@@ -4,9 +4,6 @@
 
 package org.chromium.chrome.browser;
 
-import static org.chromium.base.test.util.Restriction.RESTRICTION_TYPE_LOW_END_DEVICE;
-import static org.chromium.base.test.util.Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE;
-
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.annotation.UiThreadTest;
@@ -21,18 +18,19 @@ import org.junit.Test;
 import org.junit.rules.RuleChain;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.ThreadUtils;
+import org.chromium.base.task.PostTask;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.MetricsUtils;
-import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.test.ChromeBrowserTestRule;
+import org.chromium.chrome.test.ChromeBrowserTestRule;
+import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.content_public.browser.test.util.Criteria;
 import org.chromium.content_public.browser.test.util.CriteriaHelper;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.WebContentsUtils;
 import org.chromium.net.test.EmbeddedTestServer;
 
@@ -57,9 +55,9 @@ public class WarmupManagerTest {
         mContext = InstrumentationRegistry.getInstrumentation()
                            .getTargetContext()
                            .getApplicationContext();
-        ThreadUtils.runOnUiThreadBlocking(new Callable<Void>() {
+        TestThreadUtils.runOnUiThreadBlocking(new Callable<Void>() {
             @Override
-            public Void call() throws Exception {
+            public Void call() {
                 ChromeBrowserInitializer.getInstance(mContext).handleSynchronousStartup();
                 mWarmupManager = WarmupManager.getInstance();
                 return null;
@@ -68,30 +66,21 @@ public class WarmupManagerTest {
     }
 
     @After
-    public void tearDown() throws Exception {
-        ThreadUtils.runOnUiThreadBlocking(() -> mWarmupManager.destroySpareWebContents());
+    public void tearDown() {
+        TestThreadUtils.runOnUiThreadBlocking(() -> mWarmupManager.destroySpareWebContents());
     }
 
     @Test
     @SmallTest
-    @UiThreadTest
-    @Restriction(RESTRICTION_TYPE_LOW_END_DEVICE)
-    public void testNoSpareRendererOnLowEndDevices() throws Throwable {
-        mWarmupManager.createSpareWebContents();
-        Assert.assertFalse(mWarmupManager.hasSpareWebContents());
-    }
-
-    @Test
-    @SmallTest
-    @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
     public void testCreateAndTakeSpareRenderer() {
         final AtomicBoolean isRenderViewReady = new AtomicBoolean();
         final AtomicReference<WebContents> webContentsReference = new AtomicReference<>();
 
-        ThreadUtils.runOnUiThread(() -> {
-            mWarmupManager.createSpareWebContents();
+        PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () -> {
+            mWarmupManager.createSpareWebContents(!WarmupManager.FOR_CCT);
             Assert.assertTrue(mWarmupManager.hasSpareWebContents());
-            WebContents webContents = mWarmupManager.takeSpareWebContents(false, false);
+            WebContents webContents =
+                    mWarmupManager.takeSpareWebContents(false, false, !WarmupManager.FOR_CCT);
             Assert.assertNotNull(webContents);
             Assert.assertFalse(mWarmupManager.hasSpareWebContents());
             WebContentsObserver observer = new WebContentsObserver(webContents) {
@@ -112,17 +101,18 @@ public class WarmupManagerTest {
                 return isRenderViewReady.get();
             }
         });
-        ThreadUtils.runOnUiThread(() -> webContentsReference.get().destroy());
+        PostTask.runOrPostTask(
+                UiThreadTaskTraits.DEFAULT, () -> webContentsReference.get().destroy());
     }
 
     /** Tests that taking a spare WebContents makes it unavailable to subsequent callers. */
     @Test
     @SmallTest
     @UiThreadTest
-    @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
-    public void testTakeSpareWebContents() throws Throwable {
-        mWarmupManager.createSpareWebContents();
-        WebContents webContents = mWarmupManager.takeSpareWebContents(false, false);
+    public void testTakeSpareWebContents() {
+        mWarmupManager.createSpareWebContents(!WarmupManager.FOR_CCT);
+        WebContents webContents =
+                mWarmupManager.takeSpareWebContents(false, false, !WarmupManager.FOR_CCT);
         Assert.assertNotNull(webContents);
         Assert.assertFalse(mWarmupManager.hasSpareWebContents());
         webContents.destroy();
@@ -131,31 +121,30 @@ public class WarmupManagerTest {
     @Test
     @SmallTest
     @UiThreadTest
-    @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
-    public void testTakeSpareWebContentsChecksArguments() throws Throwable {
-        mWarmupManager.createSpareWebContents();
-        Assert.assertNull(mWarmupManager.takeSpareWebContents(true, false));
-        Assert.assertNull(mWarmupManager.takeSpareWebContents(true, true));
+    public void testTakeSpareWebContentsChecksArguments() {
+        mWarmupManager.createSpareWebContents(!WarmupManager.FOR_CCT);
+        Assert.assertNull(mWarmupManager.takeSpareWebContents(true, false, !WarmupManager.FOR_CCT));
+        Assert.assertNull(mWarmupManager.takeSpareWebContents(true, true, !WarmupManager.FOR_CCT));
         Assert.assertTrue(mWarmupManager.hasSpareWebContents());
-        Assert.assertNotNull(mWarmupManager.takeSpareWebContents(false, true));
+        Assert.assertNotNull(
+                mWarmupManager.takeSpareWebContents(false, true, !WarmupManager.FOR_CCT));
         Assert.assertFalse(mWarmupManager.hasSpareWebContents());
     }
 
     @Test
     @SmallTest
     @UiThreadTest
-    @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
-    public void testClearsDeadWebContents() throws Throwable {
-        mWarmupManager.createSpareWebContents();
+    public void testClearsDeadWebContents() {
+        mWarmupManager.createSpareWebContents(!WarmupManager.FOR_CCT);
         WebContentsUtils.simulateRendererKilled(mWarmupManager.mSpareWebContents, false);
-        Assert.assertNull(mWarmupManager.takeSpareWebContents(false, false));
+        Assert.assertNull(
+                mWarmupManager.takeSpareWebContents(false, false, !WarmupManager.FOR_CCT));
     }
 
     @Test
     @SmallTest
     @UiThreadTest
-    @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
-    public void testRecordSpareWebContentsStatus() throws Throwable {
+    public void testRecordWebContentsStatus() {
         String name = WarmupManager.WEBCONTENTS_STATUS_HISTOGRAM;
         MetricsUtils.HistogramDelta createdDelta =
                 new MetricsUtils.HistogramDelta(name, WarmupManager.WebContentsStatus.CREATED);
@@ -165,34 +154,52 @@ public class WarmupManagerTest {
                 new MetricsUtils.HistogramDelta(name, WarmupManager.WebContentsStatus.KILLED);
         MetricsUtils.HistogramDelta destroyedDelta =
                 new MetricsUtils.HistogramDelta(name, WarmupManager.WebContentsStatus.DESTROYED);
+        MetricsUtils.HistogramDelta stolenDelta =
+                new MetricsUtils.HistogramDelta(name, WarmupManager.WebContentsStatus.STOLEN);
 
         // Created, used.
-        mWarmupManager.createSpareWebContents();
+        mWarmupManager.createSpareWebContents(WarmupManager.FOR_CCT);
         Assert.assertEquals(1, createdDelta.getDelta());
-        Assert.assertNotNull(mWarmupManager.takeSpareWebContents(false, false));
+        Assert.assertNotNull(
+                mWarmupManager.takeSpareWebContents(false, false, WarmupManager.FOR_CCT));
         Assert.assertEquals(1, usedDelta.getDelta());
 
         // Created, killed.
-        mWarmupManager.createSpareWebContents();
+        mWarmupManager.createSpareWebContents(WarmupManager.FOR_CCT);
         Assert.assertEquals(2, createdDelta.getDelta());
         Assert.assertNotNull(mWarmupManager.mSpareWebContents);
         WebContentsUtils.simulateRendererKilled(mWarmupManager.mSpareWebContents, false);
         Assert.assertEquals(1, killedDelta.getDelta());
-        Assert.assertNull(mWarmupManager.takeSpareWebContents(false, false));
+        Assert.assertNull(mWarmupManager.takeSpareWebContents(false, false, WarmupManager.FOR_CCT));
 
         // Created, destroyed.
-        mWarmupManager.createSpareWebContents();
+        mWarmupManager.createSpareWebContents(WarmupManager.FOR_CCT);
         Assert.assertEquals(3, createdDelta.getDelta());
         Assert.assertNotNull(mWarmupManager.mSpareWebContents);
         mWarmupManager.destroySpareWebContents();
         Assert.assertEquals(1, destroyedDelta.getDelta());
+
+        // Created, stolen.
+        mWarmupManager.createSpareWebContents(WarmupManager.FOR_CCT);
+        Assert.assertEquals(4, createdDelta.getDelta());
+        Assert.assertNotNull(
+                mWarmupManager.takeSpareWebContents(false, false, !WarmupManager.FOR_CCT));
+        Assert.assertEquals(1, stolenDelta.getDelta());
+
+        // Created, used, not for CCT.
+        mWarmupManager.createSpareWebContents(!WarmupManager.FOR_CCT);
+        Assert.assertEquals(4, createdDelta.getDelta());
+        Assert.assertNotNull(
+                mWarmupManager.takeSpareWebContents(false, false, !WarmupManager.FOR_CCT));
+        Assert.assertEquals(1, stolenDelta.getDelta());
+        Assert.assertEquals(1, usedDelta.getDelta());
     }
 
     /** Checks that the View inflation works. */
     @Test
     @SmallTest
     @UiThreadTest
-    public void testInflateLayout() throws Throwable {
+    public void testInflateLayout() {
         int layoutId = R.layout.custom_tabs_control_container;
         int toolbarId = R.layout.custom_tabs_toolbar;
         mWarmupManager.initializeViewHierarchy(mContext, layoutId, toolbarId);
@@ -222,8 +229,9 @@ public class WarmupManagerTest {
             server.start();
 
             final String url = server.getURL("/hello_world.html");
-            ThreadUtils.runOnUiThread(() -> mWarmupManager.maybePreconnectUrlAndSubResources(
-                    Profile.getLastUsedProfile(), url));
+            PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT,
+                    () -> mWarmupManager.maybePreconnectUrlAndSubResources(
+                                    Profile.getLastUsedProfile(), url));
             if (!connectionsSemaphore.tryAcquire(5, TimeUnit.SECONDS)) {
                 // Starts at -1.
                 int actualConnections = connectionsSemaphore.availablePermits() + 1;

@@ -8,11 +8,12 @@ package_mac.py - Build and Package Release and Debug libraries for Mac OS X.
 """
 
 import argparse
-import cr_cronet
 import glob
 import os
 import shutil
 import sys
+
+from cronet.tools import cr_cronet
 
 
 def package_mac(out_dir, gn_args, build_config):

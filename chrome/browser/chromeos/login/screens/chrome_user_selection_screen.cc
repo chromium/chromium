@@ -36,8 +36,7 @@ namespace chromeos {
 
 ChromeUserSelectionScreen::ChromeUserSelectionScreen(
     const std::string& display_type)
-    : UserSelectionScreen(display_type),
-      weak_factory_(this) {
+    : UserSelectionScreen(display_type) {
   device_local_account_policy_service_ =
       g_browser_process->platform_part()
           ->browser_policy_connector_chromeos()

@@ -17,7 +17,7 @@ double ConvertFontSizeChromeToAndroid(int default_size,
   // fixed font size we will want to take into account the adjustment.
   default_fixed_size += 3;
   int max_chrome_size =
-      std::max(std::max(default_fixed_size, default_size), minimum_size);
+      std::max({default_fixed_size, default_size, minimum_size});
 
   double android_scale = kAndroidFontScaleSmall;
   if (max_chrome_size >= kChromeFontSizeVeryLarge) {

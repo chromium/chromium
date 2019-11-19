@@ -21,8 +21,7 @@ class MediaControlTimeDisplayElement : public MediaControlDivElement {
   WebSize GetSizeOrDefault() const override;
 
  protected:
-  MediaControlTimeDisplayElement(MediaControlsImpl&,
-                                 blink::WebLocalizedString::Name);
+  MediaControlTimeDisplayElement(MediaControlsImpl&, int resource_id);
 
   virtual int EstimateElementWidth() const;
 
@@ -32,7 +31,7 @@ class MediaControlTimeDisplayElement : public MediaControlDivElement {
   void SetAriaLabel();
 
   double current_value_ = 0;
-  blink::WebLocalizedString::Name localized_label_;
+  int localized_resource_id_;
 };
 
 }  // namespace blink

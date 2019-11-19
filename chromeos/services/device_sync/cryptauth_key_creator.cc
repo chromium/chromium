@@ -14,6 +14,22 @@ CryptAuthKeyCreator::CreateKeyData::CreateKeyData(
     base::Optional<std::string> handle)
     : status(status), type(type), handle(handle) {}
 
+CryptAuthKeyCreator::CreateKeyData::CreateKeyData(
+    CryptAuthKey::Status status,
+    cryptauthv2::KeyType type,
+    const std::string& handle,
+    const std::string& public_key,
+    const std::string& private_key)
+    : status(status),
+      type(type),
+      handle(handle),
+      public_key(public_key),
+      private_key(private_key) {
+  DCHECK(!handle.empty());
+  DCHECK(!public_key.empty());
+  DCHECK(!private_key.empty());
+}
+
 CryptAuthKeyCreator::CreateKeyData::~CreateKeyData() = default;
 
 CryptAuthKeyCreator::CreateKeyData::CreateKeyData(const CreateKeyData&) =

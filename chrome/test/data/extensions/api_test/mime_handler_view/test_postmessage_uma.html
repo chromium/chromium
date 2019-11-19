@@ -1,0 +1,19 @@
+<html>
+<body>
+</body>
+<script>
+  const url = window.location.search.substr(1);
+  console.log("Loaded:" + url);
+  const plugin = document.createElement("embed");
+  plugin.type = "text/csv";
+  plugin.src = url;
+  document.body.appendChild(plugin);
+
+  function sendMessages() {
+    const messages = ["a", {type: "print"}, {type: "selectAll"}, {type: "getSelectedText"},
+                      {type: "print"} /* repeated deliberately */];
+    for (msg of messages)
+      plugin.postMessage(msg);
+  }
+</script>
+</html>

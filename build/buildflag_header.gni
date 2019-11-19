@@ -31,8 +31,8 @@
 #
 #   const char kSpamServerUrl[] = BUILDFLAG(SPAM_SERVER_URL);
 #
-# There will no #define called ENABLE_FOO so if you accidentally test for that
-# in an ifdef it will always be negative.
+# There will be no #define called ENABLE_FOO so if you accidentally test for
+# that in an ifdef it will always be negative.
 #
 #
 # Template parameters

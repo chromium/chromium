@@ -6,6 +6,8 @@
 """Diagnose some common system configuration problems on Linux, and
 suggest fixes."""
 
+from __future__ import print_function
+
 import os
 import subprocess
 import sys
@@ -99,10 +101,10 @@ def RunChecks():
         sys.stdout.flush()
         error = check()
         if not error:
-            print "ok"
+            print("ok")
         else:
-            print "FAIL"
-            print error
+            print("FAIL")
+            print(error)
 
 
 if __name__ == '__main__':

@@ -59,6 +59,13 @@ scoped_refptr<const extensions::Extension> CreateExternalComponentExtension() {
                                    extensions::Extension::NO_FLAGS);
 }
 
+scoped_refptr<const extensions::Extension> CreateComponentExtension() {
+  base::DictionaryValue values;
+  return CreateExtensionFromValues(std::string(),
+                                   extensions::Manifest::COMPONENT, &values,
+                                   extensions::Extension::NO_FLAGS);
+}
+
 scoped_refptr<const extensions::Extension> CreateHostedApp() {
   base::DictionaryValue values;
   values.Set(extensions::manifest_keys::kApp,
@@ -102,6 +109,12 @@ TEST(DeviceLocalAccountManagementPolicyProviderTest, PublicSession) {
       CreateExternalComponentExtension();
   ASSERT_TRUE(extension.get());
   base::string16 error;
+  EXPECT_TRUE(provider.UserMayLoad(extension.get(), &error));
+  EXPECT_EQ(base::string16(), error);
+  error.clear();
+
+  extension = CreateComponentExtension();
+  ASSERT_TRUE(extension.get());
   EXPECT_TRUE(provider.UserMayLoad(extension.get(), &error));
   EXPECT_EQ(base::string16(), error);
   error.clear();
@@ -592,6 +605,12 @@ TEST(DeviceLocalAccountManagementPolicyProviderTest, KioskAppSession) {
   // other types of device-local accounts cannot be installed in a single-app
   // kiosk session.
   extension = CreateExternalComponentExtension();
+  ASSERT_TRUE(extension.get());
+  EXPECT_TRUE(provider.UserMayLoad(extension.get(), &error));
+  EXPECT_EQ(base::string16(), error);
+  error.clear();
+
+  extension = CreateComponentExtension();
   ASSERT_TRUE(extension.get());
   EXPECT_TRUE(provider.UserMayLoad(extension.get(), &error));
   EXPECT_EQ(base::string16(), error);

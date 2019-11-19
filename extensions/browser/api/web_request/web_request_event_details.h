@@ -25,7 +25,7 @@ class HttpResponseHeaders;
 
 namespace extensions {
 
-class InfoMap;
+class PermissionHelper;
 struct WebRequestInfo;
 
 // This helper class is used to construct the details for a webRequest event
@@ -95,19 +95,6 @@ class WebRequestEventDetails {
     dict_.SetString(key, value);
   }
 
-  // Sets the following keys using the value provided.
-  // - tabId
-  // - frameId
-  // - parentFrameId
-  void SetFrameData(const ExtensionApiFrameIdMap::FrameData& frame_data);
-
-  // Sets the following keys using information from constructor.
-  // - tabId
-  // - frameId
-  // - parentFrameId
-  // This must be called from the UI thread.
-  void DetermineFrameDataOnUI();
-
   // Create an event dictionary that contains all required keys, and also the
   // extra keys as specified by the |extra_info_spec| filter. If the listener
   // this event will be dispatched to doesn't have permission for the initiator
@@ -115,7 +102,7 @@ class WebRequestEventDetails {
   // This can be called from any thread.
   std::unique_ptr<base::DictionaryValue> GetFilteredDict(
       int extra_info_spec,
-      const InfoMap* extension_info_map,
+      PermissionHelper* permission_helper,
       const ExtensionId& extension_id,
       bool crosses_incognito) const;
 

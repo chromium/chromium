@@ -11,20 +11,15 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/files/file.h"
-#include "base/files/file_path.h"
 #include "base/macros.h"
-#include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "media/cdm/api/content_decryption_module.h"
-#include "media/mojo/interfaces/cdm_storage.mojom.h"
+#include "media/mojo/mojom/cdm_storage.mojom.h"
 #include "media/mojo/services/media_mojo_export.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
+#include "mojo/public/cpp/bindings/pending_associated_remote.h"
 
 namespace media {
-
-// TODO(crbug.com/774160): This class should do the Read/Write operations on a
-// separate thread so as to not impact decoding happening on the same thread.
-// The new thread may need to block shutdown so that the file is not corrupted.
 
 // Implements a cdm::FileIO that communicates with mojom::CdmStorage.
 class MEDIA_MOJO_EXPORT MojoCdmFileIO : public cdm::FileIO {
@@ -75,17 +70,14 @@ class MEDIA_MOJO_EXPORT MojoCdmFileIO : public cdm::FileIO {
 
   // Called when the file is opened (or not).
   void OnFileOpened(mojom::CdmStorage::Status status,
-                    base::File file,
-                    mojom::CdmFileAssociatedPtrInfo cdm_file);
+                    mojo::PendingAssociatedRemote<mojom::CdmFile> cdm_file);
 
-  // Reading the file is done asynchronously.
-  void DoRead(int64_t num_bytes);
+  // Called when the read operation is done.
+  void OnFileRead(mojom::CdmFile::Status status,
+                  const std::vector<uint8_t>& data);
 
-  // Called when a temporary file has been opened for writing.
-  void DoWrite(const std::vector<uint8_t>& data, base::File temporary_file);
-
-  // Called after the write has been committed and replaces the original file.
-  void OnWriteCommitted(base::File reopened_file);
+  // Called when the write operation is done.
+  void OnFileWritten(mojom::CdmFile::Status status);
 
   // Called when an error occurs. Calls client_->OnXxxxComplete with kError
   // or kInUse asynchronously. In some cases we could actually call them
@@ -108,18 +100,16 @@ class MEDIA_MOJO_EXPORT MojoCdmFileIO : public cdm::FileIO {
   // |file_name_| is only saved for logging purposes.
   std::string file_name_;
 
-  // Current file open for reading.
-  base::File file_for_reading_;
-
-  // |cdm_file_| is used to write to the file and is released when the file is
-  // closed so that CdmStorage can tell that the file is no longer being used.
-  mojom::CdmFileAssociatedPtr cdm_file_;
+  // |cdm_file_| is used to read and write the file and is released when the
+  // file is closed so that CdmStorage can tell that the file is no longer being
+  // used.
+  mojo::AssociatedRemote<mojom::CdmFile> cdm_file_;
 
   // Keep track of operations in progress.
   State state_ = State::kUnopened;
 
   // NOTE: Weak pointers must be invalidated before all other member variables.
-  base::WeakPtrFactory<MojoCdmFileIO> weak_factory_;
+  base::WeakPtrFactory<MojoCdmFileIO> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(MojoCdmFileIO);
 };

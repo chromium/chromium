@@ -11,7 +11,6 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/streams/readable_stream.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
-#include "third_party/blink/renderer/platform/bindings/trace_wrapper_member.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/loader/fetch/bytes_consumer.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
@@ -24,7 +23,6 @@ class ScriptState;
 // The stream will be immediately locked by the consumer and will never be
 // released.
 class CORE_EXPORT ReadableStreamBytesConsumer final : public BytesConsumer {
-  USING_PRE_FINALIZER(ReadableStreamBytesConsumer, Dispose);
 
  public:
   ReadableStreamBytesConsumer(ScriptState*, ReadableStream*, ExceptionState&);
@@ -46,13 +44,12 @@ class CORE_EXPORT ReadableStreamBytesConsumer final : public BytesConsumer {
   class OnFulfilled;
   class OnRejected;
 
-  void Dispose();
   void OnRead(DOMUint8Array*);
   void OnReadDone();
   void OnRejected();
   void Notify();
 
-  TraceWrapperMember<ReadableStream::ReadHandle> read_handle_;
+  Member<ReadableStream::ReadHandle> read_handle_;
   Member<ScriptState> script_state_;
   Member<BytesConsumer::Client> client_;
   Member<DOMUint8Array> pending_buffer_;

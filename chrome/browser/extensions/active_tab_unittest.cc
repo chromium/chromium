@@ -20,6 +20,7 @@
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sessions/session_tab_helper.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/version_info/version_info.h"
@@ -59,9 +60,11 @@
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/constants/chromeos_switches.h"
+#include "chromeos/dbus/cryptohome/cryptohome_client.h"
 #include "chromeos/login/login_state/scoped_test_public_session_login_state.h"
 #include "components/account_id/account_id.h"
-#include "components/browser_sync/browser_sync_switches.h"
+#include "components/sync/driver/sync_driver_switches.h"
+#include "content/public/common/content_switches.h"
 #include "extensions/browser/extension_dialog_auto_confirm.h"
 #endif
 
@@ -347,8 +350,8 @@ TEST_F(ActiveTabTest, GrantToSinglePage) {
 TEST_F(ActiveTabTest, CapturingPagesWithActiveTab) {
   std::vector<GURL> test_urls = {
       GURL("https://example.com"),
-      GURL("chrome://version"),
-      GURL("chrome://newtab"),
+      GURL(chrome::kChromeUIVersionURL),
+      GURL(chrome::kChromeUINewTabURL),
       GURL("http://[2607:f8b0:4005:805::200e]"),
       ExtensionsClient::Get()->GetWebstoreBaseURL(),
       extension->GetResourceURL("test.html"),
@@ -459,7 +462,7 @@ TEST_F(ActiveTabTest, SameDocumentNavigations) {
 }
 
 TEST_F(ActiveTabTest, ChromeUrlGrants) {
-  GURL internal("chrome://version");
+  GURL internal(chrome::kChromeUIVersionURL);
   NavigateAndCommit(internal);
   active_tab_permission_granter()->GrantIfRequested(
       extension_with_tab_capture.get());
@@ -529,6 +532,9 @@ class ActiveTabManagedSessionTest : public ActiveTabTest {
     // Necessary because no ProfileManager instance exists in this test.
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
         chromeos::switches::kIgnoreUserProfileMappingForTests);
+    // Necessary to skip cryptohome/profile sanity check in
+    // ChromeUserManagerImpl for fake user login.
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(switches::kTestType);
 
     // Setup, login a public account user.
     const std::string user_id = "public@account.user";
@@ -543,8 +549,7 @@ class ActiveTabManagedSessionTest : public ActiveTabTest {
         TestingBrowserProcess::GetGlobal());
     wallpaper_controller_client_ =
         std::make_unique<WallpaperControllerClient>();
-    wallpaper_controller_client_->InitForTesting(
-        test_wallpaper_controller_.CreateInterfacePtr());
+    wallpaper_controller_client_->InitForTesting(&test_wallpaper_controller_);
     g_browser_process->local_state()->SetString(
         "PublicAccountPendingDataRemoval", user_email);
     user_manager::UserManager::Get()->UserLoggedIn(account_id, user_id_hash,

@@ -81,7 +81,7 @@ AudioDeviceOwner::~AudioDeviceOwner() {
 
 void AudioDeviceOwner::StartOnMainThread(
     assistant_client::AudioOutput::Delegate* delegate,
-    service_manager::Connector* connector,
+    mojo::PendingRemote<audio::mojom::StreamFactory> stream_factory,
     const assistant_client::OutputStreamFormat& format) {
   DCHECK(!output_device_);
   DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
@@ -108,14 +108,14 @@ void AudioDeviceOwner::StartOnMainThread(
     ScheduleFillLocked(base::TimeTicks::Now());
   }
 
-  // |connector| is null in unittest.
-  if (connector) {
+  // |stream_factory| is null in unittest.
+  if (stream_factory) {
     // |AudioDeviceOwner| is destroyed on background thread. Thus, it's safe to
     // use base::Unretained.
     background_task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(&AudioDeviceOwner::StartDeviceOnBackgroundThread,
-                       base::Unretained(this), connector->Clone()));
+                       base::Unretained(this), std::move(stream_factory)));
   }
 }
 
@@ -130,10 +130,10 @@ void AudioDeviceOwner::StopOnBackgroundThread() {
 }
 
 void AudioDeviceOwner::StartDeviceOnBackgroundThread(
-    std::unique_ptr<service_manager::Connector> connector) {
+    mojo::PendingRemote<audio::mojom::StreamFactory> stream_factory) {
   DCHECK(background_task_runner_->RunsTasksInCurrentSequence());
   output_device_ = std::make_unique<audio::OutputDevice>(
-      std::move(connector), audio_param_, this, device_id_);
+      std::move(stream_factory), audio_param_, this, device_id_);
   output_device_->Play();
 }
 

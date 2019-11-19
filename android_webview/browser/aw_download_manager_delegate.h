@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/macros.h"
 #include "base/supports_user_data.h"
 #include "content/public/browser/download_manager_delegate.h"
 
@@ -23,17 +24,10 @@ namespace android_webview {
 class AwDownloadManagerDelegate : public content::DownloadManagerDelegate,
                                   public base::SupportsUserData::Data {
  public:
+  AwDownloadManagerDelegate();
   ~AwDownloadManagerDelegate() override;
 
   // content::DownloadManagerDelegate implementation.
-  bool DetermineDownloadTarget(
-      download::DownloadItem* item,
-      const content::DownloadTargetCallback& callback) override;
-  bool ShouldCompleteDownload(download::DownloadItem* item,
-                              const base::Closure& complete_callback) override;
-  bool ShouldOpenDownload(
-      download::DownloadItem* item,
-      const content::DownloadOpenDelayedCallback& callback) override;
   bool InterceptDownloadIfApplicable(
       const GURL& url,
       const std::string& user_agent,
@@ -41,8 +35,11 @@ class AwDownloadManagerDelegate : public content::DownloadManagerDelegate,
       const std::string& mime_type,
       const std::string& request_origin,
       int64_t content_length,
+      bool is_transient,
       content::WebContents* web_contents) override;
-  void GetNextId(const content::DownloadIdCallback& callback) override;
+
+ private:
+  DISALLOW_COPY_AND_ASSIGN(AwDownloadManagerDelegate);
 };
 
 }  // namespace android_webview

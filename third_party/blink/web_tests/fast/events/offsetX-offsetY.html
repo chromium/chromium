@@ -20,15 +20,15 @@
       var resultsDiv = document.getElementById('results');
       resultsDiv.innerHTML += s + '<br>';
     }
-    
+
     function test()
     {
       // Scroll so that frame view offsets are non-zero
       window.scrollTo(20, 100);
 
-      document.getElementById('overflow').scrollLeft = 80;
+      document.getElementById('overflow').scrollLeft = 0;
       document.getElementById('overflow').scrollTop = 60;
-      
+
       // In non-test mode, show the mouse coords for testing
       if (!window.testRunner)
         document.body.addEventListener('mousemove', mousemoved, false);
@@ -95,7 +95,7 @@
       if (window.testRunner)
         testRunner.notifyDone();
     }
-    
+
     function sumPositions(element)
     {
         var offsetLeft = 0;
@@ -141,13 +141,13 @@
 
       log(result);
     }
-    
+
     window.addEventListener('load', function() {
       window.setTimeout(test, 0);
     }, false);
   </script>
   <style type="text/css" media="screen">
-  
+
     body {
       height: 2048px;
       width: 2048px;
@@ -170,7 +170,7 @@
       width: 200px;
       border: 15px solid gray;
     }
-    
+
     #rel-box {
       position: relative;
       height: 100px;
@@ -179,7 +179,7 @@
       top: -50px;
       background-color: #CCC;
     }
-    
+
     #fixed-box {
       position: fixed;
       top: 20px;
@@ -188,7 +188,7 @@
       height: 50px;
       background-color: #AAA;
     }
-    
+
     #columns {
       position: absolute;
       -webkit-column-count: 3;
@@ -197,7 +197,7 @@
       left: 460px;
       border: 2px solid black;
     }
-    
+
     #in-columns {
       display: block;
       height: 40px;
@@ -206,7 +206,7 @@
       text-align: center;
       background-color: gray;
     }
-    
+
     #transformed {
       height: 120px;
       width: 200px;
@@ -223,13 +223,13 @@
       border: 2px solid black;
       direction: rtl;
     }
-    
+
     #overflow-contents {
       height: 500px;
       width: 120%;
       background-color: #BBB;
     }
-    
+
     #inside-overflow {
       width: 50%;
       background-color: gray;
@@ -240,7 +240,7 @@
       left: 30px;
       top: 700px;
     }
-    
+
     #mousepos {
       position: absolute;
       left: 30px;
@@ -248,7 +248,7 @@
       color: gray;
       font-size: smaller;
     }
-    
+
     tr {
 /*      transform: rotate(10deg);*/
     }

@@ -37,7 +37,8 @@ class VirtualFileRequestServiceProvider
 
   // Keep this last so that all weak pointers will be invalidated at the
   // beginning of destruction.
-  base::WeakPtrFactory<VirtualFileRequestServiceProvider> weak_ptr_factory_;
+  base::WeakPtrFactory<VirtualFileRequestServiceProvider> weak_ptr_factory_{
+      this};
 
   DISALLOW_COPY_AND_ASSIGN(VirtualFileRequestServiceProvider);
 };

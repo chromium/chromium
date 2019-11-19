@@ -39,7 +39,7 @@ static_library("service") {
   deps = [
     ":buildflags",
     "//base",
-    "//components/data_use_measurement/core",
+    "//build:branding_buildflags",
     "//components/encrypted_messages",
     "//components/language/core/browser",
     "//components/metrics",

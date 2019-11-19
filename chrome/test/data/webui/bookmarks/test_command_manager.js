@@ -2,40 +2,41 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-/**
- * Creates and returns a CommandManager which tracks what commands are executed.
- * @constructor
- * @extends {bookmarks.CommandManager}
- */
-function TestCommandManager() {
-  const commandManager = document.createElement('bookmarks-command-manager');
-  let lastCommand = null;
-  let lastCommandIds = null;
+import 'chrome://bookmarks/bookmarks.js';
+import {normalizeIterable} from 'chrome://test/bookmarks/test_util.js';
 
-  const realHandle = commandManager.handle.bind(commandManager);
-  commandManager.handle = function(command, itemIds) {
-    lastCommand = command;
-    lastCommandIds = itemIds;
-    realHandle(command, itemIds);
-  };
+export class TestCommandManager {
+  constructor() {
+    this.commandManager_ = document.createElement('bookmarks-command-manager');
+    this.lastCommand_ = null;
+    this.lastCommandIds_ = null;
+    const realHandle = this.commandManager_.handle.bind(this.commandManager_);
+    this.commandManager_.handle = (command, itemIds) => {
+      this.lastCommand_ = command;
+      this.lastCommandIds_ = itemIds;
+      realHandle(command, itemIds);
+    };
+  }
+
+  getCommandManager() {
+    return this.commandManager_;
+  }
 
   /**
    * @param {Command} command
    * @param {!Array<string>} ids
    */
-  commandManager.assertLastCommand = function(command, ids) {
-    assertEquals(command, lastCommand);
+  assertLastCommand(command, ids) {
+    assertEquals(command, this.lastCommand_);
     if (ids) {
-      assertDeepEquals(ids, normalizeIterable(lastCommandIds));
+      assertDeepEquals(ids, normalizeIterable(this.lastCommandIds_));
     }
-    lastCommand = null;
-    lastCommandIds = null;
-  };
+    this.lastCommand_ = null;
+    this.lastCommandIds_ = null;
+  }
 
   /** @param {!Array<string>} ids */
-  commandManager.assertMenuOpenForIds = function(ids) {
-    assertDeepEquals(ids, normalizeIterable(commandManager.menuIds_));
-  };
-
-  return commandManager;
+  assertMenuOpenForIds(ids) {
+    assertDeepEquals(ids, normalizeIterable(this.commandManager_.menuIds_));
+  }
 }

@@ -1,8 +1,0 @@
-This is a testharness.js-based test.
-FAIL window.postMessage should be able to transfer a TransformStream Cannot read property 'constructor' of null
-PASS a TransformStream with a locked writable should not be transferable
-PASS a TransformStream with a locked readable should not be transferable
-PASS a TransformStream with both sides locked should not be transferable
-FAIL piping through transferred transforms should work Cannot read property 'source' of null
-Harness: the test ran to completion.
-

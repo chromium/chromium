@@ -1,8 +1,2 @@
 set noparent
-
-dullweber@chromium.org
-mkwst@chromium.org
-msramek@chromium.org
-nicolaso@chromium.org
-rhalavati@chromium.org
-tnagel@chromium.org
+file://tools/traffic_annotation/summary/TRAFFIC_ANNOTATION_OWNERS

@@ -16,11 +16,6 @@ component("embedder") {
     "scoped_ipc_support.cc",
   ]
 
-  if (is_mac && !is_ios) {
-    public += [ "default_mach_broker.h" ]
-    sources += [ "default_mach_broker.cc" ]
-  }
-
   defines = [ "IS_MOJO_CORE_EMBEDDER_IMPL" ]
 
   public_deps = [

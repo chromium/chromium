@@ -208,8 +208,6 @@ void SettingsResetPromptModel::ReportUmaMetrics() const {
                             startup_urls_reset_state(), RESET_STATE_MAX);
   UMA_HISTOGRAM_ENUMERATION("SettingsResetPrompt.ResetState_Homepage",
                             homepage_reset_state(), RESET_STATE_MAX);
-  base::UmaHistogramSparse("SettingsResetPrompt.DelayBeforePromptParam",
-                           prompt_config_->delay_before_prompt().InSeconds());
 }
 
 void SettingsResetPromptModel::InitDefaultSearchData() {

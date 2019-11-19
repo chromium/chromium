@@ -7,23 +7,24 @@
 
 #include "content/common/widget.mojom.h"
 #include "content/test/mock_widget_input_handler.h"
-#include "mojo/public/cpp/bindings/binding.h"
-#include "mojo/public/cpp/bindings/interface_request.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 
 namespace content {
 
 class MockWidgetImpl : public mojom::Widget {
  public:
-  explicit MockWidgetImpl(mojo::InterfaceRequest<mojom::Widget> request);
+  explicit MockWidgetImpl(mojo::PendingReceiver<mojom::Widget> receiver);
   ~MockWidgetImpl() override;
 
-  void SetupWidgetInputHandler(mojom::WidgetInputHandlerRequest request,
-                               mojom::WidgetInputHandlerHostPtr host) override;
+  void SetupWidgetInputHandler(
+      mojo::PendingReceiver<mojom::WidgetInputHandler> receiver,
+      mojo::PendingRemote<mojom::WidgetInputHandlerHost> host) override;
 
   MockWidgetInputHandler* input_handler() { return input_handler_.get(); }
 
  private:
-  mojo::Binding<mojom::Widget> binding_;
+  mojo::Receiver<mojom::Widget> receiver_;
   std::unique_ptr<MockWidgetInputHandler> input_handler_;
 
   DISALLOW_COPY_AND_ASSIGN(MockWidgetImpl);

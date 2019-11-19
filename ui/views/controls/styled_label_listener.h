@@ -23,7 +23,7 @@ class VIEWS_EXPORT StyledLabelListener {
                                       int event_flags) = 0;
 
  protected:
-  virtual ~StyledLabelListener() {}
+  virtual ~StyledLabelListener() = default;
 };
 
 }  // namespace views

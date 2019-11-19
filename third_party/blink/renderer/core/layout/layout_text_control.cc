@@ -53,7 +53,7 @@ void LayoutTextControl::StyleDidChange(StyleDifference diff,
   if (!inner_editor)
     return;
   LayoutBlock* inner_editor_layout_object =
-      ToLayoutBlock(inner_editor->GetLayoutObject());
+      To<LayoutBlock>(inner_editor->GetLayoutObject());
   if (inner_editor_layout_object) {
     inner_editor->SetNeedsStyleRecalc(
         kSubtreeStyleChange,
@@ -63,27 +63,11 @@ void LayoutTextControl::StyleDidChange(StyleDifference diff,
     // (see: GetUncachedSelectionStyle in SelectionPaintingUtils.cpp) so ensure
     // the inner editor selection is invalidated anytime style changes and a
     // ::selection style is or was present on LayoutTextControl.
-    if (StyleRef().HasPseudoStyle(kPseudoIdSelection) ||
-        (old_style && old_style->HasPseudoStyle(kPseudoIdSelection))) {
+    if (StyleRef().HasPseudoElementStyle(kPseudoIdSelection) ||
+        (old_style && old_style->HasPseudoElementStyle(kPseudoIdSelection))) {
       inner_editor_layout_object->InvalidateSelectedChildrenOnStyleChange();
     }
   }
-}
-
-int LayoutTextControl::TextBlockLogicalHeight() const {
-  return (LogicalHeight() - BorderAndPaddingLogicalHeight()).ToInt();
-}
-
-int LayoutTextControl::TextBlockLogicalWidth() const {
-  Element* inner_editor = InnerEditorElement();
-  DCHECK(inner_editor);
-
-  LayoutUnit unit_width = LogicalWidth() - BorderAndPaddingLogicalWidth();
-  if (inner_editor->GetLayoutObject())
-    unit_width -= inner_editor->GetLayoutBox()->PaddingStart() +
-                  inner_editor->GetLayoutBox()->PaddingEnd();
-
-  return unit_width.ToInt();
 }
 
 int LayoutTextControl::ScrollbarThickness() const {
@@ -126,19 +110,16 @@ void LayoutTextControl::ComputeLogicalHeight(
 
 void LayoutTextControl::HitInnerEditorElement(
     HitTestResult& result,
-    const LayoutPoint& point_in_container,
-    const LayoutPoint& accumulated_offset) {
+    const HitTestLocation& hit_test_location,
+    const PhysicalOffset& accumulated_offset) {
   HTMLElement* inner_editor = InnerEditorElement();
   if (!inner_editor->GetLayoutObject())
     return;
 
-  LayoutPoint adjusted_location = accumulated_offset + Location();
-  LayoutPoint local_point =
-      point_in_container -
-      ToLayoutSize(adjusted_location +
-                   inner_editor->GetLayoutBox()->Location());
-  if (HasOverflowClip())
-    local_point += ScrolledContentOffset();
+  PhysicalOffset local_point =
+      hit_test_location.Point() - accumulated_offset -
+      inner_editor->GetLayoutObject()->LocalToAncestorPoint(PhysicalOffset(),
+                                                            this);
   result.SetNodeAndPosition(inner_editor, local_point);
 }
 
@@ -227,14 +208,6 @@ float LayoutTextControl::GetAvgCharWidth(const AtomicString& family) const {
   return font.Width(text_run);
 }
 
-float LayoutTextControl::ScaleEmToUnits(int x) const {
-  // This matches the unitsPerEm value for MS Shell Dlg and Courier New from the
-  // "head" font table.
-  float units_per_em = 2048.0f;
-  return roundf(StyleRef().GetFont().GetFontDescription().ComputedSize() * x /
-                units_per_em);
-}
-
 void LayoutTextControl::ComputeIntrinsicLogicalWidths(
     LayoutUnit& min_logical_width,
     LayoutUnit& max_logical_width) const {
@@ -300,10 +273,10 @@ void LayoutTextControl::ComputePreferredLogicalWidths() {
   ClearPreferredLogicalWidthsDirty();
 }
 
-void LayoutTextControl::AddOutlineRects(Vector<LayoutRect>& rects,
-                                        const LayoutPoint& additional_offset,
+void LayoutTextControl::AddOutlineRects(Vector<PhysicalRect>& rects,
+                                        const PhysicalOffset& additional_offset,
                                         NGOutlineType) const {
-  rects.push_back(LayoutRect(additional_offset, Size()));
+  rects.emplace_back(additional_offset, Size());
 }
 
 LayoutObject* LayoutTextControl::LayoutSpecialExcludedChild(
@@ -334,7 +307,7 @@ LayoutUnit LayoutTextControl::FirstLineBoxBaseline() const {
     return LayoutUnit(-1);
 
   LayoutBlock* inner_editor_layout_object =
-      ToLayoutBlock(inner_editor->GetLayoutObject());
+      To<LayoutBlock>(inner_editor->GetLayoutObject());
   const SimpleFontData* font_data =
       inner_editor_layout_object->Style(true)->GetFont().PrimaryFont();
   DCHECK(font_data);

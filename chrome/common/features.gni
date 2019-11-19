@@ -7,6 +7,7 @@ import("//build/config/chromecast_build.gni")
 import("//build/config/compiler/compiler.gni")
 import("//build/config/dcheck_always_on.gni")
 import("//build/config/features.gni")
+import("//components/safe_browsing/buildflags.gni")
 import("//device/vr/buildflags/buildflags.gni")
 import("//extensions/buildflags/buildflags.gni")
 import("//media/media_options.gni")
@@ -20,7 +21,13 @@ assert(!is_ios, "Chromium/iOS shouldn't use anything in //chrome")
 
 # Please keep features in alphabetical order.
 declare_args() {
-  enable_app_list = is_chromeos
+  # Platforms where the BuiltinCertificateVerifierEnabled enterprise policy is
+  # supported. This must must match the supported_on list of the policy in
+  # policy_templates.json and be a subset of the
+  # builtin_cert_verifier_feature_supported platforms.
+  # See crbug.com/410574.  This can be removed when the builtin verifier is
+  # unconditionally enabled on all platforms.
+  builtin_cert_verifier_policy_supported = is_chromeos || is_desktop_linux
 
   # Enables support for background apps.
   enable_background_contents = !is_android && !is_chromecast
@@ -31,6 +38,9 @@ declare_args() {
   enable_basic_print_dialog = enable_basic_printing && !is_chromeos
 
   enable_captive_portal_detection = !is_android && !is_chromecast
+
+  # Enables the Click to Call feature on desktop platforms.
+  enable_click_to_call = is_mac || is_win || is_desktop_linux || is_chromeos
 
   # Hangout services is an extension that adds extra features to Hangouts.
   # It is enableable separately to facilitate testing.
@@ -43,21 +53,13 @@ declare_args() {
   enable_one_click_signin =
       is_win || is_mac || (is_linux && !is_chromeos && !is_chromecast)
 
-  enable_service_discovery = (enable_mdns && !is_android && !is_ios) || is_mac
+  enable_service_discovery = (enable_mdns && !is_android) || is_mac
 
   # Enables use of the session service, which is enabled by default.
   # Android stores them separately on the Java side.
   enable_session_service = !is_android && !is_chromecast
 
-  # Enables embedding of the simple_browser service, a lightweight browser
-  # application which consumes the Content Service. Useful primarily for
-  # developer testing.
-  enable_simple_browser_service_in_process =
-      use_aura && (is_debug || dcheck_always_on) && !is_chromecast
-  enable_simple_browser_service_out_of_process =
-      is_chromeos && (is_debug || dcheck_always_on)
-
-  enable_supervised_users = !is_chromecast
+  enable_supervised_users = is_chromeos || is_android
 
   # Indicates if Wayland display server support is enabled.
   enable_wayland_server = is_chromeos
@@ -74,7 +76,6 @@ use_brlapi = is_chromeos
 # Every grit target in //chrome should apply these defines so that the
 # proper build flags can be set.
 chrome_grit_defines = [
-  "enable_app_list=$enable_app_list",
   "enable_arcore=$enable_arcore",
   "enable_background_mode=$enable_background_mode",
   "enable_background_contents=$enable_background_contents",
@@ -84,7 +85,9 @@ chrome_grit_defines = [
   "enable_print_preview=$enable_print_preview",
   "enable_printing=$enable_basic_printing",
   "enable_service_discovery=$enable_service_discovery",
+  "enable_supervised_users=$enable_supervised_users",
   "enable_vr=$enable_vr",
+  "enable_webui_tab_strip=$enable_webui_tab_strip",
   "safe_browsing_mode=$safe_browsing_mode",
   "optimize_webui=$optimize_webui",
 ]

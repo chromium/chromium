@@ -51,14 +51,13 @@ template("implement_content_app") {
       "//content/public/android:jni",
       "//device/bluetooth",
       "//device/gamepad",
-      "//device/usb",
       "//gpu",
       "//media",
       "//media/capture",
       "//media/midi",
       "//net",
       "//skia",
-      "//third_party/android_tools:cpu_features",
+      "//third_party/android_ndk:cpu_features",
       "//ui/android",
       "//ui/events",
       "//ui/shell_dialogs",
@@ -96,12 +95,22 @@ template("implement_content_app") {
   }
 
   source_set(main_target_name) {
+    check_includes = false
+
     sources = [
       "content_service_manager_main_delegate.cc",
       "content_service_manager_main_delegate.h",
       "mojo/mojo_init.cc",
       "mojo/mojo_init.h",
     ]
+
+    if (defined(invoker.include_browser_sources) &&
+        invoker.include_browser_sources) {
+      sources += [
+        "service_manager_environment.cc",
+        "service_manager_environment.h",
+      ]
+    }
 
     configs += extra_configs
     deps = content_app_deps + [
@@ -163,6 +172,7 @@ implement_content_app("both") {
     "//content/renderer",
     "//content/utility",
   ]
+  include_browser_sources = true
 }
 
 # See comment at the top of //content/BUILD.gn for how this works.
@@ -185,6 +195,7 @@ if (is_multi_dll_chrome) {
     deps = [
       ":content_app_browser_deps",
     ]
+    include_browser_sources = true
   }
 
   implement_content_app("child") {

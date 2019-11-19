@@ -44,12 +44,6 @@ class SVGPoint final : public SVGPropertyHelper<SVGPoint> {
  public:
   typedef SVGPointTearOff TearOffType;
 
-  static SVGPoint* Create() { return MakeGarbageCollected<SVGPoint>(); }
-
-  static SVGPoint* Create(const FloatPoint& point) {
-    return MakeGarbageCollected<SVGPoint>(point);
-  }
-
   SVGPoint();
   explicit SVGPoint(const FloatPoint&);
 
@@ -69,7 +63,7 @@ class SVGPoint final : public SVGPropertyHelper<SVGPoint> {
   SVGParsingError SetValueAsString(const String&);
 
   void Add(SVGPropertyBase*, SVGElement*) override;
-  void CalculateAnimatedValue(SVGAnimationElement*,
+  void CalculateAnimatedValue(const SVGAnimateElement&,
                               float percentage,
                               unsigned repeat_count,
                               SVGPropertyBase* from,

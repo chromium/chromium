@@ -1,8 +1,0 @@
-In file included from class_requires_finalization_base.cpp:5:
-./class_requires_finalization_base.h:23:1: warning: [blink-gc] Class 'NeedsFinalizer' requires finalization.
-class NeedsFinalizer : public A, public B {
-^
-./class_requires_finalization_base.h:23:34: note: [blink-gc] Base class 'B' requiring finalization declared here:
-class NeedsFinalizer : public A, public B {
-                                 ^
-1 warning generated.

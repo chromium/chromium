@@ -13,13 +13,15 @@ namespace {
 class FakeTaskImpl : public Task {
  public:
   FakeTaskImpl() = default;
+  FakeTaskImpl(const FakeTaskImpl&) = delete;
+
+  FakeTaskImpl& operator=(const FakeTaskImpl&) = delete;
 
   // Overridden from Task:
   void RunOnWorkerThread() override {}
 
  private:
   ~FakeTaskImpl() override = default;
-  DISALLOW_COPY_AND_ASSIGN(FakeTaskImpl);
 };
 
 TEST(TaskGraphWorkQueueTest, TestChangingDependency) {

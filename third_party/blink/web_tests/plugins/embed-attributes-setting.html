@@ -35,6 +35,9 @@ function test()
     embed = document.getElementById('embed');
     print("[Embed is element specified in markup]");
 
+    if (window.internals)
+        internals.updateLayoutAndRunPostLayoutTasks();
+
     embed.align = 1;
     embed.height = 1;
     embed.name = 1;
@@ -48,15 +51,24 @@ function test()
     shouldBe("embed.getAttribute('type')", 1);
     shouldBe("typeof embed.postMessage", "function");
 
+    if (window.internals)
+        internals.updateLayoutAndRunPostLayoutTasks();
+
     print("----------");
 
     embed = document.createElement('embed');
     print("[Embed is dynamically created element with only type specified]");
 
+    if (window.internals)
+        internals.updateLayoutAndRunPostLayoutTasks();
+
     embed.style.visibility = "hidden";
     embed.type = "application/x-blink-test-plugin";
     document.body.appendChild(embed);
     shouldBe("typeof embed.postMessage", "function");
+
+    if (window.internals)
+        internals.updateLayoutAndRunPostLayoutTasks();
 }
 </script>
 </head>

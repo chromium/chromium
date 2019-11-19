@@ -20,7 +20,7 @@
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/tts_controller.h"
-#include "third_party/blink/public/platform/web_speech_synthesis_constants.h"
+#include "third_party/blink/public/mojom/speech/speech_synthesis.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace {
@@ -61,7 +61,7 @@ TtsControllerDelegateImpl::~TtsControllerDelegateImpl() {
 }
 
 int TtsControllerDelegateImpl::GetMatchingVoice(
-    const content::TtsUtterance* utterance,
+    content::TtsUtterance* utterance,
     std::vector<content::VoiceData>& voices) {
   // Return the index of the voice that best match the utterance parameters.
   //
@@ -195,23 +195,23 @@ void TtsControllerDelegateImpl::UpdateUtteranceDefaultsFromPrefs(
   // Update pitch, rate and volume from user prefs if not set explicitly
   // on this utterance.
   const PrefService* prefs = GetPrefService(utterance);
-  if (*rate == blink::kWebSpeechSynthesisDoublePrefNotSet) {
+  if (*rate == blink::mojom::kSpeechSynthesisDoublePrefNotSet) {
     *rate = prefs ? prefs->GetDouble(prefs::kTextToSpeechRate)
-                  : blink::kWebSpeechSynthesisDefaultTextToSpeechRate;
+                  : blink::mojom::kSpeechSynthesisDefaultRate;
   }
-  if (*pitch == blink::kWebSpeechSynthesisDoublePrefNotSet) {
+  if (*pitch == blink::mojom::kSpeechSynthesisDoublePrefNotSet) {
     *pitch = prefs ? prefs->GetDouble(prefs::kTextToSpeechPitch)
-                   : blink::kWebSpeechSynthesisDefaultTextToSpeechPitch;
+                   : blink::mojom::kSpeechSynthesisDefaultPitch;
   }
-  if (*volume == blink::kWebSpeechSynthesisDoublePrefNotSet) {
+  if (*volume == blink::mojom::kSpeechSynthesisDoublePrefNotSet) {
     *volume = prefs ? prefs->GetDouble(prefs::kTextToSpeechVolume)
-                    : blink::kWebSpeechSynthesisDefaultTextToSpeechVolume;
+                    : blink::mojom::kSpeechSynthesisDefaultVolume;
   }
 #endif  // defined(OS_CHROMEOS)
 }
 
 const PrefService* TtsControllerDelegateImpl::GetPrefService(
-    const content::TtsUtterance* utterance) {
+    content::TtsUtterance* utterance) {
   const PrefService* prefs = nullptr;
   // The utterance->GetBrowserContext() is null in tests.
   if (utterance->GetBrowserContext()) {

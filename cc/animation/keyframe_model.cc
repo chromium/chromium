@@ -12,6 +12,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/trace_event/trace_event.h"
 #include "cc/animation/animation_curve.h"
+#include "cc/trees/target_property.h"
 
 namespace {
 
@@ -50,9 +51,11 @@ std::unique_ptr<KeyframeModel> KeyframeModel::Create(
     std::unique_ptr<AnimationCurve> curve,
     int keyframe_model_id,
     int group_id,
-    int target_property_id) {
+    int target_property_id,
+    const std::string& custom_property_name) {
   return base::WrapUnique(new KeyframeModel(std::move(curve), keyframe_model_id,
-                                            group_id, target_property_id));
+                                            group_id, target_property_id,
+                                            custom_property_name));
 }
 
 std::unique_ptr<KeyframeModel> KeyframeModel::CreateImplInstance(
@@ -61,7 +64,8 @@ std::unique_ptr<KeyframeModel> KeyframeModel::CreateImplInstance(
   // creating multiple controlling instances.
   DCHECK(!is_controlling_instance_);
   std::unique_ptr<KeyframeModel> to_return(
-      new KeyframeModel(curve_->Clone(), id_, group_, target_property_id_));
+      new KeyframeModel(curve_->Clone(), id_, group_, target_property_id_,
+                        custom_property_name_));
   to_return->element_id_ = element_id_;
   to_return->run_state_ = initial_run_state;
   to_return->iterations_ = iterations_;
@@ -81,7 +85,8 @@ std::unique_ptr<KeyframeModel> KeyframeModel::CreateImplInstance(
 KeyframeModel::KeyframeModel(std::unique_ptr<AnimationCurve> curve,
                              int keyframe_model_id,
                              int group_id,
-                             int target_property_id)
+                             int target_property_id,
+                             const std::string& custom_property_name)
     : curve_(std::move(curve)),
       id_(keyframe_model_id),
       group_(group_id),
@@ -97,7 +102,11 @@ KeyframeModel::KeyframeModel(std::unique_ptr<AnimationCurve> curve,
       is_controlling_instance_(false),
       is_impl_only_(false),
       affects_active_elements_(true),
-      affects_pending_elements_(true) {}
+      affects_pending_elements_(true),
+      custom_property_name_(custom_property_name) {
+  DCHECK(custom_property_name_.empty() ||
+         target_property_id_ == TargetProperty::CSS_CUSTOM_PROPERTY);
+}
 
 KeyframeModel::~KeyframeModel() {
   if (run_state_ == RUNNING || run_state_ == PAUSED)

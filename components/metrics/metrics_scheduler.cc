@@ -21,9 +21,11 @@ const int kInitialIntervalSeconds = 60;
 
 }  // namespace
 
-MetricsScheduler::MetricsScheduler(const base::Closure& task_callback)
+MetricsScheduler::MetricsScheduler(const base::Closure& task_callback,
+                                   bool fast_startup_for_testing)
     : task_callback_(task_callback),
-      interval_(base::TimeDelta::FromSeconds(kInitialIntervalSeconds)),
+      interval_(base::TimeDelta::FromSeconds(
+          fast_startup_for_testing ? 0 : kInitialIntervalSeconds)),
       running_(false),
       callback_pending_(false) {}
 

@@ -9,12 +9,14 @@ namespace ppapi {
 VpnProviderSharedBuffer::VpnProviderSharedBuffer(
     uint32_t capacity,
     uint32_t packet_size,
-    std::unique_ptr<base::SharedMemory> shm)
+    base::UnsafeSharedMemoryRegion shm,
+    base::WritableSharedMemoryMapping mapping)
     : capacity_(capacity),
       max_packet_size_(packet_size),
       shm_(std::move(shm)),
+      shm_mapping_(std::move(mapping)),
       available_(capacity, true) {
-  DCHECK(this->shm_);
+  DCHECK(shm_.IsValid() && shm_mapping_.IsValid());
 }
 
 VpnProviderSharedBuffer::~VpnProviderSharedBuffer() {}
@@ -44,11 +46,14 @@ void* VpnProviderSharedBuffer::GetBuffer(uint32_t id) {
     NOTREACHED();
     return nullptr;
   }
-  return reinterpret_cast<char*>(shm_->memory()) + max_packet_size_ * id;
+  return shm_mapping_.GetMemoryAsSpan<char>()
+      .subspan(max_packet_size_ * id)
+      .data();
 }
 
-base::SharedMemoryHandle VpnProviderSharedBuffer::GetHandle() {
-  return shm_->handle();
+base::UnsafeSharedMemoryRegion VpnProviderSharedBuffer::DuplicateRegion()
+    const {
+  return shm_.Duplicate();
 }
 
 }  // namespace ppapi

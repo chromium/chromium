@@ -6,7 +6,6 @@
 
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
-#include "content/public/common/console_message_level.h"
 #include "extensions/renderer/bindings/api_binding_types.h"
 #include "extensions/renderer/bindings/api_binding_util.h"
 #include "extensions/renderer/bindings/api_invocation_errors.h"
@@ -21,6 +20,7 @@
 #include "gin/converter.h"
 #include "gin/handle.h"
 #include "gin/object_template_builder.h"
+#include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
 
 namespace extensions {
 
@@ -145,25 +145,22 @@ void ContentSetting::HandleFunction(const std::string& method_name,
   if (!access_checker_->HasAccessOrThrowError(context, full_name))
     return;
 
-  std::unique_ptr<base::ListValue> converted_arguments;
-  v8::Local<v8::Function> callback;
-  std::string error;
   const APISignature* signature = type_refs_->GetTypeMethodSignature(full_name);
-  if (!signature->ParseArgumentsToJSON(context, argument_list, *type_refs_,
-                                       &converted_arguments, &callback,
-                                       &error)) {
+  APISignature::JSONParseResult parse_result =
+      signature->ParseArgumentsToJSON(context, argument_list, *type_refs_);
+  if (!parse_result.succeeded()) {
     arguments->ThrowTypeError(api_errors::InvocationError(
-        full_name, signature->GetExpectedSignature(), error));
+        full_name, signature->GetExpectedSignature(), *parse_result.error));
     return;
   }
 
   if (IsDeprecated(pref_name_)) {
     console::AddMessage(ScriptContextSet::GetContextByV8Context(context),
-                        content::CONSOLE_MESSAGE_LEVEL_WARNING,
+                        blink::mojom::ConsoleMessageLevel::kWarning,
                         base::StringPrintf("contentSettings.%s is deprecated.",
                                            pref_name_.c_str()));
     // If a callback was provided, call it immediately.
-    if (!callback.IsEmpty()) {
+    if (!parse_result.callback.IsEmpty()) {
       std::vector<v8::Local<v8::Value>> args;
       if (method_name == "get") {
         // Deprecated settings are always set to "allow". Populate the result to
@@ -177,8 +174,8 @@ void ContentSetting::HandleFunction(const std::string& method_name,
         CHECK(result.ToChecked());
         args.push_back(object);
       }
-      JSRunner::Get(context)->RunJSFunction(callback, context, args.size(),
-                                            args.data());
+      JSRunner::Get(context)->RunJSFunction(parse_result.callback, context,
+                                            args.size(), args.data());
     }
     return;
   }
@@ -199,10 +196,11 @@ void ContentSetting::HandleFunction(const std::string& method_name,
     }
   }
 
-  converted_arguments->Insert(0u, std::make_unique<base::Value>(pref_name_));
-  request_handler_->StartRequest(
-      context, "contentSettings." + method_name, std::move(converted_arguments),
-      callback, v8::Local<v8::Function>(), binding::RequestThread::UI);
+  parse_result.arguments->Insert(0u, std::make_unique<base::Value>(pref_name_));
+  request_handler_->StartRequest(context, "contentSettings." + method_name,
+                                 std::move(parse_result.arguments),
+                                 parse_result.callback,
+                                 v8::Local<v8::Function>());
 }
 
 }  // namespace extensions

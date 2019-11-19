@@ -34,15 +34,16 @@ static base::Optional<net::AddressList> AddressListForResponse(
 }  // namespace
 
 FakeHostResolver::FakeHostResolver(
-    network::mojom::HostResolverRequest resolver_request,
+    mojo::PendingReceiver<network::mojom::HostResolver> resolver_receiver,
     std::vector<SingleResult> result_list)
-    : binding_(this, std::move(resolver_request)), result_list_(result_list) {}
+    : receiver_(this, std::move(resolver_receiver)),
+      result_list_(result_list) {}
 
 FakeHostResolver::FakeHostResolver(
-    network::mojom::HostResolverRequest resolver_request,
+    mojo::PendingReceiver<network::mojom::HostResolver> resolver_receiver,
     int32_t result,
     Response response)
-    : FakeHostResolver(std::move(resolver_request),
+    : FakeHostResolver(std::move(resolver_receiver),
                        {SingleResult(result, response)}) {}
 
 FakeHostResolver::~FakeHostResolver() = default;
@@ -50,10 +51,13 @@ FakeHostResolver::~FakeHostResolver() = default;
 void FakeHostResolver::ResolveHost(
     const net::HostPortPair& host,
     network::mojom::ResolveHostParametersPtr optional_parameters,
-    network::mojom::ResolveHostClientPtr response_client) {
+    mojo::PendingRemote<network::mojom::ResolveHostClient>
+        pending_response_client) {
   const SingleResult& cur_result = result_list_[next_result_];
   if (next_result_ + 1 < result_list_.size())
     next_result_++;
+  mojo::Remote<network::mojom::ResolveHostClient> response_client(
+      std::move(pending_response_client));
   response_client->OnComplete(cur_result.result,
                               AddressListForResponse(cur_result.response));
 }
@@ -61,31 +65,31 @@ void FakeHostResolver::ResolveHost(
 void FakeHostResolver::MdnsListen(
     const net::HostPortPair& host,
     net::DnsQueryType query_type,
-    network::mojom::MdnsListenClientPtr response_client,
+    mojo::PendingRemote<network::mojom::MdnsListenClient> response_client,
     MdnsListenCallback callback) {
   NOTREACHED();
 }
 
 HangingHostResolver::HangingHostResolver(
-    network::mojom::HostResolverRequest resolver_request)
-    : binding_(this, std::move(resolver_request)) {}
+    mojo::PendingReceiver<network::mojom::HostResolver> resolver_receiver)
+    : receiver_(this, std::move(resolver_receiver)) {}
 
 HangingHostResolver::~HangingHostResolver() = default;
 
 void HangingHostResolver::ResolveHost(
     const net::HostPortPair& host,
     network::mojom::ResolveHostParametersPtr optional_parameters,
-    network::mojom::ResolveHostClientPtr response_client) {
+    mojo::PendingRemote<network::mojom::ResolveHostClient> response_client) {
   // Intentionally do not call response_client->OnComplete, but hang onto the
   // |response_client| since destroying that also causes the mojo
   // set_connection_error_handler handler to be called.
-  response_client_ = std::move(response_client);
+  response_client_.Bind(std::move(response_client));
 }
 
 void HangingHostResolver::MdnsListen(
     const net::HostPortPair& host,
     net::DnsQueryType query_type,
-    network::mojom::MdnsListenClientPtr response_client,
+    mojo::PendingRemote<network::mojom::MdnsListenClient> response_client,
     MdnsListenCallback callback) {
   NOTREACHED();
 }
@@ -100,36 +104,36 @@ FakeHostResolverNetworkContext::~FakeHostResolverNetworkContext() = default;
 
 void FakeHostResolverNetworkContext::CreateHostResolver(
     const base::Optional<net::DnsConfigOverrides>& config_overrides,
-    network::mojom::HostResolverRequest request) {
+    mojo::PendingReceiver<network::mojom::HostResolver> receiver) {
   ASSERT_TRUE(config_overrides);
   if (!config_overrides->nameservers) {
     if (!system_resolver_) {
       system_resolver_ = std::make_unique<FakeHostResolver>(
-          std::move(request), system_result_list_);
+          std::move(receiver), system_result_list_);
     }
   } else {
     if (!public_resolver_) {
       public_resolver_ = std::make_unique<FakeHostResolver>(
-          std::move(request), public_result_list_);
+          std::move(receiver), public_result_list_);
     }
   }
 }
 
 FakeDnsConfigChangeManager::FakeDnsConfigChangeManager(
-    network::mojom::DnsConfigChangeManagerRequest request)
-    : binding_(this, std::move(request)) {}
+    mojo::PendingReceiver<network::mojom::DnsConfigChangeManager> receiver)
+    : receiver_(this, std::move(receiver)) {}
 
 FakeDnsConfigChangeManager::~FakeDnsConfigChangeManager() = default;
 
 void FakeDnsConfigChangeManager::RequestNotifications(
-    network::mojom::DnsConfigChangeManagerClientPtr client) {
+    mojo::PendingRemote<network::mojom::DnsConfigChangeManagerClient> client) {
   ASSERT_FALSE(client_);
-  client_ = std::move(client);
+  client_.Bind(std::move(client));
 }
 
 void FakeDnsConfigChangeManager::SimulateDnsConfigChange() {
   ASSERT_TRUE(client_);
-  client_->OnSystemDnsConfigChanged();
+  client_->OnDnsConfigChanged();
 }
 
 }  // namespace chrome_browser_net

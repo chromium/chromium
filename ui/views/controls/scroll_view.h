@@ -5,7 +5,9 @@
 #ifndef UI_VIEWS_CONTROLS_SCROLL_VIEW_H_
 #define UI_VIEWS_CONTROLS_SCROLL_VIEW_H_
 
+#include <memory>
 #include <string>
+#include <utility>
 
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
@@ -13,6 +15,7 @@
 #include "ui/native_theme/native_theme.h"
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/scrollbar/scroll_bar.h"
+#include "ui/views/controls/separator.h"
 
 namespace gfx {
 class ScrollOffset;
@@ -41,14 +44,14 @@ class Separator;
 
 class VIEWS_EXPORT ScrollView : public View, public ScrollBarController {
  public:
-  static const char kViewClassName[];
+  METADATA_HEADER(ScrollView);
 
   ScrollView();
 
   ~ScrollView() override;
 
   // Creates a ScrollView with a theme specific border.
-  static ScrollView* CreateScrollViewWithBorder();
+  static std::unique_ptr<ScrollView> CreateScrollViewWithBorder();
 
   // Returns the ScrollView for which |contents| is its contents, or null if
   // |contents| is not in a ScrollView.
@@ -56,12 +59,28 @@ class VIEWS_EXPORT ScrollView : public View, public ScrollBarController {
 
   // Set the contents. Any previous contents will be deleted. The contents
   // is the view that needs to scroll.
-  void SetContents(View* a_view);
+  template <typename T>
+  T* SetContents(std::unique_ptr<T> a_view) {
+    T* content_view = a_view.get();
+    SetContentsImpl(std::move(a_view));
+    return content_view;
+  }
+  void SetContents(std::nullptr_t);
   const View* contents() const { return contents_; }
   View* contents() { return contents_; }
 
   // Sets the header, deleting the previous header.
-  void SetHeader(View* header);
+  template <typename T>
+  T* SetHeader(std::unique_ptr<T> a_header) {
+    T* header_view = a_header.get();
+    SetHeaderImpl(std::move(a_header));
+    return header_view;
+  }
+  void SetHeader(std::nullptr_t);
+
+  int GetMaxHeight() const { return max_height_; }
+
+  int GetMinHeight() const { return min_height_; }
 
   // The background color can be configured in two distinct ways:
   // . By way of SetBackgroundThemeColorId(). This is the default and when
@@ -70,19 +89,21 @@ class VIEWS_EXPORT ScrollView : public View, public ScrollBarController {
   // . By way of setting an explicit color, i.e. SetBackgroundColor(). Use
   //   SK_ColorTRANSPARENT if you don't want any color, but be warned this
   //   produces awful results when layers are used with subpixel rendering.
+  SkColor GetBackgroundColor() const;
   void SetBackgroundColor(SkColor color);
+
   void SetBackgroundThemeColorId(ui::NativeTheme::ColorId color_id);
 
   // Returns the visible region of the content View.
   gfx::Rect GetVisibleRect() const;
 
-  void set_hide_horizontal_scrollbar(bool visible) {
-    hide_horizontal_scrollbar_ = visible;
-  }
+  bool GetUseColorId() const { return use_color_id_; }
 
-  void set_draw_overflow_indicator(bool draw_overflow_indicator) {
-    draw_overflow_indicator_ = draw_overflow_indicator;
-  }
+  bool GetHideHorizontalScrollBar() const { return hide_horizontal_scrollbar_; }
+  void SetHideHorizontalScrollBar(bool visible);
+
+  bool GetDrawOverflowIndicator() const { return draw_overflow_indicator_; }
+  void SetDrawOverflowIndicator(bool draw_overflow_indicator);
 
   // Turns this scroll view into a bounded scroll view, with a fixed height.
   // By default, a ScrollView will stretch to fill its outer container.
@@ -96,16 +117,18 @@ class VIEWS_EXPORT ScrollView : public View, public ScrollBarController {
   int GetScrollBarLayoutWidth() const;
   int GetScrollBarLayoutHeight() const;
 
-  // Returns the horizontal/vertical scrollbar. This may return NULL.
-  const ScrollBar* horizontal_scroll_bar() const { return horiz_sb_; }
-  const ScrollBar* vertical_scroll_bar() const { return vert_sb_; }
+  // Returns the horizontal/vertical scrollbar. This may return null.
+  ScrollBar* horizontal_scroll_bar() { return horiz_sb_.get(); }
+  const ScrollBar* horizontal_scroll_bar() const { return horiz_sb_.get(); }
+  ScrollBar* vertical_scroll_bar() { return vert_sb_.get(); }
+  const ScrollBar* vertical_scroll_bar() const { return vert_sb_.get(); }
 
-  // Customize the scrollbar design. ScrollView takes the ownership of the
-  // specified ScrollBar. |horiz_sb| and |vert_sb| cannot be NULL.
-  void SetHorizontalScrollBar(ScrollBar* horiz_sb);
-  void SetVerticalScrollBar(ScrollBar* vert_sb);
+  // Customize the scrollbar design. |horiz_sb| and |vert_sb| cannot be null.
+  ScrollBar* SetHorizontalScrollBar(std::unique_ptr<ScrollBar> horiz_sb);
+  ScrollBar* SetVerticalScrollBar(std::unique_ptr<ScrollBar> vert_sb);
 
-  // Sets whether this ScrollView has a focus indicator or not.
+  // Gets/Sets whether this ScrollView has a focus indicator or not.
+  bool GetHasFocusIndicator() const { return draw_focus_indicator_; }
   void SetHasFocusIndicator(bool has_focus_indicator);
 
   // View overrides:
@@ -116,8 +139,7 @@ class VIEWS_EXPORT ScrollView : public View, public ScrollBarController {
   bool OnMouseWheel(const ui::MouseWheelEvent& e) override;
   void OnScrollEvent(ui::ScrollEvent* event) override;
   void OnGestureEvent(ui::GestureEvent* event) override;
-  const char* GetClassName() const override;
-  void OnNativeThemeChanged(const ui::NativeTheme* theme) override;
+  void OnThemeChanged() override;
 
   // ScrollBarController overrides:
   void ScrollToPosition(ScrollBar* source, int position) override;
@@ -146,9 +168,15 @@ class VIEWS_EXPORT ScrollView : public View, public ScrollBarController {
   // otherwise it doesn't.
   void UpdateViewportLayerForClipping();
 
-  // Used internally by SetHeader() and SetContents() to reset the view.  Sets
-  // |member| to |new_view|. If |new_view| is non-null it is added to |parent|.
-  void SetHeaderOrContents(View* parent, View* new_view, View** member);
+  void SetContentsImpl(std::unique_ptr<View> a_view);
+  void SetHeaderImpl(std::unique_ptr<View> a_header);
+
+  // Used internally by SetHeaderImpl() and SetContentsImpl() to reset the view.
+  // Sets |member| to |new_view|. If |new_view| is non-null it is added to
+  // |parent|.
+  void SetHeaderOrContents(View* parent,
+                           std::unique_ptr<View> new_view,
+                           View** member);
 
   // Scrolls the minimum amount necessary to make the specified rectangle
   // visible, in the coordinates of the contents view. The specified rectangle
@@ -188,7 +216,6 @@ class VIEWS_EXPORT ScrollView : public View, public ScrollBarController {
   void UpdateBorder();
 
   void UpdateBackground();
-  SkColor GetBackgroundColor() const;
 
   // Positions each overflow indicator against their respective content edge.
   void PositionOverflowIndicators();
@@ -199,33 +226,35 @@ class VIEWS_EXPORT ScrollView : public View, public ScrollBarController {
 
   // The current contents and its viewport. |contents_| is contained in
   // |contents_viewport_|.
-  View* contents_;
-  View* contents_viewport_;
+  View* contents_ = nullptr;
+  View* contents_viewport_ = nullptr;
 
   // The current header and its viewport. |header_| is contained in
   // |header_viewport_|.
-  View* header_;
-  View* header_viewport_;
+  View* header_ = nullptr;
+  View* header_viewport_ = nullptr;
 
   // Horizontal scrollbar.
-  ScrollBar* horiz_sb_;
+  std::unique_ptr<ScrollBar> horiz_sb_;
 
   // Vertical scrollbar.
-  ScrollBar* vert_sb_;
+  std::unique_ptr<ScrollBar> vert_sb_;
 
   // Corner view.
-  View* corner_view_;
+  std::unique_ptr<View> corner_view_;
 
   // Hidden content indicators
-  std::unique_ptr<Separator> more_content_left_;
-  std::unique_ptr<Separator> more_content_top_;
-  std::unique_ptr<Separator> more_content_right_;
-  std::unique_ptr<Separator> more_content_bottom_;
+  std::unique_ptr<Separator> more_content_left_ = std::make_unique<Separator>();
+  std::unique_ptr<Separator> more_content_top_ = std::make_unique<Separator>();
+  std::unique_ptr<Separator> more_content_right_ =
+      std::make_unique<Separator>();
+  std::unique_ptr<Separator> more_content_bottom_ =
+      std::make_unique<Separator>();
 
   // The min and max height for the bounded scroll view. These are negative
   // values if the view is not bounded.
-  int min_height_;
-  int max_height_;
+  int min_height_ = -1;
+  int max_height_ = -1;
 
   // See description of SetBackgroundColor() for details.
   BackgroundColorData background_color_data_ = {
@@ -234,7 +263,7 @@ class VIEWS_EXPORT ScrollView : public View, public ScrollBarController {
 
   // If true, never show the horizontal scrollbar (even if the contents is wider
   // than the viewport).
-  bool hide_horizontal_scrollbar_;
+  bool hide_horizontal_scrollbar_ = false;
 
   // In Harmony, the indicator is a focus ring. Pre-Harmony, the indicator is a
   // different border painter.

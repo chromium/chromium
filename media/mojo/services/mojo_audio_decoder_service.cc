@@ -19,8 +19,7 @@ MojoAudioDecoderService::MojoAudioDecoderService(
     MojoCdmServiceContext* mojo_cdm_service_context,
     std::unique_ptr<media::AudioDecoder> decoder)
     : mojo_cdm_service_context_(mojo_cdm_service_context),
-      decoder_(std::move(decoder)),
-      weak_factory_(this) {
+      decoder_(std::move(decoder)) {
   DCHECK(mojo_cdm_service_context_);
   weak_this_ = weak_factory_.GetWeakPtr();
 }
@@ -28,7 +27,7 @@ MojoAudioDecoderService::MojoAudioDecoderService(
 MojoAudioDecoderService::~MojoAudioDecoderService() = default;
 
 void MojoAudioDecoderService::Construct(
-    mojom::AudioDecoderClientAssociatedPtrInfo client) {
+    mojo::PendingAssociatedRemote<mojom::AudioDecoderClient> client) {
   DVLOG(1) << __func__;
   client_.Bind(std::move(client));
 }
@@ -38,18 +37,23 @@ void MojoAudioDecoderService::Initialize(const AudioDecoderConfig& config,
                                          InitializeCallback callback) {
   DVLOG(1) << __func__ << " " << config.AsHumanReadableString();
 
-  // Get CdmContext from cdm_id if the stream is encrypted.
+  // Get CdmContext from |cdm_id|, which could be null.
   CdmContext* cdm_context = nullptr;
-  if (config.is_encrypted()) {
-    cdm_context_ref_ = mojo_cdm_service_context_->GetCdmContextRef(cdm_id);
-    if (!cdm_context_ref_) {
-      DVLOG(1) << "CdmContextRef not found for CDM id: " << cdm_id;
-      std::move(callback).Run(false, false);
-      return;
+  if (cdm_id != CdmContext::kInvalidCdmId) {
+    auto cdm_context_ref = mojo_cdm_service_context_->GetCdmContextRef(cdm_id);
+    if (cdm_context_ref) {
+      // |cdm_context_ref_| must be kept as long as |cdm_context| is used by the
+      // |decoder_|.
+      cdm_context_ref_ = std::move(cdm_context_ref);
+      cdm_context = cdm_context_ref_->GetCdmContext();
+      DCHECK(cdm_context);
     }
+  }
 
-    cdm_context = cdm_context_ref_->GetCdmContext();
-    DCHECK(cdm_context);
+  if (config.is_encrypted() && !cdm_context) {
+    DVLOG(1) << "CdmContext for " << cdm_id << " not found for encrypted audio";
+    OnInitialized(std::move(callback), false);
+    return;
   }
 
   decoder_->Initialize(
@@ -133,11 +137,11 @@ void MojoAudioDecoderService::OnResetDone(ResetCallback callback) {
 }
 
 void MojoAudioDecoderService::OnAudioBufferReady(
-    const scoped_refptr<AudioBuffer>& audio_buffer) {
+    scoped_refptr<AudioBuffer> audio_buffer) {
   DVLOG(1) << __func__;
 
   // TODO(timav): Use DataPipe.
-  client_->OnBufferDecoded(mojom::AudioBuffer::From(audio_buffer));
+  client_->OnBufferDecoded(mojom::AudioBuffer::From(*audio_buffer));
 }
 
 void MojoAudioDecoderService::OnWaiting(WaitingReason reason) {

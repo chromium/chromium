@@ -28,6 +28,7 @@ class CastFeatureListCreator;
 namespace shell {
 
 class CastContentBrowserClient;
+class CastContentGpuClient;
 class CastContentRendererClient;
 class CastContentUtilityClient;
 
@@ -48,6 +49,7 @@ class CastMainDelegate : public content::ContentMainDelegate {
   bool ShouldCreateFeatureList() override;
   void PostEarlyInitialization(bool is_running_tests) override;
   content::ContentBrowserClient* CreateContentBrowserClient() override;
+  content::ContentGpuClient* CreateContentGpuClient() override;
   content::ContentRendererClient* CreateContentRendererClient() override;
   content::ContentUtilityClient* CreateContentUtilityClient() override;
 
@@ -55,6 +57,7 @@ class CastMainDelegate : public content::ContentMainDelegate {
   void InitializeResourceBundle();
 
   std::unique_ptr<CastContentBrowserClient> browser_client_;
+  std::unique_ptr<CastContentGpuClient> gpu_client_;
   std::unique_ptr<CastContentRendererClient> renderer_client_;
   std::unique_ptr<CastContentUtilityClient> utility_client_;
   std::unique_ptr<CastResourceDelegate> resource_delegate_;

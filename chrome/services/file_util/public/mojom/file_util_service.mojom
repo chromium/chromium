@@ -1,0 +1,23 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module chrome.mojom;
+
+[EnableIf=full_safe_browsing]
+import "chrome/services/file_util/public/mojom/safe_archive_analyzer.mojom";
+
+[EnableIf=is_chromeos]
+import "chrome/services/file_util/public/mojom/zip_file_creator.mojom";
+
+// The main interface to the file utility service. Binds any of various
+// specific utility receivers.
+interface FileUtilService {
+  // Binds an instance of the ZipFileCreator interface.
+  [EnableIf=is_chromeos]
+  BindZipFileCreator(pending_receiver<ZipFileCreator> receiver);
+
+  // Binds an instance of the SafeArchiveAnalyzer interface.
+  [EnableIf=full_safe_browsing]
+  BindSafeArchiveAnalyzer(pending_receiver<SafeArchiveAnalyzer> receiver);
+};

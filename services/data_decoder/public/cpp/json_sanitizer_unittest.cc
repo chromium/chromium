@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,111 +9,68 @@
 #include "base/bind.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
-#include "base/message_loop/message_loop.h"
 #include "base/run_loop.h"
+#include "base/test/bind_test_util.h"
+#include "base/test/task_environment.h"
 #include "base/values.h"
-#include "build/build_config.h"
-#include "services/data_decoder/public/cpp/safe_json_parser.h"
+#include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if !defined(OS_ANDROID)
-#include "services/data_decoder/public/cpp/testing_json_parser.h"
-#endif
-
 namespace data_decoder {
+namespace {
 
-class JsonSanitizerTest : public ::testing::Test {
- public:
-  void TearDown() override {
-    // Flush any tasks from the message loop to avoid leaks.
-    base::RunLoop().RunUntilIdle();
-  }
+// Verifies that |json| can be sanitized by JsonSanitizer, and that the output
+// JSON is parsed to the same exact value as the original JSON.
+void CheckSuccess(const std::string& json) {
+  base::JSONReader::ValueWithError original_parse =
+      base::JSONReader::ReadAndReturnValueWithError(json, base::JSON_PARSE_RFC);
+  ASSERT_TRUE(original_parse.value);
 
- protected:
-  void CheckSuccess(const std::string& json);
-  void CheckError(const std::string& json);
+  base::RunLoop loop;
+  bool result_received = false;
+  JsonSanitizer::Sanitize(
+      json, base::BindLambdaForTesting([&](JsonSanitizer::Result result) {
+        result_received = true;
+        ASSERT_TRUE(result.value);
+        base::JSONReader::ValueWithError reparse =
+            base::JSONReader::ReadAndReturnValueWithError(*result.value,
+                                                          base::JSON_PARSE_RFC);
+        ASSERT_TRUE(reparse.value);
+        EXPECT_EQ(*reparse.value, *original_parse.value);
+        loop.Quit();
+      }));
 
+  // Verify that the API always dispatches its result asynchronously.
+  EXPECT_FALSE(result_received);
+  loop.Run();
+  EXPECT_TRUE(result_received);
+}
+
+// Verifies that |json| is rejected by the sanitizer as an invlid string.
+void CheckError(const std::string& json) {
+  base::RunLoop loop;
+  bool result_received = false;
+  JsonSanitizer::Sanitize(
+      json, base::BindLambdaForTesting([&](JsonSanitizer::Result result) {
+        result_received = true;
+        EXPECT_FALSE(result.value);
+        EXPECT_TRUE(result.error);
+        loop.Quit();
+      }));
+
+  // Verify that the API always dispatches its result asynchronously.
+  EXPECT_FALSE(result_received);
+  loop.Run();
+  EXPECT_TRUE(result_received);
+}
+
+class DataDecoderJsonSanitizerTest : public ::testing::Test {
  private:
-  enum class State {
-    // ERROR is a #define on Windows, so we prefix the values with STATE_.
-    STATE_IDLE,
-    STATE_SUCCESS,
-    STATE_ERROR,
-  };
-
-  void Sanitize(const std::string& json);
-
-  void OnSuccess(const std::string& json);
-  void OnError(const std::string& error);
-
-  base::MessageLoop message_loop_;
-
-#if !defined(OS_ANDROID)
-  TestingJsonParser::ScopedFactoryOverride factory_override_;
-#endif
-
-  std::string result_;
-  std::string error_;
-  State state_;
-
-  std::unique_ptr<base::RunLoop> run_loop_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
+  test::InProcessDataDecoder in_process_data_decoder_;
 };
 
-void JsonSanitizerTest::CheckSuccess(const std::string& json) {
-  SCOPED_TRACE(json);
-  Sanitize(json);
-  std::unique_ptr<base::Value> parsed = base::JSONReader::ReadDeprecated(json);
-  ASSERT_TRUE(parsed);
-  EXPECT_EQ(State::STATE_SUCCESS, state_) << "Error: " << error_;
-
-  // The JSON parser should accept the result.
-  int error_code;
-  std::string error;
-  std::unique_ptr<base::Value> reparsed =
-      base::JSONReader::ReadAndReturnErrorDeprecated(
-          result_, base::JSON_PARSE_RFC, &error_code, &error);
-  EXPECT_TRUE(reparsed) << "Invalid result: " << error;
-
-  // The parsed values should be equal.
-  EXPECT_TRUE(reparsed->Equals(parsed.get()));
-}
-
-void JsonSanitizerTest::CheckError(const std::string& json) {
-  SCOPED_TRACE(json);
-  Sanitize(json);
-  EXPECT_EQ(State::STATE_ERROR, state_) << "Result: " << result_;
-}
-
-void JsonSanitizerTest::Sanitize(const std::string& json) {
-  state_ = State::STATE_IDLE;
-  result_.clear();
-  error_.clear();
-  run_loop_.reset(new base::RunLoop);
-  JsonSanitizer::Sanitize(
-      nullptr, json,
-      base::Bind(&JsonSanitizerTest::OnSuccess, base::Unretained(this)),
-      base::Bind(&JsonSanitizerTest::OnError, base::Unretained(this)));
-
-  // We should never get a result immediately.
-  EXPECT_EQ(State::STATE_IDLE, state_);
-  run_loop_->Run();
-}
-
-void JsonSanitizerTest::OnSuccess(const std::string& json) {
-  ASSERT_EQ(State::STATE_IDLE, state_);
-  state_ = State::STATE_SUCCESS;
-  result_ = json;
-  run_loop_->Quit();
-}
-
-void JsonSanitizerTest::OnError(const std::string& error) {
-  ASSERT_EQ(State::STATE_IDLE, state_);
-  state_ = State::STATE_ERROR;
-  error_ = error;
-  run_loop_->Quit();
-}
-
-TEST_F(JsonSanitizerTest, Json) {
+TEST_F(DataDecoderJsonSanitizerTest, Json) {
   // Valid JSON:
   CheckSuccess("{\n  \"foo\": \"bar\"\n}");
   CheckSuccess("[true]");
@@ -132,17 +89,17 @@ TEST_F(JsonSanitizerTest, Json) {
   CheckError("[1,2,3,]");
 }
 
-TEST_F(JsonSanitizerTest, Nesting) {
-  // 199 nested arrays are fine.
-  std::string nested(199u, '[');
-  nested.append(199u, ']');
+TEST_F(DataDecoderJsonSanitizerTest, Nesting) {
+  // 10 nested arrays is fine.
+  std::string nested(10u, '[');
+  nested.append(10u, ']');
   CheckSuccess(nested);
 
   // 200 nested arrays is too much.
   CheckError(std::string(200u, '[') + std::string(200u, ']'));
 }
 
-TEST_F(JsonSanitizerTest, Unicode) {
+TEST_F(DataDecoderJsonSanitizerTest, Unicode) {
   // Non-ASCII characters encoded either directly as UTF-8 or escaped as UTF-16:
   CheckSuccess("[\"☃\"]");
   CheckSuccess("[\"\\u2603\"]");
@@ -184,4 +141,5 @@ TEST_F(JsonSanitizerTest, Unicode) {
   CheckError("[\"\\ud83f\\udffe\"]");
 }
 
+}  // namespace
 }  // namespace data_decoder

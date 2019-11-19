@@ -1,15 +1,15 @@
 <!doctype html>
-<html dir="$i18n{textdirection}" lang="$i18n{language}">
+<html dir="ltr" lang="en">
 <head>
   <meta charset="utf-8">
   <script src="chrome://resources/js/cr.js"></script>
   <script src="chrome://resources/js/util.js"></script>
   <script src="chrome://resources/js/load_time_data.js"></script>
   <script src="strings.js"></script>
-  <if expr="is_ios">
-    <!-- TODO(crbug.com/487000): Remove this once injected by the web layer. -->
-    <script src="chrome://resources/js/ios/web_ui.js"></script>
-  </if>
+<if expr="is_ios">
+  <!-- TODO(crbug.com/487000): Remove this once injected by the web layer. -->
+  <script src="chrome://resources/js/ios/web_ui.js"></script>
+</if>
   <link rel="stylesheet" href="chrome://resources/css/text_defaults.css">
   <link rel="stylesheet" type="text/css" href="signin_index.css">
 </head>
@@ -77,7 +77,7 @@
     <div class="account-section">
       <table class="signin-details">
         <tr class="header">
-          <td>Accound Id</td>
+          <td>Account Id</td>
           <td>Has refresh token</td>
           <td>Has persistent auth error</td>
         </tr>

@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<title>Test detached iframe in Picture-in-Picture</title>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<script src="../../../resources/testdriver.js"></script>
+<script src="../../../resources/testdriver-vendor.js"></script>
+<script src="utils.js"></script>
+<body></body>
+<script>
+promise_test(async t => {
+  enablePictureInPictureV2ForTest(t);
+
+  const frame = document.createElement('iframe');
+  const frameLoadedPromise = new Promise(resolve => {
+    frame.addEventListener('load', resolve, { once: true });
+    document.body.appendChild(frame);
+  });
+  await frameLoadedPromise;
+
+  const element = frame.contentDocument.createElement('div');
+  document.body.removeChild(frame);
+  return promise_rejects(t, 'InvalidStateError',
+    requestPictureInPictureWithTrustedClick(element, { height: 1, width: 1 }));
+}, 'request Picture-in-Picture rejects when frame is detached');
+</script>

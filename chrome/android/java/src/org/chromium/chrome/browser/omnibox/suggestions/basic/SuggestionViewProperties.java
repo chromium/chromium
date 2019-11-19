@@ -5,11 +5,12 @@
 package org.chromium.chrome.browser.omnibox.suggestions.basic;
 
 import android.graphics.Bitmap;
-import android.support.annotation.IntDef;
 import android.text.Spannable;
 import android.text.TextUtils;
 import android.text.style.UpdateAppearance;
 import android.util.Pair;
+
+import androidx.annotation.IntDef;
 
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionCommonProperties;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -25,18 +26,22 @@ import java.lang.annotation.RetentionPolicy;
  * The properties associated with rendering the suggestion view.
  */
 public class SuggestionViewProperties {
-    @IntDef({SuggestionIcon.UNDEFINED, SuggestionIcon.BOOKMARK, SuggestionIcon.HISTORY,
+    @IntDef({SuggestionIcon.UNSET, SuggestionIcon.BOOKMARK, SuggestionIcon.HISTORY,
             SuggestionIcon.GLOBE, SuggestionIcon.MAGNIFIER, SuggestionIcon.VOICE,
-            SuggestionIcon.CALCULATOR})
+            SuggestionIcon.CALCULATOR, SuggestionIcon.FAVICON, SuggestionIcon.TOTAL_COUNT})
     @Retention(RetentionPolicy.SOURCE)
     public @interface SuggestionIcon {
-        int UNDEFINED = -1;
-        int BOOKMARK = 0;
-        int HISTORY = 1;
-        int GLOBE = 2;
-        int MAGNIFIER = 3;
-        int VOICE = 4;
-        int CALCULATOR = 5;
+        // This enum is used to back UMA histograms, and should therefore be treated as append-only.
+        // See http://cs.chromium.org/SuggestionIconOrFaviconType
+        int UNSET = 0;
+        int BOOKMARK = 1;
+        int HISTORY = 2;
+        int GLOBE = 3;
+        int MAGNIFIER = 4;
+        int VOICE = 5;
+        int CALCULATOR = 6;
+        int FAVICON = 7;
+        int TOTAL_COUNT = 8;
     }
 
     /**
@@ -93,20 +98,14 @@ public class SuggestionViewProperties {
     public static final WritableObjectPropertyKey<SuggestionViewDelegate> DELEGATE =
             new WritableObjectPropertyKey<>();
 
-    /** Whether the suggestion is for an answer. */
-    public static final WritableBooleanPropertyKey IS_ANSWER = new WritableBooleanPropertyKey();
-    /** Whether an answer image will be shown. */
-    public static final WritableBooleanPropertyKey HAS_ANSWER_IMAGE =
-            new WritableBooleanPropertyKey();
-    /** The answer image to be shown. */
-    public static final WritableObjectPropertyKey<Bitmap> ANSWER_IMAGE =
-            new WritableObjectPropertyKey<>();
-
     /** Whether the suggestion supports refinement. */
     public static final WritableBooleanPropertyKey REFINABLE = new WritableBooleanPropertyKey();
 
     /** The suggestion icon type shown. */
     public static final WritableIntPropertyKey SUGGESTION_ICON_TYPE = new WritableIntPropertyKey();
+    /** Bitmap (typically site favicon) to be displayed as a suggestion icon. */
+    public static final WritableObjectPropertyKey<Bitmap> SUGGESTION_ICON_BITMAP =
+            new WritableObjectPropertyKey<>();
 
     /**
      * The sizing information for the first line of text.
@@ -148,11 +147,11 @@ public class SuggestionViewProperties {
     public static final WritableObjectPropertyKey<SuggestionTextContainer> TEXT_LINE_2_TEXT =
             new WritableObjectPropertyKey<>();
 
-    public static final PropertyKey[] ALL_UNIQUE_KEYS = new PropertyKey[] {DELEGATE, IS_ANSWER,
-            HAS_ANSWER_IMAGE, ANSWER_IMAGE, REFINABLE, SUGGESTION_ICON_TYPE, TEXT_LINE_1_SIZING,
-            TEXT_LINE_1_MAX_LINES, TEXT_LINE_1_TEXT_COLOR, TEXT_LINE_1_TEXT_DIRECTION,
-            TEXT_LINE_1_TEXT, TEXT_LINE_2_SIZING, TEXT_LINE_2_MAX_LINES, TEXT_LINE_2_TEXT_COLOR,
-            TEXT_LINE_2_TEXT_DIRECTION, TEXT_LINE_2_TEXT};
+    public static final PropertyKey[] ALL_UNIQUE_KEYS = new PropertyKey[] {DELEGATE, REFINABLE,
+            SUGGESTION_ICON_TYPE, TEXT_LINE_1_SIZING, TEXT_LINE_1_MAX_LINES, TEXT_LINE_1_TEXT_COLOR,
+            TEXT_LINE_1_TEXT_DIRECTION, TEXT_LINE_1_TEXT, TEXT_LINE_2_SIZING, TEXT_LINE_2_MAX_LINES,
+            TEXT_LINE_2_TEXT_COLOR, TEXT_LINE_2_TEXT_DIRECTION, TEXT_LINE_2_TEXT,
+            SUGGESTION_ICON_BITMAP};
 
     public static final PropertyKey[] ALL_KEYS =
             PropertyModel.concatKeys(ALL_UNIQUE_KEYS, SuggestionCommonProperties.ALL_KEYS);

@@ -1,0 +1,28 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+// This enum defines the types of parameters used to specify a feature policy.
+// TODO(loonybear): Add the following types: inc/dec int, inc double, enum, set.
+enum PolicyValueType {
+  kNull,
+  kBool,
+  kDecDouble,
+};
+
+// This union includes all the types that can be used to specify a policy's
+// parameter.
+// TODO(loonybear): Add the following types: inc/dec int, inc double, enum, set.
+union PolicyValueData {
+  bool null_value;
+  bool bool_value;
+  double dec_double_value;
+};
+
+// Defined as a structure so that it can be typemapped with StructTraits.
+struct PolicyValue {
+  PolicyValueData data;
+};
+

@@ -41,7 +41,7 @@ runAfterLayoutAndPaint(function() {
                 return;
             var layers_dump = internals.layerTreeAsText(document, internals.LAYER_TREE_INCLUDES_PAINT_INVALIDATIONS);
             var layers = JSON.parse(layers_dump).layers;
-            var scrollingContentsLayer = layers[2];
+            var scrollingContentsLayer = layers[0];
             var paintInvalidations = scrollingContentsLayer.paintInvalidations;
             var shadowRect = [1.4, 1.4, 100, 100];
             assert_true(paintInvalidations.some(paintInvalidation => rectContainsRect(paintInvalidation.rect, shadowRect)),

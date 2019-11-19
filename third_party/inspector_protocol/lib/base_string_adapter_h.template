@@ -100,7 +100,7 @@ class {{config.lib.export_macro}} StringUtil {
     return std::string(reinterpret_cast<const char*>(data), length);
   }
 
-  static String fromUTF16(const uint16_t* data, size_t length);
+  static String fromUTF16LE(const uint16_t* data, size_t length);
 
   static const uint8_t* CharactersLatin1(const String& s) { return nullptr; }
   static const uint8_t* CharactersUTF8(const String& s) {
@@ -136,12 +136,6 @@ class {{config.lib.export_macro}} Binary {
 
 std::unique_ptr<Value> toProtocolValue(const base::Value* value, int depth);
 std::unique_ptr<base::Value> toBaseValue(Value* value, int depth);
-
-bool AppendStringValueToMapBinary(base::StringPiece in,
-    base::StringPiece key, base::StringPiece value, std::string* out);
-bool AppendStringValueToMapJSON(base::StringPiece in,
-    base::StringPiece key, base::StringPiece value, std::string* out);
-
 {% for namespace in config.protocol.namespace %}
 } // namespace {{namespace}}
 {% endfor %}

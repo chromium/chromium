@@ -1,0 +1,11 @@
+include_rules = [
+  # Run
+  #
+  #   buildtools/checkdeps/checkdeps.py components/policy
+  #
+  # to test.
+
+  "+crypto",
+  "+net"
+]
+

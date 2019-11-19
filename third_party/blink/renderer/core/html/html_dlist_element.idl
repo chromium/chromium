@@ -18,8 +18,10 @@
  */
 
 // https://html.spec.whatwg.org/C/#the-dl-element
-[HTMLConstructor]
-interface HTMLDListElement : HTMLElement {
+[
+    Exposed=Window,
+    HTMLConstructor
+] interface HTMLDListElement : HTMLElement {
     // obsolete members
     // https://html.spec.whatwg.org/C/#HTMLDListElement-partial
     [CEReactions, Reflect] attribute boolean compact;

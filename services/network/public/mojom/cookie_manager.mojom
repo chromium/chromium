@@ -24,6 +24,28 @@ struct CookieManagerParams {
 
   // Schemes that unconditionally allow third party cookies.
   array<string> third_party_cookies_allowed_schemes;
+
+  // Whether or not to allow cookies for file:// URLs. Can be overridden by
+  // CookieManager.AllowFileSchemeCookies().
+  bool allow_file_scheme_cookies = false;
+
+  // Content settings for which domains are allowed to use legacy cookie
+  // access rules.
+  array<content_settings.mojom.ContentSettingPatternSource>
+      settings_for_legacy_cookie_access;
+
+  // The type of CookieAccessDelegate to pass to the underlying CookieStore.
+  // If these params are not present, CookieManager defaults to using
+  // USE_CONTENT_SETTINGS.
+  CookieAccessDelegateType cookie_access_delegate_type = USE_CONTENT_SETTINGS;
+};
+
+enum CookieAccessDelegateType {
+  // Decides access semantics based on the content settings it was constructed
+  // with.
+  USE_CONTENT_SETTINGS,
+  // Always returns Legacy access semantics.
+  ALWAYS_LEGACY,
 };
 
 enum CookiePriority {
@@ -35,26 +57,44 @@ enum CookiePriority {
 // See https://tools.ietf.org/html/draft-ietf-httpbis-cookie-same-site-00
 // and https://tools.ietf.org/html/draft-ietf-httpbis-rfc6265bis for
 // information about same site cookie restrictions.
+// Keep in sync with net/cookies/cookie_constants.h.
+// Note: Don't renumber, as these values are persisted to a database.
 enum CookieSameSite {
-  NO_RESTRICTION,
-  LAX_MODE,
-  STRICT_MODE
+  UNSPECIFIED = -1,
+  NO_RESTRICTION = 0,
+  LAX_MODE = 1,
+  STRICT_MODE = 2,
+  // Reserved 3 (was EXTENDED_MODE), next number is 4.
 };
 
-enum CookieSameSiteFilter {
-  INCLUDE_STRICT_AND_LAX,
-  INCLUDE_LAX,
-  DO_NOT_INCLUDE
+enum CookieSameSiteContext {
+  CROSS_SITE,
+  SAME_SITE_LAX_METHOD_UNSAFE,
+  SAME_SITE_LAX,
+  SAME_SITE_STRICT,
+  SAME_SITE_LAX_METHOD_UNSAFE_CROSS_SCHEME_SECURE_URL,
+  SAME_SITE_LAX_CROSS_SCHEME_SECURE_URL,
+  SAME_SITE_STRICT_CROSS_SCHEME_SECURE_URL,
+  SAME_SITE_LAX_METHOD_UNSAFE_CROSS_SCHEME_INSECURE_URL,
+  SAME_SITE_LAX_CROSS_SCHEME_INSECURE_URL,
+  SAME_SITE_STRICT_CROSS_SCHEME_INSECURE_URL
+};
+
+// What rules to apply when determining whether access to a particular cookie is
+// allowed.
+// Keep in sync with net/cookies/cookie_constants.h.
+enum CookieAccessSemantics {
+  UNKNOWN = -1,
+  NONLEGACY = 0,
+  LEGACY,
 };
 
 // Keep defaults here in sync with net/cookies/cookie_options.cc.
 struct CookieOptions {
   bool exclude_httponly = true;
-  CookieSameSiteFilter cookie_same_site_filter = DO_NOT_INCLUDE;
+  CookieSameSiteContext same_site_cookie_context = CROSS_SITE;
   bool update_access_time = true;
-  // TODO(rdsmith): Remove this element from the mojo structure?  It's only
-  // used in the underlying net:: structure in CanonicalCookie::Create().
-  mojo_base.mojom.Time? server_time;
+  bool return_excluded_cookies = false;
 };
 
 // See net/cookies/canonical_cookie.{h,cc} for documentation.
@@ -73,8 +113,34 @@ struct CanonicalCookie {
   CookiePriority priority = MEDIUM;
 };
 
-// Keep values here in sync with net::CookieStore::ChangeCause.
-// (Not typemapped to avoid forcing clients to know about net::CookieStore.)
+// Keep values here in sync with
+// net::CanonicalCookie::CookieInclusionStatus::WarningReason.
+enum CookieInclusionStatusWarningReason {
+  DO_NOT_WARN = 0,
+  WARN_SAMESITE_UNSPECIFIED_CROSS_SITE_CONTEXT,
+  WARN_SAMESITE_NONE_INSECURE,
+  WARN_SAMESITE_UNSPECIFIED_LAX_ALLOW_UNSAFE
+};
+
+// Exclusion reasons can be found in
+// net::CanonicalCookie::CookieInclusionStatus::ExclusionReason.
+struct CookieInclusionStatus {
+  uint32 exclusion_reasons;
+  CookieInclusionStatusWarningReason warning;
+};
+
+struct CookieWithStatus {
+  CanonicalCookie cookie;
+  CookieInclusionStatus status;
+};
+
+struct CookieAndLineWithStatus {
+  CanonicalCookie? cookie;
+  string cookie_string;
+  CookieInclusionStatus status;
+};
+
+// Keep values here in sync with net::CookieChangeCause.
 enum CookieChangeCause {
   // The cookie was inserted.
   INSERTED,
@@ -91,6 +157,14 @@ enum CookieChangeCause {
   EVICTED,
   // The cookie was overwritten with an already-expired expiration date.
   EXPIRED_OVERWRITE
+};
+
+struct CookieChangeInfo {
+  // The cookie that changed, in its post-change state.
+  CanonicalCookie cookie;
+  // Access semantics of the cookie at the time of the change.
+  CookieAccessSemantics access_semantics;
+  CookieChangeCause cause;
 };
 
 // Session cookies are cookies that expire at the end of the browser session.
@@ -161,7 +235,7 @@ struct CookieDeletionFilter {
 
 interface CookieChangeListener {
   // TODO(rdsmith): Should this be made a batch interface?
-  OnCookieChange(CanonicalCookie cookie, CookieChangeCause cause);
+  OnCookieChange(CookieChangeInfo change);
 };
 
 interface CookieManager {
@@ -175,20 +249,41 @@ interface CookieManager {
   // on origin.  Should the returned cookies also be sorted by origin?
   GetAllCookies() => (array<CanonicalCookie> cookies);
 
-  // Get all cookies for the specified URL and cookie options.
+  // Get all the cookies known to the service.
   // Returned cookie list is sorted first by path length (longest first)
   // and second by creation time.
-  GetCookieList(url.mojom.Url url, CookieOptions cookie_options) =>
-      (array<CanonicalCookie> cookies);
+  // Additionally get a list of the CookieAccessSemantics that applies to each,
+  // if known. The |access_semantics_list| is guaranteed to be the same length
+  // as |cookies|, with each element in |cookies| having the access semantics
+  // which is given by the same index in |access_semantics_list|. If this method
+  // is not implemented in the underlying CookieStore, the returned
+  // |access_semantics_list| will just contain all UNKNOWNs. If it is
+  // supported, the access semantics values will have been determined by
+  // querying the CookieStore's CookieAccessDelegate.
+  GetAllCookiesWithAccessSemantics()
+      => (array<CanonicalCookie> cookies,
+          array<CookieAccessSemantics> access_semantics_list);
+
+  // Get all cookies for the specified URL and cookie options.
+  // Returned cookie list is sorted first by path length (longest first)
+  // and second by creation time. If the |return_excluded_cookies| option is set
+  // in the options, |excluded_cookies| with be a list of cookies that were
+  // blocked from being sent along with the reason each cookie was blocked. By
+  // default, that option is not set and |excluded_cookies| is an empty list.
+  GetCookieList(url.mojom.Url url, CookieOptions cookie_options)
+      => (array<CookieWithStatus> cookies,
+          array<CookieWithStatus> excluded_cookies);
 
   // Set a cookie.  |source_scheme| is used to check whether existing secure
   // cookies can be overwritten (secure cookies may be created from a
   // non-secure source), and whether the scheme is permitted to use cookies in
-  // the first place.  |modify_http_only| indicates whether http_only
-  // cookies may be overwritten.
-  SetCanonicalCookie(
-      CanonicalCookie cookie, string source_scheme, bool modify_http_only) =>
-      (bool success);
+  // the first place.  |cookie_options| indicates whether http_only
+  // or SameSite cookies may be overwritten. If a cookie is not permitted to be
+  // set, |status| will indicate why it was blocked. If the cookie is permitted,
+  // |status| will be set to INCLUDE.
+  SetCanonicalCookie(CanonicalCookie cookie, string source_scheme,
+                     CookieOptions cookie_options)
+      => (CookieInclusionStatus status);
 
   // Delete a cookie. Returns true if a cookie was deleted.
   DeleteCanonicalCookie(CanonicalCookie cookie) => (bool success);
@@ -206,14 +301,16 @@ interface CookieManager {
   // information about the tracked cookie, to make sure that a change to the
   // cookie did not happen right before the listener was registered.
   //
+  // If |name| is omitted then changes are returned for all cookies for |url|.
+  //
   // TODO(rdsmith): Should this have a filter to register for a lot of
   // notifications at once?  Maybe combine with the deletion filter?
-  // TODO(rdsmith): Describe the performance implications of using this meethod.
+  // TODO(rdsmith): Describe the performance implications of using this method.
   // The comments in CookieMonster::AddCallbackForCookie look pretty scary.
   AddCookieChangeListener(
       url.mojom.Url url,
-      string name,
-      CookieChangeListener listener);
+      string? name,
+      pending_remote<CookieChangeListener> listener);
 
   // Subscribes the given listener to changes to this CookieManager's cookies.
   //
@@ -221,15 +318,23 @@ interface CookieManager {
   //
   // TODO(rdsmith): Should this have a filter to register for a lot of
   // notifications at once?  Maybe combine with the deletion filter?
-  AddGlobalChangeListener(CookieChangeListener notification_pointer);
+  AddGlobalChangeListener(
+      pending_remote<CookieChangeListener> notification_pointer);
 
   // Clone the interface for use somewhere else.  After this call,
   // requests to the same implementation may be posted to the other side
   // of the pipe new_interface was configured on.
-  CloneInterface(CookieManager& new_interface);
+  CloneInterface(pending_receiver<CookieManager> new_interface);
 
   // Flush the backing store (if any) to disk.
   FlushCookieStore() => ();
+
+  // Configure this CookieManager to allow/disallow setting cookies for file://
+  // URLs. If this is not called, the CookieManager follows
+  // CookieManagerParams.allow_file_scheme_cookies. This should be called before
+  // the first use of the backing store, otherwise this will have no effect on
+  // the CookieManager, returning false to indicate so.
+  AllowFileSchemeCookies(bool allow) => (bool success);
 
   // Sets content settings for cookies. These are used to determine cookie
   // access and cookie deletion behavior.
@@ -241,4 +346,9 @@ interface CookieManager {
 
   // Enables/Disables blocking of third-party cookies.
   BlockThirdPartyCookies(bool block);
+
+  // Sets content settings for which domains are allowed to use legacy cookie
+  // access rules.
+  SetContentSettingsForLegacyCookieAccess(
+      array<content_settings.mojom.ContentSettingPatternSource> settings);
 };

@@ -1,2 +1,0 @@
-Should not have opaque composited scrolling contents layer: Pass.
-

@@ -23,14 +23,19 @@ FakeTileManagerClient::BuildEvictionQueue(TreePriority tree_priority) {
   return nullptr;
 }
 
-RasterColorSpace FakeTileManagerClient::GetRasterColorSpace() const {
-  return RasterColorSpace();
+const gfx::ColorSpace& FakeTileManagerClient::GetRasterColorSpace() const {
+  return color_space_;
 }
 
 size_t FakeTileManagerClient::GetFrameIndexForImage(
     const PaintImage& paint_image,
     WhichTree tree) const {
   return PaintImage::kDefaultFrameIndex;
+}
+
+int FakeTileManagerClient::GetMSAASampleCountForRaster(
+    const scoped_refptr<DisplayItemList>& display_list) {
+  return 0;
 }
 
 }  // namespace cc

@@ -20,27 +20,21 @@ namespace extensions {
 class ActivityLogConverterStrategy
     : public content::V8ValueConverter::Strategy {
  public:
-  typedef content::V8ValueConverter::Strategy::FromV8ValueCallback
-      FromV8ValueCallback;
-
   ActivityLogConverterStrategy();
   ~ActivityLogConverterStrategy() override;
 
   // content::V8ValueConverter::Strategy implementation.
   bool FromV8Object(v8::Local<v8::Object> value,
                     std::unique_ptr<base::Value>* out,
-                    v8::Isolate* isolate,
-                    const FromV8ValueCallback& callback) override;
+                    v8::Isolate* isolate) override;
   bool FromV8Array(v8::Local<v8::Array> value,
                    std::unique_ptr<base::Value>* out,
-                   v8::Isolate* isolate,
-                   const FromV8ValueCallback& callback) override;
+                   v8::Isolate* isolate) override;
 
  private:
   bool FromV8Internal(v8::Local<v8::Object> value,
                       std::unique_ptr<base::Value>* out,
-                      v8::Isolate* isolate,
-                      const FromV8ValueCallback& callback) const;
+                      v8::Isolate* isolate) const;
 
   DISALLOW_COPY_AND_ASSIGN(ActivityLogConverterStrategy);
 };

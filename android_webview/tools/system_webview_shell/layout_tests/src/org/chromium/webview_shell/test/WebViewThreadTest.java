@@ -39,12 +39,12 @@ public class WebViewThreadTest {
             new ActivityTestRule<>(WebViewThreadTestActivity.class, false, false);
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         mActivity = mActivityTestRule.launchActivity(new Intent());
     }
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
         mActivity.finish();
     }
 

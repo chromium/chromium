@@ -28,20 +28,25 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_EXECUTION_CONTEXT_EXECUTION_CONTEXT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_EXECUTION_CONTEXT_EXECUTION_CONTEXT_H_
 
+#include <bitset>
 #include <memory>
 
 #include "base/location.h"
 #include "base/macros.h"
 #include "base/optional.h"
 #include "base/unguessable_token.h"
-#include "third_party/blink/public/mojom/frame/lifecycle.mojom-blink.h"
+#include "services/network/public/mojom/referrer_policy.mojom-blink-forward.h"
+#include "third_party/blink/public/mojom/frame/lifecycle.mojom-blink-forward.h"
 #include "third_party/blink/renderer/bindings/core/v8/sanitize_script_errors.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/execution_context/context_lifecycle_notifier.h"
 #include "third_party/blink/renderer/core/execution_context/context_lifecycle_observer.h"
-#include "third_party/blink/renderer/core/loader/console_logger_impl_base.h"
+#include "third_party/blink/renderer/core/feature_policy/feature_policy_parser_delegate.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
+#include "third_party/blink/renderer/platform/loader/fetch/console_logger.h"
 #include "third_party/blink/renderer/platform/loader/fetch/https_state.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
 #include "v8/include/v8.h"
 
@@ -53,20 +58,11 @@ namespace service_manager {
 class InterfaceProvider;
 }
 
-namespace network {
-namespace mojom {
-enum class ReferrerPolicy : int32_t;
-}  // namespace mojom
-}  // namespace network
-
 namespace blink {
 
-namespace mojom {
-namespace blink {
-class DocumentInterfaceBroker;
-}  // namespace blink
-}  // namespace mojom
-
+class Agent;
+class BrowserInterfaceBrokerProxy;
+class ConsoleMessage;
 class ContentSecurityPolicy;
 class ContentSecurityPolicyDelegate;
 class CoreProbeSink;
@@ -74,16 +70,17 @@ class DOMTimerCoordinator;
 class ErrorEvent;
 class EventTarget;
 class FrameOrWorkerScheduler;
-class InterfaceInvalidator;
 class KURL;
 class LocalDOMWindow;
+class OriginTrialContext;
 class PublicURLManager;
 class ResourceFetcher;
 class SecurityContext;
 class SecurityOrigin;
 class ScriptState;
+class TrustedTypePolicyFactory;
 
-enum class TaskType : unsigned;
+enum class TaskType : unsigned char;
 
 enum ReasonForCallingCanExecuteScripts {
   kAboutToExecuteScript,
@@ -116,7 +113,9 @@ enum class SecureContextMode { kInsecureContext, kSecureContext };
 // in common.
 class CORE_EXPORT ExecutionContext : public ContextLifecycleNotifier,
                                      public Supplementable<ExecutionContext>,
-                                     public ConsoleLoggerImplBase {
+                                     public ConsoleLogger,
+                                     public UseCounter,
+                                     public FeaturePolicyParserDelegate {
   MERGE_GARBAGE_COLLECTED_MIXINS();
 
  public:
@@ -182,9 +181,13 @@ class CORE_EXPORT ExecutionContext : public ContextLifecycleNotifier,
   virtual ResourceFetcher* Fetcher() const = 0;
 
   virtual SecurityContext& GetSecurityContext() = 0;
+  virtual const SecurityContext& GetSecurityContext() const = 0;
 
   // https://tc39.github.io/ecma262/#sec-agent-clusters
-  virtual const base::UnguessableToken& GetAgentClusterID() const = 0;
+  // TODO(dtapuska): Remove this virtual once all execution_contexts
+  // always have an agent. Worklets currently override this because
+  // they don't have agents.
+  virtual const base::UnguessableToken& GetAgentClusterID() const;
 
   bool IsSameAgentCluster(const base::UnguessableToken&) const;
 
@@ -205,6 +208,13 @@ class CORE_EXPORT ExecutionContext : public ContextLifecycleNotifier,
   void SetLifecycleState(mojom::FrameLifecycleState);
   void NotifyContextDestroyed() override;
 
+  using ConsoleLogger::AddConsoleMessage;
+
+  void AddConsoleMessage(ConsoleMessage* message,
+                         bool discard_duplicates = false) {
+    AddConsoleMessageImpl(message, discard_duplicates);
+  }
+
   // TODO(haraken): Remove these methods by making the customers inherit from
   // ContextLifecycleObserver. ContextLifecycleObserver is a standard way to
   // observe context suspension/resumption.
@@ -212,9 +222,7 @@ class CORE_EXPORT ExecutionContext : public ContextLifecycleNotifier,
   virtual void TasksWerePaused() {}
   virtual void TasksWereUnpaused() {}
 
-  bool IsContextPaused() const {
-    return lifecycle_state_ != mojom::FrameLifecycleState::kRunning;
-  }
+  bool IsContextPaused() const;
   bool IsContextDestroyed() const { return is_context_destroyed_; }
   mojom::FrameLifecycleState ContextPauseState() const {
     return lifecycle_state_;
@@ -267,23 +275,47 @@ class CORE_EXPORT ExecutionContext : public ContextLifecycleNotifier,
     return nullptr;
   }
 
-  virtual mojom::blink::DocumentInterfaceBroker* GetDocumentInterfaceBroker() {
-    return nullptr;
-  }
+  virtual BrowserInterfaceBrokerProxy& GetBrowserInterfaceBroker() = 0;
 
   virtual FrameOrWorkerScheduler* GetScheduler() = 0;
   virtual scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner(
       TaskType) = 0;
 
-  InterfaceInvalidator* GetInterfaceInvalidator() { return invalidator_.get(); }
-
   v8::Isolate* GetIsolate() const { return isolate_; }
+  Agent* GetAgent() const { return agent_; }
+
+  v8::MicrotaskQueue* GetMicrotaskQueue() const;
+
+  OriginTrialContext* GetOriginTrialContext() const {
+    return origin_trial_context_;
+  }
+
+  virtual TrustedTypePolicyFactory* GetTrustedTypes() const { return nullptr; }
+  virtual bool RequireTrustedTypes() const;
+
+  // FeaturePolicyParserDelegate override
+  bool FeatureEnabled(OriginTrialFeature) const override;
+  void CountFeaturePolicyUsage(mojom::WebFeature feature) override;
+  bool FeaturePolicyFeatureObserved(
+      mojom::FeaturePolicyFeature feature) override;
+
 
  protected:
-  explicit ExecutionContext(v8::Isolate* isolate);
+  ExecutionContext(v8::Isolate* isolate,
+                   Agent* agent,
+                   OriginTrialContext* origin_trial_context);
   ~ExecutionContext() override;
 
  private:
+  // ConsoleLogger implementation.
+  void AddConsoleMessageImpl(mojom::ConsoleMessageSource,
+                             mojom::ConsoleMessageLevel,
+                             const String& message,
+                             bool discard_duplicates) final;
+
+  virtual void AddConsoleMessageImpl(ConsoleMessage*,
+                                     bool discard_duplicates) = 0;
+
   v8::Isolate* const isolate_;
 
   bool DispatchErrorEventInternal(ErrorEvent*, SanitizeScriptErrors);
@@ -293,13 +325,16 @@ class CORE_EXPORT ExecutionContext : public ContextLifecycleNotifier,
   bool in_dispatch_error_event_;
   HeapVector<Member<ErrorEvent>> pending_exceptions_;
 
-  mojom::FrameLifecycleState lifecycle_state_ =
-      mojom::FrameLifecycleState::kRunning;
+  mojom::FrameLifecycleState lifecycle_state_;
   bool is_context_destroyed_;
 
   Member<PublicURLManager> public_url_manager_;
 
   const Member<ContentSecurityPolicyDelegate> csp_delegate_;
+
+  Member<Agent> agent_;
+
+  Member<OriginTrialContext> origin_trial_context_;
 
   // Counter that keeps track of how many window interaction calls are allowed
   // for this ExecutionContext. Callers are expected to call
@@ -309,7 +344,10 @@ class CORE_EXPORT ExecutionContext : public ContextLifecycleNotifier,
 
   network::mojom::ReferrerPolicy referrer_policy_;
 
-  std::unique_ptr<InterfaceInvalidator> invalidator_;
+  // Tracks which feature policies have already been parsed, so as not to count
+  // them multiple times.
+  // The size of this vector is 0 until FeaturePolicyFeatureObserved is called.
+  Vector<bool> parsed_feature_policies_;
 
   DISALLOW_COPY_AND_ASSIGN(ExecutionContext);
 };

@@ -1,0 +1,19 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/util/lastchange.gni")
+import("//build/util/process_version.gni")
+
+# Nothing outside //chrome/test/chromedriver can depend on these targets.
+visibility = [ "//chrome/test/chromedriver/*" ]
+
+process_version("version_header") {
+  template_file = "version.cc.in"
+  sources = [
+    "//chrome/VERSION",
+    "BRANDING",
+    lastchange_file,
+  ]
+  output = "$target_gen_dir/version.cc"
+}

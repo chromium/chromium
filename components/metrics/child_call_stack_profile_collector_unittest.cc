@@ -10,8 +10,9 @@
 
 #include "base/bind.h"
 #include "base/run_loop.h"
-#include "base/test/scoped_task_environment.h"
-#include "mojo/public/cpp/bindings/binding.h"
+#include "base/test/task_environment.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/metrics_proto/sampled_profile.pb.h"
 
@@ -21,8 +22,9 @@ class ChildCallStackProfileCollectorTest : public testing::Test {
  protected:
   class Receiver : public mojom::CallStackProfileCollector {
    public:
-    explicit Receiver(mojom::CallStackProfileCollectorRequest request)
-        : binding_(this, std::move(request)) {}
+    explicit Receiver(
+        mojo::PendingReceiver<mojom::CallStackProfileCollector> receiver)
+        : receiver_(this, std::move(receiver)) {}
     ~Receiver() override {}
 
     void Collect(base::TimeTicks start_timestamp,
@@ -33,13 +35,14 @@ class ChildCallStackProfileCollectorTest : public testing::Test {
     std::vector<base::TimeTicks> profile_start_times;
 
    private:
-    mojo::Binding<mojom::CallStackProfileCollector> binding_;
+    mojo::Receiver<mojom::CallStackProfileCollector> receiver_;
 
     DISALLOW_COPY_AND_ASSIGN(Receiver);
   };
 
   ChildCallStackProfileCollectorTest()
-      : receiver_impl_(new Receiver(MakeRequest(&receiver_))) {}
+      : receiver_impl_(
+            new Receiver(collector_remote_.InitWithNewPipeAndPassReceiver())) {}
 
   void CollectEmptyProfile() {
     child_collector_.Collect(base::TimeTicks::Now(), SampledProfile());
@@ -50,8 +53,8 @@ class ChildCallStackProfileCollectorTest : public testing::Test {
     return child_collector_.profiles_;
   }
 
-  base::test::ScopedTaskEnvironment task_environment_;
-  mojom::CallStackProfileCollectorPtr receiver_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
+  mojo::PendingRemote<mojom::CallStackProfileCollector> collector_remote_;
   std::unique_ptr<Receiver> receiver_impl_;
   ChildCallStackProfileCollector child_collector_;
 
@@ -71,7 +74,7 @@ TEST_F(ChildCallStackProfileCollectorTest, InterfaceProvided) {
             base::TimeTicks::Now() - start_timestamp);
 
   // Set the interface. The profiles should be passed to it.
-  child_collector_.SetParentProfileCollector(std::move(receiver_));
+  child_collector_.SetParentProfileCollector(std::move(collector_remote_));
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(0u, profiles().size());
   ASSERT_EQ(1u, receiver_impl_->profile_start_times.size());
@@ -97,8 +100,7 @@ TEST_F(ChildCallStackProfileCollectorTest, InterfaceNotProvided) {
             base::TimeTicks::Now() - profiles()[0].start_timestamp);
 
   // Set the null interface. The profile should be flushed.
-  child_collector_.SetParentProfileCollector(
-      mojom::CallStackProfileCollectorPtr());
+  child_collector_.SetParentProfileCollector(mojo::NullRemote());
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(0u, profiles().size());
 

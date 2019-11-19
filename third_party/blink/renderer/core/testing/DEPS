@@ -13,4 +13,7 @@ specific_include_rules = {
     'scoped_fake_plugin_registry\.cc': [
         "+base/files/file_path.h",
     ],
+    'internals\.cc' : [
+        "+third_party/blink/renderer/core/exported/web_view_impl.h",
+    ],
 }

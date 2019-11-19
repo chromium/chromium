@@ -15,7 +15,7 @@ class CustomElementDefinition;
 class Element;
 
 class CORE_EXPORT CustomElementReaction
-    : public GarbageCollectedFinalized<CustomElementReaction> {
+    : public GarbageCollected<CustomElementReaction> {
  public:
   CustomElementReaction(CustomElementDefinition&);
   virtual ~CustomElementReaction() = default;

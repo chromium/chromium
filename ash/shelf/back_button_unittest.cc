@@ -6,35 +6,49 @@
 
 #include <memory>
 
-#include "ash/accelerators/accelerator_controller.h"
+#include "ash/accelerators/accelerator_controller_impl.h"
 #include "ash/app_list/test/app_list_test_helper.h"
 #include "ash/app_list/views/app_list_view.h"
 #include "ash/shelf/shelf.h"
+#include "ash/shelf/shelf_navigation_widget.h"
 #include "ash/shelf/shelf_view.h"
 #include "ash/shelf/shelf_view_test_api.h"
+#include "ash/shelf/shelf_widget.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/run_loop.h"
+#include "base/test/scoped_feature_list.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/accelerators/test_accelerator_target.h"
 #include "ui/events/test/event_generator.h"
 
 namespace ash {
 
-class BackButtonTest : public AshTestBase {
+class BackButtonTest : public AshTestBase,
+                       public testing::WithParamInterface<bool> {
  public:
   BackButtonTest() = default;
   ~BackButtonTest() override = default;
 
-  BackButton* back_button() { return back_button_; }
+  BackButton* back_button() {
+    return test_api_->shelf_view()->shelf_widget()->GetBackButton();
+  }
   ShelfViewTestAPI* test_api() { return test_api_.get(); }
 
   void SetUp() override {
+    if (GetParam()) {
+      scoped_feature_list_.InitAndEnableFeature(
+          chromeos::features::kShelfHotseat);
+    } else {
+      scoped_feature_list_.InitAndDisableFeature(
+          chromeos::features::kShelfHotseat);
+    }
+
     AshTestBase::SetUp();
     test_api_ = std::make_unique<ShelfViewTestAPI>(
         GetPrimaryShelf()->GetShelfViewForTesting());
-    back_button_ = test_api_->shelf_view()->GetBackButton();
 
     // Finish all setup tasks. In particular we want to finish the
     // GetSwitchStates post task in (Fake)PowerManagerClient which is triggered
@@ -43,49 +57,76 @@ class BackButtonTest : public AshTestBase {
     base::RunLoop().RunUntilIdle();
   }
 
- private:
-  BackButton* back_button_ = nullptr;
+ protected:
   std::unique_ptr<ShelfViewTestAPI> test_api_;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 
   DISALLOW_COPY_AND_ASSIGN(BackButtonTest);
 };
 
+// The parameter indicates whether the kShelfHotseat feature is enabled.
+INSTANTIATE_TEST_SUITE_P(, BackButtonTest, testing::Bool());
+
 // Verify that the back button is visible in tablet mode.
-TEST_F(BackButtonTest, Visibility) {
+TEST_P(BackButtonTest, Visibility) {
   ASSERT_TRUE(back_button()->layer());
   EXPECT_EQ(0.f, back_button()->layer()->opacity());
 
-  Shell::Get()->tablet_mode_controller()->EnableTabletModeWindowManager(true);
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+  if (GetParam()) {
+    // Ensure the back button is not yet visible when hotseat is enabled.
+    EXPECT_EQ(0.f, back_button()->layer()->opacity());
+
+    // When hotseat is enabled, the back button is only usable in in-app shelf.
+    std::unique_ptr<views::Widget> widget = CreateTestWidget();
+  }
+
   test_api()->RunMessageLoopUntilAnimationsDone();
   EXPECT_EQ(1.f, back_button()->layer()->opacity());
 
-  Shell::Get()->tablet_mode_controller()->EnableTabletModeWindowManager(false);
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(false);
   test_api()->RunMessageLoopUntilAnimationsDone();
   EXPECT_EQ(0.f, back_button()->layer()->opacity());
 }
 
 // Verify that the back button is visible in tablet mode, if the initial shelf
 // alignment is on the left or right.
-TEST_F(BackButtonTest, VisibilityWithVerticalShelf) {
+TEST_P(BackButtonTest, VisibilityWithVerticalShelf) {
   test_api()->shelf_view()->shelf()->SetAlignment(SHELF_ALIGNMENT_LEFT);
   ASSERT_TRUE(back_button()->layer());
   EXPECT_EQ(0.f, back_button()->layer()->opacity());
 
-  Shell::Get()->tablet_mode_controller()->EnableTabletModeWindowManager(true);
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+  // When hotseat is enabled, the back button is only usable in in-app shelf.
+  if (GetParam())
+    std::unique_ptr<views::Widget> widget = CreateTestWidget();
+
   test_api()->RunMessageLoopUntilAnimationsDone();
   EXPECT_EQ(1.f, back_button()->layer()->opacity());
 
-  Shell::Get()->tablet_mode_controller()->EnableTabletModeWindowManager(false);
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(false);
   test_api()->RunMessageLoopUntilAnimationsDone();
   EXPECT_EQ(0.f, back_button()->layer()->opacity());
 }
 
-TEST_F(BackButtonTest, BackKeySequenceGenerated) {
+TEST_P(BackButtonTest, BackKeySequenceGenerated) {
   // Enter tablet mode; the back button is not visible in non tablet mode.
-  Shell::Get()->tablet_mode_controller()->EnableTabletModeWindowManager(true);
-  test_api()->RunMessageLoopUntilAnimationsDone();
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+  // When hotseat is enabled, the back button is only usable in in-app shelf.
+  if (GetParam())
+    std::unique_ptr<views::Widget> widget = CreateTestWidget();
 
-  AcceleratorController* controller = Shell::Get()->accelerator_controller();
+  // Wait for the navigation widget's animation.
+  test_api()->RunMessageLoopUntilAnimationsDone(
+      GetPrimaryShelf()
+          ->shelf_widget()
+          ->navigation_widget()
+          ->get_bounds_animator_for_testing());
+
+  AcceleratorControllerImpl* controller =
+      Shell::Get()->accelerator_controller();
 
   // Register an accelerator that looks for back presses. Note there is already
   // an accelerator on AppListView, which will handle the accelerator since it
@@ -107,13 +148,43 @@ TEST_F(BackButtonTest, BackKeySequenceGenerated) {
   ui::TestAcceleratorTarget target_back_release;
   controller->Register({accelerator_back_release}, &target_back_release);
 
-  // Verify that by clicking the back button, a back key sequence will be
-  // generated.
+  // Verify that by pressing the back button no event is generated on the press,
+  // but there is one generated on the release.
   ui::test::EventGenerator* generator = GetEventGenerator();
   generator->MoveMouseTo(back_button()->GetBoundsInScreen().CenterPoint());
-  generator->ClickLeftButton();
+  generator->PressLeftButton();
+  EXPECT_EQ(0, target_back_press.accelerator_count());
+  EXPECT_EQ(0, target_back_release.accelerator_count());
+
+  generator->ReleaseLeftButton();
   EXPECT_EQ(1, target_back_press.accelerator_count());
   EXPECT_EQ(1, target_back_release.accelerator_count());
+}
+
+// Tests that the back button does not show a context menu.
+TEST_P(BackButtonTest, NoContextMenuOnBackButton) {
+  ui::test::EventGenerator* generator = GetEventGenerator();
+
+  // Enable tablet mode to show the back button. Wait for tablet mode animations
+  // to finish in order for the back button to move out from under the
+  // home button.
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+
+  // When hotseat is enabled, the back button is only usable in in-app shelf.
+  if (GetParam())
+    std::unique_ptr<views::Widget> widget = CreateTestWidget();
+
+  // We need to wait for the navigation widget's animation to be done.
+  test_api_->RunMessageLoopUntilAnimationsDone(
+      GetPrimaryShelf()
+          ->shelf_widget()
+          ->navigation_widget()
+          ->get_bounds_animator_for_testing());
+
+  generator->MoveMouseTo(back_button()->GetBoundsInScreen().CenterPoint());
+  generator->PressRightButton();
+
+  EXPECT_FALSE(test_api_->CloseMenu());
 }
 
 }  // namespace ash

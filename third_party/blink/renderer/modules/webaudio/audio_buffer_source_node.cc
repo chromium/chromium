@@ -26,7 +26,6 @@
 #include <algorithm>
 
 #include "base/numerics/safe_conversions.h"
-#include "third_party/blink/renderer/core/frame/use_counter.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_buffer_source_node.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_buffer_source_options.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_node_output.h"
@@ -34,6 +33,7 @@
 #include "third_party/blink/renderer/platform/audio/audio_utilities.h"
 #include "third_party/blink/renderer/platform/bindings/exception_messages.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 
 namespace blink {
@@ -175,8 +175,6 @@ bool AudioBufferSourceHandler::RenderFromBuffer(
   // Basic sanity checking
   DCHECK(bus);
   DCHECK(Buffer());
-  if (!bus || !Buffer())
-    return false;
 
   unsigned number_of_channels = this->NumberOfChannels();
   unsigned bus_number_of_channels = bus->NumberOfChannels();
@@ -184,25 +182,15 @@ bool AudioBufferSourceHandler::RenderFromBuffer(
   bool channel_count_good =
       number_of_channels && number_of_channels == bus_number_of_channels;
   DCHECK(channel_count_good);
-  if (!channel_count_good)
-    return false;
 
   // Sanity check destinationFrameOffset, numberOfFrames.
   size_t destination_length = bus->length();
 
-  bool is_length_good =
-      destination_length <= audio_utilities::kRenderQuantumFrames &&
-      number_of_frames <= audio_utilities::kRenderQuantumFrames;
-  DCHECK(is_length_good);
-  if (!is_length_good)
-    return false;
+  DCHECK_LE(destination_length, audio_utilities::kRenderQuantumFrames);
+  DCHECK_LE(number_of_frames, audio_utilities::kRenderQuantumFrames);
 
-  bool is_offset_good =
-      destination_frame_offset <= destination_length &&
-      destination_frame_offset + number_of_frames <= destination_length;
-  DCHECK(is_offset_good);
-  if (!is_offset_good)
-    return false;
+  DCHECK_LE(destination_frame_offset, destination_length);
+  DCHECK_LE(destination_frame_offset + number_of_frames, destination_length);
 
   // Potentially zero out initial frames leading up to the offset.
   if (destination_frame_offset) {
@@ -411,7 +399,10 @@ void AudioBufferSourceHandler::SetBuffer(AudioBuffer* buffer,
   // This synchronizes with process().
   MutexLocker process_locker(process_lock_);
 
-  if (buffer) {
+  if (!buffer) {
+    // Clear out the shared buffer.
+    shared_buffer_.reset();
+  } else {
     buffer_has_been_set_ = true;
 
     // Do any necesssary re-configuration to the buffer's number of channels.
@@ -595,12 +586,8 @@ double AudioBufferSourceHandler::ComputePlaybackRate() {
   // get any bad rate values.
   final_playback_rate = clampTo(final_playback_rate, 0.0, kMaxRate);
 
-  bool is_playback_rate_valid =
-      !std::isnan(final_playback_rate) && !std::isinf(final_playback_rate);
-  DCHECK(is_playback_rate_valid);
-
-  if (!is_playback_rate_valid)
-    final_playback_rate = 1.0;
+  DCHECK(!std::isnan(final_playback_rate));
+  DCHECK(!std::isinf(final_playback_rate));
 
   // Record the minimum playback rate for use by HandleStoppableSourceNode.
   if (final_playback_rate < min_playback_rate_) {
@@ -621,6 +608,18 @@ bool AudioBufferSourceHandler::PropagatesSilence() const {
 
 void AudioBufferSourceHandler::HandleStoppableSourceNode() {
   DCHECK(Context()->IsAudioThread());
+  // If the source node has been scheduled to stop, we can stop the node once
+  // the current time reaches that value.  Usually,
+  // AudioScheduledSourceHandler::UpdateSchedulingInfo handles stopped nodes,
+  // but we can get here if the node is stopped and then disconnected.  Then
+  // UpdateSchedulingInfo never gets a chance to finish the node.
+
+  if (end_time_ != AudioScheduledSourceHandler::kUnknownTime &&
+      Context()->currentTime() > end_time_) {
+    Finish();
+    return;
+  }
+
   // If the source node is not looping, and we have a buffer, we can determine
   // when the source would stop playing.  This is intended to handle the
   // (uncommon) scenario where start() has been called but is never connected to
@@ -663,18 +662,20 @@ void AudioBufferSourceHandler::HandleStoppableSourceNode() {
 // ----------------------------------------------------------------
 AudioBufferSourceNode::AudioBufferSourceNode(BaseAudioContext& context)
     : AudioScheduledSourceNode(context),
-      playback_rate_(
-          AudioParam::Create(context,
-                             kParamTypeAudioBufferSourcePlaybackRate,
-                             1.0,
-                             AudioParamHandler::AutomationRate::kControl,
-                             AudioParamHandler::AutomationRateMode::kFixed)),
-      detune_(
-          AudioParam::Create(context,
-                             kParamTypeAudioBufferSourceDetune,
-                             0.0,
-                             AudioParamHandler::AutomationRate::kControl,
-                             AudioParamHandler::AutomationRateMode::kFixed)) {
+      playback_rate_(AudioParam::Create(
+          context,
+          Uuid(),
+          AudioParamHandler::kParamTypeAudioBufferSourcePlaybackRate,
+          1.0,
+          AudioParamHandler::AutomationRate::kControl,
+          AudioParamHandler::AutomationRateMode::kFixed)),
+      detune_(AudioParam::Create(
+          context,
+          Uuid(),
+          AudioParamHandler::kParamTypeAudioBufferSourceDetune,
+          0.0,
+          AudioParamHandler::AutomationRate::kControl,
+          AudioParamHandler::AutomationRateMode::kFixed)) {
   SetHandler(AudioBufferSourceHandler::Create(*this, context.sampleRate(),
                                               playback_rate_->Handler(),
                                               detune_->Handler()));
@@ -786,6 +787,18 @@ void AudioBufferSourceNode::start(double when,
                                   ExceptionState& exception_state) {
   GetAudioBufferSourceHandler().Start(when, grain_offset, grain_duration,
                                       exception_state);
+}
+
+void AudioBufferSourceNode::ReportDidCreate() {
+  GraphTracer().DidCreateAudioNode(this);
+  GraphTracer().DidCreateAudioParam(detune_);
+  GraphTracer().DidCreateAudioParam(playback_rate_);
+}
+
+void AudioBufferSourceNode::ReportWillBeDestroyed() {
+  GraphTracer().WillDestroyAudioParam(detune_);
+  GraphTracer().WillDestroyAudioParam(playback_rate_);
+  GraphTracer().WillDestroyAudioNode(this);
 }
 
 }  // namespace blink

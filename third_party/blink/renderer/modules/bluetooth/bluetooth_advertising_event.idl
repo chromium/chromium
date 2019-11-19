@@ -5,6 +5,7 @@
 // https://webbluetoothcg.github.io/web-bluetooth/#bluetoothadvertisingevent
 
 [
+    Exposed=Window,
     RuntimeEnabled=WebBluetoothScanning,
     SecureContext
 ] interface BluetoothAdvertisingEvent : Event {

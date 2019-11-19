@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.dom_distiller;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.annotations.JNINamespace;
+import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.dom_distiller.core.DomDistillerService;
 
@@ -30,11 +31,14 @@ public class DomDistillerServiceFactory {
         ThreadUtils.assertOnUiThread();
         DomDistillerService service = sServiceMap.get(profile);
         if (service == null) {
-            service = nativeGetForProfile(profile);
+            service = DomDistillerServiceFactoryJni.get().getForProfile(profile);
             sServiceMap.put(profile, service);
         }
         return service;
     }
 
-    private static native DomDistillerService nativeGetForProfile(Profile profile);
+    @NativeMethods
+    interface Natives {
+        DomDistillerService getForProfile(Profile profile);
+    }
 }

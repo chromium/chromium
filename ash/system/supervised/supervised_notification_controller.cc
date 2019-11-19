@@ -6,7 +6,7 @@
 
 #include "ash/public/cpp/notification_utils.h"
 #include "ash/public/cpp/vector_icons/vector_icons.h"
-#include "ash/session/session_controller.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/supervised/supervised_icon_string.h"
@@ -43,18 +43,18 @@ void SupervisedNotificationController::OnUserSessionAdded(
 
 void SupervisedNotificationController::OnUserSessionUpdated(
     const AccountId& account_id) {
-  SessionController* session_controller = Shell::Get()->session_controller();
+  SessionControllerImpl* session_controller =
+      Shell::Get()->session_controller();
   if (!session_controller->IsUserSupervised())
     return;
 
   // Get the active user session.
   DCHECK(session_controller->IsActiveUserSessionStarted());
-  const mojom::UserSession* const user_session =
-      session_controller->GetUserSession(0);
+  const UserSession* const user_session = session_controller->GetUserSession(0);
   DCHECK(user_session);
 
   // Only respond to updates for the active user.
-  if (user_session->user_info->account_id != account_id)
+  if (user_session->user_info.account_id != account_id)
     return;
 
   // Show notifications when custodian data first becomes available on login

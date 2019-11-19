@@ -6,7 +6,7 @@
 
 #include "ash/public/cpp/ash_pref_names.h"
 #include "ash/root_window_controller.h"
-#include "ash/session/session_controller.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/session/test_session_controller_client.h"
 #include "ash/shell.h"
 #include "ash/system/session/logout_confirmation_controller.h"
@@ -51,27 +51,26 @@ TEST_F(LogoutButtonTrayTest, Visibility) {
                                  ->GetStatusAreaWidget()
                                  ->logout_button_tray_for_testing();
   ASSERT_TRUE(button);
-  EXPECT_FALSE(button->visible());
+  EXPECT_FALSE(button->GetVisible());
 
   // Button is not visible after simulated login.
-  EXPECT_FALSE(button->visible());
+  EXPECT_FALSE(button->GetVisible());
 
   // Setting the pref makes the button visible.
   pref_service()->SetBoolean(prefs::kShowLogoutButtonInTray, true);
-  EXPECT_TRUE(button->visible());
+  EXPECT_TRUE(button->GetVisible());
 
   // Locking the screen hides the button.
-  TestSessionControllerClient* const session = GetSessionControllerClient();
-  session->RequestLockScreen();
-  EXPECT_FALSE(button->visible());
+  GetSessionControllerClient()->LockScreen();
+  EXPECT_FALSE(button->GetVisible());
 
   // Unlocking the screen shows the button.
-  session->UnlockScreen();
-  EXPECT_TRUE(button->visible());
+  GetSessionControllerClient()->UnlockScreen();
+  EXPECT_TRUE(button->GetVisible());
 
   // Resetting the pref hides the button.
   pref_service()->SetBoolean(prefs::kShowLogoutButtonInTray, false);
-  EXPECT_FALSE(button->visible());
+  EXPECT_FALSE(button->GetVisible());
 }
 
 TEST_F(LogoutButtonTrayTest, ButtonPressed) {
@@ -83,8 +82,6 @@ TEST_F(LogoutButtonTrayTest, ButtonPressed) {
                                      ->logout_button_tray_for_testing();
   ASSERT_TRUE(tray);
   views::MdTextButton* const button = tray->button_for_test();
-  SessionController* const session_controller =
-      Shell::Get()->session_controller();
   TestSessionControllerClient* const session_client =
       GetSessionControllerClient();
   base::UserActionTester user_action_tester;
@@ -104,7 +101,7 @@ TEST_F(LogoutButtonTrayTest, ButtonPressed) {
   // Sign out immediately when duration is zero.
   pref_service->SetInteger(prefs::kLogoutDialogDurationMs, 0);
   tray->ButtonPressed(button, event);
-  session_controller->FlushMojoForTest();
+  session_client->FlushForTest();
   EXPECT_EQ(1, session_client->request_sign_out_count());
   EXPECT_EQ(0, user_action_tester.GetActionCount(kUserAction));
   EXPECT_EQ(0, Shell::Get()
@@ -115,7 +112,7 @@ TEST_F(LogoutButtonTrayTest, ButtonPressed) {
   // non-zero.
   pref_service->SetInteger(prefs::kLogoutDialogDurationMs, 1000);
   tray->ButtonPressed(button, event);
-  session_controller->FlushMojoForTest();
+  session_client->FlushForTest();
   EXPECT_EQ(1, session_client->request_sign_out_count());
   EXPECT_EQ(0, user_action_tester.GetActionCount(kUserAction));
   EXPECT_EQ(1, Shell::Get()
@@ -127,7 +124,7 @@ TEST_F(LogoutButtonTrayTest, ButtonPressed) {
   pref_service->SetInteger(prefs::kLogoutDialogDurationMs, 0);
   session_client->SetIsDemoSession();
   tray->ButtonPressed(button, event);
-  session_controller->FlushMojoForTest();
+  session_client->FlushForTest();
   EXPECT_EQ(2, session_client->request_sign_out_count());
   EXPECT_EQ(1, user_action_tester.GetActionCount(kUserAction));
   EXPECT_EQ(1, Shell::Get()

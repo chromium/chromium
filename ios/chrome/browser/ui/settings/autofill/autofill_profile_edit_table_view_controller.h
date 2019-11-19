@@ -12,8 +12,6 @@ class AutofillProfile;
 class PersonalDataManager;
 }  // namespace autofill
 
-extern NSString* const kAutofillProfileEditTableViewId;
-
 // The table view for the Autofill profile edit settings.
 @interface AutofillProfileEditTableViewController
     : AutofillEditTableViewController

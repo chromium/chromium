@@ -20,7 +20,8 @@ DisplayInfo CreateDisplayInfo(int x, int y, int width, int height,
   MONITORINFOEX monitor_info = CreateMonitorInfo(gfx::Rect(x, y, width, height),
                                                  gfx::Rect(x, y, width, height),
                                                  kFakeDisplayName);
-  return DisplayInfo(monitor_info, scale_factor, 1.0f);
+  return DisplayInfo(monitor_info, scale_factor, 1.0f, Display::ROTATE_0, 60,
+                     gfx::Vector2dF());
 }
 
 ::testing::AssertionResult AssertOffsetsEqual(

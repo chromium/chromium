@@ -11,17 +11,18 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/sync/engine/cycle/sync_cycle_snapshot.h"
 #include "google_apis/gaia/google_service_auth_error.h"
-#include "ios/web/public/test/test_web_thread_bundle.h"
+#include "ios/web/public/test/web_task_environment.h"
 #include "testing/platform_test.h"
 
-namespace browser_sync {
-class ProfileSyncServiceMock;
-}  // namespace browser_sync
+namespace syncer {
+class MockSyncService;
+}  // namespace syncer
 
 namespace web {
 class BrowserState;
 }  // namespace web
 
+class Browser;
 class TestChromeBrowserState;
 @class UINavigationController;
 @class UIViewController;
@@ -31,7 +32,7 @@ class TestChromeBrowserState;
 // supporting structure they require.
 class PassphraseTableViewControllerTest : public ChromeTableViewControllerTest {
  public:
-  static std::unique_ptr<KeyedService> CreateNiceProfileSyncServiceMock(
+  static std::unique_ptr<KeyedService> CreateNiceMockSyncService(
       web::BrowserState* context);
 
   PassphraseTableViewControllerTest();
@@ -42,13 +43,14 @@ class PassphraseTableViewControllerTest : public ChromeTableViewControllerTest {
 
   void SetUpNavigationController(UIViewController* test_controller);
 
-  web::TestWebThreadBundle thread_bundle_;
+  web::WebTaskEnvironment task_environment_;
 
   std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
+  std::unique_ptr<Browser> browser_;
   // Weak, owned by chrome_browser_state_.
-  browser_sync::ProfileSyncServiceMock* fake_sync_service_;
+  syncer::MockSyncService* fake_sync_service_;
 
-  // Default return values for NiceMock<browser_sync::ProfileSyncServiceMock>.
+  // Default return values for NiceMock<syncer::MockSyncService>.
   GoogleServiceAuthError default_auth_error_;
   syncer::SyncCycleSnapshot default_sync_cycle_snapshot_;
 

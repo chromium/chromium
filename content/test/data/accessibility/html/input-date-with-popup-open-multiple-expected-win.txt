@@ -1,0 +1,69 @@
+ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE
+++IA2_ROLE_SECTION
+++++IA2_ROLE_DATE_EDITOR value='2008-09-01' FOCUSABLE
+++++++IA2_ROLE_SECTION
+++++++++IA2_ROLE_SECTION
+++++++++++ROLE_SYSTEM_SPINBUTTON name='Month' value='09' FOCUSABLE
+++++++++++++ROLE_SYSTEM_STATICTEXT name='09'
+++++++++++ROLE_SYSTEM_STATICTEXT name='/'
+++++++++++ROLE_SYSTEM_SPINBUTTON name='Day' value='01' FOCUSABLE
+++++++++++++ROLE_SYSTEM_STATICTEXT name='01'
+++++++++++ROLE_SYSTEM_STATICTEXT name='/'
+++++++++++ROLE_SYSTEM_SPINBUTTON name='Year' value='2008' FOCUSABLE
+++++++++++++ROLE_SYSTEM_STATICTEXT name='2008'
+++++++ROLE_SYSTEM_BUTTONMENU name='Show date picker' FOCUSABLE HASPOPUP
+++++IA2_ROLE_DATE_EDITOR value='2008-09-01' FOCUSABLE
+++++++IA2_ROLE_SECTION
+++++++++IA2_ROLE_SECTION
+++++++++++ROLE_SYSTEM_SPINBUTTON name='Month' value='09' FOCUSABLE
+++++++++++++ROLE_SYSTEM_STATICTEXT name='09'
+++++++++++ROLE_SYSTEM_STATICTEXT name='/'
+++++++++++ROLE_SYSTEM_SPINBUTTON name='Day' value='01' FOCUSABLE
+++++++++++++ROLE_SYSTEM_STATICTEXT name='01'
+++++++++++ROLE_SYSTEM_STATICTEXT name='/'
+++++++++++ROLE_SYSTEM_SPINBUTTON name='Year' value='2008' FOCUSABLE
+++++++++++++ROLE_SYSTEM_STATICTEXT name='2008'
+++++++ROLE_SYSTEM_BUTTONMENU name='Show date picker' FOCUSABLE HASPOPUP
+++++IA2_ROLE_DATE_EDITOR name='Third date picker' value='2008-09-01' FOCUSABLE
+++++++IA2_ROLE_SECTION
+++++++++IA2_ROLE_SECTION
+++++++++++ROLE_SYSTEM_SPINBUTTON name='Month Third date picker' value='09' FOCUSABLE
+++++++++++++ROLE_SYSTEM_STATICTEXT name='09'
+++++++++++ROLE_SYSTEM_STATICTEXT name='/'
+++++++++++ROLE_SYSTEM_SPINBUTTON name='Day Third date picker' value='01' FOCUSABLE
+++++++++++++ROLE_SYSTEM_STATICTEXT name='01'
+++++++++++ROLE_SYSTEM_STATICTEXT name='/'
+++++++++++ROLE_SYSTEM_SPINBUTTON name='Year Third date picker' value='2008' FOCUSABLE
+++++++++++++ROLE_SYSTEM_STATICTEXT name='2008'
+++++++ROLE_SYSTEM_BUTTONMENU name='Show date picker' FOCUSABLE HASPOPUP
+++++++ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE
+++++++++IA2_ROLE_SECTION
+++++++++++IA2_ROLE_SECTION
+++++++++++++IA2_ROLE_SECTION
+++++++++++++++ROLE_SYSTEM_PUSHBUTTON name='Show month selection panel' FOCUSABLE
+++++++++++++++++ROLE_SYSTEM_STATICTEXT
+++++++++++++++++ROLE_SYSTEM_GRAPHIC
+++++++++++++ROLE_SYSTEM_PUSHBUTTON name='Show previous month' FOCUSABLE
+++++++++++++++ROLE_SYSTEM_GRAPHIC
+++++++++++++ROLE_SYSTEM_PUSHBUTTON name='Today' FOCUSABLE
+++++++++++++++IA2_ROLE_SECTION
+++++++++++++ROLE_SYSTEM_PUSHBUTTON name='Show next month' FOCUSABLE
+++++++++++++++ROLE_SYSTEM_GRAPHIC
+++++++++++++ROLE_SYSTEM_TABLE FOCUSABLE
+++++++++++++++IA2_ROLE_SECTION
+++++++++++++++++IA2_ROLE_SECTION
+++++++++++++++++++ROLE_SYSTEM_STATICTEXT name='Sun'
+++++++++++++++++IA2_ROLE_SECTION
+++++++++++++++++++ROLE_SYSTEM_STATICTEXT name='Mon'
+++++++++++++++++IA2_ROLE_SECTION
+++++++++++++++++++ROLE_SYSTEM_STATICTEXT name='Tue'
+++++++++++++++++IA2_ROLE_SECTION
+++++++++++++++++++ROLE_SYSTEM_STATICTEXT name='Wed'
+++++++++++++++++IA2_ROLE_SECTION
+++++++++++++++++++ROLE_SYSTEM_STATICTEXT name='Thu'
+++++++++++++++++IA2_ROLE_SECTION
+++++++++++++++++++ROLE_SYSTEM_STATICTEXT name='Fri'
+++++++++++++++++IA2_ROLE_SECTION
+++++++++++++++++++ROLE_SYSTEM_STATICTEXT name='Sat'
+++++++++++++++IA2_ROLE_SECTION
+++++++++++++++++IA2_ROLE_SECTION

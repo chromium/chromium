@@ -28,10 +28,10 @@ run_jsbundler("select_to_speak_copied_files") {
   mode = "copy"
   dest_dir = select_to_speak_out_dir
   sources = [
-    "../chromevox/cvox2/background/automation_predicate.js",
-    "../chromevox/cvox2/background/automation_util.js",
-    "../chromevox/cvox2/background/constants.js",
-    "../chromevox/cvox2/background/tree_walker.js",
+    "../chromevox/background/automation_predicate.js",
+    "../chromevox/background/automation_util.js",
+    "../chromevox/background/constants.js",
+    "../chromevox/background/tree_walker.js",
     "checked.png",
     "closure_shim.js",
     "earcons/null_selection.ogg",
@@ -54,11 +54,11 @@ run_jsbundler("select_to_speak_copied_files") {
   rewrite_rules = [
     rebase_path(".", root_build_dir) + ":",
     rebase_path(closure_library_dir, root_build_dir) + ":closure",
-    rebase_path("../chromevox/cvox2/background", root_build_dir) + ":",
+    rebase_path("../chromevox/background", root_build_dir) + ":",
   ]
 }
 
-# TODO: refactor this into another file like generate_manifest.gni
+# TODO(crbug/978200): refactor this into another file like generate_manifest.gni
 # to share with other extensions.
 template("manifest") {
   version_file = "//chrome/VERSION"
@@ -119,12 +119,9 @@ source_set("browser_tests") {
     # The test uses data from the original location, not the copied one.
     "//chrome/browser/resources/chromeos/chromevox/",
     "//chrome/browser/resources/chromeos/select_to_speak/",
-    "//chrome/test/data/webui/test_api.js",
-    "//chrome/third_party/mock4js/",
-    "//third_party/accessibility-audit/axs_testing.js",
-    "//third_party/chaijs/chai.js",
     "//ui/webui/resources/js/cr.js",
   ]
+  data += js2gtest_js_libraries
 }
 
 js2gtest("select_to_speak_extjs_tests") {
@@ -149,20 +146,20 @@ js2gtest("select_to_speak_extjs_tests") {
   # The test base classes generate C++ code with these deps.
   deps = [
     "//ash",
+    "//ash/keyboard/ui",
     "//base",
     "//chrome/browser/chromeos",
     "//chrome/common",
-    "//ui/keyboard",
   ]
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 }
 
 js_type_check("closure_compile") {
   deps = [
-    ":../chromevox/cvox2/background/automation_predicate",
-    ":../chromevox/cvox2/background/automation_util",
-    ":../chromevox/cvox2/background/constants",
-    ":../chromevox/cvox2/background/tree_walker",
+    ":../chromevox/background/automation_predicate",
+    ":../chromevox/background/automation_util",
+    ":../chromevox/background/constants",
+    ":../chromevox/background/tree_walker",
     ":closure_shim",
     ":input_handler",
     ":metrics_utils",
@@ -178,8 +175,8 @@ js_type_check("closure_compile") {
 
 js_library("select_to_speak") {
   deps = [
-    ":../chromevox/cvox2/background/automation_util",
-    ":../chromevox/cvox2/background/constants",
+    ":../chromevox/background/automation_util",
+    ":../chromevox/background/constants",
     ":input_handler",
     ":metrics_utils",
     ":node_utils",
@@ -253,11 +250,11 @@ js_library("metrics_utils") {
   externs_list = [ "$externs_path/metrics_private.js" ]
 }
 
-js_library("../chromevox/cvox2/background/automation_util") {
+js_library("../chromevox/background/automation_util") {
   deps = [
-    ":../chromevox/cvox2/background/automation_predicate",
-    ":../chromevox/cvox2/background/constants",
-    ":../chromevox/cvox2/background/tree_walker",
+    ":../chromevox/background/automation_predicate",
+    ":../chromevox/background/constants",
+    ":../chromevox/background/tree_walker",
   ]
   externs_list = [
     "$externs_path/automation.js",
@@ -265,10 +262,10 @@ js_library("../chromevox/cvox2/background/automation_util") {
   ]
 }
 
-js_library("../chromevox/cvox2/background/tree_walker") {
+js_library("../chromevox/background/tree_walker") {
   deps = [
-    ":../chromevox/cvox2/background/automation_predicate",
-    ":../chromevox/cvox2/background/constants",
+    ":../chromevox/background/automation_predicate",
+    ":../chromevox/background/constants",
   ]
   externs_list = [
     "$externs_path/automation.js",
@@ -276,9 +273,9 @@ js_library("../chromevox/cvox2/background/tree_walker") {
   ]
 }
 
-js_library("../chromevox/cvox2/background/automation_predicate") {
+js_library("../chromevox/background/automation_predicate") {
   deps = [
-    ":../chromevox/cvox2/background/constants",
+    ":../chromevox/background/constants",
   ]
   externs_list = [
     "$externs_path/automation.js",
@@ -286,7 +283,7 @@ js_library("../chromevox/cvox2/background/automation_predicate") {
   ]
 }
 
-js_library("../chromevox/cvox2/background/constants") {
+js_library("../chromevox/background/constants") {
 }
 
 js_library("closure_shim") {

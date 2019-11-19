@@ -6,7 +6,8 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_KEYBOARD_KEYBOARD_LAYOUT_H_
 
 #include "base/macros.h"
-#include "third_party/blink/public/platform/modules/keyboard_lock/keyboard_lock.mojom-blink.h"
+#include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/blink/public/mojom/keyboard_lock/keyboard_lock.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/execution_context/context_lifecycle_observer.h"
@@ -16,7 +17,7 @@ namespace blink {
 
 class ScriptPromiseResolver;
 
-class KeyboardLayout final : public GarbageCollectedFinalized<KeyboardLayout>,
+class KeyboardLayout final : public GarbageCollected<KeyboardLayout>,
                              public ContextLifecycleObserver {
   USING_GARBAGE_COLLECTED_MIXIN(KeyboardLayout);
 
@@ -44,7 +45,7 @@ class KeyboardLayout final : public GarbageCollectedFinalized<KeyboardLayout>,
 
   Member<ScriptPromiseResolver> script_promise_resolver_;
 
-  mojom::blink::KeyboardLockServicePtr service_;
+  mojo::Remote<mojom::blink::KeyboardLockService> service_;
 
   DISALLOW_COPY_AND_ASSIGN(KeyboardLayout);
 };

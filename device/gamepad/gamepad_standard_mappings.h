@@ -23,9 +23,17 @@ enum GamepadBusType {
 typedef void (*GamepadStandardMappingFunction)(const Gamepad& original,
                                                Gamepad* mapped);
 
+// Returns the most suitable mapping function for a particular gamepad.
+// |vendor_id| and |product_id| are the USB or Bluetooth vendor and product IDs
+// reported by the device. |hid_specification_version| is the binary-coded
+// decimal representation of the version of the HID specification that the
+// device is compliant with (bcdHID). |version_number| is the firmware version
+// number reported by the device (bcdDevice). |bus_type| is the transport
+// used to connect to this device, or GAMEPAD_BUS_UNKNOWN if unknown.
 GamepadStandardMappingFunction GetGamepadStandardMappingFunction(
     const uint16_t vendor_id,
     const uint16_t product_id,
+    const uint16_t hid_specification_version,
     const uint16_t version_number,
     GamepadBusType bus_type);
 

@@ -4,8 +4,8 @@
 
 #include "jingle/glue/task_pump.h"
 
-#include "base/message_loop/message_loop.h"
 #include "base/run_loop.h"
+#include "base/test/task_environment.h"
 #include "jingle/glue/mock_task.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -17,7 +17,7 @@ using ::testing::Return;
 
 class TaskPumpTest : public testing::Test {
  private:
-  base::MessageLoop message_loop_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
 };
 
 TEST_F(TaskPumpTest, Basic) {

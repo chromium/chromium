@@ -50,14 +50,32 @@ inline ChromeDirectionalEdgeInsets ChromeDirectionalEdgeInsetsMake(
   return insets;
 }
 
-// Defines a protocol for common -...Anchor methods of UIView and UILayoutGuide.
-@protocol LayoutGuideProvider<NSObject>
+// Defines a protocol for the edge anchor methods of UIView and UILayoutGuide.
+@protocol EdgeLayoutGuideProvider <NSObject>
 @property(nonatomic, readonly, strong) NSLayoutXAxisAnchor* leadingAnchor;
 @property(nonatomic, readonly, strong) NSLayoutXAxisAnchor* trailingAnchor;
-@property(nonatomic, readonly, strong) NSLayoutXAxisAnchor* leftAnchor;
-@property(nonatomic, readonly, strong) NSLayoutXAxisAnchor* rightAnchor;
 @property(nonatomic, readonly, strong) NSLayoutYAxisAnchor* topAnchor;
 @property(nonatomic, readonly, strong) NSLayoutYAxisAnchor* bottomAnchor;
+@end
+
+// ComposedEdgeLayoutGuide is a layout guide based on the anchors of
+// multiple views. It is useful when the details of how the layout guide is
+// created shouldn't be exposed.
+@interface ComposedEdgeLayoutGuide : NSObject <EdgeLayoutGuideProvider>
+// A base layout guide to serve the anchors not defined with a provider.
+@property(nonatomic, weak) id<EdgeLayoutGuideProvider> baseLayoutGuide;
+// Each of the edge anchors can have a different provider assigned. If none is
+// assigned, the respective |baseLayoutGuide| anchor will be returned.
+@property(nonatomic, weak) id<EdgeLayoutGuideProvider> leadingAnchorProvider;
+@property(nonatomic, weak) id<EdgeLayoutGuideProvider> trailingAnchorProvider;
+@property(nonatomic, weak) id<EdgeLayoutGuideProvider> topAnchorProvider;
+@property(nonatomic, weak) id<EdgeLayoutGuideProvider> bottomAnchorProvider;
+@end
+
+// Defines a protocol for common -...Anchor methods of UIView and UILayoutGuide.
+@protocol LayoutGuideProvider <EdgeLayoutGuideProvider>
+@property(nonatomic, readonly, strong) NSLayoutXAxisAnchor* leftAnchor;
+@property(nonatomic, readonly, strong) NSLayoutXAxisAnchor* rightAnchor;
 @property(nonatomic, readonly, strong) NSLayoutDimension* widthAnchor;
 @property(nonatomic, readonly, strong) NSLayoutDimension* heightAnchor;
 @property(nonatomic, readonly, strong) NSLayoutXAxisAnchor* centerXAnchor;
@@ -133,18 +151,24 @@ void AddSameCenterYConstraint(UIView* unused_parentView,
 
 // Adds constraints to make two views' size and center equal by pinning leading,
 // trailing, top and bottom anchors.
-void AddSameConstraints(id<LayoutGuideProvider> view1,
-                        id<LayoutGuideProvider> view2);
+void AddSameConstraints(id<EdgeLayoutGuideProvider> view1,
+                        id<EdgeLayoutGuideProvider> view2);
+
+// Constraints all sides of |innerView| and |outerView| together, with
+// |innerView| inset by |insets|.
+void AddSameConstraintsWithInsets(id<EdgeLayoutGuideProvider> innerView,
+                                  id<EdgeLayoutGuideProvider> outerView,
+                                  ChromeDirectionalEdgeInsets insets);
 
 // Adds constraints to make |innerView| leading, trailing, top and bottom
 // anchors equals to |outerView| safe area (or view bounds) anchors.
-void PinToSafeArea(id<LayoutGuideProvider> innerView, UIView* outerView);
+void PinToSafeArea(id<EdgeLayoutGuideProvider> innerView, UIView* outerView);
 
 // Constraints |side_flags| of |view1| and |view2| together.
 // Example usage: AddSameConstraintsToSides(view1, view2,
 // LayoutSides::kTop|LayoutSides::kLeading)
-void AddSameConstraintsToSides(id<LayoutGuideProvider> view1,
-                               id<LayoutGuideProvider> view2,
+void AddSameConstraintsToSides(id<EdgeLayoutGuideProvider> view1,
+                               id<EdgeLayoutGuideProvider> view2,
                                LayoutSides side_flags);
 
 // Constraints |side_flags| sides of |innerView| and |outerView| together, with
@@ -154,8 +178,8 @@ void AddSameConstraintsToSides(id<LayoutGuideProvider> view1,
 // 10, 5}) - This will constraint innerView to be inside of outerView, with
 // leading/trailing inset by 10 and top/bottom inset by 5.
 // Edge insets for sides not listed in |side_flags| are ignored.
-void AddSameConstraintsToSidesWithInsets(id<LayoutGuideProvider> innerView,
-                                         id<LayoutGuideProvider> outerView,
+void AddSameConstraintsToSidesWithInsets(id<EdgeLayoutGuideProvider> innerView,
+                                         id<EdgeLayoutGuideProvider> outerView,
                                          LayoutSides side_flags,
                                          ChromeDirectionalEdgeInsets insets);
 
@@ -166,12 +190,12 @@ void AddSameConstraintsToSidesWithInsets(id<LayoutGuideProvider> innerView,
 // the padding is optional so that the inner views are not artificially
 // shortened when fixed-size cells cut into that padding.  The padding is added
 // between |outerView| and |innerView|.
-void AddOptionalVerticalPadding(id<LayoutGuideProvider> outerView,
-                                id<LayoutGuideProvider> innerView,
+void AddOptionalVerticalPadding(id<EdgeLayoutGuideProvider> outerView,
+                                id<EdgeLayoutGuideProvider> innerView,
                                 CGFloat padding);
-void AddOptionalVerticalPadding(id<LayoutGuideProvider> outerView,
-                                id<LayoutGuideProvider> topInnerView,
-                                id<LayoutGuideProvider> bottomInnerView,
+void AddOptionalVerticalPadding(id<EdgeLayoutGuideProvider> outerView,
+                                id<EdgeLayoutGuideProvider> topInnerView,
+                                id<EdgeLayoutGuideProvider> bottomInnerView,
                                 CGFloat padding);
 
 #pragma mark - Safe Area.

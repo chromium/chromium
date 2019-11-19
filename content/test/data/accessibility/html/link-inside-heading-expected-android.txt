@@ -1,3 +1,3 @@
 android.webkit.WebView focusable focused scrollable
-++android.view.View role_description='heading 1' heading name='Link In Heading'
-++++android.view.View role_description='link' clickable focusable heading link name='Link In Heading'
+++android.view.View role_description='heading 1 link' clickable heading name='Link In Heading'
+++++android.view.View role_description='heading 1 link' clickable focusable heading link name='Link In Heading'

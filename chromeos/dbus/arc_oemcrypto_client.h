@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include <memory>
 #include <string>
 
 #include "base/callback_forward.h"
@@ -30,7 +31,7 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) ArcOemCryptoClient : public DBusClient {
 
   // Factory function, creates a new instance and returns ownership.
   // For normal usage, access the singleton via DBusThreadManager::Get().
-  static ArcOemCryptoClient* Create();
+  static std::unique_ptr<ArcOemCryptoClient> Create();
 
   // Bootstraps the Mojo IPC connection between Chrome and the service daemon.
   // This should pass in the child end of a Mojo pipe.

@@ -1,0 +1,15 @@
+embeddedObject color=-16777216
+++document restriction=readOnly
+++++region name='Page 1' restriction=readOnly isPageBreakingObject=true
+++++++paragraph restriction=readOnly
+++++++++staticText name='Case 1<newline>' restriction=readOnly
+++++++++++inlineTextBox fontFamily='Helvetica-Bold-Italic' name='Case 1<newline>' restriction=readOnly color=-65536 fontSize=38.00 fontWeight=800.00
+++++++paragraph restriction=readOnly
+++++++++staticText name='Case 2<newline>' restriction=readOnly
+++++++++++inlineTextBox fontFamily='Helvetica-Bold-Italic' name='Case 2<newline>' restriction=readOnly color=-16711936 fontSize=38.00 fontWeight=800.00
+++++++paragraph restriction=readOnly
+++++++++staticText name='Case 3<newline>' restriction=readOnly
+++++++++++inlineTextBox fontFamily='Helvetica-Bold-Italic' name='Case 3<newline>' restriction=readOnly color=-65536 fontSize=38.00 fontWeight=800.00
+++++++paragraph restriction=readOnly
+++++++++staticText name='Case 4' restriction=readOnly
+++++++++++inlineTextBox fontFamily='Helvetica-Bold-Italic' name='Case 4' restriction=readOnly fontSize=38.00 fontWeight=800.00

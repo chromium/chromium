@@ -7,6 +7,7 @@
 #include "base/mac/foundation_util.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_controller.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_styler.h"
+#import "ios/chrome/common/colors/UIColor+cr_semantic_colors.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -30,20 +31,13 @@
 - (void)viewDidLoad {
   [super viewDidLoad];
 
-  UIVisualEffectView* visualEffectView = [[UIVisualEffectView alloc]
-      initWithEffect:[UIBlurEffect
-                         effectWithStyle:UIBlurEffectStyleExtraLight]];
-
-  self.navigationBar.translucent = YES;
-  self.navigationController.navigationBar.backgroundColor =
-      [UIColor clearColor];
-  [self.navigationController.navigationBar addSubview:visualEffectView];
+  self.navigationBar.translucent = NO;
+  self.navigationBar.barTintColor = UIColor.cr_systemBackgroundColor;
+  self.view.backgroundColor = UIColor.cr_systemBackgroundColor;
   self.navigationBar.prefersLargeTitles = YES;
 
-  [self.toolbar setShadowImage:[UIImage new]
-            forToolbarPosition:UIBarPositionAny];
-  self.toolbar.translucent = YES;
-  [self.toolbar addSubview:visualEffectView];
+  self.toolbar.translucent = NO;
+  self.toolbar.barTintColor = UIColor.cr_systemBackgroundColor;
 }
 
 @end

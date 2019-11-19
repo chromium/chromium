@@ -49,14 +49,14 @@ public class ClientOnReceivedError2Test {
             "http://id.be.really.surprised.if.this.address.existed/a.html";
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         mContentsClient = new VerifyOnReceivedError2CallClient();
         mTestContainerView = mActivityTestRule.createAwTestContainerViewOnMainSync(mContentsClient);
         mAwContents = mTestContainerView.getAwContents();
     }
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
         if (mWebServer != null) mWebServer.shutdown();
     }
 
@@ -64,7 +64,7 @@ public class ClientOnReceivedError2Test {
         mWebServer = TestWebServer.start();
     }
 
-    private void useDefaultTestAwContentsClient() throws Exception {
+    private void useDefaultTestAwContentsClient() {
         mContentsClient.enableBypass();
     }
 
@@ -400,5 +400,26 @@ public class ClientOnReceivedError2Test {
                 TimeUnit.MILLISECONDS);
         Assert.assertEquals(onReceivedError2CallCount + 1, onReceivedError2Helper.getCallCount());
         Assert.assertEquals(BAD_HTML_URL, onReceivedError2Helper.getRequest().url);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    public void testUnsafeRedirect_FileUrl() throws Throwable {
+        startWebServer();
+        final String redirectUrl = mWebServer.setRedirect("/302.html", "file:///foo");
+
+        TestAwContentsClient.OnReceivedError2Helper onReceivedError2Helper =
+                mContentsClient.getOnReceivedError2Helper();
+        final int onReceivedError2CallCount = onReceivedError2Helper.getCallCount();
+
+        mActivityTestRule.loadUrlSync(
+                mAwContents, mContentsClient.getOnPageFinishedHelper(), redirectUrl);
+
+        onReceivedError2Helper.waitForCallback(onReceivedError2CallCount,
+                1 /* numberOfCallsToWaitFor */, WAIT_TIMEOUT_MS, TimeUnit.MILLISECONDS);
+        Assert.assertEquals(onReceivedError2CallCount + 1, onReceivedError2Helper.getCallCount());
+        AwWebResourceError error = onReceivedError2Helper.getError();
+        Assert.assertEquals("net::ERR_UNSAFE_REDIRECT", error.description);
     }
 }

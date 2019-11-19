@@ -1,7 +1,5 @@
 #include "rar.hpp"
 
-namespace third_party_unrar {
-
 void FileHeader::Reset(size_t SubDataSize)
 {
   SubData.Alloc(SubDataSize);
@@ -61,5 +59,3 @@ void MainHeader::Reset()
   RROffset=0;
   RRMaxSize=0;
 }
-
-}  // namespace third_party_unrar

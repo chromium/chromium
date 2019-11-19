@@ -5,15 +5,11 @@
 #ifndef CHROME_BROWSER_PLUGINS_PLUGIN_PREFS_H_
 #define CHROME_BROWSER_PLUGINS_PLUGIN_PREFS_H_
 
-#include <map>
-#include <set>
-#include <vector>
+#include <string>
 
-#include "base/files/file_path.h"
 #include "base/macros.h"
-#include "base/synchronization/lock.h"
-#include "chrome/browser/plugins/plugin_finder.h"
-#include "chrome/common/chrome_content_client.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/strings/string16.h"
 #include "components/keyed_service/core/refcounted_keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
@@ -77,22 +73,12 @@ class PluginPrefs : public RefcountedKeyedService {
   // Allows unit tests to directly set the AlwaysOpenPdfExternally pref.
   void SetAlwaysOpenPdfExternallyForTests(bool always_open_pdf_externally);
 
-  // Called on the UI thread with the plugin data to save the preferences.
-  void OnUpdatePreferences(const std::vector<content::WebPluginInfo>& plugins);
+  bool always_open_pdf_externally_ = false;
 
-  // Sends the notification that plugin data has changed.
-  void NotifyPluginStatusChanged();
-
-  // Guards access to the following data structures.
-  mutable base::Lock lock_;
-
-  bool always_open_pdf_externally_;
-
-  // Weak pointer, owns us. Only used as a notification source.
-  Profile* profile_;
+  Profile* profile_ = nullptr;
 
   // Weak pointer, owned by the profile.
-  PrefService* prefs_;
+  PrefService* prefs_ = nullptr;
 
   PrefChangeRegistrar registrar_;
 

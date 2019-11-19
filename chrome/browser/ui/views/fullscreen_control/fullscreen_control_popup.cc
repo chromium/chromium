@@ -17,9 +17,6 @@ constexpr int kFinalOffset = 45;
 constexpr float kInitialOpacity = 0.1f;
 constexpr float kFinalOpacity = 1.f;
 
-constexpr int kSlideInDurationMs = 300;
-constexpr int kSlideOutDurationMs = 150;
-
 // Creates a Widget containing an FullscreenControlView.
 std::unique_ptr<views::Widget> CreatePopupWidget(gfx::NativeView parent_view,
                                                  FullscreenControlView* view) {
@@ -29,7 +26,7 @@ std::unique_ptr<views::Widget> CreatePopupWidget(gfx::NativeView parent_view,
   params.opacity = views::Widget::InitParams::TRANSLUCENT_WINDOW;
   params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   params.parent = parent_view;
-  popup->Init(params);
+  popup->Init(std::move(params));
   popup->SetContentsView(view);
 
   return popup;
@@ -62,7 +59,7 @@ void FullscreenControlPopup::Show(const gfx::Rect& parent_bounds_in_screen) {
 
   parent_bounds_in_screen_ = parent_bounds_in_screen;
 
-  animation_->SetSlideDuration(kSlideInDurationMs);
+  animation_->SetSlideDuration(base::TimeDelta::FromMilliseconds(300));
   animation_->Show();
 
   // The default animation progress is 0. Call it once here then show the popup
@@ -76,7 +73,7 @@ void FullscreenControlPopup::Hide(bool animated) {
     return;
 
   if (animated) {
-    animation_->SetSlideDuration(kSlideOutDurationMs);
+    animation_->SetSlideDuration(base::TimeDelta::FromMilliseconds(150));
     animation_->Hide();
     return;
   }

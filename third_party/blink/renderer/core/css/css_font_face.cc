@@ -32,10 +32,10 @@
 #include "third_party/blink/renderer/core/css/font_face_set_document.h"
 #include "third_party/blink/renderer/core/css/font_face_set_worker.h"
 #include "third_party/blink/renderer/core/css/remote_font_face_source.h"
-#include "third_party/blink/renderer/core/frame/use_counter.h"
 #include "third_party/blink/renderer/core/workers/worker_global_scope.h"
 #include "third_party/blink/renderer/platform/fonts/font_description.h"
 #include "third_party/blink/renderer/platform/fonts/simple_font_data.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 
 namespace blink {
 
@@ -60,7 +60,7 @@ void CSSFontFace::DidBeginLoad() {
     SetLoadStatus(FontFace::kLoading);
 }
 
-bool CSSFontFace::FontLoaded(RemoteFontFaceSource* source) {
+bool CSSFontFace::FontLoaded(CSSFontFaceSource* source) {
   if (!IsValid() || source != sources_.front())
     return false;
 
@@ -186,7 +186,7 @@ void CSSFontFace::Load(const FontDescription& font_description) {
   while (!sources_.IsEmpty()) {
     Member<CSSFontFaceSource>& source = sources_.front();
     if (source->IsValid()) {
-      if (source->IsLocal()) {
+      if (source->IsLocalNonBlocking()) {
         if (source->IsLocalFontAvailable(font_description)) {
           SetLoadStatus(FontFace::kLoaded);
           return;

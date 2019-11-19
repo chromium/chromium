@@ -43,7 +43,8 @@ class LayoutThemeMobile : public LayoutThemeDefault {
     return LayoutThemeMobile::kDefaultTapHighlightColor;
   }
 
-  Color PlatformActiveSelectionBackgroundColor() const override {
+  Color PlatformActiveSelectionBackgroundColor(
+      WebColorScheme color_scheme) const override {
     return LayoutThemeMobile::kDefaultActiveSelectionBackgroundColor;
   }
 

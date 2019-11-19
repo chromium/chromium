@@ -23,12 +23,15 @@
 #include "third_party/blink/renderer/core/svg/svg_path_consumer.h"
 #include "third_party/blink/renderer/core/svg/svg_path_data.h"
 #include "third_party/blink/renderer/platform/animation/animation_utilities.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
 
 enum FloatBlendMode { kBlendHorizontal, kBlendVertical };
 
 class SVGPathBlender::BlendState {
+  STACK_ALLOCATED();
+
  public:
   BlendState(float progress, unsigned add_types_count = 0)
       : progress_(progress),

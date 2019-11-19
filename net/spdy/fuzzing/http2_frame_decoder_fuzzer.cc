@@ -5,15 +5,16 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <fuzzer/FuzzedDataProvider.h>
+
 #include <list>
 #include <vector>
 
-#include "base/test/fuzzed_data_provider.h"
 #include "net/third_party/quiche/src/http2/decoder/http2_frame_decoder.h"
 
 // Entry point for LibFuzzer.
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
-  base::FuzzedDataProvider fuzzed_data_provider(data, size);
+  FuzzedDataProvider fuzzed_data_provider(data, size);
   http2::Http2FrameDecoder decoder;
 
   // Store all chunks in a function scope list, as the API requires the caller

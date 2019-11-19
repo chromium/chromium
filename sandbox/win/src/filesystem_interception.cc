@@ -70,7 +70,7 @@ NTSTATUS WINAPI TargetNtCreateFile(NtCreateFileFunction orig_CreateFile,
     params[OpenFile::OPTIONS] = ParamPickerMake(options_uint32);
     params[OpenFile::BROKER] = ParamPickerMake(broker);
 
-    if (!QueryBroker(IPC_NTCREATEFILE_TAG, params.GetBase()))
+    if (!QueryBroker(IpcTag::NTCREATEFILE, params.GetBase()))
       break;
 
     SharedMemIPCClient ipc(memory);
@@ -78,7 +78,7 @@ NTSTATUS WINAPI TargetNtCreateFile(NtCreateFileFunction orig_CreateFile,
     // The following call must match in the parameters with
     // FilesystemDispatcher::ProcessNtCreateFile.
     ResultCode code =
-        CrossCall(ipc, IPC_NTCREATEFILE_TAG, name.get(), attributes,
+        CrossCall(ipc, IpcTag::NTCREATEFILE, name.get(), attributes,
                   desired_access_uint32, file_attributes, sharing, disposition,
                   options_uint32, &answer);
     if (SBOX_ALL_OK != code)
@@ -147,13 +147,13 @@ NTSTATUS WINAPI TargetNtOpenFile(NtOpenFileFunction orig_OpenFile,
     params[OpenFile::OPTIONS] = ParamPickerMake(options_uint32);
     params[OpenFile::BROKER] = ParamPickerMake(broker);
 
-    if (!QueryBroker(IPC_NTOPENFILE_TAG, params.GetBase()))
+    if (!QueryBroker(IpcTag::NTOPENFILE, params.GetBase()))
       break;
 
     SharedMemIPCClient ipc(memory);
     CrossCallReturn answer = {0};
     ResultCode code =
-        CrossCall(ipc, IPC_NTOPENFILE_TAG, name.get(), attributes,
+        CrossCall(ipc, IpcTag::NTOPENFILE, name.get(), attributes,
                   desired_access_uint32, sharing, options_uint32, &answer);
     if (SBOX_ALL_OK != code)
       break;
@@ -212,12 +212,12 @@ TargetNtQueryAttributesFile(NtQueryAttributesFileFunction orig_QueryAttributes,
     params[FileName::NAME] = ParamPickerMake(name_ptr);
     params[FileName::BROKER] = ParamPickerMake(broker);
 
-    if (!QueryBroker(IPC_NTQUERYATTRIBUTESFILE_TAG, params.GetBase()))
+    if (!QueryBroker(IpcTag::NTQUERYATTRIBUTESFILE, params.GetBase()))
       break;
 
     SharedMemIPCClient ipc(memory);
     CrossCallReturn answer = {0};
-    ResultCode code = CrossCall(ipc, IPC_NTQUERYATTRIBUTESFILE_TAG, name.get(),
+    ResultCode code = CrossCall(ipc, IpcTag::NTQUERYATTRIBUTESFILE, name.get(),
                                 attributes, file_info, &answer);
 
     if (SBOX_ALL_OK != code)
@@ -269,12 +269,12 @@ NTSTATUS WINAPI TargetNtQueryFullAttributesFile(
     params[FileName::NAME] = ParamPickerMake(name_ptr);
     params[FileName::BROKER] = ParamPickerMake(broker);
 
-    if (!QueryBroker(IPC_NTQUERYFULLATTRIBUTESFILE_TAG, params.GetBase()))
+    if (!QueryBroker(IpcTag::NTQUERYFULLATTRIBUTESFILE, params.GetBase()))
       break;
 
     SharedMemIPCClient ipc(memory);
     CrossCallReturn answer = {0};
-    ResultCode code = CrossCall(ipc, IPC_NTQUERYFULLATTRIBUTESFILE_TAG,
+    ResultCode code = CrossCall(ipc, IpcTag::NTQUERYFULLATTRIBUTESFILE,
                                 name.get(), attributes, file_info, &answer);
 
     if (SBOX_ALL_OK != code)
@@ -345,7 +345,7 @@ TargetNtSetInformationFile(NtSetInformationFileFunction orig_SetInformationFile,
     params[FileName::NAME] = ParamPickerMake(name_ptr);
     params[FileName::BROKER] = ParamPickerMake(broker);
 
-    if (!QueryBroker(IPC_NTSETINFO_RENAME_TAG, params.GetBase()))
+    if (!QueryBroker(IpcTag::NTSETINFO_RENAME, params.GetBase()))
       break;
 
     InOutCountedBuffer io_status_buffer(io_status, sizeof(IO_STATUS_BLOCK));
@@ -356,7 +356,7 @@ TargetNtSetInformationFile(NtSetInformationFileFunction orig_SetInformationFile,
     SharedMemIPCClient ipc(memory);
     CrossCallReturn answer = {0};
     ResultCode code =
-        CrossCall(ipc, IPC_NTSETINFO_RENAME_TAG, file, io_status_buffer,
+        CrossCall(ipc, IpcTag::NTSETINFO_RENAME, file, io_status_buffer,
                   file_info_buffer, length, file_info_class, &answer);
 
     if (SBOX_ALL_OK != code)

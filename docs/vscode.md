@@ -84,7 +84,7 @@ changing the font size in your settings:
   // If you would rather just increase the size of the font:
   //"terminal.integrated.fontSize": 15
   // If you would rather decrease the size of the font:
-  //"terminal.integrated.fontSize": 15
+  //"terminal.integrated.fontSize": 13
 }
 ```
 
@@ -150,6 +150,16 @@ The following extensions might be useful for you as well:
     format-on-save (see `C_Cpp.clang_format_formatOnSave` setting). This
     extension adds the ability to format a document or the current selection on
     demand.
+*   ***vscode-clangd*** -
+    If you do not plan to use VSCode for debugging, vscode-clangd is a great
+    alternative to C/C++ IntelliSense. It knows about how to compile Chromium,
+    enabling it to provide smarter autocomplete than C/C++ IntelliSense as well
+    as allowing you to jump from functions to their definitions. See
+    [clangd.md](clangd.md) for details.
+
+    If you need to debug, disable the vscode-clangd extension, enable C/C++
+    Intellisense, and restart VSCode.
+
 
 Also be sure to take a look at the
 [VS Code marketplace](https://marketplace.visualstudio.com/VSCode) to check out other
@@ -252,6 +262,23 @@ wholesale, enter the following command into your terminal:
 $ cp tools/vscode/keybindings.json5 .vscode/keybindings.json
 ```
 
+### Snippets
+There are some useful snippets provided in
+[//tools/vscode/cpp.json5](/tools/vscode/cpp.json5).
+
+You can either install them in your user profile (path may vary depending on the
+platform):
+```
+$ cp tools/vscode/cpp.json5 ~/.config/Code/User/snippets/cpp.json
+```
+
+Or install them as project snippets after installing the [Project
+Snippets](https://marketplace.visualstudio.com/items?itemName=rebornix.project-snippets)
+extension:
+```
+$ cp tools/vscode/cpp.json5 .vscode/snippets/cpp.json
+```
+
 ### Tips
 
 #### The `out` folder
@@ -299,7 +326,6 @@ might want to disable git status autorefresh as well.
 ```
 "git.autorefresh": false,
 "C_Cpp.autocomplete": "Disabled",
-"C_Cpp.addWorkspaceRootToIncludePath": false
 ```
 
 ### Unable to open $File resource is not available when debugging Chromium on Linux

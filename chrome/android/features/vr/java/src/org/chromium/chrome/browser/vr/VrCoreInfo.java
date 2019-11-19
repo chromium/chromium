@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.vr;
 
 import org.chromium.base.annotations.JNINamespace;
+import org.chromium.base.annotations.NativeMethods;
 
 /**
  * Container class to provide the version and the compatibility with Chrome of the installed VrCore.
@@ -34,11 +35,15 @@ public class VrCoreInfo {
     }
 
     public long makeNativeVrCoreInfo() {
-        return (gvrVersion == null) ? nativeInit(0, 0, 0, compatibility)
-                                    : nativeInit(gvrVersion.majorVersion, gvrVersion.minorVersion,
-                                            gvrVersion.patchVersion, compatibility);
+        return (gvrVersion == null)
+                ? VrCoreInfoJni.get().init(VrCoreInfo.this, 0, 0, 0, compatibility)
+                : VrCoreInfoJni.get().init(VrCoreInfo.this, gvrVersion.majorVersion,
+                        gvrVersion.minorVersion, gvrVersion.patchVersion, compatibility);
     }
 
-    private native long nativeInit(
-            int majorVersion, int minorVersion, int patchVersion, int compatibility);
+    @NativeMethods
+    interface Natives {
+        long init(VrCoreInfo caller, int majorVersion, int minorVersion, int patchVersion,
+                int compatibility);
+    }
 }

@@ -1,4 +1,4 @@
 [document web]
 ++[panel]
 ++++[toggle button] name='details tag'
-++++++[text] name='details tag'
+++++++[static] name='details tag'

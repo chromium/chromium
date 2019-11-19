@@ -11,6 +11,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "printing/backend/print_backend.h"
 
 namespace printing {
@@ -18,6 +19,10 @@ namespace printing {
 struct PrinterBasicInfo;
 
 extern const char kPrinter[];
+
+#if defined(OS_WIN)
+std::string GetUserFriendlyName(const std::string& printer_name);
+#endif
 
 // Extracts the printer display name and description from the
 // appropriate fields in |printer| for the platform.
@@ -29,12 +34,13 @@ std::pair<std::string, std::string> GetPrinterNameAndDescription(
 // for passage to the WebUI. The settings are obtained using |print_backend| if
 // it is provided. If |print_backend| is null, uses a new PrintBackend instance
 // with default settings.
-// Data from |basic_info| and |additional_papers| are incorporated into the
-// returned dictionary.
-base::Value GetSettingsOnBlockingPool(
+// Data from |basic_info|, |additional_papers| and |has_secure_protocol| are
+// incorporated into the returned dictionary.
+base::Value GetSettingsOnBlockingTaskRunner(
     const std::string& device_name,
     const PrinterBasicInfo& basic_info,
     const PrinterSemanticCapsAndDefaults::Papers& additional_papers,
+    bool has_secure_protocol,
     scoped_refptr<PrintBackend> print_backend);
 
 }  // namespace printing

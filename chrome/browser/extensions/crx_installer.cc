@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/lazy_instance.h"
@@ -27,7 +28,7 @@
 #include "chrome/browser/extensions/convert_web_app.h"
 #include "chrome/browser/extensions/extension_assets_manager.h"
 #include "chrome/browser/extensions/extension_service.h"
-#include "chrome/browser/extensions/forced_extensions/installation_failures.h"
+#include "chrome/browser/extensions/forced_extensions/installation_reporter.h"
 #include "chrome/browser/extensions/install_tracker.h"
 #include "chrome/browser/extensions/install_tracker_factory.h"
 #include "chrome/browser/extensions/load_error_reporter.h"
@@ -35,6 +36,7 @@
 #include "chrome/browser/extensions/webstore_installer.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_paths.h"
+#include "chrome/common/chrome_switches.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/web_application_info.h"
 #include "chrome/grit/generated_resources.h"
@@ -42,8 +44,6 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/notification_service.h"
-#include "content/public/browser/resource_dispatcher_host.h"
-#include "content/public/common/service_manager_connection.h"
 #include "extensions/browser/extension_file_task_runner.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
@@ -67,7 +67,6 @@
 #include "extensions/common/user_script.h"
 #include "extensions/common/verifier_formats.h"
 #include "extensions/strings/grit/extensions_strings.h"
-#include "services/service_manager/public/cpp/connector.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -92,9 +91,6 @@ scoped_refptr<CrxInstaller> CrxInstaller::Create(
     std::unique_ptr<ExtensionInstallPrompt> client) {
   return new CrxInstaller(frontend->AsWeakPtr(), std::move(client), NULL);
 }
-
-// static
-service_manager::Connector* CrxInstaller::connector_for_test_ = nullptr;
 
 // static
 scoped_refptr<CrxInstaller> CrxInstaller::Create(
@@ -171,7 +167,9 @@ CrxInstaller::~CrxInstaller() {
 void CrxInstaller::InstallCrx(const base::FilePath& source_file) {
   crx_file::VerifierFormat format =
       off_store_install_allow_reason_ == OffStoreInstallDisallowed
-          ? GetWebstoreVerifierFormat()
+          ? GetWebstoreVerifierFormat(
+                base::CommandLine::ForCurrentProcess()->HasSwitch(
+                    ::switches::kAppsGalleryURL))
           : GetExternalVerifierFormat();
   InstallCrxFile(CRXFileInfo(source_file, format));
 }
@@ -186,8 +184,8 @@ void CrxInstaller::InstallCrxFile(const CRXFileInfo& source_file) {
   source_file_ = source_file.path;
 
   auto unpacker = base::MakeRefCounted<SandboxedUnpacker>(
-      GetConnector()->Clone(), install_source_, creation_flags_,
-      install_directory_, installer_task_runner_.get(), this);
+      install_source_, creation_flags_, install_directory_,
+      installer_task_runner_.get(), this);
 
   if (!installer_task_runner_->PostTask(
           FROM_HERE, base::BindOnce(&SandboxedUnpacker::StartWithCrx, unpacker,
@@ -208,8 +206,8 @@ void CrxInstaller::InstallUnpackedCrx(const std::string& extension_id,
   source_file_ = unpacked_dir;
 
   auto unpacker = base::MakeRefCounted<SandboxedUnpacker>(
-      GetConnector()->Clone(), install_source_, creation_flags_,
-      install_directory_, installer_task_runner_.get(), this);
+      install_source_, creation_flags_, install_directory_,
+      installer_task_runner_.get(), this);
 
   if (!installer_task_runner_->PostTask(
           FROM_HERE,
@@ -266,7 +264,8 @@ void CrxInstaller::UpdateExtensionFromUnpackedCrx(
   if (!service || service->browser_terminating())
     return;
 
-  const Extension* extension = service->GetInstalledExtension(extension_id);
+  const Extension* extension = ExtensionRegistry::Get(service->profile())
+                                   ->GetInstalledExtension(extension_id);
   if (!extension) {
     LOG(WARNING) << "Will not update extension " << extension_id
                  << " because it is not installed";
@@ -482,9 +481,6 @@ void CrxInstaller::OnUnpackFailure(const CrxInstallError& error) {
   UMA_HISTOGRAM_ENUMERATION("Extensions.UnpackFailureInstallSource",
                             install_source(), Manifest::NUM_LOCATIONS);
 
-  UMA_HISTOGRAM_ENUMERATION("Extensions.UnpackFailureInstallCause",
-                            install_cause(),
-                            extension_misc::NUM_INSTALL_CAUSES);
   ReportFailureFromFileThread(error);
 }
 
@@ -500,10 +496,6 @@ void CrxInstaller::OnUnpackSuccess(
   UMA_HISTOGRAM_ENUMERATION("Extensions.UnpackSuccessInstallSource",
                             install_source(), Manifest::NUM_LOCATIONS);
 
-
-  UMA_HISTOGRAM_ENUMERATION("Extensions.UnpackSuccessInstallCause",
-                            install_cause(),
-                            extension_misc::NUM_INSTALL_CAUSES);
 
   extension_ = extension;
   temp_dir_ = temp_dir;
@@ -528,9 +520,8 @@ void CrxInstaller::OnUnpackSuccess(
     return;
   }
 
-  if (!base::PostTaskWithTraits(
-          FROM_HERE, {BrowserThread::UI},
-          base::BindOnce(&CrxInstaller::CheckInstall, this)))
+  if (!base::PostTask(FROM_HERE, {BrowserThread::UI},
+                      base::BindOnce(&CrxInstaller::CheckInstall, this)))
     NOTREACHED();
 }
 
@@ -545,9 +536,10 @@ void CrxInstaller::CheckInstall() {
   if (SharedModuleInfo::ImportsModules(extension())) {
     const std::vector<SharedModuleInfo::ImportInfo>& imports =
         SharedModuleInfo::GetImports(extension());
+    ExtensionRegistry* registry = ExtensionRegistry::Get(service->profile());
     for (const auto& import : imports) {
-      const Extension* imported_module =
-          service->GetExtensionById(import.extension_id, true);
+      const Extension* imported_module = registry->GetExtensionById(
+          import.extension_id, ExtensionRegistry::EVERYTHING);
       if (!imported_module)
         continue;
 
@@ -874,10 +866,9 @@ void CrxInstaller::ReloadExtensionAfterInstall(
 
 void CrxInstaller::ReportFailureFromFileThread(const CrxInstallError& error) {
   DCHECK(installer_task_runner_->RunsTasksInCurrentSequence());
-  if (!base::PostTaskWithTraits(
-          FROM_HERE, {BrowserThread::UI},
-          base::BindOnce(&CrxInstaller::ReportFailureFromUIThread, this,
-                         error))) {
+  if (!base::PostTask(FROM_HERE, {BrowserThread::UI},
+                      base::BindOnce(&CrxInstaller::ReportFailureFromUIThread,
+                                     this, error))) {
     NOTREACHED();
   }
 }
@@ -919,7 +910,7 @@ void CrxInstaller::ReportSuccessFromFileThread() {
   if (install_cause() == extension_misc::INSTALL_CAUSE_USER_DOWNLOAD)
     UMA_HISTOGRAM_ENUMERATION("Extensions.ExtensionInstalled", 1, 2);
 
-  if (!base::PostTaskWithTraits(
+  if (!base::PostTask(
           FROM_HERE, {BrowserThread::UI},
           base::BindOnce(&CrxInstaller::ReportSuccessFromUIThread, this)))
     NOTREACHED();
@@ -965,28 +956,31 @@ void CrxInstaller::NotifyCrxInstallBegin() {
 
 void CrxInstaller::NotifyCrxInstallComplete(
     const base::Optional<CrxInstallError>& error) {
+  const std::string extension_id =
+      expected_id_.empty() && extension() ? extension()->id() : expected_id_;
+  InstallationReporter* installation_reporter =
+      InstallationReporter::Get(profile_);
+  installation_reporter->ReportInstallationStage(
+      extension_id, InstallationReporter::Stage::COMPLETE);
   const bool success = !error.has_value();
 
   if (!success && (!expected_id_.empty() || extension())) {
-    const std::string extension_id =
-        expected_id_.empty() ? extension()->id() : expected_id_;
     switch (error->type()) {
       case CrxInstallErrorType::DECLINED:
-        InstallationFailures::ReportCrxInstallError(
-            profile_, extension_id,
-            InstallationFailures::Reason::CRX_INSTALL_ERROR_DECLINED,
+        installation_reporter->ReportCrxInstallError(
+            extension_id,
+            InstallationReporter::FailureReason::CRX_INSTALL_ERROR_DECLINED,
             error->detail());
         break;
       case CrxInstallErrorType::SANDBOXED_UNPACKER_FAILURE:
-        InstallationFailures::ReportFailure(
-            profile_, extension_id,
-            InstallationFailures::Reason::
-                CRX_INSTALL_ERROR_SANDBOXED_UNPACKER_FAILURE);
+        installation_reporter->ReportFailure(
+            extension_id, InstallationReporter::FailureReason::
+                              CRX_INSTALL_ERROR_SANDBOXED_UNPACKER_FAILURE);
         break;
       case CrxInstallErrorType::OTHER:
-        InstallationFailures::ReportCrxInstallError(
-            profile_, extension_id,
-            InstallationFailures::Reason::CRX_INSTALL_ERROR_OTHER,
+        installation_reporter->ReportCrxInstallError(
+            extension_id,
+            InstallationReporter::FailureReason::CRX_INSTALL_ERROR_OTHER,
             error->detail());
         break;
       case CrxInstallErrorType::NONE:
@@ -1011,7 +1005,7 @@ void CrxInstaller::NotifyCrxInstallComplete(
     ConfirmReEnable();
 
   if (!installer_callback_.is_null() &&
-      !base::CreateSingleThreadTaskRunnerWithTraits({BrowserThread::UI})
+      !base::CreateSingleThreadTaskRunner({BrowserThread::UI})
            ->PostTask(FROM_HERE,
                       base::BindOnce(std::move(installer_callback_), error))) {
     NOTREACHED();
@@ -1050,7 +1044,8 @@ void CrxInstaller::CheckUpdateFromSettingsPage() {
     return;
 
   const Extension* installed_extension =
-      service->GetInstalledExtension(extension()->id());
+      ExtensionRegistry::Get(service->profile())
+          ->GetInstalledExtension(extension()->id());
   if (installed_extension) {
     // Previous version of the extension exists.
     update_from_settings_page_ = true;
@@ -1084,13 +1079,6 @@ void CrxInstaller::ConfirmReEnable() {
                         std::make_unique<ExtensionInstallPrompt::Prompt>(type),
                         ExtensionInstallPrompt::GetDefaultShowDialogCallback());
   }
-}
-
-service_manager::Connector* CrxInstaller::GetConnector() const {
-  return connector_for_test_
-             ? connector_for_test_
-             : content::ServiceManagerConnection::GetForProcess()
-                   ->GetConnector();
 }
 
 }  // namespace extensions

@@ -10,20 +10,21 @@
 #include "base/macros.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
-#include "components/signin/core/browser/signin_client.h"
 #include "components/signin/ios/browser/wait_for_network_callback_helper.h"
+#include "components/signin/public/base/signin_client.h"
 #include "net/cookies/cookie_change_dispatcher.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
-@class CWVSyncController;
+namespace ios_web_view {
+class WebViewBrowserState;
+}
 
 // iOS WebView specific signin client.
 class IOSWebViewSigninClient : public SigninClient {
  public:
   IOSWebViewSigninClient(
       PrefService* pref_service,
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      network::mojom::CookieManager* cookie_manager,
+      ios_web_view::WebViewBrowserState* browser_state,
       scoped_refptr<content_settings::CookieSettings> cookie_settings,
       scoped_refptr<HostContentSettingsMap> host_content_settings_map);
 
@@ -33,14 +34,12 @@ class IOSWebViewSigninClient : public SigninClient {
   void Shutdown() override;
 
   // SigninClient implementation.
-  std::string GetProductVersion() override;
-  base::Time GetInstallDate() override;
   PrefService* GetPrefs() override;
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory() override;
   network::mojom::CookieManager* GetCookieManager() override;
   void DoFinalInit() override;
-  bool IsFirstRun() const override;
   bool AreSigninCookiesAllowed() override;
+  bool AreSigninCookiesDeletedOnExit() override;
   void AddContentSettingsObserver(
       content_settings::Observer* observer) override;
   void RemoveContentSettingsObserver(
@@ -51,29 +50,18 @@ class IOSWebViewSigninClient : public SigninClient {
   void DelayNetworkCall(base::OnceClosure callback) override;
   std::unique_ptr<GaiaAuthFetcher> CreateGaiaAuthFetcher(
       GaiaAuthConsumer* consumer,
-      gaia::GaiaSource source,
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
-      override;
-
-  // CWVSyncController setter/getter.
-  void SetSyncController(CWVSyncController* sync_controller);
-  CWVSyncController* GetSyncController() const;
+      gaia::GaiaSource source) override;
 
  private:
   // Helper to delay callbacks until connection becomes online again.
   std::unique_ptr<WaitForNetworkCallbackHelper> network_callback_helper_;
   // The PrefService associated with this service.
   PrefService* pref_service_;
-  scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
-  network::mojom::CookieManager* cookie_manager_;
+  ios_web_view::WebViewBrowserState* browser_state_;
   // Used to check if sign in cookies are allowed.
   scoped_refptr<content_settings::CookieSettings> cookie_settings_;
   // Used to add and remove content settings observers.
   scoped_refptr<HostContentSettingsMap> host_content_settings_map_;
-  // Used by WebViewProfileOAuth2TokenServiceIOSProviderImpl to fetch access
-  // tokens. Also used to notify of signout events. Held weak so this class
-  // does not determine |sync_controller_|'s lifetime.
-  __weak CWVSyncController* sync_controller_ = nil;
 
   DISALLOW_COPY_AND_ASSIGN(IOSWebViewSigninClient);
 };

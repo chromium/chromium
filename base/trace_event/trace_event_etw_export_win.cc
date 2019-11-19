@@ -89,7 +89,9 @@ const char* const kFilteredEventGroupNames[] = {
     "disabled-by-default-cc.debug.picture",             // 0x1000
     "disabled-by-default-toplevel.flow",                // 0x2000
     "startup",                                          // 0x4000
-    "latency"};                                         // 0x8000
+    "latency",                                          // 0x8000
+    "blink.user_timing",                                // 0x10000
+};
 const char kOtherEventsGroupName[] = "__OTHER_EVENTS";  // 0x2000000000000000
 const char kDisabledOtherEventsGroupName[] =
     "__DISABLED_OTHER_EVENTS";  // 0x4000000000000000

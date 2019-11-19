@@ -12,13 +12,14 @@
 
 #include "base/bind.h"
 #include "base/run_loop.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "chromecast/media/audio/cast_audio_manager.h"
 #include "chromecast/media/audio/cast_audio_output_stream.h"
 #include "chromecast/media/cma/backend/cma_backend_factory.h"
 #include "media/audio/audio_io.h"
 #include "media/audio/test_audio_thread.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "services/service_manager/public/cpp/connector.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -26,8 +27,8 @@
 namespace {
 
 std::unique_ptr<service_manager::Connector> CreateConnector() {
-  service_manager::mojom::ConnectorRequest request;
-  return service_manager::Connector::Create(&request);
+  mojo::PendingReceiver<service_manager::mojom::Connector> receiver;
+  return service_manager::Connector::Create(&receiver);
 }
 
 std::string DummyGetSessionId(std::string /* audio_group_id */) {
@@ -97,6 +98,7 @@ class MockMediaAudioOutputStream : public ::media::AudioOutputStream {
 
   MOCK_METHOD0(Open, bool());
   MOCK_METHOD0(Close, void());
+  MOCK_METHOD0(Flush, void());
   MOCK_METHOD1(Start, void(AudioSourceCallback* source_callback));
   MOCK_METHOD0(Stop, void());
   MOCK_METHOD1(SetVolume, void(double volume));
@@ -139,8 +141,7 @@ class MockCastAudioManager : public CastAudioManager {
 class CastAudioMixerTest : public ::testing::Test {
  public:
   CastAudioMixerTest()
-      : scoped_task_environment_(
-            base::test::ScopedTaskEnvironment::MainThreadType::UI),
+      : task_environment_(base::test::TaskEnvironment::MainThreadType::UI),
         connector_(CreateConnector()),
         source_callback_(nullptr) {}
   ~CastAudioMixerTest() override {}
@@ -148,7 +149,7 @@ class CastAudioMixerTest : public ::testing::Test {
  protected:
   void SetUp() override {
     mock_manager_.reset(new StrictMock<MockCastAudioManager>(
-        connector_.get(), scoped_task_environment_.GetMainThreadTaskRunner()));
+        connector_.get(), task_environment_.GetMainThreadTaskRunner()));
     mock_mixer_stream_.reset(new StrictMock<MockMediaAudioOutputStream>());
 
     ON_CALL(*mock_manager_, MakeMixerOutputStream(_))
@@ -171,7 +172,7 @@ class CastAudioMixerTest : public ::testing::Test {
         GetAudioParams(), "", ::media::AudioManager::LogCallback());
   }
 
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_;
   std::unique_ptr<service_manager::Connector> connector_;
   std::unique_ptr<MockCastAudioManager> mock_manager_;
   std::unique_ptr<MockMediaAudioOutputStream> mock_mixer_stream_;

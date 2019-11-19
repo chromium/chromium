@@ -2,12 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/platform/fonts/shaping/shape_result.h"
+#include "third_party/blink/renderer/platform/fonts/shaping/shape_result_inline_headers.h"
 
+#include "base/containers/span.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/fonts/font.h"
 #include "third_party/blink/renderer/platform/fonts/font_cache.h"
 #include "third_party/blink/renderer/platform/fonts/font_test_utilities.h"
+#include "third_party/blink/renderer/platform/fonts/shaping/shape_result_spacing.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_test_info.h"
 #include "third_party/blink/renderer/platform/testing/font_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
@@ -34,9 +36,26 @@ class ShapeResultTest : public testing::Test {
   void TestCopyRangesLatin(const ShapeResult*) const;
   void TestCopyRangesArabic(const ShapeResult*) const;
 
+  static bool HasNonZeroGlyphOffsets(const ShapeResult& result) {
+    for (const auto& run : result.RunsOrParts()) {
+      if (run->glyph_data_.HasNonZeroOffsets())
+        return true;
+    }
+    return false;
+  }
+
+  // Release the ShapeResults held inside an array of ShapeResult::ShapeRange
+  // instances.
+  static void ReleaseShapeRange(base::span<ShapeResult::ShapeRange> ranges) {
+    for (auto& range : ranges) {
+      range.target->Release();
+    }
+  }
+
   ShapeResult* CreateShapeResult(TextDirection direction) const {
     return new ShapeResult(
-        direction == TextDirection::kLtr ? &font : &arabic_font, 0, direction);
+        direction == TextDirection::kLtr ? &font : &arabic_font, 0, 0,
+        direction);
   }
 
   FontCachePurgePreventer font_cache_purge_preventer;
@@ -79,6 +98,7 @@ void ShapeResultTest::TestCopyRangesLatin(const ShapeResult* result) const {
   EXPECT_TRUE(CompareResultGlyphs(glyphs[1], reference_glyphs[1], 0u, 10u));
   EXPECT_TRUE(CompareResultGlyphs(glyphs[2], reference_glyphs[2], 0u, 10u));
   EXPECT_TRUE(CompareResultGlyphs(glyphs[3], reference_glyphs[3], 0u, 8u));
+  ReleaseShapeRange(ranges);
 }
 
 void ShapeResultTest::TestCopyRangesArabic(const ShapeResult* result) const {
@@ -115,6 +135,7 @@ void ShapeResultTest::TestCopyRangesArabic(const ShapeResult* result) const {
   EXPECT_TRUE(CompareResultGlyphs(glyphs[1], reference_glyphs[1], 0u, 3u));
   EXPECT_TRUE(CompareResultGlyphs(glyphs[2], reference_glyphs[2], 0u, 3u));
   EXPECT_TRUE(CompareResultGlyphs(glyphs[3], reference_glyphs[3], 0u, 5u));
+  ReleaseShapeRange(ranges);
 }
 
 TEST_F(ShapeResultTest, CopyRangeLatin) {
@@ -139,7 +160,8 @@ TEST_F(ShapeResultTest, CopyRangeLatinMultiRun) {
 
   // Combine four separate results into a single one to ensure we have a result
   // with multiple runs.
-  scoped_refptr<ShapeResult> result = ShapeResult::Create(&font, 0, direction);
+  scoped_refptr<ShapeResult> result =
+      ShapeResult::Create(&font, 0, 0, direction);
   shaper_a.Shape(&font, direction)->CopyRange(0u, 5u, result.get());
   shaper_b.Shape(&font, direction)->CopyRange(0u, 2u, result.get());
   shaper_c.Shape(&font, direction)->CopyRange(0u, 25u, result.get());
@@ -155,7 +177,8 @@ TEST_F(ShapeResultTest, CopyRangeLatinMultiRunWithHoles) {
   HarfBuzzShaper shaper_c(string.Substring(7, 32));
   HarfBuzzShaper shaper_d(string.Substring(32, 34));
 
-  scoped_refptr<ShapeResult> result = ShapeResult::Create(&font, 0, direction);
+  scoped_refptr<ShapeResult> result =
+      ShapeResult::Create(&font, 0, 0, direction);
   shaper_a.Shape(&font, direction)->CopyRange(0u, 5u, result.get());
   shaper_b.Shape(&font, direction)->CopyRange(0u, 2u, result.get());
   shaper_c.Shape(&font, direction)->CopyRange(0u, 25u, result.get());
@@ -189,6 +212,7 @@ TEST_F(ShapeResultTest, CopyRangeLatinMultiRunWithHoles) {
   EXPECT_TRUE(CompareResultGlyphs(glyphs[0], reference_glyphs[0], 0u, 13u));
   EXPECT_TRUE(CompareResultGlyphs(glyphs[1], reference_glyphs[1], 0u, 3u));
   EXPECT_TRUE(CompareResultGlyphs(glyphs[2], reference_glyphs[2], 0u, 6u));
+  ReleaseShapeRange(ranges);
 }
 
 TEST_F(ShapeResultTest, CopyRangeArabic) {
@@ -220,12 +244,31 @@ TEST_F(ShapeResultTest, CopyRangeArabicMultiRun) {
   // Combine three separate results into a single one to ensure we have a result
   // with multiple runs.
   scoped_refptr<ShapeResult> result =
-      ShapeResult::Create(&arabic_font, 0, direction);
+      ShapeResult::Create(&arabic_font, 0, 0, direction);
   shaper_a.Shape(&arabic_font, direction)->CopyRange(0u, 2u, result.get());
   shaper_b.Shape(&arabic_font, direction)->CopyRange(0u, 7u, result.get());
   shaper_c.Shape(&arabic_font, direction)->CopyRange(0u, 8u, result.get());
 
   TestCopyRangesArabic(result.get());
+}
+
+TEST_F(ShapeResultTest, ComputeInkBoundsWithZeroOffset) {
+  String string(u"abc");
+  HarfBuzzShaper shaper(string);
+  auto result = shaper.Shape(&font, TextDirection::kLtr);
+  EXPECT_FALSE(HasNonZeroGlyphOffsets(*result));
+  EXPECT_FALSE(result->ComputeInkBounds().IsZero());
+}
+
+// TDOO(yosin): We should use a font including U+0A81 or other code point
+// having non-zero glyph offset.
+TEST_F(ShapeResultTest, DISABLED_ComputeInkBoundsWithNonZeroOffset) {
+  // U+0A81 has non-zero glyph offset
+  String string(u"xy\u0A81z");
+  HarfBuzzShaper shaper(string);
+  auto result = shaper.Shape(&font, TextDirection::kLtr);
+  ASSERT_TRUE(HasNonZeroGlyphOffsets(*result));
+  EXPECT_FALSE(result->ComputeInkBounds().IsZero());
 }
 
 }  // namespace blink

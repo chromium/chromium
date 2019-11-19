@@ -27,6 +27,7 @@ class WinHttpUrlFetcher {
 
   virtual HRESULT SetRequestHeader(const char* name, const char* value);
   virtual HRESULT SetRequestBody(const char* body);
+  virtual HRESULT SetHttpRequestTimeout(const int timeout_in_millis);
   virtual HRESULT Fetch(std::vector<char>* response);
   virtual HRESULT Close();
 
@@ -48,6 +49,7 @@ class WinHttpUrlFetcher {
   std::string body_;
   ScopedWinHttpHandle session_;
   ScopedWinHttpHandle request_;
+  int timeout_in_millis_ = 0;
 
   // Gets storage of the function pointer used to create instances of this
   // class for tests.

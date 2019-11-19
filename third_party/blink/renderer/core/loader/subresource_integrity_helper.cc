@@ -4,10 +4,10 @@
 
 #include "third_party/blink/renderer/core/loader/subresource_integrity_helper.h"
 
+#include "third_party/blink/public/mojom/devtools/console_message.mojom-blink.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
-#include "third_party/blink/renderer/core/frame/use_counter.h"
-#include "third_party/blink/renderer/core/inspector/console_types.h"
-#include "third_party/blink/renderer/core/origin_trials/origin_trials.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
@@ -56,8 +56,9 @@ void SubresourceIntegrityHelper::GetConsoleMessages(
     HeapVector<Member<ConsoleMessage>>* messages) {
   DCHECK(messages);
   for (const auto& message : report_info.ConsoleErrorMessages()) {
-    messages->push_back(ConsoleMessage::Create(
-        kSecurityMessageSource, mojom::ConsoleMessageLevel::kError, message));
+    messages->push_back(
+        ConsoleMessage::Create(mojom::ConsoleMessageSource::kSecurity,
+                               mojom::ConsoleMessageLevel::kError, message));
   }
 }
 
@@ -65,7 +66,7 @@ SubresourceIntegrity::IntegrityFeatures SubresourceIntegrityHelper::GetFeatures(
     ExecutionContext* execution_context) {
   bool allow_signatures =
       RuntimeEnabledFeatures::SignatureBasedIntegrityEnabledByRuntimeFlag() ||
-      origin_trials::SignatureBasedIntegrityEnabled(execution_context);
+      RuntimeEnabledFeatures::SignatureBasedIntegrityEnabled(execution_context);
   return allow_signatures ? SubresourceIntegrity::IntegrityFeatures::kSignatures
                           : SubresourceIntegrity::IntegrityFeatures::kDefault;
 }

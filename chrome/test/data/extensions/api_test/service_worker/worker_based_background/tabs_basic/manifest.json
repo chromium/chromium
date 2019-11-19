@@ -4,5 +4,5 @@
   "manifest_version": 2,
   "description": "Test tabs APIs for service worker-based background scripts.",
   "permissions": ["tabs"],
-  "background": {"service_worker_script": "service_worker_background.js"}
+  "background": {"service_worker": "service_worker_background.js"}
 }

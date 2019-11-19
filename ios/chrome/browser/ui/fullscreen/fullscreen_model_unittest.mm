@@ -263,3 +263,54 @@ TEST_F(FullscreenModelTest, DisableForShortContent) {
                            1.0);
   EXPECT_TRUE(model().enabled());
 }
+
+// Tests that scrolling past the edge of the page content is ignored when the
+// scroll view is being resized.
+TEST_F(FullscreenModelTest, IgnoreScrollsPastBottomWhileResizing) {
+  // Instruct the model to resize the scroll view and scroll to the bottom of
+  // the page.
+  model().SetResizesScrollView(true);
+  model().SetYContentOffset(kContentHeight - kScrollViewHeight);
+  // Try scrolling with a user gesture such that the toolars are hidden, then
+  // verify that this scroll is ignored.
+  SimulateFullscreenUserScrollForProgress(&model(), 0.0);
+  EXPECT_EQ(observer().progress(), 1.0);
+}
+
+// Tests that updates to the content height that would normally disable the
+// model are ignored during the scroll, and that the model is correctly updated
+// to be disabled upon the subsequent scroll.
+TEST_F(FullscreenModelTest, IgnoreContentHeightChangesWhileScrolling) {
+  ASSERT_TRUE(model().enabled());
+  // Simulate a re-render to a height that would disable the model during a
+  // scroll.
+  model().SetScrollViewIsScrolling(true);
+  model().SetContentHeight(kScrollViewHeight / 2.0);
+  model().SetScrollViewIsScrolling(false);
+  EXPECT_TRUE(model().enabled());
+  // Simulate the start of a subsequent scroll and verify that the model becomes
+  // disabled for the short content height.
+  model().SetScrollViewIsDragging(true);
+  EXPECT_FALSE(model().enabled());
+}
+
+// Tests that the model detects when the page is scrolled to the top and bottom.
+TEST_F(FullscreenModelTest, ScrolledToTopAndBottom) {
+  // Scroll to the top of the page and verify that only is_scrolled_to_top()
+  // returns true.
+  model().SetYContentOffset(-kToolbarHeight);
+  EXPECT_TRUE(model().is_scrolled_to_top());
+  EXPECT_FALSE(model().is_scrolled_to_bottom());
+
+  // Scroll to the middle of the page and verify that neither
+  // is_scrolled_to_top() nor is_scrolled_to_bottom() returns true.
+  model().SetYContentOffset(kContentHeight / 2.0);
+  EXPECT_FALSE(model().is_scrolled_to_top());
+  EXPECT_FALSE(model().is_scrolled_to_bottom());
+
+  // Scroll to the bottom of the page and verify that only
+  // is_scrolled_to_bottom() returns true.
+  model().SetYContentOffset(kContentHeight - kScrollViewHeight);
+  EXPECT_FALSE(model().is_scrolled_to_top());
+  EXPECT_TRUE(model().is_scrolled_to_bottom());
+}

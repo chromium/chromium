@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2019 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingTop="@dimen/revamped_context_menu_divider_padding"
+    android:paddingBottom="@dimen/revamped_context_menu_divider_padding"
+    android:importantForAccessibility="no">
+    <!-- TODO(sinansahin): divider_preference can be renamed to horizontal_divider -->
+    <include layout="@layout/divider_preference" />
+</FrameLayout>

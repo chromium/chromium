@@ -90,7 +90,8 @@ bool LogMessageToAsl(
 void InitHostLogging() {
   // Write logs to the system debug log.
   logging::LoggingSettings settings;
-  settings.logging_dest = logging::LOG_TO_SYSTEM_DEBUG_LOG;
+  settings.logging_dest =
+      logging::LOG_TO_SYSTEM_DEBUG_LOG | logging::LOG_TO_STDERR;
   logging::InitLogging(settings);
 
   // Write logs to syslog as well.

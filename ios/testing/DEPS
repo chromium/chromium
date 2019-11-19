@@ -1,5 +1,5 @@
 include_rules = [
+  "+ios/third_party/earl_grey2/src",
   "+net",
-  "+third_party/google_toolbox_for_mac",
   "+third_party/ocmock",
 ]

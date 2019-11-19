@@ -69,12 +69,6 @@ struct PrefetchItem {
   // The URL to the favicon image of the article's hosting web site.
   GURL favicon_url;
 
-  // A snippet of the article's contents.
-  std::string snippet;
-
-  // The publisher name/web site the article is attributed to.
-  std::string attribution;
-
   // Number of attempts to request OPS to generate an archive for this item.
   int generate_bundle_attempts = 0;
 
@@ -123,6 +117,12 @@ struct PrefetchItem {
 
   // The title of the page.
   base::string16 title;
+
+  // A snippet of the article's contents.
+  std::string snippet;
+
+  // The publisher name/web site the article is attributed to.
+  std::string attribution;
 
   // The file path to the archive of the page.
   base::FilePath file_path;

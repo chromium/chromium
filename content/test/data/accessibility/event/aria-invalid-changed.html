@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<body>
+<input id="field0" aria-label="field0">
+<input id="field1" aria-label="field1" aria-invalid="true">
+<input id="field2" aria-label="field2" aria-invalid="true" >
+<input id="field3" aria-label="field3">
+<script>
+  function go() {
+    // Set aria-invalid from default false->false; should not fire an event.
+    document.getElementById('field0').setAttribute('aria-invalid', 'false');
+
+    // Set aria-invalid from true->false; should fire an event.
+    document.getElementById('field1').setAttribute('aria-invalid', 'false');
+
+    // Set aria-invalid from true->[removed]; should fire an event.
+    document.getElementById('field2').removeAttribute('aria-invalid');
+
+    // Set aria-invalid from false->true; should fire an event.
+    document.getElementById('field3').setAttribute('aria-invalid', 'true');
+  }
+</script>
+</body>

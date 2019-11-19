@@ -20,7 +20,7 @@ namespace {
 
 class VirtualFileProviderClientImpl : public VirtualFileProviderClient {
  public:
-  VirtualFileProviderClientImpl() : weak_ptr_factory_(this) {}
+  VirtualFileProviderClientImpl() {}
   ~VirtualFileProviderClientImpl() override = default;
 
   // VirtualFileProviderClient override:
@@ -65,7 +65,7 @@ class VirtualFileProviderClientImpl : public VirtualFileProviderClient {
 
   dbus::ObjectProxy* proxy_ = nullptr;
 
-  base::WeakPtrFactory<VirtualFileProviderClientImpl> weak_ptr_factory_;
+  base::WeakPtrFactory<VirtualFileProviderClientImpl> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(VirtualFileProviderClientImpl);
 };
@@ -77,8 +77,8 @@ VirtualFileProviderClient::VirtualFileProviderClient() = default;
 VirtualFileProviderClient::~VirtualFileProviderClient() = default;
 
 // static
-VirtualFileProviderClient* VirtualFileProviderClient::Create() {
-  return new VirtualFileProviderClientImpl();
+std::unique_ptr<VirtualFileProviderClient> VirtualFileProviderClient::Create() {
+  return std::make_unique<VirtualFileProviderClientImpl>();
 }
 
 }  // namespace chromeos

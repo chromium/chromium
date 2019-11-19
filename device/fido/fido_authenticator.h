@@ -17,12 +17,16 @@
 #include "device/fido/authenticator_get_assertion_response.h"
 #include "device/fido/authenticator_make_credential_response.h"
 #include "device/fido/authenticator_supported_options.h"
+#include "device/fido/bio/enrollment.h"
+#include "device/fido/credential_management.h"
+#include "device/fido/fido_request_handler_base.h"
 #include "device/fido/fido_transport_protocol.h"
+#include "device/fido/pin.h"
 
 namespace device {
 
-class CtapGetAssertionRequest;
-class CtapMakeCredentialRequest;
+struct CtapGetAssertionRequest;
+struct CtapMakeCredentialRequest;
 
 namespace pin {
 struct RetriesResponse;
@@ -57,6 +61,18 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoAuthenticator {
   using ResetCallback =
       base::OnceCallback<void(CtapDeviceResponseCode,
                               base::Optional<pin::EmptyResponse>)>;
+  using GetCredentialsMetadataCallback =
+      base::OnceCallback<void(CtapDeviceResponseCode,
+                              base::Optional<CredentialsMetadataResponse>)>;
+  using EnumerateCredentialsCallback = base::OnceCallback<void(
+      CtapDeviceResponseCode,
+      base::Optional<std::vector<AggregatedEnumerateCredentialsResponse>>)>;
+  using DeleteCredentialCallback =
+      base::OnceCallback<void(CtapDeviceResponseCode,
+                              base::Optional<DeleteCredentialResponse>)>;
+  using BioEnrollmentCallback =
+      base::OnceCallback<void(CtapDeviceResponseCode,
+                              base::Optional<BioEnrollmentResponse>)>;
 
   FidoAuthenticator() = default;
   virtual ~FidoAuthenticator() = default;
@@ -69,6 +85,9 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoAuthenticator {
                               MakeCredentialCallback callback) = 0;
   virtual void GetAssertion(CtapGetAssertionRequest request,
                             GetAssertionCallback callback) = 0;
+  // GetNextAssertion fetches the next assertion from a device that indicated in
+  // the response to |GetAssertion| that multiple results were available.
+  virtual void GetNextAssertion(GetAssertionCallback callback);
   // GetTouch causes an (external) authenticator to flash and wait for a touch.
   virtual void GetTouch(base::OnceCallback<void()> callback);
   // GetRetries gets the number of PIN attempts remaining before an
@@ -100,6 +119,74 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoAuthenticator {
                          const std::string& new_pin,
                          pin::KeyAgreementResponse& peer_key,
                          SetPINCallback callback);
+
+  // MakeCredentialPINDisposition enumerates the possible interactions between
+  // a user-verification level, the PIN configuration of an authenticator, and
+  // whether the embedder is capable of collecting PINs from the user.
+  enum class MakeCredentialPINDisposition {
+    // kNoPIN means that a PIN will not be needed to make this credential.
+    kNoPIN,
+    // kUsePIN means that a PIN must be gathered and used to make this
+    // credential.
+    kUsePIN,
+    // kSetPIN means that the operation should set and then use a PIN to
+    // make this credential.
+    kSetPIN,
+    // kUnsatisfiable means that the request cannot be satisfied by this
+    // authenticator.
+    kUnsatisfiable,
+  };
+  // WillNeedPINToMakeCredential returns what type of PIN intervention will be
+  // needed to serve the given request on this authenticator.
+  virtual MakeCredentialPINDisposition WillNeedPINToMakeCredential(
+      const CtapMakeCredentialRequest& request,
+      const FidoRequestHandlerBase::Observer* observer);
+
+  // GetAssertionPINDisposition enumerates the possible interactions between
+  // a user-verification level and the PIN support of an authenticator when
+  // getting an assertion.
+  enum class GetAssertionPINDisposition {
+    // kNoPIN means that a PIN will not be needed for this assertion.
+    kNoPIN,
+    // kUsePIN means that a PIN must be gathered and used for this assertion.
+    kUsePIN,
+    // kUnsatisfiable means that the request cannot be satisfied by this
+    // authenticator.
+    kUnsatisfiable,
+  };
+  // WillNeedPINToGetAssertion returns whether a PIN prompt will be needed to
+  // serve the given request on this authenticator.
+  virtual GetAssertionPINDisposition WillNeedPINToGetAssertion(
+      const CtapGetAssertionRequest& request,
+      const FidoRequestHandlerBase::Observer* observer);
+
+  virtual void GetCredentialsMetadata(base::span<const uint8_t> pin_token,
+                                      GetCredentialsMetadataCallback callback);
+  virtual void EnumerateCredentials(base::span<const uint8_t> pin_token,
+                                    EnumerateCredentialsCallback callback);
+  virtual void DeleteCredential(
+      base::span<const uint8_t> pin_token,
+      const PublicKeyCredentialDescriptor& credential_id,
+      DeleteCredentialCallback callback);
+
+  // Biometric enrollment commands.
+  virtual void GetModality(BioEnrollmentCallback callback);
+  virtual void GetSensorInfo(BioEnrollmentCallback callback);
+  virtual void BioEnrollFingerprint(
+      const pin::TokenResponse&,
+      base::Optional<std::vector<uint8_t>> template_id,
+      BioEnrollmentCallback);
+  virtual void BioEnrollCancel(BioEnrollmentCallback);
+  virtual void BioEnrollEnumerate(const pin::TokenResponse&,
+                                  BioEnrollmentCallback);
+  virtual void BioEnrollRename(const pin::TokenResponse&,
+                               std::vector<uint8_t> template_id,
+                               std::string name,
+                               BioEnrollmentCallback);
+  virtual void BioEnrollDelete(const pin::TokenResponse&,
+                               std::vector<uint8_t> template_id,
+                               BioEnrollmentCallback);
+
   // Reset triggers a reset operation on the authenticator. This erases all
   // stored resident keys and any configured PIN.
   virtual void Reset(ResetCallback callback);
@@ -113,9 +200,13 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoAuthenticator {
       const = 0;
   virtual bool IsInPairingMode() const = 0;
   virtual bool IsPaired() const = 0;
+  virtual bool RequiresBlePairingPin() const = 0;
 #if defined(OS_WIN)
   virtual bool IsWinNativeApiAuthenticator() const = 0;
 #endif  // defined(OS_WIN)
+#if defined(OS_MACOSX)
+  virtual bool IsTouchIdAuthenticator() const = 0;
+#endif  // defined(OS_MACOSX)
   virtual base::WeakPtr<FidoAuthenticator> GetWeakPtr() = 0;
 
  private:

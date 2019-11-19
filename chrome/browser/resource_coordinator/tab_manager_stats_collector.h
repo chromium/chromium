@@ -234,12 +234,6 @@ class TabManagerStatsCollector final : public SessionRestoreObserver {
   // TabManagerStatsCollector should be used from a single sequence.
   SEQUENCE_CHECKER(sequence_checker_);
 
-  // Time at which the TabManagerStatsCollector was created.
-  const base::TimeTicks start_time_ = NowTicks();
-
-  // Last time at which TabManager had to urgently discard LifecycleUnits.
-  base::TimeTicks last_urgent_discard_time_;
-
   int session_id_ = -1;
   int sequence_ = 0;
 
@@ -268,7 +262,7 @@ class TabManagerStatsCollector final : public SessionRestoreObserver {
   // The start time of an ongoing periodic sample.
   base::TimeTicks sample_start_time_;
 
-  base::WeakPtrFactory<TabManagerStatsCollector> weak_factory_;
+  base::WeakPtrFactory<TabManagerStatsCollector> weak_factory_{this};
 };
 
 }  // namespace resource_coordinator

@@ -236,9 +236,10 @@ void PPB_Audio_Shared::Run() {
     }
 
     // Deinterleave the audio data into the shared memory as floats.
-    audio_bus_->FromInterleaved(client_buffer_.get(),
-                                audio_bus_->frames(),
-                                kBitsPerAudioOutputSample / 8);
+    static_assert(kBitsPerAudioOutputSample == 16,
+                  "FromInterleaved expects 2 bytes.");
+    audio_bus_->FromInterleaved<media::SignedInt16SampleTypeTraits>(
+        reinterpret_cast<int16_t*>(client_buffer_.get()), audio_bus_->frames());
 
     // Let the other end know which buffer we just filled.  The buffer index is
     // used to ensure the other end is getting the buffer it expects.  For more

@@ -4,8 +4,8 @@
 
 #include "ash/system/accessibility/select_to_speak_tray.h"
 
-#include "ash/accelerators/accelerator_controller.h"
-#include "ash/accessibility/accessibility_controller.h"
+#include "ash/accelerators/accelerator_controller_impl.h"
+#include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/accessibility/test_accessibility_controller_client.h"
 #include "ash/shell.h"
 #include "ash/system/status_area_widget.h"
@@ -48,7 +48,7 @@ class SelectToSpeakTrayTest : public AshTestBase {
 
  protected:
   // Returns true if the Select to Speak tray is visible.
-  bool IsVisible() { return GetTray()->visible(); }
+  bool IsVisible() { return GetTray()->GetVisible(); }
 
   // Returns true if the background color of the tray is active.
   bool IsTrayBackgroundActive() { return GetTray()->is_active(); }
@@ -84,41 +84,35 @@ TEST_F(SelectToSpeakTrayTest, ShowsAndHidesWithSelectToSpeakEnabled) {
 
 // Test that clicking the button sends a Select to Speak state change request.
 TEST_F(SelectToSpeakTrayTest, ButtonRequestsSelectToSpeakStateChange) {
-  AccessibilityController* controller =
-      Shell::Get()->accessibility_controller();
   TestAccessibilityControllerClient client;
-  controller->SetClient(client.CreateInterfacePtrAndBind());
-
   EXPECT_EQ(0, client.select_to_speak_change_change_requests());
 
   GetTray()->PerformAction(CreateTapEvent());
-  controller->FlushMojoForTest();
   EXPECT_EQ(1, client.select_to_speak_change_change_requests());
 
   GetTray()->PerformAction(CreateTapEvent());
-  controller->FlushMojoForTest();
   EXPECT_EQ(2, client.select_to_speak_change_change_requests());
 }
 
 // Test that changing the SelectToSpeakState in the AccessibilityController
 // results in a change of icon and activation in the tray.
 TEST_F(SelectToSpeakTrayTest, SelectToSpeakStateImpactsImageAndActivation) {
-  AccessibilityController* controller =
+  AccessibilityControllerImpl* controller =
       Shell::Get()->accessibility_controller();
   controller->SetSelectToSpeakState(
-      ash::mojom::SelectToSpeakState::kSelectToSpeakStateSelecting);
+      SelectToSpeakState::kSelectToSpeakStateSelecting);
   EXPECT_TRUE(IsTrayBackgroundActive());
   EXPECT_TRUE(
       GetSelectingImage().BackedBySameObjectAs(GetImageView()->GetImage()));
 
   controller->SetSelectToSpeakState(
-      ash::mojom::SelectToSpeakState::kSelectToSpeakStateSpeaking);
+      SelectToSpeakState::kSelectToSpeakStateSpeaking);
   EXPECT_TRUE(IsTrayBackgroundActive());
   EXPECT_TRUE(
       GetSpeakingImage().BackedBySameObjectAs(GetImageView()->GetImage()));
 
   controller->SetSelectToSpeakState(
-      ash::mojom::SelectToSpeakState::kSelectToSpeakStateInactive);
+      SelectToSpeakState::kSelectToSpeakStateInactive);
   EXPECT_FALSE(IsTrayBackgroundActive());
   EXPECT_TRUE(
       GetInactiveImage().BackedBySameObjectAs(GetImageView()->GetImage()));

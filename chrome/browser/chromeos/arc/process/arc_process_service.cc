@@ -30,12 +30,10 @@
 #include "base/task/task_traits.h"
 #include "base/task_runner_util.h"
 #include "base/trace_event/trace_event.h"
-#include "components/arc/arc_bridge_service.h"
 #include "components/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "components/arc/arc_util.h"
+#include "components/arc/session/arc_bridge_service.h"
 #include "content/public/browser/browser_thread.h"
-#include "services/resource_coordinator/public/cpp/memory_instrumentation/global_memory_dump.h"
-#include "services/resource_coordinator/public/mojom/memory_instrumentation/memory_instrumentation.mojom.h"
 
 namespace arc {
 
@@ -224,20 +222,18 @@ std::vector<ArcProcess> UpdateAndReturnProcessList(
   return FilterProcessList(pid_map, std::move(processes));
 }
 
-std::unique_ptr<memory_instrumentation::GlobalMemoryDump>
-UpdateAndReturnMemoryInfo(
+std::vector<mojom::ArcMemoryDumpPtr> UpdateAndReturnMemoryInfo(
     scoped_refptr<ArcProcessService::NSPidToPidMap> nspid_map,
-    memory_instrumentation::mojom::GlobalMemoryDumpPtr dump) {
+    std::vector<mojom::ArcMemoryDumpPtr> process_dumps) {
   if (!arc::IsArcVmEnabled()) {
     ArcProcessService::NSPidToPidMap& pid_map = *nspid_map;
     // Cleanup dead processes in pid_map
-    // TODO(wvk) should we be cleaning dead processes here too ?
     base::flat_set<ProcessId> nspid_to_remove;
     for (const auto& entry : pid_map)
       nspid_to_remove.insert(entry.first);
 
     bool unmapped_nspid = false;
-    for (const auto& proc : dump->process_dumps) {
+    for (const auto& proc : process_dumps) {
       // erase() returns 0 if couldn't find the key (new process)
       if (nspid_to_remove.erase(proc->pid) == 0) {
         pid_map[proc->pid] = base::kNullProcessId;
@@ -251,14 +247,14 @@ UpdateAndReturnMemoryInfo(
       UpdateNspidToPidMap(nspid_map);
 
     // Return memory info only for processes that have a mapping nspid->pid
-    for (auto& proc : dump->process_dumps) {
+    for (auto& proc : process_dumps) {
       auto it = pid_map.find(proc->pid);
       proc->pid = it == pid_map.end() ? kNullProcessId : it->second;
     }
-    base::EraseIf(dump->process_dumps,
+    base::EraseIf(process_dumps,
                   [](const auto& proc) { return proc->pid == kNullProcessId; });
   }
-  return memory_instrumentation::GlobalMemoryDump::MoveFrom(std::move(dump));
+  return process_dumps;
 }
 
 void Reset(scoped_refptr<ArcProcessService::NSPidToPidMap> pid_map) {
@@ -295,12 +291,11 @@ ArcProcessService* ArcProcessService::GetForBrowserContext(
 
 ArcProcessService::ArcProcessService(content::BrowserContext* context,
                                      ArcBridgeService* bridge_service)
-    : arc_bridge_service_(bridge_service),
-      nspid_to_pid_(new NSPidToPidMap()),
-      weak_ptr_factory_(this) {
+    : arc_bridge_service_(bridge_service), nspid_to_pid_(new NSPidToPidMap()) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  task_runner_ = base::CreateSequencedTaskRunnerWithTraits(
-      {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN,
+  task_runner_ = base::CreateSequencedTaskRunner(
+      {base::ThreadPool(), base::MayBlock(),
+       base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN,
        base::TaskPriority::USER_VISIBLE});
   arc_bridge_service_->process()->AddObserver(this);
 }
@@ -400,12 +395,12 @@ void ArcProcessService::OnReceiveProcessList(
 
 void ArcProcessService::OnReceiveMemoryInfo(
     RequestMemoryInfoCallback callback,
-    memory_instrumentation::mojom::GlobalMemoryDumpPtr dump) {
+    std::vector<mojom::ArcMemoryDumpPtr> process_dumps) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   base::PostTaskAndReplyWithResult(
       task_runner_.get(), FROM_HERE,
       base::BindOnce(&UpdateAndReturnMemoryInfo, nspid_to_pid_,
-                     std::move(dump)),
+                     std::move(process_dumps)),
       std::move(callback));
 }
 

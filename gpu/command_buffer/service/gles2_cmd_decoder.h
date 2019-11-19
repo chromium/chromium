@@ -53,17 +53,21 @@ class ShaderTranslatorInterface;
 class TransformFeedbackManager;
 class VertexArrayManager;
 
-struct DisallowedFeatures {
-  DisallowedFeatures() = default;
+struct GPU_GLES2_EXPORT DisallowedFeatures {
+  DisallowedFeatures();
+  ~DisallowedFeatures();
+  DisallowedFeatures(const DisallowedFeatures&);
 
   void AllowExtensions() {
     chromium_color_buffer_float_rgba = false;
     chromium_color_buffer_float_rgb = false;
     ext_color_buffer_float = false;
     ext_color_buffer_half_float = false;
+    ext_texture_filter_anisotropic = false;
     oes_texture_float_linear = false;
     oes_texture_half_float_linear = false;
     ext_float_blend = false;
+    oes_fbo_render_mipmap = false;
   }
 
   bool operator==(const DisallowedFeatures& other) const {
@@ -75,9 +79,11 @@ struct DisallowedFeatures {
   bool chromium_color_buffer_float_rgb = false;
   bool ext_color_buffer_float = false;
   bool ext_color_buffer_half_float = false;
+  bool ext_texture_filter_anisotropic = false;
   bool oes_texture_float_linear = false;
   bool oes_texture_half_float_linear = false;
   bool ext_float_blend = false;
+  bool oes_fbo_render_mipmap = false;
 };
 
 // This class implements the DecoderContext interface, decoding GLES2
@@ -195,7 +201,8 @@ class GPU_GLES2_EXPORT GLES2Decoder : public CommonDecoder,
       CopyTexImageResourceManager* copy_tex_image_blit) = 0;
 
  protected:
-  GLES2Decoder(CommandBufferServiceBase* command_buffer_service,
+  GLES2Decoder(DecoderClient* client,
+               CommandBufferServiceBase* command_buffer_service,
                Outputter* outputter);
 
  private:

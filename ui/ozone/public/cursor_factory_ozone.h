@@ -7,8 +7,8 @@
 
 #include <vector>
 
+#include "base/component_export.h"
 #include "ui/gfx/native_widget_types.h"
-#include "ui/ozone/ozone_base_export.h"
 
 namespace gfx {
 class Point;
@@ -18,7 +18,7 @@ namespace ui {
 
 typedef void* PlatformCursor;
 
-class OZONE_BASE_EXPORT CursorFactoryOzone {
+class COMPONENT_EXPORT(OZONE_BASE) CursorFactoryOzone {
  public:
   CursorFactoryOzone();
   virtual ~CursorFactoryOzone();

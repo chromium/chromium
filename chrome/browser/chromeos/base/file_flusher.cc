@@ -11,26 +11,12 @@
 #include "base/files/file.h"
 #include "base/files/file_enumerator.h"
 #include "base/logging.h"
-#include "base/synchronization/cancellation_flag.h"
+#include "base/synchronization/atomic_flag.h"
 #include "base/task/post_task.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 
 namespace chromeos {
-
-namespace {
-
-std::set<base::FilePath> MakeAbsoutePathSet(
-    const base::FilePath& base,
-    const std::vector<base::FilePath>& paths) {
-  std::set<base::FilePath> result;
-  for (const auto& path : paths) {
-    result.insert(path.IsAbsolute() ? path : base.Append(path));
-  }
-  return result;
-}
-
-}  // namespace
 
 ////////////////////////////////////////////////////////////////////////////////
 // FileFlusher::Job
@@ -39,7 +25,7 @@ class FileFlusher::Job {
  public:
   Job(const base::WeakPtr<FileFlusher>& master,
       const base::FilePath& path,
-      const std::vector<base::FilePath>& excludes,
+      bool recursive,
       const FileFlusher::OnFlushCallback& on_flush_callback,
       const base::Closure& callback);
   ~Job() = default;
@@ -54,9 +40,6 @@ class FileFlusher::Job {
   // Flush files on a blocking pool thread.
   void FlushAsync();
 
-  // Whether to exclude the |path| from flushing.
-  bool ShouldExclude(const base::FilePath& path) const;
-
   // Schedule a FinishOnUIThread task to run on the UI thread.
   void ScheduleFinish();
 
@@ -65,12 +48,12 @@ class FileFlusher::Job {
 
   base::WeakPtr<FileFlusher> master_;
   const base::FilePath path_;
-  const std::set<base::FilePath> excludes_;
+  const bool recursive_;
   const FileFlusher::OnFlushCallback on_flush_callback_;
   const base::Closure callback_;
 
   bool started_ = false;
-  base::CancellationFlag cancel_flag_;
+  base::AtomicFlag cancel_flag_;
   bool finish_scheduled_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(Job);
@@ -78,12 +61,12 @@ class FileFlusher::Job {
 
 FileFlusher::Job::Job(const base::WeakPtr<FileFlusher>& master,
                       const base::FilePath& path,
-                      const std::vector<base::FilePath>& excludes,
+                      bool recursive,
                       const FileFlusher::OnFlushCallback& on_flush_callback,
                       const base::Closure& callback)
     : master_(master),
       path_(path),
-      excludes_(MakeAbsoutePathSet(path, excludes)),
+      recursive_(recursive),
       on_flush_callback_(on_flush_callback),
       callback_(callback) {}
 
@@ -98,8 +81,9 @@ void FileFlusher::Job::Start() {
     return;
   }
 
-  base::PostTaskWithTraitsAndReply(
-      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+  base::PostTaskAndReply(
+      FROM_HERE,
+      {base::ThreadPool(), base::MayBlock(), base::TaskPriority::BEST_EFFORT},
       base::Bind(&FileFlusher::Job::FlushAsync, base::Unretained(this)),
       base::Bind(&FileFlusher::Job::FinishOnUIThread, base::Unretained(this)));
 }
@@ -118,13 +102,10 @@ void FileFlusher::Job::Cancel() {
 void FileFlusher::Job::FlushAsync() {
   VLOG(1) << "Flushing files under " << path_.value();
 
-  base::FileEnumerator traversal(path_, true /* recursive */,
+  base::FileEnumerator traversal(path_, recursive_,
                                  base::FileEnumerator::FILES);
   for (base::FilePath current = traversal.Next();
        !current.empty() && !cancel_flag_.IsSet(); current = traversal.Next()) {
-    if (ShouldExclude(current))
-      continue;
-
     base::File currentFile(current,
                            base::File::FLAG_OPEN | base::File::FLAG_WRITE);
     if (!currentFile.IsValid()) {
@@ -140,16 +121,12 @@ void FileFlusher::Job::FlushAsync() {
   }
 }
 
-bool FileFlusher::Job::ShouldExclude(const base::FilePath& path) const {
-  return excludes_.find(path) != excludes_.end();
-}
-
 void FileFlusher::Job::ScheduleFinish() {
   if (finish_scheduled_)
     return;
 
   finish_scheduled_ = true;
-  base::PostTaskWithTraits(
+  base::PostTask(
       FROM_HERE, {content::BrowserThread::UI},
       base::BindOnce(&Job::FinishOnUIThread, base::Unretained(this)));
 }
@@ -169,7 +146,7 @@ void FileFlusher::Job::FinishOnUIThread() {
 ////////////////////////////////////////////////////////////////////////////////
 // FileFlusher
 
-FileFlusher::FileFlusher() : weak_factory_(this) {}
+FileFlusher::FileFlusher() {}
 
 FileFlusher::~FileFlusher() {
   for (auto* job : jobs_)
@@ -177,14 +154,14 @@ FileFlusher::~FileFlusher() {
 }
 
 void FileFlusher::RequestFlush(const base::FilePath& path,
-                               const std::vector<base::FilePath>& excludes,
+                               bool recursive,
                                const base::Closure& callback) {
   for (auto* job : jobs_) {
     if (path == job->path() || path.IsParent(job->path()))
       job->Cancel();
   }
 
-  jobs_.push_back(new Job(weak_factory_.GetWeakPtr(), path, excludes,
+  jobs_.push_back(new Job(weak_factory_.GetWeakPtr(), path, recursive,
                           on_flush_callback_for_test_, callback));
   ScheduleJob();
 }

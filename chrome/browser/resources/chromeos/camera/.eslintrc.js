@@ -147,6 +147,12 @@ module.exports = {
   },
   'extends': 'eslint:recommended',
   'globals': {
+    'arc': 'readable',
+    // Adds BigInt64Array here since current version of eslint does not treat
+    // BigInt64Array as a defined type.
+    'BigInt64Array': 'readable',
+    'chromeosCamera': 'readable',
+    'cros': 'readable',
     'ImageCapture': 'readable',
     'webkitRequestFileSystem': 'readable',
   },
@@ -155,6 +161,7 @@ module.exports = {
   // Chromium tree.
   'rules': Object.assign({}, googleRules, {
     'curly': [2, 'multi-line', 'consistent'],
+    'eqeqeq': 2,
     'no-console': [2, {allow: ['warn', 'error']}],
 
     // We are using 2 spaces before trailing line comments. The option

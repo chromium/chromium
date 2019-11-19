@@ -55,78 +55,80 @@ bool ResourceLoadTiming::operator!=(const ResourceLoadTiming& other) const {
   return !(*this == other);
 }
 
-void ResourceLoadTiming::SetDnsStart(TimeTicks dns_start) {
+void ResourceLoadTiming::SetDnsStart(base::TimeTicks dns_start) {
   dns_start_ = dns_start;
 }
 
-void ResourceLoadTiming::SetRequestTime(TimeTicks request_time) {
+void ResourceLoadTiming::SetRequestTime(base::TimeTicks request_time) {
   request_time_ = request_time;
 }
 
-void ResourceLoadTiming::SetProxyStart(TimeTicks proxy_start) {
+void ResourceLoadTiming::SetProxyStart(base::TimeTicks proxy_start) {
   proxy_start_ = proxy_start;
 }
 
-void ResourceLoadTiming::SetProxyEnd(TimeTicks proxy_end) {
+void ResourceLoadTiming::SetProxyEnd(base::TimeTicks proxy_end) {
   proxy_end_ = proxy_end;
 }
 
-void ResourceLoadTiming::SetDnsEnd(TimeTicks dns_end) {
+void ResourceLoadTiming::SetDnsEnd(base::TimeTicks dns_end) {
   dns_end_ = dns_end;
 }
 
-void ResourceLoadTiming::SetConnectStart(TimeTicks connect_start) {
+void ResourceLoadTiming::SetConnectStart(base::TimeTicks connect_start) {
   connect_start_ = connect_start;
 }
 
-void ResourceLoadTiming::SetConnectEnd(TimeTicks connect_end) {
+void ResourceLoadTiming::SetConnectEnd(base::TimeTicks connect_end) {
   connect_end_ = connect_end;
 }
 
-void ResourceLoadTiming::SetWorkerStart(TimeTicks worker_start) {
+void ResourceLoadTiming::SetWorkerStart(base::TimeTicks worker_start) {
   worker_start_ = worker_start;
 }
 
-void ResourceLoadTiming::SetWorkerReady(TimeTicks worker_ready) {
+void ResourceLoadTiming::SetWorkerReady(base::TimeTicks worker_ready) {
   worker_ready_ = worker_ready;
 }
 
-void ResourceLoadTiming::SetSendStart(TimeTicks send_start) {
+void ResourceLoadTiming::SetSendStart(base::TimeTicks send_start) {
   TRACE_EVENT_MARK_WITH_TIMESTAMP0("blink.user_timing", "requestStart",
                                    send_start);
   send_start_ = send_start;
 }
 
-void ResourceLoadTiming::SetSendEnd(TimeTicks send_end) {
+void ResourceLoadTiming::SetSendEnd(base::TimeTicks send_end) {
   send_end_ = send_end;
 }
 
 void ResourceLoadTiming::SetReceiveHeadersStart(
-    TimeTicks receive_headers_start) {
+    base::TimeTicks receive_headers_start) {
   receive_headers_start_ = receive_headers_start;
 }
 
-void ResourceLoadTiming::SetReceiveHeadersEnd(TimeTicks receive_headers_end) {
+void ResourceLoadTiming::SetReceiveHeadersEnd(
+    base::TimeTicks receive_headers_end) {
   receive_headers_end_ = receive_headers_end;
 }
 
-void ResourceLoadTiming::SetSslStart(TimeTicks ssl_start) {
+void ResourceLoadTiming::SetSslStart(base::TimeTicks ssl_start) {
   ssl_start_ = ssl_start;
 }
 
-void ResourceLoadTiming::SetSslEnd(TimeTicks ssl_end) {
+void ResourceLoadTiming::SetSslEnd(base::TimeTicks ssl_end) {
   ssl_end_ = ssl_end;
 }
 
-void ResourceLoadTiming::SetPushStart(TimeTicks push_start) {
+void ResourceLoadTiming::SetPushStart(base::TimeTicks push_start) {
   push_start_ = push_start;
 }
 
-void ResourceLoadTiming::SetPushEnd(TimeTicks push_end) {
+void ResourceLoadTiming::SetPushEnd(base::TimeTicks push_end) {
   push_end_ = push_end;
 }
 
-double ResourceLoadTiming::CalculateMillisecondDelta(TimeTicks time) const {
+double ResourceLoadTiming::CalculateMillisecondDelta(
+    base::TimeTicks time) const {
   return time.is_null() ? -1 : (time - request_time_).InMillisecondsF();
 }
 

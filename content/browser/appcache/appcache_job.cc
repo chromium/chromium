@@ -8,7 +8,6 @@
 #include "content/browser/appcache/appcache_request.h"
 #include "content/browser/appcache/appcache_response.h"
 #include "content/browser/appcache/appcache_url_loader_job.h"
-#include "content/browser/appcache/appcache_url_request_job.h"
 #include "content/public/common/content_features.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_response_headers.h"
@@ -18,10 +17,6 @@ namespace content {
 
 AppCacheJob::~AppCacheJob() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-}
-
-AppCacheURLRequestJob* AppCacheJob::AsURLRequestJob() {
-  return nullptr;
 }
 
 AppCacheURLLoaderJob* AppCacheJob::AsURLLoaderJob() {

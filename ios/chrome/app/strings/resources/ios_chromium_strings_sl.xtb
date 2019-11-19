@@ -5,6 +5,8 @@
 <translation id="1185134272377778587">O Chromiumu</translation>
 <translation id="1289966288285062467">Obvestilo o zasebnosti za Chromium</translation>
 <translation id="1472013873724362412">Vaš račun ne deluje v Chromiumu. Obrnite se na skrbnika domene ali za prijavo uporabite običajen Google Račun.</translation>
+<translation id="1507010443238049608">Pomagajte izboljšati funkcije in delovanje Chromiuma</translation>
+<translation id="1617663976202781617">Podatki iz sinhronizacije za Chromium</translation>
 <translation id="1736662517232558588">Podatki Chromiuma so izbrisani</translation>
 <translation id="1838412507805038478">Chromium je preveril, ali je izdajatelj <ph name="ISSUER" /> izdal potrdilo tega spletnega mesta.</translation>
 <translation id="1843424232666537147">Chromium ima funkcije, s katerimi lažje upravljate internetne podatke in hitrost nalaganja spletnih strani.
@@ -13,25 +15,16 @@
 <translation id="2168108852149185974">Nekateri dodatki povzročajo zrušitve Chromiuma. Odstranite jih:</translation>
 <translation id="2178608107313874732">Chromium trenutno ne more uporabljati fotoaparata</translation>
 <translation id="2195025571279539885">Želite, da Chromium naslednjič ponudi prevod strani v jeziku <ph name="LANGUAGE_NAME" /> s tega spletnega mesta?</translation>
-<translation id="2517624234762908348">Sinhroniziranje podatkov v Chromiumu</translation>
-<translation id="2647554856022461007">Chromium lahko za izboljšanje izkušnje pri brskanju uporabi spletne storitve.
-Te storitve lahko po želji onemogočite. <ph name="BEGIN_LINK" />Več o tem<ph name="END_LINK" /></translation>
+<translation id="2590893390871230428">Sinhroniziranje podatkov v Chromiumu</translation>
 <translation id="2730884209570016437">Chromium ne more uporabljati fotoaparata, ker ga uporablja druga aplikacija</translation>
 <translation id="2915596697727466327">Chromium uporablja funkcijo Face ID za zagotavljanje pooblaščenega dostopa do vaših gesel.</translation>
 <translation id="3256316712990552818">Kopirano v Chromium</translation>
-<translation id="3413120535237193088">Če želite dostopati do zaznamkov v vseh napravah, se prijavite v Chromium.</translation>
-<translation id="3473048256428424907">Vklop bralnika kod QR Chromiuma</translation>
-<translation id="3605252743693911722">Prijavite se v Chromium, če želite dostopati do svojih zaznamkov, gesel in drugega v vseh napravah.</translation>
 <translation id="3805899903892079518">Chromium nima dostopa do fotografij ali videoposnetkov. Omogočite dostop v sistemu iOS: Settings &gt; Privacy &gt; Photos.</translation>
-<translation id="4024541897090868497">Če želite dostopati do zavihkov v vseh napravah, se prijavite v Chromium.</translation>
-<translation id="4157467675761413638">Nasvet za Chromium. Če želite več možnosti za zavihke, pridržite gumb za prikaz zavihkov v orodni vrstici na dnu ali vrhu zaslona.</translation>
-<translation id="4241912885070669028">Odjavili se boste iz računa, ki ga upravlja <ph name="SIGNOUT_MANAGED_DOMAIN" />. S tem boste iz te naprave izbrisali podatke v Chromiumu, vendar bodo vaši podatki še vedno na voljo v Google Računu.</translation>
-<translation id="4272892696084633551">Pomagajte izboljšati funkcije in delovanje Chromiuma</translation>
 <translation id="4555020257205549924">Kadar je vklopljena ta funkcija, bo Chromium ponudil, da z uporabo Google Prevajalnika prevede strani v drugih jezikih. <ph name="BEGIN_LINK" />Več o tem<ph name="END_LINK" /></translation>
+<translation id="4681781466797808448">Vklopite optični bralnik Chromium</translation>
 <translation id="4787850887676698916">Zavihki, ki ste jih odprli v Chromiumu v drugih napravah, bodo prikazani tukaj.</translation>
-<translation id="495292094137889840">Začetek uporabe bralnika kod QR Chromiuma</translation>
 <translation id="4999538639245140991">Ker se boste odjavili iz računa, ki ga upravlja <ph name="SIGNOUT_MANAGED_DOMAIN" />, boste iz te naprave izbrisali podatke v Chromiumu. Vaši podatki bodo še vedno na voljo v Google Računu.</translation>
-<translation id="5231355151045086930">Odjava iz Chromiuma</translation>
+<translation id="5573014823074921752">Nasvet za Chromium. Če želite več možnosti za zavihke, pridržite gumb za prikaz zavihkov v orodni vrstici na dnu ali vrhu zaslona.</translation>
 <translation id="5862307444128926510">Pozdravljeni v Chromiumu</translation>
 <translation id="5945387852661427312">Prijavljate se z računom, ki ga upravlja <ph name="DOMAIN" />, in nadzor nad podatki v Chromiumu predajate skrbniku. Vaši podatki bodo trajno povezani s tem računom. Če se odjavite iz Chromiuma, boste izbrisali podatke iz te naprave, vendar bodo še naprej shranjeni v Google Računu.</translation>
 <translation id="6068866989048414399">Pogoji storitve za Chromium</translation>
@@ -48,11 +41,13 @@ Te storitve lahko po želji onemogočite. <ph name="BEGIN_LINK" />Več o tem<ph 
 <translation id="7674213385180944843">Odprite Settings &gt; Privacy &gt; Camera &gt; Chromium in vklopite fotoaparat.</translation>
 <translation id="7746854981345936341">Nasvet za Chromium. Nekateri gumbi, na primer gumbi za nazaj, naprej in iskanje, so zdaj na dnu zaslona.</translation>
 <translation id="786327964234957808">Z računa za sinhronizacijo <ph name="USER_EMAIL1" /> boste preklopili na račun <ph name="USER_EMAIL2" />. Obstoječe podatke v Chromiumu upravlja <ph name="DOMAIN" />. S tem boste izbrisali podatke iz te naprave, vendar bodo vaši podatki še vedno na voljo v računu <ph name="USER_EMAIL1" />.</translation>
+<translation id="7890287942691234100">Začnite uporabljati optični bralnik Chromium</translation>
 <translation id="8073677936375100957">Ali želite izbrisati podatke v Chromiumu iz te naprave?</translation>
 <translation id="8175055321229419309">Nasvet: <ph name="BEGIN_LINK" />premaknite Chromium v vrstico z aplikacijami<ph name="END_LINK" /></translation>
 <translation id="8252885722420466166">Izboljšajte izkušnjo z Googlom v Chromiumu na podlagi lokacije.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> Ustvarjalci Chromiuma. Vse pravice pridržane.</translation>
 <translation id="8809780021347235332">Če želite shraniti slike, se dotaknite aplikacije Settings in dovolite Chromiumu dostop do fotografij</translation>
 <translation id="9022552996538154597">Prijava v Chromium</translation>
+<translation id="9217078088703304241"><ph name="BEGIN_LINK" />Oglejte si posodobljene pogoje storitve za Chromium.<ph name="END_LINK" /></translation>
 <translation id="985602178874221306">Ustvarjalci Chromiuma</translation>
 </translationbundle>

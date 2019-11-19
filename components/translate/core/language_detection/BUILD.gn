@@ -25,6 +25,7 @@ static_library("language_detection") {
   deps = [
     ":chinese_script_classifier",
     "//base",
+    "//components/language/core/common",
     "//components/translate/core/common",
     "//third_party/cld_3/src/src:cld_3",
     "//third_party/icu",

@@ -105,6 +105,9 @@ extern const char kMediaRouterStableExtensionId[];
 // The extension id of the Chrome Reporting extension.
 extern const char kCloudReportingExtensionId[];
 
+// A list of all the first party extension IDs, last entry is null.
+extern const char* const kBuiltInFirstPartyExtensionIds[];
+
 // The buckets used for app launches.
 enum AppLaunchBucket {
   // Launch from NTP apps section while maximized.
@@ -194,6 +197,11 @@ enum AppLaunchBucket {
 #if defined(OS_CHROMEOS)
 // The extension id of the Assessment Assistant extension.
 extern const char kAssessmentAssistantExtensionId[];
+// The extension id of the Automatic Clicks extension.
+extern const char kAutoclickExtensionId[];
+// Path to preinstalled Automatic Clicks extension (relative to
+// |chrome::DIR_RESOURCES|).
+extern const char kAutoclickExtensionPath[];
 // Path to preinstalled ChromeVox screen reader extension (relative to
 // |chrome::DIR_RESOURCES|).
 extern const char kChromeVoxExtensionPath[];
@@ -202,9 +210,9 @@ extern const char kSelectToSpeakExtensionId[];
 // Path to preinstalled Select-to-speak extension (relative to
 // |chrome::DIR_RESOURCES|).
 extern const char kSelectToSpeakExtensionPath[];
-// The extension id of the Switch access extension.
+// The extension id of the Switch Access extension.
 extern const char kSwitchAccessExtensionId[];
-// Path to preinstalled Switch access extension (relative to
+// Path to preinstalled Switch Access extension (relative to
 // |chrome::DIR_RESOURCES|).
 extern const char kSwitchAccessExtensionPath[];
 // Name of the manifest file in an extension when a special manifest is used
@@ -235,8 +243,6 @@ extern const char kChromeCameraAppId[];
 extern const char kChromeCameraAppDevId[];
 // Path to preinstalled Chrome camera app.
 extern const char kChromeCameraAppPath[];
-// The app ID of the contained home app.
-extern const char kContainedHomeAppId[];
 #endif
 
 // What causes an extension to be installed? Used in histograms, so don't

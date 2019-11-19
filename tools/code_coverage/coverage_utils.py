@@ -666,7 +666,7 @@ def GetRelativePathToDirectoryOfFile(target_path, base_path):
   return os.path.relpath(target_path, base_dir)
 
 
-def GetSharedLibraries(binary_paths, build_dir):
+def GetSharedLibraries(binary_paths, build_dir, otool_path):
   """Returns list of shared libraries used by specified binaries."""
   logging.info('Finding shared libraries for targets (if any).')
   shared_libraries = []
@@ -678,7 +678,8 @@ def GetSharedLibraries(binary_paths, build_dir):
     shared_library_re = re.compile(r'.*\.so[.0-9]*\s=>\s(.*' + build_dir +
                                    r'.*\.so[.0-9]*)\s.*')
   elif sys.platform.startswith('darwin'):
-    cmd.extend(['otool', '-L'])
+    otool = otool_path if otool_path else 'otool'
+    cmd.extend([otool, '-L'])
     shared_library_re = re.compile(r'\s+(@rpath/.*\.dylib)\s.*')
   else:
     assert False, 'Cannot detect shared libraries used by the given targets.'
@@ -749,7 +750,7 @@ def _CmdSharedLibraries(args):
     logging.error('No binaries are specified.')
     return 1
 
-  library_paths = GetSharedLibraries(args.object, args.build_dir)
+  library_paths = GetSharedLibraries(args.object, args.build_dir, None)
   if not library_paths:
     return 0
 

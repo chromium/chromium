@@ -18,7 +18,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/task_runner_util.h"
 #include "chromeos/cryptohome/cryptohome_parameters.h"
-#include "chromeos/dbus/cryptohome_client.h"
+#include "chromeos/dbus/cryptohome/cryptohome_client.h"
 
 namespace policy {
 
@@ -60,8 +60,7 @@ CachedPolicyKeyLoaderChromeOS::CachedPolicyKeyLoaderChromeOS(
     : task_runner_(task_runner),
       cryptohome_client_(cryptohome_client),
       account_id_(account_id),
-      user_policy_key_dir_(user_policy_key_dir),
-      weak_factory_(this) {}
+      user_policy_key_dir_(user_policy_key_dir) {}
 
 CachedPolicyKeyLoaderChromeOS::~CachedPolicyKeyLoaderChromeOS() {}
 

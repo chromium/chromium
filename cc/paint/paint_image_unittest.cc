@@ -8,6 +8,7 @@
 #include "cc/paint/paint_image_builder.h"
 #include "cc/test/fake_paint_image_generator.h"
 #include "cc/test/skia_common.h"
+#include "cc/test/test_paint_worklet_input.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace cc {
@@ -149,11 +150,26 @@ TEST(PaintImageTest, DecodeToYuv420NoAlpha) {
   ASSERT_TRUE(image.IsYuv(&image_yuv_size_info, image_plane_indices));
   ASSERT_EQ(yuva_size_info, image_yuv_size_info);
 
+  SkYUVAIndex plane_indices[SkYUVAIndex::kIndexCount];
   image.DecodeYuv(planes, 1u /* frame_index */,
-                  PaintImage::kDefaultGeneratorClientId, yuva_size_info);
+                  PaintImage::kDefaultGeneratorClientId, yuva_size_info,
+                  plane_indices);
   ASSERT_EQ(yuv_generator->frames_decoded().size(), 1u);
   EXPECT_EQ(yuv_generator->frames_decoded().count(1u), 1u);
   yuv_generator->reset_frames_decoded();
+}
+
+TEST(PaintImageTest, BuildPaintWorkletImage) {
+  gfx::SizeF size(100, 50);
+  scoped_refptr<TestPaintWorkletInput> input =
+      base::MakeRefCounted<TestPaintWorkletInput>(size);
+  PaintImage paint_image = PaintImageBuilder::WithDefault()
+                               .set_id(1)
+                               .set_paint_worklet_input(std::move(input))
+                               .TakePaintImage();
+  EXPECT_TRUE(paint_image.paint_worklet_input());
+  EXPECT_EQ(paint_image.width(), size.width());
+  EXPECT_EQ(paint_image.height(), size.height());
 }
 
 }  // namespace cc

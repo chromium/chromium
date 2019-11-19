@@ -56,8 +56,7 @@ class PRINTING_EXPORT MetafilePlayer {
           stretch_to_fit(false),
           center_horizontally(false),
           center_vertically(false),
-          autorotate(false) {
-    }
+          autorotate(false) {}
 
     bool shrink_to_fit;
     bool stretch_to_fit;
@@ -113,8 +112,7 @@ class PRINTING_EXPORT Metafile : public MetafilePlayer {
   // Initializes the metafile with the data in |src_buffer|. Returns true
   // on success.
   // Note: It should only be called from within the browser process.
-  virtual bool InitFromData(const void* src_buffer,
-                            size_t src_buffer_size) = 0;
+  virtual bool InitFromData(const void* src_buffer, size_t src_buffer_size) = 0;
 
   // Prepares a context for rendering a new page with the given |page_size|,
   // |content_area| and a |scale_factor| to use for the drawing. The units are

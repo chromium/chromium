@@ -92,7 +92,7 @@ const char kSafeBrowsingScoutReportingEnabled[] =
     "safebrowsing.scout_reporting_enabled";
 const char kSafeBrowsingTriggerEventTimestamps[] =
     "safebrowsing.trigger_event_timestamps";
-const char kSafeBrowsingUnhandledSyncPasswordReuses[] =
+const char kSafeBrowsingUnhandledGaiaPasswordReuses[] =
     "safebrowsing.unhandled_sync_password_reuses";
 const char kSafeBrowsingNextPasswordCaptureEventLogTime[] =
     "safebrowsing.next_password_capture_event_log_time";
@@ -106,6 +106,26 @@ const char kPasswordProtectionWarningTrigger[] =
     "safebrowsing.password_protection_warning_trigger";
 const char kAdvancedProtectionLastRefreshInUs[] =
     "safebrowsing.advanced_protection_last_refresh";
+const char kSafeBrowsingRealTimeLookupEnabled[] =
+    "safebrowsing.real_time_lookup_enabled";
+const char kSafeBrowsingSendFilesForMalwareCheck[] =
+    "safebrowsing.send_files_for_malware_check";
+const char kUnsafeEventsReportingEnabled[] =
+    "safebrowsing.unsafe_events_reporting";
+const char kBlockLargeFileTransfer[] =
+    "safebrowsing.block_large_file_transfers";
+const char kDelayDeliveryUntilVerdict[] =
+    "safebrowsing.delay_delivery_until_verdict";
+const char kAllowPasswordProtectedFiles[] =
+    "safebrowsing.allow_password_protected_files";
+const char kCheckContentCompliance[] = "safebrowsing.check_content_compliance";
+const char kURLsToCheckComplianceOfDownloadedContent[] =
+    "safebrowsing.urls_to_check_compliance_of_downloaded_content";
+const char kURLsToCheckForMalwareOfUploadedContent[] =
+    "safebrowsing.urls_to_check_for_malware_of_uploaded_content";
+const char kURLsToNotCheckComplianceOfUploadedContent[] =
+    "policy.urls_to_not_check_compliance_of_uploaded_content";
+
 }  // namespace prefs
 
 namespace safe_browsing {
@@ -157,7 +177,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
                                 false);
   registry->RegisterDictionaryPref(prefs::kSafeBrowsingIncidentsSent);
   registry->RegisterDictionaryPref(
-      prefs::kSafeBrowsingUnhandledSyncPasswordReuses);
+      prefs::kSafeBrowsingUnhandledGaiaPasswordReuses);
   registry->RegisterStringPref(
       prefs::kSafeBrowsingNextPasswordCaptureEventLogTime,
       "0");  // int64 as string
@@ -167,10 +187,24 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(prefs::kPasswordProtectionWarningTrigger,
                                 PASSWORD_PROTECTION_OFF);
   registry->RegisterInt64Pref(prefs::kAdvancedProtectionLastRefreshInUs, 0);
+  registry->RegisterBooleanPref(prefs::kSafeBrowsingRealTimeLookupEnabled,
+                                false);
+  registry->RegisterIntegerPref(prefs::kSafeBrowsingSendFilesForMalwareCheck,
+                                DO_NOT_SCAN);
 }
 
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(prefs::kSafeBrowsingTriggerEventTimestamps);
+  registry->RegisterBooleanPref(prefs::kUnsafeEventsReportingEnabled, false);
+  registry->RegisterIntegerPref(prefs::kBlockLargeFileTransfer, 0);
+  registry->RegisterIntegerPref(prefs::kDelayDeliveryUntilVerdict, DELAY_NONE);
+  registry->RegisterIntegerPref(
+      prefs::kAllowPasswordProtectedFiles,
+      AllowPasswordProtectedFilesValues::ALLOW_UPLOADS_AND_DOWNLOADS);
+  registry->RegisterIntegerPref(prefs::kCheckContentCompliance, CHECK_NONE);
+  registry->RegisterListPref(prefs::kURLsToCheckComplianceOfDownloadedContent);
+  registry->RegisterListPref(prefs::kURLsToNotCheckComplianceOfUploadedContent);
+  registry->RegisterListPref(prefs::kURLsToCheckForMalwareOfUploadedContent);
 }
 
 void SetExtendedReportingPrefAndMetric(
@@ -262,10 +296,9 @@ base::ListValue GetSafeBrowsingPreferencesList(PrefService* prefs) {
   // Add the status of the preferences if they are Enabled or Disabled for the
   // user.
   for (const char* preference : safe_browsing_preferences) {
-    preferences_list.GetList().push_back(base::Value(preference));
+    preferences_list.Append(base::Value(preference));
     bool enabled = prefs->GetBoolean(preference);
-    preferences_list.GetList().push_back(
-        base::Value(enabled ? "Enabled" : "Disabled"));
+    preferences_list.Append(base::Value(enabled ? "Enabled" : "Disabled"));
   }
   return preferences_list;
 }

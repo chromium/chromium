@@ -1,34 +1,23 @@
 {
   "layers": [
     {
-      "name": "LayoutView #document",
-      "bounds": [800, 600],
-      "drawsContent": false,
-      "backgroundColor": "#FFFFFF"
-    },
-    {
-      "name": "Scrolling Layer",
-      "bounds": [800, 600],
-      "drawsContent": false
-    },
-    {
       "name": "Scrolling Contents Layer",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
       "paintInvalidations": [
         {
-          "object": "LayoutBlockFlow DIV id='item2' class='sizedToGridArea green'",
+          "object": "LayoutNGBlockFlow DIV id='item2' class='sizedToGridArea green'",
           "rect": [8, 236, 200, 100],
           "reason": "disappeared"
         },
         {
-          "object": "LayoutBlockFlow DIV id='item2' class='sizedToGridArea green'",
+          "object": "LayoutNGBlockFlow DIV id='item2' class='sizedToGridArea green'",
           "rect": [8, 236, 200, 100],
           "reason": "chunk appeared"
         },
         {
-          "object": "LayoutBlockFlow DIV id='item1' class='sizedToGridArea green negativeZIndex'",
+          "object": "LayoutNGBlockFlow DIV id='item1' class='sizedToGridArea green negativeZIndex'",
           "rect": [8, 126, 200, 100],
           "reason": "chunk reordered"
         }

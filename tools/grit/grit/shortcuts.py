@@ -5,6 +5,8 @@
 '''Stuff to prevent conflicting shortcuts.
 '''
 
+from __future__ import print_function
+
 from grit import lazy_re
 
 

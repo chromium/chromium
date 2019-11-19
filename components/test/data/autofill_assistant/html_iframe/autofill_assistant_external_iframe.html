@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+
+<!--
+Copyright 2019 The Chromium Authors. All rights reserved.
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Autofill Assistant Test</title>
+
+    <script>
+      var removeDiv = function() {
+        var div = document.getElementById("divToRemove");
+        div.parentNode.removeChild(div);
+      }
+
+      var setText = function() {
+        var select = document.getElementById("select");
+        var input = document.getElementById("myPet");
+        input.value = select.options[select.selectedIndex].label;
+      }
+    </script>
+  </head>
+  <body>
+    <button id="button" type="button" onclick="removeDiv()">Button</button>
+    <div id="divToRemove">Text</div>
+
+    <input id="input" type="text" />
+
+    <select id="select" name="pet" onchange="setText()">
+      <option value="Dog">Dog</option>
+      <option value="Cat">Cat</option>
+      <option value="Hamster">Hamster</option>
+      <option value="Fish">Fish</option>
+    </select>
+    <input type="text" id="myPet"/>
+  </body>
+</html>

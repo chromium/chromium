@@ -52,7 +52,7 @@ def _Divide(a, b):
 
 
 def _IncludeInTotals(section_name):
-  return section_name != models.SECTION_BSS and '(' not in section_name
+  return section_name not in models.BSS_SECTIONS and '(' not in section_name
 
 
 def _GetSectionSizeInfo(section_sizes):
@@ -261,9 +261,11 @@ class DescriberText(Describer):
         yield '{}@{:<9s}  {}  {}{}'.format(
             sym.section, address, pss_field, sym.name, last_field)
       else:
-        path = sym.source_path or sym.object_path or '{no path}'
-        if sym.generated_source:
+        path = sym.source_path or sym.object_path
+        if path and sym.generated_source:
           path = '$root_gen_dir/' + path
+        path = path or '{no path}'
+
         yield '{}@{:<9s}  {} {}'.format(
             sym.section, address, pss_field, path)
         if sym.name:
@@ -483,7 +485,7 @@ class DescriberText(Describer):
 
   def _DescribeDeltaSizeInfo(self, diff):
     common_metadata = {k: v for k, v in diff.before.metadata.iteritems()
-                       if diff.after.metadata[k] == v}
+                       if diff.after.metadata.get(k) == v}
     before_metadata = {k: v for k, v in diff.before.metadata.iteritems()
                        if k not in common_metadata}
     after_metadata = {k: v for k, v in diff.after.metadata.iteritems()
@@ -512,64 +514,98 @@ class DescriberText(Describer):
     return itertools.chain(metadata_desc, section_desc, coverage_desc, ('',),
                            group_desc)
 
+
 def DescribeSizeInfoCoverage(size_info):
   """Yields lines describing how accurate |size_info| is."""
   for section, section_name in models.SECTION_TO_SECTION_NAME.iteritems():
-    if section_name not in size_info.section_sizes:
-      continue
-    expected_size = size_info.section_sizes[section_name]
-
+    expected_size = size_info.section_sizes.get(section_name)
     in_section = size_info.raw_symbols.WhereInSection(section_name)
     actual_size = in_section.size
-    size_percent = _Divide(actual_size, expected_size)
-    yield ('Section {}: has {:.1%} of {} bytes accounted for from '
-           '{} symbols. {} bytes are unaccounted for.').format(
-               section_name, size_percent, actual_size, len(in_section),
-               expected_size - actual_size)
 
-    sources_count = sum(1 for s in in_section if s.source_path)
-    sources_fraction = _Divide(sources_count, len(in_section))
-    yield '* {} have source paths assigned ({:.1%})'.format(
-        sources_count, sources_fraction)
+    if expected_size is None:
+      yield 'Section {}: {} bytes from {} symbols.'.format(
+          section_name, actual_size, len(in_section))
+    else:
+      size_percent = _Divide(actual_size, expected_size)
+      yield ('Section {}: has {:.1%} of {} bytes accounted for from '
+             '{} symbols. {} bytes are unaccounted for.').format(
+                 section_name, size_percent, actual_size, len(in_section),
+                 expected_size - actual_size)
 
-    star_syms = in_section.WhereNameMatches(r'^\*')
-    padding = in_section.padding - star_syms.padding
-    anonymous_syms = star_syms.Inverted().WhereHasAnyAttribution().Inverted()
+    padding = in_section.padding
     yield '* Padding accounts for {} bytes ({:.1%})'.format(
-        padding, _Divide(padding, in_section.size))
-    if len(star_syms):
-      yield ('* {} placeholders (symbols that start with **) account for '
-             '{} bytes ({:.1%})').format(
-                 len(star_syms), star_syms.size,
-                 _Divide(star_syms.size,  in_section.size))
-    if anonymous_syms:
-      yield '* {} anonymous symbols account for {} bytes ({:.1%})'.format(
-          len(anonymous_syms), int(anonymous_syms.pss),
-          _Divide(star_syms.size, in_section.size))
+        padding, _Divide(padding, actual_size))
+
+    def size_msg(syms, padding=False):
+      size = syms.size if not padding else syms.size_without_padding
+      size_msg = 'Accounts for {} bytes ({:.1%}).'.format(
+          size, _Divide(size, actual_size))
+      if padding:
+        size_msg = size_msg[:-1] + ' padding is {} bytes.'.format(syms.padding)
+      return size_msg
+
+    syms = in_section.Filter(lambda s: s.source_path)
+    yield '* {} have source paths. {}'.format(len(syms), size_msg(syms))
+    syms = in_section.WhereHasComponent()
+    yield '* {} have a component assigned. {}'.format(len(syms), size_msg(syms))
+
+    syms = in_section.WhereNameMatches(r'^\*')
+    if len(syms):
+      yield '* {} placeholders exist (symbols that start with **). {}'.format(
+          len(syms), size_msg(syms))
+
+    syms = syms.Inverted().WhereHasAnyAttribution().Inverted()
+    if syms:
+      yield '* {} symbols have no name or path. {}'.format(
+          len(syms), size_msg(syms))
 
     if section == 'r':
-      string_literals = in_section.Filter(lambda s: s.IsStringLiteral())
-      yield '* Contains {} string literals. Total size={}, padding={}'.format(
-          len(string_literals), string_literals.size_without_padding,
-          string_literals.padding)
+      syms = in_section.Filter(lambda s: s.IsStringLiteral())
+      yield '* {} string literals exist. {}'.format(
+          len(syms), size_msg(syms, padding=True))
 
-    aliased_symbols = in_section.Filter(lambda s: s.aliases)
-    if len(aliased_symbols):
-      uniques = sum(1 for s in aliased_symbols.IterUniqueSymbols())
+    syms = in_section.Filter(lambda s: s.aliases)
+    if len(syms):
+      uniques = sum(1 for s in syms.IterUniqueSymbols())
       saved = sum(s.size_without_padding * (s.num_aliases - 1)
-                  for s in aliased_symbols.IterUniqueSymbols())
-      yield ('* Contains {} aliases, mapped to {} unique addresses '
-             '({} bytes saved)').format(
-                 len(aliased_symbols), uniques, saved)
-    else:
-      yield '* Contains 0 aliases'
+                  for s in syms.IterUniqueSymbols())
+      yield ('* {} aliases exist, mapped to {} unique addresses '
+             '({} bytes saved)').format(len(syms), uniques, saved)
 
-    inlined_symbols = in_section.WhereObjectPathMatches('{shared}')
-    if len(inlined_symbols):
-      yield '* {} symbols have shared ownership ({} bytes)'.format(
-          len(inlined_symbols), inlined_symbols.size)
+    syms = in_section.WhereObjectPathMatches('{shared}')
+    if len(syms):
+      yield '* {} symbols have shared ownership. {}'.format(
+          len(syms), size_msg(syms))
     else:
-      yield '* 0 symbols have shared ownership'
+      yield '* 0 symbols have shared ownership.'
+
+    for flag, desc in (
+        (models.FLAG_HOT, 'marked as "hot"'),
+        (models.FLAG_UNLIKELY, 'marked as "unlikely"'),
+        (models.FLAG_STARTUP, 'marked as "startup"'),
+        (models.FLAG_CLONE, 'clones'),
+        (models.FLAG_GENERATED_SOURCE, 'from generated sources')):
+      syms = in_section.WhereHasFlag(flag)
+      if len(syms):
+        yield '* {} symbols are {}. {}'.format(len(syms), desc, size_msg(syms))
+
+    # These thresholds were found by experimenting with arm32 Chrome.
+    # E.g.: Set them to 0 and see what warnings get logged, then take max value.
+    spam_counter = 0
+    for i in xrange(len(in_section) - 1):
+      sym = in_section[i + 1]
+      if (not sym.full_name.startswith('*')
+          and not sym.source_path.endswith('.S')  # Assembly symbol are iffy.
+          and not sym.IsStringLiteral()
+          and ((sym.section in 'rd' and sym.padding >= 256) or
+               (sym.section in 't' and sym.padding >= 64))):
+        # TODO(crbug.com/959906): We should synthesize symbols for these gaps
+        #     rather than attribute them as padding.
+        spam_counter += 1
+        if spam_counter <= 5:
+          yield 'Large padding of {} between:'.format(sym.padding)
+          yield '  A) ' + repr(in_section[i])
+          yield '  B) ' + repr(sym)
 
 
 class DescriberCsv(Describer):

@@ -14,10 +14,10 @@ blink::WebImeTextSpan::Type ConvertUiImeTextSpanTypeToWebType(
     ui::ImeTextSpan::Type type);
 ui::ImeTextSpan::Type ConvertWebImeTextSpanTypeToUiType(
     blink::WebImeTextSpan::Type type);
-ws::mojom::ImeTextSpanThickness ConvertUiThicknessToUiImeTextSpanThickness(
+ui::mojom::ImeTextSpanThickness ConvertUiThicknessToUiImeTextSpanThickness(
     ui::ImeTextSpan::Thickness thickness);
 ui::ImeTextSpan::Thickness ConvertUiImeTextSpanThicknessToUiThickness(
-    ws::mojom::ImeTextSpanThickness thickness);
+    ui::mojom::ImeTextSpanThickness thickness);
 blink::WebImeTextSpan ConvertUiImeTextSpanToBlinkImeTextSpan(
     const ui::ImeTextSpan&);
 ui::ImeTextSpan ConvertBlinkImeTextSpanToUiImeTextSpan(

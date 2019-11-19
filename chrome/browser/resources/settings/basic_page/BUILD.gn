@@ -18,9 +18,10 @@ js_library("basic_page") {
     "../android_apps_page:android_apps_browser_proxy",
     "../change_password_page:change_password_browser_proxy",
     "../chrome_cleanup_page:chrome_cleanup_proxy",
+    "../prefs:prefs_behavior",
     "../settings_page:main_page_behavior",
     "//ui/webui/resources/js:load_time_data",
     "//ui/webui/resources/js:web_ui_listener_behavior",
   ]
-  externs_list = [ "$externs_path/pending.js" ]
+  externs_list = [ "$externs_path/pending_polymer.js" ]
 }

@@ -5,6 +5,7 @@
 #ifndef DEVICE_VR_UTIL_SAMPLE_QUEUE_H_
 #define DEVICE_VR_UTIL_SAMPLE_QUEUE_H_
 
+#include <cstddef>
 #include <vector>
 
 #include "base/macros.h"

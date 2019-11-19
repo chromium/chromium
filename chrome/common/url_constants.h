@@ -26,8 +26,15 @@
 
 namespace chrome {
 
+// "Learn more" URL for accessibility image labels, linked from the permissions
+// dialog shown when a user enables the feature.
+extern const char kAccessibilityLabelsLearnMoreURL[];
+
 // "Learn more" URL for when profile settings are automatically reset.
 extern const char kAutomaticSettingsResetLearnMoreURL[];
+
+// "Learn more" URL for Advanced Protection download warnings.
+extern const char kAdvancedProtectionDownloadLearnMoreURL[];
 
 // The URL for providing help when the Bluetooth adapter is off.
 extern const char kBluetoothAdapterOffHelpURL[];
@@ -49,10 +56,16 @@ extern const char kChooserUsbOverviewURL[];
 // Link to the forum for Chrome Beta.
 extern const char kChromeBetaForumURL[];
 
+// Link to the release notes page managed by marketing.
+extern const char kChromeReleaseNotesURL[];
+
 // General help links for Chrome, opened using various actions.
 extern const char kChromeHelpViaKeyboardURL[];
 extern const char kChromeHelpViaMenuURL[];
 extern const char kChromeHelpViaWebUIURL[];
+#if defined(OS_CHROMEOS)
+extern const char kChromeOsHelpViaWebUIURL[];
+#endif
 
 // The chrome-native: scheme is used show pages rendered with platform specific
 // widgets instead of using HTML.
@@ -131,6 +144,9 @@ extern const char kGoogleAccountActivityControlsURL[];
 // URL of the Google Account.
 extern const char kGoogleAccountURL[];
 
+// URL of the Google Account chooser.
+extern const char kGoogleAccountChooserURL[];
+
 // URL of the Google Password Manager.
 extern const char kGooglePasswordManagerURL[];
 
@@ -173,8 +189,17 @@ extern const char kRemoveNonCWSExtensionURL[];
 // "Learn more" URL for resetting profile preferences.
 extern const char kResetProfileSettingsLearnMoreURL[];
 
+// "Learn more" URL for safety tip bubble.
+extern const char kSafetyTipHelpCenterURL[];
+
 // Help URL for the settings page's search feature.
 extern const char kSettingsSearchHelpURL[];
+
+// URL to use as the 'Learn More' link when the interstitial is caused by
+// a "ERR_CERT_SYMANTEC_LEGACY" error, -202 fragment is included so
+// chrome://connection-help expands the right section if the user can't reach
+// the help center.
+extern const char kSymantecSupportUrl[];
 
 // The URL for the Learn More page about Sync and Google services.
 extern const char kSyncAndGoogleServicesLearnMoreURL[];
@@ -202,8 +227,23 @@ extern const char kEnhancedPlaybackNotificationLearnMoreURL[];
 #endif
 
 #if defined(OS_CHROMEOS)
+// Help center URL for Chrome OS Account Manager.
+extern const char kAccountManagerLearnMoreURL[];
+
 // The URL for the "learn more" link for Google Play Store (ARC) settings.
 extern const char kAndroidAppsLearnMoreURL[];
+
+// The URL for the "Learn more" link in the External storage preferences
+// settings.
+extern const char kArcExternalStorageLearnMoreURL[];
+
+// The path format to the localized offline ARC++ Privacy Policy.
+// Relative to |kChromeOSAssetPath|.
+extern const char kArcPrivacyPolicyPathFormat[];
+
+// The path format to the localized offline ARC++ Terms of Service.
+// Relative to |kChromeOSAssetPath|.
+extern const char kArcTermsPathFormat[];
 
 // Accessibility help link for Chrome.
 extern const char kChromeAccessibilityHelpURL[];
@@ -220,19 +260,13 @@ extern const char kCrosScheme[];
 
 extern const char kCupsPrintLearnMoreURL[];
 
+extern const char kCupsPrintPPDLearnMoreURL[];
+
 // The URL for the "Learn more" link the the Easy Unlock settings.
 extern const char kEasyUnlockLearnMoreUrl[];
 
 // The path to the offline Chrome OS EULA.
 extern const char kEULAPathFormat[];
-
-// The path format to the localized offline ARC++ Terms of Service.
-// Relative to |kChromeOSAssetPath|.
-extern const char kArcTermsPathFormat[];
-
-// The path format to the localized offline ARC++ Privacy Policy.
-// Relative to |kChromeOSAssetPath|.
-extern const char kArcPrivacyPolicyPathFormat[];
 
 // The URL for EOL notification
 extern const char kEolNotificationURL[];
@@ -242,6 +276,9 @@ extern const char kGoogleNameserversLearnMoreURL[];
 
 // The URL for the "learn more" link for Instant Tethering.
 extern const char kInstantTetheringLearnMoreURL[];
+
+// The URL for the "Learn more" link for Kerberos accounts.
+extern const char kKerberosAccountsLearnMoreURL[];
 
 // The URL for the "Learn more" link in the connected devices.
 extern const char kMultiDeviceLearnMoreURL[];
@@ -257,6 +294,9 @@ extern const char kLearnMoreEnterpriseURL[];
 
 // The URL for the Learn More page about Linux for Chromebooks.
 extern const char kLinuxAppsLearnMoreURL[];
+
+// The URL for additional help that is given when Linux export/import fails.
+extern const char kLinuxExportImportHelpURL[];
 
 // Credits for Linux for Chromebooks.
 extern const char kLinuxCreditsPath[];

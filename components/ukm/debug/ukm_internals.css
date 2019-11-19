@@ -17,15 +17,6 @@ div.ukm_collection_status {
   width: auto;
 }
 
-div.right_align {
-  float: right;
-  width: auto;
-}
-
-div.left_align {
-  display: inline;
-}
-
 #sources>div:nth-child(odd) {
   background: lightsteelblue;
 }
@@ -34,7 +25,7 @@ div.left_align {
   background: lightgrey;
 }
 
-span#state, span#clientid {
+span#state, span#clientid, span#sessionid, span#is_sampling_enabled{
   text-decoration: underline;
   font-weight: bold;
 }

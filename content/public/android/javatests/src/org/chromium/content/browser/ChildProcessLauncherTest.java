@@ -6,7 +6,6 @@ package org.chromium.content.browser;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.os.RemoteException;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.filters.LargeTest;
 import android.support.test.filters.MediumTest;
@@ -39,7 +38,7 @@ import java.util.concurrent.TimeoutException;
 public class ChildProcessLauncherTest {
     private static final long CONDITION_WAIT_TIMEOUT_MS = 5000;
 
-    private static final String SERVICE_PACKAGE_NAME = "org.chromium.content_shell_apk";
+    private static final String SERVICE_PACKAGE_NAME = "org.chromium.content_shell_apk.tests";
     private static final String SERVICE_NAME =
             "org.chromium.content_shell_apk.TestChildProcessService";
     private static final String SERVICE_COUNT_META_DATA_KEY =
@@ -100,7 +99,7 @@ public class ChildProcessLauncherTest {
     private ChildConnectionAllocator mConnectionAllocator;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         mConnectionAllocator = ChildProcessLauncherTestUtils.runOnLauncherAndGetResult(
                 new Callable<ChildConnectionAllocator>() {
                     @Override
@@ -162,19 +161,19 @@ public class ChildProcessLauncherTest {
             mOnRunMainHelper.notifyCalled();
         }
 
-        public void waitForOnConnectionSetupCalled() throws InterruptedException, TimeoutException {
+        public void waitForOnConnectionSetupCalled() throws TimeoutException {
             mOnConnectionSetupHelper.waitForCallback(0 /* currentCallCount */);
         }
 
-        public void waitForOnNativeLibraryCalled() throws InterruptedException, TimeoutException {
+        public void waitForOnNativeLibraryCalled() throws TimeoutException {
             mOnLoadNativeHelper.waitForCallback(0 /* currentCallCount */);
         }
 
-        public void waitOnBeforeMainCalled() throws InterruptedException, TimeoutException {
+        public void waitOnBeforeMainCalled() throws TimeoutException {
             mOnBeforeMainHelper.waitForCallback(0 /* currentCallCount */);
         }
 
-        public void waitOnRunMainCalled() throws InterruptedException, TimeoutException {
+        public void waitOnRunMainCalled() throws TimeoutException {
             mOnRunMainHelper.waitForCallback(0 /* currentCallCount */);
         }
     };
@@ -186,7 +185,7 @@ public class ChildProcessLauncherTest {
      * validate them.
      */
     private void testProcessLauncher(final AlreadyBoundConnection boundConnectionToUse)
-            throws InterruptedException, TimeoutException {
+            throws TimeoutException {
         // ConditionVariables used to check the ChildProcessLauncher.Delegate methods get called.
         final CallbackHelper onBeforeConnectionAllocatedHelper = new CallbackHelper();
         final CallbackHelper onBeforeConnectionSetupHelper = new CallbackHelper();
@@ -351,7 +350,7 @@ public class ChildProcessLauncherTest {
                         new Callable<ChildConnectionAllocator>() {
                             @Override
                             public ChildConnectionAllocator call() {
-                                return ChildConnectionAllocator.createForTest(null,
+                                return ChildConnectionAllocator.createFixedForTesting(null,
                                         "org.chromium.wrong_package", "WrongService",
                                         2 /* serviceCount */, false /* bindToCaller */,
                                         false /* bindAsExternalService */,
@@ -379,7 +378,7 @@ public class ChildProcessLauncherTest {
     @Test
     @MediumTest
     @Feature({"ProcessManagement"})
-    public void testServiceCrashedBeforeSetup() throws RemoteException {
+    public void testServiceCrashedBeforeSetup() {
         Assert.assertFalse(mConnectionAllocator.anyConnectionAllocated());
 
         // Start and connect to a new service.
@@ -403,7 +402,7 @@ public class ChildProcessLauncherTest {
     @Test
     @MediumTest
     @Feature({"ProcessManagement"})
-    public void testServiceCrashedAfterSetup() throws RemoteException {
+    public void testServiceCrashedAfterSetup() {
         Assert.assertFalse(mConnectionAllocator.anyConnectionAllocated());
 
         // Start and connect to a new service.
@@ -430,7 +429,7 @@ public class ChildProcessLauncherTest {
     @Test
     @MediumTest
     @Feature({"ProcessManagement"})
-    public void testPendingSpawnQueue() throws RemoteException {
+    public void testPendingSpawnQueue() {
         Assert.assertFalse(mConnectionAllocator.anyConnectionAllocated());
 
         // Launch 4 processes. Since we have only 2 services, the 3rd and 4th should get queued.

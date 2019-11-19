@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/cached_metadata.h"
 #include "third_party/blink/renderer/platform/loader/fetch/cached_metadata_handler.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_utf8_adaptor.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_encoding.h"
 #include "v8/include/v8.h"
 
@@ -104,7 +105,8 @@ class V8ScriptRunnerTest : public testing::Test {
     ResourceResponse response(Url());
     response.SetHttpStatusCode(200);
     resource->SetResponse(response);
-    resource->AppendData(code.Utf8().data(), code.Utf8().length());
+    StringUTF8Adaptor code_utf8(code);
+    resource->AppendData(code_utf8.data(), code_utf8.size());
     resource->FinishForTest();
     return resource;
   }

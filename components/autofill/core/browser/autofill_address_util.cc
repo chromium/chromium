@@ -10,8 +10,8 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/values.h"
-#include "components/autofill/core/browser/autofill_country.h"
-#include "components/autofill/core/browser/country_combobox_model.h"
+#include "components/autofill/core/browser/geo/autofill_country.h"
+#include "components/autofill/core/browser/ui/country_combobox_model.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "third_party/libaddressinput/src/cpp/include/libaddressinput/address_ui.h"
 #include "third_party/libaddressinput/src/cpp/include/libaddressinput/address_ui_component.h"
@@ -26,23 +26,23 @@ namespace autofill {
 
 // Dictionary keys for address components info.
 const char kFieldTypeKey[] = "field";
-const char kFieldLengthKey[] = "length";
-const char kFieldNameKey[] = "name";
+const char kFieldLengthKey[] = "isLongField";
+const char kFieldNameKey[] = "fieldName";
 
 // Field names for the address components.
-const char kFullNameField[] = "fullName";
-const char kCompanyNameField[] = "companyName";
-const char kAddressLineField[] = "addrLines";
-const char kDependentLocalityField[] = "dependentLocality";
-const char kCityField[] = "city";
-const char kStateField[] = "state";
-const char kPostalCodeField[] = "postalCode";
-const char kSortingCodeField[] = "sortingCode";
-const char kCountryField[] = "country";
+const char kFullNameField[] = "FULL_NAME";
+const char kCompanyNameField[] = "COMPANY_NAME";
+const char kAddressLineField[] = "ADDRESS_LINES";
+const char kDependentLocalityField[] = "ADDRESS_LEVEL_3";
+const char kCityField[] = "ADDRESS_LEVEL_2";
+const char kStateField[] = "ADDRESS_LEVEL_1";
+const char kPostalCodeField[] = "POSTAL_CODE";
+const char kSortingCodeField[] = "SORTING_CODE";
+const char kCountryField[] = "COUNTY_CODE";
 
 // Address field length values.
-const char kShortField[] = "short";
-const char kLongField[] = "long";
+const bool kShortField = false;
+const bool kLongField = true;
 
 ServerFieldType GetFieldTypeFromString(const std::string& type) {
   if (type == kFullNameField)
@@ -143,49 +143,15 @@ void GetAddressComponents(const std::string& country_code,
 
     switch (components[i].length_hint) {
       case AddressUiComponent::HINT_LONG:
-        component->SetString(kFieldLengthKey, kLongField);
+        component->SetBoolean(kFieldLengthKey, kLongField);
         break;
       case AddressUiComponent::HINT_SHORT:
-        component->SetString(kFieldLengthKey, kShortField);
+        component->SetBoolean(kFieldLengthKey, kShortField);
         break;
     }
 
     line->Append(std::move(component));
   }
-}
-
-// Sets data related to the country <select>.
-void SetCountryData(const PersonalDataManager& manager,
-                    base::DictionaryValue* localized_strings,
-                    const std::string& ui_language_code) {
-  autofill::CountryComboboxModel model;
-  model.SetCountries(manager, base::Callback<bool(const std::string&)>(),
-                     ui_language_code);
-  const std::vector<std::unique_ptr<autofill::AutofillCountry>>& countries =
-      model.countries();
-  localized_strings->SetString("defaultCountryCode",
-                               countries.front()->country_code());
-
-  // An ordered list of options to show in the <select>.
-  auto country_list = std::make_unique<base::ListValue>();
-  for (size_t i = 0; i < countries.size(); ++i) {
-    auto option_details = std::make_unique<base::DictionaryValue>();
-    option_details->SetString("name", model.GetItemAt(i));
-    option_details->SetString(
-        "value", countries[i] ? countries[i]->country_code() : "separator");
-    country_list->Append(std::move(option_details));
-  }
-  localized_strings->Set("autofillCountrySelectList", std::move(country_list));
-
-  auto default_country_components = std::make_unique<base::ListValue>();
-  std::string default_country_language_code;
-  GetAddressComponents(countries.front()->country_code(), ui_language_code,
-                       default_country_components.get(),
-                       &default_country_language_code);
-  localized_strings->Set("autofillDefaultCountryComponents",
-                         std::move(default_country_components));
-  localized_strings->SetString("autofillDefaultCountryLanguageCode",
-                               default_country_language_code);
 }
 
 }  // namespace autofill

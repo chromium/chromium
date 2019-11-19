@@ -1,0 +1,7 @@
+AriaProperties changed on role=combobox, name=input1
+AriaProperties changed on role=combobox, name=input2
+AriaProperties changed on role=combobox, name=input3
+AriaProperties changed on role=combobox, name=input4
+AriaProperties changed on role=combobox, name=input5
+AriaProperties changed on role=combobox, name=input6
+AriaProperties changed on role=combobox, name=input7

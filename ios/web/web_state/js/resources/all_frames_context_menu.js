@@ -26,7 +26,7 @@ goog.require('__crWeb.common');
  */
 var getResponseForLinkElement = function(element) {
   return {
-    href: element.href,
+    href: getElementHref_(element),
     referrerPolicy: getReferrerPolicy_(element),
     innerText: element.innerText
   };
@@ -92,7 +92,7 @@ __gCrWeb['findElementAtPointInPageCoordinates'] = function(requestId, x, y) {
     var coordinates = hitCoordinates[index];
 
     var coordinateDetails = newCoordinate(coordinates.x, coordinates.y);
-    var element = elementsFromCoordinates(coordinateDetails);
+    var element = elementsFromCoordinates(window.document, coordinateDetails);
     // if element is a frame, tell it to respond to this element request
     if (element &&
         (element.tagName.toLowerCase() === 'iframe' ||
@@ -103,7 +103,11 @@ __gCrWeb['findElementAtPointInPageCoordinates'] = function(requestId, x, y) {
         x: x - element.offsetLeft,
         y: y - element.offsetTop
       };
-      element.contentWindow.postMessage(payload, element.src);
+      // The message will not be sent if |targetOrigin| is null, so use * which
+      // allows the message to be delievered to the contentWindow regardless of
+      // the origin.
+      var targetOrigin = element.src || '*';
+      element.contentWindow.postMessage(payload, targetOrigin);
       return;
     }
 
@@ -215,26 +219,28 @@ var newCoordinate = function(x, y) {
 
 /**
  * Returns the element at the given coordinates.
+ * @param {Object} root The Document or ShadowRoot object to search within.
  * @param {Object} coordinates Page coordinates in the same format as the result
  *                             from {@code newCoordinate}.
  */
-var elementsFromCoordinates = function(coordinates) {
+var elementsFromCoordinates = function(root, coordinates) {
   coordinates.useViewPortCoordinates = coordinates.useViewPortCoordinates ||
       elementFromPointIsUsingViewPortCoordinates(coordinates.window);
 
   var currentElement = null;
   if (coordinates.useViewPortCoordinates) {
-    currentElement = coordinates.window.document.elementFromPoint(
+    currentElement = root.elementFromPoint(
         coordinates.viewPortX, coordinates.viewPortY);
   } else {
-    currentElement = coordinates.window.document.elementFromPoint(
-        coordinates.x, coordinates.y);
+    currentElement = root.elementFromPoint(coordinates.x, coordinates.y);
   }
-  // We have to check for tagName, because if a selection is made by the
-  // UIWebView, the element we will get won't have one.
+
+  // Check for tagName, because if a selection is made by the WebView, the
+  // element we will get won't have one.
   if (!currentElement || !currentElement.tagName) {
     return null;
   }
+
   if (currentElement.tagName.toLowerCase() === 'iframe' ||
       currentElement.tagName.toLowerCase() === 'frame') {
     // Check if the frame is in a different domain using only information
@@ -250,7 +256,16 @@ var elementsFromCoordinates = function(coordinates) {
     coordinates.window = currentElement.contentWindow;
     coordinates.x -= framePosition.x + coordinates.window.pageXOffset;
     coordinates.y -= framePosition.y + coordinates.window.pageYOffset;
-    return elementsFromCoordinates(coordinates);
+    return elementsFromCoordinates(coordinates.window.document, coordinates);
+  }
+
+  if (currentElement.shadowRoot) {
+    // The element's shadowRoot can be the same as |root| if the point is not
+    // on any child element. Break the recursion and return no found element.
+    if (currentElement.shadowRoot == root) {
+      return null;
+    }
+    return elementsFromCoordinates(currentElement.shadowRoot, coordinates);
   }
   return currentElement;
 };
@@ -261,10 +276,10 @@ var elementsFromCoordinates = function(coordinates) {
  * @return {Object}
  */
 var spiralCoordinates_ = function(x, y) {
-  var MAX_ANGLE = Math.PI * 2.0 * 3.0;
-  var POINT_COUNT = 30;
+  var MAX_ANGLE = Math.PI * 2.0 * 2.0;
+  var POINT_COUNT = 10;
   var ANGLE_STEP = MAX_ANGLE / POINT_COUNT;
-  var TOUCH_MARGIN = 25;
+  var TOUCH_MARGIN = 15;
   var SPEED = TOUCH_MARGIN / MAX_ANGLE;
 
   var coordinates = [];
@@ -323,6 +338,21 @@ var getReferrerPolicy_ = function(opt_linkElement) {
     }
   }
   return 'default';
+};
+
+ /**
+  * Returns the href of the given element. Handles standard <a> links as well as
+  * xlink:href links as used within <svg> tags.
+  * @param {HTMLElement} element The link triggering the navigation.
+  * @return {string} The href of the given element.
+  * @private
+  */
+var getElementHref_ = function(element) {
+  var href = element.href;
+  if (href instanceof SVGAnimatedString) {
+    return href.animVal
+  }
+  return href
 };
 
 /**

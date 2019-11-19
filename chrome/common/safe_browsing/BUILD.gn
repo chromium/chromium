@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//chrome/common/features.gni")
+import("//components/safe_browsing/buildflags.gni")
 import("//third_party/protobuf/proto_library.gni")
 
 proto_library("proto") {
@@ -25,6 +26,19 @@ source_set("file_type_policies") {
     "//chrome/browser:resources",
     "//ui/base",
   ]
+}
+
+if (is_win) {
+  source_set("pe_image_reader") {
+    sources = [
+      "pe_image_reader_win.cc",
+      "pe_image_reader_win.h",
+    ]
+
+    deps = [
+      "//base",
+    ]
+  }
 }
 
 if (safe_browsing_mode == 1) {
@@ -106,7 +120,7 @@ if (safe_browsing_mode == 1) {
     ]
 
     deps = [
-      "//base:base",
+      "//base",
     ]
   }
 
@@ -118,8 +132,6 @@ if (safe_browsing_mode == 1) {
       "binary_feature_extractor_win.cc",
       "mach_o_image_reader_mac.cc",
       "mach_o_image_reader_mac.h",
-      "pe_image_reader_win.cc",
-      "pe_image_reader_win.h",
     ]
     if (is_posix) {
       sources += [ "binary_feature_extractor_posix.cc" ]
@@ -130,6 +142,12 @@ if (safe_browsing_mode == 1) {
       "//components/safe_browsing:csd_proto",
       "//crypto",
     ]
+
+    if (is_win) {
+      deps = [
+        ":pe_image_reader",
+      ]
+    }
   }
 
   source_set("mock_binary_feature_extractor") {

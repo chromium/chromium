@@ -25,11 +25,24 @@ class PrefRegistrySyncable;
 // direct subclasses react to lifecycle events and implement memory management.
 class KEYED_SERVICE_EXPORT KeyedServiceBaseFactory : public DependencyNode {
  public:
+  // The type is used to determine whether a service can depend on another.
+  // Each type can only depend on other services that are of the same type.
+  // TODO(crbug.com/944906): Remove once there are no dependencies between
+  // factories with different type of context, or dependencies are safe to have.
+  enum Type { BROWSER_CONTEXT, BROWSER_STATE, SIMPLE };
+
   // Returns our name.
   const char* name() const { return service_name_; }
 
+  // Returns the type of this service factory.
+  // TODO(crbug.com/944906): Remove once there are no dependencies between
+  // factories with different type of context, or dependencies are safe to have.
+  Type type() { return type_; }
+
  protected:
-  KeyedServiceBaseFactory(const char* service_name, DependencyManager* manager);
+  KeyedServiceBaseFactory(const char* service_name,
+                          DependencyManager* manager,
+                          Type type);
   virtual ~KeyedServiceBaseFactory();
 
   // The main public interface for declaring dependencies between services
@@ -100,6 +113,13 @@ class KEYED_SERVICE_EXPORT KeyedServiceBaseFactory : public DependencyNode {
   // A static string passed in to the constructor. Should be unique across all
   // services.
   const char* service_name_;
+
+  // The type of this service.
+  // TODO(crbug.com/944906): Remove once there are no dependencies between
+  // factories with different type of context, or dependencies are safe to have.
+  Type type_;
+
+  DISALLOW_COPY_AND_ASSIGN(KeyedServiceBaseFactory);
 };
 
 #endif  // COMPONENTS_KEYED_SERVICE_CORE_KEYED_SERVICE_BASE_FACTORY_H_

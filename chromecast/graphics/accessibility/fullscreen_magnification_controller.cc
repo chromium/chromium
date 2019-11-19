@@ -4,6 +4,8 @@
 
 #include "chromecast/graphics/accessibility/fullscreen_magnification_controller.h"
 
+#include <vector>
+
 #include "base/numerics/ranges.h"
 #include "chromecast/graphics/gestures/cast_gesture_handler.h"
 #include "third_party/skia/include/core/SkPaint.h"
@@ -152,14 +154,14 @@ gfx::Transform FullscreenMagnificationController::GetMagnifierTransform()
 }
 
 // Overridden from ui::EventRewriter
-ui::EventRewriteStatus FullscreenMagnificationController::RewriteEvent(
+ui::EventDispatchDetails FullscreenMagnificationController::RewriteEvent(
     const ui::Event& event,
-    std::unique_ptr<ui::Event>* rewritten_event) {
+    const Continuation continuation) {
   if (!IsEnabled()) {
-    return ui::EventRewriteStatus::EVENT_REWRITE_CONTINUE;
+    return SendEvent(continuation, &event);
   }
   if (!event.IsTouchEvent())
-    return ui::EVENT_REWRITE_CONTINUE;
+    return SendEvent(continuation, &event);
 
   const ui::TouchEvent* touch_event = event.AsTouchEvent();
 
@@ -193,7 +195,7 @@ ui::EventRewriteStatus FullscreenMagnificationController::RewriteEvent(
         touch_event_dip.unique_event_id(), false /* event_consumed */,
         false /* is_source_touch_event_set_non_blocking */);
   } else {
-    return ui::EVENT_REWRITE_DISCARD;
+    return DiscardEvent(continuation);
   }
 
   // The user can change the zoom level with two fingers pinch and pan around
@@ -208,21 +210,19 @@ ui::EventRewriteStatus FullscreenMagnificationController::RewriteEvent(
     consume_touch_event_ = true;
 
     if (!press_event_map_.empty()) {
-      auto it = press_event_map_.begin();
-
-      std::unique_ptr<ui::TouchEvent> rewritten_touch_event =
-          std::make_unique<ui::TouchEvent>(ui::ET_TOUCH_CANCELLED, gfx::Point(),
-                                           touch_event_dip.time_stamp(),
-                                           it->second->pointer_details());
-      rewritten_touch_event->set_location_f(it->second->location_f());
-      rewritten_touch_event->set_root_location_f(it->second->root_location_f());
-      rewritten_touch_event->set_flags(it->second->flags());
-      *rewritten_event = std::move(rewritten_touch_event);
-
-      // The other event is cancelled in NextDispatchEvent.
-      press_event_map_.erase(it);
-
-      return ui::EVENT_REWRITE_DISPATCH_ANOTHER;
+      DCHECK_EQ(2u, press_event_map_.size());
+      ui::EventDispatchDetails details;
+      for (const auto& it : press_event_map_) {
+        ui::TouchEvent rewritten_touch_event(
+            ui::ET_TOUCH_CANCELLED, it.second->location_f(),
+            it.second->root_location_f(), touch_event_dip.time_stamp(),
+            it.second->pointer_details(), it.second->flags());
+        details = SendEvent(continuation, &rewritten_touch_event);
+        if (details.dispatcher_destroyed)
+          break;
+      }
+      press_event_map_.clear();
+      return details;
     }
   }
 
@@ -239,31 +239,9 @@ ui::EventRewriteStatus FullscreenMagnificationController::RewriteEvent(
   }
 
   if (discard)
-    return ui::EVENT_REWRITE_DISCARD;
+    return DiscardEvent(continuation);
 
-  return ui::EVENT_REWRITE_CONTINUE;
-}
-
-ui::EventRewriteStatus FullscreenMagnificationController::NextDispatchEvent(
-    const ui::Event& last_event,
-    std::unique_ptr<ui::Event>* new_event) {
-  DCHECK_EQ(1u, press_event_map_.size());
-
-  auto it = press_event_map_.begin();
-
-  std::unique_ptr<ui::TouchEvent> event = std::make_unique<ui::TouchEvent>(
-      ui::ET_TOUCH_CANCELLED, gfx::Point(), last_event.time_stamp(),
-      it->second->pointer_details());
-  event->set_location_f(it->second->location_f());
-  event->set_root_location_f(it->second->root_location_f());
-  event->set_flags(it->second->flags());
-  *new_event = std::move(event);
-
-  press_event_map_.erase(it);
-
-  DCHECK_EQ(0u, press_event_map_.size());
-
-  return ui::EVENT_REWRITE_REWRITTEN;
+  return SendEvent(continuation, &event);
 }
 
 bool FullscreenMagnificationController::RedrawDIP(

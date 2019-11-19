@@ -9,13 +9,9 @@ body {
     to { background: url('a'), url('b'); }
 }
 </style>
-<pre>This test passes if it does not crash.</pre>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
 <script>
-if (window.testRunner) {
-    testRunner.dumpAsText();
-    testRunner.waitUntilDone();
-    requestAnimationFrame(function () {
-        testRunner.notifyDone();
-    });
-}
+var test = async_test("Test passes if it does not crash with background shorthand");
+requestAnimationFrame(test.step_func_done(() => {}));
 </script>

@@ -93,22 +93,20 @@ static OutStringType STLStringToSTLStringWithEncodingsT(
                                                          out_encoding);
 }
 
-// Given an STL string |in| with an encoding specified by |in_encoding|,
-// return it as a CFStringRef.  Returns NULL on failure.
-template<typename StringType>
-static CFStringRef STLStringToCFStringWithEncodingsT(
-    const StringType& in,
+// Given a StringPiece |in| with an encoding specified by |in_encoding|, return
+// it as a CFStringRef.  Returns NULL on failure.
+template <typename StringType>
+static CFStringRef StringPieceToCFStringWithEncodingsT(
+    BasicStringPiece<StringType> in,
     CFStringEncoding in_encoding) {
-  typename StringType::size_type in_length = in.length();
+  const auto in_length = in.length();
   if (in_length == 0)
     return CFSTR("");
 
-  return CFStringCreateWithBytes(kCFAllocatorDefault,
-                                 reinterpret_cast<const UInt8*>(in.data()),
-                                 in_length *
-                                   sizeof(typename StringType::value_type),
-                                 in_encoding,
-                                 false);
+  return CFStringCreateWithBytes(
+      kCFAllocatorDefault, reinterpret_cast<const UInt8*>(in.data()),
+      in_length * sizeof(typename BasicStringPiece<StringType>::value_type),
+      in_encoding, false);
 }
 
 // Specify the byte ordering explicitly, otherwise CFString will be confused
@@ -144,19 +142,19 @@ std::wstring SysNativeMBToWide(StringPiece native_mb) {
   return SysUTF8ToWide(native_mb);
 }
 
-CFStringRef SysUTF8ToCFStringRef(const std::string& utf8) {
-  return STLStringToCFStringWithEncodingsT(utf8, kNarrowStringEncoding);
+CFStringRef SysUTF8ToCFStringRef(StringPiece utf8) {
+  return StringPieceToCFStringWithEncodingsT(utf8, kNarrowStringEncoding);
 }
 
-CFStringRef SysUTF16ToCFStringRef(const string16& utf16) {
-  return STLStringToCFStringWithEncodingsT(utf16, kMediumStringEncoding);
+CFStringRef SysUTF16ToCFStringRef(StringPiece16 utf16) {
+  return StringPieceToCFStringWithEncodingsT(utf16, kMediumStringEncoding);
 }
 
-NSString* SysUTF8ToNSString(const std::string& utf8) {
+NSString* SysUTF8ToNSString(StringPiece utf8) {
   return [mac::CFToNSCast(SysUTF8ToCFStringRef(utf8)) autorelease];
 }
 
-NSString* SysUTF16ToNSString(const string16& utf16) {
+NSString* SysUTF16ToNSString(StringPiece16 utf16) {
   return [mac::CFToNSCast(SysUTF16ToCFStringRef(utf16)) autorelease];
 }
 

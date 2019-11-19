@@ -14,7 +14,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/win/async_operation.h"
-#include "device/bluetooth/bluetooth_uuid.h"
+#include "device/bluetooth/public/cpp/bluetooth_uuid.h"
 #include "device/bluetooth/test/fake_bluetooth_le_device_winrt.h"
 #include "device/bluetooth/test/fake_gatt_characteristic_winrt.h"
 #include "device/bluetooth/test/fake_gatt_characteristics_result_winrt.h"
@@ -34,12 +34,18 @@ using ABI::Windows::Devices::Bluetooth::GenericAttributeProfile::
     GattDeviceServicesResult;
 using ABI::Windows::Devices::Bluetooth::GenericAttributeProfile::GattOpenStatus;
 using ABI::Windows::Devices::Bluetooth::GenericAttributeProfile::
+    GattOpenStatus_AlreadyOpened;
+using ABI::Windows::Devices::Bluetooth::GenericAttributeProfile::
+    GattOpenStatus_Success;
+using ABI::Windows::Devices::Bluetooth::GenericAttributeProfile::
     GattSharingMode;
+using ABI::Windows::Devices::Bluetooth::GenericAttributeProfile::
+    GattSharingMode_SharedReadAndWrite;
 using ABI::Windows::Devices::Bluetooth::GenericAttributeProfile::IGattSession;
 using ABI::Windows::Devices::Enumeration::DeviceAccessStatus;
 using ABI::Windows::Devices::Enumeration::IDeviceAccessInformation;
-using ABI::Windows::Foundation::Collections::IVectorView;
 using ABI::Windows::Foundation::IAsyncOperation;
+using ABI::Windows::Foundation::Collections::IVectorView;
 using Microsoft::WRL::ComPtr;
 using Microsoft::WRL::Make;
 
@@ -109,11 +115,29 @@ HRESULT FakeGattDeviceServiceWinrt::RequestAccessAsync(
 HRESULT FakeGattDeviceServiceWinrt::OpenAsync(
     GattSharingMode sharing_mode,
     IAsyncOperation<GattOpenStatus>** operation) {
-  return E_NOTIMPL;
+  if (sharing_mode != GattSharingMode_SharedReadAndWrite)
+    return E_NOTIMPL;
+
+  GattOpenStatus status =
+      opened_ ? GattOpenStatus_AlreadyOpened : GattOpenStatus_Success;
+  opened_ = true;
+
+  auto async_op = Make<base::win::AsyncOperation<GattOpenStatus>>();
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE, base::BindOnce(async_op->callback(), status));
+  *operation = async_op.Detach();
+  return S_OK;
 }
 
 HRESULT FakeGattDeviceServiceWinrt::GetCharacteristicsAsync(
     IAsyncOperation<GattCharacteristicsResult*>** operation) {
+  // It has been observed that this method will implicitly call
+  // OpenAsync(Exclusive) if the service has not been opened already. Catch
+  // calls to an unopened service as we do not want to take an exclusive lock
+  // on a service.
+  if (!opened_)
+    return E_NOTIMPL;
+
   auto async_op = Make<base::win::AsyncOperation<GattCharacteristicsResult*>>();
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(async_op->callback(),

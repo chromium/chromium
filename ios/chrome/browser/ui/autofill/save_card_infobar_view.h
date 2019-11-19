@@ -9,19 +9,8 @@
 
 #include <vector>
 
-class GURL;
 @protocol SaveCardInfoBarViewDelegate;
-
-// Represents a message with optional links.
-@interface MessageWithLinks : NSObject
-
-@property(nonatomic, copy) NSString* messageText;
-
-@property(nonatomic, strong) NSArray* linkRanges;
-
-@property(nonatomic, assign) std::vector<GURL> linkURLs;
-
-@end
+@class SaveCardMessageWithLinks;
 
 // An infobar for saving credit cards. It features a header section including
 // an optional leading icon, followed by an optional message, followed by an
@@ -38,7 +27,7 @@ class GURL;
 
 @property(nonatomic, strong) UIImage* googlePayIcon;
 
-@property(nonatomic, strong) MessageWithLinks* message;
+@property(nonatomic, strong) SaveCardMessageWithLinks* message;
 
 @property(nonatomic, strong) UIImage* closeButtonImage;
 
@@ -50,7 +39,7 @@ class GURL;
 
 @property(nonatomic, copy) NSString* cardSublabel;
 
-@property(nonatomic, strong) NSArray<MessageWithLinks*>* legalMessages;
+@property(nonatomic, strong) NSArray<SaveCardMessageWithLinks*>* legalMessages;
 
 @property(nonatomic, copy) NSString* cancelButtonTitle;
 

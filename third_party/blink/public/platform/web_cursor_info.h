@@ -33,6 +33,7 @@
 
 #include "third_party/blink/public/platform/web_point.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/base/cursor/types/cursor_types.h"
 
 #ifdef WIN32
 typedef struct HICON__* HICON;
@@ -44,57 +45,7 @@ namespace blink {
 class Cursor;
 
 struct WebCursorInfo {
-  // A Java counterpart will be generated for this enum.
-  // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.blink_public.web
-  // GENERATED_JAVA_CLASS_NAME_OVERRIDE: WebCursorInfoType
-  enum Type {
-    kTypePointer,
-    kTypeCross,
-    kTypeHand,
-    kTypeIBeam,
-    kTypeWait,
-    kTypeHelp,
-    kTypeEastResize,
-    kTypeNorthResize,
-    kTypeNorthEastResize,
-    kTypeNorthWestResize,
-    kTypeSouthResize,
-    kTypeSouthEastResize,
-    kTypeSouthWestResize,
-    kTypeWestResize,
-    kTypeNorthSouthResize,
-    kTypeEastWestResize,
-    kTypeNorthEastSouthWestResize,
-    kTypeNorthWestSouthEastResize,
-    kTypeColumnResize,
-    kTypeRowResize,
-    kTypeMiddlePanning,
-    kTypeEastPanning,
-    kTypeNorthPanning,
-    kTypeNorthEastPanning,
-    kTypeNorthWestPanning,
-    kTypeSouthPanning,
-    kTypeSouthEastPanning,
-    kTypeSouthWestPanning,
-    kTypeWestPanning,
-    kTypeMove,
-    kTypeVerticalText,
-    kTypeCell,
-    kTypeContextMenu,
-    kTypeAlias,
-    kTypeProgress,
-    kTypeNoDrop,
-    kTypeCopy,
-    kTypeNone,
-    kTypeNotAllowed,
-    kTypeZoomIn,
-    kTypeZoomOut,
-    kTypeGrab,
-    kTypeGrabbing,
-    kTypeCustom
-  };
-
-  Type type;
+  ui::CursorType type;
   WebPoint hot_spot;
   float image_scale_factor;
   SkBitmap custom_image;
@@ -107,7 +58,7 @@ struct WebCursorInfo {
   HCURSOR external_handle;
 #endif
 
-  explicit WebCursorInfo(Type type = kTypePointer)
+  explicit WebCursorInfo(ui::CursorType type = ui::CursorType::kPointer)
       : type(type), image_scale_factor(1) {
 #ifdef WIN32
     external_handle = 0;

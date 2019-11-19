@@ -75,7 +75,7 @@ class MEDIA_BLINK_EXPORT WebEncryptedMediaClientImpl
 
   CdmFactory* cdm_factory_;
   KeySystemConfigSelector key_system_config_selector_;
-  base::WeakPtrFactory<WebEncryptedMediaClientImpl> weak_factory_;
+  base::WeakPtrFactory<WebEncryptedMediaClientImpl> weak_factory_{this};
 };
 
 }  // namespace media

@@ -18,7 +18,6 @@
 namespace net {
 class HttpRequestHeaders;
 class HttpResponseInfo;
-class URLRequestJob;
 }
 
 namespace content {
@@ -27,7 +26,6 @@ class AppCacheEntry;
 class AppCacheResponseInfo;
 class AppCacheResponseReader;
 class AppCacheURLLoaderJob;
-class AppCacheURLRequestJob;
 
 // Interface for an AppCache job. This is used to send data stored in the
 // AppCache to networking consumers.
@@ -88,10 +86,6 @@ class CONTENT_EXPORT AppCacheJob {
 
   // Returns a weak pointer reference to the job.
   virtual base::WeakPtr<AppCacheJob> GetWeakPtr() = 0;
-
-  // Returns the underlying AppCacheURLRequestJob if any. This only applies to
-  // AppCaches loaded via the URLLoader mechanism.
-  virtual AppCacheURLRequestJob* AsURLRequestJob();
 
   // Returns the underlying ApppCacheURLLoaderJob if any. This only applies to
   // AppCaches loaded via the URLRequest mechanism.

@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/ui/omnibox/omnibox_left_image_consumer.h"
 
 @protocol OmniboxConsumer;
+class FaviconLoader;
 class TemplateURLService;
 
 // A mediator object that updates the omnibox according to the model changes.
@@ -22,6 +23,9 @@ class TemplateURLService;
 // The consumer for this object. This can change during the lifetime of this
 // object and may be nil.
 @property(nonatomic, weak) id<OmniboxConsumer> consumer;
+
+// The favicon loader.
+@property(nonatomic, assign) FaviconLoader* faviconLoader;
 
 @end
 

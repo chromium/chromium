@@ -4,109 +4,115 @@
 
 // open_and_verify_leveldb_database.pdf was created from this file by
 // https://www.code2flow.com/app
+OpenOriginState;
 
-function OpenLevelDB {
-  |Read free disk space|;
-  Histogram(FreeDiskSpace);
-  switch (leveldb_env::OpenDB) {
-    case Status Not OK:{
-      Histogram(LevelDBOpenErrors);
-      if (disk space < 100kb)
-        Report disk space as failure reason;
-      return leveldb_env::OpenDB error status;
-    }
-    case Status OK: {
-      Histogram(LevelDB.OpenTime);
-      return Status::OK;
-    }
-  }
-}
-
-OpenAndVerifyLevelDBDatabase;
 switch (Create IDB Directory) {
   case Failure:
     Histogram(FAILED_DIRECTORY);
-    return IOError("Unable to create IndexedDB database path");
+    return **IOError("Unable to create IndexedDB database path")**;
   case Success:
 }
 Create File path & blob path;
 if (File Path is too long) {
   Histogram(ORIGIN_TOO_LONG);
-  return IOError("File path too long);
+  return **IOError("File path too long)**;
 }
 
-call OpenLevelDB;
-
-switch(OpenLevelDB status) {
-  case IOError:
-    Histogram(OPEN_NO_RECOVERY);
-    return OpenLevelDB error status;
-  case Corruption:
-    Set data loss info;
-    break;
-  case OK:
-    if (Corruption Info Exists & Last Open was corrupt) {
-      Histogram(FAILED_PRIOR_CORRUPTION);
-      db_.reset();
-      Populate data loss info
-      (previous corruption);
-      break;
-    }
-    switch (try to read schema) {
-      case Failure reading schema:
-        Histogram(FAILED_IO_ERROR_CHECKING_SCHEMA);
-        db_.reset();
-        Populate data loss info
-        (schema checking failure);
+open-loop-start:
+Start;
+switch(Read corruption info from disk) {
+  case Corruption Info Exists,
+      first open attempt:
+    Histogram(PRIOR_CORRUPTION);
+  case Corruption Info Exists,
+       NOT first open attempt:
+    switch (Destroy the database) {
+      case Success:
         break;
-      case Schema is unknown:
-        Histogram(FAILED_UNKNOWN_SCHEMA);
-        db_.reset();
-        Populate data loss info
-        (unknown schema);
-        break;
-      case Success & Valid:
-        Histogram(OPEN_SUCCESS);
-        goto end;
+      case Failure:
+      goto open-loop-restart;
     }
-}
-switch(DestroyLevelDB(file_path)) {
-  case Not OK:
-    Histogram(CLEANUP_DESTROY_FAILED);
-    return DestroyLevelDB error status;
-  case OK:
-}
-call OpenLevelDB;
-switch(OpenLevelDB status) {
-  case Not OK:
-    Histogram(CLEANUP_REOPEN_FAILED);
-    return OpenLevelDB error status;
-  case OK:
-    Histogram(CLEANUP_REOPEN_SUCCESS);
+    break;
+  case No Corruption file found:
 }
 
-end:
-Histogram(OPEN_SUCCESS);
-block {
-Create BackingStore;
-switch (Parse schema & metadata) {
-  case Failure:
-    Delete Database & BackingStore;
-    break;
-  case Success:
-    if (Should we clean blob journal?) {
-    switch(CleanUpBlobJournal) {
-      case OK:
-        report `Status::OK`;
-        goto done;
-      case Not OK:
-        Histogram(FAILED_CLEANUP_JOURNAL_ERROR);
-        return CleanUpBlobJournal error status;
+block Open LevelDB {
+  switch (leveldb_env::OpenDB) {
+    case Status Not OK:{
+      Histogram(LevelDBOpenErrors);
+      if (disk space < 100kb) {
+        goto error;
+      }
+      goto open-loop-restart;
     }
+    case Status OK:
   }
 }
-return BackingStore error status;
+
+Histogram(LevelDB.OpenTime);
+Create LevelDB Scopes;
+switch (Initialize LevelDB Scopes) {
+  case Failure:
+    Histogram(SCOPES);
+    goto open-loop-restart;
+    break;
+  case Success:
 }
 
-done:
-return done;
+block Open TransactionalLevelDBDatabase {
+  Create TransactionalLevelDBDatabase;
+  switch (Try to read schema) {
+    case Corruption -
+         Failure reading schema:
+      Histogram(CHECKING_SCHEMA);
+      goto open-loop-restart;
+    case Corruption -
+         Schema is unknown:
+      Histogram(UNKNOWN_SCHEMA);
+      goto open-loop-restart;
+    case Success & Valid:
+  }
+}
+
+block Open IndexedDBBackingStore {
+  Create IndexedDBBackingStore;
+  switch (Parse schema & metadata) {
+    case Failure:
+      Histogram(SETUP_METADATA);
+      goto open-loop-restart;
+      break;
+    case Success:
+      if (Should we clean blob journal?) {
+        switch(CleanUpBlobJournal) {
+          case OK:
+            goto open-loop-end;
+          case Not OK:
+            |Histogram(CLEANUP_JOURNAL)|;
+            goto open-loop-restart;
+        }
+      }
+      goto open-loop-end;
+  }
+}
+
+open-loop-restart:
+|Cleanup from open failure|;
+if (Was open failure
+    due to corruption?) {
+  Save corruption info to file;
+}
+if (Has 'Open' been
+    tried >=2 times?) {
+  goto error;
+}
+Go to start;
+goto open-loop-start;
+
+open-loop-end:
+if (Is database on disk
+    (instead of in memory)?)
+  |Histogram(OPEN_SUCCESS)|;
+return **SUCCESS AND DONE**;
+
+error:
+return **ERROR**;

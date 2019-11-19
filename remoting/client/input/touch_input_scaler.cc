@@ -5,6 +5,7 @@
 #include "remoting/client/input/touch_input_scaler.h"
 
 #include "base/logging.h"
+#include "base/numerics/ranges.h"
 #include "remoting/proto/event.pb.h"
 
 namespace remoting {
@@ -28,7 +29,7 @@ float Scale(float value, int output_max, int input_max) {
 // |input_max|.
 float ScaleAndClamp(float value, int output_max, int input_max) {
   value = Scale(value, output_max, input_max);
-  return std::max(0.0f, std::min(static_cast<float>(output_max), value));
+  return base::ClampToRange(value, 0.0f, float{output_max});
 }
 
 }  // namespace

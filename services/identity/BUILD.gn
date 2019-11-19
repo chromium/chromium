@@ -18,42 +18,34 @@ source_set("lib") {
 
   deps = [
     "//base",
-    "//components/signin/core/browser:internals",
-    "//components/signin/core/browser:shared",
-    "//services/identity/public/cpp:cpp",
+    "//google_apis",
+  ]
+
+  public_deps = [
+    "//components/signin/public/identity_manager",
+    "//mojo/public/cpp/bindings",
+    "//services/identity/public/cpp:cpp_types",
     "//services/identity/public/mojom",
-    "//services/service_manager/public/cpp",
-    "//services/service_manager/public/mojom",
   ]
 }
 
 source_set("tests") {
   testonly = true
+
+  sources = [
+    "identity_accessor_impl_unittest.cc",
+  ]
+
   deps = [
     ":lib",
     "//base",
     "//base/test:test_support",
-    "//components/prefs:test_support",
-    "//components/signin/core/browser:internals",
-    "//components/signin/core/browser:internals_test_support",
-    "//components/signin/core/browser:shared",
-    "//components/sync_preferences:test_support",
-    "//mojo/public/cpp/bindings",
-    "//services/identity/public/cpp",
-    "//services/identity/public/cpp:test_support",
-    "//services/identity/public/cpp:tests",
+    "//components/signin/public/identity_manager",
+    "//components/signin/public/identity_manager:test_support",
+    "//google_apis",
+    "//services/identity/public/cpp:cpp_types",
     "//services/identity/public/mojom",
-    "//services/service_manager/public/cpp",
-    "//services/service_manager/public/cpp/test:test_support",
-    "//testing/gmock",
     "//testing/gtest",
-  ]
-  sources = [
-    "identity_accessor_impl_unittest.cc",
-    "public/cpp/access_token_fetcher_unittest.cc",
-    "public/cpp/identity_manager_unittest.cc",
-    "public/cpp/identity_test_environment_unittest.cc",
-    "public/cpp/primary_account_access_token_fetcher_unittest.cc",
   ]
 }
 

@@ -26,7 +26,7 @@ void TextControlSingleLinePainter::Paint(const PaintInfo& paint_info) {
   DrawingRecorder recorder(paint_info.context, text_control_,
                            DisplayItem::kCapsLockIndicator);
 
-  LayoutRect contents_rect = text_control_.PhysicalContentBoxRect();
+  PhysicalRect contents_rect = text_control_.PhysicalContentBoxRect();
 
   // Center in the block progression direction.
   if (text_control_.IsHorizontalWritingMode()) {
@@ -39,7 +39,7 @@ void TextControlSingleLinePainter::Paint(const PaintInfo& paint_info) {
 
   // Convert the rect into the coords used for painting the content.
   ScopedPaintState paint_state(text_control_, paint_info);
-  contents_rect.MoveBy(paint_state.PaintOffset());
+  contents_rect.Move(paint_state.PaintOffset());
   IntRect snapped_rect = PixelSnappedIntRect(contents_rect);
   LayoutTheme::GetTheme().Painter().PaintCapsLockIndicator(
       text_control_, paint_state.GetPaintInfo(), snapped_rect);

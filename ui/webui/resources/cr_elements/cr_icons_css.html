@@ -4,239 +4,96 @@
 <dom-module id="cr-icons">
   <template>
     <style>
-      :host-context([dir=rtl]) :-webkit-any(paper-icon-button-light, .cr-icon) {
-        transform: scaleX(-1);  /* Invert X: flip on the Y axis (aka mirror). */
+      .icon-arrow-back {
+        --cr-icon-image: url(../images/icon_arrow_back.svg);
       }
 
-      paper-icon-button-light paper-ripple {
-        opacity: 0.6;  /* TODO(dbeam): seems like ripples are too light. */
+      .icon-arrow-dropdown {
+        --cr-icon-image: url(../images/icon_arrow_dropdown.svg);
       }
 
-      :host-context([dark]) paper-icon-button-light paper-ripple {
-        --paper-ripple-opacity: .4;
-        opacity: 1;
+      .icon-cancel {
+        --cr-icon-image: url(../images/icon_cancel.svg);
       }
 
-      paper-icon-button-light button {
-        display: block;
+      .icon-clear {
+        --cr-icon-image: url(../images/icon_clear.svg);
       }
 
-      paper-icon-button-light,
+      .icon-delete-gray {
+        --cr-icon-image: url(../images/icon_delete_gray.svg);
+      }
+
+      .icon-picture-delete {
+        --cr-icon-image: url(../images/icon_picture_delete.svg);
+      }
+
+      .icon-expand-less {
+        --cr-icon-image: url(../images/icon_expand_less.svg);
+      }
+
+      .icon-expand-more {
+        --cr-icon-image: url(../images/icon_expand_more.svg);
+      }
+
+      .icon-external {
+        --cr-icon-image: url(../images/open_in_new.svg);
+      }
+
+      .icon-more-vert {
+        --cr-icon-image: url(../images/icon_more_vert.svg);
+      }
+
+      .icon-refresh {
+        --cr-icon-image: url(../images/icon_refresh.svg);
+      }
+
+      .icon-search {
+        --cr-icon-image: url(../images/icon_search.svg);
+      }
+
+      .icon-settings {
+        --cr-icon-image: url(../images/icon_settings.svg);
+      }
+
+      .icon-visibility {
+        --cr-icon-image: url(../images/icon_visibility.svg);
+      }
+
+      .icon-visibility-off {
+        --cr-icon-image: url(../images/icon_visibility_off.svg);
+      }
+
+      .subpage-arrow {
+        --cr-icon-image: url(../images/arrow_right.svg);
+      }
+
       .cr-icon {
         @apply --cr-paper-icon-button-margin;
-        background-position: center;
-        background-repeat: no-repeat;
-        background-size: var(--cr-icon-size);
+        -webkit-mask-image: var(--cr-icon-image);
+        -webkit-mask-position: center;
+        -webkit-mask-repeat: no-repeat;
+        -webkit-mask-size: var(--cr-icon-size);
+        background-color: var(--google-grey-refresh-700);
         flex-shrink: 0;
         height: var(--cr-icon-ripple-size);
         user-select: none;
         width: var(--cr-icon-ripple-size);
       }
 
-      :-webkit-any(paper-icon-button-light,
-                   cr-icon-button,
-                   .cr-icon).no-overlap {
+      :host-context([dir=rtl]) .cr-icon {
+        transform: scaleX(-1);  /* Invert X: flip on the Y axis (aka mirror). */
+      }
+
+      .cr-icon.no-overlap {
         margin-inline-end: 0;
         margin-inline-start: 0;
       }
 
-      :-webkit-any(paper-icon-button-light,
-                   cr-icon-button,
-                   .cr-icon).icon-arrow-back {
-        background-image: url(../images/icon_arrow_back.svg);
-      }
-      :host-context([dark]) :-webkit-any(paper-icon-button-light,
-                                         cr-icon-button,
-                                         .cr-icon).icon-arrow-back {
-        background-image: url(../images/dark/icon_arrow_back.svg);
-      }
-
-      :-webkit-any(paper-icon-button-light,
-                   cr-icon-button,
-                   .cr-icon).icon-cancel {
-        background-image: url(../images/icon_cancel.svg);
-      }
-      :host-context([dark]) :-webkit-any(paper-icon-button-light,
-                                         cr-icon-button,
-                                         .cr-icon).icon-cancel {
-        background-image: url(../images/dark/icon_cancel.svg);
-      }
-
-      :-webkit-any(paper-icon-button-light,
-                   cr-icon-button,
-                   .cr-icon).icon-toolbar-cancel {
-        background-image: url(../images/icon_toolbar_cancel.svg);
-      }
-      :host-context([dark]) :-webkit-any(paper-icon-button-light,
-                                         cr-icon-button,
-                                         .cr-icon).icon-toolbar-cancel {
-        background-image: url(../images/dark/icon_toolbar_cancel.svg);
-      }
-
-      :-webkit-any(paper-icon-button-light,
-                   cr-icon-button,
-                   .cr-icon).icon-clear {
-        background-image: url(../images/icon_clear.svg);
-      }
-      :host-context([dark]) :-webkit-any(paper-icon-button-light,
-                                         cr-icon-button,
-                                         .cr-icon).icon-clear {
-        background-image: url(../images/dark/icon_clear.svg);
-      }
-
-      :-webkit-any(paper-icon-button-light,
-                   cr-icon-button,
-                   .cr-icon).icon-delete-gray {
-        background-image: url(../images/icon_delete_gray.svg);
-      }
-      :host-context([dark]) :-webkit-any(paper-icon-button-light,
-                                         cr-icon-button,
-                                         .cr-icon).icon-delete-gray {
-        background-image: url(../images/dark/icon_delete_gray.svg);
-      }
-
-      :-webkit-any(paper-icon-button-light,
-                   cr-icon-button,
-                   .cr-icon).icon-picture-delete {
-        background-image: url(../images/icon_picture_delete.svg);
-      }
-      :host-context([dark]) :-webkit-any(paper-icon-button-light,
-                                         cr-icon-button,
-                                         .cr-icon).icon-picture-delete {
-        background-image: url(../images/dark/icon_picture_delete.svg);
-      }
-
-      :-webkit-any(paper-icon-button-light,
-                   cr-icon-button,
-                   .cr-icon).icon-expand-less {
-        background-image: url(../images/icon_expand_less.svg);
-      }
-      :host-context([dark]) :-webkit-any(paper-icon-button-light,
-                                         cr-icon-button,
-                                         .cr-icon).icon-expand-less {
-        background-image: url(../images/dark/icon_expand_less.svg);
-      }
-
-      :-webkit-any(paper-icon-button-light,
-                   cr-icon-button,
-                   .cr-icon).icon-expand-more {
-        background-image: url(../images/icon_expand_more.svg);
-      }
-      :host-context([dark]) :-webkit-any(paper-icon-button-light,
-                                         cr-icon-button,
-                                         .cr-icon).icon-expand-more {
-        background-image: url(../images/dark/icon_expand_more.svg);
-      }
-
-      :-webkit-any(paper-icon-button-light,
-                   cr-icon-button,
-                   .cr-icon).icon-external {
-        background-image: url(../images/open_in_new.svg);
-      }
-      /* Open in new is the same for light and dark mode. */
-
-      :-webkit-any(paper-icon-button-light,
-                   cr-icon-button,
-                   .cr-icon).icon-toolbar-menu {
-        background-image: url(../images/icon_toolbar_menu.svg);
-      }
-      :host-context([dark]) :-webkit-any(paper-icon-button-light,
-                                         cr-icon-button,
-                                         .cr-icon).icon-toolbar-menu {
-        background-image: url(../images/dark/icon_toolbar_menu.svg);
-      }
-
-      :-webkit-any(paper-icon-button-light,
-                   cr-icon-button,
-                   .cr-icon).icon-more-vert {
-        background-image: url(../images/icon_more_vert.svg);
-      }
-      :host-context([dark]) :-webkit-any(paper-icon-button-light,
-                                         cr-icon-button,
-                                         .cr-icon).icon-more-vert {
-        background-image: url(../images/dark/icon_more_vert.svg);
-      }
-      :-webkit-any(paper-icon-button-light,
-                   cr-icon-button,
-                   .cr-icon).icon-more-vert-light-mode {
-        background-image: url(../images/icon_more_vert.svg);
-      }
-
-      :-webkit-any(paper-icon-button-light,
-                   cr-icon-button,
-                   .cr-icon).icon-refresh {
-        background-image: url(../images/icon_refresh.svg);
-      }
-      :host-context([dark]) :-webkit-any(paper-icon-button-light,
-                                         cr-icon-button,
-                                         .cr-icon).icon-refresh {
-        background-image: url(../images/dark/icon_refresh.svg);
-      }
-
-      :-webkit-any(paper-icon-button-light,
-                   cr-icon-button,
-                   .cr-icon).icon-settings {
-        background-image: url(../images/icon_settings.svg);
-      }
-      :host-context([dark]) :-webkit-any(paper-icon-button-light,
-                                         cr-icon-button,
-                                         .cr-icon).icon-settings {
-        background-image: url(../images/dark/icon_settings.svg);
-      }
-
-      :-webkit-any(paper-icon-button-light,
-                   cr-icon-button,
-                   .cr-icon).icon-search {
-        background-image: url(../images/icon_search.svg);
-      }
-      :host-context([dark]) :-webkit-any(paper-icon-button-light,
-                                         cr-icon-button,
-                                         .cr-icon).icon-search {
-        background-image: url(../images/dark/icon_search.svg);
-      }
-
-      :-webkit-any(paper-icon-button-light,
-                   cr-icon-button,
-                   .cr-icon).icon-arrow-dropdown {
-        background-image: url(../images/icon_arrow_dropdown.svg);
-      }
-      :host-context([dark]) :-webkit-any(paper-icon-button-light,
-                                         cr-icon-button,
-                                         .cr-icon).icon-arrow-dropdown {
-        background-image: url(../images/dark/icon_arrow_dropdown.svg);
-      }
-
-      :-webkit-any(paper-icon-button-light,
-                   cr-icon-button,
-                   .cr-icon).subpage-arrow {
-        background-image: url(../images/arrow_right.svg);
-      }
-      :host-context([dark]) :-webkit-any(paper-icon-button-light,
-                                         cr-icon-button,
-                                         .cr-icon).subpage-arrow {
-        background-image: url(../images/dark/arrow_right.svg);
-      }
-
-      :-webkit-any(paper-icon-button-light,
-                   cr-icon-button,
-                   .cr-icon).icon-visibility {
-        background-image: url(../images/icon_visibility.svg);
-      }
-      :host-context([dark]) :-webkit-any(paper-icon-button-light,
-                                         cr-icon-button,
-                                         .cr-icon).icon-visibility {
-        background-image: url(../images/dark/icon_visibility.svg);
-      }
-
-      :-webkit-any(paper-icon-button-light,
-                   cr-icon-button,
-                   .cr-icon).icon-visibility-off {
-        background-image: url(../images/icon_visibility_off.svg);
-      }
-      :host-context([dark]) :-webkit-any(paper-icon-button-light,
-                                         cr-icon-button,
-                                         .cr-icon).icon-visibility-off {
-        background-image: url(../images/dark/icon_visibility_off.svg);
+      @media (prefers-color-scheme: dark) {
+        .cr-icon {
+          background-color: var(--google-grey-refresh-500);
+        }
       }
     </style>
   </template>

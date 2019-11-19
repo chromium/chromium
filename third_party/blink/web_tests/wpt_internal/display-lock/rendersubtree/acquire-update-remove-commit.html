@@ -1,0 +1,47 @@
+<!doctype HTML>
+<html class="reftest-wait">
+<meta charset="utf8">
+<title>Display Locking: acquire, update, remove, commit</title>
+<link rel="author" title="Vladimir Levin" href="mailto:vmpstr@chromium.org">
+<link rel="help" href="https://github.com/WICG/display-locking">
+<link rel="match" href="acquire-update-remove-commit-ref.html">
+<script src="/common/reftest-wait.js"></script>
+<script src="resources/utils.js"></script>
+
+<style>
+#container {
+  width: 100px;
+  height: 100px;
+  background: lightblue;
+}
+</style>
+
+<div id="log"></div>
+
+<script>
+function finishTest(status_string) {
+  if (document.getElementById("log").innerHTML === "")
+    document.getElementById("log").innerHTML = status_string;
+  takeScreenshot();
+}
+
+function runTest() {
+  const container = document.createElement("div");
+  container.id = "container";
+
+  setInvisible(container).then(() => {
+    document.body.appendChild(container);
+    container.updateRendering().then(
+      () => { finishTest("FAIL"); },
+      (e) => {
+        document.body.appendChild(container);
+        finishTest("PASS " + e.message);
+      });
+    container.remove();
+    setVisible(container);
+  });
+}
+
+window.onload = runTest;
+</script>
+</html>

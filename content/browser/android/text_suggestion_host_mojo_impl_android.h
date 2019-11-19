@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_ANDROID_TEXT_SUGGESTION_HOST_MOJO_IMPL_ANDROID_H_
 #define CONTENT_BROWSER_ANDROID_TEXT_SUGGESTION_HOST_MOJO_IMPL_ANDROID_H_
 
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "third_party/blink/public/mojom/input/input_host.mojom.h"
 
 namespace content {
@@ -17,8 +18,9 @@ class TextSuggestionHostMojoImplAndroid final
  public:
   explicit TextSuggestionHostMojoImplAndroid(TextSuggestionHostAndroid*);
 
-  static void Create(TextSuggestionHostAndroid*,
-                     blink::mojom::TextSuggestionHostRequest request);
+  static void Create(
+      TextSuggestionHostAndroid*,
+      mojo::PendingReceiver<blink::mojom::TextSuggestionHost> receiver);
 
   void StartSuggestionMenuTimer() final;
 

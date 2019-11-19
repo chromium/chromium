@@ -63,9 +63,9 @@ class PPAPI_PROXY_EXPORT WebSocketResource : public PluginResource,
                                const std::string& url,
                                const std::string& protocol);
   void OnPluginMsgCloseReply(const ResourceMessageReplyParams& params,
-                             unsigned long buffered_amount,
+                             uint64_t buffered_amount,
                              bool was_clean,
-                             unsigned short code,
+                             uint16_t code,
                              const std::string& reason);
   void OnPluginMsgReceiveTextReply(const ResourceMessageReplyParams& params,
                                    const std::string& message);
@@ -73,13 +73,13 @@ class PPAPI_PROXY_EXPORT WebSocketResource : public PluginResource,
                                      const std::vector<uint8_t>& message);
   void OnPluginMsgErrorReply(const ResourceMessageReplyParams& params);
   void OnPluginMsgBufferedAmountReply(const ResourceMessageReplyParams& params,
-                                      unsigned long buffered_amount);
+                                      uint64_t buffered_amount);
   void OnPluginMsgStateReply(const ResourceMessageReplyParams& params,
                              int32_t state);
   void OnPluginMsgClosedReply(const ResourceMessageReplyParams& params,
-                              unsigned long buffered_amount,
+                              uint64_t buffered_amount,
                               bool was_clean,
-                              unsigned short code,
+                              uint16_t code,
                               const std::string& reason);
 
   // Picks up a received message and moves it to user receiving buffer. This

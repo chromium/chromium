@@ -14,7 +14,7 @@ namespace {
 
 bool BlockingCopyHelper(
     ScopedDataPipeConsumerHandle source,
-    const base::Callback<size_t(const void*, uint32_t)>& write_bytes) {
+    base::RepeatingCallback<size_t(const void*, uint32_t)> write_bytes) {
   for (;;) {
     const void* buffer;
     uint32_t num_bytes;
@@ -58,7 +58,7 @@ bool BlockingCopyToString(ScopedDataPipeConsumerHandle source,
   CHECK(result);
   result->clear();
   return BlockingCopyHelper(std::move(source),
-                            base::Bind(&CopyToStringHelper, result));
+                            base::BindRepeating(&CopyToStringHelper, result));
 }
 
 bool MOJO_CPP_SYSTEM_EXPORT

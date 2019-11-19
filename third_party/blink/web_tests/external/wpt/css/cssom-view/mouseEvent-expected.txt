@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+PASS MouseEvent's x and y must be equal to clientX and clientY.
+FAIL MouseEvent's pageX and pageY attributes should be the sum of the scroll offset and clientX/clientY assert_equals: expected 5020 but got 20
+PASS MouseEvent's offsetX/offsetY attributes should be the same value as its pageX/pageY attributes.
+Harness: the test ran to completion.
+

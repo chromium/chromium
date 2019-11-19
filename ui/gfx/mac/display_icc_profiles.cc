@@ -74,7 +74,7 @@ void DisplayICCProfiles::UpdateIfNeeded() {
     // don't store its data (we will assign the best parametric fit to
     // IOSurfaces, and rely on the system compositor to do conversion to the
     // display profile).
-    if (color_space.IsValid() && color_space.IsParametricAccurate())
+    if (color_space.IsValid() && icc_profile.IsColorSpaceAccurate())
       map_[color_space] = icc_data;
   }
 }

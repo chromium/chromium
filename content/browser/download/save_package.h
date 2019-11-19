@@ -305,8 +305,7 @@ class CONTENT_EXPORT SavePackage
       bool can_save_as_complete,
       const std::string& mime_type,
       const base::FilePath& website_save_dir,
-      const base::FilePath& download_save_dir,
-      bool skip_dir_check);
+      const base::FilePath& download_save_dir);
   void ContinueGetSaveInfo(bool can_save_as_complete,
                            const base::FilePath& suggested_path);
   void OnPathPicked(

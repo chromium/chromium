@@ -16,7 +16,7 @@
 #include "base/strings/stringprintf.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace app_list {
+namespace ash {
 
 namespace {
 
@@ -401,4 +401,4 @@ TEST_F(AppListItemListTest, AddPageBreakItemWithSamePosition) {
   EXPECT_TRUE(page_break_item->position().LessThan(item_1->position()));
 }
 
-}  // namespace app_list
+}  // namespace ash

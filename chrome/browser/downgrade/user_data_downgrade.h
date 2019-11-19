@@ -6,34 +6,30 @@
 #define CHROME_BROWSER_DOWNGRADE_USER_DATA_DOWNGRADE_H_
 
 #include "base/files/file_path.h"
+#include "base/optional.h"
 #include "base/version.h"
 
 namespace downgrade {
 
 // The suffix of pending deleted directory.
-extern const base::FilePath::CharType kDowngradeDeleteSuffix[];
+extern const base::FilePath::StringPieceType kDowngradeDeleteSuffix;
+
 // The name of "Last Version" file.
-extern const base::FilePath::CharType kDowngradeLastVersionFile[];
+extern const base::FilePath::StringPieceType kDowngradeLastVersionFile;
 
-// Moves aside all directories containing user data to prevent the browser from
-// reading them when Chrome is downgraded from a higher version. When called
-// early in startup, this will result in the browser performing first-run for
-// the user. To avoid long-running I/O operations, this function merely moves
-// directories aside. A subsequent call to DeleteMovedUserDataSoon (below) must
-// be made later in startup to free up disk space.
-void MoveUserDataForFirstRunAfterDowngrade();
+// Returns the path to the "Last Version" file in |user_data_dir|.
+base::FilePath GetLastVersionFile(const base::FilePath& user_data_dir);
 
-// Update the content of "Last Version" file with current version number
-// in |user_data_dir|.
-void UpdateLastVersion(const base::FilePath& user_data_dir);
+// Returns the value contained in the "Last Version" file in |user_data_dir|, or
+// a null value if the file does not exist, cannot be read, or does not contain
+// a version number.
+base::Optional<base::Version> GetLastVersion(
+    const base::FilePath& user_data_dir);
 
-// Get the content of "Last Version" file in |user_data_dir|.
-base::Version GetLastVersion(const base::FilePath& user_data_dir);
-
-// Schedules a search for the removal of any directories moved aside by
-// MoveUserDataForFirstRunAfterDowngrade. This operation is idempotent,
-// and may be safely called when no such directories exist.
-void DeleteMovedUserDataSoon();
+// Return the disk cache directory override if one is set via administrative
+// policy or a command line switch; otherwise, an empty path (the disk cache is
+// within the User Data directory).
+base::FilePath GetDiskCacheDir();
 
 }  // namespace downgrade
 

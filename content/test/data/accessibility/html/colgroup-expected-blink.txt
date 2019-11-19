@@ -1,16 +1,17 @@
 rootWebArea
-++table
-++++row
-++++++columnHeader name='Single'
-++++++++staticText name='Single'
-++++++++++inlineTextBox name='Single'
-++++++columnHeader name='Pair'
-++++++++staticText name='Pair'
-++++++++++inlineTextBox name='Pair'
-++++row
-++++++cell name='A'
-++++++++staticText name='A'
-++++++++++inlineTextBox name='A'
-++++++cell name='AA'
-++++++++staticText name='AA'
-++++++++++inlineTextBox name='AA'
+++genericContainer ignored
+++++table
+++++++row
+++++++++columnHeader name='Single'
+++++++++++staticText name='Single'
+++++++++++++inlineTextBox name='Single'
+++++++++columnHeader name='Pair'
+++++++++++staticText name='Pair'
+++++++++++++inlineTextBox name='Pair'
+++++++row
+++++++++cell name='A'
+++++++++++staticText name='A'
+++++++++++++inlineTextBox name='A'
+++++++++cell name='AA'
+++++++++++staticText name='AA'
+++++++++++++inlineTextBox name='AA'

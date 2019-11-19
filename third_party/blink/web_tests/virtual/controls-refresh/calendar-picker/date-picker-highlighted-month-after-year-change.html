@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<script>
+testRunner.waitUntilDone();
+</script>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<script src="../../../fast/forms/resources/common.js"></script>
+<script src="../../../fast/forms/resources/picker-common.js"></script>
+<script src="../../../fast/forms/calendar-picker/resources/calendar-picker-common.js"></script>
+<input type=date id=date value="2017-07-31">
+<script>
+
+let t = async_test('Test highlighted month in year view.');
+
+function test1() {
+  clickMonthPopupButton();
+  clickYearListCell(2018);
+  assert_equals(highlightedMonthButton(), "2018-01");
+}
+
+t.step(() => {
+  openPicker(document.getElementById('date'), t.step_func_done(test1));
+});
+</script>

@@ -6,7 +6,7 @@
 #define IOS_WEB_NAVIGATION_SERIALIZABLE_USER_DATA_MANAGER_IMPL_H_
 
 #include "base/macros.h"
-#import "ios/web/public/serializable_user_data_manager.h"
+#import "ios/web/public/session/serializable_user_data_manager.h"
 
 namespace web {
 

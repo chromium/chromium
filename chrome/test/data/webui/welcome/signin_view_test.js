@@ -2,90 +2,51 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-cr.define('onboarding_signin_view_test', function() {
-  suite('SigninViewTest', function() {
+import 'chrome://welcome/signin_view.js';
 
-    /** @type {SigninViewElement} */
-    let testElement;
+import {SigninViewProxyImpl} from 'chrome://welcome/signin_view_proxy.js';
+import {WelcomeBrowserProxyImpl} from 'chrome://welcome/welcome_browser_proxy.js';
 
-    /** @type {welcome.WelcomeBrowserProxy} */
-    let testWelcomeBrowserProxy;
+import {TestSigninViewProxy} from './test_signin_view_proxy.js';
+import {TestWelcomeBrowserProxy} from './test_welcome_browser_proxy.js';
 
-    /** @type {nux.NuxEmailProxy} */
-    let testEmailBrowserProxy;
+suite('SigninViewTest', function() {
+  /** @type {SigninViewElement} */
+  let testElement;
 
-    setup(function() {
-      testWelcomeBrowserProxy = new TestWelcomeBrowserProxy();
-      welcome.WelcomeBrowserProxyImpl.instance_ = testWelcomeBrowserProxy;
+  /** @type {WelcomeBrowserProxy} */
+  let testWelcomeBrowserProxy;
 
-      testEmailBrowserProxy = new TestNuxEmailProxy();
-      nux.EmailAppProxyImpl.instance_ = testEmailBrowserProxy;
+  setup(function() {
+    testWelcomeBrowserProxy = new TestWelcomeBrowserProxy();
+    WelcomeBrowserProxyImpl.instance_ = testWelcomeBrowserProxy;
 
-      PolymerTest.clearBody();
-      testElement = document.createElement('signin-view');
-      document.body.appendChild(testElement);
-    });
+    // Not used in test, but setting to test proxy anyway, in order to prevent
+    // calls to backend.
+    SigninViewProxyImpl.instance_ = new TestSigninViewProxy();
 
-    teardown(function() {
-      testElement.remove();
-    });
+    PolymerTest.clearBody();
+    testElement = document.createElement('signin-view');
+    document.body.appendChild(testElement);
+  });
 
-    test('sign-in button with no email provider selected', function() {
-      const signinButton = testElement.$$('paper-button');
-      assertTrue(!!signinButton);
+  teardown(function() {
+    testElement.remove();
+  });
 
-      signinButton.click();
-      return testEmailBrowserProxy.whenCalled('getSavedProvider')
-          .then(() => {
-            return testWelcomeBrowserProxy.whenCalled('handleActivateSignIn');
-          })
-          .then(redirectUrl => {
-            assertEquals(redirectUrl, null);
-          });
-    });
+  test('sign-in button', function() {
+    const signinButton = testElement.$$('cr-button');
+    assertTrue(!!signinButton);
 
-    test('sign-in button with a email provider selected', function() {
-      const signinButton = testElement.$$('paper-button');
-      assertTrue(!!signinButton);
+    signinButton.click();
+    return testWelcomeBrowserProxy.whenCalled('handleActivateSignIn')
+        .then(redirectUrl => assertEquals(null, redirectUrl));
+  });
 
-      testEmailBrowserProxy.setSavedProvider(3);
-
-      signinButton.click();
-      return testEmailBrowserProxy.whenCalled('getSavedProvider')
-          .then(() => {
-            return testWelcomeBrowserProxy.whenCalled('handleActivateSignIn');
-          })
-          .then(redirectUrl => {
-            assertEquals(
-                redirectUrl, 'chrome://welcome/email-interstitial?provider=3');
-          });
-    });
-
-    test('no-thanks button with no email provider selected', function() {
-      const noThanksButton = testElement.$$('button');
-      assertTrue(!!noThanksButton);
-
-      noThanksButton.click();
-      return Promise.all([
-        testEmailBrowserProxy.whenCalled('getSavedProvider'),
-        testWelcomeBrowserProxy.whenCalled('handleUserDecline'),
-      ]);
-    });
-
-    test('no-thanks button with an email provider selected', function() {
-      const noThanksButton = testElement.$$('button');
-      assertTrue(!!noThanksButton);
-
-      testEmailBrowserProxy.setSavedProvider(4);
-
-      noThanksButton.click();
-      return testEmailBrowserProxy.whenCalled('getSavedProvider')
-          .then(() => {
-            return testWelcomeBrowserProxy.whenCalled('handleUserDecline');
-          })
-          .then(url => {
-            assertEquals(url, 'chrome://welcome/email-interstitial?provider=4');
-          });
-    });
+  test('no-thanks button', function() {
+    const noThanksButton = testElement.$$('button');
+    assertTrue(!!noThanksButton);
+    noThanksButton.click();
+    return testWelcomeBrowserProxy.whenCalled('handleUserDecline');
   });
 });

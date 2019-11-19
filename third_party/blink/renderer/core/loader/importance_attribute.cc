@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/loader/importance_attribute.h"
+#include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 
 namespace blink {
 

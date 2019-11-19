@@ -39,7 +39,7 @@ class LauncherControllerHelper : public ExtensionEnableFlowDelegate {
   // Returns true if |id| is valid for the currently active profile.
   // Used during restore to ignore no longer valid extensions.
   // Note that already running applications are ignored by the restore process.
-  virtual bool IsValidIDForCurrentUser(const std::string& id) const;
+  virtual bool IsValidIDForCurrentUser(const std::string& app_id) const;
 
   void LaunchApp(const ash::ShelfID& id,
                  ash::ShelfLaunchSource source,
@@ -56,6 +56,13 @@ class LauncherControllerHelper : public ExtensionEnableFlowDelegate {
   // ExtensionEnableFlowDelegate:
   void ExtensionEnableFlowFinished() override;
   void ExtensionEnableFlowAborted(bool user_initiated) override;
+
+  // Returns true if |id| is a valid ARC app for the currently active profile.
+  bool IsValidIDForArcApp(const std::string& app_id) const;
+
+  // Returns true if |id| is a valid app from AppService. ARC app is not
+  // handled by this method.
+  bool IsValidIDFromAppService(const std::string& app_id) const;
 
   // The currently active profile for the usage of |GetAppID|.
   Profile* profile_;

@@ -69,6 +69,7 @@ class PropertyTreePrinterTraits<TransformPaintPropertyNode> {
   static void AddVisualViewportProperties(
       const VisualViewport& visual_viewport,
       PropertyTreePrinter<TransformPaintPropertyNode>& printer) {
+    printer.AddNode(visual_viewport.GetDeviceEmulationTransformNode());
     printer.AddNode(visual_viewport.GetOverscrollElasticityTransformNode());
     printer.AddNode(visual_viewport.GetPageScaleNode());
     printer.AddNode(visual_viewport.GetScrollTranslationNode());
@@ -228,22 +229,21 @@ CORE_EXPORT void showAllPropertyTrees(const blink::LocalFrameView& rootFrame) {
 
 void showTransformPropertyTree(const blink::LocalFrameView& rootFrame) {
   LOG(ERROR) << "Transform tree:\n"
-             << transformPropertyTreeAsString(rootFrame).Utf8().data();
+             << transformPropertyTreeAsString(rootFrame).Utf8();
 }
 
 void showClipPropertyTree(const blink::LocalFrameView& rootFrame) {
-  LOG(ERROR) << "Clip tree:\n"
-             << clipPropertyTreeAsString(rootFrame).Utf8().data();
+  LOG(ERROR) << "Clip tree:\n" << clipPropertyTreeAsString(rootFrame).Utf8();
 }
 
 void showEffectPropertyTree(const blink::LocalFrameView& rootFrame) {
   LOG(ERROR) << "Effect tree:\n"
-             << effectPropertyTreeAsString(rootFrame).Utf8().data();
+             << effectPropertyTreeAsString(rootFrame).Utf8();
 }
 
 void showScrollPropertyTree(const blink::LocalFrameView& rootFrame) {
   LOG(ERROR) << "Scroll tree:\n"
-             << scrollPropertyTreeAsString(rootFrame).Utf8().data();
+             << scrollPropertyTreeAsString(rootFrame).Utf8();
 }
 
 String transformPropertyTreeAsString(const blink::LocalFrameView& rootFrame) {

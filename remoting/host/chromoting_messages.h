@@ -8,7 +8,7 @@
 #include <stdint.h>
 
 #include "base/files/file_path.h"
-#include "base/memory/shared_memory_handle.h"
+#include "base/memory/unsafe_shared_memory_region.h"
 #include "base/time/time.h"
 #include "ipc/ipc_channel_handle.h"
 #include "ipc/ipc_platform_file.h"
@@ -124,6 +124,11 @@ IPC_MESSAGE_CONTROL(ChromotingNetworkDaemonMsg_HostStarted,
 
 IPC_MESSAGE_CONTROL(ChromotingNetworkDaemonMsg_HostShutdown)
 
+// Instructs the daemon process to update the config file, replacing the current
+// OAuth refresh token with the one provided.
+IPC_MESSAGE_CONTROL(ChromotingNetworkDaemonMsg_UpdateConfigRefreshToken,
+                    std::string /* token */)
+
 //-----------------------------------------------------------------------------
 // Chromoting messages sent from the desktop to the daemon process.
 
@@ -143,7 +148,7 @@ IPC_MESSAGE_CONTROL(ChromotingDesktopDaemonMsg_InjectSas)
 // Notifies the network process that a shared buffer has been created.
 IPC_MESSAGE_CONTROL(ChromotingDesktopNetworkMsg_CreateSharedBuffer,
                     int /* id */,
-                    base::SharedMemoryHandle /* handle */,
+                    base::ReadOnlySharedMemoryRegion /* region */,
                     uint32_t /* size */)
 
 // Request the network process to stop using a shared buffer.

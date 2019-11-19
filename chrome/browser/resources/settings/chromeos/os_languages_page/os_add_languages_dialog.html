@@ -1,0 +1,74 @@
+<link rel="import" href="chrome://resources/html/polymer.html">
+
+<link rel="import" href="chrome://resources/cr_elements/cr_button/cr_button.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_checkbox/cr_checkbox.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_scrollable_behavior.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_search_field/cr_search_field.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_dialog/cr_dialog.html">
+<link rel="import" href="chrome://resources/cr_elements/shared_vars_css.html">
+<link rel="import" href="chrome://resources/html/find_shortcut_behavior.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/iron-list/iron-list.html">
+<link rel="import" href="../../languages_page/languages.html">
+<link rel="import" href="../../settings_shared_css.html">
+
+<dom-module id="os-settings-add-languages-dialog">
+  <template>
+    <style include="settings-shared">
+      #dialog-body {
+        display: flex;
+        flex-direction: column;
+        height: 350px;
+        overflow: auto;
+        padding-inline-end: 0;
+      }
+
+      cr-search-field {
+        padding-inline-end: 24px;
+      }
+
+      iron-list {
+        flex: 1;
+      }
+
+      .ripple-padding {
+        /* Create a little extra space for checkbox ink ripple to flow into. */
+        padding-inline-start: 20px;
+      }
+
+      cr-checkbox::part(label-container) {
+        white-space: nowrap;
+      }
+    </style>
+    <cr-dialog id="dialog" close-text="$i18n{close}">
+      <div slot="title">$i18n{addLanguagesDialogTitle}</div>
+      <div id="dialog-body" slot="body" scrollable>
+        <cr-search-field label="$i18n{searchLanguages}" id="search"
+            on-search-changed="onSearchChanged_"
+            on-keydown="onKeydown_" autofocus>
+        </cr-search-field>
+        <iron-list class="ripple-padding" scroll-target="[[$$('[slot=body]')]]"
+            items="[[getLanguages_(
+                languages.supported, languages.enabled.*, filterValue_)]]">
+          <template>
+            <cr-checkbox class="list-item no-outline"
+                checked="[[willAdd_(item.code)]]" tab-index="[[tabIndex]]"
+                title$="[[item.nativeDisplayName]]"
+                on-change="onLanguageCheckboxChange_">
+              [[getDisplayText_(item)]]
+            </cr-checkbox>
+          </template>
+        </iron-list>
+      </div>
+      <div slot="button-container">
+        <cr-button class="cancel-button" on-click="onCancelButtonTap_">
+          $i18n{cancel}
+        </cr-button>
+        <cr-button class="action-button" on-click="onActionButtonTap_"
+            disabled="[[disableActionButton_]]">
+          $i18n{add}
+        </cr-button>
+      </div>
+    </cr-dialog>
+  </template>
+  <script src="os_add_languages_dialog.js"></script>
+</dom-module>

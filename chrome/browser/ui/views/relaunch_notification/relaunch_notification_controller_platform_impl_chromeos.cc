@@ -4,10 +4,10 @@
 
 #include "chrome/browser/ui/views/relaunch_notification/relaunch_notification_controller_platform_impl_chromeos.h"
 
+#include "ash/public/cpp/update_types.h"
 #include "base/bind.h"
 #include "chrome/browser/ui/ash/system_tray_client.h"
 #include "chrome/browser/ui/views/relaunch_notification/relaunch_notification_metrics.h"
-#include "chrome/browser/ui/views/relaunch_notification/relaunch_recommended_timer.h"
 #include "chrome/browser/ui/views/relaunch_notification/relaunch_required_timer.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
@@ -20,19 +20,18 @@ RelaunchNotificationControllerPlatformImpl::
     ~RelaunchNotificationControllerPlatformImpl() = default;
 
 void RelaunchNotificationControllerPlatformImpl::NotifyRelaunchRecommended(
-    base::Time detection_time) {
-  if (!relaunch_recommended_timer_) {
-    relaunch_recommended_timer_ = std::make_unique<RelaunchRecommendedTimer>(
-        detection_time,
-        base::BindRepeating(&RelaunchNotificationControllerPlatformImpl::
-                                RefreshRelaunchRecommendedTitle,
-                            base::Unretained(this)));
+    base::Time /*detection_time*/,
+    bool past_deadline) {
+  RecordRecommendedShowResult();
+  RefreshRelaunchRecommendedTitle(past_deadline);
+}
 
+void RelaunchNotificationControllerPlatformImpl::RecordRecommendedShowResult() {
+  if (!recorded_shown_) {
     relaunch_notification::RecordRecommendedShowResult(
         relaunch_notification::ShowResult::kShown);
+    recorded_shown_ = true;
   }
-
-  RefreshRelaunchRecommendedTitle();
 }
 
 void RelaunchNotificationControllerPlatformImpl::NotifyRelaunchRequired(
@@ -53,10 +52,8 @@ void RelaunchNotificationControllerPlatformImpl::NotifyRelaunchRequired(
 
 void RelaunchNotificationControllerPlatformImpl::CloseRelaunchNotification() {
   SystemTrayClient::Get()->SetUpdateNotificationState(
-      ash::mojom::NotificationStyle::DEFAULT, base::string16(),
-      base::string16());
-
-  relaunch_recommended_timer_.reset();
+      ash::NotificationStyle::kDefault, base::string16(), base::string16());
+  recorded_shown_ = false;
   relaunch_required_timer_.reset();
 }
 
@@ -66,17 +63,24 @@ void RelaunchNotificationControllerPlatformImpl::SetDeadline(
 }
 
 void RelaunchNotificationControllerPlatformImpl::
-    RefreshRelaunchRecommendedTitle() {
-  SystemTrayClient::Get()->SetUpdateNotificationState(
-      ash::mojom::NotificationStyle::ADMIN_RECOMMENDED,
-      relaunch_recommended_timer_->GetWindowTitle(),
-      l10n_util::GetStringUTF16(IDS_RELAUNCH_RECOMMENDED_BODY));
+    RefreshRelaunchRecommendedTitle(bool past_deadline) {
+  if (past_deadline) {
+    SystemTrayClient::Get()->SetUpdateNotificationState(
+        ash::NotificationStyle::kAdminRecommended,
+        l10n_util::GetStringUTF16(IDS_RELAUNCH_RECOMMENDED_OVERDUE_TITLE),
+        l10n_util::GetStringUTF16(IDS_RELAUNCH_RECOMMENDED_OVERDUE_BODY));
+  } else {
+    SystemTrayClient::Get()->SetUpdateNotificationState(
+        ash::NotificationStyle::kAdminRecommended,
+        l10n_util::GetStringUTF16(IDS_RELAUNCH_RECOMMENDED_TITLE),
+        l10n_util::GetStringUTF16(IDS_RELAUNCH_RECOMMENDED_BODY));
+  }
 }
 
 void RelaunchNotificationControllerPlatformImpl::
     RefreshRelaunchRequiredTitle() {
   SystemTrayClient::Get()->SetUpdateNotificationState(
-      ash::mojom::NotificationStyle::ADMIN_REQUIRED,
+      ash::NotificationStyle::kAdminRequired,
       relaunch_required_timer_->GetWindowTitle(),
       l10n_util::GetStringUTF16(IDS_RELAUNCH_REQUIRED_BODY));
 }

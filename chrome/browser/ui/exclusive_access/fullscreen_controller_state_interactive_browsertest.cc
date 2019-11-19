@@ -31,15 +31,26 @@
 class FullscreenControllerStateInteractiveTest
     : public InProcessBrowserTest,
       public FullscreenControllerStateTest {
+ public:
+  FullscreenControllerStateInteractiveTest() = default;
+  ~FullscreenControllerStateInteractiveTest() override = default;
+
+  // InProcessBrowserTest:
+  void TearDownOnMainThread() override {
+    // This code needs to override TearDownOnMainThread() as that is called
+    // before the Browser created by BrowserTestBase is deleted. TearDown() is
+    // called after the browser has already been deleted, which means the test
+    // code tries to remove an observer from a browser that was destroyed.
+    FullscreenControllerStateTest::TearDown();
+    InProcessBrowserTest::TearDownOnMainThread();
+  }
+
+  // FullscreenControllerStateTest:
+  Browser* GetBrowser() override { return InProcessBrowserTest::browser(); }
+
  private:
-  // FullscreenControllerStateTest override:
-  Browser* GetBrowser() override;
+  DISALLOW_COPY_AND_ASSIGN(FullscreenControllerStateInteractiveTest);
 };
-
-Browser* FullscreenControllerStateInteractiveTest::GetBrowser() {
-  return InProcessBrowserTest::browser();
-}
-
 
 // Soak tests ------------------------------------------------------------------
 

@@ -11,8 +11,10 @@
 
 namespace headless {
 
-HeadlessBrowserMainParts::HeadlessBrowserMainParts(HeadlessBrowserImpl* browser)
-    : browser_(browser) {}
+HeadlessBrowserMainParts::HeadlessBrowserMainParts(
+    const content::MainFunctionParams& parameters,
+    HeadlessBrowserImpl* browser)
+    : parameters_(parameters), browser_(browser) {}
 
 HeadlessBrowserMainParts::~HeadlessBrowserMainParts() = default;
 
@@ -22,11 +24,22 @@ void HeadlessBrowserMainParts::PreMainMessageLoopRun() {
     devtools_http_handler_started_ = true;
   }
   browser_->PlatformInitialize();
+  browser_->RunOnStartCallback();
+
+  if (parameters_.ui_task) {
+    parameters_.ui_task->Run();
+    delete parameters_.ui_task;
+    run_message_loop_ = false;
+  }
 }
 
 void HeadlessBrowserMainParts::PreDefaultMainMessageLoopRun(
     base::OnceClosure quit_closure) {
   quit_main_message_loop_ = std::move(quit_closure);
+}
+
+bool HeadlessBrowserMainParts::MainMessageLoopRun(int* result_code) {
+  return !run_message_loop_;
 }
 
 void HeadlessBrowserMainParts::PostMainMessageLoopRun() {

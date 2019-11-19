@@ -12,9 +12,9 @@
 #include "third_party/blink/renderer/core/workers/worker_backing_thread.h"
 #include "third_party/blink/renderer/core/workers/worker_backing_thread_startup_data.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
-#include "third_party/blink/renderer/platform/cross_thread_functional.h"
+#include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
-#include "third_party/blink/renderer/platform/web_thread_supporting_gc.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 
 namespace blink {
 namespace {
@@ -44,7 +44,7 @@ Vector<scoped_refptr<DOMWrapperWorld>> CreateWorlds(v8::Isolate* isolate) {
   EXPECT_TRUE(worlds[2]->IsWorkerWorld());
 
   // World ids should be unique.
-  HashSet<int> world_ids;
+  HashSet<int32_t> world_ids;
   EXPECT_TRUE(world_ids.insert(worlds[0]->GetWorldId()).is_new_entry);
   EXPECT_TRUE(world_ids.insert(worlds[1]->GetWorldId()).is_new_entry);
   EXPECT_TRUE(world_ids.insert(worlds[2]->GetWorldId()).is_new_entry);
@@ -79,7 +79,7 @@ void WorkerThreadFunc(
 
   thread->ShutdownOnBackingThread();
   PostCrossThreadTask(*main_thread_task_runner, FROM_HERE,
-                      CrossThreadBind(&test::ExitRunLoop));
+                      CrossThreadBindOnce(&test::ExitRunLoop));
 }
 
 TEST(DOMWrapperWorldTest, Basic) {
@@ -112,15 +112,16 @@ TEST(DOMWrapperWorldTest, Basic) {
   retrieved_worlds.clear();
 
   // Start a worker thread and create worlds on that.
-  std::unique_ptr<WorkerBackingThread> thread = WorkerBackingThread::Create(
-      ThreadCreationParams(WebThreadType::kTestThread)
-          .SetThreadNameForTest("DOMWrapperWorld test thread"));
+  std::unique_ptr<WorkerBackingThread> thread =
+      std::make_unique<WorkerBackingThread>(
+          ThreadCreationParams(ThreadType::kTestThread)
+              .SetThreadNameForTest("DOMWrapperWorld test thread"));
   scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner =
       Thread::Current()->GetTaskRunner();
-  thread->BackingThread().PostTask(
-      FROM_HERE,
-      CrossThreadBind(&WorkerThreadFunc, CrossThreadUnretained(thread.get()),
-                      std::move(main_thread_task_runner)));
+  PostCrossThreadTask(*thread->BackingThread().GetTaskRunner(), FROM_HERE,
+                      CrossThreadBindOnce(&WorkerThreadFunc,
+                                          CrossThreadUnretained(thread.get()),
+                                          std::move(main_thread_task_runner)));
   test::EnterRunLoop();
 
   // Worlds on the worker thread should not be visible from the main thread.

@@ -39,22 +39,23 @@
 #include "third_party/blink/renderer/core/dom/events/event_dispatcher.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/text/text_direction.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 
 namespace blink {
 
 class AXObject;
 class BeforeTextInsertedEvent;
+class ComputedStyle;
 class Element;
 class Event;
 class FormControlState;
 class HTMLFormElement;
 class HTMLInputElement;
 class KeyboardEvent;
-class MouseEvent;
 class LayoutObject;
-class ComputedStyle;
+enum class LegacyLayout;
+class MouseEvent;
 
 class ClickHandlingState final : public EventDispatchHandlingState {
  public:
@@ -98,7 +99,8 @@ class CORE_EXPORT InputTypeView : public GarbageCollectedMixin {
   void DispatchSimulatedClickIfActive(KeyboardEvent&) const;
 
   virtual void SubtreeHasChanged();
-  virtual LayoutObject* CreateLayoutObject(const ComputedStyle&) const;
+  virtual LayoutObject* CreateLayoutObject(const ComputedStyle&,
+                                           LegacyLayout) const;
   virtual scoped_refptr<ComputedStyle> CustomStyleForLayoutObject(
       scoped_refptr<ComputedStyle>);
   virtual TextDirection ComputedTextDirection();
@@ -112,7 +114,6 @@ class CORE_EXPORT InputTypeView : public GarbageCollectedMixin {
   virtual void AltAttributeChanged();
   virtual void SrcAttributeChanged();
   virtual void UpdateView();
-  virtual void AttributeChanged();
   virtual void MultipleAttributeChanged();
   virtual void DisabledAttributeChanged();
   virtual void ReadonlyAttributeChanged();

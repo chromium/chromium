@@ -183,7 +183,7 @@ class CastTransportImpl final : public CastTransport {
   using SessionMap = std::map<uint32_t, std::unique_ptr<RtpStreamSession>>;
   SessionMap sessions_;
 
-  base::WeakPtrFactory<CastTransportImpl> weak_factory_;
+  base::WeakPtrFactory<CastTransportImpl> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(CastTransportImpl);
 };

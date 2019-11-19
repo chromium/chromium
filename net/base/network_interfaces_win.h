@@ -38,8 +38,8 @@ struct NET_EXPORT WlanApi {
   template <typename T>
   DWORD OpenHandle(DWORD client_version, DWORD* cur_version, T* handle) const {
     HANDLE temp_handle;
-    DWORD result = open_handle_func(client_version, NULL, cur_version,
-                                    &temp_handle);
+    DWORD result =
+        open_handle_func(client_version, nullptr, cur_version, &temp_handle);
     if (result != ERROR_SUCCESS)
       return result;
     handle->Set(temp_handle);
@@ -60,8 +60,8 @@ struct WlanApiHandleTraits {
   typedef HANDLE Handle;
 
   static bool CloseHandle(HANDLE handle) {
-    return WlanApi::GetInstance().close_handle_func(handle, NULL) ==
-        ERROR_SUCCESS;
+    return WlanApi::GetInstance().close_handle_func(handle, nullptr) ==
+           ERROR_SUCCESS;
   }
   static bool IsHandleValid(HANDLE handle) {
     return base::win::HandleTraits::IsHandleValid(handle);

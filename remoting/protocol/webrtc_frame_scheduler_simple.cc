@@ -7,6 +7,7 @@
 #include <algorithm>
 
 #include "base/bind.h"
+#include "base/numerics/ranges.h"
 #include "base/time/default_tick_clock.h"
 #include "remoting/base/constants.h"
 #include "remoting/protocol/frame_stats.h"
@@ -75,8 +76,7 @@ WebrtcFrameSchedulerSimple::WebrtcFrameSchedulerSimple(
     : tick_clock_(base::DefaultTickClock::GetInstance()),
       pacing_bucket_(LeakyBucket::kUnlimitedDepth, 0),
       updated_region_area_(kStatsWindow),
-      bandwidth_estimator_(new WebrtcBandwidthEstimator()),
-      weak_factory_(this) {}
+      bandwidth_estimator_(new WebrtcBandwidthEstimator()) {}
 
 WebrtcFrameSchedulerSimple::~WebrtcFrameSchedulerSimple() {
   DCHECK(thread_checker_.CalledOnValidThread());
@@ -275,8 +275,17 @@ void WebrtcFrameSchedulerSimple::ScheduleNextFrame() {
 
     // Ensure that the capture rate is capped by kTargetFrameInterval, to avoid
     // excessive CPU usage by the capturer.
-    target_capture_time = std::max(
-        target_capture_time, last_capture_started_time_ + kTargetFrameInterval);
+    // Also ensure that the video does not freeze for excessively long periods.
+    // This protects against, for example, bugs in the b/w estimator or the
+    // LeakyBucket implementation which may result in unbounded wait times.
+    // If the network is such that it really takes > 2 or 3 seconds to send one
+    // video frame, then this upper-bound cap could result in packet-loss,
+    // triggering PLI (key-frame request). But the session would be already
+    // unusable under such network conditions. And the client would trigger PLI
+    // anyway if it doesn't receive any video for > 3 seconds.
+    target_capture_time = base::ClampToRange(
+        target_capture_time, last_capture_started_time_ + kTargetFrameInterval,
+        last_capture_started_time_ + kKeepAliveInterval);
   }
 
   target_capture_time = std::max(target_capture_time, now);

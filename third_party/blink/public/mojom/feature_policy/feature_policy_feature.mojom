@@ -1,0 +1,142 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+// These values map to the features which can be controlled by Feature Policy.
+//
+// Features are listed in
+// https://github.com/WICG/feature-policy/blob/master/features.md. Not all
+// listed features are supported in Blink, and many are gated by runtime flags.
+// See renderer/platform/feature_policy/feature_policy.cc for the feature names
+// which will be recognized in policy declarations.
+enum FeaturePolicyFeature {
+  kNotFound = 0,
+  // Controls access to media autoplay.
+  kAutoplay = 1,
+  // Controls access to video input devices.
+  kCamera = 2,
+  // Controls whether navigator.requestMediaKeySystemAccess is allowed.
+  kEncryptedMedia = 3,
+  // Controls whether Element.requestFullscreen is allowed.
+  kFullscreen = 4,
+  // Controls access to Geolocation interface.
+  kGeolocation = 5,
+  // Controls access to audio input devices.
+  kMicrophone = 6,
+  // Controls access to requestMIDIAccess method.
+  kMidiFeature = 7,
+  // Controls access to PaymentRequest interface.
+  kPayment = 8,
+  // Controls access to document.cookie attribute.
+  kDocumentCookie = 10,
+  // Controls access to document.domain attribute.
+  kDocumentDomain = 11,
+  // Controls whether synchronous script elements will run.
+  kSyncScript = 12,
+  // Controls use of synchronous XMLHTTPRequest API.
+  kSyncXHR = 13,
+  // Controls access to the WebUSB API.
+  kUsb = 14,
+  // Controls access to AOM event listeners.
+  kAccessibilityEvents = 15,
+  // Controls use of WebVR API.
+  kWebVr = 16,
+  // The following features control access to the corresponding sensor classes.
+  // Fusion sensor APIs (e.g. LinearAcceleration, OrientationSensor-based
+  // classes)require all of the features that are inputs into that API to be
+  // enabled for the feature to be allowed.
+  kAccelerometer = 17,
+  kAmbientLightSensor = 18,
+  kGyroscope = 19,
+  kMagnetometer = 20,
+  // Controls the layout size of intrinsically sized images and videos. When
+  // disabled, default size (300 x 150) is used to prevent relayout.
+  kUnsizedMedia = 21,
+  // When disallowed, restricts source image size to be no more 2x larger than
+  // the image's containing block.
+  kOversizedImages = 25,
+  // Controls access to Picture-in-Picture.
+  kPictureInPicture = 26,
+  // Controls the ability to block and interfere with vertical scrolling.
+  kVerticalScroll = 27,
+  // Controls the ability of the document to use several dynamic markup API
+  // which interfere with document's input stream (document.write(),
+  // document.close(), etc.).
+  kDocumentWrite = 28,
+  // TODO(ekaramad): kLazyLoad is deprecated; remove.
+  // Used to enforce lazyloading for a frame and any nested <iframe> or image.
+  kLazyLoad = 29,
+  // Restricts the usage of layout-causing animations in a document.
+  kLayoutAnimations = 30,
+  // Controls access to WakeLock
+  kWakeLock = 31,
+  // Controls access to font-display attribute in @font-face CSS rule
+  kFontDisplay = 32,
+
+  // These are the defined sandbox features implemented as policy-controlled
+  // features.
+  kTopNavigation = 33,
+  kFormSubmission = 34,
+  kScript = 35,
+  kPopups = 36,
+  kPointerLock = 37,
+  kModals = 38,
+  kOrientationLock = 39,
+  kPresentation = 40,
+  // End of sandbox features.
+
+  // Sample Origin Trial enabled feature. This is used only for testing.
+  kFrobulate = 41,
+  // Controls access to Serial
+  kSerial = 42,
+  // Controls access to WebHID.
+  kHid = 43,
+  // Controls access to Idle Detection
+  kIdleDetection = 44,
+
+  // When disallowed, these policies require images to have a reasonable byte-to-pixel ratio.
+  kUnoptimizedLossyImages = 45,
+  kUnoptimizedLosslessImages = 46,
+  kUnoptimizedLosslessImagesStrict = 47,
+
+  // Loading policies.
+  kLoadingFrameDefaultEager = 48,
+
+  // Implements sandbox flag: allow-downloads-without-user-activation.
+  kDownloadsWithoutUserActivation = 49,
+
+  // Allow execution while not in the viewport.
+  kExecutionWhileOutOfViewport = 50,
+  // Allow execution while not rendered.
+  kExecutionWhileNotRendered = 51,
+
+  // When disallowed, a frame without user activation cannot acquire focus.
+  kFocusWithoutUserActivation = 52,
+
+  // Client Hints
+  kClientHintDPR = 53,
+  kClientHintDeviceMemory = 54,
+  kClientHintDownlink = 55,
+  kClientHintECT = 56,
+  kClientHintLang = 57,
+  kClientHintRTT = 58,
+  kClientHintUA = 59,
+  kClientHintUAArch = 60,
+  kClientHintUAModel = 61,
+  kClientHintUAPlatform = 62,
+  kClientHintViewportWidth = 63,
+  kClientHintWidth = 64,
+
+  // Whether all cross document access to this window object is treated as cross origin.
+  kDocumentAccess = 65,
+
+  // Controls use of WebXR API.
+  kWebXr = 66,
+
+  // Don't change assigned numbers of any item, and don't reuse removed slots.
+  // Add new features at the end of the enum.
+  // Also, run update_feature_policy_enum.py in
+  // chromium/src/tools/metrics/histograms/ to update the UMA mapping.
+};

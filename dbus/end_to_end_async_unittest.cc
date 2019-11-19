@@ -11,10 +11,11 @@
 
 #include "base/bind.h"
 #include "base/bind_helpers.h"
-#include "base/message_loop/message_loop.h"
+#include "base/message_loop/message_pump_type.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
 #include "base/stl_util.h"
+#include "base/test/task_environment.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_restrictions.h"
@@ -46,7 +47,7 @@ class EndToEndAsyncTest : public testing::Test {
     // Start the D-Bus thread.
     dbus_thread_.reset(new base::Thread("D-Bus Thread"));
     base::Thread::Options thread_options;
-    thread_options.message_loop_type = base::MessageLoop::TYPE_IO;
+    thread_options.message_pump_type = base::MessagePumpType::IO;
     ASSERT_TRUE(dbus_thread_->StartWithOptions(thread_options));
 
     // Start the test service, using the D-Bus thread.
@@ -255,7 +256,7 @@ class EndToEndAsyncTest : public testing::Test {
     run_loop_->Run();
   }
 
-  base::MessageLoop message_loop_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
   std::unique_ptr<base::RunLoop> run_loop_;
   std::vector<std::string> response_strings_;
   std::vector<std::string> error_names_;
@@ -442,7 +443,7 @@ TEST_F(EndToEndAsyncTest, CancelPendingCalls) {
 
   // We shouldn't receive any responses. Wait for a while just to make sure.
   run_loop_.reset(new base::RunLoop);
-  message_loop_.task_runner()->PostDelayedTask(
+  task_environment_.GetMainThreadTaskRunner()->PostDelayedTask(
       FROM_HERE, run_loop_->QuitClosure(), TestTimeouts::tiny_timeout());
   run_loop_->Run();
   EXPECT_TRUE(response_strings_.empty());
@@ -542,9 +543,9 @@ TEST_F(EndToEndAsyncTest, EmptyResponseCallback) {
   // Call the method with an empty callback.
   const int timeout_ms = ObjectProxy::TIMEOUT_USE_DEFAULT;
   object_proxy_->CallMethod(&method_call, timeout_ms, base::DoNothing());
-  // Post a delayed task to quit the message loop.
+  // Post a delayed task to quit the RunLoop.
   run_loop_.reset(new base::RunLoop);
-  message_loop_.task_runner()->PostDelayedTask(
+  task_environment_.GetMainThreadTaskRunner()->PostDelayedTask(
       FROM_HERE, run_loop_->QuitClosure(), TestTimeouts::tiny_timeout());
   run_loop_->Run();
   // We cannot tell if the empty callback is called, but at least we can

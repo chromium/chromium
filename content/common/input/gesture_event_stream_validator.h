@@ -24,9 +24,6 @@ class CONTENT_EXPORT GestureEventStreamValidator {
 
   // If |event| is valid for the current stream, returns true.
   // Otherwise, returns false with a corresponding error message.
-  bool Validate(const blink::WebGestureEvent& event,
-                const bool fling_cancellation_is_deferred,
-                std::string* error_msg);
   bool Validate(const blink::WebGestureEvent& event, std::string* error_msg);
 
  private:

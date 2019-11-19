@@ -4,8 +4,9 @@
 
 // <include src="browser_bridge.js">
 // <include src="info_view.js">
+// <include src="vulkan_info.js">
 
-var browserBridge;
+let browserBridge;
 
 /**
  * Main entry point. called once the page has loaded.

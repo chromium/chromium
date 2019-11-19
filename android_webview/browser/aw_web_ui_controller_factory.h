@@ -17,14 +17,14 @@ class AwWebUIControllerFactory : public content::WebUIControllerFactory {
 
   // content::WebUIControllerFactory overrides
   content::WebUI::TypeID GetWebUIType(content::BrowserContext* browser_context,
-                                      const GURL& url) const override;
+                                      const GURL& url) override;
   bool UseWebUIForURL(content::BrowserContext* browser_context,
-                      const GURL& url) const override;
+                      const GURL& url) override;
   bool UseWebUIBindingsForURL(content::BrowserContext* browser_context,
-                              const GURL& url) const override;
+                              const GURL& url) override;
   std::unique_ptr<content::WebUIController> CreateWebUIControllerForURL(
       content::WebUI* web_ui,
-      const GURL& url) const override;
+      const GURL& url) override;
 
  private:
   friend struct base::DefaultSingletonTraits<AwWebUIControllerFactory>;

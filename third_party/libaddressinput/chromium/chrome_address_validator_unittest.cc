@@ -11,9 +11,9 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/message_loop/message_loop.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/libaddressinput/src/cpp/include/libaddressinput/address_data.h"
 #include "third_party/libaddressinput/src/cpp/include/libaddressinput/address_problem.h"
@@ -50,6 +50,7 @@ using ::i18n::addressinput::MISMATCHING_VALUE;
 using ::i18n::addressinput::MISSING_REQUIRED_FIELD;
 using ::i18n::addressinput::UNEXPECTED_FIELD;
 using ::i18n::addressinput::UNKNOWN_VALUE;
+using ::i18n::addressinput::UNSUPPORTED_FIELD;
 using ::i18n::addressinput::USES_P_O_BOX;
 
 // This class should always succeed in getting the rules.
@@ -248,55 +249,51 @@ TEST_F(AddressValidatorTest, USZipCode) {
   FieldProblemMap problems;
   EXPECT_EQ(AddressValidator::SUCCESS,
             validator_->ValidateAddress(address, NULL, &problems));
-  EXPECT_TRUE(problems.empty());
 
+  FieldProblemMap expected;
+  expected.emplace(LOCALITY, UNSUPPORTED_FIELD);
+  expected.emplace(DEPENDENT_LOCALITY, UNSUPPORTED_FIELD);
+  EXPECT_EQ(expected, problems);
   problems.clear();
 
   // An extended, valid Californian zip code.
   address.postal_code = "90210-1234";
   EXPECT_EQ(AddressValidator::SUCCESS,
             validator_->ValidateAddress(address, NULL, &problems));
-  EXPECT_TRUE(problems.empty());
-
+  EXPECT_EQ(expected, problems);
   problems.clear();
 
   // New York zip code (which is invalid for California).
   address.postal_code = "12345";
   EXPECT_EQ(AddressValidator::SUCCESS,
             validator_->ValidateAddress(address, NULL, &problems));
-  EXPECT_EQ(1U, problems.size());
-  EXPECT_EQ(problems.begin()->first, POSTAL_CODE);
-  EXPECT_EQ(problems.begin()->second, MISMATCHING_VALUE);
-
+  expected.emplace(POSTAL_CODE, MISMATCHING_VALUE);
+  EXPECT_EQ(expected, problems);
   problems.clear();
 
   // A zip code with a "90" in the middle.
   address.postal_code = "12903";
   EXPECT_EQ(AddressValidator::SUCCESS,
             validator_->ValidateAddress(address, NULL, &problems));
-  EXPECT_EQ(1U, problems.size());
-  EXPECT_EQ(problems.begin()->first, POSTAL_CODE);
-  EXPECT_EQ(problems.begin()->second, MISMATCHING_VALUE);
-
+  EXPECT_EQ(expected, problems);
   problems.clear();
 
   // Invalid zip code (too many digits).
   address.postal_code = "902911";
   EXPECT_EQ(AddressValidator::SUCCESS,
             validator_->ValidateAddress(address, NULL, &problems));
-  EXPECT_EQ(1U, problems.size());
-  EXPECT_EQ(problems.begin()->first, POSTAL_CODE);
-  EXPECT_EQ(problems.begin()->second, INVALID_FORMAT);
-
+  expected.clear();
+  expected.emplace(LOCALITY, UNSUPPORTED_FIELD);
+  expected.emplace(DEPENDENT_LOCALITY, UNSUPPORTED_FIELD);
+  expected.emplace(POSTAL_CODE, INVALID_FORMAT);
+  EXPECT_EQ(expected, problems);
   problems.clear();
 
   // Invalid zip code (too few digits).
   address.postal_code = "9029";
   EXPECT_EQ(AddressValidator::SUCCESS,
             validator_->ValidateAddress(address, NULL, &problems));
-  EXPECT_EQ(1U, problems.size());
-  EXPECT_EQ(problems.begin()->first, POSTAL_CODE);
-  EXPECT_EQ(problems.begin()->second, INVALID_FORMAT);
+  EXPECT_EQ(expected, problems);
 }
 
 TEST_F(AddressValidatorTest, BasicValidation) {
@@ -313,35 +310,39 @@ TEST_F(AddressValidatorTest, BasicValidation) {
   FieldProblemMap problems;
   EXPECT_EQ(AddressValidator::SUCCESS,
             validator_->ValidateAddress(address, NULL, &problems));
-  EXPECT_TRUE(problems.empty());
+
+  FieldProblemMap expected;
+  expected.emplace(LOCALITY, UNSUPPORTED_FIELD);
+  expected.emplace(DEPENDENT_LOCALITY, UNSUPPORTED_FIELD);
+  EXPECT_EQ(expected, problems);
 
   // The display name works as well as the key.
   address.administrative_area = "Texas";
   problems.clear();
   EXPECT_EQ(AddressValidator::SUCCESS,
             validator_->ValidateAddress(address, NULL, &problems));
-  EXPECT_TRUE(problems.empty());
+  EXPECT_EQ(expected, problems);
 
   // Ignore capitalization.
   address.administrative_area = "tx";
   problems.clear();
   EXPECT_EQ(AddressValidator::SUCCESS,
             validator_->ValidateAddress(address, NULL, &problems));
-  EXPECT_TRUE(problems.empty());
+  EXPECT_EQ(expected, problems);
 
   // Ignore capitalization.
   address.administrative_area = "teXas";
   problems.clear();
   EXPECT_EQ(AddressValidator::SUCCESS,
             validator_->ValidateAddress(address, NULL, &problems));
-  EXPECT_TRUE(problems.empty());
+  EXPECT_EQ(expected, problems);
 
   // Ignore diacriticals.
   address.administrative_area = base::WideToUTF8(L"T\u00E9xas");
   problems.clear();
   EXPECT_EQ(AddressValidator::SUCCESS,
             validator_->ValidateAddress(address, NULL, &problems));
-  EXPECT_TRUE(problems.empty());
+  EXPECT_EQ(expected, problems);
 }
 
 TEST_F(AddressValidatorTest, BasicValidationFailure) {
@@ -359,9 +360,13 @@ TEST_F(AddressValidatorTest, BasicValidationFailure) {
   EXPECT_EQ(AddressValidator::SUCCESS,
             validator_->ValidateAddress(address, NULL, &problems));
 
-  ASSERT_EQ(1U, problems.size());
-  EXPECT_EQ(UNKNOWN_VALUE, problems.begin()->second);
-  EXPECT_EQ(ADMIN_AREA, problems.begin()->first);
+  ASSERT_EQ(3U, problems.size());
+
+  FieldProblemMap expected;
+  expected.emplace(ADMIN_AREA, UNKNOWN_VALUE);
+  expected.emplace(LOCALITY, UNSUPPORTED_FIELD);
+  expected.emplace(DEPENDENT_LOCALITY, UNSUPPORTED_FIELD);
+  EXPECT_EQ(expected, problems);
 }
 
 TEST_F(AddressValidatorTest, NoNullSuggestionsCrash) {
@@ -912,11 +917,12 @@ class FailingAddressValidatorTest : public testing::Test, LoadRulesListener {
 
  private:
   // LoadRulesListener implementation.
-  void OnAddressValidationRulesLoaded(const std::string&, bool success) override {
+  void OnAddressValidationRulesLoaded(const std::string&,
+                                      bool success) override {
     load_rules_success_ = success;
   }
 
-  base::MessageLoop ui_;
+  base::test::TaskEnvironment task_environment_;
 
   DISALLOW_COPY_AND_ASSIGN(FailingAddressValidatorTest);
 };

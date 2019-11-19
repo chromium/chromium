@@ -1,0 +1,9 @@
+{
+  "name": "Extension service worker - persistent filtered events",
+  "version": "1.0",
+  "manifest_version": 2,
+  "key": "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDcBHwzDvyBQ6bDppkIs9MP4ksKqCMyXQ/A52JivHZKh4YO/9vJsT3oaYhSpDCE9RPocOEQvwsHsFReW2nUEc6OLLyoCFFxIb7KkLGsmfakkut/fFdNJYh0xOTbSN8YvLWcqph09XAY2Y/f0AL7vfO1cuCqtkMt8hFrBGWxDdf9CQIDAQAB",
+  "description": "Extension service worker - filtered events test with webNavigation, that survives across browser restart",
+  "background": {"service_worker": "service_worker_background.js"},
+  "permissions": ["webNavigation"]
+}

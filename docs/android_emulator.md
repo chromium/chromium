@@ -1,11 +1,18 @@
 # Using an Android Emulator
-Always use x86 emulators. Although arm emulators exist, they are so slow that
-they are not worth your time.
+Always use x86 emulators (or x86\_64 for testing 64-bit APKs). Although arm
+emulators exist, they are so slow that they are not worth your time.
+
+*** note
+**Note:** apps with native code must be compiled specifically for the device
+architecture, so make sure your copy of the app supports x86. Also, be aware the
+Play Store may not display ARM-only applications for an x86 emulator. The steps
+below show how to locally compile chromium-based apps for x86.
+***
 
 ## Building for Emulation
 You need to target the correct architecture via GN args:
 ```gn
-target_cpu = "x86"
+target_cpu = "x86"  # or "x64" if you have an x86_64 emulator
 ```
 
 ## Creating an Emulator Image
@@ -27,14 +34,15 @@ testing large screens).
 ### Choosing an Image
 Android Studio's image labels roughly translate to the following:
 
-| AVD "Target" | GMS? | Build Properties |
-| --- | --- | --- |
-| Google Play | This has GMS | `user`/`release-keys` |
-| Google APIs | This has GMS | `userdebug`/`dev-keys` |
-| No label | AOSP image, does not have GMS | `eng`/`test-keys` |
+| AVD "Target" | Virtual Device Configuration tab | GMS? | Build Properties |
+| --- | --- | --- | --- |
+| Google Play | "Recommended" (the default tab) | This has GMS | `user`/`release-keys` |
+| Google APIs | "x86 Images" | This has GMS | `userdebug`/`dev-keys` |
+| No label | "x86 Images" | AOSP image, does not have GMS | `eng`/`test-keys` |
 
 *** promo
-If you're not sure which to use, **choose Google APIs**.
+**Tip:** if you're not sure which to use, choose **Google APIs** under the **x86
+Images** tab in the Virtual Device Configuration wizard.
 ***
 
 ### Configuration
@@ -52,17 +60,6 @@ If you're not sure which to use, **choose Google APIs**.
    * Can often be fixed by editing `~/.android/avd/YOUR_DEVICE/config.ini`.
      * Look for `hw.sdCard=no` and set it to `yes`
 
-### Cloning an Image
-Running tests on two emulators is twice as fast as running on one. Rather
-than use the UI to create additional avds, you can clone an existing one via:
-
-```shell
-$ tools/android/emulator/clone_avd.py \
-    --source-ini ~/.android/avd/EMULATOR_ID.ini \
-    --dest-ini ~/.android/avd/EMULATOR_ID_CLONED.ini \
-    --display-name "Cloned Emulator"
-```
-
 ## Starting an Emulator from the Command Line
 Refer to: https://developer.android.com/studio/run/emulator-commandline.html.
 
@@ -72,6 +69,9 @@ Ctrl-C will gracefully close an emulator.
 
 ### Basic Command Line Use
 ```shell
+$ # List virtual devices that you've created:
+$ ~/Android/Sdk/emulator/emulator -list-avds
+$ # Start a named device:
 $ ~/Android/Sdk/emulator/emulator @EMULATOR_ID
 ```
 
@@ -79,8 +79,22 @@ $ ~/Android/Sdk/emulator/emulator @EMULATOR_ID
 You can run an emulator without creating a window on your desktop (useful for
 `ssh`):
 ```shell
-$ sudo apt-get install xvfb-run
-$ xvfb-run ~/Android/Sdk/emulator/emulator -gpu off @EMULATOR_ID
+$ ~/Android/Sdk/emulator/emulator -no-window @EMULATOR_ID
+$ # This also works for new enough emulator builds:
+$ ~/Android/Sdk/emulator/emulator-headless @EMULATOR_ID
+```
+
+### Running Multiple Emulators
+Tests are automatically sharded amongst available devices. If you run multiple
+emulators, then running test suites becomes much faster. Refer to the
+"Multiple AVD instances" section of these [emulator release notes](
+https://androidstudio.googleblog.com/2018/11/emulator-28016-stable.html)
+for more about how this works.
+```shell
+$ # Start 8 emulators. Press Ctrl-C to stop them all.
+$ ( for i in $(seq 8); do ~/Android/Sdk/emulator/emulator @EMULATOR_ID -read-only & done; wait )
+$ # Start 12 emulators. More than 10 requires disabling audio on some OS's. Reducing cores increases parallelism.
+$ ( for i in $(seq 12); do ~/Android/Sdk/emulator/emulator @EMULATOR_ID -read-only -no-audio -cores 2 & done; wait )
 ```
 
 ### Writable system partition
@@ -89,13 +103,6 @@ default (even on rooted devices). If you need to do so (such as to remove a
 system app), you can start your emulator like so:
 ```shell
 $ ~/Android/Sdk/emulator/emulator -writable-system @EMULATOR_ID
-```
-
-### Remote Desktop
-For better graphics performance, use virtualgl (Googlers, see
-http://go/virtualgl):
-```shell
-$ vglrun ~/Android/Sdk/emulator/emulator @EMULATOR_ID
 ```
 
 ## Using an Emulator

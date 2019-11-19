@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2018 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<!-- TODO(fhorschig): android:elevation has no effect pre-Lollipop. Possibly, using a CardView or
+     holo drawables could create compatibility - if this becomes the final design.-->
+<TextView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:gravity="center"
+    android:layout_height="@dimen/keyboard_accessory_bar_item_height"
+    android:layout_width="wrap_content"
+    android:minHeight="0dp"
+    android:minWidth="0dp"
+    android:paddingBottom="0dp"
+    android:paddingEnd="@dimen/keyboard_accessory_horizontal_padding"
+    android:paddingStart="@dimen/keyboard_accessory_horizontal_padding"
+    android:paddingTop="0dp"
+    android:layout_marginBottom="@dimen/keyboard_accessory_chip_vertical_margin"
+    android:layout_marginTop="@dimen/keyboard_accessory_chip_vertical_margin"
+    android:elevation="2dp"
+    android:textAppearance="@style/TextAppearance.BlackTitle2"
+    android:background="@drawable/autofill_chip_inset"/>

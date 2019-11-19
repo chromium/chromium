@@ -12,7 +12,7 @@
 
 namespace media_router {
 
-// Implements the chrome://media-router user interface.
+// Implements the chrome://media-router-internals/ user interface.
 class MediaRouterInternalsUI : public content::WebUIController {
  public:
   // |web_ui| owns this object and is used to initialize the base class.

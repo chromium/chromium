@@ -78,10 +78,10 @@ WindowProxy* WindowProxyManager::CreateWindowProxy(DOMWrapperWorld& world) {
       // LocalFrame and at that time virtual member functions are not yet
       // available (we cannot use LocalFrame::isLocalFrame).  Ditto for
       // RemoteFrame.
-      return LocalWindowProxy::Create(
+      return MakeGarbageCollected<LocalWindowProxy>(
           isolate_, *static_cast<LocalFrame*>(frame_.Get()), &world);
     case FrameType::kRemote:
-      return RemoteWindowProxy::Create(
+      return MakeGarbageCollected<RemoteWindowProxy>(
           isolate_, *static_cast<RemoteFrame*>(frame_.Get()), &world);
   }
   NOTREACHED();

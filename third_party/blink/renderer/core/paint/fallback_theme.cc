@@ -13,7 +13,8 @@ namespace {
 
 class FallbackTheme : public ui::NativeThemeBase {
  public:
-  SkColor GetSystemColor(ColorId color_id) const override {
+  SkColor GetSystemColor(ColorId color_id,
+                         ColorScheme color_scheme) const override {
     // The paint routines in NativeThemeBase only use GetSystemColor for
     // button focus colors and the fallback theme is not used for buttons.
     NOTREACHED();

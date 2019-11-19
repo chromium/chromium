@@ -44,11 +44,7 @@ class SVGNumber : public SVGPropertyHelper<SVGNumber> {
   typedef SVGNumberTearOff TearOffType;
   typedef float PrimitiveType;
 
-  static SVGNumber* Create(float value = 0.0f) {
-    return MakeGarbageCollected<SVGNumber>(value);
-  }
-
-  explicit SVGNumber(float);
+  explicit SVGNumber(float = 0.0f);
 
   virtual SVGNumber* Clone() const;
 
@@ -59,7 +55,7 @@ class SVGNumber : public SVGPropertyHelper<SVGNumber> {
   virtual SVGParsingError SetValueAsString(const String&);
 
   void Add(SVGPropertyBase*, SVGElement*) override;
-  void CalculateAnimatedValue(SVGAnimationElement*,
+  void CalculateAnimatedValue(const SVGAnimateElement&,
                               float percentage,
                               unsigned repeat_count,
                               SVGPropertyBase* from,
@@ -89,11 +85,7 @@ DEFINE_SVG_PROPERTY_TYPE_CASTS(SVGNumber);
 //   offset = "<number> | <percentage>"
 class SVGNumberAcceptPercentage final : public SVGNumber {
  public:
-  static SVGNumberAcceptPercentage* Create(float value = 0) {
-    return MakeGarbageCollected<SVGNumberAcceptPercentage>(value);
-  }
-
-  explicit SVGNumberAcceptPercentage(float);
+  explicit SVGNumberAcceptPercentage(float = 0);
 
   SVGNumber* Clone() const override;
   SVGParsingError SetValueAsString(const String&) override;

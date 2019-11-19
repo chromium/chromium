@@ -1,0 +1,24 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/jumbo.gni")
+
+assert(is_mac)
+
+jumbo_component("mac") {
+  output_name = "ui_base_ime_mac"
+
+  sources = [
+    "input_method_mac.h",
+    "input_method_mac.mm",
+  ]
+
+  defines = [ "IS_UI_BASE_IME_MAC_IMPL" ]
+
+  public_deps = [
+    "//ui/base/ime",
+  ]
+
+  libs = [ "AppKit.framework" ]
+}

@@ -17,18 +17,18 @@
 #include "base/strings/sys_string_conversions.h"
 #include "base/task/post_task.h"
 #import "base/test/ios/wait_util.h"
+#include "base/test/scoped_feature_list.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
-#include "components/autofill/core/browser/card_unmask_delegate.h"
-#include "components/autofill/core/browser/credit_card.h"
+#include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/payments/card_unmask_delegate.h"
+#include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
-#include "ios/web/public/test/test_web_thread_bundle.h"
-#include "ios/web/public/web_task_traits.h"
-#include "ios/web/public/web_thread.h"
+#include "ios/web/public/test/web_task_environment.h"
+#include "ios/web/public/thread/web_task_traits.h"
+#include "ios/web/public/thread/web_thread.h"
 #import "ios/web_view/internal/autofill/cwv_credit_card_internal.h"
-#import "ios/web_view/public/cwv_credit_card_verifier_data_source.h"
-#import "ios/web_view/public/cwv_credit_card_verifier_delegate.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #include "testing/platform_test.h"
@@ -53,10 +53,11 @@ class FakeCardUnmaskDelegate : public autofill::CardUnmaskDelegate {
   virtual ~FakeCardUnmaskDelegate() {}
 
   // CardUnmaskDelegate implementation.
-  void OnUnmaskResponse(const UnmaskResponse& unmask_response) override {
-    unmask_response_ = unmask_response;
+  void OnUnmaskPromptAccepted(
+      const UserProvidedUnmaskDetails& unmask_details) override {
+    unmask_details_ = unmask_details;
     // Fake the actual verification and just respond with success.
-    base::PostTaskWithTraits(
+    base::PostTask(
         FROM_HERE, {web::WebThread::UI}, base::BindOnce(^{
           autofill::AutofillClient::PaymentsRpcResult result =
               autofill::AutofillClient::SUCCESS;
@@ -73,14 +74,16 @@ class FakeCardUnmaskDelegate : public autofill::CardUnmaskDelegate {
     credit_card_verifier_ = credit_card_verifier;
   }
 
-  const UnmaskResponse& GetUnmaskResponse() { return unmask_response_; }
+  const UserProvidedUnmaskDetails& GetUserProvidedUnmaskDetails() {
+    return unmask_details_;
+  }
 
  private:
   // Used to pass fake verification result back.
   __weak CWVCreditCardVerifier* credit_card_verifier_;
 
   // Used to verify unmask response matches.
-  UnmaskResponse unmask_response_;
+  UserProvidedUnmaskDetails unmask_details_;
 
   base::WeakPtrFactory<FakeCardUnmaskDelegate> weak_factory_;
 
@@ -130,7 +133,7 @@ class CWVCreditCardVerifierTest : public PlatformTest {
     ui::ResourceBundle::CleanupSharedInstance();
   }
 
-  web::TestWebThreadBundle web_thread_bundle_;
+  web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestingPrefServiceSimple> pref_service_;
   FakeCardUnmaskDelegate card_unmask_delegate_;
   CWVCreditCardVerifier* credit_card_verifier_;
@@ -139,7 +142,6 @@ class CWVCreditCardVerifierTest : public PlatformTest {
 // Tests CWVCreditCardVerifier properties.
 TEST_F(CWVCreditCardVerifierTest, Properties) {
   EXPECT_TRUE(credit_card_verifier_.creditCard);
-  EXPECT_TRUE(credit_card_verifier_.canStoreLocally);
   EXPECT_FALSE(credit_card_verifier_.lastStoreLocallyValue);
   EXPECT_TRUE(credit_card_verifier_.navigationTitle);
   EXPECT_TRUE(credit_card_verifier_.instructionMessage);
@@ -154,6 +156,22 @@ TEST_F(CWVCreditCardVerifierTest, Properties) {
   EXPECT_FALSE(credit_card_verifier_.shouldRequestUpdateForExpirationDate);
   [credit_card_verifier_ requestUpdateForExpirationDate];
   EXPECT_TRUE(credit_card_verifier_.shouldRequestUpdateForExpirationDate);
+}
+
+// Tests CWVCreditCardVerifier's |canStoreLocally| property.
+TEST_F(CWVCreditCardVerifierTest, CanStoreLocallyProperty) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      autofill::features::kAutofillNoLocalSaveOnUnmaskSuccess);
+  EXPECT_FALSE(credit_card_verifier_.canStoreLocally);
+}
+
+// Tests CWVCreditCardVerifier's |canStoreLocally| property.
+TEST_F(CWVCreditCardVerifierTest, CanStoreLocallyPropertyFlagOff) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      autofill::features::kAutofillNoLocalSaveOnUnmaskSuccess);
+  EXPECT_TRUE(credit_card_verifier_.canStoreLocally);
 }
 
 // Tests CWVCreditCardVerifier's |isCVCValid| method.
@@ -176,89 +194,66 @@ TEST_F(CWVCreditCardVerifierTest, IsExpirationDateValid) {
       [credit_card_verifier_ isExpirationDateValidForMonth:@"11" year:@"2222"]);
 }
 
-// Tests CWVCreditCardVerifier's verification method.
-TEST_F(CWVCreditCardVerifierTest, VerifyCard) {
-  id unused_data_source =
-      OCMProtocolMock(@protocol(CWVCreditCardVerifierDataSource));
+// Tests CWVCreditCardVerifier's verification method handles success case.
+TEST_F(CWVCreditCardVerifierTest, VerifyCardSucceeded) {
   NSString* cvc = @"123";
   BOOL store_locally = YES;
   [credit_card_verifier_ loadRiskData:std::move(base::DoNothing())];
+  __block BOOL completionCalled = NO;
+  __block NSError* completionError;
   [credit_card_verifier_
-        verifyWithCVC:cvc
-      expirationMonth:@""  // Expiration dates are ignored here because
-       expirationYear:@""  // |needsUpdateForExpirationDate| is NO.
-         storeLocally:store_locally
-           dataSource:unused_data_source
-             delegate:nil];
+          verifyWithCVC:cvc
+        expirationMonth:@""  // Expiration dates are ignored here because
+         expirationYear:@""  // |needsUpdateForExpirationDate| is NO.
+           storeLocally:store_locally
+               riskData:@"dummy-risk-data"
+      completionHandler:^(NSError* error) {
+        completionCalled = YES;
+        completionError = error;
+      }];
   EXPECT_TRUE(credit_card_verifier_.lastStoreLocallyValue);
 
-  const FakeCardUnmaskDelegate::UnmaskResponse& unmask_response_ =
-      card_unmask_delegate_.GetUnmaskResponse();
-  EXPECT_NSEQ(cvc, base::SysUTF16ToNSString(unmask_response_.cvc));
-  EXPECT_EQ(store_locally, unmask_response_.should_store_pan);
+  const FakeCardUnmaskDelegate::UserProvidedUnmaskDetails& unmask_details_ =
+      card_unmask_delegate_.GetUserProvidedUnmaskDetails();
+  EXPECT_NSEQ(cvc, base::SysUTF16ToNSString(unmask_details_.cvc));
+  EXPECT_EQ(store_locally, unmask_details_.should_store_pan);
+
+  [credit_card_verifier_
+      didReceiveUnmaskVerificationResult:autofill::AutofillClient::SUCCESS];
+  EXPECT_TRUE(completionCalled);
+  EXPECT_TRUE(completionError == nil);
 }
 
-// Tests CWVCreditCardVerifier properly invokes its delegate.
-TEST_F(CWVCreditCardVerifierTest, DelegateCallbacks) {
-  id unused_data_source =
-      OCMProtocolMock(@protocol(CWVCreditCardVerifierDataSource));
-  id delegate = OCMProtocolMock(@protocol(CWVCreditCardVerifierDelegate));
+// Tests CWVCreditCardVerifier's verification method handles failure case.
+TEST_F(CWVCreditCardVerifierTest, VerifyCardFailed) {
+  NSString* cvc = @"123";
+  BOOL store_locally = YES;
   [credit_card_verifier_ loadRiskData:std::move(base::DoNothing())];
-  [credit_card_verifier_ verifyWithCVC:@"123"
-                       expirationMonth:@""
-                        expirationYear:@""
-                          storeLocally:NO
-                            dataSource:unused_data_source
-                              delegate:delegate];
+  __block NSError* completionError;
+  [credit_card_verifier_
+          verifyWithCVC:cvc
+        expirationMonth:@""  // Expiration dates are ignored here because
+         expirationYear:@""  // |needsUpdateForExpirationDate| is NO.
+           storeLocally:store_locally
+               riskData:@"dummy-risk-data"
+      completionHandler:^(NSError* error) {
+        completionError = error;
+      }];
+  EXPECT_TRUE(credit_card_verifier_.lastStoreLocallyValue);
 
-  [[delegate expect]
-                  creditCardVerifier:credit_card_verifier_
-      didFinishVerificationWithError:[OCMArg checkWithBlock:^BOOL(
-                                                 NSError* error) {
-        return
-            [error.domain isEqualToString:CWVCreditCardVerifierErrorDomain] &&
-            error.code == CWVCreditCardVerificationErrorTryAgainFailure &&
-            error.localizedDescription != nil &&
-            error.userInfo[CWVCreditCardVerifierRetryAllowedKey] &&
-            [error.userInfo[CWVCreditCardVerifierRetryAllowedKey] boolValue];
-      }]];
+  const FakeCardUnmaskDelegate::UserProvidedUnmaskDetails& unmask_details_ =
+      card_unmask_delegate_.GetUserProvidedUnmaskDetails();
+  EXPECT_NSEQ(cvc, base::SysUTF16ToNSString(unmask_details_.cvc));
+  EXPECT_EQ(store_locally, unmask_details_.should_store_pan);
+
   [credit_card_verifier_ didReceiveUnmaskVerificationResult:
                              autofill::AutofillClient::TRY_AGAIN_FAILURE];
-  [delegate verify];
-}
-
-// Tests CWVCreditCardVerifier properly invokes its data source.
-TEST_F(CWVCreditCardVerifierTest, DataSourceCallbacks) {
-  id data_source = OCMProtocolMock(@protocol(CWVCreditCardVerifierDataSource));
-  [[data_source expect]
-                    creditCardVerifier:credit_card_verifier_
-      getRiskDataWithCompletionHandler:[OCMArg checkWithBlock:^BOOL(id arg) {
-        void (^completionHandler)(NSString*) = arg;
-        completionHandler(@"dummy-risk-data");
-        return YES;
-      }]];
-
-  __block bool callback_called = false;
-  base::OnceCallback<void(const std::string&)> callback = base::BindOnce(
-      [](bool* callback_called, const std::string& risk_data) -> void {
-        *callback_called = true;
-        EXPECT_EQ("dummy-risk-data", risk_data);
-      },
-      &callback_called);
-  [credit_card_verifier_ loadRiskData:std::move(callback)];
-  [credit_card_verifier_ verifyWithCVC:@"123"
-                       expirationMonth:@""
-                        expirationYear:@""
-                          storeLocally:NO
-                            dataSource:data_source
-                              delegate:nil];
-
-  EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForActionTimeout, ^bool {
-    base::RunLoop().RunUntilIdle();
-    return callback_called;
-  }));
-
-  [data_source verify];
+  ASSERT_TRUE(completionError != nil);
+  EXPECT_EQ(CWVCreditCardVerifierErrorDomain, completionError.domain);
+  EXPECT_EQ(CWVCreditCardVerificationErrorTryAgainFailure,
+            completionError.code);
+  EXPECT_TRUE([completionError.userInfo[CWVCreditCardVerifierRetryAllowedKey]
+      boolValue]);
 }
 
 }  // namespace ios_web_view

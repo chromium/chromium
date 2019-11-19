@@ -11,11 +11,8 @@
 #include "base/no_destructor.h"
 #include "components/keyed_service/ios/browser_state_keyed_service_factory.h"
 
-namespace browser_sync {
-class ProfileSyncService;
-}  // namespace browser_sync
-
 namespace syncer {
+class ProfileSyncService;
 class SyncService;
 }  // namespace syncer
 
@@ -33,11 +30,10 @@ class ProfileSyncServiceFactory : public BrowserStateKeyedServiceFactory {
   static syncer::SyncService* GetForBrowserStateIfExists(
       ios::ChromeBrowserState* browser_state);
 
-  static browser_sync::ProfileSyncService*
-  GetAsProfileSyncServiceForBrowserState(
+  static syncer::ProfileSyncService* GetAsProfileSyncServiceForBrowserState(
       ios::ChromeBrowserState* browser_state);
 
-  static browser_sync::ProfileSyncService*
+  static syncer::ProfileSyncService*
   GetAsProfileSyncServiceForBrowserStateIfExists(
       ios::ChromeBrowserState* browser_state);
 

@@ -5,19 +5,24 @@
 #ifndef MEDIA_BLINK_VIDEO_DECODE_STATS_REPORTER_H_
 #define MEDIA_BLINK_VIDEO_DECODE_STATS_REPORTER_H_
 
+#include <memory>
+#include <string>
+
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
+#include "base/optional.h"
 #include "base/single_thread_task_runner.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "media/base/cdm_config.h"
 #include "media/base/pipeline_status.h"
-#include "media/base/video_decoder_config.h"
+#include "media/base/video_codecs.h"
 #include "media/blink/media_blink_export.h"
-#include "media/mojo/interfaces/video_decode_stats_recorder.mojom.h"
-
-#include <memory>
+#include "media/mojo/mojom/video_decode_stats_recorder.mojom.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 namespace media {
 
@@ -30,9 +35,12 @@ class MEDIA_BLINK_EXPORT VideoDecodeStatsReporter {
   using GetPipelineStatsCB = base::Callback<PipelineStatistics(void)>;
 
   VideoDecodeStatsReporter(
-      mojom::VideoDecodeStatsRecorderPtr recorder_ptr,
+      mojo::PendingRemote<mojom::VideoDecodeStatsRecorder> recorder_remote,
       GetPipelineStatsCB get_pipeline_stats_cb,
-      const VideoDecoderConfig& video_config,
+      VideoCodecProfile codec_profile,
+      const gfx::Size& natural_size,
+      std::string key_system,
+      base::Optional<CdmConfig> cdm_config,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner,
       const base::TickClock* tick_clock =
           base::DefaultTickClock::GetInstance());
@@ -42,8 +50,11 @@ class MEDIA_BLINK_EXPORT VideoDecodeStatsReporter {
   void OnPaused();
   void OnHidden();
   void OnShown();
-  void OnNaturalSizeChanged(const gfx::Size& natural_size);
-  void OnVideoConfigChanged(const VideoDecoderConfig& video_config);
+
+  // Returns true if given |natural_size| is a match for our internal bucketed
+  // size. This allows callers to check a size change is significant enough to
+  // motivate recreating the reporter with a the new size.
+  bool MatchesBucketedNaturalSize(const gfx::Size& natural_size) const;
 
   // NOTE: We do not listen for playback rate changes. These implicitly change
   // the frame rate and surface via PipelineStatistics'
@@ -53,6 +64,8 @@ class MEDIA_BLINK_EXPORT VideoDecodeStatsReporter {
   // Friends so it can see the static constants and inspect when the timer is
   // running / should be running.
   friend class VideoDecodeStatsReporterTest;
+  // Friends to grab internal state and verify construction parameters.
+  friend class WebMediaPlayerImplTest;
 
   // Constants placed in header file for test visibility.
   enum : int {
@@ -133,24 +146,26 @@ class MEDIA_BLINK_EXPORT VideoDecodeStatsReporter {
   const base::TimeDelta kRecordingInterval;
   const base::TimeDelta kTinyFpsWindowDuration;
 
-  // Pointer to the remote recorder. The recorder runs in the browser process
+  // mojo::Remote for the recorder. The recorder runs in the browser process
   // and finalizes the record in the event of fast render process tear down.
-  mojom::VideoDecodeStatsRecorderPtr recorder_ptr_;
+  mojo::Remote<mojom::VideoDecodeStatsRecorder> recorder_remote_;
 
   // Callback for retrieving playback statistics.
   GetPipelineStatsCB get_pipeline_stats_cb_;
 
-  // Latest video decoder config, provided at construction or by
-  // OnVideoConfigChanged(). Used to determine the codec, profile, and natural
-  // size. Note that |video_config_.natural_size()| may differ slightly from the
-  // stored |natural_size_| due to size bucketing. See GetSizeBucket()
-  VideoDecoderConfig video_config_;
+  // Current video codec profile, used to index recorded stats.
+  const VideoCodecProfile codec_profile_;
 
-  // Last natural size, either from the latest |video_config_|, or from
-  // OnNaturalSizechanged(). The dimensions of this size will always be rounded
-  // to the nearest size bucket. If the original size is very small, the
-  // bucketed size will simply be empty. See GetSizeBucket().
-  gfx::Size natural_size_;
+  // Current video natural size, used to index recorded stats. These dimensions
+  // will always be rounded to the nearest size bucket. If the original size is
+  // very small, the bucketed size will simply be empty. See GetSizeBucket().
+  const gfx::Size natural_size_;
+
+  // The name of the current key system. Empty for unencrypted playback.
+  const std::string key_system_;
+
+  // From CdmConfig in constructor.
+  const bool use_hw_secure_codecs_;
 
   // Clock for |stats_cb_timer_| and getting current tick count (NowTicks()).
   // Tests may supply a mock clock via the constructor.

@@ -1,17 +1,6 @@
 {
   "layers": [
     {
-      "name": "LayoutView #document",
-      "bounds": [800, 600],
-      "drawsContent": false,
-      "backgroundColor": "#FFFFFF"
-    },
-    {
-      "name": "Scrolling Layer",
-      "bounds": [785, 600],
-      "drawsContent": false
-    },
-    {
       "name": "Scrolling Contents Layer",
       "bounds": [785, 2016],
       "contentsOpaque": true,
@@ -19,20 +8,24 @@
       "transform": 1
     },
     {
-      "name": "LayoutBlockFlow (positioned) DIV class='main'",
-      "position": [100, 200],
+      "name": "LayoutNGBlockFlow (positioned) DIV class='main'",
       "bounds": [200, 200],
       "contentsOpaque": true,
       "backgroundColor": "#ADD8E6",
-      "transform": 1
+      "transform": 2
     },
     {
-      "name": "LayoutBlockFlow (positioned) DIV class='squahed'",
-      "position": [100, 250],
+      "name": "LayoutNGBlockFlow (positioned) DIV class='squahed'",
       "bounds": [200, 200],
       "contentsOpaque": true,
       "backgroundColor": "#90EE90",
-      "transform": 1
+      "transform": 3
+    },
+    {
+      "name": "ContentsLayer for Vertical Scrollbar Layer",
+      "position": [785, 0],
+      "bounds": [15, 600],
+      "contentsOpaque": true
     }
   ],
   "transforms": [
@@ -43,8 +36,25 @@
         [0, 1, 0, 0],
         [0, 0, 1, 0],
         [0, -100, 0, 1]
-      ],
-      "flattenInheritedTransform": false
+      ]
+    },
+    {
+      "id": 2,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [100, 100, 0, 1]
+      ]
+    },
+    {
+      "id": 3,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [100, 150, 0, 1]
+      ]
     }
   ]
 }

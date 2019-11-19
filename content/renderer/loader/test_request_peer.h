@@ -13,18 +13,14 @@
 #include "content/public/renderer/request_peer.h"
 #include "net/base/load_timing_info.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
+#include "services/network/public/mojom/url_response_head.mojom-forward.h"
 
 namespace net {
 struct RedirectInfo;
 }  // namespace net
 
-namespace network {
-struct ResourceResponseInfo;
-}
-
 namespace content {
 
-class ReceivedData;
 class ResourceDispatcher;
 
 // Listens for request response data and stores it so that it can be compared
@@ -37,13 +33,12 @@ class TestRequestPeer : public RequestPeer {
 
   void OnUploadProgress(uint64_t position, uint64_t size) override;
   bool OnReceivedRedirect(const net::RedirectInfo& redirect_info,
-                          const network::ResourceResponseInfo& info) override;
-  void OnReceivedResponse(const network::ResourceResponseInfo& info) override;
+                          network::mojom::URLResponseHeadPtr head) override;
+  void OnReceivedResponse(network::mojom::URLResponseHeadPtr head) override;
   void OnStartLoadingResponseBody(
       mojo::ScopedDataPipeConsumerHandle body) override;
-  void OnReceivedData(std::unique_ptr<ReceivedData> data) override;
   void OnTransferSizeUpdated(int transfer_size_diff) override;
-  void OnReceivedCachedMetadata(const char* data, int len) override;
+  void OnReceivedCachedMetadata(mojo_base::BigBuffer data) override;
   void OnCompletedRequest(
       const network::URLLoaderCompletionStatus& status) override;
   scoped_refptr<base::TaskRunner> GetTaskRunner() override;
@@ -64,7 +59,7 @@ class TestRequestPeer : public RequestPeer {
     bool cancel_on_receive_data = false;
     bool received_response = false;
 
-    std::vector<char> cached_metadata;
+    mojo_base::BigBuffer cached_metadata;
     // Data received. If downloading to file, remains empty.
     std::string data;
 

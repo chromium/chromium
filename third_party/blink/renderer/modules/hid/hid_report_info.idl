@@ -1,0 +1,20 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Information about a report, or a portion of a report, described in the HID
+// report descriptor. When included by a top-level collection, HIDReportInfo
+// describes the entire report. When included by a subcollection, it describes
+// only the portion of the report contained by the collection.
+// https://wicg.github.io/webhid/index.html#report-descriptor
+
+[
+    Exposed(Window WebHID),
+    SecureContext
+] interface HIDReportInfo {
+    // The 8-bit report ID associated with this report.
+    readonly attribute octet reportId;
+
+    // An ordered array that describes the fields within this report.
+    readonly attribute FrozenArray<HIDReportItem> items;
+};

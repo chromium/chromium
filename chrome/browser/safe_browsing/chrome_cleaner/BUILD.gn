@@ -1,0 +1,75 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/jumbo.gni")
+import("//third_party/protobuf/proto_library.gni")
+
+source_set("public") {
+  sources = [
+    "chrome_cleaner_controller_win.cc",
+    "chrome_cleaner_controller_win.h",
+    "chrome_cleaner_dialog_controller_win.h",
+    "chrome_cleaner_reboot_dialog_controller_win.h",
+    "chrome_cleaner_scanner_results_win.cc",
+    "chrome_cleaner_scanner_results_win.h",
+    "srt_field_trial_win.cc",
+    "srt_field_trial_win.h",
+    "sw_reporter_invocation_win.cc",
+    "sw_reporter_invocation_win.h",
+  ]
+
+  deps = [
+    "//base",
+    "//components/chrome_cleaner/public/constants",
+    "//components/variations",
+    "//url",
+  ]
+}
+
+jumbo_static_library("chrome_cleaner") {
+  sources = [
+    "chrome_cleaner_controller_impl_win.cc",
+    "chrome_cleaner_controller_impl_win.h",
+    "chrome_cleaner_dialog_controller_impl_win.cc",
+    "chrome_cleaner_dialog_controller_impl_win.h",
+    "chrome_cleaner_fetcher_win.cc",
+    "chrome_cleaner_fetcher_win.h",
+    "chrome_cleaner_navigation_util_win.cc",
+    "chrome_cleaner_navigation_util_win.h",
+    "chrome_cleaner_reboot_dialog_controller_impl_win.cc",
+    "chrome_cleaner_reboot_dialog_controller_impl_win.h",
+    "chrome_cleaner_runner_win.cc",
+    "chrome_cleaner_runner_win.h",
+    "chrome_prompt_actions_win.cc",
+    "chrome_prompt_actions_win.h",
+    "chrome_prompt_channel_win.cc",
+    "chrome_prompt_channel_win.h",
+    "reporter_runner_win.cc",
+    "reporter_runner_win.h",
+    "settings_resetter_win.cc",
+    "settings_resetter_win.h",
+    "srt_client_info_win.cc",
+    "srt_client_info_win.h",
+  ]
+
+  deps = [
+    # TODO(crbug.com/920223): Break dependency cycles with //chrome/browser
+    ":public",
+    "//chrome/browser/extensions",
+    "//chrome/browser/safe_browsing",
+    "//chrome/browser/ui",
+    "//chrome/common",
+    "//chrome/installer/util:with_no_strings",
+    "//components/chrome_cleaner/public/constants",
+    "//components/chrome_cleaner/public/proto",
+    "//components/component_updater",
+    "//components/crx_file",
+    "//components/pref_registry",
+    "//components/prefs",
+    "//components/safe_browsing/common:safe_browsing_prefs",
+    "//content/public/browser",
+    "//extensions/browser",
+    "//third_party/protobuf:protobuf_lite",
+  ]
+}

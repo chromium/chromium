@@ -17,7 +17,10 @@ struct CONTENT_EXPORT MHTMLGenerationParams {
   // The file that will contain the generated MHTML.
   base::FilePath file_path;
 
-  // Uses Content-Transfer-Encoding: binary when encoding.  See
+  // If true, a Content-Transfer-Encoding value of 'binary' will be used,
+  // instead of a combination of 'quoted-printable' and 'base64'. Binary
+  // encoding is known to have interoperability issues and is not the
+  // recommended encoding for shareable content. See
   // https://tools.ietf.org/html/rfc2045 for details about
   // Content-Transfer-Encoding.
   bool use_binary_encoding = false;
@@ -28,9 +31,9 @@ struct CONTENT_EXPORT MHTMLGenerationParams {
   // Run page problem detectors while generating MTHML if true.
   bool use_page_problem_detectors = false;
 
-  // Whether to use Mojo for the MHTML serialization pipeline.
+  // Whether to compute the hash of the contents while saving the MHTML file.
   // This is triggered by the feature flag kOnTheFlyMhtmlHashComputation.
-  bool use_mojo_for_mhtml_serialization = false;
+  bool compute_contents_hash = false;
 };
 
 }  // namespace content

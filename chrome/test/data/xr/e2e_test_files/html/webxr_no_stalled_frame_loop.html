@@ -1,0 +1,36 @@
+<!doctype html>
+<!--
+WebXR page that only submits one frame.
+-->
+<html>
+  <head>
+    <link rel="stylesheet" type="text/css" href="../resources/webxr_e2e.css">
+  </head>
+  <body>
+    <canvas id="webgl-canvas"></canvas>
+    <script src="../resources/webxr_e2e.js"></script>
+    <script src="../resources/webxr_boilerplate.js"></script>
+    <script src="../../../../../../third_party/blink/web_tests/resources/testharness.js"></script>
+    <script>
+      var frame_count = 0;
+      var frame_expected = true;
+      onImmersiveXRFrameCallback = function() {
+        assert_true(frame_expected);
+        frame_count++;
+
+        if (frame_count === 1) {
+          // No need to request an animationFrame because it should've been
+          // requested previously.
+          sessionInfos[sessionTypes.IMMERSIVE].session.updateRenderState({ baseLayer: null });
+          frame_expected = false;
+        }
+      };
+
+      function setBaseLayer() {
+        let session = sessionInfos[sessionTypes.IMMERSIVE].session;
+        session.updateRenderState({ baseLayer: new XRWebGLLayer(session, gl) });
+        frame_expected = true;
+      }
+    </script>
+  </body>
+</html>

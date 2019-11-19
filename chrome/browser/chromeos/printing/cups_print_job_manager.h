@@ -12,18 +12,18 @@
 
 #include "base/observer_list.h"
 #include "base/time/time.h"
-#include "chrome/browser/chromeos/printing/cups_print_job.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 class Profile;
 
 namespace chromeos {
 
+class CupsPrintJob;
 class CupsPrintJobNotificationManager;
 
 class CupsPrintJobManager : public KeyedService {
  public:
-  class Observer {
+  class Observer : public base::CheckedObserver {
    public:
     virtual void OnPrintJobCreated(base::WeakPtr<CupsPrintJob> job) {}
     virtual void OnPrintJobStarted(base::WeakPtr<CupsPrintJob> job) {}
@@ -44,7 +44,7 @@ class CupsPrintJobManager : public KeyedService {
     virtual void OnPrintJobCancelled(base::WeakPtr<CupsPrintJob> job) {}
 
    protected:
-    virtual ~Observer() {}
+    ~Observer() override {}
   };
 
   static CupsPrintJobManager* CreateInstance(Profile* profile);
@@ -71,15 +71,16 @@ class CupsPrintJobManager : public KeyedService {
   void NotifyJobResumed(base::WeakPtr<CupsPrintJob> job);
   void NotifyJobSuspended(base::WeakPtr<CupsPrintJob> job);
   void NotifyJobCanceled(base::WeakPtr<CupsPrintJob> job);
-  void NotifyJobError(base::WeakPtr<CupsPrintJob> job);
+  void NotifyJobFailed(base::WeakPtr<CupsPrintJob> job);
   void NotifyJobDone(base::WeakPtr<CupsPrintJob> job);
 
   Profile* profile_;
-  std::unique_ptr<CupsPrintJobNotificationManager> notification_manager_;
-  base::ObserverList<Observer>::Unchecked observers_;
 
  private:
   void RecordJobDuration(base::WeakPtr<CupsPrintJob> job);
+
+  std::unique_ptr<CupsPrintJobNotificationManager> notification_manager_;
+  base::ObserverList<Observer> observers_;
 
   // Keyed by CupsPrintJob's unique ID
   std::map<std::string, base::TimeTicks> print_job_start_times_;

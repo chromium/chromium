@@ -114,6 +114,7 @@ TEST_F(PrefetchDownloaderImplTest, DownloadParams) {
   EXPECT_EQ(download::DownloadClient::OFFLINE_PAGE_PREFETCH, params->client);
   GURL download_url = params->request_params.url;
   EXPECT_TRUE(download_url.SchemeIs(url::kHttpsScheme));
+  EXPECT_FALSE(params->request_params.require_safety_checks);
   EXPECT_EQ(kServerPathForDownload, download_url.path());
   std::string key_value;
   EXPECT_TRUE(net::GetValueForKeyInQuery(download_url, "key", &key_value));

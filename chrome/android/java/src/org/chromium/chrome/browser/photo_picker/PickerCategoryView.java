@@ -4,11 +4,14 @@
 
 package org.chromium.chrome.browser.photo_picker;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.Rect;
+import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.SystemClock;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -16,11 +19,16 @@ import android.util.DisplayMetrics;
 import android.util.LruCache;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.FrameLayout;
+import android.widget.MediaController;
 import android.widget.RelativeLayout;
+import android.widget.VideoView;
+
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.DiscardableReferencePool.DiscardableReference;
-import org.chromium.base.VisibleForTesting;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.chrome.R;
@@ -50,6 +58,20 @@ public class PickerCategoryView extends RelativeLayout
     private static final int ACTION_NEW_PHOTO = 2;
     private static final int ACTION_BROWSE = 3;
     private static final int ACTION_BOUNDARY = 4;
+
+    /**
+     * A container class for keeping track of the data we need to show a photo/video tile in the
+     * photo picker (the data we store in the cache).
+     */
+    public static class Thumbnail {
+        public List<Bitmap> bitmaps;
+        public String videoDuration;
+
+        Thumbnail(List<Bitmap> bitmaps, String videoDuration) {
+            this.bitmaps = bitmaps;
+            this.videoDuration = videoDuration;
+        }
+    }
 
     // The dialog that owns us.
     private PhotoPickerDialog mDialog;
@@ -87,13 +109,13 @@ public class PickerCategoryView extends RelativeLayout
     // The {@link SelectionDelegate} keeping track of which images are selected.
     private SelectionDelegate<PickerBitmap> mSelectionDelegate;
 
-    // A low-resolution cache for images, lazily created. Helpful for cache misses from the
+    // A low-resolution cache for thumbnails, lazily created. Helpful for cache misses from the
     // high-resolution cache to avoid showing gray squares (we show pixelated versions instead until
     // image can be loaded off disk, which is much less jarring).
-    private DiscardableReference<LruCache<String, Bitmap>> mLowResBitmaps;
+    private DiscardableReference<LruCache<String, Thumbnail>> mLowResThumbnails;
 
-    // A high-resolution cache for images, lazily created.
-    private DiscardableReference<LruCache<String, Bitmap>> mHighResBitmaps;
+    // A high-resolution cache for thumbnails, lazily created.
+    private DiscardableReference<LruCache<String, Thumbnail>> mHighResThumbnails;
 
     // The size of the low-res cache.
     private int mCacheSizeLarge;
@@ -117,7 +139,7 @@ public class PickerCategoryView extends RelativeLayout
     // A worker task for asynchronously enumerating files off the main thread.
     private FileEnumWorkerTask mWorkerTask;
 
-    // The timestap for the start of the enumeration of files on disk.
+    // The timestamp for the start of the enumeration of files on disk.
     private long mEnumStartTime;
 
     // Whether the connection to the service has been established.
@@ -129,12 +151,19 @@ public class PickerCategoryView extends RelativeLayout
     // A list of files to use for testing (instead of reading files on disk).
     private static List<PickerBitmap> sTestFiles;
 
+    // The video preview view.
+    private VideoView mVideoView;
+
+    // The media controls to show with the video (play/pause, etc).
+    private MediaController mMediaController;
+
     /**
      * @param context The context to use.
      * @param multiSelectionAllowed Whether to allow the user to select more than one image.
      */
     @SuppressWarnings("unchecked") // mSelectableListLayout
-    public PickerCategoryView(Context context, boolean multiSelectionAllowed) {
+    public PickerCategoryView(Context context, boolean multiSelectionAllowed,
+            PhotoPickerToolbar.PhotoPickerToolbarDelegate delegate) {
         super(context);
         mActivity = (ChromeActivity) context;
         mMultiSelectionAllowed = multiSelectionAllowed;
@@ -154,11 +183,13 @@ public class PickerCategoryView extends RelativeLayout
         int titleId = multiSelectionAllowed ? R.string.photo_picker_select_images
                                             : R.string.photo_picker_select_image;
         PhotoPickerToolbar toolbar = (PhotoPickerToolbar) mSelectableListLayout.initializeToolbar(
-                R.layout.photo_picker_toolbar, mSelectionDelegate, titleId, null, 0, 0, null, false,
+                R.layout.photo_picker_toolbar, mSelectionDelegate, titleId, 0, 0, null, false,
                 false);
         toolbar.setNavigationOnClickListener(this);
+        toolbar.setDelegate(delegate);
         Button doneButton = (Button) toolbar.findViewById(R.id.done);
         doneButton.setOnClickListener(this);
+        mVideoView = findViewById(R.id.video_player);
 
         calculateGridMetrics();
 
@@ -184,7 +215,11 @@ public class PickerCategoryView extends RelativeLayout
         mSpacingDecoration = new GridSpacingItemDecoration(mColumns, mPadding);
         mRecyclerView.addItemDecoration(mSpacingDecoration);
 
-        mPickerAdapter.notifyDataSetChanged();
+        // Configuration change can happen at any time, even before the photos have been
+        // enumerated (when mPickerBitmaps is null, causing: https://crbug.com/947657). There's no
+        // need to call notifyDataSetChanged in that case because it will be called once the photo
+        // list becomes ready.
+        if (mPickerBitmaps != null) mPickerAdapter.notifyDataSetChanged();
     }
 
     /**
@@ -200,6 +235,52 @@ public class PickerCategoryView extends RelativeLayout
             mDecoderServiceHost.unbind(mActivity);
             mDecoderServiceHost = null;
         }
+    }
+
+    /**
+     * Start playback of a video in an overlay above the photo picker.
+     * @param uri The uri of the video to start playing.
+     */
+    public void playVideo(Uri uri) {
+        findViewById(R.id.playback_container).setVisibility(View.VISIBLE);
+        findViewById(R.id.close).setOnClickListener(this);
+
+        mMediaController = new MediaController(mActivity, false) {
+            @Override
+            public void hide() {
+                // Making sure the controls never hide prevents the seekbar from no longer updating
+                // in the middle of playing a video.
+                this.show();
+            }
+        };
+        mVideoView.setMediaController(mMediaController);
+        mVideoView.setVisibility(View.VISIBLE);
+        mVideoView.setVideoURI(uri);
+
+        mVideoView.setOnPreparedListener((MediaPlayer mp) -> {
+            mp.setOnVideoSizeChangedListener((MediaPlayer player, int width, int height) -> {
+                // To get the media controls to show up in a dialog, the view needs to be
+                // re-parented.
+                ((ViewGroup) mMediaController.getParent()).removeView(mMediaController);
+                ((FrameLayout) findViewById(R.id.controls_wrapper)).addView(mMediaController);
+                mMediaController.setVisibility(View.VISIBLE);
+
+                mMediaController.setAnchorView(mVideoView);
+                mMediaController.setEnabled(true);
+                mMediaController.show(0);
+            });
+
+            mVideoView.start();
+        });
+    }
+
+    private void stopVideo() {
+        findViewById(R.id.playback_container).setVisibility(View.GONE);
+        mVideoView.stopPlayback();
+        mVideoView.setMediaController(null);
+        // The MediaController needs a little bit of time to go away fully. Hide it in the meantime.
+        mMediaController.setVisibility(View.GONE);
+        mMediaController = null;
     }
 
     /**
@@ -263,8 +344,11 @@ public class PickerCategoryView extends RelativeLayout
 
     @Override
     public void onClick(View view) {
-        if (view.getId() == R.id.done) {
+        int id = view.getId();
+        if (id == R.id.done) {
             notifyPhotosSelected();
+        } else if (id == R.id.close) {
+            stopVideo();
         } else {
             executeAction(PhotoPickerListener.PhotoPickerAction.CANCEL, null, ACTION_CANCEL);
         }
@@ -298,20 +382,20 @@ public class PickerCategoryView extends RelativeLayout
         return mDecoderServiceHost;
     }
 
-    public LruCache<String, Bitmap> getLowResBitmaps() {
-        if (mLowResBitmaps == null || mLowResBitmaps.get() == null) {
-            mLowResBitmaps =
-                    mActivity.getReferencePool().put(new LruCache<String, Bitmap>(mCacheSizeSmall));
+    public LruCache<String, Thumbnail> getLowResThumbnails() {
+        if (mLowResThumbnails == null || mLowResThumbnails.get() == null) {
+            mLowResThumbnails = mActivity.getReferencePool().put(
+                    new LruCache<String, Thumbnail>(mCacheSizeSmall));
         }
-        return mLowResBitmaps.get();
+        return mLowResThumbnails.get();
     }
 
-    public LruCache<String, Bitmap> getHighResBitmaps() {
-        if (mHighResBitmaps == null || mHighResBitmaps.get() == null) {
-            mHighResBitmaps =
-                    mActivity.getReferencePool().put(new LruCache<String, Bitmap>(mCacheSizeLarge));
+    public LruCache<String, Thumbnail> getHighResThumbnails() {
+        if (mHighResThumbnails == null || mHighResThumbnails.get() == null) {
+            mHighResThumbnails = mActivity.getReferencePool().put(
+                    new LruCache<String, Thumbnail>(mCacheSizeLarge));
         }
-        return mHighResBitmaps.get();
+        return mHighResThumbnails.get();
     }
 
     public boolean isMultiSelectAllowed() {
@@ -365,9 +449,15 @@ public class PickerCategoryView extends RelativeLayout
             mWorkerTask.cancel(true);
         }
 
+        // TODO(finnur): Remove once we figure out the cause of crbug.com/950024.
+        if (!mActivity.getWindowAndroid().hasPermission(
+                    Manifest.permission.READ_EXTERNAL_STORAGE)) {
+            throw new RuntimeException("Bitmap enumeration without storage read permission");
+        }
+
         mEnumStartTime = SystemClock.elapsedRealtime();
-        mWorkerTask = new FileEnumWorkerTask(
-                mActivity.getWindowAndroid(), this, new MimeTypeFilter(mMimeTypes, true));
+        mWorkerTask = new FileEnumWorkerTask(mActivity.getWindowAndroid(), this,
+                new MimeTypeFilter(mMimeTypes, true), mMimeTypes, mActivity.getContentResolver());
         mWorkerTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
@@ -377,10 +467,10 @@ public class PickerCategoryView extends RelativeLayout
     private void notifyPhotosSelected() {
         List<PickerBitmap> selectedFiles = mSelectionDelegate.getSelectedItemsAsList();
         Collections.sort(selectedFiles);
-        String[] photos = new String[selectedFiles.size()];
+        Uri[] photos = new Uri[selectedFiles.size()];
         int i = 0;
         for (PickerBitmap bitmap : selectedFiles) {
-            photos[i++] = bitmap.getFilePath();
+            photos[i++] = bitmap.getUri();
         }
 
         executeAction(
@@ -431,7 +521,7 @@ public class PickerCategoryView extends RelativeLayout
      * @param umaId The UMA value to record with the action.
      */
     private void executeAction(
-            @PhotoPickerListener.PhotoPickerAction int action, String[] photos, int umaId) {
+            @PhotoPickerListener.PhotoPickerAction int action, Uri[] photos, int umaId) {
         mListener.onPhotoPickerUserAction(action, photos);
         mDialog.dismiss();
         UiUtils.onPhotoPickerDismissed();

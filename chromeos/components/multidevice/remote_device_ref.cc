@@ -12,19 +12,6 @@ namespace chromeos {
 namespace multidevice {
 
 // static
-std::string RemoteDeviceRef::GenerateDeviceId(const std::string& public_key) {
-  return RemoteDevice::GenerateDeviceId(public_key);
-}
-
-// static
-std::string RemoteDeviceRef::DerivePublicKey(const std::string& device_id) {
-  std::string public_key;
-  if (base::Base64Decode(device_id, &public_key))
-    return public_key;
-  return std::string();
-}
-
-// static
 std::string RemoteDeviceRef::TruncateDeviceIdForLogs(
     const std::string& full_id) {
   if (full_id.length() <= 10) {
@@ -44,7 +31,7 @@ RemoteDeviceRef::~RemoteDeviceRef() = default;
 
 SoftwareFeatureState RemoteDeviceRef::GetSoftwareFeatureState(
     const SoftwareFeature& software_feature) const {
-  if (!base::ContainsKey(remote_device_->software_features, software_feature))
+  if (!base::Contains(remote_device_->software_features, software_feature))
     return SoftwareFeatureState::kNotSupported;
 
   return remote_device_->software_features.at(software_feature);

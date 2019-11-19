@@ -8,8 +8,8 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
-#include "jni/ScreenCapture_jni.h"
 #include "media/base/video_frame.h"
+#include "media/capture/content/android/screen_capture_jni_headers/ScreenCapture_jni.h"
 #include "media/capture/content/android/thread_safe_capture_oracle.h"
 #include "media/capture/content/video_capture_oracle.h"
 #include "media/capture/video_capture_types.h"

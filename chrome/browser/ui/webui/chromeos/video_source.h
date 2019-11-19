@@ -28,13 +28,12 @@ class VideoSource : public content::URLDataSource {
   ~VideoSource() override;
 
   // content::URLDataSource:
-  std::string GetSource() const override;
-  void StartDataRequest(
-      const std::string& path,
-      const content::ResourceRequestInfo::WebContentsGetter& wc_getter,
-      const content::URLDataSource::GotDataCallback& got_data_callback)
-      override;
-  std::string GetMimeType(const std::string& path) const override;
+  std::string GetSource() override;
+  void StartDataRequest(const GURL& url,
+                        const content::WebContents::Getter& wc_getter,
+                        const content::URLDataSource::GotDataCallback&
+                            got_data_callback) override;
+  std::string GetMimeType(const std::string& path) override;
 
  private:
   // Continuation from StartDataRequest().
@@ -46,7 +45,7 @@ class VideoSource : public content::URLDataSource {
   // The background task runner on which file I/O is performed.
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
-  base::WeakPtrFactory<VideoSource> weak_factory_;
+  base::WeakPtrFactory<VideoSource> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(VideoSource);
 };

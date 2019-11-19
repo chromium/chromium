@@ -26,6 +26,18 @@ void FakeCryptAuthKeyCreator::CreateKeys(
   create_keys_callback_ = std::move(create_keys_callback);
 }
 
+FakeCryptAuthKeyCreatorFactory::FakeCryptAuthKeyCreatorFactory() = default;
+
+FakeCryptAuthKeyCreatorFactory::~FakeCryptAuthKeyCreatorFactory() = default;
+
+std::unique_ptr<CryptAuthKeyCreator>
+FakeCryptAuthKeyCreatorFactory::BuildInstance() {
+  auto instance = std::make_unique<FakeCryptAuthKeyCreator>();
+  instance_ = instance.get();
+
+  return instance;
+}
+
 }  // namespace device_sync
 
 }  // namespace chromeos

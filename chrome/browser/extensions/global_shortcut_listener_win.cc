@@ -72,33 +72,33 @@ bool GlobalShortcutListenerWin::RegisterAcceleratorImpl(
     const ui::Accelerator& accelerator) {
   DCHECK(hotkeys_.find(accelerator) == hotkeys_.end());
 
-  // If we want to listen for media keys, we should do that through the
-  // MediaKeysListenerManager, which will tell the manager to send us media keys
-  // and prevent the HardwareKeyMediaController from receiving the keys.
+  // TODO(https://crbug.com/950704): We should be using
+  // |media_keys_listener_manager->StartWatchingMediaKey(...)| here, but that
+  // currently breaks the GlobalCommandsApiTest.GlobalDuplicatedMediaKey test.
+  // Instead, we'll just disable the MediaKeysListenerManager handling here, and
+  // listen using the fallback RegisterHotKey method.
   if (content::MediaKeysListenerManager::IsMediaKeysListenerManagerEnabled() &&
       Command::IsMediaKey(accelerator)) {
     content::MediaKeysListenerManager* media_keys_listener_manager =
         content::MediaKeysListenerManager::GetInstance();
     DCHECK(media_keys_listener_manager);
 
-    bool success = media_keys_listener_manager->StartWatchingMediaKey(
-        accelerator.key_code(), this);
-
-    // Map the hot key to nullptr, since we don't need a
-    // SingletonHwndHotKeyObserver when the MediaKeysListenerManager is taking
-    // care of it.
-    if (success)
-      hotkeys_[accelerator] = nullptr;
-
-    return success;
+    registered_media_keys_++;
+    media_keys_listener_manager->DisableInternalMediaKeyHandling();
   }
+
+  // Convert Accelerator modifiers to OS modifiers.
+  int modifiers = 0;
+  modifiers |= accelerator.IsShiftDown() ? MOD_SHIFT : 0;
+  modifiers |= accelerator.IsCtrlDown() ? MOD_CONTROL : 0;
+  modifiers |= accelerator.IsAltDown() ? MOD_ALT : 0;
 
   // Create an observer that registers a hot key for |accelerator|.
   std::unique_ptr<gfx::SingletonHwndHotKeyObserver> observer =
       gfx::SingletonHwndHotKeyObserver::Create(
           base::BindRepeating(&GlobalShortcutListenerWin::OnWndProc,
                               base::Unretained(this)),
-          accelerator.key_code(), accelerator.modifiers());
+          accelerator.key_code(), modifiers);
 
   if (!observer) {
     // Most likely error: 1409 (Hotkey already registered).
@@ -114,16 +114,19 @@ void GlobalShortcutListenerWin::UnregisterAcceleratorImpl(
   HotKeyMap::iterator it = hotkeys_.find(accelerator);
   DCHECK(it != hotkeys_.end());
 
-  // If we're routing media keys through the MediaKeysListenerManager, then
-  // inform the manager that we're no longer listening to the given key.
+  // TODO(https://crbug.com/950704): We should be using
+  // |media_keys_listener_manager->StopWatchingMediaKey(...)| here.
   if (content::MediaKeysListenerManager::IsMediaKeysListenerManagerEnabled() &&
       Command::IsMediaKey(accelerator)) {
-    content::MediaKeysListenerManager* media_keys_listener_manager =
-        content::MediaKeysListenerManager::GetInstance();
-    DCHECK(media_keys_listener_manager);
+    registered_media_keys_--;
+    DCHECK_GE(registered_media_keys_, 0);
+    if (registered_media_keys_ == 0) {
+      content::MediaKeysListenerManager* media_keys_listener_manager =
+          content::MediaKeysListenerManager::GetInstance();
+      DCHECK(media_keys_listener_manager);
 
-    media_keys_listener_manager->StopWatchingMediaKey(accelerator.key_code(),
-                                                      this);
+      media_keys_listener_manager->EnableInternalMediaKeyHandling();
+    }
   }
 
   hotkeys_.erase(it);

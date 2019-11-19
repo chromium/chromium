@@ -15,8 +15,11 @@
 #include <string>
 #include <vector>
 
+#include "base/optional.h"
 #include "components/download/public/common/download_export.h"
 #include "components/download/public/common/download_item.h"
+#include "components/download/public/common/download_job.h"
+#include "url/origin.h"
 
 class GURL;
 
@@ -29,7 +32,6 @@ namespace download {
 struct DownloadCreateInfo;
 class DownloadItemImpl;
 class DownloadItemImplDelegate;
-class DownloadRequestHandleInterface;
 
 class COMPONENTS_DOWNLOAD_EXPORT DownloadItemFactory {
  public:
@@ -46,6 +48,7 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItemFactory {
       const GURL& site_url,
       const GURL& tab_url,
       const GURL& tab_refererr_url,
+      const base::Optional<url::Origin>& initiator_origin,
       const std::string& mime_type,
       const std::string& original_mime_type,
       base::Time start_time,
@@ -74,7 +77,7 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItemFactory {
       const base::FilePath& path,
       const GURL& url,
       const std::string& mime_type,
-      std::unique_ptr<DownloadRequestHandleInterface> request_handle) = 0;
+      download::DownloadJob::CancelRequestCallback cancel_request_callback) = 0;
 };
 
 }  // namespace download

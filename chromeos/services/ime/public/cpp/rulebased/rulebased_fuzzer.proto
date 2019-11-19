@@ -1,0 +1,109 @@
+syntax = "proto2";
+
+package rulebased_fuzzer;
+
+// If you change this enum, please update the corresponding array in
+// //chromeos/services/ime/public/cpp/rulebased/rulebased_fuzzer.cc
+enum KeyCode {
+  BACKQUOTE = 0;
+  DIGIT1 = 1;
+  DIGIT2 = 2;
+  DIGIT3 = 3;
+  DIGIT4 = 4;
+  DIGIT5 = 5;
+  DIGIT6 = 6;
+  DIGIT7 = 7;
+  DIGIT8 = 8;
+  DIGIT9 = 9;
+  DIGIT0 = 10;
+  MINUS = 11;
+  EQUAL = 12;
+  BACKSPACE = 13;
+  KEY_Q = 14;
+  KEY_W = 15;
+  KEY_E = 16;
+  KEY_R = 17;
+  KEY_T = 18;
+  KEY_Y = 19;
+  KEY_U = 20;
+  KEY_I = 21;
+  KEY_O = 22;
+  KEY_P = 23;
+  BRACKET_LEFT = 24;
+  BRACKET_RIGHT = 25;
+  KEY_A = 26;
+  KEY_S = 27;
+  KEY_D = 28;
+  KEY_F = 29;
+  KEY_G = 30;
+  KEY_H = 31;
+  KEY_J = 32;
+  KEY_K = 33;
+  KEY_L = 34;
+  SEMICOLON = 35;
+  QUOTE = 36;
+  BACKSLASH = 37;
+  INTL_BACKSLASH = 38;
+  ENTER = 39;
+  KEY_Z = 40;
+  KEY_X = 41;
+  KEY_C = 42;
+  KEY_V = 43;
+  KEY_B = 44;
+  KEY_N = 45;
+  KEY_M = 46;
+  COMMA = 47;
+  PERIOD = 48;
+  SLASH = 49;
+  SPACE = 50;
+}
+
+// If you change this enum, please update the corresponding array in
+// //chromeos/services/ime/public/cpp/rulebased/rulebased_fuzzer.cc
+enum EngineId {
+  AR = 0;
+  BN_PHONE = 1;
+  CKB_AR = 2;
+  CKB_EN = 3;
+  DEVA_PHONE = 4;
+  ETHI = 5;
+  FA = 6;
+  GU_PHONE = 7;
+  KM = 8;
+  KN_PHONE = 9;
+  LO = 10;
+  ML_PHONE = 11;
+  MY = 12;
+  MY_MYANSAN = 13;
+  NE_INSCRIPT = 14;
+  NE_PHONE = 15;
+  RU_PHONE_AATSEEL = 16;
+  RU_PHONE_YAZHERT = 17;
+  SI = 18;
+  TA_INSCRIPT = 19;
+  TA_ITRANS = 20;
+  TA_PHONE = 21;
+  TA_TAMIL99 = 22;
+  TA_TYPEWRITER = 23;
+  TE_PHONE = 24;
+  TH = 25;
+  TH_PATTAJOTI = 26;
+  TH_TIS = 27;
+  US = 28;
+  VI_TCVN = 29;
+  VI_TELEX = 30;
+  VI_VIQR = 31;
+  VI_VNI = 32;
+}
+
+message KeyEvent {
+  required KeyCode code = 1;
+  required bool shift = 2;
+  required bool altgr = 3;
+  required bool caps_lock = 4;
+}
+
+message TestFuzzerInput {
+  required EngineId engine_id = 1;
+  repeated KeyEvent key_events = 2;
+}

@@ -20,18 +20,18 @@ source_set("x11") {
     "gl_surface_glx_ozone.h",
     "ozone_platform_x11.cc",
     "ozone_platform_x11.h",
+    "x11_canvas_surface.cc",
+    "x11_canvas_surface.h",
+    "x11_clipboard_ozone.cc",
+    "x11_clipboard_ozone.h",
     "x11_cursor_factory_ozone.cc",
     "x11_cursor_factory_ozone.h",
     "x11_cursor_ozone.cc",
     "x11_cursor_ozone.h",
-    "x11_display_fetcher_ozone.cc",
-    "x11_display_fetcher_ozone.h",
     "x11_screen_ozone.cc",
     "x11_screen_ozone.h",
     "x11_surface_factory.cc",
     "x11_surface_factory.h",
-    "x11_window_manager_ozone.cc",
-    "x11_window_manager_ozone.h",
     "x11_window_ozone.cc",
     "x11_window_ozone.h",
   ]
@@ -41,8 +41,10 @@ source_set("x11") {
     "//gpu/vulkan:buildflags",
     "//skia",
     "//ui/base",
+    "//ui/base/clipboard:clipboard_types",
+    "//ui/base/ime",
     "//ui/base/x",
-    "//ui/display/manager",
+    "//ui/display/fake",
     "//ui/events",
     "//ui/events/devices",
     "//ui/events/ozone:events_ozone",
@@ -56,8 +58,15 @@ source_set("x11") {
     "//ui/ozone:ozone_base",
     "//ui/ozone/common",
     "//ui/platform_window",
+    "//ui/platform_window/platform_window_handler",
     "//ui/platform_window/x11",
   ]
+
+  if (is_chromeos) {
+    deps += [ "//ui/base/ime/chromeos" ]
+  } else {
+    deps += [ "//ui/base/ime/linux" ]
+  }
 
   if (enable_vulkan) {
     deps += [ "//gpu/vulkan/x" ]
@@ -83,6 +92,7 @@ source_set("x11_unittests") {
     ":x11",
     "//testing/gmock",
     "//testing/gtest",
+    "//ui/base/x",
     "//ui/events:test_support",
     "//ui/events/devices/x11",
     "//ui/events/platform/x11",

@@ -1,5 +1,44 @@
 include_rules = [
+    # TODO(crbug.com/923394): Remove these dependencies once std types are
+    # migrated to WTF types in mediastream.
+    "+base/strings/utf_string_conversions.h",
+    "+base/strings/string_number_conversions.h",
+    "+base/strings/stringprintf.h",
+    "+base/containers/flat_map.h",
+    "+base/callback_helpers.h",
+
+    # TODO(crbug.com/923394): Remove these dependencies once per-frame
+    # task runners are used in all cases.
+    "+base/threading/sequenced_task_runner_handle.h",
+    "+base/threading/thread_task_runner_handle.h",
+
+    # webmediaplayer_ms{_compositor}.cc includes.
+    "+base/values.h",
+    "+cc/layers/surface_layer.h",
+    "+cc/layers/video_frame_provider_client_impl.h",
+    "+cc/layers/video_frame_provider.h",
+    "+cc/layers/video_layer.h",
+    "+cc/paint/skia_paint_canvas.h",
+    "+media/filters/video_renderer_algorithm.h",
+    "+media/renderers/paint_canvas_video_renderer.h",
+    "+media/video/gpu_memory_buffer_video_frame_pool.h",
+    "+services/viz/public/cpp/gpu/context_provider_command_buffer.h",
+    "+skia/ext/platform_canvas.h",
+
+    "+base/atomicops.h",
+    "+base/files/file.h",
+    "+base/metrics/field_trial.h",
+
+    "+base/trace_event/trace_event.h",
+    "+base/unguessable_token.h",
+    "+media/audio",
     "+media/base",
+    "+media/capture",
+    "+media/mojo/mojom",
+    "+media/webrtc/audio_delay_stats_reporter.h",
+    "+media/webrtc/audio_processor_controls.h",
+    "+media/webrtc/helpers.h",
+    "+media/webrtc/webrtc_switches.h",
     "+mojo/public/cpp/bindings/binding.h",
     "-third_party/blink/renderer/modules",
     "+third_party/blink/renderer/modules/event_modules.h",
@@ -7,4 +46,25 @@ include_rules = [
     "+third_party/blink/renderer/modules/imagecapture",
     "+third_party/blink/renderer/modules/mediastream",
     "+third_party/blink/renderer/modules/modules_export.h",
+    "+third_party/blink/renderer/modules/peerconnection",
+    "+ui/gfx/geometry/size.h",
 ]
+
+specific_include_rules = {
+    ".*test\.cc" : [
+        "+base/containers/circular_deque.h",
+        "+base/run_loop.h",
+        "+cc/layers/layer.h",
+        "+media/video/mock_gpu_memory_buffer_video_frame_pool.h",
+        "+media/video/mock_gpu_video_accelerator_factories.h",
+
+        "+base/files/file_path.h",
+        "+base/files/file_util.h",
+        "+base/files/scoped_temp_dir.h",
+        "+base/memory/aligned_memory.h",
+        "+base/path_service.h",
+        "+base/test/bind_test_util.h",
+        "+base/threading/thread.h",
+        "+third_party/blink/renderer/platform/testing/video_frame_utils.h",
+    ],
+}

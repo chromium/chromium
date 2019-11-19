@@ -2,51 +2,53 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-/**
- * @param {!cr.ui.MenuButton} selectionMenuButton
- * @param {!cr.ui.Menu} menu
- * @constructor
- * @struct
- */
-function SelectionMenuController(selectionMenuButton, menu) {
+class SelectionMenuController {
   /**
-   * @type {!FilesToggleRipple}
-   * @const
+   * @param {!cr.ui.MenuButton} selectionMenuButton
+   * @param {!cr.ui.Menu} menu
+   */
+  constructor(selectionMenuButton, menu) {
+    /**
+     * @type {!FilesToggleRipple}
+     * @const
+     * @private
+     */
+    this.toggleRipple_ =
+        /** @type {!FilesToggleRipple} */ (
+            queryRequiredElement('files-toggle-ripple', selectionMenuButton));
+
+    /**
+     * @type {!cr.ui.Menu}
+     * @const
+     */
+    this.menu_ = menu;
+
+    selectionMenuButton.addEventListener(
+        'menushow', this.onShowMenu_.bind(this));
+    selectionMenuButton.addEventListener(
+        'menuhide', this.onHideMenu_.bind(this));
+  }
+
+  /**
    * @private
    */
-  this.toggleRipple_ =
-      /** @type {!FilesToggleRipple} */ (
-          queryRequiredElement('files-toggle-ripple', selectionMenuButton));
+  onShowMenu_() {
+    this.menu_.classList.toggle('toolbar-menu', true);
+    this.toggleRipple_.activated = true;
+    // crbug.com 752035 focus still on button, get rid of the tooltip
+    document.querySelector('files-tooltip').hideTooltip();
+  }
 
   /**
-   * @type {!cr.ui.Menu}
-   * @const
+   * @private
    */
-  this.menu_ = menu;
-
-  selectionMenuButton.addEventListener('menushow', this.onShowMenu_.bind(this));
-  selectionMenuButton.addEventListener('menuhide', this.onHideMenu_.bind(this));
-}
-
-/**
- * @private
- */
-SelectionMenuController.prototype.onShowMenu_ = function() {
-  this.menu_.classList.toggle('toolbar-menu', true);
-  this.toggleRipple_.activated = true;
-  // crbug.com 752035 focus still on button, get rid of the tooltip
-  document.querySelector('files-tooltip').hideTooltip();
-};
-
-/**
- * @private
- */
-SelectionMenuController.prototype.onHideMenu_ = function() {
-  // If menu is animating to close, then do not remove 'toolbar-menu' yet, it
-  // will be removed at the end of FilesMenuItem.setMenuAsAnimating_ to avoid
-  // flicker.  See crbug.com/862926.
-  if (!this.menu_.classList.contains('animating')) {
-    this.menu_.classList.toggle('toolbar-menu', false);
+  onHideMenu_() {
+    // If menu is animating to close, then do not remove 'toolbar-menu' yet, it
+    // will be removed at the end of FilesMenuItem.setMenuAsAnimating_ to avoid
+    // flicker.  See crbug.com/862926.
+    if (!this.menu_.classList.contains('animating')) {
+      this.menu_.classList.toggle('toolbar-menu', false);
+    }
+    this.toggleRipple_.activated = false;
   }
-  this.toggleRipple_.activated = false;
-};
+}

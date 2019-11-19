@@ -21,6 +21,7 @@
 #include "chrome/test/chromedriver/chrome/debugger_tracker.h"
 #include "chrome/test/chromedriver/chrome/devtools_client_impl.h"
 #include "chrome/test/chromedriver/chrome/dom_tracker.h"
+#include "chrome/test/chromedriver/chrome/download_directory_override_manager.h"
 #include "chrome/test/chromedriver/chrome/frame_tracker.h"
 #include "chrome/test/chromedriver/chrome/geolocation_override_manager.h"
 #include "chrome/test/chromedriver/chrome/heap_snapshot_taker.h"
@@ -137,6 +138,19 @@ const char* GetAsString(PointerType type) {
   }
 }
 
+std::unique_ptr<base::DictionaryValue> GenerateTouchPoint(
+    const TouchEvent& event) {
+  std::unique_ptr<base::DictionaryValue> point(new base::DictionaryValue());
+  point->SetInteger("x", event.x);
+  point->SetInteger("y", event.y);
+  point->SetDouble("radiusX", event.radiusX);
+  point->SetDouble("radiusY", event.radiusY);
+  point->SetDouble("rotationAngle", event.rotationAngle);
+  point->SetDouble("force", event.force);
+  point->SetInteger("id", event.id);
+  return point;
+}
+
 }  // namespace
 
 WebViewImpl::WebViewImpl(const std::string& id,
@@ -167,6 +181,13 @@ WebViewImpl::WebViewImpl(const std::string& id,
           new NetworkConditionsOverrideManager(client_.get())),
       heap_snapshot_taker_(new HeapSnapshotTaker(client_.get())),
       debugger_(new DebuggerTracker(client_.get())) {
+  // Downloading in headless mode requires the setting of
+  // Page.setDownloadBehavior. This is handled by the
+  // DownloadDirectoryOverrideManager, which is only instantiated
+  // in headless chrome.
+  if (browser_info->is_headless)
+    download_directory_override_manager_ =
+        std::make_unique<DownloadDirectoryOverrideManager>(client_.get());
   client_->SetOwner(this);
 }
 
@@ -174,10 +195,14 @@ WebViewImpl::~WebViewImpl() {}
 
 WebViewImpl* WebViewImpl::CreateChild(const std::string& session_id,
                                       const std::string& target_id) const {
-  DevToolsClientImpl* parent_client =
-      static_cast<DevToolsClientImpl*>(client_.get());
+  // While there may be a deep hierarchy of WebViewImpl instances, the
+  // hierarchy for DevToolsClientImpl is flat - there's a root which
+  // sends/receives over the socket, and all child sessions are considered
+  // its children (one level deep at most).
+  DevToolsClientImpl* root_client =
+      static_cast<DevToolsClientImpl*>(client_.get())->GetRootClient();
   std::unique_ptr<DevToolsClient> child_client(
-      std::make_unique<DevToolsClientImpl>(parent_client, session_id));
+      std::make_unique<DevToolsClientImpl>(root_client, session_id));
   WebViewImpl* child = new WebViewImpl(target_id, w3c_compliant_, browser_info_,
                                        std::move(child_client), nullptr,
                                        navigation_tracker_->IsNonBlocking()
@@ -268,6 +293,13 @@ Status WebViewImpl::SendCommand(const std::string& cmd,
   return client_->SendCommand(cmd, params);
 }
 
+Status WebViewImpl::SendCommandFromWebSocket(
+    const std::string& cmd,
+    const base::DictionaryValue& params,
+    const int client_cmd_id) {
+  return client_->SendCommandFromWebSocket(cmd, params, client_cmd_id);
+}
+
 Status WebViewImpl::SendCommandAndGetResult(
         const std::string& cmd,
         const base::DictionaryValue& params,
@@ -333,29 +365,41 @@ Status WebViewImpl::TraverseHistoryWithJavaScript(int delta) {
     return Status(kUnknownError, "expected delta to be 1 or -1");
 }
 
-Status WebViewImpl::EvaluateScript(const std::string& frame,
-                                   const std::string& expression,
-                                   std::unique_ptr<base::Value>* result) {
+Status WebViewImpl::EvaluateScriptWithTimeout(
+    const std::string& frame,
+    const std::string& expression,
+    const base::TimeDelta& timeout,
+    std::unique_ptr<base::Value>* result) {
   WebViewImpl* target = GetTargetForFrame(this, frame);
   if (target != nullptr && target != this) {
     if (target->IsDetached())
       return Status(kTargetDetached);
     WebViewImplHolder target_holder(target);
-    return target->EvaluateScript(frame, expression, result);
+    return target->EvaluateScriptWithTimeout(frame, expression, timeout,
+                                             result);
   }
 
   int context_id;
   Status status = GetContextIdForFrame(this, frame, &context_id);
   if (status.IsError())
     return status;
-  return internal::EvaluateScriptAndGetValue(
-      client_.get(), context_id, expression, result);
+  return internal::EvaluateScriptAndGetValue(client_.get(), context_id,
+                                             expression, timeout, result);
 }
 
-Status WebViewImpl::CallFunction(const std::string& frame,
-                                 const std::string& function,
-                                 const base::ListValue& args,
-                                 std::unique_ptr<base::Value>* result) {
+Status WebViewImpl::EvaluateScript(const std::string& frame,
+                                   const std::string& expression,
+                                   std::unique_ptr<base::Value>* result) {
+  return EvaluateScriptWithTimeout(frame, expression, base::TimeDelta::Max(),
+                                   result);
+}
+
+Status WebViewImpl::CallFunctionWithTimeout(
+    const std::string& frame,
+    const std::string& function,
+    const base::ListValue& args,
+    const base::TimeDelta& timeout,
+    std::unique_ptr<base::Value>* result) {
   std::string json;
   base::JSONWriter::Write(args, &json);
   std::string w3c = w3c_compliant_ ? "true" : "false";
@@ -367,10 +411,20 @@ Status WebViewImpl::CallFunction(const std::string& frame,
       json.c_str(),
       w3c.c_str());
   std::unique_ptr<base::Value> temp_result;
-  Status status = EvaluateScript(frame, expression, &temp_result);
+  Status status =
+      EvaluateScriptWithTimeout(frame, expression, timeout, &temp_result);
   if (status.IsError())
       return status;
   return internal::ParseCallFunctionResult(*temp_result, result);
+}
+
+Status WebViewImpl::CallFunction(const std::string& frame,
+                                 const std::string& function,
+                                 const base::ListValue& args,
+                                 std::unique_ptr<base::Value>* result) {
+  // Timeout set to Max is treated as no timeout.
+  return CallFunctionWithTimeout(frame, function, args, base::TimeDelta::Max(),
+                                 result);
 }
 
 Status WebViewImpl::CallAsyncFunction(const std::string& frame,
@@ -380,6 +434,19 @@ Status WebViewImpl::CallAsyncFunction(const std::string& frame,
                                       std::unique_ptr<base::Value>* result) {
   return CallAsyncFunctionInternal(
       frame, function, args, false, timeout, result);
+}
+
+Status WebViewImpl::CallUserSyncScript(const std::string& frame,
+                                       const std::string& script,
+                                       const base::ListValue& args,
+                                       const base::TimeDelta& timeout,
+                                       std::unique_ptr<base::Value>* result) {
+  base::ListValue sync_args;
+  sync_args.AppendString(script);
+  // Deep-copy needed since ListValue only accepts unique_ptrs of Values.
+  sync_args.Append(args.CreateDeepCopy());
+  return CallFunctionWithTimeout(frame, kExecuteScriptScript, sync_args,
+                                 timeout, result);
 }
 
 Status WebViewImpl::CallUserAsyncFunction(
@@ -468,10 +535,12 @@ Status WebViewImpl::DispatchTouchEventsForMouseEvents(
 }
 
 Status WebViewImpl::DispatchMouseEvents(const std::list<MouseEvent>& events,
-                                        const std::string& frame) {
+                                        const std::string& frame,
+                                        bool async_dispatch_events) {
   if (mobile_emulation_override_manager_->IsEmulatingTouch())
     return DispatchTouchEventsForMouseEvents(events, frame);
 
+  Status status(kOk);
   for (auto it = events.begin(); it != events.end(); ++it) {
     base::DictionaryValue params;
     params.SetString("type", GetAsString(it->type));
@@ -482,44 +551,82 @@ Status WebViewImpl::DispatchMouseEvents(const std::list<MouseEvent>& events,
     params.SetInteger("buttons", it->buttons);
     params.SetInteger("clickCount", it->click_count);
     params.SetString("pointerType", GetAsString(it->pointer_type));
-    Status status = client_->SendCommand("Input.dispatchMouseEvent", params);
+
+    if (async_dispatch_events) {
+      status = client_->SendCommandAndIgnoreResponse("Input.dispatchMouseEvent",
+                                                     params);
+    } else {
+      status = client_->SendCommand("Input.dispatchMouseEvent", params);
+    }
+
     if (status.IsError())
       return status;
   }
-  return Status(kOk);
+  return status;
 }
 
-Status WebViewImpl::DispatchTouchEvent(const TouchEvent& event) {
+Status WebViewImpl::DispatchTouchEvent(const TouchEvent& event,
+                                       bool async_dispatch_events) {
   base::DictionaryValue params;
   std::string type = GetAsString(event.type);
   params.SetString("type", type);
-  LOG(ERROR) << "WebViewImpl::DispatchTouchEvent type " << type;
   std::unique_ptr<base::ListValue> point_list(new base::ListValue);
+  Status status(kOk);
   if (type == "touchStart" || type == "touchMove") {
-    std::unique_ptr<base::DictionaryValue> point(new base::DictionaryValue());
-    point->SetInteger("x", event.x);
-    point->SetInteger("y", event.y);
-    point->SetDouble("radiusX", event.radiusX);
-    point->SetDouble("radiusY", event.radiusY);
-    point->SetDouble("rotationAngle", event.rotationAngle);
-    point->SetDouble("force", event.force);
-    point->SetInteger("id", event.id);
+    std::unique_ptr<base::DictionaryValue> point = GenerateTouchPoint(event);
     point_list->Append(std::move(point));
   }
   params.Set("touchPoints", std::move(point_list));
-  return client_->SendCommand("Input.dispatchTouchEvent", params);
+  if (async_dispatch_events) {
+    status = client_->SendCommandAndIgnoreResponse("Input.dispatchTouchEvent",
+                                                   params);
+  } else {
+    status = client_->SendCommand("Input.dispatchTouchEvent", params);
+  }
+  return status;
 }
 
-Status WebViewImpl::DispatchTouchEvents(const std::list<TouchEvent>& events) {
+Status WebViewImpl::DispatchTouchEvents(const std::list<TouchEvent>& events,
+                                        bool async_dispatch_events) {
   for (auto it = events.begin(); it != events.end(); ++it) {
-    Status status = DispatchTouchEvent(*it);
+    Status status = DispatchTouchEvent(*it, async_dispatch_events);
     if (status.IsError())
       return status;
   }
   return Status(kOk);
 }
 
-Status WebViewImpl::DispatchKeyEvents(const std::list<KeyEvent>& events) {
+Status WebViewImpl::DispatchTouchEventWithMultiPoints(
+    const std::list<TouchEvent>& events,
+    bool async_dispatch_events) {
+  if (events.size() == 0)
+    return Status(kOk);
+
+  base::DictionaryValue params;
+  std::unique_ptr<base::ListValue> point_list(new base::ListValue);
+  Status status(kOk);
+  for (auto it = events.begin(); it != events.end(); ++it) {
+    std::string type = GetAsString(it->type);
+    if (!type.empty())
+      params.SetString("type", type);
+    if (type == "touchStart" || type == "touchMove") {
+      std::unique_ptr<base::DictionaryValue> point = GenerateTouchPoint(*it);
+      point_list->Append(std::move(point));
+    }
+  }
+  params.Set("touchPoints", std::move(point_list));
+  if (async_dispatch_events) {
+    status = client_->SendCommandAndIgnoreResponse("Input.dispatchTouchEvent",
+                                                   params);
+  } else {
+    status = client_->SendCommand("Input.dispatchTouchEvent", params);
+  }
+  return Status(kOk);
+}
+
+Status WebViewImpl::DispatchKeyEvents(const std::list<KeyEvent>& events,
+                                      bool async_dispatch_events) {
+  Status status(kOk);
   for (auto it = events.begin(); it != events.end(); ++it) {
     base::DictionaryValue params;
     params.SetString("type", GetAsString(it->type));
@@ -555,11 +662,18 @@ Status WebViewImpl::DispatchKeyEvents(const std::list<KeyEvent>& events) {
       else
         params.SetInteger("location", it->location);
     }
-    Status status = client_->SendCommand("Input.dispatchKeyEvent", params);
+
+    if (async_dispatch_events) {
+      status = client_->SendCommandAndIgnoreResponse("Input.dispatchKeyEvent",
+                                                     params);
+    } else {
+      status = client_->SendCommand("Input.dispatchKeyEvent", params);
+    }
+
     if (status.IsError())
       return status;
   }
-  return Status(kOk);
+  return status;
 }
 
 Status WebViewImpl::GetCookies(std::unique_ptr<base::ListValue>* cookies,
@@ -680,6 +794,14 @@ Status WebViewImpl::OverrideNetworkConditions(
       network_conditions);
 }
 
+Status WebViewImpl::OverrideDownloadDirectoryIfNeeded(
+    const std::string& download_directory) {
+  if (download_directory_override_manager_)
+    return download_directory_override_manager_
+        ->OverrideDownloadDirectoryWhenConnected(download_directory);
+  return Status(kOk);
+}
+
 Status WebViewImpl::CaptureScreenshot(
     std::string* screenshot,
     const base::DictionaryValue& params) {
@@ -694,29 +816,16 @@ Status WebViewImpl::CaptureScreenshot(
   return Status(kOk);
 }
 
-Status WebViewImpl::SetFileInputFiles(
-    const std::string& frame,
-    const base::DictionaryValue& element,
-    const std::vector<base::FilePath>& files) {
+Status WebViewImpl::SetFileInputFiles(const std::string& frame,
+                                      const base::DictionaryValue& element,
+                                      const std::vector<base::FilePath>& files,
+                                      const bool append) {
   WebViewImpl* target = GetTargetForFrame(this, frame);
   if (target != nullptr && target != this) {
     if (target->IsDetached())
       return Status(kTargetDetached);
     WebViewImplHolder target_holder(target);
-    return target->SetFileInputFiles(frame, element, files);
-  }
-
-  base::ListValue file_list;
-  for (size_t i = 0; i < files.size(); ++i) {
-    if (!files[i].IsAbsolute()) {
-      return Status(kUnknownError,
-                    "path is not absolute: " + files[i].AsUTF8Unsafe());
-    }
-    if (files[i].ReferencesParent()) {
-      return Status(kUnknownError,
-                    "path is not canonical: " + files[i].AsUTF8Unsafe());
-    }
-    file_list.AppendString(files[i].value());
+    return target->SetFileInputFiles(frame, element, files, append);
   }
 
   int context_id;
@@ -734,10 +843,97 @@ Status WebViewImpl::SetFileInputFiles(
     return status;
   if (!found_node)
     return Status(kUnknownError, "no node ID for file input");
-  base::DictionaryValue params;
-  params.SetInteger("nodeId", node_id);
-  params.SetKey("files", file_list.Clone());
-  return client_->SendCommand("DOM.setFileInputFiles", params);
+
+  base::ListValue file_list;
+  // if the append flag is true, we need to retrieve the files that
+  // already exist in the element and add them too.
+  // Additionally, we need to add the old files first so that it looks
+  // like we're appending files.
+  if (append) {
+    // Convert the node_id to a Runtime.RemoteObject
+    std::string inputRemoteObjectId;
+    {
+      std::unique_ptr<base::DictionaryValue> cmd_result;
+      base::DictionaryValue params;
+      params.SetInteger("nodeId", node_id);
+      status = client_->SendCommandAndGetResult("DOM.resolveNode", params,
+                                                &cmd_result);
+      if (status.IsError())
+        return status;
+      if (!cmd_result->GetString("object.objectId", &inputRemoteObjectId))
+        return Status(kUnknownError, "DevTools didn't return objectId");
+    }
+
+    // figure out how many files there are
+    int numberOfFiles = 0;
+    {
+      std::unique_ptr<base::DictionaryValue> cmd_result;
+      base::DictionaryValue params;
+      params.SetString("functionDeclaration",
+                       "function() { return this.files.length }");
+      params.SetString("objectId", inputRemoteObjectId);
+      status = client_->SendCommandAndGetResult("Runtime.callFunctionOn",
+                                                params, &cmd_result);
+      if (status.IsError())
+        return status;
+      if (!cmd_result->GetInteger("result.value", &numberOfFiles))
+        return Status(kUnknownError, "DevTools didn't return value");
+    }
+
+    // Ask for each Runtime.RemoteObject and add them to the list
+    for (int i = 0; i < numberOfFiles; i++) {
+      std::string fileObjectId;
+      {
+        std::unique_ptr<base::DictionaryValue> cmd_result;
+        base::DictionaryValue params;
+        params.SetString(
+            "functionDeclaration",
+            "function() { return this.files[" + std::to_string(i) + "] }");
+        params.SetString("objectId", inputRemoteObjectId);
+
+        status = client_->SendCommandAndGetResult("Runtime.callFunctionOn",
+                                                  params, &cmd_result);
+        if (status.IsError())
+          return status;
+        if (!cmd_result->GetString("result.objectId", &fileObjectId))
+          return Status(kUnknownError, "DevTools didn't return objectId");
+      }
+
+      // Now convert each RemoteObject into the full path
+      {
+        base::DictionaryValue params;
+        params.SetString("objectId", fileObjectId);
+        std::unique_ptr<base::DictionaryValue> getFileInfoResult;
+        status = client_->SendCommandAndGetResult("DOM.getFileInfo", params,
+                                                  &getFileInfoResult);
+        if (status.IsError())
+          return status;
+        // Add the full path to the file_list
+        std::string fullPath;
+        if (!getFileInfoResult->GetString("path", &fullPath))
+          return Status(kUnknownError, "DevTools didn't return path");
+        file_list.AppendString(fullPath);
+      }
+    }
+  }
+
+  // Now add the new files
+  for (size_t i = 0; i < files.size(); ++i) {
+    if (!files[i].IsAbsolute()) {
+      return Status(kUnknownError,
+                    "path is not absolute: " + files[i].AsUTF8Unsafe());
+    }
+    if (files[i].ReferencesParent()) {
+      return Status(kUnknownError,
+                    "path is not canonical: " + files[i].AsUTF8Unsafe());
+    }
+    file_list.AppendString(files[i].value());
+  }
+
+  base::DictionaryValue setFilesParams;
+  setFilesParams.SetInteger("nodeId", node_id);
+  setFilesParams.SetKey("files", file_list.Clone());
+  return client_->SendCommand("DOM.setFileInputFiles", setFilesParams);
 }
 
 Status WebViewImpl::TakeHeapSnapshot(std::unique_ptr<base::Value>* snapshot) {
@@ -838,45 +1034,6 @@ Status WebViewImpl::SynthesizeScrollGesture(int x,
   return client_->SendCommand("Input.synthesizeScrollGesture", params);
 }
 
-Status WebViewImpl::SynthesizePinchGesture(int x, int y, double scale_factor) {
-  base::DictionaryValue params;
-  params.SetInteger("x", x);
-  params.SetInteger("y", y);
-  params.SetDouble("scaleFactor", scale_factor);
-  return client_->SendCommand("Input.synthesizePinchGesture", params);
-}
-
-Status WebViewImpl::GetScreenOrientation(std::string* orientation) {
-  base::DictionaryValue empty_params;
-  std::unique_ptr<base::DictionaryValue> result;
-  Status status =
-    client_->SendCommandAndGetResult("Emulation.getScreenOrientation",
-                                      empty_params,
-                                      &result);
-  if (status.IsError() || !result->GetString("orientation", orientation))
-    return status;
-  return Status(kOk);
-}
-
-Status WebViewImpl::SetScreenOrientation(std::string orientation) {
-  base::DictionaryValue params;
-  params.SetString("screenOrientation", orientation);
-  Status status =
-    client_->SendCommand("Emulation.lockScreenOrientation", params);
-  if (status.IsError())
-    return status;
-  return Status(kOk);
-}
-
-Status WebViewImpl::DeleteScreenOrientation() {
-  base::DictionaryValue params;
-  Status status =
-    client_->SendCommand("Emulation.unlockScreenOrientation", params);
-  if (status.IsError())
-    return status;
-  return Status(kOk);
-}
-
 Status WebViewImpl::CallAsyncFunctionInternal(
     const std::string& frame,
     const std::string& function,
@@ -888,10 +1045,10 @@ Status WebViewImpl::CallAsyncFunctionInternal(
   async_args.AppendString("return (" + function + ").apply(null, arguments);");
   async_args.Append(args.CreateDeepCopy());
   async_args.AppendBoolean(is_user_supplied);
-  async_args.AppendInteger(timeout.InMilliseconds());
   std::unique_ptr<base::Value> tmp;
-  Status status = CallFunction(
-      frame, kExecuteAsyncScriptScript, async_args, &tmp);
+  Timeout local_timeout(timeout);
+  Status status = CallFunctionWithTimeout(frame, kExecuteAsyncScriptScript,
+                                          async_args, timeout, &tmp);
   if (status.IsError())
     return status;
 
@@ -909,6 +1066,7 @@ Status WebViewImpl::CallAsyncFunctionInternal(
       "}",
       kJavaScriptError,
       kDocUnloadError);
+  const base::TimeDelta kOneHundredMs = base::TimeDelta::FromMilliseconds(100);
 
   while (true) {
     base::ListValue no_args;
@@ -938,7 +1096,12 @@ Status WebViewImpl::CallAsyncFunctionInternal(
       return Status(kOk);
     }
 
-    base::PlatformThread::Sleep(base::TimeDelta::FromMilliseconds(100));
+    // Since async-scripts return immediately, need to time period here instead.
+    if (local_timeout.IsExpired())
+      return Status(kTimeout);
+
+    base::PlatformThread::Sleep(
+        std::min(kOneHundredMs, local_timeout.GetRemainingTime()));
   }
 }
 
@@ -951,11 +1114,20 @@ Status WebViewImpl::IsNotPendingNavigation(const std::string& frame_id,
   if (status.IsError())
     return status;
   // An alert may block the pending navigation.
-  if (dialog_manager_->IsDialogOpen())
-    return Status(kUnexpectedAlertOpen);
+  if (dialog_manager_->IsDialogOpen()) {
+    std::string alert_text;
+    status = dialog_manager_->GetDialogMessage(&alert_text);
+    if (status.IsError())
+      return Status(kUnexpectedAlertOpen);
+    return Status(kUnexpectedAlertOpen, "{Alert text : " + alert_text + "}");
+  }
 
   *is_not_pending = !is_pending;
   return Status(kOk);
+}
+
+bool WebViewImpl::IsNonBlocking() {
+  return navigation_tracker_->IsNonBlocking();
 }
 
 bool WebViewImpl::IsOOPIF(const std::string& frame_id) {
@@ -1027,15 +1199,19 @@ Status EvaluateScript(DevToolsClient* client,
                       int context_id,
                       const std::string& expression,
                       EvaluateScriptReturnType return_type,
+                      const base::TimeDelta& timeout,
                       std::unique_ptr<base::DictionaryValue>* result) {
   base::DictionaryValue params;
   params.SetString("expression", expression);
   if (context_id)
     params.SetInteger("contextId", context_id);
   params.SetBoolean("returnByValue", return_type == ReturnByValue);
+  params.SetBoolean("awaitPromise", true);
   std::unique_ptr<base::DictionaryValue> cmd_result;
-  Status status = client->SendCommandAndGetResult(
-      "Runtime.evaluate", params, &cmd_result);
+
+  Timeout local_timeout(timeout);
+  Status status = client->SendCommandAndGetResultWithTimeout(
+      "Runtime.evaluate", params, &local_timeout, &cmd_result);
   if (status.IsError())
     return status;
 
@@ -1063,11 +1239,12 @@ Status EvaluateScript(DevToolsClient* client,
 Status EvaluateScriptAndGetObject(DevToolsClient* client,
                                   int context_id,
                                   const std::string& expression,
+                                  const base::TimeDelta& timeout,
                                   bool* got_object,
                                   std::string* object_id) {
   std::unique_ptr<base::DictionaryValue> result;
   Status status = EvaluateScript(client, context_id, expression, ReturnByObject,
-                                 &result);
+                                 timeout, &result);
   if (status.IsError())
     return status;
   if (!result->HasKey("objectId")) {
@@ -1083,10 +1260,11 @@ Status EvaluateScriptAndGetObject(DevToolsClient* client,
 Status EvaluateScriptAndGetValue(DevToolsClient* client,
                                  int context_id,
                                  const std::string& expression,
+                                 const base::TimeDelta& timeout,
                                  std::unique_ptr<base::Value>* result) {
   std::unique_ptr<base::DictionaryValue> temp_result;
   Status status = EvaluateScript(client, context_id, expression, ReturnByValue,
-                                 &temp_result);
+                                 timeout, &temp_result);
   if (status.IsError())
     return status;
 
@@ -1150,7 +1328,8 @@ Status GetNodeIdFromFunction(DevToolsClient* client,
   bool got_object;
   std::string element_id;
   Status status = internal::EvaluateScriptAndGetObject(
-      client, context_id, expression, &got_object, &element_id);
+      client, context_id, expression, base::TimeDelta::Max(), &got_object,
+      &element_id);
   if (status.IsError())
     return status;
   if (!got_object) {

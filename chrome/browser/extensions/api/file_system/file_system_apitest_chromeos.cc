@@ -14,7 +14,6 @@
 #include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
 #include "chrome/browser/chromeos/drive/drive_integration_service.h"
 #include "chrome/browser/chromeos/drive/drivefs_test_support.h"
-#include "chrome/browser/chromeos/drive/file_system_util.h"
 #include "chrome/browser/chromeos/file_manager/volume_manager.h"
 #include "chrome/browser/chromeos/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
@@ -22,18 +21,13 @@
 #include "chrome/browser/extensions/component_loader.h"
 #include "chrome/common/chrome_paths.h"
 #include "chromeos/constants/chromeos_features.h"
-#include "components/drive/chromeos/file_system_interface.h"
-#include "components/drive/service/fake_drive_service.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/api/file_system/file_system_api.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/common/api/file_system.h"
 #include "extensions/common/switches.h"
-#include "google_apis/drive/base_requests.h"
-#include "google_apis/drive/drive_api_parser.h"
-#include "google_apis/drive/test_util.h"
-#include "storage/browser/fileapi/external_mount_points.h"
+#include "storage/browser/file_system/external_mount_points.h"
 #include "ui/base/ui_base_types.h"
 
 // TODO(michaelpg): Port these tests to app_shell: crbug.com/505926.
@@ -54,9 +48,6 @@ const char kChildDirectory[] = "child-dir";
 
 // ID of a testing extension.
 const char kTestingExtensionId[] = "pkplfbidichfdicaijlchgnapepdginl";
-
-void IgnoreDriveEntryResult(google_apis::DriveApiErrorCode error,
-                            std::unique_ptr<google_apis::FileResource> entry) {}
 
 }  // namespace
 
@@ -144,16 +135,6 @@ class FileSystemApiTestForDrive : public PlatformAppBrowserTest {
   // necessary because the fetch starts lazily upon the first read operation.
   void SetUpOnMainThread() override {
     PlatformAppBrowserTest::SetUpOnMainThread();
-
-    if (!base::FeatureList::IsEnabled(chromeos::features::kDriveFs)) {
-      std::unique_ptr<drive::ResourceEntry> entry;
-      drive::FileError error = drive::FILE_ERROR_FAILED;
-      integration_service_->file_system()->GetResourceEntry(
-          base::FilePath::FromUTF8Unsafe("drive/root"),  // whatever
-          google_apis::test_util::CreateCopyResultCallback(&error, &entry));
-      content::RunAllTasksUntilIdle();
-      ASSERT_EQ(drive::FILE_ERROR_OK, error);
-    }
   }
 
   void TearDown() override {
@@ -161,13 +142,7 @@ class FileSystemApiTestForDrive : public PlatformAppBrowserTest {
     PlatformAppBrowserTest::TearDown();
   }
 
-  base::FilePath GetDriveMountPoint() {
-    if (base::FeatureList::IsEnabled(chromeos::features::kDriveFs)) {
-      return drivefs_mount_point_;
-    } else {
-      return drive::util::GetDriveMountPointPath(browser()->profile());
-    }
-  }
+  base::FilePath GetDriveMountPoint() { return drivefs_mount_point_; }
 
  private:
   drive::DriveIntegrationService* CreateDriveIntegrationService(
@@ -181,9 +156,6 @@ class FileSystemApiTestForDrive : public PlatformAppBrowserTest {
 
     // FileSystemApiTestForDrive doesn't expect that several user profiles could
     // exist simultaneously.
-    DCHECK(!fake_drive_service_);
-    fake_drive_service_ = new drive::FakeDriveService;
-
     CHECK(drivefs_root_.CreateUniqueTempDir());
     drivefs_mount_point_ = drivefs_root_.GetPath().Append("drive-user");
     fake_drivefs_helper_ = std::make_unique<drive::FakeDriveFsHelper>(
@@ -192,50 +164,33 @@ class FileSystemApiTestForDrive : public PlatformAppBrowserTest {
     SetUpTestFileHierarchy();
 
     integration_service_ = new drive::DriveIntegrationService(
-        profile, nullptr, fake_drive_service_, "", test_cache_root_.GetPath(),
-        nullptr, fake_drivefs_helper_->CreateFakeDriveFsListenerFactory());
+        profile, nullptr, "", test_cache_root_.GetPath(),
+        fake_drivefs_helper_->CreateFakeDriveFsListenerFactory());
     return integration_service_;
   }
 
   void SetUpTestFileHierarchy() {
-    CHECK(base::CreateDirectory(drivefs_mount_point_.Append("root")));
-    const std::string root = fake_drive_service_->GetRootResourceId();
-    AddTestFile("open_existing.txt", "Can you see me?", root);
-    AddTestFile("open_existing1.txt", "Can you see me?", root);
-    AddTestFile("open_existing2.txt", "Can you see me?", root);
-    AddTestFile("save_existing.txt", "Can you see me?", root);
+    const base::FilePath root = drivefs_mount_point_.Append("root");
+    CHECK(base::CreateDirectory(root));
 
-    const char kSubdirResourceId[] = "subdir_resource_id";
-    AddTestDirectory(kSubdirResourceId, "subdir", root);
-    AddTestFile("open_existing.txt", "Can you see me?", kSubdirResourceId);
-  }
+    std::string data = "Can you see me?";
+    CHECK(base::WriteFile(root.Append("open_existing.txt"), data.data(),
+                          data.size()));
+    CHECK(base::WriteFile(root.Append("open_existing1.txt"), data.data(),
+                          data.size()));
+    CHECK(base::WriteFile(root.Append("open_existing2.txt"), data.data(),
+                          data.size()));
+    CHECK(base::WriteFile(root.Append("save_existing.txt"), data.data(),
+                          data.size()));
 
-  void AddTestFile(const std::string& title,
-                   const std::string& data,
-                   const std::string& parent_id) {
-    fake_drive_service_->AddNewFile("text/plain", data, parent_id, title, false,
-                                    base::Bind(&IgnoreDriveEntryResult));
-    base::FilePath parent_path = drivefs_mount_point_.Append("root");
-    if (parent_id == "subdir_resource_id") {
-      parent_path = parent_path.Append("subdir");
-    }
-    CHECK(base::WriteFile(parent_path.Append(title), data.data(), data.size()));
-  }
-
-  void AddTestDirectory(const std::string& resource_id,
-                        const std::string& title,
-                        const std::string& parent_id) {
-    fake_drive_service_->AddNewDirectoryWithResourceId(
-        resource_id, parent_id, title, drive::AddNewDirectoryOptions(),
-        base::Bind(&IgnoreDriveEntryResult));
-    CHECK(base::CreateDirectory(
-        drivefs_mount_point_.Append("root").Append(title)));
+    CHECK(base::CreateDirectory(root.Append("subdir")));
+    CHECK(base::WriteFile(root.Append("subdir").Append("open_existing.txt"),
+                          data.data(), data.size()));
   }
 
   base::ScopedTempDir test_cache_root_;
   base::ScopedTempDir drivefs_root_;
   base::FilePath drivefs_mount_point_;
-  drive::FakeDriveService* fake_drive_service_ = nullptr;
   std::unique_ptr<drive::FakeDriveFsHelper> fake_drivefs_helper_;
   drive::DriveIntegrationService* integration_service_ = nullptr;
   drive::DriveIntegrationServiceFactory::FactoryCallback
@@ -356,7 +311,7 @@ class FileSystemApiTestForRequestFileSystem : public PlatformAppBrowserTest {
         profile, drivefs_root_.GetPath().Append("drive-user"));
 
     return new drive::DriveIntegrationService(
-        profile, nullptr, nullptr, "", {}, nullptr,
+        profile, nullptr, "", {},
         fake_drivefs_helper_->CreateFakeDriveFsListenerFactory());
   }
 

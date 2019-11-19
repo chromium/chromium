@@ -13,9 +13,6 @@ namespace metrics {
 
 // The type of memory UMA stats to be recorded in RecordMemoryStats.
 enum RecordMemoryStatsType {
-  // When a tab was discarded.
-  RECORD_MEMORY_STATS_TAB_DISCARDED,
-
   // Right after the renderer for contents was killed.
   RECORD_MEMORY_STATS_CONTENTS_OOM_KILLED,
 

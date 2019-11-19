@@ -1,11 +1,11 @@
 <link rel="import" href="chrome://resources/html/polymer.html">
 
+<link rel="import" href="chrome://resources/cr_elements/cr_button/cr_button.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_icon_button/cr_icon_button.html">
 <link rel="import" href="chrome://resources/cr_elements/cr_input/cr_input.html">
 <link rel="import" href="chrome://resources/cr_elements/icons.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-a11y-keys/iron-a11y-keys.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-list/iron-list.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/paper-button/paper-button.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/paper-icon-button/paper-icon-button-light.html">
 <link rel="import" href="../global_scroll_target_behavior.html">
 <link rel="import" href="../prefs/prefs.html">
 <link rel="import" href="../prefs/prefs_behavior.html">
@@ -25,6 +25,10 @@
         --cr-input-width: var(--settings-input-max-width);
       }
 
+      #newWord::part(row-container) {
+        justify-content: normal;
+      }
+
       iron-list .word {
         flex: 1;
       }
@@ -34,16 +38,13 @@
           on-keys-pressed="onKeysPress_"></iron-a11y-keys>
       <cr-input id="newWord" value="{{newWordValue_}}"
           placeholder="$i18n{addDictionaryWordLabel}"
-          invalid="[[isWordInvalid_(newWordValue_)]]"
-          error-message="[[isWordInvalid_(newWordValue_,
-              '$i18nPolymer{addDictionaryWordDuplicateError}',
-              '$i18nPolymer{addDictionaryWordLengthError}')]]"
+          invalid="[[isWordInvalid_(newWordValue_, words_.*)]]"
+          error-message="[[getErrorMessage_(newWordValue_, words_.*)]]"
           spellcheck="false">
-        <paper-button class="secondary-button" on-click="onAddWordTap_"
-            disabled="[[disableAddButton_(newWordValue_)]]" id="addWord"
-            slot="suffix">
+        <cr-button on-click="onAddWordTap_" id="addWord" slot="suffix"
+            disabled$="[[disableAddButton_(newWordValue_, words_.*)]]">
           $i18n{addDictionaryWordButton}
-        </paper-button>
+        </cr-button>
       </cr-input>
     </div>
     <div class="settings-box continuation block">
@@ -55,11 +56,12 @@
             scroll-target="[[subpageScrollTarget]]">
           <template>
             <div class="list-item">
-              <div class="word text-elide">[[item]]</div>
-              <paper-icon-button-light class="icon-clear">
-                <button on-click="onRemoveWordTap_" tabindex$="[[tabIndex]]">
-                </button>
-              </paper-icon-button-light>
+              <div id$="word[[index]]" class="word text-elide">[[item]]</div>
+              <cr-icon-button class="icon-clear" on-click="onRemoveWordTap_"
+                  tabindex$="[[tabIndex]]"
+                  title="$i18n{deleteDictionaryWordButton}"
+                  aria-describedby$="word[[index]]">
+              </cr-icon-button>
             </div>
           </template>
         </iron-list>

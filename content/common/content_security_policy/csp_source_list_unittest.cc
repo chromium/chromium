@@ -4,6 +4,7 @@
 
 #include "content/common/content_security_policy/csp_source_list.h"
 #include "content/common/content_security_policy/csp_context.h"
+#include "content/public/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace content {
@@ -95,16 +96,16 @@ TEST(CSPSourceList, AllowStarAndSelf) {
 
 TEST(CSPSourceList, AllowSelfWithUnspecifiedPort) {
   CSPContext context;
-  context.SetSelf(url::Origin::Create(GURL("chrome://print")));
+  context.SetSelf(url::Origin::Create(GetWebUIURL("print")));
   CSPSourceList source_list(true,                       // allow_self
                             false,                      // allow_star
                             false,                      // allow_redirects
                             std::vector<CSPSource>());  // source_list
 
-  EXPECT_TRUE(
-      Allow(source_list,
-            GURL("chrome://print/pdf/index.html?chrome://print/1/0/print.pdf"),
-            &context));
+  EXPECT_TRUE(Allow(source_list,
+                    GURL(GetWebUIURLString("print/pdf/index.html?") +
+                         GetWebUIURLString("print/1/0/print.pdf")),
+                    &context));
 }
 
 TEST(CSPSourceList, AllowNone) {

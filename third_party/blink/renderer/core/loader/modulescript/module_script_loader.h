@@ -31,7 +31,7 @@ enum class ModuleGraphLevel;
 //
 // ModuleScriptLoader(s) should only be used via Modulator and its ModuleMap.
 class CORE_EXPORT ModuleScriptLoader final
-    : public GarbageCollectedFinalized<ModuleScriptLoader>,
+    : public GarbageCollected<ModuleScriptLoader>,
       public ModuleScriptFetcher::Client {
   USING_GARBAGE_COLLECTED_MIXIN(ModuleScriptLoader);
 

@@ -9,7 +9,6 @@
 
 #include "base/process/kill.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/prerender/prerender_handle.h"
 #include "chrome/browser/prerender/prerender_manager.h"
 #include "chrome/browser/prerender/prerender_manager_factory.h"
@@ -18,8 +17,8 @@
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/test/mock_render_process_host.h"
+#include "content/public/test/navigation_simulator.h"
 #include "content/public/test/web_contents_tester.h"
-#include "services/resource_coordinator/public/cpp/resource_coordinator_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -30,6 +29,25 @@ using testing::_;
 using testing::StrictMock;
 using LoadingState = TabLoadTracker::LoadingState;
 
+namespace {
+
+void NavigateAndFinishLoading(content::WebContents* web_contents,
+                              const GURL& url) {
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(web_contents, url);
+}
+
+std::unique_ptr<content::NavigationSimulator> NavigateAndKeepLoading(
+    content::WebContents* web_contents,
+    const GURL& url) {
+  auto navigation =
+      content::NavigationSimulator::CreateBrowserInitiated(url, web_contents);
+  navigation->SetKeepLoading(true);
+  navigation->Commit();
+  return navigation;
+}
+
+}  // namespace
+
 // Test wrapper of TabLoadTracker that exposes some internals.
 class TestTabLoadTracker : public TabLoadTracker {
  public:
@@ -37,7 +55,6 @@ class TestTabLoadTracker : public TabLoadTracker {
   using TabLoadTracker::StopTracking;
   using TabLoadTracker::DidStartLoading;
   using TabLoadTracker::DidReceiveResponse;
-  using TabLoadTracker::DidStopLoading;
   using TabLoadTracker::DidFailLoad;
   using TabLoadTracker::RenderProcessGone;
   using TabLoadTracker::OnPageAlmostIdle;
@@ -104,7 +121,6 @@ class TestWebContentsObserver : public content::WebContentsObserver {
   void DidReceiveResponse() override {
     tracker_->DidReceiveResponse(web_contents());
   }
-  void DidStopLoading() override { tracker_->DidStopLoading(web_contents()); }
   void DidFailLoad(content::RenderFrameHost* render_frame_host,
                    const GURL& validated_url,
                    int error_code,
@@ -142,17 +158,6 @@ class TabLoadTrackerTest : public ChromeRenderViewHostTestHarness {
     ChromeRenderViewHostTestHarness::TearDown();
   }
 
-  // Enables or disables the PAI feature so that the TabLoadTracker can be
-  // tested in both modes.
-  void SetPageAlmostIdleFeatureEnabled(bool enabled) {
-    feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
-    if (enabled)
-      feature_list_->InitAndEnableFeature(features::kPageAlmostIdle);
-    else
-      feature_list_->InitAndDisableFeature(features::kPageAlmostIdle);
-    ASSERT_EQ(resource_coordinator::IsPageAlmostIdleSignalEnabled(), enabled);
-  }
-
   void ExpectTabCounts(size_t tabs,
                        size_t unloaded,
                        size_t loading,
@@ -175,7 +180,7 @@ class TabLoadTrackerTest : public ChromeRenderViewHostTestHarness {
     EXPECT_EQ(loaded, tracker().GetLoadedUiTabCount());
   }
 
-  void StateTransitionsTest(bool enable_pai, bool use_non_ui_tabs);
+  void StateTransitionsTest(bool use_non_ui_tabs);
 
   TestTabLoadTracker& tracker() { return tracker_; }
   MockObserver& observer() { return observer_; }
@@ -186,7 +191,6 @@ class TabLoadTrackerTest : public ChromeRenderViewHostTestHarness {
 
  private:
   TestTabLoadTracker tracker_;
-  std::unique_ptr<base::test::ScopedFeatureList> feature_list_;
   MockObserver observer_;
 
   std::unique_ptr<content::WebContents> contents1_;
@@ -214,35 +218,28 @@ class TabLoadTrackerTest : public ChromeRenderViewHostTestHarness {
   }
 
 TEST_F(TabLoadTrackerTest, DetermineLoadingState) {
-  auto* tester1 = content::WebContentsTester::For(contents1());
-
   EXPECT_EQ(LoadingState::UNLOADED,
             tracker().DetermineLoadingState(contents1()));
 
   // Navigate to a page and expect it to be loading.
-  tester1->NavigateAndCommit(GURL("http://chromium.org"));
+  auto navigation =
+      NavigateAndKeepLoading(contents1(), GURL("http://chromium.org"));
   EXPECT_EQ(LoadingState::LOADING,
             tracker().DetermineLoadingState(contents1()));
 
   // Indicate that loading is finished and expect the state to transition.
-  tester1->TestSetIsLoading(false);
+  navigation->StopLoading();
   EXPECT_EQ(LoadingState::LOADED, tracker().DetermineLoadingState(contents1()));
 }
 
-void TabLoadTrackerTest::StateTransitionsTest(bool enable_pai,
-                                              bool use_non_ui_tabs) {
-  SetPageAlmostIdleFeatureEnabled(enable_pai);
+void TabLoadTrackerTest::StateTransitionsTest(bool use_non_ui_tabs) {
   tracker().SetAllTabsAreNonUiTabs(use_non_ui_tabs);
-
-  auto* tester1 = content::WebContentsTester::For(contents1());
-  auto* tester2 = content::WebContentsTester::For(contents2());
-  auto* tester3 = content::WebContentsTester::For(contents3());
 
   // Set up the contents in UNLOADED, LOADING and LOADED states. This tests
   // each possible "entry" state.
-  tester2->NavigateAndCommit(GURL("http://foo.com"));
-  tester3->NavigateAndCommit(GURL("http://bar.com"));
-  tester3->TestSetIsLoading(false);
+  auto navigation_tab_2 =
+      NavigateAndKeepLoading(contents2(), GURL("http://foo.com"));
+  NavigateAndFinishLoading(contents3(), GURL("http://bar.com"));
 
   // Add the contents to the tracker.
   EXPECT_CALL(observer(), OnStartTracking(contents1(), LoadingState::UNLOADED));
@@ -286,18 +283,16 @@ void TabLoadTrackerTest::StateTransitionsTest(bool enable_pai,
   EXPECT_CALL(observer(),
               OnLoadingStateChange(contents2(), LoadingState::LOADING,
                                    LoadingState::LOADED));
-  tester2->TestSetIsLoading(false);
-  if (enable_pai) {
-    // The state transition should only occur *after* the PAI signal when that
-    // feature is enabled.
-    if (use_non_ui_tabs) {
-      EXPECT_TAB_COUNTS(3, 1, 1, 1);
-      EXPECT_UI_TAB_COUNTS(0, 0, 0, 0);
-    } else {
-      EXPECT_TAB_AND_UI_TAB_COUNTS(3, 1, 1, 1);
-    }
-    tracker().OnPageAlmostIdle(contents2());
+  navigation_tab_2->StopLoading();
+  // The state transition should only occur *after* the PAI signal.
+  if (use_non_ui_tabs) {
+    EXPECT_TAB_COUNTS(3, 1, 1, 1);
+    EXPECT_UI_TAB_COUNTS(0, 0, 0, 0);
+  } else {
+    EXPECT_TAB_AND_UI_TAB_COUNTS(3, 1, 1, 1);
   }
+  tracker().OnPageAlmostIdle(contents2());
+
   if (use_non_ui_tabs) {
     EXPECT_TAB_COUNTS(3, 1, 0, 2);
     EXPECT_UI_TAB_COUNTS(0, 0, 0, 0);
@@ -310,7 +305,8 @@ void TabLoadTrackerTest::StateTransitionsTest(bool enable_pai,
   EXPECT_CALL(observer(),
               OnLoadingStateChange(contents1(), LoadingState::UNLOADED,
                                    LoadingState::LOADING));
-  tester1->NavigateAndCommit(GURL("http://baz.com"));
+  auto navigation_tab_1 =
+      NavigateAndKeepLoading(contents1(), GURL("http://baz.com"));
   if (use_non_ui_tabs) {
     EXPECT_TAB_COUNTS(3, 0, 1, 2);
     EXPECT_UI_TAB_COUNTS(0, 0, 0, 0);
@@ -324,8 +320,8 @@ void TabLoadTrackerTest::StateTransitionsTest(bool enable_pai,
   EXPECT_CALL(observer(),
               OnLoadingStateChange(contents1(), LoadingState::LOADING,
                                    LoadingState::LOADED));
-  tester1->TestDidFailLoadWithError(GURL("http://baz.com"), 500,
-                                    base::UTF8ToUTF16("server error"));
+  navigation_tab_1->FailLoading(GURL("http://baz.com"), 500,
+                                base::UTF8ToUTF16("server error"));
   if (use_non_ui_tabs) {
     EXPECT_TAB_COUNTS(3, 0, 0, 3);
     EXPECT_UI_TAB_COUNTS(0, 0, 0, 0);
@@ -353,24 +349,15 @@ void TabLoadTrackerTest::StateTransitionsTest(bool enable_pai,
 }
 
 TEST_F(TabLoadTrackerTest, StateTransitions) {
-  StateTransitionsTest(false /* enable_pai */, false /* use_non_ui_tabs */);
-}
-
-TEST_F(TabLoadTrackerTest, StateTransitionsPAI) {
-  StateTransitionsTest(true /* enable_pai */, false /* use_non_ui_tabs */);
+  StateTransitionsTest(false /* use_non_ui_tabs */);
 }
 
 TEST_F(TabLoadTrackerTest, StateTransitionsNonUiTabs) {
-  StateTransitionsTest(false /* enable_pai */, true /* use_non_ui_tabs */);
-}
-
-TEST_F(TabLoadTrackerTest, StateTransitionsPAINonUiTabs) {
-  StateTransitionsTest(true /* enable_pai */, true /* use_non_ui_tabs */);
+  StateTransitionsTest(true /* use_non_ui_tabs */);
 }
 
 TEST_F(TabLoadTrackerTest, PrerenderContentsDoesNotChangeUiTabCounts) {
-  auto* tester1 = content::WebContentsTester::For(contents1());
-  tester1->NavigateAndCommit(GURL("http://baz.com"));
+  NavigateAndKeepLoading(contents1(), GURL("http://baz.com"));
 
   // Add the contents to the tracker.
   EXPECT_CALL(observer(), OnStartTracking(contents1(), LoadingState::LOADING));
@@ -390,7 +377,7 @@ TEST_F(TabLoadTrackerTest, PrerenderContentsDoesNotChangeUiTabCounts) {
   // Prerender some contents.
   prerender::test_utils::RestorePrerenderMode restore_prerender_mode;
   prerender::PrerenderManager::SetMode(
-      prerender::PrerenderManager::PRERENDER_MODE_ENABLED);
+      prerender::PrerenderManager::DEPRECATED_PRERENDER_MODE_ENABLED);
   prerender::PrerenderManager* prerender_manager =
       prerender::PrerenderManagerFactory::GetForBrowserContext(profile());
   GURL url("http://www.example.com");
@@ -418,8 +405,7 @@ TEST_F(TabLoadTrackerTest, PrerenderContentsDoesNotChangeUiTabCounts) {
 }
 
 TEST_F(TabLoadTrackerTest, SwapInUiTabContents) {
-  auto* tester1 = content::WebContentsTester::For(contents1());
-  tester1->NavigateAndCommit(GURL("http://baz.com"));
+  NavigateAndKeepLoading(contents1(), GURL("http://baz.com"));
 
   // Add the contents to the tracker.
   EXPECT_CALL(observer(), OnStartTracking(contents1(), LoadingState::LOADING));
@@ -465,8 +451,7 @@ TEST_F(TabLoadTrackerTest, SwapInUiTabContents) {
 }
 
 TEST_F(TabLoadTrackerTest, SwapInUntrackedContents) {
-  auto* tester1 = content::WebContentsTester::For(contents1());
-  tester1->NavigateAndCommit(GURL("http://baz.com"));
+  NavigateAndKeepLoading(contents1(), GURL("http://baz.com"));
 
   // Add the contents to the tracker.
   EXPECT_CALL(observer(), OnStartTracking(contents1(), LoadingState::LOADING));

@@ -20,8 +20,9 @@ using extensions::ErrorUtils;
 
 namespace {
 
-const char kIdRequiredError[] = "Extensions using event pages must pass an "
-    "id parameter to chrome.contextMenus.create";
+const char kIdRequiredError[] =
+    "Extensions using event pages or Service "
+    "Workers must pass an id parameter to chrome.contextMenus.create";
 
 }  // namespace
 
@@ -37,7 +38,7 @@ ExtensionFunction::ResponseAction ContextMenusCreateFunction::Run() {
   if (params->create_properties.id.get()) {
     id.string_uid = *params->create_properties.id;
   } else {
-    if (BackgroundInfo::HasLazyBackgroundPage(extension()))
+    if (context_menus_api_helpers::HasLazyContext(extension()))
       return RespondNow(Error(kIdRequiredError));
 
     // The Generated Id is added by context_menus_custom_bindings.js.

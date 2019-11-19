@@ -63,6 +63,12 @@ class MEDIA_BLINK_EXPORT VideoFrameCompositor : public VideoRendererSink,
   // Used to report back the time when the new frame has been processed.
   using OnNewProcessedFrameCB = base::OnceCallback<void(base::TimeTicks)>;
 
+  using OnNewFramePresentedCB =
+      base::OnceCallback<void(scoped_refptr<VideoFrame> presented_frame,
+                              base::TimeTicks presentation_time,
+                              base::TimeTicks expected_presentation_time,
+                              uint32_t presentation_counter)>;
+
   // |task_runner| is the task runner on which this class will live,
   // though it may be constructed on any thread.
   VideoFrameCompositor(
@@ -93,18 +99,19 @@ class MEDIA_BLINK_EXPORT VideoFrameCompositor : public VideoRendererSink,
   bool HasCurrentFrame() override;
   scoped_refptr<VideoFrame> GetCurrentFrame() override;
   void PutCurrentFrame() override;
+  base::TimeDelta GetPreferredRenderInterval() override;
 
   // Returns |current_frame_|, without offering a guarantee as to how recently
   // it was updated. In certain applications, one might need to periodically
   // call UpdateCurrentFrameIfStale on |task_runner_| to drive the updates.
   // Can be called from any thread.
-  scoped_refptr<VideoFrame> GetCurrentFrameOnAnyThread();
+  virtual scoped_refptr<VideoFrame> GetCurrentFrameOnAnyThread();
 
   // VideoRendererSink implementation. These methods must be called from the
   // same thread (typically the media thread).
   void Start(RenderCallback* callback) override;
   void Stop() override;
-  void PaintSingleFrame(const scoped_refptr<VideoFrame>& frame,
+  void PaintSingleFrame(scoped_refptr<VideoFrame> frame,
                         bool repaint_duplicate_frame = false) override;
 
   // If |client_| is not set, |callback_| is set, and |is_background_rendering_|
@@ -124,6 +131,8 @@ class MEDIA_BLINK_EXPORT VideoFrameCompositor : public VideoRendererSink,
   // callback is only run once and then reset.
   // Must be called on the compositor thread.
   virtual void SetOnNewProcessedFrameCallback(OnNewProcessedFrameCB cb);
+
+  virtual void SetOnFramePresentedCallback(OnNewFramePresentedCB present_cb);
 
   // Updates the rotation information for frames given to |submitter_|.
   void UpdateRotation(VideoRotation rotation);
@@ -170,10 +179,11 @@ class MEDIA_BLINK_EXPORT VideoFrameCompositor : public VideoRendererSink,
   void OnRendererStateUpdate(bool new_state);
 
   // Handles setting of |current_frame_|.
-  bool ProcessNewFrame(const scoped_refptr<VideoFrame>& frame,
+  bool ProcessNewFrame(scoped_refptr<VideoFrame> frame,
+                       base::TimeTicks presentation_time,
                        bool repaint_duplicate_frame);
 
-  void SetCurrentFrame(const scoped_refptr<VideoFrame>& frame);
+  void SetCurrentFrame(scoped_refptr<VideoFrame> frame);
 
   // Called by |background_rendering_timer_| when enough time elapses where we
   // haven't seen a Render() call.
@@ -214,6 +224,7 @@ class MEDIA_BLINK_EXPORT VideoFrameCompositor : public VideoRendererSink,
 
   base::TimeTicks last_background_render_;
   OnNewProcessedFrameCB new_processed_frame_cb_;
+  OnNewFramePresentedCB new_presented_frame_cb_;
   cc::UpdateSubmissionStateCB update_submission_state_callback_;
 
   // Set on the compositor thread, but also read on the media thread. Lock is
@@ -226,12 +237,14 @@ class MEDIA_BLINK_EXPORT VideoFrameCompositor : public VideoRendererSink,
   VideoRendererSink::RenderCallback* callback_ GUARDED_BY(callback_lock_) =
       nullptr;
 
+  uint32_t presentation_counter_ = 0u;
+
   // AutoOpenCloseEvent for begin/end events.
   std::unique_ptr<base::trace_event::AutoOpenCloseEvent<kTracingCategory>>
       auto_open_close_;
   std::unique_ptr<blink::WebVideoFrameSubmitter> submitter_;
 
-  base::WeakPtrFactory<VideoFrameCompositor> weak_ptr_factory_;
+  base::WeakPtrFactory<VideoFrameCompositor> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(VideoFrameCompositor);
 };

@@ -14,7 +14,10 @@ namespace chromeos {
 
 namespace device_sync {
 
-// Stores key bundles enrolled with CryptAuth.
+// Stores key bundles used in CryptAuth v2 protocols.
+//
+// Note: Not all key bundles in the registry are enrolled with CryptAuth, only
+// those bundles contained in CryptAuthKeyBundle::AllEnrollableNames().
 class CryptAuthKeyRegistry {
  public:
   using KeyBundleMap =
@@ -23,7 +26,7 @@ class CryptAuthKeyRegistry {
   virtual ~CryptAuthKeyRegistry();
 
   // Returns the underlying map from the key-bundle name to the key bundle.
-  virtual const KeyBundleMap& enrolled_key_bundles() const;
+  virtual const KeyBundleMap& key_bundles() const;
 
   // Returns the key bundle with name |name| if it exists in the key registry,
   // and returns null if it cannot be found.
@@ -37,8 +40,9 @@ class CryptAuthKeyRegistry {
   // Adds |key| to the key bundle with |name|. If the key being added is active,
   // all other keys in the bundle will be deactivated. If the handle of the
   // input key matches one in the bundle, the existing key will be overwritten.
-  virtual void AddEnrolledKey(CryptAuthKeyBundle::Name name,
-                              const CryptAuthKey& key);
+  // Note: All keys added to the bundle kUserKeyPair must have the handle
+  // kCryptAuthFixedUserKeyPairHandle.
+  virtual void AddKey(CryptAuthKeyBundle::Name name, const CryptAuthKey& key);
 
   // Activates the key corresponding to |handle| in the key bundle with |name|
   // and deactivates the other keys the bundle.
@@ -59,10 +63,10 @@ class CryptAuthKeyRegistry {
  protected:
   CryptAuthKeyRegistry();
 
-  // Invoked when the enrolled key bundle map changes.
+  // Invoked when the key bundle map changes.
   virtual void OnKeyRegistryUpdated() = 0;
 
-  KeyBundleMap enrolled_key_bundles_;
+  KeyBundleMap key_bundles_;
 
   DISALLOW_COPY_AND_ASSIGN(CryptAuthKeyRegistry);
 };

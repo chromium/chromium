@@ -37,7 +37,7 @@ import landmine_utils
 
 
 def get_build_dir(src_dir):
-  """
+  r"""
   Returns output directory absolute path dependent on build and targets.
   Examples:
     r'c:\b\build\slave\win\build\src\out'
@@ -133,7 +133,8 @@ def main():
 
   landmines = []
   for s in options.landmine_scripts:
-    proc = subprocess.Popen([sys.executable, s], stdout=subprocess.PIPE)
+    proc = subprocess.Popen([sys.executable, s], stdout=subprocess.PIPE,
+                            universal_newlines=True)
     output, _ = proc.communicate()
     landmines.extend([('%s\n' % l.strip()) for l in output.splitlines()])
   clobber_if_necessary(landmines, options.src_dir)

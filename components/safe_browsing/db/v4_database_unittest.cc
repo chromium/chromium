@@ -12,7 +12,7 @@
 #include "base/test/test_simple_task_runner.h"
 #include "components/safe_browsing/db/v4_database.h"
 #include "components/safe_browsing/db/v4_store.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/platform_test.h"
 
 namespace safe_browsing {
@@ -201,7 +201,7 @@ class V4DatabaseTest : public PlatformTest {
   std::unique_ptr<V4Database> v4_database_;
   base::FilePath database_dirname_;
   base::ScopedTempDir temp_dir_;
-  content::TestBrowserThreadBundle thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
   bool created_but_not_called_back_;
   bool created_and_called_back_;
   bool verify_checksum_called_back_;

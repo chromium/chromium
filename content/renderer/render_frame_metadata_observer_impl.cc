@@ -6,6 +6,7 @@
 
 #include <cmath>
 
+#include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "components/viz/common/quads/compositor_frame_metadata.h"
 
@@ -18,18 +19,17 @@ constexpr float kEdgeThreshold = 10.0f;
 }
 
 RenderFrameMetadataObserverImpl::RenderFrameMetadataObserverImpl(
-    mojom::RenderFrameMetadataObserverRequest request,
-    mojom::RenderFrameMetadataObserverClientPtrInfo client_info)
-    : request_(std::move(request)),
-      client_info_(std::move(client_info)),
-      render_frame_metadata_observer_binding_(this) {}
+    mojo::PendingReceiver<mojom::RenderFrameMetadataObserver> receiver,
+    mojo::PendingRemote<mojom::RenderFrameMetadataObserverClient> client_remote)
+    : receiver_(std::move(receiver)),
+      client_remote_(std::move(client_remote)) {}
 
 RenderFrameMetadataObserverImpl::~RenderFrameMetadataObserverImpl() {}
 
 void RenderFrameMetadataObserverImpl::BindToCurrentThread() {
-  DCHECK(request_.is_pending());
-  render_frame_metadata_observer_binding_.Bind(std::move(request_));
-  render_frame_metadata_observer_client_.Bind(std::move(client_info_));
+  DCHECK(receiver_.is_valid());
+  render_frame_metadata_observer_receiver_.Bind(std::move(receiver_));
+  render_frame_metadata_observer_client_.Bind(std::move(client_remote_));
 }
 
 void RenderFrameMetadataObserverImpl::OnRenderFrameSubmission(
@@ -59,7 +59,8 @@ void RenderFrameMetadataObserverImpl::OnRenderFrameSubmission(
   }
 
   // Allways cache the full metadata, so that it can correctly be sent upon
-  // ReportAllFrameSubmissionsForTesting. This must only be done after we've
+  // ReportAllFrameSubmissionsForTesting or
+  // ReportAllRootScrollsForAccessibility. This must only be done after we've
   // compared the two for changes.
   last_render_frame_metadata_ = render_frame_metadata;
 
@@ -67,11 +68,11 @@ void RenderFrameMetadataObserverImpl::OnRenderFrameSubmission(
   // generated for first time and same as the default value, update the default
   // value to all the observers.
   if (send_metadata && render_frame_metadata_observer_client_) {
-    // Sending |root_scroll_offset| outside of tests would leave the browser
-    // process with out of date information. It is an optional parameter
-    // which we clear here.
     auto metadata_copy = render_frame_metadata;
 #if !defined(OS_ANDROID)
+    // On non-Android, sending |root_scroll_offset| outside of tests would
+    // leave the browser process with out of date information. It is an
+    // optional parameter which we clear here.
     if (!report_all_frame_submissions_for_testing_enabled_)
       metadata_copy.root_scroll_offset = base::nullopt;
 #endif
@@ -107,11 +108,26 @@ void RenderFrameMetadataObserverImpl::OnRenderFrameSubmission(
   }
 }
 
+#if defined(OS_ANDROID)
+void RenderFrameMetadataObserverImpl::ReportAllRootScrollsForAccessibility(
+    bool enabled) {
+  report_all_root_scrolls_for_accessibility_enabled_ = enabled;
+
+  if (enabled)
+    SendLastRenderFrameMetadata();
+}
+#endif
+
 void RenderFrameMetadataObserverImpl::ReportAllFrameSubmissionsForTesting(
     bool enabled) {
   report_all_frame_submissions_for_testing_enabled_ = enabled;
 
-  if (!enabled || !last_frame_token_)
+  if (enabled)
+    SendLastRenderFrameMetadata();
+}
+
+void RenderFrameMetadataObserverImpl::SendLastRenderFrameMetadata() {
+  if (!last_frame_token_)
     return;
 
   // When enabled for testing send the cached metadata.
@@ -121,11 +137,10 @@ void RenderFrameMetadataObserverImpl::ReportAllFrameSubmissionsForTesting(
       last_frame_token_, *last_render_frame_metadata_);
 }
 
-// static
 bool RenderFrameMetadataObserverImpl::ShouldSendRenderFrameMetadata(
     const cc::RenderFrameMetadata& rfm1,
     const cc::RenderFrameMetadata& rfm2,
-    bool* needs_activation_notification) {
+    bool* needs_activation_notification) const {
   if (rfm1.root_background_color != rfm2.root_background_color ||
       rfm1.is_scroll_offset_at_top != rfm2.is_scroll_offset_at_top ||
       rfm1.selection != rfm2.selection ||
@@ -136,12 +151,17 @@ bool RenderFrameMetadataObserverImpl::ShouldSendRenderFrameMetadata(
       rfm1.viewport_size_in_pixels != rfm2.viewport_size_in_pixels ||
       rfm1.top_controls_height != rfm2.top_controls_height ||
       rfm1.top_controls_shown_ratio != rfm2.top_controls_shown_ratio ||
-      rfm1.local_surface_id_allocation != rfm2.local_surface_id_allocation) {
+      rfm1.local_surface_id_allocation != rfm2.local_surface_id_allocation ||
+      rfm2.new_vertical_scroll_direction !=
+          viz::VerticalScrollDirection::kNull) {
     *needs_activation_notification = true;
     return true;
   }
 
 #if defined(OS_ANDROID)
+  bool need_send_root_scroll =
+      report_all_root_scrolls_for_accessibility_enabled_ &&
+      rfm1.root_scroll_offset != rfm2.root_scroll_offset;
   if (rfm1.bottom_controls_height != rfm2.bottom_controls_height ||
       rfm1.bottom_controls_shown_ratio != rfm2.bottom_controls_shown_ratio ||
       rfm1.min_page_scale_factor != rfm2.min_page_scale_factor ||
@@ -149,7 +169,8 @@ bool RenderFrameMetadataObserverImpl::ShouldSendRenderFrameMetadata(
       rfm1.root_overflow_y_hidden != rfm2.root_overflow_y_hidden ||
       rfm1.scrollable_viewport_size != rfm2.scrollable_viewport_size ||
       rfm1.root_layer_size != rfm2.root_layer_size ||
-      rfm1.has_transparent_background != rfm2.has_transparent_background) {
+      rfm1.has_transparent_background != rfm2.has_transparent_background ||
+      need_send_root_scroll) {
     *needs_activation_notification = true;
     return true;
   }

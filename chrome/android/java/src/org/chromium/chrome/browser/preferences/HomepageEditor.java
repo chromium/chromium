@@ -4,8 +4,8 @@
 
 package org.chromium.chrome.browser.preferences;
 
-import android.app.Fragment;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -16,7 +16,6 @@ import android.widget.EditText;
 
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.partnercustomizations.HomepageManager;
-import org.chromium.chrome.browser.util.FeatureUtilities;
 import org.chromium.components.url_formatter.UrlFormatter;
 
 /**
@@ -33,11 +32,7 @@ public class HomepageEditor extends Fragment implements TextWatcher {
             Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mHomepageManager = HomepageManager.getInstance();
-        if (FeatureUtilities.isNewTabPageButtonEnabled()) {
-            getActivity().setTitle(R.string.options_startup_page_edit_title);
-        } else {
-            getActivity().setTitle(R.string.options_homepage_edit_title);
-        }
+        getActivity().setTitle(R.string.options_homepage_edit_title);
         View v = inflater.inflate(R.layout.homepage_editor, container, false);
         View scrollView = v.findViewById(R.id.scroll_view);
         scrollView.getViewTreeObserver().addOnScrollChangedListener(

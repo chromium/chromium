@@ -7,6 +7,7 @@
 
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_types.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
 
@@ -16,6 +17,8 @@ namespace blink {
 // Save/Restore methods) to ensure the restoration behavior is the expected
 // one.
 class ScopedInterpolationQuality {
+  STACK_ALLOCATED();
+
  public:
   ScopedInterpolationQuality(GraphicsContext& context,
                              InterpolationQuality interpolation_quality)

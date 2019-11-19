@@ -9,7 +9,12 @@ assert(is_android)
 
 shared_library("chromium_android_linker") {
   sources = [
+    "legacy_linker_jni.cc",
+    "legacy_linker_jni.h",
     "linker_jni.cc",
+    "linker_jni.h",
+    "modern_linker_jni.cc",
+    "modern_linker_jni.h",
   ]
 
   # The NDK contains the crazy_linker here:

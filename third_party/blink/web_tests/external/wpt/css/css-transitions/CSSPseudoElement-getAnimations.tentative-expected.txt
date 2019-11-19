@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL getAnimations sorts simultaneous transitions by name assert_equals: Got pseudo-element target expected "[object CSSPseudoElement]" but got "[object Element]"
-Harness: the test ran to completion.
-

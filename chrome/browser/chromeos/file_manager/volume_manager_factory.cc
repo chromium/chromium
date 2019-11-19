@@ -11,7 +11,7 @@
 #include "chrome/browser/chromeos/file_system_provider/service_factory.h"
 #include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chromeos/dbus/power_manager_client.h"
+#include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/disks/disk_mount_manager.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/storage_monitor/storage_monitor.h"

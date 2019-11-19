@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 #include "printing/units.h"
-#include "testing/gtest/include/gtest/gtest.h"
 #include "testing/gtest/include/gtest/gtest-spi.h"
+#include "testing/gtest/include/gtest/gtest.h"
 
 namespace printing {
 

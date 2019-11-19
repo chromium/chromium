@@ -5,6 +5,7 @@
 <translation id="1185134272377778587">À propos de Chromium</translation>
 <translation id="1289966288285062467">Avis de confidentialité de Chromium</translation>
 <translation id="1472013873724362412">Votre compte n'est pas compatible avec Chromium. Veuillez contacter l'administrateur de votre domaine ou utiliser un compte Google standard pour vous connecter.</translation>
+<translation id="1507010443238049608">Contribuer à l'amélioration des fonctionnalités et des performances de Chromium</translation>
 <translation id="1617663976202781617">Données issues de la synchronisation Chromium</translation>
 <translation id="1736662517232558588">Données de Chromium effacées</translation>
 <translation id="1838412507805038478">Chromium a confirmé que le certificat de ce site Web a bien été émis par <ph name="ISSUER" />.</translation>
@@ -14,24 +15,16 @@
 <translation id="2168108852149185974">Certains modules complémentaires entraînent le plantage de Chromium. Veuillez désinstaller les modules suivants :</translation>
 <translation id="2178608107313874732">Chromium ne peut pas utiliser votre appareil photo pour le moment</translation>
 <translation id="2195025571279539885">Souhaitez-vous que Chromium vous propose de traduire les pages de ce site rédigées en <ph name="LANGUAGE_NAME" /> lors de votre prochaine visite ?</translation>
-<translation id="2517624234762908348">Synchroniser vos données Chromium</translation>
-<translation id="2647554856022461007">Chromium peut utiliser des services Web pour améliorer votre confort de navigation. Vous pouvez choisir de désactiver ces services. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
+<translation id="2590893390871230428">Synchroniser vos données Chromium</translation>
 <translation id="2730884209570016437">Chromium ne peut pas utiliser l'appareil photo, car celui-ci est utilisé par une autre application</translation>
 <translation id="2915596697727466327">Chromium utilise Face ID pour autoriser l'accès à vos mots de passe.</translation>
 <translation id="3256316712990552818">Copié dans Chromium</translation>
-<translation id="3413120535237193088">Connectez-vous à Chromium pour synchroniser vos favoris sur tous vos appareils.</translation>
-<translation id="3473048256428424907">Activer le lecteur de code QR Chromium</translation>
-<translation id="3605252743693911722">Connectez-vous à Chromium pour accéder à vos favoris, mots de passe et bien plus sur tous vos appareils.</translation>
 <translation id="3805899903892079518">Chromium n'a pas accès à vos photos ni à vos vidéos. Activez l'accès dans iOS via Réglages &gt; Confidentialité &gt; Photos.</translation>
-<translation id="4024541897090868497">Connectez-vous à Chromium pour synchroniser vos onglets sur tous vos appareils.</translation>
-<translation id="4157467675761413638">Astuce Chromium. Pour afficher plus d'options de l'onglet, appuyez de manière prolongée sur le bouton "Afficher les onglets" situé dans la barre d'outils affichée dans la partie inférieure ou supérieure de l'écran.</translation>
-<translation id="4241912885070669028">Vous vous déconnectez d'un compte géré par <ph name="SIGNOUT_MANAGED_DOMAIN" />. Cette opération entraînera la suppression de vos données Chromium de cet appareil, mais celles-ci seront conservées dans votre compte Google.</translation>
-<translation id="4272892696084633551">Contribuer à l'amélioration des fonctionnalités et des performances de Chromium</translation>
 <translation id="4555020257205549924">Lorsque cette fonctionnalité est activée dans Chromium, un message s'affiche pour vous proposer que les pages de ce site rédigées dans d'autres langues soient traduites à l'aide de Google Traduction. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
+<translation id="4681781466797808448">Activer le lecteur Chromium</translation>
 <translation id="4787850887676698916">Les onglets que vous avez ouverts dans Chromium sur vos autres appareils s'affichent ici.</translation>
-<translation id="495292094137889840">Commencer à utiliser le lecteur de code QR Chromium</translation>
 <translation id="4999538639245140991">Comme vous vous déconnectez d'un compte géré par <ph name="SIGNOUT_MANAGED_DOMAIN" />, vos données Chromium seront supprimées de cet appareil, mais elles seront conservées dans votre compte Google.</translation>
-<translation id="5231355151045086930">Se déconnecter de Chromium</translation>
+<translation id="5573014823074921752">Astuce Chromium : Pour afficher plus d'options d'onglets, appuyez de manière prolongée sur le bouton "Afficher les onglets" situé dans la barre d'outils affichée dans la partie inférieure ou supérieure de l'écran.</translation>
 <translation id="5862307444128926510">Bienvenue dans Chromium</translation>
 <translation id="5945387852661427312">Vous vous connectez avec un compte géré par <ph name="DOMAIN" />, ce qui permettra à son administrateur de contrôler vos données Chromium. Celles-ci seront définitivement associées à ce compte. Si vous vous déconnectez de Chromium, vos données seront supprimées de cet appareil, mais elles seront conservées dans votre compte Google.</translation>
 <translation id="6068866989048414399">Conditions d'utilisation Chromium</translation>
@@ -48,11 +41,13 @@
 <translation id="7674213385180944843">Ouvrez Paramètres &gt; Confidentialité &gt; Appareil photo &gt; Chromium, puis activez l'appareil photo.</translation>
 <translation id="7746854981345936341">Astuce Chromium. Certains boutons sont désormais affichés en bas de l'écran, tels que "Arrière", "Avant" et "Rechercher".</translation>
 <translation id="786327964234957808">Vous changez de compte synchronisé pour passer de <ph name="USER_EMAIL1" /> à <ph name="USER_EMAIL2" />. Vos données Chromium actuelles sont gérées par <ph name="DOMAIN" />. Cette opération entraînera la suppression de vos données de cet appareil, mais celles-ci seront conservées dans le compte <ph name="USER_EMAIL1" />.</translation>
+<translation id="7890287942691234100">Commencer à utiliser le lecteur Chromium</translation>
 <translation id="8073677936375100957">Supprimer vos données Chromium sur cet appareil ?</translation>
 <translation id="8175055321229419309">Conseil : <ph name="BEGIN_LINK" />Placez Chromium dans le dock.<ph name="END_LINK" /></translation>
 <translation id="8252885722420466166">Améliorez votre expérience Google dans Chromium grâce à votre position.</translation>
 <translation id="8586442755830160949">Copyright Auteurs de Chromium <ph name="YEAR" />. Tous droits réservés.</translation>
 <translation id="8809780021347235332">Pour enregistrer des images, appuyez sur "Paramètres" afin d'autoriser Chromium à utiliser vos photos</translation>
 <translation id="9022552996538154597">Se connecter à Chromium</translation>
+<translation id="9217078088703304241"><ph name="BEGIN_LINK" />Passez en revue les Conditions d'utilisation Chromium mises à jour.<ph name="END_LINK" /></translation>
 <translation id="985602178874221306">Auteurs de Chromium</translation>
 </translationbundle>

@@ -62,6 +62,7 @@ component("gcm") {
 
   public_deps = [
     ":proto",
+    "//google_apis",
   ]
   deps = [
     "//base",
@@ -165,6 +166,7 @@ test("gcm_unit_tests") {
     ":test_support",
     "//base",
     "//base/test:test_support",
+    "//google_apis",
     "//google_apis:run_all_unittests",
     "//mojo/public/cpp/system:system",
     "//net",

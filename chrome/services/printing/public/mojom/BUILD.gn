@@ -6,20 +6,24 @@ import("//mojo/public/tools/bindings/mojom.gni")
 
 mojom("mojom") {
   sources = [
-    "constants.mojom",
     "pdf_nup_converter.mojom",
     "pdf_render_settings.mojom",
     "pdf_to_pwg_raster_converter.mojom",
+    "printing_service.mojom",
   ]
 
   deps = [
-    "//ui/gfx/geometry/mojo",
+    "//ui/gfx/geometry/mojom",
   ]
 
   public_deps = [
     "//mojo/public/mojom/base",
     "//url/mojom:url_mojom_gurl",
   ]
+
+  if (is_chromeos) {
+    sources += [ "pdf_flattener.mojom" ]
+  }
 
   if (is_win) {
     sources += [ "pdf_to_emf_converter.mojom" ]

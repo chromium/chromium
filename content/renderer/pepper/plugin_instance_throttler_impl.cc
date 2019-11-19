@@ -68,8 +68,7 @@ PluginInstanceThrottlerImpl::PluginInstanceThrottlerImpl(
           base::TimeDelta::FromMilliseconds(
               kAudioThrottledFrameTimeoutMilliseconds),
           this,
-          &PluginInstanceThrottlerImpl::EngageThrottle),
-      weak_factory_(this) {}
+          &PluginInstanceThrottlerImpl::EngageThrottle) {}
 
 PluginInstanceThrottlerImpl::~PluginInstanceThrottlerImpl() {
   for (auto& observer : observer_list_)
@@ -171,8 +170,9 @@ void PluginInstanceThrottlerImpl::Initialize(
     // is disabled.
     frame->RegisterPeripheralPlugin(
         content_origin,
-        base::Bind(&PluginInstanceThrottlerImpl::MarkPluginEssential,
-                   weak_factory_.GetWeakPtr(), UNTHROTTLE_METHOD_BY_WHITELIST));
+        base::BindOnce(&PluginInstanceThrottlerImpl::MarkPluginEssential,
+                       weak_factory_.GetWeakPtr(),
+                       UNTHROTTLE_METHOD_BY_WHITELIST));
   }
 }
 

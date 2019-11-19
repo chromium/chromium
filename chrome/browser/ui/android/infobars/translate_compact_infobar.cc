@@ -12,12 +12,12 @@
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/android/jni_weak_ref.h"
+#include "chrome/android/chrome_jni_headers/TranslateCompactInfoBar_jni.h"
 #include "chrome/browser/infobars/infobar_service.h"
 #include "chrome/browser/translate/android/translate_utils.h"
 #include "components/translate/core/browser/translate_infobar_delegate.h"
 #include "components/variations/variations_associated_data.h"
 #include "content/public/browser/browser_context.h"
-#include "jni/TranslateCompactInfoBar_jni.h"
 
 using base::android::JavaParamRef;
 using base::android::ScopedJavaLocalRef;
@@ -213,4 +213,10 @@ void TranslateCompactInfoBar::OnTranslateStepChanged(
 bool TranslateCompactInfoBar::IsDeclinedByUser() {
   // Whether there is any affirmative action bit.
   return action_flags_ == FLAG_NONE;
+}
+
+void TranslateCompactInfoBar::OnTranslateInfoBarDelegateDestroyed(
+    translate::TranslateInfoBarDelegate* delegate) {
+  DCHECK_EQ(GetDelegate(), delegate);
+  GetDelegate()->SetObserver(nullptr);
 }

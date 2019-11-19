@@ -9,29 +9,26 @@
 
 #include "base/macros.h"
 #include "chrome/services/printing/public/mojom/pdf_to_emf_converter.mojom.h"
-#include "services/service_manager/public/cpp/service_context_ref.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 
 namespace printing {
 
 class PdfToEmfConverterFactory : public mojom::PdfToEmfConverterFactory {
  public:
-  explicit PdfToEmfConverterFactory(
-      std::unique_ptr<service_manager::ServiceContextRef> service_ref);
+  PdfToEmfConverterFactory();
   ~PdfToEmfConverterFactory() override;
 
-  // TODO(crbug.com/798782): remove when the Cloud print chrome/service is
-  // removed.
-  PdfToEmfConverterFactory();
-  static void Create(mojom::PdfToEmfConverterFactoryRequest request);
+  static void Create(
+      mojo::PendingReceiver<mojom::PdfToEmfConverterFactory> receiver);
 
  private:
   // mojom::PdfToEmfConverterFactory implementation.
-  void CreateConverter(base::ReadOnlySharedMemoryRegion pdf_region,
-                       const PdfRenderSettings& render_settings,
-                       mojom::PdfToEmfConverterClientPtr client,
-                       CreateConverterCallback callback) override;
-
-  const std::unique_ptr<service_manager::ServiceContextRef> service_ref_;
+  void CreateConverter(
+      base::ReadOnlySharedMemoryRegion pdf_region,
+      const PdfRenderSettings& render_settings,
+      mojo::PendingRemote<mojom::PdfToEmfConverterClient> client,
+      CreateConverterCallback callback) override;
 
   DISALLOW_COPY_AND_ASSIGN(PdfToEmfConverterFactory);
 };

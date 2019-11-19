@@ -1,11 +1,11 @@
 <link rel="import" href="chrome://resources/html/polymer.html">
 
+<link rel="import" href="chrome://resources/cr_elements/cr_icon_button/cr_icon_button.html">
 <link rel="import" href="chrome://resources/cr_elements/icons.html">
 <link rel="import" href="chrome://resources/cr_elements/shared_vars_css.html">
 <link rel="import" href="chrome://resources/html/cr/ui/focus_row.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-collapse/iron-collapse.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/paper-icon-button/paper-icon-button-light.html">
 <link rel="import" href="chrome://resources/html/icon.html">
 <link rel="import" href="browser_service.html">
 <link rel="import" href="constants.html">
@@ -44,7 +44,7 @@
 
       #device-name {
         overflow: hidden;
-        padding-right: 3px;
+        padding-inline-end: 3px;
         text-overflow: ellipsis;
       }
 
@@ -87,28 +87,18 @@
           <span id="last-update-time">[[lastUpdateTime]]</span>
         </div>
         <div id="right-buttons">
-          <paper-icon-button-light class="more-vert-button">
-            <button id="menu-button" on-click="onMenuButtonTap_"
-                title="$i18n{actionMenuDescription}">
-              <div></div>
-              <div></div>
-              <div></div>
-            </button>
-          </paper-icon-button-light>
-          <paper-icon-button-light>
-            <button id="collapse-button" title$="[[getCollapseTitle_(opened)]]">
-              <iron-icon icon="[[getCollapseIcon_(opened)]]"
-                  id="dropdown-indicator">
-              </iron-icon>
-            </button>
-          </paper-icon-button-light>
+          <cr-icon-button id="menu-button" iron-icon="cr:more-vert"
+              on-click="onMenuButtonTap_" title="$i18n{actionMenuDescription}">
+          </cr-icon-button>
+          <cr-icon-button id="collapse-button"
+              iron-icon="[[getCollapseIcon_(opened)]]"
+              title$="[[getCollapseTitle_(opened)]]"></cr-icon-button>
         </div>
       </div>
 
       <iron-collapse opened="{{opened}}" id="collapse">
         <div id="tab-item-list">
-          <template is="dom-repeat" items="[[tabs]]" as="tab" id="tab-list"
-              notify-dom-change>
+          <template is="dom-repeat" items="[[tabs]]" as="tab" id="tab-list">
             <div class="item-container">
               <a href="[[tab.url]]" class="website-link" title="[[tab.title]]"
                   on-click="openTab_" on-contextmenu="onLinkRightClick_">

@@ -46,6 +46,10 @@ class TrieBitBuffer {
                  const HuffmanRepresentationTable& table,
                  HuffmanBuilder* huffman_builder);
 
+  // Writes a size_t |size| in a format that provides a compact representation
+  // for small values. This function's inverse is PreloadDecoder::DecodeSize.
+  void WriteSize(size_t size);
+
   // Writes the entire buffer to |*writer|. Returns the position |*writer| was
   // at before the buffer was written to it.
   uint32_t WriteToBitWriter(BitWriter* writer);

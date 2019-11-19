@@ -52,7 +52,7 @@ class ContentSettingsDetails {
   // True if all types should be updated. If update_all() is false, this will
   // be false as well (although the reverse does not hold true).
   bool update_all_types() const {
-    return CONTENT_SETTINGS_TYPE_DEFAULT == type_;
+    return ContentSettingsType::DEFAULT == type_;
   }
 
  private:

@@ -5,6 +5,8 @@
 
 '''Unit tests for grit.format.resource_map'''
 
+from __future__ import print_function
+
 import os
 import sys
 if __name__ == '__main__':
@@ -12,7 +14,6 @@ if __name__ == '__main__':
 
 import unittest
 
-from grit import grd_reader
 from grit import util
 from grit.format import resource_map
 
@@ -88,14 +89,14 @@ const GritResourceMap kTheRcHeader[] = {
 };
 const size_t kTheRcHeaderSize = base::size(kTheRcHeader);''', output)
 
-  def testGzippedMapFileSourceWithGeneratedFile(self):
+  def testFormatResourceMapWithGeneratedFile(self):
     os.environ["root_gen_dir"] = "gen"
 
     grd = util.ParseGrdForUnittest('''\
         <outputs>
           <output type="rc_header" filename="the_rc_header.h" />
-          <output type="gzipped_resource_map_header"
-                  filename="gzipped_resource_map_header.h" />
+          <output type="resource_map_header"
+                  filename="resource_map_header.h" />
         </outputs>
         <release seq="3">
           <includes first_id="10000">
@@ -107,67 +108,18 @@ const size_t kTheRcHeaderSize = base::size(kTheRcHeader);''', output)
          </includes>
         </release>''', run_gatherers=True)
 
-    formatter = resource_map.GetFormatter('gzipped_resource_file_map_source')
+    formatter = resource_map.GetFormatter('resource_file_map_source')
     output = util.StripBlankLinesAndComments(''.join(formatter(grd, 'en', '.')))
-    gen_path = os.path.join('@out_folder@', 'gen', 'foo', 'bar', 'baz.js')
     expected = '''\
-#include "gzipped_resource_map_header.h"
+#include "resource_map_header.h"
 #include <stddef.h>
 #include "base/stl_util.h"
 #include "the_rc_header.h"
-const GzippedGritResourceMap kTheRcHeader[] = {
-  {"''' + gen_path + '''", IDR_FOO_BAR_BAZ_JS, true},
+const GritResourceMap kTheRcHeader[] = {
+  {"@out_folder@/gen/foo/bar/baz.js", IDR_FOO_BAR_BAZ_JS},
 };
 const size_t kTheRcHeaderSize = base::size(kTheRcHeader);'''
     self.assertEqual(expected, output)
-
-  def testGzippedMapHeaderAndFileSource(self):
-    grd = util.ParseGrdForUnittest('''\
-        <outputs>
-          <output type="rc_header" filename="the_rc_header.h" />
-          <output type="gzipped_resource_map_header"
-                  filename="gzipped_resource_map_header.h" />
-        </outputs>
-        <release seq="3">
-          <structures first_id="300">
-            <structure type="menu" name="IDC_KLONKMENU" compress="gzip"
-                       file="grit\\testdata\\klonk.rc" encoding="utf-16" />
-          </structures>
-          <includes first_id="10000">
-            <include type="foo" file="abc" name="IDS_FIRSTPRESENT"
-                     compress="" />
-            <if expr="False">
-              <include type="foo" file="def" name="IDS_MISSING"
-                       compress="garbage" />
-            </if>
-         </includes>
-        </release>''', run_gatherers=True)
-    formatter = resource_map.GetFormatter('gzipped_resource_map_header')
-    output = util.StripBlankLinesAndComments(''.join(formatter(grd, 'en', '.')))
-    self.assertEqual('''\
-#include <stddef.h>
-#ifndef GZIPPED_GRIT_RESOURCE_MAP_STRUCT_
-#define GZIPPED_GRIT_RESOURCE_MAP_STRUCT_
-struct GzippedGritResourceMap {
-  const char* const name;
-  int value;
-  bool gzipped;
-};
-#endif // GZIPPED_GRIT_RESOURCE_MAP_STRUCT_
-extern const GzippedGritResourceMap kTheRcHeader[];
-extern const size_t kTheRcHeaderSize;''', output)
-    formatter = resource_map.GetFormatter('gzipped_resource_file_map_source')
-    output = util.StripBlankLinesAndComments(''.join(formatter(grd, 'en', '.')))
-    self.assertEqual('''\
-#include "gzipped_resource_map_header.h"
-#include <stddef.h>
-#include "base/stl_util.h"
-#include "the_rc_header.h"
-const GzippedGritResourceMap kTheRcHeader[] = {
-  {"grit/testdata/klonk.rc", IDC_KLONKMENU, true},
-  {"abc", IDS_FIRSTPRESENT, false},
-};
-const size_t kTheRcHeaderSize = base::size(kTheRcHeader);''', output)
 
   def testFormatResourceMapWithOutputAllEqualsFalseForStructures(self):
     grd = util.ParseGrdForUnittest('''

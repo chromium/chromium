@@ -19,7 +19,7 @@ public final class CastSysInfoAndroid {
 
     @SuppressLint("HardwareIds")
     @CalledByNative
-    private static String getSerialNumber() {
+    public static String getSerialNumber() {
         if (!Build.SERIAL.equals(Build.UNKNOWN)) return Build.SERIAL;
         return CastSerialGenerator.getGeneratedSerial();
     }

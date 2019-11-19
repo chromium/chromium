@@ -44,10 +44,10 @@ namespace forwarder2 {
 // Usage example:
 // class Object {
 //  public:
-//   typedef base::Callback<void (std::unique_ptr<Object>)> ErrorCallback;
+//   using ErrorCallback = base::OnceCallback<void (std::unique_ptr<Object>)>;
 //
-//   Object(const ErrorCallback& error_callback)
-//       : self_deleter_helper_(this, error_callback) {
+//   Object(ErrorCallback error_callback)
+//       : self_deleter_helper_(this, std::move(error_callback)) {
 //   }
 //
 //   void StartWork() {
@@ -68,8 +68,8 @@ namespace forwarder2 {
 // class ObjectOwner {
 //  public:
 //   ObjectOwner()
-//      : object_(new Object(base::Bind(&ObjectOwner::DeleteObjectOnError,
-//                                      base::Unretained(this))) {
+//      : object_(new Object(base::BindOnce(&ObjectOwner::DeleteObjectOnError,
+//                                          base::Unretained(this))) {
 //      // To keep this example simple base::Unretained(this) is used above but
 //      // note that in a real world scenario the client would have to make sure
 //      // that the ObjectOwner instance is still alive when
@@ -97,14 +97,12 @@ namespace forwarder2 {
 template <typename T>
 class SelfDeleterHelper {
  public:
-  typedef base::Callback<void(std::unique_ptr<T>)> DeletionCallback;
+  using DeletionCallback = base::OnceCallback<void(std::unique_ptr<T>)>;
 
-  SelfDeleterHelper(T* self_deleting_object,
-                    const DeletionCallback& deletion_callback)
+  SelfDeleterHelper(T* self_deleting_object, DeletionCallback deletion_callback)
       : construction_runner_(base::ThreadTaskRunnerHandle::Get()),
         self_deleting_object_(self_deleting_object),
-        deletion_callback_(deletion_callback),
-        weak_ptr_factory_(this) {}
+        deletion_callback_(std::move(deletion_callback)) {}
 
   ~SelfDeleterHelper() {
     DCHECK(construction_runner_->RunsTasksInCurrentSequence());
@@ -120,18 +118,18 @@ class SelfDeleterHelper {
  private:
   void SelfDelete() {
     DCHECK(construction_runner_->RunsTasksInCurrentSequence());
-    deletion_callback_.Run(base::WrapUnique(self_deleting_object_));
+    std::move(deletion_callback_).Run(base::WrapUnique(self_deleting_object_));
   }
 
   const scoped_refptr<base::SingleThreadTaskRunner> construction_runner_;
   T* const self_deleting_object_;
-  const DeletionCallback deletion_callback_;
+  DeletionCallback deletion_callback_;
 
-  //WeakPtrFactory's documentation says:
+  // WeakPtrFactory's documentation says:
   // Member variables should appear before the WeakPtrFactory, to ensure
   // that any WeakPtrs to Controller are invalidated before its members
   // variable's destructors are executed, rendering them invalid.
-  base::WeakPtrFactory<SelfDeleterHelper<T> > weak_ptr_factory_;
+  base::WeakPtrFactory<SelfDeleterHelper<T>> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(SelfDeleterHelper);
 };

@@ -22,6 +22,8 @@ Examples:
   %prog -t "~~BINGO~~" "echo I modified ~~BINGO~~"
 """
 
+from __future__ import print_function
+
 import optparse
 import os
 import subprocess
@@ -44,7 +46,7 @@ def GitShell(args, ignore_return=False):
                          stderr=subprocess.STDOUT)
   (out, err) = job.communicate()
   if job.returncode != 0 and not ignore_return:
-    print out
+    print(out)
     raise Exception("Error %d running command %s" % (
         job.returncode, args))
   return out.split('\n')

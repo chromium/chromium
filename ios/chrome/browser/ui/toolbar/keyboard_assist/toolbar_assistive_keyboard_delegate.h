@@ -15,9 +15,6 @@
 // Delegate protocol for the KeyboardAccessoryView.
 @protocol ToolbarAssistiveKeyboardDelegate
 
-// Notifies the delegate that the Voice Search button was pressed.
-- (void)keyboardAccessoryVoiceSearchTouchDown:(UIView*)view;
-
 // Notifies the delegate that a touch up occurred in the Voice Search button.
 - (void)keyboardAccessoryVoiceSearchTouchUpInside:(UIView*)view;
 

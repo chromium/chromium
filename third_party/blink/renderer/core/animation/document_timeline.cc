@@ -52,6 +52,23 @@ bool CompareAnimations(const Member<Animation>& left,
                        const Member<Animation>& right) {
   return Animation::HasLowerPriority(left.Get(), right.Get());
 }
+
+// Returns the current animation time for a given |document|. This is
+// the animation clock time capped to be at least this document's
+// ZeroTime() such that the animation time is never negative when converted.
+base::TimeTicks CurrentAnimationTime(Document* document) {
+  base::TimeTicks animation_time = document->GetAnimationClock().CurrentTime();
+  base::TimeTicks document_zero_time = document->Timeline().ZeroTime();
+
+  // The AnimationClock time may be null or less than the local document's
+  // zero time if we have not generated any frames for this document yet. If
+  // so, assume animation_time is the document zero time.
+  if (animation_time < document_zero_time)
+    return document_zero_time;
+
+  return animation_time;
+}
+
 }  // namespace
 
 // This value represents 1 frame at 30Hz plus a little bit of wiggle room.
@@ -59,7 +76,7 @@ bool CompareAnimations(const Member<Animation>& left,
 const double DocumentTimeline::kMinimumDelay = 0.04;
 
 DocumentTimeline* DocumentTimeline::Create(Document* document,
-                                           TimeDelta origin_time,
+                                           base::TimeDelta origin_time,
                                            PlatformTiming* timing) {
   return MakeGarbageCollected<DocumentTimeline>(document, origin_time, timing);
 }
@@ -69,38 +86,49 @@ DocumentTimeline* DocumentTimeline::Create(
     const DocumentTimelineOptions* options) {
   Document* document = To<Document>(execution_context);
   return MakeGarbageCollected<DocumentTimeline>(
-      document, TimeDelta::FromMillisecondsD(options->originTime()), nullptr);
+      document, base::TimeDelta::FromMillisecondsD(options->originTime()),
+      nullptr);
 }
 
 DocumentTimeline::DocumentTimeline(Document* document,
-                                   TimeDelta origin_time,
+                                   base::TimeDelta origin_time,
                                    PlatformTiming* timing)
     : document_(document),
       origin_time_(origin_time),
-      zero_time_(TimeTicks() + origin_time_),
+      zero_time_(base::TimeTicks() + origin_time_),
       zero_time_initialized_(false),
       outdated_animation_count_(0),
-      playback_rate_(1),
-      last_current_time_internal_(0) {
+      playback_rate_(1) {
   if (!timing)
     timing_ = MakeGarbageCollected<DocumentTimelineTiming>(this);
   else
     timing_ = timing;
 
   if (Platform::Current()->IsThreadedAnimationEnabled())
-    compositor_timeline_ = CompositorAnimationTimeline::Create();
+    compositor_timeline_ = std::make_unique<CompositorAnimationTimeline>();
 
   DCHECK(document);
 }
 
-bool DocumentTimeline::IsActive() {
+bool DocumentTimeline::IsActive() const {
   return document_->GetPage();
 }
 
-void DocumentTimeline::AnimationAttached(Animation& animation) {
-  DCHECK_EQ(animation.TimelineInternal(), this);
-  DCHECK(!animations_.Contains(&animation));
-  animations_.insert(&animation);
+// Document-linked animations are initialized with start time of the document
+// timeline current time.
+base::Optional<base::TimeDelta>
+DocumentTimeline::InitialStartTimeForAnimations() {
+  base::Optional<double> current_time_ms = CurrentTime();
+  if (current_time_ms.has_value()) {
+    return base::TimeDelta::FromMillisecondsD(current_time_ms.value());
+  }
+  return base::nullopt;
+}
+
+void DocumentTimeline::AnimationAttached(Animation* animation) {
+  DCHECK_EQ(&animation->GetDocument()->Timeline(), this);
+  DCHECK(!animations_.Contains(animation));
+  animations_.insert(animation);
 }
 
 Animation* DocumentTimeline::Play(AnimationEffect* child) {
@@ -159,37 +187,49 @@ void DocumentTimeline::ServiceAnimations(TimingUpdateReason reason) {
   }
 
   DCHECK_EQ(outdated_animation_count_, 0U);
-  DCHECK(last_current_time_internal_ == CurrentTimeInternal() ||
-         (std::isnan(CurrentTimeInternal()) &&
-          std::isnan(last_current_time_internal_)));
+  DCHECK(last_current_time_internal_ == CurrentTimeInternal());
 
 #if DCHECK_IS_ON()
   for (const auto& animation : animations_needing_update_)
     DCHECK(!animation->Outdated());
 #endif
+  // Explicitly free the backing store to avoid memory regressions.
+  // TODO(bikineev): Revisit when young generation is done.
+  animations.clear();
 }
 
 void DocumentTimeline::ScheduleNextService() {
   DCHECK_EQ(outdated_animation_count_, 0U);
 
-  double time_to_next_effect = std::numeric_limits<double>::infinity();
+  base::Optional<AnimationTimeDelta> time_to_next_effect;
   for (const auto& animation : animations_needing_update_) {
-    time_to_next_effect =
-        std::min(time_to_next_effect, animation->TimeToEffectChange());
+    base::Optional<AnimationTimeDelta> time_to_effect_change =
+        animation->TimeToEffectChange();
+    if (!time_to_effect_change)
+      continue;
+
+    time_to_next_effect = time_to_next_effect
+                              ? std::min(time_to_next_effect.value(),
+                                         time_to_effect_change.value())
+                              : time_to_effect_change.value();
   }
 
-  if (time_to_next_effect < kMinimumDelay) {
+  if (!time_to_next_effect)
+    return;
+  double next_effect_delay = time_to_next_effect.value().InSecondsF();
+  if (next_effect_delay < kMinimumDelay) {
     timing_->ServiceOnNextFrame();
-  } else if (time_to_next_effect != std::numeric_limits<double>::infinity()) {
-    timing_->WakeAfter(time_to_next_effect - kMinimumDelay);
+  } else {
+    timing_->WakeAfter(
+        base::TimeDelta::FromSecondsD(next_effect_delay - kMinimumDelay));
   }
 }
 
-void DocumentTimeline::DocumentTimelineTiming::WakeAfter(double duration) {
-  TimeDelta duration_delta = TimeDelta::FromSecondsD(duration);
-  if (timer_.IsActive() && timer_.NextFireInterval() < duration_delta)
+void DocumentTimeline::DocumentTimelineTiming::WakeAfter(
+    base::TimeDelta duration) {
+  if (timer_.IsActive() && timer_.NextFireInterval() < duration)
     return;
-  timer_.StartOneShot(duration_delta, FROM_HERE);
+  timer_.StartOneShot(duration, FROM_HERE);
 }
 
 void DocumentTimeline::DocumentTimelineTiming::ServiceOnNextFrame() {
@@ -202,7 +242,7 @@ void DocumentTimeline::DocumentTimelineTiming::Trace(blink::Visitor* visitor) {
   DocumentTimeline::PlatformTiming::Trace(visitor);
 }
 
-TimeTicks DocumentTimeline::ZeroTime() {
+base::TimeTicks DocumentTimeline::ZeroTime() {
   if (!zero_time_initialized_ && document_->Loader()) {
     zero_time_ = document_->Loader()->GetTiming().ReferenceMonotonicTime() +
                  origin_time_;
@@ -212,45 +252,44 @@ TimeTicks DocumentTimeline::ZeroTime() {
 }
 
 void DocumentTimeline::ResetForTesting() {
-  zero_time_ = TimeTicks() + origin_time_;
+  zero_time_ = base::TimeTicks() + origin_time_;
   zero_time_initialized_ = true;
   playback_rate_ = 1;
-  last_current_time_internal_ = 0;
+  last_current_time_internal_.reset();
+}
+
+void DocumentTimeline::SetTimingForTesting(PlatformTiming* timing) {
+  timing_ = timing;
 }
 
 double DocumentTimeline::currentTime(bool& is_null) {
-  return CurrentTimeInternal(is_null) * 1000;
+  base::Optional<base::TimeDelta> result = CurrentTimeInternal();
+
+  is_null = !result.has_value();
+  return result.has_value() ? result->InMillisecondsF()
+                            : std::numeric_limits<double>::quiet_NaN();
 }
 
-// TODO(npm): change the return type to base::Optional<TimeTicks>.
-double DocumentTimeline::CurrentTimeInternal(bool& is_null) {
+base::Optional<base::TimeDelta> DocumentTimeline::CurrentTimeInternal() {
   if (!IsActive()) {
-    is_null = true;
-    return std::numeric_limits<double>::quiet_NaN();
+    return base::nullopt;
   }
-  double result = playback_rate_ == 0
-                      ? ZeroTime().since_origin().InSecondsF()
-                      : (GetDocument()->GetAnimationClock().CurrentTime() -
-                         ZeroTime().since_origin().InSecondsF()) *
-                            playback_rate_;
-  is_null = std::isnan(result);
-  // This looks like it could never be NaN here.
-  DCHECK(!is_null);
+
+  base::Optional<base::TimeDelta> result =
+      playback_rate_ == 0
+          ? ZeroTime().since_origin()
+          : (CurrentAnimationTime(GetDocument()) - ZeroTime()) * playback_rate_;
   return result;
 }
 
 double DocumentTimeline::currentTime() {
-  return CurrentTimeInternal() * 1000;
-}
-
-double DocumentTimeline::CurrentTimeInternal() {
-  bool is_null;
-  return CurrentTimeInternal(is_null);
+  base::Optional<base::TimeDelta> result = CurrentTimeInternal();
+  return result.has_value() ? result->InMillisecondsF()
+                            : std::numeric_limits<double>::quiet_NaN();
 }
 
 double DocumentTimeline::EffectiveTime() {
-  double time = CurrentTimeInternal();
-  return std::isnan(time) ? 0 : time;
+  return CurrentTimeInternal().value_or(base::TimeDelta()).InSecondsF();
 }
 
 void DocumentTimeline::PauseAnimationsForTesting(double pause_time) {
@@ -261,10 +300,6 @@ void DocumentTimeline::PauseAnimationsForTesting(double pause_time) {
 
 bool DocumentTimeline::NeedsAnimationTimingUpdate() {
   if (CurrentTimeInternal() == last_current_time_internal_)
-    return false;
-
-  if (std::isnan(CurrentTimeInternal()) &&
-      std::isnan(last_current_time_internal_))
     return false;
 
   // We allow |last_current_time_internal_| to advance here when there
@@ -292,14 +327,11 @@ void DocumentTimeline::SetOutdatedAnimation(Animation* animation) {
 void DocumentTimeline::SetPlaybackRate(double playback_rate) {
   if (!IsActive())
     return;
-  double current_time = CurrentTimeInternal();
+  base::TimeDelta current_time = CurrentTimeInternal().value();
   playback_rate_ = playback_rate;
-  double zero_time_seconds =
-      playback_rate == 0 ? current_time
-                         : GetDocument()->GetAnimationClock().CurrentTime() -
-                               current_time / playback_rate;
-  zero_time_ =
-      base::TimeTicks() + base::TimeDelta::FromSecondsD(zero_time_seconds);
+  zero_time_ = playback_rate == 0 ? base::TimeTicks() + current_time
+                                  : CurrentAnimationTime(GetDocument()) -
+                                        current_time / playback_rate;
   zero_time_initialized_ = true;
 
   // Corresponding compositor animation may need to be restarted to pick up

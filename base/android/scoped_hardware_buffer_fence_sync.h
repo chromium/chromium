@@ -27,10 +27,8 @@ class BASE_EXPORT ScopedHardwareBufferFenceSync {
   ScopedFD TakeFence();
 
   // Provides fence which is signaled when the reads for this buffer are done
-  // and it can be reused. The method assumes a current GLContext and will only
-  // synchronize the reads with this context.
-  // Must only be called once.
-  virtual void SetReadFence(base::ScopedFD fence_fd) = 0;
+  // and it can be reused. Must only be called once.
+  virtual void SetReadFence(base::ScopedFD fence_fd, bool has_context) = 0;
 
  private:
   ScopedHardwareBufferHandle handle_;

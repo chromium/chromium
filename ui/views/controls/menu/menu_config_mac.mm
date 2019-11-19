@@ -33,6 +33,8 @@ void InitMaterialMenuConfig(views::MenuConfig* config) {
   config->icons_in_label = true;
   config->corner_radius = 8;
   config->auxiliary_corner_radius = 4;
+  config->item_top_margin = 4;
+  config->item_bottom_margin = 4;
 }
 
 }  // namespace

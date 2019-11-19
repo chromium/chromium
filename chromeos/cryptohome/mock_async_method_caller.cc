@@ -41,10 +41,10 @@ void MockAsyncMethodCaller::SetUp(bool success, MountError return_code) {
       .WillByDefault(
           WithArgs<4>(Invoke(this,
                              &MockAsyncMethodCaller::FakeFinishCertRequest)));
-  ON_CALL(*this, TpmAttestationSignEnterpriseChallenge(_, _, _, _, _, _, _, _))
-      .WillByDefault(
-          WithArgs<7>(Invoke(this,
-                             &MockAsyncMethodCaller::FakeEnterpriseChallenge)));
+  ON_CALL(*this,
+          TpmAttestationSignEnterpriseChallenge(_, _, _, _, _, _, _, _, _))
+      .WillByDefault(WithArgs<8>(
+          Invoke(this, &MockAsyncMethodCaller::FakeEnterpriseChallenge)));
   ON_CALL(*this, TpmAttestationRegisterKey(_, _, _, _))
       .WillByDefault(
           WithArgs<3>(Invoke(this, &MockAsyncMethodCaller::DoCallback)));

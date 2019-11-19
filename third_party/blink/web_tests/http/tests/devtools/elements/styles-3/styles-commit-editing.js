@@ -20,7 +20,7 @@
       ElementsTestRunner.selectNodeAndWaitForStyles('inspected', next);
     },
 
-    function testFreeFlowEdit(next) {
+    async function testFreeFlowEdit(next) {
       ElementsTestRunner.dumpSelectedElementStyles(true);
       treeElement = ElementsTestRunner.getElementStylePropertyTreeItem('color');
       treeOutline = treeElement.treeOutline;
@@ -29,10 +29,10 @@
       treeElement.nameElement.textContent = 'color';
       treeElement.nameElement.dispatchEvent(TestRunner.createKeyEvent('Enter'));
 
-    // Update incrementally, do not commit.
+      // Update incrementally, do not commit.
       treeElement.valueElement.textContent = 'rgb(/*';
-      ElementsTestRunner.waitForStyleApplied(next);
-      treeElement.kickFreeFlowStyleEditForTest();
+      await treeElement.kickFreeFlowStyleEditForTest();
+      next();
     },
 
     function testCommitEditing(next) {

@@ -4,7 +4,7 @@
 
 #include "base/android/java_runtime.h"
 
-#include "jni/Runtime_jni.h"
+#include "base/android_runtime_jni_headers/Runtime_jni.h"
 
 namespace base {
 namespace android {

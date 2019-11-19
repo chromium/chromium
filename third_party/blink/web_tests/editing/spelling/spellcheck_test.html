@@ -9,45 +9,45 @@
 
 spellcheck_test(
     '<div contenteditable>|</div>',
-    'insertText zz.',
-    '<div contenteditable>#zz#.</div>',
+    'insertText zz. ',
+    '<div contenteditable>#zz#.\u00A0</div>',
     'Mark misspellings after typing.');
 
 spellcheck_test(
     '<div contenteditable>|</div>',
-    'insertText You has the right.',
-    '<div contenteditable>You ~has~ the right.</div>',
+    'insertText You has the right. ',
+    '<div contenteditable>You ~has~ the right.\u00A0</div>',
     'Mark ungrammatical phrases after typing.');
 
 spellcheck_test(
     '<div contenteditable>|</div>',
-    'insertText orange,zz,apple.',
+    'insertText orange,zz,apple. ',
     // Grammar marker under the whole sentence, and spelling marker under 'zz'.
-    '<div contenteditable>~orange,#zz#,apple.~</div>',
+    '<div contenteditable>~orange,#zz#,apple.~\u00A0</div>',
     'Mark overlapping grammar and spelling errors.');
 
 spellcheck_test(
     '<textarea>|</textarea>',
     document => {
       document.querySelector('textarea').focus();
-      document.execCommand('insertText', false, 'zz.');
+      document.execCommand('insertText', false, 'zz. ');
     },
-    '<textarea>#zz#.</textarea>',
+    '<textarea>#zz#. </textarea>',
     'Mark misspellings in <textarea>.');
 
 spellcheck_test(
     '<input type="text">|',
     document => {
       document.querySelector('input').focus();
-      document.execCommand('insertText', false, 'asd.');
+      document.execCommand('insertText', false, 'asd. ');
     },
-    '<input type="text" value="#asd#.">',
+    '<input type="text" value="#asd#. ">',
     'Mark misspellings in <input>.');
 
 spellcheck_test(
-    '<div contenteditable spellcheck="false">zz.|</div>',
+    '<div contenteditable spellcheck="false">zz. |</div>',
     '',
-    '<div contenteditable spellcheck="false">zz.</div>',
+    '<div contenteditable spellcheck="false">zz. </div>',
     {
       title: 'No marker on misspelled word when spellcheck=false.',
       callback: sample => spellcheck_test(
@@ -58,7 +58,7 @@ spellcheck_test(
             // Trigger spellchecker by selection change.
             document.getSelection().collapse(div, 0);
           },
-          '<div contenteditable spellcheck="true">#zz#.</div>',
+          '<div contenteditable spellcheck="true">#zz#. </div>',
           'Marker appears after setting spellcheck=true.'
       )
     });

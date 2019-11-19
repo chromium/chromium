@@ -10,15 +10,14 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "extensions/browser/api/async_api_function.h"
 #include "extensions/browser/api/document_scan/document_scan_interface.h"
+#include "extensions/browser/extension_function.h"
 #include "extensions/common/api/document_scan.h"
 
 namespace extensions {
-
 namespace api {
 
-class DocumentScanScanFunction : public AsyncApiFunction {
+class DocumentScanScanFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("documentScan.scan", DOCUMENT_SCAN_SCAN)
   DocumentScanScanFunction();
@@ -26,10 +25,8 @@ class DocumentScanScanFunction : public AsyncApiFunction {
  protected:
   ~DocumentScanScanFunction() override;
 
-  // AsyncApiFunction:
-  bool Prepare() override;
-  void AsyncWorkStart() override;
-  bool Respond() override;
+  // ExtensionFunction:
+  ResponseAction Run() override;
 
  private:
   friend class DocumentScanScanFunctionTest;
@@ -49,7 +46,6 @@ class DocumentScanScanFunction : public AsyncApiFunction {
 };
 
 }  // namespace api
-
 }  // namespace extensions
 
 #endif  // EXTENSIONS_BROWSER_API_DOCUMENT_SCAN_DOCUMENT_SCAN_API_H_

@@ -32,13 +32,6 @@ PepperProxyChannelDelegateImpl::ShareHandleWithRemote(
   return IPC::GetPlatformFileForTransit(handle, should_close_source);
 }
 
-base::SharedMemoryHandle
-PepperProxyChannelDelegateImpl::ShareSharedMemoryHandleWithRemote(
-    const base::SharedMemoryHandle& handle,
-    base::ProcessId remote_pid) {
-  return base::SharedMemory::DuplicateHandle(handle);
-}
-
 base::UnsafeSharedMemoryRegion
 PepperProxyChannelDelegateImpl::ShareUnsafeSharedMemoryRegionWithRemote(
     const base::UnsafeSharedMemoryRegion& region,

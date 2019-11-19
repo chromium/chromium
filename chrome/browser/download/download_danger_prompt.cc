@@ -37,6 +37,20 @@ const char* GetDangerTypeString(
       return "UncommonContent";
     case download::DOWNLOAD_DANGER_TYPE_POTENTIALLY_UNWANTED:
       return "PotentiallyUnwanted";
+    case download::DOWNLOAD_DANGER_TYPE_ASYNC_SCANNING:
+      return "AsyncScanning";
+    case download::DOWNLOAD_DANGER_TYPE_BLOCKED_PASSWORD_PROTECTED:
+      return "BlockedPasswordProtected";
+    case download::DOWNLOAD_DANGER_TYPE_BLOCKED_TOO_LARGE:
+      return "BlockedTooLarge";
+    case download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_WARNING:
+      return "SensitiveContentWarning";
+    case download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_BLOCK:
+      return "SensitiveContentBlock";
+    case download::DOWNLOAD_DANGER_TYPE_DEEP_SCANNED_SAFE:
+      return "DeepScannedSafe";
+    case download::DOWNLOAD_DANGER_TYPE_DEEP_SCANNED_OPENED_DANGEROUS:
+      return "DeepScannedOpenedDangerous";
     case download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS:
     case download::DOWNLOAD_DANGER_TYPE_MAYBE_DANGEROUS_CONTENT:
     case download::DOWNLOAD_DANGER_TYPE_USER_VALIDATED:

@@ -7,10 +7,11 @@ package org.chromium.chrome.browser.download.home.list.view;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
-import android.support.annotation.DrawableRes;
-import android.support.annotation.Nullable;
-import android.support.annotation.StyleableRes;
 import android.support.v7.content.res.AppCompatResources;
+
+import androidx.annotation.DrawableRes;
+import androidx.annotation.Nullable;
+import androidx.annotation.StyleableRes;
 
 /** A set of helper methods to make interacting with the Android UI easier. */
 public final class UiUtils {

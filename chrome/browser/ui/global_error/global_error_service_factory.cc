@@ -22,16 +22,14 @@ GlobalErrorServiceFactory* GlobalErrorServiceFactory::GetInstance() {
 
 GlobalErrorServiceFactory::GlobalErrorServiceFactory()
     : BrowserContextKeyedServiceFactory(
-        "GlobalErrorService",
-        BrowserContextDependencyManager::GetInstance()) {
-}
+          "GlobalErrorService",
+          BrowserContextDependencyManager::GetInstance()) {}
 
-GlobalErrorServiceFactory::~GlobalErrorServiceFactory() {
-}
+GlobalErrorServiceFactory::~GlobalErrorServiceFactory() = default;
 
 KeyedService* GlobalErrorServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* profile) const {
-  return new GlobalErrorService(static_cast<Profile*>(profile));
+  return new GlobalErrorService();
 }
 
 content::BrowserContext* GlobalErrorServiceFactory::GetBrowserContextToUse(

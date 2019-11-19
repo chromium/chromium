@@ -151,7 +151,7 @@ class BASE_EXPORT ImportantFileWriter {
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  WeakPtrFactory<ImportantFileWriter> weak_factory_;
+  WeakPtrFactory<ImportantFileWriter> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ImportantFileWriter);
 };

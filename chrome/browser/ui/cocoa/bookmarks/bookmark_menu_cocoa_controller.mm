@@ -10,6 +10,8 @@
 #include "chrome/app/chrome_command_ids.h"  // IDC_BOOKMARK_MENU
 #import "chrome/browser/app_controller_mac.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_metrics.h"
+#include "chrome/browser/ui/bookmarks/bookmark_stats.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils_desktop.h"
 #include "chrome/browser/ui/browser.h"
@@ -102,6 +104,9 @@ NSMenuItem* GetItemWithSubmenu(NSMenu* submenu) {
       node->url(), Referrer(), disposition,
       ui::PAGE_TRANSITION_AUTO_BOOKMARK, false);
   browser->OpenURL(params);
+  RecordBookmarkLaunch(
+      BOOKMARK_LAUNCH_LOCATION_TOP_MENU,
+      ProfileMetrics::GetBrowserProfileType(bridge_->GetProfile()));
 }
 
 - (IBAction)openBookmarkMenuItem:(id)sender {

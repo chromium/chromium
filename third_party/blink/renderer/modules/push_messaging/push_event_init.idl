@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// https://w3c.github.io/push-api/#idl-def-PushEvent
+// https://w3c.github.io/push-api/#pushevent-interface
 
 // TODO(peter): Use BufferSource when union types can refer to other union types.
 typedef (ArrayBuffer or ArrayBufferView or USVString) PushMessageDataInit;

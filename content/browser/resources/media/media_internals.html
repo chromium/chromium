@@ -4,7 +4,7 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 <!DOCTYPE html>
-<html dir="$i18n{textdirection}" lang="$i18n{language}">
+<html dir="ltr" lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -20,6 +20,17 @@ found in the LICENSE file.
 </head>
 
 <body>
+  <div id="devtools-notice-window">
+    <div>
+    Media Internals functionality is now available in the media tab of the
+    developer tools.
+    </div>
+      <div>
+      <a href="chrome://flags/#enable-media-internals-devtools">
+        To try it, enable the flag here.
+      </a>
+    </div>
+  </div>
   <tabbox>
     <tabs>
       <tab>Players</tab>

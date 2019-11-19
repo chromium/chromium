@@ -1,0 +1,37 @@
+This is a testharness.js-based test.
+PASS idl_test setup
+PASS idl_test validation
+PASS PerformanceLongTaskTiming interface: existence and properties of interface object
+PASS PerformanceLongTaskTiming interface object length
+PASS PerformanceLongTaskTiming interface object name
+PASS PerformanceLongTaskTiming interface: existence and properties of interface prototype object
+PASS PerformanceLongTaskTiming interface: existence and properties of interface prototype object's "constructor" property
+PASS PerformanceLongTaskTiming interface: existence and properties of interface prototype object's @@unscopables property
+PASS PerformanceLongTaskTiming interface: attribute attribution
+PASS PerformanceLongTaskTiming interface: operation toJSON()
+PASS PerformanceLongTaskTiming must be primary interface of [object PerformanceLongTaskTiming]
+PASS Stringification of [object PerformanceLongTaskTiming]
+PASS PerformanceLongTaskTiming interface: [object PerformanceLongTaskTiming] must inherit property "attribution" with the proper type
+PASS PerformanceLongTaskTiming interface: [object PerformanceLongTaskTiming] must inherit property "toJSON()" with the proper type
+FAIL PerformanceLongTaskTiming interface: default toJSON operation on [object PerformanceLongTaskTiming] assert_true: Value should be frozen expected true got false
+PASS TaskAttributionTiming interface: existence and properties of interface object
+PASS TaskAttributionTiming interface object length
+PASS TaskAttributionTiming interface object name
+PASS TaskAttributionTiming interface: existence and properties of interface prototype object
+PASS TaskAttributionTiming interface: existence and properties of interface prototype object's "constructor" property
+PASS TaskAttributionTiming interface: existence and properties of interface prototype object's @@unscopables property
+PASS TaskAttributionTiming interface: attribute containerType
+PASS TaskAttributionTiming interface: attribute containerSrc
+PASS TaskAttributionTiming interface: attribute containerId
+PASS TaskAttributionTiming interface: attribute containerName
+PASS TaskAttributionTiming interface: operation toJSON()
+PASS TaskAttributionTiming must be primary interface of [object TaskAttributionTiming]
+PASS Stringification of [object TaskAttributionTiming]
+PASS TaskAttributionTiming interface: [object TaskAttributionTiming] must inherit property "containerType" with the proper type
+PASS TaskAttributionTiming interface: [object TaskAttributionTiming] must inherit property "containerSrc" with the proper type
+PASS TaskAttributionTiming interface: [object TaskAttributionTiming] must inherit property "containerId" with the proper type
+PASS TaskAttributionTiming interface: [object TaskAttributionTiming] must inherit property "containerName" with the proper type
+PASS TaskAttributionTiming interface: [object TaskAttributionTiming] must inherit property "toJSON()" with the proper type
+PASS TaskAttributionTiming interface: default toJSON operation on [object TaskAttributionTiming]
+Harness: the test ran to completion.
+

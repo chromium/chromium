@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+PASS Element.prototype.createElement must add an unresolved custom element to the upgrade candidates map
+FAIL HTMLElement constructor must throw an TypeError when the top of the construction stack is marked AlreadyConstructed due to a custom element constructor constructing itself after super() call assert_equals: expected "TypeError" but got "InvalidStateError"
+FAIL HTMLElement constructor must throw an TypeError when the top of the construction stack is marked AlreadyConstructed due to a custom element constructor constructing itself before super() call assert_equals: expected "TypeError" but got "InvalidStateError"
+FAIL Upgrading a custom element must throw an TypeError when the returned element is not SameValue as the upgraded element assert_equals: expected "TypeError" but got "InvalidStateError"
+FAIL Upgrading a custom element whose constructor returns a Text node must throw assert_equals: expected "TypeError" but got "InvalidStateError"
+FAIL Upgrading a custom element whose constructor returns an Element must throw assert_equals: expected "TypeError" but got "InvalidStateError"
+Harness: the test ran to completion.
+

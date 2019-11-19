@@ -4,6 +4,8 @@
 
 #include "chrome/browser/chromeos/first_run/first_run_view.h"
 
+#include <memory>
+
 #include "chrome/browser/chromeos/first_run/first_run_controller.h"
 #include "chrome/browser/extensions/chrome_extension_web_contents_observer.h"
 #include "chrome/browser/ui/webui/chromeos/first_run/first_run_ui.h"
@@ -16,21 +18,20 @@
 #include "third_party/blink/public/platform/web_input_event.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/views/controls/webview/webview.h"
+#include "ui/views/layout/fill_layout.h"
 #include "url/gurl.h"
 
 namespace chromeos {
 
-FirstRunView::FirstRunView()
-    : web_view_(NULL) {
-}
+FirstRunView::FirstRunView() {}
 
 void FirstRunView::Init(content::BrowserContext* context,
                         FirstRunController* controller) {
   DCHECK(context);
   DCHECK(controller);
   controller_ = controller;
-  web_view_ = new views::WebView(context);
-  AddChildView(web_view_);
+  SetLayoutManager(std::make_unique<views::FillLayout>());
+  web_view_ = AddChildView(std::make_unique<views::WebView>(context));
   web_view_->LoadInitialURL(GURL(chrome::kChromeUIFirstRunURL));
 
   content::WebContents* web_contents = web_view_->web_contents();
@@ -45,10 +46,6 @@ void FirstRunView::Init(content::BrowserContext* context,
 FirstRunActor* FirstRunView::GetActor() {
   return static_cast<FirstRunUI*>(
       web_view_->web_contents()->GetWebUI()->GetController())->get_actor();
-}
-
-void FirstRunView::Layout() {
-  web_view_->SetBoundsRect(bounds());
 }
 
 void FirstRunView::RequestFocus() {
@@ -84,4 +81,3 @@ bool FirstRunView::PreHandleGestureEvent(
 }
 
 }  // namespace chromeos
-

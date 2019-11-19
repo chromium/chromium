@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <string>
 
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
@@ -86,7 +87,7 @@ class InspectUI : public content::WebUIController,
   void PopulateTargets(const std::string& source_id,
                        const base::ListValue& targets);
 
-  void PopulateAdditionalTargets(const base::ListValue& targets);
+  void PopulateAdditionalTargets(const base::Value& targets);
 
   void PopulatePortStatus(const base::Value& status);
 

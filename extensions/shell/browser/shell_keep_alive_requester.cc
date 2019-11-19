@@ -8,14 +8,11 @@
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "extensions/browser/extension_prefs.h"
-#include "extensions/browser/extension_registry.h"
-#include "extensions/browser/extension_registry_observer.h"
 
 namespace extensions {
 
 ShellKeepAliveRequester::ShellKeepAliveRequester(
-    content::BrowserContext* browser_context)
-    : extension_registry_observer_(this), app_lifetime_monitor_observer_(this) {
+    content::BrowserContext* browser_context) {
   extension_registry_observer_.Add(ExtensionRegistry::Get(browser_context));
   app_lifetime_monitor_observer_.Add(
       apps::AppLifetimeMonitorFactory::GetForBrowserContext(browser_context));

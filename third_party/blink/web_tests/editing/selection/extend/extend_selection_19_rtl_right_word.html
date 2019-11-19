@@ -94,13 +94,13 @@ selection_test(
 selection_test(
   `<div contenteditable dir="rtl" style="${kStyle}">\u05D6\u05D7\u05D8 \u1497\u1498\u1499 \u1500\u1501\u1502 \'|\u202Athey said "\u202Bcar \u05D3\u05D4\u05D5 \u05D0\u05D1\u05D2\u202C"\u202C\'?</div>`,
   selection => selection.modify('extend', 'right', 'word'),
-  `<div contenteditable dir="rtl" style="width: 600px; font: 20px monospace">\u05D6\u05D7\u05D8 \u1497\u1498\u1499 |\u1500\u1501\u1502 \'^\u202Athey said "\u202Bcar \u05D3\u05D4\u05D5 \u05D0\u05D1\u05D2\u202C"\u202C\'?</div>`,
+  `<div contenteditable dir="rtl" style="width: 600px; font: 20px monospace">\u05D6\u05D7\u05D8 \u1497\u1498\u1499 \u1500\u1501\u1502 |\'^\u202Athey said "\u202Bcar \u05D3\u05D4\u05D5 \u05D0\u05D1\u05D2\u202C"\u202C\'?</div>`,
   `${behavior} 19-13 rtl right word`);
 
 selection_test(
   `<div contenteditable dir="rtl" style="${kStyle}">\u05D6\u05D7\u05D8 \u1497\u1498\u1499 \u1500\u1501\u1502 \'\u202A|they said "\u202Bcar \u05D3\u05D4\u05D5 \u05D0\u05D1\u05D2\u202C"\u202C\'?</div>`,
   selection => selection.modify('extend', 'right', 'word'),
-  `<div contenteditable dir="rtl" style="width: 600px; font: 20px monospace">\u05D6\u05D7\u05D8 \u1497\u1498\u1499 |\u1500\u1501\u1502 \'\u202A^they said "\u202Bcar \u05D3\u05D4\u05D5 \u05D0\u05D1\u05D2\u202C"\u202C\'?</div>`,
+  `<div contenteditable dir="rtl" style="width: 600px; font: 20px monospace">\u05D6\u05D7\u05D8 \u1497\u1498\u1499 \u1500\u1501\u1502 |\'\u202A^they said "\u202Bcar \u05D3\u05D4\u05D5 \u05D0\u05D1\u05D2\u202C"\u202C\'?</div>`,
   `${behavior} 19-14 rtl right word`);
 
 selection_test(
@@ -166,13 +166,13 @@ selection_test(
 selection_test(
   `<div contenteditable dir="rtl" style="${kStyle}">\u05D6\u05D7\u05D8 \u1497\u1498\u1499 \u1500\u1501\u1502 \'\u202Athey said "|\u202Bcar \u05D3\u05D4\u05D5 \u05D0\u05D1\u05D2\u202C"\u202C\'?</div>`,
   selection => selection.modify('extend', 'right', 'word'),
-  `<div contenteditable dir="rtl" style="width: 600px; font: 20px monospace">\u05D6\u05D7\u05D8 \u1497\u1498\u1499 \u1500\u1501\u1502 \'\u202Athey |said "^\u202Bcar \u05D3\u05D4\u05D5 \u05D0\u05D1\u05D2\u202C"\u202C\'?</div>`,
+  `<div contenteditable dir="rtl" style="width: 600px; font: 20px monospace">\u05D6\u05D7\u05D8 \u1497\u1498\u1499 \u1500\u1501\u1502 \'\u202Athey said |"^\u202Bcar \u05D3\u05D4\u05D5 \u05D0\u05D1\u05D2\u202C"\u202C\'?</div>`,
   `${behavior} 19-25 rtl right word`);
 
 selection_test(
   `<div contenteditable dir="rtl" style="${kStyle}">\u05D6\u05D7\u05D8 \u1497\u1498\u1499 \u1500\u1501\u1502 \'\u202Athey said "\u202B|car \u05D3\u05D4\u05D5 \u05D0\u05D1\u05D2\u202C"\u202C\'?</div>`,
   selection => selection.modify('extend', 'right', 'word'),
-  `<div contenteditable dir="rtl" style="width: 600px; font: 20px monospace">\u05D6\u05D7\u05D8 \u1497\u1498\u1499 \u1500\u1501\u1502 \'\u202Athey |said "\u202B^car \u05D3\u05D4\u05D5 \u05D0\u05D1\u05D2\u202C"\u202C\'?</div>`,
+  `<div contenteditable dir="rtl" style="width: 600px; font: 20px monospace">\u05D6\u05D7\u05D8 \u1497\u1498\u1499 \u1500\u1501\u1502 \'\u202Athey said |"\u202B^car \u05D3\u05D4\u05D5 \u05D0\u05D1\u05D2\u202C"\u202C\'?</div>`,
   `${behavior} 19-26 rtl right word`);
 
 selection_test(
@@ -250,19 +250,19 @@ selection_test(
 selection_test(
   `<div contenteditable dir="rtl" style="${kStyle}">\u05D6\u05D7\u05D8 \u1497\u1498\u1499 \u1500\u1501\u1502 \'\u202Athey said "\u202Bcar \u05D3\u05D4\u05D5 \u05D0\u05D1\u05D2\u202C"|\u202C\'?</div>`,
   selection => selection.modify('extend', 'right', 'word'),
-  `<div contenteditable dir="rtl" style="width: 600px; font: 20px monospace">\u05D6\u05D7\u05D8 \u1497\u1498\u1499 \u1500\u1501\u1502 \'\u202Athey said "\u202Bcar \u05D3\u05D4\u05D5 |\u05D0\u05D1\u05D2\u202C"^\u202C\'?</div>`,
+  `<div contenteditable dir="rtl" style="width: 600px; font: 20px monospace">\u05D6\u05D7\u05D8 \u1497\u1498\u1499 \u1500\u1501\u1502 \'\u202Athey said "\u202Bcar \u05D3\u05D4\u05D5 \u05D0\u05D1\u05D2\u202C|"^\u202C\'?</div>`,
   `${behavior} 19-39 rtl right word`);
 
 selection_test(
   `<div contenteditable dir="rtl" style="${kStyle}">\u05D6\u05D7\u05D8 \u1497\u1498\u1499 \u1500\u1501\u1502 \'\u202Athey said "\u202Bcar \u05D3\u05D4\u05D5 \u05D0\u05D1\u05D2\u202C"\u202C|\'?</div>`,
   selection => selection.modify('extend', 'right', 'word'),
-  `<div contenteditable dir="rtl" style="width: 600px; font: 20px monospace">\u05D6\u05D7\u05D8 \u1497\u1498\u1499 \u1500\u1501\u1502 \'\u202Athey said "\u202Bcar \u05D3\u05D4\u05D5 |\u05D0\u05D1\u05D2\u202C"\u202C^\'?</div>`,
+  `<div contenteditable dir="rtl" style="width: 600px; font: 20px monospace">\u05D6\u05D7\u05D8 \u1497\u1498\u1499 \u1500\u1501\u1502 \'\u202Athey said "\u202Bcar \u05D3\u05D4\u05D5 \u05D0\u05D1\u05D2\u202C|"\u202C^\'?</div>`,
   `${behavior} 19-40 rtl right word`);
 
 selection_test(
   `<div contenteditable dir="rtl" style="${kStyle}">\u05D6\u05D7\u05D8 \u1497\u1498\u1499 \u1500\u1501\u1502 \'\u202Athey said "\u202Bcar \u05D3\u05D4\u05D5 \u05D0\u05D1\u05D2\u202C"\u202C\'|?</div>`,
   selection => selection.modify('extend', 'right', 'word'),
-  `<div contenteditable dir="rtl" style="width: 600px; font: 20px monospace">\u05D6\u05D7\u05D8 \u1497\u1498\u1499 \u1500\u1501\u1502 \'\u202Athey said "\u202Bcar \u05D3\u05D4\u05D5 |\u05D0\u05D1\u05D2\u202C"\u202C\'^?</div>`,
+  `<div contenteditable dir="rtl" style="width: 600px; font: 20px monospace">\u05D6\u05D7\u05D8 \u1497\u1498\u1499 \u1500\u1501\u1502 \'\u202Athey said "\u202Bcar \u05D3\u05D4\u05D5 \u05D0\u05D1\u05D2\u202C|"\u202C\'^?</div>`,
   `${behavior} 19-41 rtl right word`);
 }
 </script>

@@ -60,11 +60,10 @@ class DistillerPageWebContents : public DistillerPage,
 
   // content::WebContentsDelegate implementation.
   gfx::Size GetSizeForNewRenderView(
-      content::WebContents* web_contents) const override;
+      content::WebContents* web_contents) override;
 
   // content::WebContentsObserver implementation.
-  void DocumentLoadedInFrame(
-      content::RenderFrameHost* render_frame_host) override;
+  void DOMContentLoaded(content::RenderFrameHost* render_frame_host) override;
 
   void DidFailLoad(content::RenderFrameHost* render_frame_host,
                    const GURL& validated_url,
@@ -101,7 +100,7 @@ class DistillerPageWebContents : public DistillerPage,
   // Called when the distillation is done or if the page load failed.
   void OnWebContentsDistillationDone(const GURL& page_url,
                                      const base::TimeTicks& javascript_start,
-                                     const base::Value* value);
+                                     base::Value value);
 
   // The current state of the |DistillerPage|, initially |IDLE|.
   State state_;
@@ -113,7 +112,7 @@ class DistillerPageWebContents : public DistillerPage,
 
   content::BrowserContext* browser_context_;
   gfx::Size render_view_size_;
-  base::WeakPtrFactory<DistillerPageWebContents> weak_factory_;
+  base::WeakPtrFactory<DistillerPageWebContents> weak_factory_{this};
   DISALLOW_COPY_AND_ASSIGN(DistillerPageWebContents);
 };
 

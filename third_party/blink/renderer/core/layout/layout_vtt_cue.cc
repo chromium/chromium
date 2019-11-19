@@ -117,31 +117,16 @@ LayoutUnit SnapToLinesLayouter::ComputeInitialPositionAdjustment(
 // are relative to the same coordinate space. If we didn't the (bounding) boxes
 // could be affect by transforms on an ancestor et.c, which could yield
 // incorrect results.
-IntRect ContentBoxRelativeToAncestor(const LayoutBox& box,
-                                     const LayoutBoxModelObject& ancestor) {
-  FloatRect cue_content_box(box.PhysicalContentBoxRect());
+IntRect BorderBoxRelativeToAncestor(const LayoutBox& box,
+                                    const LayoutBoxModelObject& ancestor) {
+  PhysicalRect border_box = box.PhysicalBorderBoxRect();
   // We pass UseTransforms here primarily because we use a transform for
   // non-snap-to-lines positioning (see VTTCue.cpp.)
-  FloatQuad mapped_content_quad =
-      box.LocalToAncestorQuad(cue_content_box, &ancestor, kUseTransforms);
-  return mapped_content_quad.EnclosingBoundingBox();
-}
-
-// Similar to above except uses the full bounding box instead of just the
-// context box (which ignores padding). This is used for the timeline since the
-// timeline is mostly padding.
-IntRect PaddingBoxRelativeToAncestor(const LayoutBox& box,
-                                     const LayoutBoxModelObject& ancestor) {
-  FloatRect cue_content_box(box.PhysicalPaddingBoxRect());
-  // We pass UseTransforms here primarily because we use a transform for
-  // non-snap-to-lines positioning (see VTTCue.cpp.)
-  FloatQuad mapped_content_quad =
-      box.LocalToAncestorQuad(cue_content_box, &ancestor, kUseTransforms);
-  return mapped_content_quad.EnclosingBoundingBox();
+  return EnclosingIntRect(box.LocalToAncestorRect(border_box, &ancestor));
 }
 
 IntRect CueBoundingBox(const LayoutBox& cue_box) {
-  return ContentBoxRelativeToAncestor(cue_box, *cue_box.ContainingBlock());
+  return BorderBoxRelativeToAncestor(cue_box, *cue_box.ContainingBlock());
 }
 
 bool SnapToLinesLayouter::IsOutside(const IntRect& title_area) const {
@@ -236,7 +221,7 @@ void SnapToLinesLayouter::UpdateLayout() {
   // rendering area except for a width of margin at the left of the rendering
   // area and a width of margin at the right of the rendering area.
   IntRect title_area =
-      EnclosingIntRect(cue_box_.ContainingBlock()->PhysicalContentBoxRect());
+      EnclosingIntRect(cue_box_.ContainingBlock()->PhysicalBorderBoxRect());
   if (blink::IsHorizontalWritingMode(writing_mode)) {
     title_area.Move(0, margin.ToInt());
     title_area.Contract(0, (2 * margin).ToInt());
@@ -352,48 +337,26 @@ IntRect LayoutVTTCue::ComputeControlsRect() const {
   if (!controls || !controls->ContainerLayoutObject())
     return IntRect();
 
-  if (RuntimeEnabledFeatures::ModernMediaControlsEnabled()) {
-    // Only a part of the media controls is used for overlap avoidance.
-    // For modern media controls, we avoid both the button panel and the
-    // timeline.
-    LayoutObject* button_panel_layout_object =
-        media_element->GetMediaControls()->ButtonPanelLayoutObject();
-    LayoutObject* timeline_layout_object =
-        media_element->GetMediaControls()->TimelineLayoutObject();
+  // Only a part of the media controls is used for overlap avoidance.
+  LayoutObject* button_panel_layout_object =
+      media_element->GetMediaControls()->ButtonPanelLayoutObject();
+  LayoutObject* timeline_layout_object =
+      media_element->GetMediaControls()->TimelineLayoutObject();
 
-    if (!button_panel_layout_object || !button_panel_layout_object->IsBox() ||
-        !timeline_layout_object || !timeline_layout_object->IsBox()) {
-      return IntRect();
-    }
-
-    IntRect button_panel_box = ContentBoxRelativeToAncestor(
-        ToLayoutBox(*button_panel_layout_object),
-        ToLayoutBox(*controls->ContainerLayoutObject()));
-    IntRect timeline_box = PaddingBoxRelativeToAncestor(
-        ToLayoutBox(*timeline_layout_object),
-        ToLayoutBox(*controls->ContainerLayoutObject()));
-
-    button_panel_box.Unite(timeline_box);
-    return button_panel_box;
+  if (!button_panel_layout_object || !button_panel_layout_object->IsBox() ||
+      !timeline_layout_object || !timeline_layout_object->IsBox()) {
+    return IntRect();
   }
 
-  // Only a part of the media controls is used for overlap avoidance.
-  LayoutObject* panel_layout_object =
-      media_element->GetMediaControls()->PanelLayoutObject();
-
-  // The (second part of the) following is mostly defensive - in general
-  // there should be a LayoutBox representing the part of the controls that
-  // are relevant for overlap avoidance. (The controls pseudo elements are
-  // generally reachable from outside the shadow tree though, hence the
-  // "mostly".)
-  if (!panel_layout_object || !panel_layout_object->IsBox())
-    return IntRect();
-
-  // Assume that the controls container are positioned in the same relative
-  // position as the text track container. (LayoutMedia::layout ensures this.)
-  return ContentBoxRelativeToAncestor(
-      ToLayoutBox(*panel_layout_object),
+  IntRect button_panel_box = BorderBoxRelativeToAncestor(
+      ToLayoutBox(*button_panel_layout_object),
       ToLayoutBox(*controls->ContainerLayoutObject()));
+  IntRect timeline_box = BorderBoxRelativeToAncestor(
+      ToLayoutBox(*timeline_layout_object),
+      ToLayoutBox(*controls->ContainerLayoutObject()));
+
+  button_panel_box.Unite(timeline_box);
+  return button_panel_box;
 }
 
 void LayoutVTTCue::UpdateLayout() {

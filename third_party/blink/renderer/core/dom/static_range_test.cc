@@ -17,7 +17,7 @@
 #include "third_party/blink/renderer/core/html/html_html_element.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
-#include "third_party/blink/renderer/platform/wtf/compiler.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 
 namespace blink {
@@ -33,9 +33,9 @@ class StaticRangeTest : public testing::Test {
 };
 
 void StaticRangeTest::SetUp() {
-  document_ = HTMLDocument::CreateForTest();
-  HTMLHtmlElement* html = HTMLHtmlElement::Create(*document_);
-  html->AppendChild(HTMLBodyElement::Create(*document_));
+  document_ = MakeGarbageCollected<HTMLDocument>();
+  auto* html = MakeGarbageCollected<HTMLHtmlElement>(*document_);
+  html->AppendChild(MakeGarbageCollected<HTMLBodyElement>(*document_));
   document_->AppendChild(html);
 }
 
@@ -46,16 +46,16 @@ HTMLDocument& StaticRangeTest::GetDocument() const {
 TEST_F(StaticRangeTest, SplitTextNodeRangeWithinText) {
   V8TestingScope scope;
   GetDocument().body()->SetInnerHTMLFromString("1234");
-  Text* old_text = ToText(GetDocument().body()->firstChild());
+  auto* old_text = To<Text>(GetDocument().body()->firstChild());
 
-  StaticRange* static_range04 =
-      StaticRange::Create(GetDocument(), old_text, 0u, old_text, 4u);
-  StaticRange* static_range02 =
-      StaticRange::Create(GetDocument(), old_text, 0u, old_text, 2u);
-  StaticRange* static_range22 =
-      StaticRange::Create(GetDocument(), old_text, 2u, old_text, 2u);
-  StaticRange* static_range24 =
-      StaticRange::Create(GetDocument(), old_text, 2u, old_text, 4u);
+  auto* static_range04 = MakeGarbageCollected<StaticRange>(
+      GetDocument(), old_text, 0u, old_text, 4u);
+  auto* static_range02 = MakeGarbageCollected<StaticRange>(
+      GetDocument(), old_text, 0u, old_text, 2u);
+  auto* static_range22 = MakeGarbageCollected<StaticRange>(
+      GetDocument(), old_text, 2u, old_text, 2u);
+  auto* static_range24 = MakeGarbageCollected<StaticRange>(
+      GetDocument(), old_text, 2u, old_text, 4u);
 
   Range* range04 = static_range04->toRange(ASSERT_NO_EXCEPTION);
   Range* range02 = static_range02->toRange(ASSERT_NO_EXCEPTION);
@@ -63,7 +63,7 @@ TEST_F(StaticRangeTest, SplitTextNodeRangeWithinText) {
   Range* range24 = static_range24->toRange(ASSERT_NO_EXCEPTION);
 
   old_text->splitText(2, ASSERT_NO_EXCEPTION);
-  Text* new_text = ToText(old_text->nextSibling());
+  auto* new_text = To<Text>(old_text->nextSibling());
 
   // Range should mutate.
   EXPECT_TRUE(range04->BoundaryPointsValid());
@@ -126,20 +126,20 @@ TEST_F(StaticRangeTest, SplitTextNodeRangeOutsideText) {
       GetDocument().getElementById(AtomicString::FromUTF8("inner-left"));
   Element* inner_right =
       GetDocument().getElementById(AtomicString::FromUTF8("inner-right"));
-  Text* old_text = ToText(outer->childNodes()->item(2));
+  auto* old_text = To<Text>(outer->childNodes()->item(2));
 
-  StaticRange* static_range_outer_outside =
-      StaticRange::Create(GetDocument(), outer, 0u, outer, 5u);
-  StaticRange* static_range_outer_inside =
-      StaticRange::Create(GetDocument(), outer, 1u, outer, 4u);
-  StaticRange* static_range_outer_surrounding_text =
-      StaticRange::Create(GetDocument(), outer, 2u, outer, 3u);
-  StaticRange* static_range_inner_left =
-      StaticRange::Create(GetDocument(), inner_left, 0u, inner_left, 1u);
-  StaticRange* static_range_inner_right =
-      StaticRange::Create(GetDocument(), inner_right, 0u, inner_right, 1u);
-  StaticRange* static_range_from_text_to_middle_of_element =
-      StaticRange::Create(GetDocument(), old_text, 6u, outer, 3u);
+  auto* static_range_outer_outside =
+      MakeGarbageCollected<StaticRange>(GetDocument(), outer, 0u, outer, 5u);
+  auto* static_range_outer_inside =
+      MakeGarbageCollected<StaticRange>(GetDocument(), outer, 1u, outer, 4u);
+  auto* static_range_outer_surrounding_text =
+      MakeGarbageCollected<StaticRange>(GetDocument(), outer, 2u, outer, 3u);
+  auto* static_range_inner_left = MakeGarbageCollected<StaticRange>(
+      GetDocument(), inner_left, 0u, inner_left, 1u);
+  auto* static_range_inner_right = MakeGarbageCollected<StaticRange>(
+      GetDocument(), inner_right, 0u, inner_right, 1u);
+  auto* static_range_from_text_to_middle_of_element =
+      MakeGarbageCollected<StaticRange>(GetDocument(), old_text, 6u, outer, 3u);
 
   Range* range_outer_outside =
       static_range_outer_outside->toRange(ASSERT_NO_EXCEPTION);
@@ -155,7 +155,7 @@ TEST_F(StaticRangeTest, SplitTextNodeRangeOutsideText) {
       static_range_from_text_to_middle_of_element->toRange(ASSERT_NO_EXCEPTION);
 
   old_text->splitText(3, ASSERT_NO_EXCEPTION);
-  Text* new_text = ToText(old_text->nextSibling());
+  auto* new_text = To<Text>(old_text->nextSibling());
 
   // Range should mutate.
   EXPECT_TRUE(range_outer_outside->BoundaryPointsValid());
@@ -232,10 +232,10 @@ TEST_F(StaticRangeTest, SplitTextNodeRangeOutsideText) {
 TEST_F(StaticRangeTest, InvalidToRange) {
   V8TestingScope scope;
   GetDocument().body()->SetInnerHTMLFromString("1234");
-  Text* old_text = ToText(GetDocument().body()->firstChild());
+  auto* old_text = To<Text>(GetDocument().body()->firstChild());
 
-  StaticRange* static_range04 =
-      StaticRange::Create(GetDocument(), old_text, 0u, old_text, 4u);
+  auto* static_range04 = MakeGarbageCollected<StaticRange>(
+      GetDocument(), old_text, 0u, old_text, 4u);
 
   // Valid StaticRange.
   static_range04->toRange(ASSERT_NO_EXCEPTION);

@@ -59,24 +59,23 @@ void FetchParameters::SetCrossOriginAccessControl(
       NOTREACHED();
       break;
     case kCrossOriginAttributeAnonymous:
-      SetCrossOriginAccessControl(
-          origin, network::mojom::FetchCredentialsMode::kSameOrigin);
+      SetCrossOriginAccessControl(origin,
+                                  network::mojom::CredentialsMode::kSameOrigin);
       break;
     case kCrossOriginAttributeUseCredentials:
-      SetCrossOriginAccessControl(
-          origin, network::mojom::FetchCredentialsMode::kInclude);
+      SetCrossOriginAccessControl(origin,
+                                  network::mojom::CredentialsMode::kInclude);
       break;
   }
 }
 
 void FetchParameters::SetCrossOriginAccessControl(
     const SecurityOrigin* origin,
-    network::mojom::FetchCredentialsMode credentials_mode) {
+    network::mojom::CredentialsMode credentials_mode) {
   // Currently FetchParametersMode is only used when the request goes to
   // Service Worker.
-  resource_request_.SetFetchRequestMode(
-      network::mojom::FetchRequestMode::kCors);
-  resource_request_.SetFetchCredentialsMode(credentials_mode);
+  resource_request_.SetMode(network::mojom::RequestMode::kCors);
+  resource_request_.SetCredentialsMode(credentials_mode);
 
   resource_request_.SetRequestorOrigin(origin);
 
@@ -95,8 +94,7 @@ void FetchParameters::SetResourceWidth(ResourceWidth resource_width) {
 }
 
 void FetchParameters::SetSpeculativePreloadType(
-    SpeculativePreloadType speculative_preload_type,
-    double discovery_time) {
+    SpeculativePreloadType speculative_preload_type) {
   speculative_preload_type_ = speculative_preload_type;
 }
 
@@ -109,12 +107,6 @@ void FetchParameters::MakeSynchronous() {
   if (IsMainThread())
     resource_request_.SetSkipServiceWorker(true);
   options_.synchronous_policy = kRequestSynchronously;
-}
-
-void FetchParameters::SetClientLoFiPlaceholder() {
-  resource_request_.SetPreviewsState(resource_request_.GetPreviewsState() |
-                                     WebURLRequest::kClientLoFiOn);
-  SetAllowImagePlaceholder();
 }
 
 void FetchParameters::SetLazyImagePlaceholder() {
@@ -130,15 +122,21 @@ void FetchParameters::SetLazyImageDeferred() {
   image_request_optimization_ = kDeferImageLoad;
 }
 
+void FetchParameters::SetLazyImageAutoReload() {
+  resource_request_.SetPreviewsState(resource_request_.GetPreviewsState() |
+                                     WebURLRequest::kLazyImageAutoReload);
+}
+
 void FetchParameters::SetAllowImagePlaceholder() {
   DCHECK_EQ(kNone, image_request_optimization_);
   if (!resource_request_.Url().ProtocolIsInHTTPFamily() ||
       resource_request_.HttpMethod() != "GET" ||
       !resource_request_.HttpHeaderField("range").IsNull()) {
-    // Make sure that the request isn't marked as using Client Lo-Fi, since
-    // without loading an image placeholder, Client Lo-Fi isn't really in use.
+    // Make sure that the request isn't marked as using an image preview type,
+    // since without loading an image placeholder, Client Lo-Fi isn't really
+    // in use.
     resource_request_.SetPreviewsState(resource_request_.GetPreviewsState() &
-                                       ~(WebURLRequest::kClientLoFiOn));
+                                       ~WebURLRequest::kLazyImageLoadDeferred);
     return;
   }
 
@@ -148,7 +146,7 @@ void FetchParameters::SetAllowImagePlaceholder() {
   // likely capture the entire image for small images and (b) likely contain
   // the dimensions for larger images.
   // TODO(sclittle): Calculate the optimal value for this number.
-  resource_request_.SetHTTPHeaderField("range", "bytes=0-2047");
+  resource_request_.SetHttpHeaderField("range", "bytes=0-2047");
 
   // TODO(sclittle): Indicate somehow (e.g. through a new request bit) to the
   // embedder that it should return the full resource if the entire resource is

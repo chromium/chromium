@@ -48,12 +48,12 @@ class TestInkDropRippleObserver
   // The value of InkDropRipple::GetTargetInkDropState() the last time an
   // AnimationStarted() event was handled. This is only valid if
   // |ink_drop_ripple_| is not null.
-  InkDropState target_state_at_last_animation_started_;
+  InkDropState target_state_at_last_animation_started_ = InkDropState::HIDDEN;
 
   // The value of InkDropRipple::GetTargetInkDropState() the last time an
   // AnimationEnded() event was handled. This is only valid if
   // |ink_drop_ripple_| is not null.
-  InkDropState target_state_at_last_animation_ended_;
+  InkDropState target_state_at_last_animation_ended_ = InkDropState::HIDDEN;
 
   // An InkDropRipple to spy info from when notifications are handled.
   InkDropRipple* ink_drop_ripple_;

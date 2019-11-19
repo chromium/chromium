@@ -20,12 +20,12 @@
 #import "ios/chrome/browser/web_state_list/web_state_list_observer.h"
 #include "ios/chrome/grit/ios_resources.h"
 #include "ios/chrome/grit/ios_strings.h"
-#include "ios/web/public/web_state/web_frame.h"
-#include "ios/web/public/web_state/web_frame_util.h"
-#import "ios/web/public/web_state/web_frames_manager.h"
-#import "ios/web/public/web_state/web_state.h"
-#include "ios/web/public/web_ui_ios_data_source.h"
+#include "ios/web/public/js_messaging/web_frame.h"
+#include "ios/web/public/js_messaging/web_frame_util.h"
+#import "ios/web/public/js_messaging/web_frames_manager.h"
+#import "ios/web/public/web_state.h"
 #include "ios/web/public/webui/web_ui_ios.h"
+#include "ios/web/public/webui/web_ui_ios_data_source.h"
 #include "ios/web/public/webui/web_ui_ios_message_handler.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -61,10 +61,9 @@ web::WebUIIOSDataSource* CreateInspectUIHTMLSource() {
                              IDS_IOS_INSPECT_UI_CONSOLE_START_LOGGING);
   source->AddLocalizedString("inspectConsoleStopLogging",
                              IDS_IOS_INSPECT_UI_CONSOLE_STOP_LOGGING);
-  source->SetJsonPath("strings.js");
+  source->UseStringsJs();
   source->AddResourcePath("inspect.js", IDR_IOS_INSPECT_JS);
   source->SetDefaultResource(IDR_IOS_INSPECT_HTML);
-  source->UseGzip();
   return source;
 }
 
@@ -187,7 +186,7 @@ void InspectDOMHandler::DidReceiveConsoleMessage(
     web::WebFrame* sender_frame,
     const JavaScriptConsoleMessage& message) {
   web::WebFrame* inspect_ui_main_frame =
-      web::GetMainWebFrame(web_ui()->GetWebState());
+      web_ui()->GetWebState()->GetWebFramesManager()->GetMainWebFrame();
   if (!inspect_ui_main_frame) {
     // Disable logging and drop this message because the main frame no longer
     // exists.
@@ -196,7 +195,8 @@ void InspectDOMHandler::DidReceiveConsoleMessage(
   }
 
   std::vector<base::Value> params;
-  web::WebFrame* main_web_frame = web::GetMainWebFrame(web_state);
+  web::WebFrame* main_web_frame =
+      web_state->GetWebFramesManager()->GetMainWebFrame();
   params.push_back(base::Value(main_web_frame->GetFrameId()));
   params.push_back(base::Value(sender_frame->GetFrameId()));
   params.push_back(base::Value(message.url.spec()));
@@ -246,7 +246,10 @@ void InspectDOMHandler::WillCloseWebStateAt(WebStateList* web_state_list,
   std::vector<base::Value> params;
   params.push_back(base::Value(web::GetMainWebFrameId(web_state)));
 
-  web::GetMainWebFrame(web_ui()->GetWebState())
+  web_ui()
+      ->GetWebState()
+      ->GetWebFramesManager()
+      ->GetMainWebFrame()
       ->CallJavaScriptFunction("inspectWebUI.tabClosed", params);
 }
 

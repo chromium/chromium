@@ -86,5 +86,15 @@
 
   await session.evaluateAsync(`fetch("/devtools/network/resources/resource.php").then(r => r.text())`);
 
+  testRunner.log('-- failing request from client 3');
+
+  dp3.Network.onceRequestIntercepted().then(event => {
+    const params = event.params;
+    testRunner.log(`client 3: failing request from ${params.request.url}`);
+    dp3.Network.continueInterceptedRequest({interceptionId: params.interceptionId, errorReason: "Aborted"});
+  });
+
+  await session.evaluateAsync(`fetch("/devtools/network/resources/resource.php").then(r => r.text())`);
+
   testRunner.completeTest();
 })

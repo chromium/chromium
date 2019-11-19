@@ -30,7 +30,7 @@ void VerifyRemoveNow(const base::FilePath& path,
       path, base::BindOnce(&SaveBoolValueCallback, run_loop.QuitClosure(),
                            &returned_result));
   run_loop.Run();
-  EXPECT_EQ(expected_result, returned_result);
+  EXPECT_EQ(expected_result, returned_result) << path;
 }
 
 void VerifyRegisterPostRebootRemoval(const base::FilePath& path,
@@ -42,7 +42,7 @@ void VerifyRegisterPostRebootRemoval(const base::FilePath& path,
       path, base::BindOnce(&SaveBoolValueCallback, run_loop.QuitClosure(),
                            &returned_result));
   run_loop.Run();
-  EXPECT_EQ(expected_result, returned_result);
+  EXPECT_EQ(expected_result, returned_result) << path;
 }
 
 }  // namespace

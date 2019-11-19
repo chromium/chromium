@@ -10,8 +10,9 @@
 #include <utility>
 
 #include "base/files/platform_file.h"
-#include "base/message_loop/message_loop.h"
+#include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/gpu_fence.h"
 #include "ui/ozone/common/gpu/ozone_gpu_message_params.h"
 #include "ui/ozone/common/linux/drm_util_linux.h"
@@ -30,8 +31,8 @@
 namespace {
 
 // Mode of size 6x4.
-const drmModeModeInfo kDefaultMode =
-    {0, 6, 0, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, {'\0'}};
+const drmModeModeInfo kDefaultMode = {0, 6, 0, 0, 0, 0, 4,     0,
+                                      0, 0, 0, 0, 0, 0, {'\0'}};
 
 const gfx::AcceleratedWidget kDefaultWidgetHandle = 1;
 constexpr uint32_t kCrtcIdBase = 1;
@@ -61,7 +62,7 @@ class DrmOverlayValidatorTest : public testing::Test {
     return nullptr;
   }
 
-  void AddPlane(const ui::OverlayCheck_Params& params);
+  void AddPlane(const ui::OverlaySurfaceCandidate& params);
 
   scoped_refptr<ui::DrmFramebuffer> CreateBuffer() {
     auto gbm_buffer = drm_->gbm_device()->CreateBuffer(
@@ -87,14 +88,15 @@ class DrmOverlayValidatorTest : public testing::Test {
 
   void InitializeDrmState(const std::vector<CrtcState>& crtc_states);
 
-  std::unique_ptr<base::MessageLoop> message_loop_;
+  base::test::SingleThreadTaskEnvironment task_environment_{
+      base::test::SingleThreadTaskEnvironment::MainThreadType::UI};
   scoped_refptr<ui::MockDrmDevice> drm_;
   ui::MockGbmDevice* gbm_ = nullptr;
   std::unique_ptr<ui::ScreenManager> screen_manager_;
   std::unique_ptr<ui::DrmDeviceManager> drm_device_manager_;
   ui::DrmWindow* window_;
   std::unique_ptr<ui::DrmOverlayValidator> overlay_validator_;
-  std::vector<ui::OverlayCheck_Params> overlay_params_;
+  std::vector<ui::OverlaySurfaceCandidate> overlay_params_;
   ui::DrmOverlayPlaneList plane_list_;
 
   int on_swap_buffers_count_;
@@ -110,7 +112,6 @@ void DrmOverlayValidatorTest::SetUp() {
   on_swap_buffers_count_ = 0;
   last_swap_buffers_result_ = gfx::SwapResult::SWAP_FAILED;
 
-  message_loop_.reset(new base::MessageLoopForUI);
   auto gbm = std::make_unique<ui::MockGbmDevice>();
   gbm_ = gbm.get();
   drm_ = new ui::MockDrmDevice(std::move(gbm));
@@ -120,12 +121,12 @@ void DrmOverlayValidatorTest::SetUp() {
   }};
   InitializeDrmState({crtc_state});
 
-  screen_manager_.reset(new ui::ScreenManager());
+  screen_manager_ = std::make_unique<ui::ScreenManager>();
   screen_manager_->AddDisplayController(drm_, kCrtcIdBase, kConnectorIdBase);
   screen_manager_->ConfigureDisplayController(
       drm_, kCrtcIdBase, kConnectorIdBase, gfx::Point(), kDefaultMode);
 
-  drm_device_manager_.reset(new ui::DrmDeviceManager(nullptr));
+  drm_device_manager_ = std::make_unique<ui::DrmDeviceManager>(nullptr);
 
   std::unique_ptr<ui::DrmWindow> window(new ui::DrmWindow(
       kDefaultWidgetHandle, drm_device_manager_.get(), screen_manager_.get()));
@@ -134,25 +135,29 @@ void DrmOverlayValidatorTest::SetUp() {
       gfx::Rect(gfx::Size(kDefaultMode.hdisplay, kDefaultMode.vdisplay)));
   screen_manager_->AddWindow(kDefaultWidgetHandle, std::move(window));
   window_ = screen_manager_->GetWindow(kDefaultWidgetHandle);
-  overlay_validator_.reset(new ui::DrmOverlayValidator(window_));
+  overlay_validator_ = std::make_unique<ui::DrmOverlayValidator>(window_);
 
   overlay_rect_ =
       gfx::Rect(0, 0, kDefaultMode.hdisplay / 2, kDefaultMode.vdisplay / 2);
 
   primary_rect_ = gfx::Rect(0, 0, kDefaultMode.hdisplay, kDefaultMode.vdisplay);
 
-  ui::OverlayCheck_Params primary_candidate;
+  ui::OverlaySurfaceCandidate primary_candidate;
   primary_candidate.buffer_size = primary_rect_.size();
-  primary_candidate.display_rect = primary_rect_;
+  primary_candidate.display_rect = gfx::RectF(primary_rect_);
+  primary_candidate.is_opaque = true;
   primary_candidate.format = gfx::BufferFormat::BGRX_8888;
+  primary_candidate.overlay_handled = true;
   overlay_params_.push_back(primary_candidate);
   AddPlane(primary_candidate);
 
-  ui::OverlayCheck_Params overlay_candidate;
+  ui::OverlaySurfaceCandidate overlay_candidate;
   overlay_candidate.buffer_size = overlay_rect_.size();
-  overlay_candidate.display_rect = overlay_rect_;
+  overlay_candidate.display_rect = gfx::RectF(overlay_rect_);
   overlay_candidate.plane_z_order = 1;
+  primary_candidate.is_opaque = true;
   overlay_candidate.format = gfx::BufferFormat::BGRX_8888;
+  overlay_candidate.overlay_handled = true;
   overlay_params_.push_back(overlay_candidate);
   AddPlane(overlay_candidate);
 }
@@ -218,21 +223,22 @@ void DrmOverlayValidatorTest::InitializeDrmState(
                         /* use_atomic= */ true);
 }
 
-void DrmOverlayValidatorTest::AddPlane(const ui::OverlayCheck_Params& params) {
+void DrmOverlayValidatorTest::AddPlane(
+    const ui::OverlaySurfaceCandidate& params) {
   scoped_refptr<ui::DrmDevice> drm = window_->GetController()->GetDrmDevice();
 
   scoped_refptr<ui::DrmFramebuffer> drm_framebuffer = CreateOverlayBuffer(
       ui::GetFourCCFormatFromBufferFormat(params.format), params.buffer_size);
   plane_list_.push_back(ui::DrmOverlayPlane(
       std::move(drm_framebuffer), params.plane_z_order, params.transform,
-      params.display_rect, params.crop_rect, true, nullptr));
+      gfx::ToNearestRect(params.display_rect), params.crop_rect, true,
+      nullptr));
 }
 
 void DrmOverlayValidatorTest::TearDown() {
   std::unique_ptr<ui::DrmWindow> window =
       screen_manager_->RemoveWindow(kDefaultWidgetHandle);
   window->Shutdown();
-  message_loop_.reset();
 }
 
 TEST_F(DrmOverlayValidatorTest, WindowWithNoController) {
@@ -240,59 +246,55 @@ TEST_F(DrmOverlayValidatorTest, WindowWithNoController) {
   // present.
   ui::HardwareDisplayController* controller = window_->GetController();
   window_->SetController(nullptr);
-  std::vector<ui::OverlayCheckReturn_Params> returns =
-      overlay_validator_->TestPageFlip(overlay_params_,
-                                       ui::DrmOverlayPlaneList());
-  EXPECT_EQ(returns.front().status, ui::OVERLAY_STATUS_NOT);
-  EXPECT_EQ(returns.back().status, ui::OVERLAY_STATUS_NOT);
+  std::vector<ui::OverlayStatus> returns = overlay_validator_->TestPageFlip(
+      overlay_params_, ui::DrmOverlayPlaneList());
+  EXPECT_EQ(returns.front(), ui::OVERLAY_STATUS_NOT);
+  EXPECT_EQ(returns.back(), ui::OVERLAY_STATUS_NOT);
   window_->SetController(controller);
 }
 
 TEST_F(DrmOverlayValidatorTest, DontPromoteMoreLayersThanAvailablePlanes) {
-  std::vector<ui::OverlayCheckReturn_Params> returns =
-      overlay_validator_->TestPageFlip(overlay_params_,
-                                       ui::DrmOverlayPlaneList());
-  EXPECT_EQ(returns.front().status, ui::OVERLAY_STATUS_ABLE);
-  EXPECT_EQ(returns.back().status, ui::OVERLAY_STATUS_NOT);
+  std::vector<ui::OverlayStatus> returns = overlay_validator_->TestPageFlip(
+      overlay_params_, ui::DrmOverlayPlaneList());
+  EXPECT_EQ(returns.front(), ui::OVERLAY_STATUS_ABLE);
+  EXPECT_EQ(returns.back(), ui::OVERLAY_STATUS_NOT);
 }
 
 TEST_F(DrmOverlayValidatorTest, DontCollapseOverlayToPrimaryInFullScreen) {
   // Overlay Validator should not collapse planes during validation.
   overlay_params_.back().buffer_size = primary_rect_.size();
-  overlay_params_.back().display_rect = primary_rect_;
+  overlay_params_.back().display_rect = gfx::RectF(primary_rect_);
   plane_list_.back().display_bounds = primary_rect_;
 
-  std::vector<ui::OverlayCheckReturn_Params> returns =
-      overlay_validator_->TestPageFlip(overlay_params_,
-                                       ui::DrmOverlayPlaneList());
+  std::vector<ui::OverlayStatus> returns = overlay_validator_->TestPageFlip(
+      overlay_params_, ui::DrmOverlayPlaneList());
   // Second candidate should be marked as Invalid as we have only one plane
   // per CRTC.
-  EXPECT_EQ(returns.front().status, ui::OVERLAY_STATUS_ABLE);
-  EXPECT_EQ(returns.back().status, ui::OVERLAY_STATUS_NOT);
+  EXPECT_EQ(returns.front(), ui::OVERLAY_STATUS_ABLE);
+  EXPECT_EQ(returns.back(), ui::OVERLAY_STATUS_NOT);
 }
 
 TEST_F(DrmOverlayValidatorTest, OverlayFormat_XRGB) {
   // This test checks for optimal format in case of non full screen video case.
   // This should be XRGB when overlay doesn't support YUV.
   overlay_params_.back().buffer_size = overlay_rect_.size();
-  overlay_params_.back().display_rect = overlay_rect_;
+  overlay_params_.back().display_rect = gfx::RectF(overlay_rect_);
   plane_list_.back().display_bounds = overlay_rect_;
 
   CrtcState state = {
       /*  .planes = */
       {
-          {/* .formats = */ {DRM_FORMAT_XRGB8888, DRM_FORMAT_UYVY}},
+          {/* .formats = */ {DRM_FORMAT_XRGB8888, DRM_FORMAT_NV12}},
           {/* .formats = */ {DRM_FORMAT_XRGB8888}},
       },
   };
   InitializeDrmState(std::vector<CrtcState>(1, state));
 
-  std::vector<ui::OverlayCheckReturn_Params> returns =
-      overlay_validator_->TestPageFlip(overlay_params_,
-                                       ui::DrmOverlayPlaneList());
+  std::vector<ui::OverlayStatus> returns = overlay_validator_->TestPageFlip(
+      overlay_params_, ui::DrmOverlayPlaneList());
   EXPECT_EQ(2u, returns.size());
   for (const auto& param : returns)
-    EXPECT_EQ(param.status, ui::OVERLAY_STATUS_ABLE);
+    EXPECT_EQ(param, ui::OVERLAY_STATUS_ABLE);
 }
 
 TEST_F(DrmOverlayValidatorTest, OverlayFormat_YUV) {
@@ -301,9 +303,10 @@ TEST_F(DrmOverlayValidatorTest, OverlayFormat_YUV) {
   // needed.
   gfx::RectF crop_rect = gfx::RectF(0, 0, 0.5, 0.5);
   overlay_params_.back().buffer_size = overlay_rect_.size();
-  overlay_params_.back().display_rect = overlay_rect_;
+  overlay_params_.back().display_rect = gfx::RectF(overlay_rect_);
   overlay_params_.back().crop_rect = crop_rect;
-  overlay_params_.back().format = gfx::BufferFormat::UYVY_422;
+  overlay_params_.back().is_opaque = false;
+  overlay_params_.back().format = gfx::BufferFormat::YUV_420_BIPLANAR;
   plane_list_.pop_back();
   AddPlane(overlay_params_.back());
 
@@ -311,25 +314,24 @@ TEST_F(DrmOverlayValidatorTest, OverlayFormat_YUV) {
       /* .planes = */
       {
           {/* .formats = */ {DRM_FORMAT_XRGB8888}},
-          {/* .formats = */ {DRM_FORMAT_XRGB8888, DRM_FORMAT_UYVY}},
+          {/* .formats = */ {DRM_FORMAT_XRGB8888, DRM_FORMAT_NV12}},
       },
   };
   InitializeDrmState(std::vector<CrtcState>(1, state));
 
-  std::vector<ui::OverlayCheckReturn_Params> returns =
-      overlay_validator_->TestPageFlip(overlay_params_,
-                                       ui::DrmOverlayPlaneList());
+  std::vector<ui::OverlayStatus> returns = overlay_validator_->TestPageFlip(
+      overlay_params_, ui::DrmOverlayPlaneList());
   EXPECT_EQ(2u, returns.size());
   for (const auto& param : returns)
-    EXPECT_EQ(param.status, ui::OVERLAY_STATUS_ABLE);
+    EXPECT_EQ(param, ui::OVERLAY_STATUS_ABLE);
 }
 
 TEST_F(DrmOverlayValidatorTest, RejectYUVBuffersIfNotSupported) {
-  // Check case where buffer storage format is already UYVY but planes dont
+  // Check case where buffer storage format is already YUV 420 but planes don't
   // support it.
   overlay_params_.back().buffer_size = overlay_rect_.size();
-  overlay_params_.back().display_rect = overlay_rect_;
-  overlay_params_.back().format = gfx::BufferFormat::UYVY_422;
+  overlay_params_.back().display_rect = gfx::RectF(overlay_rect_);
+  overlay_params_.back().format = gfx::BufferFormat::YUV_420_BIPLANAR;
   plane_list_.pop_back();
   AddPlane(overlay_params_.back());
 
@@ -342,12 +344,11 @@ TEST_F(DrmOverlayValidatorTest, RejectYUVBuffersIfNotSupported) {
   };
   InitializeDrmState(std::vector<CrtcState>(1, state));
 
-  std::vector<ui::OverlayCheck_Params> validated_params = overlay_params_;
-  std::vector<ui::OverlayCheckReturn_Params> returns =
-      overlay_validator_->TestPageFlip(validated_params,
-                                       ui::DrmOverlayPlaneList());
+  std::vector<ui::OverlaySurfaceCandidate> validated_params = overlay_params_;
+  std::vector<ui::OverlayStatus> returns = overlay_validator_->TestPageFlip(
+      validated_params, ui::DrmOverlayPlaneList());
   EXPECT_EQ(2u, returns.size());
-  EXPECT_EQ(returns.back().status, ui::OVERLAY_STATUS_NOT);
+  EXPECT_EQ(returns.back(), ui::OVERLAY_STATUS_NOT);
 }
 
 TEST_F(DrmOverlayValidatorTest,
@@ -357,14 +358,14 @@ TEST_F(DrmOverlayValidatorTest,
           /* .planes = */
           {
               {/* .formats = */ {DRM_FORMAT_XRGB8888}},
-              {/* .formats = */ {DRM_FORMAT_XRGB8888, DRM_FORMAT_UYVY}},
+              {/* .formats = */ {DRM_FORMAT_XRGB8888, DRM_FORMAT_NV12}},
           },
       },
       {
           /* .planes = */
           {
               {/* .formats = */ {DRM_FORMAT_XRGB8888}},
-              {/* .formats = */ {DRM_FORMAT_XRGB8888, DRM_FORMAT_UYVY}},
+              {/* .formats = */ {DRM_FORMAT_XRGB8888, DRM_FORMAT_NV12}},
           },
       },
   };
@@ -380,21 +381,20 @@ TEST_F(DrmOverlayValidatorTest,
 
   gfx::RectF crop_rect = gfx::RectF(0, 0, 0.5, 0.5);
   overlay_params_.back().buffer_size = overlay_rect_.size();
-  overlay_params_.back().display_rect = overlay_rect_;
+  overlay_params_.back().display_rect = gfx::RectF(overlay_rect_);
   overlay_params_.back().crop_rect = crop_rect;
   plane_list_.back().display_bounds = overlay_rect_;
   plane_list_.back().crop_rect = crop_rect;
 
-  std::vector<ui::OverlayCheck_Params> validated_params = overlay_params_;
-  validated_params.back().format = gfx::BufferFormat::UYVY_422;
-  std::vector<ui::OverlayCheckReturn_Params> returns =
-      overlay_validator_->TestPageFlip(validated_params,
-                                       ui::DrmOverlayPlaneList());
+  std::vector<ui::OverlaySurfaceCandidate> validated_params = overlay_params_;
+  validated_params.back().format = gfx::BufferFormat::YUV_420_BIPLANAR;
+  std::vector<ui::OverlayStatus> returns = overlay_validator_->TestPageFlip(
+      validated_params, ui::DrmOverlayPlaneList());
   EXPECT_EQ(2u, returns.size());
-  EXPECT_EQ(returns.back().status, ui::OVERLAY_STATUS_ABLE);
+  EXPECT_EQ(returns.back(), ui::OVERLAY_STATUS_ABLE);
 
   // This configuration should not be promoted to Overlay when either of the
-  // controllers dont support UYVY format.
+  // controllers don't support YUV 420 format.
 
   // Check case where we dont have support for packed formats in Mirrored CRTC.
   crtc_states[1].planes[1].formats = {DRM_FORMAT_XRGB8888};
@@ -403,18 +403,18 @@ TEST_F(DrmOverlayValidatorTest,
   returns = overlay_validator_->TestPageFlip(validated_params,
                                              ui::DrmOverlayPlaneList());
   EXPECT_EQ(2u, returns.size());
-  EXPECT_EQ(returns.back().status, ui::OVERLAY_STATUS_NOT);
+  EXPECT_EQ(returns.back(), ui::OVERLAY_STATUS_NOT);
 
   // Check case where we dont have support for packed formats in primary
   // display.
   crtc_states[0].planes[1].formats = {DRM_FORMAT_XRGB8888};
-  crtc_states[1].planes[1].formats = {DRM_FORMAT_XRGB8888, DRM_FORMAT_UYVY};
+  crtc_states[1].planes[1].formats = {DRM_FORMAT_XRGB8888, DRM_FORMAT_NV12};
   InitializeDrmState(crtc_states);
 
   returns = overlay_validator_->TestPageFlip(validated_params,
                                              ui::DrmOverlayPlaneList());
   EXPECT_EQ(2u, returns.size());
-  EXPECT_EQ(returns.back().status, ui::OVERLAY_STATUS_NOT);
+  EXPECT_EQ(returns.back(), ui::OVERLAY_STATUS_NOT);
   controller->RemoveCrtc(drm_, kCrtcIdBase + 1);
 }
 
@@ -424,14 +424,14 @@ TEST_F(DrmOverlayValidatorTest, OptimalFormatXRGB_MirroredControllers) {
           /* .planes = */
           {
               {/* .formats = */ {DRM_FORMAT_XRGB8888}},
-              {/* .formats = */ {DRM_FORMAT_XRGB8888, DRM_FORMAT_UYVY}},
+              {/* .formats = */ {DRM_FORMAT_XRGB8888, DRM_FORMAT_NV12}},
           },
       },
       {
           /* .planes = */
           {
               {/* .formats = */ {DRM_FORMAT_XRGB8888}},
-              {/* .formats = */ {DRM_FORMAT_XRGB8888, DRM_FORMAT_UYVY}},
+              {/* .formats = */ {DRM_FORMAT_XRGB8888, DRM_FORMAT_NV12}},
           },
       },
   };
@@ -445,14 +445,13 @@ TEST_F(DrmOverlayValidatorTest, OptimalFormatXRGB_MirroredControllers) {
   EXPECT_TRUE(controller->Modeset(plane1, kDefaultMode));
 
   overlay_params_.back().buffer_size = overlay_rect_.size();
-  overlay_params_.back().display_rect = overlay_rect_;
+  overlay_params_.back().display_rect = gfx::RectF(overlay_rect_);
   plane_list_.back().display_bounds = overlay_rect_;
 
-  std::vector<ui::OverlayCheckReturn_Params> returns =
-      overlay_validator_->TestPageFlip(overlay_params_,
-                                       ui::DrmOverlayPlaneList());
+  std::vector<ui::OverlayStatus> returns = overlay_validator_->TestPageFlip(
+      overlay_params_, ui::DrmOverlayPlaneList());
   EXPECT_EQ(2u, returns.size());
-  EXPECT_EQ(returns.back().status, ui::OVERLAY_STATUS_ABLE);
+  EXPECT_EQ(returns.back(), ui::OVERLAY_STATUS_ABLE);
 
   // Check case where we dont have support for packed formats in Mirrored CRTC.
   crtc_states[1].planes[1].formats = {DRM_FORMAT_XRGB8888};
@@ -460,18 +459,18 @@ TEST_F(DrmOverlayValidatorTest, OptimalFormatXRGB_MirroredControllers) {
 
   returns = overlay_validator_->TestPageFlip(overlay_params_,
                                              ui::DrmOverlayPlaneList());
-  EXPECT_EQ(returns.back().status, ui::OVERLAY_STATUS_ABLE);
+  EXPECT_EQ(returns.back(), ui::OVERLAY_STATUS_ABLE);
 
   // Check case where we dont have support for packed formats in primary
   // display.
   crtc_states[0].planes[1].formats = {DRM_FORMAT_XRGB8888};
-  crtc_states[1].planes[1].formats = {DRM_FORMAT_XRGB8888, DRM_FORMAT_UYVY};
+  crtc_states[1].planes[1].formats = {DRM_FORMAT_XRGB8888, DRM_FORMAT_NV12};
   InitializeDrmState(crtc_states);
 
   returns = overlay_validator_->TestPageFlip(overlay_params_,
                                              ui::DrmOverlayPlaneList());
   EXPECT_EQ(2u, returns.size());
-  EXPECT_EQ(returns.back().status, ui::OVERLAY_STATUS_ABLE);
+  EXPECT_EQ(returns.back(), ui::OVERLAY_STATUS_ABLE);
 
   controller->RemoveCrtc(drm_, kCrtcIdBase + 1);
 }
@@ -481,9 +480,31 @@ TEST_F(DrmOverlayValidatorTest, RejectBufferAllocationFail) {
   // In that case we should reject the overlay candidate.
   gbm_->set_allocation_failure(true);
 
-  std::vector<ui::OverlayCheckReturn_Params> returns =
-      overlay_validator_->TestPageFlip(overlay_params_,
-                                       ui::DrmOverlayPlaneList());
+  std::vector<ui::OverlayStatus> returns = overlay_validator_->TestPageFlip(
+      overlay_params_, ui::DrmOverlayPlaneList());
   EXPECT_EQ(2u, returns.size());
-  EXPECT_EQ(returns.front().status, ui::OVERLAY_STATUS_NOT);
+  EXPECT_EQ(returns.front(), ui::OVERLAY_STATUS_NOT);
+}
+
+// This test verifies that the Ozone/DRM implementation does not reject overlay
+// candidates purely on the basis of having non-integer bounds. Instead, they
+// should be rounded to the nearest integer.
+TEST_F(DrmOverlayValidatorTest, NonIntegerDisplayRect) {
+  overlay_params_.back().display_rect.Inset(0.005f, 0.005f);
+  plane_list_.pop_back();
+  AddPlane(overlay_params_.back());
+  CrtcState state = {
+      /* .planes = */
+      {
+          {/* .formats = */ {DRM_FORMAT_XRGB8888}},
+          {/* .formats = */ {DRM_FORMAT_XRGB8888, DRM_FORMAT_NV12}},
+      },
+  };
+  InitializeDrmState(std::vector<CrtcState>(1, state));
+
+  std::vector<ui::OverlayStatus> returns = overlay_validator_->TestPageFlip(
+      overlay_params_, ui::DrmOverlayPlaneList());
+  EXPECT_EQ(2u, returns.size());
+  for (const auto& param : returns)
+    EXPECT_EQ(param, ui::OVERLAY_STATUS_ABLE);
 }

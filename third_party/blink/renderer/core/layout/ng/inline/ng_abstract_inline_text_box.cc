@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_abstract_inline_text_box.h"
 
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
+#include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_break_token.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_physical_line_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_physical_text_fragment.h"
 #include "third_party/blink/renderer/core/paint/ng/ng_paint_fragment.h"
@@ -19,7 +20,6 @@ NGAbstractInlineTextBox::FragmentToNGAbstractInlineTextBoxHashMap*
     NGAbstractInlineTextBox::g_abstract_inline_text_box_map_ = nullptr;
 
 scoped_refptr<AbstractInlineTextBox> NGAbstractInlineTextBox::GetOrCreate(
-    LineLayoutText line_layout_item,
     const NGPaintFragment& fragment) {
   DCHECK(fragment.GetLayoutObject()->IsText()) << fragment.GetLayoutObject();
   if (!g_abstract_inline_text_box_map_) {
@@ -27,11 +27,16 @@ scoped_refptr<AbstractInlineTextBox> NGAbstractInlineTextBox::GetOrCreate(
         new FragmentToNGAbstractInlineTextBoxHashMap();
   }
   const auto it = g_abstract_inline_text_box_map_->find(&fragment);
-  if (it != g_abstract_inline_text_box_map_->end())
+  LayoutText* const layout_text =
+      ToLayoutText(fragment.GetMutableLayoutObject());
+  if (it != g_abstract_inline_text_box_map_->end()) {
+    CHECK(layout_text->HasAbstractInlineTextBox());
     return it->value;
-  scoped_refptr<AbstractInlineTextBox> obj =
-      base::AdoptRef(new NGAbstractInlineTextBox(line_layout_item, fragment));
+  }
+  scoped_refptr<AbstractInlineTextBox> obj = base::AdoptRef(
+      new NGAbstractInlineTextBox(LineLayoutText(layout_text), fragment));
   g_abstract_inline_text_box_map_->Set(&fragment, obj);
+  layout_text->SetHasAbstractInlineTextBox();
   return obj;
 }
 
@@ -65,15 +70,9 @@ void NGAbstractInlineTextBox::Detach() {
   fragment_ = nullptr;
 }
 
-bool NGAbstractInlineTextBox::HasSoftWrapToNextLine() const {
-  return ToNGPhysicalLineBoxFragment(
-             fragment_->ContainerLineBox()->PhysicalFragment())
-      .HasSoftWrapToNextLine();
-}
-
 const NGPhysicalTextFragment& NGAbstractInlineTextBox::PhysicalTextFragment()
     const {
-  return ToNGPhysicalTextFragment(fragment_->PhysicalFragment());
+  return To<NGPhysicalTextFragment>(fragment_->PhysicalFragment());
 }
 
 bool NGAbstractInlineTextBox::NeedsLayout() const {
@@ -81,13 +80,37 @@ bool NGAbstractInlineTextBox::NeedsLayout() const {
 }
 
 bool NGAbstractInlineTextBox::NeedsTrailingSpace() const {
-  if (!HasSoftWrapToNextLine())
+  if (!fragment_->Style().CollapseWhiteSpace())
     return false;
-  const NGPaintFragment* next_fragment = NextTextFragmentForSameLayoutObject();
-  if (!next_fragment)
+  const NGPaintFragment& line_box = *fragment_->ContainerLineBox();
+  if (!To<NGPhysicalLineBoxFragment>(line_box.PhysicalFragment())
+           .HasSoftWrapToNextLine())
     return false;
-  return ToNGPhysicalTextFragment(next_fragment->PhysicalFragment())
-             .StartOffset() != PhysicalTextFragment().EndOffset();
+  const NGPhysicalTextFragment& text_fragment = PhysicalTextFragment();
+  if (text_fragment.EndOffset() >= text_fragment.TextContent().length())
+    return false;
+  if (text_fragment.TextContent()[text_fragment.EndOffset()] != ' ')
+    return false;
+  const NGInlineBreakToken& break_token = *To<NGInlineBreakToken>(
+      To<NGPhysicalLineBoxFragment>(line_box.PhysicalFragment()).BreakToken());
+  // TODO(yosin): We should support OOF fragments between |fragment_| and
+  // break token.
+  if (break_token.TextOffset() != text_fragment.EndOffset() + 1)
+    return false;
+  // Check a character in text content after |fragment_| comes from same
+  // layout text of |fragment_|.
+  const NGOffsetMapping* mapping =
+      NGOffsetMapping::GetFor(fragment_->GetLayoutObject());
+  // TODO(kojii): There's not much we can do for dirty-tree. crbug.com/946004
+  if (!mapping)
+    return false;
+  const base::span<const NGOffsetMappingUnit> mapping_units =
+      mapping->GetMappingUnitsForTextContentOffsetRange(
+          text_fragment.EndOffset(), text_fragment.EndOffset() + 1);
+  if (mapping_units.begin() == mapping_units.end())
+    return false;
+  const NGOffsetMappingUnit& mapping_unit = mapping_units.front();
+  return mapping_unit.GetLayoutObject() == fragment_->GetLayoutObject();
 }
 
 const NGPaintFragment*
@@ -110,7 +133,7 @@ NGAbstractInlineTextBox::NextInlineTextBox() const {
   const NGPaintFragment* next_fragment = NextTextFragmentForSameLayoutObject();
   if (!next_fragment)
     return nullptr;
-  return GetOrCreate(GetLineLayoutItem(), *next_fragment);
+  return GetOrCreate(*next_fragment);
 }
 
 LayoutRect NGAbstractInlineTextBox::LocalBounds() const {
@@ -124,8 +147,14 @@ unsigned NGAbstractInlineTextBox::Len() const {
   if (!fragment_)
     return 0;
   if (NeedsTrailingSpace())
-    return PhysicalTextFragment().Length() + 1;
-  return PhysicalTextFragment().Length();
+    return PhysicalTextFragment().TextLength() + 1;
+  return PhysicalTextFragment().TextLength();
+}
+
+unsigned NGAbstractInlineTextBox::TextOffsetInContainer(unsigned offset) const {
+  if (!fragment_)
+    return 0;
+  return PhysicalTextFragment().StartOffset() + offset;
 }
 
 AbstractInlineTextBox::Direction NGAbstractInlineTextBox::GetDirection() const {
@@ -214,7 +243,7 @@ scoped_refptr<AbstractInlineTextBox> NGAbstractInlineTextBox::NextOnLine()
   NGPaintFragmentTraversal cursor(*fragment_->ContainerLineBox(), *fragment_);
   for (cursor.MoveToNext(); !cursor.IsAtEnd(); cursor.MoveToNext()) {
     if (cursor->GetLayoutObject()->IsText())
-      return GetOrCreate(GetLineLayoutItem(), *cursor);
+      return GetOrCreate(*cursor);
   }
   return nullptr;
 }
@@ -228,9 +257,16 @@ scoped_refptr<AbstractInlineTextBox> NGAbstractInlineTextBox::PreviousOnLine()
   NGPaintFragmentTraversal cursor(*fragment_->ContainerLineBox(), *fragment_);
   for (cursor.MoveToPrevious(); !cursor.IsAtEnd(); cursor.MoveToPrevious()) {
     if (cursor->GetLayoutObject()->IsText())
-      return GetOrCreate(GetLineLayoutItem(), *cursor);
+      return GetOrCreate(*cursor);
   }
   return nullptr;
+}
+
+bool NGAbstractInlineTextBox::IsLineBreak() const {
+  if (!fragment_)
+    return false;
+  DCHECK(!NeedsLayout());
+  return PhysicalTextFragment().IsLineBreak();
 }
 
 }  // namespace blink

@@ -39,6 +39,8 @@ class TabRestoreServiceDelegateImplIOS : public sessions::LiveTabContext,
   sessions::LiveTab* GetLiveTabAt(int index) const override;
   sessions::LiveTab* GetActiveLiveTab() const override;
   bool IsTabPinned(int index) const override;
+  base::Optional<base::Token> GetTabGroupForTab(int index) const override;
+  TabGroupMetadata GetTabGroupMetadata(base::Token group) const override;
   const gfx::Rect GetRestoredBounds() const override;
   ui::WindowShowState GetRestoredState() const override;
   std::string GetWorkspace() const override;
@@ -47,6 +49,7 @@ class TabRestoreServiceDelegateImplIOS : public sessions::LiveTabContext,
       int tab_index,
       int selected_navigation,
       const std::string& extension_app_id,
+      base::Optional<base::Token> group,
       bool select,
       bool pin,
       bool from_last_session,
@@ -54,12 +57,15 @@ class TabRestoreServiceDelegateImplIOS : public sessions::LiveTabContext,
       const std::string& user_agent_override) override;
   sessions::LiveTab* ReplaceRestoredTab(
       const std::vector<sessions::SerializedNavigationEntry>& navigations,
+      base::Optional<base::Token> group,
       int selected_navigation,
       bool from_last_session,
       const std::string& extension_app_id,
       const sessions::PlatformSpecificTabData* tab_platform_data,
       const std::string& user_agent_override) override;
   void CloseTab() override;
+  void SetTabGroupMetadata(base::Token group,
+                           TabGroupMetadata group_metadata) override;
 
  private:
   // Retrieves the current |WebStateList| corresponding to |browser_state_|;

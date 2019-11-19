@@ -4,14 +4,35 @@
 
 module blink.mojom;
 
-import "services/viz/public/interfaces/compositing/surface_id.mojom";
-import "ui/gfx/geometry/mojo/geometry.mojom";
+import "services/viz/public/mojom/compositing/surface_id.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
 
-// PictureInPictureDelegate is associated to a PictureInPictureService. It will
-// be notified by running its callbacks when a change happened to the running
-// Picture-in-Picture session.
-interface PictureInPictureDelegate {
-  PictureInPictureWindowSizeChanged(gfx.mojom.Size size);
+// PictureInPictureSessionObserver is associated to a PictureInPictureSession at
+// its creation. It receives all the events associated to the session lifetime.
+interface PictureInPictureSessionObserver {
+  // Called when the size of the window associated to the session has changed.
+  OnWindowSizeChanged(gfx.mojom.Size size);
+
+  // Called when the session is stopped, typically when the user closes the
+  // Picture-in-Picture window or when another session has started. This will
+  // not be called when `Stop()` is called on a PictureInPictureSession object.
+  OnStopped();
+};
+
+// Representation of a Picture-in-Picture session. The caller receives this
+// object back after a call to `StartSession()` on the main service. It can be
+// used to interact with the session after its creation.
+interface PictureInPictureSession {
+  // Update the information used to create the session when it was created.
+  // This call cannot happen after `Stop()`.
+  Update(uint32 player_id,
+      viz.mojom.SurfaceId? surface_id,
+      gfx.mojom.Size natural_size,
+      bool show_play_pause_button);
+
+  // Request to stop the current session. It will close the Picture-in-Picture
+  // window and make other calls related to the session no-ops.
+  Stop() => ();
 };
 
 // PictureInPictureService is a Document-associated interface that lives in
@@ -21,42 +42,20 @@ interface PictureInPictureDelegate {
 // a Document to display a video in an always-on-top floating window with
 // basic playback functionality (e.g. play and pause).
 interface PictureInPictureService {
-  // Notify the service that it should start a Picture-in-Picture session.
+  // Notify the service that it should start a Picture-in-Picture session. If a
+  // Picture-in-Picture session is already running, it will be closed.
   // player_id: WebMediaPlayer id used to control playback via the
   //            Picture-in-Picture window.
   // surface_id: SurfaceId to be shown in the Picture-in-Picture window.
   // natural_size: Size of the video frames.
   // show_play_pause_button: Whether a play/pause control should be offered in
   //                         the Picture-in-Picture window.
-  // show_mute_button: Whether a mute control should be offered in the
-  //                   Picture-in-Picture window.
-  // NOTE: this method shouldn't be called twice in a raw. An interleaved call
-  // to EndSession() would be expected. In case of some parameters have changed,
-  // UpdateSession() should be called.
+  // observer: Observer to be associated with the session.
   StartSession(
       uint32 player_id,
       viz.mojom.SurfaceId? surface_id,
       gfx.mojom.Size natural_size,
       bool show_play_pause_button,
-      bool show_mute_button) => (gfx.mojom.Size size);
-
-  // Notify the service to end the Picture-in-Picture session. It will close
-  // the Picture-in-Picture window.
-  EndSession() => ();
-
-  // Notify the service that some information about the client have change. All
-  // information associated with the Picture-in-Picture session are sent again.
-  // A Picture-in-Picture session must already be active from a previous call to
-  // StartSession().
-  UpdateSession(
-      uint32 player_id,
-      viz.mojom.SurfaceId? surface_id,
-      gfx.mojom.Size natural_size,
-      bool show_play_pause_button,
-      bool show_mute_button);
-
-  // Associate a PictureInPictureDelegate with the service. All changes in
-  // Picture-in-Picture states will be sent to the delegate. Only one delegate
-  // can be set at a time.
-  SetDelegate(PictureInPictureDelegate delegate);
+      pending_remote<PictureInPictureSessionObserver> observer)
+          => (pending_remote<PictureInPictureSession>? session, gfx.mojom.Size size);
 };

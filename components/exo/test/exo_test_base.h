@@ -9,6 +9,11 @@
 
 #include "ash/test/ash_test_base.h"
 #include "base/macros.h"
+#include "ui/compositor/scoped_animation_duration_scale_mode.h"
+
+namespace viz {
+class SurfaceManager;
+}
 
 namespace exo {
 class WMHelper;
@@ -25,11 +30,14 @@ class ExoTestBase : public ash::AshTestBase {
   void SetUp() override;
   void TearDown() override;
 
+  viz::SurfaceManager* GetSurfaceManager();
+
   ExoTestHelper* exo_test_helper() { return exo_test_helper_.get(); }
 
  private:
   std::unique_ptr<ExoTestHelper> exo_test_helper_;
   std::unique_ptr<WMHelper> wm_helper_;
+  ui::ScopedAnimationDurationScaleMode scale_mode_;
 
   DISALLOW_COPY_AND_ASSIGN(ExoTestBase);
 };

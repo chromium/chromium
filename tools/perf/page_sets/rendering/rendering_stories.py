@@ -41,6 +41,7 @@ class RenderingStorySet(story.StorySet):
         continue
 
       required_args = []
+      name_suffix = ''
       if (story_class.TAGS and
           story_tags.USE_FAKE_CAMERA_DEVICE in story_class.TAGS):
         required_args += [
@@ -56,33 +57,28 @@ class RenderingStorySet(story.StorySet):
         # 'backdrop-filter' CSS property to work.
         required_args.append('--enable-experimental-web-platform-features')
 
+      # TODO(crbug.com/968125): We must run without out-of-process rasterization
+      # until that branch is implemented for YUV decoding.
+      if (story_class.TAGS and
+          story_tags.IMAGE_DECODING in story_class.TAGS and
+          story_tags.GPU_RASTERIZATION in story_class.TAGS):
+        required_args += ['--force-gpu-rasterization',
+                          '--enable-gpu-rasterization']
+        # Run RGB decoding with GPU rasterization (to be most comparable to YUV)
+        self.AddStory(story_class(
+            page_set=self,
+            extra_browser_args=required_args +
+                ['--disable-yuv-image-decoding'],
+            shared_page_state_class=shared_page_state_class,
+            name_suffix='_rgb_and_gpu_rasterization'))
+        # Also run YUV decoding story with GPU rasterization.
+        name_suffix = '_yuv_and_gpu_rasterization'
+
       self.AddStory(story_class(
           page_set=self,
+          extra_browser_args=required_args,
           shared_page_state_class=shared_page_state_class,
-          extra_browser_args=required_args))
-
-      if (platform == platforms.MOBILE and
-          story_class.TAGS and
-          story_tags.GPU_RASTERIZATION in story_class.TAGS):
-        self.AddStory(story_class(
-            page_set=self,
-            shared_page_state_class=shared_page_state_class,
-            name_suffix='_desktop_gpu_raster',
-            extra_browser_args=required_args + [
-                '--force-gpu-rasterization',
-            ]))
-
-      if (platform == platforms.MOBILE and
-          story_class.TAGS and
-          story_tags.IMAGE_DECODING in story_class.TAGS):
-        self.AddStory(story_class(
-            page_set=self,
-            shared_page_state_class=shared_page_state_class,
-            name_suffix='_gpu_rasterization_and_decoding',
-            extra_browser_args=required_args + [
-                '--force-gpu-rasterization',
-                '--enable-accelerated-jpeg-decoding',
-            ]))
+          name_suffix=name_suffix))
 
 
 class DesktopRenderingStorySet(RenderingStorySet):

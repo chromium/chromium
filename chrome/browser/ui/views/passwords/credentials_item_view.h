@@ -9,6 +9,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/passwords/account_avatar_fetcher.h"
 #include "ui/views/controls/button/button.h"
+#include "ui/views/style/typography.h"
 
 namespace autofill {
 struct PasswordForm;
@@ -39,7 +40,9 @@ class CredentialsItemView : public AccountAvatarFetcherDelegate,
                       const base::string16& lower_text,
                       SkColor hover_color,
                       const autofill::PasswordForm* form,
-                      network::mojom::URLLoaderFactory* loader_factory);
+                      network::mojom::URLLoaderFactory* loader_factory,
+                      int upper_text_style = views::style::STYLE_PRIMARY,
+                      int lower_text_style = views::style::STYLE_SECONDARY);
   ~CredentialsItemView() override;
 
   const autofill::PasswordForm* form() const { return form_; }
@@ -48,27 +51,23 @@ class CredentialsItemView : public AccountAvatarFetcherDelegate,
   void UpdateAvatar(const gfx::ImageSkia& image) override;
 
   void SetLowerLabelColor(SkColor color);
-  void SetHoverColor(SkColor color);
 
   int GetPreferredHeight() const;
 
  private:
   // views::View:
-  gfx::Size CalculatePreferredSize() const override;
-  int GetHeightForWidth(int w) const override;
-  void Layout() override;
   void OnPaintBackground(gfx::Canvas* canvas) override;
 
   const autofill::PasswordForm* form_;
 
   views::ImageView* image_view_;
-  views::Label* upper_label_;
-  views::Label* lower_label_;
-  views::ImageView* info_icon_;
+  views::Label* upper_label_ = nullptr;
+  views::Label* lower_label_ = nullptr;
+  views::ImageView* info_icon_ = nullptr;
 
   SkColor hover_color_;
 
-  base::WeakPtrFactory<CredentialsItemView> weak_ptr_factory_;
+  base::WeakPtrFactory<CredentialsItemView> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(CredentialsItemView);
 };

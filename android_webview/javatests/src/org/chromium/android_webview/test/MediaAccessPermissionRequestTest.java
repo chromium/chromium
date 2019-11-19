@@ -72,7 +72,7 @@ public class MediaAccessPermissionRequestTest {
     }
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
         mTestWebServer.shutdown();
         mTestWebServer = null;
     }
@@ -130,8 +130,7 @@ public class MediaAccessPermissionRequestTest {
         pollTitleAs("deny", awContents);
     }
 
-    private void pollTitleAs(final String title, final AwContents awContents)
-            throws Exception {
+    private void pollTitleAs(final String title, final AwContents awContents) {
         AwActivityTestRule.pollInstrumentationThread(
                 () -> title.equals(mActivityTestRule.getTitleOnUiThread(awContents)));
     }

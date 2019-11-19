@@ -26,6 +26,7 @@
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 
 using content::RenderViewHost;
@@ -197,9 +198,10 @@ using content::RenderViewHost;
       RenderViewHost::From(renderWidgetHost_));
   DCHECK(webContents && webContents->GetFocusedFrame());
 
-  spellcheck::mojom::SpellCheckPanelPtr focused_spell_check_panel_client;
+  mojo::Remote<spellcheck::mojom::SpellCheckPanel>
+      focused_spell_check_panel_client;
   webContents->GetFocusedFrame()->GetRemoteInterfaces()->GetInterface(
-      &focused_spell_check_panel_client);
+      focused_spell_check_panel_client.BindNewPipeAndPassReceiver());
   focused_spell_check_panel_client->AdvanceToNextMisspelling();
 }
 
@@ -221,9 +223,10 @@ using content::RenderViewHost;
       RenderViewHost::From(renderWidgetHost_));
   DCHECK(webContents && webContents->GetFocusedFrame());
 
-  spellcheck::mojom::SpellCheckPanelPtr focused_spell_check_panel_client;
+  mojo::Remote<spellcheck::mojom::SpellCheckPanel>
+      focused_spell_check_panel_client;
   webContents->GetFocusedFrame()->GetRemoteInterfaces()->GetInterface(
-      &focused_spell_check_panel_client);
+      focused_spell_check_panel_client.BindNewPipeAndPassReceiver());
   focused_spell_check_panel_client->ToggleSpellPanel(visible);
 }
 

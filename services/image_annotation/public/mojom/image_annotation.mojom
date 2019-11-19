@@ -5,11 +5,12 @@
 module image_annotation.mojom;
 
 interface ImageProcessor {
-  // Returns the (potentially resized and compressed) pixels for the image.
+  // Returns the (potentially resized and compressed) pixels for the image,
+  // along with its new width and height.
   //
   // TODO(crbug.com/916420): expand this signature to include arguments when we
   //                         require more sophisticated render-side processing.
-  GetJpgImageData() => (array<uint8> bytes);
+  GetJpgImageData() => (array<uint8> bytes, int32 width, int32 height);
 };
 
 // The ways in which an annotation request can fail.
@@ -20,10 +21,12 @@ enum AnnotateImageError {
 };
 
 // The types of annotations that can be returned.
+//
+// Logged in metrics - do not reuse or reassign values.
 enum AnnotationType {
-  kOcr,
-  kLabel,
-  kCaption,
+  kOcr = 1,
+  kLabel = 2,
+  kCaption = 3,
 };
 
 // One annotation for an image.
@@ -47,13 +50,23 @@ interface Annotator {
   // uniquely identifies an image (e.g. a hash of image content for a data
   // URI). Source IDs are used to query local and remote caches.
   //
+  // |description_language_tag| is the string representation of the BCP-47 code
+  // for the language in which descriptions should be generated (or empty for
+  // the default language).
+  //
   // |result| will contain either the error code specifying how annotation
   // failed, or the annotations extracted from the image.
   //
   // TODO(crbug.com/916420): expand this signature to include a request
   //                         argument when we support more than one type of
   //                         annotation.
-  // TODO(crbug.com/916420): add a language code as an arg / parameter.
-  AnnotateImage(string source_id, ImageProcessor image_processor)
-    => (AnnotateImageResult result);
+  AnnotateImage(string source_id, string description_language_tag,
+                pending_remote<ImageProcessor> image_processor)
+                    => (AnnotateImageResult result);
+};
+
+// The main interface to the Image Annotation service.
+interface ImageAnnotationService {
+  // Binds an Annotator endpoint which can be used to annotate images.
+  BindAnnotator(pending_receiver<Annotator> receiver);
 };

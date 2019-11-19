@@ -55,7 +55,7 @@
 //       observers_.AddObserver(obs);
 //     }
 //
-//     void RemoveObserver(const Observer* obs) {
+//     void RemoveObserver(Observer* obs) {
 //       observers_.RemoveObserver(obs);
 //     }
 //

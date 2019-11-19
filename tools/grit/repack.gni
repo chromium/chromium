@@ -20,6 +20,9 @@ import("//tools/grit/grit_rule.gni")
 #       Path of the file in the application bundle, defaults to
 #       {{bundle_resources_dir}}/{{source_file_part}}.
 #
+#   compress  [optional]
+#       Gzip the resulting bundle (and append .gz to the output name).
+#
 #   deps  [optional]
 #   public_deps  [optional]
 #   visibility  [optional]
@@ -31,6 +34,8 @@ template("repack") {
   if (_copy_data_to_bundle) {
     _repack_target_name = "${target_name}__repack"
   }
+
+  _compress = defined(invoker.compress) && invoker.compress
 
   action(_repack_target_name) {
     forward_variables_from(invoker,
@@ -66,6 +71,9 @@ template("repack") {
     }
     args += [ rebase_path(invoker.output, root_build_dir) ]
     args += rebase_path(invoker.sources, root_build_dir)
+    if (_compress) {
+      args += [ "--compress" ]
+    }
   }
 
   if (_copy_data_to_bundle) {
@@ -153,6 +161,7 @@ template("repack_locales") {
                              [
                                "copy_data_to_bundle",
                                "bundle_output",
+                               "compress",
                                "deps",
                                "repack_whitelist",
                                "testonly",

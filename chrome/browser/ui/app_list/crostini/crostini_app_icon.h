@@ -99,7 +99,7 @@ class CrostiniAppIcon {
   // Contains pending image decode requests.
   std::vector<std::unique_ptr<DecodeRequest>> decode_requests_;
 
-  base::WeakPtrFactory<CrostiniAppIcon> weak_ptr_factory_;
+  base::WeakPtrFactory<CrostiniAppIcon> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(CrostiniAppIcon);
 };

@@ -1,39 +1,36 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="et">
-<translation id="1326317727527857210">Vahelehtede hankimiseks oma teistest seadmetest logige Chrome'i sisse.</translation>
+<translation id="1282031177488366470">Aidake täiustada Chrome'i funktsioone ja toimivust</translation>
+<translation id="1682483655351012182">Chrome'i andmete sünkroonimine</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1816764564654397850">Google Chrome'i privaatsust.</translation>
 <translation id="1863312987075920112">Seda rakendust kasutades nõustute Chrome'i <ph name="BEGIN_LINK_TOS" />teenusetingimuste<ph name="END_LINK_TOS" /> ja <ph name="BEGIN_LINK_PRIVACY" />privaatsusteatisega<ph name="END_LINK_PRIVACY" />.</translation>
-<translation id="1984705450038014246">Sünkroonige oma Chrome'i andmed</translation>
 <translation id="2147651015520127414">Chrome kinnitas, et veebisaidi sertifikaadi väljastas <ph name="ISSUER" />.</translation>
 <translation id="2199719347983604670">Chrome'i sünkroonimise teave</translation>
-<translation id="2334084861041072223">Autoriõigus <ph name="YEAR" /> Google Inc. Kõik õigused on kaitstud.</translation>
-<translation id="2342981853652716282">Logige Chrome'i sisse, et kõikides oma seadmetes kasutada järjehoidjaid, paroole ja muud.</translation>
 <translation id="2347208864470321755">Kui see funktsioon on sisse lülitatud, pakub Chrome võimalust tõlkida teistes keeltes kirjutatud lehti Google'i tõlke abil. <ph name="BEGIN_LINK" />Lisateave<ph name="END_LINK" /></translation>
 <translation id="2441696206556358796">Kujutiste salvestamiseks puudutage valikut Seaded, et lubada Chrome'il teie fotosid kasutada</translation>
 <translation id="2576431527583832481">Chrome muutus just veelgi paremaks! Saadaval on uus versioon.</translation>
 <translation id="257708665678654955">Kas soovite, et Google Chrome pakuks järgmisel korral sellel saidil <ph name="LANGUAGE_NAME" /> keeles olevate lehtede tõlkimise võimalust?</translation>
 <translation id="3030414234702425231">Kuna logite välja kontolt, mida haldab <ph name="SIGNOUT_MANAGED_DOMAIN" />, kustutatakse selles seadmes teie Chrome'i andmed. Google'i kontole jäävad teie andmed alles.</translation>
-<translation id="3148434565183091099">Järjehoidjate hankimiseks kõikidesse seadmetesse logige Chrome'i sisse.</translation>
 <translation id="3148688391461398285">Hankige Chrome’i parem kasutuskogemus teie asukoha põhjal.</translation>
 <translation id="3167189358072330585">Teie konto ei tööta Google Chrome'is. Võtke ühendust domeeni administraatoriga või kasutage sisselogimiseks tavalist Google'i kontot.</translation>
 <translation id="3196546062792660320">Chrome säästab aega, tuues teie kontod veebi. Saate kontosid lisada või eemaldada menüüs Seaded.</translation>
 <translation id="3282568296779691940">Chrome'i sisselogimine</translation>
 <translation id="3345341804167540816">Chrome'i kasutamine kõikjal</translation>
 <translation id="384394811301901750">Chrome ei saa praegu kaamerat kasutada</translation>
-<translation id="3870154837782082782">Google Inc.</translation>
 <translation id="3980220367029651214">Vahetate kontode sünkroonimise kontolt <ph name="USER_EMAIL1" /> kontole <ph name="USER_EMAIL2" />. Olemasolevaid Chrome'i andmeid haldab domeen <ph name="DOMAIN" />. See kustutab teie andmed sellest seadmest, kuid teie andmed jäävad alles kontole <ph name="USER_EMAIL1" />.</translation>
 <translation id="3988789688219830639">Google Chrome'il pole juurdepääsu fotodele ega videotele. Lubage iOS-is juurdep. valikutega Seaded &gt; Privaatsus &gt; Fotod.</translation>
 <translation id="4099578267706723511">Aidake muuta Chrome'i paremaks, saates Google'ile kasutusstatistikat ja krahhiaruandeid.</translation>
 <translation id="415767770115540173">Asukohapõhised andmed tagavad teile parema Google Chrome'i kasutuskogemuse.</translation>
 <translation id="424864128008805179">Kas logida Chrome'ist välja?</translation>
-<translation id="447252321002412580">Aidake täiustada Chrome'i funktsioone ja toimivust</translation>
+<translation id="4249068189593983585">Chrome'i nõuanne. Vahelehtede lisavalikute nägemiseks puudutage ja hoidke all ekraanikuva üla- või alaosas tööriistaribal olevat nuppu Kuva vahelehed.</translation>
 <translation id="4523886039239821078">Mõned pistikprogrammid põhjustavad Chrome'i kokkujooksmise. Desinstallige need:</translation>
-<translation id="4615174829807303908">Logite välja kontolt, mida haldab <ph name="SIGNOUT_MANAGED_DOMAIN" />. Selle tulemusel kustutatakse seadmes olevad Chrome'i andmed, kuid need jäävad alles teie Google'i kontole.</translation>
 <translation id="5389212809648216794">Google Chrome ei saa kaamerat kasutada, kuna seda kasutab muu rakendus</translation>
+<translation id="5621912349729388018"><ph name="BEGIN_LINK" />Vaadake üle Chrome'i värskendatud teenusetingimused.<ph name="END_LINK" /></translation>
 <translation id="5639704535586432836">Tehke valikud Seaded &gt; Privaatsus &gt; Kaamera &gt; Google Chrome ja lülitage kaamera sisse.</translation>
 <translation id="5642200033778930880">Google Chrome ei saa kaamerat poolitatud vaate režiimis kasutada</translation>
+<translation id="5690427481109656848">Google LLC</translation>
 <translation id="5854621639439811139">Chrome'i nõuanne. Mõned nupud, näiteks Tagasi, Edasi ja Otsing, asuvad nüüd ekraani alaosas.</translation>
 <translation id="6036420186814142909">Google Chrome'il on funktsioone, mis aitavad teil hallata oma Interneti-andmeid ja seda, kui kiiresti saate laadida veebilehti.
 <ph name="BEGIN_LINK" />Lisateave<ph name="END_LINK" /></translation>
@@ -46,14 +43,12 @@
 <translation id="7172660552945675509">Nõuanne: <ph name="BEGIN_LINK" />lisage Chrome dokki<ph name="END_LINK" /></translation>
 <translation id="7173660919484573146">Chrome kasutab paroolide volitatud juurdepääsu kontrollimiseks Face ID-d.</translation>
 <translation id="7265369419224458312">Hankige juurdepääs arvutis avatud vahelehtedele siit. Lihtsalt avage arvutis Chrome, minge menüüsse ja valige käsk „Logi Chrome'i sisse ...”</translation>
-<translation id="728488472449859922">Google Chrome'i QR-skanneri sisselülitamine</translation>
 <translation id="7400722733683201933">Google Chrome'i kohta</translation>
-<translation id="7437998757836447326">Chrome'ist väljalogimine</translation>
 <translation id="756809126120519699">Chrome'i andmed kustutati</translation>
 <translation id="7626032353295482388">Tere tulemast Chrome'i</translation>
+<translation id="7698568245838009292">Chrome soovib juurdepääsu kaamerale</translation>
+<translation id="8370517070665726704">Autoriõigus <ph name="YEAR" /> Google LLC. Kõik õigused on kaitstud.</translation>
 <translation id="840168496893712993">Mõned pistikprogrammid põhjustavad Chrome'i kokkujooksmise. Proovige need desinstallida.</translation>
 <translation id="8459495907675268833">Valitud andmed eemaldati Chrome'ist ja sünkroonitud seadmetest. Aadressil history.google.com võib teie Google'i kontol olla muus vormis sirvimisajalugu, nagu otsingud ja tegevused muudes Google'i teenustes.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
-<translation id="8606668294522778825">Google Chrome võib kasutada veebiteenuseid sirvimiskogemuse parandamiseks. Võite need teenused valikuliselt keelata. <ph name="BEGIN_LINK" />Lisateave<ph name="END_LINK" /></translation>
-<translation id="96145293669295453">Chrome'i nõuanne. Vahelehtede muude valikute vaatamiseks hoidke all ekraani üla- või alaosas tööriistaribal olevat nuppu Kuva vahelehed.</translation>
 </translationbundle>

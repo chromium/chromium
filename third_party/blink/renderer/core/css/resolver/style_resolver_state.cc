@@ -26,27 +26,32 @@
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
 #include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
+#include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 
 namespace blink {
 
 StyleResolverState::StyleResolverState(
     Document& document,
-    const ElementResolveContext& element_context,
+    Element& element,
+    PseudoElement* pseudo_element,
+    AnimatingElementType animating_element_type,
     const ComputedStyle* parent_style,
     const ComputedStyle* layout_parent_style)
-    : element_context_(element_context),
+    : element_context_(element),
       document_(document),
       style_(nullptr),
       parent_style_(parent_style),
       layout_parent_style_(layout_parent_style),
       is_animation_interpolation_map_ready_(false),
       is_animating_custom_properties_(false),
-      apply_property_to_regular_style_(true),
-      apply_property_to_visited_link_style_(false),
       has_dir_auto_attribute_(false),
       font_builder_(&document),
-      element_style_resources_(*GetElement(), document.DevicePixelRatio()) {
+      element_style_resources_(GetElement(),
+                               document.DevicePixelRatio(),
+                               pseudo_element),
+      pseudo_element_(pseudo_element),
+      animating_element_type_(animating_element_type) {
   DCHECK(!!parent_style_ == !!layout_parent_style_);
 
   if (!parent_style_) {
@@ -63,12 +68,25 @@ StyleResolverState::StyleResolverState(
 }
 
 StyleResolverState::StyleResolverState(Document& document,
-                                       Element* element,
+                                       Element& element,
                                        const ComputedStyle* parent_style,
                                        const ComputedStyle* layout_parent_style)
     : StyleResolverState(document,
-                         element ? ElementResolveContext(*element)
-                                 : ElementResolveContext(document),
+                         element,
+                         nullptr /* pseudo_element */,
+                         AnimatingElementType::kElement,
+                         parent_style,
+                         layout_parent_style) {}
+
+StyleResolverState::StyleResolverState(Document& document,
+                                       Element& element,
+                                       PseudoId pseudo_id,
+                                       const ComputedStyle* parent_style,
+                                       const ComputedStyle* layout_parent_style)
+    : StyleResolverState(document,
+                         element,
+                         element.GetPseudoElement(pseudo_id),
+                         AnimatingElementType::kPseudoElement,
                          parent_style,
                          layout_parent_style) {}
 
@@ -79,7 +97,7 @@ StyleResolverState::~StyleResolverState() {
 }
 
 TreeScope& StyleResolverState::GetTreeScope() const {
-  return GetElement() ? GetElement()->GetTreeScope() : GetDocument();
+  return GetElement().GetTreeScope();
 }
 
 void StyleResolverState::SetStyle(scoped_refptr<ComputedStyle> style) {
@@ -98,10 +116,8 @@ CSSToLengthConversionData StyleResolverState::UnzoomedLengthConversionData(
     const ComputedStyle* font_style) const {
   float em = font_style->SpecifiedFontSize();
   float rem = RootElementStyle() ? RootElementStyle()->SpecifiedFontSize() : 1;
-  // TODO(fs): Since 'ch' and 'ex' are still accessed directly from the font,
-  // they will still have zoom applied.
-  CSSToLengthConversionData::FontSizes font_sizes(em, rem,
-                                                  &font_style->GetFont());
+  CSSToLengthConversionData::FontSizes font_sizes(
+      em, rem, &font_style->GetFont(), font_style->EffectiveZoom());
   CSSToLengthConversionData::ViewportSize viewport_size(
       GetDocument().GetLayoutView());
 
@@ -133,7 +149,7 @@ void StyleResolverState::CacheUserAgentBorderAndBackground() {
   if (!Style()->HasAppearance())
     return;
 
-  cached_ua_style_ = CachedUAStyle::Create(Style());
+  cached_ua_style_ = std::make_unique<CachedUAStyle>(Style());
 }
 
 void StyleResolverState::LoadPendingResources() {
@@ -177,7 +193,7 @@ void StyleResolverState::SetTextOrientation(ETextOrientation text_orientation) {
 
 HeapHashMap<CSSPropertyID, Member<const CSSValue>>&
 StyleResolverState::ParsedPropertiesForPendingSubstitutionCache(
-    const CSSPendingSubstitutionValue& value) const {
+    const cssvalue::CSSPendingSubstitutionValue& value) const {
   HeapHashMap<CSSPropertyID, Member<const CSSValue>>* map =
       parsed_properties_for_pending_substitution_cache_.at(&value);
   if (!map) {
@@ -186,6 +202,13 @@ StyleResolverState::ParsedPropertiesForPendingSubstitutionCache(
     parsed_properties_for_pending_substitution_cache_.Set(&value, map);
   }
   return *map;
+}
+
+const Element* StyleResolverState::GetAnimatingElement() const {
+  if (animating_element_type_ == AnimatingElementType::kElement)
+    return &GetElement();
+  DCHECK_EQ(AnimatingElementType::kPseudoElement, animating_element_type_);
+  return pseudo_element_;
 }
 
 }  // namespace blink

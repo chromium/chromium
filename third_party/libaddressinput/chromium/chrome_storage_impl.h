@@ -53,7 +53,7 @@ class ChromeStorageImpl : public ::i18n::addressinput::Storage,
   // Get requests that haven't yet been serviced.
   std::vector<std::unique_ptr<Request>> outstanding_requests_;
 
-  ScopedObserver<PrefStore, ChromeStorageImpl> scoped_observer_;
+  ScopedObserver<PrefStore, PrefStore::Observer> scoped_observer_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ChromeStorageImpl);
 };

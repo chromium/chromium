@@ -82,9 +82,9 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterProfileBlueZ
       const dbus::ObjectPath& device_path,
       base::ScopedFD fd,
       const bluez::BluetoothProfileServiceProvider::Delegate::Options& options,
-      const ConfirmationCallback& callback) override;
+      ConfirmationCallback callback) override;
   void RequestDisconnection(const dbus::ObjectPath& device_path,
-                            const ConfirmationCallback& callback) override;
+                            ConfirmationCallback callback) override;
   void Cancel() override;
 
   // Called by dbus:: on completion of the D-Bus method to unregister a profile.
@@ -107,7 +107,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterProfileBlueZ
 
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.
-  base::WeakPtrFactory<BluetoothAdapterProfileBlueZ> weak_ptr_factory_;
+  base::WeakPtrFactory<BluetoothAdapterProfileBlueZ> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(BluetoothAdapterProfileBlueZ);
 };

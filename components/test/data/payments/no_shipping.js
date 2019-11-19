@@ -9,7 +9,7 @@
 /**
  * Launches the PaymentRequest UI that does not require a shipping address.
  */
-function buy() {  // eslint-disable-line no-unused-vars
+function buy() { // eslint-disable-line no-unused-vars
   try {
     new PaymentRequest(
         [{

@@ -4,7 +4,7 @@
 #include <memory>
 #include "gpu/command_buffer/client/gles2_interface.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "ui/gfx/gpu_memory_buffer.h"
 
 namespace blink {

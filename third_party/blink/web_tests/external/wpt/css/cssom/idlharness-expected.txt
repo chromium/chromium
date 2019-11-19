@@ -1,0 +1,436 @@
+This is a testharness.js-based test.
+Found 430 tests; 375 PASS, 55 FAIL, 0 TIMEOUT, 0 NOTRUN.
+PASS idl_test setup
+PASS idl_test validation
+PASS Partial interface CSSStyleSheet: original interface defined
+PASS Partial interface CSSStyleSheet: member names are unique
+PASS Partial interface mixin DocumentOrShadowRoot: original interface mixin defined
+PASS Partial interface mixin DocumentOrShadowRoot: member names are unique
+PASS Partial interface Window: original interface defined
+PASS Partial interface Window: member names are unique
+PASS Partial interface mixin DocumentOrShadowRoot[2]: member names are unique
+PASS Partial interface HTMLLinkElement: member names are unique
+PASS Partial interface HTMLStyleElement: member names are unique
+PASS Partial interface Window[2]: member names are unique
+PASS ProcessingInstruction includes LinkStyle: member names are unique
+PASS HTMLElement includes ElementCSSInlineStyle: member names are unique
+PASS HTMLElement includes GlobalEventHandlers: member names are unique
+PASS HTMLElement includes DocumentAndElementEventHandlers: member names are unique
+PASS HTMLElement includes ElementContentEditable: member names are unique
+PASS HTMLElement includes HTMLOrSVGElement: member names are unique
+PASS SVGElement includes ElementCSSInlineStyle: member names are unique
+PASS SVGElement includes GlobalEventHandlers: member names are unique
+PASS SVGElement includes DocumentAndElementEventHandlers: member names are unique
+PASS SVGElement includes SVGElementInstance: member names are unique
+PASS SVGElement includes HTMLOrSVGElement: member names are unique
+PASS SVGStyleElement includes LinkStyle: member names are unique
+PASS HTMLLinkElement includes LinkStyle: member names are unique
+PASS HTMLStyleElement includes LinkStyle: member names are unique
+PASS Window includes GlobalEventHandlers: member names are unique
+PASS Window includes WindowEventHandlers: member names are unique
+PASS Window includes WindowOrWorkerGlobalScope: member names are unique
+PASS Window includes AnimationFrameProvider: member names are unique
+PASS Window includes WindowSessionStorage: member names are unique
+PASS Window includes WindowLocalStorage: member names are unique
+PASS Document includes NonElementParentNode: member names are unique
+PASS Document includes DocumentOrShadowRoot: member names are unique
+PASS Document includes ParentNode: member names are unique
+PASS Document includes XPathEvaluatorBase: member names are unique
+PASS DocumentFragment includes NonElementParentNode: member names are unique
+PASS DocumentFragment includes ParentNode: member names are unique
+PASS ShadowRoot includes DocumentOrShadowRoot: member names are unique
+PASS Element includes ParentNode: member names are unique
+PASS Element includes NonDocumentTypeChildNode: member names are unique
+PASS Element includes ChildNode: member names are unique
+PASS Element includes Slotable: member names are unique
+PASS CharacterData includes NonDocumentTypeChildNode: member names are unique
+PASS CharacterData includes ChildNode: member names are unique
+PASS MediaList interface: existence and properties of interface object
+PASS MediaList interface object length
+PASS MediaList interface object name
+PASS MediaList interface: existence and properties of interface prototype object
+PASS MediaList interface: existence and properties of interface prototype object's "constructor" property
+PASS MediaList interface: existence and properties of interface prototype object's @@unscopables property
+PASS MediaList interface: attribute mediaText
+PASS MediaList interface: stringifier
+PASS MediaList interface: attribute length
+PASS MediaList interface: operation item(unsigned long)
+PASS MediaList interface: operation appendMedium(CSSOMString)
+PASS MediaList interface: operation deleteMedium(CSSOMString)
+PASS MediaList must be primary interface of sheet.media
+PASS Stringification of sheet.media
+PASS MediaList interface: sheet.media must inherit property "mediaText" with the proper type
+PASS MediaList interface: sheet.media must inherit property "length" with the proper type
+PASS MediaList interface: sheet.media must inherit property "item(unsigned long)" with the proper type
+PASS MediaList interface: calling item(unsigned long) on sheet.media with too few arguments must throw TypeError
+PASS MediaList interface: sheet.media must inherit property "appendMedium(CSSOMString)" with the proper type
+PASS MediaList interface: calling appendMedium(CSSOMString) on sheet.media with too few arguments must throw TypeError
+PASS MediaList interface: sheet.media must inherit property "deleteMedium(CSSOMString)" with the proper type
+PASS MediaList interface: calling deleteMedium(CSSOMString) on sheet.media with too few arguments must throw TypeError
+PASS StyleSheet interface: existence and properties of interface object
+PASS StyleSheet interface object length
+PASS StyleSheet interface object name
+PASS StyleSheet interface: existence and properties of interface prototype object
+PASS StyleSheet interface: existence and properties of interface prototype object's "constructor" property
+PASS StyleSheet interface: existence and properties of interface prototype object's @@unscopables property
+PASS StyleSheet interface: attribute type
+PASS StyleSheet interface: attribute href
+PASS StyleSheet interface: attribute ownerNode
+PASS StyleSheet interface: attribute parentStyleSheet
+PASS StyleSheet interface: attribute title
+PASS StyleSheet interface: attribute media
+PASS StyleSheet interface: attribute disabled
+FAIL CSSStyleSheet interface: existence and properties of interface object assert_throws: interface object didn't throw TypeError when called as a constructor function "function() {
+                new interface_object();
+            }" did not throw
+PASS CSSStyleSheet interface object length
+PASS CSSStyleSheet interface object name
+PASS CSSStyleSheet interface: existence and properties of interface prototype object
+PASS CSSStyleSheet interface: existence and properties of interface prototype object's "constructor" property
+PASS CSSStyleSheet interface: existence and properties of interface prototype object's @@unscopables property
+PASS CSSStyleSheet interface: attribute ownerRule
+PASS CSSStyleSheet interface: attribute cssRules
+PASS CSSStyleSheet interface: operation insertRule(CSSOMString, unsigned long)
+PASS CSSStyleSheet interface: operation deleteRule(unsigned long)
+PASS CSSStyleSheet interface: attribute rules
+PASS CSSStyleSheet interface: operation addRule(DOMString, DOMString, unsigned long)
+PASS CSSStyleSheet interface: operation removeRule(unsigned long)
+PASS CSSStyleSheet must be primary interface of sheet
+PASS Stringification of sheet
+PASS CSSStyleSheet interface: sheet must inherit property "ownerRule" with the proper type
+PASS CSSStyleSheet interface: sheet must inherit property "cssRules" with the proper type
+PASS CSSStyleSheet interface: sheet must inherit property "insertRule(CSSOMString, unsigned long)" with the proper type
+PASS CSSStyleSheet interface: calling insertRule(CSSOMString, unsigned long) on sheet with too few arguments must throw TypeError
+PASS CSSStyleSheet interface: sheet must inherit property "deleteRule(unsigned long)" with the proper type
+PASS CSSStyleSheet interface: calling deleteRule(unsigned long) on sheet with too few arguments must throw TypeError
+PASS CSSStyleSheet interface: sheet must inherit property "rules" with the proper type
+PASS CSSStyleSheet interface: sheet must inherit property "addRule(DOMString, DOMString, unsigned long)" with the proper type
+PASS CSSStyleSheet interface: calling addRule(DOMString, DOMString, unsigned long) on sheet with too few arguments must throw TypeError
+PASS CSSStyleSheet interface: sheet must inherit property "removeRule(unsigned long)" with the proper type
+PASS CSSStyleSheet interface: calling removeRule(unsigned long) on sheet with too few arguments must throw TypeError
+PASS StyleSheet interface: sheet must inherit property "type" with the proper type
+PASS StyleSheet interface: sheet must inherit property "href" with the proper type
+PASS StyleSheet interface: sheet must inherit property "ownerNode" with the proper type
+PASS StyleSheet interface: sheet must inherit property "parentStyleSheet" with the proper type
+PASS StyleSheet interface: sheet must inherit property "title" with the proper type
+PASS StyleSheet interface: sheet must inherit property "media" with the proper type
+PASS StyleSheet interface: sheet must inherit property "disabled" with the proper type
+PASS StyleSheetList interface: existence and properties of interface object
+PASS StyleSheetList interface object length
+PASS StyleSheetList interface object name
+PASS StyleSheetList interface: existence and properties of interface prototype object
+PASS StyleSheetList interface: existence and properties of interface prototype object's "constructor" property
+PASS StyleSheetList interface: existence and properties of interface prototype object's @@unscopables property
+PASS StyleSheetList interface: operation item(unsigned long)
+PASS StyleSheetList interface: attribute length
+PASS StyleSheetList must be primary interface of document.styleSheets
+PASS Stringification of document.styleSheets
+PASS StyleSheetList interface: document.styleSheets must inherit property "item(unsigned long)" with the proper type
+PASS StyleSheetList interface: calling item(unsigned long) on document.styleSheets with too few arguments must throw TypeError
+PASS StyleSheetList interface: document.styleSheets must inherit property "length" with the proper type
+PASS CSSRuleList interface: existence and properties of interface object
+PASS CSSRuleList interface object length
+PASS CSSRuleList interface object name
+PASS CSSRuleList interface: existence and properties of interface prototype object
+PASS CSSRuleList interface: existence and properties of interface prototype object's "constructor" property
+PASS CSSRuleList interface: existence and properties of interface prototype object's @@unscopables property
+PASS CSSRuleList interface: operation item(unsigned long)
+PASS CSSRuleList interface: attribute length
+PASS CSSRuleList must be primary interface of sheet.cssRules
+PASS Stringification of sheet.cssRules
+PASS CSSRuleList interface: sheet.cssRules must inherit property "item(unsigned long)" with the proper type
+PASS CSSRuleList interface: calling item(unsigned long) on sheet.cssRules with too few arguments must throw TypeError
+PASS CSSRuleList interface: sheet.cssRules must inherit property "length" with the proper type
+PASS CSSRule interface: existence and properties of interface object
+PASS CSSRule interface object length
+PASS CSSRule interface object name
+PASS CSSRule interface: existence and properties of interface prototype object
+PASS CSSRule interface: existence and properties of interface prototype object's "constructor" property
+PASS CSSRule interface: existence and properties of interface prototype object's @@unscopables property
+PASS CSSRule interface: attribute cssText
+PASS CSSRule interface: attribute parentRule
+PASS CSSRule interface: attribute parentStyleSheet
+PASS CSSRule interface: attribute type
+PASS CSSRule interface: constant STYLE_RULE on interface object
+PASS CSSRule interface: constant STYLE_RULE on interface prototype object
+PASS CSSRule interface: constant CHARSET_RULE on interface object
+PASS CSSRule interface: constant CHARSET_RULE on interface prototype object
+PASS CSSRule interface: constant IMPORT_RULE on interface object
+PASS CSSRule interface: constant IMPORT_RULE on interface prototype object
+PASS CSSRule interface: constant MEDIA_RULE on interface object
+PASS CSSRule interface: constant MEDIA_RULE on interface prototype object
+PASS CSSRule interface: constant FONT_FACE_RULE on interface object
+PASS CSSRule interface: constant FONT_FACE_RULE on interface prototype object
+PASS CSSRule interface: constant PAGE_RULE on interface object
+PASS CSSRule interface: constant PAGE_RULE on interface prototype object
+FAIL CSSRule interface: constant MARGIN_RULE on interface object assert_own_property: expected property "MARGIN_RULE" missing
+FAIL CSSRule interface: constant MARGIN_RULE on interface prototype object assert_own_property: expected property "MARGIN_RULE" missing
+PASS CSSRule interface: constant NAMESPACE_RULE on interface object
+PASS CSSRule interface: constant NAMESPACE_RULE on interface prototype object
+PASS CSSStyleRule interface: existence and properties of interface object
+PASS CSSStyleRule interface object length
+PASS CSSStyleRule interface object name
+PASS CSSStyleRule interface: existence and properties of interface prototype object
+PASS CSSStyleRule interface: existence and properties of interface prototype object's "constructor" property
+PASS CSSStyleRule interface: existence and properties of interface prototype object's @@unscopables property
+PASS CSSStyleRule interface: attribute selectorText
+PASS CSSStyleRule interface: attribute style
+PASS CSSStyleRule must be primary interface of sheet.cssRules[4]
+PASS Stringification of sheet.cssRules[4]
+PASS CSSStyleRule interface: sheet.cssRules[4] must inherit property "selectorText" with the proper type
+PASS CSSStyleRule interface: sheet.cssRules[4] must inherit property "style" with the proper type
+PASS CSSRule interface: sheet.cssRules[4] must inherit property "cssText" with the proper type
+PASS CSSRule interface: sheet.cssRules[4] must inherit property "parentRule" with the proper type
+PASS CSSRule interface: sheet.cssRules[4] must inherit property "parentStyleSheet" with the proper type
+PASS CSSRule interface: sheet.cssRules[4] must inherit property "type" with the proper type
+PASS CSSRule interface: sheet.cssRules[4] must inherit property "STYLE_RULE" with the proper type
+PASS CSSRule interface: sheet.cssRules[4] must inherit property "CHARSET_RULE" with the proper type
+PASS CSSRule interface: sheet.cssRules[4] must inherit property "IMPORT_RULE" with the proper type
+PASS CSSRule interface: sheet.cssRules[4] must inherit property "MEDIA_RULE" with the proper type
+PASS CSSRule interface: sheet.cssRules[4] must inherit property "FONT_FACE_RULE" with the proper type
+PASS CSSRule interface: sheet.cssRules[4] must inherit property "PAGE_RULE" with the proper type
+FAIL CSSRule interface: sheet.cssRules[4] must inherit property "MARGIN_RULE" with the proper type assert_inherits: property "MARGIN_RULE" not found in prototype chain
+PASS CSSRule interface: sheet.cssRules[4] must inherit property "NAMESPACE_RULE" with the proper type
+PASS CSSImportRule interface: existence and properties of interface object
+PASS CSSImportRule interface object length
+PASS CSSImportRule interface object name
+PASS CSSImportRule interface: existence and properties of interface prototype object
+PASS CSSImportRule interface: existence and properties of interface prototype object's "constructor" property
+PASS CSSImportRule interface: existence and properties of interface prototype object's @@unscopables property
+PASS CSSImportRule interface: attribute href
+PASS CSSImportRule interface: attribute media
+PASS CSSImportRule interface: attribute styleSheet
+PASS CSSImportRule must be primary interface of sheet.cssRules[0]
+PASS Stringification of sheet.cssRules[0]
+PASS CSSImportRule interface: sheet.cssRules[0] must inherit property "href" with the proper type
+PASS CSSImportRule interface: sheet.cssRules[0] must inherit property "media" with the proper type
+PASS CSSImportRule interface: sheet.cssRules[0] must inherit property "styleSheet" with the proper type
+PASS CSSRule interface: sheet.cssRules[0] must inherit property "cssText" with the proper type
+PASS CSSRule interface: sheet.cssRules[0] must inherit property "parentRule" with the proper type
+PASS CSSRule interface: sheet.cssRules[0] must inherit property "parentStyleSheet" with the proper type
+PASS CSSRule interface: sheet.cssRules[0] must inherit property "type" with the proper type
+PASS CSSRule interface: sheet.cssRules[0] must inherit property "STYLE_RULE" with the proper type
+PASS CSSRule interface: sheet.cssRules[0] must inherit property "CHARSET_RULE" with the proper type
+PASS CSSRule interface: sheet.cssRules[0] must inherit property "IMPORT_RULE" with the proper type
+PASS CSSRule interface: sheet.cssRules[0] must inherit property "MEDIA_RULE" with the proper type
+PASS CSSRule interface: sheet.cssRules[0] must inherit property "FONT_FACE_RULE" with the proper type
+PASS CSSRule interface: sheet.cssRules[0] must inherit property "PAGE_RULE" with the proper type
+FAIL CSSRule interface: sheet.cssRules[0] must inherit property "MARGIN_RULE" with the proper type assert_inherits: property "MARGIN_RULE" not found in prototype chain
+PASS CSSRule interface: sheet.cssRules[0] must inherit property "NAMESPACE_RULE" with the proper type
+PASS CSSGroupingRule interface: existence and properties of interface object
+PASS CSSGroupingRule interface object length
+PASS CSSGroupingRule interface object name
+PASS CSSGroupingRule interface: existence and properties of interface prototype object
+PASS CSSGroupingRule interface: existence and properties of interface prototype object's "constructor" property
+PASS CSSGroupingRule interface: existence and properties of interface prototype object's @@unscopables property
+PASS CSSGroupingRule interface: attribute cssRules
+FAIL CSSGroupingRule interface: operation insertRule(CSSOMString, unsigned long) assert_equals: property has wrong .length expected 1 but got 2
+PASS CSSGroupingRule interface: operation deleteRule(unsigned long)
+FAIL CSSPageRule interface: existence and properties of interface object assert_equals: prototype of CSSPageRule is not CSSGroupingRule expected function "function CSSGroupingRule() { [native code] }" but got function "function CSSRule() { [native code] }"
+PASS CSSPageRule interface object length
+PASS CSSPageRule interface object name
+FAIL CSSPageRule interface: existence and properties of interface prototype object assert_equals: prototype of CSSPageRule.prototype is not CSSGroupingRule.prototype expected object "[object CSSGroupingRule]" but got object "[object CSSRule]"
+PASS CSSPageRule interface: existence and properties of interface prototype object's "constructor" property
+PASS CSSPageRule interface: existence and properties of interface prototype object's @@unscopables property
+PASS CSSPageRule interface: attribute selectorText
+PASS CSSPageRule interface: attribute style
+PASS CSSPageRule must be primary interface of sheet.cssRules[2]
+PASS Stringification of sheet.cssRules[2]
+PASS CSSPageRule interface: sheet.cssRules[2] must inherit property "selectorText" with the proper type
+PASS CSSPageRule interface: sheet.cssRules[2] must inherit property "style" with the proper type
+FAIL CSSGroupingRule interface: sheet.cssRules[2] must inherit property "cssRules" with the proper type assert_inherits: property "cssRules" not found in prototype chain
+FAIL CSSGroupingRule interface: sheet.cssRules[2] must inherit property "insertRule(CSSOMString, unsigned long)" with the proper type assert_inherits: property "insertRule" not found in prototype chain
+FAIL CSSGroupingRule interface: calling insertRule(CSSOMString, unsigned long) on sheet.cssRules[2] with too few arguments must throw TypeError assert_inherits: property "insertRule" not found in prototype chain
+FAIL CSSGroupingRule interface: sheet.cssRules[2] must inherit property "deleteRule(unsigned long)" with the proper type assert_inherits: property "deleteRule" not found in prototype chain
+FAIL CSSGroupingRule interface: calling deleteRule(unsigned long) on sheet.cssRules[2] with too few arguments must throw TypeError assert_inherits: property "deleteRule" not found in prototype chain
+PASS CSSRule interface: sheet.cssRules[2] must inherit property "cssText" with the proper type
+PASS CSSRule interface: sheet.cssRules[2] must inherit property "parentRule" with the proper type
+PASS CSSRule interface: sheet.cssRules[2] must inherit property "parentStyleSheet" with the proper type
+PASS CSSRule interface: sheet.cssRules[2] must inherit property "type" with the proper type
+PASS CSSRule interface: sheet.cssRules[2] must inherit property "STYLE_RULE" with the proper type
+PASS CSSRule interface: sheet.cssRules[2] must inherit property "CHARSET_RULE" with the proper type
+PASS CSSRule interface: sheet.cssRules[2] must inherit property "IMPORT_RULE" with the proper type
+PASS CSSRule interface: sheet.cssRules[2] must inherit property "MEDIA_RULE" with the proper type
+PASS CSSRule interface: sheet.cssRules[2] must inherit property "FONT_FACE_RULE" with the proper type
+PASS CSSRule interface: sheet.cssRules[2] must inherit property "PAGE_RULE" with the proper type
+FAIL CSSRule interface: sheet.cssRules[2] must inherit property "MARGIN_RULE" with the proper type assert_inherits: property "MARGIN_RULE" not found in prototype chain
+PASS CSSRule interface: sheet.cssRules[2] must inherit property "NAMESPACE_RULE" with the proper type
+FAIL CSSMarginRule interface: existence and properties of interface object assert_own_property: self does not have own property "CSSMarginRule" expected property "CSSMarginRule" missing
+FAIL CSSMarginRule interface object length assert_own_property: self does not have own property "CSSMarginRule" expected property "CSSMarginRule" missing
+FAIL CSSMarginRule interface object name assert_own_property: self does not have own property "CSSMarginRule" expected property "CSSMarginRule" missing
+FAIL CSSMarginRule interface: existence and properties of interface prototype object assert_own_property: self does not have own property "CSSMarginRule" expected property "CSSMarginRule" missing
+FAIL CSSMarginRule interface: existence and properties of interface prototype object's "constructor" property assert_own_property: self does not have own property "CSSMarginRule" expected property "CSSMarginRule" missing
+FAIL CSSMarginRule interface: existence and properties of interface prototype object's @@unscopables property assert_own_property: self does not have own property "CSSMarginRule" expected property "CSSMarginRule" missing
+FAIL CSSMarginRule interface: attribute name assert_own_property: self does not have own property "CSSMarginRule" expected property "CSSMarginRule" missing
+FAIL CSSMarginRule interface: attribute style assert_own_property: self does not have own property "CSSMarginRule" expected property "CSSMarginRule" missing
+FAIL CSSMarginRule must be primary interface of sheet.cssRules[2].cssRules[0] assert_equals: Unexpected exception when evaluating object expected null but got object "TypeError: Cannot read property '0' of undefined"
+FAIL Stringification of sheet.cssRules[2].cssRules[0] assert_equals: Unexpected exception when evaluating object expected null but got object "TypeError: Cannot read property '0' of undefined"
+FAIL CSSMarginRule interface: sheet.cssRules[2].cssRules[0] must inherit property "name" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "TypeError: Cannot read property '0' of undefined"
+FAIL CSSMarginRule interface: sheet.cssRules[2].cssRules[0] must inherit property "style" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "TypeError: Cannot read property '0' of undefined"
+FAIL CSSRule interface: sheet.cssRules[2].cssRules[0] must inherit property "cssText" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "TypeError: Cannot read property '0' of undefined"
+FAIL CSSRule interface: sheet.cssRules[2].cssRules[0] must inherit property "parentRule" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "TypeError: Cannot read property '0' of undefined"
+FAIL CSSRule interface: sheet.cssRules[2].cssRules[0] must inherit property "parentStyleSheet" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "TypeError: Cannot read property '0' of undefined"
+FAIL CSSRule interface: sheet.cssRules[2].cssRules[0] must inherit property "type" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "TypeError: Cannot read property '0' of undefined"
+FAIL CSSRule interface: sheet.cssRules[2].cssRules[0] must inherit property "STYLE_RULE" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "TypeError: Cannot read property '0' of undefined"
+FAIL CSSRule interface: sheet.cssRules[2].cssRules[0] must inherit property "CHARSET_RULE" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "TypeError: Cannot read property '0' of undefined"
+FAIL CSSRule interface: sheet.cssRules[2].cssRules[0] must inherit property "IMPORT_RULE" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "TypeError: Cannot read property '0' of undefined"
+FAIL CSSRule interface: sheet.cssRules[2].cssRules[0] must inherit property "MEDIA_RULE" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "TypeError: Cannot read property '0' of undefined"
+FAIL CSSRule interface: sheet.cssRules[2].cssRules[0] must inherit property "FONT_FACE_RULE" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "TypeError: Cannot read property '0' of undefined"
+FAIL CSSRule interface: sheet.cssRules[2].cssRules[0] must inherit property "PAGE_RULE" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "TypeError: Cannot read property '0' of undefined"
+FAIL CSSRule interface: sheet.cssRules[2].cssRules[0] must inherit property "MARGIN_RULE" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "TypeError: Cannot read property '0' of undefined"
+FAIL CSSRule interface: sheet.cssRules[2].cssRules[0] must inherit property "NAMESPACE_RULE" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "TypeError: Cannot read property '0' of undefined"
+PASS CSSNamespaceRule interface: existence and properties of interface object
+PASS CSSNamespaceRule interface object length
+PASS CSSNamespaceRule interface object name
+PASS CSSNamespaceRule interface: existence and properties of interface prototype object
+PASS CSSNamespaceRule interface: existence and properties of interface prototype object's "constructor" property
+PASS CSSNamespaceRule interface: existence and properties of interface prototype object's @@unscopables property
+PASS CSSNamespaceRule interface: attribute namespaceURI
+PASS CSSNamespaceRule interface: attribute prefix
+PASS CSSNamespaceRule must be primary interface of sheet.cssRules[1]
+PASS Stringification of sheet.cssRules[1]
+PASS CSSNamespaceRule interface: sheet.cssRules[1] must inherit property "namespaceURI" with the proper type
+PASS CSSNamespaceRule interface: sheet.cssRules[1] must inherit property "prefix" with the proper type
+PASS CSSRule interface: sheet.cssRules[1] must inherit property "cssText" with the proper type
+PASS CSSRule interface: sheet.cssRules[1] must inherit property "parentRule" with the proper type
+PASS CSSRule interface: sheet.cssRules[1] must inherit property "parentStyleSheet" with the proper type
+PASS CSSRule interface: sheet.cssRules[1] must inherit property "type" with the proper type
+PASS CSSRule interface: sheet.cssRules[1] must inherit property "STYLE_RULE" with the proper type
+PASS CSSRule interface: sheet.cssRules[1] must inherit property "CHARSET_RULE" with the proper type
+PASS CSSRule interface: sheet.cssRules[1] must inherit property "IMPORT_RULE" with the proper type
+PASS CSSRule interface: sheet.cssRules[1] must inherit property "MEDIA_RULE" with the proper type
+PASS CSSRule interface: sheet.cssRules[1] must inherit property "FONT_FACE_RULE" with the proper type
+PASS CSSRule interface: sheet.cssRules[1] must inherit property "PAGE_RULE" with the proper type
+FAIL CSSRule interface: sheet.cssRules[1] must inherit property "MARGIN_RULE" with the proper type assert_inherits: property "MARGIN_RULE" not found in prototype chain
+PASS CSSRule interface: sheet.cssRules[1] must inherit property "NAMESPACE_RULE" with the proper type
+PASS CSSStyleDeclaration interface: existence and properties of interface object
+PASS CSSStyleDeclaration interface object length
+PASS CSSStyleDeclaration interface object name
+PASS CSSStyleDeclaration interface: existence and properties of interface prototype object
+PASS CSSStyleDeclaration interface: existence and properties of interface prototype object's "constructor" property
+PASS CSSStyleDeclaration interface: existence and properties of interface prototype object's @@unscopables property
+PASS CSSStyleDeclaration interface: attribute cssText
+PASS CSSStyleDeclaration interface: attribute length
+PASS CSSStyleDeclaration interface: operation item(unsigned long)
+PASS CSSStyleDeclaration interface: operation getPropertyValue(CSSOMString)
+PASS CSSStyleDeclaration interface: operation getPropertyPriority(CSSOMString)
+PASS CSSStyleDeclaration interface: operation setProperty(CSSOMString, CSSOMString, CSSOMString)
+PASS CSSStyleDeclaration interface: operation removeProperty(CSSOMString)
+PASS CSSStyleDeclaration interface: attribute parentRule
+PASS CSSStyleDeclaration interface: attribute cssFloat
+PASS CSSStyleDeclaration must be primary interface of sheet.cssRules[4].style
+PASS Stringification of sheet.cssRules[4].style
+PASS CSSStyleDeclaration interface: sheet.cssRules[4].style must inherit property "cssText" with the proper type
+PASS CSSStyleDeclaration interface: sheet.cssRules[4].style must inherit property "length" with the proper type
+PASS CSSStyleDeclaration interface: sheet.cssRules[4].style must inherit property "item(unsigned long)" with the proper type
+PASS CSSStyleDeclaration interface: calling item(unsigned long) on sheet.cssRules[4].style with too few arguments must throw TypeError
+PASS CSSStyleDeclaration interface: sheet.cssRules[4].style must inherit property "getPropertyValue(CSSOMString)" with the proper type
+PASS CSSStyleDeclaration interface: calling getPropertyValue(CSSOMString) on sheet.cssRules[4].style with too few arguments must throw TypeError
+PASS CSSStyleDeclaration interface: sheet.cssRules[4].style must inherit property "getPropertyPriority(CSSOMString)" with the proper type
+PASS CSSStyleDeclaration interface: calling getPropertyPriority(CSSOMString) on sheet.cssRules[4].style with too few arguments must throw TypeError
+PASS CSSStyleDeclaration interface: sheet.cssRules[4].style must inherit property "setProperty(CSSOMString, CSSOMString, CSSOMString)" with the proper type
+PASS CSSStyleDeclaration interface: calling setProperty(CSSOMString, CSSOMString, CSSOMString) on sheet.cssRules[4].style with too few arguments must throw TypeError
+PASS CSSStyleDeclaration interface: sheet.cssRules[4].style must inherit property "removeProperty(CSSOMString)" with the proper type
+PASS CSSStyleDeclaration interface: calling removeProperty(CSSOMString) on sheet.cssRules[4].style with too few arguments must throw TypeError
+PASS CSSStyleDeclaration interface: sheet.cssRules[4].style must inherit property "parentRule" with the proper type
+PASS CSSStyleDeclaration interface: sheet.cssRules[4].style must inherit property "cssFloat" with the proper type
+PASS CSSStyleDeclaration must be primary interface of sheet.cssRules[2].style
+PASS Stringification of sheet.cssRules[2].style
+PASS CSSStyleDeclaration interface: sheet.cssRules[2].style must inherit property "cssText" with the proper type
+PASS CSSStyleDeclaration interface: sheet.cssRules[2].style must inherit property "length" with the proper type
+PASS CSSStyleDeclaration interface: sheet.cssRules[2].style must inherit property "item(unsigned long)" with the proper type
+PASS CSSStyleDeclaration interface: calling item(unsigned long) on sheet.cssRules[2].style with too few arguments must throw TypeError
+PASS CSSStyleDeclaration interface: sheet.cssRules[2].style must inherit property "getPropertyValue(CSSOMString)" with the proper type
+PASS CSSStyleDeclaration interface: calling getPropertyValue(CSSOMString) on sheet.cssRules[2].style with too few arguments must throw TypeError
+PASS CSSStyleDeclaration interface: sheet.cssRules[2].style must inherit property "getPropertyPriority(CSSOMString)" with the proper type
+PASS CSSStyleDeclaration interface: calling getPropertyPriority(CSSOMString) on sheet.cssRules[2].style with too few arguments must throw TypeError
+PASS CSSStyleDeclaration interface: sheet.cssRules[2].style must inherit property "setProperty(CSSOMString, CSSOMString, CSSOMString)" with the proper type
+PASS CSSStyleDeclaration interface: calling setProperty(CSSOMString, CSSOMString, CSSOMString) on sheet.cssRules[2].style with too few arguments must throw TypeError
+PASS CSSStyleDeclaration interface: sheet.cssRules[2].style must inherit property "removeProperty(CSSOMString)" with the proper type
+PASS CSSStyleDeclaration interface: calling removeProperty(CSSOMString) on sheet.cssRules[2].style with too few arguments must throw TypeError
+PASS CSSStyleDeclaration interface: sheet.cssRules[2].style must inherit property "parentRule" with the proper type
+PASS CSSStyleDeclaration interface: sheet.cssRules[2].style must inherit property "cssFloat" with the proper type
+FAIL CSSStyleDeclaration must be primary interface of sheet.cssRules[2].cssRules[0].style assert_equals: Unexpected exception when evaluating object expected null but got object "TypeError: Cannot read property '0' of undefined"
+FAIL Stringification of sheet.cssRules[2].cssRules[0].style assert_equals: Unexpected exception when evaluating object expected null but got object "TypeError: Cannot read property '0' of undefined"
+FAIL CSSStyleDeclaration interface: sheet.cssRules[2].cssRules[0].style must inherit property "cssText" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "TypeError: Cannot read property '0' of undefined"
+FAIL CSSStyleDeclaration interface: sheet.cssRules[2].cssRules[0].style must inherit property "length" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "TypeError: Cannot read property '0' of undefined"
+FAIL CSSStyleDeclaration interface: sheet.cssRules[2].cssRules[0].style must inherit property "item(unsigned long)" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "TypeError: Cannot read property '0' of undefined"
+FAIL CSSStyleDeclaration interface: calling item(unsigned long) on sheet.cssRules[2].cssRules[0].style with too few arguments must throw TypeError assert_equals: Unexpected exception when evaluating object expected null but got object "TypeError: Cannot read property '0' of undefined"
+FAIL CSSStyleDeclaration interface: sheet.cssRules[2].cssRules[0].style must inherit property "getPropertyValue(CSSOMString)" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "TypeError: Cannot read property '0' of undefined"
+FAIL CSSStyleDeclaration interface: calling getPropertyValue(CSSOMString) on sheet.cssRules[2].cssRules[0].style with too few arguments must throw TypeError assert_equals: Unexpected exception when evaluating object expected null but got object "TypeError: Cannot read property '0' of undefined"
+FAIL CSSStyleDeclaration interface: sheet.cssRules[2].cssRules[0].style must inherit property "getPropertyPriority(CSSOMString)" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "TypeError: Cannot read property '0' of undefined"
+FAIL CSSStyleDeclaration interface: calling getPropertyPriority(CSSOMString) on sheet.cssRules[2].cssRules[0].style with too few arguments must throw TypeError assert_equals: Unexpected exception when evaluating object expected null but got object "TypeError: Cannot read property '0' of undefined"
+FAIL CSSStyleDeclaration interface: sheet.cssRules[2].cssRules[0].style must inherit property "setProperty(CSSOMString, CSSOMString, CSSOMString)" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "TypeError: Cannot read property '0' of undefined"
+FAIL CSSStyleDeclaration interface: calling setProperty(CSSOMString, CSSOMString, CSSOMString) on sheet.cssRules[2].cssRules[0].style with too few arguments must throw TypeError assert_equals: Unexpected exception when evaluating object expected null but got object "TypeError: Cannot read property '0' of undefined"
+FAIL CSSStyleDeclaration interface: sheet.cssRules[2].cssRules[0].style must inherit property "removeProperty(CSSOMString)" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "TypeError: Cannot read property '0' of undefined"
+FAIL CSSStyleDeclaration interface: calling removeProperty(CSSOMString) on sheet.cssRules[2].cssRules[0].style with too few arguments must throw TypeError assert_equals: Unexpected exception when evaluating object expected null but got object "TypeError: Cannot read property '0' of undefined"
+FAIL CSSStyleDeclaration interface: sheet.cssRules[2].cssRules[0].style must inherit property "parentRule" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "TypeError: Cannot read property '0' of undefined"
+FAIL CSSStyleDeclaration interface: sheet.cssRules[2].cssRules[0].style must inherit property "cssFloat" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "TypeError: Cannot read property '0' of undefined"
+PASS CSSStyleDeclaration must be primary interface of style_element.style
+PASS Stringification of style_element.style
+PASS CSSStyleDeclaration interface: style_element.style must inherit property "cssText" with the proper type
+PASS CSSStyleDeclaration interface: style_element.style must inherit property "length" with the proper type
+PASS CSSStyleDeclaration interface: style_element.style must inherit property "item(unsigned long)" with the proper type
+PASS CSSStyleDeclaration interface: calling item(unsigned long) on style_element.style with too few arguments must throw TypeError
+PASS CSSStyleDeclaration interface: style_element.style must inherit property "getPropertyValue(CSSOMString)" with the proper type
+PASS CSSStyleDeclaration interface: calling getPropertyValue(CSSOMString) on style_element.style with too few arguments must throw TypeError
+PASS CSSStyleDeclaration interface: style_element.style must inherit property "getPropertyPriority(CSSOMString)" with the proper type
+PASS CSSStyleDeclaration interface: calling getPropertyPriority(CSSOMString) on style_element.style with too few arguments must throw TypeError
+PASS CSSStyleDeclaration interface: style_element.style must inherit property "setProperty(CSSOMString, CSSOMString, CSSOMString)" with the proper type
+PASS CSSStyleDeclaration interface: calling setProperty(CSSOMString, CSSOMString, CSSOMString) on style_element.style with too few arguments must throw TypeError
+PASS CSSStyleDeclaration interface: style_element.style must inherit property "removeProperty(CSSOMString)" with the proper type
+PASS CSSStyleDeclaration interface: calling removeProperty(CSSOMString) on style_element.style with too few arguments must throw TypeError
+PASS CSSStyleDeclaration interface: style_element.style must inherit property "parentRule" with the proper type
+PASS CSSStyleDeclaration interface: style_element.style must inherit property "cssFloat" with the proper type
+PASS CSSStyleDeclaration must be primary interface of svg_element.style
+PASS Stringification of svg_element.style
+PASS CSSStyleDeclaration interface: svg_element.style must inherit property "cssText" with the proper type
+PASS CSSStyleDeclaration interface: svg_element.style must inherit property "length" with the proper type
+PASS CSSStyleDeclaration interface: svg_element.style must inherit property "item(unsigned long)" with the proper type
+PASS CSSStyleDeclaration interface: calling item(unsigned long) on svg_element.style with too few arguments must throw TypeError
+PASS CSSStyleDeclaration interface: svg_element.style must inherit property "getPropertyValue(CSSOMString)" with the proper type
+PASS CSSStyleDeclaration interface: calling getPropertyValue(CSSOMString) on svg_element.style with too few arguments must throw TypeError
+PASS CSSStyleDeclaration interface: svg_element.style must inherit property "getPropertyPriority(CSSOMString)" with the proper type
+PASS CSSStyleDeclaration interface: calling getPropertyPriority(CSSOMString) on svg_element.style with too few arguments must throw TypeError
+PASS CSSStyleDeclaration interface: svg_element.style must inherit property "setProperty(CSSOMString, CSSOMString, CSSOMString)" with the proper type
+PASS CSSStyleDeclaration interface: calling setProperty(CSSOMString, CSSOMString, CSSOMString) on svg_element.style with too few arguments must throw TypeError
+PASS CSSStyleDeclaration interface: svg_element.style must inherit property "removeProperty(CSSOMString)" with the proper type
+PASS CSSStyleDeclaration interface: calling removeProperty(CSSOMString) on svg_element.style with too few arguments must throw TypeError
+PASS CSSStyleDeclaration interface: svg_element.style must inherit property "parentRule" with the proper type
+PASS CSSStyleDeclaration interface: svg_element.style must inherit property "cssFloat" with the proper type
+PASS CSSStyleDeclaration must be primary interface of getComputedStyle(svg_element)
+PASS Stringification of getComputedStyle(svg_element)
+PASS CSSStyleDeclaration interface: getComputedStyle(svg_element) must inherit property "cssText" with the proper type
+PASS CSSStyleDeclaration interface: getComputedStyle(svg_element) must inherit property "length" with the proper type
+PASS CSSStyleDeclaration interface: getComputedStyle(svg_element) must inherit property "item(unsigned long)" with the proper type
+PASS CSSStyleDeclaration interface: calling item(unsigned long) on getComputedStyle(svg_element) with too few arguments must throw TypeError
+PASS CSSStyleDeclaration interface: getComputedStyle(svg_element) must inherit property "getPropertyValue(CSSOMString)" with the proper type
+PASS CSSStyleDeclaration interface: calling getPropertyValue(CSSOMString) on getComputedStyle(svg_element) with too few arguments must throw TypeError
+PASS CSSStyleDeclaration interface: getComputedStyle(svg_element) must inherit property "getPropertyPriority(CSSOMString)" with the proper type
+PASS CSSStyleDeclaration interface: calling getPropertyPriority(CSSOMString) on getComputedStyle(svg_element) with too few arguments must throw TypeError
+PASS CSSStyleDeclaration interface: getComputedStyle(svg_element) must inherit property "setProperty(CSSOMString, CSSOMString, CSSOMString)" with the proper type
+PASS CSSStyleDeclaration interface: calling setProperty(CSSOMString, CSSOMString, CSSOMString) on getComputedStyle(svg_element) with too few arguments must throw TypeError
+PASS CSSStyleDeclaration interface: getComputedStyle(svg_element) must inherit property "removeProperty(CSSOMString)" with the proper type
+PASS CSSStyleDeclaration interface: calling removeProperty(CSSOMString) on getComputedStyle(svg_element) with too few arguments must throw TypeError
+PASS CSSStyleDeclaration interface: getComputedStyle(svg_element) must inherit property "parentRule" with the proper type
+PASS CSSStyleDeclaration interface: getComputedStyle(svg_element) must inherit property "cssFloat" with the proper type
+PASS CSS namespace: operation escape(CSSOMString)
+PASS SVGElement interface: attribute style
+PASS SVGElement interface: svg_element must inherit property "style" with the proper type
+PASS SVGStyleElement interface: attribute sheet
+PASS HTMLElement interface: attribute style
+PASS HTMLElement interface: style_element must inherit property "style" with the proper type
+PASS HTMLElement interface: document.createElement("unknownelement") must inherit property "style" with the proper type
+PASS HTMLLinkElement interface: attribute sheet
+PASS HTMLStyleElement interface: attribute sheet
+PASS Window interface: operation getComputedStyle(Element, CSSOMString)
+PASS Window interface: window must inherit property "getComputedStyle(Element, CSSOMString)" with the proper type
+PASS Window interface: calling getComputedStyle(Element, CSSOMString) on window with too few arguments must throw TypeError
+PASS Document interface: attribute styleSheets
+PASS Document interface: document must inherit property "styleSheets" with the proper type
+PASS Document interface: new Document() must inherit property "styleSheets" with the proper type
+PASS ShadowRoot interface: attribute styleSheets
+PASS ProcessingInstruction interface: attribute sheet
+PASS ProcessingInstruction interface: xmlss_pi must inherit property "sheet" with the proper type
+Harness: the test ran to completion.
+

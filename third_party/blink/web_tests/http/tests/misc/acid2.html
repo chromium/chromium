@@ -149,10 +149,8 @@
   <!-- Chromium modifications for automatic testing: -->
   <script>
     document.getElementById("top").scrollIntoView();
-    if (window.testRunner)
-      testRunner.dumpAsTextWithPixelResults();
     if (window.internals)
-      internals.updateLayoutIgnorePendingStylesheetsAndRunPostLayoutTasks();
+      internals.updateLayoutAndRunPostLayoutTasks();
   </script>
  </body>
 </html>

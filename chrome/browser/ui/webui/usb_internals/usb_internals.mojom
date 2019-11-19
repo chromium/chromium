@@ -4,9 +4,15 @@
 
 module mojom;
 
-import "device/usb/public/mojom/device_manager_test.mojom";
+import "services/device/public/mojom/usb_manager.mojom";
+import "services/device/public/mojom/usb_manager_test.mojom";
 
 interface UsbInternalsPageHandler {
+  // Bind the UsbDeviceManager receiver to get all devices that connected.
+  BindUsbDeviceManagerInterface(
+      pending_receiver<device.mojom.UsbDeviceManager> receiver);
+
   // Simulate the connection of a new device with the given properties.
-  BindTestInterface(device.mojom.UsbDeviceManagerTest& request);
+  BindTestInterface(
+      pending_receiver<device.mojom.UsbDeviceManagerTest> receiver);
 };

@@ -1,0 +1,6 @@
+file://third_party/blink/renderer/modules/wake_lock/OWNERS
+
+per-file *permission_context*=file://chrome/browser/permissions/PERMISSIONS_OWNERS
+
+# COMPONENT: Blink>WakeLock
+# TEAM: device-dev@chromium.org

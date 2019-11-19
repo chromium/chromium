@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-FAIL setProperty with existing longhand should change order assert_array_equals: Property order should match after setting existing property property 0, expected "bottom" but got "top"
-FAIL invoke property setter with existing longhand should change order assert_array_equals: Property order should match after setting existing property property 0, expected "bottom" but got "top"
-FAIL setProperty with existing shorthand should change order assert_array_equals: Property order should match after setting an existing shorthand property 0, expected "top" but got "margin-top"
-FAIL invoke property setter with existing shorthand should change order assert_array_equals: Property order should match after setting an existing shorthand property 0, expected "top" but got "margin-top"
-Harness: the test ran to completion.
-

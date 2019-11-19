@@ -1,0 +1,45 @@
+<style include="print-preview-shared md-select cr-hidden-style">
+  :host {
+    --printer-icon-side-padding: 4px;
+    --printer-icon-size: 20px;
+  }
+
+  select.md-select {
+    background-position: var(--printer-icon-side-padding) center,
+        calc(100% - var(--md-select-side-padding)) center;
+    background-size: var(--printer-icon-size), var(--md-arrow-width);
+    margin: 2px;
+    padding-inline-start: 32px;
+    --md-select-width: calc(100% - 4px);
+  }
+
+  :host-context([dir=rtl]) .md-select {
+    background-position-x: calc(100% - var(--printer-icon-side-padding)),
+        var(--md-select-side-padding);
+  }
+</style>
+<select class="md-select" aria-label$="[[i18n(destinationLabel)]]"
+    style="background-image:
+        [[getBackgroundImages_(selectedValue, destination,
+                               destinationState, dark)]];"
+    disabled$="[[disabled]]"
+    value="{{selectedValue::change}}">
+  <template is="dom-repeat" items="[[recentDestinationList]]">
+    <option value="[[getKey_(item)]]">[[item.displayName]]</option>
+  </template>
+  <option value="[[getPdfDestinationKey_()]]"
+          hidden$="[[pdfPrinterDisabled]]">
+    $i18n{printToPDF}
+  </option>
+  <option value="[[getGoogleDriveDestinationKey_(activeUser)]]"
+      hidden$="[[!activeUser]]">
+    $i18n{printToGoogleDrive}
+  </option>
+  <option value="noDestinations"
+          hidden$="[[!noDestinations]]" selected$="[[noDestinations]]">
+    $i18n{noDestinationsMessage}
+  </option>
+  <option value="seeMore" aria-label$="[[i18n(seeMoreDestinationsLabel)]]">
+    $i18n{seeMore}
+  </option>
+</select>

@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/run_loop.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/device/public/cpp/test/fake_sensor_and_provider.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
@@ -27,7 +28,7 @@ namespace blink {
 using device::FakeSensorProvider;
 
 class MockDeviceOrientationController final
-    : public GarbageCollectedFinalized<MockDeviceOrientationController>,
+    : public GarbageCollected<MockDeviceOrientationController>,
       public PlatformEventController {
   USING_GARBAGE_COLLECTED_MIXIN(MockDeviceOrientationController);
 
@@ -54,7 +55,13 @@ class MockDeviceOrientationController final
   }
 
   void RegisterWithDispatcher() override {
-    orientation_pump_->AddController(this);
+    // In the typical case, |frame| should be non-null. Passing nullptr here
+    // causes DeviceOrientationEventPump to exit early from StartListening
+    // before DeviceOrientationEventPump::Start is called. As a workaround,
+    // Start is called manually by each test case.
+    // TODO(crbug.com/850619): Ensure a non-null LocalFrame is passed, and use
+    // SetController/RemoveController to start and stop the event pump.
+    orientation_pump_->SetController(this);
   }
 
   bool HasLastData() override {
@@ -62,7 +69,7 @@ class MockDeviceOrientationController final
   }
 
   void UnregisterWithDispatcher() override {
-    orientation_pump_->RemoveController(this);
+    orientation_pump_->RemoveController();
   }
 
   const DeviceOrientationData* data() {
@@ -86,15 +93,14 @@ class DeviceOrientationEventPumpTest : public testing::Test {
 
  protected:
   void SetUp() override {
-    device::mojom::SensorProviderPtrInfo sensor_provider_ptr_info;
-    sensor_provider_.Bind(mojo::MakeRequest(&sensor_provider_ptr_info));
+    mojo::PendingRemote<device::mojom::SensorProvider> sensor_provider;
+    sensor_provider_.Bind(sensor_provider.InitWithNewPipeAndPassReceiver());
     auto* orientation_pump = MakeGarbageCollected<DeviceOrientationEventPump>(
         base::ThreadTaskRunnerHandle::Get(), false /* absolute */);
     orientation_pump->SetSensorProviderForTesting(
-        device::mojom::blink::SensorProviderPtr(
-            device::mojom::blink::SensorProviderPtrInfo(
-                sensor_provider_ptr_info.PassHandle(),
-                device::mojom::SensorProvider::Version_)));
+        mojo::PendingRemote<device::mojom::blink::SensorProvider>(
+            sensor_provider.PassPipe(),
+            device::mojom::SensorProvider::Version_));
 
     controller_ =
         MakeGarbageCollected<MockDeviceOrientationController>(orientation_pump);
@@ -692,16 +698,15 @@ class DeviceAbsoluteOrientationEventPumpTest : public testing::Test {
 
  protected:
   void SetUp() override {
-    device::mojom::SensorProviderPtrInfo sensor_provider_ptr_info;
-    sensor_provider_.Bind(mojo::MakeRequest(&sensor_provider_ptr_info));
+    mojo::PendingRemote<device::mojom::SensorProvider> sensor_provider;
+    sensor_provider_.Bind(sensor_provider.InitWithNewPipeAndPassReceiver());
     auto* absolute_orientation_pump =
         MakeGarbageCollected<DeviceOrientationEventPump>(
             base::ThreadTaskRunnerHandle::Get(), true /* absolute */);
     absolute_orientation_pump->SetSensorProviderForTesting(
-        device::mojom::blink::SensorProviderPtr(
-            device::mojom::blink::SensorProviderPtrInfo(
-                sensor_provider_ptr_info.PassHandle(),
-                device::mojom::SensorProvider::Version_)));
+        mojo::PendingRemote<device::mojom::blink::SensorProvider>(
+            sensor_provider.PassPipe(),
+            device::mojom::SensorProvider::Version_));
     controller_ = MakeGarbageCollected<MockDeviceOrientationController>(
         absolute_orientation_pump);
 

@@ -43,7 +43,7 @@ function waitForCompositor() {
 
 requestAnimationFrame(() => {
   requestAnimationFrame(() => {
-    internals.setZoomFactor(2);
+    eventSender.setPageZoomFactor(2);
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
         waitForCompositor().then(() => {

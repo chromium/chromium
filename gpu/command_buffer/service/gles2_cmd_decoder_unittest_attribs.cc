@@ -49,8 +49,6 @@ using ::testing::StrictMock;
 namespace gpu {
 namespace gles2 {
 
-using namespace cmds;
-
 TEST_P(GLES2DecoderTest, DisableVertexAttribArrayValidArgs) {
   SetDriverVertexAttribEnabled(1, false);
   SpecializedSetup<cmds::DisableVertexAttribArray, 0>(true);
@@ -92,7 +90,7 @@ TEST_P(GLES2DecoderWithShaderTest, EnabledVertexAttribArrayIsDisabledIfUnused) {
     EXPECT_CALL(*gl_, DrawArrays(GL_TRIANGLES, 0, kNumVertices))
         .Times(1)
         .RetiresOnSaturation();
-    DrawArrays cmd;
+    cmds::DrawArrays cmd;
     cmd.Init(GL_TRIANGLES, 0, kNumVertices);
     EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
     EXPECT_EQ(GL_NO_ERROR, GetGLError());
@@ -102,12 +100,12 @@ TEST_P(GLES2DecoderWithShaderTest, EnabledVertexAttribArrayIsDisabledIfUnused) {
 TEST_P(GLES2DecoderWithShaderTest, GetVertexAttribPointervSucceeds) {
   const GLuint kOffsetToTestFor = sizeof(float) * 4;
   const GLuint kIndexToTest = 1;
-  GetVertexAttribPointerv::Result* result =
-      static_cast<GetVertexAttribPointerv::Result*>(shared_memory_address_);
+  auto* result = static_cast<cmds::GetVertexAttribPointerv::Result*>(
+      shared_memory_address_);
   result->size = 0;
   const GLuint* result_value = result->GetData();
   // Test that initial value is 0.
-  GetVertexAttribPointerv cmd;
+  cmds::GetVertexAttribPointerv cmd;
   cmd.Init(kIndexToTest,
            GL_VERTEX_ATTRIB_ARRAY_POINTER,
            shared_memory_id_,
@@ -129,12 +127,12 @@ TEST_P(GLES2DecoderWithShaderTest, GetVertexAttribPointervSucceeds) {
 
 TEST_P(GLES2DecoderWithShaderTest, GetVertexAttribPointervBadArgsFails) {
   const GLuint kIndexToTest = 1;
-  GetVertexAttribPointerv::Result* result =
-      static_cast<GetVertexAttribPointerv::Result*>(shared_memory_address_);
+  auto* result = static_cast<cmds::GetVertexAttribPointerv::Result*>(
+      shared_memory_address_);
   result->size = 0;
   const GLuint* result_value = result->GetData();
   // Test pname invalid fails.
-  GetVertexAttribPointerv cmd;
+  cmds::GetVertexAttribPointerv cmd;
   cmd.Init(kIndexToTest,
            GL_VERTEX_ATTRIB_ARRAY_POINTER + 1,
            shared_memory_id_,
@@ -177,7 +175,7 @@ TEST_P(GLES2DecoderWithShaderTest, BindBufferToDifferentTargetFails) {
   // NOTE: Real GLES2 does not have this restriction but WebGL and we do.
   // This can be restriction can be removed at runtime.
   EXPECT_CALL(*gl_, BindBuffer(_, _)).Times(0);
-  BindBuffer cmd;
+  cmds::BindBuffer cmd;
   cmd.Init(GL_ELEMENT_ARRAY_BUFFER, client_buffer_id_);
   EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
   EXPECT_EQ(GL_INVALID_OPERATION, GetGLError());
@@ -237,7 +235,7 @@ TEST_P(GLES2DecoderWithShaderTest, VertexAttribPointer) {
                                                 stride,
                                                 BufferOffset(offset)));
               }
-              VertexAttribPointer cmd;
+              cmds::VertexAttribPointer cmd;
               cmd.Init(index, size, type, normalize, stride, offset);
               EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
               if (good) {
@@ -286,7 +284,7 @@ class GLES2DecoderVertexArraysOESTest : public GLES2DecoderWithShaderTest {
     SetupDefaultProgram();
 
     AddExpectationsForGenVertexArraysOES();
-    GenHelper<GenVertexArraysOESImmediate>(client_vertexarray_id_);
+    GenHelper<cmds::GenVertexArraysOESImmediate>(client_vertexarray_id_);
 
     vertex_array_deleted_manually_ = false;
   }
@@ -305,8 +303,7 @@ class GLES2DecoderVertexArraysOESTest : public GLES2DecoderWithShaderTest {
 
   void GenVertexArraysOESImmediateValidArgs() {
     AddExpectationsForGenVertexArraysOES();
-    GenVertexArraysOESImmediate* cmd =
-        GetImmediateAs<GenVertexArraysOESImmediate>();
+    auto* cmd = GetImmediateAs<cmds::GenVertexArraysOESImmediate>();
     GLuint temp = kNewClientId;
     cmd->Init(1, &temp);
     EXPECT_EQ(error::kNoError, ExecuteImmediateCmd(*cmd, sizeof(temp)));
@@ -316,8 +313,7 @@ class GLES2DecoderVertexArraysOESTest : public GLES2DecoderWithShaderTest {
   }
 
   void GenVertexArraysOESImmediateDuplicateOrNullIds() {
-    GenVertexArraysOESImmediate* cmd =
-        GetImmediateAs<GenVertexArraysOESImmediate>();
+    auto* cmd = GetImmediateAs<cmds::GenVertexArraysOESImmediate>();
     GLuint temp[3] = {kNewClientId, kNewClientId + 1, kNewClientId};
     cmd->Init(3, temp);
     EXPECT_EQ(error::kInvalidArguments,
@@ -333,8 +329,7 @@ class GLES2DecoderVertexArraysOESTest : public GLES2DecoderWithShaderTest {
 
   void GenVertexArraysOESImmediateInvalidArgs() {
     EXPECT_CALL(*gl_, GenVertexArraysOES(_, _)).Times(0);
-    GenVertexArraysOESImmediate* cmd =
-        GetImmediateAs<GenVertexArraysOESImmediate>();
+    auto* cmd = GetImmediateAs<cmds::GenVertexArraysOESImmediate>();
     cmd->Init(1, &client_vertexarray_id_);
     EXPECT_EQ(error::kInvalidArguments,
               ExecuteImmediateCmd(*cmd, sizeof(&client_vertexarray_id_)));
@@ -342,8 +337,7 @@ class GLES2DecoderVertexArraysOESTest : public GLES2DecoderWithShaderTest {
 
   void DeleteVertexArraysOESImmediateValidArgs() {
     AddExpectationsForDeleteVertexArraysOES();
-    DeleteVertexArraysOESImmediate& cmd =
-        *GetImmediateAs<DeleteVertexArraysOESImmediate>();
+    auto& cmd = *GetImmediateAs<cmds::DeleteVertexArraysOESImmediate>();
     cmd.Init(1, &client_vertexarray_id_);
     EXPECT_EQ(error::kNoError,
               ExecuteImmediateCmd(cmd, sizeof(client_vertexarray_id_)));
@@ -353,8 +347,7 @@ class GLES2DecoderVertexArraysOESTest : public GLES2DecoderWithShaderTest {
   }
 
   void DeleteVertexArraysOESImmediateInvalidArgs() {
-    DeleteVertexArraysOESImmediate& cmd =
-        *GetImmediateAs<DeleteVertexArraysOESImmediate>();
+    auto& cmd = *GetImmediateAs<cmds::DeleteVertexArraysOESImmediate>();
     GLuint temp = kInvalidClientId;
     cmd.Init(1, &temp);
     EXPECT_EQ(error::kNoError, ExecuteImmediateCmd(cmd, sizeof(temp)));
@@ -364,8 +357,7 @@ class GLES2DecoderVertexArraysOESTest : public GLES2DecoderWithShaderTest {
     BindVertexArrayOESValidArgs();
 
     AddExpectationsForDeleteBoundVertexArraysOES();
-    DeleteVertexArraysOESImmediate& cmd =
-        *GetImmediateAs<DeleteVertexArraysOESImmediate>();
+    auto& cmd = *GetImmediateAs<cmds::DeleteVertexArraysOESImmediate>();
     cmd.Init(1, &client_vertexarray_id_);
     EXPECT_EQ(error::kNoError,
               ExecuteImmediateCmd(cmd, sizeof(client_vertexarray_id_)));
@@ -375,14 +367,14 @@ class GLES2DecoderVertexArraysOESTest : public GLES2DecoderWithShaderTest {
   }
 
   void IsVertexArrayOESValidArgs() {
-    IsVertexArrayOES cmd;
+    cmds::IsVertexArrayOES cmd;
     cmd.Init(client_vertexarray_id_, shared_memory_id_, shared_memory_offset_);
     EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
     EXPECT_EQ(GL_NO_ERROR, GetGLError());
   }
 
   void IsVertexArrayOESInvalidArgsBadSharedMemoryId() {
-    IsVertexArrayOES cmd;
+    cmds::IsVertexArrayOES cmd;
     cmd.Init(
         client_vertexarray_id_, kInvalidSharedMemoryId, shared_memory_offset_);
     EXPECT_EQ(error::kOutOfBounds, ExecuteCmd(cmd));
@@ -393,14 +385,14 @@ class GLES2DecoderVertexArraysOESTest : public GLES2DecoderWithShaderTest {
 
   void BindVertexArrayOESValidArgs() {
     AddExpectationsForBindVertexArrayOES();
-    BindVertexArrayOES cmd;
+    cmds::BindVertexArrayOES cmd;
     cmd.Init(client_vertexarray_id_);
     EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
     EXPECT_EQ(GL_NO_ERROR, GetGLError());
   }
 
   void BindVertexArrayOESValidArgsNewId() {
-    BindVertexArrayOES cmd;
+    cmds::BindVertexArrayOES cmd;
     cmd.Init(kNewClientId);
     EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
     EXPECT_EQ(GL_INVALID_OPERATION, GetGLError());
@@ -424,7 +416,7 @@ class GLES2DecoderEmulatedVertexArraysOESTest
     SetupDefaultProgram();
 
     AddExpectationsForGenVertexArraysOES();
-    GenHelper<GenVertexArraysOESImmediate>(client_vertexarray_id_);
+    GenHelper<cmds::GenVertexArraysOESImmediate>(client_vertexarray_id_);
 
     vertex_array_deleted_manually_ = false;
   }
@@ -534,7 +526,7 @@ TEST_P(GLES2DecoderTest, BufferDataGLError) {
   EXPECT_CALL(*gl_, BufferData(target, size, _, GL_STREAM_DRAW))
       .Times(1)
       .RetiresOnSaturation();
-  BufferData cmd;
+  cmds::BufferData cmd;
   cmd.Init(target, size, 0, 0, GL_STREAM_DRAW);
   EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
   EXPECT_EQ(GL_OUT_OF_MEMORY, GetGLError());

@@ -4,19 +4,24 @@
 
 package org.chromium.chrome.browser.history;
 
+import static org.chromium.chrome.browser.history.HistoryTestUtils.checkAdapterContents;
+
 import android.support.test.filters.SmallTest;
 
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.ContextUtils;
-import org.chromium.base.ThreadUtils;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.widget.DateDividedAdapter.ItemViewType;
+import org.chromium.chrome.browser.ui.widget.MoreProgressButton;
 import org.chromium.chrome.browser.widget.selection.SelectionDelegate;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
@@ -25,31 +30,32 @@ import java.util.concurrent.TimeUnit;
  * Tests for the {@link HistoryAdapter}.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
+@DisableIf.Build(supported_abis_includes = "arm64-v8a", message = "crbug.com/1023426")
 public class HistoryAdapterTest {
     private StubbedHistoryProvider mHistoryProvider;
     private HistoryAdapter mAdapter;
 
+    @Mock
+    private MoreProgressButton mMockButton;
+
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
+        MockitoAnnotations.initMocks(this);
         mHistoryProvider = new StubbedHistoryProvider();
         mAdapter = new HistoryAdapter(new SelectionDelegate<HistoryItem>(), null, mHistoryProvider);
         mAdapter.generateHeaderItemsForTest();
+        mAdapter.generateFooterItemsForTest(mMockButton);
     }
 
     private void initializeAdapter() {
-        ThreadUtils.runOnUiThreadBlocking(new Runnable(){
-            @Override
-            public void run() {
-                mAdapter.initialize();
-            }
-        });
+        TestThreadUtils.runOnUiThreadBlocking(() -> mAdapter.initialize());
     }
 
     @Test
     @SmallTest
     public void testInitialize_Empty() {
         initializeAdapter();
-        checkAdapterContents(false);
+        checkAdapterContents(mAdapter, false, false);
     }
 
     @Test
@@ -63,7 +69,7 @@ public class HistoryAdapterTest {
         initializeAdapter();
 
         // There should be three items - the header, a date and the history item.
-        checkAdapterContents(true, null, null, item1);
+        checkAdapterContents(mAdapter, true, false, null, null, item1);
     }
 
     @Test
@@ -80,19 +86,19 @@ public class HistoryAdapterTest {
         initializeAdapter();
 
         // There should be four items - the list header, a date header and two history items.
-        checkAdapterContents(true, null, null, item1, item2);
+        checkAdapterContents(mAdapter, true, false, null, null, item1, item2);
 
         mAdapter.markItemForRemoval(item1);
 
         // Check that one item was removed.
-        checkAdapterContents(true, null, null, item2);
+        checkAdapterContents(mAdapter, true, false, null, null, item2);
         Assert.assertEquals(1, mHistoryProvider.markItemForRemovalCallback.getCallCount());
         Assert.assertEquals(0, mHistoryProvider.removeItemsCallback.getCallCount());
 
         mAdapter.markItemForRemoval(item2);
 
         // There should no longer be any items in the adapter.
-        checkAdapterContents(false);
+        checkAdapterContents(mAdapter, false, false);
         Assert.assertEquals(2, mHistoryProvider.markItemForRemovalCallback.getCallCount());
         Assert.assertEquals(0, mHistoryProvider.removeItemsCallback.getCallCount());
 
@@ -116,19 +122,19 @@ public class HistoryAdapterTest {
 
         // There should be five items - the list header, a date header, a history item, another
         // date header and another history item.
-        checkAdapterContents(true, null, null, item1, null, item2);
+        checkAdapterContents(mAdapter, true, false, null, null, item1, null, item2);
 
         mAdapter.markItemForRemoval(item1);
 
         // Check that the first item and date header were removed.
-        checkAdapterContents(true, null, null, item2);
+        checkAdapterContents(mAdapter, true, false, null, null, item2);
         Assert.assertEquals(1, mHistoryProvider.markItemForRemovalCallback.getCallCount());
         Assert.assertEquals(0, mHistoryProvider.removeItemsCallback.getCallCount());
 
         mAdapter.markItemForRemoval(item2);
 
         // There should no longer be any items in the adapter.
-        checkAdapterContents(false);
+        checkAdapterContents(mAdapter, false, false);
         Assert.assertEquals(2, mHistoryProvider.markItemForRemovalCallback.getCallCount());
         Assert.assertEquals(0, mHistoryProvider.removeItemsCallback.getCallCount());
 
@@ -149,17 +155,17 @@ public class HistoryAdapterTest {
         mHistoryProvider.addItem(item2);
 
         initializeAdapter();
-        checkAdapterContents(true, null, null, item1, null, item2);
+        checkAdapterContents(mAdapter, true, false, null, null, item1, null, item2);
 
         mAdapter.search("google");
 
         // The header should be hidden during the search.
-        checkAdapterContents(false, null, item1);
+        checkAdapterContents(mAdapter, false, false, null, item1);
 
         mAdapter.onEndSearch();
 
         // The header should be shown again after the search.
-        checkAdapterContents(true, null, null, item1, null, item2);
+        checkAdapterContents(mAdapter, true, false, null, null, item1, null, item2);
     }
 
     @Test
@@ -193,20 +199,21 @@ public class HistoryAdapterTest {
         initializeAdapter();
 
         // Only the first five of the seven items should be loaded.
-        checkAdapterContents(true, null, null, item1, item2, item3, item4, null, item5);
+        checkAdapterContents(
+                mAdapter, true, false, null, null, item1, item2, item3, item4, null, item5);
         Assert.assertTrue(mAdapter.canLoadMoreItems());
 
         mAdapter.loadMoreItems();
 
         // All items should now be loaded.
-        checkAdapterContents(true, null, null, item1, item2, item3, item4, null, item5, item6,
-                null, item7);
+        checkAdapterContents(mAdapter, true, false, null, null, item1, item2, item3, item4, null,
+                item5, item6, null, item7);
         Assert.assertFalse(mAdapter.canLoadMoreItems());
     }
 
     @Test
     @SmallTest
-    public void testOnHistoryDeleted() throws Exception {
+    public void testOnHistoryDeleted() {
         Date today = new Date();
         long timestamp = today.getTime();
         HistoryItem item1 = StubbedHistoryProvider.createHistoryItem(0, timestamp);
@@ -214,18 +221,13 @@ public class HistoryAdapterTest {
 
         initializeAdapter();
 
-        checkAdapterContents(true, null, null, item1);
+        checkAdapterContents(mAdapter, true, false, null, null, item1);
 
         mHistoryProvider.removeItem(item1);
 
-        ThreadUtils.runOnUiThreadBlocking(new Runnable() {
-            @Override
-            public void run() {
-                mAdapter.onHistoryDeleted();
-            }
-        });
+        TestThreadUtils.runOnUiThreadBlocking(() -> mAdapter.onHistoryDeleted());
 
-        checkAdapterContents(false);
+        checkAdapterContents(mAdapter, false, false);
     }
 
     @Test
@@ -241,30 +243,10 @@ public class HistoryAdapterTest {
 
         initializeAdapter();
 
-        checkAdapterContents(true, null, null, item1, item2);
+        checkAdapterContents(mAdapter, true, false, null, null, item1, item2);
         Assert.assertEquals(ContextUtils.getApplicationContext().getString(
                                     R.string.android_history_blocked_site),
                 item2.getTitle());
         Assert.assertTrue(item2.wasBlockedVisit());
-    }
-
-    private void checkAdapterContents(boolean hasHeader, Object... expectedItems) {
-        Assert.assertEquals(expectedItems.length, mAdapter.getItemCount());
-        Assert.assertEquals(hasHeader, mAdapter.hasListHeader());
-
-        for (int i = 0; i < expectedItems.length; i++) {
-            if (i == 0 && hasHeader) {
-                Assert.assertEquals(ItemViewType.HEADER, mAdapter.getItemViewType(i));
-                continue;
-            }
-
-            if (expectedItems[i] == null) {
-                // TODO(twellington): Check what date header is showing.
-                Assert.assertEquals(ItemViewType.DATE, mAdapter.getItemViewType(i));
-            } else {
-                Assert.assertEquals(ItemViewType.NORMAL, mAdapter.getItemViewType(i));
-                Assert.assertEquals(expectedItems[i], mAdapter.getItemAt(i).second);
-            }
-        }
     }
 }

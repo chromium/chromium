@@ -1,8 +1,0 @@
-rootWebArea fontFamily='Times New Roman'
-++navigation fontFamily='-webkit-serif'
-++++paragraph fontFamily='-webkit-monospace'
-++++++staticText fontFamily='-webkit-monospace' name='Monospace'
-++++++++inlineTextBox fontFamily='-webkit-monospace' name='Monospace'
-++++staticText fontFamily='-webkit-sans-serif' name='Sans serif'
-++++++inlineTextBox fontFamily='-webkit-sans-serif' name='Sans serif'
-<-- End-of-file -->

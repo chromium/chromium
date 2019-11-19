@@ -7,10 +7,12 @@
 #include "chrome/browser/media/webrtc/desktop_media_list.h"
 #include "chrome/browser/ui/views/desktop_capture/desktop_media_list_view.h"
 #include "chrome/browser/ui/views/desktop_capture/desktop_media_picker_views.h"
+#include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/gfx/canvas.h"
 #include "ui/native_theme/native_theme.h"
-#include "ui/views/border.h"
+#include "ui/views/background.h"
+#include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 
@@ -26,7 +28,6 @@ DesktopMediaSourceViewStyle::DesktopMediaSourceViewStyle(
     const gfx::Rect& label_rect,
     gfx::HorizontalAlignment text_alignment,
     const gfx::Rect& image_rect,
-    int selection_border_thickness,
     int focus_rectangle_inset)
     : columns(columns),
       item_size(item_size),
@@ -34,7 +35,6 @@ DesktopMediaSourceViewStyle::DesktopMediaSourceViewStyle(
       label_rect(label_rect),
       text_alignment(text_alignment),
       image_rect(image_rect),
-      selection_border_thickness(selection_border_thickness),
       focus_rectangle_inset(focus_rectangle_inset) {}
 
 DesktopMediaSourceView::DesktopMediaSourceView(
@@ -44,9 +44,6 @@ DesktopMediaSourceView::DesktopMediaSourceView(
     : parent_(parent),
       source_id_(source_id),
       style_(style),
-      icon_view_(new views::ImageView()),
-      image_view_(new views::ImageView()),
-      label_(new views::Label()),
       selected_(false) {
   AddChildView(icon_view_);
   AddChildView(image_view_);
@@ -93,15 +90,14 @@ void DesktopMediaSourceView::SetSelected(bool selected) {
       }
     }
 
-    const SkColor border_color = GetNativeTheme()->GetSystemColor(
-        ui::NativeTheme::kColorId_FocusedBorderColor);
-    image_view_->SetBorder(views::CreateSolidBorder(
-        style_.selection_border_thickness, border_color));
+    image_view_->SetBackground(
+        views::CreateSolidBackground(GetNativeTheme()->GetSystemColor(
+            ui::NativeTheme::kColorId_FocusedMenuItemBackgroundColor)));
     label_->SetFontList(label_->font_list().Derive(0, gfx::Font::NORMAL,
                                                    gfx::Font::Weight::BOLD));
     parent_->OnSelectionChanged();
   } else {
-    image_view_->SetBorder(views::NullBorder());
+    image_view_->SetBackground(nullptr);
     label_->SetFontList(label_->font_list().Derive(0, gfx::Font::NORMAL,
                                                    gfx::Font::Weight::NORMAL));
   }
@@ -116,12 +112,6 @@ const char* DesktopMediaSourceView::GetClassName() const {
 void DesktopMediaSourceView::SetStyle(DesktopMediaSourceViewStyle style) {
   style_ = style;
   image_view_->SetBoundsRect(style_.image_rect);
-  if (selected_) {
-    const SkColor border_color = GetNativeTheme()->GetSystemColor(
-        ui::NativeTheme::kColorId_FocusedBorderColor);
-    image_view_->SetBorder(views::CreateSolidBorder(
-        style_.selection_border_thickness, border_color));
-  }
   icon_view_->SetBoundsRect(style_.icon_rect);
   icon_view_->SetImageSize(style_.icon_rect.size());
   label_->SetBoundsRect(style_.label_rect);
@@ -149,27 +139,10 @@ bool DesktopMediaSourceView::IsGroupFocusTraversable() const {
   return false;
 }
 
-void DesktopMediaSourceView::OnPaint(gfx::Canvas* canvas) {
-  View::OnPaint(canvas);
-  if (HasFocus()) {
-    gfx::Rect bounds(GetLocalBounds());
-    bounds.Inset(style_.focus_rectangle_inset, style_.focus_rectangle_inset);
-    canvas->DrawFocusRect(bounds);
-  }
-}
-
 void DesktopMediaSourceView::OnFocus() {
   View::OnFocus();
   SetSelected(true);
   ScrollRectToVisible(gfx::Rect(size()));
-  // We paint differently when focused.
-  SchedulePaint();
-}
-
-void DesktopMediaSourceView::OnBlur() {
-  View::OnBlur();
-  // We paint differently when focused.
-  SchedulePaint();
 }
 
 bool DesktopMediaSourceView::OnMousePressed(const ui::MouseEvent& event) {
@@ -201,5 +174,5 @@ void DesktopMediaSourceView::OnGestureEvent(ui::GestureEvent* event) {
 
 void DesktopMediaSourceView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->role = ax::mojom::Role::kButton;
-  node_data->SetName(label_->text());
+  node_data->SetName(label_->GetText());
 }

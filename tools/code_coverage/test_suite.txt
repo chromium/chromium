@@ -17,6 +17,7 @@ capture_unittests
 cast_unittests
 cc_unittests
 chrome_app_unittests
+color_unittests
 components_browsertests
 components_unittests
 compositor_unittests
@@ -46,7 +47,6 @@ interactive_ui_tests
 ipc_tests
 jingle_unittests
 latency_unittests
-leveldb_service_unittests
 libjingle_xmpp_unittests
 media_blink_unittests
 media_mojo_unittests

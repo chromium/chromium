@@ -13,13 +13,14 @@
 #include "cc/base/math_util.h"
 #include "cc/debug/debug_colors.h"
 #include "cc/layers/append_quads_data.h"
+#include "cc/paint/element_id.h"
 #include "cc/paint/filter_operations.h"
 #include "cc/trees/damage_tracker.h"
-#include "cc/trees/draw_property_utils.h"
 #include "cc/trees/effect_node.h"
 #include "cc/trees/layer_tree_impl.h"
 #include "cc/trees/occlusion.h"
 #include "cc/trees/transform_node.h"
+#include "components/viz/common/display/de_jelly.h"
 #include "components/viz/common/quads/content_draw_quad_base.h"
 #include "components/viz/common/quads/debug_border_draw_quad.h"
 #include "components/viz/common/quads/render_pass.h"
@@ -121,13 +122,11 @@ float RenderSurfaceImpl::GetDebugBorderWidth() const {
       layer_tree_impl_ ? layer_tree_impl_->device_scale_factor() : 1);
 }
 
-LayerImpl* RenderSurfaceImpl::MaskLayer() {
-  int mask_layer_id = OwningEffectNode()->mask_layer_id;
-  return layer_tree_impl_->LayerById(mask_layer_id);
-}
-
-bool RenderSurfaceImpl::HasMask() const {
-  return OwningEffectNode()->mask_layer_id != Layer::INVALID_ID;
+LayerImpl* RenderSurfaceImpl::BackdropMaskLayer() const {
+  ElementId mask_element_id = OwningEffectNode()->backdrop_mask_element_id;
+  if (!mask_element_id)
+    return nullptr;
+  return layer_tree_impl_->LayerByElementId(mask_element_id);
 }
 
 bool RenderSurfaceImpl::HasMaskingContributingSurface() const {
@@ -153,7 +152,7 @@ const FilterOperations& RenderSurfaceImpl::BackdropFilters() const {
   return OwningEffectNode()->backdrop_filters;
 }
 
-const gfx::RRectF& RenderSurfaceImpl::BackdropFilterBounds() const {
+base::Optional<gfx::RRectF> RenderSurfaceImpl::BackdropFilterBounds() const {
   return OwningEffectNode()->backdrop_filter_bounds;
 }
 
@@ -247,6 +246,9 @@ gfx::Rect RenderSurfaceImpl::CalculateClippedAccumulatedContentRect() {
         CalculateExpandedClipForFilters(target_to_surface);
   } else {
     clipped_accumulated_rect_in_target_space = clip_rect();
+  }
+  if (layer_tree_impl_->settings().allow_de_jelly_effect) {
+    clipped_accumulated_rect_in_target_space.Inset(0, -viz::MaxDeJellyHeight());
   }
   clipped_accumulated_rect_in_target_space.Intersect(
       accumulated_rect_in_target_space);
@@ -403,7 +405,7 @@ void RenderSurfaceImpl::AppendQuads(DrawMode draw_mode,
   viz::SharedQuadState* shared_quad_state =
       render_pass->CreateAndAppendSharedQuadState();
   shared_quad_state->SetAll(
-      draw_transform(), content_rect(), content_rect(),
+      draw_transform(), content_rect(), content_rect(), rounded_corner_bounds(),
       draw_properties_.clip_rect, draw_properties_.is_clipped, contents_opaque,
       draw_properties_.draw_opacity, BlendMode(), sorting_context_id);
 
@@ -416,12 +418,12 @@ void RenderSurfaceImpl::AppendQuads(DrawMode draw_mode,
                               GetDebugBorderWidth());
   }
 
+  LayerImpl* mask_layer = BackdropMaskLayer();
   viz::ResourceId mask_resource_id = 0;
   gfx::Size mask_texture_size;
   gfx::RectF mask_uv_rect;
   gfx::Vector2dF surface_contents_scale =
       OwningEffectNode()->surface_contents_scale;
-  PictureLayerImpl* mask_layer = static_cast<PictureLayerImpl*>(MaskLayer());
   // Resourceless mode does not support masks.
   if (draw_mode != DRAW_MODE_RESOURCELESS_SOFTWARE && mask_layer &&
       mask_layer->DrawsContent() && !mask_layer->bounds().IsEmpty()) {
@@ -435,20 +437,20 @@ void RenderSurfaceImpl::AppendQuads(DrawMode draw_mode,
                  "mask_layer_gpu_memory_usage",
                  mask_layer->GPUMemoryUsageInBytes());
 
-    if (mask_layer->mask_type() == Layer::LayerMaskType::MULTI_TEXTURE_MASK) {
-      TileMaskLayer(render_pass, shared_quad_state, unoccluded_content_rect);
-      return;
-    }
     gfx::SizeF mask_uv_size;
     mask_layer->GetContentsResourceId(&mask_resource_id, &mask_texture_size,
                                       &mask_uv_size);
-    gfx::SizeF unclipped_mask_target_size = gfx::ScaleSize(
-        gfx::SizeF(OwningEffectNode()->unscaled_mask_target_size),
-        surface_contents_scale.x(), surface_contents_scale.y());
+    gfx::SizeF unclipped_mask_target_size =
+        gfx::ScaleSize(gfx::SizeF(mask_layer->bounds()),
+                       surface_contents_scale.x(), surface_contents_scale.y());
+    gfx::Vector2dF mask_offset = gfx::ScaleVector2d(
+        mask_layer->offset_to_transform_parent(), surface_contents_scale.x(),
+        surface_contents_scale.y());
     // Convert content_rect from target space to normalized mask UV space.
     // Where |unclipped_mask_target_size| maps to |mask_uv_size|.
     mask_uv_rect = gfx::ScaleRect(
-        gfx::RectF(content_rect()),
+        // Translate content_rect into mask resource's space.
+        gfx::RectF(content_rect()) - mask_offset,
         mask_uv_size.width() / unclipped_mask_target_size.width(),
         mask_uv_size.height() / unclipped_mask_target_size.height());
   }
@@ -460,196 +462,6 @@ void RenderSurfaceImpl::AppendQuads(DrawMode draw_mode,
                surface_contents_scale, FiltersOrigin(), tex_coord_rect,
                !layer_tree_impl_->settings().enable_edge_anti_aliasing,
                OwningEffectNode()->backdrop_filter_quality);
-}
-
-void RenderSurfaceImpl::TileMaskLayer(
-    viz::RenderPass* render_pass,
-    viz::SharedQuadState* shared_quad_state,
-    const gfx::Rect& unoccluded_content_rect) {
-  DCHECK(MaskLayer());
-  DCHECK(Filters().IsEmpty());
-
-  LayerImpl* mask_layer = MaskLayer();
-  gfx::Vector2dF owning_layer_to_surface_contents_scale =
-      OwningEffectNode()->surface_contents_scale;
-
-  // Use the picture layer's AppendQuads logic to generate TileDrawQuads. These
-  // DrawQuads are used to generate tiled RenderPassDrawQuad for the mask.
-  std::unique_ptr<viz::RenderPass> temp_render_pass = viz::RenderPass::Create();
-  AppendQuadsData temp_append_quads_data;
-  mask_layer->AppendQuads(temp_render_pass.get(), &temp_append_quads_data);
-
-  auto* temp_quad = temp_render_pass->quad_list.front();
-  if (!temp_quad)
-    return;
-
-  // There are two spaces we are dealing with here:
-  // 1. quad space: This is the space where the draw quads generated by the
-  // PictureLayerImpl's logic are in. In other words, this is the space where
-  // the |temp_quad|'s rect is in.
-  // 2. surface space: This is the contents space of |this| render surface.
-  // Since |mask_layer|'s target is the render surface it's masking, the surface
-  // space is also the target space for the quads generated by
-  // PictureLayerImpl's logic.
-
-  gfx::Transform quad_space_to_surface_space_transform =
-      temp_quad->shared_quad_state->quad_to_target_transform;
-  // This transform should be a 2d scale + offset, so would be invertible.
-  gfx::Transform surface_space_to_quad_space_transform;
-  bool invertible = quad_space_to_surface_space_transform.GetInverse(
-      &surface_space_to_quad_space_transform);
-  DCHECK(invertible) << "RenderSurfaceImpl::TileMaskLayer created quads with "
-                        "non-invertible transform.";
-
-  // While converting from the TileDrawQuads to RenderPassDrawQuads, we keep the
-  // quad rects in the same space, and modify every other rect that is not in
-  // quad space accordingly.
-
-  // The |shared_quad_state| being passed in is generated with |this| render
-  // surface's draw properties. It holds a transform from the surface contents
-  // space to the surface target space. We want to change the origin space to
-  // match the |mask_layer|'s quad space, so we must include the transform from
-  // the quad space to the surface contents space. Then the transform is from
-  // the |mask_layer|'s quad space to our target space.
-  shared_quad_state->quad_to_target_transform.PreconcatTransform(
-      quad_space_to_surface_space_transform);
-
-  // Next, we need to modify the rects on |shared_quad_state| that are in
-  // surface's "quad space" (surface space) to quad space.
-  shared_quad_state->quad_layer_rect = MathUtil::ProjectEnclosingClippedRect(
-      surface_space_to_quad_space_transform,
-      shared_quad_state->quad_layer_rect);
-  shared_quad_state->visible_quad_layer_rect =
-      MathUtil::ProjectEnclosingClippedRect(
-          surface_space_to_quad_space_transform,
-          shared_quad_state->visible_quad_layer_rect);
-
-  // The |shared_quad_state|'s |quad_layer_rect| and |visible_quad_layer_rect|
-  // is set from content_rect(). content_rect() defines the size of the source
-  // texture to be masked. PictureLayerImpl's generated |quad_layer_rect| and
-  // |visible_quad_layer_rect| is from the mask layer's |bounds| and
-  // |visible_layer_rect|. These rect defines the size of the mask texture. The
-  // intersection of the two rects is the rect we can draw.
-  shared_quad_state->quad_layer_rect.Intersect(
-      temp_quad->shared_quad_state->quad_layer_rect);
-  shared_quad_state->visible_quad_layer_rect.Intersect(
-      temp_quad->shared_quad_state->visible_quad_layer_rect);
-
-  // Cache content_rect() and |unoccluded_content_rect| in quad space.
-  gfx::Rect content_rect_in_quad_space = MathUtil::MapEnclosingClippedRect(
-      surface_space_to_quad_space_transform, content_rect());
-  gfx::Rect unoccluded_content_rect_in_quad_space =
-      MathUtil::MapEnclosingClippedRect(surface_space_to_quad_space_transform,
-                                        unoccluded_content_rect);
-
-  // Generate RenderPassDrawQuads based on the temporary quads created by
-  // |mask_layer|.
-  for (auto* temp_quad : temp_render_pass->quad_list) {
-    gfx::Rect temp_quad_rect = temp_quad->rect;
-    // If the |temp_quad_rect| is entirely outside render surface's
-    // content_rect(), ignore the quad.
-    if (!temp_quad_rect.Intersects(content_rect_in_quad_space))
-      continue;
-
-    // We only care about the quads that are inside the content_rect().
-    gfx::Rect quad_rect =
-        gfx::IntersectRects(temp_quad_rect, content_rect_in_quad_space);
-
-    gfx::Rect visible_quad_rect =
-        gfx::IntersectRects(quad_rect, unoccluded_content_rect_in_quad_space);
-    if (visible_quad_rect.IsEmpty())
-      continue;
-
-    // |tex_coord_rect| is non-normalized sub-rect of the render surface's
-    // texture that is being masked. Its origin is (0,0) and it is in surface
-    // space. For example the |tex_coord_rect| for the entire texture would be
-    // (0,0 content_rect.width X content_rect.height).
-
-    // In order to calculate the |tex_coord_rect|, we calculate what quad's rect
-    // would be masking in the surface contents space, then remove the offset.
-    gfx::RectF tex_coord_rect = MathUtil::MapClippedRect(
-        quad_space_to_surface_space_transform, gfx::RectF(quad_rect));
-    tex_coord_rect.Offset(-content_rect().OffsetFromOrigin());
-
-    constexpr float backdrop_filter_quality = 1.0;
-    switch (temp_quad->material) {
-      case viz::DrawQuad::TILED_CONTENT: {
-        DCHECK_EQ(1U, temp_quad->resources.count);
-        // When the |temp_quad| is actually a texture, we need to calculate
-        // |mask_uv_rect|. The |mask_uv_rect| is the normalized sub-rect for
-        // applying the mask's texture. To get |mask_uv_rect|, we need the newly
-        // calculated |quad_rect| in the texture's space, then normalized by the
-        // texture's size.
-
-        // We are applying the |temp_quad|'s texture as a mask, so we start with
-        // the |tex_coord_rect| of the |temp_quad|.
-        gfx::RectF temp_tex_coord_rect =
-            viz::TileDrawQuad::MaterialCast(temp_quad)->tex_coord_rect;
-
-        // The |quad_rect| is in the same space as |temp_quad_rect|. Calculate
-        // the scale transform between the texture space and the quad space.
-        float scale_x = temp_tex_coord_rect.width() / temp_quad_rect.width();
-        float scale_y = temp_tex_coord_rect.height() / temp_quad_rect.height();
-        // Start by setting up the correct size of mask_uv_rect in texture
-        // space.
-        gfx::RectF mask_uv_rect(quad_rect.width() * scale_x,
-                                quad_rect.height() * scale_y);
-
-        // Now figure out what is the correct offset. Start with the original
-        // temp_tex_coord_rect's offset.
-        mask_uv_rect.Offset(temp_tex_coord_rect.OffsetFromOrigin());
-        // Next figure out what offset to apply by checking the difference in
-        // offset between |temp_quad_rect| and |quad_rect| which is
-        // intersected by the content_rect().
-        gfx::Vector2dF offset(quad_rect.OffsetFromOrigin());
-        offset -= temp_quad_rect.OffsetFromOrigin();
-        // Convert the difference in offset into texture space.
-        offset.Scale(scale_x, scale_y);
-        mask_uv_rect.Offset(offset);
-
-        // |mask_uv_rect| is normalized to [0..1] by the |mask_texture_size|.
-        gfx::Size mask_texture_size =
-            viz::TileDrawQuad::MaterialCast(temp_quad)->texture_size;
-        mask_uv_rect.Scale(1.f / mask_texture_size.width(),
-                           1.f / mask_texture_size.height());
-
-        auto* quad =
-            render_pass->CreateAndAppendDrawQuad<viz::RenderPassDrawQuad>();
-        quad->SetNew(shared_quad_state, quad_rect, visible_quad_rect, id(),
-                     temp_quad->resources.ids[0], mask_uv_rect,
-                     mask_texture_size, owning_layer_to_surface_contents_scale,
-                     FiltersOrigin(), tex_coord_rect,
-                     !layer_tree_impl_->settings().enable_edge_anti_aliasing,
-                     backdrop_filter_quality);
-      } break;
-      case viz::DrawQuad::SOLID_COLOR: {
-        SkColor temp_color =
-            viz::SolidColorDrawQuad::MaterialCast(temp_quad)->color;
-        // Check the alpha channel of the color. We apply the mask by
-        // multiplying with the alpha channel, so if the alpha channel is
-        // transparent, we skip this quad.
-        if (SkColorGetA(temp_color) == SK_AlphaTRANSPARENT)
-          continue;
-        SkAlpha solid = SK_AlphaOPAQUE;
-        DCHECK_EQ(SkColorGetA(temp_color), solid);
-
-        auto* quad =
-            render_pass->CreateAndAppendDrawQuad<viz::RenderPassDrawQuad>();
-        quad->SetNew(shared_quad_state, quad_rect, visible_quad_rect, id(), 0,
-                     gfx::RectF(), gfx::Size(),
-                     owning_layer_to_surface_contents_scale, FiltersOrigin(),
-                     tex_coord_rect,
-                     !layer_tree_impl_->settings().enable_edge_anti_aliasing,
-                     backdrop_filter_quality);
-      } break;
-      case viz::DrawQuad::DEBUG_BORDER:
-        NOTIMPLEMENTED();
-        break;
-      default:
-        NOTREACHED();
-        break;
-    }
-  }
 }
 
 }  // namespace cc

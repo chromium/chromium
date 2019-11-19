@@ -15,7 +15,6 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/child_process_data.h"
 #include "content/public/browser/render_process_host.h"
-#include "content/public/common/bind_interface_helpers.h"
 #include "content/public/common/child_process_host.h"
 #include "content/public/common/process_type.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
@@ -44,7 +43,7 @@ void HistogramController::OnHistogramDataCollected(
     int sequence_number,
     const std::vector<std::string>& pickled_histograms) {
   if (!BrowserThread::CurrentlyOn(BrowserThread::UI)) {
-    base::PostTaskWithTraits(
+    base::PostTask(
         FROM_HERE, {BrowserThread::UI},
         base::BindOnce(&HistogramController::OnHistogramDataCollected,
                        base::Unretained(this), sequence_number,
@@ -101,23 +100,23 @@ template <class T>
 void HistogramController::SetHistogramMemory(
     T* host,
     base::WritableSharedMemoryRegion shared_region) {
-  content::mojom::ChildHistogramFetcherFactoryPtr
-      child_histogram_fetcher_factory;
-  content::mojom::ChildHistogramFetcherPtr child_histogram_fetcher;
-  content::BindInterface(host, &child_histogram_fetcher_factory);
-  child_histogram_fetcher_factory->CreateFetcher(
-      std::move(shared_region), mojo::MakeRequest(&child_histogram_fetcher));
-  InsertChildHistogramFetcherInterface(host,
-                                       std::move(child_histogram_fetcher));
+  mojo::Remote<content::mojom::ChildHistogramFetcherFactory> factory;
+  host->BindReceiver(factory.BindNewPipeAndPassReceiver());
+
+  mojo::Remote<content::mojom::ChildHistogramFetcher> fetcher;
+  factory->CreateFetcher(std::move(shared_region),
+                         fetcher.BindNewPipeAndPassReceiver());
+  InsertChildHistogramFetcherInterface(host, std::move(fetcher));
 }
 
 template <class T>
 void HistogramController::InsertChildHistogramFetcherInterface(
     T* host,
-    content::mojom::ChildHistogramFetcherPtr child_histogram_fetcher) {
+    mojo::Remote<content::mojom::ChildHistogramFetcher>
+        child_histogram_fetcher) {
   // Broken pipe means remove this from the map. The map size is a proxy for
   // the number of known processes
-  child_histogram_fetcher.set_connection_error_handler(base::BindOnce(
+  child_histogram_fetcher.set_disconnect_handler(base::BindOnce(
       &HistogramController::RemoveChildHistogramFetcherInterface<T>,
       base::Unretained(this), base::Unretained(host)));
   GetChildHistogramFetcherMap<T>()[host] = std::move(child_histogram_fetcher);
@@ -168,11 +167,10 @@ void HistogramController::GetHistogramDataFromChildProcesses(
       ++pending_processes;
     }
   }
-  base::PostTaskWithTraits(
-      FROM_HERE, {BrowserThread::UI},
-      base::BindOnce(&HistogramController::OnPendingProcesses,
-                     base::Unretained(this), sequence_number, pending_processes,
-                     true));
+  base::PostTask(FROM_HERE, {BrowserThread::UI},
+                 base::BindOnce(&HistogramController::OnPendingProcesses,
+                                base::Unretained(this), sequence_number,
+                                pending_processes, true));
 }
 
 void HistogramController::GetHistogramData(int sequence_number) {
@@ -193,7 +191,7 @@ void HistogramController::GetHistogramData(int sequence_number) {
   }
   OnPendingProcesses(sequence_number, pending_processes, false);
 
-  base::PostTaskWithTraits(
+  base::PostTask(
       FROM_HERE, {BrowserThread::IO},
       base::BindOnce(&HistogramController::GetHistogramDataFromChildProcesses,
                      base::Unretained(this), sequence_number));

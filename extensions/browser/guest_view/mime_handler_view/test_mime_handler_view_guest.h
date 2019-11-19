@@ -54,7 +54,7 @@ class TestMimeHandlerViewGuest : public MimeHandlerViewGuest {
 
   // This is used to ensure pending tasks will not fire after this object is
   // destroyed.
-  base::WeakPtrFactory<TestMimeHandlerViewGuest> weak_ptr_factory_;
+  base::WeakPtrFactory<TestMimeHandlerViewGuest> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(TestMimeHandlerViewGuest);
 };

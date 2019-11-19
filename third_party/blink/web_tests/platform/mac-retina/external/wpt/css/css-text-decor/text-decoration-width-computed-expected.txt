@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+FAIL Property text-decoration-width value 'auto' computes to 'auto' assert_true: text-decoration-width doesn't seem to be supported in the computed style expected true got false
+FAIL Property text-decoration-width value 'from-font' computes to 'from-font' assert_true: text-decoration-width doesn't seem to be supported in the computed style expected true got false
+FAIL Property text-decoration-width value 'calc(10px - 8px)' computes to '2px' assert_true: text-decoration-width doesn't seem to be supported in the computed style expected true got false
+Harness: the test ran to completion.
+

@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/macros.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
@@ -19,9 +20,12 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/policy/cloud/user_policy_signin_service.h"
 #include "chrome/browser/policy/cloud/user_policy_signin_service_factory.h"
+#include "chrome/browser/policy/policy_conversions.h"
+#include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/signin/account_id_from_account_info.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/sync/profile_sync_service_factory.h"
@@ -30,20 +34,17 @@
 #include "chrome/browser/unified_consent/unified_consent_service_factory.h"
 #include "components/keyed_service/content/browser_context_keyed_service_shutdown_notifier_factory.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
+#include "components/policy/core/common/cloud/user_cloud_policy_manager.h"
 #include "components/prefs/pref_service.h"
-#include "components/signin/core/browser/account_consistency_method.h"
-#include "components/signin/core/browser/account_info.h"
-#include "components/signin/core/browser/signin_metrics.h"
-#include "components/signin/core/browser/signin_pref_names.h"
-#include "components/sync/base/sync_prefs.h"
+#include "components/signin/public/base/signin_metrics.h"
+#include "components/signin/public/base/signin_pref_names.h"
+#include "components/signin/public/identity_manager/accounts_mutator.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/signin/public/identity_manager/primary_account_mutator.h"
 #include "components/sync/driver/sync_service.h"
 #include "components/sync/driver/sync_user_settings.h"
-#include "components/unified_consent/feature.h"
 #include "components/unified_consent/unified_consent_service.h"
 #include "content/public/browser/storage_partition.h"
-#include "services/identity/public/cpp/accounts_mutator.h"
-#include "services/identity/public/cpp/identity_manager.h"
-#include "services/identity/public/cpp/primary_account_mutator.h"
 
 namespace {
 
@@ -73,16 +74,17 @@ class DiceTurnSyncOnHelperShutdownNotifierFactory
   DISALLOW_COPY_AND_ASSIGN(DiceTurnSyncOnHelperShutdownNotifierFactory);
 };
 
-AccountInfo GetAccountInfo(identity::IdentityManager* identity_manager,
-                           const std::string& account_id) {
+AccountInfo GetAccountInfo(signin::IdentityManager* identity_manager,
+                           const CoreAccountId& account_id) {
   auto maybe_account_info =
-      identity_manager->FindAccountInfoForAccountWithRefreshTokenByAccountId(
-          account_id);
+      identity_manager
+          ->FindExtendedAccountInfoForAccountWithRefreshTokenByAccountId(
+              account_id);
   return maybe_account_info.has_value() ? maybe_account_info.value()
                                         : AccountInfo();
 }
 
-class TokensLoadedCallbackRunner : public identity::IdentityManager::Observer {
+class TokensLoadedCallbackRunner : public signin::IdentityManager::Observer {
  public:
   // Calls |callback| when tokens are loaded.
   static void RunWhenLoaded(Profile* profile,
@@ -101,11 +103,10 @@ class TokensLoadedCallbackRunner : public identity::IdentityManager::Observer {
   }
 
  private:
-  TokensLoadedCallbackRunner(identity::IdentityManager* identity_manager,
+  TokensLoadedCallbackRunner(signin::IdentityManager* identity_manager,
                              KeyedServiceShutdownNotifier* shutdown_notifier,
                              base::OnceClosure callback)
       : identity_manager_(identity_manager),
-        scoped_identity_manager_observer_(this),
         callback_(std::move(callback)),
         shutdown_subscription_(shutdown_notifier->Subscribe(
             base::Bind(&TokensLoadedCallbackRunner::OnShutdown,
@@ -114,7 +115,7 @@ class TokensLoadedCallbackRunner : public identity::IdentityManager::Observer {
     scoped_identity_manager_observer_.Add(identity_manager_);
   }
 
-  // identity::IdentityManager::Observer implementation:
+  // signin::IdentityManager::Observer implementation:
   void OnRefreshTokensLoaded() override {
     std::move(callback_).Run();
     delete this;
@@ -122,12 +123,14 @@ class TokensLoadedCallbackRunner : public identity::IdentityManager::Observer {
 
   void OnShutdown() { delete this; }
 
-  identity::IdentityManager* identity_manager_;
-  ScopedObserver<identity::IdentityManager, TokensLoadedCallbackRunner>
-      scoped_identity_manager_observer_;
+  signin::IdentityManager* identity_manager_;
+  ScopedObserver<signin::IdentityManager, signin::IdentityManager::Observer>
+      scoped_identity_manager_observer_{this};
   base::OnceClosure callback_;
   std::unique_ptr<KeyedServiceShutdownNotifier::Subscription>
       shutdown_subscription_;
+
+  DISALLOW_COPY_AND_ASSIGN(TokensLoadedCallbackRunner);
 };
 
 }  // namespace
@@ -137,7 +140,7 @@ DiceTurnSyncOnHelper::DiceTurnSyncOnHelper(
     signin_metrics::AccessPoint signin_access_point,
     signin_metrics::PromoAction signin_promo_action,
     signin_metrics::Reason signin_reason,
-    const std::string& account_id,
+    const CoreAccountId& account_id,
     SigninAbortedMode signin_aborted_mode,
     std::unique_ptr<Delegate> delegate,
     base::OnceClosure callback)
@@ -154,8 +157,7 @@ DiceTurnSyncOnHelper::DiceTurnSyncOnHelper(
           DiceTurnSyncOnHelperShutdownNotifierFactory::GetInstance()
               ->Get(profile)
               ->Subscribe(base::Bind(&DiceTurnSyncOnHelper::AbortAndDelete,
-                                     base::Unretained(this)))),
-      weak_pointer_factory_(this) {
+                                     base::Unretained(this)))) {
   DCHECK(delegate_);
   DCHECK(profile_);
   // Should not start syncing if the profile is already authenticated
@@ -201,7 +203,7 @@ DiceTurnSyncOnHelper::DiceTurnSyncOnHelper(
     signin_metrics::AccessPoint signin_access_point,
     signin_metrics::PromoAction signin_promo_action,
     signin_metrics::Reason signin_reason,
-    const std::string& account_id,
+    const CoreAccountId& account_id,
     SigninAbortedMode signin_aborted_mode)
     : DiceTurnSyncOnHelper(
           profile,
@@ -281,11 +283,6 @@ void DiceTurnSyncOnHelper::OnEnterpriseAccountConfirmation(
 }
 
 void DiceTurnSyncOnHelper::TurnSyncOnWithProfileMode(ProfileMode profile_mode) {
-  // Make sure the syncing is requested, otherwise the IdentityManager
-  // will not be able to complete successfully.
-  syncer::SyncPrefs sync_prefs(profile_->GetPrefs());
-  sync_prefs.SetSyncRequested(true);
-
   switch (profile_mode) {
     case ProfileMode::CURRENT_PROFILE: {
       // If this is a new signin (no account authenticated yet) try loading
@@ -353,17 +350,38 @@ void DiceTurnSyncOnHelper::OnPolicyFetchComplete(bool success) {
   // PrimaryAccountMutator::ClearPrimaryAccount() here instead.
   DLOG_IF(ERROR, !success) << "Error fetching policy for user";
   DVLOG_IF(1, success) << "Policy fetch successful - completing signin";
+  if (VLOG_IS_ON(2)) {
+    // User cloud policies have been fetched from the server. Dump all policy
+    // values into log once these new policies are merged.
+    profile_->GetProfilePolicyConnector()
+        ->policy_service()
+        ->AddProviderUpdateObserver(this);
+  }
   SigninAndShowSyncConfirmationUI();
+}
+
+void DiceTurnSyncOnHelper::OnProviderUpdatePropagated(
+    policy::ConfigurationPolicyProvider* provider) {
+  if (provider != profile_->GetUserCloudPolicyManager())
+    return;
+  VLOG(2) << "Policies after sign in:";
+  VLOG(2) << policy::DictionaryPolicyConversions()
+                 .WithBrowserContext(profile_)
+                 .ToJSON();
+  profile_->GetProfilePolicyConnector()
+      ->policy_service()
+      ->RemoveProviderUpdateObserver(this);
 }
 
 void DiceTurnSyncOnHelper::CreateNewSignedInProfile() {
   // Create a new profile and have it call back when done so we can start the
   // signin flow.
-  size_t icon_index = g_browser_process->profile_manager()
-                          ->GetProfileAttributesStorage()
-                          .ChooseAvatarIconIndexForNewProfile();
+  ProfileAttributesStorage& storage =
+      g_browser_process->profile_manager()->GetProfileAttributesStorage();
+  size_t icon_index = storage.ChooseAvatarIconIndexForNewProfile();
+
   ProfileManager::CreateMultiProfileAsync(
-      base::UTF8ToUTF16(account_info_.email),
+      storage.ChooseNameForNewProfile(icon_index),
       profiles::GetDefaultAvatarIconUrl(icon_index),
       base::BindRepeating(&DiceTurnSyncOnHelper::OnNewProfileCreated,
                           weak_pointer_factory_.GetWeakPtr()));
@@ -443,6 +461,7 @@ void DiceTurnSyncOnHelper::SigninAndShowSyncConfirmationUI() {
     // progress.
     // TODO(https://crbug.com/811211): Remove this handle.
     sync_blocker_ = sync_service->GetSetupInProgressHandle();
+    sync_service->GetUserSettings()->SetSyncRequested(true);
     bool is_enterprise_user =
         !policy::BrowserPolicyConnector::IsNonEnterpriseUser(
             account_info_.email);
@@ -496,7 +515,8 @@ void DiceTurnSyncOnHelper::FinishSyncSetupAndDelete(
     case LoginUIService::SYNC_WITH_DEFAULT_SETTINGS: {
       syncer::SyncService* sync_service = GetSyncService();
       if (sync_service)
-        sync_service->GetUserSettings()->SetFirstSetupComplete();
+        sync_service->GetUserSettings()->SetFirstSetupComplete(
+            syncer::SyncFirstSetupCompleteSource::BASIC_FLOW);
       if (consent_service)
         consent_service->SetUrlKeyedAnonymizedDataCollectionEnabled(true);
       break;
@@ -506,7 +526,7 @@ void DiceTurnSyncOnHelper::FinishSyncSetupAndDelete(
           identity_manager_->GetPrimaryAccountMutator();
       DCHECK(primary_account_mutator);
       primary_account_mutator->ClearPrimaryAccount(
-          identity::PrimaryAccountMutator::ClearAccountsAction::kKeepAll,
+          signin::PrimaryAccountMutator::ClearAccountsAction::kKeepAll,
           signin_metrics::ABORT_SIGNIN,
           signin_metrics::SignoutDelete::IGNORE_METRIC);
       AbortAndDelete();

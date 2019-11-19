@@ -1,0 +1,4 @@
+include_rules = [
+  "+chrome/grit",
+  "+chrome/browser/preferences/android/java",
+]

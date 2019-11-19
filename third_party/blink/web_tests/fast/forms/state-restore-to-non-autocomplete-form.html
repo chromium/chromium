@@ -3,7 +3,7 @@
 <head>
 <script src="../../resources/js-test.js"></script>
 </head>
-<body onload="runTest()">
+<body onload="setTimeout(runTest, 1)">
 <p>Test to NOT restore form state to a form with autocomplete=off.</p>
 <div id="console"></div>
 
@@ -22,6 +22,7 @@
 </div>
 
 <script>
+window.jsTestIsAsync = true;
 
 function runTest()
 {
@@ -29,8 +30,6 @@ function runTest()
     var state = document.getElementById('emptyOnFirstVisit');
     if (!state.value) {
         // First visit.
-        if (window.testRunner)
-            testRunner.waitUntilDone();
         state.value = 'visited';
 
         document.getElementById('input1').value = 'value1';
@@ -51,8 +50,7 @@ function runTest()
         shouldBe('document.getElementById("input2").value', '"value2"');
         shouldBe('document.getElementById("textarea2").value', '"good"');
         shouldBe('document.getElementById("select2").value', '"BSD"');
-        if (window.testRunner)
-            testRunner.notifyDone();
+        finishJSTest();
     }
  }
 </script>

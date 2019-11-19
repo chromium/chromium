@@ -41,14 +41,10 @@ TEST(FilePathConversionTest, convert) {
   EXPECT_EQ(path_latin1.value(), WebStringToFilePath(test16bit_latin1).value());
   EXPECT_EQ(path_utf16.value(), WebStringToFilePath(test16bit_utf16).value());
 
-  EXPECT_STREQ("path",
-               FilePathToWebString(base::FilePath(FILE_PATH_LITERAL("path")))
-                   .Utf8()
-                   .data());
-  EXPECT_STREQ(test8bit_latin1.Utf8().data(),
-               FilePathToWebString(path_latin1).Utf8().data());
-  EXPECT_STREQ(test16bit_utf16.Utf8().data(),
-               FilePathToWebString(path_utf16).Utf8().data());
+  EXPECT_EQ("path",
+            FilePathToWebString(base::FilePath(FILE_PATH_LITERAL("path"))));
+  EXPECT_EQ(test8bit_latin1.Utf8(), FilePathToWebString(path_latin1).Utf8());
+  EXPECT_EQ(test16bit_utf16.Utf8(), FilePathToWebString(path_utf16).Utf8());
 }
 
 }  // namespace blink

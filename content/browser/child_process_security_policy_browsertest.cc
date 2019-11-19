@@ -50,7 +50,7 @@ IN_PROC_BROWSER_TEST_F(ChildProcessSecurityPolicyInProcessBrowserTest, NoLeak) {
   GURL url = GetTestUrl("", "simple_page.html");
   auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
 
-  NavigateToURL(shell(), url);
+  EXPECT_TRUE(NavigateToURL(shell(), url));
   {
     base::AutoLock lock(policy->lock_);
     EXPECT_EQ(RenderProcessHostImpl::IsSpareProcessKeptAtAllTimes() ? 2u : 1u,

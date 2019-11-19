@@ -1,0 +1,39 @@
+<!doctype HTML>
+<html class="reftest-wait">
+<meta charset="utf8">
+<title>Display Locking: contain: size block layout</title>
+<link rel="author" title="Vladimir Levin" href="mailto:vmpstr@chromium.org">
+<link rel="help" href="https://github.com/WICG/display-locking">
+<link rel="match" href="contain-size-block-ref.html">
+<script src="/common/reftest-wait.js"></script>
+<script src="../resources/utils.js"></script>
+
+<style>
+#border {
+  border: 1px solid black;
+  width: min-content;
+}
+#container {
+  contain: style layout size;
+  intrinsic-size: 0;
+}
+div:not([rendersubtree~="invisible"]) {
+  intrinsic-size: legacy !important;
+}
+</style>
+
+<div id="border">
+  <div id="container"></div>
+</div>
+
+<script>
+function runTest() {
+  const container = document.getElementById("container");
+  setInvisible(container).then(() => {
+    takeScreenshot();
+  });
+}
+
+window.onload = runTest;
+</script>
+</html>

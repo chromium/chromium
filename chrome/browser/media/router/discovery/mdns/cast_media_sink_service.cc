@@ -18,8 +18,7 @@
 namespace media_router {
 
 CastMediaSinkService::CastMediaSinkService()
-    : impl_(nullptr, base::OnTaskRunnerDeleter(nullptr)),
-      weak_ptr_factory_(this) {}
+    : impl_(nullptr, base::OnTaskRunnerDeleter(nullptr)) {}
 
 CastMediaSinkService::~CastMediaSinkService() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

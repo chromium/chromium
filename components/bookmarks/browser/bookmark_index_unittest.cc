@@ -72,8 +72,7 @@ class BookmarkIndexTest : public testing::Test {
 
   void AddBookmarks(const std::vector<TitleAndURL>& bookmarks) {
     for (size_t i = 0; i < bookmarks.size(); ++i) {
-      model_->AddURL(model_->other_node(), static_cast<int>(i),
-                     ASCIIToUTF16(bookmarks[i].first),
+      model_->AddURL(model_->other_node(), i, ASCIIToUTF16(bookmarks[i].first),
                      GURL(bookmarks[i].second));
     }
   }
@@ -457,7 +456,7 @@ TEST_F(BookmarkIndexTest, Remove) {
   AddBookmarks(titles, urls, base::size(titles));
 
   // Remove the node and make sure we don't get back any results.
-  model_->Remove(model_->other_node()->GetChild(0));
+  model_->Remove(model_->other_node()->children().front().get());
   ExpectMatches("A", nullptr, 0U);
 }
 
@@ -469,7 +468,8 @@ TEST_F(BookmarkIndexTest, ChangeTitle) {
 
   // Remove the node and make sure we don't get back any results.
   const char* expected[] = { "blah" };
-  model_->SetTitle(model_->other_node()->GetChild(0), ASCIIToUTF16("blah"));
+  model_->SetTitle(model_->other_node()->children().front().get(),
+                   ASCIIToUTF16("blah"));
   ExpectMatches("BlAh", expected, base::size(expected));
 }
 
@@ -481,7 +481,8 @@ TEST_F(BookmarkIndexTest, ChangeURL) {
   AddBookmarks(titles, urls, base::size(titles));
 
   const char* expected[] = { "a" };
-  model_->SetURL(model_->other_node()->GetChild(0), GURL("http://blah"));
+  model_->SetURL(model_->other_node()->children().front().get(),
+                 GURL("http://blah"));
   ExpectMatches("blah", expected, base::size(expected));
 }
 

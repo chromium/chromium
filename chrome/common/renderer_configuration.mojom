@@ -27,8 +27,9 @@ interface RendererConfiguration {
   // Configures the renderer with settings that won't change.
   // The |chromeos_listener| is only passed on Chrome OS when
   // the merge session is still running - otherwise not set.
-  SetInitialConfiguration(bool is_incognito_process,
-                          ChromeOSListener&? chromeos_listener);
+  SetInitialConfiguration(
+      bool is_incognito_process,
+      pending_receiver<ChromeOSListener>? chromeos_listener);
 
   // Update renderer configuration with settings that can change.
   SetConfiguration(DynamicParams params);

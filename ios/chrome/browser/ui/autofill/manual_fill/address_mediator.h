@@ -12,7 +12,7 @@ namespace autofill {
 class AutofillProfile;
 }  // namespace autofill
 
-@protocol ManualFillContentDelegate;
+@protocol ManualFillContentInjector;
 @protocol ManualFillAddressConsumer;
 @protocol AddressListDelegate;
 
@@ -28,7 +28,7 @@ extern NSString* const ManageAddressAccessibilityIdentifier;
 @property(nonatomic, weak) id<ManualFillAddressConsumer> consumer;
 
 // The delegate in charge of using the content selected by the user.
-@property(nonatomic, weak) id<ManualFillContentDelegate> contentDelegate;
+@property(nonatomic, weak) id<ManualFillContentInjector> contentInjector;
 
 // The delegate in charge of navigation.
 @property(nonatomic, weak) id<AddressListDelegate> navigationDelegate;

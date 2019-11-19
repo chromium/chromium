@@ -1,0 +1,18 @@
+<!--
+@WIN-DENY:EVENT_OBJECT_FOCUS*
+@UIA-WIN-DENY:AutomationFocusChanged*
+-->
+<!DOCTYPE html>
+<input id="value" type="text" value="something">
+<script>
+  var go_passes = [
+    () => document.querySelector('#value').setAttribute('value', 'new thing'),
+    () => document.querySelector('#value').removeAttribute('value'),
+  ];
+
+  var current_pass = 0;
+  function go() {
+    go_passes[current_pass++].call();
+    return current_pass < go_passes.length;
+  }
+</script>

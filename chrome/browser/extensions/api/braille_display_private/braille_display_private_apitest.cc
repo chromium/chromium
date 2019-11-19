@@ -68,10 +68,9 @@ class MockBrlapiConnection : public BrlapiConnection {
     data_->connected = true;
     on_data_ready_ = on_data_ready;
     if (!data_->pending_keys.empty()) {
-      base::PostTaskWithTraits(
-          FROM_HERE, {content::BrowserThread::IO},
-          base::BindOnce(&MockBrlapiConnection::NotifyDataReady,
-                         base::Unretained(this)));
+      base::PostTask(FROM_HERE, {content::BrowserThread::IO},
+                     base::BindOnce(&MockBrlapiConnection::NotifyDataReady,
+                                    base::Unretained(this)));
     }
     return CONNECT_SUCCESS;
   }
@@ -80,7 +79,7 @@ class MockBrlapiConnection : public BrlapiConnection {
     data_->connected = false;
     if (data_->reappear_on_disconnect) {
       data_->display_columns *= 2;
-      base::PostTaskWithTraits(
+      base::PostTask(
           FROM_HERE, {content::BrowserThread::IO},
           base::BindOnce(
               &BrailleControllerImpl::PokeSocketDirForTesting,
@@ -129,10 +128,9 @@ class MockBrlapiConnection : public BrlapiConnection {
   void NotifyDataReady() {
     on_data_ready_.Run();
     if (!data_->pending_keys.empty()) {
-      base::PostTaskWithTraits(
-          FROM_HERE, {content::BrowserThread::IO},
-          base::BindOnce(&MockBrlapiConnection::NotifyDataReady,
-                         base::Unretained(this)));
+      base::PostTask(FROM_HERE, {content::BrowserThread::IO},
+                     base::BindOnce(&MockBrlapiConnection::NotifyDataReady,
+                                    base::Unretained(this)));
     }
   }
 

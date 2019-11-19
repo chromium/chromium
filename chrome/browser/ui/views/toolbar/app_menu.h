@@ -9,13 +9,13 @@
 #include <memory>
 #include <utility>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observer.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
+#include "chrome/browser/ui/global_error/global_error_observer.h"
+#include "chrome/browser/ui/global_error/global_error_service.h"
 #include "components/bookmarks/browser/base_bookmark_model_observer.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_registrar.h"
 #include "ui/base/models/menu_model.h"
 #include "ui/views/controls/menu/menu_delegate.h"
 
@@ -24,7 +24,7 @@ class Browser;
 class ExtensionToolbarMenuView;
 
 namespace views {
-class MenuButton;
+class MenuButtonController;
 class MenuItemView;
 class MenuRunner;
 }
@@ -32,22 +32,18 @@ class MenuRunner;
 // AppMenu adapts the AppMenuModel to view's menu related classes.
 class AppMenu : public views::MenuDelegate,
                 public bookmarks::BaseBookmarkModelObserver,
-                public content::NotificationObserver,
+                public GlobalErrorObserver,
                 public base::SupportsWeakPtr<AppMenu> {
  public:
-  enum RunFlags {
-    NO_FLAGS = 0,
-    // Indicates that the menu was opened for a drag-and-drop operation.
-    FOR_DROP = 1 << 0,
-  };
-
-  AppMenu(Browser* browser, int run_flags, bool alert_reopen_tab_items);
+  AppMenu(Browser* browser, int run_types, bool alert_reopen_tab_items);
+  AppMenu(const AppMenu&) = delete;
+  AppMenu& operator=(const AppMenu&) = delete;
   ~AppMenu() override;
 
   void Init(ui::MenuModel* model);
 
-  // Shows the menu relative to the specified view.
-  void RunMenu(views::MenuButton* host);
+  // Shows the menu relative to the specified controller's button.
+  void RunMenu(views::MenuButtonController* host);
 
   // Closes the menu if it is open, otherwise does nothing.
   void CloseMenu();
@@ -55,7 +51,9 @@ class AppMenu : public views::MenuDelegate,
   // Whether the menu is currently visible to the user.
   bool IsShowing() const;
 
-  bool for_drop() const { return (run_flags_ & FOR_DROP) != 0; }
+  bool for_drop() const {
+    return (run_types_ & views::MenuRunner::FOR_DROP) != 0;
+  }
 
   views::MenuItemView* root_menu_item() { return root_; }
 
@@ -101,10 +99,8 @@ class AppMenu : public views::MenuDelegate,
   // bookmarks::BaseBookmarkModelObserver overrides:
   void BookmarkModelChanged() override;
 
-  // content::NotificationObserver overrides:
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override;
+  // GlobalErrorObserver:
+  void OnGlobalErrorsChanged() override;
 
   ExtensionToolbarMenuView* extension_toolbar_for_testing() {
     return extension_toolbar_;
@@ -186,18 +182,17 @@ class AppMenu : public views::MenuDelegate,
   // Used for managing "Recent tabs" menu items.
   std::unique_ptr<RecentTabsMenuModelDelegate> recent_tabs_menu_model_delegate_;
 
-  content::NotificationRegistrar registrar_;
+  ScopedObserver<GlobalErrorService, GlobalErrorObserver>
+      global_error_observer_{this};
 
-  // The bit mask of RunFlags.
-  const int run_flags_;
+  // The bit mask of views::MenuRunner::RunTypes.
+  const int run_types_;
 
   // Whether to show items relating to reopening the last-closed tab as alerted.
   const bool alert_reopen_tab_items_;
 
   // Records the time from when menu opens to when the user selects a menu item.
   base::ElapsedTimer menu_opened_timer_;
-
-  DISALLOW_COPY_AND_ASSIGN(AppMenu);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TOOLBAR_APP_MENU_H_

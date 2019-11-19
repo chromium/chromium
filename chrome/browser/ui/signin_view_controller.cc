@@ -21,11 +21,12 @@
 #include "chrome/browser/ui/singleton_tabs.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/webui_url_constants.h"
-#include "components/signin/core/browser/account_consistency_method.h"
+#include "components/signin/public/base/account_consistency_method.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/web_contents.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/gaia_urls.h"
-#include "services/identity/public/cpp/identity_manager.h"
+#include "google_apis/google_api_keys.h"
 #include "url/url_constants.h"
 
 namespace {
@@ -83,7 +84,7 @@ int FindDiceSigninTab(TabStripModel* tab_strip, const GURL& signin_url) {
 
 // Returns the promo action to be used when signing with a new account.
 signin_metrics::PromoAction GetPromoActionForNewAccount(
-    identity::IdentityManager* identity_manager,
+    signin::IdentityManager* identity_manager,
     signin::AccountConsistencyMethod account_consistency) {
   if (account_consistency != signin::AccountConsistencyMethod::kDice)
     return signin_metrics::PromoAction::PROMO_ACTION_NEW_ACCOUNT_PRE_DICE;
@@ -178,10 +179,29 @@ void SigninViewController::ShowDiceSigninTab(
     signin_metrics::PromoAction promo_action,
     const std::string& email_hint,
     const GURL& redirect_url) {
-  Profile* profile = browser->profile();
-  DCHECK(signin::DiceMethodGreaterOrEqual(
-      AccountConsistencyModeManager::GetMethodForProfile(profile),
-      signin::AccountConsistencyMethod::kDiceMigration));
+#if DCHECK_IS_ON()
+  if (!signin::DiceMethodGreaterOrEqual(
+          AccountConsistencyModeManager::GetMethodForProfile(
+              browser->profile()),
+          signin::AccountConsistencyMethod::kDiceMigration)) {
+    // Developers often fall into the trap of not configuring the OAuth client
+    // ID and client secret and then attempt to sign in to Chromium, which
+    // fail as the account consistency is disabled. Explicitly check that the
+    // OAuth client ID are configured when developers attempt to sign in to
+    // Chromium.
+    DCHECK(google_apis::HasOAuthClientConfigured())
+        << "You must configure the OAuth client ID and client secret in order "
+           "to sign in to Chromium. See instruction at "
+           "https://www.chromium.org/developers/how-tos/api-keys";
+
+    // Account consistency mode does not support signing in to Chrome due to
+    // some other unexpected reason. Signing in to Chrome is not supported.
+    NOTREACHED()
+        << "OAuth client ID and client secret is configured, but "
+           "the account consistency mode does not support signing in to "
+           "Chromium.";
+  }
+#endif
 
   // If redirect_url is empty, we would like to redirect to the NTP, but it's
   // not possible through the continue_url, because Gaia cannot redirect to
@@ -193,7 +213,7 @@ void SigninViewController::ShowDiceSigninTab(
   // because the set of valid URLs is not specified.
   std::string continue_url =
       (redirect_url.is_empty() || !redirect_url.SchemeIsHTTPOrHTTPS())
-          ? UIThreadSearchTermsData(profile).GoogleBaseURLValue()
+          ? UIThreadSearchTermsData().GoogleBaseURLValue()
           : redirect_url.spec();
 
   GURL signin_url =
@@ -247,7 +267,7 @@ void SigninViewController::ShowDiceEnableSyncTab(
   signin_metrics::Reason reason =
       signin_metrics::Reason::REASON_SIGNIN_PRIMARY_ACCOUNT;
   std::string email_to_use = email_hint;
-  identity::IdentityManager* identity_manager =
+  signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(browser->profile());
   if (identity_manager->HasPrimaryAccount()) {
     reason = signin_metrics::Reason::REASON_REAUTHENTICATION;

@@ -5,14 +5,14 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_DETAILS_MARKER_PAINTER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_DETAILS_MARKER_PAINTER_H_
 
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
 
-struct PaintInfo;
 class Path;
-class LayoutPoint;
 class LayoutDetailsMarker;
+struct PaintInfo;
+struct PhysicalOffset;
 
 class DetailsMarkerPainter {
   STACK_ALLOCATED();
@@ -25,7 +25,7 @@ class DetailsMarkerPainter {
 
  private:
   Path GetCanonicalPath() const;
-  Path GetPath(const LayoutPoint& origin) const;
+  Path GetPath(const PhysicalOffset& origin) const;
 
   const LayoutDetailsMarker& layout_details_marker_;
 };

@@ -18,7 +18,7 @@ class SchemeHostPortTest : public testing::Test {
   SchemeHostPortTest() = default;
   ~SchemeHostPortTest() override {
     // Reset any added schemes.
-    url::Shutdown();
+    url::ResetForTests();
   }
 
  private:

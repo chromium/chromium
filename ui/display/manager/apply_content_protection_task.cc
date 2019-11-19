@@ -4,69 +4,48 @@
 
 #include "ui/display/manager/apply_content_protection_task.h"
 
+#include <utility>
+#include <vector>
+
 #include "base/bind.h"
 #include "ui/display/manager/display_layout_manager.h"
+#include "ui/display/manager/display_util.h"
 #include "ui/display/types/display_snapshot.h"
 #include "ui/display/types/native_display_delegate.h"
 
 namespace display {
 
-namespace {
-
-bool GetHDCPCapableDisplays(
-    const DisplayLayoutManager& layout_manager,
-    std::vector<DisplaySnapshot*>* hdcp_capable_displays) {
-  for (DisplaySnapshot* display : layout_manager.GetDisplayStates()) {
-    switch (display->type()) {
-      case DISPLAY_CONNECTION_TYPE_UNKNOWN:
-        return false;
-      // DisplayPort, DVI, and HDMI all support HDCP.
-      case DISPLAY_CONNECTION_TYPE_DISPLAYPORT:
-      case DISPLAY_CONNECTION_TYPE_DVI:
-      case DISPLAY_CONNECTION_TYPE_HDMI:
-        hdcp_capable_displays->push_back(display);
-        break;
-      case DISPLAY_CONNECTION_TYPE_INTERNAL:
-      case DISPLAY_CONNECTION_TYPE_VGA:
-      case DISPLAY_CONNECTION_TYPE_NETWORK:
-        // No protections for these types. Do nothing.
-        break;
-      case DISPLAY_CONNECTION_TYPE_NONE:
-        NOTREACHED();
-        break;
-    }
-  }
-
-  return true;
-}
-
-}  // namespace
-
 ApplyContentProtectionTask::ApplyContentProtectionTask(
     DisplayLayoutManager* layout_manager,
     NativeDisplayDelegate* native_display_delegate,
-    const DisplayConfigurator::ContentProtections& requests,
-    const ResponseCallback& callback)
+    ContentProtectionManager::ContentProtections requests,
+    ResponseCallback callback)
     : layout_manager_(layout_manager),
       native_display_delegate_(native_display_delegate),
-      requests_(requests),
-      callback_(callback),
-      query_status_(true),
-      pending_requests_(0),
-      weak_ptr_factory_(this) {}
+      requests_(std::move(requests)),
+      callback_(std::move(callback)) {}
 
-ApplyContentProtectionTask::~ApplyContentProtectionTask() {}
+ApplyContentProtectionTask::~ApplyContentProtectionTask() {
+  if (callback_)
+    std::move(callback_).Run(Status::KILLED);
+}
 
 void ApplyContentProtectionTask::Run() {
   std::vector<DisplaySnapshot*> hdcp_capable_displays;
-  if (!GetHDCPCapableDisplays(*layout_manager_, &hdcp_capable_displays)) {
-    callback_.Run(false);
-    return;
+  for (DisplaySnapshot* display : layout_manager_->GetDisplayStates()) {
+    uint32_t protection_mask;
+    if (!GetContentProtectionMethods(display->type(), &protection_mask)) {
+      std::move(callback_).Run(Status::FAILURE);
+      return;
+    }
+
+    if (protection_mask & CONTENT_PROTECTION_METHOD_HDCP)
+      hdcp_capable_displays.push_back(display);
   }
 
   pending_requests_ = hdcp_capable_displays.size();
   if (pending_requests_ == 0) {
-    callback_.Run(true);
+    std::move(callback_).Run(Status::SUCCESS);
     return;
   }
 
@@ -74,80 +53,58 @@ void ApplyContentProtectionTask::Run() {
   // updated the state.
   for (DisplaySnapshot* display : hdcp_capable_displays) {
     native_display_delegate_->GetHDCPState(
-        *display,
-        base::Bind(&ApplyContentProtectionTask::OnHDCPStateUpdate,
-                   weak_ptr_factory_.GetWeakPtr(), display->display_id()));
+        *display, base::BindOnce(&ApplyContentProtectionTask::OnGetHDCPState,
+                                 weak_ptr_factory_.GetWeakPtr(), display));
   }
 }
 
-void ApplyContentProtectionTask::OnHDCPStateUpdate(int64_t display_id,
-                                                   bool success,
-                                                   HDCPState state) {
-  query_status_ &= success;
-  display_hdcp_state_map_[display_id] = state;
+void ApplyContentProtectionTask::OnGetHDCPState(DisplaySnapshot* display,
+                                                bool success,
+                                                HDCPState state) {
+  success_ &= success;
+
+  bool hdcp_enabled = state != HDCP_STATE_UNDESIRED;
+  bool hdcp_requested = GetDesiredProtectionMask(display->display_id()) &
+                        CONTENT_PROTECTION_METHOD_HDCP;
+
+  if (hdcp_enabled != hdcp_requested) {
+    hdcp_requests_.emplace_back(
+        display, hdcp_requested ? HDCP_STATE_DESIRED : HDCP_STATE_UNDESIRED);
+  }
+
   pending_requests_--;
 
   // Wait for all the requests before continuing.
   if (pending_requests_ != 0)
     return;
 
-  if (!query_status_) {
-    callback_.Run(false);
+  if (!success_) {
+    std::move(callback_).Run(Status::FAILURE);
     return;
   }
 
-  ApplyProtections();
-}
-
-void ApplyContentProtectionTask::ApplyProtections() {
-  std::vector<DisplaySnapshot*> hdcp_capable_displays;
-  if (!GetHDCPCapableDisplays(*layout_manager_, &hdcp_capable_displays)) {
-    callback_.Run(false);
-    return;
-  }
-
-  std::vector<std::pair<DisplaySnapshot*, HDCPState>> hdcp_requests;
-  // Figure out which displays need to have their HDCP state changed.
-  for (DisplaySnapshot* display : hdcp_capable_displays) {
-    uint32_t desired_mask = GetDesiredProtectionMask(display->display_id());
-
-    auto it = display_hdcp_state_map_.find(display->display_id());
-    // If the display can't be found, the display configuration changed.
-    if (it == display_hdcp_state_map_.end()) {
-      callback_.Run(false);
-      return;
-    }
-
-    bool hdcp_enabled = it->second != HDCP_STATE_UNDESIRED;
-    bool hdcp_requested = desired_mask & CONTENT_PROTECTION_METHOD_HDCP;
-    if (hdcp_enabled != hdcp_requested) {
-      hdcp_requests.push_back(std::make_pair(
-          display, hdcp_requested ? HDCP_STATE_DESIRED : HDCP_STATE_UNDESIRED));
-    }
-  }
-
-  pending_requests_ = hdcp_requests.size();
+  pending_requests_ = hdcp_requests_.size();
   // All the requested changes are the same as the current HDCP state. Nothing
   // to do anymore, just ack the content protection change.
   if (pending_requests_ == 0) {
-    callback_.Run(true);
+    std::move(callback_).Run(Status::SUCCESS);
     return;
   }
 
-  for (const auto& pair : hdcp_requests) {
+  for (const auto& pair : hdcp_requests_) {
     native_display_delegate_->SetHDCPState(
         *pair.first, pair.second,
-        base::Bind(&ApplyContentProtectionTask::OnHDCPStateApplied,
-                   weak_ptr_factory_.GetWeakPtr()));
+        base::BindOnce(&ApplyContentProtectionTask::OnSetHDCPState,
+                       weak_ptr_factory_.GetWeakPtr()));
   }
 }
 
-void ApplyContentProtectionTask::OnHDCPStateApplied(bool success) {
-  query_status_ &= success;
+void ApplyContentProtectionTask::OnSetHDCPState(bool success) {
+  success_ &= success;
   pending_requests_--;
 
   if (pending_requests_ == 0)
-    callback_.Run(query_status_);
+    std::move(callback_).Run(success_ ? Status::SUCCESS : Status::FAILURE);
 }
 
 uint32_t ApplyContentProtectionTask::GetDesiredProtectionMask(
@@ -157,7 +114,7 @@ uint32_t ApplyContentProtectionTask::GetDesiredProtectionMask(
   // In non-mirror mode, only request of client's display needs to be
   // fulfilled.
   if (layout_manager_->IsMirroring()) {
-    for (auto pair : requests_)
+    for (const auto& pair : requests_)
       desired_mask |= pair.second;
   } else {
     auto it = requests_.find(display_id);

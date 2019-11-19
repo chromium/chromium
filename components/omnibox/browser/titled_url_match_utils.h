@@ -30,13 +30,6 @@ AutocompleteMatch TitledUrlMatchToAutocompleteMatch(
     const AutocompleteInput& input,
     const base::string16& fixed_up_input_text);
 
-// Removes leading spaces from |title| before displaying, otherwise it looks
-// funny. In the process, corrects |title_match_positions| so the correct
-// characters are highlighted.
-void CorrectTitleAndMatchPositions(
-    base::string16* title,
-    TitledUrlMatch::MatchPositions* title_match_positions);
-
 }  // namespace bookmarks
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_TITLED_URL_MATCH_UTILS_H_

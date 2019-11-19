@@ -7,7 +7,7 @@
 #include <memory>
 
 #include "ios/chrome/browser/ui/util/ui_util.h"
-#import "ios/chrome/test/base/scoped_block_swizzler.h"
+#import "ios/testing/scoped_block_swizzler.h"
 #include "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 
@@ -86,22 +86,6 @@ class ContentSuggestionsCollectionUtilsTest : public PlatformTest {
   std::unique_ptr<ScopedBlockSwizzler> device_type_swizzler_;
   std::unique_ptr<ScopedBlockSwizzler> orientation_swizzler_;
 };
-
-TEST_F(ContentSuggestionsCollectionUtilsTest, centeredTilesMarginIPhone6) {
-  // Setup.
-  SetAsIPhone();
-
-  CGFloat result = centeredTilesMarginForWidth(375);
-  EXPECT_EQ(28, result);
-}
-
-TEST_F(ContentSuggestionsCollectionUtilsTest, centeredTilesMarginIPad) {
-  // Setup.
-  SetAsIPad();
-
-  CGFloat result = centeredTilesMarginForWidth(767);
-  EXPECT_EQ(209, result);
-}
 
 TEST_F(ContentSuggestionsCollectionUtilsTest, doodleFrameIPad) {
   // Setup.

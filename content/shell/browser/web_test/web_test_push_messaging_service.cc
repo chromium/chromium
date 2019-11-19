@@ -8,13 +8,11 @@
 #include "base/callback.h"
 #include "base/logging.h"
 #include "base/stl_util.h"
-#include "content/common/service_worker/service_worker_types.h"
 #include "content/public/browser/permission_type.h"
-#include "content/public/common/push_messaging_status.mojom.h"
-#include "content/public/common/push_subscription_options.h"
 #include "content/shell/browser/web_test/web_test_browser_context.h"
 #include "content/shell/browser/web_test/web_test_content_browser_client.h"
 #include "content/shell/browser/web_test/web_test_permission_manager.h"
+#include "third_party/blink/public/mojom/push_messaging/push_messaging_status.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration.mojom.h"
 
 namespace content {
@@ -49,28 +47,23 @@ WebTestPushMessagingService::WebTestPushMessagingService()
 
 WebTestPushMessagingService::~WebTestPushMessagingService() {}
 
-GURL WebTestPushMessagingService::GetEndpoint(bool standard_protocol) const {
-  return GURL(standard_protocol ? "https://example.com/StandardizedEndpoint/"
-                                : "https://example.com/LayoutTestEndpoint/");
-}
-
 void WebTestPushMessagingService::SubscribeFromDocument(
     const GURL& requesting_origin,
     int64_t service_worker_registration_id,
     int renderer_id,
     int render_frame_id,
-    const PushSubscriptionOptions& options,
+    blink::mojom::PushSubscriptionOptionsPtr options,
     bool user_gesture,
-    const RegisterCallback& callback) {
+    RegisterCallback callback) {
   SubscribeFromWorker(requesting_origin, service_worker_registration_id,
-                      options, callback);
+                      std::move(options), std::move(callback));
 }
 
 void WebTestPushMessagingService::SubscribeFromWorker(
     const GURL& requesting_origin,
     int64_t service_worker_registration_id,
-    const PushSubscriptionOptions& options,
-    const RegisterCallback& callback) {
+    blink::mojom::PushSubscriptionOptionsPtr options,
+    RegisterCallback callback) {
   blink::mojom::PermissionStatus permission_status =
       WebTestContentBrowserClient::Get()
           ->browser_context()
@@ -79,7 +72,7 @@ void WebTestPushMessagingService::SubscribeFromWorker(
                                 requesting_origin, requesting_origin);
 
   // The `userVisibleOnly` option is still required when subscribing.
-  if (!options.user_visible_only)
+  if (!options->user_visible_only)
     permission_status = blink::mojom::PermissionStatus::DENIED;
 
   if (permission_status == blink::mojom::PermissionStatus::GRANTED) {
@@ -88,13 +81,18 @@ void WebTestPushMessagingService::SubscribeFromWorker(
     std::vector<uint8_t> auth(kAuthentication,
                               kAuthentication + base::size(kAuthentication));
 
+    const std::string subscription_id = "layoutTestRegistrationId";
+    const GURL endpoint = CreateEndpoint(subscription_id);
+
     subscribed_service_worker_registration_ = service_worker_registration_id;
-    callback.Run("layoutTestRegistrationId", p256dh, auth,
-                 mojom::PushRegistrationStatus::SUCCESS_FROM_PUSH_SERVICE);
+    std::move(callback).Run(
+        subscription_id, endpoint, p256dh, auth,
+        blink::mojom::PushRegistrationStatus::SUCCESS_FROM_PUSH_SERVICE);
   } else {
-    callback.Run("registration_id", std::vector<uint8_t>() /* p256dh */,
-                 std::vector<uint8_t>() /* auth */,
-                 mojom::PushRegistrationStatus::PERMISSION_DENIED);
+    std::move(callback).Run(
+        "registration_id", GURL::EmptyGURL() /* endpoint */,
+        std::vector<uint8_t>() /* p256dh */, std::vector<uint8_t>() /* auth */,
+        blink::mojom::PushRegistrationStatus::PERMISSION_DENIED);
   }
 }
 
@@ -109,7 +107,8 @@ void WebTestPushMessagingService::GetSubscriptionInfo(
   std::vector<uint8_t> auth(kAuthentication,
                             kAuthentication + base::size(kAuthentication));
 
-  callback.Run(true /* is_valid */, p256dh, auth);
+  const GURL endpoint = CreateEndpoint(subscription_id);
+  callback.Run(true /* is_valid */, endpoint, p256dh, auth);
 }
 
 bool WebTestPushMessagingService::SupportNonVisibleMessages() {
@@ -117,20 +116,21 @@ bool WebTestPushMessagingService::SupportNonVisibleMessages() {
 }
 
 void WebTestPushMessagingService::Unsubscribe(
-    mojom::PushUnregistrationReason reason,
+    blink::mojom::PushUnregistrationReason reason,
     const GURL& requesting_origin,
     int64_t service_worker_registration_id,
     const std::string& sender_id,
-    const UnregisterCallback& callback) {
+    UnregisterCallback callback) {
   ClearPushSubscriptionId(
       WebTestContentBrowserClient::Get()->browser_context(), requesting_origin,
       service_worker_registration_id,
-      base::Bind(
-          callback,
+      base::BindOnce(
+          std::move(callback),
           service_worker_registration_id ==
                   subscribed_service_worker_registration_
-              ? mojom::PushUnregistrationStatus::SUCCESS_UNREGISTERED
-              : mojom::PushUnregistrationStatus::SUCCESS_WAS_NOT_REGISTERED));
+              ? blink::mojom::PushUnregistrationStatus::SUCCESS_UNREGISTERED
+              : blink::mojom::PushUnregistrationStatus::
+                    SUCCESS_WAS_NOT_REGISTERED));
   if (service_worker_registration_id ==
       subscribed_service_worker_registration_) {
     subscribed_service_worker_registration_ =
@@ -151,6 +151,11 @@ void WebTestPushMessagingService::DidDeleteServiceWorkerRegistration(
 void WebTestPushMessagingService::DidDeleteServiceWorkerDatabase() {
   subscribed_service_worker_registration_ =
       blink::mojom::kInvalidServiceWorkerRegistrationId;
+}
+
+GURL WebTestPushMessagingService::CreateEndpoint(
+    const std::string& subscription_id) const {
+  return GURL("https://example.com/StandardizedEndpoint/" + subscription_id);
 }
 
 }  // namespace content

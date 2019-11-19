@@ -9,7 +9,7 @@
 
 #include <unordered_map>
 
-#include "base/hash.h"
+#include "base/hash/hash.h"
 #include "ui/events/event.h"
 #include "ui/events/events_export.h"
 #include "ui/events/keycodes/dom/dom_key.h"

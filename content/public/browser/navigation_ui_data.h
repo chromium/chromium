@@ -9,7 +9,6 @@
 
 namespace content {
 
-// PlzNavigate
 // Copyable interface for embedders to pass opaque data to content/. It is
 // expected to be created on the UI thread at the start of the navigation, and
 // content/ will transfer it to the IO thread as a clone.
@@ -18,7 +17,7 @@ class NavigationUIData {
   virtual ~NavigationUIData() {}
 
   // Creates a new NavigationData that is a deep copy of the original.
-  virtual std::unique_ptr<NavigationUIData> Clone() const = 0;
+  virtual std::unique_ptr<NavigationUIData> Clone() = 0;
 };
 
 }  // namespace content

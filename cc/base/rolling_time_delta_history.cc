@@ -29,6 +29,13 @@ void RollingTimeDeltaHistory::InsertSample(base::TimeDelta time) {
   percentile_cache_.clear();
 }
 
+void RollingTimeDeltaHistory::RemoveOldestSample() {
+  if (sample_set_.size() > 0) {
+    sample_set_.erase(chronological_sample_deque_.front());
+    chronological_sample_deque_.pop_front();
+  }
+}
+
 void RollingTimeDeltaHistory::Clear() {
   chronological_sample_deque_.clear();
   sample_set_.clear();

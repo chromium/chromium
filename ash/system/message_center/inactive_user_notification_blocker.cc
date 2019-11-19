@@ -4,7 +4,7 @@
 
 #include "ash/system/message_center/inactive_user_notification_blocker.h"
 
-#include "ash/session/session_controller.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "components/account_id/account_id.h"
 #include "ui/message_center/message_center.h"

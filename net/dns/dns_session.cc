@@ -6,20 +6,24 @@
 
 #include <stdint.h>
 
+#include <cstdlib>
 #include <limits>
+#include <string>
 #include <utility>
 
 #include "base/bind.h"
 #include "base/lazy_instance.h"
 #include "base/macros.h"
-#include "base/metrics/field_trial.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/sample_vector.h"
 #include "base/rand_util.h"
 #include "base/stl_util.h"
+#include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_errors.h"
+#include "net/dns/dns_config.h"
 #include "net/dns/dns_socket_pool.h"
 #include "net/dns/dns_util.h"
 #include "net/log/net_log_event_type.h"
@@ -45,6 +49,8 @@ const int32_t kRTTMaxMs = 30000;
 const size_t kRTTBucketCount = 350;
 // Target percentile in the RTT histogram used for retransmission timeout.
 const unsigned kRTOPercentile = 99;
+// Number of samples to seed the histogram with.
+const unsigned kNumSeeds = 2;
 
 }  // namespace
 
@@ -56,7 +62,7 @@ struct DnsSession::ServerStats {
     // Seed histogram with 2 samples at |rtt_estimate| timeout.
     rtt_histogram->Accumulate(
         static_cast<base::HistogramBase::Sample>(rtt_estimate.InMilliseconds()),
-        2);
+        kNumSeeds);
   }
 
   // Count of consecutive failures after last success.
@@ -114,12 +120,9 @@ DnsSession::DnsSession(const DnsConfig& config,
                               config_.nameservers.size(), 1, 10, 11);
   UpdateTimeouts(NetworkChangeNotifier::GetConnectionType());
   InitializeServerStats();
-  NetworkChangeNotifier::AddConnectionTypeObserver(this);
 }
 
-DnsSession::~DnsSession() {
-  NetworkChangeNotifier::RemoveConnectionTypeObserver(this);
-}
+DnsSession::~DnsSession() = default;
 
 void DnsSession::UpdateTimeouts(NetworkChangeNotifier::ConnectionType type) {
   initial_timeout_ = GetTimeDeltaForConnectionTypeFromFieldTrialOrDefault(
@@ -131,20 +134,16 @@ void DnsSession::UpdateTimeouts(NetworkChangeNotifier::ConnectionType type) {
 
 void DnsSession::InitializeServerStats() {
   server_stats_.clear();
-  for (size_t i = 0;
-       i < config_.nameservers.size() + config_.dns_over_https_servers.size();
-       ++i) {
+  for (size_t i = 0; i < config_.nameservers.size(); ++i) {
     server_stats_.push_back(std::make_unique<ServerStats>(
         initial_timeout_, rtt_buckets_.Pointer()));
   }
-}
 
-void DnsSession::OnConnectionTypeChanged(
-    NetworkChangeNotifier::ConnectionType type) {
-  UpdateTimeouts(type);
-  const char* kTrialName = "AsyncDnsFlushServerStatsOnConnectionTypeChange";
-  if (base::FieldTrialList::FindFullName(kTrialName) == "enable") {
-    InitializeServerStats();
+  doh_server_stats_.clear();
+  for (size_t i = 0; i < config_.dns_over_https_servers.size(); ++i) {
+    doh_server_stats_.push_back(std::make_pair(
+        std::make_unique<ServerStats>(initial_timeout_, rtt_buckets_.Pointer()),
+        false));
   }
 }
 
@@ -167,13 +166,13 @@ unsigned DnsSession::NextGoodServerIndex(unsigned server_index) {
   unsigned oldest_server_failure_index = 0;
 
   do {
-    base::Time cur_server_failure = server_stats_[index]->last_failure;
     // If number of failures on this server doesn't exceed number of allowed
     // attempts, return its index.
     if (server_stats_[server_index]->last_failure_count < config_.attempts) {
       return index;
     }
     // Track oldest failed server.
+    base::Time cur_server_failure = server_stats_[index]->last_failure;
     if (cur_server_failure < oldest_server_failure) {
       oldest_server_failure = cur_server_failure;
       oldest_server_failure_index = index;
@@ -186,85 +185,162 @@ unsigned DnsSession::NextGoodServerIndex(unsigned server_index) {
   return oldest_server_failure_index;
 }
 
-unsigned DnsSession::NextGoodDnsOverHttpsServerIndex(unsigned server_index) {
-  DCHECK_GE(server_index, config_.nameservers.size());
-  DCHECK_LT(server_index,
-            config_.nameservers.size() + config_.dns_over_https_servers.size());
-  unsigned index = server_index;
+int DnsSession::NextGoodDohServerIndex(
+    unsigned doh_server_index,
+    DnsConfig::SecureDnsMode secure_dns_mode) {
+  DCHECK_GE(doh_server_index, 0u);
+  DCHECK_LT(doh_server_index, config_.dns_over_https_servers.size());
+  unsigned index = doh_server_index;
   base::Time oldest_server_failure(base::Time::Now());
-  unsigned oldest_server_failure_index = config_.nameservers.size();
+  int oldest_available_server_failure_index = -1;
 
   do {
-    base::Time cur_server_failure = server_stats_[index]->last_failure;
-    // If number of failures on this server doesn't exceed number of allowed
-    // attempts, return its index.
-    if (server_stats_[index]->last_failure_count < config_.attempts) {
-      return index;
+    // For a server to be considered "available", the server must have a
+    // successful probe status if we are in AUTOMATIC mode.
+    if (secure_dns_mode == DnsConfig::SecureDnsMode::SECURE ||
+        doh_server_stats_[index].second) {
+      // If number of failures on this server doesn't exceed |config_.attempts|,
+      // return its index. |config_.attempts| will generally be more restrictive
+      // than |kAutomaticModeFailureLimit|, although this is not guaranteed.
+      const ServerStats* stats =
+          GetServerStats(index, true /* is_doh_server */);
+      if (stats->last_failure_count < config_.attempts) {
+        return index;
+      }
+      // Track oldest failed available server.
+      base::Time cur_server_failure = stats->last_failure;
+      if (cur_server_failure < oldest_server_failure) {
+        oldest_server_failure = cur_server_failure;
+        oldest_available_server_failure_index = index;
+      }
     }
-    // Track oldest failed server.
-    if (cur_server_failure < oldest_server_failure) {
-      oldest_server_failure = cur_server_failure;
-      oldest_server_failure_index = index;
-    }
-    // Index of dns over https servers begins at nameservers.size().
-    unsigned doh_index = index - config_.nameservers.size();
-    doh_index = ((doh_index + 1) % config_.dns_over_https_servers.size());
-    index = doh_index + config_.nameservers.size();
-  } while (index != server_index);
+    index = (index + 1) % config_.dns_over_https_servers.size();
+  } while (index != doh_server_index);
 
-  // If we are here it means that there are no successful servers, so we have
-  // to use one that has failed oldest.
-  return oldest_server_failure_index;
+  // If we are here it means that there are either no available DoH servers or
+  // that all available DoH servers have at least |config_.attempts| consecutive
+  // failures. In the latter case, we'll return the available DoH server that
+  // failed least recently. In the former case we return -1.
+  return oldest_available_server_failure_index;
 }
 
-void DnsSession::RecordServerFailure(unsigned server_index) {
-  ++(server_stats_[server_index]->last_failure_count);
-  server_stats_[server_index]->last_failure = base::Time::Now();
+bool DnsSession::HasAvailableDohServer() {
+  for (const auto& doh_stats_ : doh_server_stats_) {
+    if (doh_stats_.second)
+      return true;
+  }
+  return false;
 }
 
-void DnsSession::RecordServerSuccess(unsigned server_index) {
-  server_stats_[server_index]->last_failure_count = 0;
-  server_stats_[server_index]->last_failure = base::Time();
-  server_stats_[server_index]->last_success = base::Time::Now();
+unsigned DnsSession::NumAvailableDohServers() {
+  unsigned count = 0;
+  for (const auto& doh_stats_ : doh_server_stats_) {
+    if (doh_stats_.second)
+      count++;
+  }
+  return count;
 }
 
-void DnsSession::RecordRTT(unsigned server_index, base::TimeDelta rtt) {
-  DCHECK_LT(server_index, server_stats_.size());
+DnsSession::ServerStats* DnsSession::GetServerStats(unsigned server_index,
+                                                    bool is_doh_server) {
+  DCHECK_GE(server_index, 0u);
+  if (!is_doh_server) {
+    DCHECK_LT(server_index, config_.nameservers.size());
+    return server_stats_[server_index].get();
+  } else {
+    DCHECK_LT(server_index, config_.dns_over_https_servers.size());
+    return doh_server_stats_[server_index].first.get();
+  }
+}
+
+void DnsSession::RecordServerFailure(unsigned server_index,
+                                     bool is_doh_server) {
+  ServerStats* stats = GetServerStats(server_index, is_doh_server);
+  ++(stats->last_failure_count);
+  stats->last_failure = base::Time::Now();
+
+  if (is_doh_server &&
+      stats->last_failure_count >= kAutomaticModeFailureLimit) {
+    SetProbeSuccess(server_index, false /* success */);
+  }
+}
+
+void DnsSession::RecordServerSuccess(unsigned server_index,
+                                     bool is_doh_server) {
+  ServerStats* stats = GetServerStats(server_index, is_doh_server);
+
+  // DoH queries can be sent using more than one URLRequestContext. A success
+  // from one URLRequestContext shouldn't zero out failures that may be
+  // consistently occurring for another URLRequestContext.
+  if (!is_doh_server)
+    stats->last_failure_count = 0;
+  stats->last_failure = base::Time();
+  stats->last_success = base::Time::Now();
+}
+
+void DnsSession::SetProbeSuccess(unsigned doh_server_index, bool success) {
+  DCHECK_GE(doh_server_index, 0u);
+  DCHECK_LT(doh_server_index, config_.dns_over_https_servers.size());
+
+  bool doh_available_before = HasAvailableDohServer();
+  doh_server_stats_[doh_server_index].second = success;
+
+  if (doh_available_before != HasAvailableDohServer())
+    NetworkChangeNotifier::TriggerNonSystemDnsChange();
+}
+
+void DnsSession::RecordRTT(unsigned server_index,
+                           bool is_doh_server,
+                           base::TimeDelta rtt,
+                           int rv) {
+  RecordRTTForHistogram(server_index, is_doh_server, rtt, rv);
+
+  ServerStats* stats = GetServerStats(server_index, is_doh_server);
 
   // Jacobson/Karels algorithm for TCP.
   // Using parameters: alpha = 1/8, delta = 1/4, beta = 4
-  base::TimeDelta& estimate = server_stats_[server_index]->rtt_estimate;
-  base::TimeDelta& deviation = server_stats_[server_index]->rtt_deviation;
+  base::TimeDelta& estimate = stats->rtt_estimate;
+  base::TimeDelta& deviation = stats->rtt_deviation;
   base::TimeDelta current_error = rtt - estimate;
   estimate += current_error / 8;  // * alpha
   base::TimeDelta abs_error = base::TimeDelta::FromInternalValue(
       std::abs(current_error.ToInternalValue()));
   deviation += (abs_error - deviation) / 4;  // * delta
 
-  // RTT values shouldn't be less than 0, but it shouldn't cause a crash if they
-  // are anyway, so clip to 0. See https://crbug.com/753568.
+  // RTT values shouldn't be less than 0, but it shouldn't cause a crash if
+  // they are anyway, so clip to 0. See https://crbug.com/753568.
   int32_t rtt_ms = rtt.InMilliseconds();
   if (rtt_ms < 0)
     rtt_ms = 0;
 
   // Histogram-based method.
-  server_stats_[server_index]->rtt_histogram->Accumulate(
+  stats->rtt_histogram->Accumulate(
       static_cast<base::HistogramBase::Sample>(rtt_ms), 1);
 }
 
 base::TimeDelta DnsSession::NextTimeout(unsigned server_index, int attempt) {
+  return NextTimeoutHelper(
+      GetServerStats(server_index, false /* is _doh_server */),
+      attempt / config_.nameservers.size());
+}
+
+base::TimeDelta DnsSession::NextDohTimeout(unsigned doh_server_index) {
+  return NextTimeoutHelper(
+      GetServerStats(doh_server_index, true /* is _doh_server */),
+      0 /* num_backoffs */);
+}
+
+base::TimeDelta DnsSession::NextTimeoutHelper(ServerStats* server_stats,
+                                              int num_backoffs) {
   // Respect initial timeout (from config or field trial) if it exceeds max.
   if (initial_timeout_ > max_timeout_)
     return initial_timeout_;
-
-  DCHECK_LT(server_index, server_stats_.size());
 
   static_assert(std::numeric_limits<base::HistogramBase::Count>::is_signed,
                 "histogram base count assumed to be signed");
 
   // Use fixed percentile of observed samples.
-  const base::SampleVector& samples =
-      *server_stats_[server_index]->rtt_histogram;
+  const base::SampleVector& samples = *server_stats->rtt_histogram;
 
   base::HistogramBase::Count total = samples.TotalCount();
   base::HistogramBase::Count remaining_count = kRTOPercentile * total / 100;
@@ -279,9 +355,6 @@ base::TimeDelta DnsSession::NextTimeout(unsigned server_index, int attempt) {
 
   timeout = std::max(timeout, base::TimeDelta::FromMilliseconds(kMinTimeoutMs));
 
-  // The timeout still doubles every full round.
-  unsigned num_backoffs = attempt / config_.nameservers.size();
-
   return std::min(timeout * (1 << num_backoffs), max_timeout_);
 }
 
@@ -295,8 +368,8 @@ std::unique_ptr<DnsSession::SocketLease> DnsSession::AllocateSocket(
   if (!socket.get())
     return std::unique_ptr<SocketLease>();
 
-  socket->NetLog().BeginEvent(NetLogEventType::SOCKET_IN_USE,
-                              source.ToEventParametersCallback());
+  socket->NetLog().BeginEventReferencingSource(NetLogEventType::SOCKET_IN_USE,
+                                               source);
 
   SocketLease* lease = new SocketLease(this, server_index, std::move(socket));
   return std::unique_ptr<SocketLease>(lease);
@@ -316,6 +389,44 @@ void DnsSession::FreeSocket(unsigned server_index,
   socket->NetLog().EndEvent(NetLogEventType::SOCKET_IN_USE);
 
   socket_pool_->FreeSocket(server_index, std::move(socket));
+}
+
+void DnsSession::RecordRTTForHistogram(unsigned server_index,
+                                       bool is_doh_server,
+                                       base::TimeDelta rtt,
+                                       int rv) {
+  std::string query_type;
+  std::string provider_id;
+  if (is_doh_server) {
+    // Secure queries are validated if the DoH server state is available.
+    if (doh_server_stats_[server_index].second)
+      query_type = "SecureValidated";
+    else
+      query_type = "SecureNotValidated";
+    provider_id = GetDohProviderIdForHistogramFromDohConfig(
+        config_.dns_over_https_servers[server_index]);
+  } else {
+    query_type = "Insecure";
+    provider_id = GetDohProviderIdForHistogramFromNameserver(
+        config_.nameservers[server_index]);
+  }
+  if (rv == OK || rv == ERR_NAME_NOT_RESOLVED) {
+    base::UmaHistogramMediumTimes(
+        base::StringPrintf("Net.DNS.DnsTransaction.%s.%s.SuccessTime",
+                           query_type.c_str(), provider_id.c_str()),
+        rtt);
+  } else {
+    base::UmaHistogramMediumTimes(
+        base::StringPrintf("Net.DNS.DnsTransaction.%s.%s.FailureTime",
+                           query_type.c_str(), provider_id.c_str()),
+        rtt);
+    if (is_doh_server) {
+      base::UmaHistogramSparse(
+          base::StringPrintf("Net.DNS.DnsTransaction.%s.%s.FailureError",
+                             query_type.c_str(), provider_id.c_str()),
+          std::abs(rv));
+    }
+  }
 }
 
 }  // namespace net

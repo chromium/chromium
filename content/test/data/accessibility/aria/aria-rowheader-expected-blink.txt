@@ -1,22 +1,23 @@
 rootWebArea
-++grid
-++++row selected=false
-++++++rowHeader name='Browser' selected=false
-++++++++staticText name='Browser'
-++++++++++inlineTextBox name='Browser'
-++++++cell name='Chrome' selected=false
-++++++++staticText name='Chrome'
-++++++++++inlineTextBox name='Chrome'
-++++++cell name='Safari' selected=false
-++++++++staticText name='Safari'
-++++++++++inlineTextBox name='Safari'
-++++row selected=false
-++++++rowHeader name='Rendering Engine' selected=false
-++++++++staticText name='Rendering Engine'
-++++++++++inlineTextBox name='Rendering Engine'
-++++++cell name='Blink' selected=false
-++++++++staticText name='Blink'
-++++++++++inlineTextBox name='Blink'
-++++++cell name='WebKit' selected=false
-++++++++staticText name='WebKit'
-++++++++++inlineTextBox name='WebKit'
+++genericContainer ignored
+++++grid
+++++++row selected=false
+++++++++rowHeader name='Browser' selected=false
+++++++++++staticText name='Browser'
+++++++++++++inlineTextBox name='Browser'
+++++++++cell name='Chrome' selected=false
+++++++++++staticText name='Chrome'
+++++++++++++inlineTextBox name='Chrome'
+++++++++cell name='Safari' selected=false
+++++++++++staticText name='Safari'
+++++++++++++inlineTextBox name='Safari'
+++++++row selected=false
+++++++++rowHeader name='Rendering Engine' selected=false
+++++++++++staticText name='Rendering Engine'
+++++++++++++inlineTextBox name='Rendering Engine'
+++++++++cell name='Blink' selected=false
+++++++++++staticText name='Blink'
+++++++++++++inlineTextBox name='Blink'
+++++++++cell name='WebKit' selected=false
+++++++++++staticText name='WebKit'
+++++++++++++inlineTextBox name='WebKit'

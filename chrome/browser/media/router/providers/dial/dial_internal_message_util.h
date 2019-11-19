@@ -11,7 +11,7 @@
 #include "base/macros.h"
 #include "base/values.h"
 #include "chrome/browser/media/router/discovery/dial/parsed_dial_app_info.h"
-#include "chrome/common/media_router/mojo/media_router.mojom.h"
+#include "chrome/common/media_router/mojom/media_router.mojom.h"
 
 namespace media_router {
 
@@ -95,7 +95,7 @@ class DialInternalMessageUtil final {
   ~DialInternalMessageUtil();
 
   // Returns |true| if |message| is a valid STOP_SESSION message.
-  bool IsStopSessionMessage(const DialInternalMessage& message) const;
+  static bool IsStopSessionMessage(const DialInternalMessage& message);
 
   // Returns a NEW_SESSION message to be sent to the page when the user requests
   // an app launch.

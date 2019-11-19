@@ -2,7 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ca">
 <translation id="1197088940767939838">Taronja</translation>
-<translation id="1273314450961659276">Configuració de síntesi de veu</translation>
+<translation id="1273314450961659276">Configuració de text a parla</translation>
 <translation id="1555130319947370107">Blau</translation>
 <translation id="1666326070478924810">Configuració d'Escolta la selecció</translation>
 <translation id="1966649499058910679">Destaca cada paraula a mesura que es digui</translation>
@@ -15,14 +15,14 @@
 <translation id="4827410568042294688">no seleccionat</translation>
 <translation id="5901630391730855834">Groc</translation>
 <translation id="6017514345406065928">Verd</translation>
-<translation id="6475604559827479857">Color per destacar paraules:</translation>
+<translation id="6475604559827479857">Color d'èmfasi paraules:</translation>
 <translation id="6837853484260746864">Selecciona una veu:</translation>
-<translation id="7261612856573623172">Veu de la síntesi de veu del sistema</translation>
+<translation id="7261612856573623172">Veu del text a parla del sistema</translation>
 <translation id="7317017974771324508">seleccionat parcialment</translation>
 <translation id="7768784765476638775">Escolta la selecció</translation>
 <translation id="7914870167134465181">Opcions per destacar</translation>
 <translation id="8033827949643255796">seleccionats</translation>
-<translation id="8324974933005349667">Personalitza la configuració de síntesi de veu</translation>
+<translation id="8324974933005349667">Personalitza la configuració de text a parla</translation>
 <translation id="8944511129464116546">marcada parcialment</translation>
 <translation id="992256792861109788">Rosa</translation>
 </translationbundle>

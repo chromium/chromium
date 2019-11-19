@@ -11,6 +11,7 @@ namespace blink {
 
 class Document;
 class Element;
+class ExceptionState;
 class ScriptPromise;
 class ScriptState;
 class TreeScope;
@@ -21,7 +22,9 @@ class DocumentPictureInPicture {
  public:
   static bool pictureInPictureEnabled(Document&);
 
-  static ScriptPromise exitPictureInPicture(ScriptState*, Document&);
+  static ScriptPromise exitPictureInPicture(ScriptState*,
+                                            Document&,
+                                            ExceptionState&);
 
   static Element* pictureInPictureElement(TreeScope&);
 };

@@ -10,7 +10,7 @@
 #include "chrome/browser/chromeos/arc/fileapi/arc_documents_provider_util.h"
 #include "components/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "content/public/browser/browser_thread.h"
-#include "storage/browser/fileapi/external_mount_points.h"
+#include "storage/browser/file_system/external_mount_points.h"
 
 using content::BrowserThread;
 

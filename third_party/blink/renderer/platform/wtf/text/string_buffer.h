@@ -29,8 +29,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_STRING_BUFFER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_STRING_BUFFER_H_
 
+#include "base/containers/span.h"
 #include "base/macros.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/assertions.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_impl.h"
 #include "third_party/blink/renderer/platform/wtf/text/unicode.h"
@@ -52,6 +53,11 @@ class StringBuffer {
   ~StringBuffer() = default;
 
   void Shrink(unsigned new_length);
+
+  // Prefer Span() to length()/Characters().
+  base::span<CharType> Span() {
+    return base::span<CharType>(Characters(), length());
+  }
 
   unsigned length() const { return data_ ? data_->length() : 0; }
   CharType* Characters() {

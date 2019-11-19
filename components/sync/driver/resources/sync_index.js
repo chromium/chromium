@@ -6,8 +6,9 @@
 //
 // TODO(akalin): BMM and options page does something similar, too.
 // Move this to util.js.
-if (cr.isWindows)
+if (cr.isWindows) {
   document.documentElement.setAttribute('os', 'win');
+}
 
 cr.ui.decorate('tabbox', cr.ui.TabBox);
 

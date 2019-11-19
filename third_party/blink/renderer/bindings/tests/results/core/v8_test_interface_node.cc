@@ -10,11 +10,14 @@
 // clang-format off
 #include "third_party/blink/renderer/bindings/tests/results/core/v8_test_interface_node.h"
 
+#include <algorithm>
+
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/js_event_handler.h"
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_configuration.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_node.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_test_interface_empty.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/html/custom/v0_custom_element_processing_stack.h"
@@ -23,6 +26,7 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/runtime_call_stats.h"
 #include "third_party/blink/renderer/platform/bindings/v8_object_constructor.h"
+#include "third_party/blink/renderer/platform/scheduler/public/cooperative_scheduling_manager.h"
 #include "third_party/blink/renderer/platform/wtf/get_ptr.h"
 
 namespace blink {
@@ -288,6 +292,95 @@ static void PerWorldBindingsTestInterfaceEmptyMethodOptionalBooleanArgMethodForM
   V8SetReturnValueForMainWorld(info, impl->perWorldBindingsTestInterfaceEmptyMethodOptionalBooleanArg(optional_boolean_argument));
 }
 
+static void TestInterfaceEmptyMethodOverloadWithVariadicArgs1Method(const v8::FunctionCallbackInfo<v8::Value>& info) {
+  ExceptionState exception_state(info.GetIsolate(), ExceptionState::kExecutionContext, "TestInterfaceNode", "testInterfaceEmptyMethodOverloadWithVariadicArgs");
+
+  TestInterfaceNode* impl = V8TestInterfaceNode::ToImpl(info.Holder());
+
+  bool boolean_arg;
+  Node* node_arg;
+  Vector<String> dom_string_variadic_args;
+  boolean_arg = NativeValueTraits<IDLBoolean>::NativeValue(info.GetIsolate(), info[0], exception_state);
+  if (exception_state.HadException())
+    return;
+
+  node_arg = V8Node::ToImplWithTypeCheck(info.GetIsolate(), info[1]);
+  if (!node_arg) {
+    exception_state.ThrowTypeError(ExceptionMessages::ArgumentNotOfType(1, "Node"));
+    return;
+  }
+
+  dom_string_variadic_args = ToImplArguments<IDLString>(info, 2, exception_state);
+  if (exception_state.HadException())
+    return;
+
+  V8SetReturnValueFast(info, impl->testInterfaceEmptyMethodOverloadWithVariadicArgs(boolean_arg, node_arg, dom_string_variadic_args), impl);
+}
+
+static void TestInterfaceEmptyMethodOverloadWithVariadicArgs2Method(const v8::FunctionCallbackInfo<v8::Value>& info) {
+  ExceptionState exception_state(info.GetIsolate(), ExceptionState::kExecutionContext, "TestInterfaceNode", "testInterfaceEmptyMethodOverloadWithVariadicArgs");
+
+  TestInterfaceNode* impl = V8TestInterfaceNode::ToImpl(info.Holder());
+
+  bool boolean_arg;
+  Vector<String> dom_string_variadic_args;
+  boolean_arg = NativeValueTraits<IDLBoolean>::NativeValue(info.GetIsolate(), info[0], exception_state);
+  if (exception_state.HadException())
+    return;
+
+  dom_string_variadic_args = ToImplArguments<IDLString>(info, 1, exception_state);
+  if (exception_state.HadException())
+    return;
+
+  V8SetReturnValueFast(info, impl->testInterfaceEmptyMethodOverloadWithVariadicArgs(boolean_arg, dom_string_variadic_args), impl);
+}
+
+static void TestInterfaceEmptyMethodOverloadWithVariadicArgsMethod(const v8::FunctionCallbackInfo<v8::Value>& info) {
+  scheduler::CooperativeSchedulingManager::Instance()->Safepoint();
+
+  bool is_arity_error = false;
+
+  switch (std::min(3, info.Length())) {
+    case 1:
+      if (true) {
+        TestInterfaceEmptyMethodOverloadWithVariadicArgs2Method(info);
+        return;
+      }
+      break;
+    case 2:
+      if (V8Node::HasInstance(info[1], info.GetIsolate())) {
+        TestInterfaceEmptyMethodOverloadWithVariadicArgs1Method(info);
+        return;
+      }
+      if (true) {
+        TestInterfaceEmptyMethodOverloadWithVariadicArgs2Method(info);
+        return;
+      }
+      break;
+    case 3:
+      if (V8Node::HasInstance(info[1], info.GetIsolate())) {
+        TestInterfaceEmptyMethodOverloadWithVariadicArgs1Method(info);
+        return;
+      }
+      if (true) {
+        TestInterfaceEmptyMethodOverloadWithVariadicArgs2Method(info);
+        return;
+      }
+      break;
+    default:
+      is_arity_error = true;
+  }
+
+  ExceptionState exception_state(info.GetIsolate(), ExceptionState::kExecutionContext, "TestInterfaceNode", "testInterfaceEmptyMethodOverloadWithVariadicArgs");
+  if (is_arity_error) {
+    if (info.Length() < 1) {
+      exception_state.ThrowTypeError(ExceptionMessages::NotEnoughArguments(1, info.Length()));
+      return;
+    }
+  }
+  exception_state.ThrowTypeError("No function was found that matched the signature provided.");
+}
+
 }  // namespace test_interface_node_v8_internal
 
 void V8TestInterfaceNode::NodeNameAttributeGetterCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
@@ -413,16 +506,11 @@ void V8TestInterfaceNode::PerWorldBindingsTestInterfaceEmptyMethodOptionalBoolea
   test_interface_node_v8_internal::PerWorldBindingsTestInterfaceEmptyMethodOptionalBooleanArgMethodForMainWorld(info);
 }
 
-static constexpr V8DOMConfiguration::AccessorConfiguration kV8TestInterfaceNodeAccessors[] = {
-    { "nodeName", V8TestInterfaceNode::NodeNameAttributeGetterCallback, V8TestInterfaceNode::NodeNameAttributeSetterCallback, V8PrivateProperty::kNoCachedAccessor, static_cast<v8::PropertyAttribute>(v8::None), V8DOMConfiguration::kOnPrototype, V8DOMConfiguration::kCheckHolder, V8DOMConfiguration::kHasSideEffect, V8DOMConfiguration::kAlwaysCallGetter, V8DOMConfiguration::kAllWorlds },
-    { "stringAttribute", V8TestInterfaceNode::StringAttributeAttributeGetterCallback, V8TestInterfaceNode::StringAttributeAttributeSetterCallback, V8PrivateProperty::kNoCachedAccessor, static_cast<v8::PropertyAttribute>(v8::None), V8DOMConfiguration::kOnPrototype, V8DOMConfiguration::kCheckHolder, V8DOMConfiguration::kHasSideEffect, V8DOMConfiguration::kAlwaysCallGetter, V8DOMConfiguration::kAllWorlds },
-    { "readonlyTestInterfaceEmptyAttribute", V8TestInterfaceNode::ReadonlyTestInterfaceEmptyAttributeAttributeGetterCallback, nullptr, V8PrivateProperty::kNoCachedAccessor, static_cast<v8::PropertyAttribute>(v8::ReadOnly), V8DOMConfiguration::kOnPrototype, V8DOMConfiguration::kCheckHolder, V8DOMConfiguration::kHasSideEffect, V8DOMConfiguration::kAlwaysCallGetter, V8DOMConfiguration::kAllWorlds },
-    { "eventHandlerAttribute", V8TestInterfaceNode::EventHandlerAttributeAttributeGetterCallback, V8TestInterfaceNode::EventHandlerAttributeAttributeSetterCallback, V8PrivateProperty::kNoCachedAccessor, static_cast<v8::PropertyAttribute>(v8::None), V8DOMConfiguration::kOnPrototype, V8DOMConfiguration::kCheckHolder, V8DOMConfiguration::kHasSideEffect, V8DOMConfiguration::kAlwaysCallGetter, V8DOMConfiguration::kAllWorlds },
-    { "perWorldBindingsReadonlyTestInterfaceEmptyAttribute", V8TestInterfaceNode::PerWorldBindingsReadonlyTestInterfaceEmptyAttributeAttributeGetterCallbackForMainWorld, nullptr, V8PrivateProperty::kNoCachedAccessor, static_cast<v8::PropertyAttribute>(v8::ReadOnly), V8DOMConfiguration::kOnPrototype, V8DOMConfiguration::kCheckHolder, V8DOMConfiguration::kHasSideEffect, V8DOMConfiguration::kAlwaysCallGetter, V8DOMConfiguration::kMainWorld },
-    { "perWorldBindingsReadonlyTestInterfaceEmptyAttribute", V8TestInterfaceNode::PerWorldBindingsReadonlyTestInterfaceEmptyAttributeAttributeGetterCallback, nullptr, V8PrivateProperty::kNoCachedAccessor, static_cast<v8::PropertyAttribute>(v8::ReadOnly), V8DOMConfiguration::kOnPrototype, V8DOMConfiguration::kCheckHolder, V8DOMConfiguration::kHasSideEffect, V8DOMConfiguration::kAlwaysCallGetter, V8DOMConfiguration::kNonMainWorlds },
-    { "reflectStringAttribute", V8TestInterfaceNode::ReflectStringAttributeAttributeGetterCallback, V8TestInterfaceNode::ReflectStringAttributeAttributeSetterCallback, V8PrivateProperty::kNoCachedAccessor, static_cast<v8::PropertyAttribute>(v8::None), V8DOMConfiguration::kOnPrototype, V8DOMConfiguration::kCheckHolder, V8DOMConfiguration::kHasSideEffect, V8DOMConfiguration::kAlwaysCallGetter, V8DOMConfiguration::kAllWorlds },
-    { "reflectUrlStringAttribute", V8TestInterfaceNode::ReflectUrlStringAttributeAttributeGetterCallback, V8TestInterfaceNode::ReflectUrlStringAttributeAttributeSetterCallback, V8PrivateProperty::kNoCachedAccessor, static_cast<v8::PropertyAttribute>(v8::None), V8DOMConfiguration::kOnPrototype, V8DOMConfiguration::kCheckHolder, V8DOMConfiguration::kHasSideEffect, V8DOMConfiguration::kAlwaysCallGetter, V8DOMConfiguration::kAllWorlds },
-};
+void V8TestInterfaceNode::TestInterfaceEmptyMethodOverloadWithVariadicArgsMethodCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
+  RUNTIME_CALL_TIMER_SCOPE_DISABLED_BY_DEFAULT(info.GetIsolate(), "Blink_TestInterfaceNode_testInterfaceEmptyMethodOverloadWithVariadicArgs");
+
+  test_interface_node_v8_internal::TestInterfaceEmptyMethodOverloadWithVariadicArgsMethod(info);
+}
 
 static constexpr V8DOMConfiguration::MethodConfiguration kV8TestInterfaceNodeMethods[] = {
     {"testInterfaceEmptyMethod", V8TestInterfaceNode::TestInterfaceEmptyMethodMethodCallback, 0, v8::None, V8DOMConfiguration::kOnPrototype, V8DOMConfiguration::kCheckHolder, V8DOMConfiguration::kDoNotCheckAccess, V8DOMConfiguration::kHasSideEffect, V8DOMConfiguration::kAllWorlds},
@@ -430,6 +518,7 @@ static constexpr V8DOMConfiguration::MethodConfiguration kV8TestInterfaceNodeMet
     {"perWorldBindingsTestInterfaceEmptyMethod", V8TestInterfaceNode::PerWorldBindingsTestInterfaceEmptyMethodMethodCallback, 0, v8::None, V8DOMConfiguration::kOnPrototype, V8DOMConfiguration::kCheckHolder, V8DOMConfiguration::kDoNotCheckAccess, V8DOMConfiguration::kHasSideEffect, V8DOMConfiguration::kNonMainWorlds},
     {"perWorldBindingsTestInterfaceEmptyMethodOptionalBooleanArg", V8TestInterfaceNode::PerWorldBindingsTestInterfaceEmptyMethodOptionalBooleanArgMethodCallbackForMainWorld, 0, v8::None, V8DOMConfiguration::kOnPrototype, V8DOMConfiguration::kCheckHolder, V8DOMConfiguration::kDoNotCheckAccess, V8DOMConfiguration::kHasSideEffect, V8DOMConfiguration::kMainWorld},
     {"perWorldBindingsTestInterfaceEmptyMethodOptionalBooleanArg", V8TestInterfaceNode::PerWorldBindingsTestInterfaceEmptyMethodOptionalBooleanArgMethodCallback, 0, v8::None, V8DOMConfiguration::kOnPrototype, V8DOMConfiguration::kCheckHolder, V8DOMConfiguration::kDoNotCheckAccess, V8DOMConfiguration::kHasSideEffect, V8DOMConfiguration::kNonMainWorlds},
+    {"testInterfaceEmptyMethodOverloadWithVariadicArgs", V8TestInterfaceNode::TestInterfaceEmptyMethodOverloadWithVariadicArgsMethodCallback, 1, v8::None, V8DOMConfiguration::kOnPrototype, V8DOMConfiguration::kCheckHolder, V8DOMConfiguration::kDoNotCheckAccess, V8DOMConfiguration::kHasSideEffect, V8DOMConfiguration::kAllWorlds},
 };
 
 static void InstallV8TestInterfaceNodeTemplate(
@@ -447,9 +536,21 @@ static void InstallV8TestInterfaceNodeTemplate(
   ALLOW_UNUSED_LOCAL(prototype_template);
 
   // Register IDL constants, attributes and operations.
+  static constexpr V8DOMConfiguration::AccessorConfiguration
+  kAccessorConfigurations[] = {
+      { "nodeName", V8TestInterfaceNode::NodeNameAttributeGetterCallback, V8TestInterfaceNode::NodeNameAttributeSetterCallback, V8PrivateProperty::kNoCachedAccessor, static_cast<v8::PropertyAttribute>(v8::None), V8DOMConfiguration::kOnPrototype, V8DOMConfiguration::kCheckHolder, V8DOMConfiguration::kHasSideEffect, V8DOMConfiguration::kAlwaysCallGetter, V8DOMConfiguration::kAllWorlds },
+      { "stringAttribute", V8TestInterfaceNode::StringAttributeAttributeGetterCallback, V8TestInterfaceNode::StringAttributeAttributeSetterCallback, V8PrivateProperty::kNoCachedAccessor, static_cast<v8::PropertyAttribute>(v8::None), V8DOMConfiguration::kOnPrototype, V8DOMConfiguration::kCheckHolder, V8DOMConfiguration::kHasSideEffect, V8DOMConfiguration::kAlwaysCallGetter, V8DOMConfiguration::kAllWorlds },
+      { "readonlyTestInterfaceEmptyAttribute", V8TestInterfaceNode::ReadonlyTestInterfaceEmptyAttributeAttributeGetterCallback, nullptr, V8PrivateProperty::kNoCachedAccessor, static_cast<v8::PropertyAttribute>(v8::ReadOnly), V8DOMConfiguration::kOnPrototype, V8DOMConfiguration::kCheckHolder, V8DOMConfiguration::kHasSideEffect, V8DOMConfiguration::kAlwaysCallGetter, V8DOMConfiguration::kAllWorlds },
+      { "eventHandlerAttribute", V8TestInterfaceNode::EventHandlerAttributeAttributeGetterCallback, V8TestInterfaceNode::EventHandlerAttributeAttributeSetterCallback, V8PrivateProperty::kNoCachedAccessor, static_cast<v8::PropertyAttribute>(v8::None), V8DOMConfiguration::kOnPrototype, V8DOMConfiguration::kCheckHolder, V8DOMConfiguration::kHasSideEffect, V8DOMConfiguration::kAlwaysCallGetter, V8DOMConfiguration::kAllWorlds },
+      { "perWorldBindingsReadonlyTestInterfaceEmptyAttribute", V8TestInterfaceNode::PerWorldBindingsReadonlyTestInterfaceEmptyAttributeAttributeGetterCallbackForMainWorld, nullptr, V8PrivateProperty::kNoCachedAccessor, static_cast<v8::PropertyAttribute>(v8::ReadOnly), V8DOMConfiguration::kOnPrototype, V8DOMConfiguration::kCheckHolder, V8DOMConfiguration::kHasSideEffect, V8DOMConfiguration::kAlwaysCallGetter, V8DOMConfiguration::kMainWorld },
+      { "perWorldBindingsReadonlyTestInterfaceEmptyAttribute", V8TestInterfaceNode::PerWorldBindingsReadonlyTestInterfaceEmptyAttributeAttributeGetterCallback, nullptr, V8PrivateProperty::kNoCachedAccessor, static_cast<v8::PropertyAttribute>(v8::ReadOnly), V8DOMConfiguration::kOnPrototype, V8DOMConfiguration::kCheckHolder, V8DOMConfiguration::kHasSideEffect, V8DOMConfiguration::kAlwaysCallGetter, V8DOMConfiguration::kNonMainWorlds },
+      { "reflectStringAttribute", V8TestInterfaceNode::ReflectStringAttributeAttributeGetterCallback, V8TestInterfaceNode::ReflectStringAttributeAttributeSetterCallback, V8PrivateProperty::kNoCachedAccessor, static_cast<v8::PropertyAttribute>(v8::None), V8DOMConfiguration::kOnPrototype, V8DOMConfiguration::kCheckHolder, V8DOMConfiguration::kHasSideEffect, V8DOMConfiguration::kAlwaysCallGetter, V8DOMConfiguration::kAllWorlds },
+      { "reflectUrlStringAttribute", V8TestInterfaceNode::ReflectUrlStringAttributeAttributeGetterCallback, V8TestInterfaceNode::ReflectUrlStringAttributeAttributeSetterCallback, V8PrivateProperty::kNoCachedAccessor, static_cast<v8::PropertyAttribute>(v8::None), V8DOMConfiguration::kOnPrototype, V8DOMConfiguration::kCheckHolder, V8DOMConfiguration::kHasSideEffect, V8DOMConfiguration::kAlwaysCallGetter, V8DOMConfiguration::kAllWorlds },
+  };
   V8DOMConfiguration::InstallAccessors(
       isolate, world, instance_template, prototype_template, interface_template,
-      signature, kV8TestInterfaceNodeAccessors, base::size(kV8TestInterfaceNodeAccessors));
+      signature, kAccessorConfigurations,
+      base::size(kAccessorConfigurations));
   V8DOMConfiguration::InstallMethods(
       isolate, world, instance_template, prototype_template, interface_template,
       signature, kV8TestInterfaceNodeMethods, base::size(kV8TestInterfaceNodeMethods));

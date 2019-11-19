@@ -17,6 +17,7 @@
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
 #include "media/base/audio_bus.h"
+#include "media/base/video_frame.h"
 #include "media/cast/cast_config.h"
 #include "media/cast/cast_environment.h"
 #include "media/cast/constants.h"
@@ -27,7 +28,6 @@ class Size;
 }
 
 namespace media {
-class VideoFrame;
 
 namespace cast {
 
@@ -35,9 +35,8 @@ class VideoFrameInput : public base::RefCountedThreadSafe<VideoFrameInput> {
  public:
   // Insert video frames into Cast sender. Frames will be encoded, packetized
   // and sent to the network.
-  virtual void InsertRawVideoFrame(
-      const scoped_refptr<media::VideoFrame>& video_frame,
-      const base::TimeTicks& capture_time) = 0;
+  virtual void InsertRawVideoFrame(scoped_refptr<media::VideoFrame> video_frame,
+                                   base::TimeTicks capture_time) = 0;
 
   // Creates a |VideoFrame| optimized for the encoder. When available, these
   // frames offer performance benefits, such as memory copy elimination. The

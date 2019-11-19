@@ -23,5 +23,8 @@
     <p>This tests that a cross-origin iframe with user gesture can vibrate.</p>
     <h4>DOMAIN</h4>
     <iframe id="i" src="http://localhost:8000/security/vibration/resources/vibrate-in-iframe-with-user-gesture-allowed.html"></iframe>
+    <script>
+      fetch_tests_from_window(document.getElementById("i").contentWindow);
+    </script>
 </body>
 </html>

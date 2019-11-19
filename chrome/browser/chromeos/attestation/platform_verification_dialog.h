@@ -31,15 +31,16 @@ class PlatformVerificationDialog : public views::DialogDelegateView,
     CONSENT_RESPONSE_DENY
   };
 
-  using ConsentCallback = base::Callback<void(ConsentResponse response)>;
+  using ConsentCallback = base::OnceCallback<void(ConsentResponse response)>;
 
   // Initializes a tab-modal dialog for |web_contents| and |requesting_origin|
   // and shows it. Returns a non-owning pointer to the widget so that caller can
   // close the dialog and cancel the request. The returned widget is only
-  // guaranteed to be valid before |callback| is called.
+  // guaranteed to be valid before |callback| is called. The |callback| will
+  // never be run when null is returned.
   static views::Widget* ShowDialog(content::WebContents* web_contents,
                                    const GURL& requesting_origin,
-                                   const ConsentCallback& callback);
+                                   ConsentCallback callback);
 
  protected:
   ~PlatformVerificationDialog() override;
@@ -47,14 +48,12 @@ class PlatformVerificationDialog : public views::DialogDelegateView,
  private:
   PlatformVerificationDialog(content::WebContents* web_contents,
                              const base::string16& domain,
-                             const ConsentCallback& callback);
+                             ConsentCallback callback);
 
   // views::DialogDelegate:
-  View* CreateExtraView() override;
   bool Cancel() override;
   bool Accept() override;
   bool Close() override;
-  base::string16 GetDialogButtonLabel(ui::DialogButton button) const override;
 
   // views::WidgetDelegate:
   ui::ModalType GetModalType() const override;

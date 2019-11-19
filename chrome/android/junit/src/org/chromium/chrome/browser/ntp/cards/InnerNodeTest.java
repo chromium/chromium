@@ -15,7 +15,7 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import org.junit.Before;
 import org.junit.Test;

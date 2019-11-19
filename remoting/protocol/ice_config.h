@@ -17,6 +17,13 @@ class DictionaryValue;
 }  // namespace base
 
 namespace remoting {
+
+namespace apis {
+namespace v1 {
+class GetIceConfigResponse;
+}  // namespace v1
+}  // namespace apis
+
 namespace protocol {
 
 struct IceConfig {
@@ -30,15 +37,12 @@ struct IceConfig {
   // fails.
   static IceConfig Parse(const base::DictionaryValue& dictionary);
   static IceConfig Parse(const std::string& config_json);
+  static IceConfig Parse(const apis::v1::GetIceConfigResponse& config);
 
   // Time when the config will stop being valid and need to be refreshed.
   base::Time expiration_time;
 
   std::vector<rtc::SocketAddress> stun_servers;
-
-  // Legacy GTURN relay servers.
-  std::vector<std::string> relay_servers;
-  std::string relay_token;
 
   // Standard TURN servers
   std::vector<cricket::RelayServerConfig> turn_servers;

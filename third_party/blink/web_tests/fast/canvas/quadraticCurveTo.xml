@@ -7,9 +7,6 @@
 	<head>
 		<title>Context2D.quadraticCurveTo Test Case</title>
 		<script>
-		    if (window.testRunner)
-			  testRunner.dumpAsTextWithPixelResults();
-
 			var ctx;
 			var current_point;
 			var current_center;

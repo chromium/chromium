@@ -6,9 +6,11 @@ implementing their own local storage and responding to remote changes. This
 guide is for developers interested in syncing data for their model type to the
 cloud using Chrome Sync. It describes the newest version of the API, known as
 Unified Sync and Storage (USS). There is also the deprecated [SyncableService
-API] (aka Directory), which as of early 2016 is still used by most model types.
+API] (aka Directory), which as of mid-2019 is still used by several legacy model
+types, but "wrapped into" USS (see [SyncableServiceBasedBridge]).
 
 [SyncableService API]: https://www.chromium.org/developers/design-documents/sync/syncable-service-api
+[SyncableServiceBasedBridge]: https://cs.chromium.org/chromium/src/components/sync/model_impl/syncable_service_based_bridge.h
 
 [TOC]
 
@@ -23,17 +25,19 @@ changes being dropped and never synced to the server, or data being duplicated
 due to being committed more than once.
 
 [`ModelTypeSyncBridge`][Bridge] is the interface the model code must implement.
-The bridge tends to be either a [`KeyedService`][KeyedService] or owned by one.
+The bridge is usually owned by a [`KeyedService`][KeyedService].
 The correct place for the bridge generally lies as close to where your model
 data is stored as possible, as the bridge needs to be able to inject metadata
 updates into any local data changes that occur.
 
-The bridge has access to a [`ModelTypeChangeProcessor`][MTCP] object, which it
-uses to communicate local changes to sync using the `Put` and `Delete` methods.
+The bridge owns a [`ModelTypeChangeProcessor`][MTCP] object, which it uses to
+communicate local changes to sync using the `Put` and `Delete` methods.
 The processor will communicate remote changes from sync to the bridge using the
-`ApplySyncChanges` method. [`MetadataChangeList`][MCL] is the way sync will
-communicate metadata changes to the storage mechanism. Note that it is typically
-implemented on a per-storage basis, not a per-type basis.
+`MergeSyncData` and `ApplySyncChanges` methods, respectively for the initial
+merge of remote and local data, and for incremental changes coming from sync.
+[`MetadataChangeList`][MCL] is the way sync communicates metadata changes to the
+storage mechanism. Note that it is typically implemented on a per-storage basis,
+not a per-type basis.
 
 [Bridge]: https://cs.chromium.org/chromium/src/components/sync/model/model_type_sync_bridge.h
 [KeyedService]: https://cs.chromium.org/chromium/src/components/keyed_service/core/keyed_service.h
@@ -62,7 +66,7 @@ contains the specifics) and be able generate both of these from it. For
 non-legacy types without significant performance concerns, these will generally
 be the same.
 
-The storage key is used to uniquely identify entities locally within a client.
+The storage key is meant to be the primary key in the local model/database.
 It’s what’s used to refer to entities most of the time and, as its name implies,
 the bridge needs to be able to look up local data and metadata entries in the
 store using it. Because it is a local identifier, it can change as part of
@@ -112,13 +116,12 @@ The store interface abstracts away the type and will handle setting up tables
 for the type’s data, so multiple `ModelTypeStore` objects for different types
 can share the same LevelDB backend just by specifying the same path and task
 runner. Sync already has a backend it uses for DeviceInfo that can be shared by
-other types via the
-[`ProfileSyncService::GetModelTypeStoreFactory`][StoreFactory] method.
+other types via the [`ModelTypeStoreService`][StoreService].
 
 [Store]: https://cs.chromium.org/chromium/src/components/sync/model/model_type_store.h
-[LevelDB]: http://leveldb.org/
-[WriteBatch]: https://cs.chromium.org/search/?q="class+WriteBatch"+file:model_type_store.h
-[StoreFactory]: https://cs.chromium.org/search/?q=GetModelTypeStoreFactory+file:profile_sync_service.h
+[LevelDB]: https://github.com/google/leveldb/blob/master/doc/index.md
+[WriteBatch]: https://cs.chromium.org/search/?q="class+WriteBatch"+file:model_type_store_base.h
+[StoreService]: https://cs.chromium.org/chromium/src/components/sync/model/model_type_store_service.h
 
 ## Implementing ModelTypeSyncBridge
 
@@ -242,10 +245,10 @@ a [`ModelError`][ModelError].
 
 This will inform sync of the error, which will stop all communications with the
 server so bad data doesn’t get synced. Since the metadata might no longer be
-valid, the bridge will asynchronously receive a `DisableSync` call (this is
-implemented by the abstract base class; subclasses don’t need to do anything).
-All the metadata will be cleared from the store (if possible), and the type will
-be started again from scratch on the next client restart.
+valid, the bridge will asynchronously receive an `ApplyStopSyncChanges` call
+with a non-null `MetadataChangeList` parameter. All the metadata will be cleared
+from the store (if possible), and the type will be started again from scratch on
+the next client restart.
 
 [ReportError]: https://cs.chromium.org/search/?q=ReportError+file:/model_type_change_processor.h
 [ModelError]: https://cs.chromium.org/chromium/src/components/sync/model/model_error.h
@@ -258,20 +261,23 @@ be started again from scratch on the next client restart.
     [`kModelTypeInfoMap`][info_map].
 *   Add it to the [proto value conversions][conversions] files.
 *   Register a [`ModelTypeController`][ModelTypeController] for your type in
-    [`ProfileSyncComponentsFactoryImpl::RegisterDataTypes`][RegisterDataTypes].
-*   Tell sync how to access your `ModelTypeSyncBridge` in
-    [`ChromeSyncClient::GetSyncBridgeForModelType`][GetSyncBridge].
+    [`ProfileSyncComponentsFactoryImpl::CreateCommonDataTypeControllers`][CreateCommonDataTypeControllers] or platform-specific equivalent in
+    [`ChromeSyncClient::CreateDataTypeControllers`][CreateDataTypeControllers].
 *   Add your KeyedService dependency to
     [`ProfileSyncServiceFactory`][ProfileSyncServiceFactory].
 *   Add to the [start order list][kStartOrder].
 *   Add an field for encrypted data to [`NigoriSpecifics`][NigoriSpecifics].
 *   Add to two encrypted types translation functions in
     [`nigori_util.cc`][nigori_util].
-*   Add a [preference][pref_names] for tracking whether your type is enabled.
-*   Map your type to the pref in [`GetPrefNameForDataType`][GetPrefName].
-*   Check whether you should be part of a [pref group][RegisterPrefGroup].
-*   Add to the `SyncModelTypes` enum and `SyncModelType` suffix in
-    [`histograms.xml`][histograms].
+*   If your type should have its own toggle in sync settings, add an entry to
+    the [`UserSelectableType`][UserSelectableType] enum, add a
+    [preference][pref_names] for tracking whether your type is enabled, and
+    map your type to the pref in [`GetPrefNameForType`][GetPrefName].
+*   Otherwise, if your type should be included in an existing toggle in sync
+    settings, add it in [`GetUserSelectableTypeInfo`]
+    [GetUserSelectableTypeInfo].
+*   Add to the `SyncModelTypes` enum in [`enums.xml`][enums] and to the
+    `SyncModelType` suffix in [`histograms.xml`][histograms].
 *   Add to the [`SYNC_DATA_TYPE_HISTOGRAM`][DataTypeHistogram] macro.
 
 [protocol]: https://cs.chromium.org/chromium/src/components/sync/protocol/
@@ -279,22 +285,24 @@ be started again from scratch on the next client restart.
 [info_map]: https://cs.chromium.org/search/?q="kModelTypeInfoMap%5B%5D"+file:model_type.cc
 [conversions]: https://cs.chromium.org/chromium/src/components/sync/protocol/proto_value_conversions.h
 [ModelTypeController]: https://cs.chromium.org/chromium/src/components/sync/driver/model_type_controller.h
-[RegisterDataTypes]: https://cs.chromium.org/search/?q="ProfileSyncComponentsFactoryImpl::RegisterDataTypes"
-[GetSyncBridge]: https://cs.chromium.org/search/?q=GetSyncBridgeForModelType+file:chrome_sync_client.cc
+[CreateCommonDataTypeControllers]: https://cs.chromium.org/search/?q="ProfileSyncComponentsFactoryImpl::CreateCommonDataTypeControllers"
+[CreateDataTypeControllers]: https://cs.chromium.org/search/?q="ChromeSyncClient::CreateDataTypeControllers"
 [ProfileSyncServiceFactory]: https://cs.chromium.org/search/?q=:ProfileSyncServiceFactory%5C(%5C)
 [kStartOrder]: https://cs.chromium.org/search/?q="kStartOrder[]"
 [NigoriSpecifics]: https://cs.chromium.org/chromium/src/components/sync/protocol/nigori_specifics.proto
 [nigori_util]: https://cs.chromium.org/chromium/src/components/sync/syncable/nigori_util.cc
+[UserSelectableType]: https://cs.chromium.org/chromium/src/components/sync/base/user_selectable_type.h?type=cs&q="enum+class+UserSelectableType"
 [pref_names]: https://cs.chromium.org/chromium/src/components/sync/base/pref_names.h
-[GetPrefName]: https://cs.chromium.org/search/?q=::GetPrefNameForDataType+file:sync_prefs.cc
-[RegisterPrefGroup]: https://cs.chromium.org/search/?q=::RegisterPrefGroups+file:sync_prefs.cc
+[GetPrefName]: https://cs.chromium.org/search/?q=GetPrefNameForType+file:sync_prefs.cc
+[GetUserSelectableTypeInfo]: https://cs.chromium.org/chromium/src/components/sync/base/user_selectable_type.cc?type=cs&q="UserSelectableTypeInfo+GetUserSelectableTypeInfo"+f:components/sync/base/user_selectable_type.cc
+[enums]: https://cs.chromium.org/chromium/src/tools/metrics/histograms/enums.xml
 [histograms]: https://cs.chromium.org/chromium/src/tools/metrics/histograms/histograms.xml
 [DataTypeHistogram]: https://cs.chromium.org/chromium/src/components/sync/base/data_type_histogram.h
 
 ## Testing
 
-The [`TwoClientUssSyncTest`][UssTest] suite is probably a good place to start
+The [`TwoClientTypedUrlsSyncTest`][UssTest] suite is probably a good place to start
 for integration testing. Especially note the use of a `StatusChangeChecker` to
 wait for events to happen.
 
-[UssTest]: https://cs.chromium.org/chromium/src/chrome/browser/sync/test/integration/two_client_uss_sync_test.cc
+[UssTest]: https://cs.chromium.org/chromium/src/chrome/browser/sync/test/integration/two_client_typed_urls_sync_test.cc

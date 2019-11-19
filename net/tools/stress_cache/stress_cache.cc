@@ -25,7 +25,7 @@
 #include "base/files/file_path.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/message_loop/message_loop.h"
+#include "base/message_loop/message_pump_type.h"
 #include "base/path_service.h"
 #include "base/process/launch.h"
 #include "base/process/process.h"
@@ -34,6 +34,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/single_thread_task_executor.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -132,7 +133,7 @@ class EntryWrapper {
   void DoOpen(int key);
 
  private:
-  void OnOpenDone(int key, int result);
+  void OnOpenDone(int key, disk_cache::EntryResult result);
   void DoRead();
   void OnReadDone(int result);
   void DoWrite();
@@ -166,24 +167,26 @@ void EntryWrapper::DoOpen(int key) {
     return DoRead();
 
   state_ = OPEN;
-  int rv = g_data->cache->OpenEntry(
-      g_data->keys[key], net::HIGHEST, &entry_,
-      base::Bind(&EntryWrapper::OnOpenDone, base::Unretained(this), key));
-  if (rv != net::ERR_IO_PENDING)
-    OnOpenDone(key, rv);
+  disk_cache::EntryResult result = g_data->cache->OpenEntry(
+      g_data->keys[key], net::HIGHEST,
+      base::BindOnce(&EntryWrapper::OnOpenDone, base::Unretained(this), key));
+  if (result.net_error() != net::ERR_IO_PENDING)
+    OnOpenDone(key, std::move(result));
 }
 
-void EntryWrapper::OnOpenDone(int key, int result) {
-  if (result == net::OK)
+void EntryWrapper::OnOpenDone(int key, disk_cache::EntryResult result) {
+  if (result.net_error() == net::OK) {
+    entry_ = result.ReleaseEntry();
     return DoRead();
+  }
 
   CHECK_EQ(state_, OPEN);
   state_ = CREATE;
   result = g_data->cache->CreateEntry(
-      g_data->keys[key], net::HIGHEST, &entry_,
-      base::Bind(&EntryWrapper::OnOpenDone, base::Unretained(this), key));
-  if (result != net::ERR_IO_PENDING)
-    OnOpenDone(key, result);
+      g_data->keys[key], net::HIGHEST,
+      base::BindOnce(&EntryWrapper::OnOpenDone, base::Unretained(this), key));
+  if (result.net_error() != net::ERR_IO_PENDING)
+    OnOpenDone(key, std::move(result));
 }
 
 void EntryWrapper::DoRead() {
@@ -195,7 +198,7 @@ void EntryWrapper::DoRead() {
   memset(buffer_->data(), 'k', kReadSize);
   int rv = entry_->ReadData(
       0, 0, buffer_.get(), kReadSize,
-      base::Bind(&EntryWrapper::OnReadDone, base::Unretained(this)));
+      base::BindOnce(&EntryWrapper::OnReadDone, base::Unretained(this)));
   if (rv != net::ERR_IO_PENDING)
     OnReadDone(rv);
 }
@@ -216,7 +219,7 @@ void EntryWrapper::DoWrite() {
                  g_data->writes, g_data->iteration, size, truncate ? 1 : 0);
   int rv = entry_->WriteData(
       0, 0, buffer_.get(), size,
-      base::Bind(&EntryWrapper::OnWriteDone, base::Unretained(this), size),
+      base::BindOnce(&EntryWrapper::OnWriteDone, base::Unretained(this), size),
       truncate);
   if (rv != net::ERR_IO_PENDING)
     OnWriteDone(size, rv);
@@ -248,7 +251,7 @@ void EntryWrapper::DoDelete(const std::string& key) {
   state_ = DOOM;
   int rv = g_data->cache->DoomEntry(
       key, net::HIGHEST,
-      base::Bind(&EntryWrapper::OnDeleteDone, base::Unretained(this)));
+      base::BindOnce(&EntryWrapper::OnDeleteDone, base::Unretained(this)));
   if (rv != net::ERR_IO_PENDING)
     OnDeleteDone(rv);
 }
@@ -306,13 +309,13 @@ void StressTheCache(int iteration) {
 
   base::Thread cache_thread("CacheThread");
   if (!cache_thread.StartWithOptions(
-          base::Thread::Options(base::MessageLoop::TYPE_IO, 0)))
+          base::Thread::Options(base::MessagePumpType::IO, 0)))
     return;
 
   g_data = new Data();
   g_data->iteration = iteration;
   g_data->cache = new disk_cache::BackendImpl(
-      path, mask, cache_thread.task_runner().get(), NULL);
+      path, mask, cache_thread.task_runner().get(), net::DISK_CACHE, nullptr);
   g_data->cache->SetMaxSize(cache_size);
   g_data->cache->SetFlags(disk_cache::kNoLoadProtection);
 
@@ -422,13 +425,14 @@ int main(int argc, const char* argv[]) {
 #else
   base::CommandLine::Init(argc, argv);
   logging::LoggingSettings settings;
-  settings.logging_dest = logging::LOG_TO_SYSTEM_DEBUG_LOG;
+  settings.logging_dest =
+      logging::LOG_TO_SYSTEM_DEBUG_LOG | logging::LOG_TO_STDERR;
   logging::InitLogging(settings);
 #endif
 
   // Some time for the memory manager to flush stuff.
   base::PlatformThread::Sleep(base::TimeDelta::FromSeconds(3));
-  base::MessageLoopForIO message_loop;
+  base::SingleThreadTaskExecutor io_task_executor(base::MessagePumpType::IO);
 
   char* end;
   long int iteration = strtol(argv[1], &end, 0);

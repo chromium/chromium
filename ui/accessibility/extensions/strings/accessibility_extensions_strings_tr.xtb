@@ -31,6 +31,7 @@
 <translation id="4769065380738716500">Resimler, alternatif metinleriyle değiştirildi.</translation>
 <translation id="4896660567607030658">Geri bildirim yok, sadece imleci göster.</translation>
 <translation id="4937901943818762779">Animasyonlu resimlere yalnızca bir defalığına izin verin.</translation>
+<translation id="4949131196216960195">Klavyeye Göz Atma uzantısını etkinleştirmek için &lt;span class='key'&gt;Arama&lt;/span&gt; + &lt;img src='increase_brightness.png'&gt; (Parlaklığı Artırma tuşu veya F7) tuşuna basın. Devre dışı bırakmak için bu tuşlara tekrar basın.</translation>
 <translation id="4954450790315188152">Caret Browsing etkinleştirildiğinde:</translation>
 <translation id="5041932793799765940">Renk düzenleme</translation>
 <translation id="5094574508723441140">Artırılmış Kontrast</translation>
@@ -59,7 +60,6 @@
 <translation id="7658239707568436148">İptal</translation>
 <translation id="786423340267544509">aria-describedat veya longdesc özelliği olan öğelere sınır ekleyin.</translation>
 <translation id="7942349550061667556">Kırmızı</translation>
-<translation id="8254860724243898966">Caret Browsing'i etkinleştirmek için &lt;span class='key'&gt;Alt&lt;/span&gt; + &lt;img src='increase_brightness.png'&gt; (Parlaklığı Artırma tuşu veya F7) tuşuna basın. Kapatmak için tekrar aynı tuşa basın.</translation>
 <translation id="8260673944985561857">Caret Browsing Seçenekleri</translation>
 <translation id="8321034316479930120">Animasyon Politikası</translation>
 <translation id="8480209185614411573">Yüksek Kontrast</translation>

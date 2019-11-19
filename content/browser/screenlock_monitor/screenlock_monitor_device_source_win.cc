@@ -25,8 +25,8 @@ ScreenlockMonitorDeviceSource::SessionMessageWindow::SessionMessageWindow() {
       base::BindOnce(base::IgnoreResult(&::WTSRegisterSessionNotification),
                      window_->hwnd(), NOTIFY_FOR_ALL_SESSIONS);
 
-  base::CreateCOMSTATaskRunnerWithTraits({})->PostTask(FROM_HERE,
-                                                       std::move(wts_register));
+  base::CreateCOMSTATaskRunner({base::ThreadPool()})
+      ->PostTask(FROM_HERE, std::move(wts_register));
 }
 
 ScreenlockMonitorDeviceSource::SessionMessageWindow::~SessionMessageWindow() {

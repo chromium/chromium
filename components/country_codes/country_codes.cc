@@ -28,8 +28,8 @@ namespace country_codes {
 
 namespace {
 
-// TODO(scottchen): remove this function after confirming if it only pertains
-// to obsolete OSes.
+// TODO(hcarmona/johntlee): remove this function after confirming if it only
+// pertains to obsolete OSes.
 int CountryCharsToCountryIDWithUpdate(char c1, char c2) {
   // SPECIAL CASE: In 2003, Yugoslavia renamed itself to Serbia and Montenegro.
   // Serbia and Montenegro dissolved their union in June 2006. Yugoslavia was

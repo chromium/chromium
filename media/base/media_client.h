@@ -9,7 +9,9 @@
 #include <string>
 #include <vector>
 
+#include "base/optional.h"
 #include "media/base/audio_codecs.h"
+#include "media/base/audio_parameters.h"
 #include "media/base/key_system_properties.h"
 #include "media/base/media_export.h"
 #include "media/base/media_types.h"
@@ -57,6 +59,10 @@ class MEDIA_EXPORT MediaClient {
   // Returns true if the compressed audio |codec| format is supported by the
   // audio sink.
   virtual bool IsSupportedBitstreamAudioCodec(AudioCodec codec) = 0;
+
+  // Optionally returns audio renderer algorithm parameters.
+  virtual base::Optional<::media::AudioRendererAlgorithmParameters>
+  GetAudioRendererAlgorithmParameters(AudioParameters audio_parameters) = 0;
 };
 
 }  // namespace media

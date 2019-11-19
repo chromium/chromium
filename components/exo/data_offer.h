@@ -36,8 +36,13 @@ enum class DndAction;
 // Object representing transferred data offered to a client.
 class DataOffer final : public ui::PropertyHandler {
  public:
-  explicit DataOffer(DataOfferDelegate* delegate);
-  ~DataOffer();
+  enum Purpose {
+    COPY_PASTE,
+    DRAG_DROP,
+  };
+
+  DataOffer(DataOfferDelegate* delegate, Purpose purpose);
+  ~DataOffer() override;
 
   void AddObserver(DataOfferObserver* observer);
   void RemoveObserver(DataOfferObserver* observer);
@@ -89,12 +94,33 @@ class DataOffer final : public ui::PropertyHandler {
   // for unpopulated (nullptr) data bytes in |data_| to be populated.
   std::vector<std::pair<std::string, base::ScopedFD>> pending_receive_requests_;
 
+  using SendDataCallback = base::RepeatingCallback<void(base::ScopedFD)>;
+  // Map from mime type (or other offered data type) to a callback that sends
+  // data for that type. Using callbacks allows us to delay making copies or
+  // doing other expensive processing until actually necessary.
+  base::flat_map<std::string, SendDataCallback> data_callbacks_;
+
   base::flat_set<DndAction> source_actions_;
   DndAction dnd_action_;
   base::ObserverList<DataOfferObserver>::Unchecked observers_;
-  base::WeakPtrFactory<DataOffer> weak_ptr_factory_;
+  Purpose purpose_;
+
+  base::WeakPtrFactory<DataOffer> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(DataOffer);
+};
+
+class ScopedDataOffer {
+ public:
+  ScopedDataOffer(DataOffer* data_offer, DataOfferObserver* observer);
+  ~ScopedDataOffer();
+  DataOffer* get() { return data_offer_; }
+
+ private:
+  DataOffer* const data_offer_;
+  DataOfferObserver* const observer_;
+
+  DISALLOW_COPY_AND_ASSIGN(ScopedDataOffer);
 };
 
 }  // namespace exo

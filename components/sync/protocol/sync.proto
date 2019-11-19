@@ -10,6 +10,9 @@
 
 syntax = "proto2";
 
+option java_multiple_files = true;
+option java_package = "org.chromium.components.sync.protocol";
+
 option optimize_for = LITE_RUNTIME;
 
 package sync_pb;
@@ -19,7 +22,6 @@ import "app_notification_specifics.proto";
 import "app_setting_specifics.proto";
 import "app_specifics.proto";
 import "arc_package_specifics.proto";
-import "article_specifics.proto";
 import "autofill_specifics.proto";
 import "bookmark_specifics.proto";
 import "client_commands.proto";
@@ -38,8 +40,9 @@ import "managed_user_setting_specifics.proto";
 import "managed_user_shared_setting_specifics.proto";
 import "managed_user_specifics.proto";
 import "managed_user_whitelist_specifics.proto";
-import "mountain_share_specifics.proto";
 import "nigori_specifics.proto";
+import "os_preference_specifics.proto";
+import "os_priority_preference_specifics.proto";
 import "password_specifics.proto";
 import "preference_specifics.proto";
 import "printer_specifics.proto";
@@ -57,7 +60,8 @@ import "typed_url_specifics.proto";
 import "unique_position.proto";
 import "user_consent_specifics.proto";
 import "user_event_specifics.proto";
-import "wifi_credential_specifics.proto";
+import "web_app_specifics.proto";
+import "wifi_configuration_specifics.proto";
 
 // Used for inspecting how long we spent performing operations in different
 // backends. All times must be in millis.
@@ -113,7 +117,9 @@ message EntitySpecifics {
     PreferenceSpecifics preference = 37702;
     TypedUrlSpecifics typed_url = 40781;
     ThemeSpecifics theme = 41210;
-    AppNotification app_notification = 45184;
+    // TODO(crbug.com/1012648): |app_notification| isn't used by the client
+    // anymore, but the server still needs it for now.
+    AppNotification app_notification = 45184 [deprecated = true];
     PasswordSpecifics password = 45873;
     NigoriSpecifics nigori = 47745;
     ExtensionSpecifics extension = 48119;
@@ -124,8 +130,13 @@ message EntitySpecifics {
     ExtensionSettingSpecifics extension_setting = 96159;
     AppSettingSpecifics app_setting = 103656;
     HistoryDeleteDirectiveSpecifics history_delete_directive = 150251;
-    SyncedNotificationSpecifics synced_notification = 153108;
-    SyncedNotificationAppInfoSpecifics synced_notification_app_info = 235816;
+    // TODO(crbug.com/1012648): |synced_notification| and
+    // |synced_notification_app_info| aren't used by the client anymore, but the
+    // server still needs them for now.
+    SyncedNotificationSpecifics synced_notification = 153108
+        [deprecated = true];
+    SyncedNotificationAppInfoSpecifics synced_notification_app_info = 235816
+        [deprecated = true];
     DeviceInfoSpecifics device_info = 154522;
     ExperimentsSpecifics experiments = 161496;
     PriorityPreferenceSpecifics priority_preference = 163425;
@@ -133,12 +144,13 @@ message EntitySpecifics {
     FaviconTrackingSpecifics favicon_tracking = 181534;
     FaviconImageSpecifics favicon_image = 182019;
     ManagedUserSettingSpecifics managed_user_setting = 186662;
-    ManagedUserSpecifics managed_user = 194582;
-    ManagedUserSharedSettingSpecifics managed_user_shared_setting = 202026;
+    // TODO(tschumann): Remove once server-side dependencies are resolved.
+    ManagedUserSpecifics managed_user = 194582 [deprecated = true];
+    // TODO(tschumann): Remove once server-side dependencies are resolved.
+    ManagedUserSharedSettingSpecifics managed_user_shared_setting = 202026
+        [deprecated = true];
     ManagedUserWhitelistSpecifics managed_user_whitelist = 306060;
-    ArticleSpecifics article = 223759;
     AppListSpecifics app_list = 229170;
-    WifiCredentialSpecifics wifi_credential = 218175;
     AutofillWalletSpecifics autofill_wallet = 306270;
     WalletMetadataSpecifics wallet_metadata = 330441;
     ArcPackageSpecifics arc_package = 340906;
@@ -146,10 +158,19 @@ message EntitySpecifics {
     ReadingListSpecifics reading_list = 411028;
     UserEventSpecifics user_event = 455206;
     UserConsentSpecifics user_consent = 556014;
-    MountainShareSpecifics mountain_share = 545005;
     SendTabToSelfSpecifics send_tab_to_self = 601980;
     SecurityEventSpecifics security_event = 600372;
+    WebAppSpecifics web_app = 673225;
+    WifiConfigurationSpecifics wifi_configuration = 662827;
+    OsPreferenceSpecifics os_preference = 702141;
+    OsPriorityPreferenceSpecifics os_priority_preference = 703915;
   }
+  reserved 218175;
+  reserved "wifi_credential";
+  reserved 223759;
+  reserved "article";
+  reserved 545005;
+  reserved "mountain_share";
 }
 
 message SyncEntity {
@@ -218,11 +239,8 @@ message SyncEntity {
   // Present in both GetUpdatesResponse and CommitMessage.
   optional string non_unique_name = 8;
 
-  // A value from a monotonically increasing sequence that indicates when
-  // this item was last updated on the server. This is now equivalent
-  // to version. This is now deprecated in favor of version.
-  // Present only in GetUpdatesResponse.
-  optional int64 sync_timestamp = 9;
+  reserved 9;
+  reserved "sync_timestamp";
 
   // If present, this tag identifies this item as being a uniquely
   // instanced item.  The server ensures that there is never more
@@ -242,26 +260,14 @@ message SyncEntity {
   // Present only in GetUpdatesResponse.
   optional string server_defined_unique_tag = 10;
 
-  // If this group is present, it implies that this SyncEntity corresponds to
-  // a bookmark or a bookmark folder.
-  //
-  // This group is deprecated; clients should use the bookmark EntitySpecifics
-  // protocol buffer extension instead.
-  optional group BookmarkData = 11 [deprecated = true] {
-    // We use a required field to differentiate between a bookmark and a
-    // bookmark folder.
-    // Present in both GetUpdatesMessage and CommitMessage.
-    required bool bookmark_folder = 12;
-
-    // For bookmark objects, contains the bookmark's URL.
-    // Present in both GetUpdatesResponse and CommitMessage.
-    optional string bookmark_url = 13;
-
-    // For bookmark objects, contains the bookmark's favicon. The favicon is
-    // represented as a 16X16 PNG image.
-    // Present in both GetUpdatesResponse and CommitMessage.
-    optional bytes bookmark_favicon = 14;
-  }
+  reserved 11;
+  reserved "BookmarkData";
+  reserved 12;
+  reserved "bookmark_folder";
+  reserved 13;
+  reserved "bookmark_url";
+  reserved 14;
+  reserved "bookmark_favicon";
 
   // Supplies a numeric position for this item, relative to other items with the
   // same parent.  Deprecated in M26, though clients are still required to set
@@ -289,7 +295,7 @@ message SyncEntity {
   // Conversion from UniquePosition to int64 reverses this process: the first 8
   // bytes of the position are to be interpreted as a big endian int64 value
   // with its sign bit flipped.
-  optional int64 position_in_parent = 15;
+  optional int64 position_in_parent = 15 [deprecated = true];
 
   // Contains the ID of the element (under the same parent) after which this
   // element resides. An empty string indicates that the element is the first
@@ -302,12 +308,10 @@ message SyncEntity {
   //
   // This is deprecated.  Clients are allowed to omit this as long as they
   // include |position_in_parent| instead.
-  optional string insert_after_item_id = 16;
+  optional string insert_after_item_id = 16 [deprecated = true];
 
-  // Arbitrary key/value pairs associated with this item.
-  // Present in both GetUpdatesResponse and CommitMessage.
-  // Deprecated.
-  // optional ExtendedAttributes extended_attributes = 17;
+  reserved 17;
+  reserved "extended_attributes";
 
   // If true, indicates that this item has been (or should be) deleted.
   // Present in both GetUpdatesResponse and CommitMessage.
@@ -375,15 +379,14 @@ message SyncEntity {
   // attempt to support it.  In fact, no client ever read or set this field.
   //
   // Deprecated in M26.
-  optional bytes ordinal_in_parent = 24;
+  optional bytes ordinal_in_parent = 24 [deprecated = true];
 
   // This is the fourth attempt at positioning.
   //
   // This field is present in both GetUpdatesResponse and CommitMessage, if the
   // item's type requires it and the client that wrote the item supports it (M26
   // or higher).  Clients must also be prepared to handle updates from clients
-  // that do not set this field.  See the comments on
-  // |server_position_in_parent| for more information on how this is handled.
+  // that do not set this field.
   //
   // This field will not be set for items whose type ignores positioning.
   // Clients should not attempt to read this field on the receipt of an item of
@@ -395,7 +398,8 @@ message SyncEntity {
 
   // This used to be a list of sync attachment IDs, but it was never launched
   // and the code has been removed as of M66.
-  repeated DeprecatedMessage attachment_id = 26 [deprecated = true];
+  reserved 26;
+  reserved "attachment_id";
 };
 
 // This message contains diagnostic information used to correlate
@@ -540,7 +544,7 @@ message GarbageCollectionDirective {
     UNKNOWN = 0;
     VERSION_WATERMARK = 1;
     AGE_WATERMARK = 2;
-    MAX_ITEM_COUNT = 3;
+    DEPRECATED_MAX_ITEM_COUNT = 3 [deprecated = true];
   }
 
   optional Type type = 1 [default = UNKNOWN];
@@ -559,10 +563,8 @@ message GarbageCollectionDirective {
   // based on last modified time.
   optional int32 age_watermark_in_days = 3;
 
-  // This field specifies the max number of items that the client should keep
-  // for a specific datatype.  If the number of items exceeds this limit, the
-  // client should purge the extra sync entities based on the LRU rule.
-  optional int32 max_number_of_items = 4;
+  reserved 4;
+  reserved "max_number_of_items";
 }
 
 message DataTypeProgressMarker {
@@ -600,7 +602,7 @@ message DataTypeProgressMarker {
   // token mechanism can set this field in a GetUpdatesMessage.  The server
   // will perform a get updates operation as normal from the indicated
   // timestamp, and return only an opaque progress token.
-  optional int64 timestamp_token_for_migration = 3;
+  optional int64 timestamp_token_for_migration = 3 [deprecated = true];
 
   // An opaque-to-the-client string of bytes, received through a notification,
   // that the server may interpret as a hint about the location of the latest
@@ -608,7 +610,7 @@ message DataTypeProgressMarker {
   //
   // Deprecated in M29.  We should use the repeated field version in the
   // PerClientTypeState instead.
-  optional string notification_hint = 4;
+  optional string notification_hint = 4 [deprecated = true];
 
   // This field will be included only in GetUpdates with origin GU_TRIGGER.
   optional GetUpdateTriggers get_update_triggers = 5;
@@ -621,14 +623,8 @@ message DataTypeProgressMarker {
 }
 
 message GetUpdatesMessage {
-  // Indicates the client's current progress in downloading updates.  A
-  // from_timestamp value of zero means that the client is requesting a first-
-  // time sync.  After that point, clients should fill in this value with the
-  // value returned in the last-seen GetUpdatesResponse.new_timestamp.
-  //
-  // from_timestamp has been deprecated; clients should use
-  // |from_progress_marker| instead, which allows more flexibility.
-  optional int64 from_timestamp = 1;
+  reserved 1;
+  reserved "from_timestamp";
 
   // Indicates the reason for the GetUpdatesMessage.
   // This was *mostly* deprecated in M29.  GetUpdatesOrigin is the new way to
@@ -687,21 +683,11 @@ message GetUpdatesMessage {
   // Set of optional per-client datatype contexts.
   repeated DataTypeContext client_contexts = 11;
 
-  // requested_types is a deprecated predecessor to using progress markers.
-  // See https://crbug.com/687426.
   reserved 4;
   reserved "requested_types";
 };
 
-message AuthenticateMessage {
-  required string auth_token = 1;
-};
-
 // Message from a client asking the server to clear its data.
-//
-// A client makes a ClearServerData request when it transitions to passphrase
-// encryption to ensure the server deletes any plaintext data that may have been
-// synced previously.
 message ClearServerDataMessage {
   // No arguments needed as the store birthday and user identifier are part of
   // an enclosing message.
@@ -768,7 +754,7 @@ message ClientToServerMessage {
   enum Contents {
     COMMIT = 1;
     GET_UPDATES = 2;
-    AUTHENTICATE = 3;
+    DEPRECATED_3 = 3;
     DEPRECATED_4 = 4;
     CLEAR_SERVER_DATA = 5;
   }
@@ -780,9 +766,10 @@ message ClientToServerMessage {
   required Contents message_contents = 3;
   optional CommitMessage commit = 4;
   optional GetUpdatesMessage get_updates = 5;
-  optional AuthenticateMessage authenticate = 6;
+  reserved 6;
+  reserved "authenticate";
 
-  optional DeprecatedMessage deprecated_field_9 = 9 [deprecated = true];
+  reserved 9;
 
   optional string store_birthday = 7;  // Opaque store ID; if it changes, duck!
   // The client sets this if it detects a sync issue. The server will tell it
@@ -858,12 +845,8 @@ message CommitResponse {
     // should be filled if our parent was assigned a new ID.
     optional string parent_id_string = 4;
 
-    // This value is the same as the position_in_parent value returned within
-    // the SyncEntity message in GetUpdatesResponse.  There was a time when the
-    // client would attempt to honor this position, but nowadays the server
-    // should ensure it is no different from the position_in_parent sent up in
-    // the commit request and the client should not read it.
-    optional int64 position_in_parent = 5;
+    reserved 5;
+    reserved "position_in_parent";
 
     // The item's current version.
     optional int64 version = 6;
@@ -889,29 +872,20 @@ message GetUpdatesResponse {
   // New sync entries that the client should apply.
   repeated SyncEntity entries = 1;
 
-  // If there are more changes on the server that weren't processed during this
-  // GetUpdates request, the client should send another GetUpdates request and
-  // use new_timestamp as the from_timestamp value within GetUpdatesMessage.
-  //
-  // This field has been deprecated and will be returned only to clients
-  // that set the also-deprecated |from_timestamp| field in the update request.
-  // Clients should use |from_progress_marker| and |new_progress_marker|
-  // instead.
-  optional int64 new_timestamp = 2;
+  reserved 2;
+  reserved "new_timestamp";
 
-  // DEPRECATED FIELD - server does not set this anymore.
-  optional int64 deprecated_newest_timestamp = 3;
+  reserved 3;
+  reserved "newest_timestamp";
 
   // Approximate count of changes remaining - use this for UI feedback.
   // If present and zero, this estimate is firm: the server has no changes
   // after the current batch.
   optional int64 changes_remaining = 4;
 
-  // Opaque, per-datatype timestamp-like tokens.  A client should use this
-  // field in lieu of new_timestamp, which is deprecated in newer versions
-  // of the protocol.  Clients should retain and persist the values returned
-  // in this field, and present them back to the server to indicate the
-  // starting point for future update requests.
+  // Opaque, per-datatype timestamp-like tokens.  Clients should retain and
+  // persist the values returned in this field, and present them back to the
+  // server to indicate the starting point for future update requests.
   //
   // This will be sent only if the client provided |from_progress_marker|
   // in the update request.
@@ -938,48 +912,11 @@ message GetUpdatesResponse {
   repeated DataTypeContext context_mutations = 7;
 };
 
-// The metadata response for GetUpdatesMessage.  This response is sent when
-// streaming is set to true in the request.  It is prefixed with a length
-// delimiter, which is encoded in varint.
-message GetUpdatesMetadataResponse {
-  // Approximate count of changes remaining.  Detailed comment is available in
-  // GetUpdatesResponse.
-  optional int64 changes_remaining = 1;
-
-  // Opaque, per-datatype timestamp-like tokens.  Detailed comment is available
-  // in GetUpdatesResponse.
-  repeated DataTypeProgressMarker new_progress_marker = 2;
-};
-
-// The streaming response message for GetUpdatesMessage.  This message is sent
-// when streaming is set to true in the request.  There may be multiple
-// GetUpdatesStreamingResponse messages in a response.  This type of messages
-// is preceded by GetUpdatesMetadataResponse.  It is prefixed with a length
-// delimiter, which is encoded in varint.
-message GetUpdatesStreamingResponse {
-  // New sync entries that the client should apply.
-  repeated SyncEntity entries = 1;
-};
-
-// A user-identifying struct.  For a given Google account the email and display
-// name can change, but obfuscated_id should be constant.
-// The obfuscated id is optional because at least one planned use of the proto
-// (sharing) does not require it.
-message UserIdentification {
-  required string email = 1;          // the user's full primary email address.
-  optional string display_name = 2;   // the user's display name.
-  optional string obfuscated_id = 3;  // an obfuscated, opaque user id.
-};
-
-message AuthenticateResponse {
-  // Optional only for backward compatibility.
-  optional UserIdentification user = 1;
-};
-
 message ClientToServerResponse {
   optional CommitResponse commit = 1;
   optional GetUpdatesResponse get_updates = 2;
-  optional AuthenticateResponse authenticate = 3;
+  reserved 3;
+  reserved "authenticate";
 
   // Up until protocol_version 24, the default was SUCCESS which made it
   // impossible to add new enum values since older clients would parse any
@@ -999,11 +936,11 @@ message ClientToServerResponse {
 
   optional ClientCommand client_command = 7;
   optional ProfilingData profiling_data = 8;
-  optional DeprecatedMessage deprecated_field_9 = 9 [deprecated = true];
-  optional GetUpdatesMetadataResponse stream_metadata = 10;
-  // If GetUpdatesStreamingResponse is contained in the ClientToServerResponse,
-  // none of the other fields (error_code and etc) will be set.
-  optional GetUpdatesStreamingResponse stream_data = 11;
+  reserved 9;
+  reserved 10;
+  reserved "stream_metadata";
+  reserved 11;
+  reserved "stream_data";
 
   // The data types whose storage has been migrated.  Present when the value of
   // error_code is MIGRATION_DONE.

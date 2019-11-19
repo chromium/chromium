@@ -12,16 +12,17 @@
 
 namespace ukm {
 
-MojoUkmRecorder::MojoUkmRecorder(mojom::UkmRecorderInterfacePtr interface)
-    : interface_(std::move(interface)), weak_factory_(this) {}
+MojoUkmRecorder::MojoUkmRecorder(
+    mojo::PendingRemote<mojom::UkmRecorderInterface> interface)
+    : interface_(std::move(interface)) {}
 MojoUkmRecorder::~MojoUkmRecorder() = default;
 
 // static
 std::unique_ptr<MojoUkmRecorder> MojoUkmRecorder::Create(
     service_manager::Connector* connector) {
-  ukm::mojom::UkmRecorderInterfacePtr interface;
-  connector->BindInterface(metrics::mojom::kMetricsServiceName,
-                           mojo::MakeRequest(&interface));
+  mojo::PendingRemote<ukm::mojom::UkmRecorderInterface> interface;
+  connector->Connect(metrics::mojom::kMetricsServiceName,
+                     interface.InitWithNewPipeAndPassReceiver());
   return std::make_unique<MojoUkmRecorder>(std::move(interface));
 }
 
@@ -45,6 +46,10 @@ void MojoUkmRecorder::RecordNavigation(
 
 void MojoUkmRecorder::AddEntry(mojom::UkmEntryPtr entry) {
   interface_->AddEntry(std::move(entry));
+}
+
+void MojoUkmRecorder::MarkSourceForDeletion(ukm::SourceId source_id) {
+  NOTREACHED();
 }
 
 }  // namespace ukm

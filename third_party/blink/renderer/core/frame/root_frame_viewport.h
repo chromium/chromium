@@ -14,7 +14,7 @@
 namespace blink {
 
 class LocalFrameView;
-class LayoutRect;
+struct PhysicalRect;
 struct WebScrollIntoViewParams;
 
 // ScrollableArea for the root frame's viewport. This class ties together the
@@ -27,17 +27,11 @@ struct WebScrollIntoViewParams;
 // the layout viewport. Thus, we could say this class is a decorator on the
 // LocalFrameView scrollable area that adds pinch-zoom semantics to scrolling.
 class CORE_EXPORT RootFrameViewport final
-    : public GarbageCollectedFinalized<RootFrameViewport>,
+    : public GarbageCollected<RootFrameViewport>,
       public ScrollableArea {
   USING_GARBAGE_COLLECTED_MIXIN(RootFrameViewport);
 
  public:
-  static RootFrameViewport* Create(ScrollableArea& visual_viewport,
-                                   ScrollableArea& layout_viewport) {
-    return MakeGarbageCollected<RootFrameViewport>(visual_viewport,
-                                                   layout_viewport);
-  }
-
   RootFrameViewport(ScrollableArea& visual_viewport,
                     ScrollableArea& layout_viewport);
 
@@ -52,9 +46,9 @@ class CORE_EXPORT RootFrameViewport final
   // and so the root content is the layout viewport's content but if the page
   // sets a custom root scroller via document.rootScroller, another element
   // may be the layout viewport.
-  LayoutRect RootContentsToLayoutViewportContents(
+  PhysicalRect RootContentsToLayoutViewportContents(
       LocalFrameView& root_frame_view,
-      const LayoutRect&) const;
+      const PhysicalRect&) const;
 
   void RestoreToAnchor(const ScrollOffset&);
 
@@ -65,12 +59,13 @@ class CORE_EXPORT RootFrameViewport final
   bool IsRootFrameViewport() const override { return true; }
   void SetScrollOffset(const ScrollOffset&,
                        ScrollType,
-                       ScrollBehavior = kScrollBehaviorInstant) override;
-  LayoutRect ScrollIntoView(const LayoutRect&,
-                            const WebScrollIntoViewParams&) override;
+                       ScrollBehavior,
+                       ScrollCallback on_finish) override;
+  PhysicalRect ScrollIntoView(const PhysicalRect&,
+                              const WebScrollIntoViewParams&) override;
   IntRect VisibleContentRect(
       IncludeScrollbarsInRect = kExcludeScrollbars) const override;
-  LayoutRect VisibleScrollSnapportRect(
+  PhysicalRect VisibleScrollSnapportRect(
       IncludeScrollbarsInRect = kExcludeScrollbars) const override;
   bool ShouldUseIntegerScrollOffset() const override;
   bool IsThrottled() const override {
@@ -91,23 +86,24 @@ class CORE_EXPORT RootFrameViewport final
   IntSize ClampScrollOffset(const IntSize&) const override;
   ScrollOffset ClampScrollOffset(const ScrollOffset&) const override;
   IntSize ContentsSize() const override;
+  bool ShouldScrollOnMainThread() const override;
   bool ScrollbarsCanBeActive() const override;
-  IntRect ScrollableAreaBoundingBox() const override;
   bool UserInputScrollable(ScrollbarOrientation) const override;
   bool ShouldPlaceVerticalScrollbarOnLeft() const override;
   void ScrollControlWasSetNeedsPaintInvalidation() override;
-  GraphicsLayer* LayerForContainer() const override;
-  GraphicsLayer* LayerForScrolling() const override;
-  GraphicsLayer* LayerForHorizontalScrollbar() const override;
-  GraphicsLayer* LayerForVerticalScrollbar() const override;
-  GraphicsLayer* LayerForScrollCorner() const override;
+  cc::Layer* LayerForScrolling() const override;
+  cc::Layer* LayerForHorizontalScrollbar() const override;
+  cc::Layer* LayerForVerticalScrollbar() const override;
+  cc::Layer* LayerForScrollCorner() const override;
   int HorizontalScrollbarHeight(
       OverlayScrollbarClipBehavior =
           kIgnorePlatformOverlayScrollbarSize) const override;
   int VerticalScrollbarWidth(
       OverlayScrollbarClipBehavior =
           kIgnorePlatformOverlayScrollbarSize) const override;
-  ScrollResult UserScroll(ScrollGranularity, const FloatSize&) override;
+  ScrollResult UserScroll(ScrollGranularity,
+                          const FloatSize&,
+                          ScrollableArea::ScrollCallback on_finish) override;
   CompositorElementId GetCompositorElementId() const override;
   CompositorElementId GetScrollbarElementId(
       ScrollbarOrientation orientation) override;
@@ -118,6 +114,7 @@ class CORE_EXPORT RootFrameViewport final
   void UpdateCompositorScrollAnimations() override;
   void CancelProgrammaticScrollAnimation() override;
   ScrollBehavior ScrollBehaviorStyle() const override;
+  WebColorScheme UsedColorScheme() const override;
   void ClearScrollableArea() override;
   LayoutBox* GetLayoutBox() const override;
   FloatQuad LocalToVisibleContentQuad(const FloatQuad&,
@@ -125,16 +122,24 @@ class CORE_EXPORT RootFrameViewport final
                                       unsigned = 0) const final;
   scoped_refptr<base::SingleThreadTaskRunner> GetTimerTaskRunner() const final;
   ScrollbarTheme& GetPageScrollbarTheme() const override;
+  const cc::SnapContainerData* GetSnapContainerData() const override;
+  void SetSnapContainerData(base::Optional<cc::SnapContainerData>) override;
+  base::Optional<FloatPoint> GetSnapPositionAndSetTarget(
+      const cc::SnapSelectionStrategy& strategy) override;
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(RootFrameViewportTest, DistributeScrollOrder);
+
   enum ViewportToScrollFirst { kVisualViewport, kLayoutViewport };
 
   ScrollOffset ScrollOffsetFromScrollAnimators() const;
 
-  void DistributeScrollBetweenViewports(const ScrollOffset&,
-                                        ScrollType,
-                                        ScrollBehavior,
-                                        ViewportToScrollFirst);
+  void DistributeScrollBetweenViewports(
+      const ScrollOffset&,
+      ScrollType,
+      ScrollBehavior,
+      ViewportToScrollFirst,
+      ScrollCallback on_finish = ScrollCallback());
 
   // If either of the layout or visual viewports are scrolled explicitly (i.e.
   // not through this class), their updated offset will not be reflected in this

@@ -4,6 +4,12 @@
 
 #include "chrome/browser/ui/app_list/md_icon_normalizer.h"
 
+#include <algorithm>
+#include <cmath>
+#include <utility>
+#include <vector>
+
+#include "base/numerics/math_constants.h"
 #include "skia/ext/image_operations.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/canvas.h"
@@ -26,7 +32,7 @@ constexpr float kMaxSquareAreaFactor = 361.0f / 576;
 // Ratio of icon visible area to full icon size for a circular shaped icon.
 constexpr float kMaxCircleAreaFactor = 380.0f / 576;
 
-constexpr float kCircleAreaByRect = static_cast<float>(M_PI) / 4;
+constexpr float kCircleAreaByRect = base::kPiFloat / 4;
 
 // Slope used to calculate icon visible area to full icon size for any generic
 // shaped icon.
@@ -86,7 +92,7 @@ float GetMdIconScale(const SkBitmap& bitmap) {
   // square and scale accordingly.
   if (pixmap.alphaType() == kUnknown_SkAlphaType ||
       pixmap.alphaType() == kOpaque_SkAlphaType) {
-    return (float)std::sqrt(kMaxSquareAreaFactor);
+    return std::sqrt(kMaxSquareAreaFactor);
   }
 
   bool const nativeColorType = pixmap.colorType() == kN32_SkColorType;
@@ -176,9 +182,8 @@ float GetMdIconScale(const SkBitmap& bitmap) {
   float area_scale = area / (width * height);
   // Use sqrt of the final ratio as the image is scaled across both width and
   // height.
-  return area_scale > scale_required
-             ? (float)std::sqrt(scale_required / area_scale)
-             : 1;
+  return area_scale > scale_required ? std::sqrt(scale_required / area_scale)
+                                     : 1.0f;
 }
 
 }  // namespace

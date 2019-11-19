@@ -550,6 +550,10 @@ static size_t GetAllocatedSize(void* ptr) {
 static size_t GetAllocatedSize(void* ptr) {
   return malloc_size(ptr);
 }
+#elif defined(OS_LINUX)
+static size_t GetAllocatedSize(void* ptr) {
+  return malloc_usable_size(ptr);
+}
 #else
 #define NO_MALLOC_SIZE
 #endif

@@ -100,7 +100,7 @@ class DownloadsApiUnitTest : public ExtensionApiUnittest {
 
    private:
     void QueryDownloads(
-        const HistoryService::DownloadQueryCallback& callback) override {}
+        HistoryService::DownloadQueryCallback callback) override {}
   };
 
   // Constructs and returns a TestDownloadCoreService.

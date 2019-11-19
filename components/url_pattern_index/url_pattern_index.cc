@@ -47,8 +47,7 @@ const ActivationTypeMap& GetActivationTypeMap() {
           {proto::ACTIVATION_TYPE_GENERICHIDE, flat::ActivationType_NONE},
           {proto::ACTIVATION_TYPE_GENERICBLOCK,
            flat::ActivationType_GENERIC_BLOCK},
-      },
-      base::KEEP_FIRST_OF_DUPES);
+      });
   return *activation_type_map;
 }
 
@@ -73,8 +72,7 @@ const ElementTypeMap& GetElementTypeMap() {
           // Filtering popups is not supported.
           {proto::ELEMENT_TYPE_POPUP, flat::ElementType_NONE},
           {proto::ELEMENT_TYPE_WEBSOCKET, flat::ElementType_WEBSOCKET},
-      },
-      base::KEEP_FIRST_OF_DUPES);
+      });
   return *element_type_map;
 }
 
@@ -767,6 +765,10 @@ UrlPatternIndexMatcher::UrlPatternIndexMatcher(
 }
 
 UrlPatternIndexMatcher::~UrlPatternIndexMatcher() = default;
+UrlPatternIndexMatcher::UrlPatternIndexMatcher(UrlPatternIndexMatcher&&) =
+    default;
+UrlPatternIndexMatcher& UrlPatternIndexMatcher::operator=(
+    UrlPatternIndexMatcher&&) = default;
 
 const flat::UrlRule* UrlPatternIndexMatcher::FindMatch(
     const GURL& url,

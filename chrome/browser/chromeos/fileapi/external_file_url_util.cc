@@ -18,7 +18,8 @@
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/url_constants.h"
 #include "net/base/escape.h"
-#include "storage/browser/fileapi/file_system_url.h"
+#include "storage/browser/file_system/file_system_context.h"
+#include "storage/browser/file_system/file_system_url.h"
 
 using content::BrowserThread;
 
@@ -28,7 +29,8 @@ bool IsExternalFileURLType(storage::FileSystemType type, bool force) {
   return type == storage::kFileSystemTypeDrive ||
          type == storage::kFileSystemTypeDeviceMediaAsFileStorage ||
          type == storage::kFileSystemTypeProvided ||
-         type == storage::kFileSystemTypeArcContent || force;
+         type == storage::kFileSystemTypeArcContent ||
+         type == storage::kFileSystemTypeArcDocumentsProvider || force;
 }
 
 GURL FileSystemURLToExternalFileURL(
@@ -45,9 +47,8 @@ GURL FileSystemURLToExternalFileURL(
 base::FilePath ExternalFileURLToVirtualPath(const GURL& url) {
   if (!url.is_valid() || url.scheme() != content::kExternalFileScheme)
     return base::FilePath();
-  std::string path_string;
-  net::UnescapeBinaryURLComponent(url.path(), &path_string);
-  return base::FilePath::FromUTF8Unsafe(path_string);
+  return base::FilePath::FromUTF8Unsafe(
+      net::UnescapeBinaryURLComponent(url.path_piece()));
 }
 
 GURL VirtualPathToExternalFileURL(const base::FilePath& virtual_path) {

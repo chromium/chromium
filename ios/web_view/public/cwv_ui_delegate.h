@@ -26,9 +26,10 @@ CWV_EXPORT
 
 @optional
 // Instructs the delegate to create a new browsing window (f.e. in response to
-// window.open JavaScript call). Page will not open a window if this method
-// returns nil or is not implemented. This method can not return |webView|.
-- (CWVWebView*)webView:(CWVWebView*)webView
+// window.open JavaScript call). Page will not open a window and report a
+// failure (f.e. return null from window.open) if this method returns nil or is
+// not implemented. This method can not return |webView|.
+- (nullable CWVWebView*)webView:(CWVWebView*)webView
     createWebViewWithConfiguration:(CWVWebViewConfiguration*)configuration
                forNavigationAction:(CWVNavigationAction*)action;
 

@@ -15,7 +15,7 @@ namespace base {
 
 namespace {
 
-// Call FieldTrialList::FactoryGetFieldTrial() with a future expiry date.
+// Call FieldTrialList::FactoryGetFieldTrial().
 scoped_refptr<FieldTrial> CreateFieldTrial(
     const std::string& trial_name,
     int total_probability,
@@ -23,15 +23,14 @@ scoped_refptr<FieldTrial> CreateFieldTrial(
     int* default_group_number) {
   return FieldTrialList::FactoryGetFieldTrial(
       trial_name, total_probability, default_group_name,
-      FieldTrialList::kNoExpirationYear, 1, 1, FieldTrial::SESSION_RANDOMIZED,
-      default_group_number);
+      FieldTrial::SESSION_RANDOMIZED, default_group_number);
 }
 
 }  // namespace
 
 class FieldTrialParamsTest : public ::testing::Test {
  public:
-  FieldTrialParamsTest() : field_trial_list_(nullptr) {}
+  FieldTrialParamsTest() = default;
 
   ~FieldTrialParamsTest() override {
     // Ensure that the maps are cleared between tests, since they are stored as
@@ -49,7 +48,6 @@ class FieldTrialParamsTest : public ::testing::Test {
   }
 
  private:
-  FieldTrialList field_trial_list_;
   test::ScopedFeatureList scoped_feature_list_;
 
   DISALLOW_COPY_AND_ASSIGN(FieldTrialParamsTest);

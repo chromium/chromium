@@ -7,6 +7,7 @@
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/shelf/shelf.h"
 #include "ash/system/tray/tray_constants.h"
+#include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
@@ -18,12 +19,6 @@
 
 namespace ash {
 
-namespace {
-
-const int kTrayItemAnimationDurationMS = 200;
-
-}  // namespace
-
 void IconizedLabel::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   if (custom_accessible_name_.empty())
     return Label::GetAccessibleNodeData(node_data);
@@ -33,7 +28,10 @@ void IconizedLabel::GetAccessibleNodeData(ui::AXNodeData* node_data) {
 }
 
 TrayItemView::TrayItemView(Shelf* shelf)
-    : shelf_(shelf), label_(NULL), image_view_(NULL) {
+    : views::AnimationDelegateViews(this),
+      shelf_(shelf),
+      label_(NULL),
+      image_view_(NULL) {
   DCHECK(shelf_);
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
@@ -64,9 +62,9 @@ void TrayItemView::SetVisible(bool set_visible) {
 
   if (!animation_) {
     animation_.reset(new gfx::SlideAnimation(this));
-    animation_->SetSlideDuration(GetAnimationDurationMS());
+    animation_->SetSlideDuration(base::TimeDelta::FromMilliseconds(200));
     animation_->SetTweenType(gfx::Tween::LINEAR);
-    animation_->Reset(visible() ? 1.0 : 0.0);
+    animation_->Reset(GetVisible() ? 1.0 : 0.0);
   }
 
   if (!set_visible) {
@@ -79,16 +77,12 @@ void TrayItemView::SetVisible(bool set_visible) {
   }
 }
 
-int TrayItemView::GetAnimationDurationMS() {
-  return kTrayItemAnimationDurationMS;
-}
-
 bool TrayItemView::IsHorizontalAlignment() const {
   return shelf_->IsHorizontalAlignment();
 }
 
 gfx::Size TrayItemView::CalculatePreferredSize() const {
-  DCHECK_EQ(1, child_count());
+  DCHECK_EQ(1u, children().size());
   gfx::Size size = views::View::CalculatePreferredSize();
   if (image_view_) {
     size = gfx::Size(kUnifiedTrayIconSize, kUnifiedTrayIconSize);
@@ -108,6 +102,10 @@ gfx::Size TrayItemView::CalculatePreferredSize() const {
 
 int TrayItemView::GetHeightForWidth(int width) const {
   return GetPreferredSize().height();
+}
+
+const char* TrayItemView::GetClassName() const {
+  return "TrayItemView";
 }
 
 void TrayItemView::ChildPreferredSizeChanged(views::View* child) {

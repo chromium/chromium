@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "android_webview/browser_jni_headers/AwContentsClientBridge_jni.h"
 #include "android_webview/common/devtools_instrumentation.h"
 #include "android_webview/grit/components_strings.h"
 #include "base/android/jni_android.h"
@@ -20,7 +21,6 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
-#include "jni/AwContentsClientBridge_jni.h"
 #include "net/cert/x509_certificate.h"
 #include "net/cert/x509_util.h"
 #include "net/http/http_response_headers.h"
@@ -91,8 +91,7 @@ AwContentsClientBridge* AwContentsClientBridge::FromWebContents(
 
 // static
 AwContentsClientBridge* AwContentsClientBridge::FromWebContentsGetter(
-    const content::ResourceRequestInfo::WebContentsGetter&
-        web_contents_getter) {
+    const content::WebContents::Getter& web_contents_getter) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   WebContents* web_contents = web_contents_getter.Run();
   return UserData::GetContents(web_contents);

@@ -9,14 +9,15 @@
 #include <string.h>
 
 #include <memory>
+#include <utility>
 #include <vector>
 
 #include "base/base64.h"
 #include "base/bind.h"
 #include "base/bind_helpers.h"
+#include "base/hash/sha1.h"
 #include "base/json/json_writer.h"
 #include "base/rand_util.h"
-#include "base/sha1.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
@@ -75,7 +76,7 @@ WebSocket::~WebSocket() {
   CHECK(thread_checker_.CalledOnValidThread());
 }
 
-void WebSocket::Connect(const net::CompletionCallback& callback) {
+void WebSocket::Connect(net::CompletionOnceCallback callback) {
   CHECK(thread_checker_.CalledOnValidThread());
   CHECK_EQ(INITIALIZED, state_);
 
@@ -86,7 +87,7 @@ void WebSocket::Connect(const net::CompletionCallback& callback) {
     addresses = net::AddressList::CreateFromIPAddress(address, port);
   } else {
     if (!ResolveHost(url_.HostNoBrackets(), port, &addresses)) {
-      callback.Run(net::ERR_ADDRESS_UNREACHABLE);
+      std::move(callback).Run(net::ERR_ADDRESS_UNREACHABLE);
       return;
     }
     base::ListValue endpoints;
@@ -101,9 +102,9 @@ void WebSocket::Connect(const net::CompletionCallback& callback) {
   socket_.reset(new net::TCPClientSocket(addresses, NULL, NULL, source));
 
   state_ = CONNECTING;
-  connect_callback_ = callback;
-  int code = socket_->Connect(base::Bind(
-      &WebSocket::OnSocketConnect, base::Unretained(this)));
+  connect_callback_ = std::move(callback);
+  int code = socket_->Connect(
+      base::BindOnce(&WebSocket::OnSocketConnect, base::Unretained(this)));
   VLOG(4) << "WebSocket::Connect code=" << net::ErrorToShortString(code);
   if (code != net::ERR_IO_PENDING)
     OnSocketConnect(code);
@@ -199,10 +200,10 @@ void WebSocket::ContinueWritingIfNecessary() {
         pending_write_.length());
     pending_write_.clear();
   }
-  int code =
-      socket_->Write(write_buffer_.get(), write_buffer_->BytesRemaining(),
-                     base::Bind(&WebSocket::OnWrite, base::Unretained(this)),
-                     TRAFFIC_ANNOTATION_FOR_TESTS);
+  int code = socket_->Write(
+      write_buffer_.get(), write_buffer_->BytesRemaining(),
+      base::BindOnce(&WebSocket::OnWrite, base::Unretained(this)),
+      TRAFFIC_ANNOTATION_FOR_TESTS);
   if (code != net::ERR_IO_PENDING)
     OnWrite(code);
 }
@@ -211,7 +212,7 @@ void WebSocket::Read() {
   while (true) {
     int code = socket_->Read(
         read_buffer_.get(), read_buffer_->size(),
-        base::Bind(&WebSocket::OnRead, base::Unretained(this), true));
+        base::BindOnce(&WebSocket::OnRead, base::Unretained(this), true));
     if (code == net::ERR_IO_PENDING)
       break;
 
@@ -255,10 +256,9 @@ void WebSocket::OnReadDuringHandshake(const char* data, int len) {
   std::string websocket_accept;
   base::Base64Encode(base::SHA1HashString(sec_key_ + kMagicKey),
                      &websocket_accept);
-  scoped_refptr<net::HttpResponseHeaders> headers(
-      new net::HttpResponseHeaders(
-          net::HttpUtil::AssembleRawHeaders(
-              handshake_response_.data(), headers_end)));
+  auto headers = base::MakeRefCounted<net::HttpResponseHeaders>(
+      net::HttpUtil::AssembleRawHeaders(
+          base::StringPiece(handshake_response_.data(), headers_end)));
   if (headers->response_code() != 101 ||
       !headers->HasHeaderValue("Upgrade", "WebSocket") ||
       !headers->HasHeaderValue("Connection", "Upgrade") ||
@@ -279,22 +279,34 @@ void WebSocket::OnReadDuringOpen(const char* data, int len) {
   std::vector<std::unique_ptr<net::WebSocketFrameChunk>> frame_chunks;
   CHECK(parser_.Decode(data, len, &frame_chunks));
   for (size_t i = 0; i < frame_chunks.size(); ++i) {
-    scoped_refptr<net::IOBufferWithSize> buffer = frame_chunks[i]->data;
-    if (buffer.get())
-      next_message_ += std::string(buffer->data(), buffer->size());
+    const auto& header = frame_chunks[i]->header;
+    if (header) {
+      DCHECK_EQ(0u, current_frame_offset_);
+      is_current_frame_masked_ = header->masked;
+      current_masking_key_ = header->masking_key;
+    }
+
+    auto& buffer = frame_chunks[i]->payload;
+    std::vector<char> payload(buffer.begin(), buffer.end());
+    if (is_current_frame_masked_) {
+      MaskWebSocketFramePayload(current_masking_key_, current_frame_offset_,
+                                payload.data(), payload.size());
+    }
+    next_message_ += std::string(payload.data(), payload.size());
+    current_frame_offset_ += payload.size();
+
     if (frame_chunks[i]->final_chunk) {
       VLOG(4) << "WebSocket::OnReadDuringOpen " << next_message_;
       listener_->OnMessageReceived(next_message_);
       next_message_.clear();
+      current_frame_offset_ = 0;
     }
   }
 }
 
 void WebSocket::InvokeConnectCallback(int code) {
-  net::CompletionCallback temp = connect_callback_;
-  connect_callback_.Reset();
-  CHECK(!temp.is_null());
-  temp.Run(code);
+  CHECK(!connect_callback_.is_null());
+  std::move(connect_callback_).Run(code);
 }
 
 void WebSocket::Close(int code) {

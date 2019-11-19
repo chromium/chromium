@@ -7,7 +7,7 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "crypto/scoped_capi_types.h"
+#include "base/win/wincrypt_shim.h"
 #include "net/base/net_export.h"
 #include "net/ssl/client_cert_store.h"
 #include "net/ssl/ssl_cert_request_info.h"
@@ -19,8 +19,11 @@ class NET_EXPORT ClientCertStoreWin : public ClientCertStore {
   // Uses the "MY" current user system certificate store.
   ClientCertStoreWin();
 
-  // Takes ownership of |cert_store| and closes it at destruction time.
-  explicit ClientCertStoreWin(HCERTSTORE cert_store);
+  // Calls |cert_store_callback| on the platform key thread to determine the
+  // certificate store. ClientCertStoreWin takes ownership of the resulting
+  // |HCERTSTORE| and closes it when the operation is finished.
+  explicit ClientCertStoreWin(
+      base::RepeatingCallback<HCERTSTORE()> cert_store_callback);
 
   ~ClientCertStoreWin() override;
 
@@ -28,20 +31,15 @@ class NET_EXPORT ClientCertStoreWin : public ClientCertStore {
   // will use that. Otherwise it will use the current user's "MY" cert store
   // instead.
   void GetClientCerts(const SSLCertRequestInfo& cert_request_info,
-                      const ClientCertListCallback& callback) override;
+                      ClientCertListCallback callback) override;
 
  private:
-  using ScopedHCERTSTORE = crypto::ScopedCAPIHandle<
-      HCERTSTORE,
-      crypto::CAPIDestroyerWithFlags<HCERTSTORE,
-                                     CertCloseStore,
-                                     CERT_CLOSE_STORE_CHECK_FLAG>>;
-
   friend class ClientCertStoreWinTestDelegate;
 
-  // Opens the "MY" cert store and uses it to lookup the client certs.
-  static ClientCertIdentityList GetClientCertsWithMyCertStore(
-      const SSLCertRequestInfo& request);
+  // Opens the cert store and uses it to lookup the client certs.
+  static ClientCertIdentityList GetClientCertsWithCertStore(
+      const SSLCertRequestInfo& request,
+      const base::RepeatingCallback<HCERTSTORE()>& cert_store_callback);
 
   // A hook for testing. Filters |input_certs| using the logic being used to
   // filter the system store when GetClientCerts() is called.
@@ -51,7 +49,7 @@ class NET_EXPORT ClientCertStoreWin : public ClientCertStore {
                                    const SSLCertRequestInfo& cert_request_info,
                                    ClientCertIdentityList* selected_identities);
 
-  ScopedHCERTSTORE cert_store_;
+  base::RepeatingCallback<HCERTSTORE()> cert_store_callback_;
 
   DISALLOW_COPY_AND_ASSIGN(ClientCertStoreWin);
 };

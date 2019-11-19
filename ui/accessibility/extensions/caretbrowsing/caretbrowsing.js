@@ -618,8 +618,8 @@ CaretBrowsing.updateCaretOrSelection = function(scrollToSelection) {
   var style = window.getComputedStyle(elem);
   var bg = axs.utils.getBgColor(style, elem);
   var fg = axs.utils.getFgColor(style, elem, bg);
-  CaretBrowsing.caretBackground = axs.utils.colorToString(bg);
-  CaretBrowsing.caretForeground = axs.utils.colorToString(fg);
+  CaretBrowsing.caretBackground = axs.color.colorToString(bg);
+  CaretBrowsing.caretForeground = axs.color.colorToString(fg);
 
   if (scrollToSelection) {
     // Scroll just to the "focus" position of the selection,

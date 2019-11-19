@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_KEYED_SERVICE_CORE_REFCOUNTED_KEYED_SERVICE_H_
 #define COMPONENTS_KEYED_SERVICE_CORE_REFCOUNTED_KEYED_SERVICE_H_
 
+#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequenced_task_runner.h"
 #include "base/sequenced_task_runner_helpers.h"
@@ -51,7 +52,7 @@ class KEYED_SERVICE_EXPORT RefcountedKeyedService
   // If you need your service to be deleted on a specific sequence (for example,
   // you're converting a service that used content::DeleteOnThread<IO>), then
   // use this constructor with a reference to the SequencedTaskRunner (e.g., you
-  // can get it from base::CreateSequencedTaskRunnerWithTraits).
+  // can get it from base::CreateSequencedTaskRunner).
   explicit RefcountedKeyedService(
       scoped_refptr<base::SequencedTaskRunner> task_runner);
 
@@ -67,6 +68,8 @@ class KEYED_SERVICE_EXPORT RefcountedKeyedService
 
   // Do we have to delete this object on a specific sequence?
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
+
+  DISALLOW_COPY_AND_ASSIGN(RefcountedKeyedService);
 };
 
 #endif  // COMPONENTS_KEYED_SERVICE_CORE_REFCOUNTED_KEYED_SERVICE_H_

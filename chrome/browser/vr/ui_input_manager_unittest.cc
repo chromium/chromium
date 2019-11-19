@@ -572,7 +572,7 @@ TEST_F(UiInputManagerContentTest, TreeVsZOrder) {
 
   // We will now move the content quad behind the backplane.
   content_quad->SetTranslate(0, 0, -1.0);
-  OnBeginFrame();
+  AdvanceFrame();
 
   input_manager_->HandleInput(MsToTicks(1), RenderInfo(), controller_model,
                               &reticle_model, &input_event_list);

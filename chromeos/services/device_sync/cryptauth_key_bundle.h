@@ -19,20 +19,42 @@ namespace device_sync {
 // A group of related CryptAuthKeys, uniquely identified by their handles.
 //
 // No more than one key in the bundle can be active at a time, and only the
-// active key should be used for encryption, signing, etc. The inactive keys are
-// retained in case CryptAuth decides to activate them in a future via a
-// SyncSingleKeyResponse::KeyAction.
+// active key should be used for encryption, signing, etc. Inactive keys are
+// retained and can be activated in the future, for example, due to a
+// SyncSingleKeyResponse::KeyAction sent by CryptAuth.
 //
 // All key bundles used in Chrome OS are enumerated in the Name enum class. The
-// corresponding name string that will be sent to CryptAuth in the
-// SyncSingleKeysRequest::key_name protobuf field can be retrieved via
-// KeyBundleNameEnumToString().
+// name string corresponding to each enum value can be retrieved via
+// KeyBundleNameEnumToString(). For key bundles that enroll with CryptAuth, this
+// string is used to populate the SyncSingleKeysRequest::key_name protobuf
+// field.
 class CryptAuthKeyBundle {
  public:
-  // Names which uniquely define a CryptAuthKeyBundle.
-  // TODO(nohle): Add name for DeviceSync keys.
-  enum class Name { kUserKeyPair, kLegacyMasterKey };
+  // Names that uniquely define a CryptAuthKeyBundle.
+  enum class Name {
+    // A non-rotated asymmetric key associated with a user on the device. It is
+    // used for encrypting device-to-device communications, for example, and it
+    // has historically been used as a device identifier.
+    kUserKeyPair,
+    // Currently unused but required for CryptAuth v2 Enrollment.
+    kLegacyMasterKey,
+    // Enrolling this asymmetric key adds the device to the user's DeviceSync v2
+    // "DeviceSync:BetterTogether" group. This key is not to be confused with
+    // the unenrolled kDeviceSyncBetterTogetherGroupKey.
+    kDeviceSyncBetterTogether,
+    // A key pair that does *not* enroll with CryptAuth, used to encrypt and
+    // decrypt the metadata of all devices in the user's
+    // "DeviceSync:BetterTogether" group. This metadata is passed in an
+    // end-to-end encrypted fashion via DeviceSync v2 SyncMetadata calls .
+    kDeviceSyncBetterTogetherGroupKey
+  };
+
+  // Returns all Name enum values as a set.
   static const base::flat_set<CryptAuthKeyBundle::Name>& AllNames();
+
+  // Returns the Name enum value of all key bundles that enroll with CryptAuth.
+  static const base::flat_set<CryptAuthKeyBundle::Name>& AllEnrollableNames();
+
   static std::string KeyBundleNameEnumToString(CryptAuthKeyBundle::Name name);
   static base::Optional<CryptAuthKeyBundle::Name> KeyBundleNameStringToEnum(
       const std::string& name);
@@ -66,6 +88,8 @@ class CryptAuthKeyBundle {
   // If the key being added is active, all other keys in the bundle will be
   // deactivated. If the handle of the input key matches one in the bundle, the
   // existing key will be overwritten.
+  // Note: All keys added to the bundle kUserKeyPair must have the handle
+  // kCryptAuthFixedUserKeyPairHandle.
   void AddKey(const CryptAuthKey& key);
 
   // Activates the key corresponding to |handle| in the bundle and deactivates

@@ -38,26 +38,24 @@ namespace blink {
 
 CSSToLengthConversionData::FontSizes::FontSizes(float em,
                                                 float rem,
-                                                const Font* font)
-    : em_(em), rem_(rem), font_(font) {
+                                                const Font* font,
+                                                float zoom)
+    : em_(em), rem_(rem), font_(font), zoom_(zoom) {
   // FIXME: Improve RAII of StyleResolverState to use const Font&.
   DCHECK(font_);
 }
 
 CSSToLengthConversionData::FontSizes::FontSizes(const ComputedStyle* style,
                                                 const ComputedStyle* root_style)
-    : FontSizes(style->ComputedFontSize(),
-                root_style ? root_style->ComputedFontSize() : 1.0f,
-                &style->GetFont()) {}
+    : FontSizes(style->SpecifiedFontSize(),
+                root_style ? root_style->SpecifiedFontSize() : 1.0f,
+                &style->GetFont(),
+                style->EffectiveZoom()) {}
 
 float CSSToLengthConversionData::FontSizes::Ex() const {
   DCHECK(font_);
   const SimpleFontData* font_data = font_->PrimaryFont();
   DCHECK(font_data);
-
-  // FIXME: We have a bug right now where the zoom will be applied twice to EX
-  // units. We really need to compute EX using fontMetrics for the original
-  // specifiedSize and not use our actual constructed layoutObject font.
   if (!font_data || !font_data->GetFontMetrics().HasXHeight())
     return em_ / 2.0f;
   return font_data->GetFontMetrics().XHeight();
@@ -68,6 +66,10 @@ float CSSToLengthConversionData::FontSizes::Ch() const {
   const SimpleFontData* font_data = font_->PrimaryFont();
   DCHECK(font_data);
   return font_data ? font_data->GetFontMetrics().ZeroWidth() : 0;
+}
+
+float CSSToLengthConversionData::FontSizes::Zoom() const {
+  return zoom_ ? zoom_ : 1;
 }
 
 CSSToLengthConversionData::ViewportSize::ViewportSize(
@@ -125,6 +127,18 @@ float CSSToLengthConversionData::RemFontSize() const {
   return font_sizes_.Rem();
 }
 
+float CSSToLengthConversionData::ExFontSize() const {
+  if (style_)
+    const_cast<ComputedStyle*>(style_)->SetHasGlyphRelativeUnits();
+  return font_sizes_.Ex();
+}
+
+float CSSToLengthConversionData::ChFontSize() const {
+  if (style_)
+    const_cast<ComputedStyle*>(style_)->SetHasGlyphRelativeUnits();
+  return font_sizes_.Ch();
+}
+
 double CSSToLengthConversionData::ZoomedComputedPixels(
     double value,
     CSSPrimitiveValue::UnitType type) const {
@@ -173,13 +187,13 @@ double CSSToLengthConversionData::ZoomedComputedPixels(
     // as well as enforcing the implicit "smart minimum."
     case CSSPrimitiveValue::UnitType::kEms:
     case CSSPrimitiveValue::UnitType::kQuirkyEms:
-      return value * EmFontSize();
+      return value * EmFontSize() * Zoom();
 
     case CSSPrimitiveValue::UnitType::kExs:
       return value * ExFontSize();
 
     case CSSPrimitiveValue::UnitType::kRems:
-      return value * RemFontSize();
+      return value * RemFontSize() * Zoom();
 
     case CSSPrimitiveValue::UnitType::kChs:
       return value * ChFontSize();

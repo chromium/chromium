@@ -100,15 +100,12 @@ std::string CryptohomeTokenEncryptor::DecryptTokenWithKey(
     const crypto::SymmetricKey* key,
     const std::string& salt,
     const std::string& encrypted_token_hex) {
-  std::vector<uint8_t> encrypted_token_bytes;
-  if (!base::HexStringToBytes(encrypted_token_hex, &encrypted_token_bytes)) {
+  std::string encrypted_token;
+  if (!base::HexStringToString(encrypted_token_hex, &encrypted_token)) {
     LOG(WARNING) << "Corrupt encrypted token found.";
     return std::string();
   }
 
-  std::string encrypted_token(
-      reinterpret_cast<char*>(encrypted_token_bytes.data()),
-      encrypted_token_bytes.size());
   crypto::Encryptor encryptor;
   if (!encryptor.Init(key, crypto::Encryptor::CTR, std::string())) {
     LOG(WARNING) << "Failed to initialize Encryptor.";

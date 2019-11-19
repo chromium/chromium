@@ -14,7 +14,7 @@
 #include "chrome/test/views/chrome_test_views_delegate.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/test/bookmark_test_helpers.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/controls/tree/tree_view.h"
@@ -31,7 +31,7 @@ class BookmarkEditorViewTest : public testing::Test {
   BookmarkEditorViewTest() : model_(nullptr) {}
 
   void SetUp() override {
-    profile_.reset(new TestingProfile());
+    profile_ = std::make_unique<TestingProfile>();
     profile_->CreateBookmarkModel(true);
 
     model_ = BookmarkModelFactory::GetForBrowserContext(profile_.get());
@@ -59,8 +59,8 @@ class BookmarkEditorViewTest : public testing::Test {
                     const BookmarkNode* parent,
                     const BookmarkEditor::EditDetails& details,
                     BookmarkEditor::Configuration configuration) {
-    editor_.reset(new BookmarkEditorView(profile, parent, details,
-                                         configuration));
+    editor_ = std::make_unique<BookmarkEditorView>(profile, parent, details,
+                                                   configuration);
   }
 
   void SetTitleText(const base::string16& title) {
@@ -74,7 +74,7 @@ class BookmarkEditorViewTest : public testing::Test {
 
   base::string16 GetURLText() const {
     if (editor_->details_.type != BookmarkEditor::EditDetails::NEW_FOLDER)
-      return editor_->url_tf_->text();
+      return editor_->url_tf_->GetText();
 
     return base::string16();
   }
@@ -108,7 +108,7 @@ class BookmarkEditorViewTest : public testing::Test {
 
   views::TreeView* tree_view() { return editor_->tree_view_; }
 
-  content::TestBrowserThreadBundle thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
 
   BookmarkModel* model_;
   std::unique_ptr<TestingProfile> profile_;
@@ -153,31 +153,29 @@ class BookmarkEditorViewTest : public testing::Test {
 TEST_F(BookmarkEditorViewTest, ModelsMatch) {
   CreateEditor(profile_.get(), NULL,
                BookmarkEditor::EditDetails::AddNodeInFolder(
-                   NULL, -1, GURL(), base::string16()),
+                   NULL, size_t{-1}, GURL(), base::string16()),
                BookmarkEditorView::SHOW_TREE);
   BookmarkEditorView::EditorNode* editor_root = editor_tree_model()->GetRoot();
   // The root should have two or three children: bookmark bar, other bookmarks
   // and conditionally mobile bookmarks.
-  if (model_->mobile_node()->IsVisible()) {
-    ASSERT_EQ(3, editor_root->child_count());
-  } else {
-    ASSERT_EQ(2, editor_root->child_count());
-  }
+  ASSERT_EQ(model_->mobile_node()->IsVisible() ? 3u : 2u,
+            editor_root->children().size());
 
-  BookmarkEditorView::EditorNode* bb_node = editor_root->GetChild(0);
+  BookmarkEditorView::EditorNode* bb_node = editor_root->children()[0].get();
   // The root should have 2 nodes: folder F1 and F2.
-  ASSERT_EQ(2, bb_node->child_count());
-  ASSERT_EQ(ASCIIToUTF16("F1"), bb_node->GetChild(0)->GetTitle());
-  ASSERT_EQ(ASCIIToUTF16("F2"), bb_node->GetChild(1)->GetTitle());
+  ASSERT_EQ(2u, bb_node->children().size());
+  ASSERT_EQ(ASCIIToUTF16("F1"), bb_node->children()[0]->GetTitle());
+  ASSERT_EQ(ASCIIToUTF16("F2"), bb_node->children()[1]->GetTitle());
 
   // F1 should have one child, F11
-  ASSERT_EQ(1, bb_node->GetChild(0)->child_count());
-  ASSERT_EQ(ASCIIToUTF16("F11"), bb_node->GetChild(0)->GetChild(0)->GetTitle());
+  ASSERT_EQ(1u, bb_node->children()[0]->children().size());
+  ASSERT_EQ(ASCIIToUTF16("F11"),
+            bb_node->children()[0]->children()[0]->GetTitle());
 
-  BookmarkEditorView::EditorNode* other_node = editor_root->GetChild(1);
+  BookmarkEditorView::EditorNode* other_node = editor_root->children()[1].get();
   // Other node should have one child (OF1).
-  ASSERT_EQ(1, other_node->child_count());
-  ASSERT_EQ(ASCIIToUTF16("OF1"), other_node->GetChild(0)->GetTitle());
+  ASSERT_EQ(1u, other_node->children().size());
+  ASSERT_EQ(ASCIIToUTF16("OF1"), other_node->children()[0]->GetTitle());
 }
 
 // Changes the title and makes sure parent/visual order doesn't change.
@@ -187,12 +185,12 @@ TEST_F(BookmarkEditorViewTest, EditTitleKeepsPosition) {
                BookmarkEditorView::SHOW_TREE);
   SetTitleText(ASCIIToUTF16("new_a"));
 
-  ApplyEdits(editor_tree_model()->GetRoot()->GetChild(0));
+  ApplyEdits(editor_tree_model()->GetRoot()->children().front().get());
 
   const BookmarkNode* bb_node = model_->bookmark_bar_node();
-  ASSERT_EQ(ASCIIToUTF16("new_a"), bb_node->GetChild(0)->GetTitle());
+  ASSERT_EQ(ASCIIToUTF16("new_a"), bb_node->children().front()->GetTitle());
   // The URL shouldn't have changed.
-  ASSERT_TRUE(GURL(base_path() + "a") == bb_node->GetChild(0)->url());
+  ASSERT_TRUE(GURL(base_path() + "a") == bb_node->children().front()->url());
 }
 
 // Changes the url and makes sure parent/visual order doesn't change.
@@ -205,13 +203,14 @@ TEST_F(BookmarkEditorViewTest, EditURLKeepsPosition) {
 
   SetURLText(UTF8ToUTF16(GURL(base_path() + "new_a").spec()));
 
-  ApplyEdits(editor_tree_model()->GetRoot()->GetChild(0));
+  ApplyEdits(editor_tree_model()->GetRoot()->children().front().get());
 
   const BookmarkNode* bb_node = model_->bookmark_bar_node();
-  ASSERT_EQ(ASCIIToUTF16("a"), bb_node->GetChild(0)->GetTitle());
+  ASSERT_EQ(ASCIIToUTF16("a"), bb_node->children().front()->GetTitle());
   // The URL should have changed.
-  ASSERT_TRUE(GURL(base_path() + "new_a") == bb_node->GetChild(0)->url());
-  ASSERT_TRUE(node_time == bb_node->GetChild(0)->date_added());
+  ASSERT_TRUE(GURL(base_path() + "new_a") ==
+              bb_node->children().front()->url());
+  ASSERT_TRUE(node_time == bb_node->children().front()->date_added());
 }
 
 // Moves 'a' to be a child of the other node.
@@ -220,11 +219,11 @@ TEST_F(BookmarkEditorViewTest, ChangeParent) {
                BookmarkEditor::EditDetails::EditNode(GetNode("a")),
                BookmarkEditorView::SHOW_TREE);
 
-  ApplyEdits(editor_tree_model()->GetRoot()->GetChild(1));
+  ApplyEdits(editor_tree_model()->GetRoot()->children()[1].get());
 
   const BookmarkNode* other_node = model_->other_node();
-  ASSERT_EQ(ASCIIToUTF16("a"), other_node->GetChild(2)->GetTitle());
-  ASSERT_TRUE(GURL(base_path() + "a") == other_node->GetChild(2)->url());
+  ASSERT_EQ(ASCIIToUTF16("a"), other_node->children()[2]->GetTitle());
+  ASSERT_TRUE(GURL(base_path() + "a") == other_node->children()[2]->url());
 }
 
 // Moves 'a' to be a child of the other node and changes its url to new_a.
@@ -237,12 +236,12 @@ TEST_F(BookmarkEditorViewTest, ChangeParentAndURL) {
 
   SetURLText(UTF8ToUTF16(GURL(base_path() + "new_a").spec()));
 
-  ApplyEdits(editor_tree_model()->GetRoot()->GetChild(1));
+  ApplyEdits(editor_tree_model()->GetRoot()->children()[1].get());
 
   const BookmarkNode* other_node = model_->other_node();
-  ASSERT_EQ(ASCIIToUTF16("a"), other_node->GetChild(2)->GetTitle());
-  ASSERT_TRUE(GURL(base_path() + "new_a") == other_node->GetChild(2)->url());
-  ASSERT_TRUE(node_time == other_node->GetChild(2)->date_added());
+  ASSERT_EQ(ASCIIToUTF16("a"), other_node->children()[2]->GetTitle());
+  ASSERT_TRUE(GURL(base_path() + "new_a") == other_node->children()[2]->url());
+  ASSERT_TRUE(node_time == other_node->children()[2]->date_added());
 }
 
 // Creates a new folder and moves a node to it.
@@ -253,7 +252,7 @@ TEST_F(BookmarkEditorViewTest, MoveToNewParent) {
 
   // Create two nodes: "F21" as a child of "F2" and "F211" as a child of "F21".
   BookmarkEditorView::EditorNode* f2 =
-      editor_tree_model()->GetRoot()->GetChild(0)->GetChild(1);
+      editor_tree_model()->GetRoot()->children()[0]->children()[1].get();
   BookmarkEditorView::EditorNode* f21 = AddNewFolder(f2);
   f21->SetTitle(ASCIIToUTF16("F21"));
   BookmarkEditorView::EditorNode* f211 = AddNewFolder(f21);
@@ -263,19 +262,19 @@ TEST_F(BookmarkEditorViewTest, MoveToNewParent) {
   ApplyEdits(f2);
 
   const BookmarkNode* bb_node = model_->bookmark_bar_node();
-  const BookmarkNode* mf2 = bb_node->GetChild(1);
+  const BookmarkNode* mf2 = bb_node->children()[1].get();
 
   // F2 in the model should have two children now: F21 and the node edited.
-  ASSERT_EQ(2, mf2->child_count());
+  ASSERT_EQ(2u, mf2->children().size());
   // F21 should be first.
-  ASSERT_EQ(ASCIIToUTF16("F21"), mf2->GetChild(0)->GetTitle());
+  ASSERT_EQ(ASCIIToUTF16("F21"), mf2->children()[0]->GetTitle());
   // Then a.
-  ASSERT_EQ(ASCIIToUTF16("a"), mf2->GetChild(1)->GetTitle());
+  ASSERT_EQ(ASCIIToUTF16("a"), mf2->children()[1]->GetTitle());
 
   // F21 should have one child, F211.
-  const BookmarkNode* mf21 = mf2->GetChild(0);
-  ASSERT_EQ(1, mf21->child_count());
-  ASSERT_EQ(ASCIIToUTF16("F211"), mf21->GetChild(0)->GetTitle());
+  const BookmarkNode* mf21 = mf2->children()[0].get();
+  ASSERT_EQ(1u, mf21->children().size());
+  ASSERT_EQ(ASCIIToUTF16("F211"), mf21->children()[0]->GetTitle());
 }
 
 // Brings up the editor, creating a new URL on the bookmark bar.
@@ -290,11 +289,11 @@ TEST_F(BookmarkEditorViewTest, NewURL) {
   SetURLText(UTF8ToUTF16(GURL(base_path() + "a").spec()));
   SetTitleText(ASCIIToUTF16("new_a"));
 
-  ApplyEdits(editor_tree_model()->GetRoot()->GetChild(0));
+  ApplyEdits(editor_tree_model()->GetRoot()->children()[0].get());
 
-  ASSERT_EQ(4, bb_node->child_count());
+  ASSERT_EQ(4u, bb_node->children().size());
 
-  const BookmarkNode* new_node = bb_node->GetChild(1);
+  const BookmarkNode* new_node = bb_node->children()[1].get();
 
   EXPECT_EQ(ASCIIToUTF16("new_a"), new_node->GetTitle());
   EXPECT_TRUE(GURL(base_path() + "a") == new_node->url());
@@ -304,7 +303,7 @@ TEST_F(BookmarkEditorViewTest, NewURL) {
 TEST_F(BookmarkEditorViewTest, ChangeURLNoTree) {
   CreateEditor(profile_.get(), NULL,
                BookmarkEditor::EditDetails::EditNode(
-                 model_->other_node()->GetChild(0)),
+                   model_->other_node()->children().front().get()),
                BookmarkEditorView::NO_TREE);
 
   SetURLText(UTF8ToUTF16(GURL(base_path() + "a").spec()));
@@ -313,9 +312,9 @@ TEST_F(BookmarkEditorViewTest, ChangeURLNoTree) {
   ApplyEdits(NULL);
 
   const BookmarkNode* other_node = model_->other_node();
-  ASSERT_EQ(2, other_node->child_count());
+  ASSERT_EQ(2u, other_node->children().size());
 
-  const BookmarkNode* new_node = other_node->GetChild(0);
+  const BookmarkNode* new_node = other_node->children().front().get();
 
   EXPECT_EQ(ASCIIToUTF16("new_a"), new_node->GetTitle());
   EXPECT_TRUE(GURL(base_path() + "a") == new_node->url());
@@ -325,7 +324,7 @@ TEST_F(BookmarkEditorViewTest, ChangeURLNoTree) {
 TEST_F(BookmarkEditorViewTest, ChangeTitleNoTree) {
   CreateEditor(profile_.get(), NULL,
                BookmarkEditor::EditDetails::EditNode(
-                 model_->other_node()->GetChild(0)),
+                   model_->other_node()->children().front().get()),
                BookmarkEditorView::NO_TREE);
 
   SetTitleText(ASCIIToUTF16("new_a"));
@@ -333,9 +332,9 @@ TEST_F(BookmarkEditorViewTest, ChangeTitleNoTree) {
   ApplyEdits(NULL);
 
   const BookmarkNode* other_node = model_->other_node();
-  ASSERT_EQ(2, other_node->child_count());
+  ASSERT_EQ(2u, other_node->children().size());
 
-  const BookmarkNode* new_node = other_node->GetChild(0);
+  const BookmarkNode* new_node = other_node->children().front().get();
 
   EXPECT_EQ(ASCIIToUTF16("new_a"), new_node->GetTitle());
 }
@@ -358,11 +357,11 @@ TEST_F(BookmarkEditorViewTest, EditKeepsScheme) {
   const base::string16& kTitle = ASCIIToUTF16("EditingKeepsScheme");
   SetTitleText(kTitle);
 
-  ApplyEdits(editor_tree_model()->GetRoot()->GetChild(0));
+  ApplyEdits(editor_tree_model()->GetRoot()->children()[0].get());
 
-  ASSERT_EQ(4, kBBNode->child_count());
+  ASSERT_EQ(4u, kBBNode->children().size());
 
-  const BookmarkNode* kNewNode = kBBNode->GetChild(1);
+  const BookmarkNode* kNewNode = kBBNode->children()[1].get();
 
   EXPECT_EQ(kTitle, kNewNode->GetTitle());
   EXPECT_EQ(kUrl, kNewNode->url());
@@ -381,16 +380,16 @@ TEST_F(BookmarkEditorViewTest, NewFolder) {
   EXPECT_FALSE(URLTFHasParent());
   SetTitleText(ASCIIToUTF16("new_F"));
 
-  ApplyEdits(editor_tree_model()->GetRoot()->GetChild(0));
+  ApplyEdits(editor_tree_model()->GetRoot()->children()[0].get());
 
   // Make sure the folder was created.
-  ASSERT_EQ(4, bb_node->child_count());
-  const BookmarkNode* new_node = bb_node->GetChild(1);
+  ASSERT_EQ(4u, bb_node->children().size());
+  const BookmarkNode* new_node = bb_node->children()[1].get();
   EXPECT_EQ(BookmarkNode::FOLDER, new_node->type());
   EXPECT_EQ(ASCIIToUTF16("new_F"), new_node->GetTitle());
   // The node should have one child.
-  ASSERT_EQ(1, new_node->child_count());
-  const BookmarkNode* new_child = new_node->GetChild(0);
+  ASSERT_EQ(1u, new_node->children().size());
+  const BookmarkNode* new_child = new_node->children()[0].get();
   // Make sure the child url/title match.
   EXPECT_EQ(BookmarkNode::URL, new_child->type());
   EXPECT_EQ(details.urls[0].second, new_child->GetTitle());
@@ -401,7 +400,7 @@ TEST_F(BookmarkEditorViewTest, NewFolder) {
 // in then the editor is initially created showing.
 TEST_F(BookmarkEditorViewTest, MoveFolder) {
   BookmarkEditor::EditDetails details = BookmarkEditor::EditDetails::AddFolder(
-      model_->bookmark_bar_node(), -1);
+      model_->bookmark_bar_node(), size_t{-1});
   details.urls.push_back(std::make_pair(GURL(base_path() + "x"),
                                         ASCIIToUTF16("z")));
   CreateEditor(profile_.get(), model_->bookmark_bar_node(),
@@ -410,16 +409,16 @@ TEST_F(BookmarkEditorViewTest, MoveFolder) {
   SetTitleText(ASCIIToUTF16("new_F"));
 
   // Create the folder in the 'other' folder.
-  ApplyEdits(editor_tree_model()->GetRoot()->GetChild(1));
+  ApplyEdits(editor_tree_model()->GetRoot()->children()[1].get());
 
   // Make sure the folder we edited is still there.
-  ASSERT_EQ(3, model_->other_node()->child_count());
-  const BookmarkNode* new_node = model_->other_node()->GetChild(2);
+  ASSERT_EQ(3u, model_->other_node()->children().size());
+  const BookmarkNode* new_node = model_->other_node()->children()[2].get();
   EXPECT_EQ(BookmarkNode::FOLDER, new_node->type());
   EXPECT_EQ(ASCIIToUTF16("new_F"), new_node->GetTitle());
   // The node should have one child.
-  ASSERT_EQ(1, new_node->child_count());
-  const BookmarkNode* new_child = new_node->GetChild(0);
+  ASSERT_EQ(1u, new_node->children().size());
+  const BookmarkNode* new_child = new_node->children()[0].get();
   // Make sure the child url/title match.
   EXPECT_EQ(BookmarkNode::URL, new_child->type());
   EXPECT_EQ(details.urls[0].second, new_child->GetTitle());
@@ -429,7 +428,7 @@ TEST_F(BookmarkEditorViewTest, MoveFolder) {
 // Verifies the title of a new folder is updated correctly if ApplyEdits() is
 // is invoked while focus is still on the text field.
 TEST_F(BookmarkEditorViewTest, NewFolderTitleUpdatedOnCommit) {
-  const BookmarkNode* parent = model_->bookmark_bar_node()->GetChild(2);
+  const BookmarkNode* parent = model_->bookmark_bar_node()->children()[2].get();
 
   CreateEditor(profile_.get(), parent,
                BookmarkEditor::EditDetails::AddNodeInFolder(
@@ -446,8 +445,8 @@ TEST_F(BookmarkEditorViewTest, NewFolderTitleUpdatedOnCommit) {
   ApplyEdits();
 
   // Verify the new folder was added and title set appropriately.
-  ASSERT_EQ(1, parent->child_count());
-  const BookmarkNode* new_folder = parent->GetChild(0);
+  ASSERT_EQ(1u, parent->children().size());
+  const BookmarkNode* new_folder = parent->children().front().get();
   ASSERT_TRUE(new_folder->is_folder());
   EXPECT_EQ("modified", base::UTF16ToASCII(new_folder->GetTitle()));
 }

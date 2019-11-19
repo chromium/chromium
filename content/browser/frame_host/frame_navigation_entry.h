@@ -9,11 +9,14 @@
 
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
+#include "base/optional.h"
 #include "content/browser/site_instance_impl.h"
 #include "content/public/common/page_state.h"
 #include "content/public/common/referrer.h"
 #include "services/network/public/cpp/resource_request_body.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "url/gurl.h"
+#include "url/origin.h"
 
 namespace content {
 
@@ -41,6 +44,7 @@ class CONTENT_EXPORT FrameNavigationEntry
       const GURL& url,
       const url::Origin* origin,
       const Referrer& referrer,
+      const base::Optional<url::Origin>& initiator_origin,
       const std::vector<GURL>& redirect_chain,
       const PageState& page_state,
       const std::string& method,
@@ -49,7 +53,7 @@ class CONTENT_EXPORT FrameNavigationEntry
 
   // Creates a copy of this FrameNavigationEntry that can be modified
   // independently from the original.
-  FrameNavigationEntry* Clone() const;
+  scoped_refptr<FrameNavigationEntry> Clone() const;
 
   // Updates all the members of this entry.
   void UpdateEntry(
@@ -61,6 +65,7 @@ class CONTENT_EXPORT FrameNavigationEntry
       const GURL& url,
       const base::Optional<url::Origin>& origin,
       const Referrer& referrer,
+      const base::Optional<url::Origin>& initiator_origin,
       const std::vector<GURL>& redirect_chain,
       const PageState& page_state,
       const std::string& method,
@@ -123,6 +128,13 @@ class CONTENT_EXPORT FrameNavigationEntry
   // The referring URL.  Can be empty.
   void set_referrer(const Referrer& referrer) { referrer_ = referrer; }
   const Referrer& referrer() const { return referrer_; }
+
+  // The origin that initiated the original navigation.  base::nullopt means
+  // that the original navigation was browser-initiated (e.g. initiated from a
+  // trusted surface like the omnibox or the bookmarks bar).
+  const base::Optional<url::Origin>& initiator_origin() const {
+    return initiator_origin_;
+  }
 
   // The origin of the document the frame has committed. It is optional, since
   // pending entries do not have an origin associated with them and the real
@@ -191,6 +203,9 @@ class CONTENT_EXPORT FrameNavigationEntry
   // and verified when receiving the DidCommit IPC.
   base::Optional<url::Origin> committed_origin_;
   Referrer referrer_;
+  // TODO(lukasza): https://crbug.com/976055: |initiator_origin| should be
+  // persisted across session restore.
+  base::Optional<url::Origin> initiator_origin_;
   // This is used when transferring a pending entry from one process to another.
   // We also send the main frame's redirect chain through session sync for
   // offline analysis.

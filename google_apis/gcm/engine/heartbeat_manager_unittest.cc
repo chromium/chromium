@@ -28,7 +28,10 @@ mcs_proto::HeartbeatConfig BuildHeartbeatConfig(int interval_ms) {
 
 class TestHeartbeatManager : public HeartbeatManager {
  public:
-  TestHeartbeatManager() {}
+  TestHeartbeatManager(scoped_refptr<base::SequencedTaskRunner> io_task_runner,
+                       scoped_refptr<base::SequencedTaskRunner>
+                           maybe_power_wrapped_io_task_runner)
+      : HeartbeatManager(io_task_runner, maybe_power_wrapped_io_task_runner) {}
   ~TestHeartbeatManager() override {}
 
   // Bypass the heartbeat timer, and send the heartbeat now.
@@ -63,22 +66,21 @@ class HeartbeatManagerTest : public testing::Test {
   void SendHeartbeatClosure();
   void TriggerReconnectClosure(ConnectionFactory::ConnectionResetReason reason);
 
+  scoped_refptr<base::TestSimpleTaskRunner> task_runner_;
+  base::ThreadTaskRunnerHandle task_runner_handle_;
+
   std::unique_ptr<TestHeartbeatManager> manager_;
 
   int heartbeats_sent_;
   int reconnects_triggered_;
-
-  scoped_refptr<base::TestSimpleTaskRunner> task_runner_;
-  base::ThreadTaskRunnerHandle task_runner_handle_;
 };
 
 HeartbeatManagerTest::HeartbeatManagerTest()
-    : manager_(new TestHeartbeatManager()),
+    : task_runner_(new base::TestSimpleTaskRunner()),
+      task_runner_handle_(task_runner_),
+      manager_(new TestHeartbeatManager(task_runner_, task_runner_)),
       heartbeats_sent_(0),
-      reconnects_triggered_(0),
-      task_runner_(new base::TestSimpleTaskRunner()),
-      task_runner_handle_(task_runner_) {
-}
+      reconnects_triggered_(0) {}
 
 void HeartbeatManagerTest::StartManager() {
   manager_->Start(base::Bind(&HeartbeatManagerTest::SendHeartbeatClosure,

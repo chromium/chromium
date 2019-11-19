@@ -10,7 +10,7 @@
 #include "ash/assistant/model/assistant_query.h"
 #include "ash/assistant/ui/assistant_ui_constants.h"
 #include "ash/assistant/ui/assistant_view_delegate.h"
-#include "ash/assistant/ui/logo_view/base_logo_view.h"
+#include "ash/assistant/ui/logo_view/logo_view.h"
 #include "ash/assistant/util/assistant_util.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "base/strings/utf_string_conversions.h"
@@ -72,12 +72,12 @@ void AssistantMiniView::InitLayout() {
           2 * kSpacingDip));
 
   layout_manager->set_cross_axis_alignment(
-      views::BoxLayout::CrossAxisAlignment::CROSS_AXIS_ALIGNMENT_CENTER);
+      views::BoxLayout::CrossAxisAlignment::kCenter);
 
   // Molecule icon.
-  BaseLogoView* molecule_icon = BaseLogoView::Create();
+  LogoView* molecule_icon = LogoView::Create();
   molecule_icon->SetPreferredSize(gfx::Size(kIconSizeDip, kIconSizeDip));
-  molecule_icon->SetState(BaseLogoView::State::kMoleculeWavy,
+  molecule_icon->SetState(LogoView::State::kMoleculeWavy,
                           /*animate=*/false);
   AddChildView(molecule_icon);
 
@@ -105,7 +105,7 @@ void AssistantMiniView::OnInputModalityChanged(InputModality input_modality) {
 }
 
 void AssistantMiniView::OnResponseChanged(
-    const std::shared_ptr<AssistantResponse>& response) {
+    const scoped_refptr<AssistantResponse>& response) {
   // When a response changes, the committed query becomes active. We'll cache
   // the text for that query to use as our prompt when not using the stylus.
   const AssistantQuery& committed_query =

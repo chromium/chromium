@@ -5,10 +5,12 @@
 package org.chromium.ui.base;
 
 import android.annotation.SuppressLint;
+import android.annotation.TargetApi;
 import android.content.ClipData;
 import android.content.ClipDescription;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.os.Build;
 import android.text.Html;
 import android.text.Spanned;
 import android.text.style.CharacterStyle;
@@ -16,9 +18,12 @@ import android.text.style.ParagraphStyle;
 import android.text.style.UpdateAppearance;
 
 import org.chromium.base.ApiCompatibilityUtils;
+import org.chromium.base.BuildInfo;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
+import org.chromium.base.annotations.NativeMethods;
+import org.chromium.base.compat.ApiHelperForO;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.ui.R;
 import org.chromium.ui.widget.Toast;
@@ -36,6 +41,8 @@ public class Clipboard implements ClipboardManager.OnPrimaryClipChangedListener 
     private final Context mContext;
 
     private final ClipboardManager mClipboardManager;
+
+    private long mNativeClipboard;
 
     /**
      * Get the singleton Clipboard instance (creating it if needed).
@@ -177,6 +184,11 @@ public class Clipboard implements ClipboardManager.OnPrimaryClipChangedListener 
         }
     }
 
+    @CalledByNative
+    private void setNativePtr(long nativeClipboard) {
+        mNativeClipboard = nativeClipboard;
+    }
+
     /**
      * Tells the C++ Clipboard that the clipboard has changed.
      *
@@ -185,8 +197,9 @@ public class Clipboard implements ClipboardManager.OnPrimaryClipChangedListener 
     @Override
     public void onPrimaryClipChanged() {
         RecordUserAction.record("MobileClipboardChanged");
-        long nativeClipboardAndroid = nativeInit();
-        if (nativeClipboardAndroid != 0) nativeOnPrimaryClipChanged(nativeClipboardAndroid);
+        if (mNativeClipboard != 0) {
+            ClipboardJni.get().onPrimaryClipChanged(mNativeClipboard, Clipboard.this);
+        }
     }
 
     /**
@@ -199,6 +212,42 @@ public class Clipboard implements ClipboardManager.OnPrimaryClipChangedListener 
         Toast.makeText(mContext, R.string.url_copied, Toast.LENGTH_SHORT).show();
     }
 
-    private native long nativeInit();
-    private native void nativeOnPrimaryClipChanged(long nativeClipboardAndroid);
+    /**
+     * Because Android may not notify apps in the background that the content of clipboard has
+     * changed, this method proactively considers clipboard invalidated, when the app loses focus.
+     * @param hasFocus Whether or not {@code activity} gained or lost focus.
+     */
+    public void onWindowFocusChanged(boolean hasFocus) {
+        if (mNativeClipboard == 0 || !hasFocus || !BuildInfo.isAtLeastQ()) return;
+        onPrimaryClipTimestampInvalidated();
+    }
+
+    @TargetApi(Build.VERSION_CODES.O)
+    private void onPrimaryClipTimestampInvalidated() {
+        ClipDescription clipDescription = mClipboardManager.getPrimaryClipDescription();
+        if (clipDescription == null) return;
+
+        long timestamp = ApiHelperForO.getTimestamp(clipDescription);
+        ClipboardJni.get().onPrimaryClipTimestampInvalidated(
+                mNativeClipboard, Clipboard.this, timestamp);
+    }
+
+    /**
+     * Gets the last modified timestamp observed by the native side ClipboardAndroid, not the
+     * Android framework.
+     *
+     * @return the last modified time in millisecond.
+     */
+    public long getLastModifiedTimeMs() {
+        if (mNativeClipboard == 0) return 0;
+        return ClipboardJni.get().getLastModifiedTimeToJavaTime(mNativeClipboard);
+    }
+
+    @NativeMethods
+    interface Natives {
+        void onPrimaryClipChanged(long nativeClipboardAndroid, Clipboard caller);
+        void onPrimaryClipTimestampInvalidated(
+                long nativeClipboardAndroid, Clipboard caller, long timestamp);
+        long getLastModifiedTimeToJavaTime(long nativeClipboardAndroid);
+    }
 }

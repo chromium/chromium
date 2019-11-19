@@ -1,0 +1,8 @@
+Test that UA client hints are added on redirect.
+
+Got request: GET http://127.0.1.1:8000/whatever
+sec-ch-ua: content_shell 99
+Got request: GET http://127.0.0.1:8000/devtools/resources/empty.html
+sec-ch-ua: content_shell 99
+dpr: 1
+

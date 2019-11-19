@@ -141,6 +141,9 @@ public abstract class BaseNotificationController
     @Override
     public void onMediaSessionAction(int action) {}
 
+    @Override
+    public void onMediaSessionSeekTo(long pos) {}
+
     // Abstract methods to be implemented by children.
     public abstract Intent createContentIntent();
 

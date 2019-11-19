@@ -68,7 +68,6 @@ class MockUnlockManager : public UnlockManager {
   ~MockUnlockManager() override {}
   MOCK_METHOD0(IsUnlockAllowed, bool());
   MOCK_METHOD1(SetRemoteDeviceLifeCycle, void(RemoteDeviceLifeCycle*));
-  MOCK_METHOD0(OnLifeCycleStateChanged, void());
   MOCK_METHOD1(OnAuthAttempted, void(mojom::AuthType));
   MOCK_METHOD0(CancelConnectionAttempt, void());
 
@@ -393,20 +392,6 @@ TEST_F(ProximityAuthSystemTest, StopSystem_RegisteredUserFocused) {
   EXPECT_CALL(*unlock_manager_, SetRemoteDeviceLifeCycle(NotNull()));
   proximity_auth_system_->Start();
   EXPECT_EQ(kUser1, life_cycle()->GetRemoteDevice().user_id());
-}
-
-TEST_F(ProximityAuthSystemTest, OnLifeCycleStateChanged) {
-  FocusUser(kUser1);
-
-  EXPECT_CALL(*unlock_manager_, OnLifeCycleStateChanged());
-  life_cycle()->ChangeState(RemoteDeviceLifeCycle::State::FINDING_CONNECTION);
-
-  EXPECT_CALL(*unlock_manager_, OnLifeCycleStateChanged());
-  life_cycle()->ChangeState(RemoteDeviceLifeCycle::State::AUTHENTICATING);
-
-  EXPECT_CALL(*unlock_manager_, OnLifeCycleStateChanged());
-  life_cycle()->ChangeState(
-      RemoteDeviceLifeCycle::State::SECURE_CHANNEL_ESTABLISHED);
 }
 
 TEST_F(ProximityAuthSystemTest, OnAuthAttempted) {

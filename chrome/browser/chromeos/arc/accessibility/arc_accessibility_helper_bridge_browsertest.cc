@@ -11,9 +11,9 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chromeos/constants/chromeos_features.h"
-#include "components/arc/arc_bridge_service.h"
 #include "components/arc/arc_service_manager.h"
 #include "components/arc/arc_util.h"
+#include "components/arc/session/arc_bridge_service.h"
 #include "components/arc/test/connection_holder_util.h"
 #include "components/arc/test/fake_accessibility_helper_instance.h"
 #include "components/exo/shell_surface.h"
@@ -22,7 +22,6 @@
 #include "components/exo/wm_helper_chromeos.h"
 #include "components/viz/common/features.h"
 #include "ui/aura/client/aura_constants.h"
-#include "ui/aura/env.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/public/activation_client.h"
 
@@ -46,8 +45,7 @@ class ArcAccessibilityHelperBridgeBrowserTest : public InProcessBrowserTest {
     chromeos::AccessibilityManager::Get()->SetProfileForTest(
         browser()->profile());
 
-    wm_helper_ =
-        std::make_unique<exo::WMHelperChromeOS>(ash::Shell::Get()->aura_env());
+    wm_helper_ = std::make_unique<exo::WMHelperChromeOS>();
     exo::WMHelper::SetInstance(wm_helper_.get());
   }
 

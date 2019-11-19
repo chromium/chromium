@@ -24,7 +24,7 @@ static const char kZygoteHelloMessage[] = "ZYGOTE_OK";
 static const char kZygoteChildPingMessage[] = "CHILD_PING";
 
 // Maximum allowable length for messages sent to the zygote.
-const size_t kZygoteMaxMessageLength = 8192;
+const size_t kZygoteMaxMessageLength = 12288;
 
 // File descriptors initialized by the Zygote Host
 const int kZygoteSocketPairFd = base::GlobalDescriptors::kBaseDescriptor;

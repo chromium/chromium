@@ -20,9 +20,9 @@ MediaTracks::~MediaTracks() = default;
 MediaTrack* MediaTracks::AddAudioTrack(
     const AudioDecoderConfig& config,
     StreamParser::TrackId bytestream_track_id,
-    const std::string& kind,
-    const std::string& label,
-    const std::string& language) {
+    const MediaTrack::Kind& kind,
+    const MediaTrack::Label& label,
+    const MediaTrack::Language& language) {
   DCHECK(config.IsValidConfig());
   CHECK(audio_configs_.find(bytestream_track_id) == audio_configs_.end());
   std::unique_ptr<MediaTrack> track = std::make_unique<MediaTrack>(
@@ -36,9 +36,9 @@ MediaTrack* MediaTracks::AddAudioTrack(
 MediaTrack* MediaTracks::AddVideoTrack(
     const VideoDecoderConfig& config,
     StreamParser::TrackId bytestream_track_id,
-    const std::string& kind,
-    const std::string& label,
-    const std::string& language) {
+    const MediaTrack::Kind& kind,
+    const MediaTrack::Label& label,
+    const MediaTrack::Language& language) {
   DCHECK(config.IsValidConfig());
   CHECK(video_configs_.find(bytestream_track_id) == video_configs_.end());
   std::unique_ptr<MediaTrack> track = std::make_unique<MediaTrack>(

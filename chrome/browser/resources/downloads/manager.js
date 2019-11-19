@@ -2,9 +2,31 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-cr.define('downloads', function() {
-  const Manager = Polymer({
+import './strings.m.js';
+import {Polymer, html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {BrowserProxy} from './browser_proxy.js';
+import {States} from './constants.js';
+import './item.js';
+import {SearchService} from './search_service.js';
+import './toolbar.js';
+import 'chrome://resources/cr_components/managed_footnote/managed_footnote.m.js';
+import 'chrome://resources/cr_elements/cr_page_host_style_css.m.js';
+import {getInstance as getToastManagerInstance} from 'chrome://resources/cr_elements/cr_toast/cr_toast_manager.m.js';
+import 'chrome://resources/cr_elements/hidden_style_css.m.js';
+import 'chrome://resources/cr_elements/shared_style_css.m.js';
+import 'chrome://resources/cr_elements/shared_vars_css.m.js';
+import {FindShortcutBehavior} from 'chrome://resources/js/find_shortcut_behavior.m.js';
+import {queryRequiredElement} from 'chrome://resources/js/util.m.js';
+import {IronA11yAnnouncer} from 'chrome://resources/polymer/v3_0/iron-a11y-announcer/iron-a11y-announcer.js';
+import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
+import {assert} from 'chrome://resources/js/assert.m.js';
+
+  Polymer({
     is: 'downloads-manager',
+
+    _template: html`{__html_template__}`,
 
     behaviors: [
       FindShortcutBehavior,
@@ -60,20 +82,13 @@ cr.define('downloads', function() {
       'itemsChanged_(items_.*)',
     ],
 
-    listeners: {
-      'restore-focus-after-remove': 'onRestoreFocusAfterRemove_',
-    },
-
     /** @private {downloads.mojom.PageCallbackRouter} */
     mojoEventTarget_: null,
 
     /** @private {downloads.mojom.PageHandlerInterface} */
     mojoHandler_: null,
 
-    /** @private {boolean} */
-    restoreFocusAfterRemove_: false,
-
-    /** @private {?downloads.SearchService} */
+    /** @private {?SearchService} */
     searchService_: null,
 
     /** @private {!PromiseResolver} */
@@ -82,12 +97,23 @@ cr.define('downloads', function() {
     /** @private {Array<number>} */
     listenerIds_: null,
 
+    /** @private {?Function} */
+    boundOnKeyDown_: null,
+
     /** @override */
     created: function() {
-      const browserProxy = downloads.BrowserProxy.getInstance();
+      const browserProxy = BrowserProxy.getInstance();
       this.mojoEventTarget_ = browserProxy.callbackRouter;
       this.mojoHandler_ = browserProxy.handler;
-      this.searchService_ = downloads.SearchService.getInstance();
+      this.searchService_ = SearchService.getInstance();
+
+      // Regular expression that captures the leading slash, the content and the
+      // trailing slash in three different groups.
+      const CANONICAL_PATH_REGEX = /(^\/)([\/-\w]+)(\/$)/;
+      const path = location.pathname.replace(CANONICAL_PATH_REGEX, '$1$2');
+      if (path !== '/') {  // There are no subpages in chrome://downloads.
+        window.history.replaceState(undefined /* stateObject */, '', '/');
+      }
     },
 
     /** @override */
@@ -103,17 +129,28 @@ cr.define('downloads', function() {
             this.updateItem_.bind(this)),
       ];
 
-      // TODO(aee): Remove this conditional when the Polymer 2 migration
-      // is completed. Polymer.DomIf exists in Polymer 2 and not in Polymer 1.
-      if (typeof Polymer.DomIf == 'undefined') {
-        this.$.downloadsList.preserveFocus = false;
-      }
+      this.boundOnKeyDown_ = e => this.onKeyDown_(e);
+      document.addEventListener('keydown', this.boundOnKeyDown_);
+
+      this.loaded_.promise.then(() => {
+        requestIdleCallback(function() {
+          chrome.send(
+              'metricsHandler:recordTime',
+              ['Download.ResultsRenderedTime', window.performance.now()]);
+          document.fonts.load('bold 12px Roboto');
+        });
+      });
+
+      this.searchService_.loadMore();
     },
 
     /** @override */
     detached: function() {
       this.listenerIds_.forEach(
           id => assert(this.mojoEventTarget_.removeListener(id)));
+
+      document.removeEventListener('keydown', this.boundOnKeyDown_);
+      this.boundOnKeyDown_ = null;
     },
 
     /** @private */
@@ -123,10 +160,6 @@ cr.define('downloads', function() {
 
     /** @private */
     hasDownloadsChanged_: function() {
-      if (loadTimeData.getBoolean('allowDeletingHistory')) {
-        this.$.toolbar.downloadsShowing = this.hasDownloads_;
-      }
-
       if (this.hasDownloads_) {
         this.$.downloadsList.fire('iron-resize');
       }
@@ -162,9 +195,15 @@ cr.define('downloads', function() {
     /** @private */
     itemsChanged_: function() {
       this.hasDownloads_ = this.items_.length > 0;
+      this.$.toolbar.hasClearableDownloads =
+          loadTimeData.getBoolean('allowDeletingHistory') &&
+          this.items_.some(
+              ({state}) => state != States.DANGEROUS &&
+                  state != States.IN_PROGRESS &&
+                  state != States.PAUSED);
 
       if (this.inSearchMode_) {
-        Polymer.IronA11yAnnouncer.requestAvailability();
+        IronA11yAnnouncer.requestAvailability();
         this.fire('iron-announce', {
           text: this.items_.length == 0 ?
               this.noDownloadsText_() :
@@ -189,31 +228,53 @@ cr.define('downloads', function() {
     },
 
     /**
-     * @param {Event} e
+     * @param {!KeyboardEvent} e
      * @private
      */
-    onCanExecute_: function(e) {
-      e = /** @type {cr.ui.CanExecuteEvent} */ (e);
-      switch (e.command.id) {
-        case 'undo-command':
-          e.canExecute = this.$.toolbar.canUndo();
-          break;
-        case 'clear-all-command':
-          e.canExecute = this.$.toolbar.canClearAll();
-          break;
+    onKeyDown_: function(e) {
+      let clearAllKey = 'c';
+      // <if expr="is_macosx">
+      // On Mac, pressing alt+c produces 'ç' as |event.key|.
+      clearAllKey = 'ç';
+      // </if>
+      if (e.key === clearAllKey && e.altKey && !e.ctrlKey && !e.shiftKey &&
+          !e.metaKey) {
+        this.onClearAllCommand_();
+        e.preventDefault();
+        return;
+      }
+
+      if (e.key === 'z' && !e.altKey && !e.shiftKey) {
+        let hasTriggerModifier = e.ctrlKey && !e.metaKey;
+        // <if expr="is_macosx">
+        hasTriggerModifier = !e.ctrlKey && e.metaKey;
+        // </if>
+        if (hasTriggerModifier) {
+          this.onUndoCommand_();
+          e.preventDefault();
+        }
       }
     },
 
-    /**
-     * @param {Event} e
-     * @private
-     */
-    onCommand_: function(e) {
-      if (e.command.id == 'clear-all-command') {
-        this.mojoHandler_.clearAll();
-      } else if (e.command.id == 'undo-command') {
-        this.mojoHandler_.undo();
+    /** @private */
+    onClearAllCommand_() {
+      if (!this.$.toolbar.canClearAll()) {
+        return;
       }
+
+      this.mojoHandler_.clearAll();
+      getToastManagerInstance().show(
+          loadTimeData.getString('toastClearedAll'), true);
+    },
+
+    /** @private */
+    onUndoCommand_() {
+      if (!this.$.toolbar.canUndo()) {
+        return;
+      }
+
+      getToastManagerInstance().hide();
+      this.mojoHandler_.undo();
     },
 
     /** @private */
@@ -226,19 +287,6 @@ cr.define('downloads', function() {
         this.searchService_.loadMore();
       }
       this.hasShadow_ = container.scrollTop > 0;
-    },
-
-    /**
-     * @return {!Promise}
-     * @private
-     */
-    onLoad_: function() {
-      cr.ui.decorate('command', cr.ui.Command);
-      document.addEventListener('canExecute', this.onCanExecute_.bind(this));
-      document.addEventListener('command', this.onCommand_.bind(this));
-
-      this.searchService_.loadMore();
-      return this.loaded_.promise;
     },
 
     /** @private */
@@ -260,24 +308,13 @@ cr.define('downloads', function() {
                            type: 'splice',
                            removed: removed,
                          }]);
-      if (this.restoreFocusAfterRemove_) {
-        this.restoreFocusAfterRemove_ = false;
-        if (this.items_.length > 0) {
-          setTimeout(() => {
-            this.$.downloadsList.focusItem(index);
-            const item = getDeepActiveElement();
-            if (item) {
-              item.focusOnRemoveButton();
-            }
-          });
-        }
-      }
       this.onScroll_();
     },
 
     /** @private */
-    onRestoreFocusAfterRemove_: function() {
-      this.restoreFocusAfterRemove_ = true;
+    onUndoClick_: function() {
+      getToastManagerInstance().hide();
+      this.mojoHandler_.undo();
     },
 
     /**
@@ -308,19 +345,7 @@ cr.define('downloads', function() {
       this.items_[index] = data;
       this.updateHideDates_(index, index);
 
-      // TODO(aee): Remove this conditional when the Polymer 2 migration
-      // is completed. Polymer.DomIf exists in Polymer 2 and not in Polymer 1.
-      if (Polymer.DomIf) {
-        this.notifyPath(`items_.${index}`);
-      } else {
-        this.notifySplices('items_', [{
-                             index: index,
-                             addedCount: 0,
-                             object: this.items_,
-                             type: 'splice',
-                             removed: [],
-                           }]);
-      }
+      this.notifyPath(`items_.${index}`);
       this.async(() => {
         const list = /** @type {!IronListElement} */ (this.$.downloadsList);
         list.updateSizeForIndex(index);
@@ -341,16 +366,3 @@ cr.define('downloads', function() {
       return this.$.toolbar.isSearchFocused();
     },
   });
-
-  /** @return {!downloads.Manager} */
-  Manager.get = function() {
-    return /** @type {!downloads.Manager} */ (
-        queryRequiredElement('downloads-manager'));
-  };
-  /** @return {!Promise} */
-  Manager.onLoad = function() {
-    return Manager.get().onLoad_();
-  };
-
-  return {Manager: Manager};
-});

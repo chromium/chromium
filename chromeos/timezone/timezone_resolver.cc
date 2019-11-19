@@ -144,7 +144,7 @@ class TimeZoneResolver::TimeZoneResolverImpl : public base::PowerObserver {
   std::unique_ptr<TZRequest> request_;
 
   base::WeakPtrFactory<TimeZoneResolver::TimeZoneResolverImpl>
-      weak_ptr_factory_;
+      weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(TimeZoneResolverImpl);
 };
@@ -155,7 +155,7 @@ namespace {
 class TZRequest {
  public:
   explicit TZRequest(TimeZoneResolver::TimeZoneResolverImpl* resolver)
-      : resolver_(resolver), weak_ptr_factory_(this) {}
+      : resolver_(resolver) {}
 
   ~TZRequest();
 
@@ -179,7 +179,7 @@ class TZRequest {
 
   TimeZoneResolver::TimeZoneResolverImpl* const resolver_;
 
-  base::WeakPtrFactory<TZRequest> weak_ptr_factory_;
+  base::WeakPtrFactory<TZRequest> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(TZRequest);
 };
@@ -266,13 +266,11 @@ TimeZoneResolver::TimeZoneResolverImpl::TimeZoneResolverImpl(
           SimpleGeolocationProvider::DefaultGeolocationProviderURL()),
       timezone_provider_(resolver->shared_url_loader_factory(),
                          DefaultTimezoneProviderURL()),
-      requests_count_(0),
-      weak_ptr_factory_(this) {
+      requests_count_(0) {
   DCHECK(!resolver_->apply_timezone().is_null());
   DCHECK(!resolver_->delay_network_call().is_null());
 
-  base::PowerMonitor* power_monitor = base::PowerMonitor::Get();
-  power_monitor->AddObserver(this);
+  base::PowerMonitor::AddObserver(this);
 
   const int64_t last_refresh_at_raw =
       resolver_->local_state()->GetInt64(kLastTimeZoneRefreshTime);
@@ -289,9 +287,7 @@ TimeZoneResolver::TimeZoneResolverImpl::TimeZoneResolverImpl(
 }
 
 TimeZoneResolver::TimeZoneResolverImpl::~TimeZoneResolverImpl() {
-  base::PowerMonitor* power_monitor = base::PowerMonitor::Get();
-  if (power_monitor)
-    power_monitor->RemoveObserver(this);
+  base::PowerMonitor::RemoveObserver(this);
 }
 
 void TimeZoneResolver::TimeZoneResolverImpl::Start() {

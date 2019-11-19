@@ -17,7 +17,7 @@
 #include "third_party/blink/renderer/modules/service_worker/service_worker_registration.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
-#include "third_party/blink/renderer/platform/histogram.h"
+#include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/assertions.h"
 
@@ -69,7 +69,7 @@ ScriptPromise ServiceWorkerRegistrationNotifications::showNotification(
       ("Notifications.PersistentNotificationActionCount", 17));
   notification_count_histogram.Count(options->actions().size());
 
-  ScriptPromiseResolver* resolver = ScriptPromiseResolver::Create(script_state);
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
 
   ServiceWorkerRegistrationNotifications::From(execution_context, registration)
@@ -82,7 +82,7 @@ ScriptPromise ServiceWorkerRegistrationNotifications::getNotifications(
     ScriptState* script_state,
     ServiceWorkerRegistration& registration,
     const GetNotificationOptions* options) {
-  ScriptPromiseResolver* resolver = ScriptPromiseResolver::Create(script_state);
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
 
   ExecutionContext* execution_context = ExecutionContext::From(script_state);

@@ -20,10 +20,6 @@ void SSLInfo::Reset() {
   *this = SSLInfo();
 }
 
-void SSLInfo::SetCertError(int error) {
-  cert_status |= MapNetErrorToCertStatus(error);
-}
-
 void SSLInfo::UpdateCertificateTransparencyInfo(
     const ct::CTVerifyResult& ct_verify_result) {
   signed_certificate_timestamps.insert(signed_certificate_timestamps.end(),

@@ -50,7 +50,7 @@ TAGS_THAT_HAVE_EXTRA_NEWLINE = {
 # Tags that we allow to be squished into a single line for brevity.
 TAGS_THAT_ALLOW_SINGLE_LINE = ['obsolete', 'owner', 'description']
 
-LOWERCASE_NAME_FN = lambda n: n.attributes['name'].value.lower()
+LOWERCASE_NAME_FN = lambda n: n.get('name').lower()
 
 # Tags whose children we want to alphabetize. The key is the parent tag name,
 # and the value is a list of pairs of tag name and key functions that maps each

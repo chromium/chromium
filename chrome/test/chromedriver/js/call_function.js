@@ -65,12 +65,24 @@ function generateUUID() {
 };
 
 /**
+ * Constructs new error to be thrown with given code and message.
+ * @param {string} message Message reported to user.
+ * @param {StatusCode} code StatusCode for error.
+ * @return {!Error} Error object that can be thrown.
+ */
+function newError(message, code) {
+  const error = new Error(message);
+  error.code = code;
+  return error;
+}
+
+/**
  * A cache which maps IDs <-> cached objects for the purpose of identifying
  * a script object remotely. Uses UUIDs for identification.
  * @constructor
  */
 function CacheWithUUID() {
-  this.cache_ = {};
+  this.cache_ = Object.create(null);
 }
 
 CacheWithUUID.prototype = {
@@ -100,10 +112,8 @@ CacheWithUUID.prototype = {
     var item = this.cache_[id];
     if (item)
       return item;
-    var error = new Error('not in cache');
-    error.code = StatusCode.STALE_ELEMENT_REFERENCE;
-    error.message = 'element is not attached to the page document';
-    throw error;
+    throw newError('element is not attached to the page document',
+                   StatusCode.STALE_ELEMENT_REFERENCE);
   },
 
   /**
@@ -136,7 +146,7 @@ CacheWithUUID.prototype = {
  * @constructor
  */
 function Cache() {
-  this.cache_ = {};
+  this.cache_ = Object.create(null);
   this.nextId_ = 1;
   this.idPrefix_ = Math.random().toString();
 }
@@ -170,10 +180,8 @@ Cache.prototype = {
     var item = this.cache_[id];
     if (item)
       return item;
-    var error = new Error('not in cache');
-    error.code = StatusCode.STALE_ELEMENT_REFERENCE;
-    error.message = 'element is not attached to the page document';
-    throw error;
+    throw newError('element is not attached to the page document',
+                   StatusCode.STALE_ELEMENT_REFERENCE);
   },
 
   /**
@@ -246,13 +254,11 @@ function getPageCache(opt_doc, opt_w3c) {
 }
 
 /**
- * Wraps the given value to be transmitted remotely by converting
- * appropriate objects to cached object IDs.
- *
- * @param {*} value The value to wrap.
- * @return {*} The wrapped value.
+ * Returns whether given value is an element.
+ * @param {*} value The value to identify as object.
+ * @return {boolean} True if value is a cacheable element.
  */
-function wrap(value) {
+function isElement(value) {
   // As of crrev.com/1316933002, typeof() for some elements will return
   // 'function', not 'object'. So we need to check for both non-null objects, as
   // well Elements that also happen to be callable functions (e.g. <embed> and
@@ -260,60 +266,143 @@ function wrap(value) {
   // since this does not work with frames/iframes, for example
   // frames[0].document.body instanceof Object == false even though
   // typeof(frames[0].document.body) == 'object'.
-  if ((typeof(value) == 'object' && value != null) ||
-      (value instanceof HTMLAllCollection) ||
-      (typeof(value) == 'function' && value.nodeName &&
-       value.nodeType == NodeType.ELEMENT)) {
-    var nodeType = value['nodeType'];
-    if (nodeType == NodeType.ELEMENT || nodeType == NodeType.DOCUMENT
-        || (SHADOW_DOM_ENABLED && value instanceof ShadowRoot)) {
-      var wrapped = {};
-      var root = getNodeRootThroughAnyShadows(value);
-      wrapped[ELEMENT_KEY] = getPageCache(root, w3cEnabled).storeItem(value);
-      return wrapped;
-    }
-
-    var obj;
-    if (typeof(value.length) == 'number') {
-      obj = [];
-      for (var i = 0; i < value.length; i++)
-        obj[i] = wrap(value[i]);
-    } else {
-      obj = {};
-      for (var prop in value)
-        obj[prop] = wrap(value[prop]);
-    }
-    return obj;
-  }
-  return value;
+  return ((typeof(value) == 'object' && value != null) ||
+            (typeof(value) == 'function' && value.nodeName &&
+            value.nodeType == NodeType.ELEMENT)) &&
+          (value.nodeType == NodeType.ELEMENT   ||
+           value.nodeType == NodeType.DOCUMENT  ||
+           (SHADOW_DOM_ENABLED && value instanceof ShadowRoot));
 }
 
 /**
- * Unwraps the given value by converting from object IDs to the cached
- * objects.
- *
- * @param {*} value The value to unwrap.
- * @param {Cache} cache The cache to retrieve wrapped elements from.
- * @return {*} The unwrapped value.
+ * Returns whether given value is a collection (iterable with
+ * 'length' property).
+ * @param {*} value The value to identify as a collection.
+ * @return {boolean} True if value is an iterable collection.
  */
-function unwrap(value, cache) {
-  if (typeof(value) == 'object' && value != null) {
-    if (ELEMENT_KEY in value)
-      return cache.retrieveItem(value[ELEMENT_KEY]);
+function isCollection(value) {
+  return (typeof value[Symbol.iterator] === 'function');
+}
 
-    var obj;
-    if (typeof(value.length) == 'number') {
-      obj = [];
-      for (var i = 0; i < value.length; i++)
-        obj[i] = unwrap(value[i], cache);
-    } else {
-      obj = {};
-      for (var prop in value)
-        obj[prop] = unwrap(value[prop], cache);
+/**
+ * Deep-clones item, given object references in seen, using cloning algorithm
+ * algo. Implements "clone an object" from W3C-spec (#dfn-clone-an-object).
+ * @param {*} item Object or collection to deep clone.
+ * @param {!Array<*>} seen Object references that have already been seen.
+ * @param {function(*, Array<*>, ?Cache) : *} algo Cloning algorithm to use to
+ *     deep clone properties of item.
+ * @param {?Cache} opt_cache Optional cache to use for cloning.
+ * @return {*} Clone of item with status of cloning.
+ */
+function cloneWithAlgorithm(item, seen, algo, opt_cache) {
+  let tmp = null;
+  function maybeCopyProperty(prop) {
+    let sourceValue = null;
+    try {
+      sourceValue = item[prop];
+    } catch(e) {
+      throw newError('error reading property', StatusCode.JAVA_SCRIPT_ERROR);
     }
-    return obj;
+    return algo(sourceValue, seen, opt_cache);
   }
-  return value;
+
+  if (isCollection(item)) {
+    tmp = new Array(item.length);
+    for (let i = 0; i < item.length; ++i)
+      tmp[i] = maybeCopyProperty(i);
+  } else {
+    tmp = {};
+    for (let prop in item)
+      tmp[prop] = maybeCopyProperty(prop);
+  }
+  return tmp;
+}
+
+/**
+ * Wrapper to cloneWithAlgorithm, with circular reference detection logic.
+ * @param {*} item Object or collection to deep clone.
+ * @param {!Array<*>} seen Object references that have already been seen.
+ * @param {function(*, Array<*>, ?Cache) : *} algo Cloning algorithm to use to
+ *     deep clone properties of item.
+ * @return {*} Clone of item with status of cloning.
+ */
+function cloneWithCircularCheck(item, seen, algo) {
+  if (seen.includes(item))
+    throw newError('circular reference', StatusCode.JAVA_SCRIPT_ERROR);
+  seen.push(item);
+  const result = cloneWithAlgorithm(item, seen, algo);
+  seen.pop();
+  return result;
+}
+
+/**
+ * Returns deep clone of given value, replacing element references with a
+ * serialized string representing that element.
+ * @param {*} item Object or collection to deep clone.
+ * @param {!Array<*>} seen Object references that have already been seen.
+ * @return {*} Clone of item with status of cloning.
+ */
+function jsonSerialize(item, seen) {
+  if (item === undefined || item === null)
+    return null;
+  if (typeof item === 'boolean' ||
+      typeof item === 'number' ||
+      typeof item === 'string')
+    return item;
+  if (isElement(item)) {
+    const root = getNodeRootThroughAnyShadows(item);
+    const cache = getPageCache(root, w3cEnabled);
+    if (!cache.isNodeReachable_(item))
+      throw newError('stale element not found',
+                     StatusCode.STALE_ELEMENT_REFERENCE);
+    const ret = {};
+    ret[ELEMENT_KEY] = cache.storeItem(item);
+    return ret;
+  }
+  if (isCollection(item))
+    return cloneWithCircularCheck(item, seen, jsonSerialize);
+  // http://crbug.com/chromedriver/2995: Placed here because some element
+  // (above) are type 'function', so this check must be performed after.
+  if (typeof item === 'function')
+    return item;
+  // TODO(rohpavone): Implement WindowProxy serialization.
+  if (typeof item.toJSON === 'function' &&
+      (item.hasOwnProperty('toJSON') ||
+       Object.getPrototypeOf(item).hasOwnProperty('toJSON')))
+    return item.toJSON();
+
+  // Deep clone Objects.
+  return cloneWithCircularCheck(item, seen, jsonSerialize);
+}
+
+/**
+ * Returns deserialized deep clone of given value, replacing serialized string
+ * references to elements with a element reference, if found.
+ * @param {*} item Object or collection to deep clone.
+ * @param {?Array<*>} opt_seen Object references that have already been seen.
+ * @param {?Cache} opt_cache Document cache containing serialized elements.
+ * @return {*} Clone of item with status of cloning.
+ */
+function jsonDeserialize(item, opt_seen, opt_cache) {
+  if (opt_seen === undefined || opt_seen === null)
+    opt_seen = []
+  if (item === undefined ||
+      item === null ||
+      typeof item === 'boolean' ||
+      typeof item === 'number' ||
+      typeof item === 'string' ||
+      typeof item === 'function')
+    return item;
+  if (item.hasOwnProperty(ELEMENT_KEY)) {
+    if (opt_cache === undefined || opt_cache === null) {
+      const root = getNodeRootThroughAnyShadows(item);
+      opt_cache = getPageCache(root, w3cEnabled);
+    }
+    return  opt_cache.retrieveItem(item[ELEMENT_KEY]);
+  }
+  if (isCollection(item) || typeof item === 'object')
+    return cloneWithAlgorithm(item, opt_seen, jsonDeserialize, opt_cache);
+  throw newError('unhandled object', StatusCode.JAVA_SCRIPT_ERROR);
 }
 
 /**
@@ -341,21 +430,31 @@ function callFunction(func, args, w3c, opt_unwrappedReturn) {
     ELEMENT_KEY = 'element-6066-11e4-a52e-4f735466cecf';
 
   }
-  var cache = getPageCache(null, w3cEnabled);
+  const cache = getPageCache(null, w3cEnabled);
   cache.clearStale();
 
-  if (opt_unwrappedReturn)
-    return func.apply(null, unwrap(args, cache));
-
-  var status = 0;
-  try {
-    var returnValue = wrap(func.apply(null, unwrap(args, cache)));
-  } catch (error) {
-    status = error.code || StatusCode.JAVA_SCRIPT_ERROR;
-    var returnValue = error.message;
+  function buildError(error) {
+    return {
+      status: error.code || StatusCode.JAVA_SCRIPT_ERROR,
+      value: error.message || error
+    };
   }
-  return {
-      status: status,
-      value: returnValue
+
+  let status = 0;
+  let returnValue;
+  try {
+    const unwrappedArgs = jsonDeserialize(args, [], cache);
+    const tmp = func.apply(null, unwrappedArgs);
+    return Promise.resolve(tmp).then((result) => {
+      if (opt_unwrappedReturn)
+        return result;
+      const clone = jsonSerialize(result, []);
+      return {
+        status: 0,
+        value: clone
+      };
+    }).catch(buildError);
+  } catch (error) {
+    return Promise.resolve(buildError(error));
   }
 }

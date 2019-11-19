@@ -3,9 +3,17 @@
 <script src='test.js'></script>
 <script src='call_function.js'></script>
 <script>
+function wrap(value) {
+  return jsonSerialize(value, []);
+}
 
+function unwrap(value, opt_cache) {
+  return jsonDeserialize(value, [], opt_cache);
+}
+
+var initialCache = getPageCache().cache_;
 function clearCache() {
-  getPageCache().cache_ = {};
+  getPageCache().cache_ = Object.create(initialCache);
 }
 
 function isValidUUID(uuid) {
@@ -30,53 +38,70 @@ function testUUID() {
   }
 }
 
-function testCallFunctionNoArgs() {
+function testCallFunctionNoArgs(runner) {
   clearCache();
 
-  var result = callFunction(function() { return 1; }, []);
-  assertEquals(0, result.status);
-  assertEquals(1, result.value);
+  callFunction(function() { return 1; }, []).then((result) => {
+    assertEquals(0, result.status);
+    assertEquals(1, result.value);
+    runner.continueTesting();
+  });
+  runner.waitForAsync();
 }
 
-function testCallFunctionThrows() {
+function testCallFunctionThrows(runner) {
   clearCache();
-
-  var result = callFunction(function() { throw new Error('fake error'); },
-      []);
-  assertEquals(StatusCode.JAVA_SCRIPT_ERROR, result.status);
-  assertEquals('fake error', result.value);
-
-  result = callFunction(function() {
-    var e = new Error('fake error');
-    e.code = 77;
-    e.message = 'CUSTOM';
-    throw e;
-  }, []);
-  assertEquals(77, result.status);
-  assertEquals('CUSTOM', result.value);
+  let allComplete = 0;
+  callFunction(function() { throw new Error('fake error'); },
+    []).then((result) => {
+      assertEquals(StatusCode.JAVA_SCRIPT_ERROR, result.status);
+      assertEquals('fake error', result.value);
+      if (allComplete)
+        runner.continueTesting();
+      allComplete += 1;
+    });
+  callFunction(function() {
+      var e = new Error('fake error');
+      e.code = 77;
+      e.message = 'CUSTOM';
+      throw e;
+  }, []).then((result) => {
+    assertEquals(77, result.status);
+    assertEquals('CUSTOM', result.value);
+    if (allComplete)
+      runner.continueTesting();
+    allComplete += 1;
+  });
+  runner.waitForAsync();
 }
 
-function testCallFunctionArgs() {
+function testCallFunctionArgs(runner) {
   clearCache();
 
   function func(primitive, elem) {
     return [primitive, elem.querySelector('div')];
   }
-  var result = callFunction(func, [1, wrap(document)]);
-  assertEquals(0, result.status);
-  assertEquals(1, result.value[0]);
-  var cache = getPageCache();
-  assertEquals(document.querySelector('div'), unwrap(result.value[1], cache));
+  callFunction(func, [1, wrap(document)]).then((result) => {
+    assertEquals(0, result.status);
+    assertEquals(1, result.value[0]);
+    const cache = getPageCache();
+    assertEquals(document.querySelector('div'), unwrap(result.value[1], cache));
+    runner.continueTesting();
+  });
+  runner.waitForAsync();
 }
 
-function testCallFunctionArgsUnwrappedReturn() {
+function testCallFunctionArgsUnwrappedReturn(runner) {
   clearCache();
 
   function func(elem) {
     return elem.querySelector('div');
   }
-  var result = callFunction(func, [wrap(document)], false, true);
-  assertEquals(document.querySelector('div'), result);
+  callFunction(func, [wrap(document)], false, true).then((result) => {
+    assertEquals(document.querySelector('div'), result);
+    runner.continueTesting();
+  });
+  runner.waitForAsync();
 }
 
 function testCacheWrap() {
@@ -92,9 +117,6 @@ function testCacheWrap() {
   assertEquals(null, unwrap(null));
   assertEquals(undefined, wrap(undefined));
   assertEquals(undefined, unwrap(undefined));
-  function func() {}
-  assertEquals(func, wrap(func));
-  assertEquals(func, unwrap(func));
 
   var cache = getPageCache();
   var arr = [1, new Array(1, new Object({a: 1, b: {a: 1, b: {}, c: 3}}), 3)];
@@ -107,6 +129,25 @@ function testCacheWrap() {
   assertEquals(document, unwrapped[1][1].b.b);
   unwrapped[1][1].b.b = {};
   assertEquals(originalJson, JSON.stringify(unwrapped));
+}
+
+function testObjectWithLengthProperty() {
+  clearCache();
+
+  let obj = {length: 200};
+  assertEquals(200, wrap({length: 200})['length'])
+  assertEquals(JSON.stringify(obj), JSON.stringify(wrap({length: 200})))
+
+  obj = {bar: 'foo', bazz: {length: 150}};
+  let wrappedObj = wrap(obj);
+  assertEquals('foo', wrappedObj['bar'])
+  assertEquals(150, wrappedObj['bazz']['length'])
+  assertEquals(JSON.stringify(obj), JSON.stringify(wrappedObj));
+
+  let unwrappedObj = unwrap(obj);
+  assertEquals('foo', unwrappedObj['bar'])
+  assertEquals(150, unwrappedObj['bazz']['length'])
+  assertEquals(JSON.stringify(obj), JSON.stringify(unwrappedObj));
 }
 
 function testCacheDoubleWrap() {
@@ -182,7 +223,7 @@ function testCacheStaleRef() {
   }
 }
 
-function testCallFunctionWithShadowHost() {
+function testCallFunctionWithShadowHost(runner) {
   clearCache();
 
   // Set up something in the shadow DOM.
@@ -194,17 +235,18 @@ function testCallFunctionWithShadowHost() {
     return element;
   }
   var wrappedHost = wrap(host);
-  
-  var result = callFunction(func, [wrappedHost]);
-  assertEquals(0, result.status);
-  assertEquals(wrappedHost['ELEMENT'], result.value['ELEMENT']);
-  var cache = getPageCache();
-  assertEquals(host, unwrap(result.value, cache));
-  
-  document.body.removeChild(host);
+  callFunction(func, [wrappedHost]).then((result) => {
+    assertEquals(0, result.status);
+    assertEquals(wrappedHost['ELEMENT'], result.value['ELEMENT']);
+    var cache = getPageCache();
+    assertEquals(host, unwrap(result.value, cache));
+    document.body.removeChild(host);
+    runner.continueTesting();
+  });
+  runner.waitForAsync();
 }
 
-function testCallFunctionWithShadowRoot() {
+function testCallFunctionWithShadowRoot(runner) {
   clearCache();
 
   // Set up something in the shadow DOM.
@@ -219,18 +261,21 @@ function testCallFunctionWithShadowRoot() {
   var wrappedRoot = wrap(root);
   
   // Should handle shadow root as an argument.
-  result = callFunction(func, [wrappedRoot]);
-  assertEquals(0, result.status);
-  assertEquals(wrappedRoot['ELEMENT'], result.value['ELEMENT']);
-  var cache = getPageCache();
-  assertEquals(root, unwrap(result.value, cache));
-  
-  document.body.removeChild(host);
+  callFunction(func, [wrappedRoot]).then((result) => {
+    assertEquals(0, result.status);
+    assertEquals(wrappedRoot['ELEMENT'], result.value['ELEMENT']);
+    var cache = getPageCache();
+    assertEquals(root, unwrap(result.value, cache));
+
+    document.body.removeChild(host);
+    runner.continueTesting();
+  });
+  runner.waitForAsync();
 }
 
 function testCacheWithShadowDomAttached() {
   clearCache();
-  var pageCache = getPageCache();
+  const pageCache = getPageCache();
   
   // Set up something in the shadow DOM.
   var host = document.body.appendChild(document.createElement('div'));
@@ -269,6 +314,62 @@ function testCacheWithShadowDomDetachedChild() {
   document.body.removeChild(host);
 }
 
+// Verify callFunction works when Object.prototype has user-defined functions.
+// (https://crbug.com/chromedriver/3074)
+function testCallWithFunctionInObject(runner) {
+  clearCache();
+
+  Object.prototype.f = () => {};
+  function func(arg) {
+    return { bar: arg };
+  }
+  callFunction(func, [{ foo: 1 }]).then((result) => {
+    assertEquals(1, result.value.bar.foo);
+    delete Object.prototype.f;
+    runner.continueTesting();
+  });
+  runner.waitForAsync();
+}
+
+// Verify array serialization works when Array.prototype.toJSON is defined.
+// (https://crbug.com/chromedriver/3084)
+function testCallWithArrayToJSON(runner) {
+  clearCache();
+
+  Array.prototype.toJSON = () => '["testing"]';
+  function func() {
+    return [1, 2, 3];
+  }
+  callFunction(func, []).then((result) => {
+    assert(result.value instanceof Array);
+    assertEquals(result.value.length, 3);
+    assertEquals(result.value[2], 3);
+    delete Array.prototype.toJSON;
+    runner.continueTesting();
+  });
+  runner.waitForAsync();
+}
+
+function testCallWithModifiedObjectProto(runner) {
+  var callCount = 0;
+  Object.defineProperty(Object.prototype, 'f', {
+    enumerable: true,
+    configurable: true,
+    get: function() {
+      callCount += 1;
+    }
+  });
+
+  callFunction(function() {}, []).then(() => {
+    try {
+      assertEquals(callCount, 0);
+      runner.continueTesting();
+    } finally {
+      delete Object.prototype.f;
+    }
+  });
+  runner.waitForAsync();
+}
 </script>
 <body>
 <div><span></span></div>

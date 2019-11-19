@@ -6,8 +6,10 @@
 #include "components/viz/common/surfaces/local_surface_id.h"
 #include "components/viz/common/surfaces/parent_local_surface_id_allocator.h"
 #include "content/common/visual_properties.h"
+#include "content/common/widget_messages.h"
 #include "content/public/renderer/render_frame_visitor.h"
 #include "content/public/test/render_view_test.h"
+#include "content/renderer/compositor/layer_tree_view.h"
 #include "content/renderer/render_frame_proxy.h"
 #include "content/renderer/render_thread_impl.h"
 #include "content/renderer/render_view_impl.h"
@@ -26,8 +28,11 @@ class RenderWidgetTest : public RenderViewTest {
     return static_cast<RenderViewImpl*>(view_)->GetWidget();
   }
 
-  void OnSynchronizeVisualProperties(const VisualProperties& params) {
-    widget()->OnSynchronizeVisualProperties(params);
+  void OnSynchronizeVisualProperties(
+      const VisualProperties& visual_properties) {
+    WidgetMsg_UpdateVisualProperties msg(widget()->routing_id(),
+                                         visual_properties);
+    widget()->OnMessageReceived(msg);
   }
 
   void GetCompositionRange(gfx::Range* range) {
@@ -56,7 +61,7 @@ TEST_F(RenderWidgetTest, OnSynchronizeVisualProperties) {
   VisualProperties visual_properties;
   visual_properties.screen_info = ScreenInfo();
   visual_properties.new_size = gfx::Size();
-  visual_properties.compositor_viewport_pixel_size = gfx::Size();
+  visual_properties.compositor_viewport_pixel_rect = gfx::Rect();
   visual_properties.top_controls_height = 0.f;
   visual_properties.browser_controls_shrink_blink_size = false;
   visual_properties.is_fullscreen_granted = false;
@@ -74,7 +79,7 @@ TEST_F(RenderWidgetTest, OnSynchronizeVisualProperties) {
   visual_properties.local_surface_id_allocation =
       local_surface_id_allocator.GetCurrentLocalSurfaceIdAllocation();
   visual_properties.new_size = size;
-  visual_properties.compositor_viewport_pixel_size = size;
+  visual_properties.compositor_viewport_pixel_rect = gfx::Rect(size);
   OnSynchronizeVisualProperties(visual_properties);
 
   // Clear the flag.
@@ -86,7 +91,7 @@ TEST_F(RenderWidgetTest, OnSynchronizeVisualProperties) {
 
   // Resetting the rect to empty should not send the ack.
   visual_properties.new_size = gfx::Size();
-  visual_properties.compositor_viewport_pixel_size = gfx::Size();
+  visual_properties.compositor_viewport_pixel_rect = gfx::Rect();
   visual_properties.local_surface_id_allocation = base::nullopt;
   OnSynchronizeVisualProperties(visual_properties);
 
@@ -101,12 +106,12 @@ TEST_F(RenderWidgetTest, OnSynchronizeVisualProperties) {
 
 class RenderWidgetInitialSizeTest : public RenderWidgetTest {
  protected:
-  std::unique_ptr<VisualProperties> InitialVisualProperties() override {
-    std::unique_ptr<VisualProperties> initial_visual_properties(
-        new VisualProperties());
-    initial_visual_properties->new_size = initial_size_;
-    initial_visual_properties->compositor_viewport_pixel_size = initial_size_;
-    initial_visual_properties->local_surface_id_allocation =
+  VisualProperties InitialVisualProperties() override {
+    VisualProperties initial_visual_properties;
+    initial_visual_properties.new_size = initial_size_;
+    initial_visual_properties.compositor_viewport_pixel_rect =
+        gfx::Rect(initial_size_);
+    initial_visual_properties.local_surface_id_allocation =
         local_surface_id_allocator_.GetCurrentLocalSurfaceIdAllocation();
     return initial_visual_properties;
   }
@@ -221,6 +226,29 @@ TEST_F(RenderWidgetTest, PageFocusIme) {
   CommitText(text);
   EXPECT_EQ("hello world",
             GetInputMethodController()->TextInputInfo().value.Utf8());
+}
+
+// Tests that the value of VisualProperties::is_pinch_gesture_active is
+// not propagated to the LayerTreeHost when properties are synced for main
+// frame.
+TEST_F(RenderWidgetTest, ActivePinchGestureUpdatesLayerTreeHost) {
+  auto* layer_tree_host = widget()->layer_tree_view()->layer_tree_host();
+  EXPECT_FALSE(layer_tree_host->is_external_pinch_gesture_active_for_testing());
+  content::VisualProperties visual_properties;
+
+  // Sync visual properties on a mainframe RenderWidget.
+  visual_properties.is_pinch_gesture_active = true;
+  {
+    WidgetMsg_UpdateVisualProperties msg(widget()->routing_id(),
+                                         visual_properties);
+    widget()->OnMessageReceived(msg);
+  }
+  // We do not expect the |is_pinch_gesture_active| value to propagate to the
+  // LayerTreeHost for the main-frame. Since GesturePinch events are handled
+  // directly by the layer tree for the main frame, it already knows whether or
+  // not a pinch gesture is active, and so we shouldn't propagate this
+  // information to the layer tree for a main-frame's widget.
+  EXPECT_FALSE(layer_tree_host->is_external_pinch_gesture_active_for_testing());
 }
 
 }  // namespace content

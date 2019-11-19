@@ -4,6 +4,7 @@
 
 import("//third_party/closure_compiler/compile_js.gni")
 import("//third_party/closure_compiler/js_unit_tests.gni")
+import("//ui/file_manager/base/gn/js_test_gen_html.gni")
 
 visibility = [ "//ui/file_manager/*" ]
 
@@ -11,6 +12,7 @@ group("closure_compile") {
   testonly = true
   deps = [
     ":closure_compile_module",
+    ":js_test_gen_html_type_check_auto",
     ":test_support_type_check",
   ]
 }
@@ -78,7 +80,7 @@ js_unittest("volume_manager_types_unittest") {
   ]
 }
 
-js_unit_tests("unit_tests") {
+js_test_gen_html("js_test_gen_html") {
   deps = [
     ":volume_manager_types_unittest",
   ]

@@ -46,18 +46,19 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAgentServiceProvider {
     // The PinCodeCallback is used for the RequestPinCode() method, it should
     // be called with two arguments, the |status| of the request (success,
     // rejected or cancelled) and the |pincode| requested.
-    typedef base::Callback<void(Status, const std::string&)> PinCodeCallback;
+    using PinCodeCallback =
+        base::OnceCallback<void(Status, const std::string&)>;
 
     // The PasskeyCallback is used for the RequestPasskey() method, it should
     // be called with two arguments, the |status| of the request (success,
     // rejected or cancelled) and the |passkey| requested, a numeric in the
     // range 0-999999,
-    typedef base::Callback<void(Status, uint32_t)> PasskeyCallback;
+    using PasskeyCallback = base::OnceCallback<void(Status, uint32_t)>;
 
     // The ConfirmationCallback is used for methods which request confirmation
     // or authorization, it should be called with one argument, the |status|
     // of the request (success, rejected or cancelled).
-    typedef base::Callback<void(Status)> ConfirmationCallback;
+    using ConfirmationCallback = base::OnceCallback<void(Status)>;
 
     // This method will be called when the agent is unregistered from the
     // Bluetooth daemon, generally at the end of a pairing request. It may be
@@ -74,7 +75,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAgentServiceProvider {
     // PIN Codes are generally required for Bluetooth 2.0 and earlier devices
     // for which there is no automatic pairing or special handling.
     virtual void RequestPinCode(const dbus::ObjectPath& device_path,
-                                const PinCodeCallback& callback) = 0;
+                                PinCodeCallback callback) = 0;
 
     // This method will be called when the Bluetooth daemon requires that the
     // user enter the PIN code |pincode| into the device with object path
@@ -98,7 +99,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAgentServiceProvider {
     // which cannot provide input or display on their own, and don't accept
     // passkey-less pairing.
     virtual void RequestPasskey(const dbus::ObjectPath& device_path,
-                                const PasskeyCallback& callback) = 0;
+                                PasskeyCallback callback) = 0;
 
     // This method will be called when the Bluetooth daemon requires that the
     // user enter the Passkey |passkey| into the device with object path
@@ -130,7 +131,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAgentServiceProvider {
     // digits.
     virtual void RequestConfirmation(const dbus::ObjectPath& device_path,
                                      uint32_t passkey,
-                                     const ConfirmationCallback& callback) = 0;
+                                     ConfirmationCallback callback) = 0;
 
     // This method will be called when the Bluetooth daemon requires
     // authorization of an incoming pairing attempt from the device with object
@@ -140,7 +141,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAgentServiceProvider {
     // The agent should confirm the incoming pairing with the user and call
     // |callback| to provide their response (success, rejected or cancelled).
     virtual void RequestAuthorization(const dbus::ObjectPath& device_path,
-                                      const ConfirmationCallback& callback) = 0;
+                                      ConfirmationCallback callback) = 0;
 
     // This method will be called when the Bluetooth daemon requires that the
     // user confirm that the device with object path |object_path| is
@@ -149,7 +150,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAgentServiceProvider {
     // (success, rejected or cancelled).
     virtual void AuthorizeService(const dbus::ObjectPath& device_path,
                                   const std::string& uuid,
-                                  const ConfirmationCallback& callback) = 0;
+                                  ConfirmationCallback callback) = 0;
 
     // This method will be called by the Bluetooth daemon to indicate that
     // the request failed before a reply was returned from the device.

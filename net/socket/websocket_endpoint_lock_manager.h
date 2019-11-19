@@ -130,7 +130,7 @@ class NET_EXPORT_PRIVATE WebSocketEndpointLockManager {
   // Number of sockets currently pending unlock.
   size_t pending_unlock_count_;
 
-  base::WeakPtrFactory<WebSocketEndpointLockManager> weak_factory_;
+  base::WeakPtrFactory<WebSocketEndpointLockManager> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(WebSocketEndpointLockManager);
 };

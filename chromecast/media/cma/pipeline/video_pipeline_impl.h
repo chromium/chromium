@@ -44,7 +44,7 @@ class VideoPipelineImpl : public AvPipelineImpl {
   void OnUpdateConfig(StreamId id,
                       const ::media::AudioDecoderConfig& audio_config,
                       const ::media::VideoDecoderConfig& video_config) override;
-  const EncryptionScheme& GetEncryptionScheme(StreamId id) const override;
+  EncryptionScheme GetEncryptionScheme(StreamId id) const override;
   std::unique_ptr<StreamDecryptor> CreateDecryptor() override;
 
   CmaBackend::VideoDecoder* const video_decoder_;

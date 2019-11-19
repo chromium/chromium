@@ -1,47 +1,79 @@
-<link rel="import" href="chrome://oobe/custom_elements.html">
+<!-- Copyright 2019 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
 
-<div class="step right hidden no-logo" id="gaia-signin" role="group"
-    aria-live="polite" hidden>
-  <oobe-dialog id="signin-frame-dialog" class="gaia-dialog" role="dialog"
-      has-buttons no-header no-footer-padding no-buttons-padding hidden>
-    <div id="signin-frame-container-v2" slot="footer"
-        class="flex layout vertical">
-    </div>
-    <div id="gaia-screen-navigation-buttons"
-        slot="bottom-buttons" class="relative flex layout horizontal center">
-      <div id="buttons-container" class="fit">
-        <oobe-back-button id="signin-back-button"></oobe-back-button>
-        <div class="flex">
+<dom-module id="gaia-signin">
+  <link rel="stylesheet" href="oobe_dialog_host.css">
+  <link rel="stylesheet" href="oobe_flex_layout.css">
+  <link rel="stylesheet" href="screen_gaia_signin.css">
+
+  <template>
+    <oobe-dialog id="signin-frame-dialog" class="gaia-dialog" role="dialog"
+        has-buttons no-header no-footer-padding
+        show-buttons-overlay="[[!navigationEnabled_]]"
+        hidden="[[!eq_(step_, 'online-gaia')]]">
+      <div slot="footer" class="flex layout vertical">
+        <div id="signin-frame-container"
+            class$="[[getSigninFrameContainerClass_(isLoadingUiShown_)]]">
+          <webview id="signin-frame" name="signin-frame"></webview>
         </div>
       </div>
-      <div id="gaia-screen-buttons-overlay" class="fit" hidden></div>
+      <div id="gaia-screen-navigation-buttons"
+          slot="bottom-buttons" class="relative flex layout horizontal">
+        <div id="buttons-container" class="flex layout horizontal center">
+          <oobe-back-button id="signin-back-button"
+              disabled="[[!navigationEnabled_]]"></oobe-back-button>
+          <div class="flex">
+          </div>
+          <oobe-text-button id="secondary-action-button"
+              on-tap="onSecondaryActionButtonClicked_"
+              hidden="[[!secondaryActionButtonLabel_]]"
+              disabled="[[!secondaryActionButtonEnabled_]]"
+              >[[secondaryActionButtonLabel_]]</oobe-text-button>
+          <oobe-text-button id="primary-action-button"
+              on-tap="onPrimaryActionButtonClicked_"
+              hidden="[[!primaryActionButtonLabel_]]"
+              disabled="[[!primaryActionButtonEnabled_]]"
+              inverse
+              >[[primaryActionButtonLabel_]]</oobe-text-button>
+        </div>
+      </div>
+    </oobe-dialog>
+    <offline-gaia id="offline-gaia" class="gaia-dialog"
+        hidden="[[!eq_(step_, 'offline-gaia')]]">
+    </offline-gaia>
+    <offline-ad-login id="offline-ad-auth" class="gaia-dialog"
+        hidden="[[!eq_(step_, 'ad')]]"
+        i18n-values="ad-welcome-message:loginWelcomeMessage">
+    </offline-ad-login>
+    <security-token-pin id="pinDialog" parameters="[[pinDialogParameters_]]"
+        hidden="[[!eq_(step_, 'pin')]]"
+        on-cancel="onPinDialogCanceled_" on-completed="onPinDialogCompleted_">
+    </security-token-pin>
+    <div id="gaia-step-contents" class="step-contents"
+        hidden="[[!eq_(step_, 'saml-interstitial')]]">
+      <div id="gaia-signin-form-container">
+        <saml-interstitial id="saml-interstitial" class="fit gaia-dialog">
+        </saml-interstitial>
+      </div>
     </div>
-  </oobe-dialog>
-  <div id="gaia-step-contents" class="step-contents">
-    <div id="gaia-signin-form-container">
-      <webview id="signin-frame" name="signin-frame" hidden></webview>
-      <offline-gaia id="offline-gaia" class="gaia-dialog" hidden>
-      </offline-gaia>
-      <saml-interstitial id="saml-interstitial" class="fit gaia-dialog"
-          hidden>
-      </saml-interstitial>
-      <offline-ad-login id="offline-ad-auth" class="fit gaia-dialog" hidden
-          i18n-values="ad-welcome-message:loginWelcomeMessage">
-      </offline-ad-login>
+    <div id="gaia-loading" class="step-loading gaia-dialog"
+        hidden="[[!eq_(step_, 'loading')]]">
+      <throbber-notice i18n-values="text:gaiaLoading"></throbber-notice>
     </div>
-  </div>
-  <div id="gaia-loading" class="step-loading gaia-dialog" hidden>
-    <throbber-notice i18n-values="text:gaiaLoading"></throbber-notice>
-  </div>
-  <notification-card id="gaia-whitelist-error" type="fail" class="gaia-dialog"
-      i18n-values="button-label:tryAgainButton;
-                   link-label:learnMoreButton">
-  </notification-card>
-  <div id="saml-notice-container" hidden>
-    <span id="saml-notice-recording-indicator" hidden>
-      <img src="chrome://theme/IDR_TAB_RECORDING_INDICATOR">
-    </span>
-    <span id="saml-notice-message"></span>
-  </div>
-  <navigation-bar id="gaia-navigation"></navigation-bar>
-</div>
+    <notification-card id="gaia-whitelist-error" type="fail" class="gaia-dialog"
+        hidden="[[!eq_(step_, 'whitelist-error')]]"
+        i18n-values="button-label:tryAgainButton;
+                     link-label:learnMoreButton">
+    </notification-card>
+    <div id="saml-notice-container"
+        hidden="[[!isSamlNoticeContainerVisible_(isSaml_,
+                                                 pinDialogParameters_)]]">
+      <span id="saml-notice-recording-indicator" hidden="[[!videoEnabled_]]">
+        <img src="chrome://theme/IDR_TAB_RECORDING_INDICATOR">
+      </span>
+      <span id="saml-notice-message"></span>
+    </div>
+
+  </template>
+</dom-module>

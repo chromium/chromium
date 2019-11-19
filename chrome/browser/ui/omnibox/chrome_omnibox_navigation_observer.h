@@ -18,6 +18,7 @@
 #include "content/public/browser/reload_type.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "net/url_request/url_fetcher_delegate.h"
+#include "services/network/public/mojom/url_response_head.mojom-forward.h"
 
 class Profile;
 class ShortcutsBackend;
@@ -114,7 +115,7 @@ class ChromeOmniboxNavigationObserver : public OmniboxNavigationObserver,
 
   // See SimpleURLLoader::OnRedirectCallback for info on the signature.
   void OnURLRedirect(const net::RedirectInfo& redirect_info,
-                     const network::ResourceResponseHead& response_head,
+                     const network::mojom::URLResponseHead& response_head,
                      std::vector<std::string>* to_be_removed_headers);
 
   // Called from either OnURLLoadComplete or OnURLRedirect.

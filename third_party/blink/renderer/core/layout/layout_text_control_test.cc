@@ -101,6 +101,21 @@ TEST_F(LayoutTextControlTest,
   EXPECT_FALSE(selectedText->ShouldInvalidateSelection());
 }
 
+TEST_F(LayoutTextControlTest, HitTestSearchInput) {
+  SetBodyInnerHTML(R"HTML(
+    <input id="input" type="search"
+           style="border-width: 20px; font-size: 30px; padding: 0">
+  )HTML");
+
+  auto* input = GetHTMLInputElementById("input");
+  HitTestResult result;
+  HitTestLocation location(PhysicalOffset(40, 30));
+  EXPECT_TRUE(input->GetLayoutObject()->HitTestAllPhases(result, location,
+                                                         PhysicalOffset()));
+  EXPECT_EQ(PhysicalOffset(20, 10), result.LocalPoint());
+  EXPECT_EQ(input->InnerEditorElement(), result.InnerElement());
+}
+
 }  // anonymous namespace
 
 }  // namespace blink

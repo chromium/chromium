@@ -468,10 +468,19 @@ TEST_F(BackFwdMenuModelTest, EscapeLabel) {
   EXPECT_EQ(0, back_model->GetItemCount());
   EXPECT_FALSE(back_model->ItemHasCommand(1));
 
+  // Note: Multiple navigations to the same URL in a row have to be
+  // renderer-initiated.  If they were browser-initiated, the
+  // NavigationController would treat them as reloads.
   LoadURLAndUpdateState("http://www.a.com/1", "A B");
-  LoadURLAndUpdateState("http://www.a.com/1", "A & B");
+  NavigationSimulator::NavigateAndCommitFromDocument(GURL("http://www.a.com/1"),
+                                                     main_rfh());
+  web_contents()->UpdateTitleForEntry(controller().GetLastCommittedEntry(),
+                                      base::UTF8ToUTF16("A & B"));
   LoadURLAndUpdateState("http://www.a.com/2", "A && B");
-  LoadURLAndUpdateState("http://www.a.com/2", "A &&& B");
+  NavigationSimulator::NavigateAndCommitFromDocument(GURL("http://www.a.com/2"),
+                                                     main_rfh());
+  web_contents()->UpdateTitleForEntry(controller().GetLastCommittedEntry(),
+                                      base::UTF8ToUTF16("A &&& B"));
   LoadURLAndUpdateState("http://www.a.com/3", "");
 
   EXPECT_EQ(6, back_model->GetItemCount());

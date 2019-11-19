@@ -21,7 +21,6 @@
 #include "base/strings/string_util.h"
 #include "base/values.h"
 #include "components/crx_file/id_util.h"
-#include "components/data_use_measurement/core/data_use_user_data.h"
 #include "components/update_client/component.h"
 #include "components/update_client/configurator.h"
 #include "components/update_client/network.h"
@@ -53,8 +52,13 @@ bool DeleteFileAndEmptyParentDirectory(const base::FilePath& filepath) {
 }
 
 std::string GetCrxComponentID(const CrxComponent& component) {
-  const std::string result = crx_file::id_util::GenerateIdFromHash(
-      &component.pk_hash[0], component.pk_hash.size());
+  return component.app_id.empty() ? GetCrxIdFromPublicKeyHash(component.pk_hash)
+                                  : component.app_id;
+}
+
+std::string GetCrxIdFromPublicKeyHash(const std::vector<uint8_t>& pk_hash) {
+  const std::string result =
+      crx_file::id_util::GenerateIdFromHash(&pk_hash[0], pk_hash.size());
   DCHECK(crx_file::id_util::IdIsValid(result));
   return result;
 }

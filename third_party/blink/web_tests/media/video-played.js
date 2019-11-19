@@ -77,5 +77,5 @@ function playForDuration(duration, t) {
 
 function startPlayingInNewRange(t, expectedStartTimes) {
     willCreateNewRange(expectedStartTimes);
-    playForDuration(0.1, t);
+    playForDuration(0.3, t);
 }

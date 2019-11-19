@@ -30,7 +30,7 @@ void MarkVariationsSeedAsStored();
 void SetJavaFirstRunPrefsForTesting(const std::string& seed_data,
                                     const std::string& seed_signature,
                                     const std::string& seed_country,
-                                    const std::string& response_date,
+                                    long response_date,
                                     bool is_gzip_compressed);
 
 }  // namespace android

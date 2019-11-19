@@ -3,10 +3,11 @@
 <head>
   <meta charset="utf-8">
   <title>Test AnalyserNode when the input is silent</title>
+  <meta name="timeout" content="long">
   <script src="/resources/testharness.js"></script>
   <script src="/resources/testharnessreport.js"></script>
   <script>
-
+    setup({ single_test: true });
     var ac = new AudioContext();
     var analyser = ac.createAnalyser();
     var constant = ac.createConstantSource();

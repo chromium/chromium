@@ -15,11 +15,12 @@ class TtsPlatformImplChromeOs : public content::TtsPlatform {
   // TtsPlatform overrides:
   bool PlatformImplAvailable() override;
   bool LoadBuiltInTtsEngine(content::BrowserContext* browser_context) override;
-  bool Speak(int utterance_id,
+  void Speak(int utterance_id,
              const std::string& utterance,
              const std::string& lang,
              const content::VoiceData& voice,
-             const content::UtteranceContinuousParameters& params) override;
+             const content::UtteranceContinuousParameters& params,
+             base::OnceCallback<void(bool)> on_speak_finished) override;
   bool StopSpeaking() override;
   void GetVoices(std::vector<content::VoiceData>* out_voices) override;
   std::string GetError() override;
@@ -31,19 +32,28 @@ class TtsPlatformImplChromeOs : public content::TtsPlatform {
   void Pause() override {}
   void Resume() override {}
   void WillSpeakUtteranceWithVoice(
-      const content::TtsUtterance* utterance,
+      content::TtsUtterance* utterance,
       const content::VoiceData& voice_data) override {}
 
   // Get the single instance of this class.
   static TtsPlatformImplChromeOs* GetInstance();
 
  private:
-  TtsPlatformImplChromeOs() {}
-  virtual ~TtsPlatformImplChromeOs() {}
+  TtsPlatformImplChromeOs();
+  virtual ~TtsPlatformImplChromeOs();
+
+  void ProcessSpeech(int utterance_id,
+                     const std::string& lang,
+                     const content::VoiceData& voice,
+                     const content::UtteranceContinuousParameters& params,
+                     base::OnceCallback<void(bool)> on_speak_finished,
+                     const std::string& parsed_utterance);
 
   friend struct base::DefaultSingletonTraits<TtsPlatformImplChromeOs>;
 
   std::string error_;
+
+  base::WeakPtrFactory<TtsPlatformImplChromeOs> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(TtsPlatformImplChromeOs);
 };

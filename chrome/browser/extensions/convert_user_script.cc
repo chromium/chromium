@@ -37,18 +37,18 @@ scoped_refptr<Extension> ConvertUserScriptToExtension(
   std::string content;
   if (!base::ReadFileToString(user_script_path, &content)) {
     *error = base::ASCIIToUTF16("Could not read source file.");
-    return NULL;
+    return nullptr;
   }
 
   if (!base::IsStringUTF8(content)) {
     *error = base::ASCIIToUTF16("User script must be UTF8 encoded.");
-    return NULL;
+    return nullptr;
   }
 
   UserScript script;
   if (!UserScriptLoader::ParseMetadataHeader(content, &script)) {
     *error = base::ASCIIToUTF16("Invalid script header.");
-    return NULL;
+    return nullptr;
   }
 
   base::FilePath install_temp_dir =
@@ -56,13 +56,13 @@ scoped_refptr<Extension> ConvertUserScriptToExtension(
   if (install_temp_dir.empty()) {
     *error = base::ASCIIToUTF16(
         "Could not get path to profile temporary directory.");
-    return NULL;
+    return nullptr;
   }
 
   base::ScopedTempDir temp_dir;
   if (!temp_dir.CreateUniqueTempDirUnderPath(install_temp_dir)) {
     *error = base::ASCIIToUTF16("Could not create temporary directory.");
-    return NULL;
+    return nullptr;
   }
 
   // Create the manifest
@@ -164,14 +164,14 @@ scoped_refptr<Extension> ConvertUserScriptToExtension(
   JSONFileValueSerializer serializer(manifest_path);
   if (!serializer.Serialize(*root)) {
     *error = base::ASCIIToUTF16("Could not write JSON.");
-    return NULL;
+    return nullptr;
   }
 
   // Write the script file.
   if (!base::CopyFile(user_script_path,
                       temp_dir.GetPath().AppendASCII("script.js"))) {
     *error = base::ASCIIToUTF16("Could not copy script file.");
-    return NULL;
+    return nullptr;
   }
 
   // TODO(rdevlin.cronin): Continue removing std::string errors and replacing
@@ -183,7 +183,7 @@ scoped_refptr<Extension> ConvertUserScriptToExtension(
   *error = base::UTF8ToUTF16(utf8_error);
   if (!extension.get()) {
     NOTREACHED() << "Could not init extension " << *error;
-    return NULL;
+    return nullptr;
   }
 
   temp_dir.Take();  // The caller takes ownership of the directory.

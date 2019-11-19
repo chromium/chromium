@@ -1,14 +1,14 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="hi">
-<translation id="130631256467250065">अगली बार अपना डिवाइस पुन: प्रारंभ करने पर आपके परिवर्तन प्रभावी हो जाएंगे.</translation>
+<translation id="130631256467250065">अगली बार अपना डिवाइस फिर से शुरू करने पर आपके बदलाव लागू हो जाएंगे.</translation>
 <translation id="1838412507805038478">क्रोमियम ने सत्‍यापित किया है कि इस वेबसाइट का प्रमाणपत्र <ph name="ISSUER" /> ने जारी किया है.</translation>
-<translation id="275588974610408078">क्रोमियम में क्रैश की रिपोर्ट करना उपलब्ध नहीं है.</translation>
+<translation id="275588974610408078">क्रोमियम में खराबी रिपोर्ट नहीं कर सकते.</translation>
 <translation id="3064346599913645280">आप एक सुरक्षित Chromium पेज देख रहे हैं</translation>
-<translation id="3550966579244642892">Chromium OS ने अपना आरंभिक सेटअप पूर्ण नहीं किया है.</translation>
+<translation id="3550966579244642892">Chromium OS ने अपना शुरुआती सेटअप पूरा नहीं किया है.</translation>
 <translation id="4365115785552740256">क्रोमियम <ph name="BEGIN_LINK_CHROMIUM" />क्रोमियम<ph name="END_LINK_CHROMIUM" /> खुला स्रोत प्रोजेक्ट और अन्‍य <ph name="BEGIN_LINK_OSS" />खुले स्रोत प्रोजेक्ट<ph name="END_LINK_OSS" /> द्वारा संभव बनाया गया है.</translation>
 <translation id="4559775032954821361">यहां
-          क्रोमियम मेनू &gt;
+          क्रोमियम मेन्यू &gt;
           <ph name="SETTINGS_TITLE" />
           &gt;
           <ph name="ADVANCED_TITLE" />
@@ -16,28 +16,27 @@
           <ph name="PROXIES_TITLE" />
           &gt;
           LAN सेटिंग पर जाएं
-          और "अपने LAN के लिए किसी प्रॉक्सी सर्वर का उपयोग करें" चेकबॉक्स का चयन ना करें.</translation>
+          और "अपने LAN के लिए किसी प्रॉक्सी सर्वर का इस्तेमाल करें" चेकबॉक्स को चुने हुए से हटाएं.</translation>
 <translation id="48558539577516920">क्रोमियम को अपनी फ़ायरवॉल या एंटीवायरस सेटिंग में
-          नेटवर्क एक्सेस करने दें.</translation>
-<translation id="580822234363523061">यहां
-          क्रोमियम मेनू &gt;
+          नेटवर्क को एक्सेस करने दें.</translation>
+<translation id="580822234363523061">यहां जाएं
+          क्रोमियम मेन्यू &gt;
           <ph name="SETTINGS_TITLE" />
           &gt;
           <ph name="ADVANCED_TITLE" />
           &gt;
           <ph name="PROXIES_TITLE" />
-          पर जाएं और सुनिश्चित करें कि आपका कॉन्फ़िगरेशन "कोई प्रॉक्सी नहीं" या "प्रत्यक्ष" पर सेट है.</translation>
-<translation id="6613594504749178791">अगली बार आपके द्वारा क्रोमियम पुन: लॉन्‍च करने पर आपके परिवर्तन प्रभावी होंगे.</translation>
-<translation id="7861509383340276692">क्रोमियम
-          मेनू &gt;
+           और पक्का करें कि आपका कॉन्फ़िगरेशन "कोई प्रॉक्सी नहीं" या "डायरेक्ट" पर सेट है.</translation>
+<translation id="6613594504749178791">अगली बार जब आप क्रोमियम फिर से लॉन्‍च करेंगे तो आपके बदलाव लागू होंगे .</translation>
+<translation id="7861509383340276692">यहां जाएं
+          क्रोमियम मेन्यू &gt;
           <ph name="SETTINGS_TITLE" />
           &gt;
           <ph name="ADVANCED_TITLE" />
-          पर जाएं और "<ph name="NO_PREFETCH_DESCRIPTION" />" का चयन हटाएं.
-          यदि इससे समस्‍या हल नहीं होती, तो बेहतर प्रदर्शन के लिए हम इस विकल्‍प को पुन: चुनने की
-          अनुशंसा करते हैं.</translation>
+          और "<ph name="NO_PREFETCH_DESCRIPTION" />" चुना हुआ हटाएं.
+          अगर इससे समस्‍या हल नहीं होती, तो बेहतर प्रदर्शन के लिए हम इस विकल्‍प को फिर से चुनने का सुझाव देते हैं.</translation>
 <translation id="8187289872471304532">यहां
-          ऐप्स  &gt; सिस्टम प्राथमिकताएं &gt; नेटवर्क &gt; उन्नत &gt; प्रॉक्सी
-          पर जाएं और चयनित प्रॉक्सी का चयन ना करें.</translation>
+          ऐप्लिकेशन  &gt; सिस्टम प्राथमिकताएं &gt; नेटवर्क &gt; बेहतर &gt; प्रॉक्सी
+          पर जाएं और चुनी गई प्रॉक्सी को न चुनें.</translation>
 <translation id="8684913864886094367">क्रोमियम सही तरीके से बंद नहीं हुआ.</translation>
 </translationbundle>

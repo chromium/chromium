@@ -9,5 +9,11 @@ module network.mojom;
 // proper mojom definitions.
 
 [Native]
+enum ConnectionInfo;
+
+[Native]
 enum EffectiveConnectionType;
+
+[Native]
+enum CTPolicyCompliance;
 

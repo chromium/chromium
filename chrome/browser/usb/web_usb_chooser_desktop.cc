@@ -15,7 +15,7 @@
 
 WebUsbChooserDesktop::WebUsbChooserDesktop(
     content::RenderFrameHost* render_frame_host)
-    : WebUsbChooser(render_frame_host), weak_factory_(this) {}
+    : WebUsbChooser(render_frame_host) {}
 
 WebUsbChooserDesktop::~WebUsbChooserDesktop() {
   if (bubble_)

@@ -21,7 +21,7 @@ body {
 <div id="hidden"></div>
 <div id="overlap"></div>
 <script>
-document.getElementById("hidden").style.transform = "translateZ(0)";
+document.getElementById("hidden").style.willChange = "transform";
 
 if (window.testRunner)
     testRunner.dumpAsText();

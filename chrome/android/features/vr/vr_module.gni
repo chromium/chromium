@@ -1,0 +1,16 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chrome/android/modules/buildflags.gni")
+import("//device/vr/buildflags/buildflags.gni")
+
+assert(enable_vr)
+
+vr_module_desc = {
+  name = "vr"
+  java_deps = [ "//chrome/android/features/vr:java" ]
+  android_manifest = "//chrome/android/features/vr/java/AndroidManifest.xml"
+  native_deps = [ "//chrome/browser/vr:vr_ui" ]
+  native_entrypoints = "//chrome/browser/vr/module_exports.lst"
+}

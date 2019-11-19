@@ -11,7 +11,10 @@ namespace blink {
 
 WebViewFrameWidget::WebViewFrameWidget(WebWidgetClient& client,
                                        WebViewImpl& web_view)
-    : WebFrameWidgetBase(client), web_view_(&web_view), self_keep_alive_(this) {
+    : WebFrameWidgetBase(client),
+      web_view_(&web_view),
+      self_keep_alive_(PERSISTENT_FROM_HERE, this) {
+  web_view_->SetWebWidget(this);
 }
 
 WebViewFrameWidget::~WebViewFrameWidget() = default;
@@ -19,9 +22,7 @@ WebViewFrameWidget::~WebViewFrameWidget() = default;
 void WebViewFrameWidget::Close() {
   // Closing the WebViewFrameWidget happens in response to the local main frame
   // being detached from the Page/WebViewImpl.
-  // TODO(danakj): Close the WebWidget parts of WebViewImpl here. This should
-  // drop the WebWidgetClient from it as well. For now, WebViewImpl requires a
-  // WebWidgetClient to always be present so this does nothing.
+  web_view_->SetWebWidget(nullptr);
   web_view_ = nullptr;
   WebFrameWidgetBase::Close();
   self_keep_alive_.Clear();
@@ -33,10 +34,6 @@ WebSize WebViewFrameWidget::Size() {
 
 void WebViewFrameWidget::Resize(const WebSize& size) {
   web_view_->Resize(size);
-}
-
-void WebViewFrameWidget::ResizeVisualViewport(const WebSize& size) {
-  web_view_->ResizeVisualViewport(size);
 }
 
 void WebViewFrameWidget::DidEnterFullscreen() {
@@ -69,6 +66,22 @@ void WebViewFrameWidget::EndRafAlignedInput() {
   web_view_->EndRafAlignedInput();
 }
 
+void WebViewFrameWidget::BeginUpdateLayers() {
+  web_view_->BeginUpdateLayers();
+}
+
+void WebViewFrameWidget::EndUpdateLayers() {
+  web_view_->EndUpdateLayers();
+}
+
+void WebViewFrameWidget::BeginCommitCompositorFrame() {
+  web_view_->BeginCommitCompositorFrame();
+}
+
+void WebViewFrameWidget::EndCommitCompositorFrame() {
+  web_view_->EndCommitCompositorFrame();
+}
+
 void WebViewFrameWidget::RecordStartOfFrameMetrics() {
   web_view_->RecordStartOfFrameMetrics();
 }
@@ -78,19 +91,14 @@ void WebViewFrameWidget::RecordEndOfFrameMetrics(
   web_view_->RecordEndOfFrameMetrics(frame_begin_time);
 }
 
+std::unique_ptr<cc::BeginMainFrameMetrics>
+WebViewFrameWidget::GetBeginMainFrameMetrics() {
+  return web_view_->GetBeginMainFrameMetrics();
+}
+
 void WebViewFrameWidget::UpdateLifecycle(LifecycleUpdate requested_update,
                                          LifecycleUpdateReason reason) {
   web_view_->UpdateLifecycle(requested_update, reason);
-}
-
-void WebViewFrameWidget::PaintContent(cc::PaintCanvas* canvas,
-                                      const WebRect& view_port) {
-  web_view_->PaintContent(canvas, view_port);
-}
-
-void WebViewFrameWidget::CompositeAndReadbackAsync(
-    base::OnceCallback<void(const SkBitmap&)> callback) {
-  web_view_->CompositeAndReadbackAsync(std::move(callback));
 }
 
 void WebViewFrameWidget::ThemeChanged() {
@@ -110,16 +118,18 @@ void WebViewFrameWidget::SetCursorVisibilityState(bool is_visible) {
   web_view_->SetCursorVisibilityState(is_visible);
 }
 
+void WebViewFrameWidget::OnFallbackCursorModeToggled(bool is_on) {
+  web_view_->OnFallbackCursorModeToggled(is_on);
+}
+
 void WebViewFrameWidget::ApplyViewportChanges(
     const ApplyViewportChangesArgs& args) {
   web_view_->ApplyViewportChanges(args);
 }
 
-void WebViewFrameWidget::RecordWheelAndTouchScrollingCount(
-    bool has_scrolled_by_wheel,
-    bool has_scrolled_by_touch) {
-  web_view_->RecordWheelAndTouchScrollingCount(has_scrolled_by_wheel,
-                                               has_scrolled_by_touch);
+void WebViewFrameWidget::RecordManipulationTypeCounts(
+    cc::ManipulationInfo info) {
+  web_view_->RecordManipulationTypeCounts(info);
 }
 void WebViewFrameWidget::SendOverscrollEventFromImplSide(
     const gfx::Vector2dF& overscroll_delta,
@@ -153,6 +163,10 @@ WebURL WebViewFrameWidget::GetURLForDebugTrace() {
   return web_view_->GetURLForDebugTrace();
 }
 
+void WebViewFrameWidget::DidDetachLocalFrameTree() {
+  web_view_->DidDetachLocalMainFrame();
+}
+
 WebInputMethodController*
 WebViewFrameWidget::GetActiveWebInputMethodController() const {
   return web_view_->GetActiveWebInputMethodController();
@@ -162,27 +176,12 @@ bool WebViewFrameWidget::ScrollFocusedEditableElementIntoView() {
   return web_view_->ScrollFocusedEditableElementIntoView();
 }
 
-void WebViewFrameWidget::SetLayerTreeView(WebLayerTreeView*,
-                                          cc::AnimationHost*) {
-  // The WebViewImpl already has its LayerTreeView, the WebWidgetClient
-  // thus does not initialize and set another one here.
-  NOTREACHED();
-}
-
-void WebViewFrameWidget::SetRootGraphicsLayer(GraphicsLayer* layer) {
-  web_view_->SetRootGraphicsLayer(layer);
-}
-
-GraphicsLayer* WebViewFrameWidget::RootGraphicsLayer() const {
-  return web_view_->RootGraphicsLayer();
+void WebViewFrameWidget::SetAnimationHost(cc::AnimationHost* host) {
+  web_view_->SetAnimationHost(host);
 }
 
 void WebViewFrameWidget::SetRootLayer(scoped_refptr<cc::Layer> layer) {
   web_view_->SetRootLayer(layer);
-}
-
-WebLayerTreeView* WebViewFrameWidget::GetLayerTreeView() const {
-  return web_view_->LayerTreeView();
 }
 
 cc::AnimationHost* WebViewFrameWidget::AnimationHost() const {

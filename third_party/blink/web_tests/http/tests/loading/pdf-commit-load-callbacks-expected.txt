@@ -2,6 +2,7 @@ main frame - DidStartNavigation
 main frame - ReadyToCommitNavigation
 main frame - didCommitLoadForFrame
 frame "<!--framePath //<!--frame0-->-->" - didReceiveTitle: 
+frame "<!--framePath //<!--frame0-->-->" - BeginNavigation request to 'data:application/pdf;base64,', http method GET
 frame "<!--framePath //<!--frame0-->-->" - DidStartNavigation
 main frame - didReceiveTitle: 
 main frame - didFinishDocumentLoadForFrame

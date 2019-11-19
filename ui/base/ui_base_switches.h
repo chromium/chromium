@@ -30,9 +30,6 @@ UI_BASE_EXPORT extern const char kForceCaptionStyle[];
 UI_BASE_EXPORT extern const char kForceDarkMode[];
 UI_BASE_EXPORT extern const char kForceHighContrast[];
 UI_BASE_EXPORT extern const char kLang[];
-UI_BASE_EXPORT extern const char kMaterialDesignInkDropAnimationSpeed[];
-UI_BASE_EXPORT extern const char kMaterialDesignInkDropAnimationSpeedFast[];
-UI_BASE_EXPORT extern const char kMaterialDesignInkDropAnimationSpeedSlow[];
 UI_BASE_EXPORT extern const char kShowOverdrawFeedback[];
 UI_BASE_EXPORT extern const char kSlowDownCompositingScaleFactor[];
 UI_BASE_EXPORT extern const char kTintGlCompositedContent[];
@@ -41,6 +38,7 @@ UI_BASE_EXPORT extern const char kTopChromeTouchUiAuto[];
 UI_BASE_EXPORT extern const char kTopChromeTouchUiDisabled[];
 UI_BASE_EXPORT extern const char kTopChromeTouchUiEnabled[];
 UI_BASE_EXPORT extern const char kUIDisablePartialSwap[];
+UI_BASE_EXPORT extern const char kUseSystemClipboard[];
 
 // Test related.
 UI_BASE_EXPORT extern const char kDisallowNonExactResourceReuse[];

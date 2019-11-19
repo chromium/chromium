@@ -11,33 +11,64 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 
-BlobReader::BlobReader(content::BrowserContext* browser_context,
-                       const std::string& blob_uuid,
-                       BlobReadCallback callback)
-    : BlobReader(
-          content::BrowserContext::GetBlobPtr(browser_context, blob_uuid),
-          std::move(callback)) {}
-
-BlobReader::BlobReader(blink::mojom::BlobPtr blob, BlobReadCallback callback)
-    : callback_(std::move(callback)), blob_(std::move(blob)), binding_(this) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  blob_.set_connection_error_handler(
-      base::BindOnce(&BlobReader::Failed, base::Unretained(this)));
-}
-
-BlobReader::~BlobReader() { DCHECK_CURRENTLY_ON(content::BrowserThread::UI); }
-
-void BlobReader::SetByteRange(int64_t offset, int64_t length) {
+// static
+void BlobReader::Read(content::BrowserContext* browser_context,
+                      const std::string& blob_uuid,
+                      BlobReader::BlobReadCallback callback,
+                      int64_t offset,
+                      int64_t length) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   CHECK_GE(offset, 0);
   CHECK_GT(length, 0);
   CHECK_LE(offset, std::numeric_limits<int64_t>::max() - length);
 
-  read_range_ = Range{offset, length};
+  base::Optional<Range> range = Range{offset, length};
+  Read(browser_context, blob_uuid, std::move(callback), std::move(range));
 }
 
-void BlobReader::Start() {
+// static
+void BlobReader::Read(content::BrowserContext* browser_context,
+                      const std::string& blob_uuid,
+                      BlobReader::BlobReadCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  Read(browser_context, blob_uuid, std::move(callback), base::nullopt);
+}
+
+BlobReader::~BlobReader() { DCHECK_CURRENTLY_ON(content::BrowserThread::UI); }
+
+// static
+void BlobReader::Read(content::BrowserContext* browser_context,
+                      const std::string& blob_uuid,
+                      BlobReader::BlobReadCallback callback,
+                      base::Optional<BlobReader::Range> range) {
+  std::unique_ptr<BlobReader> reader(new BlobReader(
+      content::BrowserContext::GetBlobRemote(browser_context, blob_uuid),
+      std::move(range)));
+
+  // Move the reader to be owned by the callback, so hold onto a temporary
+  // pointer to it so we can still call Start on it.
+  BlobReader* raw_reader = reader.get();
+  base::OnceClosure wrapped = base::BindOnce(
+      [](BlobReadCallback callback, std::unique_ptr<BlobReader> reader) {
+        std::move(callback).Run(std::move(reader->blob_data_),
+                                *reader->blob_length_);
+      },
+      std::move(callback), std::move(reader));
+  raw_reader->Start(std::move(wrapped));
+}
+
+BlobReader::BlobReader(mojo::PendingRemote<blink::mojom::Blob> blob,
+                       base::Optional<Range> range)
+    : blob_(std::move(blob)), read_range_(std::move(range)) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  blob_.set_disconnect_handler(
+      base::BindOnce(&BlobReader::Failed, base::Unretained(this)));
+}
+
+void BlobReader::Start(base::OnceClosure callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  callback_ = std::move(callback);
+
   mojo::ScopedDataPipeProducerHandle producer_handle;
   mojo::ScopedDataPipeConsumerHandle consumer_handle;
   MojoResult result =
@@ -46,13 +77,13 @@ void BlobReader::Start() {
     Failed();
     return;
   }
-  blink::mojom::BlobReaderClientPtr client_ptr;
-  binding_.Bind(MakeRequest(&client_ptr));
   if (read_range_) {
     blob_->ReadRange(read_range_->offset, read_range_->length,
-                     std::move(producer_handle), std::move(client_ptr));
+                     std::move(producer_handle),
+                     receiver_.BindNewPipeAndPassRemote());
   } else {
-    blob_->ReadAll(std::move(producer_handle), std::move(client_ptr));
+    blob_->ReadAll(std::move(producer_handle),
+                   receiver_.BindNewPipeAndPassRemote());
   }
   data_pipe_drainer_ =
       std::make_unique<mojo::DataPipeDrainer>(this, std::move(consumer_handle));
@@ -80,11 +111,11 @@ void BlobReader::OnDataComplete() {
 }
 
 void BlobReader::Failed() {
-  std::move(callback_).Run(std::make_unique<std::string>(), 0);
-  delete this;
+  blob_length_ = 0;
+  blob_data_ = std::make_unique<std::string>();
+  std::move(callback_).Run();
 }
 
 void BlobReader::Succeeded() {
-  std::move(callback_).Run(std::move(blob_data_), *blob_length_);
-  delete this;
+  std::move(callback_).Run();
 }

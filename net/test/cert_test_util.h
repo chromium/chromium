@@ -6,6 +6,7 @@
 #define NET_TEST_CERT_TEST_UTIL_H_
 
 #include <string>
+#include <vector>
 
 #include "base/memory/ref_counted.h"
 #include "net/cert/x509_cert_types.h"

@@ -175,8 +175,8 @@ INT_PTR CALLBACK MainUIWindow::SpawnTargetWndProc(HWND dialog,
       HWND edit_box_dll_name = ::GetDlgItem(dialog, IDC_DLL_NAME);
       wchar_t current_dir[MAX_PATH];
       if (GetCurrentDirectory(MAX_PATH, current_dir)) {
-        base::string16 dll_path = base::string16(current_dir) +
-                                base::string16(kDefaultDll_);
+        std::wstring dll_path =
+            std::wstring(current_dir) + std::wstring(kDefaultDll_);
         ::SetWindowText(edit_box_dll_name, dll_path.c_str());
       }
 
@@ -205,7 +205,7 @@ INT_PTR CALLBACK MainUIWindow::SpawnTargetWndProc(HWND dialog,
         return static_cast<INT_PTR>(TRUE);
       } else if (LOWORD(wparam) == IDC_BROWSE_DLL) {
         // If the user presses the Browse button to look for a DLL
-        base::string16 dll_path = host->OnShowBrowseForDllDlg(dialog);
+        std::wstring dll_path = host->OnShowBrowseForDllDlg(dialog);
         if (dll_path.length() > 0) {
           // Initialize the window text for Log File edit box
           HWND edit_box_dll_path = ::GetDlgItem(dialog, IDC_DLL_NAME);
@@ -214,7 +214,7 @@ INT_PTR CALLBACK MainUIWindow::SpawnTargetWndProc(HWND dialog,
         return static_cast<INT_PTR>(TRUE);
       } else if (LOWORD(wparam) == IDC_BROWSE_LOG) {
         // If the user presses the Browse button to look for a log file
-        base::string16 log_path = host->OnShowBrowseForLogFileDlg(dialog);
+        std::wstring log_path = host->OnShowBrowseForLogFileDlg(dialog);
         if (log_path.length() > 0) {
           // Initialize the window text for Log File edit box
           HWND edit_box_log_file = ::GetDlgItem(dialog, IDC_LOG_FILE);
@@ -350,7 +350,7 @@ bool MainUIWindow::OnLaunchDll(HWND dialog) {
   }
 
   // store these values in the member variables for use in SpawnTarget
-  log_file_ = base::string16(L"\"") + log_file + base::string16(L"\"");
+  log_file_ = std::wstring(L"\"") + log_file + std::wstring(L"\"");
   dll_path_ = dll_path;
   entry_point_ = entry_point;
 
@@ -519,7 +519,7 @@ bool MainUIWindow::SpawnTarget() {
       broker_->SpawnTarget(spawn_target_.c_str(), arguments, policy,
                            &warning_result, &last_error, &target_);
 
-  policy = NULL;
+  policy.reset();
 
   bool return_value = false;
   if (sandbox::SBOX_ALL_OK != result) {
@@ -571,7 +571,7 @@ bool MainUIWindow::SpawnTarget() {
   return return_value;
 }
 
-base::string16 MainUIWindow::OnShowBrowseForDllDlg(HWND owner) {
+std::wstring MainUIWindow::OnShowBrowseForDllDlg(HWND owner) {
   wchar_t filename[MAX_PATH];
   wcscpy_s(filename, MAX_PATH, L"");
 
@@ -591,7 +591,7 @@ base::string16 MainUIWindow::OnShowBrowseForDllDlg(HWND owner) {
   return L"";
 }
 
-base::string16 MainUIWindow::OnShowBrowseForLogFileDlg(HWND owner) {
+std::wstring MainUIWindow::OnShowBrowseForLogFileDlg(HWND owner) {
   wchar_t filename[MAX_PATH];
   wcscpy_s(filename, MAX_PATH, L"");
 
@@ -626,6 +626,7 @@ void MainUIWindow::AddDebugMessage(const wchar_t* format, ...) {
   text[kMaxDebugBuffSize] = L'\0';
 
   InsertLineInListView(text);
+  va_end(arg_list);
 }
 
 

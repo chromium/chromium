@@ -12,9 +12,11 @@
 #include "base/files/file.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/chromeos/file_manager/fileapi_util.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_byte_range.h"
-#include "storage/browser/fileapi/file_system_url.h"
+#include "storage/browser/file_system/file_system_url.h"
+#include "storage/browser/file_system/isolated_context.h"
 #include "url/gurl.h"
 
 namespace net {
@@ -28,17 +30,6 @@ class GURL;
 
 namespace chromeos {
 
-// Scope of isolated file system.
-class IsolatedFileSystemScope {
- public:
-  explicit IsolatedFileSystemScope(const std::string& file_system_id);
-  ~IsolatedFileSystemScope();
-
- private:
-  std::string file_system_id_;
-  DISALLOW_COPY_AND_ASSIGN(IsolatedFileSystemScope);
-};
-
 // Resolves an externalfile URL to a redirect or a FileStreamReader.
 class ExternalFileResolver {
  public:
@@ -47,7 +38,7 @@ class ExternalFileResolver {
                                                    const GURL& redirect_url)>;
   using StreamCallback = base::OnceCallback<void(
       const std::string& mime_type,
-      std::unique_ptr<IsolatedFileSystemScope> isolated_file_system_scope,
+      storage::IsolatedContext::ScopedFSHandle isolated_file_system_scope,
       std::unique_ptr<storage::FileStreamReader> stream_reader,
       int64_t size)>;
 
@@ -69,9 +60,8 @@ class ExternalFileResolver {
  private:
   void OnHelperResultObtained(
       net::Error error,
-      const scoped_refptr<storage::FileSystemContext>& file_system_context,
-      std::unique_ptr<IsolatedFileSystemScope> isolated_file_system_scope,
-      const storage::FileSystemURL& file_system_url,
+      scoped_refptr<storage::FileSystemContext> file_system_context,
+      file_manager::util::FileSystemURLAndHandle isolated_file_system,
       const std::string& mime_type);
 
   void OnRedirectURLObtained(const GURL& redirect_url);
@@ -88,10 +78,9 @@ class ExternalFileResolver {
   StreamCallback stream_callback_;
 
   scoped_refptr<storage::FileSystemContext> file_system_context_;
-  std::unique_ptr<IsolatedFileSystemScope> isolated_file_system_scope_;
-  storage::FileSystemURL file_system_url_;
+  file_manager::util::FileSystemURLAndHandle isolated_file_system_;
   std::string mime_type_;
-  base::WeakPtrFactory<ExternalFileResolver> weak_ptr_factory_;
+  base::WeakPtrFactory<ExternalFileResolver> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ExternalFileResolver);
 };

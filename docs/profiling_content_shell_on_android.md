@@ -24,7 +24,7 @@ ninja -C out/Release content_shell_apk
 Plug in your device. Make sure you can talk to your device, try:
 
 ```shell
-third_party/android_tools/sdk/platform-tools/adb shell ls
+third_party/android_sdk/public/platform-tools/adb shell ls
 ```
 
 ## Root your device and install a userdebug build

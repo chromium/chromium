@@ -47,21 +47,21 @@ class MODULES_EXPORT ThreadSafeScriptContainer
     USING_FAST_MALLOC(RawScriptData);
 
    public:
-    static std::unique_ptr<RawScriptData> Create(const String& encoding,
-                                                 Vector<BytesChunk> script_text,
-                                                 Vector<BytesChunk> meta_data);
-
+    RawScriptData(const String& encoding,
+                  Vector<uint8_t> script_text,
+                  Vector<uint8_t> meta_data);
     ~RawScriptData();
 
     void AddHeader(const String& key, const String& value);
 
     // The encoding of the script text.
     const String& Encoding() const { return encoding_; }
-    // An array of raw byte chunks of the script text.
-    const Vector<BytesChunk>& ScriptTextChunks() const { return script_text_; }
-    // An array of raw byte chunks of the scripts's meta data from the script's
-    // V8 code cache.
-    const Vector<BytesChunk>& MetaDataChunks() const { return meta_data_; }
+
+    // An array of raw bytes representing the script text.
+    Vector<uint8_t> TakeScriptText() { return std::move(script_text_); }
+
+    // An array of raw bytes representing the cached metadata.
+    Vector<uint8_t> TakeMetaData() { return std::move(meta_data_); }
 
     // The HTTP headers of the script.
     std::unique_ptr<CrossThreadHTTPHeaderMapData> TakeHeaders() {
@@ -69,12 +69,9 @@ class MODULES_EXPORT ThreadSafeScriptContainer
     }
 
    private:
-    RawScriptData(const String& encoding,
-                  Vector<BytesChunk> script_text,
-                  Vector<BytesChunk> meta_data);
     String encoding_;
-    Vector<BytesChunk> script_text_;
-    Vector<BytesChunk> meta_data_;
+    Vector<uint8_t> script_text_;
+    Vector<uint8_t> meta_data_;
     std::unique_ptr<CrossThreadHTTPHeaderMapData> headers_;
   };
 

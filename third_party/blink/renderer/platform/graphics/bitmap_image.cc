@@ -34,6 +34,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "third_party/blink/renderer/platform/geometry/float_rect.h"
 #include "third_party/blink/renderer/platform/graphics/bitmap_image_metrics.h"
+#include "third_party/blink/renderer/platform/graphics/dark_mode_image_classifier.h"
 #include "third_party/blink/renderer/platform/graphics/deferred_image_decoder.h"
 #include "third_party/blink/renderer/platform/graphics/image_observer.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_canvas.h"
@@ -49,6 +50,12 @@
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
+namespace {
+
+const int kMinImageSizeForClassification1D = 24;
+const int kMaxImageSizeForClassification1D = 100;
+
+}  // namespace
 
 int GetRepetitionCountWithPolicyOverride(int actual_count,
                                          ImageAnimationPolicy policy) {
@@ -154,6 +161,19 @@ bool BitmapImage::GetHotSpot(IntPoint& hot_spot) const {
   return decoder_ && decoder_->HotSpot(hot_spot);
 }
 
+// We likely don't need to confirm that this is the first time all data has
+// been received as a way to avoid reporting the UMA multiple times for the
+// same image. However, we err on the side of caution.
+bool BitmapImage::ShouldReportByteSizeUMAs(bool data_now_completely_received) {
+  if (!decoder_)
+    return false;
+  // Ensures that refactoring to check truthiness of ByteSize() method is
+  // equivalent to the previous use of Data() and does not mess up UMAs.
+  DCHECK_EQ(!decoder_->ByteSize(), !decoder_->Data());
+  return !all_data_received_ && data_now_completely_received &&
+         decoder_->ByteSize() && IsSizeAvailable();
+}
+
 Image::SizeAvailability BitmapImage::SetData(scoped_refptr<SharedBuffer> data,
                                              bool all_data_received) {
   if (!data)
@@ -198,14 +218,13 @@ Image::SizeAvailability BitmapImage::DataChanged(bool all_data_received) {
 
   // Report the image density metric right after we received all the data. The
   // SetData() call on the decoder_ (if there is one) should have decoded the
-  // images and we should know the image size at this point. We still check it
-  // here as a sanity check.
-  if (!all_data_received_ && all_data_received && decoder_ &&
-      decoder_->Data() && decoder_->FilenameExtension() == "jpg" &&
-      IsSizeAvailable()) {
+  // images and we should know the image size at this point.
+  if (ShouldReportByteSizeUMAs(all_data_received) &&
+      decoder_->FilenameExtension() == "jpg") {
     BitmapImageMetrics::CountImageJpegDensity(
         std::min(Size().Width(), Size().Height()),
-        ImageDensityInCentiBpp(Size(), decoder_->Data()->size()));
+        ImageDensityInCentiBpp(Size(), decoder_->ByteSize()),
+        decoder_->ByteSize());
   }
 
   // Feed all the data we've seen so far to the image decoder.
@@ -429,6 +448,23 @@ void BitmapImage::SetAnimationPolicy(ImageAnimationPolicy policy) {
 
   animation_policy_ = policy;
   ResetAnimation();
+}
+
+DarkModeClassification BitmapImage::CheckTypeSpecificConditionsForDarkMode(
+    const FloatRect& dest_rect,
+    DarkModeImageClassifier* classifier) {
+  if (dest_rect.Width() < kMinImageSizeForClassification1D ||
+      dest_rect.Height() < kMinImageSizeForClassification1D)
+    return DarkModeClassification::kApplyFilter;
+
+  if (dest_rect.Width() > kMaxImageSizeForClassification1D ||
+      dest_rect.Height() > kMaxImageSizeForClassification1D) {
+    return DarkModeClassification::kDoNotApplyFilter;
+  }
+
+  classifier->SetImageType(DarkModeImageClassifier::ImageType::kBitmap);
+
+  return DarkModeClassification::kNotClassified;
 }
 
 }  // namespace blink

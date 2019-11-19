@@ -5,6 +5,7 @@
 #ifndef ASH_SYSTEM_TRAY_TRAY_CONTAINER_H_
 #define ASH_SYSTEM_TRAY_TRAY_CONTAINER_H_
 
+#include "ash/public/cpp/shelf_config.h"
 #include "base/macros.h"
 #include "ui/views/view.h"
 
@@ -13,10 +14,13 @@ class Shelf;
 
 // Base class for tray containers. Sets the border and layout. The container
 // auto-resizes the widget when necessary.
-class TrayContainer : public views::View {
+class TrayContainer : public views::View, ShelfConfig::Observer {
  public:
   explicit TrayContainer(Shelf* shelf);
   ~TrayContainer() override;
+
+  // ShelfConfig::Observer:
+  void OnShelfConfigUpdated() override;
 
   void UpdateAfterShelfAlignmentChange();
 
@@ -27,8 +31,9 @@ class TrayContainer : public views::View {
   void ChildPreferredSizeChanged(views::View* child) override;
   void ChildVisibilityChanged(View* child) override;
   void ViewHierarchyChanged(
-      const ViewHierarchyChangedDetails& details) override;
+      const views::ViewHierarchyChangedDetails& details) override;
   gfx::Rect GetAnchorBoundsInScreen() const override;
+  const char* GetClassName() const override;
 
  private:
   void UpdateLayout();

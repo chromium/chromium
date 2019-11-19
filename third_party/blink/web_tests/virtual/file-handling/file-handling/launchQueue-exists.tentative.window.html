@@ -1,0 +1,24 @@
+<!doctype html>
+<title>Launch Params are available from JavaScript.</title>
+<link rel="help" href="https://github.com/WICG/file-handling/blob/master/explainer.md">
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<script>
+
+test(() => {
+  assert_true('launchQueue' in window, 'window must have a launchQueue.');
+  assert_true(window.launchQueue instanceof LaunchQueue, 'launchQueue must be a LaunchQueue.');
+}, 'launchQueue should be available off the global object.');
+
+test(() => {
+  assert_true('setConsumer' in window.launchQueue, 'clients should be able to set a consumer for launches.');
+  assert_equals(typeof window.launchQueue.setConsumer, 'function', 'launchQueue.setConsumer should be a function.');
+
+  // There should be no events in the launchQueue in the test.
+  window.launchQueue.setConsumer(launchParams => {
+    console.error(launchParams);
+    throw new Error("This should not be reached in the test");
+  });
+}, 'setConsumer should be a function.');
+
+</script>

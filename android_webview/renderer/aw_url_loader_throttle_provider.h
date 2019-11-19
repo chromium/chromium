@@ -8,6 +8,9 @@
 #include "base/threading/thread_checker.h"
 #include "components/safe_browsing/common/safe_browsing.mojom.h"
 #include "content/public/renderer/url_loader_throttle_provider.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
 
 namespace android_webview {
 
@@ -15,14 +18,15 @@ namespace android_webview {
 // destructed on a single thread, which can be different from the render thread.
 class AwURLLoaderThrottleProvider : public content::URLLoaderThrottleProvider {
  public:
-  explicit AwURLLoaderThrottleProvider(
+  AwURLLoaderThrottleProvider(
+      blink::ThreadSafeBrowserInterfaceBrokerProxy* broker,
       content::URLLoaderThrottleProviderType type);
 
   ~AwURLLoaderThrottleProvider() override;
 
   // content::URLLoaderThrottleProvider implementation.
   std::unique_ptr<content::URLLoaderThrottleProvider> Clone() override;
-  std::vector<std::unique_ptr<content::URLLoaderThrottle>> CreateThrottles(
+  std::vector<std::unique_ptr<blink::URLLoaderThrottle>> CreateThrottles(
       int render_frame_id,
       const blink::WebURLRequest& request,
       content::ResourceType resource_type) override;
@@ -35,8 +39,8 @@ class AwURLLoaderThrottleProvider : public content::URLLoaderThrottleProvider {
 
   content::URLLoaderThrottleProviderType type_;
 
-  safe_browsing::mojom::SafeBrowsingPtrInfo safe_browsing_info_;
-  safe_browsing::mojom::SafeBrowsingPtr safe_browsing_;
+  mojo::PendingRemote<safe_browsing::mojom::SafeBrowsing> safe_browsing_remote_;
+  mojo::Remote<safe_browsing::mojom::SafeBrowsing> safe_browsing_;
 
   THREAD_CHECKER(thread_checker_);
 

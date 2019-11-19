@@ -23,4 +23,6 @@ client 3: overriding URL from http://127.0.0.1:8000/devtools/network/resources/r
 client 2: intercepted request to http://127.0.0.1:8000/devtools/network/resources/resource.php?jscontent=1
 client 1: rejecting request to http://127.0.0.1:8000/devtools/network/resources/resource.php?jscontent=1
 client 2: intercepted response 418 from http://127.0.0.1:8000/devtools/network/resources/resource.php?jscontent=1
+-- failing request from client 3
+client 3: failing request from http://127.0.0.1:8000/devtools/network/resources/resource.php
 

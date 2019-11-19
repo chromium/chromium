@@ -87,6 +87,8 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoBleConnection
   void GattServicesDiscovered(BluetoothAdapter* adapter,
                               BluetoothDevice* device) override;
 
+  const BluetoothRemoteGattService* GetFidoService();
+
   void OnCreateGattConnection(
       std::unique_ptr<BluetoothGattConnection> connection);
   void OnCreateGattConnectionError(
@@ -122,7 +124,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoBleConnection
   base::Optional<std::string> service_revision_id_;
   base::Optional<std::string> service_revision_bitfield_id_;
 
-  base::WeakPtrFactory<FidoBleConnection> weak_factory_;
+  base::WeakPtrFactory<FidoBleConnection> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(FidoBleConnection);
 };

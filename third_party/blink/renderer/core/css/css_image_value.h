@@ -23,10 +23,12 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/css/css_origin_clean.h"
 #include "third_party/blink/renderer/core/css/css_value.h"
 #include "third_party/blink/renderer/platform/loader/fetch/cross_origin_attribute_value.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_parameters.h"
 #include "third_party/blink/renderer/platform/weborigin/referrer.h"
+#include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
 
@@ -37,35 +39,43 @@ class ComputedStyle;
 
 class CORE_EXPORT CSSImageValue : public CSSValue {
  public:
-  static CSSImageValue* Create(const KURL& url, StyleImage* image = nullptr) {
-    return Create(url.GetString(), url, Referrer(), image);
+  static CSSImageValue* Create(const KURL& url,
+                               OriginClean origin_clean,
+                               StyleImage* image = nullptr) {
+    return Create(url.GetString(), url, Referrer(), origin_clean, image);
   }
   static CSSImageValue* Create(const AtomicString& relative_url,
                                const KURL& absolute_url,
+                               OriginClean origin_clean,
                                StyleImage* image = nullptr) {
-    return Create(relative_url, absolute_url, Referrer(), image);
+    return Create(relative_url, absolute_url, Referrer(), origin_clean, image);
   }
   static CSSImageValue* Create(const String& raw_value,
                                const KURL& url,
                                const Referrer& referrer,
+                               OriginClean origin_clean,
                                StyleImage* image = nullptr) {
-    return Create(AtomicString(raw_value), url, referrer, image);
+    return Create(AtomicString(raw_value), url, referrer, origin_clean, image);
   }
   static CSSImageValue* Create(const AtomicString& raw_value,
                                const KURL& url,
                                const Referrer& referrer,
+                               OriginClean origin_clean,
                                StyleImage* image = nullptr) {
-    return MakeGarbageCollected<CSSImageValue>(raw_value, url, referrer, image);
+    return MakeGarbageCollected<CSSImageValue>(raw_value, url, referrer, image,
+                                               origin_clean);
   }
-  static CSSImageValue* Create(const AtomicString& absolute_url) {
-    return MakeGarbageCollected<CSSImageValue>(absolute_url);
+  static CSSImageValue* Create(const AtomicString& absolute_url,
+                               OriginClean origin_clean) {
+    return MakeGarbageCollected<CSSImageValue>(absolute_url, origin_clean);
   }
 
   CSSImageValue(const AtomicString& raw_value,
                 const KURL&,
                 const Referrer&,
-                StyleImage*);
-  CSSImageValue(const AtomicString& absolute_url);
+                StyleImage*,
+                OriginClean origin_clean);
+  CSSImageValue(const AtomicString& absolute_url, OriginClean origin_clean);
   ~CSSImageValue();
 
   bool IsCachePending() const { return !cached_image_; }
@@ -94,11 +104,12 @@ class CORE_EXPORT CSSImageValue : public CSSValue {
   bool KnownToBeOpaque(const Document&, const ComputedStyle&) const;
 
   CSSImageValue* ValueWithURLMadeAbsolute() const {
-    return Create(KURL(absolute_url_), cached_image_.Get());
+    return Create(KURL(absolute_url_), origin_clean_, cached_image_.Get());
   }
 
   CSSImageValue* Clone() const {
-    return Create(relative_url_, KURL(absolute_url_), cached_image_.Get());
+    return Create(relative_url_, KURL(absolute_url_), origin_clean_,
+                  cached_image_.Get());
   }
 
   void SetInitiator(const AtomicString& name) { initiator_name_ = name; }
@@ -114,9 +125,16 @@ class CORE_EXPORT CSSImageValue : public CSSValue {
   // Cached image data.
   mutable AtomicString absolute_url_;
   mutable Member<StyleImage> cached_image_;
+
+  // Whether the stylesheet that requested this image is origin-clean:
+  // https://drafts.csswg.org/cssom-1/#concept-css-style-sheet-origin-clean-flag
+  const OriginClean origin_clean_;
 };
 
-DEFINE_CSS_VALUE_TYPE_CASTS(CSSImageValue, IsImageValue());
+template <>
+struct DowncastTraits<CSSImageValue> {
+  static bool AllowFrom(const CSSValue& value) { return value.IsImageValue(); }
+};
 
 }  // namespace blink
 

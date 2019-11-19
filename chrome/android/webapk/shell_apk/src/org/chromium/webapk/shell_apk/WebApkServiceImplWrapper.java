@@ -111,7 +111,7 @@ public class WebApkServiceImplWrapper extends IWebApkApi.Stub {
             NotificationManager manager =
                     (NotificationManager) mContext.getSystemService(Context.NOTIFICATION_SERVICE);
             NotificationChannel channel = new NotificationChannel(DEFAULT_NOTIFICATION_CHANNEL_ID,
-                    mContext.getString(R.string.notification_channel_name),
+                    WebApkUtils.getNotificationChannelName(mContext),
                     NotificationManager.IMPORTANCE_DEFAULT);
             manager.createNotificationChannel(channel);
         }

@@ -33,8 +33,8 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/media_device_id.h"
+#include "content/public/browser/system_connector.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/common/service_manager_connection.h"
 #include "content/public/test/browser_test_utils.h"
 #include "extensions/common/permissions/permission_set.h"
 #include "extensions/common/permissions/permissions_data.h"
@@ -71,10 +71,8 @@ namespace {
 void GetAudioDeviceDescriptions(bool for_input,
                                 AudioDeviceDescriptions* device_descriptions) {
   base::RunLoop run_loop;
-  std::unique_ptr<media::AudioSystem> audio_system = audio::CreateAudioSystem(
-      content::ServiceManagerConnection::GetForProcess()
-          ->GetConnector()
-          ->Clone());
+  std::unique_ptr<media::AudioSystem> audio_system =
+      audio::CreateAudioSystem(content::GetSystemConnector()->Clone());
   audio_system->GetDeviceDescriptions(
       for_input,
       base::BindOnce(

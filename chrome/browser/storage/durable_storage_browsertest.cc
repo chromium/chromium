@@ -180,7 +180,7 @@ IN_PROC_BROWSER_TEST_F(DurableStorageBrowserTest, Incognito) {
 
 IN_PROC_BROWSER_TEST_F(DurableStorageBrowserTest, SessionOnly) {
   HostContentSettingsMapFactory::GetForProfile(browser()->profile())
-      ->SetDefaultContentSetting(CONTENT_SETTINGS_TYPE_COOKIES,
+      ->SetDefaultContentSetting(ContentSettingsType::COOKIES,
                                  CONTENT_SETTING_SESSION_ONLY);
   Bookmark();
   ui_test_utils::NavigateToURL(browser(), url_);

@@ -6,7 +6,6 @@
 
 #include "base/logging.h"
 #include "net/base/host_port_pair.h"
-#include "net/base/net_errors.h"
 #include "net/dns/host_cache.h"
 #include "net/dns/host_resolver_mdns_task.h"
 #include "net/dns/record_parsed.h"
@@ -37,13 +36,20 @@ HostResolverMdnsListenerImpl::HostResolverMdnsListenerImpl(
 }
 
 HostResolverMdnsListenerImpl::~HostResolverMdnsListenerImpl() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   // Destroy |inner_listener_| first to cancel listening and callbacks to |this|
   // before anything else becomes invalid.
   inner_listener_ = nullptr;
 }
 
 int HostResolverMdnsListenerImpl::Start(Delegate* delegate) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(delegate);
+
+  if (initialization_error_ != OK)
+    return initialization_error_;
+
   DCHECK(inner_listener_);
 
   delegate_ = delegate;
@@ -66,6 +72,7 @@ void HostResolverMdnsListenerImpl::OnRecordUpdate(
 
   switch (query_type_) {
     case DnsQueryType::UNSPECIFIED:
+    case DnsQueryType::ESNI:
       NOTREACHED();
       break;
     case DnsQueryType::A:

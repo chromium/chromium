@@ -156,7 +156,7 @@ class SecureChannel : public ConnectionObserver {
   std::unique_ptr<PendingMessage> pending_message_;
   int next_sequence_number_ = 0;
   base::ObserverList<Observer>::Unchecked observer_list_;
-  base::WeakPtrFactory<SecureChannel> weak_ptr_factory_;
+  base::WeakPtrFactory<SecureChannel> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(SecureChannel);
 };

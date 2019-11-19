@@ -25,9 +25,7 @@ Queue::Task::~Task() {
 }
 
 Queue::Queue(size_t max_in_parallel)
-    : max_in_parallel_(max_in_parallel),
-      next_token_(1),
-      weak_ptr_factory_(this) {
+    : max_in_parallel_(max_in_parallel), next_token_(1) {
   CHECK_LT(0u, max_in_parallel);
 }
 

@@ -37,8 +37,8 @@
     TestRunner.addResult(request1.url());
     TestRunner.addResult(request2.url());
     TestRunner.addResult(request3.url());
-    TestRunner.assertTrue(request1Content === request2Content, 'First and second resources are equal');
-    TestRunner.assertTrue(request2Content !== request3Content, 'Second and third resources differ');
+    TestRunner.assertTrue(request1Content.content === request2Content.content, 'First and second resources are equal');
+    TestRunner.assertTrue(request2Content.content !== request3Content.content, 'Second and third resources differ');
     TestRunner.NetworkAgent.setCacheDisabled(false).then(step5);
   }
 

@@ -1,9 +1,9 @@
 include_rules = [
   "+cc/paint",
   "+components/crash/core/common/crash_key.h",
+  "+components/remote_cocoa",
   "+components/vector_icons",
   "+mojo/public/cpp/bindings",
-  "+services/ws/public/mojom",
   "+skia/ext",
   "+third_party/iaccessible2",
   "+third_party/skia",
@@ -21,7 +21,6 @@ include_rules = [
   "+ui/resources/grit/ui_resources.h",
   "+ui/strings/grit/ui_strings.h",
   "+ui/touch_selection",
-  "+ui/views_bridge_mac",
   "+ui/wm/core",
   "+ui/wm/public",
 
@@ -37,12 +36,6 @@ specific_include_rules = {
   ],
   "views_perftests\.cc": [
     "+mojo/core/embedder",
-  ],
-  "views_test_base\.cc": [
-    "+mojo/core/embedder",
-    "+services/service_manager/public",
-    "+services/ws",
-    "+ui/gl",
   ],
   "view_unittest\.cc": [
     "+cc/playback",

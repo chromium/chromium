@@ -9,7 +9,7 @@ namespace scheduler {
 
 CompositorMetricsHelper::CompositorMetricsHelper(
     bool has_cpu_timing_for_each_task)
-    : MetricsHelper(WebThreadType::kCompositorThread,
+    : MetricsHelper(ThreadType::kCompositorThread,
                     has_cpu_timing_for_each_task) {}
 
 CompositorMetricsHelper::~CompositorMetricsHelper() {}

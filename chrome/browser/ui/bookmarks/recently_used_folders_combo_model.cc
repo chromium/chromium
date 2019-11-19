@@ -145,21 +145,19 @@ void RecentlyUsedFoldersComboModel::BookmarkModelBeingDeleted(
 void RecentlyUsedFoldersComboModel::BookmarkNodeMoved(
     BookmarkModel* model,
     const BookmarkNode* old_parent,
-    int old_index,
+    size_t old_index,
     const BookmarkNode* new_parent,
-    int new_index) {
-}
+    size_t new_index) {}
 
 void RecentlyUsedFoldersComboModel::BookmarkNodeAdded(
     BookmarkModel* model,
     const BookmarkNode* parent,
-    int index) {
-}
+    size_t index) {}
 
 void RecentlyUsedFoldersComboModel::OnWillRemoveBookmarks(
     BookmarkModel* model,
     const BookmarkNode* parent,
-    int old_index,
+    size_t old_index,
     const BookmarkNode* node) {
   // Changing is rare enough that we don't attempt to readjust the contents.
   // Update |items_| so we aren't left pointing to a deleted node.
@@ -181,7 +179,7 @@ void RecentlyUsedFoldersComboModel::OnWillRemoveBookmarks(
 void RecentlyUsedFoldersComboModel::BookmarkNodeRemoved(
     BookmarkModel* model,
     const BookmarkNode* parent,
-    int old_index,
+    size_t old_index,
     const BookmarkNode* node,
     const std::set<GURL>& removed_urls) {}
 
@@ -230,7 +228,7 @@ void RecentlyUsedFoldersComboModel::MaybeChangeParent(
   const BookmarkNode* new_parent = GetNodeAt(selected_index);
   if (new_parent != node->parent()) {
     base::RecordAction(base::UserMetricsAction("BookmarkBubble_ChangeParent"));
-    bookmark_model_->Move(node, new_parent, new_parent->child_count());
+    bookmark_model_->Move(node, new_parent, new_parent->children().size());
   }
 }
 

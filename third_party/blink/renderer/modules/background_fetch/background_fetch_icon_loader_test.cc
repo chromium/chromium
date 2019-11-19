@@ -91,9 +91,9 @@ class BackgroundFetchIconLoaderTest : public PageTestBase {
   KURL PickRightIcon(HeapVector<Member<ManifestImageResource>> icons,
                      const WebSize& ideal_display_size) {
     loader_->icons_ = std::move(icons);
-    loader_->icon_display_size_pixels_ = ideal_display_size;
 
-    return loader_->PickBestIconForDisplay(GetContext());
+    return loader_->PickBestIconForDisplay(GetContext(),
+                                           ideal_display_size.height);
   }
 
   void LoadIcon(const KURL& url,

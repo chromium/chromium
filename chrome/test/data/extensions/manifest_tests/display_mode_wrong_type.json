@@ -1,0 +1,11 @@
+{
+  "name": "Display Mode",
+  "manifest_version": 2,
+  "version": "1",
+  "app": {
+    "launch": {
+      "web_url": "http://www.google.com/launch.html"
+    },
+    "display_mode": 123456
+  }
+}

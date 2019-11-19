@@ -28,13 +28,13 @@ TestMediaTransferProtocolManagerChromeOS::
 TestMediaTransferProtocolManagerChromeOS::
     ~TestMediaTransferProtocolManagerChromeOS() {}
 
-void TestMediaTransferProtocolManagerChromeOS::AddBinding(
-    device::mojom::MtpManagerRequest request) {
-  bindings_.AddBinding(this, std::move(request));
+void TestMediaTransferProtocolManagerChromeOS::AddReceiver(
+    mojo::PendingReceiver<device::mojom::MtpManager> receiver) {
+  receivers_.Add(this, std::move(receiver));
 }
 
 void TestMediaTransferProtocolManagerChromeOS::EnumerateStoragesAndSetClient(
-    device::mojom::MtpManagerClientAssociatedPtrInfo client,
+    mojo::PendingAssociatedRemote<device::mojom::MtpManagerClient> client,
     EnumerateStoragesAndSetClientCallback callback) {
   std::move(callback).Run(std::vector<device::mojom::MtpStorageInfoPtr>());
 }

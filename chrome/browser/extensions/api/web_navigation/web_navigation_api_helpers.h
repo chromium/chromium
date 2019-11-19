@@ -48,9 +48,10 @@ void DispatchOnCompleted(content::WebContents* web_contents,
                          const GURL& url);
 
 void DispatchOnCreatedNavigationTarget(
-    content::WebContents* web_contents,
+    int source_tab_id,
+    int source_render_process_id,
+    int source_extension_frame_id,
     content::BrowserContext* browser_context,
-    content::RenderFrameHost* source_frame_host,
     content::WebContents* target_web_contents,
     const GURL& target_url);
 

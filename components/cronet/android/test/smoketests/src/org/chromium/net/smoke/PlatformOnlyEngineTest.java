@@ -9,6 +9,7 @@ import static org.chromium.net.smoke.CronetSmokeTestRule.assertSuccessfulNonEmpt
 
 import android.support.test.InstrumentationRegistry;
 import android.support.test.filters.SmallTest;
+import android.support.test.runner.AndroidJUnit4;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -17,13 +18,12 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.net.UrlRequest;
 
 /**
  * Tests scenario when an app doesn't contain the native Cronet implementation.
  */
-@RunWith(BaseJUnit4ClassRunner.class)
+@RunWith(AndroidJUnit4.class)
 public class PlatformOnlyEngineTest {
     private String mURL;
     private TestSupport.TestServer mServer;

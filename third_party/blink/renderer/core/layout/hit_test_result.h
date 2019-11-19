@@ -24,6 +24,7 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/editing/forward.h"
+#include "third_party/blink/renderer/core/layout/geometry/physical_offset.h"
 #include "third_party/blink/renderer/core/layout/hit_test_location.h"
 #include "third_party/blink/renderer/core/layout/hit_test_request.h"
 #include "third_party/blink/renderer/platform/geometry/float_quad.h"
@@ -47,6 +48,7 @@ class Node;
 class LayoutObject;
 class Region;
 class Scrollbar;
+struct PhysicalOffset;
 
 // List-based hit test testing can continue even after a hit has been found.
 // This is used to support fuzzy matching with rect-based hit tests as well as
@@ -57,7 +59,7 @@ class CORE_EXPORT HitTestResult {
   DISALLOW_NEW();
 
  public:
-  typedef HeapListHashSet<Member<Node>> NodeSet;
+  typedef HeapLinkedHashSet<Member<Node>> NodeSet;
 
   HitTestResult();
   HitTestResult(const HitTestRequest&, const HitTestLocation&);
@@ -80,6 +82,7 @@ class CORE_EXPORT HitTestResult {
   // FIXME: Make these less error-prone for rect-based hit tests (center point
   // or fail).
   Node* InnerNode() const { return inner_node_.Get(); }
+  Node* InertNode() const { return inert_node_.Get(); }
   Node* InnerPossiblyPseudoNode() const {
     return inner_possibly_pseudo_node_.Get();
   }
@@ -97,10 +100,10 @@ class CORE_EXPORT HitTestResult {
 
   // The hit-tested point in the coordinates of the innerNode frame, the frame
   // containing innerNode.
-  const LayoutPoint& PointInInnerNodeFrame() const {
+  const PhysicalOffset& PointInInnerNodeFrame() const {
     return point_in_inner_node_frame_;
   }
-  void SetPointInInnerNodeFrame(const LayoutPoint& point) {
+  void SetPointInInnerNodeFrame(const PhysicalOffset& point) {
     point_in_inner_node_frame_ = point;
   }
   IntPoint RoundedPointInInnerNodeFrame() const {
@@ -109,8 +112,8 @@ class CORE_EXPORT HitTestResult {
   LocalFrame* InnerNodeFrame() const;
 
   // The hit-tested point in the coordinates of the inner node.
-  const LayoutPoint& LocalPoint() const { return local_point_; }
-  void SetNodeAndPosition(Node* node, const LayoutPoint& p) {
+  const PhysicalOffset& LocalPoint() const { return local_point_; }
+  void SetNodeAndPosition(Node* node, const PhysicalOffset& p) {
     local_point_ = p;
     SetInnerNode(node);
   }
@@ -123,6 +126,7 @@ class CORE_EXPORT HitTestResult {
   const HitTestRequest& GetHitTestRequest() const { return hit_test_request_; }
 
   void SetInnerNode(Node*);
+  void SetInertNode(Node*);
   HTMLAreaElement* ImageAreaForImage() const;
   void SetURLElement(Element*);
   void SetScrollbar(Scrollbar*);
@@ -153,12 +157,12 @@ class CORE_EXPORT HitTestResult {
 
   // TODO(pdr): When using the default rect argument, this function does not
   // check if the tapped area is entirely contained by the HitTestLocation's
-  // bounding box. Callers should pass a LayoutRect as the third parameter so
+  // bounding box. Callers should pass a PhysicalRect as the third parameter so
   // hit testing can early-out when a tapped area is covered.
   ListBasedHitTestBehavior AddNodeToListBasedTestResult(
       Node*,
       const HitTestLocation&,
-      const LayoutRect& = LayoutRect());
+      const PhysicalRect& = PhysicalRect());
   ListBasedHitTestBehavior AddNodeToListBasedTestResult(Node*,
                                                         const HitTestLocation&,
                                                         const Region&);
@@ -176,7 +180,7 @@ class CORE_EXPORT HitTestResult {
   // location.
   HitTestLocation ResolveRectBasedTest(
       Node* resolved_inner_node,
-      const LayoutPoint& resolved_point_in_main_frame);
+      const PhysicalOffset& resolved_point_in_main_frame);
 
  private:
   NodeSet& MutableListBasedTestResult();  // See above.
@@ -186,16 +190,17 @@ class CORE_EXPORT HitTestResult {
   bool cacheable_;
 
   Member<Node> inner_node_;
+  Member<Node> inert_node_;
   // This gets calculated in the first call to InnerElement function.
   Member<Element> inner_element_;
   Member<Node> inner_possibly_pseudo_node_;
   // FIXME: Nothing changes this to a value different from m_hitTestLocation!
   // The hit-tested point in innerNode frame coordinates.
-  LayoutPoint point_in_inner_node_frame_;
+  PhysicalOffset point_in_inner_node_frame_;
   // A point in the local coordinate space of m_innerNode's layoutObject.Allows
   // us to efficiently determine where inside the layoutObject we hit on
   // subsequent operations.
-  LayoutPoint local_point_;
+  PhysicalOffset local_point_;
   // For non-URL, this is the enclosing that triggers navigation.
   Member<Element> inner_url_element_;
   Member<Scrollbar> scrollbar_;

@@ -5,9 +5,13 @@
 """Formats as a .C file for compilation.
 """
 
+from __future__ import print_function
+
+import codecs
 import os
 import re
-import types
+
+import six
 
 from grit import util
 
@@ -33,7 +37,7 @@ def _FormatHeader(root, output_dir):
 def Format(root, lang='en', output_dir='.'):
   """Outputs a C switch statement representing the string table."""
   from grit.node import message
-  assert isinstance(lang, types.StringTypes)
+  assert isinstance(lang, six.string_types)
 
   yield _FormatHeader(root, output_dir)
 
@@ -53,7 +57,7 @@ def _HexToOct(match):
   result = ""
   while len(hex):
     next_num = int(hex[2:4], 16)
-    result += "\\" + '%03d' % int(oct(next_num), 10)
+    result += "\\" + '%03o' % next_num
     hex = hex[4:]
   return match.group("escaped_backslashes") + result
 
@@ -62,10 +66,16 @@ def _FormatMessage(item, lang):
   """Format a single <message> element."""
 
   message = item.ws_at_start + item.Translate(lang) + item.ws_at_end
-  # output message with non-ascii chars escaped as octal numbers
-  # C's grammar allows escaped hexadecimal numbers to be infinite,
-  # but octal is always of the form \OOO
-  message = message.encode('utf-8').encode('string_escape')
+  # Output message with non-ascii chars escaped as octal numbers C's grammar
+  # allows escaped hexadecimal numbers to be infinite, but octal is always of
+  # the form \OOO.  Python 3 doesn't support string-escape, so we have to jump
+  # through some hoops here via codecs.escape_encode.
+  # This basically does:
+  #   - message - the starting string
+  #   - message.encode(...) - convert to bytes
+  #   - codecs.escape_encode(...) - convert non-ASCII bytes to \x## escapes
+  #   - (...).decode() - convert bytes back to a string
+  message = codecs.escape_encode(message.encode('utf-8'))[0].decode('utf-8')
   # an escaped char is (\xHH)+ but only if the initial
   # backslash is not escaped.
   not_a_backslash = r"(^|[^\\])"  # beginning of line or a non-backslash char

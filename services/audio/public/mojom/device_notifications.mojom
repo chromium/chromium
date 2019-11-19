@@ -14,5 +14,5 @@ interface DeviceListener {
 // (e.g., the browser process) to subscribe to device-change events.
 interface DeviceNotifier {
   // Registers a listener. Closing the pipe removes the subscription.
-  RegisterListener(DeviceListener listener);
+  RegisterListener(pending_remote<DeviceListener> listener);
 };

@@ -15,4 +15,4 @@ public_deps = [
   "//ipc:message_support",
   "//mojo/public/cpp/base:shared_typemap_traits",
 ]
-type_mappings = [ "IPC.mojom.Message=IPC::MessageView[move_only]" ]
+type_mappings = [ "IPC.mojom.Message=::IPC::MessageView[move_only]" ]

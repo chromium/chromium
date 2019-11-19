@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_TEST_REPORT_BODY_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_TEST_REPORT_BODY_H_
 
+#include "third_party/blink/renderer/bindings/core/v8/v8_object_builder.h"
 #include "third_party/blink/renderer/core/frame/report_body.h"
 
 namespace blink {
@@ -18,6 +19,8 @@ class TestReportBody : public ReportBody {
   ~TestReportBody() override = default;
 
   String message() const { return message_; }
+
+  void BuildJSONValue(V8ObjectBuilder& builder) const override;
 
  private:
   const String message_;

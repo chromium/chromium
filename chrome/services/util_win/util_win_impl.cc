@@ -21,7 +21,7 @@
 #include "base/win/scoped_variant.h"
 #include "base/win/shortcut.h"
 #include "base/win/win_util.h"
-#include "chrome/browser/conflicts/module_info_util_win.h"
+#include "chrome/browser/win/conflicts/module_info_util.h"
 #include "chrome/installer/util/install_util.h"
 #include "chrome/services/util_win/av_products.h"
 #include "mojo/public/cpp/bindings/strong_binding.h"
@@ -219,9 +219,8 @@ bool IsPinnedToTaskbarHelper::GetResult() {
 
 }  // namespace
 
-UtilWinImpl::UtilWinImpl(
-    std::unique_ptr<service_manager::ServiceContextRef> service_ref)
-    : service_ref_(std::move(service_ref)) {}
+UtilWinImpl::UtilWinImpl(mojo::PendingReceiver<chrome::mojom::UtilWin> receiver)
+    : receiver_(this, std::move(receiver)) {}
 
 UtilWinImpl::~UtilWinImpl() = default;
 

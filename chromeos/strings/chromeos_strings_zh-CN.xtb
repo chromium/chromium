@@ -1,22 +1,41 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="zh-CN">
+<translation id="1482734542997480527"><ph name="ENROLLMENT_DOMAIN" /> 管理此设备，并可能监控您的活动。</translation>
 <translation id="1510238584712386396">启动器</translation>
 <translation id="1734367976349034509">此设备是受企业管理的设备</translation>
+<translation id="1930797645656624981">Chrome 操作系统输入法服务</translation>
+<translation id="1979103255016296513">密码更改期限已过</translation>
 <translation id="2049639323467105390">此设备由 <ph name="DOMAIN" /> 管理。</translation>
 <translation id="2083960536266308407">在屏幕上找不到任何相符的内容</translation>
 <translation id="2338501278241028356">开启蓝牙以发现附近的设备</translation>
 <translation id="2805756323405976993">应用</translation>
 <translation id="2872961005593481000">关机</translation>
-<translation id="3147142846278915599">启动器（正在同步应用…）</translation>
+<translation id="3008341117444806826">刷新</translation>
+<translation id="3838338534323494292">新密码</translation>
+<translation id="4003259559679196451"><ph name="ENROLLMENT_DOMAIN" /> 管理此设备并可查看所有用户活动（包括访问过的网页、密码和电子邮件）。</translation>
+<translation id="4227825898293920515">密码将于 <ph name="TIME" />后到期</translation>
+<translation id="4429881212383817840">Kerberos 票据即将过期</translation>
+<translation id="445059817448385655">旧密码</translation>
+<translation id="467510802200863975">输入的两个密码不相同</translation>
 <translation id="4731797938093519117">家长访问</translation>
+<translation id="4890353053343094602">请立即设置一个新密码</translation>
 <translation id="5212543919916444558">无法提供与您的屏幕上可以找到的任何内容相关的帮助。
 请尝试通过点按麦克风图标向我提问。</translation>
 <translation id="5222676887888702881">退出</translation>
+<translation id="5317780077021120954">保存</translation>
+<translation id="5332948983412042822">请立即设置一个新密码</translation>
 <translation id="5457599981699367932">以访客身份浏览</translation>
 <translation id="54609108002486618">托管</translation>
 <translation id="5832805196449965646">添加用户</translation>
 <translation id="5895138241574237353">重新启动</translation>
+<translation id="6058625436358447366">要完成更改，请输入您的旧密码和新密码</translation>
+<translation id="6106186594183574873">要完成更改，请输入您的旧密码</translation>
+<translation id="6146993107019042706">要完成更改，请输入您的新密码</translation>
 <translation id="7658239707568436148">取消</translation>
+<translation id="7690294790491645610">再次输入新密码</translation>
+<translation id="808894953321890993">更改密码</translation>
+<translation id="8747900814994928677">确认更改</translation>
+<translation id="910415269708673980">刷新 <ph name="PRINCIPAL_NAME" /> 的票据</translation>
 <translation id="9111102763498581341">解锁</translation>
 </translationbundle>

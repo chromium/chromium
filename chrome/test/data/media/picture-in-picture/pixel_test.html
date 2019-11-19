@@ -26,5 +26,16 @@
       window.domAutomationController.send(false);
     });
   }
+
+  function changeVideoSrc() {
+    if (video.srcObject) {
+      video.srcObject.getTracks().forEach(track => track.stop());
+      video.srcObject = null;
+    }
+    video.src = 'pixel_test_video.webm';
+    video.play()
+    .then(_ => { window.domAutomationController.send(true); })
+    .catch(e => { window.domAutomationController.send(false); });
+  }
 </script>
 </html>

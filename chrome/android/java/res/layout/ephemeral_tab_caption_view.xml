@@ -3,11 +3,17 @@
      Use of this source code is governed by a BSD-style license that can be
      found in the LICENSE file. -->
 
-<!-- Ephemeral Tab caption view where we display 'Open in new tab'. Hidden in
-     peeked state, and gets visible only when being expanded to maximized state. -->
+<!-- Ephemeral Tab caption view where we display 'Open in new tab'.  Hidden in
+     peeked state, and gets visible only when being expanded to maximized state.
+
+     In the new layout, we display security level information with URL like in
+     CCT header. Always visible. -->
 <FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/ephemeral_tab_caption_view"
+    android:orientation="horizontal"
+    android:gravity="center"
     style="@style/ContextualSearchTextViewLayout" >
     <TextView
         android:id="@+id/ephemeral_tab_caption"

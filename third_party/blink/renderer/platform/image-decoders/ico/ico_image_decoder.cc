@@ -47,11 +47,7 @@ ICOImageDecoder::ICOImageDecoder(AlphaOption alpha_option,
     : ImageDecoder(alpha_option,
                    ImageDecoder::kDefaultBitDepth,
                    color_behavior,
-                   max_decoded_bytes),
-      fast_reader_(nullptr),
-      decoded_offset_(0),
-      dir_entries_count_(0),
-      color_behavior_(color_behavior) {}
+                   max_decoded_bytes) {}
 
 ICOImageDecoder::~ICOImageDecoder() = default;
 

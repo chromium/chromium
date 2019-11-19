@@ -12,15 +12,13 @@ namespace autofill_assistant {
 // An unsupported action that always fails.
 class UnsupportedAction : public Action {
  public:
-  explicit UnsupportedAction(const ActionProto& proto);
+  explicit UnsupportedAction(ActionDelegate* delegate,
+                             const ActionProto& proto);
   ~UnsupportedAction() override;
 
  private:
   // Overrides Action:
-  void InternalProcessAction(ActionDelegate* delegate,
-                             ProcessActionCallback callback) override;
-
-  void OnUnsupported(ProcessActionCallback callback, bool status);
+  void InternalProcessAction(ProcessActionCallback callback) override;
 
   DISALLOW_COPY_AND_ASSIGN(UnsupportedAction);
 };

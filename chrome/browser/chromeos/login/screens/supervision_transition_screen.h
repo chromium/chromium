@@ -7,18 +7,18 @@
 
 #include <string>
 
+#include "base/callback.h"
 #include "base/macros.h"
 #include "chrome/browser/chromeos/login/screens/base_screen.h"
 
 namespace chromeos {
 
 class SupervisionTransitionScreenView;
-class BaseScreenDelegate;
 
 class SupervisionTransitionScreen : public BaseScreen {
  public:
-  SupervisionTransitionScreen(BaseScreenDelegate* base_screen_delegate,
-                              SupervisionTransitionScreenView* view);
+  SupervisionTransitionScreen(SupervisionTransitionScreenView* view,
+                              const base::RepeatingClosure& exit_callback);
   ~SupervisionTransitionScreen() override;
 
   // BaseScreen:
@@ -31,8 +31,12 @@ class SupervisionTransitionScreen : public BaseScreen {
   // Called when transition has finished, exits the screen.
   void OnSupervisionTransitionFinished();
 
+ protected:
+  base::RepeatingClosure* exit_callback() { return &exit_callback_; }
+
  private:
   SupervisionTransitionScreenView* view_;
+  base::RepeatingClosure exit_callback_;
 
   DISALLOW_COPY_AND_ASSIGN(SupervisionTransitionScreen);
 };

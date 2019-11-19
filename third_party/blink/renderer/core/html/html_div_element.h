@@ -32,8 +32,6 @@ class CORE_EXPORT HTMLDivElement : public HTMLElement {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  DECLARE_NODE_FACTORY(HTMLDivElement);
-
   explicit HTMLDivElement(Document&);
 
  private:

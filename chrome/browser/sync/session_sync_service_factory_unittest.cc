@@ -26,7 +26,7 @@ TEST(SessionSyncServiceFactoryTest, ShouldSyncURL) {
   EXPECT_FALSE(SessionSyncServiceFactory::ShouldSyncURLForTesting(
       GURL("file://anything")));
   EXPECT_FALSE(SessionSyncServiceFactory::ShouldSyncURLForTesting(
-      GURL("chrome://anything")));
+      GURL(chrome::kChromeUIVersionURL)));
   EXPECT_FALSE(SessionSyncServiceFactory::ShouldSyncURLForTesting(
       GURL("chrome-native://anything")));
 

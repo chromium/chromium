@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
 #include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/common/loader/url_loader_factory_bundle.h"
@@ -24,17 +25,17 @@ struct BLINK_COMMON_EXPORT
 
   static void SetToNull(BundleInfoType* bundle) { bundle->reset(); }
 
-  static network::mojom::URLLoaderFactoryPtrInfo default_factory(
+  static mojo::PendingRemote<network::mojom::URLLoaderFactory> default_factory(
       BundleInfoType& bundle);
 
-  static network::mojom::URLLoaderFactoryPtrInfo appcache_factory(
+  static mojo::PendingRemote<network::mojom::URLLoaderFactory> appcache_factory(
       BundleInfoType& bundle);
 
   static blink::URLLoaderFactoryBundleInfo::SchemeMap scheme_specific_factories(
       BundleInfoType& bundle);
 
-  static blink::URLLoaderFactoryBundleInfo::OriginMap
-  initiator_specific_factories(BundleInfoType& bundle);
+  static blink::URLLoaderFactoryBundleInfo::OriginMap isolated_world_factories(
+      BundleInfoType& bundle);
 
   static bool bypass_redirect_checks(BundleInfoType& bundle);
 

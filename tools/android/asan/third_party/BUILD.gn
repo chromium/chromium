@@ -1,0 +1,54 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/config.gni")
+import("//build/config/clang/clang.gni")
+import("//build/util/generate_wrapper.gni")
+
+generate_wrapper("asan_device_setup") {
+  testonly = true
+  executable = "with_asan.py"
+  wrapper_script = "$root_out_dir/bin/run_with_asan"
+
+  _lib_archs = []
+
+  if (target_cpu == "arm" || target_cpu == "arm64") {
+    _lib_archs += [
+      "arm",
+      "aarch64",
+    ]
+  } else if (target_cpu == "x86") {
+    _lib_archs += [ "i686" ]
+  } else {
+    assert(false, "No ASAN library available for $target_cpu")
+  }
+
+  _adb_path = "${android_sdk_root}/platform-tools/adb"
+  _lib_dir = "${clang_base_path}/lib/clang/${clang_version}/lib/linux"
+  _lib_paths = []
+  foreach(_lib_arch, _lib_archs) {
+    _lib_paths += [ "${_lib_dir}/libclang_rt.asan-${_lib_arch}-android.so" ]
+  }
+  data = [
+    "asan_device_setup.sh",
+    "with_asan.py",
+    _adb_path,
+  ]
+  data += _lib_paths
+
+  data_deps = [
+    "//build/android:devil_chromium_py",
+    "//third_party/catapult/devil",
+  ]
+
+  _rebased_adb_path = rebase_path(_adb_path, root_build_dir)
+  _rebased_lib_dir_path = rebase_path(_lib_dir, root_build_dir)
+
+  executable_args = [
+    "--adb",
+    "@WrappedPath(${_rebased_adb_path})",
+    "--lib",
+    "@WrappedPath(${_rebased_lib_dir_path})",
+  ]
+}

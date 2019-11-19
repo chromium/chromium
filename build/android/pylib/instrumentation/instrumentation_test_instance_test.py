@@ -40,21 +40,20 @@ class InstrumentationTestInstanceTest(unittest.TestCase):
       return instrumentation_test_instance.InstrumentationTestInstance(
           mock.MagicMock(), mock.MagicMock(), lambda s: None)
 
-  _FlagAttributesArgs = collections.namedtuple(
-      '_FlagAttributesArgs',
-      [
-        'command_line_flags',
-        'device_flags_file',
-        'strict_mode',
-        'use_apk_under_test_flags_file'
-      ])
+  _FlagAttributesArgs = collections.namedtuple('_FlagAttributesArgs', [
+      'command_line_flags', 'device_flags_file', 'strict_mode',
+      'use_apk_under_test_flags_file', 'coverage_dir'
+  ])
 
-  def createFlagAttributesArgs(
-      self, command_line_flags=None, device_flags_file=None,
-      strict_mode=None, use_apk_under_test_flags_file=False):
-    return self._FlagAttributesArgs(
-        command_line_flags, device_flags_file, strict_mode,
-        use_apk_under_test_flags_file)
+  def createFlagAttributesArgs(self,
+                               command_line_flags=None,
+                               device_flags_file=None,
+                               strict_mode=None,
+                               use_apk_under_test_flags_file=False,
+                               coverage_dir=None):
+    return self._FlagAttributesArgs(command_line_flags, device_flags_file,
+                                    strict_mode, use_apk_under_test_flags_file,
+                                    coverage_dir)
 
   def test_initializeFlagAttributes_commandLineFlags(self):
     o = self.createTestInstance()
@@ -77,6 +76,13 @@ class InstrumentationTestInstanceTest(unittest.TestCase):
     args = self.createFlagAttributesArgs(strict_mode='on')
     o._initializeFlagAttributes(args)
     self.assertEquals(o._flags, ['--enable-test-intents', '--strict-mode=on'])
+
+  def test_initializeFlagAttributes_strictModeOn_coverageOn(self):
+    o = self.createTestInstance()
+    args = self.createFlagAttributesArgs(
+        strict_mode='on', coverage_dir='/coverage/dir')
+    o._initializeFlagAttributes(args)
+    self.assertEquals(o._flags, ['--enable-test-intents'])
 
   def test_initializeFlagAttributes_strictModeOff(self):
     o = self.createTestInstance()
@@ -854,119 +860,320 @@ class InstrumentationTestInstanceTest(unittest.TestCase):
     self.assertEqual(1, len(results))
     self.assertEqual(base_test_result.ResultType.SKIP, results[0].GetType())
 
-  def testCommandLineParameterization(self):
+  def testParameterizedCommandLineFlagsSwitches(self):
     o = self.createTestInstance()
-    raw_tests = [
-      {
-        'annotations': {'CommandLineParameter': {
-          'value': ['', 'enable-features=abc']}},
-        'class': 'org.chromium.test.SampleTest',
-        'superclass': 'java.lang.Object',
+    raw_tests = [{
+        'annotations': {
+            'ParameterizedCommandLineFlags$Switches': {
+                'value': ['enable-features=abc', 'enable-features=def']
+            }
+        },
+        'class':
+        'org.chromium.test.SampleTest',
+        'superclass':
+        'java.lang.Object',
         'methods': [
-          {
-            'annotations': {'SmallTest': None},
-            'method': 'testMethod1',
-          },
-          {
-            'annotations': {'MediumTest': None},
-            'method': 'testMethod2',
-          },
+            {
+                'annotations': {
+                    'SmallTest': None
+                },
+                'method': 'testMethod1',
+            },
+            {
+                'annotations': {
+                    'MediumTest': None,
+                    'ParameterizedCommandLineFlags$Switches': {
+                        'value': ['enable-features=ghi', 'enable-features=jkl']
+                    },
+                },
+                'method': 'testMethod2',
+            },
+            {
+                'annotations': {
+                    'MediumTest': None,
+                    'ParameterizedCommandLineFlags$Switches': {
+                        'value': []
+                    },
+                },
+                'method': 'testMethod3',
+            },
+            {
+                'annotations': {
+                    'MediumTest': None,
+                    'SkipCommandLineParameterization': None,
+                },
+                'method': 'testMethod4',
+            },
         ],
-      }
-    ]
+    }]
 
     expected_tests = [
         {
-          'annotations': {
-            'CommandLineParameter': {'value': ['', 'enable-features=abc']},
-            'SmallTest': None},
-          'class': 'org.chromium.test.SampleTest',
-          'flags': [''],
-          'is_junit4': True,
-          'method': 'testMethod1'},
+            'annotations': {},
+            'class': 'org.chromium.test.SampleTest',
+            'flags': ['--enable-features=abc', '--enable-features=def'],
+            'is_junit4': True,
+            'method': 'testMethod1'
+        },
         {
-          'annotations': {
-            'CommandLineParameter': {'value': ['', 'enable-features=abc']},
-            'MediumTest': None},
-          'class': 'org.chromium.test.SampleTest',
-          'flags': [''],
-          'is_junit4': True,
-          'method': 'testMethod2'},
+            'annotations': {},
+            'class': 'org.chromium.test.SampleTest',
+            'flags': ['--enable-features=ghi', '--enable-features=jkl'],
+            'is_junit4': True,
+            'method': 'testMethod2'
+        },
         {
-          'annotations': {
-            'CommandLineParameter': {'value': ['', 'enable-features=abc']},
-            'SmallTest': None},
-          'class': 'org.chromium.test.SampleTest',
-          'flags': ['--enable-features=abc'],
-          'is_junit4': True,
-          'method': 'testMethod1'},
+            'annotations': {},
+            'class': 'org.chromium.test.SampleTest',
+            'is_junit4': True,
+            'method': 'testMethod3'
+        },
         {
-          'annotations': {
-            'CommandLineParameter': {'value': ['', 'enable-features=abc']},
-             'MediumTest': None},
-          'class': 'org.chromium.test.SampleTest',
-          'flags': ['--enable-features=abc'],
-          'is_junit4': True,
-          'method': 'testMethod2'}]
+            'annotations': {},
+            'class': 'org.chromium.test.SampleTest',
+            'is_junit4': True,
+            'method': 'testMethod4'
+        },
+    ]
+    for i in range(4):
+      expected_tests[i]['annotations'].update(raw_tests[0]['annotations'])
+      expected_tests[i]['annotations'].update(
+          raw_tests[0]['methods'][i]['annotations'])
 
     o._test_jar = 'path/to/test.jar'
     o._junit4_runner_class = 'J4Runner'
     actual_tests = o.ProcessRawTests(raw_tests)
     self.assertEquals(actual_tests, expected_tests)
 
-  def testCommandLineParameterization_skipped(self):
+  def testParameterizedCommandLineFlags(self):
+    o = self.createTestInstance()
+    raw_tests = [{
+        'annotations': {
+            'ParameterizedCommandLineFlags': {
+                'value': [
+                    {
+                        'ParameterizedCommandLineFlags$Switches': {
+                            'value': [
+                                'enable-features=abc',
+                                'force-fieldtrials=trial/group'
+                            ],
+                        }
+                    },
+                    {
+                        'ParameterizedCommandLineFlags$Switches': {
+                            'value': [
+                                'enable-features=abc2',
+                                'force-fieldtrials=trial/group2'
+                            ],
+                        }
+                    },
+                ],
+            },
+        },
+        'class':
+        'org.chromium.test.SampleTest',
+        'superclass':
+        'java.lang.Object',
+        'methods': [
+            {
+                'annotations': {
+                    'SmallTest': None
+                },
+                'method': 'testMethod1',
+            },
+            {
+                'annotations': {
+                    'MediumTest': None,
+                    'ParameterizedCommandLineFlags': {
+                        'value': [{
+                            'ParameterizedCommandLineFlags$Switches': {
+                                'value': ['enable-features=def']
+                            }
+                        }],
+                    },
+                },
+                'method': 'testMethod2',
+            },
+            {
+                'annotations': {
+                    'MediumTest': None,
+                    'ParameterizedCommandLineFlags': {
+                        'value': [],
+                    },
+                },
+                'method': 'testMethod3',
+            },
+            {
+                'annotations': {
+                    'MediumTest': None,
+                    'SkipCommandLineParameterization': None,
+                },
+                'method': 'testMethod4',
+            },
+        ],
+    }]
+
+    expected_tests = [
+        {
+            'annotations': {},
+            'class': 'org.chromium.test.SampleTest',
+            'flags':
+            ['--enable-features=abc', '--force-fieldtrials=trial/group'],
+            'is_junit4': True,
+            'method': 'testMethod1'
+        },
+        {
+            'annotations': {},
+            'class': 'org.chromium.test.SampleTest',
+            'flags': ['--enable-features=def'],
+            'is_junit4': True,
+            'method': 'testMethod2'
+        },
+        {
+            'annotations': {},
+            'class': 'org.chromium.test.SampleTest',
+            'is_junit4': True,
+            'method': 'testMethod3'
+        },
+        {
+            'annotations': {},
+            'class': 'org.chromium.test.SampleTest',
+            'is_junit4': True,
+            'method': 'testMethod4'
+        },
+        {
+            'annotations': {},
+            'class':
+            'org.chromium.test.SampleTest',
+            'flags': [
+                '--enable-features=abc2',
+                '--force-fieldtrials=trial/group2',
+            ],
+            'is_junit4':
+            True,
+            'method':
+            'testMethod1'
+        },
+    ]
+    for i in range(4):
+      expected_tests[i]['annotations'].update(raw_tests[0]['annotations'])
+      expected_tests[i]['annotations'].update(
+          raw_tests[0]['methods'][i]['annotations'])
+    expected_tests[4]['annotations'].update(raw_tests[0]['annotations'])
+    expected_tests[4]['annotations'].update(
+        raw_tests[0]['methods'][0]['annotations'])
+
+    o._test_jar = 'path/to/test.jar'
+    o._junit4_runner_class = 'J4Runner'
+    actual_tests = o.ProcessRawTests(raw_tests)
+    self.assertEquals(actual_tests, expected_tests)
+
+  def testDifferentCommandLineParameterizations(self):
+    o = self.createTestInstance()
+    raw_tests = [{
+        'annotations': {},
+        'class':
+        'org.chromium.test.SampleTest',
+        'superclass':
+        'java.lang.Object',
+        'methods': [
+            {
+                'annotations': {
+                    'SmallTest': None,
+                    'ParameterizedCommandLineFlags': {
+                        'value': [
+                            {
+                                'ParameterizedCommandLineFlags$Switches': {
+                                    'value': ['a1', 'a2'],
+                                }
+                            },
+                        ],
+                    },
+                },
+                'method': 'testMethod2',
+            },
+            {
+                'annotations': {
+                    'SmallTest': None,
+                    'ParameterizedCommandLineFlags$Switches': {
+                        'value': ['b1', 'b2'],
+                    },
+                },
+                'method': 'testMethod3',
+            },
+        ],
+    }]
+
+    expected_tests = [
+        {
+            'annotations': {},
+            'class': 'org.chromium.test.SampleTest',
+            'flags': ['--a1', '--a2'],
+            'is_junit4': True,
+            'method': 'testMethod2'
+        },
+        {
+            'annotations': {},
+            'class': 'org.chromium.test.SampleTest',
+            'flags': ['--b1', '--b2'],
+            'is_junit4': True,
+            'method': 'testMethod3'
+        },
+    ]
+    for i in range(2):
+      expected_tests[i]['annotations'].update(
+          raw_tests[0]['methods'][i]['annotations'])
+
+    o._test_jar = 'path/to/test.jar'
+    o._junit4_runner_class = 'J4Runner'
+    actual_tests = o.ProcessRawTests(raw_tests)
+    self.assertEquals(actual_tests, expected_tests)
+
+  def testMultipleCommandLineParameterizations_raises(self):
     o = self.createTestInstance()
     raw_tests = [
-      {
-        'annotations': {'CommandLineParameter': {
-          'value': ['', 'enable-features=abc']}},
-        'class': 'org.chromium.test.SampleTest',
-        'superclass': 'java.lang.Object',
-        'methods': [
-          {
+        {
             'annotations': {
-              'SmallTest': None,
-              'SkipCommandLineParameterization': None},
-            'method': 'testMethod1',
-          },
-          {
-            'annotations': {'MediumTest': None},
-            'method': 'testMethod2',
-          },
-        ],
-      }
+                'ParameterizedCommandLineFlags': {
+                    'value': [
+                        {
+                            'ParameterizedCommandLineFlags$Switches': {
+                                'value': [
+                                    'enable-features=abc',
+                                    'force-fieldtrials=trial/group',
+                                ],
+                            }
+                        },
+                    ],
+                },
+            },
+            'class':
+            'org.chromium.test.SampleTest',
+            'superclass':
+            'java.lang.Object',
+            'methods': [
+                {
+                    'annotations': {
+                        'SmallTest': None,
+                        'ParameterizedCommandLineFlags$Switches': {
+                            'value': [
+                                'enable-features=abc',
+                                'force-fieldtrials=trial/group',
+                            ],
+                        },
+                    },
+                    'method': 'testMethod1',
+                },
+            ],
+        },
     ]
-
-    expected_tests = [
-        {
-          'annotations': {
-            'CommandLineParameter': {'value': ['', 'enable-features=abc']},
-            'SkipCommandLineParameterization': None,
-            'SmallTest': None},
-          'class': 'org.chromium.test.SampleTest',
-          'is_junit4': True,
-          'method': 'testMethod1'},
-        {
-          'annotations': {
-            'CommandLineParameter': {'value': ['', 'enable-features=abc']},
-            'MediumTest': None},
-          'class': 'org.chromium.test.SampleTest',
-          'flags': [''],
-          'is_junit4': True,
-          'method': 'testMethod2'},
-        {
-          'annotations': {
-            'CommandLineParameter': {'value': ['', 'enable-features=abc']},
-             'MediumTest': None},
-          'class': 'org.chromium.test.SampleTest',
-          'flags': ['--enable-features=abc'],
-          'is_junit4': True,
-          'method': 'testMethod2'}]
 
     o._test_jar = 'path/to/test.jar'
     o._junit4_runner_class = 'J4Runner'
-    actual_tests = o.ProcessRawTests(raw_tests)
-    self.assertEquals(actual_tests, expected_tests)
+    self.assertRaises(
+        instrumentation_test_instance.CommandLineParameterizationException,
+        o.ProcessRawTests, [raw_tests[0]])
+
 
 if __name__ == '__main__':
   unittest.main(verbosity=2)

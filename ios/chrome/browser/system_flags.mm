@@ -18,16 +18,15 @@
 #include "base/metrics/field_trial.h"
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
+#include "build/branding_buildflags.h"
 #include "components/autofill/core/common/autofill_switches.h"
 #include "components/password_manager/core/common/password_manager_features.h"
-#include "components/signin/core/browser/signin_switches.h"
 #include "components/variations/variations_associated_data.h"
 #include "ios/chrome/browser/browsing_data/browsing_data_features.h"
 #include "ios/chrome/browser/chrome_switches.h"
 #include "ios/chrome/browser/passwords/password_manager_features.h"
 #import "ios/chrome/browser/ui/infobars/infobar_feature.h"
 #include "ios/chrome/browser/ui/ui_feature_flags.h"
-#include "ios/web/public/web_view_creation_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -35,6 +34,7 @@
 
 namespace {
 
+NSString* const kDisableDCHECKCrashes = @"DisableDCHECKCrashes";
 NSString* const kEnableStartupCrash = @"EnableStartupCrash";
 NSString* const kFirstRunForceEnabled = @"FirstRunForceEnabled";
 NSString* const kGaiaEnvironment = @"GAIAEnvironment";
@@ -46,9 +46,6 @@ const base::Feature kEnableThirdPartyKeyboardWorkaround{
 }  // namespace
 
 namespace experimental_flags {
-
-const base::Feature kExternalFilesLoadedInWebState{
-    "ExternalFilesLoadedInWebState", base::FEATURE_ENABLED_BY_DEFAULT};
 
 bool AlwaysDisplayFirstRun() {
   return
@@ -88,16 +85,21 @@ WhatsNewPromoStatus GetWhatsNewPromoStatus() {
 bool IsMemoryDebuggingEnabled() {
 // Always return true for Chromium builds, but check the user default for
 // official builds because memory debugging should never be enabled on stable.
-#if CHROMIUM_BUILD
+#if BUILDFLAG(CHROMIUM_BRANDING)
   return true;
 #else
   return [[NSUserDefaults standardUserDefaults]
       boolForKey:@"EnableMemoryDebugging"];
-#endif  // CHROMIUM_BUILD
+#endif  // BUILDFLAG(CHROMIUM_BRANDING)
 }
 
 bool IsStartupCrashEnabled() {
   return [[NSUserDefaults standardUserDefaults] boolForKey:kEnableStartupCrash];
+}
+
+bool AreDCHECKCrashesDisabled() {
+  return
+      [[NSUserDefaults standardUserDefaults] boolForKey:kDisableDCHECKCrashes];
 }
 
 bool MustClearApplicationGroupSandbox() {

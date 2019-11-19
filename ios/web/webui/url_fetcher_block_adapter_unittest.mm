@@ -11,7 +11,7 @@
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/sys_string_conversions.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 #import "testing/gtest_mac.h"
@@ -28,11 +28,11 @@ namespace web {
 class URLFetcherBlockAdapterTest : public PlatformTest {
  protected:
   URLFetcherBlockAdapterTest()
-      : scoped_task_environment_(
-            base::test::ScopedTaskEnvironment::MainThreadType::UI) {}
+      : task_environment_(
+            base::test::SingleThreadTaskEnvironment::MainThreadType::UI) {}
 
   // Required for base::MessageLoopCurrent::Get().
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
 };
 
 // Tests that URLFetcherBlockAdapter calls its completion handler with the

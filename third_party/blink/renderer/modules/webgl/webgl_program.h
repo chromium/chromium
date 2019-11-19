@@ -29,7 +29,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_shader.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_shared_platform_3d_object.h"
-#include "third_party/blink/renderer/platform/bindings/trace_wrapper_member.h"
 
 namespace blink {
 
@@ -43,6 +42,7 @@ class WebGLProgram final : public WebGLSharedPlatform3DObject {
   static WebGLProgram* Create(WebGLRenderingContextBase*);
 
   bool LinkStatus(WebGLRenderingContextBase*);
+  void setLinkStatus(bool link_status);
 
   bool CompletionStatus(WebGLRenderingContextBase*);
 
@@ -93,9 +93,9 @@ class WebGLProgram final : public WebGLSharedPlatform3DObject {
   // feedback objects.
   unsigned active_transform_feedback_count_;
 
-  TraceWrapperMember<WebGLShader> vertex_shader_;
-  TraceWrapperMember<WebGLShader> fragment_shader_;
-  TraceWrapperMember<WebGLShader> compute_shader_;
+  Member<WebGLShader> vertex_shader_;
+  Member<WebGLShader> fragment_shader_;
+  Member<WebGLShader> compute_shader_;
 
   bool info_valid_;
 

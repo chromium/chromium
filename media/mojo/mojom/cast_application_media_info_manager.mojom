@@ -1,0 +1,22 @@
+// Copyright 2018 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module media.mojom;
+
+struct CastApplicationMediaInfo {
+  // Used by multizone Playback.
+  // Can be empty string if WebContents isn't for a WebApplication.
+  string application_session_id;
+  // True if WebApplication has MIXER_AUDIO feature enabled.
+  // This value is set in Chromecast internal code.
+  bool mixer_audio_enabled;
+};
+
+// This is a service attached to RenderFrameHost.
+interface CastApplicationMediaInfoManager {
+  // Returns the CastApplicationMediaInfo associated with the
+  // RenderFrameHost, i.e., the application.
+  GetCastApplicationMediaInfo() =>
+    (CastApplicationMediaInfo cast_application_media_info);
+};

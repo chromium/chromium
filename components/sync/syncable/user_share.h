@@ -6,9 +6,6 @@
 #define COMPONENTS_SYNC_SYNCABLE_USER_SHARE_H_
 
 #include <memory>
-#include <string>
-
-#include "components/sync/engine/sync_credentials.h"
 
 namespace syncer {
 
@@ -26,11 +23,6 @@ struct UserShare {
 
   // The Directory itself, which is the parent of Transactions.
   std::unique_ptr<syncable::Directory> directory;
-
-  // The credentials used by sync when talking to the sync server.
-  //
-  // Note: some or all of the sync_credentials fields may be empty.
-  SyncCredentials sync_credentials;
 };
 
 }  // namespace syncer

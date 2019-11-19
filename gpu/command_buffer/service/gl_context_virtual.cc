@@ -97,8 +97,11 @@ void GLContextVirtual::SetSafeToForceGpuSwitch() {
   return shared_context_->SetSafeToForceGpuSwitch();
 }
 
-bool GLContextVirtual::WasAllocatedUsingRobustnessExtension() {
-  return shared_context_->WasAllocatedUsingRobustnessExtension();
+unsigned int GLContextVirtual::CheckStickyGraphicsResetStatus() {
+  // Don't pretend we know which one of the virtual contexts was responsible.
+  unsigned int reset_status = shared_context_->CheckStickyGraphicsResetStatus();
+  return reset_status == GL_NO_ERROR ? GL_NO_ERROR
+                                     : GL_UNKNOWN_CONTEXT_RESET_ARB;
 }
 
 void GLContextVirtual::SetUnbindFboOnMakeCurrent() {

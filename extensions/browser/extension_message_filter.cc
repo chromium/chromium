@@ -10,6 +10,7 @@
 #include "components/crx_file/id_util.h"
 #include "components/keyed_service/content/browser_context_keyed_service_shutdown_notifier_factory.h"
 #include "content/public/browser/render_process_host.h"
+#include "extensions/browser/api/messaging/channel_endpoint.h"
 #include "extensions/browser/api/messaging/message_service.h"
 #include "extensions/browser/bad_message.h"
 #include "extensions/browser/blob_holder.h"
@@ -397,14 +398,13 @@ void ExtensionMessageFilter::OnOpenChannelToExtension(
         this, bad_message::EMF_INVALID_CHANNEL_SOURCE_TYPE);
     return;
   }
-  // TODO(crbug.com/925918): Support messages from Service Worker.
-  DCHECK(source_context.is_for_render_frame());
   if (browser_context_) {
+    ChannelEndpoint source_endpoint(browser_context_, render_process_id_,
+                                    source_context);
     MessageService::Get(browser_context_)
-        ->OpenChannelToExtension(
-            render_process_id_, source_context.frame->routing_id, port_id,
-            info.source_endpoint, nullptr /* opener_port */, info.target_id,
-            info.source_url, channel_name);
+        ->OpenChannelToExtension(source_endpoint, port_id, info.source_endpoint,
+                                 nullptr /* opener_port */, info.target_id,
+                                 info.source_url, channel_name);
   }
 }
 
@@ -413,15 +413,13 @@ void ExtensionMessageFilter::OnOpenChannelToNativeApp(
     const std::string& native_app_name,
     const PortId& port_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  // TODO(crbug.com/925918): Support messages from Service Worker.
-  DCHECK(source_context.is_for_render_frame());
   if (!browser_context_)
     return;
 
+  ChannelEndpoint source_endpoint(browser_context_, render_process_id_,
+                                  source_context);
   MessageService::Get(browser_context_)
-      ->OpenChannelToNativeApp(render_process_id_,
-                               source_context.frame->routing_id, port_id,
-                               native_app_name);
+      ->OpenChannelToNativeApp(source_endpoint, port_id, native_app_name);
 }
 
 void ExtensionMessageFilter::OnOpenChannelToTab(
@@ -431,41 +429,35 @@ void ExtensionMessageFilter::OnOpenChannelToTab(
     const std::string& channel_name,
     const PortId& port_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  // TODO(crbug.com/925918): Support messages from Service Worker.
-  DCHECK(source_context.is_for_render_frame());
   if (!browser_context_)
     return;
 
+  ChannelEndpoint source_endpoint(browser_context_, render_process_id_,
+                                  source_context);
   MessageService::Get(browser_context_)
-      ->OpenChannelToTab(render_process_id_, source_context.frame->routing_id,
-                         port_id, info.tab_id, info.frame_id, extension_id,
-                         channel_name);
+      ->OpenChannelToTab(source_endpoint, port_id, info.tab_id, info.frame_id,
+                         extension_id, channel_name);
 }
 
 void ExtensionMessageFilter::OnOpenMessagePort(const PortContext& source,
                                                const PortId& port_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  // TODO(crbug.com/925918): Support messages from Service Worker.
-  DCHECK(source.is_for_render_frame());
   if (!browser_context_)
     return;
 
   MessageService::Get(browser_context_)
-      ->OpenPort(port_id, render_process_id_, source.frame->routing_id);
+      ->OpenPort(port_id, render_process_id_, source);
 }
 
 void ExtensionMessageFilter::OnCloseMessagePort(const PortContext& port_context,
                                                 const PortId& port_id,
                                                 bool force_close) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  // TODO(crbug.com/925918): Support messages from Service Worker.
-  DCHECK(port_context.is_for_render_frame());
   if (!browser_context_)
     return;
 
   MessageService::Get(browser_context_)
-      ->ClosePort(port_id, render_process_id_, port_context.frame->routing_id,
-                  force_close);
+      ->ClosePort(port_id, render_process_id_, port_context, force_close);
 }
 
 void ExtensionMessageFilter::OnPostMessage(const PortId& port_id,

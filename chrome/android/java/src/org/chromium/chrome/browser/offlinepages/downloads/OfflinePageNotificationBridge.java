@@ -14,9 +14,8 @@ import org.chromium.chrome.browser.download.DownloadNotifier;
 import org.chromium.chrome.browser.download.DownloadSharedPreferenceEntry;
 import org.chromium.chrome.browser.download.DownloadSharedPreferenceHelper;
 import org.chromium.chrome.browser.download.items.OfflineContentAggregatorFactory;
+import org.chromium.chrome.browser.flags.FeatureUtilities;
 import org.chromium.chrome.browser.offlinepages.OfflinePageOrigin;
-import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.util.FeatureUtilities;
 import org.chromium.components.offline_items_collection.ContentId;
 import org.chromium.components.offline_items_collection.FailState;
 import org.chromium.components.offline_items_collection.LegacyHelpers;
@@ -224,8 +223,7 @@ public class OfflinePageNotificationBridge {
      * TODO(shaktisahu): Remove this function when offline pages backend cache loading is fixed.
      */
     private static void intializeOfflineItemsCollection() {
-        OfflineContentProvider offlineContentProvider = OfflineContentAggregatorFactory.forProfile(
-                Profile.getLastUsedProfile().getOriginalProfile());
+        OfflineContentProvider offlineContentProvider = OfflineContentAggregatorFactory.get();
         offlineContentProvider.getAllItems(offlineItems -> {});
     }
 

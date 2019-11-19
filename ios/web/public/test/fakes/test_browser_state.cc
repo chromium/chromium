@@ -7,8 +7,8 @@
 #include "base/files/file_path.h"
 #include "base/single_thread_task_runner.h"
 #include "base/task/post_task.h"
-#include "ios/web/public/web_task_traits.h"
-#include "ios/web/public/web_thread.h"
+#include "ios/web/public/thread/web_task_traits.h"
+#include "ios/web/public/thread/web_thread.h"
 #include "ios/web/test/test_url_constants.h"
 #include "ios/web/webui/url_data_manager_ios_backend.h"
 #include "net/url_request/url_request_context.h"
@@ -33,7 +33,7 @@ class TestContextURLRequestContextGetter : public net::URLRequestContextGetter {
 
   scoped_refptr<base::SingleThreadTaskRunner> GetNetworkTaskRunner()
       const override {
-    return base::CreateSingleThreadTaskRunnerWithTraits({web::WebThread::IO});
+    return base::CreateSingleThreadTaskRunner({web::WebThread::IO});
   }
 
  private:
@@ -45,9 +45,10 @@ class TestContextURLRequestContextGetter : public net::URLRequestContextGetter {
 
 }  // namespace
 
-TestBrowserState::TestBrowserState() : is_off_the_record_(false) {
-  BrowserState::Initialize(this, GetStatePath());
-}
+// static
+const char TestBrowserState::kCorsExemptTestHeaderName[] = "ExemptTest";
+
+TestBrowserState::TestBrowserState() : is_off_the_record_(false) {}
 
 TestBrowserState::~TestBrowserState() {}
 
@@ -63,6 +64,12 @@ net::URLRequestContextGetter* TestBrowserState::GetRequestContext() {
   if (!request_context_)
     request_context_ = new TestContextURLRequestContextGetter(this);
   return request_context_.get();
+}
+
+void TestBrowserState::UpdateCorsExemptHeader(
+    network::mojom::NetworkContextParams* params) {
+  DCHECK(params);
+  params->cors_exempt_header_list.push_back(kCorsExemptTestHeaderName);
 }
 
 void TestBrowserState::SetOffTheRecord(bool flag) {

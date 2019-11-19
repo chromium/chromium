@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL API availability following history traversal Cannot read property 'history' of null
+Harness: the test ran to completion.
+

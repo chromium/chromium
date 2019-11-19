@@ -8,6 +8,7 @@
 #include <string>
 
 #include "components/invalidation/public/invalidation_export.h"
+#include "components/invalidation/public/invalidation_util.h"
 #include "components/invalidation/public/invalidator_state.h"
 
 namespace syncer {
@@ -33,6 +34,8 @@ class INVALIDATION_EXPORT InvalidationHandler {
   // the invalidator. The id is only relevant to some handlers, e.g. Sync
   // where the reflection blocking logic is based on it.
   virtual void OnInvalidatorClientIdChange(const std::string& client_id) {}
+
+  virtual bool IsPublicTopic(const Topic& topic) const;
 
  protected:
   virtual ~InvalidationHandler();

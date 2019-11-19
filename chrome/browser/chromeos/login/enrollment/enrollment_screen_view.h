@@ -10,7 +10,7 @@
 #include "base/values.h"
 #include "chrome/browser/chromeos/login/enrollment/enterprise_enrollment_helper.h"
 #include "chrome/browser/chromeos/login/oobe_screen.h"
-#include "chromeos/dbus/authpolicy/active_directory_info.pb.h"
+#include "chromeos/dbus/auth_policy/active_directory_info.pb.h"
 
 class GoogleServiceAuthError;
 
@@ -47,7 +47,7 @@ class EnrollmentScreenView {
                                            const std::string& location) = 0;
   };
 
-  constexpr static OobeScreen kScreenId = OobeScreen::SCREEN_OOBE_ENROLLMENT;
+  constexpr static StaticOobeScreenId kScreenId{"oauth-enrollment"};
 
   virtual ~EnrollmentScreenView() {}
 

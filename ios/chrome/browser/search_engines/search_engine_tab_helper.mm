@@ -12,10 +12,10 @@
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/search_engines/template_url_fetcher_factory.h"
 #include "ios/chrome/browser/search_engines/template_url_service_factory.h"
-#include "ios/web/public/favicon_status.h"
-#import "ios/web/public/navigation_item.h"
-#import "ios/web/public/navigation_manager.h"
-#import "ios/web/public/web_state/navigation_context.h"
+#include "ios/web/public/favicon/favicon_status.h"
+#import "ios/web/public/navigation/navigation_context.h"
+#import "ios/web/public/navigation/navigation_item.h"
+#import "ios/web/public/navigation/navigation_manager.h"
 #include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
 
@@ -77,7 +77,7 @@ SearchEngineTabHelper::~SearchEngineTabHelper() {}
 SearchEngineTabHelper::SearchEngineTabHelper(web::WebState* web_state)
     : web_state_(web_state) {
   web_state->AddObserver(this);
-  web_state->AddScriptCommandCallback(
+  subscription_ = web_state->AddScriptCommandCallback(
       base::BindRepeating(&SearchEngineTabHelper::OnJsMessage,
                           base::Unretained(this)),
       kCommandPrefix);
@@ -87,7 +87,6 @@ SearchEngineTabHelper::SearchEngineTabHelper(web::WebState* web_state)
 }
 
 void SearchEngineTabHelper::WebStateDestroyed(web::WebState* web_state) {
-  web_state->RemoveScriptCommandCallback(kCommandPrefix);
   web_state->RemoveObserver(this);
   web_state_ = nullptr;
   favicon_driver_observer_.RemoveAll();
@@ -125,37 +124,33 @@ void SearchEngineTabHelper::DidFinishNavigation(
   }
 }
 
-bool SearchEngineTabHelper::OnJsMessage(const base::DictionaryValue& message,
+void SearchEngineTabHelper::OnJsMessage(const base::DictionaryValue& message,
                                         const GURL& page_url,
-                                        bool has_user_gesture,
-                                        bool form_in_main_frame,
+                                        bool user_is_interacting,
                                         web::WebFrame* sender_frame) {
   const base::Value* cmd = message.FindKey("command");
   if (!cmd || !cmd->is_string()) {
-    return false;
+    return;
   }
   std::string cmd_str = cmd->GetString();
   if (cmd_str == kCommandOpenSearch) {
     const base::Value* document_url = message.FindKey(kOpenSearchPageUrlKey);
     if (!document_url || !document_url->is_string())
-      return false;
+      return;
     const base::Value* osdd_url = message.FindKey(kOpenSearchOsddUrlKey);
     if (!osdd_url || !osdd_url->is_string())
-      return false;
+      return;
     AddTemplateURLByOSDD(GURL(document_url->GetString()),
                          GURL(osdd_url->GetString()));
   } else if (cmd_str == kCommandSearchableUrl) {
     const base::Value* url = message.FindKey(kSearchableUrlUrlKey);
     if (!url || !url->is_string())
-      return false;
+      return;
     // Save |url| to |searchable_url_| when generated from <form> submission,
     // and create the TemplateURL when the submission did lead to a successful
     // navigation.
     searchable_url_ = GURL(url->GetString());
-  } else {
-    return false;
   }
-  return true;
 }
 
 // Creates a new TemplateURL by OSDD. The TemplateURL will be added to
@@ -208,11 +203,10 @@ void SearchEngineTabHelper::AddTemplateURLByOSDD(const GURL& page_url,
   //      https://cs.chromium.org/chromium/src/services/network/public/cpp/resource_request.h?rcl=39c6fbea496641a6514e34c0ab689871d14e6d52&l=100
   //      Use the same value as the SearchEngineTabHelper for Desktop.
   ios::TemplateURLFetcherFactory::GetForBrowserState(browser_state)
-      ->ScheduleDownload(
-          keyword, osdd_url, item->GetFavicon().url,
-          url::Origin::Create(web_state_->GetLastCommittedURL()),
-          browser_state->GetURLLoaderFactory(), MSG_ROUTING_NONE,
-          /* content::ResourceType::RESOURCE_TYPE_SUB_RESOURCE */ 6);
+      ->ScheduleDownload(keyword, osdd_url, item->GetFavicon().url,
+                         url::Origin::Create(web_state_->GetLastCommittedURL()),
+                         browser_state->GetURLLoaderFactory(), MSG_ROUTING_NONE,
+                         /* content::ResourceType::kSubResource */ 6);
 }
 
 // Creates a TemplateURL by |searchable_url| and adds it to TemplateURLService.
@@ -236,9 +230,11 @@ void SearchEngineTabHelper::AddTemplateURLBySearchableURL(
   // normally due to a form submit that opened in a new tab.
   if (last_index <= 0)
     return;
-  const web::NavigationItem* item = manager->GetItemAtIndex(last_index - 1);
+  const web::NavigationItem* current_item = manager->GetItemAtIndex(last_index);
+  const web::NavigationItem* previous_item =
+      manager->GetItemAtIndex(last_index - 1);
 
-  base::string16 keyword(GenerateKeywordFromNavigationItem(item));
+  base::string16 keyword(GenerateKeywordFromNavigationItem(previous_item));
   if (keyword.empty())
     return;
 
@@ -252,18 +248,19 @@ void SearchEngineTabHelper::AddTemplateURLBySearchableURL(
     return;
   }
 
-  const TemplateURL* current_url;
+  const TemplateURL* existing_url;
   if (!url_service->CanAddAutogeneratedKeyword(keyword, searchable_url,
-                                               &current_url))
+                                               &existing_url)) {
     return;
+  }
 
-  if (current_url) {
-    if (current_url->originating_url().is_valid()) {
+  if (existing_url) {
+    if (existing_url->originating_url().is_valid()) {
       // The existing keyword was generated from an OpenSearch description
       // document, don't regenerate.
       return;
     }
-    url_service->Remove(current_url);
+    url_service->Remove(existing_url);
   }
 
   TemplateURLData data;
@@ -271,15 +268,17 @@ void SearchEngineTabHelper::AddTemplateURLBySearchableURL(
   data.SetKeyword(keyword);
   data.SetURL(searchable_url.spec());
 
-  const GURL& current_favicon =
-      manager->GetLastCommittedItem()->GetFavicon().url;
-  // If the favicon url isn't valid, it means there really isn't a favicon, or
-  // the favicon url wasn't obtained before the load started. This assumes the
-  // latter.
-  if (current_favicon.is_valid()) {
-    data.favicon_url = current_favicon;
-  } else if (item->GetReferrer().url.is_valid()) {
-    data.favicon_url = TemplateURL::GenerateFaviconURL(item->GetReferrer().url);
+  // Try to get favicon url by following methods:
+  //   1. Get from FaviconStatus of previous NavigationItem;
+  //   2. Create by current NavigationItem's referrer if valid;
+  //   3. Create by previous NavigationItem's URL if valid;
+  if (previous_item->GetFavicon().url.is_valid()) {
+    data.favicon_url = previous_item->GetFavicon().url;
+  } else if (current_item->GetReferrer().url.is_valid()) {
+    data.favicon_url =
+        TemplateURL::GenerateFaviconURL(current_item->GetReferrer().url);
+  } else if (previous_item->GetURL().is_valid()) {
+    data.favicon_url = TemplateURL::GenerateFaviconURL(previous_item->GetURL());
   }
   data.safe_for_autoreplace = true;
   url_service->Add(std::make_unique<TemplateURL>(data));

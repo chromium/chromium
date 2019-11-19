@@ -14,7 +14,6 @@
 #include "ipc/param_traits_macros.h"
 #include "media/base/overlay_info.h"
 #include "media/gpu/ipc/common/media_param_traits.h"
-#include "media/video/jpeg_decode_accelerator.h"
 #include "media/video/video_decode_accelerator.h"
 #include "ui/gfx/ipc/color/gfx_param_traits.h"
 #include "ui/gfx/ipc/gfx_param_traits.h"

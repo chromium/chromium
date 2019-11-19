@@ -72,13 +72,12 @@ IndexedDBInternalsUI::IndexedDBInternalsUI(WebUI* web_ui)
       WebUIDataSource::Create(kChromeUIIndexedDBInternalsHost);
   source->OverrideContentSecurityPolicyScriptSrc(
       "script-src chrome://resources 'self' 'unsafe-eval';");
-  source->SetJsonPath("strings.js");
+  source->UseStringsJs();
   source->AddResourcePath("indexeddb_internals.js",
                           IDR_INDEXED_DB_INTERNALS_JS);
   source->AddResourcePath("indexeddb_internals.css",
                           IDR_INDEXED_DB_INTERNALS_CSS);
   source->SetDefaultResource(IDR_INDEXED_DB_INTERNALS_HTML);
-  source->UseGzip();
 
   BrowserContext* browser_context =
       web_ui->GetWebContents()->GetBrowserContext();
@@ -103,8 +102,8 @@ void IndexedDBInternalsUI::GetAllOrigins(const base::ListValue* args) {
       web_ui()->GetWebContents()->GetBrowserContext();
 
   BrowserContext::StoragePartitionCallback cb =
-      base::Bind(&IndexedDBInternalsUI::AddContextFromStoragePartition,
-                 base::Unretained(this));
+      base::BindRepeating(&IndexedDBInternalsUI::AddContextFromStoragePartition,
+                          base::Unretained(this));
   BrowserContext::ForEachStoragePartition(browser_context, std::move(cb));
 }
 
@@ -120,7 +119,7 @@ void IndexedDBInternalsUI::GetAllOriginsOnIndexedDBThread(
       context_impl->GetAllOriginsDetails());
   bool is_incognito = context_impl->is_incognito();
 
-  base::PostTaskWithTraits(
+  base::PostTask(
       FROM_HERE, {BrowserThread::UI},
       base::BindOnce(&IndexedDBInternalsUI::OnOriginsReady,
                      base::Unretained(this), std::move(info_list),
@@ -175,7 +174,7 @@ bool IndexedDBInternalsUI::GetOriginContext(
 
   StoragePartition* result_partition;
   BrowserContext::StoragePartitionCallback cb =
-      base::Bind(&FindContext, path, &result_partition, context);
+      base::BindRepeating(&FindContext, path, &result_partition, context);
   BrowserContext::ForEachStoragePartition(browser_context, std::move(cb));
 
   if (!result_partition || !(context->get()))
@@ -260,13 +259,12 @@ void IndexedDBInternalsUI::DownloadOriginDataOnIndexedDBThread(
 
   std::vector<base::FilePath> paths = context->GetStoragePaths(origin);
   zip::ZipWithFilterCallback(context->data_path(), zip_path,
-                             base::Bind(AllowWhitelistedPaths, paths));
+                             base::BindRepeating(AllowWhitelistedPaths, paths));
 
-  base::PostTaskWithTraits(
-      FROM_HERE, {BrowserThread::UI},
-      base::BindOnce(&IndexedDBInternalsUI::OnDownloadDataReady,
-                     base::Unretained(this), partition_path, origin, temp_path,
-                     zip_path, connection_count));
+  base::PostTask(FROM_HERE, {BrowserThread::UI},
+                 base::BindOnce(&IndexedDBInternalsUI::OnDownloadDataReady,
+                                base::Unretained(this), partition_path, origin,
+                                temp_path, zip_path, connection_count));
 }
 
 void IndexedDBInternalsUI::ForceCloseOriginOnIndexedDBThread(
@@ -282,11 +280,10 @@ void IndexedDBInternalsUI::ForceCloseOriginOnIndexedDBThread(
   context->ForceClose(origin, IndexedDBContextImpl::FORCE_CLOSE_INTERNALS_PAGE);
   size_t connection_count = context->GetConnectionCount(origin);
 
-  base::PostTaskWithTraits(
-      FROM_HERE, {BrowserThread::UI},
-      base::BindOnce(&IndexedDBInternalsUI::OnForcedSchemaDowngrade,
-                     base::Unretained(this), partition_path, origin,
-                     connection_count));
+  base::PostTask(FROM_HERE, {BrowserThread::UI},
+                 base::BindOnce(&IndexedDBInternalsUI::OnForcedSchemaDowngrade,
+                                base::Unretained(this), partition_path, origin,
+                                connection_count));
 }
 
 void IndexedDBInternalsUI::ForceSchemaDowngradeOriginOnIndexedDBThread(
@@ -304,11 +301,10 @@ void IndexedDBInternalsUI::ForceSchemaDowngradeOriginOnIndexedDBThread(
       origin, IndexedDBContextImpl::FORCE_SCHEMA_DOWNGRADE_INTERNALS_PAGE);
   size_t connection_count = context->GetConnectionCount(origin);
 
-  base::PostTaskWithTraits(
-      FROM_HERE, {BrowserThread::UI},
-      base::BindOnce(&IndexedDBInternalsUI::OnForcedSchemaDowngrade,
-                     base::Unretained(this), partition_path, origin,
-                     connection_count));
+  base::PostTask(FROM_HERE, {BrowserThread::UI},
+                 base::BindOnce(&IndexedDBInternalsUI::OnForcedSchemaDowngrade,
+                                base::Unretained(this), partition_path, origin,
+                                connection_count));
 }
 
 void IndexedDBInternalsUI::OnForcedClose(const base::FilePath& partition_path,
@@ -372,9 +368,9 @@ void IndexedDBInternalsUI::OnDownloadDataReady(
   // This is how to watch for the download to finish: first wait for it
   // to start, then attach a download::DownloadItem::Observer to observe the
   // state change to the finished state.
-  dl_params->set_callback(base::Bind(&IndexedDBInternalsUI::OnDownloadStarted,
-                                     base::Unretained(this), partition_path,
-                                     origin, temp_path, connection_count));
+  dl_params->set_callback(base::BindOnce(
+      &IndexedDBInternalsUI::OnDownloadStarted, base::Unretained(this),
+      partition_path, origin, temp_path, connection_count));
 
   BrowserContext* context = web_contents->GetBrowserContext();
   BrowserContext::GetDownloadManager(context)->DownloadUrl(
@@ -416,11 +412,12 @@ void FileDeleter::OnDownloadUpdated(download::DownloadItem* item) {
 }
 
 FileDeleter::~FileDeleter() {
-  base::PostTaskWithTraits(FROM_HERE,
-                           {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
-                            base::TaskShutdownBehavior::BLOCK_SHUTDOWN},
-                           base::BindOnce(base::IgnoreResult(&base::DeleteFile),
-                                          std::move(temp_dir_), true));
+  base::PostTask(
+      FROM_HERE,
+      {base::ThreadPool(), base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+       base::TaskShutdownBehavior::BLOCK_SHUTDOWN},
+      base::BindOnce(base::IgnoreResult(&base::DeleteFile),
+                     std::move(temp_dir_), true));
 }
 
 void IndexedDBInternalsUI::OnDownloadStarted(

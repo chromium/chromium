@@ -1,0 +1,5 @@
+Tests that the live line-level heap profile is shown in the text editor.
+
+allocator.js
+Memory annotation added to line 13.
+

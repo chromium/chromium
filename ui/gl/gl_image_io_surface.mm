@@ -17,7 +17,7 @@
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/mac/display_icc_profiles.h"
 #include "ui/gfx/mac/io_surface.h"
-#include "ui/gl/buildflags.h"
+#include "ui/gl/buffer_format_utils.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_enums.h"
@@ -25,10 +25,10 @@
 #include "ui/gl/scoped_binders.h"
 #include "ui/gl/yuv_to_rgb_converter.h"
 
-#if BUILDFLAG(USE_EGL_ON_MAC)
+#if defined(USE_EGL)
 #include "ui/gl/gl_image_io_surface_egl.h"
 #include "ui/gl/gl_implementation.h"
-#endif  // BUILDFLAG(USE_EGL_ON_MAC)
+#endif  // defined(USE_EGL)
 
 // Note that this must be included after gl_bindings.h to avoid conflicts.
 #include <OpenGL/CGLIOSurface.h>
@@ -70,7 +70,6 @@ GLenum TextureFormat(gfx::BufferFormat format) {
     case gfx::BufferFormat::RGBA_8888:
     case gfx::BufferFormat::RGBA_F16:
       return GL_RGBA;
-    case gfx::BufferFormat::UYVY_422:
     case gfx::BufferFormat::YUV_420_BIPLANAR:
       return GL_RGB_YCBCR_420V_CHROMIUM;
     case gfx::BufferFormat::BGRX_1010102:
@@ -83,7 +82,8 @@ GLenum TextureFormat(gfx::BufferFormat format) {
     case gfx::BufferFormat::RGBX_8888:
     case gfx::BufferFormat::RGBX_1010102:
     case gfx::BufferFormat::YVU_420:
-      NOTREACHED();
+    case gfx::BufferFormat::P010:
+      NOTREACHED() << gfx::BufferFormatToString(format);
       return 0;
   }
 
@@ -106,14 +106,13 @@ GLenum DataFormat(gfx::BufferFormat format) {
       return GL_BGRA;
     case gfx::BufferFormat::RGBA_F16:
       return GL_RGBA;
-    case gfx::BufferFormat::UYVY_422:
-      return GL_YCBCR_422_APPLE;
     case gfx::BufferFormat::BGR_565:
     case gfx::BufferFormat::RGBA_4444:
     case gfx::BufferFormat::RGBX_8888:
     case gfx::BufferFormat::RGBX_1010102:
     case gfx::BufferFormat::YVU_420:
     case gfx::BufferFormat::YUV_420_BIPLANAR:
+    case gfx::BufferFormat::P010:
       NOTREACHED() << gfx::BufferFormatToString(format);
       return 0;
   }
@@ -137,14 +136,13 @@ GLenum DataType(gfx::BufferFormat format) {
       return GL_UNSIGNED_INT_2_10_10_10_REV;
     case gfx::BufferFormat::RGBA_F16:
       return GL_HALF_APPLE;
-    case gfx::BufferFormat::UYVY_422:
-      return GL_UNSIGNED_SHORT_8_8_APPLE;
     case gfx::BufferFormat::BGR_565:
     case gfx::BufferFormat::RGBA_4444:
     case gfx::BufferFormat::RGBX_8888:
     case gfx::BufferFormat::RGBX_1010102:
     case gfx::BufferFormat::YVU_420:
     case gfx::BufferFormat::YUV_420_BIPLANAR:
+    case gfx::BufferFormat::P010:
       NOTREACHED() << gfx::BufferFormatToString(format);
       return 0;
   }
@@ -168,15 +166,18 @@ GLenum ConvertRequestedInternalFormat(GLenum internalformat) {
 // static
 GLImageIOSurface* GLImageIOSurface::Create(const gfx::Size& size,
                                            unsigned internalformat) {
-#if BUILDFLAG(USE_EGL_ON_MAC)
+#if defined(USE_EGL)
   switch (GetGLImplementation()) {
     case kGLImplementationEGLGLES2:
+    case kGLImplementationEGLANGLE:
     case kGLImplementationSwiftShaderGL:
-      return new GLImageIOSurfaceEGL(size, internalformat);
+      return new GLImageIOSurfaceEGL(
+          size, internalformat,
+          GetGLImplementation() == kGLImplementationSwiftShaderGL);
     default:
       break;
   }
-#endif  // BUILDFLAG(USE_EGL_ON_MAC)
+#endif  // defined(USE_EGL)
 
   return new GLImageIOSurface(size, internalformat);
 }
@@ -242,6 +243,10 @@ gfx::Size GLImageIOSurface::GetSize() {
 
 unsigned GLImageIOSurface::GetInternalFormat() {
   return internalformat_;
+}
+
+unsigned GLImageIOSurface::GetDataType() {
+  return gl::BufferFormatToGLDataType(format_);
 }
 
 GLImageIOSurface::BindOrCopy GLImageIOSurface::ShouldBindOrCopy() {
@@ -494,7 +499,6 @@ bool GLImageIOSurface::ValidFormat(gfx::BufferFormat format) {
     case gfx::BufferFormat::RGBA_8888:
     case gfx::BufferFormat::RGBA_F16:
     case gfx::BufferFormat::BGRX_1010102:
-    case gfx::BufferFormat::UYVY_422:
     case gfx::BufferFormat::YUV_420_BIPLANAR:
       return true;
     case gfx::BufferFormat::R_16:
@@ -504,6 +508,7 @@ bool GLImageIOSurface::ValidFormat(gfx::BufferFormat format) {
     case gfx::BufferFormat::RGBX_8888:
     case gfx::BufferFormat::RGBX_1010102:
     case gfx::BufferFormat::YVU_420:
+    case gfx::BufferFormat::P010:
       return false;
   }
 

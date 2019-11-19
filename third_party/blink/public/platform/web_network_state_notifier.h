@@ -51,6 +51,7 @@ class WebNetworkStateNotifier {
   BLINK_PLATFORM_EXPORT static void SetNetworkQualityWebHoldback(
       WebEffectiveConnectionType);
   BLINK_PLATFORM_EXPORT static void SetSaveDataEnabled(bool enabled);
+  BLINK_PLATFORM_EXPORT static bool SaveDataEnabled();
 
  private:
   WebNetworkStateNotifier() = delete;

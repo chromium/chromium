@@ -33,7 +33,9 @@ class FakeLoopbackGroupMember : public LoopbackGroupMember {
   ~FakeLoopbackGroupMember() override;
 
   // Sets the sine wave |frequency| rendered into channel |ch|. Note that
-  // setting the frequency to zero will zero-out the channel signal.
+  // setting the frequency to zero will zero-out the channel signal. For
+  // convenience, pass |kSetAllChannels| for |ch| to set all channels to the
+  // same frequency.
   void SetChannelTone(int ch, double frequency);
 
   // Sets the volume of this FakeLoopbackGroupMember. This simulates the current
@@ -48,10 +50,12 @@ class FakeLoopbackGroupMember : public LoopbackGroupMember {
   // LoopbackGroupMember implementation.
   const media::AudioParameters& GetAudioParameters() const override;
   std::string GetDeviceId() const override;
-  void StartSnooping(Snooper* snooper, SnoopingMode mode) override;
-  void StopSnooping(Snooper* snooper, SnoopingMode mode) override;
+  void StartSnooping(Snooper* snooper) override;
+  void StopSnooping(Snooper* snooper) override;
   void StartMuting() override;
   void StopMuting() override;
+
+  static constexpr int kSetAllChannels = -1;
 
  private:
   const media::AudioParameters params_;

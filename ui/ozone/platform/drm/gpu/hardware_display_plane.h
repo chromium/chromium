@@ -30,9 +30,9 @@ class HardwareDisplayPlane {
 
   bool IsSupportedFormat(uint32_t format);
 
-  std::vector<uint64_t> ModifiersForFormat(uint32_t format);
+  std::vector<uint64_t> ModifiersForFormat(uint32_t format) const;
 
-  bool CanUseForCrtc(uint32_t crtc_index);
+  bool CanUseForCrtc(uint32_t crtc_index) const;
 
   bool in_use() const { return in_use_; }
   void set_in_use(bool in_use) { in_use_ = in_use; }

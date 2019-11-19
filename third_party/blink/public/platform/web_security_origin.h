@@ -93,6 +93,11 @@ class WebSecurityOrigin {
   // from a given security origin to receive contents from a given URL.
   BLINK_PLATFORM_EXPORT bool CanRequest(const WebURL&) const;
 
+  // Returns true if this WebSecurityOrigin can display content from the given
+  // URL (e.g., in an iframe or as an image). For example, web sites generally
+  // cannot display content from the user's files system.
+  BLINK_PLATFORM_EXPORT bool CanDisplay(const WebURL&) const;
+
   // Returns true if the origin loads resources either from the local
   // machine or over the network from a
   // cryptographically-authenticated origin, as described in

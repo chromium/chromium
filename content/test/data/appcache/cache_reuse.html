@@ -1,0 +1,15 @@
+<!doctype html>
+<html manifest="cache_reuse.manifest">
+<meta charset="utf-8">
+<title>OK</title>
+<script>
+'use strict';
+
+applicationCache.addEventListener('cached', () => {
+  document.title = 'AppCache primed';
+});
+applicationCache.addEventListener('updateready', () => {
+  document.title = 'AppCache updated';
+});
+</script>
+</html>

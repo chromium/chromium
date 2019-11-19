@@ -10,7 +10,6 @@
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "chromeos/dbus/fake_cec_service_client.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
 #include "dbus/object_proxy.h"
@@ -133,13 +132,8 @@ CecServiceClient::CecServiceClient() = default;
 CecServiceClient::~CecServiceClient() = default;
 
 // static
-std::unique_ptr<CecServiceClient> CecServiceClient::Create(
-    DBusClientImplementationType type) {
-  if (type == REAL_DBUS_CLIENT_IMPLEMENTATION)
-    return std::make_unique<CecServiceClientImpl>();
-
-  DCHECK_EQ(FAKE_DBUS_CLIENT_IMPLEMENTATION, type);
-  return std::make_unique<FakeCecServiceClient>();
+std::unique_ptr<CecServiceClient> CecServiceClient::Create() {
+  return std::make_unique<CecServiceClientImpl>();
 }
 
 }  // namespace chromeos

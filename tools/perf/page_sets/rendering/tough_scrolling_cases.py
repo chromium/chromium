@@ -43,12 +43,7 @@ class ScrollingText10000Page(ToughFastScrollingPage):
   BASE_NAME = 'text_10000_pixels_per_second'
   URL = 'file://../tough_scrolling_cases/text.html'
   SPEED_IN_PIXELS_PER_SECOND = 10000
-
-
-class ScrollingText15000Page(ToughFastScrollingPage):
-  BASE_NAME = 'text_15000_pixels_per_second'
-  URL = 'file://../tough_scrolling_cases/text.html'
-  SPEED_IN_PIXELS_PER_SECOND = 15000
+  TAGS = ToughFastScrollingPage.TAGS + [story_tags.REPRESENTATIVE_MOBILE]
 
 
 class ScrollingText20000Page(ToughFastScrollingPage):
@@ -57,22 +52,10 @@ class ScrollingText20000Page(ToughFastScrollingPage):
   SPEED_IN_PIXELS_PER_SECOND = 20000
 
 
-class ScrollingText30000Page(ToughFastScrollingPage):
-  BASE_NAME = 'text_30000_pixels_per_second'
-  URL = 'file://../tough_scrolling_cases/text.html'
-  SPEED_IN_PIXELS_PER_SECOND = 30000
-
-
 class ScrollingText40000Page(ToughFastScrollingPage):
   BASE_NAME = 'text_40000_pixels_per_second'
   URL = 'file://../tough_scrolling_cases/text.html'
   SPEED_IN_PIXELS_PER_SECOND = 40000
-
-
-class ScrollingText50000Page(ToughFastScrollingPage):
-  BASE_NAME = 'text_50000_pixels_per_second'
-  URL = 'file://../tough_scrolling_cases/text.html'
-  SPEED_IN_PIXELS_PER_SECOND = 50000
 
 
 class ScrollingText60000Page(ToughFastScrollingPage):
@@ -107,13 +90,6 @@ class ScrollingTextHover10000Page(ToughFastScrollingPage):
   SYNTHETIC_GESTURE_SOURCE = page_action.GESTURE_SOURCE_MOUSE
 
 
-class ScrollingTextHover15000Page(ToughFastScrollingPage):
-  BASE_NAME = 'text_hover_15000_pixels_per_second'
-  URL = 'file://../tough_scrolling_cases/text_hover.html'
-  SPEED_IN_PIXELS_PER_SECOND = 15000
-  SYNTHETIC_GESTURE_SOURCE = page_action.GESTURE_SOURCE_MOUSE
-
-
 class ScrollingTextHover20000Page(ToughFastScrollingPage):
   BASE_NAME = 'text_hover_20000_pixels_per_second'
   URL = 'file://../tough_scrolling_cases/text_hover.html'
@@ -121,24 +97,10 @@ class ScrollingTextHover20000Page(ToughFastScrollingPage):
   SYNTHETIC_GESTURE_SOURCE = page_action.GESTURE_SOURCE_MOUSE
 
 
-class ScrollingTextHover30000Page(ToughFastScrollingPage):
-  BASE_NAME = 'text_hover_30000_pixels_per_second'
-  URL = 'file://../tough_scrolling_cases/text_hover.html'
-  SPEED_IN_PIXELS_PER_SECOND = 30000
-  SYNTHETIC_GESTURE_SOURCE = page_action.GESTURE_SOURCE_MOUSE
-
-
 class ScrollingTextHover40000Page(ToughFastScrollingPage):
   BASE_NAME = 'text_hover_40000_pixels_per_second'
   URL = 'file://../tough_scrolling_cases/text_hover.html'
   SPEED_IN_PIXELS_PER_SECOND = 40000
-  SYNTHETIC_GESTURE_SOURCE = page_action.GESTURE_SOURCE_MOUSE
-
-
-class ScrollingTextHover50000Page(ToughFastScrollingPage):
-  BASE_NAME = 'text_hover_50000_pixels_per_second'
-  URL = 'file://../tough_scrolling_cases/text_hover.html'
-  SPEED_IN_PIXELS_PER_SECOND = 50000
   SYNTHETIC_GESTURE_SOURCE = page_action.GESTURE_SOURCE_MOUSE
 
 
@@ -175,34 +137,16 @@ class ScrollingTextRaster10000Page(ToughFastScrollingPage):
   SPEED_IN_PIXELS_PER_SECOND = 10000
 
 
-class ScrollingTextRaster15000Page(ToughFastScrollingPage):
-  BASE_NAME = 'text_constant_full_page_raster_15000_pixels_per_second'
-  URL = 'file://../tough_scrolling_cases/text_constant_full_page_raster.html'
-  SPEED_IN_PIXELS_PER_SECOND = 15000
-
-
 class ScrollingTextRaster20000Page(ToughFastScrollingPage):
   BASE_NAME = 'text_constant_full_page_raster_20000_pixels_per_second'
   URL = 'file://../tough_scrolling_cases/text_constant_full_page_raster.html'
   SPEED_IN_PIXELS_PER_SECOND = 20000
 
 
-class ScrollingTextRaster30000Page(ToughFastScrollingPage):
-  BASE_NAME = 'text_constant_full_page_raster_30000_pixels_per_second'
-  URL = 'file://../tough_scrolling_cases/text_constant_full_page_raster.html'
-  SPEED_IN_PIXELS_PER_SECOND = 30000
-
-
 class ScrollingTextRaster40000Page(ToughFastScrollingPage):
   BASE_NAME = 'text_constant_full_page_raster_40000_pixels_per_second'
   URL = 'file://../tough_scrolling_cases/text_constant_full_page_raster.html'
   SPEED_IN_PIXELS_PER_SECOND = 40000
-
-
-class ScrollingTextRaster50000Page(ToughFastScrollingPage):
-  BASE_NAME = 'text_constant_full_page_raster_50000_pixels_per_second'
-  URL = 'file://../tough_scrolling_cases/text_constant_full_page_raster.html'
-  SPEED_IN_PIXELS_PER_SECOND = 50000
 
 
 class ScrollingTextRaster60000Page(ToughFastScrollingPage):
@@ -227,6 +171,10 @@ class ScrollingCanvas5000Page(ToughFastScrollingPage):
   BASE_NAME = 'canvas_05000_pixels_per_second'
   URL = 'file://../tough_scrolling_cases/canvas.html'
   SPEED_IN_PIXELS_PER_SECOND = 5000
+  TAGS = ToughFastScrollingPage.TAGS + [
+    story_tags.REPRESENTATIVE_MOBILE,
+    story_tags.REPRESENTATIVE_MAC_DESKTOP
+  ]
 
 
 class ScrollingCanvas10000Page(ToughFastScrollingPage):
@@ -235,34 +183,16 @@ class ScrollingCanvas10000Page(ToughFastScrollingPage):
   SPEED_IN_PIXELS_PER_SECOND = 10000
 
 
-class ScrollingCanvas15000Page(ToughFastScrollingPage):
-  BASE_NAME = 'canvas_15000_pixels_per_second'
-  URL = 'file://../tough_scrolling_cases/canvas.html'
-  SPEED_IN_PIXELS_PER_SECOND = 15000
-
-
 class ScrollingCanvas20000Page(ToughFastScrollingPage):
   BASE_NAME = 'canvas_20000_pixels_per_second'
   URL = 'file://../tough_scrolling_cases/canvas.html'
   SPEED_IN_PIXELS_PER_SECOND = 20000
 
 
-class ScrollingCanvas30000Page(ToughFastScrollingPage):
-  BASE_NAME = 'canvas_30000_pixels_per_second'
-  URL = 'file://../tough_scrolling_cases/canvas.html'
-  SPEED_IN_PIXELS_PER_SECOND = 30000
-
-
 class ScrollingCanvas40000Page(ToughFastScrollingPage):
   BASE_NAME = 'canvas_40000_pixels_per_second'
   URL = 'file://../tough_scrolling_cases/canvas.html'
   SPEED_IN_PIXELS_PER_SECOND = 40000
-
-
-class ScrollingCanvas50000Page(ToughFastScrollingPage):
-  BASE_NAME = 'canvas_50000_pixels_per_second'
-  URL = 'file://../tough_scrolling_cases/canvas.html'
-  SPEED_IN_PIXELS_PER_SECOND = 50000
 
 
 class ScrollingCanvas60000Page(ToughFastScrollingPage):
@@ -281,4 +211,3 @@ class ScrollingCanvas90000Page(ToughFastScrollingPage):
   BASE_NAME = 'canvas_90000_pixels_per_second'
   URL = 'file://../tough_scrolling_cases/canvas.html'
   SPEED_IN_PIXELS_PER_SECOND = 90000
-  TAGS = ToughFastScrollingPage.TAGS + [story_tags.REPRESENTATIVE_WIN_DESKTOP]

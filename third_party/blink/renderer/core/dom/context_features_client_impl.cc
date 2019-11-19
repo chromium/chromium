@@ -34,11 +34,12 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
 
 class ContextFeaturesCache final
-    : public GarbageCollectedFinalized<ContextFeaturesCache>,
+    : public GarbageCollected<ContextFeaturesCache>,
       public Supplement<Document> {
   USING_GARBAGE_COLLECTED_MIXIN(ContextFeaturesCache);
 
@@ -46,6 +47,8 @@ class ContextFeaturesCache final
   static const char kSupplementName[];
 
   class Entry {
+    DISALLOW_NEW();
+
    public:
     enum Value { kIsEnabled, kIsDisabled, kNeedsRefresh };
 

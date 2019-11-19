@@ -52,8 +52,7 @@ net::IPEndPoint CreateIPEndPointForTest() {
 MockCastMessageHandler::MockCastMessageHandler(
     MockCastSocketService* socket_service)
     : CastMessageHandler(socket_service,
-                         /* connector */ nullptr,
-                         base::Token{},
+                         /* parse_json */ base::DoNothing(),
                          "userAgent",
                          "1.2.3.4",
                          "en-US") {}

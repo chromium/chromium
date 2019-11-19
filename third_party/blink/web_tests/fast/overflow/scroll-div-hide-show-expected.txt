@@ -56,13 +56,13 @@ PASS e.scrollLeft is 0
 
 
 Testing that scroll position is restored for RTL texts
-Scrolling to 50, 150
+Scrolling to -50, 150
 Div's display is none now
 PASS e.scrollTop is 0
 PASS e.scrollLeft is 0
 Div's display is block again
 PASS e.scrollTop is 150
-PASS e.scrollLeft is 50
+PASS e.scrollLeft is -50
 
 
 Test iframe scrolling

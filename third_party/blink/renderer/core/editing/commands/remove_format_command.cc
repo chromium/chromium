@@ -39,20 +39,25 @@
 
 namespace blink {
 
-using namespace html_names;
-
 RemoveFormatCommand::RemoveFormatCommand(Document& document)
     : CompositeEditCommand(document) {}
 
 static bool IsElementForRemoveFormatCommand(const Element* element) {
-  DEFINE_STATIC_LOCAL(
-      HashSet<QualifiedName>, elements,
-      ({
-          kAcronymTag, kBTag,   kBdoTag,  kBigTag,  kCiteTag,  kCodeTag,
-          kDfnTag,     kEmTag,  kFontTag, kITag,    kInsTag,   kKbdTag,
-          kNobrTag,    kQTag,   kSTag,    kSampTag, kSmallTag, kStrikeTag,
-          kStrongTag,  kSubTag, kSupTag,  kTtTag,   kUTag,     kVarTag,
-      }));
+  DEFINE_STATIC_LOCAL(HashSet<QualifiedName>, elements,
+                      ({
+                          html_names::kAcronymTag, html_names::kBTag,
+                          html_names::kBdoTag,     html_names::kBigTag,
+                          html_names::kCiteTag,    html_names::kCodeTag,
+                          html_names::kDfnTag,     html_names::kEmTag,
+                          html_names::kFontTag,    html_names::kITag,
+                          html_names::kInsTag,     html_names::kKbdTag,
+                          html_names::kNobrTag,    html_names::kQTag,
+                          html_names::kSTag,       html_names::kSampTag,
+                          html_names::kSmallTag,   html_names::kStrikeTag,
+                          html_names::kStrongTag,  html_names::kSubTag,
+                          html_names::kSupTag,     html_names::kTtTag,
+                          html_names::kUTag,       html_names::kVarTag,
+                      }));
   return elements.Contains(element->TagQName());
 }
 
@@ -69,14 +74,14 @@ void RemoveFormatCommand::DoApply(EditingState* editing_state) {
   // Get the default style for this editable root, it's the style that we'll
   // give the content that we're operating on.
   Element* root = selection.RootEditableElement();
-  EditingStyle* default_style = EditingStyle::Create(root);
+  EditingStyle* default_style = MakeGarbageCollected<EditingStyle>(root);
 
   // We want to remove everything but transparent background.
   // FIXME: We shouldn't access style().
-  default_style->Style()->SetProperty(CSSPropertyBackgroundColor,
-                                      CSSValueTransparent);
+  default_style->Style()->SetProperty(CSSPropertyID::kBackgroundColor,
+                                      CSSValueID::kTransparent);
 
-  ApplyCommandToComposite(ApplyStyleCommand::Create(
+  ApplyCommandToComposite(MakeGarbageCollected<ApplyStyleCommand>(
                               GetDocument(), default_style,
                               IsElementForRemoveFormatCommand, GetInputType()),
                           editing_state);

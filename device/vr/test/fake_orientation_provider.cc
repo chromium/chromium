@@ -8,10 +8,9 @@
 
 namespace device {
 
-FakeOrientationSensor::FakeOrientationSensor(mojom::SensorRequest request)
-    : binding_(this) {
-  binding_.Bind(std::move(request));
-}
+FakeOrientationSensor::FakeOrientationSensor(
+    mojo::PendingReceiver<mojom::Sensor> receiver)
+    : receiver_(this, std::move(receiver)) {}
 
 FakeOrientationSensor::~FakeOrientationSensor() = default;
 

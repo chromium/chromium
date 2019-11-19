@@ -11,6 +11,7 @@ namespace net {
 
 URLFetcher::~URLFetcher() = default;
 
+#if (!defined(OS_WIN) && !defined(OS_LINUX)) || defined(OS_CHROMEOS)
 // static
 std::unique_ptr<URLFetcher> URLFetcher::Create(
     const GURL& url,
@@ -27,6 +28,7 @@ std::unique_ptr<URLFetcher> URLFetcher::Create(
     URLFetcherDelegate* d) {
   return Create(id, url, request_type, d, MISSING_TRAFFIC_ANNOTATION);
 }
+#endif
 
 // static
 std::unique_ptr<URLFetcher> URLFetcher::Create(

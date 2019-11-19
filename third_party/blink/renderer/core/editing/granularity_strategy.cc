@@ -148,6 +148,8 @@ SelectionInDOMTree DirectionGranularityStrategy::UpdateExtent(
     new_offset_extent_point = extent_point;
     new_offset_extent_position = CreateVisiblePosition(
         PositionForContentsPointRespectingEditingBoundary(extent_point, frame));
+    if (new_offset_extent_position.IsNull())
+      return selection.AsSelection();
   }
 
   const VisiblePosition base = selection.VisibleBase();
@@ -256,9 +258,13 @@ SelectionInDOMTree DirectionGranularityStrategy::UpdateExtent(
     VisiblePosition bound_before_extent = CreateVisiblePosition(NextWordBound(
         new_offset_extent_position.DeepEquivalent(),
         SearchDirection::kSearchBackwards, BoundAdjust::kCurrentPosIfOnBound));
+    if (bound_before_extent.IsNull())
+      return selection.AsSelection();
     VisiblePosition bound_after_extent = CreateVisiblePosition(NextWordBound(
         new_offset_extent_position.DeepEquivalent(),
         SearchDirection::kSearchForward, BoundAdjust::kCurrentPosIfOnBound));
+    if (bound_after_extent.IsNull())
+      return selection.AsSelection();
     int x_middle_between_bounds = (PositionLocation(bound_after_extent).X() +
                                    PositionLocation(bound_before_extent).X()) /
                                   2;

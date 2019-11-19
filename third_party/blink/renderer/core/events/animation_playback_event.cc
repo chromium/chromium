@@ -11,9 +11,12 @@ namespace blink {
 AnimationPlaybackEvent::AnimationPlaybackEvent(const AtomicString& type,
                                                double current_time,
                                                double timeline_time)
-    : Event(type, Bubbles::kNo, Cancelable::kNo),
-      current_time_(current_time),
-      timeline_time_(timeline_time) {}
+    : Event(type, Bubbles::kNo, Cancelable::kNo) {
+  if (!std::isnan(current_time))
+    current_time_ = current_time;
+  if (!std::isnan(timeline_time))
+    timeline_time_ = timeline_time;
+}
 
 AnimationPlaybackEvent::AnimationPlaybackEvent(
     const AtomicString& type,

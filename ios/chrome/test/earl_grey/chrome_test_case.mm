@@ -6,28 +6,27 @@
 
 #import <objc/runtime.h>
 
-#import <EarlGrey/EarlGrey.h>
-
 #include <memory>
 
 #include "base/command_line.h"
-#include "base/mac/scoped_block.h"
 #include "base/strings/sys_string_conversions.h"
-#include "components/signin/core/browser/signin_switches.h"
-#import "ios/chrome/test/app/chrome_test_util.h"
-#include "ios/chrome/test/app/settings_test_util.h"
-#include "ios/chrome/test/app/signin_test_util.h"
-#import "ios/chrome/test/app/sync_test_util.h"
-#import "ios/chrome/test/app/tab_test_util.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
+#import "ios/chrome/test/earl_grey/chrome_test_case_app_interface.h"
+#import "ios/testing/earl_grey/app_launch_manager.h"
+#import "ios/testing/earl_grey/coverage_utils.h"
+#import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ios/web/public/test/http_server/http_server.h"
-#include "testing/coverage_util_ios.h"
+#include "net/test/embedded_test_server/default_handlers.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
 namespace {
+
+// This flag indicates whether +setUpForTestCase has been executed in a test
+// case.
+bool gExecutedSetUpForTestCase = false;
 
 NSString* const kFlakyEarlGreyTestTargetSuffix = @"_flaky_egtests";
 
@@ -83,11 +82,43 @@ NSArray* whiteListedMultitaskingTests = @[
 
 const CFTimeInterval kDrainTimeout = 5;
 
+void SetUpMockAuthentication() {
+  [ChromeTestCaseAppInterface setUpMockAuthentication];
+}
+
+void TearDownMockAuthentication() {
+  [ChromeTestCaseAppInterface tearDownMockAuthentication];
+}
+
+void ResetAuthentication() {
+  [ChromeTestCaseAppInterface resetAuthentication];
+}
+
+void RemoveInfoBarsAndPresentedState() {
+  [ChromeTestCaseAppInterface removeInfoBarsAndPresentedState];
+}
+
+UIDeviceOrientation GetCurrentDeviceOrientation() {
+#if defined(CHROME_EARL_GREY_1)
+  return [[UIDevice currentDevice] orientation];
+#elif defined(CHROME_EARL_GREY_2)
+  return [[GREY_REMOTE_CLASS_IN_APP(UIDevice) currentDevice] orientation];
+#endif
+}
+
 }  // namespace
 
-@interface ChromeTestCase () {
+#if defined(CHROME_EARL_GREY_2)
+GREY_STUB_CLASS_IN_APP_MAIN_QUEUE(ChromeTestCaseAppInterface)
+#endif
+
+@interface ChromeTestCase () <AppLaunchManagerObserver> {
   // Block to be executed during object tearDown.
   ProceduralBlock _tearDownHandler;
+
+  // This flag indicates whether test method -setUp steps are executed during a
+  // test method.
+  BOOL _executedTestMethodSetUp;
 
   BOOL _isHTTPServerStopped;
   BOOL _isMockAuthenticationDisabled;
@@ -122,6 +153,7 @@ const CFTimeInterval kDrainTimeout = 5;
 // Overrides testInvocations so the set of tests run can be modified, as
 // necessary.
 + (NSArray*)testInvocations {
+#if defined(CHROME_EARL_GREY_1)
   NSError* error = nil;
   [[EarlGrey selectElementWithMatcher:grey_systemAlertViewShown()]
       assertWithMatcher:grey_nil()
@@ -139,8 +171,9 @@ const CFTimeInterval kDrainTimeout = 5;
         [NSInvocation invocationWithMethodSignature:signature];
     systemAlertTest.selector = @selector(failAllTestsDueToSystemAlertVisible);
     return @[ systemAlertTest ];
-#endif
+#endif  // !TARGET_IPHONE_SIMULATOR
   }
+#endif  // defined(CHROME_EARL_GREY_1)
 
   // Return specific list of tests based on the target.
   NSString* targetName = [NSBundle mainBundle].infoDictionary[@"CFBundleName"];
@@ -155,22 +188,18 @@ const CFTimeInterval kDrainTimeout = 5;
   }
 }
 
-// Set up called once for the class, to dismiss anything displayed on startup
-// and revert browser settings to default. It also starts the HTTP server and
-// enables mock authentication.
+#if defined(CHROME_EARL_GREY_1)
 + (void)setUp {
   [super setUp];
-  [[self class] startHTTPServer];
-  [[self class] enableMockAuthentication];
-
-  // Sometimes on start up there can be infobars (e.g. restore session), so
-  // ensure the UI is in a clean state.
-  [self removeAnyOpenMenusAndInfoBars];
-  [self closeAllTabs];
-  chrome_test_util::SetContentSettingsBlockPopups(CONTENT_SETTING_DEFAULT);
-
-  coverage_util::ConfigureCoverageReportPath();
+  [ChromeTestCase setUpHelper];
 }
+#elif defined(CHROME_EARL_GREY_2)
++ (void)setUpForTestCase {
+  [super setUpForTestCase];
+  [ChromeTestCase setUpHelper];
+  gExecutedSetUpForTestCase = true;
+}
+#endif  // CHROME_EARL_GREY_2
 
 // Tear down called once for the class, to shutdown mock authentication and
 // the HTTP server.
@@ -178,40 +207,50 @@ const CFTimeInterval kDrainTimeout = 5;
   [[self class] disableMockAuthentication];
   [[self class] stopHTTPServer];
   [super tearDown];
+  gExecutedSetUpForTestCase = false;
 }
 
 - (net::EmbeddedTestServer*)testServer {
   if (!_testServer) {
     _testServer = std::make_unique<net::EmbeddedTestServer>();
-    _testServer->AddDefaultHandlers(base::FilePath(
-        FILE_PATH_LITERAL("ios/testing/data/http_server_files/")));
+    NSString* bundlePath = [NSBundle bundleForClass:[self class]].resourcePath;
+    _testServer->ServeFilesFromDirectory(
+        base::FilePath(base::SysNSStringToUTF8(bundlePath))
+            .AppendASCII("ios/testing/data/http_server_files/"));
+    net::test_server::RegisterDefaultHandlers(_testServer.get());
   }
   return _testServer.get();
 }
 
 // Set up called once per test, to open a new tab.
 - (void)setUp {
-  [super setUp];
-  _isHTTPServerStopped = NO;
-  _isMockAuthenticationDisabled = NO;
-  _tearDownHandler = nil;
-  _originalOrientation = [[UIDevice currentDevice] orientation];
+  // Add this class as an AppLaunchManager observer before [super setUp],
+  // as [super setUp] can trigger an app launch.
+  [[AppLaunchManager sharedManager] addObserver:self];
 
-  chrome_test_util::ResetSigninPromoPreferences();
-  chrome_test_util::ResetMockAuthentication();
+  [super setUp];
+  [self resetAppState];
+
+  ResetAuthentication();
+
+  // Reset any remaining sign-in state from previous tests.
+  [ChromeEarlGrey signOutAndClearAccounts];
   [ChromeEarlGrey openNewTab];
+  _executedTestMethodSetUp = YES;
 }
 
 // Tear down called once per test, to close all tabs and menus, and clear the
 // tracked tests accounts. It also makes sure mock authentication and the HTTP
 // server are running.
 - (void)tearDown {
+  [[AppLaunchManager sharedManager] removeObserver:self];
+
   if (_tearDownHandler) {
     _tearDownHandler();
   }
 
   // Clear any remaining test accounts and signed in users.
-  chrome_test_util::SignOutAndClearAccounts();
+  [ChromeEarlGrey signOutAndClearAccounts];
 
   // Re-start anything that was disabled this test, so it is running when the
   // next test starts.
@@ -229,12 +268,13 @@ const CFTimeInterval kDrainTimeout = 5;
   [[self class] removeAnyOpenMenusAndInfoBars];
   [[self class] closeAllTabs];
 
-  if ([[UIDevice currentDevice] orientation] != _originalOrientation) {
+  if (GetCurrentDeviceOrientation() != _originalOrientation) {
     // Rotate the device back to the original orientation, since some tests
     // attempt to run in other orientations.
-    [EarlGrey rotateDeviceToOrientation:_originalOrientation errorOrNil:nil];
+    [ChromeEarlGrey rotateDeviceToOrientation:_originalOrientation error:nil];
   }
   [super tearDown];
+  _executedTestMethodSetUp = NO;
 }
 
 #pragma mark - Public methods
@@ -246,8 +286,7 @@ const CFTimeInterval kDrainTimeout = 5;
 }
 
 + (void)removeAnyOpenMenusAndInfoBars {
-  chrome_test_util::RemoveAllInfoBars();
-  chrome_test_util::ClearPresentedState();
+  RemoveInfoBarsAndPresentedState();
   // After programatically removing UI elements, allow Earl Grey's
   // UI synchronization to become idle, so subsequent steps won't start before
   // the UI is in a good state.
@@ -256,7 +295,7 @@ const CFTimeInterval kDrainTimeout = 5;
 }
 
 + (void)closeAllTabs {
-  chrome_test_util::CloseAllTabs();
+  [ChromeEarlGrey closeAllTabs];
   [[GREYUIThreadExecutor sharedInstance]
       drainUntilIdleWithTimeout:kDrainTimeout];
 }
@@ -281,16 +320,14 @@ const CFTimeInterval kDrainTimeout = 5;
 + (void)disableMockAuthentication {
   // Make sure local data is cleared, before disabling mock authentication,
   // where data may be sent to real servers.
-  chrome_test_util::SignOutAndClearAccounts();
-  chrome_test_util::TearDownFakeSyncServer();
-  chrome_test_util::TearDownMockAccountReconcilor();
-  chrome_test_util::TearDownMockAuthentication();
+  [ChromeEarlGrey signOutAndClearAccounts];
+  [ChromeEarlGrey tearDownFakeSyncServer];
+  TearDownMockAuthentication();
 }
 
 + (void)enableMockAuthentication {
-  chrome_test_util::SetUpMockAuthentication();
-  chrome_test_util::SetUpMockAccountReconcilor();
-  chrome_test_util::SetUpFakeSyncServer();
+  SetUpMockAuthentication();
+  [ChromeEarlGrey setUpFakeSyncServer];
 }
 
 + (void)stopHTTPServer {
@@ -301,7 +338,8 @@ const CFTimeInterval kDrainTimeout = 5;
 
 + (void)startHTTPServer {
   web::test::HttpServer& server = web::test::HttpServer::GetSharedInstance();
-  server.StartOrDie();
+  NSString* bundlePath = [NSBundle bundleForClass:[self class]].resourcePath;
+  server.StartOrDie(base::FilePath(base::SysNSStringToUTF8(bundlePath)));
 }
 
 + (NSArray*)flakyTestNames {
@@ -344,10 +382,64 @@ const CFTimeInterval kDrainTimeout = 5;
   return multitaskingTestNames;
 }
 
+// Called from +setUp or when the host app is relaunched.
+// Dismisses and revert browser settings to default.
+// It also starts the HTTP server and enables mock authentication.
++ (void)setUpHelper {
+  GREYAssertTrue([ChromeEarlGrey isCustomWebKitLoadedIfRequested],
+                 @"Unable to load custom WebKit");
+
+  [CoverageUtils configureCoverageReportPath];
+
+  [[self class] startHTTPServer];
+  [[self class] enableMockAuthentication];
+
+  // Sometimes on start up there can be infobars (e.g. restore session), so
+  // ensure the UI is in a clean state.
+  [self removeAnyOpenMenusAndInfoBars];
+  [self closeAllTabs];
+  [ChromeEarlGrey setContentSettings:CONTENT_SETTING_DEFAULT];
+
+  [CoverageUtils configureCoverageReportPath];
+}
+
+// Resets the variables tracking app state.
+// Called at the start of a test and when the app is relaunched.
+- (void)resetAppState {
+  _isHTTPServerStopped = NO;
+  _isMockAuthenticationDisabled = NO;
+  _tearDownHandler = nil;
+  _originalOrientation = GetCurrentDeviceOrientation();
+}
+
 #pragma mark - Handling system alerts
 
 - (void)failAllTestsDueToSystemAlertVisible {
   XCTFail("System alerts are present on device. Skipping all tests.");
+}
+
+#pragma mark AppLaunchManagerObserver method
+
+- (void)appLaunchManagerDidRelaunchApp:(AppLaunchManager*)appLaunchManager {
+  // Do not call +[ChromeTestCase setUpHelper] if the app was relaunched before
+  // +setUpForTestCase. +setUpForTestCase will call +setUpHelper, and
+  // +setUpHelper can not be called twice during setup process.
+  if (gExecutedSetUpForTestCase) {
+    [ChromeTestCase setUpHelper];
+
+    // Do not call test method setup steps if the app was relaunched before
+    // -setUp is executed. If do so, two new tabs will be opened before test
+    // method starts.
+    if (_executedTestMethodSetUp) {
+      [self resetAppState];
+
+      ResetAuthentication();
+
+      // Reset any remaining sign-in state from previous tests.
+      [ChromeEarlGrey signOutAndClearAccounts];
+      [ChromeEarlGrey openNewTab];
+    }
+  }
 }
 
 @end

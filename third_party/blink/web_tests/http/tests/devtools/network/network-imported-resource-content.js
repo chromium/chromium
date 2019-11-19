@@ -27,7 +27,7 @@
     request.requestContent().then(step3);
   }
 
-  function step3(content) {
+  function step3({ content, error, isEncoded }) {
     TestRunner.addResult('resource.content after requesting content: ' + content);
     TestRunner.completeTest();
   }

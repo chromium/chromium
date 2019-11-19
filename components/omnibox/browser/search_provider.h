@@ -24,6 +24,7 @@
 #include "components/omnibox/browser/answers_cache.h"
 #include "components/omnibox/browser/base_search_provider.h"
 #include "components/search_engines/template_url.h"
+#include "components/search_engines/template_url_service.h"
 #include "components/search_engines/template_url_service_observer.h"
 #include "third_party/metrics_proto/omnibox_input_type.pb.h"
 
@@ -31,7 +32,6 @@ class AutocompleteProviderClient;
 class AutocompleteProviderListener;
 class AutocompleteResult;
 class SearchProviderTest;
-class TemplateURLService;
 
 namespace history {
 struct KeywordSearchTermVisit;
@@ -77,6 +77,9 @@ class SearchProvider : public BaseSearchProvider,
   // AutocompleteProvider:
   void ResetSession() override;
 
+  // The verbatim score for an input which is not an URL.
+  static const int kNonURLVerbatimRelevance = 1300;
+
  protected:
   ~SearchProvider() override;
 
@@ -88,6 +91,9 @@ class SearchProvider : public BaseSearchProvider,
                            DontInlineAutocompleteAsynchronously);
   FRIEND_TEST_ALL_PREFIXES(SearchProviderTest, NavigationInline);
   FRIEND_TEST_ALL_PREFIXES(SearchProviderTest, NavigationInlineDomainClassify);
+  FRIEND_TEST_ALL_PREFIXES(SearchProviderTest, NavigationPrefixClassify);
+  FRIEND_TEST_ALL_PREFIXES(SearchProviderTest, NavigationMidWordClassify);
+  FRIEND_TEST_ALL_PREFIXES(SearchProviderTest, NavigationWordBreakClassify);
   FRIEND_TEST_ALL_PREFIXES(SearchProviderTest, NavigationInlineSchemeSubstring);
   FRIEND_TEST_ALL_PREFIXES(SearchProviderTest, SuggestRelevanceExperiment);
   FRIEND_TEST_ALL_PREFIXES(SearchProviderTest, TestDeleteMatch);
@@ -96,13 +102,13 @@ class SearchProvider : public BaseSearchProvider,
   FRIEND_TEST_ALL_PREFIXES(SearchProviderTest, AnswersCache);
   FRIEND_TEST_ALL_PREFIXES(SearchProviderTest, RemoveExtraAnswers);
   FRIEND_TEST_ALL_PREFIXES(SearchProviderTest, DoesNotProvideOnFocus);
-  FRIEND_TEST_ALL_PREFIXES(SearchProviderTest, SendsWarmUpRequestOnFocus);
   FRIEND_TEST_ALL_PREFIXES(SearchProviderTest, DoTrimHttpScheme);
   FRIEND_TEST_ALL_PREFIXES(SearchProviderTest,
                            DontTrimHttpSchemeIfInputHasScheme);
   FRIEND_TEST_ALL_PREFIXES(SearchProviderTest,
                            DontTrimHttpsSchemeIfInputHasScheme);
   FRIEND_TEST_ALL_PREFIXES(SearchProviderTest, DoTrimHttpsScheme);
+  FRIEND_TEST_ALL_PREFIXES(SearchProviderWarmUpTest, SendsWarmUpRequestOnFocus);
   FRIEND_TEST_ALL_PREFIXES(InstantExtendedPrefetchTest, ClearPrefetchedResults);
   FRIEND_TEST_ALL_PREFIXES(InstantExtendedPrefetchTest, SetPrefetchQuery);
 
@@ -131,7 +137,6 @@ class SearchProvider : public BaseSearchProvider,
       keyword_provider_ = keyword_provider;
     }
 
-    TemplateURLService* template_url_service() { return template_url_service_; }
     const base::string16& default_provider() const { return default_provider_; }
     const base::string16& keyword_provider() const { return keyword_provider_; }
 
@@ -262,10 +267,12 @@ class SearchProvider : public BaseSearchProvider,
 
   // Starts a new SimpleURLLoader requesting suggest results from
   // |template_url|; callers own the returned SimpleURLLoader, which is NULL for
-  // invalid providers.
+  // invalid providers. Note the request will never time out unless the given
+  // |timeout| is greater than 0.
   std::unique_ptr<network::SimpleURLLoader> CreateSuggestLoader(
       const TemplateURL* template_url,
-      const AutocompleteInput& input);
+      const AutocompleteInput& input,
+      const base::TimeDelta& timeout);
 
   // Converts the parsed results to a set of AutocompleteMatches, |matches_|.
   void ConvertResultsToAutocompleteMatches();
@@ -430,7 +437,8 @@ class SearchProvider : public BaseSearchProvider,
   AnswersCache answers_cache_;  // Cache for last answers seen.
   AnswersQueryData prefetch_data_;  // Data to use for query prefetching.
 
-  ScopedObserver<TemplateURLService, TemplateURLServiceObserver> observer_;
+  ScopedObserver<TemplateURLService, TemplateURLServiceObserver> observer_{
+      this};
 
   DISALLOW_COPY_AND_ASSIGN(SearchProvider);
 };

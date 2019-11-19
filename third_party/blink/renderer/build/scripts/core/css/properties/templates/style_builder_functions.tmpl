@@ -2,51 +2,32 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-{% macro declare_initial(prefix = None) %}
-void {{prefix ~ '::' if prefix}}ApplyInitial(StyleResolverState& state) const{{' override' if not prefix}}
-{%- endmacro %}
-{% macro declare_inherit(prefix = None) %}
-void {{prefix ~ '::' if prefix}}ApplyInherit(StyleResolverState& state) const{{' override' if not prefix}}
-{%- endmacro %}
-{% macro declare_value(prefix = None) %}
-void {{prefix ~ '::' if prefix}}ApplyValue(StyleResolverState& state, const CSSValue& value) const{{' override' if not prefix}}
-{%- endmacro %}
-
-{% macro apply_initial(property, header) %}
-  {% set spaces = 2 if header else 0 %}
+{% macro apply_initial(property) %}
+  {% set class_name = property.name.to_upper_camel_case() %}
   {% if property.style_builder_declare %}
-    {% if property.style_builder_inline == header and property.style_builder_generate_initial %}
-{{declare_initial(property.name.to_upper_camel_case() if not header)|indent(spaces, true)}} {
-{{caller(property)|indent(spaces, true)-}}
-{{'}'|indent(spaces, true)}}
-    {% else %}
-{{declare_initial()|indent(spaces, true)-}};
+    {% if property.style_builder_generate_initial %}
+void {{class_name}}::ApplyInitial(StyleResolverState& state) const {
+{{(caller(property) ~ '}')}}
     {% endif %}
   {% endif %}
 {% endmacro %}
 
-{% macro apply_inherit(property, header) %}
-  {% set spaces = 2 if header else 0 %}
+{% macro apply_inherit(property) %}
+  {% set class_name = property.name.to_upper_camel_case() %}
   {% if property.style_builder_declare %}
-    {% if property.style_builder_inline == header and property.style_builder_generate_inherit %}
-{{declare_inherit(property.name.to_upper_camel_case() if not header)|indent(spaces, true)}} {
-{{caller(property)|indent(spaces, true)-}}
-{{'}'|indent(spaces, true)}}
-    {% else %}
-{{declare_inherit()|indent(spaces, true)-}};
+    {% if property.style_builder_generate_inherit %}
+void {{class_name}}::ApplyInherit(StyleResolverState& state) const {
+{{(caller(property) ~ '}')}}
     {% endif %}
   {% endif %}
 {% endmacro %}
 
-{% macro apply_value(property, header) %}
-  {% set spaces = 2 if header else 0 %}
+{% macro apply_value(property) %}
+  {% set class_name = property.name.to_upper_camel_case() %}
   {% if property.style_builder_declare %}
-    {% if property.style_builder_inline == header and property.style_builder_generate_value %}
-{{declare_value(property.name.to_upper_camel_case() if not header)|indent(spaces, true)}} {
-{{caller(property)|indent(spaces, true)-}}
-{{'}'|indent(spaces, true)}}
-    {% else %}
-{{declare_value()|indent(spaces, true)-}};
+    {% if property.style_builder_generate_value %}
+void {{class_name}}::ApplyValue(StyleResolverState& state, const CSSValue& value) const {
+{{(caller(property) ~ '}')}}
     {% endif %}
   {% endif %}
 {% endmacro %}
@@ -63,9 +44,9 @@ state.Style()->{{property.setter}}
 
 {% macro convert_and_set_value(property) %}
   {% if property.converter == 'CSSPrimitiveValue' %}
-{{set_value(property)}}(ToCSSPrimitiveValue(value).ConvertTo<{{property.type_name}}>());
+{{set_value(property)}}(To<CSSPrimitiveValue>(value).ConvertTo<{{property.type_name}}>());
   {%- elif property.converter == 'CSSIdentifierValue' %}
-{{set_value(property)}}(ToCSSIdentifierValue(value).ConvertTo<blink::{{property.type_name}}>());
+{{set_value(property)}}(To<CSSIdentifierValue>(value).ConvertTo<blink::{{property.type_name}}>());
   {%- elif property.converter %}
 {{set_value(property)}}(StyleBuilderConverter::{{property.converter}}(state, value));
   {%- endif %}
@@ -79,9 +60,9 @@ DCHECK(!resolved_property.IDEquals(PropertyID()));
 To<Longhand>(resolved_property).{{apply_call}};
 {% endmacro %}
 
-{% macro style_builder_functions(property, header) %}
+{% macro style_builder_functions(property) %}
   {% if not property.style_builder_template %}
-    {% call(property) apply_initial(property, header) %}
+    {% call(property) apply_initial(property) %}
       {% if property.svg %}
   {{set_value(property)}}(SVGComputedStyle::{{property.initial}}());
       {% elif property.font %}
@@ -93,7 +74,7 @@ To<Longhand>(resolved_property).{{apply_call}};
   state.Style()->{{property.is_inherited_setter}}(false);
       {% endif %}
     {% endcall %}
-    {% call(property) apply_inherit(property, header) %}
+    {% call(property) apply_inherit(property) %}
       {% if property.svg %}
   {{set_value(property)}}(state.ParentStyle()->SvgStyle().{{property.getter}}());
       {% elif property.font %}
@@ -105,30 +86,30 @@ To<Longhand>(resolved_property).{{apply_call}};
   state.Style()->{{property.is_inherited_setter}}(true);
       {% endif %}
     {% endcall %}
-    {% call(property) apply_value(property, header) %}
+    {% call(property) apply_value(property) %}
   {{convert_and_set_value(property)}}
         {% if property.independent %}
   state.Style()->{{property.is_inherited_setter}}(false);
         {% endif %}
     {% endcall %}
   {% elif property.style_builder_template == 'empty' %}
-    {% call(property) apply_initial(property, header) %}
+    {% call(property) apply_initial(property) %}
   // Intentionally empty.
     {% endcall %}
-    {% call(property) apply_inherit(property, header) %}
+    {% call(property) apply_inherit(property) %}
   // Intentionally empty.
     {% endcall %}
-    {% call(property) apply_value(property, header) %}
+    {% call(property) apply_value(property) %}
   // Intentionally empty.
     {% endcall %}
   {% elif property.style_builder_template == 'direction_aware' %}
-    {% call(property) apply_initial(property, header) %}
+    {% call(property) apply_initial(property) %}
 {{resolve_directional_property('ApplyInitial(state)')|indent(2, true) -}}
     {% endcall %}
-    {% call(property) apply_inherit(property, header) %}
+    {% call(property) apply_inherit(property) %}
 {{resolve_directional_property('ApplyInherit(state)')|indent(2, true) -}}
     {% endcall %}
-    {% call(property) apply_value(property, header) %}
+    {% call(property) apply_value(property) %}
 {{resolve_directional_property('ApplyValue(state, value)')|indent(2, true) -}}
     {% endcall %}
   {% elif property.style_builder_template == "auto" %}
@@ -136,18 +117,18 @@ To<Longhand>(resolved_property).{{apply_call}};
                        'HasAuto' + property.name_for_methods %}
     {% set auto_setter = property.style_builder_template_args['auto_setter'] or
                        'SetHasAuto' + property.name_for_methods %}
-    {% call(property) apply_initial(property, header) %}
+    {% call(property) apply_initial(property) %}
   state.Style()->{{auto_setter}}();
     {% endcall %}
-    {% call(property) apply_inherit(property, header) %}
+    {% call(property) apply_inherit(property) %}
   if (state.ParentStyle()->{{auto_getter}}())
     state.Style()->{{auto_setter}}();
   else
     {{set_value(property)}}(state.ParentStyle()->{{property.getter}}());
     {% endcall %}
-    {% call(property) apply_value(property, header) %}
-  if (value.IsIdentifierValue() &&
-      ToCSSIdentifierValue(value).GetValueID() == CSSValueAuto)
+    {% call(property) apply_value(property) %}
+  auto* identifier_value = DynamicTo<CSSIdentifierValue>(value);
+  if (identifier_value && identifier_value->GetValueID() == CSSValueID::kAuto)
     state.Style()->{{auto_setter}}();
   else
     {{convert_and_set_value(property)}}
@@ -157,7 +138,7 @@ To<Longhand>(resolved_property).{{apply_call}};
     {% set modifier_type = property.style_builder_template_args['modifier_type'] %}
     {% set getter = 'MaskBoxImage' if is_mask_box else 'BorderImage' %}
     {% set setter = 'Set' + getter %}
-    {% call(property) apply_initial(property, header) %}
+    {% call(property) apply_initial(property) %}
   const NinePieceImage& current_image = state.Style()->{{getter}}();
   {# Check for equality in case we can bail out before creating a new NinePieceImage. #}
       {% if modifier_type == 'Outset' %}
@@ -206,7 +187,7 @@ To<Longhand>(resolved_property).{{apply_call}};
       {% endif %}
   state.Style()->{{setter}}(image);
     {% endcall %}
-    {% call(property) apply_inherit(property, header) %}
+    {% call(property) apply_inherit(property) %}
   NinePieceImage image(state.Style()->{{getter}}());
       {% if modifier_type == 'Outset' %}
   image.CopyOutsetFrom(state.ParentStyle()->{{getter}}());
@@ -219,7 +200,7 @@ To<Longhand>(resolved_property).{{apply_call}};
       {% endif %}
   state.Style()->{{setter}}(image);
     {% endcall %}
-    {% call(property) apply_value(property, header) %}
+    {% call(property) apply_value(property) %}
   NinePieceImage image(state.Style()->{{getter}}());
       {% if modifier_type == 'Outset' %}
   image.SetOutset(CSSToStyleMap::MapNinePieceImageQuad(state, value));
@@ -236,13 +217,13 @@ To<Longhand>(resolved_property).{{apply_call}};
     {% set attribute = property.style_builder_template_args['attribute'] %}
     {% set animation = 'Animation' if property.style_builder_template == 'animation' else 'Transition' %}
     {% set vector = attribute + "List()" %}
-    {% call(property) apply_initial(property, header) %}
+    {% call(property) apply_initial(property) %}
   CSS{{animation}}Data& data = state.Style()->Access{{animation}}s();
   data.{{vector}}.clear();
   data.{{vector}}.push_back(CSS{{animation}}Data::Initial{{attribute}}());
     {% endcall %}
 
-    {% call(property) apply_inherit(property, header) %}
+    {% call(property) apply_inherit(property) %}
   const CSS{{animation}}Data* parent_data = state.ParentStyle()->{{animation}}s();
   if (!parent_data)
     ApplyInitial{{property_id}}(state);
@@ -250,49 +231,24 @@ To<Longhand>(resolved_property).{{apply_call}};
     state.Style()->Access{{animation}}s().{{vector}} = parent_data->{{vector}};
     {% endcall %}
 
-    {% call(property) apply_value(property, header) %}
+    {% call(property) apply_value(property) %}
   CSS{{animation}}Data& data = state.Style()->Access{{animation}}s();
   data.{{vector}}.clear();
-  for (auto& listValue : ToCSSValueList(value))
+  for (auto& listValue : To<CSSValueList>(value))
     data.{{vector}}.push_back(CSSToStyleMap::MapAnimation{{attribute}}(*listValue));
-    {% endcall %}
-  {% elif property.style_builder_template == 'svg_paint' %}
-    {% set paint_type = property.style_builder_template_args['paint_type'] %}
-    {% set visited_link_setter = 'SetVisitedLink' + paint_type %}
-    {% call(property) apply_initial(property, header) %}
-  if (state.ApplyPropertyToRegularStyle())
-    {{set_value(property)}}(SVGComputedStyle::Initial{{paint_type}}());
-  if (state.ApplyPropertyToVisitedLinkStyle())
-    state.Style()->AccessSVGStyle().{{visited_link_setter}}(SVGComputedStyle::Initial{{paint_type}}());
-    {% endcall %}
-
-    {% call(property) apply_inherit(property, header) %}
-  const SVGComputedStyle& parent_svg_style = state.ParentStyle()->SvgStyle();
-  if (state.ApplyPropertyToRegularStyle())
-    {{set_value(property)}}(parent_svg_style.{{paint_type}}());
-  if (state.ApplyPropertyToVisitedLinkStyle())
-    state.Style()->AccessSVGStyle().{{visited_link_setter}}(parent_svg_style.{{paint_type}}());
-    {% endcall %}
-
-    {% call(property) apply_value(property, header) %}
-  SVGPaint paint = StyleBuilderConverter::{{property.converter}}(state, value);
-  if (state.ApplyPropertyToRegularStyle())
-    {{set_value(property)}}(paint);
-  if (state.ApplyPropertyToVisitedLinkStyle())
-    state.Style()->AccessSVGStyle().{{visited_link_setter}}(paint);
     {% endcall %}
   {% elif property.style_builder_template in ['background_layer', 'mask_layer'] %}
     {% set layer_type = 'Background' if property.style_builder_template == 'background_layer' else 'Mask' %}
     {% set fill_type = property.style_builder_template_args['fill_type'] %}
     {% set fill_type_getter = property.style_builder_template_args['fill_type_getter'] or fill_type %}
-    {% call(property) apply_initial(property, header) %}
+    {% call(property) apply_initial(property) %}
   FillLayer* curr_child = &state.Style()->Access{{layer_type}}Layers();
   curr_child->Set{{fill_type}}(FillLayer::InitialFill{{fill_type}}(EFillLayerType::k{{layer_type}}));
   for (curr_child = curr_child->Next(); curr_child; curr_child = curr_child->Next())
     curr_child->Clear{{fill_type}}();
     {% endcall %}
 
-    {% call(property) apply_inherit(property, header) %}
+    {% call(property) apply_inherit(property) %}
   FillLayer* curr_child = &state.Style()->Access{{layer_type}}Layers();
   FillLayer* prev_child = 0;
   const FillLayer* curr_parent = &state.ParentStyle()->{{layer_type}}Layers();
@@ -320,16 +276,16 @@ To<Longhand>(resolved_property).{{apply_call}};
   }
     {% endcall %}
 
-    {% call(property) apply_value(property, header) %}
+    {% call(property) apply_value(property) %}
   FillLayer* curr_child = &state.Style()->Access{{layer_type}}Layers();
   FillLayer* prev_child = 0;
-  if (value.IsValueList() && !value.IsImageSetValue()) {
+  const auto* value_list = DynamicTo<CSSValueList>(value);
+  if (value_list && !value.IsImageSetValue()) {
     // Walk each value and put it into a layer, creating new layers as needed.
-    const CSSValueList& valueList = ToCSSValueList(value);
-    for (unsigned int i = 0; i < valueList.length(); i++) {
+    for (unsigned int i = 0; i < value_list->length(); i++) {
       if (!curr_child)
         curr_child = prev_child->EnsureNext();
-      CSSToStyleMap::MapFill{{fill_type}}(state, curr_child, valueList.Item(i));
+      CSSToStyleMap::MapFill{{fill_type}}(state, curr_child, value_list->Item(i));
       prev_child = curr_child;
       curr_child = curr_child->Next();
     }
@@ -343,42 +299,32 @@ To<Longhand>(resolved_property).{{apply_call}};
     curr_child = curr_child->Next();
   }
     {% endcall %}
-  {% elif property.style_builder_template == 'color' %}
+  {% elif property.style_builder_template in ['color', 'visited_color'] %}
     {% set initial_color = property.style_builder_template_args['initial_color'] or 'StyleColor::CurrentColor' %}
-    {% set visited_link_setter = 'SetVisitedLink' + property.name_for_methods %}
-    {% call(property) apply_initial(property, header) %}
-  StyleColor color = {{initial_color}}();
-  if (state.ApplyPropertyToRegularStyle())
-    {{set_value(property)}}(color);
-  if (state.ApplyPropertyToVisitedLinkStyle())
-    state.Style()->{{visited_link_setter}}(color);
+    {% set is_visited = property.style_builder_template == 'visited_color' %}
+    {% set main_getter = is_visited and property.unvisited_property.getter or property.getter %}
+    {% call(property) apply_initial(property) %}
+  auto color = {{initial_color}}();
+  {{set_value(property)}}(color);
     {% endcall %}
 
-    {% call(property) apply_inherit(property, header) %}
-  // Visited link style can never explicitly inherit from parent visited link
-  // style so no separate getters are needed.
-  StyleColor color = state.ParentStyle()->{{property.getter}}();
-  if (state.ApplyPropertyToRegularStyle())
-    {{set_value(property)}}(color);
-  if (state.ApplyPropertyToVisitedLinkStyle())
-    state.Style()->{{visited_link_setter}}(color);
+    {% call(property) apply_inherit(property) %}
+  auto color = state.ParentStyle()->{{main_getter}}();
+  {{set_value(property)}}(color);
     {% endcall %}
 
-    {% call(property) apply_value(property, header) %}
-  if (state.ApplyPropertyToRegularStyle())
-    {{set_value(property)}}(StyleBuilderConverter::{{property.converter}}(state, value));
-  if (state.ApplyPropertyToVisitedLinkStyle()) {
-    state.Style()->{{visited_link_setter}}(
-        StyleBuilderConverter::{{property.converter}}(state, value, true));
-  }
+    {% call(property) apply_value(property) %}
+    {% set visited_link = is_visited and 'true' or 'false' %}
+  {{set_value(property)}}(StyleBuilderConverter::{{property.converter}}(state, value, {{visited_link}}));
     {% endcall %}
   {% elif property.style_builder_template == 'counter' %}
     {% set action = property.style_builder_template_args['action'] %}
-    {% call(property) apply_initial(property, header) %}
+    {% call(property) apply_initial(property) %}
   state.Style()->Clear{{action}}Directives();
     {% endcall %}
 
-    {% call(property) apply_inherit(property, header) %}
+    {% call(property) apply_inherit(property) %}
+  state.Style()->Clear{{action}}Directives();
   const CounterDirectiveMap* parent_map = state.ParentStyle()->GetCounterDirectives();
   if (!parent_map)
     return;
@@ -394,23 +340,21 @@ To<Longhand>(resolved_property).{{apply_call}};
   }
     {% endcall %}
 
-    {% call(property) apply_value(property, header) %}
+    {% call(property) apply_value(property) %}
   state.Style()->Clear{{action}}Directives();
 
-  if (!value.IsValueList()) {
-    DCHECK(value.IsIdentifierValue());
-    DCHECK_EQ(ToCSSIdentifierValue(value).GetValueID(), CSSValueNone);
+  const auto* list = DynamicTo<CSSValueList>(value);
+  if (!list) {
+    DCHECK_EQ(To<CSSIdentifierValue>(value).GetValueID(), CSSValueID::kNone);
     return;
   }
 
   CounterDirectiveMap& map = state.Style()->AccessCounterDirectives();
 
-  const CSSValueList& list = ToCSSValueList(value);
-
-  for (const CSSValue* item : list) {
-    const CSSValuePair& pair = ToCSSValuePair(*item);
-    AtomicString identifier(ToCSSCustomIdentValue(pair.First()).Value());
-    int counter_value = ToCSSPrimitiveValue(pair.Second()).GetIntValue();
+  for (const CSSValue* item : *list) {
+    const auto& pair = To<CSSValuePair>(*item);
+    AtomicString identifier(To<CSSCustomIdentValue>(pair.First()).Value());
+    int counter_value = To<CSSPrimitiveValue>(pair.Second()).GetIntValue();
     CounterDirectives& directives =
     map.insert(identifier, CounterDirectives()).stored_value->value;
         {% if action == 'Reset' %}
@@ -423,7 +367,7 @@ To<Longhand>(resolved_property).{{apply_call}};
     {% endcall %}
   {% elif property.style_builder_template == 'grid' %}
     {% set type = property.style_builder_template_args['type'] %}
-    {% call(property) apply_initial(property, header) %}
+    {% call(property) apply_initial(property) %}
   state.Style()->SetGridTemplate{{type}}s(ComputedStyleInitialValues::InitialGridTemplate{{type}}s());
   state.Style()->SetNamedGrid{{type}}Lines(ComputedStyleInitialValues::InitialNamedGrid{{type}}Lines());
   state.Style()->SetOrderedNamedGrid{{type}}Lines(ComputedStyleInitialValues::InitialOrderedNamedGrid{{type}}Lines());
@@ -434,7 +378,7 @@ To<Longhand>(resolved_property).{{apply_call}};
   state.Style()->SetGridAutoRepeat{{type}}sType(ComputedStyleInitialValues::InitialGridAutoRepeat{{type}}sType());
     {% endcall %}
 
-    {% call(property) apply_inherit(property, header) %}
+    {% call(property) apply_inherit(property) %}
   state.Style()->SetGridTemplate{{type}}s(state.ParentStyle()->GridTemplate{{type}}s());
   state.Style()->SetNamedGrid{{type}}Lines(state.ParentStyle()->NamedGrid{{type}}Lines());
   state.Style()->SetOrderedNamedGrid{{type}}Lines(state.ParentStyle()->OrderedNamedGrid{{type}}Lines());
@@ -445,7 +389,7 @@ To<Longhand>(resolved_property).{{apply_call}};
   state.Style()->SetGridAutoRepeat{{type}}sType(state.ParentStyle()->GridAutoRepeat{{type}}sType());
     {% endcall %}
 
-    {% call(property) apply_value(property, header) %}
+    {% call(property) apply_value(property) %}
   Vector<GridTrackSize> track_sizes;
   Vector<GridTrackSize> auto_repeat_track_sizes;
   NamedGridLinesMap named_grid_lines;

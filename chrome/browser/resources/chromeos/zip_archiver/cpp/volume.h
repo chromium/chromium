@@ -116,7 +116,7 @@ class Volume {
                             const std::string& encoding,
                             int64_t archive_size);
 
-  // A calback helper for OpenFile.
+  // A callback helper for OpenFile.
   void OpenFileCallback(int32_t result, const OpenFileArgs& args);
 
   // A callback helper for CloseFile.
@@ -124,7 +124,7 @@ class Volume {
                          const std::string& request_id,
                          const std::string& open_request_id);
 
-  // A calback helper for ReadFile.
+  // A callback helper for ReadFile.
   void ReadFileCallback(int32_t result,
                         const std::string& request_id,
                         const pp::VarDictionary& dictionary);

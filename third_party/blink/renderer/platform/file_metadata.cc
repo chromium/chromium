@@ -30,7 +30,11 @@
 
 #include "third_party/blink/renderer/platform/file_metadata.h"
 
+#include <limits>
+#include <string>
+
 #include "base/optional.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/filename_util.h"
 #include "third_party/blink/public/mojom/file/file_utilities.mojom-blink.h"
 #include "third_party/blink/public/platform/file_path_conversion.h"
@@ -57,7 +61,7 @@ FileMetadata FileMetadata::From(const base::File::Info& file_info) {
   return file_metadata;
 }
 
-bool GetFileSize(const String& path, long long& result) {
+bool GetFileSize(const String& path, int64_t& result) {
   FileMetadata metadata;
   if (!GetFileMetadata(path, metadata))
     return false;
@@ -75,12 +79,12 @@ bool GetFileModificationTime(const String& path, double& result) {
 
 bool GetFileMetadata(const String& path, FileMetadata& metadata) {
   DEFINE_THREAD_SAFE_STATIC_LOCAL(
-      ThreadSpecific<mojom::blink::FileUtilitiesHostPtr>, thread_specific_host,
-      ());
+      ThreadSpecific<mojo::Remote<mojom::blink::FileUtilitiesHost>>,
+      thread_specific_host, ());
   auto& host = *thread_specific_host;
   if (!host) {
     Platform::Current()->GetInterfaceProvider()->GetInterface(
-        mojo::MakeRequest(&host));
+        host.BindNewPipeAndPassReceiver());
   }
 
   base::Optional<base::File::Info> file_info;

@@ -9,25 +9,28 @@
 #include "base/bind.h"
 #include "content/browser/permissions/permission_controller_impl.h"
 #include "content/browser/permissions/permission_service_impl.h"
+#include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/permission_controller.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
-
-using blink::mojom::PermissionObserverPtr;
+#include "mojo/public/cpp/bindings/remote.h"
 
 namespace content {
 
 class PermissionServiceContext::PermissionSubscription {
  public:
-  PermissionSubscription(PermissionServiceContext* context,
-                         PermissionObserverPtr observer)
+  PermissionSubscription(
+      PermissionServiceContext* context,
+      mojo::PendingRemote<blink::mojom::PermissionObserver> observer)
       : context_(context), observer_(std::move(observer)) {
-    observer_.set_connection_error_handler(base::BindOnce(
+    observer_.set_disconnect_handler(base::BindOnce(
         &PermissionSubscription::OnConnectionError, base::Unretained(this)));
   }
+  PermissionSubscription(const PermissionSubscription&) = delete;
+  PermissionSubscription& operator=(const PermissionSubscription&) = delete;
 
   ~PermissionSubscription() {
     DCHECK_NE(id_, 0);
@@ -50,8 +53,8 @@ class PermissionServiceContext::PermissionSubscription {
   void set_id(int id) { id_ = id; }
 
  private:
-  PermissionServiceContext* context_;
-  PermissionObserverPtr observer_;
+  PermissionServiceContext* const context_;
+  mojo::Remote<blink::mojom::PermissionObserver> observer_;
   int id_ = 0;
 };
 
@@ -73,45 +76,53 @@ PermissionServiceContext::~PermissionServiceContext() {
 }
 
 void PermissionServiceContext::CreateService(
-    blink::mojom::PermissionServiceRequest request) {
+    mojo::PendingReceiver<blink::mojom::PermissionService> receiver) {
   DCHECK(render_frame_host_);
-  services_.AddBinding(std::make_unique<PermissionServiceImpl>(
-                           this, render_frame_host_->GetLastCommittedOrigin()),
-                       std::move(request));
+  services_.Add(std::make_unique<PermissionServiceImpl>(
+                    this, render_frame_host_->GetLastCommittedOrigin()),
+                std::move(receiver));
 }
 
 void PermissionServiceContext::CreateServiceForWorker(
-    blink::mojom::PermissionServiceRequest request,
-    const url::Origin& origin) {
-  services_.AddBinding(std::make_unique<PermissionServiceImpl>(this, origin),
-                       std::move(request));
+    const url::Origin& origin,
+    mojo::PendingReceiver<blink::mojom::PermissionService> receiver) {
+  services_.Add(std::make_unique<PermissionServiceImpl>(this, origin),
+                std::move(receiver));
 }
 
 void PermissionServiceContext::CreateSubscription(
     PermissionType permission_type,
     const url::Origin& origin,
-    PermissionObserverPtr observer) {
+    blink::mojom::PermissionStatus current_status,
+    blink::mojom::PermissionStatus last_known_status,
+    mojo::PendingRemote<blink::mojom::PermissionObserver> observer) {
   BrowserContext* browser_context = GetBrowserContext();
   if (!browser_context)
     return;
 
   auto subscription =
       std::make_unique<PermissionSubscription>(this, std::move(observer));
+
+  if (current_status != last_known_status) {
+    subscription->OnPermissionStatusChanged(current_status);
+    last_known_status = current_status;
+  }
+
   GURL requesting_origin(origin.Serialize());
   int subscription_id =
       PermissionControllerImpl::FromBrowserContext(browser_context)
           ->SubscribePermissionStatusChange(
               permission_type, render_frame_host_, requesting_origin,
-              base::Bind(&PermissionSubscription::OnPermissionStatusChanged,
-                         base::Unretained(subscription.get())));
+              base::BindRepeating(
+                  &PermissionSubscription::OnPermissionStatusChanged,
+                  base::Unretained(subscription.get())));
   subscription->set_id(subscription_id);
   subscriptions_[subscription_id] = std::move(subscription);
 }
 
 void PermissionServiceContext::ObserverHadConnectionError(int subscription_id) {
-  auto it = subscriptions_.find(subscription_id);
-  DCHECK(it != subscriptions_.end());
-  subscriptions_.erase(it);
+  size_t erased = subscriptions_.erase(subscription_id);
+  DCHECK_EQ(1u, erased);
 }
 
 void PermissionServiceContext::RenderFrameHostChanged(
@@ -139,7 +150,15 @@ void PermissionServiceContext::CloseBindings(
   if (render_frame_host != render_frame_host_)
     return;
 
-  services_.CloseAllBindings();
+  if (!services_.empty() || !subscriptions_.empty()) {
+    // |services_| and |subscriptions_| are destroyed here, so the page
+    // functionality might be broken if we restore the page from back-forward
+    // cache. Disable back-forward cache for this frame to ensure that this
+    // would not happen.
+    content::BackForwardCache::DisableForRenderFrameHost(
+        render_frame_host_, "PermissionServiceContext");
+  }
+  services_.Clear();
   subscriptions_.clear();
 }
 
@@ -160,8 +179,4 @@ GURL PermissionServiceContext::GetEmbeddingOrigin() const {
                         : GURL();
 }
 
-RenderFrameHost* PermissionServiceContext::render_frame_host() const {
-  return render_frame_host_;
-}
-
-} // namespace content
+}  // namespace content

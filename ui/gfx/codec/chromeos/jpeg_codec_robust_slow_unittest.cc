@@ -5,6 +5,7 @@
 #include <math.h>
 #include <stdint.h>
 
+#include "base/containers/span.h"
 #include "base/stl_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/codec/chromeos/jpeg_codec_robust_slow.h"
@@ -59,7 +60,7 @@ const uint8_t kTopSitesMigrationTestImage[] =
 
 namespace gfx {
 
-static void MakeRGBImage(int w, int h, std::vector<unsigned char>* dat) {
+static void MakeRGBImage(int w, int h, std::vector<uint8_t>* dat) {
   dat->resize(w * h * 3);
   for (int y = 0; y < h; y++) {
     for (int x = 0; x < w; x++) {
@@ -76,15 +77,15 @@ TEST(JPEGCodecRobustSlow, DecodeCorrupted) {
   int w = 20, h = 20;
 
   // some random data (an uncompressed image)
-  std::vector<unsigned char> original;
+  std::vector<uint8_t> original;
   MakeRGBImage(w, h, &original);
 
   // it should fail when given non-JPEG compressed data
-  std::vector<unsigned char> output;
+  std::vector<uint8_t> output;
   int outw, outh;
-  ASSERT_FALSE(JPEGCodecRobustSlow::Decode(&original[0], original.size(),
-                                           JPEGCodecRobustSlow::FORMAT_RGB,
-                                           &output, &outw, &outh));
+  ASSERT_FALSE(JPEGCodecRobustSlow::Decode(
+      original, JPEGCodecRobustSlow::FORMAT_RGB, &output, &outw, &outh,
+      base::nullopt /* max_decoded_num_bytes */));
 }
 
 // Test that we can decode JPEG images without invalid-read errors on valgrind.
@@ -94,11 +95,20 @@ TEST(JPEGCodecRobustSlow, InvalidRead) {
   std::vector<unsigned char> output;
   int outw, outh;
   ASSERT_TRUE(JPEGCodecRobustSlow::Decode(
-      kTopSitesMigrationTestImage, base::size(kTopSitesMigrationTestImage),
-      JPEGCodecRobustSlow::FORMAT_RGB, &output, &outw, &outh));
+      kTopSitesMigrationTestImage, JPEGCodecRobustSlow::FORMAT_RGB, &output,
+      &outw, &outh, base::nullopt /* max_decoded_num_bytes */));
   ASSERT_TRUE(JPEGCodecRobustSlow::Decode(
-      kTopSitesMigrationTestImage, base::size(kTopSitesMigrationTestImage),
-      JPEGCodecRobustSlow::FORMAT_RGBA, &output, &outw, &outh));
+      kTopSitesMigrationTestImage, JPEGCodecRobustSlow::FORMAT_RGBA, &output,
+      &outw, &outh, base::nullopt /* max_decoded_num_bytes */));
+}
+
+// Test that we can limit the size of a decode operation.
+TEST(JPEGCodecRobustSlow, MaxDecodedSize) {
+  std::vector<uint8_t> output;
+  int outw, outh;
+  EXPECT_FALSE(JPEGCodecRobustSlow::Decode(
+      kTopSitesMigrationTestImage, JPEGCodecRobustSlow::FORMAT_RGB, &output,
+      &outw, &outh, 1 /* max_decoded_num_bytes */));
 }
 
 }  // namespace gfx

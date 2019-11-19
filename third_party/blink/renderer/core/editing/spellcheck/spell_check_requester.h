@@ -43,8 +43,8 @@ class LocalFrame;
 class SpellCheckRequester;
 class WebTextCheckClient;
 
-class CORE_EXPORT SpellCheckRequest
-    : public GarbageCollectedFinalized<SpellCheckRequest> {
+class CORE_EXPORT SpellCheckRequest final
+    : public GarbageCollected<SpellCheckRequest> {
  public:
   static const int kUnrequestedTextCheckingSequence = -1;
 
@@ -80,12 +80,8 @@ class CORE_EXPORT SpellCheckRequest
 };
 
 class CORE_EXPORT SpellCheckRequester final
-    : public GarbageCollectedFinalized<SpellCheckRequester> {
+    : public GarbageCollected<SpellCheckRequester> {
  public:
-  static SpellCheckRequester* Create(LocalFrame& frame) {
-    return MakeGarbageCollected<SpellCheckRequester>(frame);
-  }
-
   explicit SpellCheckRequester(LocalFrame&);
   ~SpellCheckRequester();
   void Trace(Visitor*);
@@ -125,7 +121,7 @@ class CORE_EXPORT SpellCheckRequester final
 
   int last_request_sequence_;
   int last_processed_sequence_;
-  TimeTicks last_request_time_;
+  base::TimeTicks last_request_time_;
 
   TaskRunnerTimer<SpellCheckRequester> timer_to_process_queued_request_;
 

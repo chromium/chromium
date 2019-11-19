@@ -113,6 +113,7 @@ class VIZ_CLIENT_EXPORT ClientResourceProvider {
   class VIZ_CLIENT_EXPORT ScopedSkSurface {
    public:
     ScopedSkSurface(GrContext* gr_context,
+                    sk_sp<SkColorSpace> color_space,
                     GLuint texture_id,
                     GLenum texture_target,
                     const gfx::Size& size,

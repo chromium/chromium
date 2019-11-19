@@ -50,3 +50,8 @@ bool IOSChromeVariationsServiceClient::OverridesRestrictParameter(
     std::string* parameter) {
   return false;
 }
+
+bool IOSChromeVariationsServiceClient::IsEnterprise() {
+  // TODO(crbug.com/1003846): Implement enterprise check for iOS.
+  return false;
+}

@@ -18,6 +18,7 @@
 #include "chrome/browser/sync_file_system/sync_file_system_service_factory.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/common/extension.h"
 
@@ -28,6 +29,10 @@ namespace syncfs_internals {
 
 namespace {
 
+// TODO(crbug.com/989631): Break this and GetExtensionStatusesAsDictionary
+// into a separate library, so the callbacks can use weak pointers to the
+// calling instances. This will also break the dependency between
+// ExtensionStatusesHandler and FileMetadataHandler.
 void ConvertExtensionStatusToDictionary(
     const base::WeakPtr<extensions::ExtensionService>& extension_service,
     const base::Callback<void(const base::ListValue&)>& callback,
@@ -37,13 +42,17 @@ void ConvertExtensionStatusToDictionary(
     return;
   }
 
+  extensions::ExtensionRegistry* extension_registry =
+      extensions::ExtensionRegistry::Get(extension_service->profile());
+
   base::ListValue list;
   for (auto itr = status_map.begin(); itr != status_map.end(); ++itr) {
     std::string extension_id = itr->first.HostNoBrackets();
 
     // Join with human readable extension name.
     const extensions::Extension* extension =
-        extension_service->GetExtensionById(extension_id, true);
+        extension_registry->GetExtensionById(
+            extension_id, extensions::ExtensionRegistry::EVERYTHING);
     if (!extension)
       continue;
 
@@ -60,8 +69,7 @@ void ConvertExtensionStatusToDictionary(
 }  // namespace
 
 ExtensionStatusesHandler::ExtensionStatusesHandler(Profile* profile)
-    : profile_(profile),
-      weak_ptr_factory_(this) {}
+    : profile_(profile) {}
 
 ExtensionStatusesHandler::~ExtensionStatusesHandler() {}
 

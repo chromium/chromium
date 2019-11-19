@@ -9,10 +9,11 @@
 
 #include "base/time/time.h"
 #include "net/base/ip_endpoint.h"
+#include "net/base/net_export.h"
 
 namespace net {
 
-class FtpResponseInfo {
+class NET_EXPORT_PRIVATE FtpResponseInfo {
  public:
   FtpResponseInfo();
   ~FtpResponseInfo();

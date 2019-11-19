@@ -8,6 +8,7 @@
 #include "net/url_request/report_sender.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 
 namespace {
 
@@ -46,7 +47,7 @@ class SimpleURLLoaderOwner {
   ~SimpleURLLoaderOwner() = default;
 
   void OnResponseStarted(const GURL& final_url,
-                         const network::ResourceResponseHead& response_head) {
+                         const network::mojom::URLResponseHead& response_head) {
     OnDone(&response_head, net::OK);
   }
 
@@ -54,7 +55,7 @@ class SimpleURLLoaderOwner {
     OnDone(loader_->ResponseInfo(), loader_->NetError());
   }
 
-  void OnDone(const network::ResourceResponseHead* response_head,
+  void OnDone(const network::mojom::URLResponseHead* response_head,
               int net_error) {
     if (net_error == net::OK) {
       if (success_callback_)

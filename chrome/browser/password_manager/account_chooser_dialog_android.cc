@@ -10,6 +10,8 @@
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/macros.h"
+#include "chrome/android/chrome_jni_headers/AccountChooserDialog_jni.h"
+#include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/password_manager/credential_android.h"
 #include "chrome/browser/profiles/profile.h"
@@ -22,27 +24,21 @@
 #include "components/password_manager/core/browser/password_ui_utils.h"
 #include "components/password_manager/core/common/credential_manager_types.h"
 #include "content/public/browser/storage_partition.h"
-#include "jni/AccountChooserDialog_jni.h"
 #include "ui/android/window_android.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/android/java_bitmap.h"
 #include "ui/gfx/range/range.h"
 
-using base::android::AttachCurrentThread;
-using base::android::ConvertUTF16ToJavaString;
-using base::android::JavaParamRef;
-using base::android::ScopedJavaLocalRef;
-
 namespace {
 
 void JNI_AccountChooserDialog_AddElementsToJavaCredentialArray(
     JNIEnv* env,
-    ScopedJavaLocalRef<jobjectArray> java_credentials_array,
+    base::android::ScopedJavaLocalRef<jobjectArray> java_credentials_array,
     const std::vector<std::unique_ptr<autofill::PasswordForm>>& forms) {
   int index = 0;
   for (const auto& password_form : forms) {
-    ScopedJavaLocalRef<jobject> java_credential = CreateNativeCredential(
-        env, *password_form, index);
+    base::android::ScopedJavaLocalRef<jobject> java_credential =
+        CreateNativeCredential(env, *password_form, index);
     env->SetObjectArrayElement(java_credentials_array.obj(), index,
                                java_credential.obj());
     index++;
@@ -82,7 +78,8 @@ void AvatarFetcherAndroid::OnFetchComplete(const GURL& url,
     base::android::ScopedJavaLocalRef<jobject> java_bitmap =
         gfx::ConvertToJavaBitmap(bitmap);
     Java_AccountChooserDialog_imageFetchComplete(
-        AttachCurrentThread(), java_dialog_, index_, java_bitmap);
+        base::android::AttachCurrentThread(), java_dialog_, index_,
+        java_bitmap);
   }
   delete this;
 }
@@ -117,13 +114,17 @@ AccountChooserDialogAndroid::AccountChooserDialogAndroid(
 
 AccountChooserDialogAndroid::~AccountChooserDialogAndroid() {}
 
-void AccountChooserDialogAndroid::ShowDialog() {
-  JNIEnv* env = AttachCurrentThread();
+bool AccountChooserDialogAndroid::ShowDialog() {
+  TabAndroid* tab = TabAndroid::FromWebContents(web_contents_);
+  if (!(tab && tab->IsUserInteractable())) {
+    delete this;
+    return false;
+  }
+  JNIEnv* env = base::android::AttachCurrentThread();
   base::string16 title =
       l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_ACCOUNT_CHOOSER_TITLE);
-  ;
   gfx::NativeWindow native_window = web_contents_->GetTopLevelNativeWindow();
-  ScopedJavaLocalRef<jobjectArray> java_credentials_array =
+  base::android::ScopedJavaLocalRef<jobjectArray> java_credentials_array =
       CreateNativeCredentialArray(env, local_credentials_forms().size());
   JNI_AccountChooserDialog_AddElementsToJavaCredentialArray(
       env, java_credentials_array, local_credentials_forms());
@@ -148,11 +149,12 @@ void AccountChooserDialogAndroid::ShowDialog() {
   int avatar_index = 0;
   for (const auto& form : local_credentials_forms())
     FetchAvatar(dialog_jobject_, form.get(), avatar_index++, loader_factory);
+  return true;
 }
 
 void AccountChooserDialogAndroid::OnCredentialClicked(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
+    const base::android::JavaParamRef<jobject>& obj,
     jint credential_item,
     jboolean signin_button_clicked) {
   ChooseCredential(
@@ -161,20 +163,21 @@ void AccountChooserDialogAndroid::OnCredentialClicked(
       signin_button_clicked);
 }
 
-void AccountChooserDialogAndroid::Destroy(JNIEnv* env,
-                                          const JavaParamRef<jobject>& obj) {
+void AccountChooserDialogAndroid::Destroy(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& obj) {
   delete this;
 }
 
 void AccountChooserDialogAndroid::CancelDialog(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj) {
+    const base::android::JavaParamRef<jobject>& obj) {
   OnDialogCancel();
 }
 
 void AccountChooserDialogAndroid::OnLinkClicked(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj) {
+    const base::android::JavaParamRef<jobject>& obj) {
   web_contents_->OpenURL(content::OpenURLParams(
       GURL(password_manager::kPasswordManagerHelpCenterSmartLock),
       content::Referrer(), WindowOpenDisposition::NEW_FOREGROUND_TAB,
@@ -182,7 +185,7 @@ void AccountChooserDialogAndroid::OnLinkClicked(
 }
 
 void AccountChooserDialogAndroid::WebContentsDestroyed() {
-  JNIEnv* env = AttachCurrentThread();
+  JNIEnv* env = base::android::AttachCurrentThread();
   Java_AccountChooserDialog_dismissDialog(env, dialog_jobject_);
 }
 
@@ -192,7 +195,7 @@ void AccountChooserDialogAndroid::OnVisibilityChanged(
     // TODO(https://crbug.com/610700): once bug is fixed, this code should be
     // gone.
     OnDialogCancel();
-    JNIEnv* env = AttachCurrentThread();
+    JNIEnv* env = base::android::AttachCurrentThread();
     Java_AccountChooserDialog_dismissDialog(env, dialog_jobject_);
   }
 }
@@ -211,26 +214,22 @@ void AccountChooserDialogAndroid::ChooseCredential(
     size_t index,
     password_manager::CredentialType type,
     bool signin_button_clicked) {
-  using namespace password_manager;
-  password_manager::metrics_util::AccountChooserUserAction action;
-  if (type == CredentialType::CREDENTIAL_TYPE_EMPTY) {
+  namespace metrics = password_manager::metrics_util;
+
+  metrics::AccountChooserUserAction action;
+  if (type == password_manager::CredentialType::CREDENTIAL_TYPE_EMPTY) {
     passwords_data_.ChooseCredential(nullptr);
-    action = metrics_util::ACCOUNT_CHOOSER_DISMISSED;
+    action = metrics::ACCOUNT_CHOOSER_DISMISSED;
   } else {
-    action = signin_button_clicked
-                 ? metrics_util::ACCOUNT_CHOOSER_SIGN_IN
-                 : metrics_util::ACCOUNT_CHOOSER_CREDENTIAL_CHOSEN;
+    action = signin_button_clicked ? metrics::ACCOUNT_CHOOSER_SIGN_IN
+                                   : metrics::ACCOUNT_CHOOSER_CREDENTIAL_CHOSEN;
     const auto& credentials_forms = local_credentials_forms();
-    if (index < credentials_forms.size()) {
+    if (index < credentials_forms.size())
       passwords_data_.ChooseCredential(credentials_forms[index].get());
-    }
   }
 
-  if (local_credentials_forms().size() == 1) {
-    password_manager::metrics_util::LogAccountChooserUserActionOneAccount(
-        action);
-  } else {
-    password_manager::metrics_util::LogAccountChooserUserActionManyAccounts(
-        action);
-  }
+  if (local_credentials_forms().size() == 1)
+    metrics::LogAccountChooserUserActionOneAccount(action);
+  else
+    metrics::LogAccountChooserUserActionManyAccounts(action);
 }

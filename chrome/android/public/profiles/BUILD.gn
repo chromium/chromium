@@ -1,0 +1,35 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+
+# Keep profiles and cookies in the same target due to bi-directional dependency
+# between Profile and CookiesFetcher.
+android_library("java") {
+  deps = [
+    "//base:base_java",
+    "//base:jni_java",
+    "//chrome/android/public/crypto:java",
+    "//content/public/android:content_java",
+  ]
+  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+  java_files = [
+    "java/src/org/chromium/chrome/browser/cookies/CanonicalCookie.java",
+    "java/src/org/chromium/chrome/browser/cookies/CookiesFetcher.java",
+    "java/src/org/chromium/chrome/browser/profiles/Profile.java",
+    "java/src/org/chromium/chrome/browser/profiles/ProfileKey.java",
+    "java/src/org/chromium/chrome/browser/profiles/ProfileManager.java",
+    "java/src/org/chromium/chrome/browser/profiles/ProfileManagerUtils.java",
+  ]
+}
+
+generate_jni("jni_headers") {
+  sources = [
+    "java/src/org/chromium/chrome/browser/cookies/CookiesFetcher.java",
+    "java/src/org/chromium/chrome/browser/profiles/Profile.java",
+    "java/src/org/chromium/chrome/browser/profiles/ProfileKey.java",
+    "java/src/org/chromium/chrome/browser/profiles/ProfileManager.java",
+    "java/src/org/chromium/chrome/browser/profiles/ProfileManagerUtils.java",
+  ]
+}

@@ -6,6 +6,12 @@ intervening, composited ancestors. The test is working correctly if the
 scrollbars are correctly positioned on top of the scroller and the scrolled
 contents.
 -->
+<script>
+if (window.internals) {
+    internals.useMockOverlayScrollbars();
+    internals.settings.setPreferCompositingToLCDTextEnabled(true);
+}
+</script>
 <style>
 #scroller {
     overflow: scroll;
@@ -49,11 +55,6 @@ contents.
     </div>
 </div>
 <script>
-if (window.internals) {
-    internals.runtimeFlags.overlayScrollbarsEnabled = true;
-    internals.settings.setPreferCompositingToLCDTextEnabled(true);
-}
-
 if (window.testRunner)
     testRunner.dumpAsTextWithPixelResults();
 

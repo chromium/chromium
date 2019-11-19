@@ -8,6 +8,7 @@
 #include "base/run_loop.h"
 #import "base/test/ios/wait_util.h"
 #include "base/test/metrics/user_action_tester.h"
+#import "ios/chrome/browser/find_in_page/features.h"
 #import "ios/chrome/browser/find_in_page/find_in_page_model.h"
 #import "ios/chrome/browser/web/chrome_web_test.h"
 #import "ios/web/public/test/fakes/test_web_state.h"
@@ -68,6 +69,11 @@ class FindTabHelperTest : public ChromeWebTest {
 
 // Tests the StartFinding(), ContinueFinding(), and StopFinding() methods.
 TEST_F(FindTabHelperTest, FindInPage) {
+  // Tests should not run if Find in Page iFrame feature flag is on. If it is,
+  // FindinPageResponseDelegate is used by FindinPageController to respond.
+  if (base::FeatureList::IsEnabled(kFindInPageiFrame)) {
+    return;
+  }
   LoadTestHtml(5);
   auto* helper = FindTabHelper::FromWebState(web_state());
   ASSERT_TRUE(helper);
@@ -132,6 +138,11 @@ TEST_F(FindTabHelperTest, FindInPage) {
 
 // Tests that ContinueFinding() wraps around when it reaches the last match.
 TEST_F(FindTabHelperTest, ContinueFindingWrapsAround) {
+  // Tests should not run if Find in Page iFrame feature flag is on. If it is,
+  // FindinPageResponseDelegate is used by FindinPageController to respond.
+  if (base::FeatureList::IsEnabled(kFindInPageiFrame)) {
+    return;
+  }
   LoadTestHtml(2);
   auto* helper = FindTabHelper::FromWebState(web_state());
   ASSERT_TRUE(helper);
@@ -183,6 +194,11 @@ TEST_F(FindTabHelperTest, ContinueFindingWrapsAround) {
 // Tests that the FindInPageModel returned by GetFindResults() is updated to
 // reflect the results of the latest find operation.
 TEST_F(FindTabHelperTest, GetFindResults) {
+  // Tests should not run if Find in Page iFrame feature flag is on. If it is,
+  // FindinPageResponseDelegate is used by FindinPageController to respond.
+  if (base::FeatureList::IsEnabled(kFindInPageiFrame)) {
+    return;
+  }
   LoadTestHtml(2);
   auto* helper = FindTabHelper::FromWebState(web_state());
   ASSERT_TRUE(helper);
@@ -228,6 +244,11 @@ TEST_F(FindTabHelperTest, GetFindResults) {
 
 // Tests the IsFindUIActive() getter and setter.
 TEST_F(FindTabHelperTest, IsFindUIActive) {
+  // Tests should not run if Find in Page iFrame feature flag is on. If it is,
+  // FindinPageResponseDelegate is used by FindinPageController to respond.
+  if (base::FeatureList::IsEnabled(kFindInPageiFrame)) {
+    return;
+  }
   auto* helper = FindTabHelper::FromWebState(web_state());
 
   helper->SetFindUIActive(true);
@@ -239,6 +260,11 @@ TEST_F(FindTabHelperTest, IsFindUIActive) {
 
 // Tests that IsFindUIActive() is reset to false on page navigation.
 TEST_F(FindTabHelperTest, FindUIActiveIsResetOnPageNavigation) {
+  // Tests should not run if Find in Page iFrame feature flag is on. If it is,
+  // FindinPageResponseDelegate is used by FindinPageController to respond.
+  if (base::FeatureList::IsEnabled(kFindInPageiFrame)) {
+    return;
+  }
   LoadTestHtml(2);
   auto* helper = FindTabHelper::FromWebState(web_state());
   helper->SetFindUIActive(true);

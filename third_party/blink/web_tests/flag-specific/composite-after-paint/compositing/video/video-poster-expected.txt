@@ -1,0 +1,58 @@
+A <video> should not have a layer until playback begins.
+This test can not be run manually, it requires testRunner.layerTreeAsText.
+
+Case: No src, no poster
+{
+  "layers": [
+    {
+      "name": "Scrolling background of LayoutView #document",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF"
+    }
+  ]
+}
+
+
+Case: Displaying poster
+{
+  "layers": [
+    {
+      "name": "Scrolling background of LayoutView #document",
+      "bounds": [785, 605],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF"
+    },
+    {
+      "name": "VerticalScrollbar",
+      "position": [785, 0],
+      "bounds": [15, 600]
+    }
+  ]
+}
+
+
+Case: Displaying movie
+{
+  "layers": [
+    {
+      "name": "Scrolling background of LayoutView #document",
+      "bounds": [785, 893],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF"
+    },
+    {
+      "name": "VerticalScrollbar",
+      "position": [785, 0],
+      "bounds": [15, 600]
+    },
+    {
+      "name": "LayoutVideo VIDEO",
+      "position": [8, 8],
+      "bounds": [352, 288]
+    }
+  ]
+}
+
+
+

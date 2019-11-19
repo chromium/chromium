@@ -17,7 +17,7 @@ import android.text.TextUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.UrlConstants;
+import org.chromium.chrome.browser.util.UrlConstants;
 import org.chromium.ui.widget.Toast;
 
 import java.net.MalformedURLException;

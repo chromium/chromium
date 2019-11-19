@@ -67,16 +67,6 @@ wtf_size_t CSSTokenizer::TokenCount() {
   return token_count_;
 }
 
-static bool IsNewLine(UChar cc) {
-  // We check \r and \f here, since we have no preprocessing stage
-  return (cc == '\r' || cc == '\n' || cc == '\f');
-}
-
-// https://drafts.csswg.org/css-syntax/#check-if-two-code-points-are-a-valid-escape
-static bool TwoCharsAreValidEscape(UChar first, UChar second) {
-  return first == '\\' && !IsNewLine(second);
-}
-
 void CSSTokenizer::Reconsume(UChar c) {
   input_.PushBack(c);
 }
@@ -397,7 +387,7 @@ CSSParserToken CSSTokenizer::ConsumeStringTokenUntil(UChar ending_code_point) {
       input_.Advance(size + 1);
       return CSSParserToken(kStringToken, input_.RangeAt(start_offset, size));
     }
-    if (IsNewLine(cc)) {
+    if (IsCSSNewLine(cc)) {
       input_.Advance(size);
       return CSSParserToken(kBadStringToken);
     }
@@ -410,14 +400,14 @@ CSSParserToken CSSTokenizer::ConsumeStringTokenUntil(UChar ending_code_point) {
     UChar cc = Consume();
     if (cc == ending_code_point || cc == kEndOfFileMarker)
       return CSSParserToken(kStringToken, RegisterString(output.ToString()));
-    if (IsNewLine(cc)) {
+    if (IsCSSNewLine(cc)) {
       Reconsume(cc);
       return CSSParserToken(kBadStringToken);
     }
     if (cc == '\\') {
       if (input_.NextInputChar() == kEndOfFileMarker)
         continue;
-      if (IsNewLine(input_.PeekWithoutReplacement(0)))
+      if (IsCSSNewLine(input_.PeekWithoutReplacement(0)))
         ConsumeSingleWhitespaceIfNext();  // This handles \r\n for us
       else
         output.Append(ConsumeEscape());
@@ -527,12 +517,7 @@ void CSSTokenizer::ConsumeBadUrlRemnants() {
 }
 
 void CSSTokenizer::ConsumeSingleWhitespaceIfNext() {
-  // We check for \r\n and HTML spaces since we don't do preprocessing
-  UChar next = input_.PeekWithoutReplacement(0);
-  if (next == '\r' && input_.PeekWithoutReplacement(1) == '\n')
-    input_.Advance(2);
-  else if (IsHTMLSpace(next))
-    input_.Advance();
+  blink::ConsumeSingleWhitespaceIfNext(input_);
 }
 
 void CSSTokenizer::ConsumeUntilCommentEndFound() {
@@ -581,49 +566,12 @@ StringView CSSTokenizer::ConsumeName() {
     return input_.RangeAt(start_offset, size);
   }
 
-  StringBuilder result;
-  while (true) {
-    UChar cc = Consume();
-    if (IsNameCodePoint(cc)) {
-      result.Append(cc);
-      continue;
-    }
-    if (TwoCharsAreValidEscape(cc, input_.PeekWithoutReplacement(0))) {
-      result.Append(ConsumeEscape());
-      continue;
-    }
-    Reconsume(cc);
-    return RegisterString(result.ToString());
-  }
+  return RegisterString(blink::ConsumeName(input_));
 }
 
 // https://drafts.csswg.org/css-syntax/#consume-an-escaped-code-point
 UChar32 CSSTokenizer::ConsumeEscape() {
-  UChar cc = Consume();
-  DCHECK(!IsNewLine(cc));
-  if (IsASCIIHexDigit(cc)) {
-    unsigned consumed_hex_digits = 1;
-    StringBuilder hex_chars;
-    hex_chars.Append(cc);
-    while (consumed_hex_digits < 6 &&
-           IsASCIIHexDigit(input_.PeekWithoutReplacement(0))) {
-      cc = Consume();
-      hex_chars.Append(cc);
-      consumed_hex_digits++;
-    };
-    ConsumeSingleWhitespaceIfNext();
-    bool ok = false;
-    UChar32 code_point = hex_chars.ToString().HexToUIntStrict(&ok);
-    DCHECK(ok);
-    if (code_point == 0 || (0xD800 <= code_point && code_point <= 0xDFFF) ||
-        code_point > 0x10FFFF)
-      return kReplacementCharacter;
-    return code_point;
-  }
-
-  if (cc == kEndOfFileMarker)
-    return kReplacementCharacter;
-  return cc;
+  return blink::ConsumeEscape(input_);
 }
 
 bool CSSTokenizer::NextTwoCharsAreValidEscape() {
@@ -653,15 +601,7 @@ bool CSSTokenizer::NextCharsAreNumber() {
 
 // https://drafts.csswg.org/css-syntax/#would-start-an-identifier
 bool CSSTokenizer::NextCharsAreIdentifier(UChar first) {
-  UChar second = input_.PeekWithoutReplacement(0);
-  if (IsNameStartCodePoint(first) || TwoCharsAreValidEscape(first, second))
-    return true;
-
-  if (first == '-')
-    return IsNameStartCodePoint(second) || second == '-' ||
-           NextTwoCharsAreValidEscape();
-
-  return false;
+  return blink::NextCharsAreIdentifier(first, input_);
 }
 
 bool CSSTokenizer::NextCharsAreIdentifier() {

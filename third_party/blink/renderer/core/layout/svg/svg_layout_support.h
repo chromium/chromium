@@ -28,14 +28,13 @@
 #include "third_party/blink/renderer/core/style/svg_computed_style_defs.h"
 #include "third_party/blink/renderer/platform/graphics/dash_array.h"
 #include "third_party/blink/renderer/platform/transforms/affine_transform.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
 
 class AffineTransform;
 class FloatPoint;
 class FloatRect;
-class LayoutRect;
 class LayoutGeometryMap;
 class LayoutBoxModelObject;
 class LayoutObject;
@@ -72,14 +71,19 @@ class CORE_EXPORT SVGLayoutSupport {
   // Determine if the LayoutObject references a filter resource object.
   static bool HasFilterResource(const LayoutObject&);
 
-  // Determine whether the passed location intersects the clip path of |object|.
-  static bool IntersectsClipPath(const LayoutObject&, const HitTestLocation&);
+  // Determine whether the passed location intersects a clip path referenced by
+  // the passed LayoutObject.
+  // |reference_box| is used to resolve 'objectBoundingBox' units/percentages,
+  // and can differ from the reference box of the passed LayoutObject.
+  static bool IntersectsClipPath(const LayoutObject&,
+                                 const FloatRect& reference_box,
+                                 const HitTestLocation&);
 
   // Shared child hit-testing code between LayoutSVGRoot/LayoutSVGContainer.
   static bool HitTestChildren(LayoutObject* last_child,
                               HitTestResult&,
                               const HitTestLocation&,
-                              const LayoutPoint& accumulated_offset,
+                              const PhysicalOffset& accumulated_offset,
                               HitTestAction);
 
   static void ComputeContainerBoundingBoxes(const LayoutObject* container,
@@ -91,17 +95,18 @@ class CORE_EXPORT SVGLayoutSupport {
   // Important functions used by nearly all SVG layoutObjects centralizing
   // coordinate transformations / visual rect calculations
   static FloatRect LocalVisualRect(const LayoutObject&);
-  static LayoutRect VisualRectInAncestorSpace(
+  static PhysicalRect VisualRectInAncestorSpace(
       const LayoutObject&,
-      const LayoutBoxModelObject& ancestor);
-  static LayoutRect TransformVisualRect(const LayoutObject&,
-                                        const AffineTransform&,
-                                        const FloatRect&);
+      const LayoutBoxModelObject& ancestor,
+      VisualRectFlags = kDefaultVisualRectFlags);
+  static PhysicalRect TransformVisualRect(const LayoutObject&,
+                                          const AffineTransform&,
+                                          const FloatRect&);
   static bool MapToVisualRectInAncestorSpace(
       const LayoutObject&,
       const LayoutBoxModelObject* ancestor,
       const FloatRect& local_visual_rect,
-      LayoutRect& result_rect,
+      PhysicalRect& result_rect,
       VisualRectFlags = kDefaultVisualRectFlags);
   static void MapLocalToAncestor(const LayoutObject*,
                                  const LayoutBoxModelObject* ancestor,
@@ -171,41 +176,6 @@ class SubtreeContentTransformScope {
  private:
   static AffineTransform::Transform current_content_transformation_;
   AffineTransform saved_content_transformation_;
-};
-
-// The following enumeration is used to optimize cases where the scale is known
-// to be invariant (see: LayoutSVGContainer::layout and LayoutSVGroot). The
-// value 'Full' can be used in the general case when the scale change is
-// unknown, or known to change.
-enum class SVGTransformChange {
-  kNone,
-  kScaleInvariant,
-  kFull,
-};
-
-// Helper for computing ("classifying") a change to a transform using the
-// categoies defined above.
-class SVGTransformChangeDetector {
-  STACK_ALLOCATED();
-
- public:
-  explicit SVGTransformChangeDetector(const AffineTransform& previous)
-      : previous_transform_(previous) {}
-
-  SVGTransformChange ComputeChange(const AffineTransform& current) {
-    if (previous_transform_ == current)
-      return SVGTransformChange::kNone;
-    if (ScaleReference(previous_transform_) == ScaleReference(current))
-      return SVGTransformChange::kScaleInvariant;
-    return SVGTransformChange::kFull;
-  }
-
- private:
-  static std::pair<double, double> ScaleReference(
-      const AffineTransform& transform) {
-    return std::make_pair(transform.XScaleSquared(), transform.YScaleSquared());
-  }
-  AffineTransform previous_transform_;
 };
 
 template <typename LayoutObjectType>

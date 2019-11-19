@@ -2,6 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// clang-format off
+// #import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
+//
+// #import {eventToPromise, flushTasks} from '../test_util.m.js';
+// #import {keyDownOn, keyEventOn, tap} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
+// #import {Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+// clang-format on
+
 suite('cr-dialog', function() {
   function pressEnter(element) {
     MockInteractions.keyEventOn(element, 'keypress', 13, undefined, 'Enter');
@@ -36,6 +44,11 @@ suite('cr-dialog', function() {
 
   setup(function() {
     PolymerTest.clearBody();
+    // Ensure svg, which is referred to by a relative URL, is loaded from
+    // chrome://resources and not chrome://test
+    const base = document.createElement('base');
+    base.href = 'chrome://resources/cr_elements/';
+    document.head.appendChild(base);
   });
 
   test('cr-dialog-open event fires when opened', function() {
@@ -186,7 +199,7 @@ suite('cr-dialog', function() {
     assertEquals(0, clickedCounter);
 
     // Enter keys on the close icon in the top-right corner should be ignored.
-    pressEnter(dialog.getCloseButton());
+    pressEnter(dialog.$.close);
     assertEquals(0, clickedCounter);
   });
 
@@ -220,25 +233,48 @@ suite('cr-dialog', function() {
     assertTrue(clicked);
   });
 
-  test('enter keys from cr-inputs (only) are processed', function() {
+  test('enter keys from certain inputs only are processed', function() {
     document.body.innerHTML = `
       <cr-dialog>
         <div slot="title">title</div>
         <div slot="body">
-          <cr-input></cr-input>
           <foobar></foobar>
+          <input type="checkbox">
+          <input type="text">
+
+          <cr-input type="search"></cr-input>
+          <cr-input type="text"></cr-input>
+
+          <div id="withShadow"></div>
           <button class="action-button">active</button>
         </div>
       </cr-dialog>`;
 
     const dialog = document.body.querySelector('cr-dialog');
 
-    const inputElement = document.body.querySelector('cr-input');
     const otherElement = document.body.querySelector('foobar');
+    const inputCheckboxElement =
+        document.body.querySelector('input[type="checkbox"]');
+    const inputTextElement = document.body.querySelector('input[type="text"]');
+
+    // Manually set the |type| property since cr-input is not actually imported
+    // as part of this test, and therefore the element is not upgraded, as it
+    // would normally.
+    const crTextInputElement =
+        document.body.querySelector('cr-input[type="text"]');
+    crTextInputElement.type = 'text';
+    const crSearchInputElement =
+        document.body.querySelector('cr-input[type="search"]');
+    crSearchInputElement.type = 'search';
+
+    // Attach a cr-input element nested within another element.
+    const containerElement = document.body.querySelector('#withShadow');
+    const shadow = containerElement.attachShadow({mode: 'open'});
+    const crInputNested = document.createElement('cr-input');
+    crInputNested.type = 'text';
+    shadow.appendChild(crInputNested);
+
     const actionButton = document.body.querySelector('.action-button');
-    assertTrue(!!inputElement);
-    assertTrue(!!otherElement);
-    assertTrue(!!actionButton);
 
     // MockInteractions triggers event listeners synchronously.
     let clickedCounter = 0;
@@ -246,11 +282,25 @@ suite('cr-dialog', function() {
       clickedCounter++;
     });
 
+    // Enter on anything other than cr-input should not be accepted.
     pressEnter(otherElement);
     assertEquals(0, clickedCounter);
+    pressEnter(inputCheckboxElement);
+    assertEquals(0, clickedCounter);
+    pressEnter(inputTextElement);
+    assertEquals(0, clickedCounter);
 
-    pressEnter(inputElement);
+    // Enter on a cr-input with type "search" should not be accepted.
+    pressEnter(crSearchInputElement);
+    assertEquals(0, clickedCounter);
+
+    // Enter on a cr-input with type "text" should be accepted.
+    pressEnter(crTextInputElement);
     assertEquals(1, clickedCounter);
+
+    // Enter on a nested <cr-input> should be accepted.
+    pressEnter(crInputNested);
+    assertEquals(2, clickedCounter);
   });
 
   test('focuses [autofocus] instead of title when present', function() {
@@ -285,10 +335,14 @@ suite('cr-dialog', function() {
     assertFalse(dialog.open);
     const bodyContainer = dialog.$$('.body-container');
     assertTrue(!!bodyContainer);
+    const topShadow = dialog.$$('#cr-container-shadow-top');
+    assertTrue(!!topShadow);
+    const bottomShadow = dialog.$$('#cr-container-shadow-bottom');
+    assertTrue(!!bottomShadow);
 
-    return PolymerTest.flushTasks().then(() => {
-      assertFalse(bodyContainer.classList.contains('top-scrollable'));
-      assertFalse(bodyContainer.classList.contains('bottom-scrollable'));
+    return test_util.flushTasks().then(() => {
+      assertFalse(topShadow.classList.contains('has-shadow'));
+      assertFalse(bottomShadow.classList.contains('has-shadow'));
     });
   });
 
@@ -304,6 +358,10 @@ suite('cr-dialog', function() {
     const dialog = document.body.querySelector('cr-dialog');
     const bodyContainer = dialog.$$('.body-container');
     assertTrue(!!bodyContainer);
+    const topShadow = dialog.$$('#cr-container-shadow-top');
+    assertTrue(!!topShadow);
+    const bottomShadow = dialog.$$('#cr-container-shadow-bottom');
+    assertTrue(!!bottomShadow);
 
     dialog.showModal();  // Attach the dialog for the first time here.
 
@@ -320,24 +378,25 @@ suite('cr-dialog', function() {
       observerCount++;
       switch (observerCount) {
         case 1:  // Triggered when scrolled to bottom.
-          assertFalse(bodyContainer.classList.contains('bottom-scrollable'));
-          assertTrue(bodyContainer.classList.contains('top-scrollable'));
+          assertFalse(bottomShadow.classList.contains('has-shadow'));
+          assertTrue(topShadow.classList.contains('has-shadow'));
           bodyContainer.scrollTop = 0;
           break;
         case 2:  // Triggered when scrolled back to top.
-          assertTrue(bodyContainer.classList.contains('bottom-scrollable'));
-          assertFalse(bodyContainer.classList.contains('top-scrollable'));
+          assertTrue(bottomShadow.classList.contains('has-shadow'));
+          assertFalse(topShadow.classList.contains('has-shadow'));
           bodyContainer.scrollTop = 2;
           break;
         case 3:  // Triggered when finally scrolling to middle.
-          assertTrue(bodyContainer.classList.contains('bottom-scrollable'));
-          assertTrue(bodyContainer.classList.contains('top-scrollable'));
+          assertTrue(bottomShadow.classList.contains('has-shadow'));
+          assertTrue(topShadow.classList.contains('has-shadow'));
           observer.disconnect();
           done();
           break;
       }
     });
-    observer.observe(bodyContainer, {attributes: true});
+    observer.observe(topShadow, {attributes: true});
+    observer.observe(bottomShadow, {attributes: true});
 
     // Height is normally set via CSS, but mixin doesn't work with innerHTML.
     bodyContainer.style.height = '60px';  // Element has "min-height: 60px".
@@ -356,7 +415,7 @@ suite('cr-dialog', function() {
     assertTrue(dialog.open);
     assertTrue(dialog.hasAttribute('open'));
 
-    e = new CustomEvent('cancel', {cancelable: true});
+    const e = new CustomEvent('cancel', {cancelable: true});
     dialog.getNative().dispatchEvent(e);
 
     assertFalse(dialog.open);
@@ -372,9 +431,7 @@ suite('cr-dialog', function() {
     const dialog = document.body.querySelector('cr-dialog');
     dialog.showModal();
 
-    // The paper-icon-button-light is the hidden element which is the
-    // parentElement of the button.
-    assertTrue(dialog.getCloseButton().parentElement.hidden);
+    assertTrue(dialog.$.close.hidden);
 
     // Hitting escape fires a 'cancel' event. Cancelling that event prevents the
     // dialog from closing.
@@ -399,13 +456,9 @@ suite('cr-dialog', function() {
     dialog.showModal();
     assertTrue(dialog.open);
 
-    // The paper-icon-button-light is the hidden element which is the
-    // parentElement of the button.
-    assertFalse(dialog.getCloseButton().parentElement.hidden);
-    assertEquals(
-        'block',
-        window.getComputedStyle(dialog.getCloseButton().parentElement).display);
-    dialog.getCloseButton().click();
+    assertFalse(dialog.$.close.hidden);
+    assertEquals('flex', window.getComputedStyle(dialog.$.close).display);
+    dialog.$.close.click();
     assertFalse(dialog.open);
   });
 
@@ -418,12 +471,8 @@ suite('cr-dialog', function() {
     const dialog = document.body.querySelector('cr-dialog');
     dialog.showModal();
 
-    // The paper-icon-button-light is the hidden element which is the
-    // parentElement of the button.
-    assertTrue(dialog.getCloseButton().parentElement.hidden);
-    assertEquals(
-        'none',
-        window.getComputedStyle(dialog.getCloseButton().parentElement).display);
+    assertTrue(dialog.$.close.hidden);
+    assertEquals('none', window.getComputedStyle(dialog.$.close).display);
   });
 
   test('keydown should be consumed when the property is true', function() {
@@ -442,7 +491,7 @@ suite('cr-dialog', function() {
     }
     document.addEventListener('keydown', assertKeydownNotReached);
 
-    return PolymerTest.flushTasks().then(() => {
+    return test_util.flushTasks().then(() => {
       MockInteractions.keyDownOn(dialog, 65, undefined, 'a');
       MockInteractions.keyDownOn(document.body, 65, undefined, 'a');
       document.removeEventListener('keydown', assertKeydownNotReached);
@@ -466,7 +515,7 @@ suite('cr-dialog', function() {
     }
     document.addEventListener('keydown', assertKeydownCount);
 
-    return PolymerTest.flushTasks().then(() => {
+    return test_util.flushTasks().then(() => {
       MockInteractions.keyDownOn(dialog, 65, undefined, 'a');
       assertEquals(1, keydownCounter);
       document.removeEventListener('keydown', assertKeydownCount);

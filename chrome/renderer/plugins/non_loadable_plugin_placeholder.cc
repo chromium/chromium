@@ -10,9 +10,9 @@
 #include "chrome/grit/renderer_resources.h"
 #include "components/plugins/renderer/plugin_placeholder.h"
 #include "components/strings/grit/components_strings.h"
-#include "content/app/strings/grit/content_strings.h"
 #include "content/public/renderer/render_frame.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
+#include "third_party/blink/public/strings/grit/blink_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/webui/jstemplate_builder.h"
@@ -27,6 +27,7 @@ NonLoadablePluginPlaceholder::CreateNotSupportedPlugin(
           IDR_BLOCKED_PLUGIN_HTML));
 
   base::DictionaryValue values;
+  values.SetString("name", "");
   values.SetString("message",
                    l10n_util::GetStringUTF8(IDS_PLUGIN_NOT_SUPPORTED));
 
@@ -41,6 +42,7 @@ plugins::PluginPlaceholder* NonLoadablePluginPlaceholder::CreateErrorPlugin(
     content::RenderFrame* render_frame,
     const base::FilePath& file_path) {
   base::DictionaryValue values;
+  values.SetString("name", "");
   values.SetString("message",
                    l10n_util::GetStringUTF8(IDS_PLUGIN_INITIALIZATION_ERROR));
 
@@ -54,7 +56,7 @@ plugins::PluginPlaceholder* NonLoadablePluginPlaceholder::CreateErrorPlugin(
   plugins::PluginPlaceholder* plugin =
       new plugins::PluginPlaceholder(render_frame, params, html_data);
 
-  chrome::mojom::PluginHostAssociatedPtr plugin_host;
+  mojo::AssociatedRemote<chrome::mojom::PluginHost> plugin_host;
   render_frame->GetRemoteAssociatedInterfaces()->GetInterface(&plugin_host);
   plugin_host->CouldNotLoadPlugin(file_path);
 

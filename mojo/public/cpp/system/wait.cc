@@ -131,10 +131,9 @@ MojoResult WaitMany(const Handle* handles,
     // successful. Otherwise balanced immediately below.
     contexts[i]->AddRef();
 
-    MojoResult rv =
-        MojoAddTrigger(trap.get().value(), handles[i].value(), signals[i],
-                       MOJO_TRIGGER_CONDITION_SIGNALS_SATISFIED,
-                       contexts[i]->context_value(), nullptr);
+    rv = MojoAddTrigger(trap.get().value(), handles[i].value(), signals[i],
+                        MOJO_TRIGGER_CONDITION_SIGNALS_SATISFIED,
+                        contexts[i]->context_value(), nullptr);
     if (rv == MOJO_RESULT_INVALID_ARGUMENT) {
       if (result_index)
         *result_index = i;

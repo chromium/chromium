@@ -103,7 +103,7 @@ class BleSynchronizer : public BleSynchronizerBase {
   base::Clock* clock_;
   scoped_refptr<base::TaskRunner> task_runner_;
   base::Time last_command_end_timestamp_;
-  base::WeakPtrFactory<BleSynchronizer> weak_ptr_factory_;
+  base::WeakPtrFactory<BleSynchronizer> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(BleSynchronizer);
 };

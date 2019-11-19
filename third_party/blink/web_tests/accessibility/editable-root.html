@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <script src="../resources/testharness.js"></script>
 <script src="../resources/testharnessreport.js"></script>
-<script src="../resources/run-after-layout-and-paint.js"></script>
 
 <div id="main" role="main">
 
@@ -21,27 +20,27 @@
 </div>
 
 <script>
-test_after_layout_and_paint(function() {
+test(function() {
     var axInput = accessibilityController.accessibleElementById('input');
     assert_true(axInput.isEditableRoot);
 }, 'An input element is an editable root.');
 
-test_after_layout_and_paint(function() {
+test(function() {
     var axContentEditable = accessibilityController.accessibleElementById('contenteditable-textbox');
     assert_true(axContentEditable.isEditableRoot);
 }, 'A content editable with a role of textbox is an editable root.');
 
-test_after_layout_and_paint(function() {
+test(function() {
     var axInnerInput = accessibilityController.accessibleElementById('inner-input');
     assert_true(axInnerInput.isEditableRoot);
 }, 'An input element embedded inside a content editable is an editable root.');
 
-test_after_layout_and_paint(function() {
+test(function() {
     var axInnerTextarea = accessibilityController.accessibleElementById('inner-textarea');
     assert_true(axInnerTextarea.isEditableRoot);
 }, 'A textarea embedded inside a content editable is an editable root.');
 
-test_after_layout_and_paint(function() {
+test(function() {
     var axContentEditable = accessibilityController.accessibleElementById('contenteditable-div');
     var axParagraph1 = accessibilityController.accessibleElementById('paragraph1');
     var axParagraph2 = accessibilityController.accessibleElementById('paragraph2');

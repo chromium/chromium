@@ -15,10 +15,11 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "components/gcm_driver/gcm_driver.h"
+#include "components/signin/public/identity_manager/access_token_fetcher.h"
+#include "components/signin/public/identity_manager/access_token_info.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "net/base/ip_endpoint.h"
-#include "services/identity/public/cpp/access_token_fetcher.h"
-#include "services/identity/public/cpp/identity_manager.h"
 
 namespace gcm {
 
@@ -48,13 +49,12 @@ GCMAccountTracker::AccountInfo::~AccountInfo() {
 
 GCMAccountTracker::GCMAccountTracker(
     std::unique_ptr<AccountTracker> account_tracker,
-    identity::IdentityManager* identity_manager,
+    signin::IdentityManager* identity_manager,
     GCMDriver* driver)
     : account_tracker_(account_tracker.release()),
       identity_manager_(identity_manager),
       driver_(driver),
-      shutdown_called_(false),
-      reporting_weak_ptr_factory_(this) {}
+      shutdown_called_(false) {}
 
 GCMAccountTracker::~GCMAccountTracker() {
   DCHECK(shutdown_called_);
@@ -113,9 +113,9 @@ void GCMAccountTracker::OnAccountSignInChanged(const AccountIds& ids,
 }
 
 void GCMAccountTracker::OnAccessTokenFetchCompleteForAccount(
-    std::string account_id,
+    CoreAccountId account_id,
     GoogleServiceAuthError error,
-    identity::AccessTokenInfo access_token_info) {
+    signin::AccessTokenInfo access_token_info) {
   auto iter = account_infos_.find(account_id);
   DCHECK(iter != account_infos_.end());
   if (iter != account_infos_.end()) {
@@ -297,13 +297,13 @@ void GCMAccountTracker::GetToken(AccountInfos::iterator& account_iter) {
   // NOTE: It is safe to use base::Unretained() here as |token_fetcher| is owned
   // by this object and guarantees that it will not invoke its callback after
   // its destruction.
-  std::unique_ptr<identity::AccessTokenFetcher> token_fetcher =
+  std::unique_ptr<signin::AccessTokenFetcher> token_fetcher =
       identity_manager_->CreateAccessTokenFetcherForAccount(
           account_iter->first, kGCMAccountTrackerName, scopes,
           base::BindOnce(
               &GCMAccountTracker::OnAccessTokenFetchCompleteForAccount,
               base::Unretained(this), account_iter->first),
-          identity::AccessTokenFetcher::Mode::kImmediate);
+          signin::AccessTokenFetcher::Mode::kImmediate);
 
   DCHECK(pending_token_requests_.count(account_iter->first) == 0);
   pending_token_requests_.emplace(account_iter->first,

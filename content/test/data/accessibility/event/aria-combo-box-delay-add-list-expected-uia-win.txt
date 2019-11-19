@@ -1,0 +1,3 @@
+AutomationFocusChanged on role=option, name=Apple
+ControllerFor changed on role=combobox
+Text_TextChanged on role=document

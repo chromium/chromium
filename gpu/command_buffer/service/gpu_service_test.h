@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "base/memory/ref_counted.h"
-#include "base/message_loop/message_loop.h"
+#include "base/test/task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gl/gl_mock.h"
@@ -42,7 +42,7 @@ class GpuServiceTest : public testing::Test {
   bool ran_teardown_;
   scoped_refptr<gl::GLContextStub> context_;
   scoped_refptr<gl::GLSurfaceStub> surface_;
-  base::MessageLoop message_loop_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
 };
 
 }  // namespace gles2

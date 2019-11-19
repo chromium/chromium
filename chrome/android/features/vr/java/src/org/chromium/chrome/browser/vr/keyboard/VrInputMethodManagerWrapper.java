@@ -12,8 +12,9 @@ import android.view.inputmethod.CursorAnchorInfo;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.Log;
-import org.chromium.base.VisibleForTesting;
 import org.chromium.content_public.browser.InputMethodManagerWrapper;
 
 /**
@@ -21,7 +22,7 @@ import org.chromium.content_public.browser.InputMethodManagerWrapper;
  * InputMethodManager and instead talks to the Daydream keyboard.
  */
 public class VrInputMethodManagerWrapper implements InputMethodManagerWrapper {
-    private static final String TAG = "cr_VrIme";
+    private static final String TAG = "VrIme";
     private static final boolean DEBUG_LOGS = false;
 
     private final Context mContext;

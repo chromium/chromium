@@ -12,7 +12,7 @@
 
 namespace dom_distiller {
 
-// Tracks whether DocumentLoadedInFrame has been called for the main frame for
+// Tracks whether DOMContentLoaded has been called for the main frame for
 // the current main frame for the given WebContents. It removes itself as an
 // observer if the WebContents is destroyed or the render process is gone.
 class WebContentsMainFrameObserver
@@ -28,8 +28,7 @@ class WebContentsMainFrameObserver
   bool is_initialized() const { return is_initialized_; }
 
   // content::WebContentsObserver implementation.
-  void DocumentLoadedInFrame(
-      content::RenderFrameHost* render_frame_host) override;
+  void DOMContentLoaded(content::RenderFrameHost* render_frame_host) override;
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
   void RenderProcessGone(base::TerminationStatus status) override;
@@ -41,9 +40,9 @@ class WebContentsMainFrameObserver
   // Removes the observer and clears the WebContents member.
   void CleanUp();
 
-  // Whether DocumentLoadedInFrame has been called for the tracked WebContents
+  // Whether DOMContentLoaded has been called for the tracked WebContents
   // for the current main frame. This is cleared when the main frame navigates,
-  // and set again when DocumentLoadedInFrame is called for the main frame.
+  // and set again when DOMContentLoaded is called for the main frame.
   bool is_document_loaded_in_main_frame_;
 
   // Whether this object has been correctly initialized. This is set as soon as

@@ -1,7 +1,7 @@
 // Proxy script which sends requests to a non-existent proxy on
 // success, otherwise sends them DIRECT.
 let kFailure = "DIRECT";
-let kSuccess = "PROXY 0.0.0.0:8000";
+let kSuccess = "PROXY 0.0.0.1:1";
 
 // Returns true if |ip| is a valid IP literal.
 function isIpAddress(ip) {

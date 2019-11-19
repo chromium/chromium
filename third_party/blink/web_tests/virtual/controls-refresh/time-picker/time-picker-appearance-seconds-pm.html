@@ -1,0 +1,9 @@
+<!DOCTYPE html>
+<script>
+testRunner.waitUntilDone();
+</script>
+<script src="../../../fast/forms/resources/picker-common.js"></script>
+<input type="time" id="time" value="18:17:28" step="1">
+<script>
+openPicker(document.getElementById('time'), () => testRunner.notifyDone(), () => testRunner.notifyDone());
+</script>

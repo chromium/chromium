@@ -7,7 +7,7 @@
 </head>
 <body onLoad="runTest();">
 <iframe id="nestingFrame" src="resources/1-nested-frame-noncomposited.html" style="position: relative; left: 10px; top: 10px; width: 450px; height: 150px;"></iframe>
-<div style="position: relative; left: 10px; top: 20px; transform: translateZ(0);">
+<div style="position: relative; left: 10px; top: 20px; will-change: transform;">
 This test is successful if "Target Link" is covered by a green box with square corners,
 and the outer frame is partially scrolled.
 </div>
@@ -25,7 +25,7 @@ function runTest() {
     if (window.eventSender && window.testRunner) {
         eventSender.gestureShowPress(x, y);
         runAfterLayoutAndPaint(function() {
-            nestingFrame.style.webkitTransform = "translateZ(0)";
+            nestingFrame.style.willChange = "transform";
             runAfterLayoutAndPaint(function() {
                 nestingFrame.contentWindow.scrollTo(0, 20);
                 testRunner.notifyDone();

@@ -4,13 +4,16 @@
 
 #include "components/arc/media_session/arc_media_session_bridge.h"
 
+#include <utility>
+
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
-#include "components/arc/arc_bridge_service.h"
 #include "components/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "components/arc/arc_features.h"
-#include "content/public/common/service_manager_connection.h"
+#include "components/arc/session/arc_bridge_service.h"
+#include "content/public/browser/system_connector.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "services/media_session/public/cpp/features.h"
 #include "services/media_session/public/mojom/audio_focus.mojom.h"
 #include "services/media_session/public/mojom/constants.mojom.h"
@@ -85,15 +88,16 @@ void ArcMediaSessionBridge::SetupAudioFocus() {
     return;
   }
 
-  media_session::mojom::AudioFocusManagerPtr audio_focus_ptr;
-  content::ServiceManagerConnection::GetForProcess()
-      ->GetConnector()
-      ->BindInterface(media_session::mojom::kServiceName, &audio_focus_ptr);
+  mojo::Remote<media_session::mojom::AudioFocusManager> audio_focus;
+  content::GetSystemConnector()->Connect(
+      media_session::mojom::kServiceName,
+      audio_focus.BindNewPipeAndPassReceiver());
 
-  audio_focus_ptr->SetSourceName(kAudioFocusSourceName);
+  audio_focus->SetSource(base::UnguessableToken::Create(),
+                         kAudioFocusSourceName);
 
   DVLOG(2) << "ArcMediaSessionBridge will enable audio focus";
-  ms_instance->EnableAudioFocus(std::move(audio_focus_ptr));
+  ms_instance->EnableAudioFocus(audio_focus.Unbind());
 }
 
 }  // namespace arc

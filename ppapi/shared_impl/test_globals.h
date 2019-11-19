@@ -9,7 +9,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/shared_memory.h"
+#include "base/memory/unsafe_shared_memory_region.h"
 #include "ppapi/shared_impl/callback_tracker.h"
 #include "ppapi/shared_impl/ppapi_globals.h"
 #include "ppapi/shared_impl/resource_tracker.h"
@@ -36,18 +36,18 @@ class TestVarTracker : public VarTracker {
   }
   ArrayBufferVar* CreateShmArrayBuffer(
       uint32_t size_in_bytes,
-      base::SharedMemoryHandle handle) override {
+      base::UnsafeSharedMemoryRegion region) override {
     return NULL;
   }
   void DidDeleteInstance(PP_Instance instance) override {}
-  int TrackSharedMemoryHandle(PP_Instance instance,
-                              base::SharedMemoryHandle handle,
+  int TrackSharedMemoryRegion(PP_Instance instance,
+                              base::UnsafeSharedMemoryRegion region,
                               uint32_t size_in_bytes) override {
     return -1;
   }
-  bool StopTrackingSharedMemoryHandle(int id,
+  bool StopTrackingSharedMemoryRegion(int id,
                                       PP_Instance instance,
-                                      base::SharedMemoryHandle* handle,
+                                      base::UnsafeSharedMemoryRegion* region,
                                       uint32_t* size_in_bytes) override {
     return false;
   }

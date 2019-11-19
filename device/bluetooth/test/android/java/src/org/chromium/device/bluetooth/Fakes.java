@@ -41,7 +41,7 @@ import java.util.UUID;
 @JNINamespace("device")
 @TargetApi(Build.VERSION_CODES.M)
 class Fakes {
-    private static final String TAG = "cr.Bluetooth";
+    private static final String TAG = "Bluetooth";
 
     // Android uses Integer.MIN_VALUE to signal no Tx Power in advertisement
     // packet.
@@ -478,8 +478,7 @@ class Fakes {
                 HashMap<String, Integer> uuidsToInstanceIdMap = new HashMap<String, Integer>();
                 for (String uuid : uuidsSpaceDelimited.split(" ")) {
                     // String.split() can return empty strings. Ignore them.
-                    if (uuid.isEmpty())
-                        continue;
+                    if (uuid.isEmpty()) continue;
                     Integer previousId = uuidsToInstanceIdMap.get(uuid);
                     int instanceId = (previousId == null) ? 0 : previousId + 1;
                     uuidsToInstanceIdMap.put(uuid, instanceId);

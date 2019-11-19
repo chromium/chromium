@@ -16,7 +16,7 @@
 namespace blink {
 
 void TablePainter::PaintObject(const PaintInfo& paint_info,
-                               const LayoutPoint& paint_offset) {
+                               const PhysicalOffset& paint_offset) {
   PaintPhase paint_phase = paint_info.phase;
 
   if (ShouldPaintSelfBlockBackground(paint_phase)) {
@@ -30,7 +30,8 @@ void TablePainter::PaintObject(const PaintInfo& paint_info,
     return;
   }
 
-  if (paint_phase != PaintPhase::kSelfOutlineOnly) {
+  if (paint_phase != PaintPhase::kSelfOutlineOnly &&
+      !paint_info.DescendantPaintingBlocked()) {
     PaintInfo paint_info_for_descendants = paint_info.ForDescendants();
 
     for (LayoutObject* child = layout_table_.FirstChild(); child;
@@ -54,8 +55,8 @@ void TablePainter::PaintObject(const PaintInfo& paint_info,
 
 void TablePainter::PaintBoxDecorationBackground(
     const PaintInfo& paint_info,
-    const LayoutPoint& paint_offset) {
-  LayoutRect rect(paint_offset, layout_table_.Size());
+    const PhysicalOffset& paint_offset) {
+  PhysicalRect rect(paint_offset, layout_table_.Size());
   layout_table_.SubtractCaptionRect(rect);
 
   if (layout_table_.HasBoxDecorationBackground() &&
@@ -68,7 +69,7 @@ void TablePainter::PaintBoxDecorationBackground(
 }
 
 void TablePainter::PaintMask(const PaintInfo& paint_info,
-                             const LayoutPoint& paint_offset) {
+                             const PhysicalOffset& paint_offset) {
   if (layout_table_.StyleRef().Visibility() != EVisibility::kVisible ||
       paint_info.phase != PaintPhase::kMask)
     return;
@@ -77,7 +78,7 @@ void TablePainter::PaintMask(const PaintInfo& paint_info,
           paint_info.context, layout_table_, paint_info.phase))
     return;
 
-  LayoutRect rect(paint_offset, layout_table_.Size());
+  PhysicalRect rect(paint_offset, layout_table_.Size());
   layout_table_.SubtractCaptionRect(rect);
 
   DrawingRecorder recorder(paint_info.context, layout_table_, paint_info.phase);

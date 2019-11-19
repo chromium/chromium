@@ -18,7 +18,7 @@ enum class OperationResult;
 class DataItem;
 }  // namespace lock_screen_data
 
-class LockScreenDataCreateFunction : public UIThreadExtensionFunction {
+class LockScreenDataCreateFunction : public ExtensionFunction {
  public:
   LockScreenDataCreateFunction();
 
@@ -34,7 +34,7 @@ class LockScreenDataCreateFunction : public UIThreadExtensionFunction {
   DISALLOW_COPY_AND_ASSIGN(LockScreenDataCreateFunction);
 };
 
-class LockScreenDataGetAllFunction : public UIThreadExtensionFunction {
+class LockScreenDataGetAllFunction : public ExtensionFunction {
  public:
   LockScreenDataGetAllFunction();
 
@@ -49,7 +49,7 @@ class LockScreenDataGetAllFunction : public UIThreadExtensionFunction {
   DISALLOW_COPY_AND_ASSIGN(LockScreenDataGetAllFunction);
 };
 
-class LockScreenDataGetContentFunction : public UIThreadExtensionFunction {
+class LockScreenDataGetContentFunction : public ExtensionFunction {
  public:
   LockScreenDataGetContentFunction();
 
@@ -66,7 +66,7 @@ class LockScreenDataGetContentFunction : public UIThreadExtensionFunction {
   DISALLOW_COPY_AND_ASSIGN(LockScreenDataGetContentFunction);
 };
 
-class LockScreenDataSetContentFunction : public UIThreadExtensionFunction {
+class LockScreenDataSetContentFunction : public ExtensionFunction {
  public:
   LockScreenDataSetContentFunction();
 
@@ -82,7 +82,7 @@ class LockScreenDataSetContentFunction : public UIThreadExtensionFunction {
   DISALLOW_COPY_AND_ASSIGN(LockScreenDataSetContentFunction);
 };
 
-class LockScreenDataDeleteFunction : public UIThreadExtensionFunction {
+class LockScreenDataDeleteFunction : public ExtensionFunction {
  public:
   LockScreenDataDeleteFunction();
 

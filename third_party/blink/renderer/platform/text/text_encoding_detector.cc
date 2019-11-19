@@ -63,7 +63,7 @@ bool DetectTextEncoding(const char* data,
   int consumed_bytes;
   bool is_reliable;
   Encoding encoding = CompactEncDet::DetectEncoding(
-      data, length, hint_url.GetString().Ascii().data(), nullptr, nullptr,
+      data, length, hint_url.GetString().Ascii().c_str(), nullptr, nullptr,
       EncodingNameAliasToEncoding(hint_encoding_name), language,
       CompactEncDet::WEB_CORPUS,
       false,  // Include 7-bit encodings to detect ISO-2022-JP

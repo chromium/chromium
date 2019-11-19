@@ -32,6 +32,8 @@ std::string GetCrashKeyValue(const std::string& key_name) {
   return std::string();
 }
 
+void InitializeCrashKeysForTesting() {}
+
 void ResetCrashKeysForTesting() {}
 
 }  // namespace crash_reporter

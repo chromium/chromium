@@ -2,22 +2,9 @@
 
 Landing page for all things memory-related in Chromium.
 
-The goal is to keep an up-to-date set of links and references that will
-help people understand what is actively happening in the memory space. Please keep
-this landing page short and action oriented.
-
-That being said, please also send CL with update and changes. This should
-reflect current active status, and it's easier to do that if everyone helps
-maintain it. :)
-
 ## How is chrome's memory usage doing in the world?
 
 Look at the UMAs **Memory.{Total,Renderer,Browser,Gpu,Extension}.PrivateMemoryFootprint**.
-
-These metrics are known to lack sufficient context. e.g. How many renderers are open? What site is a renderer hosting? How long has the browser been running?
-
-Some of these graphs are now available at [go/mem-ukm](http://go/mem-ukm).
-
 
 ## How do developers communicate?
 
@@ -29,10 +16,9 @@ instead.
 |------|-------------|
 | [memory-dev@chromium.org]() | Discussion group for all things memory related. Post docs, discuss bugs, etc., here. |
 | chrome-memory@google.com | Google internal version of the above. Use sparingly. |
-| https://chromiumdev.slack.com/messages/memory/ | Slack channel for real-time discussion with memory devs. Lots of C++ sadness too. |
+| https://chromium.slack.com/messages/memory/ | Slack channel for real-time discussion with memory devs. Lots of C++ sadness too. |
 | crbug [Performance=Memory](https://bugs.chromium.org/p/chromium/issues/list?can=2&q=Performance%3DMemory) label | Bucket with auto-filed and user-filed bugs. |
 | crbug [Stability=Memory](https://bugs.chromium.org/p/chromium/issues/list?can=2&q=Stability%3DMemory) label | Tracks mostly OOM crashes. |
-
 
 ## I have memory problem, what do I do?
 
@@ -55,14 +41,18 @@ Second, familiarize yourself with the following:
 | [memory-infra](/docs/memory-infra/README.md) | The primary tool used for inspecting allocations. |
 
 ## What are people actively working on?
-| Project | Description |
-|---------|-------------|
-|  [Purge+Throttle/Suspend](https://docs.google.com/document/d/1EgLimgxWK5DGhptnNVbEGSvVn6Q609ZJaBkLjEPRJvI/edit) | Centralized policy and coordination of all memory components in Chrome |
-| [Memory-Infra](/docs/memory-infra/README.md) | Tooling and infrastructure for Memory |
-| [System health benchmarks](https://docs.google.com/document/d/1pEeCnkbtrbsK3uuPA-ftbg4kzM4Bk7a2A9rhRYklmF8/edit?usp=sharing) | Automated tests based on telemetry |
-| [Out of Process Heap Profiling](https://docs.google.com/document/d/1zKNGByeouYz9E719J8dmKNepLLanCNUq310gbzjiHOg/edit#heading=h.aabxwucn5hhp) | Collect heap dumps from the wild |
-| [Always on Document Leak Detector](https://bugs.chromium.org/p/chromium/issues/detail?id=757374) | UMA-based sanity check that DOM objects are not leaking in the wild. |
-| [Real-world leak detector](https://bugs.chromium.org/p/chromium/issues/detail?id=763280) | Runs blink leak detector on top-sites [web-page-replay] on waterfall.
+
+There are roughly three types of memory work within Chrome:
+
+* Team based, targeted improvements. Examples include:
+    * memory reductions for specific components like v8
+    * allocator improvements: tcmalloc for linux + cros, PartitionAlloc for blink, etc.
+    * memory purging at appropriate times [e.g. on tab background]
+    * better memory pressure signals
+* Memlog: Heap profiling in the wild for regression detection + root cause
+  analysis.
+* Lab tests: Perf waterfall for micro-regressions, ASAN/MSAN/LSAN, blink leak
+  detector.
 
 
 ## Key knowledge areas and contacts
@@ -72,11 +62,10 @@ Second, familiarize yourself with the following:
 | Browser Process | ssid, erikchen, etienneb |
 | GPU/cc | ericrk |
 | Memory metrics | ssid, erikchen, primano, ajwong, wez |
-| Native Heap Profiling | primiano, ajwong |
+| Heap Profiling | alph, erikchen, ssid, etienneb |
 | Net Stack | mmenke, rsleevi, xunjieli |
 | Renderer Process | haraken, tasak, hajimehoshi, keishi, hiroshige |
 | V8 | hpayer, ulan, verwaest, mlippautz |
-| Out of Process Heap Profiling | erikchen, ajwong, brettw, etienneb |
 
 
 ## Other docs

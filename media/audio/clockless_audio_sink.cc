@@ -107,6 +107,8 @@ void ClocklessAudioSink::Stop() {
     Pause();
 }
 
+void ClocklessAudioSink::Flush() {}
+
 void ClocklessAudioSink::Play() {
   DCHECK(initialized_);
 

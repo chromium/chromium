@@ -42,6 +42,7 @@ Polymer({
     disabled: {
       type: Boolean,
       value: false,
+      reflectToAttribute: true,
     }
   },
 
@@ -121,5 +122,24 @@ Polymer({
    */
   shouldShowEmail_: function(user) {
     return !user.isSupervised && user.name != user.displayEmail;
+  },
+
+  /**
+   * Use this function to prevent tooltips from displaying for user names. We
+   * only want to display tooltips for email addresses.
+   * @param {chrome.usersPrivate.User} user
+   * @private
+   */
+  getTooltip_: function(user) {
+    return !this.shouldShowEmail_(user) ? user.displayEmail : '';
+  },
+
+  /**
+   * @param {!chrome.usersPrivate.User} user
+   * @return {string}
+   * @private
+   */
+  getRemoveUserTooltip_: function(user) {
+    return this.i18n('removeUserTooltip', user.name);
   },
 });

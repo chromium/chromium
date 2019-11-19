@@ -8,7 +8,7 @@
 #include "base/lazy_instance.h"
 #include "base/macros.h"
 #include "base/synchronization/lock.h"
-#include "jni/ViewConfigurationHelper_jni.h"
+#include "ui/gfx/gfx_jni_headers/ViewConfigurationHelper_jni.h"
 
 using base::android::AttachCurrentThread;
 using base::android::JavaParamRef;

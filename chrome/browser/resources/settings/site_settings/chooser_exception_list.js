@@ -109,6 +109,10 @@ Polymer({
     switch (this.chooserType) {
       case settings.ChooserType.USB_DEVICES:
         this.emptyListMessage_ = this.i18n('noUsbDevicesFound');
+        break;
+      case settings.ChooserType.SERIAL_PORTS:
+        this.emptyListMessage_ = this.i18n('noSerialPortsFound');
+        break;
       default:
         this.emptyListMessage_ = '';
     }
@@ -172,7 +176,9 @@ Polymer({
       return Object.assign(exception, {sites});
     });
 
-    if (!this.updateList('chooserExceptions', x => x.displayName, exceptions)) {
+    if (!this.updateList(
+            'chooserExceptions', x => x.displayName, exceptions,
+            true /* uidBasedUpdate */)) {
       // The chooser objects have not been changed, so check if their site
       // permissions have changed. The |exceptions| and |this.chooserExceptions|
       // arrays should be the same length.

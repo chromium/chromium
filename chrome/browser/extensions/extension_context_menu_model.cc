@@ -26,6 +26,7 @@
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
@@ -79,6 +80,11 @@ int GetVisibilityStringId(
     Profile* profile,
     const Extension* extension,
     ExtensionContextMenuModel::ButtonVisibility button_visibility) {
+  if (base::FeatureList::IsEnabled(features::kExtensionsToolbarMenu)) {
+    return button_visibility == ExtensionContextMenuModel::VISIBLE
+               ? IDS_EXTENSIONS_UNPIN_FROM_TOOLBAR
+               : IDS_EXTENSIONS_PIN_TO_TOOLBAR;
+  }
   DCHECK(profile);
   int string_id = -1;
   // We display "show" or "hide" based on the icon's visibility, and can have
@@ -95,6 +101,7 @@ int GetVisibilityStringId(
       string_id = IDS_EXTENSIONS_SHOW_BUTTON_IN_TOOLBAR;
       break;
   }
+
   return string_id;
 }
 
@@ -185,7 +192,8 @@ ExtensionContextMenuModel::ExtensionContextMenuModel(
     const Extension* extension,
     Browser* browser,
     ButtonVisibility button_visibility,
-    PopupDelegate* delegate)
+    PopupDelegate* delegate,
+    bool can_show_icon_in_toolbar)
     : SimpleMenuModel(this),
       extension_id_(extension->id()),
       is_component_(Manifest::IsComponentLocation(extension->location())),
@@ -193,7 +201,8 @@ ExtensionContextMenuModel::ExtensionContextMenuModel(
       profile_(browser->profile()),
       delegate_(delegate),
       action_type_(NO_ACTION),
-      button_visibility_(button_visibility) {
+      button_visibility_(button_visibility),
+      can_show_icon_in_toolbar_(can_show_icon_in_toolbar) {
   InitMenu(extension, button_visibility);
 }
 
@@ -224,7 +233,12 @@ bool ExtensionContextMenuModel::IsCommandIdVisible(int command_id) const {
     return extension_items_->IsCommandIdVisible(command_id);
   }
 
-  // Standard menu items are always visible.
+  // The command is hidden in app windows because they don't
+  // support showing extensions in the app window frame.
+  if (command_id == TOGGLE_VISIBILITY)
+    return can_show_icon_in_toolbar_;
+
+  // Standard menu items are visible.
   return true;
 }
 
@@ -408,11 +422,9 @@ void ExtensionContextMenuModel::InitMenu(const Extension* extension,
     AddItemWithStringId(MANAGE_EXTENSIONS, IDS_MANAGE_EXTENSION);
   }
 
-  const ActionInfo* action_info = ActionInfo::GetPageActionInfo(extension);
-  if (!action_info)
-    action_info = ActionInfo::GetBrowserActionInfo(extension);
-  if (profile_->GetPrefs()->GetBoolean(prefs::kExtensionsUIDeveloperMode) &&
-      delegate_ && !is_component_ && action_info && !action_info->synthesized) {
+  const ActionInfo* action_info = ActionInfo::GetAnyActionInfo(extension);
+  if (delegate_ && !is_component_ && action_info && !action_info->synthesized &&
+      profile_->GetPrefs()->GetBoolean(prefs::kExtensionsUIDeveloperMode)) {
     AddSeparator(ui::NORMAL_SEPARATOR);
     AddItemWithStringId(INSPECT_POPUP, IDS_EXTENSION_ACTION_INSPECT_POPUP);
   }

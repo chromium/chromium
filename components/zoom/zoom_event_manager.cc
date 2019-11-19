@@ -25,7 +25,7 @@ ZoomEventManager* ZoomEventManager::GetForBrowserContext(
       context->GetUserData(kBrowserZoomEventManager));
 }
 
-ZoomEventManager::ZoomEventManager() : weak_ptr_factory_(this) {}
+ZoomEventManager::ZoomEventManager() {}
 
 ZoomEventManager::~ZoomEventManager() {}
 

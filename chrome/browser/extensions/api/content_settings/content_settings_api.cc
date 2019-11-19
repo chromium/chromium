@@ -66,7 +66,7 @@ bool RemoveContentType(base::ListValue* args,
   *content_type =
       extensions::content_settings_helpers::StringToContentSettingsType(
           content_type_str);
-  return *content_type != CONTENT_SETTINGS_TYPE_DEFAULT;
+  return *content_type != ContentSettingsType::DEFAULT;
 }
 
 }  // namespace
@@ -161,7 +161,7 @@ ContentSettingsContentSettingGetFunction::Run() {
   }
 
   ContentSetting setting;
-  if (content_type == CONTENT_SETTINGS_TYPE_COOKIES) {
+  if (content_type == ContentSettingsType::COOKIES) {
     cookie_settings->GetCookieSetting(primary_url, secondary_url, nullptr,
                                       &setting);
   } else {
@@ -239,9 +239,9 @@ ContentSettingsContentSettingSetFunction::Run() {
     // TODO(msramek): Get the same human readable name as is presented
     // externally in the API, i.e. chrome.contentSettings.<name>.set().
     std::string readable_type_name;
-    if (content_type == CONTENT_SETTINGS_TYPE_MEDIASTREAM_MIC) {
+    if (content_type == ContentSettingsType::MEDIASTREAM_MIC) {
       readable_type_name = "microphone";
-    } else if (content_type == CONTENT_SETTINGS_TYPE_MEDIASTREAM_CAMERA) {
+    } else if (content_type == ContentSettingsType::MEDIASTREAM_CAMERA) {
       readable_type_name = "camera";
     } else {
       NOTREACHED() << "No human-readable type name defined for this type.";
@@ -315,7 +315,7 @@ bool ContentSettingsContentSettingGetResourceIdentifiersFunction::RunAsync() {
   ContentSettingsType content_type;
   EXTENSION_FUNCTION_VALIDATE(RemoveContentType(args_.get(), &content_type));
 
-  if (content_type != CONTENT_SETTINGS_TYPE_PLUGINS) {
+  if (content_type != ContentSettingsType::PLUGINS) {
     SendResponse(true);
     return true;
   }
@@ -347,7 +347,7 @@ void ContentSettingsContentSettingGetResourceIdentifiersFunction::OnGotPlugins(
     list->Append(std::move(dict));
   }
   SetResult(std::move(list));
-  base::PostTaskWithTraits(
+  base::PostTask(
       FROM_HERE, {BrowserThread::UI},
       base::BindOnce(
           &ContentSettingsContentSettingGetResourceIdentifiersFunction::

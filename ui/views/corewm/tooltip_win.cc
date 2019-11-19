@@ -12,23 +12,21 @@
 #include "ui/display/screen.h"
 #include "ui/display/win/screen_win.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/platform_font_win.h"
+#include "ui/gfx/system_fonts_win.h"
 #include "ui/views/corewm/cursor_height_provider_win.h"
 
 namespace views {
 namespace corewm {
 
 TooltipWin::TooltipWin(HWND parent)
-    : parent_hwnd_(parent),
-      tooltip_hwnd_(NULL),
-      showing_(false) {
+    : parent_hwnd_(parent), tooltip_hwnd_(nullptr), showing_(false) {
   memset(&toolinfo_, 0, sizeof(toolinfo_));
   toolinfo_.cbSize = sizeof(toolinfo_);
   toolinfo_.uFlags = TTF_IDISHWND | TTF_TRACK | TTF_ABSOLUTE;
   toolinfo_.uId = reinterpret_cast<UINT_PTR>(parent_hwnd_);
   toolinfo_.hwnd = parent_hwnd_;
-  toolinfo_.lpszText = NULL;
-  toolinfo_.lpReserved = NULL;
+  toolinfo_.lpszText = nullptr;
+  toolinfo_.lpReserved = nullptr;
   SetRectEmpty(&toolinfo_.rect);
 }
 
@@ -38,7 +36,7 @@ TooltipWin::~TooltipWin() {
 }
 
 bool TooltipWin::HandleNotify(int w_param, NMHDR* l_param, LRESULT* l_result) {
-  if (tooltip_hwnd_ == NULL)
+  if (tooltip_hwnd_ == nullptr)
     return false;
 
   switch (l_param->code) {
@@ -60,10 +58,10 @@ bool TooltipWin::EnsureTooltipWindow() {
   if (tooltip_hwnd_)
     return true;
 
-  tooltip_hwnd_ = CreateWindowEx(
-      WS_EX_TRANSPARENT | l10n_util::GetExtendedTooltipStyles(),
-      TOOLTIPS_CLASS, NULL, TTS_NOPREFIX | WS_POPUP, 0, 0, 0, 0,
-      parent_hwnd_, NULL, NULL, NULL);
+  tooltip_hwnd_ =
+      CreateWindowEx(WS_EX_TRANSPARENT | l10n_util::GetExtendedTooltipStyles(),
+                     TOOLTIPS_CLASS, nullptr, TTS_NOPREFIX | WS_POPUP, 0, 0, 0,
+                     0, parent_hwnd_, nullptr, nullptr, nullptr);
   if (!tooltip_hwnd_) {
     PLOG(WARNING) << "tooltip creation failed, disabling tooltips";
     return false;
@@ -93,18 +91,18 @@ void TooltipWin::PositionTooltip() {
   tooltip_bounds.AdjustToFit(
       display::win::ScreenWin::DIPToScreenRect(parent_hwnd_,
                                                display.work_area()));
-  SetWindowPos(tooltip_hwnd_, NULL, tooltip_bounds.x(), tooltip_bounds.y(), 0,
-               0, SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE);
+  SetWindowPos(tooltip_hwnd_, nullptr, tooltip_bounds.x(), tooltip_bounds.y(),
+               0, 0, SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE);
 
   MaybeOverrideFont();
 }
 
 void TooltipWin::MaybeOverrideFont() {
-  gfx::PlatformFontWin::FontAdjustment font_adjustment;
+  gfx::win::FontAdjustment font_adjustment;
   const HFONT old_font = GetWindowFont(tooltip_hwnd_);
 
   // Determine if we need to override the font.
-  if ((!override_font_ || override_font_->GetNativeFont() != old_font) &&
+  if ((!override_font_.get() || override_font_.get() != old_font) &&
       l10n_util::NeedOverrideDefaultUIFont(
           &font_adjustment.font_family_override, &font_adjustment.font_scale)) {
     // Determine if we need to regenerate the font.
@@ -113,14 +111,14 @@ void TooltipWin::MaybeOverrideFont() {
     // font unless the underlying text/DPI scale of the window has changed.
     const float current_scale =
         display::win::ScreenWin::GetScaleFactorForHWND(tooltip_hwnd_);
-    if (!override_font_ || current_scale != override_scale_) {
-      override_font_ =
-          gfx::PlatformFontWin::AdjustExistingFont(old_font, font_adjustment);
+    if (!override_font_.get() || current_scale != override_scale_) {
+      override_font_.reset(
+          gfx::win::AdjustExistingSystemFont(old_font, font_adjustment));
       override_scale_ = current_scale;
     }
 
     // Override the font in the tooltip.
-    SetWindowFont(tooltip_hwnd_, override_font_->GetNativeFont(), FALSE);
+    SetWindowFont(tooltip_hwnd_, override_font_.get(), FALSE);
   }
 }
 

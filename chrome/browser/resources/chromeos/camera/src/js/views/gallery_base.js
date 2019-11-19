@@ -128,18 +128,20 @@ cca.views.GalleryBase.prototype.deleteSelection = function() {
   var message = chrome.i18n.getMessage(
       multi ? 'delete_multi_confirmation_msg' : 'delete_confirmation_msg',
       param);
-  cca.nav.open('dialog', message, true).then((confirmed) => {
-    if (!confirmed) {
-      return;
-    }
-    var selectedPictures = this.selectedPictures();
-    for (var i = selectedPictures.length - 1; i >= 0; i--) {
-      this.model_.deletePicture(selectedPictures[i].picture).catch((error) => {
-        console.error(error);
-        // TODO(yuli): Show a toast message here.
+  cca.nav.open('message-dialog', {message, cancellable: true})
+      .then((confirmed) => {
+        if (!confirmed) {
+          return;
+        }
+        var selectedPictures = this.selectedPictures();
+        for (var i = selectedPictures.length - 1; i >= 0; i--) {
+          this.model_.deletePicture(selectedPictures[i].picture)
+              .catch((error) => {
+                console.error(error);
+                // TODO(yuli): Show a toast message here.
+              });
+        }
       });
-    }
-  });
 };
 
 /**

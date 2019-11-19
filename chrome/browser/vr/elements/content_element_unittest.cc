@@ -61,24 +61,32 @@ class TestPlatformInputHandler : public PlatformInputHandler {
   void ClearFocusedElement() override { clear_focus_called_ = true; }
   void OnWebInputEdited(const TextEdits& edits) override { edits_ = edits; }
   void SubmitWebInput() override {}
-  void RequestWebInputText(TextStateUpdateCallback) override {
-    text_state_requested_ = true;
+  void RequestWebInputText(TextStateUpdateCallback callback) override {
+    web_input_text_requests.emplace(std::move(callback));
+  }
+
+  void report_text_state(const base::string16& text) {
+    while (!web_input_text_requests.empty()) {
+      auto callback = std::move(web_input_text_requests.front());
+      web_input_text_requests.pop();
+      std::move(callback).Run(text);
+    }
   }
 
   TextEdits edits() { return edits_; }
-  bool text_state_requested() { return text_state_requested_; }
+  bool text_state_requested() { return !web_input_text_requests.empty(); }
   bool clear_focus_called() { return clear_focus_called_; }
 
   void Reset() {
     edits_.clear();
-    text_state_requested_ = false;
     clear_focus_called_ = false;
+    web_input_text_requests = {};
   }
 
  private:
   TextEdits edits_;
-  bool text_state_requested_ = false;
   bool clear_focus_called_ = false;
+  std::queue<TextStateUpdateCallback> web_input_text_requests;
 
   DISALLOW_COPY_AND_ASSIGN(TestPlatformInputHandler);
 };
@@ -105,7 +113,7 @@ class ContentElementSceneTest : public UiTest {
     auto* content =
         static_cast<ContentElement*>(scene_->GetUiElementByName(kContentQuad));
     content->SetTextInputDelegate(text_input_delegate_.get());
-    OnBeginFrame();
+    AdvanceFrame();
   }
 
  protected:
@@ -130,14 +138,14 @@ TEST_F(ContentElementSceneTest, WebInputFocus) {
   EXPECT_CALL(*kb_delegate, OnBeginFrame());
   EXPECT_CALL(*kb_delegate, SetTransform(_));
   browser_ui->ShowSoftInput(true);
-  EXPECT_TRUE(OnBeginFrame());
+  EXPECT_TRUE(AdvanceFrame());
 
   // Giving content focus should tell the delegate the focued field's content.
   EXPECT_CALL(*text_input_delegate_, UpdateInput(_));
   EXPECT_CALL(*kb_delegate, OnBeginFrame());
   EXPECT_CALL(*kb_delegate, SetTransform(_));
   content->OnFocusChanged(true);
-  EXPECT_FALSE(OnBeginFrame());
+  EXPECT_FALSE(AdvanceFrame());
 
   // Updates from the browser should update keyboard state.
   TextInputInfo info(base::ASCIIToUTF16("asdfg"));
@@ -151,14 +159,14 @@ TEST_F(ContentElementSceneTest, WebInputFocus) {
   EXPECT_CALL(*kb_delegate, OnBeginFrame());
   EXPECT_CALL(*kb_delegate, SetTransform(_));
   browser_ui->UpdateWebInputIndices(1, 1, 0, 1);
-  EXPECT_TRUE(OnBeginFrame());
+  EXPECT_TRUE(AdvanceFrame());
 
   // End editing.
   EXPECT_CALL(*kb_delegate, HideKeyboard());
   EXPECT_CALL(*kb_delegate, OnBeginFrame());
   EXPECT_CALL(*kb_delegate, SetTransform(_));
   browser_ui->ShowSoftInput(false);
-  EXPECT_TRUE(OnBeginFrame());
+  EXPECT_TRUE(AdvanceFrame());
 
   // Taking focus away from content should clear the delegate state.
   EXPECT_FALSE(input_forwarder_->clear_focus_called());
@@ -168,7 +176,7 @@ TEST_F(ContentElementSceneTest, WebInputFocus) {
   // OnBeginFrame on the keyboard delegate should be called despite of
   // visibility.
   EXPECT_CALL(*kb_delegate, OnBeginFrame());
-  OnBeginFrame();
+  AdvanceFrame();
 }
 
 // Verify that we clear the model for the web input field when it loses focus to
@@ -177,25 +185,26 @@ TEST_F(ContentElementSceneTest, ClearWebInputInfoModel) {
   auto* content =
       static_cast<ContentElement*>(scene_->GetUiElementByName(kContentQuad));
   // Initial state.
-  TextInputInfo info(base::ASCIIToUTF16("asdfg"));
-  model_->web_input_text_field_info.current = info;
-  EXPECT_TRUE(OnBeginFrame());
+  EditedText info = model_->web_input_text_field_info;
+  info.current = TextInputInfo(base::ASCIIToUTF16("asdfg"));
+  model_->set_web_input_text_field_info(info);
+  EXPECT_TRUE(AdvanceFrame());
 
   // Initial state gets pushed when the content element is focused.
-  EXPECT_CALL(*text_input_delegate_, UpdateInput(info));
+  EXPECT_CALL(*text_input_delegate_, UpdateInput(info.current));
   content->OnFocusChanged(true);
-  EXPECT_FALSE(OnBeginFrame());
+  EXPECT_FALSE(AdvanceFrame());
 
   // Unfocus the content element.
   content->OnFocusChanged(false);
-  EXPECT_TRUE(OnBeginFrame());
+  EXPECT_TRUE(AdvanceFrame());
 
   // A cleared state gets pushed when the content element is focused. This is
   // needed because the user may have clicked another text field in the content,
   // so we shouldn't be pushing the stale state.
   EXPECT_CALL(*text_input_delegate_, UpdateInput(TextInputInfo()));
   content->OnFocusChanged(true);
-  EXPECT_FALSE(OnBeginFrame());
+  EXPECT_FALSE(AdvanceFrame());
 }
 
 class ContentElementInputEditingTest : public UiTest {
@@ -214,7 +223,7 @@ class ContentElementInputEditingTest : public UiTest {
     content_ =
         static_cast<ContentElement*>(scene_->GetUiElementByName(kContentQuad));
     content_->SetTextInputDelegate(text_input_delegate_.get());
-    OnBeginFrame();
+    AdvanceFrame();
   }
 
  protected:
@@ -269,65 +278,10 @@ TEST_F(ContentElementInputEditingTest, IndicesUpdated) {
                         const TextInputInfo& info) { *model = info; },
                      base::Unretained(&model_actual)));
   EXPECT_TRUE(input_forwarder_->text_state_requested());
-  content_delegate_->OnWebInputTextChangedForTest(base::UTF8ToUTF16("asdf"));
+  input_forwarder_->report_text_state(base::UTF8ToUTF16("asdf"));
   model_exp.selection_start = 2;
   model_exp.selection_end = 2;
   EXPECT_EQ(model_actual, model_exp);
-
-  // Now verify that although the keyboard and web contents may have a different
-  // view of the current text, a user-triggered update from the keyboard is
-  // still sane from the user's point of view.
-
-  // OnWebInputIndicesChanged is called, presumably due to a JS change, but the
-  // indices are the same as those from the last update.
-  input_forwarder_->Reset();
-  TextInputInfo model;
-  content_delegate_->OnWebInputIndicesChanged(
-      2, 2, -1, -1,
-      base::BindOnce([](TextInputInfo* model,
-                        const TextInputInfo& info) { *model = info; },
-                     base::Unretained(&model)));
-  // We don't request the curent text state, so the keyboard and web contents
-  // may be out of sync.
-  EXPECT_FALSE(input_forwarder_->text_state_requested());
-  EXPECT_EQ(model, TextInputInfo());
-  // The user presses 'q', and the keyboard gives us an incorrect state, but
-  // because we're calculating deltas, we still update web contents with a 'q'.
-  SetInput(GetInputInfo("asqdf", 3, 3), GetInputInfo("asdf", 2, 2));
-  auto edits = input_forwarder_->edits();
-  EXPECT_EQ(edits.size(), 1u);
-  EXPECT_EQ(edits[0], TextEditAction(TextEditActionType::COMMIT_TEXT,
-                                     base::UTF8ToUTF16("q"), 1));
-}
-
-// This test verifies that we request the text state when the indices are
-// updated the second time the indices are changed. That is
-// OnWebInputIndicesChanged is called as a side effect of requesting the text
-// state, and we should ignore that call, but any call after that should still
-// request the text state, because for example, it may be for a different text
-// field.
-TEST_F(ContentElementInputEditingTest, PendingRequestStateCleared) {
-  // Initial keyboard state.
-  content_delegate_->OnWebInputEdited(
-      EditedText(GetInputInfo("a", 1, 1), TextInputInfo()), false);
-
-  content_delegate_->OnWebInputIndicesChanged(
-      2, 2, -1, -1, base::BindOnce([](const TextInputInfo& info) {}));
-  EXPECT_TRUE(input_forwarder_->text_state_requested());
-
-  input_forwarder_->Reset();
-  content_delegate_->OnWebInputIndicesChanged(
-      2, 2, -1, -1, base::BindOnce([](const TextInputInfo& info) {}));
-  // We don't request the curent text state becasuse OnWebInputIndicesChanged
-  // gets called as a side-effect of requesting the state above.
-  EXPECT_FALSE(input_forwarder_->text_state_requested());
-
-  input_forwarder_->Reset();
-  content_delegate_->OnWebInputIndicesChanged(
-      0, 0, -1, -1, base::BindOnce([](const TextInputInfo& info) {}));
-  // We should request the current text state this time because the call to
-  // OnWebInputIndicesChanged this time can be for a different reason.
-  EXPECT_TRUE(input_forwarder_->text_state_requested());
 }
 
 }  // namespace vr

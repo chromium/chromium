@@ -6,7 +6,7 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
-#include "jni/UrlFilterBridge_jni.h"
+#include "chrome/android/chrome_jni_headers/UrlFilterBridge_jni.h"
 #include "url/gurl.h"
 
 using base::android::JavaParamRef;

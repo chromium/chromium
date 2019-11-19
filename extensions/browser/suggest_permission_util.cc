@@ -7,21 +7,19 @@
 #include "base/strings/stringprintf.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/common/console_message_level.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/common/permissions/permissions_info.h"
-
-using content::CONSOLE_MESSAGE_LEVEL_WARNING;
+#include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
 
 namespace extensions {
 
 namespace {
 
 const char kPermissionsHelpURLForExtensions[] =
-    "http://developer.chrome.com/extensions/manifest.html#permissions";
+    "https://developer.chrome.com/extensions/manifest.html#permissions";
 const char kPermissionsHelpURLForApps[] =
-    "http://developer.chrome.com/apps/declare_permissions.html";
+    "https://developer.chrome.com/apps/declare_permissions.html";
 
 void SuggestAPIPermissionInDevToolsConsole(
     APIPermission::ID permission,
@@ -42,7 +40,8 @@ void SuggestAPIPermissionInDevToolsConsole(
   // Only the main frame handles dev tools messages.
   content::WebContents::FromRenderFrameHost(render_frame_host)
       ->GetMainFrame()
-      ->AddMessageToConsole(CONSOLE_MESSAGE_LEVEL_WARNING, message);
+      ->AddMessageToConsole(blink::mojom::ConsoleMessageLevel::kWarning,
+                            message);
 }
 
 }  // namespace

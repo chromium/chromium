@@ -17,10 +17,10 @@ class WebAssociatedURLLoaderClient {
                                   const WebURLResponse& redirect_response) {
     return true;
   }
-  virtual void DidSendData(unsigned long long bytes_sent,
-                           unsigned long long total_bytes_to_be_sent) {}
+  virtual void DidSendData(uint64_t bytes_sent,
+                           uint64_t total_bytes_to_be_sent) {}
   virtual void DidReceiveResponse(const WebURLResponse&) {}
-  virtual void DidDownloadData(unsigned long long data_length) {}
+  virtual void DidDownloadData(uint64_t data_length) {}
   virtual void DidReceiveData(const char* data, int data_length) {}
   virtual void DidReceiveCachedMetadata(const char* data, int data_length) {}
   virtual void DidFinishLoading() {}

@@ -141,7 +141,7 @@ TEST_F(InMemoryURLIndexTypesTest, StaticFunctions) {
     EXPECT_EQ(expected_offsets[i], matches_g[i].offset);
 }
 
-TEST_F(InMemoryURLIndexTypesTest, OffsetsAndTermMatches) {
+TEST_F(InMemoryURLIndexTypesTest, DISABLED_OffsetsAndTermMatches) {
   // Test OffsetsFromTermMatches
   TermMatches matches_a;
   matches_a.push_back(TermMatch(1, 1, 2));

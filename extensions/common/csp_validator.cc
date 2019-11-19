@@ -261,13 +261,6 @@ std::string GetSecureDirectiveValues(
     } else if ((options & OPTIONS_ALLOW_UNSAFE_EVAL) &&
                source_lower == "'unsafe-eval'") {
       is_secure_csp_token = true;
-    } else if (base::StartsWith(source_lower, "chrome-extension-resource:",
-                                base::CompareCase::SENSITIVE)) {
-      // The "chrome-extension-resource" scheme has been removed from the
-      // codebase, but it may still appear in existing CSPs. We continue to
-      // allow it here for compatibility. Requests on this scheme will not
-      // return any kind of network response.
-      is_secure_csp_token = true;
     }
 
     if (is_secure_csp_token) {
@@ -670,8 +663,9 @@ bool ContentSecurityPolicyIsSandboxed(
   return seen_sandbox;
 }
 
-bool IsSecureIsolatedWorldCSP(const std::string& isolated_world_csp,
-                              base::string16* error) {
+bool DoesCSPDisallowRemoteCode(const std::string& content_security_policy,
+                               base::StringPiece manifest_key,
+                               base::string16* error) {
   DCHECK(error);
 
   struct DirectiveMapping {
@@ -694,7 +688,7 @@ bool IsSecureIsolatedWorldCSP(const std::string& isolated_world_csp,
   };
 
   // Populate |directive_mappings|.
-  CSPParser csp_parser(isolated_world_csp);
+  CSPParser csp_parser(content_security_policy);
   for (DirectiveMapping* mapping : directive_mappings) {
     // Find the first matching directive. As per
     // http://www.w3.org/TR/CSP/#parse-a-csp-policy, duplicate directive names
@@ -730,12 +724,11 @@ bool IsSecureIsolatedWorldCSP(const std::string& isolated_world_csp,
   // "default-src".
   fallback_if_necessary(&worker_src_mapping, script_src_mapping);
 
-  auto is_secure_directive = [](const DirectiveMapping& mapping,
-                                base::string16* error) {
+  auto is_secure_directive = [manifest_key](const DirectiveMapping& mapping,
+                                            base::string16* error) {
     if (!mapping.directive) {
       *error = ErrorUtils::FormatErrorMessageUTF16(
-          manifest_errors::kInvalidCSPMissingSecureSrc,
-          manifest_keys::kContentSecurityPolicy_IsolatedWorldPath,
+          manifest_errors::kInvalidCSPMissingSecureSrc, manifest_key,
           mapping.status.name());
       return false;
     }
@@ -753,8 +746,7 @@ bool IsSecureIsolatedWorldCSP(const std::string& isolated_world_csp,
       return true;
 
     *error = ErrorUtils::FormatErrorMessageUTF16(
-        manifest_errors::kInvalidCSPInsecureValueError,
-        manifest_keys::kContentSecurityPolicy_IsolatedWorldPath, *it,
+        manifest_errors::kInvalidCSPInsecureValueError, manifest_key, *it,
         mapping.status.name());
     return false;
   };

@@ -80,7 +80,7 @@ bool EncodeBarcode(const std::vector<bool>& bits,
 }
 
 namespace {
-bool DecodeBarCodeRows(const scoped_refptr<VideoFrame>& frame,
+bool DecodeBarCodeRows(const VideoFrame& frame,
                        std::vector<bool>* output,
                        int min_row,
                        int max_row) {
@@ -88,11 +88,11 @@ bool DecodeBarCodeRows(const scoped_refptr<VideoFrame>& frame,
   base::circular_deque<int> runs;
   bool is_black = true;
   int length = 0;
-  for (int pos = 0; pos < frame->row_bytes(VideoFrame::kYPlane); pos++) {
+  for (int pos = 0; pos < frame.row_bytes(VideoFrame::kYPlane); pos++) {
     float value = 0.0;
     for (int row = min_row; row < max_row; row++) {
-      value += frame->data(VideoFrame::kYPlane)[
-          frame->stride(VideoFrame::kYPlane) * row + pos];
+      value += frame.data(
+          VideoFrame::kYPlane)[frame.stride(VideoFrame::kYPlane) * row + pos];
     }
     value /= max_row - min_row;
     if (is_black ? value > kBlackThreshold : value < kWhiteThreshold) {
@@ -148,16 +148,13 @@ bool DecodeBarCodeRows(const scoped_refptr<VideoFrame>& frame,
 // Note that "output" is assumed to be the right size already. This
 // could be inferred from the data, but the decoding is more robust
 // if we can assume that we know how many bits we want.
-bool DecodeBarcode(const scoped_refptr<VideoFrame>& frame,
-                   std::vector<bool>* output) {
-  DCHECK(frame->format() == PIXEL_FORMAT_YV12 ||
-         frame->format() == PIXEL_FORMAT_I422 ||
-         frame->format() == PIXEL_FORMAT_I420);
-  int rows = frame->rows(VideoFrame::kYPlane);
+bool DecodeBarcode(const VideoFrame& frame, std::vector<bool>* output) {
+  DCHECK(frame.format() == PIXEL_FORMAT_YV12 ||
+         frame.format() == PIXEL_FORMAT_I422 ||
+         frame.format() == PIXEL_FORMAT_I420);
+  int rows = frame.rows(VideoFrame::kYPlane);
   // Middle 10 lines
-  if (DecodeBarCodeRows(frame,
-                        output,
-                        std::max(0, rows / 2 - 5),
+  if (DecodeBarCodeRows(frame, output, std::max(0, rows / 2 - 5),
                         std::min(rows, rows / 2 + 5))) {
     return true;
   }

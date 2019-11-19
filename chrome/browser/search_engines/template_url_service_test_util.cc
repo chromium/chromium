@@ -59,9 +59,7 @@ void RemoveManagedDefaultSearchPreferences(TestingProfile* profile) {
       DefaultSearchManager::kDefaultSearchProviderDataPrefName);
 }
 
-TemplateURLServiceTestUtil::TemplateURLServiceTestUtil()
-    : changed_count_(0),
-      search_terms_data_(NULL) {
+TemplateURLServiceTestUtil::TemplateURLServiceTestUtil() : changed_count_(0) {
   // Make unique temp directory.
   EXPECT_TRUE(temp_dir_.CreateUniqueTempDir());
   profile_.reset(new TestingProfile(temp_dir_.GetPath()));
@@ -84,6 +82,7 @@ TemplateURLServiceTestUtil::TemplateURLServiceTestUtil()
 
 TemplateURLServiceTestUtil::~TemplateURLServiceTestUtil() {
   ClearModel();
+  web_data_service_->ShutdownOnUISequence();
   profile_.reset();
 
   // Flush the message loop to make application verifiers happy.
@@ -122,23 +121,21 @@ void TemplateURLServiceTestUtil::ChangeModelToLoadState() {
 void TemplateURLServiceTestUtil::ClearModel() {
   model_->Shutdown();
   model_.reset();
-  search_terms_data_ = NULL;
 }
 
 void TemplateURLServiceTestUtil::ResetModel(bool verify_load) {
   if (model_)
     ClearModel();
-  search_terms_data_ = new TestingSearchTermsData("http://www.google.com/");
   model_.reset(new TemplateURLService(
       profile()->GetPrefs(),
-      std::unique_ptr<SearchTermsData>(search_terms_data_),
+      std::make_unique<TestingSearchTermsData>("http://www.google.com/"),
       web_data_service_.get(),
       std::unique_ptr<TemplateURLServiceClient>(
           new TestingTemplateURLServiceClient(
               HistoryServiceFactory::GetForProfileIfExists(
                   profile(), ServiceAccessType::EXPLICIT_ACCESS),
               &search_term_)),
-      NULL, NULL, base::Closure()));
+      nullptr, base::Closure()));
   model()->AddObserver(this);
   changed_count_ = 0;
   if (verify_load)
@@ -149,12 +146,6 @@ base::string16 TemplateURLServiceTestUtil::GetAndClearSearchTerm() {
   base::string16 search_term;
   search_term.swap(search_term_);
   return search_term;
-}
-
-void TemplateURLServiceTestUtil::SetGoogleBaseURL(const GURL& base_url) {
-  DCHECK(base_url.is_valid());
-  search_terms_data_->set_google_base_url(base_url.spec());
-  model_->GoogleBaseURLChanged();
 }
 
 TemplateURL* TemplateURLServiceTestUtil::AddExtensionControlledTURL(

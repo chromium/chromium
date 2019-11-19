@@ -17,12 +17,12 @@
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/paint/cull_rect.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_record_builder.h"
-#include "third_party/blink/renderer/platform/wtf/time.h"
 
 namespace blink {
 
 SimCompositor::SimCompositor() {
   LocalFrameView::SetInitialTracksPaintInvalidationsForTesting(true);
+  last_frame_time_ = base::TimeTicks::Now();
 }
 
 SimCompositor::~SimCompositor() {
@@ -31,23 +31,18 @@ SimCompositor::~SimCompositor() {
 
 void SimCompositor::SetWebView(
     WebViewImpl& web_view,
-    content::LayerTreeView& layer_tree_view,
+    cc::LayerTreeHost& layer_tree_host,
     frame_test_helpers::TestWebViewClient& view_client,
     frame_test_helpers::TestWebWidgetClient& widget_client) {
   web_view_ = &web_view;
-  layer_tree_view_ = &layer_tree_view;
+  layer_tree_host_ = &layer_tree_host;
   test_web_view_client_ = &view_client;
   test_web_widget_client_ = &widget_client;
-
-  // SimCompositor starts with defer commits enabled, but uses synchronous
-  // compositing which does not use defer commits anyhow, it only uses it for
-  // reading deferred state in tests.
-  web_view_->DeferMainFrameUpdateForTesting();
 }
 
 SimCanvas::Commands SimCompositor::BeginFrame(double time_delta_in_seconds) {
   DCHECK(web_view_);
-  DCHECK(!layer_tree_view_->layer_tree_host()->defer_main_frame_update());
+  DCHECK(!layer_tree_host_->defer_main_frame_update());
   // Verify that the need for a BeginMainFrame has been registered, and would
   // have caused the compositor to schedule one if we were using its scheduler.
   DCHECK(NeedsBeginFrame());
@@ -60,8 +55,8 @@ SimCanvas::Commands SimCompositor::BeginFrame(double time_delta_in_seconds) {
   SimCanvas::Commands commands;
   paint_commands_ = &commands;
 
-  layer_tree_view_->layer_tree_host()->Composite(last_frame_time_,
-                                                 /*raster=*/false);
+  layer_tree_host_->Composite(last_frame_time_,
+                              /*raster=*/false);
 
   paint_commands_ = nullptr;
   return commands;

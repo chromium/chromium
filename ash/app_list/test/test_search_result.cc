@@ -4,7 +4,7 @@
 
 #include "ash/app_list/test/test_search_result.h"
 
-namespace app_list {
+namespace ash {
 
 TestSearchResult::TestSearchResult() = default;
 
@@ -14,4 +14,4 @@ void TestSearchResult::set_result_id(const std::string& id) {
   set_id(id);
 }
 
-}  // namespace app_list
+}  // namespace ash

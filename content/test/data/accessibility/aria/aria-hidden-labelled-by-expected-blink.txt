@@ -1,0 +1,11 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer ignored invisible name='span-1'
+++++++genericContainer name='span-2'
+++++++genericContainer name='span-4' labelledbyIds=genericContainer
+++++++++genericContainer ignored invisible name='span-4'
+++++++genericContainer name='span-1' labelledbyIds=genericContainer
+++++++genericContainer name='span-2' labelledbyIds=genericContainer
+++++++genericContainer name='span-3' labelledbyIds=genericContainer
+++++++genericContainer name='span-4' labelledbyIds=genericContainer

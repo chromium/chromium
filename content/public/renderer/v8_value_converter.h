@@ -30,10 +30,6 @@ class CONTENT_EXPORT V8ValueConverter {
   // Extends the default behaviour of V8ValueConverter.
   class CONTENT_EXPORT Strategy {
    public:
-    typedef base::Callback<std::unique_ptr<base::Value>(v8::Local<v8::Value>,
-                                                        v8::Isolate* isolate)>
-        FromV8ValueCallback;
-
     virtual ~Strategy() {}
 
     // If false is returned, V8ValueConverter proceeds with the default
@@ -42,8 +38,7 @@ class CONTENT_EXPORT V8ValueConverter {
     // the ValueConverter's internal checks for depth and cycles.
     virtual bool FromV8Object(v8::Local<v8::Object> value,
                               std::unique_ptr<base::Value>* out,
-                              v8::Isolate* isolate,
-                              const FromV8ValueCallback& callback);
+                              v8::Isolate* isolate);
 
     // If false is returned, V8ValueConverter proceeds with the default
     // behavior.
@@ -51,8 +46,7 @@ class CONTENT_EXPORT V8ValueConverter {
     // the ValueConverter's internal checks for depth and cycles.
     virtual bool FromV8Array(v8::Local<v8::Array> value,
                              std::unique_ptr<base::Value>* out,
-                             v8::Isolate* isolate,
-                             const FromV8ValueCallback& callback);
+                             v8::Isolate* isolate);
 
     // If false is returned, V8ValueConverter proceeds with the default
     // behavior. v8::Object is passed as ArrayBuffer and ArrayBufferView

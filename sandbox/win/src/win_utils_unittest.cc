@@ -20,6 +20,8 @@
 #include "sandbox/win/tests/common/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+namespace sandbox {
+
 namespace {
 
 class ScopedTerminateProcess {
@@ -73,11 +75,11 @@ TEST(WinUtils, IsReparsePoint) {
   EXPECT_EQ(static_cast<DWORD>(ERROR_NOT_A_REPARSE_POINT),
             IsReparsePoint(my_folder));
 
-  base::string16 not_found = base::string16(my_folder) + L"\\foo\\bar";
+  std::wstring not_found = std::wstring(my_folder) + L"\\foo\\bar";
   EXPECT_EQ(static_cast<DWORD>(ERROR_NOT_A_REPARSE_POINT),
             IsReparsePoint(not_found));
 
-  base::string16 new_file = base::string16(my_folder) + L"\\foo";
+  std::wstring new_file = std::wstring(my_folder) + L"\\foo";
   EXPECT_EQ(static_cast<DWORD>(ERROR_NOT_A_REPARSE_POINT),
             IsReparsePoint(new_file));
 
@@ -87,7 +89,7 @@ TEST(WinUtils, IsReparsePoint) {
                             OPEN_EXISTING, FILE_FLAG_BACKUP_SEMANTICS, nullptr);
   EXPECT_NE(INVALID_HANDLE_VALUE, dir);
 
-  base::string16 temp_dir_nt = base::string16(L"\\??\\") + temp_directory;
+  std::wstring temp_dir_nt = std::wstring(L"\\??\\") + temp_directory;
   EXPECT_TRUE(SetReparsePoint(dir, temp_dir_nt.c_str()));
 
   EXPECT_EQ(static_cast<DWORD>(ERROR_SUCCESS), IsReparsePoint(new_file));
@@ -110,17 +112,16 @@ TEST(WinUtils, SameObject) {
   ASSERT_TRUE(::DeleteFile(my_folder));
   ASSERT_TRUE(::CreateDirectory(my_folder, nullptr));
 
-  base::string16 folder(my_folder);
-  base::string16 file_name = folder + L"\\foo.txt";
+  std::wstring folder(my_folder);
+  std::wstring file_name = folder + L"\\foo.txt";
   const ULONG kSharing = FILE_SHARE_WRITE | FILE_SHARE_READ | FILE_SHARE_DELETE;
   base::win::ScopedHandle file(CreateFile(file_name.c_str(), GENERIC_WRITE,
                                           kSharing, nullptr, CREATE_ALWAYS,
                                           FILE_FLAG_DELETE_ON_CLOSE, nullptr));
 
   EXPECT_TRUE(file.IsValid());
-  base::string16 file_name_nt1 = base::string16(L"\\??\\") + file_name;
-  base::string16 file_name_nt2 =
-      base::string16(L"\\??\\") + folder + L"\\FOO.txT";
+  std::wstring file_name_nt1 = std::wstring(L"\\??\\") + file_name;
+  std::wstring file_name_nt2 = std::wstring(L"\\??\\") + folder + L"\\FOO.txT";
   EXPECT_TRUE(SameObject(file.Get(), file_name_nt1.c_str()));
   EXPECT_TRUE(SameObject(file.Get(), file_name_nt2.c_str()));
 
@@ -131,7 +132,7 @@ TEST(WinUtils, SameObject) {
 TEST(WinUtils, IsPipe) {
   using sandbox::IsPipe;
 
-  base::string16 pipe_name = L"\\??\\pipe\\mypipe";
+  std::wstring pipe_name = L"\\??\\pipe\\mypipe";
   EXPECT_TRUE(IsPipe(pipe_name));
 
   pipe_name = L"\\??\\PiPe\\mypipe";
@@ -224,26 +225,26 @@ TEST(WinUtils, ConvertToLongPath) {
   // it was disabled in the filesystem setup.
   EXPECT_NE(temp_path.value().length(), ::wcslen(short_path));
 
-  base::string16 short_form_native_path;
-  EXPECT_TRUE(sandbox::GetNtPathFromWin32Path(base::string16(short_path),
+  std::wstring short_form_native_path;
+  EXPECT_TRUE(sandbox::GetNtPathFromWin32Path(std::wstring(short_path),
                                               &short_form_native_path));
   // NT short path: "\Device\HarddiskVolume4\PROGRA~1\TEST_C~1.EXE"
 
   // Test 1: convert win32 short path to long:
-  base::string16 test1(short_path);
+  std::wstring test1(short_path);
   EXPECT_TRUE(sandbox::ConvertToLongPath(&test1));
   EXPECT_TRUE(::wcsicmp(temp_path.value().c_str(), test1.c_str()) == 0);
   // Expected result: "c:\Program Files\test_calc.exe"
 
   // Test 2: convert native short path to long:
-  base::string16 drive_letter = temp_path.value().substr(0, 3);
-  base::string16 test2(short_form_native_path);
+  std::wstring drive_letter = temp_path.value().substr(0, 3);
+  std::wstring test2(short_form_native_path);
   EXPECT_TRUE(sandbox::ConvertToLongPath(&test2, &drive_letter));
 
   size_t index = short_form_native_path.find_first_of(
       L'\\', ::wcslen(L"\\Device\\HarddiskVolume"));
-  EXPECT_TRUE(index != base::string16::npos);
-  base::string16 expected_result = short_form_native_path.substr(0, index + 1);
+  EXPECT_TRUE(index != std::wstring::npos);
+  std::wstring expected_result = short_form_native_path.substr(0, index + 1);
   expected_result.append(temp_path.value().substr(3));
   EXPECT_TRUE(::wcsicmp(expected_result.c_str(), test2.c_str()) == 0);
   // Expected result: "\Device\HarddiskVolumeX\Program Files\test_calc.exe"
@@ -253,3 +254,5 @@ TEST(WinUtils, ConvertToLongPath) {
 
   return;
 }
+
+}  // namespace sandbox

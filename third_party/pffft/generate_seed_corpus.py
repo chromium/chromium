@@ -9,9 +9,10 @@ from __future__ import print_function
 from array import array
 import os
 import random
+import shutil
 import sys
 
-MAX_INPUT_SIZE = int(1e6)
+MAX_INPUT_SIZE = 5000  # < 1 MB so we don't blow up fuzzer build sizes.
 MAX_FLOAT32 = 3.4028235e+38
 
 
@@ -42,9 +43,10 @@ def main():
     sys.exit(1)
 
   output_path = sys.argv[1]
-  # Create output directory if missing.
-  if not os.path.exists(output_path):
-    os.makedirs(output_path)
+  # Start with a clean output directory.
+  if os.path.exists(output_path):
+    shutil.rmtree(output_path)
+  os.makedirs(output_path)
 
   # List of valid input sizes.
   N = [n for n in range(MAX_INPUT_SIZE) if IsValidSize(n)]

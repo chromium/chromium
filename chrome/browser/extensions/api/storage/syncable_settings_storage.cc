@@ -191,7 +191,7 @@ syncer::SyncError SyncableSettingsStorage::SendLocalSettingsToSync(
     std::string key = base::DictionaryValue::Iterator(*local_state).key();
     std::unique_ptr<base::Value> value;
     local_state->RemoveWithoutPathExpansion(key, &value);
-    changes.push_back(ValueStoreChange(key, nullptr, std::move(value)));
+    changes.push_back(ValueStoreChange(key, base::nullopt, std::move(*value)));
   }
 
   syncer::SyncError error = sync_processor_->SendChanges(changes);
@@ -356,7 +356,8 @@ syncer::SyncError SyncableSettingsStorage::OnSyncAdd(
                            result.status().message.c_str()),
         sync_processor_->type());
   }
-  changes->push_back(ValueStoreChange(key, nullptr, std::move(new_value)));
+  changes->push_back(
+      ValueStoreChange(key, base::nullopt, std::move(*new_value)));
   return syncer::SyncError();
 }
 
@@ -377,7 +378,7 @@ syncer::SyncError SyncableSettingsStorage::OnSyncUpdate(
         sync_processor_->type());
   }
   changes->push_back(
-      ValueStoreChange(key, std::move(old_value), std::move(new_value)));
+      ValueStoreChange(key, std::move(*old_value), std::move(*new_value)));
   return syncer::SyncError();
 }
 
@@ -394,7 +395,8 @@ syncer::SyncError SyncableSettingsStorage::OnSyncDelete(
                            result.status().message.c_str()),
         sync_processor_->type());
   }
-  changes->push_back(ValueStoreChange(key, std::move(old_value), nullptr));
+  changes->push_back(
+      ValueStoreChange(key, std::move(*old_value), base::nullopt));
   return syncer::SyncError();
 }
 

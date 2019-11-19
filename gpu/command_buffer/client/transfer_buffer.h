@@ -67,6 +67,8 @@ class GPU_EXPORT TransferBufferInterface {
 
   virtual void ShrinkLastBlock(unsigned int new_size) = 0;
 
+  virtual unsigned int GetMaxSize() const = 0;
+
  protected:
   template <typename>
   friend class ScopedResultPtr;
@@ -107,10 +109,10 @@ class GPU_EXPORT TransferBuffer : public TransferBufferInterface {
   unsigned int GetFreeSize() const override;
   unsigned int GetFragmentedFreeSize() const override;
   void ShrinkLastBlock(unsigned int new_size) override;
+  unsigned int GetMaxSize() const override;
 
   // These are for testing.
   unsigned int GetCurrentMaxAllocationWithoutRealloc() const;
-  unsigned int GetMaxAllocation() const;
 
   // We will attempt to shrink the ring buffer once the number of bytes
   // allocated reaches this threshold times the high water mark.

@@ -41,9 +41,7 @@ WebGLTexture::WebGLTexture(WebGLRenderingContextBase* ctx)
   SetObject(texture);
 }
 
-WebGLTexture::~WebGLTexture() {
-  RunDestructor();
-}
+WebGLTexture::~WebGLTexture() = default;
 
 void WebGLTexture::SetTarget(GLenum target) {
   if (!Object())

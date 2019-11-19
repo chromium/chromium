@@ -4,7 +4,7 @@
   found in the LICENSE file.
 -->
 <!DOCTYPE html>
-<html dir="$i18n{textdirection}" lang="$i18n{language}">
+<html dir="ltr" lang="en">
   <head>
     <meta charset="utf-8">
     <title>AppCache</title>
@@ -17,13 +17,8 @@
       <div id="appcache-list-template"
            jsvalues=".partitionPath:$this.partition_path">
         <div class="appcache-summary">
-          <span jsdisplay="$this.partition_path">
-            <span>Instances in: </span>
-            <span jscontent="$this.partition_path"></span>
-          </span>
-          <span jsdisplay="!$this.partition_path">
-            <span>Instances: Incognito </span>
-          </span>
+          <span>Instances in: </span>
+          <span jscontent="$this.display_name"></span>
           <span jscontent="'(' + $this.appcache_vector.length + ')'">
           </span>
         </div>
@@ -42,7 +37,11 @@
               </div>
               <div class="appcache-size">
                 <span> Size: </span>
-                <span jscontent="size"></span>
+                <span jscontent="totalSize"></span>
+                =
+                <span jscontent="responseSizes"></span> (response)
+                +
+                <span jscontent="paddingSizes"></span> (padding)
               </div>
               <div class="appcache-dates">
                 <ul>
@@ -81,15 +80,31 @@
         </div>
       </div>
 
-      <div id="appcache-info-template" jsselect="$this.items">
-        <span>
-          <a href="#" class="appcache-info-template-file-url"
-                      jscontent="fileUrl" jsvalues=".responseId:responseId">
-          </a>
-        </span>
-        <span jscontent="size"></span>
-        <span jscontent="properties"></span>
-      </div>
+      <table id="appcache-info-template">
+        <thead>
+          <tr>
+            <th>File URL</th>
+            <th>Total Size</th>
+            <th>Response</th>
+            <th>Padding</th>
+            <th>Properties</th>
+          </tr>
+        </thead>
+        <tbody class="appcache-details"
+               jsvalues=".manifestURL:$manifestURL;.groupId:$groupId;">
+          <tr jsselect="items">
+            <td>
+              <a href="#" class="appcache-info-template-file-url"
+                          jscontent="fileUrl" jsvalues=".responseId:responseId">
+              </a>
+            </td>
+            <td jscontent="totalSize"></td>
+            <td jscontent="responseSize"></td>
+            <td jscontent="paddingSize"></td>
+            <td jscontent="properties"></td>
+          </tr>
+        </tbody>
+      </table>
     </div>
     <h1>Application Cache</h1>
     <div class="content">

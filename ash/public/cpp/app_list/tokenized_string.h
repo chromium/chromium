@@ -12,7 +12,7 @@
 #include "base/strings/string16.h"
 #include "ui/gfx/range/range.h"
 
-namespace app_list {
+namespace ash {
 
 // TokenizedString takes a string and breaks it down into token words. It
 // first breaks using BreakIterator to get all the words. Then it breaks
@@ -42,6 +42,6 @@ class ASH_PUBLIC_EXPORT TokenizedString {
   DISALLOW_COPY_AND_ASSIGN(TokenizedString);
 };
 
-}  // namespace app_list
+}  // namespace ash
 
 #endif  // ASH_PUBLIC_CPP_APP_LIST_TOKENIZED_STRING_H_

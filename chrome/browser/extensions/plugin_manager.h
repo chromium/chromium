@@ -8,9 +8,11 @@
 #include <set>
 #include <string>
 
+#include "base/macros.h"
 #include "base/scoped_observer.h"
 #include "components/nacl/common/buildflags.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
+#include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
 #include "extensions/common/manifest_handlers/nacl_modules_handler.h"
 
@@ -22,7 +24,6 @@ class BrowserContext;
 }
 
 namespace extensions {
-class ExtensionRegistry;
 
 class PluginManager : public BrowserContextKeyedAPI,
                       public ExtensionRegistryObserver {
@@ -72,7 +73,9 @@ class PluginManager : public BrowserContextKeyedAPI,
 
   // Listen to extension load, unloaded notifications.
   ScopedObserver<ExtensionRegistry, ExtensionRegistryObserver>
-      extension_registry_observer_;
+      extension_registry_observer_{this};
+
+  DISALLOW_COPY_AND_ASSIGN(PluginManager);
 };
 
 }  // namespace extensions

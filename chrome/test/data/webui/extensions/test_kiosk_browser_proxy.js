@@ -2,8 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-/** @implements {extensions.KioskBrowserProxy} */
-class TestKioskBrowserProxy extends TestBrowserProxy {
+import {TestBrowserProxy} from '../test_browser_proxy.m.js';
+
+/** @implements {KioskBrowserProxy} */
+export class TestKioskBrowserProxy extends TestBrowserProxy {
   constructor() {
     super([
       'initializeKioskAppSettings',

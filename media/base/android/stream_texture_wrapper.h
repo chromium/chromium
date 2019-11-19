@@ -22,7 +22,7 @@ class MEDIA_EXPORT StreamTextureWrapper {
   // Initialize the underlying StreamTexture.
   // See StreamTextureWrapperImpl.
   virtual void Initialize(
-      const base::Closure& received_frame_cb,
+      const base::RepeatingClosure& received_frame_cb,
       const gfx::Size& natural_size,
       scoped_refptr<base::SingleThreadTaskRunner> compositor_task_runner,
       const StreamTextureWrapperInitCB& init_cb) = 0;

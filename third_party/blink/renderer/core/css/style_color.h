@@ -31,9 +31,10 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_STYLE_COLOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_STYLE_COLOR_H_
 
+#include "third_party/blink/public/platform/web_color_scheme.h"
 #include "third_party/blink/renderer/core/css_value_keywords.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
 
@@ -41,29 +42,34 @@ class StyleColor {
   DISALLOW_NEW();
 
  public:
-  StyleColor() : current_color_(true) {}
-  StyleColor(Color color) : color_(color), current_color_(false) {}
+  StyleColor() : color_keyword_(CSSValueID::kCurrentcolor) {}
+  StyleColor(Color color)
+      : color_(color), color_keyword_(CSSValueID::kInvalid) {}
   static StyleColor CurrentColor() { return StyleColor(); }
 
-  bool IsCurrentColor() const { return current_color_; }
+  bool IsCurrentColor() const {
+    return color_keyword_ == CSSValueID::kCurrentcolor;
+  }
   Color GetColor() const {
     DCHECK(!IsCurrentColor());
     return color_;
   }
 
   Color Resolve(Color current_color) const {
-    return current_color_ ? current_color : color_;
+    return IsCurrentColor() ? current_color : color_;
   }
 
-  bool HasAlpha() const { return !current_color_ && color_.HasAlpha(); }
+  bool HasAlpha() const { return !IsCurrentColor() && color_.HasAlpha(); }
 
-  static Color ColorFromKeyword(CSSValueID);
+  static Color ColorFromKeyword(CSSValueID, WebColorScheme color_scheme);
   static bool IsColorKeyword(CSSValueID);
   static bool IsSystemColor(CSSValueID);
 
  private:
+  explicit StyleColor(CSSValueID keyword) : color_keyword_(keyword) {}
+
   Color color_;
-  bool current_color_;
+  CSSValueID color_keyword_;
 };
 
 inline bool operator==(const StyleColor& a, const StyleColor& b) {

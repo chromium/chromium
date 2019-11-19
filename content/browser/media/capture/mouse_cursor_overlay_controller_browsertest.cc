@@ -63,9 +63,8 @@ class MouseCursorOverlayControllerBrowserTest : public ContentBrowserTest {
     auto overlay_ptr = std::make_unique<FakeOverlay>();
     FakeOverlay* const overlay = overlay_ptr.get();
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
-    controller_.Start(
-        std::move(overlay_ptr),
-        base::CreateSingleThreadTaskRunnerWithTraits({BrowserThread::UI}));
+    controller_.Start(std::move(overlay_ptr),
+                      base::CreateSingleThreadTaskRunner({BrowserThread::UI}));
     return overlay;
   }
 

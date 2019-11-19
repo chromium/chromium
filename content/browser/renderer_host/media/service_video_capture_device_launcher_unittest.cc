@@ -11,12 +11,15 @@
 #include "base/threading/thread.h"
 #include "content/browser/renderer_host/media/ref_counted_video_source_provider.h"
 #include "content/browser/renderer_host/media/service_launched_video_capture_device.h"
-#include "content/public/test/test_browser_thread_bundle.h"
-#include "mojo/public/cpp/bindings/binding.h"
-#include "mojo/public/cpp/bindings/binding_set.h"
+#include "content/public/test/browser_task_environment.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
 #include "services/video_capture/public/cpp/mock_push_subscription.h"
 #include "services/video_capture/public/cpp/mock_video_source.h"
 #include "services/video_capture/public/cpp/mock_video_source_provider.h"
+#include "services/video_capture/public/mojom/video_frame_handler.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -49,20 +52,17 @@ class ServiceVideoCaptureDeviceLauncherTest : public testing::Test {
   ServiceVideoCaptureDeviceLauncherTest() {}
   ~ServiceVideoCaptureDeviceLauncherTest() override {}
 
-  void CloseSourceBinding() { source_binding_.reset(); }
+  void CloseSourceReceiver() { source_receiver_.reset(); }
 
-  void CloseSubscriptionBindings() {
-    subscription_bindings_.CloseAllBindings();
-  }
+  void CloseSubscriptionReceivers() { subscription_receivers_.Clear(); }
 
  protected:
   void SetUp() override {
-    source_provider_binding_ = std::make_unique<
-        mojo::Binding<video_capture::mojom::VideoSourceProvider>>(
-        &mock_source_provider_, mojo::MakeRequest(&source_provider_));
+    source_provider_receiver_ = std::make_unique<
+        mojo::Receiver<video_capture::mojom::VideoSourceProvider>>(
+        &mock_source_provider_, source_provider_.BindNewPipeAndPassReceiver());
     service_connection_ = base::MakeRefCounted<RefCountedVideoSourceProvider>(
         std::move(source_provider_),
-        video_capture::mojom::DeviceFactoryProviderPtr(),
         release_connection_cb_.Get());
 
     launcher_ = std::make_unique<ServiceVideoCaptureDeviceLauncher>(
@@ -86,23 +86,26 @@ class ServiceVideoCaptureDeviceLauncherTest : public testing::Test {
     ON_CALL(mock_source_provider_, DoGetVideoSource(kStubDeviceId, _))
         .WillByDefault(Invoke(
             [this](const std::string& device_id,
-                   video_capture::mojom::VideoSourceRequest* source_request) {
-              source_binding_ = std::make_unique<
-                  mojo::Binding<video_capture::mojom::VideoSource>>(
-                  &mock_source_, std::move(*source_request));
+                   mojo::PendingReceiver<video_capture::mojom::VideoSource>*
+                       source_receiver) {
+              source_receiver_ = std::make_unique<
+                  mojo::Receiver<video_capture::mojom::VideoSource>>(
+                  &mock_source_, std::move(*source_receiver));
             }));
 
     ON_CALL(mock_source_, DoCreatePushSubscription(_, _, _, _, _))
         .WillByDefault(Invoke(
-            [this](video_capture::mojom::ReceiverPtr& subscriber,
+            [this](mojo::PendingRemote<video_capture::mojom::VideoFrameHandler>
+                       subscriber,
                    const media::VideoCaptureParams& requested_settings,
                    bool force_reopen_with_new_settings,
-                   video_capture::mojom::PushVideoStreamSubscriptionRequest&
+                   mojo::PendingReceiver<
+                       video_capture::mojom::PushVideoStreamSubscription>
                        subscription,
                    video_capture::mojom::VideoSource::
                        CreatePushSubscriptionCallback& callback) {
-              subscription_bindings_.AddBinding(&mock_subscription_,
-                                                std::move(subscription));
+              subscription_receivers_.Add(&mock_subscription_,
+                                          std::move(subscription));
               std::move(callback).Run(
                   video_capture::mojom::CreatePushSubscriptionResultCode::
                       kCreatedWithRequestedSettings,
@@ -118,18 +121,18 @@ class ServiceVideoCaptureDeviceLauncherTest : public testing::Test {
   void RunConnectionLostAfterSuccessfulStartTest(
       base::OnceClosure close_connection_cb);
 
-  TestBrowserThreadBundle thread_bundle_;
+  BrowserTaskEnvironment task_environment_;
   MockVideoCaptureDeviceLauncherCallbacks mock_callbacks_;
-  video_capture::mojom::VideoSourceProviderPtr source_provider_;
+  mojo::Remote<video_capture::mojom::VideoSourceProvider> source_provider_;
   video_capture::MockVideoSourceProvider mock_source_provider_;
-  std::unique_ptr<mojo::Binding<video_capture::mojom::VideoSourceProvider>>
-      source_provider_binding_;
+  std::unique_ptr<mojo::Receiver<video_capture::mojom::VideoSourceProvider>>
+      source_provider_receiver_;
   video_capture::MockVideoSource mock_source_;
-  std::unique_ptr<mojo::Binding<video_capture::mojom::VideoSource>>
-      source_binding_;
+  std::unique_ptr<mojo::Receiver<video_capture::mojom::VideoSource>>
+      source_receiver_;
   video_capture::MockPushSubcription mock_subscription_;
-  mojo::BindingSet<video_capture::mojom::PushVideoStreamSubscription>
-      subscription_bindings_;
+  mojo::ReceiverSet<video_capture::mojom::PushVideoStreamSubscription>
+      subscription_receivers_;
   std::unique_ptr<ServiceVideoCaptureDeviceLauncher> launcher_;
   base::MockCallback<base::OnceClosure> connection_lost_cb_;
   base::MockCallback<base::OnceClosure> done_cb_;
@@ -159,10 +162,10 @@ TEST_F(ServiceVideoCaptureDeviceLauncherTest, LaunchingDeviceSucceeds) {
           [&wait_for_done_cb]() { wait_for_done_cb.Quit(); }));
 
   // Exercise
-  launcher_->LaunchDeviceAsync(kStubDeviceId, blink::MEDIA_DEVICE_VIDEO_CAPTURE,
-                               kArbitraryParams, kNullReceiver,
-                               connection_lost_cb_.Get(), &mock_callbacks_,
-                               done_cb_.Get());
+  launcher_->LaunchDeviceAsync(
+      kStubDeviceId, blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE,
+      kArbitraryParams, kNullReceiver, connection_lost_cb_.Get(),
+      &mock_callbacks_, done_cb_.Get());
   wait_for_done_cb.Run();
 
   launcher_.reset();
@@ -203,17 +206,20 @@ void ServiceVideoCaptureDeviceLauncherTest::RunLaunchingDeviceIsAbortedTest(
       .WillOnce(Invoke(
           [&create_push_subscription_success_answer_cb, &step_1_run_loop,
            service_result_code](
-              video_capture::mojom::ReceiverPtr& subscriber,
+              mojo::PendingRemote<video_capture::mojom::VideoFrameHandler>
+                  subscriber,
               const media::VideoCaptureParams& requested_settings,
               bool force_reopen_with_new_settings,
-              video_capture::mojom::PushVideoStreamSubscriptionRequest&
+              mojo::PendingReceiver<
+                  video_capture::mojom::PushVideoStreamSubscription>
                   subscription,
               video_capture::mojom::VideoSource::CreatePushSubscriptionCallback&
                   callback) {
             // Prepare the callback, but save it for now instead of invoking it.
             create_push_subscription_success_answer_cb = base::BindOnce(
                 [](const media::VideoCaptureParams& requested_settings,
-                   video_capture::mojom::PushVideoStreamSubscriptionRequest
+                   mojo::PendingReceiver<
+                       video_capture::mojom::PushVideoStreamSubscription>
                        subscription,
                    video_capture::mojom::VideoSource::
                        CreatePushSubscriptionCallback callback,
@@ -235,10 +241,10 @@ void ServiceVideoCaptureDeviceLauncherTest::RunLaunchingDeviceIsAbortedTest(
   }));
 
   // Exercise
-  launcher_->LaunchDeviceAsync(kStubDeviceId, blink::MEDIA_DEVICE_VIDEO_CAPTURE,
-                               kArbitraryParams, kNullReceiver,
-                               connection_lost_cb_.Get(), &mock_callbacks_,
-                               done_cb_.Get());
+  launcher_->LaunchDeviceAsync(
+      kStubDeviceId, blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE,
+      kArbitraryParams, kNullReceiver, connection_lost_cb_.Get(),
+      &mock_callbacks_, done_cb_.Get());
   step_1_run_loop.Run();
   launcher_->AbortLaunch();
 
@@ -257,10 +263,12 @@ TEST_F(ServiceVideoCaptureDeviceLauncherTest,
 
   EXPECT_CALL(mock_source_, DoCreatePushSubscription(_, _, _, _, _))
       .WillOnce(Invoke(
-          [](video_capture::mojom::ReceiverPtr& subscriber,
+          [](mojo::PendingRemote<video_capture::mojom::VideoFrameHandler>
+                 subscriber,
              const media::VideoCaptureParams& requested_settings,
              bool force_reopen_with_new_settings,
-             video_capture::mojom::PushVideoStreamSubscriptionRequest&
+             mojo::PendingReceiver<
+                 video_capture::mojom::PushVideoStreamSubscription>
                  subscription,
              video_capture::mojom::VideoSource::CreatePushSubscriptionCallback&
                  callback) {
@@ -269,9 +277,11 @@ TEST_F(ServiceVideoCaptureDeviceLauncherTest,
             base::ThreadTaskRunnerHandle::Get()->PostTask(
                 FROM_HERE,
                 base::BindOnce(
-                    [](video_capture::mojom::ReceiverPtr subscriber,
+                    [](mojo::PendingRemote<
+                           video_capture::mojom::VideoFrameHandler> subscriber,
                        const media::VideoCaptureParams& requested_settings,
-                       video_capture::mojom::PushVideoStreamSubscriptionRequest
+                       mojo::PendingReceiver<
+                           video_capture::mojom::PushVideoStreamSubscription>
                            subscription,
                        video_capture::mojom::VideoSource::
                            CreatePushSubscriptionCallback callback) {
@@ -296,10 +306,10 @@ TEST_F(ServiceVideoCaptureDeviceLauncherTest,
   }));
 
   // Exercise
-  launcher_->LaunchDeviceAsync(kStubDeviceId, blink::MEDIA_DEVICE_VIDEO_CAPTURE,
-                               kArbitraryParams, kNullReceiver,
-                               connection_lost_cb_.Get(), &mock_callbacks_,
-                               done_cb_.Get());
+  launcher_->LaunchDeviceAsync(
+      kStubDeviceId, blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE,
+      kArbitraryParams, kNullReceiver, connection_lost_cb_.Get(),
+      &mock_callbacks_, done_cb_.Get());
   run_loop.Run();
 }
 
@@ -318,10 +328,10 @@ TEST_F(ServiceVideoCaptureDeviceLauncherTest,
   // Exercise
   service_connection_->ReleaseProviderForTesting();
 
-  launcher_->LaunchDeviceAsync(kStubDeviceId, blink::MEDIA_DEVICE_VIDEO_CAPTURE,
-                               kArbitraryParams, kNullReceiver,
-                               connection_lost_cb_.Get(), &mock_callbacks_,
-                               done_cb_.Get());
+  launcher_->LaunchDeviceAsync(
+      kStubDeviceId, blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE,
+      kArbitraryParams, kNullReceiver, connection_lost_cb_.Get(),
+      &mock_callbacks_, done_cb_.Get());
 
   run_loop.Run();
 }
@@ -335,10 +345,12 @@ TEST_F(ServiceVideoCaptureDeviceLauncherTest,
   EXPECT_CALL(mock_source_, DoCreatePushSubscription(_, _, _, _, _))
       .WillOnce(Invoke(
           [&create_subscription_cb](
-              video_capture::mojom::ReceiverPtr& subscriber,
+              mojo::PendingRemote<video_capture::mojom::VideoFrameHandler>
+                  subscriber,
               const media::VideoCaptureParams& requested_settings,
               bool force_reopen_with_new_settings,
-              video_capture::mojom::PushVideoStreamSubscriptionRequest&
+              mojo::PendingReceiver<
+                  video_capture::mojom::PushVideoStreamSubscription>
                   subscription,
               video_capture::mojom::VideoSource::CreatePushSubscriptionCallback&
                   callback) {
@@ -358,17 +370,17 @@ TEST_F(ServiceVideoCaptureDeviceLauncherTest,
   }));
 
   // Exercise
-  launcher_->LaunchDeviceAsync(kStubDeviceId, blink::MEDIA_DEVICE_VIDEO_CAPTURE,
-                               kArbitraryParams, kNullReceiver,
-                               connection_lost_cb_.Get(), &mock_callbacks_,
-                               done_cb_.Get());
+  launcher_->LaunchDeviceAsync(
+      kStubDeviceId, blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE,
+      kArbitraryParams, kNullReceiver, connection_lost_cb_.Get(),
+      &mock_callbacks_, done_cb_.Get());
 
   run_loop.Run();
 
   // Cleanup
   // Cut the connection to the source, so that the outstanding
   // |create_subscription_cb| will be dropped when we invoke it below.
-  source_binding_.reset();
+  source_receiver_.reset();
   // We have to invoke the callback, because not doing so triggers a DCHECK.
   const video_capture::mojom::CreatePushSubscriptionResultCode
       arbitrary_result_code = video_capture::mojom::
@@ -379,15 +391,15 @@ TEST_F(ServiceVideoCaptureDeviceLauncherTest,
 
 TEST_F(ServiceVideoCaptureDeviceLauncherTest,
        ConnectionToSubscriptionLostAfterSuccessfulLaunch) {
-  RunConnectionLostAfterSuccessfulStartTest(
-      base::BindOnce(&ServiceVideoCaptureDeviceLauncherTest::CloseSourceBinding,
-                     base::Unretained(this)));
+  RunConnectionLostAfterSuccessfulStartTest(base::BindOnce(
+      &ServiceVideoCaptureDeviceLauncherTest::CloseSourceReceiver,
+      base::Unretained(this)));
 }
 
 TEST_F(ServiceVideoCaptureDeviceLauncherTest,
        ConnectionToSourceLostAfterSuccessfulLaunch) {
   RunConnectionLostAfterSuccessfulStartTest(base::BindOnce(
-      &ServiceVideoCaptureDeviceLauncherTest::CloseSubscriptionBindings,
+      &ServiceVideoCaptureDeviceLauncherTest::CloseSubscriptionReceivers,
       base::Unretained(this)));
 }
 
@@ -408,10 +420,10 @@ void ServiceVideoCaptureDeviceLauncherTest::
     step_1_run_loop.Quit();
   }));
   // Exercise step 1
-  launcher_->LaunchDeviceAsync(kStubDeviceId, blink::MEDIA_DEVICE_VIDEO_CAPTURE,
-                               kArbitraryParams, kNullReceiver,
-                               connection_lost_cb_.Get(), &mock_callbacks_,
-                               done_cb_.Get());
+  launcher_->LaunchDeviceAsync(
+      kStubDeviceId, blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE,
+      kArbitraryParams, kNullReceiver, connection_lost_cb_.Get(),
+      &mock_callbacks_, done_cb_.Get());
   step_1_run_loop.Run();
 
   base::RunLoop step_2_run_loop;

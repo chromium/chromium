@@ -62,6 +62,15 @@
             </div>
           </div>
         </div>
+        <div id="save-page-for-later-button" class="hidden">
+          <a class="link-button" onclick="savePageLaterClick()"
+            jsselect="savePageLater" jscontent="savePageMsg">
+          </a>
+        </div>
+        <div id="cancel-save-page-button" class="hidden"
+          onclick="cancelSavePageClick()" jsselect="savePageLater"
+          jsvalues=".innerHTML:cancelMsg">
+        </div>
         <div id="offline-content-list" class="list-hidden" hidden>
           <div id="offline-content-list-visibility-card"
               onclick="toggleOfflineContentListVisibility(true)">
@@ -84,28 +93,6 @@
             </a>
           </div>
         </div>
-        <div id="offline-content-summary" onclick="launchDownloadsPage()" hidden>
-          <div class="offline-content-summary-images">
-            <div class="offline-content-summary-image-truncate">
-              <img id="earth" src="images/generic-globe.svg">
-            </div>
-            <div class="offline-content-summary-image-truncate">
-              <img id="music-note" src="images/music-note.svg">
-            </div>
-            <div class="offline-content-summary-image-truncate">
-              <img id="video" src="images/video.svg">
-            </div>
-            <div>
-              <img id="image" src="images/image.svg">
-            </div>
-          </div>
-          <div class="offline-content-summary-description"
-              jsselect="offlineContentSummary" jscontent="description">
-          </div>
-          <a class="offline-content-summary-action link-button"
-              jsselect="offlineContentSummary" jscontent="actionText">
-          </a>
-        </div>
       </div>
     </div>
     <div id="buttons" class="nav-wrapper">
@@ -123,17 +110,6 @@
             jsselect="downloadButton"
             jscontent="msg" jsvalues=".disabledText:disabledMsg">
         </button>
-        <div id="save-page-for-later-button" class="hidden">
-          <a class="link-button" onclick="savePageLaterClick()"
-            jsselect="savePageLater"
-            jscontent="savePageMsg">
-          </a>
-        </div>
-        <div id="cancel-save-page-button" class="hidden"
-          onclick="cancelSavePageClick()"
-          jsselect="savePageLater"
-          jsvalues=".innerHTML:cancelMsg">
-        </div>
       </div>
       <button id="details-button" class="secondary-button text-button small-link"
          onclick="detailsButtonClick(); toggleHelpBox()" jscontent="details"

@@ -46,13 +46,15 @@ class ExecutionContext;
 class File;
 class ScriptState;
 
+namespace probe {
+class AsyncTaskId;
+}
+
 class CORE_EXPORT DataTransferItem final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static DataTransferItem* Create(DataTransfer*, DataObjectItem*);
-
-  DataTransferItem(DataTransfer*, DataObjectItem*);
+  explicit DataTransferItem(DataTransfer*, DataObjectItem*);
 
   String kind() const;
   String type() const;
@@ -66,10 +68,10 @@ class CORE_EXPORT DataTransferItem final : public ScriptWrappable {
   void Trace(blink::Visitor*) override;
 
  private:
-  void RunGetAsStringTask(
-      ExecutionContext*,
-      V8PersistentCallbackFunction<V8FunctionStringCallback>*,
-      const String& data);
+  void RunGetAsStringTask(ExecutionContext*,
+                          V8FunctionStringCallback*,
+                          const String& data,
+                          std::unique_ptr<probe::AsyncTaskId>);
 
   Member<DataTransfer> data_transfer_;
   Member<DataObjectItem> item_;

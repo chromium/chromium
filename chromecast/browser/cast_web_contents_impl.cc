@@ -7,24 +7,82 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/bind_helpers.h"
+#include "base/no_destructor.h"
+#include "base/strings/string_piece.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "base/values.h"
 #include "chromecast/base/chromecast_switches.h"
+#include "chromecast/base/metrics/cast_metrics_helper.h"
 #include "chromecast/browser/cast_browser_process.h"
 #include "chromecast/browser/devtools/remote_debugging_server.h"
 #include "chromecast/common/mojom/media_playback_options.mojom.h"
+#include "chromecast/common/mojom/on_load_script_injector.mojom.h"
+#include "chromecast/common/mojom/queryable_data_store.mojom.h"
+#include "chromecast/common/queryable_data.h"
+#include "chromecast/net/connectivity_checker.h"
+#include "content/public/browser/message_port_provider.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
+#include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/common/bindings_policy.h"
+#include "content/public/common/favicon_url.h"
+#include "content/public/common/resource_load_info.mojom.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/net_errors.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "url/gurl.h"
 
 namespace chromecast {
+
+namespace {
+
+// IDs start at 1, since 0 is reserved for the root content window.
+size_t next_tab_id = 1;
+
+// Remove the given CastWebContents pointer from the global instance vector.
+void RemoveCastWebContents(CastWebContents* instance) {
+  auto& all_cast_web_contents = CastWebContents::GetAll();
+  auto it = std::find(all_cast_web_contents.begin(),
+                      all_cast_web_contents.end(), instance);
+  if (it != all_cast_web_contents.end()) {
+    all_cast_web_contents.erase(it);
+  }
+}
+
+bool IsOriginWhitelisted(const GURL& url,
+                         const std::vector<std::string>& allowed_origins) {
+  constexpr const char kWildcard[] = "*";
+  url::Origin url_origin = url::Origin::Create(url);
+
+  for (const std::string& allowed_origin : allowed_origins) {
+    if (allowed_origin == kWildcard)
+      return true;
+
+    if (url_origin.IsSameOriginWith(url::Origin::Create(GURL(allowed_origin))))
+      return true;
+
+    // TODO(crbug.com/893236): Add handling for nonstandard origins
+    // (e.g. data: URIs).
+  }
+  return false;
+}
+
+}  // namespace
+
+// static
+std::vector<CastWebContents*>& CastWebContents::GetAll() {
+  static base::NoDestructor<std::vector<CastWebContents*>> instance;
+  return *instance;
+}
 
 CastWebContentsImpl::CastWebContentsImpl(content::WebContents* web_contents,
                                          const InitParams& init_params)
@@ -34,8 +92,15 @@ CastWebContentsImpl::CastWebContentsImpl(content::WebContents* web_contents,
       last_state_(PageState::IDLE),
       enabled_for_dev_(init_params.enabled_for_dev),
       use_cma_renderer_(init_params.use_cma_renderer),
+      handle_inner_contents_(init_params.handle_inner_contents),
+      view_background_color_(init_params.background_color),
       remote_debugging_server_(
           shell::CastBrowserProcess::GetInstance()->remote_debugging_server()),
+      media_blocker_(init_params.use_media_blocker
+                         ? std::make_unique<CastMediaBlocker>(web_contents_)
+                         : nullptr),
+      tab_id_(init_params.is_root_window ? 0 : next_tab_id++),
+      main_frame_loaded_(false),
       closing_(false),
       stopped_(false),
       stop_notified_(false),
@@ -46,6 +111,7 @@ CastWebContentsImpl::CastWebContentsImpl(content::WebContents* web_contents,
   DCHECK(web_contents_);
   DCHECK(web_contents_->GetController().IsInitialNavigation());
   DCHECK(!web_contents_->IsLoading());
+  CastWebContents::GetAll().push_back(this);
   content::WebContentsObserver::Observe(web_contents_);
   if (enabled_for_dev_) {
     LOG(INFO) << "Enabling dev console for CastWebContentsImpl";
@@ -67,6 +133,11 @@ CastWebContentsImpl::~CastWebContentsImpl() {
   for (auto& observer : observer_list_) {
     observer.ResetCastWebContents();
   }
+  RemoveCastWebContents(this);
+}
+
+int CastWebContentsImpl::tab_id() const {
+  return tab_id_;
 }
 
 content::WebContents* CastWebContentsImpl::web_contents() const {
@@ -96,18 +167,13 @@ void CastWebContentsImpl::LoadUrl(const GURL& url) {
     LOG(ERROR) << "Cannot load URL for WebContents while closing";
     return;
   }
-  closing_ = false;
-  stopped_ = false;
-  stop_notified_ = false;
-  last_error_ = net::OK;
-  start_loading_ticks_ = base::TimeTicks::Now();
+  OnPageLoading();
   LOG(INFO) << "Load url: " << url.possibly_invalid_spec();
-  TracePageLoadBegin(url);
   web_contents_->GetController().LoadURL(url, content::Referrer(),
                                          ui::PAGE_TRANSITION_TYPED, "");
   UpdatePageState();
   DCHECK_EQ(PageState::LOADING, page_state_);
-  NotifyObservers();
+  NotifyPageState();
 }
 
 void CastWebContentsImpl::ClosePage() {
@@ -131,7 +197,7 @@ void CastWebContentsImpl::Stop(int error_code) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (stopped_) {
     UpdatePageState();
-    NotifyObservers();
+    NotifyPageState();
     return;
   }
   last_error_ = error_code;
@@ -141,12 +207,22 @@ void CastWebContentsImpl::Stop(int error_code) {
   DCHECK_NE(PageState::IDLE, page_state_);
   DCHECK_NE(PageState::LOADING, page_state_);
   DCHECK_NE(PageState::LOADED, page_state_);
-  NotifyObservers();
+  NotifyPageState();
 }
 
-void CastWebContentsImpl::SetDelegate(CastWebContents::Delegate* delegate) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  delegate_ = delegate;
+void CastWebContentsImpl::BlockMediaLoading(bool blocked) {
+  if (media_blocker_)
+    media_blocker_->BlockMediaLoading(blocked);
+}
+
+void CastWebContentsImpl::BlockMediaStarting(bool blocked) {
+  if (media_blocker_)
+    media_blocker_->BlockMediaStarting(blocked);
+}
+
+void CastWebContentsImpl::EnableBackgroundVideoPlayback(bool enabled) {
+  if (media_blocker_)
+    media_blocker_->EnableBackgroundVideoPlayback(enabled);
 }
 
 void CastWebContentsImpl::AllowWebAndMojoWebUiBindings() {
@@ -170,6 +246,70 @@ void CastWebContentsImpl::ClearRenderWidgetHostView() {
     view->SetBackgroundColor(SK_ColorBLACK);
     view->SetBackgroundColor(SK_ColorTRANSPARENT);
   }
+}
+
+CastWebContentsImpl::OriginScopedScript::OriginScopedScript() = default;
+
+CastWebContentsImpl::OriginScopedScript::OriginScopedScript(
+    const std::vector<std::string>& origins,
+    std::string script)
+    : origins_(std::move(origins)), script_(std::move(script)) {}
+
+CastWebContentsImpl::OriginScopedScript&
+CastWebContentsImpl::OriginScopedScript::operator=(
+    CastWebContentsImpl::OriginScopedScript&& other) {
+  origins_ = std::move(other.origins_);
+  script_ = std::move(other.script_);
+  return *this;
+}
+
+CastWebContentsImpl::OriginScopedScript::~OriginScopedScript() = default;
+
+void CastWebContentsImpl::AddBeforeLoadJavaScript(
+    base::StringPiece id,
+    const std::vector<std::string>& origins,
+    base::StringPiece script) {
+  DCHECK(!id.empty() && !script.empty() && !origins.empty())
+      << "Invalid empty parameters were passed to AddBeforeLoadJavascript";
+  // If there is no script with the identifier |id|, then create a place for it
+  // at the end of the injection sequence.
+  if (before_load_scripts_.find(id.as_string()) == before_load_scripts_.end()) {
+    before_load_scripts_order_.push_back(id.as_string());
+  }
+  before_load_scripts_[id.as_string()] =
+      OriginScopedScript(origins, script.as_string());
+}
+
+void CastWebContentsImpl::RemoveBeforeLoadJavaScript(base::StringPiece id) {
+  before_load_scripts_.erase(id.as_string());
+
+  for (auto script_id_iter = before_load_scripts_order_.begin();
+       script_id_iter != before_load_scripts_order_.end(); ++script_id_iter) {
+    if (*script_id_iter == id) {
+      before_load_scripts_order_.erase(script_id_iter);
+      return;
+    }
+  }
+}
+
+void CastWebContentsImpl::PostMessageToMainFrame(
+    const std::string& target_origin,
+    const std::string& data,
+    std::vector<mojo::ScopedMessagePipeHandle> channels) {
+  DCHECK(!data.empty());
+
+  base::string16 data_utf16;
+  data_utf16 = base::UTF8ToUTF16(data);
+
+  // If origin is set as wildcard, no origin scoping would be applied.
+  constexpr char kWildcardOrigin[] = "*";
+  base::Optional<base::string16> target_origin_utf16;
+  if (target_origin != kWildcardOrigin)
+    target_origin_utf16 = base::UTF8ToUTF16(target_origin);
+
+  content::MessagePortProvider::PostMessageToFrame(
+      web_contents(), base::string16(), target_origin_utf16, data_utf16,
+      std::move(channels));
 }
 
 void CastWebContentsImpl::AddObserver(CastWebContents::Observer* observer) {
@@ -209,26 +349,45 @@ void CastWebContentsImpl::RenderFrameCreated(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(render_frame_host);
 
-  // New render frame has been created, we need to add it to the app
-  // whitelisting session so URL requests are handled correctly. This must be
-  // done before URL requests are executed within render frame.
   auto* process = render_frame_host->GetProcess();
   const int render_process_id = process->GetID();
   const int render_frame_id = render_frame_host->GetRoutingID();
 
+  // Allow observers to use remote interfaces which are hosted by the new
+  // RenderFrame.
   for (Observer& observer : observer_list_) {
-    observer.RenderFrameCreated(render_process_id, render_frame_id);
+    observer.RenderFrameCreated(
+        render_process_id, render_frame_id,
+        render_frame_host->GetRemoteInterfaces(),
+        render_frame_host->GetRemoteAssociatedInterfaces());
   }
 
-  chromecast::shell::mojom::FeatureManagerPtr feature_manager_ptr;
-  render_frame_host->GetRemoteInterfaces()->GetInterface(&feature_manager_ptr);
-  feature_manager_ptr->ConfigureFeatures(GetRendererFeatures());
+  mojo::Remote<chromecast::shell::mojom::FeatureManager> feature_manager_remote;
+  render_frame_host->GetRemoteInterfaces()->GetInterface(
+      feature_manager_remote.BindNewPipeAndPassReceiver());
+  feature_manager_remote->ConfigureFeatures(GetRendererFeatures());
 
-  chromecast::shell::mojom::MediaPlaybackOptionsAssociatedPtr
+  mojo::AssociatedRemote<chromecast::shell::mojom::MediaPlaybackOptions>
       media_playback_options;
   render_frame_host->GetRemoteAssociatedInterfaces()->GetInterface(
       &media_playback_options);
   media_playback_options->SetUseCmaRenderer(use_cma_renderer_);
+
+  // Send queryable values
+  mojo::Remote<chromecast::shell::mojom::QueryableDataStore>
+      queryable_data_store_remote;
+  render_frame_host->GetRemoteInterfaces()->GetInterface(
+      queryable_data_store_remote.BindNewPipeAndPassReceiver());
+  for (const auto& value : QueryableData::GetValues()) {
+    // base::Value is not copyable.
+    queryable_data_store_remote->Set(value.first, value.second.Clone());
+  }
+}
+
+void CastWebContentsImpl::RenderFrameHostChanged(
+    content::RenderFrameHost* old_host,
+    content::RenderFrameHost* new_host) {
+  RenderFrameCreated(new_host);
 }
 
 std::vector<chromecast::shell::mojom::FeaturePtr>
@@ -247,6 +406,12 @@ void CastWebContentsImpl::OnInterfaceRequestFromFrame(
     mojo::ScopedMessagePipeHandle* interface_pipe) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  if (!delegate_) {
+    // Don't let the page bind any more interfaces at this point, since the
+    // owning client has been torn down. This is a cheap trick so that all of
+    // the interfaces don't have to provide binder callbacks with WeakPtr.
+    return;
+  }
   if (binder_registry_.TryBindInterface(interface_name, interface_pipe)) {
     return;
   }
@@ -262,28 +427,115 @@ void CastWebContentsImpl::OnInterfaceRequestFromFrame(
   }
 }
 
+void CastWebContentsImpl::RenderViewCreated(
+    content::RenderViewHost* render_view_host) {
+  content::RenderWidgetHostView* view =
+      render_view_host->GetWidget()->GetView();
+  if (!view)
+    return;
+  if (view_background_color_ == BackgroundColor::WHITE) {
+    view->SetBackgroundColor(SK_ColorWHITE);
+  } else if (view_background_color_ == BackgroundColor::BLACK) {
+    view->SetBackgroundColor(SK_ColorBLACK);
+  } else if (view_background_color_ == BackgroundColor::TRANSPARENT) {
+    view->SetBackgroundColor(SK_ColorTRANSPARENT);
+  } else {
+    view->SetBackgroundColor(chromecast::GetSwitchValueColor(
+        switches::kCastAppBackgroundColor, SK_ColorBLACK));
+  }
+}
+
 void CastWebContentsImpl::RenderProcessGone(base::TerminationStatus status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   LOG(INFO) << "Render process for main frame exited unexpectedly.";
   Stop(net::ERR_UNEXPECTED);
 }
 
+void CastWebContentsImpl::DidStartNavigation(
+    content::NavigationHandle* navigation_handle) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(navigation_handle);
+  if (!web_contents_ || closing_ || stopped_)
+    return;
+  if (!navigation_handle->IsInMainFrame())
+    return;
+  // Main frame has begun navigating/loading.
+  OnPageLoading();
+  start_loading_ticks_ = base::TimeTicks::Now();
+  GURL loading_url;
+  content::NavigationEntry* nav_entry =
+      web_contents()->GetController().GetVisibleEntry();
+  if (nav_entry) {
+    loading_url = nav_entry->GetVirtualURL();
+  }
+  TracePageLoadBegin(loading_url);
+  UpdatePageState();
+  DCHECK_EQ(page_state_, PageState::LOADING);
+  NotifyPageState();
+}
+
+void CastWebContentsImpl::ReadyToCommitNavigation(
+    content::NavigationHandle* navigation_handle) {
+  if (before_load_scripts_.empty())
+    return;
+
+  if (!navigation_handle->IsInMainFrame() ||
+      navigation_handle->IsSameDocument() || navigation_handle->IsErrorPage())
+    return;
+
+  mojo::AssociatedRemote<chromecast::shell::mojom::OnLoadScriptInjector>
+      before_load_script_injector;
+  navigation_handle->GetRenderFrameHost()
+      ->GetRemoteAssociatedInterfaces()
+      ->GetInterface(&before_load_script_injector);
+
+  // Provision the renderer's ScriptInjector with the scripts scoped to this
+  // page's origin.
+  before_load_script_injector->ClearOnLoadScripts();
+  for (auto script_id : before_load_scripts_order_) {
+    const OriginScopedScript& origin_scoped_script =
+        before_load_scripts_[script_id];
+    if (IsOriginWhitelisted(navigation_handle->GetURL(),
+                            origin_scoped_script.origins())) {
+      before_load_script_injector->AddOnLoadScript(
+          origin_scoped_script.script());
+    }
+  }
+}
+
 void CastWebContentsImpl::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  const net::Error error_code = navigation_handle->GetNetErrorCode();
+
   // If the navigation was not committed, it means either the page was a
   // download or error 204/205, or the navigation never left the previous
   // URL. Ignore these navigations.
   if (!navigation_handle->HasCommitted()) {
     LOG(WARNING) << "Navigation did not commit: url="
                  << navigation_handle->GetURL();
+
+    // Detect if there was a blocked navigation. Some pages may disallow
+    // navigation, such as with a web-based window manager. In this case, the
+    // page can handle the navigation by opening a new tab or simply ignoring
+    // the request.
+    if (navigation_handle->HasUserGesture() &&
+        (error_code == net::ERR_ABORTED)) {
+      for (Observer& observer : observer_list_) {
+        observer.DidFinishBlockedNavigation(navigation_handle->GetURL());
+      }
+    }
+
     return;
   }
 
+  // Return early if we didn't navigate to an error page. Note that even if we
+  // haven't navigated to an error page, there could still be errors in loading
+  // the desired content: e.g. if the server returned HTTP 404, or if there is
+  // an error with the content itself.
   if (!navigation_handle->IsErrorPage())
     return;
-
-  net::Error error_code = navigation_handle->GetNetErrorCode();
 
   // If we abort errors in an iframe, it can create a really confusing
   // and fragile user experience.  Rather than create a list of errors
@@ -297,89 +549,43 @@ void CastWebContentsImpl::DidFinishNavigation(
 
   LOG(ERROR) << "Got error on navigation: url=" << navigation_handle->GetURL()
              << ", error_code=" << error_code
-             << ", description= " << net::ErrorToShortString(error_code);
+             << ", description=" << net::ErrorToShortString(error_code);
 
   Stop(error_code);
   DCHECK_EQ(page_state_, PageState::ERROR);
 }
 
-void CastWebContentsImpl::DidStartLoading() {
+void CastWebContentsImpl::DidFinishLoad(
+    content::RenderFrameHost* render_frame_host,
+    const GURL& validated_url) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  UpdatePageState();
-  DCHECK_EQ(page_state_, PageState::LOADING);
-  NotifyObservers();
-}
-
-void CastWebContentsImpl::DidStopLoading() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (page_state_ != PageState::LOADING || !web_contents_ ||
+      render_frame_host != web_contents_->GetMainFrame()) {
+    return;
+  }
+  // The main frame finished loading. Before proceeding, we need to verify that
+  // the loaded page is the one that was requested.
+  TracePageLoadEnd(validated_url);
   int http_status_code = 0;
-  GURL final_url;
   content::NavigationEntry* nav_entry =
       web_contents()->GetController().GetVisibleEntry();
   if (nav_entry) {
     http_status_code = nav_entry->GetHttpStatusCode();
-    final_url = nav_entry->GetVirtualURL();
   }
-  TracePageLoadEnd(final_url);
 
   if (http_status_code != 0 && http_status_code / 100 != 2) {
-    // We successfully loaded an error HTML page.
-    LOG(INFO) << "Failed loading page for: " << final_url
-              << "; http status code: " << http_status_code;
-    Stop(net::ERR_FAILED);
+    // An error HTML page was loaded instead of the content we requested.
+    LOG(ERROR) << "Failed loading page for: " << validated_url
+               << "; http status code: " << http_status_code;
+    Stop(net::ERR_HTTP_RESPONSE_CODE_FAILURE);
     DCHECK_EQ(page_state_, PageState::ERROR);
     return;
   }
-  // Main frame finished loading.
+  // Main frame finished loading properly.
   base::TimeDelta load_time = base::TimeTicks::Now() - start_loading_ticks_;
   LOG(INFO) << "Finished loading page after " << load_time.InMilliseconds()
-            << " ms, url=" << final_url;
-  PageState previous = page_state_;
-  UpdatePageState();
-  DCHECK((previous == PageState::ERROR && page_state_ == PageState::ERROR) ||
-         page_state_ == PageState::LOADED)
-      << "Page is in unexpected state: " << page_state_;
-  NotifyObservers();
-}
-
-void CastWebContentsImpl::UpdatePageState() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  last_state_ = page_state_;
-  if (!web_contents_) {
-    DCHECK(stopped_);
-    page_state_ = PageState::DESTROYED;
-  } else if (!stopped_) {
-    if (web_contents_->IsLoading()) {
-      page_state_ = PageState::LOADING;
-    } else {
-      page_state_ = PageState::LOADED;
-    }
-  } else if (stopped_) {
-    if (last_error_ != net::OK) {
-      page_state_ = PageState::ERROR;
-    } else {
-      page_state_ = PageState::CLOSED;
-    }
-  }
-}
-
-void CastWebContentsImpl::NotifyObservers() {
-  if (!delegate_)
-    return;
-  // Don't notify if the page state didn't change.
-  if (last_state_ == page_state_)
-    return;
-  // Don't recursively notify the delegate.
-  if (notifying_)
-    return;
-  notifying_ = true;
-  if (stopped_ && !stop_notified_) {
-    stop_notified_ = true;
-    delegate_->OnPageStopped(this, last_error_);
-  } else {
-    delegate_->OnPageStateChanged(this);
-  }
-  notifying_ = false;
+            << " ms, url=" << validated_url;
+  OnPageLoaded();
 }
 
 void CastWebContentsImpl::DidFailLoad(
@@ -400,6 +606,11 @@ void CastWebContentsImpl::DidFailLoad(
     // cancelled/aborted and then the same URL is requested via the buffered
     // data source for media::Pipeline playback.
     LOG(INFO) << "Load canceled: url=" << validated_url.spec();
+
+    // We consider the page to be fully loaded in this case, since the app has
+    // intentionally entered this state. If the app wanted to stop, it would
+    // have called window.close() instead.
+    OnPageLoaded();
     return;
   }
 
@@ -411,22 +622,182 @@ void CastWebContentsImpl::DidFailLoad(
   DCHECK_EQ(PageState::ERROR, page_state_);
 }
 
+void CastWebContentsImpl::OnPageLoading() {
+  closing_ = false;
+  stopped_ = false;
+  stop_notified_ = false;
+  main_frame_loaded_ = false;
+  last_error_ = net::OK;
+}
+
+void CastWebContentsImpl::OnPageLoaded() {
+  main_frame_loaded_ = true;
+  UpdatePageState();
+  DCHECK(page_state_ == PageState::LOADED);
+  NotifyPageState();
+}
+
+void CastWebContentsImpl::UpdatePageState() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  last_state_ = page_state_;
+  if (!web_contents_) {
+    DCHECK(stopped_);
+    page_state_ = PageState::DESTROYED;
+  } else if (!stopped_) {
+    if (main_frame_loaded_) {
+      page_state_ = PageState::LOADED;
+    } else {
+      page_state_ = PageState::LOADING;
+    }
+  } else if (stopped_) {
+    if (last_error_ != net::OK) {
+      page_state_ = PageState::ERROR;
+    } else {
+      page_state_ = PageState::CLOSED;
+    }
+  }
+}
+
+void CastWebContentsImpl::NotifyPageState() {
+  // Don't notify if the page state didn't change.
+  if (last_state_ == page_state_)
+    return;
+  // Don't recursively notify the observers.
+  if (notifying_)
+    return;
+  notifying_ = true;
+  if (stopped_ && !stop_notified_) {
+    stop_notified_ = true;
+    for (auto& observer : observer_list_) {
+      observer.OnPageStopped(this, last_error_);
+    }
+  } else {
+    for (auto& observer : observer_list_) {
+      observer.OnPageStateChanged(this);
+    }
+  }
+  notifying_ = false;
+}
+
+void CastWebContentsImpl::MainFrameWasResized(bool width_changed) {
+  if (!web_contents_)
+    return;
+  for (auto& observer : observer_list_) {
+    observer.MainFrameResized(web_contents_->GetContainerBounds());
+  }
+}
+
+void CastWebContentsImpl::ResourceLoadComplete(
+    content::RenderFrameHost* render_frame_host,
+    const content::GlobalRequestID& request_id,
+    const content::mojom::ResourceLoadInfo& resource_load_info) {
+  if (!web_contents_ || render_frame_host != web_contents_->GetMainFrame())
+    return;
+  int net_error = resource_load_info.net_error;
+  if (net_error == net::OK)
+    return;
+  metrics::CastMetricsHelper* metrics_helper =
+      metrics::CastMetricsHelper::GetInstance();
+  metrics_helper->RecordApplicationEventWithValue(
+      "Cast.Platform.ResourceRequestError", net_error);
+  LOG(ERROR) << "Resource \"" << resource_load_info.url << "\" failed to load "
+             << " with net_error=" << net_error
+             << ", description=" << net::ErrorToShortString(net_error);
+  shell::CastBrowserProcess::GetInstance()->connectivity_checker()->Check();
+  for (auto& observer : observer_list_) {
+    observer.ResourceLoadFailed(this);
+  }
+}
+
 void CastWebContentsImpl::InnerWebContentsCreated(
     content::WebContents* inner_web_contents) {
-  auto result = inner_contents_.insert(std::make_unique<CastWebContentsImpl>(
-      inner_web_contents, InitParams{nullptr, enabled_for_dev_}));
-  if (delegate_)
-    delegate_->InnerContentsCreated(result.first->get(), this);
+  if (!handle_inner_contents_ || !delegate_)
+    return;
+  InitParams params;
+  params.delegate = delegate_;
+  params.enabled_for_dev = enabled_for_dev_;
+  params.background_color = view_background_color_;
+  auto result = inner_contents_.insert(
+      std::make_unique<CastWebContentsImpl>(inner_web_contents, params));
+  delegate_->InnerContentsCreated(result.first->get(), this);
+}
+
+void CastWebContentsImpl::TitleWasSet(content::NavigationEntry* entry) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!entry)
+    return;
+  for (Observer& observer : observer_list_) {
+    observer.UpdateTitle(entry->GetTitle());
+  }
+}
+
+void CastWebContentsImpl::DidFirstVisuallyNonEmptyPaint() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  metrics::CastMetricsHelper::GetInstance()->LogTimeToFirstPaint();
+
+  for (Observer& observer : observer_list_) {
+    observer.DidFirstVisuallyNonEmptyPaint();
+  }
 }
 
 void CastWebContentsImpl::WebContentsDestroyed() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   closing_ = false;
   DisableDebugging();
+  media_blocker_.reset();
   content::WebContentsObserver::Observe(nullptr);
   web_contents_ = nullptr;
   Stop(net::OK);
+  RemoveCastWebContents(this);
   DCHECK_EQ(PageState::DESTROYED, page_state_);
+}
+
+void CastWebContentsImpl::DidUpdateFaviconURL(
+    const std::vector<content::FaviconURL>& candidates) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (candidates.empty())
+    return;
+  GURL icon_url;
+  bool found_touch_icon = false;
+  // icon search order:
+  //  1) apple-touch-icon-precomposed
+  //  2) apple-touch-icon
+  //  3) icon
+  for (auto& favicon : candidates) {
+    if (favicon.icon_type ==
+        content::FaviconURL::IconType::kTouchPrecomposedIcon) {
+      icon_url = favicon.icon_url;
+      break;
+    } else if ((favicon.icon_type ==
+                content::FaviconURL::IconType::kTouchIcon) &&
+               !found_touch_icon) {
+      found_touch_icon = true;
+      icon_url = favicon.icon_url;
+    } else if (!found_touch_icon) {
+      icon_url = favicon.icon_url;
+    }
+  }
+
+  for (Observer& observer : observer_list_) {
+    observer.UpdateFaviconURL(icon_url);
+  }
+}
+
+void CastWebContentsImpl::MediaStartedPlaying(
+    const MediaPlayerInfo& video_type,
+    const content::MediaPlayerId& id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  metrics::CastMetricsHelper::GetInstance()->LogMediaPlay();
+}
+
+void CastWebContentsImpl::MediaStoppedPlaying(
+    const MediaPlayerInfo& video_type,
+    const content::MediaPlayerId& id,
+    content::WebContentsObserver::MediaStoppedReason reason) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  metrics::CastMetricsHelper::GetInstance()->LogMediaPause();
 }
 
 void CastWebContentsImpl::TracePageLoadBegin(const GURL& url) {

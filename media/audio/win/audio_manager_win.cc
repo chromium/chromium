@@ -19,7 +19,6 @@
 #include "base/bind.h"
 #include "base/bind_helpers.h"
 #include "base/command_line.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/win/windows_version.h"
 #include "media/audio/audio_device_description.h"
@@ -80,71 +79,6 @@ static int NumberOfWaveOutBuffers() {
   return 3;
 }
 
-static bool IsSupported(HRESULT hr) {
-  return hr != S_FALSE && SUCCEEDED(hr);
-}
-
-// Records bitstream output support to histograms. Follows information from:
-// https://docs.microsoft.com/en-us/windows/desktop/coreaudio/representing-formats-for-iec-61937-transmissions
-static void LogBitstreamOutputSupport() {
-  auto client = CoreAudioUtil::CreateClient(
-      AudioDeviceDescription::kDefaultDeviceId, eRender, eConsole);
-
-  // Happens if no audio output devices are available.
-  if (!client)
-    return;
-
-  WAVEFORMATEXTENSIBLE wfext;
-  memset(&wfext, 0, sizeof(wfext));
-
-  // See link in function comment for where each value comes from.
-  wfext.Format.wFormatTag = WAVE_FORMAT_EXTENSIBLE;
-  wfext.Format.nChannels = 2;
-  wfext.Format.nSamplesPerSec = 192000;
-  wfext.Format.nAvgBytesPerSec = 768000;
-  wfext.Format.nBlockAlign = 4;
-  wfext.Format.wBitsPerSample = 16;
-  wfext.Format.cbSize = sizeof(WAVEFORMATEXTENSIBLE) - sizeof(WAVEFORMATEX);
-  wfext.Samples.wValidBitsPerSample = 16;
-  wfext.dwChannelMask = KSAUDIO_SPEAKER_7POINT1_SURROUND;
-
-  // Test Dolby Digital+ / Atmos support. For whatever reason Atmos doesn't use
-  // the KSDATAFORMAT_SUBTYPE_IEC61937_DOLBY_DIGITAL_PLUS_ATMOS SubFormat.
-  wfext.SubFormat = KSDATAFORMAT_SUBTYPE_IEC61937_DOLBY_DIGITAL_PLUS;
-
-  HRESULT hr = client->IsFormatSupported(AUDCLNT_SHAREMODE_EXCLUSIVE,
-                                         &wfext.Format, nullptr);
-  base::UmaHistogramBoolean("Media.Audio.Bitstream.EAC3", IsSupported(hr));
-
-  // Test Dolby TrueHD.
-  wfext.SubFormat = KSDATAFORMAT_SUBTYPE_IEC61937_DOLBY_MLP;
-  hr = client->IsFormatSupported(AUDCLNT_SHAREMODE_EXCLUSIVE, &wfext.Format,
-                                 nullptr);
-  base::UmaHistogramBoolean("Media.Audio.Bitstream.TrueHD", IsSupported(hr));
-
-  // Test DTS-HD.
-  wfext.SubFormat = KSDATAFORMAT_SUBTYPE_IEC61937_DTS_HD;
-  hr = client->IsFormatSupported(AUDCLNT_SHAREMODE_EXCLUSIVE, &wfext.Format,
-                                 nullptr);
-  base::UmaHistogramBoolean("Media.Audio.Bitstream.DTS-HD", IsSupported(hr));
-
-  // Older bitstream formats run at lower sampling rates.
-  wfext.Format.nSamplesPerSec = 48000;
-  wfext.Format.nAvgBytesPerSec = 192000;
-
-  // Test AC3.
-  wfext.SubFormat = KSDATAFORMAT_SUBTYPE_IEC61937_DOLBY_DIGITAL;
-  hr = client->IsFormatSupported(AUDCLNT_SHAREMODE_EXCLUSIVE, &wfext.Format,
-                                 nullptr);
-  base::UmaHistogramBoolean("Media.Audio.Bitstream.AC3", IsSupported(hr));
-
-  // Test DTS.
-  wfext.SubFormat = KSDATAFORMAT_SUBTYPE_IEC61937_DTS;
-  hr = client->IsFormatSupported(AUDCLNT_SHAREMODE_EXCLUSIVE, &wfext.Format,
-                                 nullptr);
-  base::UmaHistogramBoolean("Media.Audio.Bitstream.DTS", IsSupported(hr));
-}
-
 AudioManagerWin::AudioManagerWin(std::unique_ptr<AudioThread> audio_thread,
                                  AudioLogFactory* audio_log_factory)
     : AudioManagerBase(std::move(audio_thread), audio_log_factory) {
@@ -195,11 +129,6 @@ bool AudioManagerWin::HasAudioInputDevices() {
 
 void AudioManagerWin::InitializeOnAudioThread() {
   DCHECK(GetTaskRunner()->BelongsToCurrentThread());
-
-  // Delay metrics recording to avoid any issues at startup.
-  GetTaskRunner()->PostDelayedTask(FROM_HERE,
-                                   base::BindOnce(&LogBitstreamOutputSupport),
-                                   base::TimeDelta::FromSeconds(15));
 
   // AudioDeviceListenerWin must be initialized on a COM thread.
   output_device_listener_.reset(new AudioDeviceListenerWin(BindToCurrentLoop(
@@ -349,6 +278,7 @@ AudioParameters AudioManagerWin::GetPreferredOutputStreamParameters(
     const std::string& output_device_id,
     const AudioParameters& input_params) {
   const base::CommandLine* cmd_line = base::CommandLine::ForCurrentProcess();
+  int channels = 0;
   ChannelLayout channel_layout = CHANNEL_LAYOUT_STEREO;
   int sample_rate = 48000;
   int buffer_size = kFallbackBufferSize;
@@ -384,9 +314,10 @@ AudioParameters AudioManagerWin::GetPreferredOutputStreamParameters(
       DLOG(ERROR) << "GetPreferredAudioParameters failed: " << std::hex << hr;
       return AudioParameters();
     }
-
+    DVLOG(1) << params.AsHumanReadableString();
     DCHECK(params.IsValid());
 
+    channels = params.channels();
     buffer_size = params.frames_per_buffer();
     channel_layout = params.channel_layout();
     sample_rate = params.sample_rate();
@@ -446,6 +377,9 @@ AudioParameters AudioManagerWin::GetPreferredOutputStreamParameters(
       buffer_size,
       AudioParameters::HardwareCapabilities(min_buffer_size, max_buffer_size));
   params.set_effects(effects);
+  if (channel_layout == CHANNEL_LAYOUT_DISCRETE) {
+    params.set_channels_for_discrete(channels);
+  }
   DCHECK(params.IsValid());
   return params;
 }

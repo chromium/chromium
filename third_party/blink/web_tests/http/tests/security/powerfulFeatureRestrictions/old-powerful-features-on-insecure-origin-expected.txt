@@ -1,4 +1,5 @@
-CONSOLE WARNING: Application Cache is restricted to secure contexts. Please consider migrating your application to HTTPS, and eventually shifting over to Service Workers. See https://goo.gl/rStTGz for more details.
+CONSOLE WARNING: Application Cache API manifest selection is deprecated and will be removed in M82, around April 2020. See https://www.chromestatus.com/features/6192449487634432 for more details.
+CONSOLE WARNING: Application Cache was previously restricted to secure origins only from M70 on but now secure origin use is deprecated and will be removed in M82.  Please shift your use case over to Service Workers.
 CONSOLE WARNING: line 21: getCurrentPosition() and watchPosition() no longer work on insecure origins. To use this feature, you should consider switching your application to a secure origin, such as HTTPS. See https://goo.gl/rStTGz for more details.
 This is a testharness.js-based test.
 PASS getCurrentPosition

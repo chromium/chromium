@@ -129,20 +129,13 @@ StateStore::StateStore(Profile* profile)
   Transaction transaction(this);
   std::unique_ptr<base::DictionaryValue> value_dict(
       platform_state_store::Load(profile_));
-
-  InitializationResult state_store_init_result = PSS_MATCHES;
-  if (!value_dict) {
-    state_store_init_result = PSS_NULL;
-  } else if (value_dict->empty()) {
-    if (incidents_sent_ && !incidents_sent_->empty())
-      state_store_init_result = PSS_EMPTY;
-    transaction.ClearAll();
-  } else if (!incidents_sent_ || !incidents_sent_->Equals(value_dict.get())) {
-    state_store_init_result = PSS_DIFFERS;
-    transaction.ReplacePrefDict(std::move(value_dict));
+  if (value_dict) {
+    if (value_dict->empty())
+      transaction.ClearAll();
+    else if (!incidents_sent_ || !incidents_sent_->Equals(value_dict.get()))
+      transaction.ReplacePrefDict(std::move(value_dict));
   }
-  UMA_HISTOGRAM_ENUMERATION("SBIRS.StateStoreInit", state_store_init_result,
-                            NUM_INITIALIZATION_RESULTS);
+
   if (incidents_sent_)
     CleanLegacyValues(&transaction);
 }

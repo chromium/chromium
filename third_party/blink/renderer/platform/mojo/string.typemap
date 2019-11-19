@@ -8,6 +8,6 @@ public_headers =
 traits_headers =
     [ "//third_party/blink/renderer/platform/mojo/string16_mojom_traits.h" ]
 type_mappings = [
-  "mojo_base.mojom.BigString16=WTF::String[nullable_is_same_type,force_serialize]",
-  "mojo_base.mojom.String16=WTF::String[nullable_is_same_type,force_serialize]",
+  "mojo_base.mojom.BigString16=::WTF::String[nullable_is_same_type,force_serialize]",
+  "mojo_base.mojom.String16=::WTF::String[nullable_is_same_type,force_serialize]",
 ]

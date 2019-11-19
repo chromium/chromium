@@ -2,8 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://extensions/extensions.js';
+
+import {eventToPromise} from '../test_util.m.js';
+
 suite('extensions-toggle-row', function() {
-  let toggle;
+  let row;
 
   setup(function() {
     PolymerTest.clearBody();
@@ -20,13 +24,13 @@ suite('extensions-toggle-row', function() {
 
   // Test that the control is toggled when the user taps on the text label.
   test('TestToggleByLabelTap', function() {
-    let whenChanged = test_util.eventToPromise('change', row);
-    MockInteractions.tap(row.getLabel());
+    let whenChanged = eventToPromise('change', row);
+    row.getLabel().click();
     return whenChanged
         .then(function() {
           assertTrue(row.checked);
-          whenChanged = test_util.eventToPromise('change', row);
-          MockInteractions.tap(row.getLabel());
+          whenChanged = eventToPromise('change', row);
+          row.getLabel().click();
           return whenChanged;
         })
         .then(function() {

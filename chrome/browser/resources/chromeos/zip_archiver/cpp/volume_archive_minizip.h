@@ -8,6 +8,7 @@
 #include <cstdint>
 #include <memory>
 #include <string>
+#include <unordered_map>
 
 #include "base/optional.h"
 #include "chrome/browser/resources/chromeos/zip_archiver/cpp/minizip_helpers.h"
@@ -151,6 +152,9 @@ class VolumeArchiveMinizip : public VolumeArchive {
 
   // The password cache to access password protected files.
   base::Optional<std::string> password_cache_;
+
+  // Map of file name to zip file offset.
+  std::unordered_map<std::string, int64_t> file_offset_map_;
 
   // The minizip correspondent archive object.
   // This must be destroyed before the archive stream and any of its buffers

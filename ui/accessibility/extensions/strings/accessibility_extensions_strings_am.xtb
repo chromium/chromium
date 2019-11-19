@@ -31,6 +31,7 @@
 <translation id="4769065380738716500">ምስሌች በተለዋጭ ጽሑፋቸው ተተክተዋል።</translation>
 <translation id="4896660567607030658">ምንም ግብረ መልስ የለም፣ ጠቋሚውን ብቻ አሳይ።</translation>
 <translation id="4937901943818762779">እነማ ምስሎችን ፍቀድ፣ ነገር ግን አንድ ጊዜ ብቻ።</translation>
+<translation id="4949131196216960195">Caret Browsingን ለማብራት &lt;span class='key'&gt;ፍለጋ&lt;/span&gt; + &lt;img src='increase_brightness.png'&gt; (የብሩህነት መጨመሪያ ቁልፉን፣ ወይም F7) ይጫኑ። ለማጥፋት እንደገና ይጫኑት።</translation>
 <translation id="4954450790315188152">Caret Browsing በሚነቃበት ጊዜ፦</translation>
 <translation id="5041932793799765940">የቀለም ማስተካከያ</translation>
 <translation id="5094574508723441140">የጨመረ ንፅፅር</translation>
@@ -60,7 +61,6 @@
 <translation id="7658239707568436148">ይቅር</translation>
 <translation id="786423340267544509">የaria-describedat ወይም የlongdesc አይነታዎች ባላቸው አባላት ላይ ክፈፍ አክል</translation>
 <translation id="7942349550061667556">ቀይ</translation>
-<translation id="8254860724243898966">Caret Browsingን ለማብራት &lt;span class='key'&gt;Alt&lt;/span&gt; + &lt;img src='increase_brightness.png'&gt; (የብሩህነት መጨመሪያ ቁልፉን፣ ወይም F7) ይጫኑ። ለማጥፋት እንደገና ይጫኑት።</translation>
 <translation id="8260673944985561857">የካሬት የአሰሳ አማራጭ</translation>
 <translation id="8321034316479930120">የእነማ መመሪያ</translation>
 <translation id="8480209185614411573">ከፍተኛ ንፅፅር</translation>

@@ -7,7 +7,9 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "components/device_event_log/device_event_log.h"
 #include "device/fido/ble/fido_ble_connection.h"
 #include "device/fido/fido_constants.h"
 
@@ -15,9 +17,7 @@ namespace device {
 
 FidoBleTransaction::FidoBleTransaction(FidoBleConnection* connection,
                                        uint16_t control_point_length)
-    : connection_(connection),
-      control_point_length_(control_point_length),
-      weak_factory_(this) {
+    : connection_(connection), control_point_length_(control_point_length) {
   buffer_.reserve(control_point_length_);
 }
 
@@ -26,7 +26,8 @@ FidoBleTransaction::~FidoBleTransaction() = default;
 void FidoBleTransaction::WriteRequestFrame(FidoBleFrame request_frame,
                                            FrameCallback callback) {
   if (control_point_length_ < 3u) {
-    VLOG(2) << "Control Point Length is too short: " << control_point_length_;
+    FIDO_LOG(DEBUG) << "Control Point Length is too short: "
+                    << control_point_length_;
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), base::nullopt));
     return;
@@ -48,6 +49,8 @@ void FidoBleTransaction::WriteRequestFragment(
   fragment.Serialize(&buffer_);
   DCHECK(!has_pending_request_fragment_write_);
   has_pending_request_fragment_write_ = true;
+  FIDO_LOG(DEBUG) << "Writing request fragment: " +
+                         base::HexEncode(buffer_.data(), buffer_.size());
   // A weak pointer is required, since this call might time out. If that
   // happens, the current FidoBleTransaction could be destroyed.
   connection_->WriteControlPoint(
@@ -56,6 +59,13 @@ void FidoBleTransaction::WriteRequestFragment(
   // WriteRequestFragment() expects an invocation of OnRequestFragmentWritten()
   // soon after.
   StartTimeout();
+}
+
+static void WriteCancel(FidoBleConnection* connection) {
+  FIDO_LOG(DEBUG) << "Writing control point 'Cancel'";
+  connection->WriteControlPoint(
+      {static_cast<uint8_t>(FidoBleDeviceCommand::kCancel), 0, 0},
+      base::DoNothing());
 }
 
 void FidoBleTransaction::OnRequestFragmentWritten(bool success) {
@@ -72,6 +82,12 @@ void FidoBleTransaction::OnRequestFragmentWritten(bool success) {
     request_cont_fragments_.pop();
     WriteRequestFragment(next_request_fragment);
     return;
+  }
+
+  if (cancel_pending_) {
+    cancel_pending_ = false;
+    cancel_sent_ = true;
+    WriteCancel(connection_);
   }
 
   // The transaction wrote the full request frame. It is possible that the full
@@ -91,7 +107,7 @@ void FidoBleTransaction::OnResponseFragment(std::vector<uint8_t> data) {
   if (!response_frame_assembler_) {
     FidoBleFrameInitializationFragment fragment;
     if (!FidoBleFrameInitializationFragment::Parse(data, &fragment)) {
-      LOG(ERROR) << "Malformed Frame Initialization Fragment";
+      FIDO_LOG(ERROR) << "Malformed Frame Initialization Fragment";
       OnError(base::nullopt);
       return;
     }
@@ -101,7 +117,7 @@ void FidoBleTransaction::OnResponseFragment(std::vector<uint8_t> data) {
     FidoBleFrameContinuationFragment fragment;
     if (!FidoBleFrameContinuationFragment::Parse(data, &fragment) ||
         !response_frame_assembler_->AddFragment(fragment)) {
-      LOG(ERROR) << "Malformed Frame Continuation Fragment";
+      FIDO_LOG(ERROR) << "Malformed Frame Continuation Fragment";
       OnError(base::nullopt);
       return;
     }
@@ -125,6 +141,21 @@ void FidoBleTransaction::OnResponseFragment(std::vector<uint8_t> data) {
   }
 }
 
+void FidoBleTransaction::Cancel() {
+  if (cancel_sent_) {
+    return;
+  }
+
+  if (has_pending_request_fragment_write_) {
+    // A mesasge is still being written. Signal that the cancelation should be
+    // written once complete.
+    cancel_pending_ = true;
+  } else {
+    cancel_sent_ = true;
+    WriteCancel(connection_);
+  }
+}
+
 void FidoBleTransaction::ProcessResponseFrame() {
   DCHECK(response_frame_assembler_ && response_frame_assembler_->IsDone());
   auto response_frame = std::move(*response_frame_assembler_->GetFrame());
@@ -139,13 +170,13 @@ void FidoBleTransaction::ProcessResponseFrame() {
 
   if (response_frame.command() == FidoBleDeviceCommand::kKeepAlive) {
     if (!response_frame.IsValid()) {
-      LOG(ERROR) << "Got invald KeepAlive Command.";
+      FIDO_LOG(ERROR) << "Got invalid KeepAlive Command.";
       OnError(base::nullopt);
       return;
     }
 
-    VLOG(2) << "CMD_KEEPALIVE: "
-            << static_cast<int>(response_frame.GetKeepaliveCode());
+    FIDO_LOG(DEBUG) << "CMD_KEEPALIVE: "
+                    << static_cast<int>(response_frame.GetKeepaliveCode());
     // Expect another reponse frame soon.
     StartTimeout();
     return;
@@ -153,19 +184,19 @@ void FidoBleTransaction::ProcessResponseFrame() {
 
   if (response_frame.command() == FidoBleDeviceCommand::kError) {
     if (!response_frame.IsValid()) {
-      LOG(ERROR) << "Got invald Error Command.";
+      FIDO_LOG(ERROR) << "Got invald Error Command.";
       OnError(base::nullopt);
       return;
     }
 
-    LOG(ERROR) << "CMD_ERROR: "
-               << static_cast<int>(response_frame.GetErrorCode());
+    FIDO_LOG(ERROR) << "CMD_ERROR: "
+                    << static_cast<int>(response_frame.GetErrorCode());
     OnError(std::move(response_frame));
     return;
   }
 
-  LOG(ERROR) << "Got unexpected Command: "
-             << static_cast<int>(response_frame.command());
+  FIDO_LOG(ERROR) << "Got unexpected Command: "
+                  << static_cast<int>(response_frame.command());
   OnError(base::nullopt);
 }
 

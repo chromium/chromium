@@ -1,0 +1,97 @@
+{{header}}
+{{object 1 0}} <<
+  /Type /Catalog
+  /Pages 2 0 R
+>>
+endobj
+{{object 2 0}} <<
+  /Type /Pages
+  /MediaBox [0 0 200 200]
+  /Count 1
+  /Kids [3 0 R]
+>>
+endobj
+{{object 3 0}} <<
+  /Type /Page
+  /Parent 2 0 R
+  /Resources <<
+    /Font <<
+      /F1 4 0 R
+      /F2 5 0 R
+      /F3 6 0 R
+      /F4 7 0 R
+    >>
+  >>
+  /Contents 8 0 R
+>>
+endobj
+{{object 4 0}} <<
+  /Type /Font
+  /Subtype /Type1
+  /BaseFont /Helvetica
+>>
+endobj
+{{object 5 0}} <<
+  /Type /Font
+  /Subtype /Type1
+  /BaseFont /Courier
+>>
+endobj
+{{object 6 0}} <<
+  /Type /Font
+  /Subtype /Type1
+  /BaseFont /Helvetica-Bold
+>>
+endobj
+{{object 7 0}} <<
+  /Type /Font
+  /Subtype /Type1
+  /BaseFont /Helvetica-Oblique
+>>
+endobj
+{{object 8 0}} <<
+  {{streamlen}}
+>>
+stream
+BT
+/F1 10 Tf
+10 180 Td
+(This is some ) Tj
+/F2 10 Tf
+(simple) Tj
+/F1 10 Tf
+( text with a font) Tj
+0 -10 Td
+(change in the middle of the line.) Tj
+ET
+BT
+/F1 10 Tf
+10 150 Td
+(In this ) Tj
+/F2 12 Tf
+(example) Tj
+/F1 10 Tf
+( the font size is slightly) Tj
+0 -10 Td
+(different from the surrounding text.) Tj
+ET
+BT
+/F1 10 Tf
+10 120 Td
+(Similarly, attributes such as ) Tj
+/F3 10 Tf
+(bold) Tj
+/F1 10 Tf
+( and / or) Tj
+0 -10 Td
+/F4 10 Tf
+(italics) Tj
+/F1 10 Tf
+( should not cause line breaks.) Tj
+ET
+endstream
+endobj
+{{xref}}
+{{trailer}}
+{{startxref}}
+%%EOF

@@ -24,6 +24,9 @@ class ServiceWorkerRegisterJobBase {
   // It can be called regardless of whether Start() was called.
   virtual void Abort() = 0;
 
+  // Notifies the job that the context is shutting down.
+  virtual void WillShutDown() = 0;
+
   // Returns true if this job is identical to |job| for the purpose of
   // collapsing them together in a ServiceWorkerJobCoordinator queue.
   // Registration jobs are equal if they are for the same scope and script

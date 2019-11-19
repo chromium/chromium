@@ -7,13 +7,13 @@ package org.chromium.chrome.browser.vr.util;
 import static org.chromium.chrome.browser.vr.XrTestFramework.POLL_CHECK_INTERVAL_SHORT_MS;
 import static org.chromium.chrome.browser.vr.XrTestFramework.POLL_TIMEOUT_SHORT_MS;
 
-import android.support.annotation.IntDef;
+import androidx.annotation.IntDef;
 
-import org.chromium.base.ThreadUtils;
 import org.chromium.chrome.browser.infobar.InfoBar;
 import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.util.InfoBarUtil;
 import org.chromium.content_public.browser.test.util.CriteriaHelper;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -54,7 +54,7 @@ public class VrInfoBarUtils {
     public static void clickInfoBarButton(final @Button int button, ChromeActivityTestRule rule) {
         if (!isInfoBarPresent(rule)) return;
         final List<InfoBar> infoBars = rule.getInfoBars();
-        ThreadUtils.runOnUiThreadBlocking(() -> {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
             switch (button) {
                 case Button.PRIMARY:
                     InfoBarUtil.clickPrimaryButton(infoBars.get(0));
@@ -75,7 +75,8 @@ public class VrInfoBarUtils {
     public static void clickInfobarCloseButton(ChromeActivityTestRule rule) {
         if (!isInfoBarPresent(rule)) return;
         final List<InfoBar> infoBars = rule.getInfoBars();
-        ThreadUtils.runOnUiThreadBlocking(() -> { InfoBarUtil.clickCloseButton(infoBars.get(0)); });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { InfoBarUtil.clickCloseButton(infoBars.get(0)); });
         InfoBarUtil.waitUntilNoInfoBarsExist(rule.getInfoBars());
     }
 

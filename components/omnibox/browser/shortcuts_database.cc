@@ -26,7 +26,7 @@ namespace {
 // Current version number. We write databases at the "current" version number,
 // but any previous version that can read the "compatible" one can make do with
 // our database without *too* many bad effects.
-const int kCurrentVersionNumber = 1;
+const int kCurrentVersionNumber = 2;
 const int kCompatibleVersionNumber = 1;
 
 void BindShortcutToStatement(const ShortcutsDatabase::Shortcut& shortcut,
@@ -36,15 +36,16 @@ void BindShortcutToStatement(const ShortcutsDatabase::Shortcut& shortcut,
   s->BindString16(1, shortcut.text);
   s->BindString16(2, shortcut.match_core.fill_into_edit);
   s->BindString(3, shortcut.match_core.destination_url.spec());
-  s->BindString16(4, shortcut.match_core.contents);
-  s->BindString(5, shortcut.match_core.contents_class);
-  s->BindString16(6, shortcut.match_core.description);
-  s->BindString(7, shortcut.match_core.description_class);
-  s->BindInt(8, shortcut.match_core.transition);
-  s->BindInt(9, shortcut.match_core.type);
-  s->BindString16(10, shortcut.match_core.keyword);
-  s->BindInt64(11, shortcut.last_access_time.ToInternalValue());
-  s->BindInt(12, shortcut.number_of_hits);
+  s->BindInt(4, shortcut.match_core.document_type);
+  s->BindString16(5, shortcut.match_core.contents);
+  s->BindString(6, shortcut.match_core.contents_class);
+  s->BindString16(7, shortcut.match_core.description);
+  s->BindString(8, shortcut.match_core.description_class);
+  s->BindInt(9, shortcut.match_core.transition);
+  s->BindInt(10, shortcut.match_core.type);
+  s->BindString16(11, shortcut.match_core.keyword);
+  s->BindInt64(12, shortcut.last_access_time.ToInternalValue());
+  s->BindInt(13, shortcut.number_of_hits);
 }
 
 bool DeleteShortcut(const char* field_name,
@@ -90,6 +91,7 @@ void DatabaseErrorCallback(sql::Database* db,
 ShortcutsDatabase::Shortcut::MatchCore::MatchCore(
     const base::string16& fill_into_edit,
     const GURL& destination_url,
+    int document_type,
     const base::string16& contents,
     const std::string& contents_class,
     const base::string16& description,
@@ -99,14 +101,14 @@ ShortcutsDatabase::Shortcut::MatchCore::MatchCore(
     const base::string16& keyword)
     : fill_into_edit(fill_into_edit),
       destination_url(destination_url),
+      document_type(document_type),
       contents(contents),
       contents_class(contents_class),
       description(description),
       description_class(description_class),
       transition(transition),
       type(type),
-      keyword(keyword) {
-}
+      keyword(keyword) {}
 
 ShortcutsDatabase::Shortcut::MatchCore::MatchCore(const MatchCore& other) =
     default;
@@ -130,11 +132,18 @@ ShortcutsDatabase::Shortcut::Shortcut(
 }
 
 ShortcutsDatabase::Shortcut::Shortcut()
-    : match_core(base::string16(), GURL(), base::string16(), std::string(),
-                 base::string16(), std::string(), 0, 0, base::string16()),
+    : match_core(base::string16(),
+                 GURL(),
+                 0,
+                 base::string16(),
+                 std::string(),
+                 base::string16(),
+                 std::string(),
+                 0,
+                 0,
+                 base::string16()),
       last_access_time(base::Time::Now()),
-      number_of_hits(0) {
-}
+      number_of_hits(0) {}
 
 ShortcutsDatabase::Shortcut::Shortcut(const Shortcut& other) = default;
 
@@ -153,7 +162,7 @@ bool ShortcutsDatabase::Init() {
 
   // To recover from corruption.
   db_.set_error_callback(
-      base::Bind(&DatabaseErrorCallback, &db_, database_path_));
+      base::BindRepeating(&DatabaseErrorCallback, &db_, database_path_));
 
   // Set the database page size to something a little larger to give us
   // better performance (we're typically seek rather than bandwidth limited).
@@ -173,9 +182,10 @@ bool ShortcutsDatabase::AddShortcut(const Shortcut& shortcut) {
   sql::Statement s(db_.GetCachedStatement(
       SQL_FROM_HERE,
       "INSERT INTO omni_box_shortcuts (id, text, fill_into_edit, url, "
-          "contents, contents_class, description, description_class, "
-          "transition, type, keyword, last_access_time, number_of_hits) "
-          "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)"));
+          "document_type, contents, contents_class, description, "
+          "description_class, transition, type, keyword, last_access_time, "
+          "number_of_hits) "
+      "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)"));
   BindShortcutToStatement(shortcut, &s);
   return s.Run();
 }
@@ -184,11 +194,11 @@ bool ShortcutsDatabase::UpdateShortcut(const Shortcut& shortcut) {
   sql::Statement s(db_.GetCachedStatement(
       SQL_FROM_HERE,
       "UPDATE omni_box_shortcuts SET id=?, text=?, fill_into_edit=?, url=?, "
-          "contents=?, contents_class=?, description=?, description_class=?, "
-          "transition=?, type=?, keyword=?, last_access_time=?, "
-          "number_of_hits=? WHERE id=?"));
+          "document_type=?, contents=?, contents_class=?, description=?, "
+          "description_class=?, transition=?, type=?, keyword=?, "
+          "last_access_time=?, number_of_hits=? WHERE id=?"));
   BindShortcutToStatement(shortcut, &s);
-  s.BindString(13, shortcut.id);
+  s.BindString(14, shortcut.id);
   return s.Run();
 }
 
@@ -220,9 +230,9 @@ void ShortcutsDatabase::LoadShortcuts(GuidToShortcutMap* shortcuts) {
   DCHECK(shortcuts);
   sql::Statement s(db_.GetCachedStatement(
       SQL_FROM_HERE,
-      "SELECT id, text, fill_into_edit, url, contents, contents_class, "
-          "description, description_class, transition, type, keyword, "
-          "last_access_time, number_of_hits FROM omni_box_shortcuts"));
+      "SELECT id, text, fill_into_edit, url, document_type, contents, "
+          "contents_class, description, description_class, transition, type, "
+          "keyword, last_access_time, number_of_hits FROM omni_box_shortcuts"));
 
   shortcuts->clear();
   while (s.Step()) {
@@ -234,16 +244,17 @@ void ShortcutsDatabase::LoadShortcuts(GuidToShortcutMap* shortcuts) {
             Shortcut::MatchCore(
                 s.ColumnString16(2),      // fill_into_edit
                 GURL(s.ColumnString(3)),  // destination_url
-                s.ColumnString16(4),      // contents
-                s.ColumnString(5),        // contents_class
-                s.ColumnString16(6),      // description
-                s.ColumnString(7),        // description_class
-                s.ColumnInt(8),           // transition
-                s.ColumnInt(9),           // type
-                s.ColumnString16(10)),    // keyword
-            base::Time::FromInternalValue(s.ColumnInt64(11)),
+                s.ColumnInt(4),           // document_type
+                s.ColumnString16(5),      // contents
+                s.ColumnString(6),        // contents_class
+                s.ColumnString16(7),      // description
+                s.ColumnString(8),        // description_class
+                s.ColumnInt(9),           // transition
+                s.ColumnInt(10),          // type
+                s.ColumnString16(11)),    // keyword
+            base::Time::FromInternalValue(s.ColumnInt64(12)),
                                           // last_access_time
-            s.ColumnInt(12))));           // number_of_hits
+            s.ColumnInt(13))));           // number_of_hits
   }
 }
 
@@ -251,62 +262,110 @@ ShortcutsDatabase::~ShortcutsDatabase() {
 }
 
 bool ShortcutsDatabase::EnsureTable() {
-  if (!db_.DoesTableExist("omni_box_shortcuts")) {
-    return db_.Execute(
-        "CREATE TABLE omni_box_shortcuts (id VARCHAR PRIMARY KEY, "
-            "text VARCHAR, fill_into_edit VARCHAR, url VARCHAR, "
-            "contents VARCHAR, contents_class VARCHAR, description VARCHAR, "
-            "description_class VARCHAR, transition INTEGER, type INTEGER, "
-            "keyword VARCHAR, last_access_time INTEGER, "
-            "number_of_hits INTEGER)");
+  if (!db_.DoesTableExist("omni_box_shortcuts"))
+    return DoMigration(-1);
+
+  // The first version of the shortcuts table (pre-v0) lacked the
+  // fill_into_edit, transition, type, and keyword columns.
+  // Additionally, pre-v0 lacks a MetaTable from which to identify the version,
+  // thus requiring checking the existence of those columns.
+  if (!db_.DoesColumnExist("omni_box_shortcuts", "fill_into_edit") &&
+      !DoMigration(0)) {
+    return false;
   }
 
-  // The first version of the shortcuts table lacked the fill_into_edit,
-  // transition, type, and keyword columns.
-  if (!db_.DoesColumnExist("omni_box_shortcuts", "fill_into_edit")) {
-    // Perform the upgrade in a transaction to ensure it doesn't happen
-    // incompletely.
-    sql::Transaction transaction(&db_);
-    if (!(transaction.Begin() &&
-        db_.Execute("ALTER TABLE omni_box_shortcuts "
-            "ADD COLUMN fill_into_edit VARCHAR") &&
-        db_.Execute("UPDATE omni_box_shortcuts SET fill_into_edit = url") &&
-        db_.Execute("ALTER TABLE omni_box_shortcuts "
-            "ADD COLUMN transition INTEGER") &&
-        db_.Execute(base::StringPrintf(
-            "UPDATE omni_box_shortcuts SET transition = %d",
-            static_cast<int>(ui::PAGE_TRANSITION_TYPED)).c_str()) &&
-        db_.Execute("ALTER TABLE omni_box_shortcuts ADD COLUMN type INTEGER") &&
-        db_.Execute(base::StringPrintf(
-            "UPDATE omni_box_shortcuts SET type = %d",
-            static_cast<int>(AutocompleteMatchType::HISTORY_TITLE)).c_str()) &&
-        db_.Execute("ALTER TABLE omni_box_shortcuts "
-            "ADD COLUMN keyword VARCHAR") &&
-        transaction.Commit())) {
+  // v0 also lacks a MetaTable. Migrating to v1 introduces the MetaTable in
+  // addition to other changes handled by |DoMigration|. If the MetaTable
+  // exists, lookup |current_version|. Otherwise, leave it at 0, and
+  // |DoMigration(1)| will create the MetaTable.
+  int current_version = 0;
+  if (sql::MetaTable::DoesTableExist(&db_)) {
+    if (!(meta_table_.Init(&db_, 1, kCompatibleVersionNumber)))
       return false;
-    }
+    current_version = meta_table_.GetVersionNumber();
   }
 
-  if (!sql::MetaTable::DoesTableExist(&db_)) {
-    sql::Transaction transaction(&db_);
-    if (!(transaction.Begin() &&
-          meta_table_.Init(
-              &db_, kCurrentVersionNumber, kCompatibleVersionNumber) &&
-          // Migrate old SEARCH_OTHER_ENGINE values to the new type value.
-          db_.Execute(
-              "UPDATE omni_box_shortcuts SET type = 13 WHERE type = 9") &&
-          // Migrate old EXTENSION_APP values to the new type value.
-          db_.Execute(
-              "UPDATE omni_box_shortcuts SET type = 14 WHERE type = 10") &&
-          // Migrate old CONTACT values to the new type value.
-          db_.Execute(
-              "UPDATE omni_box_shortcuts SET type = 15 WHERE type = 11") &&
-          // Migrate old BOOKMARK_TITLE values to the new type value.
-          db_.Execute(
-              "UPDATE omni_box_shortcuts SET type = 16 WHERE type = 12") &&
-          transaction.Commit())) {
+  for (int i = current_version + 1; i <= kCurrentVersionNumber; ++i) {
+    if (!DoMigration(i))
       return false;
-    }
+    meta_table_.SetVersionNumber(i);
   }
+
   return true;
+}
+
+bool ShortcutsDatabase::DoMigration(int version) {
+  // Perform migrations in transactions to avoid incomplete migrations.
+  sql::Transaction transaction(&db_);
+
+  switch (version) {
+    case -1:
+      // When there is no existing table, skip iterative migration; instead,
+      // migrate to the latest version.
+      return transaction.Begin() &&
+             meta_table_.Init(&db_, kCurrentVersionNumber,
+                              kCompatibleVersionNumber) &&
+             db_.Execute(
+                 "CREATE TABLE omni_box_shortcuts (id VARCHAR PRIMARY KEY, "
+                 "text VARCHAR, fill_into_edit VARCHAR, url VARCHAR, "
+                 "document_type INTEGER, contents VARCHAR, "
+                 "contents_class VARCHAR, description VARCHAR, "
+                 "description_class VARCHAR, transition INTEGER, type INTEGER, "
+                 "keyword VARCHAR, last_access_time INTEGER, "
+                 "number_of_hits INTEGER)") &&
+             transaction.Commit();
+    case 0:
+      // Version pre-0 of the shortcuts table lacked the fill_into_edit,
+      // transition type, and keyword columns.
+      return transaction.Begin() &&
+             db_.Execute(
+                 "ALTER TABLE omni_box_shortcuts "
+                 "ADD COLUMN fill_into_edit VARCHAR") &&
+             db_.Execute(
+                 "UPDATE omni_box_shortcuts SET fill_into_edit = url") &&
+             db_.Execute(
+                 "ALTER TABLE omni_box_shortcuts "
+                 "ADD COLUMN transition INTEGER") &&
+             db_.Execute(base::StringPrintf(
+                             "UPDATE omni_box_shortcuts SET transition = %d",
+                             static_cast<int>(ui::PAGE_TRANSITION_TYPED))
+                             .c_str()) &&
+             db_.Execute(
+                 "ALTER TABLE omni_box_shortcuts ADD COLUMN type INTEGER") &&
+             db_.Execute(
+                 base::StringPrintf(
+                     "UPDATE omni_box_shortcuts SET type = %d",
+                     static_cast<int>(AutocompleteMatchType::HISTORY_TITLE))
+                     .c_str()) &&
+             db_.Execute(
+                 "ALTER TABLE omni_box_shortcuts "
+                 "ADD COLUMN keyword VARCHAR") &&
+             transaction.Commit();
+    case 1:
+      return transaction.Begin() &&
+             // Create the MetaTable.
+             meta_table_.Init(&db_, 1, kCompatibleVersionNumber) &&
+             // Migrate old SEARCH_OTHER_ENGINE values to the new type value.
+             db_.Execute(
+                 "UPDATE omni_box_shortcuts SET type = 13 WHERE type = 9") &&
+             // Migrate old EXTENSION_APP values to the new type value.
+             db_.Execute(
+                 "UPDATE omni_box_shortcuts SET type = 14 WHERE type = 10") &&
+             // Migrate old CONTACT values to the new type value.
+             db_.Execute(
+                 "UPDATE omni_box_shortcuts SET type = 15 WHERE type = 11") &&
+             // Migrate old BOOKMARK_TITLE values to the new type value.
+             db_.Execute(
+                 "UPDATE omni_box_shortcuts SET type = 16 WHERE type = 12") &&
+             transaction.Commit();
+    case 2:
+      // Version 1 of the shortcuts table lacked the document_type column.
+      return transaction.Begin() &&
+             db_.Execute(
+                 "ALTER TABLE omni_box_shortcuts "
+                 "ADD COLUMN document_type INTEGER") &&
+             transaction.Commit();
+    default:
+      return false;
+  }
 }

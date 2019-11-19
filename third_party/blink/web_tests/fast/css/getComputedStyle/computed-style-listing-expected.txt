@@ -148,6 +148,7 @@ float: none
 flood-color: rgb(0, 0, 0)
 flood-opacity: 1
 font-kerning: auto
+font-optical-sizing: auto
 font-size: 16px
 font-size-adjust: none
 font-stretch: 100%

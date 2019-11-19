@@ -33,8 +33,6 @@ class CORE_EXPORT HTMLHeadElement final : public HTMLElement {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  DECLARE_NODE_FACTORY(HTMLHeadElement);
-
   explicit HTMLHeadElement(Document&);
 
   bool HasNonInBodyInsertionMode() const override { return true; }

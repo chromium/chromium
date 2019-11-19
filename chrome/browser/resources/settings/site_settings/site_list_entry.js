@@ -15,14 +15,6 @@ Polymer({
   ],
 
   properties: {
-    /** @private */
-    enableSiteSettings_: {
-      type: Boolean,
-      value: function() {
-        return loadTimeData.getBoolean('enableSiteSettings');
-      },
-    },
-
     /**
      * Some content types (like Location) do not allow the user to manually
      * edit the exception list from within Settings.
@@ -60,12 +52,6 @@ Polymer({
     chooserObject: {
       type: Object,
       value: null,
-    },
-
-    /** @private */
-    siteDescription_: {
-      type: String,
-      computed: 'computeSiteDescription_(model)',
     },
 
     /** @private */
@@ -134,34 +120,59 @@ Polymer({
   },
 
   /**
+   * Returns the appropriate display name to show for the exception.
+   * This can, for example, be the website that is affected itself,
+   * or the website whose third parties are also affected.
+   * @return {string}
+   */
+  computeDisplayName_: function() {
+    if (this.model.embeddingOrigin &&
+        this.model.category === settings.ContentSettingsTypes.COOKIES &&
+        this.model.origin.trim() == settings.SITE_EXCEPTION_WILDCARD) {
+      return this.model.embeddingOrigin;
+    }
+    return this.model.displayName;
+  },
+
+  /**
    * Returns the appropriate site description to display. This can, for example,
    * be blank, an 'embedded on <site>' or 'Current incognito session' (or a
    * mix of the last two).
-   * @return {string} The site description.
+   * @return {string}
    */
   computeSiteDescription_: function() {
-    let displayName = '';
+    let description = '';
+
     if (this.model.embeddingOrigin) {
-      displayName = loadTimeData.getStringF(
-          'embeddedOnHost', this.sanitizePort(this.model.embeddingOrigin));
+      if (this.model.category === settings.ContentSettingsTypes.COOKIES &&
+          this.model.origin.trim() == settings.SITE_EXCEPTION_WILDCARD) {
+        description =
+            loadTimeData.getString(
+                'siteSettingsCookiesThirdPartyExceptionLabel');
+       } else {
+         description = loadTimeData.getStringF(
+             'embeddedOnHost', this.sanitizePort(this.model.embeddingOrigin));
+       }
     } else if (this.category == settings.ContentSettingsTypes.GEOLOCATION) {
-      displayName = loadTimeData.getString('embeddedOnAnyHost');
+      description = loadTimeData.getString('embeddedOnAnyHost');
     }
 
     // <if expr="chromeos">
     if (this.model.category === settings.ContentSettingsTypes.NOTIFICATIONS &&
         this.model.showAndroidSmsNote) {
-      displayName = loadTimeData.getString('androidSmsNote');
+      description = loadTimeData.getString('androidSmsNote');
     }
     // </if>
 
     if (this.model.incognito) {
-      if (displayName.length > 0) {
-        return loadTimeData.getStringF('embeddedIncognitoSite', displayName);
+      if (description.length > 0) {
+        description =
+            loadTimeData.getStringF('embeddedIncognitoSite', description);
+      } else {
+        description = loadTimeData.getString('incognitoSite');
       }
-      return loadTimeData.getString('incognitoSite');
     }
-    return displayName;
+    return description;
   },
 
   /**
@@ -209,7 +220,7 @@ Polymer({
       return;
     }
     this.browserProxy.isOriginValid(this.model.origin).then((valid) => {
-      this.allowNavigateToSiteDetail_ = valid && this.enableSiteSettings_;
+      this.allowNavigateToSiteDetail_ = valid;
     });
   }
 });

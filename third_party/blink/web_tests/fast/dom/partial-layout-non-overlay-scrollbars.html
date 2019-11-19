@@ -1,5 +1,10 @@
 <!DOCTYPE HTML>
 <html>
+<script>
+// Note: We force non-overlay scrollbars with CSS.
+if (window.internals)
+    internals.useMockOverlayScrollbars();
+</script>
 <script src="../../resources/testharness.js"></script>
 <script src="../../resources/testharnessreport.js"></script>
 <link rel="stylesheet" href="../../resources/testharness.css">
@@ -26,9 +31,6 @@
 <script>
     if (window.testRunner)
         testRunner.dumpAsText();
-
-    if (window.internals)
-        internals.runtimeFlags.overlayScrollbarsEnabled = true; // Note: We force non-overlay scrollbars with CSS.
 
     var test = async_test("Test that partial layout works with non-overlay scrollbars.");
     setTimeout(function() {

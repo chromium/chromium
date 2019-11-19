@@ -141,20 +141,12 @@ def UnzipSymbols(symbolfile, symdir=None):
 
 def main(argv):
   try:
-    options, arguments = getopt.getopt(argv, "",
-                                       ["packed-relocation-adjustments",
-                                        "no-packed-relocation-adjustments",
-                                        "more-info",
-                                        "less-info",
-                                        "chrome-symbols-dir=",
-                                        "output-directory=",
-                                        "symbols-dir=",
-                                        "symbols-zip=",
-                                        "packed-lib=",
-                                        "arch=",
-                                        "fallback-monochrome",
-                                        "verbose",
-                                        "help"])
+    options, arguments = getopt.getopt(argv, "", [
+        "packed-relocation-adjustments", "no-packed-relocation-adjustments",
+        "more-info", "less-info", "chrome-symbols-dir=", "output-directory=",
+        "apks-directory=", "symbols-dir=", "symbols-zip=", "packed-lib=",
+        "arch=", "fallback-monochrome", "verbose", "help"
+    ])
   except getopt.GetoptError, unused_error:
     PrintUsage()
 
@@ -163,13 +155,14 @@ def main(argv):
   fallback_monochrome = False
   arch_defined = False
   packed_libs = []
+  apks_directory = None
   for option, value in options:
     if option == "--help":
       PrintUsage()
     elif option == "--symbols-dir":
-      symbol.SYMBOLS_DIR = os.path.expanduser(value)
+      symbol.SYMBOLS_DIR = os.path.abspath(os.path.expanduser(value))
     elif option == "--symbols-zip":
-      zip_arg = os.path.expanduser(value)
+      zip_arg = os.path.abspath(os.path.expanduser(value))
     elif option == "--arch":
       symbol.ARCH = value
       arch_defined = True
@@ -177,9 +170,11 @@ def main(argv):
       symbol.CHROME_SYMBOLS_DIR = os.path.join(constants.DIR_SOURCE_ROOT,
                                                value)
     elif option == "--output-directory":
-      constants.SetOutputDirectory(value)
+      constants.SetOutputDirectory(os.path.abspath(value))
+    elif option == "--apks-directory":
+      apks_directory = os.path.abspath(value)
     elif option == "--packed-lib":
-      packed_libs.append(os.path.expanduser(value))
+      packed_libs.append(os.path.abspath(os.path.expanduser(value)))
     elif option == "--more-info":
       more_info = True
     elif option == "--less-info":
@@ -216,7 +211,7 @@ def main(argv):
     with llvm_symbolizer.LLVMSymbolizer() as symbolizer:
       stack_core.StreamingConvertTrace(sys.stdin, {}, more_info,
                                        fallback_monochrome, arch_defined,
-                                       symbolizer)
+                                       symbolizer, apks_directory)
   else:
     print "Searching for native crashes in: " + os.path.realpath(arguments[0])
     f = open(arguments[0], "r")
@@ -240,8 +235,9 @@ def main(argv):
     with llvm_symbolizer.LLVMSymbolizer() as symbolizer:
       print ("Searching for Chrome symbols from within: "
              + ':'.join((os.path.normpath(d) for d in chrome_search_path)))
-      stack_core.ConvertTrace(lines, load_vaddrs, more_info, fallback_monochrome,
-                              arch_defined, symbolizer)
+      stack_core.ConvertTrace(lines, load_vaddrs, more_info,
+                              fallback_monochrome, arch_defined, symbolizer,
+                              apks_directory)
 
   if rootdir:
     # be a good citizen and clean up...os.rmdir and os.removedirs() don't work

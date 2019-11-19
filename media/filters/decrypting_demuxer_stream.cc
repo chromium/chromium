@@ -31,12 +31,7 @@ DecryptingDemuxerStream::DecryptingDemuxerStream(
     const WaitingCB& waiting_cb)
     : task_runner_(task_runner),
       media_log_(media_log),
-      state_(kUninitialized),
-      waiting_cb_(waiting_cb),
-      demuxer_stream_(NULL),
-      decryptor_(NULL),
-      key_added_while_decrypt_pending_(false),
-      weak_factory_(this) {}
+      waiting_cb_(waiting_cb) {}
 
 std::string DecryptingDemuxerStream::GetDisplayName() const {
   return "DecryptingDemuxerStream";
@@ -76,17 +71,21 @@ void DecryptingDemuxerStream::Initialize(DemuxerStream* stream,
   std::move(init_cb_).Run(PIPELINE_OK);
 }
 
-void DecryptingDemuxerStream::Read(const ReadCB& read_cb) {
+void DecryptingDemuxerStream::Read(ReadCB read_cb) {
   DVLOG(3) << __func__;
   DCHECK(task_runner_->BelongsToCurrentThread());
   DCHECK_EQ(state_, kIdle) << state_;
   DCHECK(read_cb);
   CHECK(!read_cb_) << "Overlapping reads are not supported.";
 
-  read_cb_ = BindToCurrentLoop(read_cb);
+  read_cb_ = BindToCurrentLoop(std::move(read_cb));
   state_ = kPendingDemuxerRead;
-  demuxer_stream_->Read(
-      base::Bind(&DecryptingDemuxerStream::DecryptBuffer, weak_this_));
+  demuxer_stream_->Read(base::BindOnce(
+      &DecryptingDemuxerStream::OnBufferReadFromDemuxerStream, weak_this_));
+}
+
+bool DecryptingDemuxerStream::IsReadPending() const {
+  return !read_cb_.is_null();
 }
 
 void DecryptingDemuxerStream::Reset(const base::Closure& closure) {
@@ -101,8 +100,8 @@ void DecryptingDemuxerStream::Reset(const base::Closure& closure) {
 
   // Reset() cannot complete if the read callback is still pending.
   // Defer the resetting process in this case. The |reset_cb_| will be fired
-  // after the read callback is fired - see DoDecryptBuffer() and
-  // DoDeliverBuffer().
+  // after the read callback is fired - see OnBufferReadFromDemuxerStream() and
+  // OnBufferDecrypted().
   if (state_ == kPendingDemuxerRead || state_ == kPendingDecrypt) {
     DCHECK(read_cb_);
     return;
@@ -111,8 +110,8 @@ void DecryptingDemuxerStream::Reset(const base::Closure& closure) {
   if (state_ == kWaitingForKey) {
     CompleteWaitingForDecryptionKey();
     DCHECK(read_cb_);
-    pending_buffer_to_decrypt_ = NULL;
-    std::move(read_cb_).Run(kAborted, NULL);
+    pending_buffer_to_decrypt_ = nullptr;
+    std::move(read_cb_).Run(kAborted, nullptr);
   }
 
   DCHECK(!read_cb_);
@@ -163,30 +162,30 @@ DecryptingDemuxerStream::~DecryptingDemuxerStream() {
 
   if (decryptor_) {
     decryptor_->CancelDecrypt(GetDecryptorStreamType());
-    decryptor_ = NULL;
+    decryptor_ = nullptr;
   }
   if (init_cb_)
     std::move(init_cb_).Run(PIPELINE_ERROR_ABORT);
   if (read_cb_)
-    std::move(read_cb_).Run(kAborted, NULL);
+    std::move(read_cb_).Run(kAborted, nullptr);
   if (reset_cb_)
     std::move(reset_cb_).Run();
-  pending_buffer_to_decrypt_ = NULL;
+  pending_buffer_to_decrypt_ = nullptr;
 }
 
-void DecryptingDemuxerStream::DecryptBuffer(
+void DecryptingDemuxerStream::OnBufferReadFromDemuxerStream(
     DemuxerStream::Status status,
     scoped_refptr<DecoderBuffer> buffer) {
   DVLOG(3) << __func__ << ": status = " << status;
   DCHECK(task_runner_->BelongsToCurrentThread());
   DCHECK_EQ(state_, kPendingDemuxerRead) << state_;
   DCHECK(read_cb_);
-  DCHECK_EQ(buffer.get() != NULL, status == kOk) << status;
+  DCHECK_EQ(buffer.get() != nullptr, status == kOk) << status;
 
   // Even when |reset_cb_|, we need to pass |kConfigChanged| back to
   // the caller so that the downstream decoder can be properly reinitialized.
   if (status == kConfigChanged) {
-    DVLOG(2) << "DoDecryptBuffer() - kConfigChanged.";
+    DVLOG(2) << __func__ << ": config change";
     DCHECK_EQ(demuxer_stream_->type() == AUDIO, audio_config_.IsValidConfig());
     DCHECK_EQ(demuxer_stream_->type() == VIDEO, video_config_.IsValidConfig());
 
@@ -195,14 +194,14 @@ void DecryptingDemuxerStream::DecryptBuffer(
     InitializeDecoderConfig();
 
     state_ = kIdle;
-    std::move(read_cb_).Run(kConfigChanged, NULL);
+    std::move(read_cb_).Run(kConfigChanged, nullptr);
     if (reset_cb_)
       DoReset();
     return;
   }
 
   if (reset_cb_) {
-    std::move(read_cb_).Run(kAborted, NULL);
+    std::move(read_cb_).Run(kAborted, nullptr);
     DoReset();
     return;
   }
@@ -220,14 +219,14 @@ void DecryptingDemuxerStream::DecryptBuffer(
   DCHECK_EQ(kOk, status);
 
   if (buffer->end_of_stream()) {
-    DVLOG(2) << "DoDecryptBuffer() - EOS buffer.";
+    DVLOG(2) << __func__ << ": EOS buffer";
     state_ = kIdle;
     std::move(read_cb_).Run(kOk, std::move(buffer));
     return;
   }
 
   if (!buffer->decrypt_config()) {
-    DVLOG(2) << "DoDecryptBuffer() - clear buffer.";
+    DVLOG(2) << __func__ << ": clear buffer";
     state_ = kIdle;
     std::move(read_cb_).Run(kOk, std::move(buffer));
     return;
@@ -249,16 +248,15 @@ void DecryptingDemuxerStream::DecryptPendingBuffer() {
   decryptor_->Decrypt(
       GetDecryptorStreamType(), pending_buffer_to_decrypt_,
       BindToCurrentLoop(
-          base::Bind(&DecryptingDemuxerStream::DeliverBuffer, weak_this_)));
+          base::Bind(&DecryptingDemuxerStream::OnBufferDecrypted, weak_this_)));
 }
 
-void DecryptingDemuxerStream::DeliverBuffer(
+void DecryptingDemuxerStream::OnBufferDecrypted(
     Decryptor::Status status,
     scoped_refptr<DecoderBuffer> decrypted_buffer) {
   DVLOG(3) << __func__ << " - status: " << status;
   DCHECK(task_runner_->BelongsToCurrentThread());
   DCHECK_EQ(state_, kPendingDecrypt) << state_;
-  DCHECK_NE(status, Decryptor::kNeedMoreData);
   DCHECK(read_cb_);
   DCHECK(pending_buffer_to_decrypt_);
   CompletePendingDecrypt(status);
@@ -267,18 +265,19 @@ void DecryptingDemuxerStream::DeliverBuffer(
   key_added_while_decrypt_pending_ = false;
 
   if (reset_cb_) {
-    pending_buffer_to_decrypt_ = NULL;
-    std::move(read_cb_).Run(kAborted, NULL);
+    pending_buffer_to_decrypt_ = nullptr;
+    std::move(read_cb_).Run(kAborted, nullptr);
     DoReset();
     return;
   }
 
-  DCHECK_EQ(status == Decryptor::kSuccess, decrypted_buffer.get() != NULL);
+  DCHECK_EQ(status == Decryptor::kSuccess, decrypted_buffer.get() != nullptr);
 
-  if (status == Decryptor::kError) {
-    DVLOG(2) << "DoDeliverBuffer() - kError";
-    MEDIA_LOG(ERROR, media_log_) << GetDisplayName() << ": decrypt error";
-    pending_buffer_to_decrypt_ = NULL;
+  if (status == Decryptor::kError || status == Decryptor::kNeedMoreData) {
+    DVLOG(2) << __func__ << ": Error with status " << status;
+    MEDIA_LOG(ERROR, media_log_)
+        << GetDisplayName() << ": decrypt error " << status;
+    pending_buffer_to_decrypt_ = nullptr;
     state_ = kIdle;
     std::move(read_cb_).Run(kError, nullptr);
     return;
@@ -316,7 +315,7 @@ void DecryptingDemuxerStream::DeliverBuffer(
   if (pending_buffer_to_decrypt_->is_key_frame())
     decrypted_buffer->set_is_key_frame(true);
 
-  pending_buffer_to_decrypt_ = NULL;
+  pending_buffer_to_decrypt_ = nullptr;
   state_ = kIdle;
   std::move(read_cb_).Run(kOk, std::move(decrypted_buffer));
 }
@@ -329,13 +328,15 @@ void DecryptingDemuxerStream::OnKeyAdded() {
     return;
   }
 
-  if (state_ == kWaitingForKey) {
-    CompleteWaitingForDecryptionKey();
-    MEDIA_LOG(INFO, media_log_)
-        << GetDisplayName() << ": key was added, resuming decrypt";
-    state_ = kPendingDecrypt;
-    DecryptPendingBuffer();
-  }
+  // Nothing to do.
+  if (state_ != kWaitingForKey)
+    return;
+
+  CompleteWaitingForDecryptionKey();
+  MEDIA_LOG(INFO, media_log_)
+      << GetDisplayName() << ": key was added, resuming decrypt";
+  state_ = kPendingDecrypt;
+  DecryptPendingBuffer();
 }
 
 void DecryptingDemuxerStream::DoReset() {
@@ -344,7 +345,6 @@ void DecryptingDemuxerStream::DoReset() {
   DCHECK(!read_cb_);
 
   state_ = kIdle;
-
   std::move(reset_cb_).Run();
 }
 

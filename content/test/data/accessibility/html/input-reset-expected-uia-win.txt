@@ -1,0 +1,4 @@
+document
+++group
+++++textbox
+++++button Name='Reset'

@@ -11,6 +11,7 @@ import android.view.KeyEvent;
 import android.view.KeyboardShortcutGroup;
 import android.view.KeyboardShortcutInfo;
 
+import org.chromium.base.annotations.VerifiesOnN;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -103,13 +104,16 @@ public class KeyboardShortcuts {
      * appropriate group in this method so the user can see it when this method
      * is called.
      *
+     * Preventing inlining since this uses APIs only available on Android N, and this causes dex
+     * validation failures on earlier versions if inlined.
+     *
      * @param context We need an activity so we can call the strings from our
      *            resource.
      * @return a list of shortcuts organized into groups.
      */
     @TargetApi(Build.VERSION_CODES.N)
+    @VerifiesOnN
     public static List<KeyboardShortcutGroup> createShortcutGroup(Context context) {
-
         final int ctrlShift = KeyEvent.META_CTRL_ON | KeyEvent.META_SHIFT_ON;
 
         List<KeyboardShortcutGroup> shortcutGroups = new ArrayList<>();
@@ -120,10 +124,7 @@ public class KeyboardShortcuts {
                 KeyEvent.KEYCODE_N, KeyEvent.META_CTRL_ON);
         addShortcut(context, tabShortcutGroup, R.string.keyboard_shortcut_reopen_new_tab,
                 KeyEvent.KEYCODE_T, ctrlShift);
-        addShortcut(context, tabShortcutGroup,
-                ChromeFeatureList.isEnabled(ChromeFeatureList.INCOGNITO_STRINGS)
-                        ? R.string.keyboard_shortcut_new_private_tab
-                        : R.string.keyboard_shortcut_new_incognito_tab,
+        addShortcut(context, tabShortcutGroup, R.string.keyboard_shortcut_new_incognito_tab,
                 KeyEvent.KEYCODE_N, ctrlShift);
         addShortcut(context, tabShortcutGroup, R.string.keyboard_shortcut_next_tab,
                 KeyEvent.KEYCODE_TAB, KeyEvent.META_CTRL_ON);
@@ -327,7 +328,7 @@ public class KeyboardShortcuts {
                                 && tab.getWebContents().focusLocationBarByDefault()) {
                             activity.getToolbarManager().revertLocationBarChanges();
                         } else {
-                            tab.requestFocus();
+                            if (tab.getView() != null) tab.getView().requestFocus();
                         }
                     }
                     return true;

@@ -1,0 +1,82 @@
+\bcoahuila\s+de\s+zaragoza\b	coahuila
+\bbaja\s+california\s+sur\b	b c s
+\bestado\s+de\s+mexico\b	me
+\bbaja\s+california\b	b c
+\baguascalientes\b	ag
+\bveracruz\s+llave\b	veracruz
+\bprolongacion\b	prol
+\bquintana\s+roo\b	qr
+\bdiecinueve\b	19
+\bdiecisiete\b	17
+\bgobernador\b	gob
+\bguanajuato\b	gt
+\blicenciado\b	lic
+\bpresbitero\b	pbro
+\bsan\s+isidro\b	s isidro
+\bseptiembre\b	sept
+\bdieciocho\b	18
+\bdieciseis\b	16
+\bfrancisco\b	fco
+\bingeniero\b	ing
+\brepublica\b	rep
+\barticulo\b	art
+\bguerrero\b	gr
+\bhacienda\b	hda
+\bponiente\b	pte
+\bprofesor\b	prof
+\bsan\s+juan\b	s juan
+\bavenida\b	av
+\bcaptain\b	cap
+\bcatorce\b	14
+\bfebrero\b	feb
+\bgeneral\b	gral
+\bhidalgo\b	hg
+\bjalisco\b	ja
+\boriente\b	ote
+\bprimera\b	1a
+\bprivada\b	priv
+\bsegunda\b	2a
+\bseptima\b	7a
+\bsinaloa\b	si
+\btercera\b	3a
+\bciudad\b	cd
+\bcuarta\b	4a
+\bcuatro\b	4
+\bdoctor\b	dr
+\bmexico\b	me
+\bmx\s+mex\b	me
+\boaxaca\b	oa
+\boctava\b	8a
+\bpuebla\b	pu
+\bpuerto\b	pto
+\bquince\b	15
+\bquinta\b	5a
+\bveinte\b	20
+\bcinco\b	5
+\bmaria\b	ma
+\bnorte\b	nte
+\bnueve\b	9
+\boeste\b	pte
+\bq\s+roo\b	qr
+\bsanta\b	sta
+\bsexta\b	6a
+\bsiete\b	7
+\btrece\b	13
+\bdiez\b	10
+\bdoce\b	12
+\beste\b	ote
+\bocho\b	8
+\bonce\b	11
+\bseis\b	6
+\btres\b	3
+\bags\b	ag
+\bdel\b	
+\bdos\b	2
+\blas\b	
+\blos\b	
+\bq\s+r\b	qr
+\buno\b	1
+\bde\b	
+\bel\b	
+\ble\b	
+\bmx\b	me

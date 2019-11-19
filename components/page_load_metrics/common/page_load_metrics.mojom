@@ -1,0 +1,275 @@
+// Copyright 2017 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module page_load_metrics.mojom;
+
+import "mojo/public/mojom/base/time.mojom";
+import "third_party/blink/public/mojom/web_feature/web_feature.mojom";
+import "third_party/blink/public/mojom/use_counter/css_property_id.mojom";
+import "url/mojom/origin.mojom";
+
+// TimeDeltas below relative to navigation start.
+struct DocumentTiming {
+  // Time immediately before the DOMContentLoaded event is fired.
+  mojo_base.mojom.TimeDelta? dom_content_loaded_event_start;
+
+  // Time immediately before the load event is fired.
+  mojo_base.mojom.TimeDelta? load_event_start;
+
+  // Time when the first layout is completed.
+  mojo_base.mojom.TimeDelta? first_layout;
+};
+
+// TimeDeltas below relative to navigation start.
+struct PaintTiming {
+  // Time when the first paint is performed.
+  mojo_base.mojom.TimeDelta? first_paint;
+
+  // Time when the first image is painted.
+  mojo_base.mojom.TimeDelta? first_image_paint;
+
+  // Time when the first contentful thing (image, text, etc.) is painted.
+  mojo_base.mojom.TimeDelta? first_contentful_paint;
+
+  // (Experimental) Time when the page's primary content is painted.
+  mojo_base.mojom.TimeDelta? first_meaningful_paint;
+
+  // (Experimental) Time when the page's largest image is painted.
+  mojo_base.mojom.TimeDelta? largest_image_paint;
+
+  // (Experimental) Size of the largest image of the largest image paint, by
+  // Size = Height * Width.
+  uint64 largest_image_paint_size;
+
+  // (Experimental) Time when the page's largest text is painted.
+  mojo_base.mojom.TimeDelta? largest_text_paint;
+
+  // (Experimental) Size of the largest text of the largest text paint, by
+  // Size = Height * Width.
+  uint64 largest_text_paint_size;
+};
+
+// TimeDeltas below represent durations of time during the page load.
+struct ParseTiming {
+  // Time that the document's parser started and stopped parsing main resource
+  // content.
+  mojo_base.mojom.TimeDelta? parse_start;
+  mojo_base.mojom.TimeDelta? parse_stop;
+
+  // Sum of times when the parser is blocked waiting on the load of a script.
+  // This duration takes place between parser_start and parser_stop, and thus
+  // must be less than or equal to parser_stop - parser_start. Note that this
+  // value may be updated multiple times during the period between parse_start
+  // and parse_stop.
+  mojo_base.mojom.TimeDelta? parse_blocked_on_script_load_duration;
+
+  // Sum of times when the parser is blocked waiting on the load of a script
+  // that was inserted from document.write. This duration must be less than or
+  // equal to parse_blocked_on_script_load_duration. Note that this value may be
+  // updated multiple times during the period between parse_start and
+  // parse_stop. Note that some uncommon cases where scripts are loaded via
+  // document.write are not currently covered by this field. See crbug/600711
+  // for details.
+  mojo_base.mojom.TimeDelta? parse_blocked_on_script_load_from_document_write_duration;
+
+  // Sum of times when the parser is executing a script.  This duration takes
+  // place between parser_start and parser_stop, and thus must be less than or
+  // equal to parser_stop - parser_start. Note that this value may be updated
+  // multiple times during the period between parse_start and parse_stop.
+  mojo_base.mojom.TimeDelta? parse_blocked_on_script_execution_duration;
+
+  // Sum of times when the parser is executing a script that was inserted from
+  // document.write. This duration must be less than or equal to
+  // parse_blocked_on_script_load_duration. Note that this value may be updated
+  // multiple times during the period between parse_start and parse_stop. Note
+  // that some uncommon cases where scripts are loaded via document.write are
+  // not currently covered by this field. See crbug/600711 for details.
+  mojo_base.mojom.TimeDelta? parse_blocked_on_script_execution_from_document_write_duration;
+};
+
+struct InteractiveTiming {
+  // The first time the page is considered 'interactive'. This is determined
+  // using heuristics based on main thread and network activity. Time delta is
+  // relative to navigation_start.
+  mojo_base.mojom.TimeDelta? interactive;
+
+  // The time of when we detect the page is interactive. There is a delay
+  // between when the page was interactive and when we were able to detect it.
+  // Time delta is relative to navigation_start.
+  // This is a page load metrics internal value and not generally intended for
+  // consumption by observers.
+  mojo_base.mojom.TimeDelta? interactive_detection;
+
+
+  // The time of when a significant input event happened that may cause
+  // observers to discard the value of Time to Interactive. Time delta is
+  // relative to navigation start.
+  // This is a page load metrics internal value and not generally intended for
+  // consumption by observers.
+  mojo_base.mojom.TimeDelta? first_invalidating_input;
+
+  // Queueing Time of the first click, tap, key press, cancellable touchstart,
+  // or pointer down followed by a pointer up.
+  mojo_base.mojom.TimeDelta? first_input_delay;
+
+  // The timestamp of the event whose delay is reported by GetFirstInputDelay().
+  mojo_base.mojom.TimeDelta? first_input_timestamp;
+
+  // Queueing Time of the meaningful input event with longest delay. Meaningful
+  // input events are click, tap, key press, cancellable touchstart, or pointer
+  // down followed by a pointer up.
+  mojo_base.mojom.TimeDelta? longest_input_delay;
+
+  // The timestamp of the event whose delay is reported as longest_input_delay.
+  mojo_base.mojom.TimeDelta? longest_input_timestamp;
+};
+
+
+// PageLoadTiming contains timing metrics associated with a page load. Many of
+// the metrics here are based on the Navigation Timing spec:
+// http://www.w3.org/TR/navigation-timing/.
+struct PageLoadTiming {
+  // Time that the navigation for the associated page was initiated. Note that
+  // this field is only used for internal tracking purposes and should not be
+  // used by PageLoadMetricsObservers. This field will likely be removed in the
+  // future.
+  mojo_base.mojom.Time navigation_start;
+
+  // Time relative to navigation_start that the first byte of the response is
+  // received.
+  mojo_base.mojom.TimeDelta? response_start;
+  DocumentTiming document_timing;
+  InteractiveTiming interactive_timing;
+  PaintTiming paint_timing;
+  ParseTiming parse_timing;
+  // Time between user input and navigation start. This is set for navigations
+  // where the input start timing is known; currently when the navigation is
+  // initiated by a link click in the renderer, or from the desktop omnibox.
+  mojo_base.mojom.TimeDelta? input_to_navigation_start;
+
+  // If you add additional members, also be sure to update page_load_timing.h.
+};
+
+struct PageLoadMetadata {
+  // These are packed blink::LoadingBehaviorFlag enums.
+  int32 behavior_flags = 0;
+};
+
+// PageLoadFeatures contains a list of features newly observed by use counter.
+// In a given page load, no PageLoadFeatures sent will contain previously seen
+// values.
+struct PageLoadFeatures {
+  // These features are defined as blink::mojom::WebFeature enums.
+  array<blink.mojom.WebFeature> features;
+  // CSS properties are defined as blink::mojom::CSSSampleId enums.
+  array<blink.mojom.CSSSampleId> css_properties;
+  array<blink.mojom.CSSSampleId> animated_css_properties;
+};
+
+// Enumeration of distinct cache types.
+enum CacheType {
+  kNotCached, // Resource came from network.
+  kHttp, // Resource was serviced by the http cache.
+  kMemory, // Resource was serviced by the Renderer's MemoryCache.
+};
+
+struct ResourceDataUpdate {
+  // The id for the resource request.
+  int32 request_id = 0;
+
+  // Network bytes received for the resource since the last timing update
+  // from renderer to browser.
+  int64 delta_bytes = 0;
+
+  // Total network bytes received for the resource across timing updates. This
+  // is the aggregate of the |delta_bytes| from each timing update.
+  int64 received_data_length = 0;
+
+  // The length of the response body for the resource before removing any
+  // content encodings. Only set for complete resources.
+  int64 encoded_body_length = 0;
+
+  // Whether this resource load has completed.
+  bool is_complete;
+
+  // Compression ratio estimated from the response headers if data saver was
+  // used.
+  double data_reduction_proxy_compression_ratio_estimate;
+
+  // Whether this resource was tagged as an ad in the renderer. This flag can
+  // be set to true at any point during a resource load. A more recent
+  // ResourceDataUpdate can have a different flag than the previous update.
+  // Once this is set to true, it will be true for all future updates.
+  bool reported_as_ad_resource;
+
+  // Whether this resource was loaded in the top-level frame.
+  bool is_main_frame_resource;
+
+  // Which cache this resource originated from, if any.
+  CacheType cache_type;
+
+  // Whether this resource is the primary resource for a frame.
+  bool is_primary_frame_resource;
+
+  // Mime type for the resource found in the network response header.
+  string mime_type;
+
+  // Whether the scheme of this resource indicates a secure connection.
+  bool is_secure_scheme;
+
+  // Whether this resource was fetched via proxy.
+  bool proxy_used;
+
+  // The origin of this resource.
+  url.mojom.Origin origin;
+
+  // Whether this resource completed loading, either by network or cache, before
+  // FCP in the frame it belongs to. This flag can be set to true at any point
+  // during a resource load. A more recent ResourceDataUpdate can have a
+  // different flag than the previous update. Once this is set to true, it will
+  // be true for all future updates.
+  bool completed_before_fcp;
+};
+
+// Metrics about how a RenderFrame rendered since the last UpdateTiming call.
+struct FrameRenderDataUpdate {
+  // How much visible elements in the frame shifted (bit.ly/lsm-explainer) since
+  // the last timing update.
+  float layout_shift_delta;
+
+  // How much visible elements in the frame shifted (bit.ly/lsm-explainer),
+  // before a user input or document scroll, since the last timing update.
+  float layout_shift_delta_before_input_or_scroll;
+};
+
+// Metrics about the time spent in tasks (cpu time) by a frame.
+struct CpuTiming {
+  // Time spent in tasks measured in wall time.
+  mojo_base.mojom.TimeDelta task_time;
+};
+
+// Metrics about the count of resources that were lazy loaded in the frame.
+struct DeferredResourceCounts {
+  // The count of frames that were deferred due to lazy load.
+  uint64 deferred_frames = 0;
+  // The count of frames that were loaded after being deferred due to lazy load.
+  uint64 frames_loaded_after_deferral = 0;
+
+  // The count of images that were deferred due to lazy load.
+  uint64 deferred_images = 0;
+  // The count of images that were loaded after being deferred due to lazy load.
+  uint64 images_loaded_after_deferral = 0;
+};
+
+// Sent from renderer to browser process when the PageLoadTiming for the
+// associated frame changed.
+interface PageLoadMetrics {
+  UpdateTiming(PageLoadTiming page_load_timing,
+               PageLoadMetadata page_load_metadata,
+               PageLoadFeatures new_features,
+               array<ResourceDataUpdate> resources,
+               FrameRenderDataUpdate render_data,
+               CpuTiming cpu_load_timing,
+               DeferredResourceCounts new_deferred_resource_data);
+};

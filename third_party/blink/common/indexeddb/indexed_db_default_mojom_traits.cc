@@ -11,6 +11,7 @@
 #include "third_party/blink/public/common/indexeddb/indexeddb_key.h"
 #include "third_party/blink/public/common/indexeddb/indexeddb_key_range.h"
 #include "third_party/blink/public/common/indexeddb/indexeddb_metadata.h"
+#include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom.h"
 
 namespace mojo {
 
@@ -37,6 +38,7 @@ bool StructTraits<blink::mojom::IDBDatabaseMetadataDataView,
     DCHECK_EQ(out->object_stores.count(key), 0UL);
     out->object_stores[key] = object_store;
   }
+  out->was_cold_open = data.was_cold_open();
   return true;
 }
 
@@ -45,8 +47,8 @@ bool StructTraits<
     blink::mojom::IDBIndexKeysDataView,
     blink::IndexedDBIndexKeys>::Read(blink::mojom::IDBIndexKeysDataView data,
                                      blink::IndexedDBIndexKeys* out) {
-  out->first = data.index_id();
-  return data.ReadIndexKeys(&out->second);
+  out->id = data.index_id();
+  return data.ReadIndexKeys(&out->keys);
 }
 
 // static
@@ -79,16 +81,15 @@ UnionTraits<blink::mojom::IDBKeyDataDataView, blink::IndexedDBKey>::GetTag(
       return blink::mojom::IDBKeyDataDataView::Tag::DATE;
     case blink::mojom::IDBKeyType::Number:
       return blink::mojom::IDBKeyDataDataView::Tag::NUMBER;
-    case blink::mojom::IDBKeyType::Invalid:
-      return blink::mojom::IDBKeyDataDataView::Tag::OTHER_INVALID;
-    case blink::mojom::IDBKeyType::Null:
-      return blink::mojom::IDBKeyDataDataView::Tag::OTHER_NULL;
+    case blink::mojom::IDBKeyType::None:
+      return blink::mojom::IDBKeyDataDataView::Tag::OTHER_NONE;
 
     // Not used, fall through to NOTREACHED.
-    case blink::mojom::IDBKeyType::Min:;
+    case blink::mojom::IDBKeyType::Invalid:  // Only used in blink.
+    case blink::mojom::IDBKeyType::Min:;     // Only used in the browser.
   }
   NOTREACHED();
-  return blink::mojom::IDBKeyDataDataView::Tag::OTHER_INVALID;
+  return blink::mojom::IDBKeyDataDataView::Tag::OTHER_NONE;
 }
 
 // static
@@ -124,11 +125,8 @@ bool UnionTraits<blink::mojom::IDBKeyDataDataView, blink::IndexedDBKey>::Read(
       *out =
           blink::IndexedDBKey(data.number(), blink::mojom::IDBKeyType::Number);
       return true;
-    case blink::mojom::IDBKeyDataDataView::Tag::OTHER_INVALID:
-      *out = blink::IndexedDBKey(blink::mojom::IDBKeyType::Invalid);
-      return true;
-    case blink::mojom::IDBKeyDataDataView::Tag::OTHER_NULL:
-      *out = blink::IndexedDBKey(blink::mojom::IDBKeyType::Null);
+    case blink::mojom::IDBKeyDataDataView::Tag::OTHER_NONE:
+      *out = blink::IndexedDBKey(blink::mojom::IDBKeyType::None);
       return true;
   }
 

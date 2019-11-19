@@ -6,16 +6,18 @@
 
 #include "ui/display/screen.h"
 #include "ui/message_center/message_center.h"
+#include "ui/message_center/views/desktop_message_popup_collection.h"
 
 PopupsOnlyUiController::PopupsOnlyUiController()
     : message_center_(message_center::MessageCenter::Get()) {
   message_center_->AddObserver(this);
   message_center_->SetHasMessageCenterView(false);
 
-  // Initialize delegate after calling message_center_->AddObserver to ensure
+  // Initialize collection after calling message_center_->AddObserver to ensure
   // the correct order of observers. (PopupsOnlyUiController has to be called
   // before MessagePopupCollection, see crbug.com/901350)
-  delegate_ = CreateDelegate();
+  popup_collection_ =
+      std::make_unique<message_center::DesktopMessagePopupCollection>();
 }
 
 PopupsOnlyUiController::~PopupsOnlyUiController() {
@@ -53,12 +55,9 @@ void PopupsOnlyUiController::OnBlockingStateChanged(
 
 void PopupsOnlyUiController::ShowOrHidePopupBubbles() {
   if (popups_visible_ && !message_center_->HasPopupNotifications()) {
-    if (delegate_)
-      delegate_->HidePopups();
     popups_visible_ = false;
   } else if (!popups_visible_ && message_center_->HasPopupNotifications()) {
-    if (delegate_)
-      delegate_->ShowPopups();
+    popup_collection_->StartObserving(display::Screen::GetScreen());
     popups_visible_ = true;
   }
 }

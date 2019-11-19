@@ -15,13 +15,11 @@
 #include "net/base/backoff_entry.h"
 #include "services/network/public/cpp/network_connection_tracker.h"
 
-class Profile;
-
-namespace identity {
+namespace signin {
 class IdentityManager;
 class PrimaryAccountAccessTokenFetcher;
 struct AccessTokenInfo;
-}  // namespace identity
+}  // namespace signin
 
 extern const char kForceSigninVerificationMetricsName[];
 extern const char kForceSigninVerificationSuccessTimeMetricsName[];
@@ -33,11 +31,11 @@ extern const char kForceSigninVerificationFailureTimeMetricsName[];
 class ForceSigninVerifier
     : public network::NetworkConnectionTracker::NetworkConnectionObserver {
  public:
-  explicit ForceSigninVerifier(Profile* profile);
+  explicit ForceSigninVerifier(signin::IdentityManager* identity_manager);
   ~ForceSigninVerifier() override;
 
   void OnAccessTokenFetchComplete(GoogleServiceAuthError error,
-                                  identity::AccessTokenInfo token_info);
+                                  signin::AccessTokenInfo token_info);
 
   // override network::NetworkConnectionTracker::NetworkConnectionObserver
   void OnConnectionChanged(network::mojom::ConnectionType type) override;
@@ -66,22 +64,22 @@ class ForceSigninVerifier
 
   virtual void CloseAllBrowserWindows();
 
-  identity::PrimaryAccountAccessTokenFetcher* GetAccessTokenFetcherForTesting();
+  signin::PrimaryAccountAccessTokenFetcher* GetAccessTokenFetcherForTesting();
   net::BackoffEntry* GetBackoffEntryForTesting();
   base::OneShotTimer* GetOneShotTimerForTesting();
 
  private:
-  std::unique_ptr<identity::PrimaryAccountAccessTokenFetcher>
+  std::unique_ptr<signin::PrimaryAccountAccessTokenFetcher>
       access_token_fetcher_;
 
   // Indicates whether the verification is finished successfully or with a
   // persistent error.
-  bool has_token_verified_;
+  bool has_token_verified_ = false;
   net::BackoffEntry backoff_entry_;
   base::OneShotTimer backoff_request_timer_;
   base::TimeTicks creation_time_;
 
-  identity::IdentityManager* identity_manager_;
+  signin::IdentityManager* identity_manager_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(ForceSigninVerifier);
 };

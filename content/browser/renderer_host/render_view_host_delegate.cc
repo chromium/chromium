@@ -61,7 +61,11 @@ bool RenderViewHostDelegate::HasPersistentVideo() const {
   return false;
 }
 
-RenderFrameHost* RenderViewHostDelegate::GetPendingMainFrame() {
+bool RenderViewHostDelegate::IsSpatialNavigationDisabled() const {
+  return false;
+}
+
+RenderFrameHostImpl* RenderViewHostDelegate::GetPendingMainFrame() {
   return nullptr;
 }
 

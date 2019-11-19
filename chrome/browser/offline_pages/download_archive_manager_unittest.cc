@@ -5,10 +5,11 @@
 #include "chrome/browser/offline_pages/download_archive_manager.h"
 
 #include "base/macros.h"
+#include "base/threading/thread_task_runner_handle.h"
+#include "chrome/browser/download/download_prefs.h"
 #include "chrome/common/pref_names.h"
-#include "chrome/test/base/testing_profile.h"
-#include "components/prefs/pref_service.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace offline_pages {
@@ -30,26 +31,26 @@ class DownloadArchiveManagerTest : public testing::Test {
   void TearDown() override;
   void PumpLoop();
 
-  TestingProfile* profile() { return &profile_; }
+  sync_preferences::TestingPrefServiceSyncable* prefs() { return &prefs_; }
   DownloadArchiveManager* archive_manager() { return archive_manager_.get(); }
 
  private:
-  content::TestBrowserThreadBundle browser_thread_bundle_;
-  TestingProfile profile_;
+  content::BrowserTaskEnvironment task_environment_;
+  sync_preferences::TestingPrefServiceSyncable prefs_;
   std::unique_ptr<DownloadArchiveManager> archive_manager_;
   DISALLOW_COPY_AND_ASSIGN(DownloadArchiveManagerTest);
 };
 
 void DownloadArchiveManagerTest::SetUp() {
   // Set up preferences to point to kChromePublicSdCardDir.
-  profile()->GetPrefs()->SetString(prefs::kDownloadDefaultDirectory,
-                                   kChromePublicSdCardDir);
+  DownloadPrefs::RegisterProfilePrefs(prefs()->registry());
+  prefs()->SetString(prefs::kDownloadDefaultDirectory, kChromePublicSdCardDir);
 
   // Create a DownloadArchiveManager to use.
   archive_manager_.reset(new DownloadArchiveManager(
       base::FilePath(kTemporaryDir), base::FilePath(kPrivateDir),
       base::FilePath(kPublicDir), base::ThreadTaskRunnerHandle::Get(),
-      profile()));
+      prefs()));
 }
 
 void DownloadArchiveManagerTest::TearDown() {
@@ -61,7 +62,7 @@ TEST_F(DownloadArchiveManagerTest, UseDownloadDirFromPreferences) {
   ASSERT_EQ(kChromePublicSdCardDir, download_dir.AsUTF8Unsafe());
 }
 
-TEST_F(DownloadArchiveManagerTest, NullProfile) {
+TEST_F(DownloadArchiveManagerTest, NullPrefs) {
   DownloadArchiveManager download_archive_manager(
       base::FilePath(kTemporaryDir), base::FilePath(kPrivateDir),
       base::FilePath(kPublicDir), base::ThreadTaskRunnerHandle::Get(), nullptr);

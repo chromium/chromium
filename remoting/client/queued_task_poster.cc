@@ -13,8 +13,7 @@ namespace remoting {
 
 QueuedTaskPoster::QueuedTaskPoster(
     scoped_refptr<base::SingleThreadTaskRunner> target_task_runner)
-    : target_task_runner_(target_task_runner),
-      weak_factory_(this) {}
+    : target_task_runner_(target_task_runner) {}
 
 QueuedTaskPoster::~QueuedTaskPoster() {
   if (source_task_runner_) {

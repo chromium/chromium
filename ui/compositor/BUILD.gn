@@ -25,13 +25,10 @@ jumbo_component("compositor") {
     "compositor_observer.h",
     "compositor_switches.cc",
     "compositor_switches.h",
-    "compositor_vsync_manager.cc",
-    "compositor_vsync_manager.h",
     "debug_utils.cc",
     "debug_utils.h",
     "dip_util.cc",
     "dip_util.h",
-    "external_begin_frame_client.h",
     "float_animation_curve_adapter.cc",
     "float_animation_curve_adapter.h",
     "layer.cc",
@@ -55,6 +52,7 @@ jumbo_component("compositor") {
     "layer_threaded_animation_delegate.h",
     "layer_tree_owner.cc",
     "layer_tree_owner.h",
+    "layer_type.cc",
     "layer_type.h",
     "overscroll/scroll_input_handler.cc",
     "overscroll/scroll_input_handler.h",
@@ -116,8 +114,6 @@ jumbo_component("compositor") {
 jumbo_static_library("test_support") {
   testonly = true
   sources = [
-    "test/context_factories_for_test.cc",
-    "test/context_factories_for_test.h",
     "test/draw_waiter_for_test.cc",
     "test/draw_waiter_for_test.h",
     "test/fake_context_factory.cc",
@@ -137,6 +133,8 @@ jumbo_static_library("test_support") {
     "test/test_compositor_host_android.cc",
     "test/test_compositor_host_mac.mm",
     "test/test_compositor_host_win.cc",
+    "test/test_context_factories.cc",
+    "test/test_context_factories.h",
     "test/test_layer_animation_delegate.cc",
     "test/test_layer_animation_delegate.h",
     "test/test_layer_animation_observer.cc",
@@ -175,7 +173,10 @@ jumbo_static_library("test_support") {
 
   if (use_x11) {
     configs += [ "//build/config/linux:x11" ]
-    deps += [ "//ui/gfx/x" ]
+    deps += [
+      "//ui/events/x",
+      "//ui/gfx/x",
+    ]
   }
 
   if (is_mac) {

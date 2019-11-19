@@ -11,7 +11,7 @@
 
 #include "base/bind.h"
 #include "base/macros.h"
-#include "base/message_loop/message_loop.h"
+#include "base/message_loop/message_loop_current.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
@@ -81,6 +81,12 @@ class MockClientSideDetectionHost : public ClientSideDetectionHost {
 
 class BrowserFeatureExtractorTest : public ChromeRenderViewHostTestHarness {
  protected:
+  template <typename Request>
+  struct RequestAndResult {
+    std::unique_ptr<Request> request;
+    bool success = false;
+  };
+
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
     ASSERT_TRUE(profile()->CreateHistoryService(
@@ -98,7 +104,7 @@ class BrowserFeatureExtractorTest : public ChromeRenderViewHostTestHarness {
   void TearDown() override {
     extractor_.reset();
     host_.reset();
-    db_manager_ = NULL;
+    db_manager_.reset();
     ChromeRenderViewHostTestHarness::TearDown();
     ASSERT_EQ(0, num_pending_);
   }
@@ -132,27 +138,38 @@ class BrowserFeatureExtractorTest : public ChromeRenderViewHostTestHarness {
                          ui::PageTransition type) {
     auto navigation = content::NavigationSimulator::CreateBrowserInitiated(
         url, web_contents());
-    navigation->SetReferrer(
-        content::Referrer(referrer, network::mojom::ReferrerPolicy::kDefault));
+    navigation->SetReferrer(blink::mojom::Referrer::New(
+        referrer, network::mojom::ReferrerPolicy::kDefault));
     navigation->SetTransition(type);
     navigation->Commit();
   }
 
-  bool ExtractFeatures(ClientPhishingRequest* request) {
-    StartExtractFeatures(request);
+  RequestAndResult<ClientPhishingRequest> ExtractFeatures(
+      std::unique_ptr<ClientPhishingRequest> request) {
+    // Feature extraction takes ownership of the request object
+    // and passes it along to the done callback in the end.
+    uintptr_t key = StartExtractFeatures(std::move(request));
     base::RunLoop().Run();
-    EXPECT_EQ(1U, success_.count(request));
-    return success_.count(request) ? success_[request] : false;
+    auto iterator = phishing_results_.find(key);
+    EXPECT_TRUE(iterator != phishing_results_.end());
+    if (iterator == phishing_results_.end())
+      return {};
+
+    auto result = std::move(iterator->second);
+    phishing_results_.erase(iterator);
+    return result;
   }
 
-  void StartExtractFeatures(ClientPhishingRequest* request) {
-    success_.erase(request);
+  uintptr_t StartExtractFeatures(
+      std::unique_ptr<ClientPhishingRequest> request) {
+    uintptr_t key = reinterpret_cast<uintptr_t>(request.get());
+    EXPECT_EQ(0u, phishing_results_.count(key));
     ++num_pending_;
     extractor_->ExtractFeatures(
-        browse_info_.get(),
-        request,
+        browse_info_.get(), std::move(request),
         base::Bind(&BrowserFeatureExtractorTest::ExtractFeaturesDone,
                    base::Unretained(this)));
+    return key;
   }
 
   void GetFeatureMap(const ClientPhishingRequest& request,
@@ -165,26 +182,35 @@ class BrowserFeatureExtractorTest : public ChromeRenderViewHostTestHarness {
     }
   }
 
-  void ExtractMalwareFeatures(ClientMalwareRequest* request) {
+  std::unique_ptr<ClientMalwareRequest> ExtractMalwareFeatures(
+      std::unique_ptr<ClientMalwareRequest> request) {
     // Feature extraction takes ownership of the request object
     // and passes it along to the done callback in the end.
-    StartExtractMalwareFeatures(request);
-    ASSERT_TRUE(base::MessageLoopCurrentForUI::IsSet());
+    uintptr_t key = StartExtractMalwareFeatures(std::move(request));
+    EXPECT_TRUE(base::MessageLoopCurrentForUI::IsSet());
     base::RunLoop().Run();
-    EXPECT_EQ(1U, success_.count(request));
-    EXPECT_TRUE(success_[request]);
+    auto iterator = malware_results_.find(key);
+    EXPECT_TRUE(iterator != malware_results_.end());
+    if (iterator == malware_results_.end())
+      return nullptr;
+
+    auto result = std::move(iterator->second);
+    malware_results_.erase(iterator);
+    EXPECT_TRUE(result.success);
+    EXPECT_TRUE(result.request);
+    return std::move(result.request);
   }
 
-  void StartExtractMalwareFeatures(ClientMalwareRequest* request) {
-    success_.erase(request);
+  uintptr_t StartExtractMalwareFeatures(
+      std::unique_ptr<ClientMalwareRequest> request) {
+    uintptr_t key = reinterpret_cast<uintptr_t>(request.get());
+    EXPECT_EQ(0u, malware_results_.count(key));
     ++num_pending_;
-    // We temporarily give up ownership of request to ExtractMalwareFeatures
-    // but we'll regain ownership of it in ExtractMalwareFeaturesDone.
     extractor_->ExtractMalwareFeatures(
-        browse_info_.get(),
-        request,
+        browse_info_.get(), std::move(request),
         base::Bind(&BrowserFeatureExtractorTest::ExtractMalwareFeaturesDone,
                    base::Unretained(this)));
+    return key;
   }
 
   void GetMalwareUrls(
@@ -199,7 +225,9 @@ class BrowserFeatureExtractorTest : public ChromeRenderViewHostTestHarness {
 
   int num_pending_;  // Number of pending feature extractions.
   std::unique_ptr<BrowserFeatureExtractor> extractor_;
-  std::map<void*, bool> success_;
+  std::map<uintptr_t, RequestAndResult<ClientPhishingRequest>>
+      phishing_results_;
+  std::map<uintptr_t, RequestAndResult<ClientMalwareRequest>> malware_results_;
   std::unique_ptr<BrowseInfo> browse_info_;
   std::unique_ptr<StrictMock<MockClientSideDetectionHost>> host_;
   scoped_refptr<StrictMock<MockSafeBrowsingDatabaseManager> > db_manager_;
@@ -208,10 +236,9 @@ class BrowserFeatureExtractorTest : public ChromeRenderViewHostTestHarness {
   void ExtractFeaturesDone(bool success,
                            std::unique_ptr<ClientPhishingRequest> request) {
     EXPECT_TRUE(BrowserThread::CurrentlyOn(BrowserThread::UI));
-    ASSERT_EQ(0U, success_.count(request.get()));
-    // The pointer doesn't really belong to us.  It belongs to
-    // the test case which passed it to ExtractFeatures above.
-    success_[request.release()] = success;
+    uintptr_t key = reinterpret_cast<uintptr_t>(request.get());
+    ASSERT_EQ(0U, phishing_results_.count(key));
+    phishing_results_[key] = {std::move(request), success};
     if (--num_pending_ == 0) {
       base::RunLoop::QuitCurrentWhenIdleDeprecated();
     }
@@ -221,10 +248,9 @@ class BrowserFeatureExtractorTest : public ChromeRenderViewHostTestHarness {
       bool success,
       std::unique_ptr<ClientMalwareRequest> request) {
     EXPECT_TRUE(BrowserThread::CurrentlyOn(BrowserThread::UI));
-    ASSERT_EQ(0U, success_.count(request.get()));
-    // The pointer doesn't really belong to us.  It belongs to
-    // the test case which passed it to ExtractMalwareFeatures above.
-    success_[request.release()] = success;
+    uintptr_t key = reinterpret_cast<uintptr_t>(request.get());
+    ASSERT_EQ(0U, malware_results_.count(key));
+    malware_results_[key] = {std::move(request), success};
     if (--num_pending_ == 0) {
       base::RunLoop::QuitCurrentWhenIdleDeprecated();
     }
@@ -232,19 +258,19 @@ class BrowserFeatureExtractorTest : public ChromeRenderViewHostTestHarness {
 };
 
 TEST_F(BrowserFeatureExtractorTest, UrlNotInHistory) {
-  ClientPhishingRequest request;
+  auto request = std::make_unique<ClientPhishingRequest>();
   SimpleNavigateAndCommit(GURL("http://www.google.com"));
-  request.set_url("http://www.google.com/");
-  request.set_client_score(0.5);
-  EXPECT_FALSE(ExtractFeatures(&request));
+  request->set_url("http://www.google.com/");
+  request->set_client_score(0.5);
+  EXPECT_FALSE(ExtractFeatures(std::move(request)).success);
 }
 
 TEST_F(BrowserFeatureExtractorTest, RequestNotInitialized) {
-  ClientPhishingRequest request;
-  request.set_url("http://www.google.com/");
+  auto request = std::make_unique<ClientPhishingRequest>();
+  request->set_url("http://www.google.com/");
   // Request is missing the score value.
   SimpleNavigateAndCommit(GURL("http://www.google.com"));
-  EXPECT_FALSE(ExtractFeatures(&request));
+  EXPECT_FALSE(ExtractFeatures(std::move(request)).success);
 }
 
 TEST_F(BrowserFeatureExtractorTest, UrlInHistory) {
@@ -278,57 +304,73 @@ TEST_F(BrowserFeatureExtractorTest, UrlInHistory) {
 
   SimpleNavigateAndCommit(GURL("http://www.foo.com/bar.html"));
 
-  ClientPhishingRequest request;
-  request.set_url("http://www.foo.com/bar.html");
-  request.set_client_score(0.5);
-  EXPECT_TRUE(ExtractFeatures(&request));
-  std::map<std::string, double> features;
-  GetFeatureMap(request, &features);
+  {
+    auto request = std::make_unique<ClientPhishingRequest>();
+    request->set_url("http://www.foo.com/bar.html");
+    request->set_client_score(0.5);
+    auto result = ExtractFeatures(std::move(request));
+    EXPECT_TRUE(result.success);
+    ASSERT_TRUE(result.request);
 
-  EXPECT_EQ(12U, features.size());
-  EXPECT_DOUBLE_EQ(2.0, features[kUrlHistoryVisitCount]);
-  EXPECT_DOUBLE_EQ(1.0, features[kUrlHistoryVisitCountMoreThan24hAgo]);
-  EXPECT_DOUBLE_EQ(1.0, features[kUrlHistoryTypedCount]);
-  EXPECT_DOUBLE_EQ(1.0, features[kUrlHistoryLinkCount]);
-  EXPECT_DOUBLE_EQ(4.0, features[kHttpHostVisitCount]);
-  EXPECT_DOUBLE_EQ(2.0, features[kHttpsHostVisitCount]);
-  EXPECT_DOUBLE_EQ(1.0, features[kFirstHttpHostVisitMoreThan24hAgo]);
-  EXPECT_DOUBLE_EQ(1.0, features[kFirstHttpsHostVisitMoreThan24hAgo]);
+    std::map<std::string, double> features;
+    GetFeatureMap(*result.request, &features);
 
-  request.Clear();
-  request.set_url("https://www.foo.com/gaa.html");
-  request.set_client_score(0.5);
-  EXPECT_TRUE(ExtractFeatures(&request));
-  features.clear();
-  GetFeatureMap(request, &features);
+    EXPECT_EQ(12U, features.size());
+    EXPECT_DOUBLE_EQ(2.0, features[kUrlHistoryVisitCount]);
+    EXPECT_DOUBLE_EQ(1.0, features[kUrlHistoryVisitCountMoreThan24hAgo]);
+    EXPECT_DOUBLE_EQ(1.0, features[kUrlHistoryTypedCount]);
+    EXPECT_DOUBLE_EQ(1.0, features[kUrlHistoryLinkCount]);
+    EXPECT_DOUBLE_EQ(4.0, features[kHttpHostVisitCount]);
+    EXPECT_DOUBLE_EQ(2.0, features[kHttpsHostVisitCount]);
+    EXPECT_DOUBLE_EQ(1.0, features[kFirstHttpHostVisitMoreThan24hAgo]);
+    EXPECT_DOUBLE_EQ(1.0, features[kFirstHttpsHostVisitMoreThan24hAgo]);
+  }
 
-  EXPECT_EQ(8U, features.size());
-  EXPECT_DOUBLE_EQ(1.0, features[kUrlHistoryVisitCount]);
-  EXPECT_DOUBLE_EQ(0.0, features[kUrlHistoryVisitCountMoreThan24hAgo]);
-  EXPECT_DOUBLE_EQ(0.0, features[kUrlHistoryTypedCount]);
-  EXPECT_DOUBLE_EQ(1.0, features[kUrlHistoryLinkCount]);
-  EXPECT_DOUBLE_EQ(4.0, features[kHttpHostVisitCount]);
-  EXPECT_DOUBLE_EQ(2.0, features[kHttpsHostVisitCount]);
-  EXPECT_DOUBLE_EQ(1.0, features[kFirstHttpHostVisitMoreThan24hAgo]);
-  EXPECT_DOUBLE_EQ(1.0, features[kFirstHttpsHostVisitMoreThan24hAgo]);
+  {
+    auto request = std::make_unique<ClientPhishingRequest>();
+    request->set_url("https://www.foo.com/gaa.html");
+    request->set_client_score(0.5);
+    auto result = ExtractFeatures(std::move(request));
+    EXPECT_TRUE(result.success);
+    EXPECT_TRUE(result.request);
 
-  request.Clear();
-  request.set_url("http://bar.foo.com/gaa.html");
-  request.set_client_score(0.5);
-  EXPECT_TRUE(ExtractFeatures(&request));
-  features.clear();
-  GetFeatureMap(request, &features);
-  // We have less features because we didn't Navigate to this page, so we don't
-  // have Referrer, IsFirstNavigation, HasSSLReferrer, etc.
-  EXPECT_EQ(7U, features.size());
-  EXPECT_DOUBLE_EQ(1.0, features[kUrlHistoryVisitCount]);
-  EXPECT_DOUBLE_EQ(0.0, features[kUrlHistoryVisitCountMoreThan24hAgo]);
-  EXPECT_DOUBLE_EQ(0.0, features[kUrlHistoryTypedCount]);
-  EXPECT_DOUBLE_EQ(1.0, features[kUrlHistoryLinkCount]);
-  EXPECT_DOUBLE_EQ(1.0, features[kHttpHostVisitCount]);
-  EXPECT_DOUBLE_EQ(0.0, features[kHttpsHostVisitCount]);
-  EXPECT_DOUBLE_EQ(0.0, features[kFirstHttpHostVisitMoreThan24hAgo]);
-  EXPECT_FALSE(features.count(kFirstHttpsHostVisitMoreThan24hAgo));
+    std::map<std::string, double> features;
+    GetFeatureMap(*result.request, &features);
+
+    EXPECT_EQ(8U, features.size());
+    EXPECT_DOUBLE_EQ(1.0, features[kUrlHistoryVisitCount]);
+    EXPECT_DOUBLE_EQ(0.0, features[kUrlHistoryVisitCountMoreThan24hAgo]);
+    EXPECT_DOUBLE_EQ(0.0, features[kUrlHistoryTypedCount]);
+    EXPECT_DOUBLE_EQ(1.0, features[kUrlHistoryLinkCount]);
+    EXPECT_DOUBLE_EQ(4.0, features[kHttpHostVisitCount]);
+    EXPECT_DOUBLE_EQ(2.0, features[kHttpsHostVisitCount]);
+    EXPECT_DOUBLE_EQ(1.0, features[kFirstHttpHostVisitMoreThan24hAgo]);
+    EXPECT_DOUBLE_EQ(1.0, features[kFirstHttpsHostVisitMoreThan24hAgo]);
+  }
+
+  {
+    auto request = std::make_unique<ClientPhishingRequest>();
+    request->set_url("http://bar.foo.com/gaa.html");
+    request->set_client_score(0.5);
+    auto result = ExtractFeatures(std::move(request));
+    EXPECT_TRUE(result.success);
+    EXPECT_TRUE(result.request);
+
+    std::map<std::string, double> features;
+    GetFeatureMap(*result.request, &features);
+
+    // We have less features because we didn't Navigate to this page, so we
+    // don't have Referrer, IsFirstNavigation, HasSSLReferrer, etc.
+    EXPECT_EQ(7U, features.size());
+    EXPECT_DOUBLE_EQ(1.0, features[kUrlHistoryVisitCount]);
+    EXPECT_DOUBLE_EQ(0.0, features[kUrlHistoryVisitCountMoreThan24hAgo]);
+    EXPECT_DOUBLE_EQ(0.0, features[kUrlHistoryTypedCount]);
+    EXPECT_DOUBLE_EQ(1.0, features[kUrlHistoryLinkCount]);
+    EXPECT_DOUBLE_EQ(1.0, features[kHttpHostVisitCount]);
+    EXPECT_DOUBLE_EQ(0.0, features[kHttpsHostVisitCount]);
+    EXPECT_DOUBLE_EQ(0.0, features[kFirstHttpHostVisitMoreThan24hAgo]);
+    EXPECT_FALSE(features.count(kFirstHttpsHostVisitMoreThan24hAgo));
+  }
 }
 
 TEST_F(BrowserFeatureExtractorTest, MultipleRequestsAtOnce) {
@@ -336,22 +378,22 @@ TEST_F(BrowserFeatureExtractorTest, MultipleRequestsAtOnce) {
                              base::Time::Now(),
                              history::SOURCE_BROWSED);
   SimpleNavigateAndCommit(GURL("http:/www.foo.com/bar.html"));
-  ClientPhishingRequest request;
-  request.set_url("http://www.foo.com/bar.html");
-  request.set_client_score(0.5);
-  StartExtractFeatures(&request);
+  auto request1 = std::make_unique<ClientPhishingRequest>();
+  request1->set_url("http://www.foo.com/bar.html");
+  request1->set_client_score(0.5);
+  uintptr_t key1 = StartExtractFeatures(std::move(request1));
 
   SimpleNavigateAndCommit(GURL("http://www.foo.com/goo.html"));
-  ClientPhishingRequest request2;
-  request2.set_url("http://www.foo.com/goo.html");
-  request2.set_client_score(1.0);
-  StartExtractFeatures(&request2);
+  auto request2 = std::make_unique<ClientPhishingRequest>();
+  request2->set_url("http://www.foo.com/goo.html");
+  request2->set_client_score(1.0);
+  uintptr_t key2 = StartExtractFeatures(std::move(request2));
 
   base::RunLoop().Run();
-  EXPECT_TRUE(success_[&request]);
+  EXPECT_TRUE(phishing_results_[key1].success);
   // Success is false because the second URL is not in the history and we are
   // not able to distinguish between a missing URL in the history and an error.
-  EXPECT_FALSE(success_[&request2]);
+  EXPECT_FALSE(phishing_results_[key2].success);
 }
 
 TEST_F(BrowserFeatureExtractorTest, BrowseFeatures) {
@@ -371,178 +413,201 @@ TEST_F(BrowserFeatureExtractorTest, BrowseFeatures) {
                              base::Time::Now(),
                              history::SOURCE_BROWSED);
 
-  ClientPhishingRequest request;
-  request.set_url("http://www.foo.com/");
-  request.set_client_score(0.5);
-  std::vector<GURL> redirect_chain;
-  redirect_chain.push_back(GURL("http://somerandomwebsite.com/"));
-  redirect_chain.push_back(GURL("http://www.foo.com/"));
-  SetRedirectChain(redirect_chain, true);
-  browse_info_->http_status_code = 200;
-  NavigateAndCommit(GURL("http://www.foo.com/"),
-                    GURL("http://google.com/"),
-                    ui::PageTransitionFromInt(
-                        ui::PAGE_TRANSITION_AUTO_BOOKMARK |
-                        ui::PAGE_TRANSITION_FORWARD_BACK));
+  {
+    auto request = std::make_unique<ClientPhishingRequest>();
+    request->set_url("http://www.foo.com/");
+    request->set_client_score(0.5);
+    std::vector<GURL> redirect_chain;
+    redirect_chain.push_back(GURL("http://somerandomwebsite.com/"));
+    redirect_chain.push_back(GURL("http://www.foo.com/"));
+    SetRedirectChain(redirect_chain, true);
+    browse_info_->http_status_code = 200;
+    NavigateAndCommit(
+        GURL("http://www.foo.com/"), GURL("http://google.com/"),
+        ui::PageTransitionFromInt(ui::PAGE_TRANSITION_AUTO_BOOKMARK |
+                                  ui::PAGE_TRANSITION_FORWARD_BACK));
 
-  EXPECT_TRUE(ExtractFeatures(&request));
-  std::map<std::string, double> features;
-  GetFeatureMap(request, &features);
+    auto result = ExtractFeatures(std::move(request));
+    EXPECT_TRUE(result.success);
+    ASSERT_TRUE(result.request);
 
-  EXPECT_EQ(
-      1.0,
-      features[base::StringPrintf("%s=%s", kReferrer, "http://google.com/")]);
-  EXPECT_EQ(1.0, features[base::StringPrintf("%s[0]=%s", kRedirect,
-                                             "http://somerandomwebsite.com/")]);
-  // We shouldn't have a feature for the last redirect in the chain, since it
-  // should always be the URL that we navigated to.
-  EXPECT_EQ(
-      0.0,
-      features[base::StringPrintf("%s[1]=%s", kRedirect, "http://foo.com/")]);
-  EXPECT_EQ(0.0, features[kHasSSLReferrer]);
-  EXPECT_EQ(2.0, features[kPageTransitionType]);
-  EXPECT_EQ(1.0, features[kIsFirstNavigation]);
-  EXPECT_EQ(200.0, features[kHttpStatusCode]);
+    std::map<std::string, double> features;
+    GetFeatureMap(*result.request, &features);
 
-  request.Clear();
-  request.set_url("http://www.foo.com/page.html");
-  request.set_client_score(0.5);
-  redirect_chain.clear();
-  redirect_chain.push_back(GURL("http://www.foo.com/redirect"));
-  redirect_chain.push_back(GURL("http://www.foo.com/second_redirect"));
-  redirect_chain.push_back(GURL("http://www.foo.com/page.html"));
-  SetRedirectChain(redirect_chain, false);
-  browse_info_->http_status_code = 404;
-  NavigateAndCommit(GURL("http://www.foo.com/page.html"),
-                    GURL("http://www.foo.com"),
-                    ui::PageTransitionFromInt(
-                        ui::PAGE_TRANSITION_TYPED |
-                        ui::PAGE_TRANSITION_CHAIN_START |
-                        ui::PAGE_TRANSITION_CLIENT_REDIRECT));
+    EXPECT_EQ(
+        1.0,
+        features[base::StringPrintf("%s=%s", kReferrer, "http://google.com/")]);
+    EXPECT_EQ(1.0,
+              features[base::StringPrintf("%s[0]=%s", kRedirect,
+                                          "http://somerandomwebsite.com/")]);
+    // We shouldn't have a feature for the last redirect in the chain, since it
+    // should always be the URL that we navigated to.
+    EXPECT_EQ(
+        0.0,
+        features[base::StringPrintf("%s[1]=%s", kRedirect, "http://foo.com/")]);
+    EXPECT_EQ(0.0, features[kHasSSLReferrer]);
+    EXPECT_EQ(2.0, features[kPageTransitionType]);
+    EXPECT_EQ(1.0, features[kIsFirstNavigation]);
+    EXPECT_EQ(200.0, features[kHttpStatusCode]);
+  }
 
-  EXPECT_TRUE(ExtractFeatures(&request));
-  features.clear();
-  GetFeatureMap(request, &features);
+  {
+    auto request = std::make_unique<ClientPhishingRequest>();
+    request->set_url("http://www.foo.com/page.html");
+    request->set_client_score(0.5);
+    std::vector<GURL> redirect_chain;
+    redirect_chain.push_back(GURL("http://www.foo.com/redirect"));
+    redirect_chain.push_back(GURL("http://www.foo.com/second_redirect"));
+    redirect_chain.push_back(GURL("http://www.foo.com/page.html"));
+    SetRedirectChain(redirect_chain, false);
+    browse_info_->http_status_code = 404;
+    NavigateAndCommit(
+        GURL("http://www.foo.com/page.html"), GURL("http://www.foo.com"),
+        ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
+                                  ui::PAGE_TRANSITION_CHAIN_START |
+                                  ui::PAGE_TRANSITION_CLIENT_REDIRECT));
 
-  EXPECT_EQ(
-      1,
-      features[base::StringPrintf("%s=%s", kReferrer, "http://www.foo.com/")]);
-  EXPECT_EQ(1.0, features[base::StringPrintf("%s[0]=%s", kRedirect,
-                                             "http://www.foo.com/redirect")]);
-  EXPECT_EQ(1.0,
-            features[base::StringPrintf("%s[1]=%s", kRedirect,
-                                        "http://www.foo.com/second_redirect")]);
-  EXPECT_EQ(0.0, features[kHasSSLReferrer]);
-  EXPECT_EQ(1.0, features[kPageTransitionType]);
-  EXPECT_EQ(0.0, features[kIsFirstNavigation]);
-  EXPECT_EQ(1.0, features[base::StringPrintf("%s%s=%s", kHostPrefix, kReferrer,
-                                             "http://google.com/")]);
-  EXPECT_EQ(1.0,
-            features[base::StringPrintf("%s%s[0]=%s", kHostPrefix, kRedirect,
-                                        "http://somerandomwebsite.com/")]);
-  EXPECT_EQ(
-      2.0,
-      features[base::StringPrintf("%s%s", kHostPrefix, kPageTransitionType)]);
-  EXPECT_EQ(
-      1.0,
-      features[base::StringPrintf("%s%s", kHostPrefix, kIsFirstNavigation)]);
-  EXPECT_EQ(404.0, features[kHttpStatusCode]);
+    auto result = ExtractFeatures(std::move(request));
+    EXPECT_TRUE(result.success);
+    ASSERT_TRUE(result.request);
 
-  request.Clear();
-  request.set_url("http://www.bar.com/");
-  request.set_client_score(0.5);
-  redirect_chain.clear();
-  redirect_chain.push_back(GURL("http://www.foo.com/page.html"));
-  redirect_chain.push_back(GURL("http://www.bar.com/"));
-  SetRedirectChain(redirect_chain, true);
-  NavigateAndCommit(GURL("http://www.bar.com/"),
-                    GURL("http://www.foo.com/page.html"),
-                    ui::PageTransitionFromInt(
-                        ui::PAGE_TRANSITION_LINK |
-                        ui::PAGE_TRANSITION_CHAIN_END |
-                        ui::PAGE_TRANSITION_CLIENT_REDIRECT));
+    std::map<std::string, double> features;
+    GetFeatureMap(*result.request, &features);
 
-  EXPECT_TRUE(ExtractFeatures(&request));
-  features.clear();
-  GetFeatureMap(request, &features);
+    EXPECT_EQ(1, features[base::StringPrintf("%s=%s", kReferrer,
+                                             "http://www.foo.com/")]);
+    EXPECT_EQ(1.0, features[base::StringPrintf("%s[0]=%s", kRedirect,
+                                               "http://www.foo.com/redirect")]);
+    EXPECT_EQ(
+        1.0, features[base::StringPrintf(
+                 "%s[1]=%s", kRedirect, "http://www.foo.com/second_redirect")]);
+    EXPECT_EQ(0.0, features[kHasSSLReferrer]);
+    EXPECT_EQ(1.0, features[kPageTransitionType]);
+    EXPECT_EQ(0.0, features[kIsFirstNavigation]);
+    EXPECT_EQ(1.0,
+              features[base::StringPrintf("%s%s=%s", kHostPrefix, kReferrer,
+                                          "http://google.com/")]);
+    EXPECT_EQ(1.0,
+              features[base::StringPrintf("%s%s[0]=%s", kHostPrefix, kRedirect,
+                                          "http://somerandomwebsite.com/")]);
+    EXPECT_EQ(
+        2.0,
+        features[base::StringPrintf("%s%s", kHostPrefix, kPageTransitionType)]);
+    EXPECT_EQ(
+        1.0,
+        features[base::StringPrintf("%s%s", kHostPrefix, kIsFirstNavigation)]);
+    EXPECT_EQ(404.0, features[kHttpStatusCode]);
+  }
 
-  EXPECT_EQ(1.0, features[base::StringPrintf("%s=%s", kReferrer,
-                                             "http://www.foo.com/page.html")]);
-  EXPECT_EQ(1.0, features[base::StringPrintf("%s[0]=%s", kRedirect,
-                                             "http://www.foo.com/page.html")]);
-  EXPECT_EQ(0.0, features[kHasSSLReferrer]);
-  EXPECT_EQ(0.0, features[kPageTransitionType]);
-  EXPECT_EQ(0.0, features[kIsFirstNavigation]);
+  {
+    auto request = std::make_unique<ClientPhishingRequest>();
+    request->set_url("http://www.bar.com/");
+    request->set_client_score(0.5);
+    std::vector<GURL> redirect_chain;
+    redirect_chain.push_back(GURL("http://www.foo.com/page.html"));
+    redirect_chain.push_back(GURL("http://www.bar.com/"));
+    SetRedirectChain(redirect_chain, true);
+    NavigateAndCommit(
+        GURL("http://www.bar.com/"), GURL("http://www.foo.com/page.html"),
+        ui::PageTransitionFromInt(ui::PAGE_TRANSITION_LINK |
+                                  ui::PAGE_TRANSITION_CHAIN_END |
+                                  ui::PAGE_TRANSITION_CLIENT_REDIRECT));
 
-  // Should not have host features.
-  EXPECT_EQ(0U, features.count(base::StringPrintf("%s%s", kHostPrefix,
-                                                  kPageTransitionType)));
-  EXPECT_EQ(0U, features.count(base::StringPrintf("%s%s", kHostPrefix,
-                                                  kIsFirstNavigation)));
+    auto result = ExtractFeatures(std::move(request));
+    EXPECT_TRUE(result.success);
+    ASSERT_TRUE(result.request);
 
-  request.Clear();
-  request.set_url("http://www.bar.com/other_page.html");
-  request.set_client_score(0.5);
-  redirect_chain.clear();
-  redirect_chain.push_back(GURL("http://www.bar.com/other_page.html"));
-  SetRedirectChain(redirect_chain, false);
-  NavigateAndCommit(GURL("http://www.bar.com/other_page.html"),
-                    GURL("http://www.bar.com/"),
-                    ui::PAGE_TRANSITION_LINK);
+    std::map<std::string, double> features;
+    GetFeatureMap(*result.request, &features);
 
-  EXPECT_TRUE(ExtractFeatures(&request));
-  features.clear();
-  GetFeatureMap(request, &features);
+    EXPECT_EQ(1.0, features[base::StringPrintf(
+                       "%s=%s", kReferrer, "http://www.foo.com/page.html")]);
+    EXPECT_EQ(1.0, features[base::StringPrintf(
+                       "%s[0]=%s", kRedirect, "http://www.foo.com/page.html")]);
+    EXPECT_EQ(0.0, features[kHasSSLReferrer]);
+    EXPECT_EQ(0.0, features[kPageTransitionType]);
+    EXPECT_EQ(0.0, features[kIsFirstNavigation]);
 
-  EXPECT_EQ(
-      1.0,
-      features[base::StringPrintf("%s=%s", kReferrer, "http://www.bar.com/")]);
-  EXPECT_EQ(0.0, features[kHasSSLReferrer]);
-  EXPECT_EQ(0.0, features[kPageTransitionType]);
-  EXPECT_EQ(0.0, features[kIsFirstNavigation]);
-  EXPECT_EQ(1.0, features[base::StringPrintf("%s%s=%s", kHostPrefix, kReferrer,
-                                             "http://www.foo.com/page.html")]);
-  EXPECT_EQ(1.0,
-            features[base::StringPrintf("%s%s[0]=%s", kHostPrefix, kRedirect,
-                                        "http://www.foo.com/page.html")]);
-  EXPECT_EQ(
-      0.0,
-      features[base::StringPrintf("%s%s", kHostPrefix, kPageTransitionType)]);
-  EXPECT_EQ(
-      0.0,
-      features[base::StringPrintf("%s%s", kHostPrefix, kIsFirstNavigation)]);
-  request.Clear();
-  request.set_url("http://www.baz.com/");
-  request.set_client_score(0.5);
-  redirect_chain.clear();
-  redirect_chain.push_back(GURL("https://bankofamerica.com"));
-  redirect_chain.push_back(GURL("http://www.baz.com/"));
-  SetRedirectChain(redirect_chain, true);
-  NavigateAndCommit(GURL("http://www.baz.com"),
-                    GURL("https://bankofamerica.com"),
-                    ui::PAGE_TRANSITION_GENERATED);
+    // Should not have host features.
+    EXPECT_EQ(0U, features.count(base::StringPrintf("%s%s", kHostPrefix,
+                                                    kPageTransitionType)));
+    EXPECT_EQ(0U, features.count(base::StringPrintf("%s%s", kHostPrefix,
+                                                    kIsFirstNavigation)));
+  }
 
-  EXPECT_TRUE(ExtractFeatures(&request));
-  features.clear();
-  GetFeatureMap(request, &features);
+  {
+    auto request = std::make_unique<ClientPhishingRequest>();
+    request->set_url("http://www.bar.com/other_page.html");
+    request->set_client_score(0.5);
+    std::vector<GURL> redirect_chain;
+    redirect_chain.push_back(GURL("http://www.bar.com/other_page.html"));
+    SetRedirectChain(redirect_chain, false);
+    NavigateAndCommit(GURL("http://www.bar.com/other_page.html"),
+                      GURL("http://www.bar.com/"), ui::PAGE_TRANSITION_LINK);
 
-  EXPECT_EQ(1.0, features[base::StringPrintf("%s[0]=%s", kRedirect,
-                                             kSecureRedirectValue)]);
-  EXPECT_EQ(1.0, features[kHasSSLReferrer]);
-  EXPECT_EQ(5.0, features[kPageTransitionType]);
-  // Should not have redirect or host features.
-  EXPECT_EQ(0U, features.count(base::StringPrintf("%s%s", kHostPrefix,
-                                                  kPageTransitionType)));
-  EXPECT_EQ(0U, features.count(base::StringPrintf("%s%s", kHostPrefix,
-                                                  kIsFirstNavigation)));
-  EXPECT_EQ(5.0, features[kPageTransitionType]);
+    auto result = ExtractFeatures(std::move(request));
+    EXPECT_TRUE(result.success);
+    ASSERT_TRUE(result.request);
+
+    std::map<std::string, double> features;
+    GetFeatureMap(*result.request, &features);
+
+    EXPECT_EQ(1.0, features[base::StringPrintf("%s=%s", kReferrer,
+                                               "http://www.bar.com/")]);
+    EXPECT_EQ(0.0, features[kHasSSLReferrer]);
+    EXPECT_EQ(0.0, features[kPageTransitionType]);
+    EXPECT_EQ(0.0, features[kIsFirstNavigation]);
+    EXPECT_EQ(1.0,
+              features[base::StringPrintf("%s%s=%s", kHostPrefix, kReferrer,
+                                          "http://www.foo.com/page.html")]);
+    EXPECT_EQ(1.0,
+              features[base::StringPrintf("%s%s[0]=%s", kHostPrefix, kRedirect,
+                                          "http://www.foo.com/page.html")]);
+    EXPECT_EQ(
+        0.0,
+        features[base::StringPrintf("%s%s", kHostPrefix, kPageTransitionType)]);
+    EXPECT_EQ(
+        0.0,
+        features[base::StringPrintf("%s%s", kHostPrefix, kIsFirstNavigation)]);
+  }
+
+  {
+    auto request = std::make_unique<ClientPhishingRequest>();
+    request->set_url("http://www.baz.com/");
+    request->set_client_score(0.5);
+    std::vector<GURL> redirect_chain;
+    redirect_chain.push_back(GURL("https://bankofamerica.com"));
+    redirect_chain.push_back(GURL("http://www.baz.com/"));
+    SetRedirectChain(redirect_chain, true);
+    NavigateAndCommit(GURL("http://www.baz.com"),
+                      GURL("https://bankofamerica.com"),
+                      ui::PAGE_TRANSITION_GENERATED);
+
+    auto result = ExtractFeatures(std::move(request));
+    EXPECT_TRUE(result.success);
+    ASSERT_TRUE(result.request);
+
+    std::map<std::string, double> features;
+    GetFeatureMap(*result.request, &features);
+
+    EXPECT_EQ(1.0, features[base::StringPrintf("%s[0]=%s", kRedirect,
+                                               kSecureRedirectValue)]);
+    EXPECT_EQ(1.0, features[kHasSSLReferrer]);
+    EXPECT_EQ(5.0, features[kPageTransitionType]);
+    // Should not have redirect or host features.
+    EXPECT_EQ(0U, features.count(base::StringPrintf("%s%s", kHostPrefix,
+                                                    kPageTransitionType)));
+    EXPECT_EQ(0U, features.count(base::StringPrintf("%s%s", kHostPrefix,
+                                                    kIsFirstNavigation)));
+    EXPECT_EQ(5.0, features[kPageTransitionType]);
+  }
 }
 
 TEST_F(BrowserFeatureExtractorTest, SafeBrowsingFeatures) {
   SimpleNavigateAndCommit(GURL("http://www.foo.com/malware.html"));
-  ClientPhishingRequest request;
-  request.set_url("http://www.foo.com/malware.html");
-  request.set_client_score(0.5);
+  auto request = std::make_unique<ClientPhishingRequest>();
+  request->set_url("http://www.foo.com/malware.html");
+  request->set_client_score(0.5);
 
   browse_info_->unsafe_resource.reset(
       new security_interstitials::UnsafeResource);
@@ -551,9 +616,11 @@ TEST_F(BrowserFeatureExtractorTest, SafeBrowsingFeatures) {
   browse_info_->unsafe_resource->is_subresource = true;
   browse_info_->unsafe_resource->threat_type = SB_THREAT_TYPE_URL_MALWARE;
 
-  ExtractFeatures(&request);
+  auto result = ExtractFeatures(std::move(request));
+  ASSERT_TRUE(result.request);
+
   std::map<std::string, double> features;
-  GetFeatureMap(request, &features);
+  GetFeatureMap(*result.request, &features);
   EXPECT_TRUE(features.count(base::StringPrintf(
       "%s%s", kSafeBrowsingMaliciousUrl, "http://www.malware.com/")));
   EXPECT_TRUE(features.count(base::StringPrintf(
@@ -564,19 +631,19 @@ TEST_F(BrowserFeatureExtractorTest, SafeBrowsingFeatures) {
 }
 
 TEST_F(BrowserFeatureExtractorTest, MalwareFeatures) {
-  ClientMalwareRequest request;
-  request.set_url("http://www.foo.com/");
+  auto request = std::make_unique<ClientMalwareRequest>();
+  request->set_url("http://www.foo.com/");
 
   std::vector<IPUrlInfo> bad_urls;
   bad_urls.push_back(
-      IPUrlInfo("http://bad.com", "GET", "", content::RESOURCE_TYPE_SCRIPT));
+      IPUrlInfo("http://bad.com", "GET", "", content::ResourceType::kScript));
   bad_urls.push_back(
-      IPUrlInfo("http://evil.com", "GET", "", content::RESOURCE_TYPE_SCRIPT));
+      IPUrlInfo("http://evil.com", "GET", "", content::ResourceType::kScript));
   browse_info_->ips.insert(std::make_pair("193.5.163.8", bad_urls));
   browse_info_->ips.insert(std::make_pair("92.92.92.92", bad_urls));
   std::vector<IPUrlInfo> good_urls;
   good_urls.push_back(
-      IPUrlInfo("http://ok.com", "GET", "", content::RESOURCE_TYPE_SCRIPT));
+      IPUrlInfo("http://ok.com", "GET", "", content::ResourceType::kScript));
   browse_info_->ips.insert(std::make_pair("23.94.78.1", good_urls));
   EXPECT_CALL(*db_manager_, MatchMalwareIP("193.5.163.8"))
       .WillOnce(Return(true));
@@ -585,10 +652,12 @@ TEST_F(BrowserFeatureExtractorTest, MalwareFeatures) {
   EXPECT_CALL(*db_manager_, MatchMalwareIP("23.94.78.1"))
       .WillOnce(Return(false));
 
-  ExtractMalwareFeatures(&request);
-  EXPECT_EQ(4, request.bad_ip_url_info_size());
+  request = ExtractMalwareFeatures(std::move(request));
+  ASSERT_TRUE(request);
+
+  EXPECT_EQ(4, request->bad_ip_url_info_size());
   std::map<std::string, std::set<std::string> > result_urls;
-  GetMalwareUrls(request, &result_urls);
+  GetMalwareUrls(*request, &result_urls);
 
   EXPECT_EQ(2U, result_urls.size());
   EXPECT_TRUE(result_urls.count("193.5.163.8"));
@@ -604,12 +673,12 @@ TEST_F(BrowserFeatureExtractorTest, MalwareFeatures) {
 }
 
 TEST_F(BrowserFeatureExtractorTest, MalwareFeatures_ExceedLimit) {
-  ClientMalwareRequest request;
-  request.set_url("http://www.foo.com/");
+  auto request = std::make_unique<ClientMalwareRequest>();
+  request->set_url("http://www.foo.com/");
 
   std::vector<IPUrlInfo> bad_urls;
   bad_urls.push_back(
-      IPUrlInfo("http://bad.com", "GET", "", content::RESOURCE_TYPE_SCRIPT));
+      IPUrlInfo("http://bad.com", "GET", "", content::ResourceType::kScript));
   std::vector<std::string> ips;
   for (int i = 0; i < 7; ++i) {  // Add 7 ips
     std::string ip = base::StringPrintf("%d.%d.%d.%d", i, i, i, i);
@@ -620,9 +689,11 @@ TEST_F(BrowserFeatureExtractorTest, MalwareFeatures_ExceedLimit) {
     EXPECT_CALL(*db_manager_, MatchMalwareIP(ip)).WillOnce(Return(i > 0));
   }
 
-  ExtractMalwareFeatures(&request);
+  request = ExtractMalwareFeatures(std::move(request));
+  ASSERT_TRUE(request);
+
   // The number of IP matched url we store is capped at 5 IPs per request.
-  EXPECT_EQ(5, request.bad_ip_url_info_size());
+  EXPECT_EQ(5, request->bad_ip_url_info_size());
 }
 
 }  // namespace safe_browsing

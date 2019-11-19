@@ -23,7 +23,7 @@
   {% if command.description %}
   // {{ command.description.replace('\n', '\n  // ') }}
   {% endif %}
-  void {{method_name}}(std::unique_ptr<{{method_name}}Params> params, base::OnceCallback<void(std::unique_ptr<{{method_name}}Result>)> callback = base::OnceCallback<void(std::unique_ptr<{{method_name}}Result>)>());
+  void {{method_name}}(std::unique_ptr<{{method_name}}Params> params, const std::string& optional_node_frame_id, base::OnceCallback<void(const MessageDispatcher::ReplyStatus&, std::unique_ptr<{{method_name}}Result>)> callback = base::OnceCallback<void(const MessageDispatcher::ReplyStatus&, std::unique_ptr<{{method_name}}Result>)>());
   {# Generate convenience methods that take the required parameters directly. #}
   {# Don't generate these for experimental commands. #}
   {% if "parameters" in command and not command.experimental %}
@@ -36,15 +36,16 @@
 {{resolve_type(parameter).pass_type}} {{parameter.name | camelcase_to_hacker_style -}}
     {% endfor %}
     {% if command.get("parameters", []) and not command.parameters[0].get("optional", False) %}, {% endif %}{# -#}
+    const std::string& optional_node_frame_id,
     {% if command.get("returns", []) -%}
-      base::OnceCallback<void(std::unique_ptr<{{method_name}}Result>)> callback = base::OnceCallback<void(std::unique_ptr<{{method_name}}Result>)>(){##}
+      base::OnceCallback<void(const MessageDispatcher::ReplyStatus&, std::unique_ptr<{{method_name}}Result>)> callback = base::OnceCallback<void(const MessageDispatcher::ReplyStatus&, std::unique_ptr<{{method_name}}Result>)>(){##}
     {% else -%}
       base::OnceClosure callback = base::OnceClosure(){##}
     {% endif %});
     {# If the command has no return value, generate a convenience method that #}
     {# accepts a base::Closure together with the parameters object. #}
     {% if not command.get("returns", []) %}
-  void {{method_name}}(std::unique_ptr<{{method_name}}Params> params, base::OnceClosure callback);
+  void {{method_name}}(std::unique_ptr<{{method_name}}Params> params, const std::string& optional_node_frame_id, base::OnceClosure callback);
     {% endif %}
   {% endif %}
 {% endmacro %}
@@ -108,7 +109,10 @@ class Domain {
   {% for command in domain.commands %}
     {% if not "returns" in command %}{% continue %}{% endif %}
     {% set method_name = command.name | sanitize_literal | to_title_case %}
-  static void Handle{{method_name}}Response(base::OnceCallback<void(std::unique_ptr<{{method_name}}Result>)> callback, const base::Value& response);
+  static void Handle{{method_name}}Response(
+      base::OnceCallback<void(const MessageDispatcher::ReplyStatus&, std::unique_ptr<{{method_name}}Result>)> callback,
+      const MessageDispatcher::ReplyStatus& reply_status,
+      const base::Value& response);
   {% endfor %}
 
   {# Generate event dispatchers. #}

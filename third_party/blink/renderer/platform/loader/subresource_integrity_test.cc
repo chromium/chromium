@@ -16,13 +16,11 @@
 #include "third_party/blink/renderer/platform/loader/fetch/resource_load_scheduler.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_loader.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_response.h"
-#include "third_party/blink/renderer/platform/loader/testing/crypto_testing_platform_support.h"
 #include "third_party/blink/renderer/platform/loader/testing/mock_fetch_context.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
-#include "third_party/blink/renderer/platform/wtf/dtoa/utils.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -32,22 +30,6 @@
 namespace blink {
 
 static const char kBasicScript[] = "alert('test');";
-static unsigned char kSha256Hash[] = {
-    0x18, 0x01, 0x78, 0xf1, 0x03, 0xa8, 0xc5, 0x1b, 0xee, 0xd2, 0x06,
-    0x40, 0x99, 0x08, 0xaf, 0x51, 0xd2, 0x4f, 0xc8, 0x16, 0x9c, 0xab,
-    0x39, 0xc1, 0x01, 0x7c, 0x27, 0x91, 0xfa, 0x66, 0x41, 0x7e};
-static unsigned char kSha384Hash[] = {
-    0x9d, 0xea, 0x77, 0x5e, 0x9b, 0xe1, 0x53, 0x1a, 0x42, 0x30, 0xe5, 0x57,
-    0x20, 0x53, 0xde, 0x71, 0x38, 0x40, 0xa9, 0xd6, 0x3f, 0xb9, 0x57, 0xa2,
-    0x0f, 0x89, 0x17, 0x4a, 0xa5, 0xe9, 0xc7, 0x46, 0x09, 0x51, 0x65, 0x38,
-    0x7d, 0x34, 0xda, 0x16, 0x07, 0x22, 0x4e, 0xe6, 0x64, 0xed, 0xf9, 0x84};
-static unsigned char kSha512Hash[] = {
-    0x4d, 0x79, 0x09, 0xc3, 0x5f, 0x0f, 0xaa, 0x55, 0x65, 0x11, 0x45,
-    0xd7, 0x8d, 0xe5, 0xdb, 0x19, 0xeb, 0x68, 0xa7, 0x54, 0xca, 0x07,
-    0x7c, 0x18, 0x40, 0x8a, 0x75, 0xfe, 0x28, 0x71, 0x08, 0xe1, 0x46,
-    0x51, 0xf1, 0xbd, 0x4d, 0x83, 0x9a, 0x03, 0x53, 0x25, 0x92, 0x94,
-    0xc0, 0xa9, 0x25, 0x7a, 0xc9, 0xa7, 0xaf, 0x2c, 0xef, 0x13, 0x8f,
-    0x9a, 0x60, 0x1f, 0x52, 0x66, 0x67, 0xef, 0x88, 0xb4};
 static const char kSha256Integrity[] =
     "sha256-GAF48QOoxRvu0gZAmQivUdJPyBacqznBAXwnkfpmQX4=";
 static const char kSha256IntegrityLenientSyntax[] =
@@ -206,7 +188,7 @@ class SubresourceIntegrityTest : public testing::Test {
 
   struct TestCase {
     const KURL url;
-    network::mojom::FetchRequestMode request_mode;
+    network::mojom::RequestMode request_mode;
     network::mojom::FetchResponseType response_type;
     const Expectation expectation;
   };
@@ -236,14 +218,14 @@ class SubresourceIntegrityTest : public testing::Test {
 
   Resource* CreateTestResource(
       const KURL& url,
-      network::mojom::FetchRequestMode request_mode,
+      network::mojom::RequestMode request_mode,
       network::mojom::FetchResponseType response_type) {
     Resource* resource = RawResource::CreateForTest(
         url, SecurityOrigin::CreateUniqueOpaque(), ResourceType::kRaw);
 
     ResourceRequest request;
-    request.SetURL(url);
-    request.SetFetchRequestMode(request_mode);
+    request.SetUrl(url);
+    request.SetMode(request_mode);
 
     ResourceResponse response(url);
     response.SetHttpStatusCode(200);
@@ -257,7 +239,6 @@ class SubresourceIntegrityTest : public testing::Test {
   KURL sec_url;
   KURL insec_url;
 
-  ScopedTestingPlatformSupport<CryptoTestingPlatformSupport> platform_;
   Persistent<MockFetchContext> context;
 };
 
@@ -527,52 +508,28 @@ TEST_F(SubresourceIntegrityTest, ParsingBase64) {
 // requests, successful and failing CORS checks as well as when the response was
 // handled by a service worker.
 TEST_F(SubresourceIntegrityTest, OriginIntegrity) {
-  using network::mojom::FetchRequestMode;
   using network::mojom::FetchResponseType;
+  using network::mojom::RequestMode;
   constexpr auto kOk = kIntegritySuccess;
   constexpr auto kFail = kIntegrityFailure;
   const KURL& url = sec_url;
 
   const TestCase cases[] = {
       // FetchResponseType::kError never arrives because it is a loading error.
-      {url, FetchRequestMode::kNoCors, FetchResponseType::kBasic, kOk},
-      {url, FetchRequestMode::kNoCors, FetchResponseType::kCors, kOk},
-      {url, FetchRequestMode::kNoCors, FetchResponseType::kDefault, kOk},
-      {url, FetchRequestMode::kNoCors, FetchResponseType::kOpaque, kFail},
-      {url, FetchRequestMode::kNoCors, FetchResponseType::kOpaqueRedirect,
-       kFail},
+      {url, RequestMode::kNoCors, FetchResponseType::kBasic, kOk},
+      {url, RequestMode::kNoCors, FetchResponseType::kCors, kOk},
+      {url, RequestMode::kNoCors, FetchResponseType::kDefault, kOk},
+      {url, RequestMode::kNoCors, FetchResponseType::kOpaque, kFail},
+      {url, RequestMode::kNoCors, FetchResponseType::kOpaqueRedirect, kFail},
 
       // FetchResponseType::kError never arrives because it is a loading error.
       // FetchResponseType::kOpaque and FetchResponseType::kOpaqueResponse
       // never arrives: even when service worker is involved, it's handled as
       // an error.
-      {url, FetchRequestMode::kCors, FetchResponseType::kBasic, kOk},
-      {url, FetchRequestMode::kCors, FetchResponseType::kCors, kOk},
-      {url, FetchRequestMode::kCors, FetchResponseType::kDefault, kOk},
+      {url, RequestMode::kCors, FetchResponseType::kBasic, kOk},
+      {url, RequestMode::kCors, FetchResponseType::kCors, kOk},
+      {url, RequestMode::kCors, FetchResponseType::kDefault, kOk},
   };
-
-  MockWebCryptoDigestorFactory factory_sha256(
-      kBasicScript, strlen(kBasicScript), kSha256Hash, sizeof(kSha256Hash));
-  MockWebCryptoDigestorFactory factory_sha384(
-      kBasicScript, strlen(kBasicScript), kSha384Hash, sizeof(kSha384Hash));
-  MockWebCryptoDigestorFactory factory_sha512(
-      kBasicScript, strlen(kBasicScript), kSha512Hash, sizeof(kSha512Hash));
-
-  CryptoTestingPlatformSupport::SetMockCryptoScope mock_crypto_scope(
-      *platform_.GetTestingPlatformSupport());
-
-  EXPECT_CALL(mock_crypto_scope.MockCrypto(),
-              CreateDigestorProxy(kWebCryptoAlgorithmIdSha256))
-      .WillRepeatedly(testing::InvokeWithoutArgs(
-          &factory_sha256, &MockWebCryptoDigestorFactory::Create));
-  EXPECT_CALL(mock_crypto_scope.MockCrypto(),
-              CreateDigestorProxy(kWebCryptoAlgorithmIdSha384))
-      .WillRepeatedly(testing::InvokeWithoutArgs(
-          &factory_sha384, &MockWebCryptoDigestorFactory::Create));
-  EXPECT_CALL(mock_crypto_scope.MockCrypto(),
-              CreateDigestorProxy(kWebCryptoAlgorithmIdSha512))
-      .WillRepeatedly(testing::InvokeWithoutArgs(
-          &factory_sha512, &MockWebCryptoDigestorFactory::Create));
 
   for (const auto& test : cases) {
     SCOPED_TRACE(testing::Message()

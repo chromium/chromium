@@ -50,9 +50,9 @@ class KeepAliveTest : public ExtensionsTest {
     }
   }
 
-  void CreateKeepAlive(KeepAliveRequest request) {
+  void CreateKeepAlive(mojo::PendingReceiver<KeepAlive> receiver) {
     KeepAliveImpl::Create(browser_context(), extension_.get(),
-                          std::move(request), nullptr);
+                          std::move(receiver), nullptr);
   }
 
   const Extension* extension() { return extension_.get(); }

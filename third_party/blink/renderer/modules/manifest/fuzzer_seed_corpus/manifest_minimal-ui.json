@@ -1,0 +1,14 @@
+{
+  "name": "Manifest test app",
+  "icons": [
+    {
+      "src": "launcher-icon-4x.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "badge"
+    }
+  ],
+  "start_url": "/",
+  "display": "standalone",
+  "display": "minimal-ui"
+}

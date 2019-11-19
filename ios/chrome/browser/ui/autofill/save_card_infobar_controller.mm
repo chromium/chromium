@@ -7,12 +7,13 @@
 #include "base/strings/string16.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
-#include "components/autofill/core/browser/autofill_save_card_infobar_delegate_mobile.h"
+#include "components/autofill/core/browser/payments/autofill_save_card_infobar_delegate_mobile.h"
 #include "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/infobars/infobar_controller+protected.h"
 #include "ios/chrome/browser/infobars/infobar_controller_delegate.h"
 #import "ios/chrome/browser/ui/autofill/save_card_infobar_view.h"
 #import "ios/chrome/browser/ui/autofill/save_card_infobar_view_delegate.h"
+#import "ios/chrome/browser/ui/autofill/save_card_message_with_links.h"
 #include "ios/chrome/browser/ui/util/ui_util.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #include "ios/chrome/grit/ios_theme_resources.h"
@@ -61,7 +62,6 @@ base::string16 GetTitleForButton(ConfirmInfoBarDelegate* delegate,
 @implementation SaveCardInfoBarController
 
 @dynamic infoBarDelegate;
-@synthesize infoBarView = _infoBarView;
 
 - (instancetype)initWithInfoBarDelegate:
     (autofill::AutofillSaveCardInfoBarDelegateMobile*)infoBarDelegate {
@@ -83,15 +83,18 @@ base::string16 GetTitleForButton(ConfirmInfoBarDelegate* delegate,
   // Icon.
   gfx::Image icon = self.infoBarDelegate->GetIcon();
   DCHECK(!icon.IsEmpty());
-  if (self.infoBarDelegate->IsGooglePayBrandingEnabled())
+  if (self.infoBarDelegate->IsGooglePayBrandingEnabled()) {
     [self.infoBarView setGooglePayIcon:icon.ToUIImage()];
-  else
-    [self.infoBarView setIcon:icon.ToUIImage()];
+  } else {
+    UIImage* iconImage = [icon.ToUIImage()
+        imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+    [self.infoBarView setIcon:iconImage];
+  }
 
   // Message, if any.
   base::string16 messageText = self.infoBarDelegate->GetMessageText();
   if (!messageText.empty()) {
-    MessageWithLinks* message = [[MessageWithLinks alloc] init];
+    SaveCardMessageWithLinks* message = [[SaveCardMessageWithLinks alloc] init];
     const base::string16 linkText = self.infoBarDelegate->GetLinkText();
     GURL linkURL = self.infoBarDelegate->GetLinkURL();
 
@@ -127,10 +130,11 @@ base::string16 GetTitleForButton(ConfirmInfoBarDelegate* delegate,
                           self.infoBarDelegate->card_sub_label())];
 
   // Legal messages, if any.
-  if (!self.infoBarDelegate->legal_messages().empty()) {
+  if (!self.infoBarDelegate->legal_message_lines().empty()) {
     NSMutableArray* legalMessages = [[NSMutableArray alloc] init];
-    for (const auto& line : self.infoBarDelegate->legal_messages()) {
-      MessageWithLinks* message = [[MessageWithLinks alloc] init];
+    for (const auto& line : self.infoBarDelegate->legal_message_lines()) {
+      SaveCardMessageWithLinks* message =
+          [[SaveCardMessageWithLinks alloc] init];
       message.messageText = base::SysUTF16ToNSString(line.text());
       NSMutableArray* linkRanges = [[NSMutableArray alloc] init];
       std::vector<GURL> linkURLs;

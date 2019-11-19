@@ -18,8 +18,10 @@
  */
 
 // https://html.spec.whatwg.org/C/#the-br-element
-[HTMLConstructor]
-interface HTMLBRElement : HTMLElement {
+[
+    Exposed=Window,
+    HTMLConstructor
+] interface HTMLBRElement : HTMLElement {
     // obsolete members
     // https://html.spec.whatwg.org/C/#HTMLBRElement-partial
     [CEReactions, Reflect] attribute DOMString clear;

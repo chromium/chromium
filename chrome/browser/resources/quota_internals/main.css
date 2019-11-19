@@ -4,8 +4,8 @@
 
 th,
 td {
-  padding-left: 0.5em;
-  padding-right: 0.5em;
+  padding-inline-end: 0.5em;
+  padding-inline-start: 0.5em;
   text-align: center;
 }
 
@@ -19,6 +19,6 @@ tr:nth-child(odd) {
   background: rgb(238, 238, 255);
 }
 
-.tree-item:not([may-have-children]) > .tree-row > .tree-label {
+.tree-item:not([may-have-children]) > .tree-row > .tree-label-icon {
   background-image: url(../../../../ui/webui/resources/images/icon_file.png);
 }

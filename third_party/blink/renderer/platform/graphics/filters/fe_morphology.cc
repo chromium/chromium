@@ -24,10 +24,10 @@
 
 #include "third_party/blink/renderer/platform/graphics/filters/fe_morphology.h"
 
-#include "SkMorphologyImageFilter.h"
 #include "third_party/blink/renderer/platform/graphics/filters/filter.h"
 #include "third_party/blink/renderer/platform/graphics/filters/paint_filter_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_stream.h"
+#include "third_party/skia/include/effects/SkMorphologyImageFilter.h"
 
 namespace blink {
 
@@ -39,13 +39,6 @@ FEMorphology::FEMorphology(Filter* filter,
       type_(type),
       radius_x_(std::max(0.0f, radius_x)),
       radius_y_(std::max(0.0f, radius_y)) {}
-
-FEMorphology* FEMorphology::Create(Filter* filter,
-                                   MorphologyOperatorType type,
-                                   float radius_x,
-                                   float radius_y) {
-  return MakeGarbageCollected<FEMorphology>(filter, type, radius_x, radius_y);
-}
 
 MorphologyOperatorType FEMorphology::MorphologyOperator() const {
   return type_;

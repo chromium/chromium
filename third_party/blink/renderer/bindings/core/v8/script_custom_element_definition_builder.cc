@@ -12,15 +12,16 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_custom_element_adopted_callback.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_custom_element_attribute_changed_callback.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_custom_element_constructor.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_custom_element_disabled_state_changed_callback.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_custom_element_form_associated_callback.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_custom_element_restore_value_callback.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_custom_element_form_disabled_callback.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_custom_element_form_state_restore_callback.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_void_function.h"
 #include "third_party/blink/renderer/platform/bindings/callback_method_retriever.h"
 #include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding_macros.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
 
 namespace blink {
 
@@ -130,7 +131,7 @@ bool ScriptCustomElementDefinitionBuilder::RememberOriginalProperties() {
     }
   }
 
-  if (RuntimeEnabledFeatures::ElementInternalsEnabled()) {
+  {
     auto* isolate = Isolate();
     v8::Local<v8::Context> current_context = isolate->GetCurrentContext();
     v8::TryCatch try_catch(isolate);
@@ -153,7 +154,7 @@ bool ScriptCustomElementDefinitionBuilder::RememberOriginalProperties() {
     }
   }
 
-  if (RuntimeEnabledFeatures::FormAssociatedCustomElementsEnabled()) {
+  {
     auto* isolate = Isolate();
     v8::Local<v8::Context> current_context = isolate->GetCurrentContext();
     v8::TryCatch try_catch(isolate);
@@ -194,24 +195,24 @@ bool ScriptCustomElementDefinitionBuilder::RememberOriginalProperties() {
           V8VoidFunction::Create(v8_form_reset_callback_.As<v8::Function>());
     }
 
-    v8_disabled_state_changed_callback_ = retriever.GetMethodOrUndefined(
-        "disabledStateChangedCallback", exception_state_);
+    v8_form_disabled_callback_ = retriever.GetMethodOrUndefined(
+        "formDisabledCallback", exception_state_);
     if (exception_state_.HadException())
       return false;
-    if (v8_disabled_state_changed_callback_->IsFunction()) {
-      data_.disabled_state_changed_callback_ =
-          V8CustomElementDisabledStateChangedCallback::Create(
-              v8_disabled_state_changed_callback_.As<v8::Function>());
+    if (v8_form_disabled_callback_->IsFunction()) {
+      data_.form_disabled_callback_ =
+          V8CustomElementFormDisabledCallback::Create(
+              v8_form_disabled_callback_.As<v8::Function>());
     }
 
-    v8_restore_value_callback_ = retriever.GetMethodOrUndefined(
-        "restoreValueCallback", exception_state_);
+    v8_form_state_restore_callback_ = retriever.GetMethodOrUndefined(
+        "formStateRestoreCallback", exception_state_);
     if (exception_state_.HadException())
       return false;
-    if (v8_restore_value_callback_->IsFunction()) {
-      data_.restore_value_callback_ =
-          V8CustomElementRestoreValueCallback::Create(
-              v8_restore_value_callback_.As<v8::Function>());
+    if (v8_form_state_restore_callback_->IsFunction()) {
+      data_.form_state_restore_callback_ =
+          V8CustomElementFormStateRestoreCallback::Create(
+              v8_form_state_restore_callback_.As<v8::Function>());
     }
   }
 
@@ -221,7 +222,8 @@ bool ScriptCustomElementDefinitionBuilder::RememberOriginalProperties() {
 CustomElementDefinition* ScriptCustomElementDefinitionBuilder::Build(
     const CustomElementDescriptor& descriptor,
     CustomElementDefinition::Id id) {
-  return ScriptCustomElementDefinition::Create(data_, descriptor, id);
+  return MakeGarbageCollected<ScriptCustomElementDefinition>(data_, descriptor,
+                                                             id);
 }
 
 v8::Isolate* ScriptCustomElementDefinitionBuilder::Isolate() {

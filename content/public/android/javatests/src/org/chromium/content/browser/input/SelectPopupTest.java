@@ -4,8 +4,6 @@
 
 package org.chromium.content.browser.input;
 
-import static org.chromium.base.test.util.ScalableTimeout.scaleTimeout;
-
 import android.support.test.InstrumentationRegistry;
 import android.support.test.filters.LargeTest;
 
@@ -37,7 +35,7 @@ public class SelectPopupTest {
     @Rule
     public ContentShellActivityTestRule mActivityTestRule = new ContentShellActivityTestRule();
 
-    private static final long WAIT_TIMEOUT_SECONDS = scaleTimeout(2);
+    private static final long WAIT_TIMEOUT_SECONDS = 2L;
     private static final String SELECT_URL = UrlUtils.encodeHtmlDataUri(
             "<html><head><meta name=\"viewport\""
             + "content=\"width=device-width, initial-scale=1.0, maximum-scale=1.0\" /></head>"
@@ -76,7 +74,7 @@ public class SelectPopupTest {
     }
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         mActivityTestRule.launchContentShellWithUrl(SELECT_URL);
         mActivityTestRule.waitForActiveShellToBeDoneLoading();
     }
@@ -90,7 +88,7 @@ public class SelectPopupTest {
     @Feature({"Browser"})
     @RerunWithUpdatedContainerView
     @RetryOnFailure
-    public void testReloadWhilePopupShowing() throws InterruptedException, Exception, Throwable {
+    public void testReloadWhilePopupShowing() throws Exception, Throwable {
         // The popup should be hidden before the click.
         CriteriaHelper.pollUiThread(new PopupHiddenCriteria());
 

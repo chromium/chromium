@@ -1,6 +1,9 @@
 include_rules = [
+  "+components/autofill/core/browser",
   "+components/autofill/core/common",
   "+components/autofill/ios/browser",
   "+components/autofill/ios/form_util",
+  "+components/security_state/ios",
   "+ios/web/public",
+  "+ios/web/common",
 ]

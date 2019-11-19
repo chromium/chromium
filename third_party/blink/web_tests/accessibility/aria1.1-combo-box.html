@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <script src="../resources/testharness.js"></script>
 <script src="../resources/testharnessreport.js"></script>
-<script src="../resources/run-after-layout-and-paint.js"></script>
 
 <div id="comboBox"
     role="combobox"
@@ -26,7 +25,7 @@
     document.querySelector('input').focus();
   });
 
-  test_after_layout_and_paint(() => {
+  test(() => {
     assert_true(window.comboBoxInput.isFocused, 'Combo box should be focused.');
     let state1 = accessibilityController.accessibleElementById('state1');
     assert_false(state1.isSelected, 'State1 should not be selected.');
@@ -40,7 +39,7 @@
     assert_false(state2.isFocused, 'State2 should not be focused.');
   }, 'An option with an activedescendant pointing to it is selected.');
 
-  test_after_layout_and_paint(() => {
+  test(() => {
     document.querySelector('input').setAttribute('aria-activedescendant', 'state1');
 
     assert_true(window.comboBoxInput.isFocused, 'Combo box should be focused.');

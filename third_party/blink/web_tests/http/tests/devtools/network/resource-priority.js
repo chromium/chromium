@@ -70,6 +70,24 @@
           var iframe = document.createElement("iframe");
           document.body.appendChild(iframe);
           iframe.srcdoc = '<html><body><link href="resources/abe.png?preloaded" rel=preload as=image>'
+              + '<link rel="stylesheet" type="text/css" href="http://localhost:8000/devtools/network/resources/style.css?precededByPreloadedImage">'
+              + '<img src="resources/abe.png?preloaded"></body></html>';
+      }
+
+      function sendStyleRequestPrecededByImage()
+      {
+          var iframe = document.createElement("iframe");
+          document.body.appendChild(iframe);
+          iframe.srcdoc = '<html><body><img src="resources/abe.png?precedingStyle">'
+              + '<link rel="stylesheet" type="text/css" href="http://localhost:8000/devtools/network/resources/style.css?precededByImage">'
+              + '</body></html>';
+      }
+
+      function sendStyleRequestPrecededByPreloadedImage()
+      {
+          var iframe = document.createElement("iframe");
+          document.body.appendChild(iframe);
+          iframe.srcdoc = '<html><body><link href="resources/abe.png?preloaded" rel=preload as=image>'
               + '<script src="http://localhost:8000/devtools/network/resources/empty-script.js?precededByPreloadedImage"></s'
               + 'cript><img src="resources/abe.png?preloaded"></body></html>';
       }
@@ -97,6 +115,8 @@
     {'fn': 'sendModuleScriptRequest', 'requests': 2},
     {'fn': 'sendScriptRequestPrecededByImage', 'requests': 2},
     {'fn': 'sendScriptRequestPrecededByPreloadedImage', 'requests': 2},
+    {'fn': 'sendStyleRequestPrecededByImage', 'requests': 2},
+    {'fn': 'sendStyleRequestPrecededByPreloadedImage', 'requests': 2},
     {'fn': 'sendXHRSync', 'requests': 1},
     {'fn': 'sendXHRAsync', 'requests': 1},
     {'fn': 'sendImageRequest', 'requests': 1},

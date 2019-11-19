@@ -12,11 +12,16 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
+#include "base/optional.h"
 #include "net/base/net_export.h"
 #include "net/der/input.h"
 #include "net/der/parse_values.h"
 
 namespace net {
+
+namespace der {
+class Parser;
+}
 
 class CertErrors;
 struct ParsedTbsCertificate;
@@ -53,6 +58,19 @@ struct ParsedTbsCertificate;
 NET_EXPORT bool VerifySerialNumber(const der::Input& value,
                                    bool warnings_only,
                                    CertErrors* errors) WARN_UNUSED_RESULT;
+
+// Consumes a "Time" value (as defined by RFC 5280) from |parser|. On success
+// writes the result to |*out| and returns true. On failure no guarantees are
+// made about the state of |parser|.
+//
+// From RFC 5280:
+//
+//     Time ::= CHOICE {
+//          utcTime        UTCTime,
+//          generalTime    GeneralizedTime }
+NET_EXPORT bool ReadUTCOrGeneralizedTime(der::Parser* parser,
+                                         der::GeneralizedTime* out)
+    WARN_UNUSED_RESULT;
 
 struct NET_EXPORT ParseCertificateOptions {
   // If set to true, then parsing will skip checks on the certificate's serial
@@ -296,6 +314,13 @@ NET_EXPORT bool ParseExtension(const der::Input& extension_tlv,
 
 // From RFC 5280:
 //
+//     id-ce-subjectKeyIdentifier OBJECT IDENTIFIER ::=  { id-ce 14 }
+//
+// In dotted notation: 2.5.29.14
+NET_EXPORT der::Input SubjectKeyIdentifierOid();
+
+// From RFC 5280:
+//
 //     id-ce-keyUsage OBJECT IDENTIFIER ::=  { id-ce 15 }
 //
 // In dotted notation: 2.5.29.15
@@ -328,6 +353,13 @@ NET_EXPORT der::Input NameConstraintsOid();
 //
 // In dotted notation: 2.5.29.32
 NET_EXPORT der::Input CertificatePoliciesOid();
+
+// From RFC 5280:
+//
+//     id-ce-authorityKeyIdentifier OBJECT IDENTIFIER ::=  { id-ce 35 }
+//
+// In dotted notation: 2.5.29.35
+NET_EXPORT der::Input AuthorityKeyIdentifierOid();
 
 // From RFC 5280:
 //
@@ -511,6 +543,49 @@ struct NET_EXPORT ParsedDistributionPoint {
 NET_EXPORT bool ParseCrlDistributionPoints(
     const der::Input& distribution_points_tlv,
     std::vector<ParsedDistributionPoint>* distribution_points)
+    WARN_UNUSED_RESULT;
+
+// Represents the AuthorityKeyIdentifier extension defined by RFC 5280 section
+// 4.2.1.1.
+//
+//    AuthorityKeyIdentifier ::= SEQUENCE {
+//       keyIdentifier             [0] KeyIdentifier           OPTIONAL,
+//       authorityCertIssuer       [1] GeneralNames            OPTIONAL,
+//       authorityCertSerialNumber [2] CertificateSerialNumber OPTIONAL  }
+//
+//    KeyIdentifier ::= OCTET STRING
+struct NET_EXPORT ParsedAuthorityKeyIdentifier {
+  ParsedAuthorityKeyIdentifier();
+  ~ParsedAuthorityKeyIdentifier();
+  ParsedAuthorityKeyIdentifier(ParsedAuthorityKeyIdentifier&& other);
+  ParsedAuthorityKeyIdentifier& operator=(ParsedAuthorityKeyIdentifier&& other);
+
+  // The keyIdentifier, which is an OCTET STRING.
+  base::Optional<der::Input> key_identifier;
+
+  // The authorityCertIssuer, which should be a GeneralNames, but this is not
+  // enforced by ParseAuthorityKeyIdentifier.
+  base::Optional<der::Input> authority_cert_issuer;
+
+  // The DER authorityCertSerialNumber, which should be a
+  // CertificateSerialNumber (an INTEGER) but this is not enforced by
+  // ParseAuthorityKeyIdentifier.
+  base::Optional<der::Input> authority_cert_serial_number;
+};
+
+// Parses the value of an authorityKeyIdentifier extension. Returns true on
+// success and fills |authority_key_identifier| with values that reference data
+// in |extension_value|. On failure the state of |authority_key_identifier| is
+// not guaranteed.
+NET_EXPORT bool ParseAuthorityKeyIdentifier(
+    const der::Input& extension_value,
+    ParsedAuthorityKeyIdentifier* authority_key_identifier) WARN_UNUSED_RESULT;
+
+// Parses the value of a subjectKeyIdentifier extension. Returns true on
+// success and |subject_key_identifier| references data in |extension_value|.
+// On failure the state of |subject_key_identifier| is not guaranteed.
+NET_EXPORT bool ParseSubjectKeyIdentifier(const der::Input& extension_value,
+                                          der::Input* subject_key_identifier)
     WARN_UNUSED_RESULT;
 
 }  // namespace net

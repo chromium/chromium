@@ -5,7 +5,7 @@
 #include <stddef.h>
 
 #include "base/macros.h"
-#include "base/message_loop/message_loop.h"
+#include "base/test/task_environment.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/process_memory_dump.h"
 #include "cc/resources/ui_resource_bitmap.h"
@@ -55,7 +55,7 @@ class TestResourceManagerImpl : public ResourceManagerImpl {
     small_bitmap.setImmutable();
 
     OnResourceReady(nullptr, nullptr, res_type, res_id,
-                    gfx::ConvertToJavaBitmap(&small_bitmap),
+                    gfx::ConvertToJavaBitmap(&small_bitmap), 1, 1,
                     reinterpret_cast<intptr_t>(new Resource()));
   }
 
@@ -113,7 +113,7 @@ class ResourceManagerTest : public testing::Test {
   }
 
  private:
-  base::MessageLoop message_loop_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
   WindowAndroid* window_android_;
 
  protected:

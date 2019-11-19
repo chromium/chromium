@@ -92,21 +92,73 @@ extern const base::FilePath::CharType kWebRtcEventLogHistoryExtension[];
 // Such expired files will be purged from disk when examined.
 extern const base::TimeDelta kRemoteBoundWebRtcEventLogsMaxRetention;
 
-// StartRemoteLogging could fail for several reasons, but we only report
-// individually those failures that relate to either bad parameters, or calls
-// at a time that makes no sense. Anything else  would leak information to
-// the JS application (too many pending logs, etc.), and is not actionable
-// anyhow.
 // These are made globally visible so that unit tests may check for them.
-extern const char kStartRemoteLoggingFailureFeatureDisabled[];
-extern const char kStartRemoteLoggingFailureUnlimitedSizeDisallowed[];
-extern const char kStartRemoteLoggingFailureMaxSizeTooSmall[];
-extern const char kStartRemoteLoggingFailureMaxSizeTooLarge[];
-extern const char kStartRemoteLoggingFailureOutputPeriodMsTooLarge[];
-extern const char kStartRemoteLoggingFailureIllegalWebAppId[];
-extern const char kStartRemoteLoggingFailureUnknownOrInactivePeerConnection[];
 extern const char kStartRemoteLoggingFailureAlreadyLogging[];
-extern const char kStartRemoteLoggingFailureGeneric[];
+extern const char kStartRemoteLoggingFailureDeadRenderProcessHost[];
+extern const char kStartRemoteLoggingFailureFeatureDisabled[];
+extern const char kStartRemoteLoggingFailureFileCreationError[];
+extern const char kStartRemoteLoggingFailureFilePathUsedHistory[];
+extern const char kStartRemoteLoggingFailureFilePathUsedLog[];
+extern const char kStartRemoteLoggingFailureIllegalWebAppId[];
+extern const char kStartRemoteLoggingFailureLoggingDisabledBrowserContext[];
+extern const char kStartRemoteLoggingFailureMaxSizeTooLarge[];
+extern const char kStartRemoteLoggingFailureMaxSizeTooSmall[];
+extern const char kStartRemoteLoggingFailureNoAdditionalActiveLogsAllowed[];
+extern const char kStartRemoteLoggingFailureOutputPeriodMsTooLarge[];
+extern const char kStartRemoteLoggingFailureUnknownOrInactivePeerConnection[];
+extern const char kStartRemoteLoggingFailureUnlimitedSizeDisallowed[];
+
+// Values for the histogram for the result of the API call to collect
+// a WebRTC event log.
+// Must match the numbering of WebRtcEventLoggingApiEnum in enums.xml.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class WebRtcEventLoggingApiUma {
+  kSuccess = 0,                         // Log successfully collected.
+  kDeadRph = 1,                         // Log not collected.
+  kFeatureDisabled = 2,                 // Log not collected.
+  kIncognito = 3,                       // Log not collected.
+  kInvalidArguments = 4,                // Log not collected.
+  kIllegalSessionId = 5,                // Log not collected.
+  kDisabledBrowserContext = 6,          // Log not collected.
+  kUnknownOrInvalidPeerConnection = 7,  // Log not collected.
+  kAlreadyLogging = 8,                  // Log not collected.
+  kNoAdditionalLogsAllowed = 9,         // Log not collected.
+  kLogPathNotAvailable = 10,            // Log not collected.
+  kHistoryPathNotAvailable = 11,        // Log not collected.
+  kFileCreationError = 12,              // Log not collected.
+  kMaxValue = kFileCreationError
+};
+
+void UmaRecordWebRtcEventLoggingApi(WebRtcEventLoggingApiUma result);
+
+// Values for the histogram for the result of the upload of a WebRTC event log.
+// Must match the numbering of WebRtcEventLoggingUploadEnum in enums.xml.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class WebRtcEventLoggingUploadUma {
+  kSuccess = 0,                            // Uploaded successfully.
+  kLogFileWriteError = 1,                  // Will not be uploaded.
+  kActiveLogCancelledDueToCacheClear = 2,  // Will not be uploaded.
+  kPendingLogDeletedDueToCacheClear = 3,   // Will not be uploaded.
+  kHistoryFileCreationError = 4,           // Will not be uploaded.
+  kHistoryFileWriteError = 5,              // Will not be uploaded.
+  kLogFileReadError = 6,                   // Will not be uploaded.
+  kLogFileNameError = 7,                   // Will not be uploaded.
+  kUploadCancelled = 8,                    // Upload started then cancelled.
+  kUploadFailure = 9,                      // Upload attempted and failed.
+  kIncompletePastUpload = 10,              // Upload attempted and failed.
+  kExpiredLogFileAtChromeStart = 11,       // Expired before upload opportunity.
+  kExpiredLogFileDuringSession = 12,       // Expired before upload opportunity.
+  kMaxValue = kExpiredLogFileDuringSession
+};
+
+void UmaRecordWebRtcEventLoggingUpload(WebRtcEventLoggingUploadUma result);
+
+// Success is signalled by 0.
+// All negative values signal errors.
+// Positive values are not used.
+void UmaRecordWebRtcEventLoggingNetErrorType(int net_error);
 
 // For a given Chrome session, this is a unique key for PeerConnections.
 // It's not, however, unique between sessions (after Chrome is restarted).

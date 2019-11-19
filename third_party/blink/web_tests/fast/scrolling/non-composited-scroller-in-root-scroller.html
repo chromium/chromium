@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<script src='../../resources/testharness.js'></script>
+<script src='../../resources/testharnessreport.js'></script>
+<script src='../../resources/gesture-util.js'></script>
+
+<style>
+  body, html {
+    margin: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+  }
+  pre {
+    /* Prevent test output from interfering with root scroller activation when
+     * running manually */
+    position: absolute;
+  }
+</style>
+
+<iframe id="rootscroller" srcdoc="
+  <!DOCTYPE html>
+  <style>
+    body {
+      height: 2000px;
+    }
+    #scroller {
+      position: absolute;
+      clip: rect(0px, 1000px, 500px, 0px);
+      overflow: auto;
+      height: 500px;
+      width: 500px;
+      background-color: salmon;
+      padding: 20px;
+      box-sizing: border-box;
+      text-align: center;
+    }
+  </style>
+  <div id='scroller'>
+    <p>
+      This scroller is positioned and has a clip region so should be
+      non-composited. It is contained in a viewport-sized IFRAME which should
+      be the root scroller.
+    </p>
+    <p>
+      Attempt to scroll here with wheel or touch. If the colored box scrolls,
+      the test passes. The IFRAME must not scroll.
+    </p>
+    <div style='height: 1600px'></div>
+  </div>">
+</iframe>
+
+
+<script>
+  if (window.internals)
+    window.internals.runtimeFlags.implicitRootScrollerEnabled = true;
+
+  window.onload = async () => {
+    const iframe = document.getElementById('rootscroller');
+    const scroller  = iframe.contentDocument.getElementById('scroller');
+
+    promise_test(async () => {
+      await waitForCompositorCommit();
+
+      if (window.internals) {
+        assert_equals(window.internals.effectiveRootScroller(document),
+                      iframe,
+                      "IFrame must have been promoted to root scroller " +
+                      "for this test to be effective");
+      }
+
+      assert_equals(iframe.scrollTop, 0, "IFRAME starts off unscrolled.");
+      assert_equals(scroller.scrollTop, 0, "Scroller starts off unscrolled.");
+
+      // Scroll over the colored scrolling DIV. Ensure it's the one that gets
+      // scrolled.
+      {
+        const delta = 1000;
+        const location = { x: 100, y: 100 };
+        await smoothScroll(delta,
+                           location.x,
+                           location.y,
+                           GestureSourceType.TOUCH_INPUT,
+                           'down',
+                           SPEED_INSTANT);
+
+        // Make sure the scroll above went to the DIV and not the IFRAME.
+        assert_equals(iframe.contentWindow.scrollY, 0,
+                      "|iframe| must not have scrolled.")
+        assert_greater_than(scroller.scrollTop, 150,
+                            "|scroller| should have been scrolled.");
+      }
+
+    }, 'NonFastScrollableRegion inside root scroller.');
+  }
+
+</script>

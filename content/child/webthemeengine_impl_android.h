@@ -9,9 +9,10 @@
 
 namespace content {
 
-class WebThemeEngineImpl : public blink::WebThemeEngine {
+class WebThemeEngineAndroid : public blink::WebThemeEngine {
  public:
   // WebThemeEngine methods:
+  ~WebThemeEngineAndroid() override;
   blink::WebSize GetSize(blink::WebThemeEngine::Part) override;
   void GetOverlayScrollbarStyle(
       blink::WebThemeEngine::ScrollbarStyle*) override;
@@ -19,7 +20,13 @@ class WebThemeEngineImpl : public blink::WebThemeEngine {
              blink::WebThemeEngine::Part part,
              blink::WebThemeEngine::State state,
              const blink::WebRect& rect,
-             const blink::WebThemeEngine::ExtraParams* extra_params) override;
+             const blink::WebThemeEngine::ExtraParams* extra_params,
+             blink::WebColorScheme color_scheme) override;
+  blink::ForcedColors GetForcedColors() const override;
+  void SetForcedColors(const blink::ForcedColors forced_colors) override;
+  blink::PreferredColorScheme PreferredColorScheme() const override;
+  void SetPreferredColorScheme(
+      const blink::PreferredColorScheme preferred_color_scheme) override;
 };
 
 }  // namespace content

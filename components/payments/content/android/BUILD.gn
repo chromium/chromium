@@ -8,14 +8,21 @@ import("//mojo/public/tools/bindings/mojom.gni")
 
 static_library("android") {
   sources = [
+    "byte_buffer_helper.cc",
+    "byte_buffer_helper.h",
     "currency_formatter_android.cc",
     "currency_formatter_android.h",
     "origin_security_checker_android.cc",
+    "payment_handler_host.cc",
+    "payment_handler_host.h",
     "payment_manifest_downloader_android.cc",
+    "payment_manifest_downloader_android.h",
     "payment_manifest_parser_android.cc",
     "payment_manifest_parser_android.h",
     "payment_validator_android.cc",
+    "url_util.cc",
   ]
+
   deps = [
     ":jni_headers",
     "//base",
@@ -32,27 +39,49 @@ generate_jni("jni_headers") {
   sources = [
     "java/src/org/chromium/components/payments/CurrencyFormatter.java",
     "java/src/org/chromium/components/payments/OriginSecurityChecker.java",
+    "java/src/org/chromium/components/payments/PaymentHandlerHost.java",
     "java/src/org/chromium/components/payments/PaymentManifestDownloader.java",
     "java/src/org/chromium/components/payments/PaymentManifestParser.java",
     "java/src/org/chromium/components/payments/PaymentValidator.java",
+    "java/src/org/chromium/components/payments/UrlUtil.java",
   ]
-  jni_package = "payments"
 }
 
 android_library("java") {
+  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   java_files = [
     "java/src/org/chromium/components/payments/CurrencyFormatter.java",
     "java/src/org/chromium/components/payments/OriginSecurityChecker.java",
+    "java/src/org/chromium/components/payments/PaymentDetailsConverter.java",
+    "java/src/org/chromium/components/payments/PaymentHandlerHost.java",
     "java/src/org/chromium/components/payments/PaymentManifestDownloader.java",
     "java/src/org/chromium/components/payments/PaymentManifestParser.java",
     "java/src/org/chromium/components/payments/PaymentValidator.java",
     "java/src/org/chromium/components/payments/WebAppManifestSection.java",
+    "java/src/org/chromium/components/payments/UrlUtil.java",
   ]
   deps = [
     "//base:base_java",
+    "//base:jni_java",
     "//components/payments/mojom:mojom_java",
     "//content/public/android:content_java",
     "//mojo/public/java:bindings_java",
     "//third_party/blink/public/mojom:android_mojo_bindings_java",
   ]
+}
+
+java_cpp_strings("error_strings_generated_srcjar") {
+  sources = [
+    "//components/payments/core/error_strings.cc",
+  ]
+
+  template = "java_templates/ErrorStrings.java.tmpl"
+}
+
+java_cpp_strings("method_strings_generated_srcjar") {
+  sources = [
+    "//components/payments/core/method_strings.cc",
+  ]
+
+  template = "java_templates/MethodStrings.java.tmpl"
 }

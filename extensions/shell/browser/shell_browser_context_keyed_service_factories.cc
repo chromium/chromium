@@ -12,8 +12,6 @@ namespace extensions {
 namespace shell {
 
 void EnsureBrowserContextKeyedServiceFactoriesBuilt() {
-  IdentityAPI::GetFactoryInstance();
-
   // TODO(rockot): Remove this once UpdateService is supported across all
   // extensions embedders (and namely chrome.)
   UpdateServiceFactory::GetInstance();

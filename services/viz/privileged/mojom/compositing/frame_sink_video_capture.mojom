@@ -1,0 +1,162 @@
+// Copyright 2017 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module viz.mojom;
+
+import "media/capture/mojom/video_capture_types.mojom";
+import "media/mojo/mojom/media_types.mojom";
+import "mojo/public/mojom/base/time.mojom";
+import "mojo/public/mojom/base/shared_memory.mojom";
+import "services/viz/public/mojom/compositing/frame_sink_id.mojom";
+import "skia/public/mojom/bitmap.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
+import "ui/gfx/mojom/color_space.mojom";
+
+// Provided with each call to FrameSinkVideoConsumer::OnFrameCaptured() so that
+// the consumer can notify the capturer the instant it is done consuming the
+// frame, and then later (optionally) provide utilization feedback.
+interface FrameSinkVideoConsumerFrameCallbacks {
+  // Informs the capturer that the consumer is done reading the content of the
+  // video frame.
+  Done();
+
+  // Reports that the frame incurred some fractional |utilization| of the
+  // downstream pipeline's per-frame processing capacity. See code comments in
+  // media::base::VideoFrameMetadata for a discussion of how |utilization| is
+  // interpreted. The capturer uses this information to auto-adjust the capture
+  // resolution based on performance variances in the live system environment.
+  ProvideFeedback(double utilization);
+};
+
+// Interface for a consumer that receives frames and notifications related to
+// capture of the source content. An instance that implements this interface is
+// provided to FrameSinkVideoCapturer.Start().
+interface FrameSinkVideoConsumer {
+  // Called to deliver each frame to the consumer. |data| contains the video
+  // frame's image data, and is valid for reading until the consumer notifies
+  // the service that it is Done(). |info| is used to interpret the
+  // format/layout of the data, and also contains the frame timestamps and other
+  // metadata (the following media::VideoFrameMetadata keys are set:
+  // CAPTURE_BEGIN_TIME, CAPTURE_END_TIME, CAPTURE_COUNTER, CAPTURE_UPDATE_RECT,
+  // COLOR_SPACE, FRAME_DURATION, INTERACTIVE_CONTENT, REFERENCE_TIME).
+  // |content_rect| is the region of the frame that contains the captured
+  // content, with the rest of the frame having been letterboxed to adhere to
+  // resolution constraints.
+  OnFrameCaptured(mojo_base.mojom.ReadOnlySharedMemoryRegion data,
+                  media.mojom.VideoFrameInfo info,
+                  gfx.mojom.Rect content_rect,
+                  pending_remote<FrameSinkVideoConsumerFrameCallbacks>
+                      callbacks);
+
+  // Indicates that OnFrameCaptured() will not be called again, an end-of-stream
+  // signal.
+  OnStopped();
+};
+
+// Interface to an implementation that captures the frames of a
+// CompositorFrameSink's surface as a video stream. During operation, the
+// "target" frame sink can be changed, as needed, to continue capturing the
+// desired content (e.g., a new web page in the same browser tab).
+//
+// The SetXYZ() methods set or change the video capture parameters and
+// constraints. They may be called any time before and/or after a Start() call.
+// Note that the consumer must not assume any changes have taken effect until
+// this is reflected in some later delivered frame.
+//
+// General usage: A capturer is created, its SetXYZ() methods are called,
+// followed by ChangeTarget() and then Start(). Then, later, when video capture
+// should suspend, Stop() is called. After that point, Start() can be called
+// again to resume capture; or the mojo binding can be dropped to auto-terminate
+// the capturer.
+interface FrameSinkVideoCapturer {
+  // Specifies the pixel format and color space to use.
+  //
+  // Default, if never called: PIXEL_FORMAT_I420, COLOR_SPACE_HD_REC709
+  SetFormat(media.mojom.VideoPixelFormat format,
+            gfx.mojom.ColorSpace color_space);
+
+  // Specifies the maximum rate of capture in terms of a minimum time period
+  // (min_period = 1/max_frame_rate).
+  //
+  // Default, if never called: a very conservative 1/5 second (for 5 FPS
+  // max). Usually 30-60 FPS is desired for frame sinks that may contain video
+  // content.
+  SetMinCapturePeriod(mojo_base.mojom.TimeDelta min_period);
+
+  // Specifies the minimum amount of time that must elapse between changing the
+  // size of video frames. This can be set to zero to disable resize throttling,
+  // which means each video frame could have a different size. Note that
+  // setting this period too low can result in erratic frame sizing behaviour;
+  // consider disabling auto-throttling in such cases.
+  //
+  // Default, if never called: 3 seconds.
+  SetMinSizeChangePeriod(mojo_base.mojom.TimeDelta min_period);
+
+  // Specifies the range (if any) of acceptable capture resolutions and whether
+  // a fixed aspect ratio is required. When |min_size| is equal to |max_size|,
+  // capture resolution will be held constant. Otherwise, capture resolution
+  // will dynamically adapt over time as the source content size and system
+  // resource utilization change. If a fixed aspect ratio is required, the
+  // aspect ratio of |max_size| is used and the implementation will letterbox
+  // around the captured content when needed.
+  //
+  // Default, if never called: Fixed at 640x360 (standard definition, 16:9).
+  // Usually, 320x180↔3840x2160 (auto-adapt, 16:9) is desired when the consumer
+  // can handle variable frame resolutions.
+  SetResolutionConstraints(gfx.mojom.Size min_size, gfx.mojom.Size max_size,
+                           bool use_fixed_aspect_ratio);
+
+  // Specifies whether capture resolution should be automatically adjusted
+  // within the bounds provided to SetReslutionConstraints in response to
+  // utilization feedback from the consumer and the buffer pool. When set to
+  // false, the capturer will always use the highest resolution within
+  // constraints that doesn't exceed the source size.
+  //
+  // Default, if never called: true.
+  SetAutoThrottlingEnabled(bool enabled);
+
+  // Targets a different compositor frame sink. This may be called anytime,
+  // before or after Start(). If the argument is null, capture will suspend
+  // until a new frame sink target is set.
+  ChangeTarget(FrameSinkId? frame_sink_id);
+
+  // Starts emitting video frames to the given |consumer|.
+  Start(pending_remote<FrameSinkVideoConsumer> consumer);
+
+  // Stops capturing "soon." Meaning, no new frame captures will be started, but
+  // there may already be some in-flight for delivery. Wait for the "end of
+  // stream" signal provided by FrameSinkVideoConsumer.OnStopped().
+  Stop();
+
+  // Requests the capturer send a duplicate of the last frame. This is used to
+  // resolve occasional "picture loss" issues consumer-side.
+  RequestRefreshFrame();
+
+  // Creates an overlay to be renderered within each captured video frame. The
+  // |stacking_index| is an arbitrary value that determines whether to render
+  // this overlay before/after other overlays. Greater values mean "after" and
+  // "on top of" those with lesser values. Specifying the same index as an
+  // existing overlay will cause the existing one to be dropped and replaced
+  // with a new one.
+  CreateOverlay(int32 stacking_index,
+                pending_receiver<FrameSinkVideoCaptureOverlay> receiver);
+};
+
+// Control interface for a small image to be composited on top of each captured
+// video frame. This allows clients to, for example, have the capturer render
+// mouse cursors or debug info boxes on top of the captured content.
+interface FrameSinkVideoCaptureOverlay {
+  // Sets/Changes the overlay |image| and its position and size, relative to the
+  // source content. |bounds| consists of coordinates where the range [0.0,1.0)
+  // indicates the relative position+size within the bounds of the source
+  // content (e.g., 0.0 refers to the top or left edge; 1.0 to just after the
+  // bottom or right edge). Pass empty |bounds| to temporarily hide the overlay
+  // until a later call to SetBounds().
+  SetImageAndBounds(skia.mojom.Bitmap image, gfx.mojom.RectF bounds);
+
+  // Changes the bounds of the previously-set image, showing the overlay if
+  // non-empty bounds are provided, and hiding the overlay otherwise. |bounds|
+  // has the same semantics as described in ShowImageAt().
+  SetBounds(gfx.mojom.RectF bounds);
+};

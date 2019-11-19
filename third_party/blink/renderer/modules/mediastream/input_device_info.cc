@@ -6,9 +6,14 @@
 
 #include <algorithm>
 
+#include "build/build_config.h"
 #include "media/base/sample_format.h"
+#include "third_party/blink/public/mojom/mediastream/media_devices.mojom-blink.h"
 #include "third_party/blink/public/platform/web_media_stream_track.h"
 #include "third_party/blink/renderer/modules/mediastream/media_track_capabilities.h"
+#include "third_party/blink/renderer/platform/mediastream/media_stream_audio_processor_options.h"
+#include "third_party/blink/renderer/platform/mediastream/media_stream_audio_source.h"
+#include "third_party/webrtc/modules/audio_processing/include/audio_processing.h"
 
 namespace blink {
 
@@ -63,15 +68,37 @@ void InputDeviceInfo::SetVideoInputCapabilities(
     float min_frame_rate = 1.0f;
     float max_frame_rate = min_frame_rate;
     for (const auto& format : video_input_capabilities->formats) {
-      max_width = std::max(max_width, format->frame_size.width);
-      max_height = std::max(max_height, format->frame_size.height);
-      max_frame_rate = std::max(max_frame_rate, format->frame_rate);
+      max_width = std::max(max_width, format.frame_size.width());
+      max_height = std::max(max_height, format.frame_size.height());
+      max_frame_rate = std::max(max_frame_rate, format.frame_rate);
     }
     platform_capabilities_.width = {1, max_width};
     platform_capabilities_.height = {1, max_height};
     platform_capabilities_.aspect_ratio = {1.0 / max_height,
                                            static_cast<double>(max_width)};
     platform_capabilities_.frame_rate = {min_frame_rate, max_frame_rate};
+  }
+}
+
+void InputDeviceInfo::SetAudioInputCapabilities(
+    mojom::blink::AudioInputDeviceCapabilitiesPtr audio_input_capabilities) {
+  DCHECK_EQ(deviceId(), audio_input_capabilities->device_id);
+
+  if (audio_input_capabilities->is_valid) {
+    platform_capabilities_.channel_count = {1,
+                                            audio_input_capabilities->channels};
+
+    platform_capabilities_.sample_rate = {
+        std::min(kAudioProcessingSampleRate,
+                 audio_input_capabilities->sample_rate),
+        std::max(kAudioProcessingSampleRate,
+                 audio_input_capabilities->sample_rate)};
+    double fallback_latency = kFallbackAudioLatencyMs / 1000;
+    platform_capabilities_.latency = {
+        std::min(fallback_latency,
+                 audio_input_capabilities->latency.InSecondsF()),
+        std::max(fallback_latency,
+                 audio_input_capabilities->latency.InSecondsF())};
   }
 }
 
@@ -97,6 +124,27 @@ MediaTrackCapabilities* InputDeviceInfo::getCapabilities() const {
     sample_size->setMax(
         media::SampleFormatToBitsPerChannel(media::kSampleFormatS16));
     capabilities->setSampleSize(sample_size);
+    // Channel count.
+    if (!platform_capabilities_.channel_count.empty()) {
+      LongRange* channel_count = LongRange::Create();
+      channel_count->setMin(platform_capabilities_.channel_count[0]);
+      channel_count->setMax(platform_capabilities_.channel_count[1]);
+      capabilities->setChannelCount(channel_count);
+    }
+    // Sample rate.
+    if (!platform_capabilities_.sample_rate.empty()) {
+      LongRange* sample_rate = LongRange::Create();
+      sample_rate->setMin(platform_capabilities_.sample_rate[0]);
+      sample_rate->setMax(platform_capabilities_.sample_rate[1]);
+      capabilities->setSampleRate(sample_rate);
+    }
+    // Latency.
+    if (!platform_capabilities_.latency.empty()) {
+      DoubleRange* latency = DoubleRange::Create();
+      latency->setMin(platform_capabilities_.latency[0]);
+      latency->setMax(platform_capabilities_.latency[1]);
+      capabilities->setLatency(latency);
+    }
   }
 
   if (DeviceType() == MediaDeviceType::MEDIA_VIDEO_INPUT) {

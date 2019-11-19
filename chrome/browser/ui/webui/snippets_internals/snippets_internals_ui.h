@@ -10,7 +10,9 @@
 #include "chrome/browser/ui/webui/snippets_internals/snippets_internals.mojom.h"
 #include "components/ntp_snippets/content_suggestions_service.h"
 #include "components/prefs/pref_service.h"
-#include "mojo/public/cpp/bindings/binding.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 
 class SnippetsInternalsPageHandler;
@@ -23,19 +25,21 @@ class SnippetsInternalsUI
   explicit SnippetsInternalsUI(content::WebUI* web_ui);
   ~SnippetsInternalsUI() override;
 
-  void CreatePageHandler(snippets_internals::mojom::PagePtr page,
-                         CreatePageHandlerCallback callback) override;
+  void CreatePageHandler(
+      mojo::PendingRemote<snippets_internals::mojom::Page> page,
+      CreatePageHandlerCallback callback) override;
 
  private:
   void BindSnippetsInternalsPageHandlerFactory(
-      snippets_internals::mojom::PageHandlerFactoryRequest request);
+      mojo::PendingReceiver<snippets_internals::mojom::PageHandlerFactory>
+          receiver);
 
   std::unique_ptr<SnippetsInternalsPageHandler> page_handler_;
   ntp_snippets::ContentSuggestionsService* content_suggestions_service_;
   PrefService* pref_service_;
 
-  // Binding from the mojo interface to concrete impl.
-  mojo::Binding<snippets_internals::mojom::PageHandlerFactory> binding_;
+  // Receiver from the mojo interface to concrete impl.
+  mojo::Receiver<snippets_internals::mojom::PageHandlerFactory> receiver_{this};
 
   DISALLOW_COPY_AND_ASSIGN(SnippetsInternalsUI);
 };

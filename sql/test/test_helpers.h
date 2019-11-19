@@ -119,6 +119,39 @@ std::string ExecuteWithResults(sql::Database* db,
                                const char* column_sep,
                                const char* row_sep);
 
+// Returns the database size, in pages. Crashes on SQLite errors.
+int GetPageCount(sql::Database* db);
+
+// Column information returned by GetColumnInfo.
+//
+// C++ wrapper around the out-params of sqlite3_table_column_metadata().
+struct ColumnInfo {
+  // Retrieves schema information for a column in a table.
+  //
+  // Crashes on SQLite errors.
+  //
+  // |db_name| should be "main" for the connection's main (opened) database, and
+  // "temp" for the connection's temporary (in-memory) database.
+  //
+  // This is a static method rather than a function so it can be listed in the
+  // InternalApiToken access control list.
+  static ColumnInfo Create(sql::Database* db,
+                           const std::string& db_name,
+                           const std::string& table_name,
+                           const std::string& column_name) WARN_UNUSED_RESULT;
+
+  // The native data type. Example: "INTEGER".
+  std::string data_type;
+  // Default collation sequence for sorting. Example: "BINARY".
+  std::string collation_sequence;
+  // True if the column has a "NOT NULL" constraint.
+  bool has_non_null_constraint;
+  // True if the column is included in the table's PRIMARY KEY.
+  bool is_in_primary_key;
+  // True if the column is AUTOINCREMENT.
+  bool is_auto_incremented;
+};
+
 }  // namespace test
 }  // namespace sql
 

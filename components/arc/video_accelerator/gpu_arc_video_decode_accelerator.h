@@ -13,7 +13,7 @@
 #include "base/callback_forward.h"
 #include "base/files/scoped_file.h"
 #include "base/threading/thread_checker.h"
-#include "components/arc/common/video_decode_accelerator.mojom.h"
+#include "components/arc/mojom/video_decode_accelerator.mojom.h"
 #include "gpu/config/gpu_preferences.h"
 #include "media/video/video_decode_accelerator.h"
 
@@ -46,6 +46,12 @@ class GpuArcVideoDecodeAccelerator
                              uint32_t textures_per_buffer,
                              const gfx::Size& dimensions,
                              uint32_t texture_target) override;
+  void ProvidePictureBuffersWithVisibleRect(uint32_t requested_num_of_buffers,
+                                            media::VideoPixelFormat format,
+                                            uint32_t textures_per_buffer,
+                                            const gfx::Size& dimensions,
+                                            const gfx::Rect& visible_rect,
+                                            uint32_t texture_target) override;
   void PictureReady(const media::Picture& picture) override;
   void DismissPictureBuffer(int32_t picture_buffer_id) override;
   void NotifyEndOfBitstreamBuffer(int32_t bitstream_buffer_id) override;
@@ -77,8 +83,6 @@ class GpuArcVideoDecodeAccelerator
   using PendingRequest =
       base::OnceCallback<void(PendingCallback, media::VideoDecodeAccelerator*)>;
 
-  class ScopedBitstreamBuffer;
-
   // Initialize GpuArcVDA and create VDA. It returns SUCCESS if they are
   // successful. Otherwise, returns an error status.
   mojom::VideoDecodeAccelerator::Result InitializeTask(
@@ -100,7 +104,7 @@ class GpuArcVideoDecodeAccelerator
   // Requested VDA methods are executed in these functions.
   void FlushRequest(PendingCallback cb, media::VideoDecodeAccelerator* vda);
   void ResetRequest(PendingCallback cb, media::VideoDecodeAccelerator* vda);
-  void DecodeRequest(ScopedBitstreamBuffer bitstream_buffer,
+  void DecodeRequest(media::BitstreamBuffer bitstream_buffer,
                      PendingCallback cb,
                      media::VideoDecodeAccelerator* vda);
 
@@ -147,6 +151,7 @@ class GpuArcVideoDecodeAccelerator
 
   bool secure_mode_ = false;
   size_t output_buffer_count_ = 0;
+  bool assign_picture_buffers_called_ = false;
 
   THREAD_CHECKER(thread_checker_);
   DISALLOW_COPY_AND_ASSIGN(GpuArcVideoDecodeAccelerator);

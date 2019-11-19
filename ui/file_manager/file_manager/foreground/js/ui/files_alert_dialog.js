@@ -4,21 +4,21 @@
 
 /**
  * Alert dialog.
- * @param {!HTMLElement} parentNode
- * @constructor
- * @extends {cr.ui.dialogs.AlertDialog}
  */
-const FilesAlertDialog = function(parentNode) {
-  cr.ui.dialogs.AlertDialog.call(this, parentNode);
-};
+class FilesAlertDialog extends cr.ui.dialogs.AlertDialog {
+  /**
+   * @param {!HTMLElement} parentNode
+   */
+  constructor(parentNode) {
+    super(parentNode);
+  }
 
-FilesAlertDialog.prototype.__proto__ = cr.ui.dialogs.AlertDialog.prototype;
-
-/**
- * @protected
- * @override
- */
-FilesAlertDialog.prototype.initDom_ = function() {
-  cr.ui.dialogs.AlertDialog.prototype.initDom_.call(this);
-  this.frame_.classList.add('files-alert-dialog');
-};
+  /**
+   * @protected
+   * @override
+   */
+  initDom() {
+    super.initDom();
+    this.frame.classList.add('files-alert-dialog');
+  }
+}

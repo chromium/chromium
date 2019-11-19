@@ -8,9 +8,10 @@
 #include <map>
 #include <string>
 
-#include "extensions/common/mojo/wifi_display_session_service.mojom.h"
+#include "extensions/common/mojom/wifi_display_session_service.mojom.h"
 #include "extensions/renderer/api/display_source/display_source_session.h"
-#include "mojo/public/cpp/bindings/binding.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/wds/src/libwds/public/source.h"
 
 namespace base {
@@ -40,8 +41,8 @@ class WiFiDisplaySession : public DisplaySourceSession,
   void Terminate(const CompletionCallback& callback) override;
 
   // WiFiDisplaySessionServiceClient overrides.
-  void OnConnected(const std::string& local_ip_address,
-                   const std::string& sink_ip_address) override;
+  void OnConnected(const net::IPAddress& local_ip_address,
+                   const net::IPAddress& sink_ip_address) override;
   void OnConnectRequestHandled(bool success, const std::string& error) override;
   void OnTerminated() override;
   void OnDisconnectRequestHandled(bool success,
@@ -74,9 +75,9 @@ class WiFiDisplaySession : public DisplaySourceSession,
  private:
   std::unique_ptr<wds::Source> wfd_source_;
   std::unique_ptr<WiFiDisplayMediaManager> media_manager_;
-  mojom::WiFiDisplaySessionServicePtr service_;
-  mojo::Binding<WiFiDisplaySessionServiceClient> binding_;
-  std::string local_ip_address_;
+  mojo::Remote<mojom::WiFiDisplaySessionService> service_;
+  mojo::Receiver<WiFiDisplaySessionServiceClient> receiver_{this};
+  net::IPAddress local_ip_address_;
   std::map<int, std::unique_ptr<base::RepeatingTimer>> timers_;
 
   DisplaySourceSessionParams params_;

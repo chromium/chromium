@@ -8,10 +8,11 @@
 #include <memory>
 
 #include "base/memory/scoped_refptr.h"
-#include "third_party/blink/renderer/platform/bindings/trace_wrapper_member.h"
+#include "base/util/type_safety/pass_key.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/loader/fetch/bytes_consumer.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
+#include "third_party/blink/renderer/platform/timer.h"
 #include "third_party/blink/renderer/platform/wtf/deque.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -31,17 +32,39 @@ class PLATFORM_EXPORT BufferingBytesConsumer final
   USING_GARBAGE_COLLECTED_MIXIN(BufferingBytesConsumer);
 
  public:
-  // Creates a BufferingBytesConsumer. |bytes_consumer| is the original
-  // BytesConsumer.
-  // |bytes_consumer| must not have a client.
-  explicit BufferingBytesConsumer(BytesConsumer* bytes_consumer);
+  // Creates a BufferingBytesConsumer that waits some delay before beginning
+  // to buffer data from the underlying consumer. This delay provides an
+  // opportunity for the data to be drained before buffering begins. The
+  // |bytes_consumer| is the original BytesConsumer. |bytes_consumer| must
+  // not have a client.
+  static BufferingBytesConsumer* CreateWithDelay(
+      BytesConsumer* bytes_consumer,
+      scoped_refptr<base::SingleThreadTaskRunner> timer_task_runner);
+
+  // Creates a BufferingBytesConsumer that buffers immediately without any
+  // delay. |bytes_consumer| is the original BytesConsumer. |bytes_consumer|
+  // must not have a client.
+  static BufferingBytesConsumer* Create(BytesConsumer* bytes_consumer);
+
+  // Use the Create*() factory methods instead of direct instantiation.
+  BufferingBytesConsumer(
+      util::PassKey<BufferingBytesConsumer> key,
+      BytesConsumer* bytes_consumer,
+      scoped_refptr<base::SingleThreadTaskRunner> timer_task_runner,
+      base::TimeDelta buffering_start_delay);
   ~BufferingBytesConsumer() override;
+
+  // Attempt to start buffering data from the underlying consumer.  This will
+  // only have an effect if we're currently in the kDelayed state.  If
+  // buffering has already started or been explicitly stopped then this method
+  // has no effect.
+  void MaybeStartBuffering();
 
   // After this function is called, |this| will not do buffering. Already
   // buffered data still waits to be consumed, but after all the buffered data
   // is consumed, BeginRead and EndRead will result in BeginRead and EndRead
   // calls to the original BytesConsumer.
-  void StopBuffering() { is_buffering_ = false; }
+  void StopBuffering();
 
   // BufferingBytesConsumer
   Result BeginRead(const char** buffer, size_t* available) override;
@@ -59,14 +82,24 @@ class PLATFORM_EXPORT BufferingBytesConsumer final
   void Trace(blink::Visitor*) override;
 
  private:
+  void OnTimerFired(TimerBase*);
+
   // BufferingBytesConsumer::Client
   void OnStateChange() override;
   void BufferData();
 
-  const TraceWrapperMember<BytesConsumer> bytes_consumer_;
+  const Member<BytesConsumer> bytes_consumer_;
+  TaskRunnerTimer<BufferingBytesConsumer> timer_;
   Deque<Vector<char>> buffer_;
   size_t offset_for_first_chunk_ = 0;
-  bool is_buffering_ = true;
+
+  enum class BufferingState {
+    kDelayed,
+    kStarted,
+    kStopped,
+  };
+  BufferingState buffering_state_ = BufferingState::kDelayed;
+
   bool has_seen_end_of_data_ = false;
   bool has_seen_error_ = false;
   Member<BytesConsumer::Client> client_;

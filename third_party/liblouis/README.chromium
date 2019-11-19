@@ -1,7 +1,7 @@
 Name: Braille Translation Library
 Short Name: liblouis
 URL: https://github.com/liblouis/liblouis
-Version: 3.2.0
+Version: 3.11.0
 License: LGPL3 and GPL3
 License Android Compatible: No
 License File: LICENSE
@@ -15,17 +15,22 @@ contracted and uncontracted translation for many languages.
 LibLouis is used as a web assembly module.
 
 Local Modifications:
-  * Add liblouis_wrapper.js, a js wrapper to wasm binary.
+* Add liblouis_wrapper.js, a js wrapper to wasm binary.
 * Add tables.json, a list of tables with metadata.
 * Add cvox-common.cti with common definitions for all tables mentioned in
   tables.json.
-  * The web assembly module is compiled by using emscripting.
-      The full emcc command is:
+* The web assembly module is compiled by using emscripten,
+  using these instructions:
 
-emmake make && \
+cd third_party/liblouis/src
+cp ../cvox-common.cti tables/
+./autogen.sh
+emconfigure ./configure
+emmake make
 emcc ./liblouis/.libs/liblouis.a -s RESERVED_FUNCTION_POINTERS=1 -s MODULARIZE=1 \
 -s TOTAL_MEMORY=167772160 -s EXPORT_NAME="'liblouisBuild'" \
 -s EXTRA_EXPORTED_RUNTIME_METHODS="['ccall','ALLOC_NORMAL', \
 'Pointer_stringify', 'allocate','FS', 'cwrap', 'stringToUTF16', \
 'UTF16ToString','intArrayFromString', 'intArrayToString', 'setValue',\
 'getValue']" --preload-file tables@/ -o liblouis_wasm.js
+cp liblouis_wasm.* ../wasm

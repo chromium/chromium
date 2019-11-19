@@ -1,7 +1,0 @@
-This test checks whether serialized invalid XHTML is valid XML (for bug 9901).
-
-If the test passes, you'll see a series of 'PASS' messages below.
-
-PASS: doc.firstChild.firstChild.nodeValue should be 123 and is.
-PASS: str should be <input xmlns="http://www.w3.org/1999/xhtml">123</input> and is.
-

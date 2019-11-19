@@ -1,0 +1,73 @@
+<!-- Copyright 2015 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+<html>
+<head>
+<meta charset="utf-8">
+<title class="i18n" msgid="panel_title"></title>
+
+<link href="http://fonts.googleapis.com/css?family=Droid+Sans+Mono|Roboto:400,700,700italic" rel="stylesheet" type="text/css">
+<link href="panel.css" rel="stylesheet" type="text/css">
+
+<script type="text/javascript" src="../../closure/base.js"></script>
+<script type="text/javascript" src="../../deps.js"></script>
+<script type="text/javascript" src="panel_loader.js"></script>
+<script type="text/javascript" src="../../chromeVoxPanelScript.js">
+</script>
+
+</head>
+
+<body>
+<div id="main">
+  <div hidden id="menus_title" class="i18n" msgid="menus_title"></div>
+  <button id="menus_button" aria-labelledby="menus_title">
+    <img id="chromevox" src="/images/chromevox-19.png">
+    <img id="triangle" src="/images/triangle-6.png">
+  </button>
+  <div id="caption">
+    <div id="speech-container">
+      <div id="speech"></div>
+    </div>
+    <div id="braille-container">
+      <div id="braille-table-holder-outer">
+        <div id="braille-table-holder1" class="braille-table-holder">
+          <table id="braille-table">
+          </table>
+        </div>
+        <div id="braille-table-holder2" class="braille-table-holder">
+          <table id="braille-table2">
+          </table>
+        </div>
+      </div>
+    </div>
+    <div id="search-container">
+      <input class="i18n" msgid="search_widget_intro" id="search" type="search">
+    </div>
+  </div>
+  <div id="options_close">
+    <div hidden id="options_title" class="i18n" msgid="options"></div>
+    <button id="options" aria-labelledby="options_title"></button>
+    <div hidden id="disable_chromevox_title" class="i18n"
+         msgid="disable_chromevox"></div>
+    <button id="close" aria-labelledby="disable_chromevox_title"></button>
+  </div>
+</div>
+<div id="menus_background">
+  <div id="menu-bar" role="menubar">
+  </div>
+</div>
+<div id="tutorial" hidden>
+  <div id="tutorial_logo"></div>
+  <div hidden id="close_tutorial_title" class="i18n" msgid="close_tutorial">
+  </div>
+  <button id="close_tutorial" aria-labelledby="close_tutorial_title"></button>
+  <div id="tutorial_main">
+  </div>
+  <div id="tutorial_footer">
+    <button id="tutorial_previous" class="i18n" msgid="tutorial_previous">
+    </button>
+    <button id="tutorial_next" class="i18n" msgid="tutorial_next"></button>
+  </div>
+</div>
+</body>
+</html>

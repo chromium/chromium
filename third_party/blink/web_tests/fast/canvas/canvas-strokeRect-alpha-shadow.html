@@ -41,73 +41,70 @@ ctx.restore();
 var imageData, data;
 ctx.fillStyle = 'black';
 
-function testPixelAlphaShadow(x, y, color)
+function testPixelAlphaShadow(x, y, color, rgbTolerance)
 {
-    if (color.length == 4) {
-        assert_array_equals(ctx.getImageData(x, y, 1, 1).data, color);
-    } else {    // we expect to have [r, g, b, a, alphaApprox]
-        var data = ctx.getImageData(x, y, 1, 1).data;
-        assert_array_equals(data.slice(0,3), color.slice(0,3));
-        assert_approx_equals(data[3], color[3], color[4]);
-    }
+    var data = ctx.getImageData(x, y, 1, 1).data;
+    for (i = 0; i < 3; i++)
+        assert_approx_equals(data[i]*data[3]/255, color[i]*color[3]/255, rgbTolerance);
+
     // Plot test point.
     ctx.fillRect(x, y, 3, 3);
 }
 
-var alphaTolerance = 15;
+var rgbTolerance = 4;
 var testScenarios = [
-    ['Verify alpha shadow 1' , 400, 150, [0, 0, 0, 0]],
-    ['Verify alpha shadow 2' , 400, 75, [0, 0, 0, 0]],
-    ['Verify alpha shadow 3' , 400, 225, [0, 0, 0, 0]],
-    ['Verify alpha shadow 4' , 325, 150, [0, 0, 0, 0]],
-    ['Verify alpha shadow 5' , 475, 150, [0, 0, 0, 0]],
-    ['Verify alpha shadow 6' , 400, 50, [255, 0, 0, 64, alphaTolerance]],
-    ['Verify alpha shadow 7' , 500, 150, [255, 0, 0, 64, alphaTolerance]],
-    ['Verify alpha shadow 8' , 400, 250, [255, 0, 0, 64, alphaTolerance]],
-    ['Verify alpha shadow 9' , 300, 150, [255, 0, 0, 64, alphaTolerance]],
-    ['Verify alpha shadow 10' , 400, 25, [0, 0, 0, 0]],
-    ['Verify alpha shadow 11' , 525, 150, [0, 0, 0, 0]],
-    ['Verify alpha shadow 12' , 400, 275, [0, 0, 0, 0]],
-    ['Verify alpha shadow 13' , 275, 150, [0, 0, 0, 0]],
+    ['Verify alpha shadow 1' , 400, 150, [0, 0, 0, 0], 0],
+    ['Verify alpha shadow 2' , 400, 75, [0, 0, 0, 0], 0],
+    ['Verify alpha shadow 3' , 400, 225, [0, 0, 0, 0], 0],
+    ['Verify alpha shadow 4' , 325, 150, [0, 0, 0, 0], 0],
+    ['Verify alpha shadow 5' , 475, 150, [0, 0, 0, 0], 0],
+    ['Verify alpha shadow 6' , 400, 50, [255, 0, 0, 64], rgbTolerance],
+    ['Verify alpha shadow 7' , 500, 150, [255, 0, 0, 64], rgbTolerance],
+    ['Verify alpha shadow 8' , 400, 250, [255, 0, 0, 64], rgbTolerance],
+    ['Verify alpha shadow 9' , 300, 150, [255, 0, 0, 64], rgbTolerance],
+    ['Verify alpha shadow 10' , 400, 25, [0, 0, 0, 0], 0],
+    ['Verify alpha shadow 11' , 525, 150, [0, 0, 0, 0], 0],
+    ['Verify alpha shadow 12' , 400, 275, [0, 0, 0, 0], rgbTolerance],
+    ['Verify alpha shadow 13' , 275, 150, [0, 0, 0, 0], rgbTolerance],
 
-    ['Verify blurry shadow 1' , 400, 400, [0, 0, 0, 0]],
-    ['Verify blurry shadow 2' , 400, 325, [0, 0, 0, 0]],
-    ['Verify blurry shadow 3' , 475, 400, [0, 0, 0, 0]],
-    ['Verify blurry shadow 4' , 400, 475, [0, 0, 0, 0]],
-    ['Verify blurry shadow 5' , 325, 400, [0, 0, 0, 0]],
-    ['Verify blurry shadow 6' , 400, 300, [255, 0, 0, 64, alphaTolerance]],
-    ['Verify blurry shadow 7' , 400, 500, [255, 0, 0, 64, alphaTolerance]],
-    ['Verify blurry shadow 8' , 300, 400, [255, 0, 0, 64, alphaTolerance]],
-    ['Verify blurry shadow 9' , 500, 400, [255, 0, 0, 64, alphaTolerance]],
-    ['Verify blurry shadow 10' , 525, 400, [0, 0, 0, 0]],
-    ['Verify blurry shadow 11' , 275, 400, [0, 0, 0, 0]],
+    ['Verify blurry shadow 1' , 400, 400, [0, 0, 0, 0], 0],
+    ['Verify blurry shadow 2' , 400, 325, [0, 0, 0, 0], rgbTolerance],
+    ['Verify blurry shadow 3' , 475, 400, [0, 0, 0, 0], rgbTolerance],
+    ['Verify blurry shadow 4' , 400, 475, [0, 0, 0, 0], rgbTolerance],
+    ['Verify blurry shadow 5' , 325, 400, [0, 0, 0, 0], rgbTolerance],
+    ['Verify blurry shadow 6' , 400, 300, [255, 0, 0, 64], rgbTolerance],
+    ['Verify blurry shadow 7' , 400, 500, [255, 0, 0, 64], rgbTolerance],
+    ['Verify blurry shadow 8' , 300, 400, [255, 0, 0, 64], rgbTolerance],
+    ['Verify blurry shadow 9' , 500, 400, [255, 0, 0, 64], rgbTolerance],
+    ['Verify blurry shadow 10' , 525, 400, [0, 0, 0, 0], rgbTolerance],
+    ['Verify blurry shadow 11' , 275, 400, [0, 0, 0, 0], rgbTolerance],
 
-    ['Verify rotated alpha shadow 1' , 400, 650, [0, 0, 0, 0]],
-    ['Verify rotated alpha shadow 2' , 400, 575, [0, 0, 0, 0]],
-    ['Verify rotated alpha shadow 3' , 400, 725, [0, 0, 0, 0]],
-    ['Verify rotated alpha shadow 4' , 325, 650, [0, 0, 0, 0]],
-    ['Verify rotated alpha shadow 5' , 475, 650, [0, 0, 0, 0]],
-    ['Verify rotated alpha shadow 6' , 400, 550, [255, 0, 0, 64, alphaTolerance]],
-    ['Verify rotated alpha shadow 7' , 500, 650, [255, 0, 0, 64, alphaTolerance]],
-    ['Verify rotated alpha shadow 8' , 400, 750, [255, 0, 0, 64, alphaTolerance]],
-    ['Verify rotated alpha shadow 9' , 300, 650, [255, 0, 0, 64, alphaTolerance]],
-    ['Verify rotated alpha shadow 10' , 400, 525, [0, 0, 0, 0]],
-    ['Verify rotated alpha shadow 11' , 525, 650, [0, 0, 0, 0]],
-    ['Verify rotated alpha shadow 12' , 400, 775, [0, 0, 0, 0]],
-    ['Verify rotated alpha shadow 13' , 275, 650, [0, 0, 0, 0]],
+    ['Verify rotated alpha shadow 1' , 400, 650, [0, 0, 0, 0], 0],
+    ['Verify rotated alpha shadow 2' , 400, 575, [0, 0, 0, 0], 0],
+    ['Verify rotated alpha shadow 3' , 400, 725, [0, 0, 0, 0], 0],
+    ['Verify rotated alpha shadow 4' , 325, 650, [0, 0, 0, 0], 0],
+    ['Verify rotated alpha shadow 5' , 475, 650, [0, 0, 0, 0], 0],
+    ['Verify rotated alpha shadow 6' , 400, 550, [255, 0, 0, 64], rgbTolerance],
+    ['Verify rotated alpha shadow 7' , 500, 650, [255, 0, 0, 64], rgbTolerance],
+    ['Verify rotated alpha shadow 8' , 400, 750, [255, 0, 0, 64], rgbTolerance],
+    ['Verify rotated alpha shadow 9' , 300, 650, [255, 0, 0, 64], rgbTolerance],
+    ['Verify rotated alpha shadow 10' , 400, 525, [0, 0, 0, 0], rgbTolerance],
+    ['Verify rotated alpha shadow 11' , 525, 650, [0, 0, 0, 0], 0],
+    ['Verify rotated alpha shadow 12' , 400, 775, [0, 0, 0, 0], rgbTolerance],
+    ['Verify rotated alpha shadow 13' , 275, 650, [0, 0, 0, 0], 0],
 
-    ['Verify rotated blurry shadow 1' , 400, 900, [0, 0, 0, 0]],
-    ['Verify rotated blurry shadow 2' , 400, 825, [0, 0, 0, 0]],
-    ['Verify rotated blurry shadow 3' , 475, 900, [0, 0, 0, 0]],
-    ['Verify rotated blurry shadow 4' , 400, 975, [0, 0, 0, 0]],
-    ['Verify rotated blurry shadow 5' , 325, 900, [0, 0, 0, 0]],
-    ['Verify rotated blurry shadow 6' , 400, 800, [255, 0, 0, 64, alphaTolerance]],
-    ['Verify rotated blurry shadow 7' , 400, 1000, [255, 0, 0, 64, alphaTolerance]],
-    ['Verify rotated blurry shadow 8' , 300, 900, [255, 0, 0, 64, alphaTolerance]],
-    ['Verify rotated blurry shadow 9' , 500, 900, [255, 0, 0, 64, alphaTolerance]],
-    ['Verify rotated blurry shadow 10' , 525, 900, [0, 0, 0, 0]],
-    ['Verify rotated blurry shadow 11' , 275, 900, [0, 0, 0, 0]],
-    ['Verify rotated blurry shadow 12' , 400, 1025, [0, 0, 0, 0]],
+    ['Verify rotated blurry shadow 1' , 400, 900, [0, 0, 0, 0], 0],
+    ['Verify rotated blurry shadow 2' , 400, 825, [0, 0, 0, 0], rgbTolerance],
+    ['Verify rotated blurry shadow 3' , 475, 900, [0, 0, 0, 0], rgbTolerance],
+    ['Verify rotated blurry shadow 4' , 400, 975, [0, 0, 0, 0], rgbTolerance],
+    ['Verify rotated blurry shadow 5' , 325, 900, [0, 0, 0, 0], rgbTolerance],
+    ['Verify rotated blurry shadow 6' , 400, 800, [255, 0, 0, 64], rgbTolerance],
+    ['Verify rotated blurry shadow 7' , 400, 1000, [255, 0, 0, 64], rgbTolerance],
+    ['Verify rotated blurry shadow 8' , 300, 900, [255, 0, 0, 64], rgbTolerance],
+    ['Verify rotated blurry shadow 9' , 500, 900, [255, 0, 0, 64], rgbTolerance],
+    ['Verify rotated blurry shadow 10' , 525, 900, [0, 0, 0, 0], rgbTolerance],
+    ['Verify rotated blurry shadow 11' , 275, 900, [0, 0, 0, 0], rgbTolerance],
+    ['Verify rotated blurry shadow 12' , 400, 1025, [0, 0, 0, 0], rgbTolerance],
 ];
 
 generate_tests(testPixelAlphaShadow, testScenarios);

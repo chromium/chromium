@@ -613,3 +613,25 @@ test("test_opus_padding") {
     ":opus",
   ]
 }
+
+# Compilation fails on windows due to wstring/string mistmatch.
+# This is not worth looking at it since the benchmark is tailored for android.
+# It is ok to run it on linux though, for experimentation purpose.
+if (!is_win) {
+  test("opus_tests") {
+    sources = [
+      "tests/opus_benchmark.cc",
+    ]
+
+    data = [
+      "tests/resources/speech_mono_32_48kHz.pcm",
+    ]
+
+    deps = [
+      ":opus",
+      "//base",
+      "//testing/gtest",
+      "//testing/gtest:gtest_main",
+    ]
+  }
+}

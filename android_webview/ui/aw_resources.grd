@@ -8,7 +8,7 @@
   </outputs>
   <release seq="1">
     <includes>
-      <include name="IDR_AW_LOAD_ERROR_HTML" file="resources\load_error.html" flattenhtml="true" type="BINDATA" />
+      <include name="IDR_AW_LOAD_ERROR_HTML" file="resources\load_error.html" flattenhtml="true" type="BINDATA" compress="gzip" />
     </includes>
   </release>
 </grit>

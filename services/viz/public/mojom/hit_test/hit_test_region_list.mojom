@@ -1,0 +1,28 @@
+// Copyright 2017 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module viz.mojom;
+
+import "services/viz/public/mojom/compositing/frame_sink_id.mojom";
+import "services/viz/public/mojom/compositing/surface_id.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
+import "ui/gfx/mojom/transform.mojom";
+
+// See src/components/viz/common/hit_test/hit_test_region_list.h.
+struct HitTestRegion {
+  uint32 flags;
+  uint32 async_hit_test_reasons;
+  FrameSinkId frame_sink_id;
+  gfx.mojom.Rect rect;
+  gfx.mojom.Transform transform;
+};
+
+// See src/components/viz/common/hit_test/hit_test_region_list.h.
+struct HitTestRegionList {
+  uint32 flags;
+  uint32 async_hit_test_reasons;
+  gfx.mojom.Rect bounds;
+  gfx.mojom.Transform transform;
+  array<HitTestRegion> regions;
+};

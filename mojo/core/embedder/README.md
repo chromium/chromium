@@ -49,7 +49,7 @@ its lifetime.
 Typically an application will create a dedicated background thread and give its
 `TaskRunner` to Mojo. Note that in Chromium, we use the existing "IO thread" in
 the browser process and content child processes. In general, any thread used
-for Mojo IPC support must be running a `base::MessageLoop::TYPE_IO` loop.
+for Mojo IPC support must be running a `base::MessagePumpType::IO` loop.
 
 ```
 #include "base/threading/thread.h"
@@ -61,7 +61,7 @@ int main(int argc, char** argv) {
 
   base::Thread ipc_thread("ipc!");
   ipc_thread.StartWithOptions(
-      base::Thread::Options(base::MessageLoop::TYPE_IO, 0));
+      base::Thread::Options(base::MessagePumpType::IO, 0));
 
   // As long as this object is alive, all Mojo API surface relevant to IPC
   // connections is usable, and message pipes which span a process boundary will

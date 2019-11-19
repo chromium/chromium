@@ -18,5 +18,6 @@ namespace crashpad {
 
 const uint32_t CodeViewRecordPDB20::kSignature;
 const uint32_t CodeViewRecordPDB70::kSignature;
+const uint32_t CodeViewRecordBuildID::kSignature;
 
 }  // namespace crashpad

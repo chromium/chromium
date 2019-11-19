@@ -82,7 +82,7 @@ class QuotaInternalsProxy
   std::set<std::pair<std::string, blink::mojom::StorageType>> hosts_visited_,
       hosts_pending_;
   std::vector<PerHostStorageInfo> report_pending_;
-  base::WeakPtrFactory<QuotaInternalsProxy> weak_factory_;
+  base::WeakPtrFactory<QuotaInternalsProxy> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(QuotaInternalsProxy);
 };

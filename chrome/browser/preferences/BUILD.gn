@@ -1,0 +1,26 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+
+android_library("java") {
+  java_files = [
+    "android/java/src/org/chromium/chrome/browser/preferences/ChromePreferenceKeys.java",
+    "android/java/src/org/chromium/chrome/browser/preferences/SharedPreferencesManager.java",
+  ]
+  deps = [
+    "//base:base_java",
+  ]
+}
+
+android_library("javatests") {
+  testonly = true
+  java_files = [ "android/java/src/org/chromium/chrome/browser/preferences/ChromePreferenceKeysTest.java" ]
+  deps = [
+    ":java",
+    "//base:base_java",
+    "//chrome/test/android:chrome_java_test_support",
+    "//third_party/junit",
+  ]
+}

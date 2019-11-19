@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "cc/benchmarks/micro_benchmark.h"
 
 namespace base {
@@ -24,7 +23,10 @@ class LayerTreeHostImpl;
 class CC_EXPORT MicroBenchmarkController {
  public:
   explicit MicroBenchmarkController(LayerTreeHost* host);
+  MicroBenchmarkController(const MicroBenchmarkController&) = delete;
   ~MicroBenchmarkController();
+
+  MicroBenchmarkController& operator=(const MicroBenchmarkController&) = delete;
 
   void DidUpdateLayers();
 
@@ -45,8 +47,6 @@ class CC_EXPORT MicroBenchmarkController {
   std::vector<std::unique_ptr<MicroBenchmark>> benchmarks_;
   static int next_id_;
   scoped_refptr<base::SingleThreadTaskRunner> main_controller_task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(MicroBenchmarkController);
 };
 
 }  // namespace cc

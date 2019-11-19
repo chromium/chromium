@@ -35,10 +35,6 @@ class Node;
 
 class NativeXPathNSResolver final : public XPathNSResolver {
  public:
-  static NativeXPathNSResolver* Create(Node* node) {
-    return MakeGarbageCollected<NativeXPathNSResolver>(node);
-  }
-
   explicit NativeXPathNSResolver(Node*);
 
   AtomicString lookupNamespaceURI(const String& prefix) override;

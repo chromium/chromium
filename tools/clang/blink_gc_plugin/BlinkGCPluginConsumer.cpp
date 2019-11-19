@@ -61,6 +61,19 @@ class EmptyStmtVisitor : public RecursiveASTVisitor<EmptyStmtVisitor> {
   bool empty_;
 };
 
+const CXXRecordDecl* GetFirstTemplateArgAsCXXRecordDecl(
+    const CXXRecordDecl* gc_base) {
+  if (const auto* gc_base_template_id =
+          dyn_cast<ClassTemplateSpecializationDecl>(gc_base)) {
+    const TemplateArgumentList& gc_args =
+        gc_base_template_id->getTemplateArgs();
+    if (!gc_args.size() || gc_args[0].getKind() != TemplateArgument::Type)
+      return nullptr;
+    return gc_args[0].getAsType()->getAsCXXRecordDecl();
+  }
+  return nullptr;
+}
+
 }  // namespace
 
 BlinkGCPluginConsumer::BlinkGCPluginConsumer(
@@ -204,6 +217,25 @@ void BlinkGCPluginConsumer::CheckClass(RecordInfo* info) {
   }
 
   if (info->IsGCDerived()) {
+    // Check that CRTP pattern for GCed classes is correctly used.
+    if (auto* base_spec = info->GetDirectGCBase()) {
+      // Skip the check if base_spec name is dependent. The check will occur
+      // later for actual specializations.
+      if (!base_spec->getType()->isDependentType()) {
+        const CXXRecordDecl* base_decl =
+            base_spec->getType()->getAsCXXRecordDecl();
+        const CXXRecordDecl* first_arg =
+            GetFirstTemplateArgAsCXXRecordDecl(base_decl);
+        // The last check is for redeclaratation cases, for example, when
+        // explicit instantiation declaration is followed by the corresponding
+        // explicit instantiation definition.
+        if (!first_arg ||
+            first_arg->getFirstDecl() != info->record()->getFirstDecl()) {
+          reporter_.ClassMustCRTPItself(info, base_decl, base_spec);
+        }
+      }
+    }
+
     // It is illegal for a class to be both stack allocated and garbage
     // collected.
     if (info->IsStackAllocated()) {
@@ -231,9 +263,6 @@ void BlinkGCPluginConsumer::CheckClass(RecordInfo* info) {
 
     if (info->NeedsFinalization())
       CheckFinalization(info);
-
-    if (options_.warn_unneeded_finalizer && info->IsGCFinalized())
-      CheckUnneededFinalization(info);
   }
 
   DumpClass(info);
@@ -368,7 +397,6 @@ void BlinkGCPluginConsumer::CheckLeftMostDerived(RecordInfo* info) {
 }
 
 void BlinkGCPluginConsumer::CheckDispatch(RecordInfo* info) {
-  bool finalized = info->IsGCFinalized();
   CXXMethodDecl* trace_dispatch = info->GetTraceDispatchMethod();
   CXXMethodDecl* finalize_dispatch = info->GetFinalizeDispatchMethod();
   if (!trace_dispatch && !finalize_dispatch)
@@ -381,12 +409,6 @@ void BlinkGCPluginConsumer::CheckDispatch(RecordInfo* info) {
   if (base == info->record()) {
     if (!trace_dispatch)
       reporter_.MissingTraceDispatchMethod(info);
-    if (finalized && !finalize_dispatch)
-      reporter_.MissingFinalizeDispatchMethod(info);
-    if (!finalized && finalize_dispatch) {
-      reporter_.ClassRequiresFinalization(info);
-      reporter_.NoteUserDeclaredFinalizer(finalize_dispatch);
-    }
   }
 
   // Check that classes implementing manual dispatch do not have vtables.
@@ -410,7 +432,7 @@ void BlinkGCPluginConsumer::CheckDispatch(RecordInfo* info) {
       reporter_.MissingTraceDispatch(defn, info);
   }
 
-  if (finalized && finalize_dispatch && finalize_dispatch->isDefined(defn)) {
+  if (finalize_dispatch && finalize_dispatch->isDefined(defn)) {
     CheckDispatchVisitor visitor(info);
     visitor.TraverseStmt(defn->getBody());
     if (!visitor.dispatched_to_receiver())
@@ -421,86 +443,15 @@ void BlinkGCPluginConsumer::CheckDispatch(RecordInfo* info) {
 // TODO: Should we collect destructors similar to trace methods?
 void BlinkGCPluginConsumer::CheckFinalization(RecordInfo* info) {
   CXXDestructorDecl* dtor = info->record()->getDestructor();
-
-  // For finalized classes, check the finalization method if possible.
-  if (info->IsGCFinalized()) {
-    if (dtor && dtor->hasBody()) {
-      CheckFinalizerVisitor visitor(&cache_, info->IsEagerlyFinalized());
-      visitor.TraverseCXXMethodDecl(dtor);
-      if (!visitor.finalized_fields().empty()) {
-        reporter_.FinalizerAccessesFinalizedFields(
-            dtor, visitor.finalized_fields());
-      }
-    }
-    return;
-  }
-
-  // Don't require finalization of a mixin that has not yet been "mixed in".
-  if (info->IsGCMixin())
+  if (!dtor || !dtor->hasBody())
     return;
 
-  // Report the finalization error, and proceed to print possible causes for
-  // the finalization requirement.
-  reporter_.ClassRequiresFinalization(info);
-
-  if (dtor && dtor->isUserProvided())
-    reporter_.NoteUserDeclaredDestructor(dtor);
-
-  for (auto& base : info->GetBases())
-    if (base.second.info()->NeedsFinalization())
-      reporter_.NoteBaseRequiresFinalization(&base.second);
-
-  for (auto& field : info->GetFields())
-    if (field.second.edge()->NeedsFinalization())
-      reporter_.NoteFieldRequiresFinalization(&field.second);
-}
-
-void BlinkGCPluginConsumer::CheckUnneededFinalization(RecordInfo* info) {
-  if (!HasNonEmptyFinalizer(info))
-    reporter_.ClassDoesNotRequireFinalization(info);
-}
-
-bool BlinkGCPluginConsumer::HasNonEmptyFinalizer(RecordInfo* info) {
-  CXXDestructorDecl* dtor = info->record()->getDestructor();
-
-  // If the destructor is virtual (or one of the bases are by way of the
-  // recursive call below), consider this class as having a non-empty
-  // finalizer. Not doing so runs counter to standard C++ reflexes like
-  //
-  //   class A : public GarbageCollectedMixin {
-  //   public:
-  //     virtual ~A() { };
-  //     virtual void f() = 0;
-  //   };
-  //   class B : public GarbageCollectedFinalized<B>, public A {
-  //     USING_GARBAGE_COLLECTED_MIXIN(B);
-  //   public:
-  //     ~B() override { }
-  //     void f() override { }
-  //   };
-  //
-  // and it is considered a step too far to report a warning for such
-  // explicit usage of empty destructors.
-  if (dtor && dtor->isVirtual())
-      return true;
-
-  if (dtor && dtor->isUserProvided()) {
-    if (!dtor->hasBody() || !EmptyStmtVisitor::isEmpty(dtor->getBody()))
-      return true;
+  CheckFinalizerVisitor visitor(&cache_);
+  visitor.TraverseCXXMethodDecl(dtor);
+  if (!visitor.finalized_fields().empty()) {
+    reporter_.FinalizerAccessesFinalizedFields(dtor,
+                                               visitor.finalized_fields());
   }
-
-  if (info->GetFinalizeDispatchMethod())
-    return true;
-
-  for (auto& base : info->GetBases())
-    if (HasNonEmptyFinalizer(base.second.info()))
-      return true;
-
-  for (auto& field : info->GetFields())
-    if (field.second.edge()->NeedsFinalization())
-      return true;
-
-  return false;
 }
 
 void BlinkGCPluginConsumer::CheckTracingMethod(CXXMethodDecl* method) {

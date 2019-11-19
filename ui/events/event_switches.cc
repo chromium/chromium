@@ -40,6 +40,10 @@ const char kEdgeTouchFiltering[] = "edge-touch-filtering";
 // Tells Chrome to do filter out low pressure touches, as from a pencil. Should
 // only be used if the driver level filtering is insufficient.
 const char kLowPressureTouchFiltering[] = "low-pressure-touch-filtering";
+
+// Disable CancelAllTouches() function for the implementation on cancel single
+// touches.
+const char kDisableCancelAllTouches[] = "disable-cancel-all-touches";
 #endif
 
 }  // namespace switches

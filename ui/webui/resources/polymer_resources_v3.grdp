@@ -1,0 +1,298 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  This file is partially generated. See note below about the "partially" part.
+
+  Please use 'src/tools/polymer/polymer_grdp_to_txt.py' and
+  'src/tools/polymer/txt_to_polymer_grdp.py' to modify it, if possible.
+
+  'polymer_grdp_to_txt.py' converts 'polymer_resources.grdp' to a plain list of
+  used Polymer components:
+    ...
+    iron-iron-iconset/iron-iconset-extracted.js
+    iron-iron-iconset/iron-iconset.html
+    ...
+
+  'txt_to_polymer_grdp.py' converts list back to GRDP file.
+
+  Usage:
+    $ polymer_grdp_to_txt.py polymer_resources.grdp \-\-polymer_version=3 > /tmp/list.txt
+    $ vim /tmp/list.txt
+    $ txt_to_polymer_grdp.py /tmp/list.txt \-\-polymer_version=3 > polymer_resources.grdp
+
+  NOTE: Regenerating this file will eliminate all previous <if expr> statements.
+  Please restore these manually.
+-->
+<grit-part>
+  <!-- Polymer 3.0 -->
+  <structure name="IDR_POLYMER_3_0_FONT_ROBOTO_ROBOTO_JS"
+             file="../../../third_party/polymer/v3_0/components-chromium/font-roboto/roboto.js"
+             type="chrome_html"
+             compress="gzip" />
+  <structure name="IDR_POLYMER_3_0_IRON_A11Y_ANNOUNCER_IRON_A11Y_ANNOUNCER_JS"
+             file="../../../third_party/polymer/v3_0/components-chromium/iron-a11y-announcer/iron-a11y-announcer.js"
+             type="chrome_html"
+             compress="gzip" />
+  <structure name="IDR_POLYMER_3_0_IRON_A11Y_KEYS_BEHAVIOR_IRON_A11Y_KEYS_BEHAVIOR_JS"
+             file="../../../third_party/polymer/v3_0/components-chromium/iron-a11y-keys-behavior/iron-a11y-keys-behavior.js"
+             type="chrome_html"
+             compress="gzip" />
+  <structure name="IDR_POLYMER_3_0_IRON_A11Y_KEYS_IRON_A11Y_KEYS_JS"
+             file="../../../third_party/polymer/v3_0/components-chromium/iron-a11y-keys/iron-a11y-keys.js"
+             type="chrome_html"
+             compress="gzip" />
+  <structure name="IDR_POLYMER_3_0_IRON_BEHAVIORS_IRON_BUTTON_STATE_JS"
+             file="../../../third_party/polymer/v3_0/components-chromium/iron-behaviors/iron-button-state.js"
+             type="chrome_html"
+             compress="gzip" />
+  <structure name="IDR_POLYMER_3_0_IRON_BEHAVIORS_IRON_CONTROL_STATE_JS"
+             file="../../../third_party/polymer/v3_0/components-chromium/iron-behaviors/iron-control-state.js"
+             type="chrome_html"
+             compress="gzip" />
+  <structure name="IDR_POLYMER_3_0_IRON_COLLAPSE_IRON_COLLAPSE_JS"
+             file="../../../third_party/polymer/v3_0/components-chromium/iron-collapse/iron-collapse.js"
+             type="chrome_html"
+             compress="gzip" />
+  <if expr="chromeos">
+    <structure name="IDR_POLYMER_3_0_IRON_DROPDOWN_IRON_DROPDOWN_JS"
+               file="../../../third_party/polymer/v3_0/components-chromium/iron-dropdown/iron-dropdown.js"
+               type="chrome_html"
+               compress="gzip" />
+    <structure name="IDR_POLYMER_3_0_IRON_DROPDOWN_IRON_DROPDOWN_SCROLL_MANAGER_JS"
+               file="../../../third_party/polymer/v3_0/components-chromium/iron-dropdown/iron-dropdown-scroll-manager.js"
+               type="chrome_html"
+               compress="gzip" />
+  </if>
+  <structure name="IDR_POLYMER_3_0_IRON_FIT_BEHAVIOR_IRON_FIT_BEHAVIOR_JS"
+             file="../../../third_party/polymer/v3_0/components-chromium/iron-fit-behavior/iron-fit-behavior.js"
+             type="chrome_html"
+             compress="gzip" />
+  <structure name="IDR_POLYMER_3_0_IRON_FLEX_LAYOUT_IRON_FLEX_LAYOUT_CLASSES_JS"
+             file="../../../third_party/polymer/v3_0/components-chromium/iron-flex-layout/iron-flex-layout-classes.js"
+             type="chrome_html"
+             compress="gzip" />
+  <structure name="IDR_POLYMER_3_0_IRON_FLEX_LAYOUT_IRON_FLEX_LAYOUT_JS"
+             file="../../../third_party/polymer/v3_0/components-chromium/iron-flex-layout/iron-flex-layout.js"
+             type="chrome_html"
+             compress="gzip" />
+  <structure name="IDR_POLYMER_3_0_IRON_ICONSET_SVG_IRON_ICONSET_SVG_JS"
+             file="../../../third_party/polymer/v3_0/components-chromium/iron-iconset-svg/iron-iconset-svg.js"
+             type="chrome_html"
+             compress="gzip" />
+  <structure name="IDR_POLYMER_3_0_IRON_ICON_IRON_ICON_JS"
+             file="../../../third_party/polymer/v3_0/components-chromium/iron-icon/iron-icon.js"
+             type="chrome_html"
+             compress="gzip" />
+  <if expr="chromeos">
+    <structure name="IDR_POLYMER_3_0_IRON_INPUT_IRON_INPUT_JS"
+               file="../../../third_party/polymer/v3_0/components-chromium/iron-input/iron-input.js"
+               type="chrome_html"
+               compress="gzip" />
+  </if>
+  <structure name="IDR_POLYMER_3_0_IRON_LIST_IRON_LIST_JS"
+             file="../../../third_party/polymer/v3_0/components-chromium/iron-list/iron-list.js"
+             type="chrome_html"
+             compress="gzip" />
+  <structure name="IDR_POLYMER_3_0_IRON_LOCATION_IRON_LOCATION_JS"
+             file="../../../third_party/polymer/v3_0/components-chromium/iron-location/iron-location.js"
+             type="chrome_html"
+             compress="gzip" />
+  <structure name="IDR_POLYMER_3_0_IRON_LOCATION_IRON_QUERY_PARAMS_JS"
+             file="../../../third_party/polymer/v3_0/components-chromium/iron-location/iron-query-params.js"
+             type="chrome_html"
+             compress="gzip" />
+  <structure name="IDR_POLYMER_3_0_IRON_MEDIA_QUERY_IRON_MEDIA_QUERY_JS"
+             file="../../../third_party/polymer/v3_0/components-chromium/iron-media-query/iron-media-query.js"
+             type="chrome_html"
+             compress="gzip" />
+  <structure name="IDR_POLYMER_3_0_IRON_META_IRON_META_JS"
+             file="../../../third_party/polymer/v3_0/components-chromium/iron-meta/iron-meta.js"
+             type="chrome_html"
+             compress="gzip" />
+  <if expr="chromeos">
+    <structure name="IDR_POLYMER_3_0_IRON_OVERLAY_BEHAVIOR_IRON_FOCUSABLES_HELPER_JS"
+               file="../../../third_party/polymer/v3_0/components-chromium/iron-overlay-behavior/iron-focusables-helper.js"
+               type="chrome_html"
+               compress="gzip" />
+    <structure name="IDR_POLYMER_3_0_IRON_OVERLAY_BEHAVIOR_IRON_OVERLAY_BACKDROP_JS"
+               file="../../../third_party/polymer/v3_0/components-chromium/iron-overlay-behavior/iron-overlay-backdrop.js"
+               type="chrome_html"
+               compress="gzip" />
+    <structure name="IDR_POLYMER_3_0_IRON_OVERLAY_BEHAVIOR_IRON_OVERLAY_BEHAVIOR_JS"
+               file="../../../third_party/polymer/v3_0/components-chromium/iron-overlay-behavior/iron-overlay-behavior.js"
+               type="chrome_html"
+               compress="gzip" />
+    <structure name="IDR_POLYMER_3_0_IRON_OVERLAY_BEHAVIOR_IRON_OVERLAY_MANAGER_JS"
+               file="../../../third_party/polymer/v3_0/components-chromium/iron-overlay-behavior/iron-overlay-manager.js"
+               type="chrome_html"
+               compress="gzip" />
+    <structure name="IDR_POLYMER_3_0_IRON_OVERLAY_BEHAVIOR_IRON_SCROLL_MANAGER_JS"
+               file="../../../third_party/polymer/v3_0/components-chromium/iron-overlay-behavior/iron-scroll-manager.js"
+               type="chrome_html"
+               compress="gzip" />
+  </if>
+  <structure name="IDR_POLYMER_3_0_IRON_PAGES_IRON_PAGES_JS"
+             file="../../../third_party/polymer/v3_0/components-chromium/iron-pages/iron-pages.js"
+             type="chrome_html"
+             compress="gzip" />
+  <structure name="IDR_POLYMER_3_0_IRON_RANGE_BEHAVIOR_IRON_RANGE_BEHAVIOR_JS"
+             file="../../../third_party/polymer/v3_0/components-chromium/iron-range-behavior/iron-range-behavior.js"
+             type="chrome_html"
+             compress="gzip" />
+  <structure name="IDR_POLYMER_3_0_IRON_RESIZABLE_BEHAVIOR_IRON_RESIZABLE_BEHAVIOR_JS"
+             file="../../../third_party/polymer/v3_0/components-chromium/iron-resizable-behavior/iron-resizable-behavior.js"
+             type="chrome_html"
+             compress="gzip" />
+  <structure name="IDR_POLYMER_3_0_IRON_SCROLL_TARGET_BEHAVIOR_IRON_SCROLL_TARGET_BEHAVIOR_JS"
+             file="../../../third_party/polymer/v3_0/components-chromium/iron-scroll-target-behavior/iron-scroll-target-behavior.js"
+             type="chrome_html"
+             compress="gzip" />
+  <structure name="IDR_POLYMER_3_0_IRON_SCROLL_THRESHOLD_IRON_SCROLL_THRESHOLD_JS"
+             file="../../../third_party/polymer/v3_0/components-chromium/iron-scroll-threshold/iron-scroll-threshold.js"
+             type="chrome_html"
+             compress="gzip" />
+  <structure name="IDR_POLYMER_3_0_IRON_SELECTOR_IRON_MULTI_SELECTABLE_JS"
+             file="../../../third_party/polymer/v3_0/components-chromium/iron-selector/iron-multi-selectable.js"
+             type="chrome_html"
+             compress="gzip" />
+  <structure name="IDR_POLYMER_3_0_IRON_SELECTOR_IRON_SELECTABLE_JS"
+             file="../../../third_party/polymer/v3_0/components-chromium/iron-selector/iron-selectable.js"
+             type="chrome_html"
+             compress="gzip" />
+  <structure name="IDR_POLYMER_3_0_IRON_SELECTOR_IRON_SELECTION_JS"
+             file="../../../third_party/polymer/v3_0/components-chromium/iron-selector/iron-selection.js"
+             type="chrome_html"
+             compress="gzip" />
+  <structure name="IDR_POLYMER_3_0_IRON_SELECTOR_IRON_SELECTOR_JS"
+             file="../../../third_party/polymer/v3_0/components-chromium/iron-selector/iron-selector.js"
+             type="chrome_html"
+             compress="gzip" />
+  <structure name="IDR_POLYMER_3_0_IRON_TEST_HELPERS_MOCK_INTERACTIONS_JS"
+             file="../../../third_party/polymer/v3_0/components-chromium/iron-test-helpers/mock-interactions.js"
+             type="chrome_html"
+             compress="gzip" />
+  <if expr="chromeos">
+    <structure name="IDR_POLYMER_3_0_IRON_VALIDATABLE_BEHAVIOR_IRON_VALIDATABLE_BEHAVIOR_JS"
+               file="../../../third_party/polymer/v3_0/components-chromium/iron-validatable-behavior/iron-validatable-behavior.js"
+               type="chrome_html"
+               compress="gzip" />
+    <structure name="IDR_POLYMER_3_0_NEON_ANIMATION_ANIMATIONS_FADE_IN_ANIMATION_JS"
+               file="../../../third_party/polymer/v3_0/components-chromium/neon-animation/animations/fade-in-animation.js"
+               type="chrome_html"
+               compress="gzip" />
+    <structure name="IDR_POLYMER_3_0_NEON_ANIMATION_ANIMATIONS_FADE_OUT_ANIMATION_JS"
+               file="../../../third_party/polymer/v3_0/components-chromium/neon-animation/animations/fade-out-animation.js"
+               type="chrome_html"
+               compress="gzip" />
+    <structure name="IDR_POLYMER_3_0_NEON_ANIMATION_NEON_ANIMATABLE_BEHAVIOR_JS"
+               file="../../../third_party/polymer/v3_0/components-chromium/neon-animation/neon-animatable-behavior.js"
+               type="chrome_html"
+               compress="gzip" />
+    <structure name="IDR_POLYMER_3_0_NEON_ANIMATION_NEON_ANIMATABLE_JS"
+               file="../../../third_party/polymer/v3_0/components-chromium/neon-animation/neon-animatable.js"
+               type="chrome_html"
+               compress="gzip" />
+    <structure name="IDR_POLYMER_3_0_NEON_ANIMATION_NEON_ANIMATED_PAGES_JS"
+               file="../../../third_party/polymer/v3_0/components-chromium/neon-animation/neon-animated-pages.js"
+               type="chrome_html"
+               compress="gzip" />
+    <structure name="IDR_POLYMER_3_0_NEON_ANIMATION_NEON_ANIMATION_BEHAVIOR_JS"
+               file="../../../third_party/polymer/v3_0/components-chromium/neon-animation/neon-animation-behavior.js"
+               type="chrome_html"
+               compress="gzip" />
+    <structure name="IDR_POLYMER_3_0_NEON_ANIMATION_NEON_ANIMATION_RUNNER_BEHAVIOR_JS"
+               file="../../../third_party/polymer/v3_0/components-chromium/neon-animation/neon-animation-runner-behavior.js"
+               type="chrome_html"
+               compress="gzip" />
+  </if>
+  <structure name="IDR_POLYMER_3_0_PAPER_BEHAVIORS_PAPER_INKY_FOCUS_BEHAVIOR_JS"
+             file="../../../third_party/polymer/v3_0/components-chromium/paper-behaviors/paper-inky-focus-behavior.js"
+             type="chrome_html"
+             compress="gzip" />
+  <structure name="IDR_POLYMER_3_0_PAPER_BEHAVIORS_PAPER_RIPPLE_BEHAVIOR_JS"
+             file="../../../third_party/polymer/v3_0/components-chromium/paper-behaviors/paper-ripple-behavior.js"
+             type="chrome_html"
+             compress="gzip" />
+  <if expr="chromeos">
+    <structure name="IDR_POLYMER_3_0_PAPER_INPUT_PAPER_INPUT_ADDON_BEHAVIOR_JS"
+               file="../../../third_party/polymer/v3_0/components-chromium/paper-input/paper-input-addon-behavior.js"
+               type="chrome_html"
+               compress="gzip" />
+    <structure name="IDR_POLYMER_3_0_PAPER_INPUT_PAPER_INPUT_CONTAINER_JS"
+               file="../../../third_party/polymer/v3_0/components-chromium/paper-input/paper-input-container.js"
+               type="chrome_html"
+               compress="gzip" />
+    <structure name="IDR_POLYMER_3_0_PAPER_INPUT_PAPER_INPUT_ERROR_JS"
+               file="../../../third_party/polymer/v3_0/components-chromium/paper-input/paper-input-error.js"
+               type="chrome_html"
+               compress="gzip" />
+  </if>
+  <structure name="IDR_POLYMER_3_0_PAPER_PROGRESS_PAPER_PROGRESS_JS"
+             file="../../../third_party/polymer/v3_0/components-chromium/paper-progress/paper-progress.js"
+             type="chrome_html"
+             compress="gzip" />
+  <structure name="IDR_POLYMER_3_0_PAPER_RIPPLE_PAPER_RIPPLE_JS"
+             file="../../../third_party/polymer/v3_0/components-chromium/paper-ripple/paper-ripple.js"
+             type="chrome_html"
+             compress="gzip" />
+  <structure name="IDR_POLYMER_3_0_PAPER_SPINNER_PAPER_SPINNER_BEHAVIOR_JS"
+             file="../../../third_party/polymer/v3_0/components-chromium/paper-spinner/paper-spinner-behavior.js"
+             type="chrome_html"
+             compress="gzip" />
+  <structure name="IDR_POLYMER_3_0_PAPER_SPINNER_PAPER_SPINNER_LITE_JS"
+             file="../../../third_party/polymer/v3_0/components-chromium/paper-spinner/paper-spinner-lite.js"
+             type="chrome_html"
+             compress="gzip" />
+  <structure name="IDR_POLYMER_3_0_PAPER_SPINNER_PAPER_SPINNER_STYLES_JS"
+             file="../../../third_party/polymer/v3_0/components-chromium/paper-spinner/paper-spinner-styles.js"
+             type="chrome_html"
+             compress="gzip" />
+  <structure name="IDR_POLYMER_3_0_PAPER_STYLES_CLASSES_GLOBAL_JS"
+             file="../../../third_party/polymer/v3_0/components-chromium/paper-styles/classes/global.js"
+             type="chrome_html"
+             compress="gzip" />
+  <structure name="IDR_POLYMER_3_0_PAPER_STYLES_CLASSES_SHADOW_JS"
+             file="../../../third_party/polymer/v3_0/components-chromium/paper-styles/classes/shadow.js"
+             type="chrome_html"
+             compress="gzip" />
+  <structure name="IDR_POLYMER_3_0_PAPER_STYLES_CLASSES_TYPOGRAPHY_JS"
+             file="../../../third_party/polymer/v3_0/components-chromium/paper-styles/classes/typography.js"
+             type="chrome_html"
+             compress="gzip" />
+  <structure name="IDR_POLYMER_3_0_PAPER_STYLES_COLOR_JS"
+             file="../../../third_party/polymer/v3_0/components-chromium/paper-styles/color.js"
+             type="chrome_html"
+             compress="gzip" />
+  <structure name="IDR_POLYMER_3_0_PAPER_STYLES_DEFAULT_THEME_JS"
+             file="../../../third_party/polymer/v3_0/components-chromium/paper-styles/default-theme.js"
+             type="chrome_html"
+             compress="gzip" />
+  <structure name="IDR_POLYMER_3_0_PAPER_STYLES_DEMO_PAGES_JS"
+             file="../../../third_party/polymer/v3_0/components-chromium/paper-styles/demo-pages.js"
+             type="chrome_html"
+             compress="gzip" />
+  <structure name="IDR_POLYMER_3_0_PAPER_STYLES_ELEMENT_STYLES_PAPER_ITEM_STYLES_JS"
+             file="../../../third_party/polymer/v3_0/components-chromium/paper-styles/element-styles/paper-item-styles.js"
+             type="chrome_html"
+             compress="gzip" />
+  <structure name="IDR_POLYMER_3_0_PAPER_STYLES_ELEMENT_STYLES_PAPER_MATERIAL_STYLES_JS"
+             file="../../../third_party/polymer/v3_0/components-chromium/paper-styles/element-styles/paper-material-styles.js"
+             type="chrome_html"
+             compress="gzip" />
+  <structure name="IDR_POLYMER_3_0_PAPER_STYLES_SHADOW_JS"
+             file="../../../third_party/polymer/v3_0/components-chromium/paper-styles/shadow.js"
+             type="chrome_html"
+             compress="gzip" />
+  <structure name="IDR_POLYMER_3_0_PAPER_STYLES_TYPOGRAPHY_JS"
+             file="../../../third_party/polymer/v3_0/components-chromium/paper-styles/typography.js"
+             type="chrome_html"
+             compress="gzip" />
+  <structure name="IDR_POLYMER_3_0_PAPER_TOOLTIP_PAPER_TOOLTIP_JS"
+             file="../../../third_party/polymer/v3_0/components-chromium/paper-tooltip/paper-tooltip.js"
+             type="chrome_html"
+             compress="gzip" />
+  <structure name="IDR_POLYMER_3_0_POLYMER_POLYMER_BUNDLED_MIN_JS"
+             file="../../../third_party/polymer/v3_0/components-chromium/polymer/polymer_bundled.min.js"
+             type="chrome_html"
+             compress="gzip" />
+</grit-part>
+

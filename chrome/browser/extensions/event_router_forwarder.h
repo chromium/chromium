@@ -38,7 +38,8 @@ class EventRouterForwarder
   void BroadcastEventToRenderers(events::HistogramValue histogram_value,
                                  const std::string& event_name,
                                  std::unique_ptr<base::ListValue> event_args,
-                                 const GURL& event_url);
+                                 const GURL& event_url,
+                                 bool dispatch_to_off_the_record_profiles);
 
   // Calls
   //   DispatchEventToRenderers(event_name, event_args,
@@ -49,7 +50,8 @@ class EventRouterForwarder
                                 std::unique_ptr<base::ListValue> event_args,
                                 void* profile,
                                 bool use_profile_to_restrict_events,
-                                const GURL& event_url);
+                                const GURL& event_url,
+                                bool dispatch_to_off_the_record_profiles);
 
  protected:
   // Protected for testing.
@@ -63,7 +65,8 @@ class EventRouterForwarder
                            std::unique_ptr<base::ListValue> event_args,
                            void* profile,
                            bool use_profile_to_restrict_events,
-                           const GURL& event_url);
+                           const GURL& event_url,
+                           bool dispatch_to_off_the_record_profiles);
 
   // Calls DispatchEventToRenderers or DispatchEventToExtension (depending on
   // whether extension_id == "" or not) of |profile|'s EventRouter.

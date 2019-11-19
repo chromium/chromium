@@ -8,11 +8,11 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "chrome/browser/download/download_history.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "extensions/buildflags/buildflags.h"
 
 class ChromeDownloadManagerDelegate;
-class DownloadHistory;
 class ExtensionDownloadsEventRouter;
 
 namespace content {
@@ -64,6 +64,12 @@ class DownloadCoreService : public KeyedService {
   // the previous delegate.  For testing.
   virtual void SetDownloadManagerDelegateForTesting(
       std::unique_ptr<ChromeDownloadManagerDelegate> delegate) = 0;
+
+  // Sets the DownloadHistory associated with this object and
+  // its DownloadManager. Takes ownership of |download_history|, and destroys
+  // the previous delegate.  For testing.
+  virtual void SetDownloadHistoryForTesting(
+      std::unique_ptr<DownloadHistory> download_history) {}
 
   // Returns false if at least one extension has disabled the shelf, true
   // otherwise.

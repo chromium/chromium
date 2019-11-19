@@ -8,7 +8,7 @@ import org.chromium.base.annotations.UsedByReflection;
 
 /** {@link VrDelegateProvider} implementation if the VR module is available. */
 @UsedByReflection("VrModuleProvider.java")
-/* package */ class VrDelegateProviderImpl implements VrDelegateProvider {
+public class VrDelegateProviderImpl implements VrDelegateProvider {
     private final VrDelegateImpl mDelegate = new VrDelegateImpl();
     private final VrIntentDelegateImpl mIntentDelegate = new VrIntentDelegateImpl();
 

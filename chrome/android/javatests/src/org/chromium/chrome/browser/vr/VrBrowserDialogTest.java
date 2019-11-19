@@ -21,7 +21,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.ThreadUtils;
+import org.chromium.base.task.PostTask;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
@@ -34,15 +34,16 @@ import org.chromium.chrome.browser.vr.util.RenderTestUtils;
 import org.chromium.chrome.browser.vr.util.VrBrowserTransitionUtils;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.RenderTestRule;
+import org.chromium.content_public.browser.UiThreadTaskTraits;
 
 import java.io.IOException;
-import java.util.concurrent.TimeoutException;
 
 /**
  * End-to-End test for capturing and comparing screen images for VR Browsering Dialogs
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@CommandLineFlags.
+Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, "enable-features=LogJsConsoleMessages"})
 @Restriction(RESTRICTION_TYPE_VIEWER_DAYDREAM_OR_STANDALONE)
 public class VrBrowserDialogTest {
     // We need to make sure the port is constant, otherwise the URL changes between test runs, which
@@ -62,7 +63,7 @@ public class VrBrowserDialogTest {
     private VrBrowserTestFramework mVrBrowserTestFramework;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         mVrBrowserTestFramework = new VrBrowserTestFramework(mVrTestRule);
         mVrTestRule.getEmbeddedTestServerRule().setServerPort(SERVER_PORT);
 
@@ -75,7 +76,7 @@ public class VrBrowserDialogTest {
     }
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
         clearNotificationChannel();
     }
 
@@ -84,13 +85,12 @@ public class VrBrowserDialogTest {
             PermissionInfo notificationSettings =
                     new PermissionInfo(PermissionInfo.Type.NOTIFICATION,
                             "http://127.0.0.1:" + String.valueOf(SERVER_PORT), null, false);
-            ThreadUtils.runOnUiThread(
+            PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT,
                     () -> notificationSettings.setContentSetting(ContentSettingValues.DEFAULT));
         }
     }
 
-    private void navigateAndDisplayPermissionPrompt(String page, final String promptCommand)
-            throws InterruptedException, TimeoutException {
+    private void navigateAndDisplayPermissionPrompt(String page, final String promptCommand) {
         // Trying to grant permissions on file:// URLs ends up hitting DCHECKS, so load from a local
         // server instead.
         mVrBrowserTestFramework.loadUrlAndAwaitInitialization(
@@ -113,7 +113,7 @@ public class VrBrowserDialogTest {
     }
 
     private void permissionPromptTestImpl(String promptSnippet, String nameBase, int indicatorName,
-            final boolean grant) throws InterruptedException, TimeoutException, IOException {
+            final boolean grant) throws InterruptedException, IOException {
         // Display the requested permission.
         navigateAndDisplayPermissionPrompt("2d_permission_page", promptSnippet);
         // Capture an image with the permission prompt displayed
@@ -166,8 +166,7 @@ public class VrBrowserDialogTest {
     @Test
     @LargeTest
     @Feature({"Browser", "RenderTest"})
-    public void testMicrophonePermissionPrompt()
-            throws InterruptedException, TimeoutException, IOException {
+    public void testMicrophonePermissionPrompt() throws InterruptedException, IOException {
         testMicrophonePermissionPromptImpl(false, false);
     }
 
@@ -177,15 +176,14 @@ public class VrBrowserDialogTest {
     @Test
     @LargeTest
     @Feature({"Browser", "RenderTest"})
-    public void testMicrophonePermissionPromptIncognito()
-            throws InterruptedException, TimeoutException, IOException {
+    public void testMicrophonePermissionPromptIncognito() throws InterruptedException, IOException {
         // Create an incognito tab
         mVrBrowserTestFramework.openIncognitoTab("about:blank");
         testMicrophonePermissionPromptImpl(true, false);
     }
 
     private void testMicrophonePermissionPromptImpl(boolean incognito, boolean reposition)
-            throws InterruptedException, TimeoutException, IOException {
+            throws InterruptedException, IOException {
         permissionPromptTestImpl("navigator.getUserMedia({audio: true}, onGranted, onDenied)",
                 "microphone_permission_prompt" + (incognito ? "_incognito" : "")
                         + (reposition ? "_reposition" : ""),
@@ -208,7 +206,7 @@ public class VrBrowserDialogTest {
     @LargeTest
     @Feature({"Browser", "RenderTest"})
     public void testMicrophonePermissionPromptRepositionResize()
-            throws InterruptedException, TimeoutException, IOException {
+            throws InterruptedException, IOException {
         VrBrowserTransitionUtils.forceEnterVrBrowserOrFail(POLL_TIMEOUT_LONG_MS);
         // Move the content quad a bit up and to the right and make it smaller.
         NativeUiUtils.selectRepositionBar();
@@ -232,8 +230,7 @@ public class VrBrowserDialogTest {
     @LargeTest
     @Feature({"Browser", "RenderTest"})
     @Restriction(RESTRICTION_TYPE_VIEWER_DAYDREAM)
-    public void testCameraPermissionPrompt()
-            throws InterruptedException, TimeoutException, IOException {
+    public void testCameraPermissionPrompt() throws InterruptedException, IOException {
         permissionPromptTestImpl("navigator.getUserMedia({video: true}, onGranted, onDenied)",
                 "camera_permission_prompt", UserFriendlyElementName.CAMERA_PERMISSION_INDICATOR,
                 true /* grant */);
@@ -245,8 +242,7 @@ public class VrBrowserDialogTest {
     @Test
     @LargeTest
     @Feature({"Browser", "RenderTest"})
-    public void testLocationPermissionPrompt()
-            throws InterruptedException, TimeoutException, IOException {
+    public void testLocationPermissionPrompt() throws InterruptedException, IOException {
         permissionPromptTestImpl("navigator.geolocation.watchPosition(onGranted, onDenied, "
                         + "{enableHighAccuracy:true})",
                 "location_permission_prompt", UserFriendlyElementName.LOCATION_PERMISSION_INDICATOR,
@@ -259,8 +255,7 @@ public class VrBrowserDialogTest {
     @Test
     @LargeTest
     @Feature({"Browser", "RenderTest"})
-    public void testNotificationPermissionPrompt()
-            throws InterruptedException, TimeoutException, IOException {
+    public void testNotificationPermissionPrompt() throws InterruptedException, IOException {
         permissionPromptTestImpl("Notification.requestPermission(onGranted, onDenied)",
                 "notification_permission_prompt", UserFriendlyElementName.NONE, true /* grant */);
     }

@@ -9,7 +9,6 @@
 #include "base/trace_event/trace_event.h"
 #include "components/safe_browsing/common/safebrowsing_constants.h"
 #include "components/safe_browsing/common/utils.h"
-#include "mojo/public/cpp/bindings/interface_request.h"
 #include "net/url_request/redirect_info.h"
 #include "services/network/public/cpp/resource_request.h"
 
@@ -18,22 +17,18 @@ namespace safe_browsing {
 RendererURLLoaderThrottle::RendererURLLoaderThrottle(
     mojom::SafeBrowsing* safe_browsing,
     int render_frame_id)
-    : safe_browsing_(safe_browsing),
-      render_frame_id_(render_frame_id),
-      weak_factory_(this) {}
+    : safe_browsing_(safe_browsing), render_frame_id_(render_frame_id) {}
 
 RendererURLLoaderThrottle::~RendererURLLoaderThrottle() {
   if (deferred_)
     TRACE_EVENT_ASYNC_END0("safe_browsing", "Deferred", this);
-
-  if (!user_action_involved_)
-    LogNoUserActionResourceLoadingDelay(total_delay_);
 }
 
 void RendererURLLoaderThrottle::DetachFromCurrentSequence() {
   // Create a new pipe to the SafeBrowsing interface that can be bound to a
   // different sequence.
-  safe_browsing_->Clone(mojo::MakeRequest(&safe_browsing_ptr_info_));
+  safe_browsing_->Clone(
+      safe_browsing_pending_remote_.InitWithNewPipeAndPassReceiver());
   safe_browsing_ = nullptr;
 }
 
@@ -44,11 +39,11 @@ void RendererURLLoaderThrottle::WillStartRequest(
   DCHECK(!blocked_);
   DCHECK(!url_checker_);
 
-  if (safe_browsing_ptr_info_.is_valid()) {
+  if (safe_browsing_pending_remote_.is_valid()) {
     // Bind the pipe created in DetachFromCurrentSequence to the current
     // sequence.
-    safe_browsing_ptr_.Bind(std::move(safe_browsing_ptr_info_));
-    safe_browsing_ = safe_browsing_ptr_.get();
+    safe_browsing_remote_.Bind(std::move(safe_browsing_pending_remote_));
+    safe_browsing_ = safe_browsing_remote_.get();
   }
 
   original_url_ = request->url;
@@ -58,7 +53,7 @@ void RendererURLLoaderThrottle::WillStartRequest(
   net::HttpRequestHeaders headers;
   headers.CopyFrom(request->headers);
   safe_browsing_->CreateCheckerAndCheck(
-      render_frame_id_, mojo::MakeRequest(&url_checker_), request->url,
+      render_frame_id_, url_checker_.BindNewPipeAndPassReceiver(), request->url,
       request->method, headers, request->load_flags,
       static_cast<content::ResourceType>(request->resource_type),
       request->has_user_gesture, request->originated_from_service_worker,
@@ -66,13 +61,13 @@ void RendererURLLoaderThrottle::WillStartRequest(
                      weak_factory_.GetWeakPtr()));
   safe_browsing_ = nullptr;
 
-  url_checker_.set_connection_error_handler(base::BindOnce(
-      &RendererURLLoaderThrottle::OnConnectionError, base::Unretained(this)));
+  url_checker_.set_disconnect_handler(base::BindOnce(
+      &RendererURLLoaderThrottle::OnMojoDisconnect, base::Unretained(this)));
 }
 
 void RendererURLLoaderThrottle::WillRedirectRequest(
     net::RedirectInfo* redirect_info,
-    const network::ResourceResponseHead& /* response_head */,
+    const network::mojom::URLResponseHead& /* response_head */,
     bool* /* defer */,
     std::vector<std::string>* /* to_be_removed_headers */,
     net::HttpRequestHeaders* /* modified_headers */) {
@@ -94,7 +89,7 @@ void RendererURLLoaderThrottle::WillRedirectRequest(
 
 void RendererURLLoaderThrottle::WillProcessResponse(
     const GURL& response_url,
-    network::ResourceResponseHead* response_head,
+    network::mojom::URLResponseHead* response_head,
     bool* defer) {
   // If |blocked_| is true, the resource load has been canceled and there
   // shouldn't be such a notification.
@@ -117,7 +112,7 @@ void RendererURLLoaderThrottle::OnCompleteCheck(bool proceed,
 }
 
 void RendererURLLoaderThrottle::OnCheckUrlResult(
-    mojom::UrlCheckNotifierRequest slow_check_notifier,
+    mojo::PendingReceiver<mojom::UrlCheckNotifier> slow_check_notifier,
     bool proceed,
     bool showed_interstitial) {
   // When this is the callback of safe_browsing_->CreateCheckerAndCheck(), it is
@@ -126,7 +121,7 @@ void RendererURLLoaderThrottle::OnCheckUrlResult(
   if (blocked_ || !url_checker_)
     return;
 
-  if (!slow_check_notifier.is_pending()) {
+  if (!slow_check_notifier.is_valid()) {
     OnCompleteCheckInternal(false /* slow_check */, proceed,
                             showed_interstitial);
     return;
@@ -141,11 +136,11 @@ void RendererURLLoaderThrottle::OnCheckUrlResult(
   if (pending_slow_checks_ == 1)
     delegate_->PauseReadingBodyFromNet();
 
-  if (!notifier_bindings_) {
-    notifier_bindings_ =
-        std::make_unique<mojo::BindingSet<mojom::UrlCheckNotifier>>();
+  if (!notifier_receivers_) {
+    notifier_receivers_ =
+        std::make_unique<mojo::ReceiverSet<mojom::UrlCheckNotifier>>();
   }
-  notifier_bindings_->AddBinding(this, std::move(slow_check_notifier));
+  notifier_receivers_->Add(this, std::move(slow_check_notifier));
 }
 
 void RendererURLLoaderThrottle::OnCompleteCheckInternal(
@@ -182,7 +177,7 @@ void RendererURLLoaderThrottle::OnCompleteCheckInternal(
     blocked_ = true;
 
     url_checker_.reset();
-    notifier_bindings_.reset();
+    notifier_receivers_.reset();
     pending_checks_ = 0;
     pending_slow_checks_ = 0;
     delegate_->CancelWithError(GetNetErrorCodeForSafeBrowsing(),
@@ -190,12 +185,12 @@ void RendererURLLoaderThrottle::OnCompleteCheckInternal(
   }
 }
 
-void RendererURLLoaderThrottle::OnConnectionError() {
+void RendererURLLoaderThrottle::OnMojoDisconnect() {
   DCHECK(!blocked_);
 
   // If a service-side disconnect happens, treat all URLs as if they are safe.
   url_checker_.reset();
-  notifier_bindings_.reset();
+  notifier_receivers_.reset();
 
   pending_checks_ = 0;
 

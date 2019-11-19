@@ -19,8 +19,6 @@ namespace mojom {
 enum class WindowStateType;
 }
 
-namespace wm {
-
 // ClientControlledState delegates the window state transition and
 // bounds control to the client. Its window state and bounds are
 // determined by the delegate. ARC++ window's state is controlled by
@@ -33,16 +31,17 @@ class ASH_EXPORT ClientControlledState : public BaseState {
     // Handles the state change of |window_state| to |requested_state|.
     // Delegate may decide to ignore the state change, proceed with the state
     // change, or can move to a different state.
-    virtual void HandleWindowStateRequest(
-        WindowState* window_state,
-        mojom::WindowStateType requested_state) = 0;
+    virtual void HandleWindowStateRequest(WindowState* window_state,
+                                          WindowStateType requested_state) = 0;
     // Handles the bounds change request for |window_state|. The bounds change
     // might come from a state change request |requested_state| (currently it
     // should only be a snapped window state). Delegate may choose to ignore the
     // request, set the given bounds, or set the different bounds.
-    virtual void HandleBoundsRequest(WindowState* window_state,
-                                     mojom::WindowStateType requested_state,
-                                     const gfx::Rect& requested_bounds) = 0;
+    virtual void HandleBoundsRequest(
+        WindowState* window_state,
+        WindowStateType requested_state,
+        const gfx::Rect& requested_bounds_in_display,
+        int64_t display_id) = 0;
   };
 
   // Adjust bounds to ensure window visibility, which is used for window added
@@ -53,6 +52,9 @@ class ASH_EXPORT ClientControlledState : public BaseState {
 
   explicit ClientControlledState(std::unique_ptr<Delegate> delegate);
   ~ClientControlledState() override;
+
+  // Resets |delegate_|.
+  void ResetDelegate();
 
   // A flag used to update the window's bounds directly, instead of
   // delegating to |Delegate|. The Delegate should use this to
@@ -94,8 +96,8 @@ class ASH_EXPORT ClientControlledState : public BaseState {
   // Enters next state. This is used when the state moves from one to another
   // within the same desktop mode. Returns true if the state has changed, or
   // false otherwise.
-  bool EnterNextState(wm::WindowState* window_state,
-                      mojom::WindowStateType next_state_type);
+  bool EnterNextState(WindowState* window_state,
+                      WindowStateType next_state_type);
 
  private:
   std::unique_ptr<Delegate> delegate_;
@@ -109,7 +111,6 @@ class ASH_EXPORT ClientControlledState : public BaseState {
   DISALLOW_COPY_AND_ASSIGN(ClientControlledState);
 };
 
-}  // namespace wm
 }  // namespace ash
 
 #endif  // ASH_WM_DEFAULT_STATE_H_

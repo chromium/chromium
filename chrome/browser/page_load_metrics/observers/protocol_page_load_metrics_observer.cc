@@ -4,7 +4,26 @@
 
 #include "chrome/browser/page_load_metrics/observers/protocol_page_load_metrics_observer.h"
 
-#include "chrome/browser/page_load_metrics/page_load_metrics_util.h"
+#include "components/page_load_metrics/browser/page_load_metrics_util.h"
+
+namespace {
+
+#define PROTOCOL_HISTOGRAM(name, protocol, sample)                         \
+  switch (protocol) {                                                      \
+    case page_load_metrics::NetworkProtocol::kHttp11:                      \
+      PAGE_LOAD_HISTOGRAM("PageLoad.Clients.Protocol.H11." name, sample);  \
+      break;                                                               \
+    case page_load_metrics::NetworkProtocol::kHttp2:                       \
+      PAGE_LOAD_HISTOGRAM("PageLoad.Clients.Protocol.H2." name, sample);   \
+      break;                                                               \
+    case page_load_metrics::NetworkProtocol::kQuic:                        \
+      PAGE_LOAD_HISTOGRAM("PageLoad.Clients.Protocol.QUIC." name, sample); \
+      break;                                                               \
+    case page_load_metrics::NetworkProtocol::kOther:                       \
+      break;                                                               \
+  }
+
+}  // namespace
 
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy
 ProtocolPageLoadMetricsObserver::OnStart(
@@ -18,295 +37,52 @@ page_load_metrics::PageLoadMetricsObserver::ObservePolicy
 ProtocolPageLoadMetricsObserver::OnCommit(
     content::NavigationHandle* navigation_handle,
     ukm::SourceId source_id) {
-  connection_info_ = navigation_handle->GetConnectionInfo();
+  protocol_ = page_load_metrics::GetNetworkProtocol(
+      navigation_handle->GetConnectionInfo());
   return CONTINUE_OBSERVING;
 }
 
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy
 ProtocolPageLoadMetricsObserver::OnHidden(
-    const page_load_metrics::mojom::PageLoadTiming& timing,
-    const page_load_metrics::PageLoadExtraInfo& info) {
+    const page_load_metrics::mojom::PageLoadTiming& timing) {
   return STOP_OBSERVING;
 }
 
 void ProtocolPageLoadMetricsObserver::OnParseStart(
-    const page_load_metrics::mojom::PageLoadTiming& timing,
-    const page_load_metrics::PageLoadExtraInfo& info) {
-  switch (connection_info_) {
-    case net::HttpResponseInfo::CONNECTION_INFO_UNKNOWN:
-    case net::HttpResponseInfo::CONNECTION_INFO_DEPRECATED_SPDY2:
-    case net::HttpResponseInfo::CONNECTION_INFO_DEPRECATED_SPDY3:
-    case net::HttpResponseInfo::CONNECTION_INFO_DEPRECATED_HTTP2_14:
-    case net::HttpResponseInfo::CONNECTION_INFO_DEPRECATED_HTTP2_15:
-    case net::HttpResponseInfo::CONNECTION_INFO_HTTP0_9:
-    case net::HttpResponseInfo::CONNECTION_INFO_HTTP1_0:
-    case net::HttpResponseInfo::NUM_OF_CONNECTION_INFOS:
-      return;
-    case net::HttpResponseInfo::CONNECTION_INFO_HTTP1_1:
-      PAGE_LOAD_HISTOGRAM(
-          "PageLoad.Clients.Protocol.H11.ParseTiming.NavigationToParseStart",
-          timing.parse_timing->parse_start.value());
-      break;
-    case net::HttpResponseInfo::CONNECTION_INFO_HTTP2:
-      PAGE_LOAD_HISTOGRAM(
-          "PageLoad.Clients.Protocol.H2.ParseTiming.NavigationToParseStart",
-          timing.parse_timing->parse_start.value());
-      break;
-    case net::HttpResponseInfo::CONNECTION_INFO_QUIC_UNKNOWN_VERSION:
-    case net::HttpResponseInfo::CONNECTION_INFO_QUIC_32:
-    case net::HttpResponseInfo::CONNECTION_INFO_QUIC_33:
-    case net::HttpResponseInfo::CONNECTION_INFO_QUIC_34:
-    case net::HttpResponseInfo::CONNECTION_INFO_QUIC_35:
-    case net::HttpResponseInfo::CONNECTION_INFO_QUIC_36:
-    case net::HttpResponseInfo::CONNECTION_INFO_QUIC_37:
-    case net::HttpResponseInfo::CONNECTION_INFO_QUIC_38:
-    case net::HttpResponseInfo::CONNECTION_INFO_QUIC_39:
-    case net::HttpResponseInfo::CONNECTION_INFO_QUIC_40:
-    case net::HttpResponseInfo::CONNECTION_INFO_QUIC_41:
-    case net::HttpResponseInfo::CONNECTION_INFO_QUIC_42:
-    case net::HttpResponseInfo::CONNECTION_INFO_QUIC_43:
-    case net::HttpResponseInfo::CONNECTION_INFO_QUIC_44:
-    case net::HttpResponseInfo::CONNECTION_INFO_QUIC_45:
-    case net::HttpResponseInfo::CONNECTION_INFO_QUIC_46:
-    case net::HttpResponseInfo::CONNECTION_INFO_QUIC_47:
-    case net::HttpResponseInfo::CONNECTION_INFO_QUIC_99:
-      PAGE_LOAD_HISTOGRAM(
-          "PageLoad.Clients.Protocol.QUIC.ParseTiming.NavigationToParseStart",
-          timing.parse_timing->parse_start.value());
-      break;
-  }
+    const page_load_metrics::mojom::PageLoadTiming& timing) {
+  PROTOCOL_HISTOGRAM("ParseTiming.NavigationToParseStart", protocol_,
+                     timing.parse_timing->parse_start.value());
 }
 
 void ProtocolPageLoadMetricsObserver::OnFirstContentfulPaintInPage(
-    const page_load_metrics::mojom::PageLoadTiming& timing,
-    const page_load_metrics::PageLoadExtraInfo& extra_info) {
-  switch (connection_info_) {
-    case net::HttpResponseInfo::CONNECTION_INFO_UNKNOWN:
-    case net::HttpResponseInfo::CONNECTION_INFO_DEPRECATED_SPDY2:
-    case net::HttpResponseInfo::CONNECTION_INFO_DEPRECATED_SPDY3:
-    case net::HttpResponseInfo::CONNECTION_INFO_DEPRECATED_HTTP2_14:
-    case net::HttpResponseInfo::CONNECTION_INFO_DEPRECATED_HTTP2_15:
-    case net::HttpResponseInfo::CONNECTION_INFO_HTTP0_9:
-    case net::HttpResponseInfo::CONNECTION_INFO_HTTP1_0:
-    case net::HttpResponseInfo::NUM_OF_CONNECTION_INFOS:
-      return;
-    case net::HttpResponseInfo::CONNECTION_INFO_HTTP1_1:
-      PAGE_LOAD_HISTOGRAM(
-          "PageLoad.Clients.Protocol.H11.PaintTiming."
-          "NavigationToFirstContentfulPaint",
-          timing.paint_timing->first_contentful_paint.value());
-      PAGE_LOAD_HISTOGRAM(
-          "PageLoad.Clients.Protocol.H11.PaintTiming."
-          "ParseStartToFirstContentfulPaint",
-          timing.paint_timing->first_contentful_paint.value() -
-              timing.parse_timing->parse_start.value());
-      break;
-    case net::HttpResponseInfo::CONNECTION_INFO_HTTP2:
-      PAGE_LOAD_HISTOGRAM(
-          "PageLoad.Clients.Protocol.H2.PaintTiming."
-          "NavigationToFirstContentfulPaint",
-          timing.paint_timing->first_contentful_paint.value());
-      PAGE_LOAD_HISTOGRAM(
-          "PageLoad.Clients.Protocol.H2.PaintTiming."
-          "ParseStartToFirstContentfulPaint",
-          timing.paint_timing->first_contentful_paint.value() -
-              timing.parse_timing->parse_start.value());
-      break;
-    case net::HttpResponseInfo::CONNECTION_INFO_QUIC_UNKNOWN_VERSION:
-    case net::HttpResponseInfo::CONNECTION_INFO_QUIC_32:
-    case net::HttpResponseInfo::CONNECTION_INFO_QUIC_33:
-    case net::HttpResponseInfo::CONNECTION_INFO_QUIC_34:
-    case net::HttpResponseInfo::CONNECTION_INFO_QUIC_35:
-    case net::HttpResponseInfo::CONNECTION_INFO_QUIC_36:
-    case net::HttpResponseInfo::CONNECTION_INFO_QUIC_37:
-    case net::HttpResponseInfo::CONNECTION_INFO_QUIC_38:
-    case net::HttpResponseInfo::CONNECTION_INFO_QUIC_39:
-    case net::HttpResponseInfo::CONNECTION_INFO_QUIC_40:
-    case net::HttpResponseInfo::CONNECTION_INFO_QUIC_41:
-    case net::HttpResponseInfo::CONNECTION_INFO_QUIC_42:
-    case net::HttpResponseInfo::CONNECTION_INFO_QUIC_43:
-    case net::HttpResponseInfo::CONNECTION_INFO_QUIC_44:
-    case net::HttpResponseInfo::CONNECTION_INFO_QUIC_45:
-    case net::HttpResponseInfo::CONNECTION_INFO_QUIC_46:
-    case net::HttpResponseInfo::CONNECTION_INFO_QUIC_47:
-    case net::HttpResponseInfo::CONNECTION_INFO_QUIC_99:
-      PAGE_LOAD_HISTOGRAM(
-          "PageLoad.Clients.Protocol.QUIC.PaintTiming."
-          "NavigationToFirstContentfulPaint",
-          timing.paint_timing->first_contentful_paint.value());
-      PAGE_LOAD_HISTOGRAM(
-          "PageLoad.Clients.Protocol.QUIC.PaintTiming."
-          "ParseStartToFirstContentfulPaint",
-          timing.paint_timing->first_contentful_paint.value() -
-              timing.parse_timing->parse_start.value());
-      break;
-  }
+    const page_load_metrics::mojom::PageLoadTiming& timing) {
+  PROTOCOL_HISTOGRAM("PaintTiming.NavigationToFirstContentfulPaint", protocol_,
+                     timing.paint_timing->first_contentful_paint.value());
+  PROTOCOL_HISTOGRAM("PaintTiming.ParseStartToFirstContentfulPaint", protocol_,
+                     timing.paint_timing->first_contentful_paint.value() -
+                         timing.parse_timing->parse_start.value());
 }
 
 void ProtocolPageLoadMetricsObserver::OnFirstMeaningfulPaintInMainFrameDocument(
-    const page_load_metrics::mojom::PageLoadTiming& timing,
-    const page_load_metrics::PageLoadExtraInfo& extra_info) {
-  switch (connection_info_) {
-    case net::HttpResponseInfo::CONNECTION_INFO_UNKNOWN:
-    case net::HttpResponseInfo::CONNECTION_INFO_DEPRECATED_SPDY2:
-    case net::HttpResponseInfo::CONNECTION_INFO_DEPRECATED_SPDY3:
-    case net::HttpResponseInfo::CONNECTION_INFO_DEPRECATED_HTTP2_14:
-    case net::HttpResponseInfo::CONNECTION_INFO_DEPRECATED_HTTP2_15:
-    case net::HttpResponseInfo::CONNECTION_INFO_HTTP0_9:
-    case net::HttpResponseInfo::CONNECTION_INFO_HTTP1_0:
-    case net::HttpResponseInfo::NUM_OF_CONNECTION_INFOS:
-      return;
-    case net::HttpResponseInfo::CONNECTION_INFO_HTTP1_1:
-      PAGE_LOAD_HISTOGRAM(
-          "PageLoad.Clients.Protocol.H11.Experimental.PaintTiming."
-          "NavigationToFirstMeaningfulPaint",
-          timing.paint_timing->first_meaningful_paint.value());
-      PAGE_LOAD_HISTOGRAM(
-          "PageLoad.Clients.Protocol.H11.Experimental.PaintTiming."
-          "ParseStartToFirstMeaningfulPaint",
-          timing.paint_timing->first_meaningful_paint.value() -
-              timing.parse_timing->parse_start.value());
-      break;
-    case net::HttpResponseInfo::CONNECTION_INFO_HTTP2:
-      PAGE_LOAD_HISTOGRAM(
-          "PageLoad.Clients.Protocol.H2.Experimental.PaintTiming."
-          "NavigationToFirstMeaningfulPaint",
-          timing.paint_timing->first_meaningful_paint.value());
-      PAGE_LOAD_HISTOGRAM(
-          "PageLoad.Clients.Protocol.H2.Experimental.PaintTiming."
-          "ParseStartToFirstMeaningfulPaint",
-          timing.paint_timing->first_meaningful_paint.value() -
-              timing.parse_timing->parse_start.value());
-      break;
-    case net::HttpResponseInfo::CONNECTION_INFO_QUIC_UNKNOWN_VERSION:
-    case net::HttpResponseInfo::CONNECTION_INFO_QUIC_32:
-    case net::HttpResponseInfo::CONNECTION_INFO_QUIC_33:
-    case net::HttpResponseInfo::CONNECTION_INFO_QUIC_34:
-    case net::HttpResponseInfo::CONNECTION_INFO_QUIC_35:
-    case net::HttpResponseInfo::CONNECTION_INFO_QUIC_36:
-    case net::HttpResponseInfo::CONNECTION_INFO_QUIC_37:
-    case net::HttpResponseInfo::CONNECTION_INFO_QUIC_38:
-    case net::HttpResponseInfo::CONNECTION_INFO_QUIC_39:
-    case net::HttpResponseInfo::CONNECTION_INFO_QUIC_40:
-    case net::HttpResponseInfo::CONNECTION_INFO_QUIC_41:
-    case net::HttpResponseInfo::CONNECTION_INFO_QUIC_42:
-    case net::HttpResponseInfo::CONNECTION_INFO_QUIC_43:
-    case net::HttpResponseInfo::CONNECTION_INFO_QUIC_44:
-    case net::HttpResponseInfo::CONNECTION_INFO_QUIC_45:
-    case net::HttpResponseInfo::CONNECTION_INFO_QUIC_46:
-    case net::HttpResponseInfo::CONNECTION_INFO_QUIC_47:
-    case net::HttpResponseInfo::CONNECTION_INFO_QUIC_99:
-      PAGE_LOAD_HISTOGRAM(
-          "PageLoad.Clients.Protocol.QUIC.Experimental.PaintTiming."
-          "NavigationToFirstMeaningfulPaint",
-          timing.paint_timing->first_meaningful_paint.value());
-      PAGE_LOAD_HISTOGRAM(
-          "PageLoad.Clients.Protocol.QUIC.Experimental.PaintTiming."
-          "ParseStartToFirstMeaningfulPaint",
-          timing.paint_timing->first_meaningful_paint.value() -
-              timing.parse_timing->parse_start.value());
-      break;
-  }
+    const page_load_metrics::mojom::PageLoadTiming& timing) {
+  PROTOCOL_HISTOGRAM(
+      "Experimental.PaintTiming.NavigationToFirstMeaningfulPaint", protocol_,
+      timing.paint_timing->first_meaningful_paint.value());
+  PROTOCOL_HISTOGRAM(
+      "Experimental.PaintTiming.ParseStartToFirstMeaningfulPaint", protocol_,
+      timing.paint_timing->first_meaningful_paint.value() -
+          timing.parse_timing->parse_start.value());
 }
 
 void ProtocolPageLoadMetricsObserver::OnDomContentLoadedEventStart(
-    const page_load_metrics::mojom::PageLoadTiming& timing,
-    const page_load_metrics::PageLoadExtraInfo& extra_info) {
-  switch (connection_info_) {
-    case net::HttpResponseInfo::CONNECTION_INFO_UNKNOWN:
-    case net::HttpResponseInfo::CONNECTION_INFO_DEPRECATED_SPDY2:
-    case net::HttpResponseInfo::CONNECTION_INFO_DEPRECATED_SPDY3:
-    case net::HttpResponseInfo::CONNECTION_INFO_DEPRECATED_HTTP2_14:
-    case net::HttpResponseInfo::CONNECTION_INFO_DEPRECATED_HTTP2_15:
-    case net::HttpResponseInfo::CONNECTION_INFO_HTTP0_9:
-    case net::HttpResponseInfo::CONNECTION_INFO_HTTP1_0:
-    case net::HttpResponseInfo::NUM_OF_CONNECTION_INFOS:
-      return;
-    case net::HttpResponseInfo::CONNECTION_INFO_HTTP1_1:
-      PAGE_LOAD_HISTOGRAM(
-          "PageLoad.Clients.Protocol.H11.DocumentTiming."
-          "NavigationToDOMContentLoadedEventFired",
-          timing.document_timing->dom_content_loaded_event_start.value());
-      break;
-    case net::HttpResponseInfo::CONNECTION_INFO_HTTP2:
-      PAGE_LOAD_HISTOGRAM(
-          "PageLoad.Clients.Protocol.H2.DocumentTiming."
-          "NavigationToDOMContentLoadedEventFired",
-          timing.document_timing->dom_content_loaded_event_start.value());
-      break;
-    case net::HttpResponseInfo::CONNECTION_INFO_QUIC_UNKNOWN_VERSION:
-    case net::HttpResponseInfo::CONNECTION_INFO_QUIC_32:
-    case net::HttpResponseInfo::CONNECTION_INFO_QUIC_33:
-    case net::HttpResponseInfo::CONNECTION_INFO_QUIC_34:
-    case net::HttpResponseInfo::CONNECTION_INFO_QUIC_35:
-    case net::HttpResponseInfo::CONNECTION_INFO_QUIC_36:
-    case net::HttpResponseInfo::CONNECTION_INFO_QUIC_37:
-    case net::HttpResponseInfo::CONNECTION_INFO_QUIC_38:
-    case net::HttpResponseInfo::CONNECTION_INFO_QUIC_39:
-    case net::HttpResponseInfo::CONNECTION_INFO_QUIC_40:
-    case net::HttpResponseInfo::CONNECTION_INFO_QUIC_41:
-    case net::HttpResponseInfo::CONNECTION_INFO_QUIC_42:
-    case net::HttpResponseInfo::CONNECTION_INFO_QUIC_43:
-    case net::HttpResponseInfo::CONNECTION_INFO_QUIC_44:
-    case net::HttpResponseInfo::CONNECTION_INFO_QUIC_45:
-    case net::HttpResponseInfo::CONNECTION_INFO_QUIC_46:
-    case net::HttpResponseInfo::CONNECTION_INFO_QUIC_47:
-    case net::HttpResponseInfo::CONNECTION_INFO_QUIC_99:
-      PAGE_LOAD_HISTOGRAM(
-          "PageLoad.Clients.Protocol.QUIC.DocumentTiming."
-          "NavigationToDOMContentLoadedEventFired",
-          timing.document_timing->dom_content_loaded_event_start.value());
-      break;
-  }
+    const page_load_metrics::mojom::PageLoadTiming& timing) {
+  PROTOCOL_HISTOGRAM(
+      "DocumentTiming.NavigationToDOMContentLoadedEventFired", protocol_,
+      timing.document_timing->dom_content_loaded_event_start.value());
 }
 
 void ProtocolPageLoadMetricsObserver::OnLoadEventStart(
-    const page_load_metrics::mojom::PageLoadTiming& timing,
-    const page_load_metrics::PageLoadExtraInfo& extra_info) {
-  switch (connection_info_) {
-    case net::HttpResponseInfo::CONNECTION_INFO_UNKNOWN:
-    case net::HttpResponseInfo::CONNECTION_INFO_DEPRECATED_SPDY2:
-    case net::HttpResponseInfo::CONNECTION_INFO_DEPRECATED_SPDY3:
-    case net::HttpResponseInfo::CONNECTION_INFO_DEPRECATED_HTTP2_14:
-    case net::HttpResponseInfo::CONNECTION_INFO_DEPRECATED_HTTP2_15:
-    case net::HttpResponseInfo::CONNECTION_INFO_HTTP0_9:
-    case net::HttpResponseInfo::CONNECTION_INFO_HTTP1_0:
-    case net::HttpResponseInfo::NUM_OF_CONNECTION_INFOS:
-      return;
-    case net::HttpResponseInfo::CONNECTION_INFO_HTTP1_1:
-      PAGE_LOAD_HISTOGRAM(
-          "PageLoad.Clients.Protocol.H11.DocumentTiming."
-          "NavigationToLoadEventFired",
-          timing.document_timing->load_event_start.value());
-      break;
-    case net::HttpResponseInfo::CONNECTION_INFO_HTTP2:
-      PAGE_LOAD_HISTOGRAM(
-          "PageLoad.Clients.Protocol.H2.DocumentTiming."
-          "NavigationToLoadEventFired",
-          timing.document_timing->load_event_start.value());
-      break;
-    case net::HttpResponseInfo::CONNECTION_INFO_QUIC_UNKNOWN_VERSION:
-    case net::HttpResponseInfo::CONNECTION_INFO_QUIC_32:
-    case net::HttpResponseInfo::CONNECTION_INFO_QUIC_33:
-    case net::HttpResponseInfo::CONNECTION_INFO_QUIC_34:
-    case net::HttpResponseInfo::CONNECTION_INFO_QUIC_35:
-    case net::HttpResponseInfo::CONNECTION_INFO_QUIC_36:
-    case net::HttpResponseInfo::CONNECTION_INFO_QUIC_37:
-    case net::HttpResponseInfo::CONNECTION_INFO_QUIC_38:
-    case net::HttpResponseInfo::CONNECTION_INFO_QUIC_39:
-    case net::HttpResponseInfo::CONNECTION_INFO_QUIC_40:
-    case net::HttpResponseInfo::CONNECTION_INFO_QUIC_41:
-    case net::HttpResponseInfo::CONNECTION_INFO_QUIC_42:
-    case net::HttpResponseInfo::CONNECTION_INFO_QUIC_43:
-    case net::HttpResponseInfo::CONNECTION_INFO_QUIC_44:
-    case net::HttpResponseInfo::CONNECTION_INFO_QUIC_45:
-    case net::HttpResponseInfo::CONNECTION_INFO_QUIC_46:
-    case net::HttpResponseInfo::CONNECTION_INFO_QUIC_47:
-    case net::HttpResponseInfo::CONNECTION_INFO_QUIC_99:
-      PAGE_LOAD_HISTOGRAM(
-          "PageLoad.Clients.Protocol.QUIC.DocumentTiming."
-          "NavigationToLoadEventFired",
-          timing.document_timing->load_event_start.value());
-      break;
-  }
+    const page_load_metrics::mojom::PageLoadTiming& timing) {
+  PROTOCOL_HISTOGRAM("DocumentTiming.NavigationToLoadEventFired", protocol_,
+                     timing.document_timing->load_event_start.value());
 }

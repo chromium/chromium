@@ -14,19 +14,27 @@
 #include "media/base/audio_codecs.h"
 #include "media/base/pipeline_status.h"
 #include "media/base/video_codecs.h"
-#include "media/mojo/interfaces/watch_time_recorder.mojom.h"
+#include "media/mojo/mojom/watch_time_recorder.mojom.h"
 #include "media/mojo/services/media_mojo_export.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "url/gurl.h"
 
 namespace media {
 
 // See mojom::WatchTimeRecorder for documentation.
 class MEDIA_MOJO_EXPORT WatchTimeRecorder : public mojom::WatchTimeRecorder {
  public:
+  using RecordAggregateWatchTimeCallback =
+      base::OnceCallback<void(base::TimeDelta total_watch_time,
+                              base::TimeDelta time_stamp,
+                              bool has_video,
+                              bool has_audio)>;
+
   WatchTimeRecorder(mojom::PlaybackPropertiesPtr properties,
                     ukm::SourceId source_id,
                     bool is_top_frame,
-                    uint64_t player_id);
+                    uint64_t player_id,
+                    RecordAggregateWatchTimeCallback record_playback_cb);
   ~WatchTimeRecorder() override;
 
   // mojom::WatchTimeRecorder implementation:
@@ -38,7 +46,12 @@ class MEDIA_MOJO_EXPORT WatchTimeRecorder : public mojom::WatchTimeRecorder {
       mojom::SecondaryPlaybackPropertiesPtr secondary_properties) override;
   void SetAutoplayInitiated(bool value) override;
   void OnDurationChanged(base::TimeDelta duration) override;
-  void UpdateUnderflowCount(int32_t count) override;
+  void UpdateVideoDecodeStats(uint32_t video_frames_decoded,
+                              uint32_t video_frames_dropped) override;
+  void UpdateUnderflowCount(int32_t total_count) override;
+  void UpdateUnderflowDuration(int32_t total_completed_count,
+                               base::TimeDelta total_duration) override;
+  void OnCurrentTimestampChanged(base::TimeDelta current_timestamp) override;
 
  private:
   // Records a UKM event based on |aggregate_watch_time_info_|; only recorded
@@ -89,19 +102,31 @@ class MEDIA_MOJO_EXPORT WatchTimeRecorder : public mojom::WatchTimeRecorder {
     // Sum of all watch time data since the last complete finalize.
     WatchTimeInfo aggregate_watch_time_info;
 
-    // Total underflow count for this segment of UKM watch time.
+    // Total underflow count and duration for this segment of UKM watch time.
     int total_underflow_count = 0;
+    int total_completed_underflow_count = 0;
+    base::TimeDelta total_underflow_duration;
+
+    uint32_t total_video_frames_decoded = 0;
+    uint32_t total_video_frames_dropped = 0;
   };
 
   // List of all watch time segments. A new entry is added for every secondary
   // property update.
   std::vector<WatchTimeUkmRecord> ukm_records_;
 
+  uint32_t video_frames_decoded_ = 0;
+  uint32_t video_frames_dropped_ = 0;
+
   int underflow_count_ = 0;
+  int completed_underflow_count_ = 0;
+  base::TimeDelta underflow_duration_;
+
   PipelineStatus pipeline_status_ = PIPELINE_OK;
   base::TimeDelta duration_ = kNoTimestamp;
-
+  base::TimeDelta last_timestamp_ = kNoTimestamp;
   base::Optional<bool> autoplay_initiated_;
+  RecordAggregateWatchTimeCallback record_playback_cb_;
 
   DISALLOW_COPY_AND_ASSIGN(WatchTimeRecorder);
 };

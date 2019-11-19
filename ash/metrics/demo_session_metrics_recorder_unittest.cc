@@ -130,7 +130,7 @@ class DemoSessionMetricsRecorderTest : public AshTestBase {
         kShelfIDKey,
         new std::string(ShelfID(app_id, std::string()).Serialize()));
     if (!package_name.empty())
-      window->SetProperty(kArcPackageNameKey, new std::string(package_name));
+      window->SetProperty(kArcPackageNameKey, package_name);
     return window;
   }
 

@@ -8,7 +8,6 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/chromeos/app_mode/arc/arc_kiosk_app_service.h"
-#include "chrome/browser/chromeos/login/screens/arc_kiosk_splash_screen_view.h"
 #include "chrome/browser/chromeos/login/session/user_session_manager.h"
 #include "chromeos/login/auth/login_performer.h"
 
@@ -21,6 +20,7 @@ class OneShotTimer;
 
 namespace chromeos {
 
+class ArcKioskSplashScreenView;
 class LoginDisplayHost;
 class OobeUI;
 class UserContext;
@@ -30,8 +30,7 @@ class UserContext;
 // updating the splash screen UI.
 class ArcKioskController : public LoginPerformer::Delegate,
                            public UserSessionManagerDelegate,
-                           public ArcKioskAppService::Delegate,
-                           public ArcKioskSplashScreenView::Delegate {
+                           public ArcKioskAppService::Delegate {
  public:
   ArcKioskController(LoginDisplayHost* host, OobeUI* oobe_ui);
 
@@ -39,6 +38,11 @@ class ArcKioskController : public LoginPerformer::Delegate,
 
   // Starts ARC kiosk splash screen.
   void StartArcKiosk(const AccountId& account_id);
+
+  // Invoked when the launch bailout shortcut key is pressed.
+  void OnCancelArcKioskLaunch();
+  // Invoked when the splash screen view gets being deleted.
+  void OnDeletingSplashScreenView();
 
  private:
   void CleanUp();
@@ -60,10 +64,6 @@ class ArcKioskController : public LoginPerformer::Delegate,
   void OnAppStarted() override;
   void OnAppWindowLaunched() override;
 
-  // ArcKioskSplashScreenView::Delegate implementation:
-  void OnCancelArcKioskLaunch() override;
-  void OnDeletingSplashScreenView() override;
-
   // LoginDisplayHost owns itself.
   LoginDisplayHost* const host_;
   // Owned by OobeUI.
@@ -77,7 +77,7 @@ class ArcKioskController : public LoginPerformer::Delegate,
   // A timer to ensure the app splash is shown for a minimum amount of time.
   base::OneShotTimer splash_wait_timer_;
   bool launched_ = false;
-  base::WeakPtrFactory<ArcKioskController> weak_ptr_factory_;
+  base::WeakPtrFactory<ArcKioskController> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ArcKioskController);
 };

@@ -21,33 +21,19 @@ namespace extensions {
 namespace keys = manifest_keys;
 namespace errors = manifest_errors;
 
-namespace file_handler_verbs {
-
-const char kOpenWith[] = "open_with";
-const char kAddTo[] = "add_to";
-const char kPackWith[] = "pack_with";
-const char kShareWith[] = "share_with";
-
-}  // namespace file_handler_verbs
-
 namespace {
 
 const int kMaxTypeAndExtensionHandlers = 200;
 const char kNotRecognized[] = "'%s' is not a recognized file handler property.";
 
 bool IsSupportedVerb(const std::string& verb) {
-  return verb == file_handler_verbs::kOpenWith ||
-         verb == file_handler_verbs::kAddTo ||
-         verb == file_handler_verbs::kPackWith ||
-         verb == file_handler_verbs::kShareWith;
+  return verb == apps::file_handler_verbs::kOpenWith ||
+         verb == apps::file_handler_verbs::kAddTo ||
+         verb == apps::file_handler_verbs::kPackWith ||
+         verb == apps::file_handler_verbs::kShareWith;
 }
 
 }  // namespace
-
-FileHandlerInfo::FileHandlerInfo()
-    : include_directories(false), verb(file_handler_verbs::kOpenWith) {}
-FileHandlerInfo::FileHandlerInfo(const FileHandlerInfo& other) = default;
-FileHandlerInfo::~FileHandlerInfo() {}
 
 FileHandlerMatch::FileHandlerMatch() = default;
 FileHandlerMatch::~FileHandlerMatch() = default;
@@ -75,7 +61,7 @@ bool LoadFileHandler(const std::string& handler_id,
                      base::string16* error,
                      std::vector<InstallWarning>* install_warnings) {
   DCHECK(error);
-  FileHandlerInfo handler;
+  apps::FileHandlerInfo handler;
 
   handler.id = handler_id;
 
@@ -106,7 +92,7 @@ bool LoadFileHandler(const std::string& handler_id,
     }
   }
 
-  handler.verb = file_handler_verbs::kOpenWith;
+  handler.verb = apps::file_handler_verbs::kOpenWith;
   const base::Value* file_handler =
       handler_info.FindKey(keys::kFileHandlerVerb);
   if (file_handler != nullptr) {
@@ -130,7 +116,7 @@ bool LoadFileHandler(const std::string& handler_id,
   }
 
   if (mime_types) {
-    const base::Value::ListStorage& list_storage = mime_types->GetList();
+    base::span<const base::Value> list_storage = mime_types->GetList();
     for (size_t i = 0; i < list_storage.size(); ++i) {
       if (!list_storage[i].is_string()) {
         *error = ErrorUtils::FormatErrorMessageUTF16(
@@ -143,7 +129,7 @@ bool LoadFileHandler(const std::string& handler_id,
   }
 
   if (file_extensions) {
-    const base::Value::ListStorage& list_storage = file_extensions->GetList();
+    base::span<const base::Value> list_storage = file_extensions->GetList();
     for (size_t i = 0; i < list_storage.size(); ++i) {
       if (!list_storage[i].is_string()) {
         *error = ErrorUtils::FormatErrorMessageUTF16(
@@ -173,6 +159,17 @@ bool LoadFileHandler(const std::string& handler_id,
 }
 
 bool FileHandlersParser::Parse(Extension* extension, base::string16* error) {
+  // Don't load file handlers for hosted_apps unless they're also bookmark apps.
+  // This check can be removed when bookmark apps are migrated off hosted apps,
+  // and hosted_apps should be removed from the list of valid extension types
+  // for "file_handling" in extensions/common/api/_manifest_features.json.
+  if (extension->is_hosted_app() && !extension->from_bookmark()) {
+    extension->AddInstallWarning(
+        InstallWarning(errors::kInvalidFileHandlersHostedAppsNotSupported,
+                       keys::kFileHandlers));
+    return true;
+  }
+
   std::unique_ptr<FileHandlers> info(new FileHandlers);
   const base::Value* all_handlers = nullptr;
   if (!extension->manifest()->GetDictionary(keys::kFileHandlers,

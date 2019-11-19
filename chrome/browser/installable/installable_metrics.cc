@@ -10,210 +10,8 @@
 
 #if defined(OS_ANDROID)
 #include "chrome/browser/android/tab_android.h"
+#include "chrome/browser/android/tab_web_contents_delegate_android.h"
 #endif
-
-namespace {
-
-void WriteMenuOpenHistogram(InstallabilityCheckStatus status, int count) {
-  for (int i = 0; i < count; ++i) {
-    UMA_HISTOGRAM_ENUMERATION("Webapp.InstallabilityCheckStatus.MenuOpen",
-                              status, InstallabilityCheckStatus::COUNT);
-  }
-}
-
-void WriteMenuItemAddToHomescreenHistogram(InstallabilityCheckStatus status,
-                                           int count) {
-  for (int i = 0; i < count; ++i) {
-    UMA_HISTOGRAM_ENUMERATION(
-        "Webapp.InstallabilityCheckStatus.MenuItemAddToHomescreen", status,
-        InstallabilityCheckStatus::COUNT);
-  }
-}
-
-void WriteAddToHomescreenHistogram(AddToHomescreenTimeoutStatus status,
-                                   int count) {
-  for (int i = 0; i < count; ++i) {
-    UMA_HISTOGRAM_ENUMERATION(
-        "Webapp.InstallabilityCheckStatus.AddToHomescreenTimeout", status,
-        AddToHomescreenTimeoutStatus::COUNT);
-  }
-}
-
-// Buffers metrics calls until we have resolved whether a site is a PWA.
-class AccumulatingRecorder : public InstallableMetrics::Recorder {
- public:
-  AccumulatingRecorder()
-      : InstallableMetrics::Recorder(),
-        menu_open_count_(0),
-        menu_item_add_to_homescreen_count_(0),
-        add_to_homescreen_manifest_timeout_count_(0),
-        add_to_homescreen_installability_timeout_count_(0),
-        started_(false) {}
-
-  ~AccumulatingRecorder() override {
-    DCHECK_EQ(0, menu_open_count_);
-    DCHECK_EQ(0, menu_item_add_to_homescreen_count_);
-    DCHECK_EQ(0, add_to_homescreen_manifest_timeout_count_);
-    DCHECK_EQ(0, add_to_homescreen_installability_timeout_count_);
-  }
-
-  void Resolve(bool check_passed) override {
-    // Resolve queued metrics to their appropriate state based on whether or not
-    // we passed the installability check.
-    if (check_passed) {
-      WriteMetricsAndResetCounts(
-          InstallabilityCheckStatus::IN_PROGRESS_PROGRESSIVE_WEB_APP,
-          AddToHomescreenTimeoutStatus::
-              TIMEOUT_MANIFEST_FETCH_PROGRESSIVE_WEB_APP,
-          AddToHomescreenTimeoutStatus::
-              TIMEOUT_INSTALLABILITY_CHECK_PROGRESSIVE_WEB_APP);
-    } else {
-      WriteMetricsAndResetCounts(
-          InstallabilityCheckStatus::IN_PROGRESS_NON_PROGRESSIVE_WEB_APP,
-          AddToHomescreenTimeoutStatus::
-              TIMEOUT_MANIFEST_FETCH_NON_PROGRESSIVE_WEB_APP,
-          AddToHomescreenTimeoutStatus::
-              TIMEOUT_INSTALLABILITY_CHECK_NON_PROGRESSIVE_WEB_APP);
-    }
-  }
-
-  void Flush(bool waiting_for_service_worker) override {
-    InstallabilityCheckStatus status =
-        started_ ? InstallabilityCheckStatus::IN_PROGRESS_UNKNOWN
-                 : InstallabilityCheckStatus::NOT_STARTED;
-
-    if (waiting_for_service_worker)
-      status = InstallabilityCheckStatus::COMPLETE_NON_PROGRESSIVE_WEB_APP;
-
-    WriteMetricsAndResetCounts(
-        status, AddToHomescreenTimeoutStatus::TIMEOUT_MANIFEST_FETCH_UNKNOWN,
-        AddToHomescreenTimeoutStatus::TIMEOUT_INSTALLABILITY_CHECK_UNKNOWN);
-  }
-
-  void RecordMenuOpen() override {
-    if (started_)
-      ++menu_open_count_;
-    else
-      WriteMenuOpenHistogram(InstallabilityCheckStatus::NOT_STARTED, 1);
-  }
-
-  void RecordMenuItemAddToHomescreen() override {
-    if (started_) {
-      ++menu_item_add_to_homescreen_count_;
-    } else {
-      WriteMenuItemAddToHomescreenHistogram(
-          InstallabilityCheckStatus::NOT_STARTED, 1);
-    }
-  }
-
-  void RecordAddToHomescreenNoTimeout() override {
-    // If this class is instantiated and there is no timeout, we must have
-    // failed the installability check early.
-    WriteAddToHomescreenHistogram(
-        AddToHomescreenTimeoutStatus::NO_TIMEOUT_NON_PROGRESSIVE_WEB_APP, 1);
-  }
-
-  void RecordAddToHomescreenManifestAndIconTimeout() override {
-    ++add_to_homescreen_manifest_timeout_count_;
-  }
-
-  void RecordAddToHomescreenInstallabilityTimeout() override {
-    ++add_to_homescreen_installability_timeout_count_;
-  }
-
-  void Start() override { started_ = true; }
-
- private:
-  void WriteMetricsAndResetCounts(
-      InstallabilityCheckStatus status,
-      AddToHomescreenTimeoutStatus manifest_status,
-      AddToHomescreenTimeoutStatus installability_status) {
-    WriteMenuOpenHistogram(status, menu_open_count_);
-    WriteMenuItemAddToHomescreenHistogram(status,
-                                          menu_item_add_to_homescreen_count_);
-    WriteAddToHomescreenHistogram(manifest_status,
-                                  add_to_homescreen_manifest_timeout_count_);
-    WriteAddToHomescreenHistogram(
-        installability_status, add_to_homescreen_installability_timeout_count_);
-
-    menu_open_count_ = 0;
-    menu_item_add_to_homescreen_count_ = 0;
-    add_to_homescreen_manifest_timeout_count_ = 0;
-    add_to_homescreen_installability_timeout_count_ = 0;
-  }
-
-  // Counts for the number of queued requests of the menu and add to homescreen
-  // menu item there have been whilst the installable check is running.
-  int menu_open_count_;
-  int menu_item_add_to_homescreen_count_;
-
-  // Counts for the number of times the add to homescreen dialog times out at
-  // different stages of the installable check.
-  int add_to_homescreen_manifest_timeout_count_;
-  int add_to_homescreen_installability_timeout_count_;
-
-  // True if we have started working yet.
-  bool started_;
-};
-
-// Directly writes metrics calls with the current page's PWA status.
-class DirectRecorder : public InstallableMetrics::Recorder {
- public:
-  explicit DirectRecorder(bool check_passed)
-      : InstallableMetrics::Recorder(),
-        installability_check_status_(
-            check_passed
-                ? InstallabilityCheckStatus::COMPLETE_PROGRESSIVE_WEB_APP
-                : InstallabilityCheckStatus::COMPLETE_NON_PROGRESSIVE_WEB_APP),
-        no_timeout_status_(
-            check_passed
-                ? AddToHomescreenTimeoutStatus::NO_TIMEOUT_PROGRESSIVE_WEB_APP
-                : AddToHomescreenTimeoutStatus::
-                      NO_TIMEOUT_NON_PROGRESSIVE_WEB_APP),
-        manifest_timeout_status_(
-            check_passed ? AddToHomescreenTimeoutStatus::
-                               TIMEOUT_MANIFEST_FETCH_PROGRESSIVE_WEB_APP
-                         : AddToHomescreenTimeoutStatus::
-                               TIMEOUT_MANIFEST_FETCH_NON_PROGRESSIVE_WEB_APP),
-        installability_timeout_status_(
-            check_passed
-                ? AddToHomescreenTimeoutStatus::
-                      TIMEOUT_INSTALLABILITY_CHECK_PROGRESSIVE_WEB_APP
-                : AddToHomescreenTimeoutStatus::
-                      TIMEOUT_INSTALLABILITY_CHECK_NON_PROGRESSIVE_WEB_APP) {}
-
-  ~DirectRecorder() override {}
-
-  void Resolve(bool check_passed) override {}
-  void Flush(bool waiting_for_service_worker) override {}
-  void Start() override {}
-  void RecordMenuOpen() override {
-    WriteMenuOpenHistogram(installability_check_status_, 1);
-  }
-
-  void RecordMenuItemAddToHomescreen() override {
-    WriteMenuItemAddToHomescreenHistogram(installability_check_status_, 1);
-  }
-
-  void RecordAddToHomescreenNoTimeout() override {
-    WriteAddToHomescreenHistogram(no_timeout_status_, 1);
-  }
-
-  void RecordAddToHomescreenManifestAndIconTimeout() override {
-    WriteAddToHomescreenHistogram(manifest_timeout_status_, 1);
-  }
-
-  void RecordAddToHomescreenInstallabilityTimeout() override {
-    WriteAddToHomescreenHistogram(installability_timeout_status_, 1);
-  }
-
-  InstallabilityCheckStatus installability_check_status_;
-  AddToHomescreenTimeoutStatus no_timeout_status_;
-  AddToHomescreenTimeoutStatus manifest_timeout_status_;
-  AddToHomescreenTimeoutStatus installability_timeout_status_;
-};
-
-}  // anonymous namespace
 
 // static
 void InstallableMetrics::TrackInstallEvent(WebappInstallSource source) {
@@ -232,7 +30,13 @@ bool InstallableMetrics::IsReportableInstallSource(WebappInstallSource source) {
          source == WebappInstallSource::API_CUSTOM_TAB ||
          source == WebappInstallSource::DEVTOOLS ||
          source == WebappInstallSource::AMBIENT_BADGE_BROWSER_TAB ||
-         source == WebappInstallSource::AMBIENT_BADGE_CUSTOM_TAB;
+         source == WebappInstallSource::AMBIENT_BADGE_CUSTOM_TAB ||
+         source == WebappInstallSource::ARC ||
+         source == WebappInstallSource::INTERNAL_DEFAULT ||
+         source == WebappInstallSource::EXTERNAL_DEFAULT ||
+         source == WebappInstallSource::EXTERNAL_POLICY ||
+         source == WebappInstallSource::SYSTEM_DEFAULT ||
+         source == WebappInstallSource::OMNIBOX_INSTALL_ICON;
 }
 
 // static
@@ -241,8 +45,9 @@ WebappInstallSource InstallableMetrics::GetInstallSource(
     InstallTrigger trigger) {
   bool is_custom_tab = false;
 #if defined(OS_ANDROID)
-  is_custom_tab =
-      TabAndroid::FromWebContents(web_contents)->IsCurrentlyACustomTab();
+  auto* delegate = static_cast<android::TabWebContentsDelegateAndroid*>(
+      web_contents->GetDelegate());
+  is_custom_tab = delegate->IsCustomTab();
 #endif
 
   switch (trigger) {
@@ -261,43 +66,4 @@ WebappInstallSource InstallableMetrics::GetInstallSource(
   }
   NOTREACHED();
   return WebappInstallSource::COUNT;
-}
-
-InstallableMetrics::InstallableMetrics()
-    : recorder_(std::make_unique<AccumulatingRecorder>()) {}
-
-InstallableMetrics::~InstallableMetrics() {}
-
-void InstallableMetrics::RecordMenuOpen() {
-  recorder_->RecordMenuOpen();
-}
-
-void InstallableMetrics::RecordMenuItemAddToHomescreen() {
-  recorder_->RecordMenuItemAddToHomescreen();
-}
-
-void InstallableMetrics::RecordAddToHomescreenNoTimeout() {
-  recorder_->RecordAddToHomescreenNoTimeout();
-}
-
-void InstallableMetrics::RecordAddToHomescreenManifestAndIconTimeout() {
-  recorder_->RecordAddToHomescreenManifestAndIconTimeout();
-}
-
-void InstallableMetrics::RecordAddToHomescreenInstallabilityTimeout() {
-  recorder_->RecordAddToHomescreenInstallabilityTimeout();
-}
-
-void InstallableMetrics::Resolve(bool check_passed) {
-  recorder_->Resolve(check_passed);
-  recorder_ = std::make_unique<DirectRecorder>(check_passed);
-}
-
-void InstallableMetrics::Start() {
-  recorder_->Start();
-}
-
-void InstallableMetrics::Flush(bool waiting_for_service_worker) {
-  recorder_->Flush(waiting_for_service_worker);
-  recorder_ = std::make_unique<AccumulatingRecorder>();
 }

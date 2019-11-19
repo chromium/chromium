@@ -28,7 +28,7 @@ class SafeBrowsingPrivateEventRouterFactory
   static SafeBrowsingPrivateEventRouterFactory* GetInstance();
 
  protected:
-  // BrowserContextKeyedBaseFactory overrides:
+  // BrowserContextKeyedServiceFactory overrides:
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
   bool ServiceIsCreatedWithBrowserContext() const override;

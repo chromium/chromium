@@ -27,7 +27,7 @@ void FakeImageLoaderClient::SetMountPathForComponent(
 }
 
 bool FakeImageLoaderClient::IsLoaded(const std::string& name) const {
-  return base::ContainsKey(loaded_components_, name);
+  return base::Contains(loaded_components_, name);
 }
 
 base::FilePath FakeImageLoaderClient::GetComponentInstallPath(

@@ -22,17 +22,34 @@ namespace autofill_assistant {
 // An internal interface for sending DevTools messages from the domain agents.
 class MessageDispatcher {
  public:
+  // Status of a SendMessage operation.
+  struct ReplyStatus {
+    // Error codes, as a number, -1 if error code is unknown.
+    //
+    // Possible values are listed on:
+    // src/third_party/inspector_protocol/lib/DispatcherBase_h.template
+    long error_code = 0;
+
+    std::string error_message;
+
+    bool is_ok() const { return error_code == 0; }
+  };
+
   virtual void SendMessage(
       const char* method,
       std::unique_ptr<base::Value> params,
-      base::OnceCallback<void(const base::Value&)> callback) = 0;
+      const std::string& optional_node_frame_id,
+      base::OnceCallback<void(const ReplyStatus&, const base::Value&)>
+          callback) = 0;
   virtual void SendMessage(const char* method,
                            std::unique_ptr<base::Value> params,
+                           const std::string& optional_node_frame_id,
                            base::OnceClosure callback) = 0;
 
   virtual void RegisterEventHandler(
       const char* method,
       base::RepeatingCallback<void(const base::Value&)> callback) = 0;
+  virtual void UnregisterEventHandler(const char* method) = 0;
 
  protected:
   virtual ~MessageDispatcher() {}

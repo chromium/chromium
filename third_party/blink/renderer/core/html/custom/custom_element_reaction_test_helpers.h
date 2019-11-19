@@ -9,7 +9,6 @@
 
 #include <initializer_list>
 #include <memory>
-#include <vector>
 
 #include "base/macros.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -23,7 +22,7 @@ namespace blink {
 
 class Element;
 
-class Command : public GarbageCollectedFinalized<Command> {
+class Command : public GarbageCollected<Command> {
  public:
   Command() = default;
   virtual ~Command() = default;
@@ -60,13 +59,13 @@ class Unreached : public Command {
 
 class Log : public Command {
  public:
-  Log(char what, std::vector<char>& where) : what_(what), where_(where) {}
+  Log(char what, Vector<char>& where) : what_(what), where_(where) {}
   ~Log() override = default;
   void Run(Element&) override { where_.push_back(what_); }
 
  private:
   char what_;
-  std::vector<char>& where_;
+  Vector<char>& where_;
 
   DISALLOW_COPY_AND_ASSIGN(Log);
 };

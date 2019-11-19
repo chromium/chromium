@@ -14,13 +14,20 @@ component("ios") {
     "//components/autofill/ios/form_util",
     "//components/password_manager/core/browser",
     "//components/password_manager/core/browser/form_parsing",
+    "//components/password_manager/core/common",
+    "//components/security_state/ios",
+    "//ios/web/common",
     "//ios/web/public",
+    "//ios/web/public/deprecated",
+    "//ios/web/public/js_messaging",
     "//url",
   ]
 
   sources = [
     "account_select_fill_data.cc",
     "account_select_fill_data.h",
+    "credential_manager_util.h",
+    "credential_manager_util.mm",
     "js_password_manager.h",
     "js_password_manager.mm",
     "password_form_helper.h",
@@ -50,6 +57,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "account_select_fill_data_unittest.cc",
+    "credential_manager_util_unittest.cc",
     "password_form_helper_unittest.mm",
   ]
   deps = [

@@ -11,8 +11,10 @@
 
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/chromeos/arc/arc_session_manager.h"
+#include "base/time/time.h"
+#include "chrome/browser/chromeos/arc/session/arc_session_manager.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
+#include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ui/ash/launcher/shelf_spinner_item_controller.h"
 
 // ArcShelfSpinnerItemController displays the icon of the ARC app that
@@ -24,6 +26,7 @@ class ArcShelfSpinnerItemController : public ShelfSpinnerItemController,
  public:
   ArcShelfSpinnerItemController(const std::string& arc_app_id,
                                 int event_flags,
+                                arc::UserInteractionType user_interaction_type,
                                 int64_t display_id);
 
   ~ArcShelfSpinnerItemController() override;
@@ -43,6 +46,9 @@ class ArcShelfSpinnerItemController : public ShelfSpinnerItemController,
   // The flags of the event that caused the ARC app to be activated. These will
   // be propagated to the launch event once the app is actually launched.
   const int event_flags_;
+
+  // Stores how this action was initiated.
+  const arc::UserInteractionType user_interaction_type_;
 
   const int64_t display_id_;
 

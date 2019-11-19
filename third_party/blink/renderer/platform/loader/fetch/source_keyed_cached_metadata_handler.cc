@@ -7,7 +7,7 @@
 #include "base/bit_cast.h"
 #include "third_party/blink/renderer/platform/crypto.h"
 #include "third_party/blink/renderer/platform/loader/fetch/cached_metadata.h"
-#include "third_party/blink/renderer/platform/wtf/string_hasher.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_hasher.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -96,7 +96,7 @@ SingleCachedMetadataHandler* SourceKeyedCachedMetadataHandler::HandlerForSource(
                      source.CharactersSizeInBytes(), digest_value))
     return nullptr;
 
-  Key key;
+  Key key(kKeySize);
   DCHECK_EQ(digest_value.size(), kKeySize);
   memcpy(key.data(), digest_value.data(), kKeySize);
 
@@ -159,8 +159,10 @@ T ReadVal(const uint8_t* data) {
 }  // namespace
 
 void SourceKeyedCachedMetadataHandler::SetSerializedCachedMetadata(
-    const uint8_t* data,
-    size_t size) {
+    mojo_base::BigBuffer data_buffer) {
+  const uint8_t* data = data_buffer.data();
+  size_t size = data_buffer.size();
+
   // We only expect to receive cached metadata from the platform once. If this
   // triggers, it indicates an efficiency problem which is most likely
   // unexpected in code designed to improve performance.
@@ -192,7 +194,7 @@ void SourceKeyedCachedMetadataHandler::SetSerializedCachedMetadata(
       return;
     }
 
-    Key key;
+    Key key(kKeySize);
     std::copy(data, data + kKeySize, std::begin(key));
     data += kKeySize;
     size_t entry_size = ReadVal<size_t>(data);
@@ -236,10 +238,11 @@ void SourceKeyedCachedMetadataHandler::SendToPlatform() {
                            sizeof(num_entries));
     for (const auto& metadata : cached_metadata_map_) {
       serialized_data.Append(metadata.key.data(), kKeySize);
-      size_t entry_size = metadata.value->SerializedData().size();
+      base::span<const uint8_t> data = metadata.value->SerializedData();
+      size_t entry_size = data.size();
       serialized_data.Append(reinterpret_cast<const uint8_t*>(&entry_size),
                              sizeof(entry_size));
-      serialized_data.AppendVector(metadata.value->SerializedData());
+      serialized_data.Append(data.data(), data.size());
     }
     sender_->Send(serialized_data.data(), serialized_data.size());
   }

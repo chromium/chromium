@@ -134,23 +134,21 @@ class VideoDecoder::Vp8Impl : public VideoDecoder::ImplBase {
   }
 
   scoped_refptr<VideoFrame> Decode(uint8_t* data, int len) final {
-    if (len <= 0 || vpx_codec_decode(&context_,
-                                     data,
-                                     static_cast<unsigned int>(len),
-                                     NULL,
-                                     0) != VPX_CODEC_OK) {
-      return NULL;
+    if (len <= 0 ||
+        vpx_codec_decode(&context_, data, static_cast<unsigned int>(len),
+                         nullptr, 0) != VPX_CODEC_OK) {
+      return nullptr;
     }
 
-    vpx_codec_iter_t iter = NULL;
+    vpx_codec_iter_t iter = nullptr;
     vpx_image_t* const image = vpx_codec_get_frame(&context_, &iter);
     if (!image)
-      return NULL;
+      return nullptr;
     if (image->fmt != VPX_IMG_FMT_I420) {
       NOTREACHED() << "Only pixel format supported is I420, got " << image->fmt;
-      return NULL;
+      return nullptr;
     }
-    DCHECK(vpx_codec_get_frame(&context_, &iter) == NULL)
+    DCHECK(vpx_codec_get_frame(&context_, &iter) == nullptr)
         << "Should have only decoded exactly one frame.";
 
     const gfx::Size frame_size(image->d_w, image->d_h);
@@ -198,12 +196,12 @@ class VideoDecoder::FakeImpl : public VideoDecoder::ImplBase {
   scoped_refptr<VideoFrame> Decode(uint8_t* data, int len) final {
     // Make sure this is a JSON string.
     if (!len || data[0] != '{')
-      return NULL;
+      return nullptr;
     std::unique_ptr<base::Value> values(base::JSONReader::ReadDeprecated(
         base::StringPiece(reinterpret_cast<char*>(data), len)));
     if (!values)
-      return NULL;
-    base::DictionaryValue* dict = NULL;
+      return nullptr;
+    base::DictionaryValue* dict = nullptr;
     values->GetAsDictionary(&dict);
 
     bool key = false;
@@ -259,7 +257,7 @@ void VideoDecoder::DecodeFrame(std::unique_ptr<EncodedFrame> encoded_frame,
   DCHECK(encoded_frame.get());
   DCHECK(!callback.is_null());
   if (!impl_.get() || impl_->InitializationResult() != STATUS_INITIALIZED) {
-    callback.Run(base::WrapRefCounted<VideoFrame>(NULL), false);
+    callback.Run(base::WrapRefCounted<VideoFrame>(nullptr), false);
     return;
   }
   cast_environment_->PostTask(CastEnvironment::VIDEO,

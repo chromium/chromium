@@ -25,25 +25,25 @@ class FontVariantEastAsianParser {
   ParseResult ConsumeEastAsian(CSSParserTokenRange& range) {
     CSSValueID value_id = range.Peek().Id();
     switch (value_id) {
-      case CSSValueJis78:
-      case CSSValueJis83:
-      case CSSValueJis90:
-      case CSSValueJis04:
-      case CSSValueSimplified:
-      case CSSValueTraditional:
+      case CSSValueID::kJis78:
+      case CSSValueID::kJis83:
+      case CSSValueID::kJis90:
+      case CSSValueID::kJis04:
+      case CSSValueID::kSimplified:
+      case CSSValueID::kTraditional:
         if (east_asian_form_value_)
           return ParseResult::kDisallowedValue;
         east_asian_form_value_ =
             css_property_parser_helpers::ConsumeIdent(range);
         return ParseResult::kConsumedValue;
-      case CSSValueFullWidth:
-      case CSSValueProportionalWidth:
+      case CSSValueID::kFullWidth:
+      case CSSValueID::kProportionalWidth:
         if (east_asian_width_value_)
           return ParseResult::kDisallowedValue;
         east_asian_width_value_ =
             css_property_parser_helpers::ConsumeIdent(range);
         return ParseResult::kConsumedValue;
-      case CSSValueRuby:
+      case CSSValueID::kRuby:
         if (ruby_value_)
           return ParseResult::kDisallowedValue;
         ruby_value_ = css_property_parser_helpers::ConsumeIdent(range);
@@ -63,7 +63,7 @@ class FontVariantEastAsianParser {
       result->Append(*ruby_value_.Release());
 
     if (!result->length())
-      return CSSIdentifierValue::Create(CSSValueNormal);
+      return CSSIdentifierValue::Create(CSSValueID::kNormal);
     return result;
   }
 

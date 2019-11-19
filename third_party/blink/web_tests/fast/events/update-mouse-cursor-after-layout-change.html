@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<script src='../../resources/testharness.js'></script>
+<script src='../../resources/testharnessreport.js'></script>
+<script src='../../resources/gesture-util.js'></script>
+<script src="resources/expect-cursor-update.js"></script>
+
+<style>
+#test-container {
+  position: relative;
+  padding: 10px;
+}
+#target {
+  cursor: text;
+  background-color: blue;
+  width: 100px;
+  height: 100px;
+}
+#overlay {
+  cursor: wait;
+  width: 200px;
+  height: 200px;
+  background: rgba(255,0,0,0.2);
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+</style>
+<div id="test-container">
+    <div id="target"></div>
+</div>
+<script>
+function addOverlay() {
+  var testContainer = document.getElementById('test-container');
+  var overlay = document.createElement('div');
+  overlay.id='overlay';
+  testContainer.appendChild(overlay);
+}
+
+window.onload = async () => {
+  if (window.internals) {
+    internals.runtimeFlags.updateHoverAtBeginFrameEnabled = true;
+  }
+
+  promise_test (async () => {
+    document.addEventListener('click', addOverlay);
+    var target = document.getElementById('target');
+    var rect = target.getBoundingClientRect();
+    await mouseMoveTo(rect.left + 3, rect.top + 3);
+    assert_equals(internals.getCurrentCursorInfo(), 'type=IBeam hotSpot=0,0', 'wait for move to target');
+    await mouseClickOn(rect.left + 3, rect.top + 3);
+    assert_equals(internals.getCurrentCursorInfo(), 'type=Wait hotSpot=0,0', 'wait for mouse cursor change');
+  }, 'Tests that there is mouse cursor update when the element underneath the mouse cursor is changed.');
+}
+</script>

@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/autofill/manual_fill/passwords_fetcher.h"
 
+#include "base/stl_util.h"
 #include "components/autofill/core/common/password_form.h"
 #include "components/password_manager/core/browser/android_affiliation/affiliation_utils.h"
 #include "components/password_manager/core/browser/password_list_sorter.h"
@@ -86,7 +87,7 @@ class PasswordStoreObserverBridge
       _passwordStore->GetAutofillableLogins(_savedPasswordsConsumer.get());
     } else {
       password_manager::PasswordStore::FormDigest digest = {
-          autofill::PasswordForm::SCHEME_HTML, std::string(), URL};
+          autofill::PasswordForm::Scheme::kHtml, std::string(), URL};
       digest.signon_realm = URL.spec();
       _passwordStore->GetLogins(digest, _savedPasswordsConsumer.get());
     }
@@ -101,23 +102,18 @@ class PasswordStoreObserverBridge
 #pragma mark - SavePasswordsConsumerDelegate
 
 - (void)onGetPasswordStoreResults:
-    (std::vector<std::unique_ptr<autofill::PasswordForm>>&)result {
+    (std::vector<std::unique_ptr<autofill::PasswordForm>>)results {
   // For Manual Fallback we filter out the android and the blacklisted
   // passwords.
-  result.erase(
-      std::remove_if(result.begin(), result.end(),
-                     [](std::unique_ptr<autofill::PasswordForm>& form) {
-                       const auto is_android_uri =
-                           password_manager::IsValidAndroidFacetURI(
-                               form->signon_realm);
-                       return form->blacklisted_by_user || is_android_uri;
-                     }),
-      result.end());
+  base::EraseIf(results, [](const auto& form) {
+    return form->blacklisted_by_user ||
+           password_manager::IsValidAndroidFacetURI(form->signon_realm);
+  });
 
   password_manager::DuplicatesMap savedPasswordDuplicates;
-  password_manager::SortEntriesAndHideDuplicates(&result,
+  password_manager::SortEntriesAndHideDuplicates(&results,
                                                  &savedPasswordDuplicates);
-  [self.delegate passwordFetcher:self didFetchPasswords:result];
+  [self.delegate passwordFetcher:self didFetchPasswords:std::move(results)];
 }
 
 #pragma mark - PasswordStoreObserver

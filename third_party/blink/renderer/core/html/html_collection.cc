@@ -42,8 +42,6 @@
 
 namespace blink {
 
-using namespace html_names;
-
 static bool ShouldTypeOnlyIncludeDirectChildren(CollectionType type) {
   switch (type) {
     case kClassCollectionType:
@@ -113,9 +111,9 @@ static NodeListSearchRoot SearchRootFromCollectionType(
     case kMapAreas:
       return NodeListSearchRoot::kOwnerNode;
     case kFormControls:
-      if (IsHTMLFieldSetElement(owner))
+      if (IsA<HTMLFieldSetElement>(owner))
         return NodeListSearchRoot::kOwnerNode;
-      DCHECK(IsHTMLFormElement(owner));
+      DCHECK(IsA<HTMLFormElement>(owner));
       return NodeListSearchRoot::kTreeScope;
     case kNameNodeListType:
     case kRadioNodeListType:
@@ -191,12 +189,6 @@ HTMLCollection::HTMLCollection(ContainerNode& owner_node,
   GetDocument().RegisterNodeList(this);
 }
 
-HTMLCollection* HTMLCollection::Create(ContainerNode& base,
-                                       CollectionType type) {
-  return MakeGarbageCollected<HTMLCollection>(base, type,
-                                              kDoesNotOverrideItemAfter);
-}
-
 HTMLCollection::~HTMLCollection() = default;
 
 void HTMLCollection::InvalidateCache(Document* old_document) const {
@@ -211,7 +203,7 @@ unsigned HTMLCollection::length() const {
 Element* HTMLCollection::item(unsigned offset) const {
   Element* element = collection_items_cache_.NodeAt(*this, offset);
   if (element && element->GetDocument().InDOMNodeRemovedHandler()) {
-    if (NodeChildRemovalTracker::IsBeingRemoved(element))
+    if (NodeChildRemovalTracker::IsBeingRemoved(*element))
       GetDocument().CountDetachingNodeAccessInDOMNodeRemovedHandler();
   }
   return element;
@@ -221,44 +213,48 @@ static inline bool IsMatchingHTMLElement(const HTMLCollection& html_collection,
                                          const HTMLElement& element) {
   switch (html_collection.GetType()) {
     case kDocImages:
-      return element.HasTagName(kImgTag);
+      return element.HasTagName(html_names::kImgTag);
     case kDocScripts:
-      return element.HasTagName(kScriptTag);
+      return element.HasTagName(html_names::kScriptTag);
     case kDocForms:
-      return element.HasTagName(kFormTag);
+      return element.HasTagName(html_names::kFormTag);
     case kDocumentNamedItems:
       return ToDocumentNameCollection(html_collection).ElementMatches(element);
     case kDocumentAllNamedItems:
       return ToDocumentAllNameCollection(html_collection)
           .ElementMatches(element);
     case kTableTBodies:
-      return element.HasTagName(kTbodyTag);
+      return element.HasTagName(html_names::kTbodyTag);
     case kTRCells:
-      return element.HasTagName(kTdTag) || element.HasTagName(kThTag);
+      return element.HasTagName(html_names::kTdTag) ||
+             element.HasTagName(html_names::kThTag);
     case kTSectionRows:
-      return element.HasTagName(kTrTag);
+      return element.HasTagName(html_names::kTrTag);
     case kSelectOptions:
       return ToHTMLOptionsCollection(html_collection).ElementMatches(element);
-    case kSelectedOptions:
-      return IsHTMLOptionElement(element) &&
-             ToHTMLOptionElement(element).Selected();
+    case kSelectedOptions: {
+      auto* option_element = DynamicTo<HTMLOptionElement>(element);
+      return option_element && option_element->Selected();
+    }
     case kDataListOptions:
       return ToHTMLDataListOptionsCollection(html_collection)
           .ElementMatches(element);
     case kMapAreas:
-      return element.HasTagName(kAreaTag);
+      return element.HasTagName(html_names::kAreaTag);
     case kDocApplets:
       return IsHTMLObjectElement(element) &&
              ToHTMLObjectElement(element).ContainsJavaApplet();
     case kDocEmbeds:
-      return element.HasTagName(kEmbedTag);
+      return element.HasTagName(html_names::kEmbedTag);
     case kDocLinks:
-      return (element.HasTagName(kATag) || element.HasTagName(kAreaTag)) &&
-             element.FastHasAttribute(kHrefAttr);
+      return (element.HasTagName(html_names::kATag) ||
+              element.HasTagName(html_names::kAreaTag)) &&
+             element.FastHasAttribute(html_names::kHrefAttr);
     case kDocAnchors:
-      return element.HasTagName(kATag) && element.FastHasAttribute(kNameAttr);
+      return element.HasTagName(html_names::kATag) &&
+             element.FastHasAttribute(html_names::kNameAttr);
     case kFormControls:
-      DCHECK(IsHTMLFieldSetElement(html_collection.ownerNode()));
+      DCHECK(IsA<HTMLFieldSetElement>(html_collection.ownerNode()));
       return IsHTMLObjectElement(element) ||
              IsHTMLFormControlElement(element) ||
              element.IsFormAssociatedCustomElement();
@@ -302,8 +298,8 @@ inline bool HTMLCollection::ElementMatches(const Element& element) const {
   }
 
   // The following only applies to HTMLElements.
-  return element.IsHTMLElement() &&
-         IsMatchingHTMLElement(*this, ToHTMLElement(element));
+  auto* html_element = DynamicTo<HTMLElement>(element);
+  return html_element && IsMatchingHTMLElement(*this, *html_element);
 }
 
 namespace {
@@ -341,13 +337,20 @@ Element* HTMLCollection::VirtualItemAfter(Element*) const {
 // although it returns any type of element by id.
 static inline bool NameShouldBeVisibleInDocumentAll(
     const HTMLElement& element) {
-  return element.HasTagName(kATag) || element.HasTagName(kButtonTag) ||
-         element.HasTagName(kEmbedTag) || element.HasTagName(kFormTag) ||
-         element.HasTagName(kFrameTag) || element.HasTagName(kFramesetTag) ||
-         element.HasTagName(kIFrameTag) || element.HasTagName(kImgTag) ||
-         element.HasTagName(kInputTag) || element.HasTagName(kMapTag) ||
-         element.HasTagName(kMetaTag) || element.HasTagName(kObjectTag) ||
-         element.HasTagName(kSelectTag) || element.HasTagName(kTextareaTag);
+  return element.HasTagName(html_names::kATag) ||
+         element.HasTagName(html_names::kButtonTag) ||
+         element.HasTagName(html_names::kEmbedTag) ||
+         element.HasTagName(html_names::kFormTag) ||
+         element.HasTagName(html_names::kFrameTag) ||
+         element.HasTagName(html_names::kFramesetTag) ||
+         element.HasTagName(html_names::kIFrameTag) ||
+         element.HasTagName(html_names::kImgTag) ||
+         element.HasTagName(html_names::kInputTag) ||
+         element.HasTagName(html_names::kMapTag) ||
+         element.HasTagName(html_names::kMetaTag) ||
+         element.HasTagName(html_names::kObjectTag) ||
+         element.HasTagName(html_names::kSelectTag) ||
+         element.HasTagName(html_names::kTextareaTag);
 }
 
 Element* HTMLCollection::TraverseToFirst() const {
@@ -483,12 +486,13 @@ void HTMLCollection::SupportedPropertyNames(Vector<String>& names) {
       if (add_result.is_new_entry)
         names.push_back(id_attribute);
     }
-    if (!element->IsHTMLElement())
+    auto* html_element = DynamicTo<HTMLElement>(element);
+    if (!html_element)
       continue;
     const AtomicString& name_attribute = element->GetNameAttribute();
     if (!name_attribute.IsEmpty() &&
         (GetType() != kDocAll ||
-         NameShouldBeVisibleInDocumentAll(ToHTMLElement(*element)))) {
+         NameShouldBeVisibleInDocumentAll(*html_element))) {
       HashSet<AtomicString>::AddResult add_result =
           existing_names.insert(name_attribute);
       if (add_result.is_new_entry)
@@ -506,19 +510,20 @@ void HTMLCollection::UpdateIdNameCache() const {
   if (HasValidIdNameCache())
     return;
 
-  NamedItemCache* cache = NamedItemCache::Create();
+  auto* cache = MakeGarbageCollected<NamedItemCache>();
   unsigned length = this->length();
   for (unsigned i = 0; i < length; ++i) {
     Element* element = item(i);
     const AtomicString& id_attr_val = element->GetIdAttribute();
     if (!id_attr_val.IsEmpty())
       cache->AddElementWithId(id_attr_val, element);
-    if (!element->IsHTMLElement())
+    auto* html_element = DynamicTo<HTMLElement>(element);
+    if (!html_element)
       continue;
     const AtomicString& name_attr_val = element->GetNameAttribute();
     if (!name_attr_val.IsEmpty() && id_attr_val != name_attr_val &&
         (GetType() != kDocAll ||
-         NameShouldBeVisibleInDocumentAll(ToHTMLElement(*element))))
+         NameShouldBeVisibleInDocumentAll(*html_element)))
       cache->AddElementWithName(name_attr_val, element);
   }
   // Set the named item cache last as traversing the tree may cause cache

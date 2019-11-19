@@ -15,8 +15,6 @@ viz_component("client") {
     "hit_test_data_provider.h",
     "hit_test_data_provider_draw_quad.cc",
     "hit_test_data_provider_draw_quad.h",
-    "local_surface_id_provider.cc",
-    "local_surface_id_provider.h",
     "shared_bitmap_reporter.cc",
     "shared_bitmap_reporter.h",
   ]
@@ -40,6 +38,7 @@ viz_source_set("unit_tests") {
   testonly = true
   sources = [
     "client_resource_provider_unittest.cc",
+    "frame_eviction_manager_unittest.cc",
     "hit_test_data_provider_draw_quad_unittest.cc",
   ]
 
@@ -50,7 +49,7 @@ viz_source_set("unit_tests") {
     "//components/viz/client",
     "//components/viz/test:test_support",
     "//mojo/public/cpp/bindings",
-    "//services/viz/public/interfaces",
+    "//services/viz/public/mojom",
     "//testing/gmock",
     "//testing/gtest",
   ]

@@ -18,10 +18,13 @@
 
 using testing::_;
 using testing::ContainerEq;
+using testing::Eq;
 using testing::Return;
 
 namespace offline_items_collection {
 namespace {
+
+using GetVisualsOptions = OfflineContentProvider::GetVisualsOptions;
 
 struct CompareOfflineItemsById {
   bool operator()(const OfflineItem& a, const OfflineItem& b) const {
@@ -71,9 +74,7 @@ class OpenItemRemovalOfflineContentProvider
 class OfflineContentAggregatorTest : public testing::Test {
  public:
   OfflineContentAggregatorTest()
-      : task_runner_(new base::TestMockTimeTaskRunner),
-        handle_(task_runner_),
-        weak_ptr_factory_(this) {}
+      : task_runner_(new base::TestMockTimeTaskRunner), handle_(task_runner_) {}
   ~OfflineContentAggregatorTest() override {}
 
  protected:
@@ -91,7 +92,7 @@ class OfflineContentAggregatorTest : public testing::Test {
   scoped_refptr<base::TestMockTimeTaskRunner> task_runner_;
   base::ThreadTaskRunnerHandle handle_;
   OfflineContentAggregator aggregator_;
-  base::WeakPtrFactory<OfflineContentAggregatorTest> weak_ptr_factory_;
+  base::WeakPtrFactory<OfflineContentAggregatorTest> weak_ptr_factory_{this};
 };
 
 void OfflineContentAggregatorTest::GetAllItemsAndVerify(
@@ -186,8 +187,8 @@ TEST_F(OfflineContentAggregatorTest, ActionPropagatesToRightProvider) {
   EXPECT_CALL(provider2, ResumeDownload(id2, true)).Times(1);
   EXPECT_CALL(provider1, PauseDownload(id1)).Times(1);
   EXPECT_CALL(provider2, PauseDownload(id2)).Times(1);
-  EXPECT_CALL(provider1, GetVisualsForItem_(id1, _)).Times(1);
-  EXPECT_CALL(provider2, GetVisualsForItem_(id2, _)).Times(1);
+  EXPECT_CALL(provider1, GetVisualsForItem_(id1, _, _)).Times(1);
+  EXPECT_CALL(provider2, GetVisualsForItem_(id2, _, _)).Times(1);
   EXPECT_CALL(provider1, GetShareInfoForItem(id1, _)).Times(1);
   EXPECT_CALL(provider2, GetShareInfoForItem(id2, _)).Times(1);
   aggregator_.OpenItem(LaunchLocation::DOWNLOAD_HOME, id1);
@@ -200,8 +201,10 @@ TEST_F(OfflineContentAggregatorTest, ActionPropagatesToRightProvider) {
   aggregator_.ResumeDownload(id2, true);
   aggregator_.PauseDownload(id1);
   aggregator_.PauseDownload(id2);
-  aggregator_.GetVisualsForItem(id1, OfflineContentProvider::VisualsCallback());
-  aggregator_.GetVisualsForItem(id2, OfflineContentProvider::VisualsCallback());
+  aggregator_.GetVisualsForItem(id1, GetVisualsOptions::IconOnly(),
+                                OfflineContentProvider::VisualsCallback());
+  aggregator_.GetVisualsForItem(id2, GetVisualsOptions::IconOnly(),
+                                OfflineContentProvider::VisualsCallback());
   aggregator_.GetShareInfoForItem(id1, OfflineContentProvider::ShareCallback());
   aggregator_.GetShareInfoForItem(id2, OfflineContentProvider::ShareCallback());
 }
@@ -285,12 +288,12 @@ TEST_F(OfflineContentAggregatorTest, OnItemUpdatedPropagatedToObservers) {
   OfflineItem item1(ContentId("1", "A"));
   OfflineItem item2(ContentId("2", "B"));
 
-  EXPECT_CALL(observer1, OnItemUpdated(item1)).Times(1);
-  EXPECT_CALL(observer1, OnItemUpdated(item2)).Times(1);
-  EXPECT_CALL(observer2, OnItemUpdated(item1)).Times(1);
-  EXPECT_CALL(observer2, OnItemUpdated(item2)).Times(1);
-  provider1.NotifyOnItemUpdated(item1);
-  provider2.NotifyOnItemUpdated(item2);
+  EXPECT_CALL(observer1, OnItemUpdated(item1, Eq(base::nullopt))).Times(1);
+  EXPECT_CALL(observer1, OnItemUpdated(item2, Eq(base::nullopt))).Times(1);
+  EXPECT_CALL(observer2, OnItemUpdated(item1, Eq(base::nullopt))).Times(1);
+  EXPECT_CALL(observer2, OnItemUpdated(item2, Eq(base::nullopt))).Times(1);
+  provider1.NotifyOnItemUpdated(item1, base::nullopt);
+  provider2.NotifyOnItemUpdated(item2, base::nullopt);
 }
 
 TEST_F(OfflineContentAggregatorTest, ProviderRemovedDuringCallbackFlush) {

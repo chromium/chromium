@@ -4,8 +4,9 @@
 
 package org.chromium.chrome.browser.infobar;
 
-import android.support.annotation.IntDef;
 import android.text.TextUtils;
+
+import androidx.annotation.IntDef;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

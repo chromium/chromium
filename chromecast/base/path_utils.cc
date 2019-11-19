@@ -21,8 +21,8 @@ base::FilePath GetPath(base::BasePathKey default_dir_key,
     LOG(DFATAL) << "Cannot get default dir: " << default_dir_key;
 
   base::FilePath adjusted_path(default_dir.Append(path));
-  VLOG(1) << "Path adjusted from " << path.value() << " to "
-          << adjusted_path.value();
+  DVLOG(1) << "Path adjusted from " << path.value() << " to "
+           << adjusted_path.value();
   return adjusted_path;
 }
 

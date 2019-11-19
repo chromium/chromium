@@ -77,12 +77,7 @@ void SuggestedArticlesObserver::OnNewSuggestions(Category category) {
   if (category != ArticlesCategory())
     return;
 
-  std::vector<PrefetchURL> prefetch_urls;
-  if (!GetCurrentSuggestions(&prefetch_urls))
-    return;
-
-  prefetch_service_->GetPrefetchDispatcher()->AddCandidatePrefetchURLs(
-      kSuggestedArticlesNamespace, prefetch_urls);
+  ConsumeSuggestions();
 }
 
 void SuggestedArticlesObserver::OnCategoryStatusChanged(
@@ -122,6 +117,15 @@ void SuggestedArticlesObserver::OnFullRefreshRequired() {
 
 void SuggestedArticlesObserver::ContentSuggestionsServiceShutdown() {
   // No need to do anything here, we will just stop getting events.
+}
+
+void SuggestedArticlesObserver::ConsumeSuggestions() {
+  std::vector<PrefetchURL> prefetch_urls;
+  if (!GetCurrentSuggestions(&prefetch_urls))
+    return;
+
+  prefetch_service_->GetPrefetchDispatcher()->AddCandidatePrefetchURLs(
+      kSuggestedArticlesNamespace, prefetch_urls);
 }
 
 std::vector<ntp_snippets::ContentSuggestion>*

@@ -39,7 +39,6 @@ chrome.test.runTests([
     // renderer-initiated navigation.
     expect([
       { status: 'loading', url: getURL('browserThenRendererInitiated/a.html') },
-      { status: 'complete' },
       { status: 'loading', url: getURL('browserThenRendererInitiated/b.html') },
       { status: 'complete' },
     ]);

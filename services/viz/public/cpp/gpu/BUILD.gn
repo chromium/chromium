@@ -1,0 +1,79 @@
+# Copyright 2016 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/ui.gni")
+
+source_set("gpu") {
+  public = [
+    "command_buffer_metrics.h",
+    "context_provider_command_buffer.h",
+    "gpu.h",
+  ]
+
+  sources = [
+    "client_gpu_memory_buffer_manager.cc",
+    "client_gpu_memory_buffer_manager.h",
+    "command_buffer_metrics.cc",
+    "context_provider_command_buffer.cc",
+    "gpu.cc",
+  ]
+
+  public_deps = [
+    "//cc",
+    "//gpu/command_buffer/common",
+    "//gpu/ipc/client",
+    "//gpu/ipc/common",
+    "//services/viz/public/mojom",
+    "//url",
+  ]
+
+  deps = [
+    "//base",
+    "//gpu",
+    "//gpu/command_buffer/client",
+    "//gpu/command_buffer/client:gles2_cmd_helper",
+    "//gpu/command_buffer/client:gles2_implementation",
+    "//gpu/command_buffer/client:raster",
+    "//gpu/command_buffer/client:raster_interface",
+    "//gpu/command_buffer/client:webgpu",
+    "//gpu/command_buffer/common:raster",
+    "//gpu/skia_bindings",
+    "//mojo/public/cpp/system",
+    "//services/service_manager/public/cpp",
+    "//services/viz/public/mojom",
+    "//ui/base:features",
+    "//ui/gl",
+  ]
+
+  if (use_aura || is_mac) {
+    public += [ "shared_worker_context_provider_factory.h" ]
+
+    sources += [ "shared_worker_context_provider_factory.cc" ]
+  }
+}
+
+source_set("tests") {
+  testonly = true
+
+  sources = [
+    "gpu_unittest.cc",
+  ]
+
+  deps = [
+    "//base",
+    "//base/test:test_support",
+    "//mojo/core/embedder",
+    "//mojo/public/cpp/system",
+    "//services/service_manager/public/cpp",
+    "//services/viz/public/cpp/gpu",
+    "//testing/gtest",
+    "//ui/gfx:test_support",
+    "//ui/gfx/geometry",
+    "//ui/gfx/geometry/mojom",
+  ]
+
+  if (use_x11) {
+    deps += [ "//ui/gfx/x" ]
+  }
+}

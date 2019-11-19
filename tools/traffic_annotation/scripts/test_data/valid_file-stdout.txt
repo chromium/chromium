@@ -1,0 +1,97 @@
+==== NEW ANNOTATION ====
+valid_file.cc
+14
+Definition
+id1
+
+
+        semantics {
+          sender: "sender1"
+          description: "desc1"
+          trigger: "trigger1"
+          data: "data1"
+          destination: GOOGLE_OWNED_SERVICE
+        }
+        policy {
+          cookies_allowed: NO
+          setting: "setting1"
+          chrome_policy {
+            SpellCheckServiceEnabled {
+                SpellCheckServiceEnabled: false
+            }
+          }
+        }
+        comments: "comment1"
+==== ANNOTATION ENDS ====
+==== NEW ANNOTATION ====
+valid_file.cc
+36
+Partial
+id2
+completing_id2
+
+        semantics {
+          sender: "sender2"
+          description: "desc2"
+          trigger: "trigger2"
+          data: "data2"
+          destination: WEBSITE
+        }
+==== ANNOTATION ENDS ====
+==== NEW ANNOTATION ====
+valid_file.cc
+46
+Completing
+id3
+
+
+        policy {
+          cookies_allowed: YES
+          cookie_store: "user"
+          setting: "setting3"
+          chrome_policy {
+            SpellCheckServiceEnabled {
+                SpellCheckServiceEnabled: false
+            }
+          }
+        }
+        comments: "comment3"
+==== ANNOTATION ENDS ====
+==== NEW ANNOTATION ====
+valid_file.cc
+61
+BranchedCompleting
+id4
+branch4
+
+        policy {
+          cookies_allowed: YES
+          cookie_store: "user"
+          setting: "setting4"
+          policy_exception_justification: "justification"
+        }
+==== ANNOTATION ENDS ====
+==== NEW ANNOTATION ====
+valid_file.cc
+126
+Mutable
+
+
+
+==== ANNOTATION ENDS ====
+==== NEW ANNOTATION ====
+valid_file.cc
+86
+Definition
+test
+
+Traffic annotation for unit, browser and other tests
+==== ANNOTATION ENDS ====
+==== NEW ANNOTATION ====
+valid_file.cc
+88
+Partial
+test_partial
+test
+Traffic annotation for unit, browser and other tests
+==== ANNOTATION ENDS ====

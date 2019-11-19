@@ -1,0 +1,15 @@
+This is a testharness.js-based test.
+FAIL Can set 'text-decoration-thickness' to CSS-wide keywords Failed to execute 'set' on 'StylePropertyMap': Invalid propertyName: text-decoration-thickness
+FAIL Can set 'text-decoration-thickness' to var() references Failed to execute 'set' on 'StylePropertyMap': Invalid propertyName: text-decoration-thickness
+FAIL Can set 'text-decoration-thickness' to the 'auto' keyword Failed to execute 'set' on 'StylePropertyMap': Invalid propertyName: text-decoration-thickness
+FAIL Can set 'text-decoration-thickness' to a length Failed to execute 'set' on 'StylePropertyMap': Invalid propertyName: text-decoration-thickness
+PASS Setting 'text-decoration-thickness' to a percent throws TypeError
+PASS Setting 'text-decoration-thickness' to a time throws TypeError
+PASS Setting 'text-decoration-thickness' to an angle throws TypeError
+PASS Setting 'text-decoration-thickness' to a flexible length throws TypeError
+PASS Setting 'text-decoration-thickness' to a number throws TypeError
+PASS Setting 'text-decoration-thickness' to a position throws TypeError
+PASS Setting 'text-decoration-thickness' to a URL throws TypeError
+PASS Setting 'text-decoration-thickness' to a transform throws TypeError
+Harness: the test ran to completion.
+

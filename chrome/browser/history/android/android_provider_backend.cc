@@ -787,7 +787,7 @@ bool AndroidProviderBackend::UpdateVisitedURLs() {
         base::Time::FromInternalValue(statement.ColumnInt64(1));
     base::Time created_time = last_visit_time;
 
-    if (statement.ColumnType(2) != sql::COLUMN_TYPE_NULL)
+    if (statement.GetColumnType(2) != sql::ColumnType::kNull)
       created_time = base::Time::FromInternalValue(statement.ColumnInt64(2));
 
     if (!history_db_->AddBookmarkCacheRow(created_time, last_visit_time,

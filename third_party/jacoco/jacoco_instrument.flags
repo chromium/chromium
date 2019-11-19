@@ -1,0 +1,8 @@
+# This package is only used when Java coverage is enabled.
+# JaCoCo libraries contain all dependencies so we can ignore warning here.
+-dontwarn java.lang.instrument.**
+
+# Keep everything for the jacoco classes.
+-keep class com.vladium.** {*;}
+-keep class org.jacoco.** {*;}
+-dontwarn org.jacoco.**

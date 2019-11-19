@@ -7,7 +7,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "chrome/browser/chromeos/assistant/assistant_util.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "components/arc/arc_prefs.h"
+#include "chromeos/services/assistant/public/cpp/assistant_prefs.h"
 #include "components/prefs/pref_service.h"
 
 AssistantServiceMetricsProvider::AssistantServiceMetricsProvider() = default;
@@ -24,5 +24,5 @@ void AssistantServiceMetricsProvider::ProvideCurrentSessionData(
   UMA_HISTOGRAM_BOOLEAN(
       "Assistant.ServiceEnabledUserCount",
       ProfileManager::GetActiveUserProfile()->GetPrefs()->GetBoolean(
-          arc::prefs::kVoiceInteractionEnabled));
+          chromeos::assistant::prefs::kAssistantEnabled));
 }

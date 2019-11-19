@@ -4,7 +4,7 @@
 
 #include "chrome/browser/subresource_filter/test_ruleset_publisher.h"
 
-#include "base/hash.h"
+#include "base/hash/hash.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/browser_process.h"

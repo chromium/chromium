@@ -4,10 +4,10 @@
 
 #include "chromecast/graphics/accessibility/partial_magnification_controller.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/aura/test/aura_test_base.h"
 #include "ui/aura/test/test_window_delegate.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/views/test/views_test_base.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/default_screen_position_client.h"
 
@@ -55,13 +55,13 @@ class PartialMagnificationControllerTestApi {
   DISALLOW_ASSIGN(PartialMagnificationControllerTestApi);
 };
 
-class PartialMagnificationControllerTest : public aura::test::AuraTestBase {
+class PartialMagnificationControllerTest : public views::ViewsTestBase {
  public:
   PartialMagnificationControllerTest() = default;
   ~PartialMagnificationControllerTest() override = default;
 
   void SetUp() override {
-    aura::test::AuraTestBase::SetUp();
+    views::ViewsTestBase::SetUp();
 
     screen_position_client_.reset(new wm::DefaultScreenPositionClient());
     aura::client::SetScreenPositionClient(root_window(),
@@ -72,10 +72,10 @@ class PartialMagnificationControllerTest : public aura::test::AuraTestBase {
 
   void TearDown() override {
     // PartialMagnificationController needs to be deleted before the root window
-    // is torn down by AuraTestBase.
+    // is torn down by ViewsTestBase.
     controller_.reset();
 
-    aura::test::AuraTestBase::TearDown();
+    views::ViewsTestBase::TearDown();
   }
 
  protected:

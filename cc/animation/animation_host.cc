@@ -9,7 +9,6 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/stl_util.h"
 #include "base/trace_event/trace_event.h"
@@ -48,6 +47,19 @@ AnimationWorkletMutationState ToAnimationWorkletMutationState(
   }
 }
 
+bool TickAnimationsIf(AnimationHost::AnimationsList animations,
+                      base::TimeTicks monotonic_time,
+                      bool (*predicate)(const Animation&)) {
+  bool did_tick = false;
+  for (auto& it : animations) {
+    if (predicate(*it)) {
+      it->Tick(monotonic_time);
+      did_tick = true;
+    }
+  }
+  return did_tick;
+}
+
 }  // namespace
 
 std::unique_ptr<AnimationHost> AnimationHost::CreateMainInstance() {
@@ -69,8 +81,7 @@ AnimationHost::AnimationHost(ThreadInstance thread_instance)
       thread_instance_(thread_instance),
       supports_scroll_animations_(false),
       needs_push_properties_(false),
-      mutator_(nullptr),
-      weak_factory_(this) {
+      mutator_(nullptr) {
   if (thread_instance_ == ThreadInstance::IMPL) {
     scroll_offset_animations_impl_ =
         std::make_unique<ScrollOffsetAnimationsImpl>(this);
@@ -130,20 +141,35 @@ void AnimationHost::RemoveAnimationTimeline(
   SetNeedsPushProperties();
 }
 
-void AnimationHost::RegisterElement(ElementId element_id,
-                                    ElementListType list_type) {
-  scoped_refptr<ElementAnimations> element_animations =
-      GetElementAnimationsForElementId(element_id);
-  if (element_animations)
-    element_animations->ElementRegistered(element_id, list_type);
+void AnimationHost::UpdateRegisteredElementIds(ElementListType changed_list) {
+  for (auto map_entry : element_to_animations_map_) {
+    if (mutator_host_client()->IsElementInPropertyTrees(map_entry.first,
+                                                        changed_list))
+      map_entry.second->ElementIdRegistered(map_entry.first, changed_list);
+    else
+      map_entry.second->ElementIdUnregistered(map_entry.first, changed_list);
+  }
 }
 
-void AnimationHost::UnregisterElement(ElementId element_id,
+void AnimationHost::InitClientAnimationState() {
+  for (auto map_entry : element_to_animations_map_)
+    map_entry.second->InitClientAnimationState();
+}
+
+void AnimationHost::RegisterElementId(ElementId element_id,
                                       ElementListType list_type) {
   scoped_refptr<ElementAnimations> element_animations =
       GetElementAnimationsForElementId(element_id);
   if (element_animations)
-    element_animations->ElementUnregistered(element_id, list_type);
+    element_animations->ElementIdRegistered(element_id, list_type);
+}
+
+void AnimationHost::UnregisterElementId(ElementId element_id,
+                                        ElementListType list_type) {
+  scoped_refptr<ElementAnimations> element_animations =
+      GetElementAnimationsForElementId(element_id);
+  if (element_animations)
+    element_animations->ElementIdUnregistered(element_id, list_type);
 }
 
 void AnimationHost::RegisterKeyframeEffectForElement(
@@ -195,6 +221,8 @@ void AnimationHost::SetMutatorHostClient(MutatorHostClient* client) {
     return;
 
   mutator_host_client_ = client;
+  if (mutator_host_client_ && needs_push_properties_)
+    mutator_host_client_->SetMutatorsNeedCommit();
 }
 
 void AnimationHost::SetNeedsCommit() {
@@ -206,6 +234,8 @@ void AnimationHost::SetNeedsCommit() {
 
 void AnimationHost::SetNeedsPushProperties() {
   needs_push_properties_ = true;
+  if (mutator_host_client_)
+    mutator_host_client_->SetMutatorsNeedCommit();
 }
 
 void AnimationHost::PushPropertiesTo(MutatorHost* mutator_host_impl) {
@@ -330,8 +360,8 @@ void AnimationHost::TickMutator(base::TimeTicks monotonic_time,
       weak_factory_.GetWeakPtr(), tree_type);
 
   MutateQueuingStrategy queuing_strategy =
-      is_active_tree ? MutateQueuingStrategy::kDrop
-                     : MutateQueuingStrategy::kQueueAndReplace;
+      is_active_tree ? MutateQueuingStrategy::kQueueAndReplaceNormalPriority
+                     : MutateQueuingStrategy::kQueueHighPriority;
   if (mutator_->Mutate(std::move(state), queuing_strategy,
                        std::move(on_done))) {
     mutator_host_client_->NotifyAnimationWorkletStateChange(
@@ -340,29 +370,21 @@ void AnimationHost::TickMutator(base::TimeTicks monotonic_time,
   return;
 }
 
-bool AnimationHost::ActivateAnimations() {
+bool AnimationHost::ActivateAnimations(MutatorEvents* mutator_events) {
   if (!NeedsTickAnimations())
     return false;
 
+  auto* animation_events = static_cast<AnimationEvents*>(mutator_events);
+
   TRACE_EVENT0("cc", "AnimationHost::ActivateAnimations");
   AnimationsList ticking_animations_copy = ticking_animations_;
-  for (auto& it : ticking_animations_copy)
+  for (auto& it : ticking_animations_copy) {
     it->ActivateKeyframeEffects();
+    // Finish animations which no longer affect active or pending elements.
+    it->UpdateState(false, animation_events);
+  }
 
   return true;
-}
-
-bool TickAnimationsIf(AnimationHost::AnimationsList animations,
-                      base::TimeTicks monotonic_time,
-                      bool (*predicate)(const Animation&)) {
-  bool did_tick = false;
-  for (auto& it : animations) {
-    if (predicate(*it)) {
-      it->Tick(monotonic_time);
-      did_tick = true;
-    }
-  }
-  return did_tick;
 }
 
 bool AnimationHost::TickAnimations(base::TimeTicks monotonic_time,
@@ -409,8 +431,8 @@ void AnimationHost::TickScrollAnimations(base::TimeTicks monotonic_time,
   TickMutator(monotonic_time, scroll_tree, true /* is_active_tree */);
 }
 
-void AnimationHost::TickWorkletAnimations(base::TimeTicks monotonic_time) {
-  TickAnimationsIf(ticking_animations_, monotonic_time,
+void AnimationHost::TickWorkletAnimations() {
+  TickAnimationsIf(ticking_animations_, base::TimeTicks(),
                    [](const Animation& animation) {
                      return animation.IsWorkletAnimation();
                    });
@@ -461,6 +483,32 @@ std::unique_ptr<MutatorEvents> AnimationHost::CreateEvents() {
   return std::make_unique<AnimationEvents>();
 }
 
+void DispatchAnimationEventToElementAnimations(ElementAnimations* animations,
+                                               const AnimationEvent& event) {
+  switch (event.type) {
+    case AnimationEvent::STARTED:
+      animations->NotifyAnimationStarted(event);
+      break;
+
+    case AnimationEvent::FINISHED:
+      animations->NotifyAnimationFinished(event);
+      break;
+
+    case AnimationEvent::ABORTED:
+      animations->NotifyAnimationAborted(event);
+      break;
+
+    case AnimationEvent::TAKEOVER:
+      animations->NotifyAnimationTakeover(event);
+      break;
+
+    case AnimationEvent::TIME_UPDATED:
+      // Worklet animations are looked up in ticking animations.
+      NOTREACHED();
+      break;
+  }
+}
+
 void AnimationHost::SetAnimationEvents(
     std::unique_ptr<MutatorEvents> mutator_events) {
   auto events =
@@ -468,31 +516,26 @@ void AnimationHost::SetAnimationEvents(
 
   for (size_t event_index = 0; event_index < events->events_.size();
        ++event_index) {
-    ElementId element_id = events->events_[event_index].element_id;
+    AnimationEvent& event = events->events_[event_index];
 
-    // Use the map of all ElementAnimations, not just ticking animations, since
-    // non-ticking animations may still receive events for impl-only animations.
-    const ElementToAnimationsMap& all_element_animations =
-        element_to_animations_map_;
-    auto iter = all_element_animations.find(element_id);
-    if (iter != all_element_animations.end()) {
-      switch (events->events_[event_index].type) {
-        case AnimationEvent::STARTED:
-          (*iter).second->NotifyAnimationStarted(events->events_[event_index]);
-          break;
-
-        case AnimationEvent::FINISHED:
-          (*iter).second->NotifyAnimationFinished(events->events_[event_index]);
-          break;
-
-        case AnimationEvent::ABORTED:
-          (*iter).second->NotifyAnimationAborted(events->events_[event_index]);
-          break;
-
-        case AnimationEvent::TAKEOVER:
-          (*iter).second->NotifyAnimationTakeover(events->events_[event_index]);
-          break;
-      }
+    // TODO(http://crbug.com/1013727): Make all animation events use animation
+    // id to do targeting;
+    if (event.worklet_animation_id) {
+      DCHECK(event.type == AnimationEvent::TIME_UPDATED);
+      // Look up worklet animation in ticking animations.
+      WorkletAnimation* animation =
+          FindWorkletAnimation(event.worklet_animation_id);
+      if (animation)
+        animation->NotifyLocalTimeUpdated(event);
+    } else {
+      // Use the map of all ElementAnimations, not just ticking animations,
+      // since non-ticking animations may still receive events for impl-only
+      // animations.
+      const ElementToAnimationsMap& all_element_animations =
+          element_to_animations_map_;
+      auto iter = all_element_animations.find(event.element_id);
+      if (iter != all_element_animations.end())
+        DispatchAnimationEventToElementAnimations((*iter).second.get(), event);
     }
   }
 }
@@ -512,6 +555,15 @@ bool AnimationHost::IsAnimatingFilterProperty(ElementId element_id,
              ? element_animations->IsCurrentlyAnimatingProperty(
                    TargetProperty::FILTER, list_type)
              : false;
+}
+
+bool AnimationHost::IsAnimatingBackdropFilterProperty(
+    ElementId element_id,
+    ElementListType list_type) const {
+  auto element_animations = GetElementAnimationsForElementId(element_id);
+  return element_animations ? element_animations->IsCurrentlyAnimatingProperty(
+                                  TargetProperty::BACKDROP_FILTER, list_type)
+                            : false;
 }
 
 bool AnimationHost::IsAnimatingOpacityProperty(
@@ -541,6 +593,16 @@ bool AnimationHost::HasPotentiallyRunningFilterAnimation(
   return element_animations
              ? element_animations->IsPotentiallyAnimatingProperty(
                    TargetProperty::FILTER, list_type)
+             : false;
+}
+
+bool AnimationHost::HasPotentiallyRunningBackdropFilterAnimation(
+    ElementId element_id,
+    ElementListType list_type) const {
+  auto element_animations = GetElementAnimationsForElementId(element_id);
+  return element_animations
+             ? element_animations->IsPotentiallyAnimatingProperty(
+                   TargetProperty::BACKDROP_FILTER, list_type)
              : false;
 }
 
@@ -574,15 +636,6 @@ bool AnimationHost::HasAnyAnimationTargetingProperty(
   return element_animations->HasAnyAnimationTargetingProperty(property);
 }
 
-bool AnimationHost::HasOnlyTranslationTransforms(
-    ElementId element_id,
-    ElementListType list_type) const {
-  auto element_animations = GetElementAnimationsForElementId(element_id);
-  return element_animations
-             ? element_animations->HasOnlyTranslationTransforms(list_type)
-             : true;
-}
-
 bool AnimationHost::AnimationsPreserveAxisAlignment(
     ElementId element_id) const {
   auto element_animations = GetElementAnimationsForElementId(element_id);
@@ -591,24 +644,17 @@ bool AnimationHost::AnimationsPreserveAxisAlignment(
              : true;
 }
 
-bool AnimationHost::MaximumTargetScale(ElementId element_id,
+void AnimationHost::GetAnimationScales(ElementId element_id,
                                        ElementListType list_type,
-                                       float* max_scale) const {
-  *max_scale = 0.f;
-  auto element_animations = GetElementAnimationsForElementId(element_id);
-  return element_animations
-             ? element_animations->MaximumTargetScale(list_type, max_scale)
-             : true;
-}
-
-bool AnimationHost::AnimationStartScale(ElementId element_id,
-                                        ElementListType list_type,
-                                        float* start_scale) const {
-  *start_scale = 0.f;
-  auto element_animations = GetElementAnimationsForElementId(element_id);
-  return element_animations
-             ? element_animations->AnimationStartScale(list_type, start_scale)
-             : true;
+                                       float* maximum_scale,
+                                       float* starting_scale) const {
+  if (auto element_animations = GetElementAnimationsForElementId(element_id)) {
+    element_animations->GetAnimationScales(list_type, maximum_scale,
+                                           starting_scale);
+    return;
+  }
+  *maximum_scale = kNotScaled;
+  *starting_scale = kNotScaled;
 }
 
 bool AnimationHost::IsElementAnimating(ElementId element_id) const {
@@ -621,6 +667,18 @@ bool AnimationHost::HasTickingKeyframeModelForTesting(
   auto element_animations = GetElementAnimationsForElementId(element_id);
   return element_animations ? element_animations->HasTickingKeyframeEffect()
                             : false;
+}
+
+void AnimationHost::ImplOnlyAutoScrollAnimationCreate(
+    ElementId element_id,
+    const gfx::ScrollOffset& target_offset,
+    const gfx::ScrollOffset& current_offset,
+    float autoscroll_velocity,
+    base::TimeDelta animation_start_offset) {
+  DCHECK(scroll_offset_animations_impl_);
+  scroll_offset_animations_impl_->AutoScrollAnimationCreate(
+      element_id, target_offset, current_offset, autoscroll_velocity,
+      animation_start_offset);
 }
 
 void AnimationHost::ImplOnlyScrollAnimationCreate(
@@ -658,8 +716,13 @@ void AnimationHost::ScrollAnimationAbort() {
       false /* needs_completion */);
 }
 
+bool AnimationHost::IsImplOnlyScrollAnimating() const {
+  DCHECK(scroll_offset_animations_impl_);
+  return scroll_offset_animations_impl_->IsAnimating();
+}
+
 void AnimationHost::AddToTicking(scoped_refptr<Animation> animation) {
-  DCHECK(!base::ContainsValue(ticking_animations_, animation));
+  DCHECK(!base::Contains(ticking_animations_, animation));
   ticking_animations_.push_back(animation);
 }
 
@@ -688,6 +751,20 @@ void AnimationHost::SetLayerTreeMutator(
   mutator_->SetClient(this);
 }
 
+WorkletAnimation* AnimationHost::FindWorkletAnimation(WorkletAnimationId id) {
+  // TODO(majidvp): Use a map to make lookup O(1)
+  auto animation = std::find_if(
+      ticking_animations_.begin(), ticking_animations_.end(), [id](auto& it) {
+        return it->IsWorkletAnimation() &&
+               ToWorkletAnimation(it.get())->worklet_animation_id() == id;
+      });
+
+  if (animation == ticking_animations_.end())
+    return nullptr;
+
+  return ToWorkletAnimation(animation->get());
+}
+
 void AnimationHost::SetMutationUpdate(
     std::unique_ptr<MutatorOutputState> output_state) {
   if (!output_state)
@@ -697,17 +774,9 @@ void AnimationHost::SetMutationUpdate(
   for (auto& animation_state : output_state->animations) {
     WorkletAnimationId id = animation_state.worklet_animation_id;
 
-    // TODO(majidvp): Use a map to make lookup O(1)
-    auto to_update = std::find_if(
-        ticking_animations_.begin(), ticking_animations_.end(), [id](auto& it) {
-          return it->IsWorkletAnimation() &&
-                 ToWorkletAnimation(it.get())->worklet_animation_id() == id;
-        });
-
-    if (to_update == ticking_animations_.end())
-      continue;
-
-    ToWorkletAnimation(to_update->get())->SetOutputState(animation_state);
+    WorkletAnimation* to_update = FindWorkletAnimation(id);
+    if (to_update)
+      to_update->SetOutputState(animation_state);
   }
 }
 
@@ -746,6 +815,13 @@ void AnimationHost::SetAnimationCounts(
 
 size_t AnimationHost::MainThreadAnimationsCount() const {
   return main_thread_animations_count_;
+}
+
+bool AnimationHost::HasCustomPropertyAnimations() const {
+  for (const auto& it : ticking_animations_)
+    if (it->AffectsCustomProperty())
+      return true;
+  return false;
 }
 
 bool AnimationHost::CurrentFrameHadRAF() const {

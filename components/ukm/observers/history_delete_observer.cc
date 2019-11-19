@@ -4,19 +4,16 @@
 
 #include "components/ukm/observers/history_delete_observer.h"
 
-#include "components/history/core/browser/history_service.h"
-
 namespace ukm {
 
-HistoryDeleteObserver::HistoryDeleteObserver() : history_observer_(this) {}
+HistoryDeleteObserver::HistoryDeleteObserver() {}
 
 HistoryDeleteObserver::~HistoryDeleteObserver() {}
 
 void HistoryDeleteObserver::ObserveServiceForDeletions(
     history::HistoryService* history_service) {
-  if (history_service) {
+  if (history_service)
     history_observer_.Add(history_service);
-  }
 }
 
 void HistoryDeleteObserver::OnURLsDeleted(

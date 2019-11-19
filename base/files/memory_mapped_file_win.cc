@@ -12,18 +12,51 @@
 #include "base/files/file_path.h"
 #include "base/strings/string16.h"
 #include "base/threading/scoped_blocking_call.h"
+#include "base/win/pe_image.h"
 
 #include <windows.h>
+#include <winnt.h>  // NOLINT(build/include_order)
 
 namespace base {
 
 MemoryMappedFile::MemoryMappedFile() : data_(NULL), length_(0) {
 }
 
+bool MemoryMappedFile::MapImageToMemory(Access access) {
+  ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
+
+  // The arguments to the calls of ::CreateFile(), ::CreateFileMapping(), and
+  // ::MapViewOfFile() need to be self consistent as far as access rights and
+  // type of mapping or one or more of them will fail in non-obvious ways.
+
+  if (!file_.IsValid())
+    return false;
+
+  file_mapping_.Set(::CreateFileMapping(file_.GetPlatformFile(), nullptr,
+                                        PAGE_READONLY | SEC_IMAGE_NO_EXECUTE, 0,
+                                        0, NULL));
+  if (!file_mapping_.IsValid())
+    return false;
+
+  data_ = static_cast<uint8_t*>(
+      ::MapViewOfFile(file_mapping_.Get(), FILE_MAP_READ, 0, 0, 0));
+  if (!data_)
+    return false;
+
+  // We need to know how large the mapped file is in some cases
+
+  base::win::PEImage pe_image(data_);
+  length_ = pe_image.GetNTHeaders()->OptionalHeader.SizeOfImage;
+
+  return true;
+}
+
 bool MemoryMappedFile::MapFileRegionToMemory(
     const MemoryMappedFile::Region& region,
     Access access) {
   ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
+
+  DCHECK(access != READ_CODE_IMAGE || region == Region::kWholeFile);
 
   if (!file_.IsValid())
     return false;
@@ -41,6 +74,8 @@ bool MemoryMappedFile::MapFileRegionToMemory(
       flags |= PAGE_READWRITE;
       size.QuadPart = region.size;
       break;
+    case READ_CODE_IMAGE:
+      return MapImageToMemory(access);
   }
 
   file_mapping_.Set(::CreateFileMapping(file_.GetPlatformFile(), NULL, flags,
@@ -68,8 +103,8 @@ bool MemoryMappedFile::MapFileRegionToMemory(
     // which contains |region| and then add up the |data_offset| displacement.
     int64_t aligned_start = 0;
     size_t ignored = 0U;
-    CalculateVMAlignedBoundaries(
-        region.offset, region.size, &aligned_start, &ignored, &data_offset);
+    CalculateVMAlignedBoundaries(region.offset, region.size, &aligned_start,
+                                 &ignored, &data_offset);
     int64_t full_map_size = region.size + data_offset;
 
     // Ensure that the casts below in the MapViewOfFile call are sane.

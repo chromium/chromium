@@ -14,7 +14,7 @@
 
 #include "base/macros.h"
 #include "base/stl_util.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "components/invalidation/public/invalidation_util.h"
 #include "google/cacheinvalidation/include/invalidation-client.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -54,7 +54,7 @@ class FakeInvalidationClient : public invalidation::InvalidationClient {
   ~FakeInvalidationClient() override {}
 
   void LoseRegistration(const invalidation::ObjectId& oid) {
-    EXPECT_TRUE(base::ContainsKey(registered_ids_, oid));
+    EXPECT_TRUE(base::Contains(registered_ids_, oid));
     registered_ids_.erase(oid);
   }
 
@@ -69,7 +69,7 @@ class FakeInvalidationClient : public invalidation::InvalidationClient {
   void Acknowledge(const invalidation::AckHandle& handle) override {}
 
   void Register(const invalidation::ObjectId& oid) override {
-    EXPECT_FALSE(base::ContainsKey(registered_ids_, oid));
+    EXPECT_FALSE(base::Contains(registered_ids_, oid));
     registered_ids_.insert(oid);
   }
 
@@ -78,7 +78,7 @@ class FakeInvalidationClient : public invalidation::InvalidationClient {
   }
 
   void Unregister(const invalidation::ObjectId& oid) override {
-    EXPECT_TRUE(base::ContainsKey(registered_ids_, oid));
+    EXPECT_TRUE(base::Contains(registered_ids_, oid));
     registered_ids_.erase(oid);
   }
 
@@ -223,7 +223,7 @@ class RegistrationManagerTest : public testing::Test {
 
  private:
   // Needed by timers in RegistrationManager.
-  base::test::ScopedTaskEnvironment task_environment_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
 
   DISALLOW_COPY_AND_ASSIGN(RegistrationManagerTest);
 };

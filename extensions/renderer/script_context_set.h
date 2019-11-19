@@ -16,6 +16,7 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/features/feature.h"
 #include "extensions/renderer/renderer_extension_registry.h"
+#include "extensions/renderer/script_context_set_iterable.h"
 #include "url/gurl.h"
 #include "v8/include/v8.h"
 
@@ -39,14 +40,14 @@ class ScriptContext;
 // Since calling JavaScript within a context can cause any number of contexts
 // to be created or destroyed, this has additional smarts to help with the set
 // changing underneath callers.
-class ScriptContextSet {
+class ScriptContextSet : public ScriptContextSetIterable {
  public:
   explicit ScriptContextSet(
       // Set of the IDs of extensions that are active in this process.
       // Must outlive this. TODO(kalman): Combine this and |extensions|.
       ExtensionIdSet* active_extension_ids);
 
-  ~ScriptContextSet();
+  ~ScriptContextSet() override;
 
   // Returns the number of contexts being tracked by this set.
   // This may also include invalid contexts. TODO(kalman): Useful?
@@ -56,7 +57,7 @@ class ScriptContextSet {
   // Returns a weak reference to the new ScriptContext.
   ScriptContext* Register(blink::WebLocalFrame* frame,
                           const v8::Local<v8::Context>& v8_context,
-                          int world_id);
+                          int32_t world_id);
 
   // If the specified context is contained in this set, remove it, then delete
   // it asynchronously. After this call returns the context object will still
@@ -89,25 +90,11 @@ class ScriptContextSet {
   static ScriptContext* GetMainWorldContextForFrame(
       content::RenderFrame* render_frame);
 
-  // Synchronously runs |callback| with each ScriptContext that belongs to
-  // |extension_id| in |render_frame|.
-  //
-  // An empty |extension_id| will match all extensions, and a null
-  // |render_frame| will match all render views, but try to use the inline
-  // variants of these methods instead.
-  void ForEach(const std::string& extension_id,
-               content::RenderFrame* render_frame,
-               const base::Callback<void(ScriptContext*)>& callback) const;
-  // ForEach which matches all extensions.
-  void ForEach(content::RenderFrame* render_frame,
-               const base::Callback<void(ScriptContext*)>& callback) const {
-    ForEach(std::string(), render_frame, callback);
-  }
-  // ForEach which matches all render views.
-  void ForEach(const std::string& extension_id,
-               const base::Callback<void(ScriptContext*)>& callback) const {
-    ForEach(extension_id, nullptr, callback);
-  }
+  // ScriptContextIterable:
+  void ForEach(
+      const std::string& extension_id,
+      content::RenderFrame* render_frame,
+      const base::RepeatingCallback<void(ScriptContext*)>& callback) override;
 
   // Cleans up contexts belonging to an unloaded extension.
   void OnExtensionUnloaded(const std::string& extension_id);
@@ -125,13 +112,13 @@ class ScriptContextSet {
   // extension ID associated with the main world's JavaScript context. If the
   // JavaScript context isn't from an extension, returns empty string.
   const Extension* GetExtensionFromFrameAndWorld(blink::WebLocalFrame* frame,
-                                                 int world_id,
+                                                 int32_t world_id,
                                                  bool use_effective_url);
 
   // Returns the Feature::Context type of context for a JavaScript context.
   Feature::Context ClassifyJavaScriptContext(
       const Extension* extension,
-      int world_id,
+      int32_t world_id,
       const GURL& url,
       const blink::WebSecurityOrigin& origin);
 

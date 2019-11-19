@@ -8,13 +8,13 @@
 #include "ash/components/shortcut_viewer/vector_icons/vector_icons.h"
 
 #include "base/logging.h"
+#include "components/vector_icons/cc_macros.h"
 #include "ui/gfx/vector_icon_types.h"
 
-#include "components/vector_icons/cc_macros.h"
+#define DECLARE_VECTOR_COMMAND(x) using gfx::x;
+DECLARE_VECTOR_COMMANDS
 
 namespace keyboard_shortcut_viewer {
-
-using namespace gfx;
 
 TEMPLATE_PLACEHOLDER
 

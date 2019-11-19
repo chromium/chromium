@@ -11,6 +11,7 @@
 #include "components/offline_pages/core/offline_page_feature.h"
 #include "components/offline_pages/core/offline_store_utils.h"
 #include "components/offline_pages/core/prefetch/prefetch_downloader.h"
+#include "components/offline_pages/core/prefetch/prefetch_prefs.h"
 #include "components/offline_pages/core/prefetch/prefetch_types.h"
 #include "components/offline_pages/core/prefetch/store/prefetch_downloader_quota.h"
 #include "components/offline_pages/core/prefetch/store/prefetch_store.h"
@@ -19,10 +20,6 @@
 #include "sql/transaction.h"
 
 namespace offline_pages {
-namespace prefetch_prefs {
-bool IsLimitlessPrefetchingEnabled(PrefService*);
-}
-
 namespace {
 
 using DownloadItem = DownloadArchivesTask::DownloadItem;
@@ -30,10 +27,10 @@ using ItemsToDownload = DownloadArchivesTask::ItemsToDownload;
 
 ItemsToDownload FindItemsReadyForDownload(sql::Database* db) {
   static const char kSql[] =
-      "SELECT offline_id, archive_body_name, operation_name,"
-      " archive_body_length"
+      "SELECT offline_id,archive_body_name,operation_name,"
+      "archive_body_length"
       " FROM prefetch_items"
-      " WHERE state = ?"
+      " WHERE state=?"
       " ORDER BY creation_time DESC";
   sql::Statement statement(db->GetCachedStatement(SQL_FROM_HERE, kSql));
   statement.BindInt(0, static_cast<int>(PrefetchItemState::RECEIVED_BUNDLE));
@@ -53,7 +50,7 @@ ItemsToDownload FindItemsReadyForDownload(sql::Database* db) {
 
 std::unique_ptr<int> CountDownloadsInProgress(sql::Database* db) {
   static const char kSql[] =
-      "SELECT COUNT(offline_id) FROM prefetch_items WHERE state = ?";
+      "SELECT COUNT(offline_id) FROM prefetch_items WHERE state=?";
   sql::Statement statement(db->GetCachedStatement(SQL_FROM_HERE, kSql));
   statement.BindInt(0, static_cast<int>(PrefetchItemState::DOWNLOADING));
   if (!statement.Step())
@@ -69,12 +66,11 @@ bool MarkItemAsDownloading(sql::Database* db,
   // the item longer than that, if we keep on retrying it.
   static const char kSql[] =
       "UPDATE prefetch_items"
-      " SET state = ?,"
-      "     guid = ?,"
-      "     freshness_time = CASE WHEN download_initiation_attempts = 0 THEN ?"
-      "                           ELSE freshness_time END,"
-      "     download_initiation_attempts = download_initiation_attempts + 1"
-      " WHERE offline_id = ?";
+      " SET state=?,guid=?,"
+      "freshness_time=CASE WHEN download_initiation_attempts=0 THEN ? "
+      "ELSE freshness_time END,"
+      "download_initiation_attempts=download_initiation_attempts+1"
+      " WHERE offline_id=?";
   sql::Statement statement(db->GetCachedStatement(SQL_FROM_HERE, kSql));
   statement.BindInt(0, static_cast<int>(PrefetchItemState::DOWNLOADING));
   statement.BindString(1, guid);
@@ -85,15 +81,11 @@ bool MarkItemAsDownloading(sql::Database* db,
 
 std::unique_ptr<ItemsToDownload> SelectAndMarkItemsForDownloadSync(
     bool is_limitless_prefetching_enabled,
+    int max_concurrent_downloads,
     sql::Database* db) {
   sql::Transaction transaction(db);
   if (!transaction.Begin())
     return nullptr;
-
-  const int max_concurrent_downloads =
-      is_limitless_prefetching_enabled
-          ? DownloadArchivesTask::kMaxConcurrentDownloadsForLimitless
-          : DownloadArchivesTask::kMaxConcurrentDownloads;
 
   // Get current count of concurrent downloads and bail early if we are already
   // downloading more than we can.
@@ -153,16 +145,6 @@ std::unique_ptr<ItemsToDownload> SelectAndMarkItemsForDownloadSync(
 
 }  // namespace
 
-// static
-const int DownloadArchivesTask::kMaxConcurrentDownloads = 2;
-
-// This value matches the maximum number of concurrent downloads allowed by the
-// downloads service.
-// TODO(https://crbug.com/793158): obtain this value directly from the downloads
-// service once it is exposed.
-// static
-const int DownloadArchivesTask::kMaxConcurrentDownloadsForLimitless = 4;
-
 DownloadArchivesTask::DownloadItem::DownloadItem() = default;
 DownloadArchivesTask::DownloadItem::DownloadItem(const DownloadItem& other) =
     default;
@@ -173,8 +155,7 @@ DownloadArchivesTask::DownloadArchivesTask(
     PrefService* prefs)
     : prefetch_store_(prefetch_store),
       prefetch_downloader_(prefetch_downloader),
-      prefs_(prefs),
-      weak_ptr_factory_(this) {
+      prefs_(prefs) {
   DCHECK(prefetch_store_);
   DCHECK(prefetch_downloader_);
   DCHECK(prefs_);
@@ -188,10 +169,17 @@ void DownloadArchivesTask::Run() {
     TaskComplete();
     return;
   }
+  const bool is_limitless_prefetching_enabled =
+      prefetch_prefs::IsLimitlessPrefetchingEnabled(prefs_);
+  const int max_concurrent_downloads =
+      is_limitless_prefetching_enabled
+          ? prefetch_downloader_->GetMaxConcurrentDownloads()
+          : DownloadArchivesTask::kMaxConcurrentDownloads;
 
   prefetch_store_->Execute(
       base::BindOnce(&SelectAndMarkItemsForDownloadSync,
-                     prefetch_prefs::IsLimitlessPrefetchingEnabled(prefs_)),
+                     is_limitless_prefetching_enabled,
+                     max_concurrent_downloads),
       base::BindOnce(&DownloadArchivesTask::SendItemsToPrefetchDownloader,
                      weak_ptr_factory_.GetWeakPtr()),
       std::unique_ptr<ItemsToDownload>());

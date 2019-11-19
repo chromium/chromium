@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//services/service_manager/public/cpp/service_executable.gni")
 import("//testing/test.gni")
 
 static_library("lib") {
@@ -11,8 +10,6 @@ static_library("lib") {
     "directory_impl.h",
     "file_impl.cc",
     "file_impl.h",
-    "file_system_impl.cc",
-    "file_system_impl.h",
     "lock_table.cc",
     "lock_table.h",
     "shared_temp_dir.cc",
@@ -23,30 +20,29 @@ static_library("lib") {
 
   deps = [
     "//base",
-    "//components/services/filesystem/public/interfaces",
+    "//components/services/filesystem/public/mojom",
     "//mojo/public/cpp/system",
-    "//services/service_manager/public/cpp",
-    "//services/service_manager/public/mojom",
     "//url",
   ]
 }
 
 if (!is_ios) {
-  # service binaries are not supported on iOS.
-  service_executable("filesystem") {
+  source_set("test_support") {
+    testonly = true
+
     sources = [
-      "file_system_app.cc",
-      "file_system_app.h",
-      "main.cc",
+      "directory_test_helper.cc",
+      "directory_test_helper.h",
     ]
 
     deps = [
+      "//base/test:test_support",
+    ]
+
+    public_deps = [
       ":lib",
       "//base",
-      "//components/services/filesystem/public/interfaces",
-      "//mojo/public/cpp/bindings",
-      "//mojo/public/cpp/system",
-      "//services/service_manager/public/cpp",
+      "//components/services/filesystem/public/mojom",
     ]
   }
 
@@ -54,25 +50,18 @@ if (!is_ios) {
     sources = [
       "directory_impl_unittest.cc",
       "file_impl_unittest.cc",
-      "files_test_base.cc",
-      "files_test_base.h",
     ]
 
     deps = [
+      ":lib",
+      ":test_support",
       "//base",
       "//base/test:test_support",
-      "//components/services/filesystem/public/cpp:manifest",
-      "//components/services/filesystem/public/interfaces",
+      "//components/services/filesystem/public/mojom",
       "//mojo/core/test:run_all_unittests",
       "//mojo/public/cpp/bindings",
       "//mojo/public/cpp/system",
-      "//services/service_manager/public/cpp",
-      "//services/service_manager/public/cpp/test:test_support",
       "//testing/gtest",
-    ]
-
-    data_deps = [
-      ":filesystem",
     ]
   }
 }

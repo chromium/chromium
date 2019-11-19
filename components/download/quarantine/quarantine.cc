@@ -4,19 +4,14 @@
 
 #include "components/download/quarantine/quarantine.h"
 
-#include "build/build_config.h"
-
-#if !defined(OS_WIN) && !defined(OS_MACOSX)
-
 namespace download {
 
 QuarantineFileResult QuarantineFile(const base::FilePath& file,
                                     const GURL& source_url,
                                     const GURL& referrer_url,
                                     const std::string& client_guid) {
-  return QuarantineFileResult::OK;
+  return quarantine::QuarantineFile(file, source_url, referrer_url,
+                                    client_guid);
 }
 
 }  // namespace download
-
-#endif  // !WIN && !MAC

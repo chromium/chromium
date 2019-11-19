@@ -39,6 +39,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/testing/null_execution_context.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
 #include "v8/include/v8.h"
 
 namespace blink {
@@ -282,8 +283,8 @@ TEST(ScriptPromiseTest, CastNonPromise) {
   V8TestingScope scope;
   ScriptValue on_fulfilled1, on_fulfilled2, on_rejected1, on_rejected2;
 
-  ScriptValue value = ScriptValue(scope.GetScriptState(),
-                                  V8String(scope.GetIsolate(), "hello"));
+  ScriptValue value =
+      ScriptValue(scope.GetIsolate(), V8String(scope.GetIsolate(), "hello"));
   ScriptPromise promise1 =
       ScriptPromise::Cast(scope.GetScriptState(), ScriptValue(value));
   ScriptPromise promise2 =
@@ -321,8 +322,8 @@ TEST(ScriptPromiseTest, Reject) {
   V8TestingScope scope;
   ScriptValue on_fulfilled, on_rejected;
 
-  ScriptValue value = ScriptValue(scope.GetScriptState(),
-                                  V8String(scope.GetIsolate(), "hello"));
+  ScriptValue value =
+      ScriptValue(scope.GetIsolate(), V8String(scope.GetIsolate(), "hello"));
   ScriptPromise promise =
       ScriptPromise::Reject(scope.GetScriptState(), ScriptValue(value));
   promise.Then(FunctionForScriptPromiseTest::CreateFunction(
@@ -347,8 +348,8 @@ TEST(ScriptPromiseTest, RejectWithExceptionState) {
   ScriptValue on_fulfilled, on_rejected;
   ScriptPromise promise = ScriptPromise::RejectWithDOMException(
       scope.GetScriptState(),
-      DOMException::Create(DOMExceptionCode::kSyntaxError,
-                           "some syntax error"));
+      MakeGarbageCollected<DOMException>(DOMExceptionCode::kSyntaxError,
+                                         "some syntax error"));
   promise.Then(FunctionForScriptPromiseTest::CreateFunction(
                    scope.GetScriptState(), &on_fulfilled),
                FunctionForScriptPromiseTest::CreateFunction(
@@ -370,7 +371,7 @@ TEST(ScriptPromiseTest, AllWithEmptyPromises) {
   ScriptValue on_fulfilled, on_rejected;
 
   ScriptPromise promise =
-      ScriptPromise::All(scope.GetScriptState(), Vector<ScriptPromise>());
+      ScriptPromise::All(scope.GetScriptState(), HeapVector<ScriptPromise>());
   ASSERT_FALSE(promise.IsEmpty());
 
   promise.Then(FunctionForScriptPromiseTest::CreateFunction(
@@ -392,7 +393,7 @@ TEST(ScriptPromiseTest, AllWithResolvedPromises) {
   V8TestingScope scope;
   ScriptValue on_fulfilled, on_rejected;
 
-  Vector<ScriptPromise> promises;
+  HeapVector<ScriptPromise> promises;
   promises.push_back(ScriptPromise::Cast(
       scope.GetScriptState(), V8String(scope.GetIsolate(), "hello")));
   promises.push_back(ScriptPromise::Cast(
@@ -422,7 +423,7 @@ TEST(ScriptPromiseTest, AllWithRejectedPromise) {
   V8TestingScope scope;
   ScriptValue on_fulfilled, on_rejected;
 
-  Vector<ScriptPromise> promises;
+  HeapVector<ScriptPromise> promises;
   promises.push_back(ScriptPromise::Cast(
       scope.GetScriptState(), V8String(scope.GetIsolate(), "hello")));
   promises.push_back(ScriptPromise::Reject(

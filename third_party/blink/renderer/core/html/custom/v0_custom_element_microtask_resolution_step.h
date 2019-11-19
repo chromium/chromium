@@ -43,11 +43,6 @@ class Element;
 class V0CustomElementMicrotaskResolutionStep final
     : public V0CustomElementMicrotaskStep {
  public:
-  static V0CustomElementMicrotaskResolutionStep* Create(
-      V0CustomElementRegistrationContext*,
-      Element*,
-      const V0CustomElementDescriptor&);
-
   V0CustomElementMicrotaskResolutionStep(V0CustomElementRegistrationContext*,
                                          Element*,
                                          const V0CustomElementDescriptor&);

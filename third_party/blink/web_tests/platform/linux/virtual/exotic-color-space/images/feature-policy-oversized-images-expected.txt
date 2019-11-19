@@ -1,0 +1,6 @@
+CONSOLE ERROR: Feature policy violation: oversized-images is not allowed in this document.
+CONSOLE ERROR: Feature policy violation: oversized-images is not allowed in this document.
+CONSOLE ERROR: Feature policy violation: oversized-images is not allowed in this document.
+CONSOLE ERROR: Feature policy violation: oversized-images is not allowed in this document.
+CONSOLE ERROR: Feature policy violation: oversized-images is not allowed in this document.
+CONSOLE ERROR: Feature policy violation: oversized-images is not allowed in this document.

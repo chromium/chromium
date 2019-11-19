@@ -76,7 +76,7 @@ gpu::ContextResult WebGPUCommandBufferStub::Initialize(
   return gpu::ContextResult::kFatalFailure;
 #else
   TRACE_EVENT0("gpu", "WebGPUBufferStub::Initialize");
-  FastSetActiveURL(active_url_, active_url_hash_, channel_);
+  UpdateActiveUrl();
 
   GpuChannelManager* manager = channel_->gpu_channel_manager();
   DCHECK(manager);
@@ -106,16 +106,14 @@ gpu::ContextResult WebGPUCommandBufferStub::Initialize(
   command_buffer_ =
       std::make_unique<CommandBufferService>(this, memory_tracker_.get());
   std::unique_ptr<webgpu::WebGPUDecoder> decoder(webgpu::WebGPUDecoder::Create(
-      this, command_buffer_.get(), manager->outputter()));
+      this, command_buffer_.get(), manager->shared_image_manager(),
+      memory_tracker_.get(), manager->outputter()));
 
   sync_point_client_state_ =
       channel_->sync_point_manager()->CreateSyncPointClientState(
           CommandBufferNamespace::GPU_IO, command_buffer_id_, sequence_id_);
 
-  // Initialize the decoder with either the view or pbuffer GLContext.
-  ContextResult result = decoder->Initialize(
-      nullptr, nullptr, true /* offscreen */, gpu::gles2::DisallowedFeatures(),
-      init_params.attribs);
+  ContextResult result = decoder->Initialize();
   if (result != gpu::ContextResult::kSuccess) {
     DLOG(ERROR) << "Failed to initialize decoder.";
     return result;
@@ -138,7 +136,7 @@ gpu::ContextResult WebGPUCommandBufferStub::Initialize(
       std::move(shared_state_shm), std::move(shared_state_mapping)));
 
   if (!active_url_.is_empty())
-    manager->delegate()->DidCreateOffscreenContext(active_url_);
+    manager->delegate()->DidCreateOffscreenContext(active_url_.url());
 
   manager->delegate()->DidCreateContextSuccessfully();
   initialized_ = true;

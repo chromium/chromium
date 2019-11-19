@@ -1,14 +1,13 @@
 <!DOCTYPE HTML>
 <script src="../resources/testharness.js"></script>
 <script src="../resources/testharnessreport.js"></script>
-<script src="../resources/run-after-layout-and-paint.js"></script>
 
 <div id="wrapper1">
     <button id="button1">Button</button>
 </div>
 
 <script>
-async_test_after_layout_and_paint(function(t)
+async_test(function(t)
 {
     var axButton = accessibilityController.accessibleElementById("button1");
     axButton.addNotificationListener(t.step_func(function(notification) {
@@ -28,7 +27,7 @@ async_test_after_layout_and_paint(function(t)
 </div>
 
 <script>
-async_test_after_layout_and_paint(function(t)
+async_test(function(t)
 {
     var axButton = accessibilityController.accessibleElementById("button2");
     axButton.addNotificationListener(t.step_func(function(notification) {
@@ -48,7 +47,7 @@ async_test_after_layout_and_paint(function(t)
 </div>
 
 <script>
-async_test_after_layout_and_paint(function(t)
+async_test(function(t)
 {
     var axButton = accessibilityController.accessibleElementById("button3");
     axButton.addNotificationListener(t.step_func(function(notification) {
@@ -68,7 +67,7 @@ async_test_after_layout_and_paint(function(t)
 </div>
 
 <script>
-async_test_after_layout_and_paint(function(t)
+async_test(function(t)
 {
     var axButton = accessibilityController.accessibleElementById("button4");
     axButton.addNotificationListener(t.step_func(function(notification) {
@@ -86,7 +85,7 @@ async_test_after_layout_and_paint(function(t)
 </div>
 
 <script>
-async_test_after_layout_and_paint(function(t)
+async_test(function(t)
 {
     var axButton = accessibilityController.accessibleElementById("button5");
     axButton.addNotificationListener(t.step_func(function(notification) {
@@ -116,7 +115,7 @@ async_test_after_layout_and_paint(function(t)
 </div>
 
 <script>
-async_test_after_layout_and_paint(function(t)
+async_test(function(t)
 {
     var axButton = accessibilityController.accessibleElementById("button6");
     axButton.addNotificationListener(t.step_func(function(notification) {
@@ -147,7 +146,7 @@ async_test_after_layout_and_paint(function(t)
 </div>
 
 <script>
-async_test_after_layout_and_paint(function(t)
+async_test(function(t)
 {
     var axButton = accessibilityController.accessibleElementById("button7");
     axButton.addNotificationListener(t.step_func(function(notification) {

@@ -13,6 +13,7 @@
 #include "chrome/common/net/safe_search_util.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/testing_pref_store.h"
+#include "extensions/buildflags/buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using base::DictionaryValue;
@@ -57,7 +58,7 @@ SupervisedUserPrefStoreFixture::~SupervisedUserPrefStoreFixture() {
 
 void SupervisedUserPrefStoreFixture::OnPrefValueChanged(
     const std::string& key) {
-  const base::Value* value = NULL;
+  const base::Value* value = nullptr;
   ASSERT_TRUE(pref_store_->GetValue(key, &value));
   changed_prefs_.Set(key, std::make_unique<base::Value>(value->Clone()));
 }
@@ -73,7 +74,7 @@ void SupervisedUserPrefStoreFixture::OnInitializationCompleted(bool succeeded) {
 
 class SupervisedUserPrefStoreTest : public ::testing::Test {
  public:
-  SupervisedUserPrefStoreTest() : service_(nullptr) {}
+  SupervisedUserPrefStoreTest() {}
   void SetUp() override;
   void TearDown() override;
 
@@ -110,7 +111,7 @@ TEST_F(SupervisedUserPrefStoreTest, ConfigureSettings) {
   EXPECT_FALSE(allow_deleting_browser_history);
 
   // kSupervisedModeManualHosts does not have a hardcoded value.
-  base::DictionaryValue* manual_hosts = NULL;
+  base::DictionaryValue* manual_hosts = nullptr;
   EXPECT_FALSE(fixture.changed_prefs()->GetDictionary(
       prefs::kSupervisedUserManualHosts, &manual_hosts));
 
@@ -126,28 +127,36 @@ TEST_F(SupervisedUserPrefStoreTest, ConfigureSettings) {
   EXPECT_EQ(force_youtube_restrict,
             safe_search_util::YOUTUBE_RESTRICT_MODERATE);
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  // Permissions requests default to disallowed.
+  bool extensions_may_request_permissions = false;
+  EXPECT_TRUE(fixture.changed_prefs()->GetBoolean(
+      prefs::kSupervisedUserExtensionsMayRequestPermissions,
+      &extensions_may_request_permissions));
+  EXPECT_FALSE(extensions_may_request_permissions);
+#endif
+
   // Activating the service again should not change anything.
   fixture.changed_prefs()->Clear();
   service_.SetActive(true);
   EXPECT_EQ(0u, fixture.changed_prefs()->size());
 
   // kSupervisedModeManualHosts can be configured by the custodian.
-  std::unique_ptr<base::DictionaryValue> dict(new base::DictionaryValue);
-  dict->SetBoolean("example.com", true);
-  dict->SetBoolean("moose.org", false);
+  base::Value hosts(base::Value::Type::DICTIONARY);
+  hosts.SetBoolKey("example.com", true);
+  hosts.SetBoolKey("moose.org", false);
   service_.SetLocalSetting(supervised_users::kContentPackManualBehaviorHosts,
-                           std::unique_ptr<base::Value>(dict->DeepCopy()));
+                           std::make_unique<base::Value>(hosts.Clone()));
   EXPECT_EQ(1u, fixture.changed_prefs()->size());
   ASSERT_TRUE(fixture.changed_prefs()->GetDictionary(
       prefs::kSupervisedUserManualHosts, &manual_hosts));
-  EXPECT_TRUE(manual_hosts->Equals(dict.get()));
+  EXPECT_TRUE(*manual_hosts == hosts);
 
   // kForceGoogleSafeSearch and kForceYouTubeRestrict can be configured by the
   // custodian, overriding the hardcoded default.
   fixture.changed_prefs()->Clear();
-  service_.SetLocalSetting(
-      supervised_users::kForceSafeSearch,
-      std::unique_ptr<base::Value>(new base::Value(false)));
+  service_.SetLocalSetting(supervised_users::kForceSafeSearch,
+                           std::make_unique<base::Value>(false));
   EXPECT_EQ(1u, fixture.changed_prefs()->size());
   EXPECT_TRUE(fixture.changed_prefs()->GetBoolean(prefs::kForceGoogleSafeSearch,
                                                   &force_google_safesearch));
@@ -155,6 +164,21 @@ TEST_F(SupervisedUserPrefStoreTest, ConfigureSettings) {
                                                   &force_youtube_restrict));
   EXPECT_FALSE(force_google_safesearch);
   EXPECT_EQ(force_youtube_restrict, safe_search_util::YOUTUBE_RESTRICT_OFF);
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  // The custodian can allow sites and apps to request permissions.
+  // Currently tested indirectly by enabling geolocation requests.
+  // TODO(michaelpg): Update Kids Management server to set a new bit for
+  // extension permissions and update this test.
+  fixture.changed_prefs()->Clear();
+  service_.SetLocalSetting(supervised_users::kGeolocationDisabled,
+                           std::make_unique<base::Value>(false));
+  EXPECT_EQ(1u, fixture.changed_prefs()->size());
+  EXPECT_TRUE(fixture.changed_prefs()->GetBoolean(
+      prefs::kSupervisedUserExtensionsMayRequestPermissions,
+      &extensions_may_request_permissions));
+  EXPECT_TRUE(extensions_may_request_permissions);
+#endif
 }
 
 TEST_F(SupervisedUserPrefStoreTest, ActivateSettingsBeforeInitialization) {

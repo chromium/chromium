@@ -41,12 +41,11 @@ ppapi::host::HostFactory* TestNaClBrowserDelegate::CreatePpapiHostFactory(
   return NULL;
 }
 
-bool TestNaClBrowserDelegate::MapUrlToLocalFilePath(
-    const GURL& url,
-    bool use_blocking_api,
-    const base::FilePath& profile_directory,
-    base::FilePath* file_path) {
-  return false;
+NaClBrowserDelegate::MapUrlToLocalFilePathCallback
+TestNaClBrowserDelegate::GetMapUrlToLocalFilePathCallback(
+    const base::FilePath& profile_directory) {
+  return base::BindRepeating([](const GURL& url, bool use_blocking_api,
+                                base::FilePath* file_path) { return false; });
 }
 
 void TestNaClBrowserDelegate::SetDebugPatterns(

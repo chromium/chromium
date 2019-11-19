@@ -13,14 +13,19 @@
 # stay that way due to their above-described purpose).
 # Consult {platform-architecture-dev, services-dev}@chromium.org in the case
 # of any uncertainty.
-source_set("shared_with_blink") {
+component("shared_with_blink") {
   sources = [
     "gamepad.cc",
     "gamepad.h",
     "gamepads.cc",
     "gamepads.h",
   ]
+
   # Do not add deps here per the above comment.
+  defines = [ "IS_GAMEPAD_PUBLIC_IMPL" ]
+  public_deps = [
+    "//base",
+  ]
 }
 
 # Normally typemap traits sources should be build directly into mojom targets

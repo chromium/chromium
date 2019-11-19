@@ -57,29 +57,39 @@ void ProfileDestroyer::DestroyProfileWhenAppropriate(Profile* const profile) {
   // Off-the-record profiles have DestroyProfileWhenAppropriate() called before
   // their RenderProcessHosts are destroyed, to ensure private data is erased
   // promptly. In this case, defer deletion until all the hosts are gone.
-  const size_t profile_hosts_count = profile_hosts.size();
-  base::debug::Alias(&profile_hosts_count);
   if (profile_is_off_the_record) {
     DCHECK(!profile_has_off_the_record);
-    if (profile_hosts_count) {
+    if (profile_hosts.size()) {
       // The instance will destroy itself once all (non-spare) render process
       // hosts referring to it are properly terminated.
       new ProfileDestroyer(profile, &profile_hosts);
     } else {
-      profile->GetOriginalProfile()->DestroyOffTheRecordProfile();
+      if (profile->IsIndependentOffTheRecordProfile())
+        delete profile;
+      else
+        profile->GetOriginalProfile()->DestroyOffTheRecordProfile();
     }
     return;
   }
 
-  // If |profile| has an off-the-record profile then count its hosts so crashes
-  // and DCHECKs will contain that detail.
-  HostSet off_the_record_hosts;
-  if (profile_has_off_the_record) {
-    off_the_record_hosts =
-        GetHostsForProfile(profile->GetOffTheRecordProfile());
-  }
-  const size_t off_the_record_hosts_count = off_the_record_hosts.size();
-  base::debug::Alias(&off_the_record_hosts_count);
+#if DCHECK_IS_ON()
+  // Save the raw pointers of profile and off-the-record profile for DCHECKing
+  // on later.
+  void* profile_ptr = profile;
+  void* otr_profile_ptr =
+      profile_has_off_the_record ? profile->GetOffTheRecordProfile() : nullptr;
+#endif  // DCHECK_IS_ON()
+
+  delete profile;
+
+#if DCHECK_IS_ON()
+  // Count the number of hosts that have dangling pointers to the freed Profile
+  // and off-the-record Profile.
+  const size_t profile_hosts_count = GetHostsForProfile(profile_ptr).size();
+  base::debug::Alias(&profile_hosts_count);
+  const size_t off_the_record_profile_hosts_count =
+      otr_profile_ptr ? GetHostsForProfile(otr_profile_ptr).size() : 0u;
+  base::debug::Alias(&off_the_record_profile_hosts_count);
 
   // |profile| is not off-the-record, so if |profile_hosts| is not empty then
   // something has leaked a RenderProcessHost, and needs fixing.
@@ -91,11 +101,10 @@ void ProfileDestroyer::DestroyProfileWhenAppropriate(Profile* const profile) {
 #if !defined(OS_CHROMEOS)
     // ChromeOS' system profile can be outlived by its off-the-record profile
     // (see https://crbug.com/828479).
-    DCHECK_EQ(off_the_record_hosts_count, 0u);
+    DCHECK_EQ(off_the_record_profile_hosts_count, 0u);
 #endif
   }
-
-  delete profile;
+#endif  // DCHECK_IS_ON()
 }
 
 // This can be called to cancel any pending destruction and destroy the profile
@@ -122,7 +131,7 @@ void ProfileDestroyer::DestroyOffTheRecordProfileNow(Profile* const profile) {
 }
 
 ProfileDestroyer::ProfileDestroyer(Profile* const profile, HostSet* hosts)
-    : num_hosts_(0), profile_(profile), weak_ptr_factory_(this) {
+    : num_hosts_(0), profile_(profile) {
   if (pending_destroyers_ == NULL)
     pending_destroyers_ = new DestroyerSet;
   pending_destroyers_->insert(this);
@@ -187,8 +196,12 @@ void ProfileDestroyer::DestroyProfile() {
 
   DCHECK(profile_->IsOffTheRecord());
   DCHECK(profile_->GetOriginalProfile());
-  profile_->GetOriginalProfile()->DestroyOffTheRecordProfile();
-  profile_ = NULL;
+  if (profile_->IsIndependentOffTheRecordProfile())
+    delete profile_;
+  else
+    profile_->GetOriginalProfile()->DestroyOffTheRecordProfile();
+
+  profile_ = nullptr;
 
   // And stop the timer so we can be released early too.
   timer_.Stop();
@@ -198,7 +211,7 @@ void ProfileDestroyer::DestroyProfile() {
 
 // static
 ProfileDestroyer::HostSet ProfileDestroyer::GetHostsForProfile(
-    Profile* const profile) {
+    void* const profile_ptr) {
   HostSet hosts;
   for (content::RenderProcessHost::iterator iter(
         content::RenderProcessHost::AllHostsIterator());
@@ -206,7 +219,7 @@ ProfileDestroyer::HostSet ProfileDestroyer::GetHostsForProfile(
     content::RenderProcessHost* render_process_host = iter.GetCurrentValue();
     DCHECK(render_process_host);
 
-    if (render_process_host->GetBrowserContext() != profile)
+    if (render_process_host->GetBrowserContext() != profile_ptr)
       continue;
 
     // Ignore the spare RenderProcessHost.

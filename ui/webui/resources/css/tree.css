@@ -9,11 +9,13 @@ tree {
 }
 
 .tree-item > .tree-row {
+  align-items: center;
   background-color: rgba(255, 255, 255, 0);
   border: 1px solid rgba(255, 255, 255, 0); /* transparent white */
   border-radius: 2px;
   color: black;
   cursor: default;
+  display: flex;
   line-height: 28px;
   padding: 0 3px;
   position: relative;
@@ -23,15 +25,12 @@ tree {
 
 .expand-icon {
   background: url(../images/tree_triangle.svg) no-repeat center center;
-  background-size: 8px 5px;
-  display: inline-block;
+  background-size: 8px 5.5px;
   height: 16px;
+  min-width: 16px;
   opacity: .6;
-  position: relative;
-  top: 6px;
   transform: rotate(-90deg);
   transition: all 150ms;
-  vertical-align: top;
   width: 16px;
 }
 
@@ -95,52 +94,50 @@ tree:focus .tree-row[selected] {
   display: inline-block;
 }
 
-.tree-label {
+.tree-label-icon {
   background-position: 0 50%;
   background-repeat: no-repeat;
-  padding-inline-start: 20px;
+  height: 20px;
+  min-width: 20px;
+  width: 20px;
+}
+
+.tree-label {
   white-space: pre;
 }
 
-html[dir=rtl] .tree-label {
-  background-position: 100% 50%;
+.tree-label-icon,
+.tree-row[may-have-children] > .tree-label-icon {
+  background-image: url(chrome://theme/IDR_FOLDER_CLOSED);
 }
 
-.tree-label,
-.tree-row[may-have-children] > .tree-label {
-  background-image: -webkit-image-set(
-      url(../../../resources/default_100_percent/common/folder_closed.png) 1x,
-      url(../../../resources/default_200_percent/common/folder_closed.png) 2x);
-}
-
-.tree-item[expanded] > .tree-row > .tree-label {
-  background-image: -webkit-image-set(
-      url(../../../views/resources/default_100_percent/common/folder_open.png) 1x,
-      url(../../../views/resources/default_200_percent/common/folder_open.png) 2x);
-}
-
-<if expr="not is_macosx and not is_ios">
-html[dir=rtl] .tree-label,
-html[dir=rtl] .tree-row[may-have-children] > .tree-label {
-  background-image: -webkit-image-set(
-      url(../../../resources/default_100_percent/common/folder_closed_rtl.png) 1x,
-      url(../../../resources/default_200_percent/common/folder_closed_rtl.png) 2x);
-}
-
-html[dir=rtl] .tree-item[expanded] > .tree-row > .tree-label {
-  background-image: -webkit-image-set(
-     url(../../../views/resources/default_100_percent/common/folder_open_rtl.png) 1x,
-     url(../../../views/resources/default_200_percent/common/folder_open_rtl.png) 2x);
+<if expr="is_macosx or is_ios">
+@media (prefers-color-scheme: dark) {
+  .tree-label-icon,
+  .tree-row[may-have-children] > .tree-label-icon {
+    background-image: url(chrome://theme/IDR_FOLDER_CLOSED_WHITE);
+  }
 }
 </if>
 
-tree[icon-visibility=hidden] .tree-label {
-  background-image: none !important;
-  padding-inline-start: 0;
+<if expr="not is_macosx and not is_ios">
+.tree-item[expanded] > .tree-row > .tree-label-icon {
+  background-image: url(chrome://theme/IDR_FOLDER_OPEN);
+}
+</if>
+
+html[dir=rtl] .tree-label-icon,
+html[dir=rtl] .tree-row[may-have-children] > .tree-label-icon,
+html[dir=rtl] .tree-item[expanded] > .tree-row > .tree-label-icon {
+  transform: scaleX(-1);
 }
 
-tree[icon-visibility=parent] .tree-label,
-tree[icon-visibility=parent] .tree-row[has-children=false] > .tree-label {
+tree[icon-visibility=hidden] .tree-label-icon {
+  display: none;
+}
+
+tree[icon-visibility=parent] .tree-label-icon,
+tree[icon-visibility=parent] .tree-row[has-children=false] > .tree-label-icon {
   background-image: none;
 }
 
@@ -173,4 +170,16 @@ tree[icon-visibility=parent] .tree-row[has-children=false] > .tree-label {
 html[dir=rtl] .tree-item[editing] input {
   margin: -2px -3px -2px -8px;
   padding: 1px 1px 1px 7px;
+}
+
+@media(forced-colors) {
+  .tree-row[selected],
+  .tree-row:hover,
+  .tree-row[selected]:hover,
+  tree:focus .tree-row[selected] {
+    background-color: Highlight;
+    background-image: none;
+    color: HighlightText;
+    forced-color-adjust: none;
+  }
 }

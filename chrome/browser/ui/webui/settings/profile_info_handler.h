@@ -74,15 +74,15 @@ class ProfileInfoHandler : public SettingsPageUIHandler,
   Profile* profile_;
 
 #if defined(OS_CHROMEOS)
-  ScopedObserver<user_manager::UserManager, ProfileInfoHandler>
-      user_manager_observer_;
+  ScopedObserver<user_manager::UserManager, user_manager::UserManager::Observer>
+      user_manager_observer_{this};
 #endif
 
-  ScopedObserver<ProfileAttributesStorage, ProfileInfoHandler>
-      profile_observer_;
+  ScopedObserver<ProfileAttributesStorage, ProfileAttributesStorage::Observer>
+      profile_observer_{this};
 
   // Used to cancel callbacks when JavaScript becomes disallowed.
-  base::WeakPtrFactory<ProfileInfoHandler> callback_weak_ptr_factory_;
+  base::WeakPtrFactory<ProfileInfoHandler> callback_weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ProfileInfoHandler);
 };

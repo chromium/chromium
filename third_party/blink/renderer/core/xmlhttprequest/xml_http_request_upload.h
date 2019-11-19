@@ -41,10 +41,6 @@ class XMLHttpRequestUpload final : public XMLHttpRequestEventTarget {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static XMLHttpRequestUpload* Create(XMLHttpRequest* xml_http_request) {
-    return MakeGarbageCollected<XMLHttpRequestUpload>(xml_http_request);
-  }
-
   explicit XMLHttpRequestUpload(XMLHttpRequest*);
 
   XMLHttpRequest* XmlHttpRequest() const { return xml_http_request_; }
@@ -52,11 +48,8 @@ class XMLHttpRequestUpload final : public XMLHttpRequestEventTarget {
   const AtomicString& InterfaceName() const override;
   ExecutionContext* GetExecutionContext() const override;
 
-  void DispatchEventAndLoadEnd(const AtomicString&,
-                               bool,
-                               unsigned long long,
-                               unsigned long long);
-  void DispatchProgressEvent(unsigned long long, unsigned long long);
+  void DispatchEventAndLoadEnd(const AtomicString&, bool, uint64_t, uint64_t);
+  void DispatchProgressEvent(uint64_t, uint64_t);
 
   void HandleRequestError(const AtomicString&);
 
@@ -67,8 +60,8 @@ class XMLHttpRequestUpload final : public XMLHttpRequestEventTarget {
 
   // Last progress event values; used when issuing the
   // required 'progress' event on a request error or abort.
-  unsigned long long last_bytes_sent_;
-  unsigned long long last_total_bytes_to_be_sent_;
+  uint64_t last_bytes_sent_;
+  uint64_t last_total_bytes_to_be_sent_;
 };
 
 }  // namespace blink

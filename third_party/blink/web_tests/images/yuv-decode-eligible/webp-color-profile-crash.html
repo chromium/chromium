@@ -1,0 +1,19 @@
+<!-- This test waits until all image data is received before decoding,
+which allows YUV decoding if the feature is enabled.
+See virtual/yuv-rasterization/README.md.-->
+<script>
+  const img = new Image();
+  img.src = "../resources/webp-color-profile-crash.webp";
+  img.decode().then(() => {
+      document.body.appendChild(img);
+      if (window.testRunner) {
+          setTimeout(function() { testRunner.notifyDone() }, 0);
+      }
+  });
+
+  if (window.testRunner) {
+      testRunner.dumpAsText();
+      testRunner.waitUntilDone();
+  }
+</script>
+This test passes if it does not crash.<br>

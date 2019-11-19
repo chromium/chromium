@@ -18,7 +18,7 @@ class View;
 // Delegate interface for views::FocusManager.
 class VIEWS_EXPORT FocusManagerDelegate {
  public:
-  virtual ~FocusManagerDelegate() {}
+  virtual ~FocusManagerDelegate() = default;
 
   // Activate the target associated with the specified accelerator.
   // First, AcceleratorPressed handler of the most recently registered target

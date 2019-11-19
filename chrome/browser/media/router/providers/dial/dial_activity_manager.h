@@ -14,7 +14,7 @@
 #include "chrome/common/media_router/discovery/media_sink_internal.h"
 #include "chrome/common/media_router/media_route.h"
 #include "chrome/common/media_router/media_source.h"
-#include "chrome/common/media_router/mojo/media_router.mojom.h"
+#include "chrome/common/media_router/mojom/media_router.mojom.h"
 #include "chrome/common/media_router/route_request_result.h"
 #include "url/gurl.h"
 
@@ -123,7 +123,7 @@ class DialActivityManager {
   // |callback| will be invoked with |true| if the launch succeeded, or |false|
   // if the launch failed.
   // If |message.do_launch| is |false|, then app launch will be skipped, and
-  // |calback| will be invoked with |true|.
+  // |callback| will be invoked with |true|.
   // This method is only valid to call if there is an activity for |route_id|.
   // This method is a no-op if there is already a pending launch request, or
   // if the app is already launched.
@@ -131,10 +131,17 @@ class DialActivityManager {
                  const CustomDialLaunchMessageBody& message,
                  LaunchAppCallback callback);
 
-  // Stops the app that is currently active on |route_id|.
-  // On success, the associated DialActivity and MediaRoute will be removed
-  // before |callback| is invoked. On failure, the DialActivity and MediaRoute
-  // will not be removed.
+  // Checks if there are existing conditions that would cause a stop app request
+  // to fail, such as |route_id| being invalid or there already being a pending
+  // stop request. If so, returns the error message and error code. Returns
+  // nullopt and RouteRequestResult::OK otherwise.
+  std::pair<base::Optional<std::string>, RouteRequestResult::ResultCode>
+  CanStopApp(const MediaRoute::Id& route_id) const;
+
+  // Stops the app that is currently active on |route_id|. Assumes that
+  // |route_id| has already been verified with CanStopApp(). On success, the
+  // associated DialActivity and MediaRoute will be removed before |callback| is
+  // invoked. On failure, the DialActivity and MediaRoute will not be removed.
   void StopApp(const MediaRoute::Id& route_id,
                mojom::MediaRouteProvider::TerminateRouteCallback callback);
 

@@ -45,8 +45,6 @@ class RequestCoordinatorStubTaco {
   void SetScheduler(std::unique_ptr<Scheduler> scheduler);
   void SetNetworkQualityProvider(
       std::unique_ptr<network::NetworkQualityTracker> network_quality_tracker);
-  void SetOfflinePagesUkmReporter(
-      std::unique_ptr<OfflinePagesUkmReporter> ukm_reporter);
   void SetRequestCoordinatorDelegate(
       std::unique_ptr<RequestCoordinator::ActiveTabInfo> delegate);
 
@@ -83,7 +81,6 @@ class RequestCoordinatorStubTaco {
   std::unique_ptr<Offliner> offliner_;
   std::unique_ptr<Scheduler> scheduler_;
   std::unique_ptr<network::NetworkQualityTracker> network_quality_tracker_;
-  std::unique_ptr<OfflinePagesUkmReporter> ukm_reporter_;
   std::unique_ptr<RequestCoordinator::ActiveTabInfo> active_tab_info_;
 
   // This is null if the request coordinator was given to the

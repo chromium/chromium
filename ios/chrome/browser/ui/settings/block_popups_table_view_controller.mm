@@ -22,7 +22,6 @@
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_header_footer_item.h"
 #include "ios/chrome/browser/ui/ui_feature_flags.h"
 #include "ios/chrome/grit/ios_strings.h"
-#import "ios/third_party/material_components_ios/src/components/Palettes/src/MaterialPalettes.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/l10n/l10n_util_mac.h"
 
@@ -75,7 +74,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
         ios::HostContentSettingsMapFactory::GetForBrowserState(_browserState);
     _disablePopupsSetting = [[ContentSettingBackedBoolean alloc]
         initWithHostContentSettingsMap:settingsMap
-                             settingID:CONTENT_SETTINGS_TYPE_POPUPS
+                             settingID:ContentSettingsType::POPUPS
                               inverted:YES];
     [_disablePopupsSetting setObserver:self];
     self.title = l10n_util::GetNSString(IDS_IOS_BLOCK_POPUPS);
@@ -89,7 +88,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
       @"block_popups_settings_view_controller";
 
   [self populateExceptionsList];
-  [self updateEditButton];
+  [self updateUIForEditState];
   [self loadModel];
   self.tableView.allowsSelection = NO;
   self.tableView.allowsMultipleSelectionDuringEditing = YES;
@@ -185,7 +184,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
   // Update the rest of the UI.
   [self setEditing:NO animated:YES];
-  [self updateEditButton];
+  [self updateUIForEditState];
   [self layoutSections:[_disablePopupsSetting value]];
 }
 
@@ -200,7 +199,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
   // Update the rest of the UI.
   [self setEditing:NO animated:YES];
-  [self updateEditButton];
+  [self updateUIForEditState];
   [self layoutSections:switchView.on];
 }
 
@@ -219,7 +218,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
     ios::HostContentSettingsMapFactory::GetForBrowserState(_browserState)
         ->SetContentSettingCustomScope(
             ContentSettingsPattern::FromString(urlToRemove),
-            ContentSettingsPattern::Wildcard(), CONTENT_SETTINGS_TYPE_POPUPS,
+            ContentSettingsPattern::Wildcard(), ContentSettingsType::POPUPS,
             std::string(), CONTENT_SETTING_DEFAULT);
 
     // Remove the site from |_exceptions|.
@@ -257,7 +256,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   // to only deal with urls/patterns that allow popups.
   ContentSettingsForOneType entries;
   ios::HostContentSettingsMapFactory::GetForBrowserState(_browserState)
-      ->GetSettingsForOneType(CONTENT_SETTINGS_TYPE_POPUPS, std::string(),
+      ->GetSettingsForOneType(ContentSettingsType::POPUPS, std::string(),
                               &entries);
   for (size_t i = 0; i < entries.size(); ++i) {
     // Skip default settings from extensions and policy, and the default content

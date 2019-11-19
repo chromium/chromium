@@ -55,15 +55,15 @@ class COMPONENT_EXPORT(NET_EXTRAS) SQLitePersistentCookieStore
   void DeleteAllInList(const std::list<CookieOrigin>& cookies);
 
   // CookieMonster::PersistentCookieStore:
-  void Load(const LoadedCallback& loaded_callback,
+  void Load(LoadedCallback loaded_callback,
             const NetLogWithSource& net_log) override;
   void LoadCookiesForKey(const std::string& key,
-                         const LoadedCallback& callback) override;
+                         LoadedCallback callback) override;
   void AddCookie(const CanonicalCookie& cc) override;
   void UpdateCookieAccessTime(const CanonicalCookie& cc) override;
   void DeleteCookie(const CanonicalCookie& cc) override;
   void SetForceKeepSessionState() override;
-  void SetBeforeFlushCallback(base::RepeatingClosure callback) override;
+  void SetBeforeCommitCallback(base::RepeatingClosure callback) override;
   void Flush(base::OnceClosure callback) override;
 
   // Returns how many operations are currently queued. For test use only;
@@ -73,11 +73,11 @@ class COMPONENT_EXPORT(NET_EXTRAS) SQLitePersistentCookieStore
 
  private:
   ~SQLitePersistentCookieStore() override;
-  void CompleteLoad(const LoadedCallback& callback,
+  void CompleteLoad(LoadedCallback callback,
                     std::vector<std::unique_ptr<CanonicalCookie>> cookie_list);
   void CompleteKeyedLoad(
       const std::string& key,
-      const LoadedCallback& callback,
+      LoadedCallback callback,
       std::vector<std::unique_ptr<CanonicalCookie>> cookie_list);
 
   class Backend;

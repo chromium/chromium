@@ -17,14 +17,15 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
-#include "base/message_loop/message_loop.h"
+#include "base/message_loop/message_pump_type.h"
 #include "base/no_destructor.h"
+#include "base/numerics/ranges.h"
 #include "chromecast/base/init_command_line_shlib.h"
 #include "chromecast/base/serializers.h"
 #include "chromecast/chromecast_buildflags.h"
-#include "jni/VolumeControl_jni.h"
+#include "chromecast/media/cma/backend/android/audio_track_jni_headers/VolumeControl_jni.h"
 #if BUILDFLAG(ENABLE_VOLUME_TABLES_ACCESS)
-#include "jni/VolumeMap_jni.h"
+#include "chromecast/media/cma/backend/android/audio_track_jni_headers/VolumeMap_jni.h"
 #endif
 
 namespace chromecast {
@@ -45,7 +46,7 @@ VolumeControlAndroid::VolumeControlAndroid()
       base::android::AttachCurrentThread(), reinterpret_cast<intptr_t>(this)));
 
   base::Thread::Options options;
-  options.message_loop_type = base::MessageLoop::TYPE_IO;
+  options.message_pump_type = base::MessagePumpType::IO;
   thread_.StartWithOptions(options);
 
   thread_.task_runner()->PostTask(
@@ -83,7 +84,7 @@ void VolumeControlAndroid::SetVolume(VolumeChangeSource source,
     return;
   }
 
-  level = std::max(0.0f, std::min(level, 1.0f));
+  level = base::ClampToRange(level, 0.0f, 1.0f);
   // The input level value is in the kMedia (MUSIC) volume table domain.
   float mapped_level =
       MapIntoDifferentVolumeTableDomain(AudioContentType::kMedia, type, level);
@@ -119,7 +120,7 @@ void VolumeControlAndroid::SetOutputLimit(AudioContentType type, float limit) {
   }
 
   // The input limit is in the kMedia (MUSIC) volume table domain.
-  limit = std::max(0.0f, std::min(limit, 1.0f));
+  limit = base::ClampToRange(limit, 0.0f, 1.0f);
   float limit_db = VolumeToDbFSCached(AudioContentType::kMedia, limit);
   AudioSinkManager::Get()->SetOutputLimitDb(type, limit_db);
 }
@@ -392,11 +393,6 @@ float VolumeControl::VolumeToDbFS(float volume) {
 float VolumeControl::DbFSToVolume(float db) {
   // The db value is the kMedia (MUSIC) volume table domain.
   return GetVolumeControl().DbFSToVolumeCached(AudioContentType::kMedia, db);
-}
-
-// static
-void VolumeControl::SetPowerSaveMode(bool power_save_on) {
-  // Ignored.
 }
 
 }  // namespace media

@@ -2,21 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import <EarlGrey/EarlGrey.h>
 #import <XCTest/XCTest.h>
 
 #include "base/bind.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
-#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_constants.h"
 #include "ios/chrome/browser/ui/ui_feature_flags.h"
-#import "ios/chrome/test/app/chrome_test_util.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
+#import "ios/testing/earl_grey/earl_grey_test.h"
+#include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 
@@ -121,7 +120,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   [ChromeEarlGreyUI focusOmnibox];
   [[EarlGrey selectElementWithMatcher:[self mostVisitedTileMatcher]]
       performAction:grey_tap()];
-  [ChromeEarlGrey waitForWebViewContainingText:kTilePageLoadedString];
+  [ChromeEarlGrey waitForWebStateContainingText:kTilePageLoadedString];
 }
 
 - (void)testBookmarksShortcut {
@@ -170,8 +169,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
                                    nil)]
       assertWithMatcher:grey_sufficientlyVisible()];
 
-  [[EarlGrey
-      selectElementWithMatcher:[GREYMatchers matcherForButtonTitle:@"Done"]]
+  [[EarlGrey selectElementWithMatcher:grey_buttonTitle(@"Done")]
       performAction:grey_tap()];
 
   // Verify that after tapping Done the omnibox is defocused.
@@ -198,8 +196,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
                                    nil)]
       assertWithMatcher:grey_sufficientlyVisible()];
 
-  [[EarlGrey
-      selectElementWithMatcher:[GREYMatchers matcherForButtonTitle:@"Done"]]
+  [[EarlGrey selectElementWithMatcher:grey_buttonTitle(@"Done")]
       performAction:grey_tap()];
 
   // Verify that after tapping Done the omnibox is defocused.
@@ -225,8 +222,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
                                           nil)]
       assertWithMatcher:grey_sufficientlyVisible()];
 
-  [[EarlGrey
-      selectElementWithMatcher:[GREYMatchers matcherForButtonTitle:@"Done"]]
+  [[EarlGrey selectElementWithMatcher:grey_buttonTitle(@"Done")]
       performAction:grey_tap()];
 
   // Verify that after tapping Done the omnibox is defocused.
@@ -240,13 +236,11 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   [ChromeEarlGrey openNewTab];
 
   // Tap the fake omnibox.
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(
-                                   ntp_home::FakeOmniboxAccessibilityID())]
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::FakeOmnibox()]
       performAction:grey_tap()];
   // Wait for the real omnibox to be visible.
   [ChromeEarlGrey
-      waitForElementWithMatcherSufficientlyVisible:chrome_test_util::Omnibox()];
+      waitForSufficientlyVisibleElementWithMatcher:chrome_test_util::Omnibox()];
 
   // The shortcuts should not show up here.
   // The shortcuts are similar to the NTP tiles, so in this test it's necessary
@@ -262,13 +256,13 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 - (void)navigateToAPage {
   const GURL pageURL = self.testServer->GetURL(kPageURL);
   [ChromeEarlGrey loadURL:pageURL];
-  [ChromeEarlGrey waitForWebViewContainingText:kPageLoadedString];
+  [ChromeEarlGrey waitForWebStateContainingText:kPageLoadedString];
 }
 
 - (void)prepareMostVisitedTiles {
   const GURL pageURL = self.testServer->GetURL(kTilePageURL);
   [ChromeEarlGrey loadURL:pageURL];
-  [ChromeEarlGrey waitForWebViewContainingText:kTilePageLoadedString];
+  [ChromeEarlGrey waitForWebStateContainingText:kTilePageLoadedString];
 
   // After loading URL, need to do another action before opening a new tab
   // with the icon present.

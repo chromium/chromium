@@ -44,7 +44,7 @@ SkPath CreateArcPath(gfx::RectF oval, float start_angle, float sweep_angle) {
 NetworkIconImageSource::NetworkIconImageSource(const gfx::Size& size,
                                                const gfx::ImageSkia& icon,
                                                const Badges& badges)
-    : CanvasImageSource(size, false), icon_(icon), badges_(badges) {}
+    : CanvasImageSource(size), icon_(icon), badges_(badges) {}
 
 NetworkIconImageSource::~NetworkIconImageSource() = default;
 
@@ -97,7 +97,7 @@ SignalStrengthImageSource::SignalStrengthImageSource(ImageType image_type,
                                                      const gfx::Size& size,
                                                      int signal_strength,
                                                      int padding)
-    : CanvasImageSource(size, false /* is_opaque */),
+    : CanvasImageSource(size),
       image_type_(image_type),
       color_(color),
       signal_strength_(signal_strength),

@@ -4,11 +4,11 @@
 
 #include "chrome/browser/ui/android/autofill/card_unmask_prompt_view_android.h"
 
+#include "chrome/android/chrome_jni_headers/CardUnmaskBridge_jni.h"
 #include "chrome/browser/android/resource_mapper.h"
-#include "chrome/browser/ui/autofill/create_card_unmask_prompt_view.h"
-#include "components/autofill/core/browser/ui/card_unmask_prompt_controller.h"
+#include "chrome/browser/ui/autofill/payments/create_card_unmask_prompt_view.h"
+#include "components/autofill/core/browser/ui/payments/card_unmask_prompt_controller.h"
 #include "content/public/browser/web_contents.h"
-#include "jni/CardUnmaskBridge_jni.h"
 #include "ui/android/view_android.h"
 #include "ui/android/window_android.h"
 
@@ -53,6 +53,7 @@ void CardUnmaskPromptViewAndroid::Show() {
       confirm, ResourceMapper::MapFromChromiumId(controller_->GetCvcImageRid()),
       controller_->ShouldRequestExpirationDate(),
       controller_->CanStoreLocally(), controller_->GetStoreLocallyStartState(),
+      controller_->GetWebauthnOfferStartState(),
       controller_->GetSuccessMessageDuration().InMilliseconds(),
       view_android->GetWindowAndroid()->GetJavaObject()));
 
@@ -74,12 +75,13 @@ void CardUnmaskPromptViewAndroid::OnUserInput(
     const JavaParamRef<jstring>& cvc,
     const JavaParamRef<jstring>& month,
     const JavaParamRef<jstring>& year,
-    jboolean should_store_locally) {
-  controller_->OnUnmaskResponse(
+    jboolean should_store_locally,
+    jboolean enable_fido_auth) {
+  controller_->OnUnmaskPromptAccepted(
       base::android::ConvertJavaStringToUTF16(env, cvc),
       base::android::ConvertJavaStringToUTF16(env, month),
-      base::android::ConvertJavaStringToUTF16(env, year),
-      should_store_locally);
+      base::android::ConvertJavaStringToUTF16(env, year), should_store_locally,
+      enable_fido_auth);
 }
 
 void CardUnmaskPromptViewAndroid::OnNewCardLinkClicked(

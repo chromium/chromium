@@ -7,6 +7,7 @@
 
 #include <list>
 #include <memory>
+#include <string>
 #include <utility>
 
 #include "base/containers/flat_map.h"
@@ -37,12 +38,12 @@ class DesktopCaptureAccessHandler : public CaptureAccessHandlerBase,
 
   // MediaAccessHandler implementation.
   bool SupportsStreamType(content::WebContents* web_contents,
-                          const blink::MediaStreamType type,
+                          const blink::mojom::MediaStreamType type,
                           const extensions::Extension* extension) override;
   bool CheckMediaAccessPermission(
       content::RenderFrameHost* render_frame_host,
       const GURL& security_origin,
-      blink::MediaStreamType type,
+      blink::mojom::MediaStreamType type,
       const extensions::Extension* extension) override;
   void HandleRequest(content::WebContents* web_contents,
                      const content::MediaStreamRequest& request,
@@ -51,7 +52,7 @@ class DesktopCaptureAccessHandler : public CaptureAccessHandlerBase,
   void UpdateMediaRequestState(int render_process_id,
                                int render_frame_id,
                                int page_request_id,
-                               blink::MediaStreamType stream_type,
+                               blink::mojom::MediaStreamType stream_type,
                                content::MediaRequestState state) override;
 
  private:

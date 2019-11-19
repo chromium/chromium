@@ -7,7 +7,7 @@ package org.chromium.chrome.browser.ntp.cards;
 import android.content.Context;
 import android.graphics.Region;
 
-import org.chromium.chrome.browser.ntp.NewTabPage.FakeboxDelegate;
+import org.chromium.chrome.browser.ntp.FakeboxDelegate;
 import org.chromium.chrome.browser.ntp.NewTabPageLayout;
 import org.chromium.chrome.browser.ntp.SnapScrollHelper;
 import org.chromium.chrome.browser.suggestions.SuggestionsRecyclerView;
@@ -53,18 +53,6 @@ public class NewTabPageRecyclerView
         // prevents the RecyclerView from requesting focus during the URL focus animation, which
         // would cause the focus animation to be canceled. See https://crbug.com/798084.
         return mFakeboxDelegate == null || !mFakeboxDelegate.isUrlBarFocused();
-    }
-
-    /**
-     * Returns the approximate adapter position that the user has scrolled to. The purpose of this
-     * value is that it can be stored and later retrieved to restore a scroll position that is
-     * familiar to the user, showing (part of) the same content the user was previously looking at.
-     * This position is valid for that purpose regardless of device orientation changes. Note that
-     * if the underlying data has changed in the meantime, different content would be shown for this
-     * position.
-     */
-    public int getScrollPosition() {
-        return getLinearLayoutManager().findFirstVisibleItemPosition();
     }
 
     @Override

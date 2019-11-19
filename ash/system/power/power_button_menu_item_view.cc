@@ -4,9 +4,10 @@
 
 #include "ash/system/power/power_button_menu_item_view.h"
 
+#include "ash/style/ash_color_provider.h"
+#include "ash/style/default_color_constants.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/canvas.h"
-#include "ui/gfx/color_palette.h"
 #include "ui/gfx/font.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -17,12 +18,6 @@
 namespace ash {
 
 namespace {
-
-// Color of the image icon.
-constexpr SkColor kItemIconColor = SkColorSetARGB(0xFF, 0x20, 0x21, 0x24);
-
-// Color of the title of the label.
-constexpr SkColor kItemTitleColor = SkColorSetARGB(0xFF, 0x5F, 0x63, 0x68);
 
 // Size of the image icon in pixels.
 constexpr int kIconSize = 24;
@@ -36,13 +31,6 @@ constexpr int kTitleTopPadding = 52;
 // The amount of rounding applied to the corners of the focused menu item.
 constexpr int kFocusedItemRoundRectRadiusDp = 8;
 
-// Color of the focused menu item's border.
-constexpr SkColor kFocusedItemBorderColor =
-    SkColorSetARGB(0x66, 0x1A, 0x73, 0xE8);
-
-// Color of the focused menu item.
-constexpr SkColor kFocusedItemColor = SkColorSetARGB(0x0A, 0x1A, 0x73, 0xE8);
-
 }  // namespace
 
 PowerButtonMenuItemView::PowerButtonMenuItemView(
@@ -55,15 +43,23 @@ PowerButtonMenuItemView::PowerButtonMenuItemView(
   SetFocusBehavior(FocusBehavior::ALWAYS);
   SetFocusPainter(nullptr);
   SetPaintToLayer();
-  icon_view_->SetImage(gfx::CreateVectorIcon(icon, kItemIconColor));
+  layer()->SetFillsBoundsOpaquely(false);
+
+  const AshColorProvider* color_provider = AshColorProvider::Get();
+  icon_view_->SetImage(gfx::CreateVectorIcon(
+      icon, color_provider->DeprecatedGetContentLayerColor(
+                AshColorProvider::ContentLayerType::kIconPrimary,
+                kPowerButtonMenuItemIconColor)));
   AddChildView(icon_view_);
 
   title_->SetBackgroundColor(SK_ColorTRANSPARENT);
-  title_->SetEnabledColor(kItemTitleColor);
+  title_->SetEnabledColor(color_provider->DeprecatedGetContentLayerColor(
+      AshColorProvider::ContentLayerType::kTextPrimary,
+      kPowerButtonMenuItemTitleColor));
   title_->SetText(title_text);
   AddChildView(title_);
   GetViewAccessibility().OverrideRole(ax::mojom::Role::kMenuItem);
-  GetViewAccessibility().OverrideName(title_->text());
+  GetViewAccessibility().OverrideName(title_->GetText());
 
   SetBorder(views::CreateEmptyBorder(kItemBorderThickness, kItemBorderThickness,
                                      kItemBorderThickness,
@@ -71,6 +67,10 @@ PowerButtonMenuItemView::PowerButtonMenuItemView(
 }
 
 PowerButtonMenuItemView::~PowerButtonMenuItemView() = default;
+
+const char* PowerButtonMenuItemView::GetClassName() const {
+  return "PowerButtonMenuItemView";
+}
 
 void PowerButtonMenuItemView::Layout() {
   const gfx::Rect rect(GetContentsBounds());
@@ -103,16 +103,27 @@ void PowerButtonMenuItemView::OnBlur() {
 }
 
 void PowerButtonMenuItemView::PaintButtonContents(gfx::Canvas* canvas) {
-  views::View::OnPaint(canvas);
-  canvas->DrawColor(SK_ColorWHITE);
-  if (!HasFocus() || GetContentsBounds().IsEmpty())
+  cc::PaintFlags flags;
+  flags.setAntiAlias(true);
+  // Set the background color to SK_ColorTRANSPARENT here since the parent view
+  // PowerButtonMenuView has already set the background color.
+  flags.setColor(SK_ColorTRANSPARENT);
+  const gfx::Rect content_bounds = GetContentsBounds();
+  canvas->DrawRoundRect(content_bounds, kFocusedItemRoundRectRadiusDp, flags);
+
+  if (!HasFocus() || content_bounds.IsEmpty())
     return;
 
-  SetBorder(views::CreateRoundedRectBorder(kItemBorderThickness,
-                                           kFocusedItemRoundRectRadiusDp,
-                                           kFocusedItemBorderColor));
-  canvas->FillRect(GetContentsBounds(), kFocusedItemColor);
-  views::View::OnPaintBorder(canvas);
+  // Border.
+  gfx::Rect bounds = GetLocalBounds();
+  bounds.Inset(gfx::Insets(kItemBorderThickness));
+  // Stroke.
+  flags.setColor(AshColorProvider::Get()->DeprecatedGetControlsLayerColor(
+      AshColorProvider::ControlsLayerType::kFocusRing,
+      kPowerButtonMenuItemFocusColor));
+  flags.setStrokeWidth(kItemBorderThickness);
+  flags.setStyle(cc::PaintFlags::Style::kStroke_Style);
+  canvas->DrawRoundRect(bounds, kFocusedItemRoundRectRadiusDp, flags);
 }
 
 }  // namespace ash

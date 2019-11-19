@@ -8,21 +8,39 @@
 #include <stdint.h>
 
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "content/common/content_export.h"
 
 namespace content {
 
 struct CONTENT_EXPORT BackgroundSyncParameters {
   BackgroundSyncParameters();
+  BackgroundSyncParameters(const BackgroundSyncParameters& other);
   bool operator==(const BackgroundSyncParameters& other) const;
 
   // True if the manager should be disabled and registration attempts should
   // fail.
   bool disable;
 
-  // The number of attempts the BackgroundSyncManager will make to fire an event
-  // before giving up.
+#if defined(OS_ANDROID)
+  // True if we should rely on Android's network detection where possible.
+  bool rely_on_android_network_detection;
+#endif
+
+  // If true, we keep the browser awake till all (periodic)sync events fired
+  // have completed. If false, we only keep the browser awake till all ready
+  // (periodic)sync events have been fired.
+  bool keep_browser_awake_till_events_complete;
+
+  // The number of attempts the BackgroundSyncManager will make to fire an
+  // event before giving up.
   int max_sync_attempts;
+
+  // The number of attempts the BackgroundSyncManager will make to fire an
+  // event before giving up, assuming the origin has notification permission.
+  // This value will override |max_sync_attempts| assuming the Sync
+  // Registration's origin has notification permissions.
+  int max_sync_attempts_with_notification_permission;
 
   // The first time that a registration retries, it will wait at least this much
   // time before doing so.
@@ -38,6 +56,10 @@ struct CONTENT_EXPORT BackgroundSyncParameters {
 
   // The maximum amount of time that a sync event can run for.
   base::TimeDelta max_sync_event_duration;
+
+  // The minimum time interval between first attempts of Periodic Background
+  // Sync events for a given registration.
+  base::TimeDelta min_periodic_sync_events_interval;
 };
 
 }  // namespace content

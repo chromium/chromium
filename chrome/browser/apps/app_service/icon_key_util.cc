@@ -6,17 +6,12 @@
 
 namespace apps_util {
 
-IncrementingIconKeyFactory::IncrementingIconKeyFactory() : u_key_(0) {}
+IncrementingIconKeyFactory::IncrementingIconKeyFactory() : last_timeline_(0) {}
 
 apps::mojom::IconKeyPtr IncrementingIconKeyFactory::MakeIconKey(
-    apps::mojom::AppType app_type,
-    const std::string& s_key,
-    uint8_t flags) {
-  // The flags occupy the low 8 bits.
-  u_key_ += 1 << 8;
-
+    uint32_t icon_effects) {
   return apps::mojom::IconKey::New(
-      app_type, u_key_ | static_cast<uint64_t>(flags), s_key);
+      ++last_timeline_, apps::mojom::IconKey::kInvalidResourceId, icon_effects);
 }
 
 }  // namespace apps_util

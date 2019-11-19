@@ -4,16 +4,14 @@
 
 #include "chrome/browser/password_manager/password_store_signin_notifier_impl.h"
 
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/signin/identity_manager_factory.h"
-#include "services/identity/public/cpp/identity_manager.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 
 namespace password_manager {
 
 PasswordStoreSigninNotifierImpl::PasswordStoreSigninNotifierImpl(
-    Profile* profile)
-    : profile_(profile) {
-  DCHECK(profile);
+    signin::IdentityManager* identity_manager)
+    : identity_manager_(identity_manager) {
+  DCHECK(identity_manager_);
 }
 
 PasswordStoreSigninNotifierImpl::~PasswordStoreSigninNotifierImpl() {}
@@ -21,11 +19,11 @@ PasswordStoreSigninNotifierImpl::~PasswordStoreSigninNotifierImpl() {}
 void PasswordStoreSigninNotifierImpl::SubscribeToSigninEvents(
     PasswordStore* store) {
   set_store(store);
-  IdentityManagerFactory::GetForProfile(profile_)->AddObserver(this);
+  identity_manager_->AddObserver(this);
 }
 
 void PasswordStoreSigninNotifierImpl::UnsubscribeFromSigninEvents() {
-  IdentityManagerFactory::GetForProfile(profile_)->RemoveObserver(this);
+  identity_manager_->RemoveObserver(this);
 }
 
 void PasswordStoreSigninNotifierImpl::OnPrimaryAccountCleared(
@@ -37,8 +35,7 @@ void PasswordStoreSigninNotifierImpl::OnPrimaryAccountCleared(
 void PasswordStoreSigninNotifierImpl::OnExtendedAccountInfoRemoved(
     const AccountInfo& info) {
   // Only reacts to content area (non-primary) Gaia account sign-out event.
-  if (info.account_id !=
-      IdentityManagerFactory::GetForProfile(profile_)->GetPrimaryAccountId()) {
+  if (info.account_id != identity_manager_->GetPrimaryAccountId()) {
     NotifySignedOut(info.email, /* primary_account= */ false);
   }
 }

@@ -11,8 +11,8 @@
 #include "base/files/scoped_file.h"
 #include "base/memory/weak_ptr.h"
 #include "net/base/io_buffer.h"
-#include "storage/browser/fileapi/file_stream_reader.h"
-#include "storage/browser/fileapi/file_system_context.h"
+#include "storage/browser/file_system/file_stream_reader.h"
+#include "storage/browser/file_system/file_system_context.h"
 
 namespace arc {
 
@@ -78,7 +78,7 @@ class FileStreamForwarder {
   scoped_refptr<net::IOBufferWithSize> buf_;
   std::unique_ptr<storage::FileStreamReader> stream_reader_;
 
-  base::WeakPtrFactory<FileStreamForwarder> weak_ptr_factory_;
+  base::WeakPtrFactory<FileStreamForwarder> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(FileStreamForwarder);
 };

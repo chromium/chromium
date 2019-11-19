@@ -27,8 +27,8 @@
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/common/page_zoom.h"
 #include "content/public/common/url_constants.h"
+#include "third_party/blink/public/common/page/page_zoom.h"
 #include "third_party/blink/public/platform/web_gesture_event.h"
 
 using content::WebContents;
@@ -183,8 +183,7 @@ GuestViewBase::GuestViewBase(WebContents* owner_web_contents)
       guest_host_(nullptr),
       auto_size_enabled_(false),
       is_full_page_plugin_(false),
-      guest_proxy_routing_id_(MSG_ROUTING_NONE),
-      weak_ptr_factory_(this) {
+      guest_proxy_routing_id_(MSG_ROUTING_NONE) {
   SetOwnerHost();
 }
 
@@ -447,7 +446,7 @@ void GuestViewBase::DidDetach() {
     Destroy(true);
 }
 
-WebContents* GuestViewBase::GetOwnerWebContents() const {
+WebContents* GuestViewBase::GetOwnerWebContents() {
   return owner_web_contents_;
 }
 
@@ -550,7 +549,8 @@ void GuestViewBase::WillAttach(WebContents* embedder_web_contents,
 
   if (content::GuestMode::IsCrossProcessFrameGuest(web_contents())) {
     owner_web_contents_->AttachInnerWebContents(
-        base::WrapUnique<WebContents>(web_contents()), outer_contents_frame);
+        base::WrapUnique<WebContents>(web_contents()), outer_contents_frame,
+        is_full_page_plugin);
     // TODO(ekaramad): MimeHandlerViewGuest might not need this ACK
     // (https://crbug.com/659750).
     // We don't ACK until after AttachToOuterWebContentsFrame, so that
@@ -645,7 +645,7 @@ void GuestViewBase::ContentsZoomChange(bool zoom_in) {
 bool GuestViewBase::HandleKeyboardEvent(
     WebContents* source,
     const content::NativeWebKeyboardEvent& event) {
-  if (!attached())
+  if (!attached() || !embedder_web_contents()->GetDelegate())
     return false;
 
   // Send the keyboard events back to the embedder to reprocess them.
@@ -701,8 +701,7 @@ bool GuestViewBase::PreHandleGestureEvent(WebContents* source,
   // Pinch events which cause a scale change should not be routed to a guest.
   // We still allow synthetic wheel events for touchpad pinch to go to the page.
   DCHECK(!blink::WebInputEvent::IsPinchGestureEventType(event.GetType()) ||
-         (event.SourceDevice() ==
-              blink::WebGestureDevice::kWebGestureDeviceTouchpad &&
+         (event.SourceDevice() == blink::WebGestureDevice::kTouchpad &&
           event.NeedsWheelEvent()));
   return false;
 }
@@ -771,8 +770,8 @@ void GuestViewBase::OnZoomChanged(
     // The embedder's zoom level has changed.
     auto* guest_zoom_controller =
         zoom::ZoomController::FromWebContents(web_contents());
-    if (content::ZoomValuesEqual(data.new_zoom_level,
-                                 guest_zoom_controller->GetZoomLevel())) {
+    if (blink::PageZoomValuesEqual(data.new_zoom_level,
+                                   guest_zoom_controller->GetZoomLevel())) {
       return;
     }
     // When the embedder's zoom level doesn't match the guest's, then update the
@@ -832,7 +831,7 @@ double GuestViewBase::GetEmbedderZoomFactor() const {
   if (!embedder_web_contents())
     return 1.0;
 
-  return content::ZoomLevelToZoomFactor(
+  return blink::PageZoomLevelToZoomFactor(
       zoom::ZoomController::GetZoomLevelForWebContents(
           embedder_web_contents()));
 }

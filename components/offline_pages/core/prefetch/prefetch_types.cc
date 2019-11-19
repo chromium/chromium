@@ -37,6 +37,12 @@ std::string PrefetchEnumToString(PrefetchRequestStatus value) {
       return "SHOULD_SUSPEND_FORBIDDEN";
     case PrefetchRequestStatus::kShouldSuspendBlockedByAdministrator:
       return "SHOULD_SUSPEND_BLOCKED_BY_ADMINISTRATOR";
+    case PrefetchRequestStatus::kShouldSuspendForbiddenByOPS:
+      return "SHOULD_SUSPEND_FORBIDDEN_BY_OPS";
+    case PrefetchRequestStatus::kShouldSuspendNewlyForbiddenByOPS:
+      return "SHOULD_SUSPEND_NEWLY_FORBIDDEN_BY_OPS";
+    case PrefetchRequestStatus::kEmptyRequestSuccess:
+      return "EMPTY_REQUEST_SUCCESS";
   }
   DCHECK(false) << static_cast<int>(value) << " not valid enum value";
 }
@@ -113,6 +119,8 @@ std::string PrefetchEnumToString(PrefetchItemErrorCode value) {
       return "STALE_AT_UNKNOWN";
     case PrefetchItemErrorCode::STUCK:
       return "STUCK";
+    case PrefetchItemErrorCode::INVALID_ITEM:
+      return "INVALID_ITEM";
     case PrefetchItemErrorCode::GET_OPERATION_MAX_ATTEMPTS_REACHED:
       return "GET_OPERATION_MAX_ATTEMPTS_REACHED";
     case PrefetchItemErrorCode::
@@ -139,6 +147,21 @@ PrefetchURL::PrefetchURL(const std::string& id,
                          const GURL& url,
                          const base::string16& title)
     : id(id), url(url), title(title) {}
+
+PrefetchURL::PrefetchURL(const std::string& id,
+                         const GURL& url,
+                         const base::string16& title,
+                         const GURL& thumbnail_url,
+                         const GURL& favicon_url,
+                         const std::string& snippet,
+                         const std::string& attribution)
+    : id(id),
+      url(url),
+      title(title),
+      thumbnail_url(thumbnail_url),
+      favicon_url(favicon_url),
+      snippet(snippet),
+      attribution(attribution) {}
 
 PrefetchURL::~PrefetchURL() = default;
 
@@ -172,6 +195,53 @@ PrefetchArchiveInfo::~PrefetchArchiveInfo() = default;
 
 bool PrefetchArchiveInfo::empty() const {
   return offline_id == 0;
+}
+
+base::Optional<PrefetchItemState> ToPrefetchItemState(int value) {
+  switch (static_cast<PrefetchItemState>(value)) {
+    case PrefetchItemState::NEW_REQUEST:
+    case PrefetchItemState::SENT_GENERATE_PAGE_BUNDLE:
+    case PrefetchItemState::AWAITING_GCM:
+    case PrefetchItemState::RECEIVED_GCM:
+    case PrefetchItemState::SENT_GET_OPERATION:
+    case PrefetchItemState::RECEIVED_BUNDLE:
+    case PrefetchItemState::DOWNLOADING:
+    case PrefetchItemState::DOWNLOADED:
+    case PrefetchItemState::IMPORTING:
+    case PrefetchItemState::FINISHED:
+    case PrefetchItemState::ZOMBIE:
+      return static_cast<PrefetchItemState>(value);
+  }
+  return base::nullopt;
+}
+
+base::Optional<PrefetchItemErrorCode> ToPrefetchItemErrorCode(int value) {
+  switch (static_cast<PrefetchItemErrorCode>(value)) {
+    case PrefetchItemErrorCode::SUCCESS:
+    case PrefetchItemErrorCode::TOO_MANY_NEW_URLS:
+    case PrefetchItemErrorCode::DOWNLOAD_ERROR:
+    case PrefetchItemErrorCode::IMPORT_ERROR:
+    case PrefetchItemErrorCode::ARCHIVING_FAILED:
+    case PrefetchItemErrorCode::ARCHIVING_LIMIT_EXCEEDED:
+    case PrefetchItemErrorCode::STALE_AT_NEW_REQUEST:
+    case PrefetchItemErrorCode::STALE_AT_AWAITING_GCM:
+    case PrefetchItemErrorCode::STALE_AT_RECEIVED_GCM:
+    case PrefetchItemErrorCode::STALE_AT_RECEIVED_BUNDLE:
+    case PrefetchItemErrorCode::STALE_AT_DOWNLOADING:
+    case PrefetchItemErrorCode::STALE_AT_IMPORTING:
+    case PrefetchItemErrorCode::STALE_AT_UNKNOWN:
+    case PrefetchItemErrorCode::STUCK:
+    case PrefetchItemErrorCode::INVALID_ITEM:
+    case PrefetchItemErrorCode::GET_OPERATION_MAX_ATTEMPTS_REACHED:
+    case PrefetchItemErrorCode::
+        GENERATE_PAGE_BUNDLE_REQUEST_MAX_ATTEMPTS_REACHED:
+    case PrefetchItemErrorCode::DOWNLOAD_MAX_ATTEMPTS_REACHED:
+    case PrefetchItemErrorCode::MAXIMUM_CLOCK_BACKWARD_SKEW_EXCEEDED:
+    case PrefetchItemErrorCode::IMPORT_LOST:
+    case PrefetchItemErrorCode::SUGGESTION_INVALIDATED:
+      return static_cast<PrefetchItemErrorCode>(value);
+  }
+  return base::nullopt;
 }
 
 std::ostream& operator<<(std::ostream& out,

@@ -17,10 +17,10 @@
 #include "components/ntp_snippets/features.h"
 #include "components/ntp_snippets/ntp_snippets_constants.h"
 #include "components/ntp_snippets/user_classifier.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
 #include "components/variations/variations_associated_data.h"
 #include "net/base/url_util.h"
-#include "services/identity/public/cpp/identity_manager.h"
-#include "services/identity/public/cpp/primary_account_access_token_fetcher.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 using language::UrlLanguageHistogram;
@@ -155,7 +155,7 @@ void FilterCategories(FetchedCategoriesVector* categories,
 bool RemoteSuggestionsFetcherImpl::skip_api_key_check_for_testing_ = false;
 
 RemoteSuggestionsFetcherImpl::RemoteSuggestionsFetcherImpl(
-    identity::IdentityManager* identity_manager,
+    signin::IdentityManager* identity_manager,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     PrefService* pref_service,
     UrlLanguageHistogram* language_histogram,
@@ -215,7 +215,8 @@ void RemoteSuggestionsFetcherImpl::FetchSnippets(
       .SetParseJsonCallback(parse_json_callback_)
       .SetClock(clock_)
       .SetUrlLoaderFactory(url_loader_factory_)
-      .SetUserClassifier(*user_classifier_);
+      .SetUserClassifier(*user_classifier_)
+      .SetOptionalImagesCapability(true);
 
   if (identity_manager_->HasPrimaryAccount()) {
     // Signed-in: get OAuth token --> fetch suggestions.
@@ -256,7 +257,6 @@ void RemoteSuggestionsFetcherImpl::FetchSnippetsAuthenticated(
       fetch_url_, builder.is_interactive_request());
 
   builder.SetUrl(url).SetAuthentication(
-      identity_manager_->GetPrimaryAccountId(),
       base::StringPrintf(kAuthorizationRequestHeaderFormat,
                          oauth_access_token.c_str()));
   StartRequest(std::move(builder), std::move(callback),
@@ -283,17 +283,17 @@ void RemoteSuggestionsFetcherImpl::StartTokenRequest() {
 
   base::Time token_start_time = clock_->Now();
   identity::ScopeSet scopes{kContentSuggestionsApiScope};
-  token_fetcher_ = std::make_unique<identity::PrimaryAccountAccessTokenFetcher>(
+  token_fetcher_ = std::make_unique<signin::PrimaryAccountAccessTokenFetcher>(
       "ntp_snippets", identity_manager_, scopes,
       base::BindOnce(&RemoteSuggestionsFetcherImpl::AccessTokenFetchFinished,
                      base::Unretained(this), token_start_time),
-      identity::PrimaryAccountAccessTokenFetcher::Mode::kWaitUntilAvailable);
+      signin::PrimaryAccountAccessTokenFetcher::Mode::kWaitUntilAvailable);
 }
 
 void RemoteSuggestionsFetcherImpl::AccessTokenFetchFinished(
     base::Time token_start_time,
     GoogleServiceAuthError error,
-    identity::AccessTokenInfo access_token_info) {
+    signin::AccessTokenInfo access_token_info) {
   DCHECK(token_fetcher_);
   token_fetcher_.reset();
 
@@ -345,7 +345,7 @@ void RemoteSuggestionsFetcherImpl::JsonRequestDone(
     SnippetsAvailableCallback callback,
     bool is_authenticated,
     std::string access_token,
-    std::unique_ptr<base::Value> result,
+    base::Value result,
     FetchResult status_code,
     const std::string& error_details) {
   DCHECK(request);
@@ -356,14 +356,14 @@ void RemoteSuggestionsFetcherImpl::JsonRequestDone(
 
   UMA_HISTOGRAM_TIMES("NewTabPage.Snippets.FetchTime",
                       request->GetFetchDuration());
-  if (!result) {
+  if (result.is_none()) {
     FetchFinished(OptionalFetchedCategories(), std::move(callback), status_code,
                   error_details, is_authenticated, access_token);
     return;
   }
 
   FetchedCategoriesVector categories;
-  if (!JsonToCategories(*result, &categories, fetch_time)) {
+  if (!JsonToCategories(result, &categories, fetch_time)) {
     LOG(WARNING) << "Received invalid snippets: " << last_fetch_json_;
     FetchFinished(OptionalFetchedCategories(), std::move(callback),
                   FetchResult::INVALID_SNIPPET_CONTENT_ERROR, std::string(),
@@ -391,7 +391,7 @@ void RemoteSuggestionsFetcherImpl::FetchFinished(
 
   if (fetch_result == FetchResult::HTTP_ERROR_UNAUTHORIZED) {
     identity::ScopeSet scopes{kContentSuggestionsApiScope};
-    std::string account_id = identity_manager_->GetPrimaryAccountId();
+    CoreAccountId account_id = identity_manager_->GetPrimaryAccountId();
     identity_manager_->RemoveAccessTokenFromCache(account_id, scopes,
                                                   access_token);
   }

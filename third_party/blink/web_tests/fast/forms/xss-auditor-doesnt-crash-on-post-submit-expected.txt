@@ -1,6 +1,0 @@
-This tests that no assertions are thrown when POST submitting a form.
-PASS successfullyParsed is true
-
-TEST COMPLETE
-
-PASS No assertions raised.

@@ -4,6 +4,7 @@
 import("//build/buildflag_header.gni")
 import("//chromecast/chromecast.gni")
 import("//media/media_options.gni")
+import("//testing/test.gni")
 
 declare_args() {
   # Defines bounds for the output buffer size (in frames)
@@ -12,14 +13,29 @@ declare_args() {
   default_output_buffer_size_in_frames = 2048
 }
 
+cast_source_set("audio_io_thread") {
+  sources = [
+    "audio_io_thread.cc",
+    "audio_io_thread.h",
+  ]
+
+  deps = [
+    "//base",
+  ]
+}
+
 cast_source_set("audio") {
   sources = [
+    "cast_audio_input_stream.cc",
+    "cast_audio_input_stream.h",
     "cast_audio_manager.cc",
     "cast_audio_manager.h",
     "cast_audio_mixer.cc",
     "cast_audio_mixer.h",
     "cast_audio_output_stream.cc",
     "cast_audio_output_stream.h",
+    "cma_audio_output_stream.cc",
+    "cma_audio_output_stream.h",
   ]
 
   deps = [
@@ -27,9 +43,12 @@ cast_source_set("audio") {
     "//base",
     "//chromecast/base",
     "//chromecast/common/mojom",
-    "//chromecast/media/audio/mixer_service:connection",
+    "//chromecast/media/audio/capture_service:receiver",
+    "//chromecast/media/audio/mixer_service:common",
+    "//chromecast/media/audio/mixer_service:output_stream_connection",
     "//chromecast/media/audio/mixer_service:proto",
     "//chromecast/media/base",
+    "//chromecast/media/base:monotonic_clock",
     "//chromecast/media/cma/backend",
     "//chromecast/media/cma/base",
     "//chromecast/public/media",
@@ -43,19 +62,43 @@ cast_source_set("audio") {
       "cast_audio_manager_alsa.cc",
       "cast_audio_manager_alsa.h",
     ]
-    deps += [ "//content/public/browser" ]
+    deps += [
+      ":audio_buildflags",
+      "//content/public/browser",
+    ]
   }
 
   configs += [ "//media/audio:platform_config" ]
 }
 
-cast_shared_library("libcast_external_audio_pipeline_1.0") {
+if (is_android) {
+  cast_source_set("cast_audio_device_factory") {
+    sources = [
+      "cast_audio_device_factory.cc",
+      "cast_audio_device_factory.h",
+    ]
+
+    deps = [
+      "//base",
+      "//content/renderer:renderer",
+      "//media",
+    ]
+  }
+}
+
+source_set("dummy_external_audio_pipeline") {
   sources = [
     "external_audio_pipeline_dummy.cc",
   ]
 
   public_deps = [
     "//chromecast/public/media",
+  ]
+}
+
+cast_shared_library("libcast_external_audio_pipeline_1.0") {
+  public_deps = [
+    ":dummy_external_audio_pipeline",
   ]
 }
 
@@ -79,5 +122,28 @@ buildflag_header("audio_buildflags") {
     "MINIMUM_OUTPUT_BUFFER_SIZE_IN_FRAMES=$minimum_output_buffer_size_in_frames",
     "MAXIMUM_OUTPUT_BUFFER_SIZE_IN_FRAMES=$maximum_output_buffer_size_in_frames",
     "DEFAULT_OUTPUT_BUFFER_SIZE_IN_FRAMES=$default_output_buffer_size_in_frames",
+    "ENABLE_AUDIO_CAPTURE_SERVICE=$enable_audio_capture_service",
+    "USE_UNIX_SOCKETS=$use_unix_sockets",
+  ]
+
+  if (use_alsa) {
+    # Currently, this flag will only be used in cast_audio_manager_alsa.cc
+    flags += [ "AUDIO_INPUT_SAMPLE_RATE=$audio_input_sample_rate" ]
+  }
+}
+
+cast_source_set("test_support") {
+  testonly = true
+
+  sources = [
+    "mock_audio_input_callback.h",
+  ]
+
+  public_deps = [
+    "//testing/gmock",
+  ]
+
+  deps = [
+    "//media",
   ]
 }

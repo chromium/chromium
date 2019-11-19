@@ -34,13 +34,12 @@ static scoped_refptr<AudioBuffer> CreateDecodedBuffer(int frames) {
                          kSampleRate, 0.0f, kDataStep, frames, kNoTimestamp);
 }
 
-static float ExtractDecodedData(const scoped_refptr<AudioBuffer>& buffer,
-                                int index) {
+static float ExtractDecodedData(const AudioBuffer& buffer, int index) {
   // This is really inefficient, but we can't access the raw AudioBuffer if any
   // start trimming has been applied.
   std::unique_ptr<AudioBus> temp_bus =
-      AudioBus::Create(buffer->channel_count(), 1);
-  buffer->ReadFrames(1, index, 0, temp_bus.get());
+      AudioBus::Create(buffer.channel_count(), 1);
+  buffer.ReadFrames(1, index, 0, temp_bus.get());
   return temp_bus->channel(0)[0];
 }
 
@@ -86,7 +85,8 @@ TEST(AudioDiscardHelperTest, BasicProcessBuffers) {
   scoped_refptr<AudioBuffer> decoded_buffer = CreateDecodedBuffer(kTestFrames);
 
   // Verify the basic case where nothing is discarded.
-  ASSERT_TRUE(discard_helper.ProcessBuffers(*encoded_buffer, decoded_buffer));
+  ASSERT_TRUE(
+      discard_helper.ProcessBuffers(*encoded_buffer, decoded_buffer.get()));
   ASSERT_TRUE(discard_helper.initialized());
   EXPECT_EQ(kTimestamp, decoded_buffer->timestamp());
   EXPECT_EQ(kActualDuration, decoded_buffer->duration());
@@ -113,7 +113,8 @@ TEST(AudioDiscardHelperTest, NegativeTimestampClampsToZero) {
   scoped_refptr<AudioBuffer> decoded_buffer = CreateDecodedBuffer(kTestFrames);
 
   // Verify the basic case where nothing is discarded.
-  ASSERT_TRUE(discard_helper.ProcessBuffers(*encoded_buffer, decoded_buffer));
+  ASSERT_TRUE(
+      discard_helper.ProcessBuffers(*encoded_buffer, decoded_buffer.get()));
   ASSERT_TRUE(discard_helper.initialized());
   EXPECT_EQ(base::TimeDelta(), decoded_buffer->timestamp());
   EXPECT_EQ(kDuration, decoded_buffer->duration());
@@ -137,13 +138,14 @@ TEST(AudioDiscardHelperTest, ProcessBuffersWithInitialDiscard) {
   scoped_refptr<AudioBuffer> decoded_buffer = CreateDecodedBuffer(kTestFrames);
 
   // Verify half the frames end up discarded.
-  ASSERT_TRUE(discard_helper.ProcessBuffers(*encoded_buffer, decoded_buffer));
+  ASSERT_TRUE(
+      discard_helper.ProcessBuffers(*encoded_buffer, decoded_buffer.get()));
   ASSERT_TRUE(discard_helper.initialized());
   EXPECT_EQ(kTimestamp, decoded_buffer->timestamp());
   EXPECT_EQ(kDuration / 2, decoded_buffer->duration());
   EXPECT_EQ(kDiscardFrames, decoded_buffer->frame_count());
   ASSERT_FLOAT_EQ(kDiscardFrames * kDataStep,
-                  ExtractDecodedData(decoded_buffer, 0));
+                  ExtractDecodedData(*decoded_buffer, 0));
 }
 
 TEST(AudioDiscardHelperTest, ProcessBuffersWithLargeInitialDiscard) {
@@ -162,13 +164,15 @@ TEST(AudioDiscardHelperTest, ProcessBuffersWithLargeInitialDiscard) {
   scoped_refptr<AudioBuffer> decoded_buffer = CreateDecodedBuffer(kTestFrames);
 
   // The first call should fail since no output buffer remains.
-  ASSERT_FALSE(discard_helper.ProcessBuffers(*encoded_buffer, decoded_buffer));
+  ASSERT_FALSE(
+      discard_helper.ProcessBuffers(*encoded_buffer, decoded_buffer.get()));
   ASSERT_TRUE(discard_helper.initialized());
 
   // Generate another set of buffers and expect half the output frames.
   encoded_buffer = CreateEncodedBuffer(kTimestamp + kDuration, kDuration);
   decoded_buffer = CreateDecodedBuffer(kTestFrames);
-  ASSERT_TRUE(discard_helper.ProcessBuffers(*encoded_buffer, decoded_buffer));
+  ASSERT_TRUE(
+      discard_helper.ProcessBuffers(*encoded_buffer, decoded_buffer.get()));
 
   // The timestamp should match that of the initial buffer.
   const int kDiscardFrames = kTestFrames / 2;
@@ -176,7 +180,7 @@ TEST(AudioDiscardHelperTest, ProcessBuffersWithLargeInitialDiscard) {
   EXPECT_EQ(kDuration / 2, decoded_buffer->duration());
   EXPECT_EQ(kDiscardFrames, decoded_buffer->frame_count());
   ASSERT_FLOAT_EQ(kDiscardFrames * kDataStep,
-                  ExtractDecodedData(decoded_buffer, 0));
+                  ExtractDecodedData(*decoded_buffer, 0));
 }
 
 TEST(AudioDiscardHelperTest, AllowNonMonotonicTimestamps) {
@@ -191,7 +195,8 @@ TEST(AudioDiscardHelperTest, AllowNonMonotonicTimestamps) {
       CreateEncodedBuffer(kTimestamp, kDuration);
   scoped_refptr<AudioBuffer> decoded_buffer = CreateDecodedBuffer(kTestFrames);
 
-  ASSERT_TRUE(discard_helper.ProcessBuffers(*encoded_buffer, decoded_buffer));
+  ASSERT_TRUE(
+      discard_helper.ProcessBuffers(*encoded_buffer, decoded_buffer.get()));
   ASSERT_TRUE(discard_helper.initialized());
   EXPECT_EQ(kTimestamp, decoded_buffer->timestamp());
   EXPECT_EQ(kDuration, decoded_buffer->duration());
@@ -199,7 +204,8 @@ TEST(AudioDiscardHelperTest, AllowNonMonotonicTimestamps) {
 
   // Process the same input buffer again to ensure input timestamps which go
   // backwards in time are not errors.
-  ASSERT_TRUE(discard_helper.ProcessBuffers(*encoded_buffer, decoded_buffer));
+  ASSERT_TRUE(
+      discard_helper.ProcessBuffers(*encoded_buffer, decoded_buffer.get()));
   EXPECT_EQ(kTimestamp + kDuration, decoded_buffer->timestamp());
   EXPECT_EQ(kDuration, decoded_buffer->duration());
   EXPECT_EQ(kTestFrames, decoded_buffer->frame_count());
@@ -221,7 +227,8 @@ TEST(AudioDiscardHelperTest, DiscardEndPadding) {
   encoded_buffer->set_discard_padding(
       std::make_pair(base::TimeDelta(), kDuration / 2));
 
-  ASSERT_TRUE(discard_helper.ProcessBuffers(*encoded_buffer, decoded_buffer));
+  ASSERT_TRUE(
+      discard_helper.ProcessBuffers(*encoded_buffer, decoded_buffer.get()));
   ASSERT_TRUE(discard_helper.initialized());
   EXPECT_EQ(kTimestamp, decoded_buffer->timestamp());
   EXPECT_EQ(kDuration / 2, decoded_buffer->duration());
@@ -245,7 +252,8 @@ TEST(AudioDiscardHelperTest, BadDiscardEndPadding) {
       std::make_pair(base::TimeDelta(), kDuration * 2));
 
   // Verify the end discard padding is rejected.
-  ASSERT_FALSE(discard_helper.ProcessBuffers(*encoded_buffer, decoded_buffer));
+  ASSERT_FALSE(
+      discard_helper.ProcessBuffers(*encoded_buffer, decoded_buffer.get()));
   ASSERT_TRUE(discard_helper.initialized());
 }
 
@@ -269,13 +277,14 @@ TEST(AudioDiscardHelperTest, InitialDiscardAndDiscardEndPadding) {
   const int kDiscardFrames = kTestFrames / 4;
   discard_helper.Reset(kDiscardFrames);
 
-  ASSERT_TRUE(discard_helper.ProcessBuffers(*encoded_buffer, decoded_buffer));
+  ASSERT_TRUE(
+      discard_helper.ProcessBuffers(*encoded_buffer, decoded_buffer.get()));
   ASSERT_TRUE(discard_helper.initialized());
   EXPECT_EQ(kTimestamp, decoded_buffer->timestamp());
   EXPECT_EQ(kDuration / 2, decoded_buffer->duration());
   EXPECT_EQ(kTestFrames / 2, decoded_buffer->frame_count());
   ASSERT_FLOAT_EQ(kDiscardFrames * kDataStep,
-                  ExtractDecodedData(decoded_buffer, 0));
+                  ExtractDecodedData(*decoded_buffer, 0));
 }
 
 TEST(AudioDiscardHelperTest, InitialDiscardAndDiscardPadding) {
@@ -296,7 +305,8 @@ TEST(AudioDiscardHelperTest, InitialDiscardAndDiscardPadding) {
       std::make_pair(kDuration / 8, kDuration / 16));
   discard_helper.Reset(kDiscardFrames);
 
-  ASSERT_TRUE(discard_helper.ProcessBuffers(*encoded_buffer, decoded_buffer));
+  ASSERT_TRUE(
+      discard_helper.ProcessBuffers(*encoded_buffer, decoded_buffer.get()));
   ASSERT_TRUE(discard_helper.initialized());
   EXPECT_EQ(kTimestamp, decoded_buffer->timestamp());
   EXPECT_EQ(kDuration - kDuration / 4 - kDuration / 8 - kDuration / 16,
@@ -333,7 +343,8 @@ TEST(AudioDiscardHelperTest, InitialDiscardAndDiscardPaddingAndDecoderDelay) {
   //   |--------|     |---------|     |----|
   //                    Decoded               Discard Front Padding
   //
-  ASSERT_FALSE(discard_helper.ProcessBuffers(*encoded_buffer, decoded_buffer));
+  ASSERT_FALSE(
+      discard_helper.ProcessBuffers(*encoded_buffer, decoded_buffer.get()));
   ASSERT_TRUE(discard_helper.initialized());
 
   // Processing another buffer that has front discard set to half the buffer's
@@ -354,17 +365,18 @@ TEST(AudioDiscardHelperTest, InitialDiscardAndDiscardPaddingAndDecoderDelay) {
   encoded_buffer->set_discard_padding(
       std::make_pair(kDuration / 2, kDuration / 4));
   decoded_buffer = CreateDecodedBuffer(kTestFrames);
-  ASSERT_FLOAT_EQ(0.0f, ExtractDecodedData(decoded_buffer, 0));
+  ASSERT_FLOAT_EQ(0.0f, ExtractDecodedData(*decoded_buffer, 0));
   ASSERT_NEAR(kDecoderDelay * kDataStep,
-              ExtractDecodedData(decoded_buffer, kDecoderDelay),
+              ExtractDecodedData(*decoded_buffer, kDecoderDelay),
               kDataStep / 1000);
-  ASSERT_TRUE(discard_helper.ProcessBuffers(*encoded_buffer, decoded_buffer));
+  ASSERT_TRUE(
+      discard_helper.ProcessBuffers(*encoded_buffer, decoded_buffer.get()));
   EXPECT_EQ(kTimestamp, decoded_buffer->timestamp());
   EXPECT_EQ(kDuration / 2, decoded_buffer->duration());
   EXPECT_EQ(kTestFrames / 2, decoded_buffer->frame_count());
 
   // Verify it was actually the latter half of the buffer that was removed.
-  ASSERT_FLOAT_EQ(0.0f, ExtractDecodedData(decoded_buffer, 0));
+  ASSERT_FLOAT_EQ(0.0f, ExtractDecodedData(*decoded_buffer, 0));
 
   // Verify the end discard padding is carried over to the next buffer.  Use
   // kDuration / 2 for the end discard padding so that the next buffer has its
@@ -381,17 +393,18 @@ TEST(AudioDiscardHelperTest, InitialDiscardAndDiscardPaddingAndDecoderDelay) {
   encoded_buffer->set_discard_padding(
       std::make_pair(base::TimeDelta(), kDuration / 2));
   decoded_buffer = CreateDecodedBuffer(kTestFrames);
-  ASSERT_TRUE(discard_helper.ProcessBuffers(*encoded_buffer, decoded_buffer));
+  ASSERT_TRUE(
+      discard_helper.ProcessBuffers(*encoded_buffer, decoded_buffer.get()));
   EXPECT_EQ(kTimestamp + kDuration / 2, decoded_buffer->timestamp());
   EXPECT_EQ(3 * kDuration / 4, decoded_buffer->duration());
   EXPECT_EQ(3 * kTestFrames / 4, decoded_buffer->frame_count());
 
   // Verify it was actually the second quarter of the buffer that was removed.
   const int kDiscardFrames = kTestFrames / 4;
-  ASSERT_FLOAT_EQ(0.0f, ExtractDecodedData(decoded_buffer, 0));
+  ASSERT_FLOAT_EQ(0.0f, ExtractDecodedData(*decoded_buffer, 0));
   ASSERT_FLOAT_EQ(
       kDiscardFrames * 2 * kDataStep,
-      ExtractDecodedData(decoded_buffer, kDecoderDelay - kDiscardFrames));
+      ExtractDecodedData(*decoded_buffer, kDecoderDelay - kDiscardFrames));
 
   // One last test to ensure carryover discard from the start works.
   //
@@ -405,14 +418,15 @@ TEST(AudioDiscardHelperTest, InitialDiscardAndDiscardPaddingAndDecoderDelay) {
   encoded_buffer->set_timestamp(encoded_buffer->timestamp() + kDuration);
   encoded_buffer->set_discard_padding(DecoderBuffer::DiscardPadding());
   decoded_buffer = CreateDecodedBuffer(kTestFrames);
-  ASSERT_FLOAT_EQ(0.0f, ExtractDecodedData(decoded_buffer, 0));
-  ASSERT_TRUE(discard_helper.ProcessBuffers(*encoded_buffer, decoded_buffer));
+  ASSERT_FLOAT_EQ(0.0f, ExtractDecodedData(*decoded_buffer, 0));
+  ASSERT_TRUE(
+      discard_helper.ProcessBuffers(*encoded_buffer, decoded_buffer.get()));
   EXPECT_EQ(kTimestamp + kDuration / 2 + 3 * kDuration / 4,
             decoded_buffer->timestamp());
   EXPECT_EQ(kDuration / 2, decoded_buffer->duration());
   EXPECT_EQ(kTestFrames / 2, decoded_buffer->frame_count());
   ASSERT_FLOAT_EQ(kTestFrames / 2 * kDataStep,
-                  ExtractDecodedData(decoded_buffer, 0));
+                  ExtractDecodedData(*decoded_buffer, 0));
 }
 
 TEST(AudioDiscardHelperTest, DelayedDiscardInitialDiscardAndDiscardPadding) {
@@ -442,7 +456,8 @@ TEST(AudioDiscardHelperTest, DelayedDiscardInitialDiscardAndDiscardPadding) {
 
   // Verify that when the decoded buffer is consumed, the discards from the
   // previous encoded buffer are applied.
-  ASSERT_TRUE(discard_helper.ProcessBuffers(*encoded_buffer, decoded_buffer));
+  ASSERT_TRUE(
+      discard_helper.ProcessBuffers(*encoded_buffer, decoded_buffer.get()));
   EXPECT_EQ(kTimestamp, decoded_buffer->timestamp());
   EXPECT_EQ(kDuration - kDuration / 4 - kDuration / 8 - kDuration / 16,
             decoded_buffer->duration());
@@ -466,18 +481,20 @@ TEST(AudioDiscardHelperTest, CompleteDiscard) {
   scoped_refptr<AudioBuffer> decoded_buffer = CreateDecodedBuffer(kTestFrames);
 
   // Verify all of the first buffer is discarded.
-  ASSERT_FALSE(discard_helper.ProcessBuffers(*encoded_buffer, decoded_buffer));
+  ASSERT_FALSE(
+      discard_helper.ProcessBuffers(*encoded_buffer, decoded_buffer.get()));
   ASSERT_TRUE(discard_helper.initialized());
   encoded_buffer->set_timestamp(kTimestamp + kDuration);
   encoded_buffer->set_discard_padding(DecoderBuffer::DiscardPadding());
 
   // Verify a second buffer goes through untouched.
   decoded_buffer = CreateDecodedBuffer(kTestFrames / 2);
-  ASSERT_TRUE(discard_helper.ProcessBuffers(*encoded_buffer, decoded_buffer));
+  ASSERT_TRUE(
+      discard_helper.ProcessBuffers(*encoded_buffer, decoded_buffer.get()));
   EXPECT_EQ(kTimestamp, decoded_buffer->timestamp());
   EXPECT_EQ(kDuration / 2, decoded_buffer->duration());
   EXPECT_EQ(kTestFrames / 2, decoded_buffer->frame_count());
-  ASSERT_FLOAT_EQ(0.0f, ExtractDecodedData(decoded_buffer, 0));
+  ASSERT_FLOAT_EQ(0.0f, ExtractDecodedData(*decoded_buffer, 0));
 }
 
 TEST(AudioDiscardHelperTest, CompleteDiscardWithDelayedDiscard) {
@@ -502,16 +519,18 @@ TEST(AudioDiscardHelperTest, CompleteDiscardWithDelayedDiscard) {
   // Verify the first output buffer is dropped.
   encoded_buffer->set_timestamp(kTimestamp + kDuration);
   encoded_buffer->set_discard_padding(DecoderBuffer::DiscardPadding());
-  ASSERT_FALSE(discard_helper.ProcessBuffers(*encoded_buffer, decoded_buffer));
+  ASSERT_FALSE(
+      discard_helper.ProcessBuffers(*encoded_buffer, decoded_buffer.get()));
 
   // Verify the second buffer goes through untouched.
   encoded_buffer->set_timestamp(kTimestamp + 2 * kDuration);
   decoded_buffer = CreateDecodedBuffer(kTestFrames / 2);
-  ASSERT_TRUE(discard_helper.ProcessBuffers(*encoded_buffer, decoded_buffer));
+  ASSERT_TRUE(
+      discard_helper.ProcessBuffers(*encoded_buffer, decoded_buffer.get()));
   EXPECT_EQ(kTimestamp, decoded_buffer->timestamp());
   EXPECT_EQ(kDuration / 2, decoded_buffer->duration());
   EXPECT_EQ(kTestFrames / 2, decoded_buffer->frame_count());
-  ASSERT_FLOAT_EQ(0.0f, ExtractDecodedData(decoded_buffer, 0));
+  ASSERT_FLOAT_EQ(0.0f, ExtractDecodedData(*decoded_buffer, 0));
 }
 
 TEST(AudioDiscardHelperTest, CompleteDiscardWithInitialDiscardDecoderDelay) {
@@ -532,19 +551,21 @@ TEST(AudioDiscardHelperTest, CompleteDiscardWithInitialDiscardDecoderDelay) {
   scoped_refptr<AudioBuffer> decoded_buffer = CreateDecodedBuffer(kTestFrames);
 
   // Verify all of the first buffer is discarded.
-  ASSERT_FALSE(discard_helper.ProcessBuffers(*encoded_buffer, decoded_buffer));
+  ASSERT_FALSE(
+      discard_helper.ProcessBuffers(*encoded_buffer, decoded_buffer.get()));
   ASSERT_TRUE(discard_helper.initialized());
   encoded_buffer->set_timestamp(kTimestamp + kDuration);
   encoded_buffer->set_discard_padding(DecoderBuffer::DiscardPadding());
 
   // Verify 5ms off the front of the second buffer is discarded.
   decoded_buffer = CreateDecodedBuffer(kTestFrames * 2);
-  ASSERT_TRUE(discard_helper.ProcessBuffers(*encoded_buffer, decoded_buffer));
+  ASSERT_TRUE(
+      discard_helper.ProcessBuffers(*encoded_buffer, decoded_buffer.get()));
   EXPECT_EQ(kTimestamp, decoded_buffer->timestamp());
   EXPECT_EQ(kDuration * 2 - kDuration / 2, decoded_buffer->duration());
   EXPECT_EQ(kTestFrames * 2 - kDecoderDelay, decoded_buffer->frame_count());
   ASSERT_FLOAT_EQ(kDecoderDelay * kDataStep,
-                  ExtractDecodedData(decoded_buffer, 0));
+                  ExtractDecodedData(*decoded_buffer, 0));
 }
 
 }  // namespace media

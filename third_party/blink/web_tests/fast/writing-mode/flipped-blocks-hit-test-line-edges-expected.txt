@@ -7,6 +7,6 @@ PASS: offset at (60,26) was 24.
 PASS: offset at (160,26) was 26.
 PASS: offset at (60,25) was 24.
 PASS: offset at (160,25) was 26.
-FAIL: offset at (60,24) was 26. Expected 24.
+PASS: offset at (60,24) was 24.
 PASS: offset at (160,24) was 26.
 

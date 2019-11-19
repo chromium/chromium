@@ -112,17 +112,24 @@
 
     async function postFillingActions() {
       await new Promise(resolve => {
-        indexedDBModel.getKeyGeneratorValue(
-          databaseId, {name: objectStoreName1, autoIncrement: true}).then(printKeyGeneratorValue);
-        indexedDBModel.getKeyGeneratorValue(
-          databaseId, {name: objectStoreName2, autoIncrement: true}).then(printKeyGeneratorValue);
+        indexedDBModel.getMetadata(
+          databaseId, {name: objectStoreName1, autoIncrement: true}).then(printMetadata);
+        indexedDBModel.getMetadata(
+          databaseId, {name: objectStoreName2, autoIncrement: true}).then(printMetadata);
         resolve();
       });
       TestRunner.addSniffer(Resources.IndexedDBModel.prototype, '_updateOriginDatabaseNames', refreshDatabase, false);
       indexedDBModel.refreshDatabaseNames();
 
-      function printKeyGeneratorValue(number) {
-        TestRunner.addResult('key generator value: ' + (number ? String(number) : 'null'));
+      function printMetadata(metadata) {
+        if (!metadata) {
+          TestRunner.addResult('backend returns an error response');
+          return;
+        }
+        const entriesCount = metadata.entriesCount;
+        const keyGenNumber = metadata.keyGeneratorValue;
+        TestRunner.addResult('entries count: ' + String(entriesCount));
+        TestRunner.addResult('key gen value: ' + String(keyGenNumber));
       }
     }
   }

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_SSL_SSL_BLOCKING_PAGE_BASE_H_
 #define CHROME_BROWSER_SSL_SSL_BLOCKING_PAGE_BASE_H_
 
+#include "base/callback_forward.h"
 #include "chrome/browser/ssl/cert_report_helper.h"
 #include "chrome/browser/ssl/certificate_error_report.h"
 #include "components/security_interstitials/content/security_interstitial_page.h"
@@ -17,7 +18,6 @@ namespace net {
 class SSLInfo;
 }  // namespace net
 
-class CertReportHelper;
 class SSLCertReporter;
 
 // This is the base class for blocking pages representing SSL certificate
@@ -27,7 +27,6 @@ class SSLBlockingPageBase
  public:
   SSLBlockingPageBase(
       content::WebContents* web_contents,
-      int cert_error,
       CertificateErrorReport::InterstitialReason interstitial_reason,
       const net::SSLInfo& ssl_info,
       const GURL& request_url,
@@ -41,14 +40,23 @@ class SSLBlockingPageBase
 
   // security_interstitials::SecurityInterstitialPage:
   void OnInterstitialClosing() override;
+  void OverrideRendererPrefs(blink::mojom::RendererPreferences* prefs) override;
+
+  void set_renderer_pref_callback(
+      base::Callback<void(content::WebContents*,
+                          blink::mojom::RendererPreferences*)> callback) {
+    renderer_pref_callback_ = callback;
+  }
+
+  CertReportHelper* cert_report_helper() { return cert_report_helper_.get(); }
 
   void SetSSLCertReporterForTesting(
       std::unique_ptr<SSLCertReporter> ssl_cert_reporter);
 
- protected:
-  CertReportHelper* cert_report_helper();
-
  private:
+  base::Callback<void(content::WebContents*,
+                      blink::mojom::RendererPreferences*)>
+      renderer_pref_callback_;
   const std::unique_ptr<CertReportHelper> cert_report_helper_;
   DISALLOW_COPY_AND_ASSIGN(SSLBlockingPageBase);
 };

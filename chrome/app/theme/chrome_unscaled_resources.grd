@@ -37,14 +37,26 @@
         <if expr="is_macosx">
           <include name="IDR_STATUS_TRAY_ICON" file="google_chrome/product_logo_22_mono.png" type="BINDATA" />
         </if>
-        <if expr="not is_macosx and not is_win">
-          <include name="IDR_STATUS_TRAY_ICON" file="google_chrome/product_logo_22.png" type="BINDATA" />
-        </if>
         <if expr="chromeos">
           <include name="IDR_CHROME_APP_ICON_32" file="google_chrome/chromeos/chrome_app_icon_32.png" type="BINDATA" />
           <include name="IDR_CHROME_APP_ICON_192" file="google_chrome/chromeos/chrome_app_icon_192.png" type="BINDATA" />
           <include name="IDR_WEBSTORE_APP_ICON_16" file="google_chrome/chromeos/webstore_app_icon_16.png" type="BINDATA" />
           <include name="IDR_WEBSTORE_APP_ICON_128" file="google_chrome/chromeos/webstore_app_icon_128.png" type="BINDATA" />
+        </if>
+        <if expr="not chromeos">
+          <include name="IDR_WELCOME_MODULE_ICONS_GOOGLE_DARK" file="google_chrome/welcome/module_icons/google_dark.svg" type="BINDATA" />
+          <include name="IDR_WELCOME_MODULE_ICONS_GOOGLE_LIGHT" file="google_chrome/welcome/module_icons/google_light.svg" type="BINDATA" />
+          <include name="IDR_WELCOME_MODULE_ICONS_SET_DEFAULT_DARK" file="google_chrome/welcome/module_icons/set_default_dark.svg" type="BINDATA" />
+          <include name="IDR_WELCOME_MODULE_ICONS_SET_DEFAULT_LIGHT" file="google_chrome/welcome/module_icons/set_default_light.svg" type="BINDATA" />
+          <include name="IDR_WELCOME_MODULE_ICONS_WALLPAPER_DARK" file="google_chrome/welcome/module_icons/wallpaper_dark.svg" type="BINDATA" />
+          <include name="IDR_WELCOME_MODULE_ICONS_WALLPAPER_LIGHT" file="google_chrome/welcome/module_icons/wallpaper_light.svg" type="BINDATA" />
+          <include name="IDR_WELCOME_NTP_THUMBNAILS_ART" file="google_chrome/welcome/ntp_thumbnails/art.jpg" type="BINDATA" />
+          <include name="IDR_WELCOME_NTP_THUMBNAILS_CITYSCAPE" file="google_chrome/welcome/ntp_thumbnails/cityscape.jpg" type="BINDATA" />
+          <include name="IDR_WELCOME_NTP_THUMBNAILS_EARTH" file="google_chrome/welcome/ntp_thumbnails/earth.jpg" type="BINDATA" />
+          <include name="IDR_WELCOME_NTP_THUMBNAILS_GEOMETRIC_SHAPES" file="google_chrome/welcome/ntp_thumbnails/geometric_shapes.jpg" type="BINDATA" />
+          <include name="IDR_WELCOME_NTP_THUMBNAILS_LANDSCAPE" file="google_chrome/welcome/ntp_thumbnails/landscape.jpg" type="BINDATA" />
+          <include name="IDR_WELCOME_SET_DEFAULT_DARK" file="google_chrome/welcome/set_default_dark.svg" type="BINDATA" />
+          <include name="IDR_WELCOME_SET_DEFAULT_LIGHT" file="google_chrome/welcome/set_default_light.svg" type="BINDATA" />
         </if>
       </if>
       <if expr="not _google_chrome">
@@ -56,9 +68,6 @@
              what you're doing! -->
         <if expr="is_macosx">
           <include name="IDR_STATUS_TRAY_ICON" file="chromium/product_logo_22_mono.png" type="BINDATA" />
-        </if>
-        <if expr="not is_macosx and not is_win">
-          <include name="IDR_STATUS_TRAY_ICON" file="chromium/product_logo_22.png" type="BINDATA" />
         </if>
         <if expr="chromeos">
           <include name="IDR_CHROME_APP_ICON_32" file="chromium/chromeos/chrome_app_icon_32.png" type="BINDATA" />
@@ -99,23 +108,6 @@
         <include name="IDR_PROFILE_AVATAR_2X_24" file="default_200_percent/common/profile_avatar_note.png" type="BINDATA" />
         <include name="IDR_PROFILE_AVATAR_2X_25" file="default_200_percent/common/profile_avatar_sun_cloud.png" type="BINDATA" />
         <include name="IDR_PROFILE_AVATAR_2X_26" file="default_200_percent/common/profile_avatar_placeholder.png" type="BINDATA" />
-      </if>
-      <if expr="is_linux and enable_app_list">
-        <!-- App Launcher icons for desktop icon. -->
-        <if expr="_google_chrome">
-          <then>
-            <include name="IDR_APP_LIST_16" file="google_chrome/linux/app_list_16.png" type="BINDATA" />
-            <include name="IDR_APP_LIST_32" file="google_chrome/linux/app_list_32.png" type="BINDATA" />
-            <include name="IDR_APP_LIST_48" file="google_chrome/linux/app_list_48.png" type="BINDATA" />
-            <include name="IDR_APP_LIST_256" file="google_chrome/linux/app_list_256.png" type="BINDATA" />
-          </then>
-          <else>
-            <include name="IDR_APP_LIST_16" file="chromium/linux/app_list_16.png" type="BINDATA" />
-            <include name="IDR_APP_LIST_32" file="chromium/linux/app_list_32.png" type="BINDATA" />
-            <include name="IDR_APP_LIST_48" file="chromium/linux/app_list_48.png" type="BINDATA" />
-            <include name="IDR_APP_LIST_256" file="chromium/linux/app_list_256.png" type="BINDATA" />
-          </else>
-        </if>
       </if>
       <if expr="is_macosx">
         <include name="IDR_APPS_FOLDER_16" file="mac/apps_folder_16.png" type="BINDATA" />

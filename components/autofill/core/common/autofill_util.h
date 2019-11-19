@@ -12,6 +12,7 @@
 
 #include "base/strings/string16.h"
 #include "components/autofill/core/common/form_field_data.h"
+#include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 
 namespace base {
 struct Feature;
@@ -36,6 +37,9 @@ bool IsShowAutofillSignaturesEnabled();
 
 // Returns true when keyboard accessory is enabled.
 bool IsKeyboardAccessoryEnabled();
+
+// Returns whether the Touch To Fill feature is enabled.
+bool IsTouchToFillEnabled();
 
 // Returns animation duration for keyboard accessory. If 0, we do not animate.
 unsigned int GetKeyboardAccessoryAnimationDuration();
@@ -100,6 +104,12 @@ bool SanitizedFieldIsEmpty(const base::string16& value);
 // Returns true if the first suggestion should be autoselected when the autofill
 // dropdown is shown due to an arrow down event. Enabled on desktop only.
 bool ShouldAutoselectFirstSuggestionOnArrowDown();
+
+// Returns true if focused_field_type corresponds to a fillable field.
+bool IsFillable(mojom::FocusedFieldType focused_field_type);
+
+mojom::SubmissionIndicatorEvent ToSubmissionIndicatorEvent(
+    mojom::SubmissionSource source);
 
 }  // namespace autofill
 

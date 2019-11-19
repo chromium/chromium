@@ -26,12 +26,12 @@ namespace internal {
 
 base::Optional<mojo::NamedPlatformChannel>
 ChildProcessLauncherHelper::CreateNamedPlatformChannelOnClientThread() {
-  DCHECK_CURRENTLY_ON(client_thread_id_);
+  DCHECK(client_task_runner_->RunsTasksInCurrentSequence());
   return base::nullopt;
 }
 
 void ChildProcessLauncherHelper::BeforeLaunchOnClientThread() {
-  DCHECK_CURRENTLY_ON(client_thread_id_);
+  DCHECK(client_task_runner_->RunsTasksInCurrentSequence());
 }
 
 std::unique_ptr<FileMappedForLaunch>
@@ -44,7 +44,7 @@ ChildProcessLauncherHelper::GetFilesToMap() {
 }
 
 bool ChildProcessLauncherHelper::BeforeLaunchOnLauncherThread(
-    const PosixFileDescriptorInfo& files_to_register,
+    PosixFileDescriptorInfo& files_to_register,
     base::LaunchOptions* options) {
   // Convert FD mapping to FileHandleMappingVector
   options->fds_to_remap = files_to_register.GetMappingWithIDAdjustment(
@@ -56,7 +56,7 @@ bool ChildProcessLauncherHelper::BeforeLaunchOnLauncherThread(
         std::make_pair(sandbox_fd, service_manager::GetSandboxFD()));
   }
 
-  options->environ = delegate_->GetEnvironment();
+  options->environment = delegate_->GetEnvironment();
 
   return true;
 }

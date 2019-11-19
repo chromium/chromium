@@ -11,15 +11,17 @@
 #include "base/memory/ref_counted.h"
 #include "content/common/content_export.h"
 #include "content/common/frame.mojom.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
+#include "services/network/public/mojom/url_response_head.mojom-forward.h"
 #include "third_party/blink/public/platform/scheduler/web_resource_loading_task_runner_handle.h"
 #include "third_party/blink/public/platform/web_url_loader.h"
 #include "third_party/blink/public/platform/web_url_loader_factory.h"
 
 namespace network {
-struct ResourceResponseInfo;
+struct ResourceResponseHead;
 }
 
 namespace content {
@@ -35,9 +37,6 @@ class CONTENT_EXPORT WebURLLoaderFactoryImpl
       scoped_refptr<network::SharedURLLoaderFactory> loader_factory);
   ~WebURLLoaderFactoryImpl() override;
 
-  // Creates a test-only factory which can be used only for data URLs.
-  static std::unique_ptr<WebURLLoaderFactoryImpl> CreateTestOnlyFactory();
-
   std::unique_ptr<blink::WebURLLoader> CreateURLLoader(
       const blink::WebURLRequest& request,
       std::unique_ptr<blink::scheduler::WebResourceLoadingTaskRunnerHandle>
@@ -51,11 +50,6 @@ class CONTENT_EXPORT WebURLLoaderFactoryImpl
 
 class CONTENT_EXPORT WebURLLoaderImpl : public blink::WebURLLoader {
  public:
-  WebURLLoaderImpl(
-      ResourceDispatcher* resource_dispatcher,
-      std::unique_ptr<blink::scheduler::WebResourceLoadingTaskRunnerHandle>
-          task_runner_handle,
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
   // When non-null |keep_alive_handle| is specified, this loader prolongs
   // this render process's lifetime.
   WebURLLoaderImpl(
@@ -63,11 +57,16 @@ class CONTENT_EXPORT WebURLLoaderImpl : public blink::WebURLLoader {
       std::unique_ptr<blink::scheduler::WebResourceLoadingTaskRunnerHandle>
           task_runner_handle,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      mojom::KeepAliveHandlePtr keep_alive_handle);
+      mojo::PendingRemote<mojom::KeepAliveHandle> keep_alive_handle);
   ~WebURLLoaderImpl() override;
 
   static void PopulateURLResponse(const blink::WebURL& url,
-                                  const network::ResourceResponseInfo& info,
+                                  const network::ResourceResponseHead& head,
+                                  blink::WebURLResponse* response,
+                                  bool report_security_info,
+                                  int request_id);
+  static void PopulateURLResponse(const blink::WebURL& url,
+                                  const network::mojom::URLResponseHead& head,
                                   blink::WebURLResponse* response,
                                   bool report_security_info,
                                   int request_id);
@@ -86,14 +85,18 @@ class CONTENT_EXPORT WebURLLoaderImpl : public blink::WebURLLoader {
                          blink::WebBlobInfo& downloaded_blob) override;
   void LoadAsynchronously(const blink::WebURLRequest& request,
                           blink::WebURLLoaderClient* client) override;
-  void Cancel() override;
   void SetDefersLoading(bool value) override;
   void DidChangePriority(blink::WebURLRequest::Priority new_priority,
                          int intra_priority_value) override;
+  scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner() override;
+
  private:
   class Context;
   class RequestPeerImpl;
   class SinkPeer;
+
+  void Cancel();
+
   scoped_refptr<Context> context_;
 
   DISALLOW_COPY_AND_ASSIGN(WebURLLoaderImpl);

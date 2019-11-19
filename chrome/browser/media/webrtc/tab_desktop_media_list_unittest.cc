@@ -6,13 +6,13 @@
 
 #include "base/command_line.h"
 #include "base/files/file_util.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/location.h"
-#include "base/message_loop/message_loop.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "chrome/browser/media/webrtc/desktop_media_list_observer.h"
+#include "chrome/browser/media/webrtc/desktop_media_list.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -24,7 +24,7 @@
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_switches.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -39,8 +39,8 @@ using content::WebContentsTester;
 
 namespace {
 
-static const int kDefaultSourceCount = 2;
-static const int kThumbnailSize = 50;
+constexpr int kDefaultSourceCount = 2;
+constexpr int kThumbnailSize = 50;
 
 class UnittestProfileManager : public ::ProfileManagerWithoutInit {
  public:
@@ -48,12 +48,11 @@ class UnittestProfileManager : public ::ProfileManagerWithoutInit {
       : ::ProfileManagerWithoutInit(user_data_dir) {}
 
  protected:
-  Profile* CreateProfileHelper(const base::FilePath& file_path) override {
-    if (!base::PathExists(file_path)) {
-      if (!base::CreateDirectory(file_path))
-        return NULL;
-    }
-    return new TestingProfile(file_path, NULL);
+  std::unique_ptr<Profile> CreateProfileHelper(
+      const base::FilePath& path) override {
+    if (!base::PathExists(path) && !base::CreateDirectory(path))
+      return nullptr;
+    return std::make_unique<TestingProfile>(path);
   }
 };
 
@@ -92,6 +91,7 @@ class MockObserver : public DesktopMediaListObserver {
   MOCK_METHOD2(OnSourceNameChanged, void(DesktopMediaList* list, int index));
   MOCK_METHOD2(OnSourceThumbnailChanged,
                void(DesktopMediaList* list, int index));
+  MOCK_METHOD1(OnAllSourcesFound, void(DesktopMediaList* list));
 
   void VerifyAndClearExpectations() {
     testing::Mock::VerifyAndClearExpectations(this);
@@ -130,7 +130,7 @@ class TabDesktopMediaListTest : public testing::Test {
     if (!entry) {
       std::unique_ptr<content::NavigationEntry> entry_new =
           content::NavigationController::CreateNavigationEntry(
-              GURL("chrome://blank"), content::Referrer(),
+              GURL("chrome://blank"), content::Referrer(), base::nullopt,
               ui::PAGE_TRANSITION_LINK, false, std::string(), profile_,
               nullptr /* blob_url_loader_factory */);
 
@@ -250,7 +250,7 @@ class TabDesktopMediaListTest : public testing::Test {
   std::unique_ptr<TabDesktopMediaList> list_;
   std::vector<WebContents*> manually_added_web_contents_;
 
-  content::TestBrowserThreadBundle thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
 
 #if defined(OS_CHROMEOS)
   chromeos::ScopedCrosSettingsTestHelper cros_settings_test_helper_;

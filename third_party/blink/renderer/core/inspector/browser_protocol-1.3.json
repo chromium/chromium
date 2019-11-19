@@ -1755,7 +1755,7 @@
             },
             {
                 "name": "setRequestInterception",
-                "description": "Sets the requests to intercept that match a the provided patterns and optionally resource types.",
+                "description": "Sets the requests to intercept that match the provided patterns and optionally resource types.",
                 "parameters": [
                     { "name": "patterns", "type": "array", "items": { "$ref": "RequestPattern" }, "description": "Requests matching any of these patterns will be forwarded and wait for the corresponding continueInterceptedRequest call." }
                 ],

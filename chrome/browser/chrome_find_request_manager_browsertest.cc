@@ -127,4 +127,52 @@ IN_PROC_BROWSER_TEST_F(ChromeFindRequestManagerTest,
   EXPECT_EQ(11, results.active_match_ordinal);
 }
 
+IN_PROC_BROWSER_TEST_F(ChromeFindRequestManagerTest, FindMissingStringInPDF) {
+  LoadAndWait("/find_in_pdf_page.pdf");
+  ASSERT_TRUE(pdf_extension_test_util::EnsurePDFHasLoaded(contents()));
+
+  auto options = blink::mojom::FindOptions::New();
+  options->run_synchronously_for_testing = true;
+  Find("missing", options.Clone());
+  delegate()->WaitForFinalReply();
+
+  FindResults results = delegate()->GetFindResults();
+  EXPECT_EQ(last_request_id(), results.request_id);
+  EXPECT_EQ(0, results.number_of_matches);
+  EXPECT_EQ(0, results.active_match_ordinal);
+}
+
+// Tests searching for a word character-by-character, as would typically be
+// done by a user typing into the find bar.
+IN_PROC_BROWSER_TEST_F(ChromeFindRequestManagerTest,
+                       CharacterByCharacterFindInPDF) {
+  LoadAndWait("/find_in_pdf_page.pdf");
+  ASSERT_TRUE(pdf_extension_test_util::EnsurePDFHasLoaded(contents()));
+
+  auto options = blink::mojom::FindOptions::New();
+  options->run_synchronously_for_testing = true;
+  Find("r", options.Clone());
+  delegate()->MarkNextReply();
+  delegate()->WaitForNextReply();
+  Find("re", options.Clone());
+  delegate()->MarkNextReply();
+  delegate()->WaitForNextReply();
+  Find("res", options.Clone());
+  delegate()->MarkNextReply();
+  delegate()->WaitForNextReply();
+  Find("resu", options.Clone());
+  delegate()->MarkNextReply();
+  delegate()->WaitForNextReply();
+  Find("resul", options.Clone());
+  delegate()->MarkNextReply();
+  delegate()->WaitForNextReply();
+  Find("result", options.Clone());
+  delegate()->WaitForFinalReply();
+
+  FindResults results = delegate()->GetFindResults();
+  EXPECT_EQ(last_request_id(), results.request_id);
+  EXPECT_EQ(5, results.number_of_matches);
+  EXPECT_EQ(1, results.active_match_ordinal);
+}
+
 }  // namespace content

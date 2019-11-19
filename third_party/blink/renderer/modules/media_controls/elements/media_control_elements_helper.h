@@ -5,9 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIA_CONTROLS_ELEMENTS_MEDIA_CONTROL_ELEMENTS_HELPER_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIA_CONTROLS_ELEMENTS_MEDIA_CONTROL_ELEMENTS_HELPER_H_
 
-#include "third_party/blink/renderer/modules/media_controls/elements/media_control_element_type.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace WTF {
 class AtomicString;
@@ -35,12 +34,6 @@ class MediaControlElementsHelper final {
   // Sliders (the volume control and timeline) need to capture some additional
   // events used when dragging the thumb.
   static bool IsUserInteractionEventForSlider(const Event&, LayoutObject*);
-
-  // Returns the MediaControlElementType associated with a given |Node|. The
-  // |node| _must_ be a media control element.
-  // Exported to be used by the accessibility module.
-  MODULES_EXPORT static MediaControlElementType GetMediaControlElementType(
-      const Node*);
 
   // Returns the media element associated with a given |node|.
   // Exported to be used by the accessibility module.

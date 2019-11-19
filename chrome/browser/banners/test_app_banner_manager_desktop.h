@@ -26,18 +26,24 @@ class TestAppBannerManagerDesktop : public AppBannerManagerDesktop {
   static TestAppBannerManagerDesktop* CreateForWebContents(
       content::WebContents* web_contents);
 
+  // Blocks until the existing installability check has been cleared.
+  void WaitForInstallableCheckTearDown();
+
   // Returns whether the installable check passed.
   bool WaitForInstallableCheck();
 
   // AppBannerManager:
   void OnDidGetManifest(const InstallableData& result) override;
-  void OnDidPerformInstallableCheck(const InstallableData& result) override;
+  void OnDidPerformInstallableWebAppCheck(
+      const InstallableData& result) override;
+  void ResetCurrentPageData() override;
 
  private:
   void SetInstallable(bool installable);
 
   base::Optional<bool> installable_;
-  base::OnceClosure quit_closure_;
+  base::OnceClosure tear_down_quit_closure_;
+  base::OnceClosure installable_quit_closure_;
 
   DISALLOW_COPY_AND_ASSIGN(TestAppBannerManagerDesktop);
 };

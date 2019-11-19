@@ -51,10 +51,8 @@ class ChannelProvider final : public AudioSourceProvider {
   // first channel.  Each time it's called, it will provide the next channel of
   // data.
   void ProvideInput(AudioBus* bus, uint32_t frames_to_process) override {
-    bool is_bus_good = bus && bus->NumberOfChannels() == 1;
-    DCHECK(is_bus_good);
-    if (!is_bus_good)
-      return;
+    DCHECK(bus);
+    DCHECK_EQ(bus->NumberOfChannels(), 1u);
 
     // Get the data from the multi-channel provider when the first channel asks
     // for it.  For subsequent channels, we can just dish out the channel data
@@ -67,22 +65,15 @@ class ChannelProvider final : public AudioSourceProvider {
                                             frames_to_process);
     }
 
-    // All channels must ask for the same amount. This should always be the
-    // case, but let's just make sure.
-    bool is_good =
-        multi_channel_bus_.get() && frames_to_process == frames_to_process_;
-    DCHECK(is_good);
-    if (!is_good)
-      return;
+    DCHECK(multi_channel_bus_.get());
+    DCHECK_EQ(frames_to_process, frames_to_process_);
 
     // Copy the channel data from what we received from m_multiChannelProvider.
-    DCHECK_LE(current_channel_, number_of_channels_);
-    if (current_channel_ < number_of_channels_) {
-      memcpy(bus->Channel(0)->MutableData(),
-             multi_channel_bus_->Channel(current_channel_)->Data(),
-             sizeof(float) * frames_to_process);
-      ++current_channel_;
-    }
+    DCHECK_LT(current_channel_, number_of_channels_);
+    memcpy(bus->Channel(0)->MutableData(),
+           multi_channel_bus_->Channel(current_channel_)->Data(),
+           sizeof(float) * frames_to_process);
+    ++current_channel_;
   }
 
  private:

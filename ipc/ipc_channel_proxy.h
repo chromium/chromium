@@ -26,6 +26,8 @@
 #include "ipc/ipc_sender.h"
 #include "mojo/public/cpp/bindings/associated_interface_ptr.h"
 #include "mojo/public/cpp/bindings/associated_interface_request.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
+#include "mojo/public/cpp/bindings/lib/message_quota_checker.h"
 #include "mojo/public/cpp/bindings/scoped_interface_endpoint_handle.h"
 #include "mojo/public/cpp/bindings/thread_safe_interface_ptr.h"
 
@@ -205,6 +207,13 @@ class COMPONENT_EXPORT(IPC) ChannelProxy : public Sender {
     GetGenericRemoteAssociatedInterface(Interface::Name_, request.PassHandle());
   }
 
+  // Template helper to receive associated interfaces from the remote endpoint.
+  template <typename Interface>
+  void GetRemoteAssociatedInterface(mojo::AssociatedRemote<Interface>* proxy) {
+    GetGenericRemoteAssociatedInterface(
+        Interface::Name_, proxy->BindNewEndpointAndPassReceiver().PassHandle());
+  }
+
 #if defined(ENABLE_IPC_FUZZER)
   void set_outgoing_message_filter(OutgoingMessageFilter* filter) {
     outgoing_message_filter_ = filter;
@@ -263,7 +272,7 @@ class COMPONENT_EXPORT(IPC) ChannelProxy : public Sender {
     }
 
     scoped_refptr<base::SingleThreadTaskRunner> listener_task_runner() {
-      return listener_task_runner_;
+      return default_listener_task_runner_;
     }
 
     // Dispatches a message on the listener thread.
@@ -271,6 +280,19 @@ class COMPONENT_EXPORT(IPC) ChannelProxy : public Sender {
 
     // Sends |message| from appropriate thread.
     void Send(Message* message);
+
+    // Adds |task_runner| for the task to be executed later.
+    void AddListenerTaskRunner(
+        int32_t routing_id,
+        scoped_refptr<base::SingleThreadTaskRunner> task_runner);
+
+    // Removes task runner for |routing_id|.
+    void RemoveListenerTaskRunner(int32_t routing_id);
+
+    // Called on the IPC::Channel thread.
+    // Returns the task runner associated with |routing_id|.
+    scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner(
+        int32_t routing_id);
 
    protected:
     friend class base::RefCountedThreadSafe<Context>;
@@ -335,7 +357,13 @@ class COMPONENT_EXPORT(IPC) ChannelProxy : public Sender {
         const std::string& name,
         const GenericAssociatedInterfaceFactory& factory);
 
-    scoped_refptr<base::SingleThreadTaskRunner> listener_task_runner_;
+    base::Lock listener_thread_task_runners_lock_;
+    // Map of routing_id and listener's thread task runner.
+    std::map<int32_t, scoped_refptr<base::SingleThreadTaskRunner>>
+        listener_thread_task_runners_
+            GUARDED_BY(listener_thread_task_runners_lock_);
+
+    scoped_refptr<base::SingleThreadTaskRunner> default_listener_task_runner_;
     Listener* listener_;
 
     // List of filters.  This is only accessed on the IPC thread.
@@ -348,6 +376,9 @@ class COMPONENT_EXPORT(IPC) ChannelProxy : public Sender {
     // One exception is the thread-safe send. See the class comment.
     std::unique_ptr<Channel> channel_;
     bool channel_connected_called_;
+
+    // The quota checker associated with this channel, if any.
+    scoped_refptr<mojo::internal::MessageQuotaChecker> quota_checker_;
 
     // Lock for |channel_| value. This is only relevant in the context of
     // thread-safe send.

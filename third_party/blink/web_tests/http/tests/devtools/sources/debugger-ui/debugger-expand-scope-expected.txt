@@ -9,14 +9,14 @@ Catch
     at innerFunction (...)
     at testFunction (...)
 Local
+    x: 2010
     innerFunctionLocalVar: 2012
     negInf: -Infinity
     negZero: -0
     this: Window
-    x: 2010
 Closure (makeClosure)
-    makeClosureLocalVar: "local.TextParam"
     n: "TextParam"
+    makeClosureLocalVar: "local.TextParam"
 WindowGlobal
     <section collapsed>
 Script execution resumed.

@@ -50,4 +50,15 @@ bool SupportedVideoDecoderConfig::Matches(
   return true;
 }
 
+// static
+bool IsVideoDecoderConfigSupported(
+    const SupportedVideoDecoderConfigs& supported_configs,
+    const VideoDecoderConfig& config) {
+  for (const auto& c : supported_configs) {
+    if (c.Matches(config))
+      return true;
+  }
+  return false;
+}
+
 }  // namespace media

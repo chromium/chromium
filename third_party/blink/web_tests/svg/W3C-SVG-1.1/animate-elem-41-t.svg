@@ -18,15 +18,15 @@
 
             <Paragraph>
                 For each graphics properties, there are three tests. One animates the graphics
-                property directly on an element (such as a rect or a line) which uses the 
-                property. The other two tests apply the animation on a container element (g and 
-                a), and validate that the animated property is inherited by elements which 
+                property directly on an element (such as a rect or a line) which uses the
+                property. The other two tests apply the animation on a container element (g and
+                a), and validate that the animated property is inherited by elements which
                 are child of the container.
             </Paragraph>
 
             <Paragraph>
-                For each animation test, the element on which the animation is applied is also 
-                translated by an animation so that the various states of the animation can 
+                For each animation test, the element on which the animation is applied is also
+                translated by an animation so that the various states of the animation can
                 be checked more easily. In most tests, there is a gray reference marker which shows
                 the expected animation state at the begining of the animation, mid-way, or at the
                 end of the animation.
@@ -34,10 +34,10 @@
 
             <Paragraph>
                 The following animations should show continuous changes: fill, stroke,
-                stroke-width, stroke-miterlimit, stroke-dashoffset and color. Note that 
+                stroke-width, stroke-miterlimit, stroke-dashoffset and color. Note that
                 visually, stroke-miterlimit shows a sharp transition, but that is because
                 the miter is cut off when the animated miter limit reaches the test sharp
-                angle's miter value. The stroke-miterlimit value is changed continously 
+                angle's miter value. The stroke-miterlimit value is changed continuously
                 but that is not visible in this test.
             </Paragraph>
 
@@ -88,7 +88,7 @@
                     <animate attributeName="fill" to="rgb(255,165,0)" dur="3s" fill="freeze"/>
                     <animate attributeName="x" to="40" dur="3s" fill="freeze"/>
                 </rect>
-            
+
                 <g transform="translate(110, 0)">
                     <rect x="10" width="8" height="8"/>
                     <animate attributeName="fill" to="rgb(255,165,0)" dur="3s" fill="freeze"/>
@@ -99,7 +99,7 @@
                     <rect x="10" width="8" height="8"/>
                     <animate attributeName="fill" to="rgb(255,165,0)" dur="3s" fill="freeze"/>
                     <animateTransform type="translate" attributeName="transform" from="0" to="30" dur="3s" fill="freeze" additive="sum"/>
-                </a> 
+                </a>
 
             </g>
 
@@ -118,7 +118,7 @@
                     <animate attributeName="fill-rule" to="evenodd" dur="3s" fill="freeze"/>
                     <animateTransform type="translate" attributeName="transform" from="0" to="30" dur="3s" fill="freeze" additive="sum"/>
                 </polyline>
-            
+
                 <g transform="translate(110, 0)">
                     <animate attributeName="fill-rule" to="evenodd" dur="3s" fill="freeze"/>
                     <animateTransform type="translate" attributeName="transform" from="0" to="30" dur="3s" fill="freeze" additive="sum"/>
@@ -129,7 +129,7 @@
                     <animate attributeName="fill-rule" to="evenodd" dur="3s" fill="freeze"/>
                     <animateTransform type="translate" attributeName="transform" from="0" to="30" dur="3s" fill="freeze" additive="sum"/>
                     <polyline points="20,10,0,10,15,20,10,2,5,20,20,10"/>
-                </a> 
+                </a>
 
             </g>
 
@@ -150,7 +150,7 @@
                     <animate attributeName="stroke" from="rgb(204,0,102)" to="rgb(255,165,0)" dur="3s"/>
                     <animateTransform type="translate" attributeName="transform" from="0" to="30" dur="3s" fill="freeze" additive="sum"/>
                 </rect>
-            
+
                 <g transform="translate(110, 0)">
                     <animate attributeName="stroke" from="rgb(204,0,102)" to="rgb(255,165,0)" dur="3s"/>
                     <animateTransform type="translate" attributeName="transform" from="0" to="30" dur="3s" fill="freeze" additive="sum"/>
@@ -161,7 +161,7 @@
                     <animate attributeName="stroke" from="rgb(204,0,102)" to="rgb(255,165,0)" dur="3s"/>
                     <animateTransform type="translate" attributeName="transform" from="0" to="30" dur="3s" fill="freeze" additive="sum"/>
                     <rect x="10" width="8" height="8" stroke-width="3"/>
-                </a> 
+                </a>
             </g>
 
             <g id="setThree" transform="translate(0,60)">
@@ -180,7 +180,7 @@
                     <animate attributeName="stroke-width" from="1" to="5" dur="3s" fill="freeze"/>
                     <animateTransform type="translate" attributeName="transform" from="0" to="30" dur="3s" fill="freeze" additive="sum"/>
                 </line>
-            
+
                 <g transform="translate(110, 0)">
                     <animate attributeName="stroke-width" from="1" to="5" dur="3s" fill="freeze"/>
                     <animateTransform type="translate" attributeName="transform" from="0" to="30" dur="3s" fill="freeze" additive="sum"/>
@@ -191,7 +191,7 @@
                     <animate attributeName="stroke-width" from="1" to="5" dur="3s" fill="freeze"/>
                     <animateTransform type="translate" attributeName="transform" from="0" to="30" dur="3s" fill="freeze" additive="sum"/>
                     <line x1="10" y1="8" x2="20" y2="8" stroke="gray"/>
-                </a> 
+                </a>
             </g>
 
             <g id="setFour" transform="translate(0,80)" stroke-width="4" stroke="rgb(204,0,102)">
@@ -209,7 +209,7 @@
                     <animate attributeName="stroke-linecap" from="butt" to="round" dur="3s" fill="freeze"/>
                     <animateTransform type="translate" attributeName="transform" from="0" to="30" dur="3s" fill="freeze" additive="sum"/>
                 </line>
-            
+
                 <g transform="translate(110, 0)">
                     <animate attributeName="stroke-linecap" from="butt" to="round" dur="3s" fill="freeze"/>
                     <animateTransform type="translate" attributeName="transform" from="0" to="30" dur="3s" fill="freeze" additive="sum"/>
@@ -220,7 +220,7 @@
                     <animate attributeName="stroke-linecap" from="butt" to="round" dur="3s" fill="freeze"/>
                     <animateTransform type="translate" attributeName="transform" from="0" to="30" dur="3s" fill="freeze" additive="sum"/>
                     <line x1="10" y1="8" x2="12" y2="8" stroke-width="12"/>
-                </a> 
+                </a>
             </g>
 
             <g id="setFive" transform="translate(5,100)" fill="none" stroke-miterlimit="10" stroke-width="3" stroke="rgb(204,0,102)">
@@ -238,7 +238,7 @@
                     <animate attributeName="stroke-linejoin" from="miter" to="bevel" dur="3s" fill="freeze"/>
                     <animateTransform type="translate" attributeName="transform" from="0" to="30" dur="3s" fill="freeze" additive="sum"/>
                 </polyline>
-            
+
                 <g transform="translate(110, 0)">
                     <animate attributeName="stroke-linejoin" from="miter" to="bevel" dur="3s" fill="freeze"/>
                     <animateTransform type="translate" attributeName="transform" from="0" to="30" dur="3s" fill="freeze" additive="sum"/>
@@ -249,7 +249,7 @@
                     <animate attributeName="stroke-linejoin" from="miter" to="bevel" dur="3s" fill="freeze"/>
                     <animateTransform type="translate" attributeName="transform" from="0" to="30" dur="3s" fill="freeze" additive="sum"/>
                     <polyline points="5,2,20,5,5,8"/>
-                </a> 
+                </a>
             </g>
 
             <g id="setSix" transform="translate(5,120)" stroke-miterlimit="1" fill="none" stroke-width="3" stroke="rgb(204,0,102)">
@@ -267,7 +267,7 @@
                     <animate attributeName="stroke-miterlimit" from="1" to="10" dur="3s" fill="freeze"/>
                     <animateTransform type="translate" attributeName="transform" from="0" to="30" dur="3s" fill="freeze" additive="sum"/>
                 </polyline>
-            
+
                 <g transform="translate(110, 0)">
                     <animate attributeName="stroke-miterlimit" from="1" to="10" dur="3s" fill="freeze"/>
                     <animateTransform type="translate" attributeName="transform" from="0" to="30" dur="3s" fill="freeze" additive="sum"/>
@@ -278,7 +278,7 @@
                     <animate attributeName="stroke-miterlimit" from="1" to="10" dur="3s" fill="freeze"/>
                     <animateTransform type="translate" attributeName="transform" from="0" to="30" dur="3s" fill="freeze" additive="sum"/>
                     <polyline points="5,0,20,5,5,10"/>
-                </a> 
+                </a>
 
             </g>
 
@@ -297,7 +297,7 @@
                     <animate attributeName="stroke-dashoffset" from="0" to="5.5" dur="3s" fill="freeze"/>
                     <animateTransform type="translate" attributeName="transform" from="0" to="40" dur="3s" fill="freeze" additive="sum"/>
                 </line>
-            
+
                 <g transform="translate(110, 0)">
                     <animate attributeName="stroke-dashoffset" from="0" to="5.5" dur="3s" fill="freeze"/>
                     <animateTransform type="translate" attributeName="transform" from="0" to="40" dur="3s" fill="freeze" additive="sum"/>
@@ -308,7 +308,7 @@
                     <animate attributeName="stroke-dashoffset" from="0" to="5.5" dur="3s" fill="freeze"/>
                     <animateTransform type="translate" attributeName="transform" from="0" to="40" dur="3s" fill="freeze" additive="sum"/>
                     <line x1="0" y1="0" x2="25" y2="0"/>
-                </a> 
+                </a>
             </g>
 
             <g id="setEight" transform="translate(0,160)">
@@ -325,7 +325,7 @@
                     <animate attributeName="display" from="inline" to="none" dur="3s" fill="freeze"/>
                     <animateTransform type="translate" attributeName="transform" from="0" to="30" dur="3s" fill="freeze" additive="sum"/>
                 </rect>
-            
+
                 <g transform="translate(110, 0)">
                     <animate attributeName="display" from="inline" to="none" dur="3s" fill="freeze"/>
                     <animateTransform type="translate" attributeName="transform" from="0" to="30" dur="3s" fill="freeze" additive="sum"/>
@@ -336,7 +336,7 @@
                     <animate attributeName="display" from="inline" to="none" dur="3s" fill="freeze"/>
                     <animateTransform type="translate" attributeName="transform" from="0" to="30" dur="3s" fill="freeze" additive="sum"/>
                     <rect x="10" width="8" height="8"/>
-                </a> 
+                </a>
             </g>
 
             <g id="setNine" transform="translate(0,180)">
@@ -354,7 +354,7 @@
                     <animate attributeName="visibility" from="visible" to="hidden" dur="3s" fill="freeze"/>
                     <animateTransform type="translate" attributeName="transform" from="0" to="30" dur="3s" fill="freeze" additive="sum"/>
                 </rect>
-            
+
                 <g transform="translate(110, 0)">
                     <animate attributeName="visibility" from="visible" to="hidden" dur="3s" fill="freeze"/>
                     <animateTransform type="translate" attributeName="transform" from="0" to="30" dur="3s" fill="freeze" additive="sum"/>
@@ -365,7 +365,7 @@
                     <animate attributeName="visibility" from="visible" to="hidden" dur="3s" fill="freeze"/>
                     <animateTransform type="translate" attributeName="transform" from="0" to="30" dur="3s" fill="freeze" additive="sum"/>
                     <rect x="10" width="8" height="8"/>
-                </a> 
+                </a>
             </g>
 
             <g id="setTen" color="rgb(204,0,102)" transform="translate(0,200)">
@@ -384,7 +384,7 @@
                     <animate attributeName="color" from="rgb(204,0,102)" to="rgb(255,165,0)" dur="3s" fill="freeze"/>
                     <animateTransform type="translate" attributeName="transform" from="0" to="30" dur="3s" fill="freeze" additive="sum"/>
                 </rect>
-            
+
                 <g transform="translate(110, 0)" fill="currentColor">
                     <animate attributeName="color" from="rgb(204,0,102)" to="rgb(255,165,0)" dur="3s" fill="freeze"/>
                     <animateTransform type="translate" attributeName="transform" from="0" to="30" dur="3s" fill="freeze" additive="sum"/>
@@ -395,7 +395,7 @@
                     <animate attributeName="color" from="rgb(204,0,102)" to="rgb(255,165,0)" dur="3s" fill="freeze"/>
                     <animateTransform type="translate" attributeName="transform" from="0" to="30" dur="3s" fill="freeze" additive="sum"/>
                     <rect x="10" width="8" height="8"/>
-                </a> 
+                </a>
             </g>
 
         </g>

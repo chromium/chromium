@@ -45,8 +45,7 @@ class ControllableHttpResponse::Interceptor : public HttpResponse {
 ControllableHttpResponse::ControllableHttpResponse(
     EmbeddedTestServer* embedded_test_server,
     const std::string& relative_url,
-    bool relative_url_is_prefix)
-    : weak_ptr_factory_(this) {
+    bool relative_url_is_prefix) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   embedded_test_server->RegisterRequestHandler(base::BindRepeating(
       RequestHandler, weak_ptr_factory_.GetWeakPtr(),

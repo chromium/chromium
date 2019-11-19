@@ -14,8 +14,9 @@ for (let update_via_cache of ['none', 'imports']) {
     promise_test(function(t) {
         let registration;
 
+        let options = { updateViaCache: update_via_cache };
         return service_worker_unregister_and_register(t, worker_url, scope,
-                                                      update_via_cache)
+                                                      options)
           .then(function(r) {
               // The script resource for this register() having a non-zero
               // max-age value was cached.
@@ -44,8 +45,9 @@ for (let update_via_cache of ['all']) {
     promise_test(function(t) {
         let registration;
 
+        let options = { updateViaCache: update_via_cache };
         return service_worker_unregister_and_register(t, worker_url, scope,
-                                                      update_via_cache)
+                                                      options)
           .then(function(r) {
               // The script resource for this register() having a non-zero
               // max-age value was cached.

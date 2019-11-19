@@ -239,7 +239,7 @@ patch_symlink() {
 
   # Use rsync instead of the above, as it's the only way to preserve the
   # timestamp of a symbolic link using shell tools.
-  if ! rsync -lt "${patch_file}" "${new_file}"; then
+  if ! rsync --links --times "${patch_file}" "${new_file}"; then
     exit 10
   fi
 

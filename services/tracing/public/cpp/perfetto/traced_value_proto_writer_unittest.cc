@@ -11,8 +11,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/perfetto/include/perfetto/protozero/scattered_heap_buffer.h"
 #include "third_party/perfetto/include/perfetto/protozero/scattered_stream_writer.h"
-#include "third_party/perfetto/protos/perfetto/trace/chrome/chrome_trace_event.pb.h"
-#include "third_party/perfetto/protos/perfetto/trace/chrome/chrome_trace_event.pbzero.h"
 #include "third_party/perfetto/protos/perfetto/trace/track_event/debug_annotation.pb.h"
 #include "third_party/perfetto/protos/perfetto/trace/track_event/debug_annotation.pbzero.h"
 #include "third_party/protobuf/src/google/protobuf/io/zero_copy_stream.h"
@@ -23,7 +21,6 @@ namespace tracing {
 
 namespace {
 
-using perfetto::protos::ChromeTracedValue;
 using perfetto::protos::DebugAnnotation;
 using NestedValue = perfetto::protos::DebugAnnotation::NestedValue;
 
@@ -73,30 +70,14 @@ class ProtoInputStream : public google::protobuf::io::ZeroCopyInputStream {
   bool has_backed_up_ = false;
 };
 
-// Tests are run with the ChromeTracedValue proto when the param is true, and
-// with TrackEvent's NestedValue otherwise.
-class TracedValueProtoWriterTest : public testing::TestWithParam<bool> {
+class TracedValueProtoWriterTest : public testing::Test {
  public:
-  void SetUp() override {
-    RegisterTracedValueProtoWriter(true, /*use_chrome_proto=*/GetParam());
-  }
+  void SetUp() override { RegisterTracedValueProtoWriter(true); }
 
-  void TearDown() override {
-    RegisterTracedValueProtoWriter(false, /*use_chrome_proto=*/GetParam());
-  }
+  void TearDown() override { RegisterTracedValueProtoWriter(false); }
 };
 
-#define TRACED_VALUE_PROTO_WRITER_TEST_P(test_name) \
-  TEST_P(TracedValueProtoWriterTest, test_name) {   \
-    if (GetParam()) {                               \
-      Test##test_name<ChromeTracedValue>();         \
-    } else {                                        \
-      Test##test_name<NestedValue>();               \
-    }                                               \
-  }
-
-template <typename ValueClass>
-const ValueClass* FindDictEntry(const ValueClass* dict, const char* name) {
+const NestedValue* FindDictEntry(const NestedValue* dict, const char* name) {
   EXPECT_EQ(dict->dict_values_size(), dict->dict_keys_size());
 
   for (int i = 0; i < dict->dict_keys_size(); ++i) {
@@ -109,52 +90,24 @@ const ValueClass* FindDictEntry(const ValueClass* dict, const char* name) {
   return nullptr;
 }
 
-template <typename ValueClass>
-bool IsValue(const ValueClass* proto_value, bool value) {
+bool IsValue(const NestedValue* proto_value, bool value) {
   return proto_value->has_bool_value() && (proto_value->bool_value() == value);
 }
 
-template <typename ValueClass>
-bool IsValue(const ValueClass* proto_value, double value) {
+bool IsValue(const NestedValue* proto_value, double value) {
   return proto_value->has_double_value() &&
          (proto_value->double_value() == value);
 }
 
-template <typename ValueClass>
-bool IsValue(const ValueClass* proto_value, int value) {
+bool IsValue(const NestedValue* proto_value, int value) {
   return proto_value->has_int_value() && (proto_value->int_value() == value);
 }
 
-template <typename ValueClass>
-bool IsValue(const ValueClass* proto_value, const char* value) {
+bool IsValue(const NestedValue* proto_value, const char* value) {
   return proto_value->has_string_value() &&
          (proto_value->string_value() == value);
 }
 
-template <typename ValueClass>
-ValueClass GetProtoFromTracedValue(TracedValue* traced_value);
-
-template <>
-ChromeTracedValue GetProtoFromTracedValue(TracedValue* traced_value) {
-  protozero::ScatteredHeapBuffer buffer(100);
-  protozero::ScatteredStreamWriter stream(&buffer);
-  perfetto::protos::pbzero::ChromeTraceEvent_Arg proto;
-  proto.Reset(&stream);
-  buffer.set_writer(&stream);
-
-  PerfettoProtoAppender proto_appender(&proto);
-  EXPECT_TRUE(traced_value->AppendToProto(&proto_appender));
-  uint32_t size = proto.Finalize();
-  ProtoInputStream proto_stream(&buffer);
-
-  perfetto::protos::ChromeTraceEvent_Arg full_proto;
-  EXPECT_TRUE(full_proto.ParseFromBoundedZeroCopyStream(&proto_stream, size));
-  EXPECT_TRUE(full_proto.has_traced_value());
-
-  return full_proto.traced_value();
-}
-
-template <>
 NestedValue GetProtoFromTracedValue(TracedValue* traced_value) {
   protozero::ScatteredHeapBuffer buffer(100);
   protozero::ScatteredStreamWriter stream(&buffer);
@@ -174,42 +127,35 @@ NestedValue GetProtoFromTracedValue(TracedValue* traced_value) {
   return full_proto.nested_value();
 }
 
-template <typename ValueClass>
-void TestFlatDictionary() {
+TEST_F(TracedValueProtoWriterTest, FlatDictionary) {
   std::unique_ptr<TracedValue> value(new TracedValue());
   value->SetBoolean("bool", true);
   value->SetDouble("double", 0.0);
   value->SetInteger("int", 2014);
   value->SetString("string", "string");
 
-  auto full_proto = GetProtoFromTracedValue<ValueClass>(value.get());
+  auto full_proto = GetProtoFromTracedValue(value.get());
   EXPECT_TRUE(IsValue(FindDictEntry(&full_proto, "bool"), true));
   EXPECT_TRUE(IsValue(FindDictEntry(&full_proto, "double"), 0.0));
   EXPECT_TRUE(IsValue(FindDictEntry(&full_proto, "int"), 2014));
   EXPECT_TRUE(IsValue(FindDictEntry(&full_proto, "string"), "string"));
 }
 
-TRACED_VALUE_PROTO_WRITER_TEST_P(FlatDictionary)
-
-template <typename ValueClass>
-void TestNoDotPathExpansion() {
+TEST_F(TracedValueProtoWriterTest, NoDotPathExpansion) {
   std::unique_ptr<TracedValue> value(new TracedValue());
   value->SetBoolean("bool", true);
   value->SetDouble("double", 0.0);
   value->SetInteger("int", 2014);
   value->SetString("string", "string");
 
-  auto full_proto = GetProtoFromTracedValue<ValueClass>(value.get());
+  auto full_proto = GetProtoFromTracedValue(value.get());
   EXPECT_TRUE(IsValue(FindDictEntry(&full_proto, "bool"), true));
   EXPECT_TRUE(IsValue(FindDictEntry(&full_proto, "double"), 0.0));
   EXPECT_TRUE(IsValue(FindDictEntry(&full_proto, "int"), 2014));
   EXPECT_TRUE(IsValue(FindDictEntry(&full_proto, "string"), "string"));
 }
 
-TRACED_VALUE_PROTO_WRITER_TEST_P(NoDotPathExpansion)
-
-template <typename ValueClass>
-void TestHierarchy() {
+TEST_F(TracedValueProtoWriterTest, Hierarchy) {
   std::unique_ptr<TracedValue> value(new TracedValue());
   value->BeginArray("a1");
   value->AppendInteger(1);
@@ -230,17 +176,17 @@ void TestHierarchy() {
   value->SetInteger("i0", 2014);
   value->SetString("s0", "foo");
 
-  auto full_proto = GetProtoFromTracedValue<ValueClass>(value.get());
+  auto full_proto = GetProtoFromTracedValue(value.get());
 
   auto* a1_array = FindDictEntry(&full_proto, "a1");
   EXPECT_TRUE(a1_array);
-  EXPECT_EQ(a1_array->nested_type(), ValueClass::ARRAY);
+  EXPECT_EQ(a1_array->nested_type(), NestedValue::ARRAY);
   EXPECT_EQ(a1_array->array_values_size(), 3);
   EXPECT_TRUE(IsValue(&a1_array->array_values(0), 1));
   EXPECT_TRUE(IsValue(&a1_array->array_values(1), true));
   auto* a1_subdict = &a1_array->array_values(2);
   EXPECT_TRUE(a1_subdict);
-  EXPECT_EQ(a1_subdict->nested_type(), ValueClass::DICT);
+  EXPECT_EQ(a1_subdict->nested_type(), NestedValue::DICT);
   EXPECT_EQ(a1_subdict->dict_values_size(), 1);
   EXPECT_TRUE(IsValue(FindDictEntry(a1_subdict, "i2"), 3));
   EXPECT_TRUE(IsValue(FindDictEntry(&full_proto, "b0"), true));
@@ -248,11 +194,11 @@ void TestHierarchy() {
   auto* dict1 = FindDictEntry(&full_proto, "dict1");
   EXPECT_TRUE(dict1);
   EXPECT_EQ(dict1->dict_values_size(), 3);
-  EXPECT_EQ(dict1->nested_type(), ValueClass::DICT);
+  EXPECT_EQ(dict1->nested_type(), NestedValue::DICT);
   auto* dict2 = FindDictEntry(dict1, "dict2");
   EXPECT_TRUE(dict2);
   EXPECT_EQ(dict2->dict_values_size(), 1);
-  EXPECT_EQ(dict2->nested_type(), ValueClass::DICT);
+  EXPECT_EQ(dict2->nested_type(), NestedValue::DICT);
   EXPECT_TRUE(IsValue(FindDictEntry(dict2, "b2"), false));
   EXPECT_TRUE(IsValue(FindDictEntry(dict1, "i1"), 2014));
   EXPECT_TRUE(IsValue(FindDictEntry(dict1, "s1"), "foo"));
@@ -260,10 +206,7 @@ void TestHierarchy() {
   EXPECT_TRUE(IsValue(FindDictEntry(&full_proto, "s0"), "foo"));
 }
 
-TRACED_VALUE_PROTO_WRITER_TEST_P(Hierarchy)
-
-template <typename ValueClass>
-void TestLongStrings() {
+TEST_F(TracedValueProtoWriterTest, LongStrings) {
   std::string kLongString = "supercalifragilisticexpialidocious";
   std::string kLongString2 = "0123456789012345678901234567890123456789";
   char kLongString3[4096];
@@ -282,24 +225,22 @@ void TestLongStrings() {
   value->EndDictionary();
   value->EndArray();
 
-  auto full_proto = GetProtoFromTracedValue<ValueClass>(value.get());
+  auto full_proto = GetProtoFromTracedValue(value.get());
 
   EXPECT_TRUE(IsValue(FindDictEntry(&full_proto, "a"), "short"));
   EXPECT_TRUE(IsValue(FindDictEntry(&full_proto, "b"), kLongString.c_str()));
   auto* c_array = FindDictEntry(&full_proto, "c");
   EXPECT_TRUE(c_array);
   EXPECT_EQ(c_array->array_values_size(), 3);
-  EXPECT_EQ(c_array->nested_type(), ValueClass::ARRAY);
+  EXPECT_EQ(c_array->nested_type(), NestedValue::ARRAY);
   EXPECT_TRUE(IsValue(&c_array->array_values(0), kLongString2.c_str()));
   EXPECT_TRUE(IsValue(&c_array->array_values(1), ""));
   auto* c_subdict = &c_array->array_values(2);
   EXPECT_TRUE(c_subdict);
   EXPECT_EQ(c_subdict->dict_values_size(), 1);
-  EXPECT_EQ(c_subdict->nested_type(), ValueClass::DICT);
+  EXPECT_EQ(c_subdict->nested_type(), NestedValue::DICT);
   EXPECT_TRUE(IsValue(FindDictEntry(c_subdict, "a"), kLongString3));
 }
-
-TRACED_VALUE_PROTO_WRITER_TEST_P(LongStrings)
 
 // Test that the proto which results from the TracedValue is still
 // valid regardless of the size of the buffer chunks we provide to
@@ -307,8 +248,7 @@ TRACED_VALUE_PROTO_WRITER_TEST_P(LongStrings)
 // at the end where there isn't enough space for, say, a size field.
 // 10-140 bytes tests both buffers being smaller and larger than
 // the actual size of the proto.
-template <typename ValueClass>
-void TestProtoMessageBoundaries() {
+TEST_F(TracedValueProtoWriterTest, ProtoMessageBoundaries) {
   for (int i = 10; i < 140; ++i) {
     std::unique_ptr<TracedValue> value(new TracedValue(i));
 
@@ -316,7 +256,7 @@ void TestProtoMessageBoundaries() {
     value->SetString("thread", "RendererCompositor");
     value->SetString("compile_target", "Chromium");
 
-    auto full_proto = GetProtoFromTracedValue<ValueClass>(value.get());
+    auto full_proto = GetProtoFromTracedValue(value.get());
 
     EXPECT_TRUE(
         IsValue(FindDictEntry(&full_proto, "source"), "RendererCompositor"));
@@ -327,10 +267,7 @@ void TestProtoMessageBoundaries() {
   }
 }
 
-TRACED_VALUE_PROTO_WRITER_TEST_P(ProtoMessageBoundaries)
-
-template <typename ValueClass>
-void TestPassTracedValue() {
+TEST_F(TracedValueProtoWriterTest, PassTracedValue) {
   auto dict_value = std::make_unique<TracedValue>();
   dict_value->SetInteger("a", 1);
 
@@ -344,7 +281,7 @@ void TestPassTracedValue() {
 
   {
     // Check the merged result.
-    auto parent_proto = GetProtoFromTracedValue<ValueClass>(dict_value.get());
+    auto parent_proto = GetProtoFromTracedValue(dict_value.get());
 
     EXPECT_TRUE(IsValue(FindDictEntry(&parent_proto, "a"), 1));
 
@@ -360,8 +297,7 @@ void TestPassTracedValue() {
 
   {
     // Check that the passed nested dict was left untouched.
-    auto child_proto =
-        GetProtoFromTracedValue<ValueClass>(nested_dict_value.get());
+    auto child_proto = GetProtoFromTracedValue(nested_dict_value.get());
     EXPECT_TRUE(IsValue(FindDictEntry(&child_proto, "b"), 2));
     auto* c_array = FindDictEntry(&child_proto, "c");
     EXPECT_TRUE(c_array);
@@ -369,11 +305,6 @@ void TestPassTracedValue() {
     EXPECT_TRUE(IsValue(&c_array->array_values(0), "foo"));
   }
 }
-
-TRACED_VALUE_PROTO_WRITER_TEST_P(PassTracedValue)
-
-// Run tests both for the ChromeEventBundle and the new TraceEvent protos.
-INSTANTIATE_TEST_SUITE_P(, TracedValueProtoWriterTest, ::testing::Bool());
 
 }  // namespace
 

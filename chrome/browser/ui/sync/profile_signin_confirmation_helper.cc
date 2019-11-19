@@ -85,20 +85,21 @@ bool HasSyncedExtensions(Profile* profile) {
 
 void CheckShouldPromptForNewProfile(
     Profile* profile,
-    const base::Callback<void(bool)>& return_result) {
+    base::OnceCallback<void(bool)> return_result) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   if (HasBeenShutdown(profile) ||
       HasBookmarks(profile) ||
       HasSyncedExtensions(profile)) {
-    return_result.Run(true);
+    std::move(return_result).Run(true);
     return;
   }
   history::HistoryService* service =
       HistoryServiceFactory::GetForProfileWithoutCreating(profile);
   // Fire asynchronous queries for profile data.
   browser_sync::SigninConfirmationHelper* helper =
-      new browser_sync::SigninConfirmationHelper(service, return_result);
+      new browser_sync::SigninConfirmationHelper(service,
+                                                 std::move(return_result));
   helper->CheckHasHistory(kHistoryEntriesBeforeNewProfilePrompt);
   helper->CheckHasTypedURLs();
 }

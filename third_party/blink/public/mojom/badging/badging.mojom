@@ -1,0 +1,27 @@
+// Copyright 2018 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+import "url/mojom/url.mojom";
+
+// A value that a badge can hold.
+union BadgeValue {
+  // Represents the special value |flag|. This indicates that a badge should be
+  // set but that no data should be displayed in it.
+  // Note: The value of this field is unused (see https://crbug.com/999900).
+  uint8 flag;
+  // Represents a numerical badge. Note: This must not be zero (setting the
+  // badge to 0 should be translated into a clear).
+  uint64 number;
+};
+
+// Interface for handling badge messages from frames and subframes.
+interface BadgeService {
+  // Asks the browser process to set a badge.
+  SetBadge(BadgeValue value);
+
+  // Asks the browser to clear a badge.
+  ClearBadge();
+};

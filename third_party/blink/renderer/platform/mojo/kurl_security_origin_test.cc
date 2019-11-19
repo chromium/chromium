@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 #include "base/macros.h"
-#include "base/message_loop/message_loop.h"
-#include "mojo/public/cpp/bindings/binding.h"
+#include "base/test/task_environment.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/mojom/url_test.mojom-blink.h"
 #include "url/url_constants.h"
@@ -14,8 +14,9 @@ namespace {
 
 class UrlTestImpl : public url::mojom::blink::UrlTest {
  public:
-  explicit UrlTestImpl(url::mojom::blink::UrlTestRequest request)
-      : binding_(this, std::move(request)) {}
+  explicit UrlTestImpl(
+      mojo::PendingReceiver<url::mojom::blink::UrlTest> receiver)
+      : receiver_(this, std::move(receiver)) {}
 
   // UrlTest:
   void BounceUrl(const KURL& in, BounceUrlCallback callback) override {
@@ -28,14 +29,14 @@ class UrlTestImpl : public url::mojom::blink::UrlTest {
   }
 
  private:
-  mojo::Binding<UrlTest> binding_;
+  mojo::Receiver<UrlTest> receiver_;
 };
 
 }  // namespace
 
 // Mojo version of chrome IPC test in url/ipc/url_param_traits_unittest.cc.
 TEST(KURLSecurityOriginStructTraitsTest, Basic) {
-  base::MessageLoop message_loop;
+  base::test::TaskEnvironment task_environment;
 
   url::mojom::blink::UrlTestPtr proxy;
   UrlTestImpl impl(MakeRequest(&proxy));

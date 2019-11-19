@@ -1,5 +1,4 @@
 include_rules = [
-  "+components/bookmarks",
   "+components/google/core",
   "+components/pref_registry",
   "+components/proxy_config",

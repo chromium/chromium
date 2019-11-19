@@ -17,7 +17,7 @@
   SDK.targetManager.observeTargets({
     targetAdded: function(target) {
       TestRunner.addResult('Target added: ' + target.name() + '; type: ' + target.type());
-      if (target.type() === SDK.Target.Type.Worker) {
+      if (target.type() === SDK.Target.Type.ServiceWorker) {
         var serviceWorkerManager = SDK.targetManager.mainTarget().model(SDK.ServiceWorkerManager);
         // Allow agents to do rountrips.
         TestRunner.deprecatedRunAfterPendingDispatches(function() {

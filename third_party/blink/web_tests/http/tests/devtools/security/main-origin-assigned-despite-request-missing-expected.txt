@@ -2,7 +2,7 @@ Tests that the Main Origin is assigned even if there is no matching Request.
 
 Page origin: http://127.0.0.1:8000
 Detected main origin: http://127.0.0.1:8000
-Group: Main origin
+Group: Main origin (non-secure)
 <SPAN >
     <SPAN class=url-scheme-unknown >
 http

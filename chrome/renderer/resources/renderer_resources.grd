@@ -23,24 +23,18 @@
       <!-- Extension libraries. -->
       <if expr="enable_extensions">
         <!-- Custom bindings for extension APIs. -->
-        <include name="IDR_APP_CUSTOM_BINDINGS_JS" file="extensions\app_custom_bindings.js" type="BINDATA" />
-        <include name="IDR_AUTOMATION_CUSTOM_BINDINGS_JS" file="extensions\automation_custom_bindings.js" type="BINDATA" />
-        <include name="IDR_AUTOMATION_EVENT_JS" file="extensions\automation\automation_event.js" type="BINDATA" />
-        <include name="IDR_AUTOMATION_NODE_JS" file="extensions\automation\automation_node.js" type="BINDATA" />
+        <include name="IDR_ACTION_CUSTOM_BINDINGS_JS" file="extensions\action_custom_bindings.js" type="BINDATA" />
         <include name="IDR_BROWSER_ACTION_CUSTOM_BINDINGS_JS" file="extensions\browser_action_custom_bindings.js" type="BINDATA" />
         <include name="IDR_CAST_STREAMING_RTP_STREAM_CUSTOM_BINDINGS_JS" file="extensions\cast_streaming_rtp_stream_custom_bindings.js" type="BINDATA" />
         <include name="IDR_CAST_STREAMING_SESSION_CUSTOM_BINDINGS_JS" file="extensions\cast_streaming_session_custom_bindings.js" type="BINDATA" />
         <include name="IDR_CAST_STREAMING_UDP_TRANSPORT_CUSTOM_BINDINGS_JS" file="extensions\cast_streaming_udp_transport_custom_bindings.js" type="BINDATA" />
         <include name="IDR_CAST_STREAMING_RECEIVER_SESSION_CUSTOM_BINDINGS_JS" file="extensions\cast_streaming_receiver_session_custom_bindings.js" type="BINDATA" />
-        <include name="IDR_CHROME_SETTING_JS" file="extensions\chrome_setting.js" type="BINDATA" />
         <include name="IDR_CHROME_WEB_VIEW_INTERNAL_CUSTOM_BINDINGS_JS" file="extensions\web_view\chrome_web_view_internal_custom_bindings.js" type="BINDATA" />
         <include name="IDR_CHROME_WEB_VIEW_JS" file="extensions\web_view\chrome_web_view.js" type="BINDATA" />
-        <include name="IDR_CONTENT_SETTING_JS" file="extensions\content_setting.js" type="BINDATA" />
         <include name="IDR_DECLARATIVE_CONTENT_CUSTOM_BINDINGS_JS" file="extensions\declarative_content_custom_bindings.js" type="BINDATA" />
         <include name="IDR_DESKTOP_CAPTURE_CUSTOM_BINDINGS_JS" file="extensions\desktop_capture_custom_bindings.js" type="BINDATA" />
         <include name="IDR_DEVELOPER_PRIVATE_CUSTOM_BINDINGS_JS" file="extensions\developer_private_custom_bindings.js" type="BINDATA" />
         <include name="IDR_DOWNLOADS_CUSTOM_BINDINGS_JS" file="extensions\downloads_custom_bindings.js" type="BINDATA" />
-        <include name="IDR_EASY_UNLOCK_PROXIMITY_REQUIRED_JS" file="extensions\easy_unlock_proximity_required.js" type="BINDATA" />
         <include name="IDR_GCM_CUSTOM_BINDINGS_JS" file="extensions\gcm_custom_bindings.js" type="BINDATA" />
         <include name="IDR_IDENTITY_CUSTOM_BINDINGS_JS" file="extensions\identity_custom_bindings.js" type="BINDATA" />
         <include name="IDR_IMAGE_WRITER_PRIVATE_CUSTOM_BINDINGS_JS" file="extensions\image_writer_private_custom_bindings.js" type="BINDATA" />
@@ -53,7 +47,6 @@
         <include name="IDR_SYNC_FILE_SYSTEM_CUSTOM_BINDINGS_JS" file="extensions\sync_file_system_custom_bindings.js" type="BINDATA" />
         <include name="IDR_SYSTEM_INDICATOR_CUSTOM_BINDINGS_JS" file="extensions\system_indicator_custom_bindings.js" type="BINDATA" />
         <include name="IDR_TAB_CAPTURE_CUSTOM_BINDINGS_JS" file="extensions\tab_capture_custom_bindings.js" type="BINDATA" />
-        <include name="IDR_TABS_CUSTOM_BINDINGS_JS" file="extensions\tabs_custom_bindings.js" type="BINDATA" />
         <include name="IDR_TTS_CUSTOM_BINDINGS_JS" file="extensions\tts_custom_bindings.js" type="BINDATA" />
         <include name="IDR_TTS_ENGINE_CUSTOM_BINDINGS_JS" file="extensions\tts_engine_custom_bindings.js" type="BINDATA" />
         <include name="IDR_WEBRTC_DESKTOP_CAPTURE_PRIVATE_CUSTOM_BINDINGS_JS" file="extensions\webrtc_desktop_capture_private_custom_bindings.js" type="BINDATA" />
@@ -81,10 +74,10 @@
           <include name="IDR_IME_SERVICE_MOJOM_JS" file="${mojom_root}\chromeos/services/ime/public/mojom/input_engine.mojom.js" use_base_dir="false" type="BINDATA" />
         </if>
         <!-- Media Router Mojo service and bindings. -->
-        <include name="IDR_MEDIA_CONTROLLER_MOJOM_JS" file="${mojom_root}\chrome\common\media_router\mojo\media_controller.mojom.js" use_base_dir="false" type="BINDATA" />
-        <include name="IDR_MEDIA_ROUTER_MOJOM_JS" file="${mojom_root}\chrome\common\media_router\mojo\media_router.mojom.js" use_base_dir="false" type="BINDATA" />
+        <include name="IDR_MEDIA_CONTROLLER_MOJOM_JS" file="${mojom_root}\chrome\common\media_router\mojom\media_controller.mojom.js" use_base_dir="false" type="BINDATA" />
+        <include name="IDR_MEDIA_ROUTER_MOJOM_JS" file="${mojom_root}\chrome\common\media_router\mojom\media_router.mojom.js" use_base_dir="false" type="BINDATA" />
         <include name="IDR_MEDIA_ROUTER_BINDINGS_JS" file="extensions\media_router_bindings.js" type="BINDATA" />
-        <include name="IDR_MEDIA_STATUS_MOJOM_JS" file="${mojom_root}\chrome\common\media_router\mojo\media_status.mojom.js" use_base_dir="false" type="BINDATA" />
+        <include name="IDR_MEDIA_STATUS_MOJOM_JS" file="${mojom_root}\chrome\common\media_router\mojom\media_status.mojom.js" use_base_dir="false" type="BINDATA" />
         <include name="IDR_MIRRORING_SERVICE_HOST_MOJOM_JS" file="${mojom_root}\components\mirroring\mojom\mirroring_service_host.mojom.js" use_base_dir="false" type="BINDATA" />
         <include name="IDR_MIRRORING_CAST_MESSAGE_CHANNEL_MOJOM_JS" file="${mojom_root}\components\mirroring\mojom\cast_message_channel.mojom.js" use_base_dir="false" type="BINDATA" />
         <include name="IDR_MIRRORING_SESSION_OBSERVER_MOJOM_JS" file="${mojom_root}\components\mirroring\mojom\session_observer.mojom.js" use_base_dir="false" type="BINDATA" />
@@ -95,8 +88,8 @@
         <include name="IDR_MOJO_IP_ENDPOINT_MOJOM_JS" file="${mojom_root}\services\network\public\mojom\ip_endpoint.mojom.js" use_base_dir="false" type="BINDATA" />
         <include name="IDR_ORIGIN_MOJOM_JS" file="${mojom_root}\url\mojom\origin.mojom.js" use_base_dir="false" type="BINDATA" />
         <include name="IDR_MOJO_URL_MOJOM_JS" file="${mojom_root}\url\mojom\url.mojom.js" use_base_dir="false" type="BINDATA" />
-        <include name="IDR_MEDIA_REMOTING_JS" file="${mojom_root}\media\mojo\interfaces\mirror_service_remoting.mojom.js" use_base_dir="false" type="BINDATA" />
-        <include name="IDR_REMOTING_COMMON_JS" file="${mojom_root}\media\mojo\interfaces\remoting_common.mojom.js" use_base_dir="false" type="BINDATA" />
+        <include name="IDR_MEDIA_REMOTING_JS" file="${mojom_root}\media\mojo\mojom\mirror_service_remoting.mojom.js" use_base_dir="false" type="BINDATA" />
+        <include name="IDR_REMOTING_COMMON_JS" file="${mojom_root}\media\mojo\mojom\remoting_common.mojom.js" use_base_dir="false" type="BINDATA" />
       </if>
     </includes>
   </release>

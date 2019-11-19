@@ -82,13 +82,11 @@ _COMMANDS = {
     "DeleteCookie": (Method.DELETE, "/session/:sessionId/cookie/:name"),
     "DeleteNetworkConditions":
     (Method.DELETE, "/session/:sessionId/chromium/network_conditions"),
-    "DeleteScreenOrientation":
-    (Method.DELETE, "/session/:sessionId/orientation"),
-    "DismissAlert": (Method.POST, "/session/:sessionId/dismiss_alert"),
+    "DismissAlert": command_executor.Command.DISMISS_ALERT,
     "DoubleClick": (Method.POST, "/session/:sessionId/doubleclick"),
     "ElementScreenshot":
     (Method.GET, "/session/:sessionId/element/:id/screenshot"),
-    "ExecuteAsyncScript": (Method.POST, "/session/:sessionId/execute_async"),
+    "ExecuteAsyncScript": command_executor.Command.EXECUTE_ASYNC_SCRIPT,
     "ExecuteCDP": (Method.POST, "/session/:sessionId/goog/cdp/execute"),
     "ExecuteScript": (Method.POST, "/session/:sessionId/execute/sync"),
     "FindChildElement":
@@ -99,7 +97,7 @@ _COMMANDS = {
     "FindElements": (Method.POST, "/session/:sessionId/elements"),
     "Freeze": (Method.POST, "/session/:sessionId/goog/page/freeze"),
     "FullscreenWindow": (Method.POST, "/session/:sessionId/window/fullscreen"),
-    "GetActiveElement": (Method.POST, "/session/:sessionId/element/active"),
+    "GetActiveElement": command_executor.Command.GET_ACTIVE_ELEMENT,
     "GetAlertMessage": (Method.GET, "/session/:sessionId/alert_text"),
     "GetCookies": (Method.GET, "/session/:sessionId/cookie"),
     "GetElementAttribute":
@@ -124,14 +122,13 @@ _COMMANDS = {
     (Method.GET, "/session/:sessionId/local_storage"),
     "GetLocalStorageSize":
     (Method.GET, "/session/:sessionId/local_storage/size"),
-    "GetLog": (Method.POST, "/session/:sessionId/log"),
-    "GetLogTypes": (Method.GET, "/session/:sessionId/log/types"),
+    "GetLog": (Method.POST, "/session/:sessionId/se/log"),
+    "GetLogTypes": (Method.GET, "/session/:sessionId/se/log/types"),
     "GetNamedCookie": (Method.GET, "/session/:sessionId/cookie/:name"),
     "GetNetworkConditions":
     (Method.GET, "/session/:sessionId/chromium/network_conditions"),
     "GetNetworkConnection":
     (Method.GET, "/session/:sessionId/network_connection"),
-    "GetScreenOrientation": (Method.GET, "/session/:sessionId/orientation"),
     "GetSessionCapabilities": (Method.GET, "/session/:sessionId"),
     "GetSessionStorageItem":
     (Method.GET, "/session/:sessionId/session_storage/key/:key"),
@@ -145,21 +142,19 @@ _COMMANDS = {
     "GetTimeouts": (Method.GET, "/session/:sessionId/timeouts"),
     "GetTitle": (Method.GET, "/session/:sessionId/title"),
     "GetUrl": (Method.GET, "/session/:sessionId/url"),
-    "GetWindow": (Method.GET, "/session/:sessionId/window_handle"),
+    "GetWindow": command_executor.Command.GET_CURRENT_WINDOW_HANDLE,
     "GetWindowPosition":
     (Method.GET, "/session/:sessionId/window/:windowHandle/position"),
     "GetWindowRect":
     (Method.GET, "/session/:sessionId/window/rect"),
     "GetWindowSize":
     (Method.GET, "/session/:sessionId/window/:windowHandle/size"),
-    "GetWindows": (Method.GET, "/session/:sessionId/window_handles"),
+    "GetWindows": command_executor.Command.GET_WINDOW_HANDLES,
     "GoBack": (Method.POST, "/session/:sessionId/back"),
     "GoForward": (Method.POST, "/session/:sessionId/forward"),
     "HeapSnapshot": (Method.GET, "/session/:sessionId/chromium/heap_snapshot"),
-    "HoverElement": (Method.POST, "/session/:sessionId/element/:id/hover"),
     "InitSession": (Method.POST, "/session"),
     "IsAlertOpen": (Method.GET, "/session/:sessionId/alert"),
-    "IsAutoReporting": (Method.GET, "/session/:sessionId/autoreport"),
     "IsElementDisplayed":
     (Method.GET, "/session/:sessionId/element/:id/displayed"),
     "IsElementEnabled": (Method.GET, "/session/:sessionId/element/:id/enabled"),
@@ -188,8 +183,9 @@ _COMMANDS = {
     "SendCommand": (Method.POST, "/session/:sessionId/chromium/send_command"),
     "SendCommandAndGetResult":
     (Method.POST, "/session/:sessionId/chromium/send_command_and_get_result"),
-    "SetAlertPrompt": (Method.POST, "/session/:sessionId/alert_text"),
-    "SetAutoReporting": (Method.POST, "/session/:sessionId/autoreport"),
+    "SendCommandFromWebSocket":
+    (Method.POST, "session/:sessionId/chromium/send_command_from_websocket"),
+    "SetAlertPrompt": command_executor.Command.SET_ALERT_VALUE,
     "SetGeolocation": (Method.POST, "/session/:sessionId/location"),
     "SetImplicitWait":
     (Method.POST, "/session/:sessionId/timeouts/implicit_wait"),
@@ -198,7 +194,6 @@ _COMMANDS = {
     (Method.POST, "/session/:sessionId/chromium/network_conditions"),
     "SetNetworkConnection":
     (Method.POST, "/session/:sessionId/network_connection"),
-    "SetScreenOrientation": (Method.POST, "/session/:sessionId/orientation"),
     "SetScriptTimeout":
     (Method.POST, "/session/:sessionId/timeouts/async_script"),
     "SetSessionStorageItem":
@@ -219,7 +214,6 @@ _COMMANDS = {
     "TouchFlick": (Method.POST, "/session/:sessionId/touch/flick"),
     "TouchLongPress": (Method.POST, "/session/:sessionId/touch/longclick"),
     "TouchMove": (Method.POST, "/session/:sessionId/touch/move"),
-    "TouchPinch": (Method.POST, "/session/:sessionId/touch/pinch"),
     "TouchScroll": (Method.POST, "/session/:sessionId/touch/scroll"),
     "TouchUp": (Method.POST, "/session/:sessionId/touch/up"),
     "Type": (Method.POST, "/session/:sessionId/keys"),
@@ -288,11 +282,12 @@ def _GetAnyElementIds(payload):
   Returns:
     list of ID strings, in order, in this payload
   """
+  element_tag="element-6066-11e4-a52e-4f735466cecf"
   if isinstance(payload, dict):
-    if "ELEMENT" in payload:
-      return [payload["ELEMENT"]]
+    if element_tag in payload:
+      return [payload[element_tag]]
   elif isinstance(payload, list):
-    elements = [item["ELEMENT"] for item in payload if "ELEMENT" in item]
+    elements = [item[element_tag] for item in payload if element_tag in item]
     windows = [item for item in payload if "CDwindow" in item]
     if not elements and not windows:
       return None
@@ -590,6 +585,12 @@ class _Parser(object):
   _CLIENT_PREAMBLE_REGEX = re.compile(
       r"^\[[0-9]{10}\.[0-9]{3}\]\[INFO\]: \[[a-f0-9]*\]")
 
+  # Matches headers for client commands/responses when readable-timestamp
+  #option is selected. Depending on OS, final component may be 3 or 6 digits
+  _CLIENT_PREAMBLE_REGEX_READABLE = re.compile(
+      r"^\[[0-9]{2}-[0-9]{2}-[0-9]{4} "
+      "[0-9]{2}:[0-9]{2}:[0-9]{2}.([0-9]{3}){1,2}\]\[INFO\]: \[[a-f0-9]*\]")
+
   def __init__(self, log_file):
     """Initialize the _Parser instance.
 
@@ -625,6 +626,11 @@ class _Parser(object):
         return None
       if re.match(self._CLIENT_PREAMBLE_REGEX, next_line):
         return next_line
+      if re.match(self._CLIENT_PREAMBLE_REGEX_READABLE, next_line):
+        #Readable timestamp contains a space between date and time,
+        #which breaks other parsing of the header. Replace with underscore
+        next_line = next_line.replace(" ", "_", 1)
+        return next_line
 
   def _GetPayloadString(self, header_line):
     """Gets the payload for the current command in self._logfile.
@@ -641,11 +647,13 @@ class _Parser(object):
     Returns:
       payload of the command as a string
     """
+    min_header = 5
+
     header_segments = header_line.split()
-    if len(header_segments) < 5:
+    if len(header_segments) < min_header:
       return None
-    payload = " ".join(header_segments[4:])
-    opening_char = header_segments[4]
+    payload = " ".join(header_segments[min_header-1:])
+    opening_char = header_segments[min_header-1]
     if opening_char == "{":
       closing_char = "}"
     elif opening_char == "[":
@@ -735,6 +743,7 @@ class CommandSequence(object):
       return command
     if not response.IsResponse():
       raise ReplayException("Command and Response unexpectedly out of order.")
+
     self._IngestLoggedResponse(response)
     return command
 
@@ -756,8 +765,15 @@ class CommandSequence(object):
           self._id_map[id_old] = id_new
         self._staged_logged_ids = None
 
-    if "sessionId" in response and self._staged_logged_session_id:
-      self._id_map[self._staged_logged_session_id] = response["sessionId"]
+    # In W3C format, the http response is a single key dict,
+    # where the value is None, a single value, or another dictionary
+    # sessionId is contained in the nested dictionary
+    if (self._staged_logged_session_id
+        and "value" in response and response["value"]
+        and isinstance(response["value"], dict)
+        and "sessionId" in response["value"]):
+      self._id_map[self._staged_logged_session_id] = (
+        response["value"]["sessionId"])
       self._staged_logged_session_id = None
 
   def _IngestLoggedResponse(self, response):

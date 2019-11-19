@@ -1,0 +1,68 @@
+rootWebArea fontSize=16.00
+++genericContainer ignored fontSize=16.00
+++++paragraph fontSize=10.23
+++++++staticText name='10.2340920823px' fontSize=10.23
+++++++++inlineTextBox name='10.2340920823px'
+++++paragraph fontSize=10.00
+++++++staticText name='10px' fontSize=10.00
+++++++++inlineTextBox name='10px'
+++++paragraph fontSize=11.00
+++++++staticText name='11px' fontSize=11.00
+++++++++inlineTextBox name='11px'
+++++paragraph fontSize=12.00
+++++++staticText name='12px' fontSize=12.00
+++++++++inlineTextBox name='12px'
+++++paragraph fontSize=13.00
+++++++staticText name='13px' fontSize=13.00
+++++++++inlineTextBox name='13px'
+++++paragraph fontSize=14.00
+++++++staticText name='14px' fontSize=14.00
+++++++++inlineTextBox name='14px'
+++++paragraph fontSize=15.00
+++++++staticText name='15px' fontSize=15.00
+++++++++inlineTextBox name='15px'
+++++paragraph fontSize=20.00
+++++++staticText name='20px' fontSize=20.00
+++++++++inlineTextBox name='20px'
+++++paragraph fontSize=40.00
+++++++staticText name='40px' fontSize=40.00
+++++++++inlineTextBox name='40px'
+++++paragraph fontSize=50.00
+++++++staticText name='50px' fontSize=50.00
+++++++++inlineTextBox name='50px'
+++++paragraph fontSize=100.00
+++++++staticText name='100px' fontSize=100.00
+++++++++inlineTextBox name='100px'
+++++paragraph fontSize=13.65
+++++++staticText name='10.2340920823pt' fontSize=13.65
+++++++++inlineTextBox name='10.2340920823pt'
+++++paragraph fontSize=13.33
+++++++staticText name='10pt' fontSize=13.33
+++++++++inlineTextBox name='10pt'
+++++paragraph fontSize=14.67
+++++++staticText name='11pt' fontSize=14.67
+++++++++inlineTextBox name='11pt'
+++++paragraph fontSize=16.00
+++++++staticText name='12pt' fontSize=16.00
+++++++++inlineTextBox name='12pt'
+++++paragraph fontSize=17.33
+++++++staticText name='13pt' fontSize=17.33
+++++++++inlineTextBox name='13pt'
+++++paragraph fontSize=18.67
+++++++staticText name='14pt' fontSize=18.67
+++++++++inlineTextBox name='14pt'
+++++paragraph fontSize=20.00
+++++++staticText name='15pt' fontSize=20.00
+++++++++inlineTextBox name='15pt'
+++++paragraph fontSize=26.67
+++++++staticText name='20pt' fontSize=26.67
+++++++++inlineTextBox name='20pt'
+++++paragraph fontSize=53.33
+++++++staticText name='40pt' fontSize=53.33
+++++++++inlineTextBox name='40pt'
+++++paragraph fontSize=66.67
+++++++staticText name='50pt' fontSize=66.67
+++++++++inlineTextBox name='50pt'
+++++paragraph fontSize=133.33
+++++++staticText name='100pt' fontSize=133.33
+++++++++inlineTextBox name='100pt'

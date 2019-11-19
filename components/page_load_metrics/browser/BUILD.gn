@@ -1,0 +1,104 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//testing/test.gni")
+
+source_set("browser") {
+  sources = [
+    "metrics_navigation_throttle.cc",
+    "metrics_navigation_throttle.h",
+    "metrics_web_contents_observer.cc",
+    "metrics_web_contents_observer.h",
+    "observers/click_input_tracker.cc",
+    "observers/click_input_tracker.h",
+    "observers/core_page_load_metrics_observer.cc",
+    "observers/core_page_load_metrics_observer.h",
+    "observers/largest_contentful_paint_handler.cc",
+    "observers/largest_contentful_paint_handler.h",
+    "observers/use_counter/ukm_features.cc",
+    "observers/use_counter_page_load_metrics_observer.cc",
+    "observers/use_counter_page_load_metrics_observer.h",
+    "page_load_metrics_embedder_base.cc",
+    "page_load_metrics_embedder_base.h",
+    "page_load_metrics_embedder_interface.h",
+    "page_load_metrics_observer.cc",
+    "page_load_metrics_observer.h",
+    "page_load_metrics_observer_delegate.h",
+    "page_load_metrics_update_dispatcher.cc",
+    "page_load_metrics_update_dispatcher.h",
+    "page_load_metrics_util.cc",
+    "page_load_metrics_util.h",
+    "page_load_tracker.cc",
+    "page_load_tracker.h",
+    "protocol_util.cc",
+    "protocol_util.h",
+    "resource_tracker.cc",
+    "resource_tracker.h",
+  ]
+  deps = [
+    "//components/data_reduction_proxy/core/browser",
+    "//components/page_load_metrics/common",
+    "//components/page_load_metrics/common:page_load_metrics_mojom",
+    "//content/public/browser",
+    "//content/public/common",
+    "//net",
+    "//services/metrics/public/cpp:ukm_builders",
+    "//ui/base",
+  ]
+}
+
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "observers/page_load_metrics_observer_tester.cc",
+    "observers/page_load_metrics_observer_tester.h",
+    "page_load_metrics_test_content_browser_client.cc",
+    "page_load_metrics_test_content_browser_client.h",
+    "page_load_metrics_test_waiter.cc",
+    "page_load_metrics_test_waiter.h",
+    "test_metrics_web_contents_observer_embedder.cc",
+    "test_metrics_web_contents_observer_embedder.h",
+  ]
+  deps = [
+    ":browser",
+    "//base",
+    "//base/test:test_support",
+    "//components/page_load_metrics/common:page_load_metrics_mojom",
+    "//components/page_load_metrics/common:test_support",
+    "//components/ukm:test_support",
+    "//content/public/browser",
+    "//content/public/common",
+    "//content/test:test_support",
+    "//testing/gtest",
+    "//ui/gfx/geometry",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "metrics_web_contents_observer_unittest.cc",
+    "observers/click_input_tracker_unittest.cc",
+    "observers/core_page_load_metrics_observer_unittest.cc",
+    "observers/page_load_metrics_observer_content_test_harness.cc",
+    "observers/page_load_metrics_observer_content_test_harness.h",
+    "observers/use_counter_page_load_metrics_observer_unittest.cc",
+    "page_load_metrics_util_unittest.cc",
+    "resource_tracker_unittest.cc",
+  ]
+  deps = [
+    ":browser",
+    ":test_support",
+    "//base/test:test_support",
+    "//components/page_load_metrics/common:page_load_metrics_mojom",
+    "//components/page_load_metrics/common:test_support",
+    "//components/ukm:test_support",
+    "//components/ukm/content",
+    "//content/public/browser",
+    "//content/test:test_support",
+    "//services/metrics/public/cpp:ukm_builders",
+    "//testing/gtest",
+    "//url",
+  ]
+}

@@ -1,0 +1,27 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/closure_compiler/compile_js.gni")
+
+js_type_check("closure_compile") {
+  deps = [
+    ":parental_controls_page",
+  ]
+}
+
+js_library("parental_controls_browser_proxy") {
+  deps = [
+    "//ui/webui/resources/js:cr",
+  ]
+}
+
+js_library("parental_controls_page") {
+  deps = [
+    ":parental_controls_browser_proxy",
+    "..:route",
+    "//ui/webui/resources/js:cr",
+    "//ui/webui/resources/js:i18n_behavior",
+    "//ui/webui/resources/js:web_ui_listener_behavior",
+  ]
+}

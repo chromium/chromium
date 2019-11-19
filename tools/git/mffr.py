@@ -17,6 +17,8 @@ REGEXP uses full Python regexp syntax. REPLACEMENT can use
 back-references.
 """
 
+from __future__ import print_function
+
 import optparse
 import os
 import re
@@ -126,7 +128,7 @@ command line.''')
                     'interpreted correctly, use raw strings.')
   opts, args = parser.parse_args()
   if opts.use_default_glob and opts.user_supplied_globs:
-    print '"-d" and "-g" cannot be used together'
+    print('"-d" and "-g" cannot be used together')
     parser.print_help()
     return 1
 
@@ -139,12 +141,12 @@ command line.''')
     out, err = subprocess.Popen([_git, 'status', '--porcelain'],
                                 stdout=subprocess.PIPE).communicate()
     if out:
-      print 'ERROR: This tool does not print any confirmation prompts,'
-      print 'so you should only run it with a clean staging area and cache'
-      print 'so that reverting a bad find/replace is as easy as running'
-      print '  git checkout -- .'
-      print ''
-      print 'To override this safeguard, pass the -f flag.'
+      print('ERROR: This tool does not print any confirmation prompts,')
+      print('so you should only run it with a clean staging area and cache')
+      print('so that reverting a bad find/replace is as easy as running')
+      print('  git checkout -- .')
+      print('')
+      print('To override this safeguard, pass the -f flag.')
       return 1
 
   global_file_globs = ['*.*']
@@ -168,9 +170,9 @@ command line.''')
     f.close()
 
   for (original, replacement, file_globs) in search_replace_tasks:
-    print 'File globs:  %s' % file_globs
-    print 'Original:    %s' % original
-    print 'Replacement: %s' % replacement
+    print('File globs:  %s' % file_globs)
+    print('Original:    %s' % original)
+    print('Replacement: %s' % replacement)
     MultiFileFindReplace(original, replacement, file_globs)
   return 0
 

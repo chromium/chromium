@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2019 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<resources>
+    <dimen name="list_menu_width">180dp</dimen>
+
+    <!-- Custom Menu dimensions -->
+    <dimen name="menu_negative_software_vertical_offset">0dp</dimen>
+
+    <!-- DualControlLayout dimensions -->
+    <dimen name="dual_control_margin_between_items">8dp</dimen>
+
+    <!-- RadioButton(WithDescription)Layout dimensions -->
+    <dimen name="default_vertical_margin_between_items">8dp</dimen>
+
+    <!-- RadioButtonWithDescription dimensions -->
+    <dimen name="radio_button_with_description_lateral_padding">16dp</dimen>
+    <dimen name="radio_button_with_description_vertical_padding">10dp</dimen>
+
+    <!-- Drag-Reorderable List dimensions -->
+    <dimen name="list_item_dragged_elevation">6dp</dimen>
+
+    <!-- Dialogs -->
+    <dimen name="dialog_max_width">600dp</dimen>
+    <dimen name="dialog_header_margin">14dp</dimen>
+    <dimen name="promo_dialog_illustration_margin">24dp</dimen>
+    <dimen name="promo_dialog_illustration_width">150dp</dimen>
+    <dimen name="promo_dialog_padding">16dp</dimen>
+    <dimen name="promo_dialog_stacked_margin">16dp</dimen>
+    <dimen name="promo_dialog_max_content_width">320dp</dimen>
+    <dimen name="promo_dialog_min_scrollable_height">100dp</dimen>
+
+    <!-- TextBubble dimensions -->
+    <dimen name="text_bubble_margin">4dp</dimen>
+    <dimen name="text_bubble_corner_radius">8dp</dimen>
+    <dimen name="text_bubble_arrow_width">20dp</dimen>
+    <dimen name="text_bubble_arrow_height">10dp</dimen>
+    <dimen name="iph_pulse_baseline_radius">16dp</dimen>
+</resources>

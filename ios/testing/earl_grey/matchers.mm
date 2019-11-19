@@ -4,17 +4,10 @@
 
 #import "ios/testing/earl_grey/matchers.h"
 
+#include "ios/testing/earl_grey/earl_grey_test.h"
+
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
-#endif
-
-#if defined(CHROME_EARL_GREY_1)
-#import <EarlGrey/EarlGrey.h>
-#endif
-
-#if defined(CHROME_EARL_GREY_2)
-#import <AppFramework/EarlGreyApp.h>
-#import <AppFramework/Matcher/GREYMatchersShorthand.h>
 #endif
 
 namespace testing {

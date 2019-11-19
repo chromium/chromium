@@ -1,59 +1,60 @@
 <!DOCTYPE html>
-<head>
-<script src="../../resources/js-test.js"></script>
-<script src="resources/spatial-navigation-utils.js"></script>
-</head>
 <style>
-body a {
+  body a {
     position: absolute;
     height: 100px;
     width: 100px;
     border: 1px solid black;
-}
-#e1 {
+  }
+
+  #e1 {
     left: 10px;
     top: 10px;
-}
-#e2 {
+  }
+
+  #e2 {
     left: 20px;
     top: 75px;
-}
-#e3 {
+  }
+
+  #e3 {
     left: 10px;
     top: 150px;
-}
-#e4 {
+  }
+
+  #e4 {
     left: 10px;
     top: 300px;
-}
-#e5 {
+  }
+
+  #e5 {
     left: 75px;
     top: 300px;
-}
-#e6 {
+  }
+
+  #e6 {
     left: 150px;
     top: 300px;
-}
+  }
 </style>
-<body id="some-content" onload="runTest()">
-<p id="description"></p>
+
+<p id="description">This test ensures that Spatial Navigation works with overlapping elements.</p>
 <div id="elements">
-<!-- Vertical: -->
-<a id="e1" href="#e1">Element 1</a>
-<a id="e2" href="#e2">Element 2</a>
-<a id="e3" href="#e3">Element 3</a>
-<!-- Horizontal: -->
-<a id="e4" href="#e1">Element 4</a>
-<a id="e5" href="#e2">Element 5</a>
-<a id="e6" href="#e3">Element 6</a>
+  <!-- Vertical: -->
+  <a id="e1" href="#e1">Element 1</a>
+  <a id="e2" href="#e2">Element 2</a>
+  <a id="e3" href="#e3">Element 3</a>
+  <!-- Horizontal: -->
+  <a id="e4" href="#e1">Element 4</a>
+  <a id="e5" href="#e2">Element 5</a>
+  <a id="e6" href="#e3">Element 6</a>
 </div>
-<div id="console"></div>
+
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="resources/snav-testharness.js"></script>
 <script type="application/javascript">
-description('This test ensures that Spatial Navigation works with overlapping elements');
-
-jsTestIsAsync = true;
-
-var resultMap = [
+  var resultMap = [
     // Vertical:
     ["Down", "e2"],
     ["Down", "e3"],
@@ -66,22 +67,10 @@ var resultMap = [
     ["Right", "e5"],
     ["Right", "e6"],
     ["Left", "e5"],
-    ["Left", "e4"],
-    ["DONE", "DONE"]
-];
+    ["Left", "e4"]
+  ];
 
-if (window.testRunner) {
-    testRunner.overridePreference("WebKitTabToLinksPreferenceKey", 1);
-    testRunner.overridePreference("WebKitSpatialNavigationEnabled", 1);
-}
-
-function runTest()
-{
-    // starting the test itself: get to a known place.
-    document.getElementById("e1").focus();
-
-    initTest(resultMap, finishJSTest);
-}
+  // starting the test itself: get to a known place.
+  document.getElementById("e1").focus();
+  snav.assertFocusMoves(resultMap);
 </script>
-</body>
-</html>

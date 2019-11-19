@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/feature_list.h"
 #include "third_party/blink/renderer/bindings/core/v8/source_location.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/core/core_probe_sink.h"
@@ -32,8 +33,39 @@ bool IsKnownAdExecutionContext(ExecutionContext* execution_context) {
 
 }  // namespace
 
-AdTracker::AdTracker(LocalFrame* local_root) : local_root_(local_root) {
-  local_root_->GetProbeSink()->addAdTracker(this);
+namespace features {
+// Controls whether the AdTracker will look across async stacks to determine if
+// the currently running stack is ad related.
+const base::Feature kAsyncStackAdTagging{"AsyncStackAdTagging",
+                                         base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Controls whether the AdTracker analyzes the whole pseudo-stack or just the
+// top of the stack when detecting ads.
+const base::Feature kTopOfStackAdTagging{"TopOfStackAdTagging",
+                                         base::FEATURE_DISABLED_BY_DEFAULT};
+}  // namespace features
+
+// static
+AdTracker* AdTracker::FromExecutionContext(
+    ExecutionContext* execution_context) {
+  if (!execution_context)
+    return nullptr;
+  if (auto* document = DynamicTo<Document>(execution_context)) {
+    LocalFrame* frame = document->GetFrame();
+    if (frame) {
+      return frame->GetAdTracker();
+    }
+  }
+  return nullptr;
+}
+
+AdTracker::AdTracker(LocalFrame* local_root)
+    : local_root_(local_root),
+      async_stack_enabled_(
+          base::FeatureList::IsEnabled(features::kAsyncStackAdTagging)),
+      top_of_stack_only_(
+          base::FeatureList::IsEnabled(features::kTopOfStackAdTagging)) {
+  local_root_->GetProbeSink()->AddAdTracker(this);
 }
 
 AdTracker::~AdTracker() {
@@ -43,7 +75,7 @@ AdTracker::~AdTracker() {
 void AdTracker::Shutdown() {
   if (!local_root_)
     return;
-  local_root_->GetProbeSink()->removeAdTracker(this);
+  local_root_->GetProbeSink()->RemoveAdTracker(this);
   local_root_ = nullptr;
 }
 
@@ -63,6 +95,9 @@ ExecutionContext* AdTracker::GetCurrentExecutionContext() {
 
 void AdTracker::WillExecuteScript(ExecutionContext* execution_context,
                                   const String& script_url) {
+  if (top_of_stack_only_)
+    return;
+
   bool is_ad = script_url.IsEmpty()
                    ? false
                    : IsKnownAdScript(execution_context, script_url);
@@ -72,6 +107,9 @@ void AdTracker::WillExecuteScript(ExecutionContext* execution_context,
 }
 
 void AdTracker::DidExecuteScript() {
+  if (top_of_stack_only_)
+    return;
+
   if (stack_frame_is_ad_.back()) {
     DCHECK_LT(0u, num_ads_in_stack_);
     num_ads_in_stack_ -= 1;
@@ -96,8 +134,11 @@ void AdTracker::Will(const probe::CallFunction& probe) {
   v8::Local<v8::Value> resource_name =
       probe.function->GetScriptOrigin().ResourceName();
   String script_url;
-  if (!resource_name.IsEmpty())
-    script_url = ToCoreString(resource_name->ToString(ToIsolate(local_root_)));
+  if (!resource_name.IsEmpty()) {
+    script_url = ToCoreString(
+        resource_name->ToString(ToIsolate(local_root_)->GetCurrentContext())
+            .ToLocalChecked());
+  }
   WillExecuteScript(probe.context, script_url);
 }
 
@@ -129,8 +170,35 @@ bool AdTracker::CalculateIfAdSubresource(ExecutionContext* execution_context,
   return known_ad;
 }
 
+void AdTracker::DidCreateAsyncTask(probe::AsyncTaskId* task) {
+  DCHECK(task);
+  if (!async_stack_enabled_)
+    return;
+
+  if (IsAdScriptInStack())
+    task->SetAdTask();
+}
+
+void AdTracker::DidStartAsyncTask(probe::AsyncTaskId* task) {
+  DCHECK(task);
+  if (!async_stack_enabled_)
+    return;
+
+  if (task->IsAdTask())
+    running_ad_async_tasks_ += 1;
+}
+
+void AdTracker::DidFinishAsyncTask(probe::AsyncTaskId* task) {
+  DCHECK(task);
+  if (!async_stack_enabled_)
+    return;
+
+  if (task->IsAdTask())
+    running_ad_async_tasks_ -= 1;
+}
+
 bool AdTracker::IsAdScriptInStack() {
-  if (num_ads_in_stack_ > 0)
+  if (num_ads_in_stack_ > 0 || running_ad_async_tasks_ > 0)
     return true;
 
   ExecutionContext* execution_context = GetCurrentExecutionContext();

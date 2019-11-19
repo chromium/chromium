@@ -23,21 +23,24 @@ config("crashpad_config") {
 if (crashpad_is_in_chromium || crashpad_is_in_fuchsia) {
   test("crashpad_tests") {
     deps = [
-      "client:client_test",
-      "handler:handler_test",
-      "minidump:minidump_test",
-      "snapshot:snapshot_test",
       "test:gmock_main",
       "test:test_test",
-      "util:util_test",
     ]
+    if (!crashpad_is_ios) {
+      deps += [
+        "client:client_test",
+        "handler:handler_test",
+        "minidump:minidump_test",
+        "snapshot:snapshot_test",
+        "util:util_test",
+      ]
+    }
   }
 
   if (crashpad_is_in_fuchsia) {
     import("//build/package.gni")
     package("crashpad_test") {
       testonly = true
-      deprecated_system_image = true
 
       deps = [
         ":crashpad_tests",
@@ -55,19 +58,21 @@ if (crashpad_is_in_chromium || crashpad_is_in_fuchsia) {
         },
       ]
 
-      # Note that the infix of "crashpad_tests" below in
-      # binary/resource entries should be removed once
-      # crashpad_tests is moved out of the system image;
-      # until then, it is used to disambiguate the crashpad
-      # binaries and data from others within /system/(bin|data).
+      meta = [
+        {
+          path = "test/fuchsia_crashpad_tests.cmx"
+          dest = "crashpad_tests.cmx"
+        },
+      ]
+
       binaries = [
         {
           name = "crashpad_test_test_multiprocess_exec_test_child"
-          dest = "crashpad_tests/crashpad_test_test_multiprocess_exec_test_child"
+          dest = "crashpad_test_test_multiprocess_exec_test_child"
         },
         {
           name = "http_transport_test_server"
-          dest = "crashpad_tests/http_transport_test_server"
+          dest = "http_transport_test_server"
         },
       ]
 
@@ -89,52 +94,33 @@ if (crashpad_is_in_chromium || crashpad_is_in_fuchsia) {
       resources = [
         {
           path = "util/net/testdata/ascii_http_body.txt"
-          dest = "crashpad_tests/util/net/testdata/ascii_http_body.txt"
+          dest = "util/net/testdata/ascii_http_body.txt"
         },
         {
           path = "util/net/testdata/binary_http_body.dat"
-          dest = "crashpad_tests/util/net/testdata/binary_http_body.dat"
+          dest = "util/net/testdata/binary_http_body.dat"
         },
         {
           path = "test/test_paths_test_data_root.txt"
-          dest = "crashpad_tests/test/test_paths_test_data_root.txt"
+          dest = "test/test_paths_test_data_root.txt"
         },
       ]
 
       if (crashpad_use_boringssl_for_http_transport_socket) {
-        deps += [
-          "util:generate_test_server_key",
-        ]
         resources += [
           {
-            path = "$root_out_dir/crashpad_util_test_cert.pem"
-            dest = "crashpad_tests/crashpad_util_test_cert.pem"
+            path = "util/net/testdata/crashpad_util_test_cert.pem"
+            dest = "util/net/testdata/crashpad_util_test_cert.pem"
           },
           {
-            path = "$root_out_dir/crashpad_util_test_key.pem"
-            dest = "crashpad_tests/crashpad_util_test_key.pem"
+            path = "util/net/testdata/crashpad_util_test_key.pem"
+            dest = "util/net/testdata/crashpad_util_test_key.pem"
           },
         ]
       }
     }
 
-    package("crashpad_handler") {
-      deprecated_system_image = true
-
-      deps = [
-        "handler:crashpad_handler",
-      ]
-
-      binaries = [
-        {
-          name = "crashpad_handler"
-        },
-      ]
-    }
-
     package("crashpad_database_util") {
-      deprecated_system_image = true
-
       deps = [
         "tools:crashpad_database_util",
       ]
@@ -142,6 +128,7 @@ if (crashpad_is_in_chromium || crashpad_is_in_fuchsia) {
       binaries = [
         {
           name = "crashpad_database_util"
+          shell = true
         },
       ]
     }
@@ -152,6 +139,9 @@ if (crashpad_is_in_chromium || crashpad_is_in_fuchsia) {
       "client:client_test",
       "test:gmock_main",
     ]
+    if (crashpad_is_ios) {
+      deps -= [ "client:client_test" ]
+    }
   }
 
   test("crashpad_handler_test") {
@@ -159,6 +149,9 @@ if (crashpad_is_in_chromium || crashpad_is_in_fuchsia) {
       "handler:handler_test",
       "test:gtest_main",
     ]
+    if (crashpad_is_ios) {
+      deps -= [ "handler:handler_test" ]
+    }
   }
 
   test("crashpad_minidump_test") {
@@ -166,6 +159,9 @@ if (crashpad_is_in_chromium || crashpad_is_in_fuchsia) {
       "minidump:minidump_test",
       "test:gtest_main",
     ]
+    if (crashpad_is_ios) {
+      deps -= [ "minidump:minidump_test" ]
+    }
   }
 
   test("crashpad_snapshot_test") {
@@ -173,6 +169,9 @@ if (crashpad_is_in_chromium || crashpad_is_in_fuchsia) {
       "snapshot:snapshot_test",
       "test:gtest_main",
     ]
+    if (crashpad_is_ios) {
+      deps -= [ "snapshot:snapshot_test" ]
+    }
   }
 
   test("crashpad_test_test") {
@@ -187,5 +186,8 @@ if (crashpad_is_in_chromium || crashpad_is_in_fuchsia) {
       "test:gmock_main",
       "util:util_test",
     ]
+    if (crashpad_is_ios) {
+      deps -= [ "util:util_test" ]
+    }
   }
 }

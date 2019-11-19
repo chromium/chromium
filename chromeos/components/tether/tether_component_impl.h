@@ -129,7 +129,7 @@ class TetherComponentImpl : public TetherComponent {
   bool has_shutdown_been_requested_ = false;
   ShutdownReason shutdown_reason_;
 
-  base::WeakPtrFactory<TetherComponentImpl> weak_ptr_factory_;
+  base::WeakPtrFactory<TetherComponentImpl> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(TetherComponentImpl);
 };

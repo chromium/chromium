@@ -151,16 +151,6 @@ var availableTests = [
           }));
       }));
   },
-  function startActivateSprint() {
-    chrome.networkingPrivate.startActivate(
-      kCellularGuid, callbackPass(function() {
-        chrome.networkingPrivate.getState(
-          kCellularGuid, callbackPass(function(state) {
-            assertEq(ActivationStateType.ACTIVATED,
-                     state.Cellular.ActivationState);
-          }));
-      }));
-  },
   function startConnectNonexistent() {
     chrome.networkingPrivate.startConnect(
       'nonexistent_path',
@@ -382,17 +372,6 @@ var availableTests = [
             TetheringState: "NotDetected"
           }
         }, {
-          Connectable: true,
-          ConnectionState: ConnectionStateType.CONNECTED,
-          GUID: 'stub_wimax_guid',
-          Name: 'wimax',
-          Priority: 0,
-          Source: 'User',
-          Type: NetworkType.WI_MAX,
-          WiMAX: {
-            SignalStrength: 40
-          }
-        }, {
           ConnectionState: ConnectionStateType.CONNECTED,
           GUID: 'stub_vpn1_guid',
           Name: 'vpn1',
@@ -476,31 +455,38 @@ var availableTests = [
         }], result);
       }));
   },
-  function enabledNetworkTypes() {
-    // Note: We call getEnabledNetworkTypes twice after each enable/dsiable
-    // to ensure that Chrome has processed the command (since enable/disable
-    // are 'synchronous' even though the action of enabling/disabling is not).
-    chrome.networkingPrivate.getEnabledNetworkTypes(
-        callbackPass(function(types) {
-          assertTrue(types.indexOf('WiFi') >= 0);
-          chrome.networkingPrivate.disableNetworkType('WiFi');
-          chrome.networkingPrivate.getEnabledNetworkTypes(
-              callbackPass(function(types) {
-                chrome.networkingPrivate.getEnabledNetworkTypes(
-                    callbackPass(function(types) {
-                      assertFalse(types.indexOf('WiFi') >= 0);
-                      chrome.networkingPrivate.enableNetworkType('WiFi');
-                      chrome.networkingPrivate.getEnabledNetworkTypes(
-                          callbackPass(function(types) {
-                            chrome.networkingPrivate.getEnabledNetworkTypes(
-                                callbackPass(function(types) {
-                                  assertTrue(types.indexOf('WiFi') >= 0);
-                                }));
-                          }));
-                    }));
-              }));
-        }));
+  function enabledNetworkTypesDisable() {
+    chrome.networkingPrivate.getEnabledNetworkTypes(function(types) {
+      assertTrue(types.indexOf('WiFi') >= 0);
+      var listener = callbackPass(function() {
+        chrome.networkingPrivate.onDeviceStateListChanged.removeListener(
+          listener);
+        chrome.networkingPrivate.getEnabledNetworkTypes(
+          callbackPass(function(types2) {
+            assertFalse(types2.indexOf('WiFi') >= 0);
+          }));
+      });
+      chrome.networkingPrivate.onDeviceStateListChanged.addListener(listener);
+      chrome.networkingPrivate.disableNetworkType('WiFi');
+    });
   },
+
+  function enabledNetworkTypesEnable() {
+    chrome.networkingPrivate.getEnabledNetworkTypes(function(types) {
+      assertFalse(types.indexOf('WiFi') >= 0);
+      var listener = callbackPass(function() {
+        chrome.networkingPrivate.onDeviceStateListChanged.removeListener(
+          listener);
+        chrome.networkingPrivate.getEnabledNetworkTypes(
+          callbackPass(function(types2) {
+            assertTrue(types2.indexOf('WiFi') >= 0);
+          }));
+      });
+      chrome.networkingPrivate.onDeviceStateListChanged.addListener(listener);
+      chrome.networkingPrivate.enableNetworkType('WiFi');
+    });
+  },
+
   function getDeviceStates() {
     chrome.networkingPrivate.getDeviceStates(callbackPass(function(result) {
       assertEq([
@@ -510,7 +496,6 @@ var availableTests = [
         {State: 'Uninitialized', SIMPresent: true,
          SIMLockStatus: {LockEnabled: true, LockType: '', RetriesLeft: 3},
          Type: 'Cellular' },
-        {State: 'Disabled', Type: 'WiMAX'},
       ],
                result);
     }));
@@ -519,7 +504,6 @@ var availableTests = [
     // Connected or Connecting networks should be listed first, sorted by type.
     var expected = ['stub_ethernet_guid',
                     'stub_wifi1_guid',
-                    'stub_wimax_guid',
                     'stub_vpn1_guid',
                     'stub_vpn2_guid',
                     'stub_wifi2_guid'];
@@ -587,7 +571,6 @@ var availableTests = [
             ActivationState: ActivationStateType.NOT_ACTIVATED,
             AllowRoaming: false,
             AutoConnect: true,
-            Carrier: 'Cellular1_Carrier',
             Family: 'GSM',
             HomeProvider: {
               Code: '000000',
@@ -621,7 +604,6 @@ var availableTests = [
         assertEq({
           Cellular: {
             AllowRoaming: false,
-            Carrier: 'Cellular1_Carrier',
             ESN: "test_esn",
             Family: 'GSM',
             HomeProvider: {
@@ -642,7 +624,7 @@ var availableTests = [
           Connectable: false,
           ConnectionState: ConnectionStateType.NOT_CONNECTED,
           GUID: kCellularGuid,
-          Name: 'Cellular1_Provider',
+          Name: '',
           Priority: 0,
           Source: 'None',
           Type: NetworkType.CELLULAR,
@@ -654,7 +636,6 @@ var availableTests = [
       'stub_wifi2',
       callbackPass(function(result) {
         assertEq({
-          Connectable: true,
           ConnectionState: ConnectionStateType.NOT_CONNECTED,
           GUID: 'stub_wifi2',
           Name: {
@@ -674,7 +655,6 @@ var availableTests = [
           Type: NetworkType.WI_FI,
           WiFi: {
             AutoConnect: {
-              Active: false,
               UserEditable: true
             },
             HexSSID: {
@@ -707,19 +687,12 @@ var availableTests = [
   },
   function setCellularProperties() {
     var network_guid = kCellularGuid;
-    // Make sure we test Cellular.Carrier since it requires a special call
-    // to Shill.Device.SetCarrier.
-    var newCarrier = 'new_carrier';
     chrome.networkingPrivate.getProperties(
         network_guid,
         callbackPass(function(result) {
           assertEq(network_guid, result.GUID);
-          assertTrue(!result.Cellular || result.Cellular.Carrier != newCarrier);
           var new_properties = {
-            Priority: 1,
-            Cellular: {
-              Carrier: newCarrier,
-            },
+            Priority: 1
           };
           chrome.networkingPrivate.setProperties(
               network_guid,
@@ -732,8 +705,6 @@ var availableTests = [
                       assertEq(network_guid, result.GUID);
                       // Ensure that the properties were set.
                       assertEq(1, result['Priority']);
-                      assertTrue('Cellular' in result);
-                      assertEq(newCarrier, result.Cellular.Carrier);
                     }));
               }));
         }));
@@ -871,7 +842,6 @@ var availableTests = [
     // Connecting to wifi2 should set wifi1 to offline. Connected or Connecting
     // networks should be listed first, sorted by type.
     var expected = ['stub_ethernet_guid',
-                    'stub_wimax_guid',
                     'stub_vpn1_guid',
                     'stub_wifi2_guid',
                     'stub_wifi1_guid',
@@ -890,6 +860,16 @@ var availableTests = [
     });
     chrome.networkingPrivate.onDeviceStateListChanged.addListener(listener);
     chrome.networkingPrivate.disableNetworkType('WiFi');
+  },
+  function onDeviceScanningChangedEvent() {
+    // Requesting a scan should trigger a device state list changed event when
+    // the scan completes.
+    var listener = callbackPass(function() {
+      chrome.networkingPrivate.onDeviceStateListChanged.removeListener(
+          listener);
+    });
+    chrome.networkingPrivate.onDeviceStateListChanged.addListener(listener);
+    chrome.networkingPrivate.requestNetworkScan('Cellular');
   },
   function onCertificateListsChangedEvent() {
     chrome.test.listenOnce(

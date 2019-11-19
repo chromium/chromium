@@ -17,7 +17,7 @@ Are you a Google employee? See
 *   At least 100GB of free disk space.
 *   You must have Git and Python v2 installed already.
 
-Most development is done on Ubuntu (currently 14.04, Trusty Tahr). There are
+Most development is done on Ubuntu (currently 16.04, Xenial Xerus). There are
 some instructions for other distros below, but they are mostly unsupported.
 
 ## Install `depot_tools`
@@ -127,21 +127,31 @@ $ gn gen out/Default
   The default will be a debug component build matching the current host
   operating system and CPU.
 * For more info on GN, run `gn help` on the command line or read the
-  [quick start guide](../tools/gn/docs/quick_start.md).
+  [quick start guide](https://gn.googlesource.com/gn/+/master/docs/quick_start.md).
 
 ### <a name="faster-builds"></a>Faster builds
 
 This section contains some things you can change to speed up your builds,
 sorted so that the things that make the biggest difference are first.
 
-#### Jumbo/Unity builds
+#### Use Goma
 
-Jumbo builds merge many translation units ("source files") and compile them
-together. Since a large portion of Chromium's code is in shared header files,
-this dramatically reduces the total amount of work needed. Check out the
-[Jumbo / Unity builds](jumbo.md) for more information.
+Google developed the distributed compiler called
+[Goma](https://chromium.googlesource.com/infra/goma/client).
+Googlers and contributors who have
+[tryjob access](https://www.chromium.org/getting-involved/become-a-committer#TOC-Try-job-access)
+could use `Goma`.
 
-Enable jumbo builds by setting the GN arg `use_jumbo_build=true`.
+If you are not a Googler and would like to use `Goma`
+[sign up](https://docs.google.com/forms/d/1NKHcyqYqw3c4jftrLPwvyiPlolRm4Hf6ObrB83wHXy8/viewform).
+
+Once you've allowed to use `Goma` service and installed the client,
+[set the following GN args](https://www.chromium.org/developers/gn-build-configuration#TOC-Goma):
+
+```
+use_goma=true
+goma_dir=/path/to/goma-client
+```
 
 #### Disable NaCl
 
@@ -162,13 +172,13 @@ symbols at all. Either will speed up the build compared to full symbols.
 
 Due to its extensive use of templates, the Blink code produces about half
 of our debug symbols. If you don't ever need to debug Blink, you can set
-the GN arg `remove_webcore_debug_symbols=true`.
+the GN arg `blink_symbol_level=0`.
 
 #### Use Icecc
 
 [Icecc](https://github.com/icecc/icecream) is the distributed compiler with a
 central scheduler to share build load. Currently, many external contributors use
-it. e.g. Intel, Opera, Samsung (Googlers use an internal system called Goma).
+it. e.g. Intel, Opera, Samsung (this is not useful if you're using Goma).
 
 In order to use `icecc`, set the following GN args:
 
@@ -188,7 +198,7 @@ See [related bug](https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=808181).
 #### ccache
 
 You can use [ccache](https://ccache.samba.org) to speed up local builds (again,
-this is not useful if you're a Googler using Goma).
+this is not useful if you're using Goma).
 
 Increase your ccache hit rate by setting `CCACHE_BASEDIR` to a parent directory
 that the working directories all have in common (e.g.,
@@ -356,10 +366,10 @@ For the optional packages on Arch Linux:
 
 ### Crostini (Debian based)
 
-First install the `file` command for the script to run properly:
+First install the `file` and `lsb-release` commands for the script to run properly:
 
 ```shell
-$ sudo apt-get install file
+$ sudo apt-get install file lsb-release
 ```
 
 Then invoke install-build-deps.sh with the `--no-arm` argument,

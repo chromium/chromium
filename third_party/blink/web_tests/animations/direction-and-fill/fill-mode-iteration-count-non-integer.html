@@ -1,121 +1,101 @@
 <!DOCTYPE html>
+<title>Test simple animation with fill modes and non integer iteration count</title>
+<style type="text/css" media="screen">
+.box {
+  position: relative;
+  left: 100px;
+  height: 100px;
+  width: 100px;
+  animation-delay: 0.1s;
+  animation-duration: 0.1s;
+  animation-timing-function: linear;
+  animation-name: anim;
+}
+@keyframes anim {
+  from { left: 200px; }
+  to   { left: 300px; }
+}
+#none {
+  background-color: blue;
+  animation-fill-mode: none;
+  animation-iteration-count: 1.4;
+}
+#backwards {
+  background-color: red;
+  animation-fill-mode: backwards;
+  animation-iteration-count: 0.4;
+}
+#forwards {
+  background-color: green;
+  animation-fill-mode: forwards;
+  animation-iteration-count: 1.4;
+}
+#both {
+  background-color: yellow;
+  animation-fill-mode: both;
+  animation-iteration-count: 1.4;
+}
+#both_iterating {
+  background-color: cyan;
+  animation-fill-mode: both;
+  animation-iteration-count: 2.4;
+  animation-direction: alternate;
+}
+#both_iterating_reverse {
+  background-color: #999;
+  animation-fill-mode: both;
+  animation-iteration-count: 2.4;
+  animation-direction: alternate-reverse;
+}
+</style>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script type="text/javascript" charset="utf-8">
+const numAnims = 6;
+var animsFinished = 0;
+const expectedValues = [
+  {id: "none",                   start: 100, end: 100},
+  {id: "backwards",              start: 200, end: 100},
+  {id: "forwards",               start: 100, end: 240},
+  {id: "both",                   start: 200, end: 240},
+  {id: "both_iterating",         start: 200, end: 240},
+  {id: "both_iterating_reverse", start: 300, end: 260}
+];
 
-<html lang="en">
-<head>
-  <title>Test simple animation with fill modes and non integer iteration count</title>
-  <style type="text/css" media="screen">
-    .box {
-      position: relative;
-      left: 100px;
-      height: 100px;
-      width: 100px;
-      animation-delay: 0.1s;
-      animation-duration: 0.1s;
-      animation-timing-function: linear;
-      animation-name: anim;
-    }
-    @keyframes anim {
-        from { left: 200px; }
-        to   { left: 300px; }
-    }
-    #none {
-      background-color: blue;
-      animation-fill-mode: none;
-      animation-iteration-count: 1.4;
-    }
-    #backwards {
-      background-color: red;
-      animation-fill-mode: backwards;
-      animation-iteration-count: 0.4;
-    }
-    #forwards {
-      background-color: green;
-      animation-fill-mode: forwards;
-      animation-iteration-count: 1.4;
-    }
-    #both {
-      background-color: yellow;
-      animation-fill-mode: both;
-      animation-iteration-count: 1.4;
-    }
-    #both_iterating {
-      background-color: cyan;
-      animation-fill-mode: both;
-      animation-iteration-count: 2.4;
-      animation-direction: alternate;
-    }
-    #both_iterating_reverse {
-      background-color: #999;
-      animation-fill-mode: both;
-      animation-iteration-count: 2.4;
-      animation-direction: alternate-reverse;
-    }
-  </style>
-  <script type="text/javascript" charset="utf-8">
-    const numAnims = 6;
-    var animsFinished = 0;
-    const expectedValues = [
-      {id: "none",                   start: 100, end: 100},
-      {id: "backwards",              start: 200, end: 100},
-      {id: "forwards",               start: 100, end: 240},
-      {id: "both",                   start: 200, end: 240},
-      {id: "both_iterating",         start: 200, end: 240},
-      {id: "both_iterating_reverse", start: 300, end: 260}
-    ];
-    var result = "";
+async_test(t => {
+  function assertAnimatedValue(expected, actual, isStart, id) {
+    var identifier = (isStart ? 'Start' : 'End') + ' of animation for element \'' + id + '\'';
+    var diff = Math.abs(expected - actual);
+    assert_less_than(diff, 5, identifier + ': Saw something close to ' + expected);
+  }
 
-    if (window.testRunner) {
-        testRunner.dumpAsText();
-        testRunner.waitUntilDone();
+  function endTest() {
+    for (var i=0; i < expectedValues.length; i++) {
+      var el = document.getElementById(expectedValues[i].id);
+      var expectedValue = expectedValues[i].end;
+      var realValue = parseFloat(window.getComputedStyle(el).left);
+      assertAnimatedValue(expectedValue, realValue, false, expectedValues[i].id);
     }
+    t.done();
+  }
 
-    function animationEnded(event) {
-        if (++animsFinished == numAnims) {
-            // This call to setTimeout() should be OK in the test environment
-            // since we're just giving style a chance to resolve.
-            setTimeout(endTest, 0);
-        }
-    };
-
-    function log(expected, actual, isStart, id) {
-        var identifier = (isStart ? 'Start' : 'End') + ' of animation for element \'' + id + '\'';
-        if (Math.abs(expected - actual) < 5) {
-            result += 'PASS: ' + identifier + ': Saw something close to ' + expected + '<br>';
-        } else {
-            result += 'FAIL: ' + identifier + ': Expected ' + expected + ' but saw ' + actual + '<br>';
-        }
+  window.addEventListener("load", t.step_func(() => {
+    for (var i=0; i < expectedValues.length; i++) {
+      var el = document.getElementById(expectedValues[i].id);
+      var expectedValue = expectedValues[i].start;
+      var realValue = parseFloat(window.getComputedStyle(el).left);
+      assertAnimatedValue(expectedValue, realValue, true, expectedValues[i].id);
     }
-
-    function endTest() {
-        for (var i=0; i < expectedValues.length; i++) {
-            var el = document.getElementById(expectedValues[i].id);
-            var expectedValue = expectedValues[i].end;
-            var realValue = parseFloat(window.getComputedStyle(el).left);
-            log(expectedValue, realValue, false, expectedValues[i].id);
-        }
-        document.getElementById('result').innerHTML = result;
-
-        if (window.testRunner)
-            testRunner.notifyDone();
-    }
-
-    window.onload = function () {
-        for (var i=0; i < expectedValues.length; i++) {
-            var el = document.getElementById(expectedValues[i].id);
-            var expectedValue = expectedValues[i].start;
-            var realValue = parseFloat(window.getComputedStyle(el).left);
-            log(expectedValue, realValue, true, expectedValues[i].id);
-        }
-        document.addEventListener("animationend", animationEnded, false);
-    };
-  </script>
-</head>
-<body>
-<div>
-  This test performs an animation of the left property with four different
-  fill modes. It animates over 0.1 seconds with a 0.1 second delay. It takes
-  snapshots at document load and the end of the animation.
-</div>
+    document.addEventListener("animationend", t.step_func(() => {
+      if (++animsFinished == numAnims) {
+        // This call to setTimeout() should be OK in the test environment
+        // since we're just giving style a chance to resolve.
+        t.step_timeout(endTest, 0);
+      }
+    }));
+  }));
+}, "This test performs an animation of the left property with four different fill modes. It animates over 0.1 seconds with a 0.1 second delay. It takes snapshots at document load and the end of the animation");
+</script>
 <div id="none" class="box">
   None
 </div>
@@ -134,7 +114,3 @@
 <div id="both_iterating_reverse" class="box">
   Both iterating reverse
 </div>
-<div id="result">
-</div>
-</body>
-</html>

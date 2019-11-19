@@ -17,6 +17,7 @@ bool StructTraits<
     return false;
   }
   out->set_trace_config(std::move(config));
+  out->set_privacy_filtering_enabled(data.privacy_filtering_enabled());
   return true;
 }
 }  // namespace mojo

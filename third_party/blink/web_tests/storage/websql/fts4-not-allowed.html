@@ -1,0 +1,25 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>WebSQL: FTS4 is not allowed</title>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script>
+'use strict';
+
+async_test(testCase => {
+  const database = openDatabase(
+      'Fts4NotAllowedTest', '1.0', 'Database for FTS4 blocking test',
+      1024 * 1024);
+  assert_not_equals(database, null, 'openDatabase should not fail');
+
+  database.transaction(testCase.step_func(transaction => {
+    transaction.executeSql(
+        'DROP TABLE IF EXISTS main;', [], () => {},
+        testCase.unreached_func('Table drop should not fail'));
+    transaction.executeSql(
+        'CREATE VIRTUAL TABLE main USING FTS4(fts4table);', [],
+        testCase.unreached_func('FTS4 usage should not succeed'),
+        testCase.step_func_done());
+  }));
+}, 'FTS4 table creation should not be allowed');
+</script>

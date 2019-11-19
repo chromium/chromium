@@ -12,7 +12,7 @@
 #include "base/mac/sdk_forward_declarations.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "mojo/public/cpp/bindings/strong_binding.h"
+#include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/shape_detection/detection_utils_mac.h"
 #include "services/shape_detection/public/mojom/facedetection.mojom.h"
 
@@ -31,8 +31,8 @@ class API_AVAILABLE(macos(10.13)) FaceDetectionImplMacVision
   void Detect(const SkBitmap& bitmap,
               mojom::FaceDetection::DetectCallback callback) override;
 
-  void SetBinding(mojo::StrongBindingPtr<mojom::FaceDetection> binding) {
-    binding_ = std::move(binding);
+  void SetReceiver(mojo::SelfOwnedReceiverRef<mojom::FaceDetection> receiver) {
+    receiver_ = std::move(receiver);
   }
 
  private:
@@ -41,7 +41,7 @@ class API_AVAILABLE(macos(10.13)) FaceDetectionImplMacVision
   CGSize image_size_;
   std::unique_ptr<VisionAPIAsyncRequestMac> landmarks_async_request_;
   DetectCallback detected_callback_;
-  mojo::StrongBindingPtr<mojom::FaceDetection> binding_;
+  mojo::SelfOwnedReceiverRef<mojom::FaceDetection> receiver_;
   base::WeakPtrFactory<FaceDetectionImplMacVision> weak_factory_;
 
   DISALLOW_COPY_AND_ASSIGN(FaceDetectionImplMacVision);

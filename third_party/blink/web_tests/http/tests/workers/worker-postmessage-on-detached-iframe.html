@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Worker: Worker.postMessage() on a detached iframe</title>
+<body>
+</body>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+<script>
+
+function with_iframe(url) {
+  return new Promise(resolve => {
+      let frame = document.createElement('iframe');
+      frame.src = url;
+      frame.onload = () => { resolve(frame); };
+      document.body.appendChild(frame);
+      add_result_callback(() => frame.remove());
+    });
+}
+
+// This test should not be upstreamed to WPT because the spec does not define
+// behavior in the case where Worker.postMessage() is called from a detached
+// frame.
+promise_test(async t => {
+  const frame = await with_iframe('resources/blank.html');
+  const worker = new frame.contentWindow.Worker('resources/empty.js');
+  frame.remove();
+  try {
+    worker.postMessage('hello');
+  } catch (e) {
+    assert_unreached();
+  }
+}, 'Worker.postMessage() on a detached iframe should not throw an exception ' +
+   'nor crash.');
+
+</script>

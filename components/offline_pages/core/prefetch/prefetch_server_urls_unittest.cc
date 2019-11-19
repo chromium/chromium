@@ -4,8 +4,8 @@
 
 #include "components/offline_pages/core/prefetch/prefetch_server_urls.h"
 
+#include "base/test/scoped_feature_list.h"
 #include "components/offline_pages/core/offline_page_feature.h"
-#include "components/variations/variations_params_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace offline_pages {
@@ -23,16 +23,15 @@ class PrefetchServerURLsTest : public testing::Test {
   void SetTestingServerEndpoint(const std::string& server_config);
 
  private:
-  variations::testing::VariationParamsManager params_manager_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 void PrefetchServerURLsTest::SetTestingServerEndpoint(
     const std::string& server_config) {
-  params_manager_.ClearAllVariationParams();
-  params_manager_.SetVariationParamsWithFeatureAssociations(
-      kPrefetchingOfflinePagesFeature.name,
-      {{"offline_pages_backend", server_config}},
-      {kPrefetchingOfflinePagesFeature.name});
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitAndEnableFeatureWithParameters(
+      kPrefetchingOfflinePagesFeature,
+      {{"offline_pages_backend", server_config}});
 }
 
 TEST_F(PrefetchServerURLsTest, TestVariationsConfig) {

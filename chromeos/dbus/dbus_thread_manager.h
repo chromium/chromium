@@ -25,36 +25,26 @@ namespace chromeos {
 
 // Style Note: Clients are sorted by names.
 class ArcAppfuseProviderClient;
+class ArcKeymasterClient;
 class ArcMidisClient;
 class ArcObbMounterClient;
 class ArcOemCryptoClient;
-class AuthPolicyClient;
-class BiodClient;
 class CecServiceClient;
 class CiceroneClient;
 class ConciergeClient;
-class CrasAudioClient;
 class CrosDisksClient;
-class CryptohomeClient;
 class DBusClientsBrowser;
-class DBusClientsCommon;
 class DBusThreadManagerSetter;
 class DebugDaemonClient;
-class DiagnosticsdClient;
 class EasyUnlockClient;
-class GsmSMSClient;
-class HammerdClient;
+class GnubbyClient;
 class ImageBurnerClient;
 class ImageLoaderClient;
 class LorgnetteManagerClient;
-class MachineLearningClient;
-class MediaAnalyticsClient;
 class ModemMessagingClient;
 class OobeConfigurationClient;
-class PermissionBrokerClient;
 class RuntimeProbeClient;
 class SeneschalClient;
-class SessionManagerClient;
 class ShillDeviceClient;
 class ShillIPConfigClient;
 class ShillManagerClient;
@@ -64,27 +54,18 @@ class ShillThirdPartyVpnDriverClient;
 class SmbProviderClient;
 class SMSClient;
 class UpdateEngineClient;
-class UpstartClient;
 class VirtualFileProviderClient;
+class VmPluginDispatcherClient;
 
+// THIS CLASS IS BEING DEPRECATED. See README.md for guidelines and
+// https://crbug.com/647367 for details.
+//
 // DBusThreadManager manages the D-Bus thread, the thread dedicated to
 // handling asynchronous D-Bus operations.
 //
 // This class also manages D-Bus connections and D-Bus clients, which
 // depend on the D-Bus thread to ensure the right order of shutdowns for
 // the D-Bus thread, the D-Bus connections, and the D-Bus clients.
-//
-// CALLBACKS IN D-BUS CLIENTS:
-//
-// D-Bus clients managed by DBusThreadManager are guaranteed to be deleted
-// after the D-Bus thread so the clients don't need to worry if new
-// incoming messages arrive from the D-Bus thread during shutdown of the
-// clients. The UI message loop is not running during the shutdown hence
-// the UI message loop won't post tasks to D-BUS clients during the
-// shutdown. However, to be extra cautious, clients should use
-// WeakPtrFactory when creating callbacks that run on UI thread. See
-// session_manager_client.cc for examples.
-//
 class COMPONENT_EXPORT(CHROMEOS_DBUS) DBusThreadManager {
  public:
   // Processes for which to create and initialize the D-Bus clients.
@@ -135,44 +116,38 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) DBusThreadManager {
   // TODO(jamescook): Replace this with calls to FooClient::Get().
   // http://crbug.com/647367
   ArcAppfuseProviderClient* GetArcAppfuseProviderClient();
+  ArcKeymasterClient* GetArcKeymasterClient();
   ArcMidisClient* GetArcMidisClient();
   ArcObbMounterClient* GetArcObbMounterClient();
   ArcOemCryptoClient* GetArcOemCryptoClient();
-  AuthPolicyClient* GetAuthPolicyClient();
-  BiodClient* GetBiodClient();
   CecServiceClient* GetCecServiceClient();
   CiceroneClient* GetCiceroneClient();
   ConciergeClient* GetConciergeClient();
-  CrasAudioClient* GetCrasAudioClient();
   CrosDisksClient* GetCrosDisksClient();
-  CryptohomeClient* GetCryptohomeClient();
   DebugDaemonClient* GetDebugDaemonClient();
-  DiagnosticsdClient* GetDiagnosticsdClient();
   EasyUnlockClient* GetEasyUnlockClient();
-  GsmSMSClient* GetGsmSMSClient();
-  HammerdClient* GetHammerdClient();
+  GnubbyClient* GetGnubbyClient();
   ImageBurnerClient* GetImageBurnerClient();
   ImageLoaderClient* GetImageLoaderClient();
   LorgnetteManagerClient* GetLorgnetteManagerClient();
-  MachineLearningClient* GetMachineLearningClient();
-  MediaAnalyticsClient* GetMediaAnalyticsClient();
-  ModemMessagingClient* GetModemMessagingClient();
   OobeConfigurationClient* GetOobeConfigurationClient();
-  PermissionBrokerClient* GetPermissionBrokerClient();
   RuntimeProbeClient* GetRuntimeProbeClient();
   SeneschalClient* GetSeneschalClient();
-  SessionManagerClient* GetSessionManagerClient();
+  SmbProviderClient* GetSmbProviderClient();
+  UpdateEngineClient* GetUpdateEngineClient();
+  VirtualFileProviderClient* GetVirtualFileProviderClient();
+  VmPluginDispatcherClient* GetVmPluginDispatcherClient();
+
+  // DEPRECATED, DO NOT USE. The static getter for each of these classes should
+  // be used instead. TODO(stevenjb): Remove. https://crbug.com/948390.
+  ModemMessagingClient* GetModemMessagingClient();
+  SMSClient* GetSMSClient();
   ShillDeviceClient* GetShillDeviceClient();
   ShillIPConfigClient* GetShillIPConfigClient();
   ShillManagerClient* GetShillManagerClient();
   ShillProfileClient* GetShillProfileClient();
   ShillServiceClient* GetShillServiceClient();
   ShillThirdPartyVpnDriverClient* GetShillThirdPartyVpnDriverClient();
-  SmbProviderClient* GetSmbProviderClient();
-  SMSClient* GetSMSClient();
-  UpdateEngineClient* GetUpdateEngineClient();
-  UpstartClient* GetUpstartClient();
-  VirtualFileProviderClient* GetVirtualFileProviderClient();
 
  private:
   friend class DBusThreadManagerSetter;
@@ -192,9 +167,6 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) DBusThreadManager {
   // Whether to use real or fake dbus clients.
   const bool use_real_clients_;
 
-  // Clients used by multiple processes.
-  std::unique_ptr<DBusClientsCommon> clients_common_;
-
   // Clients used only by the browser process. Null in other processes.
   std::unique_ptr<DBusClientsBrowser> clients_browser_;
 
@@ -206,33 +178,17 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) DBusThreadManagerSetter {
  public:
   ~DBusThreadManagerSetter();
 
-  void SetAuthPolicyClient(std::unique_ptr<AuthPolicyClient> client);
-  void SetBiodClient(std::unique_ptr<BiodClient> client);
   void SetCiceroneClient(std::unique_ptr<CiceroneClient> client);
   void SetConciergeClient(std::unique_ptr<ConciergeClient> client);
-  void SetCrasAudioClient(std::unique_ptr<CrasAudioClient> client);
   void SetCrosDisksClient(std::unique_ptr<CrosDisksClient> client);
-  void SetCryptohomeClient(std::unique_ptr<CryptohomeClient> client);
   void SetDebugDaemonClient(std::unique_ptr<DebugDaemonClient> client);
-  void SetHammerdClient(std::unique_ptr<HammerdClient> client);
+  void SetGnubbyClient(std::unique_ptr<GnubbyClient> client);
   void SetImageBurnerClient(std::unique_ptr<ImageBurnerClient> client);
   void SetImageLoaderClient(std::unique_ptr<ImageLoaderClient> client);
-  void SetMediaAnalyticsClient(std::unique_ptr<MediaAnalyticsClient> client);
-  void SetPermissionBrokerClient(
-      std::unique_ptr<PermissionBrokerClient> client);
   void SetSeneschalClient(std::unique_ptr<SeneschalClient> client);
   void SetRuntimeProbeClient(std::unique_ptr<RuntimeProbeClient> client);
-  void SetSessionManagerClient(std::unique_ptr<SessionManagerClient> client);
-  void SetShillDeviceClient(std::unique_ptr<ShillDeviceClient> client);
-  void SetShillIPConfigClient(std::unique_ptr<ShillIPConfigClient> client);
-  void SetShillManagerClient(std::unique_ptr<ShillManagerClient> client);
-  void SetShillServiceClient(std::unique_ptr<ShillServiceClient> client);
-  void SetShillProfileClient(std::unique_ptr<ShillProfileClient> client);
-  void SetShillThirdPartyVpnDriverClient(
-      std::unique_ptr<ShillThirdPartyVpnDriverClient> client);
   void SetSmbProviderClient(std::unique_ptr<SmbProviderClient> client);
   void SetUpdateEngineClient(std::unique_ptr<UpdateEngineClient> client);
-  void SetUpstartClient(std::unique_ptr<UpstartClient> client);
 
  private:
   friend class DBusThreadManager;

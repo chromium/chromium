@@ -29,6 +29,9 @@ const WebGLCompressedTextureASTC::BlockSizeCompressASTC
 WebGLCompressedTextureASTC::WebGLCompressedTextureASTC(
     WebGLRenderingContextBase* context)
     : WebGLExtension(context) {
+  context->ExtensionsUtil()->EnsureExtensionEnabled(
+      "GL_KHR_texture_compression_astc_ldr");
+
   const int kAlphaFormatGap =
       GL_COMPRESSED_SRGB8_ALPHA8_ASTC_4x4_KHR - GL_COMPRESSED_RGBA_ASTC_4x4_KHR;
 

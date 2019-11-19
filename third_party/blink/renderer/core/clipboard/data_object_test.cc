@@ -65,8 +65,8 @@ TEST_F(DataObjectTest, DataObjectObserver) {
   DataObjectObserver* observer2 = MakeGarbageCollected<DataObjectObserver>();
   data_object_->AddObserver(observer2);
 
-  String file_path = test::BlinkRootDir();
-  file_path.append("/renderer/core/clipboard/dat_aobject_test.cc");
+  String file_path =
+      test::BlinkRootDir() + "/renderer/core/clipboard/dat_aobject_test.cc";
   data_object_->AddFilename(file_path, String(), String());
   EXPECT_EQ(2U, data_object_->length());
   EXPECT_EQ(4U, observer->call_count());
@@ -84,8 +84,8 @@ TEST_F(DataObjectTest, DataObjectObserver) {
 }
 
 TEST_F(DataObjectTest, addItemWithFilenameAndNoTitle) {
-  String file_path = test::BlinkRootDir();
-  file_path.append("/renderer/core/clipboard/data_object_test.cc");
+  String file_path =
+      test::BlinkRootDir() + "/renderer/core/clipboard/data_object_test.cc";
 
   data_object_->AddFilename(file_path, String(), String());
   EXPECT_EQ(1U, data_object_->length());
@@ -103,8 +103,8 @@ TEST_F(DataObjectTest, addItemWithFilenameAndNoTitle) {
 }
 
 TEST_F(DataObjectTest, addItemWithFilenameAndTitle) {
-  String file_path = test::BlinkRootDir();
-  file_path.append("/renderer/core/clipboard/data_object_test.cc");
+  String file_path =
+      test::BlinkRootDir() + "/renderer/core/clipboard/data_object_test.cc";
 
   data_object_->AddFilename(file_path, "name.cpp", String());
   EXPECT_EQ(1U, data_object_->length());
@@ -122,8 +122,8 @@ TEST_F(DataObjectTest, addItemWithFilenameAndTitle) {
 }
 
 TEST_F(DataObjectTest, fileSystemId) {
-  String file_path = test::BlinkRootDir();
-  file_path.append("/renderer/core/clipboard/data_object_test.cpp");
+  String file_path =
+      test::BlinkRootDir() + "/renderer/core/clipboard/data_object_test.cpp";
   KURL url;
 
   data_object_->AddFilename(file_path, String(), String());

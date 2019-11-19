@@ -1,0 +1,9 @@
+knollr@chromium.org
+peter@chromium.org
+rayankans@chromium.org
+
+per-file *_type_converter*.*=set noparent
+per-file *_type_converter*.*=file://ipc/SECURITY_OWNERS
+
+# TEAM: platform-capabilities@chromium.org
+# COMPONENT: Blink>ContentIndexing

@@ -14,6 +14,7 @@
 #include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/io_buffer.h"
 
@@ -26,7 +27,6 @@ NetworkServiceAsyncSocket::NetworkServiceAsyncSocket(
     size_t write_buf_size,
     const net::NetworkTrafficAnnotationTag& traffic_annotation)
     : get_socket_factory_callback_(get_socket_factory_callback),
-      socket_observer_binding_(this),
       use_fake_tls_handshake_(use_fake_tls_handshake),
       state_(STATE_CLOSED),
       error_(ERROR_NONE),
@@ -154,11 +154,12 @@ bool NetworkServiceAsyncSocket::Connect(const net::HostPortPair& address) {
 
   state_ = STATE_CONNECTING;
 
-  get_socket_factory_callback_.Run(mojo::MakeRequest(&socket_factory_));
+  get_socket_factory_callback_.Run(
+      socket_factory_.BindNewPipeAndPassReceiver());
 
-  network::mojom::SocketObserverPtr socket_observer;
-  network::mojom::SocketObserverRequest socket_observer_request =
-      mojo::MakeRequest(&socket_observer);
+  mojo::PendingRemote<network::mojom::SocketObserver> socket_observer;
+  auto socket_observer_receiver =
+      socket_observer.InitWithNewPipeAndPassReceiver();
   network::mojom::ProxyResolvingSocketOptionsPtr options =
       network::mojom::ProxyResolvingSocketOptions::New();
   options->use_tls = false;
@@ -166,10 +167,10 @@ bool NetworkServiceAsyncSocket::Connect(const net::HostPortPair& address) {
   socket_factory_->CreateProxyResolvingSocket(
       GURL("https://" + address.ToString()), std::move(options),
       net::MutableNetworkTrafficAnnotationTag(traffic_annotation_),
-      mojo::MakeRequest(&socket_), std::move(socket_observer),
+      socket_.BindNewPipeAndPassReceiver(), std::move(socket_observer),
       base::BindOnce(&NetworkServiceAsyncSocket::ProcessConnectDone,
                      base::Unretained(this),
-                     std::move(socket_observer_request)));
+                     std::move(socket_observer_receiver)));
   return true;
 }
 
@@ -177,7 +178,8 @@ bool NetworkServiceAsyncSocket::Connect(const net::HostPortPair& address) {
 // read_state_ == IDLE -> read_state_ == WAITING (via WatchForReadReady())
 
 void NetworkServiceAsyncSocket::ProcessConnectDone(
-    network::mojom::SocketObserverRequest socket_observer_request,
+    mojo::PendingReceiver<network::mojom::SocketObserver>
+        socket_observer_receiver,
     int status,
     const base::Optional<net::IPEndPoint>& local_addr,
     const base::Optional<net::IPEndPoint>& peer_addr,
@@ -194,7 +196,7 @@ void NetworkServiceAsyncSocket::ProcessConnectDone(
   }
   state_ = STATE_OPEN;
   ConnectPipes(std::move(receive_stream), std::move(send_stream));
-  BindSocketObserver(std::move(socket_observer_request));
+  BindSocketObserver(std::move(socket_observer_receiver));
 
   WatchForReadReady();
   // Write buffer should be empty.
@@ -382,7 +384,7 @@ void NetworkServiceAsyncSocket::ProcessWriteReady(
   }
 
   if (result != MOJO_RESULT_OK) {
-    DCHECK(socket_observer_binding_.is_bound());
+    DCHECK(socket_observer_receiver_.is_bound());
     // Unlike with reads, as the pipe close notifier for writes is independent
     // and always armed, it can take care of all the errors.
     return;
@@ -450,10 +452,10 @@ void NetworkServiceAsyncSocket::DoClose() {
   write_watcher_.reset();
   write_close_watcher_.reset();
 
-  socket_ = nullptr;
-  tls_socket_ = nullptr;
-  socket_observer_binding_.Close();
-  socket_factory_ = nullptr;
+  socket_.reset();
+  tls_socket_.reset();
+  socket_observer_receiver_.reset();
+  socket_factory_.reset();
 
   if (state_ != STATE_CLOSED) {
     state_ = STATE_CLOSED;
@@ -486,18 +488,18 @@ bool NetworkServiceAsyncSocket::StartTls(const std::string& domain_name) {
   write_watcher_ = nullptr;
   write_close_watcher_ = nullptr;
   write_pipe_.reset();
-  socket_observer_binding_.Close();
-  network::mojom::SocketObserverPtr socket_observer;
-  network::mojom::SocketObserverRequest socket_observer_request =
-      mojo::MakeRequest(&socket_observer);
+  socket_observer_receiver_.reset();
+  mojo::PendingRemote<network::mojom::SocketObserver> socket_observer;
+  auto socket_observer_receiver =
+      socket_observer.InitWithNewPipeAndPassReceiver();
 
   socket_->UpgradeToTLS(
       net::HostPortPair(domain_name, 443),
       net::MutableNetworkTrafficAnnotationTag(traffic_annotation_),
-      mojo::MakeRequest(&tls_socket_), std::move(socket_observer),
+      tls_socket_.BindNewPipeAndPassReceiver(), std::move(socket_observer),
       base::BindOnce(&NetworkServiceAsyncSocket::ProcessSSLConnectDone,
                      base::Unretained(this),
-                     std::move(socket_observer_request)));
+                     std::move(socket_observer_receiver)));
   return true;
 }
 
@@ -507,7 +509,8 @@ bool NetworkServiceAsyncSocket::StartTls(const std::string& domain_name) {
 // WatchForWriteReady())
 
 void NetworkServiceAsyncSocket::ProcessSSLConnectDone(
-    network::mojom::SocketObserverRequest socket_observer_request,
+    mojo::PendingReceiver<network::mojom::SocketObserver>
+        socket_observer_receiver,
     int status,
     mojo::ScopedDataPipeConsumerHandle receive_stream,
     mojo::ScopedDataPipeProducerHandle send_stream) {
@@ -524,7 +527,7 @@ void NetworkServiceAsyncSocket::ProcessSSLConnectDone(
   }
   state_ = STATE_TLS_OPEN;
   ConnectPipes(std::move(receive_stream), std::move(send_stream));
-  BindSocketObserver(std::move(socket_observer_request));
+  BindSocketObserver(std::move(socket_observer_receiver));
 
   WatchForReadReady();
   if (write_end_ > 0U) {
@@ -569,9 +572,10 @@ void NetworkServiceAsyncSocket::ConnectPipes(
 }
 
 void NetworkServiceAsyncSocket::BindSocketObserver(
-    network::mojom::SocketObserverRequest socket_observer_request) {
-  socket_observer_binding_.Bind(std::move(socket_observer_request));
-  socket_observer_binding_.set_connection_error_handler(
+    mojo::PendingReceiver<network::mojom::SocketObserver>
+        socket_observer_receiver) {
+  socket_observer_receiver_.Bind(std::move(socket_observer_receiver));
+  socket_observer_receiver_.set_disconnect_handler(
       base::BindOnce(&NetworkServiceAsyncSocket::ProcessSocketObserverError,
                      base::Unretained(this)));
 }

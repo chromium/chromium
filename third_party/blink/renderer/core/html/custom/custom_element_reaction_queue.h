@@ -15,7 +15,7 @@ class CustomElementReaction;
 class Element;
 
 class CORE_EXPORT CustomElementReactionQueue final
-    : public GarbageCollectedFinalized<CustomElementReactionQueue> {
+    : public GarbageCollected<CustomElementReactionQueue> {
  public:
   CustomElementReactionQueue();
   ~CustomElementReactionQueue();

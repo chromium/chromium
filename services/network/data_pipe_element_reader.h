@@ -13,6 +13,8 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "mojo/public/cpp/system/simple_watcher.h"
 #include "net/base/completion_once_callback.h"
@@ -37,7 +39,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) DataPipeElementReader
   // pipe is closed. That should be fixed.
   DataPipeElementReader(
       scoped_refptr<ResourceRequestBody> resource_request_body,
-      mojom::DataPipeGetterPtr data_pipe_getter);
+      mojo::PendingRemote<mojom::DataPipeGetter> data_pipe_getter);
 
   ~DataPipeElementReader() override;
 
@@ -65,7 +67,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) DataPipeElementReader
   int ReadInternal(net::IOBuffer* buf, int buf_length);
 
   scoped_refptr<ResourceRequestBody> resource_request_body_;
-  mojom::DataPipeGetterPtr data_pipe_getter_;
+  mojo::Remote<mojom::DataPipeGetter> data_pipe_getter_;
   mojo::ScopedDataPipeConsumerHandle data_pipe_;
   mojo::SimpleWatcher handle_watcher_;
 
@@ -81,7 +83,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) DataPipeElementReader
   net::CompletionOnceCallback init_callback_;
   net::CompletionOnceCallback read_callback_;
 
-  base::WeakPtrFactory<DataPipeElementReader> weak_factory_;
+  base::WeakPtrFactory<DataPipeElementReader> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(DataPipeElementReader);
 };

@@ -6,9 +6,10 @@ package org.chromium.chrome.browser.omaha;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.support.annotation.IntDef;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.filters.SmallTest;
+
+import androidx.annotation.IntDef;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -198,14 +199,14 @@ public class OmahaBaseTest {
     }
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         Context targetContext = InstrumentationRegistry.getTargetContext();
         OmahaBase.setIsDisabledForTesting(false);
         mContext = new AdvancedMockContext(targetContext);
     }
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
         OmahaBase.setIsDisabledForTesting(true);
     }
 
@@ -254,7 +255,7 @@ public class OmahaBaseTest {
         }
 
         @Override
-        protected HttpURLConnection createConnection() throws RequestFailureException {
+        protected HttpURLConnection createConnection() {
             MockConnection connection = null;
             try {
                 URL url = new URL(mDelegate.getRequestGenerator().getServerUrl());
@@ -307,7 +308,7 @@ public class OmahaBaseTest {
         mDelegate.getScheduler().setCurrentTime(now);
 
         // Record that an install event has already been sent and that we're due for a new request.
-        SharedPreferences.Editor editor = OmahaBase.getSharedPreferences(mContext).edit();
+        SharedPreferences.Editor editor = OmahaBase.getSharedPreferences().edit();
         editor.putBoolean(OmahaBase.PREF_SEND_INSTALL_EVENT, false);
         editor.putLong(OmahaBase.PREF_TIMESTAMP_FOR_NEW_REQUEST, now);
         editor.putLong(OmahaBase.PREF_TIMESTAMP_FOR_NEXT_POST_ATTEMPT, now);
@@ -342,7 +343,7 @@ public class OmahaBaseTest {
         mDelegate.getScheduler().setCurrentTime(now);
 
         // Put the time for the next request in the future.
-        SharedPreferences prefs = OmahaBase.getSharedPreferences(mContext);
+        SharedPreferences prefs = OmahaBase.getSharedPreferences();
         prefs.edit().putLong(OmahaBase.PREF_TIMESTAMP_FOR_NEW_REQUEST, later).apply();
 
         // Trigger Omaha.
@@ -372,7 +373,7 @@ public class OmahaBaseTest {
         mDelegate = new MockOmahaDelegate(mContext, DeviceType.HANDSET, InstallSource.ORGANIC);
         mDelegate.getScheduler().setCurrentTime(now);
 
-        SharedPreferences prefs = OmahaBase.getSharedPreferences(mContext);
+        SharedPreferences prefs = OmahaBase.getSharedPreferences();
         SharedPreferences.Editor editor = prefs.edit();
 
         // Make it so that a request was generated and is just waiting to be sent.
@@ -415,7 +416,7 @@ public class OmahaBaseTest {
         mDelegate = new MockOmahaDelegate(mContext, DeviceType.HANDSET, InstallSource.ORGANIC);
         mDelegate.getScheduler().setCurrentTime(now);
 
-        SharedPreferences prefs = OmahaBase.getSharedPreferences(mContext);
+        SharedPreferences prefs = OmahaBase.getSharedPreferences();
         SharedPreferences.Editor editor = prefs.edit();
 
         // Make it so that a regular <ping> was generated and is just waiting to be sent.
@@ -460,7 +461,7 @@ public class OmahaBaseTest {
         mDelegate = new MockOmahaDelegate(mContext, DeviceType.HANDSET, InstallSource.ORGANIC);
         mDelegate.getScheduler().setCurrentTime(now);
 
-        SharedPreferences prefs = OmahaBase.getSharedPreferences(mContext);
+        SharedPreferences prefs = OmahaBase.getSharedPreferences();
         SharedPreferences.Editor editor = prefs.edit();
 
         // Make it so that a regular <ping> was generated and is just waiting to be sent.
@@ -505,7 +506,7 @@ public class OmahaBaseTest {
         mDelegate = new MockOmahaDelegate(mContext, DeviceType.HANDSET, InstallSource.ORGANIC);
         mDelegate.getScheduler().setCurrentTime(now);
 
-        SharedPreferences prefs = OmahaBase.getSharedPreferences(mContext);
+        SharedPreferences prefs = OmahaBase.getSharedPreferences();
         SharedPreferences.Editor editor = prefs.edit();
 
         // Indicate that the next request should be generated way past an expected timeframe.
@@ -548,7 +549,7 @@ public class OmahaBaseTest {
 
         // Record that a regular <ping> was generated, but not sent, then assign it an invalid
         // timestamp and try to send it now.
-        SharedPreferences prefs = OmahaBase.getSharedPreferences(mContext);
+        SharedPreferences prefs = OmahaBase.getSharedPreferences();
         SharedPreferences.Editor editor = prefs.edit();
         editor.putBoolean(OmahaBase.PREF_SEND_INSTALL_EVENT, false);
         editor.putLong(OmahaBase.PREF_TIMESTAMP_FOR_NEW_REQUEST, timeRegisterNewRequest);

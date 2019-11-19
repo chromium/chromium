@@ -6,9 +6,10 @@
 [
     SecureContext,
     Exposed=Window,
-    OriginTrialEnabled=WebXR
+    RuntimeEnabled=WebXR
 ] interface XR : EventTarget {
   attribute EventHandler ondevicechange;
-  [CallWith=ScriptState, MeasureAs=XRSupportsSession] Promise<void> supportsSessionMode(XRSessionMode mode);
-  [CallWith=ScriptState, MeasureAs=XRRequestSession] Promise<XRSession> requestSession([PermissiveDictionaryConversion] optional XRSessionCreationOptions options);
+  [CallWith=ScriptState, DeprecateAs=XRSupportsSession, RaisesException] Promise<void> supportsSession(XRSessionMode mode);
+  [CallWith=ScriptState, MeasureAs=XRIsSessionSupported, RaisesException] Promise<boolean> isSessionSupported(XRSessionMode mode);
+  [CallWith=ScriptState, MeasureAs=XRRequestSession, RaisesException] Promise<XRSession> requestSession(XRSessionMode mode, optional XRSessionInit options);
 };

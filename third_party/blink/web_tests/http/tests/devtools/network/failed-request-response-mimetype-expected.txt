@@ -1,0 +1,8 @@
+Verifies that network request response view generates a view if no mime type is set.
+networkRequests.length: 1
+request.url(): http://localhost:8000/
+request.failed: true
+networkRequest.url(): http://localhost:8000/
+networkRequest.mimeType: undefined
+Failed to load response data
+

@@ -4,10 +4,8 @@
 <script src="./resources/tex-image-and-sub-image-image-bitmap-utils-resize.js"></script>
 <body>
 <script>
-if (window.testRunner) {
-    testRunner.dumpAsTextWithPixelResults();
+if (window.testRunner)
     testRunner.waitUntilDone();
-}
 
 var video = document.createElement("video");
 var canvas = document.createElement('canvas');
@@ -24,5 +22,6 @@ video.oncanplaythrough = function() {
     prepareResizedImageBitmapsAndRuntTests(testOptions);
 };
 
+video.preload = "auto";
 video.src = "resources/red-green-blue-white-2x2.ogv";
 </script>

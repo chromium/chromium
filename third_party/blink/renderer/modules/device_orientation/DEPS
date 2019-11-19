@@ -2,6 +2,7 @@ include_rules = [
     "+base/run_loop.h",
     "+mojo/public/cpp/bindings/binding.h",
     "+services/device/public/mojom/sensor.mojom-blink.h",
+    "+services/device/public/mojom/sensor.mojom-blink-forward.h",
     "+services/device/public/mojom/sensor_provider.mojom-blink.h",
     "+services/device/public/cpp/test/fake_sensor_and_provider.h",
     "+services/device/public/cpp/generic_sensor/sensor_reading.h",

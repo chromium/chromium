@@ -9,6 +9,13 @@ body {
   font-size: 85%;
 }
 
+@media (prefers-color-scheme: dark) {
+  html {
+    background: rgb(53, 54, 58);
+    color: rgb(232, 234, 237);  /* --google-grey-200 */
+  }
+}
+
 h1 {
   font-size: 200%;
   font-weight: 400;
@@ -29,8 +36,6 @@ a:hover {
   text-decoration: underline;
 }
 
-/* 'Learn More' button styled like a Material Design text button.
- * TODO(edwardjung): Switch styled links to actual text buttons. */
 .learn-more-button {
   color: rgb(66, 133, 244);
   display: inline-block;
@@ -39,7 +44,12 @@ a:hover {
   margin-top: 1.98em;
   padding: 10.5px 12px;
   text-decoration: none;
-  text-transform: uppercase;
+}
+
+@media (prefers-color-scheme: dark) {
+  :-webkit-any(a, .learn-more-button) {
+    color: rgb(138, 180, 248);  /* --google-blue-refresh-300 */
+  }
 }
 
 .content {

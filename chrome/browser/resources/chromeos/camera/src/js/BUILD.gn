@@ -1,0 +1,83 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/closure_compiler/compile_js.gni")
+
+group("closure_compile") {
+  deps = [
+    ":compile_resources",
+    "browser_proxy:closure_compile",
+    "device:closure_compile",
+    "models:closure_compile",
+    "mojo:closure_compile",
+    "views:closure_compile",
+  ]
+}
+
+js_type_check("compile_resources") {
+  deps = [
+    ":background",
+    ":intent",
+    ":metrics",
+    ":nav",
+    ":sound",
+    ":state",
+    ":toast",
+    ":tooltip",
+    ":type",
+    ":util",
+  ]
+}
+
+js_library("intent") {
+  deps = [
+    "mojo:chrome_helper",
+  ]
+}
+
+js_library("metrics") {
+  deps = [
+    "externs:chrome_platform_analytics",
+  ]
+}
+
+js_library("sound") {
+}
+
+js_library("type") {
+}
+
+js_library("nav") {
+  deps = [
+    "mojo:device_operator",
+    "views:view",
+  ]
+}
+
+js_library("state") {
+}
+
+js_library("background") {
+  deps = [
+    ":intent",
+  ]
+}
+
+js_library("toast") {
+  deps = [
+    ":util",
+  ]
+}
+
+js_library("tooltip") {
+}
+
+js_library("util") {
+  deps = [
+    ":tooltip",
+    "browser_proxy:browser_proxy",
+    "mojo:chrome_helper",
+  ]
+  externs_list = [ "$externs_path/chrome_extensions.js" ]
+}

@@ -4,16 +4,27 @@
 
 #include "chrome/browser/ui/views/location_bar/intent_picker_view.h"
 
-#include "chrome/browser/chromeos/apps/intent_helper/apps_navigation_throttle.h"
-#include "chrome/browser/chromeos/arc/intent_helper/intent_picker_controller.h"
+#include "build/build_config.h"
+#include "chrome/browser/apps/intent_helper/apps_navigation_throttle.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/intent_picker_tab_helper.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/intent_picker_bubble_view.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/omnibox/browser/vector_icons.h"
+#include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
+
+#if defined(OS_CHROMEOS)
+#include "chrome/browser/chromeos/apps/intent_helper/chromeos_apps_navigation_throttle.h"
+#include "chrome/browser/chromeos/apps/intent_helper/common_apps_navigation_throttle.h"
+#endif  //  defined(OS_CHROMEOS)
+
+#if defined(OS_MACOSX)
+#include "chrome/browser/apps/intent_helper/mac_apps_navigation_throttle.h"
+#endif  //  defined(OS_MACOSX)
 
 namespace content {
 class WebContents;
@@ -21,52 +32,72 @@ class WebContents;
 
 IntentPickerView::IntentPickerView(Browser* browser,
                                    PageActionIconView::Delegate* delegate)
-    : PageActionIconView(nullptr, 0, delegate), browser_(browser) {
-  if (browser_) {
-    intent_picker_controller_ =
-        std::make_unique<arc::IntentPickerController>(browser_);
-  }
-}
+    : PageActionIconView(nullptr, 0, delegate), browser_(browser) {}
 
 IntentPickerView::~IntentPickerView() = default;
 
-void IntentPickerView::SetVisible(bool visible) {
-  // Besides changing visibility, make sure that we don't leave an opened bubble
-  // when transitioning to !visible.
-  if (!visible)
+bool IntentPickerView::Update() {
+  bool was_visible = GetVisible();
+
+  SetVisible(ShouldShowIcon());
+
+  if (was_visible && !GetVisible())
     IntentPickerBubbleView::CloseCurrentBubble();
 
-  PageActionIconView::SetVisible(visible);
+  return was_visible != GetVisible();
 }
 
 void IntentPickerView::OnExecuting(
     PageActionIconView::ExecuteSource execute_source) {
-  if (browser_ && !browser_->profile()->IsGuestSession() &&
-      !IsIncognitoMode()) {
-    SetVisible(true);
-    content::WebContents* web_contents =
-        browser_->tab_strip_model()->GetActiveWebContents();
-    const GURL& url = chrome::GetURLToBookmark(web_contents);
-
-    chromeos::AppsNavigationThrottle::ShowIntentPickerBubble(
+  DCHECK(ShouldShowIcon());
+  content::WebContents* web_contents = GetWebContents();
+  const GURL& url = chrome::GetURLToBookmark(web_contents);
+#if defined(OS_CHROMEOS)
+  if (base::FeatureList::IsEnabled(features::kAppServiceIntentHandling)) {
+    apps::CommonAppsNavigationThrottle::ShowIntentPickerBubble(
         web_contents, /*ui_auto_display_service=*/nullptr, url);
   } else {
-    SetVisible(false);
+    chromeos::ChromeOsAppsNavigationThrottle::ShowIntentPickerBubble(
+        web_contents, /*ui_auto_display_service=*/nullptr, url);
   }
+#elif defined(OS_MACOSX)
+  apps::MacAppsNavigationThrottle::ShowIntentPickerBubble(
+      web_contents, /*ui_auto_display_service=*/nullptr, url);
+#else
+  apps::AppsNavigationThrottle::ShowIntentPickerBubble(
+      web_contents, /*ui_auto_display_service=*/nullptr, url);
+#endif  //  defined(OS_CHROMEOS)
 }
 
 views::BubbleDialogDelegateView* IntentPickerView::GetBubble() const {
   return IntentPickerBubbleView::intent_picker_bubble();
 }
 
-bool IntentPickerView::IsIncognitoMode() {
+bool IntentPickerView::IsIncognitoMode() const {
   DCHECK(browser_);
 
   return browser_->profile()->IsOffTheRecord();
 }
 
+bool IntentPickerView::ShouldShowIcon() const {
+  if (IsIncognitoMode())
+    return false;
+
+  content::WebContents* web_contents = GetWebContents();
+  if (!web_contents)
+    return false;
+
+  IntentPickerTabHelper* tab_helper =
+      IntentPickerTabHelper::FromWebContents(web_contents);
+
+  if (!tab_helper)
+    return false;
+
+  return tab_helper->should_show_icon();
+}
+
 const gfx::VectorIcon& IntentPickerView::GetVectorIcon() const {
-  return omnibox::kOpenInNewIcon;
+  return vector_icons::kOpenInNewIcon;
 }
 
 base::string16 IntentPickerView::GetTextForTooltipAndAccessibleName() const {

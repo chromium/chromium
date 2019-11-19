@@ -37,6 +37,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
 #include "url/gurl.h"
 
@@ -182,21 +183,19 @@ void NavigateTab(int browser_index, const GURL& url) {
 }
 
 void NavigateTabBack(int browser_index) {
-  test()
-      ->GetBrowser(browser_index)
-      ->tab_strip_model()
-      ->GetWebContentsAt(0)
-      ->GetController()
-      .GoBack();
+  content::WebContents* web_contents =
+      test()->GetBrowser(browser_index)->tab_strip_model()->GetWebContentsAt(0);
+  content::TestNavigationObserver observer(web_contents);
+  web_contents->GetController().GoBack();
+  observer.WaitForNavigationFinished();
 }
 
 void NavigateTabForward(int browser_index) {
-  test()
-      ->GetBrowser(browser_index)
-      ->tab_strip_model()
-      ->GetWebContentsAt(0)
-      ->GetController()
-      .GoForward();
+  content::WebContents* web_contents =
+      test()->GetBrowser(browser_index)->tab_strip_model()->GetWebContentsAt(0);
+  content::TestNavigationObserver observer(web_contents);
+  web_contents->GetController().GoForward();
+  observer.WaitForNavigationFinished();
 }
 
 bool ExecJs(int browser_index, int tab_index, const std::string& script) {
@@ -463,10 +462,7 @@ ForeignSessionsMatchChecker::ForeignSessionsMatchChecker(
       browser_index_(browser_index),
       windows_(windows) {}
 
-bool ForeignSessionsMatchChecker::IsExitConditionSatisfied() {
+bool ForeignSessionsMatchChecker::IsExitConditionSatisfied(std::ostream* os) {
+  *os << "Waiting for matching foreign sessions";
   return sessions_helper::CheckForeignSessionsAgainst(browser_index_, windows_);
-}
-
-std::string ForeignSessionsMatchChecker::GetDebugMessage() const {
-  return "Waiting for matching foreign sessions";
 }

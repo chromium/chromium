@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_physical_text_fragment.h"
 
-#include "third_party/blink/renderer/core/layout/ng/geometry/ng_logical_rect.h"
+#include "third_party/blink/renderer/core/layout/geometry/logical_rect.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_fragment_traversal.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_layout_test.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
@@ -23,21 +23,22 @@ class NGPhysicalTextFragmentTest : public NGLayoutTest {
     const LayoutObject* layout_object = container->GetLayoutObject();
     DCHECK(layout_object) << container;
     DCHECK(layout_object->IsLayoutBlockFlow()) << container;
-    const NGPhysicalBoxFragment* root_fragment =
-        ToLayoutBlockFlow(layout_object)->CurrentFragment();
+    const auto* root_fragment =
+        To<LayoutBlockFlow>(layout_object)->CurrentFragment();
     DCHECK(root_fragment) << container;
 
     Vector<scoped_refptr<const NGPhysicalTextFragment>> result;
     for (const auto& child :
          NGInlineFragmentTraversal::DescendantsOf(*root_fragment)) {
-      if (child.fragment->IsText())
-        result.push_back(ToNGPhysicalTextFragment(child.fragment.get()));
+      if (auto* text_child_fragment =
+              DynamicTo<NGPhysicalTextFragment>(child.fragment.get()))
+        result.push_back(text_child_fragment);
     }
     return result;
   }
 
   static std::string GetText(const NGPhysicalTextFragment& fragment) {
-    return fragment.Text().ToString().Utf8().data();
+    return fragment.Text().ToString().Utf8();
   }
 };
 
@@ -54,9 +55,7 @@ TEST_F(NGPhysicalTextFragmentTest, LocalRect) {
   )HTML");
   auto text_fragments = CollectTextFragmentsInContainer("container");
   ASSERT_EQ(2u, text_fragments.size());
-  EXPECT_EQ(NGPhysicalOffsetRect({LayoutUnit(20), LayoutUnit(0)},
-                                 {LayoutUnit(20), LayoutUnit(10)}),
-            text_fragments[1]->LocalRect(8, 10));
+  EXPECT_EQ(PhysicalRect(20, 0, 20, 10), text_fragments[1]->LocalRect(8, 10));
 }
 
 TEST_F(NGPhysicalTextFragmentTest, LocalRectRTL) {
@@ -77,8 +76,7 @@ TEST_F(NGPhysicalTextFragmentTest, LocalRectRTL) {
   // The 2nd line starts at 12, because the div has a bidi-control.
   EXPECT_EQ(12u, text_fragments[1]->StartOffset());
   // TODO(layout-dev): Investigate whether this is correct.
-  // EXPECT_EQ(NGPhysicalOffsetRect({LayoutUnit(50), LayoutUnit(0)},
-  //                               {LayoutUnit(20), LayoutUnit(10)}),
+  // EXPECT_EQ(PhysicalRect(50, 0, 20, 10),
   //          text_fragments[1]->LocalRect(14, 16));
 }
 
@@ -96,9 +94,7 @@ TEST_F(NGPhysicalTextFragmentTest, LocalRectVLR) {
   )HTML");
   auto text_fragments = CollectTextFragmentsInContainer("container");
   ASSERT_EQ(2u, text_fragments.size());
-  EXPECT_EQ(NGPhysicalOffsetRect({LayoutUnit(0), LayoutUnit(20)},
-                                 {LayoutUnit(10), LayoutUnit(20)}),
-            text_fragments[1]->LocalRect(8, 10));
+  EXPECT_EQ(PhysicalRect(0, 20, 10, 20), text_fragments[1]->LocalRect(8, 10));
 }
 
 TEST_F(NGPhysicalTextFragmentTest, LocalRectVRL) {
@@ -115,9 +111,7 @@ TEST_F(NGPhysicalTextFragmentTest, LocalRectVRL) {
   )HTML");
   auto text_fragments = CollectTextFragmentsInContainer("container");
   ASSERT_EQ(2u, text_fragments.size());
-  EXPECT_EQ(NGPhysicalOffsetRect({LayoutUnit(0), LayoutUnit(20)},
-                                 {LayoutUnit(10), LayoutUnit(20)}),
-            text_fragments[1]->LocalRect(8, 10));
+  EXPECT_EQ(PhysicalRect(0, 20, 10, 20), text_fragments[1]->LocalRect(8, 10));
 }
 
 TEST_F(NGPhysicalTextFragmentTest, NormalTextIsNotAnonymousText) {
@@ -127,7 +121,7 @@ TEST_F(NGPhysicalTextFragmentTest, NormalTextIsNotAnonymousText) {
   ASSERT_EQ(1u, text_fragments.size());
 
   const NGPhysicalTextFragment& text = *text_fragments[0];
-  EXPECT_FALSE(text.IsAnonymousText());
+  EXPECT_FALSE(text.IsGeneratedText());
 }
 
 TEST_F(NGPhysicalTextFragmentTest, FirstLetterIsNotAnonymousText) {
@@ -140,8 +134,8 @@ TEST_F(NGPhysicalTextFragmentTest, FirstLetterIsNotAnonymousText) {
 
   const NGPhysicalTextFragment& first_letter = *text_fragments[0];
   const NGPhysicalTextFragment& remaining_text = *text_fragments[1];
-  EXPECT_FALSE(first_letter.IsAnonymousText());
-  EXPECT_FALSE(remaining_text.IsAnonymousText());
+  EXPECT_FALSE(first_letter.IsGeneratedText());
+  EXPECT_FALSE(remaining_text.IsGeneratedText());
 }
 
 TEST_F(NGPhysicalTextFragmentTest, BeforeAndAfterAreAnonymousText) {
@@ -155,9 +149,9 @@ TEST_F(NGPhysicalTextFragmentTest, BeforeAndAfterAreAnonymousText) {
   const NGPhysicalTextFragment& before = *text_fragments[0];
   const NGPhysicalTextFragment& text = *text_fragments[1];
   const NGPhysicalTextFragment& after = *text_fragments[2];
-  EXPECT_TRUE(before.IsAnonymousText());
-  EXPECT_FALSE(text.IsAnonymousText());
-  EXPECT_TRUE(after.IsAnonymousText());
+  EXPECT_TRUE(before.IsGeneratedText());
+  EXPECT_FALSE(text.IsGeneratedText());
+  EXPECT_TRUE(after.IsGeneratedText());
 }
 
 TEST_F(NGPhysicalTextFragmentTest, Ellipsis) {
@@ -174,21 +168,29 @@ TEST_F(NGPhysicalTextFragmentTest, Ellipsis) {
       <p id="sample">abcdef</p>
   )HTML");
   auto text_fragments = CollectTextFragmentsInContainer("sample");
-  ASSERT_EQ(2u, text_fragments.size());
+  ASSERT_EQ(3u, text_fragments.size());
 
-  const NGPhysicalTextFragment& abcdef = *text_fragments[0];
-  const NGPhysicalTextFragment& ellipsis = *text_fragments[1];
-  EXPECT_EQ(NGPhysicalTextFragment::kNormalText, abcdef.TextType());
-  EXPECT_FALSE(abcdef.IsGeneratedText());
-  EXPECT_FALSE(abcdef.IsAnonymousText());
-  EXPECT_EQ(u8"abc", GetText(abcdef));
+  const NGPhysicalTextFragment& hidden = *text_fragments[0];
+  const NGPhysicalTextFragment& truncated = *text_fragments[1];
+  const NGPhysicalTextFragment& ellipsis = *text_fragments[2];
+
+  EXPECT_EQ(NGPhysicalTextFragment::kNormalText, hidden.TextType());
+  EXPECT_FALSE(hidden.IsGeneratedText());
+  EXPECT_TRUE(hidden.IsHiddenForPaint());
+  EXPECT_EQ(u8"abcdef", GetText(hidden));
+
+  EXPECT_EQ(NGPhysicalTextFragment::kNormalText, truncated.TextType());
+  EXPECT_FALSE(truncated.IsGeneratedText());
+  EXPECT_FALSE(truncated.IsHiddenForPaint());
+  EXPECT_EQ(u8"abc", GetText(truncated));
+
   EXPECT_EQ(NGPhysicalTextFragment::kGeneratedText, ellipsis.TextType());
   EXPECT_TRUE(ellipsis.IsGeneratedText());
-  EXPECT_TRUE(ellipsis.IsAnonymousText());
+  EXPECT_FALSE(ellipsis.IsHiddenForPaint());
   EXPECT_EQ(u8"\u2026", GetText(ellipsis));
 }
 
-TEST_F(NGPhysicalTextFragmentTest, ListMarkerIsAnonymousText) {
+TEST_F(NGPhysicalTextFragmentTest, ListMarkerIsGeneratedText) {
   SetBodyInnerHTML(
       "<ol style='list-style-position:inside'>"
       "<li id=list>text</li>"
@@ -199,8 +201,8 @@ TEST_F(NGPhysicalTextFragmentTest, ListMarkerIsAnonymousText) {
 
   const NGPhysicalTextFragment& marker = *text_fragments[0];
   const NGPhysicalTextFragment& text = *text_fragments[1];
-  EXPECT_TRUE(marker.IsAnonymousText());
-  EXPECT_FALSE(text.IsAnonymousText());
+  EXPECT_TRUE(marker.IsGeneratedText());
+  EXPECT_FALSE(text.IsGeneratedText());
 }
 
 TEST_F(NGPhysicalTextFragmentTest, SoftHyphen) {
@@ -221,17 +223,14 @@ TEST_F(NGPhysicalTextFragmentTest, SoftHyphen) {
   const NGPhysicalTextFragment& shy = *text_fragments[1];
   const NGPhysicalTextFragment& def = *text_fragments[2];
   EXPECT_EQ(NGPhysicalTextFragment::kNormalText, abc.TextType());
-  EXPECT_FALSE(abc.IsGeneratedText());
   // Note: ShapeResult::RunInfo.width_ == 0 for U+00AD
   EXPECT_EQ(u8"abc\u00AD", GetText(abc));
   EXPECT_EQ(NGPhysicalTextFragment::kGeneratedText, shy.TextType());
-  EXPECT_TRUE(shy.IsGeneratedText());
   // Note: |ComputedStyle::HypenString()| returns "-" or U+2010 based on
   // glyph availability.
   if (GetText(shy) != "-")
     EXPECT_EQ(u8"\u2010", GetText(shy));
   EXPECT_EQ(NGPhysicalTextFragment::kNormalText, def.TextType());
-  EXPECT_FALSE(def.IsGeneratedText());
 }
 
 TEST_F(NGPhysicalTextFragmentTest, QuotationMarksAreAnonymousText) {
@@ -243,9 +242,9 @@ TEST_F(NGPhysicalTextFragmentTest, QuotationMarksAreAnonymousText) {
   const NGPhysicalTextFragment& open_quote = *text_fragments[0];
   const NGPhysicalTextFragment& text = *text_fragments[1];
   const NGPhysicalTextFragment& closed_quote = *text_fragments[2];
-  EXPECT_TRUE(open_quote.IsAnonymousText());
-  EXPECT_FALSE(text.IsAnonymousText());
-  EXPECT_TRUE(closed_quote.IsAnonymousText());
+  EXPECT_TRUE(open_quote.IsGeneratedText());
+  EXPECT_FALSE(text.IsGeneratedText());
+  EXPECT_TRUE(closed_quote.IsGeneratedText());
 }
 
 TEST_F(NGPhysicalTextFragmentTest, TextOffsetForPointForTabulation) {

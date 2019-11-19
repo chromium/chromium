@@ -2,15 +2,18 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build_overrides/build.gni")
 import("//build/config/sanitizers/sanitizers.gni")
+import("//build_overrides/build.gni")
+import("//third_party/abseil-cpp/abseil_clients.gni")
 
+# Usage of Abseil in Chromium is guarded by an explicit opt-in list, before
+# adding projects to this list please reach out to cxx@chromium.org and CC:
+# - https://cs.chromium.org/chromium/src/third_party/abseil-cpp/OWNERS
+#
+# More information can be found at:
+# https://docs.google.com/document/d/1DgS1-A3rzboTLjpf4m1sqkJgWjnY_Ru2dokk1X1vBDU
 if (build_with_chromium) {
-  visibility = [
-    "//third_party/webrtc/*",
-    "//third_party/abseil-cpp/*",
-    "//third_party/googletest:gtest",
-  ]
+  visibility = absl_visibility
 } else {
   visibility = [ "*" ]
 }
@@ -57,6 +60,7 @@ source_set("symbolize") {
     ":demangle_internal",
     "../base",
     "../base:core_headers",
+    "../base:dynamic_annotations",
     "../base:malloc_internal",
   ]
 }

@@ -8,15 +8,19 @@
 #include <string>
 
 #include "ash/login_status.h"
-#include "ash/public/cpp/session_types.h"
-#include "ash/session/session_controller.h"
+#include "ash/session/session_controller_impl.h"
+#include "ash/session/test_pref_service_provider.h"
 #include "ash/shell.h"
+#include "base/bind.h"
 #include "base/logging.h"
+#include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "components/account_id/account_id.h"
-#include "components/prefs/testing_pref_service.h"
+#include "components/prefs/pref_service.h"
 #include "components/session_manager/session_manager_types.h"
 #include "components/user_manager/user_type.h"
+#include "ui/views/widget/widget.h"
 
 namespace ash {
 
@@ -41,76 +45,71 @@ void TestSessionControllerClient::DisableAutomaticallyProvideSigninPref() {
 }
 
 TestSessionControllerClient::TestSessionControllerClient(
-    SessionController* controller)
-    : controller_(controller), binding_(this) {
+    SessionControllerImpl* controller,
+    TestPrefServiceProvider* prefs_provider)
+    : controller_(controller), prefs_provider_(prefs_provider) {
   DCHECK(controller_);
   Reset();
 }
 
 TestSessionControllerClient::~TestSessionControllerClient() = default;
 
-void TestSessionControllerClient::InitializeAndBind() {
-  session_info_->can_lock_screen = controller_->CanLockScreen();
-  session_info_->should_lock_screen_automatically =
+void TestSessionControllerClient::InitializeAndSetClient() {
+  session_info_.can_lock_screen = controller_->CanLockScreen();
+  session_info_.should_lock_screen_automatically =
       controller_->ShouldLockScreenAutomatically();
-  session_info_->add_user_session_policy = controller_->GetAddUserPolicy();
-  session_info_->state = controller_->GetSessionState();
+  session_info_.add_user_session_policy = controller_->GetAddUserPolicy();
+  session_info_.state = controller_->GetSessionState();
 
-  ash::mojom::SessionControllerClientPtr client;
-  binding_.Bind(mojo::MakeRequest(&client));
-  controller_->SetClient(std::move(client));
+  controller_->SetClient(this);
+  if (g_provide_signin_pref_service && prefs_provider_)
+    controller_->EnsureSigninScreenPrefService();
 }
 
 void TestSessionControllerClient::Reset() {
-  session_info_ = mojom::SessionInfo::New();
-  session_info_->can_lock_screen = true;
-  session_info_->should_lock_screen_automatically = false;
-  session_info_->add_user_session_policy = AddUserSessionPolicy::ALLOWED;
-  session_info_->state = session_manager::SessionState::LOGIN_PRIMARY;
+  session_info_.can_lock_screen = true;
+  session_info_.should_lock_screen_automatically = false;
+  session_info_.add_user_session_policy = AddUserSessionPolicy::ALLOWED;
+  session_info_.state = session_manager::SessionState::LOGIN_PRIMARY;
 
   controller_->ClearUserSessionsForTest();
-  controller_->SetSessionInfo(session_info_->Clone());
+  controller_->SetSessionInfo(session_info_);
 
-  if (g_provide_signin_pref_service &&
-      !controller_->GetSigninScreenPrefService()) {
-    auto pref_service = std::make_unique<TestingPrefServiceSimple>();
-    Shell::RegisterSigninProfilePrefs(pref_service->registry(),
-                                      true /* for_test */);
-    controller_->SetSigninScreenPrefServiceForTest(std::move(pref_service));
-  }
+  if (g_provide_signin_pref_service && prefs_provider_)
+    prefs_provider_->CreateSigninPrefsIfNeeded();
 }
 
 void TestSessionControllerClient::SetCanLockScreen(bool can_lock) {
-  session_info_->can_lock_screen = can_lock;
-  controller_->SetSessionInfo(session_info_->Clone());
+  session_info_.can_lock_screen = can_lock;
+  controller_->SetSessionInfo(session_info_);
 }
 
 void TestSessionControllerClient::SetShouldLockScreenAutomatically(
     bool should_lock) {
-  session_info_->should_lock_screen_automatically = should_lock;
-  controller_->SetSessionInfo(session_info_->Clone());
+  session_info_.should_lock_screen_automatically = should_lock;
+  controller_->SetSessionInfo(session_info_);
 }
 
 void TestSessionControllerClient::SetAddUserSessionPolicy(
     AddUserSessionPolicy policy) {
-  session_info_->add_user_session_policy = policy;
-  controller_->SetSessionInfo(session_info_->Clone());
+  session_info_.add_user_session_policy = policy;
+  controller_->SetSessionInfo(session_info_);
 }
 
 void TestSessionControllerClient::SetSessionState(
     session_manager::SessionState state) {
-  session_info_->state = state;
-  controller_->SetSessionInfo(session_info_->Clone());
+  session_info_.state = state;
+  controller_->SetSessionInfo(session_info_);
 }
 
 void TestSessionControllerClient::SetIsRunningInAppMode(bool app_mode) {
-  session_info_->is_running_in_app_mode = app_mode;
-  controller_->SetSessionInfo(session_info_->Clone());
+  session_info_.is_running_in_app_mode = app_mode;
+  controller_->SetSessionInfo(session_info_);
 }
 
 void TestSessionControllerClient::SetIsDemoSession() {
-  session_info_->is_demo_session = true;
-  controller_->SetSessionInfo(session_info_->Clone());
+  session_info_.is_demo_session = true;
+  controller_->SetSessionInfo(session_info_);
 }
 
 void TestSessionControllerClient::CreatePredefinedUserSessions(int count) {
@@ -126,7 +125,7 @@ void TestSessionControllerClient::CreatePredefinedUserSessions(int count) {
   }
 
   // Sets the first user as active.
-  SwitchActiveUser(controller_->GetUserSession(0)->user_info->account_id);
+  SwitchActiveUser(controller_->GetUserSession(0)->user_info.account_id);
 
   // Updates session state after adding user sessions.
   SetSessionState(session_manager::SessionState::ACTIVE);
@@ -142,22 +141,20 @@ void TestSessionControllerClient::AddUserSession(
   auto account_id = AccountId::FromUserEmail(
       use_lower_case_user_id_ ? GetUserIdFromEmail(display_email)
                               : display_email);
-  mojom::UserSessionPtr session = mojom::UserSession::New();
-  session->session_id = ++fake_session_id_;
-  session->user_info = mojom::UserInfo::New();
-  session->user_info->avatar = mojom::UserAvatar::New();
-  session->user_info->type = user_type;
-  session->user_info->account_id = account_id;
-  session->user_info->service_instance_group = service_instance_group;
-  session->user_info->display_name = "Über tray Über tray Über tray Über tray";
-  session->user_info->display_email = display_email;
-  session->user_info->is_ephemeral = false;
-  session->user_info->is_new_profile = is_new_profile;
-  session->should_enable_settings = enable_settings;
-  session->should_show_notification_tray = true;
+  UserSession session;
+  session.session_id = ++fake_session_id_;
+  session.user_info.type = user_type;
+  session.user_info.account_id = account_id;
+  session.user_info.service_instance_group = service_instance_group;
+  session.user_info.display_name = "Über tray Über tray Über tray Über tray";
+  session.user_info.display_email = display_email;
+  session.user_info.is_ephemeral = false;
+  session.user_info.is_new_profile = is_new_profile;
+  session.should_enable_settings = enable_settings;
+  session.should_show_notification_tray = true;
   controller_->UpdateUserSession(std::move(session));
 
-  if (provide_pref_service &&
+  if (provide_pref_service && prefs_provider_ &&
       !controller_->GetUserPrefServiceForUser(account_id)) {
     ProvidePrefServiceForUser(account_id);
   }
@@ -166,20 +163,45 @@ void TestSessionControllerClient::AddUserSession(
 void TestSessionControllerClient::ProvidePrefServiceForUser(
     const AccountId& account_id) {
   DCHECK(!controller_->GetUserPrefServiceForUser(account_id));
+  prefs_provider_->CreateUserPrefs(account_id);
+  controller_->OnProfilePrefServiceInitialized(
+      account_id, prefs_provider_->GetUserPrefs(account_id));
+}
 
-  auto pref_service = std::make_unique<TestingPrefServiceSimple>();
-  Shell::RegisterUserProfilePrefs(pref_service->registry(),
-                                  true /* for_test */);
-  controller_->ProvideUserPrefServiceForTest(account_id,
-                                             std::move(pref_service));
+void TestSessionControllerClient::LockScreen() {
+  RequestLockScreen();
+  FlushForTest();
 }
 
 void TestSessionControllerClient::UnlockScreen() {
   SetSessionState(session_manager::SessionState::ACTIVE);
 }
 
+void TestSessionControllerClient::FlushForTest() {
+  base::RunLoop().RunUntilIdle();
+}
+
+void TestSessionControllerClient::SetSigninScreenPrefService(
+    std::unique_ptr<PrefService> pref_service) {
+  prefs_provider_->SetSigninPrefs(std::move(pref_service));
+  controller_->OnSigninScreenPrefServiceInitialized(
+      prefs_provider_->GetSigninPrefs());
+}
+
+void TestSessionControllerClient::SetUserPrefService(
+    const AccountId& account_id,
+    std::unique_ptr<PrefService> pref_service) {
+  DCHECK(!controller_->GetUserPrefServiceForUser(account_id));
+  prefs_provider_->SetUserPrefs(account_id, std::move(pref_service));
+  controller_->OnProfilePrefServiceInitialized(
+      account_id, prefs_provider_->GetUserPrefs(account_id));
+}
+
 void TestSessionControllerClient::RequestLockScreen() {
-  SetSessionState(session_manager::SessionState::LOCKED);
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE, base::BindOnce(&TestSessionControllerClient::SetSessionState,
+                                weak_ptr_factory_.GetWeakPtr(),
+                                session_manager::SessionState::LOCKED));
 }
 
 void TestSessionControllerClient::RequestSignOut() {
@@ -189,25 +211,16 @@ void TestSessionControllerClient::RequestSignOut() {
 
 void TestSessionControllerClient::SwitchActiveUser(
     const AccountId& account_id) {
-  std::vector<uint32_t> session_order;
-  session_order.reserve(controller_->GetUserSessions().size());
-
-  for (const auto& user_session : controller_->GetUserSessions()) {
-    if (user_session->user_info->account_id == account_id) {
-      session_order.insert(session_order.begin(), user_session->session_id);
-    } else {
-      session_order.push_back(user_session->session_id);
-    }
-  }
-
-  controller_->SetUserSessionOrder(session_order);
+  controller_->CanSwitchActiveUser(
+      base::BindOnce(&TestSessionControllerClient::DoSwitchUser,
+                     weak_ptr_factory_.GetWeakPtr(), account_id));
 }
 
 void TestSessionControllerClient::CycleActiveUser(
     CycleUserDirection direction) {
   DCHECK_GT(controller_->NumberOfLoggedInUsers(), 0);
 
-  const std::vector<mojom::UserSessionPtr>& sessions =
+  const SessionControllerImpl::UserSessions& sessions =
       controller_->GetUserSessions();
   const size_t session_count = sessions.size();
 
@@ -232,18 +245,58 @@ void TestSessionControllerClient::CycleActiveUser(
     session_id = 1u;
 
   // Maps session id to AccountId and call SwitchActiveUser.
-  auto it = std::find_if(sessions.begin(), sessions.end(),
-                         [session_id](const mojom::UserSessionPtr& session) {
-                           return session && session->session_id == session_id;
-                         });
+  auto it =
+      std::find_if(sessions.begin(), sessions.end(),
+                   [session_id](const std::unique_ptr<UserSession>& session) {
+                     return session && session->session_id == session_id;
+                   });
   if (it == sessions.end()) {
     NOTREACHED();
     return;
   }
 
-  SwitchActiveUser((*it)->user_info->account_id);
+  SwitchActiveUser((*it)->user_info.account_id);
 }
 
-void TestSessionControllerClient::ShowMultiProfileLogin() {}
+void TestSessionControllerClient::ShowMultiProfileLogin() {
+  views::Widget::InitParams params;
+  params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+  params.bounds = gfx::Rect(0, 0, 400, 300);
+  params.context = Shell::GetPrimaryRootWindow();
+
+  multi_profile_login_widget_ = std::make_unique<views::Widget>();
+  multi_profile_login_widget_->Init(std::move(params));
+  multi_profile_login_widget_->Show();
+}
+
+void TestSessionControllerClient::EmitAshInitialized() {}
+
+PrefService* TestSessionControllerClient::GetSigninScreenPrefService() {
+  return prefs_provider_ ? prefs_provider_->GetSigninPrefs() : nullptr;
+}
+
+PrefService* TestSessionControllerClient::GetUserPrefService(
+    const AccountId& account_id) {
+  return prefs_provider_ ? prefs_provider_->GetUserPrefs(account_id) : nullptr;
+}
+
+void TestSessionControllerClient::DoSwitchUser(const AccountId& account_id,
+                                               bool switch_user) {
+  if (!switch_user)
+    return;
+
+  std::vector<uint32_t> session_order;
+  session_order.reserve(controller_->GetUserSessions().size());
+
+  for (const auto& user_session : controller_->GetUserSessions()) {
+    if (user_session->user_info.account_id == account_id) {
+      session_order.insert(session_order.begin(), user_session->session_id);
+    } else {
+      session_order.push_back(user_session->session_id);
+    }
+  }
+
+  controller_->SetUserSessionOrder(session_order);
+}
 
 }  // namespace ash

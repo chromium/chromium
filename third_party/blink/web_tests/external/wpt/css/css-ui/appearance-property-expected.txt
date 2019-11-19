@@ -1,0 +1,8 @@
+This is a testharness.js-based test.
+FAIL setProperty assert_equals: expected (string) "none" but got (undefined) undefined
+FAIL removeProperty assert_equals: expected (string) "" but got (undefined) undefined
+PASS property assignment
+FAIL getPropertyValue assert_equals: expected "none" but got ""
+FAIL property access assert_equals: expected (string) "none" but got (undefined) undefined
+Harness: the test ran to completion.
+

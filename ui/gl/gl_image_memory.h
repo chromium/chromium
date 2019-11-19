@@ -30,6 +30,8 @@ class GL_EXPORT GLImageMemory : public GLImage {
   // Overridden from GLImage:
   gfx::Size GetSize() override;
   unsigned GetInternalFormat() override;
+  unsigned GetDataFormat() override;
+  unsigned GetDataType() override;
   BindOrCopy ShouldBindOrCopy() override;
   bool BindTexImage(unsigned target) override;
   void ReleaseTexImage(unsigned target) override {}
@@ -61,6 +63,10 @@ class GL_EXPORT GLImageMemory : public GLImage {
   const unsigned char* memory_;
   gfx::BufferFormat format_;
   size_t stride_;
+
+  unsigned buffer_ = 0;
+  size_t buffer_bytes_ = 0;
+  int memcpy_tasks_ = 0;
 
   DISALLOW_COPY_AND_ASSIGN(GLImageMemory);
 };

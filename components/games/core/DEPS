@@ -1,0 +1,5 @@
+include_rules = [
+  "+components/keyed_service/core",
+  "+components/prefs",
+  "+third_party/protobuf",
+]

@@ -17,7 +17,8 @@ namespace app.runtime {
 
   // Enumeration of app launch sources.
   // This should be kept in sync with AppLaunchSource in
-  // extensions/common/constants.h, and GetLaunchSourceEnum() in
+  // components/services/app_service/public/mojom/types.mojom, and
+  // GetLaunchSourceEnum() in
   // extensions/browser/api/app_runtime/app_runtime_api.cc.
   // Note the enumeration is used in UMA histogram so entries
   // should not be re-ordered or removed.
@@ -43,7 +44,8 @@ namespace app.runtime {
     test,
     installed_notification,
     context_menu,
-    arc
+    arc,
+    intent_url
   };
 
   // An app can be launched with a specific action in mind, for example, to
@@ -53,16 +55,6 @@ namespace app.runtime {
   enum ActionType {
     // The user wants to quickly take a new note.
     new_note
-  };
-
-  // Status of the play store.
-  [nodoc] enum PlayStoreStatus {
-    // Indicates that the play store is enabled. It also implies available.
-    enabled,
-    // Indicates that the play store is available but not enabled.
-    available,
-    // Indicates that the play store status is unknown.
-    unknown
   };
 
   // Optional data that includes action-specific launch information.
@@ -129,9 +121,6 @@ namespace app.runtime {
     // launched with. This is null if the app was not launched with a specific
     // action intent.
     ActionData? actionData;
-
-    // Internal fields used to indicate ARC status on the device.
-    [nodoc] PlayStoreStatus? playStoreStatus;
   };
 
   // This object specifies details and operations to perform on the embedding

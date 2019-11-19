@@ -7,7 +7,9 @@
 #include <utility>
 
 #include "base/command_line.h"
+#include "base/environment.h"
 #include "base/files/file_util.h"
+#include "base/optional.h"
 #include "base/process/launch.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/media/test_license_server_config.h"
@@ -35,10 +37,18 @@ bool TestLicenseServer::Start() {
     return false;
   }
 
-  DVLOG(0) << "Starting test license server " <<
-      command_line.GetCommandLineString();
-  license_server_process_ =
-      base::LaunchProcess(command_line, base::LaunchOptions());
+  base::Optional<base::EnvironmentMap> env =
+      server_config_->GetServerEnvironment();
+  if (!env) {
+    DVLOG(0) << "Could not get server environment variables.";
+    return false;
+  }
+
+  DVLOG(0) << "Starting test license server "
+           << command_line.GetCommandLineString();
+  base::LaunchOptions launch_options;
+  launch_options.environment = std::move(*env);
+  license_server_process_ = base::LaunchProcess(command_line, launch_options);
   if (!license_server_process_.IsValid()) {
     DVLOG(0) << "Failed to start test license server!";
     return false;

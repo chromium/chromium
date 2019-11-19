@@ -9,7 +9,6 @@
 #include "build/build_config.h"
 #include "ui/events/platform/platform_event_source.h"
 #include "ui/ozone/platform/windows/windows_window_manager.h"
-#include "ui/platform_window/platform_window_delegate.h"
 
 namespace ui {
 

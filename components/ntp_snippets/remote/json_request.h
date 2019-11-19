@@ -16,6 +16,7 @@
 #include "components/language/core/browser/url_language_histogram.h"
 #include "components/ntp_snippets/remote/request_params.h"
 #include "components/ntp_snippets/status.h"
+#include "google_apis/gaia/core_account_id.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "url/gurl.h"
 
@@ -59,7 +60,7 @@ class JsonRequest {
   // A client can expect error_details only, if there was any error during the
   // fetching or parsing. In successful cases, it will be an empty string.
   using CompletedCallback =
-      base::OnceCallback<void(std::unique_ptr<base::Value> result,
+      base::OnceCallback<void(base::Value result,
                               FetchResult result_code,
                               const std::string& error_details)>;
 
@@ -73,8 +74,7 @@ class JsonRequest {
     // Builds a Request object that contains all data to fetch new snippets.
     std::unique_ptr<JsonRequest> Build() const;
 
-    Builder& SetAuthentication(const std::string& account_id,
-                               const std::string& auth_header);
+    Builder& SetAuthentication(const std::string& auth_header);
     Builder& SetCreationTime(base::TimeTicks creation_time);
     // The language_histogram borrowed from the fetcher needs to stay alive
     // until the request body is built.
@@ -90,6 +90,7 @@ class JsonRequest {
     Builder& SetUrlLoaderFactory(
         scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
     Builder& SetUserClassifier(const UserClassifier& user_classifier);
+    Builder& SetOptionalImagesCapability(bool supports_optional_images);
 
     // These preview methods allow to inspect the Request without exposing it
     // publicly.
@@ -125,8 +126,8 @@ class JsonRequest {
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 
     // Optional properties.
-    std::string obfuscated_gaia_id_;
     std::string user_class_;
+    std::string display_capability_;
     const language::UrlLanguageHistogram* language_histogram_;
 
     DISALLOW_COPY_AND_ASSIGN(Builder);
@@ -153,7 +154,7 @@ class JsonRequest {
   void OnSimpleLoaderComplete(std::unique_ptr<std::string> response_body);
 
   void ParseJsonResponse();
-  void OnJsonParsed(std::unique_ptr<base::Value> result);
+  void OnJsonParsed(base::Value result);
   void OnJsonError(const std::string& error);
 
   // The loader for downloading the snippets. Only non-null if a load is
@@ -182,7 +183,7 @@ class JsonRequest {
   // The last response string
   std::string last_response_string_;
 
-  base::WeakPtrFactory<JsonRequest> weak_ptr_factory_;
+  base::WeakPtrFactory<JsonRequest> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(JsonRequest);
 };

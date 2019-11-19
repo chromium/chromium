@@ -23,7 +23,7 @@ class Supplement : public GarbageCollectedMixin {
 };
 
 // Class derived from a mixin template needs USING_GARBAGE_COLLECTED_MIXIN.
-class MySupplement : public GarbageCollectedFinalized<MySupplement>,
+class MySupplement : public GarbageCollected<MySupplement>,
                      public Supplement<Derived> {
   virtual void Trace(Visitor* visitor) override { Supplement::Trace(visitor); }
 };
@@ -36,8 +36,9 @@ class GoodDerived : public GarbageCollected<GoodDerived>, public Mixin {
 class GoodDerived;
 
 // Same macro providing only a typedef is also ok.
-class GoodDerivedMacroUsingTypedef : public GarbageCollected<GoodDerived>,
-                                     public Mixin {
+class GoodDerivedMacroUsingTypedef
+    : public GarbageCollected<GoodDerivedMacroUsingTypedef>,
+      public Mixin {
   USING_GARBAGE_COLLECTED_MIXIN_NEW(GoodDerivedMacroUsingTypedef);
 };
 class GoodDerivedMacroUsingTypedef;

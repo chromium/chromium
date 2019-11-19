@@ -6,6 +6,7 @@
 
 #include <vector>
 
+#include "base/logging.h"
 #include "base/memory/ref_counted.h"
 #include "chrome/browser/autofill/address_normalizer_factory.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
@@ -17,21 +18,21 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/views/payments/payment_request_dialog_view.h"
 #include "chrome/browser/web_data_service_factory.h"
 #include "components/autofill/core/browser/address_normalizer_impl.h"
+#include "components/autofill/core/browser/geo/region_data_loader_impl.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
-#include "components/autofill/core/browser/region_combobox_model.h"
-#include "components/autofill/core/browser/region_data_loader_impl.h"
+#include "components/autofill/core/browser/ui/region_combobox_model.h"
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/payments/content/payment_manifest_web_data_service.h"
 #include "components/payments/content/payment_request.h"
 #include "components/payments/content/payment_request_dialog.h"
 #include "components/payments/core/payment_prefs.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/web_contents.h"
-#include "services/identity/public/cpp/identity_manager.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/libaddressinput/chromium/chrome_metadata_source.h"
@@ -63,7 +64,7 @@ ChromePaymentRequestDelegate::~ChromePaymentRequestDelegate() {}
 
 void ChromePaymentRequestDelegate::ShowDialog(PaymentRequest* request) {
   DCHECK_EQ(nullptr, shown_dialog_);
-  shown_dialog_ = chrome::CreatePaymentRequestDialog(request);
+  shown_dialog_ = new payments::PaymentRequestDialogView(request, nullptr);
   shown_dialog_->ShowDialog();
 }
 
@@ -105,11 +106,7 @@ const std::string& ChromePaymentRequestDelegate::GetApplicationLocale() const {
 bool ChromePaymentRequestDelegate::IsIncognito() const {
   Profile* profile =
       Profile::FromBrowserContext(web_contents_->GetBrowserContext());
-  return profile && profile->GetProfileType() == Profile::INCOGNITO_PROFILE;
-}
-
-bool ChromePaymentRequestDelegate::IsSslCertificateValid() {
-  return SslValidityChecker::IsSslCertificateValid(web_contents_);
+  return profile && profile->IsIncognitoProfile();
 }
 
 const GURL& ChromePaymentRequestDelegate::GetLastCommittedURL() const {
@@ -147,7 +144,7 @@ std::string ChromePaymentRequestDelegate::GetAuthenticatedEmail() const {
   // authenticated.
   Profile* profile =
       Profile::FromBrowserContext(web_contents_->GetBrowserContext());
-  identity::IdentityManager* identity_manager =
+  signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
   if (identity_manager && identity_manager->HasPrimaryAccount())
     return identity_manager->GetPrimaryAccountInfo().email;
@@ -192,6 +189,16 @@ void ChromePaymentRequestDelegate::EmbedPaymentHandlerWindow(
 
 bool ChromePaymentRequestDelegate::IsInteractive() const {
   return shown_dialog_ && shown_dialog_->IsInteractive();
+}
+
+std::string
+ChromePaymentRequestDelegate::GetInvalidSslCertificateErrorMessage() {
+  return SslValidityChecker::GetInvalidSslCertificateErrorMessage(
+      web_contents_);
+}
+
+bool ChromePaymentRequestDelegate::SkipUiForBasicCard() const {
+  return false;  // Only tests do this.
 }
 
 }  // namespace payments

@@ -42,6 +42,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/animation/timing_function.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -90,12 +91,15 @@ class CORE_EXPORT KeyframeEffectModelBase : public EffectModel {
   void SetFrames(HeapVector<K>& keyframes);
 
   CompositeOperation Composite() const { return composite_; }
-  void SetComposite(CompositeOperation composite) { composite_ = composite; }
+  void SetComposite(CompositeOperation composite);
 
-  const PropertySpecificKeyframeVector& GetPropertySpecificKeyframes(
+  const PropertySpecificKeyframeVector* GetPropertySpecificKeyframes(
       const PropertyHandle& property) const {
     EnsureKeyframeGroups();
-    return keyframe_groups_->at(property)->Keyframes();
+    const auto keyframe_group_iter = keyframe_groups_->find(property);
+    if (keyframe_group_iter == keyframe_groups_->end())
+      return nullptr;
+    return &keyframe_group_iter->value->Keyframes();
   }
 
   using KeyframeGroupMap =
@@ -166,6 +170,9 @@ class CORE_EXPORT KeyframeEffectModelBase : public EffectModel {
   void EnsureKeyframeGroups() const;
   void EnsureInterpolationEffectPopulated() const;
 
+  // Clears the various bits of cached data that this class has.
+  void ClearCachedData();
+
   using ShouldSnapshotPropertyCallback =
       std::function<bool(const PropertyHandle&)>;
   using ShouldSnapshotKeyframeCallback =
@@ -209,17 +216,10 @@ template <class K>
 class KeyframeEffectModel final : public KeyframeEffectModelBase {
  public:
   using KeyframeVector = HeapVector<Member<K>>;
-  static KeyframeEffectModel<K>* Create(
+  KeyframeEffectModel(
       const KeyframeVector& keyframes,
       CompositeOperation composite = kCompositeReplace,
-      scoped_refptr<TimingFunction> default_keyframe_easing = nullptr) {
-    return MakeGarbageCollected<KeyframeEffectModel<K>>(
-        keyframes, composite, std::move(default_keyframe_easing));
-  }
-
-  KeyframeEffectModel(const KeyframeVector& keyframes,
-                      CompositeOperation composite,
-                      scoped_refptr<TimingFunction> default_keyframe_easing)
+      scoped_refptr<TimingFunction> default_keyframe_easing = nullptr)
       : KeyframeEffectModelBase(composite, std::move(default_keyframe_easing)) {
     keyframes_.AppendVector(keyframes);
   }
@@ -230,7 +230,8 @@ class KeyframeEffectModel final : public KeyframeEffectModelBase {
       Keyframe* new_keyframe = keyframe->Clone();
       keyframes.push_back(static_cast<K*>(new_keyframe));
     }
-    return Create(keyframes, composite_, default_keyframe_easing_);
+    return MakeGarbageCollected<KeyframeEffectModel<K>>(
+        keyframes, composite_, default_keyframe_easing_);
   }
 
  private:

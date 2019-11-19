@@ -16,6 +16,7 @@ namespace auto_screen_brightness {
 // Model customization config.
 struct ModelConfig {
   double auto_brightness_als_horizon_seconds = -1.0;
+  bool enabled = false;
   std::vector<double> log_lux;
   std::vector<double> brightness;
   std::string metrics_key;

@@ -35,7 +35,13 @@ TEST(AcceleratorTest, TimeStamp) {
   EXPECT_EQ(event_time, accelerator_b.time_stamp());
 }
 
-TEST(AcceleratorTest, GetShortcutText) {
+// Crash on Android builders. https://crbug.com/980267
+#if defined(OS_ANDROID)
+#define MAYBE_GetShortcutText DISABLED_GetShortcutText
+#else
+#define MAYBE_GetShortcutText GetShortcutText
+#endif
+TEST(AcceleratorTest, MAYBE_GetShortcutText) {
   struct {
     KeyboardCode code;
     int modifiers;
@@ -60,6 +66,11 @@ TEST(AcceleratorTest, GetShortcutText) {
     EXPECT_EQ(text, base::UTF8ToUTF16(key.expected_long));
 #endif
   }
+}
+
+TEST(AcceleratorTest, ShortcutTextForUnknownKey) {
+  const Accelerator accelerator(VKEY_UNKNOWN, EF_NONE);
+  EXPECT_EQ(base::string16(), accelerator.GetShortcutText());
 }
 
 }  // namespace ui

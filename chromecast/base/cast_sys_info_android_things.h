@@ -5,6 +5,8 @@
 #ifndef CHROMECAST_BASE_CAST_SYS_INFO_ANDROID_THINGS_H_
 #define CHROMECAST_BASE_CAST_SYS_INFO_ANDROID_THINGS_H_
 
+#include <vector>
+
 #include "chromecast/base/cast_sys_info_android.h"
 
 namespace chromecast {
@@ -19,6 +21,7 @@ class CastSysInfoAndroidThings : public CastSysInfoAndroid {
   std::string GetDeviceModel() override;
   std::string GetManufacturer() override;
   std::string GetSystemReleaseChannel() override;
+  std::vector<std::string> GetFactoryLocaleList() override;
 };
 
 }  // namespace chromecast

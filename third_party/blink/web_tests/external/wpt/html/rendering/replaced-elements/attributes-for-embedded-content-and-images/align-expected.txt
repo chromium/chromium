@@ -1,0 +1,26 @@
+This is a testharness.js-based test.
+PASS align attribute mapping
+PASS align=left on replaced elements
+PASS align=left on non-replaced elements
+PASS align=right on replaced elements
+PASS align=right on non-replaced elements
+PASS align=top on replaced elements
+PASS align=top on non-replaced elements
+PASS align=middle on replaced elements
+PASS align=middle on non-replaced elements
+PASS align=center on replaced elements
+PASS align=center on non-replaced elements
+PASS align=baseline on replaced elements
+PASS align=baseline on non-replaced elements
+PASS align=bottom on replaced elements
+PASS align=bottom on non-replaced elements
+PASS align=texttop on replaced elements
+PASS align=texttop on non-replaced elements
+PASS align=absmiddle on replaced elements
+PASS align=absmiddle on non-replaced elements
+FAIL align=abscenter on replaced elements assert_equals: align=abscenter should map to vertical-align: middle expected "middle" but got "baseline"
+PASS align=abscenter on non-replaced elements
+PASS align=absbottom on replaced elements
+PASS align=absbottom on non-replaced elements
+Harness: the test ran to completion.
+

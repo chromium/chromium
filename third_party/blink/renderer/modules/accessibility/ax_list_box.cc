@@ -43,11 +43,6 @@ AXListBox::AXListBox(LayoutObject* layout_object,
 
 AXListBox::~AXListBox() = default;
 
-AXListBox* AXListBox::Create(LayoutObject* layout_object,
-                             AXObjectCacheImpl& ax_object_cache) {
-  return MakeGarbageCollected<AXListBox>(layout_object, ax_object_cache);
-}
-
 ax::mojom::Role AXListBox::DetermineAccessibilityRole() {
   if ((aria_role_ = DetermineAriaRoleAttribute()) != ax::mojom::Role::kUnknown)
     return aria_role_;
@@ -56,10 +51,10 @@ ax::mojom::Role AXListBox::DetermineAccessibilityRole() {
 }
 
 AXObject* AXListBox::ActiveDescendant() {
-  if (!IsHTMLSelectElement(GetNode()))
+  auto* select = DynamicTo<HTMLSelectElement>(GetNode());
+  if (!select)
     return nullptr;
 
-  HTMLSelectElement* select = ToHTMLSelectElement(GetNode());
   int active_index = select->ActiveSelectionEndListIndex();
   if (active_index >= 0 && active_index < static_cast<int>(select->length())) {
     HTMLOptionElement* option = select->item(active_index_);
@@ -70,10 +65,10 @@ AXObject* AXListBox::ActiveDescendant() {
 }
 
 void AXListBox::ActiveIndexChanged() {
-  if (!IsHTMLSelectElement(GetNode()))
+  auto* select = DynamicTo<HTMLSelectElement>(GetNode());
+  if (!select)
     return;
 
-  HTMLSelectElement* select = ToHTMLSelectElement(GetNode());
   int active_index = select->ActiveSelectionEndListIndex();
   if (active_index == active_index_)
     return;

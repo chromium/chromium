@@ -17,6 +17,7 @@
 #include "gpu/command_buffer/common/constants.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/gpu_export.h"
+#include "ui/gfx/overlay_transform.h"
 
 extern "C" typedef struct _ClientBuffer* ClientBuffer;
 extern "C" typedef struct _ClientGpuFence* ClientGpuFence;
@@ -113,6 +114,10 @@ class GPU_EXPORT GpuControl {
   // channel as the wait command guarantee that the fence sync will be enqueued
   // first so does not need to be flushed.
   virtual bool CanWaitUnverifiedSyncToken(const SyncToken& sync_token) = 0;
+
+  // Notifies the onscreen surface of the display transform applied to the swaps
+  // from the client.
+  virtual void SetDisplayTransform(gfx::OverlayTransform transform) = 0;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(GpuControl);

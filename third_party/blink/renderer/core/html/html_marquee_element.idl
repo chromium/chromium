@@ -18,8 +18,10 @@
  */
 
 // https://html.spec.whatwg.org/C/#htmlmarqueeelement
-[HTMLConstructor]
-interface HTMLMarqueeElement : HTMLElement {
+[
+    Exposed=Window,
+    HTMLConstructor
+] interface HTMLMarqueeElement : HTMLElement {
     [Reflect] attribute DOMString behavior;
     [Reflect] attribute DOMString bgColor;
     [Reflect] attribute DOMString direction;

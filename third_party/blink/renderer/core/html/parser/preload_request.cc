@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/html/parser/preload_request.h"
 
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
@@ -16,7 +17,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_parameters.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_loader_options.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/network/network_state_notifier.h"
 #include "third_party/blink/renderer/platform/weborigin/security_policy.h"
 
 namespace blink {
@@ -40,13 +41,21 @@ Resource* PreloadRequest::Start(Document* document) {
 
   ResourceRequest resource_request(url);
   resource_request.SetReferrerPolicy(referrer_policy_);
-  if (referrer_source_ == kBaseUrlIsReferrer)
+  if (referrer_source_ == kBaseUrlIsReferrer) {
     resource_request.SetReferrerString(base_url_.StrippedForUseAsReferrer());
+  }
 
   resource_request.SetRequestContext(
       ResourceFetcher::DetermineRequestContext(resource_type_, is_image_set_));
 
   resource_request.SetFetchImportanceMode(importance_);
+
+  if (resource_type_ == ResourceType::kImage && url.ProtocolIsInHTTPFamily() &&
+      base::FeatureList::IsEnabled(blink::features::kSubresourceRedirect) &&
+      blink::GetNetworkStateNotifier().SaveDataEnabled()) {
+    resource_request.SetPreviewsState(resource_request.GetPreviewsState() |
+                                      WebURLRequest::kSubresourceRedirectOn);
+  }
 
   ResourceLoaderOptions options;
   options.initiator_info = initiator_info;
@@ -81,8 +90,7 @@ Resource* PreloadRequest::Start(Document* document) {
 
   if (script_type_ == mojom::ScriptType::kModule) {
     DCHECK_EQ(resource_type_, ResourceType::kScript);
-    params.SetDecoderOptions(
-        TextResourceDecoderOptions::CreateAlwaysUseUTF8ForText());
+    params.SetDecoderOptions(TextResourceDecoderOptions::CreateUTF8Decode());
   } else if (resource_type_ == ResourceType::kScript ||
              resource_type_ == ResourceType::kCSSStyleSheet ||
              resource_type_ == ResourceType::kImportResource) {
@@ -103,15 +111,9 @@ Resource* PreloadRequest::Start(Document* document) {
     // the async request to the blocked script here.
   }
 
-  if (resource_type_ == ResourceType::kImage) {
-    if (const auto* frame = document->Loader()->GetFrame()) {
-      if (frame->IsClientLoFiAllowed(params.GetResourceRequest())) {
-        params.SetClientLoFiPlaceholder();
-      } else if (!is_lazyload_image_disabled_ &&
-                 frame->IsLazyLoadingImageAllowed()) {
-        params.SetLazyImagePlaceholder();
-      }
-    }
+  if (resource_type_ == ResourceType::kImage &&
+      params.Url().ProtocolIsInHTTPFamily() && is_lazy_load_image_enabled_) {
+    params.SetLazyImagePlaceholder();
   }
 
   return PreloadHelper::StartPreload(resource_type_, params,

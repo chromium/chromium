@@ -5,5 +5,5 @@ console-log-object-with-getter.js:31 (2) [(...), empty]
 console-log-object-with-getter.js:32 {}
 console-log-object-with-getter.js:30 {}foo: Objectget foo: ƒ ()set bar: ƒ (x)__proto__: Object
 console-log-object-with-getter.js:31 (2) [(...), empty]0: 1length: 2get 0: ƒ ()set 1: ƒ (x)__proto__: Array(0)
-console-log-object-with-getter.js:32 {}error: [Exception: custom stack]function: [Exception: ƒ ()]number: [Exception: 123]string: [Exception: "myString"]get error: ƒ error()get function: ƒ ()get number: ƒ number()get string: ƒ string()__proto__: Object
+console-log-object-with-getter.js:32 {}error: [Exception: custom stack]string: [Exception: "myString"]number: [Exception: 123]function: [Exception: ƒ ()]get error: ƒ error()get string: ƒ string()get number: ƒ number()get function: ƒ ()__proto__: Object
 

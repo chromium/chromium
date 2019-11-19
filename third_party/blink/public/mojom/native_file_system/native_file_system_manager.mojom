@@ -1,0 +1,68 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+import "mojo/public/mojom/base/string16.mojom";
+import "third_party/blink/public/mojom/native_file_system/native_file_system_directory_handle.mojom";
+import "third_party/blink/public/mojom/native_file_system/native_file_system_file_handle.mojom";
+import "third_party/blink/public/mojom/native_file_system/native_file_system_error.mojom";
+import "third_party/blink/public/mojom/native_file_system/native_file_system_transfer_token.mojom";
+
+enum ChooseFileSystemEntryType {
+  kOpenFile,
+  kOpenMultipleFiles,
+  kSaveFile,
+  kOpenDirectory
+};
+
+// Struct to represent individual options for types of files that are accepted
+// by calls to ChooseEntry. Each type has an optional description, and any
+// number of mime types and/or extensions.
+// Options with no extensions and no known mime types will be ignored.
+struct ChooseFileSystemEntryAcceptsOption {
+  mojo_base.mojom.String16 description;
+  array<string> mime_types;
+  array<string> extensions;
+};
+
+// Interface provided by the browser to the renderer as main entry point to the
+// Native File System API. The renderer can request this interface for a
+// specific worker or document, so the browser process will always be able to
+// tell what operations are being done by which document or worker.
+interface NativeFileSystemManager {
+  // Opens the sandboxed filesystem for the origin of the current document or worker.
+  GetSandboxedFileSystem() =>
+      (NativeFileSystemError result,
+       pending_remote<NativeFileSystemDirectoryHandle>? directory);
+
+  // Prompts the user to select a file from the native filesystem. Returns an
+  // error code if something failed, or a list of the selected entries on
+  // success.
+  // If |include_accepts_all| is true, a "all files" option is included in the
+  // dialog displayed to the user. If no valid options are present in |accepts|
+  // |include_accepts_all| is treated as if it was true.
+  ChooseEntries(ChooseFileSystemEntryType type,
+                array<ChooseFileSystemEntryAcceptsOption> accepts,
+                bool include_accepts_all) =>
+      (NativeFileSystemError result,
+       array<NativeFileSystemEntry> entries);
+
+  // Used to redeem tokens received by a postMessage() target. Clones
+  // FileSystemFileHandles. Token redemption should never fail. The
+  // postMessage() target should perform an origin check before
+  // redeeming tokens. Origin check failures must dispatch a messageerror
+  // event instead of cloning the objects. NativeFileSystemManager will also
+  // validate the redeemed token, including the token's origin, before binding the
+  // FileSystemHandle.
+  GetFileHandleFromToken(
+    pending_remote<NativeFileSystemTransferToken> token,
+    pending_receiver<NativeFileSystemFileHandle> file_handle);
+
+  // Same as GetFileHandleFromToken(), but for FileSystemDirectoryHandles.
+  // See GetFileHandleFromToken() comment above for details.
+  GetDirectoryHandleFromToken(
+    pending_remote<NativeFileSystemTransferToken> token,
+    pending_receiver<NativeFileSystemDirectoryHandle> directory_handle);
+};

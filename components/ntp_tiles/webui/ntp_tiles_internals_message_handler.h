@@ -82,7 +82,7 @@ class NTPTilesInternalsMessageHandler : public MostVisitedSites::Observer {
   std::string popular_sites_json_;
 
   base::CancelableTaskTracker cancelable_task_tracker_;
-  base::WeakPtrFactory<NTPTilesInternalsMessageHandler> weak_ptr_factory_;
+  base::WeakPtrFactory<NTPTilesInternalsMessageHandler> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(NTPTilesInternalsMessageHandler);
 };

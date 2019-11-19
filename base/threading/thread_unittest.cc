@@ -17,16 +17,21 @@
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/task/post_task.h"
 #include "base/task/sequence_manager/sequence_manager_impl.h"
+#include "base/task/task_executor.h"
+#include "base/test/bind_test_util.h"
 #include "base/test/gtest_util.h"
 #include "base/third_party/dynamic_annotations/dynamic_annotations.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
 
 using base::Thread;
+using ::testing::NotNull;
 
 typedef PlatformTest ThreadTest;
 
@@ -522,11 +527,49 @@ TEST_F(ThreadTest, FlushForTesting) {
   a.FlushForTesting();
 }
 
+TEST_F(ThreadTest, GetTaskExecutorForCurrentThread) {
+  Thread a("GetTaskExecutorForCurrentThread");
+  ASSERT_TRUE(a.Start());
+
+  base::WaitableEvent event;
+
+  a.task_runner()->PostTask(
+      FROM_HERE, base::BindLambdaForTesting([&]() {
+        EXPECT_THAT(base::GetTaskExecutorForCurrentThread(), NotNull());
+        event.Signal();
+      }));
+
+  event.Wait();
+  a.Stop();
+}
+
+TEST_F(ThreadTest, CurrentThread) {
+  Thread a("CurrentThread");
+  ASSERT_TRUE(a.Start());
+
+  base::WaitableEvent event;
+
+  a.task_runner()->PostTask(
+      FROM_HERE, base::BindLambdaForTesting([&]() {
+        EXPECT_EQ(a.task_runner(),
+                  base::CreateSingleThreadTaskRunner({base::CurrentThread()}));
+
+        // There's only a single task runner so base::TaskPriority is ignored.
+        EXPECT_EQ(a.task_runner(), base::CreateSingleThreadTaskRunner(
+                                       {base::CurrentThread(),
+                                        base::TaskPriority::BEST_EFFORT}));
+        event.Signal();
+      }));
+
+  event.Wait();
+  a.Stop();
+}
+
 namespace {
 
-class SequenceManagerTaskEnvironment : public Thread::TaskEnvironment {
+class SequenceManagerThreadDelegate : public Thread::Delegate {
  public:
-  SequenceManagerTaskEnvironment()
+  SequenceManagerThreadDelegate()
       : sequence_manager_(
             base::sequence_manager::CreateUnboundSequenceManager()),
         task_queue_(
@@ -536,7 +579,9 @@ class SequenceManagerTaskEnvironment : public Thread::TaskEnvironment {
     sequence_manager_->SetDefaultTaskRunner(GetDefaultTaskRunner());
   }
 
-  ~SequenceManagerTaskEnvironment() override {}
+  ~SequenceManagerThreadDelegate() override {}
+
+  // Thread::Delegate:
 
   scoped_refptr<base::SingleThreadTaskRunner> GetDefaultTaskRunner() override {
     return task_queue_->task_runner();
@@ -544,8 +589,7 @@ class SequenceManagerTaskEnvironment : public Thread::TaskEnvironment {
 
   void BindToCurrentThread(base::TimerSlack timer_slack) override {
     sequence_manager_->BindToMessagePump(
-        base::MessageLoop::CreateMessagePumpForType(
-            base::MessageLoop::TYPE_DEFAULT));
+        base::MessagePump::Create(base::MessagePumpType::DEFAULT));
     sequence_manager_->SetTimerSlack(timer_slack);
   }
 
@@ -553,20 +597,20 @@ class SequenceManagerTaskEnvironment : public Thread::TaskEnvironment {
   std::unique_ptr<base::sequence_manager::SequenceManager> sequence_manager_;
   scoped_refptr<base::sequence_manager::TaskQueue> task_queue_;
 
-  DISALLOW_COPY_AND_ASSIGN(SequenceManagerTaskEnvironment);
+  DISALLOW_COPY_AND_ASSIGN(SequenceManagerThreadDelegate);
 };
 
 }  // namespace
 
-TEST_F(ThreadTest, ProvidedTaskEnvironment) {
-  Thread thread("TaskEnvironment");
+TEST_F(ThreadTest, ProvidedThreadDelegate) {
+  Thread thread("ThreadDelegate");
   base::Thread::Options options;
-  options.task_environment = new SequenceManagerTaskEnvironment();
+  options.delegate = new SequenceManagerThreadDelegate();
   thread.StartWithOptions(options);
 
   base::WaitableEvent event;
 
-  options.task_environment->GetDefaultTaskRunner()->PostTask(
+  options.delegate->GetDefaultTaskRunner()->PostTask(
       FROM_HERE,
       base::BindOnce(&base::WaitableEvent::Signal, base::Unretained(&event)));
   event.Wait();

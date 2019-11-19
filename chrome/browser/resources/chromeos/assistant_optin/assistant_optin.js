@@ -15,10 +15,13 @@ cr.define('login.AssistantOptInFlowScreen', function() {
 
     /**
      * Starts the assistant opt-in flow.
-     * @param {number} type The type of the flow.
      */
-    show: function(type) {
-      $('assistant-optin-flow-card').onShow(type);
+    show: function() {
+      var url = new URL(document.URL);
+      $('assistant-optin-flow-card')
+          .onShow(
+              url.searchParams.get('flow-type'),
+              url.searchParams.get('caption-bar-height'));
     },
 
     /**
@@ -60,6 +63,5 @@ cr.define('login.AssistantOptInFlowScreen', function() {
 });
 
 document.addEventListener('DOMContentLoaded', function() {
-  var url = new URL(document.URL);
-  login.AssistantOptInFlowScreen.show(url.searchParams.get('flow-type'));
+  login.AssistantOptInFlowScreen.show();
 });

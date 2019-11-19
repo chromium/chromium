@@ -5,12 +5,14 @@
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
 
 #include <memory>
+
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/html/forms/form_controller.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_element.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
 
 namespace blink {
 
@@ -32,25 +34,25 @@ TEST_F(HTMLSelectElementTest, SaveRestoreSelectSingleFormControlState) {
       "<option value='111' selected id='2'>!666</option>"
       "<option value='999'>999</option></select>");
   Element* element = GetElementById("sel");
-  HTMLFormControlElementWithState* select = ToHTMLSelectElement(element);
-  HTMLOptionElement* opt0 = ToHTMLOptionElement(GetElementById("0"));
-  HTMLOptionElement* opt2 = ToHTMLOptionElement(GetElementById("2"));
+  auto* opt0 = To<HTMLOptionElement>(GetElementById("0"));
+  auto* opt2 = To<HTMLOptionElement>(GetElementById("2"));
 
   // Save the select element state, and then restore again.
   // Test passes if the restored state is not changed.
-  EXPECT_EQ(2, ToHTMLSelectElement(element)->selectedIndex());
+  EXPECT_EQ(2, To<HTMLSelectElement>(element)->selectedIndex());
   EXPECT_FALSE(opt0->Selected());
   EXPECT_TRUE(opt2->Selected());
+  HTMLFormControlElementWithState* select = To<HTMLSelectElement>(element);
   FormControlState select_state = select->SaveFormControlState();
   EXPECT_EQ(2U, select_state.ValueSize());
 
   // Clear the selected state, to be restored by restoreFormControlState.
-  ToHTMLSelectElement(select)->setSelectedIndex(-1);
+  To<HTMLSelectElement>(select)->setSelectedIndex(-1);
   ASSERT_FALSE(opt2->Selected());
 
   // Restore
   select->RestoreFormControlState(select_state);
-  EXPECT_EQ(2, ToHTMLSelectElement(element)->selectedIndex());
+  EXPECT_EQ(2, To<HTMLSelectElement>(element)->selectedIndex());
   EXPECT_FALSE(opt0->Selected());
   EXPECT_TRUE(opt2->Selected());
 }
@@ -62,18 +64,18 @@ TEST_F(HTMLSelectElementTest, SaveRestoreSelectMultipleFormControlState) {
       "<option value='222'>222</option>"
       "<option value='111' selected id='2'>!666</option>"
       "<option value='999' selected id='3'>999</option></select>");
-  HTMLFormControlElementWithState* select =
-      ToHTMLSelectElement(GetElementById("sel"));
 
-  HTMLOptionElement* opt0 = ToHTMLOptionElement(GetElementById("0"));
-  HTMLOptionElement* opt2 = ToHTMLOptionElement(GetElementById("2"));
-  HTMLOptionElement* opt3 = ToHTMLOptionElement(GetElementById("3"));
+  auto* opt0 = To<HTMLOptionElement>(GetElementById("0"));
+  auto* opt2 = To<HTMLOptionElement>(GetElementById("2"));
+  auto* opt3 = To<HTMLOptionElement>(GetElementById("3"));
 
   // Save the select element state, and then restore again.
   // Test passes if the selected options are not changed.
   EXPECT_FALSE(opt0->Selected());
   EXPECT_TRUE(opt2->Selected());
   EXPECT_TRUE(opt3->Selected());
+  HTMLFormControlElementWithState* select =
+      To<HTMLSelectElement>(GetElementById("sel"));
   FormControlState select_state = select->SaveFormControlState();
   EXPECT_EQ(4U, select_state.ValueSize());
 
@@ -103,11 +105,11 @@ TEST_F(HTMLSelectElementTest, RestoreUnmatchedFormControlState) {
     </select>
   )HTML");
   Element* element = GetElementById("sel");
-  HTMLFormControlElementWithState* select = ToHTMLSelectElement(element);
-  HTMLOptionElement* opt2 = ToHTMLOptionElement(GetElementById("2"));
+  auto* opt2 = To<HTMLOptionElement>(GetElementById("2"));
 
-  ToHTMLSelectElement(element)->setSelectedIndex(1);
+  To<HTMLSelectElement>(element)->setSelectedIndex(1);
   // Save the current state.
+  HTMLFormControlElementWithState* select = To<HTMLSelectElement>(element);
   FormControlState select_state = select->SaveFormControlState();
   EXPECT_EQ(2U, select_state.ValueSize());
 
@@ -118,16 +120,15 @@ TEST_F(HTMLSelectElementTest, RestoreUnmatchedFormControlState) {
 
   // Restore
   select->RestoreFormControlState(select_state);
-  EXPECT_EQ(-1, ToHTMLSelectElement(element)->selectedIndex());
-  EXPECT_EQ(nullptr, ToHTMLSelectElement(element)->OptionToBeShown());
+  EXPECT_EQ(-1, To<HTMLSelectElement>(element)->selectedIndex());
+  EXPECT_EQ(nullptr, To<HTMLSelectElement>(element)->OptionToBeShown());
 }
 
 TEST_F(HTMLSelectElementTest, VisibleBoundsInVisualViewport) {
   SetHtmlInnerHTML(
       "<select style='position:fixed; top:12.3px; height:24px; "
       "-webkit-appearance:none;'><option>o1</select>");
-  HTMLSelectElement* select =
-      ToHTMLSelectElement(GetDocument().body()->firstChild());
+  auto* select = To<HTMLSelectElement>(GetDocument().body()->firstChild());
   ASSERT_NE(select, nullptr);
   IntRect bounds = select->VisibleBoundsInVisualViewport();
   EXPECT_EQ(24, bounds.Height());
@@ -135,8 +136,7 @@ TEST_F(HTMLSelectElementTest, VisibleBoundsInVisualViewport) {
 
 TEST_F(HTMLSelectElementTest, PopupIsVisible) {
   SetHtmlInnerHTML("<select><option>o1</option></select>");
-  HTMLSelectElement* select =
-      ToHTMLSelectElement(GetDocument().body()->firstChild());
+  auto* select = To<HTMLSelectElement>(GetDocument().body()->firstChild());
   ASSERT_NE(select, nullptr);
   EXPECT_FALSE(select->PopupIsVisible());
   select->ShowPopup();
@@ -148,15 +148,13 @@ TEST_F(HTMLSelectElementTest, PopupIsVisible) {
 TEST_F(HTMLSelectElementTest, FirstSelectableOption) {
   {
     SetHtmlInnerHTML("<select></select>");
-    HTMLSelectElement* select =
-        ToHTMLSelectElement(GetDocument().body()->firstChild());
+    auto* select = To<HTMLSelectElement>(GetDocument().body()->firstChild());
     EXPECT_EQ(nullptr, select->FirstSelectableOption());
   }
   {
     SetHtmlInnerHTML(
         "<select><option id=o1></option><option id=o2></option></select>");
-    HTMLSelectElement* select =
-        ToHTMLSelectElement(GetDocument().body()->firstChild());
+    auto* select = To<HTMLSelectElement>(GetDocument().body()->firstChild());
     EXPECT_EQ("o1", select->FirstSelectableOption()->FastGetAttribute(
                         html_names::kIdAttr));
   }
@@ -164,8 +162,7 @@ TEST_F(HTMLSelectElementTest, FirstSelectableOption) {
     SetHtmlInnerHTML(
         "<select><option id=o1 disabled></option><option "
         "id=o2></option></select>");
-    HTMLSelectElement* select =
-        ToHTMLSelectElement(GetDocument().body()->firstChild());
+    auto* select = To<HTMLSelectElement>(GetDocument().body()->firstChild());
     EXPECT_EQ("o2", select->FirstSelectableOption()->FastGetAttribute(
                         html_names::kIdAttr));
   }
@@ -173,8 +170,7 @@ TEST_F(HTMLSelectElementTest, FirstSelectableOption) {
     SetHtmlInnerHTML(
         "<select><option id=o1 style='display:none'></option><option "
         "id=o2></option></select>");
-    HTMLSelectElement* select =
-        ToHTMLSelectElement(GetDocument().body()->firstChild());
+    auto* select = To<HTMLSelectElement>(GetDocument().body()->firstChild());
     EXPECT_EQ("o2", select->FirstSelectableOption()->FastGetAttribute(
                         html_names::kIdAttr));
   }
@@ -182,8 +178,7 @@ TEST_F(HTMLSelectElementTest, FirstSelectableOption) {
     SetHtmlInnerHTML(
         "<select><optgroup><option id=o1></option><option "
         "id=o2></option></optgroup></select>");
-    HTMLSelectElement* select =
-        ToHTMLSelectElement(GetDocument().body()->firstChild());
+    auto* select = To<HTMLSelectElement>(GetDocument().body()->firstChild());
     EXPECT_EQ("o1", select->FirstSelectableOption()->FastGetAttribute(
                         html_names::kIdAttr));
   }
@@ -192,15 +187,13 @@ TEST_F(HTMLSelectElementTest, FirstSelectableOption) {
 TEST_F(HTMLSelectElementTest, LastSelectableOption) {
   {
     SetHtmlInnerHTML("<select></select>");
-    HTMLSelectElement* select =
-        ToHTMLSelectElement(GetDocument().body()->firstChild());
+    auto* select = To<HTMLSelectElement>(GetDocument().body()->firstChild());
     EXPECT_EQ(nullptr, select->LastSelectableOption());
   }
   {
     SetHtmlInnerHTML(
         "<select><option id=o1></option><option id=o2></option></select>");
-    HTMLSelectElement* select =
-        ToHTMLSelectElement(GetDocument().body()->firstChild());
+    auto* select = To<HTMLSelectElement>(GetDocument().body()->firstChild());
     EXPECT_EQ("o2", select->LastSelectableOption()->FastGetAttribute(
                         html_names::kIdAttr));
   }
@@ -208,8 +201,7 @@ TEST_F(HTMLSelectElementTest, LastSelectableOption) {
     SetHtmlInnerHTML(
         "<select><option id=o1></option><option id=o2 "
         "disabled></option></select>");
-    HTMLSelectElement* select =
-        ToHTMLSelectElement(GetDocument().body()->firstChild());
+    auto* select = To<HTMLSelectElement>(GetDocument().body()->firstChild());
     EXPECT_EQ("o1", select->LastSelectableOption()->FastGetAttribute(
                         html_names::kIdAttr));
   }
@@ -217,8 +209,7 @@ TEST_F(HTMLSelectElementTest, LastSelectableOption) {
     SetHtmlInnerHTML(
         "<select><option id=o1></option><option id=o2 "
         "style='display:none'></option></select>");
-    HTMLSelectElement* select =
-        ToHTMLSelectElement(GetDocument().body()->firstChild());
+    auto* select = To<HTMLSelectElement>(GetDocument().body()->firstChild());
     EXPECT_EQ("o1", select->LastSelectableOption()->FastGetAttribute(
                         html_names::kIdAttr));
   }
@@ -226,8 +217,7 @@ TEST_F(HTMLSelectElementTest, LastSelectableOption) {
     SetHtmlInnerHTML(
         "<select><optgroup><option id=o1></option><option "
         "id=o2></option></optgroup></select>");
-    HTMLSelectElement* select =
-        ToHTMLSelectElement(GetDocument().body()->firstChild());
+    auto* select = To<HTMLSelectElement>(GetDocument().body()->firstChild());
     EXPECT_EQ("o2", select->LastSelectableOption()->FastGetAttribute(
                         html_names::kIdAttr));
   }
@@ -236,15 +226,13 @@ TEST_F(HTMLSelectElementTest, LastSelectableOption) {
 TEST_F(HTMLSelectElementTest, NextSelectableOption) {
   {
     SetHtmlInnerHTML("<select></select>");
-    HTMLSelectElement* select =
-        ToHTMLSelectElement(GetDocument().body()->firstChild());
+    auto* select = To<HTMLSelectElement>(GetDocument().body()->firstChild());
     EXPECT_EQ(nullptr, select->NextSelectableOption(nullptr));
   }
   {
     SetHtmlInnerHTML(
         "<select><option id=o1></option><option id=o2></option></select>");
-    HTMLSelectElement* select =
-        ToHTMLSelectElement(GetDocument().body()->firstChild());
+    auto* select = To<HTMLSelectElement>(GetDocument().body()->firstChild());
     EXPECT_EQ("o1", select->NextSelectableOption(nullptr)->FastGetAttribute(
                         html_names::kIdAttr));
   }
@@ -252,8 +240,7 @@ TEST_F(HTMLSelectElementTest, NextSelectableOption) {
     SetHtmlInnerHTML(
         "<select><option id=o1 disabled></option><option "
         "id=o2></option></select>");
-    HTMLSelectElement* select =
-        ToHTMLSelectElement(GetDocument().body()->firstChild());
+    auto* select = To<HTMLSelectElement>(GetDocument().body()->firstChild());
     EXPECT_EQ("o2", select->NextSelectableOption(nullptr)->FastGetAttribute(
                         html_names::kIdAttr));
   }
@@ -261,8 +248,7 @@ TEST_F(HTMLSelectElementTest, NextSelectableOption) {
     SetHtmlInnerHTML(
         "<select><option id=o1 style='display:none'></option><option "
         "id=o2></option></select>");
-    HTMLSelectElement* select =
-        ToHTMLSelectElement(GetDocument().body()->firstChild());
+    auto* select = To<HTMLSelectElement>(GetDocument().body()->firstChild());
     EXPECT_EQ("o2", select->NextSelectableOption(nullptr)->FastGetAttribute(
                         html_names::kIdAttr));
   }
@@ -270,30 +256,27 @@ TEST_F(HTMLSelectElementTest, NextSelectableOption) {
     SetHtmlInnerHTML(
         "<select><optgroup><option id=o1></option><option "
         "id=o2></option></optgroup></select>");
-    HTMLSelectElement* select =
-        ToHTMLSelectElement(GetDocument().body()->firstChild());
+    auto* select = To<HTMLSelectElement>(GetDocument().body()->firstChild());
     EXPECT_EQ("o1", select->NextSelectableOption(nullptr)->FastGetAttribute(
                         html_names::kIdAttr));
   }
   {
     SetHtmlInnerHTML(
         "<select><option id=o1></option><option id=o2></option></select>");
-    HTMLSelectElement* select =
-        ToHTMLSelectElement(GetDocument().body()->firstChild());
-    HTMLOptionElement* option = ToHTMLOptionElement(GetElementById("o1"));
+    auto* select = To<HTMLSelectElement>(GetDocument().body()->firstChild());
+    auto* option = To<HTMLOptionElement>(GetElementById("o1"));
     EXPECT_EQ("o2", select->NextSelectableOption(option)->FastGetAttribute(
                         html_names::kIdAttr));
 
     EXPECT_EQ(nullptr, select->NextSelectableOption(
-                           ToHTMLOptionElement(GetElementById("o2"))));
+                           To<HTMLOptionElement>(GetElementById("o2"))));
   }
   {
     SetHtmlInnerHTML(
         "<select><option id=o1></option><optgroup><option "
         "id=o2></option></optgroup></select>");
-    HTMLSelectElement* select =
-        ToHTMLSelectElement(GetDocument().body()->firstChild());
-    HTMLOptionElement* option = ToHTMLOptionElement(GetElementById("o1"));
+    auto* select = To<HTMLSelectElement>(GetDocument().body()->firstChild());
+    auto* option = To<HTMLOptionElement>(GetElementById("o1"));
     EXPECT_EQ("o2", select->NextSelectableOption(option)->FastGetAttribute(
                         html_names::kIdAttr));
   }
@@ -302,15 +285,13 @@ TEST_F(HTMLSelectElementTest, NextSelectableOption) {
 TEST_F(HTMLSelectElementTest, PreviousSelectableOption) {
   {
     SetHtmlInnerHTML("<select></select>");
-    HTMLSelectElement* select =
-        ToHTMLSelectElement(GetDocument().body()->firstChild());
+    auto* select = To<HTMLSelectElement>(GetDocument().body()->firstChild());
     EXPECT_EQ(nullptr, select->PreviousSelectableOption(nullptr));
   }
   {
     SetHtmlInnerHTML(
         "<select><option id=o1></option><option id=o2></option></select>");
-    HTMLSelectElement* select =
-        ToHTMLSelectElement(GetDocument().body()->firstChild());
+    auto* select = To<HTMLSelectElement>(GetDocument().body()->firstChild());
     EXPECT_EQ("o2", select->PreviousSelectableOption(nullptr)->FastGetAttribute(
                         html_names::kIdAttr));
   }
@@ -318,8 +299,7 @@ TEST_F(HTMLSelectElementTest, PreviousSelectableOption) {
     SetHtmlInnerHTML(
         "<select><option id=o1></option><option id=o2 "
         "disabled></option></select>");
-    HTMLSelectElement* select =
-        ToHTMLSelectElement(GetDocument().body()->firstChild());
+    auto* select = To<HTMLSelectElement>(GetDocument().body()->firstChild());
     EXPECT_EQ("o1", select->PreviousSelectableOption(nullptr)->FastGetAttribute(
                         html_names::kIdAttr));
   }
@@ -327,8 +307,7 @@ TEST_F(HTMLSelectElementTest, PreviousSelectableOption) {
     SetHtmlInnerHTML(
         "<select><option id=o1></option><option id=o2 "
         "style='display:none'></option></select>");
-    HTMLSelectElement* select =
-        ToHTMLSelectElement(GetDocument().body()->firstChild());
+    auto* select = To<HTMLSelectElement>(GetDocument().body()->firstChild());
     EXPECT_EQ("o1", select->PreviousSelectableOption(nullptr)->FastGetAttribute(
                         html_names::kIdAttr));
   }
@@ -336,30 +315,27 @@ TEST_F(HTMLSelectElementTest, PreviousSelectableOption) {
     SetHtmlInnerHTML(
         "<select><optgroup><option id=o1></option><option "
         "id=o2></option></optgroup></select>");
-    HTMLSelectElement* select =
-        ToHTMLSelectElement(GetDocument().body()->firstChild());
+    auto* select = To<HTMLSelectElement>(GetDocument().body()->firstChild());
     EXPECT_EQ("o2", select->PreviousSelectableOption(nullptr)->FastGetAttribute(
                         html_names::kIdAttr));
   }
   {
     SetHtmlInnerHTML(
         "<select><option id=o1></option><option id=o2></option></select>");
-    HTMLSelectElement* select =
-        ToHTMLSelectElement(GetDocument().body()->firstChild());
-    HTMLOptionElement* option = ToHTMLOptionElement(GetElementById("o2"));
+    auto* select = To<HTMLSelectElement>(GetDocument().body()->firstChild());
+    auto* option = To<HTMLOptionElement>(GetElementById("o2"));
     EXPECT_EQ("o1", select->PreviousSelectableOption(option)->FastGetAttribute(
                         html_names::kIdAttr));
 
     EXPECT_EQ(nullptr, select->PreviousSelectableOption(
-                           ToHTMLOptionElement(GetElementById("o1"))));
+                           To<HTMLOptionElement>(GetElementById("o1"))));
   }
   {
     SetHtmlInnerHTML(
         "<select><option id=o1></option><optgroup><option "
         "id=o2></option></optgroup></select>");
-    HTMLSelectElement* select =
-        ToHTMLSelectElement(GetDocument().body()->firstChild());
-    HTMLOptionElement* option = ToHTMLOptionElement(GetElementById("o2"));
+    auto* select = To<HTMLSelectElement>(GetDocument().body()->firstChild());
+    auto* option = To<HTMLOptionElement>(GetElementById("o2"));
     EXPECT_EQ("o1", select->PreviousSelectableOption(option)->FastGetAttribute(
                         html_names::kIdAttr));
   }
@@ -368,10 +344,8 @@ TEST_F(HTMLSelectElementTest, PreviousSelectableOption) {
 TEST_F(HTMLSelectElementTest, ActiveSelectionEndAfterOptionRemoval) {
   SetHtmlInnerHTML(
       "<select><optgroup><option selected>o1</option></optgroup></select>");
-  HTMLSelectElement* select =
-      ToHTMLSelectElement(GetDocument().body()->firstChild());
-  HTMLOptionElement* option =
-      ToHTMLOptionElement(select->firstChild()->firstChild());
+  auto* select = To<HTMLSelectElement>(GetDocument().body()->firstChild());
+  auto* option = To<HTMLOptionElement>(select->firstChild()->firstChild());
   EXPECT_EQ(1, select->ActiveSelectionEndListIndex());
   select->firstChild()->removeChild(option);
   EXPECT_EQ(-1, select->ActiveSelectionEndListIndex());
@@ -383,10 +357,9 @@ TEST_F(HTMLSelectElementTest, DefaultToolTip) {
   SetHtmlInnerHTML(
       "<select size=4><option value="
       ">Placeholder</option><optgroup><option>o2</option></optgroup></select>");
-  HTMLSelectElement* select =
-      ToHTMLSelectElement(GetDocument().body()->firstChild());
-  Element* option = ToElement(select->firstChild());
-  Element* optgroup = ToElement(option->nextSibling());
+  auto* select = To<HTMLSelectElement>(GetDocument().body()->firstChild());
+  auto* option = To<Element>(select->firstChild());
+  auto* optgroup = To<Element>(option->nextSibling());
 
   EXPECT_EQ(String(), select->DefaultToolTip())
       << "defaultToolTip for SELECT without FORM and without required "
@@ -401,7 +374,7 @@ TEST_F(HTMLSelectElementTest, DefaultToolTip) {
   EXPECT_EQ(select->DefaultToolTip(), option->DefaultToolTip());
   EXPECT_EQ(select->DefaultToolTip(), optgroup->DefaultToolTip());
 
-  HTMLFormElement* form = HTMLFormElement::Create(GetDocument());
+  auto* form = MakeGarbageCollected<HTMLFormElement>(GetDocument());
   GetDocument().body()->AppendChild(form);
   form->AppendChild(select);
   EXPECT_EQ("<<ValidationValueMissingForSelect>>", select->DefaultToolTip())
@@ -427,8 +400,7 @@ TEST_F(HTMLSelectElementTest, SetRecalcListItemsByOptgroupRemoval) {
   SetHtmlInnerHTML(
       "<select><optgroup><option>sub1</option><option>sub2</option></"
       "optgroup></select>");
-  HTMLSelectElement* select =
-      ToHTMLSelectElement(GetDocument().body()->firstChild());
+  auto* select = To<HTMLSelectElement>(GetDocument().body()->firstChild());
   select->SetInnerHTMLFromString("");
   // PASS if setInnerHTML didn't have a check failure.
 }

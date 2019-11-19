@@ -39,9 +39,8 @@ class ExceptionState;
 
 class NumberInputType final : public TextFieldInputType {
  public:
-  static InputType* Create(HTMLInputElement&);
-
-  NumberInputType(HTMLInputElement& element) : TextFieldInputType(element) {}
+  explicit NumberInputType(HTMLInputElement& element)
+      : TextFieldInputType(element) {}
 
  private:
   void CountUsage() override;

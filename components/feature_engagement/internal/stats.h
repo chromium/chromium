@@ -9,8 +9,8 @@
 #include <vector>
 
 #include "components/feature_engagement/internal/condition_validator.h"
-#include "components/feature_engagement/internal/configuration.h"
 #include "components/feature_engagement/internal/proto/feature_event.pb.h"
+#include "components/feature_engagement/public/configuration.h"
 
 namespace feature_engagement {
 namespace stats {
@@ -79,7 +79,8 @@ enum class ConfigParsingEvent {
   // The configuration is invalid after parsing.
   FAILURE = 1,
 
-  // Fails to parse the feature config because no field trial is found.
+  // Fails to parse the feature config because no field trial is found,
+  // and there was no checked in configuration.
   FAILURE_NO_FIELD_TRIAL = 2,
 
   // Fails to parse the used event.
@@ -115,8 +116,11 @@ enum class ConfigParsingEvent {
   // Fails to parse the tracking only flag.
   FAILURE_TRACKING_ONLY_PARSE = 13,
 
+  // Successfully read checked in configuration.
+  SUCCESS_FROM_SOURCE = 14,
+
   // Last entry for the enum.
-  COUNT = 14,
+  COUNT = 15,
 };
 
 // Used in metrics to track database states. Each type will match to a suffix

@@ -4,24 +4,20 @@
 
 // <include src="../../assert.js">
 
-cr.exportPath('cr.ui');
-
-/**
- * Enum for type of hide. Delayed is used when called by clicking on a
- * checkable menu item.
- * @enum {number}
- */
-cr.ui.HideType = {
-  INSTANT: 0,
-  DELAYED: 1
-};
 
 cr.define('cr.ui', function() {
   /** @const */
   const Menu = cr.ui.Menu;
 
-  /** @const */
-  const HideType = cr.ui.HideType;
+  /**
+   * Enum for type of hide. Delayed is used when called by clicking on a
+   * checkable menu item.
+   * @enum {number}
+   */
+  const HideType = {
+    INSTANT: 0,
+    DELAYED: 1,
+  };
 
   /** @const */
   const positionPopupAroundElement = cr.ui.positionPopupAroundElement;
@@ -350,6 +346,7 @@ cr.define('cr.ui', function() {
 
   // Export
   return {
+    HideType: HideType,
     MenuButton: MenuButton,
   };
 });

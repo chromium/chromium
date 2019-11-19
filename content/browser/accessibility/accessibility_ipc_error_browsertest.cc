@@ -9,11 +9,11 @@
 #include "content/browser/frame_host/render_frame_host_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/ax_event_notification_details.h"
+#include "content/public/test/accessibility_notification_waiter.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/shell/browser/shell.h"
-#include "content/test/accessibility_browser_test_utils.h"
 #include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/ax_tree.h"
 
@@ -50,7 +50,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityIpcErrorBrowserTest,
       "</div>"
       "<button id='button'>Button</button>";
   GURL url(url_str);
-  NavigateToURL(shell(), url);
+  EXPECT_TRUE(NavigateToURL(shell(), url));
 
   // Simulate a condition where the RFH can't create a
   // BrowserAccessibilityManager - like if there's no view.
@@ -117,16 +117,16 @@ IN_PROC_BROWSER_TEST_F(AccessibilityIpcErrorBrowserTest,
   VLOG(1) << tree->ToString();
 
   EXPECT_EQ(ax::mojom::Role::kRootWebArea, root->data().role);
-  ASSERT_EQ(2, root->child_count());
+  ASSERT_EQ(2u, root->GetUnignoredChildCount());
 
-  const ui::AXNode* live_region = root->ChildAtIndex(0);
-  ASSERT_EQ(1, live_region->child_count());
+  const ui::AXNode* live_region = root->GetUnignoredChildAtIndex(0);
+  ASSERT_EQ(1u, live_region->GetUnignoredChildCount());
   EXPECT_EQ(ax::mojom::Role::kGenericContainer, live_region->data().role);
 
-  const ui::AXNode* para = live_region->ChildAtIndex(0);
+  const ui::AXNode* para = live_region->GetUnignoredChildAtIndex(0);
   EXPECT_EQ(ax::mojom::Role::kParagraph, para->data().role);
 
-  const ui::AXNode* button = root->ChildAtIndex(1);
+  const ui::AXNode* button = root->GetUnignoredChildAtIndex(1);
   EXPECT_EQ(ax::mojom::Role::kButton, button->data().role);
 }
 
@@ -145,7 +145,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityIpcErrorBrowserTest,
       "data:text/html,"
       "<button id='button'>Button</button>";
   GURL url(url_str);
-  NavigateToURL(shell(), url);
+  EXPECT_TRUE(NavigateToURL(shell(), url));
   RenderFrameHostImpl* frame = static_cast<RenderFrameHostImpl*>(
       shell()->web_contents()->GetMainFrame());
 
@@ -174,10 +174,12 @@ IN_PROC_BROWSER_TEST_F(AccessibilityIpcErrorBrowserTest,
   int max_iterations = RenderFrameHostImpl::kMaxAccessibilityResets;
 
   for (int iteration = 0; iteration < max_iterations; iteration++) {
-    // Send the browser accessibility the bad message.
-    BrowserAccessibilityManager* manager =
-        frame->GetOrCreateBrowserAccessibilityManager();
-    manager->OnAccessibilityEvents(bad_accessibility_event);
+    // Make sure the manager has been created.
+    frame->GetOrCreateBrowserAccessibilityManager();
+    ASSERT_NE(nullptr, frame->browser_accessibility_manager());
+
+    // Send the bad message to the manager.
+    frame->SendAccessibilityEventsToManager(bad_accessibility_event);
 
     // Now the frame should have deleted the BrowserAccessibilityManager.
     ASSERT_EQ(nullptr, frame->browser_accessibility_manager());

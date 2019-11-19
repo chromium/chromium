@@ -39,8 +39,7 @@ void HeadlessBrowserImpl::PlatformStart() {
 void HeadlessBrowserImpl::PlatformInitializeWebContents(
     HeadlessWebContentsImpl* web_contents) {
   auto window_tree_host = std::make_unique<HeadlessWindowTreeHost>(
-      gfx::Rect(),
-      web_contents->begin_frame_control_enabled() ? web_contents : nullptr);
+      web_contents->begin_frame_control_enabled());
   window_tree_host->InitHost();
   gfx::NativeWindow parent_window = window_tree_host->window();
   parent_window->Show();
@@ -63,8 +62,7 @@ void HeadlessBrowserImpl::PlatformSetWebContentsBounds(
   gfx::Rect new_host_bounds(
       0, 0, std::max(old_host_bounds.width(), bounds.x() + bounds.width()),
       std::max(old_host_bounds.height(), bounds.y() + bounds.height()));
-  web_contents->window_tree_host()->SetBoundsInPixels(
-      new_host_bounds, viz::LocalSurfaceIdAllocation());
+  web_contents->window_tree_host()->SetBoundsInPixels(new_host_bounds);
   web_contents->window_tree_host()->window()->SetBounds(new_host_bounds);
 
   gfx::NativeView native_view = web_contents->web_contents()->GetNativeView();

@@ -11,14 +11,17 @@
 #include "base/strings/string_split.h"
 #include "base/test/bind_test_util.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
+#include "base/test/task_environment.h"
+#include "components/feed/core/pref_names.h"
 #include "components/feed/feed_feature_list.h"
-#include "components/variations/variations_params_manager.h"
+#include "components/prefs/testing_pref_service.h"
+#include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_status_code.h"
+#include "net/http/http_util.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
-#include "services/identity/public/cpp/identity_test_environment.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -67,18 +70,20 @@ class FeedNetworkingHostTest : public testing::Test {
   ~FeedNetworkingHostTest() override {}
 
   void SetUp() override {
+    feed::RegisterProfilePrefs(profile_prefs_.registry());
+
     shared_url_loader_factory_ =
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             &test_factory_);
     net_service_ = std::make_unique<FeedNetworkingHost>(
         identity_test_env_.identity_manager(), "dummy_api_key",
-        shared_url_loader_factory_,
-        scoped_task_environment_.GetMockTickClock());
+        shared_url_loader_factory_, task_environment_.GetMockTickClock(),
+        &profile_prefs_);
   }
 
   FeedNetworkingHost* service() { return net_service_.get(); }
 
-  identity::IdentityTestEnvironment* identity_env() {
+  signin::IdentityTestEnvironment* identity_env() {
     return &identity_test_env_;
   }
 
@@ -87,16 +92,16 @@ class FeedNetworkingHostTest : public testing::Test {
                net::HttpStatusCode code = net::HTTP_OK,
                network::URLLoaderCompletionStatus status =
                    network::URLLoaderCompletionStatus()) {
-    network::ResourceResponseHead head;
+    auto head = network::mojom::URLResponseHead::New();
     if (code >= 0) {
-      head.headers = base::MakeRefCounted<net::HttpResponseHeaders>(
+      head->headers = base::MakeRefCounted<net::HttpResponseHeaders>(
           "HTTP/1.1 " + base::NumberToString(code));
       status.decoded_body_length = response_string.length();
     }
 
-    test_factory_.AddResponse(url, head, response_string, status);
+    test_factory_.AddResponse(url, std::move(head), response_string, status);
 
-    scoped_task_environment_.FastForwardUntilNoTasksRemain();
+    task_environment_.FastForwardUntilNoTasksRemain();
   }
 
   void SendRequestAndRespond(const std::string& url_string,
@@ -136,15 +141,18 @@ class FeedNetworkingHostTest : public testing::Test {
 
   network::TestURLLoaderFactory* test_factory() { return &test_factory_; }
 
-  base::test::ScopedTaskEnvironment scoped_task_environment_{
-      base::test::ScopedTaskEnvironment::MainThreadType::MOCK_TIME};
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+
+  TestingPrefServiceSimple& profile_prefs() { return profile_prefs_; }
 
  private:
-  identity::IdentityTestEnvironment identity_test_env_;
+  signin::IdentityTestEnvironment identity_test_env_;
   std::unique_ptr<FeedNetworkingHost> net_service_;
   network::TestURLLoaderFactory test_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory_;
   base::SimpleTestTickClock test_tick_clock_;
+  TestingPrefServiceSimple profile_prefs_;
 
   DISALLOW_COPY_AND_ASSIGN(FeedNetworkingHostTest);
 };
@@ -172,7 +180,7 @@ TEST_F(FeedNetworkingHostTest, ShouldSendSuccessfullyMultipleInflight) {
                         &done_callback2);
   SendRequestAndRespond("http://foobar.com/other", "POST", "", "", net::HTTP_OK,
                         network::URLLoaderCompletionStatus(), &done_callback3);
-  scoped_task_environment_.FastForwardUntilNoTasksRemain();
+  task_environment_.FastForwardUntilNoTasksRemain();
 
   EXPECT_TRUE(done_callback1.has_run);
   EXPECT_TRUE(done_callback2.has_run);
@@ -192,7 +200,7 @@ TEST_F(FeedNetworkingHostTest, ShouldSendSuccessfullyDifferentRequestMethods) {
                           net::HTTP_OK, network::URLLoaderCompletionStatus(),
                           &done_callback);
 
-    scoped_task_environment_.FastForwardUntilNoTasksRemain();
+    task_environment_.FastForwardUntilNoTasksRemain();
     EXPECT_TRUE(done_callback.has_run);
     EXPECT_EQ(done_callback.code, 200);
   }
@@ -291,7 +299,7 @@ TEST_F(FeedNetworkingHostTest, CancellationIsSafe) {
   service()->Send(GURL("http://foobar.com/feed2"), "POST", request_body,
                   base::BindOnce(&MockResponseDoneCallback::Done,
                                  base::Unretained(&done_callback2)));
-  scoped_task_environment_.FastForwardUntilNoTasksRemain();
+  task_environment_.FastForwardUntilNoTasksRemain();
   service()->CancelRequests();
 }
 
@@ -346,7 +354,7 @@ TEST_F(FeedNetworkingHostTest, TestDurationHistogram) {
   service()->Send(url, "POST", request_body,
                   base::BindOnce(&MockResponseDoneCallback::Done,
                                  base::Unretained(&done_callback)));
-  scoped_task_environment_.FastForwardBy(duration);
+  task_environment_.FastForwardBy(duration);
   Respond(url, "", net::HTTP_OK, network::URLLoaderCompletionStatus());
 
   EXPECT_TRUE(done_callback.has_run);
@@ -363,10 +371,10 @@ TEST_F(FeedNetworkingHostTest, TestDefaultTimeout) {
   service()->Send(url, "POST", request_body,
                   base::BindOnce(&MockResponseDoneCallback::Done,
                                  base::Unretained(&done_callback)));
-  scoped_task_environment_.FastForwardBy(TimeDelta::FromSeconds(29));
+  task_environment_.FastForwardBy(TimeDelta::FromSeconds(29));
   EXPECT_FALSE(done_callback.has_run);
 
-  scoped_task_environment_.FastForwardBy(TimeDelta::FromSeconds(29));
+  task_environment_.FastForwardBy(TimeDelta::FromSeconds(29));
   EXPECT_TRUE(done_callback.has_run);
   histogram_tester.ExpectTimeBucketCount(
       "ContentSuggestions.Feed.Network.Duration", TimeDelta::FromSeconds(30),
@@ -374,10 +382,9 @@ TEST_F(FeedNetworkingHostTest, TestDefaultTimeout) {
 }
 
 TEST_F(FeedNetworkingHostTest, TestParamTimeout) {
-  variations::testing::VariationParamsManager variation_params(
-      kInterestFeedContentSuggestions.name,
-      {{kTimeoutDurationSeconds.name, "2"}},
-      {kInterestFeedContentSuggestions.name});
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      kInterestFeedContentSuggestions, {{kTimeoutDurationSeconds.name, "2"}});
   MockResponseDoneCallback done_callback;
   GURL url = GURL("http://foobar.com/feed");
   std::vector<uint8_t> request_body;
@@ -385,11 +392,39 @@ TEST_F(FeedNetworkingHostTest, TestParamTimeout) {
   service()->Send(url, "POST", request_body,
                   base::BindOnce(&MockResponseDoneCallback::Done,
                                  base::Unretained(&done_callback)));
-  scoped_task_environment_.FastForwardBy(TimeDelta::FromSeconds(1));
+  task_environment_.FastForwardBy(TimeDelta::FromSeconds(1));
   EXPECT_FALSE(done_callback.has_run);
 
-  scoped_task_environment_.FastForwardBy(TimeDelta::FromSeconds(1));
+  task_environment_.FastForwardBy(TimeDelta::FromSeconds(1));
   EXPECT_TRUE(done_callback.has_run);
+}
+
+// Verify that the kHostOverrideHost pref overrides the feed host
+// and updates the Bless nonce if one sent in the response.
+TEST_F(FeedNetworkingHostTest, TestHostOverrideWithAuthHeader) {
+  MockResponseDoneCallback done_callback;
+  profile_prefs().SetString(feed::prefs::kHostOverrideHost,
+                            "http://www.newhost.com/");
+
+  service()->Send(GURL("http://foobar.com/feed"), "GET", {},
+                  base::BindOnce(&MockResponseDoneCallback::Done,
+                                 base::Unretained(&done_callback)));
+
+  auto head = network::mojom::URLResponseHead::New();
+  head->headers = base::MakeRefCounted<net::HttpResponseHeaders>(
+      net::HttpUtil::AssembleRawHeaders(
+          "HTTP/1.1 401 Unauthorized\nwww-authenticate: Foo "
+          "nonce=\"1234123412341234\"\n\n"));
+  // The response is from www.newhost.com, which verifies that the host is
+  // overridden in the request as expected.
+  test_factory()->AddResponse(GURL("http://www.newhost.com/feed"),
+                              std::move(head), std::string(),
+                              network::URLLoaderCompletionStatus());
+  task_environment_.FastForwardUntilNoTasksRemain();
+
+  EXPECT_TRUE(done_callback.has_run);
+  EXPECT_EQ("1234123412341234",
+            profile_prefs().GetString(feed::prefs::kHostOverrideBlessNonce));
 }
 
 }  // namespace feed

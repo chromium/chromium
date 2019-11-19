@@ -1,0 +1,426 @@
+Tests that audits panel works.
+
+
+========== Audits Start Audit State ==========
+[x] Performance
+[x] Progressive Web App
+[x] Best practices
+[x] Accessibility
+[x] SEO
+[x] Clear storage
+Run audits: enabled visible
+
+=============== Lighthouse Status Updates ===============
+Loading…
+Create config
+Requiring gatherers
+Requiring audits
+Runner setup
+Connecting to browser
+Resetting state with about:blank
+Getting browser version
+Benchmarking machine
+Initializing…
+Resetting state with about:blank
+Setting up network for the pass trace
+Cleaning browser cache
+Running beforePass methods
+Gathering setup: CSSUsage
+Gathering setup: ViewportDimensions
+Gathering setup: RuntimeExceptions
+Gathering setup: ConsoleMessages
+Gathering setup: AnchorElements
+Gathering setup: ImageElements
+Gathering setup: LinkElements
+Gathering setup: MetaElements
+Gathering setup: ScriptElements
+Gathering setup: AppCacheManifest
+Gathering setup: Doctype
+Gathering setup: DOMStats
+Gathering setup: OptimizedImages
+Gathering setup: PasswordInputsWithPreventedPaste
+Gathering setup: ResponseCompression
+Gathering setup: TagsBlockingFirstPaint
+Gathering setup: FontSize
+Gathering setup: EmbeddedContent
+Gathering setup: RobotsTxt
+Gathering setup: TapTargets
+Gathering setup: Accessibility
+Beginning devtoolsLog and trace
+Getting browser version
+Loading page & waiting for onload
+Running pass methods
+Gathering in-page: CSSUsage
+Gathering in-page: ViewportDimensions
+Gathering in-page: RuntimeExceptions
+Gathering in-page: ConsoleMessages
+Gathering in-page: AnchorElements
+Gathering in-page: ImageElements
+Gathering in-page: LinkElements
+Gathering in-page: MetaElements
+Gathering in-page: ScriptElements
+Gathering in-page: AppCacheManifest
+Gathering in-page: Doctype
+Gathering in-page: DOMStats
+Gathering in-page: OptimizedImages
+Gathering in-page: PasswordInputsWithPreventedPaste
+Gathering in-page: ResponseCompression
+Gathering in-page: TagsBlockingFirstPaint
+Gathering in-page: FontSize
+Gathering in-page: EmbeddedContent
+Gathering in-page: RobotsTxt
+Gathering in-page: TapTargets
+Gathering in-page: Accessibility
+Gathering trace
+Gathering devtoolsLog & network records
+Running afterPass methods
+Gathering: CSSUsage
+Gathering: ViewportDimensions
+Gathering: RuntimeExceptions
+Gathering: ConsoleMessages
+Gathering: AnchorElements
+Gathering: ImageElements
+Gathering: LinkElements
+Gathering: MetaElements
+Gathering: ScriptElements
+Gathering: AppCacheManifest
+Gathering: Doctype
+Gathering: DOMStats
+Gathering: OptimizedImages
+Gathering: PasswordInputsWithPreventedPaste
+Gathering: ResponseCompression
+Gathering: TagsBlockingFirstPaint
+Gathering: FontSize
+Gathering: EmbeddedContent
+Gathering: RobotsTxt
+Gathering: TapTargets
+Gathering: Accessibility
+Resetting state with about:blank
+Setting up network for the pass trace
+Running beforePass methods
+Gathering setup: ServiceWorker
+Gathering setup: Offline
+Gathering setup: StartUrl
+Beginning devtoolsLog and trace
+Loading page & waiting for onload
+Running pass methods
+Gathering in-page: ServiceWorker
+Gathering in-page: Offline
+Gathering in-page: StartUrl
+Gathering devtoolsLog & network records
+Running afterPass methods
+Gathering: ServiceWorker
+Gathering: Offline
+Gathering: StartUrl
+Resetting state with about:blank
+Setting up network for the pass trace
+Running beforePass methods
+Gathering setup: HTTPRedirect
+Gathering setup: HTMLWithoutJavaScript
+Beginning devtoolsLog and trace
+Loading page & waiting for onload
+Running pass methods
+Gathering in-page: HTTPRedirect
+Gathering in-page: HTMLWithoutJavaScript
+Gathering devtoolsLog & network records
+Running afterPass methods
+Gathering: HTTPRedirect
+Gathering: HTMLWithoutJavaScript
+Disconnecting from browser...
+Analyzing and running audits...
+Auditing: Uses HTTPS
+Computing artifact: NetworkRecords
+Auditing: Redirects HTTP traffic to HTTPS
+Auditing: Registers a service worker that controls page and `start_url`
+Auditing: Current page responds with a 200 when offline
+Auditing: Has a `<meta name="viewport">` tag with `width` or `initial-scale`
+Computing artifact: ViewportMeta
+Auditing: Contains some content when JavaScript is not available
+Auditing: First Contentful Paint
+Computing artifact: FirstContentfulPaint
+Computing artifact: TraceOfTab
+Auditing: First Meaningful Paint
+Computing artifact: FirstMeaningfulPaint
+Auditing: Page load is fast enough on mobile networks
+Computing artifact: Interactive
+Auditing: Speed Index
+Computing artifact: SpeedIndex
+Auditing: Screenshot Thumbnails
+Computing artifact: Speedline
+Auditing: Final Screenshot
+Auditing: Estimated Input Latency
+Computing artifact: EstimatedInputLatency
+Auditing: Total Blocking Time
+Computing artifact: TotalBlockingTime
+Auditing: Max Potential First Input Delay
+Computing artifact: MaxPotentialFID
+Auditing: No browser errors logged to the console
+Auditing: Server response times are low (TTFB)
+Computing artifact: MainResource
+Auditing: First CPU Idle
+Computing artifact: FirstCPUIdle
+Auditing: Time to Interactive
+Auditing: User Timing marks and measures
+Computing artifact: UserTimings
+Auditing: Avoid chaining critical requests
+Computing artifact: CriticalRequestChains
+Auditing: Avoid multiple page redirects
+Auditing: Web app manifest meets the installability requirements
+Computing artifact: ManifestValues
+Auditing: Provides a valid `apple-touch-icon`
+Auditing: Configured for a custom splash screen
+Auditing: Sets a theme color for the address bar.
+Auditing: Content is sized correctly for the viewport
+Auditing: Displays images with correct aspect ratio
+Auditing: Avoids deprecated APIs
+Auditing: Minimizes main-thread work
+Computing artifact: MainThreadTasks
+Auditing: JavaScript execution time
+Auditing: Preload key requests
+Computing artifact: PageDependencyGraph
+Computing artifact: LoadSimulator
+Computing artifact: NetworkAnalysis
+Auditing: Preconnect to required origins
+Computing artifact: LoadSimulator
+Auditing: All text remains visible during webfont loads
+Auditing: Diagnostics
+Auditing: Network Requests
+Auditing: Network Round Trip Times
+Auditing: Server Backend Latencies
+Auditing: Tasks
+Auditing: Metrics
+Auditing: `start_url` responds with a 200 when offline
+Auditing: Performance budget
+Computing artifact: ResourceSummary
+Auditing: Keep request counts low and transfer sizes small
+Auditing: Minimize third-party usage
+Auditing: Site works cross-browser
+Auditing: Page transitions don't feel like they block on the network
+Auditing: Each page has a URL
+Auditing: `[accesskey]` values are unique
+Auditing: `[aria-*]` attributes match their roles
+Auditing: `[role]`s have all required `[aria-*]` attributes
+Auditing: Elements with an ARIA `[role]` that require children to contain a specific `[role]` have all required children.
+Auditing: `[role]`s are contained by their required parent element
+Auditing: `[role]` values are valid
+Auditing: `[aria-*]` attributes have valid values
+Auditing: `[aria-*]` attributes are valid and not misspelled
+Auditing: `<audio>` elements contain a `<track>` element with `[kind="captions"]`
+Auditing: Buttons have an accessible name
+Auditing: The page contains a heading, skip link, or landmark region
+Auditing: Background and foreground colors have a sufficient contrast ratio
+Auditing: `<dl>`'s contain only properly-ordered `<dt>` and `<dd>` groups, `<script>` or `<template>` elements.
+Auditing: Definition list items are wrapped in `<dl>` elements
+Auditing: Document has a `<title>` element
+Auditing: `[id]` attributes on the page are unique
+Auditing: `<frame>` or `<iframe>` elements have a title
+Auditing: `<html>` element has a `[lang]` attribute
+Auditing: `<html>` element has a valid value for its `[lang]` attribute
+Auditing: Image elements have `[alt]` attributes
+Auditing: `<input type="image">` elements have `[alt]` text
+Auditing: Form elements have associated labels
+Auditing: Presentational `<table>` elements avoid using `<th>`, `<caption>` or the `[summary]` attribute.
+Auditing: Links have a discernible name
+Auditing: Lists contain only `<li>` elements and script supporting elements (`<script>` and `<template>`).
+Auditing: List items (`<li>`) are contained within `<ul>` or `<ol>` parent elements
+Auditing: The document does not use `<meta http-equiv="refresh">`
+Auditing: `[user-scalable="no"]` is not used in the `<meta name="viewport">` element and the `[maximum-scale]` attribute is not less than 5.
+Auditing: `<object>` elements have `[alt]` text
+Auditing: No element has a `[tabindex]` value greater than 0
+Auditing: Cells in a `<table>` element that use the `[headers]` attribute refer to table cells within the same table.
+Auditing: `<th>` elements and elements with `[role="columnheader"/"rowheader"]` have data cells they describe.
+Auditing: `[lang]` attributes have a valid value
+Auditing: `<video>` elements contain a `<track>` element with `[kind="captions"]`
+Auditing: `<video>` elements contain a `<track>` element with `[kind="description"]`
+Auditing: Custom controls have associated labels
+Auditing: Custom controls have ARIA roles
+Auditing: User focus is not accidentally trapped in a region
+Auditing: Interactive controls are keyboard focusable
+Auditing: Headings don't skip levels
+Auditing: Interactive elements indicate their purpose and state
+Auditing: The page has a logical tab order
+Auditing: The user's focus is directed to new content added to the page
+Auditing: Offscreen content is hidden from assistive technology
+Auditing: HTML5 landmark elements are used to improve navigation
+Auditing: Visual order on the page follows DOM order
+Auditing: Uses efficient cache policy on static assets
+Auditing: Avoids enormous network payloads
+Auditing: Defer offscreen images
+Auditing: Eliminate render-blocking resources
+Auditing: Minify CSS
+Auditing: Minify JavaScript
+Auditing: Remove unused CSS
+Auditing: Serve images in next-gen formats
+Auditing: Efficiently encode images
+Auditing: Enable text compression
+Auditing: Properly size images
+Auditing: Use video formats for animated content
+Auditing: Avoids Application Cache
+Auditing: Page has the HTML doctype
+Auditing: Avoids an excessive DOM size
+Auditing: Links to cross-origin destinations are safe
+Auditing: Avoids requesting the geolocation permission on page load
+Auditing: Avoids `document.write()`
+Auditing: Avoids front-end JavaScript libraries with known security vulnerabilities
+Auditing: Detected JavaScript libraries
+Auditing: Avoids requesting the notification permission on page load
+Auditing: Allows users to paste into password fields
+Auditing: Uses HTTP/2 for its own resources
+Auditing: Uses passive listeners to improve scrolling performance
+Auditing: Document has a meta description
+Auditing: Page has successful HTTP status code
+Auditing: Document uses legible font sizes
+Auditing: Links have descriptive text
+Auditing: Page isn’t blocked from indexing
+Auditing: robots.txt is valid
+Auditing: Tap targets are sized appropriately
+Auditing: Document has a valid `hreflang`
+Auditing: Document avoids plugins
+Auditing: Document has a valid `rel=canonical`
+Auditing: Structured data is valid
+Generating results...
+
+=============== Lighthouse Results ===============
+URL: http://127.0.0.1:8000/devtools/resources/inspected-page.html
+Version: 5.5.0
+TestedAsMobileDevice: true
+ViewportDimensions: {
+  "innerWidth": 981,
+  "innerHeight": 1570,
+  "outerWidth": 412,
+  "outerHeight": 660,
+  "devicePixelRatio": 2.625
+}
+
+
+accesskeys: notApplicable
+appcache-manifest: pass
+apple-touch-icon: fail
+aria-allowed-attr: notApplicable
+aria-required-attr: notApplicable
+aria-required-children: notApplicable
+aria-required-parent: notApplicable
+aria-roles: notApplicable
+aria-valid-attr: notApplicable
+aria-valid-attr-value: notApplicable
+audio-caption: notApplicable
+bootup-time: flaky
+button-name: notApplicable
+bypass: notApplicable
+canonical: notApplicable
+color-contrast: notApplicable
+content-width: fail
+critical-request-chains: notApplicable
+custom-controls-labels: manual
+custom-controls-roles: manual
+definition-list: notApplicable
+deprecations: pass
+diagnostics: ERROR Something went wrong with recording the trace over your page load. Please run Lighthouse again. (NO_FCP)
+dlitem: notApplicable
+doctype: fail
+document-title: fail
+dom-size: numeric
+duplicate-id: notApplicable
+efficient-animated-content: flaky
+errors-in-console: pass
+estimated-input-latency: flaky
+external-anchors-use-rel-noopener: pass
+final-screenshot: ERROR Something went wrong with recording the trace over your page load. Please run Lighthouse again. (NO_FCP)
+first-contentful-paint: flaky
+first-cpu-idle: flaky
+first-meaningful-paint: flaky
+focus-traps: manual
+focusable-controls: manual
+font-display: pass
+font-size: fail
+frame-title: notApplicable
+geolocation-on-start: pass
+heading-levels: manual
+hreflang: pass
+html-has-lang: fail
+html-lang-valid: notApplicable
+http-status-code: pass
+image-alt: notApplicable
+image-aspect-ratio: pass
+input-image-alt: notApplicable
+installable-manifest: fail
+interactive: flaky
+interactive-element-affordance: manual
+is-crawlable: pass
+is-on-https: pass
+js-libraries: pass
+label: notApplicable
+layout-table: notApplicable
+link-name: notApplicable
+link-text: pass
+list: notApplicable
+listitem: notApplicable
+load-fast-enough-for-pwa: flaky
+logical-tab-order: manual
+main-thread-tasks: ERROR Something went wrong with recording the trace over your page load. Please run Lighthouse again. (NO_FCP)
+mainthread-work-breakdown: ERROR Something went wrong with recording the trace over your page load. Please run Lighthouse again. (NO_FCP)
+managed-focus: manual
+max-potential-fid: ERROR Something went wrong with recording the trace over your page load. Please run Lighthouse again. (NO_FCP)
+meta-description: fail
+meta-refresh: notApplicable
+meta-viewport: notApplicable
+metrics: flaky
+network-requests: informative
+network-rtt: informative
+network-server-latency: informative
+no-document-write: pass
+no-vulnerable-libraries: pass
+notification-on-start: pass
+object-alt: notApplicable
+offline-start-url: fail
+offscreen-content-hidden: manual
+offscreen-images: flaky
+password-inputs-can-be-pasted-into: pass
+performance-budget: notApplicable
+plugins: pass
+pwa-cross-browser: manual
+pwa-each-page-has-url: manual
+pwa-page-transitions: manual
+redirects: flaky
+redirects-http: fail
+render-blocking-resources: flaky
+resource-summary: informative
+robots-txt: notApplicable
+screenshot-thumbnails: flaky
+service-worker: fail
+speed-index: flaky
+splash-screen: fail
+structured-data: manual
+tabindex: notApplicable
+tap-targets: fail
+td-headers-attr: notApplicable
+th-has-data-cells: notApplicable
+themed-omnibox: fail
+third-party-summary: ERROR Something went wrong with recording the trace over your page load. Please run Lighthouse again. (NO_FCP)
+time-to-first-byte: pass
+total-blocking-time: ERROR Something went wrong with recording the trace over your page load. Please run Lighthouse again. (NO_FCP)
+total-byte-weight: numeric
+unminified-css: flaky
+unminified-javascript: flaky
+unused-css-rules: flaky
+use-landmarks: manual
+user-timings: flaky
+uses-http2: fail
+uses-long-cache-ttl: numeric
+uses-optimized-images: flaky
+uses-passive-event-listeners: pass
+uses-rel-preconnect: numeric
+uses-rel-preload: flaky
+uses-responsive-images: flaky
+uses-text-compression: flaky
+uses-webp-images: flaky
+valid-lang: notApplicable
+video-caption: notApplicable
+video-description: notApplicable
+viewport: fail
+visual-order-follows-dom: manual
+without-javascript: fail
+works-offline: fail
+
+# of .lh-audit divs: 115
+

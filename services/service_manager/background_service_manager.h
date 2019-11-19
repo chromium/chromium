@@ -40,19 +40,20 @@ class BackgroundServiceManager {
   // Service Manager's embedder to register instances directly, without
   // requiring a Connector.
   //
-  // |pid_receiver_request| may be null, in which case the service manager
-  // assumes the new service is running in this process.
-  void RegisterService(const Identity& identity,
-                       mojom::ServicePtr service,
-                       mojom::PIDReceiverRequest pid_receiver_request);
+  // |metadata_receiver| may be null, in which case the Service Manager assumes
+  // the new service is running in the calling process.
+  void RegisterService(
+      const Identity& identity,
+      mojo::PendingRemote<mojom::Service> service,
+      mojo::PendingReceiver<mojom::ProcessMetadata> metadata_receiver);
 
  private:
   void InitializeOnBackgroundThread(const std::vector<Manifest>& manifests);
   void ShutDownOnBackgroundThread(base::WaitableEvent* done_event);
   void RegisterServiceOnBackgroundThread(
       const Identity& identity,
-      mojom::ServicePtrInfo service_info,
-      mojom::PIDReceiverRequest pid_receiver_request);
+      mojo::PendingRemote<mojom::Service> service,
+      mojo::PendingReceiver<mojom::ProcessMetadata> metadata_receiver);
 
   base::Thread background_thread_;
 

@@ -8,7 +8,9 @@
 #include <sys/mman.h>
 #include <sys/stat.h>
 
+#include "base/files/file.h"
 #include "base/files/file_util.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 
@@ -16,6 +18,12 @@ namespace base {
 namespace subtle {
 
 namespace {
+
+#if !defined(OS_NACL)
+void LogCreateError(PlatformSharedMemoryRegion::CreateError error) {
+  UMA_HISTOGRAM_ENUMERATION("SharedMemory.CreateError", error);
+}
+#endif
 
 struct ScopedPathUnlinkerTraits {
   static const FilePath* InvalidValue() { return nullptr; }
@@ -34,14 +42,16 @@ using ScopedPathUnlinker =
 bool CheckFDAccessMode(int fd, int expected_mode) {
   int fd_status = fcntl(fd, F_GETFL);
   if (fd_status == -1) {
-    DPLOG(ERROR) << "fcntl(" << fd << ", F_GETFL) failed";
+    // TODO(crbug.com/838365): convert to DLOG when bug fixed.
+    PLOG(ERROR) << "fcntl(" << fd << ", F_GETFL) failed";
     return false;
   }
 
   int mode = fd_status & O_ACCMODE;
   if (mode != expected_mode) {
-    DLOG(ERROR) << "Descriptor access mode (" << mode
-                << ") differs from expected (" << expected_mode << ")";
+    // TODO(crbug.com/838365): convert to DLOG when bug fixed.
+    LOG(ERROR) << "Descriptor access mode (" << mode
+               << ") differs from expected (" << expected_mode << ")";
     return false;
   }
 
@@ -65,6 +75,17 @@ ScopedFDPair::ScopedFDPair(ScopedFD in_fd, ScopedFD in_readonly_fd)
 FDPair ScopedFDPair::get() const {
   return {fd.get(), readonly_fd.get()};
 }
+
+#if defined(OS_LINUX)
+// static
+ScopedFD PlatformSharedMemoryRegion::ExecutableRegion::CreateFD(size_t size) {
+  PlatformSharedMemoryRegion region =
+      Create(Mode::kUnsafe, size, true /* executable */);
+  if (region.IsValid())
+    return region.PassPlatformHandle().fd;
+  return ScopedFD();
+}
+#endif  // defined(OS_LINUX)
 
 // static
 PlatformSharedMemoryRegion PlatformSharedMemoryRegion::Take(
@@ -202,16 +223,25 @@ bool PlatformSharedMemoryRegion::MapAtInternal(off_t offset,
 
 // static
 PlatformSharedMemoryRegion PlatformSharedMemoryRegion::Create(Mode mode,
-                                                              size_t size) {
+                                                              size_t size
+#if defined(OS_LINUX)
+                                                              ,
+                                                              bool executable
+#endif
+) {
 #if defined(OS_NACL)
   // Untrusted code can't create descriptors or handles.
   return {};
 #else
-  if (size == 0)
+  if (size == 0) {
+    LogCreateError(PlatformSharedMemoryRegion::CreateError::SIZE_ZERO);
     return {};
+  }
 
-  if (size > static_cast<size_t>(std::numeric_limits<int>::max()))
+  if (size > static_cast<size_t>(std::numeric_limits<int>::max())) {
+    LogCreateError(PlatformSharedMemoryRegion::CreateError::SIZE_TOO_LARGE);
     return {};
+  }
 
   CHECK_NE(mode, Mode::kReadOnly) << "Creating a region in read-only mode will "
                                      "lead to this region being non-modifiable";
@@ -224,14 +254,25 @@ PlatformSharedMemoryRegion PlatformSharedMemoryRegion::Create(Mode mode,
   // We don't use shm_open() API in order to support the --disable-dev-shm-usage
   // flag.
   FilePath directory;
-  if (!GetShmemTempDir(false /* executable */, &directory))
+  if (!GetShmemTempDir(
+#if defined(OS_LINUX)
+          executable,
+#else
+          false /* executable */,
+#endif
+          &directory)) {
+    LogCreateError(
+        PlatformSharedMemoryRegion::CreateError::GET_SHMEM_TEMP_DIR_FAILURE);
     return {};
+  }
 
-  ScopedFD fd;
   FilePath path;
-  fd.reset(CreateAndOpenFdForTemporaryFileInDir(directory, &path));
+  ScopedFD fd = CreateAndOpenFdForTemporaryFileInDir(directory, &path);
+  File shm_file(fd.release());
 
-  if (!fd.is_valid()) {
+  if (!shm_file.IsValid()) {
+    LogCreateError(
+        PlatformSharedMemoryRegion::CreateError::CREATE_FILE_MAPPING_FAILURE);
     PLOG(ERROR) << "Creating shared memory in " << path.value() << " failed";
     FilePath dir = path.DirName();
     if (access(dir.value().c_str(), W_OK | X_OK) < 0) {
@@ -254,35 +295,46 @@ PlatformSharedMemoryRegion PlatformSharedMemoryRegion::Create(Mode mode,
     // Also open as readonly so that we can ConvertToReadOnly().
     readonly_fd.reset(HANDLE_EINTR(open(path.value().c_str(), O_RDONLY)));
     if (!readonly_fd.is_valid()) {
+      LogCreateError(
+          PlatformSharedMemoryRegion::CreateError::REDUCE_PERMISSIONS_FAILURE);
       DPLOG(ERROR) << "open(\"" << path.value() << "\", O_RDONLY) failed";
       return {};
     }
   }
 
-  // Get current size.
-  struct stat stat = {};
-  if (fstat(fd.get(), &stat) != 0)
+  if (!AllocateFileRegion(&shm_file, 0, size)) {
+    LogCreateError(
+        PlatformSharedMemoryRegion::CreateError::ALLOCATE_FILE_REGION_FAILURE);
     return {};
-  const size_t current_size = stat.st_size;
-  if (current_size != size) {
-    if (HANDLE_EINTR(ftruncate(fd.get(), size)) != 0)
-      return {};
   }
 
   if (readonly_fd.is_valid()) {
+    struct stat stat = {};
+    if (fstat(shm_file.GetPlatformFile(), &stat) != 0) {
+      LogCreateError(PlatformSharedMemoryRegion::CreateError::FSTAT_FAILURE);
+      DPLOG(ERROR) << "fstat(fd) failed";
+      return {};
+    }
+
     struct stat readonly_stat = {};
-    if (fstat(readonly_fd.get(), &readonly_stat))
-      NOTREACHED();
+    if (fstat(readonly_fd.get(), &readonly_stat) != 0) {
+      LogCreateError(PlatformSharedMemoryRegion::CreateError::FSTAT_FAILURE);
+      DPLOG(ERROR) << "fstat(readonly_fd) failed";
+      return {};
+    }
 
     if (stat.st_dev != readonly_stat.st_dev ||
         stat.st_ino != readonly_stat.st_ino) {
+      LogCreateError(PlatformSharedMemoryRegion::CreateError::INODES_MISMATCH);
       LOG(ERROR) << "Writable and read-only inodes don't match; bailing";
       return {};
     }
   }
 
-  return PlatformSharedMemoryRegion({std::move(fd), std::move(readonly_fd)},
-                                    mode, size, UnguessableToken::Create());
+  LogCreateError(PlatformSharedMemoryRegion::CreateError::SUCCESS);
+  return PlatformSharedMemoryRegion(
+      {ScopedFD(shm_file.TakePlatformFile()), std::move(readonly_fd)}, mode,
+      size, UnguessableToken::Create());
 #endif  // !defined(OS_NACL)
 }
 
@@ -301,7 +353,8 @@ bool PlatformSharedMemoryRegion::CheckPlatformHandlePermissionsCorrespondToMode(
 
   // The second descriptor must be invalid in kReadOnly and kUnsafe modes.
   if (handle.readonly_fd != -1) {
-    DLOG(ERROR) << "The second descriptor must be invalid";
+    // TODO(crbug.com/838365): convert to DLOG when bug fixed.
+    LOG(ERROR) << "The second descriptor must be invalid";
     return false;
   }
 

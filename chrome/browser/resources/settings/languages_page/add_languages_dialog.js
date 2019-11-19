@@ -166,6 +166,8 @@ Polymer({
     // Close dialog if 'esc' is pressed and the search box is already empty.
     if (e.key == 'Escape' && !this.$.search.getValue().trim()) {
       this.$.dialog.close();
+    } else {
+      this.$.search.scrollIntoViewIfNeeded();
     }
   },
 });

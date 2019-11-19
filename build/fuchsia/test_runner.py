@@ -62,12 +62,14 @@ def main():
   parser.add_argument('--enable-test-server', action='store_true',
                       default=False,
                       help='Enable Chrome test server spawner.')
-  parser.add_argument('child_args', nargs='*',
-                      help='Arguments for the test process.')
   parser.add_argument('--test-launcher-bot-mode', action='store_true',
                       default=False,
                       help='Informs the TestLauncher to that it should enable '
                       'special allowances for running on a test bot.')
+  parser.add_argument('--child-arg', action='append',
+                      help='Arguments for the test process.')
+  parser.add_argument('child_args', nargs='*',
+                      help='Arguments for the test process.')
   args = parser.parse_args()
   ConfigureLogging(args)
 
@@ -94,13 +96,18 @@ def main():
         '--test-launcher-retry-limit=' + args.test_launcher_retry_limit)
   if args.gtest_break_on_failure:
     child_args.append('--gtest_break_on_failure')
-  if args.child_args:
-    child_args.extend(args.child_args)
-
   if args.test_launcher_summary_output:
     child_args.append('--test-launcher-summary-output=' + TEST_RESULT_PATH)
 
-  with GetDeploymentTargetForArgs(args) as target:
+  if args.child_arg:
+    child_args.extend(args.child_arg)
+  if args.child_args:
+    child_args.extend(args.child_args)
+
+  # KVM is required on x64 test bots.
+  require_kvm = args.test_launcher_bot_mode and args.target_cpu == 'x64'
+
+  with GetDeploymentTargetForArgs(args, require_kvm=require_kvm) as target:
     target.Start()
 
     if args.test_launcher_filter_file:
@@ -110,12 +117,13 @@ def main():
 
     test_server = None
     if args.enable_test_server:
-      test_server = SetupTestServer(target, test_concurrency)
+      test_server = SetupTestServer(target, test_concurrency,
+                                    args.package_name)
 
     run_package_args = RunPackageArgs.FromCommonArgs(args)
     returncode = RunPackage(
         args.output_directory, target, args.package, args.package_name,
-        args.package_dep, child_args, run_package_args)
+        child_args, run_package_args)
 
     if test_server:
       test_server.Stop()

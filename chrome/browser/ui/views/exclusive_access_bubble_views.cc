@@ -14,7 +14,6 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
 #include "chrome/browser/ui/views/exclusive_access_bubble_views_context.h"
@@ -22,7 +21,7 @@
 #include "chrome/browser/ui/views/frame/top_container_view.h"
 #include "chrome/browser/ui/views/subtle_notification_view.h"
 #include "chrome/grit/generated_resources.h"
-#include "content/public/browser/notification_service.h"
+#include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/events/keycodes/keyboard_codes.h"
@@ -67,13 +66,22 @@ ExclusiveAccessBubbleViews::ExclusiveAccessBubbleViews(
   gfx::Size size = GetPopupRect(true).size();
   // Bounds are in screen coordinates.
   popup_->SetBounds(GetPopupRect(false));
+  // Why is this special enough to require the "security surface" level? A
+  // decision was made a long time ago to not require confirmation when a site
+  // asks to go fullscreen, and that's not changing. However, a site going
+  // fullscreen is a big security risk, allowing phishing and other UI fakery.
+  // This bubble is the only defense that Chromium can provide against this
+  // attack, so it's important to order it above everything.
+  //
+  // On some platforms, pages can put themselves into fullscreen and then
+  // trigger other elements to cover up this bubble, elements that aren't fully
+  // under Chromium's control. See https://crbug.com/927150 for an example.
+  popup_->SetZOrderLevel(ui::ZOrderLevel::kSecuritySurface);
   view_->SetBounds(0, 0, size.width(), size.height());
   popup_->AddObserver(this);
 
-  registrar_.Add(this, chrome::NOTIFICATION_FULLSCREEN_CHANGED,
-                 content::Source<FullscreenController>(
-                     bubble_view_context_->GetExclusiveAccessManager()
-                         ->fullscreen_controller()));
+  fullscreen_observer_.Add(bubble_view_context_->GetExclusiveAccessManager()
+                               ->fullscreen_controller());
 
   UpdateMouseWatcher();
 }
@@ -138,7 +146,7 @@ void ExclusiveAccessBubbleViews::HideImmediately() {
 
   RunHideCallbackIfNeeded(ExclusiveAccessBubbleHideReason::kInterrupted);
 
-  animation_->SetSlideDuration(kQuickSlideOutDurationMs);
+  animation_->SetSlideDuration(base::TimeDelta::FromMilliseconds(150));
   animation_->Hide();
 }
 
@@ -256,14 +264,14 @@ void ExclusiveAccessBubbleViews::Hide() {
   DCHECK(!IsHideTimeoutRunning());
   RunHideCallbackIfNeeded(ExclusiveAccessBubbleHideReason::kTimeout);
 
-  animation_->SetSlideDuration(kSlideOutDurationMs);
+  animation_->SetSlideDuration(base::TimeDelta::FromMilliseconds(700));
   animation_->Hide();
 }
 
 void ExclusiveAccessBubbleViews::Show() {
   if (animation_->IsShowing())
     return;
-  animation_->SetSlideDuration(kSlideInDurationMs);
+  animation_->SetSlideDuration(base::TimeDelta::FromMilliseconds(350));
   animation_->Show();
 }
 
@@ -275,11 +283,7 @@ bool ExclusiveAccessBubbleViews::CanTriggerOnMouse() const {
   return bubble_view_context_->CanTriggerOnMouse();
 }
 
-void ExclusiveAccessBubbleViews::Observe(
-    int type,
-    const content::NotificationSource& source,
-    const content::NotificationDetails& details) {
-  DCHECK_EQ(chrome::NOTIFICATION_FULLSCREEN_CHANGED, type);
+void ExclusiveAccessBubbleViews::OnFullscreenStateChanged() {
   UpdateMouseWatcher();
 }
 

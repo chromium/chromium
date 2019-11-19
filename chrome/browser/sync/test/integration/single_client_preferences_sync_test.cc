@@ -2,22 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <map>
+
 #include "base/macros.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "chrome/browser/sync/test/integration/feature_toggler.h"
 #include "chrome/browser/sync/test/integration/preferences_helper.h"
 #include "chrome/browser/sync/test/integration/profile_sync_service_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/browser/sync/test/integration/updated_progress_marker_checker.h"
+#include "chrome/common/chrome_constants.h"
 #include "chrome/common/pref_names.h"
-#include "components/browser_sync/profile_sync_service.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/json_pref_store.h"
 #include "components/prefs/pref_service.h"
-#include "components/sync/driver/sync_driver_switches.h"
+#include "components/sync/driver/profile_sync_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 using preferences_helper::BooleanPrefMatches;
@@ -30,46 +31,48 @@ using testing::NotNull;
 
 namespace {
 
-class SingleClientPreferencesSyncTest : public FeatureToggler, public SyncTest {
+class SingleClientPreferencesSyncTest : public SyncTest {
  public:
-  SingleClientPreferencesSyncTest()
-      : FeatureToggler(switches::kSyncPseudoUSSPreferences),
-        SyncTest(SINGLE_CLIENT) {}
+  SingleClientPreferencesSyncTest() : SyncTest(SINGLE_CLIENT) {}
+
   ~SingleClientPreferencesSyncTest() override {}
 
+  // If non-empty, |contents| will be written to the Preferences file of the
+  // profile at |index| before that Profile object is created.
+  void SetPreexistingPreferencesFileContents(int index,
+                                             const std::string& contents) {
+    preexisting_preferences_file_contents_[index] = contents;
+  }
+
+ protected:
+  void BeforeSetupClient(int index,
+                         const base::FilePath& profile_path) override {
+    const std::string& contents = preexisting_preferences_file_contents_[index];
+    if (contents.empty()) {
+      return;
+    }
+
+    base::FilePath pref_path(profile_path.Append(chrome::kPreferencesFilename));
+    ASSERT_TRUE(base::CreateDirectory(profile_path));
+    ASSERT_NE(-1,
+              base::WriteFile(pref_path, contents.c_str(), contents.size()));
+  }
+
  private:
+  // The contents to be written to a profile's Preferences file before the
+  // Profile object is created. If empty, no preexisting file will be written.
+  // The map key corresponds to the profile's index.
+  std::map<int, std::string> preexisting_preferences_file_contents_;
+
   DISALLOW_COPY_AND_ASSIGN(SingleClientPreferencesSyncTest);
 };
 
-IN_PROC_BROWSER_TEST_P(SingleClientPreferencesSyncTest, Sanity) {
+IN_PROC_BROWSER_TEST_F(SingleClientPreferencesSyncTest, Sanity) {
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
   ASSERT_TRUE(BooleanPrefMatches(prefs::kHomePageIsNewTabPage));
   ChangeBooleanPref(0, prefs::kHomePageIsNewTabPage);
   ASSERT_TRUE(UpdatedProgressMarkerChecker(GetSyncService(0)).Wait());
   EXPECT_TRUE(BooleanPrefMatches(prefs::kHomePageIsNewTabPage));
-}
-
-// This test simply verifies that preferences registered after sync started
-// get properly synced.
-IN_PROC_BROWSER_TEST_P(SingleClientPreferencesSyncTest, LateRegistration) {
-  ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
-  PrefRegistrySyncable* registry = GetRegistry(GetProfile(0));
-  const std::string pref_name = "testing.my-test-preference";
-  registry->WhitelistLateRegistrationPrefForSync(pref_name);
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
-  registry->RegisterBooleanPref(
-      pref_name, true, user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
-  // Verify the default is properly used.
-  EXPECT_TRUE(GetProfile(0)->GetPrefs()->GetBoolean(pref_name));
-  // Now make a change and verify it gets uploaded.
-  GetProfile(0)->GetPrefs()->SetBoolean(pref_name, false);
-  ASSERT_FALSE(GetProfile(0)->GetPrefs()->GetBoolean(pref_name));
-  EXPECT_TRUE(UpdatedProgressMarkerChecker(GetSyncService(0)).Wait());
-
-  GetRegistry(verifier())
-      ->RegisterBooleanPref(pref_name, true,
-                            user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
-  EXPECT_FALSE(BooleanPrefMatches(pref_name.c_str()));
 }
 
 // Flaky on Windows. https://crbug.com/930482
@@ -80,7 +83,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientPreferencesSyncTest, LateRegistration) {
 #define MAYBE_ShouldRemoveBadDataWhenRegistering \
   ShouldRemoveBadDataWhenRegistering
 #endif
-IN_PROC_BROWSER_TEST_P(SingleClientPreferencesSyncTest,
+IN_PROC_BROWSER_TEST_F(SingleClientPreferencesSyncTest,
                        MAYBE_ShouldRemoveBadDataWhenRegistering) {
   // Populate the data store with data of type boolean but register as string.
   SetPreexistingPreferencesFileContents(
@@ -109,7 +112,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientPreferencesSyncTest,
 
 // Regression test to verify that pagination during GetUpdates() contributes
 // properly to UMA histograms.
-IN_PROC_BROWSER_TEST_P(SingleClientPreferencesSyncTest,
+IN_PROC_BROWSER_TEST_F(SingleClientPreferencesSyncTest,
                        EmitModelTypeEntityChangeToUma) {
   const int kNumEntities = 17;
 
@@ -132,7 +135,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientPreferencesSyncTest,
                               /*REMOTE_INITIAL_UPDATE=*/5));
 }
 
-IN_PROC_BROWSER_TEST_P(SingleClientPreferencesSyncTest,
+IN_PROC_BROWSER_TEST_F(SingleClientPreferencesSyncTest,
                        PRE_PersistProgressMarkerOnRestart) {
   sync_pb::EntitySpecifics specifics;
   specifics.mutable_preference()->set_name("testing.my-test-preference");
@@ -150,7 +153,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientPreferencesSyncTest,
                    /*REMOTE_INITIAL_UPDATE=*/5));
 }
 
-IN_PROC_BROWSER_TEST_P(SingleClientPreferencesSyncTest,
+IN_PROC_BROWSER_TEST_F(SingleClientPreferencesSyncTest,
                        PersistProgressMarkerOnRestart) {
   sync_pb::EntitySpecifics specifics;
   specifics.mutable_preference()->set_name("testing.my-test-preference");
@@ -164,7 +167,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientPreferencesSyncTest,
   base::HistogramTester histogram_tester;
   ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
 #if defined(CHROMEOS)
-  // identity::SetRefreshTokenForPrimaryAccount() is needed on ChromeOS in order
+  // signin::SetRefreshTokenForPrimaryAccount() is needed on ChromeOS in order
   // to get a non-empty refresh token on startup.
   GetClient(0)->SignInPrimaryAccount();
 #endif  // defined(CHROMEOS)
@@ -179,9 +182,5 @@ IN_PROC_BROWSER_TEST_P(SingleClientPreferencesSyncTest,
                    "Sync.ModelTypeEntityChange3.PREFERENCE",
                    /*REMOTE_INITIAL_UPDATE=*/5));
 }
-
-INSTANTIATE_TEST_SUITE_P(USS,
-                         SingleClientPreferencesSyncTest,
-                         ::testing::Values(false, true));
 
 }  // namespace

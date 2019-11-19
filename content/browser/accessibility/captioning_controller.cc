@@ -7,7 +7,7 @@
 #include "base/android/jni_string.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/common/frame_messages.h"
-#include "jni/CaptioningController_jni.h"
+#include "content/public/android/content_jni_headers/CaptioningController_jni.h"
 
 using base::android::AttachCurrentThread;
 using base::android::ConvertJavaStringToUTF8;
@@ -26,6 +26,14 @@ int GetRenderProcessIdFromRenderViewHost(RenderViewHost* host) {
   if (render_process->IsInitializedAndNotDead())
     return render_process->GetProcess().Handle();
   return 0;
+}
+
+// Adds !important to all captions styles. They should always override any
+// styles added by the video author or by a user stylesheet. This is because in
+// Chrome, there is an option to turn off captions styles, so any time the
+// captions are on, the styles should take priority.
+std::string AddCSSImportant(std::string css_string) {
+  return css_string + " !important";
 }
 
 }  // namespace
@@ -83,18 +91,19 @@ void CaptioningController::SetTextTrackSettings(
   FrameMsg_TextTrackSettings_Params params;
   params.text_tracks_enabled = textTracksEnabled;
   params.text_track_background_color =
-      ConvertJavaStringToUTF8(env, textTrackBackgroundColor);
+      AddCSSImportant(ConvertJavaStringToUTF8(env, textTrackBackgroundColor));
   params.text_track_font_family =
-      ConvertJavaStringToUTF8(env, textTrackFontFamily);
+      AddCSSImportant(ConvertJavaStringToUTF8(env, textTrackFontFamily));
   params.text_track_font_style =
-      ConvertJavaStringToUTF8(env, textTrackFontStyle);
+      AddCSSImportant(ConvertJavaStringToUTF8(env, textTrackFontStyle));
   params.text_track_font_variant =
-      ConvertJavaStringToUTF8(env, textTrackFontVariant);
+      AddCSSImportant(ConvertJavaStringToUTF8(env, textTrackFontVariant));
   params.text_track_text_color =
-      ConvertJavaStringToUTF8(env, textTrackTextColor);
+      AddCSSImportant(ConvertJavaStringToUTF8(env, textTrackTextColor));
   params.text_track_text_shadow =
-      ConvertJavaStringToUTF8(env, textTrackTextShadow);
-  params.text_track_text_size = ConvertJavaStringToUTF8(env, textTrackTextSize);
+      AddCSSImportant(ConvertJavaStringToUTF8(env, textTrackTextShadow));
+  params.text_track_text_size =
+      AddCSSImportant(ConvertJavaStringToUTF8(env, textTrackTextSize));
   static_cast<WebContentsImpl*>(web_contents())
       ->GetMainFrame()
       ->SetTextTrackSettings(params);

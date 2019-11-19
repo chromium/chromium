@@ -1,0 +1,59 @@
+{
+  "layers": [
+    {
+      "name": "Scrolling background of LayoutView #document",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF"
+    },
+    {
+      "name": "LayoutNGBlockFlow DIV class='box composited'",
+      "bounds": [100, 100],
+      "contentsOpaque": true,
+      "backgroundColor": "#008000",
+      "transform": 1
+    },
+    {
+      "name": "LayoutNGBlockFlow DIV class='box composited padding-clip'",
+      "bounds": [100, 100],
+      "backgroundColor": "#008000",
+      "transform": 2
+    },
+    {
+      "name": "LayoutNGBlockFlow DIV class='box composited content-clip'",
+      "bounds": [100, 100],
+      "backgroundColor": "#008000",
+      "transform": 3
+    }
+  ],
+  "transforms": [
+    {
+      "id": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [13, 8, 0, 1]
+      ]
+    },
+    {
+      "id": 2,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [13, 113, 0, 1]
+      ]
+    },
+    {
+      "id": 3,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [13, 218, 0, 1]
+      ]
+    }
+  ]
+}
+

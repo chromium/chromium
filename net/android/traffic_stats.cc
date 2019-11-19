@@ -4,7 +4,7 @@
 
 #include "net/android/traffic_stats.h"
 
-#include "jni/AndroidTrafficStats_jni.h"
+#include "net/net_jni_headers/AndroidTrafficStats_jni.h"
 
 namespace net {
 

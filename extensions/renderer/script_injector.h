@@ -22,8 +22,8 @@ class WebLocalFrame;
 namespace extensions {
 
 // The pseudo-delegate class for a ScriptInjection that provides all necessary
-// information about how to inject the script, including what code to inject,
-// when (run location), and where (world), but without any injection logic.
+// information about how to inject the script, including what code to inject and
+// when (run location), but without any injection logic.
 class ScriptInjector {
  public:
   // The possible reasons for not injecting the script.
@@ -38,9 +38,6 @@ class ScriptInjector {
 
   // Returns the script type of this particular injection.
   virtual UserScript::InjectionType script_type() const = 0;
-
-  // Returns true if the script should execute in the main world.
-  virtual bool ShouldExecuteInMainWorld() const = 0;
 
   // Returns true if the script is running inside a user gesture.
   virtual bool IsUserGesture() const = 0;

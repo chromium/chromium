@@ -2,8 +2,11 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//components/safe_browsing/buildflags.gni")
+import("//extensions/buildflags/buildflags.gni")
+
 source_set("password_protection") {
-  if (!is_android && !is_ios) {
+  if (safe_browsing_mode == 1 || safe_browsing_mode == 2) {
     sources = [
       "password_protection_navigation_throttle.cc",
       "password_protection_navigation_throttle.h",
@@ -23,23 +26,28 @@ source_set("password_protection") {
       ":password_protection_metrics_util",
       "//base:base",
       "//components/content_settings/core/browser:browser",
-      "//components/data_use_measurement/core:core",
       "//components/history/core/browser:browser",
       "//components/password_manager/core/browser:browser",
       "//components/safe_browsing:csd_proto",
       "//components/safe_browsing:features",
+      "//components/safe_browsing/browser:referrer_chain_provider",
       "//components/safe_browsing/common:common",
+      "//components/safe_browsing/common:interfaces",
       "//components/safe_browsing/common:safe_browsing_prefs",
+      "//components/safe_browsing/db:allowlist_checker_client",
       "//components/safe_browsing/db:database_manager",
       "//components/safe_browsing/db:v4_protocol_manager_util",
-      "//components/safe_browsing/db:whitelist_checker_client",
       "//components/safe_browsing/web_ui:web_ui",
       "//components/sessions",
-      "//components/zoom",
+      "//components/signin/public/base",
+      "//components/signin/public/identity_manager",
       "//content/public/browser:browser",
       "//net:net",
       "//third_party/protobuf:protobuf_lite",
     ]
+  }
+  if (safe_browsing_mode == 1) {
+    deps += [ "//components/zoom" ]
   }
 }
 
@@ -59,7 +67,7 @@ source_set("password_protection_metrics_util") {
 
 source_set("password_protection_unittest") {
   testonly = true
-  if (!is_android && !is_ios) {
+  if (safe_browsing_mode == 1) {
     sources = [
       "password_protection_service_unittest.cc",
       "visual_utils_unittest.cc",
@@ -73,8 +81,13 @@ source_set("password_protection_unittest") {
       "//components/content_settings/core/browser:browser",
       "//components/history/core/browser:browser",
       "//components/password_manager/core/browser:browser",
+      "//components/safe_browsing:csd_proto",
       "//components/safe_browsing:features",
+      "//components/safe_browsing:verdict_cache_manager",
+      "//components/safe_browsing/common:interfaces",
       "//components/safe_browsing/db:test_database_manager",
+      "//components/signin/public/base",
+      "//components/signin/public/identity_manager",
       "//components/sync_preferences:test_support",
       "//content/test:test_support",
       "//net:test_support",
@@ -88,7 +101,7 @@ source_set("password_protection_unittest") {
 
 source_set("mock_password_protection") {
   testonly = true
-  if (!is_android && !is_ios) {
+  if (safe_browsing_mode == 1) {
     sources = [
       "mock_password_protection_service.cc",
       "mock_password_protection_service.h",

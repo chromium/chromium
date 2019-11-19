@@ -8,7 +8,7 @@
 
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
-#include "net/base/completion_callback.h"
+#include "net/base/completion_once_callback.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
 

@@ -142,13 +142,13 @@ WebSocket::ParseResult DecodeFrameHybi17(const base::StringPiece& frame,
   return closed ? WebSocket::FRAME_CLOSE : WebSocket::FRAME_OK;
 }
 
-void EncodeFrameHybi17(const std::string& message,
+void EncodeFrameHybi17(base::StringPiece message,
                        int masking_key,
                        bool compressed,
                        std::string* output) {
   std::vector<char> frame;
   OpCode op_code = kOpCodeText;
-  size_t data_length = message.length();
+  size_t data_length = message.size();
 
   int reserved1 = compressed ? kReserved1Bit : 0;
   frame.push_back(kFinalBit | op_code | reserved1);
@@ -304,7 +304,7 @@ WebSocket::ParseResult WebSocketEncoder::DecodeFrame(
   return result;
 }
 
-void WebSocketEncoder::EncodeFrame(const std::string& frame,
+void WebSocketEncoder::EncodeFrame(base::StringPiece frame,
                                    int masking_key,
                                    std::string* output) {
   std::string compressed;
@@ -336,8 +336,7 @@ bool WebSocketEncoder::Inflate(std::string* message) {
   return true;
 }
 
-bool WebSocketEncoder::Deflate(const std::string& message,
-                               std::string* output) {
+bool WebSocketEncoder::Deflate(base::StringPiece message, std::string* output) {
   if (!deflater_)
     return false;
   if (!deflater_->AddBytes(message.data(), message.length())) {

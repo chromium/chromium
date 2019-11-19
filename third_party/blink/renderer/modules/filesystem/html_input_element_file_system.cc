@@ -72,10 +72,13 @@ EntryHeapVector HTMLInputElementFileSystem::webkitEntries(
     // The dropped entries are mapped as top-level entries in the isolated
     // filesystem.
     String virtual_path = DOMFilePath::Append("/", file->name());
-    if (metadata.type == FileMetadata::kTypeDirectory)
-      entries.push_back(DirectoryEntry::Create(filesystem, virtual_path));
-    else
-      entries.push_back(FileEntry::Create(filesystem, virtual_path));
+    if (metadata.type == FileMetadata::kTypeDirectory) {
+      entries.push_back(
+          MakeGarbageCollected<DirectoryEntry>(filesystem, virtual_path));
+    } else {
+      entries.push_back(
+          MakeGarbageCollected<FileEntry>(filesystem, virtual_path));
+    }
   }
   return entries;
 }

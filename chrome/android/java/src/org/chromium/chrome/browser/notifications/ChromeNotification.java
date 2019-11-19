@@ -6,15 +6,17 @@ package org.chromium.chrome.browser.notifications;
 
 import android.app.Notification;
 
+import androidx.annotation.Nullable;
+
 /**
  * A wrapper class of {@link Notification}, which also contains the notification id and tag, etc.
  */
 public class ChromeNotification {
+    @Nullable
     private final Notification mNotification;
     private final NotificationMetadata mNotificationMetadata;
 
-    ChromeNotification(Notification notification, NotificationMetadata metadata) {
-        assert notification != null;
+    public ChromeNotification(@Nullable Notification notification, NotificationMetadata metadata) {
         assert metadata != null;
         mNotification = notification;
         mNotificationMetadata = metadata;

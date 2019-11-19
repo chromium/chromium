@@ -4,6 +4,8 @@
 
 #include "ui/base/idle/idle.h"
 
+#include "ui/base/idle/idle_internal.h"
+
 #if defined(USE_X11)
 #include "ui/base/idle/idle_query_x11.h"
 #include "ui/base/idle/screensaver_window_finder_x11.h"
@@ -21,6 +23,9 @@ int CalculateIdleTime() {
 }
 
 bool CheckIdleStateIsLocked() {
+  if (IdleStateForTesting().has_value())
+    return IdleStateForTesting().value() == IDLE_STATE_LOCKED;
+
 #if defined(USE_X11)
   // Usually the screensaver is used to lock the screen.
   return ScreensaverWindowFinder::ScreensaverWindowExists();

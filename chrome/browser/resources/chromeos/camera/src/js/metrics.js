@@ -16,21 +16,18 @@ cca.metrics = cca.metrics || {};
 
 /**
  * Event builder for basic metrics.
- * @type {analytics.EventBuilder}
+ * @type {?analytics.EventBuilder}
  * @private
  */
 cca.metrics.base_ = null;
 
-/**
- * @type {analytics}
- */
 var analytics = window['analytics'] || {};
 
 /**
  * Fixes analytics.EventBuilder's dimension() method.
  * @param {number} i
  * @param {string} v
- * @return {analytics.EventBuilder}
+ * @return {!analytics.EventBuilder}
  */
 analytics.EventBuilder.prototype.dimen = function(i, v) {
   return this.dimension({index: i, value: v});
@@ -39,10 +36,11 @@ analytics.EventBuilder.prototype.dimen = function(i, v) {
 /**
  * Promise for Google Analytics tracker.
  * @type {Promise<analytics.Tracker>}
+ * @suppress {checkTypes}
  * @private
  */
 cca.metrics.ga_ = (function() {
-  const id = 'UA-134822711-2';  // TODO(yuli): Use prod id.
+  const id = 'UA-134822711-1';
   const service = analytics.getService('chrome-camera-app');
 
   var getConfig = () =>
@@ -83,7 +81,7 @@ cca.metrics.ga_ = (function() {
 /**
  * Returns event builder for the metrics type: launch.
  * @param {boolean} ackMigrate Whether acknowledged to migrate during launch.
- * @return {analytics.EventBuilder}
+ * @return {!analytics.EventBuilder}
  * @private
  */
 cca.metrics.launchType_ = function(ackMigrate) {
@@ -92,36 +90,57 @@ cca.metrics.launchType_ = function(ackMigrate) {
 };
 
 /**
+ * Types of intent result dimension.
+ * @enum {string}
+ */
+cca.metrics.IntentResultType = {
+  NOT_INTENT: '',
+  CANCELED: 'canceled',
+  CONFIRMED: 'confirmed',
+};
+
+/**
  * Returns event builder for the metrics type: capture.
- * @param {string} facingMode Camera facing-mode of the capture.
- * @param {number=} length Length of 1 minute buckets for captured video.
- * @return {analytics.EventBuilder}
+ * @param {?string} facingMode Camera facing-mode of the capture.
+ * @param {number} length Length of 1 minute buckets for captured video.
+ * @param {!{width: number, height: number}} resolution Capture resolution.
+ * @param {!cca.metrics.IntentResultType} intentResult
+ * @return {!analytics.EventBuilder}
  * @private
  */
-cca.metrics.captureType_ = function(facingMode, length) {
-  var condState = (states, cond) => {
+cca.metrics.captureType_ = function(
+    facingMode, length, {width, height}, intentResult) {
+  var condState = (states, cond = undefined, strict = undefined) => {
     // Return the first existing state among the given states only if there is
     // no gate condition or the condition is met.
     const prerequisite = !cond || cca.state.get(cond);
-    return prerequisite && states.find((state) => cca.state.get(state)) || '';
+    if (strict && !prerequisite) {
+      return '';
+    }
+    return prerequisite && states.find((state) => cca.state.get(state)) ||
+        'n/a';
   };
 
   return cca.metrics.base_.category('capture')
-      .action(cca.state.get('record-mode') ? 'capture-video' : 'capture-photo')
-      .label(facingMode)
+      .action(/^(\w*)/.exec(condState(
+          ['video-mode', 'photo-mode', 'square-mode', 'portrait-mode']))[0])
+      .label(facingMode || '(not set)')
       .dimen(3, condState(['sound']))
       .dimen(4, condState(['mirror']))
       .dimen(5, condState(['_3x3', '_4x4', 'golden'], 'grid'))
       .dimen(6, condState(['_3sec', '_10sec'], 'timer'))
-      .dimen(7, condState(['mic'], 'record-mode'))
+      .dimen(7, condState(['mic'], 'video-mode', true))
       .dimen(8, condState(['max-wnd']))
       .dimen(9, condState(['tall']))
+      .dimen(10, `${width}x${height}`)
+      .dimen(11, condState(['_30fps', '_60fps'], 'video-mode', true))
+      .dimen(12, intentResult)
       .value(length || 0);
 };
 
 /**
  * Metrics types.
- * @enum {function(*=)}
+ * @enum {function(...): !analytics.EventBuilder}
  */
 cca.metrics.Type = {
   LAUNCH: cca.metrics.launchType_,
@@ -130,7 +149,7 @@ cca.metrics.Type = {
 
 /**
  * Logs the given metrics.
- * @param {cca.metrics.Type} type Metrics type.
+ * @param {!cca.metrics.Type} type Metrics type.
  * @param {...*} args Optional rest parameters for logging metrics.
  */
 cca.metrics.log = function(type, ...args) {

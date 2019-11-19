@@ -8,10 +8,9 @@
 #include <cstdint>
 #include <cstring>
 
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/macros.h"
-#include "base/memory/protected_memory.h"
-#include "base/memory/protected_memory_cfi.h"
 #include "base/no_destructor.h"
 #include "build/build_config.h"
 #include "mojo/public/c/system/core.h"
@@ -28,15 +27,10 @@ namespace {
 
 typedef void (*MojoGetSystemThunksFunction)(MojoSystemThunks* thunks);
 
-#if defined(OS_CHROMEOS) || defined(OS_LINUX) || defined(OS_WIN)
-PROTECTED_MEMORY_SECTION
-base::ProtectedMemory<MojoGetSystemThunksFunction> g_get_thunks;
-#endif
-
-PROTECTED_MEMORY_SECTION base::ProtectedMemory<MojoSystemThunks> g_thunks;
+MojoSystemThunks g_thunks;
 
 MojoResult NotImplemented(const char* name) {
-  if (g_thunks->size > 0) {
+  if (g_thunks.size > 0) {
     DLOG(ERROR) << "Function 'Mojo" << name
                 << "()' not supported in this version of Mojo Core.";
     return MOJO_RESULT_UNIMPLEMENTED;
@@ -51,10 +45,9 @@ MojoResult NotImplemented(const char* name) {
 
 }  // namespace
 
-#define INVOKE_THUNK(name, ...)                                        \
-  offsetof(MojoSystemThunks, name) < g_thunks->size                    \
-      ? base::UnsanitizedCfiCall(g_thunks,                             \
-                                 &MojoSystemThunks::name)(__VA_ARGS__) \
+#define INVOKE_THUNK(name, ...)                    \
+  offsetof(MojoSystemThunks, name) < g_thunks.size \
+      ? g_thunks.name(__VA_ARGS__)                 \
       : NotImplemented(#name)
 
 namespace mojo {
@@ -121,22 +114,18 @@ class CoreLibraryInitializer {
     }
 
     const char kGetThunksFunctionName[] = "MojoGetSystemThunks";
-    {
-      auto writer = base::AutoWritableMemory::Create(g_get_thunks);
-      *g_get_thunks = reinterpret_cast<MojoGetSystemThunksFunction>(
-          library_->GetFunctionPointer(kGetThunksFunctionName));
-    }
-    CHECK(*g_get_thunks) << "Invalid mojo_core library: "
-                         << library_path->value();
 
-    DCHECK_EQ(g_thunks->size, 0u);
-    {
-      auto writer = base::AutoWritableMemory::Create(g_thunks);
-      g_thunks->size = sizeof(*g_thunks);
-      base::UnsanitizedCfiCall(g_get_thunks)(&*g_thunks);
-    }
+    MojoGetSystemThunksFunction g_get_thunks =
+        reinterpret_cast<MojoGetSystemThunksFunction>(
+            library_->GetFunctionPointer(kGetThunksFunctionName));
+    CHECK(g_get_thunks) << "Invalid mojo_core library: "
+                        << library_path->value();
 
-    CHECK_GT(g_thunks->size, 0u)
+    DCHECK_EQ(g_thunks.size, 0u);
+    g_thunks.size = sizeof(g_thunks);
+    g_get_thunks(&g_thunks);
+
+    CHECK_GT(g_thunks.size, 0u)
         << "Invalid mojo_core library: " << library_path->value();
 #else   // defined(OS_CHROMEOS) || defined(OS_LINUX)
     NOTREACHED()
@@ -161,7 +150,7 @@ extern "C" {
 MojoResult MojoInitialize(const struct MojoInitializeOptions* options) {
   static base::NoDestructor<mojo::CoreLibraryInitializer> initializer(options);
   ALLOW_UNUSED_LOCAL(initializer);
-  DCHECK(g_thunks->Initialize);
+  DCHECK(g_thunks.Initialize);
 
   return INVOKE_THUNK(Initialize, options);
 }
@@ -492,14 +481,13 @@ MojoResult MojoShutdown(const MojoShutdownOptions* options) {
 void MojoEmbedderSetSystemThunks(const MojoSystemThunks* thunks) {
   // Assume embedders will always use matching versions of the Mojo Core and
   // public APIs.
-  DCHECK_EQ(thunks->size, sizeof(*g_thunks));
+  DCHECK_EQ(thunks->size, sizeof(g_thunks));
 
   // This should only have to check that the |g_thunks->size| is zero, but we
   // have multiple Mojo Core initializations in some test suites still. For now
   // we allow double calls as long as they're the same thunks as before.
-  DCHECK(g_thunks->size == 0 || !memcmp(&*g_thunks, thunks, sizeof(*g_thunks)))
+  DCHECK(g_thunks.size == 0 || !memcmp(&g_thunks, thunks, sizeof(g_thunks)))
       << "Cannot set embedder thunks after Mojo API calls have been made.";
 
-  auto writer = base::AutoWritableMemory::Create(g_thunks);
-  *g_thunks = *thunks;
+  g_thunks = *thunks;
 }

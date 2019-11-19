@@ -119,7 +119,7 @@
   }
 }
 
-- (ToolbarComponentVisibility)omniboxButtonVisibility {
+- (ToolbarComponentVisibility)searchButtonVisibility {
   switch (self.type) {
     case PRIMARY:
       return ToolbarComponentVisibilityNone;

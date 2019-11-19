@@ -65,9 +65,11 @@ void CdmPromiseAdapter::RejectPromise(uint32_t promise_id,
 void CdmPromiseAdapter::Clear() {
   // Reject all outstanding promises.
   DCHECK(thread_checker_.CalledOnValidThread());
-  for (auto& promise : promises_)
-    promise.second->reject(CdmPromise::Exception::INVALID_STATE_ERROR, 0,
+  for (auto& promise : promises_) {
+    promise.second->reject(CdmPromise::Exception::INVALID_STATE_ERROR,
+                           CdmPromise::SystemCode::kAborted,
                            "Operation aborted.");
+  }
   promises_.clear();
 }
 

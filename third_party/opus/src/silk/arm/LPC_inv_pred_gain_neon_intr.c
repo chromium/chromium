@@ -210,28 +210,32 @@ opus_int32 silk_LPC_inverse_pred_gain_neon(         /* O   Returns inverse predi
         /* Increase Q domain of the AR coefficients */
         t0_s16x8 = vld1q_s16( A_Q12 +  0 );
         t1_s16x8 = vld1q_s16( A_Q12 +  8 );
-        t2_s16x8 = vld1q_s16( A_Q12 + 16 );
+        if ( order > 16 ) {
+          t2_s16x8 = vld1q_s16( A_Q12 + 16 );
+        }
         t0_s32x4 = vpaddlq_s16( t0_s16x8 );
 
         switch( order - leftover )
         {
         case 24:
             t0_s32x4 = vpadalq_s16( t0_s32x4, t2_s16x8 );
-            /* Intend to fall through */
+            vst1q_s32( Atmp_QA + 16, vshll_n_s16( vget_low_s16 ( t2_s16x8 ), QA - 12 ) );
+            vst1q_s32( Atmp_QA + 20, vshll_n_s16( vget_high_s16( t2_s16x8 ), QA - 12 ) );
+            /* FALLTHROUGH */
 
         case 16:
             t0_s32x4 = vpadalq_s16( t0_s32x4, t1_s16x8 );
-            vst1q_s32( Atmp_QA + 16, vshll_n_s16( vget_low_s16 ( t2_s16x8 ), QA - 12 ) );
-            vst1q_s32( Atmp_QA + 20, vshll_n_s16( vget_high_s16( t2_s16x8 ), QA - 12 ) );
-            /* Intend to fall through */
+            vst1q_s32( Atmp_QA +  8, vshll_n_s16( vget_low_s16 ( t1_s16x8 ), QA - 12 ) );
+            vst1q_s32( Atmp_QA + 12, vshll_n_s16( vget_high_s16( t1_s16x8 ), QA - 12 ) );
+            /* FALLTHROUGH */
 
         case 8:
         {
             const int32x2_t t_s32x2 = vpadd_s32( vget_low_s32( t0_s32x4 ), vget_high_s32( t0_s32x4 ) );
             const int64x1_t t_s64x1 = vpaddl_s32( t_s32x2 );
             DC_resp = vget_lane_s32( vreinterpret_s32_s64( t_s64x1 ), 0 );
-            vst1q_s32( Atmp_QA +  8, vshll_n_s16( vget_low_s16 ( t1_s16x8 ), QA - 12 ) );
-            vst1q_s32( Atmp_QA + 12, vshll_n_s16( vget_high_s16( t1_s16x8 ), QA - 12 ) );
+            vst1q_s32( Atmp_QA + 0, vshll_n_s16( vget_low_s16 ( t0_s16x8 ), QA - 12 ) );
+            vst1q_s32( Atmp_QA + 4, vshll_n_s16( vget_high_s16( t0_s16x8 ), QA - 12 ) );
         }
         break;
 
@@ -246,17 +250,23 @@ opus_int32 silk_LPC_inverse_pred_gain_neon(         /* O   Returns inverse predi
         case 6:
             DC_resp += (opus_int32)A_Q12[ 5 ];
             DC_resp += (opus_int32)A_Q12[ 4 ];
-            /* Intend to fall through */
+            Atmp_QA[ order - leftover + 5 ] = silk_LSHIFT32( (opus_int32)A_Q12[ 5 ], QA - 12 );
+            Atmp_QA[ order - leftover + 4 ] = silk_LSHIFT32( (opus_int32)A_Q12[ 4 ], QA - 12 );
+            /* FALLTHROUGH */
 
         case 4:
             DC_resp += (opus_int32)A_Q12[ 3 ];
             DC_resp += (opus_int32)A_Q12[ 2 ];
-            /* Intend to fall through */
+            Atmp_QA[ order - leftover + 3 ] = silk_LSHIFT32( (opus_int32)A_Q12[ 3 ], QA - 12 );
+            Atmp_QA[ order - leftover + 2 ] = silk_LSHIFT32( (opus_int32)A_Q12[ 2 ], QA - 12 );
+            /* FALLTHROUGH */
 
         case 2:
             DC_resp += (opus_int32)A_Q12[ 1 ];
             DC_resp += (opus_int32)A_Q12[ 0 ];
-            /* Intend to fall through */
+            Atmp_QA[ order - leftover + 1 ] = silk_LSHIFT32( (opus_int32)A_Q12[ 1 ], QA - 12 );
+            Atmp_QA[ order - leftover + 0 ] = silk_LSHIFT32( (opus_int32)A_Q12[ 0 ], QA - 12 );
+            /* FALLTHROUGH */
 
         default:
             break;
@@ -266,8 +276,6 @@ opus_int32 silk_LPC_inverse_pred_gain_neon(         /* O   Returns inverse predi
         if( DC_resp >= 4096 ) {
             invGain_Q30 = 0;
         } else {
-            vst1q_s32( Atmp_QA + 0, vshll_n_s16( vget_low_s16 ( t0_s16x8 ), QA - 12 ) );
-            vst1q_s32( Atmp_QA + 4, vshll_n_s16( vget_high_s16( t0_s16x8 ), QA - 12 ) );
             invGain_Q30 = LPC_inverse_pred_gain_QA_neon( Atmp_QA, order );
         }
     }

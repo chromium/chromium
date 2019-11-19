@@ -27,8 +27,7 @@ ValidatingAuthenticator::ValidatingAuthenticator(
     std::unique_ptr<Authenticator> current_authenticator)
     : remote_jid_(remote_jid),
       validation_callback_(validation_callback),
-      current_authenticator_(std::move(current_authenticator)),
-      weak_factory_(this) {
+      current_authenticator_(std::move(current_authenticator)) {
   DCHECK(!remote_jid_.empty());
   DCHECK(validation_callback_);
   DCHECK(current_authenticator_);

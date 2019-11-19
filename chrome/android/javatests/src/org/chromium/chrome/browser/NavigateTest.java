@@ -19,7 +19,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ApiCompatibilityUtils;
-import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
@@ -45,6 +44,7 @@ import org.chromium.content_public.browser.test.util.CriteriaHelper;
 import org.chromium.content_public.browser.test.util.DOMUtils;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
 import org.chromium.content_public.browser.test.util.KeyUtils;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TouchCommon;
 import org.chromium.content_public.browser.test.util.UiUtils;
 import org.chromium.net.test.EmbeddedTestServer;
@@ -71,13 +71,13 @@ public class NavigateTest {
     private EmbeddedTestServer mTestServer;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         mActivityTestRule.startMainActivityFromLauncher();
         mTestServer = EmbeddedTestServer.createAndStartServer(InstrumentationRegistry.getContext());
     }
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
         mTestServer.stopAndDestroyServer();
     }
 
@@ -123,7 +123,7 @@ public class NavigateTest {
             throws Exception {
         final UrlBar urlBar = (UrlBar) mActivityTestRule.getActivity().findViewById(R.id.url_bar);
         Assert.assertNotNull("urlBar is null", urlBar);
-        ThreadUtils.runOnUiThreadBlocking(() -> {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
             urlBar.requestFocus();
             urlBar.setText(url);
         });
@@ -164,10 +164,10 @@ public class NavigateTest {
     }
 
     @Test
-    @DisabledTest(message = "crbug.com/516018")
     @Restriction(UiRestriction.RESTRICTION_TYPE_TABLET)
     @MediumTest
     @Feature({"Navigation"})
+    @RetryOnFailure
     public void testNavigateMany() throws Exception {
         final String[] urls = mTestServer.getURLs("/chrome/test/data/android/navigate/one.html",
                 "/chrome/test/data/android/navigate/two.html",
@@ -259,9 +259,9 @@ public class NavigateTest {
         navigateAndObserve(url1, url1);
 
         final Tab tab = mActivityTestRule.getActivity().getActivityTab();
-        ThreadUtils.runOnUiThreadBlocking(
+        TestThreadUtils.runOnUiThreadBlocking(
                 () -> tab.getWebContents().getNavigationController().setUseDesktopUserAgent(
-                        true /* useDesktop */, true /* reloadOnChange */));
+                                true /* useDesktop */, true /* reloadOnChange */));
         ChromeTabUtils.waitForTabPageLoaded(tab, url1);
 
         DOMUtils.clickNode(tab.getWebContents(), "aboutLink");
@@ -509,7 +509,7 @@ public class NavigateTest {
 
     private String getTabUrlOnUIThread(final Tab tab) {
         try {
-            return ThreadUtils.runOnUiThreadBlocking(() -> tab.getUrl());
+            return TestThreadUtils.runOnUiThreadBlocking(() -> tab.getUrl());
         } catch (ExecutionException ex) {
             assert false : "Unexpected ExecutionException";
         }

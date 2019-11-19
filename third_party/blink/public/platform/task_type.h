@@ -12,9 +12,11 @@ namespace blink {
 //
 // For the task type usage guideline, see https://bit.ly/2vMAsQ4
 //
-// When a new task type is created, use kCount value as a new value,
-// the tools/metrics/histograms/enums.xml shall also be updated.
-enum class TaskType : unsigned {
+// When a new task type is created:
+// * use kCount value as a new value,
+// * update tools/metrics/histograms/enums.xml,
+// * update TaskTypes.md
+enum class TaskType : unsigned char {
   ///////////////////////////////////////
   // Speced tasks should use one of the following task types
   ///////////////////////////////////////
@@ -128,9 +130,9 @@ enum class TaskType : unsigned {
   // Tasks used for DedicatedWorker's requestAnimationFrame.
   kWorkerAnimation = 51,
 
-  // For tasks started with the experimental Scheduling API
-  kExperimentalWebSchedulingUserInteraction = 53,
-  kExperimentalWebSchedulingBestEffort = 54,
+  // Obsolete.
+  // kExperimentalWebSchedulingUserInteraction = 53,
+  // kExperimentalWebSchedulingBestEffort = 54,
 
   // https://drafts.csswg.org/css-font-loading/#task-source
   kFontLoading = 56,
@@ -146,6 +148,9 @@ enum class TaskType : unsigned {
 
   // https://w3c.github.io/ServiceWorker/#dfn-client-message-queue
   kServiceWorkerClientMessage = 60,
+
+  // https://wicg.github.io/web-locks/#web-locks-tasks-source
+  kWebLocks = 66,
 
   ///////////////////////////////////////
   // Not-speced tasks should use one of the following task types
@@ -189,9 +194,8 @@ enum class TaskType : unsigned {
   // Tasks related to the inspector.
   kInternalInspector = 33,
 
-  // Tasks related to workers. Tasks with this type are mainly posted by:
-  // * //third_party/blink/renderer/core/workers
-  kInternalWorker = 36,
+  // Obsolete.
+  // kInternalWorker = 36,
 
   // Translation task that freezes when the frame is not visible.
   kInternalTranslation = 55,
@@ -202,9 +206,42 @@ enum class TaskType : unsigned {
   // Task used for ContentCapture.
   kInternalContentCapture = 61,
 
+  // Navigation tasks and tasks which have to run in order with them, including
+  // legacy IPCs and channel associated interfaces.
+  // Note that the ordering between tasks related to different frames is not
+  // always guaranteed - tasks belonging to different frames can be reordered
+  // when one of the frames is frozen.
+  // Note: all AssociatedRemotes/AssociatedReceivers should use this task type.
+  kInternalNavigationAssociated = 63,
+
+  // Tasks which should run when the frame is frozen, but otherwise should run
+  // in order with other legacy IPC and channel-associated interfaces.
+  // Only tasks related to unfreezing itself should run here, the majority of
+  // the tasks
+  // should use kInternalNavigationAssociated instead.
+  kInternalNavigationAssociatedUnfreezable = 64,
+
+  // Task used to split a script loading task for cooperative scheduling
+  kInternalContinueScriptLoading = 65,
+
+  // Experimental tasks types used for main thread scheduling postTask API
+  // (https://github.com/WICG/main-thread-scheduling).
+  // These task types should not be passed directly to
+  // FrameScheduler::GetTaskRunner(); they are used indirectly by
+  // WebSchedulingTaskQueues.
+  kExperimentalWebScheduling = 67,
+
+  // Tasks used to control frame lifecycle - they should run even when the frame
+  // is frozen.
+  kInternalFrameLifecycleControl = 68,
+
   ///////////////////////////////////////
   // The following task types are only for thread-local queues.
   ///////////////////////////////////////
+
+  // The following task types are internal-use only, escpecially for annotations
+  // like UMA of per-thread task queues. Do not specify these task types when to
+  // get a task queue/runner.
 
   kMainThreadTaskQueueV8 = 37,
   kMainThreadTaskQueueCompositor = 38,
@@ -214,15 +251,16 @@ enum class TaskType : unsigned {
   kMainThreadTaskQueueIPC = 42,
   kMainThreadTaskQueueControl = 43,
   kMainThreadTaskQueueCleanup = 52,
+  kMainThreadTaskQueueMemoryPurge = 62,
   kCompositorThreadTaskQueueDefault = 45,
   kCompositorThreadTaskQueueInput = 49,
   kWorkerThreadTaskQueueDefault = 46,
   kWorkerThreadTaskQueueV8 = 47,
   kWorkerThreadTaskQueueCompositor = 48,
 
-  kCount = 62,
+  kCount = 69,
 };
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_PUBLIC_PLATFORM_TASK_TYPE_H_

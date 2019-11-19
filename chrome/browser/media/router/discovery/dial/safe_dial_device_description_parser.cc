@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/media/router/data_decoder_util.h"
+#include "services/data_decoder/public/cpp/safe_xml_parser.h"
 #include "url/gurl.h"
 
 namespace media_router {
@@ -34,11 +35,9 @@ void NotifyParsingError(SafeDialDeviceDescriptionParser::ParseCallback callback,
 
 }  // namespace
 
-SafeDialDeviceDescriptionParser::SafeDialDeviceDescriptionParser(
-    DataDecoder* data_decoder)
-    : data_decoder_(data_decoder), weak_factory_(this) {}
+SafeDialDeviceDescriptionParser::SafeDialDeviceDescriptionParser() = default;
 
-SafeDialDeviceDescriptionParser::~SafeDialDeviceDescriptionParser() {}
+SafeDialDeviceDescriptionParser::~SafeDialDeviceDescriptionParser() = default;
 
 void SafeDialDeviceDescriptionParser::Parse(const std::string& xml_text,
                                             const GURL& app_url,
@@ -46,7 +45,7 @@ void SafeDialDeviceDescriptionParser::Parse(const std::string& xml_text,
   DVLOG(2) << "Parsing device description...";
   DCHECK(callback);
 
-  data_decoder_->ParseXml(
+  GetDataDecoder().ParseXml(
       xml_text,
       base::BindOnce(&SafeDialDeviceDescriptionParser::OnXmlParsingDone,
                      weak_factory_.GetWeakPtr(), std::move(callback), app_url));
@@ -55,9 +54,8 @@ void SafeDialDeviceDescriptionParser::Parse(const std::string& xml_text,
 void SafeDialDeviceDescriptionParser::OnXmlParsingDone(
     SafeDialDeviceDescriptionParser::ParseCallback callback,
     const GURL& app_url,
-    std::unique_ptr<base::Value> value,
-    const base::Optional<std::string>& error) {
-  if (!value || !value->is_dict()) {
+    data_decoder::DataDecoder::ValueOrError result) {
+  if (!result.value || !result.value->is_dict()) {
     std::move(callback).Run(
         ParsedDialDeviceDescription(),
         SafeDialDeviceDescriptionParser::ParsingError::kInvalidXml);
@@ -66,7 +64,7 @@ void SafeDialDeviceDescriptionParser::OnXmlParsingDone(
 
   bool unique_device = true;
   const base::Value* device_element = data_decoder::FindXmlElementPath(
-      *value, {"root", "device"}, &unique_device);
+      *result.value, {"root", "device"}, &unique_device);
   if (!device_element) {
     NotifyParsingError(
         std::move(callback),

@@ -41,7 +41,7 @@ void FakeModelTypeChangeProcessor::UntrackEntityForStorageKey(
     const std::string& storage_key) {}
 
 void FakeModelTypeChangeProcessor::UntrackEntityForClientTagHash(
-    const std::string& client_tag_hash) {}
+    const ClientTagHash& client_tag_hash) {}
 
 bool FakeModelTypeChangeProcessor::IsEntityUnsynced(
     const std::string& storage_key) {
@@ -69,6 +69,10 @@ bool FakeModelTypeChangeProcessor::IsTrackingMetadata() {
 }
 
 std::string FakeModelTypeChangeProcessor::TrackedAccountId() {
+  return "";
+}
+
+std::string FakeModelTypeChangeProcessor::TrackedCacheGuid() {
   return "";
 }
 

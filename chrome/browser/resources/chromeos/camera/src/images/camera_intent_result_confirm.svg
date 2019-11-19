@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="72px" height="72px" viewBox="0 0 72 72" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 57.1 (83088) - https://sketch.com -->
+    <title>btn_confirm_1x</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <polygon id="path-1" points="14.3166667 25.9666667 7.36666667 19.0166667 5 21.3666667 14.3166667 30.6833333 34.3166667 10.6833333 31.9666667 8.33333333"></polygon>
+    </defs>
+    <g id="btn_confirm_1x" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="camera-button" transform="translate(6.127660, 6.127660)" fill="#1A73E8" opacity="0.9">
+            <circle id="Oval-3" cx="30.0154866" cy="30.0154866" r="30.0154866"></circle>
+            <circle id="Oval-3" cx="30.0154866" cy="30.0154866" r="30.0154866"></circle>
+        </g>
+        <g id="ic_check_24px" transform="translate(16.000000, 16.000000)">
+            <mask id="mask-2" fill="white">
+                <use xlink:href="#path-1"></use>
+            </mask>
+            <use fill="#FFFFFF" fill-rule="nonzero" xlink:href="#path-1"></use>
+        </g>
+    </g>
+</svg>

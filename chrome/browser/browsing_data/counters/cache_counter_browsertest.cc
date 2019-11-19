@@ -12,6 +12,7 @@
 
 #include "base/bind.h"
 #include "base/run_loop.h"
+#include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -63,6 +64,14 @@ class CacheCounterTest : public InProcessBrowserTest {
     std::unique_ptr<network::ResourceRequest> request =
         std::make_unique<network::ResourceRequest>();
     request->url = embedded_test_server()->GetURL("/cachetime/yay");
+
+    // Populate the Network Isolation Key so that it is cacheable.
+    url::Origin origin =
+        url::Origin::Create(embedded_test_server()->base_url());
+    request->trusted_params = network::ResourceRequest::TrustedParams();
+    request->trusted_params->network_isolation_key =
+        net::NetworkIsolationKey(origin, origin);
+
     content::SimpleURLLoaderTestHelper simple_loader_helper;
     std::unique_ptr<network::SimpleURLLoader> simple_loader =
         network::SimpleURLLoader::Create(std::move(request),
@@ -118,7 +127,13 @@ class CacheCounterTest : public InProcessBrowserTest {
 };
 
 // Tests that for the empty cache, the result is zero.
-IN_PROC_BROWSER_TEST_F(CacheCounterTest, Empty) {
+// Flaky. See crbug.com/971650.
+#if defined(OS_LINUX)
+#define MAYBE_Empty DISABLED_Empty
+#else
+#define MAYBE_Empty Empty
+#endif
+IN_PROC_BROWSER_TEST_F(CacheCounterTest, MAYBE_Empty) {
   Profile* profile = browser()->profile();
 
   CacheCounter counter(profile);
@@ -167,9 +182,16 @@ IN_PROC_BROWSER_TEST_F(CacheCounterTest, AfterDoom) {
   EXPECT_EQ(0u, GetResult());
 }
 
+// TODO(crbug.com/985131): Test is flaky in Linux, Win and ChromeOS.
+#if defined(OS_LINUX) || defined(OS_WIN) || defined(OS_CHROMEOS)
+#define MAYBE_PrefChanged DISABLED_PrefChanged
+#else
+#define MAYBE_PrefChanged PrefChanged
+#endif
+
 // Tests that the counter starts counting automatically when the deletion
 // pref changes to true.
-IN_PROC_BROWSER_TEST_F(CacheCounterTest, PrefChanged) {
+IN_PROC_BROWSER_TEST_F(CacheCounterTest, MAYBE_PrefChanged) {
   SetCacheDeletionPref(false);
 
   Profile* profile = browser()->profile();

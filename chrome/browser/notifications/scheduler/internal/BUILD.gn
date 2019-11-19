@@ -1,0 +1,108 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Internal library that embedders should not directly depend on.
+source_set("lib") {
+  visibility = [
+    ":unit_tests",
+    "//chrome/browser/notifications/scheduler",
+    "//chrome/browser/notifications/scheduler:factory",
+    "//chrome/browser/notifications/scheduler/test:test_lib",
+  ]
+
+  sources = [
+    "background_task_coordinator.cc",
+    "background_task_coordinator.h",
+    "collection_store.h",
+    "display_decider.cc",
+    "display_decider.h",
+    "icon_converter.h",
+    "icon_converter_result.cc",
+    "icon_converter_result.h",
+    "icon_entry.cc",
+    "icon_entry.h",
+    "icon_store.cc",
+    "icon_store.h",
+    "impression_history_tracker.cc",
+    "impression_history_tracker.h",
+    "impression_store.cc",
+    "impression_store.h",
+    "impression_types.cc",
+    "impression_types.h",
+    "init_aware_scheduler.cc",
+    "init_aware_scheduler.h",
+    "noop_notification_schedule_service.cc",
+    "noop_notification_schedule_service.h",
+    "notification_entry.cc",
+    "notification_entry.h",
+    "notification_schedule_service_impl.cc",
+    "notification_schedule_service_impl.h",
+    "notification_scheduler.cc",
+    "notification_scheduler.h",
+    "notification_scheduler_context.cc",
+    "notification_scheduler_context.h",
+    "notification_store.cc",
+    "notification_store.h",
+    "png_icon_converter_impl.cc",
+    "png_icon_converter_impl.h",
+    "proto_conversion.cc",
+    "proto_conversion.h",
+    "scheduled_notification_manager.cc",
+    "scheduled_notification_manager.h",
+    "scheduler_config.cc",
+    "scheduler_config.h",
+    "scheduler_utils.cc",
+    "scheduler_utils.h",
+    "stats.cc",
+    "stats.h",
+    "webui_client.cc",
+    "webui_client.h",
+  ]
+
+  # This target should not depend on anything in //chrome/* except the proto library.
+  deps = [
+    "//base",
+    "//chrome/app:generated_resources",
+    "//chrome/browser/notifications/proto",
+    "//chrome/browser/notifications/scheduler/public",
+    "//components/keyed_service/core",
+    "//components/leveldb_proto",
+    "//skia",
+    "//ui/base",
+    "//ui/gfx/codec",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "background_task_coordinator_unittest.cc",
+    "display_decider_unittest.cc",
+    "icon_converter_unittest.cc",
+    "icon_store_unittest.cc",
+    "impression_history_tracker_unittest.cc",
+    "impression_store_unittest.cc",
+    "impression_types_unittest.cc",
+    "init_aware_scheduler_unittest.cc",
+    "notification_scheduler_unittest.cc",
+    "notification_store_unittest.cc",
+    "proto_conversion_unittest.cc",
+    "scheduled_notification_manager_unittest.cc",
+    "scheduler_config_unittest.cc",
+    "scheduler_utils_unittest.cc",
+    "stats_unittest.cc",
+  ]
+
+  deps = [
+    "//chrome/browser/notifications/proto",
+    "//chrome/browser/notifications/scheduler/internal:lib",
+    "//chrome/browser/notifications/scheduler/public",
+    "//chrome/browser/notifications/scheduler/test:test_lib",
+    "//chrome/browser/notifications/scheduler/test:test_support",
+    "//components/leveldb_proto:test_support",
+    "//skia",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

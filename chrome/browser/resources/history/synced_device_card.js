@@ -93,8 +93,6 @@ Polymer({
         SYNCED_TABS_HISTOGRAM_NAME, histogramValue, SyncedTabsHistogram.LIMIT);
 
     this.$.collapse.toggle();
-    this.$['dropdown-indicator'].icon =
-        this.$.collapse.opened ? 'cr:expand-less' : 'cr:expand-more';
 
     this.fire('update-focus-grid');
   },
@@ -112,10 +110,13 @@ Polymer({
    */
   updateIcons_: function() {
     this.async(function() {
-      const icons = Polymer.dom(this.root).querySelectorAll('.website-icon');
+      const icons = this.shadowRoot.querySelectorAll('.website-icon');
 
       for (let i = 0; i < this.tabs.length; i++) {
-        icons[i].style.backgroundImage = cr.icon.getFavicon(this.tabs[i].url);
+        // Entries on this UI are coming strictly from sync, so we can set
+        // |isSyncedUrlForHistoryUi| to true on the getFavicon call below.
+        icons[i].style.backgroundImage = cr.icon.getFaviconForPageURL(
+            this.tabs[i].url, true, this.tabs[i].remoteIconUrlForUma);
       }
     });
   },

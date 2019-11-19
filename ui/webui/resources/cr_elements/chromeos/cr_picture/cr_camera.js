@@ -289,12 +289,30 @@ Polymer({
   },
 
   /**
+   * @return {string}
+   * @private
+   */
+  getTakePhotoIcon_: function() {
+    return this.videomode ? 'cr-picture:videocam-shutter-icon' :
+                            'cr-picture:camera-shutter-icon';
+  },
+
+  /**
    * Returns the label to use for take photo button.
    * @return {string}
    * @private
    */
   getTakePhotoLabel_: function(videomode, photoLabel, videoLabel) {
     return videomode ? videoLabel : photoLabel;
+  },
+
+  /**
+   * @return {string}
+   * @private
+   */
+  getSwitchModeIcon_: function() {
+    return this.videomode ? 'cr-picture:camera-alt-icon' :
+                            'cr-picture:videocam-icon';
   },
 
   /**

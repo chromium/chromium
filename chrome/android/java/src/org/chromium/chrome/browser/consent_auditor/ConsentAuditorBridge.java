@@ -4,9 +4,10 @@
 
 package org.chromium.chrome.browser.consent_auditor;
 
-import android.support.annotation.StringRes;
+import androidx.annotation.StringRes;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.profiles.Profile;
 
 import java.util.List;
@@ -30,8 +31,9 @@ public final class ConsentAuditorBridge {
         for (int i = 0; i < consentDescription.size(); ++i) {
             consentDescriptionArray[i] = consentDescription.get(i);
         }
-        nativeRecordConsent(Profile.getLastUsedProfile(), accountId, feature,
-                consentDescriptionArray, consentConfirmation);
+        ConsentAuditorBridgeJni.get().recordConsent(ConsentAuditorBridge.this,
+                Profile.getLastUsedProfile(), accountId, feature, consentDescriptionArray,
+                consentConfirmation);
     }
 
     private ConsentAuditorBridge() {}
@@ -45,6 +47,9 @@ public final class ConsentAuditorBridge {
         return sInstance;
     }
 
-    private native void nativeRecordConsent(Profile profile, String accountId, int feature,
-            int[] consentDescription, int consentConfirmation);
+    @NativeMethods
+    interface Natives {
+        void recordConsent(ConsentAuditorBridge caller, Profile profile, String accountId,
+                int feature, int[] consentDescription, int consentConfirmation);
+    }
 }

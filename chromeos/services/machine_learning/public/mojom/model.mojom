@@ -4,35 +4,80 @@
 
 // Datatypes and interfaces of models for the Machine Learning API.
 
-// NOTE: This mojom should be kept in sync with the copy in Chromium OS's repo
-// in src/platform2/ml/mojom/.
-// Example: A backwards-compatible interface change can be made in Chromium OS
-// first, then replicated and used here later.
+// NOTE: This mojom exists in two places and must be kept in sync:
+//       Chromium:  //chromeos/services/machine_learning/public/mojom/
+//       Chrome OS: src/platform2/ml/mojom/
+// Example: A backwards-compatible mojom change (and corresponding
+// implementation change) can be made in Chrome OS first, then replicated to the
+// client (Chromium) later.
 
 module chromeos.machine_learning.mojom;
 
+// NOTE: The base directory for 'import' statements is expected to differ
+//       between Chromium and Chrome OS versions of this file.
 import "chromeos/services/machine_learning/public/mojom/graph_executor.mojom";
 
-enum ModelId {
-  UNKNOWN,
-  TEST_MODEL,  // Only available in tests.
-  SMART_DIM,
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// ModelIds prefixed with UNSUPPORTED_ are no longer supported. Attempts to load
+// them will produce an error.
+enum BuiltinModelId {
+  // Unknown ML model. It is marked as unsupported.
+  UNSUPPORTED_UNKNOWN = 0,
+  // Test ML model.
+  TEST_MODEL = 1,
+  // The Smart Dim (20181115) ML model.
+  SMART_DIM_20181115 = 2,
+  // The Smart Dim (20190221) ML model.
+  SMART_DIM_20190221 = 3,
+  // The Top Cat (20190722) ML model.
+  TOP_CAT_20190722 = 4,
+  // The Smart Dim (20190521) ML model.
+  SMART_DIM_20190521 = 5,
+  // The Search Ranker (20190923) ML model.
+  SEARCH_RANKER_20190923 = 6,
 };
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum CreateGraphExecutorResult {
   OK = 0,
-  MODEL_INTERPRETATION_ERROR,
-  MEMORY_ALLOCATION_ERROR,
+  MODEL_INTERPRETATION_ERROR = 1,
+  MEMORY_ALLOCATION_ERROR = 2,
+  // Remove kMax and use builtin kMaxValue after Mojo uprev (crbug.com/909719).
+  kMax = MEMORY_ALLOCATION_ERROR,
 };
 
-struct ModelSpec {
-  ModelId id;
+// Model specification for builtin models.
+// Because ml-service can retrieve a builtin model's content and metadata, only
+// an |id| is needed to specify it.
+struct BuiltinModelSpec {
+  BuiltinModelId id;
+};
+
+// Model specification for downloaded models.
+// For a downloaded model, both of the model content and metadata must be
+// specified.
+struct FlatBufferModelSpec {
+  // The content of the model's tflite model file.
+  string model_string;
+  // A map from input nodes' names to their indices.
+  map<string, int32> inputs;
+  // A map from output nodes' names to their indices.
+  map<string, int32> outputs;
+  // Used in naming the UMA metric histograms of the model. An example of the
+  // names of the histograms is:
+  //
+  // MachineLearningService.|metrics_model_name|.ExecuteResult.CpuTimeMicrosec
+  //
+  // This variable must NOT be empty.
+  string metrics_model_name;
 };
 
 // The lifetime of the cached model is tied to the lifetime of the Model
 // interface pipe. The Model interface pipe can be used to acquire multiple
 // separate GraphExecutor instances.
 interface Model {
-  CreateGraphExecutor(GraphExecutor& request) =>
+  CreateGraphExecutor(pending_receiver<GraphExecutor> receiver) =>
       (CreateGraphExecutorResult result);
 };

@@ -17,7 +17,10 @@
 #include "base/component_export.h"
 #include "base/macros.h"
 #include "base/unguessable_token.h"
-#include "storage/common/blob_storage/blob_storage_constants.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
+#include "storage/browser/blob/blob_storage_constants.h"
+#include "third_party/blink/public/mojom/blob/blob.mojom.h"
 
 class GURL;
 
@@ -51,39 +54,40 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobStorageRegistry {
   BlobEntry* GetEntry(const std::string& uuid);
   const BlobEntry* GetEntry(const std::string& uuid) const;
 
-  // Creates a url mapping from blob uuid to the given url. Returns false if
-  // the uuid isn't mapped to an entry or if there already is a map for the URL.
-  bool CreateUrlMapping(const GURL& url, const std::string& uuid);
+  // Creates a url mapping from blob to the given url. Returns false if
+  // there already is a map for the URL.
+  bool CreateUrlMapping(const GURL& url,
+                        mojo::PendingRemote<blink::mojom::Blob> blob);
 
-  // Removes the given URL mapping. Optionally populates a uuid string of the
-  // removed entry uuid. Returns false if the url isn't mapped.
-  bool DeleteURLMapping(const GURL& url, std::string* uuid);
+  // Removes the given URL mapping. Returns false if the url wasn't mapped.
+  bool DeleteURLMapping(const GURL& url);
 
-  // Returns if the url is mapped to a blob uuid.
+  // Returns if the url is mapped to a blob.
   bool IsURLMapped(const GURL& blob_url) const;
 
-  // Returns the entry from the given url, and optionally populates the uuid for
-  // that entry. Returns a nullptr if the mapping or entry doesn't exist.
-  BlobEntry* GetEntryFromURL(const GURL& url, std::string* uuid);
+  // Returns the blob from the given url. Returns a null remote if the mapping
+  // doesn't exist.
+  mojo::PendingRemote<blink::mojom::Blob> GetBlobFromURL(const GURL& url);
 
   size_t blob_count() const { return blob_map_.size(); }
-  size_t url_count() const { return url_to_uuid_.size(); }
+  size_t url_count() const { return url_to_blob_.size(); }
 
   void AddTokenMapping(const base::UnguessableToken& token,
                        const GURL& url,
-                       const std::string& uuid);
+                       mojo::PendingRemote<blink::mojom::Blob> blob);
   void RemoveTokenMapping(const base::UnguessableToken& token);
   bool GetTokenMapping(const base::UnguessableToken& token,
                        GURL* url,
-                       std::string* uuid) const;
+                       mojo::PendingRemote<blink::mojom::Blob>* blob) const;
 
  private:
   friend class ViewBlobInternalsJob;
 
   std::unordered_map<std::string, std::unique_ptr<BlobEntry>> blob_map_;
-  std::map<GURL, std::string> url_to_uuid_;
-  std::map<base::UnguessableToken, std::pair<GURL, std::string>>
-      token_to_url_and_uuid_;
+  std::map<GURL, mojo::Remote<blink::mojom::Blob>> url_to_blob_;
+  std::map<base::UnguessableToken,
+           std::pair<GURL, mojo::Remote<blink::mojom::Blob>>>
+      token_to_url_and_blob_;
 
   DISALLOW_COPY_AND_ASSIGN(BlobStorageRegistry);
 };

@@ -4,6 +4,8 @@
 
 """This tool provides a command line interface for the flakiness dashboard."""
 
+from __future__ import print_function
+
 import argparse
 
 from cli_tools.flakiness_cli import analysis
@@ -54,4 +56,4 @@ def Main():
 
   df = analysis.pandas.concat(dfs)
   df = df.sort_values('flakiness', ascending=False)
-  print df
+  print(df)

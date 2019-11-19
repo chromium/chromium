@@ -107,7 +107,7 @@ class CAPTURE_EXPORT VideoCaptureDeviceFactoryWin
   base::Thread com_thread_;
   scoped_refptr<base::SingleThreadTaskRunner> origin_task_runner_;
   std::unordered_set<IAsyncOperation<DeviceInformationCollection*>*> async_ops_;
-  base::WeakPtrFactory<VideoCaptureDeviceFactoryWin> weak_ptr_factory_;
+  base::WeakPtrFactory<VideoCaptureDeviceFactoryWin> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(VideoCaptureDeviceFactoryWin);
 };

@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-FAIL setLocalDescription(rollback) from have-local-offer state should reset back to stable state promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'setLocalDescription' on 'RTCPeerConnection': The provided value 'rollback' is not a valid enum value of type RTCSdpType."
-FAIL setLocalDescription(rollback) from stable state should reject with InvalidStateError assert_throws: function "function() { throw e }" threw object "TypeError: Failed to execute 'setLocalDescription' on 'RTCPeerConnection': The provided value 'rollback' is not a valid enum value of type RTCSdpType." that is not a DOMException InvalidStateError: property "code" is equal to undefined, expected 11
-FAIL setLocalDescription(rollback) after setting answer description should reject with InvalidStateError assert_throws: function "function() { throw e }" threw object "TypeError: Failed to execute 'setLocalDescription' on 'RTCPeerConnection': The provided value 'rollback' is not a valid enum value of type RTCSdpType." that is not a DOMException InvalidStateError: property "code" is equal to undefined, expected 11
-FAIL setLocalDescription(rollback) should ignore invalid sdp content and succeed promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'setLocalDescription' on 'RTCPeerConnection': The provided value 'rollback' is not a valid enum value of type RTCSdpType."
-Harness: the test ran to completion.
-

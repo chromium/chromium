@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/platform/text/text_direction.h"
+#include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
 
@@ -51,14 +52,14 @@ class CORE_EXPORT HTMLElement : public Element {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  DECLARE_ELEMENT_FACTORY_WITH_TAGNAME(HTMLElement);
+
+  HTMLElement(const QualifiedName& tag_name, Document&, ConstructionType);
 
   bool HasTagName(const HTMLQualifiedName& name) const {
     return HasLocalName(name.LocalName());
   }
 
   String title() const final;
-  int tabIndex() const override;
 
   void setInnerText(const String&, ExceptionState&);
   virtual void setInnerText(const StringOrTrustedScript&, ExceptionState&);
@@ -146,8 +147,6 @@ class CORE_EXPORT HTMLElement : public Element {
   bool IsFormAssociatedCustomElement() const;
 
  protected:
-  HTMLElement(const QualifiedName& tag_name, Document&, ConstructionType);
-
   enum AllowPercentage { kDontAllowPercentageValues, kAllowPercentageValues };
   void AddHTMLLengthToStyle(MutableCSSPropertyValueSet*,
                             CSSPropertyID,
@@ -198,8 +197,7 @@ class CORE_EXPORT HTMLElement : public Element {
   bool SelfOrAncestorHasDirAutoAttribute() const;
   void AdjustDirectionalityIfNeededAfterChildAttributeChanged(Element* child);
   void AdjustDirectionalityIfNeededAfterChildrenChanged(const ChildrenChange&);
-  TextDirection Directionality(
-      Node** strong_directionality_text_node = nullptr) const;
+  TextDirection Directionality() const;
 
   TranslateAttributeMode GetTranslateAttributeMode() const;
 
@@ -219,6 +217,11 @@ class CORE_EXPORT HTMLElement : public Element {
 
 DEFINE_ELEMENT_TYPE_CASTS(HTMLElement, IsHTMLElement());
 
+template <>
+struct DowncastTraits<HTMLElement> {
+  static bool AllowFrom(const Node& node) { return node.IsHTMLElement(); }
+};
+
 template <typename T>
 bool IsElementOfType(const HTMLElement&);
 template <>
@@ -234,7 +237,8 @@ inline HTMLElement::HTMLElement(const QualifiedName& tag_name,
 }
 
 inline bool Node::HasTagName(const HTMLQualifiedName& name) const {
-  return IsHTMLElement() && ToHTMLElement(*this).HasTagName(name);
+  auto* html_element = DynamicTo<HTMLElement>(this);
+  return html_element && html_element->HasTagName(name);
 }
 
 // Functor used to match HTMLElements with a specific HTML tag when using the
@@ -256,25 +260,26 @@ class HasHTMLTagName {
 // This requires isHTML*Element(const Element&) and isHTML*Element(const
 // HTMLElement&).  When the input element is an HTMLElement, we don't need to
 // check the namespace URI, just the local name.
-#define DEFINE_HTMLELEMENT_TYPE_CASTS_WITH_FUNCTION(thisType)                \
-  inline bool Is##thisType(const thisType* element);                         \
-  inline bool Is##thisType(const thisType& element);                         \
-  inline bool Is##thisType(const HTMLElement* element) {                     \
-    return element && Is##thisType(*element);                                \
-  }                                                                          \
-  inline bool Is##thisType(const Node& node) {                               \
-    return node.IsHTMLElement() ? Is##thisType(ToHTMLElement(node)) : false; \
-  }                                                                          \
-  inline bool Is##thisType(const Node* node) {                               \
-    return node && Is##thisType(*node);                                      \
-  }                                                                          \
-  inline bool Is##thisType(const Element* element) {                         \
-    return element && Is##thisType(*element);                                \
-  }                                                                          \
-  template <>                                                                \
-  inline bool IsElementOfType<const thisType>(const HTMLElement& element) {  \
-    return Is##thisType(element);                                            \
-  }                                                                          \
+#define DEFINE_HTMLELEMENT_TYPE_CASTS_WITH_FUNCTION(thisType)               \
+  inline bool Is##thisType(const thisType* element);                        \
+  inline bool Is##thisType(const thisType& element);                        \
+  inline bool Is##thisType(const HTMLElement* element) {                    \
+    return element && Is##thisType(*element);                               \
+  }                                                                         \
+  inline bool Is##thisType(const Node& node) {                              \
+    auto* html_element = DynamicTo<HTMLElement>(node);                      \
+    return html_element ? Is##thisType(html_element) : false;               \
+  }                                                                         \
+  inline bool Is##thisType(const Node* node) {                              \
+    return node && Is##thisType(*node);                                     \
+  }                                                                         \
+  inline bool Is##thisType(const Element* element) {                        \
+    return element && Is##thisType(*element);                               \
+  }                                                                         \
+  template <>                                                               \
+  inline bool IsElementOfType<const thisType>(const HTMLElement& element) { \
+    return Is##thisType(element);                                           \
+  }                                                                         \
   DEFINE_ELEMENT_TYPE_CASTS_WITH_FUNCTION(thisType)
 
 }  // namespace blink

@@ -21,7 +21,10 @@
 #include "build/build_config.h"
 #include "content/common/content_export.h"
 #include "content/public/common/process_type.h"
-#include "mojo/public/cpp/bindings/binding.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/ip_address.h"
 #include "net/base/ip_endpoint.h"
 #include "ppapi/c/pp_instance.h"
@@ -58,7 +61,7 @@ class BrowserPpapiHostImpl;
 
 class CONTENT_EXPORT PepperUDPSocketMessageFilter
     : public ppapi::host::ResourceMessageFilter,
-      public network::mojom::UDPSocketReceiver {
+      public network::mojom::UDPSocketListener {
  public:
   PepperUDPSocketMessageFilter(BrowserPpapiHostImpl* host,
                                PP_Instance instance,
@@ -66,8 +69,8 @@ class CONTENT_EXPORT PepperUDPSocketMessageFilter
 
   using CreateUDPSocketCallback = base::RepeatingCallback<void(
       network::mojom::NetworkContext* network_context,
-      network::mojom::UDPSocketRequest socket_request,
-      network::mojom::UDPSocketReceiverPtr socket_receiver)>;
+      mojo::PendingReceiver<network::mojom::UDPSocket> socket_receiver,
+      mojo::PendingRemote<network::mojom::UDPSocketListener> socket_listener)>;
 
   static void SetCreateUDPSocketCallbackForTesting(
       const CreateUDPSocketCallback* create_udp_socket_callback);
@@ -125,16 +128,19 @@ class CONTENT_EXPORT PepperUDPSocketMessageFilter
   int32_t OnMsgLeaveGroup(const ppapi::host::HostMessageContext* context,
                           const PP_NetAddress_Private& addr);
 
-  void DoBindCallback(network::mojom::UDPSocketReceiverRequest receiver_request,
+  void DoBindCallback(mojo::PendingReceiver<network::mojom::UDPSocketListener>
+                          listener_receiver,
                       const ppapi::host::ReplyMessageContext& context,
                       int result,
                       const base::Optional<net::IPEndPoint>& local_addr_out);
-  void OnBindComplete(network::mojom::UDPSocketReceiverRequest receiver_request,
+  void OnBindComplete(mojo::PendingReceiver<network::mojom::UDPSocketListener>
+                          listener_receiver,
                       const ppapi::host::ReplyMessageContext& context,
                       const PP_NetAddress_Private& net_address);
 #if defined(OS_CHROMEOS)
   void OnFirewallHoleOpened(
-      network::mojom::UDPSocketReceiverRequest receiver_request,
+      mojo::PendingReceiver<network::mojom::UDPSocketListener>
+          listener_receiver,
       const ppapi::host::ReplyMessageContext& context,
       const PP_NetAddress_Private& net_address,
       std::unique_ptr<chromeos::FirewallHole> hole);
@@ -142,7 +148,7 @@ class CONTENT_EXPORT PepperUDPSocketMessageFilter
   void StartPendingSend();
   void Close();
 
-  // network::mojom::UDPSocketReceiver override:
+  // network::mojom::UDPSocketListener override:
   void OnReceived(int result,
                   const base::Optional<net::IPEndPoint>& src_addr,
                   base::Optional<base::span<const uint8_t>> data) override;
@@ -209,13 +215,13 @@ class CONTENT_EXPORT PepperUDPSocketMessageFilter
   // Bound (in a Mojo sense) when binding (in a network sense) starts. Closed in
   // Close() and on Mojo pipe errors. Must only be accessed (and destroyed) on
   // UI thread.
-  network::mojom::UDPSocketPtr socket_;
+  mojo::Remote<network::mojom::UDPSocket> socket_;
 
   // Bound (in a Mojo sense) when binding (in a network sense) completes.
   // Binding late avoids receiving data when still setting up the socket. Closed
   // in Close() and on Mojo pipe errors. Must only be accessed (and destroyed)
   // on UI thread.
-  mojo::Binding<network::mojom::UDPSocketReceiver> binding_;
+  mojo::Receiver<network::mojom::UDPSocketListener> receiver_{this};
 
 #if defined(OS_CHROMEOS)
   std::unique_ptr<chromeos::FirewallHole,
@@ -224,7 +230,7 @@ class CONTENT_EXPORT PepperUDPSocketMessageFilter
   // Allows for cancellation of opening a hole in the firewall in the case the
   // network service crashes.
   base::WeakPtrFactory<PepperUDPSocketMessageFilter>
-      firewall_hole_weak_ptr_factory_;
+      firewall_hole_weak_ptr_factory_{this};
 #endif  // defined(OS_CHROMEOS)
 
   DISALLOW_COPY_AND_ASSIGN(PepperUDPSocketMessageFilter);

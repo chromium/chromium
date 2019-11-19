@@ -9,8 +9,11 @@
 #include "media/capture/video/video_capture_buffer_pool_impl.h"
 #include "media/capture/video/video_capture_buffer_tracker_factory_impl.h"
 #include "media/capture/video/video_capture_device_client.h"
-#include "media/capture/video/video_capture_jpeg_decoder.h"
 #include "media/capture/video/video_frame_receiver_on_task_runner.h"
+
+#if defined(OS_CHROMEOS)
+#include "media/capture/video/chromeos/video_capture_jpeg_decoder.h"
+#endif  // defined(OS_CHROMEOS)
 
 namespace {
 
@@ -23,8 +26,8 @@ class FakeLaunchedVideoCaptureDevice
       std::unique_ptr<media::VideoCaptureDevice> device)
       : device_(std::move(device)) {}
 
-  void GetPhotoState(media::VideoCaptureDevice::GetPhotoStateCallback callback)
-      const override {
+  void GetPhotoState(
+      media::VideoCaptureDevice::GetPhotoStateCallback callback) override {
     device_->GetPhotoState(std::move(callback));
   }
   void SetPhotoOptions(
@@ -65,24 +68,32 @@ FakeVideoCaptureDeviceLauncher::~FakeVideoCaptureDeviceLauncher() = default;
 
 void FakeVideoCaptureDeviceLauncher::LaunchDeviceAsync(
     const std::string& device_id,
-    blink::MediaStreamType stream_type,
+    blink::mojom::MediaStreamType stream_type,
     const media::VideoCaptureParams& params,
     base::WeakPtr<media::VideoFrameReceiver> receiver,
     base::OnceClosure connection_lost_cb,
     Callbacks* callbacks,
     base::OnceClosure done_cb) {
   auto device = system_->CreateDevice(device_id);
-  auto empty_jpeg_decoder_factory_cb = base::BindRepeating(
-      []() { return std::unique_ptr<media::VideoCaptureJpegDecoder>(); });
   scoped_refptr<media::VideoCaptureBufferPool> buffer_pool(
       new media::VideoCaptureBufferPoolImpl(
           std::make_unique<media::VideoCaptureBufferTrackerFactoryImpl>(),
-          kMaxBufferCount));
+          media::VideoCaptureBufferType::kSharedMemory, kMaxBufferCount));
+#if defined(OS_CHROMEOS)
   auto device_client = std::make_unique<media::VideoCaptureDeviceClient>(
       media::VideoCaptureBufferType::kSharedMemory,
       std::make_unique<media::VideoFrameReceiverOnTaskRunner>(
           receiver, base::ThreadTaskRunnerHandle::Get()),
-      std::move(buffer_pool), std::move(empty_jpeg_decoder_factory_cb));
+      std::move(buffer_pool), base::BindRepeating([]() {
+        return std::unique_ptr<media::VideoCaptureJpegDecoder>();
+      }));
+#else
+  auto device_client = std::make_unique<media::VideoCaptureDeviceClient>(
+      media::VideoCaptureBufferType::kSharedMemory,
+      std::make_unique<media::VideoFrameReceiverOnTaskRunner>(
+          receiver, base::ThreadTaskRunnerHandle::Get()),
+      std::move(buffer_pool));
+#endif  // defined(OS_CHROMEOS)
   device->AllocateAndStart(params, std::move(device_client));
   auto launched_device =
       std::make_unique<FakeLaunchedVideoCaptureDevice>(std::move(device));

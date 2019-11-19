@@ -7,6 +7,7 @@
 
 #include "mojo/public/cpp/bindings/interface_ptr.h"
 #include "mojo/public/cpp/bindings/interface_request.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 
 namespace content {
@@ -20,6 +21,15 @@ void BindInterface(Host* host, mojo::InterfacePtr<Interface>* ptr) {
 template <typename Host, typename Interface>
 void BindInterface(Host* host, mojo::InterfaceRequest<Interface> request) {
   host->BindInterface(Interface::Name_, std::move(request.PassMessagePipe()));
+}
+template <typename Host, typename Interface>
+void BindInterface(Host* host, mojo::PendingRemote<Interface>* remote) {
+  auto receiver = remote->InitWithNewPipeAndPassReceiver();
+  host->BindInterface(Interface::Name_, receiver.PassPipe());
+}
+template <typename Host, typename Interface>
+void BindInterface(Host* host, mojo::PendingReceiver<Interface> receiver) {
+  host->BindInterface(Interface::Name_, receiver.PassPipe());
 }
 
 }  // namespace

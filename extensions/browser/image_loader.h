@@ -120,7 +120,7 @@ class ImageLoader : public KeyedService {
   void ReplyBackWithImageFamily(ImageLoaderImageFamilyCallback callback,
                                 const std::vector<LoadResult>& load_result);
 
-  base::WeakPtrFactory<ImageLoader> weak_ptr_factory_;
+  base::WeakPtrFactory<ImageLoader> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ImageLoader);
 };

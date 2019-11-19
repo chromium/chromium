@@ -57,9 +57,6 @@ void PopulateExtensionInfo(
     extension_info->set_update_url(update_url);
   }
 
-  extension_info->set_installed_by_custodian(
-      extensions::util::WasInstalledByCustodian(
-          extension.id(), extension_registry.browser_context()));
   extension_info->set_installed_by_default(
       extension.was_installed_by_default());
   extension_info->set_installed_by_oem(extension.was_installed_by_oem());
@@ -77,11 +74,11 @@ void PopulateExtensionInfo(
     std::unique_ptr<extensions::InstallSignature> signature_from_prefs =
         extensions::InstallSignature::FromValue(*signature);
     if (signature_from_prefs) {
-      if (base::ContainsKey(signature_from_prefs->ids, extension_id)) {
+      if (base::Contains(signature_from_prefs->ids, extension_id)) {
         extension_info->set_has_signature_validation(true);
         extension_info->set_signature_is_valid(true);
-      } else if (base::ContainsKey(signature_from_prefs->invalid_ids,
-                                   extension_id)) {
+      } else if (base::Contains(signature_from_prefs->invalid_ids,
+                                extension_id)) {
         extension_info->set_has_signature_validation(true);
         extension_info->set_signature_is_valid(false);
       }

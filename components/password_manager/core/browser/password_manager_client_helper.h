@@ -9,29 +9,11 @@
 
 namespace password_manager {
 
-// Delegate class for PasswordManagerClientHelper. A class that wants to use
-// PasswordManagerClientHelper must implement this delegate.
-class PasswordManagerClientHelperDelegate {
- public:
-  // Shows the dialog where the user can accept or decline the global autosignin
-  // setting as a first run experience.
-  virtual void PromptUserToEnableAutosignin() = 0;
-
-  // Methods required from PasswordManagerClient implementation:
-  virtual bool IsIncognito() const = 0;
-  virtual PrefService* GetPrefs() const = 0;
-  virtual PasswordManager* GetPasswordManager() = 0;
-
- protected:
-  virtual ~PasswordManagerClientHelperDelegate() {}
-};
-
 // Helper class for PasswordManagerClients. It extracts some common logic for
 // ChromePasswordManagerClient and IOSChromePasswordManagerClient.
 class PasswordManagerClientHelper {
  public:
-  explicit PasswordManagerClientHelper(
-      PasswordManagerClientHelperDelegate* delegate);
+  explicit PasswordManagerClientHelper(PasswordManagerClient* delegate);
   ~PasswordManagerClientHelper();
 
   // Implementation of PasswordManagerClient::NotifyUserCouldBeAutoSignedIn.
@@ -67,7 +49,7 @@ class PasswordManagerClientHelper {
   // is the case for first run experience, and only for non-incognito mode.
   bool ShouldPromptToEnableAutoSignIn() const;
 
-  PasswordManagerClientHelperDelegate* delegate_;
+  PasswordManagerClient* delegate_;
 
   // Set during 'NotifyUserCouldBeAutoSignedIn' in order to store the
   // form for potential use during 'NotifySuccessfulLoginWithExistingPassword'.

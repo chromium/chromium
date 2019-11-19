@@ -1,0 +1,35 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://www.khronos.org/registry/webgl/extensions/WEBGL_multi_draw_instanced_base_vertex_base_instance/
+
+[NoInterfaceObject]
+interface WebGLMultiDrawInstancedBaseVertexBaseInstance {
+  void multiDrawArraysInstancedBaseInstanceWEBGL(
+      GLenum mode,
+      (Int32Array or sequence<long>) firstsList,
+      GLuint firstsOffset,
+      (Int32Array or sequence<long>) countsList,
+      GLuint countsOffset,
+      (Int32Array or sequence<long>) instanceCountsList,
+      GLuint instanceCountsOffset,
+      (Int32Array or sequence<long>) baseInstancesList,
+      GLuint baseInstancesOffset,
+      GLsizei drawcount);
+
+  void multiDrawElementsInstancedBaseVertexBaseInstanceWEBGL(
+      GLenum mode,
+      (Int32Array or sequence<long>) countsList,
+      GLuint countsOffset,
+      GLenum type,
+      (Int32Array or sequence<long>) offsetsList,
+      GLuint offsetsOffset,
+      (Int32Array or sequence<long>) instanceCountsList,
+      GLuint instanceCountsOffset,
+      (Int32Array or sequence<long>) baseVerticesList,
+      GLuint baseVerticesOffset,
+      (Int32Array or sequence<long>) baseInstancesList,
+      GLuint baseInstancesOffset,
+      GLsizei drawcount);
+};

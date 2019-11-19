@@ -8,30 +8,32 @@
 
 #include "base/sequenced_task_runner.h"
 #include "base/task/post_task.h"
+#include "build/build_config.h"
 #include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/dom_distiller/content/browser/distiller_page_web_contents.h"
 #include "components/dom_distiller/core/article_entry.h"
 #include "components/dom_distiller/core/distiller.h"
-#include "components/dom_distiller/core/dom_distiller_store.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
-#include "components/leveldb_proto/public/proto_database.h"
-#include "components/leveldb_proto/public/proto_database_provider.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
+#if defined(OS_ANDROID)
+#include "chrome/browser/android/dom_distiller/distiller_ui_handle_android.h"
+#endif  // defined(OS_ANDROID)
+
 namespace dom_distiller {
 
 DomDistillerContextKeyedService::DomDistillerContextKeyedService(
-    std::unique_ptr<DomDistillerStoreInterface> store,
     std::unique_ptr<DistillerFactory> distiller_factory,
     std::unique_ptr<DistillerPageFactory> distiller_page_factory,
-    std::unique_ptr<DistilledPagePrefs> distilled_page_prefs)
-    : DomDistillerService(std::move(store),
-                          std::move(distiller_factory),
+    std::unique_ptr<DistilledPagePrefs> distilled_page_prefs,
+    std::unique_ptr<DistillerUIHandle> distiller_ui_handle)
+    : DomDistillerService(std::move(distiller_factory),
                           std::move(distiller_page_factory),
-                          std::move(distilled_page_prefs)) {}
+                          std::move(distilled_page_prefs),
+                          std::move(distiller_ui_handle)) {}
 
 // static
 DomDistillerServiceFactory* DomDistillerServiceFactory::GetInstance() {
@@ -49,30 +51,26 @@ DomDistillerServiceFactory::GetForBrowserContext(
 DomDistillerServiceFactory::DomDistillerServiceFactory()
     : BrowserContextKeyedServiceFactory(
           "DomDistillerService",
-          BrowserContextDependencyManager::GetInstance()) {}
+          BrowserContextDependencyManager::GetInstance()) {
+}
 
 DomDistillerServiceFactory::~DomDistillerServiceFactory() {}
 
 KeyedService* DomDistillerServiceFactory::BuildServiceInstanceFor(
-    content::BrowserContext* profile) const {
+    content::BrowserContext* context) const {
+  Profile* profile = Profile::FromBrowserContext(context);
   scoped_refptr<base::SequencedTaskRunner> background_task_runner =
-      base::CreateSequencedTaskRunnerWithTraits(
-          {base::MayBlock(), base::TaskPriority::BEST_EFFORT});
-
-  auto db = leveldb_proto::ProtoDatabaseProvider::CreateUniqueDB<ArticleEntry>(
-      background_task_runner);
+      base::CreateSequencedTaskRunner({base::ThreadPool(), base::MayBlock(),
+                                       base::TaskPriority::BEST_EFFORT});
 
   base::FilePath database_dir(
-      profile->GetPath().Append(FILE_PATH_LITERAL("Articles")));
-
-  std::unique_ptr<DomDistillerStore> dom_distiller_store(
-      new DomDistillerStore(std::move(db), database_dir));
+      context->GetPath().Append(FILE_PATH_LITERAL("Articles")));
 
   std::unique_ptr<DistillerPageFactory> distiller_page_factory(
-      new DistillerPageWebContentsFactory(profile));
+      new DistillerPageWebContentsFactory(context));
   std::unique_ptr<DistillerURLFetcherFactory> distiller_url_fetcher_factory(
       new DistillerURLFetcherFactory(
-          content::BrowserContext::GetDefaultStoragePartition(profile)
+          content::BrowserContext::GetDefaultStoragePartition(context)
               ->GetURLLoaderFactoryForBrowserProcess()));
 
   dom_distiller::proto::DomDistillerOptions options;
@@ -88,12 +86,18 @@ KeyedService* DomDistillerServiceFactory::BuildServiceInstanceFor(
   std::unique_ptr<DistillerFactory> distiller_factory(new DistillerFactoryImpl(
       std::move(distiller_url_fetcher_factory), options));
   std::unique_ptr<DistilledPagePrefs> distilled_page_prefs(
-      new DistilledPagePrefs(Profile::FromBrowserContext(profile)->GetPrefs()));
+      new DistilledPagePrefs(profile->GetPrefs()));
+  std::unique_ptr<DistillerUIHandle> distiller_ui_handle;
+
+#if defined(OS_ANDROID)
+  distiller_ui_handle =
+      std::make_unique<dom_distiller::android::DistillerUIHandleAndroid>();
+#endif  // defined(OS_ANDROID)
 
   DomDistillerContextKeyedService* service =
       new DomDistillerContextKeyedService(
-          std::move(dom_distiller_store), std::move(distiller_factory),
-          std::move(distiller_page_factory), std::move(distilled_page_prefs));
+          std::move(distiller_factory), std::move(distiller_page_factory),
+          std::move(distilled_page_prefs), std::move(distiller_ui_handle));
 
   return service;
 }

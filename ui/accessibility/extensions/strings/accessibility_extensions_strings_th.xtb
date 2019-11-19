@@ -31,6 +31,7 @@
 <translation id="4769065380738716500">มีการแทนที่รูปภาพด้วยข้อความ alt ของรูปภาพเหล่านั้น</translation>
 <translation id="4896660567607030658">ไม่มีการตอบสนอง แสดงเคอร์เซอร์เท่านั้น</translation>
 <translation id="4937901943818762779">อนุญาตภาพเคลื่อนไหว แต่ครั้งเดียวเท่านั้น</translation>
+<translation id="4949131196216960195">กด&lt;span class='key'&gt;ค้นหา&lt;/span&gt; + &lt;img src='increase_brightness.png'&gt; (แป้นเพิ่มความสว่าง หรือ F7) เพื่อเปิดการเรียกดูด้วยแป้นพิมพ์ กดอีกครั้งเพื่อปิด</translation>
 <translation id="4954450790315188152">เมื่อเปิดใช้การเรียกดูด้วยแป้นพิมพ์</translation>
 <translation id="5041932793799765940">การปรับสี</translation>
 <translation id="5094574508723441140">ความเปรียบต่างที่เพิ่มขึ้น</translation>
@@ -60,7 +61,6 @@
 <translation id="7658239707568436148">ยกเลิก</translation>
 <translation id="786423340267544509">เพิ่มขอบให้กับองค์ประกอบด้วยแอตทริบิวต์ aria-describedat หรือ longdesc</translation>
 <translation id="7942349550061667556">สีแดง</translation>
-<translation id="8254860724243898966">กด &lt;span class='key'&gt;Alt&lt;/span&gt; + &lt;img src='increase_brightness.png'&gt; (คีย์เพิ่มความสว่างหรือ F7) เพื่อเปิดการเรียกดูด้วยแป้นพิมพ์ กดอีกครั้งเพื่อปิด</translation>
 <translation id="8260673944985561857">ตัวเลือกการเรียกดูด้วยแป้นพิมพ์</translation>
 <translation id="8321034316479930120">นโยบายภาพเคลื่อนไหว</translation>
 <translation id="8480209185614411573">ความเปรียบต่างสูง</translation>

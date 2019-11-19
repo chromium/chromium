@@ -11,7 +11,9 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/media_stream_request.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
+#include "third_party/blink/public/mojom/mediastream/media_stream.mojom-shared.h"
 #include "ui/gfx/native_widget_types.h"
 
 namespace content {
@@ -26,7 +28,7 @@ class CONTENT_EXPORT MediaStreamUIProxy {
  public:
   using ResponseCallback =
       base::OnceCallback<void(const blink::MediaStreamDevices& devices,
-                              blink::MediaStreamRequestResult result)>;
+                              blink::mojom::MediaStreamRequestResult result)>;
 
   using WindowIdCallback =
       base::OnceCallback<void(gfx::NativeViewId window_id)>;
@@ -53,7 +55,7 @@ class CONTENT_EXPORT MediaStreamUIProxy {
   // |window_id_callback| is called on the IO thread with the platform-
   // dependent window ID of the UI.
   virtual void OnStarted(base::OnceClosure stop_callback,
-                         base::RepeatingClosure source_callback,
+                         MediaStreamUI::SourceCallback source_callback,
                          WindowIdCallback window_id_callback);
 
  protected:
@@ -64,10 +66,11 @@ class CONTENT_EXPORT MediaStreamUIProxy {
   friend class Core;
   friend class FakeMediaStreamUIProxy;
 
-  void ProcessAccessRequestResponse(const blink::MediaStreamDevices& devices,
-                                    blink::MediaStreamRequestResult result);
+  void ProcessAccessRequestResponse(
+      const blink::MediaStreamDevices& devices,
+      blink::mojom::MediaStreamRequestResult result);
   void ProcessStopRequestFromUI();
-  void ProcessChangeSourceRequestFromUI();
+  void ProcessChangeSourceRequestFromUI(const DesktopMediaID& media_id);
   void OnWindowId(WindowIdCallback window_id_callback,
                   gfx::NativeViewId* window_id);
   void OnCheckedAccess(base::Callback<void(bool)> callback, bool have_access);
@@ -75,9 +78,9 @@ class CONTENT_EXPORT MediaStreamUIProxy {
   std::unique_ptr<Core, content::BrowserThread::DeleteOnUIThread> core_;
   ResponseCallback response_callback_;
   base::OnceClosure stop_callback_;
-  base::RepeatingClosure source_callback_;
+  MediaStreamUI::SourceCallback source_callback_;
 
-  base::WeakPtrFactory<MediaStreamUIProxy> weak_factory_;
+  base::WeakPtrFactory<MediaStreamUIProxy> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(MediaStreamUIProxy);
 };
@@ -98,7 +101,7 @@ class CONTENT_EXPORT FakeMediaStreamUIProxy : public MediaStreamUIProxy {
   void RequestAccess(std::unique_ptr<MediaStreamRequest> request,
                      ResponseCallback response_callback) override;
   void OnStarted(base::OnceClosure stop_callback,
-                 base::RepeatingClosure source_callback,
+                 MediaStreamUI::SourceCallback source_callback,
                  WindowIdCallback window_id_callback) override;
 
  private:

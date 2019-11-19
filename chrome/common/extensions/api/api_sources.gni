@@ -16,8 +16,6 @@ schema_sources_ = [
   "cast_streaming_session.idl",
   "cast_streaming_udp_transport.idl",
   "autofill_private.idl",
-  "automation.idl",
-  "automation_internal.idl",
   "autotest_private.idl",
   "bookmark_manager_private.json",
   "bookmarks.json",
@@ -52,7 +50,6 @@ schema_sources_ = [
   "page_capture.json",
   "passwords_private.idl",
   "permissions.json",
-  "preferences_private.json",
   "resources_private.idl",
   "safe_browsing_private.idl",
   "sessions.json",
@@ -97,12 +94,17 @@ if (is_chromeos) {
     "file_manager_private_internal.idl",
     "file_system_provider.idl",
     "file_system_provider_internal.idl",
-    "first_run_private.json",
     "input_ime.json",
     "input_method_private.json",
     "launcher_search_provider.idl",
+    "login.idl",
+    "login_screen_storage.idl",
+    "login_screen_ui.idl",
+    "login_state.idl",
     "platform_keys.idl",
     "platform_keys_internal.idl",
+    "printing.idl",
+    "printing_metrics.idl",
     "quick_unlock_private.idl",
     "terminal_private.json",
     "users_private.idl",
@@ -126,9 +128,12 @@ if (enable_service_discovery) {
 }
 
 uncompiled_sources_ = [
+  "action.json",
+  "browser_action.json",
   "browsing_data.json",
   "extension.json",
   "idltest.idl",
+  "page_action.json",
   "top_sites.json",
 ]
 

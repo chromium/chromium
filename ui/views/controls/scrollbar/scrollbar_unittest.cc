@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
+
 #include "build/build_config.h"
 #include "ui/views/controls/scrollbar/scroll_bar.h"
 #include "ui/views/controls/scrollbar/scroll_bar_views.h"
@@ -14,7 +16,7 @@ namespace {
 // scrolling of contents.
 class TestScrollBarController : public views::ScrollBarController {
  public:
-  virtual ~TestScrollBarController() {}
+  virtual ~TestScrollBarController() = default;
 
   void ScrollToPosition(views::ScrollBar* source, int position) override {
     last_source = source;
@@ -47,16 +49,16 @@ namespace views {
 
 class ScrollBarViewsTest : public ViewsTestBase {
  public:
-  ScrollBarViewsTest() : widget_(nullptr), scrollbar_(nullptr) {}
+  ScrollBarViewsTest() = default;
 
   void SetUp() override {
     ViewsTestBase::SetUp();
-    controller_.reset(new TestScrollBarController());
+    controller_ = std::make_unique<TestScrollBarController>();
 
     widget_ = new Widget;
     Widget::InitParams params = CreateParams(Widget::InitParams::TYPE_POPUP);
     params.bounds = gfx::Rect(0, 0, 100, 100);
-    widget_->Init(params);
+    widget_->Init(std::move(params));
     View* container = new View();
     widget_->SetContentsView(container);
 
@@ -75,10 +77,10 @@ class ScrollBarViewsTest : public ViewsTestBase {
   }
 
  protected:
-  Widget* widget_;
+  Widget* widget_ = nullptr;
 
   // This is the Views scrollbar.
-  BaseScrollBar* scrollbar_;
+  ScrollBar* scrollbar_ = nullptr;
 
   // Keep track of the size of the track. This is how we can tell when we
   // scroll to the middle.
@@ -112,16 +114,16 @@ TEST_F(ScrollBarViewsTest, Scrolling) {
   // Test the different fixed scrolling amounts. Generally used by buttons,
   // or click on track.
   scrollbar_->ScrollToThumbPosition(0, false);
-  scrollbar_->ScrollByAmount(BaseScrollBar::SCROLL_NEXT_LINE);
+  scrollbar_->ScrollByAmount(ScrollBar::ScrollAmount::kNextLine);
   EXPECT_EQ(10, controller_->last_position);
 
-  scrollbar_->ScrollByAmount(BaseScrollBar::SCROLL_PREV_LINE);
+  scrollbar_->ScrollByAmount(ScrollBar::ScrollAmount::kPrevLine);
   EXPECT_EQ(0, controller_->last_position);
 
-  scrollbar_->ScrollByAmount(BaseScrollBar::SCROLL_NEXT_PAGE);
+  scrollbar_->ScrollByAmount(ScrollBar::ScrollAmount::kNextPage);
   EXPECT_EQ(20, controller_->last_position);
 
-  scrollbar_->ScrollByAmount(BaseScrollBar::SCROLL_PREV_PAGE);
+  scrollbar_->ScrollByAmount(ScrollBar::ScrollAmount::kPrevPage);
   EXPECT_EQ(0, controller_->last_position);
 }
 
@@ -134,15 +136,15 @@ TEST_F(ScrollBarViewsTest, ScrollBarFitsToBottom) {
   // Scroll to the midpoint of the document.
   scrollbar_->Update(100, 1999, 950);
   EXPECT_EQ((scrollbar_->GetTrackBounds().width() -
-             scrollbar_->GetThumbSizeForTest()) /
+             scrollbar_->GetThumbSizeForTesting()) /
                 2,
             scrollbar_->GetPosition());
 
   // Scroll to the end of the document.
   scrollbar_->Update(100, 1999, 1899);
-  EXPECT_EQ(
-      scrollbar_->GetTrackBounds().width() - scrollbar_->GetThumbSizeForTest(),
-      scrollbar_->GetPosition());
+  EXPECT_EQ(scrollbar_->GetTrackBounds().width() -
+                scrollbar_->GetThumbSizeForTesting(),
+            scrollbar_->GetPosition());
 }
 
 TEST_F(ScrollBarViewsTest, ScrollToEndAfterShrinkAndExpand) {
@@ -160,23 +162,23 @@ TEST_F(ScrollBarViewsTest, ThumbFullLengthOfTrack) {
   // Shrink content so that it fits within the viewport.
   scrollbar_->Update(100, 10, 0);
   EXPECT_EQ(scrollbar_->GetTrackBounds().width(),
-            scrollbar_->GetThumbSizeForTest());
+            scrollbar_->GetThumbSizeForTesting());
   // Emulate a click on the full size scroll bar.
   scrollbar_->ScrollToThumbPosition(0, false);
   EXPECT_EQ(0, scrollbar_->GetPosition());
   // Emulate a key down.
-  scrollbar_->ScrollByAmount(BaseScrollBar::SCROLL_NEXT_LINE);
+  scrollbar_->ScrollByAmount(ScrollBar::ScrollAmount::kNextLine);
   EXPECT_EQ(0, scrollbar_->GetPosition());
 
   // Expand content so that it fits *exactly* within the viewport.
   scrollbar_->Update(100, 100, 0);
   EXPECT_EQ(scrollbar_->GetTrackBounds().width(),
-            scrollbar_->GetThumbSizeForTest());
+            scrollbar_->GetThumbSizeForTesting());
   // Emulate a click on the full size scroll bar.
   scrollbar_->ScrollToThumbPosition(0, false);
   EXPECT_EQ(0, scrollbar_->GetPosition());
   // Emulate a key down.
-  scrollbar_->ScrollByAmount(BaseScrollBar::SCROLL_NEXT_LINE);
+  scrollbar_->ScrollByAmount(ScrollBar::ScrollAmount::kNextLine);
   EXPECT_EQ(0, scrollbar_->GetPosition());
 }
 

@@ -13,13 +13,14 @@ SchedulerDelegateWin::~SchedulerDelegateWin() {}
 
 void SchedulerDelegateWin::OnPose(base::OnceCallback<void()> on_frame_ended,
                                   gfx::Transform head_pose,
+                                  bool draw_overlay,
                                   bool draw_ui) {
   on_frame_ended_ = std::move(on_frame_ended);
   base::TimeTicks now = base::TimeTicks::Now();
-  if (draw_ui)
-    browser_renderer_->DrawBrowserFrame(now);
-  else
+  if (draw_overlay)
     browser_renderer_->DrawWebXrFrame(now, head_pose);
+  else if (draw_ui)
+    browser_renderer_->DrawBrowserFrame(now);
 }
 
 void SchedulerDelegateWin::OnPause() {

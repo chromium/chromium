@@ -442,7 +442,7 @@ Error DecodeString(Cursor<CharType>* cursor,
   *output = buffer.ToString();
 
   // Validate constructed utf16 string.
-  if (output->Utf8(kStrictUTF8Conversion).IsNull()) {
+  if (output->Utf8(kStrictUTF8Conversion).empty()) {
     cursor->pos = string_start;
     return Error::kUnsupportedEncoding;
   }
@@ -468,10 +468,10 @@ Error BuildValue(Cursor<CharType>* cursor,
       *result = JSONValue::Null();
       break;
     case kBoolTrue:
-      *result = JSONBasicValue::Create(true);
+      *result = std::make_unique<JSONBasicValue>(true);
       break;
     case kBoolFalse:
-      *result = JSONBasicValue::Create(false);
+      *result = std::make_unique<JSONBasicValue>(false);
       break;
     case kNumber: {
       bool ok;
@@ -485,9 +485,9 @@ Error BuildValue(Cursor<CharType>* cursor,
       }
       if (base::IsValueInRangeForNumericType<int>(value) &&
           static_cast<int>(value) == value)
-        *result = JSONBasicValue::Create(static_cast<int>(value));
+        *result = std::make_unique<JSONBasicValue>(static_cast<int>(value));
       else
-        *result = JSONBasicValue::Create(value);
+        *result = std::make_unique<JSONBasicValue>(value);
       break;
     }
     case kStringLiteral: {
@@ -497,11 +497,11 @@ Error BuildValue(Cursor<CharType>* cursor,
         *cursor = token_start;
         return error;
       }
-      *result = JSONString::Create(value);
+      *result = std::make_unique<JSONString>(value);
       break;
     }
     case kArrayBegin: {
-      std::unique_ptr<JSONArray> array = JSONArray::Create();
+      auto array = std::make_unique<JSONArray>();
       Cursor<CharType> before_token = *cursor;
       error = ParseToken(cursor, end, &token, &token_start);
       if (error != Error::kNoError)
@@ -541,7 +541,7 @@ Error BuildValue(Cursor<CharType>* cursor,
       break;
     }
     case kObjectBegin: {
-      std::unique_ptr<JSONObject> object = JSONObject::Create();
+      auto object = std::make_unique<JSONObject>();
       error = ParseToken(cursor, end, &token, &token_start);
       if (error != Error::kNoError)
         return error;

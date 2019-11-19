@@ -55,6 +55,11 @@ class PRINTING_EXPORT CupsConnection {
   bool GetJobs(const std::vector<std::string>& printer_ids,
                std::vector<QueueStatus>* jobs);
 
+  // Queries CUPS for printer status for |printer_id|.
+  // Returns true if the query was successful.
+  bool GetPrinterStatus(const std::string& printer_id,
+                        PrinterStatus* printer_status);
+
   std::string server_name() const;
 
   int last_error() const;
@@ -67,7 +72,7 @@ class PRINTING_EXPORT CupsConnection {
   http_encryption_t cups_encryption_;
   bool blocking_;
 
-  std::unique_ptr<http_t, HttpDeleter> cups_http_;
+  ScopedHttpPtr cups_http_;
 
   DISALLOW_COPY_AND_ASSIGN(CupsConnection);
 };

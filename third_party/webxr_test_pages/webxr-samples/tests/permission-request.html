@@ -36,6 +36,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
     <!--The polyfill is not needed for browser that have native API support,
         but is linked by these samples for wider compatibility.-->
     <!--script src='https://cdn.jsdelivr.net/npm/webxr-polyfill@latest/build/webxr-polyfill.js'></script-->
+    <script src='../js/xrray-polyfill.js' type='module'></script>
     <script src='../js/webxr-polyfill.js'></script>
 
     <script src='../js/webxr-button.js'></script>
@@ -47,7 +48,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
         <p>
           Tests requesting permissions from within XR. Demonstrates how the UA
           handles those requests, if at all.
-          <a class="back" href="./">Back</a>
+          <a class="back" href="./index.html">Back</a>
         </p>
       </details>
     </header>
@@ -86,20 +87,25 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
       let checkTexture = new UrlTexture('../../media/textures/check-button.png');
       let xTexture = new UrlTexture('../../media/textures/x-button.png');
+      let waitTexture = new UrlTexture('../test-media/third-party/hourglass-button.png');
 
       function initXR() {
         xrButton = new XRDeviceButton({
           onRequestSession: onRequestSession,
-          onEndSession: onEndSession
+          onEndSession: onEndSession,
+          supportedSessionTypes: ['immersive-vr']
         });
         document.querySelector('header').appendChild(xrButton.domElement);
 
         if (navigator.xr) {
-          navigator.xr.supportsSessionMode('immersive-vr').then(() => {
-            xrButton.enabled = true;
+          requestInlineSession()
+          .then((session) => {
+            gl.canvas.addEventListener('touchend', () => {
+              session.end().then(() => {
+                requestInlineSession({ optionalFeatures: ['local-floor'] });
+              }, { once: true });
+            })
           });
-
-          navigator.xr.requestSession().then(onSessionStarted);
         } else {
           initFallback();
         }
@@ -107,7 +113,6 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
       function initFallback() {
         initGL();
-        document.body.appendChild(gl.canvas);
         let fallbackHelper = new FallbackHelper(scene, gl);
         fallbackHelper.emulateStage = true;
       }
@@ -119,6 +124,14 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
         gl = createWebGLContext({
           xrCompatible: true
         });
+        document.body.appendChild(gl.canvas);
+
+        function onResize () {
+          gl.canvas.width = (gl.canvas.offsetWidth * window.devicePixelRatio);
+          gl.canvas.height = (gl.canvas.offsetHeight * window.devicePixelRatio);
+        }
+        window.addEventListener('resize', onResize);
+        onResize();
 
         renderer = new Renderer(gl);
         scene.setRenderer(renderer);
@@ -126,6 +139,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
         function addPermissionButton(iconUrl, callback, yAngle, yOffset) {
           let button = new ButtonNode(new UrlTexture(iconUrl), () => {
+            button.iconTexture = waitTexture;
             callback(
               () => { button.iconTexture = checkTexture; }, // Success callback
               () => { button.iconTexture = xTexture; } // Failure callback
@@ -193,14 +207,43 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
               .then(success, fail);
             }
           },
+          {
+            icon: '../test-media/third-party/midi-button.png',
+            callback: (success, fail) => {
+              navigator.requestMIDIAccess({ sysex: true })
+              .then(success, fail);
+            }
+          },
+          {
+            icon: '../test-media/third-party/screen-share-button.png',
+            callback: (success, fail) => {
+              navigator.mediaDevices.getDisplayMedia()
+              .then(device => {
+                  // Assign the device to a temp variable to keep it from
+                  // getting garbage collected immediately.
+                  window.getDisplayMediaRetVal = device;
+              })
+              .then(success, fail);
+            }
+          },
         ]);
       }
 
       function onRequestSession() {
-        navigator.xr.requestSession({ mode: 'immersive-vr' }).then((session) => {
+        navigator.xr.requestSession('immersive-vr', {requiredFeatures: ['local-floor']})
+        .then((session) => {
+          session.mode = 'immersive-vr';
           xrButton.setSession(session);
           onSessionStarted(session);
         });
+      }
+
+      function requestInlineSession(options) {
+        return navigator.xr.requestSession('inline', options)
+          .then((session) => {
+            session.mode = 'inline';
+            return onSessionStarted(session);
+          });
       }
 
       function onSessionStarted(session) {
@@ -215,15 +258,26 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
         initGL();
 
-        let outputCanvas = document.createElement('canvas');
-        document.body.appendChild(outputCanvas);
-
         session.updateRenderState({
-            baseLayer: new XRWebGLLayer(session, gl),
-            outputContext: outputCanvas.getContext('xrpresent')
+            baseLayer: new XRWebGLLayer(session, gl)
         });
 
-        session.requestReferenceSpace({ type: 'stationary', subtype: 'floor-level' }).then((refSpace) => {
+        session.requestReferenceSpace('local-floor').then((refSpace) => {
+          return refSpace;
+        }, (e) => {
+          if (!session.mode.startsWith('immersive')) {
+            // If we're in inline mode, our underlying platform may not support
+            // the local-floor reference space, but a viewer space is guaranteed.
+            return session.requestReferenceSpace('viewer').then((viewerRefSpace) => {
+              // Adjust the viewer space for an estimated user height. Otherwise,
+              // the poses queried with this space will originate from the floor.
+              let xform = new XRRigidTransform({x: 0, y: -1.5, z: 0});
+              return viewerRefSpace.getOffsetReferenceSpace(xform);
+            });
+          } else {
+            throw e;
+          }
+        }).then((refSpace) => {
           if (session.mode.startsWith('immersive')) {
             xrImmersiveRefSpace = refSpace;
           } else {
@@ -232,6 +286,8 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
           session.requestAnimationFrame(onXRFrame);
         });
+
+        return session;
       }
 
       function onEndSession(session) {
@@ -241,10 +297,6 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
       function onSessionEnded(event) {
         if (event.session.mode.startsWith('immersive')) {
           xrButton.setSession(null);
-        }
-
-        if (event.session.renderState.outputContext) {
-          document.body.removeChild(event.session.renderState.outputContext.canvas);
         }
       }
 

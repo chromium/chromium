@@ -7,6 +7,7 @@
 
 #include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/gtest_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/third_party/mozilla/url_parse.h"
 #include "url/url_canon.h"
@@ -123,26 +124,15 @@ TEST(URLCanonTest, DoAppendUTF8) {
   }
 }
 
-#if defined(GTEST_HAS_DEATH_TEST)
-// TODO(mattm): Can't run this in debug mode for now, since the DCHECK will
-// cause the Chromium stack trace dialog to appear and hang the test.
-// See http://crbug.com/49580.
-#if defined(NDEBUG) && !defined(DCHECK_ALWAYS_ON)
-#define MAYBE_DoAppendUTF8Invalid DoAppendUTF8Invalid
-#else
-#define MAYBE_DoAppendUTF8Invalid DISABLED_DoAppendUTF8Invalid
-#endif
-TEST(URLCanonTest, MAYBE_DoAppendUTF8Invalid) {
+TEST(URLCanonTest, DoAppendUTF8Invalid) {
   std::string out_str;
   StdStringCanonOutput output(&out_str);
   // Invalid code point (too large).
-  ASSERT_DEBUG_DEATH({
+  EXPECT_DCHECK_DEATH({
     AppendUTF8Value(0x110000, &output);
     output.Complete();
-    EXPECT_EQ("", out_str);
-  }, "");
+  });
 }
-#endif  // defined(GTEST_HAS_DEATH_TEST)
 
 TEST(URLCanonTest, UTF) {
   // Low-level test that we handle reading, canonicalization, and writing
@@ -1403,7 +1393,7 @@ TEST(URLCanonTest, CanonicalizeStandardURL) {
       {"https://foo:80/", "https://foo:80/", true},
       {"ftp://foo:21/", "ftp://foo/", true},
       {"ftp://foo:80/", "ftp://foo:80/", true},
-      {"gopher://foo:70/", "gopher://foo/", true},
+      {"gopher://foo:70/", "gopher://foo:70/", true},
       {"gopher://foo:443/", "gopher://foo:443/", true},
       {"ws://foo:80/", "ws://foo/", true},
       {"ws://foo:81/", "ws://foo:81/", true},
@@ -1873,9 +1863,13 @@ TEST(URLCanonTest, CanonicalizePathURL) {
     const char* input;
     const char* expected;
   } path_cases[] = {
-    {"javascript:", "javascript:"},
-    {"JavaScript:Foo", "javascript:Foo"},
-    {"Foo:\":This /is interesting;?#", "foo:\":This /is interesting;?#"},
+      {"javascript:", "javascript:"},
+      {"JavaScript:Foo", "javascript:Foo"},
+      {"Foo:\":This /is interesting;?#", "foo:\":This /is interesting;?#"},
+
+      // Validation errors should not cause failure. See
+      // https://crbug.com/925614.
+      {"javascript:\uFFFF", "javascript:%EF%BF%BD"},
   };
 
   for (size_t i = 0; i < base::size(path_cases); i++) {
@@ -2331,14 +2325,12 @@ TEST(URLCanonTest, DefaultPortForScheme) {
       {"ftp", 21},
       {"ws", 80},
       {"wss", 443},
-      {"gopher", 70},
       {"fake-scheme", PORT_UNSPECIFIED},
       {"HTTP", PORT_UNSPECIFIED},
       {"HTTPS", PORT_UNSPECIFIED},
       {"FTP", PORT_UNSPECIFIED},
       {"WS", PORT_UNSPECIFIED},
       {"WSS", PORT_UNSPECIFIED},
-      {"GOPHER", PORT_UNSPECIFIED},
   };
 
   for (auto& test_case : cases) {

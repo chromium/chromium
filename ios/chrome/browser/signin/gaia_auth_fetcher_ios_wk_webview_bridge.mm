@@ -9,7 +9,7 @@
 
 #include "base/json/string_escape.h"
 #include "base/strings/sys_string_conversions.h"
-#import "ios/web/public/web_view_creation_util.h"
+#import "ios/web/common/web_view_creation_util.h"
 #import "net/base/mac/url_conversions.h"
 #include "net/http/http_request_headers.h"
 

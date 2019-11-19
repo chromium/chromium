@@ -6,7 +6,7 @@ mojom = "//third_party/blink/public/mojom/messaging/transferable_message.mojom"
 public_headers = [
   "//third_party/blink/renderer/core/messaging/blink_transferable_message.h",
 ]
-traits_headers = [ "//third_party/blink/renderer/core/messaging/blink_transferable_message_struct_traits.h" ]
+traits_headers = [ "//third_party/blink/renderer/core/messaging/blink_transferable_message_mojom_traits.h" ]
 
 deps = [
   "//mojo/public/cpp/bindings",
@@ -15,5 +15,5 @@ deps = [
 ]
 type_mappings = [
   "blink.mojom.TransferableMessage=::blink::BlinkTransferableMessage[move_only]",
-  "blink.mojom.SerializedArrayBufferContents=WTF::ArrayBufferContents[move_only]",
+  "blink.mojom.SerializedArrayBufferContents=::blink::ArrayBufferContents[move_only]",
 ]

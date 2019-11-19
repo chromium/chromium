@@ -14,6 +14,10 @@
 #include "media/capture/video/fake_video_capture_device.h"
 #include "media/capture/video/video_capture_device_factory.h"
 
+namespace gpu {
+class GpuMemoryBufferSupport;
+}  // namespace gpu
+
 namespace media {
 
 struct CAPTURE_EXPORT FakeVideoCaptureDeviceSettings {
@@ -49,12 +53,14 @@ class CAPTURE_EXPORT FakeVideoCaptureDeviceFactory
   ~FakeVideoCaptureDeviceFactory() override;
 
   static std::unique_ptr<VideoCaptureDevice> CreateDeviceWithSettings(
-      const FakeVideoCaptureDeviceSettings& settings);
+      const FakeVideoCaptureDeviceSettings& settings,
+      std::unique_ptr<gpu::GpuMemoryBufferSupport> gmb_support = nullptr);
 
   static std::unique_ptr<VideoCaptureDevice> CreateDeviceWithDefaultResolutions(
       VideoPixelFormat pixel_format,
       FakeVideoCaptureDevice::DeliveryMode delivery_mode,
-      float frame_rate);
+      float frame_rate,
+      std::unique_ptr<gpu::GpuMemoryBufferSupport> gmb_support = nullptr);
 
   // Creates a device that reports OnError() when AllocateAndStart() is called.
   static std::unique_ptr<VideoCaptureDevice> CreateErrorDevice();

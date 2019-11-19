@@ -24,14 +24,14 @@
 
 #if defined(OS_ANDROID)
 #include "base/android/jni_android.h"
-#include "jni/InterfaceRegistrar_jni.h"
+#include "services/shape_detection/shape_detection_jni_headers/InterfaceRegistrar_jni.h"
 #endif
 
 namespace shape_detection {
 
 ShapeDetectionService::ShapeDetectionService(
-    service_manager::mojom::ServiceRequest request)
-    : service_binding_(this, std::move(request)) {
+    mojo::PendingReceiver<mojom::ShapeDetectionService> receiver)
+    : receiver_(this, std::move(receiver)) {
 #if defined(OS_MACOSX)
   if (__builtin_available(macOS 10.13, *)) {
     vision_framework_ =
@@ -49,51 +49,43 @@ ShapeDetectionService::~ShapeDetectionService() {
 #endif
 }
 
-void ShapeDetectionService::OnStart() {
+void ShapeDetectionService::BindBarcodeDetectionProvider(
+    mojo::PendingReceiver<mojom::BarcodeDetectionProvider> receiver) {
 #if defined(OS_ANDROID)
-  registry_.AddInterface(
-      GetJavaInterfaces()
-          ->CreateInterfaceFactory<mojom::BarcodeDetectionProvider>());
-  registry_.AddInterface(
-      GetJavaInterfaces()
-          ->CreateInterfaceFactory<mojom::FaceDetectionProvider>());
-  registry_.AddInterface(
-      GetJavaInterfaces()->CreateInterfaceFactory<mojom::TextDetection>());
-#elif defined(OS_WIN)
-  registry_.AddInterface(base::Bind(&BarcodeDetectionProviderImpl::Create));
-  registry_.AddInterface(base::Bind(&TextDetectionImpl::Create));
-  registry_.AddInterface(base::Bind(&FaceDetectionProviderWin::Create));
+  Java_InterfaceRegistrar_bindBarcodeDetectionProvider(
+      base::android::AttachCurrentThread(),
+      receiver.PassPipe().release().value());
 #elif defined(OS_MACOSX)
-  registry_.AddInterface(base::Bind(&BarcodeDetectionProviderMac::Create));
-  registry_.AddInterface(base::Bind(&TextDetectionImpl::Create));
-  registry_.AddInterface(base::Bind(&FaceDetectionProviderMac::Create));
+  BarcodeDetectionProviderMac::Create(std::move(receiver));
 #else
-  registry_.AddInterface(base::Bind(&BarcodeDetectionProviderImpl::Create));
-  registry_.AddInterface(base::Bind(&FaceDetectionProviderImpl::Create));
-  registry_.AddInterface(base::Bind(&TextDetectionImpl::Create));
+  BarcodeDetectionProviderImpl::Create(std::move(receiver));
 #endif
 }
 
-void ShapeDetectionService::OnBindInterface(
-    const service_manager::BindSourceInfo& source_info,
-    const std::string& interface_name,
-    mojo::ScopedMessagePipeHandle interface_pipe) {
-  registry_.BindInterface(interface_name, std::move(interface_pipe));
-}
-
+void ShapeDetectionService::BindFaceDetectionProvider(
+    mojo::PendingReceiver<mojom::FaceDetectionProvider> receiver) {
 #if defined(OS_ANDROID)
-service_manager::InterfaceProvider* ShapeDetectionService::GetJavaInterfaces() {
-  if (!java_interface_provider_) {
-    service_manager::mojom::InterfaceProviderPtr provider;
-    Java_InterfaceRegistrar_createInterfaceRegistryForContext(
-        base::android::AttachCurrentThread(),
-        mojo::MakeRequest(&provider).PassMessagePipe().release().value());
-    java_interface_provider_ =
-        std::make_unique<service_manager::InterfaceProvider>();
-    java_interface_provider_->Bind(std::move(provider));
-  }
-  return java_interface_provider_.get();
-}
+  Java_InterfaceRegistrar_bindFaceDetectionProvider(
+      base::android::AttachCurrentThread(),
+      receiver.PassPipe().release().value());
+#elif defined(OS_MACOSX)
+  FaceDetectionProviderMac::Create(std::move(receiver));
+#elif defined(OS_WIN)
+  FaceDetectionProviderWin::Create(std::move(receiver));
+#else
+  FaceDetectionProviderImpl::Create(std::move(receiver));
 #endif
+}
+
+void ShapeDetectionService::BindTextDetection(
+    mojo::PendingReceiver<mojom::TextDetection> receiver) {
+#if defined(OS_ANDROID)
+  Java_InterfaceRegistrar_bindTextDetection(
+      base::android::AttachCurrentThread(),
+      receiver.PassPipe().release().value());
+#else
+  TextDetectionImpl::Create(std::move(receiver));
+#endif
+}
 
 }  // namespace shape_detection

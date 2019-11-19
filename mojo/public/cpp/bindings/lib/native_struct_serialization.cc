@@ -90,7 +90,7 @@ void UnmappedNativeStructSerializerImpl::SerializeMessageContents(
     internal::Serializer<ScopedHandle, ScopedHandle>::Serialize(
         handle, &handle_writer->the_handle, context);
     handle_writer->type = static_cast<int32_t>(
-        mojo::ConvertTo<native::SerializedHandle::Type>(attachment->GetType()));
+        mojo::ConvertTo<native::SerializedHandleType>(attachment->GetType()));
     handles_writer.data()->at(i).Set(handle_writer.data());
   }
   writer->data()->handles.Set(handles_writer.data());
@@ -115,7 +115,7 @@ bool UnmappedNativeStructSerializerImpl::DeserializeMessageAttachments(
     auto attachment = IPC::MessageAttachment::CreateFromMojoHandle(
         std::move(handle),
         mojo::ConvertTo<IPC::MessageAttachment::Type>(
-            static_cast<native::SerializedHandle::Type>(handle_data->type)));
+            static_cast<native::SerializedHandleType>(handle_data->type)));
     message->attachment_set()->AddAttachment(std::move(attachment));
   }
   return true;

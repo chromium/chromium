@@ -12,12 +12,14 @@
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_switches.h"
+#include "chrome/common/pref_names.h"
+#include "components/feedback/feedback_util.h"
+#include "components/prefs/pref_service.h"
 #include "extensions/browser/api/feedback_private/feedback_private_api.h"
 
 #if defined(OS_CHROMEOS)
-#include "base/system/sys_info.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "services/identity/public/cpp/identity_manager.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #endif
 
 namespace feedback_private = extensions::api::feedback_private;
@@ -27,8 +29,6 @@ namespace chrome {
 namespace {
 
 #if defined(OS_CHROMEOS)
-constexpr char kGoogleDotCom[] = "@google.com";
-
 // Returns if the feedback page is considered to be triggered from user
 // interaction.
 bool IsFromUserInteraction(FeedbackSource source) {
@@ -37,6 +37,7 @@ bool IsFromUserInteraction(FeedbackSource source) {
     case kFeedbackSourceAsh:
     case kFeedbackSourceAssistant:
     case kFeedbackSourceBrowserCommand:
+    case kFeedbackSourceDesktopTabGroups:
     case kFeedbackSourceMdSettingsAboutPage:
     case kFeedbackSourceOldSettingsAboutPage:
       return true;
@@ -44,18 +45,10 @@ bool IsFromUserInteraction(FeedbackSource source) {
       return false;
   }
 }
-
-bool IsBluetoothLoggingAllowedByBoard() {
-  const std::vector<std::string> board =
-      base::SplitString(base::SysInfo::GetLsbReleaseBoard(), "-",
-                        base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-  const std::string board_name = board[0];
-  return board_name == "eve" || board_name == "nocturne";
-}
 #endif
-}
+}  // namespace
 
-void ShowFeedbackPage(Browser* browser,
+void ShowFeedbackPage(const Browser* browser,
                       FeedbackSource source,
                       const std::string& description_template,
                       const std::string& description_placeholder_text,
@@ -72,7 +65,9 @@ void ShowFeedbackPage(Browser* browser,
     LOG(ERROR) << "Cannot invoke feedback: No profile found!";
     return;
   }
-
+  if (!profile->GetPrefs()->GetBoolean(prefs::kUserFeedbackAllowed)) {
+    return;
+  }
   // Record an UMA histogram to know the most frequent feedback request source.
   UMA_HISTOGRAM_ENUMERATION("Feedback.RequestSource", source,
                             kFeedbackSourceCount);
@@ -85,19 +80,21 @@ void ShowFeedbackPage(Browser* browser,
           ? feedback_private::FeedbackFlow::FEEDBACK_FLOW_SADTABCRASH
           : feedback_private::FeedbackFlow::FEEDBACK_FLOW_REGULAR;
 
+  bool include_bluetooth_logs = false;
 #if defined(OS_CHROMEOS)
   auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
   if (identity_manager &&
-      base::EndsWith(identity_manager->GetPrimaryAccountInfo().email,
-                     kGoogleDotCom, base::CompareCase::INSENSITIVE_ASCII) &&
-      IsFromUserInteraction(source) && IsBluetoothLoggingAllowedByBoard()) {
+      feedback_util::IsGoogleEmail(
+          identity_manager->GetPrimaryAccountInfo().email)) {
     flow = feedback_private::FeedbackFlow::FEEDBACK_FLOW_GOOGLEINTERNAL;
+    include_bluetooth_logs = IsFromUserInteraction(source);
   }
 #endif
 
   api->RequestFeedbackForFlow(
       description_template, description_placeholder_text, category_tag,
-      extra_diagnostics, page_url, flow, source == kFeedbackSourceAssistant);
+      extra_diagnostics, page_url, flow, source == kFeedbackSourceAssistant,
+      include_bluetooth_logs);
 }
 
 }  // namespace chrome

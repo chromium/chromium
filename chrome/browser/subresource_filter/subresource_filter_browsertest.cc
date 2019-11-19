@@ -22,6 +22,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/branding_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/metrics/subprocess_metrics_provider.h"
 #include "chrome/browser/safe_browsing/test_safe_browsing_database_helper.h"
@@ -61,6 +62,7 @@
 #include "content/public/common/referrer.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/no_renderer_crashes_assertion.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -83,14 +85,6 @@ static constexpr const char kTestFrameSetPath[] =
 // Names of DocumentLoad histograms.
 constexpr const char kDocumentLoadActivationLevel[] =
     "SubresourceFilter.DocumentLoad.ActivationState";
-constexpr const char kSubresourceLoadsTotal[] =
-    "SubresourceFilter.DocumentLoad.NumSubresourceLoads.Total";
-constexpr const char kSubresourceLoadsEvaluated[] =
-    "SubresourceFilter.DocumentLoad.NumSubresourceLoads.Evaluated";
-constexpr const char kSubresourceLoadsMatchedRules[] =
-    "SubresourceFilter.DocumentLoad.NumSubresourceLoads.MatchedRules";
-constexpr const char kSubresourceLoadsDisallowed[] =
-    "SubresourceFilter.DocumentLoad.NumSubresourceLoads.Disallowed";
 
 constexpr const char kSubresourceLoadsTotalForPage[] =
     "SubresourceFilter.PageLoad.NumSubresourceLoads.Total";
@@ -110,10 +104,6 @@ constexpr const char kEvaluationTotalWallDurationForPage[] =
     "SubresourceFilter.PageLoad.SubresourceEvaluation.TotalWallDuration";
 constexpr const char kEvaluationTotalCPUDurationForPage[] =
     "SubresourceFilter.PageLoad.SubresourceEvaluation.TotalCPUDuration";
-constexpr const char kEvaluationTotalWallDurationForDocument[] =
-    "SubresourceFilter.DocumentLoad.SubresourceEvaluation.TotalWallDuration";
-constexpr const char kEvaluationTotalCPUDurationForDocument[] =
-    "SubresourceFilter.DocumentLoad.SubresourceEvaluation.TotalCPUDuration";
 constexpr const char kEvaluationWallDuration[] =
     "SubresourceFilter.SubresourceLoad.Evaluation.WallDuration";
 constexpr const char kEvaluationCPUDuration[] =
@@ -234,7 +224,7 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest,
                        SubresourceFilterListNeedsBranding) {
   bool has_list = database_helper()->HasListSynced(
       safe_browsing::GetUrlSubresourceFilterId());
-#if defined(GOOGLE_CHROME_BUILD)
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   EXPECT_TRUE(has_list);
 #else
   EXPECT_FALSE(has_list);
@@ -409,10 +399,8 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest,
   NavigateFrame(kSubframeNames[0], allowed_empty_subdocument_url);
 
   // Finally, navigate the first subframe to an allowed URL that redirects to a
-  // disallowed URL, and verify that:
-  //  -- The navigation gets blocked and the frame collapsed (with PlzNavigate).
-  //  -- The navigation is cancelled, but the frame is not collapsed (without
-  //  PlzNavigate, where BLOCK_REQUEST_AND_COLLAPSE is not supported).
+  // disallowed URL, and verify that the navigation gets blocked and the frame
+  // collapsed.
   GURL disallowed_subdocument_url(
       GetTestUrl("subresource_filter/frame_with_included_script.html"));
   GURL redirect_to_disallowed_subdocument_url(embedded_test_server()->GetURL(
@@ -654,6 +642,10 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest,
                        RendererDebugURL_NoLeakedThrottlePtrs) {
+  // Allow crashes caused by the navigation to kChromeUICrashURL below.
+  content::ScopedAllowRendererCrashes scoped_allow_renderer_crashes(
+      browser()->tab_strip_model()->GetActiveWebContents());
+
   // We have checks in the throttle manager that we don't improperly leak
   // activation state throttles. It would be nice to test things directly but it
   // isn't very feasible right now without exposing a bunch of internal guts of
@@ -694,11 +686,6 @@ void ExpectHistogramsAreRecordedForTestFrameSet(
   content::FetchHistogramsFromChildProcesses();
   SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
 
-  tester.ExpectTotalCount(kEvaluationTotalWallDurationForDocument,
-                          time_recorded ? 6 : 0);
-  tester.ExpectTotalCount(kEvaluationTotalCPUDurationForDocument,
-                          time_recorded ? 6 : 0);
-
   // 5 subframes, each with an include.js, plus a top level include.js.
   int num_subresource_checks = 5 + 5 + 1;
   tester.ExpectTotalCount(kEvaluationWallDuration,
@@ -718,16 +705,6 @@ void ExpectHistogramsAreRecordedForTestFrameSet(
       kDocumentLoadActivationLevel,
       static_cast<base::Histogram::Sample>(mojom::ActivationLevel::kEnabled),
       6);
-
-  EXPECT_THAT(tester.GetAllSamples(kSubresourceLoadsTotal),
-              ::testing::ElementsAre(base::Bucket(0, 3), base::Bucket(2, 3)));
-  EXPECT_THAT(tester.GetAllSamples(kSubresourceLoadsEvaluated),
-              ::testing::ElementsAre(base::Bucket(0, 3), base::Bucket(2, 3)));
-
-  EXPECT_THAT(tester.GetAllSamples(kSubresourceLoadsMatchedRules),
-              ::testing::ElementsAre(base::Bucket(0, 4), base::Bucket(2, 2)));
-  EXPECT_THAT(tester.GetAllSamples(kSubresourceLoadsDisallowed),
-              ::testing::ElementsAre(base::Bucket(0, 4), base::Bucket(2, 2)));
 }
 
 }  // namespace
@@ -747,11 +724,20 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest,
       tester, true /* expect_performance_measurements */);
 }
 
-IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest,
+class SubresourceFilterBrowserTestWithoutAdTagging
+    : public SubresourceFilterBrowserTest {
+ public:
+  SubresourceFilterBrowserTestWithoutAdTagging() {
+    feature_list_.InitAndDisableFeature(kAdTagging);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// This test only makes sense when AdTagging is disabled.
+IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTestWithoutAdTagging,
                        ExpectHistogramsNotRecordedWhenFilteringNotActivated) {
-  // This test only makes sense when AdTagging is disabled.
-  base::test::ScopedFeatureList scoped_tagging;
-  scoped_tagging.InitAndDisableFeature(kAdTagging);
   ASSERT_NO_FATAL_FAILURE(SetRulesetToDisallowURLsWithPathSuffix(
       "suffix-that-does-not-match-anything"));
   ResetConfigurationToEnableOnPhishingSites(true /* measure_performance */);
@@ -775,18 +761,11 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest,
   SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
 
   // But they still should not be recorded as the filtering is not activated.
-  tester.ExpectTotalCount(kEvaluationTotalWallDurationForDocument, 0);
-  tester.ExpectTotalCount(kEvaluationTotalCPUDurationForDocument, 0);
   tester.ExpectTotalCount(kEvaluationWallDuration, 0);
   tester.ExpectTotalCount(kEvaluationCPUDuration, 0);
 
   tester.ExpectTotalCount(kActivationWallDuration, 0);
   tester.ExpectTotalCount(kActivationCPUDuration, 0);
-
-  tester.ExpectTotalCount(kSubresourceLoadsTotal, 0);
-  tester.ExpectTotalCount(kSubresourceLoadsEvaluated, 0);
-  tester.ExpectTotalCount(kSubresourceLoadsMatchedRules, 0);
-  tester.ExpectTotalCount(kSubresourceLoadsDisallowed, 0);
 
   // Although SubresourceFilterAgents still record the activation decision.
   tester.ExpectUniqueSample(

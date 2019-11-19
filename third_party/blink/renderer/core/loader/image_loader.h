@@ -38,13 +38,14 @@
 
 namespace blink {
 
-class IncrementLoadEventDelayCount;
+class ContainerNode;
 class Element;
-class LayoutImageResource;
 class ExceptionState;
+class IncrementLoadEventDelayCount;
+class LayoutImageResource;
 class ScriptState;
 
-class CORE_EXPORT ImageLoader : public GarbageCollectedFinalized<ImageLoader>,
+class CORE_EXPORT ImageLoader : public GarbageCollected<ImageLoader>,
                                 public ImageResourceObserver {
   USING_PRE_FINALIZER(ImageLoader, Dispose);
 
@@ -90,7 +91,15 @@ class CORE_EXPORT ImageLoader : public GarbageCollectedFinalized<ImageLoader>,
 
   // Returns true if this loader should be updated via UpdateFromElement() when
   // being inserted into a new parent; returns false otherwise.
-  bool ShouldUpdateOnInsertedInto(ContainerNode& insertion_point) const;
+  bool ShouldUpdateOnInsertedInto(
+      ContainerNode& insertion_point,
+      network::mojom::ReferrerPolicy referrer_policy =
+          network::mojom::ReferrerPolicy::kDefault) const;
+
+  // Returns true if a the owner of this loader should consider the image being
+  // loaded as "potentially available", i.e that it may eventually become
+  // available.
+  bool ImageIsPotentiallyAvailable() const;
 
   // Cancels pending load events, and doesn't dispatch new ones.
   // Note: ClearImage/SetImage.*() are not a simple setter.
@@ -110,7 +119,6 @@ class CORE_EXPORT ImageLoader : public GarbageCollectedFinalized<ImageLoader>,
   // Otherwise:
   //   Normal loading via ResourceFetcher/ResourceLoader.
   //   |image_resource_for_image_document_| is null.
-  bool IsLoadingImageDocument() { return loading_image_document_; }
   void SetLoadingImageDocument() { loading_image_document_ = true; }
   ImageResource* ImageResourceForImageDocument() const {
     return image_resource_for_image_document_;
@@ -143,9 +151,10 @@ class CORE_EXPORT ImageLoader : public GarbageCollectedFinalized<ImageLoader>,
   // https://docs.google.com/document/d/1Ym0EOwyZJmaB5afnCVPu0SFb8EWLBj_facm2fK9kgC0/
   enum class LazyImageLoadState {
     kNone,      // LazyImages not active.
-    kDeferred,  // Placeholder is loading/loaded. Full image load not started.
-                // Once the placeholder is loaded, document load event is
-                // unblocked, but image load event is not fired yet.
+    kDeferred,  // Full image load not started, and image load event will not be
+                // fired. If image dimensions is present, document load event
+                // will be unblocked. Otherwise placeholder fetch will start,
+                // and once its done document load event is unblocked.
     kFullImage  // Full image is loading/loaded, due to element coming near the
                 // viewport or if a placeholder load actually fetched the full
                 // image. image_complete_ can differentiate if the fetch is
@@ -207,6 +216,8 @@ class CORE_EXPORT ImageLoader : public GarbageCollectedFinalized<ImageLoader>,
   Member<ImageResource> image_resource_for_image_document_;
 
   String last_base_element_url_;
+  network::mojom::ReferrerPolicy last_referrer_policy_ =
+      network::mojom::ReferrerPolicy::kDefault;
   AtomicString failed_load_url_;
   base::WeakPtr<Task> pending_task_;  // owned by Microtask
   std::unique_ptr<IncrementLoadEventDelayCount>
@@ -235,6 +246,7 @@ class CORE_EXPORT ImageLoader : public GarbageCollectedFinalized<ImageLoader>,
   bool image_complete_ : 1;
   bool loading_image_document_ : 1;
   bool suppress_error_events_ : 1;
+  bool was_fully_deferred_ : 1;  // Used by LazyImageLoad.
 
   LazyImageLoadState lazy_image_load_state_;
 

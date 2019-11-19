@@ -29,6 +29,8 @@ class URLRequestInterceptor;
 // This class is only intended for use in intercepting requests before they
 // are passed on to their default ProtocolHandler.  Each supported scheme should
 // have its own ProtocolHandler.
+//
+// TODO(mmenke): Delete this class.
 class NET_EXPORT URLRequestInterceptingJobFactory
     : public URLRequestJobFactory {
  public:
@@ -45,15 +47,6 @@ class NET_EXPORT URLRequestInterceptingJobFactory
   // URLRequestJobFactory implementation
   URLRequestJob* MaybeCreateJobWithProtocolHandler(
       const std::string& scheme,
-      URLRequest* request,
-      NetworkDelegate* network_delegate) const override;
-
-  URLRequestJob* MaybeInterceptRedirect(
-      URLRequest* request,
-      NetworkDelegate* network_delegate,
-      const GURL& location) const override;
-
-  URLRequestJob* MaybeInterceptResponse(
       URLRequest* request,
       NetworkDelegate* network_delegate) const override;
 

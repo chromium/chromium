@@ -21,7 +21,6 @@
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/common/context_menu_params.h"
 #include "content/public/common/drop_data.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
@@ -74,17 +73,14 @@ void WebContentsViewGuest::OnGuestAttached(WebContentsView* parent_view) {
   // view hierarchy. We add this view as embedder's child here.
   // This would go in WebContentsViewGuest::CreateView, but that is too early to
   // access embedder_web_contents(). Therefore, we do it here.
-  if (!features::IsMultiProcessMash())
-    parent_view->GetNativeView()->AddChild(platform_view_->GetNativeView());
+  parent_view->GetNativeView()->AddChild(platform_view_->GetNativeView());
 #endif  // defined(USE_AURA)
 }
 
 void WebContentsViewGuest::OnGuestDetached(WebContentsView* old_parent_view) {
 #if defined(USE_AURA)
-  if (!features::IsMultiProcessMash()) {
-    old_parent_view->GetNativeView()->RemoveChild(
-        platform_view_->GetNativeView());
-  }
+  old_parent_view->GetNativeView()->RemoveChild(
+      platform_view_->GetNativeView());
 #endif  // defined(USE_AURA)
 }
 
@@ -117,10 +113,8 @@ gfx::Rect WebContentsViewGuest::GetViewBounds() const {
   return gfx::Rect(size_);
 }
 
-void WebContentsViewGuest::CreateView(const gfx::Size& initial_size,
-                                      gfx::NativeView context) {
-  platform_view_->CreateView(initial_size, context);
-  size_ = initial_size;
+void WebContentsViewGuest::CreateView(gfx::NativeView context) {
+  platform_view_->CreateView(context);
 }
 
 RenderWidgetHostViewBase* WebContentsViewGuest::CreateViewForWidget(

@@ -2,33 +2,18 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import shutil
-import tempfile
-
 from telemetry import decorators
-from telemetry.testing import options_for_unittests
-from telemetry.testing import page_test_test_case
+from telemetry.testing import legacy_page_test_case
 
 from measurements import skpicture_printer
 
 
-class SkpicturePrinterUnitTest(page_test_test_case.PageTestTestCase):
-
-  def setUp(self):
-    self._options = options_for_unittests.GetCopy()
-    self._skp_outdir = tempfile.mkdtemp('_skp_test')
-
-  def tearDown(self):
-    shutil.rmtree(self._skp_outdir)
-
+class SkpicturePrinterUnitTest(legacy_page_test_case.LegacyPageTestCase):
   # Picture printing is not supported on all platforms.
   @decorators.Disabled('android', 'chromeos')
   def testSkpicturePrinter(self):
-    ps = self.CreateStorySetFromFileInUnittestDataDir('blank.html')
-    measurement = skpicture_printer.SkpicturePrinter(self._skp_outdir)
-    results = self.RunMeasurement(measurement, ps, options=self._options)
-
-    saved_picture_count = results.FindAllPageSpecificValuesNamed(
-        'saved_picture_count')
+    page_test = skpicture_printer.SkpicturePrinter(self.options.output_dir)
+    measurements = self.RunPageTest(page_test, 'file://blank.html')
+    saved_picture_count = measurements['saved_picture_count']['samples']
     self.assertEquals(len(saved_picture_count), 1)
-    self.assertGreater(saved_picture_count[0].value, 0)
+    self.assertGreater(saved_picture_count[0], 0)

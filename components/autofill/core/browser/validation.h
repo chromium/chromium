@@ -19,20 +19,9 @@ class Time;
 
 namespace autofill {
 
-class CreditCard;
-class AutofillProfile;
-
 // Constants for the length of a CVC.
 static const size_t GENERAL_CVC_LENGTH = 3;
 static const size_t AMEX_CVC_LENGTH = 4;
-
-// Used to express the completion status of a credit card.
-typedef uint32_t CreditCardCompletionStatus;
-static const CreditCardCompletionStatus CREDIT_CARD_COMPLETE = 0;
-static const CreditCardCompletionStatus CREDIT_CARD_EXPIRED = 1 << 0;
-static const CreditCardCompletionStatus CREDIT_CARD_NO_CARDHOLDER = 1 << 1;
-static const CreditCardCompletionStatus CREDIT_CARD_NO_NUMBER = 1 << 2;
-static const CreditCardCompletionStatus CREDIT_CARD_NO_BILLING_ADDRESS = 1 << 3;
 
 // Returns true if |year| and |month| describe a date later than |now|.
 // |year| must have 4 digits.
@@ -67,23 +56,6 @@ bool IsValidCreditCardNumberForBasicCardNetworks(
     const std::set<std::string>& supported_basic_card_networks,
     base::string16* error_message);
 
-// Returns the credit card's completion status. If equal to
-// CREDIT_CARD_COMPLETE, then the card is ready to be used for Payment Request.
-CreditCardCompletionStatus GetCompletionStatusForCard(
-    const CreditCard& credit_card,
-    const std::string& app_locale,
-    const std::vector<AutofillProfile*> billing_addresses);
-
-// Return the message to be displayed to the user, indicating what's missing
-// to make the credit card complete for payment. If more than one thing is
-// missing, the message will be a generic "more information required".
-base::string16 GetCompletionMessageForCard(CreditCardCompletionStatus status);
-
-// Returns the title string for a card edit dialog. The title string will
-// mention what needs to be added/fixed to make the card valid if it is not
-// valid. Otherwise, it will be "Edit card".
-base::string16 GetEditDialogTitleForCard(CreditCardCompletionStatus status);
-
 // Returns true if |text| looks like a valid e-mail address.
 bool IsValidEmailAddress(const base::string16& text);
 
@@ -116,6 +88,16 @@ size_t GetCvcLengthForCardType(const base::StringPiece card_type);
 // Returns true if |value| appears to be a UPI Virtual Payment Address.
 // https://upipayments.co.in/virtual-payment-address-vpa/
 bool IsUPIVirtualPaymentAddress(const base::string16& value);
+
+// Returns true if |value| appears to be an International Bank Account Number
+// (IBAN). See https://en.wikipedia.org/wiki/International_Bank_Account_Number
+bool IsInternationalBankAccountNumber(const base::string16& value);
+
+// Return true if |value| is a 3 or 4 digit number.
+bool IsPlausibleCreditCardCVCNumber(const base::string16& value);
+
+// Returns true if the value is a 4 digit year in this century.
+bool IsPlausible4DigitExpirationYear(const base::string16& value);
 
 }  // namespace autofill
 

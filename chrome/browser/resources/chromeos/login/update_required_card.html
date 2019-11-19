@@ -11,13 +11,100 @@
   Events: none
 -->
 <dom-module id="update-required-card">
+  <link rel="stylesheet" href="oobe_dialog_host.css">
   <link rel="stylesheet" href="oobe_flex_layout.css">
   <link rel="stylesheet" href="update_required_card.css">
 
   <template>
-    <div class="content">
-      <div class="message" i18n-content="updateRequiredMessage">
+    <oobe-dialog has-buttons hidden="[[showOn_(ui_state,
+        'update-required-message',
+        'update-error')]]" id="update-required-error-dialog">
+      <div slot="subtitle">
+        <div hidden="[[showOn_(ui_state, 'update-error')]]"
+            class="update-error">
+          [[i18nDynamic(locale,'errorMessage')]]
+        </div>
+        <div>
+          [[i18nDynamic(locale,'updateRequiredMessage')]]
+        </div>
       </div>
-    </div>
+
+      <div slot="bottom-buttons" class="layout horizontal end-justified">
+        <cr-button disabled="[[selectNetworkDisabled]]"
+            on-click="onSelectNetworkClicked_">
+          [[i18nDynamic(locale,'selectNetworkButtonCaption')]]
+        </cr-button>
+        <cr-button disabled="[[!isConnected]]" on-click="onUpdateClicked_">
+          [[i18nDynamic(locale,'updateButtonCaption')]]
+        </cr-button>
+      </div>
+    </oobe-dialog>
+
+    <oobe-dialog hidden="[[showOn_(ui_state, 'update-process')]]" has-buttons>
+      <h1 slot="title" hidden="[[!updateProgressUnavailable]]">
+        [[i18nDynamic(locale,'checkingForUpdatesTitle')]]
+      </h1>
+      <paper-progress slot="progress" indeterminate
+          hidden="[[!updateProgressUnavailable]]">
+      </paper-progress>
+
+      <h1 slot="title" hidden="[[updateProgressUnavailable]]">
+          [[i18nDynamic(locale,'updatingTitle')]]
+      </h1>
+      <paper-progress slot="progress" min="0" max="100"
+          value="[[updateProgressValue]]"
+          hidden="[[updateProgressUnavailable]]">
+      </paper-progress>
+
+      <div slot="footer" hidden="[[updateProgressUnavailable]]"
+          class="flex layout vertical">
+        <div id="estimated-time-left" class="progress-message text"
+            hidden="[[!estimatedTimeLeftVisible]]">
+          [[estimatedTimeLeft]]
+        </div>
+        <div id="progress-message" class="progress-message text"
+            hidden="[[!updateProgressMessage]]">
+          [[updateProgressMessage]]
+        </div>
+      </div>
+    </oobe-dialog>
+
+    <oobe-dialog hidden="[[showOn_(ui_state, 'update-need-permission')]]"
+        has-buttons>
+      <h1 slot="title">
+        [[i18nDynamic(locale,'updateOverCellularPromptTitle')]]
+      </h1>
+      <div slot="subtitle" class="update-subtitle">
+        [[i18nDynamic(locale,'updateOverCellularPromptMessage')]]
+      </div>
+      <div slot="bottom-buttons" class="layout horizontal end-justified">
+        <cr-button on-click="onCellularPermissionRejected_">
+          [[i18nDynamic(locale,'RejectUpdateOverCellularButton')]]
+        </cr-button>
+        <cr-button on-click="onCellularPermissionAccepted_">
+          [[i18nDynamic(locale,'AcceptUpdateOverCellularButton')]]
+        </cr-button>
+      </div>
+    </oobe-dialog>
+
+    <oobe-dialog
+        hidden="[[showOn_(ui_state, 'update-completed-need-reboot')]]"
+        id="update-completed-dialog">
+      <div slot="subtitle">
+        <div>
+          [[i18nDynamic(locale,'rebootNeededMessage')]]
+        </div>
+      </div>
+    </oobe-dialog>
+
+    <oobe-dialog
+        hidden="[[showOn_(ui_state, 'eol')]]"
+        id="eol-dialog">
+      <div slot="subtitle">>
+        <div>
+          [[i18nDynamic(locale,'eolMessage')]]
+        </div>
+      </div>
+    </oobe-dialog>
   </template>
 </dom-module>

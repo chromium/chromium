@@ -18,37 +18,6 @@
 
 namespace data_reduction_proxy {
 
-namespace {
-
-bool HasEmptyImageDirective(const blink::WebURLResponse& web_url_response) {
-  std::string chrome_proxy_value =
-      web_url_response
-          .HttpHeaderField(blink::WebString::FromUTF8(chrome_proxy_header()))
-          .Utf8();
-  for (const auto& directive :
-       base::SplitStringPiece(chrome_proxy_value, ",", base::TRIM_WHITESPACE,
-                              base::SPLIT_WANT_NONEMPTY)) {
-    if (!base::StartsWith(directive, page_policies_directive(),
-                          base::CompareCase::INSENSITIVE_ASCII)) {
-      continue;
-    }
-
-    // Check policy directive for empty-image entry.
-    base::StringPiece page_policies_value = base::StringPiece(directive).substr(
-        strlen(page_policies_directive()) + 1);
-    for (const auto& policy :
-         base::SplitStringPiece(page_policies_value, "|", base::TRIM_WHITESPACE,
-                                base::SPLIT_WANT_NONEMPTY)) {
-      if (base::LowerCaseEqualsASCII(policy, empty_image_directive())) {
-        return true;
-      }
-    }
-  }
-  return false;
-}
-
-}  // namespace
-
 ContentPreviewsRenderFrameObserver::ContentPreviewsRenderFrameObserver(
     content::RenderFrame* render_frame)
     : content::RenderFrameObserver(render_frame) {}
@@ -69,14 +38,8 @@ bool ContentPreviewsRenderFrameObserver::ValidatePreviewsStateWithResponse(
   DCHECK_EQ(has_lite_page_state, has_lite_page_directive)
       << "Inconsistent PreviewsState ServerLitePage:" << has_lite_page_state
       << " header:" << has_lite_page_directive;
-  bool has_lofi_state = previews_state & content::SERVER_LOFI_ON;
-  bool has_empty_image_directive = HasEmptyImageDirective(web_url_response);
-  DCHECK_EQ(has_lofi_state, has_empty_image_directive)
-      << "Inconsistent PreviewsState ServerLoFi:" << has_lofi_state
-      << " header:" << has_empty_image_directive;
 
-  return (has_lite_page_state == has_lite_page_directive) &&
-         (has_lofi_state == has_empty_image_directive);
+  return has_lite_page_state == has_lite_page_directive;
 }
 
 void ContentPreviewsRenderFrameObserver::OnDestruct() {

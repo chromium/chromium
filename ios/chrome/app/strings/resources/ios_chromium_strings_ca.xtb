@@ -5,6 +5,7 @@
 <translation id="1185134272377778587">Quant a Chromium</translation>
 <translation id="1289966288285062467">Avís de privadesa de Chromium</translation>
 <translation id="1472013873724362412">El vostre compte no funciona a Chromium. Contacteu amb l'administrador del domini o utilitzeu un compte de Google estàndard per iniciar la sessió.</translation>
+<translation id="1507010443238049608">Ajuda a millorar les funcions i el rendiment de Chromium</translation>
 <translation id="1617663976202781617">Dades de la sincronització de Chromium</translation>
 <translation id="1736662517232558588">Dades de Chromium esborrades</translation>
 <translation id="1838412507805038478">Chromium ha verificat que <ph name="ISSUER" /> ha emès el certificat d'aquest lloc web.</translation>
@@ -14,24 +15,16 @@
 <translation id="2168108852149185974">Alguns complements fan que Chromium es bloquegi. Desinstal·la:</translation>
 <translation id="2178608107313874732">Chromium no pot utilitzar la càmera en aquest moment</translation>
 <translation id="2195025571279539885">La propera vegada, voleu que Chromium s'ofereixi per traduir les pàgines d'aquest lloc escrites en <ph name="LANGUAGE_NAME" />?</translation>
-<translation id="2517624234762908348">Sincronitza les dades de Chromium</translation>
-<translation id="2647554856022461007">Chromium pot utilitzar serveis web per millorar la navegació, però si vols els pots desactivar. <ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>
+<translation id="2590893390871230428">Sincronitza les dades de Chromium</translation>
 <translation id="2730884209570016437">Chromium no pot utilitzar la càmera perquè l'està utilitzant una altra aplicació</translation>
 <translation id="2915596697727466327">Chromium utilitza Face ID per garantir l'accés autoritzat a les contrasenyes.</translation>
 <translation id="3256316712990552818">Copiada a Chromium</translation>
-<translation id="3413120535237193088">Inicia la sessió a Chromium per accedir a les adreces d'interès des de tots els dispositius.</translation>
-<translation id="3473048256428424907">Activa l'escàner QR de Chromium</translation>
-<translation id="3605252743693911722">Inicia la sessió a Chromium per accedir a les teves adreces d'interès, les contrasenyes i altres continguts des de tots els teus dispositius.</translation>
 <translation id="3805899903892079518">Chromium no té accés als vostres vídeos o fotos. Permeteu-li l'accés a iOS, a Configuració &gt; Privadesa &gt; Fotos.</translation>
-<translation id="4024541897090868497">Per veure les teves pestanyes en tots els dispositius, inicia la sessió a Chromium.</translation>
-<translation id="4157467675761413638">Consell de Chromium. Per accedir a més opcions de pestanyes, mantén premut el botó Mostra pestanyes a la barra d'eines, que és a la part inferior o superior de la pantalla.</translation>
-<translation id="4241912885070669028">Estàs tancant la sessió d'un compte gestionat per <ph name="SIGNOUT_MANAGED_DOMAIN" />. Se suprimiran les teves dades de Chromium d'aquest dispositiu, però continuaran al teu compte de Google.</translation>
-<translation id="4272892696084633551">Ajuda a millorar les funcions i el rendiment de Chromium</translation>
 <translation id="4555020257205549924">Quan aquesta funció està activada, Chromium ofereix la possibilitat de traduir pàgines escrites en altres idiomes mitjançant el Traductor de Google. <ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>
+<translation id="4681781466797808448">Activa l'escàner de Chromium</translation>
 <translation id="4787850887676698916">Les pestanyes que tinguis obertes a Chromium als altres dispositius es mostraran aquí.</translation>
-<translation id="495292094137889840">Comença a utilitzar l'escàner QR de Chromium</translation>
 <translation id="4999538639245140991">Com que estàs tancant la sessió d'un compte gestionat per <ph name="SIGNOUT_MANAGED_DOMAIN" />, se suprimiran les teves dades de Chromium d'aquest dispositiu, però continuaran emmagatzemades al teu Compte de Google.</translation>
-<translation id="5231355151045086930">Tanca la sessió de Chromium</translation>
+<translation id="5573014823074921752">Consell de Chromium. Per accedir a més opcions de pestanyes, mantén premut el botó Mostra pestanyes a la barra d'eines, que és a la part inferior o superior de la pantalla.</translation>
 <translation id="5862307444128926510">Us donem la benvinguda a Chromium</translation>
 <translation id="5945387852661427312">Estàs iniciant la sessió amb un compte gestionat per <ph name="DOMAIN" /> i estàs donant a l'administrador el control de les teves dades de Chromium. Les dades passaran a estar vinculades a aquest compte permanentment. Si tanques la sessió de Chromium, se suprimiran les teves dades d'aquest dispositiu, però continuaran emmagatzemades al teu compte de Google.</translation>
 <translation id="6068866989048414399">Condicions del servei de Chromium</translation>
@@ -48,11 +41,13 @@
 <translation id="7674213385180944843">Obre Configuració &gt; Privacitat &gt; Càmera &gt; Chromium i activa la càmera.</translation>
 <translation id="7746854981345936341">Consell de Chromium. Ara alguns botons són a la part inferior de la pantalla, per exemple, Enrere, Endavant i Cerca.</translation>
 <translation id="786327964234957808">Estàs canviant el compte de sincronització de <ph name="USER_EMAIL1" /> a <ph name="USER_EMAIL2" />. <ph name="DOMAIN" /> gestiona les teves dades de Chromium. Se suprimiran les teves dades d'aquest dispositiu, però continuaran estant disponibles a <ph name="USER_EMAIL1" />.</translation>
+<translation id="7890287942691234100">Comença a utilitzar l'escàner de Chromium</translation>
 <translation id="8073677936375100957">Vols esborrar les dades de Chromium del dispositiu?</translation>
 <translation id="8175055321229419309">Consell: <ph name="BEGIN_LINK" />mou Chromium al Dock<ph name="END_LINK" /></translation>
 <translation id="8252885722420466166">Compartiu la vostra ubicació per tal de gaudir dels avantatges de Chromium.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> Els autors de Chromium. Tots els drets reservats.</translation>
 <translation id="8809780021347235332">Per desar imatges, toca Configuració perquè Chromium pugui utilitzar les teves fotos</translation>
 <translation id="9022552996538154597">Inicia la sessió a Chromium</translation>
+<translation id="9217078088703304241"><ph name="BEGIN_LINK" />Revisa les condicions del servei actualitzades de Chromium.<ph name="END_LINK" /></translation>
 <translation id="985602178874221306">Els autors de Chromium</translation>
 </translationbundle>

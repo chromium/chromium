@@ -6,6 +6,8 @@ PASS Setting color to ActiveBorder was successfully set.
 PASS Setting color to activeborder was successfully set.
 PASS Setting color to ActiveCaption was successfully set.
 PASS Setting color to activecaption was successfully set.
+FAIL Setting color to ActiveText was not set but should!
+FAIL Setting color to activetext was not set but should!
 PASS Setting color to AppWorkspace was successfully set.
 PASS Setting color to appworkspace was successfully set.
 PASS Setting color to Background was successfully set.
@@ -18,8 +20,16 @@ PASS Setting color to ButtonShadow was successfully set.
 PASS Setting color to buttonshadow was successfully set.
 PASS Setting color to ButtonText was successfully set.
 PASS Setting color to buttontext was successfully set.
+PASS Setting color to Canvas was successfully set.
+PASS Setting color to canvas was successfully set.
+PASS Setting color to CanvasText was successfully set.
+PASS Setting color to canvastext was successfully set.
 PASS Setting color to CaptionText was successfully set.
 PASS Setting color to captiontext was successfully set.
+FAIL Setting color to Field was not set but should!
+FAIL Setting color to field was not set but should!
+FAIL Setting color to FieldText was not set but should!
+FAIL Setting color to fieldtext was not set but should!
 PASS Setting color to GrayText was successfully set.
 PASS Setting color to graytext was successfully set.
 PASS Setting color to Highlight was successfully set.
@@ -36,6 +46,8 @@ PASS Setting color to InfoBackground was successfully set.
 PASS Setting color to infobackground was successfully set.
 PASS Setting color to InfoText was successfully set.
 PASS Setting color to infotext was successfully set.
+PASS Setting color to LinkText was successfully set.
+PASS Setting color to linktext was successfully set.
 PASS Setting color to Menu was successfully set.
 PASS Setting color to menu was successfully set.
 PASS Setting color to MenuText was successfully set.
@@ -52,6 +64,8 @@ PASS Setting color to ThreeDLightShadow was successfully set.
 PASS Setting color to threedlightshadow was successfully set.
 PASS Setting color to ThreeDShadow was successfully set.
 PASS Setting color to threedshadow was successfully set.
+PASS Setting color to VisitedText was successfully set.
+PASS Setting color to visitedtext was successfully set.
 PASS Setting color to Window was successfully set.
 PASS Setting color to window was successfully set.
 PASS Setting color to WindowFrame was successfully set.

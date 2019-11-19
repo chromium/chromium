@@ -3,5 +3,8 @@ rootWebArea focusable
 ++++iframe focusable
 ++++++rootWebArea focusable
 ++++++++genericContainer editable focusable invisible multiline richlyEditable value='1'
+++++++++++staticText editable ignored invisible richlyEditable name='1'
 ++++iframe focusable
 ++++++rootWebArea focusable
+++++++++genericContainer ignored invisible
+++++++++++staticText ignored invisible name='2'

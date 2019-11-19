@@ -6,48 +6,43 @@ CASE 1, original layer tree:
 {
   "layers": [
     {
-      "name": "LayoutView #document",
-      "bounds": [800, 600],
-      "drawsContent": false,
-      "backgroundColor": "#FFFFFF"
-    },
-    {
-      "name": "Scrolling Layer",
-      "bounds": [785, 600],
-      "drawsContent": false
-    },
-    {
       "name": "Scrolling Contents Layer",
       "bounds": [785, 4100],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutBlockFlow (positioned) DIV id='backgroundFixed'",
+      "name": "LayoutNGBlockFlow (positioned) DIV id='backgroundFixed'",
       "bounds": [400, 400],
       "contentsOpaque": true,
       "backgroundColor": "#808080"
     },
     {
-      "name": "LayoutBlockFlow (positioned) DIV id='container'",
-      "position": [100, 100],
+      "name": "LayoutNGBlockFlow (positioned) DIV id='container'",
       "bounds": [100, 4000],
       "contentsOpaque": true,
-      "backgroundColor": "#008000"
-    },
-    {
-      "name": "LayoutBlockFlow (positioned) DIV id='innerFixed'",
-      "bounds": [200, 100],
-      "contentsOpaque": true,
-      "backgroundColor": "#0000FF",
+      "backgroundColor": "#008000",
       "transform": 1
     },
     {
-      "name": "LayoutBlockFlow (positioned) DIV id='innerScrolling'",
-      "position": [200, 100],
+      "name": "LayoutNGBlockFlow (positioned) DIV id='innerFixed'",
+      "bounds": [200, 100],
+      "contentsOpaque": true,
+      "backgroundColor": "#0000FF",
+      "transform": 2
+    },
+    {
+      "name": "LayoutNGBlockFlow (positioned) DIV id='innerScrolling'",
       "bounds": [100, 100],
       "contentsOpaque": true,
-      "backgroundColor": "#00FF00"
+      "backgroundColor": "#00FF00",
+      "transform": 3
+    },
+    {
+      "name": "ContentsLayer for Vertical Scrollbar Layer",
+      "position": [785, 0],
+      "bounds": [15, 600],
+      "contentsOpaque": true
     }
   ],
   "transforms": [
@@ -57,7 +52,26 @@ CASE 1, original layer tree:
         [1, 0, 0, 0],
         [0, 1, 0, 0],
         [0, 0, 1, 0],
+        [100, 100, 0, 1]
+      ]
+    },
+    {
+      "id": 2,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
         [100, 150, 0, 1]
+      ]
+    },
+    {
+      "id": 3,
+      "parent": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [100, 0, 0, 1]
       ]
     }
   ]
@@ -67,17 +81,6 @@ CASE 2, scrolling y by 10 pixels, both the "container" and "inner" should scroll
 {
   "layers": [
     {
-      "name": "LayoutView #document",
-      "bounds": [800, 600],
-      "drawsContent": false,
-      "backgroundColor": "#FFFFFF"
-    },
-    {
-      "name": "Scrolling Layer",
-      "bounds": [785, 600],
-      "drawsContent": false
-    },
-    {
       "name": "Scrolling Contents Layer",
       "bounds": [785, 4100],
       "contentsOpaque": true,
@@ -85,34 +88,37 @@ CASE 2, scrolling y by 10 pixels, both the "container" and "inner" should scroll
       "transform": 1
     },
     {
-      "name": "LayoutBlockFlow (positioned) DIV id='backgroundFixed'",
+      "name": "LayoutNGBlockFlow (positioned) DIV id='backgroundFixed'",
       "bounds": [400, 400],
       "contentsOpaque": true,
-      "backgroundColor": "#808080",
-      "transform": 2
+      "backgroundColor": "#808080"
     },
     {
-      "name": "LayoutBlockFlow (positioned) DIV id='container'",
-      "position": [100, 100],
+      "name": "LayoutNGBlockFlow (positioned) DIV id='container'",
       "bounds": [100, 4000],
       "contentsOpaque": true,
       "backgroundColor": "#008000",
-      "transform": 1
+      "transform": 2
     },
     {
-      "name": "LayoutBlockFlow (positioned) DIV id='innerFixed'",
+      "name": "LayoutNGBlockFlow (positioned) DIV id='innerFixed'",
       "bounds": [200, 100],
       "contentsOpaque": true,
       "backgroundColor": "#0000FF",
       "transform": 3
     },
     {
-      "name": "LayoutBlockFlow (positioned) DIV id='innerScrolling'",
-      "position": [200, 100],
+      "name": "LayoutNGBlockFlow (positioned) DIV id='innerScrolling'",
       "bounds": [100, 100],
       "contentsOpaque": true,
       "backgroundColor": "#00FF00",
-      "transform": 1
+      "transform": 4
+    },
+    {
+      "name": "ContentsLayer for Vertical Scrollbar Layer",
+      "position": [785, 0],
+      "bounds": [15, 600],
+      "contentsOpaque": true
     }
   ],
   "transforms": [
@@ -123,8 +129,7 @@ CASE 2, scrolling y by 10 pixels, both the "container" and "inner" should scroll
         [0, 1, 0, 0],
         [0, 0, 1, 0],
         [0, -10, 0, 1]
-      ],
-      "flattenInheritedTransform": false
+      ]
     },
     {
       "id": 2,
@@ -133,17 +138,26 @@ CASE 2, scrolling y by 10 pixels, both the "container" and "inner" should scroll
         [1, 0, 0, 0],
         [0, 1, 0, 0],
         [0, 0, 1, 0],
-        [0, 10, 0, 1]
+        [100, 100, 0, 1]
       ]
     },
     {
       "id": 3,
-      "parent": 1,
       "transform": [
         [1, 0, 0, 0],
         [0, 1, 0, 0],
         [0, 0, 1, 0],
-        [100, 160, 0, 1]
+        [100, 150, 0, 1]
+      ]
+    },
+    {
+      "id": 4,
+      "parent": 2,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [100, 0, 0, 1]
       ]
     }
   ]
@@ -153,17 +167,6 @@ CASE 3, scrolling y further so that "inner" no longer overlaps the fixed-pos lay
 {
   "layers": [
     {
-      "name": "LayoutView #document",
-      "bounds": [800, 600],
-      "drawsContent": false,
-      "backgroundColor": "#FFFFFF"
-    },
-    {
-      "name": "Scrolling Layer",
-      "bounds": [785, 600],
-      "drawsContent": false
-    },
-    {
       "name": "Scrolling Contents Layer",
       "bounds": [785, 4100],
       "contentsOpaque": true,
@@ -171,32 +174,36 @@ CASE 3, scrolling y further so that "inner" no longer overlaps the fixed-pos lay
       "transform": 1
     },
     {
-      "name": "LayoutBlockFlow (positioned) DIV id='backgroundFixed'",
+      "name": "LayoutNGBlockFlow (positioned) DIV id='backgroundFixed'",
       "bounds": [400, 400],
       "contentsOpaque": true,
-      "backgroundColor": "#808080",
-      "transform": 2
+      "backgroundColor": "#808080"
     },
     {
-      "name": "LayoutBlockFlow (positioned) DIV id='container'",
-      "position": [100, 100],
+      "name": "LayoutNGBlockFlow (positioned) DIV id='container'",
       "bounds": [200, 4000],
       "backgroundColor": "#008000",
       "paintInvalidations": [
         {
-          "object": "LayoutBlockFlow (positioned) DIV id='innerScrolling'",
+          "object": "LayoutNGBlockFlow (positioned) DIV id='innerScrolling'",
           "rect": [100, 0, 100, 100],
           "reason": "appeared"
         }
       ],
-      "transform": 1
+      "transform": 2
     },
     {
-      "name": "LayoutBlockFlow (positioned) DIV id='innerFixed'",
+      "name": "LayoutNGBlockFlow (positioned) DIV id='innerFixed'",
       "bounds": [200, 100],
       "contentsOpaque": true,
       "backgroundColor": "#0000FF",
       "transform": 3
+    },
+    {
+      "name": "ContentsLayer for Vertical Scrollbar Layer",
+      "position": [785, 0],
+      "bounds": [15, 600],
+      "contentsOpaque": true
     }
   ],
   "transforms": [
@@ -207,8 +214,7 @@ CASE 3, scrolling y further so that "inner" no longer overlaps the fixed-pos lay
         [0, 1, 0, 0],
         [0, 0, 1, 0],
         [0, -110, 0, 1]
-      ],
-      "flattenInheritedTransform": false
+      ]
     },
     {
       "id": 2,
@@ -217,17 +223,16 @@ CASE 3, scrolling y further so that "inner" no longer overlaps the fixed-pos lay
         [1, 0, 0, 0],
         [0, 1, 0, 0],
         [0, 0, 1, 0],
-        [0, 110, 0, 1]
+        [100, 100, 0, 1]
       ]
     },
     {
       "id": 3,
-      "parent": 1,
       "transform": [
         [1, 0, 0, 0],
         [0, 1, 0, 0],
         [0, 0, 1, 0],
-        [100, 260, 0, 1]
+        [100, 150, 0, 1]
       ]
     }
   ]

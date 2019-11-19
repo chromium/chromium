@@ -122,6 +122,19 @@ TEST_F(MultiDeviceSetupAndroidSmsAppInstallingStatusObserverTest,
 }
 
 TEST_F(MultiDeviceSetupAndroidSmsAppInstallingStatusObserverTest,
+       DoesNotInstallAfterHostVerifiedIfUninstalledByUser) {
+  fake_app_helper_delegate()->Reset();
+  fake_app_helper_delegate()->set_has_app_been_manually_uninstalled(true);
+
+  SetHostWithStatus(mojom::HostStatus::kNoEligibleHosts,
+                    base::nullopt /* host_device */);
+  EXPECT_FALSE(fake_app_helper_delegate()->has_installed_app());
+
+  SetHostWithStatus(mojom::HostStatus::kHostVerified, GetFakePhone());
+  EXPECT_FALSE(fake_app_helper_delegate()->has_installed_app());
+}
+
+TEST_F(MultiDeviceSetupAndroidSmsAppInstallingStatusObserverTest,
        DoesNotInstallsAfterHostVerifiedIfNotSupportedByPhone) {
   SetMessagesFeatureState(mojom::FeatureState::kNotSupportedByPhone);
   fake_app_helper_delegate()->Reset();

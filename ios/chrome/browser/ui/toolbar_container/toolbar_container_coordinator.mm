@@ -18,7 +18,7 @@
 
 @interface ToolbarContainerCoordinator () {
   // The updater for the container view controller.
-  std::unique_ptr<FullscreenUIUpdater> _fullscreenUpdater;
+  std::unique_ptr<FullscreenUIUpdater> _fullscreenUIUpdater;
 }
 // The container view controller.
 @property(nonatomic, strong)
@@ -86,11 +86,9 @@
   self.containerViewController.collapsesSafeArea = !isPrimary;
   [self startToolbarCoordinators];
   // Start observing fullscreen events.
-  _fullscreenUpdater =
-      std::make_unique<FullscreenUIUpdater>(self.containerViewController);
-  FullscreenControllerFactory::GetInstance()
-      ->GetForBrowserState(self.browserState)
-      ->AddObserver(_fullscreenUpdater.get());
+  _fullscreenUIUpdater = std::make_unique<FullscreenUIUpdater>(
+      FullscreenControllerFactory::GetForBrowserState(self.browserState),
+      self.containerViewController);
   self.started = YES;
 }
 
@@ -103,10 +101,7 @@
   [self.containerViewController removeFromParentViewController];
   self.containerViewController = nil;
   [self stopToolbarCoordinators];
-  FullscreenControllerFactory::GetInstance()
-      ->GetForBrowserState(self.browserState)
-      ->RemoveObserver(_fullscreenUpdater.get());
-  _fullscreenUpdater = nullptr;
+  _fullscreenUIUpdater = nullptr;
   self.started = NO;
 }
 

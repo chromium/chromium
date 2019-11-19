@@ -6,11 +6,10 @@
 var gl_context;
 var gl_renderer;
 
-initializeWebGL = function(canvas) {
+initializeWebGL = function(canvas, opt_attrs) {
   gl_context = null;
   // Try to grab the standard context.
-  gl_context = canvas.getContext("webgl") ||
-               canvas.getContext("experimental-webgl");
+  gl_context = canvas.getContext("webgl", opt_attrs);
   // If we don't have a GL context, give up now.
   if (!gl_context) {
     err = "Unable to initialize WebGL. Your browser may not support it.";
@@ -22,10 +21,10 @@ initializeWebGL = function(canvas) {
   }
 }
 
-startWebGLContext = function() {
+startWebGLContext = function(opt_attrs) {
   var canvas = document.getElementById("glcanvas");
   // Initialize the GL context.
-  initializeWebGL(canvas);
+  initializeWebGL(canvas, opt_attrs);
 
   // Only continue if WebGL is available and working.
   if (gl_context) {

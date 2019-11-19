@@ -24,17 +24,14 @@ body {
     overflow-x: scroll;
 }
 </style>
-<iframe id="iframe" src="data:text/html,<div id='div' style='width: 100px; height: 100px; background: red'></div>"></iframe>
-<iframe id="iframeScrollbars" src="data:text/html,<div id='big' style='width: 500px; height: 500px; background: blue;'></div><div id='div' style='position: absolute; top: 0; left: 0; width: 100px; height: 100px; background: green;'>"></iframe>
+<iframe id="iframe" srcdoc="<div id='div' style='width: 100px; height: 100px; background: red'></div>"></iframe>
+<iframe id="iframeScrollbars" srcdoc="<div id='big' style='width: 500px; height: 500px; background: blue;'></div><div id='div' style='position: absolute; top: 0; left: 0; width: 100px; height: 100px; background: green;'>"></iframe>
 <div id="console"></div>
 <script>
 window.jsTestIsAsync = true;
 
 if (window.testRunner)
     testRunner.dumpAsText();
-
-if (window.internals)
-    internals.settings.setMockScrollbarsEnabled(true);
 
 onload = function() {
     checkElementsFromPointFourCorners('document', 'iframe');

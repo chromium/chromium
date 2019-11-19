@@ -12,7 +12,6 @@
 #include "base/logging.h"
 #include "base/values.h"
 #include "content/public/browser/render_process_host.h"
-#include "content/public/common/bind_interface_helpers.h"
 
 namespace content {
 
@@ -28,7 +27,6 @@ const int kInitialNumberOfLiveDocuments = 1;
 const int kInitialNumberOfLiveNodes = 4;
 const int kInitialNumberOfLiveLayoutObjects = 3;
 const int kInitialNumberOfLiveResources = 0;
-const int kInitialNumberOfScriptPromises = 0;
 const int kInitialNumberOfLiveFrames = 1;
 const int kInitialNumberOfWorkerGlobalScopes = 0;
 const int kInitialNumberOfLiveResourceFetchers = 1;
@@ -40,7 +38,7 @@ const int kInitialNumberOfLiveContextLifecycleStateObservers = 0;
 // objects.
 const int kInitialNumberOfV8PerContextData = 2;
 
-LeakDetector::LeakDetector() : weak_factory_(this) {
+LeakDetector::LeakDetector() {
   previous_result_ = blink::mojom::LeakDetectionResult::New();
   previous_result_->number_of_live_audio_nodes = kInitialNumberOfLiveAudioNodes;
   previous_result_->number_of_live_documents = kInitialNumberOfLiveDocuments;
@@ -50,8 +48,6 @@ LeakDetector::LeakDetector() : weak_factory_(this) {
   previous_result_->number_of_live_resources = kInitialNumberOfLiveResources;
   previous_result_->number_of_live_context_lifecycle_state_observers =
       kInitialNumberOfLiveContextLifecycleStateObservers;
-  previous_result_->number_of_live_script_promises =
-      kInitialNumberOfScriptPromises;
   previous_result_->number_of_live_frames = kInitialNumberOfLiveFrames;
   previous_result_->number_of_live_v8_per_context_data =
       kInitialNumberOfV8PerContextData;
@@ -67,8 +63,8 @@ void LeakDetector::TryLeakDetection(RenderProcessHost* process,
                                     ReportCallback callback) {
   callback_ = std::move(callback);
 
-  BindInterface(process, &leak_detector_);
-  leak_detector_.set_connection_error_handler(base::BindOnce(
+  process->BindReceiver(leak_detector_.BindNewPipeAndPassReceiver());
+  leak_detector_.set_disconnect_handler(base::BindOnce(
       &LeakDetector::OnLeakDetectorIsGone, base::Unretained(this)));
   leak_detector_->PerformLeakDetection(base::BindOnce(
       &LeakDetector::OnLeakDetectionComplete, weak_factory_.GetWeakPtr()));
@@ -126,13 +122,6 @@ void LeakDetector::OnLeakDetectionComplete(
       list->AppendInteger(
           result->number_of_live_context_lifecycle_state_observers);
       detail.Set("numberOfLiveContextLifecycleStateObservers", std::move(list));
-    }
-    if (previous_result_->number_of_live_script_promises <
-        result->number_of_live_script_promises) {
-      auto list = std::make_unique<base::ListValue>();
-      list->AppendInteger(previous_result_->number_of_live_script_promises);
-      list->AppendInteger(result->number_of_live_script_promises);
-      detail.Set("numberOfLiveScriptPromises", std::move(list));
     }
     if (previous_result_->number_of_live_frames <
         result->number_of_live_frames) {

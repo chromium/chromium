@@ -6,8 +6,11 @@
 #define CHROME_BROWSER_ANDROID_DOM_DISTILLER_DISTILLER_UI_HANDLE_ANDROID_H_
 
 #include "base/macros.h"
-#include "components/dom_distiller/content/browser/distiller_ui_handle.h"
-#include "content/public/browser/web_contents.h"
+#include "components/dom_distiller/core/distiller_ui_handle.h"
+
+namespace content {
+class RenderFrameHost;
+}
 
 namespace dom_distiller {
 
@@ -18,9 +21,13 @@ class DistillerUIHandleAndroid : public DistillerUIHandle {
   DistillerUIHandleAndroid() {}
   ~DistillerUIHandleAndroid() override {}
 
-  void OpenSettings(content::WebContents* web_contents) override;
+  void set_render_frame_host(content::RenderFrameHost* host) {
+    render_frame_host_ = host;
+  }
+  void OpenSettings() override;
 
  private:
+  content::RenderFrameHost* render_frame_host_ = nullptr;
   DISALLOW_COPY_AND_ASSIGN(DistillerUIHandleAndroid);
 };
 

@@ -1,0 +1,29 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://gpuweb.github.io/gpuweb/
+
+dictionary GPUBindGroupLayoutBinding {
+    required unsigned long binding;
+    required GPUShaderStageFlags visibility;
+    required GPUBindingType type;
+    GPUTextureViewDimension textureDimension = "2d";
+    GPUTextureComponentType textureComponentType = "float";
+    boolean multisampled = false;
+    boolean hasDynamicOffset = false;
+};
+
+enum GPUBindingType {
+    "uniform-buffer",
+    "storage-buffer",
+    "sampler",
+    "sampled-texture",
+    "storage-texture",
+};
+
+enum GPUTextureComponentType {
+    "float",
+    "sint",
+    "uint"
+};

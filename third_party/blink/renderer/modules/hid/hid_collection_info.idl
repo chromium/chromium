@@ -1,0 +1,28 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Information about a HID collection, including its reports and subcollections.
+// https://wicg.github.io/webhid/index.html#report-descriptor
+
+[
+    Exposed(Window WebHID),
+    SecureContext
+] interface HIDCollectionInfo {
+    // The 16-bit usage page associated with this collection. Zero if not set.
+    readonly attribute unsigned short usagePage;
+
+    // The 16-bit usage value associated with this collection. Zero if not set.
+    readonly attribute unsigned short usage;
+
+    // The subcollections of this collection, in the order they were encountered
+    // in the report descriptor.
+    readonly attribute FrozenArray<HIDCollectionInfo> children;
+
+    // Input, output, and feature reports described in this collection, sorted
+    // by report ID. If this is a subcollection, only the portion of the report
+    // described within this collection is included.
+    readonly attribute FrozenArray<HIDReportInfo> inputReports;
+    readonly attribute FrozenArray<HIDReportInfo> outputReports;
+    readonly attribute FrozenArray<HIDReportInfo> featureReports;
+};

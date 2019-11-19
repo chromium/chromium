@@ -1,5 +1,6 @@
 rootWebArea
-++listBox
-++++listBoxOption name='1' selected=false
-++++listBoxOption name='2' selected=true
-++++listBoxOption name='3' selected=false
+++genericContainer ignored
+++++listBox
+++++++listBoxOption name='1' selected=false
+++++++listBoxOption name='2' selected=true
+++++++listBoxOption name='3' selected=false

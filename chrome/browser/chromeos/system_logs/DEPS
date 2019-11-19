@@ -1,6 +1,5 @@
 specific_include_rules = {
-  # TODO(mash): http://crbug.com/807408.
   "touch_log_source\.cc": [
-    "+ash/touch/touch_observer_hud.h",
+    "+ash/touch/touch_hud_debug.h",
   ],
 }

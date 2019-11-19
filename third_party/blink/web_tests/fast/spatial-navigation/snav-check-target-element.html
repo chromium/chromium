@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<!-- TODO(crbug.com/1015307): should adopt title value. -->
+<title>SpatNav isn't performed if the webpage directly handles the arrow keys for moving focus.</title>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="resources/snav-testharness.js"></script>
+
+<button id="a">A</button>
+<button id="b">B</button>
+<button id="c">C</button>
+<button id="d">D</button>
+<button id="e">E</button>
+<button id="f">F</button>
+<button id="g">G</button>
+
+<script>
+  const buttons = document.getElementsByTagName("button");
+
+  // Keydown on D button.
+  buttons[3].addEventListener('keydown', (e) => {
+    // Custom SpatNav on web page.
+    if (e.key == 'ArrowLeft') {
+      // Move focus to B button.
+      buttons[1].focus();
+    } else if (e.key == 'ArrowRight') {
+      // Move focus to F button.
+      buttons[5].focus();
+    }
+  });
+</script>
+<script>
+  var resultMap = [
+    ["Right", "a"],
+    ["Right", "b"],
+    ["Right", "c"],
+    ["Right", "d"],
+    ["Right", "f"],
+    ["Right", "g"],
+    ["Left", "f"],
+    ["Left", "e"],
+    ["Left", "d"],
+    ["Left", "b"],
+    ["Left", "a"]
+  ];
+
+  snav.assertFocusMoves(resultMap);
+</script>

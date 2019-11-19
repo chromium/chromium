@@ -4,8 +4,12 @@
 
 package org.chromium.webapk.shell_apk;
 
+import android.annotation.TargetApi;
+import android.app.ActivityManager;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
@@ -20,6 +24,8 @@ import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.TypedValue;
+import android.view.Display;
+import android.view.Surface;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -27,18 +33,16 @@ import android.widget.TextView;
 
 import org.chromium.webapk.lib.common.WebApkMetaDataKeys;
 
-import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
 
 /**
  * Contains utility methods for interacting with WebAPKs.
  */
 public class WebApkUtils {
     private static final String TAG = "cr_WebApkUtils";
-
-    /** Percentage to darken a color by when setting the status bar color. */
-    private static final float DARKEN_COLOR_FRACTION = 0.6f;
 
     private static final float CONTRAST_LIGHT_ITEM_THRESHOLD = 3f;
 
@@ -98,20 +102,29 @@ public class WebApkUtils {
         return returnUrlBuilder.toString();
     }
 
-    /** Returns a set of ResolveInfo for all of the installed browsers. */
-    public static Set<ResolveInfo> getInstalledBrowserResolveInfos(PackageManager packageManager) {
+    /** Returns a browser-package-name->ResolveInfo mapping for all of the installed browsers. */
+    public static Map<String, ResolveInfo> getInstalledBrowserResolveInfos(
+            PackageManager packageManager) {
         Intent browserIntent = getQueryInstalledBrowsersIntent();
         // Note: {@link PackageManager#queryIntentActivities()} does not return ResolveInfos for
         // disabled browsers.
-        Set<ResolveInfo> result = new HashSet<>();
-        List<ResolveInfo> resolveInfosAll =
+        List<ResolveInfo> resolveInfos =
                 packageManager.queryIntentActivities(browserIntent, PackageManager.MATCH_ALL);
-        List<ResolveInfo> resolveInfosDefaultOnly = packageManager.queryIntentActivities(
-                browserIntent, PackageManager.MATCH_DEFAULT_ONLY);
+        resolveInfos.addAll(packageManager.queryIntentActivities(
+                browserIntent, PackageManager.MATCH_DEFAULT_ONLY));
 
-        result.addAll(resolveInfosAll);
-        result.addAll(resolveInfosDefaultOnly);
+        Map<String, ResolveInfo> result = new HashMap<>();
+        for (ResolveInfo resolveInfo : resolveInfos) {
+            result.put(getPackageNameFromResolveInfo(resolveInfo), resolveInfo);
+        }
         return result;
+    }
+
+    /** Returns the package name for the passed-in ResolveInfo. */
+    public static String getPackageNameFromResolveInfo(ResolveInfo resolveInfo) {
+        return (resolveInfo != null && resolveInfo.activityInfo != null)
+                ? resolveInfo.activityInfo.packageName
+                : null;
     }
 
     /** Builds a context for the passed in remote package name. */
@@ -141,19 +154,6 @@ public class WebApkUtils {
     }
 
     /**
-     * Android uses padding_left under API level 17 and uses padding_start after that.
-     * If we set the padding in resource file, android will create duplicated resource xml
-     * with the padding to be different.
-     */
-    public static void setPaddingInPixel(View view, int start, int top, int end, int bottom) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-            view.setPaddingRelative(start, top, end, bottom);
-        } else {
-            view.setPadding(start, top, end, bottom);
-        }
-    }
-
-    /**
      * Imitates Chrome's @style/AlertDialogContent. We set the style via Java instead of via
      * specifying the style in the XML to avoid having layout files in both layout-v17/ and in
      * layout/.
@@ -166,11 +166,11 @@ public class WebApkUtils {
                 TypedValue.COMPLEX_UNIT_PX, res.getDimension(R.dimen.headline_size_medium));
         int dialogContentPadding = res.getDimensionPixelSize(R.dimen.dialog_content_padding);
         int titleBottomPadding = res.getDimensionPixelSize(R.dimen.title_bottom_padding);
-        setPaddingInPixel(titleView, dialogContentPadding, dialogContentPadding,
+        titleView.setPaddingRelative(dialogContentPadding, dialogContentPadding,
                 dialogContentPadding, titleBottomPadding);
 
         int dialogContentTopPadding = res.getDimensionPixelSize(R.dimen.dialog_content_top_padding);
-        setPaddingInPixel(contentView, dialogContentPadding, dialogContentTopPadding,
+        contentView.setPaddingRelative(dialogContentPadding, dialogContentTopPadding,
                 dialogContentPadding, dialogContentPadding);
     }
 
@@ -199,28 +199,6 @@ public class WebApkUtils {
         bgB = (bgB < 0.03928f) ? bgB / 12.92f : (float) Math.pow((bgB + 0.055f) / 1.055f, 2.4f);
         float bgL = 0.2126f * bgR + 0.7152f * bgG + 0.0722f * bgB;
         return Math.abs((1.05f) / (bgL + 0.05f));
-    }
-
-    /**
-     * Darkens the given color to use on the status bar.
-     * @param color Color which should be darkened.
-     * @return Color that should be used for Android status bar.
-     */
-    public static int getDarkenedColorForStatusBar(int color) {
-        return getDarkenedColor(color, DARKEN_COLOR_FRACTION);
-    }
-
-    /**
-     * Darken a color to a fraction of its current brightness.
-     * @param color The input color.
-     * @param darkenFraction The fraction of the current brightness the color should be.
-     * @return The new darkened color.
-     */
-    public static int getDarkenedColor(int color, float darkenFraction) {
-        float[] hsv = new float[3];
-        Color.colorToHSV(color, hsv);
-        hsv[2] *= darkenFraction;
-        return Color.HSVToColor(hsv);
     }
 
     /**
@@ -255,6 +233,25 @@ public class WebApkUtils {
     }
 
     /**
+     * Sets the status bar icons to dark or light. Note that this is only valid for
+     * Android M+.
+     *
+     * @param rootView The root view used to request updates to the system UI theming.
+     * @param useDarkIcons Whether the status bar icons should be dark.
+     */
+    public static void setStatusBarIconColor(View rootView, boolean useDarkIcons) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) return;
+
+        int systemUiVisibility = rootView.getSystemUiVisibility();
+        if (useDarkIcons) {
+            systemUiVisibility |= View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
+        } else {
+            systemUiVisibility &= ~View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
+        }
+        rootView.setSystemUiVisibility(systemUiVisibility);
+    }
+
+    /**
      * @see android.view.Window#setStatusBarColor(int color).
      */
     public static void setStatusBarColor(Window window, int statusBarColor) {
@@ -272,5 +269,94 @@ public class WebApkUtils {
                 .setAction(Intent.ACTION_VIEW)
                 .addCategory(Intent.CATEGORY_BROWSABLE)
                 .setData(Uri.parse("http://"));
+    }
+
+    public static String getNotificationChannelName(Context context) {
+        return context.getString(R.string.notification_channel_name);
+    }
+
+    public static int getNotificationSmallIconId() {
+        return R.drawable.notification_badge;
+    }
+
+    /** Computes the screen lock orientation from the passed-in metadata and the display size.  */
+    public static int computeScreenLockOrientationFromMetaData(Context context, Bundle metadata) {
+        String orientation = metadata.getString(WebApkMetaDataKeys.ORIENTATION);
+        if (orientation == null) {
+            return ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED;
+        } else if (orientation.equals("portrait-primary")) {
+            return ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
+        } else if (orientation.equals("portrait-secondary")) {
+            return ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT;
+        } else if (orientation.equals("landscape-primary")) {
+            return ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
+        } else if (orientation.equals("landscape-secondary")) {
+            return ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE;
+        } else if (orientation.equals("portrait")) {
+            return ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT;
+        } else if (orientation.equals("landscape")) {
+            return ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE;
+        } else if (orientation.equals("any")) {
+            return ActivityInfo.SCREEN_ORIENTATION_FULL_SENSOR;
+        } else if (orientation.equals("natural")) {
+            WindowManager windowManager =
+                    (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+            Display display = windowManager.getDefaultDisplay();
+            int rotation = display.getRotation();
+            if (rotation == Surface.ROTATION_0 || rotation == Surface.ROTATION_180) {
+                if (display.getHeight() >= display.getWidth()) {
+                    return ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
+                }
+                return ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
+            } else {
+                if (display.getHeight() < display.getWidth()) {
+                    return ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
+                }
+                return ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
+            }
+        } else {
+            return ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED;
+        }
+    }
+
+    /** Grants the host browser permission to the shared files if any. */
+    public static void grantUriPermissionToHostBrowserIfShare(
+            Context context, HostBrowserLauncherParams params) {
+        if (params.getSelectedShareTargetActivityClassName() == null) return;
+
+        Intent originalIntent = params.getOriginalIntent();
+        ArrayList<Uri> uris = originalIntent.getParcelableArrayListExtra(Intent.EXTRA_STREAM);
+        if (uris == null) {
+            uris = new ArrayList<>();
+            Uri uri = originalIntent.getParcelableExtra(Intent.EXTRA_STREAM);
+            if (uri != null) {
+                uris.add(uri);
+            }
+        }
+        for (Uri uri : uris) {
+            context.grantUriPermission(
+                    params.getHostBrowserPackageName(), uri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        }
+    }
+
+    /** Returns the ComponentName for the top activity in {@link taskId}'s task stack. */
+    @TargetApi(Build.VERSION_CODES.M)
+    public static ComponentName fetchTopActivityComponent(Context context, int taskId) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+            return null;
+        }
+
+        ActivityManager manager =
+                (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+        for (ActivityManager.AppTask task : manager.getAppTasks()) {
+            try {
+                ActivityManager.RecentTaskInfo taskInfo = task.getTaskInfo();
+                if (taskInfo != null && taskInfo.id == taskId) {
+                    return taskInfo.topActivity;
+                }
+            } catch (IllegalArgumentException e) {
+            }
+        }
+        return null;
     }
 }

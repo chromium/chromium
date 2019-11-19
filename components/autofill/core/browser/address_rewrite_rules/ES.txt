@@ -1,0 +1,100 @@
+\bsanta\s+cruz\s+de\s+tenerife\b	tf
+\bbalearic\s+islands\b	pm
+\bislas\s+baleares\b	pm
+\billes\s+balears\b	pm
+\bciudad\s+real\b	cr
+\bguadalajara\b	gu
+\bla\s+corunna\b	c
+\bla\s+corunya\b	c
+\blas\s+palmas\b	gc
+\bpontevedra\b	po
+\bvalladolid\b	va
+\bbarcelona\b	b
+\bcantabria\b	s
+\bcastellon\b	cs
+\besplugues\b	esplugas
+\bguipuscoa\b	ss
+\bguipuzcoa\b	ss
+\bla\s+coruna\b	c
+\bsalamanca\b	sa
+\bsaragossa\b	z
+\btarragona\b	t
+\ba\s+coruna\b	c
+\balbacete\b	ab
+\balicante\b	
+\basturias\b	o
+\bcastello\b	cs
+\bgipuzkoa\b	ss
+\bla\s+rioja\b	lo
+\bnafarroa\b	na
+\bpalencia\b	p
+\bvalencia\b	v
+\bzaragoza\b	z
+\balacant\b	
+\balmeria\b	
+\bavenida\b	av
+\bbadajoz\b	ba
+\bbizkaia\b	bi
+\bcaceres\b	cc
+\bcordoba\b	co
+\bcordova\b	co
+\bgranada\b	gr
+\bnavarra\b	na
+\bnavarre\b	na
+\bourense\b	or
+\bsegovia\b	sg
+\bsevilla\b	se
+\bseville\b	se
+\bvizcaya\b	bi
+\bbiscay\b	bi
+\bburgos\b	bu
+\bcoruna\b	c
+\bcuenca\b	cu
+\bespana\b	es
+\bgerona\b	gi
+\bgirona\b	gi
+\bhuelva\b	h
+\bhuesca\b	hu
+\blerida\b	
+\blleida\b	
+\bmadrid\b	m
+\bmalaga\b	ma
+\bmurcia\b	mu
+\borense\b	or
+\bteruel\b	te
+\btoledo\b	to
+\bzamora\b	za
+\balava\b	vi
+\baraba\b	vi
+\bavila\b	av
+\bcadiz\b	ca
+\bnorte\b	n
+\bnorth\b	n
+\boeste\b	o
+\bsoria\b	so
+\bsouth\b	s
+\bspain\b	es
+\beast\b	e
+\beste\b	e
+\bjaen\b	j
+\bleon\b	le
+\blugo\b	lu
+\bwest\b	o
+\bc\.\/\b	c
+\bc\/\.\b	c
+\bdal\b	
+\bdel\b	
+\blas\b	
+\bles\b	
+\blos\b	
+\bsur\b	s
+\bal\b	
+\bc\/\b	c
+\bde\b	
+\bel\b	
+\ben\b	
+\bla\b	
+\bof\b	
+\ba\b	
+\bd\b	
+\bl\b	

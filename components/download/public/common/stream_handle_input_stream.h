@@ -8,7 +8,7 @@
 #include "components/download/public/common/download_export.h"
 #include "components/download/public/common/download_stream.mojom.h"
 #include "components/download/public/common/input_stream.h"
-#include "mojo/public/cpp/bindings/binding.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/system/simple_watcher.h"
 
 namespace download {
@@ -40,7 +40,7 @@ class COMPONENTS_DOWNLOAD_EXPORT StreamHandleInputStream
   // Objects for consuming a mojo data pipe.
   mojom::DownloadStreamHandlePtr stream_handle_;
   std::unique_ptr<mojo::SimpleWatcher> handle_watcher_;
-  std::unique_ptr<mojo::Binding<mojom::DownloadStreamClient>> binding_;
+  std::unique_ptr<mojo::Receiver<mojom::DownloadStreamClient>> receiver_;
 
   // Whether the producer has completed handling the response.
   bool is_response_completed_;

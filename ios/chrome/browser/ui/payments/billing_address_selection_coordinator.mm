@@ -7,7 +7,7 @@
 #include <vector>
 
 #include "base/logging.h"
-#include "components/autofill/core/browser/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/strings/grit/components_strings.h"
 #include "ios/chrome/browser/payments/payment_request.h"
 #include "ios/chrome/browser/ui/payments/billing_address_selection_mediator.h"

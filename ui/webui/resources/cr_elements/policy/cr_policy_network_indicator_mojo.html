@@ -1,0 +1,27 @@
+<link rel="import" href="../../html/polymer.html">
+
+<link rel="import" href="../hidden_style_css.html">
+<link rel="import" href="cr_policy_indicator_behavior.html">
+<link rel="import" href="cr_policy_network_behavior_mojo.html">
+<link rel="import" href="cr_tooltip_icon.html">
+
+<dom-module id="cr-policy-network-indicator-mojo">
+  <template>
+    <style include="cr-hidden-style">
+      /* CSS variable for controlling the margin of the icon outside the
+       * indicator element (i.e. in the element including the indicator). */
+      :host {
+        --cr-tooltip-icon-margin-start: 0;
+      }
+
+      cr-tooltip-icon {
+        margin-inline-start: var(--cr-tooltip-icon-margin-start);
+      }
+    </style>
+    <cr-tooltip-icon hidden$="[[!indicatorVisible]]"
+        tooltip-text="[[indicatorTooltip_]]" icon-class="[[indicatorIcon]]"
+        tooltip-position="[[tooltipPosition]]">
+    </cr-tooltip-icon>
+  </template>
+  <script src="cr_policy_network_indicator_mojo.js"></script>
+</dom-module>

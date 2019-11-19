@@ -1,0 +1,325 @@
+<style include="iron-flex cr-hidden-style cr-icons action-link
+    shared-style">
+  .bounded-text,
+  .multiline-clippable-text,
+  .clippable-flex-text {
+    /** Ensure that the text does not overflow its container. */
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .bounded-text,
+  .clippable-flex-text {
+    white-space: nowrap;
+  }
+
+  .clippable-flex-text {
+    /**
+     * These labels can be arbitrarily long. We want to ensure that these
+     * shrink, rather than the neighboring content.
+     */
+    flex-shrink: 1;
+  }
+
+  #icon-wrapper {
+    align-self: flex-start;
+    display: flex;
+    padding: 6px;
+    position: relative;
+  }
+
+  #icon {
+    height: 36px;
+    width: 36px;
+  }
+
+  #card {
+    @apply --cr-card-elevation;
+    background-color: var(--cr-card-background-color);
+    border-radius: var(--cr-card-border-radius);
+    display: flex;
+    flex-direction: column;
+    height: 160px;
+    /* Duration matches --drawer-transition from toolbar.html. */
+    transition: height 300ms cubic-bezier(.25, .1, .25, 1);
+  }
+
+  #card.dev-mode {
+    height: 208px;
+  }
+
+  #main {
+    display: flex;
+    flex: 1;
+    min-height: 0;
+    padding: 16px 20px;
+  }
+
+  #content {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    margin-inline-start: 24px;
+    overflow: hidden;
+  }
+
+  #name-and-version {
+    color: var(--cr-primary-text-color);
+    margin-bottom: 4px;
+  }
+
+  #name {
+    margin-inline-end: 8px;
+  }
+
+  #description {
+    flex: 1;
+  }
+
+  #warnings {
+    color: var(--error-color);
+    flex: 1;
+    margin-bottom: 8px;
+  }
+
+  #error-icon {
+    --iron-icon-fill-color: var(--error-color);
+    height: 18px;
+    margin-inline-end: 4px;
+    width: 18px;
+  }
+
+  #description,
+  #version,
+  #extension-id,
+  #inspect-views,
+  #button-strip {
+    @apply --cr-secondary-text;
+  }
+
+  #extension-id {
+    flex-shrink: 0;
+  }
+
+  #inspect-views {
+    display: flex;
+    white-space: nowrap;
+  }
+
+  #inspect-views > span {
+    margin-inline-end: 4px;
+  }
+
+  #button-strip {
+    box-sizing: border-box;
+    flex-shrink: 0;
+    height: var(--cr-section-min-height);
+    padding-bottom: 8px;
+    padding-inline-end: 20px;
+    padding-top: 8px;
+  }
+
+  #button-strip cr-button {
+    margin-inline-start: 8px;
+  }
+
+  #source-indicator {
+    margin-inline-start: 24px;
+    margin-top: 24px;
+    position: absolute;
+  }
+
+  .source-icon-wrapper {
+    align-items: center;
+    background: rgb(241, 89, 43);  /* Same in light & dark modes. */
+    border-radius: 50%;  /* 50% border radius == a circle */
+    box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.22),
+                0 2px 2px 0 rgba(0, 0, 0, 0.12);
+    display: flex;
+    height: 22px;
+    justify-content: center;
+    width: 22px;
+  }
+
+  #source-indicator iron-icon {
+    color: white;
+    height: 16px;
+    width: 16px;
+  }
+
+  paper-tooltip {
+    --paper-tooltip: {
+      @apply --cr-tooltip;
+      min-width: 0;
+    };
+  }
+
+  #errors-button {
+    color: var(--error-color);
+  }
+
+  #dev-reload-button {
+    margin-inline-end: 12px;
+  }
+
+  #blacklisted-warning:empty {
+    display: none;
+  }
+
+  #a11yAssociation {
+    height: 0;
+    overflow: hidden;
+  }
+</style>
+<!-- Invisible instead of hidden because VoiceOver refuses to read text of
+  element that's hidden when referenced by an aria label.  Unfortunately,
+  this text can be found by Ctrl + F because it isn't hidden. -->
+<div id="a11yAssociation" aria-hidden="true">
+  [[a11yAssociation_(data.name)]]
+</div>
+<div id="card" class$="[[computeClasses_(data.state, inDevMode)]]">
+  <div id="main">
+    <div id="icon-wrapper">
+      <img id="icon" src="[[data.iconUrl]]"
+          aria-describedby="a11yAssociation"
+          alt$="[[appOrExtension(
+              data.type,
+              '$i18nPolymer{appIcon}',
+              '$i18nPolymer{extensionIcon}')]]">
+      <template is="dom-if"
+          if="[[computeSourceIndicatorIcon_(data.*)]]">
+        <div id="source-indicator">
+          <div class="source-icon-wrapper" role="img"
+              aria-describedby="a11yAssociation"
+              aria-label$="[[computeSourceIndicatorText_(data.*)]]">
+            <iron-icon icon="[[computeSourceIndicatorIcon_(data.*)]]">
+            </iron-icon>
+          </div>
+        </div>
+      </template>
+    </div>
+    <!-- This needs to be separate from the source-indicator since it can't
+         be contained inside of a position:relative parent element. -->
+    <template is="dom-if"
+        if="[[computeSourceIndicatorIcon_(data.*)]]">
+      <paper-tooltip id="source-indicator-text" for="source-indicator"
+          position="top" fit-to-visible-bounds aria-hidden="true">
+        [[computeSourceIndicatorText_(data.*)]]
+      </paper-tooltip>
+    </template>
+    <div id="content">
+      <!--Note: We wrap inspect-views in a div so that the outer div
+          doesn't shrink (because it's not display: flex).-->
+      <div>
+        <div id="name-and-version" class="layout horizontal center">
+          <div id="name" role="heading" aria-level="3"
+              class="clippable-flex-text">[[data.name]]</div>
+          <span id="version" hidden$="[[!inDevMode]]">
+            [[data.version]]
+          </span>
+        </div>
+      </div>
+      <div id="description" class="multiline-clippable-text"
+          hidden$="[[hasWarnings_(data.disableReasons.*, data.*)]]">
+        [[data.description]]
+      </div>
+      <template is="dom-if"
+          if="[[hasWarnings_(data.disableReasons.*, data.*)]]">
+        <div id="warnings">
+          <iron-icon id="error-icon" icon="cr:error"></iron-icon>
+          <span id="runtime-warnings" aria-describedby="a11yAssociation"
+              hidden$="[[!data.runtimeWarnings.length]]">
+            <template is="dom-repeat" items="[[data.runtimeWarnings]]">
+              [[item]]
+            </template>
+          </span>
+          <span id="suspicious-warning" aria-describedby="a11yAssociation"
+              hidden$="[[!data.disableReasons.suspiciousInstall]]">
+            $i18n{itemSuspiciousInstall}
+            <a target="_blank" href="$i18n{suspiciousInstallHelpUrl}">
+              $i18n{learnMore}
+            </a>
+          </span>
+          <span id="corrupted-warning" aria-describedby="a11yAssociation"
+              hidden$="[[!data.disableReasons.corruptInstall]]">
+            $i18n{itemCorruptInstall}
+          </span>
+          <span id="blacklisted-warning"><!-- No whitespace
+            -->[[data.blacklistText]]<!-- so we can use :empty in css.
+         --></span>
+        </div>
+      </template>
+      <template is="dom-if" if="[[inDevMode]]">
+        <div id="extension-id" class="bounded-text">[[data.id]]</div>
+        <template is="dom-if"
+            if="[[!computeInspectViewsHidden_(data.views)]]">
+          <!--Note: We wrap inspect-views in a div so that the outer div
+              doesn't shrink (because it's not display: flex).-->
+          <div>
+            <div id="inspect-views">
+              <span aria-describedby="a11yAssociation">
+                $i18n{itemInspectViews}
+              </span>
+              <a class="clippable-flex-text" is="action-link"
+                  title="[[computeFirstInspectTitle_(data.views)]]"
+                  on-click="onInspectTap_">
+                [[computeFirstInspectLabel_(data.views)]]
+              </a>
+              <a is="action-link"
+                  hidden$="[[computeExtraViewsHidden_(data.views)]]"
+                  on-click="onExtraInspectTap_">
+                [[computeExtraInspectLabel_(data.views)]]
+              </a>
+            </div>
+          </div>
+        </template>
+      </template>
+    </div>
+  </div>
+  <div id="button-strip" class="layout horizontal center">
+    <div class="layout flex horizontal center">
+      <cr-button id="detailsButton" on-click="onDetailsTap_"
+          aria-describedby="a11yAssociation">
+        $i18n{itemDetails}
+      </cr-button>
+      <cr-button id="remove-button" on-click="onRemoveTap_"
+          aria-describedby="a11yAssociation"
+          hidden="[[isControlled_(data.controlledInfo)]]">
+        $i18n{remove}
+      </cr-button>
+      <template is="dom-if" if="[[shouldShowErrorsButton_(data.*)]]">
+        <cr-button id="errors-button" on-click="onErrorsTap_"
+            aria-describedby="a11yAssociation">
+          $i18n{itemErrors}
+        </cr-button>
+      </template>
+    </div>
+    <template is="dom-if" if="[[!computeDevReloadButtonHidden_(data.*)]]">
+      <cr-icon-button id="dev-reload-button" class="icon-refresh no-overlap"
+          aria-label="$i18n{itemReload}" aria-describedby="a11yAssociation"
+          on-click="onReloadTap_"></cr-icon-button>
+    </template>
+    <template is="dom-if" if="[[data.disableReasons.corruptInstall]]">
+      <cr-button id="repair-button" class="action-button"
+          aria-describedby="a11yAssociation" on-click="onRepairTap_">
+        $i18n{itemRepair}
+      </cr-button>
+    </template>
+    <template is="dom-if" if="[[isTerminated_(data.state)]]">
+      <cr-button id="terminated-reload-button" on-click="onReloadTap_"
+          aria-describedby="a11yAssociation" class="action-button">
+        $i18n{itemReload}
+      </cr-button>
+    </template>
+    <cr-toggle id="enable-toggle"
+        aria-label$="[[appOrExtension(
+            data.type,
+            '$i18nPolymer{appEnabled}',
+            '$i18nPolymer{extensionEnabled}')]]"
+        aria-describedby="a11yAssociation"
+        checked="[[isEnabled_(data.state)]]" on-change="onEnableChange_"
+        disabled="[[!isEnableToggleEnabled_(data.*)]]"
+        hidden$="[[!showEnableToggle_(data.*)]]">
+    </cr-toggle>
+  </div>
+</div>

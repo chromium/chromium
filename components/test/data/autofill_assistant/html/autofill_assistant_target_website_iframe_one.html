@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+
+<!--
+Copyright 2018 The Chromium Authors. All rights reserved.
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Autofill Assistant Test</title>
+
+    <script>
+      var load = function() {
+        createShadowDom();
+        moveTouchArea();
+      }
+
+      var createShadowDom = function() {
+      var shadowSection = document.getElementById("shadowsection");
+      var shadowRoot = shadowSection.attachShadow({mode: 'open'});
+      shadowRoot.innerHTML =
+          '<button id="shadowbutton" type="button" onclick="removeButton()">\
+          Test Button</button>';
+      }
+
+      var removeButton = function() {
+        var button = document.getElementById("button");
+        button.parentNode.removeChild(button);
+      }
+
+      var removeTouchArea = function() {
+        var touch_area = document.getElementById("touch_area");
+        touch_area.parentNode.removeChild(touch_area);
+      }
+
+      var moveTouchArea = function() {
+        var touch_area = document.getElementById("touch_area");
+        setTimeout(function(){touch_area.style.top += "100px";}, 100);
+        setTimeout(function(){touch_area.style.top += "200px";}, 200);
+        setTimeout(function(){touch_area.style.top += "300px";}, 300);
+        setTimeout(function(){touch_area.style.top += "400px";}, 400);
+        setTimeout(function(){touch_area.style.top += "500px";}, 500);
+        setTimeout(function(){touch_area.style.top += "600px";}, 600);
+      }
+    </script>
+
+    <style>
+      #full_height_section {
+        height: 100vh;
+      }
+
+      #touch_area {
+        position: absolute;
+      }
+    </style>
+  </head>
+
+  <body onload="load()">
+    <div>
+      <form name="address" id="address_section">
+        <div id="billing">
+          <h2>Billing Address</h2>
+          Name: <input type="text" name="name"><br>
+          Address: <input type="text" name="address"><br>
+          City: <input type="text" name="city"><br>
+          State: <select name="state">
+            <option value="CA">CA</option>
+            <option value="MA">MA</option>
+            <option value="NY">NY</option>
+            <option value="MD">MD</option>
+            <option value="OR">OR</option>
+            <option value="OH">OH</option>
+            <option value="IL">IL</option>
+            <option value="DC">DC</option>
+          </select> <br>
+          Zip: <input name="zip"> <br>
+          Country: <input name="country"> <br>
+          Email: <input name="email"> <br>
+        </div>
+      </form>
+    </div>
+
+    <div>
+      <button id="button" type="button">Test Button</button><br>
+    </div>
+
+    <div>
+      <input id="input" type="text" />
+    </div>
+
+    <div>
+      <p id="touch_area" ontouchend="removeTouchArea()">Touchable Area</p>
+      <br>
+    </div>
+
+    <hr>
+    <div id="shadowsection"></div>
+
+    <!--
+    Intentionally make this section has the full height of the window
+    to force scroll when operating on the elements below not in this
+    section.
+    -->
+    <div id="full_height_section">
+      <p>Blank Section
+    </div>
+    <div id="focus">Hidden Text</div>
+
+    <iframe id="iframe" width="100%" height="500" src=
+        "autofill_assistant_target_website_iframe_two.html"></iframe>
+  </body>
+</html>

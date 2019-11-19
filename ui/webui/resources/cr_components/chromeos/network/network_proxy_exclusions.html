@@ -1,18 +1,14 @@
 <link rel="import" href="chrome://resources/html/polymer.html">
 
+<link rel="import" href="chrome://resources/cr_elements/cr_icon_button/cr_icon_button.html">
 <link rel="import" href="chrome://resources/cr_elements/hidden_style_css.html">
-<link rel="import" href="chrome://resources/cr_elements/icons.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="chrome://resources/html/i18n_behavior.html">
 <link rel="import" href="network_shared_css.html">
 
 <dom-module id="network-proxy-exclusions">
   <template>
     <style include="network-shared cr-hidden-style iron-flex">
-      iron-icon {
-        @apply --cr-actionable;
-        margin: 5px;
-      }
-
       #container {
         align-self: stretch;
         border: 1px solid lightgrey;
@@ -21,14 +17,19 @@
         overflow-y: auto;
         padding: 5px;
       }
+
+      cr-icon-button {
+        --cr-icon-button-margin-end: 0;
+      }
     </style>
     <div id="container">
       <template is="dom-repeat" items="[[exclusions]]">
-        <div class="layout horizontal center" tabindex="0" >
+        <div class="layout horizontal center">
           <div class="flex">[[item]]</div>
-          <iron-icon class="favicon-image" icon="cr:clear"
-              on-tap="onRemoveTap_" tabindex="0" hidden="[[!editable]]">
-          </iron-icon>
+          <cr-icon-button class="icon-clear" hidden="[[!editable]]"
+              title="[[i18n('networkProxyExceptionRemoveA11yLabel', item)]]"
+              on-click="onRemoveTap_">
+          </cr-icon-button>
         </div>
       </template>
     </div>

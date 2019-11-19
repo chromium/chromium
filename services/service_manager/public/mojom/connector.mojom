@@ -4,6 +4,7 @@
 
 module service_manager.mojom;
 
+import "mojo/public/mojom/base/process_id.mojom";
 import "mojo/public/mojom/base/token.mojom";
 import "services/service_manager/public/mojom/constants.mojom";
 import "services/service_manager/public/mojom/interface_provider.mojom";
@@ -80,11 +81,13 @@ struct ServiceInfo {
   string sandbox_type;
 };
 
-// Implemented by an object in the service manager associated with a specific
-// instance. Tells the service manager the PID for a process launched by the
-// client.
-interface PIDReceiver {
-  SetPID(uint32 pid);
+// Implemented by an object in the Service Manager associated with a specific
+// instance. Used by privileged clients to inform the Service Manager about
+// metadata concerning a specific service process controlled by the client. See
+// |Connector.RegisterServiceInstance()| and
+// |Service.CreatePackagedServiceInstance()|.
+interface ProcessMetadata {
+  SetPID(mojo_base.mojom.ProcessId pid);
 };
 
 // An interface that allows the holder to start other services & bind to
@@ -159,8 +162,8 @@ interface Connector {
   //
   // |service| is a |Service| interface pipe (i.e. a ServicePtr in C++).
   //
-  // |pid_receiver_request| is the receiving end of a PIDReceiver pipe. The
-  // caller is expected to call |SetPid()| on the other end of this pipe in
+  // |metadata_receiver| is the receiving end of a ProcessMetadata pipe. The
+  // caller is expected to call |SetPID()| on the other end of this pipe in
   // order to inform the Service Manager about which process is actually hosting
   // the service instance.
   //
@@ -170,38 +173,11 @@ interface Connector {
   // message pipe.
   RegisterServiceInstance(Identity identity,
                           handle<message_pipe> service,
-                          PIDReceiver& pid_receiver_request) =>
-      (ConnectResult result);
+                          pending_receiver<ProcessMetadata>? metadata_receiver)
+      => (ConnectResult result);
 
   // Binds another Connector pipe to this same implementation. This effectively
   // allows the client to "clone" its Connector arbitrarily many times, for
   // example to mint Connector endpoints for different threads to use.
-  Clone(Connector& request);
-
-  // Filter interface requests received from |source| according to the policy
-  // specified in this service's manifest in an InterfaceProviderSpec named
-  // |spec|.
-  //
-  // The flow is basically - remote service wishes to (generically) request
-  // interfaces from this service, and so sends us an InterfaceProvider request
-  // (|source_request|) which it would like us to bind. We forward this request
-  // to the Service Manager, passing our actual InterfaceProvider implementation
-  // in |target|. The Service Manager will only forward interface requests that
-  // were permitted by intersecting |source|'s manifest requirements with the
-  // contents of |spec|.
-  //
-  // DEPRECATED: Please do not introduce new uses of this API, as it will be
-  // removed soon. Please instead avoid using InterfaceProvider altogether in
-  // favor of explicit factory interfaces. i.e., instead of an InterfaceProvider
-  // hooked up to a BinderRegistry, prefer to define something like:
-  //
-  //   interface MyInterfaceBroker {
-  //     GetFoo(Foo& request);
-  //     GetBar(Bar& request);
-  //   };
-  //
-  FilterInterfaces(string spec,
-                   Identity source,
-                   InterfaceProvider& source_request,
-                   InterfaceProvider target);
+  Clone(pending_receiver<Connector> receiver);
 };

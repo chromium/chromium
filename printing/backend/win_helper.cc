@@ -12,6 +12,7 @@
 
 #include "base/debug/alias.h"
 #include "base/file_version_info.h"
+#include "base/file_version_info_win.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/memory/free_deleter.h"
@@ -27,23 +28,23 @@
 
 namespace {
 
-typedef HRESULT (WINAPI* PTOpenProviderProc)(PCWSTR printer_name,
-                                             DWORD version,
-                                             HPTPROVIDER* provider);
+typedef HRESULT(WINAPI* PTOpenProviderProc)(PCWSTR printer_name,
+                                            DWORD version,
+                                            HPTPROVIDER* provider);
 
-typedef HRESULT (WINAPI* PTGetPrintCapabilitiesProc)(HPTPROVIDER provider,
-                                                     IStream* print_ticket,
-                                                     IStream* capabilities,
-                                                     BSTR* error_message);
+typedef HRESULT(WINAPI* PTGetPrintCapabilitiesProc)(HPTPROVIDER provider,
+                                                    IStream* print_ticket,
+                                                    IStream* capabilities,
+                                                    BSTR* error_message);
 
-typedef HRESULT (WINAPI* PTConvertDevModeToPrintTicketProc)(
+typedef HRESULT(WINAPI* PTConvertDevModeToPrintTicketProc)(
     HPTPROVIDER provider,
     ULONG devmode_size_in_bytes,
     PDEVMODE devmode,
     EPrintTicketScope scope,
     IStream* print_ticket);
 
-typedef HRESULT (WINAPI* PTConvertPrintTicketToDevModeProc)(
+typedef HRESULT(WINAPI* PTConvertPrintTicketToDevModeProc)(
     HPTPROVIDER provider,
     IStream* print_ticket,
     EDefaultDevmodeType base_devmode_type,
@@ -52,7 +53,7 @@ typedef HRESULT (WINAPI* PTConvertPrintTicketToDevModeProc)(
     PDEVMODE* devmode,
     BSTR* error_message);
 
-typedef HRESULT (WINAPI* PTMergeAndValidatePrintTicketProc)(
+typedef HRESULT(WINAPI* PTMergeAndValidatePrintTicketProc)(
     HPTPROVIDER provider,
     IStream* base_ticket,
     IStream* delta_ticket,
@@ -60,11 +61,11 @@ typedef HRESULT (WINAPI* PTMergeAndValidatePrintTicketProc)(
     IStream* result_ticket,
     BSTR* error_message);
 
-typedef HRESULT (WINAPI* PTReleaseMemoryProc)(PVOID buffer);
+typedef HRESULT(WINAPI* PTReleaseMemoryProc)(PVOID buffer);
 
-typedef HRESULT (WINAPI* PTCloseProviderProc)(HPTPROVIDER provider);
+typedef HRESULT(WINAPI* PTCloseProviderProc)(HPTPROVIDER provider);
 
-typedef HRESULT (WINAPI* StartXpsPrintJobProc)(
+typedef HRESULT(WINAPI* StartXpsPrintJobProc)(
     const LPCWSTR printer_name,
     const LPCWSTR job_name,
     const LPCWSTR output_file_name,
@@ -88,6 +89,9 @@ PTReleaseMemoryProc g_release_memory_proc = nullptr;
 PTCloseProviderProc g_close_provider_proc = nullptr;
 StartXpsPrintJobProc g_start_xps_print_job_proc = nullptr;
 
+typedef std::string (*GetDisplayNameFunc)(const std::string& printer_name);
+GetDisplayNameFunc g_get_display_name_func = nullptr;
+
 HRESULT StreamFromPrintTicket(const std::string& print_ticket,
                               IStream** stream) {
   DCHECK(stream);
@@ -107,27 +111,68 @@ HRESULT StreamFromPrintTicket(const std::string& print_ticket,
 }
 
 const char kXpsTicketTemplate[] =
-  "<?xml version='1.0' encoding='UTF-8'?>"
-  "<psf:PrintTicket "
-  "xmlns:psf='"
-  "http://schemas.microsoft.com/windows/2003/08/printing/printschemaframework' "
-  "xmlns:psk="
-  "'http://schemas.microsoft.com/windows/2003/08/printing/printschemakeywords' "
-  "version='1'>"
-  "<psf:Feature name='psk:PageOutputColor'>"
-  "<psf:Option name='psk:%s'>"
-  "</psf:Option>"
-  "</psf:Feature>"
-  "</psf:PrintTicket>";
+    "<?xml version='1.0' encoding='UTF-8'?>"
+    "<psf:PrintTicket "
+    "xmlns:psf='"
+    "http://schemas.microsoft.com/windows/2003/08/printing/"
+    "printschemaframework' "
+    "xmlns:psk="
+    "'http://schemas.microsoft.com/windows/2003/08/printing/"
+    "printschemakeywords' "
+    "version='1'>"
+    "<psf:Feature name='psk:PageOutputColor'>"
+    "<psf:Option name='psk:%s'>"
+    "</psf:Option>"
+    "</psf:Feature>"
+    "</psf:PrintTicket>";
 
 const char kXpsTicketColor[] = "Color";
 const char kXpsTicketMonochrome[] = "Monochrome";
 
+bool IsOpenXpsCapableImpl() {
+  std::unique_ptr<FileVersionInfoWin> file_version_info =
+      FileVersionInfoWin::CreateFileVersionInfoWin(
+          base::FilePath(FILE_PATH_LITERAL("xpsprint.dll")));
+  if (!file_version_info)
+    return false;  // Cannot support OpenXPS without system support.
+
+  // Need at least version 6.2.9200.16492 to support OpenXPS, per:
+  // https://support.microsoft.com/en-us/help/2670838/platform-update-for-windows-7-sp1-and-windows-server-2008-r2-sp1
+  const base::Version kOpenXpsMinVersion("6.2.9200.16492");
+  return file_version_info->GetFileVersion() >= kOpenXpsMinVersion;
+}
 
 }  // namespace
 
-
 namespace printing {
+
+// static
+bool PrinterHandleTraits::CloseHandle(HANDLE handle) {
+  return ::ClosePrinter(handle) != FALSE;
+}
+
+// static
+bool PrinterChangeHandleTraits::CloseHandle(HANDLE handle) {
+  ::FindClosePrinterChangeNotification(handle);
+  return true;
+}
+
+bool ScopedPrinterHandle::OpenPrinterWithName(const wchar_t* printer) {
+  HANDLE temp_handle;
+  // ::OpenPrinter may return error but assign some value into handle.
+  if (::OpenPrinter(const_cast<LPTSTR>(printer), &temp_handle, nullptr)) {
+    Set(temp_handle);
+  }
+  return IsValid();
+}
+
+// static
+bool XPSModule::IsOpenXpsCapable() {
+  // TODO(awscreen): Can be removed once Chrome drops support for Windows 7,
+  // since everything from Windows 8 onward is all OpenXPS.
+  static const bool capable = IsOpenXpsCapableImpl();
+  return capable;
+}
 
 bool XPSModule::Init() {
   static bool initialized = InitImpl();
@@ -171,16 +216,14 @@ bool XPSModule::InitImpl() {
     NOTREACHED();
     return false;
   }
-  g_release_memory_proc =
-      reinterpret_cast<PTReleaseMemoryProc>(
-          GetProcAddress(prntvpt_module, "PTReleaseMemory"));
+  g_release_memory_proc = reinterpret_cast<PTReleaseMemoryProc>(
+      GetProcAddress(prntvpt_module, "PTReleaseMemory"));
   if (!g_release_memory_proc) {
     NOTREACHED();
     return false;
   }
-  g_close_provider_proc =
-      reinterpret_cast<PTCloseProviderProc>(
-          GetProcAddress(prntvpt_module, "PTCloseProvider"));
+  g_close_provider_proc = reinterpret_cast<PTCloseProviderProc>(
+      GetProcAddress(prntvpt_module, "PTCloseProvider"));
   if (!g_close_provider_proc) {
     NOTREACHED();
     return false;
@@ -198,9 +241,7 @@ HRESULT XPSModule::GetPrintCapabilities(HPTPROVIDER provider,
                                         IStream* print_ticket,
                                         IStream* capabilities,
                                         BSTR* error_message) {
-  return g_get_print_capabilities_proc(provider,
-                                       print_ticket,
-                                       capabilities,
+  return g_get_print_capabilities_proc(provider, print_ticket, capabilities,
                                        error_message);
 }
 
@@ -209,11 +250,8 @@ HRESULT XPSModule::ConvertDevModeToPrintTicket(HPTPROVIDER provider,
                                                PDEVMODE devmode,
                                                EPrintTicketScope scope,
                                                IStream* print_ticket) {
-  return g_convert_devmode_to_print_ticket_proc(provider,
-                                                devmode_size_in_bytes,
-                                                devmode,
-                                                scope,
-                                                print_ticket);
+  return g_convert_devmode_to_print_ticket_proc(provider, devmode_size_in_bytes,
+                                                devmode, scope, print_ticket);
 }
 
 HRESULT XPSModule::ConvertPrintTicketToDevMode(
@@ -224,13 +262,9 @@ HRESULT XPSModule::ConvertPrintTicketToDevMode(
     ULONG* devmode_byte_count,
     PDEVMODE* devmode,
     BSTR* error_message) {
-  return g_convert_print_ticket_to_devmode_proc(provider,
-                                                print_ticket,
-                                                base_devmode_type,
-                                                scope,
-                                                devmode_byte_count,
-                                                devmode,
-                                                error_message);
+  return g_convert_print_ticket_to_devmode_proc(
+      provider, print_ticket, base_devmode_type, scope, devmode_byte_count,
+      devmode, error_message);
 }
 
 HRESULT XPSModule::MergeAndValidatePrintTicket(HPTPROVIDER provider,
@@ -239,12 +273,8 @@ HRESULT XPSModule::MergeAndValidatePrintTicket(HPTPROVIDER provider,
                                                EPrintTicketScope scope,
                                                IStream* result_ticket,
                                                BSTR* error_message) {
-  return g_merge_and_validate_print_ticket_proc(provider,
-                                                base_ticket,
-                                                delta_ticket,
-                                                scope,
-                                                result_ticket,
-                                                error_message);
+  return g_merge_and_validate_print_ticket_proc(
+      provider, base_ticket, delta_ticket, scope, result_ticket, error_message);
 }
 
 HRESULT XPSModule::ReleaseMemory(PVOID buffer) {
@@ -316,16 +346,16 @@ HRESULT XPSPrintModule::StartXpsPrintJob(
     IXpsPrintJob** xps_print_job,
     IXpsPrintJobStream** document_stream,
     IXpsPrintJobStream** print_ticket_stream) {
-  return g_start_xps_print_job_proc(printer_name,
-                                    job_name,
-                                    output_file_name,
-                                    progress_event,
-                                    completion_event,
-                                    printable_pages_on,
-                                    printable_pages_on_count,
-                                    xps_print_job,
-                                    document_stream,
-                                    print_ticket_stream);
+  return g_start_xps_print_job_proc(
+      printer_name, job_name, output_file_name, progress_event,
+      completion_event, printable_pages_on, printable_pages_on_count,
+      xps_print_job, document_stream, print_ticket_stream);
+}
+
+void SetGetDisplayNameFunction(GetDisplayNameFunc get_display_name_func) {
+  DCHECK(get_display_name_func);
+  DCHECK(!g_get_display_name_func);
+  g_get_display_name_func = get_display_name_func;
 }
 
 bool InitBasicPrinterInfo(HANDLE printer, PrinterBasicInfo* printer_info) {
@@ -339,6 +369,12 @@ bool InitBasicPrinterInfo(HANDLE printer, PrinterBasicInfo* printer_info) {
     return false;
 
   printer_info->printer_name = base::WideToUTF8(info_2.get()->pPrinterName);
+  if (g_get_display_name_func) {
+    printer_info->display_name =
+        g_get_display_name_func(printer_info->printer_name);
+  } else {
+    printer_info->display_name = printer_info->printer_name;
+  }
   if (info_2.get()->pComment) {
     printer_info->printer_description =
         base::WideToUTF8(info_2.get()->pComment);
@@ -405,7 +441,7 @@ std::unique_ptr<DEVMODE, base::FreeDeleter> XpsTicketToDevMode(
   }
 
   ScopedPrinterHandle printer;
-  if (!printer.OpenPrinter(printer_name.c_str()))
+  if (!printer.OpenPrinterWithName(printer_name.c_str()))
     return dev_mode;
 
   Microsoft::WRL::ComPtr<IStream> pt_stream;

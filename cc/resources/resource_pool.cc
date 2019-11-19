@@ -99,8 +99,7 @@ ResourcePool::ResourcePool(
       disallow_non_exact_reuse_(disallow_non_exact_reuse),
       tracing_id_(g_next_tracing_id.GetNext()),
       flush_evicted_resources_deadline_(base::TimeTicks::Max()),
-      clock_(base::DefaultTickClock::GetInstance()),
-      weak_ptr_factory_(this) {
+      clock_(base::DefaultTickClock::GetInstance()) {
   base::trace_event::MemoryDumpManager::GetInstance()->RegisterDumpProvider(
       this, "cc::ResourcePool", task_runner_.get());
   memory_pressure_listener_.reset(
@@ -321,7 +320,7 @@ bool ResourcePool::PrepareForExport(const InUsePoolResource& in_use_resource) {
       resource->mark_avoid_reuse();
       return false;
     }
-    transferable = viz::TransferableResource::MakeGLOverlay(
+    transferable = viz::TransferableResource::MakeGL(
         gpu_backing->mailbox, GL_LINEAR, gpu_backing->texture_target,
         gpu_backing->mailbox_sync_token, resource->size(),
         gpu_backing->overlay_candidate);

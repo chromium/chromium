@@ -14,16 +14,13 @@
 #include "chrome/browser/safe_browsing/incident_reporting/mock_incident_receiver.h"
 #include "components/safe_browsing/db/test_database_manager.h"
 #include "components/safe_browsing/proto/csd.pb.h"
-#include "content/public/browser/resource_request_info.h"
 #include "content/public/common/previews_state.h"
 #include "content/public/common/resource_type.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "crypto/sha2.h"
 #include "ipc/ipc_message.h"
 #include "net/base/request_priority.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
-#include "net/url_request/url_request.h"
-#include "net/url_request/url_request_test_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -91,25 +88,6 @@ class ResourceRequestDetectorTest : public testing::Test {
     base::RunLoop().RunUntilIdle();
   }
 
-  std::unique_ptr<net::URLRequest> GetTestURLRequest(
-      const std::string& url,
-      content::ResourceType resource_type) const {
-    std::unique_ptr<net::URLRequest> url_request(context_.CreateRequest(
-        GURL(url), net::DEFAULT_PRIORITY, NULL, TRAFFIC_ANNOTATION_FOR_TESTS));
-
-    content::ResourceRequestInfo::AllocateForTesting(
-        url_request.get(), resource_type,
-        /*resource_context=*/NULL,
-        /*render_process_id=*/0,
-        /*render_view_id=*/0,
-        /*render_frame_id=*/MSG_ROUTING_NONE,
-        /*is_main_frame=*/true, content::ResourceInterceptPolicy::kAllowAll,
-        /*is_async=*/false, content::PREVIEWS_OFF,
-        /*navigation_ui_data*/ nullptr);
-
-    return url_request;
-  }
-
   void ExpectNoDatabaseCheck() {
     EXPECT_CALL(*mock_database_manager_, CheckResourceUrl(_, _))
         .Times(0);
@@ -133,14 +111,12 @@ class ResourceRequestDetectorTest : public testing::Test {
 
   void ExpectNoIncident(const std::string& url,
                         content::ResourceType resource_type) {
-    std::unique_ptr<net::URLRequest> request(
-        GetTestURLRequest(url, resource_type));
-
     EXPECT_CALL(*mock_incident_receiver_, DoAddIncidentForProfile(IsNull(), _))
         .Times(0);
 
-    ResourceRequestInfo info =
-        ResourceRequestDetector::GetRequestInfo(request.get());
+    ResourceRequestInfo info;
+    info.url = GURL(url);
+    info.resource_type = resource_type;
     fake_resource_request_detector_->ProcessResourceRequest(&info);
     base::RunLoop().RunUntilIdle();
   }
@@ -150,14 +126,13 @@ class ResourceRequestDetectorTest : public testing::Test {
       content::ResourceType resource_type,
       ResourceRequestIncidentMessage::Type expected_type,
       const std::string& expected_digest) {
-    std::unique_ptr<net::URLRequest> request(
-        GetTestURLRequest(url, resource_type));
     std::unique_ptr<Incident> incident;
     EXPECT_CALL(*mock_incident_receiver_, DoAddIncidentForProfile(IsNull(), _))
         .WillOnce(WithArg<1>(TakeIncident(&incident)));
 
-    ResourceRequestInfo info =
-        ResourceRequestDetector::GetRequestInfo(request.get());
+    ResourceRequestInfo info;
+    info.url = GURL(url);
+    info.resource_type = resource_type;
     fake_resource_request_detector_->ProcessResourceRequest(&info);
     base::RunLoop().RunUntilIdle();
 
@@ -173,7 +148,7 @@ class ResourceRequestDetectorTest : public testing::Test {
   }
 
  protected:
-  content::TestBrowserThreadBundle thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
 
  public:
   StrictMock<safe_browsing::MockIncidentReceiver>* mock_incident_receiver_;
@@ -181,33 +156,32 @@ class ResourceRequestDetectorTest : public testing::Test {
   std::unique_ptr<FakeResourceRequestDetector> fake_resource_request_detector_;
 
  private:
-  net::TestURLRequestContext context_;
 };
 
 TEST_F(ResourceRequestDetectorTest, NoDbCheckForIgnoredResourceTypes) {
   ExpectNoDatabaseCheck();
-  ExpectNoIncident(
-      "http://www.example.com/index.html", content::RESOURCE_TYPE_MAIN_FRAME);
+  ExpectNoIncident("http://www.example.com/index.html",
+                   content::ResourceType::kMainFrame);
 }
 
 TEST_F(ResourceRequestDetectorTest, NoDbCheckForUnsupportedSchemes) {
   ExpectNoDatabaseCheck();
-  ExpectNoIncident(
-      "file:///usr/local/script.js", content::RESOURCE_TYPE_SCRIPT);
-  ExpectNoIncident(
-      "chrome-extension://abcdefghi/script.js", content::RESOURCE_TYPE_SCRIPT);
+  ExpectNoIncident("file:///usr/local/script.js",
+                   content::ResourceType::kScript);
+  ExpectNoIncident("chrome-extension://abcdefghi/script.js",
+                   content::ResourceType::kScript);
 }
 
 TEST_F(ResourceRequestDetectorTest, NoEventForNegativeSynchronousDbCheck) {
   const std::string url = "http://www.example.com/script.js";
   ExpectNegativeSyncDatabaseCheck(url);
-  ExpectNoIncident(url, content::RESOURCE_TYPE_SCRIPT);
+  ExpectNoIncident(url, content::ResourceType::kScript);
 }
 
 TEST_F(ResourceRequestDetectorTest, NoEventForNegativeAsynchronousDbCheck) {
   const std::string url = "http://www.example.com/script.js";
   ExpectAsyncDatabaseCheck(url, false, "");
-  ExpectNoIncident(url, content::RESOURCE_TYPE_SCRIPT);
+  ExpectNoIncident(url, content::ResourceType::kScript);
 }
 
 TEST_F(ResourceRequestDetectorTest, EventAddedForSupportedSchemes) {
@@ -218,17 +192,16 @@ TEST_F(ResourceRequestDetectorTest, EventAddedForSupportedSchemes) {
   for (const auto& scheme : schemes) {
     const std::string url = scheme + "://" + domain_path;
     ExpectAsyncDatabaseCheck(url, true, digest);
-    ExpectIncidentAdded(
-        url, content::RESOURCE_TYPE_SCRIPT,
-        ResourceRequestIncidentMessage::TYPE_PATTERN, digest);
+    ExpectIncidentAdded(url, content::ResourceType::kScript,
+                        ResourceRequestIncidentMessage::TYPE_PATTERN, digest);
   }
 }
 
 TEST_F(ResourceRequestDetectorTest, EventAddedForSupportedResourceTypes) {
   content::ResourceType supported_types[] = {
-    content::RESOURCE_TYPE_SCRIPT,
-    content::RESOURCE_TYPE_SUB_FRAME,
-    content::RESOURCE_TYPE_OBJECT,
+      content::ResourceType::kScript,
+      content::ResourceType::kSubFrame,
+      content::ResourceType::kObject,
   };
   const std::string url = "http://www.example.com/";
   const std::string digest = "dummydigest";

@@ -36,6 +36,13 @@ class SettingsWindowManager {
   // Browser window for |profile| or creates a new one.
   void ShowChromePageForProfile(Profile* profile, const GURL& gurl);
 
+  // Shows the OS settings window for |profile|. When feature SplitSettings is
+  // disabled, this behaves like ShowChromePageForProfile().
+  void ShowOSSettings(Profile* profile);
+
+  // As above, but shows a settings sub-page.
+  void ShowOSSettings(Profile* profile, const std::string& sub_page);
+
   // If a Browser settings window for |profile| has already been created,
   // returns it, otherwise returns NULL.
   Browser* FindBrowserForProfile(Profile* profile);

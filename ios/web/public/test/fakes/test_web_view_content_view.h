@@ -5,7 +5,7 @@
 #ifndef IOS_WEB_PUBLIC_TEST_FAKES_TEST_WEB_VIEW_CONTENT_VIEW_H_
 #define IOS_WEB_PUBLIC_TEST_FAKES_TEST_WEB_VIEW_CONTENT_VIEW_H_
 
-#import "ios/web/public/web_state/ui/crw_web_view_content_view.h"
+#import "ios/web/common/crw_web_view_content_view.h"
 
 // A test version of CRWWebViewContentView.
 @interface TestWebViewContentView : CRWWebViewContentView

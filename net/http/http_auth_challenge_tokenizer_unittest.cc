@@ -14,7 +14,7 @@ TEST(HttpAuthChallengeTokenizerTest, Basic) {
   HttpUtil::NameValuePairsIterator parameters = challenge.param_pairs();
 
   EXPECT_TRUE(parameters.valid());
-  EXPECT_EQ(std::string("Basic"), challenge.scheme());
+  EXPECT_EQ(std::string("basic"), challenge.auth_scheme());
   EXPECT_TRUE(parameters.GetNext());
   EXPECT_TRUE(parameters.valid());
   EXPECT_EQ(std::string("realm"), parameters.name());
@@ -30,7 +30,7 @@ TEST(HttpAuthChallengeTokenizerTest, NoQuotes) {
   HttpUtil::NameValuePairsIterator parameters = challenge.param_pairs();
 
   EXPECT_TRUE(parameters.valid());
-  EXPECT_EQ(std::string("Basic"), challenge.scheme());
+  EXPECT_EQ(std::string("basic"), challenge.auth_scheme());
   EXPECT_TRUE(parameters.GetNext());
   EXPECT_TRUE(parameters.valid());
   EXPECT_EQ(std::string("realm"), parameters.name());
@@ -46,7 +46,7 @@ TEST(HttpAuthChallengeTokenizerTest, MismatchedQuotes) {
   HttpUtil::NameValuePairsIterator parameters = challenge.param_pairs();
 
   EXPECT_TRUE(parameters.valid());
-  EXPECT_EQ(std::string("Basic"), challenge.scheme());
+  EXPECT_EQ(std::string("basic"), challenge.auth_scheme());
   EXPECT_TRUE(parameters.GetNext());
   EXPECT_TRUE(parameters.valid());
   EXPECT_EQ(std::string("realm"), parameters.name());
@@ -62,7 +62,7 @@ TEST(HttpAuthChallengeTokenizerTest, MismatchedQuotesNoValue) {
   HttpUtil::NameValuePairsIterator parameters = challenge.param_pairs();
 
   EXPECT_TRUE(parameters.valid());
-  EXPECT_EQ(std::string("Basic"), challenge.scheme());
+  EXPECT_EQ(std::string("basic"), challenge.auth_scheme());
   EXPECT_TRUE(parameters.GetNext());
   EXPECT_TRUE(parameters.valid());
   EXPECT_EQ(std::string("realm"), parameters.name());
@@ -79,7 +79,7 @@ TEST(HttpAuthChallengeTokenizerTest, MismatchedQuotesSpaces) {
   HttpUtil::NameValuePairsIterator parameters = challenge.param_pairs();
 
   EXPECT_TRUE(parameters.valid());
-  EXPECT_EQ(std::string("Basic"), challenge.scheme());
+  EXPECT_EQ(std::string("basic"), challenge.auth_scheme());
   EXPECT_TRUE(parameters.GetNext());
   EXPECT_TRUE(parameters.valid());
   EXPECT_EQ(std::string("realm"), parameters.name());
@@ -96,7 +96,7 @@ TEST(HttpAuthChallengeTokenizerTest, MismatchedQuotesMultiple) {
   HttpUtil::NameValuePairsIterator parameters = challenge.param_pairs();
 
   EXPECT_TRUE(parameters.valid());
-  EXPECT_EQ(std::string("Digest"), challenge.scheme());
+  EXPECT_EQ(std::string("digest"), challenge.auth_scheme());
   EXPECT_TRUE(parameters.GetNext());
   EXPECT_TRUE(parameters.valid());
   EXPECT_EQ(std::string("qop"), parameters.name());
@@ -120,7 +120,7 @@ TEST(HttpAuthChallengeTokenizerTest, NoValue) {
   HttpUtil::NameValuePairsIterator parameters = challenge.param_pairs();
 
   EXPECT_TRUE(parameters.valid());
-  EXPECT_EQ(std::string("Digest"), challenge.scheme());
+  EXPECT_EQ(std::string("digest"), challenge.auth_scheme());
   EXPECT_FALSE(parameters.GetNext());
   EXPECT_FALSE(parameters.valid());
 }
@@ -134,7 +134,7 @@ TEST(HttpAuthChallengeTokenizerTest, Multiple) {
   HttpUtil::NameValuePairsIterator parameters = challenge.param_pairs();
 
   EXPECT_TRUE(parameters.valid());
-  EXPECT_EQ(std::string("Digest"), challenge.scheme());
+  EXPECT_EQ(std::string("digest"), challenge.auth_scheme());
   EXPECT_TRUE(parameters.GetNext());
   EXPECT_TRUE(parameters.valid());
   EXPECT_EQ(std::string("algorithm"), parameters.name());
@@ -159,7 +159,7 @@ TEST(HttpAuthChallengeTokenizerTest, NoProperty) {
   HttpUtil::NameValuePairsIterator parameters = challenge.param_pairs();
 
   EXPECT_TRUE(parameters.valid());
-  EXPECT_EQ(std::string("NTLM"), challenge.scheme());
+  EXPECT_EQ(std::string("ntlm"), challenge.auth_scheme());
   EXPECT_FALSE(parameters.GetNext());
 }
 
@@ -169,7 +169,7 @@ TEST(HttpAuthChallengeTokenizerTest, Base64) {
   HttpAuthChallengeTokenizer challenge(challenge_str.begin(),
                                        challenge_str.end());
 
-  EXPECT_EQ(std::string("NTLM"), challenge.scheme());
+  EXPECT_EQ(std::string("ntlm"), challenge.auth_scheme());
   // Notice the two equal statements below due to padding removal.
   EXPECT_EQ(std::string("SGVsbG8sIFdvcmxkCg=="), challenge.base64_param());
 }

@@ -41,18 +41,4 @@ void WrapperTypeInfo::Trace(Visitor* visitor, void* impl) const {
   }
 }
 
-void WrapperTypeInfo::TraceWithWrappers(Visitor* visitor, void* impl) const {
-  switch (wrapper_class_id) {
-    case WrapperTypeInfo::kNodeClassId:
-    case WrapperTypeInfo::kObjectClassId:
-      visitor->TraceWithWrappers(reinterpret_cast<ScriptWrappable*>(impl));
-      break;
-    case WrapperTypeInfo::kCustomWrappableId:
-      visitor->TraceWithWrappers(reinterpret_cast<CustomWrappable*>(impl));
-      break;
-    default:
-      NOTREACHED();
-  }
-}
-
 }  // namespace blink

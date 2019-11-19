@@ -56,7 +56,10 @@ Polymer({
       observer: 'onfullScreenDialogChanged_',
     },
 
-    android: {
+    /**
+     * Shows overlay on top of the bottom buttons.
+     */
+    showButtonsOverlay: {
       type: Boolean,
       value: false,
     },
@@ -81,6 +84,14 @@ Polymer({
   },
 
   /**
+   * Scroll to the bottom of footer container.
+   */
+  scrollToBottom: function() {
+    var el = this.$$('#footer-container');
+    el.scrollTop = el.scrollHeight;
+  },
+
+  /**
    * This is called from oobe_welcome when this dialog is shown.
    */
   show: function() {
@@ -100,6 +111,7 @@ Polymer({
     this.fire('show-dialog');
   },
 
+  /** @private */
   onfullScreenDialogChanged_: function() {
     if (this.fullScreenDialog)
       document.documentElement.setAttribute('full-screen-dialog', true);

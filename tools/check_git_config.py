@@ -15,6 +15,8 @@ of the push attempt to the server (on appengine), so that chrome-infra team can
 collect information about misconfigured Git accounts.
 """
 
+from __future__ import print_function
+
 import contextlib
 import datetime
 import errno
@@ -392,37 +394,35 @@ def check_gclient_config(conf):
     return
   # Show big warning if url or deps_file is wrong.
   if current['url'] != good['url'] or current['deps_file'] != good['deps_file']:
-    print '-' * 80
-    print 'Your gclient solution is not set to use supported git workflow!'
-    print
-    print 'Your \'src\' solution (in %s):' % GCLIENT_CONFIG
-    print pprint.pformat(current, indent=2)
-    print
-    print 'Correct \'src\' solution to use git:'
-    print pprint.pformat(good, indent=2)
-    print
-    print 'Please update your .gclient file ASAP.'
-    print '-' * 80
+    print('-' * 80)
+    print('Your gclient solution is not set to use supported git workflow!')
+    print()
+    print('Your \'src\' solution (in %s):' % GCLIENT_CONFIG)
+    print(pprint.pformat(current, indent=2))
+    print()
+    print('Correct \'src\' solution to use git:')
+    print(pprint.pformat(good, indent=2))
+    print()
+    print('Please update your .gclient file ASAP.')
+    print('-' * 80)
   # Show smaller (additional) warning about managed workflow.
   if current['managed']:
-    print '-' * 80
-    print (
-        'You are using managed gclient mode with git, which was deprecated '
-        'on 8/22/13:')
-    print (
-        'https://groups.google.com/a/chromium.org/'
-        'forum/#!topic/chromium-dev/n9N5N3JL2_U')
-    print
-    print (
-        'It is strongly advised to switch to unmanaged mode. For more '
-        'information about managed mode and reasons for its deprecation see:')
-    print 'http://www.chromium.org/developers/how-tos/get-the-code/gclient-managed-mode'
-    print
-    print (
-        'There\'s also a large suite of tools to assist managing git '
-        'checkouts.\nSee \'man depot_tools\' (or read '
-        'depot_tools/man/html/depot_tools.html).')
-    print '-' * 80
+    print('-' * 80)
+    print('You are using managed gclient mode with git, which was deprecated '
+          'on 8/22/13:')
+    print('https://groups.google.com/a/chromium.org/'
+          'forum/#!topic/chromium-dev/n9N5N3JL2_U')
+    print()
+    print('It is strongly advised to switch to unmanaged mode. For more '
+          'information about managed mode and reasons for its deprecation see:')
+    print(
+        'http://www.chromium.org/developers/how-tos/get-the-code/gclient-managed-mode'
+    )
+    print()
+    print('There\'s also a large suite of tools to assist managing git '
+          'checkouts.\nSee \'man depot_tools\' (or read '
+          'depot_tools/man/html/depot_tools.html).')
+    print('-' * 80)
 
 
 def upload_report(
@@ -440,8 +440,8 @@ def upload_report(
 
   as_bytes = json.dumps({'access_check': report}, indent=2, sort_keys=True)
   if verbose:
-    print 'Status of git push attempt:'
-    print as_bytes
+    print('Status of git push attempt:')
+    print(as_bytes)
 
   # Do not upload it outside of corp or if server side is already disabled.
   if not is_in_google_corp() or datetime.datetime.now() > UPLOAD_DISABLE_TS:

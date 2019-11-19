@@ -36,6 +36,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
     <!--The polyfill is not needed for browser that have native API support,
         but is linked by these samples for wider compatibility.-->
     <!--script src='https://cdn.jsdelivr.net/npm/webxr-polyfill@latest/build/webxr-polyfill.js'></script-->
+    <script src='js/xrray-polyfill.js' type='module'></script>
     <script src='js/webxr-polyfill.js'></script>
 
     <script src='js/webxr-button.js'></script>
@@ -48,12 +49,12 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
           This sample demonstrates how to present a simple WebGL scene to a
           XRDevice. The scene is not rendered to the page prior to XR
           presentation, nor is it mirrored during presentation.
-          <a class="back" href="./">Back</a>
+          <a class="back" href="./index.html">Back</a>
         </p>
       </details>
     </header>
     <main style='text-align: center;'>
-      <p>Click 'Enter XR' to see content</p> 
+      <p>Click 'Enter XR' to see content</p>
     </main>
     <script type="module">
       import {Scene} from './js/cottontail/src/scenes/scene.js';
@@ -85,29 +86,22 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
         // available and let's the user pick between them if there's multiple.
         xrButton = new XRDeviceButton({
           onRequestSession: onRequestSession,
-          onEndSession: onEndSession
+          onEndSession: onEndSession,
+          supportedSessionTypes: ['immersive-vr']
         });
         document.querySelector('header').appendChild(xrButton.domElement);
-
-        // Is WebXR available on this UA?
-        if (navigator.xr) {
-          // If the device allows creation of exclusive sessions set it as the
-          // target of the 'Enter XR' button.
-          navigator.xr.supportsSessionMode('immersive-vr').then(() => {
-            xrButton.enabled = true;
-          });
-        }
       }
 
       // Called when the user selects a device to present to. In response we
       // will request an exclusive session from that device.
       function onRequestSession() {
-        navigator.xr.requestSession({mode: 'immersive-vr'}).then(onSessionStarted);
+        navigator.xr.requestSession('immersive-vr').then(onSessionStarted);
       }
 
       // Called when we've successfully acquired a XRSession. In response we
       // will set up the necessary session state and kick off the frame loop.
       function onSessionStarted(session) {
+        session.mode = 'immersive-vr';
         // This informs the 'Enter XR' button that the session has started and
         // that it should display 'Exit XR' instead.
         xrButton.setSession(session);
@@ -137,7 +131,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
         // Get a frame of reference, which is required for querying poses. In
         // this case an 'eye-level' frame of reference means that all poses will
         // be relative to the location where the XRDevice was first detected.
-        session.requestReferenceSpace({ type: 'stationary', subtype: 'eye-level' }).then((refSpace) => {
+        session.requestReferenceSpace('local').then((refSpace) => {
           xrRefSpace = refSpace;
 
           // Inform the session that we're ready to begin drawing.
@@ -206,7 +200,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
             // projection and view matricies from the current view and pose.
             // We bound the framebuffer and viewport up above, and are passing
             // in the appropriate matrices here to be used when rendering.
-            scene.draw(view.projectionMatrix, view.viewMatrix);
+            scene.draw(view.projectionMatrix, view.transform.inverse.matrix);
           }
         } else {
           // There's several options for handling cases where no pose is given.

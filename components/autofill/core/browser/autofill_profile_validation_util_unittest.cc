@@ -197,7 +197,7 @@ TEST_F(AutofillProfileValidationUtilTest, ValidateAddress_AdminAreaNotExists) {
   // The city can't be validated, because we don't know the state, in the strict
   // validation this is considered as invalid.
   EXPECT_EQ(
-      AutofillDataModel::INVALID,
+      AutofillDataModel::VALID,
       profile.GetValidityState(ADDRESS_HOME_CITY, AutofillDataModel::CLIENT));
   EXPECT_EQ(AutofillDataModel::EMPTY,
             profile.GetValidityState(ADDRESS_HOME_DEPENDENT_LOCALITY,
@@ -221,7 +221,7 @@ TEST_F(AutofillProfileValidationUtilTest, ValidateAddress_EmptyAdminArea) {
   // The city can't be validated, because we don't know the state, in the strict
   // validation this is considered as invalid.
   EXPECT_EQ(
-      AutofillDataModel::INVALID,
+      AutofillDataModel::VALID,
       profile.GetValidityState(ADDRESS_HOME_CITY, AutofillDataModel::CLIENT));
   EXPECT_EQ(AutofillDataModel::EMPTY,
             profile.GetValidityState(ADDRESS_HOME_DEPENDENT_LOCALITY,
@@ -903,6 +903,12 @@ TEST_F(AutofillProfileValidationUtilTest,
       AutofillDataModel::VALID,
       profile.GetValidityState(ADDRESS_HOME_STATE, AutofillDataModel::CLIENT));
   EXPECT_EQ(
+      AutofillDataModel::VALID,
+      profile.GetValidityState(ADDRESS_HOME_CITY, AutofillDataModel::CLIENT));
+  EXPECT_EQ(AutofillDataModel::EMPTY,
+            profile.GetValidityState(ADDRESS_HOME_DEPENDENT_LOCALITY,
+                                     AutofillDataModel::CLIENT));
+  EXPECT_EQ(
       AutofillDataModel::INVALID,
       profile.GetValidityState(ADDRESS_HOME_ZIP, AutofillDataModel::CLIENT));
   EXPECT_EQ(AutofillDataModel::VALID,
@@ -926,6 +932,12 @@ TEST_F(AutofillProfileValidationUtilTest,
       profile.GetValidityState(ADDRESS_HOME_STATE, AutofillDataModel::CLIENT));
   EXPECT_EQ(
       AutofillDataModel::VALID,
+      profile.GetValidityState(ADDRESS_HOME_CITY, AutofillDataModel::CLIENT));
+  EXPECT_EQ(AutofillDataModel::EMPTY,
+            profile.GetValidityState(ADDRESS_HOME_DEPENDENT_LOCALITY,
+                                     AutofillDataModel::CLIENT));
+  EXPECT_EQ(
+      AutofillDataModel::VALID,
       profile.GetValidityState(ADDRESS_HOME_ZIP, AutofillDataModel::CLIENT));
   EXPECT_EQ(AutofillDataModel::INVALID,
             profile.GetValidityState(PHONE_HOME_WHOLE_NUMBER,
@@ -946,6 +958,12 @@ TEST_F(AutofillProfileValidationUtilTest,
   EXPECT_EQ(
       AutofillDataModel::VALID,
       profile.GetValidityState(ADDRESS_HOME_STATE, AutofillDataModel::CLIENT));
+  EXPECT_EQ(
+      AutofillDataModel::VALID,
+      profile.GetValidityState(ADDRESS_HOME_CITY, AutofillDataModel::CLIENT));
+  EXPECT_EQ(AutofillDataModel::EMPTY,
+            profile.GetValidityState(ADDRESS_HOME_DEPENDENT_LOCALITY,
+                                     AutofillDataModel::CLIENT));
   EXPECT_EQ(
       AutofillDataModel::VALID,
       profile.GetValidityState(ADDRESS_HOME_ZIP, AutofillDataModel::CLIENT));
@@ -1020,11 +1038,11 @@ TEST_F(AutofillProfileValidationUtilTest,
   // We can't validate city, because state is not valid, in the strict
   // validation this is considered as invalid.
   EXPECT_EQ(
-      AutofillDataModel::INVALID,
+      AutofillDataModel::VALID,
       profile.GetValidityState(ADDRESS_HOME_CITY, AutofillDataModel::CLIENT));
   // The dependent locality is not a Canadian field, so it's considered as
   // invalid.
-  EXPECT_EQ(AutofillDataModel::INVALID,
+  EXPECT_EQ(AutofillDataModel::VALID,
             profile.GetValidityState(ADDRESS_HOME_DEPENDENT_LOCALITY,
                                      AutofillDataModel::CLIENT));
   EXPECT_EQ(AutofillDataModel::UNSUPPORTED,

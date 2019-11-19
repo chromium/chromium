@@ -8,7 +8,7 @@
 #include "base/time/default_tick_clock.h"
 #include "chrome/browser/media/cast_transport_host_filter.h"
 #include "chrome/common/cast_messages.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "media/cast/logging/logging_defines.h"
 #include "net/base/ip_address.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -18,15 +18,12 @@ namespace {
 class CastTransportHostFilterTest : public testing::Test {
  public:
   CastTransportHostFilterTest()
-      : browser_thread_bundle_(
-            content::TestBrowserThreadBundle::IO_MAINLOOP) {
+      : task_environment_(content::BrowserTaskEnvironment::IO_MAINLOOP) {
     filter_ = new cast::CastTransportHostFilter();
     static_cast<cast::CastTransportHostFilter*>(filter_.get())
         ->InitializeNoOpWakeLockForTesting();
     // 127.0.0.1:7 is the local echo service port, which
     // is probably not going to respond, but that's ok.
-    // TODO(hubbe): Open up an UDP port and make sure
-    // we can send and receive packets.
     receive_endpoint_ = net::IPEndPoint(net::IPAddress::IPv4Localhost(), 7);
   }
 
@@ -36,7 +33,7 @@ class CastTransportHostFilterTest : public testing::Test {
   }
 
   base::DictionaryValue options_;
-  content::TestBrowserThreadBundle browser_thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
   scoped_refptr<content::BrowserMessageFilter> filter_;
   net::IPEndPoint receive_endpoint_;
 };

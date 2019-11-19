@@ -17,11 +17,6 @@ static_library("search_engines") {
     "keyword_table.h",
     "keyword_web_data_service.cc",
     "keyword_web_data_service.h",
-    "search_engine_data_type_controller.cc",
-    "search_engine_data_type_controller.h",
-    "search_engine_model_type_controller.cc",
-    "search_engine_model_type_controller.h",
-    "search_engine_type.h",
     "search_engines_pref_names.cc",
     "search_engines_pref_names.h",
     "search_engines_switches.cc",
@@ -52,8 +47,9 @@ static_library("search_engines") {
   ]
 
   public_deps = [
+    ":search_engine_type",
     "//base",
-    "//components/google/core/browser",
+    "//components/google/core/common",
     "//components/keyed_service/core",
     "//components/prefs",
     "//components/sync",
@@ -74,15 +70,26 @@ static_library("search_engines") {
     "//components/variations",
     "//google_apis",
     "//net",
+    "//services/data_decoder/public/cpp",
     "//services/network/public/cpp",
     "//sql",
-    "//third_party/libxml",
     "//third_party/metrics_proto",
     "//ui/base",
     "//ui/gfx",
     "//ui/gfx/geometry",
     "//url",
   ]
+
+  if (is_android) {
+    sources += [
+      "android/template_url_android.cc",
+      "android/template_url_android.h",
+      "android/template_url_service_android.cc",
+      "android/template_url_service_android.h",
+    ]
+
+    deps += [ "//components/search_engines/android:jni_headers" ]
+  }
 
   if (!is_ios) {
     sources += [
@@ -94,6 +101,12 @@ static_library("search_engines") {
       "//components/policy/core/browser",
     ]
   }
+}
+
+source_set("search_engine_type") {
+  sources = [
+    "search_engine_type.h",
+  ]
 }
 
 static_library("test_support") {
@@ -118,7 +131,6 @@ source_set("unit_tests") {
   sources = [
     "default_search_manager_unittest.cc",
     "keyword_table_unittest.cc",
-    "search_engine_data_type_controller_unittest.cc",
     "search_host_to_urls_map_unittest.cc",
     "template_url_data_unittest.cc",
     "template_url_prepopulate_data_unittest.cc",
@@ -132,11 +144,10 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//components/country_codes",
-    "//components/google/core/browser",
+    "//components/google/core/common",
     "//components/pref_registry:pref_registry",
     "//components/prefs",
-    "//components/sync:test_support_driver",
-    "//components/sync:test_support_model",
+    "//components/sync:test_support",
     "//components/sync_preferences:test_support",
     "//components/webdata/common",
     "//net:net",
@@ -164,6 +175,9 @@ json_to_struct("prepopulated_engines") {
   source = "prepopulated_engines.json"
   schema_file = "prepopulated_engines_schema.json"
   namespace = "TemplateURLPrepopulateData"
+  deps = [
+    ":search_engine_type",
+  ]
 }
 
 if (is_android) {

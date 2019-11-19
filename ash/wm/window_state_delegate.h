@@ -13,7 +13,7 @@ class Point;
 }
 
 namespace ash {
-namespace wm {
+
 class WindowState;
 
 class ASH_EXPORT WindowStateDelegate {
@@ -25,7 +25,7 @@ class ASH_EXPORT WindowStateDelegate {
   // state. If the window is not fullscreen and the window supports immersive
   // fullscreen ToggleFullscreen() should put the window into immersive
   // fullscreen instead of the default fullscreen type. The caller
-  // (ash::wm::WindowState) falls backs to the default implementation if this
+  // (ash::WindowState) falls backs to the default implementation if this
   // returns false.
   virtual bool ToggleFullscreen(WindowState* window_state);
 
@@ -43,7 +43,6 @@ class ASH_EXPORT WindowStateDelegate {
   DISALLOW_COPY_AND_ASSIGN(WindowStateDelegate);
 };
 
-}  // namespace wm
 }  // namespace ash
 
 #endif  // ASH_WM_WINDOW_STATE_DELEGATE_H_

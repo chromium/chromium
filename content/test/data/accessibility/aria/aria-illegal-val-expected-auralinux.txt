@@ -1,0 +1,24 @@
+[document web]
+++[log] name='Atomic illegal' atomic:true live:polite relevant:additions text
+++[entry] name='Autocomplete illegal' selectable-text autocomplete:x-illegal
+++[log] name='Busy illegal' busy atomic:false busy:true live:polite relevant:additions text
+++[tree item] name='Checked illegal' checked selectable checkable:true
+++[section] name='Current illegal' current:true
+++[section] name='Disabled illegal'
+++[section] name='Dropeffect illegal' dropeffect:none
+++[tree item] name='Expanded illegal' expanded selectable
+++[section] name='Grabbed illegal'
+++[push button] name='Haspopup illegal' haspopup:menu
+++[section] name='Invalid illegal' invalid-entry
+++[log] name='Live illegal' atomic:false live:X-ILLEGAL relevant:additions text
+++[dialog] name='Modal illegal' modal
+++[entry] name='Multiline illegal' selectable-text
+++[table] name='Multiselectable illegal' multiselectable cols=0 headers=(NONE); rows=0 headers=(NONE); caption=false; spans=(all: 1x1)
+++[slider] name='Orientation illegal' horizontal current=50.000000 minimum=0.000000 maximum=100.000000
+++[toggle button] name='Pressed illegal' pressed checkable:true
+++[entry] name='Readonly illegal' selectable-text
+++[log] name='Relevant illegal' atomic:false live:polite relevant:X-ILLEGAL
+++[entry] name='Required illegal' required selectable-text
+++[tree] multiselectable
+++++[tree item] name='Selected illegal' selectable selected
+++[column header] name='Sort illegal' selectable sort:other (row=-1, col=-1, row_span=1, col_span=1, n_row_headers=0, n_col_headers=0)

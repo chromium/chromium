@@ -13,7 +13,6 @@
 
 #include "base/logging.h"
 #include "base/mac/scoped_mach_port.h"
-#include "base/mac/scoped_nsautorelease_pool.h"
 #include "base/process/process_metrics.h"
 #include "base/stl_util.h"
 #include "base/strings/string_util.h"
@@ -43,9 +42,10 @@ std::string SysInfo::OperatingSystemName() {
   static dispatch_once_t get_system_name_once;
   static std::string* system_name;
   dispatch_once(&get_system_name_once, ^{
-    base::mac::ScopedNSAutoreleasePool pool;
-    system_name = new std::string(
-        SysNSStringToUTF8([[UIDevice currentDevice] systemName]));
+    @autoreleasepool {
+      system_name = new std::string(
+          SysNSStringToUTF8([[UIDevice currentDevice] systemName]));
+    }
   });
   // Examples of returned value: 'iPhone OS' on iPad 5.1.1
   // and iPhone 5.1.1.
@@ -57,9 +57,10 @@ std::string SysInfo::OperatingSystemVersion() {
   static dispatch_once_t get_system_version_once;
   static std::string* system_version;
   dispatch_once(&get_system_version_once, ^{
-    base::mac::ScopedNSAutoreleasePool pool;
-    system_version = new std::string(
-        SysNSStringToUTF8([[UIDevice currentDevice] systemVersion]));
+    @autoreleasepool {
+      system_version = new std::string(
+          SysNSStringToUTF8([[UIDevice currentDevice] systemVersion]));
+    }
   });
   return *system_version;
 }
@@ -68,18 +69,19 @@ std::string SysInfo::OperatingSystemVersion() {
 void SysInfo::OperatingSystemVersionNumbers(int32_t* major_version,
                                             int32_t* minor_version,
                                             int32_t* bugfix_version) {
-  base::mac::ScopedNSAutoreleasePool pool;
-  std::string system_version = OperatingSystemVersion();
-  if (!system_version.empty()) {
-    // Try to parse out the version numbers from the string.
-    int num_read = sscanf(system_version.c_str(), "%d.%d.%d", major_version,
-                          minor_version, bugfix_version);
-    if (num_read < 1)
-      *major_version = 0;
-    if (num_read < 2)
-      *minor_version = 0;
-    if (num_read < 3)
-      *bugfix_version = 0;
+  @autoreleasepool {
+    std::string system_version = OperatingSystemVersion();
+    if (!system_version.empty()) {
+      // Try to parse out the version numbers from the string.
+      int num_read = sscanf(system_version.c_str(), "%d.%d.%d", major_version,
+                            minor_version, bugfix_version);
+      if (num_read < 1)
+        *major_version = 0;
+      if (num_read < 2)
+        *minor_version = 0;
+      if (num_read < 3)
+        *bugfix_version = 0;
+    }
   }
 }
 

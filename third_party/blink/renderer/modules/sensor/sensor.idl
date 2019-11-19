@@ -8,7 +8,6 @@
 [
     ActiveScriptWrappable,
     SecureContext,
-    RuntimeEnabled=Sensor,
     Exposed=Window
 ] interface Sensor : EventTarget {
     [MeasureAs=GenericSensorActivated] readonly attribute boolean activated;

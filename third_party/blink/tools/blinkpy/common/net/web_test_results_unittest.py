@@ -37,40 +37,66 @@ class WebTestResultsTest(unittest.TestCase):
     "tests": {
         "fast": {
             "dom": {
-                "prototype-inheritance.html": {
+                "many-mismatches.html": {
                     "expected": "PASS",
-                    "actual": "TEXT",
+                    "actual": "FAIL",
+                    "artifacts": {
+                        "actual_text": ["fast/dom/many-mismatches-actual.txt"],
+                        "expected_text": ["fast/dom/many-mismatches-expected.txt"],
+                        "actual_image": ["fast/dom/many-mismatches-actual.png"],
+                        "expected_image": ["fast/dom/many-mismatches-expected.png"]
+                    },
                     "is_unexpected": true
                 },
-                "prototype-banana.html": {
+                "mismatch-implicit-baseline.html": {
+                    "expected": "PASS",
+                    "actual": "FAIL",
+                    "artifacts": {
+                        "actual_text": ["fast/dom/mismatch-implicit-baseline-actual.txt"]
+                    },
+                    "is_unexpected": true
+                },
+                "reference-mismatch.html": {
+                    "expected": "PASS",
+                    "actual": "FAIL",
+                    "artifacts": {
+                        "actual_image": ["fast/dom/reference-mismatch-actual.png"],
+                        "expected_image": ["fast/dom/reference-mismatch-expected.png"],
+                        "reference_file_mismatch": ["reference-mismatch-ref.html"]
+                    },
+                    "is_unexpected": true
+                },
+                "unexpected-pass.html": {
                     "expected": "FAIL",
                     "actual": "PASS",
                     "is_unexpected": true
                 },
-                "prototype-taco.html": {
+                "unexpected-flaky.html": {
                     "expected": "PASS",
-                    "actual": "PASS TEXT",
+                    "actual": "PASS FAIL",
                     "is_unexpected": true
                 },
-                "prototype-chocolate.html": {
+                "expected-flaky.html": {
+                    "expected": "PASS FAIL",
+                    "actual": "PASS FAIL"
+                },
+                "expected-fail.html": {
                     "expected": "FAIL",
-                    "actual": "IMAGE+TEXT"
+                    "actual": "FAIL"
                 },
-                "prototype-strawberry.html": {
+                "missing-text.html": {
                     "expected": "PASS",
-                    "actual": "IMAGE PASS",
-                    "is_unexpected": true
-                },
-                "prototype-crashy.html": {
-                    "expected": "PASS",
-                    "actual": "CRASH",
-                    "is_unexpected": true
-                },
-                "prototype-newtest.html": {
-                    "expected": "PASS",
-                    "actual": "MISSING",
+                    "actual": "FAIL",
+                    "artifacts": {
+                        "actual_text": ["fast/dom/missing-text-actual.txt"]
+                    },
                     "is_unexpected": true,
                     "is_missing_text": true
+                },
+                "prototype-slow.html": {
+                    "expected": "SLOW",
+                    "actual": "FAIL",
+                    "is_unexpected": true
                 }
             }
         },
@@ -78,7 +104,7 @@ class WebTestResultsTest(unittest.TestCase):
             "dynamic-updates": {
                 "SVGFEDropShadowElement-dom-stdDeviation-attr.html": {
                     "expected": "PASS",
-                    "actual": "IMAGE",
+                    "actual": "FAIL",
                     "has_stderr": true,
                     "is_unexpected": true
                 }
@@ -86,17 +112,16 @@ class WebTestResultsTest(unittest.TestCase):
         }
     },
     "skipped": 450,
-    "num_regressions": 15,
+    "num_regressions": 6,
     "layout_tests_dir": "/b/build/slave/Webkit_Mac10_5/build/src/third_party/blink/web_tests",
     "version": 3,
-    "num_passes": 77,
-    "fixable": 1220,
-    "num_flaky": 0,
+    "num_passes": 1,
+    "num_flaky": 1,
     "chromium_revision": "1234",
     "builder_name": "mock_builder_name"
 });"""
 
-    def test_results_from_string(self):
+    def test_empty_results_from_string(self):
         self.assertIsNone(WebTestResults.results_from_string(None))
         self.assertIsNone(WebTestResults.results_from_string(''))
 
@@ -109,48 +134,49 @@ class WebTestResultsTest(unittest.TestCase):
     def test_chromium_revision(self):
         self.assertEqual(WebTestResults.results_from_string(self.example_full_results_json).chromium_revision(), 1234)
 
-    def test_actual_results(self):
-        results = WebTestResults.results_from_string(self.example_full_results_json)
-        self.assertEqual(results.result_for_test('fast/dom/prototype-banana.html').actual_results(), 'PASS')
-        self.assertEqual(results.result_for_test('fast/dom/prototype-taco.html').actual_results(), 'PASS TEXT')
-        self.assertFalse(results.result_for_test('nonexistant.html'))
-
     def test_didnt_run_as_expected_results(self):
         results = WebTestResults.results_from_string(self.example_full_results_json)
         self.assertEqual(
             [r.test_name() for r in results.didnt_run_as_expected_results()],
             [
-                'fast/dom/prototype-banana.html',
-                'fast/dom/prototype-crashy.html',
-                'fast/dom/prototype-inheritance.html',
-                'fast/dom/prototype-newtest.html',
-                'fast/dom/prototype-strawberry.html',
-                'fast/dom/prototype-taco.html',
+                'fast/dom/many-mismatches.html',
+                'fast/dom/mismatch-implicit-baseline.html',
+                'fast/dom/missing-text.html',
+                'fast/dom/prototype-slow.html',
+                'fast/dom/reference-mismatch.html',
+                'fast/dom/unexpected-flaky.html',
+                'fast/dom/unexpected-pass.html',
                 'svg/dynamic-updates/SVGFEDropShadowElement-dom-stdDeviation-attr.html',
             ])
 
-    def test_didnt_run_as_expected_slow_test(self):
-        results = WebTestResults({
-            'tests': {
-                'fast': {
-                    'dom': {
-                        'prototype-fast.html': {
-                            'expected': 'PASS',
-                            'actual': 'TEXT',
-                            'is_unexpected': True,
-                        },
-                        'prototype-slow.html': {
-                            'expected': 'SLOW',
-                            'actual': 'TEXT',
-                            'is_unexpected': True,
-                        }
-                    }
-                }
-            }
-        })
-        self.assertEqual(
-            [r.test_name() for r in results.didnt_run_as_expected_results()],
-            [
-                'fast/dom/prototype-fast.html',
-                'fast/dom/prototype-slow.html',
-            ])
+    def test_result_for_test_non_existent(self):
+        results = WebTestResults.results_from_string(self.example_full_results_json)
+        self.assertFalse(results.result_for_test('nonexistent.html'))
+
+    # The following are tests for a single WebTestResult.
+
+    def test_actual_results(self):
+        results = WebTestResults.results_from_string(self.example_full_results_json)
+        self.assertEqual(results.result_for_test('fast/dom/unexpected-pass.html').actual_results(), 'PASS')
+        self.assertEqual(results.result_for_test('fast/dom/unexpected-flaky.html').actual_results(), 'PASS FAIL')
+
+    def test_expected_results(self):
+        results = WebTestResults.results_from_string(self.example_full_results_json)
+        self.assertEqual(results.result_for_test('fast/dom/many-mismatches.html').expected_results(), 'PASS')
+        self.assertEqual(results.result_for_test('fast/dom/expected-flaky.html').expected_results(), 'PASS FAIL')
+
+    def test_has_non_reftest_mismatch(self):
+        results = WebTestResults.results_from_string(self.example_full_results_json)
+        self.assertTrue(results.result_for_test('fast/dom/many-mismatches.html').has_non_reftest_mismatch())
+        self.assertTrue(results.result_for_test('fast/dom/mismatch-implicit-baseline.html').has_non_reftest_mismatch())
+        self.assertFalse(results.result_for_test('fast/dom/reference-mismatch.html').has_non_reftest_mismatch())
+
+    def test_is_missing_baseline(self):
+        results = WebTestResults.results_from_string(self.example_full_results_json)
+        self.assertTrue(results.result_for_test('fast/dom/missing-text.html').is_missing_baseline())
+        self.assertFalse(results.result_for_test('fast/dom/many-mismatches.html').is_missing_baseline())
+
+    def test_suffixes_for_test_result(self):
+        results = WebTestResults.results_from_string(self.example_full_results_json)
+        self.assertSetEqual(results.result_for_test('fast/dom/many-mismatches.html').suffixes_for_test_result(), {'txt', 'png'})
+        self.assertSetEqual(results.result_for_test('fast/dom/missing-text.html').suffixes_for_test_result(), {'txt'})

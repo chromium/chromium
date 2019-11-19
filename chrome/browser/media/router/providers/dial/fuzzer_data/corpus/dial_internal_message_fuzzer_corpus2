@@ -1,0 +1,11 @@
+{
+  "type": "v2_message",
+  "message": {
+    "type": "STOP",
+    "requestId": 0,
+    "sessionId": "1"
+  },
+  "sequenceNumber": 2,
+  "timeoutMillis": 3000,
+  "clientId": "123456789123456789"
+}

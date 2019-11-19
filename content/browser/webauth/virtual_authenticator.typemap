@@ -1,0 +1,18 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+mojom = "//third_party/blink/public/mojom/webauthn/virtual_authenticator.mojom"
+public_headers = [ "//device/fido/fido_types.h" ]
+traits_headers =
+    [ "//content/browser/webauth/virtual_authenticator_mojom_traits.h" ]
+sources = [
+  "//content/browser/webauth/virtual_authenticator_mojom_traits.cc",
+  "//content/browser/webauth/virtual_authenticator_mojom_traits.h",
+]
+public_deps = [
+  "//device/fido",
+]
+type_mappings = [
+  "blink.test.mojom.ClientToAuthenticatorProtocol=::device::ProtocolVersion",
+]

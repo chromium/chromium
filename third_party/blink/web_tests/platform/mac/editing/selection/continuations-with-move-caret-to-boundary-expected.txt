@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+PASS Continuations across a block -20
+FAIL Continuations across a block -15 resources/testharness.js:1587:25)
+	 expected <style>* { font: 20px Ahem; }</style><p>^AAAAA</p><p>|BBBBB</p>,
+	 but got  <style>* { font: 20px Ahem; }</style><p>^AAAAA</p><p>BB|BBB</p>,
+	 sameupto <style>* { font: 20px Ahem; }</style><p>^AAAAA</p><p>
+PASS Continuations across a block 5
+Harness: the test ran to completion.
+

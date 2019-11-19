@@ -14,17 +14,17 @@ cr.define('snackbar', function() {
    *    action: (function()|undefined)
    *  }}
    */
-  var SnackbarOptions;
+  let SnackbarOptions;
 
-  /** @const {number} */ var SHOW_DURATION = 5000;
-  /** @const {number} */ var TRANSITION_DURATION = 225;
+  /** @type {number} */ const SHOW_DURATION = 5000;
+  /** @type {number} */ const TRANSITION_DURATION = 225;
 
   /**
    * Enum of Snackbar types. Used by Snackbar to determine the styling for the
    * Snackbar.
    * @enum {string}
    */
-  var SnackbarType = {
+  const SnackbarType = {
     INFO: 'info',
     SUCCESS: 'success',
     WARNING: 'warning',
@@ -39,7 +39,7 @@ cr.define('snackbar', function() {
    * @constructor
    * @extends {HTMLDivElement}
    */
-  var Snackbar = cr.ui.define('div');
+  const Snackbar = cr.ui.define('div');
 
   Snackbar.prototype = {
     __proto__: HTMLDivElement.prototype,
@@ -179,14 +179,14 @@ cr.define('snackbar', function() {
    * @return {!snackbar.Snackbar}
    */
   Snackbar.show = function(message, opt_type, opt_actionText, opt_action) {
-    var options = {
+    const options = {
       message: message,
       type: opt_type || SnackbarType.INFO,
       actionText: opt_actionText,
       action: opt_action,
     };
 
-    var newSnackbar = new Snackbar();
+    const newSnackbar = new Snackbar();
     newSnackbar.initialize(options);
 
     if (Snackbar.current_) {
@@ -210,7 +210,7 @@ cr.define('snackbar', function() {
     newSnackbar.addEventListener('dismissed', function() {
       $('snackbar-container').removeChild(Snackbar.current_);
 
-      var newSnackbar = Snackbar.queue_.shift();
+      const newSnackbar = Snackbar.queue_.shift();
       if (newSnackbar) {
         Snackbar.show_(newSnackbar);
         return;

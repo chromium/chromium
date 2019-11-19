@@ -3,7 +3,8 @@
      Use of this source code is governed by a BSD-style license that can be
      found in the LICENSE file. -->
 
-<View 
+<View
     xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/divider_view"
     style="@style/HorizontalDivider"
     android:importantForAccessibility="no" />

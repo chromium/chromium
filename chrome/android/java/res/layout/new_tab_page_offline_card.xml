@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2019 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/explore_offline_card"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:minHeight="68dp"
+    android:background="@drawable/hairline_border_card_background"
+    android:paddingStart="@dimen/card_padding">
+
+    <FrameLayout
+        android:id="@+id/explore_offline_image"
+        android:layout_width="124dp"
+        android:layout_height="match_parent"
+        android:minHeight="68dp"
+        android:background="@drawable/card_background_rounded_right_half_with_border"
+        android:layout_alignParentEnd="true">
+
+        <!-- TODO(shaktisahu): Add correct image resource. -->
+        <org.chromium.ui.widget.ChromeImageView
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginStart="44dp"
+            android:tint="@color/modern_grey_700"
+            android:src="@drawable/ic_play_arrow_white_36dp" />
+    </FrameLayout>
+
+    <TextView
+        android:id="@+id/explore_offline_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_toStartOf="@id/explore_offline_image"
+        android:layout_centerVertical="true"
+        android:text="@string/explore_offline_card_message"
+        android:textAppearance="@style/TextAppearance.BlackTitle2" />
+
+</RelativeLayout>

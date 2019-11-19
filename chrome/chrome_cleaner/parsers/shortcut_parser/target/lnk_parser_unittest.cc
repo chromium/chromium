@@ -13,6 +13,7 @@
 #include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/win/scoped_com_initializer.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/shortcut.h"
@@ -49,6 +50,37 @@ class LnkParserTest : public testing::Test {
     if (!handle.IsValid())
       LOG(ERROR) << "Error opening the lnk file";
     return handle;
+  }
+
+  base::win::ScopedHandle CreateAndOpenShortcutFromBuffer(
+      const std::vector<BYTE>& shortcut_buffer) {
+    base::FilePath shortcut_path =
+        temp_dir_.GetPath().AppendASCII("test_shortcut_from_buffer.lnk");
+    base::File lnk_file(shortcut_path, base::File::Flags::FLAG_CREATE |
+                                           base::File::Flags::FLAG_WRITE |
+                                           base::File::Flags::FLAG_READ);
+
+    // Write the contents of the buffer to a new file.
+    uint64_t written_bytes = lnk_file.Write(
+        /*offset=*/0, reinterpret_cast<const char*>(shortcut_buffer.data()),
+        shortcut_buffer.size());
+    if (written_bytes != shortcut_buffer.size()) {
+      LOG(ERROR) << "Error writing shortcut from buffer";
+      return base::win::ScopedHandle(INVALID_HANDLE_VALUE);
+    }
+
+    // Rewind the file to the start.
+    if (lnk_file.Seek(base::File::Whence::FROM_BEGIN, /*offset=*/0) == -1) {
+      LOG(ERROR) << "Could not rewind file to the begining";
+      return base::win::ScopedHandle(INVALID_HANDLE_VALUE);
+    }
+
+    base::win::ScopedHandle lnk_handle(lnk_file.TakePlatformFile());
+    if (!lnk_handle.IsValid()) {
+      LOG(ERROR) << "Cannot open lnk from buffer for writing";
+      return base::win::ScopedHandle(INVALID_HANDLE_VALUE);
+    }
+    return lnk_handle;
   }
 
   void CheckParsedShortcut(ParsedLnkFile* parsed_shortcut,
@@ -174,34 +206,97 @@ class LnkParserTest : public testing::Test {
       current_byte += 2;
     }
 
-    // Write the contents of back to a new file.
-    base::FilePath corrupted_shortcut_path =
-        temp_dir_.GetPath().AppendASCII("corrupted_shortcut.lnk");
-    base::File bad_lnk_file(corrupted_shortcut_path,
-                            base::File::Flags::FLAG_CREATE |
-                                base::File::Flags::FLAG_WRITE |
-                                base::File::Flags::FLAG_READ);
+    return CreateAndOpenShortcutFromBuffer(shortcut_buffer);
+  }
 
-    uint64_t written_bytes = bad_lnk_file.Write(
-        /*offset=*/0, reinterpret_cast<const char*>(shortcut_buffer.data()),
-        shortcut_buffer.size());
-    if (written_bytes != shortcut_buffer.size()) {
-      LOG(ERROR) << "Error writing bad shortcut";
+  // Creates a shortcut file and pads |extra_size| extra bytes to the end of it.
+  base::win::ScopedHandle CreateAndOpenPaddedLnkFile(
+      const base::win::ShortcutProperties& properties,
+      size_t extra_size) {
+    base::win::ScopedHandle good_lnk_handle = CreateAndOpenShortcut(properties);
+    if (!good_lnk_handle.IsValid()) {
+      LOG(ERROR) << "Error creating and opening good lnk file";
       return base::win::ScopedHandle(INVALID_HANDLE_VALUE);
     }
 
-    // Rewind the file to the start.
-    if (bad_lnk_file.Seek(base::File::Whence::FROM_BEGIN, /*offset=*/0) == -1) {
-      LOG(ERROR) << "Could not rewind file to the begining";
+    // Load the shortcut into memory.
+    base::File good_lnk_file(good_lnk_handle.Take());
+    std::vector<BYTE> shortcut_buffer;
+    if (!LoadShortcutIntoMemory(&good_lnk_file, &shortcut_buffer)) {
+      LOG(ERROR) << "Error loading shortcut into memory";
       return base::win::ScopedHandle(INVALID_HANDLE_VALUE);
     }
 
-    base::win::ScopedHandle bad_lnk_handle(bad_lnk_file.TakePlatformFile());
-    if (!bad_lnk_handle.IsValid()) {
-      LOG(ERROR) << "Cannot open bad lnk for writing";
+    // Add extra bytes at the end of the buffer.
+    size_t initial_size = shortcut_buffer.size();
+    shortcut_buffer.resize(initial_size + extra_size);
+    std::fill(shortcut_buffer.begin() + initial_size, shortcut_buffer.end(), 1);
+
+    return CreateAndOpenShortcutFromBuffer(shortcut_buffer);
+  }
+
+  // Returns the last found instance of a given "StringData" in the given
+  // buffer. A StringData consists of a 16-bit unsigned integer which represents
+  // the size for a string followed by the variable-length unicode string. See
+  // https://msdn.microsoft.com/en-us/library/dd871305.aspx for more
+  // information.
+  bool FindStringDataInBuffer(const std::vector<BYTE>& buffer,
+                              const base::string16& expected_string,
+                              DWORD* found_location) {
+    size_t length = expected_string.length();
+    if (buffer.size() < length + 2)
+      return false;
+
+    bool found = false;
+    char size_upper = length >> 8;
+    char size_lower = length % (1 << 8);
+    for (size_t i = 0; i < buffer.size() - length - 1; i++) {
+      if (buffer[i] == size_lower && buffer[i + 1] == size_upper) {
+        const wchar_t* string_ptr =
+            reinterpret_cast<const wchar_t*>(buffer.data() + i + 2);
+        base::string16 found_string;
+        base::WideToUTF16(string_ptr, length, &found_string);
+        if (found_string == expected_string) {
+          found = true;
+          *found_location = i;
+        }
+      }
+    }
+
+    return found;
+  }
+
+  // Creates a shortcut file and modifies its bytes containing the size of
+  // the command-line arguments.
+  base::win::ScopedHandle CreateAndOpenCorruptedArgumentSizeLnkFile(
+      const base::win::ShortcutProperties& properties,
+      SHORT new_size) {
+    base::win::ScopedHandle good_lnk_handle = CreateAndOpenShortcut(properties);
+    if (!good_lnk_handle.IsValid()) {
+      LOG(ERROR) << "Error creating and opening good lnk file";
       return base::win::ScopedHandle(INVALID_HANDLE_VALUE);
     }
-    return bad_lnk_handle;
+
+    // Load the shortcut into memory.
+    base::File good_lnk_file(good_lnk_handle.Take());
+    std::vector<BYTE> shortcut_buffer;
+    if (!LoadShortcutIntoMemory(&good_lnk_file, &shortcut_buffer)) {
+      LOG(ERROR) << "Error loading shortcut into memory";
+      return base::win::ScopedHandle(INVALID_HANDLE_VALUE);
+    }
+
+    // Find the location of the command-line argument size bytes.
+    DWORD argument_size_location;
+    if (!FindStringDataInBuffer(shortcut_buffer, properties.arguments,
+                                &argument_size_location)) {
+      LOG(ERROR) << "Error finding argument locations";
+      return base::win::ScopedHandle(INVALID_HANDLE_VALUE);
+    }
+    // Set the command-line argument bytes to |new_size|.
+    shortcut_buffer[argument_size_location] = new_size % (1 << 8);
+    shortcut_buffer[argument_size_location + 1] = new_size >> 8;
+
+    return CreateAndOpenShortcutFromBuffer(shortcut_buffer);
   }
 
  protected:
@@ -303,6 +398,115 @@ TEST_F(LnkParserTest, CorruptedShortcutTest) {
   ParsedLnkFile unused_parsed_shortcut;
   ASSERT_NE(ParseLnk(std::move(bad_lnk_handle), &unused_parsed_shortcut),
             mojom::LnkParsingResult::SUCCESS);
+}
+
+TEST_F(LnkParserTest, ReasonablyLargeFileSizeShortcutTest) {
+  base::win::ShortcutProperties properties;
+  properties.set_target(target_file_path_);
+  properties.set_working_dir(temp_dir_.GetPath());
+
+  // Create a LNK file with an extra kilobyte of data appended to it.
+  base::win::ScopedHandle lnk_handle =
+      CreateAndOpenPaddedLnkFile(properties, 1024);
+
+  ASSERT_TRUE(lnk_handle.IsValid());
+  ParsedLnkFile parsed_shortcut;
+  ASSERT_EQ(ParseLnk(std::move(lnk_handle), &parsed_shortcut),
+            mojom::LnkParsingResult::SUCCESS);
+  CheckParsedShortcut(&parsed_shortcut, target_file_path_, L"",
+                      base::FilePath(L""));
+}
+
+TEST_F(LnkParserTest, TooLargeFileSizeShortcutTest) {
+  base::win::ShortcutProperties properties;
+  properties.set_target(target_file_path_);
+  properties.set_working_dir(temp_dir_.GetPath());
+
+  // Create a LNK file with an extra megabyte of data appended to it.
+  base::win::ScopedHandle lnk_handle =
+      CreateAndOpenPaddedLnkFile(properties, 1024 * 1024);
+
+  ASSERT_TRUE(lnk_handle.IsValid());
+  ParsedLnkFile unused_parsed_shortcut;
+  ASSERT_NE(ParseLnk(std::move(lnk_handle), &unused_parsed_shortcut),
+            mojom::LnkParsingResult::SUCCESS);
+}
+
+TEST_F(LnkParserTest, ArgumentsSizeCorruptedShortcutTest_TooLarge) {
+  base::win::ShortcutProperties properties;
+  properties.set_target(target_file_path_);
+  properties.set_working_dir(temp_dir_.GetPath());
+  const base::string16 kArguments = L"foo --bar";
+  properties.set_arguments(kArguments.c_str());
+
+  // Create a LNK file which thinks its arguments are much longer than they
+  // really are.
+  base::win::ScopedHandle lnk_handle =
+      CreateAndOpenCorruptedArgumentSizeLnkFile(properties, 256);
+
+  ASSERT_TRUE(lnk_handle.IsValid());
+  ParsedLnkFile unused_parsed_shortcut;
+  ASSERT_NE(ParseLnk(std::move(lnk_handle), &unused_parsed_shortcut),
+            mojom::LnkParsingResult::SUCCESS);
+}
+
+TEST_F(LnkParserTest, ArgumentsSizeCorruptedShortcutTest_ZeroSize) {
+  const base::string16 kArguments = L"foo --bar";
+
+  base::win::ShortcutProperties properties;
+  properties.set_target(target_file_path_);
+  properties.set_working_dir(temp_dir_.GetPath());
+  properties.set_arguments(kArguments.c_str());
+
+  // Create a LNK file which thinks its arguments are of size zero.
+  base::win::ScopedHandle lnk_handle =
+      CreateAndOpenCorruptedArgumentSizeLnkFile(properties, 0);
+
+  ASSERT_TRUE(lnk_handle.IsValid());
+  ParsedLnkFile unused_parsed_shortcut;
+  ASSERT_NE(ParseLnk(std::move(lnk_handle), &unused_parsed_shortcut),
+            mojom::LnkParsingResult::SUCCESS);
+}
+
+TEST_F(LnkParserTest, ArgumentsSizeCorruptedShortcutTest_NegativeSize) {
+  const base::string16 kArguments = L"foo --bar";
+
+  base::win::ShortcutProperties properties;
+  properties.set_target(target_file_path_);
+  properties.set_working_dir(temp_dir_.GetPath());
+  properties.set_arguments(kArguments.c_str());
+
+  // Create a LNK file which thinks its arguments are of a negative size.
+  // The size is supposed to be unsigned, so a negative size should have the
+  // same behavior as if the size was much larger than the real file.
+  base::win::ScopedHandle lnk_handle =
+      CreateAndOpenCorruptedArgumentSizeLnkFile(properties, -42);
+
+  ASSERT_TRUE(lnk_handle.IsValid());
+  ParsedLnkFile unused_parsed_shortcut;
+  ASSERT_NE(ParseLnk(std::move(lnk_handle), &unused_parsed_shortcut),
+            mojom::LnkParsingResult::SUCCESS);
+}
+
+TEST_F(LnkParserTest, ArgumentsSizeCorruptedShortcutTest_Smaller) {
+  const base::string16 kArguments = L"foo --bar";
+
+  base::win::ShortcutProperties properties;
+  properties.set_target(target_file_path_);
+  properties.set_working_dir(temp_dir_.GetPath());
+  properties.set_arguments(kArguments.c_str());
+
+  // Create a LNK file which thinks its arguments are smaller than they
+  // really are.
+  base::win::ScopedHandle lnk_handle =
+      CreateAndOpenCorruptedArgumentSizeLnkFile(properties, 3);
+
+  ASSERT_TRUE(lnk_handle.IsValid());
+  ParsedLnkFile parsed_shortcut;
+  ASSERT_EQ(ParseLnk(std::move(lnk_handle), &parsed_shortcut),
+            mojom::LnkParsingResult::SUCCESS);
+  CheckParsedShortcut(&parsed_shortcut, target_file_path_, L"foo",
+                      base::FilePath(L""));
 }
 
 TEST_F(LnkParserTest, LocalAndNetworkShortcutTest) {

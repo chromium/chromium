@@ -74,7 +74,7 @@ SystemMetrics SystemMetrics::Sample() {
 std::unique_ptr<Value> SystemMetrics::ToValue() const {
   std::unique_ptr<DictionaryValue> res(new DictionaryValue());
 
-  res->SetInteger("committed_memory", static_cast<int>(committed_memory_));
+  res->SetIntKey("committed_memory", static_cast<int>(committed_memory_));
 #if defined(OS_LINUX) || defined(OS_ANDROID)
   std::unique_ptr<DictionaryValue> meminfo = memory_info_.ToValue();
   std::unique_ptr<DictionaryValue> vmstat = vmstat_info_.ToValue();

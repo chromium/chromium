@@ -15,6 +15,8 @@ class NetInternalsTest : public WebUIBrowserTest {
   NetInternalsTest();
   ~NetInternalsTest() override;
 
+  void SetUpOnMainThread() override;
+
  private:
   class MessageHandler;
 

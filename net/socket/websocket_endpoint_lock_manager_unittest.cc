@@ -14,7 +14,7 @@
 #include "net/socket/next_proto.h"
 #include "net/socket/socket_test_util.h"
 #include "net/test/gtest_util.h"
-#include "net/test/test_with_scoped_task_environment.h"
+#include "net/test/test_with_task_environment.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -57,7 +57,7 @@ class BlockingWaiter : public FakeWaiter {
   base::RunLoop run_loop_;
 };
 
-class WebSocketEndpointLockManagerTest : public TestWithScopedTaskEnvironment {
+class WebSocketEndpointLockManagerTest : public TestWithTaskEnvironment {
  protected:
   WebSocketEndpointLockManagerTest() {
     websocket_endpoint_lock_manager_.SetUnlockDelayForTesting(

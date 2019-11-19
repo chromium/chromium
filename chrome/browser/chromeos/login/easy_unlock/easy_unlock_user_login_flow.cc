@@ -56,10 +56,6 @@ void EasyUnlockUserLoginFlow::HandleLoginSuccess(const UserContext& context) {
   service->RecordEasySignInOutcome(account_id(), true);
 }
 
-bool EasyUnlockUserLoginFlow::HandlePasswordChangeDetected() {
-  return false;
-}
-
 void EasyUnlockUserLoginFlow::HandleOAuthTokenStatusChange(
     user_manager::User::OAuthTokenStatus status) {}
 

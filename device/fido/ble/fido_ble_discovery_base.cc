@@ -11,6 +11,7 @@
 #include "base/no_destructor.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
+#include "components/device_event_log/device_event_log.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/bluetooth/bluetooth_common.h"
 #include "device/bluetooth/bluetooth_discovery_session.h"
@@ -19,7 +20,7 @@
 namespace device {
 
 FidoBleDiscoveryBase::FidoBleDiscoveryBase(FidoTransportProtocol transport)
-    : FidoDeviceDiscovery(transport), weak_factory_(this) {}
+    : FidoDeviceDiscovery(transport) {}
 
 FidoBleDiscoveryBase::~FidoBleDiscoveryBase() {
   if (adapter_)
@@ -38,18 +39,15 @@ const BluetoothUUID& FidoBleDiscoveryBase::CableAdvertisementUUID() {
 void FidoBleDiscoveryBase::OnStartDiscoverySessionWithFilter(
     std::unique_ptr<BluetoothDiscoverySession> session) {
   SetDiscoverySession(std::move(session));
-  DVLOG(2) << "Discovery session started.";
-  NotifyDiscoveryStarted(true);
+  FIDO_LOG(DEBUG) << "BLE discovery session started";
 }
 
 void FidoBleDiscoveryBase::OnSetPoweredError() {
-  DLOG(ERROR) << "Failed to power on the adapter.";
-  NotifyDiscoveryStarted(false);
+  FIDO_LOG(ERROR) << "Failed to power on BLE adapter";
 }
 
 void FidoBleDiscoveryBase::OnStartDiscoverySessionError() {
-  DLOG(ERROR) << "Discovery session not started.";
-  NotifyDiscoveryStarted(false);
+  FIDO_LOG(ERROR) << "Failed to start BLE discovery";
 }
 
 void FidoBleDiscoveryBase::SetDiscoverySession(
@@ -59,14 +57,14 @@ void FidoBleDiscoveryBase::SetDiscoverySession(
 
 bool FidoBleDiscoveryBase::IsCableDevice(const BluetoothDevice* device) const {
   const auto& uuid = CableAdvertisementUUID();
-  return base::ContainsKey(device->GetServiceData(), uuid) ||
-         base::ContainsKey(device->GetUUIDs(), uuid);
+  return base::Contains(device->GetServiceData(), uuid) ||
+         base::Contains(device->GetUUIDs(), uuid);
 }
 
 void FidoBleDiscoveryBase::OnGetAdapter(
     scoped_refptr<BluetoothAdapter> adapter) {
   if (!adapter->IsPresent()) {
-    DVLOG(2) << "bluetooth adapter is not available in current system.";
+    FIDO_LOG(DEBUG) << "No BLE adapter present";
     NotifyDiscoveryStarted(false);
     return;
   }
@@ -74,11 +72,19 @@ void FidoBleDiscoveryBase::OnGetAdapter(
   DCHECK(!adapter_);
   adapter_ = std::move(adapter);
   DCHECK(adapter_);
-  DVLOG(2) << "Got adapter " << adapter_->GetAddress();
+  FIDO_LOG(DEBUG) << "BLE adapter address " << adapter_->GetAddress();
 
   adapter_->AddObserver(this);
-  if (adapter_->IsPowered())
+  if (adapter_->IsPowered()) {
     OnSetPowered();
+  }
+
+  // FidoRequestHandlerBase blocks its transport availability callback on the
+  // DiscoveryStarted() calls of all instantiated discoveries. Hence, this call
+  // must not be put behind the BLE adapter getting powered on (which is
+  // dependent on the UI), or else the UI and this discovery will wait on each
+  // other indefinitely (see crbug.com/1018416).
+  NotifyDiscoveryStarted(true);
 }
 
 void FidoBleDiscoveryBase::StartInternal() {

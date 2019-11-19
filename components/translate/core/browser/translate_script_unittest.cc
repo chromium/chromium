@@ -9,7 +9,7 @@
 #include "base/macros.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind_test_util.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "components/translate/core/browser/translate_download_manager.h"
@@ -35,7 +35,7 @@ class TranslateScriptTest : public testing::Test {
  protected:
   void SetUp() override {
     variations::VariationsHttpHeaderProvider::GetInstance()->ResetForTesting();
-    script_.reset(new TranslateScript);
+    script_ = std::make_unique<TranslateScript>();
     auto* translate_download_manager = TranslateDownloadManager::GetInstance();
     translate_download_manager->set_application_locale("en");
     translate_download_manager->set_url_loader_factory(
@@ -55,7 +55,7 @@ class TranslateScriptTest : public testing::Test {
 
   const std::string& GetData() { return script_->data(); }
 
-  void RunUntilIdle() { scoped_task_environment_.RunUntilIdle(); }
+  void RunUntilIdle() { task_environment_.RunUntilIdle(); }
 
   network::TestURLLoaderFactory* GetTestURLLoaderFactory() {
     return &test_url_loader_factory_;
@@ -67,7 +67,7 @@ class TranslateScriptTest : public testing::Test {
   }
 
   // Sets up the task scheduling/task-runner environment for each test.
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_;
 
   // The translate script.
   std::unique_ptr<TranslateScript> script_;
@@ -94,11 +94,8 @@ TEST_F(TranslateScriptTest, CheckScriptParameters) {
   EXPECT_EQ(expected_url.GetOrigin().spec(), url.GetOrigin().spec());
   EXPECT_EQ(expected_url.path(), url.path());
 
-  int load_flags = last_resource_request.load_flags;
-  EXPECT_EQ(net::LOAD_DO_NOT_SEND_COOKIES,
-            load_flags & net::LOAD_DO_NOT_SEND_COOKIES);
-  EXPECT_EQ(net::LOAD_DO_NOT_SAVE_COOKIES,
-            load_flags & net::LOAD_DO_NOT_SAVE_COOKIES);
+  EXPECT_EQ(network::mojom::CredentialsMode::kOmit,
+            last_resource_request.credentials_mode);
 
   std::string expected_extra_headers =
       base::StringPrintf("%s\r\n\r\n", TranslateScript::kRequestHeader);

@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// https://github.com/beverloo/contact-api
+// https://wicg.github.io/contact-api/spec/#extensions-to-navigator
 
 [
     Exposed=Window,
     ImplementedAs=NavigatorContacts
 ] partial interface Navigator {
-    [SecureContext, OriginTrialEnabled=ContactsManager] readonly attribute ContactsManager contacts;
+    [SecureContext, SameObject, RuntimeEnabled=ContactsManager] readonly attribute ContactsManager contacts;
 };

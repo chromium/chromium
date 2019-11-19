@@ -111,6 +111,7 @@
           "serverBoundCertificates": {
             "type": "boolean",
             "optional": true,
+            "deprecated": "Support for server-bound certificates has been removed. This data type will be ignored.",
             "description": "Server-bound certificates."
           },
           "passwords": {

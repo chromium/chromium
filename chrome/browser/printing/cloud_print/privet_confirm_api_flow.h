@@ -14,11 +14,10 @@ namespace cloud_print {
 // API call flow for server-side communication with CloudPrint for registration.
 class PrivetConfirmApiCallFlow : public CloudPrintApiFlowRequest {
  public:
-  using ResponseCallback = base::Callback<void(GCDApiFlow::Status)>;
+  using ResponseCallback = base::OnceCallback<void(GCDApiFlow::Status)>;
 
   // Create an OAuth2-based confirmation
-  PrivetConfirmApiCallFlow(const std::string& token,
-                           const ResponseCallback& callback);
+  PrivetConfirmApiCallFlow(const std::string& token, ResponseCallback callback);
   ~PrivetConfirmApiCallFlow() override;
 
   // CloudPrintApiFlowRequest implementation:

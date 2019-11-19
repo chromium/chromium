@@ -72,6 +72,10 @@ const wchar_t* GetCursorId(gfx::NativeCursor native_cursor) {
       return MAKEINTRESOURCE(IDC_ROWRESIZE);
     case CursorType::kMiddlePanning:
       return MAKEINTRESOURCE(IDC_PAN_MIDDLE);
+    case CursorType::kMiddlePanningVertical:
+      return MAKEINTRESOURCE(IDC_PAN_MIDDLE_VERTICAL);
+    case CursorType::kMiddlePanningHorizontal:
+      return MAKEINTRESOURCE(IDC_PAN_MIDDLE_HORIZONTAL);
     case CursorType::kEastPanning:
       return MAKEINTRESOURCE(IDC_PAN_EAST);
     case CursorType::kNorthPanning:

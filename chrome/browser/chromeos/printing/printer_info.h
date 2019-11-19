@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/callback_forward.h"
+#include "printing/printer_query_result_chromeos.h"
 
 namespace chromeos {
 
@@ -18,12 +19,12 @@ namespace chromeos {
 // from the printer. |autoconf| indicates if we think we can compute the
 // printer capabilites without a PPD.
 using PrinterInfoCallback =
-    base::Callback<void(bool success,
-                        const std::string& make,
-                        const std::string& model,
-                        const std::string& make_and_model,
-                        const std::vector<std::string>& document_formats,
-                        bool autoconf)>;
+    base::OnceCallback<void(::printing::PrinterQueryResult result,
+                            const std::string& make,
+                            const std::string& model,
+                            const std::string& make_and_model,
+                            const std::vector<std::string>& document_formats,
+                            bool autoconf)>;
 
 // Dispatch an IPP request to |host| on |port| for |path| to obtain
 // basic printer information.
@@ -31,7 +32,7 @@ void QueryIppPrinter(const std::string& host,
                      const int port,
                      const std::string& path,
                      bool encrypted,
-                     const PrinterInfoCallback& callback);
+                     PrinterInfoCallback callback);
 
 }  // namespace chromeos
 

@@ -55,7 +55,7 @@ public class SessionsInvalidationManagerTest {
      * ApplicationStateListener.
      */
     @Test
-    public void testEnsureConstructorRegistersListener() throws Exception {
+    public void testEnsureConstructorRegistersListener() {
         final AtomicBoolean listenerCallbackCalled = new AtomicBoolean();
 
         // Create instance.

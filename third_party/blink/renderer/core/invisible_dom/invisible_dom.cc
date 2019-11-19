@@ -15,8 +15,8 @@ bool InvisibleDOM::IsInsideInvisibleSubtree(const Node& node) {
   if (!node.CanParticipateInFlatTree())
     return false;
   for (Node& ancestor : FlatTreeTraversal::InclusiveAncestorsOf(node)) {
-    if (ancestor.IsElementNode() &&
-        ToElement(ancestor).HasInvisibleAttribute()) {
+    auto* element = DynamicTo<Element>(ancestor);
+    if (element && element->HasInvisibleAttribute()) {
       return true;
     }
   }
@@ -28,9 +28,9 @@ Element* InvisibleDOM::InvisibleRoot(const Node& node) {
     return nullptr;
   Element* root = nullptr;
   for (Node& ancestor : FlatTreeTraversal::InclusiveAncestorsOf(node)) {
-    if (ancestor.IsElementNode() &&
-        ToElement(ancestor).HasInvisibleAttribute()) {
-      root = &ToElement(ancestor);
+    auto* element = DynamicTo<Element>(ancestor);
+    if (element && element->HasInvisibleAttribute()) {
+      root = element;
     }
   }
   return root;
@@ -46,9 +46,10 @@ bool InvisibleDOM::ActivateRangeIfNeeded(
   for (Node& node : range.Nodes()) {
     if (!InvisibleDOM::IsInsideInvisibleSubtree(node))
       continue;
-    for (Node& node : FlatTreeTraversal::AncestorsOf(node)) {
-      if (node.IsElementNode()) {
-        elements_to_activate.push_back(ToElement(node));
+    for (Node& ancestor_node : FlatTreeTraversal::AncestorsOf(node)) {
+      auto* element = DynamicTo<Element>(ancestor_node);
+      if (element) {
+        elements_to_activate.push_back(element);
         break;
       }
     }

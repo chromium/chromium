@@ -15,8 +15,7 @@
 namespace prefs {
 
 template <typename BasePrefStore>
-PrefStoreClientMixin<BasePrefStore>::PrefStoreClientMixin()
-    : observer_binding_(this) {}
+PrefStoreClientMixin<BasePrefStore>::PrefStoreClientMixin() = default;
 
 template <typename BasePrefStore>
 void PrefStoreClientMixin<BasePrefStore>::AddObserver(
@@ -64,9 +63,9 @@ template <typename BasePrefStore>
 void PrefStoreClientMixin<BasePrefStore>::Init(
     std::unique_ptr<base::DictionaryValue> initial_prefs,
     bool initialized,
-    mojom::PrefStoreObserverRequest observer_request) {
+    mojo::PendingReceiver<mojom::PrefStoreObserver> observer_receiver) {
   cached_prefs_ = std::move(initial_prefs);
-  observer_binding_.Bind(std::move(observer_request));
+  observer_receiver_.Bind(std::move(observer_receiver));
   if (initialized)
     OnInitializationCompleted(static_cast<bool>(cached_prefs_));
 }

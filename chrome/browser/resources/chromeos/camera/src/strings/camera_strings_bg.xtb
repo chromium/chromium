@@ -7,45 +7,69 @@
 <translation id="1627744224761163218">4 x 4</translation>
 <translation id="1664224225747386870">Нищо не е записано</translation>
 <translation id="1862930711583847113">Файлът „<ph name="FILE" />“ не може да се експортира</translation>
+<translation id="1899697626337024495">Разделителна способност за снимките</translation>
 <translation id="2036868001356139588">Продължителност на таймера</translation>
+<translation id="2050339315714019657">Вертикално</translation>
 <translation id="2064538373111010176"><ph name="CAMERA" /> е активна</translation>
 <translation id="229579744168541441">Експортиране към диска</translation>
 <translation id="2501278716633472235">Назад</translation>
 <translation id="2501853267655415902">Записването спря</translation>
 <translation id="2501953888035679275">Правете снимки и записвайте видеоклипове с камерата си.</translation>
 <translation id="2549985041256363841">Старт на записа</translation>
+<translation id="2599796128805996109">Задна камера</translation>
+<translation id="2912439424121107408">Експертният режим не се поддържа на това устройство</translation>
 <translation id="2968794441791257519">Направените с камерата снимки и видеоклипове ще бъдат преместени в папката „Изтегляния“. Можете да осъществите достъп до тях от „Файлове“.
 
 Приложенията с разрешения за хранилището ще имат достъп до снимките и видеоклиповете ви.</translation>
 <translation id="3081586908890909590">Превключване към режима за запис на видеоклипове</translation>
+<translation id="313467653172006084">30 кдр/сек</translation>
 <translation id="3183731565330012717">Тип решетка</translation>
 <translation id="3227137524299004712">Микрофон</translation>
+<translation id="3259149966178251584">Разделителна способност на камерата</translation>
+<translation id="3517926952904427380">Не може да се направи вертикална снимка</translation>
 <translation id="3569311554794739032">Наистина ли искате да премахнете „<ph name="FILE" />“?</translation>
+<translation id="3810838688059735925">Видео</translation>
 <translation id="4279490309300973883">Дублиране</translation>
+<translation id="4329152592498422850">Превключвател за правене на квадратна снимка</translation>
 <translation id="4445542136948522167">Спиране на правенето на снимка</translation>
+<translation id="4497569853498380347">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" />) <ph name="MEGAPIXEL" /> мегапиксела</translation>
+<translation id="4570032796877367747">Предна камера</translation>
+<translation id="4628948037717959914">Снимка</translation>
 <translation id="4649291346448517080">Файлът не може да бъде запазен</translation>
 <translation id="4890010094662541459">3 x 3</translation>
 <translation id="5057360777601936059">Понастоящем няма достъп до камерата ви.
         Моля, проверете дали камерата е свързана правилно.</translation>
 <translation id="5152121255775685072">Към галерията</translation>
+<translation id="5671277269877808209">Квадрат</translation>
+<translation id="5775960006311140197">Експертен режим</translation>
 <translation id="5869546221129391014">Таблица</translation>
 <translation id="6073451960410192870">Спиране на записа</translation>
+<translation id="6197807149213783179">Запазване на метаданните</translation>
 <translation id="6233780560267770709">3 на 3</translation>
 <translation id="6243827288366940320">Златно сечение</translation>
+<translation id="6248749904681914629">Външна камера</translation>
+<translation id="6420689864531458495">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" /> – <ph name="WIDTH" /> x <ph name="HEIGHT" />) <ph name="MEGAPIXEL" /> мегапиксела</translation>
 <translation id="6681668084120808868">Снимане</translation>
 <translation id="6778482348691154169">Не може да се направи снимка</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="698156982839284926">3 секунди</translation>
 <translation id="712848772518857951">Наистина ли искате да премахнете <ph name="COUNT" /> елемента?</translation>
+<translation id="7243947652761655814">Разделителна способност за видеоклиповете</translation>
 <translation id="7337660886763914220">Грешки във файловата система.</translation>
 <translation id="7557677699350329807">Превключване към следващата камера</translation>
 <translation id="7608223098072244877">4 на 4</translation>
 <translation id="7649070708921625228">Помощ</translation>
 <translation id="7658239707568436148">Отказ</translation>
+<translation id="7670511624014457267">60 кдр/сек</translation>
 <translation id="8049189770492311300">Таймер</translation>
+<translation id="8067883171444229417">Възпроизвеждане на видеоклипа</translation>
+<translation id="8131740175452115882">Потвърждаване</translation>
 <translation id="8145038249676204903">Превключване към режима за правене на снимки</translation>
 <translation id="8261506727792406068">Изтриване</translation>
 <translation id="8428213095426709021">Настройки</translation>
+<translation id="8687491812650032292">HD при <ph name="HEIGHT" />p (<ph name="WIDTH" />:<ph name="HEIGHT" />)</translation>
+<translation id="8732462232047530626">Преглед на метаданните</translation>
+<translation id="8815966864175525708">Превключвател за правене на вертикална снимка</translation>
 <translation id="8870695351537079478">Записването не може да се стартира</translation>
 <translation id="9045155556724273246">10 секунди</translation>
 <translation id="945522503751344254">Изпращане на отзиви</translation>

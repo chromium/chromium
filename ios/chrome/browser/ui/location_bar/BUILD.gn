@@ -5,8 +5,6 @@
 source_set("location_bar") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
-    "extended_touch_target_button.h",
-    "extended_touch_target_button.mm",
     "location_bar_consumer.h",
     "location_bar_coordinator.h",
     "location_bar_coordinator.mm",
@@ -21,17 +19,18 @@ source_set("location_bar") {
   ]
   deps = [
     ":constants",
-    "resources:location_bar_dangerous",
-    "resources:location_bar_insecure",
+    "resources:location_bar_info",
+    "resources:location_bar_not_secure_warning",
     "resources:location_bar_offline",
     "resources:location_bar_secure",
     "resources:location_bar_share",
     "resources:location_bar_voice",
     "//base",
-    "//components/google/core/browser",
+    "//components/google/core/common",
     "//components/omnibox/browser",
     "//components/open_from_clipboard:",
     "//components/search_engines",
+    "//components/security_state/ios",
     "//components/strings",
     "//components/variations/net",
     "//ios/chrome/app/strings",
@@ -41,15 +40,22 @@ source_set("location_bar") {
     "//ios/chrome/browser/browser_state:browser_state",
     "//ios/chrome/browser/geolocation:geolocation_internal",
     "//ios/chrome/browser/infobars:badge",
+    "//ios/chrome/browser/infobars:public",
+    "//ios/chrome/browser/main",
     "//ios/chrome/browser/ntp",
+    "//ios/chrome/browser/overlays",
+    "//ios/chrome/browser/overlays/public/web_content_area",
     "//ios/chrome/browser/search_engines",
     "//ios/chrome/browser/ssl",
-    "//ios/chrome/browser/ui",
     "//ios/chrome/browser/ui:feature_flags",
+    "//ios/chrome/browser/ui/badges",
+    "//ios/chrome/browser/ui/badges:public",
     "//ios/chrome/browser/ui/commands",
+    "//ios/chrome/browser/ui/elements",
     "//ios/chrome/browser/ui/fullscreen",
     "//ios/chrome/browser/ui/fullscreen:ui",
     "//ios/chrome/browser/ui/infobars:feature_flags",
+    "//ios/chrome/browser/ui/infobars/badge",
     "//ios/chrome/browser/ui/ntp:util",
     "//ios/chrome/browser/ui/omnibox:omnibox",
     "//ios/chrome/browser/ui/omnibox:omnibox_internal",
@@ -67,13 +73,16 @@ source_set("location_bar") {
     "//ios/chrome/browser/web",
     "//ios/chrome/browser/web_state_list",
     "//ios/chrome/common:timing",
+    "//ios/chrome/common/colors",
+    "//ios/chrome/common/ui_util",
     "//ios/public/provider/chrome/browser:browser",
     "//ios/public/provider/chrome/browser/voice",
     "//ios/third_party/material_components_ios",
     "//ios/third_party/material_roboto_font_loader_ios",
+    "//ios/web/common",
     "//ios/web/public:public",
+    "//ios/web/public/security",
     "//skia",
-    "//third_party/google_toolbox_for_mac",
     "//ui/base",
     "//ui/base",
     "//ui/gfx",
@@ -100,6 +109,7 @@ source_set("location_bar_model_delegate") {
     "//base",
     "//components/omnibox/browser",
     "//components/prefs",
+    "//components/security_state/ios",
     "//ios/chrome/browser",
     "//ios/chrome/browser/autocomplete",
     "//ios/chrome/browser/browser_state",
@@ -107,6 +117,7 @@ source_set("location_bar_model_delegate") {
     "//ios/chrome/browser/ssl",
     "//ios/chrome/browser/web_state_list",
     "//ios/web/public",
+    "//ios/web/public/security",
   ]
   libs = [ "UIKit.framework" ]
 }
@@ -123,11 +134,21 @@ source_set("constants") {
   ]
 }
 
+# TODO(crbug.com/778008): Remove this target.
+source_set("notifications") {
+  sources = [
+    "location_bar_notification_names.h",
+    "location_bar_notification_names.mm",
+  ]
+  configs += [ "//build/config/compiler:enable_arc" ]
+}
+
 source_set("unit_tests") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
     "location_bar_coordinator_unittest.mm",
+    "location_bar_mediator_unittest.mm",
   ]
   deps = [
     ":location_bar",
@@ -139,8 +160,13 @@ source_set("unit_tests") {
     "//ios/chrome/browser",
     "//ios/chrome/browser/autocomplete",
     "//ios/chrome/browser/browser_state:test_support",
+    "//ios/chrome/browser/main:test_support",
+    "//ios/chrome/browser/overlays",
+    "//ios/chrome/browser/overlays/public/web_content_area",
+    "//ios/chrome/browser/overlays/test",
     "//ios/chrome/browser/search_engines",
     "//ios/chrome/browser/ui/commands",
+    "//ios/chrome/browser/ui/location_bar/test",
     "//ios/chrome/browser/ui/toolbar",
     "//ios/chrome/browser/ui/toolbar/test",
     "//ios/chrome/browser/url_loading",

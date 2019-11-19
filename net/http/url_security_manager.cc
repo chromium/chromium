@@ -10,35 +10,35 @@
 
 namespace net {
 
-URLSecurityManagerWhitelist::URLSecurityManagerWhitelist() = default;
+URLSecurityManagerAllowlist::URLSecurityManagerAllowlist() = default;
 
-URLSecurityManagerWhitelist::~URLSecurityManagerWhitelist() = default;
+URLSecurityManagerAllowlist::~URLSecurityManagerAllowlist() = default;
 
-bool URLSecurityManagerWhitelist::CanUseDefaultCredentials(
-    const GURL& auth_origin) const  {
-  if (whitelist_default_.get())
-    return whitelist_default_->IsValid(auth_origin, HttpAuth::AUTH_SERVER);
+bool URLSecurityManagerAllowlist::CanUseDefaultCredentials(
+    const GURL& auth_origin) const {
+  if (allowlist_default_.get())
+    return allowlist_default_->IsValid(auth_origin, HttpAuth::AUTH_SERVER);
   return false;
 }
 
-bool URLSecurityManagerWhitelist::CanDelegate(const GURL& auth_origin) const {
-  if (whitelist_delegate_.get())
-    return whitelist_delegate_->IsValid(auth_origin, HttpAuth::AUTH_SERVER);
+bool URLSecurityManagerAllowlist::CanDelegate(const GURL& auth_origin) const {
+  if (allowlist_delegate_.get())
+    return allowlist_delegate_->IsValid(auth_origin, HttpAuth::AUTH_SERVER);
   return false;
 }
 
-void URLSecurityManagerWhitelist::SetDefaultWhitelist(
-    std::unique_ptr<HttpAuthFilter> whitelist_default) {
-  whitelist_default_ = std::move(whitelist_default);
+void URLSecurityManagerAllowlist::SetDefaultAllowlist(
+    std::unique_ptr<HttpAuthFilter> allowlist_default) {
+  allowlist_default_ = std::move(allowlist_default);
 }
 
-void URLSecurityManagerWhitelist::SetDelegateWhitelist(
-    std::unique_ptr<HttpAuthFilter> whitelist_delegate) {
-  whitelist_delegate_ = std::move(whitelist_delegate);
+void URLSecurityManagerAllowlist::SetDelegateAllowlist(
+    std::unique_ptr<HttpAuthFilter> allowlist_delegate) {
+  allowlist_delegate_ = std::move(allowlist_delegate);
 }
 
-bool URLSecurityManagerWhitelist::HasDefaultWhitelist() const {
-  return whitelist_default_.get() != nullptr;
+bool URLSecurityManagerAllowlist::HasDefaultAllowlist() const {
+  return allowlist_default_.get() != nullptr;
 }
 
 }  //  namespace net

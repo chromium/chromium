@@ -11,7 +11,7 @@
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #import "base/test/ios/wait_util.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #import "ios/web/public/test/fakes/fake_download_task.h"
 #include "net/base/net_errors.h"
 #include "net/url_request/url_fetcher_response_writer.h"
@@ -45,7 +45,7 @@ class CWVDownloadTaskTest : public PlatformTest {
 
  protected:
   std::string valid_local_file_path_;
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_;
   web::FakeDownloadTask* fake_internal_task_ = nullptr;
   id<CWVDownloadTaskDelegate> mock_delegate_ = nil;
   CWVDownloadTask* cwv_task_ = nil;
@@ -53,7 +53,7 @@ class CWVDownloadTaskTest : public PlatformTest {
   // Waits until fake_internal_task_->Start() is called.
   bool WaitUntilTaskStarts() WARN_UNUSED_RESULT {
     return WaitUntilConditionOrTimeout(kWaitForFileOperationTimeout, ^{
-      scoped_task_environment_.RunUntilIdle();
+      task_environment_.RunUntilIdle();
       return fake_internal_task_->GetState() ==
              web::DownloadTask::State::kInProgress;
     });
@@ -67,7 +67,7 @@ class CWVDownloadTaskTest : public PlatformTest {
           error_code = block_error_code;
         }));
     return WaitUntilConditionOrTimeout(kWaitForFileOperationTimeout, ^{
-      scoped_task_environment_.RunUntilIdle();
+      task_environment_.RunUntilIdle();
       return error_code == net::OK;
     });
   }
@@ -101,8 +101,11 @@ TEST_F(CWVDownloadTaskTest, FailedFlow) {
                                                 valid_local_file_path_)];
   ASSERT_TRUE(WaitUntilTaskStarts());
 
-  OCMExpect([mock_delegate_ downloadTask:cwv_task_
-                      didFinishWithError:[OCMArg isNotNil]]);
+  OCMExpect([mock_delegate_
+            downloadTask:cwv_task_
+      didFinishWithError:[OCMArg checkWithBlock:^(NSError* error) {
+        return error.code == CWVDownloadErrorFailed;
+      }]]);
   ASSERT_TRUE(FinishResponseWriter());
   fake_internal_task_->SetErrorCode(net::ERR_FAILED);
   fake_internal_task_->SetDone(true);
@@ -115,10 +118,23 @@ TEST_F(CWVDownloadTaskTest, CancelledFlow) {
                                                 valid_local_file_path_)];
   ASSERT_TRUE(WaitUntilTaskStarts());
 
+  OCMExpect([mock_delegate_
+            downloadTask:cwv_task_
+      didFinishWithError:[OCMArg checkWithBlock:^(NSError* error) {
+        return error.code == CWVDownloadErrorAborted;
+      }]]);
+
   ASSERT_TRUE(FinishResponseWriter());
   [cwv_task_ cancel];
   EXPECT_EQ(web::DownloadTask::State::kCancelled,
             fake_internal_task_->GetState());
+
+  // Simulate behavior of a real web::DownloadTask which transition to state
+  // kComplete with error code net::ERR_ABORTED when cancelled.
+  fake_internal_task_->SetErrorCode(net::ERR_ABORTED);
+  fake_internal_task_->SetDone(true);
+
+  EXPECT_OCMOCK_VERIFY((id)mock_delegate_);
 }
 
 // Tests a case when it fails to write to the specified local file path.
@@ -135,7 +151,7 @@ TEST_F(CWVDownloadTaskTest, WriteFailure) {
   [cwv_task_ startDownloadToLocalFileAtPath:path];
 
   EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForFileOperationTimeout, ^{
-    scoped_task_environment_.RunUntilIdle();
+    task_environment_.RunUntilIdle();
     return did_finish_called;
   }));
 }

@@ -8,10 +8,12 @@
 
 #include "base/command_line.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "chrome/browser/ssl/tls_deprecation_test_utils.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/security_state/content/ssl_status_input_event_data.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/test/mock_navigation_handle.h"
+#include "content/public/test/navigation_simulator.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -77,7 +79,55 @@ TEST_F(SecurityStateTabHelperHistogramTest, FormSubmissionHistogram) {
   base::HistogramTester histograms;
   StartFormSubmissionNavigation();
   histograms.ExpectUniqueSample(kFormSubmissionSecurityLevelHistogram,
-                                security_state::HTTP_SHOW_WARNING, 1);
+                                security_state::WARNING, 1);
+}
+
+// Tests that form submission histograms are recorded correctly on a page that
+// uses legacy TLS (TLS 1.0/1.1).
+TEST_F(SecurityStateTabHelperHistogramTest, LegacyTLSFormSubmissionHistogram) {
+  base::HistogramTester histograms;
+  InitializeEmptyLegacyTLSConfig();
+
+  auto navigation =
+      CreateLegacyTLSNavigation(GURL(kLegacyTLSDefaultURL), web_contents());
+  navigation->Commit();
+
+  StartFormSubmissionNavigation();
+
+  histograms.ExpectUniqueSample("Security.LegacyTLS.FormSubmission", true, 1);
+}
+
+// Tests that form submission histograms are recorded as not coming from a page
+// that triggered legacy TLS warnings for a page that uses legacy TLS but is
+// marked as a control site that should suppress legacy TLS warnings.
+TEST_F(SecurityStateTabHelperHistogramTest,
+       LegacyTLSControlSiteFormSubmissionHistogram) {
+  base::HistogramTester histograms;
+  InitializeLegacyTLSConfigWithControl();
+
+  auto navigation =
+      CreateLegacyTLSNavigation(GURL(kLegacyTLSControlURL), web_contents());
+  navigation->Commit();
+
+  StartFormSubmissionNavigation();
+
+  histograms.ExpectUniqueSample("Security.LegacyTLS.FormSubmission", false, 1);
+}
+
+// Tests that form submission histograms are recorded as not coming from a page
+// that triggered legacy TLS warnings for a page that uses modern TLS.
+TEST_F(SecurityStateTabHelperHistogramTest,
+       LegacyTLSGoodSiteFormSubmissionHistogram) {
+  base::HistogramTester histograms;
+  InitializeEmptyLegacyTLSConfig();
+
+  auto navigation =
+      CreateNonlegacyTLSNavigation(GURL("https://good.test"), web_contents());
+  navigation->Commit();
+
+  StartFormSubmissionNavigation();
+
+  histograms.ExpectUniqueSample("Security.LegacyTLS.FormSubmission", false, 1);
 }
 
 }  // namespace

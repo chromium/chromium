@@ -41,7 +41,7 @@ class ValidatingTextfieldTest : public ChromeViewsTestBase {
     bool IsValidTextfield(views::Textfield* textfield,
                           base::string16* error_message) override {
       // We really don't like textfields with more than 5 characters in them.
-      return textfield->text().size() <= 5u;
+      return textfield->GetText().size() <= 5u;
     }
     bool IsValidCombobox(views::Combobox* combobox,
                          base::string16* error_message) override {
@@ -69,11 +69,11 @@ TEST_F(ValidatingTextfieldTest, Validation) {
   textfield->OnContentsChanged();
 
   // Not marked as invalid.
-  EXPECT_FALSE(textfield->invalid());
+  EXPECT_FALSE(textfield->GetInvalid());
 
   // On blur though, there is a first validation.
   textfield->OnBlur();
-  EXPECT_TRUE(textfield->invalid());
+  EXPECT_TRUE(textfield->GetInvalid());
 
   // On further text adjustements, the validation runs now. Set a valid string
   // (<=5 characters).
@@ -81,7 +81,7 @@ TEST_F(ValidatingTextfieldTest, Validation) {
   textfield->OnContentsChanged();
 
   // No longer invalid.
-  EXPECT_FALSE(textfield->invalid());
+  EXPECT_FALSE(textfield->GetInvalid());
 }
 
 }  // namespace payments

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2018 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingTop="@dimen/autofill_assistant_toolbar_vertical_padding"
+    android:paddingBottom="@dimen/autofill_assistant_toolbar_vertical_padding"
+    android:orientation="horizontal"
+    android:gravity="center_horizontal">
+
+    <ImageView
+        android:id="@+id/swipe_indicator"
+        android:layout_width="36dp"
+        android:layout_height="@dimen/autofill_assistant_toolbar_swipe_handle_height"
+        android:layout_gravity="center_horizontal"
+        android:src="@drawable/autofill_assistant_swipe_indicator"
+        tools:ignore="ContentDescription" />
+
+</LinearLayout>

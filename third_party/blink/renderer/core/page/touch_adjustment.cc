@@ -47,8 +47,10 @@ namespace blink {
 namespace touch_adjustment {
 
 const float kZeroTolerance = 1e-6f;
-// The maximum adjustment range (diameters) in dip.
+// The touch adjustment range (diameters) in dip, using same as the value in
+// gesture_configuration_android.cc
 constexpr float kMaxAdjustmentSizeDip = 32.f;
+constexpr float kMinAdjustmentSizeDip = 20.f;
 
 // Class for remembering absolute quads of a target node and what node they
 // represent.
@@ -92,12 +94,11 @@ bool NodeRespondsToTapGesture(Node* node) {
   if (node->WillRespondToMouseClickEvents() ||
       node->WillRespondToMouseMoveEvents())
     return true;
-  if (node->IsElementNode()) {
-    Element* element = ToElement(node);
+  if (auto* element = DynamicTo<Element>(node)) {
     // Tapping on a text field or other focusable item should trigger
     // adjustment, except that iframe elements are hard-coded to support focus
     // but the effect is often invisible so they should be excluded.
-    if (element->IsMouseFocusable() && !IsHTMLIFrameElement(element))
+    if (element->IsMouseFocusable() && !IsA<HTMLIFrameElement>(element))
       return true;
     // Accept nodes that has a CSS effect when touched.
     if (element->ChildrenOrSiblingsAffectedByActive() ||
@@ -181,10 +182,10 @@ static inline void AppendContextSubtargetsForNode(
   // subtargets for selected or auto-selectable parts of text nodes.
   DCHECK(node->GetLayoutObject());
 
-  if (!node->IsTextNode())
+  auto* text_node = DynamicTo<Text>(node);
+  if (!text_node)
     return AppendBasicSubtargetsForNode(node, subtargets);
 
-  Text* text_node = ToText(node);
   LayoutText* text_layout_object = text_node->GetLayoutObject();
 
   if (text_layout_object->GetFrame()
@@ -517,10 +518,11 @@ bool FindBestContextMenuCandidate(Node*& target_node,
       subtargets, touch_adjustment::HybridDistanceFunction);
 }
 
-LayoutSize GetHitTestRectForAdjustment(const LocalFrame& frame,
+LayoutSize GetHitTestRectForAdjustment(LocalFrame& frame,
                                        const LayoutSize& touch_area) {
+  ChromeClient& chrome_client = frame.GetChromeClient();
   float device_scale_factor =
-      frame.GetPage()->GetChromeClient().GetScreenInfo().device_scale_factor;
+      chrome_client.GetScreenInfo(frame).device_scale_factor;
   // Check if zoom-for-dsf is enabled. If not, touch_area is in dip, so we don't
   // need to convert max_size_in_dip to physical pixel.
   if (frame.GetPage()->DeviceScaleFactorDeprecated() != 1)
@@ -530,10 +532,13 @@ LayoutSize GetHitTestRectForAdjustment(const LocalFrame& frame,
   const LayoutSize max_size_in_dip(touch_adjustment::kMaxAdjustmentSizeDip,
                                    touch_adjustment::kMaxAdjustmentSizeDip);
 
+  const LayoutSize min_size_in_dip(touch_adjustment::kMinAdjustmentSizeDip,
+                                   touch_adjustment::kMinAdjustmentSizeDip);
   // (when use-zoom-for-dsf enabled) touch_area is in physical pixel scaled,
   // max_size_in_dip should be converted to physical pixel and scale too.
-  return touch_area.ShrunkTo(max_size_in_dip *
-                             (device_scale_factor / page_scale_factor));
+  return touch_area
+      .ShrunkTo(max_size_in_dip * (device_scale_factor / page_scale_factor))
+      .ExpandedTo(min_size_in_dip * (device_scale_factor / page_scale_factor));
 }
 
 }  // namespace blink

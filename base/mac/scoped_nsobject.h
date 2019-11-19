@@ -36,11 +36,10 @@ namespace base {
 // scoped_nsprotocol<> has the same behavior as scoped_nsobject, but can be used
 // with protocols.
 //
-// scoped_nsobject<> is not to be used for NSAutoreleasePools. For
-// NSAutoreleasePools use ScopedNSAutoreleasePool from
-// scoped_nsautorelease_pool.h instead.
-// We check for bad uses of scoped_nsobject and NSAutoreleasePool at compile
-// time with a template specialization (see below).
+// scoped_nsobject<> is not to be used for NSAutoreleasePools. For C++ code use
+// NSAutoreleasePool; for Objective-C(++) code use @autoreleasepool instead. We
+// check for bad uses of scoped_nsobject and NSAutoreleasePool at compile time
+// with a template specialization (see below).
 //
 // If Automatic Reference Counting (aka ARC) is enabled then the ownership
 // policy is not controllable by the user as ARC make it really difficult to
@@ -187,7 +186,7 @@ class scoped_nsobject : public scoped_nsprotocol<NST*> {
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
   static_assert(std::is_same<NST, NSAutoreleasePool>::value == false,
-                "Use ScopedNSAutoreleasePool instead");
+                "Use @autoreleasepool instead");
 #endif
 };
 

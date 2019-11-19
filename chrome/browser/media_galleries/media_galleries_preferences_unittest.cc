@@ -33,7 +33,7 @@
 #include "components/storage_monitor/storage_monitor.h"
 #include "components/storage_monitor/test_storage_monitor.h"
 #include "components/sync/model/string_ordinal.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest_handlers/background_info.h"
@@ -204,8 +204,8 @@ class MediaGalleriesPreferencesTest : public testing::Test {
       VerifyGalleryInfo(it->second, it->first);
       if (it->second.type != MediaGalleryPrefInfo::kAutoDetected &&
           it->second.type != MediaGalleryPrefInfo::kBlackListed) {
-        if (!base::ContainsKey(expected_galleries_for_all, it->first) &&
-            !base::ContainsKey(expected_galleries_for_regular, it->first)) {
+        if (!base::Contains(expected_galleries_for_all, it->first) &&
+            !base::Contains(expected_galleries_for_regular, it->first)) {
           EXPECT_FALSE(gallery_prefs_->NonAutoGalleryHasPermission(it->first));
         } else {
           EXPECT_TRUE(gallery_prefs_->NonAutoGalleryHasPermission(it->first));
@@ -354,7 +354,7 @@ class MediaGalleriesPreferencesTest : public testing::Test {
 
  private:
   // Needed for extension service & friends to work.
-  content::TestBrowserThreadBundle thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
 
   EnsureMediaDirectoriesExists mock_gallery_locations_;
 
@@ -1172,8 +1172,8 @@ TEST_F(MediaGalleriesPreferencesTest, ScanResults) {
 }
 
 TEST(MediaGalleriesPrefInfoTest, NameGeneration) {
-  base::test::ScopedTaskEnvironment scoped_task_environment(
-      base::test::ScopedTaskEnvironment::MainThreadType::UI);
+  base::test::TaskEnvironment task_environment(
+      base::test::TaskEnvironment::MainThreadType::UI);
 
   ASSERT_TRUE(TestStorageMonitor::CreateAndInstall());
 

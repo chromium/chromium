@@ -45,9 +45,9 @@ class COMPONENT_EXPORT(CHROMEOS_GEOLOCATION) SimpleGeolocationRequest {
   // The second argument indicates whether there was a server error or not.
   // It is true when there was a server or network error - either no response
   // or a 500 error code.
-  typedef base::Callback<void(const Geoposition& /* position*/,
-                              bool /* server_error */,
-                              const base::TimeDelta elapsed)> ResponseCallback;
+  using ResponseCallback = base::OnceCallback<void(const Geoposition& position,
+                                                   bool server_error,
+                                                   base::TimeDelta elapsed)>;
 
   // |url| is the server address to which the request wil be sent.
   // |timeout| retry request on error until timeout.
@@ -65,7 +65,7 @@ class COMPONENT_EXPORT(CHROMEOS_GEOLOCATION) SimpleGeolocationRequest {
   // Initiates request.
   // Note: if request object is destroyed before callback is called,
   // request will be silently cancelled.
-  void MakeRequest(const ResponseCallback& callback);
+  void MakeRequest(ResponseCallback callback);
 
   void set_retry_sleep_on_server_error_for_testing(
       const base::TimeDelta value) {

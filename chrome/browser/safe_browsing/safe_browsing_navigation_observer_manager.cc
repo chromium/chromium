@@ -8,6 +8,7 @@
 
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/rand_util.h"
 #include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
@@ -34,6 +35,10 @@ namespace safe_browsing {
 namespace {
 
 constexpr size_t kMaxNumberOfNavigationsToAppend = 5;
+
+// Logging the number of events cleaned up every 2 minutes is excessive, so we
+// sample by this rate.
+const double kNavigationCleanUpSamplingRate = 0.01;
 
 // Given when an event happened and its TTL, determine if it is already expired.
 // Note, if for some reason this event's timestamp is in the future, this
@@ -541,9 +546,11 @@ void SafeBrowsingNavigationObserverManager::AppendRecentNavigations(
 void SafeBrowsingNavigationObserverManager::CleanUpNavigationEvents() {
   std::size_t removal_count = navigation_event_list_.CleanUpNavigationEvents();
 
-  UMA_HISTOGRAM_COUNTS_10000(
-      "SafeBrowsing.NavigationObserver.NavigationEventCleanUpCount",
-      removal_count);
+  if (base::RandDouble() < kNavigationCleanUpSamplingRate) {
+    UMA_HISTOGRAM_COUNTS_10000(
+        "SafeBrowsing.NavigationObserver.NavigationEventCleanUpCount",
+        removal_count);
+  }
 }
 
 void SafeBrowsingNavigationObserverManager::CleanUpUserGestures() {

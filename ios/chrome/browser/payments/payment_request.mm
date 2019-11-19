@@ -13,30 +13,31 @@
 #include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/autofill_data_util.h"
-#include "components/autofill/core/browser/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/geo/region_data_loader_impl.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
-#include "components/autofill/core/browser/region_data_loader_impl.h"
 #include "components/autofill/core/browser/validation.h"
 #import "components/autofill/ios/browser/credit_card_util.h"
-#include "components/payments/core/autofill_payment_instrument.h"
+#include "components/payments/core/autofill_payment_app.h"
 #include "components/payments/core/currency_formatter.h"
 #include "components/payments/core/features.h"
+#include "components/payments/core/method_strings.h"
 #include "components/payments/core/payment_details.h"
 #include "components/payments/core/payment_item.h"
 #include "components/payments/core/payment_request_data_util.h"
 #include "components/payments/core/payment_shipping_option.h"
 #include "components/payments/core/web_payment_request.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
+#import "components/ukm/ios/ukm_url_recorder.h"
 #include "ios/chrome/browser/application_context.h"
 #include "ios/chrome/browser/autofill/address_normalizer_factory.h"
 #include "ios/chrome/browser/autofill/validation_rules_storage_factory.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#import "ios/chrome/browser/metrics/ukm_url_recorder.h"
 #import "ios/chrome/browser/payments/ios_payment_instrument.h"
 #import "ios/chrome/browser/payments/payment_request_util.h"
 #include "ios/chrome/browser/signin/identity_manager_factory.h"
-#import "ios/web/public/web_state/web_state.h"
-#include "services/identity/public/cpp/identity_manager.h"
+#import "ios/web/public/web_state.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/libaddressinput/chromium/chrome_metadata_source.h"
 #include "third_party/libaddressinput/src/cpp/include/libaddressinput/source.h"
@@ -147,11 +148,6 @@ bool PaymentRequest::IsIncognito() const {
   return browser_state_->IsOffTheRecord();
 }
 
-bool PaymentRequest::IsSslCertificateValid() {
-  NOTREACHED() << "Implementation is never used";
-  return false;
-}
-
 const GURL& PaymentRequest::GetLastCommittedURL() const {
   return web_state_->GetLastCommittedURL();
 }
@@ -180,7 +176,7 @@ ukm::UkmRecorder* PaymentRequest::GetUkmRecorder() {
 }
 
 std::string PaymentRequest::GetAuthenticatedEmail() const {
-  const identity::IdentityManager* identity_manager =
+  const signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForBrowserStateIfExists(browser_state_);
   if (identity_manager && identity_manager->HasPrimaryAccount())
     return identity_manager->GetPrimaryAccountInfo().email;
@@ -193,7 +189,7 @@ PrefService* PaymentRequest::GetPrefService() {
 }
 
 const PaymentItem& PaymentRequest::GetTotal(
-    PaymentInstrument* selected_instrument) const {
+    PaymentApp* selected_instrument) const {
   const PaymentDetailsModifier* modifier =
       GetApplicableModifier(selected_instrument);
   if (modifier && modifier->total) {
@@ -205,7 +201,7 @@ const PaymentItem& PaymentRequest::GetTotal(
 }
 
 std::vector<PaymentItem> PaymentRequest::GetDisplayItems(
-    PaymentInstrument* selected_instrument) const {
+    PaymentApp* selected_instrument) const {
   std::vector<PaymentItem> display_items =
       web_payment_request_.details.display_items;
 
@@ -298,7 +294,7 @@ void PaymentRequest::UpdateAutofillProfile(
 }
 
 const PaymentDetailsModifier* PaymentRequest::GetApplicableModifier(
-    PaymentInstrument* selected_instrument) const {
+    PaymentApp* selected_instrument) const {
   if (!selected_instrument ||
       !base::FeatureList::IsEnabled(features::kWebPaymentsModifiers)) {
     return nullptr;
@@ -366,15 +362,13 @@ void PaymentRequest::PopulateAvailableProfiles() {
       profile_comparator_.FilterProfilesForShipping(raw_profiles_for_filtering);
 }
 
-AutofillPaymentInstrument*
-PaymentRequest::CreateAndAddAutofillPaymentInstrument(
+AutofillPaymentApp* PaymentRequest::CreateAndAddAutofillPaymentInstrument(
     const autofill::CreditCard& credit_card) {
   return CreateAndAddAutofillPaymentInstrument(
       credit_card, /*may_update_personal_data_manager=*/true);
 }
 
-AutofillPaymentInstrument*
-PaymentRequest::CreateAndAddAutofillPaymentInstrument(
+AutofillPaymentApp* PaymentRequest::CreateAndAddAutofillPaymentInstrument(
     const autofill::CreditCard& credit_card,
     bool may_update_personal_data_manager) {
   std::string basic_card_issuer_network =
@@ -391,7 +385,7 @@ PaymentRequest::CreateAndAddAutofillPaymentInstrument(
   // the name of the network directly.
   std::string method_name = basic_card_issuer_network;
   if (basic_card_specified_networks_.count(basic_card_issuer_network)) {
-    method_name = "basic-card";
+    method_name = methods::kBasicCard;
   }
 
   // The total number of card types: credit, debit, prepaid, unknown.
@@ -404,9 +398,9 @@ PaymentRequest::CreateAndAddAutofillPaymentInstrument(
       credit_card.card_type() != autofill::CreditCard::CARD_TYPE_UNKNOWN ||
       supported_card_types_set_.size() == kTotalNumberOfCardTypes;
 
-  // AutofillPaymentInstrument makes a copy of |credit_card| so it is
+  // AutofillPaymentApp makes a copy of |credit_card| so it is
   // effectively owned by this object.
-  payment_method_cache_.push_back(std::make_unique<AutofillPaymentInstrument>(
+  payment_method_cache_.push_back(std::make_unique<AutofillPaymentApp>(
       method_name, credit_card, matches_merchant_card_type_exactly,
       billing_profiles(), GetApplicationLocale(), this));
 
@@ -415,8 +409,7 @@ PaymentRequest::CreateAndAddAutofillPaymentInstrument(
   if (may_update_personal_data_manager && !IsIncognito())
     personal_data_manager_->AddCreditCard(credit_card);
 
-  return static_cast<AutofillPaymentInstrument*>(
-      payment_method_cache_.back().get());
+  return static_cast<AutofillPaymentApp*>(payment_method_cache_.back().get());
 }
 
 void PaymentRequest::UpdateAutofillPaymentInstrument(
@@ -441,7 +434,7 @@ const PaymentsProfileComparator* PaymentRequest::profile_comparator() const {
 }
 
 bool PaymentRequest::CanMakePayment() const {
-  for (PaymentInstrument* payment_method : payment_methods_) {
+  for (PaymentApp* payment_method : payment_methods_) {
     if (payment_method->IsValidForCanMakePayment()) {
       return true;
     }
@@ -517,7 +510,7 @@ void PaymentRequest::CreateNativeAppPaymentMethods() {
       ios_instrument_finder_.CreateIOSPaymentInstrumentsForMethods(
           url_payment_method_identifiers_,
           base::BindOnce(&PaymentRequest::PopulatePaymentMethodCache,
-                         base::Unretained(this)));
+                         weak_ptr_factory_.GetWeakPtr()));
 }
 
 void PaymentRequest::PopulatePaymentMethodCache(
@@ -546,14 +539,15 @@ void PaymentRequest::PopulatePaymentMethodCache(
     // We only want to add the credit cards read from the PersonalDataManager to
     // the list of payment instrument. Don't re-add them to PersonalDataManager.
     CreateAndAddAutofillPaymentInstrument(
-        *credit_card, /*may_update_personal_data_manager=*/false);
+        *credit_card,
+        /*may_update_personal_data_manager=*/false);
   }
 
   PopulateAvailablePaymentMethods();
 
   const auto first_complete_payment_method =
       std::find_if(payment_methods_.begin(), payment_methods_.end(),
-                   [](PaymentInstrument* payment_method) {
+                   [](PaymentApp* payment_method) {
                      return payment_method->IsCompleteForPayment() &&
                             payment_method->IsExactlyMatchingMerchantRequest();
                    });
@@ -637,8 +631,8 @@ void PaymentRequest::RecordRequestedInformation() {
       request_payer_name());
 
   // Log metrics around which payment methods are requested by the merchant.
-  const GURL kGooglePayUrl("https://google.com/pay");
-  const GURL kAndroidPayUrl("https://android.com/pay");
+  const GURL kGooglePayUrl(methods::kGooglePay);
+  const GURL kAndroidPayUrl(methods::kAndroidPay);
 
   // Looking for payment methods that are NOT Google-related as well as the
   // Google-related ones.

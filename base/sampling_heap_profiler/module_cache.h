@@ -5,7 +5,6 @@
 #ifndef BASE_SAMPLING_HEAP_PROFILER_MODULE_CACHE_H_
 #define BASE_SAMPLING_HEAP_PROFILER_MODULE_CACHE_H_
 
-#include <map>
 #include <memory>
 #include <string>
 #include <vector>
@@ -20,6 +19,16 @@
 
 namespace base {
 
+// Supports cached lookup of modules by address, with caching based on module
+// address ranges.
+//
+// Cached lookup is necessary on Mac for performance, due to an inefficient
+// dladdr implementation. See https://crrev.com/487092.
+//
+// Cached lookup is beneficial on Windows to minimize use of the loader
+// lock. Note however that the cache retains a handle to looked-up modules for
+// its lifetime, which may result in pinning modules in memory that were
+// transiently loaded by the OS.
 class BASE_EXPORT ModuleCache {
  public:
   // Module represents a binary module (executable or library) and its
@@ -50,6 +59,9 @@ class BASE_EXPORT ModuleCache {
 
     // Gets the size of the module.
     virtual size_t GetSize() const = 0;
+
+    // True if this is a native module.
+    virtual bool IsNative() const = 0;
   };
 
   ModuleCache();
@@ -61,33 +73,39 @@ class BASE_EXPORT ModuleCache {
   const Module* GetModuleForAddress(uintptr_t address);
   std::vector<const Module*> GetModules() const;
 
+  // Add a non-native module to the cache. Non-native modules represent regions
+  // of non-native executable code, like v8 generated code or compiled
+  // Java.
+  //
+  // Note that non-native modules may be embedded within native modules, as in
+  // the case of v8 builtin code compiled within Chrome. In that case
+  // GetModuleForAddress() will return the non-native module rather than the
+  // native module for the memory region it occupies.
+  void AddNonNativeModule(std::unique_ptr<Module> module);
+
+  void InjectModuleForTesting(std::unique_ptr<Module> module);
+
  private:
-  // TODO(alph): Refactor corresponding functions to use public API instead,
-  // and drop friends.
+  // Looks for a module containing |address| in |modules| returns the module if
+  // found, or null if not.
+  static Module* FindModuleForAddress(
+      const std::vector<std::unique_ptr<Module>>& modules,
+      uintptr_t address);
 
   // Creates a Module object for the specified memory address. Returns null if
   // the address does not belong to a module.
   static std::unique_ptr<Module> CreateModuleForAddress(uintptr_t address);
-  friend class NativeStackSamplerMac;
 
-#if defined(OS_MACOSX)
-  // Returns the size of the _TEXT segment of the module loaded
-  // at |module_addr|.
-  static size_t GetModuleTextSize(const void* module_addr);
-  friend bool MayTriggerUnwInitLocalCrash(uint64_t);
-#endif
+  // Unsorted vector of cached native modules. The number of loaded modules is
+  // generally much less than 100, and more frequently seen modules will tend to
+  // be added earlier and thus be closer to the front to the vector. So linear
+  // search to find modules should be acceptable.
+  std::vector<std::unique_ptr<Module>> native_modules_;
 
-#if defined(OS_WIN)
-  const Module* GetModuleForHandle(HMODULE module_handle);
-  static std::unique_ptr<Module> CreateModuleForHandle(HMODULE module_handle);
-  friend class NativeStackSamplerWin;
-
-  // The module objects, indexed by the module handle.
-  // TODO(wittman): Merge this state into modules_cache_map_ and remove
-  std::map<HMODULE, std::unique_ptr<Module>> win_module_cache_;
-#endif
-
-  std::map<uintptr_t, std::unique_ptr<Module>> modules_cache_map_;
+  // Unsorted vector of non-native modules. Separate from native_modules_ to
+  // support preferential lookup of non-native modules embedded in native
+  // modules. See comment on AddNonNativeModule().
+  std::vector<std::unique_ptr<Module>> non_native_modules_;
 };
 
 }  // namespace base

@@ -33,10 +33,6 @@ namespace blink {
 
 class ChildNodeList final : public NodeList {
  public:
-  static ChildNodeList* Create(ContainerNode& root_node) {
-    return MakeGarbageCollected<ChildNodeList>(root_node);
-  }
-
   explicit ChildNodeList(ContainerNode& root_node);
   ~ChildNodeList() override;
 

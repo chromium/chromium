@@ -13,6 +13,7 @@
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
+#include "base/optional.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 #include "components/policy/policy_export.h"
@@ -48,19 +49,26 @@ class POLICY_EXPORT RemoteCommandJob {
   // time. It must be consistent to the same parameter passed to Run() below.
   // In order to minimize the error while estimating the command issued time,
   // this method must be called immediately after the command is received from
-  // the server.
+  // the server. |signed_command| is passed if we're using signed commands; its
+  // format is the raw serialized command inside of policy data proto plus its
+  // signature, and it's cached in case the actual command implementation needs
+  // to pass its signature on to some other system for verification.
   bool Init(base::TimeTicks now,
-            const enterprise_management::RemoteCommand& command);
+            const enterprise_management::RemoteCommand& command,
+            const enterprise_management::SignedData* signed_command);
 
-  // Run the command asynchronously. |now| is the time which will be used for
-  // command expiration checking and marking of execution start.
+  // Run the command asynchronously. |now| is the time used for marking the
+  // execution start. |now_ticks| is the time which will be used for command
+  // expiration checking.
   // |finished_callback| will be called once the command finishes running,
   // regardless of whether the command is successful, fails or is terminated
   // prematurely.
   // Returns true if the task is posted and the command marked as running.
   // Returns false otherwise, for example if the command is invalid or expired.
   // Subclasses should implement RunImpl() for actual work.
-  bool Run(base::TimeTicks now, FinishedCallback finished_callback);
+  bool Run(base::Time now,
+           base::TimeTicks now_ticks,
+           FinishedCallback finished_callback);
 
   // Attempts to terminate the running tasks associated with this command. Does
   // nothing if the task is already terminated or finished. It's guaranteed that
@@ -81,9 +89,7 @@ class POLICY_EXPORT RemoteCommandJob {
   // Helpful accessors.
   UniqueIDType unique_id() const { return unique_id_; }
   base::TimeTicks issued_time() const { return issued_time_; }
-  base::TimeTicks execution_started_time() const {
-    return execution_started_time_;
-  }
+  base::Time execution_started_time() const { return execution_started_time_; }
   Status status() const { return status_; }
 
   // Returns whether execution of this command is finished.
@@ -137,6 +143,11 @@ class POLICY_EXPORT RemoteCommandJob {
   // The default implementation does nothing.
   virtual void TerminateImpl();
 
+  const base::Optional<enterprise_management::SignedData>& signed_command()
+      const {
+    return signed_command_;
+  }
+
  private:
   // Posted tasks are expected to call this method.
   void OnCommandExecutionFinishedWithResult(
@@ -149,7 +160,11 @@ class POLICY_EXPORT RemoteCommandJob {
   // The estimated time when the command was issued.
   base::TimeTicks issued_time_;
   // The time when the command started running.
-  base::TimeTicks execution_started_time_;
+  base::Time execution_started_time_;
+
+  // Serialized command inside policy data proto with signature in case of a
+  // signed command, otherwise empty.
+  base::Optional<enterprise_management::SignedData> signed_command_;
 
   std::unique_ptr<ResultPayload> result_payload_;
 
@@ -157,7 +172,7 @@ class POLICY_EXPORT RemoteCommandJob {
 
   base::ThreadChecker thread_checker_;
 
-  base::WeakPtrFactory<RemoteCommandJob> weak_factory_;
+  base::WeakPtrFactory<RemoteCommandJob> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(RemoteCommandJob);
 };

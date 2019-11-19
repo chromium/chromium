@@ -5,17 +5,44 @@
 source_set("find_in_page") {
   deps = [
     "//base",
+    "//ios/web/js_messaging",
     "//ios/web/public/",
     "//ios/web/public/find_in_page",
-    "//ios/web/web_state:web_frame",
+    "//ios/web/public/js_messaging",
     "//ios/web/web_state:web_state_impl_header",
   ]
 
   sources = [
     "find_in_page_constants.h",
     "find_in_page_constants.mm",
+    "find_in_page_manager_delegate_bridge.mm",
     "find_in_page_manager_impl.h",
     "find_in_page_manager_impl.mm",
+    "find_in_page_request.h",
+    "find_in_page_request.mm",
+  ]
+
+  configs += [ "//build/config/compiler:enable_arc" ]
+}
+
+source_set("find_in_page_unittests") {
+  testonly = true
+  deps = [
+    ":find_in_page",
+    "//base",
+    "//base/test:test_support",
+    "//ios/web/public",
+    "//ios/web/public/find_in_page",
+    "//ios/web/public/js_messaging",
+    "//ios/web/public/test",
+    "//ios/web/public/test/fakes",
+    "//testing/gtest",
+  ]
+
+  sources = [
+    "find_in_page_manager_delegate_bridge_unittest.mm",
+    "find_in_page_manger_impl_unittest.mm",
+    "find_in_page_request_unittest.mm",
   ]
 
   configs += [ "//build/config/compiler:enable_arc" ]

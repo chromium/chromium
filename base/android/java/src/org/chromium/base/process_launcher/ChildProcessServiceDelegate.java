@@ -35,10 +35,8 @@ public interface ChildProcessServiceDelegate {
     /**
      * Called when the delegate should load the native library.
      * @param hostContext The host context the library should be loaded with (i.e. Chrome).
-     * @return true if the library was loaded successfully, false otherwise in which case the
-     * service stops.
      */
-    boolean loadNativeLibrary(Context hostContext);
+    void loadNativeLibrary(Context hostContext);
 
     /**
      * Called when the delegate should preload the native library.

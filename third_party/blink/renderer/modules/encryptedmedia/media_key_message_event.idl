@@ -33,6 +33,7 @@ enum MediaKeyMessageType {
 };
 
 [
+    Exposed=Window,
     Constructor(DOMString type, MediaKeyMessageEventInit eventInitDict),
     SecureContext
 ] interface MediaKeyMessageEvent : Event {

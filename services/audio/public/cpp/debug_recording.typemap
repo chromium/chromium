@@ -14,5 +14,5 @@ deps = [
 ]
 
 type_mappings = [
-  "audio.mojom.DebugRecordingStreamType=media::AudioDebugRecordingStreamType",
+  "audio.mojom.DebugRecordingStreamType=::media::AudioDebugRecordingStreamType",
 ]

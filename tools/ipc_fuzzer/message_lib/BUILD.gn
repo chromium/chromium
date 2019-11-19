@@ -14,7 +14,6 @@ static_library("ipc_message_lib") {
     "//chrome/common/safe_browsing:proto",
     "//components/guest_view/common",
     "//components/nacl/common:buildflags",
-    "//components/network_hints/common",
     "//components/safe_browsing/common",
     "//components/spellcheck/common",
     "//components/subresource_filter/content/common",
@@ -29,11 +28,11 @@ static_library("ipc_message_lib") {
     "//skia",
     "//third_party/blink/public:blink",
     "//third_party/blink/public:blink_headers",
-    "//third_party/webrtc_overrides",
+    "//third_party/webrtc_overrides:webrtc_component",
     "//ui/accessibility:ax_enums_mojo",
   ]
   if (is_win) {
-    public_deps += [ "//chrome_elf:test_stubs" ]
+    public_deps += [ "//chrome/chrome_elf:test_stubs" ]
   }
   sources = [
     "all_messages.h",

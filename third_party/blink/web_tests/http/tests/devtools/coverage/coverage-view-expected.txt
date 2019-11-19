@@ -1,11 +1,9 @@
 Tests the coverage list view after finishing recording in the Coverage view.
 
-.../devtools/coverage/resources/coverage.js JS (coarse) used: 411 unused: 157 total: 568
 .../devtools/coverage/resources/highlight-in-source.css CSS used: 67 unused: 142 total: 209
-.../devtools/coverage/resources/basic-coverage.html JS (coarse) used: 51 unused: 0 total: 51
 Reloading Page
 Page reloaded.
-.../devtools/coverage/resources/coverage.js JS used: 360 unused: 208 total: 568
+.../devtools/coverage/resources/coverage.js JS (per block) used: 360 unused: 208 total: 568
 .../devtools/coverage/resources/highlight-in-source.css CSS used: 67 unused: 142 total: 209
-.../devtools/coverage/resources/basic-coverage.html JS used: 51 unused: 0 total: 51
+.../devtools/coverage/resources/basic-coverage.html JS (per block) used: 51 unused: 0 total: 51
 

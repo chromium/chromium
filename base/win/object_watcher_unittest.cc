@@ -4,11 +4,11 @@
 
 #include "base/win/object_watcher.h"
 
-#include <process.h>
 #include <windows.h>
+#include <process.h>
 
 #include "base/run_loop.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base {
@@ -34,8 +34,8 @@ class DecrementCountDelegate : public ObjectWatcher::Delegate {
 };
 
 void RunTest_BasicSignal(
-    test::ScopedTaskEnvironment::MainThreadType main_thread_type) {
-  test::ScopedTaskEnvironment scoped_task_environment(main_thread_type);
+    test::TaskEnvironment::MainThreadType main_thread_type) {
+  test::TaskEnvironment task_environment(main_thread_type);
 
   ObjectWatcher watcher;
   EXPECT_FALSE(watcher.IsWatching());
@@ -58,8 +58,8 @@ void RunTest_BasicSignal(
 }
 
 void RunTest_BasicCancel(
-    test::ScopedTaskEnvironment::MainThreadType main_thread_type) {
-  test::ScopedTaskEnvironment scoped_task_environment(main_thread_type);
+    test::TaskEnvironment::MainThreadType main_thread_type) {
+  test::TaskEnvironment task_environment(main_thread_type);
 
   ObjectWatcher watcher;
 
@@ -76,8 +76,8 @@ void RunTest_BasicCancel(
 }
 
 void RunTest_CancelAfterSet(
-    test::ScopedTaskEnvironment::MainThreadType main_thread_type) {
-  test::ScopedTaskEnvironment scoped_task_environment(main_thread_type);
+    test::TaskEnvironment::MainThreadType main_thread_type) {
+  test::TaskEnvironment task_environment(main_thread_type);
 
   ObjectWatcher watcher;
 
@@ -106,8 +106,8 @@ void RunTest_CancelAfterSet(
 }
 
 void RunTest_SignalBeforeWatch(
-    test::ScopedTaskEnvironment::MainThreadType main_thread_type) {
-  test::ScopedTaskEnvironment scoped_task_environment(main_thread_type);
+    test::TaskEnvironment::MainThreadType main_thread_type) {
+  test::TaskEnvironment task_environment(main_thread_type);
 
   ObjectWatcher watcher;
 
@@ -125,7 +125,7 @@ void RunTest_SignalBeforeWatch(
 }
 
 void RunTest_OutlivesTaskEnvironment(
-    test::ScopedTaskEnvironment::MainThreadType main_thread_type) {
+    test::TaskEnvironment::MainThreadType main_thread_type) {
   // Simulate a task environment that dies before an ObjectWatcher.  This
   // ordinarily doesn't happen when people use the Thread class, but it can
   // happen when people use the Singleton pattern or atexit.
@@ -133,7 +133,7 @@ void RunTest_OutlivesTaskEnvironment(
   {
     ObjectWatcher watcher;
     {
-      test::ScopedTaskEnvironment scoped_task_environment(main_thread_type);
+      test::TaskEnvironment task_environment(main_thread_type);
 
       QuitDelegate delegate;
       watcher.StartWatchingOnce(event, &delegate);
@@ -160,8 +160,8 @@ class QuitAfterMultipleDelegate : public ObjectWatcher::Delegate {
 };
 
 void RunTest_ExecuteMultipleTimes(
-    test::ScopedTaskEnvironment::MainThreadType main_thread_type) {
-  test::ScopedTaskEnvironment scoped_task_environment(main_thread_type);
+    test::TaskEnvironment::MainThreadType main_thread_type) {
+  test::TaskEnvironment task_environment(main_thread_type);
 
   ObjectWatcher watcher;
   EXPECT_FALSE(watcher.IsWatching());
@@ -189,44 +189,40 @@ void RunTest_ExecuteMultipleTimes(
 //-----------------------------------------------------------------------------
 
 TEST(ObjectWatcherTest, BasicSignal) {
-  RunTest_BasicSignal(test::ScopedTaskEnvironment::MainThreadType::DEFAULT);
-  RunTest_BasicSignal(test::ScopedTaskEnvironment::MainThreadType::IO);
-  RunTest_BasicSignal(test::ScopedTaskEnvironment::MainThreadType::UI);
+  RunTest_BasicSignal(test::TaskEnvironment::MainThreadType::DEFAULT);
+  RunTest_BasicSignal(test::TaskEnvironment::MainThreadType::IO);
+  RunTest_BasicSignal(test::TaskEnvironment::MainThreadType::UI);
 }
 
 TEST(ObjectWatcherTest, BasicCancel) {
-  RunTest_BasicCancel(test::ScopedTaskEnvironment::MainThreadType::DEFAULT);
-  RunTest_BasicCancel(test::ScopedTaskEnvironment::MainThreadType::IO);
-  RunTest_BasicCancel(test::ScopedTaskEnvironment::MainThreadType::UI);
+  RunTest_BasicCancel(test::TaskEnvironment::MainThreadType::DEFAULT);
+  RunTest_BasicCancel(test::TaskEnvironment::MainThreadType::IO);
+  RunTest_BasicCancel(test::TaskEnvironment::MainThreadType::UI);
 }
 
 TEST(ObjectWatcherTest, CancelAfterSet) {
-  RunTest_CancelAfterSet(test::ScopedTaskEnvironment::MainThreadType::DEFAULT);
-  RunTest_CancelAfterSet(test::ScopedTaskEnvironment::MainThreadType::IO);
-  RunTest_CancelAfterSet(test::ScopedTaskEnvironment::MainThreadType::UI);
+  RunTest_CancelAfterSet(test::TaskEnvironment::MainThreadType::DEFAULT);
+  RunTest_CancelAfterSet(test::TaskEnvironment::MainThreadType::IO);
+  RunTest_CancelAfterSet(test::TaskEnvironment::MainThreadType::UI);
 }
 
 TEST(ObjectWatcherTest, SignalBeforeWatch) {
-  RunTest_SignalBeforeWatch(
-      test::ScopedTaskEnvironment::MainThreadType::DEFAULT);
-  RunTest_SignalBeforeWatch(test::ScopedTaskEnvironment::MainThreadType::IO);
-  RunTest_SignalBeforeWatch(test::ScopedTaskEnvironment::MainThreadType::UI);
+  RunTest_SignalBeforeWatch(test::TaskEnvironment::MainThreadType::DEFAULT);
+  RunTest_SignalBeforeWatch(test::TaskEnvironment::MainThreadType::IO);
+  RunTest_SignalBeforeWatch(test::TaskEnvironment::MainThreadType::UI);
 }
 
 TEST(ObjectWatcherTest, OutlivesTaskEnvironment) {
   RunTest_OutlivesTaskEnvironment(
-      test::ScopedTaskEnvironment::MainThreadType::DEFAULT);
-  RunTest_OutlivesTaskEnvironment(
-      test::ScopedTaskEnvironment::MainThreadType::IO);
-  RunTest_OutlivesTaskEnvironment(
-      test::ScopedTaskEnvironment::MainThreadType::UI);
+      test::TaskEnvironment::MainThreadType::DEFAULT);
+  RunTest_OutlivesTaskEnvironment(test::TaskEnvironment::MainThreadType::IO);
+  RunTest_OutlivesTaskEnvironment(test::TaskEnvironment::MainThreadType::UI);
 }
 
 TEST(ObjectWatcherTest, ExecuteMultipleTimes) {
-  RunTest_ExecuteMultipleTimes(
-      test::ScopedTaskEnvironment::MainThreadType::DEFAULT);
-  RunTest_ExecuteMultipleTimes(test::ScopedTaskEnvironment::MainThreadType::IO);
-  RunTest_ExecuteMultipleTimes(test::ScopedTaskEnvironment::MainThreadType::UI);
+  RunTest_ExecuteMultipleTimes(test::TaskEnvironment::MainThreadType::DEFAULT);
+  RunTest_ExecuteMultipleTimes(test::TaskEnvironment::MainThreadType::IO);
+  RunTest_ExecuteMultipleTimes(test::TaskEnvironment::MainThreadType::UI);
 }
 
 }  // namespace win

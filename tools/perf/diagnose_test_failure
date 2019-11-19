@@ -3,6 +3,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+from __future__ import print_function
+
 import argparse
 import re
 import sys
@@ -25,7 +27,7 @@ class _Color(object):
 
 
 def _PrintWithColor(text, *colors):
-  print ''.join(colors) + text + _Color.ENDC
+  print(''.join(colors) + text + _Color.ENDC)
 
 
 def _ExtractBuildRevisionRange(build_page_content, build_url, test_name):
@@ -47,10 +49,10 @@ def _ShouldSkipBuild(build_page_content, build_url):
   ]
   for failure in _GLOBAL_FAILURE:
     if failure in build_page_content:
-      print
+      print(
       _PrintWithColor(
           "Warning: %s has '%s'."
-          ' Skipping this build' % (build_url, failure), _Color.WARNING)
+          ' Skipping this build' % (build_url, failure), _Color.WARNING))
       return True
   return False
 
@@ -65,7 +67,7 @@ def FindFirstFailureRange(build_url, test_name):
   while True:
     current_build_url = initial_build_url + str(build_number)
     build_number -= 1
-    print '\rProcess %s' % current_build_url,
+    print('\rProcess %s' % current_build_url,)
     sys.stdout.flush()
     build_page_content = urllib2.urlopen(current_build_url).read()
     if _ShouldSkipBuild(build_page_content, build_url):
@@ -89,8 +91,8 @@ def Main(args):
   options = parser.parse_args(args)
   first_failure_revisions, first_failed_build = FindFirstFailureRange(
       options.build_url, options.test_name)
-  print
-  print
+  print()
+  print()
   _PrintWithColor(
       'First failure range: %s - %s CLs' % (
           (min(first_failure_revisions), max(first_failure_revisions)),

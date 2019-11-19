@@ -50,7 +50,7 @@ bool IPAddressPrefixCheck(const IPAddressBytes& ip_address,
 }
 
 // Returns false if |ip_address| matches any of the reserved IPv4 ranges. This
-// method operates on a blacklist of reserved IPv4 ranges. Some ranges are
+// method operates on a list of reserved IPv4 ranges. Some ranges are
 // consolidated.
 // Sources for info:
 // www.iana.org/assignments/ipv4-address-space/ipv4-address-space.xhtml
@@ -80,8 +80,8 @@ bool IsPubliclyRoutableIPv4(const IPAddressBytes& ip_address) {
 }
 
 // Returns false if |ip_address| matches any of the IPv6 ranges IANA reserved
-// for local networks. This method operates on a whitelist of non-reserved
-// IPv6 ranges, plus the blacklist of reserved IPv4 ranges mapped to IPv6.
+// for local networks. This method operates on an allowlist of non-reserved
+// IPv6 ranges, plus the list of reserved IPv4 ranges mapped to IPv6.
 // Sources for info:
 // www.iana.org/assignments/ipv6-address-space/ipv6-address-space.xhtml
 bool IsPubliclyRoutableIPv6(const IPAddressBytes& ip_address) {
@@ -275,6 +275,10 @@ bool IPAddress::IsLinkLocal() const {
   // 169.254.0.0/16
   if (IsIPv4())
     return (ip_address_[0] == 169) && (ip_address_[1] == 254);
+
+  // [::ffff:169.254.0.0]/112
+  if (IsIPv4MappedIPv6())
+    return (ip_address_[12] == 169) && (ip_address_[13] == 254);
 
   // [fe80::]/10
   if (IsIPv6())

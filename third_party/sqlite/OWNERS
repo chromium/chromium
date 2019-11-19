@@ -1,8 +1,9 @@
 # Primary:
-pwnall@chromium.org
+huangdarwin@chromium.org
 
 # Secondary:
-cmumford@chromium.org
+cmumford@google.com
+pwnall@chromium.org
 
 # TEAM: storage-dev@chromium.org
 # COMPONENT: Internals>Storage

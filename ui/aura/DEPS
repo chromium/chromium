@@ -1,5 +1,6 @@
 include_rules = [
   "+cc/base",
+  "+cc/mojo_embedder",
   # TODO(danakj): This should not use LayerTreeFrameSink, which is part of the
   # layer compositor. It should use CompositorFrameSink instead.
   "+cc/trees/layer_tree_frame_sink.h",
@@ -8,11 +9,8 @@ include_rules = [
   "+components/viz/common",
   "+components/viz/host",
   "+mojo/public/cpp",
-  "+net/base/filename_util.h",
   "+services/service_manager/public/cpp",
   "+services/service_manager/public/mojom",
-  "+services/ws/common",
-  "+services/ws/public/mojom",
   "+skia/ext",
   "+third_party/skia",
   "+ui/base",
@@ -21,8 +19,12 @@ include_rules = [
   "+ui/events",
   "+ui/gfx",
   "+ui/gl/test",
-  "+ui/metro_viewer",  # TODO(beng): investigate moving remote_root_window_host
-                       #             to ui/metro_viewer.
   "+ui/ozone/public",
   "+ui/platform_window",
 ]
+
+specific_include_rules = {
+  "native_window_occlusion_tracker_win_interactive_test\.cc": [
+    "+mojo/core/embedder/embedder.h",
+  ],
+}

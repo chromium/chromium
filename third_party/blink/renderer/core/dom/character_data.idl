@@ -18,8 +18,9 @@
  */
 
 // https://dom.spec.whatwg.org/#interface-characterdata
-
-interface CharacterData : Node {
+[
+  Exposed=Window
+] interface CharacterData : Node {
     attribute [TreatNullAs=EmptyString] DOMString data;
     readonly attribute unsigned long length;
     [RaisesException] DOMString substringData(unsigned long offset, unsigned long count);
@@ -29,5 +30,5 @@ interface CharacterData : Node {
     [RaisesException] void replaceData(unsigned long offset, unsigned long count, DOMString data);
 };
 
-CharacterData implements ChildNode;
-CharacterData implements NonDocumentTypeChildNode;
+CharacterData includes ChildNode;
+CharacterData includes NonDocumentTypeChildNode;

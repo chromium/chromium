@@ -1,0 +1,10 @@
+This is a testharness.js-based test.
+PASS setLocalDescription with valid offer should succeed
+PASS setLocalDescription with type offer and null sdp should use lastOffer generated from createOffer
+PASS setLocalDescription() with offer not created by own createOffer() should reject with InvalidModificationError
+FAIL Set created offer other than last offer should reject with InvalidModificationError assert_unreached: Should have rejected: undefined Reached unreachable code
+PASS Creating and setting offer multiple times should succeed
+FAIL Setting previously generated offer after a call to createAnswer should work promise_test: Unhandled rejection with value: object "OperationError: Failed to execute 'setRemoteDescription' on 'RTCPeerConnection': Rollback not supported in Plan B"
+FAIL Negotiation works when there has been a repeated setLocalDescription(offer) assert_equals: expected 1 but got 0
+Harness: the test ran to completion.
+

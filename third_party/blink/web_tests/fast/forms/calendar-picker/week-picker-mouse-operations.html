@@ -115,7 +115,7 @@ function test() {
     eventSender.mouseScrollBy(0, 10);
     shouldBeTrue('checkYearListViewScrollOffset() > 0');
     clickYearListCell(1999);
-    shouldBeEqualToString('highlightedMonthButton()', '1999-10');
+    shouldBeEqualToString('highlightedMonthButton()', '1999-01');
 
     debug('Check that clicking the month popup sets the month.');
 

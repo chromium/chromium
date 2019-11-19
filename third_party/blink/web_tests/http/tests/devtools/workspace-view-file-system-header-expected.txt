@@ -1,0 +1,5 @@
+Tests workspace view file system headers
+
+File system name: test
+File system path: file:///this/is/a/test
+

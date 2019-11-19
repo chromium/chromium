@@ -1,17 +1,20 @@
 <link rel="import" href="chrome://resources/html/polymer.html">
 
+<link rel="import" href="chrome://resources/cr_elements/cr_button/cr_button.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_icon_button/cr_icon_button.html">
 <link rel="import" href="chrome://resources/cr_elements/policy/cr_policy_indicator.html">
 <link rel="import" href="chrome://resources/html/i18n_behavior.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/paper-button/paper-button.html">
 <link rel="import" href="../i18n_setup.html">
 <link rel="import" href="../prefs/prefs_behavior.html">
 <link rel="import" href="../settings_page/settings_animated_pages.html">
 <link rel="import" href="../settings_page/settings_subpage.html">
 <link rel="import" href="../settings_shared_css.html">
+<link rel="import" href="crostini_arc_adb.html">
 <link rel="import" href="crostini_browser_proxy.html">
-<link rel="import" href="crostini_subpage.html">
+<link rel="import" href="crostini_export_import.html">
 <link rel="import" href="crostini_shared_paths.html">
 <link rel="import" href="crostini_shared_usb_devices.html">
+<link rel="import" href="crostini_subpage.html">
 
 <dom-module id="settings-crostini-page">
   <template>
@@ -34,21 +37,19 @@
             </cr-policy-indicator>
           </template>
           <template is="dom-if" if="[[prefs.crostini.enabled.value]]">
-            <paper-icon-button-light class="subpage-arrow">
-              <button aria-label="$i18n{crostiniPageTitle}"
-                  aria-describedby="secondaryText">
-              </button>
-            </paper-icon-button-light>
+            <cr-icon-button class="subpage-arrow"
+                aria-label="$i18n{crostiniPageTitle}"
+                aria-describedby="secondaryText"></cr-icon-button>
           </template>
           <template is="dom-if" if="[[!prefs.crostini.enabled.value]]">
             <div class="separator"></div>
-            <paper-button id="enable"
-                disabled="[[!allowCrostini]]"
+            <cr-button id="enable"
+                disabled$="[[disableCrostiniInstall_]]"
                 on-click="onEnableTap_"
                 aria-label="$i18n{crostiniPageTitle}"
                 aria-describedby="secondaryText">
               $i18n{crostiniEnable}
-            </paper-button>
+            </cr-button>
           </template>
         </div>
       </div>
@@ -59,6 +60,24 @@
             page-title="$i18n{crostiniPageLabel}">
           <settings-crostini-subpage prefs="{{prefs}}">
           </settings-crostini-subpage>
+        </settings-subpage>
+      </template>
+
+      <template is="dom-if" route-path="/crostini/androidAdb">
+        <settings-subpage
+            associated-control="[[$$('#crostini')]]"
+            page-title="$i18n{crostiniArcAdbTitle}">
+          <settings-crostini-arc-adb prefs="{{prefs}}">
+          </settings-crostini-arc-adb>
+        </settings-subpage>
+      </template>
+
+      <template is="dom-if" route-path="/crostini/exportImport">
+        <settings-subpage
+            associated-control="[[$$('#crostini')]]"
+            page-title="$i18n{crostiniExportImportTitle}">
+          <settings-crostini-export-import prefs="{{prefs}}">
+          </settings-crostini-export-import>
         </settings-subpage>
       </template>
 

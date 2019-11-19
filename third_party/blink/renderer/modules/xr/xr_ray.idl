@@ -6,13 +6,14 @@
 [
     SecureContext,
     Exposed=Window,
-    OriginTrialEnabled=WebXR,
+    RuntimeEnabled=WebXRHitTest,
     Constructor(),
     Constructor(DOMPointInit origin),
     Constructor(DOMPointInit origin, DOMPointInit direction),
-    Constructor(XRRigidTransform transform)
+    Constructor(XRRigidTransform transform),
+    RaisesException=Constructor
 ] interface XRRay {
-  readonly attribute DOMPointReadOnly origin;
-  readonly attribute DOMPointReadOnly direction;
-  readonly attribute Float32Array matrix;
+  [SameObject] readonly attribute DOMPointReadOnly origin;
+  [SameObject] readonly attribute DOMPointReadOnly direction;
+  [SameObject] readonly attribute Float32Array matrix;
 };

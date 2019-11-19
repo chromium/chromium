@@ -1,0 +1,4 @@
+Tests that tracing with proto format outputs something resembling protos.
+Tracing complete
+First byte: 10
+

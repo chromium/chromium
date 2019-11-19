@@ -12,11 +12,11 @@
 
 Chromium also uses these languages to a lesser degree:
 
-  * [Kernel C style](https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/tree/Documentation/CodingStyle?id=refs/heads/master) for ChromiumOS firmware.
+  * [Kernel C style](https://www.kernel.org/doc/html/latest/process/coding-style.html) for ChromiumOS firmware.
   * [IDL](https://sites.google.com/a/chromium.org/dev/blink/webidl#TOC-Style)
   * [Jinja style guide](https://sites.google.com/a/chromium.org/dev/developers/jinja#TOC-Style) for [Jinja](https://sites.google.com/a/chromium.org/dev/developers/jinja) templates.
 
-Regardless of the language used, please keep code [gender neutral](gender_neutral_code.md).
+Regardless of the language used, please keep code [inclusive for all contributors](inclusive_code.md).
 
 ## Web languages (JavaScript, HTML, CSS)
 

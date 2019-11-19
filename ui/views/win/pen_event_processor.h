@@ -53,8 +53,11 @@ class VIEWS_EXPORT PenEventProcessor {
   bool direct_manipulation_enabled_;
   bool pen_in_contact_ = false;
   bool send_touch_for_pen_ = false;
-  bool sent_mouse_down_ = false;
-  bool sent_touch_start_ = false;
+
+  // There may be more than one pen used at the same time.
+  base::flat_map<UINT32, bool> sent_mouse_down_;
+  base::flat_map<UINT32, bool> sent_touch_start_;
+
   base::Optional<unsigned int> eraser_pointer_id_;
 
   DISALLOW_COPY_AND_ASSIGN(PenEventProcessor);

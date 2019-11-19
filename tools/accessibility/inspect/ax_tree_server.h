@@ -9,7 +9,7 @@
 
 #include "base/process/process_handle.h"
 #include "build/build_config.h"
-#include "content/browser/accessibility/accessibility_tree_formatter.h"
+#include "content/public/browser/accessibility_tree_formatter.h"
 
 #if defined(OS_WIN)
 #include "base/win/scoped_com_initializer.h"

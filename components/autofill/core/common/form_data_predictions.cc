@@ -6,23 +6,24 @@
 
 namespace autofill {
 
-FormDataPredictions::FormDataPredictions() {
-}
+FormDataPredictions::FormDataPredictions() = default;
 
-FormDataPredictions::FormDataPredictions(const FormDataPredictions& other)
-    : data(other.data),
-      signature(other.signature),
-      fields(other.fields) {
-}
+FormDataPredictions::FormDataPredictions(const FormDataPredictions&) = default;
 
-FormDataPredictions::~FormDataPredictions() {
-}
+FormDataPredictions& FormDataPredictions::operator=(
+    const FormDataPredictions&) = default;
+
+FormDataPredictions::FormDataPredictions(FormDataPredictions&&) = default;
+
+FormDataPredictions& FormDataPredictions::operator=(FormDataPredictions&&) =
+    default;
+
+FormDataPredictions::~FormDataPredictions() = default;
 
 bool FormDataPredictions::operator==(
     const FormDataPredictions& predictions) const {
   return (data.SameFormAs(predictions.data) &&
-          signature == predictions.signature &&
-          fields == predictions.fields);
+          signature == predictions.signature && fields == predictions.fields);
 }
 
 bool FormDataPredictions::operator!=(

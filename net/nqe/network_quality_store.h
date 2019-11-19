@@ -99,7 +99,7 @@ class NET_EXPORT_PRIVATE NetworkQualityStore {
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  base::WeakPtrFactory<NetworkQualityStore> weak_ptr_factory_;
+  base::WeakPtrFactory<NetworkQualityStore> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(NetworkQualityStore);
 };

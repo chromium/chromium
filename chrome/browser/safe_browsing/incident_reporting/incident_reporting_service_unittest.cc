@@ -36,7 +36,7 @@
 #include "components/safe_browsing/common/safe_browsing_prefs.h"
 #include "components/safe_browsing/proto/csd.pb.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "extensions/browser/quota_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -156,7 +156,7 @@ class IncidentReportingServiceTest : public testing::Test {
   };
 
   // A type for specifying the action to be taken by the test fixture during
-  // profile initialization (before NOTIFICATION_PROFILE_ADDED is sent).
+  // profile initialization (before OnProfileAdded is called).
   enum OnProfileAdditionAction {
     ON_PROFILE_ADDITION_NO_ACTION,
     ON_PROFILE_ADDITION_ADD_INCIDENT,  // Add an incident to the service.
@@ -263,11 +263,15 @@ class IncidentReportingServiceTest : public testing::Test {
     profile_properties_[profile_name].on_addition_action = on_addition_action;
 
     // Boom (or fizzle).
-    return profile_manager_.CreateTestingProfile(
+    auto* profile = profile_manager_.CreateTestingProfile(
         profile_name, std::move(prefs), base::ASCIIToUTF16(profile_name),
         0,              // avatar_id (unused)
         std::string(),  // supervised_user_id (unused)
-        TestingProfile::TestingFactories());
+        TestingProfile::TestingFactories(),
+        /*override_new_profile=*/base::Optional<bool>(false));
+    mock_time_task_runner_->FastForwardUntilNoTasksRemain();
+
+    return profile;
   }
 
   // Configures a callback to run when the next upload is started that will post
@@ -331,7 +335,7 @@ class IncidentReportingServiceTest : public testing::Test {
   bool DelayedAnalysisRan() const { return delayed_analysis_ran_; }
 
   // Fakes BrowserThreads and the main MessageLoop.
-  content::TestBrowserThreadBundle thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
 
   // Replaces the main MessageLoop's TaskRunner with a TaskRunner on which time
   // is mocked to allow testing of things bound to timers below.
@@ -462,7 +466,7 @@ class IncidentReportingServiceTest : public testing::Test {
     ProfileProperties() : on_addition_action(ON_PROFILE_ADDITION_NO_ACTION) {}
 
     // The action taken by the test fixture during profile initialization
-    // (before NOTIFICATION_PROFILE_ADDED is sent).
+    // (before OnProfileAdded is called).
     OnProfileAdditionAction on_addition_action;
   };
 

@@ -77,15 +77,6 @@ HeadlessBrowserContextOptions::override_web_preferences_callback() const {
       browser_options_->override_web_preferences_callback);
 }
 
-const ProtocolHandlerMap& HeadlessBrowserContextOptions::protocol_handlers()
-    const {
-  return protocol_handlers_;
-}
-
-ProtocolHandlerMap HeadlessBrowserContextOptions::TakeProtocolHandlers() {
-  return std::move(protocol_handlers_);
-}
-
 gfx::FontRenderParams::Hinting
 HeadlessBrowserContextOptions::font_render_hinting() const {
   return ReturnOverriddenValue(font_render_hinting_,

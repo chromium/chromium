@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<title>Hide the overlay play button on play, show it on tap</title>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../media-controls.js"></script>
+<script src="overlay-play-button.js"></script>
+<body>
+<script>
+async_test((t) => {
+  // This test is only valid when the overlay play button is enabled.
+  enableOverlayPlayButtonForTest(t);
+
+  const video = document.createElement('video');
+  video.width = 400;
+  video.controls = true;
+  video.preload = 'metadata'
+  document.body.appendChild(video);
+  const button = mediaControlsOverlayPlayButtonInternal(video);
+  const controls = mediaControls(video);
+  const overlay = mediaControlsOverlayPlayButton(video);
+  let call_count = 0;
+
+  // Make sure the overlay button is not hidden.
+  assert_false(overlay.classList.contains('hidden'));
+
+  overlay.addEventListener('transitionend', t.step_func(() => {
+    call_count++;
+    if (call_count == 1) {
+      // Now tap anywhere on the controls and make sure the button
+      // unhides itself.
+      assert_true(overlay.classList.contains('hidden'));
+      singleTapOnControl(controls);
+    } else if(call_count == 2) {
+      // The second time a transition ends, it must be the controls becoming
+      // visible.
+      assert_false(overlay.classList.contains('hidden'));
+      t.done();
+    } else {
+      assert_unreached("Unexpected transitionend event");
+    }
+  }));
+
+  // Wait until we have loaded the video and tap on the button. This will
+  // transition the button to visible.
+  video.addEventListener('canplay', t.step_func(() => {
+    singleTapOnControl(button);
+  }), { once: true });
+
+  video.src = '../content/test.webm';
+});
+</script>

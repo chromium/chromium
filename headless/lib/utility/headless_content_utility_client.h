@@ -26,9 +26,7 @@ class HEADLESS_EXPORT HeadlessContentUtilityClient
   ~HeadlessContentUtilityClient() override;
 
   // content::ContentUtilityClient:
-  bool HandleServiceRequest(
-      const std::string& service_name,
-      service_manager::mojom::ServiceRequest request) override;
+  mojo::ServiceFactory* GetMainThreadServiceFactory() override;
   void RegisterNetworkBinders(
       service_manager::BinderRegistry* registry) override;
 

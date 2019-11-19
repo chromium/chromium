@@ -8,6 +8,8 @@ blink_modules_sources("shapedetection") {
   sources = [
     "barcode_detector.cc",
     "barcode_detector.h",
+    "barcode_detector_statics.cc",
+    "barcode_detector_statics.h",
     "detected_barcode.cc",
     "detected_barcode.h",
     "detected_face.cc",
@@ -25,6 +27,6 @@ blink_modules_sources("shapedetection") {
 
   public_deps = [
     "//services/shape_detection/public/mojom:mojom_blink",
-    "//skia/public/interfaces",
+    "//skia/public/mojom",
   ]
 }

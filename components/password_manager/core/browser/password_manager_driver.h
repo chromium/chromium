@@ -12,14 +12,11 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string16.h"
-#include "components/autofill/core/common/filling_status.h"
-#include "components/autofill/core/common/password_form_field_prediction_map.h"
+#include "base/util/type_safety/strong_alias.h"
+#include "components/autofill/core/common/mojom/autofill_types.mojom.h"
 
 namespace autofill {
 class AutofillDriver;
-struct FormData;
-struct NewPasswordFormGenerationData;
-struct PasswordForm;
 struct PasswordFormGenerationData;
 struct PasswordFormFillData;
 }  // namespace autofill
@@ -27,7 +24,7 @@ struct PasswordFormFillData;
 namespace password_manager {
 
 class PasswordAutofillManager;
-class PasswordGenerationManager;
+class PasswordGenerationFrameHelper;
 class PasswordManager;
 
 // Interface that allows PasswordManager core code to interact with its driver
@@ -35,8 +32,14 @@ class PasswordManager;
 class PasswordManagerDriver
     : public base::SupportsWeakPtr<PasswordManagerDriver> {
  public:
-  PasswordManagerDriver() {}
-  virtual ~PasswordManagerDriver() {}
+  using ShowVirtualKeyboard =
+      util::StrongAlias<class ShowVirtualKeyboardTag, bool>;
+
+  PasswordManagerDriver() = default;
+  virtual ~PasswordManagerDriver() = default;
+
+  // Returns driver id which is unique in the current tab.
+  virtual int GetId() const = 0;
 
   // Fills forms matching |form_data|.
   virtual void FillPasswordForm(
@@ -47,28 +50,23 @@ class PasswordManagerDriver
   // TODO(https://crbug.com/621355): Remove and observe FormFetcher instead.
   virtual void InformNoSavedCredentials() {}
 
-  // Informs the driver that |form| can be used for password generation.
-  virtual void AllowPasswordGenerationForForm(
-      const autofill::PasswordForm& form) = 0;
-
-  // Notifies the driver that |forms| were found on which password can be
-  // generated.
-  virtual void FormsEligibleForGenerationFound(
-      const std::vector<autofill::PasswordFormGenerationData>& forms) = 0;
-
   // Notifies the driver that a password can be generated on the fields
   // identified by |form|.
   virtual void FormEligibleForGenerationFound(
-      const autofill::NewPasswordFormGenerationData& form) {}
-
-  // Notifies the driver that username and password predictions from autofill
-  // have been received.
-  virtual void AutofillDataReceived(
-      const std::map<autofill::FormData,
-                     autofill::PasswordFormFieldPredictionMap>& predictions) {}
+      const autofill::PasswordFormGenerationData& form) {}
 
   // Notifies the driver that the user has accepted a generated password.
+  // TODO(crbug/936011): delete this method. The UI should call the one below.
   virtual void GeneratedPasswordAccepted(const base::string16& password) = 0;
+
+  // Notifies the password manager that the user has accepted a generated
+  // password. The password manager can bring up some disambiguation UI in
+  // response.
+  virtual void GeneratedPasswordAccepted(const autofill::FormData& form_data,
+                                         uint32_t generation_element_id,
+                                         const base::string16& password) {}
+
+  virtual void TouchToFillClosed(ShowVirtualKeyboard show_virtual_keyboard) {}
 
   // Tells the driver to fill the form with the |username| and |password|.
   virtual void FillSuggestion(const base::string16& username,
@@ -78,24 +76,18 @@ class PasswordManagerDriver
   // Always calls |completed_callback| with a status indicating success/error.
   virtual void FillIntoFocusedField(
       bool is_password,
-      const base::string16& user_provided_credential,
-      base::OnceCallback<void(autofill::FillingStatus)> compeleted_callback) {}
+      const base::string16& user_provided_credential) {}
 
   // Tells the driver to preview filling form with the |username| and
   // |password|.
   virtual void PreviewSuggestion(const base::string16& username,
                                  const base::string16& password) = 0;
 
-  // Tells the driver to show an initial set of accounts to suggest for the
-  // form.
-  virtual void ShowInitialPasswordAccountSuggestions(
-      const autofill::PasswordFormFillData& form_data) = 0;
-
   // Tells the driver to clear previewed password and username fields.
   virtual void ClearPreviewedForm() = 0;
 
-  // Returns the PasswordGenerationManager associated with this instance.
-  virtual PasswordGenerationManager* GetPasswordGenerationManager() = 0;
+  // Returns the PasswordGenerationFrameHelper associated with this instance.
+  virtual PasswordGenerationFrameHelper* GetPasswordGenerationHelper() = 0;
 
   // Returns the PasswordManager associated with this instance.
   virtual PasswordManager* GetPasswordManager() = 0;
@@ -114,7 +106,12 @@ class PasswordManagerDriver
   virtual bool IsMainFrame() const = 0;
 
   // Returns the last committed URL of the frame.
-  virtual GURL GetLastCommittedURL() const = 0;
+  virtual const GURL& GetLastCommittedURL() const = 0;
+
+  // Annotate password related (username, password) DOM input elements with
+  // corresponding HTML attributes. It is used only for debugging.
+  virtual void AnnotateFieldsWithParsingResult(
+      const autofill::ParsingResult& parsing_result) {}
 
  private:
   DISALLOW_COPY_AND_ASSIGN(PasswordManagerDriver);

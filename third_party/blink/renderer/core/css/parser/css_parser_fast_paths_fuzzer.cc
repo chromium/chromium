@@ -19,7 +19,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
 
   const auto property_id =
       blink::convertToCSSPropertyID(provider.ConsumeIntegralInRange<int>(
-          blink::firstCSSProperty, blink::lastCSSProperty));
+          blink::kIntFirstCSSProperty, blink::kIntLastCSSProperty));
   const auto data_string = provider.ConsumeRemainingBytes();
 
   for (unsigned parser_mode = 0;

@@ -15,10 +15,12 @@
 #include "base/memory/weak_ptr.h"
 #include "base/single_thread_task_runner.h"
 #include "components/download/internal/background_service/blob_task_proxy.h"
+#include "components/download/public/background_service/blob_context_getter_factory.h"
 #include "components/download/public/background_service/download_params.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/cpp/simple_url_loader_stream_consumer.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
+#include "services/network/public/mojom/url_response_head.mojom-forward.h"
 
 class GURL;
 
@@ -38,17 +40,22 @@ struct RequestParams;
 // Used by download service in Incognito mode, where download files shouldn't
 // be persisted to disk.
 //
-// Life cycle: The object is created before creating the network request.
-// Call Start() to send the network request.
+// Life cycle: The object is created before sending the network request.
+// Call Start() to retrieve the blob storage context and send the network
+// request.
 class InMemoryDownload {
  public:
-  // Report download progress with in-memory download backend.
   class Delegate {
    public:
+    // Report download progress with in-memory download backend.
     virtual void OnDownloadStarted(InMemoryDownload* download) = 0;
     virtual void OnDownloadProgress(InMemoryDownload* download) = 0;
     virtual void OnDownloadComplete(InMemoryDownload* download) = 0;
     virtual void OnUploadProgress(InMemoryDownload* download) = 0;
+
+    // Retrieves the blob storage context getter.
+    virtual void RetrieveBlobContextGetter(
+        BlobContextGetterCallback callback) = 0;
 
    protected:
     virtual ~Delegate() = default;
@@ -69,12 +76,15 @@ class InMemoryDownload {
 
   // States of the download.
   enum class State {
-    // The object is created but network request has not been sent.
+    // The object is just created.
     INITIAL,
 
+    // Waiting to retrieve BlobStorageContextGetter.
+    RETRIEVE_BLOB_CONTEXT,
+
     // Download is in progress, including the following procedures.
-    // 1. Transfer network data.
-    // 2. Save to blob storage.
+    // 1. Send the network request and transfer data from network.
+    // 2. Save the data to blob storage.
     IN_PROGRESS,
 
     // The download can fail due to:
@@ -161,7 +171,6 @@ class InMemoryDownloadImpl : public network::SimpleURLLoaderStreamConsumer,
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
       Delegate* delegate,
       network::mojom::URLLoaderFactory* url_loader_factory,
-      BlobTaskProxy::BlobContextGetter blob_context_getter,
       scoped_refptr<base::SingleThreadTaskRunner> io_task_runner);
 
   ~InMemoryDownloadImpl() override;
@@ -171,6 +180,9 @@ class InMemoryDownloadImpl : public network::SimpleURLLoaderStreamConsumer,
   void Start() override;
   void Pause() override;
   void Resume() override;
+
+  // Called when the BlobStorageContextGetter is ready to use.
+  void OnRetrievedBlobContextGetter(BlobContextGetter blob_context_getter);
 
   std::unique_ptr<storage::BlobDataHandle> ResultAsBlob() const override;
   size_t EstimateMemoryUsage() const override;
@@ -196,12 +208,12 @@ class InMemoryDownloadImpl : public network::SimpleURLLoaderStreamConsumer,
 
   // Called when the server redirects to another URL.
   void OnRedirect(const net::RedirectInfo& redirect_info,
-                  const network::ResourceResponseHead& response_head,
+                  const network::mojom::URLResponseHead& response_head,
                   std::vector<std::string>* to_be_removed_headers);
 
   // Called when the response of the final URL is received.
   void OnResponseStarted(const GURL& final_url,
-                         const network::ResourceResponseHead& response_head);
+                         const network::mojom::URLResponseHead& response_head);
 
   void OnUploadProgress(uint64_t position, uint64_t total);
 
@@ -248,7 +260,7 @@ class InMemoryDownloadImpl : public network::SimpleURLLoaderStreamConsumer,
   bool started_;
 
   // Bounded to main thread task runner.
-  base::WeakPtrFactory<InMemoryDownloadImpl> weak_ptr_factory_;
+  base::WeakPtrFactory<InMemoryDownloadImpl> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(InMemoryDownloadImpl);
 };

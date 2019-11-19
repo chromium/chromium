@@ -1,11 +1,5 @@
 {
     "archives": {
-        "intent:coldish:bbc": {
-            "DEFAULT": "startup_pages_000.wprgo"
-        },
-        "intent:warm:bbc": {
-            "DEFAULT": "startup_pages_000.wprgo"
-        },
         "cct:coldish:bbc": {
             "DEFAULT": "startup_pages_000.wprgo"
         },
@@ -14,8 +8,17 @@
         },
         "http://kapook.com": {
             "DEFAULT": "startup_pages_000.wprgo"
+        },
+        "intent:coldish:bbc": {
+            "DEFAULT": "startup_pages_000.wprgo"
+        },
+        "intent:warm:bbc": {
+            "DEFAULT": "startup_pages_000.wprgo"
+        },
+        "maps_pwa:with_http_cache": {
+            "DEFAULT": "startup_pages_b689e9a47f.wprgo"
         }
     },
-    "description": "Describes the Web Page Replay archives for a story set. Normally record_wpr is used to produce this file. Since record_wpr does not work for startup.mobile benchmarks, we allow adding new stories to this file by hand.",
+    "description": "Describes the Web Page Replay archives for a story set. Don't edit by hand! Use record_wpr for updating.",
     "platform_specific": true
 }

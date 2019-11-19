@@ -1,0 +1,14 @@
+This folder is for Chrome automation specific only. If your manual test
+can be automated using test_driver APIs exposed in wpt documented in
+https://web-platform-tests.org/writing-tests/testdriver.html
+use those APIs and drop the "manual" suffix from the name of the test.
+
+If your test can only be automated with Chrome only testing APIs
+such as eventSender then leave the "manual" in the name of the test
+and add a mirror automation script in this directory. You need to also
+make sure your test subdirectory is whitelisted under
+resources/testharnessreport.js.
+
+If you add an automation script here please also file an issue to capture
+the follow up work with the owners in that space to make that testing API
+cross browser.

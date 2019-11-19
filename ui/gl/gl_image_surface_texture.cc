@@ -29,6 +29,10 @@ gfx::Size GLImageSurfaceTexture::GetSize() {
 
 unsigned GLImageSurfaceTexture::GetInternalFormat() { return GL_RGBA; }
 
+unsigned GLImageSurfaceTexture::GetDataType() {
+  return GL_UNSIGNED_BYTE;
+}
+
 bool GLImageSurfaceTexture::BindTexImage(unsigned target) {
   TRACE_EVENT0("gpu", "GLImageSurfaceTexture::BindTexImage");
   DCHECK(thread_checker_.CalledOnValidThread());

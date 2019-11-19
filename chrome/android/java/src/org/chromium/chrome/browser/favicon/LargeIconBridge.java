@@ -5,11 +5,13 @@
 package org.chromium.chrome.browser.favicon;
 
 import android.graphics.Bitmap;
-import android.support.annotation.Nullable;
 import android.util.LruCache;
 
-import org.chromium.base.VisibleForTesting;
+import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.annotations.CalledByNative;
+import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.util.ConversionUtils;
 
@@ -62,7 +64,7 @@ public class LargeIconBridge {
      * @param profile Profile to use when fetching icons.
      */
     public LargeIconBridge(Profile profile) {
-        mNativeLargeIconBridge = nativeInit();
+        mNativeLargeIconBridge = LargeIconBridgeJni.get().init();
         mProfile = profile;
     }
 
@@ -100,7 +102,7 @@ public class LargeIconBridge {
      */
     public void destroy() {
         if (mNativeLargeIconBridge != 0) {
-            nativeDestroy(mNativeLargeIconBridge);
+            LargeIconBridgeJni.get().destroy(mNativeLargeIconBridge);
             mNativeLargeIconBridge = 0;
         }
     }
@@ -124,8 +126,8 @@ public class LargeIconBridge {
         assert callback != null;
 
         if (mFaviconCache == null) {
-            return nativeGetLargeIconForURL(mNativeLargeIconBridge, mProfile, pageUrl,
-                    desiredSizePx, callback);
+            return LargeIconBridgeJni.get().getLargeIconForURL(
+                    mNativeLargeIconBridge, mProfile, pageUrl, desiredSizePx, callback);
         } else {
             CachedFavicon cached = mFaviconCache.get(pageUrl);
             if (cached != null) {
@@ -145,8 +147,8 @@ public class LargeIconBridge {
                             icon, fallbackColor, isFallbackColorDefault, iconType);
                 }
             };
-            return nativeGetLargeIconForURL(mNativeLargeIconBridge, mProfile, pageUrl,
-                    desiredSizePx, callbackWrapper);
+            return LargeIconBridgeJni.get().getLargeIconForURL(
+                    mNativeLargeIconBridge, mProfile, pageUrl, desiredSizePx, callbackWrapper);
         }
     }
 
@@ -157,8 +159,11 @@ public class LargeIconBridge {
         mFaviconCache.remove(url);
     }
 
-    private static native long nativeInit();
-    private static native void nativeDestroy(long nativeLargeIconBridge);
-    private static native boolean nativeGetLargeIconForURL(long nativeLargeIconBridge,
-            Profile profile, String pageUrl, int desiredSizePx, LargeIconCallback callback);
+    @NativeMethods
+    interface Natives {
+        long init();
+        void destroy(long nativeLargeIconBridge);
+        boolean getLargeIconForURL(long nativeLargeIconBridge, Profile profile, String pageUrl,
+                int desiredSizePx, LargeIconCallback callback);
+    }
 }

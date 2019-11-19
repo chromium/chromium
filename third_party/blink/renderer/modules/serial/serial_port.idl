@@ -5,15 +5,21 @@
 // https://wicg.github.io/serial
 
 [
+    ActiveScriptWrappable,
     Exposed(Window Serial,DedicatedWorker Serial),
     SecureContext
 ] interface SerialPort {
-    readonly attribute ReadableStream in;
-    readonly attribute WritableStream out;
+    [CallWith=ScriptState, RaisesException]
+    readonly attribute ReadableStream readable;
+    [CallWith=ScriptState, RaisesException]
+    readonly attribute WritableStream writable;
 
-    [CallWith=ScriptState, MeasureAs=SerialPortOpen]
+    [CallWith=ScriptState, RaisesException, MeasureAs=SerialPortOpen]
     Promise<void> open(SerialOptions options);
-
-    [CallWith=ScriptState, MeasureAs=SerialPortClose]
+    [CallWith=ScriptState, RaisesException]
+    Promise<SerialInputSignals> getSignals();
+    [CallWith=ScriptState, RaisesException]
+    Promise<void> setSignals(SerialOutputSignals signals);
+    [RaisesException, CallWith=ScriptState, MeasureAs=SerialPortClose]
     Promise<void> close();
 };

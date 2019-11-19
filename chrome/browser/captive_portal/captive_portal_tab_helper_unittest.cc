@@ -76,9 +76,6 @@ class CaptivePortalTabHelperTest : public ChromeRenderViewHostTestHarness {
     content::WebContentsTester* web_contents_tester =
         content::WebContentsTester::For(web_contents());
     web_contents_tester->NavigateAndCommit(GURL(kStartUrl));
-    content::RenderFrameHostTester* rfh_tester =
-        content::RenderFrameHostTester::For(main_rfh());
-    rfh_tester->SimulateNavigationStop();
 
     tab_helper_.reset(new CaptivePortalTabHelper(web_contents()));
     tab_helper_->profile_ = nullptr;
@@ -139,8 +136,6 @@ class CaptivePortalTabHelperTest : public ChromeRenderViewHostTestHarness {
     EXPECT_CALL(mock_reloader(), OnAbort()).Times(1);
     navigation->Fail(net::ERR_TIMED_OUT);
     navigation->AbortCommit();
-    content::RenderFrameHostTester::For(navigation->GetFinalRenderFrameHost())
-        ->SimulateNavigationStop();
 
     // Make sure that above call resulted in abort, for tests that continue
     // after the abort.
@@ -180,17 +175,14 @@ class CaptivePortalTabHelperTest : public ChromeRenderViewHostTestHarness {
 
 TEST_F(CaptivePortalTabHelperTest, HttpSuccess) {
   SimulateSuccess(GURL(kHttpUrl));
-  content::RenderFrameHostTester::For(main_rfh())->SimulateNavigationStop();
 }
 
 TEST_F(CaptivePortalTabHelperTest, HttpTimeout) {
   SimulateTimeout(GURL(kHttpUrl));
-  content::RenderFrameHostTester::For(main_rfh())->SimulateNavigationStop();
 }
 
 TEST_F(CaptivePortalTabHelperTest, HttpsSuccess) {
   SimulateSuccess(GURL(kHttpsUrl));
-  content::RenderFrameHostTester::For(main_rfh())->SimulateNavigationStop();
   EXPECT_FALSE(tab_helper()->IsLoginTab());
 }
 
@@ -237,7 +229,6 @@ TEST_F(CaptivePortalTabHelperTest, AbortTimeoutCrossProcess) {
 // a cross-process one.
 TEST_F(CaptivePortalTabHelperTest, HttpsAbortTimeoutForCrossProcess) {
   SimulateSuccess(GURL(kHttpsUrl));
-  content::RenderFrameHostTester::For(main_rfh())->SimulateNavigationStop();
 
   SimulateAbortTimeout(GURL(kHttpsUrl));
   // Make sure no state was carried over from the timeout or the abort.
@@ -271,11 +262,6 @@ TEST_F(CaptivePortalTabHelperTest, UnexpectedProvisionalLoad) {
 
   // The cross-process navigation fails.
   cross_process_navigation->Fail(net::ERR_FAILED);
-
-  // The same-site navigation finally stops.
-  content::RenderFrameHostTester::For(
-      same_site_navigation->GetFinalRenderFrameHost())
-      ->SimulateNavigationStop();
 
   EXPECT_CALL(mock_reloader(), OnLoadCommitted(net::ERR_FAILED)).Times(1);
   cross_process_navigation->CommitErrorPage();

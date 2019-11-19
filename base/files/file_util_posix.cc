@@ -22,6 +22,7 @@
 #include <unistd.h>
 
 #include "base/base_switches.h"
+#include "base/bits.h"
 #include "base/command_line.h"
 #include "base/containers/stack.h"
 #include "base/environment.h"
@@ -30,6 +31,7 @@
 #include "base/files/scoped_file.h"
 #include "base/logging.h"
 #include "base/memory/singleton.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/path_service.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/stl_util.h"
@@ -41,6 +43,7 @@
 #include "base/system/sys_info.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/time/time.h"
+#include "build/branding_buildflags.h"
 #include "build/build_config.h"
 
 #if defined(OS_MACOSX)
@@ -113,7 +116,7 @@ bool VerifySpecificPathControlledByUser(const FilePath& path,
   }
 
   if ((stat_info.st_mode & S_IWGRP) &&
-      !ContainsKey(group_gids, stat_info.st_gid)) {
+      !Contains(group_gids, stat_info.st_gid)) {
     DLOG(ERROR) << "Path " << path.value()
                 << " is writable by an unprivileged group.";
     return false;
@@ -132,7 +135,7 @@ std::string TempFileName() {
   return StringPrintf(".%s.XXXXXX", base::mac::BaseBundleID());
 #endif
 
-#if defined(GOOGLE_CHROME_BUILD)
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   return std::string(".com.google.Chrome.XXXXXX");
 #else
   return std::string(".org.chromium.Chromium.XXXXXX");
@@ -317,38 +320,19 @@ bool DoCopyDirectory(const FilePath& from_path,
 
   return true;
 }
-#endif  // !defined(OS_NACL_NONSFI)
-
-#if !defined(OS_MACOSX)
-// Appends |mode_char| to |mode| before the optional character set encoding; see
-// https://www.gnu.org/software/libc/manual/html_node/Opening-Streams.html for
-// details.
-std::string AppendModeCharacter(StringPiece mode, char mode_char) {
-  std::string result(mode.as_string());
-  size_t comma_pos = result.find(',');
-  result.insert(comma_pos == std::string::npos ? result.length() : comma_pos, 1,
-                mode_char);
-  return result;
-}
-#endif
-
-}  // namespace
-
-#if !defined(OS_NACL_NONSFI)
-FilePath MakeAbsoluteFilePath(const FilePath& input) {
-  ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
-  char full_path[PATH_MAX];
-  if (realpath(input.value().c_str(), full_path) == nullptr)
-    return FilePath();
-  return FilePath(full_path);
-}
 
 // TODO(erikkay): The Windows version of this accepts paths like "foo/bar/*"
 // which works both with and without the recursive flag.  I'm not sure we need
 // that functionality. If not, remove from file_util_win.cc, otherwise add it
 // here.
-bool DeleteFile(const FilePath& path, bool recursive) {
+bool DoDeleteFile(const FilePath& path, bool recursive) {
   ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
+
+#if defined(OS_ANDROID)
+  if (path.IsContentUri())
+    return DeleteContentUri(path);
+#endif  // defined(OS_ANDROID)
+
   const char* path_str = path.value().c_str();
   stat_wrapper_t file_info;
   if (CallLstat(path_str, &file_info) != 0) {
@@ -381,6 +365,39 @@ bool DeleteFile(const FilePath& path, bool recursive) {
   }
   return success;
 }
+#endif  // !defined(OS_NACL_NONSFI)
+
+#if !defined(OS_MACOSX)
+// Appends |mode_char| to |mode| before the optional character set encoding; see
+// https://www.gnu.org/software/libc/manual/html_node/Opening-Streams.html for
+// details.
+std::string AppendModeCharacter(StringPiece mode, char mode_char) {
+  std::string result(mode.as_string());
+  size_t comma_pos = result.find(',');
+  result.insert(comma_pos == std::string::npos ? result.length() : comma_pos, 1,
+                mode_char);
+  return result;
+}
+#endif
+
+}  // namespace
+
+#if !defined(OS_NACL_NONSFI)
+FilePath MakeAbsoluteFilePath(const FilePath& input) {
+  ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
+  char full_path[PATH_MAX];
+  if (realpath(input.value().c_str(), full_path) == nullptr)
+    return FilePath();
+  return FilePath(full_path);
+}
+
+bool DeleteFile(const FilePath& path, bool recursive) {
+  return DoDeleteFile(path, recursive);
+}
+
+bool DeleteFileRecursively(const FilePath& path) {
+  return DoDeleteFile(path, /*recursive=*/true);
+}
 
 bool ReplaceFile(const FilePath& from_path,
                  const FilePath& to_path,
@@ -405,6 +422,17 @@ bool CopyDirectoryExcl(const FilePath& from_path,
   return DoCopyDirectory(from_path, to_path, recursive, true);
 }
 #endif  // !defined(OS_NACL_NONSFI)
+
+bool CreatePipe(ScopedFD* read_fd, ScopedFD* write_fd, bool non_blocking) {
+  int fds[2];
+  bool created =
+      non_blocking ? CreateLocalNonBlockingPipe(fds) : (0 == pipe(fds));
+  if (!created)
+    return false;
+  read_fd->reset(fds[0]);
+  write_fd->reset(fds[1]);
+  return true;
+}
 
 bool CreateLocalNonBlockingPipe(int fds[2]) {
 #if defined(OS_LINUX)
@@ -494,8 +522,8 @@ bool ReadFromFD(int fd, char* buffer, size_t bytes) {
 
 #if !defined(OS_NACL_NONSFI)
 
-int CreateAndOpenFdForTemporaryFileInDir(const FilePath& directory,
-                                         FilePath* path) {
+ScopedFD CreateAndOpenFdForTemporaryFileInDir(const FilePath& directory,
+                                              FilePath* path) {
   ScopedBlockingCall scoped_blocking_call(
       FROM_HERE,
       BlockingType::MAY_BLOCK);  // For call to mkstemp().
@@ -504,7 +532,7 @@ int CreateAndOpenFdForTemporaryFileInDir(const FilePath& directory,
   // this should be OK since mkstemp just replaces characters in place
   char* buffer = const_cast<char*>(tmpdir_string.c_str());
 
-  return HANDLE_EINTR(mkstemp(buffer));
+  return ScopedFD(HANDLE_EINTR(mkstemp(buffer)));
 }
 
 #if !defined(OS_FUCHSIA)
@@ -633,23 +661,21 @@ FilePath GetHomeDir() {
 #endif  // !defined(OS_MACOSX)
 
 bool CreateTemporaryFile(FilePath* path) {
-  ScopedBlockingCall scoped_blocking_call(
-      FROM_HERE, BlockingType::MAY_BLOCK);  // For call to close().
+  // For call to close() inside ScopedFD.
+  ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
   FilePath directory;
   if (!GetTempDir(&directory))
     return false;
-  int fd = CreateAndOpenFdForTemporaryFileInDir(directory, path);
-  if (fd < 0)
-    return false;
-  close(fd);
-  return true;
+  ScopedFD fd = CreateAndOpenFdForTemporaryFileInDir(directory, path);
+  return fd.is_valid();
 }
 
 FILE* CreateAndOpenTemporaryFileInDir(const FilePath& dir, FilePath* path) {
-  int fd = CreateAndOpenFdForTemporaryFileInDir(dir, path);
-  if (fd < 0)
+  ScopedFD scoped_fd = CreateAndOpenFdForTemporaryFileInDir(dir, path);
+  if (!scoped_fd.is_valid())
     return nullptr;
 
+  int fd = scoped_fd.release();
   FILE* file = fdopen(fd, "a+");
   if (!file)
     close(fd);
@@ -657,10 +683,10 @@ FILE* CreateAndOpenTemporaryFileInDir(const FilePath& dir, FilePath* path) {
 }
 
 bool CreateTemporaryFileInDir(const FilePath& dir, FilePath* temp_file) {
-  ScopedBlockingCall scoped_blocking_call(
-      FROM_HERE, BlockingType::MAY_BLOCK);  // For call to close().
-  int fd = CreateAndOpenFdForTemporaryFileInDir(dir, temp_file);
-  return ((fd >= 0) && !IGNORE_EINTR(close(fd)));
+  // For call to close() inside ScopedFD.
+  ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
+  ScopedFD fd = CreateAndOpenFdForTemporaryFileInDir(dir, temp_file);
+  return fd.is_valid();
 }
 
 static bool CreateTemporaryDirInDirImpl(const FilePath& base_dir,
@@ -859,6 +885,78 @@ bool WriteFileDescriptor(const int fd, const char* data, int size) {
   return true;
 }
 
+bool AllocateFileRegion(File* file, int64_t offset, size_t size) {
+  DCHECK(file);
+
+  // Explicitly extend |file| to the maximum size. Zeros will fill the new
+  // space. It is assumed that the existing file is fully realized as
+  // otherwise the entire file would have to be read and possibly written.
+  const int64_t original_file_len = file->GetLength();
+  if (original_file_len < 0) {
+    DPLOG(ERROR) << "fstat " << file->GetPlatformFile();
+    return false;
+  }
+
+  // Increase the actual length of the file, if necessary. This can fail if
+  // the disk is full and the OS doesn't support sparse files.
+  const int64_t new_file_len = offset + size;
+  if (!file->SetLength(std::max(original_file_len, new_file_len))) {
+    DPLOG(ERROR) << "ftruncate " << file->GetPlatformFile();
+    return false;
+  }
+
+  // Realize the extent of the file so that it can't fail (and crash) later
+  // when trying to write to a memory page that can't be created. This can
+  // fail if the disk is full and the file is sparse.
+
+  // First try the more effective platform-specific way of allocating the disk
+  // space. It can fail because the filesystem doesn't support it. In that case,
+  // use the manual method below.
+
+#if defined(OS_LINUX)
+  if (HANDLE_EINTR(fallocate(file->GetPlatformFile(), 0, offset, size)) != -1)
+    return true;
+  DPLOG(ERROR) << "fallocate";
+#elif defined(OS_MACOSX)
+  // MacOS doesn't support fallocate even though their new APFS filesystem
+  // does support sparse files. It does, however, have the functionality
+  // available via fcntl.
+  // See also: https://openradar.appspot.com/32720223
+  fstore_t params = {F_ALLOCATEALL, F_PEOFPOSMODE, offset, size, 0};
+  if (fcntl(file->GetPlatformFile(), F_PREALLOCATE, &params) != -1)
+    return true;
+  DPLOG(ERROR) << "F_PREALLOCATE";
+#endif
+
+  // Manually realize the extended file by writing bytes to it at intervals.
+  int64_t block_size = 512;  // Start with something safe.
+  struct stat statbuf;
+  if (fstat(file->GetPlatformFile(), &statbuf) == 0 && statbuf.st_blksize > 0 &&
+      base::bits::IsPowerOfTwo(statbuf.st_blksize)) {
+    block_size = statbuf.st_blksize;
+  }
+
+  // Write starting at the next block boundary after the old file length.
+  const int64_t extension_start =
+      base::bits::Align(original_file_len, block_size);
+  for (int64_t i = extension_start; i < new_file_len; i += block_size) {
+    char existing_byte;
+    if (HANDLE_EINTR(pread(file->GetPlatformFile(), &existing_byte, 1, i)) !=
+        1) {
+      return false;  // Can't read? Not viable.
+    }
+    if (existing_byte != 0) {
+      continue;  // Block has data so must already exist.
+    }
+    if (HANDLE_EINTR(pwrite(file->GetPlatformFile(), &existing_byte, 1, i)) !=
+        1) {
+      return false;  // Can't write? Not viable.
+    }
+  }
+
+  return true;
+}
+
 #if !defined(OS_NACL_NONSFI)
 
 bool AppendToFile(const FilePath& filename, const char* data, int size) {
@@ -1032,6 +1130,34 @@ bool CopyFile(const FilePath& from_path, const FilePath& to_path) {
 }
 #endif  // !defined(OS_MACOSX)
 
+bool PreReadFile(const FilePath& file_path,
+                 bool is_executable,
+                 int64_t max_bytes) {
+  DCHECK_GE(max_bytes, 0);
+
+  // ChromeOS is also covered by OS_LINUX.
+  // posix_fadvise() is only available in the Android NDK in API 21+. Older
+  // versions may have the required kernel support, but don't have enough usage
+  // to justify backporting.
+#if defined(OS_LINUX) || (defined(OS_ANDROID) && __ANDROID_API__ >= 21)
+  File file(file_path, File::FLAG_OPEN | File::FLAG_READ);
+  if (!file.IsValid())
+    return false;
+
+  if (max_bytes == 0) {
+    // fadvise() pre-fetches the entire file when given a zero length.
+    return true;
+  }
+
+  const PlatformFile fd = file.GetPlatformFile();
+  const ::off_t len = base::saturated_cast<::off_t>(max_bytes);
+  return posix_fadvise(fd, /*offset=*/0, len, POSIX_FADV_WILLNEED) == 0;
+#else
+  // TODO(pwnall): Fall back to madvise() for macOS.
+  return internal::PreReadFileSlow(file_path, max_bytes);
+#endif  // defined(OS_LINUX) || (defined(OS_ANDROID) && __ANDROID_API__ >= 21)
+}
+
 // -----------------------------------------------------------------------------
 
 namespace internal {
@@ -1055,7 +1181,7 @@ bool MoveUnsafe(const FilePath& from_path, const FilePath& to_path) {
   if (!CopyDirectory(from_path, to_path, true))
     return false;
 
-  DeleteFile(from_path, true);
+  DeleteFileRecursively(from_path);
   return true;
 }
 
@@ -1068,7 +1194,7 @@ BASE_EXPORT bool IsPathExecutable(const FilePath& path) {
   bool result = false;
   FilePath tmp_file_path;
 
-  ScopedFD fd(CreateAndOpenFdForTemporaryFileInDir(path, &tmp_file_path));
+  ScopedFD fd = CreateAndOpenFdForTemporaryFileInDir(path, &tmp_file_path);
   if (fd.is_valid()) {
     DeleteFile(tmp_file_path, false);
     long sysconf_result = sysconf(_SC_PAGESIZE);

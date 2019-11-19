@@ -5,16 +5,18 @@
 #include "chromeos/services/device_sync/cryptauth_client_impl.h"
 
 #include <memory>
-#include <utility>
 
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/memory/ptr_util.h"
 #include "chromeos/components/multidevice/logging/logging.h"
+#include "chromeos/services/device_sync/proto/cryptauth_devicesync.pb.h"
 #include "chromeos/services/device_sync/proto/cryptauth_enrollment.pb.h"
+#include "chromeos/services/device_sync/proto/cryptauth_proto_to_query_parameters_util.h"
 #include "chromeos/services/device_sync/switches.h"
-#include "services/identity/public/cpp/identity_manager.h"
-#include "services/identity/public/cpp/primary_account_access_token_fetcher.h"
+#include "components/signin/public/identity_manager/access_token_info.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace chromeos {
@@ -22,6 +24,8 @@ namespace chromeos {
 namespace device_sync {
 
 namespace {
+
+// -------------------- CryptAuth v1 Endpoints --------------------
 
 // Default URL of Google APIs endpoint hosting CryptAuth v1.
 const char kDefaultCryptAuthV1HTTPHost[] = "https://www.googleapis.com";
@@ -40,20 +44,28 @@ const char kToggleEasyUnlockPath[] = "deviceSync/toggleeasyunlock";
 const char kSetupEnrollmentPath[] = "enrollment/setup";
 const char kFinishEnrollmentPath[] = "enrollment/finish";
 
+// -------------------- CryptAuth v2 Endpoints --------------------
+
 // Default URL of Google APIs endpoint hosting CryptAuth v2 Enrollment.
 const char kDefaultCryptAuthV2EnrollmentHTTPHost[] =
     "https://cryptauthenrollment.googleapis.com";
 
-// URL subpaths for each CryptAuth v2 API.
+// Default URL of Google APIs endpoint hosting CryptAuth v2 DeviceSync.
+const char kDefaultCryptAuthV2DeviceSyncHTTPHost[] =
+    "https://cryptauthdevicesync.googleapis.com";
+
+// URL subpaths for each CryptAuth v2 API endpoint.
 // Note: Although "v1" is part of the path names, these are in fact v2 API
 //       endpoints. Also, the "/" is necessary for GURL::Resolve() to parse the
 //       paths correctly; otherwise, ":" is interpreted as a scheme delimiter.
 const char kSyncKeysPath[] = "/v1:syncKeys";
 const char kEnrollKeysPath[] = "/v1:enrollKeys";
-
-// Query string of the API URL indicating that the response should be in a
-// serialized protobuf format.
-const char kQueryProtobuf[] = "?alt=proto";
+const char kSyncMetadataPath[] = "/v1:syncMetadata";
+const char kShareGroupPrivateKeyPath[] = "/v1:shareGroupPrivateKey";
+const char kBatchNotifyGroupDevicesPath[] = "/v1:batchNotifyGroupDevices";
+const char kBatchGetFeatureStatusesPath[] = "/v1:batchGetFeatureStatuses";
+const char kBatchSetFeatureStatusesPath[] = "/v1:batchSetFeatureStatuses";
+const char kGetDevicesActivityStatusPath[] = "/v1:getDevicesActivityStatus";
 
 const char kCryptAuthOAuth2Scope[] =
     "https://www.googleapis.com/auth/cryptauth";
@@ -62,12 +74,11 @@ const char kCryptAuthOAuth2Scope[] =
 // |request_path|.
 GURL CreateV1RequestUrl(const std::string& request_path) {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  GURL google_apis_url =
-      GURL(command_line->HasSwitch(switches::kCryptAuthHTTPHost)
-               ? command_line->GetSwitchValueASCII(switches::kCryptAuthHTTPHost)
-               : kDefaultCryptAuthV1HTTPHost);
-  return google_apis_url.Resolve(kCryptAuthV1Path + request_path +
-                                 kQueryProtobuf);
+  GURL google_apis_url = command_line->HasSwitch(switches::kCryptAuthHTTPHost)
+                             ? GURL(command_line->GetSwitchValueASCII(
+                                   switches::kCryptAuthHTTPHost))
+                             : GURL(kDefaultCryptAuthV1HTTPHost);
+  return google_apis_url.Resolve(kCryptAuthV1Path + request_path);
 }
 
 // Creates the full URL for endpoint to the CryptAuth v2 Enrollment API with
@@ -75,26 +86,37 @@ GURL CreateV1RequestUrl(const std::string& request_path) {
 GURL CreateV2EnrollmentRequestUrl(const std::string& request_path) {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   GURL google_apis_url =
-      GURL(command_line->HasSwitch(switches::kCryptAuthV2EnrollmentHTTPHost)
-               ? command_line->GetSwitchValueASCII(
-                     switches::kCryptAuthV2EnrollmentHTTPHost)
-               : kDefaultCryptAuthV2EnrollmentHTTPHost);
-  return google_apis_url.Resolve(request_path + kQueryProtobuf);
+      command_line->HasSwitch(switches::kCryptAuthV2EnrollmentHTTPHost)
+          ? GURL(command_line->GetSwitchValueASCII(
+                switches::kCryptAuthV2EnrollmentHTTPHost))
+          : GURL(kDefaultCryptAuthV2EnrollmentHTTPHost);
+  return google_apis_url.Resolve(request_path);
+}
+
+// Creates the full URL for endpoint to the CryptAuth v2 DeviceSync API with
+// |request_path|.
+GURL CreateV2DeviceSyncRequestUrl(const std::string& request_path) {
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  GURL google_apis_url =
+      command_line->HasSwitch(switches::kCryptAuthV2DeviceSyncHTTPHost)
+          ? GURL(command_line->GetSwitchValueASCII(
+                switches::kCryptAuthV2DeviceSyncHTTPHost))
+          : GURL(kDefaultCryptAuthV2DeviceSyncHTTPHost);
+  return google_apis_url.Resolve(request_path);
 }
 
 }  // namespace
 
 CryptAuthClientImpl::CryptAuthClientImpl(
     std::unique_ptr<CryptAuthApiCallFlow> api_call_flow,
-    identity::IdentityManager* identity_manager,
+    signin::IdentityManager* identity_manager,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const cryptauth::DeviceClassifier& device_classifier)
     : api_call_flow_(std::move(api_call_flow)),
       identity_manager_(identity_manager),
       url_loader_factory_(std::move(url_loader_factory)),
       device_classifier_(device_classifier),
-      has_call_started_(false),
-      weak_ptr_factory_(this) {}
+      has_call_started_(false) {}
 
 CryptAuthClientImpl::~CryptAuthClientImpl() {}
 
@@ -103,9 +125,10 @@ void CryptAuthClientImpl::GetMyDevices(
     const GetMyDevicesCallback& callback,
     const ErrorCallback& error_callback,
     const net::PartialNetworkTrafficAnnotationTag& partial_traffic_annotation) {
-  MakeApiCall(CreateV1RequestUrl(kGetMyDevicesPath),
-              RequestWithDeviceClassifierSet(request), callback, error_callback,
-              partial_traffic_annotation);
+  MakeApiCall(CreateV1RequestUrl(kGetMyDevicesPath), RequestType::kPost,
+              RequestWithDeviceClassifierSet(request).SerializeAsString(),
+              base::nullopt /* request_as_query_parameters */, callback,
+              error_callback, partial_traffic_annotation);
 }
 
 void CryptAuthClientImpl::FindEligibleUnlockDevices(
@@ -138,8 +161,10 @@ void CryptAuthClientImpl::FindEligibleUnlockDevices(
         }
       })");
   MakeApiCall(CreateV1RequestUrl(kFindEligibleUnlockDevicesPath),
-              RequestWithDeviceClassifierSet(request), callback, error_callback,
-              partial_traffic_annotation);
+              RequestType::kPost,
+              RequestWithDeviceClassifierSet(request).SerializeAsString(),
+              base::nullopt /* request_as_query_parameters */, callback,
+              error_callback, partial_traffic_annotation);
 }
 
 void CryptAuthClientImpl::FindEligibleForPromotion(
@@ -169,8 +194,10 @@ void CryptAuthClientImpl::FindEligibleForPromotion(
         }
       })");
   MakeApiCall(CreateV1RequestUrl(kFindEligibleForPromotionPath),
-              RequestWithDeviceClassifierSet(request), callback, error_callback,
-              partial_traffic_annotation);
+              RequestType::kPost,
+              RequestWithDeviceClassifierSet(request).SerializeAsString(),
+              base::nullopt /* request_as_query_parameters */, callback,
+              error_callback, partial_traffic_annotation);
 }
 
 void CryptAuthClientImpl::SendDeviceSyncTickle(
@@ -178,9 +205,10 @@ void CryptAuthClientImpl::SendDeviceSyncTickle(
     const SendDeviceSyncTickleCallback& callback,
     const ErrorCallback& error_callback,
     const net::PartialNetworkTrafficAnnotationTag& partial_traffic_annotation) {
-  MakeApiCall(CreateV1RequestUrl(kSendDeviceSyncTicklePath),
-              RequestWithDeviceClassifierSet(request), callback, error_callback,
-              partial_traffic_annotation);
+  MakeApiCall(CreateV1RequestUrl(kSendDeviceSyncTicklePath), RequestType::kPost,
+              RequestWithDeviceClassifierSet(request).SerializeAsString(),
+              base::nullopt /* request_as_query_parameters */, callback,
+              error_callback, partial_traffic_annotation);
 }
 
 void CryptAuthClientImpl::ToggleEasyUnlock(
@@ -210,9 +238,10 @@ void CryptAuthClientImpl::ToggleEasyUnlock(
           }
         }
       })");
-  MakeApiCall(CreateV1RequestUrl(kToggleEasyUnlockPath),
-              RequestWithDeviceClassifierSet(request), callback, error_callback,
-              partial_traffic_annotation);
+  MakeApiCall(CreateV1RequestUrl(kToggleEasyUnlockPath), RequestType::kPost,
+              RequestWithDeviceClassifierSet(request).SerializeAsString(),
+              base::nullopt /* request_as_query_parameters */, callback,
+              error_callback, partial_traffic_annotation);
 }
 
 void CryptAuthClientImpl::SetupEnrollment(
@@ -245,9 +274,10 @@ void CryptAuthClientImpl::SetupEnrollment(
           }
         }
       })");
-  MakeApiCall(CreateV1RequestUrl(kSetupEnrollmentPath),
-              RequestWithDeviceClassifierSet(request), callback, error_callback,
-              partial_traffic_annotation);
+  MakeApiCall(CreateV1RequestUrl(kSetupEnrollmentPath), RequestType::kPost,
+              RequestWithDeviceClassifierSet(request).SerializeAsString(),
+              base::nullopt /* request_as_query_parameters */, callback,
+              error_callback, partial_traffic_annotation);
 }
 
 void CryptAuthClientImpl::FinishEnrollment(
@@ -277,9 +307,10 @@ void CryptAuthClientImpl::FinishEnrollment(
           }
         }
       })");
-  MakeApiCall(CreateV1RequestUrl(kFinishEnrollmentPath),
-              RequestWithDeviceClassifierSet(request), callback, error_callback,
-              partial_traffic_annotation);
+  MakeApiCall(CreateV1RequestUrl(kFinishEnrollmentPath), RequestType::kPost,
+              RequestWithDeviceClassifierSet(request).SerializeAsString(),
+              base::nullopt /* request_as_query_parameters */, callback,
+              error_callback, partial_traffic_annotation);
 }
 
 void CryptAuthClientImpl::SyncKeys(const cryptauthv2::SyncKeysRequest& request,
@@ -312,7 +343,9 @@ void CryptAuthClientImpl::SyncKeys(const cryptauthv2::SyncKeysRequest& request,
           }
         }
       })");
-  MakeApiCall(CreateV2EnrollmentRequestUrl(kSyncKeysPath), request, callback,
+  MakeApiCall(CreateV2EnrollmentRequestUrl(kSyncKeysPath), RequestType::kPost,
+              request.SerializeAsString(),
+              base::nullopt /* request_as_query_parameters */, callback,
               error_callback, partial_traffic_annotation);
 }
 
@@ -346,18 +379,253 @@ void CryptAuthClientImpl::EnrollKeys(
           }
         }
       })");
-  MakeApiCall(CreateV2EnrollmentRequestUrl(kEnrollKeysPath), request, callback,
+  MakeApiCall(CreateV2EnrollmentRequestUrl(kEnrollKeysPath), RequestType::kPost,
+              request.SerializeAsString(),
+              base::nullopt /* request_as_query_parameters */, callback,
               error_callback, partial_traffic_annotation);
+}
+
+void CryptAuthClientImpl::SyncMetadata(
+    const cryptauthv2::SyncMetadataRequest& request,
+    const SyncMetadataCallback& callback,
+    const ErrorCallback& error_callback) {
+  net::PartialNetworkTrafficAnnotationTag partial_traffic_annotation =
+      net::DefinePartialNetworkTrafficAnnotation(
+          "cryptauth_v2_devicesync_sync_metadata", "oauth2_api_call_flow",
+          R"(
+      semantics {
+        sender: "CryptAuth Device Syncer"
+        description:
+          "Sends device metadata to CryptAuth and receives metadata data for "
+          "the user's other devices."
+        trigger:
+          "CryptAuth will potentially instruct the client to invoke "
+          "SyncMetadata at the end of enrollment flows, which occur "
+          "periodically, or via GCM messages. There is no dedicated periodic "
+          "scheduling. The client can also force a SyncMetadataRequest."
+        data:
+          "Sends the device's encrypted metadata. Receives encrypted metadata "
+          "from other user devices. Can potentially receive the group public "
+          "key and/or the encrypted group private key, used for the encryption "
+          "and decryption of all device metadata."
+        destination: GOOGLE_OWNED_SERVICE
+      }
+      policy {
+        setting:
+          "This feature cannot be disabled by settings. However, this request "
+          "is made only for signed-in users."
+        chrome_policy {
+          SigninAllowed {
+            SigninAllowed: false
+          }
+        }
+      })");
+  MakeApiCall(CreateV2DeviceSyncRequestUrl(kSyncMetadataPath),
+              RequestType::kPost, request.SerializeAsString(),
+              base::nullopt /* request_as_query_parameters */, callback,
+              error_callback, partial_traffic_annotation);
+}
+
+void CryptAuthClientImpl::ShareGroupPrivateKey(
+    const cryptauthv2::ShareGroupPrivateKeyRequest& request,
+    const ShareGroupPrivateKeyCallback& callback,
+    const ErrorCallback& error_callback) {
+  net::PartialNetworkTrafficAnnotationTag partial_traffic_annotation =
+      net::DefinePartialNetworkTrafficAnnotation(
+          "cryptauth_v2_devicesync_share_group_private_key",
+          "oauth2_api_call_flow",
+          R"(
+      semantics {
+        sender: "CryptAuth Device Syncer"
+        description:
+          "The device shares the group private key by encrypting it with the "
+          "public key of the user's other devices."
+        trigger:
+          "If the SyncMetadataResponse indicates that other user devices need "
+          "the group private key, then the client immediately invokes "
+          "ShareGroupPrivateKey."
+        data:
+          "The group private key encrypted with the public key of other user "
+          "devices."
+        destination: GOOGLE_OWNED_SERVICE
+      }
+      policy {
+        setting:
+          "This feature cannot be disabled by settings. However, this request "
+          "is made only for signed-in users."
+        chrome_policy {
+          SigninAllowed {
+            SigninAllowed: false
+          }
+        }
+      })");
+  MakeApiCall(CreateV2DeviceSyncRequestUrl(kShareGroupPrivateKeyPath),
+              RequestType::kPost, request.SerializeAsString(),
+              base::nullopt /* request_as_query_parameters */, callback,
+              error_callback, partial_traffic_annotation);
+}
+
+// TODO(https://crbug.com/953087): Populate the "sender" and "trigger" fields
+// when method is used in codebase.
+void CryptAuthClientImpl::BatchNotifyGroupDevices(
+    const cryptauthv2::BatchNotifyGroupDevicesRequest& request,
+    const BatchNotifyGroupDevicesCallback& callback,
+    const ErrorCallback& error_callback) {
+  net::PartialNetworkTrafficAnnotationTag partial_traffic_annotation =
+      net::DefinePartialNetworkTrafficAnnotation(
+          "cryptauth_v2_devicesync_batch_notify_group_devices",
+          "oauth2_api_call_flow",
+          R"(
+      semantics {
+        sender: "TBD"
+        description:
+          "The client sends a list of the user's devices that it wants to "
+          "tickle via a GCM message."
+        trigger: "TBD"
+        data:
+          "The list of device IDs to notify as well as a specification of the "
+          "the CryptAuth service (Enrollment or DeviceSync) and feature "
+          "relevant to the tickle."
+        destination: GOOGLE_OWNED_SERVICE
+      }
+      policy {
+        setting:
+          "This feature cannot be disabled by settings. However, this request "
+          "is made only for signed-in users."
+        chrome_policy {
+          SigninAllowed {
+            SigninAllowed: false
+          }
+        }
+      })");
+  MakeApiCall(
+      CreateV2DeviceSyncRequestUrl(kBatchNotifyGroupDevicesPath),
+      RequestType::kGet, base::nullopt /* serialized_request */,
+      cryptauthv2::BatchNotifyGroupDevicesRequestToQueryParameters(request),
+      callback, error_callback, partial_traffic_annotation);
+}
+
+void CryptAuthClientImpl::BatchGetFeatureStatuses(
+    const cryptauthv2::BatchGetFeatureStatusesRequest& request,
+    const BatchGetFeatureStatusesCallback& callback,
+    const ErrorCallback& error_callback) {
+  net::PartialNetworkTrafficAnnotationTag partial_traffic_annotation =
+      net::DefinePartialNetworkTrafficAnnotation(
+          "cryptauth_v2_devicesync_batch_get_feature_statuses",
+          "oauth2_api_call_flow",
+          R"(
+      semantics {
+        sender: "CryptAuth Device Syncer"
+        description:
+          "The client queries CryptAuth for the state of features on the "
+          "user's devices, for example, whether or not Magic Tether is enabled "
+          "on any of the user's phones."
+        trigger:
+          "Called after SyncMetadata as part of the v2 DeviceSync flow."
+        data: "The user device IDs and feature types to query."
+        destination: GOOGLE_OWNED_SERVICE
+      }
+      policy {
+        setting:
+          "This feature cannot be disabled by settings. However, this request "
+          "is made only for signed-in users."
+        chrome_policy {
+          SigninAllowed {
+            SigninAllowed: false
+          }
+        }
+      })");
+  MakeApiCall(
+      CreateV2DeviceSyncRequestUrl(kBatchGetFeatureStatusesPath),
+      RequestType::kGet, base::nullopt /* serialized_request */,
+      cryptauthv2::BatchGetFeatureStatusesRequestToQueryParameters(request),
+      callback, error_callback, partial_traffic_annotation);
+}
+
+// TODO(https://crbug.com/953087): Populate the "sender" and "trigger" fields
+// when method is used in codebase.
+void CryptAuthClientImpl::BatchSetFeatureStatuses(
+    const cryptauthv2::BatchSetFeatureStatusesRequest& request,
+    const BatchSetFeatureStatusesCallback& callback,
+    const ErrorCallback& error_callback) {
+  net::PartialNetworkTrafficAnnotationTag partial_traffic_annotation =
+      net::DefinePartialNetworkTrafficAnnotation(
+          "cryptauth_v2_devicesync_batch_set_feature_statuses",
+          "oauth2_api_call_flow",
+          R"(
+      semantics {
+        sender: "TBD"
+        description:
+          "The client requests CryptAuth to set the state of various features "
+          "for the user's devices."
+        trigger: "TBD"
+        data: "User device IDs and feature state specifications."
+        destination: GOOGLE_OWNED_SERVICE
+      }
+      policy {
+        setting:
+          "This feature cannot be disabled by settings. However, this request "
+          "is made only for signed-in users."
+        chrome_policy {
+          SigninAllowed {
+            SigninAllowed: false
+          }
+        }
+      })");
+  MakeApiCall(CreateV2DeviceSyncRequestUrl(kBatchSetFeatureStatusesPath),
+              RequestType::kPost, request.SerializeAsString(),
+              base::nullopt /* request_as_query_parameters */, callback,
+              error_callback, partial_traffic_annotation);
+}
+
+// TODO(https://crbug.com/953087): Populate the "sender" and "trigger" fields
+// when method is used in codebase.
+void CryptAuthClientImpl::GetDevicesActivityStatus(
+    const cryptauthv2::GetDevicesActivityStatusRequest& request,
+    const GetDevicesActivityStatusCallback& callback,
+    const ErrorCallback& error_callback) {
+  net::PartialNetworkTrafficAnnotationTag partial_traffic_annotation =
+      net::DefinePartialNetworkTrafficAnnotation(
+          "cryptauth_v2_devicesync_get_devices_activity_status",
+          "oauth2_api_call_flow",
+          R"(
+      semantics {
+        sender: "TBD"
+        description:
+          "The client queries CryptAuth for the activity of status of the"
+          "user's devices."
+        trigger: "TBD"
+        data: "User device ID."
+        destination: GOOGLE_OWNED_SERVICE
+      }
+      policy {
+        setting:
+          "This feature cannot be disabled by settings. However, this request "
+          "is made only for signed-in users."
+        chrome_policy {
+          SigninAllowed {
+            SigninAllowed: false
+          }
+        }
+      })");
+  MakeApiCall(
+      CreateV2DeviceSyncRequestUrl(kGetDevicesActivityStatusPath),
+      RequestType::kGet, base::nullopt /* serialized_request */,
+      cryptauthv2::GetDevicesActivityStatusRequestToQueryParameters(request),
+      callback, error_callback, partial_traffic_annotation);
 }
 
 std::string CryptAuthClientImpl::GetAccessTokenUsed() {
   return access_token_used_;
 }
 
-template <class RequestProto, class ResponseProto>
+template <class ResponseProto>
 void CryptAuthClientImpl::MakeApiCall(
     const GURL& request_url,
-    const RequestProto& request_proto,
+    RequestType request_type,
+    const base::Optional<std::string>& serialized_request,
+    const base::Optional<std::vector<std::pair<std::string, std::string>>>&
+        request_as_query_parameters,
     const base::Callback<void(const ResponseProto&)>& response_callback,
     const ErrorCallback& error_callback,
     const net::PartialNetworkTrafficAnnotationTag& partial_traffic_annotation) {
@@ -372,35 +640,31 @@ void CryptAuthClientImpl::MakeApiCall(
   api_call_flow_->SetPartialNetworkTrafficAnnotation(
       partial_traffic_annotation);
 
-  std::string serialized_request;
-  if (!request_proto.SerializeToString(&serialized_request)) {
-    PA_LOG(ERROR) << "CryptAuthClientImpl::MakeApiCall(): Failure serializing "
-                  << "request proto.";
-    NOTREACHED();
-    return;
-  }
-
   request_url_ = request_url;
   error_callback_ = error_callback;
 
-  OAuth2TokenService::ScopeSet scopes;
+  OAuth2AccessTokenManager::ScopeSet scopes;
   scopes.insert(kCryptAuthOAuth2Scope);
 
-  access_token_fetcher_ = std::make_unique<
-      identity::PrimaryAccountAccessTokenFetcher>(
-      "cryptauth_client", identity_manager_, scopes,
-      base::BindOnce(&CryptAuthClientImpl::OnAccessTokenFetched<ResponseProto>,
-                     weak_ptr_factory_.GetWeakPtr(), serialized_request,
-                     response_callback),
-      identity::PrimaryAccountAccessTokenFetcher::Mode::kWaitUntilAvailable);
+  access_token_fetcher_ =
+      std::make_unique<signin::PrimaryAccountAccessTokenFetcher>(
+          "cryptauth_client", identity_manager_, scopes,
+          base::BindOnce(
+              &CryptAuthClientImpl::OnAccessTokenFetched<ResponseProto>,
+              weak_ptr_factory_.GetWeakPtr(), request_type, serialized_request,
+              request_as_query_parameters, response_callback),
+          signin::PrimaryAccountAccessTokenFetcher::Mode::kWaitUntilAvailable);
 }
 
 template <class ResponseProto>
 void CryptAuthClientImpl::OnAccessTokenFetched(
-    const std::string& serialized_request,
+    RequestType request_type,
+    const base::Optional<std::string>& serialized_request,
+    const base::Optional<std::vector<std::pair<std::string, std::string>>>&
+        request_as_query_parameters,
     const base::Callback<void(const ResponseProto&)>& response_callback,
     GoogleServiceAuthError error,
-    identity::AccessTokenInfo access_token_info) {
+    signin::AccessTokenInfo access_token_info) {
   access_token_fetcher_.reset();
 
   if (error.state() != GoogleServiceAuthError::NONE) {
@@ -409,12 +673,28 @@ void CryptAuthClientImpl::OnAccessTokenFetched(
   }
   access_token_used_ = access_token_info.token;
 
-  api_call_flow_->Start(
-      request_url_, url_loader_factory_, access_token_used_, serialized_request,
-      base::Bind(&CryptAuthClientImpl::OnFlowSuccess<ResponseProto>,
-                 weak_ptr_factory_.GetWeakPtr(), response_callback),
-      base::Bind(&CryptAuthClientImpl::OnApiCallFailed,
-                 weak_ptr_factory_.GetWeakPtr()));
+  switch (request_type) {
+    case RequestType::kGet:
+      DCHECK(request_as_query_parameters && !serialized_request);
+      api_call_flow_->StartGetRequest(
+          request_url_, *request_as_query_parameters, url_loader_factory_,
+          access_token_used_,
+          base::Bind(&CryptAuthClientImpl::OnFlowSuccess<ResponseProto>,
+                     weak_ptr_factory_.GetWeakPtr(), response_callback),
+          base::Bind(&CryptAuthClientImpl::OnApiCallFailed,
+                     weak_ptr_factory_.GetWeakPtr()));
+      break;
+    case RequestType::kPost:
+      DCHECK(serialized_request && !request_as_query_parameters);
+      api_call_flow_->StartPostRequest(
+          request_url_, *serialized_request, url_loader_factory_,
+          access_token_used_,
+          base::Bind(&CryptAuthClientImpl::OnFlowSuccess<ResponseProto>,
+                     weak_ptr_factory_.GetWeakPtr(), response_callback),
+          base::Bind(&CryptAuthClientImpl::OnApiCallFailed,
+                     weak_ptr_factory_.GetWeakPtr()));
+      break;
+  }
 }
 
 template <class ResponseProto>
@@ -444,7 +724,7 @@ RequestProto CryptAuthClientImpl::RequestWithDeviceClassifierSet(
 
 // CryptAuthClientFactoryImpl
 CryptAuthClientFactoryImpl::CryptAuthClientFactoryImpl(
-    identity::IdentityManager* identity_manager,
+    signin::IdentityManager* identity_manager,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const cryptauth::DeviceClassifier& device_classifier)
     : identity_manager_(identity_manager),

@@ -52,13 +52,13 @@
     var request1 = requests[requests.length - 2];
     TestRunner.addResult(request1.url());
     TestRunner.addResult('resource.type: ' + request1.resourceType());
-    var content = await request1.requestContent();
+    var { content, error, isEncoded } = await request1.requestContent();
     TestRunner.addResult('resource.content after requesting content: ' + content);
 
     var request2 = requests[requests.length - 1];
     TestRunner.addResult(request2.url());
     TestRunner.addResult('resource.type: ' + request2.resourceType());
-    var content = await request2.requestContent();
+    var { content, error, isEncoded } = await request2.requestContent();
     TestRunner.addResult('resource.content after requesting content: ' + content);
 
     TestRunner.completeTest();

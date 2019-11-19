@@ -347,4 +347,57 @@ TEST_F(MDnsCacheTest, RemoveRecord) {
   EXPECT_EQ(0u, results.size());
 }
 
+TEST_F(MDnsCacheTest, IsCacheOverfilled) {
+  DnsRecordParser parser(kTestResponseTwoRecords,
+                         sizeof(kTestResponseTwoRecords), 0);
+  std::unique_ptr<const RecordParsed> record1 =
+      RecordParsed::CreateFrom(&parser, default_time_);
+  const RecordParsed* record1_ptr = record1.get();
+  std::unique_ptr<const RecordParsed> record2 =
+      RecordParsed::CreateFrom(&parser, default_time_);
+
+  cache_.set_entry_limit_for_testing(1);
+  EXPECT_EQ(MDnsCache::RecordAdded, cache_.UpdateDnsRecord(std::move(record1)));
+  EXPECT_FALSE(cache_.IsCacheOverfilled());
+  EXPECT_EQ(MDnsCache::RecordAdded, cache_.UpdateDnsRecord(std::move(record2)));
+  EXPECT_TRUE(cache_.IsCacheOverfilled());
+
+  record1 = cache_.RemoveRecord(record1_ptr);
+  EXPECT_TRUE(record1);
+  EXPECT_FALSE(cache_.IsCacheOverfilled());
+}
+
+TEST_F(MDnsCacheTest, ClearOnOverfilledCleanup) {
+  DnsRecordParser parser(kTestResponseTwoRecords,
+                         sizeof(kTestResponseTwoRecords), 0);
+  std::unique_ptr<const RecordParsed> record1 =
+      RecordParsed::CreateFrom(&parser, default_time_);
+  const RecordParsed* record1_ptr = record1.get();
+  std::unique_ptr<const RecordParsed> record2 =
+      RecordParsed::CreateFrom(&parser, default_time_);
+  const RecordParsed* record2_ptr = record2.get();
+
+  cache_.set_entry_limit_for_testing(1);
+  EXPECT_EQ(MDnsCache::RecordAdded, cache_.UpdateDnsRecord(std::move(record1)));
+  EXPECT_EQ(MDnsCache::RecordAdded, cache_.UpdateDnsRecord(std::move(record2)));
+
+  ASSERT_TRUE(cache_.IsCacheOverfilled());
+
+  // Expect everything to be removed on CleanupRecords() with overfilled cache.
+  EXPECT_CALL(record_removal_, OnRecordRemoved(record1_ptr));
+  EXPECT_CALL(record_removal_, OnRecordRemoved(record2_ptr));
+  cache_.CleanupRecords(
+      default_time_, base::BindRepeating(&RecordRemovalMock::OnRecordRemoved,
+                                         base::Unretained(&record_removal_)));
+
+  EXPECT_FALSE(cache_.IsCacheOverfilled());
+  std::vector<const RecordParsed*> results;
+  cache_.FindDnsRecords(dns_protocol::kTypeA, "ghs.l.google.com", &results,
+                        default_time_);
+  EXPECT_TRUE(results.empty());
+  cache_.FindDnsRecords(dns_protocol::kTypeAAAA, "ghs.l.google.com", &results,
+                        default_time_);
+  EXPECT_TRUE(results.empty());
+}
+
 }  // namespace net

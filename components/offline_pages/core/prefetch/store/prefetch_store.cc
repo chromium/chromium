@@ -4,6 +4,8 @@
 
 #include "components/offline_pages/core/prefetch/store/prefetch_store.h"
 
+#include <utility>
+
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -23,164 +25,79 @@ namespace {
 
 const char kPrefetchStoreFileName[] = "PrefetchStore.db";
 
-bool PrepareDirectory(const base::FilePath& path) {
-  base::File::Error error = base::File::FILE_OK;
-  if (!base::DirectoryExists(path.DirName())) {
-    if (!base::CreateDirectoryAndGetError(path.DirName(), &error)) {
-      LOG(ERROR) << "Failed to create prefetch db directory: "
-                 << base::File::ErrorToString(error);
-      return false;
-    }
-  }
-  return true;
-}
-
-// TODO(fgorski): This function and this part of the system in general could
-// benefit from a better status code reportable through UMA to better capture
-// the reason for failure, aiding the process of repeated attempts to
-// open/initialize the database.
-bool InitializeSync(sql::Database* db,
-                    const base::FilePath& path,
-                    bool in_memory) {
-  // These values are default.
-  db->set_page_size(4096);
-  db->set_cache_size(500);
-  db->set_histogram_tag("PrefetchStore");
-  db->set_exclusive_locking();
-
-  if (!in_memory && !PrepareDirectory(path))
-    return false;
-
-  bool open_db_result = false;
-  if (in_memory)
-    open_db_result = db->OpenInMemory();
-  else
-    open_db_result = db->Open(path);
-
-  if (!open_db_result) {
-    LOG(ERROR) << "Failed to open database, in memory: " << in_memory;
-    return false;
-  }
-  db->Preload();
-
-  return PrefetchStoreSchema::CreateOrUpgradeIfNeeded(db);
-}
-
-void CloseDatabaseSync(
-    sql::Database* db,
-    scoped_refptr<base::SingleThreadTaskRunner> callback_runner,
-    base::OnceClosure callback) {
-  if (db)
-    db->Close();
-  callback_runner->PostTask(FROM_HERE, std::move(callback));
-}
-
 void ReportStoreEvent(OfflinePagesStoreEvent event) {
   UMA_HISTOGRAM_ENUMERATION("OfflinePages.PrefetchStore.StoreEvent", event);
 }
 
 }  // namespace
 
-// static
-constexpr base::TimeDelta PrefetchStore::kClosingDelay;
-
 PrefetchStore::PrefetchStore(
     scoped_refptr<base::SequencedTaskRunner> blocking_task_runner)
-    : blocking_task_runner_(std::move(blocking_task_runner)),
-      in_memory_(true),
-      db_(nullptr, base::OnTaskRunnerDeleter(blocking_task_runner_)),
-      initialization_status_(InitializationStatus::NOT_INITIALIZED),
-      weak_ptr_factory_(this),
-      closing_weak_ptr_factory_(this) {}
+    : SqlStoreBase("PrefetchStore",
+                   std::move(blocking_task_runner),
+                   base::FilePath()) {}
 
 PrefetchStore::PrefetchStore(
     scoped_refptr<base::SequencedTaskRunner> blocking_task_runner,
     const base::FilePath& path)
-    : blocking_task_runner_(std::move(blocking_task_runner)),
-      db_file_path_(path.AppendASCII(kPrefetchStoreFileName)),
-      in_memory_(false),
-      db_(nullptr, base::OnTaskRunnerDeleter(blocking_task_runner_)),
-      initialization_status_(InitializationStatus::NOT_INITIALIZED),
-      weak_ptr_factory_(this),
-      closing_weak_ptr_factory_(this) {}
+    : SqlStoreBase("PrefetchStore",
+                   std::move(blocking_task_runner),
+                   path.AppendASCII(kPrefetchStoreFileName)) {}
 
-PrefetchStore::~PrefetchStore() {}
+PrefetchStore::~PrefetchStore() = default;
 
-void PrefetchStore::Initialize(base::OnceClosure pending_command) {
-  TRACE_EVENT_ASYNC_BEGIN1("offline_pages", "Prefetch Store", this, "is reopen",
-                           !last_closing_time_.is_null());
-  DCHECK_EQ(initialization_status_, InitializationStatus::NOT_INITIALIZED);
-  initialization_status_ = InitializationStatus::INITIALIZING;
-
-  if (!last_closing_time_.is_null()) {
-    ReportStoreEvent(OfflinePagesStoreEvent::kReopened);
-    UMA_HISTOGRAM_CUSTOM_TIMES("OfflinePages.PrefetchStore.TimeFromCloseToOpen",
-                               base::TimeTicks::Now() - last_closing_time_,
-                               base::TimeDelta::FromMilliseconds(10),
-                               base::TimeDelta::FromMinutes(10),
-                               50 /* buckets */);
-  } else {
-    ReportStoreEvent(OfflinePagesStoreEvent::kOpenedFirstTime);
-  }
-
-  // This is how we reset a pointer and provide deleter. This is necessary to
-  // ensure that we can close the store more than once.
-  db_ = DatabaseUniquePtr(new sql::Database,
-                          base::OnTaskRunnerDeleter(blocking_task_runner_));
-
-  base::PostTaskAndReplyWithResult(
-      blocking_task_runner_.get(), FROM_HERE,
-      base::BindOnce(&InitializeSync, db_.get(), db_file_path_, in_memory_),
-      base::BindOnce(&PrefetchStore::OnInitializeDone,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     std::move(pending_command)));
+base::OnceCallback<bool(sql::Database* db)>
+PrefetchStore::GetSchemaInitializationFunction() {
+  return base::BindOnce(&PrefetchStoreSchema::CreateOrUpgradeIfNeeded);
 }
 
-void PrefetchStore::OnInitializeDone(base::OnceClosure pending_command,
-                                     bool success) {
+void PrefetchStore::OnOpenStart(base::TimeTicks last_closing_time) {
+  TRACE_EVENT_ASYNC_BEGIN1("offline_pages", "Prefetch Store", this, "is reopen",
+                           !last_closing_time.is_null());
+  ReportStoreEvent(last_closing_time.is_null()
+                       ? OfflinePagesStoreEvent::kOpenedFirstTime
+                       : OfflinePagesStoreEvent::kReopened);
+}
+
+void PrefetchStore::OnOpenDone(bool success) {
   // TODO(carlosk): Add initializing error reporting here.
   TRACE_EVENT_ASYNC_STEP_PAST1("offline_pages", "Prefetch Store", this,
                                "Initializing", "succeeded", success);
-  DCHECK_EQ(initialization_status_, InitializationStatus::INITIALIZING);
-  if (success) {
-    initialization_status_ = InitializationStatus::SUCCESS;
-  } else {
-    initialization_status_ = InitializationStatus::FAILURE;
-    db_.reset();
+  if (!success) {
     TRACE_EVENT_ASYNC_END0("offline_pages", "Prefetch Store", this);
   }
-
-  CHECK(!pending_command.is_null());
-  std::move(pending_command).Run();
-
-  // Once pending commands are empty, we get back to NOT_INITIALIZED state, to
-  // make it possible to retry initialization next time a DB operation is
-  // attempted.
-  if (initialization_status_ == InitializationStatus::FAILURE)
-    initialization_status_ = InitializationStatus::NOT_INITIALIZED;
 }
 
-void PrefetchStore::CloseInternal() {
-  if (initialization_status_ != InitializationStatus::SUCCESS) {
+void PrefetchStore::OnTaskBegin(bool is_initialized) {
+  TRACE_EVENT_ASYNC_BEGIN1("offline_pages", "Prefetch Store: task execution",
+                           this, "is store loaded", is_initialized);
+}
+
+void PrefetchStore::OnTaskRunComplete() {
+  // Note: the time recorded for this trace step will include thread hop wait
+  // times to the background thread and back.
+  TRACE_EVENT_ASYNC_STEP_PAST0("offline_pages",
+                               "Prefetch Store: task execution", this, "Task");
+}
+
+void PrefetchStore::OnTaskReturnComplete() {
+  TRACE_EVENT_ASYNC_STEP_PAST0(
+      "offline_pages", "Prefetch Store: task execution", this, "Callback");
+  TRACE_EVENT_ASYNC_END0("offline_pages", "Prefetch Store: task execution",
+                         this);
+}
+
+void PrefetchStore::OnCloseStart(InitializationStatus initialization_status) {
+  if (initialization_status != InitializationStatus::kSuccess) {
     ReportStoreEvent(OfflinePagesStoreEvent::kCloseSkipped);
     return;
   }
   TRACE_EVENT_ASYNC_STEP_PAST0("offline_pages", "Prefetch Store", this, "Open");
 
-  last_closing_time_ = base::TimeTicks::Now();
   ReportStoreEvent(OfflinePagesStoreEvent::kClosed);
-
-  initialization_status_ = InitializationStatus::NOT_INITIALIZED;
-  blocking_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          &CloseDatabaseSync, db_.get(), base::ThreadTaskRunnerHandle::Get(),
-          base::BindOnce(&PrefetchStore::CloseInternalDone,
-                         weak_ptr_factory_.GetWeakPtr(), std::move(db_))));
 }
 
-void PrefetchStore::CloseInternalDone(DatabaseUniquePtr db) {
-  db.reset();
+void PrefetchStore::OnCloseComplete() {
   TRACE_EVENT_ASYNC_STEP_PAST0("offline_pages", "Prefetch Store", this,
                                "Closing");
   TRACE_EVENT_ASYNC_END0("offline_pages", "Prefetch Store", this);

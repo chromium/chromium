@@ -10,11 +10,11 @@
 
   var uiSourceCode = await TestRunner.waitForUISourceCode('obfuscated.js');
   var formatData = await Sources.sourceFormatter.format(uiSourceCode);
-  var targetContent = await formatData.formattedSourceCode.requestContent();
+  var targetContent = (await formatData.formattedSourceCode.requestContent()).content;
 
   TestRunner.addResult(`Formatted:\n${targetContent}`);
 
-  var originalContent = await uiSourceCode.requestContent();
+  var originalContent = (await uiSourceCode.requestContent()).content;
   var text = new TextUtils.Text(originalContent);
   var positions = [];
   for (var offset = originalContent.indexOf('{'); offset >= 0; offset = originalContent.indexOf('{', offset + 1))

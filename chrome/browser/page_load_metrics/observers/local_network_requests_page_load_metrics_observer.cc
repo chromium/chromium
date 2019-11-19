@@ -7,7 +7,7 @@
 #include "base/lazy_instance.h"
 #include "base/metrics/histogram_macros.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/page_load_metrics/page_load_metrics_util.h"
+#include "components/page_load_metrics/browser/page_load_metrics_util.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_errors.h"
 #include "net/base/url_util.h"
@@ -124,15 +124,19 @@ bool GetIPAndPort(
   // from the URL. If none was returned, try matching the hostname from the URL
   // itself as it might be an IP address if it is a local network request, which
   // is what we care about.
-  if (!ip_exists && extra_request_info.url.is_valid()) {
-    if (net::IsLocalhost(extra_request_info.url)) {
+  if (!ip_exists && !extra_request_info.origin_of_final_url.opaque()) {
+    // TODO(csharrison): https://crbug.com/1023042: Avoid the url::Origin->GURL
+    // conversion.  Today the conversion is necessary, because net::IsLocalhost
+    // and EffectiveIntPort are only available for GURL.
+    GURL origin_of_final_url = extra_request_info.origin_of_final_url.GetURL();
+    if (net::IsLocalhost(origin_of_final_url)) {
       *resource_ip = net::IPAddress::IPv4Localhost();
       ip_exists = true;
     } else {
-      ip_exists = net::ParseURLHostnameToAddress(extra_request_info.url.host(),
+      ip_exists = net::ParseURLHostnameToAddress(origin_of_final_url.host(),
                                                  resource_ip);
     }
-    *resource_port = extra_request_info.url.EffectiveIntPort();
+    *resource_port = origin_of_final_url.EffectiveIntPort();
   }
 
   if (net::HostStringIsLocalhost(resource_ip->ToString())) {
@@ -350,13 +354,12 @@ LocalNetworkRequestsPageLoadMetricsObserver::OnCommit(
 
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy
 LocalNetworkRequestsPageLoadMetricsObserver::FlushMetricsOnAppEnterBackground(
-    const page_load_metrics::mojom::PageLoadTiming& timing,
-    const page_load_metrics::PageLoadExtraInfo& extra_info) {
+    const page_load_metrics::mojom::PageLoadTiming& timing) {
   // The browser may come back, but there is no guarantee. To be safe, we record
   // what we have now and treat changes to this navigation as new page loads.
-  if (extra_info.did_commit) {
+  if (GetDelegate().DidCommit()) {
     RecordHistograms();
-    RecordUkmMetrics(extra_info.source_id);
+    RecordUkmMetrics(GetDelegate().GetSourceId());
     ClearLocalState();
   }
 
@@ -395,11 +398,10 @@ void LocalNetworkRequestsPageLoadMetricsObserver::OnLoadedResource(
 }
 
 void LocalNetworkRequestsPageLoadMetricsObserver::OnComplete(
-    const page_load_metrics::mojom::PageLoadTiming& timing,
-    const page_load_metrics::PageLoadExtraInfo& info) {
-  if (info.did_commit) {
+    const page_load_metrics::mojom::PageLoadTiming& timing) {
+  if (GetDelegate().DidCommit()) {
     RecordHistograms();
-    RecordUkmMetrics(info.source_id);
+    RecordUkmMetrics(GetDelegate().GetSourceId());
   }
 }
 

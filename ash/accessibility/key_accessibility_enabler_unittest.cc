@@ -4,7 +4,7 @@
 
 #include "ash/accessibility/key_accessibility_enabler.h"
 
-#include "ash/accessibility/accessibility_controller.h"
+#include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/accessibility/accessibility_observer.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
@@ -30,13 +30,14 @@ class KeyAccessibilityEnablerTest : public AshTestBase,
 
   void TearDown() override {
     ui::SetEventTickClockForTesting(nullptr);
+    Shell::Get()->accessibility_controller()->RemoveObserver(this);
     AshTestBase::TearDown();
   }
 
   void SendKeyEvent(ui::KeyEvent* event) {
     // Tablet mode gets exited elsewhere, so we must force it enabled before
     // each key event.
-    Shell::Get()->tablet_mode_controller()->EnableTabletModeWindowManager(true);
+    Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
     key_accessibility_enabler_->OnKeyEvent(event);
   }
 
@@ -65,7 +66,7 @@ TEST_F(KeyAccessibilityEnablerTest, TwoVolumeKeyDown) {
   ui::KeyEvent vol_up_release(ui::ET_KEY_RELEASED, ui::VKEY_VOLUME_UP,
                               ui::EF_NONE);
 
-  AccessibilityController* controller =
+  AccessibilityControllerImpl* controller =
       Shell::Get()->accessibility_controller();
 
   ASSERT_FALSE(controller->spoken_feedback_enabled());

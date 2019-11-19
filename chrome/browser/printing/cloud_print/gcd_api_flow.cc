@@ -19,7 +19,7 @@ GCDApiFlow::Request::~Request() {
 
 std::unique_ptr<GCDApiFlow> GCDApiFlow::Create(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    identity::IdentityManager* identity_manager) {
+    signin::IdentityManager* identity_manager) {
   return std::make_unique<GCDApiFlowImpl>(url_loader_factory, identity_manager);
 }
 

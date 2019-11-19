@@ -4,7 +4,7 @@
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//      http://www.apache.org/licenses/LICENSE-2.0
+//      https://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -49,9 +49,9 @@ struct from_chars_result {
 // this only supports the `double` and `float` types.
 //
 // This interface incorporates the proposed resolutions for library issues
-// DR 3800 and DR 3801.  If these are adopted with different wording,
+// DR 3080 and DR 3081.  If these are adopted with different wording,
 // Abseil's behavior will change to match the standard.  (The behavior most
-// likely to change is for DR 3801, which says what `value` will be set to in
+// likely to change is for DR 3081, which says what `value` will be set to in
 // the case of overflow and underflow.  Code that wants to avoid possible
 // breaking changes in this area should not depend on `value` when the returned
 // from_chars_result indicates a range error.)

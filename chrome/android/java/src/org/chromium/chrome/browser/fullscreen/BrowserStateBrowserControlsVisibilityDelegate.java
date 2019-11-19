@@ -7,8 +7,13 @@ package org.chromium.chrome.browser.fullscreen;
 import android.os.Handler;
 import android.os.SystemClock;
 
-import org.chromium.base.VisibleForTesting;
+import androidx.annotation.VisibleForTesting;
+
+import org.chromium.base.CommandLine;
+import org.chromium.base.Supplier;
+import org.chromium.chrome.browser.ChromeSwitches;
 import org.chromium.chrome.browser.tab.BrowserControlsVisibilityDelegate;
+import org.chromium.ui.util.TokenHolder;
 
 /**
  * Determines the desired visibility of the browser controls based on the current state of the
@@ -27,6 +32,9 @@ public class BrowserStateBrowserControlsVisibilityDelegate
 
     private final Handler mHandler = new Handler();
 
+    /** Predicate that tells if we're in persistent fullscreen mode. */
+    private final Supplier<Boolean> mPersistentFullscreenMode;
+
     private long mCurrentShowingStartTime;
 
     /**
@@ -35,12 +43,19 @@ public class BrowserStateBrowserControlsVisibilityDelegate
      *
      * @param stateChangedCallback The callback to be triggered when the fullscreen state should be
      *                             updated based on the state of the browser visibility override.
+     * @param persistentFullscreenMode Predicate that tells if we're in persistent fullscreen mode.
      */
-    public BrowserStateBrowserControlsVisibilityDelegate(Runnable stateChangedCallback) {
+    public BrowserStateBrowserControlsVisibilityDelegate(
+            Runnable stateChangedCallback, Supplier<Boolean> persistentFullscreenMode) {
         mTokenHolder = new TokenHolder(stateChangedCallback);
+        mPersistentFullscreenMode = persistentFullscreenMode;
     }
 
     private void ensureControlsVisibleForMinDuration() {
+        // Do not lock the controls as visible. Such as in testing.
+        if (CommandLine.getInstance().hasSwitch(ChromeSwitches.DISABLE_MINIMUM_SHOW_DURATION)) {
+            return;
+        }
         if (mHandler.hasMessages(0)) return; // Messages sent via post/postDelayed have what=0
 
         long currentShowingTime = SystemClock.uptimeMillis() - mCurrentShowingStartTime;
@@ -98,7 +113,7 @@ public class BrowserStateBrowserControlsVisibilityDelegate
 
     @Override
     public boolean canShowBrowserControls() {
-        return true;
+        return !mPersistentFullscreenMode.get();
     }
 
     @Override

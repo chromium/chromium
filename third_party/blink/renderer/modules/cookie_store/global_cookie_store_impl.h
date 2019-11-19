@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "services/service_manager/public/cpp/interface_provider.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/cookie_store/cookie_store.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/supplementable.h"

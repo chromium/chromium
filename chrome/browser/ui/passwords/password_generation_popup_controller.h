@@ -11,7 +11,7 @@
 class PasswordGenerationPopupController
     : public autofill::AutofillPopupViewDelegate {
  public:
-  enum GenerationState {
+  enum GenerationUIState {
     // Generated password is offered in the popup but not filled yet.
     kOfferGeneration,
     // The generated password was accepted.
@@ -22,7 +22,7 @@ class PasswordGenerationPopupController
   virtual void PasswordAccepted() = 0;
 
   // Accessors
-  virtual GenerationState state() const = 0;
+  virtual GenerationUIState state() const = 0;
   virtual bool password_selected() const = 0;
   virtual const base::string16& password() const = 0;
 

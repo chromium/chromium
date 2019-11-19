@@ -4,6 +4,7 @@
 
 #import "ui/events/cocoa/cocoa_event_utils.h"
 
+#include "base/mac/scoped_cftyperef.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/event_utils.h"
 
@@ -131,6 +132,22 @@ bool IsKeyUpEvent(NSEvent* event) {
       return ([event modifierFlags] & NSFunctionKeyMask) == 0;
   }
   return false;
+}
+
+std::vector<uint8_t> EventToData(NSEvent* event) {
+  base::ScopedCFTypeRef<CFDataRef> cf_data(
+      CGEventCreateData(nullptr, [event CGEvent]));
+  const uint8_t* cf_data_ptr = CFDataGetBytePtr(cf_data.get());
+  size_t cf_data_size = CFDataGetLength(cf_data.get());
+  return std::vector<uint8_t>(cf_data_ptr, cf_data_ptr + cf_data_size);
+}
+
+NSEvent* EventFromData(const std::vector<uint8_t>& data) {
+  base::ScopedCFTypeRef<CFDataRef> cf_data(
+      CFDataCreate(nullptr, data.data(), data.size()));
+  base::ScopedCFTypeRef<CGEventRef> cg_event(
+      CGEventCreateFromData(nullptr, cf_data.get()));
+  return [NSEvent eventWithCGEvent:cg_event.get()];
 }
 
 }  // namespace ui

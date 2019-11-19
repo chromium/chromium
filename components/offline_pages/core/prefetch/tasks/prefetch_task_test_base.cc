@@ -21,8 +21,7 @@ PrefetchTaskTestBase::PrefetchTaskTestBase()
           base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
               &test_url_loader_factory_)),
       prefs_(std::make_unique<TestingPrefServiceSimple>()),
-      prefetch_request_factory_(test_shared_url_loader_factory_, prefs()),
-      store_test_util_(task_runner()) {}
+      prefetch_request_factory_(test_shared_url_loader_factory_, prefs()) {}
 
 PrefetchTaskTestBase::~PrefetchTaskTestBase() = default;
 

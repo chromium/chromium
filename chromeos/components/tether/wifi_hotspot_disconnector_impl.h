@@ -64,7 +64,7 @@ class WifiHotspotDisconnectorImpl : public WifiHotspotDisconnector {
   PrefService* pref_service_;
   NetworkConfigurationRemover* network_configuration_remover_;
 
-  base::WeakPtrFactory<WifiHotspotDisconnectorImpl> weak_ptr_factory_;
+  base::WeakPtrFactory<WifiHotspotDisconnectorImpl> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(WifiHotspotDisconnectorImpl);
 };

@@ -25,7 +25,7 @@ class CryptAuthKey;
 //   Symmetric keys: The HMAC-SHA256 of the payload, using a key derived from
 //                   the input symmetric key. Schematically,
 //
-//       HMAC(HKDF(|symmetric_key|, |salt|, info=|key_handle|), |payload|)
+//       HMAC(HKDF(|symmetric_key|, |salt|, |info|), |payload|)
 //
 //   Asymmetric keys: A DER-encoded ECDSA signature (RFC 3279) of the
 //                    concatenation of the salt and payload strings.
@@ -33,10 +33,12 @@ class CryptAuthKey;
 //
 //       Sign(|private_key|, |salt| + |payload|)
 //
-// The CryptAuth v2 Enrollment protocol states that the
-// SyncKeysResponse::random_session_id, sent by the CryptAuth server, be used as
-// the payload for key proofs. In the future, key crossproofs might be employed,
-// where the payload will consist of other key proofs.
+// Specifically, the CryptAuth v2 Enrollment protocol states that
+//   1) |payload| = SyncKeysResponse::random_session_id,
+//   2)    |salt| = "CryptAuth Key Proof",
+//   3)    |info| = key bundle name (needed for symmetric keys only).
+// In the future, key crossproofs might be employed, where the payload will
+// consist of other key proofs.
 //
 // Requirements:
 //   - Currently, the only supported key types are RAW128 and RAW256 for
@@ -47,10 +49,13 @@ class CryptAuthKeyProofComputer {
   virtual ~CryptAuthKeyProofComputer() = default;
 
   // Returns null if key proof computation failed.
+  // Note: The parameter |info| must be non-null for symmetric keys, but it is
+  // not used for asymmetric keys.
   virtual base::Optional<std::string> ComputeKeyProof(
       const CryptAuthKey& key,
       const std::string& payload,
-      const std::string& salt) = 0;
+      const std::string& salt,
+      const base::Optional<std::string>& info) = 0;
 
   DISALLOW_COPY_AND_ASSIGN(CryptAuthKeyProofComputer);
 };

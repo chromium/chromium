@@ -6,18 +6,18 @@
 <body>
   <div style="height:10000px;"></div>
   <img id="no_attribute_img" src='../loading/resources/base-image1.png'>
-  <img id="auto_attribute_img" src='../loading/resources/base-image2.png' lazyload="auto">
-  <img id="invalid_attribute_img" src='../loading/resources/base-image3.png' lazyload="invalid-value-default">
-  <img id="on_attribute_img" src='../loading/resources/dup-image1.png' lazyload="on">
-  <img id="off_attribute_img" src='../loading/resources/dup-image2.png' lazyload="off">
+  <img id="auto_attribute_img" src='../loading/resources/base-image2.png' loading="auto">
+  <img id="invalid_attribute_img" src='../loading/resources/base-image3.png' loading="invalid-value-default">
+  <img id="lazy_attribute_img" src='../loading/resources/dup-image1.png' loading="lazy">
+  <img id="eager_attribute_img" src='../loading/resources/dup-image2.png' loading="eager">
 </body>
 
 <script>
   var no_attribute_img = document.getElementById("no_attribute_img");
   var auto_attribute_img = document.getElementById("auto_attribute_img");
   var invalid_attribute_img = document.getElementById("invalid_attribute_img");
-  var on_attribute_img = document.getElementById("on_attribute_img");
-  var off_attribute_img = document.getElementById("off_attribute_img");
+  var lazy_attribute_img = document.getElementById("lazy_attribute_img");
+  var eager_attribute_img = document.getElementById("eager_attribute_img");
 
   async_test(function(t) {
     window.addEventListener("load", t.step_func_done());
@@ -25,52 +25,52 @@
 
   async_test(function(t) {
     window.addEventListener("load", t.step_func_done(function() {
-      assert_false(is_image_fully_loaded(on_attribute_img));
+      assert_false(is_image_fully_loaded(lazy_attribute_img));
       assert_false(is_image_fully_loaded(no_attribute_img));
     }));
-    on_attribute_img.addEventListener("load",
-      t.unreached_func("Load event should not be fired for below viewport image with lazyload=on"));
+    lazy_attribute_img.addEventListener("load",
+      t.unreached_func("Load event should not be fired for below viewport image with loading=lazy"));
     auto_attribute_img.addEventListener("load",
-      t.unreached_func("Load event should not be fired for below viewport image with lazyload=auto"));
+      t.unreached_func("Load event should not be fired for below viewport image with loading=auto"));
     no_attribute_img.addEventListener("load",
-      t.unreached_func("Load event should not be fired for below viewport image with no lazyload attribute"));
+      t.unreached_func("Load event should not be fired for below viewport image with no loading attribute"));
     invalid_attribute_img.addEventListener("load",
-      t.unreached_func("Load event should not be fired for below viewport image with invalid lazyload attribute"));
-  }, "Test that <img> with lazyload=on or auto or no attribute or invalid value are loaded as a placeholder");
+      t.unreached_func("Load event should not be fired for below viewport image with invalid loading attribute"));
+  }, "Test that <img> with loading=lazy or auto or no attribute or invalid value are loaded as a placeholder");
 
   async_test(function(t) {
-    off_attribute_img.addEventListener("load",
+    eager_attribute_img.addEventListener("load",
       t.step_func_done(function() {
-        assert_true(is_image_fully_loaded(off_attribute_img));
+        assert_true(is_image_fully_loaded(eager_attribute_img));
       }));
-  }, "Test that <img> with lazyload=off is fully loaded, and not a placeholder");
+  }, "Test that <img> with loading=eager is fully loaded, and not a placeholder");
 
   async_test(function(t) {
     var complete = 0;
     var onload_callback = function() {
       if (++complete == 4) {
-        // The four images with lazyload=on,auto or default or invalid attribute are loaded.
+        // The four images with loading=lazy,auto or default or invalid attribute are loaded.
         assert_true(is_image_fully_loaded(no_attribute_img));
-        assert_true(is_image_fully_loaded(on_attribute_img));
+        assert_true(is_image_fully_loaded(lazy_attribute_img));
         assert_true(is_image_fully_loaded(auto_attribute_img));
         assert_true(is_image_fully_loaded(invalid_attribute_img));
         t.done();
       }
-      assert_equals("off", this.getAttribute('lazyload'));
+      assert_equals("eager", this.getAttribute('loading'));
     };
     no_attribute_img.addEventListener("load", onload_callback);
-    on_attribute_img.addEventListener("load", onload_callback);
+    lazy_attribute_img.addEventListener("load", onload_callback);
     auto_attribute_img.addEventListener("load", onload_callback);
     invalid_attribute_img.addEventListener("load", onload_callback);
     window.addEventListener("load", t.step_func(function() {
-      assert_equals(null, no_attribute_img.getAttribute('lazyload'));
-      assert_equals("on", on_attribute_img.getAttribute('lazyload'));
-      assert_equals("auto", auto_attribute_img.getAttribute('lazyload'));
-      assert_equals("invalid-value-default", invalid_attribute_img.getAttribute('lazyload'));
-      no_attribute_img.setAttribute('lazyload', 'off');
-      on_attribute_img.setAttribute('lazyload', 'off');
-      auto_attribute_img.setAttribute('lazyload', 'off');
-      invalid_attribute_img.setAttribute('lazyload', 'off');
+      assert_equals(null, no_attribute_img.getAttribute('loading'));
+      assert_equals("lazy", lazy_attribute_img.getAttribute('loading'));
+      assert_equals("auto", auto_attribute_img.getAttribute('loading'));
+      assert_equals("invalid-value-default", invalid_attribute_img.getAttribute('loading'));
+      no_attribute_img.setAttribute('loading', 'eager');
+      lazy_attribute_img.setAttribute('loading', 'eager');
+      auto_attribute_img.setAttribute('loading', 'eager');
+      invalid_attribute_img.setAttribute('loading', 'eager');
     }));
-  }, "Test that deferred <img> are fully loaded when lazyload attribute is turned off");
+  }, "Test that deferred <img> are fully loaded when lazyload is turned off");
 </script>

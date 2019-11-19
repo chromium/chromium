@@ -1,0 +1,22 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromecast_build.gni")
+if (is_android) {
+  import("//build/config/android/config.gni")
+}
+
+declare_args() {
+  # Variable safe_browsing is used to control the build time configuration for
+  # safe browsing feature. Safe browsing can be compiled in 3 different levels:
+  # 0 disables it, 1 enables it fully, and 2 enables mobile protection via an
+  # external API.
+  if (is_ios || is_chromecast) {
+    safe_browsing_mode = 0
+  } else if (is_android) {
+    safe_browsing_mode = 2
+  } else {
+    safe_browsing_mode = 1
+  }
+}

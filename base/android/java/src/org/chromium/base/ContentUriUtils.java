@@ -13,15 +13,14 @@ import android.os.Build;
 import android.os.ParcelFileDescriptor;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
-import android.support.annotation.Nullable;
 import android.text.TextUtils;
-import android.util.Log;
 import android.webkit.MimeTypeMap;
+
+import androidx.annotation.Nullable;
 
 import org.chromium.base.annotations.CalledByNative;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 
 /**
@@ -56,6 +55,15 @@ public abstract class ContentUriUtils {
         }
     }
 
+    /**
+     * Get a URI for |file| which has the image capture. This function assumes that path of |file|
+     * is based on the result of UiUtils.getDirectoryForImageCapture().
+     *
+     * @param file image capture file.
+     * @return URI for |file|.
+     * @throws IllegalArgumentException when the given File is outside the paths supported by the
+     *         provider.
+     */
     public static Uri getContentUriFromFile(File file) {
         synchronized (sLock) {
             if (sFileProviderUtil != null) {
@@ -157,12 +165,8 @@ public abstract class ContentUriUtils {
                     return new AssetFileDescriptor(pfd, 0, AssetFileDescriptor.UNKNOWN_LENGTH);
                 }
             }
-        } catch (FileNotFoundException e) {
-            Log.w(TAG, "Cannot find content uri: " + uriString, e);
-        } catch (SecurityException e) {
-            Log.w(TAG, "Cannot open content uri: " + uriString, e);
         } catch (Exception e) {
-            Log.w(TAG, "Unknown content uri: " + uriString, e);
+            Log.w(TAG, "Cannot open content uri: %s", uriString, e);
         }
         return null;
     }
@@ -230,7 +234,7 @@ public abstract class ContentUriUtils {
             // There are a few Exceptions we can hit here (e.g. SecurityException), but we don't
             // particularly care what kind of Exception we hit. If we hit one, just don't return a
             // display name.
-            Log.w(TAG, "Cannot open content uri: " + uriString, e);
+            Log.w(TAG, "Cannot open content uri: %s", uriString, e);
         }
 
         // If we are unable to query the content URI, just return null.
@@ -289,12 +293,34 @@ public abstract class ContentUriUtils {
 
     /**
      * Deletes a content uri from the system.
+     *
+     * @return True if the uri was deleted.
      */
     @CalledByNative
-    public static void delete(String uriString) {
+    public static boolean delete(String uriString) {
         assert isContentUri(uriString);
         Uri parsedUri = Uri.parse(uriString);
         ContentResolver resolver = ContextUtils.getApplicationContext().getContentResolver();
-        resolver.delete(parsedUri, null, null);
+        return resolver.delete(parsedUri, null, null) > 0;
+    }
+
+    /**
+     * Retrieve the content URI from the file path.
+     *
+     * @param filePathString the file path.
+     * @return content URI or null if the input params are invalid.
+     */
+    @CalledByNative
+    public static String getContentUriFromFilePath(String filePathString) {
+        try {
+            Uri contentUri = getContentUriFromFile(new File(filePathString));
+            if (contentUri != null) {
+                return contentUri.toString();
+            }
+        } catch (IllegalArgumentException e) {
+            // This happens when the given File is outside the paths supported by the provider.
+            Log.e(TAG, "Cannot retrieve content uri from file: %s", filePathString, e);
+        }
+        return null;
     }
 }

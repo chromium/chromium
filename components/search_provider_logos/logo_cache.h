@@ -66,15 +66,18 @@ class LogoCache {
   // if |str| cannot be converted.
   static std::unique_ptr<LogoMetadata> LogoMetadataFromString(
       const std::string& str,
-      int* logo_num_bytes);
+      int* logo_num_bytes,
+      int* dark_logo_num_bytes);
 
   // Converts |metadata| to a string and stores it in |str|.
   static void LogoMetadataToString(const LogoMetadata& metadata,
                                    int logo_num_bytes,
+                                   int dark_logo_num_bytes,
                                    std::string* str);
 
   // Returns the path where the cached logo will be saved.
   base::FilePath GetLogoPath();
+  base::FilePath GetDarkLogoPath();
 
   // Returns the path where the metadata for the cached logo will be saved.
   base::FilePath GetMetadataPath();
@@ -92,7 +95,8 @@ class LogoCache {
 
   // Writes |metadata_| to the cached metadata file and |encoded_image| to the
   // cached logo file.
-  void WriteLogo(scoped_refptr<base::RefCountedMemory> encoded_image);
+  void WriteLogo(scoped_refptr<base::RefCountedMemory> encoded_image,
+                 scoped_refptr<base::RefCountedMemory> dark_encoded_image);
 
   // Deletes all the cache files.
   void DeleteLogoAndMetadata();
@@ -114,7 +118,8 @@ class LogoCache {
   // The number of bytes in the logo file, as recorded in the metadata file.
   // Valid iff |metadata_is_valid_|. This is used to verify that the logo file
   // is complete and corresponds to the current metadata file.
-  int logo_num_bytes_;
+  int logo_num_bytes_ = 0;
+  int dark_logo_num_bytes_ = 0;
 
   // Ensure LogoCache is only used sequentially.
   SEQUENCE_CHECKER(sequence_checker_);

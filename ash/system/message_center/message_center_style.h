@@ -29,6 +29,10 @@ constexpr int kSwipeControlButtonHorizontalMargin = 8;
 constexpr SkColor kSwipeControlBackgroundColor =
     SkColorSetRGB(0xee, 0xee, 0xee);
 
+// The ratio to multiply with the swipe control width to get the width to
+// display at full opacity when swiping.
+constexpr float kSwipeControlFullOpacityRatio = 1.5f;
+
 }  // namespace message_center_style
 
 }  // namespace ash

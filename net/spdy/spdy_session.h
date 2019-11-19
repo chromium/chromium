@@ -86,6 +86,9 @@ const int kYieldAfterDurationMilliseconds = 20;
 const spdy::SpdyStreamId kFirstStreamId = 1;
 const spdy::SpdyStreamId kLastStreamId = 0x7fffffff;
 
+// Maximum number of capped frames that can be queued at any time.
+const int kSpdySessionMaxQueuedCappedFrames = 10000;
+
 class NetLog;
 class NetworkQualityEstimator;
 class SpdyStream;
@@ -196,12 +199,21 @@ class NET_EXPORT_PRIVATE SpdyStreamRequest {
   // Calls CancelRequest().
   ~SpdyStreamRequest();
 
+  // Returns the time when ConfirmHandshake() completed, if this request had to
+  // wait for ConfirmHandshake().
+  base::TimeTicks confirm_handshake_end() const {
+    return confirm_handshake_end_;
+  }
+
   // Starts the request to create a stream. If OK is returned, then
   // ReleaseStream() may be called. If ERR_IO_PENDING is returned,
   // then when the stream is created, |callback| will be called, at
   // which point ReleaseStream() may be called. Otherwise, the stream
   // is not created, an error is returned, and ReleaseStream() may not
   // be called.
+  //
+  // If |can_send_early| is true, this request is allowed to be sent over
+  // TLS 1.3 0RTT without confirming the handshake.
   //
   // If OK is returned, must not be called again without
   // ReleaseStream() being called first. If ERR_IO_PENDING is
@@ -211,6 +223,7 @@ class NET_EXPORT_PRIVATE SpdyStreamRequest {
   int StartRequest(SpdyStreamType type,
                    const base::WeakPtr<SpdySession>& session,
                    const GURL& url,
+                   bool can_send_early,
                    RequestPriority priority,
                    const SocketTag& socket_tag,
                    const NetLogWithSource& net_log,
@@ -241,6 +254,8 @@ class NET_EXPORT_PRIVATE SpdyStreamRequest {
  private:
   friend class SpdySession;
 
+  void OnConfirmHandshakeComplete(int rv);
+
   // Called by |session_| when the stream attempt has finished
   // successfully.
   void OnRequestCompleteSuccess(const base::WeakPtr<SpdyStream>& stream);
@@ -267,8 +282,9 @@ class NET_EXPORT_PRIVATE SpdyStreamRequest {
   NetLogWithSource net_log_;
   CompletionOnceCallback callback_;
   MutableNetworkTrafficAnnotationTag traffic_annotation_;
+  base::TimeTicks confirm_handshake_end_;
 
-  base::WeakPtrFactory<SpdyStreamRequest> weak_ptr_factory_;
+  base::WeakPtrFactory<SpdyStreamRequest> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(SpdyStreamRequest);
 };
@@ -298,12 +314,14 @@ class NET_EXPORT SpdySession : public BufferedSpdyFramerVisitorInterface,
               HttpServerProperties* http_server_properties,
               TransportSecurityState* transport_security_state,
               SSLConfigService* ssl_config_service,
-              const quic::QuicTransportVersionVector& quic_supported_versions,
+              const quic::ParsedQuicVersionVector& quic_supported_versions,
               bool enable_sending_initial_data,
               bool enable_ping_based_connection_checking,
-              bool support_ietf_format_quic_altsvc,
+              bool is_http_enabled,
+              bool is_quic_enabled,
               bool is_trusted_proxy,
               size_t session_max_recv_window_size,
+              int session_max_queued_capped_frames,
               const spdy::SettingsMap& initial_settings,
               const base::Optional<SpdySessionPool::GreasedHttp2Frame>&
                   greased_http2_frame,
@@ -329,7 +347,7 @@ class NET_EXPORT SpdySession : public BufferedSpdyFramerVisitorInterface,
   // |pushed_stream_id| must not be kNoPushedStreamFound.
   //
   // Returns ERR_CONNECTION_CLOSED if the connection is being closed.
-  // Returns ERR_SPDY_PUSHED_STREAM_NOT_AVAILABLE if the pushed stream is not
+  // Returns ERR_HTTP2_PUSHED_STREAM_NOT_AVAILABLE if the pushed stream is not
   //   available any longer, for example, if the server has reset it.
   // Returns OK if the stream is still available, and returns the stream in
   //   |*spdy_stream|.  If the stream is still open, updates its priority to
@@ -381,6 +399,19 @@ class NET_EXPORT SpdySession : public BufferedSpdyFramerVisitorInterface,
   void EnqueueStreamWrite(const base::WeakPtr<SpdyStream>& stream,
                           spdy::SpdyFrameType frame_type,
                           std::unique_ptr<SpdyBufferProducer> producer);
+
+  // Returns true if this session is configured to send greased HTTP/2 frames.
+  // For more details on greased frames, see
+  // https://tools.ietf.org/html/draft-bishop-httpbis-grease-00.
+  bool GreasedFramesEnabled() const;
+
+  // Send greased frame, that is, a frame of reserved type.
+  void EnqueueGreasedFrame(const base::WeakPtr<SpdyStream>& stream);
+
+  // Runs the handshake to completion to confirm the handshake with the server.
+  // If ERR_IO_PENDING is returned, then when the handshake is confirmed,
+  // |callback| will be called.
+  int ConfirmHandshake(CompletionOnceCallback callback);
 
   // Creates and returns a HEADERS frame for |stream_id|.
   std::unique_ptr<spdy::SpdySerializedFrame> CreateHeaders(
@@ -476,7 +507,7 @@ class NET_EXPORT SpdySession : public BufferedSpdyFramerVisitorInterface,
 
   // Retrieves information on the current state of the SPDY session as a
   // Value.
-  std::unique_ptr<base::Value> GetInfoAsValue() const;
+  base::Value GetInfoAsValue() const;
 
   // Indicates whether the session is being reused after having successfully
   // used to send/receive data in the past or if the underlying socket was idle
@@ -704,6 +735,8 @@ class NET_EXPORT SpdySession : public BufferedSpdyFramerVisitorInterface,
   int DoWrite();
   int DoWriteComplete(int result);
 
+  void NotifyRequestsOfConfirmation(int rv);
+
   // TODO(akalin): Rename the Send* and Write* functions below to
   // Enqueue*.
 
@@ -772,7 +805,6 @@ class NET_EXPORT SpdySession : public BufferedSpdyFramerVisitorInterface,
   // that |stream| may hold the last reference to the session.
   void DeleteStream(std::unique_ptr<SpdyStream> stream, int status);
 
-  void RecordPingRTTHistogram(base::TimeDelta duration);
   void RecordHistograms();
   void RecordProtocolErrorHistogram(SpdyProtocolErrorDetails details);
   static void RecordPushedStreamVaryResponseHeaderHistogram(
@@ -1054,6 +1086,13 @@ class NET_EXPORT SpdySession : public BufferedSpdyFramerVisitorInterface,
   // https://tools.ietf.org/html/draft-bishop-httpbis-grease-00.
   const base::Optional<SpdySessionPool::GreasedHttp2Frame> greased_http2_frame_;
 
+  // The callbacks to notify a request that the handshake has been confirmed.
+  std::vector<CompletionOnceCallback> waiting_for_confirmation_callbacks_;
+
+  // True if there is an ongoing handshake confirmation with outstanding
+  // requests.
+  bool in_confirm_handshake_;
+
   // Limits
   size_t max_concurrent_streams_;
   size_t max_concurrent_pushed_streams_;
@@ -1091,6 +1130,11 @@ class NET_EXPORT SpdySession : public BufferedSpdyFramerVisitorInterface,
   // control is turned on.
   int32_t session_max_recv_window_size_;
 
+  // Maximum number of capped frames that can be queued at any time.
+  // Every time we try to enqueue a capped frame, we check that there aren't
+  // more than this amount already queued, and close the connection if so.
+  int session_max_queued_capped_frames_;
+
   // Sum of |session_unacked_recv_window_bytes_| and current receive window
   // size.  Zero unless session flow control is turned on.
   // TODO(bnc): Rename or change semantics so that |window_size_| is actual
@@ -1125,14 +1169,14 @@ class NET_EXPORT SpdySession : public BufferedSpdyFramerVisitorInterface,
   NetLogWithSource net_log_;
 
   // Versions of QUIC which may be used.
-  const quic::QuicTransportVersionVector quic_supported_versions_;
+  const quic::ParsedQuicVersionVector quic_supported_versions_;
 
   // Outside of tests, these should always be true.
   const bool enable_sending_initial_data_;
   const bool enable_ping_based_connection_checking_;
 
-  // If true, alt-svc headers advertising QUIC in IETF format will be supported.
-  const bool support_ietf_format_quic_altsvc_;
+  const bool is_http2_enabled_;
+  const bool is_quic_enabled_;
 
   // If true, this session is being made to a trusted SPDY/HTTP2 proxy that is
   // allowed to push cross-origin resources.
@@ -1181,7 +1225,7 @@ class NET_EXPORT SpdySession : public BufferedSpdyFramerVisitorInterface,
   // SpdySession is refcounted because we don't need to keep the SpdySession
   // alive if the last reference is within a RunnableMethod.  Just revoke the
   // method.
-  base::WeakPtrFactory<SpdySession> weak_factory_;
+  base::WeakPtrFactory<SpdySession> weak_factory_{this};
 };
 
 }  // namespace net

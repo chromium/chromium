@@ -9,8 +9,8 @@
 
 #include "base/callback_forward.h"
 #include "base/component_export.h"
-#include "chromeos/dbus/attestation_constants.h"
-#include "chromeos/dbus/cryptohome_client.h"
+#include "chromeos/dbus/constants/attestation_constants.h"
+#include "chromeos/dbus/cryptohome/cryptohome_client.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
 namespace cryptohome {
@@ -94,6 +94,9 @@ class COMPONENT_EXPORT(CHROMEOS_CRYPTOHOME) AsyncMethodCaller {
   // the challenge response.  If |key_type| is KEY_USER, a |user_id| must be
   // provided.  Otherwise |user_id| is ignored.  For normal GAIA users the
   // |user_id| is an AccountaId-derived string (see AccountId::GetAccountIdKey).
+  // If |key_name_for_spkac| is not empty, then the corresponding key will be
+  // used for SignedPublicKeyAndChallenge, but the challenge response will still
+  // be signed by the key specified by |key_name| (EMK or EUK).
   virtual void TpmAttestationSignEnterpriseChallenge(
       chromeos::attestation::AttestationKeyType key_type,
       const Identification& user_id,
@@ -102,6 +105,7 @@ class COMPONENT_EXPORT(CHROMEOS_CRYPTOHOME) AsyncMethodCaller {
       const std::string& device_id,
       chromeos::attestation::AttestationChallengeOptions options,
       const std::string& challenge,
+      const std::string& key_name_for_spkac,
       const DataCallback& callback) = 0;
 
   // Asks cryptohomed to asynchronously sign a simple challenge with the key

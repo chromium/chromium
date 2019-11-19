@@ -4,14 +4,36 @@
 
 #include "components/captive_portal/captive_portal_detector.h"
 
+#include <utility>
+
 #include "base/bind.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
-#include "components/data_use_measurement/core/data_use_user_data.h"
+#include "base/task_runner_util.h"
 #include "net/base/load_flags.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_util.h"
 #include "net/url_request/url_request_status.h"
+
+#if defined(OS_CHROMEOS)
+#include "chromeos/network/network_configuration_handler.h"
+#include "chromeos/network/network_handler.h"
+#include "chromeos/network/network_state_handler.h"
+#endif
+
+namespace {
+#if defined(OS_CHROMEOS)
+GURL GetProbeUrl(const GURL& default_url) {
+  DCHECK_EQ(chromeos::NetworkHandler::Get()->task_runner(),
+            base::ThreadTaskRunnerHandle::Get().get());
+  const chromeos::NetworkState* network = chromeos::NetworkHandler::Get()
+                                              ->network_state_handler()
+                                              ->DefaultNetwork();
+  return network && !network->probe_url().is_empty() ? network->probe_url()
+                                                     : default_url;
+}
+#endif
+}  // namespace
 
 namespace captive_portal {
 
@@ -20,7 +42,13 @@ const char CaptivePortalDetector::kDefaultURL[] =
 
 CaptivePortalDetector::CaptivePortalDetector(
     network::mojom::URLLoaderFactory* loader_factory)
-    : loader_factory_(loader_factory) {}
+    : loader_factory_(loader_factory)
+#if defined(OS_CHROMEOS)
+      ,
+      weak_factory_(this)
+#endif
+{
+}
 
 CaptivePortalDetector::~CaptivePortalDetector() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -33,19 +61,41 @@ void CaptivePortalDetector::DetectCaptivePortal(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!FetchingURL());
   DCHECK(detection_callback_.is_null());
+  DCHECK(!detection_callback.is_null());
 
   detection_callback_ = std::move(detection_callback);
 
+#if defined(OS_CHROMEOS)
+  if (chromeos::NetworkHandler::IsInitialized()) {
+    base::PostTaskAndReplyWithResult(
+        chromeos::NetworkHandler::Get()->task_runner(), FROM_HERE,
+        base::BindOnce(&GetProbeUrl, url),
+        base::BindOnce(&CaptivePortalDetector::StartProbe,
+                       weak_factory_.GetWeakPtr(), traffic_annotation));
+    return;
+  }
+#endif
+  StartProbe(traffic_annotation, url);
+}
+
+void CaptivePortalDetector::StartProbe(
+    const net::NetworkTrafficAnnotationTag& traffic_annotation,
+    const GURL& url) {
   auto resource_request = std::make_unique<network::ResourceRequest>();
   resource_request->url = url;
+  probe_url_ = url;
 
   // Can't safely use net::LOAD_DISABLE_CERT_NETWORK_FETCHES here,
   // since then the connection may be reused without checking the cert.
   resource_request->load_flags = net::LOAD_BYPASS_CACHE;
-  resource_request->allow_credentials = false;
+  resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
 
-  // TODO(jam): switch to using ServiceURLLoader to track data measurement once
-  // https://crbug.com/808498 is fixed.
+  // Secure DNS should be disabled for captive portal probes so that when a
+  // captive portal is present, the DNS lookup for the probe domain succeeds or
+  // is intercepted.
+  resource_request->trusted_params = network::ResourceRequest::TrustedParams();
+  resource_request->trusted_params->disable_secure_dns = true;
+
   simple_loader_ = network::SimpleURLLoader::Create(std::move(resource_request),
                                                     traffic_annotation);
   simple_loader_->SetAllowHttpErrorResults(true);
@@ -58,6 +108,10 @@ void CaptivePortalDetector::DetectCaptivePortal(
 void CaptivePortalDetector::Cancel() {
   simple_loader_.reset();
   detection_callback_.Reset();
+#if defined(OS_CHROMEOS)
+  // Cancel any pending calls to StartProbe().
+  weak_factory_.InvalidateWeakPtrs();
+#endif
 }
 
 void CaptivePortalDetector::OnSimpleLoaderComplete(

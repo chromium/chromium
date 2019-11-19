@@ -30,12 +30,18 @@
 
 #include "third_party/blink/renderer/core/css/resolver/match_result.h"
 
+#include <memory>
+#include <type_traits>
+
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
 #include "third_party/blink/renderer/core/css/style_rule.h"
+#include "third_party/blink/renderer/platform/wtf/math_extras.h"
 
 namespace blink {
 
-MatchedProperties::MatchedProperties() : possibly_padded_member(nullptr) {}
+MatchedProperties::MatchedProperties() {
+  memset(&types_, 0, sizeof(types_));
+}
 
 MatchedProperties::~MatchedProperties() = default;
 
@@ -46,12 +52,18 @@ void MatchedProperties::Trace(blink::Visitor* visitor) {
 void MatchResult::AddMatchedProperties(
     const CSSPropertyValueSet* properties,
     unsigned link_match_type,
-    PropertyWhitelistType property_whitelist_type) {
+    ValidPropertyFilter valid_property_filter) {
   matched_properties_.Grow(matched_properties_.size() + 1);
   MatchedProperties& new_properties = matched_properties_.back();
   new_properties.properties = const_cast<CSSPropertyValueSet*>(properties);
   new_properties.types_.link_match_type = link_match_type;
-  new_properties.types_.whitelist_type = property_whitelist_type;
+  new_properties.types_.valid_property_filter =
+      static_cast<std::underlying_type_t<ValidPropertyFilter>>(
+          valid_property_filter);
+  // TODO(andruud): MatchedProperties are stored here in reverse order.
+  // Reevaluate this when cascade has shipped.
+  new_properties.types_.tree_order =
+      std::numeric_limits<uint16_t>::max() - current_tree_order_;
 }
 
 void MatchResult::FinishAddingUARules() {
@@ -67,6 +79,7 @@ void MatchResult::FinishAddingUserRules() {
       user_range_ends_.back() == matched_properties_.size())
     return;
   user_range_ends_.push_back(matched_properties_.size());
+  current_tree_order_ = clampTo<uint16_t>(user_range_ends_.size());
 }
 
 void MatchResult::FinishAddingAuthorRulesForTreeScope() {
@@ -81,6 +94,7 @@ void MatchResult::FinishAddingAuthorRulesForTreeScope() {
       author_range_ends_.back() == matched_properties_.size())
     return;
   author_range_ends_.push_back(matched_properties_.size());
+  current_tree_order_ = clampTo<uint16_t>(author_range_ends_.size());
 }
 
 }  // namespace blink

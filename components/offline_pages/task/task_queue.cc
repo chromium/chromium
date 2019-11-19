@@ -15,9 +15,7 @@
 namespace offline_pages {
 
 TaskQueue::TaskQueue(Delegate* delegate)
-    : task_runner_(base::ThreadTaskRunnerHandle::Get()),
-      delegate_(delegate),
-      weak_ptr_factory_(this) {
+    : task_runner_(base::ThreadTaskRunnerHandle::Get()), delegate_(delegate) {
   DCHECK(delegate_);
 }
 

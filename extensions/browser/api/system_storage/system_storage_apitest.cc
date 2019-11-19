@@ -6,7 +6,6 @@
 
 #include <vector>
 
-#include "base/message_loop/message_loop.h"
 #include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/storage_monitor/storage_monitor.h"

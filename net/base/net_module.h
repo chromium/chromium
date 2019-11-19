@@ -6,7 +6,7 @@
 #define NET_BASE_NET_MODULE_H__
 
 #include "base/macros.h"
-#include "base/strings/string_piece.h"
+#include "base/memory/ref_counted_memory.h"
 #include "net/base/net_export.h"
 
 namespace net {
@@ -20,15 +20,15 @@ namespace net {
 //
 class NET_EXPORT NetModule {
  public:
-  typedef base::StringPiece (*ResourceProvider)(int key);
+  typedef scoped_refptr<base::RefCountedMemory> (*ResourceProvider)(int key);
 
   // Set the function to call when the net module needs resources
   static void SetResourceProvider(ResourceProvider func);
 
   // Call the resource provider (if one exists) to get the specified resource.
-  // Returns an empty string if the resource does not exist or if there is no
-  // resource provider.
-  static base::StringPiece GetResource(int key);
+  // Returns nullptr if the resource does not exist or if there is no resource
+  // provider.
+  static scoped_refptr<base::RefCountedMemory> GetResource(int key);
 
  private:
   DISALLOW_IMPLICIT_CONSTRUCTORS(NetModule);

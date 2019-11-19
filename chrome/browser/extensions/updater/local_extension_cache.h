@@ -274,7 +274,7 @@ class LocalExtensionCache {
   base::TimeDelta cache_status_polling_delay_;
 
   // Weak factory for callbacks from the backend and delayed tasks.
-  base::WeakPtrFactory<LocalExtensionCache> weak_ptr_factory_;
+  base::WeakPtrFactory<LocalExtensionCache> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(LocalExtensionCache);
 };

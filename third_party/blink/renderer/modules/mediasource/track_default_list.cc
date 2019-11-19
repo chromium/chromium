@@ -10,10 +10,6 @@
 
 namespace blink {
 
-TrackDefaultList* TrackDefaultList::Create() {
-  return MakeGarbageCollected<TrackDefaultList>();
-}
-
 TrackDefaultList* TrackDefaultList::Create(
     const HeapVector<Member<TrackDefault>>& track_defaults,
     ExceptionState& exception_state) {

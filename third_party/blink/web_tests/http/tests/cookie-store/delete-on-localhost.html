@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<!-- NOTE: On http://localhost, the Cookie Store API is intended to behave the
+same way as document.cookie. -->
+<title>Cookie Store API: Delete a cookie on http://localhost</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+
+promise_test(async t => {
+  await cookieStore.set('cookie-name', 'cookie-value', { secure: false });
+  t.add_cleanup(async () => { await cookieStore.delete('cookie-name'); });
+
+  await cookieStore.delete('cookie-name');
+  const cookie = await cookieStore.get('cookie-name');
+  assert_equals(cookie, null);
+}, 'cookieStore.delete(name) deletes an insecure cookie with the given name');
+
+promise_test(async t => {
+  await cookieStore.set('cookie-name', 'cookie-value', { secure: false });
+  t.add_cleanup(async () => { await cookieStore.delete('cookie-name'); });
+
+  await cookieStore.delete({ name: 'cookie-name' });
+  const cookie = await cookieStore.get('cookie-name');
+  assert_equals(cookie, null);
+}, `cookieStore.delete(options) deletes an insecure cookie with the given name
+    option`);
+
+</script>

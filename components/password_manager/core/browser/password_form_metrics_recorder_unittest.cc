@@ -10,7 +10,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
@@ -69,7 +69,7 @@ void ExpectUkmValueCount(ukm::TestUkmRecorder* test_ukm_recorder,
 // Test the metrics recorded around password generation and the user's
 // interaction with the offer to generate passwords.
 TEST(PasswordFormMetricsRecorder, Generation) {
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_;
   static constexpr struct {
     bool generation_available;
     bool has_generated_password;
@@ -200,7 +200,7 @@ TEST(PasswordFormMetricsRecorder, Generation) {
 // Test the recording of metrics around manager_action, user_action, and
 // submit_result.
 TEST(PasswordFormMetricsRecorder, Actions) {
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_;
   static constexpr struct {
     // Stimuli:
     bool is_main_frame_secure;
@@ -297,7 +297,7 @@ TEST(PasswordFormMetricsRecorder, Actions) {
 }
 
 TEST(PasswordFormMetricsRecorder, SubmittedFormType) {
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_;
   static constexpr struct {
     // Stimuli:
     bool is_main_frame_secure;
@@ -356,7 +356,7 @@ TEST(PasswordFormMetricsRecorder, SubmittedFormType) {
 }
 
 TEST(PasswordFormMetricsRecorder, RecordPasswordBubbleShown) {
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_;
   using Trigger = PasswordFormMetricsRecorder::BubbleTrigger;
   static constexpr struct {
     // Stimuli:
@@ -451,7 +451,7 @@ TEST(PasswordFormMetricsRecorder, RecordPasswordBubbleShown) {
 }
 
 TEST(PasswordFormMetricsRecorder, RecordUIDismissalReason) {
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_;
   static constexpr struct {
     // Stimuli:
     metrics_util::UIDisplayDisposition display_disposition;
@@ -503,7 +503,7 @@ TEST(PasswordFormMetricsRecorder, RecordUIDismissalReason) {
 // Verify that it is ok to open and close the password bubble more than once
 // and still get accurate metrics.
 TEST(PasswordFormMetricsRecorder, SequencesOfBubbles) {
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_;
   using BubbleDismissalReason =
       PasswordFormMetricsRecorder::BubbleDismissalReason;
   using BubbleTrigger = PasswordFormMetricsRecorder::BubbleTrigger;
@@ -550,7 +550,7 @@ TEST(PasswordFormMetricsRecorder, SequencesOfBubbles) {
 // Verify that one-time actions are only recorded once per life-cycle of a
 // PasswordFormMetricsRecorder.
 TEST(PasswordFormMetricsRecorder, RecordDetailedUserAction) {
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_;
   using Action = PasswordFormMetricsRecorder::DetailedUserAction;
   ukm::TestAutoSetUkmRecorder test_ukm_recorder;
   {
@@ -576,7 +576,7 @@ TEST(PasswordFormMetricsRecorder, RecordDetailedUserAction) {
 // Verify that the the mapping is correct and that metrics are actually
 // recorded.
 TEST(PasswordFormMetricsRecorder, RecordShowManualFallbackForSaving) {
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_;
   struct {
     bool has_generated_password;
     bool is_update;
@@ -606,7 +606,7 @@ TEST(PasswordFormMetricsRecorder, RecordShowManualFallbackForSaving) {
 
 // Verify that no 0 is recorded if now fallback icon is shown.
 TEST(PasswordFormMetricsRecorder, NoRecordShowManualFallbackForSaving) {
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_;
   ukm::TestAutoSetUkmRecorder test_ukm_recorder;
   {
     auto recorder = CreatePasswordFormMetricsRecorder(
@@ -621,7 +621,7 @@ TEST(PasswordFormMetricsRecorder, NoRecordShowManualFallbackForSaving) {
 
 // Verify that only the latest value is recorded
 TEST(PasswordFormMetricsRecorder, RecordShowManualFallbackForSavingLatestOnly) {
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_;
   ukm::TestAutoSetUkmRecorder test_ukm_recorder;
   {
     auto recorder = CreatePasswordFormMetricsRecorder(
@@ -675,13 +675,14 @@ struct FillingAssistanceTestCase {
     std::string value;
     std::string typed_value;
     bool user_typed = false;
-    bool manually_filled = false;
     bool automatically_filled = false;
+    bool manually_filled = false;
     bool is_password = false;
   };
 
   const char* description_for_logging;
 
+  bool is_blacklisted = false;
   bool submission_detected = true;
   bool submission_is_successful = true;
 
@@ -735,7 +736,7 @@ void CheckFillingAssistanceTestCase(
                  << ", is_main_frame_secure: " << std::boolalpha
                  << is_main_frame_secure);
 
-    base::test::ScopedTaskEnvironment scoped_task_environment_;
+    base::test::TaskEnvironment task_environment_;
     base::HistogramTester histogram_tester;
 
     FormData form_data = ConvertToFormData(test_case.fields);
@@ -747,9 +748,9 @@ void CheckFillingAssistanceTestCase(
     auto recorder =
         CreatePasswordFormMetricsRecorder(is_main_frame_secure, nullptr);
     if (test_case.submission_detected) {
-      recorder->CalculateFillingAssistanceMetric(form_data, saved_usernames,
-                                                 saved_passwords,
-                                                 test_case.interactions_stats);
+      recorder->CalculateFillingAssistanceMetric(
+          form_data, saved_usernames, saved_passwords, test_case.is_blacklisted,
+          test_case.interactions_stats);
     }
 
     if (test_case.submission_is_successful)
@@ -884,8 +885,8 @@ TEST(PasswordFormMetricsRecorder, FillingAssistanceUserTypedPassword) {
       {.description_for_logging = "The user typed into password field",
        .fields = {{.value = "user2", .automatically_filled = true},
                   {.typed_value = "password2",
-                   .automatically_filled = true,
                    .user_typed = true,
+                   .automatically_filled = true,
                    .is_password = true}},
        .saved_usernames = {"user1", "user2"},
        .saved_passwords = {"password1", "password2"},
@@ -916,8 +917,8 @@ TEST(PasswordFormMetricsRecorder, FillingAssistanceUserTypedNewCredentials) {
                       .automatically_filled = true,
                   },
                   {.typed_value = "password3",
-                   .automatically_filled = true,
                    .user_typed = true,
+                   .automatically_filled = true,
                    .is_password = true}},
        .saved_usernames = {"user1", "user2"},
        .saved_passwords = {"password1", "password2"},
@@ -987,14 +988,11 @@ TEST(PasswordFormMetricsRecorder,
 TEST(PasswordFormMetricsRecorder, FillingAssistanceBlacklistedDomain) {
   CheckFillingAssistanceTestCase(
       {.description_for_logging = "Submission while domain is blacklisted",
+       .is_blacklisted = true,
        .fields = {{.value = "user1"},
                   {.value = "password1", .is_password = true}},
-       // A blacklisted domain is represented as empty username and password
-       // but empty username elements are stripped before
-       // PasswordFormMetricsRecorder::CalculateFillingAssistanceMetric is
-       // called.
        .saved_usernames = {},
-       .saved_passwords = {""},
+       .saved_passwords = {},
        .expectation = PasswordFormMetricsRecorder::FillingAssistance::
            kNoSavedCredentialsAndBlacklisted});
 }
@@ -1004,16 +1002,15 @@ TEST(PasswordFormMetricsRecorder,
   CheckFillingAssistanceTestCase(
       {.description_for_logging =
            "Submission while domain is blacklisted but a credential is stored",
+       .is_blacklisted = true,
        .fields = {{.value = "user1", .automatically_filled = true},
-                  {.value = "password1",
-                   .is_password = true,
-                   .automatically_filled = true}},
-       // A blacklisted domain is represented as empty username and password
-       // but empty username elements are stripped before
-       // PasswordFormMetricsRecorder::CalculateFillingAssistanceMetric is
-       // called.
+                  {
+                      .value = "password1",
+                      .automatically_filled = true,
+                      .is_password = true,
+                  }},
        .saved_usernames = {"user1"},
-       .saved_passwords = {"", "password1"},
+       .saved_passwords = {"password1"},
        .expectation =
            PasswordFormMetricsRecorder::FillingAssistance::kAutomatic});
 }

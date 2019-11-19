@@ -31,6 +31,7 @@ from utilities import get_first_interface_name_from_idl
 from utilities import get_interface_exposed_arguments
 from utilities import get_interface_extended_attributes_from_idl
 from utilities import is_non_legacy_callback_interface_from_idl
+from utilities import is_interface_mixin_from_idl
 from utilities import read_file_to_list
 from utilities import read_pickle_file
 from utilities import should_generate_impl_file_from_idl
@@ -80,9 +81,10 @@ def record_global_constructors(idl_filename):
     # An interface property is produced for every non-callback interface
     # that does not have [NoInterfaceObject].
     # http://heycam.github.io/webidl/#es-interfaces
-    if ((not should_generate_impl_file_from_idl(idl_file_contents)) or
-        is_non_legacy_callback_interface_from_idl(idl_file_contents) or
-        'NoInterfaceObject' in extended_attributes):
+    if (not should_generate_impl_file_from_idl(idl_file_contents) or
+            is_non_legacy_callback_interface_from_idl(idl_file_contents) or
+            is_interface_mixin_from_idl(idl_file_contents) or
+            'NoInterfaceObject' in extended_attributes):
         return
 
     exposed_arguments = get_interface_exposed_arguments(idl_file_contents)
@@ -107,7 +109,7 @@ def record_global_constructors(idl_filename):
 def generate_global_constructors_list(interface_name, extended_attributes):
     extended_attributes_list = [
         name + (('=' + extended_attributes[name]) if extended_attributes[name] else '')
-        for name in 'RuntimeEnabled', 'OriginTrialEnabled', 'ContextEnabled', 'SecureContext'
+        for name in 'RuntimeEnabled', 'ContextEnabled', 'SecureContext'
         if name in extended_attributes]
     if extended_attributes_list:
         extended_string = '[%s] ' % ', '.join(extended_attributes_list)

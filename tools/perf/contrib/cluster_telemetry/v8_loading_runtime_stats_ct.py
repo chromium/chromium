@@ -13,11 +13,6 @@ class V8LoadingRuntimeStatsClusterTelemetry(
   def Name(cls):
     return 'v8.loading_runtime_stats.cluster_telemetry'
 
-  @classmethod
-  def ShouldAddValue(cls, name, from_first_story_run):
-    del from_first_story_run  # unused
-    return v8_browsing.V8BrowsingShouldAddValue(name)
-
   def CreateCoreTimelineBasedMeasurementOptions(self):
     options = timeline_based_measurement.Options()
     v8_browsing.AugmentOptionsForV8BrowsingMetrics(options,

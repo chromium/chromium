@@ -20,7 +20,7 @@ class ResizeAreaDelegate {
   virtual void OnResize(int resize_amount, bool done_resizing) = 0;
 
  protected:
-  virtual ~ResizeAreaDelegate() {}
+  virtual ~ResizeAreaDelegate() = default;
 };
 
 }  // namespace views

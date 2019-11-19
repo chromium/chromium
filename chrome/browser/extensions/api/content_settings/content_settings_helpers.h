@@ -23,7 +23,7 @@ ContentSettingsPattern ParseExtensionPattern(const std::string& pattern_str,
                                              std::string* error);
 
 // Converts a content settings type string to the corresponding
-// ContentSettingsType. Returns CONTENT_SETTINGS_TYPE_DEFAULT if the string
+// ContentSettingsType. Returns ContentSettingsType::DEFAULT if the string
 // didn't specify a valid content settings type.
 ContentSettingsType StringToContentSettingsType(
     const std::string& content_type);

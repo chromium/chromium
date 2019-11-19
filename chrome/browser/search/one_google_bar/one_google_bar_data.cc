@@ -19,7 +19,8 @@ bool operator==(const OneGoogleBarData& lhs, const OneGoogleBarData& rhs) {
          lhs.in_head_style == rhs.in_head_style &&
          lhs.after_bar_script == rhs.after_bar_script &&
          lhs.end_of_body_html == rhs.end_of_body_html &&
-         lhs.end_of_body_script == rhs.end_of_body_script;
+         lhs.end_of_body_script == rhs.end_of_body_script &&
+         lhs.language_code == rhs.language_code;
 }
 
 bool operator!=(const OneGoogleBarData& lhs, const OneGoogleBarData& rhs) {

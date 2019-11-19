@@ -9,6 +9,7 @@
 #include "base/optional.h"
 #include "base/strings/string_split.h"
 #include "content/public/browser/content_browser_client.h"
+#include "content/public/common/content_client.h"
 
 using device::BluetoothUUID;
 

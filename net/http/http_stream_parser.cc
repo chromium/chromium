@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/callback_helpers.h"
 #include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
@@ -18,6 +17,7 @@
 #include "net/base/ip_endpoint.h"
 #include "net/base/upload_data_stream.h"
 #include "net/http/http_chunked_decoder.h"
+#include "net/http/http_log_util.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_request_info.h"
 #include "net/http/http_response_headers.h"
@@ -68,16 +68,23 @@ bool HeadersContainMultipleCopiesOfField(const HttpResponseHeaders& headers,
   return false;
 }
 
-std::unique_ptr<base::Value> NetLogSendRequestBodyCallback(
-    uint64_t length,
-    bool is_chunked,
-    bool did_merge,
-    NetLogCaptureMode /* capture_mode */) {
-  std::unique_ptr<base::DictionaryValue> dict(new base::DictionaryValue());
-  dict->SetInteger("length", static_cast<int>(length));
-  dict->SetBoolean("is_chunked", is_chunked);
-  dict->SetBoolean("did_merge", did_merge);
+base::Value NetLogSendRequestBodyParams(uint64_t length,
+                                        bool is_chunked,
+                                        bool did_merge) {
+  base::DictionaryValue dict;
+  dict.SetInteger("length", static_cast<int>(length));
+  dict.SetBoolean("is_chunked", is_chunked);
+  dict.SetBoolean("did_merge", did_merge);
   return std::move(dict);
+}
+
+void NetLogSendRequestBody(const NetLogWithSource& net_log,
+                           uint64_t length,
+                           bool is_chunked,
+                           bool did_merge) {
+  net_log.AddEvent(NetLogEventType::HTTP_TRANSACTION_SEND_REQUEST_BODY, [&] {
+    return NetLogSendRequestBodyParams(length, is_chunked, did_merge);
+  });
 }
 
 // Returns true if |error_code| is an error for which we give the server a
@@ -196,7 +203,6 @@ HttpStreamParser::HttpStreamParser(StreamSocket* stream_socket,
       request_(request),
       request_headers_(nullptr),
       request_headers_length_(0),
-      http_09_on_non_default_ports_enabled_(false),
       read_buf_(read_buffer),
       read_buf_unused_offset_(0),
       response_header_start_offset_(std::string::npos),
@@ -212,8 +218,7 @@ HttpStreamParser::HttpStreamParser(StreamSocket* stream_socket,
       connection_is_reused_(connection_is_reused),
       net_log_(net_log),
       sent_last_chunk_(false),
-      upload_error_(OK),
-      weak_ptr_factory_(this) {
+      upload_error_(OK) {
   io_callback_ = base::BindRepeating(&HttpStreamParser::OnIOComplete,
                                      weak_ptr_factory_.GetWeakPtr());
 }
@@ -231,9 +236,9 @@ int HttpStreamParser::SendRequest(
   DCHECK(!callback.is_null());
   DCHECK(response);
 
-  net_log_.AddEvent(NetLogEventType::HTTP_TRANSACTION_SEND_REQUEST_HEADERS,
-                    base::Bind(&HttpRequestHeaders::NetLogCallback,
-                               base::Unretained(&headers), &request_line));
+  NetLogRequestHeaders(net_log_,
+                       NetLogEventType::HTTP_TRANSACTION_SEND_REQUEST_HEADERS,
+                       request_line, &headers);
 
   DVLOG(1) << __func__ << "() request_line = \"" << request_line << "\""
            << " headers = \"" << headers.ToString() << "\"";
@@ -250,7 +255,7 @@ int HttpStreamParser::SendRequest(
   std::string request = request_line + headers.ToString();
   request_headers_length_ = request.size();
 
-  if (request_->upload_data_stream != NULL) {
+  if (request_->upload_data_stream != nullptr) {
     request_body_send_buf_ =
         base::MakeRefCounted<SeekableIOBuffer>(kRequestBodyBufferSize);
     if (request_->upload_data_stream->is_chunked()) {
@@ -297,11 +302,9 @@ int HttpStreamParser::SendRequest(
     request_headers_->SetOffset(0);
     did_merge = true;
 
-    net_log_.AddEvent(NetLogEventType::HTTP_TRANSACTION_SEND_REQUEST_BODY,
-                      base::Bind(&NetLogSendRequestBodyCallback,
-                                 request_->upload_data_stream->size(),
-                                 false, /* not chunked */
-                                 true /* merged */));
+    NetLogSendRequestBody(net_log_, request_->upload_data_stream->size(),
+                          false, /* not chunked */
+                          true /* merged */);
   }
 
   if (!did_merge) {
@@ -318,6 +321,15 @@ int HttpStreamParser::SendRequest(
     callback_ = std::move(callback);
 
   return result > 0 ? OK : result;
+}
+
+int HttpStreamParser::ConfirmHandshake(CompletionOnceCallback callback) {
+  int ret = stream_socket_->ConfirmHandshake(
+      base::BindOnce(&HttpStreamParser::RunConfirmHandshakeCallback,
+                     weak_ptr_factory_.GetWeakPtr()));
+  if (ret == ERR_IO_PENDING)
+    confirm_handshake_callback_ = std::move(callback);
+  return ret;
 }
 
 int HttpStreamParser::ReadResponseHeaders(CompletionOnceCallback callback) {
@@ -387,7 +399,7 @@ void HttpStreamParser::OnIOComplete(int result) {
   // The client callback can do anything, including destroying this class,
   // so any pending callback must be issued after everything else is done.
   if (result != ERR_IO_PENDING && !callback_.is_null()) {
-    base::ResetAndReturn(&callback_).Run(result);
+    std::move(callback_).Run(result);
   }
 }
 
@@ -488,16 +500,14 @@ int HttpStreamParser::DoSendHeadersComplete(int result) {
     return OK;
   }
 
-  if (request_->upload_data_stream != NULL &&
+  if (request_->upload_data_stream != nullptr &&
       (request_->upload_data_stream->is_chunked() ||
-      // !IsEOF() indicates that the body wasn't merged.
-      (request_->upload_data_stream->size() > 0 &&
+       // !IsEOF() indicates that the body wasn't merged.
+       (request_->upload_data_stream->size() > 0 &&
         !request_->upload_data_stream->IsEOF()))) {
-    net_log_.AddEvent(NetLogEventType::HTTP_TRANSACTION_SEND_REQUEST_BODY,
-                      base::Bind(&NetLogSendRequestBodyCallback,
-                                 request_->upload_data_stream->size(),
-                                 request_->upload_data_stream->is_chunked(),
-                                 false /* not merged */));
+    NetLogSendRequestBody(net_log_, request_->upload_data_stream->size(),
+                          request_->upload_data_stream->is_chunked(),
+                          false /* not merged */);
     io_state_ = STATE_SEND_BODY;
     return OK;
   }
@@ -789,7 +799,7 @@ int HttpStreamParser::DoReadBodyComplete(int result) {
     read_buf_unused_offset_ = 0;
   } else {
     // Now waiting for more of the body to be read.
-    user_read_buf_ = NULL;
+    user_read_buf_ = nullptr;
     user_read_buf_len_ = 0;
   }
 
@@ -932,6 +942,10 @@ int HttpStreamParser::HandleReadHeaderResult(int result) {
   return OK;
 }
 
+void HttpStreamParser::RunConfirmHandshakeCallback(int rv) {
+  std::move(confirm_handshake_callback_).Run(rv);
+}
+
 int HttpStreamParser::FindAndParseResponseHeaders(int new_bytes) {
   DCHECK_GT(new_bytes, 0);
   DCHECK_EQ(0, read_buf_unused_offset_);
@@ -988,9 +1002,8 @@ int HttpStreamParser::ParseResponseHeaders(int end_offset) {
     // If the port is not the default for the scheme, assume it's not a real
     // HTTP/0.9 response, and fail the request.
     base::StringPiece scheme = request_->url.scheme_piece();
-    if (!http_09_on_non_default_ports_enabled_ &&
-        url::DefaultPortForScheme(scheme.data(), scheme.length()) !=
-            request_->url.EffectiveIntPort()) {
+    if (url::DefaultPortForScheme(scheme.data(), scheme.length()) !=
+        request_->url.EffectiveIntPort()) {
       // Allow Shoutcast responses over HTTP, as it's somewhat common and relies
       // on HTTP/0.9 on weird ports to work.
       // See
@@ -1164,10 +1177,9 @@ int HttpStreamParser::EncodeChunk(const base::StringPiece& payload,
 bool HttpStreamParser::ShouldMergeRequestHeadersAndBody(
     const std::string& request_headers,
     const UploadDataStream* request_body) {
-  if (request_body != NULL &&
+  if (request_body != nullptr &&
       // IsInMemory() ensures that the request body is not chunked.
-      request_body->IsInMemory() &&
-      request_body->size() > 0) {
+      request_body->IsInMemory() && request_body->size() > 0) {
     uint64_t merged_size = request_headers.size() + request_body->size();
     if (merged_size <= kMaxMergedHeaderAndBodySize)
       return true;

@@ -7,18 +7,25 @@
 
 #import <UIKit/UIKit.h>
 
+#include <memory>
+
+#include "base/auto_reset.h"
 #include "base/timer/timer.h"
-#include "components/signin/core/browser/signin_metrics.h"
 #import "ios/chrome/browser/signin/constants.h"
-#include "ios/chrome/browser/ui/authentication/signin_confirmation_view_controller.h"
 
 @protocol ApplicationCommands;
+class Browser;
 @class ChromeIdentity;
 @class ChromeSigninViewController;
 
 namespace ios {
 class ChromeBrowserState;
 }  // namespace ios
+
+namespace signin_metrics {
+enum class AccessPoint;
+enum class PromoAction;
+}
 
 using TimerGeneratorBlock = std::unique_ptr<base::OneShotTimer> (^)();
 
@@ -62,9 +69,11 @@ using TimerGeneratorBlock = std::unique_ptr<base::OneShotTimer> (^)();
 @end
 
 // ChromeSigninViewController is a view controller that handles all the
-// sign-in UI flow.
-@interface ChromeSigninViewController
-    : UIViewController<SigninConfirmationViewControllerDelegate>
+// sign-in UI flow. To support the swipe to dismiss feature, the init method of
+// this class uses the presentation controller. Therefore the presentation style
+// cannot be changed after the init. The style is set to
+// UIModalPresentationFormSheet by the init method.
+@interface ChromeSigninViewController : UIViewController
 
 @property(nonatomic, weak) id<ChromeSigninViewControllerDelegate> delegate;
 
@@ -74,20 +83,17 @@ using TimerGeneratorBlock = std::unique_ptr<base::OneShotTimer> (^)();
 
 @property(nonatomic, weak, readonly) id<ApplicationCommands> dispatcher;
 
-// Sign-in conformation view controller.
-@property(nonatomic, readonly) SigninConfirmationViewController* confirmationVC;
-
 // Designated initializer.
-// * |browserState| is the current browser state.
+// * |browser| is the browser where sign-in is being presented.
 // * |accessPoint| represents the access point that initiated the sign-in.
 // * |identity| will be signed in without requiring user input if not nil.
 // * |dispatcher| is the dispatcher that can accept commands for displaying
 //   settings views.
-- (instancetype)initWithBrowserState:(ios::ChromeBrowserState*)browserState
-                         accessPoint:(signin_metrics::AccessPoint)accessPoint
-                         promoAction:(signin_metrics::PromoAction)promoAction
-                      signInIdentity:(ChromeIdentity*)identity
-                          dispatcher:(id<ApplicationCommands>)dispatcher;
+- (instancetype)initWithBrowser:(Browser*)browser
+                    accessPoint:(signin_metrics::AccessPoint)accessPoint
+                    promoAction:(signin_metrics::PromoAction)promoAction
+                 signInIdentity:(ChromeIdentity*)identity
+                     dispatcher:(id<ApplicationCommands>)dispatcher;
 
 // Cancels the on-going authentication operation (if any). |delegate| will be
 // called with |didFailSignIn|.
@@ -97,9 +103,8 @@ using TimerGeneratorBlock = std::unique_ptr<base::OneShotTimer> (^)();
 
 @interface ChromeSigninViewController (Subclassing)
 
+@property(nonatomic, readonly) Browser* browser;
 @property(nonatomic, readonly) ios::ChromeBrowserState* browserState;
-
-@property(nonatomic, readonly) UIColor* backgroundColor;
 
 // Vertical padding used underneath buttons. Default value is 18.
 @property(nonatomic, assign) CGFloat buttonVerticalPadding;
@@ -110,6 +115,7 @@ using TimerGeneratorBlock = std::unique_ptr<base::OneShotTimer> (^)();
 // Secondary button title used to skip the sign-in.
 @property(nonatomic, readonly) NSString* skipSigninButtonTitle;
 
+@property(nonatomic, readonly) UIColor* backgroundColor;
 @property(nonatomic, readonly) UIButton* primaryButton;
 @property(nonatomic, readonly) UIButton* secondaryButton;
 
@@ -121,6 +127,10 @@ using TimerGeneratorBlock = std::unique_ptr<base::OneShotTimer> (^)();
 // Timer generator. Should stay nil to use the default timer class:
 // base::OneShotTimer.
 @property(nonatomic, copy) TimerGeneratorBlock timerGenerator;
+
+// Returns an AutoReset object that ensures that all future
+// ChromeSigninViewController instances will not present the activity indicator.
++ (std::unique_ptr<base::AutoReset<BOOL>>)hideActivityIndicatorForTesting;
 
 @end
 

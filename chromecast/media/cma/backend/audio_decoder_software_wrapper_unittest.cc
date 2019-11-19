@@ -4,7 +4,7 @@
 
 #include "chromecast/media/cma/backend/audio_decoder_software_wrapper.h"
 
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "chromecast/public/media/cast_decoder_buffer.h"
 #include "chromecast/public/media/decoder_config.h"
 #include "chromecast/public/media/media_pipeline_backend.h"
@@ -39,13 +39,14 @@ class AudioDecoderSoftwareWrapperTest : public ::testing::Test {
   AudioDecoderSoftwareWrapperTest()
       : audio_decoder_software_wrapper_(&audio_decoder_) {}
 
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_;
   MockAudioDecoder audio_decoder_;
   AudioDecoderSoftwareWrapper audio_decoder_software_wrapper_;
 };
 
 TEST_F(AudioDecoderSoftwareWrapperTest, IsUsingSoftwareDecoder) {
   AudioConfig audio_config;
+  audio_config.channel_layout = ChannelLayout::STEREO;
   audio_config.sample_format = kSampleFormatS16;
   audio_config.bytes_per_channel = 2;
   audio_config.channel_number = 2;

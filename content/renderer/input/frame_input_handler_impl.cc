@@ -9,12 +9,15 @@
 #include "base/bind.h"
 #include "base/logging.h"
 #include "content/common/input/ime_text_span_conversions.h"
+#include "content/common/input/input_handler.mojom.h"
 #include "content/renderer/compositor/layer_tree_view.h"
 #include "content/renderer/ime_event_guard.h"
 #include "content/renderer/input/widget_input_handler_manager.h"
 #include "content/renderer/render_thread_impl.h"
 #include "content/renderer/render_view_impl.h"
 #include "content/renderer/render_widget.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "third_party/blink/public/web/web_input_method_controller.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 
@@ -22,13 +25,11 @@ namespace content {
 
 FrameInputHandlerImpl::FrameInputHandlerImpl(
     base::WeakPtr<RenderFrameImpl> render_frame,
-    mojom::FrameInputHandlerRequest request)
-    : binding_(this),
-      render_frame_(render_frame),
+    mojo::PendingReceiver<mojom::FrameInputHandler> receiver)
+    : render_frame_(render_frame),
       input_event_queue_(
           render_frame->GetLocalRootRenderWidget()->GetInputEventQueue()),
-      main_thread_task_runner_(base::ThreadTaskRunnerHandle::Get()),
-      weak_ptr_factory_(this) {
+      main_thread_task_runner_(base::ThreadTaskRunnerHandle::Get()) {
   weak_this_ = weak_ptr_factory_.GetWeakPtr();
   // If we have created an input event queue move the mojo request over to the
   // compositor thread.
@@ -38,10 +39,10 @@ FrameInputHandlerImpl::FrameInputHandlerImpl(
     // Mojo channel bound on compositor thread.
     RenderThreadImpl::current()->compositor_task_runner()->PostTask(
         FROM_HERE, base::BindOnce(&FrameInputHandlerImpl::BindNow,
-                                  base::Unretained(this), std::move(request)));
+                                  base::Unretained(this), std::move(receiver)));
   } else {
     // Mojo channel bound on main thread.
-    BindNow(std::move(request));
+    BindNow(std::move(receiver));
   }
 }
 
@@ -50,11 +51,11 @@ FrameInputHandlerImpl::~FrameInputHandlerImpl() {}
 // static
 void FrameInputHandlerImpl::CreateMojoService(
     base::WeakPtr<RenderFrameImpl> render_frame,
-    mojom::FrameInputHandlerRequest request) {
+    mojo::PendingReceiver<mojom::FrameInputHandler> receiver) {
   DCHECK(render_frame);
 
   // Owns itself. Will be deleted when message pipe is destroyed.
-  new FrameInputHandlerImpl(render_frame, std::move(request));
+  new FrameInputHandlerImpl(render_frame, std::move(receiver));
 }
 
 void FrameInputHandlerImpl::RunOnMainThread(base::OnceClosure closure) {
@@ -188,7 +189,7 @@ void FrameInputHandlerImpl::CopyToFindPboard() {
 #if defined(OS_MACOSX)
   if (!main_thread_task_runner_->BelongsToCurrentThread()) {
     RunOnMainThread(
-        base::Bind(&FrameInputHandlerImpl::CopyToFindPboard, weak_this_));
+        base::BindOnce(&FrameInputHandlerImpl::CopyToFindPboard, weak_this_));
     return;
   }
   if (!render_frame_)
@@ -285,7 +286,7 @@ void FrameInputHandlerImpl::SelectRange(const gfx::Point& base,
 
   if (!render_frame_)
     return;
-  RenderWidget* window_widget = render_frame_->render_view()->GetWidget();
+  RenderWidget* window_widget = render_frame_->GetLocalRootRenderWidget();
   HandlingState handling_state(render_frame_, UpdateState::kIsSelectingRange);
   render_frame_->GetWebFrame()->SelectRange(
       window_widget->ConvertWindowPointToViewport(base),
@@ -382,7 +383,7 @@ void FrameInputHandlerImpl::MoveRangeSelectionExtent(const gfx::Point& extent) {
     return;
   HandlingState handling_state(render_frame_, UpdateState::kIsSelectingRange);
   render_frame_->GetWebFrame()->MoveRangeSelectionExtent(
-      render_frame_->render_view()->GetWidget()->ConvertWindowPointToViewport(
+      render_frame_->GetLocalRootRenderWidget()->ConvertWindowPointToViewport(
           extent));
 }
 
@@ -398,6 +399,11 @@ void FrameInputHandlerImpl::ScrollFocusedEditableNodeIntoRect(
   if (!render_frame_)
     return;
 
+  // OnSynchronizeVisualProperties does not call DidChangeVisibleViewport
+  // on OOPIFs. Since we are starting a new scroll operation now, call
+  // DidChangeVisibleViewport to ensure that we don't assume the element
+  // is already in view and ignore the scroll.
+  render_frame_->ResetHasScrolledFocusedEditableIntoView();
   render_frame_->ScrollFocusedEditableElementIntoRect(rect);
 }
 
@@ -412,25 +418,25 @@ void FrameInputHandlerImpl::MoveCaret(const gfx::Point& point) {
     return;
 
   render_frame_->GetWebFrame()->MoveCaretSelection(
-      render_frame_->render_view()->GetWidget()->ConvertWindowPointToViewport(
+      render_frame_->GetLocalRootRenderWidget()->ConvertWindowPointToViewport(
           point));
 }
 
 void FrameInputHandlerImpl::GetWidgetInputHandler(
-    mojom::WidgetInputHandlerAssociatedRequest interface_request,
-    mojom::WidgetInputHandlerHostPtr host) {
+    mojo::PendingAssociatedReceiver<mojom::WidgetInputHandler> receiver,
+    mojo::PendingRemote<mojom::WidgetInputHandlerHost> host) {
   if (!main_thread_task_runner_->BelongsToCurrentThread()) {
     main_thread_task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(&FrameInputHandlerImpl::GetWidgetInputHandler,
-                                  weak_this_, std::move(interface_request),
-                                  std::move(host)));
+        FROM_HERE,
+        base::BindOnce(&FrameInputHandlerImpl::GetWidgetInputHandler,
+                       weak_this_, std::move(receiver), std::move(host)));
     return;
   }
   if (!render_frame_)
     return;
   render_frame_->GetLocalRootRenderWidget()
       ->widget_input_handler_manager()
-      ->AddAssociatedInterface(std::move(interface_request), std::move(host));
+      ->AddAssociatedInterface(std::move(receiver), std::move(host));
 }
 
 void FrameInputHandlerImpl::ExecuteCommandOnMainThread(
@@ -446,9 +452,9 @@ void FrameInputHandlerImpl::ExecuteCommandOnMainThread(
 
 void FrameInputHandlerImpl::Release() {
   if (!main_thread_task_runner_->BelongsToCurrentThread()) {
-    // Close the binding on the compositor thread first before telling the main
+    // Close the receiver on the compositor thread first before telling the main
     // thread to delete this object.
-    binding_.Close();
+    receiver_.reset();
     main_thread_task_runner_->PostTask(
         FROM_HERE, base::BindOnce(&FrameInputHandlerImpl::Release, weak_this_));
     return;
@@ -456,9 +462,10 @@ void FrameInputHandlerImpl::Release() {
   delete this;
 }
 
-void FrameInputHandlerImpl::BindNow(mojom::FrameInputHandlerRequest request) {
-  binding_.Bind(std::move(request));
-  binding_.set_connection_error_handler(
+void FrameInputHandlerImpl::BindNow(
+    mojo::PendingReceiver<mojom::FrameInputHandler> receiver) {
+  receiver_.Bind(std::move(receiver));
+  receiver_.set_disconnect_handler(
       base::BindOnce(&FrameInputHandlerImpl::Release, base::Unretained(this)));
 }
 

@@ -126,7 +126,8 @@ class BookmarkModel : public BookmarkUndoProvider,
   bool IsDoingExtensiveChanges() const { return extensive_changes_ > 0; }
 
   // Removes |node| from the model and deletes it. Removing a folder node
-  // recursively removes all nodes. Observers are notified immediately.
+  // recursively removes all nodes. Observers are notified immediately. |node|
+  // must not be a permanent node.
   void Remove(const BookmarkNode* node);
 
   // Removes all the non-permanent bookmark nodes that are editable by the user.
@@ -137,12 +138,12 @@ class BookmarkModel : public BookmarkUndoProvider,
   // Moves |node| to |new_parent| and inserts it at the given |index|.
   void Move(const BookmarkNode* node,
             const BookmarkNode* new_parent,
-            int index);
+            size_t index);
 
   // Inserts a copy of |node| into |new_parent| at |index|.
   void Copy(const BookmarkNode* node,
             const BookmarkNode* new_parent,
-            int index);
+            size_t index);
 
   // Returns the favicon for |node|. If the favicon has not yet been loaded,
   // a load will be triggered and the observer of the model notified when done.
@@ -192,32 +193,27 @@ class BookmarkModel : public BookmarkUndoProvider,
   // If not on the main thread you *must* invoke BlockTillLoaded first.
   void GetBookmarks(std::vector<UrlAndTitle>* urls);
 
-  // Adds a new folder node at the specified position.
-  const BookmarkNode* AddFolder(const BookmarkNode* parent,
-                                int index,
-                                const base::string16& title);
-
-  // Adds a new folder with meta info.
-  const BookmarkNode* AddFolderWithMetaInfo(
+  // Adds a new folder node at the specified position with the given |guid| and
+  // |meta_info|. If a GUID is provided, it must be a valid version 4 GUID,
+  // otherwise a new one is generated to replace it.
+  const BookmarkNode* AddFolder(
       const BookmarkNode* parent,
-      int index,
+      size_t index,
       const base::string16& title,
-      const BookmarkNode::MetaInfoMap* meta_info);
+      const BookmarkNode::MetaInfoMap* meta_info = nullptr,
+      base::Optional<std::string> guid = base::nullopt);
 
-  // Adds a url at the specified position.
-  const BookmarkNode* AddURL(const BookmarkNode* parent,
-                             int index,
-                             const base::string16& title,
-                             const GURL& url);
-
-  // Adds a url with a specific creation date and meta info.
-  const BookmarkNode* AddURLWithCreationTimeAndMetaInfo(
+  // Adds a url at the specified position with the given |creation_time|,
+  // |meta_info| and |guid|. If a GUID is provided, it must be a valid version 4
+  // GUID, otherwise a new one is generated to replace it.
+  const BookmarkNode* AddURL(
       const BookmarkNode* parent,
-      int index,
+      size_t index,
       const base::string16& title,
       const GURL& url,
-      const base::Time& creation_time,
-      const BookmarkNode::MetaInfoMap* meta_info);
+      const BookmarkNode::MetaInfoMap* meta_info = nullptr,
+      base::Optional<base::Time> creation_time = base::nullopt,
+      base::Optional<std::string> guid = base::nullopt);
 
   // Sorts the children of |parent|, notifying observers by way of the
   // BookmarkNodeChildrenReordered method.
@@ -318,7 +314,7 @@ class BookmarkModel : public BookmarkUndoProvider,
 
   // BookmarkUndoProvider:
   void RestoreRemovedNode(const BookmarkNode* parent,
-                          int index,
+                          size_t index,
                           std::unique_ptr<BookmarkNode> node) override;
 
   // Notifies the observers for adding every descedent of |node|.
@@ -328,7 +324,7 @@ class BookmarkModel : public BookmarkUndoProvider,
   // the node is a url, its url is added to removed_urls.
   //
   // This does NOT delete the node.
-  void RemoveNode(BookmarkNode* node);
+  void RemoveNodeFromIndexRecursive(BookmarkNode* node);
 
   // Called when done loading. Updates internal state and notifies observers.
   void DoneLoading(std::unique_ptr<BookmarkLoadDetails> details);
@@ -336,14 +332,14 @@ class BookmarkModel : public BookmarkUndoProvider,
   // Adds the |node| at |parent| in the specified |index| and notifies its
   // observers.
   BookmarkNode* AddNode(BookmarkNode* parent,
-                        int index,
+                        size_t index,
                         std::unique_ptr<BookmarkNode> node);
 
   // Adds |node| to |index_| and recursisvely invokes this for all children.
   void AddNodeToIndexRecursive(BookmarkNode* node);
 
   // Returns true if the parent and index are valid.
-  bool IsValidIndex(const BookmarkNode* parent, int index, bool allow_end);
+  bool IsValidIndex(const BookmarkNode* parent, size_t index, bool allow_end);
 
   // Notification that a favicon has finished loading. If we can decode the
   // favicon, FaviconLoaded is invoked.

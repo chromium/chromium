@@ -7,42 +7,33 @@
 
 #include <memory>
 #include "base/memory/scoped_refptr.h"
-#include "services/network/public/mojom/request_context_frame_type.mojom-blink.h"
+#include "third_party/blink/public/mojom/loader/request_context_frame_type.mojom-blink.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/renderer/bindings/core/v8/callback_promise_adapter.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/post_message_helper.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
-#include "third_party/blink/renderer/core/frame/use_counter.h"
 #include "third_party/blink/renderer/core/messaging/blink_transferable_message.h"
+#include "third_party/blink/renderer/core/messaging/message_port.h"
 #include "third_party/blink/renderer/core/messaging/post_message_options.h"
-#include "third_party/blink/renderer/modules/service_worker/service_worker_global_scope_client.h"
+#include "third_party/blink/renderer/modules/service_worker/service_worker_global_scope.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 
 namespace blink {
-
-ServiceWorkerClient* ServiceWorkerClient::Create(
-    const WebServiceWorkerClientInfo& info) {
-  return MakeGarbageCollected<ServiceWorkerClient>(info);
-}
 
 ServiceWorkerClient* ServiceWorkerClient::Create(
     const mojom::blink::ServiceWorkerClientInfo& info) {
   return MakeGarbageCollected<ServiceWorkerClient>(info);
 }
 
-ServiceWorkerClient::ServiceWorkerClient(const WebServiceWorkerClientInfo& info)
-    : uuid_(info.uuid),
-      url_(info.url.GetString()),
-      type_(info.client_type),
-      frame_type_(info.frame_type) {}
-
 ServiceWorkerClient::ServiceWorkerClient(
     const mojom::blink::ServiceWorkerClientInfo& info)
     : uuid_(info.client_uuid),
       url_(info.url.GetString()),
       type_(info.client_type),
-      frame_type_(info.frame_type) {}
+      frame_type_(info.frame_type),
+      lifecycle_state_(info.lifecycle_state) {}
 
 ServiceWorkerClient::~ServiceWorkerClient() = default;
 
@@ -50,6 +41,8 @@ String ServiceWorkerClient::type() const {
   switch (type_) {
     case mojom::ServiceWorkerClientType::kWindow:
       return "window";
+    case mojom::ServiceWorkerClientType::kDedicatedWorker:
+      return "worker";
     case mojom::ServiceWorkerClientType::kSharedWorker:
       return "sharedworker";
     case mojom::ServiceWorkerClientType::kAll:
@@ -79,9 +72,21 @@ String ServiceWorkerClient::frameType(ScriptState* script_state) const {
   return String();
 }
 
+String ServiceWorkerClient::lifecycleState() const {
+  switch (lifecycle_state_) {
+    case mojom::ServiceWorkerClientLifecycleState::kActive:
+      return "active";
+    case mojom::ServiceWorkerClientLifecycleState::kFrozen:
+      return "frozen";
+  }
+
+  NOTREACHED();
+  return String();
+}
+
 void ServiceWorkerClient::postMessage(ScriptState* script_state,
                                       const ScriptValue& message,
-                                      Vector<ScriptValue>& transfer,
+                                      HeapVector<ScriptValue>& transfer,
                                       ExceptionState& exception_state) {
   PostMessageOptions* options = PostMessageOptions::Create();
   if (!transfer.IsEmpty())
@@ -106,13 +111,15 @@ void ServiceWorkerClient::postMessage(ScriptState* script_state,
 
   BlinkTransferableMessage msg;
   msg.message = serialized_message;
+  msg.sender_origin = context->GetSecurityOrigin()->IsolatedCopy();
   msg.ports = MessagePort::DisentanglePorts(
       context, transferables.message_ports, exception_state);
   if (exception_state.HadException())
     return;
 
-  ServiceWorkerGlobalScopeClient::From(context)->PostMessageToClient(
-      uuid_, std::move(msg));
+  To<ServiceWorkerGlobalScope>(context)
+      ->GetServiceWorkerHost()
+      ->PostMessageToClient(uuid_, std::move(msg));
 }
 
 }  // namespace blink

@@ -9,6 +9,7 @@
 #include "base/compiler_specific.h"
 #include "base/sequence_token.h"
 #include "base/synchronization/lock.h"
+#include "base/thread_annotations.h"
 #include "base/threading/platform_thread.h"
 
 namespace base {
@@ -24,6 +25,15 @@ class BASE_EXPORT ThreadCheckerImpl {
   ThreadCheckerImpl();
   ~ThreadCheckerImpl();
 
+  // Allow move construct/assign. This must be called on |other|'s associated
+  // thread and assignment can only be made into a ThreadCheckerImpl which is
+  // detached or already associated with the current thread. This isn't
+  // thread-safe (|this| and |other| shouldn't be in use while this move is
+  // performed). If the assignment was legal, the resulting ThreadCheckerImpl
+  // will be bound to the current thread and |other| will be detached.
+  ThreadCheckerImpl(ThreadCheckerImpl&& other);
+  ThreadCheckerImpl& operator=(ThreadCheckerImpl&& other);
+
   bool CalledOnValidThread() const WARN_UNUSED_RESULT;
 
   // Changes the thread that is checked for in CalledOnValidThread.  This may
@@ -32,7 +42,7 @@ class BASE_EXPORT ThreadCheckerImpl {
   void DetachFromThread();
 
  private:
-  void EnsureAssigned() const;
+  void EnsureAssignedLockRequired() const EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
   // Members are mutable so that CalledOnValidThread() can set them.
 
@@ -40,7 +50,7 @@ class BASE_EXPORT ThreadCheckerImpl {
   mutable base::Lock lock_;
 
   // Thread on which CalledOnValidThread() may return true.
-  mutable PlatformThreadRef thread_id_;
+  mutable PlatformThreadRef thread_id_ GUARDED_BY(lock_);
 
   // TaskToken for which CalledOnValidThread() always returns true. This allows
   // CalledOnValidThread() to return true when called multiple times from the
@@ -48,13 +58,13 @@ class BASE_EXPORT ThreadCheckerImpl {
   // (allowing usage of ThreadChecker objects on the stack in the scope of one-
   // off tasks). Note: CalledOnValidThread() may return true even if the current
   // TaskToken is not equal to this.
-  mutable TaskToken task_token_;
+  mutable TaskToken task_token_ GUARDED_BY(lock_);
 
   // SequenceToken for which CalledOnValidThread() may return true. Used to
-  // ensure that CalledOnValidThread() doesn't return true for TaskScheduler
+  // ensure that CalledOnValidThread() doesn't return true for ThreadPool
   // tasks that happen to run on the same thread but weren't posted to the same
   // SingleThreadTaskRunner.
-  mutable SequenceToken sequence_token_;
+  mutable SequenceToken sequence_token_ GUARDED_BY(lock_);
 };
 
 }  // namespace base

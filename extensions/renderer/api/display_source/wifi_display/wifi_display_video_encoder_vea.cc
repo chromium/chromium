@@ -10,6 +10,8 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/memory/shared_memory_mapping.h"
+#include "base/memory/unsafe_shared_memory_region.h"
 #include "base/single_thread_task_runner.h"
 #include "base/task_runner_util.h"
 #include "content/public/renderer/video_encode_accelerator.h"
@@ -54,8 +56,8 @@ class WiFiDisplayVideoEncoderVEA final
   void InsertFrameOnMediaThread(scoped_refptr<media::VideoFrame> video_frame,
                                 base::TimeTicks reference_time,
                                 bool send_idr) override;
-  void OnCreateSharedMemory(std::unique_ptr<base::SharedMemory> memory);
-  void OnReceivedSharedMemory(std::unique_ptr<base::SharedMemory> memory);
+  void OnCreateSharedMemory(base::UnsafeSharedMemoryRegion memory);
+  void OnReceivedSharedMemory(base::UnsafeSharedMemoryRegion memory);
 
  private:
   struct InProgressFrameEncode {
@@ -71,7 +73,9 @@ class WiFiDisplayVideoEncoderVEA final
   // FIFO list.
   std::list<InProgressFrameEncode> in_progress_frame_encodes_;
   media::VideoEncodeAccelerator* vea_;  // Owned on media thread.
-  std::vector<std::unique_ptr<base::SharedMemory>> output_buffers_;
+  std::vector<std::pair<base::UnsafeSharedMemoryRegion,
+                        base::WritableSharedMemoryMapping>>
+      output_buffers_;
   size_t output_buffers_count_;
   CreateEncodeMemoryCallback create_video_encode_memory_cb_;
 };
@@ -150,7 +154,7 @@ void WiFiDisplayVideoEncoderVEA::RequireBitstreamBuffers(
 
 // Note: This method can be called on any thread.
 void WiFiDisplayVideoEncoderVEA::OnCreateSharedMemory(
-    std::unique_ptr<base::SharedMemory> memory) {
+    base::UnsafeSharedMemoryRegion memory) {
   media_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&WiFiDisplayVideoEncoderVEA::OnReceivedSharedMemory, this,
@@ -158,10 +162,12 @@ void WiFiDisplayVideoEncoderVEA::OnCreateSharedMemory(
 }
 
 void WiFiDisplayVideoEncoderVEA::OnReceivedSharedMemory(
-    std::unique_ptr<base::SharedMemory> memory) {
+    base::UnsafeSharedMemoryRegion memory) {
   DCHECK(media_task_runner_->BelongsToCurrentThread());
 
-  output_buffers_.push_back(std::move(memory));
+  base::WritableSharedMemoryMapping mapping = memory.Map();
+  output_buffers_.push_back(
+      std::make_pair(std::move(memory), std::move(mapping)));
 
   // Wait until all requested buffers are received.
   if (output_buffers_.size() < output_buffers_count_)
@@ -170,8 +176,8 @@ void WiFiDisplayVideoEncoderVEA::OnReceivedSharedMemory(
   // Immediately provide all output buffers to the VEA.
   for (size_t i = 0; i < output_buffers_.size(); ++i) {
     vea_->UseOutputBitstreamBuffer(media::BitstreamBuffer(
-        static_cast<int32_t>(i), output_buffers_[i]->handle(),
-        output_buffers_[i]->mapped_size()));
+        static_cast<int32_t>(i), output_buffers_[i].first.Duplicate(),
+        output_buffers_[i].first.GetSize()));
   }
 }
 
@@ -194,8 +200,9 @@ void WiFiDisplayVideoEncoderVEA::BitstreamBufferReady(
              << ": invalid bitstream_buffer_id=" << bitstream_buffer_id;
     return;
   }
-  const auto& output_buffer = output_buffers_[bitstream_buffer_id];
-  if (payload_size > output_buffer->mapped_size()) {
+  const base::WritableSharedMemoryMapping& output_buffer =
+      output_buffers_[bitstream_buffer_id].second;
+  if (payload_size > output_buffer.size()) {
     DVLOG(1) << "WiFiDisplayVideoEncoderVEA::BitstreamBufferReady()"
              << ": invalid payload_size=" << payload_size;
     return;
@@ -210,14 +217,15 @@ void WiFiDisplayVideoEncoderVEA::BitstreamBufferReady(
   if (!encoded_callback_.is_null()) {
     encoded_callback_.Run(
         std::unique_ptr<WiFiDisplayEncodedFrame>(new WiFiDisplayEncodedFrame(
-            std::string(static_cast<const char*>(output_buffer->memory()),
+            std::string(output_buffer.GetMemoryAsSpan<const char>().data(),
                         payload_size),
             request.reference_time, base::TimeTicks::Now(), key_frame)));
   }
   DCHECK(vea_);
-  vea_->UseOutputBitstreamBuffer(
-      media::BitstreamBuffer(bitstream_buffer_id, output_buffer->handle(),
-                             output_buffer->mapped_size()));
+  vea_->UseOutputBitstreamBuffer(media::BitstreamBuffer(
+      bitstream_buffer_id,
+      output_buffers_[bitstream_buffer_id].first.Duplicate(),
+      output_buffers_[bitstream_buffer_id].first.GetSize()));
 
   in_progress_frame_encodes_.pop_front();
 }

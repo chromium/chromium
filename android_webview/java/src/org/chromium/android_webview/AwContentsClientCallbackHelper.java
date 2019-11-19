@@ -10,8 +10,10 @@ import android.os.Looper;
 import android.os.Message;
 import android.os.SystemClock;
 
+import androidx.annotation.VisibleForTesting;
+
+import org.chromium.android_webview.safe_browsing.AwSafeBrowsingResponse;
 import org.chromium.base.Callback;
-import org.chromium.base.VisibleForTesting;
 
 import java.util.concurrent.Callable;
 

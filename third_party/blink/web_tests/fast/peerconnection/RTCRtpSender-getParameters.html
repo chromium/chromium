@@ -7,9 +7,11 @@
 </head>
 <body>
 <script>
-promise_test(function() {
+promise_test(async t => {
   let pc1 = new RTCPeerConnection();
+  t.add_cleanup(() => pc1.close());
   let pc2 = new RTCPeerConnection();
+  t.add_cleanup(() => pc2.close());
   let video_sender, audio_sender;
 
   return createStreams({audio:true, video:true}, 1)

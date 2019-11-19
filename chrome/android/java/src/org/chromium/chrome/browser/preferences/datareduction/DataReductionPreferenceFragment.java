@@ -4,30 +4,36 @@
 
 package org.chromium.chrome.browser.preferences.datareduction;
 
+import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.os.Bundle;
-import android.preference.Preference;
-import android.preference.Preference.OnPreferenceChangeListener;
-import android.preference.PreferenceFragment;
 import android.support.graphics.drawable.VectorDrawableCompat;
+import android.support.v7.preference.PreferenceFragmentCompat;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
 import org.chromium.base.CommandLine;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.datareduction.DataReductionPromoUtils;
+import org.chromium.chrome.browser.datareduction.DataReductionProxyUma;
 import org.chromium.chrome.browser.help.HelpAndFeedback;
 import org.chromium.chrome.browser.infobar.PreviewsLitePageInfoBar;
 import org.chromium.chrome.browser.net.spdyproxy.DataReductionProxySettings;
+import org.chromium.chrome.browser.net.spdyproxy.DataReductionProxySettings.ContentLengths;
 import org.chromium.chrome.browser.preferences.ChromeSwitchPreference;
 import org.chromium.chrome.browser.preferences.PreferenceUtils;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.util.ConversionUtils;
 import org.chromium.chrome.browser.util.IntentUtils;
+
+import java.text.NumberFormat;
+import java.util.Locale;
 
 /**
  * Settings fragment that allows the user to configure Data Saver.
  */
-public class DataReductionPreferenceFragment extends PreferenceFragment {
+public class DataReductionPreferenceFragment extends PreferenceFragmentCompat {
     public static final String FROM_MAIN_MENU = "FromMainMenu";
 
     public static final String PREF_DATA_REDUCTION_SWITCH = "data_reduction_switch";
@@ -41,12 +47,9 @@ public class DataReductionPreferenceFragment extends PreferenceFragment {
     private boolean mFromInfobar;
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
+    public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
         PreferenceUtils.addPreferencesFromResource(this, R.xml.data_reduction_preferences);
-        getActivity().setTitle(DataReductionBrandingResourceProvider.getDataSaverBrandedString(
-                R.string.data_reduction_title));
+        getActivity().setTitle(R.string.data_reduction_title_lite_mode);
         boolean isEnabled = DataReductionProxySettings.getInstance().isDataReductionProxyEnabled();
         mIsEnabled = !isEnabled;
         mWasEnabledAtCreation = isEnabled;
@@ -107,12 +110,21 @@ public class DataReductionPreferenceFragment extends PreferenceFragment {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.menu_id_targeted_help) {
-            HelpAndFeedback.getInstance(getActivity())
-                    .show(getActivity(), getString(R.string.help_context_data_reduction),
-                            Profile.getLastUsedProfile(), null);
+            HelpAndFeedback.getInstance().show(getActivity(),
+                    getString(R.string.help_context_data_reduction), Profile.getLastUsedProfile(),
+                    null);
             return true;
         }
         return false;
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        // Force rebinding of preferences on orientation change, otherwise the usage chart will not
+        // be correctly redrawn: https://crbug.com/994668.
+        getListView().getAdapter().notifyDataSetChanged();
+
+        super.onConfigurationChanged(newConfig);
     }
 
     /**
@@ -126,9 +138,8 @@ public class DataReductionPreferenceFragment extends PreferenceFragment {
         if (isEnabled) {
             PreferenceUtils.addPreferencesFromResource(this, R.xml.data_reduction_preferences);
         } else {
-            PreferenceUtils.addPreferencesFromResource(this,
-                    DataReductionBrandingResourceProvider.getPreferencesOffXml(
-                            R.xml.data_reduction_preferences_off));
+            PreferenceUtils.addPreferencesFromResource(
+                    this, R.xml.data_reduction_preferences_off_lite_mode);
         }
         mIsEnabled = isEnabled;
     }
@@ -138,32 +149,45 @@ public class DataReductionPreferenceFragment extends PreferenceFragment {
      */
     public static String generateSummary(Resources resources) {
         if (DataReductionProxySettings.getInstance().isDataReductionProxyEnabled()) {
-            String percent =
-                    DataReductionProxySettings.getInstance().getContentLengthPercentSavings();
+            ContentLengths length = DataReductionProxySettings.getInstance().getContentLengths();
+
+            // If received is less than show chart threshold than don't show summary.
+            if (ConversionUtils.bytesToKilobytes(length.getReceived())
+                    < DataReductionProxySettings.DATA_REDUCTION_SHOW_CHART_KB_THRESHOLD) {
+                return "";
+            }
+
+            String percent = generatePercentSavings(length);
             return resources.getString(
-                    DataReductionBrandingResourceProvider.getDataSaverBrandedString(
-                            R.string.data_reduction_menu_item_summary),
-                    percent);
+                    R.string.data_reduction_menu_item_summary_lite_mode, percent);
         } else {
             return (String) resources.getText(R.string.text_off);
         }
     }
 
+    /**
+     * Returns formatted percent savings as string from ContentLengths
+     */
+    private static String generatePercentSavings(ContentLengths length) {
+        double savings = 0;
+        if (length.getOriginal() > 0L && length.getOriginal() > length.getReceived()) {
+            savings = (length.getOriginal() - length.getReceived()) / (double) length.getOriginal();
+        }
+        NumberFormat percentageFormatter = NumberFormat.getPercentInstance(Locale.getDefault());
+        return percentageFormatter.format(savings);
+    }
+
     private void createDataReductionSwitch(boolean isEnabled) {
         final ChromeSwitchPreference dataReductionSwitch =
-                new ChromeSwitchPreference(getActivity(), null);
+                new ChromeSwitchPreference(getPreferenceManager().getContext(), null);
         dataReductionSwitch.setKey(PREF_DATA_REDUCTION_SWITCH);
         dataReductionSwitch.setSummaryOn(R.string.text_on);
         dataReductionSwitch.setSummaryOff(R.string.text_off);
-        dataReductionSwitch.setDrawDivider(true);
-        dataReductionSwitch.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
-            @Override
-            public boolean onPreferenceChange(Preference preference, Object newValue) {
-                DataReductionProxySettings.getInstance().setDataReductionProxyEnabled(
-                        dataReductionSwitch.getContext(), (boolean) newValue);
-                DataReductionPreferenceFragment.this.updatePreferences((boolean) newValue);
-                return true;
-            }
+        dataReductionSwitch.setOnPreferenceChangeListener((preference, newValue) -> {
+            DataReductionProxySettings.getInstance().setDataReductionProxyEnabled(
+                    dataReductionSwitch.getContext(), (boolean) newValue);
+            DataReductionPreferenceFragment.this.updatePreferences((boolean) newValue);
+            return true;
         });
         dataReductionSwitch.setManagedPreferenceDelegate(preference -> {
             return CommandLine.getInstance().hasSwitch(ENABLE_DATA_REDUCTION_PROXY)

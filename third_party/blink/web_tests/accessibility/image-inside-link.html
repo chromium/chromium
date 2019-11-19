@@ -1,21 +1,18 @@
 <!DOCTYPE html>
 <script src="../resources/testharness.js"></script>
 <script src="../resources/testharnessreport.js"></script>
-<script src="../resources/run-after-layout-and-paint.js"></script>
 
 <div id="wrapper1">
     <a href="#"><img id="img1" alt="Delicious cake" src="resources/cake.png"></a>
 </div>
 
 <script>
-async_test_after_layout_and_paint(function(t)
+async_test(function(t)
 {
     var axImg = accessibilityController.accessibleElementById("img1");
     axImg.addNotificationListener(function(notification) {
-        if (notification == 'Clicked') {
-            document.getElementById("wrapper1").style.display = "none";
+        if (notification == 'Clicked')
             t.done();
-        }
     });
 
     var img = document.getElementById("img1");
@@ -32,7 +29,7 @@ async_test_after_layout_and_paint(function(t)
 </div>
 
 <script>
-async_test_after_layout_and_paint(function(t)
+async_test(function(t)
 {
     var axEvent = false;
     var domEvent = false;
@@ -47,10 +44,8 @@ async_test_after_layout_and_paint(function(t)
             domEvent = true;
         }
 
-        if (axEvent && domEvent) {
-            document.getElementById("wrapper2").style.display = "none";
+        if (axEvent && domEvent)
             t.done();
-        }
     };
 
     var axImg = accessibilityController.accessibleElementById("img2");
@@ -60,4 +55,3 @@ async_test_after_layout_and_paint(function(t)
     axImg.press();
 }, "clicking an image via accessibility sends both an accessible and a DOM click event");
 </script>
-

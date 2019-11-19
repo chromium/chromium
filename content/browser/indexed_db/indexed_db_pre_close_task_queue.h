@@ -26,7 +26,7 @@ namespace content {
 // Holds a queue of PreCloseTask's to be run after an IndexedDBBackingStore no
 // longer has any connections.
 //
-// There is a special IndexedDBMetadata fetcher task that runs beofre all the
+// There is a special IndexedDBMetadata fetcher task that runs before all the
 // other tasks, and whose output is passed to each task before they start.
 //
 // Owned by IndexedDBBackingStore.
@@ -104,7 +104,7 @@ class CONTENT_EXPORT IndexedDBPreCloseTaskQueue {
   std::unique_ptr<base::OneShotTimer> timeout_timer_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
-  base::WeakPtrFactory<IndexedDBPreCloseTaskQueue> ptr_factory_;
+  base::WeakPtrFactory<IndexedDBPreCloseTaskQueue> ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(IndexedDBPreCloseTaskQueue);
 };

@@ -1,4 +1,0 @@
-Test that right-clicking on a text area properly focuses it.
-
-PASS
-

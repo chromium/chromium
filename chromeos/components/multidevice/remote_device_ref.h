@@ -43,13 +43,6 @@ class ProximityAuthWebUIHandler;
 // the underlying data. Should be passed by value.
 class RemoteDeviceRef {
  public:
-  // Generates the device ID for a device given its public key.
-  static std::string GenerateDeviceId(const std::string& public_key);
-
-  // Derives the public key that was used to generate the given device ID;
-  // returns empty string if |device_id| is not a valid device ID.
-  static std::string DerivePublicKey(const std::string& device_id);
-
   // Static method for truncated device ID for logs.
   static std::string TruncateDeviceIdForLogs(const std::string& full_id);
 
@@ -57,7 +50,11 @@ class RemoteDeviceRef {
   ~RemoteDeviceRef();
 
   const std::string& user_id() const { return remote_device_->user_id; }
+  const std::string& instance_id() const { return remote_device_->instance_id; }
   const std::string& name() const { return remote_device_->name; }
+  const std::string& pii_free_name() const {
+    return remote_device_->pii_free_name;
+  }
   const std::string& public_key() const { return remote_device_->public_key; }
   const std::string& persistent_symmetric_key() const {
     return remote_device_->persistent_symmetric_key;

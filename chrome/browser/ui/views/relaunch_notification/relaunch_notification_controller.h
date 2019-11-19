@@ -38,7 +38,7 @@ class TickClock;
 //
 // - Required (2): The controller displays the relaunch required dialog on each
 //   change to the UpgradeDetector's upgrade_notification_stage (described
-//   above). The browser is relaunched three minutes after the third and final
+//   above). The browser is relaunched fifteen minutes after the third and final
 //   showing of the dialog (which takes place when the UpgradeDetector reaches
 //   the high annoyance level).
 //
@@ -57,7 +57,7 @@ class RelaunchNotificationController : public UpgradeObserver {
   // summarily relaunched on Chrome desktop, or the device is rebooted on
   // Chrome OS.
   static constexpr base::TimeDelta kRelaunchGracePeriod =
-      base::TimeDelta::FromMinutes(3);
+      base::TimeDelta::FromMinutes(60);
 
   RelaunchNotificationController(UpgradeDetector* upgrade_detector,
                                  const base::Clock* clock,
@@ -118,8 +118,9 @@ class RelaunchNotificationController : public UpgradeObserver {
       base::Time high_deadline);
 
   // Update |last_relaunch_notification_time_| before calling
-  // DoNotifyRelaunchRecommended.
-  void NotifyRelaunchRecommended();
+  // DoNotifyRelaunchRecommended. |past_deadline| reflects whether the
+  // Recommended deadline was already passed or not.
+  void NotifyRelaunchRecommended(bool past_deadline);
 
   // Provide deadline to DoNotifyRelaunchRequired.
   virtual void NotifyRelaunchRequired();
@@ -128,7 +129,9 @@ class RelaunchNotificationController : public UpgradeObserver {
   // notifications, are virtual for the sake of testing.
 
   // Shows the relaunch recommended notification if it is not already open.
-  virtual void DoNotifyRelaunchRecommended();
+  // |past_deadline| reflects whether the Recommended deadline was already
+  // passed or not.
+  virtual void DoNotifyRelaunchRecommended(bool past_deadline);
 
   // Shows the relaunch required notification if it is not already open.
   virtual void DoNotifyRelaunchRequired(base::Time deadline);

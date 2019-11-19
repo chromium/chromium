@@ -16,14 +16,15 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_command_line.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/browsing_data/browsing_data_helper.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_delegate.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/search_engines/template_url_service.h"
-#include "components/variations/entropy_provider.h"
 #include "components/variations/variations_associated_data.h"
 #include "components/version_info/version_info.h"
 #include "content/public/browser/browsing_data_filter_builder.h"
@@ -34,10 +35,12 @@
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_switches.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/common/user_agent.h"
+#include "content/public/test/browser_task_environment.h"
 #include "media/media_buildflags.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #include "url/gurl.h"
 
@@ -47,12 +50,6 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/search_test_utils.h"
-#endif
-
-#if defined(OS_CHROMEOS)
-#include "ash/public/interfaces/constants.mojom.h"
-#include "content/public/common/service_names.mojom.h"
-#include "services/ws/public/mojom/constants.mojom.h"
 #endif
 
 using content::BrowsingDataFilterBuilder;
@@ -130,14 +127,6 @@ static void DidOpenURLForWindowTest(content::WebContents** target_contents,
   DCHECK(target_contents);
 
   *target_contents = opened_contents;
-}
-
-TEST_F(ChromeContentBrowserClientWindowTest, IsDataSaverEnabled) {
-  ChromeContentBrowserClient client;
-  content::BrowserContext* context = browser()->profile();
-  EXPECT_FALSE(client.IsDataSaverEnabled(context));
-  browser()->profile()->GetPrefs()->SetBoolean(prefs::kDataSaverEnabled, true);
-  EXPECT_TRUE(client.IsDataSaverEnabled(context));
 }
 
 // This test opens two URLs using ContentBrowserClient::OpenURL. It expects the
@@ -240,8 +229,7 @@ class BlinkSettingsFieldTrialTest : public testing::Test {
   static const char kFakeGroupName[];
 
   BlinkSettingsFieldTrialTest()
-      : trial_list_(NULL),
-        command_line_(base::CommandLine::NO_PROGRAM) {}
+      : command_line_(base::CommandLine::NO_PROGRAM) {}
 
   void SetUp() override {
     command_line_.AppendSwitchASCII(
@@ -284,10 +272,9 @@ class BlinkSettingsFieldTrialTest : public testing::Test {
   static const int kFakeChildProcessId = 1;
 
   ChromeContentBrowserClient client_;
-  base::FieldTrialList trial_list_;
   base::CommandLine command_line_;
 
-  content::TestBrowserThreadBundle thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
 };
 
 const char BlinkSettingsFieldTrialTest::kDisallowFetchFieldTrialName[] =
@@ -329,12 +316,6 @@ namespace content {
 
 class InstantNTPURLRewriteTest : public BrowserWithTestWindowTest {
  protected:
-  void SetUp() override {
-    BrowserWithTestWindowTest::SetUp();
-    field_trial_list_.reset(new base::FieldTrialList(
-        std::make_unique<variations::SHA1EntropyProvider>("42")));
-  }
-
   void InstallTemplateURLWithNewTabPage(GURL new_tab_page_url) {
     TemplateURLServiceFactory::GetInstance()->SetTestingFactoryAndUse(
         profile(),
@@ -351,18 +332,16 @@ class InstantNTPURLRewriteTest : public BrowserWithTestWindowTest {
         template_url_service->Add(std::make_unique<TemplateURL>(data));
     template_url_service->SetUserSelectedDefaultSearchProvider(template_url);
   }
-
-  std::unique_ptr<base::FieldTrialList> field_trial_list_;
 };
 
 TEST_F(InstantNTPURLRewriteTest, UberURLHandler_InstantExtendedNewTabPage) {
-  const GURL url_original("chrome://newtab");
+  const GURL url_original(chrome::kChromeUINewTabURL);
   const GURL url_rewritten("https://www.example.com/newtab");
   InstallTemplateURLWithNewTabPage(url_rewritten);
   ASSERT_TRUE(base::FieldTrialList::CreateFieldTrial("InstantExtended",
       "Group1 use_cacheable_ntp:1"));
 
-  AddTab(browser(), GURL("chrome://blank"));
+  AddTab(browser(), GURL(url::kAboutBlankURL));
   NavigateAndCommitActiveTab(url_original);
 
   NavigationEntry* entry = browser()->tab_strip_model()->
@@ -407,7 +386,7 @@ TEST(ChromeContentBrowserClientTest, HandleWebUI) {
   test_content_browser_client.HandleWebUI(&should_not_redirect, nullptr);
   EXPECT_EQ(http_help, should_not_redirect);
 
-  const GURL chrome_help("chrome://help/");
+  const GURL chrome_help(chrome::kChromeUIHelpURL);
   GURL should_redirect = chrome_help;
   test_content_browser_client.HandleWebUI(&should_redirect, nullptr);
   EXPECT_NE(chrome_help, should_redirect);
@@ -418,7 +397,7 @@ TEST(ChromeContentBrowserClientTest, HandleWebUIReverse) {
   GURL http_settings("http://settings/");
   EXPECT_FALSE(
       test_content_browser_client.HandleWebUIReverse(&http_settings, nullptr));
-  GURL chrome_settings("chrome://settings/");
+  GURL chrome_settings(chrome::kChromeUISettingsURL);
   EXPECT_TRUE(test_content_browser_client.HandleWebUIReverse(&chrome_settings,
                                                              nullptr));
 }
@@ -439,7 +418,46 @@ TEST(ChromeContentBrowserClientTest, GetMetricSuffixForURL) {
                     GURL("https://www.google.com/search?notaquery=nope")));
 }
 
-TEST(ChromeContentBrowserClient, UserAgentStringOrdering) {
+TEST(ChromeContentBrowserClientTest, UserAgentStringFrozen) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(blink::features::kFreezeUserAgent);
+
+#if defined(OS_ANDROID)
+  // Verify the correct user agent is returned when the UseMobileUserAgent
+  // command line flag is present.
+  const char* const kArguments[] = {"chrome"};
+  base::test::ScopedCommandLine scoped_command_line;
+  base::CommandLine* command_line = scoped_command_line.GetProcessCommandLine();
+  command_line->InitFromArgv(1, kArguments);
+
+  // Verify the mobile user agent string is not returned when not using a mobile
+  // user agent.
+  ASSERT_FALSE(command_line->HasSwitch(switches::kUseMobileUserAgent));
+  {
+    ChromeContentBrowserClient content_browser_client;
+    std::string buffer = content_browser_client.GetUserAgent();
+    EXPECT_EQ(buffer, content::frozen_user_agent_strings::kAndroid);
+  }
+
+  // Verify the mobile user agent string is returned when using a mobile user
+  // agent.
+  command_line->AppendSwitch(switches::kUseMobileUserAgent);
+  ASSERT_TRUE(command_line->HasSwitch(switches::kUseMobileUserAgent));
+  {
+    ChromeContentBrowserClient content_browser_client;
+    std::string buffer = content_browser_client.GetUserAgent();
+    EXPECT_EQ(buffer, content::frozen_user_agent_strings::kAndroidMobile);
+  }
+#else
+  {
+    ChromeContentBrowserClient content_browser_client;
+    std::string buffer = content_browser_client.GetUserAgent();
+    EXPECT_EQ(buffer, content::frozen_user_agent_strings::kDesktop);
+  }
+#endif
+}
+
+TEST(ChromeContentBrowserClientTest, UserAgentStringOrdering) {
 #if defined(OS_ANDROID)
   const char* const kArguments[] = {"chrome"};
   base::test::ScopedCommandLine scoped_command_line;
@@ -459,7 +477,7 @@ TEST(ChromeContentBrowserClient, UserAgentStringOrdering) {
 #endif
 }
 
-TEST(ChromeContentBrowserClient, UserAgentMetadata) {
+TEST(ChromeContentBrowserClientTest, UserAgentMetadata) {
   ChromeContentBrowserClient content_browser_client;
   auto metadata = content_browser_client.GetUserAgentMetadata();
 
@@ -470,32 +488,3 @@ TEST(ChromeContentBrowserClient, UserAgentMetadata) {
   EXPECT_EQ(metadata.architecture, "");
   EXPECT_EQ(metadata.model, "");
 }
-
-#if defined(OS_CHROMEOS)
-
-TEST(ChromeContentBrowserClientTest, ShouldTerminateOnServiceQuit) {
-  const struct {
-    std::string service_name;
-    bool expect_terminate;
-  } kTestCases[] = {
-      // Don't terminate for invalid service names.
-      {"x", false},
-      {"unknown-name", false},
-      // Don't terminate for some well-known browser services.
-      {content::mojom::kBrowserServiceName, false},
-      {content::mojom::kGpuServiceName, false},
-      {content::mojom::kRendererServiceName, false},
-      // Do terminate for some mash-specific cases.
-      {ws::mojom::kServiceName, true},
-      {ash::mojom::kServiceName, true},
-  };
-  ChromeContentBrowserClient client;
-  for (const auto& test : kTestCases) {
-    service_manager::Identity id(test.service_name, base::Token{1, 2},
-                                 base::Token{}, base::Token{3, 4});
-    EXPECT_EQ(test.expect_terminate, client.ShouldTerminateOnServiceQuit(id))
-        << "for service name " << test.service_name;
-  }
-}
-
-#endif  // defined(OS_CHROMEOS)

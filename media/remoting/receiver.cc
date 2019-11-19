@@ -26,8 +26,7 @@ constexpr base::TimeDelta kTimeUpdateInterval =
 Receiver::Receiver(std::unique_ptr<Renderer> renderer, RpcBroker* rpc_broker)
     : renderer_(std::move(renderer)),
       rpc_broker_(rpc_broker),
-      rpc_handle_(rpc_broker_->GetUniqueHandle()),
-      weak_factory_(this) {
+      rpc_handle_(rpc_broker_->GetUniqueHandle()) {
   DCHECK(renderer_);
   DCHECK(rpc_broker_);
   rpc_broker_->RegisterMessageReceiverCallback(
@@ -75,14 +74,15 @@ void Receiver::AcquireRenderer(std::unique_ptr<pb::RpcMessage> message) {
 
   remote_handle_ = message->integer_value();
   if (stream_provider_) {
-    VLOG(1) << "Acquire renderer error: Already aquired.";
+    VLOG(1) << "Acquire renderer error: Already acquired.";
     OnError(PipelineStatus::PIPELINE_ERROR_DECODE);
     return;
   }
 
   stream_provider_.reset(new StreamProvider(
-      rpc_broker_, base::Bind(&Receiver::OnError, weak_factory_.GetWeakPtr(),
-                              PipelineStatus::PIPELINE_ERROR_DECODE)));
+      rpc_broker_,
+      base::BindOnce(&Receiver::OnError, weak_factory_.GetWeakPtr(),
+                     PipelineStatus::PIPELINE_ERROR_DECODE)));
 
   DVLOG(3) << __func__
            << ": Issues RPC_ACQUIRE_RENDERER_DONE RPC message. remote_handle="
@@ -106,14 +106,15 @@ void Receiver::Initialize(std::unique_ptr<pb::RpcMessage> message) {
   stream_provider_->Initialize(
       message->renderer_initialize_rpc().audio_demuxer_handle(),
       message->renderer_initialize_rpc().video_demuxer_handle(),
-      base::Bind(&Receiver::OnStreamInitialized, weak_factory_.GetWeakPtr()));
+      base::BindOnce(&Receiver::OnStreamInitialized,
+                     weak_factory_.GetWeakPtr()));
 }
 
 void Receiver::OnStreamInitialized() {
   DCHECK(stream_provider_);
-  renderer_->Initialize(
-      stream_provider_.get(), this,
-      base::Bind(&Receiver::OnRendererInitialized, weak_factory_.GetWeakPtr()));
+  renderer_->Initialize(stream_provider_.get(), this,
+                        base::BindOnce(&Receiver::OnRendererInitialized,
+                                       weak_factory_.GetWeakPtr()));
 }
 
 void Receiver::OnRendererInitialized(PipelineStatus status) {
@@ -163,7 +164,7 @@ void Receiver::FlushUntil(std::unique_ptr<pb::RpcMessage> message) {
   }
   time_update_timer_.Stop();
   renderer_->Flush(
-      base::Bind(&Receiver::OnFlushDone, weak_factory_.GetWeakPtr()));
+      base::BindOnce(&Receiver::OnFlushDone, weak_factory_.GetWeakPtr()));
 }
 
 void Receiver::OnFlushDone() {
@@ -187,9 +188,9 @@ void Receiver::ScheduleMediaTimeUpdates() {
   if (time_update_timer_.IsRunning())
     return;
   SendMediaTimeUpdate();
-  time_update_timer_.Start(
-      FROM_HERE, kTimeUpdateInterval,
-      base::Bind(&Receiver::SendMediaTimeUpdate, weak_factory_.GetWeakPtr()));
+  time_update_timer_.Start(FROM_HERE, kTimeUpdateInterval,
+                           base::BindRepeating(&Receiver::SendMediaTimeUpdate,
+                                               weak_factory_.GetWeakPtr()));
 }
 
 void Receiver::SetVolume(std::unique_ptr<pb::RpcMessage> message) {
@@ -253,9 +254,15 @@ void Receiver::OnStatisticsUpdate(const PipelineStatistics& stats) {
   rpc_broker_->SendMessageToRemote(std::move(rpc));
 }
 
-void Receiver::OnBufferingStateChange(BufferingState state) {
+void Receiver::OnBufferingStateChange(BufferingState state,
+                                      BufferingStateChangeReason reason) {
   DVLOG(3) << __func__
            << ": Issues RPC_RC_ONBUFFERINGSTATECHANGE message: state=" << state;
+
+  // The |reason| is determined on the other side of the RPC in CourierRenderer.
+  // For now, there is no reason to provide this in the |message| below.
+  DCHECK_EQ(reason, BUFFERING_CHANGE_REASON_UNKNOWN);
+
   std::unique_ptr<pb::RpcMessage> rpc(new pb::RpcMessage());
   rpc->set_handle(remote_handle_);
   rpc->set_proc(pb::RpcMessage::RPC_RC_ONBUFFERINGSTATECHANGE);
@@ -315,20 +322,6 @@ void Receiver::OnVideoOpacityChange(bool opaque) {
   rpc->set_proc(pb::RpcMessage::RPC_RC_ONVIDEOOPACITYCHANGE);
   rpc->set_boolean_value(opaque);
   rpc_broker_->SendMessageToRemote(std::move(rpc));
-}
-
-void Receiver::OnDurationChange(base::TimeDelta duration) {
-  DVLOG(3) << __func__ << ": Issues RPC_RC_ONDURATIONCHANGE message.";
-  std::unique_ptr<pb::RpcMessage> rpc(new pb::RpcMessage());
-  rpc->set_handle(remote_handle_);
-  rpc->set_proc(pb::RpcMessage::RPC_RC_ONDURATIONCHANGE);
-  rpc->set_integer_value(duration.InMicroseconds());
-  rpc_broker_->SendMessageToRemote(std::move(rpc));
-}
-
-void Receiver::OnRemotePlayStateChange(MediaStatus::State state) {
-  // Only used with the FlingingRenderer.
-  NOTREACHED();
 }
 
 }  // namespace remoting

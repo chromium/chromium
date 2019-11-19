@@ -23,30 +23,30 @@ void ActiveScriptWrappableBase::TraceActiveScriptWrappables(
   for (const auto& active_wrappable : *active_script_wrappables) {
     // Ignore objects that are currently under construction. They are kept alive
     // via conservative stack scan.
-    if (active_wrappable->GetHeapObjectHeader() ==
-        BlinkGC::kNotFullyConstructedObject)
+    HeapObjectHeader const* const header =
+        active_wrappable->GetHeapObjectHeader();
+    if ((header == BlinkGC::kNotFullyConstructedObject) ||
+        header->IsInConstruction())
+      continue;
+
+    // A wrapper isn't kept alive after its ExecutionContext becomes detached,
+    // even if |HasPendingActivity()| returns |true|. This measure avoids memory
+    // leaks and has proven not to be too eager wrt garbage collection of
+    // objects belonging to discarded browser contexts (
+    // https://html.spec.whatwg.org/C/#a-browsing-context-is-discarded )
+    //
+    // Consequently, an implementation of |HasPendingActivity()| is not required
+    // to take the detached state of the associated ExecutionContext into
+    // account (i.e., return |false|.) We probe the detached state of the
+    // ExecutionContext via |IsContextDestroyed()|.
+    if (active_wrappable->IsContextDestroyed())
       continue;
 
     if (!active_wrappable->DispatchHasPendingActivity())
       continue;
 
-    // A wrapper isn't kept alive after its ExecutionContext becomes
-    // detached, even if hasPendingActivity() returns |true|. This measure
-    // avoids memory leaks and has proven not to be too eager wrt
-    // garbage collection of objects belonging to discarded browser contexts
-    // ( https://html.spec.whatwg.org/C/#a-browsing-context-is-discarded )
-    //
-    // Consequently, an implementation of hasPendingActivity() is
-    // not required to take the detached state of the associated
-    // ExecutionContext into account (i.e., return |false|.) We probe
-    // the detached state of the ExecutionContext via
-    // |isContextDestroyed()|.
-    //
-    // TODO(haraken): Implement correct lifetime using traceWrapper.
-    if (active_wrappable->IsContextDestroyed())
-      continue;
     ScriptWrappable* script_wrappable = active_wrappable->ToScriptWrappable();
-    visitor->TraceWithWrappers(script_wrappable);
+    visitor->Trace(script_wrappable);
   }
 }
 

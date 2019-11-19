@@ -65,6 +65,27 @@ class BASE_EXPORT WorkQueue {
   // it informs the WorkQueueSets if the head changed.
   void Push(Task task);
 
+  // RAII helper that helps efficiently push N Tasks to a WorkQueue.
+  class BASE_EXPORT TaskPusher {
+   public:
+    TaskPusher(const TaskPusher&) = delete;
+    TaskPusher(TaskPusher&& other);
+    ~TaskPusher();
+
+    void Push(Task* task);
+
+   private:
+    friend class WorkQueue;
+
+    explicit TaskPusher(WorkQueue* work_queue);
+
+    WorkQueue* work_queue_;
+    const bool was_empty_;
+  };
+
+  // Returns an RAII helper to efficiently push multiple tasks.
+  TaskPusher CreateTaskPusher();
+
   // Pushes the task onto the front of the |tasks_| and if it's before any
   // fence it informs the WorkQueueSets the head changed. Use with caution this
   // API can easily lead to task starvation if misused.
@@ -140,6 +161,11 @@ class BASE_EXPORT WorkQueue {
   // Test support function. This should not be used in production code.
   void PopTaskForTesting();
 
+  // Iterates through |tasks_| adding any that are older than |reference| to
+  // |result|.
+  void CollectTasksOlderThan(EnqueueOrder reference,
+                             std::vector<const Task*>* result) const;
+
  private:
   bool InsertFenceImpl(EnqueueOrder fence);
 
@@ -147,6 +173,10 @@ class BASE_EXPORT WorkQueue {
   WorkQueueSets* work_queue_sets_ = nullptr;  // NOT OWNED.
   TaskQueueImpl* const task_queue_;           // NOT OWNED.
   size_t work_queue_set_index_ = 0;
+
+  // Iff the queue isn't empty (or appearing to be empty due to a fence) then
+  // |heap_handle_| will be valid and correspond to this queue's location within
+  // an IntrusiveHeap inside the WorkQueueSet.
   base::internal::HeapHandle heap_handle_;
   const char* const name_;
   EnqueueOrder fence_;

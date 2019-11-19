@@ -32,7 +32,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_COMMANDS_MOVE_COMMANDS_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_COMMANDS_MOVE_COMMANDS_H_
 
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 
 namespace blink {
@@ -42,10 +43,12 @@ class LocalFrame;
 
 enum class EditorCommandSource;
 enum class SelectionModifyAlteration;
+enum class SelectionModifyDirection;
 enum class SelectionModifyVerticalDirection;
+enum class TextGranularity;
 
 // This class provides static functions about commands related to move.
-class MoveCommands {
+class CORE_EXPORT MoveCommands {
   STATIC_ONLY(MoveCommands);
 
  public:
@@ -257,6 +260,26 @@ class MoveCommands {
       SelectionModifyAlteration,
       unsigned,
       SelectionModifyVerticalDirection);
+
+  // Wraps FrameSelection::Modify for case where the selection is moved by the
+  // user. Returns false if the "selectstart" event is dispatched and canceled,
+  // otherwise returns true (return value does not indicate whether the
+  // selection was modified).
+  static bool MoveSelection(LocalFrame&,
+                            SelectionModifyDirection,
+                            TextGranularity);
+
+  // If caret browsing is enabled and the caret is in a non-editable region then
+  // UpdateFocusForCaretBrowsing moves focus to the nearest focusable ancestor
+  // of the caret, if there is one. This will, for example, move focus to anchor
+  // elements when the caret enters an anchor. If there is no focusable ancestor
+  // then focus will move to the body.
+  static void UpdateFocusForCaretBrowsing(LocalFrame&);
+
+  // If caret browsing is enabled and the caret/selection is not in focus then
+  // UpdateSelectionForCaretBrowsing moves the caret to the first position in
+  // the active element.
+  static void UpdateSelectionForCaretBrowsing(LocalFrame&);
 };
 
 }  // namespace blink

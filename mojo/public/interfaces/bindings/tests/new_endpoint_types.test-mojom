@@ -22,3 +22,12 @@ interface WidgetFactory {
   CreateWidget(pending_receiver<Widget> receiver,
                pending_remote<WidgetClient> client);
 };
+
+interface Pinger {
+  Ping() => ();
+};
+
+interface AssociatedPingerHost {
+  AddEndpoints(pending_associated_receiver<Pinger> receiver,
+               pending_associated_remote<Pinger> remote);
+};

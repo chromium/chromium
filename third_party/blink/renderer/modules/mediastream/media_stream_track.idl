@@ -25,15 +25,13 @@
 
 // https://w3c.github.io/mediacapture-main/#mediastreamtrack
 
-// TODO(foolip): Remove or standardize MediaStreamTrackState "muted".
-// https://crbug.com/651414
 enum MediaStreamTrackState {
     "live",
-    "muted",
     "ended"
 };
 
 [
+    Exposed=Window,
     ActiveScriptWrappable
 ] interface MediaStreamTrack : EventTarget {
     readonly attribute DOMString kind;

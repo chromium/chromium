@@ -15,6 +15,7 @@ import com.android.webview.chromium.SharedTracingControllerAdapter;
 import com.android.webview.chromium.WebViewChromiumAwInit;
 import com.android.webview.chromium.WebkitToSharedGlueConverter;
 
+import org.chromium.android_webview.AwDebug;
 import org.chromium.support_lib_boundary.StaticsBoundaryInterface;
 import org.chromium.support_lib_boundary.WebViewProviderFactoryBoundaryInterface;
 import org.chromium.support_lib_boundary.util.BoundaryInterfaceReflectionUtil;
@@ -70,6 +71,11 @@ class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryBoundary
                     Features.WEB_VIEW_RENDERER_TERMINATE,
                     Features.TRACING_CONTROLLER_BASIC_USAGE,
                     Features.WEB_VIEW_RENDERER_CLIENT_BASIC_USAGE,
+                    Features.MULTI_PROCESS_QUERY,
+                    Features.FORCE_DARK,
+                    Features.FORCE_DARK_BEHAVIOR + Features.DEV_SUFFIX,
+                    Features.WEB_MESSAGE_LISTENER + Features.DEV_SUFFIX,
+                    Features.SET_SUPPORT_LIBRARY_VERSION + Features.DEV_SUFFIX,
             };
     // clang-format on
 
@@ -86,10 +92,9 @@ class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryBoundary
     }
 
     @Override
-    public InvocationHandler createWebView(WebView webview) {
+    public /* WebViewProvider */ InvocationHandler createWebView(WebView webView) {
         return BoundaryInterfaceReflectionUtil.createInvocationHandlerFor(
-                new SupportLibWebViewChromium(
-                        WebkitToSharedGlueConverter.getSharedWebViewChromium(webview)));
+                new SupportLibWebViewChromium(webView));
     }
 
     @Override
@@ -118,6 +123,11 @@ class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryBoundary
         @Override
         public Uri getSafeBrowsingPrivacyPolicyUrl() {
             return mSharedStatics.getSafeBrowsingPrivacyPolicyUrl();
+        }
+
+        @Override
+        public boolean isMultiProcessEnabled() {
+            return mSharedStatics.isMultiProcessEnabled();
         }
     }
 
@@ -173,5 +183,10 @@ class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryBoundary
             }
         }
         return mProxyController;
+    }
+
+    @Override
+    public void setSupportLibraryVersion(String version) {
+        AwDebug.setSupportLibraryWebkitVersionCrashKey(version);
     }
 }

@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/modules/shapedetection/shape_detector.h"
 
+#include <utility>
+
 #include "base/numerics/checked_math.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
@@ -16,6 +18,7 @@
 #include "third_party/blink/renderer/core/imagebitmap/image_bitmap.h"
 #include "third_party/blink/renderer/core/loader/resource/image_resource_content.h"
 #include "third_party/blink/renderer/platform/graphics/image.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
 
@@ -24,7 +27,7 @@ namespace blink {
 ScriptPromise ShapeDetector::detect(
     ScriptState* script_state,
     const ImageBitmapSourceUnion& image_source) {
-  ScriptPromiseResolver* resolver = ScriptPromiseResolver::Create(script_state);
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
 
   // ImageDatas cannot be tainted by definition.
@@ -44,14 +47,14 @@ ScriptPromise ShapeDetector::detect(
     canvas_image_source = image_source.GetAsOffscreenCanvas();
   } else {
     NOTREACHED() << "Unsupported CanvasImageSource";
-    resolver->Reject(DOMException::Create(DOMExceptionCode::kNotSupportedError,
-                                          "Unsupported source."));
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kNotSupportedError, "Unsupported source."));
     return promise;
   }
 
   if (canvas_image_source->WouldTaintOrigin()) {
-    resolver->Reject(DOMException::Create(DOMExceptionCode::kSecurityError,
-                                          "Source would taint origin."));
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kSecurityError, "Source would taint origin."));
     return promise;
   }
 
@@ -71,8 +74,8 @@ ScriptPromise ShapeDetector::detect(
   scoped_refptr<Image> image = canvas_image_source->GetSourceImageForCanvas(
       &source_image_status, kPreferNoAcceleration, size);
   if (!image || source_image_status != kNormalSourceImageStatus) {
-    resolver->Reject(DOMException::Create(DOMExceptionCode::kInvalidStateError,
-                                          "Invalid element or state."));
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kInvalidStateError, "Invalid element or state."));
     return promise;
   }
   if (size.IsEmpty()) {
@@ -90,9 +93,9 @@ ScriptPromise ShapeDetector::detect(
   if (!sk_image->asLegacyBitmap(&sk_bitmap)) {
     // TODO(mcasas): retrieve the pixels from elsewhere.
     NOTREACHED();
-    resolver->Reject(
-        DOMException::Create(DOMExceptionCode::kInvalidStateError,
-                             "Failed to get pixels for current frame."));
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kInvalidStateError,
+        "Failed to get pixels for current frame."));
     return promise;
   }
 
@@ -109,14 +112,21 @@ ScriptPromise ShapeDetector::DetectShapesOnImageData(
     return promise;
   }
 
+  if (image_data->BufferBase()->IsDetached()) {
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kInvalidStateError,
+        "The image data has been detached."));
+    return promise;
+  }
+
   SkBitmap sk_bitmap;
   if (!sk_bitmap.tryAllocPixels(
           SkImageInfo::Make(image_data->width(), image_data->height(),
                             kN32_SkColorType, kOpaque_SkAlphaType),
           image_data->width() * 4 /* bytes per pixel */)) {
-    resolver->Reject(
-        DOMException::Create(DOMExceptionCode::kInvalidStateError,
-                             "Failed to allocate pixels for current frame."));
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kInvalidStateError,
+        "Failed to allocate pixels for current frame."));
     return promise;
   }
 
@@ -141,17 +151,17 @@ ScriptPromise ShapeDetector::DetectShapesOnImageElement(
 
   ImageResourceContent* const image_resource = img->CachedImage();
   if (!image_resource || image_resource->ErrorOccurred()) {
-    resolver->Reject(
-        DOMException::Create(DOMExceptionCode::kInvalidStateError,
-                             "Failed to load or decode HTMLImageElement."));
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kInvalidStateError,
+        "Failed to load or decode HTMLImageElement."));
     return promise;
   }
 
   Image* const blink_image = image_resource->GetImage();
   if (!blink_image) {
-    resolver->Reject(
-        DOMException::Create(DOMExceptionCode::kInvalidStateError,
-                             "Failed to get image from resource."));
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kInvalidStateError,
+        "Failed to get image from resource."));
     return promise;
   }
 
@@ -163,9 +173,9 @@ ScriptPromise ShapeDetector::DetectShapesOnImageElement(
   SkBitmap sk_bitmap;
 
   if (!sk_image || !sk_image->asLegacyBitmap(&sk_bitmap)) {
-    resolver->Reject(
-        DOMException::Create(DOMExceptionCode::kInvalidStateError,
-                             "Failed to get image from current frame."));
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kInvalidStateError,
+        "Failed to get image from current frame."));
     return promise;
   }
 

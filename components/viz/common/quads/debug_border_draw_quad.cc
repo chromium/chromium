@@ -18,7 +18,7 @@ void DebugBorderDrawQuad::SetNew(const SharedQuadState* shared_quad_state,
                                  SkColor color,
                                  int width) {
   bool needs_blending = SkColorGetA(color) < 255;
-  DrawQuad::SetAll(shared_quad_state, DrawQuad::DEBUG_BORDER, rect,
+  DrawQuad::SetAll(shared_quad_state, DrawQuad::Material::kDebugBorder, rect,
                    visible_rect, needs_blending);
   this->color = color;
   this->width = width;
@@ -30,7 +30,7 @@ void DebugBorderDrawQuad::SetAll(const SharedQuadState* shared_quad_state,
                                  bool needs_blending,
                                  SkColor color,
                                  int width) {
-  DrawQuad::SetAll(shared_quad_state, DrawQuad::DEBUG_BORDER, rect,
+  DrawQuad::SetAll(shared_quad_state, DrawQuad::Material::kDebugBorder, rect,
                    visible_rect, needs_blending);
   this->color = color;
   this->width = width;
@@ -38,7 +38,7 @@ void DebugBorderDrawQuad::SetAll(const SharedQuadState* shared_quad_state,
 
 const DebugBorderDrawQuad* DebugBorderDrawQuad::MaterialCast(
     const DrawQuad* quad) {
-  DCHECK(quad->material == DrawQuad::DEBUG_BORDER);
+  DCHECK(quad->material == DrawQuad::Material::kDebugBorder);
   return static_cast<const DebugBorderDrawQuad*>(quad);
 }
 

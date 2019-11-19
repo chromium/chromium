@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/device_orientation/device_orientation_absolute_controller.h"
 
+#include "third_party/blink/public/mojom/feature_policy/feature_policy_feature.mojom-blink.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/modules/device_orientation/device_orientation_event_pump.h"
@@ -39,24 +40,23 @@ void DeviceOrientationAbsoluteController::DidAddEventListener(
   if (event_type != EventTypeName())
     return;
 
-  LocalFrame* frame = GetDocument().GetFrame();
-  if (frame) {
-    if (GetDocument().IsSecureContext()) {
-      UseCounter::Count(GetDocument(),
-                        WebFeature::kDeviceOrientationAbsoluteSecureOrigin);
-    } else {
-      Deprecation::CountDeprecation(
-          frame, WebFeature::kDeviceOrientationAbsoluteInsecureOrigin);
-      // TODO: add rappor logging of insecure origins as in
-      // DeviceOrientationController.
-      if (frame->GetSettings()->GetStrictPowerfulFeatureRestrictions())
-        return;
-      if (RuntimeEnabledFeatures::
-              RestrictDeviceSensorEventsToSecureContextsEnabled()) {
-        return;
-      }
-    }
-  }
+  // The document could be detached, e.g. if it is the `contentDocument` of an
+  // <iframe> that has been removed from the DOM of its parent frame.
+  if (GetDocument().IsContextDestroyed())
+    return;
+
+  // The API is not exposed to Workers or Worklets, so if the current realm
+  // execution context is valid, it must have a responsible browsing context.
+  SECURITY_CHECK(GetDocument().GetFrame());
+
+  // The event handler property on `window` is restricted to [SecureContext],
+  // but nothing prevents a site from calling `window.addEventListener(...)`
+  // from a non-secure browsing context.
+  if (!GetDocument().IsSecureContext())
+    return;
+
+  UseCounter::Count(GetDocument(),
+                    WebFeature::kDeviceOrientationAbsoluteSecureOrigin);
 
   if (!has_event_listener_) {
     // TODO: add rappor url logging as in DeviceOrientationController.
@@ -64,7 +64,8 @@ void DeviceOrientationAbsoluteController::DidAddEventListener(
     if (!CheckPolicyFeatures({mojom::FeaturePolicyFeature::kAccelerometer,
                               mojom::FeaturePolicyFeature::kGyroscope,
                               mojom::FeaturePolicyFeature::kMagnetometer})) {
-      LogToConsolePolicyFeaturesDisabled(frame, EventTypeName());
+      LogToConsolePolicyFeaturesDisabled(GetDocument().GetFrame(),
+                                         EventTypeName());
       return;
     }
   }

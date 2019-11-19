@@ -4,13 +4,21 @@
 
 #include "ash/system/tray/tray_event_filter.h"
 
+#include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/shell_window_ids.h"
+#include "ash/root_window_controller.h"
+#include "ash/shelf/shelf.h"
 #include "ash/shell.h"
+#include "ash/system/message_center/unified_message_center_bubble.h"
+#include "ash/system/status_area_widget.h"
 #include "ash/system/tray/tray_background_view.h"
 #include "ash/system/tray/tray_bubble_base.h"
+#include "ash/system/unified/unified_system_tray.h"
+#include "ash/system/unified/unified_system_tray_bubble.h"
 #include "ash/wm/container_finder.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ui/aura/window.h"
+#include "ui/display/screen.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/views/widget/widget.h"
 
@@ -52,7 +60,7 @@ void TrayEventFilter::ProcessPressedEvent(const ui::LocatedEvent& event) {
   const views::Widget* target_widget =
       views::Widget::GetTopLevelWidgetForNativeView(target);
   const aura::Window* container =
-      target ? wm::GetContainerForWindow(target) : nullptr;
+      target ? GetContainerForWindow(target) : nullptr;
   if (target && container) {
     const int container_id = container->id();
     // Don't process events that occurred inside an embedded menu, for example
@@ -63,7 +71,7 @@ void TrayEventFilter::ProcessPressedEvent(const ui::LocatedEvent& event) {
     // from message center.
     if (container_id == kShellWindowId_StatusContainer &&
         target->type() == aura::client::WINDOW_TYPE_POPUP && target_widget &&
-        target_widget->IsAlwaysOnTop()) {
+        target_widget->GetZOrderLevel() != ui::ZOrderLevel::kNormal) {
       return;
     }
     // Don't process events that occurred inside a virtual keyboard.
@@ -90,13 +98,37 @@ void TrayEventFilter::ProcessPressedEvent(const ui::LocatedEvent& event) {
     // |bounds| so that events located outside the bubble's visual bounds are
     // treated as outside of the bubble.
     int bubble_container_id =
-        wm::GetContainerForWindow(bubble_widget->GetNativeWindow())->id();
-    if (Shell::Get()
-            ->tablet_mode_controller()
-            ->IsTabletModeWindowManagerEnabled() &&
+        GetContainerForWindow(bubble_widget->GetNativeWindow())->id();
+    if (Shell::Get()->tablet_mode_controller()->InTabletMode() &&
         bubble_container_id == kShellWindowId_SettingBubbleContainer) {
       bounds.Intersect(bubble_widget->GetWorkAreaBoundsInScreen());
     }
+
+    // The system tray and message center are separate bubbles but they need
+    // to stay open together. We need to make sure to check if a click falls
+    // with in both their bounds and not close them both in this case.
+    if (features::IsUnifiedMessageCenterRefactorEnabled() &&
+        bubble_container_id == kShellWindowId_SettingBubbleContainer) {
+      int64_t display_id = display::Screen::GetScreen()
+                               ->GetDisplayNearestPoint(screen_location)
+                               .id();
+      UnifiedSystemTray* tray =
+          Shell::GetRootWindowControllerWithDisplayId(display_id)
+              ->shelf()
+              ->GetStatusAreaWidget()
+              ->unified_system_tray();
+
+      TrayBubbleBase* system_tray_bubble = tray->bubble();
+      if (tray->IsBubbleShown() && system_tray_bubble != bubble) {
+        bounds.Union(
+            system_tray_bubble->GetBubbleWidget()->GetWindowBoundsInScreen());
+      } else if (tray->IsMessageCenterBubbleShown()) {
+        TrayBubbleBase* message_center_bubble = tray->message_center_bubble();
+        bounds.Union(message_center_bubble->GetBubbleWidget()
+                         ->GetWindowBoundsInScreen());
+      }
+    }
+
     if (bounds.Contains(screen_location))
       continue;
     if (bubble->GetTray()) {

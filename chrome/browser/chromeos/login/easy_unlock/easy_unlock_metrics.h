@@ -71,6 +71,10 @@ enum EasyUnlockAuthEvent {
   // Password entry was forced because sign-in with Smart Lock is disabled.
   PASSWORD_ENTRY_LOGIN_DISABLED = 21,
 
+  // Password is used because primary user was in background or user is
+  // secondary user.
+  PASSWORD_ENTRY_PRIMARY_USER_ABSENT = 22,
+
   EASY_UNLOCK_AUTH_EVENT_COUNT  // Must be the last entry.
 };
 

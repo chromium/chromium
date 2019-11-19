@@ -6,8 +6,8 @@
 
 #include "android_webview/public/browser/draw_fn.h"
 #include "base/containers/flat_map.h"
-#include "base/lazy_instance.h"
 #include "base/logging.h"
+#include "base/no_destructor.h"
 #include "base/synchronization/lock.h"
 
 namespace {
@@ -59,24 +59,27 @@ class FunctorMap {
     }
   }
 
+  static FunctorMap* Get() {
+    static base::NoDestructor<FunctorMap> map;
+    return map.get();
+  }
+
  private:
   base::Lock lock_;
   base::flat_map<int, FunctorData> map_;
   int next_functor_ = 1;
 };
 
-base::LazyInstance<FunctorMap>::Leaky g_map;
-
 AwDrawFnRenderMode QueryRenderMode() {
   return AW_DRAW_FN_RENDER_MODE_OPENGL_ES;
 }
 
 int CreateFunctor(void* data, AwDrawFnFunctorCallbacks* functor_callbacks) {
-  return g_map.Get().allocate(data, functor_callbacks);
+  return FunctorMap::Get()->allocate(data, functor_callbacks);
 }
 
 void ReleaseFunctor(int functor) {
-  g_map.Get().mark_released(functor);
+  FunctorMap::Get()->mark_released(functor);
 }
 
 }  // namespace
@@ -102,7 +105,7 @@ Java_org_chromium_android_1webview_shell_DrawFn_nativeSync(
     jclass,
     jint functor,
     jboolean force_apply_dark) {
-  FunctorData data = g_map.Get().get(functor);
+  FunctorData data = FunctorMap::Get()->get(functor);
   AwDrawFn_OnSyncParams params{kAwDrawFnVersion, force_apply_dark};
   data.functor_callbacks->on_sync(functor, data.data, &params);
 }
@@ -110,7 +113,7 @@ Java_org_chromium_android_1webview_shell_DrawFn_nativeSync(
 JNIEXPORT void JNICALL
 Java_org_chromium_android_1webview_shell_DrawFn_nativeDestroyReleased(JNIEnv*,
                                                                       jclass) {
-  g_map.Get().destroy_released();
+  FunctorMap::Get()->destroy_released();
 }
 
 JNIEXPORT void JNICALL
@@ -126,9 +129,8 @@ Java_org_chromium_android_1webview_shell_DrawFn_nativeDrawGL(JNIEnv*,
                                                              jint height,
                                                              jint scroll_x,
                                                              jint scroll_y) {
-  FunctorData data = g_map.Get().get(functor);
+  FunctorData data = FunctorMap::Get()->get(functor);
   AwDrawFn_DrawGLParams params{kAwDrawFnVersion};
-  params.is_layer = false;
   params.width = width;
   params.height = height;
   params.clip_left = 0;

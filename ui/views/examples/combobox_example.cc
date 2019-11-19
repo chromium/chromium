@@ -45,22 +45,24 @@ void ComboboxExample::CreateExampleView(View* container) {
   combobox_->set_listener(this);
   combobox_->SetSelectedIndex(3);
 
-  disabled_combobox_ = new Combobox(std::make_unique<ComboboxModelExample>());
-  disabled_combobox_->set_listener(this);
-  disabled_combobox_->SetSelectedIndex(4);
-  disabled_combobox_->SetEnabled(false);
+  auto* disabled_combobox =
+      new Combobox(std::make_unique<ComboboxModelExample>());
+  disabled_combobox->set_listener(this);
+  disabled_combobox->SetSelectedIndex(4);
+  disabled_combobox->SetEnabled(false);
 
-  container->SetLayoutManager(
-      std::make_unique<BoxLayout>(BoxLayout::kVertical, gfx::Insets(10, 0), 5));
+  container->SetLayoutManager(std::make_unique<BoxLayout>(
+      BoxLayout::Orientation::kVertical, gfx::Insets(10, 0), 5));
   container->AddChildView(combobox_);
-  container->AddChildView(disabled_combobox_);
+  container->AddChildView(disabled_combobox);
 }
 
 void ComboboxExample::OnPerformAction(Combobox* combobox) {
   DCHECK_EQ(combobox, combobox_);
-  PrintStatus("Selected: %s", base::UTF16ToUTF8(combobox->model()->GetItemAt(
-                                                    combobox->selected_index()))
-                                  .c_str());
+  PrintStatus("Selected: %s",
+              base::UTF16ToUTF8(
+                  combobox->model()->GetItemAt(combobox->GetSelectedIndex()))
+                  .c_str());
 }
 
 }  // namespace examples

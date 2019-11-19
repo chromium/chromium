@@ -38,7 +38,7 @@ class ServerBackedStateKeysBroker {
   // Note that consuming code needs to hold on to the returned Subscription as
   // long as it wants to receive the callback. If the state keys haven't been
   // requested yet, calling this will also trigger their initial fetch.
-  Subscription RegisterUpdateCallback(const base::Closure& callback);
+  Subscription RegisterUpdateCallback(const base::RepeatingClosure& callback);
 
   // Requests state keys asynchronously. Invokes the passed callback at most
   // once, with the current state keys passed as a parameter to the callback. If
@@ -60,10 +60,8 @@ class ServerBackedStateKeysBroker {
     return state_keys_.empty() ? std::string() : state_keys_.front();
   }
 
-  // Whether state key retrieval is pending.
-  bool pending() const { return !initial_retrieval_completed_; }
-
-  // Whether state keys are available.
+  // Whether state keys are available. Returns false if state keys are
+  // unavailable or pending retrieval.
   bool available() const { return !state_keys_.empty(); }
 
  private:
@@ -81,16 +79,13 @@ class ServerBackedStateKeysBroker {
   // Whether a request for state keys is pending.
   bool requested_;
 
-  // Whether the initial retrieval operation completed.
-  bool initial_retrieval_completed_;
-
   // List of callbacks to receive update notifications.
   base::CallbackList<void()> update_callbacks_;
 
   // List of pending one-shot state key request callbacks.
   std::vector<StateKeysCallback> request_callbacks_;
 
-  base::WeakPtrFactory<ServerBackedStateKeysBroker> weak_factory_;
+  base::WeakPtrFactory<ServerBackedStateKeysBroker> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ServerBackedStateKeysBroker);
 };

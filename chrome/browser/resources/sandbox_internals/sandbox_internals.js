@@ -2,6 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+/**
+ * @typedef {{
+ *   seccompStatus: number,
+ *   pid: string,
+ *   uid: string,
+ *   secontext: string,
+ *   procStatus: string,
+ *   androidBuildId: string
+ * }}
+ */
+let AndroidSandboxStatus;
+
 (function() {
 /**
  * CSS classes for different statuses.
@@ -22,10 +34,10 @@ const StatusClass = {
  * @return {Element} The newly added TR.
  */
 function addStatusRow(name, value, cssClass) {
-  const row = cr.doc.createElement('tr');
+  const row = document.createElement('tr');
 
-  const nameCol = row.appendChild(cr.doc.createElement('td'));
-  const valueCol = row.appendChild(cr.doc.createElement('td'));
+  const nameCol = row.appendChild(document.createElement('td'));
+  const valueCol = row.appendChild(document.createElement('td'));
 
   nameCol.textContent = name;
   valueCol.textContent = value;
@@ -52,7 +64,7 @@ function addGoodBadRow(name, result) {
 
 /**
  * Reports the overall sandbox status evaluation message.
- * @param {boolean}
+ * @param {boolean} result
  */
 function setEvaluation(result) {
   const message = result ? 'You are adequately sandboxed.' :

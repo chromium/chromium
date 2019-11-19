@@ -38,8 +38,8 @@ std::unique_ptr<PrinterHandler> PrinterHandler::CreateForLocalPrinters(
     content::WebContents* preview_web_contents,
     Profile* profile) {
 #if defined(OS_CHROMEOS)
-  return std::make_unique<LocalPrinterHandlerChromeos>(profile,
-                                                       preview_web_contents);
+  return LocalPrinterHandlerChromeos::CreateDefault(profile,
+                                                    preview_web_contents);
 #else
   return std::make_unique<LocalPrinterHandlerDefault>(preview_web_contents);
 #endif

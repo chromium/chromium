@@ -98,12 +98,12 @@ bool WebRequestCondition::IsFulfilled(
 
   // Check URL attributes if present.
   if (url_matcher_conditions_.get() &&
-      !base::ContainsKey(request_data.url_match_ids,
-                         url_matcher_conditions_->id()))
+      !base::Contains(request_data.url_match_ids,
+                      url_matcher_conditions_->id()))
     return false;
   if (first_party_url_matcher_conditions_.get() &&
-      !base::ContainsKey(request_data.first_party_url_match_ids,
-                         first_party_url_matcher_conditions_->id()))
+      !base::Contains(request_data.first_party_url_match_ids,
+                      first_party_url_matcher_conditions_->id()))
     return false;
 
   // All condition attributes must be fulfilled for a fulfilled condition.

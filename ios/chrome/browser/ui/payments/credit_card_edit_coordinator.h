@@ -11,7 +11,7 @@
 #import "ios/chrome/browser/ui/payments/payment_request_edit_view_controller.h"
 
 namespace payments {
-class AutofillPaymentInstrument;
+class AutofillPaymentApp;
 }
 
 namespace payments {
@@ -28,8 +28,7 @@ class PaymentRequest;
 // PaymentRequest object if no payment method instance was provided to the
 // coordinator. Otherwise, it will be the same edited instance.
 - (void)creditCardEditCoordinator:(CreditCardEditCoordinator*)coordinator
-    didFinishEditingPaymentMethod:
-        (payments::AutofillPaymentInstrument*)paymentMethod;
+    didFinishEditingPaymentMethod:(payments::AutofillPaymentApp*)paymentMethod;
 
 // Notifies the delegate that the user has chosen to cancel editing or creating
 // a credit card and return to the previous screen.
@@ -48,7 +47,7 @@ class PaymentRequest;
 
 // The payment method to be edited, if any. This pointer is not owned by this
 // class and should outlive it.
-@property(nonatomic, assign) payments::AutofillPaymentInstrument* paymentMethod;
+@property(nonatomic, assign) payments::AutofillPaymentApp* paymentMethod;
 
 // The PaymentRequest object owning an instance of payments::WebPaymentRequest
 // as provided by the page invoking the Payment Request API. This pointer is not

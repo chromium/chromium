@@ -1,0 +1,2 @@
+HTTP/1.1 302 Moved
+Location: http://www.a.com:{{PORT}}/downloads/empty.bin

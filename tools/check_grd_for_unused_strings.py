@@ -10,6 +10,8 @@ You can give paths to GRD files and source directories to control what is
 check instead.
 """
 
+from __future__ import print_function
+
 import os
 import re
 import sys
@@ -64,10 +66,10 @@ def CheckForUnusedGrdIDsInSources(grd_files, src_dirs):
   for x in all_ids:
     match = id_regex.search(x)
     if match is None:
-      print 'ERROR: "%s" did not match our regex' % (x)
+      print('ERROR: "%s" did not match our regex' % x)
       got_err = True
     if not match.group(0) is x:
-      print 'ERROR: "%s" did not fully match our regex' % (x)
+      print('ERROR: "%s" did not fully match our regex' % x)
       got_err = True
   if got_err:
     return 1
@@ -92,20 +94,20 @@ def CheckForUnusedGrdIDsInSources(grd_files, src_dirs):
               ids_left.remove(match)
             if DEBUG:
               if not match in all_ids:
-                print '%s had "%s", which was not in the found IDs' % \
-                  (full_path, match)
+                print('%s had "%s", which was not in the found IDs' % \
+                  (full_path, match))
         elif DEBUG > 1:
           full_path = os.path.join(root, file)
-          print 'Skipping %s.' % (full_path)
+          print('Skipping %s.' % full_path)
 
   # Anything left?
   if len(ids_left) > 0:
-    print 'The following ids are in GRD files, but *appear* to be unused:'
+    print('The following ids are in GRD files, but *appear* to be unused:')
     for file_path, file_ids in file_id_map.iteritems():
       missing = ids_left.intersection(file_ids)
       if len(missing) > 0:
-        print '  %s:' % (file_path)
-        print '\n'.join('    %s' % (x) for x in sorted(missing))
+        print('  %s:' % file_path)
+        print('\n'.join('    %s' % (x) for x in sorted(missing)))
 
   return 0
 
@@ -132,14 +134,13 @@ def main():
     chrome_app_dir = os.path.join(chrome_dir, 'app')
     chrome_app_res_dir = os.path.join(chrome_app_dir, 'resources')
     device_base_dir = os.path.join(src_dir, 'device')
+    services_dir = os.path.join(src_dir, 'services')
     ui_dir = os.path.join(src_dir, 'ui')
     ui_strings_dir = os.path.join(ui_dir, 'strings')
     ui_chromeos_dir = os.path.join(ui_dir, 'chromeos')
     grd_files = [
       os.path.join(ash_base_dir, 'ash_strings.grd'),
       os.path.join(ash_components_dir, 'ash_components_strings.grd'),
-      os.path.join(ash_components_dir, 'resources',
-                   'ash_components_resources.grd'),
       os.path.join(chrome_app_dir, 'chromium_strings.grd'),
       os.path.join(chrome_app_dir, 'generated_resources.grd'),
       os.path.join(chrome_app_dir, 'google_chrome_strings.grd'),
@@ -156,6 +157,7 @@ def main():
                    'renderer_resources.grd'),
       os.path.join(device_base_dir, 'bluetooth', 'bluetooth_strings.grd'),
       os.path.join(device_base_dir, 'fido', 'fido_strings.grd'),
+      os.path.join(services_dir, 'services_strings.grd'),
       os.path.join(src_dir, 'chromeos', 'chromeos_strings.grd'),
       os.path.join(src_dir, 'extensions', 'strings', 'extensions_strings.grd'),
       os.path.join(src_dir, 'ui', 'resources', 'ui_resources.grd'),

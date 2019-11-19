@@ -23,9 +23,16 @@
 #include "components/subresource_filter/tools/filter_tool.h"
 #include "components/subresource_filter/tools/indexing_tool.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "testing/perf/perf_test.h"
+#include "testing/perf/perf_result_reporter.h"
 
 namespace subresource_filter {
+
+namespace {
+
+static constexpr char kMetricIndexAndWriteTimeUs[] = "index_and_write_time";
+static constexpr char kMetricMedianMatchTimeUs[] = "median_match_time";
+
+}  // namespace
 
 class IndexedRulesetPerftest : public testing::Test {
  public:
@@ -69,6 +76,13 @@ class IndexedRulesetPerftest : public testing::Test {
 
   const base::FilePath& unindexed_path() const { return unindexed_path_; }
 
+  perf_test::PerfResultReporter SetUpReporter(const std::string& story_name) {
+    perf_test::PerfResultReporter reporter("IndexedRuleset.", story_name);
+    reporter.RegisterImportantMetric(kMetricIndexAndWriteTimeUs, "us");
+    reporter.RegisterImportantMetric(kMetricMedianMatchTimeUs, "us");
+    return reporter;
+  }
+
  private:
   base::ScopedTempDir scoped_dir_;
   base::FilePath unindexed_path_;
@@ -91,9 +105,9 @@ TEST_F(IndexedRulesetPerftest, IndexRuleset) {
 
   base::ElapsedTimer timer;
   ASSERT_TRUE(IndexAndWriteRuleset(unindexed_path(), indexed_path));
-  perf_test::PrintResult("index_and_write_time", "", "",
-                         static_cast<size_t>(timer.Elapsed().InMicroseconds()),
-                         "microseconds", true /* important */);
+  perf_test::PerfResultReporter reporter = SetUpReporter("IndexRuleset");
+  reporter.AddResult(kMetricIndexAndWriteTimeUs,
+                     static_cast<size_t>(timer.Elapsed().InMicroseconds()));
 }
 
 TEST_F(IndexedRulesetPerftest, MatchAll) {
@@ -105,9 +119,8 @@ TEST_F(IndexedRulesetPerftest, MatchAll) {
     results.push_back(timer.Elapsed().InMicroseconds());
   }
   std::sort(results.begin(), results.end());
-  perf_test::PrintResult("median_match_time", "", "",
-                         static_cast<size_t>(results[2]), "microseconds",
-                         true /* important */);
+  perf_test::PerfResultReporter reporter = SetUpReporter("MatchAll");
+  reporter.AddResult(kMetricMedianMatchTimeUs, static_cast<size_t>(results[2]));
 }
 
 }  // namespace subresource_filter

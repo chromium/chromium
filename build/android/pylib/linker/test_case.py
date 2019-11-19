@@ -27,13 +27,11 @@
        Host-driven tests have also been tried, but since they're really
        sub-classes of instrumentation tests, they didn't work well either.
 
-   To build and run the linker tests, do the following:
-
-     ninja -C out/Debug chromium_linker_test_apk
-     out/Debug/bin/run_chromium_linker_test_apk
-
+   To build and run, refer to android_linker_testing.md.
 """
 # pylint: disable=R0201
+
+from __future__ import print_function
 
 import logging
 import re
@@ -47,7 +45,6 @@ ResultType = base_test_result.ResultType
 
 _PACKAGE_NAME = 'org.chromium.chromium_linker_test_apk'
 _ACTIVITY_NAME = '.ChromiumLinkerTestActivity'
-_COMMAND_LINE_FILE = '/data/local/tmp/chromium-linker-test-command-line'
 
 # Logcat filters used during each test. Only the 'chromium' one is really
 # needed, but the logs are added to the TestResult in case of error, and
@@ -124,23 +121,15 @@ class AddressList(list):
 class LinkerTestCaseBase(object):
   """Base class for linker test cases."""
 
-  def __init__(self, is_low_memory=False):
-    """Create a test case.
-    Args:
-      is_low_memory: True to simulate a low-memory device, False otherwise.
-    """
-    test_suffix = 'ForLinker'
-    self.is_low_memory = is_low_memory
-    if is_low_memory:
-      test_suffix += 'LowMemoryDevice'
-    else:
-      test_suffix += 'RegularDevice'
+  def __init__(self):
+    """Creates a test case."""
+    test_suffix = 'ForLegacyLinker'
     class_name = self.__class__.__name__
     self.qualified_name = '%s.%s' % (class_name, test_suffix)
     self.tagged_name = self.qualified_name
 
   def _RunTest(self, _device):
-    """Run the test, must be overriden.
+    """Runs the test, must be overridden.
     Args:
       _device: A DeviceUtils interface.
     Returns:
@@ -151,20 +140,15 @@ class LinkerTestCaseBase(object):
     return ResultType.FAIL, 'Unimplemented _RunTest() method!'
 
   def Run(self, device):
-    """Run the test on a given device.
+    """Runs the test on a given device.
     Args:
       device: Name of target device where to run the test.
     Returns:
       A base_test_result.TestRunResult() instance.
     """
     margin = 8
-    print '[ %-*s ] %s' % (margin, 'RUN', self.tagged_name)
+    print('[ %-*s ] %s' % (margin, 'RUN', self.tagged_name))
     logging.info('Running linker test: %s', self.tagged_name)
-
-    command_line_flags = ''
-    if self.is_low_memory:
-      command_line_flags += ' --low-memory-device'
-    device.WriteFile(_COMMAND_LINE_FILE, command_line_flags)
 
     # Run the test.
     status, logs = self._RunTest(device)
@@ -174,7 +158,7 @@ class LinkerTestCaseBase(object):
       result_text = 'FAILED'
     elif status == ResultType.TIMEOUT:
       result_text = 'TIMEOUT'
-    print '[ %*s ] %s' % (margin, result_text, self.tagged_name)
+    print('[ %*s ] %s' % (margin, result_text, self.tagged_name))
 
     return base_test_result.BaseTestResult(self.tagged_name, status, log=logs)
 

@@ -22,6 +22,7 @@ struct TestShortcutData {
                    std::string text,
                    std::string fill_into_edit,
                    std::string destination_url,
+                   AutocompleteMatch::DocumentType document_type,
                    std::string contents,
                    std::string contents_class,
                    std::string description,
@@ -37,6 +38,7 @@ struct TestShortcutData {
   std::string text;
   std::string fill_into_edit;
   std::string destination_url;
+  AutocompleteMatch::DocumentType document_type;
   std::string contents;
   std::string contents_class;
   std::string description;

@@ -7,14 +7,15 @@
 
 #include <fuchsia/modular/cpp/fidl.h>
 #include <lib/fidl/cpp/binding_set.h>
+#include <lib/sys/cpp/component_context.h>
 #include <lib/zx/channel.h>
 #include <memory>
 #include <string>
 #include <utility>
 
 #include "base/containers/flat_map.h"
+#include "base/fuchsia/default_context.h"
 #include "base/fuchsia/scoped_service_binding.h"
-#include "base/fuchsia/service_directory.h"
 #include "base/fuchsia/service_provider_impl.h"
 #include "base/macros.h"
 #include "base/strings/string_piece.h"
@@ -28,8 +29,8 @@ namespace cr_fuchsia {
 // service state as desired.
 class AgentImpl : public ::fuchsia::modular::Agent {
  public:
-  // Common base for per-component services and state. The base provides a
-  // service directory into which specializations publish their services, to
+  // Common base for per-component services and state. The base provides an
+  // outgoing directory into which specializations publish their services, to
   // have them made available to the client. Different specializations of the
   // ComponentStateBase can be created to suit different components.
   //
@@ -39,8 +40,8 @@ class AgentImpl : public ::fuchsia::modular::Agent {
   // MyComponentState : public ComponentStateBase {
   //  public:
   //   MyComponentState(..) : ComponentStateBase(..)
-  //       : binding1_(service_directory(), &service1_),
-  //         binding2_(service_directory(), shared_service2_) {}
+  //       : binding1_(outgoing_directory(), &service1_),
+  //         binding2_(outgoing_directory(), shared_service2_) {}
   //  private:
   //   Service1 service1_;
   //   ScopedServiceBinding<Service1> binding1_;
@@ -59,8 +60,8 @@ class AgentImpl : public ::fuchsia::modular::Agent {
 
     // Returns the directory into which the ComponentState implementation should
     // publish the services that the component may use.
-    base::fuchsia::ServiceDirectory* service_directory() {
-      return &service_directory_;
+    sys::OutgoingDirectory* outgoing_directory() {
+      return &outgoing_directory_;
     }
 
     // Registers |service_binding| to prevent teardown of this
@@ -75,6 +76,10 @@ class AgentImpl : public ::fuchsia::modular::Agent {
           &ComponentStateBase::TeardownIfUnused, base::Unretained(this)));
     }
 
+    // Requests that this instance be torn-down, regardless of whether one or
+    // more keep-alive bindings (see above) have clients.
+    void DisconnectClientsAndTeardown();
+
    private:
     friend class AgentImpl;
 
@@ -85,7 +90,7 @@ class AgentImpl : public ::fuchsia::modular::Agent {
 
     const std::string component_id_;
     AgentImpl* agent_impl_ = nullptr;
-    base::fuchsia::ServiceDirectory service_directory_;
+    sys::OutgoingDirectory outgoing_directory_;
     std::unique_ptr<base::fuchsia::ServiceProviderImpl> service_provider_;
     std::vector<base::RepeatingCallback<bool()>> keepalive_callbacks_;
 
@@ -99,24 +104,17 @@ class AgentImpl : public ::fuchsia::modular::Agent {
       base::RepeatingCallback<std::unique_ptr<ComponentStateBase>(
           base::StringPiece component_id)>;
 
-  // Binds the Agent service in the supplied |service_directory|, and invokes
+  // Binds the Agent service in the supplied |outgoing_directory|, and invokes
   // |create_component_state_callback| on each Connect() call, for the caller to
   // create per-component data structures and services.
-  AgentImpl(base::fuchsia::ServiceDirectory* service_directory,
+  AgentImpl(sys::OutgoingDirectory* outgoing_directory,
             CreateComponentStateCallback create_component_state_callback);
   ~AgentImpl() override;
-
-  // Configures a Closure that will be run when no component instances, nor
-  // connections to the Agent interface, remain.
-  void set_on_last_client_callback(base::OnceClosure on_last_client_callback) {
-    on_last_client_callback_ = std::move(on_last_client_callback);
-  }
 
   // fuchsia::modular::Agent implementation.
   void Connect(std::string requester_url,
                fidl::InterfaceRequest<::fuchsia::sys::ServiceProvider> services)
       override;
-  void RunTask(std::string task_id, RunTaskCallback callback) override;
 
  private:
   friend class ComponentStateBase;
@@ -127,15 +125,12 @@ class AgentImpl : public ::fuchsia::modular::Agent {
   // Returns a ComponentStateBase instance for a given component-Id.
   const CreateComponentStateCallback create_component_state_callback_;
 
-  // Binds this Agent implementation into the |service_directory|.
+  // Binds this Agent implementation into the |outgoing_directory|.
   base::fuchsia::ScopedServiceBinding<::fuchsia::modular::Agent> agent_binding_;
 
   // Owns the ComponentState instances for each connected component.
   base::flat_map<std::string, std::unique_ptr<ComponentStateBase>>
       active_components_;
-
-  // Run when no active components, nor Agent clients, remain.
-  base::OnceClosure on_last_client_callback_;
 
   DISALLOW_COPY_AND_ASSIGN(AgentImpl);
 };

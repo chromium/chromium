@@ -2,7 +2,7 @@
  * Use of this source code is governed by a BSD-style license that can be
  * found in the LICENSE file. */
 
-.lookalike-url a {
+.lookalike-url #main-content a {
   color: var(--google-blue-700);
   text-decoration: none;
 }
@@ -11,4 +11,10 @@
   background-image: -webkit-image-set(
       url(images/1x/info.png) 1x,
       url(images/2x/info.png) 2x);
+}
+
+@media (prefers-color-scheme: dark) {
+  .lookalike-url .icon {
+    filter: invert(1);
+  }
 }

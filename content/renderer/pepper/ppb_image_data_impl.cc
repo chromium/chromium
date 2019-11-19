@@ -12,6 +12,7 @@
 #include "content/common/pepper_file_util.h"
 #include "content/common/view_messages.h"
 #include "content/renderer/render_thread_impl.h"
+#include "mojo/public/cpp/base/shared_memory_utils.h"
 #include "ppapi/c/pp_errors.h"
 #include "ppapi/c/pp_instance.h"
 #include "ppapi/c/pp_resource.h"
@@ -107,9 +108,9 @@ void* PPB_ImageData_Impl::Map() { return backend_->Map(); }
 
 void PPB_ImageData_Impl::Unmap() { backend_->Unmap(); }
 
-int32_t PPB_ImageData_Impl::GetSharedMemory(base::SharedMemory** shm,
-                                            uint32_t* byte_count) {
-  return backend_->GetSharedMemory(shm, byte_count);
+int32_t PPB_ImageData_Impl::GetSharedMemoryRegion(
+    base::UnsafeSharedMemoryRegion** region) {
+  return backend_->GetSharedMemoryRegion(region);
 }
 
 SkCanvas* PPB_ImageData_Impl::GetCanvas() { return backend_->GetCanvas(); }
@@ -135,25 +136,16 @@ bool ImageDataPlatformBackend::Init(PPB_ImageData_Impl* impl,
                                     int width,
                                     int height,
                                     bool init_to_zero) {
-  // TODO(brettw) use init_to_zero when we implement caching.
+  // TODO(brettw): use init_to_zero when we implement caching.
   width_ = width;
   height_ = height;
   uint32_t buffer_size = width_ * height_ * 4;
-  std::unique_ptr<base::SharedMemory> shared_memory =
-      RenderThread::Get()->HostAllocateSharedMemoryBuffer(buffer_size);
-  if (!shared_memory)
+  base::UnsafeSharedMemoryRegion region =
+      mojo::CreateUnsafeSharedMemoryRegion(buffer_size);
+  if (!region.IsValid())
     return false;
 
-  // The TransportDIB is always backed by shared memory, so give the shared
-  // memory handle to it.
-  base::SharedMemoryHandle handle = shared_memory->handle().Duplicate();
-  shared_memory->Unmap();
-  shared_memory->Close();
-  if (!handle.IsValid())
-    return false;
-
-  dib_.reset(TransportDIB::CreateWithHandle(handle));
-
+  dib_ = TransportDIB::CreateWithHandle(std::move(region));
   return !!dib_;
 }
 
@@ -188,10 +180,9 @@ void ImageDataPlatformBackend::Unmap() {
   // in the future to save some memory.
 }
 
-int32_t ImageDataPlatformBackend::GetSharedMemory(base::SharedMemory** shm,
-                                                  uint32_t* byte_count) {
-  *byte_count = dib_->size();
-  *shm = dib_->shared_memory();
+int32_t ImageDataPlatformBackend::GetSharedMemoryRegion(
+    base::UnsafeSharedMemoryRegion** region) {
+  *region = dib_->shared_memory_region();
   return PP_OK;
 }
 
@@ -224,41 +215,42 @@ bool ImageDataSimpleBackend::Init(PPB_ImageData_Impl* impl,
                                   bool init_to_zero) {
   skia_bitmap_.setInfo(
       SkImageInfo::MakeN32Premul(impl->width(), impl->height()));
-  shared_memory_.reset(
-      RenderThread::Get()
-          ->HostAllocateSharedMemoryBuffer(skia_bitmap_.computeByteSize())
-          .release());
-  return !!shared_memory_.get();
+  shm_region_ =
+      mojo::CreateUnsafeSharedMemoryRegion(skia_bitmap_.computeByteSize());
+  return shm_region_.IsValid();
 }
 
-bool ImageDataSimpleBackend::IsMapped() const { return map_count_ > 0; }
+bool ImageDataSimpleBackend::IsMapped() const {
+  return shm_mapping_.IsValid();
+}
 
 TransportDIB* ImageDataSimpleBackend::GetTransportDIB() const {
   return nullptr;
 }
 
 void* ImageDataSimpleBackend::Map() {
-  DCHECK(shared_memory_.get());
+  DCHECK(shm_region_.IsValid());
   if (map_count_++ == 0) {
-    shared_memory_->Map(skia_bitmap_.computeByteSize());
-    skia_bitmap_.setPixels(shared_memory_->memory());
+    shm_mapping_ = shm_region_.Map();
+    if (!shm_mapping_.IsValid())
+      return nullptr;
+
+    skia_bitmap_.setPixels(shm_mapping_.memory());
     // Our platform bitmaps are set to opaque by default, which we don't want.
     skia_bitmap_.setAlphaType(kPremul_SkAlphaType);
     skia_canvas_ = std::make_unique<SkCanvas>(skia_bitmap_);
-    return skia_bitmap_.getAddr32(0, 0);
   }
-  return shared_memory_->memory();
+  return skia_bitmap_.isNull() ? nullptr : skia_bitmap_.getAddr32(0, 0);
 }
 
 void ImageDataSimpleBackend::Unmap() {
   if (--map_count_ == 0)
-    shared_memory_->Unmap();
+    shm_mapping_ = base::WritableSharedMemoryMapping();
 }
 
-int32_t ImageDataSimpleBackend::GetSharedMemory(base::SharedMemory** shm,
-                                                uint32_t* byte_count) {
-  *byte_count = skia_bitmap_.computeByteSize();
-  *shm = shared_memory_.get();
+int32_t ImageDataSimpleBackend::GetSharedMemoryRegion(
+    base::UnsafeSharedMemoryRegion** region) {
+  *region = &shm_region_;
   return PP_OK;
 }
 

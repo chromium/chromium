@@ -3,15 +3,15 @@
 // found in the LICENSE file.
 
 #include "chromecast/graphics/cast_window_manager_aura.h"
-#include "ui/aura/test/aura_test_base.h"
 #include "ui/aura/window.h"
 #include "ui/views/controls/progress_bar.h"
+#include "ui/views/test/views_test_base.h"
 #include "ui/views/widget/widget.h"
 
 namespace chromecast {
 namespace test {
 
-using CastViewsTest = aura::test::AuraTestBase;
+using CastViewsTest = views::ViewsTestBase;
 
 TEST_F(CastViewsTest, ProgressBar) {
   std::unique_ptr<CastWindowManager> window_manager =
@@ -28,20 +28,19 @@ TEST_F(CastViewsTest, ProgressBar) {
   params.context = window_manager->GetRootWindow();
   params.type = views::Widget::InitParams::TYPE_WINDOW_FRAMELESS;
   params.opacity = views::Widget::InitParams::TRANSLUCENT_WINDOW;
-  params.shadow_type = views::Widget::InitParams::SHADOW_TYPE_NONE;
+  params.shadow_type = views::Widget::InitParams::ShadowType::kNone;
   params.bounds = bounds;
   std::unique_ptr<views::Widget> widget(new views::Widget);
-  widget->Init(params);
+  widget->Init(std::move(params));
   widget->SetOpacity(0.6);
   widget->SetContentsView(progress_bar);
-  window_manager->SetWindowId(widget->GetNativeView(),
-                              CastWindowManager::VOLUME);
+  window_manager->SetZOrder(widget->GetNativeView(), mojom::ZOrder::VOLUME);
   widget->Show();
 
   EXPECT_TRUE(progress_bar->GetWidget());
   EXPECT_TRUE(progress_bar->GetWidget()->IsVisible());
-  EXPECT_TRUE(progress_bar->visible());
-  EXPECT_TRUE(progress_bar->enabled());
+  EXPECT_TRUE(progress_bar->GetVisible());
+  EXPECT_TRUE(progress_bar->GetEnabled());
 
   widget.reset();
   window_manager.reset();

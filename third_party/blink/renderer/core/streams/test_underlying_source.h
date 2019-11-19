@@ -7,7 +7,7 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
-#include "third_party/blink/renderer/core/streams/readable_stream_default_controller_wrapper.h"
+#include "third_party/blink/renderer/core/streams/readable_stream_default_controller_interface.h"
 #include "third_party/blink/renderer/core/streams/underlying_source_base.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 
@@ -22,7 +22,7 @@ class TestUnderlyingSource final : public UnderlyingSourceBase {
   // Just expose the controller methods for easy testing
   void Enqueue(ScriptValue value) { Controller()->Enqueue(value); }
   void Close() { Controller()->Close(); }
-  void SetError(ScriptValue value) { Controller()->GetError(value); }
+  void Error(ScriptValue value) { Controller()->Error(value); }
   double DesiredSize() { return Controller()->DesiredSize(); }
 
   ScriptPromise Start(ScriptState* script_state) override {

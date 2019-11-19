@@ -5,9 +5,8 @@
 // https://fetch.spec.whatwg.org/#body
 
 [
-    ActiveScriptWrappable,
-    NoInterfaceObject
-] interface Body {
+    ActiveScriptWrappable
+] interface mixin Body {
     [RaisesException] readonly attribute boolean bodyUsed;
     [CallWith=ScriptState, NewObject, RaisesException] Promise<ArrayBuffer> arrayBuffer();
     [CallWith=ScriptState, NewObject, RaisesException] Promise<Blob> blob();

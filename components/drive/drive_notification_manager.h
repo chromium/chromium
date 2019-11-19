@@ -38,6 +38,7 @@ class DriveNotificationManager : public KeyedService,
   // |clock| can be injected for testing.
   explicit DriveNotificationManager(
       invalidation::InvalidationService* invalidation_service,
+      bool use_fcm_object_ids = false,
       const base::TickClock* clock = base::DefaultTickClock::GetInstance());
   ~DriveNotificationManager() override;
 
@@ -49,6 +50,7 @@ class DriveNotificationManager : public KeyedService,
   void OnIncomingInvalidation(
       const syncer::ObjectIdInvalidationMap& invalidation_map) override;
   std::string GetOwnerName() const override;
+  bool IsPublicTopic(const syncer::Topic& topic) const override;
 
   void AddObserver(DriveNotificationObserver* observer);
   void RemoveObserver(DriveNotificationObserver* observer);
@@ -107,6 +109,11 @@ class DriveNotificationManager : public KeyedService,
   // Returns a string representation of NotificationSource.
   static std::string NotificationSourceToString(NotificationSource source);
 
+  std::string GetDriveInvalidationObjectId() const;
+  std::string GetTeamDriveInvalidationObjectId(
+      const std::string& team_drive_id) const;
+  std::string ExtractTeamDriveId(base::StringPiece object_id) const;
+
   invalidation::InvalidationService* invalidation_service_;
   base::ObserverList<DriveNotificationObserver>::Unchecked observers_;
 
@@ -133,11 +140,17 @@ class DriveNotificationManager : public KeyedService,
   // service, will be reset when when send the invalidations to the observers.
   std::map<std::string, int64_t> invalidated_change_ids_;
 
+  // Whether the FCM invalidation IDs should be used. This decides whether
+  // "Drive" or "CHANGELOG" is used for the Drive invalidations and whether
+  // the "TD:" or the "team-drive-" prefix is used. This value must match
+  // whether |invalidation_service_| is an FCMInvalidationService.
+  const bool use_fcm_object_ids_;
+
   SEQUENCE_CHECKER(sequence_checker_);
 
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.
-  base::WeakPtrFactory<DriveNotificationManager> weak_ptr_factory_;
+  base::WeakPtrFactory<DriveNotificationManager> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(DriveNotificationManager);
 };

@@ -8,8 +8,8 @@
   RuntimeEnabled=FeaturePolicyJavaScriptInterface,
   ImplementedAs=DOMFeaturePolicy
 ] interface FeaturePolicy {
-  [MeasureAs=FeaturePolicyJSAPI] boolean allowsFeature(DOMString feature, optional DOMString url);
-  [MeasureAs=FeaturePolicyJSAPI] sequence<DOMString> features();
-  [MeasureAs=FeaturePolicyJSAPI] sequence<DOMString> allowedFeatures();
-  [MeasureAs=FeaturePolicyJSAPI] sequence<DOMString> getAllowlistForFeature(DOMString feature);
+  [MeasureAs=FeaturePolicyJSAPI, CallWith=ScriptState] boolean allowsFeature(DOMString feature, optional DOMString url);
+  [MeasureAs=FeaturePolicyJSAPI, CallWith=ScriptState] sequence<DOMString> features();
+  [MeasureAs=FeaturePolicyJSAPI, CallWith=ScriptState] sequence<DOMString> allowedFeatures();
+  [MeasureAs=FeaturePolicyJSAPI, CallWith=ScriptState] sequence<DOMString> getAllowlistForFeature(DOMString feature);
 };

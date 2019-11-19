@@ -46,9 +46,10 @@ void CloseFile(base::File) {}
 void CloseFileOnFileThread(base::File* file) {
   if (!file->IsValid())
     return;
-  base::PostTaskWithTraits(FROM_HERE,
-                           {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
-                           base::BindOnce(&CloseFile, std::move(*file)));
+  base::PostTask(
+      FROM_HERE,
+      {base::ThreadPool(), base::TaskPriority::BEST_EFFORT, base::MayBlock()},
+      base::BindOnce(&CloseFile, std::move(*file)));
 }
 
 }  // namespace
@@ -59,7 +60,7 @@ RulesetPublisherImpl::RulesetPublisherImpl(
     : ruleset_service_(ruleset_service),
       ruleset_dealer_(std::make_unique<VerifiedRulesetDealer::Handle>(
           std::move(blocking_task_runner))) {
-  best_effort_task_runner_ = base::CreateSingleThreadTaskRunnerWithTraits(
+  best_effort_task_runner_ = base::CreateSingleThreadTaskRunner(
       {content::BrowserThread::UI, base::TaskPriority::BEST_EFFORT});
   DCHECK(best_effort_task_runner_->BelongsToCurrentThread());
   // Must rely on notifications as RenderProcessHostObserver::RenderProcessReady

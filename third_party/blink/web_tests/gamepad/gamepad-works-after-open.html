@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<body>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+<script src="resources/gamepad-helpers.js"></script>
+<script>
+
+promise_test(async (t) => {
+  // Check that gamepad connection events and getGamepads work on the parent.
+  disconnectGamepads();
+  let connectPromise = ongamepadconnected();
+  connectGamepads(1);
+  await connectPromise;
+  assert_not_equals(navigator.getGamepads()[0], null);
+
+  // Open a new window and check that gamepad connection events and getGamepads
+  // still work. A message is sent on success.
+  window.open('resources/check-gamepads.html');
+  await new Promise(resolve => {
+    window.addEventListener('message', (e) => {
+      if (e.data == 'success') {
+        resolve();
+      }
+    });
+  });
+}, 'gamepad API works in new window');
+
+</script>
+</body>

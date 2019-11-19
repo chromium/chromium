@@ -16,7 +16,7 @@ namespace ui {
 // An empty string will be a separator.
 class UI_BASE_EXPORT SimpleComboboxModel : public ComboboxModel {
  public:
-  explicit SimpleComboboxModel(const std::vector<base::string16>& items);
+  explicit SimpleComboboxModel(std::vector<base::string16> items);
   ~SimpleComboboxModel() override;
 
   // ui::ComboboxModel:

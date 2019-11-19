@@ -29,7 +29,7 @@ class TestKeySystemProperties : public media::KeySystemProperties {
   }
 
   media::EmeConfigRule GetEncryptionSchemeConfigRule(
-      media::EncryptionMode encryption_scheme) const override {
+      media::EncryptionScheme encryption_scheme) const override {
     return media::EmeConfigRule::NOT_SUPPORTED;
   }
 

@@ -7,18 +7,17 @@
 #import <Foundation/Foundation.h>
 
 #import "base/mac/foundation_util.h"
-#import "base/test/ios/wait_util.h"
 #import "ios/chrome/app/main_controller_private.h"
 #include "ios/chrome/browser/chrome_url_constants.h"
+#import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/metrics/tab_usage_recorder.h"
 #include "ios/chrome/browser/system_flags.h"
-#import "ios/chrome/browser/tabs/tab.h"
 #import "ios/chrome/browser/tabs/tab_model.h"
-#import "ios/chrome/browser/ui/browser_view_controller.h"
+#import "ios/chrome/browser/tabs/tab_title_util.h"
 #import "ios/chrome/browser/ui/commands/browser_commands.h"
 #import "ios/chrome/browser/ui/commands/open_new_tab_command.h"
-#import "ios/chrome/browser/ui/main/tab_switcher.h"
-#include "ios/chrome/browser/ui/util/ui_util.h"
+#import "ios/chrome/browser/ui/tab_grid/tab_switcher.h"
+#import "ios/chrome/browser/url_loading/url_loading_params.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_usage_enabler/web_state_list_web_usage_enabler.h"
 #import "ios/chrome/browser/web_state_list/web_usage_enabler/web_state_list_web_usage_enabler_factory.h"
@@ -28,8 +27,6 @@
 #error "This file requires ARC support."
 #endif
 
-using base::test::ios::WaitUntilConditionOrTimeout;
-
 namespace chrome_test_util {
 
 namespace {
@@ -37,6 +34,13 @@ namespace {
 // Returns the tab model for the current mode (incognito or normal).
 TabModel* GetCurrentTabModel() {
   return GetMainController().interfaceProvider.currentInterface.tabModel;
+}
+
+// Returns the WebStateList for the current mode. Or nullptr of there is no
+// tabModel.
+WebStateList* GetCurrentWebStateList() {
+  TabModel* tab_model = GetCurrentTabModel();
+  return tab_model ? tab_model.webStateList : nullptr;
 }
 
 }  // namespace
@@ -57,12 +61,11 @@ void OpenNewTab() {
       // The TabGrid is currently presented.
     TabModel* tabModel =
         GetMainController().interfaceProvider.mainInterface.tabModel;
+    UrlLoadParams params = UrlLoadParams::InNewTab(GURL(kChromeUINewTabURL));
     [GetMainController().tabSwitcher
         dismissWithNewTabAnimationToModel:tabModel
-                                  withURL:GURL(kChromeUINewTabURL)
-                               virtualURL:GURL::EmptyGURL()
-                                  atIndex:NSNotFound
-                               transition:ui::PAGE_TRANSITION_TYPED];
+                        withUrlLoadParams:params
+                                  atIndex:NSNotFound];
   }
 }
 
@@ -78,35 +81,51 @@ void OpenNewIncognitoTab() {
       // The TabGrid is currently presented.
     TabModel* tabModel =
         GetMainController().interfaceProvider.incognitoInterface.tabModel;
+    UrlLoadParams params = UrlLoadParams::InNewTab(GURL(kChromeUINewTabURL));
     [GetMainController().tabSwitcher
         dismissWithNewTabAnimationToModel:tabModel
-                                  withURL:GURL(kChromeUINewTabURL)
-                               virtualURL:GURL::EmptyGURL()
-                                  atIndex:NSNotFound
-                               transition:ui::PAGE_TRANSITION_TYPED];
+                        withUrlLoadParams:params
+                                  atIndex:NSNotFound];
   }
 }
 
-Tab* GetCurrentTab() {
-  TabModel* tab_model = GetCurrentTabModel();
-  return tab_model.currentTab;
+web::WebState* GetCurrentWebState() {
+  WebStateList* web_state_list = GetCurrentWebStateList();
+  return web_state_list ? web_state_list->GetActiveWebState() : nullptr;
 }
 
-Tab* GetNextTab() {
-  TabModel* tabModel = GetCurrentTabModel();
-  NSUInteger tabCount = [tabModel count];
-  if (tabCount < 2)
-    return nil;
-  Tab* currentTab = [tabModel currentTab];
-  NSUInteger nextTabIndex = [tabModel indexOfTab:currentTab] + 1;
-  if (nextTabIndex >= tabCount)
-    nextTabIndex = 0;
-  return [tabModel tabAtIndex:nextTabIndex];
+web::WebState* GetNextWebState() {
+  WebStateList* web_state_list = GetCurrentWebStateList();
+  if (!web_state_list || web_state_list->count() < 2)
+    return nullptr;
+  int next_index = web_state_list->active_index() + 1;
+  if (next_index >= web_state_list->count())
+    next_index = 0;
+  return web_state_list->GetWebStateAt(next_index);
+}
+
+web::WebState* GetWebStateAtIndexInCurrentMode(int index) {
+  WebStateList* web_state_list = GetCurrentWebStateList();
+  if (!web_state_list || !web_state_list->ContainsIndex(index))
+    return nullptr;
+  return web_state_list->GetWebStateAt(index);
+}
+
+NSString* GetCurrentTabTitle() {
+  return tab_util::GetTabTitle(GetCurrentWebState());
+}
+
+NSString* GetNextTabTitle() {
+  return tab_util::GetTabTitle(GetNextWebState());
 }
 
 void CloseCurrentTab() {
-  TabModel* tab_model = GetCurrentTabModel();
-  [tab_model closeTab:tab_model.currentTab];
+  WebStateList* web_state_list = GetCurrentWebStateList();
+  if (!web_state_list ||
+      web_state_list->active_index() == WebStateList::kInvalidIndex)
+    return;
+  web_state_list->CloseWebStateAt(web_state_list->active_index(),
+                                  WebStateList::CLOSE_USER_ACTION);
 }
 
 void CloseTabAtIndex(NSUInteger index) {
@@ -131,8 +150,9 @@ void CloseAllTabs() {
 
 void SelectTabAtIndexInCurrentMode(NSUInteger index) {
   @autoreleasepool {  // Make sure that all internals are deallocated.
-    TabModel* tab_model = GetCurrentTabModel();
-    [tab_model setCurrentTab:[tab_model tabAtIndex:index]];
+
+    WebStateList* web_state_list = GetCurrentWebStateList();
+    web_state_list->ActivateWebStateAt(static_cast<int>(index));
   }
 }
 
@@ -176,6 +196,10 @@ BOOL SimulateTabsBackgrounding() {
   return YES;
 }
 
+void SaveSessionImmediately() {
+  [GetCurrentTabModel() saveSessionImmediately:YES];
+}
+
 void EvictOtherTabModelTabs() {
   id<BrowserInterfaceProvider> provider = GetMainController().interfaceProvider;
   ios::ChromeBrowserState* otherBrowserState =
@@ -189,6 +213,17 @@ void EvictOtherTabModelTabs() {
   enabler->SetWebUsageEnabled(true);
 }
 
+BOOL CloseAllNormalTabs() {
+  MainController* main_controller = GetMainController();
+  DCHECK(main_controller);
+
+  Browser* browser = main_controller.interfaceProvider.mainInterface.browser;
+  DCHECK(browser);
+  browser->GetWebStateList()->CloseAllWebStates(
+      WebStateList::CLOSE_USER_ACTION);
+  return YES;
+}
+
 BOOL CloseAllIncognitoTabs() {
   MainController* main_controller = GetMainController();
   DCHECK(main_controller);
@@ -196,14 +231,6 @@ BOOL CloseAllIncognitoTabs() {
       GetMainController().interfaceProvider.incognitoInterface.tabModel;
   DCHECK(tabModel);
   [tabModel closeAllTabs];
-  if (!IsIPadIdiom() && !IsUIRefreshPhase1Enabled()) {
-    // If the OTR BVC is active, wait until it isn't (since all of the
-    // tabs are now closed)
-    return WaitUntilConditionOrTimeout(
-        base::test::ios::kWaitForUIElementTimeout, ^{
-          return !IsIncognitoMode();
-        });
-  }
   return YES;
 }
 

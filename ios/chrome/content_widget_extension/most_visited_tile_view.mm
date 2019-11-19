@@ -14,7 +14,6 @@
 #endif
 
 namespace {
-const CGFloat kLabelTextColor = 0.314;
 const NSInteger kLabelNumLines = 2;
 const CGFloat kFaviconSize = 48;
 const CGFloat kSpaceFaviconTitle = 8;
@@ -25,9 +24,7 @@ const CGFloat kTileWidth = 73;
 
 @implementation MostVisitedTileView
 
-@synthesize faviconView = _faviconView;
 @synthesize titleLabel = _titleLabel;
-@synthesize URL = _URL;
 
 #pragma mark - Public
 
@@ -40,13 +37,16 @@ const CGFloat kTileWidth = 73;
   if (self) {
     UIVibrancyEffect* labelEffect =
         [UIVibrancyEffect widgetSecondaryVibrancyEffect];
+    if (@available(iOS 13, *)) {
+      labelEffect = [UIVibrancyEffect
+          widgetEffectForVibrancyStyle:UIVibrancyEffectStyleSecondaryLabel];
+    }
 
     UIVisualEffectView* titleLabelEffectView =
         [[UIVisualEffectView alloc] initWithEffect:labelEffect];
     titleLabelEffectView.translatesAutoresizingMaskIntoConstraints = NO;
 
     _titleLabel = [[UILabel alloc] initWithFrame:CGRectZero];
-    _titleLabel.textColor = [UIColor colorWithWhite:kLabelTextColor alpha:1.0];
     _titleLabel.font =
         [UIFont preferredFontForTextStyle:UIFontTextStyleCaption2];
     _titleLabel.textAlignment = NSTextAlignmentCenter;
@@ -80,6 +80,8 @@ const CGFloat kTileWidth = 73;
     ]];
 
     self.translatesAutoresizingMaskIntoConstraints = NO;
+
+    self.highlightableViews = @[ _faviconView, _titleLabel ];
   }
   return self;
 }

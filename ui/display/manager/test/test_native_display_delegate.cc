@@ -10,6 +10,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "ui/display/manager/test/action_logger.h"
 #include "ui/display/types/display_mode.h"
+#include "ui/display/types/display_snapshot.h"
 #include "ui/display/types/native_display_observer.h"
 
 namespace display {
@@ -83,13 +84,49 @@ void TestNativeDisplayDelegate::Configure(const DisplaySnapshot& output,
 
 void TestNativeDisplayDelegate::GetHDCPState(const DisplaySnapshot& output,
                                              GetHDCPStateCallback callback) {
-  std::move(callback).Run(get_hdcp_expectation_, hdcp_state_);
+  if (run_async_) {
+    base::ThreadTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), get_hdcp_expectation_,
+                                  hdcp_state_));
+  } else {
+    std::move(callback).Run(get_hdcp_expectation_, hdcp_state_);
+  }
 }
 
 void TestNativeDisplayDelegate::SetHDCPState(const DisplaySnapshot& output,
                                              HDCPState state,
                                              SetHDCPStateCallback callback) {
-  log_->AppendAction(GetSetHDCPStateAction(output, state));
+  if (run_async_) {
+    base::ThreadTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE, base::BindOnce(&TestNativeDisplayDelegate::DoSetHDCPState,
+                                  base::Unretained(this), output.display_id(),
+                                  state, std::move(callback)));
+  } else {
+    DoSetHDCPState(output.display_id(), state, std::move(callback));
+  }
+}
+
+void TestNativeDisplayDelegate::DoSetHDCPState(int64_t display_id,
+                                               HDCPState state,
+                                               SetHDCPStateCallback callback) {
+  log_->AppendAction(GetSetHDCPStateAction(display_id, state));
+
+  switch (state) {
+    case HDCP_STATE_ENABLED:
+      NOTREACHED();
+      break;
+
+    case HDCP_STATE_DESIRED:
+      hdcp_state_ =
+          set_hdcp_expectation_ ? HDCP_STATE_ENABLED : HDCP_STATE_DESIRED;
+      break;
+
+    case HDCP_STATE_UNDESIRED:
+      if (set_hdcp_expectation_)
+        hdcp_state_ = HDCP_STATE_UNDESIRED;
+      break;
+  }
+
   std::move(callback).Run(set_hdcp_expectation_);
 }
 

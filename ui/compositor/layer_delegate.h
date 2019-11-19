@@ -43,6 +43,14 @@ class COMPOSITOR_EXPORT LayerDelegate {
   // Invoked when the alpha shape is set.
   virtual void OnLayerAlphaShapeChanged();
 
+  // Invoked when whether the layer fills its bounds opaquely or not changed.
+  virtual void OnLayerFillsBoundsOpaquelyChanged();
+
+  // Called when it is a good opportunity for the delegate to update any visual
+  // state or schedule any additional regions to be painted. Soon after this is
+  // called OnPaintLayer() is called.
+  virtual void UpdateVisualState();
+
  protected:
   virtual ~LayerDelegate() {}
 };

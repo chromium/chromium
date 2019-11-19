@@ -48,7 +48,7 @@ class LayoutTextControlSingleLine : public LayoutTextControl {
 
  private:
   bool HasControlClip() const final;
-  LayoutRect ControlClipRect(const LayoutPoint&) const final;
+  PhysicalRect ControlClipRect(const PhysicalOffset&) const final;
   bool IsOfType(LayoutObjectType type) const override {
     return type == kLayoutObjectTextField || LayoutTextControl::IsOfType(type);
   }
@@ -57,22 +57,17 @@ class LayoutTextControlSingleLine : public LayoutTextControl {
   void UpdateLayout() override;
 
   bool NodeAtPoint(HitTestResult&,
-                   const HitTestLocation& location_in_container,
-                   const LayoutPoint& accumulated_offset,
+                   const HitTestLocation&,
+                   const PhysicalOffset& accumulated_offset,
                    HitTestAction) final;
 
-  void Autoscroll(const IntPoint&) final;
+  void Autoscroll(const PhysicalOffset&) final;
 
   // Subclassed to forward to our inner div.
-  LayoutUnit ScrollLeft() const final;
-  LayoutUnit ScrollTop() const final;
   LayoutUnit ScrollWidth() const final;
   LayoutUnit ScrollHeight() const final;
-  void SetScrollLeft(LayoutUnit) final;
-  void SetScrollTop(LayoutUnit) final;
 
   int TextBlockWidth() const;
-  float GetAvgCharWidth(const AtomicString& family) const final;
   LayoutUnit PreferredContentLogicalWidth(float char_width) const final;
   LayoutUnit ComputeControlLogicalHeight(
       LayoutUnit line_height,

@@ -28,7 +28,7 @@ public class ShadowAsyncTask<Result> {
     public ShadowAsyncTask() {
         worker = new Callable<Result>() {
             @Override
-            public Result call() throws Exception {
+            public Result call() {
                 return getBridge().doInBackground();
             }
         };

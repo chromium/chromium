@@ -34,6 +34,7 @@ void BackgroundMemoryTracingObserver::OnTracingEnabled(
       ->RequestGlobalDumpAndAppendToTrace(
           base::trace_event::MemoryDumpType::EXPLICITLY_TRIGGERED,
           base::trace_event::MemoryDumpLevelOfDetail::BACKGROUND,
+          base::trace_event::MemoryDumpDeterminism::NONE,
           memory_instrumentation::MemoryInstrumentation::
               RequestGlobalMemoryDumpAndAppendToTraceCallback());
 }

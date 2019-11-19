@@ -3,10 +3,12 @@
 // found in the LICENSE file.
 
 #include "ui/touch_selection/touch_handle.h"
-#include "base/metrics/histogram_macros.h"
 
 #include <algorithm>
 #include <cmath>
+
+#include "base/metrics/histogram_macros.h"
+#include "base/numerics/ranges.h"
 
 namespace ui {
 
@@ -173,9 +175,10 @@ bool TouchHandle::WillHandleTouchEvent(const MotionEvent& event) {
       if (!is_visible_)
         return false;
       const gfx::PointF touch_point(event.GetX(), event.GetY());
-      const float touch_radius = std::max(
-          kMinTouchMajorForHitTesting,
-          std::min(kMaxTouchMajorForHitTesting, event.GetTouchMajor())) * 0.5f;
+      const float touch_radius =
+          base::ClampToRange(event.GetTouchMajor(), kMinTouchMajorForHitTesting,
+                             kMaxTouchMajorForHitTesting) *
+          0.5f;
       const gfx::RectF drawable_bounds = drawable_->GetVisibleBounds();
       // Only use the touch radius for targetting if the touch is at or below
       // the drawable area. This makes it easier to interact with the line of
@@ -429,7 +432,7 @@ void TouchHandle::EndFade() {
 }
 
 void TouchHandle::SetAlpha(float alpha) {
-  alpha = std::max(0.f, std::min(1.f, alpha));
+  alpha = base::ClampToRange(alpha, 0.0f, 1.0f);
   if (alpha_ == alpha)
     return;
   alpha_ = alpha;

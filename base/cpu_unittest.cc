@@ -129,6 +129,49 @@ TEST(CPU, RunExtendedInstructions) {
 // For https://crbug.com/249713
 TEST(CPU, BrandAndVendorContainsNoNUL) {
   base::CPU cpu;
-  EXPECT_FALSE(base::ContainsValue(cpu.cpu_brand(), '\0'));
-  EXPECT_FALSE(base::ContainsValue(cpu.vendor_name(), '\0'));
+  EXPECT_FALSE(base::Contains(cpu.cpu_brand(), '\0'));
+  EXPECT_FALSE(base::Contains(cpu.vendor_name(), '\0'));
 }
+
+#if defined(ARCH_CPU_X86_FAMILY)
+// Tests that we compute the correct CPU family and model based on the vendor
+// and CPUID signature.
+TEST(CPU, X86FamilyAndModel) {
+  int family;
+  int model;
+  int ext_family;
+  int ext_model;
+
+  // Check with an Intel Skylake signature.
+  std::tie(family, model, ext_family, ext_model) =
+      base::internal::ComputeX86FamilyAndModel("GenuineIntel", 0x000406e3);
+  EXPECT_EQ(family, 6);
+  EXPECT_EQ(model, 78);
+  EXPECT_EQ(ext_family, 0);
+  EXPECT_EQ(ext_model, 4);
+
+  // Check with an Intel Airmont signature.
+  std::tie(family, model, ext_family, ext_model) =
+      base::internal::ComputeX86FamilyAndModel("GenuineIntel", 0x000406c2);
+  EXPECT_EQ(family, 6);
+  EXPECT_EQ(model, 76);
+  EXPECT_EQ(ext_family, 0);
+  EXPECT_EQ(ext_model, 4);
+
+  // Check with an Intel Prescott signature.
+  std::tie(family, model, ext_family, ext_model) =
+      base::internal::ComputeX86FamilyAndModel("GenuineIntel", 0x00000f31);
+  EXPECT_EQ(family, 15);
+  EXPECT_EQ(model, 3);
+  EXPECT_EQ(ext_family, 0);
+  EXPECT_EQ(ext_model, 0);
+
+  // Check with an AMD Excavator signature.
+  std::tie(family, model, ext_family, ext_model) =
+      base::internal::ComputeX86FamilyAndModel("AuthenticAMD", 0x00670f00);
+  EXPECT_EQ(family, 21);
+  EXPECT_EQ(model, 112);
+  EXPECT_EQ(ext_family, 6);
+  EXPECT_EQ(ext_model, 7);
+}
+#endif  // defined(ARCH_CPU_X86_FAMILY)

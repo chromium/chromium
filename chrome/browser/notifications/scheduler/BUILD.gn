@@ -2,71 +2,38 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/buildflag_header.gni")
-
-if (is_android) {
-  import("//build/config/android/rules.gni")
-}
-
 group("scheduler") {
-  # TODO(xingliu): Change this to a source set when we have code to be used by
-  # NotificationScheduleServiceFactory.
   deps = [
-    ":lib",
+    ":factory",
   ]
 
   public_deps = [
-    ":public",
+    "//chrome/browser/notifications/scheduler/public",
   ]
 }
 
-source_set("public") {
+# The embedder can depend on this target to get the internal library.
+source_set("factory") {
   sources = [
-    "notification_background_task_scheduler.h",
-    "notification_data.cc",
-    "notification_data.h",
-    "notification_params.cc",
-    "notification_params.h",
-    "notification_schedule_service.h",
-    "schedule_params.cc",
-    "schedule_params.h",
+    "schedule_service_factory_helper.cc",
+    "schedule_service_factory_helper.h",
   ]
 
+  # This target should not depend on anything in //chrome/* except the proto library.
   deps = [
     "//base",
-    "//components/keyed_service/core",
-  ]
-}
-
-# Internal library that embedders should not directly depend on.
-source_set("lib") {
-  sources = [
-    "collection_store.h",
-    "notification_schedule_service_impl.cc",
-    "notification_schedule_service_impl.h",
-    "proto_db_collection_store.cc",
-    "proto_db_collection_store.h",
-  ]
-
-  deps = [
-    ":public",
-    "//base",
+    "//chrome/browser/notifications/proto",
+    "//chrome/browser/notifications/scheduler/internal:lib",
+    "//chrome/browser/notifications/scheduler/public",
     "//components/keyed_service/core",
     "//components/leveldb_proto",
+    "//skia",
   ]
 }
 
-source_set("unit_tests") {
+group("unit_tests") {
   testonly = true
-  sources = [
-    "proto_db_collection_store_unittest.cc",
-  ]
-
   deps = [
-    ":lib",
-    ":public",
-    "//components/leveldb_proto:test_support",
-    "//testing/gmock",
-    "//testing/gtest",
+    "//chrome/browser/notifications/scheduler/internal:unit_tests",
   ]
 }

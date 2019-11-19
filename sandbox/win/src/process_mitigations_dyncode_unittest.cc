@@ -271,7 +271,7 @@ void DynamicCodeTestHarness(sandbox::MitigationFlags which_mitigation,
               sandbox::SBOX_ALL_OK);
   }
 
-  base::string16 shared =
+  std::wstring shared =
       (which_mitigation == sandbox::MITIGATION_DYNAMIC_CODE_DISABLE)
           ? L"TestWin81DynamicCode "
           : L"TestWin10DynamicCodeWithOptOut ";
@@ -281,7 +281,7 @@ void DynamicCodeTestHarness(sandbox::MitigationFlags which_mitigation,
   }
 
   // Test 1:
-  base::string16 test =
+  std::wstring test =
       base::StringPrintf(L"%ls %u", shared.c_str(), VIRTUALALLOC);
   EXPECT_EQ((expect_success ? sandbox::SBOX_TEST_SUCCEEDED
                             : ERROR_DYNAMIC_CODE_BLOCKED),
@@ -403,7 +403,7 @@ SBOX_TESTS_COMMAND int TestWin10DynamicCodeWithOptOut(int argc,
 // This test validates that setting the MITIGATION_DYNAMIC_CODE_DISABLE
 // mitigation enables the setting on a process.
 TEST(ProcessMitigationsTest, CheckWin81DynamicCodePolicySuccess) {
-  if (base::win::GetVersion() < base::win::VERSION_WIN8_1)
+  if (base::win::GetVersion() < base::win::Version::WIN8_1)
     return;
 
 // TODO(crbug.com/805414): Windows ASan hotpatching requires dynamic code.
@@ -411,7 +411,7 @@ TEST(ProcessMitigationsTest, CheckWin81DynamicCodePolicySuccess) {
   return;
 #endif
 
-  base::string16 test_command = L"CheckPolicy ";
+  std::wstring test_command = L"CheckPolicy ";
   test_command += std::to_wstring(TESTPOLICY_DYNAMICCODE);
 
 //---------------------------------
@@ -444,39 +444,29 @@ TEST(ProcessMitigationsTest, CheckWin81DynamicCodePolicySuccess) {
 // This test validates that we can meddle with dynamic code if the
 // MITIGATION_DYNAMIC_CODE_DISABLE mitigation is NOT set.
 TEST(ProcessMitigationsTest, CheckWin81DynamicCode_BaseCase) {
-  if (base::win::GetVersion() < base::win::VERSION_WIN8_1)
+  if (base::win::GetVersion() < base::win::Version::WIN8_1)
     return;
 
-  HANDLE mutex =
-      ::CreateMutexW(nullptr, false, hooking_dll::g_hooking_dll_mutex);
-  EXPECT_TRUE(mutex);
-  EXPECT_EQ(WAIT_OBJECT_0,
-            ::WaitForSingleObject(mutex, SboxTestEventTimeout()));
+  ScopedTestMutex mutex(hooking_dll::g_hooking_dll_mutex);
 
   // Expect success, no mitigation.
-  DynamicCodeTestHarness(sandbox::MITIGATION_DYNAMIC_CODE_DISABLE, true, false);
-
-  EXPECT_TRUE(::ReleaseMutex(mutex));
-  EXPECT_TRUE(::CloseHandle(mutex));
+  DynamicCodeTestHarness(sandbox::MITIGATION_DYNAMIC_CODE_DISABLE,
+                         true /* expect_success */,
+                         false /* enable_mitigation */);
 }
 
 // This test validates that setting the MITIGATION_DYNAMIC_CODE_DISABLE
 // mitigation prevents meddling with dynamic code.
 TEST(ProcessMitigationsTest, CheckWin81DynamicCode_TestMitigation) {
-  if (base::win::GetVersion() < base::win::VERSION_WIN8_1)
+  if (base::win::GetVersion() < base::win::Version::WIN8_1)
     return;
 
-  HANDLE mutex =
-      ::CreateMutexW(nullptr, false, hooking_dll::g_hooking_dll_mutex);
-  EXPECT_TRUE(mutex);
-  EXPECT_EQ(WAIT_OBJECT_0,
-            ::WaitForSingleObject(mutex, SboxTestEventTimeout()));
+  ScopedTestMutex mutex(hooking_dll::g_hooking_dll_mutex);
 
   // Expect failure, with mitigation.
-  DynamicCodeTestHarness(sandbox::MITIGATION_DYNAMIC_CODE_DISABLE, false, true);
-
-  EXPECT_TRUE(::ReleaseMutex(mutex));
-  EXPECT_TRUE(::CloseHandle(mutex));
+  DynamicCodeTestHarness(sandbox::MITIGATION_DYNAMIC_CODE_DISABLE,
+                         false /* expect_success */,
+                         true /* enable_mitigation */);
 }
 
 //------------------------------------------------------------------------------
@@ -489,7 +479,7 @@ TEST(ProcessMitigationsTest, CheckWin81DynamicCode_TestMitigation) {
 // MITIGATION_DYNAMIC_CODE_DISABLE_WITH_OPT_OUT mitigation enables the setting
 // on a process.
 TEST(ProcessMitigationsTest, CheckWin10DynamicCodeOptOutPolicySuccess) {
-  if (base::win::GetVersion() < base::win::VERSION_WIN10_RS1)
+  if (base::win::GetVersion() < base::win::Version::WIN10_RS1)
     return;
 
 // TODO(crbug.com/805414): Windows ASan hotpatching requires dynamic code.
@@ -497,7 +487,7 @@ TEST(ProcessMitigationsTest, CheckWin10DynamicCodeOptOutPolicySuccess) {
   return;
 #endif
 
-  base::string16 test_command = L"CheckPolicy ";
+  std::wstring test_command = L"CheckPolicy ";
   test_command += std::to_wstring(TESTPOLICY_DYNAMICCODEOPTOUT);
 
 //---------------------------------
@@ -531,42 +521,32 @@ TEST(ProcessMitigationsTest, CheckWin10DynamicCodeOptOutPolicySuccess) {
 // This test validates that we CAN meddle with dynamic code if the
 // MITIGATION_DYNAMIC_CODE_DISABLE_WITH_OPT_OUT mitigation is NOT set.
 TEST(ProcessMitigationsTest, CheckWin10DynamicCodeOptOut_BaseCase) {
-  if (base::win::GetVersion() < base::win::VERSION_WIN10_RS1)
+  if (base::win::GetVersion() < base::win::Version::WIN10_RS1)
     return;
 
-  HANDLE mutex =
-      ::CreateMutexW(nullptr, false, hooking_dll::g_hooking_dll_mutex);
-  EXPECT_TRUE(mutex);
-  EXPECT_EQ(WAIT_OBJECT_0,
-            ::WaitForSingleObject(mutex, SboxTestEventTimeout()));
+  ScopedTestMutex mutex(hooking_dll::g_hooking_dll_mutex);
 
   // Expect success, no mitigation (and therefore no thread opt-out).
   DynamicCodeTestHarness(sandbox::MITIGATION_DYNAMIC_CODE_DISABLE_WITH_OPT_OUT,
-                         true, false, false);
-
-  EXPECT_TRUE(::ReleaseMutex(mutex));
-  EXPECT_TRUE(::CloseHandle(mutex));
+                         true /* expect_success */,
+                         false /* enable_mitigation */,
+                         false /* with_thread_opt_out */);
 }
 
 // This test validates that setting the
 // MITIGATION_DYNAMIC_CODE_DISABLE_WITH_OPT_OUT mitigation BLOCKS meddling
 // with dynamic code.
 TEST(ProcessMitigationsTest, CheckWin10DynamicCodeOptOut_TestMitigation) {
-  if (base::win::GetVersion() < base::win::VERSION_WIN10_RS1)
+  if (base::win::GetVersion() < base::win::Version::WIN10_RS1)
     return;
 
-  HANDLE mutex =
-      ::CreateMutexW(nullptr, false, hooking_dll::g_hooking_dll_mutex);
-  EXPECT_TRUE(mutex);
-  EXPECT_EQ(WAIT_OBJECT_0,
-            ::WaitForSingleObject(mutex, SboxTestEventTimeout()));
+  ScopedTestMutex mutex(hooking_dll::g_hooking_dll_mutex);
 
   // Expect failure, with mitigation, no thread opt-out.
   DynamicCodeTestHarness(sandbox::MITIGATION_DYNAMIC_CODE_DISABLE_WITH_OPT_OUT,
-                         false, true, false);
-
-  EXPECT_TRUE(::ReleaseMutex(mutex));
-  EXPECT_TRUE(::CloseHandle(mutex));
+                         false /* expect_success */,
+                         true /* enable_mitigation */,
+                         false /* with_thread_opt_out */);
 }
 
 // This test validates that setting the
@@ -574,21 +554,16 @@ TEST(ProcessMitigationsTest, CheckWin10DynamicCodeOptOut_TestMitigation) {
 // thread-specific opt-out ALLOWS meddling with dynamic code.
 TEST(ProcessMitigationsTest,
      CheckWin10DynamicCodeOptOut_TestMitigationWithOptOut) {
-  if (base::win::GetVersion() < base::win::VERSION_WIN10_RS1)
+  if (base::win::GetVersion() < base::win::Version::WIN10_RS1)
     return;
 
-  HANDLE mutex =
-      ::CreateMutexW(nullptr, false, hooking_dll::g_hooking_dll_mutex);
-  EXPECT_TRUE(mutex);
-  EXPECT_EQ(WAIT_OBJECT_0,
-            ::WaitForSingleObject(mutex, SboxTestEventTimeout()));
+  ScopedTestMutex mutex(hooking_dll::g_hooking_dll_mutex);
 
   // Expect success, with mitigation, with thread opt-out.
   DynamicCodeTestHarness(sandbox::MITIGATION_DYNAMIC_CODE_DISABLE_WITH_OPT_OUT,
-                         true, true, true);
-
-  EXPECT_TRUE(::ReleaseMutex(mutex));
-  EXPECT_TRUE(::CloseHandle(mutex));
+                         true /* expect_success */,
+                         true /* enable_mitigation */,
+                         true /* with_thread_opt_out */);
 }
 
 }  // namespace sandbox

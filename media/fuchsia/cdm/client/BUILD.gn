@@ -1,0 +1,20 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_fuchsia)
+
+source_set("client") {
+  sources = [
+    "fuchsia_cdm_util.cc",
+    "fuchsia_cdm_util.h",
+    "mojo_fuchsia_cdm_provider.cc",
+    "mojo_fuchsia_cdm_provider.h",
+  ]
+
+  deps = [
+    "//media",
+    "//media/fuchsia/mojom",
+    "//services/service_manager/public/cpp",
+  ]
+}

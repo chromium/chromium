@@ -20,7 +20,6 @@
 #include "components/sync/model/syncable_service.h"
 
 class PersistentPrefStore;
-class Profile;
 
 namespace base {
 class FilePath;
@@ -62,7 +61,11 @@ class SupervisedUserSettingsService : public KeyedService,
   using SettingsCallback = base::Callback<SettingsCallbackType>;
   using SettingsCallbackList = base::CallbackList<SettingsCallbackType>;
 
-  explicit SupervisedUserSettingsService(Profile *profile);
+  using ShutdownCallbackType = void();
+  using ShutdownCallback = base::Callback<ShutdownCallbackType>;
+  using ShutdownCallbackList = base::CallbackList<ShutdownCallbackType>;
+
+  SupervisedUserSettingsService();
   ~SupervisedUserSettingsService() override;
 
   // Initializes the service by loading its settings from a file underneath the
@@ -80,15 +83,14 @@ class SupervisedUserSettingsService : public KeyedService,
 
   // Adds a callback to be called when supervised user settings are initially
   // available, or when they change.
-  std::unique_ptr<SettingsCallbackList::Subscription> Subscribe(
-      const SettingsCallback& callback) WARN_UNUSED_RESULT;
+  std::unique_ptr<SettingsCallbackList::Subscription>
+  SubscribeForSettingsChange(const SettingsCallback& callback)
+      WARN_UNUSED_RESULT;
 
-  // Gets the associated profile
-  // This is currently only used for subscribing to notifications, it will be
-  // nullptr in tests and will soon be removed.
-  // TODO(peconn): Remove this once SupervisedUserPrefStore is (partially at
-  // least) a KeyedService, see TODO in SupervisedUserPrefStore.
-  Profile* GetProfile();
+  // Subscribe for a notification when the keyed service is shut down. The
+  // subscription object can be destroyed to unsubscribe.
+  std::unique_ptr<ShutdownCallbackList::Subscription> SubscribeForShutdown(
+      const ShutdownCallback& callback);
 
   // Activates/deactivates the service. This is called by the
   // SupervisedUserService when it is (de)activated.
@@ -112,12 +114,6 @@ class SupervisedUserSettingsService : public KeyedService,
   // An example of an uploaded item is an access request to a blocked URL.
   void UploadItem(const std::string& key, std::unique_ptr<base::Value> value);
 
-  // Updates supervised user setting and uploads it to the Sync server.
-  // An example is when an extension updates without permission
-  // increase, the approved version information should be updated accordingly.
-  void UpdateSetting(const std::string& key,
-                     std::unique_ptr<base::Value> value);
-
   // Sets the setting with the given |key| to a copy of the given |value|.
   void SetLocalSetting(const std::string& key,
                        std::unique_ptr<base::Value> value);
@@ -130,6 +126,7 @@ class SupervisedUserSettingsService : public KeyedService,
   void Shutdown() override;
 
   // SyncableService implementation:
+  void WaitUntilReadyToSync(base::OnceClosure done) override;
   syncer::SyncMergeResult MergeDataAndStartSyncing(
       syncer::ModelType type,
       const syncer::SyncDataList& initial_sync_data,
@@ -145,17 +142,19 @@ class SupervisedUserSettingsService : public KeyedService,
   void OnPrefValueChanged(const std::string& key) override;
   void OnInitializationCompleted(bool success) override;
 
- private:
-  base::DictionaryValue* GetOrCreateDictionary(const std::string& key) const;
-  base::DictionaryValue* GetAtomicSettings() const;
-  base::DictionaryValue* GetSplitSettings() const;
-  base::DictionaryValue* GetQueuedItems() const;
+  const base::DictionaryValue* LocalSettingsForTest() const;
 
   // Returns the dictionary where a given Sync item should be stored, depending
   // on whether the supervised user setting is atomic or split. In case of a
   // split setting, the split setting prefix of |key| is removed, so that |key|
   // can be used to update the returned dictionary.
   base::DictionaryValue* GetDictionaryAndSplitKey(std::string* key) const;
+
+ private:
+  base::DictionaryValue* GetOrCreateDictionary(const std::string& key) const;
+  base::DictionaryValue* GetAtomicSettings() const;
+  base::DictionaryValue* GetSplitSettings() const;
+  base::DictionaryValue* GetQueuedItems() const;
 
   // Returns a dictionary with all supervised user settings if the service is
   // active, or NULL otherwise.
@@ -172,16 +171,19 @@ class SupervisedUserSettingsService : public KeyedService,
   // directly hooked up to the PrefService.
   scoped_refptr<PersistentPrefStore> store_;
 
-  Profile* const profile_;
-
   bool active_;
 
   bool initialization_failed_;
 
+  // Set when WaitUntilReadyToSync() is invoked before initialization completes.
+  base::OnceClosure wait_until_ready_to_sync_cb_;
+
   // A set of local settings that are fixed and not configured remotely.
   std::unique_ptr<base::DictionaryValue> local_settings_;
 
-  SettingsCallbackList callback_list_;
+  SettingsCallbackList settings_callback_list_;
+
+  ShutdownCallbackList shutdown_callback_list_;
 
   std::unique_ptr<syncer::SyncChangeProcessor> sync_processor_;
   std::unique_ptr<syncer::SyncErrorFactory> error_handler_;

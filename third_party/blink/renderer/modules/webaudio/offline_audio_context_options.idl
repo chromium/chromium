@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// See hhttps://webaudio.github.io/web-audio-api/#dictdef-offlineaudiocontextoptions
+// See https://webaudio.github.io/web-audio-api/#dictdef-offlineaudiocontextoptions
 dictionary OfflineAudioContextOptions {
     unsigned long numberOfChannels = 1;
     required unsigned long length;

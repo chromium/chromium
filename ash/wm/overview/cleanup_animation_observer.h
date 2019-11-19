@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "ash/ash_export.h"
-#include "ash/wm/overview/overview_delegate.h"
+#include "ash/wm/overview/delayed_animation_observer.h"
 #include "base/macros.h"
 #include "ui/compositor/layer_animation_observer.h"
 

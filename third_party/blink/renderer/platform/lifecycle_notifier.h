@@ -161,6 +161,9 @@ inline void LifecycleNotifier<T, Observer>::NotifyContextDestroyed() {
     ContextDestroyedNotifier<Observer, T>::Call(observer, Context());
     observer->ClearContext();
   }
+  // Explicitly free the backing store to avoid memory regressions.
+  // TODO(bikineev): Revisit after young generation is done.
+  observers.clear();
 }
 
 template <typename T, typename Observer>

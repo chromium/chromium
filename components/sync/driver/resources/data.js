@@ -3,12 +3,12 @@
 // found in the LICENSE file.
 
 (function() {
-var dumpToTextButton = $('dump-to-text');
-var dataDump = $('data-dump');
+const dumpToTextButton = $('dump-to-text');
+const dataDump = $('data-dump');
 dumpToTextButton.addEventListener('click', function(event) {
   // TODO(akalin): Add info like Chrome version, OS, date dumped, etc.
 
-  var data = '';
+  let data = '';
   data += '======\n';
   data += 'Status\n';
   data += '======\n';
@@ -32,7 +32,7 @@ dumpToTextButton.addEventListener('click', function(event) {
   dataDump.textContent = data;
 });
 
-var allFields = [
+const allFields = [
   'ID',
   'IS_UNSYNCED',
   'IS_UNAPPLIED_UPDATE',
@@ -51,34 +51,37 @@ var allFields = [
 
 function versionToDateString(version) {
   // TODO(mmontgomery): ugly? Hacky? Is there a better way?
-  var epochLength = Date.now().toString().length;
-  var epochTime = parseInt(version.slice(0, epochLength));
-  var date = new Date(epochTime);
+  const epochLength = Date.now().toString().length;
+  const epochTime = parseInt(version.slice(0, epochLength), 10);
+  const date = new Date(epochTime);
   return date.toString();
 }
 
 /**
  * @param {!Object} node A JavaScript represenation of a sync entity.
- * @return {string} A string representation of the sync entity.
+ * @return {!Array<string>} A string representation of the sync entity.
  */
 function serializeNode(node) {
   return allFields.map(function(field) {
-    var fieldVal;
+    let fieldVal;
     if (field == 'SERVER_VERSION_TIME') {
-      var version = node['SERVER_VERSION'];
+      const version = node['SERVER_VERSION'];
       if (version != null) {
         fieldVal = versionToDateString(version);
       }
-    } if (field == 'BASE_VERSION_TIME') {
-      var version = node['BASE_VERSION'];
+    }
+    if (field == 'BASE_VERSION_TIME') {
+      const version = node['BASE_VERSION'];
       if (version != null) {
         fieldVal = versionToDateString(version);
       }
-    } else if ((field == 'SERVER_SPECIFICS' || field == 'SPECIFICS') &&
-            (!$('include-specifics').checked)) {
+    } else if (
+        (field == 'SERVER_SPECIFICS' || field == 'SPECIFICS') &&
+        (!$('include-specifics').checked)) {
       fieldVal = 'REDACTED';
-    } else if ((field == 'SERVER_SPECIFICS' || field == 'SPECIFICS') &&
-            $('include-specifics').checked) {
+    } else if (
+        (field == 'SERVER_SPECIFICS' || field == 'SPECIFICS') &&
+        $('include-specifics').checked) {
       fieldVal = JSON.stringify(node[field]);
     } else {
       fieldVal = node[field];
@@ -92,7 +95,7 @@ function serializeNode(node) {
  * @return {boolean} True if the type's checkbox is selected.
  */
 function isSelectedDatatype(type) {
-  var typeCheckbox = $(type);
+  const typeCheckbox = $(type);
   // Some types, such as 'Top level folder', appear in the list of nodes
   // but not in the list of selectable items.
   if (typeCheckbox == null) {
@@ -102,28 +105,26 @@ function isSelectedDatatype(type) {
 }
 
 function makeBlobUrl(data) {
-  var textBlob = new Blob([data], {type: 'octet/stream'});
-  var blobUrl = window.URL.createObjectURL(textBlob);
+  const textBlob = new Blob([data], {type: 'octet/stream'});
+  const blobUrl = window.URL.createObjectURL(textBlob);
   return blobUrl;
 }
 
 function makeDownloadName() {
   // Format is sync-data-dump-$epoch-$year-$month-$day-$OS.csv.
-  var now = new Date();
-  var friendlyDate = [now.getFullYear(),
-                      now.getMonth() + 1,
-                      now.getDate()].join('-');
-  var name = ['sync-data-dump',
-              friendlyDate,
-              Date.now(),
-              navigator.platform].join('-');
+  const now = new Date();
+  const friendlyDate =
+      [now.getFullYear(), now.getMonth() + 1, now.getDate()].join('-');
+  const name = [
+    'sync-data-dump', friendlyDate, Date.now(), navigator.platform
+  ].join('-');
   return [name, 'csv'].join('.');
 }
 
 function makeDateUserAgentHeader() {
-  var now = new Date();
-  var userAgent = window.navigator.userAgent;
-  var dateUaHeader = [now.toISOString(), userAgent].join(',');
+  const now = new Date();
+  const userAgent = window.navigator.userAgent;
+  const dateUaHeader = [now.toISOString(), userAgent].join(',');
   return dateUaHeader;
 }
 
@@ -135,14 +136,14 @@ function makeDateUserAgentHeader() {
  */
 function triggerDataDownload(nodesMap) {
   // Prepend a header with ISO date and useragent.
-  var output = [makeDateUserAgentHeader()];
+  let output = [makeDateUserAgentHeader()];
   output.push('=====');
 
-  var aboutInfo = JSON.stringify(chrome.sync.aboutInfo, null, 2);
+  const aboutInfo = JSON.stringify(chrome.sync.aboutInfo, null, 2);
   output.push(aboutInfo);
 
   // Filter out non-selected types.
-  var selectedTypesNodes = nodesMap.filter(function(x) {
+  const selectedTypesNodes = nodesMap.filter(function(x) {
     return isSelectedDatatype(x.type);
   });
 
@@ -154,25 +155,25 @@ function triggerDataDownload(nodesMap) {
 
   output = output.join('\n');
 
-  var anchor = $('dump-to-file-anchor');
+  const anchor = $('dump-to-file-anchor');
   anchor.href = makeBlobUrl(output);
   anchor.download = makeDownloadName();
   anchor.click();
 }
 
 function createTypesCheckboxes(types) {
-  var containerElt = $('node-type-checkboxes');
+  const containerElt = $('node-type-checkboxes');
 
   types.map(function(type) {
-    var div = document.createElement('div');
+    const div = document.createElement('div');
 
-    var checkbox = document.createElement('input');
+    const checkbox = document.createElement('input');
     checkbox.id = type;
     checkbox.type = 'checkbox';
     checkbox.checked = 'yes';
     div.appendChild(checkbox);
 
-    var label = document.createElement('label');
+    const label = document.createElement('label');
     // Assigning to label.for doesn't work.
     label.setAttribute('for', type);
     label.innerText = type;
@@ -183,7 +184,7 @@ function createTypesCheckboxes(types) {
 }
 
 function onReceivedListOfTypes(e) {
-  var types = e.details.types;
+  const types = e.details.types;
   types.sort();
   createTypesCheckboxes(types);
   chrome.sync.events.removeEventListener(
@@ -207,7 +208,7 @@ document.addEventListener('DOMContentLoaded', function() {
   chrome.sync.requestIncludeSpecificsInitialState();
 });
 
-var dumpToFileLink = $('dump-to-file');
+const dumpToFileLink = $('dump-to-file');
 dumpToFileLink.addEventListener('click', function(event) {
   chrome.sync.getAllNodes(triggerDataDownload);
 });

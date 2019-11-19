@@ -7,7 +7,7 @@
 #import <UIKit/UIKit.h>
 #include <vector>
 
-#include "ios/web/public/favicon_url.h"
+#include "ios/web/public/favicon/favicon_url.h"
 #import "net/base/mac/url_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"

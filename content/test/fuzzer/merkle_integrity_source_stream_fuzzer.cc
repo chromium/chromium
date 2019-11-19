@@ -4,11 +4,12 @@
 
 #include "content/browser/loader/merkle_integrity_source_stream.h"  // nogncheck
 
+#include <fuzzer/FuzzedDataProvider.h>
+
 #include <string>
 
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/test/fuzzed_data_provider.h"
 #include "net/base/io_buffer.h"
 #include "net/base/test_completion_callback.h"
 #include "net/filter/fuzzed_source_stream.h"
@@ -18,7 +19,7 @@
 // |data| contains a header prefix, and then is used to build a
 // FuzzedSourceStream.
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
-  base::FuzzedDataProvider data_provider(data, size);
+  FuzzedDataProvider data_provider(data, size);
   std::string header = data_provider.ConsumeRandomLengthString(256);
 
   net::TestCompletionCallback callback;

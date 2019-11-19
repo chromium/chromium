@@ -22,12 +22,12 @@ class MockBrowsingDataRemoverDelegate : public BrowsingDataRemoverDelegate {
 
   // BrowsingDataRemoverDelegate:
   BrowsingDataRemoverDelegate::EmbedderOriginTypeMatcher GetOriginTypeMatcher()
-      const override;
-  bool MayRemoveDownloadHistory() const override;
+      override;
+  bool MayRemoveDownloadHistory() override;
   void RemoveEmbedderData(const base::Time& delete_begin,
                           const base::Time& delete_end,
                           int remove_mask,
-                          const BrowsingDataFilterBuilder& filter_builder,
+                          BrowsingDataFilterBuilder* filter_builder,
                           int origin_type_mask,
                           base::OnceClosure callback) override;
 
@@ -36,7 +36,7 @@ class MockBrowsingDataRemoverDelegate : public BrowsingDataRemoverDelegate {
                   const base::Time& delete_end,
                   int remove_mask,
                   int origin_type_mask,
-                  const BrowsingDataFilterBuilder& filter_builder);
+                  BrowsingDataFilterBuilder* filter_builder);
 
   // Add an expected call that doesn't have to match the filter_builder.
   void ExpectCallDontCareAboutFilterBuilder(const base::Time& delete_begin,

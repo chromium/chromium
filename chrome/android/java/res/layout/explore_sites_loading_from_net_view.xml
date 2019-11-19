@@ -10,7 +10,7 @@
     android:layout_height="match_parent"
     android:gravity="center"
     android:orientation="vertical" >
-    <org.chromium.chrome.browser.widget.LoadingView
+    <org.chromium.chrome.browser.ui.widget.LoadingView
         android:id="@+id/loading"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

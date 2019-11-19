@@ -5,21 +5,17 @@
 #include "chrome/browser/ui/webui/chromeos/login/wrong_hwid_screen_handler.h"
 
 #include "chrome/browser/chromeos/login/oobe_screen.h"
+#include "chrome/browser/chromeos/login/screens/wrong_hwid_screen.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/login/localized_values_builder.h"
 
-namespace {
-
-const char kJsScreenPath[] = "login.WrongHWIDScreen";
-
-}  // namespace
-
 namespace chromeos {
+
+constexpr StaticOobeScreenId WrongHWIDScreenView::kScreenId;
 
 WrongHWIDScreenHandler::WrongHWIDScreenHandler(
     JSCallsContainer* js_calls_container)
     : BaseScreenHandler(kScreenId, js_calls_container) {
-  set_call_js_prefix(kJsScreenPath);
 }
 
 WrongHWIDScreenHandler::~WrongHWIDScreenHandler() {
@@ -38,7 +34,7 @@ void WrongHWIDScreenHandler::Show() {
 void WrongHWIDScreenHandler::Hide() {
 }
 
-void WrongHWIDScreenHandler::SetDelegate(Delegate* delegate) {
+void WrongHWIDScreenHandler::SetDelegate(WrongHWIDScreen* delegate) {
   delegate_ = delegate;
   if (page_is_ready())
     Initialize();

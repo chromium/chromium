@@ -1,5 +1,6 @@
 rootWebArea
-++menu
-++++menuItemRadio name='Menu item 1' checkedState=false
-++++menuItemRadio name='Menu item 2' checkedState=true
-++++menuItemRadio name='Menu item 3' checkedState=mixed
+++genericContainer ignored
+++++menu
+++++++menuItemRadio name='Menu item 1' checkedState=false
+++++++menuItemRadio name='Menu item 2' checkedState=true
+++++++menuItemRadio name='Menu item 3' checkedState=mixed

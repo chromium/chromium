@@ -35,9 +35,9 @@ class DEVICE_BLUETOOTH_EXPORT FakeBluetoothProfileServiceProvider
   void NewConnection(const dbus::ObjectPath& device_path,
                      base::ScopedFD fd,
                      const Delegate::Options& options,
-                     const Delegate::ConfirmationCallback& callback);
+                     Delegate::ConfirmationCallback callback);
   void RequestDisconnection(const dbus::ObjectPath& device_path,
-                            const Delegate::ConfirmationCallback& callback);
+                            Delegate::ConfirmationCallback callback);
   void Cancel();
 
   const dbus::ObjectPath& object_path() const { return object_path_; }

@@ -19,10 +19,6 @@ class ShellContentGpuClient;
 class ShellContentRendererClient;
 class ShellContentUtilityClient;
 
-#if defined(OS_ANDROID)
-class BrowserMainRunner;
-#endif
-
 class ShellMainDelegate : public ContentMainDelegate {
  public:
   explicit ShellMainDelegate(bool is_browsertest = false);
@@ -51,10 +47,6 @@ class ShellMainDelegate : public ContentMainDelegate {
   std::unique_ptr<ShellContentRendererClient> renderer_client_;
   std::unique_ptr<ShellContentUtilityClient> utility_client_;
   std::unique_ptr<ContentClient> content_client_;
-
-#if defined(OS_ANDROID)
-  std::unique_ptr<BrowserMainRunner> browser_runner_;
-#endif
 
   DISALLOW_COPY_AND_ASSIGN(ShellMainDelegate);
 };

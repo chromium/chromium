@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/chromeos/login/quick_unlock/pin_storage_prefs.h"
+
 #include "ash/public/cpp/ash_pref_names.h"
 #include "chrome/browser/chromeos/login/quick_unlock/quick_unlock_factory.h"
 #include "chrome/browser/chromeos/login/quick_unlock/quick_unlock_storage.h"
@@ -10,7 +12,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace chromeos {
@@ -22,14 +24,16 @@ class PinStoragePrefsUnitTest : public testing::Test {
   ~PinStoragePrefsUnitTest() override = default;
 
   // testing::Test:
-  void SetUp() override { quick_unlock::EnableForTesting(); }
+  void SetUp() override { quick_unlock::EnabledForTesting(true); }
+
+  void TearDown() override { quick_unlock::EnabledForTesting(false); }
 
   quick_unlock::PinStoragePrefs* PinStoragePrefs() const {
     return quick_unlock::QuickUnlockFactory::GetForProfile(profile_.get())
         ->pin_storage_prefs();
   }
 
-  content::TestBrowserThreadBundle thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
 
   DISALLOW_COPY_AND_ASSIGN(PinStoragePrefsUnitTest);

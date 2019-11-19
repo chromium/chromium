@@ -10,28 +10,25 @@
 #include <memory>
 #include <vector>
 
-#include "ash/public/interfaces/wallpaper.mojom.h"
 #include "base/macros.h"
-#include "base/memory/weak_ptr.h"
 #include "chrome/browser/image_decoder.h"
-#include "components/arc/common/wallpaper.mojom.h"
-#include "components/arc/connection_observer.h"
+#include "components/arc/mojom/wallpaper.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "mojo/public/cpp/bindings/associated_binding.h"
 
 namespace content {
 class BrowserContext;
 }  // namespace content
+
+namespace gfx {
+class ImageSkia;
+}  // namespace gfx
 
 namespace arc {
 
 class ArcBridgeService;
 
 // Lives on the UI thread.
-class ArcWallpaperService : public KeyedService,
-                            public ConnectionObserver<mojom::WallpaperInstance>,
-                            public mojom::WallpaperHost,
-                            public ash::mojom::WallpaperObserver {
+class ArcWallpaperService : public KeyedService, public mojom::WallpaperHost {
  public:
   // Returns singleton instance for the given BrowserContext,
   // or nullptr if the browser |context| is not allowed to use ARC.
@@ -42,20 +39,11 @@ class ArcWallpaperService : public KeyedService,
                       ArcBridgeService* bridge_service);
   ~ArcWallpaperService() override;
 
-  // ConnectionObserver<mojom::WallpaperInstance> overrides.
-  void OnConnectionReady() override;
-
   // mojom::WallpaperHost overrides.
   void SetWallpaper(const std::vector<uint8_t>& data,
                     int32_t wallpaper_id) override;
   void SetDefaultWallpaper() override;
   void GetWallpaper(GetWallpaperCallback callback) override;
-
-  // ash::mojom::WallpaperObserver overrides.
-  void OnWallpaperChanged(uint32_t image_id) override;
-  void OnWallpaperColorsChanged(
-      const std::vector<SkColor>& prominent_colors) override;
-  void OnWallpaperBlurChanged(bool blurred) override;
 
   class DecodeRequestSender {
    public:
@@ -75,7 +63,6 @@ class ArcWallpaperService : public KeyedService,
   friend class TestApi;
   class AndroidIdStore;
   class DecodeRequest;
-  struct WallpaperIdPair;
 
   // Initiates a set wallpaper request to //ash.
   void OnWallpaperDecoded(const gfx::ImageSkia& image, int32_t android_id);
@@ -87,26 +74,9 @@ class ArcWallpaperService : public KeyedService,
   // -1 to reset wallpaper cache at Android side.
   void NotifyWallpaperChangedAndReset(int android_id);
 
-  // If the wallpaper is allowed to be shown on screen, stores the |image_id|
-  // in order to track the wallpaper change later, otherwise notify the Android
-  // side immediately that the request is not going through.
-  void OnSetThirdPartyWallpaperCallback(int32_t android_id,
-                                        bool allowed,
-                                        uint32_t image_id);
-
-  // Initiates an encoding image request after getting the wallpaper image.
-  void OnGetWallpaperImageCallback(GetWallpaperCallback callback,
-                                   const gfx::ImageSkia& image);
-
   ArcBridgeService* const arc_bridge_service_;  // Owned by ArcServiceManager.
   std::unique_ptr<DecodeRequest> decode_request_;
-  std::vector<WallpaperIdPair> id_pairs_;
   std::unique_ptr<DecodeRequestSender> decode_request_sender_;
-
-  // The binding this instance uses to implement ash::mojom::WallpaperObserver.
-  mojo::AssociatedBinding<ash::mojom::WallpaperObserver> observer_binding_;
-
-  base::WeakPtrFactory<ArcWallpaperService> weak_ptr_factory_;
 
   DISALLOW_COPY_AND_ASSIGN(ArcWallpaperService);
 };

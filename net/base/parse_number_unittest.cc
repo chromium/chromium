@@ -13,21 +13,12 @@
 namespace net {
 namespace {
 
-template <typename T>
-std::string ToString(T number) {
-  // TODO(eroman): Just use std::to_string() instead (Currently chromium's
-  // C++11 guide hasn't taken a stance on it).
-  std::stringstream s;
-  s << number;
-  return s.str();
-}
-
 // Returns a decimal string that is one larger than the maximum value that type
 // T can represent.
 template <typename T>
 std::string CreateOverflowString() {
   const T value = std::numeric_limits<T>::max();
-  std::string result = ToString(value);
+  std::string result = base::NumberToString(value);
   EXPECT_NE('9', result.back());
   result.back()++;
   return result;
@@ -39,7 +30,7 @@ template <typename T>
 std::string CreateUnderflowString() {
   EXPECT_TRUE(std::numeric_limits<T>::is_signed);
   const T value = std::numeric_limits<T>::min();
-  std::string result = ToString(value);
+  std::string result = base::NumberToString(value);
   EXPECT_EQ('-', result.front());
   EXPECT_NE('9', result.back());
   result.back()++;
@@ -149,7 +140,7 @@ void TestParseIntUsingFormat(ParseFunc func, ParseIntFormat format) {
   // Test parsing the largest possible value for output type.
   {
     const T value = std::numeric_limits<T>::max();
-    ExpectParseIntSuccess<T>(func, ToString(value), format, value);
+    ExpectParseIntSuccess<T>(func, base::NumberToString(value), format, value);
   }
 
   // Test parsing a number one larger than the output type can accomodate
@@ -161,8 +152,9 @@ void TestParseIntUsingFormat(ParseFunc func, ParseIntFormat format) {
   // garbage at the end. This exercises an interesting internal quirk of
   // base::StringToInt*(), in that its result cannot distinguish this case
   // from overflow.
-  ExpectParseIntFailure<T>(func, ToString(std::numeric_limits<T>::max()) + " ",
-                           format, ParseIntError::FAILED_PARSE);
+  ExpectParseIntFailure<T>(
+      func, base::NumberToString(std::numeric_limits<T>::max()) + " ", format,
+      ParseIntError::FAILED_PARSE);
 
   ExpectParseIntFailure<T>(func, CreateOverflowString<T>() + " ", format,
                            ParseIntError::FAILED_PARSE);
@@ -171,7 +163,7 @@ void TestParseIntUsingFormat(ParseFunc func, ParseIntFormat format) {
   // test for unsigned types since the smallest number 0 is tested elsewhere.
   if (std::numeric_limits<T>::is_signed) {
     const T value = std::numeric_limits<T>::min();
-    std::string str_value = ToString(value);
+    std::string str_value = base::NumberToString(value);
 
     // The minimal value is necessarily negative, since this function is
     // testing only signed output types.

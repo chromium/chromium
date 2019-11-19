@@ -5,6 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_PLATFORM_INTERFACE_REGISTRY_H_
 #define THIRD_PARTY_BLINK_PUBLIC_PLATFORM_INTERFACE_REGISTRY_H_
 
+#include <utility>
+
 #include "base/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "mojo/public/cpp/bindings/scoped_interface_endpoint_handle.h"
@@ -12,9 +14,9 @@
 #include "third_party/blink/public/platform/web_common.h"
 
 #if INSIDE_BLINK
-#include "mojo/public/cpp/bindings/associated_interface_request.h"
-#include "mojo/public/cpp/bindings/interface_request.h"
-#include "third_party/blink/renderer/platform/cross_thread_functional.h"  // nogncheck
+#include "mojo/public/cpp/bindings/pending_associated_receiver.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"  // nogncheck
 #include "third_party/blink/renderer/platform/wtf/functional.h"  // nogncheck
 #endif
 
@@ -45,63 +47,63 @@ class BLINK_PLATFORM_EXPORT InterfaceRegistry {
 #if INSIDE_BLINK
   template <typename Interface>
   void AddInterface(
-      base::RepeatingCallback<void(mojo::InterfaceRequest<Interface>)>
-          factory) {
-    AddInterface(Interface::Name_,
-                 WTF::BindRepeating(
-                     &InterfaceRegistry::ForwardToInterfaceFactory<Interface>,
-                     std::move(factory)));
+      base::RepeatingCallback<void(mojo::PendingReceiver<Interface>)> factory) {
+    AddInterface(
+        Interface::Name_,
+        WTF::BindRepeating(&InterfaceRegistry::ForwardToInterfaceFactory<
+                               mojo::PendingReceiver<Interface>>,
+                           std::move(factory)));
   }
 
   template <typename Interface>
   void AddInterface(WTF::CrossThreadRepeatingFunction<
-                        void(mojo::InterfaceRequest<Interface>)> factory,
+                        void(mojo::PendingReceiver<Interface>)> factory,
                     scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
-    AddInterface(
-        Interface::Name_,
-        ConvertToBaseCallback(blink::CrossThreadBind(
-            &InterfaceRegistry::ForwardToCrossThreadInterfaceFactory<Interface>,
-            std::move(factory))),
-        std::move(task_runner));
+    AddInterface(Interface::Name_,
+                 ConvertToBaseCallback(CrossThreadBind(
+                     &InterfaceRegistry::ForwardToCrossThreadInterfaceFactory<
+                         mojo::PendingReceiver<Interface>>,
+                     std::move(factory))),
+                 std::move(task_runner));
   }
 
   template <typename Interface>
   void AddAssociatedInterface(
-      base::RepeatingCallback<void(mojo::AssociatedInterfaceRequest<Interface>)>
+      base::RepeatingCallback<void(mojo::PendingAssociatedReceiver<Interface>)>
           factory) {
     AddAssociatedInterface(
         Interface::Name_,
         WTF::BindRepeating(
-            &InterfaceRegistry::ForwardToAssociatedInterfaceFactory<Interface>,
+            &InterfaceRegistry::ForwardToAssociatedInterfaceFactory<
+                mojo::PendingAssociatedReceiver<Interface>>,
             std::move(factory)));
   }
 
  private:
-  template <typename Interface>
+  template <typename MojoType>
   static void ForwardToInterfaceFactory(
-      base::RepeatingCallback<void(mojo::InterfaceRequest<Interface>)> factory,
+      base::RepeatingCallback<void(MojoType)> factory,
       mojo::ScopedMessagePipeHandle handle) {
-    factory.Run(mojo::InterfaceRequest<Interface>(std::move(handle)));
+    factory.Run(MojoType(std::move(handle)));
   }
 
-  template <typename Interface>
+  template <typename MojoType>
   static void ForwardToCrossThreadInterfaceFactory(
-      const WTF::CrossThreadRepeatingFunction<
-          void(mojo::InterfaceRequest<Interface>)>& factory,
+      const WTF::CrossThreadRepeatingFunction<void(MojoType)>& factory,
       mojo::ScopedMessagePipeHandle handle) {
-    factory.Run(mojo::InterfaceRequest<Interface>(std::move(handle)));
+    factory.Run(MojoType(std::move(handle)));
   }
 
-  template <typename Interface>
+  template <typename MojoType>
   static void ForwardToAssociatedInterfaceFactory(
-      base::RepeatingCallback<void(mojo::AssociatedInterfaceRequest<Interface>)>
-          factory,
+      base::RepeatingCallback<void(MojoType)> factory,
       mojo::ScopedInterfaceEndpointHandle handle) {
-    factory.Run(mojo::AssociatedInterfaceRequest<Interface>(std::move(handle)));
+    factory.Run(MojoType(std::move(handle)));
   }
+
 #endif  // INSIDE_BLINK
 };
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_PUBLIC_PLATFORM_INTERFACE_REGISTRY_H_

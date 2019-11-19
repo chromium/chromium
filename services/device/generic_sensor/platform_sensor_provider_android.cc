@@ -9,9 +9,9 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/ref_counted.h"
-#include "base/memory/singleton.h"
-#include "jni/PlatformSensorProvider_jni.h"
 #include "services/device/generic_sensor/absolute_orientation_euler_angles_fusion_algorithm_using_accelerometer_and_magnetometer.h"
+#include "services/device/generic_sensor/jni_headers/PlatformSensorProvider_jni.h"
+#include "services/device/generic_sensor/linear_acceleration_fusion_algorithm_using_accelerometer.h"
 #include "services/device/generic_sensor/orientation_euler_angles_fusion_algorithm_using_quaternion.h"
 #include "services/device/generic_sensor/orientation_quaternion_fusion_algorithm_using_euler_angles.h"
 #include "services/device/generic_sensor/platform_sensor_android.h"
@@ -22,13 +22,6 @@ using base::android::AttachCurrentThread;
 using base::android::ScopedJavaLocalRef;
 
 namespace device {
-
-// static
-PlatformSensorProviderAndroid* PlatformSensorProviderAndroid::GetInstance() {
-  return base::Singleton<
-      PlatformSensorProviderAndroid,
-      base::LeakySingletonTraits<PlatformSensorProviderAndroid>>::get();
-}
 
 PlatformSensorProviderAndroid::PlatformSensorProviderAndroid() {
   JNIEnv* env = AttachCurrentThread();
@@ -52,6 +45,9 @@ void PlatformSensorProviderAndroid::CreateSensorInternal(
   // Android version, so the fallback ensures selection of the best possible
   // option.
   switch (type) {
+    case mojom::SensorType::LINEAR_ACCELERATION:
+      CreateLinearAccelerationSensor(env, reading_buffer, callback);
+      break;
     case mojom::SensorType::ABSOLUTE_ORIENTATION_EULER_ANGLES:
       CreateAbsoluteOrientationEulerAnglesSensor(env, reading_buffer, callback);
       break;
@@ -76,6 +72,33 @@ void PlatformSensorProviderAndroid::CreateSensorInternal(
       callback.Run(concrete_sensor);
       break;
     }
+  }
+}
+
+// For LINEAR_ACCELERATION we see if the platform supports it directly through
+// TYPE_LINEAR_ACCELERATION. If not we use a fusion algorithm to remove the
+// contribution of gravity from the raw ACCELEROMETER.
+void PlatformSensorProviderAndroid::CreateLinearAccelerationSensor(
+    JNIEnv* env,
+    SensorReadingSharedBuffer* reading_buffer,
+    const CreateSensorCallback& callback) {
+  ScopedJavaLocalRef<jobject> sensor = Java_PlatformSensorProvider_createSensor(
+      env, j_object_,
+      static_cast<jint>(mojom::SensorType::LINEAR_ACCELERATION));
+
+  if (sensor.obj()) {
+    auto concrete_sensor = base::MakeRefCounted<PlatformSensorAndroid>(
+        mojom::SensorType::LINEAR_ACCELERATION, reading_buffer, this, sensor);
+
+    callback.Run(concrete_sensor);
+  } else {
+    auto sensor_fusion_algorithm =
+        std::make_unique<LinearAccelerationFusionAlgorithmUsingAccelerometer>();
+
+    // If this PlatformSensorFusion object is successfully initialized,
+    // |callback| will be run with a reference to this object.
+    PlatformSensorFusion::Create(reading_buffer, this,
+                                 std::move(sensor_fusion_algorithm), callback);
   }
 }
 

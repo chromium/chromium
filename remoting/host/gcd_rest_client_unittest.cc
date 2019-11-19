@@ -8,8 +8,8 @@
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/test/bind_test_util.h"
-#include "base/test/scoped_task_environment.h"
 #include "base/test/simple_test_clock.h"
+#include "base/test/task_environment.h"
 #include "base/values.h"
 #include "remoting/base/fake_oauth_token_getter.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
@@ -62,7 +62,7 @@ class GcdRestClientTest : public testing::Test {
   GcdRestClient::Result last_result_ = GcdRestClient::OTHER_ERROR;
 
  private:
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
 };
 
 TEST_F(GcdRestClientTest, NetworkErrorGettingToken) {
@@ -97,7 +97,7 @@ TEST_F(GcdRestClientTest, NetworkErrorOnPost) {
   test_url_loader_factory_.SetInterceptor(
       base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
         test_url_loader_factory_.AddResponse(
-            request.url, network::ResourceResponseHead(), std::string(),
+            request.url, network::mojom::URLResponseHead::New(), std::string(),
             network::URLLoaderCompletionStatus(net::ERR_FAILED));
       }));
 

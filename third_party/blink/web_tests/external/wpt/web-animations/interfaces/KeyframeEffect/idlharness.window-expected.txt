@@ -7,14 +7,12 @@ PASS KeyframeEffect interface: existence and properties of interface prototype o
 PASS KeyframeEffect interface: existence and properties of interface prototype object's "constructor" property
 PASS KeyframeEffect interface: existence and properties of interface prototype object's @@unscopables property
 PASS KeyframeEffect interface: attribute target
-FAIL KeyframeEffect interface: attribute iterationComposite assert_true: The prototype object must have a property "iterationComposite" expected true got false
 PASS KeyframeEffect interface: attribute composite
 PASS KeyframeEffect interface: operation getKeyframes()
 PASS KeyframeEffect interface: operation setKeyframes(object)
 PASS KeyframeEffect must be primary interface of new KeyframeEffect(null, null)
 PASS Stringification of new KeyframeEffect(null, null)
 FAIL KeyframeEffect interface: new KeyframeEffect(null, null) must inherit property "target" with the proper type Unrecognized type Element
-FAIL KeyframeEffect interface: new KeyframeEffect(null, null) must inherit property "iterationComposite" with the proper type assert_inherits: property "iterationComposite" not found in prototype chain
 PASS KeyframeEffect interface: new KeyframeEffect(null, null) must inherit property "composite" with the proper type
 PASS KeyframeEffect interface: new KeyframeEffect(null, null) must inherit property "getKeyframes()" with the proper type
 PASS KeyframeEffect interface: new KeyframeEffect(null, null) must inherit property "setKeyframes(object)" with the proper type

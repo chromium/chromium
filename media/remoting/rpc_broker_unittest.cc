@@ -31,8 +31,7 @@ class FakeMessageSender {
   FakeMessageSender()
       : received_rpc_(new pb::RpcMessage()),
         has_sent_message_(false),
-        send_count_(0),
-        weak_factory_(this) {}
+        send_count_(0) {}
   ~FakeMessageSender() = default;
 
   void OnSendMessageAndQuit(std::unique_ptr<std::vector<uint8_t>> message) {
@@ -55,14 +54,14 @@ class FakeMessageSender {
   std::unique_ptr<pb::RpcMessage> received_rpc_;
   bool has_sent_message_;
   int send_count_;
-  base::WeakPtrFactory<FakeMessageSender> weak_factory_;
+  base::WeakPtrFactory<FakeMessageSender> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(FakeMessageSender);
 };
 
 class FakeMessageReceiver {
  public:
-  FakeMessageReceiver() : has_received_message_(false), weak_factory_(this) {}
+  FakeMessageReceiver() : has_received_message_(false) {}
   ~FakeMessageReceiver() = default;
 
   // RpcBroker::MessageReceiver implementation.
@@ -81,7 +80,7 @@ class FakeMessageReceiver {
  private:
   std::unique_ptr<pb::RpcMessage> received_rpc_;
   int has_received_message_;
-  base::WeakPtrFactory<FakeMessageReceiver> weak_factory_;
+  base::WeakPtrFactory<FakeMessageReceiver> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(FakeMessageReceiver);
 };
@@ -102,8 +101,9 @@ TEST_F(RpcBrokerTest, TestProcessMessageFromRemoteRegistered) {
       &FakeMessageReceiver::OnSendMessage, fake_receiver->GetWeakPtr())));
 
   int handle = rpc_broker->GetUniqueHandle();
-  const RpcBroker::ReceiveMessageCallback receive_callback = base::Bind(
-      &FakeMessageReceiver::OnReceivedRpc, fake_receiver->GetWeakPtr());
+  const RpcBroker::ReceiveMessageCallback receive_callback =
+      base::BindRepeating(&FakeMessageReceiver::OnReceivedRpc,
+                          fake_receiver->GetWeakPtr());
   rpc_broker->RegisterMessageReceiverCallback(handle, receive_callback);
 
   std::unique_ptr<pb::RpcMessage> rpc(new pb::RpcMessage());
@@ -121,8 +121,9 @@ TEST_F(RpcBrokerTest, TestProcessMessageFromRemoteUnregistered) {
       &FakeMessageReceiver::OnSendMessage, fake_receiver->GetWeakPtr())));
 
   int handle = rpc_broker->GetUniqueHandle();
-  const RpcBroker::ReceiveMessageCallback receive_callback = base::Bind(
-      &FakeMessageReceiver::OnReceivedRpc, fake_receiver->GetWeakPtr());
+  const RpcBroker::ReceiveMessageCallback receive_callback =
+      base::BindRepeating(&FakeMessageReceiver::OnReceivedRpc,
+                          fake_receiver->GetWeakPtr());
   rpc_broker->RegisterMessageReceiverCallback(handle, receive_callback);
 
   std::unique_ptr<pb::RpcMessage> rpc(new pb::RpcMessage());
@@ -185,8 +186,9 @@ TEST_F(RpcBrokerTest, RpcBrokerProcessMessageWithRegisteredHandle) {
   std::unique_ptr<RpcBroker> rpc_broker(new RpcBroker(base::Bind(
       &FakeMessageReceiver::OnSendMessage, fake_receiver->GetWeakPtr())));
   int handle = rpc_broker->GetUniqueHandle();
-  const RpcBroker::ReceiveMessageCallback receive_callback = base::Bind(
-      &FakeMessageReceiver::OnReceivedRpc, fake_receiver->GetWeakPtr());
+  const RpcBroker::ReceiveMessageCallback receive_callback =
+      base::BindRepeating(&FakeMessageReceiver::OnReceivedRpc,
+                          fake_receiver->GetWeakPtr());
   rpc_broker->RegisterMessageReceiverCallback(handle, receive_callback);
 
   // Generates RPC message with handle value |handle| and send it to receover
@@ -216,8 +218,9 @@ TEST_F(RpcBrokerTest, RpcBrokerProcessMessageWithUnregisteredHandle) {
   std::unique_ptr<RpcBroker> rpc_broker(new RpcBroker(base::Bind(
       &FakeMessageReceiver::OnSendMessage, fake_receiver->GetWeakPtr())));
   int handle = rpc_broker->GetUniqueHandle();
-  const RpcBroker::ReceiveMessageCallback receive_callback = base::Bind(
-      &FakeMessageReceiver::OnReceivedRpc, fake_receiver->GetWeakPtr());
+  const RpcBroker::ReceiveMessageCallback receive_callback =
+      base::BindRepeating(&FakeMessageReceiver::OnReceivedRpc,
+                          fake_receiver->GetWeakPtr());
   rpc_broker->RegisterMessageReceiverCallback(handle, receive_callback);
 
   // Generates RPC message with handle value |handle| and send it to receover

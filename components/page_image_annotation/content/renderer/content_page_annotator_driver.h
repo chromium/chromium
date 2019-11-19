@@ -78,7 +78,7 @@ class ContentPageAnnotatorDriver
 
   PageAnnotator page_annotator_;
 
-  base::WeakPtrFactory<ContentPageAnnotatorDriver> weak_ptr_factory_;
+  base::WeakPtrFactory<ContentPageAnnotatorDriver> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ContentPageAnnotatorDriver);
 };

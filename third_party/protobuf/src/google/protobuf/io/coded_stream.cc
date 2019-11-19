@@ -38,16 +38,18 @@
 // will not cross the end of the buffer, since we can avoid a lot
 // of branching in this case.
 
-#include <google/protobuf/io/coded_stream_inl.h>
+#include <limits.h>
 #include <algorithm>
 #include <utility>
-#include <limits.h>
-#include <google/protobuf/io/zero_copy_stream.h>
-#include <google/protobuf/arena.h>
 #include <google/protobuf/stubs/logging.h>
 #include <google/protobuf/stubs/common.h>
+#include <google/protobuf/io/coded_stream_inl.h>
+#include <google/protobuf/io/zero_copy_stream.h>
+#include <google/protobuf/arena.h>
 #include <google/protobuf/stubs/stl_util.h>
 
+
+#include <google/protobuf/port_def.inc>
 
 namespace google {
 namespace protobuf {
@@ -59,8 +61,8 @@ static const int kMaxVarintBytes = 10;
 static const int kMaxVarint32Bytes = 5;
 
 
-inline bool NextNonEmpty(ZeroCopyInputStream* input,
-                         const void** data, int* size) {
+inline bool NextNonEmpty(ZeroCopyInputStream* input, const void** data,
+                         int* size) {
   bool success;
   do {
     success = input->Next(data, size);
@@ -121,9 +123,9 @@ CodedInputStream::Limit CodedInputStream::PushLimit(int byte_limit) {
   // security: byte_limit is possibly evil, so check for negative values
   // and overflow. Also check that the new requested limit is before the
   // previous limit; otherwise we continue to enforce the previous limit.
-  if (GOOGLE_PREDICT_TRUE(byte_limit >= 0 &&
-                        byte_limit <= INT_MAX - current_position &&
-                        byte_limit < current_limit_ - current_position)) {
+  if (PROTOBUF_PREDICT_TRUE(byte_limit >= 0 &&
+                            byte_limit <= INT_MAX - current_position &&
+                            byte_limit < current_limit_ - current_position)) {
     current_limit_ = current_position + byte_limit;
     RecomputeBufferLimits();
   }
@@ -188,10 +190,11 @@ int CodedInputStream::BytesUntilTotalBytesLimit() const {
 
 void CodedInputStream::PrintTotalBytesLimitError() {
   GOOGLE_LOG(ERROR) << "A protocol message was rejected because it was too "
-                "big (more than " << total_bytes_limit_
+                "big (more than "
+             << total_bytes_limit_
              << " bytes).  To increase the limit (or to disable these "
                 "warnings), see CodedInputStream::SetTotalBytesLimit() "
-                "in google/protobuf/io/coded_stream.h.";
+                "in net/proto2/io/public/coded_stream.h.";
 }
 
 bool CodedInputStream::SkipFallback(int count, int original_buffer_size) {
@@ -237,12 +240,12 @@ bool CodedInputStream::ReadRaw(void* buffer, int size) {
   return InternalReadRawInline(buffer, size);
 }
 
-bool CodedInputStream::ReadString(string* buffer, int size) {
+bool CodedInputStream::ReadString(std::string* buffer, int size) {
   if (size < 0) return false;  // security: size is often user-supplied
   return InternalReadStringInline(buffer, size);
 }
 
-bool CodedInputStream::ReadStringFallback(string* buffer, int size) {
+bool CodedInputStream::ReadStringFallback(std::string* buffer, int size) {
   if (!buffer->empty()) {
     buffer->clear();
   }
@@ -312,14 +315,28 @@ bool CodedInputStream::ReadLittleEndian64Fallback(uint64* value) {
 
 namespace {
 
+// Decodes varint64 with known size, N, and returns next pointer. Knowing N at
+// compile time, compiler can generate optimal code. For example, instead of
+// subtracting 0x80 at each iteration, it subtracts properly shifted mask once.
+template <size_t N>
+const uint8* DecodeVarint64KnownSize(const uint8* buffer, uint64* value) {
+  GOOGLE_DCHECK_GT(N, 0);
+  uint64 result = static_cast<uint64>(buffer[N - 1]) << (7 * (N - 1));
+  for (int i = 0, offset = 0; i < N - 1; i++, offset += 7) {
+    result += static_cast<uint64>(buffer[i] - 0x80) << offset;
+  }
+  *value = result;
+  return buffer + N;
+}
+
 // Read a varint from the given buffer, write it to *value, and return a pair.
 // The first part of the pair is true iff the read was successful.  The second
 // part is buffer + (number of bytes read).  This function is always inlined,
 // so returning a pair is costless.
-GOOGLE_PROTOBUF_ATTRIBUTE_ALWAYS_INLINE
-::std::pair<bool, const uint8*> ReadVarint32FromArray(
-    uint32 first_byte, const uint8* buffer,
-    uint32* value);
+PROTOBUF_ALWAYS_INLINE
+::std::pair<bool, const uint8*> ReadVarint32FromArray(uint32 first_byte,
+                                                      const uint8* buffer,
+                                                      uint32* value);
 inline ::std::pair<bool, const uint8*> ReadVarint32FromArray(
     uint32 first_byte, const uint8* buffer, uint32* value) {
   // Fast path:  We have enough bytes left in the buffer to guarantee that
@@ -330,71 +347,72 @@ inline ::std::pair<bool, const uint8*> ReadVarint32FromArray(
   uint32 b;
   uint32 result = first_byte - 0x80;
   ++ptr;  // We just processed the first byte.  Move on to the second.
-  b = *(ptr++); result += b <<  7; if (!(b & 0x80)) goto done;
+  b = *(ptr++);
+  result += b << 7;
+  if (!(b & 0x80)) goto done;
   result -= 0x80 << 7;
-  b = *(ptr++); result += b << 14; if (!(b & 0x80)) goto done;
+  b = *(ptr++);
+  result += b << 14;
+  if (!(b & 0x80)) goto done;
   result -= 0x80 << 14;
-  b = *(ptr++); result += b << 21; if (!(b & 0x80)) goto done;
+  b = *(ptr++);
+  result += b << 21;
+  if (!(b & 0x80)) goto done;
   result -= 0x80 << 21;
-  b = *(ptr++); result += b << 28; if (!(b & 0x80)) goto done;
+  b = *(ptr++);
+  result += b << 28;
+  if (!(b & 0x80)) goto done;
   // "result -= 0x80 << 28" is irrevelant.
 
   // If the input is larger than 32 bits, we still need to read it all
   // and discard the high-order bits.
   for (int i = 0; i < kMaxVarintBytes - kMaxVarint32Bytes; i++) {
-    b = *(ptr++); if (!(b & 0x80)) goto done;
+    b = *(ptr++);
+    if (!(b & 0x80)) goto done;
   }
 
   // We have overrun the maximum size of a varint (10 bytes).  Assume
   // the data is corrupt.
   return std::make_pair(false, ptr);
 
- done:
+done:
   *value = result;
   return std::make_pair(true, ptr);
 }
 
-GOOGLE_PROTOBUF_ATTRIBUTE_ALWAYS_INLINE::std::pair<bool, const uint8*>
-ReadVarint64FromArray(const uint8* buffer, uint64* value);
+PROTOBUF_ALWAYS_INLINE::std::pair<bool, const uint8*> ReadVarint64FromArray(
+    const uint8* buffer, uint64* value);
 inline ::std::pair<bool, const uint8*> ReadVarint64FromArray(
     const uint8* buffer, uint64* value) {
-  const uint8* ptr = buffer;
-  uint32 b;
+  // Assumes varint64 is at least 2 bytes.
+  GOOGLE_DCHECK_GE(buffer[0], 128);
 
-  // Splitting into 32-bit pieces gives better performance on 32-bit
-  // processors.
-  uint32 part0 = 0, part1 = 0, part2 = 0;
+  const uint8* next;
+  if (buffer[1] < 128) {
+    next = DecodeVarint64KnownSize<2>(buffer, value);
+  } else if (buffer[2] < 128) {
+    next = DecodeVarint64KnownSize<3>(buffer, value);
+  } else if (buffer[3] < 128) {
+    next = DecodeVarint64KnownSize<4>(buffer, value);
+  } else if (buffer[4] < 128) {
+    next = DecodeVarint64KnownSize<5>(buffer, value);
+  } else if (buffer[5] < 128) {
+    next = DecodeVarint64KnownSize<6>(buffer, value);
+  } else if (buffer[6] < 128) {
+    next = DecodeVarint64KnownSize<7>(buffer, value);
+  } else if (buffer[7] < 128) {
+    next = DecodeVarint64KnownSize<8>(buffer, value);
+  } else if (buffer[8] < 128) {
+    next = DecodeVarint64KnownSize<9>(buffer, value);
+  } else if (buffer[9] < 128) {
+    next = DecodeVarint64KnownSize<10>(buffer, value);
+  } else {
+    // We have overrun the maximum size of a varint (10 bytes). Assume
+    // the data is corrupt.
+    return std::make_pair(false, buffer + 11);
+  }
 
-  b = *(ptr++); part0  = b      ; if (!(b & 0x80)) goto done;
-  part0 -= 0x80;
-  b = *(ptr++); part0 += b <<  7; if (!(b & 0x80)) goto done;
-  part0 -= 0x80 << 7;
-  b = *(ptr++); part0 += b << 14; if (!(b & 0x80)) goto done;
-  part0 -= 0x80 << 14;
-  b = *(ptr++); part0 += b << 21; if (!(b & 0x80)) goto done;
-  part0 -= 0x80 << 21;
-  b = *(ptr++); part1  = b      ; if (!(b & 0x80)) goto done;
-  part1 -= 0x80;
-  b = *(ptr++); part1 += b <<  7; if (!(b & 0x80)) goto done;
-  part1 -= 0x80 << 7;
-  b = *(ptr++); part1 += b << 14; if (!(b & 0x80)) goto done;
-  part1 -= 0x80 << 14;
-  b = *(ptr++); part1 += b << 21; if (!(b & 0x80)) goto done;
-  part1 -= 0x80 << 21;
-  b = *(ptr++); part2  = b      ; if (!(b & 0x80)) goto done;
-  part2 -= 0x80;
-  b = *(ptr++); part2 += b <<  7; if (!(b & 0x80)) goto done;
-  // "part2 -= 0x80 << 7" is irrelevant because (0x80 << 7) << 56 is 0.
-
-  // We have overrun the maximum size of a varint (10 bytes).  Assume
-  // the data is corrupt.
-  return std::make_pair(false, ptr);
-
- done:
-  *value = (static_cast<uint64>(part0)) |
-           (static_cast<uint64>(part1) << 28) |
-           (static_cast<uint64>(part2) << 56);
-  return std::make_pair(true, ptr);
+  return std::make_pair(true, next);
 }
 
 }  // namespace
@@ -416,7 +434,7 @@ int64 CodedInputStream::ReadVarint32Fallback(uint32 first_byte_or_zero) {
         << "Caller should provide us with *buffer_ when buffer is non-empty";
     uint32 temp;
     ::std::pair<bool, const uint8*> p =
-          ReadVarint32FromArray(first_byte_or_zero, buffer_, &temp);
+        ReadVarint32FromArray(first_byte_or_zero, buffer_, &temp);
     if (!p.first) return -1;
     buffer_ = p.second;
     return temp;
@@ -627,13 +645,13 @@ CodedOutputStream::CodedOutputStream(ZeroCopyOutputStream* output)
 
 CodedOutputStream::CodedOutputStream(ZeroCopyOutputStream* output,
                                      bool do_eager_refresh)
-  : output_(output),
-    buffer_(NULL),
-    buffer_size_(0),
-    total_bytes_(0),
-    had_error_(false),
-    aliasing_enabled_(false),
-    is_serialization_deterministic_(IsDefaultSerializationDeterministic()) {
+    : output_(output),
+      buffer_(NULL),
+      buffer_size_(0),
+      total_bytes_(0),
+      had_error_(false),
+      aliasing_enabled_(false),
+      is_serialization_deterministic_(IsDefaultSerializationDeterministic()) {
   if (do_eager_refresh) {
     // Eagerly Refresh() so buffer space is immediately available.
     Refresh();
@@ -644,9 +662,7 @@ CodedOutputStream::CodedOutputStream(ZeroCopyOutputStream* output,
   }
 }
 
-CodedOutputStream::~CodedOutputStream() {
-  Trim();
-}
+CodedOutputStream::~CodedOutputStream() { Trim(); }
 
 void CodedOutputStream::Trim() {
   if (buffer_size_ > 0) {
@@ -689,8 +705,8 @@ void CodedOutputStream::WriteRaw(const void* data, int size) {
   Advance(size);
 }
 
-uint8* CodedOutputStream::WriteRawToArray(
-    const void* data, int size, uint8* target) {
+uint8* CodedOutputStream::WriteRawToArray(const void* data, int size,
+                                          uint8* target) {
   memcpy(target, data, size);
   return target + size;
 }
@@ -698,7 +714,7 @@ uint8* CodedOutputStream::WriteRawToArray(
 
 void CodedOutputStream::WriteAliasedRaw(const void* data, int size) {
   if (size < buffer_size_
-      ) {
+  ) {
     WriteRaw(data, size);
   } else {
     Trim();
@@ -768,7 +784,7 @@ bool CodedOutputStream::Refresh() {
   }
 }
 
-uint8* CodedOutputStream::WriteStringWithSizeToArray(const string& str,
+uint8* CodedOutputStream::WriteStringWithSizeToArray(const std::string& str,
                                                      uint8* target) {
   GOOGLE_DCHECK_LE(str.size(), kuint32max);
   target = WriteVarint32ToArray(str.size(), target);

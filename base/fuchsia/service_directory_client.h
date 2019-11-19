@@ -69,25 +69,20 @@ class BASE_EXPORT ServiceDirectoryClient {
                                      zx::channel request) const;
 
  private:
+  ServiceDirectoryClient();
+
+  // Creates a ServiceDirectoryClient connected to the process' "/svc"
+  // directory, or a dummy instance if the "/svc" directory is not available.
+  static std::unique_ptr<ServiceDirectoryClient> CreateForProcess();
+
+  // Returns the container holding the ForCurrentProcess() instance. The
+  // default ServiceDirectoryClient is created the first time this function is
+  // called.
+  static std::unique_ptr<ServiceDirectoryClient>* ProcessInstance();
+
   const fidl::InterfaceHandle<::fuchsia::io::Directory> directory_;
 
   DISALLOW_COPY_AND_ASSIGN(ServiceDirectoryClient);
-};
-
-// Replaces the current process' ServiceDirectoryClient with the supplied
-// |directory|, and restores it when going out-of-scope.
-class BASE_EXPORT ScopedServiceDirectoryClientForCurrentProcessForTest {
- public:
-  explicit ScopedServiceDirectoryClientForCurrentProcessForTest(
-      fidl::InterfaceHandle<::fuchsia::io::Directory> directory);
-  ~ScopedServiceDirectoryClientForCurrentProcessForTest();
-
- private:
-  ServiceDirectoryClient* client_;
-  std::unique_ptr<ServiceDirectoryClient> old_client_;
-
-  DISALLOW_COPY_AND_ASSIGN(
-      ScopedServiceDirectoryClientForCurrentProcessForTest);
 };
 
 }  // namespace fuchsia

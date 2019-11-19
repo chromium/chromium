@@ -36,6 +36,9 @@ class DesktopEnvironmentOptions final {
   bool enable_user_interface() const;
   void set_enable_user_interface(bool enabled);
 
+  bool terminate_upon_input() const;
+  void set_terminate_upon_input(bool enabled);
+
   bool enable_file_transfer() const;
   void set_enable_file_transfer(bool enabled);
 
@@ -55,6 +58,9 @@ class DesktopEnvironmentOptions final {
 
   // True if a user-interactive window is showing up in it2me scenario.
   bool enable_user_interface_ = true;
+
+  // True if the session should be terminated when local input is detected.
+  bool terminate_upon_input_ = false;
 
   // True if this host has file transfer enabled.
   bool enable_file_transfer_ = false;

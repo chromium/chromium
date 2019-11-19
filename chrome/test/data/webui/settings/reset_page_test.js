@@ -5,6 +5,8 @@
 cr.define('settings_reset_page', function() {
   /** @enum {string} */
   const TestNames = {
+    // TODO(crbug/950007): Remove PowerwashDialogAction and
+    // PowerwashDialogOpenClose associated tests when SplitSettings is complete.
     PowerwashDialogAction: 'PowerwashDialogAction',
     PowerwashDialogOpenClose: 'PowerwashDialogOpenClose',
     ResetProfileDialogAction: 'ResetProfileDialogAction',
@@ -36,6 +38,9 @@ cr.define('settings_reset_page', function() {
 
         PolymerTest.clearBody();
         resetPage = document.createElement('settings-reset-page');
+        if (cr.isChromeOS) {
+          resetPage.pageVisibility = {powerwash: true};
+        }
         document.body.appendChild(resetPage);
       });
 
@@ -78,12 +83,6 @@ cr.define('settings_reset_page', function() {
                  // Test case where the 'cancel' button is clicked.
                  dialog.$.cancel.click();
                })
-            .then(function() {
-              return testOpenCloseResetProfileDialog(function(dialog) {
-                // Test case where the 'close' button is clicked.
-                dialog.$.dialog.getCloseButton().click();
-              });
-            })
             .then(function() {
               return testOpenCloseResetProfileDialog(function(dialog) {
                 // Test case where the browser's 'back' button is clicked.
@@ -190,14 +189,8 @@ cr.define('settings_reset_page', function() {
         test(TestNames.PowerwashDialogOpenClose, function() {
           // Test case where the 'cancel' button is clicked.
           return testOpenClosePowerwashDialog(function(dialog) {
-                   return dialog.$.cancel;
-                 })
-              .then(function() {
-                // Test case where the 'close' button is clicked.
-                return testOpenClosePowerwashDialog(function(dialog) {
-                  return dialog.$.dialog.getCloseButton();
-                });
-              });
+            return dialog.$.cancel;
+          });
         });
 
         // Tests that when powerwash is requested chrome.send calls are

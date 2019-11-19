@@ -51,34 +51,29 @@ std::unique_ptr<SyncCycleContext> EngineComponentsFactoryImpl::BuildContext(
     DebugInfoGetter* debug_info_getter,
     ModelTypeRegistry* model_type_registry,
     const std::string& invalidation_client_id,
-    base::TimeDelta short_poll_interval,
-    base::TimeDelta long_poll_interval) {
+    const std::string& store_birthday,
+    const std::string& bag_of_chips,
+    base::TimeDelta poll_interval) {
   return std::make_unique<SyncCycleContext>(
       connection_manager, directory, extensions_activity, listeners,
-      debug_info_getter, model_type_registry,
-      switches_.encryption_method == ENCRYPTION_KEYSTORE,
-      switches_.pre_commit_updates_policy ==
-          FORCE_ENABLE_PRE_COMMIT_UPDATE_AVOIDANCE,
-      invalidation_client_id, short_poll_interval, long_poll_interval);
+      debug_info_getter, model_type_registry, invalidation_client_id,
+      store_birthday, bag_of_chips, poll_interval);
 }
 
 std::unique_ptr<syncable::DirectoryBackingStore>
 EngineComponentsFactoryImpl::BuildDirectoryBackingStore(
     StorageOption storage,
     const std::string& dir_name,
+    const base::RepeatingCallback<std::string()>& cache_guid_generator,
     const base::FilePath& backing_filepath) {
   if (storage == STORAGE_ON_DISK) {
     return std::unique_ptr<syncable::DirectoryBackingStore>(
-        new syncable::OnDiskDirectoryBackingStore(dir_name, backing_filepath));
+        new syncable::OnDiskDirectoryBackingStore(
+            dir_name, cache_guid_generator, backing_filepath));
   } else {
     NOTREACHED();
     return std::unique_ptr<syncable::DirectoryBackingStore>();
   }
-}
-
-EngineComponentsFactory::Switches EngineComponentsFactoryImpl::GetSwitches()
-    const {
-  return switches_;
 }
 
 }  // namespace syncer

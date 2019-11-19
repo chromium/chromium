@@ -25,6 +25,10 @@ class DownloadItem;
 // DownloadTargetDeterminer and is expected to outlive it.
 class DownloadTargetDeterminerDelegate {
  public:
+  // Callback to be invoked after ShouldBlockDownload() completes. The
+  // |should_block| bool represents whether the download should be aborted.
+  typedef base::Callback<void(bool should_block)> ShouldBlockDownloadCallback;
+
   // Callback to be invoked after NotifyExtensions() completes. The
   // |new_virtual_path| should be set to a new path if an extension wishes to
   // override the download path. |conflict_action| should be set to the action
@@ -66,6 +70,14 @@ class DownloadTargetDeterminerDelegate {
   // should be the MIME type of the requested file. If no MIME type can be
   // determined, it should be set to the empty string.
   typedef base::Callback<void(const std::string&)> GetFileMimeTypeCallback;
+
+  // Checks whether the download should be blocked based on data available
+  // such as filename. Functionality used for active content blocking, not Safe
+  // Browsing.
+  virtual void ShouldBlockDownload(
+      download::DownloadItem* download,
+      const base::FilePath& virtual_path,
+      const ShouldBlockDownloadCallback& callback) = 0;
 
   // Notifies extensions of the impending filename determination. |virtual_path|
   // is the current suggested virtual path. The |callback| should be invoked to

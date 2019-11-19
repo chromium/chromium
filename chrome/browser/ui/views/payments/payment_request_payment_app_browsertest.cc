@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/macros.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/permissions/permission_request_manager.h"
@@ -34,9 +35,14 @@ class PaymentRequestPaymentAppTest : public PaymentRequestBrowserTestBase {
   PaymentRequestPaymentAppTest()
       : alicepay_(net::EmbeddedTestServer::TYPE_HTTPS),
         bobpay_(net::EmbeddedTestServer::TYPE_HTTPS),
-        frankpay_(net::EmbeddedTestServer::TYPE_HTTPS) {
-    scoped_feature_list_.InitAndEnableFeature(
-        ::features::kServiceWorkerPaymentApps);
+        frankpay_(net::EmbeddedTestServer::TYPE_HTTPS),
+        kylepay_(net::EmbeddedTestServer::TYPE_HTTPS) {
+    scoped_feature_list_.InitWithFeatures(
+        // enabled features
+        {::features::kServiceWorkerPaymentApps,
+         features::kAlwaysAllowJustInTimePaymentApp},
+        // disabled features
+        {});
   }
 
   PermissionRequestManager* GetPermissionRequestManager() {
@@ -51,6 +57,7 @@ class PaymentRequestPaymentAppTest : public PaymentRequestBrowserTestBase {
     ASSERT_TRUE(StartTestServer("alicepay.com", &alicepay_));
     ASSERT_TRUE(StartTestServer("bobpay.com", &bobpay_));
     ASSERT_TRUE(StartTestServer("frankpay.com", &frankpay_));
+    ASSERT_TRUE(StartTestServer("kylepay.com", &kylepay_));
 
     GetPermissionRequestManager()->set_auto_response_for_test(
         PermissionRequestManager::ACCEPT_ALL);
@@ -100,12 +107,12 @@ class PaymentRequestPaymentAppTest : public PaymentRequestBrowserTestBase {
     GURL origin = alicepay_.GetURL("alicepay.com", "/app1/").GetOrigin();
     HostContentSettingsMapFactory::GetForProfile(browser()->profile())
         ->SetContentSettingDefaultScope(origin, origin,
-                                        CONTENT_SETTINGS_TYPE_PAYMENT_HANDLER,
+                                        ContentSettingsType::PAYMENT_HANDLER,
                                         std::string(), CONTENT_SETTING_BLOCK);
   }
 
-  // Sets a TestDownloader for alicepay.com, bobpay.com and frankpay.com to
-  // ServiceWorkerPaymentAppFactory, and ignores port in app scope.
+  // Sets a TestDownloader for ServiceWorkerPaymentAppFactory and ignores port
+  // in app scope.
   void SetDownloaderAndIgnorePortInOriginComparisonForTesting() {
     content::BrowserContext* context = browser()
                                            ->tab_strip_model()
@@ -120,6 +127,8 @@ class PaymentRequestPaymentAppTest : public PaymentRequestBrowserTestBase {
                                  bobpay_.GetURL("bobpay.com", "/"));
     downloader->AddTestServerURL("https://frankpay.com/",
                                  frankpay_.GetURL("frankpay.com", "/"));
+    downloader->AddTestServerURL("https://kylepay.com/",
+                                 kylepay_.GetURL("kylepay.com", "/"));
     ServiceWorkerPaymentAppFactory::GetInstance()
         ->SetDownloaderAndIgnorePortInOriginComparisonForTesting(
             std::move(downloader));
@@ -147,6 +156,9 @@ class PaymentRequestPaymentAppTest : public PaymentRequestBrowserTestBase {
 
   // https://frankpay.com/webpay supports payment apps from any origin.
   net::EmbeddedTestServer frankpay_;
+
+  // https://kylepay.com/webpay hosts a just-in-time installable payment app.
+  net::EmbeddedTestServer kylepay_;
 
   base::test::ScopedFeatureList scoped_feature_list_;
 
@@ -457,14 +469,47 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestPaymentAppTest, PayWithBasicCard) {
   }
 }
 
-IN_PROC_BROWSER_TEST_F(PaymentRequestPaymentAppTest, SkipUIEnabledWithBobPay) {
-  base::test::ScopedFeatureList features;
-  features.InitWithFeatures(
-      {
-          payments::features::kWebPaymentsSingleAppUiSkip,
-          ::features::kServiceWorkerPaymentApps,
-      },
-      {});
+// Test can cancel payment with 'basic-card' payment method from alicepay.
+IN_PROC_BROWSER_TEST_F(PaymentRequestPaymentAppTest, PayWithBasicCardCancel) {
+  InstallAlicePayForMethod("basic-card");
+  {
+    SetDownloaderAndIgnorePortInOriginComparisonForTesting();
+    NavigateTo(
+        "/payment_request_bobpay_and_basic_card_with_modifiers_test.html");
+    InvokePaymentRequestUI();
+    ClickOnCancel();
+    ExpectBodyContains({"User closed the Payment Request UI."});
+  }
+  // Repeat should have identical results.
+  {
+    SetDownloaderAndIgnorePortInOriginComparisonForTesting();
+    NavigateTo(
+        "/payment_request_bobpay_and_basic_card_with_modifiers_test.html");
+    InvokePaymentRequestUI();
+    ClickOnCancel();
+    ExpectBodyContains({"User closed the Payment Request UI."});
+  }
+}
+
+class PaymentRequestPaymentAppTestWithPaymentHandlersAndUiSkip
+    : public PaymentRequestPaymentAppTest {
+ public:
+  PaymentRequestPaymentAppTestWithPaymentHandlersAndUiSkip() {
+    feature_list_.InitWithFeatures(
+        {
+            payments::features::kWebPaymentsSingleAppUiSkip,
+            ::features::kServiceWorkerPaymentApps,
+        },
+        {});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(PaymentRequestPaymentAppTestWithPaymentHandlersAndUiSkip,
+                       SkipUIEnabledWithBobPay) {
+  base::HistogramTester histogram_tester;
   InstallBobPayForMethod("https://bobpay.com");
 
   {
@@ -485,18 +530,18 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestPaymentAppTest, SkipUIEnabledWithBobPay) {
     WaitForObservedEvent();
 
     ExpectBodyContains({"bobpay.com"});
+
+    histogram_tester.ExpectTotalCount("PaymentRequest.TimeToCheckout.Completed",
+                                      1);
+    histogram_tester.ExpectTotalCount(
+        "PaymentRequest.TimeToCheckout.Completed.SkippedShow", 1);
+    histogram_tester.ExpectTotalCount(
+        "PaymentRequest.TimeToCheckout.Completed.SkippedShow.Other", 1);
   }
 }
 
-IN_PROC_BROWSER_TEST_F(PaymentRequestPaymentAppTest,
+IN_PROC_BROWSER_TEST_F(PaymentRequestPaymentAppTestWithPaymentHandlersAndUiSkip,
                        SkipUIDisabledWithMultipleAcceptedMethods) {
-  base::test::ScopedFeatureList features;
-  features.InitWithFeatures(
-      {
-          payments::features::kWebPaymentsSingleAppUiSkip,
-          ::features::kServiceWorkerPaymentApps,
-      },
-      {});
   InstallBobPayForMethod("https://bobpay.com");
 
   {
@@ -516,15 +561,8 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestPaymentAppTest,
   }
 }
 
-IN_PROC_BROWSER_TEST_F(PaymentRequestPaymentAppTest,
+IN_PROC_BROWSER_TEST_F(PaymentRequestPaymentAppTestWithPaymentHandlersAndUiSkip,
                        SkipUIDisabledWithRequestedPayerEmail) {
-  base::test::ScopedFeatureList features;
-  features.InitWithFeatures(
-      {
-          payments::features::kWebPaymentsSingleAppUiSkip,
-          ::features::kServiceWorkerPaymentApps,
-      },
-      {});
   InstallBobPayForMethod("https://bobpay.com");
   autofill::AutofillProfile profile(autofill::test::GetFullProfile());
   AddAutofillProfile(profile);
@@ -554,4 +592,51 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestPaymentAppTest,
   }
 }
 
+IN_PROC_BROWSER_TEST_F(PaymentRequestPaymentAppTest,
+                       AlwaysAllowJustInTimeInstall) {
+  SetDownloaderAndIgnorePortInOriginComparisonForTesting();
+
+  // Trigger a request that specifies both kylepay.com and basic-card.
+  NavigateTo("/payment_request_bobpay_and_cards_test.html");
+
+  ResetEventWaiterForDialogOpened();
+  ASSERT_TRUE(content::ExecuteScript(GetActiveWebContents(),
+                                     "testInstallableAppAndCard();"));
+  WaitForObservedEvent();
+
+  ResetEventWaiterForSequence(
+      {DialogEvent::PROCESSING_SPINNER_SHOWN, DialogEvent::DIALOG_CLOSED});
+  ClickOnDialogViewAndWait(DialogViewID::PAY_BUTTON, dialog_view());
+
+  // kylepay should be installed just-in-time and used for testing.
+  ExpectBodyContains({"kylepay.com/webpay"});
+}
+
+IN_PROC_BROWSER_TEST_F(PaymentRequestPaymentAppTest,
+                       ReadSupportedDelegationsFromAppManifest) {
+  SetDownloaderAndIgnorePortInOriginComparisonForTesting();
+
+  // Trigger a request that specifies kylepay.com and asks for shipping address
+  // as well as payer's contact information. kylepay.com hosts an installable
+  // payment app which handles both shipping address and payer's contact
+  // information.
+  NavigateTo("/payment_request_bobpay_and_cards_test.html");
+  ResetEventWaiterForDialogOpened();
+  ASSERT_TRUE(content::ExecuteScript(
+      GetActiveWebContents(),
+      "testPaymentMethods([{supportedMethods: 'https://kylepay.com/webpay'}], "
+      "true /*= requestShippingContact */);"));
+  WaitForObservedEvent();
+
+  // Pay button should be enabled without any autofill profiles since the
+  // selected payment instrument (kylepay) handles all merchant required
+  // information.
+  EXPECT_TRUE(IsPayButtonEnabled());
+
+  ResetEventWaiterForSequence({DialogEvent::DIALOG_CLOSED});
+  ClickOnDialogViewAndWait(DialogViewID::PAY_BUTTON, dialog_view());
+
+  // kylepay should be installed just-in-time and used for testing.
+  ExpectBodyContains({"kylepay.com/webpay"});
+}
 }  // namespace payments

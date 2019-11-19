@@ -5,7 +5,7 @@
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/web_resource/eula_accepted_notifier.h"
 #include "components/web_resource/resource_request_allowed_notifier_test_util.h"
@@ -119,8 +119,8 @@ class ResourceRequestAllowedNotifierTest
   }
 
  private:
-  base::test::ScopedTaskEnvironment task_environment_{
-      base::test::ScopedTaskEnvironment::MainThreadType::UI};
+  base::test::SingleThreadTaskEnvironment task_environment_{
+      base::test::SingleThreadTaskEnvironment::MainThreadType::UI};
   TestRequestAllowedNotifier resource_request_allowed_notifier_;
   TestingPrefServiceSimple prefs_;
   TestEulaAcceptedNotifier* eula_notifier_;  // Weak, owned by RRAN.

@@ -70,10 +70,7 @@ DualBufferFrameConsumer::DualBufferFrameConsumer(
     const RenderCallback& callback,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner,
     protocol::FrameConsumer::PixelFormat format)
-    : callback_(callback),
-      task_runner_(task_runner),
-      pixel_format_(format),
-      weak_factory_(this) {
+    : callback_(callback), task_runner_(task_runner), pixel_format_(format) {
   weak_ptr_ = weak_factory_.GetWeakPtr();
   thread_checker_.DetachFromThread();
 }

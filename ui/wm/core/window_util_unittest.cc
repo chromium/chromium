@@ -100,22 +100,4 @@ TEST_F(WindowUtilTest, RecreateLayersWithClosure) {
   EXPECT_EQ(window12->layer(), window1->layer()->children()[1]);
 }
 
-// Test if the root window is always snapped.
-TEST_F(WindowUtilTest, CheckRootWindowAlwaysSnapped) {
-  std::unique_ptr<aura::Window> window11(
-      aura::test::CreateTestWindowWithId(1, root_window()));
-  std::unique_ptr<aura::Window> window12(
-      aura::test::CreateTestWindowWithId(2, root_window()));
-
-  EXPECT_TRUE(root_window()->IsRootWindow());
-
-  wm::SnapWindowToPixelBoundary(window12.get());
-
-  // Root window is always marked as snapped.
-  EXPECT_TRUE(root_window()->GetProperty(wm::kSnapChildrenToPixelBoundary));
-
-  EXPECT_TRUE(window12->GetProperty(wm::kSnapChildrenToPixelBoundary));
-  EXPECT_FALSE(window11->GetProperty(wm::kSnapChildrenToPixelBoundary));
-}
-
 }  // namespace wm

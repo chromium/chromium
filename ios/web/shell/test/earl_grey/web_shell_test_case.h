@@ -5,12 +5,10 @@
 #ifndef IOS_WEB_SHELL_TEST_EARL_GREY_WEB_SHELL_TEST_CASE_H_
 #define IOS_WEB_SHELL_TEST_EARL_GREY_WEB_SHELL_TEST_CASE_H_
 
-#import <XCTest/XCTest.h>
-
-#import "ios/testing/earl_grey/disabled_test_macros.h"
+#import "ios/testing/earl_grey/base_earl_grey_test_case.h"
 
 // Base class for all web shell Earl Grey tests.
-@interface WebShellTestCase : XCTestCase
+@interface WebShellTestCase : BaseEarlGreyTestCase
 
 @end
 

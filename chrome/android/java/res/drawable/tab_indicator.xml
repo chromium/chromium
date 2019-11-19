@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2019 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:left="@dimen/tab_indicator_padding"
+        android:right="@dimen/tab_indicator_padding" >
+        <shape android:shape="rectangle" >
+            <corners
+                android:topRightRadius="@dimen/tab_indicator_radius"
+                android:topLeftRadius="@dimen/tab_indicator_radius" />
+        </shape>
+    </item>
+</layer-list>

@@ -121,13 +121,6 @@ establish the Crashpad client environment before running a program.
    Either this option or **--mach-service**, but not both, is required. This
    option is only valid on macOS.
 
- * **--no-identify-client-via-url**
-
-   Do not add client-identifying fields to the URL. By default, `"prod"`,
-   `"ver"`, and `"guid"` annotations are added to the upload URL as name-value
-   pairs `"product"`, `"version"`, and `"guid"`, respectively. Using this
-   option disables that behavior.
-
  * **--initial-client-data**=*HANDLE_request_crash_dump*,*HANDLE_request_non_crash_dump*,*HANDLE_non_crash_dump_completed*,*HANDLE_first_pipe_instance*,*HANDLE_client_process*,*Address_crash_exception_information*,*Address_non_crash_exception_information*,*Address_debug_critical_section*
 
    Register the initial client using the inherited handles and data provided.
@@ -140,6 +133,13 @@ establish the Crashpad client environment before running a program.
    name and informs its client of the name. The server waits for at least one
    client to register, and exits when all clients have exited, after waiting for
    any uploads in progress to complete.
+
+ * **--initial-client-fd**=_FD_
+
+   Wait for client requests on _FD_. Either this option or
+   **--trace-parent-with-exception**, but not both, is required. The handler
+   exits when all client connections have been closed. This option is only valid
+   on Linux platforms.
 
  * **--mach-service**=_SERVICE_
 
@@ -198,6 +198,13 @@ establish the Crashpad client environment before running a program.
    To prevent excessive accumulation of handler processes, _ARGUMENT_ must not
    be `--monitor-self`.
 
+* **--no-identify-client-via-url**
+
+   Do not add client-identifying fields to the URL. By default, `"prod"`,
+   `"ver"`, and `"guid"` annotations are added to the upload URL as name-value
+   pairs `"product"`, `"version"`, and `"guid"`, respectively. Using this
+   option disables that behavior.
+
  * **--no-periodic-tasks**
 
    Do not scan for new pending crash reports or prune the crash report database.
@@ -245,17 +252,24 @@ establish the Crashpad client environment before running a program.
    parent process. This option is only valid on macOS. Use of this option is
    discouraged. It should not be used absent extraordinary circumstances.
 
+ * **--sanitization-information**=_SANITIZATION-INFORMATION-ADDRESS_
+
+   Provides sanitization settings in a SanitizationInformation struct at
+   _SANITIZATION-INFORMATION-ADDRESS_. This option requires
+   **--trace-parent-with-exception** and is only valid on Linux platforms.
+
+ * **--shared-client-connection**
+
+   Indicates that the file descriptor provided by **--initial-client-fd** is
+   shared among mulitple clients. Using a broker process is not supported for
+   clients using this option. This option is only valid on Linux platforms.
+
  * **--trace-parent-with-exception**=_EXCEPTION-INFORMATION-ADDRESS_
 
    Causes the handler process to trace its parent process and exit. The parent
    process should have an ExceptionInformation struct at
-   _EXCEPTION-INFORMATION-ADDRESS_.
-
- * **--initial-client-fd**=_FD_
-
-   Starts the excetion handler server with an initial ExceptionHandlerClient
-   connected on the socket _FD_. The server will exit when all connected client
-   sockets have been closed.
+   _EXCEPTION-INFORMATION-ADDRESS_. This option is only valid on Linux
+   platforms.
 
  * **--url**=_URL_
 
@@ -264,6 +278,13 @@ establish the Crashpad client environment before running a program.
    enabled for a database by a Crashpad client using the Crashpad client
    library, typically in response to a user requesting this behavior. If this
    option is not specified, this program will behave as if uploads are disabled.
+
+ * **--use-cros-crash-reporter**
+
+   Causes crash reports to be passed via an in-memory file to
+   `/sbin/crash_reporter` instead of storing them in the database. The database
+   is still used for Crashpad settings. This option is only valid on Chromium
+   OS.
 
  * **--help**
 

@@ -4,6 +4,7 @@ include_rules = [
   "+components/keyed_service/core",
   "+components/pref_registry",
   "+components/security_state",
+  "+components/safe_browsing/buildflags.h",
   "+components/safe_browsing/common/safe_browsing_prefs.h",
   "+components/safe_browsing/features.h",
   "+components/sync/base",
@@ -13,7 +14,6 @@ include_rules = [
   "+components/sync/test",
   "+components/sync_preferences",
   "+components/url_formatter",
-  "+components/variations",
   "+components/webdata/common",
   "+crypto",
   "+google_apis",
@@ -52,9 +52,9 @@ specific_include_rules = {
     "+services/network",
   ],
   "password_sync_util\.cc": [
-    "+services/identity/public/cpp",
+    "+components/signin/public",
   ],
   "sync_username_test_base\.h": [
-    "+services/identity/public/cpp",
+    "+components/signin/public",
   ],
 }

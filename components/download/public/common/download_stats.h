@@ -15,11 +15,13 @@
 
 #include "base/callback.h"
 #include "base/optional.h"
+#include "build/build_config.h"
 #include "components/download/public/common/download_content.h"
 #include "components/download/public/common/download_danger_type.h"
 #include "components/download/public/common/download_export.h"
 #include "components/download/public/common/download_interrupt_reasons.h"
 #include "components/download/public/common/download_source.h"
+#include "net/http/http_response_info.h"
 #include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
 
@@ -215,8 +217,26 @@ enum class ParallelDownloadCreationEvent {
   // The http method or url scheme does not meet the requirement.
   FALLBACK_REASON_HTTP_METHOD,
 
+  // Range support is unknown from the response.
+  FALLBACK_REASON_UNKNOWN_RANGE_SUPPORT,
+
   // Last entry of the enum.
   COUNT,
+};
+
+// Reason for download to restart during resumption. These enum values are
+// persisted to logs, and should therefore never be renumbered nor removed.
+enum class ResumptionRestartCountTypes {
+  // The download is restarted due to server response.
+  kRequestedByServerCount = 0,
+
+  // Strong validator changes.
+  kStrongValidatorChangesCount = 1,
+
+  // No strong validators are present.
+  kMissingStrongValidatorsCount = 2,
+
+  kMaxValue = kMissingStrongValidatorsCount
 };
 
 // Increment one of the above counts.
@@ -231,7 +251,9 @@ COMPONENTS_DOWNLOAD_EXPORT void RecordDownloadCountWithSource(
 COMPONENTS_DOWNLOAD_EXPORT void RecordDownloadCompleted(
     int64_t download_len,
     bool is_parallelizable,
-    DownloadSource download_source);
+    DownloadSource download_source,
+    bool has_resumed,
+    bool has_strong_validators);
 
 // Record download deletion event.
 COMPONENTS_DOWNLOAD_EXPORT void RecordDownloadDeletion(
@@ -247,18 +269,8 @@ COMPONENTS_DOWNLOAD_EXPORT void RecordDownloadInterrupted(
     bool is_parallel_download_enabled,
     DownloadSource download_source);
 
-// Record that a download has been classified as malicious.
-COMPONENTS_DOWNLOAD_EXPORT void RecordMaliciousDownloadClassified(
-    DownloadDangerType danger_type);
-
 // Record a dangerous download accept event.
 COMPONENTS_DOWNLOAD_EXPORT void RecordDangerousDownloadAccept(
-    DownloadDangerType danger_type,
-    const base::FilePath& file_path);
-
-// Record a dangerous download discard event.
-COMPONENTS_DOWNLOAD_EXPORT void RecordDangerousDownloadDiscard(
-    DownloadDiscardReason reason,
     DownloadDangerType danger_type,
     const base::FilePath& file_path);
 
@@ -306,8 +318,11 @@ COMPONENTS_DOWNLOAD_EXPORT void RecordParallelDownloadRequestCount(
     int request_count);
 
 // Records if each byte stream is successfully added to download sink.
+// |support_range_request| indicates whether the server strongly supports range
+// requests.
 COMPONENTS_DOWNLOAD_EXPORT void RecordParallelDownloadAddStreamSuccess(
-    bool success);
+    bool success,
+    bool support_range_request);
 
 // Records the bandwidth for parallelizable download and estimates the saved
 // time at the file end. Does not count in any hash computation or file
@@ -384,9 +399,26 @@ enum DownloadConnectionSecurity {
   DOWNLOAD_CONNECTION_SECURITY_MAX
 };
 
+enum class DownloadMetricsCallsite {
+  // Called from within DownloadItem initialization.
+  kDownloadItem = 0,
+
+  // Called from within MixedContentDownloadBlocking (as part of
+  // ChromeDownloadManagerDelegate).
+  kMixContentDownloadBlocking,
+};
+
 COMPONENTS_DOWNLOAD_EXPORT DownloadConnectionSecurity
 CheckDownloadConnectionSecurity(const GURL& download_url,
                                 const std::vector<GURL>& url_chain);
+
+// Records a download's mime-type and security state. This is a short-lived
+// metric recorded in multiple callsites to investigate discrepancies in other
+// metrics.
+COMPONENTS_DOWNLOAD_EXPORT void RecordDownloadValidationMetrics(
+    DownloadMetricsCallsite callsite,
+    DownloadConnectionSecurity state,
+    DownloadContent file_type);
 
 COMPONENTS_DOWNLOAD_EXPORT void RecordDownloadConnectionSecurity(
     const GURL& download_url,
@@ -403,13 +435,74 @@ COMPONENTS_DOWNLOAD_EXPORT void RecordDownloadSourcePageTransitionType(
     const base::Optional<ui::PageTransition>& transition);
 
 COMPONENTS_DOWNLOAD_EXPORT void RecordDownloadHttpResponseCode(
-    int response_code);
+    int response_code,
+    bool is_background_mode);
 
 COMPONENTS_DOWNLOAD_EXPORT void RecordInProgressDBCount(
     InProgressDBCountTypes type);
 
 COMPONENTS_DOWNLOAD_EXPORT void RecordDuplicateInProgressDownloadIdCount(
     int count);
+
+// Records the interrupt reason that causes download to restart.
+COMPONENTS_DOWNLOAD_EXPORT void RecordResumptionRestartReason(
+    DownloadInterruptReason reason);
+
+// Records the interrupt reason that causes download to restart.
+COMPONENTS_DOWNLOAD_EXPORT void RecordResumptionStrongValidators(
+    DownloadInterruptReason reason);
+
+COMPONENTS_DOWNLOAD_EXPORT void RecordResumptionRestartCount(
+    ResumptionRestartCountTypes type);
+
+// Records that download was resumed.
+COMPONENTS_DOWNLOAD_EXPORT void RecordDownloadResumed(
+    bool has_strong_validators);
+
+// Records connection info of the download.
+COMPONENTS_DOWNLOAD_EXPORT void RecordDownloadConnectionInfo(
+    net::HttpResponseInfo::ConnectionInfo connection_info);
+
+COMPONENTS_DOWNLOAD_EXPORT void RecordDownloadManagerCreationTimeSinceStartup(
+    base::TimeDelta elapsed_time);
+
+COMPONENTS_DOWNLOAD_EXPORT void RecordDownloadManagerMemoryUsage(
+    size_t bytes_used);
+
+COMPONENTS_DOWNLOAD_EXPORT void RecordParallelRequestCreationFailure(
+    DownloadInterruptReason reason);
+
+#if defined(OS_ANDROID)
+// Records the download interrupt reason for the first background download.
+// If |download_started| is true, this records the last interrupt reason
+// before download is started manually or by the task scheduler.
+COMPONENTS_DOWNLOAD_EXPORT void RecordFirstBackgroundDownloadInterruptReason(
+    DownloadInterruptReason reason,
+    bool download_started);
+
+enum class BackgroudTargetDeterminationResultTypes {
+  // Target determination succeeded.
+  kSuccess = 0,
+
+  // Target path doesn't exist.
+  kTargetPathMissing = 1,
+
+  // Path reservation failed.
+  kPathReservationFailed = 2,
+
+  kMaxValue = kPathReservationFailed
+};
+
+// Records whether download target determination is successfully completed in
+// reduced mode.
+COMPONENTS_DOWNLOAD_EXPORT void RecordBackgroundTargetDeterminationResult(
+    BackgroudTargetDeterminationResultTypes type);
+#endif  // defined(OS_ANDROID)
+
+#if defined(OS_WIN)
+// Records the OS error code when moving a file on Windows.
+COMPONENTS_DOWNLOAD_EXPORT void RecordWinFileMoveError(int os_error);
+#endif  // defined(OS_WIN)
 }  // namespace download
 
 #endif  // COMPONENTS_DOWNLOAD_PUBLIC_COMMON_DOWNLOAD_STATS_H_

@@ -4,6 +4,8 @@
 
 #include "cc/test/fake_video_frame_provider.h"
 
+#include "components/viz/common/frame_sinks/begin_frame_args.h"
+
 namespace cc {
 
 FakeVideoFrameProvider::FakeVideoFrameProvider()
@@ -33,6 +35,10 @@ scoped_refptr<media::VideoFrame> FakeVideoFrameProvider::GetCurrentFrame() {
 
 void FakeVideoFrameProvider::PutCurrentFrame() {
   ++put_current_frame_count_;
+}
+
+base::TimeDelta FakeVideoFrameProvider::GetPreferredRenderInterval() {
+  return viz::BeginFrameArgs::MinInterval();
 }
 
 }  // namespace cc

@@ -11,6 +11,7 @@
 #include "base/base_switches.h"
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/message_loop/message_pump_type.h"
 #include "base/path_service.h"
 #include "base/process/launch.h"
 #include "base/process/process.h"
@@ -143,7 +144,7 @@ class MonitoredProcessClient {
   // Creates a thread then creates the message window on it.
   void CreateMessageWindow() {
     ASSERT_TRUE(message_window_thread_.StartWithOptions(
-        base::Thread::Options(base::MessageLoop::TYPE_UI, 0)));
+        base::Thread::Options(base::MessagePumpType::UI, 0)));
 
     bool succeeded = false;
     base::WaitableEvent created(
@@ -259,7 +260,7 @@ class HangMonitorThread {
   // window for |process|. Blocks until the monitor has been initialized.
   bool Start(base::Process process) {
     if (!thread_.StartWithOptions(
-            base::Thread::Options(base::MessageLoop::TYPE_UI, 0))) {
+            base::Thread::Options(base::MessagePumpType::UI, 0))) {
       return false;
     }
 

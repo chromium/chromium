@@ -6,10 +6,6 @@ szager@chromium.org
 # structural changes, please get a review from a reviewer in this file.
 per-file BUILD.gn=*
 
-# Mac Sandbox profiles.
-per-file *.sb=set noparent
-per-file *.sb=rsesek@chromium.org
-
 # For surface ID propagation and synchronization
 per-file render_frame_proxy*=fsamuel@chromium.org
 per-file render_view_impl*=fsamuel@chromium.org
@@ -30,5 +26,10 @@ per-file child_frame_compositor*=jonross@chromium.org
 per-file child_frame_compositing_helper*=jonross@chromium.org
 per-file render_frame_metadata*=jonross@chromium.org
 
-# For AppCache.
-per-file renderer_webapplicationcachehost_impl*=pwnall@chromium.org
+# Dependency for storage APIs.
+per-file storage_util*=file://storage/OWNERS
+
+# For security review.
+per-file browser_exposed_renderer_interfaces.cc=set noparent
+per-file browser_exposed_renderer_interfaces.cc=file://ipc/SECURITY_OWNERS
+

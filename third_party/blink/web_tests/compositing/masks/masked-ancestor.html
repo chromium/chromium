@@ -4,12 +4,6 @@
 <head>
   <title>Masks with composited children</title>
   <style type="text/css" media="screen">
-      #container {
-        height: 560px;
-        width: 260px;
-        border: 1px solid black;
-        display: inline-block;
-      }
       .box {
         position: relative;
         width: 200px;
@@ -22,10 +16,14 @@
       }
 
       .compositing {
-        transform: translateZ(0);
+        will-change: transform;
       }
 
       .masked {
+        height: 560px;
+        width: 260px;
+        border: 1px solid black;
+        display: inline-block;
         -webkit-mask-image: url(../resources/alpha-gradient.png);
         -webkit-mask-repeat: repeat-x;
       }
@@ -35,11 +33,11 @@
 <body>
 
   <p>Testing masks on compositing layers. Left and right columns should look the same.</p>
-  <div id="container" class="masked">
+  <div id="container1" class="masked">
     <div class="box"></div>
   </div>
 
-  <div id="container" class="masked">
+  <div id="container2" class="masked">
     <div class="compositing box"></div>
   </div>
 

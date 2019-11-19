@@ -94,6 +94,7 @@ ResultExpr BaselinePolicyAndroid::EvaluateSyscall(int sysno) const {
     case __NR_getdents64:
     case __NR_getpriority:
     case __NR_ioctl:
+    case __NR_membarrier:  // https://crbug.com/966433
     case __NR_mremap:
 #if defined(__i386__)
     // Used on pre-N to initialize threads in ART.

@@ -1,6 +1,6 @@
 include_rules = [
   "-content",
-  "+jni",
+  "+components/download/network/jni_headers",
   "+net",
   "+services/network/public",
 ]

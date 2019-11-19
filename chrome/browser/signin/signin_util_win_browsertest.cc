@@ -12,6 +12,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind_test_util.h"
 #include "base/test/test_reg_util_win.h"
+#include "base/win/wincrypt_shim.h"
 #include "build/build_config.h"
 #include "chrome/browser/first_run/first_run.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -24,12 +25,11 @@
 #include "chrome/credential_provider/common/gcp_strings.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/testing_browser_process.h"
-#include "components/os_crypt/os_crypt.h"
 #include "components/prefs/pref_service.h"
-#include "components/signin/core/browser/signin_pref_names.h"
-#include "services/identity/public/cpp/identity_manager.h"
-#include "services/identity/public/cpp/identity_test_utils.h"
-#include "services/identity/public/cpp/primary_account_mutator.h"
+#include "components/signin/public/base/signin_pref_names.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/signin/public/identity_manager/identity_test_utils.h"
+#include "components/signin/public/identity_manager/primary_account_mutator.h"
 
 namespace {
 
@@ -110,7 +110,7 @@ class SigninUtilWinBrowserTest
     }
 
     if (!GetParam().refresh_token.empty())
-      WriteRrefreshToken(&key, GetParam().refresh_token);
+      WriteRefreshToken(&key, GetParam().refresh_token);
 
     if (GetParam().expect_is_started) {
       signin_util::SetDiceTurnSyncOnHelperDelegateForTesting(
@@ -132,16 +132,26 @@ class SigninUtilWinBrowserTest
     }
   }
 
-  void WriteRrefreshToken(base::win::RegKey* key,
-                          const std::string& refresh_token) {
+  void WriteRefreshToken(base::win::RegKey* key,
+                         const std::string& refresh_token) {
     EXPECT_TRUE(key->Valid());
-    std::string ciphertext;
-    EXPECT_TRUE(OSCrypt::EncryptString(refresh_token, &ciphertext));
+    DATA_BLOB plaintext;
+    plaintext.pbData =
+        reinterpret_cast<BYTE*>(const_cast<char*>(refresh_token.c_str()));
+    plaintext.cbData = static_cast<DWORD>(refresh_token.length());
+
+    DATA_BLOB ciphertext;
+    ASSERT_TRUE(::CryptProtectData(&plaintext, L"Gaia refresh token", nullptr,
+                                   nullptr, nullptr, CRYPTPROTECT_UI_FORBIDDEN,
+                                   &ciphertext));
+    std::string encrypted_data(reinterpret_cast<char*>(ciphertext.pbData),
+                               ciphertext.cbData);
     EXPECT_EQ(
         ERROR_SUCCESS,
         key->WriteValue(
             base::ASCIIToUTF16(credential_provider::kKeyRefreshToken).c_str(),
-            ciphertext.c_str(), ciphertext.length(), REG_BINARY));
+            encrypted_data.c_str(), encrypted_data.length(), REG_BINARY));
+    LocalFree(ciphertext.pbData);
   }
 
   void ExpectRefreshTokenExists(bool exists) {
@@ -205,7 +215,7 @@ IN_PROC_BROWSER_TEST_P(SigninUtilWinBrowserTest, NoReauthAfterSignout) {
     // Write a new refresh token.
     base::win::RegKey key;
     CreateRegKey(&key);
-    WriteRrefreshToken(&key, "lst-new");
+    WriteRefreshToken(&key, "lst-new");
     ASSERT_FALSE(signin_util::ReauthWithCredentialProviderIfPossible(profile));
 
     // Sign user out of browser.
@@ -213,7 +223,7 @@ IN_PROC_BROWSER_TEST_P(SigninUtilWinBrowserTest, NoReauthAfterSignout) {
         IdentityManagerFactory::GetForProfile(profile)
             ->GetPrimaryAccountMutator();
     primary_account_mutator->ClearPrimaryAccount(
-        identity::PrimaryAccountMutator::ClearAccountsAction::kDefault,
+        signin::PrimaryAccountMutator::ClearAccountsAction::kDefault,
         signin_metrics::FORCE_SIGNOUT_ALWAYS_ALLOWED_FOR_TEST,
         signin_metrics::SignoutDelete::DELETED);
 
@@ -234,12 +244,12 @@ IN_PROC_BROWSER_TEST_P(SigninUtilWinBrowserTest, FixReauth) {
     // Write a new refresh token. This time reauth should work.
     base::win::RegKey key;
     CreateRegKey(&key);
-    WriteRrefreshToken(&key, "lst-new");
+    WriteRefreshToken(&key, "lst-new");
     ASSERT_FALSE(signin_util::ReauthWithCredentialProviderIfPossible(profile));
 
     // Make sure the profile stays signed in, but in an auth error state.
     auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
-    identity::UpdatePersistentErrorOfRefreshTokenForAccount(
+    signin::UpdatePersistentErrorOfRefreshTokenForAccount(
         identity_manager, identity_manager->GetPrimaryAccountId(),
         GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
             GoogleServiceAuthError::InvalidGaiaCredentialsReason::

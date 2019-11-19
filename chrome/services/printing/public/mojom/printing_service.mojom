@@ -1,0 +1,35 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module printing.mojom;
+
+import "chrome/services/printing/public/mojom/pdf_nup_converter.mojom";
+import "chrome/services/printing/public/mojom/pdf_to_pwg_raster_converter.mojom";
+
+[EnableIf=is_chromeos]
+import "chrome/services/printing/public/mojom/pdf_flattener.mojom";
+
+[EnableIf=is_win]
+import "chrome/services/printing/public/mojom/pdf_to_emf_converter.mojom";
+
+// The main interface to Chrome's Printing Service, which performs various PDF
+// conversion operations in an isolated sandboxed process.
+interface PrintingService {
+  // Binds an interface that can be used to do Nup PDF conversion.
+  BindPdfNupConverter(pending_receiver<PdfNupConverter> receiver);
+
+  // Binds an interface that can be used to do PDF to PWG Raster conversion.
+  BindPdfToPwgRasterConverter(
+      pending_receiver<PdfToPwgRasterConverter> receiver);
+
+  // Binds an interface that can be used to flatten a PDF.
+  [EnableIf=is_chromeos]
+  BindPdfFlattener(pending_receiver<PdfFlattener> receiver);
+
+  // Binds an interface that can be used to do PDF to EMF conversion. Windows
+  // only.
+  [EnableIf=is_win]
+  BindPdfToEmfConverterFactory(
+      pending_receiver<PdfToEmfConverterFactory> receiver);
+};

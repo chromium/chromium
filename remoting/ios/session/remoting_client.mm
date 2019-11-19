@@ -103,7 +103,6 @@ static void ResolveFeedbackDataCallback(
            entryPoint:(remoting::ChromotingEvent::SessionEntryPoint)entryPoint {
   DCHECK(_runtime->ui_task_runner()->BelongsToCurrentThread());
   DCHECK(hostInfo);
-  DCHECK(hostInfo.jabberId);
   DCHECK(hostInfo.hostId);
   DCHECK(hostInfo.publicKey);
 
@@ -113,6 +112,7 @@ static void ResolveFeedbackDataCallback(
   info.username = base::SysNSStringToUTF8(username);
   info.auth_token = base::SysNSStringToUTF8(accessToken);
   info.host_jid = base::SysNSStringToUTF8(hostInfo.jabberId);
+  info.host_ftl_id = base::SysNSStringToUTF8(hostInfo.ftlId);
   info.host_id = base::SysNSStringToUTF8(hostInfo.hostId);
   info.host_pubkey = base::SysNSStringToUTF8(hostInfo.publicKey);
   info.host_os = base::SysNSStringToUTF8(hostInfo.hostOs);
@@ -140,9 +140,9 @@ static void ResolveFeedbackDataCallback(
   _displayHandler = [[GlDisplayHandler alloc] init];
   _displayHandler.delegate = self;
 
-  _session.reset(new remoting::ChromotingSession(
+  _session = std::make_unique<remoting::ChromotingSession>(
       _sessonDelegate->GetWeakPtr(), [_displayHandler createCursorShapeStub],
-      [_displayHandler createVideoRenderer], std::move(audioStream), info));
+      [_displayHandler createVideoRenderer], std::move(audioStream), info);
   _gestureInterpreter.SetContext(_displayHandler.rendererProxy, _session.get());
   _keyboardInterpreter.SetContext(_session.get());
 }

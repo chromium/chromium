@@ -1,0 +1,54 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/closure_compiler/compile_js.gni")
+
+group("closure_compile") {
+  deps = [
+    ":compile_resources",
+  ]
+}
+
+js_type_check("compile_resources") {
+  deps = [
+    ":layout",
+    ":modes",
+    ":recordtime",
+    ":review_result",
+  ]
+}
+
+js_library("layout") {
+  deps = [
+    "../..:type",
+    "//ui/webui/resources/js:assert",
+  ]
+}
+
+js_library("modes") {
+  deps = [
+    ":recordtime",
+    "../..:sound",
+    "../..:type",
+    "../..:toast",
+    "../..:type",
+    "../..:util",
+    "../../device:constraints_preferrer",
+    "../../models:video_saver",
+    "../../models:filesystem",
+    "../../models:filenamer",
+    "../../mojo:image_capture",
+    "//media/capture/video/chromeos/mojom:cros_camera_js_library_for_compile",
+  ]
+}
+
+js_library("recordtime") {
+}
+
+js_library("review_result") {
+  deps = [
+    "../..:state",
+    "../..:util",
+  ]
+}

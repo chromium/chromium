@@ -190,17 +190,25 @@ WebMColorMetadata WebMColourParser::GetWebMColorMetadata() const {
   color_metadata.color_space = VideoColorSpace(
       primaries_, transfer_characteristics_, matrix_coefficients_, range_id);
 
-  if (max_content_light_level_ != -1)
-    color_metadata.hdr_metadata.max_content_light_level =
-        max_content_light_level_;
+  if (max_content_light_level_ != -1 || max_frame_average_light_level_ != -1 ||
+      mastering_metadata_parsed_) {
+    color_metadata.hdr_metadata = HDRMetadata();
 
-  if (max_frame_average_light_level_ != -1)
-    color_metadata.hdr_metadata.max_frame_average_light_level =
-        max_frame_average_light_level_;
+    if (max_content_light_level_ != -1) {
+      color_metadata.hdr_metadata->max_content_light_level =
+          max_content_light_level_;
+    }
 
-  if (mastering_metadata_parsed_)
-    color_metadata.hdr_metadata.mastering_metadata =
-        mastering_metadata_parser_.GetMasteringMetadata();
+    if (max_frame_average_light_level_ != -1) {
+      color_metadata.hdr_metadata->max_frame_average_light_level =
+          max_frame_average_light_level_;
+    }
+
+    if (mastering_metadata_parsed_) {
+      color_metadata.hdr_metadata->mastering_metadata =
+          mastering_metadata_parser_.GetMasteringMetadata();
+    }
+  }
 
   return color_metadata;
 }

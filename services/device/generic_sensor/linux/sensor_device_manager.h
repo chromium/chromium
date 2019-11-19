@@ -5,20 +5,24 @@
 #ifndef SERVICES_DEVICE_GENERIC_SENSOR_LINUX_SENSOR_DEVICE_MANAGER_H_
 #define SERVICES_DEVICE_GENERIC_SENSOR_LINUX_SENSOR_DEVICE_MANAGER_H_
 
-#include "base/scoped_observer.h"
-#include "base/single_thread_task_runner.h"
-#include "device/base/device_monitor_linux.h"
+#include <memory>
+
+#include "base/macros.h"
+#include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
+#include "base/sequenced_task_runner.h"
+#include "device/udev_linux/udev_watcher.h"
 #include "services/device/public/mojom/sensor.mojom.h"
 
 namespace device {
 
 struct SensorInfoLinux;
 
-// This SensorDeviceManager uses LinuxDeviceMonitor to enumerate devices
-// and listen to "add/removed" events to notify |provider_| about
-// added or removed iio devices. It has own cache to speed up an identification
-// process of removed devices.
-class SensorDeviceManager : public DeviceMonitorLinux::Observer {
+// Monitors udev added/removed events and enumerates existing sensor devices;
+// after processing, notifies its |Delegate|. It has own cache to speed up an
+// identification process of removed devices.
+// Start() must run in a task runner that can block.
+class SensorDeviceManager : public UdevWatcher::Observer {
  public:
   class Delegate {
    public:
@@ -40,11 +44,12 @@ class SensorDeviceManager : public DeviceMonitorLinux::Observer {
     virtual ~Delegate() {}
   };
 
-  SensorDeviceManager();
+  explicit SensorDeviceManager(base::WeakPtr<Delegate> delegate);
   ~SensorDeviceManager() override;
 
-  // Starts this service.
-  virtual void Start(Delegate* delegate);
+  // Starts monitoring sensor-related udev events, and enumerates existing
+  // sensors. This method must be run from a task runner that can block.
+  virtual void Start();
 
  protected:
   using SensorDeviceMap = std::unordered_map<std::string, mojom::SensorType>;
@@ -58,22 +63,22 @@ class SensorDeviceManager : public DeviceMonitorLinux::Observer {
       const std::string& attribute);
   virtual std::string GetUdevDeviceGetDevnode(udev_device* dev);
 
-  // DeviceMonitorLinux::Observer:
-  void OnDeviceAdded(udev_device* udev_device) override;
-  void OnDeviceRemoved(udev_device* device) override;
+  // UdevWatcher::Observer overrides
+  void OnDeviceAdded(ScopedUdevDevicePtr udev_device) override;
+  void OnDeviceRemoved(ScopedUdevDevicePtr device) override;
+  void OnDeviceChanged(ScopedUdevDevicePtr device) override;
 
   // Represents a map of sensors that are already known to this manager after
   // initial enumeration.
   SensorDeviceMap sensors_by_node_;
 
-  THREAD_CHECKER(thread_checker_);
+  SEQUENCE_CHECKER(sequence_checker_);
 
-  ScopedObserver<DeviceMonitorLinux, DeviceMonitorLinux::Observer> observer_;
+  std::unique_ptr<UdevWatcher> udev_watcher_;
 
-  Delegate* delegate_;
+  base::WeakPtr<Delegate> delegate_;
 
-  // A task runner, which |delegate_| lives on.
-  scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
+  scoped_refptr<base::SequencedTaskRunner> delegate_task_runner_;
 
   DISALLOW_COPY_AND_ASSIGN(SensorDeviceManager);
 };

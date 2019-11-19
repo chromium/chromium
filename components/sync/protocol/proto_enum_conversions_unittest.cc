@@ -42,9 +42,36 @@ TEST_F(ProtoEnumConversionsTest, GetPageTransitionQualifierString) {
                          sync_pb::SyncEnums::PageTransitionRedirectType_MAX);
 }
 
-TEST_F(ProtoEnumConversionsTest, GetWifiCredentialSecurityClassString) {
-  TestEnumStringFunction(sync_pb::WifiCredentialSpecifics::SecurityClass_MIN,
-                         sync_pb::WifiCredentialSpecifics::SecurityClass_MAX);
+TEST_F(ProtoEnumConversionsTest, GetWifiConfigurationSecurityTypeString) {
+  TestEnumStringFunction(
+      sync_pb::WifiConfigurationSpecificsData::SecurityType_MIN,
+      sync_pb::WifiConfigurationSpecificsData::SecurityType_MAX);
+}
+
+TEST_F(ProtoEnumConversionsTest,
+       GetWifiConfigurationAutomaticallyConnectOptionString) {
+  TestEnumStringFunction(
+      sync_pb::WifiConfigurationSpecificsData::AutomaticallyConnectOption_MIN,
+      sync_pb::WifiConfigurationSpecificsData::AutomaticallyConnectOption_MAX);
+}
+
+TEST_F(ProtoEnumConversionsTest, GetWifiConfigurationIsPreferredOptionString) {
+  TestEnumStringFunction(
+      sync_pb::WifiConfigurationSpecificsData::IsPreferredOption_MIN,
+      sync_pb::WifiConfigurationSpecificsData::IsPreferredOption_MAX);
+}
+
+TEST_F(ProtoEnumConversionsTest, GetWifiConfigurationMeteredOptionString) {
+  TestEnumStringFunction(
+      sync_pb::WifiConfigurationSpecificsData::MeteredOption_MIN,
+      sync_pb::WifiConfigurationSpecificsData::MeteredOption_MAX);
+}
+
+TEST_F(ProtoEnumConversionsTest, GetWifiConfigurationProxyOptionString) {
+  TestEnumStringFunction(sync_pb::WifiConfigurationSpecificsData::
+                             ProxyConfiguration::ProxyOption_MIN,
+                         sync_pb::WifiConfigurationSpecificsData::
+                             ProxyConfiguration::ProxyOption_MAX);
 }
 
 TEST_F(ProtoEnumConversionsTest, GetUpdatesSourceString) {

@@ -6,16 +6,18 @@
 
 namespace policy {
 
-MockPolicyServiceObserver::MockPolicyServiceObserver() {
-}
+MockPolicyServiceObserver::MockPolicyServiceObserver() = default;
 
-MockPolicyServiceObserver::~MockPolicyServiceObserver() {
-}
+MockPolicyServiceObserver::~MockPolicyServiceObserver() = default;
 
-MockPolicyService::MockPolicyService() {
-}
+MockPolicyServiceProviderUpdateObserver::
+    MockPolicyServiceProviderUpdateObserver() = default;
 
-MockPolicyService::~MockPolicyService() {
-}
+MockPolicyServiceProviderUpdateObserver::
+    ~MockPolicyServiceProviderUpdateObserver() = default;
+
+MockPolicyService::MockPolicyService() = default;
+
+MockPolicyService::~MockPolicyService() = default;
 
 }  // namespace policy

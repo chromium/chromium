@@ -6,10 +6,10 @@ package org.chromium.chrome.browser.preferences;
 
 import android.content.Context;
 import android.content.res.TypedArray;
-import android.preference.Preference;
+import android.support.v7.preference.Preference;
+import android.support.v7.preference.PreferenceViewHolder;
 import android.util.AttributeSet;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
@@ -24,7 +24,6 @@ public class SpinnerPreference extends Preference {
     private Spinner mSpinner;
     private ArrayAdapter<Object> mAdapter;
     private int mSelectedIndex;
-    private View mView;
     private final boolean mSingleLine;
 
     /**
@@ -87,12 +86,11 @@ public class SpinnerPreference extends Preference {
     }
 
     @Override
-    public View onCreateView(ViewGroup parent) {
-        if (mView != null) return mView;
+    public void onBindViewHolder(PreferenceViewHolder holder) {
+        super.onBindViewHolder(holder);
 
-        mView = super.onCreateView(parent);
-        ((TextView) mView.findViewById(R.id.title)).setText(getTitle());
-        mSpinner = (Spinner) mView.findViewById(R.id.spinner);
+        ((TextView) holder.findViewById(R.id.title)).setText(getTitle());
+        mSpinner = (Spinner) holder.findViewById(R.id.spinner);
         mSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(
@@ -109,13 +107,6 @@ public class SpinnerPreference extends Preference {
                 // No callback. Only update listeners when an actual option is selected.
             }
         });
-
-        return mView;
-    }
-
-    @Override
-    protected void onBindView(View view) {
-        super.onBindView(view);
 
         // Screen readers notice the setAdapter() call and announce it. We do not want the spinner
         // to be announced every time the view is bound (e.g. when the user scrolls away from it

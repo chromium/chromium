@@ -5,17 +5,6 @@ Case: No src, no poster
 {
   "layers": [
     {
-      "name": "LayoutView #document",
-      "bounds": [800, 600],
-      "drawsContent": false,
-      "backgroundColor": "#FFFFFF"
-    },
-    {
-      "name": "Scrolling Layer",
-      "bounds": [800, 600],
-      "drawsContent": false
-    },
-    {
       "name": "Scrolling Contents Layer",
       "bounds": [800, 600],
       "contentsOpaque": true,
@@ -29,19 +18,8 @@ Case: Displaying poster
 {
   "layers": [
     {
-      "name": "LayoutView #document",
-      "bounds": [800, 600],
-      "drawsContent": false,
-      "backgroundColor": "#FFFFFF"
-    },
-    {
-      "name": "Scrolling Layer",
-      "bounds": [785, 600],
-      "drawsContent": false
-    },
-    {
       "name": "Scrolling Contents Layer",
-      "bounds": [785, 752],
+      "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
     }
@@ -53,38 +31,42 @@ Case: Displaying movie
 {
   "layers": [
     {
-      "name": "LayoutView #document",
-      "bounds": [800, 600],
-      "drawsContent": false,
-      "backgroundColor": "#FFFFFF"
-    },
-    {
-      "name": "Scrolling Layer",
-      "bounds": [785, 600],
-      "drawsContent": false
-    },
-    {
       "name": "Scrolling Contents Layer",
-      "bounds": [785, 1112],
+      "bounds": [785, 782],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutVideo VIDEO",
-      "position": [8, 8],
+      "name": "ContentsLayer for LayoutVideo VIDEO",
       "bounds": [352, 288],
-      "drawsContent": false
+      "transform": 1
     },
     {
-      "name": "LayoutFlexibleBox (relative positioned) DIV class='sizing-small phase-ready state-stopped'",
-      "position": [8, 8],
-      "bounds": [352, 288]
+      "name": "LayoutFlexibleBox (relative positioned) DIV class='sizing-small phase-ready state-scrubbing'",
+      "bounds": [352, 288],
+      "transform": 1
     },
     {
-      "name": "LayoutBlockFlow (positioned) DIV",
-      "position": [8, 8],
+      "name": "Squashing Layer (first squashed layer: LayoutNGBlockFlow (positioned) DIV)",
       "bounds": [352, 288],
-      "drawsContent": false
+      "transform": 1
+    },
+    {
+      "name": "ContentsLayer for Vertical Scrollbar Layer",
+      "position": [785, 0],
+      "bounds": [15, 600],
+      "contentsOpaque": true
+    }
+  ],
+  "transforms": [
+    {
+      "id": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [8, 8, 0, 1]
+      ]
     }
   ]
 }

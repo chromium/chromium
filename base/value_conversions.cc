@@ -65,7 +65,7 @@ bool GetValueAsTime(const Value& value, Time* time) {
 // |Value| does not support 64-bit integers, and doubles do not have enough
 // precision, so we store the 64-bit time value as a string instead.
 Value CreateTimeDeltaValue(const TimeDelta& time_delta) {
-  std::string string_value = base::Int64ToString(time_delta.InMicroseconds());
+  std::string string_value = base::NumberToString(time_delta.InMicroseconds());
   return Value(string_value);
 }
 
@@ -92,20 +92,11 @@ bool GetValueAsUnguessableToken(const Value& value, UnguessableToken* token) {
     return false;
   }
 
-  // TODO(dcheng|yucliu): Make a function that accepts non vector variant and
-  // reads a fixed number of bytes.
-  std::vector<uint8_t> high_low_bytes;
-  if (!HexStringToBytes(value.GetString(), &high_low_bytes)) {
-    return false;
-  }
-
   UnguessableTokenRepresentation representation;
-  if (high_low_bytes.size() != sizeof(representation.buffer)) {
+  if (!HexStringToSpan(value.GetString(), representation.buffer)) {
     return false;
   }
 
-  std::copy(high_low_bytes.begin(), high_low_bytes.end(),
-            std::begin(representation.buffer));
   *token = UnguessableToken::Deserialize(representation.field.high,
                                          representation.field.low);
   return true;

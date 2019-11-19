@@ -58,10 +58,10 @@ PasswordCredential* PasswordCredential::Create(
       continue;
 
     Vector<String> autofill_tokens;
-    ToHTMLElement(submittable_element)
-        ->FastGetAttribute(html_names::kAutocompleteAttr)
+    submittable_element->ToHTMLElement()
+        .FastGetAttribute(html_names::kAutocompleteAttr)
         .GetString()
-        .DeprecatedLower()
+        .LowerASCII()
         .Split(' ', autofill_tokens);
     for (const auto& token : autofill_tokens) {
       if (token == "current-password" || token == "new-password") {
@@ -84,7 +84,8 @@ PasswordCredential* PasswordCredential::Create(const String& id,
                                                const String& password,
                                                const String& name,
                                                const KURL& icon_url) {
-  return MakeGarbageCollected<PasswordCredential>(id, password, name, icon_url);
+  return MakeGarbageCollected<PasswordCredential>(
+      id, password, name, icon_url.IsEmpty() ? blink::KURL() : icon_url);
 }
 
 PasswordCredential::PasswordCredential(const String& id,

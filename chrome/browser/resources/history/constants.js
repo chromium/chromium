@@ -15,12 +15,16 @@ const BROWSING_GAP_TIME = 15 * 60 * 1000;
 /**
  * The largest bucket value for UMA histogram, based on entry ID. All entries
  * with IDs greater than this will be included in this bucket.
+ * Keep consistent with the UMA constants on the Android history page
+ * (see HistoryManager.java).
  * @type {number}
  */
 const UMA_MAX_BUCKET_VALUE = 1000;
 
 /**
  * The largest bucket value for a UMA histogram that is a subset of above.
+ * Keep consistent with the UMA constants on the Android history page
+ * (see HistoryManager.java).
  * @type {number}
  */
 const UMA_MAX_SUBSET_BUCKET_VALUE = 100;
@@ -44,7 +48,10 @@ const HistoryPageViewHistogram = {
 const SYNCED_TABS_HISTOGRAM_NAME = 'HistoryPage.OtherDevicesMenu';
 
 /**
- * Histogram buckets for UMA tracking of synced tabs.
+ * Histogram buckets for UMA tracking of synced tabs. Keep in sync with
+ * chrome/browser/ui/webui/foreign_session_handler.h. These values are persisted
+ * to logs. Entries should not be renumbered and numeric values should never be
+ * reused.
  * @enum {number}
  */
 const SyncedTabsHistogram = {
@@ -59,5 +66,6 @@ const SyncedTabsHistogram = {
   OPEN_ALL: 8,
   HAS_FOREIGN_DATA: 9,
   HIDE_FOR_NOW: 10,
-  LIMIT: 11  // Should always be the last one.
+  OPENED_LINK_VIA_CONTEXT_MENU: 11,
+  LIMIT: 12  // Should always be the last one.
 };

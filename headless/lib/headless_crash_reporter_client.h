@@ -29,6 +29,10 @@ class HeadlessCrashReporterClient : public crash_reporter::CrashReporterClient {
   void GetProductNameAndVersion(const char** product_name,
                                 const char** version) override;
 
+  void GetProductNameAndVersion(std::string* product_name,
+                                std::string* version,
+                                std::string* channel) override;
+
   base::FilePath GetReporterLogFilename() override;
 #endif  // defined(OS_POSIX) && !defined(OS_MACOSX)
 

@@ -11,6 +11,15 @@
 
 namespace extensions {
 
+namespace {
+
+// Install warning for tests running Manifest v3. The current highest
+// supported manifest version is 2.
+constexpr char kManifestVersionWarning[] =
+    "The maximum currently-supported manifest version is 2, but this is 3.  "
+    "Certain features may not work as expected.";
+}  // namespace
+
 using PermissionsParserTest = ChromeManifestTest;
 
 TEST_F(PermissionsParserTest, RemoveOverlappingAPIPermissions) {
@@ -97,4 +106,33 @@ TEST_F(PermissionsParserTest, OptionalHostPermissionsAllURLs) {
               testing::UnorderedElementsAre("*://*/*"));
 }
 
+TEST_F(PermissionsParserTest, HostPermissionsKey) {
+  std::vector<std::string> expected_warnings;
+  expected_warnings.push_back(ErrorUtils::FormatErrorMessage(
+      manifest_errors::kPermissionUnknownOrMalformed, "https://google.com/*"));
+
+  expected_warnings.push_back(kManifestVersionWarning);
+
+  scoped_refptr<Extension> extension(
+      LoadAndExpectWarnings("host_permissions_key.json", expected_warnings));
+
+  // Expect that the host specified in |host_permissions| is parsed.
+  const URLPatternSet& required_hosts =
+      PermissionsParser::GetRequiredPermissions(extension.get())
+          .explicit_hosts();
+
+  EXPECT_THAT(*required_hosts.ToStringVector(),
+              testing::UnorderedElementsAre("https://example.com/*"));
+}
+
+TEST_F(PermissionsParserTest, HostPermissionsKeyInvalidHosts) {
+  std::vector<std::string> expected_warnings;
+  expected_warnings.push_back(ErrorUtils::FormatErrorMessage(
+      manifest_errors::kPermissionUnknownOrMalformed, "malformed_host"));
+
+  expected_warnings.push_back(kManifestVersionWarning);
+
+  scoped_refptr<Extension> extension(LoadAndExpectWarnings(
+      "host_permissions_key_invalid_hosts.json", expected_warnings));
+}
 }  // namespace extensions

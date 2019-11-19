@@ -1,14 +1,14 @@
 <link rel="import" href="../../../html/polymer.html">
 
 <link rel="import" href="../../shared_style_css.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/paper-icon-button/paper-icon-button-light.html">
+<link rel="import" href="../../cr_icon_button/cr_icon_button.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/iron-a11y-keys/iron-a11y-keys.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/paper-spinner/paper-spinner-lite.html">
 <link rel="import" href="cr_png_behavior.html">
+<link rel="import" href="icons.html">
 
 <dom-module id="cr-camera">
   <template>
-    <!-- Note: Do not include cr-shared-style, we use different
-         paper-icon-button-light styling -->
     <style>
       :host {
         --cr-camera-hidden-frame-size: 406px;
@@ -104,38 +104,34 @@
       }
 
       #cameraControls > div {
-        height: 24px;
+        height: 28px;
         line-height: normal;
-        margin: 0 12px;
-        width: 24px;
+        margin: 0 10px;
+        width: 28px;
       }
 
-      #cameraControls > button {
-        background-position: center;
-        background-repeat: no-repeat;
-        background-size: 20px;
-        display: block;
+      #cameraControls cr-icon-button {
+        --cr-icon-button-color: white;
+        --cr-icon-button-focus-color: var(--google-blue-500);
+        --cr-icon-button-icon-size: 20px;
+        --cr-icon-button-size: 28px;
+        margin: 0;
       }
 
       #takePhoto {
-        background-image: url(camera_shutter_icon.svg);
+        --cr-icon-button-fill-color-focus: #ededed;
+        --cr-icon-button-fill-color: #ededed;
+        --cr-icon-button-stroke-color-focus: var(--google-blue-500);
+        --cr-icon-button-stroke-color: white;
       }
 
       :host([videomode]) #takePhoto {
-        background-image: url(videocam_shutter_icon.svg);
+        --cr-icon-button-fill-color: red;
+        --cr-icon-button-fill-color-focus: red;
       }
 
       :host-context([dir=rtl]) #switchMode {
         float: left;
-      }
-
-      #switchMode {
-        background-image: url(videocam_icon.svg);
-        margin-inline-end: 8px;
-      }
-
-      :host([videomode]) #switchMode {
-        background-image: url(camera_alt_icon.svg);
       }
     </style>
     <div id="perspectiveBox">
@@ -149,22 +145,21 @@
         <!-- Empty div for even 'space-between' justification -->
       </div>
       <div>
-        <paper-icon-button-light>
-          <button id="takePhoto" tabindex="1"
-              title="[[getTakePhotoLabel_(videomode, takePhotoLabel,
-                  captureVideoLabel)]]" on-tap="takePhoto"
-              disabled="[[!cameraOnline_]]">
-          </button>
-        </paper-icon-button-light>
+        <iron-a11y-keys keys="up down left right"></iron-a11y-keys>
+        <cr-icon-button id="takePhoto" tabindex="1"
+            title="[[getTakePhotoLabel_(videomode, takePhotoLabel,
+                captureVideoLabel)]]" on-click="takePhoto"
+            disabled="[[!cameraOnline_]]"
+            iron-icon="[[getTakePhotoIcon_(videomode)]]">
+        </cr-icon-button>
       </div>
       <div>
-        <paper-icon-button-light hidden="[[!videoModeEnabled]]">
-          <button id="switchMode" tabindex="2"
-              title="[[getSwitchModeLabel_(videomode, switchModeToCameraLabel,
-                  switchModeToVideoLabel)]]" on-tap="onTapSwitchMode_"
-              disabled="[[!cameraOnline_]]">
-          </button>
-        </paper-icon-button-light>
+        <cr-icon-button hidden="[[!videoModeEnabled]]" id="switchMode"
+            tabindex="2" on-click="onTapSwitchMode_"
+            title="[[getSwitchModeLabel_(videomode, switchModeToCameraLabel,
+                switchModeToVideoLabel)]]" disabled="[[!cameraOnline_]]"
+            iron-icon="[[getSwitchModeIcon_(videomode)]]">
+        </cr-icon-button>
       </div>
     </div>
   </template>

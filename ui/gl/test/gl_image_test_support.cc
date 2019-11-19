@@ -19,6 +19,18 @@
 
 namespace gl {
 
+namespace {
+
+template <typename T>
+void rgb_to_yuv(uint8_t r, uint8_t g, uint8_t b, T* y, T* u, T* v) {
+  // These values are used in the transformation from YUV to RGB color values.
+  // They are taken from http://www.fourcc.org/fccyvrgb.php
+  *y = (0.257 * r) + (0.504 * g) + (0.098 * b) + 16;
+  *u = -(0.148 * r) - (0.291 * g) + (0.439 * b) + 128;
+  *v = (0.439 * r) - (0.368 * g) - (0.071 * b) + 128;
+}
+}  // namespace
+
 // static
 void GLImageTestSupport::InitializeGL(
     base::Optional<GLImplementation> prefered_impl) {
@@ -34,7 +46,7 @@ void GLImageTestSupport::InitializeGL(
   DCHECK(!allowed_impls.empty());
 
   GLImplementation impl = prefered_impl ? *prefered_impl : allowed_impls[0];
-  DCHECK(base::ContainsValue(allowed_impls, impl));
+  DCHECK(base::Contains(allowed_impls, impl));
 
   GLSurfaceTestSupport::InitializeOneOffImplementation(impl, true);
 #if defined(USE_OZONE)
@@ -71,6 +83,15 @@ void GLImageTestSupport::SetBufferDataToColor(int width,
         uint16_t* row = reinterpret_cast<uint16_t*>(data + y * stride);
         for (int x = 0; x < width; ++x) {
           row[x] = static_cast<uint16_t>(color[0] << 8);
+        }
+      }
+      return;
+    case gfx::BufferFormat::RGBA_4444:
+      DCHECK_EQ(0, plane);
+      for (int y = 0; y < height; ++y) {
+        for (int x = 0; x < width; ++x) {
+          data[y * stride + x * 2 + 0] = (color[1] << 4) | (color[0] & 0xf);
+          data[y * stride + x * 2 + 1] = (color[3] << 4) | (color[2] & 0xf);
         }
       }
       return;
@@ -177,13 +198,9 @@ void GLImageTestSupport::SetBufferDataToColor(int width,
       DCHECK_LT(plane, 3);
       DCHECK_EQ(0, height % 2);
       DCHECK_EQ(0, width % 2);
-      // These values are used in the transformation from YUV to RGB color
-      // values. They are taken from the following webpage:
-      // http://www.fourcc.org/fccyvrgb.php
-      uint8_t yvu[] = {
-          (0.257 * color[0]) + (0.504 * color[1]) + (0.098 * color[2]) + 16,
-          (0.439 * color[0]) - (0.368 * color[1]) - (0.071 * color[2]) + 128,
-          -(0.148 * color[0]) - (0.291 * color[1]) + (0.439 * color[2]) + 128};
+      uint8_t yvu[3] = {};
+      rgb_to_yuv(color[0], color[1], color[2], &yvu[0], &yvu[2], &yvu[1]);
+
       if (plane == 0) {
         for (int y = 0; y < height; ++y) {
           for (int x = 0; x < width; ++x) {
@@ -203,13 +220,9 @@ void GLImageTestSupport::SetBufferDataToColor(int width,
       DCHECK_LT(plane, 2);
       DCHECK_EQ(0, height % 2);
       DCHECK_EQ(0, width % 2);
-      // These values are used in the transformation from YUV to RGB color
-      // values. They are taken from the following webpage:
-      // http://www.fourcc.org/fccyvrgb.php
-      uint8_t yuv[] = {
-          (0.257 * color[0]) + (0.504 * color[1]) + (0.098 * color[2]) + 16,
-          -(0.148 * color[0]) - (0.291 * color[1]) + (0.439 * color[2]) + 128,
-          (0.439 * color[0]) - (0.368 * color[1]) - (0.071 * color[2]) + 128};
+      uint8_t yuv[3] = {};
+      rgb_to_yuv(color[0], color[1], color[2], &yuv[0], &yuv[1], &yuv[2]);
+
       if (plane == 0) {
         for (int y = 0; y < height; ++y) {
           for (int x = 0; x < width; ++x) {
@@ -226,10 +239,30 @@ void GLImageTestSupport::SetBufferDataToColor(int width,
       }
       return;
     }
-    case gfx::BufferFormat::RGBA_4444:
-    case gfx::BufferFormat::UYVY_422:
-      NOTREACHED() << gfx::BufferFormatToString(format);
+    case gfx::BufferFormat::P010: {
+      DCHECK_LT(plane, 3);
+      DCHECK_EQ(0, height % 2);
+      DCHECK_EQ(0, width % 2);
+      uint16_t yuv[3] = {};
+      rgb_to_yuv(color[0], color[1], color[2], &yuv[0], &yuv[1], &yuv[2]);
+
+      if (plane == 0) {
+        for (int y = 0; y < height; ++y) {
+          uint16_t* row = reinterpret_cast<uint16_t*>(data + y * stride);
+          for (int x = 0; x < width; ++x)
+            row[x] = yuv[0] << 2;
+        }
+      } else {
+        for (int y = 0; y < height / 2; ++y) {
+          uint16_t* row = reinterpret_cast<uint16_t*>(data + y * stride);
+          for (int x = 0; x < width; x += 2) {
+            row[x] = yuv[1] << 2;
+            row[x + 1] = yuv[2] << 2;
+          }
+        }
+      }
       return;
+    }
   }
   NOTREACHED();
 }

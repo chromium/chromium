@@ -5,8 +5,8 @@
 #include <memory>
 
 #include "base/bind.h"
-#include "base/message_loop/message_loop.h"
 #include "base/run_loop.h"
+#include "base/task/single_thread_task_executor.h"
 #include "mojo/public/cpp/bindings/binding_set.h"
 #include "services/service_manager/public/cpp/binder_registry.h"
 #include "services/service_manager/public/cpp/connector.h"
@@ -24,7 +24,7 @@ class Parent : public service_manager::Service,
   explicit Parent(service_manager::mojom::ServiceRequest request)
       : service_binding_(this, std::move(request)) {
     registry_.AddInterface<service_manager::test::mojom::Parent>(
-        base::Bind(&Parent::Create, base::Unretained(this)));
+        base::BindRepeating(&Parent::Create, base::Unretained(this)));
   }
 
   ~Parent() override = default;
@@ -66,6 +66,6 @@ class Parent : public service_manager::Service,
 }  // namespace
 
 void ServiceMain(service_manager::mojom::ServiceRequest request) {
-  base::MessageLoop message_loop;
+  base::SingleThreadTaskExecutor main_task_executor;
   Parent(std::move(request)).RunUntilTermination();
 }

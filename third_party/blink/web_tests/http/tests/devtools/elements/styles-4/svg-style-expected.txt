@@ -12,7 +12,7 @@ rect { (svg-style.xhtml:6 -> svg-style.xhtml:6:16)
 svg:rect[Attributes Style] { ()
 
 [expanded] 
-:not(svg), :not(foreignObject) > svg { (user agent stylesheet)
+:not(svg) { (user agent stylesheet)
     transform-origin: 0px 0px;
 
 ======== Inherited from html ========

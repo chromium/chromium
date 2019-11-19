@@ -31,7 +31,7 @@
       request.requestContent().then(step3);
     }
 
-    function step3(content) {
+    function step3({ content, error, isEncoded }) {
       TestRunner.addResult('request.content: ' + content);
       ConsoleTestRunner.addConsoleSniffer(step4);
       TestRunner.addIframe('resources/json.php?type=' + encodedContentType);
@@ -43,7 +43,7 @@
       request.requestContent().then(step5);
     }
 
-    function step5(content) {
+    function step5({ content, error, isEncoded }) {
       TestRunner.addResult('request.content: ' + content);
       callback();
     }

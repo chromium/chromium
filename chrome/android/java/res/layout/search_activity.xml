@@ -22,7 +22,7 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="@dimen/toolbar_height_no_shadow"
-            android:background="@android:color/white"
+            android:background="@color/toolbar_background_primary"
             android:paddingStart="@dimen/toolbar_edge_padding"
             android:paddingEnd="@dimen/toolbar_edge_padding"
             android:clickable="true" >

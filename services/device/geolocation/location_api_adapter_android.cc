@@ -10,7 +10,7 @@
 #include "base/location.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
-#include "jni/LocationProviderAdapter_jni.h"
+#include "services/device/geolocation/geolocation_jni_headers/LocationProviderAdapter_jni.h"
 #include "services/device/geolocation/location_provider_android.h"
 
 using base::android::AttachCurrentThread;

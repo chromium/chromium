@@ -1,8 +1,6 @@
 #ifndef _RAR_SYSTEM_
 #define _RAR_SYSTEM_
 
-namespace third_party_unrar {
-
 #ifdef _WIN_ALL
 #ifndef BELOW_NORMAL_PRIORITY_CLASS
 #define BELOW_NORMAL_PRIORITY_CLASS     0x00004000
@@ -25,6 +23,7 @@ clock_t MonoClock();
 void Wait();
 bool EmailFile(const wchar *FileName,const wchar *MailToW);
 void Shutdown(POWER_MODE Mode);
+bool ShutdownCheckAnother(bool Open);
 
 #ifdef _WIN_ALL
 HMODULE WINAPI LoadSysLibrary(const wchar *Name);
@@ -37,7 +36,5 @@ enum SSE_VERSION {SSE_NONE,SSE_SSE,SSE_SSE2,SSE_SSSE3,SSE_SSE41,SSE_AVX2};
 SSE_VERSION GetSSEVersion();
 extern SSE_VERSION _SSE_Version;
 #endif
-
-}  // namespace third_party_unrar
 
 #endif

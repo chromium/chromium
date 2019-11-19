@@ -15,10 +15,10 @@
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
 #include "base/values.h"
+#include "chrome/browser/supervised_user/supervised_user_error_page/supervised_user_error_page.h"
 #include "chrome/browser/supervised_user/supervised_user_site_list.h"
 #include "chrome/browser/supervised_user/supervised_users.h"
 #include "components/safe_search_api/url_checker.h"
-#include "components/supervised_user_error_page/supervised_user_error_page.h"
 
 class GURL;
 class SupervisedUserBlacklist;
@@ -42,6 +42,8 @@ class SharedURLLoaderFactory;
 //     sources.
 class SupervisedUserURLFilter {
  public:
+  // A Java counterpart will be generated for this enum.
+  // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.superviseduser
   enum FilteringBehavior {
     ALLOW,
     WARN,
@@ -164,8 +166,8 @@ class SupervisedUserURLFilter {
   // present, and resets the default behavior to "allow".
   void Clear();
 
-  void AddObserver(Observer* observer) const;
-  void RemoveObserver(Observer* observer) const;
+  void AddObserver(Observer* observer);
+  void RemoveObserver(Observer* observer);
 
   // Sets a different task runner for testing.
   void SetBlockingTaskRunnerForTesting(
@@ -187,8 +189,7 @@ class SupervisedUserURLFilter {
                      safe_search_api::Classification classification,
                      bool uncertain) const;
 
-  // This is mutable to allow notification in const member functions.
-  mutable base::ObserverList<Observer>::Unchecked observers_;
+  base::ObserverList<Observer>::Unchecked observers_;
 
   FilteringBehavior default_behavior_;
   std::unique_ptr<Contents> contents_;
@@ -210,7 +211,7 @@ class SupervisedUserURLFilter {
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  base::WeakPtrFactory<SupervisedUserURLFilter> weak_ptr_factory_;
+  base::WeakPtrFactory<SupervisedUserURLFilter> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(SupervisedUserURLFilter);
 };

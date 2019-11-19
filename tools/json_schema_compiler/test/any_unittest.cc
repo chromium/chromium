@@ -5,24 +5,20 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "tools/json_schema_compiler/test/any.h"
 
-using namespace test::api::any;
-
 TEST(JsonSchemaCompilerAnyTest, AnyTypePopulate) {
   {
-    AnyType any_type;
-    std::unique_ptr<base::DictionaryValue> any_type_value(
-        new base::DictionaryValue());
+    test::api::any::AnyType any_type;
+    auto any_type_value = std::make_unique<base::DictionaryValue>();
     any_type_value->SetString("any", "value");
-    EXPECT_TRUE(AnyType::Populate(*any_type_value, &any_type));
+    EXPECT_TRUE(test::api::any::AnyType::Populate(*any_type_value, &any_type));
     std::unique_ptr<base::Value> any_type_to_value(any_type.ToValue());
     EXPECT_TRUE(any_type_value->Equals(any_type_to_value.get()));
   }
   {
-    AnyType any_type;
-    std::unique_ptr<base::DictionaryValue> any_type_value(
-        new base::DictionaryValue());
+    test::api::any::AnyType any_type;
+    auto any_type_value = std::make_unique<base::DictionaryValue>();
     any_type_value->SetInteger("any", 5);
-    EXPECT_TRUE(AnyType::Populate(*any_type_value, &any_type));
+    EXPECT_TRUE(test::api::any::AnyType::Populate(*any_type_value, &any_type));
     std::unique_ptr<base::Value> any_type_to_value(any_type.ToValue());
     EXPECT_TRUE(any_type_value->Equals(any_type_to_value.get()));
   }
@@ -30,28 +26,28 @@ TEST(JsonSchemaCompilerAnyTest, AnyTypePopulate) {
 
 TEST(JsonSchemaCompilerAnyTest, OptionalAnyParamsCreate) {
   {
-    std::unique_ptr<base::ListValue> params_value(new base::ListValue());
-    std::unique_ptr<OptionalAny::Params> params(
-        OptionalAny::Params::Create(*params_value));
+    auto params_value = std::make_unique<base::ListValue>();
+    std::unique_ptr<test::api::any::OptionalAny::Params> params(
+        test::api::any::OptionalAny::Params::Create(*params_value));
     EXPECT_TRUE(params.get());
     EXPECT_FALSE(params->any_name.get());
   }
   {
-    std::unique_ptr<base::ListValue> params_value(new base::ListValue());
-    std::unique_ptr<base::Value> param(new base::Value("asdf"));
+    auto params_value = std::make_unique<base::ListValue>();
+    auto param = std::make_unique<base::Value>("asdf");
     params_value->Append(param->CreateDeepCopy());
-    std::unique_ptr<OptionalAny::Params> params(
-        OptionalAny::Params::Create(*params_value));
+    std::unique_ptr<test::api::any::OptionalAny::Params> params(
+        test::api::any::OptionalAny::Params::Create(*params_value));
     ASSERT_TRUE(params);
     ASSERT_TRUE(params->any_name);
     EXPECT_TRUE(params->any_name->Equals(param.get()));
   }
   {
-    std::unique_ptr<base::ListValue> params_value(new base::ListValue());
-    std::unique_ptr<base::Value> param(new base::Value(true));
+    auto params_value = std::make_unique<base::ListValue>();
+    auto param = std::make_unique<base::Value>(true);
     params_value->Append(param->CreateDeepCopy());
-    std::unique_ptr<OptionalAny::Params> params(
-        OptionalAny::Params::Create(*params_value));
+    std::unique_ptr<test::api::any::OptionalAny::Params> params(
+        test::api::any::OptionalAny::Params::Create(*params_value));
     ASSERT_TRUE(params);
     ASSERT_TRUE(params->any_name);
     EXPECT_TRUE(params->any_name->Equals(param.get()));

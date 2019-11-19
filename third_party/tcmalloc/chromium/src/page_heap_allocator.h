@@ -163,15 +163,15 @@ class STLPageHeapAllocator {
 
  private:
   struct Storage {
-    explicit Storage(base::LinkerInitialized x) {}
     PageHeapAllocator<T> allocator;
     bool initialized;
   };
   static Storage underlying_;
 };
 
-template<typename T, class LockingTag>
-typename STLPageHeapAllocator<T, LockingTag>::Storage STLPageHeapAllocator<T, LockingTag>::underlying_(base::LINKER_INITIALIZED);
+template <typename T, class LockingTag>
+typename STLPageHeapAllocator<T, LockingTag>::Storage
+    STLPageHeapAllocator<T, LockingTag>::underlying_;
 
 }  // namespace tcmalloc
 

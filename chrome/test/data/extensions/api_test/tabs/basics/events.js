@@ -17,7 +17,7 @@ chrome.test.runTests([
 
   function tabsOnCreated() {
     chrome.test.listenOnce(chrome.tabs.onCreated, function(tab) {
-      assertEq(pageUrl("f"), tab.url);
+      assertEq(pageUrl("f"), tab.pendingUrl || tab.url);
       otherTabId = tab.id;
       assertEq(true, tab.selected);
     });
@@ -182,7 +182,7 @@ chrome.test.runTests([
       assertTrue(!window.incognito);
       windowEventsWindow = window;
       chrome.tabs.getAllInWindow(window.id, pass(function(tabs) {
-        assertEq(pageUrl("a"), tabs[0].url);
+        assertEq(pageUrl("a"), tabs[0].pendingUrl || tabs[0].url);
       }));
     });
 

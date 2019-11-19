@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/message_loop/message_loop.h"
 #include "base/message_loop/message_pump_default.h"
+#include "base/message_loop/message_pump_type.h"
 #include "base/run_loop.h"
 #include "base/sequence_checker.h"
 #include "base/single_thread_task_runner.h"
@@ -22,9 +23,9 @@
 #include "base/task/sequence_manager/test/test_task_queue.h"
 #include "base/task/sequence_manager/test/test_task_time_observer.h"
 #include "base/task/sequence_manager/thread_controller_with_message_pump_impl.h"
-#include "base/task/task_scheduler/task_scheduler.h"
-#include "base/task/task_scheduler/task_scheduler_impl.h"
 #include "base/task/task_traits.h"
+#include "base/task/thread_pool/thread_pool_impl.h"
+#include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/default_tick_clock.h"
@@ -64,15 +65,7 @@ class PerfTestTimeDomain : public MockTimeDomain {
   DISALLOW_COPY_AND_ASSIGN(PerfTestTimeDomain);
 };
 
-// TODO(crbug.com/891670): This can be simplified after the transition away from
-// the old base::MessageLoop.
 enum class PerfTestType {
-  // A SequenceManager on top of a MessageLoop (which is SequenceManager based).
-  // This configuration is now strictly overkill.
-  kUseSequenceManagerWithMessageLoop,
-  kUseSequenceManagerWithUIMessageLoop,
-  kUseSequenceManagerWithIOMessageLoop,
-
   // A SequenceManager with a ThreadControllerWithMessagePumpImpl driving the
   // thread.
   kUseSequenceManagerWithMessagePump,
@@ -80,14 +73,8 @@ enum class PerfTestType {
   kUseSequenceManagerWithIOMessagePump,
   kUseSequenceManagerWithMessagePumpAndRandomSampling,
 
-  // A SequenceManager backed base::MessageLoop (now the default and only
-  // base::MessageLoop configuration).
-  kUseMessageLoop,
-  kUseUIMessageLoop,
-  kUseIOMessageLoop,
-
-  // A SingleThreadTaskRunner in the worker pool.
-  kUseSingleThreadInWorkerPool,
+  // A SingleThreadTaskRunner in the thread pool.
+  kUseSingleThreadInThreadPool,
 };
 
 // Customization point for SequenceManagerPerfTest which allows us to test
@@ -161,10 +148,10 @@ class SequenceManagerWithMessageLoopPerfTestDelegate
  public:
   explicit SequenceManagerWithMessageLoopPerfTestDelegate(const char* name)
       : name_(name), message_loop_(new MessageLoopType()) {
-    SetSequenceManager(SequenceManagerForTest::Create(
-        message_loop_->GetMessageLoopBase(), message_loop_->task_runner(),
-        DefaultTickClock::GetInstance(),
-        SequenceManager::Settings{.randomised_sampling_enabled = false}));
+    SetSequenceManager(CreateSequenceManagerOnCurrentThread(
+        SequenceManager::Settings::Builder()
+            .SetRandomisedSamplingEnabled(false)
+            .Build()));
   }
 
   ~SequenceManagerWithMessageLoopPerfTestDelegate() override { ShutDown(); }
@@ -181,15 +168,17 @@ class SequenceManagerWithMessagePumpPerfTestDelegate
  public:
   SequenceManagerWithMessagePumpPerfTestDelegate(
       const char* name,
-      MessageLoop::Type type,
+      MessagePumpType type,
       bool randomised_sampling_enabled = false)
       : name_(name) {
+    auto settings =
+        SequenceManager::Settings::Builder()
+            .SetRandomisedSamplingEnabled(randomised_sampling_enabled)
+            .Build();
     SetSequenceManager(SequenceManagerForTest::Create(
         std::make_unique<internal::ThreadControllerWithMessagePumpImpl>(
-            MessageLoop ::CreateMessagePumpForType(type),
-            DefaultTickClock::GetInstance()),
-        SequenceManager::Settings{.randomised_sampling_enabled =
-                                      randomised_sampling_enabled}));
+            MessagePump::Create(type), settings),
+        std::move(settings)));
 
     // ThreadControllerWithMessagePumpImpl doesn't provide a default task
     // runner.
@@ -238,21 +227,21 @@ class MessageLoopPerfTestDelegate : public PerfTestDelegate {
   std::unique_ptr<RunLoop> run_loop_;
 };
 
-class SingleThreadInWorkerPoolPerfTestDelegate : public PerfTestDelegate {
+class SingleThreadInThreadPoolPerfTestDelegate : public PerfTestDelegate {
  public:
-  SingleThreadInWorkerPoolPerfTestDelegate() : done_cond_(&done_lock_) {
-    TaskScheduler::SetInstance(
-        std::make_unique<::base::internal::TaskSchedulerImpl>("Test"));
-    TaskScheduler::GetInstance()->StartWithDefaultParams();
+  SingleThreadInThreadPoolPerfTestDelegate() : done_cond_(&done_lock_) {
+    ThreadPoolInstance::Set(
+        std::make_unique<::base::internal::ThreadPoolImpl>("Test"));
+    ThreadPoolInstance::Get()->StartWithDefaultParams();
   }
 
-  ~SingleThreadInWorkerPoolPerfTestDelegate() override {
-    TaskScheduler::GetInstance()->JoinForTesting();
-    TaskScheduler::SetInstance(nullptr);
+  ~SingleThreadInThreadPoolPerfTestDelegate() override {
+    ThreadPoolInstance::Get()->JoinForTesting();
+    ThreadPoolInstance::Set(nullptr);
   }
 
   const char* GetName() const override {
-    return " single thread in WorkerPool ";
+    return " single thread in ThreadPool ";
   }
 
   bool VirtualTimeIsSupported() const override { return false; }
@@ -260,8 +249,8 @@ class SingleThreadInWorkerPoolPerfTestDelegate : public PerfTestDelegate {
   bool MultipleQueuesSupported() const override { return false; }
 
   scoped_refptr<TaskRunner> CreateTaskRunner() override {
-    return CreateSingleThreadTaskRunnerWithTraits(
-        {TaskPriority::USER_BLOCKING});
+    return CreateSingleThreadTaskRunner(
+        {ThreadPool(), TaskPriority::USER_BLOCKING});
   }
 
   void WaitUntilDone() override {
@@ -592,53 +581,26 @@ class SequenceManagerPerfTest : public testing::TestWithParam<PerfTestType> {
 
   std::unique_ptr<PerfTestDelegate> CreateDelegate() {
     switch (GetParam()) {
-      case PerfTestType::kUseSequenceManagerWithMessageLoop:
-        return std::make_unique<
-            SequenceManagerWithMessageLoopPerfTestDelegate<MessageLoop>>(
-            " SequenceManager with MessageLoop ");
-
-      case PerfTestType::kUseSequenceManagerWithUIMessageLoop:
-        return std::make_unique<
-            SequenceManagerWithMessageLoopPerfTestDelegate<MessageLoopForUI>>(
-            " SequenceManager with MessageLoopForUI ");
-
-      case PerfTestType::kUseSequenceManagerWithIOMessageLoop:
-        return std::make_unique<
-            SequenceManagerWithMessageLoopPerfTestDelegate<MessageLoopForIO>>(
-            " SequenceManager with MessageLoopForIO ");
-
       case PerfTestType::kUseSequenceManagerWithMessagePump:
         return std::make_unique<SequenceManagerWithMessagePumpPerfTestDelegate>(
             " SequenceManager with MessagePumpDefault ",
-            MessageLoop::TYPE_DEFAULT);
+            MessagePumpType::DEFAULT);
 
       case PerfTestType::kUseSequenceManagerWithUIMessagePump:
         return std::make_unique<SequenceManagerWithMessagePumpPerfTestDelegate>(
-            " SequenceManager with MessagePumpForUI ", MessageLoop::TYPE_UI);
+            " SequenceManager with MessagePumpForUI ", MessagePumpType::UI);
 
       case PerfTestType::kUseSequenceManagerWithIOMessagePump:
         return std::make_unique<SequenceManagerWithMessagePumpPerfTestDelegate>(
-            " SequenceManager with MessagePumpForIO ", MessageLoop::TYPE_IO);
+            " SequenceManager with MessagePumpForIO ", MessagePumpType::IO);
 
       case PerfTestType::kUseSequenceManagerWithMessagePumpAndRandomSampling:
         return std::make_unique<SequenceManagerWithMessagePumpPerfTestDelegate>(
             " SequenceManager with MessagePumpDefault and random sampling ",
-            MessageLoop::TYPE_DEFAULT, true);
+            MessagePumpType::DEFAULT, true);
 
-      case PerfTestType::kUseMessageLoop:
-        return std::make_unique<MessageLoopPerfTestDelegate>(
-            " MessageLoop ", std::make_unique<MessageLoop>());
-
-      case PerfTestType::kUseUIMessageLoop:
-        return std::make_unique<MessageLoopPerfTestDelegate>(
-            " MessageLoopForUI ", std::make_unique<MessageLoopForUI>());
-
-      case PerfTestType::kUseIOMessageLoop:
-        return std::make_unique<MessageLoopPerfTestDelegate>(
-            " MessageLoopForIO ", std::make_unique<MessageLoopForIO>());
-
-      case PerfTestType::kUseSingleThreadInWorkerPool:
-        return std::make_unique<SingleThreadInWorkerPoolPerfTestDelegate>();
+      case PerfTestType::kUseSingleThreadInThreadPool:
+        return std::make_unique<SingleThreadInThreadPoolPerfTestDelegate>();
 
       default:
         NOTREACHED();
@@ -685,16 +647,10 @@ INSTANTIATE_TEST_SUITE_P(
     ,
     SequenceManagerPerfTest,
     testing::Values(
-        PerfTestType::kUseSequenceManagerWithMessageLoop,
         PerfTestType::kUseSequenceManagerWithMessagePump,
-        PerfTestType::kUseSequenceManagerWithUIMessageLoop,
         PerfTestType::kUseSequenceManagerWithUIMessagePump,
-        PerfTestType::kUseSequenceManagerWithIOMessageLoop,
         PerfTestType::kUseSequenceManagerWithIOMessagePump,
-        PerfTestType::kUseMessageLoop,
-        PerfTestType::kUseUIMessageLoop,
-        PerfTestType::kUseIOMessageLoop,
-        PerfTestType::kUseSingleThreadInWorkerPool,
+        PerfTestType::kUseSingleThreadInThreadPool,
         PerfTestType::kUseSequenceManagerWithMessagePumpAndRandomSampling));
 TEST_P(SequenceManagerPerfTest, PostDelayedTasks_OneQueue) {
   if (!delegate_->VirtualTimeIsSupported()) {

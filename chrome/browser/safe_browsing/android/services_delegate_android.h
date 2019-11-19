@@ -7,11 +7,11 @@
 
 #include "base/macros.h"
 #include "chrome/browser/safe_browsing/services_delegate.h"
+#include "components/safe_browsing/common/safe_browsing_prefs.h"
 
 namespace safe_browsing {
 
 class AndroidTelemetryService;
-class TelemetryService;
 
 // Android ServicesDelegate implementation. Create via
 // ServicesDelegate::Create().
@@ -44,18 +44,15 @@ class ServicesDelegateAndroid : public ServicesDelegate {
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const V4ProtocolConfig& v4_config) override;
   void StopOnIOThread(bool shutdown) override;
-  void CreatePasswordProtectionService(Profile* profile) override;
-  void RemovePasswordProtectionService(Profile* profile) override;
-  PasswordProtectionService* GetPasswordProtectionService(
-      Profile* profile) const override;
 
   void CreateTelemetryService(Profile* profile) override;
-  void RemoveTelemetryService() override;
-  TelemetryService* GetTelemetryService() const override;
+  void RemoveTelemetryService(Profile* profile) override;
+
+  void CreateBinaryUploadService(Profile* profile) override;
+  void RemoveBinaryUploadService(Profile* profile) override;
+  BinaryUploadService* GetBinaryUploadService(Profile* profile) const override;
 
   std::string GetSafetyNetId() const override;
-
-  SafeBrowsingService* const safe_browsing_service_;
 
   // The telemetry service tied to the current profile.
   std::unique_ptr<AndroidTelemetryService> telemetry_service_;

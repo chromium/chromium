@@ -83,7 +83,7 @@ class ConfigFileWatcherImpl
   scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;
   scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
 
-  base::WeakPtrFactory<ConfigFileWatcherImpl> weak_factory_;
+  base::WeakPtrFactory<ConfigFileWatcherImpl> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ConfigFileWatcherImpl);
 };
@@ -113,8 +113,7 @@ ConfigFileWatcherImpl::ConfigFileWatcherImpl(
       retries_(0),
       delegate_(nullptr),
       main_task_runner_(main_task_runner),
-      io_task_runner_(io_task_runner),
-      weak_factory_(this) {
+      io_task_runner_(io_task_runner) {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
 }
 

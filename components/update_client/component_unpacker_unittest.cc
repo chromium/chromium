@@ -17,12 +17,14 @@
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
 #include "base/task/post_task.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/crx_file/crx_verifier.h"
 #include "components/update_client/component_unpacker.h"
+#include "components/update_client/patcher.h"
 #include "components/update_client/test_configurator.h"
 #include "components/update_client/test_installer.h"
+#include "components/update_client/unzipper.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -76,7 +78,7 @@ class ComponentUnpackerTest : public testing::Test {
  protected:
   void RunThreads();
 
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_;
   const scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner_ =
       base::ThreadTaskRunnerHandle::Get();
   base::RunLoop runloop_;
@@ -105,8 +107,9 @@ TEST_F(ComponentUnpackerTest, UnpackFullCrx) {
       base::MakeRefCounted<ComponentUnpacker>(
           std::vector<uint8_t>(std::begin(jebg_hash), std::end(jebg_hash)),
           test_file("jebgalgnebhfojomionfpkfelancnnkf.crx"), nullptr,
-          config->CreateServiceManagerConnector(),
-          crx_file::VerifierFormat::CRX2_OR_CRX3);
+          config->GetUnzipperFactory()->Create(),
+          config->GetPatcherFactory()->Create(),
+          crx_file::VerifierFormat::CRX3);
   component_unpacker->Unpack(base::BindOnce(
       &ComponentUnpackerTest::UnpackComplete, base::Unretained(this)));
   RunThreads();
@@ -124,21 +127,18 @@ TEST_F(ComponentUnpackerTest, UnpackFullCrx) {
       base::GetFileSize(unpack_path.AppendASCII("component1.dll"), &file_size));
   EXPECT_EQ(1024, file_size);
   EXPECT_TRUE(
-      base::GetFileSize(unpack_path.AppendASCII("flashtest.pem"), &file_size));
-  EXPECT_EQ(911, file_size);
-  EXPECT_TRUE(
       base::GetFileSize(unpack_path.AppendASCII("manifest.json"), &file_size));
-  EXPECT_EQ(144, file_size);
+  EXPECT_EQ(169, file_size);
 
-  EXPECT_TRUE(base::DeleteFile(unpack_path, true));
+  EXPECT_TRUE(base::DeleteFileRecursively(unpack_path));
 }
 
 TEST_F(ComponentUnpackerTest, UnpackFileNotFound) {
   scoped_refptr<ComponentUnpacker> component_unpacker =
       base::MakeRefCounted<ComponentUnpacker>(
           std::vector<uint8_t>(std::begin(jebg_hash), std::end(jebg_hash)),
-          test_file("file-not-found.crx"), nullptr, nullptr,
-          crx_file::VerifierFormat::CRX2_OR_CRX3);
+          test_file("file-not-found.crx"), nullptr, nullptr, nullptr,
+          crx_file::VerifierFormat::CRX3);
   component_unpacker->Unpack(base::BindOnce(
       &ComponentUnpackerTest::UnpackComplete, base::Unretained(this)));
   RunThreads();
@@ -156,7 +156,7 @@ TEST_F(ComponentUnpackerTest, UnpackFileHashMismatch) {
       base::MakeRefCounted<ComponentUnpacker>(
           std::vector<uint8_t>(std::begin(abag_hash), std::end(abag_hash)),
           test_file("jebgalgnebhfojomionfpkfelancnnkf.crx"), nullptr, nullptr,
-          crx_file::VerifierFormat::CRX2_OR_CRX3);
+          nullptr, crx_file::VerifierFormat::CRX3);
   component_unpacker->Unpack(base::BindOnce(
       &ComponentUnpackerTest::UnpackComplete, base::Unretained(this)));
   RunThreads();

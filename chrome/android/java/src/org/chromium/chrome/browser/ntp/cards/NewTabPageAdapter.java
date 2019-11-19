@@ -4,14 +4,18 @@
 
 package org.chromium.chrome.browser.ntp.cards;
 
-import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.RecyclerView.Adapter;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.Callback;
-import org.chromium.base.VisibleForTesting;
+import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.task.PostTask;
+import org.chromium.chrome.browser.ChromeFeatureList;
 import org.chromium.chrome.browser.native_page.ContextMenuManager;
 import org.chromium.chrome.browser.ntp.cards.NewTabPageViewHolder.PartialBindCallback;
 import org.chromium.chrome.browser.ntp.snippets.CategoryInt;
@@ -22,11 +26,14 @@ import org.chromium.chrome.browser.ntp.snippets.SnippetArticleViewHolder;
 import org.chromium.chrome.browser.ntp.snippets.SnippetsBridge;
 import org.chromium.chrome.browser.ntp.snippets.SuggestionsSource;
 import org.chromium.chrome.browser.offlinepages.OfflinePageBridge;
+import org.chromium.chrome.browser.signin.IdentityServicesProvider;
+import org.chromium.chrome.browser.signin.SigninManager;
 import org.chromium.chrome.browser.suggestions.DestructionObserver;
 import org.chromium.chrome.browser.suggestions.SuggestionsConfig;
 import org.chromium.chrome.browser.suggestions.SuggestionsRecyclerView;
 import org.chromium.chrome.browser.suggestions.SuggestionsUiDelegate;
-import org.chromium.chrome.browser.widget.displaystyle.UiConfig;
+import org.chromium.chrome.browser.ui.widget.displaystyle.UiConfig;
+import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.ui.modelutil.ListObservable;
 
 import java.util.List;
@@ -40,21 +47,27 @@ import java.util.Set;
  */
 public class NewTabPageAdapter extends Adapter<NewTabPageViewHolder>
         implements ListObservable.ListObserver<PartialBindCallback> {
-    private final SuggestionsUiDelegate mUiDelegate;
-    private final ContextMenuManager mContextMenuManager;
-    private final OfflinePageBridge mOfflinePageBridge;
+    protected final SuggestionsUiDelegate mUiDelegate;
+    protected final ContextMenuManager mContextMenuManager;
+    protected final OfflinePageBridge mOfflinePageBridge;
 
-    private final @Nullable View mAboveTheFoldView;
-    private final UiConfig mUiConfig;
-    private SuggestionsRecyclerView mRecyclerView;
+    protected final @Nullable View mAboveTheFoldView;
+    protected final UiConfig mUiConfig;
+    protected SuggestionsRecyclerView mRecyclerView;
 
     private final InnerNode<NewTabPageViewHolder, PartialBindCallback> mRoot;
 
     private final SectionList mSections;
-    private final AllDismissedItem mAllDismissed;
     private final Footer mFooter;
 
     private final RemoteSuggestionsStatusObserver mRemoteSuggestionsStatusObserver;
+
+    // Used to track if the NTP has loaded or not. This assumes that there's only one
+    // NewTabPageAdapter per NTP. This does not fully tear down even when the main activity is
+    // destroyed. This is actually convenient in mimicking the current behavior of
+    // FeedProcessScopeFactory which comparing to is motivation behind experimenting with this
+    // delay.
+    private static boolean sHasLoadedBefore;
 
     /**
      * Creates the adapter that will manage all the cards to display on the NTP.
@@ -69,27 +82,61 @@ public class NewTabPageAdapter extends Adapter<NewTabPageViewHolder>
     public NewTabPageAdapter(SuggestionsUiDelegate uiDelegate, @Nullable View aboveTheFoldView,
             UiConfig uiConfig, OfflinePageBridge offlinePageBridge,
             ContextMenuManager contextMenuManager) {
+        this(uiDelegate, aboveTheFoldView, uiConfig, offlinePageBridge, contextMenuManager,
+                IdentityServicesProvider.getSigninManager());
+    }
+
+    /**
+     * Creates the adapter that will manage all the cards to display on the NTP.
+     * As above, but with the possibility to inject SigninManager for tests.
+     * @param uiDelegate used to interact with the rest of the system.
+     * @param aboveTheFoldView the layout encapsulating all the above-the-fold elements
+     *         (logo, search box, most visited tiles), or null if only suggestions should
+     *         be displayed.
+     * @param uiConfig the NTP UI configuration, to be passed to created views.
+     * @param offlinePageBridge used to determine if articles are available.
+     * @param contextMenuManager used to build context menus.
+     * @param signinManager used by SectionList for SignInPromo.
+     */
+    @VisibleForTesting
+    public NewTabPageAdapter(SuggestionsUiDelegate uiDelegate, @Nullable View aboveTheFoldView,
+            UiConfig uiConfig, OfflinePageBridge offlinePageBridge,
+            ContextMenuManager contextMenuManager, SigninManager signinManager) {
         mUiDelegate = uiDelegate;
         mContextMenuManager = contextMenuManager;
 
         mAboveTheFoldView = aboveTheFoldView;
         mUiConfig = uiConfig;
         mRoot = new InnerNode<>();
-        mSections = new SectionList(mUiDelegate, offlinePageBridge);
-        mAllDismissed = new AllDismissedItem();
+        mSections = new SectionList(mUiDelegate, offlinePageBridge, signinManager);
 
         if (mAboveTheFoldView != null) mRoot.addChildren(new AboveTheFoldItem());
-        mRoot.addChildren(mAllDismissed, mSections);
-
         mFooter = new Footer();
-        mRoot.addChildren(mFooter);
+
+        int sectionDelay = ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
+                ChromeFeatureList.NTP_ARTICLE_SUGGESTIONS, "artificial_legacy_ntp_delay_ms", 0);
+        Runnable addSectionAndFooter = () -> {
+            mRoot.addChildren(mSections);
+            mRoot.addChildren(mFooter);
+        };
+        if (sectionDelay <= 0 || sHasLoadedBefore) {
+            addSectionAndFooter.run();
+            RecordHistogram.recordBooleanHistogram(
+                    "NewTabPage.ContentSuggestions.ArtificialDelay", false);
+        } else {
+            PostTask.postDelayedTask(
+                    UiThreadTaskTraits.USER_BLOCKING, addSectionAndFooter, sectionDelay);
+            RecordHistogram.recordBooleanHistogram(
+                    "NewTabPage.ContentSuggestions.ArtificialDelay", true);
+        }
+        sHasLoadedBefore = true;
 
         mOfflinePageBridge = offlinePageBridge;
 
         mRemoteSuggestionsStatusObserver = new RemoteSuggestionsStatusObserver();
         mUiDelegate.addDestructionObserver(mRemoteSuggestionsStatusObserver);
 
-        updateAllDismissedVisibility();
+        updateFooterVisibility();
         mRoot.addObserver(this);
     }
 
@@ -130,9 +177,6 @@ public class NewTabPageAdapter extends Adapter<NewTabPageViewHolder>
 
             case ItemViewType.FOOTER:
                 return new Footer.ViewHolder(mRecyclerView, mUiDelegate.getNavigationDelegate());
-
-            case ItemViewType.ALL_DISMISSED:
-                return new AllDismissedItem.ViewHolder(mRecyclerView, mSections);
         }
 
         assert false : viewType;
@@ -141,8 +185,8 @@ public class NewTabPageAdapter extends Adapter<NewTabPageViewHolder>
 
     @Override
     public void onBindViewHolder(NewTabPageViewHolder holder, int position, List<Object> payloads) {
-        if (payloads.isEmpty()) {
-            onBindViewHolder(holder, position);
+        if (payloads == null || payloads.isEmpty()) {
+            mRoot.onBindViewHolder(holder, position, null);
             return;
         }
 
@@ -153,7 +197,7 @@ public class NewTabPageAdapter extends Adapter<NewTabPageViewHolder>
 
     @Override
     public void onBindViewHolder(NewTabPageViewHolder holder, final int position) {
-        mRoot.onBindViewHolder(holder, position, null);
+        onBindViewHolder(holder, position, null);
     }
 
     @Override
@@ -177,14 +221,12 @@ public class NewTabPageAdapter extends Adapter<NewTabPageViewHolder>
         return RecyclerView.NO_POSITION;
     }
 
-    private void updateAllDismissedVisibility() {
+    private void updateFooterVisibility() {
         boolean areRemoteSuggestionsEnabled =
                 mUiDelegate.getSuggestionsSource().areRemoteSuggestionsEnabled();
-        boolean allDismissed = hasAllBeenDismissed() && !areArticlesLoading();
         boolean isArticleSectionVisible = mSections.getSection(KnownCategories.ARTICLES) != null;
 
-        mAllDismissed.setVisible(areRemoteSuggestionsEnabled && allDismissed);
-        mFooter.setVisible(!SuggestionsConfig.scrollToLoad() && !allDismissed
+        mFooter.setVisible(!SuggestionsConfig.scrollToLoad()
                 && (areRemoteSuggestionsEnabled || isArticleSectionVisible));
     }
 
@@ -210,7 +252,7 @@ public class NewTabPageAdapter extends Adapter<NewTabPageViewHolder>
         assert child == mRoot;
         notifyItemRangeInserted(itemPosition, itemCount);
 
-        updateAllDismissedVisibility();
+        updateFooterVisibility();
     }
 
     @Override
@@ -218,7 +260,7 @@ public class NewTabPageAdapter extends Adapter<NewTabPageViewHolder>
         assert child == mRoot;
         notifyItemRangeRemoved(itemPosition, itemCount);
 
-        updateAllDismissedVisibility();
+        updateFooterVisibility();
     }
 
     @Override
@@ -285,10 +327,12 @@ public class NewTabPageAdapter extends Adapter<NewTabPageViewHolder>
         return RecyclerView.NO_POSITION;
     }
 
+    @VisibleForTesting
     public SectionList getSectionListForTesting() {
         return mSections;
     }
 
+    @VisibleForTesting
     public InnerNode getRootForTesting() {
         return mRoot;
     }
@@ -296,6 +340,11 @@ public class NewTabPageAdapter extends Adapter<NewTabPageViewHolder>
     @VisibleForTesting
     SuggestionsSource.Observer getSuggestionsSourceObserverForTesting() {
         return mRemoteSuggestionsStatusObserver;
+    }
+
+    @VisibleForTesting
+    static void setHasLoadedBeforeForTest(boolean value) {
+        sHasLoadedBefore = value;
     }
 
     private class RemoteSuggestionsStatusObserver
@@ -309,7 +358,7 @@ public class NewTabPageAdapter extends Adapter<NewTabPageViewHolder>
                 @CategoryInt int category, @CategoryStatus int newStatus) {
             if (!SnippetsBridge.isCategoryRemote(category)) return;
 
-            updateAllDismissedVisibility();
+            updateFooterVisibility();
         }
 
         @Override

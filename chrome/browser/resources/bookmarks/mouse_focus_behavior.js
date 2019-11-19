@@ -2,9 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-cr.define('bookmarks', function() {
   /** @const */
-  const HIDE_FOCUS_RING_ATTRIBUTE = 'hide-focus-ring';
+  export const HIDE_FOCUS_RING_ATTRIBUTE = 'hide-focus-ring';
 
   /**
    * Behavior which adds the 'hide-focus-ring' attribute to a target element
@@ -12,7 +11,7 @@ cr.define('bookmarks', function() {
    * to be hidden without affecting keyboard users.
    * @polymerBehavior
    */
-  const MouseFocusBehavior = {
+  export const MouseFocusBehavior = {
     attached: function() {
       this.boundOnMousedown_ = this.onMousedown_.bind(this);
       this.boundOnKeydown = this.onKeydown_.bind(this);
@@ -46,8 +45,3 @@ cr.define('bookmarks', function() {
     },
   };
 
-  return {
-    HIDE_FOCUS_RING_ATTRIBUTE: HIDE_FOCUS_RING_ATTRIBUTE,
-    MouseFocusBehavior: MouseFocusBehavior,
-  };
-});

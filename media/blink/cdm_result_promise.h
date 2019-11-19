@@ -8,11 +8,15 @@
 #include <stdint.h>
 
 #include "base/macros.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/time/time.h"
 #include "media/blink/cdm_result_promise_helper.h"
 #include "third_party/blink/public/platform/web_content_decryption_module_result.h"
 #include "third_party/blink/public/platform/web_string.h"
 
 namespace media {
+
+const char kTimeUMAPrefix[] = "TimeTo.";
 
 // Used to convert a WebContentDecryptionModuleResult into a CdmPromiseTemplate
 // so that it can be passed through Chromium. When resolve(T) is called, the
@@ -25,6 +29,7 @@ template <typename... T>
 class CdmResultPromise : public CdmPromiseTemplate<T...> {
  public:
   CdmResultPromise(const blink::WebContentDecryptionModuleResult& result,
+                   const std::string& key_system_uma_prefix,
                    const std::string& uma_name);
   ~CdmResultPromise() override;
 
@@ -41,8 +46,12 @@ class CdmResultPromise : public CdmPromiseTemplate<T...> {
 
   blink::WebContentDecryptionModuleResult web_cdm_result_;
 
-  // UMA name to report result to.
+  // UMA prefix and name to report result and time to.
+  std::string key_system_uma_prefix_;
   std::string uma_name_;
+
+  // Time when |this| is created.
+  base::TimeTicks creation_time_;
 
   DISALLOW_COPY_AND_ASSIGN(CdmResultPromise);
 };
@@ -50,8 +59,14 @@ class CdmResultPromise : public CdmPromiseTemplate<T...> {
 template <typename... T>
 CdmResultPromise<T...>::CdmResultPromise(
     const blink::WebContentDecryptionModuleResult& result,
+    const std::string& key_system_uma_prefix,
     const std::string& uma_name)
-    : web_cdm_result_(result), uma_name_(uma_name) {
+    : web_cdm_result_(result),
+      key_system_uma_prefix_(key_system_uma_prefix),
+      uma_name_(uma_name),
+      creation_time_(base::TimeTicks::Now()) {
+  DCHECK(!key_system_uma_prefix_.empty());
+  DCHECK(!uma_name_.empty());
 }
 
 template <typename... T>
@@ -65,7 +80,12 @@ CdmResultPromise<T...>::~CdmResultPromise() {
 template <>
 inline void CdmResultPromise<>::resolve() {
   MarkPromiseSettled();
-  ReportCdmResultUMA(uma_name_, SUCCESS);
+  ReportCdmResultUMA(key_system_uma_prefix_ + uma_name_, 0, SUCCESS);
+
+  // Only report time for promise resolution (not rejection).
+  base::UmaHistogramTimes(key_system_uma_prefix_ + kTimeUMAPrefix + uma_name_,
+                          base::TimeTicks::Now() - creation_time_);
+
   web_cdm_result_.Complete();
 }
 
@@ -73,7 +93,12 @@ template <>
 inline void CdmResultPromise<CdmKeyInformation::KeyStatus>::resolve(
     const CdmKeyInformation::KeyStatus& key_status) {
   MarkPromiseSettled();
-  ReportCdmResultUMA(uma_name_, SUCCESS);
+  ReportCdmResultUMA(key_system_uma_prefix_ + uma_name_, 0, SUCCESS);
+
+  // Only report time for promise resolution (not rejection).
+  base::UmaHistogramTimes(key_system_uma_prefix_ + kTimeUMAPrefix + uma_name_,
+                          base::TimeTicks::Now() - creation_time_);
+
   web_cdm_result_.CompleteWithKeyStatus(ConvertCdmKeyStatus(key_status));
 }
 
@@ -82,7 +107,7 @@ void CdmResultPromise<T...>::reject(CdmPromise::Exception exception_code,
                                     uint32_t system_code,
                                     const std::string& error_message) {
   MarkPromiseSettled();
-  ReportCdmResultUMA(uma_name_,
+  ReportCdmResultUMA(key_system_uma_prefix_ + uma_name_, system_code,
                      ConvertCdmExceptionToResultForUMA(exception_code));
   web_cdm_result_.CompleteWithError(ConvertCdmException(exception_code),
                                     system_code,

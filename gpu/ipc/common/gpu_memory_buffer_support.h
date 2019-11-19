@@ -28,7 +28,7 @@ namespace gpu {
 class GPU_EXPORT GpuMemoryBufferSupport {
  public:
   GpuMemoryBufferSupport();
-  ~GpuMemoryBufferSupport();
+  virtual ~GpuMemoryBufferSupport();
 
   // Returns the native GPU memory buffer factory type. Returns EMPTY_BUFFER
   // type if native buffers are not supported.
@@ -53,7 +53,8 @@ class GPU_EXPORT GpuMemoryBufferSupport {
   // should match what was used to allocate the |handle|. |callback|, if
   // non-null, is called when instance is deleted, which is not necessarily on
   // the same thread as this function was called on and instance was created on.
-  std::unique_ptr<GpuMemoryBufferImpl> CreateGpuMemoryBufferImplFromHandle(
+  virtual std::unique_ptr<GpuMemoryBufferImpl>
+  CreateGpuMemoryBufferImplFromHandle(
       gfx::GpuMemoryBufferHandle handle,
       const gfx::Size& size,
       gfx::BufferFormat format,

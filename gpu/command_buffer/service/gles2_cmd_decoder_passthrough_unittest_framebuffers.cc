@@ -10,24 +10,21 @@
 namespace gpu {
 namespace gles2 {
 
-using namespace cmds;
-
 TEST_F(GLES3DecoderPassthroughTest, ReadPixelsBufferBound) {
   const GLsizei kWidth = 5;
   const GLsizei kHeight = 3;
   const GLint kBytesPerPixel = 4;
   GLint size = kWidth * kHeight * kBytesPerPixel;
-  typedef ReadPixels::Result Result;
-  Result* result = GetSharedMemoryAs<Result*>();
+  auto* result = GetSharedMemoryAs<cmds::ReadPixels::Result*>();
   uint32_t result_shm_id = shared_memory_id_;
   uint32_t result_shm_offset = kSharedMemoryOffset;
   uint32_t pixels_shm_id = shared_memory_id_;
-  uint32_t pixels_shm_offset = kSharedMemoryOffset + sizeof(Result);
+  uint32_t pixels_shm_offset = kSharedMemoryOffset + sizeof(*result);
 
   DoBindBuffer(GL_PIXEL_PACK_BUFFER, kClientBufferId);
   DoBufferData(GL_PIXEL_PACK_BUFFER, size, nullptr, GL_STATIC_DRAW);
 
-  ReadPixels cmd;
+  cmds::ReadPixels cmd;
   cmd.Init(0, 0, kWidth, kHeight, GL_RGBA, GL_UNSIGNED_BYTE, pixels_shm_id,
            pixels_shm_offset, result_shm_id, result_shm_offset, false);
   result->success = 0;
@@ -39,7 +36,7 @@ TEST_F(GLES3DecoderPassthroughTest, ReadPixels2PixelPackBufferNoBufferBound) {
   const GLsizei kWidth = 5;
   const GLsizei kHeight = 3;
 
-  ReadPixels cmd;
+  cmds::ReadPixels cmd;
   cmd.Init(0, 0, kWidth, kHeight, GL_RGBA, GL_UNSIGNED_BYTE, 0, 0, 0, 0, false);
   EXPECT_EQ(error::kInvalidArguments, ExecuteCmd(cmd));
   EXPECT_EQ(GL_NO_ERROR, GetGLError());
@@ -54,7 +51,7 @@ TEST_F(GLES3DecoderPassthroughTest, ReadPixels2PixelPackBuffer) {
   DoBindBuffer(GL_PIXEL_PACK_BUFFER, kClientBufferId);
   DoBufferData(GL_PIXEL_PACK_BUFFER, size, nullptr, GL_STATIC_DRAW);
 
-  ReadPixels cmd;
+  cmds::ReadPixels cmd;
   cmd.Init(0, 0, kWidth, kHeight, GL_RGBA, GL_UNSIGNED_BYTE, 0, 0, 0, 0, false);
   EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
   EXPECT_EQ(GL_NO_ERROR, GetGLError());
@@ -64,8 +61,7 @@ TEST_F(GLES2DecoderPassthroughTest, DiscardFramebufferEXTUnsupported) {
   const GLenum target = GL_FRAMEBUFFER;
   const GLsizei count = 1;
   const GLenum attachments[] = {GL_COLOR_EXT};
-  DiscardFramebufferEXTImmediate& cmd =
-      *GetImmediateAs<DiscardFramebufferEXTImmediate>();
+  auto& cmd = *GetImmediateAs<cmds::DiscardFramebufferEXTImmediate>();
   cmd.Init(target, count, attachments);
   EXPECT_EQ(error::kUnknownCommand,
             ExecuteImmediateCmd(cmd, sizeof(attachments)));
@@ -85,8 +81,7 @@ TEST_F(GLES2DecoderPassthroughTest, ReadPixelsOutOfRange) {
                          kClientTextureId, 0);
 
   // Put the resulting pixels and the result in shared memory
-  typedef ReadPixels::Result Result;
-  Result* result = GetSharedMemoryAs<Result*>();
+  auto* result = GetSharedMemoryAs<cmds::ReadPixels::Result*>();
   uint32_t result_shm_id = shared_memory_id_;
   uint32_t result_shm_offset = kSharedMemoryOffset;
   uint32_t pixels_shm_id = shared_memory_id_;
@@ -126,7 +121,7 @@ TEST_F(GLES2DecoderPassthroughTest, ReadPixelsOutOfRange) {
     // written
     memset(dest, 0, 4 * test.w * test.h);
 
-    ReadPixels cmd;
+    cmds::ReadPixels cmd;
     cmd.Init(test.x, test.y, test.w, test.h, kFormat, GL_UNSIGNED_BYTE,
              pixels_shm_id, pixels_shm_offset, result_shm_id, result_shm_offset,
              false);
@@ -164,16 +159,15 @@ TEST_F(GLES2DecoderPassthroughTest, ReadPixelsOutOfRange) {
 }
 
 TEST_F(GLES2DecoderPassthroughTest, ReadPixelsAsync) {
-  typedef ReadPixels::Result Result;
-  Result* result = GetSharedMemoryAs<Result*>();
+  auto* result = GetSharedMemoryAs<cmds::ReadPixels::Result*>();
   const GLsizei kWidth = 4;
   const GLsizei kHeight = 4;
   uint32_t result_shm_id = shared_memory_id_;
   uint32_t result_shm_offset = kSharedMemoryOffset;
   uint32_t pixels_shm_id = shared_memory_id_;
-  uint32_t pixels_shm_offset = kSharedMemoryOffset + sizeof(Result);
+  uint32_t pixels_shm_offset = kSharedMemoryOffset + sizeof(*result);
 
-  ReadPixels read_pixels_cmd;
+  cmds::ReadPixels read_pixels_cmd;
   read_pixels_cmd.Init(0, 0, kWidth, kHeight, GL_RGBA, GL_UNSIGNED_BYTE,
                        pixels_shm_id, pixels_shm_offset, result_shm_id,
                        result_shm_offset, true);
@@ -198,7 +192,7 @@ TEST_F(GLES2DecoderPassthroughTest, ReadPixelsAsync) {
     EXPECT_TRUE(pending_read_pixels.waiting_async_pack_queries.empty());
   }
 
-  Finish finish_cmd;
+  cmds::Finish finish_cmd;
   finish_cmd.Init();
   EXPECT_EQ(error::kNoError, ExecuteCmd(finish_cmd));
   EXPECT_FALSE(GetDecoder()->HasMoreIdleWork());
@@ -206,8 +200,7 @@ TEST_F(GLES2DecoderPassthroughTest, ReadPixelsAsync) {
 }
 
 TEST_F(GLES3DecoderPassthroughTest, ReadPixelsAsyncSkippedIfPBOBound) {
-  typedef ReadPixels::Result Result;
-  Result* result = GetSharedMemoryAs<Result*>();
+  auto* result = GetSharedMemoryAs<cmds::ReadPixels::Result*>();
   const GLsizei kWidth = 4;
   const GLsizei kHeight = 4;
   uint32_t result_shm_id = shared_memory_id_;
@@ -227,7 +220,7 @@ TEST_F(GLES3DecoderPassthroughTest, ReadPixelsAsyncSkippedIfPBOBound) {
 
   // Check that there is no idle work to do when a PBO is already bound and that
   // the ReadPixel succeeded
-  ReadPixels read_pixels_cmd;
+  cmds::ReadPixels read_pixels_cmd;
   read_pixels_cmd.Init(0, 0, kWidth, kHeight, GL_RGBA, GL_UNSIGNED_BYTE, 0, 0,
                        result_shm_id, result_shm_offset, true);
   result->success = 0;
@@ -237,15 +230,15 @@ TEST_F(GLES3DecoderPassthroughTest, ReadPixelsAsyncSkippedIfPBOBound) {
 }
 
 TEST_F(GLES2DecoderPassthroughTest, ReadPixelsAsyncModifyCommand) {
-  typedef ReadPixels::Result Result;
   size_t shm_size = 0;
-  Result* result = GetSharedMemoryAsWithSize<Result*>(&shm_size);
+  auto* result =
+      GetSharedMemoryAsWithSize<cmds::ReadPixels::Result*>(&shm_size);
   const GLsizei kWidth = 4;
   const GLsizei kHeight = 4;
   uint32_t result_shm_id = shared_memory_id_;
   uint32_t result_shm_offset = kSharedMemoryOffset;
   uint32_t pixels_shm_id = shared_memory_id_;
-  uint32_t pixels_shm_offset = kSharedMemoryOffset + sizeof(Result);
+  uint32_t pixels_shm_offset = kSharedMemoryOffset + sizeof(*result);
 
   size_t pixels_memory_size = shm_size - 1;
   char* pixels = reinterpret_cast<char*>(result + 1);
@@ -255,7 +248,7 @@ TEST_F(GLES2DecoderPassthroughTest, ReadPixelsAsyncModifyCommand) {
   EXPECT_GT(pixels_memory_size, read_pixels_result_size);
   memset(pixels, kDummyValue, pixels_memory_size);
 
-  ReadPixels read_pixels_cmd;
+  cmds::ReadPixels read_pixels_cmd;
   read_pixels_cmd.Init(0, 0, kWidth, kHeight, GL_RGBA, GL_UNSIGNED_BYTE,
                        pixels_shm_id, pixels_shm_offset, result_shm_id,
                        result_shm_offset, true);
@@ -271,7 +264,7 @@ TEST_F(GLES2DecoderPassthroughTest, ReadPixelsAsyncModifyCommand) {
                        pixels_shm_offset, result_shm_id, result_shm_offset,
                        false);
 
-  Finish finish_cmd;
+  cmds::Finish finish_cmd;
   finish_cmd.Init();
   EXPECT_EQ(error::kNoError, ExecuteCmd(finish_cmd));
   EXPECT_FALSE(GetDecoder()->HasMoreIdleWork());
@@ -289,15 +282,15 @@ TEST_F(GLES2DecoderPassthroughTest, ReadPixelsAsyncModifyCommand) {
 }
 
 TEST_F(GLES2DecoderPassthroughTest, ReadPixelsAsyncChangePackAlignment) {
-  typedef ReadPixels::Result Result;
   size_t shm_size = 0;
-  Result* result = GetSharedMemoryAsWithSize<Result*>(&shm_size);
+  auto* result =
+      GetSharedMemoryAsWithSize<cmds::ReadPixels::Result*>(&shm_size);
   const GLsizei kWidth = 4;
   const GLsizei kHeight = 4;
   uint32_t result_shm_id = shared_memory_id_;
   uint32_t result_shm_offset = kSharedMemoryOffset;
   uint32_t pixels_shm_id = shared_memory_id_;
-  uint32_t pixels_shm_offset = kSharedMemoryOffset + sizeof(Result);
+  uint32_t pixels_shm_offset = kSharedMemoryOffset + sizeof(*result);
 
   size_t pixels_memory_size = shm_size - 1;
   char* pixels = reinterpret_cast<char*>(result + 1);
@@ -307,7 +300,7 @@ TEST_F(GLES2DecoderPassthroughTest, ReadPixelsAsyncChangePackAlignment) {
   EXPECT_GT(pixels_memory_size, read_pixels_result_size);
   memset(pixels, kDummyValue, pixels_memory_size);
 
-  ReadPixels read_pixels_cmd;
+  cmds::ReadPixels read_pixels_cmd;
   read_pixels_cmd.Init(0, 0, kWidth, kHeight, GL_RGBA, GL_UNSIGNED_BYTE,
                        pixels_shm_id, pixels_shm_offset, result_shm_id,
                        result_shm_offset, true);
@@ -317,12 +310,12 @@ TEST_F(GLES2DecoderPassthroughTest, ReadPixelsAsyncChangePackAlignment) {
   EXPECT_EQ(GL_NO_ERROR, GetGLError());
   EXPECT_TRUE(GetDecoder()->HasMoreIdleWork());
 
-  PixelStorei pixel_store_i_cmd;
+  cmds::PixelStorei pixel_store_i_cmd;
   pixel_store_i_cmd.Init(GL_PACK_ALIGNMENT, 8);
   EXPECT_EQ(error::kNoError, ExecuteCmd(pixel_store_i_cmd));
   EXPECT_EQ(GL_NO_ERROR, GetGLError());
 
-  Finish finish_cmd;
+  cmds::Finish finish_cmd;
   finish_cmd.Init();
   EXPECT_EQ(error::kNoError, ExecuteCmd(finish_cmd));
   EXPECT_FALSE(GetDecoder()->HasMoreIdleWork());
@@ -340,18 +333,17 @@ TEST_F(GLES2DecoderPassthroughTest, ReadPixelsAsyncChangePackAlignment) {
 }
 
 TEST_F(GLES2DecoderPassthroughTest, ReadPixelsAsyncError) {
-  typedef ReadPixels::Result Result;
-  Result* result = GetSharedMemoryAs<Result*>();
+  auto* result = GetSharedMemoryAs<cmds::ReadPixels::Result*>();
   const GLsizei kWidth = 4;
   const GLsizei kHeight = 4;
   uint32_t result_shm_id = shared_memory_id_;
   uint32_t result_shm_offset = kSharedMemoryOffset;
   uint32_t pixels_shm_id = shared_memory_id_;
-  uint32_t pixels_shm_offset = kSharedMemoryOffset + sizeof(Result);
+  uint32_t pixels_shm_offset = kSharedMemoryOffset + sizeof(*result);
 
   // Provide parameters that will cause glReadPixels to fail with
   // GL_INVALID_OPERATION
-  ReadPixels cmd;
+  cmds::ReadPixels cmd;
   cmd.Init(0, 0, kWidth, kHeight, GL_RGBA, GL_UNSIGNED_SHORT, pixels_shm_id,
            pixels_shm_offset, result_shm_id, result_shm_offset, true);
   result->success = 0;
@@ -365,7 +357,7 @@ TEST_F(GLES2DecoderPassthroughTest,
        RenderbufferStorageMultisampleEXTNotSupported) {
   DoBindRenderbuffer(GL_RENDERBUFFER, kClientRenderbufferId);
   // GL_EXT_framebuffer_multisample uses RenderbufferStorageMultisampleCHROMIUM.
-  RenderbufferStorageMultisampleEXT cmd;
+  cmds::RenderbufferStorageMultisampleEXT cmd;
   cmd.Init(GL_RENDERBUFFER, 1, GL_RGBA4, 1, 1);
   EXPECT_EQ(error::kUnknownCommand, ExecuteCmd(cmd));
 }
@@ -377,13 +369,13 @@ TEST_F(GLES2DecoderPassthroughTest,
   DoFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
                             GL_RENDERBUFFER, kClientRenderbufferId);
 
-  GetFramebufferAttachmentParameteriv::Result* result =
-      static_cast<GetFramebufferAttachmentParameteriv::Result*>(
+  auto* result =
+      static_cast<cmds::GetFramebufferAttachmentParameteriv::Result*>(
           shared_memory_address_);
   result->size = 0;
   const GLint* result_value = result->GetData();
 
-  GetFramebufferAttachmentParameteriv cmd;
+  cmds::GetFramebufferAttachmentParameteriv cmd;
   cmd.Init(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
            GL_FRAMEBUFFER_ATTACHMENT_OBJECT_NAME, shared_memory_id_,
            shared_memory_offset_);
@@ -399,13 +391,13 @@ TEST_F(GLES2DecoderPassthroughTest,
   DoFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D,
                          kClientTextureId, 0);
 
-  GetFramebufferAttachmentParameteriv::Result* result =
-      static_cast<GetFramebufferAttachmentParameteriv::Result*>(
+  auto* result =
+      static_cast<cmds::GetFramebufferAttachmentParameteriv::Result*>(
           shared_memory_address_);
   result->size = 0;
   const GLint* result_value = result->GetData();
 
-  GetFramebufferAttachmentParameteriv cmd;
+  cmds::GetFramebufferAttachmentParameteriv cmd;
   cmd.Init(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
            GL_FRAMEBUFFER_ATTACHMENT_OBJECT_NAME, shared_memory_id_,
            shared_memory_offset_);

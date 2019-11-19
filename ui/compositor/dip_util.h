@@ -42,14 +42,6 @@ COMPOSITOR_EXPORT gfx::Size ConvertSizeToPixel(
 COMPOSITOR_EXPORT gfx::Rect ConvertRectToPixel(
     const Layer* layer,
     const gfx::Rect& rect_in_dip);
-
-// Snaps the |layer_to_snap| to the physical pixel boundary.
-// |snapped_layer| is a reference layer that should also be
-// snapped at the pysical pixel boundary.
-COMPOSITOR_EXPORT void SnapLayerToPhysicalPixelBoundary(
-    ui::Layer* snapped_layer,
-    ui::Layer* layer_to_snap);
-
 }  // namespace ui
 
 #endif  // UI_COMPOSITOR_DIP_UTIL_H_

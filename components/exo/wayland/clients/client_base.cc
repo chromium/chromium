@@ -19,6 +19,8 @@
 
 #include "base/command_line.h"
 #include "base/logging.h"
+#include "base/memory/platform_shared_memory_region.h"
+#include "base/memory/unsafe_shared_memory_region.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "third_party/skia/include/core/SkCanvas.h"
@@ -39,6 +41,10 @@
 #include <gbm.h>
 #include <xf86drm.h>
 
+#if defined(USE_VULKAN)
+#include "gpu/vulkan/init/vulkan_factory.h"
+#include "gpu/vulkan/vulkan_function_pointers.h"
+#endif
 #include "ui/ozone/public/ozone_platform.h"  // nogncheck
 #endif
 
@@ -135,6 +141,9 @@ void RegistryHandler(void* data,
         static_cast<zwp_linux_explicit_synchronization_v1*>(wl_registry_bind(
             registry, id, &zwp_linux_explicit_synchronization_v1_interface,
             1)));
+  } else if (strcmp(interface, "zcr_vsync_feedback_v1") == 0) {
+    globals->vsync_feedback.reset(static_cast<zcr_vsync_feedback_v1*>(
+        wl_registry_bind(registry, id, &zcr_vsync_feedback_v1_interface, 1)));
   }
 }
 
@@ -313,6 +322,8 @@ ClientBase::InitParams::InitParams() {
 
 ClientBase::InitParams::~InitParams() {}
 
+ClientBase::InitParams::InitParams(const InitParams& params) = default;
+
 bool ClientBase::InitParams::FromCommandLine(
     const base::CommandLine& command_line) {
   if (command_line.HasSwitch(switches::kSize)) {
@@ -468,9 +479,9 @@ bool ClientBase::Init(const InitParams& params) {
       LOG(ERROR) << "Can't create gbm device";
       return false;
     }
-    ui::OzonePlatform::InitParams params;
-    params.single_process = true;
-    ui::OzonePlatform::InitializeForGPU(params);
+    ui::OzonePlatform::InitParams ozone_params;
+    ozone_params.single_process = true;
+    ui::OzonePlatform::InitializeForGPU(ozone_params);
     bool gl_initialized = gl::init::InitializeGLOneOff();
     DCHECK(gl_initialized);
     gl_surface_ = gl::init::CreateOffscreenGLSurface(gfx::Size());
@@ -495,20 +506,26 @@ bool ClientBase::Init(const InitParams& params) {
     DCHECK(gr_context_);
 
 #if defined(USE_VULKAN)
-    vk_instance_ = CreateVkInstance();
+    if (params.use_vulkan) {
+      vk_implementation_ = gpu::CreateVulkanImplementation();
+      CHECK(vk_implementation_) << "Can't create VulkanImplementation";
+      bool ret = vk_implementation_->InitializeVulkanInstance(false);
+      CHECK(ret) << "Failed to initialize VulkanImplementation";
+      vk_instance_ = CreateVkInstance();
+      uint32_t queue_family_index = UINT32_MAX;
+      vk_device_ = CreateVkDevice(vk_instance_->get(), &queue_family_index);
+      CHECK(gpu::GetVulkanFunctionPointers()->BindDeviceFunctionPointers(
+          vk_device_->get(), VK_VERSION_1_0, gfx::ExtensionSet()));
+      vk_render_pass_ = CreateVkRenderPass(vk_device_->get());
 
-    uint32_t queue_family_index = UINT32_MAX;
-    vk_device_ = CreateVkDevice(vk_instance_->get(), &queue_family_index);
-    vk_render_pass_ = CreateVkRenderPass(vk_device_->get());
+      vkGetDeviceQueue(vk_device_->get(), queue_family_index, 0, &vk_queue_);
 
-    vkGetDeviceQueue(vk_device_->get(), queue_family_index, 0, &vk_queue_);
-
-    vk_command_pool_ =
-        CreateVkCommandPool(vk_device_->get(), queue_family_index);
+      vk_command_pool_ =
+          CreateVkCommandPool(vk_device_->get(), queue_family_index);
+    }
 #endif  // defined(USE_VULKAN)
   }
 #endif  // defined(USE_GBM)
-
   surface_.reset(static_cast<wl_surface*>(
       wl_compositor_create_surface(globals_.compositor.get())));
   if (!surface_) {
@@ -742,11 +759,16 @@ std::unique_ptr<ClientBase::Buffer> ClientBase::CreateBuffer(
     buffer = std::make_unique<Buffer>();
 
     size_t stride = size.width() * kBytesPerPixel;
-    buffer->shared_memory.reset(new base::SharedMemory());
-    buffer->shared_memory->CreateAndMapAnonymous(stride * size.height());
+    base::UnsafeSharedMemoryRegion shared_memory_region =
+        base::UnsafeSharedMemoryRegion::Create(stride * size.height());
+    buffer->shared_memory_mapping = shared_memory_region.Map();
+    base::subtle::PlatformSharedMemoryRegion platform_shared_memory =
+        base::UnsafeSharedMemoryRegion::TakeHandleForSerialization(
+            std::move(shared_memory_region));
+
     buffer->shm_pool.reset(wl_shm_create_pool(
-        globals_.shm.get(), buffer->shared_memory->handle().GetHandle(),
-        buffer->shared_memory->requested_size()));
+        globals_.shm.get(), platform_shared_memory.GetPlatformHandle().fd,
+        buffer->shared_memory_mapping.size()));
 
     buffer->buffer.reset(static_cast<wl_buffer*>(
         wl_shm_pool_create_buffer(buffer->shm_pool.get(), 0, size.width(),
@@ -759,7 +781,7 @@ std::unique_ptr<ClientBase::Buffer> ClientBase::CreateBuffer(
     buffer->sk_surface = SkSurface::MakeRasterDirect(
         SkImageInfo::Make(size.width(), size.height(), kColorType,
                           kOpaque_SkAlphaType),
-        static_cast<uint8_t*>(buffer->shared_memory->memory()), stride);
+        buffer->shared_memory_mapping.GetMemoryAs<uint8_t>(), stride);
     DCHECK(buffer->sk_surface);
   }
 
@@ -787,10 +809,10 @@ std::unique_ptr<ClientBase::Buffer> ClientBase::CreateDrmBuffer(
 
     buffer->params.reset(
         zwp_linux_dmabuf_v1_create_params(globals_.linux_dmabuf.get()));
-    for (size_t i = 0; i < gbm_bo_get_num_planes(buffer->bo.get()); ++i) {
+    for (size_t i = 0; i < gbm_bo_get_plane_count(buffer->bo.get()); ++i) {
       base::ScopedFD fd(gbm_bo_get_plane_fd(buffer->bo.get(), i));
-      uint32_t stride = gbm_bo_get_plane_stride(buffer->bo.get(), i);
-      uint32_t offset = gbm_bo_get_plane_offset(buffer->bo.get(), i);
+      uint32_t stride = gbm_bo_get_stride_for_plane(buffer->bo.get(), i);
+      uint32_t offset = gbm_bo_get_offset(buffer->bo.get(), i);
       zwp_linux_buffer_params_v1_add(buffer->params.get(), fd.get(), i, offset,
                                      stride, 0, 0);
     }
@@ -801,22 +823,23 @@ std::unique_ptr<ClientBase::Buffer> ClientBase::CreateDrmBuffer(
     buffer->buffer.reset(zwp_linux_buffer_params_v1_create_immed(
         buffer->params.get(), size.width(), size.height(), drm_format, flags));
 
-    if (gbm_bo_get_num_planes(buffer->bo.get()) != 1)
+    if (gbm_bo_get_plane_count(buffer->bo.get()) != 1)
       return buffer;
 
-    EGLint khr_image_attrs[] = {EGL_DMA_BUF_PLANE0_FD_EXT,
-                                fd.get(),
-                                EGL_WIDTH,
-                                size.width(),
-                                EGL_HEIGHT,
-                                size.height(),
-                                EGL_LINUX_DRM_FOURCC_EXT,
-                                drm_format,
-                                EGL_DMA_BUF_PLANE0_PITCH_EXT,
-                                gbm_bo_get_plane_stride(buffer->bo.get(), 0),
-                                EGL_DMA_BUF_PLANE0_OFFSET_EXT,
-                                0,
-                                EGL_NONE};
+    EGLint khr_image_attrs[] = {
+        EGL_DMA_BUF_PLANE0_FD_EXT,
+        fd.get(),
+        EGL_WIDTH,
+        size.width(),
+        EGL_HEIGHT,
+        size.height(),
+        EGL_LINUX_DRM_FOURCC_EXT,
+        drm_format,
+        EGL_DMA_BUF_PLANE0_PITCH_EXT,
+        gbm_bo_get_stride_for_plane(buffer->bo.get(), 0),
+        EGL_DMA_BUF_PLANE0_OFFSET_EXT,
+        0,
+        EGL_NONE};
     EGLImageKHR image = eglCreateImageKHR(
         eglGetCurrentDisplay(), EGL_NO_CONTEXT, EGL_LINUX_DMA_BUF_EXT,
         nullptr /* no client buffer */, khr_image_attrs);
@@ -843,8 +866,25 @@ std::unique_ptr<ClientBase::Buffer> ClientBase::CreateDrmBuffer(
     DCHECK(buffer->sk_surface);
 
 #if defined(USE_VULKAN)
+    if (!vk_implementation_)
+      return buffer;
     // TODO(dcastagna): remove this hack as soon as the extension
     // "VK_EXT_external_memory_dma_buf" is available.
+#define VK_STRUCTURE_TYPE_DMA_BUF_IMAGE_CREATE_INFO_INTEL 1024
+    typedef struct VkDmaBufImageCreateInfo_ {
+      VkStructureType
+          sType;  // Must be VK_STRUCTURE_TYPE_DMA_BUF_IMAGE_CREATE_INFO_INTEL
+      const void* pNext;  // Pointer to next structure.
+      int fd;
+      VkFormat format;
+      VkExtent3D extent;  // Depth must be 1
+      uint32_t strideInBytes;
+    } VkDmaBufImageCreateInfo;
+    typedef VkResult(VKAPI_PTR * PFN_vkCreateDmaBufImageINTEL)(
+        VkDevice device, const VkDmaBufImageCreateInfo* pCreateInfo,
+        const VkAllocationCallbacks* pAllocator, VkDeviceMemory* pMem,
+        VkImage* pImage);
+
     PFN_vkCreateDmaBufImageINTEL create_dma_buf_image_intel =
         reinterpret_cast<PFN_vkCreateDmaBufImageINTEL>(
             vkGetDeviceProcAddr(vk_device_->get(), "vkCreateDmaBufImageINTEL"));
@@ -886,8 +926,8 @@ std::unique_ptr<ClientBase::Buffer> ClientBase::CreateDrmBuffer(
         .components =
             {
                 .r = VK_COMPONENT_SWIZZLE_IDENTITY,
-                .b = VK_COMPONENT_SWIZZLE_IDENTITY,
                 .g = VK_COMPONENT_SWIZZLE_IDENTITY,
+                .b = VK_COMPONENT_SWIZZLE_IDENTITY,
                 .a = VK_COMPONENT_SWIZZLE_IDENTITY,
             },
         .subresourceRange =

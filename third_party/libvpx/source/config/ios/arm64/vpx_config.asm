@@ -1,13 +1,16 @@
 @ This file was created from a .asm file
 @  using the ads2gas_apple.pl script.
 
-	.set WIDE_REFERENCE, 0
-	.set ARCHITECTURE, 5
 	.syntax unified
+.set VPX_ARCH_ARM ,  1
 .set ARCH_ARM ,  1
+.set VPX_ARCH_MIPS ,  0
 .set ARCH_MIPS ,  0
+.set VPX_ARCH_X86 ,  0
 .set ARCH_X86 ,  0
+.set VPX_ARCH_X86_64 ,  0
 .set ARCH_X86_64 ,  0
+.set VPX_ARCH_PPC ,  0
 .set ARCH_PPC ,  0
 .set HAVE_NEON ,  1
 .set HAVE_NEON_ASM ,  0
@@ -72,7 +75,7 @@
 .set CONFIG_OS_SUPPORT ,  1
 .set CONFIG_UNIT_TESTS ,  1
 .set CONFIG_WEBM_IO ,  1
-.set CONFIG_LIBYUV ,  1
+.set CONFIG_LIBYUV ,  0
 .set CONFIG_DECODE_PERF_TESTS ,  0
 .set CONFIG_ENCODE_PERF_TESTS ,  0
 .set CONFIG_MULTI_RES_ENCODING ,  1
@@ -85,6 +88,8 @@
 .set CONFIG_EXPERIMENTAL ,  0
 .set CONFIG_SIZE_LIMIT ,  1
 .set CONFIG_ALWAYS_ADJUST_BPM ,  0
+.set CONFIG_BITSTREAM_DEBUG ,  0
+.set CONFIG_MISMATCH_DEBUG ,  0
 .set CONFIG_FP_MB_STATS ,  0
 .set CONFIG_EMULATE_HARDWARE ,  0
 .set CONFIG_NON_GREEDY_MV ,  0

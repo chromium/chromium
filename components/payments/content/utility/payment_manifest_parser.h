@@ -16,6 +16,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "components/payments/content/web_app_manifest.h"
+#include "services/data_decoder/public/cpp/data_decoder.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -71,8 +72,13 @@ class ErrorLogger;
 // https://docs.google.com/document/d/1izV4uC-tiRJG3JLooqY3YRLU22tYOsLTNq0P_InPJeE
 // https://w3c.github.io/manifest/
 //
-// Note the JSON parsing is done using the SafeJsonParser (either OOP or in a
-// safe environment).
+// Note the JSON parsing is done using the DataDecoder (either OOP or in a safe
+// environment).
+//
+// The command line must be initialized to use this class in tests, because it
+// checks for --unsafely-treat-insecure-origin-as-secure=<origin> flag. For
+// example:
+//  base::CommandLine::Init(0, nullptr);
 class PaymentManifestParser {
  public:
   // Web app icon info parsed from web app manifest.
@@ -135,20 +141,18 @@ class PaymentManifestParser {
 
  private:
   void OnPaymentMethodParse(PaymentMethodCallback callback,
-                            std::unique_ptr<base::Value> value,
-                            const std::string& json_parser_error);
+                            data_decoder::DataDecoder::ValueOrError result);
   void OnWebAppParse(WebAppCallback callback,
-                     std::unique_ptr<base::Value> value,
-                     const std::string& json_parser_error);
-  void OnWebAppParseInstallationInfo(WebAppInstallationInfoCallback callback,
-                                     std::unique_ptr<base::Value> value,
-                                     const std::string& json_parser_error);
+                     data_decoder::DataDecoder::ValueOrError result);
+  void OnWebAppParseInstallationInfo(
+      WebAppInstallationInfoCallback callback,
+      data_decoder::DataDecoder::ValueOrError result);
 
   int64_t parse_payment_callback_counter_ = 0;
   int64_t parse_webapp_callback_counter_ = 0;
 
   std::unique_ptr<ErrorLogger> log_;
-  base::WeakPtrFactory<PaymentManifestParser> weak_factory_;
+  base::WeakPtrFactory<PaymentManifestParser> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(PaymentManifestParser);
 };

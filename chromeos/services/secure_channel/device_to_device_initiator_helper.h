@@ -182,7 +182,7 @@ class DeviceToDeviceInitiatorHelper {
       const std::string& payload,
       const securemessage::Header& header);
 
-  base::WeakPtrFactory<DeviceToDeviceInitiatorHelper> weak_ptr_factory_;
+  base::WeakPtrFactory<DeviceToDeviceInitiatorHelper> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(DeviceToDeviceInitiatorHelper);
 };

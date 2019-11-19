@@ -8,15 +8,13 @@
 
 #include "base/android/jni_android.h"
 #include "base/logging.h"
+#include "chrome/android/chrome_jni_headers/ApplicationLifetime_jni.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_list.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_context.h"
-#include "jni/ApplicationLifetime_jni.h"
 
 namespace chrome {
 
@@ -40,4 +38,4 @@ void TerminateAndroid() {
   Java_ApplicationLifetime_terminate(env, restart);
 }
 
-}  // namespace browser
+}  // namespace chrome

@@ -32,7 +32,7 @@ class MockCloudBucket(cloud_bucket.BaseCloudBucket):
 
   # override
   def DownloadFile(self, path):
-    if self.datastore.has_key(path):
+    if path in self.datastore:
       return self.datastore[path]
     else:
       raise cloud_bucket.FileNotFoundError
@@ -45,16 +45,16 @@ class MockCloudBucket(cloud_bucket.BaseCloudBucket):
 
   # override
   def RemoveFile(self, path):
-    if self.datastore.has_key(path):
+    if path in self.datastore:
       self.datastore.pop(path)
 
   # override
   def FileExists(self, path):
-    return self.datastore.has_key(path)
+    return path in self.datastore
 
   # override
   def GetImageURL(self, path):
-    if self.datastore.has_key(path):
+    if path in self.datastore:
       return path
     else:
       raise cloud_bucket.FileNotFoundError

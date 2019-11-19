@@ -1,4 +1,0 @@
-Should not be using composited scrolling: Pass.
-Should be using composited scrolling (since we're compositing anyhow): Pass.
-Should not be using composited scrolling (since we've lost our direct reason): Pass.
-

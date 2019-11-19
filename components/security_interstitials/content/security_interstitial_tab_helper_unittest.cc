@@ -129,7 +129,7 @@ TEST_F(SecurityInterstitialTabHelperTest, SingleBlockingPage) {
 
 // Tests that the helper properly handles the lifetime of multiple blocking
 // pages, committed in a different order than they are created.
-TEST_F(SecurityInterstitialTabHelperTest, MultipleBlockingPages) {
+TEST_F(SecurityInterstitialTabHelperTest, DISABLED_MultipleBlockingPages) {
   // Simulate associating the first interstitial.
   std::unique_ptr<content::NavigationHandle> handle1 =
       CreateHandle(true, false);

@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<script src='../../resources/testharness.js'></script>
+<script src='../../resources/testharnessreport.js'></script>
+<script src='../../resources/gesture-util.js'></script>
+
+<style>
+  body, html {
+    margin: 0;
+  }
+
+  #abs {
+    position: absolute;
+    width: 80%;
+    height: 80%;
+    top: 10%;
+    left: 10%;
+    padding: 20px;
+    box-sizing: border-box;
+    background-color: PaleTurquoise;
+    overflow-y: scroll;
+  }
+
+  #instructions {
+    width: 100%;
+    height: 100px;
+    text-align: center;
+  }
+
+  #scroller {
+    position: absolute;
+    top: 300px;
+    border: 5px solid salmon;
+    clip: rect(0px, 1000px, 500px, 0px);
+    width: 90%;
+    height: 100px;
+    overflow-y: scroll;
+  }
+
+  .spacer {
+   height: 400%;
+   background:repeating-linear-gradient(#FFF 0%, #FFF 10%, #000 10%, #000 20%);
+
+  }
+</style>
+
+<div id="abs">
+  <div id="instructions">
+    <p>
+      This turquoise box is a position: absolute scroller. The black-and-white
+      scroller below has a clip region so should be non-composited.
+    </p>
+    <p>
+      Scroll the turquoise box so the black-and-white scroller appears near its
+      top edge. Now attempt to scroll over the black-and-white scroller with
+      wheel or touch.  If the box scrolls, the test passes. This turquoise
+      scroller must not scroll.
+    </p>
+  </div>
+  <div id="scroller">
+    <div class="spacer"></div>
+  </div>
+  <div style="height:1000px"></div>
+</div>
+
+<script>
+  window.onload = async () => {
+    await waitForCompositorCommit();
+
+    const scroller = document.getElementById('scroller');
+    const abs = document.getElementById('abs');
+
+    promise_test(async () => {
+      assert_equals(scroller.scrollTop, 0, "Scroller must start off unscrolled.");
+      assert_equals(abs.scrollTop, 0, "Absolute box must start off unscrolled.");
+
+      // Scroll the abs so that the scroller box doesn't overlap at all with
+      // where it used to be.
+      {
+        const delta = scroller.clientHeight * 2;
+        const location = elementCenter(abs);
+        await smoothScroll(delta,
+                           location.x,
+                           location.y,
+                           GestureSourceType.TOUCH_INPUT,
+                           'down',
+                           SPEED_INSTANT);
+        assert_greater_than(abs.scrollTop, scroller.clientHeight,
+                            "Absolute box must be scrolled.");
+        assert_equals(scroller.scrollTop, 0,
+                      "Scroller must remain unscrolled.");
+      }
+
+      // Now attempt to scroll over the scroller box. Ensure it scrolls, rather
+      // than the abs box.
+      {
+        const delta = 100;
+        const location = elementCenter(scroller);
+        await smoothScroll(delta,
+                           location.x,
+                           location.y,
+                           GestureSourceType.TOUCH_INPUT,
+                           'down',
+                           SPEED_INSTANT);
+        assert_greater_than(scroller.scrollTop, 0,
+                      "Scroller must be scrolled by events over it.");
+      }
+    }, 'Scrolling over an uncomposited scrolling inside a scrolled, absolute,' +
+       ' composited scroller.');
+  }
+
+</script>

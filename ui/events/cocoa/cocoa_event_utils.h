@@ -7,6 +7,8 @@
 
 #import <Cocoa/Cocoa.h>
 
+#include <vector>
+
 #include "ui/events/events_export.h"
 
 namespace ui {
@@ -28,6 +30,13 @@ EVENTS_EXPORT int EventFlagsFromNSEventWithModifiers(NSEvent* event,
 // Returns true for |NSKeyUp| and for |NSFlagsChanged| when modifier key was
 // released.
 EVENTS_EXPORT bool IsKeyUpEvent(NSEvent* event);
+
+// Convert an NSEvent to an opaque serialization using CGEventCreateData.
+EVENTS_EXPORT std::vector<uint8_t> EventToData(NSEvent* event);
+
+// Create an NSEvent from an opaque serialization using CGEventCreateFromData.
+// The result is autoreleased.
+EVENTS_EXPORT NSEvent* EventFromData(const std::vector<uint8_t>& data);
 
 }  // namespace ui
 

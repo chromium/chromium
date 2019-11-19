@@ -1,0 +1,50 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("init") {
+  sources = [
+    "web_main.mm",
+    "web_main_loop.h",
+    "web_main_loop.mm",
+    "web_main_runner.mm",
+  ]
+
+  configs += [ "//build/config/compiler:enable_arc" ]
+
+  deps = [
+    ":global_state",
+    "//base",
+    "//base:i18n",
+    "//crypto",
+    "//ios/web:threads",
+    "//ios/web/net",
+    "//ios/web/public",
+    "//ios/web/public/init",
+    "//ios/web/webui",
+    "//mojo/core/embedder",
+    "//net",
+    "//ui/base",
+    "//ui/gfx",
+    "//ui/gfx/geometry",
+  ]
+
+  libs = [
+    "Foundation.framework",
+    "UIKit.framework",
+  ]
+}
+
+source_set("global_state") {
+  sources = [
+    "ios_global_state.mm",
+  ]
+
+  configs += [ "//build/config/compiler:enable_arc" ]
+
+  deps = [
+    "//base",
+    "//ios/web/public/init:global_state",
+    "//net",
+  ]
+}

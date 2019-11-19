@@ -29,6 +29,7 @@
 #include "third_party/blink/renderer/core/editing/selection_template.h"
 #include "third_party/blink/renderer/core/editing/visible_selection.h"
 #include "third_party/blink/renderer/core/html/html_anchor_element.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
 
 namespace blink {
 
@@ -41,7 +42,7 @@ void CreateLinkCommand::DoApply(EditingState* editing_state) {
   if (EndingSelection().IsNone())
     return;
 
-  HTMLAnchorElement* anchor_element = HTMLAnchorElement::Create(GetDocument());
+  auto* anchor_element = MakeGarbageCollected<HTMLAnchorElement>(GetDocument());
   anchor_element->SetHref(AtomicString(url_));
 
   if (EndingSelection().IsRange()) {

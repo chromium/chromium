@@ -1,22 +1,41 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="hr">
+<translation id="1482734542997480527">Uređajem upravlja domena <ph name="ENROLLMENT_DOMAIN" /> i ona možda može nadzirati vašu aktivnost.</translation>
 <translation id="1510238584712386396">Pokretač</translation>
 <translation id="1734367976349034509">Ovim uređajem upravlja tvrtka</translation>
+<translation id="1930797645656624981">Usluga načina unosa OS-a Chrome</translation>
+<translation id="1979103255016296513">Zakašnjela promjena zaporke</translation>
 <translation id="2049639323467105390">Ovim uređajem upravlja <ph name="DOMAIN" />.</translation>
 <translation id="2083960536266308407">Na zaslonu nije ništa pronađeno</translation>
 <translation id="2338501278241028356">Uključite Bluetooth da biste otkrili uređaje u blizini</translation>
 <translation id="2805756323405976993">Aplikacije</translation>
 <translation id="2872961005593481000">Isključi</translation>
-<translation id="3147142846278915599">Pokretač (sinkronizacija aplikacija...)</translation>
+<translation id="3008341117444806826">OSVJEŽI</translation>
+<translation id="3838338534323494292">Nova zaporka</translation>
+<translation id="4003259559679196451">Uređajem upravlja domena <ph name="ENROLLMENT_DOMAIN" /> i ona ima pristup svim aktivnostima korisnika, uključujući posjećene web-stranice, zaporke i e-poštu.</translation>
+<translation id="4227825898293920515">Zaporka istječe za <ph name="TIME" /></translation>
+<translation id="4429881212383817840">Kerberosov tiket uskoro istječe</translation>
+<translation id="445059817448385655">Stara zaporka</translation>
+<translation id="467510802200863975">Zaporke se ne podudaraju</translation>
 <translation id="4731797938093519117">Roditeljski pristup</translation>
+<translation id="4890353053343094602">Odmah odaberite novu</translation>
 <translation id="5212543919916444558">Na zaslonu ne mogu pronaći ništa u vezi s čime mogu pružiti pomoć.
 Dodirnite mikrofon da biste mi dali glasovnu naredbu.</translation>
 <translation id="5222676887888702881">Odjava</translation>
+<translation id="5317780077021120954">Spremi</translation>
+<translation id="5332948983412042822">Odmah odaberite novu</translation>
 <translation id="5457599981699367932">Pregledavaj kao gost</translation>
 <translation id="54609108002486618">Upravljani</translation>
 <translation id="5832805196449965646">Dodaj osobu</translation>
 <translation id="5895138241574237353">Ponovno pokreni</translation>
+<translation id="6058625436358447366">Za dovršetak unesite staru i novu zaporku</translation>
+<translation id="6106186594183574873">Za dovršetak unesite staru zaporku</translation>
+<translation id="6146993107019042706">Za dovršetak unesite novu zaporku</translation>
 <translation id="7658239707568436148">Odustani</translation>
+<translation id="7690294790491645610">Potvrdite novu zaporku</translation>
+<translation id="808894953321890993">Promjena zaporke</translation>
+<translation id="8747900814994928677">Potvrda promjena</translation>
+<translation id="910415269708673980">Osvježite tiket za <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9111102763498581341">Otključaj</translation>
 </translationbundle>

@@ -1,0 +1,431 @@
+This is a testharness.js-based test.
+Found 427 tests; 403 PASS, 24 FAIL, 0 TIMEOUT, 0 NOTRUN.
+PASS idl_test setup
+PASS idl_test validation
+PASS Partial interface Element: original interface defined
+PASS Partial interface Element: member names are unique
+PASS Partial interface CSSStyleRule: original interface defined
+PASS Partial interface CSSStyleRule: member names are unique
+PASS Partial interface mixin ElementCSSInlineStyle: original interface mixin defined
+PASS Partial interface mixin ElementCSSInlineStyle: member names are unique
+PASS Partial namespace CSS: original namespace defined
+PASS Partial namespace CSS: member names are unique
+PASS HTMLElement includes ElementCSSInlineStyle: member names are unique
+PASS HTMLElement includes GlobalEventHandlers: member names are unique
+PASS HTMLElement includes DocumentAndElementEventHandlers: member names are unique
+PASS HTMLElement includes ElementContentEditable: member names are unique
+PASS HTMLElement includes HTMLOrSVGElement: member names are unique
+PASS SVGElement includes ElementCSSInlineStyle: member names are unique
+PASS SVGElement includes GlobalEventHandlers: member names are unique
+PASS SVGElement includes DocumentAndElementEventHandlers: member names are unique
+PASS SVGElement includes SVGElementInstance: member names are unique
+PASS SVGElement includes HTMLOrSVGElement: member names are unique
+PASS Element includes ParentNode: member names are unique
+PASS Element includes NonDocumentTypeChildNode: member names are unique
+PASS Element includes ChildNode: member names are unique
+PASS Element includes Slotable: member names are unique
+PASS CSSStyleValue interface: existence and properties of interface object
+PASS CSSStyleValue interface object length
+PASS CSSStyleValue interface object name
+PASS CSSStyleValue interface: existence and properties of interface prototype object
+PASS CSSStyleValue interface: existence and properties of interface prototype object's "constructor" property
+PASS CSSStyleValue interface: existence and properties of interface prototype object's @@unscopables property
+PASS CSSStyleValue interface: stringifier
+PASS CSSStyleValue interface: operation parse(USVString, USVString)
+PASS CSSStyleValue interface: operation parseAll(USVString, USVString)
+PASS StylePropertyMapReadOnly interface: existence and properties of interface object
+PASS StylePropertyMapReadOnly interface object length
+PASS StylePropertyMapReadOnly interface object name
+PASS StylePropertyMapReadOnly interface: existence and properties of interface prototype object
+PASS StylePropertyMapReadOnly interface: existence and properties of interface prototype object's "constructor" property
+PASS StylePropertyMapReadOnly interface: existence and properties of interface prototype object's @@unscopables property
+PASS StylePropertyMapReadOnly interface: iterable<USVString, [object Object]>
+PASS StylePropertyMapReadOnly interface: operation get(USVString)
+PASS StylePropertyMapReadOnly interface: operation getAll(USVString)
+PASS StylePropertyMapReadOnly interface: operation has(USVString)
+PASS StylePropertyMapReadOnly interface: attribute size
+PASS StylePropertyMap interface: existence and properties of interface object
+PASS StylePropertyMap interface object length
+PASS StylePropertyMap interface object name
+PASS StylePropertyMap interface: existence and properties of interface prototype object
+PASS StylePropertyMap interface: existence and properties of interface prototype object's "constructor" property
+PASS StylePropertyMap interface: existence and properties of interface prototype object's @@unscopables property
+PASS StylePropertyMap interface: operation set(USVString, [object Object],[object Object])
+PASS StylePropertyMap interface: operation append(USVString, [object Object],[object Object])
+PASS StylePropertyMap interface: operation delete(USVString)
+PASS StylePropertyMap interface: operation clear()
+PASS StylePropertyMap must be primary interface of styleMap
+PASS Stringification of styleMap
+PASS StylePropertyMap interface: styleMap must inherit property "set(USVString, [object Object],[object Object])" with the proper type
+PASS StylePropertyMap interface: calling set(USVString, [object Object],[object Object]) on styleMap with too few arguments must throw TypeError
+PASS StylePropertyMap interface: styleMap must inherit property "append(USVString, [object Object],[object Object])" with the proper type
+PASS StylePropertyMap interface: calling append(USVString, [object Object],[object Object]) on styleMap with too few arguments must throw TypeError
+PASS StylePropertyMap interface: styleMap must inherit property "delete(USVString)" with the proper type
+PASS StylePropertyMap interface: calling delete(USVString) on styleMap with too few arguments must throw TypeError
+PASS StylePropertyMap interface: styleMap must inherit property "clear()" with the proper type
+PASS StylePropertyMapReadOnly interface: styleMap must inherit property "get(USVString)" with the proper type
+PASS StylePropertyMapReadOnly interface: calling get(USVString) on styleMap with too few arguments must throw TypeError
+PASS StylePropertyMapReadOnly interface: styleMap must inherit property "getAll(USVString)" with the proper type
+PASS StylePropertyMapReadOnly interface: calling getAll(USVString) on styleMap with too few arguments must throw TypeError
+PASS StylePropertyMapReadOnly interface: styleMap must inherit property "has(USVString)" with the proper type
+PASS StylePropertyMapReadOnly interface: calling has(USVString) on styleMap with too few arguments must throw TypeError
+PASS StylePropertyMapReadOnly interface: styleMap must inherit property "size" with the proper type
+PASS CSSUnparsedValue interface: existence and properties of interface object
+PASS CSSUnparsedValue interface object length
+PASS CSSUnparsedValue interface object name
+PASS CSSUnparsedValue interface: existence and properties of interface prototype object
+PASS CSSUnparsedValue interface: existence and properties of interface prototype object's "constructor" property
+PASS CSSUnparsedValue interface: existence and properties of interface prototype object's @@unscopables property
+PASS CSSUnparsedValue interface: iterable<CSSUnparsedSegment>
+PASS CSSUnparsedValue interface: attribute length
+PASS CSSVariableReferenceValue interface: existence and properties of interface object
+PASS CSSVariableReferenceValue interface object length
+PASS CSSVariableReferenceValue interface object name
+PASS CSSVariableReferenceValue interface: existence and properties of interface prototype object
+PASS CSSVariableReferenceValue interface: existence and properties of interface prototype object's "constructor" property
+PASS CSSVariableReferenceValue interface: existence and properties of interface prototype object's @@unscopables property
+PASS CSSVariableReferenceValue interface: attribute variable
+PASS CSSVariableReferenceValue interface: attribute fallback
+PASS CSSKeywordValue interface: existence and properties of interface object
+PASS CSSKeywordValue interface object length
+PASS CSSKeywordValue interface object name
+PASS CSSKeywordValue interface: existence and properties of interface prototype object
+PASS CSSKeywordValue interface: existence and properties of interface prototype object's "constructor" property
+PASS CSSKeywordValue interface: existence and properties of interface prototype object's @@unscopables property
+PASS CSSKeywordValue interface: attribute value
+PASS CSSNumericValue interface: existence and properties of interface object
+PASS CSSNumericValue interface object length
+PASS CSSNumericValue interface object name
+PASS CSSNumericValue interface: existence and properties of interface prototype object
+PASS CSSNumericValue interface: existence and properties of interface prototype object's "constructor" property
+PASS CSSNumericValue interface: existence and properties of interface prototype object's @@unscopables property
+PASS CSSNumericValue interface: operation add(CSSNumberish)
+PASS CSSNumericValue interface: operation sub(CSSNumberish)
+PASS CSSNumericValue interface: operation mul(CSSNumberish)
+PASS CSSNumericValue interface: operation div(CSSNumberish)
+PASS CSSNumericValue interface: operation min(CSSNumberish)
+PASS CSSNumericValue interface: operation max(CSSNumberish)
+PASS CSSNumericValue interface: operation equals(CSSNumberish)
+PASS CSSNumericValue interface: operation to(USVString)
+PASS CSSNumericValue interface: operation toSum(USVString)
+PASS CSSNumericValue interface: operation type()
+PASS CSSNumericValue interface: operation parse(USVString)
+PASS CSSUnitValue interface: existence and properties of interface object
+PASS CSSUnitValue interface object length
+PASS CSSUnitValue interface object name
+PASS CSSUnitValue interface: existence and properties of interface prototype object
+PASS CSSUnitValue interface: existence and properties of interface prototype object's "constructor" property
+PASS CSSUnitValue interface: existence and properties of interface prototype object's @@unscopables property
+PASS CSSUnitValue interface: attribute value
+PASS CSSUnitValue interface: attribute unit
+PASS CSSUnitValue must be primary interface of unitValue
+PASS Stringification of unitValue
+PASS CSSUnitValue interface: unitValue must inherit property "value" with the proper type
+PASS CSSUnitValue interface: unitValue must inherit property "unit" with the proper type
+PASS CSSNumericValue interface: unitValue must inherit property "add(CSSNumberish)" with the proper type
+PASS CSSNumericValue interface: calling add(CSSNumberish) on unitValue with too few arguments must throw TypeError
+PASS CSSNumericValue interface: unitValue must inherit property "sub(CSSNumberish)" with the proper type
+PASS CSSNumericValue interface: calling sub(CSSNumberish) on unitValue with too few arguments must throw TypeError
+PASS CSSNumericValue interface: unitValue must inherit property "mul(CSSNumberish)" with the proper type
+PASS CSSNumericValue interface: calling mul(CSSNumberish) on unitValue with too few arguments must throw TypeError
+PASS CSSNumericValue interface: unitValue must inherit property "div(CSSNumberish)" with the proper type
+PASS CSSNumericValue interface: calling div(CSSNumberish) on unitValue with too few arguments must throw TypeError
+PASS CSSNumericValue interface: unitValue must inherit property "min(CSSNumberish)" with the proper type
+PASS CSSNumericValue interface: calling min(CSSNumberish) on unitValue with too few arguments must throw TypeError
+PASS CSSNumericValue interface: unitValue must inherit property "max(CSSNumberish)" with the proper type
+PASS CSSNumericValue interface: calling max(CSSNumberish) on unitValue with too few arguments must throw TypeError
+PASS CSSNumericValue interface: unitValue must inherit property "equals(CSSNumberish)" with the proper type
+PASS CSSNumericValue interface: calling equals(CSSNumberish) on unitValue with too few arguments must throw TypeError
+PASS CSSNumericValue interface: unitValue must inherit property "to(USVString)" with the proper type
+PASS CSSNumericValue interface: calling to(USVString) on unitValue with too few arguments must throw TypeError
+PASS CSSNumericValue interface: unitValue must inherit property "toSum(USVString)" with the proper type
+PASS CSSNumericValue interface: calling toSum(USVString) on unitValue with too few arguments must throw TypeError
+PASS CSSNumericValue interface: unitValue must inherit property "type()" with the proper type
+PASS CSSNumericValue interface: unitValue must inherit property "parse(USVString)" with the proper type
+FAIL CSSNumericValue interface: calling parse(USVString) on unitValue with too few arguments must throw TypeError assert_own_property: interface object must have static operation as own property expected property "parse" missing
+PASS CSSStyleValue interface: unitValue must inherit property "parse(USVString, USVString)" with the proper type
+FAIL CSSStyleValue interface: calling parse(USVString, USVString) on unitValue with too few arguments must throw TypeError assert_own_property: interface object must have static operation as own property expected property "parse" missing
+PASS CSSStyleValue interface: unitValue must inherit property "parseAll(USVString, USVString)" with the proper type
+FAIL CSSStyleValue interface: calling parseAll(USVString, USVString) on unitValue with too few arguments must throw TypeError assert_own_property: interface object must have static operation as own property expected property "parseAll" missing
+PASS CSSMathValue interface: existence and properties of interface object
+PASS CSSMathValue interface object length
+PASS CSSMathValue interface object name
+PASS CSSMathValue interface: existence and properties of interface prototype object
+PASS CSSMathValue interface: existence and properties of interface prototype object's "constructor" property
+PASS CSSMathValue interface: existence and properties of interface prototype object's @@unscopables property
+PASS CSSMathValue interface: attribute operator
+PASS CSSMathSum interface: existence and properties of interface object
+PASS CSSMathSum interface object length
+PASS CSSMathSum interface object name
+PASS CSSMathSum interface: existence and properties of interface prototype object
+PASS CSSMathSum interface: existence and properties of interface prototype object's "constructor" property
+PASS CSSMathSum interface: existence and properties of interface prototype object's @@unscopables property
+PASS CSSMathSum interface: attribute values
+PASS CSSMathSum must be primary interface of mathSum
+PASS Stringification of mathSum
+PASS CSSMathSum interface: mathSum must inherit property "values" with the proper type
+PASS CSSMathValue interface: mathSum must inherit property "operator" with the proper type
+PASS CSSNumericValue interface: mathSum must inherit property "add(CSSNumberish)" with the proper type
+PASS CSSNumericValue interface: calling add(CSSNumberish) on mathSum with too few arguments must throw TypeError
+PASS CSSNumericValue interface: mathSum must inherit property "sub(CSSNumberish)" with the proper type
+PASS CSSNumericValue interface: calling sub(CSSNumberish) on mathSum with too few arguments must throw TypeError
+PASS CSSNumericValue interface: mathSum must inherit property "mul(CSSNumberish)" with the proper type
+PASS CSSNumericValue interface: calling mul(CSSNumberish) on mathSum with too few arguments must throw TypeError
+PASS CSSNumericValue interface: mathSum must inherit property "div(CSSNumberish)" with the proper type
+PASS CSSNumericValue interface: calling div(CSSNumberish) on mathSum with too few arguments must throw TypeError
+PASS CSSNumericValue interface: mathSum must inherit property "min(CSSNumberish)" with the proper type
+PASS CSSNumericValue interface: calling min(CSSNumberish) on mathSum with too few arguments must throw TypeError
+PASS CSSNumericValue interface: mathSum must inherit property "max(CSSNumberish)" with the proper type
+PASS CSSNumericValue interface: calling max(CSSNumberish) on mathSum with too few arguments must throw TypeError
+PASS CSSNumericValue interface: mathSum must inherit property "equals(CSSNumberish)" with the proper type
+PASS CSSNumericValue interface: calling equals(CSSNumberish) on mathSum with too few arguments must throw TypeError
+PASS CSSNumericValue interface: mathSum must inherit property "to(USVString)" with the proper type
+PASS CSSNumericValue interface: calling to(USVString) on mathSum with too few arguments must throw TypeError
+PASS CSSNumericValue interface: mathSum must inherit property "toSum(USVString)" with the proper type
+PASS CSSNumericValue interface: calling toSum(USVString) on mathSum with too few arguments must throw TypeError
+PASS CSSNumericValue interface: mathSum must inherit property "type()" with the proper type
+PASS CSSNumericValue interface: mathSum must inherit property "parse(USVString)" with the proper type
+FAIL CSSNumericValue interface: calling parse(USVString) on mathSum with too few arguments must throw TypeError assert_own_property: interface object must have static operation as own property expected property "parse" missing
+PASS CSSStyleValue interface: mathSum must inherit property "parse(USVString, USVString)" with the proper type
+FAIL CSSStyleValue interface: calling parse(USVString, USVString) on mathSum with too few arguments must throw TypeError assert_own_property: interface object must have static operation as own property expected property "parse" missing
+PASS CSSStyleValue interface: mathSum must inherit property "parseAll(USVString, USVString)" with the proper type
+FAIL CSSStyleValue interface: calling parseAll(USVString, USVString) on mathSum with too few arguments must throw TypeError assert_own_property: interface object must have static operation as own property expected property "parseAll" missing
+PASS CSSMathProduct interface: existence and properties of interface object
+PASS CSSMathProduct interface object length
+PASS CSSMathProduct interface object name
+PASS CSSMathProduct interface: existence and properties of interface prototype object
+PASS CSSMathProduct interface: existence and properties of interface prototype object's "constructor" property
+PASS CSSMathProduct interface: existence and properties of interface prototype object's @@unscopables property
+PASS CSSMathProduct interface: attribute values
+PASS CSSMathNegate interface: existence and properties of interface object
+PASS CSSMathNegate interface object length
+PASS CSSMathNegate interface object name
+PASS CSSMathNegate interface: existence and properties of interface prototype object
+PASS CSSMathNegate interface: existence and properties of interface prototype object's "constructor" property
+PASS CSSMathNegate interface: existence and properties of interface prototype object's @@unscopables property
+PASS CSSMathNegate interface: attribute value
+PASS CSSMathInvert interface: existence and properties of interface object
+PASS CSSMathInvert interface object length
+PASS CSSMathInvert interface object name
+PASS CSSMathInvert interface: existence and properties of interface prototype object
+PASS CSSMathInvert interface: existence and properties of interface prototype object's "constructor" property
+PASS CSSMathInvert interface: existence and properties of interface prototype object's @@unscopables property
+PASS CSSMathInvert interface: attribute value
+PASS CSSMathMin interface: existence and properties of interface object
+PASS CSSMathMin interface object length
+PASS CSSMathMin interface object name
+PASS CSSMathMin interface: existence and properties of interface prototype object
+PASS CSSMathMin interface: existence and properties of interface prototype object's "constructor" property
+PASS CSSMathMin interface: existence and properties of interface prototype object's @@unscopables property
+PASS CSSMathMin interface: attribute values
+PASS CSSMathMax interface: existence and properties of interface object
+PASS CSSMathMax interface object length
+PASS CSSMathMax interface object name
+PASS CSSMathMax interface: existence and properties of interface prototype object
+PASS CSSMathMax interface: existence and properties of interface prototype object's "constructor" property
+PASS CSSMathMax interface: existence and properties of interface prototype object's @@unscopables property
+PASS CSSMathMax interface: attribute values
+FAIL CSSMathClamp interface: existence and properties of interface object assert_own_property: self does not have own property "CSSMathClamp" expected property "CSSMathClamp" missing
+FAIL CSSMathClamp interface object length assert_own_property: self does not have own property "CSSMathClamp" expected property "CSSMathClamp" missing
+FAIL CSSMathClamp interface object name assert_own_property: self does not have own property "CSSMathClamp" expected property "CSSMathClamp" missing
+FAIL CSSMathClamp interface: existence and properties of interface prototype object assert_own_property: self does not have own property "CSSMathClamp" expected property "CSSMathClamp" missing
+FAIL CSSMathClamp interface: existence and properties of interface prototype object's "constructor" property assert_own_property: self does not have own property "CSSMathClamp" expected property "CSSMathClamp" missing
+FAIL CSSMathClamp interface: existence and properties of interface prototype object's @@unscopables property assert_own_property: self does not have own property "CSSMathClamp" expected property "CSSMathClamp" missing
+FAIL CSSMathClamp interface: attribute min assert_own_property: self does not have own property "CSSMathClamp" expected property "CSSMathClamp" missing
+FAIL CSSMathClamp interface: attribute val assert_own_property: self does not have own property "CSSMathClamp" expected property "CSSMathClamp" missing
+FAIL CSSMathClamp interface: attribute max assert_own_property: self does not have own property "CSSMathClamp" expected property "CSSMathClamp" missing
+PASS CSSNumericArray interface: existence and properties of interface object
+PASS CSSNumericArray interface object length
+PASS CSSNumericArray interface object name
+PASS CSSNumericArray interface: existence and properties of interface prototype object
+PASS CSSNumericArray interface: existence and properties of interface prototype object's "constructor" property
+PASS CSSNumericArray interface: existence and properties of interface prototype object's @@unscopables property
+PASS CSSNumericArray interface: iterable<CSSNumericValue>
+PASS CSSNumericArray interface: attribute length
+PASS CSSTransformValue interface: existence and properties of interface object
+PASS CSSTransformValue interface object length
+PASS CSSTransformValue interface object name
+PASS CSSTransformValue interface: existence and properties of interface prototype object
+PASS CSSTransformValue interface: existence and properties of interface prototype object's "constructor" property
+PASS CSSTransformValue interface: existence and properties of interface prototype object's @@unscopables property
+PASS CSSTransformValue interface: iterable<CSSTransformComponent>
+PASS CSSTransformValue interface: attribute length
+PASS CSSTransformValue interface: attribute is2D
+PASS CSSTransformValue interface: operation toMatrix()
+PASS CSSTransformValue must be primary interface of transformValue
+PASS Stringification of transformValue
+PASS CSSTransformValue interface: transformValue must inherit property "length" with the proper type
+PASS CSSTransformValue interface: transformValue must inherit property "is2D" with the proper type
+PASS CSSTransformValue interface: transformValue must inherit property "toMatrix()" with the proper type
+PASS CSSStyleValue interface: transformValue must inherit property "parse(USVString, USVString)" with the proper type
+FAIL CSSStyleValue interface: calling parse(USVString, USVString) on transformValue with too few arguments must throw TypeError assert_own_property: interface object must have static operation as own property expected property "parse" missing
+PASS CSSStyleValue interface: transformValue must inherit property "parseAll(USVString, USVString)" with the proper type
+FAIL CSSStyleValue interface: calling parseAll(USVString, USVString) on transformValue with too few arguments must throw TypeError assert_own_property: interface object must have static operation as own property expected property "parseAll" missing
+PASS CSSTransformComponent interface: existence and properties of interface object
+PASS CSSTransformComponent interface object length
+PASS CSSTransformComponent interface object name
+PASS CSSTransformComponent interface: existence and properties of interface prototype object
+PASS CSSTransformComponent interface: existence and properties of interface prototype object's "constructor" property
+PASS CSSTransformComponent interface: existence and properties of interface prototype object's @@unscopables property
+PASS CSSTransformComponent interface: stringifier
+PASS CSSTransformComponent interface: attribute is2D
+PASS CSSTransformComponent interface: operation toMatrix()
+PASS CSSTranslate interface: existence and properties of interface object
+PASS CSSTranslate interface object length
+PASS CSSTranslate interface object name
+PASS CSSTranslate interface: existence and properties of interface prototype object
+PASS CSSTranslate interface: existence and properties of interface prototype object's "constructor" property
+PASS CSSTranslate interface: existence and properties of interface prototype object's @@unscopables property
+PASS CSSTranslate interface: attribute x
+PASS CSSTranslate interface: attribute y
+PASS CSSTranslate interface: attribute z
+PASS CSSTranslate must be primary interface of transformValue[0]
+PASS Stringification of transformValue[0]
+PASS CSSTranslate interface: transformValue[0] must inherit property "x" with the proper type
+PASS CSSTranslate interface: transformValue[0] must inherit property "y" with the proper type
+PASS CSSTranslate interface: transformValue[0] must inherit property "z" with the proper type
+PASS CSSTransformComponent interface: transformValue[0] must inherit property "is2D" with the proper type
+PASS CSSTransformComponent interface: transformValue[0] must inherit property "toMatrix()" with the proper type
+PASS CSSRotate interface: existence and properties of interface object
+PASS CSSRotate interface object length
+PASS CSSRotate interface object name
+PASS CSSRotate interface: existence and properties of interface prototype object
+PASS CSSRotate interface: existence and properties of interface prototype object's "constructor" property
+PASS CSSRotate interface: existence and properties of interface prototype object's @@unscopables property
+PASS CSSRotate interface: attribute x
+PASS CSSRotate interface: attribute y
+PASS CSSRotate interface: attribute z
+PASS CSSRotate interface: attribute angle
+PASS CSSRotate must be primary interface of rotate
+PASS Stringification of rotate
+PASS CSSRotate interface: rotate must inherit property "x" with the proper type
+PASS CSSRotate interface: rotate must inherit property "y" with the proper type
+PASS CSSRotate interface: rotate must inherit property "z" with the proper type
+PASS CSSRotate interface: rotate must inherit property "angle" with the proper type
+PASS CSSTransformComponent interface: rotate must inherit property "is2D" with the proper type
+PASS CSSTransformComponent interface: rotate must inherit property "toMatrix()" with the proper type
+PASS CSSScale interface: existence and properties of interface object
+PASS CSSScale interface object length
+PASS CSSScale interface object name
+PASS CSSScale interface: existence and properties of interface prototype object
+PASS CSSScale interface: existence and properties of interface prototype object's "constructor" property
+PASS CSSScale interface: existence and properties of interface prototype object's @@unscopables property
+PASS CSSScale interface: attribute x
+PASS CSSScale interface: attribute y
+PASS CSSScale interface: attribute z
+PASS CSSScale must be primary interface of scale
+PASS Stringification of scale
+PASS CSSScale interface: scale must inherit property "x" with the proper type
+PASS CSSScale interface: scale must inherit property "y" with the proper type
+PASS CSSScale interface: scale must inherit property "z" with the proper type
+PASS CSSTransformComponent interface: scale must inherit property "is2D" with the proper type
+PASS CSSTransformComponent interface: scale must inherit property "toMatrix()" with the proper type
+PASS CSSSkew interface: existence and properties of interface object
+PASS CSSSkew interface object length
+PASS CSSSkew interface object name
+PASS CSSSkew interface: existence and properties of interface prototype object
+PASS CSSSkew interface: existence and properties of interface prototype object's "constructor" property
+PASS CSSSkew interface: existence and properties of interface prototype object's @@unscopables property
+PASS CSSSkew interface: attribute ax
+PASS CSSSkew interface: attribute ay
+PASS CSSSkew must be primary interface of skew
+PASS Stringification of skew
+PASS CSSSkew interface: skew must inherit property "ax" with the proper type
+PASS CSSSkew interface: skew must inherit property "ay" with the proper type
+PASS CSSTransformComponent interface: skew must inherit property "is2D" with the proper type
+PASS CSSTransformComponent interface: skew must inherit property "toMatrix()" with the proper type
+PASS CSSSkewX interface: existence and properties of interface object
+PASS CSSSkewX interface object length
+PASS CSSSkewX interface object name
+PASS CSSSkewX interface: existence and properties of interface prototype object
+PASS CSSSkewX interface: existence and properties of interface prototype object's "constructor" property
+PASS CSSSkewX interface: existence and properties of interface prototype object's @@unscopables property
+PASS CSSSkewX interface: attribute ax
+PASS CSSSkewX must be primary interface of skewX
+PASS Stringification of skewX
+PASS CSSSkewX interface: skewX must inherit property "ax" with the proper type
+PASS CSSTransformComponent interface: skewX must inherit property "is2D" with the proper type
+PASS CSSTransformComponent interface: skewX must inherit property "toMatrix()" with the proper type
+PASS CSSSkewY interface: existence and properties of interface object
+PASS CSSSkewY interface object length
+PASS CSSSkewY interface object name
+PASS CSSSkewY interface: existence and properties of interface prototype object
+PASS CSSSkewY interface: existence and properties of interface prototype object's "constructor" property
+PASS CSSSkewY interface: existence and properties of interface prototype object's @@unscopables property
+PASS CSSSkewY interface: attribute ay
+PASS CSSSkewY must be primary interface of skewY
+PASS Stringification of skewY
+PASS CSSSkewY interface: skewY must inherit property "ay" with the proper type
+PASS CSSTransformComponent interface: skewY must inherit property "is2D" with the proper type
+PASS CSSTransformComponent interface: skewY must inherit property "toMatrix()" with the proper type
+PASS CSSPerspective interface: existence and properties of interface object
+PASS CSSPerspective interface object length
+PASS CSSPerspective interface object name
+PASS CSSPerspective interface: existence and properties of interface prototype object
+PASS CSSPerspective interface: existence and properties of interface prototype object's "constructor" property
+PASS CSSPerspective interface: existence and properties of interface prototype object's @@unscopables property
+PASS CSSPerspective interface: attribute length
+PASS CSSPerspective must be primary interface of perspective
+PASS Stringification of perspective
+PASS CSSPerspective interface: perspective must inherit property "length" with the proper type
+PASS CSSTransformComponent interface: perspective must inherit property "is2D" with the proper type
+PASS CSSTransformComponent interface: perspective must inherit property "toMatrix()" with the proper type
+PASS CSSMatrixComponent interface: existence and properties of interface object
+PASS CSSMatrixComponent interface object length
+PASS CSSMatrixComponent interface object name
+PASS CSSMatrixComponent interface: existence and properties of interface prototype object
+PASS CSSMatrixComponent interface: existence and properties of interface prototype object's "constructor" property
+PASS CSSMatrixComponent interface: existence and properties of interface prototype object's @@unscopables property
+PASS CSSMatrixComponent interface: attribute matrix
+PASS CSSMatrixComponent must be primary interface of matrix
+PASS Stringification of matrix
+PASS CSSMatrixComponent interface: matrix must inherit property "matrix" with the proper type
+PASS CSSTransformComponent interface: matrix must inherit property "is2D" with the proper type
+PASS CSSTransformComponent interface: matrix must inherit property "toMatrix()" with the proper type
+PASS CSSImageValue interface: existence and properties of interface object
+PASS CSSImageValue interface object length
+PASS CSSImageValue interface object name
+PASS CSSImageValue interface: existence and properties of interface prototype object
+PASS CSSImageValue interface: existence and properties of interface prototype object's "constructor" property
+PASS CSSImageValue interface: existence and properties of interface prototype object's @@unscopables property
+PASS CSSStyleRule interface: attribute styleMap
+PASS CSS namespace: operation escape(CSSOMString)
+PASS CSS namespace: operation number(double)
+PASS CSS namespace: operation percent(double)
+PASS CSS namespace: operation em(double)
+PASS CSS namespace: operation ex(double)
+PASS CSS namespace: operation ch(double)
+FAIL CSS namespace: operation ic(double) assert_own_property: namespace object missing operation "ic" expected property "ic" missing
+PASS CSS namespace: operation rem(double)
+FAIL CSS namespace: operation lh(double) assert_own_property: namespace object missing operation "lh" expected property "lh" missing
+FAIL CSS namespace: operation rlh(double) assert_own_property: namespace object missing operation "rlh" expected property "rlh" missing
+PASS CSS namespace: operation vw(double)
+PASS CSS namespace: operation vh(double)
+FAIL CSS namespace: operation vi(double) assert_own_property: namespace object missing operation "vi" expected property "vi" missing
+FAIL CSS namespace: operation vb(double) assert_own_property: namespace object missing operation "vb" expected property "vb" missing
+PASS CSS namespace: operation vmin(double)
+PASS CSS namespace: operation vmax(double)
+PASS CSS namespace: operation cm(double)
+PASS CSS namespace: operation mm(double)
+PASS CSS namespace: operation Q(double)
+PASS CSS namespace: operation in(double)
+PASS CSS namespace: operation pt(double)
+PASS CSS namespace: operation pc(double)
+PASS CSS namespace: operation px(double)
+PASS CSS namespace: operation deg(double)
+PASS CSS namespace: operation grad(double)
+PASS CSS namespace: operation rad(double)
+PASS CSS namespace: operation turn(double)
+PASS CSS namespace: operation s(double)
+PASS CSS namespace: operation ms(double)
+PASS CSS namespace: operation Hz(double)
+PASS CSS namespace: operation kHz(double)
+PASS CSS namespace: operation dpi(double)
+PASS CSS namespace: operation dpcm(double)
+PASS CSS namespace: operation dppx(double)
+PASS CSS namespace: operation fr(double)
+FAIL SVGElement interface: attribute attributeStyleMap assert_own_property: expected property "attributeStyleMap" missing
+FAIL HTMLElement interface: attribute attributeStyleMap assert_own_property: expected property "attributeStyleMap" missing
+PASS Element interface: operation computedStyleMap()
+Harness: the test ran to completion.
+

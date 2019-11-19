@@ -3,12 +3,20 @@
 # found in the LICENSE file.
 
 import("//build_overrides/build.gni")
+import("//third_party/abseil-cpp/abseil_clients.gni")
 
+# Usage of Abseil in Chromium is guarded by an explicit opt-in list, before
+# adding projects to this list please reach out to cxx@chromium.org and CC:
+# - https://cs.chromium.org/chromium/src/third_party/abseil-cpp/OWNERS
+#
+# More information can be found at:
+# https://docs.google.com/document/d/1DgS1-A3rzboTLjpf4m1sqkJgWjnY_Ru2dokk1X1vBDU
 if (build_with_chromium) {
-  visibility = [
-    "//third_party/webrtc/*",
-    "//third_party/abseil-cpp/*",
-    "//third_party/googletest:gtest",
+  visibility = absl_visibility
+  visibility += [
+    "//third_party/blink/renderer/platform:platform",
+    "//third_party/blink/renderer/modules/peerconnection:peerconnection",
+    "//third_party/openscreen/*",
   ]
 } else {
   visibility = [ "*" ]
@@ -80,6 +88,9 @@ source_set("span") {
   public = [
     "span.h",
   ]
+  sources = [
+    "internal/span.h",
+  ]
   deps = [
     "../algorithm",
     "../base:core_headers",
@@ -96,13 +107,14 @@ source_set("optional") {
   ]
   public_configs = [ "//third_party/abseil-cpp:absl_include_config" ]
   sources = [
-    "optional.cc",
+    "internal/optional.h",
   ]
   public = [
     "optional.h",
   ]
   deps = [
     ":bad_optional_access",
+    "../base:base_internal",
     "../base:config",
     "../base:core_headers",
     "../memory",
@@ -169,5 +181,21 @@ source_set("variant") {
     "../base:core_headers",
     "../meta:type_traits",
     "../utility",
+  ]
+}
+
+source_set("compare") {
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [
+    "//build/config/compiler:no_chromium_code",
+    "//third_party/abseil-cpp:absl_default_cflags_cc",
+  ]
+  public_configs = [ "//third_party/abseil-cpp:absl_include_config" ]
+  public = [
+    "compare.h",
+  ]
+  deps = [
+    "../base:core_headers",
+    "../meta:type_traits",
   ]
 }

@@ -3,11 +3,18 @@ file://extensions/OWNERS
 # Additional ChromeOS-specific reviewers
 tbarzic@chromium.org
 
+per-file default_app*=dominickn@chromium.org
+per-file default_app*=jshikaram@chromium.org
+per-file default_web_app_ids.h=dominickn@chromium.org
+per-file default_web_app_ids.h=jshikaram@chromium.org
+
 per-file *wallpaper*=file://ash/wallpaper/OWNERS
 
-# input method related reviewers. shuchen@ is primary, and googleo@ is backup.
-per-file input_method*=shuchen@chromium.org
+# input method related reviewers. keithlee@ is primary, and shuchen@ and googleo@ are backup.
 per-file input_method*=googleo@chromium.org
+per-file input_method*=keithlee@chromium.org
+per-file input_method*=shuchen@chromium.org
+per-file ime_menu*=keithlee@chromium.org
 per-file ime_menu*=shuchen@chromium.org
 
 # DeviceLocalAccount reviewers. emaxx@ is primary, others are backup.

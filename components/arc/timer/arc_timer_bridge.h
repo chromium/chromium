@@ -15,8 +15,8 @@
 #include "base/optional.h"
 #include "base/sequenced_task_runner.h"
 #include "base/time/time.h"
-#include "components/arc/common/timer.mojom.h"
-#include "components/arc/connection_observer.h"
+#include "components/arc/mojom/timer.mojom.h"
+#include "components/arc/session/connection_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "mojo/public/cpp/bindings/binding.h"
 
@@ -87,7 +87,7 @@ class ArcTimerBridge : public KeyedService,
 
   mojo::Binding<mojom::TimerHost> binding_;
 
-  base::WeakPtrFactory<ArcTimerBridge> weak_ptr_factory_;
+  base::WeakPtrFactory<ArcTimerBridge> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ArcTimerBridge);
 };

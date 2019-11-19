@@ -1,6 +1,6 @@
 {
     "global-disabled-technologies": {
-         "DisableNetworkTypes": ["WiMAX"]
+         "DisableNetworkTypes": ["Cellular"]
     },
     "duplicate-network-guid": {
           "NetworkConfigurations": [
@@ -582,5 +582,23 @@
       "Certificates": [],
       "Type": "UnencryptedConfiguration",
       "UnknownField3": [],
+    },
+    "invalid-scope-due-to-type": {
+      "Type": "Bla",
+      "Id": "ngjobkbdodapjbbncmagbccommkggmnj"
+    },
+    "invalid-scope-due-to-missing-id": {
+      "Type": "Extension",
+    },
+    "invalid-scope-due-to-invalid-id-length": {
+      "Type": "Extension",
+      "Id": "blabla"
+    },
+    "invalid-scope-due-to-invalid-id-character": {
+      "Type": "Extension",
+      "Id": "9gjobkbdodapjbbncmagbccommkggmnj"
+    },
+    "invalid-scope-due-to-missing-type": {
+      "Id": "ngjobkbdodapjbbncmagbccommkggmnj"
     }
 }

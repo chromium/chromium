@@ -8,7 +8,7 @@
 
 WebAppInfoImageSource::WebAppInfoImageSource(
     int dip_size,
-    const std::vector<WebApplicationInfo::IconInfo>& icons)
+    const std::vector<WebApplicationIconInfo>& icons)
     : dip_size_(dip_size), icons_(icons) {}
 
 WebAppInfoImageSource::~WebAppInfoImageSource() {}

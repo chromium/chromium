@@ -4,35 +4,36 @@
 
 #include "storage/browser/test/fake_blob.h"
 
-#include "mojo/public/cpp/bindings/strong_binding.h"
+#include "mojo/public/cpp/bindings/self_owned_receiver.h"
 
 namespace storage {
 
 FakeBlob::FakeBlob(const std::string& uuid) : uuid_(uuid) {}
 
-blink::mojom::BlobPtr FakeBlob::Clone() {
-  blink::mojom::BlobPtr result;
-  Clone(MakeRequest(&result));
+mojo::PendingRemote<blink::mojom::Blob> FakeBlob::Clone() {
+  mojo::PendingRemote<blink::mojom::Blob> result;
+  Clone(result.InitWithNewPipeAndPassReceiver());
   return result;
 }
 
-void FakeBlob::Clone(blink::mojom::BlobRequest request) {
-  mojo::MakeStrongBinding(std::make_unique<FakeBlob>(uuid_),
-                          std::move(request));
+void FakeBlob::Clone(mojo::PendingReceiver<blink::mojom::Blob> receiver) {
+  mojo::MakeSelfOwnedReceiver(std::make_unique<FakeBlob>(uuid_),
+                              std::move(receiver));
 }
 
-void FakeBlob::AsDataPipeGetter(network::mojom::DataPipeGetterRequest) {
+void FakeBlob::AsDataPipeGetter(
+    mojo::PendingReceiver<network::mojom::DataPipeGetter>) {
   NOTREACHED();
 }
 void FakeBlob::ReadRange(uint64_t offset,
                          uint64_t size,
                          mojo::ScopedDataPipeProducerHandle,
-                         blink::mojom::BlobReaderClientPtr) {
+                         mojo::PendingRemote<blink::mojom::BlobReaderClient>) {
   NOTREACHED();
 }
 
 void FakeBlob::ReadAll(mojo::ScopedDataPipeProducerHandle,
-                       blink::mojom::BlobReaderClientPtr) {
+                       mojo::PendingRemote<blink::mojom::BlobReaderClient>) {
   NOTREACHED();
 }
 

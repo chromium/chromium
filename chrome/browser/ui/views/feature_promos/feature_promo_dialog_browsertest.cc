@@ -23,8 +23,8 @@ class FeaturePromoDialogTest : public DialogBrowserTest {
     // currently no infrastructure for test-only string resources.
     int placeholder_string = IDS_NEWTAB_PROMO_0;
     FeaturePromoBubbleView::CreateOwned(
-        app_menu_button, views::BubbleBorder::TOP_RIGHT, placeholder_string,
-        FeaturePromoBubbleView::ActivationAction::ACTIVATE);
+        app_menu_button, views::BubbleBorder::TOP_RIGHT,
+        FeaturePromoBubbleView::ActivationAction::ACTIVATE, placeholder_string);
   }
 };
 

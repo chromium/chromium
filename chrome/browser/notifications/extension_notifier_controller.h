@@ -19,8 +19,7 @@ class ExtensionNotifierController : public NotifierController,
   ~ExtensionNotifierController() override;
 
   // NotifierController:
-  std::vector<ash::mojom::NotifierUiDataPtr> GetNotifierList(
-      Profile* profile) override;
+  std::vector<ash::NotifierMetadata> GetNotifierList(Profile* profile) override;
   void SetNotifierEnabled(Profile* profile,
                           const message_center::NotifierId& notifier_id,
                           bool enabled) override;

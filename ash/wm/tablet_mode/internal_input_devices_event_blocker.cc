@@ -7,27 +7,20 @@
 #include "ash/shell.h"
 #include "ash/shell_delegate.h"
 #include "ash/touch/touch_devices_controller.h"
-#include "services/ws/public/cpp/input_devices/input_device_controller_client.h"
+#include "ui/events/devices/device_data_manager.h"
 #include "ui/events/devices/input_device.h"
-#include "ui/events/devices/input_device_manager.h"
 #include "ui/events/keycodes/dom/dom_code.h"
+#include "ui/ozone/public/input_controller.h"
+#include "ui/ozone/public/ozone_platform.h"
 
 namespace ash {
 
-namespace {
-
-ws::InputDeviceControllerClient* GetInputDeviceControllerClient() {
-  return Shell::Get()->shell_delegate()->GetInputDeviceControllerClient();
-}
-
-}  // namespace
-
 InternalInputDevicesEventBlocker::InternalInputDevicesEventBlocker() {
-  ui::InputDeviceManager::GetInstance()->AddObserver(this);
+  ui::DeviceDataManager::GetInstance()->AddObserver(this);
 }
 
 InternalInputDevicesEventBlocker::~InternalInputDevicesEventBlocker() {
-  ui::InputDeviceManager::GetInstance()->RemoveObserver(this);
+  ui::DeviceDataManager::GetInstance()->RemoveObserver(this);
   if (should_be_blocked_)
     UpdateInternalInputDevices(/*should_block=*/false);
 }
@@ -52,7 +45,7 @@ void InternalInputDevicesEventBlocker::UpdateInternalInputDevices(
 
 bool InternalInputDevicesEventBlocker::HasInternalTouchpad() {
   for (const ui::InputDevice& touchpad :
-       ui::InputDeviceManager::GetInstance()->GetTouchpadDevices()) {
+       ui::DeviceDataManager::GetInstance()->GetTouchpadDevices()) {
     if (touchpad.type == ui::INPUT_DEVICE_INTERNAL)
       return true;
   }
@@ -61,7 +54,7 @@ bool InternalInputDevicesEventBlocker::HasInternalTouchpad() {
 
 bool InternalInputDevicesEventBlocker::HasInternalKeyboard() {
   for (const ui::InputDevice& keyboard :
-       ui::InputDeviceManager::GetInstance()->GetKeyboardDevices()) {
+       ui::DeviceDataManager::GetInstance()->GetKeyboardDevices()) {
     if (keyboard.type == ui::INPUT_DEVICE_INTERNAL)
       return true;
   }
@@ -86,22 +79,23 @@ void InternalInputDevicesEventBlocker::UpdateInternalKeyboard(
   if (should_be_blocked == is_keyboard_blocked_)
     return;
 
-  // Block or unblock the internal keyboard. Note InputDeviceControllerClient
-  // may be null in tests.
-  if (HasInternalKeyboard() && GetInputDeviceControllerClient()) {
-    std::vector<ui::DomCode> allowed_keys;
-    if (should_be_blocked) {
-      // Only allow the acccessible keys present on the side of some devices to
-      // continue working if the internal keyboard events should be blocked.
-      allowed_keys.push_back(ui::DomCode::VOLUME_DOWN);
-      allowed_keys.push_back(ui::DomCode::VOLUME_UP);
-      allowed_keys.push_back(ui::DomCode::POWER);
-    }
-    GetInputDeviceControllerClient()->SetInternalKeyboardFilter(
-        should_be_blocked, allowed_keys);
-    is_keyboard_blocked_ = should_be_blocked;
-    VLOG(1) << "Internal keyboard is blocked: " << is_keyboard_blocked_;
+  if (!HasInternalKeyboard())
+    return;
+
+  // Block or unblock the internal keyboard.
+  ui::InputController* input_controller =
+      ui::OzonePlatform::GetInstance()->GetInputController();
+  std::vector<ui::DomCode> allowed_keys;
+  if (should_be_blocked) {
+    // Only allow the acccessible keys present on the side of some devices to
+    // continue working if the internal keyboard events should be blocked.
+    allowed_keys.push_back(ui::DomCode::VOLUME_DOWN);
+    allowed_keys.push_back(ui::DomCode::VOLUME_UP);
+    allowed_keys.push_back(ui::DomCode::POWER);
   }
+  input_controller->SetInternalKeyboardFilter(should_be_blocked, allowed_keys);
+  is_keyboard_blocked_ = should_be_blocked;
+  VLOG(1) << "Internal keyboard is blocked: " << is_keyboard_blocked_;
 }
 
 }  // namespace ash

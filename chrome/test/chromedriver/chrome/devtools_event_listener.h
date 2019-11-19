@@ -24,7 +24,7 @@ class DevToolsEventListener {
   // Called when a connection is made to the DevTools server.
   virtual Status OnConnected(DevToolsClient* client);
 
-  // Called when an event is received.
+  // Called when an event is received. Should avoid blocking if possible.
   virtual Status OnEvent(DevToolsClient* client,
                          const std::string& method,
                          const base::DictionaryValue& params);

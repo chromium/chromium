@@ -44,6 +44,7 @@
 namespace blink {
 
 class Document;
+class DoublePoint;
 class VTTScanner;
 
 class VTTParserClient : public GarbageCollectedMixin {
@@ -58,7 +59,7 @@ class VTTParserClient : public GarbageCollectedMixin {
 
 // Implementation of the WebVTT parser algorithm.
 // https://w3c.github.io/webvtt/#webvtt-parser-algorithm
-class VTTParser final : public GarbageCollectedFinalized<VTTParser> {
+class VTTParser final : public GarbageCollected<VTTParser> {
  public:
   enum ParseState {
     kInitial,
@@ -67,12 +68,9 @@ class VTTParser final : public GarbageCollectedFinalized<VTTParser> {
     kTimingsAndSettings,
     kCueText,
     kRegion,
-    kBadCue
+    kBadCue,
+    kStyle
   };
-
-  static VTTParser* Create(VTTParserClient* client, Document& document) {
-    return MakeGarbageCollected<VTTParser>(client, document);
-  }
 
   VTTParser(VTTParserClient*, Document&);
   ~VTTParser() = default;
@@ -103,7 +101,8 @@ class VTTParser final : public GarbageCollectedFinalized<VTTParser> {
 
   // Create the DocumentFragment representation of the WebVTT cue text.
   static DocumentFragment* CreateDocumentFragmentFromCueText(Document&,
-                                                             const String&);
+                                                             const String&,
+                                                             TextTrack*);
 
   // Input data to the parser to parse.
   void ParseBytes(const char* data, size_t length);
@@ -111,6 +110,9 @@ class VTTParser final : public GarbageCollectedFinalized<VTTParser> {
 
   // Transfers ownership of last parsed cues to caller.
   void GetNewCues(HeapVector<Member<TextTrackCue>>&);
+
+  // Transfers ownership of last parsed style sheets to caller.
+  void GetNewStyleSheets(HeapVector<Member<CSSStyleSheet>>&);
 
   void Trace(Visitor*);
 
@@ -129,9 +131,9 @@ class VTTParser final : public GarbageCollectedFinalized<VTTParser> {
   ParseState CollectRegionSettings(const String&);
   ParseState CollectWebVTTBlock(const String&);
   ParseState CheckAndRecoverCue(const String& line);
+  ParseState CollectStyleSheet(const String& line);
   bool CheckAndCreateRegion(const String& line);
   bool CheckAndStoreRegion(const String& line);
-
   void CreateNewCue();
   void ResetCueValues();
 
@@ -147,7 +149,7 @@ class VTTParser final : public GarbageCollectedFinalized<VTTParser> {
   String current_settings_;
   Member<VTTRegion> current_region_;
   Member<VTTParserClient> client_;
-
+  HeapVector<Member<CSSStyleSheet>> style_sheets_;
   HeapVector<Member<TextTrackCue>> cue_list_;
 
   VTTRegionMap region_map_;

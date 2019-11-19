@@ -210,7 +210,7 @@ The characteristics of the DoLoop pattern are:
                result = DoLoop(result);
 
                if (result != ERR_IO_PENDING && !callback_.is_null())
-                 base::ResetAndReturn(&callback_).Run(result);
+                 std::move(callback_).Run(result);
              }
     
 *   The DoLoop pattern has no concept of different events arriving for

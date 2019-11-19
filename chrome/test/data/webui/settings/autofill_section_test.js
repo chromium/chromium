@@ -211,8 +211,7 @@ cr.define('settings_autofill_section', function() {
       assertTrue(!!row);
       const menuButton = row.querySelector('#addressMenu');
       assertTrue(!!menuButton);
-      const outlinkButton =
-          row.querySelector('paper-icon-button-light.icon-external');
+      const outlinkButton = row.querySelector('cr-icon-button.icon-external');
       assertFalse(!!outlinkButton);
     });
 
@@ -225,8 +224,7 @@ cr.define('settings_autofill_section', function() {
       assertTrue(!!row);
       const menuButton = row.querySelector('#addressMenu');
       assertFalse(!!menuButton);
-      const outlinkButton =
-          row.querySelector('paper-icon-button-light.icon-external');
+      const outlinkButton = row.querySelector('cr-icon-button.icon-external');
       assertTrue(!!outlinkButton);
     });
 

@@ -13,10 +13,11 @@
 #include "base/test/test_reg_util_win.h"
 #include "base/win/registry.h"
 #include "base/win/windows_version.h"
+#include "build/branding_buildflags.h"
+#include "chrome/chrome_elf/nt_registry/nt_registry.h"
 #include "chrome/install_static/install_constants.h"
 #include "chrome/install_static/install_details.h"
 #include "chrome/install_static/install_modes.h"
-#include "chrome_elf/nt_registry/nt_registry.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -71,7 +72,7 @@ TEST(ProductInstallDetailsTest, PathIsInProgramFiles) {
 
   // 32-bit on 32-bit: only check C:\Program Files.
   // 32-bit and 64-bit on 64-bit: check both.
-  const bool is_x64 = base::win::OSInfo::GetInstance()->architecture() !=
+  const bool is_x64 = base::win::OSInfo::GetArchitecture() !=
                       base::win::OSInfo::X86_ARCHITECTURE;
   std::vector<int> program_files_keys;
   program_files_keys.push_back(base::DIR_PROGRAM_FILESX86);
@@ -128,7 +129,7 @@ struct TestData {
   const wchar_t* channel;
 };
 
-#if defined(GOOGLE_CHROME_BUILD)
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 constexpr TestData kTestData[] = {
     {
         L"C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe",
@@ -169,7 +170,7 @@ constexpr TestData kTestData[] = {
         CANARY_INDEX, false, L"canary",
     },
 };
-#else   // GOOGLE_CHROME_BUILD
+#else   // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 constexpr TestData kTestData[] = {
     {
         L"C:\\Program Files (x86)\\Chromium\\Application\\chrome.exe",
@@ -180,7 +181,7 @@ constexpr TestData kTestData[] = {
         CHROMIUM_INDEX, false, L"",
     },
 };
-#endif  // !GOOGLE_CHROME_BUILD
+#endif  // !BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 }  // namespace
 

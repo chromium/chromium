@@ -32,7 +32,8 @@ class ChromeBubbleManagerTest : public BrowserWithTestWindowTest {
 
 void ChromeBubbleManagerTest::SetUp() {
   BrowserWithTestWindowTest::SetUp();
-  manager_.reset(new ChromeBubbleManager(browser()->tab_strip_model()));
+  manager_ =
+      std::make_unique<ChromeBubbleManager>(browser()->tab_strip_model());
 }
 
 void ChromeBubbleManagerTest::TearDown() {

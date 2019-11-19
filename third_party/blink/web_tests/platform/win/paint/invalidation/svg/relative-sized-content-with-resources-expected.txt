@@ -1,56 +1,25 @@
 {
   "layers": [
     {
-      "name": "LayoutView #document",
-      "bounds": [800, 600],
-      "drawsContent": false,
-      "backgroundColor": "#FFFFFF"
-    },
-    {
-      "name": "Scrolling Layer",
-      "bounds": [800, 600],
-      "drawsContent": false
-    },
-    {
       "name": "Scrolling Contents Layer",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
       "paintInvalidations": [
         {
-          "object": "LayoutBlockFlow div id='contentBox'",
+          "object": "NGPhysicalBoxFragment LayoutNGBlockFlow div id='contentBox'",
           "rect": [8, 72, 402, 402],
           "reason": "geometry"
         },
         {
-          "object": "LayoutSVGEllipse circle",
+          "object": "LayoutSVGRoot svg",
           "rect": [47, 111, 324, 324],
-          "reason": "SVG resource change"
+          "reason": "paint property change"
         },
         {
           "object": "LayoutSVGRoot svg",
-          "rect": [47, 392, 324, 43],
-          "reason": "incremental"
-        },
-        {
-          "object": "LayoutSVGRoot svg",
-          "rect": [47, 111, 324, 43],
-          "reason": "incremental"
-        },
-        {
-          "object": "LayoutSVGRoot svg",
-          "rect": [110, 154, 261, 238],
-          "reason": "incremental"
-        },
-        {
-          "object": "LayoutSVGEllipse circle",
-          "rect": [8, 154, 170, 238],
-          "reason": "SVG resource change"
-        },
-        {
-          "object": "LayoutSVGRoot svg",
-          "rect": [8, 154, 39, 238],
-          "reason": "incremental"
+          "rect": [8, 154, 102, 238],
+          "reason": "paint property change"
         }
       ]
     }

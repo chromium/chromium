@@ -1,0 +1,17 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// This is not a spec interface. Instead, it is used to generate bindings
+// so that Blink code which wishes to create a stream can derive from
+// UnderlyingSinkBase, and a JavaScript object can then be generated
+// automatically for use in initializing a WritableStream.
+[
+    NoInterfaceObject
+]
+interface UnderlyingSinkBase {
+    [CallWith=ScriptState] Promise<void> start(any controller);
+    [CallWith=ScriptState] Promise<void> write(any chunk, any controller);
+    [CallWith=ScriptState] Promise<void> close();
+    [CallWith=ScriptState] Promise<void> abort(any reason);
+};

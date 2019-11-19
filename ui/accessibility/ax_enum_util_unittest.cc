@@ -5,6 +5,7 @@
 #include "ui/accessibility/ax_enum_util.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 
 namespace ui {
@@ -135,6 +136,15 @@ TEST(AXEnumUtilTest, DISABLED_MarkerType) {
   TestEnumStringConversion<ax::mojom::MarkerType>(ParseMarkerType);
 }
 
+TEST(AXEnumUtilTest, Text_Decoration_Style) {
+  TestEnumStringConversion<ax::mojom::TextDecorationStyle>(
+      ParseTextDecorationStyle);
+}
+
+TEST(AXEnumUtilTest, ListStyle) {
+  TestEnumStringConversion<ax::mojom::ListStyle>(ParseListStyle);
+}
+
 TEST(AXEnumUtilTest, TextDirection) {
   TestEnumStringConversion<ax::mojom::TextDirection>(ParseTextDirection);
 }
@@ -198,6 +208,10 @@ TEST(AXEnumUtilTest, TreeOrder) {
 TEST(AXEnumUtilTest, ImageAnnotationStatus) {
   TestEnumStringConversion<ax::mojom::ImageAnnotationStatus>(
       ParseImageAnnotationStatus);
+}
+
+TEST(AXEnumUtilTest, Dropeffect) {
+  TestEnumStringConversion<ax::mojom::Dropeffect>(ParseDropeffect);
 }
 
 }  // namespace ui

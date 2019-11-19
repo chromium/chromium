@@ -14,6 +14,7 @@
 #include "media/base/video_decoder_config.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_frame_pool.h"
+#include "media/filters/offloading_video_decoder.h"
 
 struct Dav1dContext;
 struct Dav1dPicture;
@@ -21,9 +22,10 @@ struct Dav1dPicture;
 namespace media {
 class MediaLog;
 
-class MEDIA_EXPORT Dav1dVideoDecoder : public VideoDecoder {
+class MEDIA_EXPORT Dav1dVideoDecoder : public OffloadableVideoDecoder {
  public:
-  explicit Dav1dVideoDecoder(MediaLog* media_log);
+  Dav1dVideoDecoder(MediaLog* media_log,
+                    OffloadState offload_state = OffloadState::kNormal);
   ~Dav1dVideoDecoder() override;
 
   // VideoDecoder implementation.
@@ -31,12 +33,14 @@ class MEDIA_EXPORT Dav1dVideoDecoder : public VideoDecoder {
   void Initialize(const VideoDecoderConfig& config,
                   bool low_delay,
                   CdmContext* cdm_context,
-                  const InitCB& init_cb,
+                  InitCB init_cb,
                   const OutputCB& output_cb,
                   const WaitingCB& waiting_cb) override;
-  void Decode(scoped_refptr<DecoderBuffer> buffer,
-              const DecodeCB& decode_cb) override;
-  void Reset(const base::RepeatingClosure& reset_cb) override;
+  void Decode(scoped_refptr<DecoderBuffer> buffer, DecodeCB decode_cb) override;
+  void Reset(base::OnceClosure reset_cb) override;
+
+  // OffloadableVideoDecoder implementation.
+  void Detach() override;
 
  private:
   enum class DecoderState {
@@ -55,10 +59,14 @@ class MEDIA_EXPORT Dav1dVideoDecoder : public VideoDecoder {
 
   scoped_refptr<VideoFrame> CopyImageToVideoFrame(const Dav1dPicture* img);
 
-  THREAD_CHECKER(thread_checker_);
-
   // Used to report error messages to the client.
   MediaLog* const media_log_ = nullptr;
+
+  // Indicates if the decoder is being wrapped by OffloadVideoDecoder; controls
+  // whether callbacks are bound to the current loop on calls.
+  const bool bind_callbacks_;
+
+  SEQUENCE_CHECKER(sequence_checker_);
 
   // Current decoder state. Used to ensure methods are called as expected.
   DecoderState state_ = DecoderState::kUninitialized;
@@ -75,6 +83,19 @@ class MEDIA_EXPORT Dav1dVideoDecoder : public VideoDecoder {
   Dav1dContext* dav1d_decoder_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(Dav1dVideoDecoder);
+};
+
+// Helper class for creating a Dav1dVideoDecoder which will offload all AV1
+// content from the media thread.
+class OffloadingDav1dVideoDecoder : public OffloadingVideoDecoder {
+ public:
+  explicit OffloadingDav1dVideoDecoder(MediaLog* media_log)
+      : OffloadingVideoDecoder(
+            0,
+            std::vector<VideoCodec>(1, kCodecAV1),
+            std::make_unique<Dav1dVideoDecoder>(
+                media_log,
+                OffloadableVideoDecoder::OffloadState::kOffloaded)) {}
 };
 
 }  // namespace media

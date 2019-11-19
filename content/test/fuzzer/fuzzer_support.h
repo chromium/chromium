@@ -26,6 +26,8 @@ class RenderViewTestAdapter : public RenderViewTest {
     RenderViewTest::LoadHTMLWithUrlOverride(html.c_str(), url.c_str());
   }
 
+  using RenderViewTest::GetMainFrame;
+
  private:
   DISALLOW_COPY_AND_ASSIGN(RenderViewTestAdapter);
 };

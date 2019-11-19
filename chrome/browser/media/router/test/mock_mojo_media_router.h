@@ -7,7 +7,9 @@
 
 #include "chrome/browser/media/router/test/mock_media_router.h"
 #include "chrome/common/media_router/media_route_provider_helper.h"
-#include "chrome/common/media_router/mojo/media_router.mojom.h"
+#include "chrome/common/media_router/mojom/media_router.mojom.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace media_router {
@@ -20,14 +22,15 @@ class MockMojoMediaRouter : public MockMediaRouter, public mojom::MediaRouter {
   // mojom::MediaRouter overrides:
   void RegisterMediaRouteProvider(
       MediaRouteProviderId provider_id,
-      mojom::MediaRouteProviderPtr provider_ptr,
+      mojo::PendingRemote<mojom::MediaRouteProvider> provider_remote,
       RegisterMediaRouteProviderCallback callback) override {
-    RegisterMediaRouteProviderInternal(provider_id, provider_ptr, callback);
+    RegisterMediaRouteProviderInternal(provider_id, provider_remote, callback);
   }
-  MOCK_METHOD3(RegisterMediaRouteProviderInternal,
-               void(MediaRouteProviderId provider_id,
-                    mojom::MediaRouteProviderPtr& provider_ptr,
-                    RegisterMediaRouteProviderCallback& callback));
+  MOCK_METHOD3(
+      RegisterMediaRouteProviderInternal,
+      void(MediaRouteProviderId provider_id,
+           mojo::PendingRemote<mojom::MediaRouteProvider>& provider_remote,
+           RegisterMediaRouteProviderCallback& callback));
   MOCK_METHOD1(OnIssue, void(const IssueInfo& issue));
   MOCK_METHOD4(OnSinksReceived,
                void(MediaRouteProviderId provider_id,
@@ -56,17 +59,20 @@ class MockMojoMediaRouter : public MockMediaRouter, public mojom::MediaRouter {
   MOCK_METHOD2(OnRouteMessagesReceived,
                void(const std::string& route_id,
                     std::vector<mojom::RouteMessagePtr> messages));
-  void OnMediaRemoterCreated(int32_t tab_id,
-                             media::mojom::MirrorServiceRemoterPtr remoter,
-                             media::mojom::MirrorServiceRemotingSourceRequest
-                                 source_request) override {
-    OnMediaRemoterCreatedInternal(tab_id, remoter, source_request);
+  void OnMediaRemoterCreated(
+      int32_t tab_id,
+      mojo::PendingRemote<media::mojom::MirrorServiceRemoter> remoter,
+      mojo::PendingReceiver<media::mojom::MirrorServiceRemotingSource>
+          source_receiver) override {
+    OnMediaRemoterCreatedInternal(tab_id, std::move(remoter),
+                                  std::move(source_receiver));
   }
   MOCK_METHOD3(
       OnMediaRemoterCreatedInternal,
       void(int32_t tab_id,
-           media::mojom::MirrorServiceRemoterPtr& remoter,
-           media::mojom::MirrorServiceRemotingSourceRequest& source_request));
+           mojo::PendingRemote<media::mojom::MirrorServiceRemoter> remoter,
+           mojo::PendingReceiver<media::mojom::MirrorServiceRemotingSource>
+               source_receiver));
   void GetMediaSinkServiceStatus(
       mojom::MediaRouter::GetMediaSinkServiceStatusCallback callback) override {
     GetMediaSinkServiceStatusInternal(callback);
@@ -75,17 +81,23 @@ class MockMojoMediaRouter : public MockMediaRouter, public mojom::MediaRouter {
       GetMediaSinkServiceStatusInternal,
       void(mojom::MediaRouter::GetMediaSinkServiceStatusCallback& callback));
   MOCK_METHOD0(GetMediaSinkServiceStatus, std::string());
-  MOCK_METHOD2(GetMirroringServiceHostForTab,
-               void(int32_t target_tab_id,
-                    mirroring::mojom::MirroringServiceHostRequest request));
-  MOCK_METHOD3(GetMirroringServiceHostForDesktop,
-               void(int32_t initiator_tab_id,
-                    const std::string& desktop_stream_id,
-                    mirroring::mojom::MirroringServiceHostRequest request));
-  MOCK_METHOD3(GetMirroringServiceHostForOffscreenTab,
-               void(const GURL& presentation_url,
-                    const std::string& presentation_id,
-                    mirroring::mojom::MirroringServiceHostRequest request));
+  MOCK_METHOD2(
+      GetMirroringServiceHostForTab,
+      void(int32_t target_tab_id,
+           mojo::PendingReceiver<mirroring::mojom::MirroringServiceHost>
+               receiver));
+  MOCK_METHOD3(
+      GetMirroringServiceHostForDesktop,
+      void(int32_t initiator_tab_id,
+           const std::string& desktop_stream_id,
+           mojo::PendingReceiver<mirroring::mojom::MirroringServiceHost>
+               receiver));
+  MOCK_METHOD3(
+      GetMirroringServiceHostForOffscreenTab,
+      void(const GURL& presentation_url,
+           const std::string& presentation_id,
+           mojo::PendingReceiver<mirroring::mojom::MirroringServiceHost>
+               receiver));
 };
 
 }  // namespace media_router

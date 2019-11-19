@@ -1,0 +1,93 @@
+{
+  "layers": [
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF",
+      "paintInvalidations": [
+        {
+          "object": "LayoutBlockFlow DIV class='half'",
+          "rect": [8, 353, 60, 38],
+          "reason": "geometry"
+        },
+        {
+          "object": "LayoutBlockFlow DIV class='half'",
+          "rect": [8, 338, 60, 38],
+          "reason": "geometry"
+        },
+        {
+          "object": "LayoutBlockFlow DIV class='red half'",
+          "rect": [8, 248, 60, 30],
+          "reason": "geometry"
+        },
+        {
+          "object": "LayoutBlockFlow DIV class='green half'",
+          "rect": [8, 218, 60, 30],
+          "reason": "geometry"
+        },
+        {
+          "object": "LayoutBlockFlow DIV class='red half'",
+          "rect": [8, 218, 60, 30],
+          "reason": "geometry"
+        },
+        {
+          "object": "LayoutBlockFlow DIV class='green half'",
+          "rect": [8, 188, 60, 30],
+          "reason": "geometry"
+        },
+        {
+          "object": "LayoutBlockFlow DIV class='green half'",
+          "rect": [8, 158, 60, 30],
+          "reason": "geometry"
+        },
+        {
+          "object": "LayoutBlockFlow DIV class='green half'",
+          "rect": [8, 128, 60, 30],
+          "reason": "geometry"
+        },
+        {
+          "object": "LayoutBlockFlow DIV class='red half'",
+          "rect": [8, 128, 60, 30],
+          "reason": "geometry"
+        },
+        {
+          "object": "LayoutBlockFlow DIV class='red half'",
+          "rect": [8, 98, 60, 30],
+          "reason": "geometry"
+        },
+        {
+          "object": "LayoutBlockFlow DIV id='top' class='blue half'",
+          "rect": [8, 98, 60, 30],
+          "reason": "disappeared"
+        },
+        {
+          "object": "LayoutBlockFlow DIV class='green half'",
+          "rect": [8, 68, 60, 30],
+          "reason": "geometry"
+        },
+        {
+          "object": "LayoutBlockFlow DIV class='green half'",
+          "rect": [8, 38, 60, 30],
+          "reason": "geometry"
+        },
+        {
+          "object": "LayoutBlockFlow DIV class='red half'",
+          "rect": [8, 38, 60, 30],
+          "reason": "geometry"
+        },
+        {
+          "object": "LayoutBlockFlow DIV class='red half'",
+          "rect": [8, 8, 60, 30],
+          "reason": "geometry"
+        },
+        {
+          "object": "LayoutBlockFlow DIV id='div1' class='blue half'",
+          "rect": [8, 8, 60, 30],
+          "reason": "disappeared"
+        }
+      ]
+    }
+  ]
+}
+

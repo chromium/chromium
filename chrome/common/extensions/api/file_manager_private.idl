@@ -10,7 +10,7 @@ namespace fileManagerPrivate {
 // Type of the mounted volume.
 enum VolumeType { drive, downloads, removable, archive, provided, mtp,
                   media_view, crostini, android_files, documents_provider,
-                  testing };
+                  testing, smb };
 
 // Device type. Available if this is removable volume.
 enum DeviceType { usb, sd, optical, mobile, unknown };
@@ -46,6 +46,9 @@ enum MountCompletedStatus {
   error_unsupported_filesystem,
   error_invalid_archive
 };
+
+// Filesystem to format to.
+enum FormatFileSystemType { vfat, exfat, ntfs };
 
 // File transfer progress state.
 enum TransferState { in_progress, completed, failed };
@@ -191,12 +194,6 @@ enum EntryPropertyName {
   isArbitrarySyncFolder
 };
 
-// Entry property visibility for setEntryTag();
-enum EntryTagVisibility {
-  private,
-  public
-};
-
 // Source of the volume data.
 enum Source {
   file,
@@ -226,7 +223,12 @@ enum SourceRestriction {
   native_or_drive_source
 };
 
-enum CrostiniEventType { enable, disable, share, unshare };
+enum CrostiniEventType {
+  enable,
+  disable,
+  share,
+  unshare
+};
 
 // A file task represents an action that the file manager can perform over the
 // currently selected files. See
@@ -559,10 +561,14 @@ dictionary Preferences {
   boolean searchSuggestEnabled;
   boolean use24hourClock;
   DOMString timezone;
+  boolean arcEnabled;
+  boolean arcRemovableMediaAccessEnabled;
 };
 
 dictionary PreferencesChange {
   boolean? cellularDisabled;
+  boolean? arcEnabled;
+  boolean? arcRemovableMediaAccessEnabled;
 };
 
 dictionary SearchParams {
@@ -587,7 +593,7 @@ dictionary SearchMetadataParams {
 };
 
 // Entry and Drive-related properties representing a search result.
-dictionary SearchResult {
+dictionary DriveMetadataSearchResult {
   // A dictionary object which represents a Drive file. This will be converted
   // into a kind of FileEntry object. See
   // file_browser_handler_custom_bindings.cc for details. For filesystem API's
@@ -666,8 +672,26 @@ dictionary CrostiniEvent {
   // Is the event raised for enable, disable, share, or unshare.
   CrostiniEventType eventType;
 
+  // VM that this event relates to.
+  DOMString vmName;
+
   // Paths that have been shared or unshared.
   [instanceOf=Entry] object[] entries;
+};
+
+// Represents an Android app (activity).
+dictionary AndroidApp {
+  // Name of the app to be shown to the user (e.g. Photos).
+  DOMString name;
+
+  // Package name (e.g. com.google.android.apps.photos).
+  DOMString packageName;
+
+  // Activity name (e.g. .PhotosPickerActivity).
+  DOMString activityName;
+
+  // App icon.
+  IconSet? iconSet;
 };
 
 // Callback that does not take arguments.
@@ -702,15 +726,9 @@ callback GetEntryPropertiesCallback =
 // |sourcePath| Source path of the mount.
 callback AddMountCallback = void(DOMString sourcePath);
 
-callback MarkCacheAsMountedCallback = void();
-
 // |volumeMetadataList| The list of VolumeMetadata representing mounted volumes.
 callback GetVolumeMetadataListCallback =
     void(VolumeMetadata[] volumeMetadataList);
-
-// |fileTransferCancelStatuses| The list of FileTransferCancelStatus.
-callback CancelFileTransfersCallback =
-    void(FileTransferCancelStatus[] fileTransferCancelStatuses);
 
 // |copyId| ID of the copy task. Can be used to identify the progress, and to
 // cancel the task.
@@ -729,11 +747,15 @@ callback GetPreferencesCallback = void(Preferences result);
 callback SearchDriveCallback =
     void([instanceOf=Entry] object[] entries, DOMString nextFeed);
 
-callback SearchDriveMetadataCallback = void(SearchResult[] results);
+callback SearchDriveMetadataCallback =
+    void(DriveMetadataSearchResult[] results);
 
-// |urls| The map of hash and array of FileEntry's URL. The array can be empty
-// if the corresponding file is not found.
-callback SearchFilesByHashesCallback = void(object urls);
+callback SearchFilesCallback = void([instanceOf=Entry] object[] entries);
+
+// |paths| A map of hash to array of drive paths. The array can be empty
+// if the corresponding file is not found. However, the array will only
+// contain at most one path per hash.
+callback SearchFilesByHashesCallback = void(object paths);
 
 callback ZipSelectionCallback = void(optional boolean success);
 
@@ -741,9 +763,6 @@ callback GetDriveConnectionStateCallback = void(DriveConnectionState result);
 
 // |result| true if the length is in the valid range, false otherwise.
 callback ValidatePathNameLengthCallback = void(boolean result);
-
-// |accessToken| OAuth2 access token, or an empty string if failed to fetch.
-callback RequestAccessTokenCallback = void(DOMString accessToken);
 
 // |accessToken| OAuth2 access token, or an empty string if failed to fetch.
 callback RequestWebStoreAccessTokenCallback = void(DOMString accessToken);
@@ -797,6 +816,9 @@ callback DetectCharacterEncodingCallback = void(DOMString result);
 // |thumbnailDataUrl| A data URL for the thumbnail as a PNG; |thumbnailDataUrl|
 // is empty if no thumbnail was available.
 callback GetThumbnailCallback = void(DOMString thumbnailDataUrl);
+
+// |apps| List of Android picker apps.
+callback GetAndroidPickerAppsCallback = void(AndroidApp[] apps);
 
 interface Functions {
   // Logout the current user for navigating to the re-authentication screen for
@@ -913,20 +935,6 @@ interface Functions {
                            boolean pin,
                            SimpleCallback callback);
 
-  // If |entry| is a Drive file, ensures the file is downloaded to the cache.
-  // Otherwise, finishes immediately in success. For example, when the file is
-  // under Downloads, MTP, removeable media, or provided by extensions for
-  // other cloud storage services than Google Drive, this does nothing.
-  // This is a workaround to avoid intermittent and duplicated downloading of
-  // a Drive file by current implementation of Drive integration when an
-  // extension reads a file sequentially but intermittently.
-  // |entry| A regular file entry to be read.
-  // |callback| Callback called after having the file in cache.
-  //     $(ref:runtime.lastError) will be set if there was an error.
-  [nocompile]
-  static void ensureFileDownloaded([instanceof=Entry] object entry,
-                           SimpleCallback callback);
-
   // Resolves entries in the isolated file system and returns corresponding
   // entries in the external file system mounted to Chrome OS file manager
   // backend. If resolving entry fails, the entry will be just ignored and the
@@ -946,26 +954,9 @@ interface Functions {
   // |volumeId| An ID of the volume.
   static void removeMount(DOMString volumeId);
 
-  // Marks a cache file of Drive as mounted or unmounted.
-  // Does nothing if the file is not under Drive directory.
-  // |sourcePath| Mounted source file. Relative file path within external file
-  //     system.
-  // |isMounted| Mark as mounted if true. Mark as unmounted otherwise.
-  // |callback| Completion callback. $(ref:runtime.lastError) will be set if
-  //     there was an error.
-  static void markCacheAsMounted(DOMString sourcePath, boolean isMounted,
-      MarkCacheAsMountedCallback callback);
-
   // Get the list of mounted volumes.
   // |callback|
   static void getVolumeMetadataList(GetVolumeMetadataListCallback callback);
-
-  // Cancels ongoing file transfers for selected files.
-  // |entries| Array of files for which ongoing transfer should be canceled.
-  // |callback| Completion callback of the cancel.
-  [nocompile]
-  static void cancelFileTransfers([instanceof=Entry] object[] entries,
-                                  SimpleCallback callback);
 
   // Starts to copy an entry. If the source is a directory, the copy is done
   // recursively.
@@ -991,7 +982,11 @@ interface Functions {
 
   // Formats a mounted volume.
   // |volumeId| ID of the volume to be formatted.
-  static void formatVolume(DOMString volumeId);
+  // |filesystem| Filesystem type to be formatted to.
+  // |volumeLabel| Label of the drive after formatting.
+  static void formatVolume(DOMString volumeId,
+                           FormatFileSystemType filesystem,
+                           DOMString volumeLabel);
 
   // Renames a mounted volume.
   // |volumeId| ID of the volume to be renamed.
@@ -1019,10 +1014,13 @@ interface Functions {
                                   SearchDriveMetadataCallback callback);
 
   // Search files in the volume having |volumeId| by using |hashList|.
-  // sub-directories) the given |targetDirectoryUrl|.
   static void searchFilesByHashes(DOMString volumeId,
                                   DOMString[] hashList,
                                   SearchFilesByHashesCallback callback);
+
+  // Search files in My Files.
+  static void searchFiles(SearchMetadataParams searchParams,
+                          SearchFilesCallback callback);
 
   // Create a zip file for the selected files.
   // |parentEntry| Entry of the directory containing the selected files.
@@ -1055,13 +1053,6 @@ interface Functions {
   // |operation| Zooming mode.
   static void zoom(ZoomOperationType operation);
 
-  // Requests a Drive API OAuth2 access token.
-  // |refresh| Whether the token should be refetched instead of using the cached
-  //     one.
-  // |callback|
-  static void requestAccessToken(boolean refresh,
-                                 RequestAccessTokenCallback callback);
-
   // Requests a Webstore API OAuth2 access token.
   // |callback|
   static void requestWebStoreAccessToken(
@@ -1073,14 +1064,6 @@ interface Functions {
   [nocompile]
   static void getDownloadUrl([instanceof=Entry] object entry,
                              GetUrlCallback callback);
-
-  // Requests to share drive files.
-  // |entry| Entry to be shared.
-  // |shareType| Type of access that is getting granted.
-  [nocompile]
-  static void requestDriveShare([instanceof=Entry] object entry,
-                                DriveShareType shareType,
-                                SimpleCallback callback);
 
   // Obtains a list of profiles that are logged-in.
   static void getProfiles(GetProfilesCallback callback);
@@ -1099,17 +1082,6 @@ interface Functions {
   [nocompile]
   static void computeChecksum([instanceof=Entry] object entry,
                               ComputeChecksumCallback callback);
-
-  // Is UMA enabled?
-  static void isUMAEnabled(BooleanCallback callback);
-
-  // Sets a tag on a file or a directory. Only Drive files are supported.
-  [nocompile]
-  static void setEntryTag([instanceof=Entry] object entry,
-                          EntryTagVisibility visibility,
-                          DOMString key,
-                          DOMString value,
-                          SimpleCallback callback);
 
   // Returns if Piex loader is enabled.
   static void isPiexLoaderEnabled(BooleanCallback callback);
@@ -1158,25 +1130,29 @@ interface Functions {
   static void mountCrostini(SimpleCallback callback);
 
   // Shares paths with crostini container.
+  // |vmName| VM to share path with.
   // |entries| Entries of the files or directories to share.
   // |persist| If true, shares will persist across restarts.
   // |callback|
-  [nocompile]
-  static void sharePathsWithCrostini(
-      [instanceof=Entry] object[] entries, boolean persist, SimpleCallback callback);
+  [nocompile] static void sharePathsWithCrostini(
+      DOMString vmName, [ instanceof = Entry] object[] entries, boolean persist,
+      SimpleCallback callback);
 
   // Unshares path with crostini container.
+  // |vmName| VM to unshare path from.
   // |entry| Entry of the file or directory to unshare.
   // |callback|
-  [nocompile]
-  static void unsharePathWithCrostini(
-      [instanceof=Entry] object entry, SimpleCallback callback);
+  [nocompile] static void unsharePathWithCrostini(
+      DOMString vmName, [ instanceof = Entry] object entry,
+      SimpleCallback callback);
 
   // Returns list of paths shared with crostini container.
   // |observeFirstForSession| If true, callback provides whether this is the
+  // |vmName| VM to get shared paths of.
   // first time this function has been called with observeFirstForSession true.
   [nocompile] static void getCrostiniSharedPaths(
-      boolean observeFirstForSession, GetCrostiniSharedPathsCallback callback);
+      boolean observeFirstForSession, DOMString vmName,
+      GetCrostiniSharedPathsCallback callback);
 
   // Requests information about a Linux package. |entry| is a .deb file.
   [nocompile]
@@ -1187,6 +1163,11 @@ interface Functions {
   [nocompile]
   static void installLinuxPackage([instanceof=Entry] object entry,
                                   InstallLinuxPackageCallback callback);
+
+  // Imports a Crostini Image File (.tini). This overrides the existing Linux
+  // apps and files.
+  [nocompile]
+  static void importCrostiniImage([instanceof=Entry] object entry);
 
   // For a file in DriveFS, retrieves its thumbnail. If |cropToSquare| is true,
   // returns a thumbnail appropriate for file list or grid views; otherwise,
@@ -1204,6 +1185,14 @@ interface Functions {
   // Returns an empty string if failed.
   static DOMString detectCharacterEncoding(DOMString bytes,
     DetectCharacterEncodingCallback callback);
+
+  // Returns a list of Android picker apps to be shown in file selector.
+  static void getAndroidPickerApps(DOMString[] extensions,
+                                   GetAndroidPickerAppsCallback callback);
+
+  // Called when the user selects an Android picker app in file selector.
+  static void selectAndroidPickerApp(AndroidApp androidApp,
+                                     SimpleCallback callback);
 };
 
 interface Events {

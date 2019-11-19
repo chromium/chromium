@@ -150,15 +150,20 @@ EXPORTS
 
   def testQuietRun(self):
     output = StringIO.StringIO()
-    gs.QuietRun([sys.executable,
-                 '-c', 'print "line 1 and suffix\\nline 2"'],
+    gs.QuietRun([
+        sys.executable, '-c',
+        'from __future__ import print_function; print("line 1 and suffix\\nline 2")'
+    ],
                 write_to=output)
     self.assertEqual('line 1 and suffix\nline 2\n', output.getvalue())
 
     output = StringIO.StringIO()
-    gs.QuietRun([sys.executable,
-                 '-c', 'print "line 1 and suffix\\nline 2"'],
-                 filter='line 1', write_to=output)
+    gs.QuietRun([
+        sys.executable, '-c',
+        'from __future__ import print_function; print("line 1 and suffix\\nline 2")'
+    ],
+                filter='line 1',
+                write_to=output)
     self.assertEqual('line 2\n', output.getvalue())
 
 

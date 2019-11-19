@@ -94,13 +94,13 @@ AppLauncherPageUI::HTMLSource::HTMLSource(Profile* profile)
     : profile_(profile) {
 }
 
-std::string AppLauncherPageUI::HTMLSource::GetSource() const {
+std::string AppLauncherPageUI::HTMLSource::GetSource() {
   return chrome::kChromeUIAppLauncherPageHost;
 }
 
 void AppLauncherPageUI::HTMLSource::StartDataRequest(
-    const std::string& path,
-    const content::ResourceRequestInfo::WebContentsGetter& wc_getter,
+    const GURL& url,
+    const content::WebContents::Getter& wc_getter,
     const content::URLDataSource::GotDataCallback& callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
@@ -118,33 +118,30 @@ void AppLauncherPageUI::HTMLSource::StartDataRequest(
 }
 
 std::string AppLauncherPageUI::HTMLSource::GetMimeType(
-    const std::string& resource) const {
+    const std::string& resource) {
   return "text/html";
 }
 
-bool AppLauncherPageUI::HTMLSource::ShouldReplaceExistingSource() const {
+bool AppLauncherPageUI::HTMLSource::ShouldReplaceExistingSource() {
   return false;
 }
 
-bool AppLauncherPageUI::HTMLSource::AllowCaching() const {
+bool AppLauncherPageUI::HTMLSource::AllowCaching() {
   // Should not be cached to reflect dynamically-generated contents that may
   // depend on user profiles.
   return false;
 }
 
-std::string AppLauncherPageUI::HTMLSource::GetContentSecurityPolicyScriptSrc()
-    const {
+std::string AppLauncherPageUI::HTMLSource::GetContentSecurityPolicyScriptSrc() {
   // 'unsafe-inline' is added to script-src.
   return "script-src chrome://resources 'self' 'unsafe-eval' 'unsafe-inline';";
 }
 
-std::string AppLauncherPageUI::HTMLSource::GetContentSecurityPolicyStyleSrc()
-    const {
+std::string AppLauncherPageUI::HTMLSource::GetContentSecurityPolicyStyleSrc() {
   return "style-src 'self' chrome://resources chrome://theme 'unsafe-inline';";
 }
 
-std::string AppLauncherPageUI::HTMLSource::GetContentSecurityPolicyImgSrc()
-    const {
+std::string AppLauncherPageUI::HTMLSource::GetContentSecurityPolicyImgSrc() {
   return "img-src chrome://extension-icon chrome://theme chrome://resources "
       "data:;";
 }

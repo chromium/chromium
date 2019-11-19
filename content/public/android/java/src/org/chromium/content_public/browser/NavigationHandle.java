@@ -6,6 +6,8 @@ package org.chromium.content_public.browser;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
+import org.chromium.base.annotations.NativeMethods;
+import org.chromium.net.NetError;
 
 /**
  * JNI bridge with content::NavigationHandle
@@ -23,7 +25,7 @@ public class NavigationHandle {
     private boolean mIsErrorPage;
     private boolean mIsFragmentNavigation;
     private boolean mIsValidSearchFormUrl;
-    private int mErrorCode;
+    private @NetError int mErrorCode;
     private int mHttpStatusCode;
 
     @CalledByNative
@@ -51,7 +53,7 @@ public class NavigationHandle {
     @CalledByNative
     public void didFinish(String url, boolean isErrorPage, boolean hasCommitted,
             boolean isFragmentNavigation, boolean isDownload, boolean isValidSearchFormUrl,
-            int transition, int errorCode, int httpStatuscode) {
+            int transition, @NetError int errorCode, int httpStatuscode) {
         mUrl = url;
         mIsErrorPage = isErrorPage;
         mHasCommitted = hasCommitted;
@@ -125,7 +127,7 @@ public class NavigationHandle {
         return "";
     }
 
-    public int errorCode() {
+    public @NetError int errorCode() {
         return mErrorCode;
     }
 
@@ -195,7 +197,8 @@ public class NavigationHandle {
      * request.
      */
     public void setRequestHeader(String headerName, String headerValue) {
-        nativeSetRequestHeader(mNativeNavigationHandleProxy, headerName, headerValue);
+        NavigationHandleJni.get().setRequestHeader(
+                mNativeNavigationHandleProxy, headerName, headerValue);
     }
 
     /**
@@ -203,11 +206,13 @@ public class NavigationHandle {
      * during a redirect.
      */
     public void removeRequestHeader(String headerName) {
-        nativeRemoveRequestHeader(mNativeNavigationHandleProxy, headerName);
+        NavigationHandleJni.get().removeRequestHeader(mNativeNavigationHandleProxy, headerName);
     }
 
-    private static native void nativeSetRequestHeader(
-            long nativeNavigationHandleProxy, String headerName, String headerValue);
-    private static native void nativeRemoveRequestHeader(
-            long nativeNavigationHandleProxy, String headerName);
+    @NativeMethods
+    interface Natives {
+        void setRequestHeader(
+                long nativeNavigationHandleProxy, String headerName, String headerValue);
+        void removeRequestHeader(long nativeNavigationHandleProxy, String headerName);
+    }
 }

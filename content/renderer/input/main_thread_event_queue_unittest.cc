@@ -28,10 +28,6 @@ using blink::WebMouseWheelEvent;
 using blink::WebTouchEvent;
 
 namespace blink {
-bool operator==(const WebMouseWheelEvent& lhs, const WebMouseWheelEvent& rhs) {
-  return memcmp(&lhs, &rhs, lhs.size()) == 0;
-}
-
 bool operator==(const WebTouchEvent& lhs, const WebTouchEvent& rhs) {
   return memcmp(&lhs, &rhs, lhs.size()) == 0;
 }
@@ -111,8 +107,7 @@ class ReceivedCallback {
 
 class HandledEventCallbackTracker {
  public:
-  HandledEventCallbackTracker()
-      : handling_event_(false), weak_ptr_factory_(this) {
+  HandledEventCallbackTracker() : handling_event_(false) {
     weak_this_ = weak_ptr_factory_.GetWeakPtr();
   }
 
@@ -144,7 +139,7 @@ class HandledEventCallbackTracker {
  private:
   std::vector<ReceivedCallback> callbacks_received_;
   base::WeakPtr<HandledEventCallbackTracker> weak_this_;
-  base::WeakPtrFactory<HandledEventCallbackTracker> weak_ptr_factory_;
+  base::WeakPtrFactory<HandledEventCallbackTracker> weak_ptr_factory_{this};
 };
 
 class MainThreadEventQueueTest : public testing::Test,
@@ -266,8 +261,8 @@ TEST_F(MainThreadEventQueueTest, ClientDoesntHandleInputEvent) {
   SyntheticWebTouchEvent event;
   event.PressPoint(10, 10);
   event.MovePoint(0, 20, 20);
-  WebMouseWheelEvent event2 =
-      SyntheticWebMouseWheelEventBuilder::Build(10, 10, 0, 53, 0, false);
+  WebMouseWheelEvent event2 = SyntheticWebMouseWheelEventBuilder::Build(
+      10, 10, 0, 53, 0, ui::input_types::ScrollGranularity::kScrollByPixel);
   HandleEvent(event2, INPUT_EVENT_ACK_STATE_NOT_CONSUMED);
   RunPendingTasksWithSimulatedRaf();
 
@@ -287,10 +282,14 @@ TEST_F(MainThreadEventQueueTest, ClientDoesntHandleInputEvent) {
 
 TEST_F(MainThreadEventQueueTest, NonBlockingWheel) {
   WebMouseWheelEvent kEvents[4] = {
-      SyntheticWebMouseWheelEventBuilder::Build(10, 10, 0, 53, 0, false),
-      SyntheticWebMouseWheelEventBuilder::Build(20, 20, 0, 53, 0, false),
-      SyntheticWebMouseWheelEventBuilder::Build(30, 30, 0, 53, 1, false),
-      SyntheticWebMouseWheelEventBuilder::Build(30, 30, 0, 53, 1, false),
+      SyntheticWebMouseWheelEventBuilder::Build(
+          10, 10, 0, 53, 0, ui::input_types::ScrollGranularity::kScrollByPixel),
+      SyntheticWebMouseWheelEventBuilder::Build(
+          20, 20, 0, 53, 0, ui::input_types::ScrollGranularity::kScrollByPixel),
+      SyntheticWebMouseWheelEventBuilder::Build(
+          30, 30, 0, 53, 1, ui::input_types::ScrollGranularity::kScrollByPixel),
+      SyntheticWebMouseWheelEventBuilder::Build(
+          30, 30, 0, 53, 1, ui::input_types::ScrollGranularity::kScrollByPixel),
   };
 
   EXPECT_FALSE(main_task_runner_->HasPendingTask());
@@ -335,7 +334,7 @@ TEST_F(MainThreadEventQueueTest, NonBlockingWheel) {
 
   {
     WebMouseWheelEvent coalesced_event = kEvents[0];
-    std::vector<const WebInputEvent*> coalesced_events =
+    blink::WebVector<const WebInputEvent*> coalesced_events =
         handled_tasks_[0]->taskAsEvent()->GetCoalescedEventsPointers();
     const WebMouseWheelEvent* coalesced_wheel_event0 =
         static_cast<const WebMouseWheelEvent*>(coalesced_events[0]);
@@ -364,7 +363,7 @@ TEST_F(MainThreadEventQueueTest, NonBlockingWheel) {
 
   {
     WebMouseWheelEvent coalesced_event = kEvents[2];
-    std::vector<const WebInputEvent*> coalesced_events =
+    blink::WebVector<const WebInputEvent*> coalesced_events =
         handled_tasks_[1]->taskAsEvent()->GetCoalescedEventsPointers();
     const WebMouseWheelEvent* coalesced_wheel_event0 =
         static_cast<const WebMouseWheelEvent*>(coalesced_events[0]);
@@ -460,7 +459,7 @@ TEST_F(MainThreadEventQueueTest, NonBlockingTouch) {
   {
     EXPECT_EQ(2u, handled_tasks_[2]->taskAsEvent()->CoalescedEventSize());
     WebTouchEvent coalesced_event = kEvents[2];
-    std::vector<const WebInputEvent*> coalesced_events =
+    blink::WebVector<const WebInputEvent*> coalesced_events =
         handled_tasks_[2]->taskAsEvent()->GetCoalescedEventsPointers();
     const WebTouchEvent* coalesced_touch_event0 =
         static_cast<const WebTouchEvent*>(coalesced_events[0]);
@@ -532,8 +531,10 @@ TEST_F(MainThreadEventQueueTest, BlockingTouch) {
 
 TEST_F(MainThreadEventQueueTest, InterleavedEvents) {
   WebMouseWheelEvent kWheelEvents[2] = {
-      SyntheticWebMouseWheelEventBuilder::Build(10, 10, 0, 53, 0, false),
-      SyntheticWebMouseWheelEventBuilder::Build(20, 20, 0, 53, 0, false),
+      SyntheticWebMouseWheelEventBuilder::Build(
+          10, 10, 0, 53, 0, ui::input_types::ScrollGranularity::kScrollByPixel),
+      SyntheticWebMouseWheelEventBuilder::Build(
+          20, 20, 0, 53, 0, ui::input_types::ScrollGranularity::kScrollByPixel),
   };
   SyntheticWebTouchEvent kTouchEvents[2];
   kTouchEvents[0].PressPoint(10, 10);
@@ -604,9 +605,12 @@ TEST_F(MainThreadEventQueueTest, RafAlignedMouseInput) {
       SyntheticWebMouseEventBuilder::Build(WebInputEvent::kMouseUp, 10, 10, 0);
 
   WebMouseWheelEvent wheelEvents[3] = {
-      SyntheticWebMouseWheelEventBuilder::Build(10, 10, 0, 53, 0, false),
-      SyntheticWebMouseWheelEventBuilder::Build(20, 20, 0, 53, 0, false),
-      SyntheticWebMouseWheelEventBuilder::Build(20, 20, 0, 53, 1, false),
+      SyntheticWebMouseWheelEventBuilder::Build(
+          10, 10, 0, 53, 0, ui::input_types::ScrollGranularity::kScrollByPixel),
+      SyntheticWebMouseWheelEventBuilder::Build(
+          20, 20, 0, 53, 0, ui::input_types::ScrollGranularity::kScrollByPixel),
+      SyntheticWebMouseWheelEventBuilder::Build(
+          20, 20, 0, 53, 1, ui::input_types::ScrollGranularity::kScrollByPixel),
   };
 
   EXPECT_FALSE(main_task_runner_->HasPendingTask());
@@ -895,8 +899,8 @@ TEST_F(MainThreadEventQueueTest, LowLatency) {
 
   WebMouseEvent mouse_move = SyntheticWebMouseEventBuilder::Build(
       WebInputEvent::kMouseMove, 10, 10, 0);
-  WebMouseWheelEvent mouse_wheel =
-      SyntheticWebMouseWheelEventBuilder::Build(10, 10, 0, 53, 0, false);
+  WebMouseWheelEvent mouse_wheel = SyntheticWebMouseWheelEventBuilder::Build(
+      10, 10, 0, 53, 0, ui::input_types::ScrollGranularity::kScrollByPixel);
 
   HandleEvent(mouse_move, INPUT_EVENT_ACK_STATE_SET_NON_BLOCKING);
   HandleEvent(mouse_wheel, INPUT_EVENT_ACK_STATE_SET_NON_BLOCKING);
@@ -1357,7 +1361,7 @@ TEST_F(MainThreadEventQueueTest, UnbufferedDispatchTouchEvent) {
 }
 
 TEST_F(MainThreadEventQueueTest, PointerEventsCoalescing) {
-  queue_->HasPointerRawMoveEventHandlers(true);
+  queue_->HasPointerRawUpdateEventHandlers(true);
   WebMouseEvent mouse_move = SyntheticWebMouseEventBuilder::Build(
       WebInputEvent::kMouseMove, 10, 10, 0);
   SyntheticWebTouchEvent touch_move;
@@ -1385,7 +1389,7 @@ TEST_F(MainThreadEventQueueTest, PointerEventsCoalescing) {
   EXPECT_FALSE(needs_main_frame_);
 }
 
-TEST_F(MainThreadEventQueueTest, PointerRawMoveEvents) {
+TEST_F(MainThreadEventQueueTest, PointerRawUpdateEvents) {
   WebMouseEvent mouse_move = SyntheticWebMouseEventBuilder::Build(
       WebInputEvent::kMouseMove, 10, 10, 0);
 
@@ -1402,14 +1406,14 @@ TEST_F(MainThreadEventQueueTest, PointerRawMoveEvents) {
   EXPECT_EQ(0u, event_queue().size());
   EXPECT_FALSE(needs_main_frame_);
 
-  queue_->HasPointerRawMoveEventHandlers(true);
+  queue_->HasPointerRawUpdateEventHandlers(true);
   HandleEvent(mouse_move, INPUT_EVENT_ACK_STATE_SET_NON_BLOCKING);
   EXPECT_EQ(2u, event_queue().size());
   RunPendingTasksWithSimulatedRaf();
   EXPECT_EQ(0u, event_queue().size());
   EXPECT_FALSE(needs_main_frame_);
 
-  queue_->HasPointerRawMoveEventHandlers(false);
+  queue_->HasPointerRawUpdateEventHandlers(false);
   SyntheticWebTouchEvent touch_move;
   touch_move.PressPoint(10, 10);
   touch_move.MovePoint(0, 50, 50);
@@ -1419,7 +1423,7 @@ TEST_F(MainThreadEventQueueTest, PointerRawMoveEvents) {
   EXPECT_EQ(0u, event_queue().size());
   EXPECT_FALSE(needs_main_frame_);
 
-  queue_->HasPointerRawMoveEventHandlers(true);
+  queue_->HasPointerRawUpdateEventHandlers(true);
   HandleEvent(touch_move, INPUT_EVENT_ACK_STATE_SET_NON_BLOCKING);
   EXPECT_EQ(2u, event_queue().size());
   RunPendingTasksWithSimulatedRaf();

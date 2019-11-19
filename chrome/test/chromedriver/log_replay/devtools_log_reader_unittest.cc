@@ -17,6 +17,8 @@ const char* const kTestDataPath[] = {"chrome", "test", "chromedriver",
 const char kTestGetTitlePath[] = "testGetTitle_simple.log";
 const char kOneEntryPath[] = "oneDevToolsEntry.log";
 const char kTruncatedJSONPath[] = "truncatedJSON.log";
+const char kReadableTimestampPathLinux[] = "testReadableTimestampLinux.log";
+const char kReadableTimestampPathWin[] = "testReadableTimestampWindows.log";
 
 base::FilePath GetLogFileFromLiteral(const char literal[]) {
   base::FilePath root_dir;
@@ -31,6 +33,30 @@ base::FilePath GetLogFileFromLiteral(const char literal[]) {
 
 TEST(DevToolsLogReaderTest, Basic) {
   base::FilePath path = GetLogFileFromLiteral(kTestGetTitlePath);
+  DevToolsLogReader reader(path);
+  std::unique_ptr<LogEntry> next = reader.GetNext(LogEntry::kHTTP);
+  EXPECT_TRUE(next != nullptr);
+  EXPECT_EQ(next->protocol_type, LogEntry::kHTTP);
+  EXPECT_EQ(next->command_name, "http://localhost:38037/json/version");
+  next = reader.GetNext(LogEntry::kHTTP);
+  EXPECT_TRUE(next != nullptr);
+  EXPECT_EQ(next->payload, "{\n   \"string_key\": \"string_value\"\n}\n");
+}
+
+TEST(DevToolsLogReaderTest, ReadableTimeStampLinux) {
+  base::FilePath path = GetLogFileFromLiteral(kReadableTimestampPathLinux);
+  DevToolsLogReader reader(path);
+  std::unique_ptr<LogEntry> next = reader.GetNext(LogEntry::kHTTP);
+  EXPECT_TRUE(next != nullptr);
+  EXPECT_EQ(next->protocol_type, LogEntry::kHTTP);
+  EXPECT_EQ(next->command_name, "http://localhost:38037/json/version");
+  next = reader.GetNext(LogEntry::kHTTP);
+  EXPECT_TRUE(next != nullptr);
+  EXPECT_EQ(next->payload, "{\n   \"string_key\": \"string_value\"\n}\n");
+}
+
+TEST(DevToolsLogReaderTest, ReadableTimeStampWindows) {
+  base::FilePath path = GetLogFileFromLiteral(kReadableTimestampPathWin);
   DevToolsLogReader reader(path);
   std::unique_ptr<LogEntry> next = reader.GetNext(LogEntry::kHTTP);
   EXPECT_TRUE(next != nullptr);

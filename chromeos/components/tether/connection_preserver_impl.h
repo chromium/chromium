@@ -95,7 +95,7 @@ class ConnectionPreserverImpl
   std::unique_ptr<secure_channel::ConnectionAttempt> connection_attempt_;
   std::unique_ptr<secure_channel::ClientChannel> client_channel_;
 
-  base::WeakPtrFactory<ConnectionPreserverImpl> weak_ptr_factory_;
+  base::WeakPtrFactory<ConnectionPreserverImpl> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ConnectionPreserverImpl);
 };

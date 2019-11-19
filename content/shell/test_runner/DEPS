@@ -26,6 +26,10 @@ include_rules = [
 # to other parts of //content/shell unrelated to web tests. So we limit access
 # to things that are not used elsewhere.
 specific_include_rules = {
+  # Only used for testing.
+  "pixel_dump\.cc": [
+    "+printing",
+  ],
   # These classes subclass RenderView and RenderWidget to inject behaviour
   # for web tests.
   "web_(frame|view|widget)_test_proxy\.h": [

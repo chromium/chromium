@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "content/public/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
@@ -158,23 +159,6 @@ bool SendKeyPressToWindowSync(const gfx::NativeWindow window,
   // or the test timed out (in which case testing::Test::HasFatalFailure should
   // be set).
   runner->Run();
-  return !testing::Test::HasFatalFailure();
-}
-
-bool SendKeyPressAndWait(const Browser* browser,
-                         ui::KeyboardCode key,
-                         bool control,
-                         bool shift,
-                         bool alt,
-                         bool command,
-                         int type,
-                         const content::NotificationSource& source) {
-  content::WindowedNotificationObserver observer(type, source);
-
-  if (!SendKeyPressSync(browser, key, control, shift, alt, command))
-    return false;
-
-  observer.Wait();
   return !testing::Test::HasFatalFailure();
 }
 

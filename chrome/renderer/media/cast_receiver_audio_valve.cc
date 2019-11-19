@@ -39,19 +39,7 @@ void CastReceiverAudioValve::DeliverRebufferedAudio(
 
   base::AutoLock lock(lock_);
   if (cb_) {
-    // The AudioCapturerSource::Callback interface provides timing information
-    // only as a relative delay value that means "captured N milliseconds ago."
-    // Therefore, translate the playout time to these semantics.  Since playout
-    // time is generally in the future, because audio should be decoded well
-    // ahead of when it should be played out, the audio delay value will
-    // generally be negative.
-    //
-    // TimeTicks::Now() is being called after the |lock_| was acquired in order
-    // to provide the most accurate delay value.
-    const int audio_delay_milliseconds =
-        (base::TimeTicks::Now() - playout_time).InMilliseconds();
-
-    cb_->Capture(&audio_bus, audio_delay_milliseconds, 1.0 /* volume */,
+    cb_->Capture(&audio_bus, playout_time, 1.0 /* volume */,
                  false /* key_pressed */);
   }
 }

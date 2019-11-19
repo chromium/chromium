@@ -7,9 +7,9 @@
 #include "base/bind.h"
 #include "base/strings/string_number_conversions.h"
 #include "content/browser/appcache/appcache_histograms.h"
+#include "content/browser/appcache/appcache_request.h"
 #include "content/browser/appcache/appcache_request_handler.h"
 #include "content/browser/appcache/appcache_subresource_url_factory.h"
-#include "content/browser/appcache/appcache_url_loader_request.h"
 #include "content/browser/url_loader_factory_getter.h"
 #include "content/public/common/resource_type.h"
 #include "net/base/ip_endpoint.h"
@@ -53,9 +53,9 @@ void AppCacheURLLoaderJob::DeliverAppCachedResponse(const GURL& manifest_url,
   is_fallback_ = is_fallback;
 
   if (is_fallback_ && loader_callback_)
-    CallLoaderCallback();
+    CallLoaderCallback({});
 
-  InitializeRangeRequestInfo(appcache_request_->GetResourceRequest()->headers);
+  InitializeRangeRequestInfo(appcache_request_->GetHeaders());
   storage_->LoadResponseInfo(manifest_url_, entry_.response_id(), this);
 }
 
@@ -69,7 +69,7 @@ void AppCacheURLLoaderJob::DeliverNetworkResponse() {
   // We signal our caller with an empy callback that it needs to perform
   // the network load.
   DCHECK(loader_callback_);
-  DCHECK(!binding_.is_bound());
+  DCHECK(!receiver_.is_bound());
   std::move(loader_callback_).Run({});
   DeleteSoon();
 }
@@ -81,20 +81,12 @@ void AppCacheURLLoaderJob::DeliverErrorResponse() {
   if (AppCacheRequestHandler::IsRunningInTests())
     return;
 
-  if (loader_callback_)
-    CallLoaderCallback();
-
-  if (!client_) {
-    // Although all callsites that lead to construction of AppCacheURLLoaderJob
-    // provide a NavigationLoaderInterceptor::LoaderCallback, some use weak
-    // pointers to bind it. So it's possible that in between the time that
-    // AppCacheURLLoaderJob grabs the response info from storage that the
-    // callback is now empty, which leads to client_ not being initialized.
-    DeleteSoon();
-    return;
+  if (loader_callback_) {
+    CallLoaderCallback(base::BindOnce(&AppCacheURLLoaderJob::NotifyCompleted,
+                                      GetDerivedWeakPtr(), net::ERR_FAILED));
+  } else {
+    NotifyCompleted(net::ERR_FAILED);
   }
-
-  NotifyCompleted(net::ERR_FAILED);
 }
 
 AppCacheURLLoaderJob* AppCacheURLLoaderJob::AsURLLoaderJob() {
@@ -116,61 +108,56 @@ void AppCacheURLLoaderJob::FollowRedirect(
   NOTREACHED() << "appcache never produces redirects";
 }
 
-void AppCacheURLLoaderJob::ProceedWithResponse() {
-  // TODO(arthursonzogni):  Implement this if AppCache starts using the
-  // AppCacheURLLoader before the Network Service has shipped.
-  NOTREACHED();
-}
-
 void AppCacheURLLoaderJob::SetPriority(net::RequestPriority priority,
                                        int32_t intra_priority_value) {}
 void AppCacheURLLoaderJob::PauseReadingBodyFromNet() {}
 void AppCacheURLLoaderJob::ResumeReadingBodyFromNet() {}
 
 void AppCacheURLLoaderJob::DeleteIfNeeded() {
-  if (binding_.is_bound() || is_deleting_soon_)
+  if (receiver_.is_bound() || is_deleting_soon_)
     return;
   delete this;
 }
 
 void AppCacheURLLoaderJob::Start(
+    base::OnceClosure continuation,
     const network::ResourceRequest& /* resource_request */,
-    network::mojom::URLLoaderRequest request,
-    network::mojom::URLLoaderClientPtr client) {
+    mojo::PendingReceiver<network::mojom::URLLoader> receiver,
+    mojo::PendingRemote<network::mojom::URLLoaderClient> client) {
   // TODO(crbug.com/876531): Figure out how AppCache interception should
   // interact with URLLoaderThrottles. It might be incorrect to ignore
   // |resource_request| here, since it's the current request after throttles.
-  DCHECK(!binding_.is_bound());
-  binding_.Bind(std::move(request));
-  client_ = std::move(client);
-  binding_.set_connection_error_handler(
+  DCHECK(!receiver_.is_bound());
+  receiver_.Bind(std::move(receiver));
+  client_.Bind(std::move(client));
+  receiver_.set_disconnect_handler(
       base::BindOnce(&AppCacheURLLoaderJob::DeleteSoon, GetDerivedWeakPtr()));
+  if (continuation)
+    std::move(continuation).Run();
 }
 
 AppCacheURLLoaderJob::AppCacheURLLoaderJob(
-    AppCacheURLLoaderRequest* appcache_request,
+    AppCacheRequest* appcache_request,
     AppCacheStorage* storage,
-    NavigationLoaderInterceptor::LoaderCallback loader_callback)
+    AppCacheRequestHandler::AppCacheLoaderCallback loader_callback)
     : storage_(storage->GetWeakPtr()),
       start_time_tick_(base::TimeTicks::Now()),
       cache_id_(blink::mojom::kAppCacheNoCacheId),
       is_fallback_(false),
-      binding_(this),
       writable_handle_watcher_(FROM_HERE,
                                mojo::SimpleWatcher::ArmingPolicy::MANUAL,
                                base::SequencedTaskRunnerHandle::Get()),
       loader_callback_(std::move(loader_callback)),
       appcache_request_(appcache_request->GetWeakPtr()),
-      is_main_resource_load_(IsResourceTypeFrame(static_cast<ResourceType>(
-          appcache_request->GetResourceRequest()->resource_type))),
-      weak_factory_(this) {}
+      is_main_resource_load_(IsResourceTypeFrame(
+          static_cast<ResourceType>(appcache_request->GetResourceType()))) {}
 
-void AppCacheURLLoaderJob::CallLoaderCallback() {
+void AppCacheURLLoaderJob::CallLoaderCallback(base::OnceClosure continuation) {
   DCHECK(loader_callback_);
-  DCHECK(!binding_.is_bound());
+  DCHECK(!receiver_.is_bound());
   std::move(loader_callback_)
-      .Run(base::BindOnce(&AppCacheURLLoaderJob::Start, GetDerivedWeakPtr()));
-  DCHECK(binding_.is_bound());
+      .Run(base::BindOnce(&AppCacheURLLoaderJob::Start, GetDerivedWeakPtr(),
+                          std::move(continuation)));
 }
 
 void AppCacheURLLoaderJob::OnResponseInfoLoaded(
@@ -184,36 +171,13 @@ void AppCacheURLLoaderJob::OnResponseInfoLoaded(
   }
 
   if (response_info) {
-    if (loader_callback_)
-      CallLoaderCallback();
-
-    if (!client_) {
-      // See comment in DeliverErrorResponse.
-      DeleteSoon();
-      return;
+    if (loader_callback_) {
+      CallLoaderCallback(base::BindOnce(
+          &AppCacheURLLoaderJob::ContinueOnResponseInfoLoaded,
+          GetDerivedWeakPtr(), base::WrapRefCounted(response_info)));
+    } else {
+      ContinueOnResponseInfoLoaded(response_info);
     }
-
-    info_ = response_info;
-    reader_ =
-        storage_->CreateResponseReader(manifest_url_, entry_.response_id());
-
-    if (is_range_request())
-      SetupRangeResponse();
-
-    response_body_stream_ = std::move(data_pipe_.producer_handle);
-
-    // TODO(ananta)
-    // Move the asynchronous reading and mojo pipe handling code to a helper
-    // class. That would also need a change to BlobURLLoader.
-
-    // Wait for the data pipe to be ready to accept data.
-    writable_handle_watcher_.Watch(
-        response_body_stream_.get(), MOJO_HANDLE_SIGNAL_WRITABLE,
-        base::BindRepeating(&AppCacheURLLoaderJob::OnResponseBodyStreamReady,
-                            GetDerivedWeakPtr()));
-
-    SendResponseInfo();
-    ReadMore();
     return;
   }
 
@@ -224,8 +188,6 @@ void AppCacheURLLoaderJob::OnResponseInfoLoaded(
     // See http://code.google.com/p/chromium/issues/detail?id=50657
     storage_->service()->CheckAppCacheResponse(manifest_url_, cache_id_,
                                                entry_.response_id());
-    AppCacheHistograms::CountResponseRetrieval(
-        false, is_main_resource_load_, url::Origin::Create(manifest_url_));
   }
   cache_entry_not_found_ = true;
 
@@ -235,6 +197,30 @@ void AppCacheURLLoaderJob::OnResponseInfoLoaded(
     DeliverNetworkResponse();
   else
     DeliverErrorResponse();
+}
+
+void AppCacheURLLoaderJob::ContinueOnResponseInfoLoaded(
+    scoped_refptr<AppCacheResponseInfo> response_info) {
+  info_ = response_info;
+  reader_ = storage_->CreateResponseReader(manifest_url_, entry_.response_id());
+
+  if (is_range_request())
+    SetupRangeResponse();
+
+  response_body_stream_ = std::move(data_pipe_.producer_handle);
+
+  // TODO(ananta)
+  // Move the asynchronous reading and mojo pipe handling code to a helper
+  // class. That would also need a change to BlobURLLoader.
+
+  // Wait for the data pipe to be ready to accept data.
+  writable_handle_watcher_.Watch(
+      response_body_stream_.get(), MOJO_HANDLE_SIGNAL_WRITABLE,
+      base::BindRepeating(&AppCacheURLLoaderJob::OnResponseBodyStreamReady,
+                          GetDerivedWeakPtr()));
+
+  SendResponseInfo();
+  ReadMore();
 }
 
 void AppCacheURLLoaderJob::OnReadComplete(int result) {
@@ -356,12 +342,6 @@ void AppCacheURLLoaderJob::NotifyCompleted(int error_code) {
     status.decoded_body_length = status.encoded_body_length;
   }
   client_->OnComplete(status);
-
-  if (delivery_type_ == DeliveryType::kAppCached) {
-    AppCacheHistograms::CountResponseRetrieval(
-        error_code == 0, is_main_resource_load_,
-        url::Origin::Create(manifest_url_));
-  }
 }
 
 }  // namespace content

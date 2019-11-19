@@ -4,7 +4,7 @@
 
 package org.chromium.bytecode;
 
-import static org.objectweb.asm.Opcodes.ASM5;
+import static org.objectweb.asm.Opcodes.ASM7;
 import static org.objectweb.asm.Opcodes.INVOKESTATIC;
 
 import org.objectweb.asm.AnnotationVisitor;
@@ -27,7 +27,7 @@ class ThreadAssertionClassAdapter extends ClassVisitor {
             "Landroid/support/annotation/WorkerThread;";
 
     ThreadAssertionClassAdapter(ClassVisitor visitor) {
-        super(ASM5, visitor);
+        super(ASM7, visitor);
     }
 
     @Override
@@ -41,7 +41,7 @@ class ThreadAssertionClassAdapter extends ClassVisitor {
         String mAssertMethodName = "";
 
         AddAssertMethodVisitor(MethodVisitor mv) {
-            super(ASM5, mv);
+            super(ASM7, mv);
         }
 
         /**

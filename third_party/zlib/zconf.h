@@ -8,8 +8,17 @@
 #ifndef ZCONF_H
 #define ZCONF_H
 
-/* This include does prefixing as below, but with an updated set of names */
-#include "names.h"
+/*
+ * This library is also built as a part of AOSP, which does not need to include
+ * chromeconf.h. This config does not want chromeconf.h, so it can set this
+ * macro to opt out. While this works today, there's no guarantee that building
+ * zlib outside of Chromium keeps working in the future.
+ */
+#if !defined(CHROMIUM_ZLIB_NO_CHROMECONF)
+/* This include does prefixing as below, but with an updated set of names.  Also
+ * sets up export macros in component builds. */
+#include "chromeconf.h"
+#endif
 
 /*
  * If you *really* need a unique prefix for all types and library functions,

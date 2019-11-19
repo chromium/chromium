@@ -12,10 +12,11 @@
 #include <utility>
 #include <vector>
 
-#include "base/callback_helpers.h"
 #include "base/memory/ref_counted.h"
-#include "base/message_loop/message_loop.h"
 #include "base/stl_util.h"
+#include "base/test/task_environment.h"
+#include "net/base/completion_once_callback.h"
+#include "net/base/completion_repeating_callback.h"
 #include "net/base/io_buffer.h"
 #include "net/base/ip_address.h"
 #include "net/base/test_completion_callback.h"
@@ -55,35 +56,15 @@ class MockClientSocket : public net::StreamSocket {
  public:
   ~MockClientSocket() override {}
 
-  int Read(net::IOBuffer* buffer,
-           int bytes,
-           net::CompletionOnceCallback callback) override {
-    return Read(buffer, bytes,
-                base::AdaptCallbackForRepeating(std::move(callback)));
-  }
-
-  int Write(net::IOBuffer* buffer,
-            int bytes,
-            net::CompletionOnceCallback callback,
-            const net::NetworkTrafficAnnotationTag& tag) override {
-    return Write(buffer, bytes,
-                 base::AdaptCallbackForRepeating(std::move(callback)), tag);
-  }
-
-  int Connect(net::CompletionOnceCallback callback) override {
-    return Connect(base::AdaptCallbackForRepeating(std::move(callback)));
-  }
-
-  MOCK_METHOD3(Read, int(net::IOBuffer*, int,
-                         const net::CompletionCallback&));
+  MOCK_METHOD3(Read, int(net::IOBuffer*, int, net::CompletionOnceCallback));
   MOCK_METHOD4(Write,
                int(net::IOBuffer*,
                    int,
-                   const net::CompletionCallback&,
+                   net::CompletionOnceCallback,
                    const net::NetworkTrafficAnnotationTag&));
   MOCK_METHOD1(SetReceiveBufferSize, int(int32_t));
   MOCK_METHOD1(SetSendBufferSize, int(int32_t));
-  MOCK_METHOD1(Connect, int(const net::CompletionCallback&));
+  MOCK_METHOD1(Connect, int(net::CompletionOnceCallback));
   MOCK_METHOD0(Disconnect, void());
   MOCK_CONST_METHOD0(IsConnected, bool());
   MOCK_CONST_METHOD0(IsConnectedAndIdle, bool());
@@ -183,28 +164,30 @@ class FakeSSLClientSocketTest : public testing::Test {
 
     for (int i = 0; i < num_resets + 1; ++i) {
       SCOPED_TRACE(i);
-      net::TestCompletionCallback test_completion_callback;
-      int status = fake_ssl_client_socket.Connect(
-          test_completion_callback.callback());
+      net::TestCompletionCallback connect_callback;
+      int status = fake_ssl_client_socket.Connect(connect_callback.callback());
       if (mode == net::ASYNC) {
         EXPECT_FALSE(fake_ssl_client_socket.IsConnected());
       }
-      ExpectStatus(mode, net::OK, status, &test_completion_callback);
+      ExpectStatus(mode, net::OK, status, &connect_callback);
       if (fake_ssl_client_socket.IsConnected()) {
         int read_len = base::size(kReadTestData);
         int read_buf_len = 2 * read_len;
         auto read_buf = base::MakeRefCounted<net::IOBuffer>(read_buf_len);
+
+        net::TestCompletionCallback read_callback;
         int read_status = fake_ssl_client_socket.Read(
-            read_buf.get(), read_buf_len, test_completion_callback.callback());
-        ExpectStatus(mode, read_len, read_status, &test_completion_callback);
+            read_buf.get(), read_buf_len, read_callback.callback());
+        ExpectStatus(mode, read_len, read_status, &read_callback);
 
         auto write_buf =
             base::MakeRefCounted<net::StringIOBuffer>(kWriteTestData);
+        net::TestCompletionCallback write_callback;
         int write_status = fake_ssl_client_socket.Write(
             write_buf.get(), base::size(kWriteTestData),
-            test_completion_callback.callback(), TRAFFIC_ANNOTATION_FOR_TESTS);
+            write_callback.callback(), TRAFFIC_ANNOTATION_FOR_TESTS);
         ExpectStatus(mode, base::size(kWriteTestData), write_status,
-                     &test_completion_callback);
+                     &write_callback);
       } else {
         ADD_FAILURE();
       }
@@ -292,7 +275,7 @@ class FakeSSLClientSocketTest : public testing::Test {
   }
 
   // MockTCPClientSocket needs a message loop.
-  base::MessageLoop message_loop_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
 
   net::MockClientSocketFactory mock_client_socket_factory_;
   std::unique_ptr<net::StaticSocketDataProvider> static_socket_data_provider_;

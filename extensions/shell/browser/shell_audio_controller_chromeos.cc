@@ -35,28 +35,10 @@ ShellAudioController::~ShellAudioController() {
   chromeos::CrasAudioHandler::Get()->RemoveAudioObserver(this);
 }
 
-void ShellAudioController::OnOutputNodeVolumeChanged(uint64_t /* node_id */,
-                                                     int /* volume */) {
-}
-
-void ShellAudioController::OnOutputMuteChanged(bool /* mute_on */,
-                                               bool /* system_adjust */) {}
-
-void ShellAudioController::OnInputNodeGainChanged(uint64_t /* node_id */,
-                                                  int /* gain */) {
-}
-
-void ShellAudioController::OnInputMuteChanged(bool /* mute_on */) {
-}
-
 void ShellAudioController::OnAudioNodesChanged() {
   VLOG(1) << "Audio nodes changed";
   ActivateDevices();
 }
-
-void ShellAudioController::OnActiveOutputNodeChanged() {}
-
-void ShellAudioController::OnActiveInputNodeChanged() {}
 
 void ShellAudioController::ActivateDevices() {
   chromeos::CrasAudioHandler* handler = chromeos::CrasAudioHandler::Get();

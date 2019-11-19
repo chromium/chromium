@@ -7,14 +7,17 @@
 
 #include <stdint.h>
 
+#include <memory>
+
 #include "base/base_export.h"
 #include "base/macros.h"
+#include "base/pending_task.h"
 
 namespace base {
-struct PendingTask;
 
 // Implements common debug annotations for posted tasks. This includes data
-// such as task origins, queueing durations and memory usage.
+// such as task origins, IPC message contexts, queueing durations and memory
+// usage.
 class BASE_EXPORT TaskAnnotator {
  public:
   class ObserverForTesting {
@@ -24,13 +27,22 @@ class BASE_EXPORT TaskAnnotator {
     virtual void BeforeRunTask(const PendingTask* pending_task) = 0;
   };
 
+  // This is used to set the |ipc_hash| field for PendingTasks. It is intended
+  // to be used only from within generated IPC handler dispatch code.
+  class ScopedSetIpcHash;
+
+  static const PendingTask* CurrentTaskForThread();
+
   TaskAnnotator();
   ~TaskAnnotator();
 
   // Called to indicate that a task is about to be queued to run in the future,
   // giving one last chance for this TaskAnnotator to add metadata to
-  // |pending_task| before it is moved into the queue.
-  void WillQueueTask(const char* trace_event_name, PendingTask* pending_task);
+  // |pending_task| before it is moved into the queue. |task_queue_name| must
+  // live for the duration of the process.
+  void WillQueueTask(const char* trace_event_name,
+                     PendingTask* pending_task,
+                     const char* task_queue_name);
 
   // Run a previously queued task.
   void RunTask(const char* trace_event_name, PendingTask* pending_task);
@@ -52,6 +64,18 @@ class BASE_EXPORT TaskAnnotator {
   static void ClearObserverForTesting();
 
   DISALLOW_COPY_AND_ASSIGN(TaskAnnotator);
+};
+
+class BASE_EXPORT TaskAnnotator::ScopedSetIpcHash {
+ public:
+  explicit ScopedSetIpcHash(uint32_t ipc_hash);
+  ~ScopedSetIpcHash();
+
+ private:
+  std::unique_ptr<PendingTask> dummy_pending_task_;
+  uint32_t old_ipc_hash_ = 0;
+
+  DISALLOW_COPY_AND_ASSIGN(ScopedSetIpcHash);
 };
 
 }  // namespace base

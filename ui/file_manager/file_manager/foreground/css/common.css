@@ -85,6 +85,10 @@ cr-menu.chrome-menu > cr-menu-item[disabled] {
   pointer-events: none;
 }
 
+cr-menu.chrome-menu > cr-menu-item[disabled] > .icon.start {
+  opacity: 0.20;
+}
+
 cr-menu.chrome-menu > cr-menu-item:not([disabled])[selected],
 cr-menu.chrome-menu > cr-menu-item:not([disabled]):active {
   background-color: rgba(0, 0, 0, 0.08);

@@ -32,10 +32,10 @@
       }
     }
 
-    window.addEventListener('touchstart', logEvent);
-    window.addEventListener('touchend', logEvent);
-    window.addEventListener('touchmove', logEvent);
-    window.addEventListener('touchcancel', logEvent);
+    window.addEventListener('touchstart', logEvent, {passive: false});
+    window.addEventListener('touchend', logEvent, {passive: false});
+    window.addEventListener('touchmove', logEvent, {passive: false});
+    window.addEventListener('touchcancel', logEvent, {passive: false});
   `);
 
   async function dispatchEvent(params) {

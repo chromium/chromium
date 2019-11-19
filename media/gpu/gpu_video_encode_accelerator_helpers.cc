@@ -14,8 +14,10 @@ namespace {
 // 1080p video.
 constexpr size_t kMaxBitstreamBufferSizeInBytes = 2 * 1024 * 1024;  // 2MB
 
-// The frame size for 2160p (UHD 4K) video in pixels.
-constexpr int k2160PSizeInPixels = 3840 * 2160;
+// The frame size for 1080p (FHD) video in pixels.
+constexpr int k1080PSizeInPixels = 1920 * 1080;
+// The frame size for 1440p (QHD) video in pixels.
+constexpr int k1440PSizeInPixels = 2560 * 1440;
 
 // The mapping from resolution, bitrate, framerate to the bitstream buffer size.
 struct BitstreamBufferSizeInfo {
@@ -36,11 +38,14 @@ constexpr BitstreamBufferSizeInfo kBitstreamBufferSizeTable[] = {
     {3840 * 2160, 20000000, 30, 970000},
 };
 
-// Use double size of kMaxBitstreamBufferSizeInBytes when the input frame size
-// is 2160p (UHD 4K) or larger. This is chosen empirically for some 4k encoding
-// use cases. (crbug.com/927284)
+// Use quadruple size of kMaxBitstreamBufferSizeInBytes when the input frame
+// size is larger than 1440p, double if larger than 1080p. This is chosen
+// empirically for some 4k encoding use cases and Android CTS VideoEncoderTest
+// (crbug.com/927284).
 size_t GetMaxEncodeBitstreamBufferSize(const gfx::Size& size) {
-  if (size.GetArea() >= k2160PSizeInPixels)
+  if (size.GetArea() > k1440PSizeInPixels)
+    return kMaxBitstreamBufferSizeInBytes * 4;
+  if (size.GetArea() > k1080PSizeInPixels)
     return kMaxBitstreamBufferSizeInBytes * 2;
   return kMaxBitstreamBufferSizeInBytes;
 }

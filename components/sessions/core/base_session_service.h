@@ -129,7 +129,7 @@ class SESSIONS_EXPORT BaseSessionService {
   scoped_refptr<base::SequencedTaskRunner> backend_task_runner_;
 
   // Used to invoke Save.
-  base::WeakPtrFactory<BaseSessionService> weak_factory_;
+  base::WeakPtrFactory<BaseSessionService> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(BaseSessionService);
 };

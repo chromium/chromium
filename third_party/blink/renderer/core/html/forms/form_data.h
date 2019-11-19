@@ -42,6 +42,7 @@
 namespace blink {
 
 class Blob;
+class FormControlState;
 class HTMLFormElement;
 class ScriptState;
 
@@ -54,16 +55,11 @@ class CORE_EXPORT FormData final
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static FormData* Create() { return MakeGarbageCollected<FormData>(); }
   static FormData* Create(ExceptionState& exception_state) {
     return MakeGarbageCollected<FormData>();
   }
   static FormData* Create(HTMLFormElement* form,
                           ExceptionState& exception_state);
-
-  static FormData* Create(const WTF::TextEncoding& encoding) {
-    return MakeGarbageCollected<FormData>(encoding);
-  }
 
   explicit FormData(const WTF::TextEncoding&);
   // Clones form_data.  This clones |form_data.entries_| Vector, but
@@ -88,7 +84,7 @@ class CORE_EXPORT FormData final
   // Internal functions.
 
   const WTF::TextEncoding& Encoding() const { return encoding_; }
-  CString Encode(const String& key) const;
+  std::string Encode(const String& key) const;
   class Entry;
   const HeapVector<Member<const Entry>>& Entries() const { return entries_; }
   size_t size() const { return entries_.size(); }
@@ -106,6 +102,10 @@ class CORE_EXPORT FormData final
       EncodedFormData::EncodingType = EncodedFormData::kFormURLEncoded);
   scoped_refptr<EncodedFormData> EncodeMultiPartFormData();
 
+  void AppendToControlState(FormControlState& state) const;
+  static FormData* CreateFromControlState(const FormControlState& state,
+                                          wtf_size_t& index);
+
  private:
   void SetEntry(const Entry*);
   IterationSource* StartIteration(ScriptState*, ExceptionState&) override;
@@ -119,7 +119,7 @@ class CORE_EXPORT FormData final
 // Represents entry, which is a pair of a name and a value.
 // https://xhr.spec.whatwg.org/#concept-formdata-entry
 // Entry objects are immutable.
-class FormData::Entry : public GarbageCollectedFinalized<FormData::Entry> {
+class FormData::Entry final : public GarbageCollected<FormData::Entry> {
  public:
   Entry(const String& name, const String& value);
   Entry(const String& name, Blob* blob, const String& filename);
@@ -130,7 +130,7 @@ class FormData::Entry : public GarbageCollectedFinalized<FormData::Entry> {
   const String& name() const { return name_; }
   const String& Value() const { return value_; }
   Blob* GetBlob() const { return blob_.Get(); }
-  File* GetFile() const;
+  CORE_EXPORT File* GetFile() const;
   const String& Filename() const { return filename_; }
 
  private:

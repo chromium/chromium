@@ -1,0 +1,7 @@
+document
+++description Name='Test that elements respawn in the accessibility tree after a modal dialog closes.'
+++group
+++++combobox ExpandCollapse.ExpandCollapseState='Collapsed' Value.Value='This should be in the tree.'
+++++++list Selection.CanSelectMultiple=false Selection.IsSelectionRequired=false
+++++++++listitem Name='This should be in the tree.' SelectionItem.IsSelected=true
+++textbox Value.Value='0% red 0% green 0% blue'

@@ -53,6 +53,9 @@ class DrmWindowHostManager {
   // Unsets a given widget as the recipient for events.
   void UngrabEvents(gfx::AcceleratedWidget widget);
 
+  // Called when a mouse physicall moved into the |window|.
+  void MouseOnWindow(DrmWindowHost* window);
+
   // Gets the current widget recipient of mouse events.
   gfx::AcceleratedWidget event_grabber() const { return event_grabber_; }
 
@@ -61,6 +64,7 @@ class DrmWindowHostManager {
 
   gfx::AcceleratedWidget last_allocated_widget_ = 0;
   WidgetToWindowMap window_map_;
+  DrmWindowHost* window_mouse_currently_on_ = nullptr;
 
   gfx::AcceleratedWidget event_grabber_ = gfx::kNullAcceleratedWidget;
 

@@ -1,0 +1,59 @@
+{{header}}
+{{object 1 0}} <<
+  /Type /Catalog
+  /Pages 2 0 R
+>>
+endobj
+{{object 2 0}} <<
+  /Type /Pages
+  /MediaBox [ 0 0 70 100 ]
+  /Count 4
+  /Kids [ 3 0 R 4 0 R 5 0 R 6 0 R ]
+>>
+endobj
+{{object 3 0}} <<
+  /Type /Page
+  /Parent 2 0 R
+  /Rotate 0
+  /Contents 7 0 R
+>>
+endobj
+{{object 4 0}} <<
+  /Type /Page
+  /Parent 2 0 R
+  /Rotate 90
+  /Contents 7 0 R
+>>
+endobj
+{{object 5 0}} <<
+  /Type /Page
+  /Parent 2 0 R
+  /Rotate 180
+  /Contents 7 0 R
+>>
+endobj
+{{object 6 0}} <<
+  /Type /Page
+  /Parent 2 0 R
+  /Rotate 270
+  /Contents 7 0 R
+>>
+endobj
+% An asymmetrical "F" figure.
+{{object 7 0}} <<
+  {{streamlen}}
+>>
+stream
+2 0 0 2 10 25 cm
+0.0 G 0.5 g
+5 0 m
+5 25 l 20 25 l 20 20 l 10 20 l
+10 15 l 15 15 l 15 10 l 10 10 l
+10 0 l
+b
+endstream
+endobj
+{{xref}}
+{{trailer}}
+{{startxref}}
+%%EOF

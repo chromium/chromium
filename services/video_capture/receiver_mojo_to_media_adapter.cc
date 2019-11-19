@@ -10,8 +10,8 @@
 namespace video_capture {
 
 ReceiverMojoToMediaAdapter::ReceiverMojoToMediaAdapter(
-    mojom::ReceiverPtr receiver)
-    : receiver_(std::move(receiver)), weak_factory_(this) {}
+    mojo::Remote<mojom::VideoFrameHandler> handler)
+    : video_frame_handler_(std::move(handler)) {}
 
 ReceiverMojoToMediaAdapter::~ReceiverMojoToMediaAdapter() = default;
 
@@ -23,7 +23,7 @@ ReceiverMojoToMediaAdapter::GetWeakPtr() {
 void ReceiverMojoToMediaAdapter::OnNewBuffer(
     int buffer_id,
     media::mojom::VideoBufferHandlePtr buffer_handle) {
-  receiver_->OnNewBuffer(buffer_id, std::move(buffer_handle));
+  video_frame_handler_->OnNewBuffer(buffer_id, std::move(buffer_handle));
 }
 
 void ReceiverMojoToMediaAdapter::OnFrameReadyInBuffer(
@@ -33,43 +33,43 @@ void ReceiverMojoToMediaAdapter::OnFrameReadyInBuffer(
         media::VideoCaptureDevice::Client::Buffer::ScopedAccessPermission>
         access_permission,
     media::mojom::VideoFrameInfoPtr frame_info) {
-  mojom::ScopedAccessPermissionPtr access_permission_proxy;
+  mojo::PendingRemote<mojom::ScopedAccessPermission> access_permission_proxy;
   mojo::MakeStrongBinding<mojom::ScopedAccessPermission>(
       std::make_unique<ScopedAccessPermissionMediaToMojoAdapter>(
           std::move(access_permission)),
-      mojo::MakeRequest(&access_permission_proxy));
-  receiver_->OnFrameReadyInBuffer(buffer_id, frame_feedback_id,
-                                  std::move(access_permission_proxy),
-                                  std::move(frame_info));
+      access_permission_proxy.InitWithNewPipeAndPassReceiver());
+  video_frame_handler_->OnFrameReadyInBuffer(buffer_id, frame_feedback_id,
+                                             std::move(access_permission_proxy),
+                                             std::move(frame_info));
 }
 
 void ReceiverMojoToMediaAdapter::OnBufferRetired(int buffer_id) {
-  receiver_->OnBufferRetired(buffer_id);
+  video_frame_handler_->OnBufferRetired(buffer_id);
 }
 
 void ReceiverMojoToMediaAdapter::OnError(media::VideoCaptureError error) {
-  receiver_->OnError(error);
+  video_frame_handler_->OnError(error);
 }
 
 void ReceiverMojoToMediaAdapter::OnFrameDropped(
     media::VideoCaptureFrameDropReason reason) {
-  receiver_->OnFrameDropped(reason);
+  video_frame_handler_->OnFrameDropped(reason);
 }
 
 void ReceiverMojoToMediaAdapter::OnLog(const std::string& message) {
-  receiver_->OnLog(message);
+  video_frame_handler_->OnLog(message);
 }
 
 void ReceiverMojoToMediaAdapter::OnStarted() {
-  receiver_->OnStarted();
+  video_frame_handler_->OnStarted();
 }
 
 void ReceiverMojoToMediaAdapter::OnStartedUsingGpuDecode() {
-  receiver_->OnStartedUsingGpuDecode();
+  video_frame_handler_->OnStartedUsingGpuDecode();
 }
 
 void ReceiverMojoToMediaAdapter::OnStopped() {
-  receiver_->OnStopped();
+  video_frame_handler_->OnStopped();
 }
 
 }  // namespace video_capture

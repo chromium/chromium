@@ -31,10 +31,12 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_PARSER_CSS_PARSER_MODE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_PARSER_CSS_PARSER_MODE_H_
 
+#include <stdint.h>
+
 namespace blink {
 
 // Must not grow beyond 3 bits, due to packing in CSSPropertyValueSet.
-enum CSSParserMode {
+enum CSSParserMode : uint8_t {
   kHTMLStandardMode,
   kHTMLQuirksMode,
   // SVG attributes are parsed in quirks mode but rules differ slightly.

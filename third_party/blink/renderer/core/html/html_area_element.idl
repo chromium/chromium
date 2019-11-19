@@ -19,8 +19,10 @@
  */
 
 // https://html.spec.whatwg.org/C/#the-area-element
-[HTMLConstructor]
-interface HTMLAreaElement : HTMLElement {
+[
+    Exposed=Window,
+    HTMLConstructor
+] interface HTMLAreaElement : HTMLElement {
     [CEReactions, Reflect] attribute DOMString alt;
     [CEReactions, Reflect] attribute DOMString coords;
     [CEReactions, Reflect] attribute DOMString download;
@@ -36,4 +38,4 @@ interface HTMLAreaElement : HTMLElement {
     [CEReactions, Reflect] attribute boolean noHref;
 };
 
-HTMLAreaElement implements HTMLHyperlinkElementUtils;
+HTMLAreaElement includes HTMLHyperlinkElementUtils;

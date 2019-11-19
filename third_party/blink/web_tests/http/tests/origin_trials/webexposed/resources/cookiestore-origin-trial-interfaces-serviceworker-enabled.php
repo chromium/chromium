@@ -8,7 +8,7 @@ importScripts('/resources/testharness.js',
               '/resources/origin-trials-helper.js');
 
 test(t => {
-  OriginTrialsHelper.check_properties(this, {
+  OriginTrialsHelper.check_properties_exist(this, {
      'CookieStore': ['get', 'getAll', 'set', 'delete', 'subscribeToChanges',
                      'getChangeSubscriptions'],
      'ExtendableCookieChangeEvent': ['changed', 'deleted'],

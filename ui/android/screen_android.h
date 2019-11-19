@@ -10,7 +10,7 @@
 
 namespace ui {
 
-UI_ANDROID_EXPORT void SetScreenAndroid();
+UI_ANDROID_EXPORT void SetScreenAndroid(bool use_display_wide_color_gamut);
 
 }  // namespace display
 

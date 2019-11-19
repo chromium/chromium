@@ -39,7 +39,7 @@ namespace blink {
 
 FileWriterBase::~FileWriterBase() = default;
 
-void FileWriterBase::Initialize(const KURL& path, long long length) {
+void FileWriterBase::Initialize(const KURL& path, int64_t length) {
   DCHECK_GE(length, 0);
   length_ = length;
   path_ = path;
@@ -50,7 +50,7 @@ FileWriterBase::FileWriterBase()
       operation_(kOperationNone),
       cancel_state_(kCancelNotInProgress) {}
 
-void FileWriterBase::SeekInternal(long long position) {
+void FileWriterBase::SeekInternal(int64_t position) {
   if (position > length_)
     position = length_;
   else if (position < 0)
@@ -60,14 +60,14 @@ void FileWriterBase::SeekInternal(long long position) {
   position_ = position;
 }
 
-void FileWriterBase::Truncate(long long length) {
+void FileWriterBase::Truncate(int64_t length) {
   DCHECK_EQ(kOperationNone, operation_);
   DCHECK_EQ(kCancelNotInProgress, cancel_state_);
   operation_ = kOperationTruncate;
   DoTruncate(path_, length);
 }
 
-void FileWriterBase::Write(long long position, const String& id) {
+void FileWriterBase::Write(int64_t position, const String& id) {
   DCHECK_EQ(kOperationNone, operation_);
   DCHECK_EQ(kCancelNotInProgress, cancel_state_);
   operation_ = kOperationWrite;

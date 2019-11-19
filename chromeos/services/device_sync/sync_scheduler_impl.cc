@@ -50,8 +50,7 @@ SyncSchedulerImpl::SyncSchedulerImpl(Delegate* delegate,
       scheduler_name_(scheduler_name),
       strategy_(Strategy::PERIODIC_REFRESH),
       sync_state_(SyncState::NOT_STARTED),
-      failure_count_(0),
-      weak_ptr_factory_(this) {}
+      failure_count_(0) {}
 
 SyncSchedulerImpl::~SyncSchedulerImpl() {}
 

@@ -24,7 +24,7 @@ class CONTENT_EXPORT SwapMetricsDriverImpl : public SwapMetricsDriver {
 
   // SwapMetricsDriver
   SwapMetricsDriver::SwapMetricsUpdateResult InitializeMetrics() override;
-  bool IsRunning() const override;
+  bool IsRunning() override;
   SwapMetricsDriver::SwapMetricsUpdateResult Start() override;
   void Stop() override;
   SwapMetricsDriver::SwapMetricsUpdateResult UpdateMetrics() override;

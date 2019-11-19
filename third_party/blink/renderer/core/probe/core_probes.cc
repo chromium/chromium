@@ -31,30 +31,58 @@
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
+#include "third_party/blink/renderer/core/core_probes_inl.h"
 #include "third_party/blink/renderer/core/inspector/inspector_trace_events.h"
 #include "third_party/blink/renderer/core/inspector/thread_debugger.h"
+#include "third_party/blink/renderer/core/probe/async_task_id.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 
 namespace blink {
 namespace probe {
 
 namespace {
-void* AsyncId(void* task) {
+void* AsyncId(AsyncTaskId* task) {
   // Blink uses odd ids for network requests and even ids for everything else.
   // We should make all of them even before reporting to V8 to avoid collisions
   // with internal V8 async events.
   return reinterpret_cast<void*>(reinterpret_cast<intptr_t>(task) << 1);
 }
+
+void AsyncTaskCanceled(v8::Isolate* isolate, AsyncTaskId* task) {
+  if (ThreadDebugger* debugger = ThreadDebugger::From(isolate))
+    debugger->AsyncTaskCanceled(AsyncId(task));
+  TRACE_EVENT_FLOW_END0("devtools.timeline.async", "AsyncTask",
+                        TRACE_ID_LOCAL(reinterpret_cast<uintptr_t>(task)));
+}
+
 }  // namespace
 
+base::TimeTicks ProbeBase::CaptureStartTime() const {
+  if (start_time_.is_null())
+    start_time_ = base::TimeTicks::Now();
+  return start_time_;
+}
+
+base::TimeTicks ProbeBase::CaptureEndTime() const {
+  if (end_time_.is_null())
+    end_time_ = base::TimeTicks::Now();
+  return end_time_;
+}
+
+base::TimeDelta ProbeBase::Duration() const {
+  DCHECK(!start_time_.is_null());
+  return CaptureEndTime() - start_time_;
+}
+
 AsyncTask::AsyncTask(ExecutionContext* context,
-                     void* task,
+                     AsyncTaskId* task,
                      const char* step,
                      bool enabled)
     : debugger_(enabled && context ? ThreadDebugger::From(context->GetIsolate())
                                    : nullptr),
-      task_(AsyncId(task)),
-      recurring_(step) {
+      task_(task),
+      recurring_(step),
+      ad_tracker_(AdTracker::FromExecutionContext(context)) {
   if (recurring_) {
     TRACE_EVENT_FLOW_STEP0("devtools.timeline.async", "AsyncTask",
                            TRACE_ID_LOCAL(reinterpret_cast<uintptr_t>(task)),
@@ -64,50 +92,54 @@ AsyncTask::AsyncTask(ExecutionContext* context,
                           TRACE_ID_LOCAL(reinterpret_cast<uintptr_t>(task)));
   }
   if (debugger_)
-    debugger_->AsyncTaskStarted(task_);
+    debugger_->AsyncTaskStarted(AsyncId(task_));
+
+  if (ad_tracker_)
+    ad_tracker_->DidStartAsyncTask(task_);
 }
 
 AsyncTask::~AsyncTask() {
   if (debugger_) {
-    debugger_->AsyncTaskFinished(task_);
+    debugger_->AsyncTaskFinished(AsyncId(task_));
     if (!recurring_)
-      debugger_->AsyncTaskCanceled(task_);
+      debugger_->AsyncTaskCanceled(AsyncId(task_));
   }
+
+  if (ad_tracker_)
+    ad_tracker_->DidFinishAsyncTask(task_);
 }
 
 void AsyncTaskScheduled(ExecutionContext* context,
                         const StringView& name,
-                        void* task) {
+                        AsyncTaskId* task) {
   TRACE_EVENT_FLOW_BEGIN1("devtools.timeline.async", "AsyncTask",
                           TRACE_ID_LOCAL(reinterpret_cast<uintptr_t>(task)),
                           "data", inspector_async_task::Data(name));
-  if (context) {
-    if (ThreadDebugger* debugger = ThreadDebugger::From(context->GetIsolate()))
-      debugger->AsyncTaskScheduled(name, AsyncId(task), true);
-  }
+  if (!context)
+    return;
+
+  if (ThreadDebugger* debugger = ThreadDebugger::From(context->GetIsolate()))
+    debugger->AsyncTaskScheduled(name, AsyncId(task), true);
+
+  blink::AdTracker* ad_tracker = AdTracker::FromExecutionContext(context);
+  if (ad_tracker)
+    ad_tracker->DidCreateAsyncTask(task);
 }
 
 void AsyncTaskScheduledBreakable(ExecutionContext* context,
                                  const char* name,
-                                 void* task) {
+                                 AsyncTaskId* task) {
   AsyncTaskScheduled(context, name, task);
   BreakableLocation(context, name);
 }
 
-void AsyncTaskCanceled(ExecutionContext* context, void* task) {
+void AsyncTaskCanceled(ExecutionContext* context, AsyncTaskId* task) {
   AsyncTaskCanceled(context ? context->GetIsolate() : nullptr, task);
-}
-
-void AsyncTaskCanceled(v8::Isolate* isolate, void* task) {
-  if (ThreadDebugger* debugger = ThreadDebugger::From(isolate))
-    debugger->AsyncTaskCanceled(AsyncId(task));
-  TRACE_EVENT_FLOW_END0("devtools.timeline.async", "AsyncTask",
-                        TRACE_ID_LOCAL(reinterpret_cast<uintptr_t>(task)));
 }
 
 void AsyncTaskCanceledBreakable(ExecutionContext* context,
                                 const char* name,
-                                void* task) {
+                                AsyncTaskId* task) {
   AsyncTaskCanceled(context, task);
   BreakableLocation(context, name);
 }

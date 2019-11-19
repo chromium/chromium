@@ -9,7 +9,14 @@
 
 #include "components/content_capture/common/content_capture.mojom.h"
 #include "content/public/renderer/render_frame_observer.h"
+#include "mojo/public/cpp/bindings/associated_receiver.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
+#include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "third_party/blink/public/web/web_content_capture_client.h"
+
+namespace blink {
+class AssociatedInterfaceRegistry;
+}
 
 namespace content_capture {
 
@@ -21,29 +28,44 @@ struct ContentCaptureData;
 // the ContentCapture in blink by setting WebContentCaptureClient to
 // WebLocalFrame.
 class ContentCaptureSender : public content::RenderFrameObserver,
-                             public blink::WebContentCaptureClient {
+                             public blink::WebContentCaptureClient,
+                             public mojom::ContentCaptureSender {
  public:
-  explicit ContentCaptureSender(content::RenderFrame* render_frame);
+  explicit ContentCaptureSender(content::RenderFrame* render_frame,
+                                blink::AssociatedInterfaceRegistry* registry);
   ~ContentCaptureSender() override;
 
+  void BindPendingReceiver(
+      mojo::PendingAssociatedReceiver<mojom::ContentCaptureSender>
+          pending_receiver);
+
   // blink::WebContentCaptureClient:
-  cc::NodeHolder::Type GetNodeHolderType() const override;
   void GetTaskTimingParameters(base::TimeDelta& short_delay,
                                base::TimeDelta& long_delay) const override;
-  void DidCaptureContent(
-      const std::vector<scoped_refptr<blink::WebContentHolder>>& data,
-      bool first_data) override;
-  void DidRemoveContent(const std::vector<int64_t>& data) override;
+  void DidCaptureContent(const blink::WebVector<blink::WebContentHolder>& data,
+                         bool first_data) override;
+  void DidUpdateContent(
+      const blink::WebVector<blink::WebContentHolder>& data) override;
+  void DidRemoveContent(blink::WebVector<int64_t> data) override;
+
+  // mojom::ContentCaptureSender:
+  void StartCapture() override;
+  void StopCapture() override;
 
   // content::RenderFrameObserver:
   void OnDestruct() override;
 
  private:
-  void FillContentCaptureData(ContentCaptureData* data, bool set_url);
-  const mojom::ContentCaptureReceiverAssociatedPtr& GetContentCaptureReceiver();
+  void FillContentCaptureData(
+      const blink::WebVector<blink::WebContentHolder>& node_holders,
+      ContentCaptureData* data,
+      bool set_url);
+  const mojo::AssociatedRemote<mojom::ContentCaptureReceiver>&
+  GetContentCaptureReceiver();
 
-  mojom::ContentCaptureReceiverAssociatedPtr content_capture_receiver_ =
-      nullptr;
+  mojo::AssociatedRemote<mojom::ContentCaptureReceiver>
+      content_capture_receiver_;
+  mojo::AssociatedReceiver<mojom::ContentCaptureSender> receiver_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ContentCaptureSender);
 };

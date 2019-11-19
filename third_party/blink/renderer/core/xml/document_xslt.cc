@@ -11,12 +11,13 @@
 #include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/dom/processing_instruction.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
-#include "third_party/blink/renderer/core/frame/use_counter.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/xml/xsl_style_sheet.h"
 #include "third_party/blink/renderer/core/xml/xslt_processor.h"
 #include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 
 namespace blink {
 
@@ -26,11 +27,7 @@ class DOMContentLoadedListener final
   USING_GARBAGE_COLLECTED_MIXIN(DOMContentLoadedListener);
 
  public:
-  static DOMContentLoadedListener* Create(ProcessingInstruction* pi) {
-    return MakeGarbageCollected<DOMContentLoadedListener>(pi);
-  }
-
-  DOMContentLoadedListener(ProcessingInstruction* pi)
+  explicit DOMContentLoadedListener(ProcessingInstruction* pi)
       : processing_instruction_(pi) {}
 
   void Invoke(ExecutionContext* execution_context, Event* event) override {
@@ -99,11 +96,8 @@ void DocumentXSLT::ApplyXSLTransform(Document& document,
 
 ProcessingInstruction* DocumentXSLT::FindXSLStyleSheet(Document& document) {
   for (Node* node = document.firstChild(); node; node = node->nextSibling()) {
-    if (node->getNodeType() != Node::kProcessingInstructionNode)
-      continue;
-
-    ProcessingInstruction* pi = ToProcessingInstruction(node);
-    if (pi->IsXSL())
+    auto* pi = DynamicTo<ProcessingInstruction>(node);
+    if (pi && pi->IsXSL())
       return pi;
   }
   return nullptr;
@@ -118,7 +112,7 @@ bool DocumentXSLT::ProcessingInstructionInsertedIntoDocument(
   if (!RuntimeEnabledFeatures::XSLTEnabled() || !document.GetFrame())
     return true;
 
-  DOMContentLoadedListener* listener = DOMContentLoadedListener::Create(pi);
+  auto* listener = MakeGarbageCollected<DOMContentLoadedListener>(pi);
   document.addEventListener(event_type_names::kDOMContentLoaded, listener,
                             false);
   DCHECK(!pi->EventListenerForXSLT());

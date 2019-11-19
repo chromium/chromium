@@ -8,6 +8,7 @@
 #include "ui/base/default_style.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/canvas.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
@@ -52,11 +53,13 @@ KeyboardShortcutItemListView::KeyboardShortcutItemListView() {
   // side tab than the padding between list view and the border of the window.
   constexpr int kLeftPadding = 16;
   constexpr int kRightPadding = 32;
-  auto layout = std::make_unique<views::BoxLayout>(views::BoxLayout::kVertical);
-  layout->set_main_axis_alignment(views::BoxLayout::MAIN_AXIS_ALIGNMENT_CENTER);
+  auto layout = std::make_unique<views::BoxLayout>(
+      views::BoxLayout::Orientation::kVertical);
+  layout->set_main_axis_alignment(views::BoxLayout::MainAxisAlignment::kCenter);
   SetLayoutManager(std::move(layout));
   SetBorder(
       views::CreateEmptyBorder(gfx::Insets(0, kLeftPadding, 0, kRightPadding)));
+  GetViewAccessibility().OverrideRole(ax::mojom::Role::kList);
 }
 
 void KeyboardShortcutItemListView::AddCategoryLabel(

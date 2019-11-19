@@ -13,16 +13,16 @@
 namespace leveldb_proto {
 
 namespace {
-const char kTestClientName[] = "TEST_DATABASE1";
+const char kTestClientName[] = "TestDatabase1";
 }
 
 class SharedProtoDatabaseClientListTest : public testing::Test {
  public:
   void SetUpExperimentParam(std::string key, std::string value) {
     std::map<std::string, std::string> params = {
-        {"migrate_TEST_DATABASE0", "true"},
+        {"migrate_TestDatabase0", "true"},
         {"migrate_" + key, value},
-        {"migrate_TEST_DATABASE2", "false"},
+        {"migrate_TestDatabase2", "false"},
     };
 
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
@@ -45,7 +45,7 @@ TEST_F(SharedProtoDatabaseClientListTest, ShouldUseSharedDBTest) {
 
 TEST_F(SharedProtoDatabaseClientListTest,
        ShouldUseSharedDBTest_OnlyWhenParamMatchesName) {
-  SetUpExperimentParam("TEST_DATABASE10", "true");
+  SetUpExperimentParam("TestDatabase10", "true");
 
   bool use_shared = SharedProtoDatabaseClientList::ShouldUseSharedDB(
       ProtoDbType::TEST_DATABASE1);

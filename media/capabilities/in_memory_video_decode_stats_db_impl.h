@@ -93,7 +93,7 @@ class MEDIA_EXPORT InMemoryVideoDecodeStatsDBImpl : public VideoDecodeStatsDB {
   // callbacks to this happen on the checked sequence.
   SEQUENCE_CHECKER(sequence_checker_);
 
-  base::WeakPtrFactory<InMemoryVideoDecodeStatsDBImpl> weak_ptr_factory_;
+  base::WeakPtrFactory<InMemoryVideoDecodeStatsDBImpl> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(InMemoryVideoDecodeStatsDBImpl);
 };

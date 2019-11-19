@@ -15,12 +15,18 @@ TEST(MemoryUsageMonitorAndroidTest, CalculateProcessFootprint) {
   MemoryUsageMonitorAndroid monitor;
 
   const char kStatusFile[] =
-      "First:  1\n Second: 2 kB\nVmSwap: 10 kB \n Third: 10 kB\n Last: 8";
+      "First:    1\n"
+      "Second:  2 kB\n"
+      "VmSwap: 10 kB\n"
+      "Third:  10 kB\n"
+      "VmHWM:  72 kB\n"
+      "Last:     8";
   const char kStatmFile[] = "100 40 25 0 0";
   uint64_t expected_swap_kb = 10;
   uint64_t expected_private_footprint_kb =
       (40 - 25) * getpagesize() / 1024 + expected_swap_kb;
   uint64_t expected_vm_size_kb = 100 * getpagesize() / 1024;
+  uint64_t expected_peak_resident_kb = 72;
 
   base::FilePath statm_path;
   EXPECT_TRUE(base::CreateTemporaryFile(&statm_path));
@@ -44,6 +50,8 @@ TEST(MemoryUsageMonitorAndroidTest, CalculateProcessFootprint) {
   EXPECT_EQ(expected_swap_kb, static_cast<uint64_t>(usage.swap_bytes / 1024));
   EXPECT_EQ(expected_vm_size_kb,
             static_cast<uint64_t>(usage.vm_size_bytes / 1024));
+  EXPECT_EQ(expected_peak_resident_kb,
+            static_cast<uint64_t>(usage.peak_resident_bytes / 1024));
 }
 
 }  // namespace blink

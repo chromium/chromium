@@ -23,6 +23,14 @@ Polymer({
 
   properties: {
     /**
+     * Authentication token provided by settings-people-page.
+     */
+    authToken: {
+      type: String,
+      value: '',
+    },
+
+    /**
      * The list of fingerprint objects.
      * @private {!Array<string>}
      */
@@ -109,9 +117,10 @@ Polymer({
 
       // Flash the background.
       listItem.animate(
-          {
-            backgroundColor: ['var(--google-grey-300)', 'white'],
-          },
+          [
+            {backgroundColor: ['var(--google-grey-300)']},
+            {backgroundColor: ['white']}
+          ],
           FLASH_DURATION_MS);
     });
   },

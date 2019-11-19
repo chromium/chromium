@@ -1,9 +1,0 @@
-CONSOLE WARNING: line 26: Synchronous XMLHttpRequest on the main thread is deprecated because of its detrimental effects to the end user's experience. For more help, check https://xhr.spec.whatwg.org/.
-This test checks for rdar://problem/4962298 REGRESSION: Synchronous XHR for missing local file throws exception -- breaks Wikipedia widget
-
-PASS: No exception.
-readyState: 4 (number)
-responseText:  (string)
-responseXML: null (object)
-statusText:  (string)
-

@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Controlled page</title>
+<script>
+// |kThirdPartyServiceWorker| from web_feature.mojom.
+const kFeature = 3007;
+
+window.onmessage = (async e => {
+  if (e.data !== 'from_opener_assert_has_use_counter') {
+    window.top.postMessage('FAIL: unexpected message', '*');
+    return;
+  }
+
+  await window.internals.observeUseCounter(document, kFeature);
+  if (window.internals.isUseCounted(document, kFeature)) {
+    window.top.postMessage('from_iframe_verified_has_use_counter', '*');
+    return;
+  }
+
+  window.top.postMessage('FAIL: !isUseCounted', '*');
+});
+</script>

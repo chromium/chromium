@@ -5,7 +5,7 @@
 #ifndef CONTENT_BROWSER_ACCESSIBILITY_ACCESSIBILITY_TREE_FORMATTER_BROWSER_H_
 #define CONTENT_BROWSER_ACCESSIBILITY_ACCESSIBILITY_TREE_FORMATTER_BROWSER_H_
 
-#include "content/browser/accessibility/accessibility_tree_formatter.h"
+#include "content/browser/accessibility/accessibility_tree_formatter_base.h"
 
 #include "base/macros.h"
 #include "base/strings/string16.h"
@@ -20,7 +20,7 @@ namespace content {
 // walking the tree and getting properties. Tree formatters that walk native
 // objects should not inherit from this class.
 class CONTENT_EXPORT AccessibilityTreeFormatterBrowser
-    : public AccessibilityTreeFormatter {
+    : public AccessibilityTreeFormatterBase {
  public:
   std::unique_ptr<base::DictionaryValue> BuildAccessibilityTree(
       BrowserAccessibility* root) override;

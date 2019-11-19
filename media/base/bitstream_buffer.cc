@@ -9,26 +9,40 @@
 namespace media {
 
 BitstreamBuffer::BitstreamBuffer()
-    : BitstreamBuffer(-1, base::SharedMemoryHandle(), 0) {}
+    : BitstreamBuffer(-1, base::subtle::PlatformSharedMemoryRegion(), 0) {}
 
-BitstreamBuffer::BitstreamBuffer(int32_t id,
-                                 base::SharedMemoryHandle handle,
-                                 size_t size,
-                                 off_t offset,
-                                 base::TimeDelta presentation_timestamp)
+BitstreamBuffer::BitstreamBuffer(
+    int32_t id,
+    base::subtle::PlatformSharedMemoryRegion region,
+    size_t size,
+    off_t offset,
+    base::TimeDelta presentation_timestamp)
     : id_(id),
-      handle_(handle),
+      region_(std::move(region)),
       size_(size),
       offset_(offset),
       presentation_timestamp_(presentation_timestamp) {}
 
-BitstreamBuffer::BitstreamBuffer(const BitstreamBuffer& other) = default;
+BitstreamBuffer::BitstreamBuffer(int32_t id,
+                                 base::UnsafeSharedMemoryRegion region,
+                                 size_t size,
+                                 off_t offset,
+                                 base::TimeDelta presentation_timestamp)
+    : id_(id),
+      region_(base::UnsafeSharedMemoryRegion::TakeHandleForSerialization(
+          std::move(region))),
+      size_(size),
+      offset_(offset),
+      presentation_timestamp_(presentation_timestamp) {}
+
+BitstreamBuffer::BitstreamBuffer(BitstreamBuffer&&) = default;
+BitstreamBuffer& BitstreamBuffer::operator=(BitstreamBuffer&&) = default;
 
 BitstreamBuffer::~BitstreamBuffer() = default;
 
-scoped_refptr<DecoderBuffer> BitstreamBuffer::ToDecoderBuffer() const {
+scoped_refptr<DecoderBuffer> BitstreamBuffer::ToDecoderBuffer() {
   scoped_refptr<DecoderBuffer> buffer =
-      DecoderBuffer::FromSharedMemoryHandle(handle_, offset_, size_);
+      DecoderBuffer::FromSharedMemoryRegion(std::move(region_), offset_, size_);
   if (!buffer)
     return nullptr;
   buffer->set_timestamp(presentation_timestamp_);

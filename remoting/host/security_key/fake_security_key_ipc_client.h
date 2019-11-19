@@ -132,7 +132,7 @@ class FakeSecurityKeyIpcClient : public SecurityKeyIpcClient {
   // Value returned by SendSecurityKeyRequest() method.
   std::string security_key_response_payload_;
 
-  base::WeakPtrFactory<FakeSecurityKeyIpcClient> weak_factory_;
+  base::WeakPtrFactory<FakeSecurityKeyIpcClient> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(FakeSecurityKeyIpcClient);
 };

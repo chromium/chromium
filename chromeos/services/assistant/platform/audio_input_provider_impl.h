@@ -11,20 +11,20 @@
 
 #include "base/macros.h"
 #include "chromeos/services/assistant/platform/audio_input_impl.h"
+#include "chromeos/services/assistant/public/mojom/assistant.mojom.h"
 #include "libassistant/shared/public/platform_audio_input.h"
 
-namespace service_manager {
-class Connector;
-}  // namespace service_manager
-
 namespace chromeos {
+class CrasAudioHandler;
+class PowerManagerClient;
+
 namespace assistant {
 
 class AudioInputProviderImpl : public assistant_client::AudioInputProvider {
  public:
-  AudioInputProviderImpl(service_manager::Connector* connector,
-                         const std::string& input_device_id,
-                         const std::string& hotword_device_id);
+  AudioInputProviderImpl(mojom::Client* client,
+                         PowerManagerClient* power_manager_client,
+                         CrasAudioHandler* cras_audio_handler);
   ~AudioInputProviderImpl() override;
 
   // assistant_client::AudioInputProvider overrides:
@@ -42,6 +42,9 @@ class AudioInputProviderImpl : public assistant_client::AudioInputProvider {
 
   // Setting the hotword input device with hardware based hotword detection.
   void SetHotwordDeviceId(const std::string& device_id);
+
+  // Setting the hotword locale for the input device with DSP support.
+  void SetDspHotwordLocale(std::string pref_locale);
 
  private:
   AudioInputImpl audio_input_;

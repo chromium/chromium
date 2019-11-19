@@ -9,7 +9,7 @@
 #include "base/json/string_escape.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/trace_event/memory_usage_estimator.h"
-#include "components/sync/base/cryptographer.h"
+#include "components/sync/nigori/cryptographer.h"
 #include "components/sync/protocol/proto_memory_estimations.h"
 #include "components/sync/protocol/proto_value_conversions.h"
 #include "components/sync/syncable/syncable_columns.h"
@@ -95,7 +95,7 @@ void SetFieldValues(const EntryKernel& kernel,
 }
 
 void SetEncryptableProtoValues(const EntryKernel& kernel,
-                               Cryptographer* cryptographer,
+                               const Cryptographer* cryptographer,
                                base::DictionaryValue* dictionary_value,
                                int field_key_min,
                                int field_key_max) {
@@ -163,7 +163,7 @@ size_t EstimateSharedMemoryUsage(ProtoValuePtr<T> const (&ptrs)[N]) {
 }  // namespace
 
 std::unique_ptr<base::DictionaryValue> EntryKernel::ToValue(
-    Cryptographer* cryptographer) const {
+    const Cryptographer* cryptographer) const {
   auto kernel_info = std::make_unique<base::DictionaryValue>();
   kernel_info->SetBoolean("isDirty", is_dirty());
   ModelType dataType = GetServerModelType();

@@ -1,7 +1,7 @@
 This is a testharness.js-based test.
 FAIL A new ready promise is created when setting animation-play-state: running assert_not_equals: After updating animation-play-state a new ready promise object is created got disallowed value object "[object Promise]"
-FAIL ready promise is rejected when an animation is canceled by resetting the animation property assert_true: Animation is initially pending expected true got undefined
-FAIL ready promise is rejected when an animation is canceled by updating the animation property assert_true: Animation is initially pending expected true got undefined
+PASS ready promise is rejected when an animation is canceled by resetting the animation property
+PASS ready promise is rejected when an animation is canceled by updating the animation property
 FAIL A new ready promise is created when setting animation-play-state: paused assert_not_equals: A new Promise object is generated when setting animation-play-state: paused got disallowed value object "[object Promise]"
 FAIL Pausing twice re-uses the same Promise assert_equals: Ready promise objects are identical after redundant pause expected object "[object Promise]" but got object "[object Promise]"
 Harness: the test ran to completion.

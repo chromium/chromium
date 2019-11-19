@@ -1,8 +1,18 @@
 include_rules = [
   "+cc/paint",
+  "+skia",
   "+third_party/skia",
+  "+components/crash/core/common/crash_key.h",
+  "+components/viz/common/gpu/dawn_context_provider.h",
+  "+components/viz/common/gpu/metal_context_provider.h",
   "+components/viz/common/gpu/vulkan_context_provider.h",
   "+components/viz/common/resources/resource_format.h",
   "+components/viz/common/resources/resource_format_utils.h",
   "+components/viz/common/resources/resource_sizes.h",
 ]
+
+specific_include_rules = {
+  "image_reader_gl_owner_unittest.cc": [
+    "+media/base/media_switches.h",
+  ],
+}

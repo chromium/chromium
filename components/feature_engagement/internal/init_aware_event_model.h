@@ -44,7 +44,7 @@ class InitAwareEventModel : public EventModel {
   // result was a success or not.
   bool initialization_complete_;
 
-  base::WeakPtrFactory<InitAwareEventModel> weak_ptr_factory_;
+  base::WeakPtrFactory<InitAwareEventModel> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(InitAwareEventModel);
 };

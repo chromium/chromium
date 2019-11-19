@@ -8,8 +8,8 @@
 #import "ios/chrome/browser/ui/fullscreen/test/fullscreen_model_test_util.h"
 #import "ios/chrome/browser/ui/fullscreen/test/test_fullscreen_controller.h"
 #import "ios/chrome/browser/ui/fullscreen/test/test_fullscreen_mediator.h"
-#import "ios/web/public/navigation_item.h"
-#include "ios/web/public/ssl_status.h"
+#import "ios/web/public/navigation/navigation_item.h"
+#include "ios/web/public/security/ssl_status.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
 #import "ios/web/public/test/fakes/test_navigation_manager.h"
 #import "ios/web/public/test/fakes/test_web_state.h"
@@ -121,27 +121,4 @@ TEST_F(FullscreenWebStateObserverTest, ResetForSameDocumentURLChange) {
   context.SetIsSameDocument(true);
   web_state().OnNavigationFinished(&context);
   EXPECT_EQ(1.0, model().progress());
-}
-
-// Tests that the model is not disabled when a load is occurring.
-TEST_F(FullscreenWebStateObserverTest, DisableDuringLoad) {
-  EXPECT_TRUE(model().enabled());
-  web_state().SetLoading(true);
-  EXPECT_TRUE(model().enabled());
-  web_state().SetLoading(false);
-  EXPECT_TRUE(model().enabled());
-}
-
-// Tests that the model remains enabled when the SSL status is broken and the
-// UI refresh flag is enabled.
-TEST_F(FullscreenWebStateObserverTest, DisableForBrokenSSL) {
-  std::unique_ptr<web::NavigationItem> item = web::NavigationItem::Create();
-  item->GetSSL().security_style = web::SECURITY_STYLE_AUTHENTICATION_BROKEN;
-  navigation_manager().SetVisibleItem(item.get());
-  EXPECT_TRUE(model().enabled());
-  web_state().OnVisibleSecurityStateChanged();
-  EXPECT_TRUE(model().enabled());
-  navigation_manager().SetVisibleItem(nullptr);
-  web_state().OnVisibleSecurityStateChanged();
-  EXPECT_TRUE(model().enabled());
 }

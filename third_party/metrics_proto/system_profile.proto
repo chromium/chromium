@@ -15,7 +15,7 @@ import "extension_install.proto";
 
 // Stores information about the user's brower and system configuration.
 // The system configuration fields are recorded once per client session.
-// Next tag: 29
+// Next tag: 31
 message SystemProfileProto {
   // The time when the client was compiled/linked, in seconds since the epoch.
   optional int64 build_timestamp = 1;
@@ -80,7 +80,7 @@ message SystemProfileProto {
   optional string application_locale = 4;
 
   // Information on the user's operating system.
-  // Next tag: 7
+  // Next tag: 8
   message OS {
     // The user's operating system. This should be one of:
     // - Android
@@ -111,11 +111,26 @@ message SystemProfileProto {
     // ChromeOS and Android, have a kernel version that the OS release version
     // was built with that differs from the version field above.
     optional string kernel_version = 6;
+
+    // Information on ChromeOS ARC runtime. This is collected to ease analysis
+    // on ARC-specific metrics, since this info varies by different boards /
+    // build configs / releases.
+    // Next tag: 2
+    message Arc {
+      // Android release number from build.prop "ro.build.version.release", e.g.
+      // "7.1.1" for N and "9" for P.
+      optional string release = 1;
+    }
+    // Available since M76. This field is reported if current build supports
+    // ARC, regardless of whether ARC is enabled or not. Check "Arc.State"
+    // histogram to determine if ARC is enabled for current report.
+    // Logged on ChromeOS only.
+    optional Arc arc = 7;
   }
   optional OS os = 5;
 
   // Information on the user's hardware.
-  // Next tag: 19
+  // Next tag: 20
   message Hardware {
     // CPU architecture. Taken from uname -m and modified in Chromium logic.
     // Common options are: x86, x86_64, armv7l, armv8l, aarch64.
@@ -169,6 +184,18 @@ message SystemProfileProto {
     optional float max_dpi_x = 9;
     optional float max_dpi_y = 10;
 
+    // Device form factors.
+    enum FormFactor {
+      FORM_FACTOR_UNKNOWN = 0;
+      FORM_FACTOR_DESKTOP = 1;
+      FORM_FACTOR_PHONE = 2;
+      FORM_FACTOR_TABLET = 3;
+      FORM_FACTOR_KIOSK = 4;
+    }
+
+    // The device form factor.
+    optional FormFactor form_factor = 19;
+
     // Information on the CPU obtained by CPUID.
     message CPU {
       // A 12 character string naming the vendor, e.g. "GeniuneIntel".
@@ -180,6 +207,9 @@ message SystemProfileProto {
       // Number of logical processors/cores on the current machine, which
       // includes hyperthreaded cores.
       optional uint32 num_cores = 3;
+
+      // Whether the CPU is running in a hypervisor.
+      optional bool is_hypervisor = 4;
     }
     optional CPU cpu = 13;
 
@@ -279,6 +309,62 @@ message SystemProfileProto {
       repeated PairedDevice paired_device = 3;
     }
     optional Bluetooth bluetooth = 11;
+
+    // Information about connected USB devices on Chrome OS systems.
+    message USB {
+      // The number of USB buses on the system.
+      optional uint32 bus_count = 1;
+
+      // Describes an attached USB device.
+      message USBDevice {
+        // Vendor ID (assigned by USB-IF).
+        optional fixed32 vendor_id = 1;
+
+        // Product ID (assigned by manufacturer).
+        optional fixed32 product_id = 2;
+
+        // Base Class as defined by USB-IF.
+        optional uint32 device_class = 3;
+
+        // SubClass as defined by USB-IF.
+        optional uint32 device_subclass = 4;
+
+        // The device release number with the decimal shifted out. The bcdDevice
+        // field from which this value originates is a 2-byte BCD in the range
+        // [00.00 - 99.99]. This value is multiplied by 100 to remove the
+        // decimal (device_release_number = bcdDevice * 100).
+        optional uint32 device_release_number = 5;
+
+        // A subset of information from the interface descriptors.
+        message InterfaceDescriptor {
+          // Base Class as defined by USB-IF.
+          optional uint32 interface_class = 1;
+
+          // SubClass as defined by USB-IF.
+          optional uint32 interface_subclass = 2;
+
+          // The configuration value for the configuration that holds this
+          // interface. Typically, all interfaces will belong to the same
+          // configuration.
+          optional uint32 configuration_value = 3;
+        }
+        repeated InterfaceDescriptor interface_descriptors = 6;
+
+        // The number of hubs above this device, including the root hub.
+        optional uint32 hops_from_root = 7;
+
+        // The vendor ID of the parent hub, if present.
+        optional fixed32 parent_vendor_id = 8;
+
+        // The product ID of the parent hub, if present.
+        optional fixed32 parent_product_id = 9;
+
+        // If this device is a hub, the number of ports on this hub.
+        optional uint32 port_count = 10;
+      }
+      repeated USBDevice usb_devices = 2;
+    }
+    optional USB usb = 30;
 
     // Whether the internal display produces touch events. Omitted if unknown.
     // Logged on ChromeOS only.
@@ -905,8 +991,6 @@ message SystemProfileProto {
   // Specifically, whether the enable metrics/crash reporting checkbox that was
   // shown on first run was checked or unchecked by default.
   // This state is recorded on first run, and uploaded in every UMA log.
-  // Consequently this should only be defined for clients that were installed
-  // after the recording code was implemented.
   enum UmaDefaultState {
     // The enable checkbox was unchecked by default.
     OPT_IN = 0;
@@ -914,6 +998,8 @@ message SystemProfileProto {
     OPT_OUT = 1;
     // Policy mandated that UMA be enabled, the user had no choice.
     POLICY_FORCED_ENABLED = 2;
+    // The client has no record of which consent flow was used.
+    OPT_UNKNOWN = 3;
   }
   optional UmaDefaultState uma_default_state = 22;
 
@@ -983,6 +1069,7 @@ message SystemProfileProto {
     RTANALYTICS_FULL = 22;
     CELLULAR = 23;
     DEMO_MODE_RESOURCES = 24;
+    ON_DEVICE_HEAD_SUGGEST = 25;
   }
 
   // Information about what Chrome components are registered and at which
@@ -1013,4 +1100,24 @@ message SystemProfileProto {
   // The Chrome package name on Android, if it's different from
   // "com.android.chrome".
   optional string app_package_name = 26;
+
+  // Data related to the "Better Together" multi-device features. This is only
+  // uploaded on Chrome OS.
+  // Next Tag: 5
+  message LinkedAndroidPhoneData {
+    // The pii-free model name of the phone used for Better Together with this
+    // device. Will not be set if Better Together is not set up. Hashed using
+    // variations::HashName() to produce a 32-bit SHA1 hash.
+    optional fixed32 phone_model_name_hash = 1;
+
+    // True if SmartLock is enabled on this Chromebook.
+    optional bool is_smartlock_enabled = 2;
+
+    // True if Instant Tethering is enabled on this Chromebook.
+    optional bool is_instant_tethering_enabled = 3;
+
+    // True if Messages integration is enabled on this Chromebook.
+    optional bool is_messages_enabled = 4;
+  }
+  optional LinkedAndroidPhoneData linked_android_phone_data = 29;
 }

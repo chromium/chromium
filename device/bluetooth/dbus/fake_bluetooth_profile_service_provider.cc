@@ -42,18 +42,19 @@ void FakeBluetoothProfileServiceProvider::NewConnection(
     const dbus::ObjectPath& device_path,
     base::ScopedFD fd,
     const Delegate::Options& options,
-    const Delegate::ConfirmationCallback& callback) {
+    Delegate::ConfirmationCallback callback) {
   VLOG(1) << object_path_.value() << ": NewConnection for "
           << device_path.value();
-  delegate_->NewConnection(device_path, std::move(fd), options, callback);
+  delegate_->NewConnection(device_path, std::move(fd), options,
+                           std::move(callback));
 }
 
 void FakeBluetoothProfileServiceProvider::RequestDisconnection(
     const dbus::ObjectPath& device_path,
-    const Delegate::ConfirmationCallback& callback) {
+    Delegate::ConfirmationCallback callback) {
   VLOG(1) << object_path_.value() << ": RequestDisconnection for "
           << device_path.value();
-  delegate_->RequestDisconnection(device_path, callback);
+  delegate_->RequestDisconnection(device_path, std::move(callback));
 }
 
 void FakeBluetoothProfileServiceProvider::Cancel() {

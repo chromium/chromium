@@ -47,6 +47,7 @@
 
   async function checkHeadersContent(expected) {
     var contents = await Promise.all(headers.map(header => header.requestContent()));
+    contents = contents.map(c => c.content);
     contents.push(uiSourceCode.workingCopy());
     var dedup = new Set(contents);
     if (dedup.size !== 1) {

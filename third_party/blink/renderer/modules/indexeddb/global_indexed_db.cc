@@ -37,7 +37,7 @@ class GlobalIndexedDBImpl final
 
   IDBFactory* IdbFactory(T& fetching_scope) {
     if (!idb_factory_)
-      idb_factory_ = IDBFactory::Create();
+      idb_factory_ = MakeGarbageCollected<IDBFactory>();
     return idb_factory_;
   }
 

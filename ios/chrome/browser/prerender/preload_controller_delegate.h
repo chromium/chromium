@@ -12,11 +12,12 @@
 // A protocol implemented by a delegate of PreloadController
 @protocol PreloadControllerDelegate
 
+// WebState from which preload controller should copy the session history.
+// This web state will be replaced on successful preload.
+- (web::WebState*)webStateToReplace;
+
 // Should preload controller request a desktop site.
 - (BOOL)preloadShouldUseDesktopUserAgent;
-
-// Returns YES if the given |url| should be backed by a native controller.
-- (BOOL)preloadHasNativeControllerForURL:(const GURL&)url;
 
 @end
 

@@ -20,7 +20,7 @@ class UTF16CharIterator;
 }
 }  // namespace base
 
-namespace app_list {
+namespace ash {
 
 // An UTF16 char iterator for a TokenizedString.
 class ASH_PUBLIC_EXPORT TokenizedStringCharIterator {
@@ -76,6 +76,6 @@ class ASH_PUBLIC_EXPORT TokenizedStringCharIterator {
   DISALLOW_COPY_AND_ASSIGN(TokenizedStringCharIterator);
 };
 
-}  // namespace app_list
+}  // namespace ash
 
 #endif  // ASH_PUBLIC_CPP_APP_LIST_TOKENIZED_STRING_CHAR_ITERATOR_H_

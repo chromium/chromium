@@ -30,6 +30,36 @@ bool ContentSettingImageModelStates::AnimationHasRun(ImageType type) const {
   return animations_[static_cast<int>(type)];
 }
 
+void ContentSettingImageModelStates::SetAccessibilityNotified(ImageType type,
+                                                              bool notified) {
+  VerifyType(type);
+  // Currently only NOTIFICATIONS_QUIET_PROMPT will notify accessibility.
+  DCHECK_EQ(ImageType::NOTIFICATIONS_QUIET_PROMPT, type);
+
+  accessibility_notified_[static_cast<int>(type)] = notified;
+}
+
+bool ContentSettingImageModelStates::GetAccessibilityNotified(
+    ImageType type) const {
+  VerifyType(type);
+  // Currently only NOTIFICATIONS_QUIET_PROMPT will notify accessibility.
+  DCHECK_EQ(ImageType::NOTIFICATIONS_QUIET_PROMPT, type);
+
+  return accessibility_notified_[static_cast<int>(type)];
+}
+
+void ContentSettingImageModelStates::SetBubbleWasAutoOpened(
+    ImageType type,
+    bool bubble_was_auto_opened) {
+  VerifyType(type);
+  auto_opened_bubbles_[static_cast<int>(type)] = bubble_was_auto_opened;
+}
+
+bool ContentSettingImageModelStates::BubbleWasAutoOpened(ImageType type) const {
+  VerifyType(type);
+  return auto_opened_bubbles_[static_cast<int>(type)];
+}
+
 ContentSettingImageModelStates::ContentSettingImageModelStates(
     content::WebContents* contents) {}
 

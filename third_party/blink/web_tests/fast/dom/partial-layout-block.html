@@ -1,5 +1,9 @@
 <!DOCTYPE HTML>
 <html>
+<script>
+if (window.internals)
+    internals.useMockOverlayScrollbars();
+</script>
 <script src="../../resources/testharness.js"></script>
 <script src="../../resources/testharnessreport.js"></script>
 <link rel="stylesheet" href="../../resources/testharness.css">
@@ -26,9 +30,6 @@ html, body {
 <script>
     if (window.testRunner)
         testRunner.dumpAsText();
-
-    if (window.internals)
-        internals.runtimeFlags.overlayScrollbarsEnabled = true;
 
     test(function() {
         var measure = document.getElementById('measure');

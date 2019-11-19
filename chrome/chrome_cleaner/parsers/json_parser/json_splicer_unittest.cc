@@ -13,11 +13,11 @@
 #include "base/synchronization/waitable_event.h"
 #include "base/test/test_timeouts.h"
 #include "base/values.h"
-#include "chrome/chrome_cleaner/interfaces/parser_interface.mojom.h"
 #include "chrome/chrome_cleaner/ipc/mojo_task_runner.h"
+#include "chrome/chrome_cleaner/mojom/parser_interface.mojom.h"
 #include "chrome/chrome_cleaner/parsers/json_parser/sandboxed_json_parser.h"
 #include "chrome/chrome_cleaner/parsers/target/parser_impl.h"
-#include "mojo/public/cpp/bindings/interface_request.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace chrome_cleaner {
@@ -49,37 +49,38 @@ bool IsDaysOfWeek(const base::DictionaryValue* dictionary) {
 }
 
 bool IsDaysOfWeek(const std::vector<base::Value>& list) {
-  return base::ContainsValue(list, base::Value("sunday")) &&
-         base::ContainsValue(list, base::Value("monday")) &&
-         base::ContainsValue(list, base::Value("tuesday")) &&
-         base::ContainsValue(list, base::Value("wednesday")) &&
-         base::ContainsValue(list, base::Value("thursday")) &&
-         base::ContainsValue(list, base::Value("friday")) &&
-         base::ContainsValue(list, base::Value("saturday"));
+  return base::Contains(list, base::Value("sunday")) &&
+         base::Contains(list, base::Value("monday")) &&
+         base::Contains(list, base::Value("tuesday")) &&
+         base::Contains(list, base::Value("wednesday")) &&
+         base::Contains(list, base::Value("thursday")) &&
+         base::Contains(list, base::Value("friday")) &&
+         base::Contains(list, base::Value("saturday"));
 }
 
 class JsonSplicerImplTest : public testing::Test {
  public:
   JsonSplicerImplTest()
       : task_runner_(MojoTaskRunner::Create()),
-        parser_ptr_(new mojom::ParserPtr(),
-                    base::OnTaskRunnerDeleter(task_runner_)),
+        parser_(new mojo::Remote<mojom::Parser>(),
+                base::OnTaskRunnerDeleter(task_runner_)),
         parser_impl_(nullptr, base::OnTaskRunnerDeleter(task_runner_)),
-        sandboxed_json_parser_(task_runner_.get(), parser_ptr_.get()) {
-    task_runner_->PostTask(
-        FROM_HERE, BindOnce(BindParser, parser_ptr_.get(), &parser_impl_));
+        sandboxed_json_parser_(task_runner_.get(), parser_.get()) {
+    task_runner_->PostTask(FROM_HERE,
+                           BindOnce(BindParser, parser_.get(), &parser_impl_));
   }
 
  protected:
   static void BindParser(
-      mojom::ParserPtr* json_parser,
+      mojo::Remote<mojom::Parser>* json_parser,
       std::unique_ptr<ParserImpl, base::OnTaskRunnerDeleter>* parser_impl) {
-    parser_impl->reset(
-        new ParserImpl(mojo::MakeRequest(json_parser), base::DoNothing()));
+    parser_impl->reset(new ParserImpl(json_parser->BindNewPipeAndPassReceiver(),
+                                      base::DoNothing()));
   }
 
   scoped_refptr<MojoTaskRunner> task_runner_;
-  std::unique_ptr<mojom::ParserPtr, base::OnTaskRunnerDeleter> parser_ptr_;
+  std::unique_ptr<mojo::Remote<mojom::Parser>, base::OnTaskRunnerDeleter>
+      parser_;
   std::unique_ptr<ParserImpl, base::OnTaskRunnerDeleter> parser_impl_;
   SandboxedJsonParser sandboxed_json_parser_;
 };

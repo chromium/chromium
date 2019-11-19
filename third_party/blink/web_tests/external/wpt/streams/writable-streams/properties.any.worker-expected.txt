@@ -1,19 +1,21 @@
 This is a testharness.js-based test.
 PASS WritableStreamDefaultController should not be exported on the global object
-PASS WritableStreamDefaultWriter should not be exported on the global object
+FAIL WritableStreamDefaultWriter should not be exported on the global object assert_equals: WritableStreamDefaultWriter should not be defined expected (undefined) undefined but got (function) function "function WritableStreamDefaultWriter() { [native code] }"
 PASS WritableStream.prototype.constructor should have standard properties
 PASS WritableStream.prototype.constructor should be a constructor
 PASS WritableStream.prototype.locked should have standard properties
 PASS WritableStream.prototype.locked should be a getter
 PASS WritableStream.prototype.abort should have standard properties
 FAIL WritableStream.prototype.abort should be a method assert_equals: abort should take 1 arguments expected 1 but got 0
+FAIL WritableStream.prototype.close should have standard properties Cannot destructure property 'configurable' of 'descriptor' as it is undefined.
+FAIL WritableStream.prototype.close should be a method Cannot read property 'writable' of undefined
 PASS WritableStream.prototype.getWriter should have standard properties
 PASS WritableStream.prototype.getWriter should be a method
-PASS WritableStream.prototype should have exactly the expected properties
+FAIL WritableStream.prototype should have exactly the expected properties assert_array_equals: WritableStream properties should match expected properties lengths differ, expected 5 got 4
 PASS WritableStreamDefaultController.prototype.constructor should have standard properties
 PASS WritableStreamDefaultController.prototype.constructor should be a constructor
 PASS WritableStreamDefaultController.prototype.error should have standard properties
-PASS WritableStreamDefaultController.prototype.error should be a method
+FAIL WritableStreamDefaultController.prototype.error should be a method assert_equals: error should take 1 arguments expected 1 but got 0
 PASS WritableStreamDefaultController.prototype should have exactly the expected properties
 PASS WritableStreamDefaultWriter.prototype.constructor should have standard properties
 PASS WritableStreamDefaultWriter.prototype.constructor should be a constructor
@@ -24,13 +26,13 @@ PASS WritableStreamDefaultWriter.prototype.desiredSize should be a getter
 PASS WritableStreamDefaultWriter.prototype.ready should have standard properties
 PASS WritableStreamDefaultWriter.prototype.ready should be a getter
 PASS WritableStreamDefaultWriter.prototype.abort should have standard properties
-PASS WritableStreamDefaultWriter.prototype.abort should be a method
+FAIL WritableStreamDefaultWriter.prototype.abort should be a method assert_equals: abort should take 1 arguments expected 1 but got 0
 PASS WritableStreamDefaultWriter.prototype.close should have standard properties
 PASS WritableStreamDefaultWriter.prototype.close should be a method
 PASS WritableStreamDefaultWriter.prototype.releaseLock should have standard properties
 PASS WritableStreamDefaultWriter.prototype.releaseLock should be a method
 PASS WritableStreamDefaultWriter.prototype.write should have standard properties
-PASS WritableStreamDefaultWriter.prototype.write should be a method
+FAIL WritableStreamDefaultWriter.prototype.write should be a method assert_equals: write should take 1 arguments expected 1 but got 0
 PASS WritableStreamDefaultWriter.prototype should have exactly the expected properties
 PASS sink method start should be called with the right number of arguments
 PASS sink method start should be called even when it's located on the prototype chain

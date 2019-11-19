@@ -4,8 +4,9 @@
 
 #import "ios/chrome/browser/ui/settings/settings_root_table_view_controller.h"
 
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
+#include "ios/chrome/browser/main/test_browser.h"
 #import "ios/chrome/browser/ui/settings/settings_navigation_controller.h"
 #include "ios/chrome/grit/ios_strings.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -28,22 +29,26 @@ class SettingsRootTableViewControllerTest : public PlatformTest {
   }
 
   SettingsNavigationController* NavigationController() {
-    if (!chrome_browser_state_) {
+    if (!browser_) {
       TestChromeBrowserState::Builder test_cbs_builder;
       chrome_browser_state_ = test_cbs_builder.Build();
+      WebStateList* web_state_list = nullptr;
+      browser_ = std::make_unique<TestBrowser>(chrome_browser_state_.get(),
+                                               web_state_list);
     }
     return [[SettingsNavigationController alloc]
         initWithRootViewController:nil
-                      browserState:chrome_browser_state_.get()
+                           browser:browser_.get()
                           delegate:nil];
   }
 
  protected:
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_;
   std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
+  std::unique_ptr<TestBrowser> browser_;
 };
 
-TEST_F(SettingsRootTableViewControllerTest, TestUpdateEditButton) {
+TEST_F(SettingsRootTableViewControllerTest, TestUpdateUIForEditState) {
   SettingsRootTableViewController* controller = Controller();
 
   id mockController = OCMPartialMock(controller);
@@ -55,7 +60,7 @@ TEST_F(SettingsRootTableViewControllerTest, TestUpdateEditButton) {
   // edited and the controller has the default behavior for
   // |shouldShowEditButton|.
   controller.tableView.editing = NO;
-  [controller updateEditButton];
+  [controller updateUIForEditState];
   UIBarButtonItem* item = [[UIBarButtonItem alloc]
       initWithBarButtonSystemItem:UIBarButtonSystemItemDone
                            target:nil
@@ -65,7 +70,7 @@ TEST_F(SettingsRootTableViewControllerTest, TestUpdateEditButton) {
   // Check that there the OK button if the table view is being edited and the
   // controller has the default behavior for |shouldShowEditButton|.
   controller.tableView.editing = YES;
-  [controller updateEditButton];
+  [controller updateUIForEditState];
   EXPECT_NSEQ(l10n_util::GetNSString(IDS_IOS_NAVIGATION_BAR_DONE_BUTTON),
               controller.navigationItem.rightBarButtonItem.title);
 
@@ -73,7 +78,7 @@ TEST_F(SettingsRootTableViewControllerTest, TestUpdateEditButton) {
   // controller returns YES for |shouldShowEditButton|.
   controller.tableView.editing = NO;
   OCMStub([mockController shouldShowEditButton]).andReturn(YES);
-  [controller updateEditButton];
+  [controller updateUIForEditState];
   EXPECT_NSEQ(l10n_util::GetNSString(IDS_IOS_NAVIGATION_BAR_EDIT_BUTTON),
               controller.navigationItem.rightBarButtonItem.title);
 }

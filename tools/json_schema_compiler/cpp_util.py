@@ -38,7 +38,7 @@ def Classname(s):
   """
   if s == '':
     return 'EMPTY_STRING'
-  return '_'.join([x[0].upper() + x[1:] for x in re.split('\W', s)])
+  return '_'.join([x[0].upper() + x[1:] for x in re.split(r'\W', s)])
 
 
 def GetAsFundamentalValue(type_, src, dst):

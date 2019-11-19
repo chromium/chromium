@@ -5,6 +5,8 @@
 
 """Selects the appropriate scraper for Firefox."""
 
+from __future__ import print_function
+
 
 def GetScraper(version):
   """Returns the scraper module for the given version.
@@ -25,4 +27,4 @@ def GetScraper(version):
 
 # if invoked rather than imported, test
 if __name__ == "__main__":
-  print GetScraper("2.0.0.6").version
+  print(GetScraper("2.0.0.6").version)

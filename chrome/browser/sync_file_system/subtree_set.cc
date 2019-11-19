@@ -6,7 +6,7 @@
 
 #include "base/logging.h"
 #include "base/stl_util.h"
-#include "storage/common/fileapi/file_system_util.h"
+#include "storage/common/file_system/file_system_util.h"
 
 namespace sync_file_system {
 
@@ -30,8 +30,8 @@ bool SubtreeSet::IsDisjointWith(const base::FilePath& subtree_root) const {
       storage::VirtualPath::GetNormalizedFilePath(subtree_root);
 
   // Check if |subtree_root| contains any of subtrees in the container.
-  if (base::ContainsKey(inclusive_ancestors_of_subtree_roots_,
-                        normalized_subtree_root))
+  if (base::Contains(inclusive_ancestors_of_subtree_roots_,
+                     normalized_subtree_root))
     return false;
 
   base::FilePath path(normalized_subtree_root);

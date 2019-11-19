@@ -1,0 +1,49 @@
+// Copyright 2016 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module media.mojom;
+
+import "media/mojo/mojom/media_types.mojom";
+
+interface AudioDecoder {
+  // Initialize the decoder. This must be called before any other method.
+  //
+  // TODO(sandersd): Rename to Initialize() if/when
+  // media::AudioDecoder::Initialize() is renamed to Configure().
+  Construct(pending_associated_remote<AudioDecoderClient> client);
+
+  // Initializes the AudioDecoder with the audio codec configuration and CDM id.
+  // For the unencrypted streams the |cdm_id| is ignored. Executed the callback
+  // with whether the initialization succeeded, and whether the pipeline needs
+  // bitstream conversion.
+  Initialize(AudioDecoderConfig config, int32 cdm_id)
+    => (bool success, bool needs_bitstream_conversion);
+
+  // Establishes data connection. Should be called before Decode().
+  SetDataSource(handle<data_pipe_consumer> receive_pipe);
+
+  // Sends the |buffer| to the underlying codec. Should be called only after
+  // Initialize() succeeds. The callback with the status is called after the
+  // decoder has accepted corresponding DecoderBuffer, indicating that the
+  // pipeline can send next buffer to decode.
+  // If |buffer| is an EOS buffer then the decoder must be flushed, i.e. all
+  // pending buffers should be processed, the corresponding decoded buffers
+  // should be returned to the proxy, and only then the service should return
+  // DecoderStatus.
+  Decode(DecoderBuffer buffer) => (DecodeStatus status);
+
+  // Resets decoder state. Should be called only if Initialize() succeeds.
+  // All pending Decode() requests will be finished or aborted, then the method
+  // executes the callback.
+  Reset() => ();
+};
+
+interface AudioDecoderClient {
+  // Sends the decoded audio buffer back to the proxy.
+  OnBufferDecoded(AudioBuffer buffer);
+
+  // Called when the remote decoder is waiting because of |reason|, e.g. waiting
+  // for decryption key.
+  OnWaiting(WaitingReason reason);
+};

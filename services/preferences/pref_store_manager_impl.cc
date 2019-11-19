@@ -28,11 +28,17 @@ class PrefStoreManagerImpl::ConnectorConnection
                       const service_manager::BindSourceInfo& source_info)
       : owner_(owner), source_info_(source_info) {}
 
-  void Connect(
-      mojom::PrefRegistryPtr pref_registry,
-      ConnectCallback callback) override {
+  void Connect(mojom::PrefRegistryPtr pref_registry,
+               const base::Optional<base::Token>& client_token,
+               ConnectCallback callback) override {
+    service_manager::Identity modified_identity = source_info_.identity;
+    if (client_token) {
+      modified_identity = service_manager::Identity(
+          modified_identity.name(), modified_identity.instance_group(),
+          modified_identity.instance_id(), *client_token);
+    }
     auto connection = owner_->shared_pref_registry_->CreateConnectionBuilder(
-        std::move(pref_registry), source_info_.identity, std::move(callback));
+        std::move(pref_registry), modified_identity, std::move(callback));
     if (owner_->persistent_pref_store_ &&
         owner_->persistent_pref_store_->initialized()) {
       connection->ProvidePersistentPrefStore(
@@ -73,7 +79,7 @@ PrefStoreManagerImpl::PrefStoreManagerImpl(
           base::WrapRefCounted(pref_registry))) {
   // This store is done in-process so it's already "registered":
   registry_.AddInterface<prefs::mojom::PrefStoreConnector>(
-      base::Bind(&PrefStoreManagerImpl::BindPrefStoreConnectorRequest,
+      base::Bind(&PrefStoreManagerImpl::BindPrefStoreConnectorReceiver,
                  base::Unretained(this)));
   persistent_pref_store_ = std::make_unique<PersistentPrefStoreImpl>(
       base::WrapRefCounted(user_prefs),
@@ -105,12 +111,12 @@ base::OnceClosure PrefStoreManagerImpl::ShutDownClosure() {
                         weak_factory_.GetWeakPtr());
 }
 
-void PrefStoreManagerImpl::BindPrefStoreConnectorRequest(
-    prefs::mojom::PrefStoreConnectorRequest request,
+void PrefStoreManagerImpl::BindPrefStoreConnectorReceiver(
+    mojo::PendingReceiver<prefs::mojom::PrefStoreConnector> receiver,
     const service_manager::BindSourceInfo& source_info) {
-  connector_bindings_.AddBinding(
+  connector_receivers_.Add(
       std::make_unique<ConnectorConnection>(this, source_info),
-      std::move(request));
+      std::move(receiver));
 }
 
 void PrefStoreManagerImpl::OnBindInterface(

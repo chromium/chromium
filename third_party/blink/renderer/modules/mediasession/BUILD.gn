@@ -14,5 +14,7 @@ blink_modules_sources("mediasession") {
     "media_session.h",
     "navigator_media_session.cc",
     "navigator_media_session.h",
+    "type_converters.cc",
+    "type_converters.h",
   ]
 }

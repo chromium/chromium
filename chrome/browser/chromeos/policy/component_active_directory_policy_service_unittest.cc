@@ -5,9 +5,8 @@
 #include "chrome/browser/chromeos/policy/component_active_directory_policy_service.h"
 
 #include "base/bind.h"
-#include "base/test/scoped_task_environment.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/dbus/fake_session_manager_client.h"
+#include "base/test/task_environment.h"
+#include "chromeos/dbus/session_manager/session_manager_client.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/policy_builder.h"
 #include "components/policy/core/common/policy_bundle.h"
@@ -105,7 +104,7 @@ class MockComponentActiveDirectoryPolicyDelegate
 
 class ComponentActiveDirectoryPolicyServiceTest : public testing::Test {
  protected:
-  ComponentActiveDirectoryPolicyServiceTest() : weak_ptr_factory_(this) {
+  ComponentActiveDirectoryPolicyServiceTest() {
     builder_.policy_data().set_policy_type(
         dm_protocol::kChromeExtensionPolicyType);
     builder_.policy_data().set_settings_entity_id(kTestExtensionId);
@@ -117,14 +116,10 @@ class ComponentActiveDirectoryPolicyServiceTest : public testing::Test {
                          POLICY_SOURCE_ACTIVE_DIRECTORY,
                          std::make_unique<base::Value>("maybe"), nullptr);
 
+    chromeos::SessionManagerClient::InitializeFakeInMemory();
+
     SetPolicy(kTestPolicy);
     SetSchema(kTestSchema);
-
-    auto session_manager_client =
-        std::make_unique<chromeos::FakeSessionManagerClient>();
-    session_manager_client_ = session_manager_client.get();
-    chromeos::DBusThreadManager::GetSetterForTesting()->SetSessionManagerClient(
-        std::move(session_manager_client));
 
     service_ = std::make_unique<ComponentActiveDirectoryPolicyService>(
         POLICY_SCOPE_USER, POLICY_DOMAIN_EXTENSIONS,
@@ -133,6 +128,7 @@ class ComponentActiveDirectoryPolicyServiceTest : public testing::Test {
   }
 
   ~ComponentActiveDirectoryPolicyServiceTest() override {
+    chromeos::SessionManagerClient::Shutdown();
     // Make sure all StorePolicy() calls succeeded.
     EXPECT_EQ(store_policy_call_count_, store_policy_succeeded_count_);
   }
@@ -154,7 +150,7 @@ class ComponentActiveDirectoryPolicyServiceTest : public testing::Test {
     EXPECT_CALL(delegate_, OnComponentActiveDirectoryPolicyUpdated());
     registry_.RegisterComponent(ns, schema);
     registry_.SetAllDomainsReady();
-    scoped_task_environment_.RunUntilIdle();
+    task_environment_.RunUntilIdle();
     testing::Mock::VerifyAndClearExpectations(&delegate_);
   }
 
@@ -168,7 +164,7 @@ class ComponentActiveDirectoryPolicyServiceTest : public testing::Test {
     descriptor.set_component_id(component_id);
 
     builder_.Build();
-    session_manager_client_->StorePolicy(
+    chromeos::SessionManagerClient::Get()->StorePolicy(
         descriptor, builder_.GetBlob(),
         base::BindOnce(
             &ComponentActiveDirectoryPolicyServiceTest::OnPolicyStored,
@@ -202,7 +198,7 @@ class ComponentActiveDirectoryPolicyServiceTest : public testing::Test {
   const PolicyNamespace kTestExtensionNS2 =
       PolicyNamespace(POLICY_DOMAIN_EXTENSIONS, kTestExtensionId2);
 
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_;
   PolicyMap expected_policy_;
   SchemaRegistry registry_;
   std::unique_ptr<ComponentActiveDirectoryPolicyService> service_;
@@ -215,19 +211,18 @@ class ComponentActiveDirectoryPolicyServiceTest : public testing::Test {
   }
 
   ComponentActiveDirectoryPolicyBuilder builder_;
-  chromeos::FakeSessionManagerClient* session_manager_client_;  // Not owned.
   std::string curr_schema_;
   int store_policy_call_count_ = 0;
   int store_policy_succeeded_count_ = 0;
   base::WeakPtrFactory<ComponentActiveDirectoryPolicyServiceTest>
-      weak_ptr_factory_;
+      weak_ptr_factory_{this};
 };
 
 // Before registry is ready, RetrievePolicies() should be a no-op.
 TEST_F(ComponentActiveDirectoryPolicyServiceTest, PolicyNotSetWithoutRegistry) {
   EXPECT_CALL(delegate_, OnComponentActiveDirectoryPolicyUpdated()).Times(0);
   service_->RetrievePolicies();
-  scoped_task_environment_.RunUntilIdle();
+  task_environment_.RunUntilIdle();
   EXPECT_FALSE(service_->policy());
 }
 
@@ -235,7 +230,7 @@ TEST_F(ComponentActiveDirectoryPolicyServiceTest, PolicyNotSetWithoutRegistry) {
 TEST_F(ComponentActiveDirectoryPolicyServiceTest, RegistryTriggersRetrieval) {
   EXPECT_CALL(delegate_, OnComponentActiveDirectoryPolicyUpdated());
   registry_.SetAllDomainsReady();
-  scoped_task_environment_.RunUntilIdle();
+  task_environment_.RunUntilIdle();
   CheckPolicyIsEmpty();
 }
 
@@ -249,14 +244,14 @@ TEST_F(ComponentActiveDirectoryPolicyServiceTest, RetrievePolicies) {
   EXPECT_CALL(delegate_, OnComponentActiveDirectoryPolicyUpdated()).Times(0);
   StorePolicy(kTestUserAccountId, login_manager::POLICY_DOMAIN_EXTENSIONS,
               kTestExtensionId);
-  scoped_task_environment_.RunUntilIdle();
+  task_environment_.RunUntilIdle();
   testing::Mock::VerifyAndClearExpectations(&delegate_);
 
   // Calling RetrievePolicies() should get the policy now.
   EXPECT_CALL(delegate_, OnComponentActiveDirectoryPolicyUpdated());
   service_->RetrievePolicies();
   CheckPolicyIsEmpty();
-  scoped_task_environment_.RunUntilIdle();
+  task_environment_.RunUntilIdle();
   CheckPolicyMatches(*ExpectedBundle());
 }
 
@@ -279,7 +274,7 @@ TEST_F(ComponentActiveDirectoryPolicyServiceTest, ClearingSchemaRemovesPolicy) {
   // Unregistering should trigger RetrievePolicies().
   EXPECT_CALL(delegate_, OnComponentActiveDirectoryPolicyUpdated());
   registry_.UnregisterComponent(kTestExtensionNS);
-  scoped_task_environment_.RunUntilIdle();
+  task_environment_.RunUntilIdle();
   testing::Mock::VerifyAndClearExpectations(&delegate_);
   CheckPolicyIsEmpty();
 }
@@ -359,8 +354,8 @@ TEST_F(ComponentActiveDirectoryPolicyServiceTest, ConvertsTypes) {
                        std::make_unique<base::Value>(1.0), nullptr);
 
   auto list = std::make_unique<base::ListValue>();
-  list->GetList().push_back(base::Value("One"));
-  list->GetList().push_back(base::Value("Two"));
+  list->Append(base::Value("One"));
+  list->Append(base::Value("Two"));
   expected_policy_.Set("ListAsSubkeys", POLICY_LEVEL_MANDATORY,
                        POLICY_SCOPE_USER, POLICY_SOURCE_ACTIVE_DIRECTORY,
                        std::move(list), nullptr);
@@ -416,7 +411,7 @@ TEST_F(ComponentActiveDirectoryPolicyServiceTest,
   StorePolicy(kTestUserAccountId, login_manager::POLICY_DOMAIN_EXTENSIONS,
               kTestExtensionId2);
   service_->RetrievePolicies();
-  scoped_task_environment_.RunUntilIdle();
+  task_environment_.RunUntilIdle();
 
   // We should have received policy for both namespaces.
   PolicyBundle expected_bundle;

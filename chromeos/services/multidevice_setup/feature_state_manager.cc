@@ -18,7 +18,9 @@ bool FeatureStateManager::SetFeatureEnabledState(mojom::Feature feature,
 
   // Changing the state is only allowed when changing from enabled to disabled
   // or disabled to enabled.
-  if ((state == mojom::FeatureState::kEnabledByUser && !enabled) ||
+  if ((((state == mojom::FeatureState::kEnabledByUser) ||
+        (state == mojom::FeatureState::kFurtherSetupRequired)) &&
+       !enabled) ||
       (state == mojom::FeatureState::kDisabledByUser && enabled)) {
     PerformSetFeatureEnabledState(feature, enabled);
     return true;

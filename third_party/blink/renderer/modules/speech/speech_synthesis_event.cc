@@ -31,18 +31,20 @@ SpeechSynthesisEvent* SpeechSynthesisEvent::Create(
     const AtomicString& type,
     const SpeechSynthesisEventInit* init) {
   return MakeGarbageCollected<SpeechSynthesisEvent>(
-      type, init->utterance(), init->charIndex(), init->elapsedTime(),
-      init->name());
+      type, init->utterance(), init->charIndex(), init->charLength(),
+      init->elapsedTime(), init->name());
 }
 
 SpeechSynthesisEvent::SpeechSynthesisEvent(const AtomicString& type,
                                            SpeechSynthesisUtterance* utterance,
                                            unsigned char_index,
+                                           unsigned char_length,
                                            float elapsed_time,
                                            const String& name)
     : Event(type, Bubbles::kNo, Cancelable::kNo),
       utterance_(utterance),
       char_index_(char_index),
+      char_length_(char_length),
       elapsed_time_(elapsed_time),
       name_(name) {}
 

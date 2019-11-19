@@ -52,9 +52,9 @@ bool ThreadSnapshotFuchsia::Initialize(
 #endif
 
   if (thread.stack_regions.empty()) {
-    stack_.Initialize(process_reader, 0, 0);
+    stack_.Initialize(process_reader->Memory(), 0, 0);
   } else {
-    stack_.Initialize(process_reader,
+    stack_.Initialize(process_reader->Memory(),
                       thread.stack_regions[0].base(),
                       thread.stack_regions[0].size());
     // TODO(scottmg): Handle split stack by adding other parts to ExtraMemory().

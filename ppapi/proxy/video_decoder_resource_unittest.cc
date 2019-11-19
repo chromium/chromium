@@ -6,7 +6,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "base/memory/shared_memory.h"
+#include "base/memory/unsafe_shared_memory_region.h"
 #include "build/build_config.h"
 #include "ppapi/c/pp_errors.h"
 #include "ppapi/c/ppb_video_decoder.h"
@@ -137,11 +137,10 @@ class VideoDecoderResourceTest : public PluginProxyTest {
     sink().AddFilter(&shm_msg_handler);
 
     if (expected_shm_msg) {
-      std::unique_ptr<SerializedHandle> serialized_handle;
-      base::SharedMemory shm;
-      shm.CreateAnonymous(kShmSize);
-      base::SharedMemoryHandle shm_handle = shm.handle().Duplicate();
-      serialized_handle.reset(new SerializedHandle(shm_handle, kShmSize));
+      auto region = base::UnsafeSharedMemoryRegion::Create(kShmSize);
+      auto serialized_handle = std::make_unique<SerializedHandle>(
+          base::UnsafeSharedMemoryRegion::TakeHandleForSerialization(
+              std::move(region)));
       shm_msg_handler.set_serialized_handle(std::move(serialized_handle));
     }
 

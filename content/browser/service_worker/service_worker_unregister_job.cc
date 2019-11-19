@@ -4,6 +4,8 @@
 
 #include "content/browser/service_worker/service_worker_unregister_job.h"
 
+#include <utility>
+
 #include "base/bind.h"
 #include "base/memory/weak_ptr.h"
 #include "content/browser/service_worker/service_worker_context_core.h"
@@ -19,12 +21,11 @@ namespace content {
 typedef ServiceWorkerRegisterJobBase::RegistrationJobType RegistrationJobType;
 
 ServiceWorkerUnregisterJob::ServiceWorkerUnregisterJob(
-    base::WeakPtr<ServiceWorkerContextCore> context,
+    ServiceWorkerContextCore* context,
     const GURL& scope)
-    : context_(context),
-      scope_(scope),
-      is_promise_resolved_(false),
-      weak_factory_(this) {}
+    : context_(context), scope_(scope), is_promise_resolved_(false) {
+  DCHECK(context_);
+}
 
 ServiceWorkerUnregisterJob::~ServiceWorkerUnregisterJob() {}
 
@@ -42,6 +43,8 @@ void ServiceWorkerUnregisterJob::Abort() {
   CompleteInternal(blink::mojom::kInvalidServiceWorkerRegistrationId,
                    blink::ServiceWorkerStatusCode::kErrorAbort);
 }
+
+void ServiceWorkerUnregisterJob::WillShutDown() {}
 
 bool ServiceWorkerUnregisterJob::Equals(
     ServiceWorkerRegisterJobBase* job) const {

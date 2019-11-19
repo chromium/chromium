@@ -13,13 +13,13 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
+#include "base/strings/string_split.h"
 #include "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/store_kit/store_kit_tab_helper.h"
 #include "ios/web/public/browser_state.h"
-#import "ios/web/public/navigation_item.h"
-#import "ios/web/public/navigation_manager.h"
-#import "ios/web/public/web_state/web_state_policy_decider.h"
-#include "net/base/filename_util.h"
+#import "ios/web/public/navigation/navigation_item.h"
+#import "ios/web/public/navigation/navigation_manager.h"
+#import "ios/web/public/navigation/web_state_policy_decider.h"
 #import "net/base/mac/url_conversions.h"
 #include "net/base/url_util.h"
 #include "url/gurl.h"
@@ -34,9 +34,9 @@ namespace {
 const char kITunesUrlDomain[] = "itunes.apple.com";
 const char kITunesProductIdPrefix[] = "id";
 const char kITunesAppPathIdentifier[] = "app";
-const size_t kITunesUrlPathMinComponentsCount = 4;
-const size_t kITunesUrlRegionComponentDefaultIndex = 1;
-const size_t kITunesUrlMediaTypeComponentDefaultIndex = 2;
+const size_t kITunesUrlPathMinComponentsCount = 3;
+const size_t kITunesUrlRegionComponentDefaultIndex = 0;
+const size_t kITunesUrlMediaTypeComponentDefaultIndex = 1;
 
 // Records the StoreKit handling result to IOS.StoreKit.ITunesURLsHandlingResult
 // UMA histogram.
@@ -89,17 +89,14 @@ bool ITunesUrlsHandlerTabHelper::CanHandleUrl(const GURL& url) {
   // Valid iTunes URL structure:
   // DOMAIN/OPTIONAL_REGION_CODE/MEDIA_TYPE/MEDIA_NAME/ID?PARAMETERS
   // Check the URL media type, to determine if it is supported.
-  base::FilePath path;
-  if (!net::FileURLToFilePath(url, &path))
-    return false;
-  std::vector<base::FilePath::StringType> path_components;
-  path.GetComponents(&path_components);
-  // GetComponents considers "/" as the first component.
+  std::vector<std::string> path_components = base::SplitString(
+      url.path(), "/", base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+
   if (path_components.size() < kITunesUrlPathMinComponentsCount)
     return false;
   size_t media_type_index = kITunesUrlMediaTypeComponentDefaultIndex;
   DCHECK(media_type_index > 0);
-  // If there is no reigon code in the URL then media type has to appear
+  // If there is no region code in the URL then media type has to appear
   // earlier in the URL.
   if (path_components[kITunesUrlRegionComponentDefaultIndex].size() != 2)
     media_type_index--;

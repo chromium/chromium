@@ -37,14 +37,28 @@ class API_AVAILABLE(macosx(10.12.2))
                         Callback callback);
   ~GetAssertionOperation() override;
 
+  // OperationBase:
   void Run() override;
+
+  // GetNextAssertion() may be called for a request with an empty allowList
+  // after the initial callback has returned.
+  void GetNextAssertion(Callback callback);
 
  private:
   const std::string& RpId() const override;
   void PromptTouchIdDone(bool success) override;
+  base::Optional<AuthenticatorGetAssertionResponse> ResponseForCredential(
+      const Credential& credential);
+
+  std::list<Credential> matching_credentials_;
 
   DISALLOW_COPY_AND_ASSIGN(GetAssertionOperation);
 };
+
+// Returns request.allow_list without entries that have an in inapplicable
+// |transports| field or a |type| other than "public-key".
+std::set<std::vector<uint8_t>> FilterInapplicableEntriesFromAllowList(
+    const CtapGetAssertionRequest& request);
 
 }  // namespace mac
 }  // namespace fido

@@ -5,19 +5,21 @@
 #include "services/resource_coordinator/memory_instrumentation/queued_request_dispatcher.h"
 
 #include <inttypes.h>
+#include <utility>
 
-#include "base/android/library_loader/anchor_functions_buildflags.h"
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/format_macros.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/process/process_metrics.h"
 #include "base/strings/pattern.h"
 #include "base/strings/stringprintf.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
+#include "services/resource_coordinator/memory_instrumentation/aggregate_metrics_processor.h"
 #include "services/resource_coordinator/memory_instrumentation/graph_processor.h"
 #include "services/resource_coordinator/memory_instrumentation/switches.h"
+#include "services/resource_coordinator/public/cpp/memory_instrumentation/global_memory_dump.h"
 
 #if defined(OS_MACOSX) && !defined(OS_IOS)
 #include "base/mac/mac_util.h"
@@ -70,46 +72,14 @@ uint32_t CalculatePrivateFootprintKb(const mojom::RawOSMemDump& os_dump,
 #endif
 }
 
-#if BUILDFLAG(SUPPORTS_CODE_ORDERING)
-size_t ReportGlobalNativeCodeResidentMemoryKb(
-    const std::map<base::ProcessId, mojom::RawOSMemDump*>& pid_to_pmd) {
-  std::vector<uint8_t> common_map;
-
-  for (const auto& pmd : pid_to_pmd) {
-    if (!pmd.second || pmd.second->native_library_pages_bitmap.empty()) {
-      DLOG(WARNING) << "No process pagemap entry for " << pmd.first;
-      return 0;
-    }
-
-    if (common_map.size() < pmd.second->native_library_pages_bitmap.size()) {
-      common_map.resize(pmd.second->native_library_pages_bitmap.size());
-    }
-    for (size_t i = 0; i < pmd.second->native_library_pages_bitmap.size();
-         ++i) {
-      common_map[i] |= pmd.second->native_library_pages_bitmap[i];
-    }
-  }
-
-  // |accessed_pages_set| will be ~40kB on 32 bit mode and ~80kB on 64 bit mode.
-  std::set<size_t> accessed_pages_set;
-  for (size_t i = 0; i < common_map.size(); i++) {
-    for (int j = 0; j < 8; j++) {
-      if (common_map[i] & (1 << j))
-        accessed_pages_set.insert(i * 8 + j);
-    }
-  }
-
-  const size_t kPageSize = base::GetPageSize();
-  return accessed_pages_set.size() * kPageSize / 1024;
-}
-#endif  // #if BUILDFLAG(SUPPORTS_CODE_ORDERING)
-
 memory_instrumentation::mojom::OSMemDumpPtr CreatePublicOSDump(
     const mojom::RawOSMemDump& internal_os_dump,
     uint32_t shared_resident_kb) {
   mojom::OSMemDumpPtr os_dump = mojom::OSMemDump::New();
 
   os_dump->resident_set_kb = internal_os_dump.resident_set_kb;
+  os_dump->peak_resident_set_kb = internal_os_dump.peak_resident_set_kb;
+  os_dump->is_peak_rss_resettable = internal_os_dump.is_peak_rss_resettable;
   os_dump->private_footprint_kb =
       CalculatePrivateFootprintKb(internal_os_dump, shared_resident_kb);
 #if defined(OS_LINUX) || defined(OS_ANDROID)
@@ -251,8 +221,9 @@ void QueuedRequestDispatcher::SetUpAndDispatch(
       continue;
     }
 
-    request->responses[client].process_id = client_info.pid;
-    request->responses[client].process_type = client_info.process_type;
+    request->responses[client_info.pid].process_id = client_info.pid;
+    request->responses[client_info.pid].process_type = client_info.process_type;
+    request->responses[client_info.pid].service_name = client_info.service_name;
 
     // Don't request a chrome memory dump at all if the client only wants the
     // a memory footprint.
@@ -263,19 +234,20 @@ void QueuedRequestDispatcher::SetUpAndDispatch(
     // https://bugs.chromium.org/p/chromium/issues/detail?id=812346#c16 for more
     // details.
     if (!request->args.memory_footprint_only) {
-      request->pending_responses.insert({client, ResponseType::kChromeDump});
+      request->pending_responses.insert(
+          {client_info.pid, ResponseType::kChromeDump});
       client->RequestChromeMemoryDump(
           request->GetRequestArgs(),
-          base::BindOnce(std::move(chrome_callback), client));
+          base::BindOnce(chrome_callback, client_info.pid));
     }
 
 // On most platforms each process can dump data about their own process
 // so ask each process to do so Linux is special see below.
 #if !defined(OS_LINUX)
-    request->pending_responses.insert({client, ResponseType::kOSDump});
+    request->pending_responses.insert({client_info.pid, ResponseType::kOSDump});
     client->RequestOSMemoryDump(request->memory_map_option(),
                                 {base::kNullProcessId},
-                                base::BindOnce(os_callback, client));
+                                base::BindOnce(os_callback, client_info.pid));
 #endif  // !defined(OS_LINUX)
 
     // If we are in the single pid case, then we've already found the only
@@ -289,6 +261,7 @@ void QueuedRequestDispatcher::SetUpAndDispatch(
 #if defined(OS_LINUX)
   std::vector<base::ProcessId> pids;
   mojom::ClientProcess* browser_client = nullptr;
+  base::ProcessId browser_client_pid = base::kNullProcessId;
   pids.reserve(request->args.pid == base::kNullProcessId ? clients.size() : 1);
   for (const auto& client_info : clients) {
     if (request->args.pid == base::kNullProcessId ||
@@ -297,14 +270,16 @@ void QueuedRequestDispatcher::SetUpAndDispatch(
     }
     if (client_info.process_type == mojom::ProcessType::BROWSER) {
       browser_client = client_info.client;
+      browser_client_pid = client_info.pid;
     }
   }
   if (clients.size() > 0) {
     DCHECK(browser_client);
   }
   if (browser_client && pids.size() > 0) {
-    request->pending_responses.insert({browser_client, ResponseType::kOSDump});
-    auto callback = base::BindOnce(os_callback, browser_client);
+    request->pending_responses.insert(
+        {browser_client_pid, ResponseType::kOSDump});
+    auto callback = base::BindOnce(os_callback, browser_client_pid);
     browser_client->RequestOSMemoryDump(request->memory_map_option(), pids,
                                         std::move(callback));
   }
@@ -343,9 +318,9 @@ void QueuedRequestDispatcher::SetUpAndDispatchVmRegionRequest(
     return;
   }
 
-  request->pending_responses.insert(browser_client);
-  request->responses[browser_client].process_id = browser_client_pid;
-  auto callback = base::BindOnce(os_callback, browser_client);
+  request->pending_responses.insert(browser_client_pid);
+  request->responses[browser_client_pid].process_id = browser_client_pid;
+  auto callback = base::BindOnce(os_callback, browser_client_pid);
   browser_client->RequestOSMemoryDump(mojom::MemoryMapOption::MODULES,
                                       desired_pids, std::move(callback));
 #else
@@ -353,11 +328,13 @@ void QueuedRequestDispatcher::SetUpAndDispatchVmRegionRequest(
     if (std::find(desired_pids.begin(), desired_pids.end(), client_info.pid) !=
         desired_pids.end()) {
       mojom::ClientProcess* client = client_info.client;
-      request->pending_responses.insert(client);
-      request->responses[client].process_id = client_info.pid;
+      request->pending_responses.insert(client_info.pid);
+      request->responses[client_info.pid].process_id = client_info.pid;
+      request->responses[client_info.pid].service_name =
+          client_info.service_name;
       client->RequestOSMemoryDump(mojom::MemoryMapOption::MODULES,
                                   {base::kNullProcessId},
-                                  base::BindOnce(os_callback, client));
+                                  base::BindOnce(os_callback, client_info.pid));
     }
   }
 #endif  // defined(OS_LINUX)
@@ -479,7 +456,6 @@ void QueuedRequestDispatcher::Finalize(QueuedRequest* request,
   mojom::GlobalMemoryDumpPtr global_dump(mojom::GlobalMemoryDump::New());
   global_dump->start_time = request->start_time;
   global_dump->process_dumps.reserve(request->responses.size());
-  global_dump->aggregated_metrics = mojom::AggregatedMetrics::New();
   for (const auto& response : request->responses) {
     base::ProcessId pid = response.second.process_id;
 
@@ -558,6 +534,7 @@ void QueuedRequestDispatcher::Finalize(QueuedRequest* request,
     pmd->pid = pid;
     pmd->process_type = pid_to_process_type[pid];
     pmd->os_dump = std::move(os_dump);
+    pmd->service_name = response.second.service_name;
 
     // If we have to return a summary, add all entries for the requested
     // allocator dumps.
@@ -582,13 +559,8 @@ void QueuedRequestDispatcher::Finalize(QueuedRequest* request,
 
     global_dump->process_dumps.push_back(std::move(pmd));
   }
-
-#if BUILDFLAG(SUPPORTS_CODE_ORDERING)
-  size_t native_resident_kb =
-      ReportGlobalNativeCodeResidentMemoryKb(pid_to_os_dump);
-  global_dump->aggregated_metrics->native_library_resident_kb =
-      native_resident_kb;
-#endif  // BUILDFLAG(SUPPORTS_CODE_ORDERING)
+  global_dump->aggregated_metrics =
+      ComputeGlobalNativeCodeResidentMemoryKb(pid_to_os_dump);
 
   const bool global_success = request->failed_memory_dump_count == 0;
 
@@ -646,10 +618,18 @@ bool QueuedRequestDispatcher::AddChromeMemoryDumpToTrace(
   return true;
 }
 
-QueuedRequestDispatcher::ClientInfo::ClientInfo(mojom::ClientProcess* client,
-                                                base::ProcessId pid,
-                                                mojom::ProcessType process_type)
-    : client(client), pid(pid), process_type(process_type) {}
-QueuedRequestDispatcher::ClientInfo::~ClientInfo() {}
+QueuedRequestDispatcher::ClientInfo::ClientInfo(
+    mojom::ClientProcess* client,
+    base::ProcessId pid,
+    mojom::ProcessType process_type,
+    base::Optional<std::string> service_name)
+    : client(client),
+      pid(pid),
+      process_type(process_type),
+      service_name(std::move(service_name)) {}
+
+QueuedRequestDispatcher::ClientInfo::ClientInfo(ClientInfo&& other) = default;
+
+QueuedRequestDispatcher::ClientInfo::~ClientInfo() = default;
 
 }  // namespace memory_instrumentation

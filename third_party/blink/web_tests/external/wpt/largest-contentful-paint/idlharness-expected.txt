@@ -1,0 +1,32 @@
+This is a testharness.js-based test.
+PASS idl_test setup
+PASS idl_test validation
+PASS Element includes ParentNode: member names are unique
+PASS Element includes NonDocumentTypeChildNode: member names are unique
+PASS Element includes ChildNode: member names are unique
+PASS Element includes Slotable: member names are unique
+PASS LargestContentfulPaint interface: existence and properties of interface object
+PASS LargestContentfulPaint interface object length
+PASS LargestContentfulPaint interface object name
+PASS LargestContentfulPaint interface: existence and properties of interface prototype object
+PASS LargestContentfulPaint interface: existence and properties of interface prototype object's "constructor" property
+PASS LargestContentfulPaint interface: existence and properties of interface prototype object's @@unscopables property
+PASS LargestContentfulPaint interface: attribute renderTime
+PASS LargestContentfulPaint interface: attribute loadTime
+PASS LargestContentfulPaint interface: attribute size
+PASS LargestContentfulPaint interface: attribute id
+PASS LargestContentfulPaint interface: attribute url
+PASS LargestContentfulPaint interface: attribute element
+PASS LargestContentfulPaint interface: operation toJSON()
+PASS LargestContentfulPaint must be primary interface of lcp
+PASS Stringification of lcp
+PASS LargestContentfulPaint interface: lcp must inherit property "renderTime" with the proper type
+PASS LargestContentfulPaint interface: lcp must inherit property "loadTime" with the proper type
+PASS LargestContentfulPaint interface: lcp must inherit property "size" with the proper type
+PASS LargestContentfulPaint interface: lcp must inherit property "id" with the proper type
+PASS LargestContentfulPaint interface: lcp must inherit property "url" with the proper type
+PASS LargestContentfulPaint interface: lcp must inherit property "element" with the proper type
+PASS LargestContentfulPaint interface: lcp must inherit property "toJSON()" with the proper type
+FAIL LargestContentfulPaint interface: default toJSON operation on lcp Type DOMHighResTimeStamp not found
+Harness: the test ran to completion.
+

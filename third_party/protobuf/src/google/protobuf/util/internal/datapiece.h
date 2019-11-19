@@ -34,19 +34,18 @@
 #include <string>
 
 #include <google/protobuf/stubs/common.h>
+#include <google/protobuf/stubs/logging.h>
+#include <google/protobuf/type.pb.h>
 #include <google/protobuf/stubs/stringpiece.h>
 #include <google/protobuf/stubs/statusor.h>
 
+#include <google/protobuf/port_def.inc>
 
 namespace google {
 namespace protobuf {
-class Enum;
-}  // namespace protobuf
-
-
-namespace protobuf {
 namespace util {
 namespace converter {
+class ProtoWriter;
 
 // Container for a single piece of data together with its data type.
 //
@@ -57,7 +56,7 @@ namespace converter {
 // Just like StringPiece, the DataPiece class does not own the storage for
 // the actual string or Cord, so it is the user's responsiblity to guarantee
 // that the underlying storage is still valid when the DataPiece is accessed.
-class LIBPROTOBUF_EXPORT DataPiece {
+class PROTOBUF_EXPORT DataPiece {
  public:
   // Identifies data type of the value.
   // These are the types supported by DataPiece.
@@ -147,33 +146,31 @@ class LIBPROTOBUF_EXPORT DataPiece {
   util::StatusOr<bool> ToBool() const;
 
   // Parses, casts or converts the value stored in the DataPiece into a string.
-  util::StatusOr<string> ToString() const;
+  util::StatusOr<std::string> ToString() const;
 
   // Tries to convert the value contained in this datapiece to string. If the
   // conversion fails, it returns the default_string.
-  string ValueAsStringOrDefault(StringPiece default_string) const;
+  std::string ValueAsStringOrDefault(StringPiece default_string) const;
 
-  util::StatusOr<string> ToBytes() const;
-
-  // Converts a value into protocol buffer enum number. If the value is a
-  // string, first attempts conversion by name, trying names as follows:
-  //   1) the directly provided string value.
-  //   2) the value upper-cased and replacing '-' by '_'
-  //   3) if use_lower_camel_for_enums is true it also attempts by comparing
-  //   enum name without underscore with the value upper cased above.
-  // If the value is not a string, attempts to convert to a 32-bit integer.
-  // If none of these succeeds, returns a conversion error status.
-  util::StatusOr<int> ToEnum(const google::protobuf::Enum* enum_type,
-                               bool use_lower_camel_for_enums,
-                               bool ignore_unknown_enum_values) const;
+  util::StatusOr<std::string> ToBytes() const;
 
  private:
+  friend class ProtoWriter;
+
   // Disallow implicit constructor.
   DataPiece();
 
   // Helper to create NULL or ENUM types.
   DataPiece(Type type, int32 val)
       : type_(type), i32_(val), use_strict_base64_decoding_(false) {}
+
+  // Same as the ToEnum() method above but with additional flag to ignore
+  // unknown enum values.
+  util::StatusOr<int> ToEnum(const google::protobuf::Enum* enum_type,
+                               bool use_lower_camel_for_enums,
+                               bool case_insensitive_enum_parsing,
+                               bool ignore_unknown_enum_values,
+                               bool* is_unknown_enum_value) const;
 
   // For numeric conversion between
   //     int32, int64, uint32, uint64, double, float and bool
@@ -183,10 +180,11 @@ class LIBPROTOBUF_EXPORT DataPiece {
   // For conversion from string to
   //     int32, int64, uint32, uint64, double, float and bool
   template <typename To>
-  util::StatusOr<To> StringToNumber(bool (*func)(StringPiece, To*)) const;
+  util::StatusOr<To> StringToNumber(bool (*func)(StringPiece,
+                                                   To*)) const;
 
   // Decodes a base64 string. Returns true on success.
-  bool DecodeBase64(StringPiece src, string* dest) const;
+  bool DecodeBase64(StringPiece src, std::string* dest) const;
 
   // Helper function to initialize this DataPiece with 'other'.
   void InternalCopy(const DataPiece& other);
@@ -215,6 +213,8 @@ class LIBPROTOBUF_EXPORT DataPiece {
 }  // namespace converter
 }  // namespace util
 }  // namespace protobuf
-
 }  // namespace google
+
+#include <google/protobuf/port_undef.inc>
+
 #endif  // GOOGLE_PROTOBUF_UTIL_CONVERTER_DATAPIECE_H__

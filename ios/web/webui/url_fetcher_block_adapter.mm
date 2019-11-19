@@ -42,7 +42,7 @@ void URLFetcherBlockAdapter::OnURLLoadComplete(
     std::unique_ptr<std::string> response_body) {
   std::string response;
   if (!response_body) {
-    DLOG(WARNING) << "String for resource URL not found"
+    DLOG(WARNING) << "String for resource URL not found "
                   << url_loader_->GetFinalURL();
   } else {
     response = *response_body;

@@ -27,8 +27,9 @@
             "mac": "system_health_desktop_040.wprgo",
             "win": "system_health_desktop_047.wprgo"
         },
-        "browse:media:youtube:2018": {
-            "DEFAULT": "system_health_desktop_6b6bdda708.wprgo"
+        "browse:media:youtube:2019": {
+            "DEFAULT": "system_health_desktop_d48f7fff0a.wprgo",
+            "linux": "system_health_desktop_d48f7fff0a.wprgo"
         },
         "browse:media:youtubetv:2019": {
             "DEFAULT": "system_health_desktop_e53598d1f4.wprgo"
@@ -85,7 +86,7 @@
             "DEFAULT": "system_health_desktop_056.wprgo"
         },
         "browse:social:tumblr_infinite_scroll:2018": {
-            "DEFAULT": "system_health_desktop_049d29ed85.wprgo"
+            "DEFAULT": "system_health_desktop_e6232c2d50.wprgo"
         },
         "browse:social:twitter": {
             "DEFAULT": "system_health_desktop_053.wprgo"
@@ -111,6 +112,12 @@
         "browse:tools:maps": {
             "DEFAULT": "system_health_desktop_052.wprgo"
         },
+        "browse:tools:maps:2019": {
+            "DEFAULT": "system_health_desktop_feb332ef0c.wprgo"
+        },
+        "browse:tools:sheets:2019": {
+            "DEFAULT": "system_health_desktop_d7b02362d8.wprgo"
+        },
         "browse_accessibility:media:youtube": {
             "DEFAULT": "system_health_desktop_062.wprgo"
         },
@@ -128,6 +135,9 @@
         },
         "load:games:bubbles": {
             "DEFAULT": "system_health_desktop_005.wprgo"
+        },
+        "load:games:bubbles:2019": {
+            "DEFAULT": "system_health_desktop_615d4e02e4.wprgo"
         },
         "load:games:lazors": {
             "DEFAULT": "system_health_desktop_005.wprgo"

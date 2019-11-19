@@ -2,20 +2,27 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// clang-format off
+// #import 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.m.js';
+// #import 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.m.js';
+// #import {Polymer, html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+// clang-format on
+
 suite('cr-lazy-render', function() {
   let lazy;
   let bind;
 
   suiteSetup(function() {
-    return PolymerTest.importHtml(
-        'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.html');
+    /* #ignore */ return PolymerTest.importHtml(
+        /* #ignore */ 'chrome://resources/cr_elements/cr_checkbox/' +
+        /* #ignore */ 'cr_checkbox.html');
   });
 
   setup(function() {
     PolymerTest.clearBody();
     const template = `
         <dom-bind>
-          <template is="dom-bind">
+          <template>
             <cr-lazy-render id="lazy">
               <template>
                 <h1>
@@ -28,9 +35,7 @@ suite('cr-lazy-render', function() {
         </dom-bind>`;
     document.body.innerHTML = template;
     lazy = document.getElementById('lazy');
-    // TODO(dpapad): Remove conditional when Polymer 2 migration has completed.
-    bind = document.querySelector(
-        Polymer.DomBind ? 'dom-bind' : 'template[is=\'dom-bind\']');
+    bind = document.querySelector('dom-bind');
   });
 
   test('stamps after get()', function() {
@@ -57,7 +62,7 @@ suite('cr-lazy-render', function() {
     const inner = lazy.get();
     const checkbox = document.querySelector('cr-checkbox');
     assertTrue(checkbox.checked);
-    MockInteractions.tap(checkbox);
+    checkbox.click();
     assertFalse(checkbox.checked);
     assertFalse(bind.checked);
   });

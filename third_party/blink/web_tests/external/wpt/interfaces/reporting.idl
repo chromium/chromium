@@ -3,17 +3,22 @@
 // (https://github.com/tidoust/reffy-reports)
 // Source: Reporting API 1 (https://w3c.github.io/reporting/)
 
+[Exposed=(Window,Worker)]
 interface ReportBody {
+  [Default] object toJSON();
 };
 
+[Exposed=(Window,Worker)]
 interface Report {
+  [Default] object toJSON();
   readonly attribute DOMString type;
   readonly attribute DOMString url;
   readonly attribute ReportBody? body;
 };
 
-[Constructor(ReportingObserverCallback callback, optional ReportingObserverOptions options)]
+[Exposed=(Window,Worker)]
 interface ReportingObserver {
+  constructor(ReportingObserverCallback callback, optional ReportingObserverOptions options = {});
   void observe();
   void disconnect();
   ReportList takeRecords();
@@ -28,7 +33,9 @@ dictionary ReportingObserverOptions {
 
 typedef sequence<Report> ReportList;
 
+[Exposed=(Window,Worker)]
 interface DeprecationReportBody : ReportBody {
+  [Default] object toJSON();
   readonly attribute DOMString id;
   readonly attribute Date? anticipatedRemoval;
   readonly attribute DOMString message;
@@ -37,7 +44,9 @@ interface DeprecationReportBody : ReportBody {
   readonly attribute unsigned long? columnNumber;
 };
 
+[Exposed=(Window,Worker)]
 interface InterventionReportBody : ReportBody {
+  [Default] object toJSON();
   readonly attribute DOMString id;
   readonly attribute DOMString message;
   readonly attribute DOMString? sourceFile;
@@ -45,7 +54,9 @@ interface InterventionReportBody : ReportBody {
   readonly attribute unsigned long? columnNumber;
 };
 
+[Exposed=(Window,Worker)]
 interface CrashReportBody : ReportBody {
+  [Default] object toJSON();
   readonly attribute DOMString? reason;
 };
 

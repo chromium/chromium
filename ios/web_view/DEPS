@@ -8,4 +8,6 @@ include_rules = [
 
   "+ios/web/public",
   "-ios/web/public/test/fakes/test_browser_state.h",
+
+  "+mojo/public/cpp/bindings",
 ]

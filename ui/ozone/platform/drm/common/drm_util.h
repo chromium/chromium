@@ -8,6 +8,7 @@
 #include <stddef.h>
 
 #include <memory>
+#include <utility>
 #include <vector>
 
 #include "base/files/file_path.h"
@@ -21,7 +22,6 @@ typedef struct _drmModeModeInfo drmModeModeInfo;
 
 namespace display {
 class DisplayMode;
-class EdidParser;
 }  // namespace display
 
 namespace gfx {
@@ -29,22 +29,6 @@ class Point;
 }
 
 namespace ui {
-
-class HardwareDisplayControllerInfo;
-using HardwareDisplayControllerInfos =
-    std::vector<std::unique_ptr<HardwareDisplayControllerInfo>>;
-
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum class EdidColorSpaceChecksOutcome {
-  kSuccess = 0,
-  kErrorBadCoordinates = 1,
-  kErrorPrimariesAreaTooSmall = 2,
-  kErrorBluePrimaryIsBroken = 3,
-  kErrorCannotExtractToXYZD50 = 4,
-  kErrorBadGamma = 5,
-  kMaxValue = kErrorBadGamma
-};
 
 // Representation of the information required to initialize and configure a
 // native display. |index| is the position of the connection and will be
@@ -58,11 +42,7 @@ class HardwareDisplayControllerInfo {
 
   drmModeConnector* connector() const { return connector_.get(); }
   drmModeCrtc* crtc() const { return crtc_.get(); }
-  ScopedDrmCrtcPtr release_crtc() { return std::move(crtc_); }
-  void set_crtc(ScopedDrmCrtcPtr crtc) { crtc_ = std::move(crtc); }
   size_t index() const { return index_; }
-
-  bool has_associated_crtc() const { return crtc_.get(); }
 
  private:
   ScopedDrmConnectorPtr connector_;
@@ -73,11 +53,9 @@ class HardwareDisplayControllerInfo {
 };
 
 // Looks-up and parses the native display configurations returning all available
-// displays. The boolean value indicates whether device has enough hardware
-// resource to support all of displays.
-HardwareDisplayControllerInfos GetAvailableDisplayControllerInfos(
-    int fd,
-    bool* support_all_connectors);
+// displays.
+std::vector<std::unique_ptr<HardwareDisplayControllerInfo>>
+GetAvailableDisplayControllerInfos(int fd);
 
 bool SameMode(const drmModeModeInfo& lhs, const drmModeModeInfo& rhs);
 
@@ -92,6 +70,9 @@ display::DisplaySnapshot::DisplayModeList ExtractDisplayModes(
     const gfx::Size& active_pixel_size,
     const display::DisplayMode** out_current_mode,
     const display::DisplayMode** out_native_mode);
+
+display::DisplayConnectionType GetDisplayType(
+    const drmModeConnector* connector);
 
 // |info| provides the DRM information related to the display, |fd| is the
 // connection to the DRM device.
@@ -144,10 +125,6 @@ OverlayStatusList CreateOverlayStatusListFrom(
 
 std::vector<OverlayCheckReturn_Params> CreateParamsFromOverlayStatusList(
     const OverlayStatusList& returns);
-
-// Uses |edid_parser| to extract a gfx::ColorSpace which will be IsValid() if
-// both gamma and the color primaries were correctly found.
-gfx::ColorSpace GetColorSpaceFromEdid(const display::EdidParser& edid_parser);
 
 }  // namespace ui
 

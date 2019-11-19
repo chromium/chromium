@@ -36,7 +36,12 @@ void AppRegistryCache::Observer::Observe(AppRegistryCache* cache) {
 
 AppRegistryCache::AppRegistryCache() = default;
 
-AppRegistryCache::~AppRegistryCache() = default;
+AppRegistryCache::~AppRegistryCache() {
+  for (auto& obs : observers_) {
+    obs.OnAppRegistryCacheWillBeDestroyed(this);
+  }
+  DCHECK(!observers_.might_have_observers());
+}
 
 void AppRegistryCache::AddObserver(Observer* observer) {
   observers_.AddObserver(observer);

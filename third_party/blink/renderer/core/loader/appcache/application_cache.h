@@ -26,15 +26,15 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_APPCACHE_APPLICATION_CACHE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_APPCACHE_APPLICATION_CACHE_H_
 
-#include "third_party/blink/public/mojom/appcache/appcache.mojom-blink.h"
+#include "third_party/blink/public/mojom/appcache/appcache.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/core/execution_context/context_lifecycle_observer.h"
-#include "third_party/blink/renderer/core/loader/appcache/application_cache_host.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 
 namespace blink {
 
+class ApplicationCacheHostForFrame;
 class ExceptionState;
 class LocalFrame;
 
@@ -44,10 +44,6 @@ class ApplicationCache final : public EventTargetWithInlineData,
   USING_GARBAGE_COLLECTED_MIXIN(ApplicationCache);
 
  public:
-  static ApplicationCache* Create(LocalFrame* frame) {
-    return MakeGarbageCollected<ApplicationCache>(frame);
-  }
-
   explicit ApplicationCache(LocalFrame*);
   ~ApplicationCache() override = default;
 
@@ -77,7 +73,7 @@ class ApplicationCache final : public EventTargetWithInlineData,
  private:
   void RecordAPIUseType() const;
 
-  ApplicationCacheHost* GetApplicationCacheHost() const;
+  ApplicationCacheHostForFrame* GetApplicationCacheHost() const;
 };
 
 }  // namespace blink

@@ -1,0 +1,11 @@
+This is a testharness.js-based test.
+FAIL 00B1  PLUS-MINUS SIGN may NOT appear at line start if ja and normal assert_true: expected true got false
+FAIL 20AC  EURO SIGN may NOT appear at line start if ja and normal assert_true: expected true got false
+FAIL 2116  NUMERO SIGN may NOT appear at line start if ja and normal assert_true: expected true got false
+FAIL FE69  SMALL DOLLAR SIGN may NOT appear at line start if ja and normal assert_true: expected true got false
+FAIL FF04  FULLWIDTH DOLLAR SIGN may NOT appear at line start if ja and normal assert_true: expected true got false
+FAIL FFE1  FULLWIDTH POUND SIGN may NOT appear at line start if ja and normal assert_true: expected true got false
+FAIL FFE5  FULLWIDTH YEN SIGN may NOT appear at line start if ja and normal assert_true: expected true got false
+FAIL FFE6  FULLWIDTH WON SIGN may NOT appear at line start if ja and normal assert_true: expected true got false
+Harness: the test ran to completion.
+

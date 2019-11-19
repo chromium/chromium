@@ -37,9 +37,10 @@ COMPONENT_EXPORT(DEVICE_FIDO)
 base::Optional<std::vector<uint8_t>> ConvertToU2fRegisterCommand(
     const CtapMakeCredentialRequest& request);
 
-// Extracts APDU encoded U2F sign command from CtapMakeCredentialRequest.
+// Turns a CtapMakeCredentialRequest into an APDU encoded U2F sign command
+// for the same RP and key handle, but a bogus challenge.
 COMPONENT_EXPORT(DEVICE_FIDO)
-base::Optional<std::vector<uint8_t>> ConvertToU2fSignCommand(
+base::Optional<std::vector<uint8_t>> ConvertToU2fSignCommandWithBogusChallenge(
     const CtapMakeCredentialRequest& request,
     base::span<const uint8_t> key_handle);
 

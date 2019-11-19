@@ -101,7 +101,7 @@ message ProxyServer {
   }
 
   // The deployment type of the proxy server.
-  enum ProxyType {
+  enum DeprecatedProxyType {
     // The proxy type is unspecified.
     UNSPECIFIED_TYPE = 0;
     // Core Google datacenter.
@@ -115,7 +115,7 @@ message ProxyServer {
   // The port number for the proxy server.
   optional int32 port = 3;
   // The type for the proxy server.
-  optional ProxyType type = 4;
+  optional DeprecatedProxyType deprecated_type = 4 [deprecated = true];
 }
 
 // Information about the device the user is on.

@@ -63,17 +63,45 @@ struct UnboundConversion {
   ConversionChar conv;
 };
 
-// Consume conversion spec prefix (not including '%') of '*src' if valid.
+// Consume conversion spec prefix (not including '%') of [p, end) if valid.
 // Examples of valid specs would be e.g.: "s", "d", "-12.6f".
-// If valid, the front of src is advanced such that src becomes the
-// part following the conversion spec, and the spec part is broken down and
-// returned in 'conv'.
-// If invalid, returns false and leaves 'src' unmodified.
-// For example:
-//   Given "d9", returns "d", and leaves src="9",
-//   Given "!", returns "" and leaves src="!".
-bool ConsumeUnboundConversion(string_view* src, UnboundConversion* conv,
-                              int* next_arg);
+// If valid, it returns the first character following the conversion spec,
+// and the spec part is broken down and returned in 'conv'.
+// If invalid, returns nullptr.
+const char* ConsumeUnboundConversion(const char* p, const char* end,
+                                     UnboundConversion* conv, int* next_arg);
+
+// Helper tag class for the table below.
+// It allows fast `char -> ConversionChar/LengthMod` checking and conversions.
+class ConvTag {
+ public:
+  constexpr ConvTag(ConversionChar::Id id) : tag_(id) {}  // NOLINT
+  // We invert the length modifiers to make them negative so that we can easily
+  // test for them.
+  constexpr ConvTag(LengthMod::Id id) : tag_(~id) {}  // NOLINT
+  // Everything else is -128, which is negative to make is_conv() simpler.
+  constexpr ConvTag() : tag_(-128) {}
+
+  bool is_conv() const { return tag_ >= 0; }
+  bool is_length() const { return tag_ < 0 && tag_ != -128; }
+  ConversionChar as_conv() const {
+    assert(is_conv());
+    return ConversionChar::FromId(static_cast<ConversionChar::Id>(tag_));
+  }
+  LengthMod as_length() const {
+    assert(is_length());
+    return LengthMod::FromId(static_cast<LengthMod::Id>(~tag_));
+  }
+
+ private:
+  std::int8_t tag_;
+};
+
+extern const ConvTag kTags[256];
+// Keep a single table for all the conversion chars and length modifiers.
+inline ConvTag GetTagForChar(char c) {
+  return kTags[static_cast<unsigned char>(c)];
+}
 
 // Parse the format string provided in 'src' and pass the identified items into
 // 'consumer'.
@@ -88,51 +116,53 @@ bool ConsumeUnboundConversion(string_view* src, UnboundConversion* conv,
 template <typename Consumer>
 bool ParseFormatString(string_view src, Consumer consumer) {
   int next_arg = 0;
-  while (!src.empty()) {
-    const char* percent =
-        static_cast<const char*>(memchr(src.data(), '%', src.size()));
+  const char* p = src.data();
+  const char* const end = p + src.size();
+  while (p != end) {
+    const char* percent = static_cast<const char*>(memchr(p, '%', end - p));
     if (!percent) {
       // We found the last substring.
-      return consumer.Append(src);
+      return consumer.Append(string_view(p, end - p));
     }
     // We found a percent, so push the text run then process the percent.
-    size_t percent_loc = percent - src.data();
-    if (!consumer.Append(string_view(src.data(), percent_loc))) return false;
-    if (percent + 1 >= src.data() + src.size()) return false;
-
-    UnboundConversion conv;
-
-    switch (percent[1]) {
-      case '%':
-        if (!consumer.Append("%")) return false;
-        src.remove_prefix(percent_loc + 2);
-        continue;
-
-#define PARSER_CASE(ch)                                     \
-  case #ch[0]:                                              \
-    src.remove_prefix(percent_loc + 2);                     \
-    conv.conv = ConversionChar::FromId(ConversionChar::ch); \
-    conv.arg_position = ++next_arg;                         \
-    break;
-        ABSL_CONVERSION_CHARS_EXPAND_(PARSER_CASE, );
-#undef PARSER_CASE
-
-      default:
-        src.remove_prefix(percent_loc + 1);
-        if (!ConsumeUnboundConversion(&src, &conv, &next_arg)) return false;
-        break;
-    }
-    if (next_arg == 0) {
-      // This indicates an error in the format std::string.
-      // The only way to get next_arg == 0 is to have a positional argument
-      // first which sets next_arg to -1 and then a non-positional argument
-      // which does ++next_arg.
-      // Checking here seems to be the cheapeast place to do it.
+    if (ABSL_PREDICT_FALSE(!consumer.Append(string_view(p, percent - p)))) {
       return false;
     }
-    if (!consumer.ConvertOne(
-            conv, string_view(percent + 1, src.data() - (percent + 1)))) {
-      return false;
+    if (ABSL_PREDICT_FALSE(percent + 1 >= end)) return false;
+
+    auto tag = GetTagForChar(percent[1]);
+    if (tag.is_conv()) {
+      if (ABSL_PREDICT_FALSE(next_arg < 0)) {
+        // This indicates an error in the format std::string.
+        // The only way to get `next_arg < 0` here is to have a positional
+        // argument first which sets next_arg to -1 and then a non-positional
+        // argument.
+        return false;
+      }
+      p = percent + 2;
+
+      // Keep this case separate from the one below.
+      // ConvertOne is more efficient when the compiler can see that the `basic`
+      // flag is set.
+      UnboundConversion conv;
+      conv.conv = tag.as_conv();
+      conv.arg_position = ++next_arg;
+      if (ABSL_PREDICT_FALSE(
+              !consumer.ConvertOne(conv, string_view(percent + 1, 1)))) {
+        return false;
+      }
+    } else if (percent[1] != '%') {
+      UnboundConversion conv;
+      p = ConsumeUnboundConversion(percent + 1, end, &conv, &next_arg);
+      if (ABSL_PREDICT_FALSE(p == nullptr)) return false;
+      if (ABSL_PREDICT_FALSE(!consumer.ConvertOne(
+          conv, string_view(percent + 1, p - (percent + 1))))) {
+        return false;
+      }
+    } else {
+      if (ABSL_PREDICT_FALSE(!consumer.Append("%"))) return false;
+      p = percent + 2;
+      continue;
     }
   }
   return true;

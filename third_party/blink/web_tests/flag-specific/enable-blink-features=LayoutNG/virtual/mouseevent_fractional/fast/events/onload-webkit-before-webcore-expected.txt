@@ -1,2 +1,0 @@
-ALERT: This should be the first line.
-This should be the second line. The first line should be an ALERT. 

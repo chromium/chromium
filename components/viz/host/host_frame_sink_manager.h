@@ -24,8 +24,11 @@
 #include "components/viz/host/host_frame_sink_client.h"
 #include "components/viz/host/viz_host_export.h"
 #include "components/viz/service/frame_sinks/compositor_frame_sink_support_manager.h"
-#include "mojo/public/cpp/bindings/binding.h"
-#include "services/viz/privileged/interfaces/compositing/frame_sink_manager.mojom.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
+#include "services/viz/privileged/mojom/compositing/frame_sink_manager.mojom.h"
 
 namespace base {
 class SingleThreadTaskRunner;
@@ -59,17 +62,17 @@ class VIZ_HOST_EXPORT HostFrameSinkManager
   // Sets a local FrameSinkManagerImpl instance and connects directly to it.
   void SetLocalManager(FrameSinkManagerImpl* frame_sink_manager_impl);
 
-  // Binds |this| as a FrameSinkManagerClient for |request| on |task_runner|. On
-  // Mac |task_runner| will be the resize helper task runner. May only be called
-  // once. If |task_runner| is null, it uses the default mojo task runner for
-  // the thread this call is made on.
+  // Binds |this| as a FrameSinkManagerClient for |receiver| on |task_runner|.
+  // On Mac |task_runner| will be the resize helper task runner. May only be
+  // called once. If |task_runner| is null, it uses the default mojo task runner
+  // for the thread this call is made on.
   void BindAndSetManager(
-      mojom::FrameSinkManagerClientRequest request,
+      mojo::PendingReceiver<mojom::FrameSinkManagerClient> receiver,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner,
-      mojom::FrameSinkManagerPtr ptr);
+      mojo::PendingRemote<mojom::FrameSinkManager> remote);
 
   // Sets a callback to be notified when the connection to the FrameSinkManager
-  // on |frame_sink_manager_ptr_| is lost.
+  // on |frame_sink_manager_remote_| is lost.
   void SetConnectionLostCallback(base::RepeatingClosure callback);
 
   // Sets a callback to be notified after Viz sent bad message to Viz host.
@@ -129,9 +132,10 @@ class VIZ_HOST_EXPORT HostFrameSinkManager
   //
   // If there is already a CompositorFrameSink for |frame_sink_id| then calling
   // this will destroy the existing CompositorFrameSink and create a new one.
-  void CreateCompositorFrameSink(const FrameSinkId& frame_sink_id,
-                                 mojom::CompositorFrameSinkRequest request,
-                                 mojom::CompositorFrameSinkClientPtr client);
+  void CreateCompositorFrameSink(
+      const FrameSinkId& frame_sink_id,
+      mojo::PendingReceiver<mojom::CompositorFrameSink> receiver,
+      mojo::PendingRemote<mojom::CompositorFrameSinkClient> client);
 
   // Registers FrameSink hierarchy. It's expected that the parent will embed
   // the child. If |parent_frame_sink_id| is registered then it will be added as
@@ -157,10 +161,12 @@ class VIZ_HOST_EXPORT HostFrameSinkManager
       const FrameSinkId& start) const;
 
   // Asks viz to send updates regarding video activity to |observer|.
-  void AddVideoDetectorObserver(mojom::VideoDetectorObserverPtr observer);
+  void AddVideoDetectorObserver(
+      mojo::PendingRemote<mojom::VideoDetectorObserver> observer);
 
   // Creates a FrameSinkVideoCapturer instance in viz.
-  void CreateVideoCapturer(mojom::FrameSinkVideoCapturerRequest request);
+  void CreateVideoCapturer(
+      mojo::PendingReceiver<mojom::FrameSinkVideoCapturer> receiver);
 
   // Creates a FrameSinkVideoCapturer instance in viz and returns a
   // ClientFrameSinkVideoCapturer that's connected to it. Clients should prefer
@@ -198,6 +204,12 @@ class VIZ_HOST_EXPORT HostFrameSinkManager
   void SetHitTestAsyncQueriedDebugRegions(
       const FrameSinkId& root_frame_sink_id,
       const std::vector<FrameSinkId>& hit_test_async_queried_debug_queue);
+
+  // Preserves the back buffer associated with the |root_sink_id|, even after
+  // the associated Display has been torn down, and returns an id for this cache
+  // entry.
+  uint32_t CacheBackBufferForRootSink(const FrameSinkId& root_sink_id);
+  void EvictCachedBackBuffer(uint32_t cache_id);
 
  private:
   friend class HostFrameSinkManagerTestApi;
@@ -247,7 +259,7 @@ class VIZ_HOST_EXPORT HostFrameSinkManager
     DISALLOW_COPY_AND_ASSIGN(FrameSinkData);
   };
 
-  // Handles connection loss to |frame_sink_manager_ptr_|. This should only
+  // Handles connection loss to |frame_sink_manager_remote_|. This should only
   // happen when the GPU process crashes.
   void OnConnectionLost();
 
@@ -260,33 +272,31 @@ class VIZ_HOST_EXPORT HostFrameSinkManager
       const FrameSinkId& frame_sink_id,
       const std::vector<AggregatedHitTestRegion>& hit_test_data) override;
 
-  // This will point to |frame_sink_manager_ptr_| if using Mojo or
+  // This will point to |frame_sink_manager_remote_| if using Mojo or
   // |frame_sink_manager_impl_| if directly connected. Use this to make function
   // calls.
   mojom::FrameSinkManager* frame_sink_manager_ = nullptr;
 
   // Mojo connection to the FrameSinkManager. If this is bound then
   // |frame_sink_manager_impl_| must be null.
-  mojom::FrameSinkManagerPtr frame_sink_manager_ptr_;
+  mojo::Remote<mojom::FrameSinkManager> frame_sink_manager_remote_;
 
   // Mojo connection back from the FrameSinkManager.
-  mojo::Binding<mojom::FrameSinkManagerClient> binding_;
+  mojo::Receiver<mojom::FrameSinkManagerClient> receiver_{this};
 
   // A direct connection to FrameSinkManagerImpl. If this is set then
-  // |frame_sink_manager_ptr_| must be unbound. For use in browser process only,
-  // viz process should not set this.
+  // |frame_sink_manager_remote_| must be unbound. For use in browser process
+  // only, viz process should not set this.
   FrameSinkManagerImpl* frame_sink_manager_impl_ = nullptr;
 
   // Per CompositorFrameSink data.
   std::unordered_map<FrameSinkId, FrameSinkData, FrameSinkIdHash>
       frame_sink_data_map_;
 
-  // If |frame_sink_manager_ptr_| connection was lost.
+  // If |frame_sink_manager_remote_| connection was lost.
   bool connection_was_lost_ = false;
 
   base::RepeatingClosure connection_lost_callback_;
-
-  base::RepeatingClosure bad_message_received_from_gpu_callback_;
 
   DisplayHitTestQueryMap display_hit_test_query_;
 
@@ -294,7 +304,10 @@ class VIZ_HOST_EXPORT HostFrameSinkManager
   // class.
   base::ObserverList<HitTestRegionObserver>::Unchecked observers_;
 
-  base::WeakPtrFactory<HostFrameSinkManager> weak_ptr_factory_;
+  uint32_t next_cache_back_buffer_id_ = 1;
+  uint32_t min_valid_cache_back_buffer_id_ = 1;
+
+  base::WeakPtrFactory<HostFrameSinkManager> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(HostFrameSinkManager);
 };

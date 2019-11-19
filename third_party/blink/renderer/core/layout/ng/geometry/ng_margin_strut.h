@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef NGMarginStrut_h
-#define NGMarginStrut_h
+#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_GEOMETRY_NG_MARGIN_STRUT_H_
+#define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_GEOMETRY_NG_MARGIN_STRUT_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
@@ -57,4 +57,4 @@ struct CORE_EXPORT NGMarginStrut {
 
 }  // namespace blink
 
-#endif  // NGMarginStrut_h
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_GEOMETRY_NG_MARGIN_STRUT_H_

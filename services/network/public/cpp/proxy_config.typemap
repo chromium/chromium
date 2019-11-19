@@ -14,10 +14,10 @@ deps = [
   "//services/network/public/mojom:mojom_shared",
 ]
 type_mappings = [
-  "network.mojom.ProxyBypassRules=net::ProxyBypassRules",
-  "network.mojom.ProxyList=net::ProxyList",
-  "network.mojom.ProxyRulesType=net::ProxyConfig::ProxyRules::Type",
-  "network.mojom.ProxyRules=net::ProxyConfig::ProxyRules",
-  "network.mojom.ProxyConfig=net::ProxyConfig",
-  "network.mojom.ProxyConfigWithAnnotation=net::ProxyConfigWithAnnotation",
+  "network.mojom.ProxyBypassRules=::net::ProxyBypassRules",
+  "network.mojom.ProxyList=::net::ProxyList",
+  "network.mojom.ProxyRulesType=::net::ProxyConfig::ProxyRules::Type",
+  "network.mojom.ProxyRules=::net::ProxyConfig::ProxyRules",
+  "network.mojom.ProxyConfig=::net::ProxyConfig",
+  "network.mojom.ProxyConfigWithAnnotation=::net::ProxyConfigWithAnnotation",
 ]

@@ -5,20 +5,21 @@
 package org.chromium.chrome.browser.gesturenav;
 
 import android.content.Context;
-import android.support.annotation.IntDef;
+import android.view.HapticFeedbackConstants;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.Animation.AnimationListener;
+import android.view.animation.AnimationSet;
 import android.view.animation.DecelerateInterpolator;
+import android.view.animation.ScaleAnimation;
 import android.view.animation.Transformation;
 
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.R;
-import org.chromium.third_party.android.swiperefresh.CircleImageView;
-
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
+import org.chromium.chrome.browser.gesturenav.NavigationBubble.CloseTarget;
+import org.chromium.chrome.browser.ui.widget.animation.Interpolators;
 
 /**
  * The SideSlideLayout can be used whenever the user navigates the contents
@@ -30,25 +31,6 @@ import java.lang.annotation.RetentionPolicy;
  * and modified accordingly to support horizontal gesture.
  */
 public class SideSlideLayout extends ViewGroup {
-    // Used to record the UMA histogram Overscroll.* This definition should be
-    // in sync with that in content/browser/web_contents/aura/types.h
-    // TODO(jinsukkim): Generate java enum from the native header.
-    @IntDef({UmaNavigationType.NAVIGATION_TYPE_NONE, UmaNavigationType.FORWARD_TOUCHPAD,
-            UmaNavigationType.BACK_TOUCHPAD, UmaNavigationType.FORWARD_TOUCHSCREEN,
-            UmaNavigationType.BACK_TOUCHSCREEN, UmaNavigationType.RELOAD_TOUCHPAD,
-            UmaNavigationType.RELOAD_TOUCHSCREEN})
-    @Retention(RetentionPolicy.SOURCE)
-    private @interface UmaNavigationType {
-        int NAVIGATION_TYPE_NONE = 0;
-        int FORWARD_TOUCHPAD = 1;
-        int BACK_TOUCHPAD = 2;
-        int FORWARD_TOUCHSCREEN = 3;
-        int BACK_TOUCHSCREEN = 4;
-        int RELOAD_TOUCHPAD = 5;
-        int RELOAD_TOUCHSCREEN = 6;
-        int NUM_ENTRIES = 7;
-    }
-
     /**
      * Classes that wish to be notified when the swipe gesture correctly
      * triggers navigation should implement this interface.
@@ -61,29 +43,35 @@ public class SideSlideLayout extends ViewGroup {
      */
     public interface OnResetListener { void onReset(); }
 
-    private static final int MAX_ALPHA = 255;
-    private static final int STARTING_ALPHA = (int) (.3f * MAX_ALPHA);
+    // Swipe offset in dips from the border of the view before applying physical tension
+    // effect. The actual arrow bubble position is capped at a value three times as this
+    // one, which is where navigation gets triggered.
+    private static final int RAW_SWIPE_LIMIT_DP = 32;
 
-    private static final int CIRCLE_DIAMETER_DP = 40;
-    private static final int MAX_CIRCLE_RADIUS_DP = 30;
-
-    // Offset in dips from the border of the view. Gesture triggers the navigation
-    // if slid by this amount or more.
-    private static final int TARGET_THRESHOLD_DP = 128;
+    // Multiplier to |RAW_SWIPE_LIMIT_DP| to trigger the navigation.
+    private static final int THRESHOLD_MULTIPLIER = 3;
 
     private static final float DECELERATE_INTERPOLATION_FACTOR = 2f;
 
-    private static final int SCALE_DOWN_DURATION_MS = 500;
+    private static final int SCALE_DOWN_DURATION_MS = 400;
     private static final int ANIMATE_TO_START_DURATION_MS = 500;
 
     // Minimum number of pull updates necessary to trigger a side nav.
     private static final int MIN_PULLS_TO_ACTIVATE = 3;
 
+    // Time threshold to detect navigation reversal - i.e. user navigating
+    // forward after navigating back (or back after forward) within a short
+    // period of time.
+    private static final int NAVIGATION_REVERSAL_MS = 3 * 1000;
+
     private final DecelerateInterpolator mDecelerateInterpolator;
     private final float mTotalDragDistance;
     private final int mMediumAnimationDuration;
     private final int mCircleWidth;
-    private final int mCircleHeight;
+
+    // Metrics
+    private static long sLastCompletedTime;
+    private static boolean sLastCompletedForward;
 
     private OnNavigateListener mListener;
     private OnResetListener mResetListener;
@@ -94,23 +82,27 @@ public class SideSlideLayout extends ViewGroup {
     private int mCurrentTargetOffset;
     private float mTotalMotion;
 
-    // Whether or not the starting offset has been determined.
-    private boolean mOriginalOffsetCalculated;
-
     // True while side gesture is in progress.
     private boolean mIsBeingDragged;
 
-    private CircleImageView mCircleView;
-    private ArrowDrawable mArrow;
+    private NavigationBubble mArrowView;
+    private int mArrowViewWidth;
 
     // Start position for animation moving the UI back to original offset.
     private int mFrom;
     private int mOriginalOffset;
 
-    private Animation mScaleDownAnimation;
-    private AnimationListener mCancelAnimationListener;
+    private AnimationSet mHidingAnimation;
+    private int mAnimationViewWidth;
 
     private boolean mIsForward;
+    private @CloseTarget int mCloseIndicator;
+
+    // True while swiped to a distance where, if released, the navigation would be triggered.
+    private boolean mWillNavigate;
+
+    // Used for metrics. Indicates user swiped over the threshold that turns the arrow blue.
+    private boolean mSwipedOverThreshold;
 
     private final AnimationListener mNavigateListener = new AnimationListener() {
         @Override
@@ -121,15 +113,14 @@ public class SideSlideLayout extends ViewGroup {
 
         @Override
         public void onAnimationEnd(Animation animation) {
+            mArrowView.setFaded(false, false);
+            mArrowView.setVisibility(View.INVISIBLE);
             if (mNavigating) {
-                // Make sure the arrow widget is fully visible
-                mArrow.setAlpha(MAX_ALPHA);
                 if (mListener != null) mListener.onNavigate(mIsForward);
-                recordHistogram("Overscroll.Navigated3", mIsForward);
             } else {
                 reset();
             }
-            mCurrentTargetOffset = mCircleView.getLeft();
+            hideCloseIndicator();
         }
     };
 
@@ -137,11 +128,10 @@ public class SideSlideLayout extends ViewGroup {
         @Override
         public void applyTransformation(float interpolatedTime, Transformation t) {
             int targetTop = mFrom + (int) ((mOriginalOffset - mFrom) * interpolatedTime);
-            int offset = targetTop - mCircleView.getLeft();
+            int offset = targetTop - mArrowView.getLeft();
             mTotalMotion += offset;
 
             float progress = Math.min(1.f, getOverscroll() / mTotalDragDistance);
-            mCircleView.setProgress(progress);
             setTargetOffsetLeftAndRight(offset);
         }
     };
@@ -155,22 +145,18 @@ public class SideSlideLayout extends ViewGroup {
         setWillNotDraw(false);
         mDecelerateInterpolator = new DecelerateInterpolator(DECELERATE_INTERPOLATION_FACTOR);
 
-        final float density = getResources().getDisplayMetrics().density;
-        mCircleWidth = (int) (CIRCLE_DIAMETER_DP * density);
-        mCircleHeight = (int) (CIRCLE_DIAMETER_DP * density);
+        mCircleWidth = (int) getResources().getDimensionPixelSize(R.dimen.navigation_bubble_size);
 
-        int background = getContext().getResources().getColor(R.color.modern_grey_50);
-        mCircleView = new CircleImageView(getContext(), background, CIRCLE_DIAMETER_DP / 2,
-                MAX_CIRCLE_RADIUS_DP, R.color.modern_blue_300);
-
-        mArrow = new ArrowDrawable(getContext().getResources());
-        mArrow.setBackgroundColor(background);
-        mCircleView.setImageDrawable(mArrow);
-        mCircleView.setVisibility(View.GONE);
-        addView(mCircleView);
+        LayoutInflater layoutInflater = LayoutInflater.from(getContext());
+        mArrowView = (NavigationBubble) layoutInflater.inflate(R.layout.navigation_bubble, null);
+        mArrowView.getTextView().setText(
+                getResources().getString(R.string.overscroll_navigation_close_chrome,
+                        getContext().getString(R.string.app_name)));
+        mArrowViewWidth = mCircleWidth;
+        addView(mArrowView);
 
         // The absolute offset has to take into account that the circle starts at an offset
-        mTotalDragDistance = TARGET_THRESHOLD_DP * density;
+        mTotalDragDistance = RAW_SWIPE_LIMIT_DP * getResources().getDisplayMetrics().density;
     }
 
     /**
@@ -197,29 +183,36 @@ public class SideSlideLayout extends ViewGroup {
     private void setNavigating(boolean navigating) {
         if (mNavigating != navigating) {
             mNavigating = navigating;
-            if (mNavigating) startScaleDownAnimation(mNavigateListener);
+            if (mNavigating) startHidingAnimation(mNavigateListener);
         }
     }
 
-    private float getOverscroll() {
+    /**
+     * @return Absolute swipe distance from the starting edge.
+     */
+    float getOverscroll() {
         return mIsForward ? -Math.min(0, mTotalMotion) : Math.max(0, mTotalMotion);
     }
 
-    private void startScaleDownAnimation(AnimationListener listener) {
-        if (mScaleDownAnimation == null) {
-            mScaleDownAnimation = new Animation() {
-                @Override
-                public void applyTransformation(float interpolatedTime, Transformation t) {
-                    float progress = 1 - interpolatedTime; // [0..1]
-                    mCircleView.setScaleX(progress);
-                    mCircleView.setScaleY(progress);
-                }
-            };
-            mScaleDownAnimation.setDuration(SCALE_DOWN_DURATION_MS);
+    private void startHidingAnimation(AnimationListener listener) {
+        // ScaleAnimation needs to be created again if the arrow widget width changes over time
+        // (due to turning on/off close indicator) to set the right x pivot point.
+        if (mHidingAnimation == null || mAnimationViewWidth != mArrowViewWidth) {
+            mAnimationViewWidth = mArrowViewWidth;
+            ScaleAnimation scalingDown =
+                    new ScaleAnimation(1, 0, 1, 0, mArrowViewWidth / 2, mArrowView.getHeight() / 2);
+            scalingDown.setInterpolator(Interpolators.LINEAR_INTERPOLATOR);
+            scalingDown.setDuration(SCALE_DOWN_DURATION_MS);
+            Animation fadingOut = new AlphaAnimation(1, 0);
+            fadingOut.setInterpolator(mDecelerateInterpolator);
+            fadingOut.setDuration(SCALE_DOWN_DURATION_MS);
+            mHidingAnimation = new AnimationSet(false);
+            mHidingAnimation.addAnimation(fadingOut);
+            mHidingAnimation.addAnimation(scalingDown);
         }
-        mCircleView.setAnimationListener(listener);
-        mCircleView.clearAnimation();
-        mCircleView.startAnimation(mScaleDownAnimation);
+        mArrowView.setAnimationListener(listener);
+        mArrowView.clearAnimation();
+        mArrowView.startAnimation(mHidingAnimation);
     }
 
     /**
@@ -228,6 +221,12 @@ public class SideSlideLayout extends ViewGroup {
      */
     public void setDirection(boolean forward) {
         mIsForward = forward;
+        mArrowView.setIcon(
+                forward ? R.drawable.ic_arrow_forward_blue_24dp : R.drawable.ic_arrow_back_24dp);
+    }
+
+    public void setCloseIndicator(@CloseTarget int target) {
+        mCloseIndicator = target;
     }
 
     @Override
@@ -235,26 +234,22 @@ public class SideSlideLayout extends ViewGroup {
         if (getChildCount() == 0) return;
 
         final int height = getMeasuredHeight();
-        int circleWidth = mCircleView.getMeasuredWidth();
-        int circleHeight = mCircleView.getMeasuredHeight();
-        mCircleView.layout(mCurrentTargetOffset, height / 2 - circleHeight / 2,
-                mCurrentTargetOffset + circleWidth, height / 2 + circleHeight / 2);
+        final int arrowWidth = mArrowView.getMeasuredWidth();
+        final int arrowHeight = mArrowView.getMeasuredHeight();
+        mArrowView.layout(mCurrentTargetOffset, height / 2 - arrowHeight / 2,
+                mCurrentTargetOffset + arrowWidth, height / 2 + arrowHeight / 2);
     }
 
     @Override
     public void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-        mCircleView.measure(MeasureSpec.makeMeasureSpec(mCircleWidth, MeasureSpec.EXACTLY),
-                MeasureSpec.makeMeasureSpec(mCircleHeight, MeasureSpec.EXACTLY));
-        if (!mOriginalOffsetCalculated) {
-            initializeOffset();
-            mOriginalOffsetCalculated = true;
-        }
+        mArrowView.measure(MeasureSpec.makeMeasureSpec(mArrowViewWidth, MeasureSpec.EXACTLY),
+                MeasureSpec.makeMeasureSpec(mCircleWidth, MeasureSpec.EXACTLY));
     }
 
     private void initializeOffset() {
-        mCurrentTargetOffset = mOriginalOffset =
-                mIsForward ? getMeasuredWidth() : -mCircleView.getMeasuredWidth();
+        int offset = mIsForward ? ((View) getParent()).getWidth() : -mArrowViewWidth;
+        mCurrentTargetOffset = mOriginalOffset = offset;
     }
 
     /**
@@ -264,12 +259,11 @@ public class SideSlideLayout extends ViewGroup {
      */
     public boolean start() {
         if (!isEnabled() || mNavigating || mListener == null) return false;
-        mCircleView.clearAnimation();
         mTotalMotion = 0;
         mIsBeingDragged = true;
-        mArrow.setAlpha(STARTING_ALPHA);
-        mArrow.setDirection(mIsForward);
+        mWillNavigate = false;
         initializeOffset();
+        mArrowView.setFaded(false, false);
         return true;
     }
 
@@ -294,18 +288,30 @@ public class SideSlideLayout extends ViewGroup {
                 (float) ((tensionSlingshotPercent / 4) - Math.pow((tensionSlingshotPercent / 4), 2))
                 * 2f;
 
-        if (mCircleView.getVisibility() != View.VISIBLE) mCircleView.setVisibility(View.VISIBLE);
-        mCircleView.setScaleX(1f);
-        mCircleView.setScaleY(1f);
+        if (mArrowView.getVisibility() != View.VISIBLE) mArrowView.setVisibility(View.VISIBLE);
 
         float originalDragPercent = overscroll / mTotalDragDistance;
         float dragPercent = Math.min(1f, Math.abs(originalDragPercent));
-        float adjustedPercent = (float) Math.max(dragPercent - .4, 0) * 5 / 3;
-        mArrow.setArrowScale(Math.min(1f, adjustedPercent));
 
-        float alphaStrength = Math.max(0f, Math.min(1f, (dragPercent - .9f) / .1f));
-        mArrow.setAlpha(STARTING_ALPHA + (int) (alphaStrength * (MAX_ALPHA - STARTING_ALPHA)));
-        mCircleView.setProgress(Math.min(1.f, Math.abs(overscroll) / mTotalDragDistance));
+        // Tint the arrow blue when swiped enough to initiate navigation if released.
+        boolean navigating = willNavigate();
+        if (navigating != mWillNavigate) {
+            mArrowView.setImageTint(navigating);
+            if (navigating) {
+                performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP);
+                mSwipedOverThreshold = true;
+            }
+        }
+        mWillNavigate = navigating;
+
+        if (mCloseIndicator != CloseTarget.NONE) {
+            if (mWillNavigate) {
+                mArrowView.showCaption(mCloseIndicator);
+                mArrowViewWidth = mArrowView.getMeasuredWidth();
+            } else {
+                hideCloseIndicator();
+            }
+        }
 
         float extraMove = slingshotDist * tensionPercent * 2;
         int targetDiff = (int) (slingshotDist * dragPercent + extraMove);
@@ -313,9 +319,40 @@ public class SideSlideLayout extends ViewGroup {
         setTargetOffsetLeftAndRight(targetX - mCurrentTargetOffset);
     }
 
+    /**
+     * Update arrow bubble transparency as navigation sheet state changes.
+     * @param faded {@code true} if arrow bubble should fade out.
+     * @param animate {@code true} if animation is needed.
+     */
+    void fadeArrow(boolean faded, boolean animate) {
+        mArrowView.setFaded(faded, animate);
+    }
+
+    /**
+     * Hide arrow bubble by making it fade away at the current position.
+     */
+    void hideArrow() {
+        mNavigating = false;
+        startHidingAnimation(mNavigateListener);
+    }
+
+    /**
+     * @return {@code true} if swiped long enough to trigger navigation upon release.
+     */
+    boolean willNavigate() {
+        return getOverscroll() > mTotalDragDistance * THRESHOLD_MULTIPLIER;
+    }
+
+    private void hideCloseIndicator() {
+        mArrowView.showCaption(CloseTarget.NONE);
+        // The width when indicator text view is hidden is slightly bigger than the height.
+        // Set the width to circle's diameter for the widget to be of completely round shape.
+        mArrowViewWidth = mCircleWidth;
+    }
+
     private void setTargetOffsetLeftAndRight(int offset) {
-        mCircleView.offsetLeftAndRight(offset);
-        mCurrentTargetOffset = mCircleView.getLeft();
+        mArrowView.offsetLeftAndRight(offset);
+        mCurrentTargetOffset = mArrowView.getLeft();
     }
 
     /**
@@ -329,34 +366,41 @@ public class SideSlideLayout extends ViewGroup {
 
         // See ACTION_UP handling in {@link #onTouchEvent(...)}.
         mIsBeingDragged = false;
-        if (isEnabled() && allowNav && getOverscroll() > mTotalDragDistance) {
-            setNavigating(true);
+
+        GestureNavMetrics.recordHistogram("GestureNavigation.Triggered", mIsForward);
+        if (mSwipedOverThreshold) {
+            GestureNavMetrics.recordHistogram("GestureNavigation.SwipedOverThreshold", mIsForward);
+            mSwipedOverThreshold = false;
+        }
+
+        if (isEnabled() && willNavigate()) {
+            if (allowNav) {
+                setNavigating(true);
+                GestureNavMetrics.recordHistogram("GestureNavigation.Completed", mIsForward);
+                long time = System.currentTimeMillis();
+                if (sLastCompletedTime > 0 && time - sLastCompletedTime < NAVIGATION_REVERSAL_MS
+                        && mIsForward != sLastCompletedForward) {
+                    GestureNavMetrics.recordHistogram("GestureNavigation.Reversed", mIsForward);
+                }
+                sLastCompletedTime = time;
+                sLastCompletedForward = mIsForward;
+            } else {
+                // Show navigation instead of triggering navigation. Just hide the arrow
+                // by fading it away.
+                mNavigating = false;
+                startHidingAnimation(mNavigateListener);
+            }
             return;
         }
         // Cancel navigation
         mNavigating = false;
-        if (mCancelAnimationListener == null) {
-            mCancelAnimationListener = new AnimationListener() {
-                @Override
-                public void onAnimationStart(Animation animation) {}
-
-                @Override
-                public void onAnimationEnd(Animation animation) {
-                    startScaleDownAnimation(mNavigateListener);
-                }
-
-                @Override
-                public void onAnimationRepeat(Animation animation) {}
-            };
-        }
         mFrom = mCurrentTargetOffset;
         mAnimateToStartPosition.reset();
         mAnimateToStartPosition.setDuration(ANIMATE_TO_START_DURATION_MS);
         mAnimateToStartPosition.setInterpolator(mDecelerateInterpolator);
-        mCircleView.setAnimationListener(mCancelAnimationListener);
-        mCircleView.clearAnimation();
-        mCircleView.startAnimation(mAnimateToStartPosition);
-        recordHistogram("Overscroll.Cancelled3", mIsForward);
+        mArrowView.clearAnimation();
+        mArrowView.startAnimation(mAnimateToStartPosition);
+        GestureNavMetrics.recordHistogram("GestureNavigation.Abandoned", mIsForward);
     }
 
     /**
@@ -365,20 +409,11 @@ public class SideSlideLayout extends ViewGroup {
     public void reset() {
         mIsBeingDragged = false;
         setNavigating(false);
-        mCircleView.setVisibility(View.GONE);
-        mCircleView.getBackground().setAlpha(MAX_ALPHA);
-        mArrow.setAlpha(MAX_ALPHA);
+        hideCloseIndicator();
 
         // Return the circle to its start position
         setTargetOffsetLeftAndRight(mOriginalOffset - mCurrentTargetOffset);
-        mCurrentTargetOffset = mCircleView.getLeft();
+        mCurrentTargetOffset = mArrowView.getLeft();
         if (mResetListener != null) mResetListener.onReset();
-    }
-
-    private static void recordHistogram(String name, boolean forward) {
-        RecordHistogram.recordEnumeratedHistogram(name,
-                forward ? UmaNavigationType.FORWARD_TOUCHSCREEN
-                        : UmaNavigationType.BACK_TOUCHSCREEN,
-                UmaNavigationType.NUM_ENTRIES);
     }
 }

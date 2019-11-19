@@ -74,7 +74,7 @@ Polymer({
         if (settings.routes.BLUETOOTH_DEVICES) {
           map.set(
               settings.routes.BLUETOOTH_DEVICES.path,
-              '#bluetoothDevices .subpage-arrow button');
+              '#bluetoothDevices .subpage-arrow');
         }
         return map;
       },
@@ -172,7 +172,7 @@ Polymer({
     // Don't use |this.bluetoothToggleState_| here, since it has not been
     // updated yet to the latest value.
     if (!bluetoothToggleState) {
-      return 'settings:bluetooth-disabled';
+      return 'os-settings:bluetooth-disabled';
     }
     return 'cr:bluetooth';
   },

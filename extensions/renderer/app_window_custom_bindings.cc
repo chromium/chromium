@@ -92,13 +92,8 @@ void AppWindowCustomBindings::ResumeParser(
     return;
   }
 
-  // The current DocumentLoader hasn't parsed any data, but it may have started
-  // reading it. So it may be in the 'provisional' state or not.
   blink::WebDocumentLoader* loader =
-      app_frame->GetWebFrame()->GetProvisionalDocumentLoader()
-          ? app_frame->GetWebFrame()->GetProvisionalDocumentLoader()
-          : app_frame->GetWebFrame()->GetDocumentLoader();
-
+      app_frame->GetWebFrame()->GetDocumentLoader();
   if (!loader) {
     NOTREACHED();
     return;

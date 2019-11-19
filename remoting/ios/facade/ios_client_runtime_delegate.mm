@@ -17,7 +17,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/sys_string_conversions.h"
-#include "remoting/client/oauth_token_getter_proxy.h"
+#include "remoting/base/oauth_token_getter_proxy.h"
 #include "remoting/ios/facade/ios_oauth_token_getter.h"
 
 namespace remoting {

@@ -22,10 +22,14 @@
 // Yellow palette.
 + (MDCPalette*)cr_yellowPalette;
 
+// Grey palette.
++ (MDCPalette*)cr_greyPalette;
+
 + (void)cr_setBluePalette:(MDCPalette*)palette;
 + (void)cr_setRedPalette:(MDCPalette*)palette;
 + (void)cr_setGreenPalette:(MDCPalette*)palette;
 + (void)cr_setYellowPalette:(MDCPalette*)palette;
++ (void)cr_setGreyPalette:(MDCPalette*)palette;
 
 @end
 

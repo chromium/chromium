@@ -20,8 +20,7 @@ struct P2PQuicTransportConfig final {
   // This object is only moveable.
   explicit P2PQuicTransportConfig(
       quic::Perspective perspective,
-      const std::vector<rtc::scoped_refptr<rtc::RTCCertificate>>
-          certificates_in,
+      const Vector<rtc::scoped_refptr<rtc::RTCCertificate>> certificates_in,
       uint32_t stream_delegate_read_buffer_size_in,
       uint32_t stream_write_buffer_size_in)
       : perspective(perspective),
@@ -38,7 +37,7 @@ struct P2PQuicTransportConfig final {
   // blink::RTCCertificates: https://www.w3.org/TR/webrtc/#dom-rtccertificate
   // This can be empty if pre shared keys are being used to establish a
   // connection.
-  const std::vector<rtc::scoped_refptr<rtc::RTCCertificate>> certificates;
+  const Vector<rtc::scoped_refptr<rtc::RTCCertificate>> certificates;
   // The amount that the delegate can store in its read buffer. This is a
   // mandatory field that must be set to ensure that the
   // P2PQuicStream::Delegate will not give the delegate more data than it can

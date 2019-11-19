@@ -61,6 +61,15 @@ class BLINK_COMMON_EXPORT IndexedDBKey {
 
   size_t size_estimate() const { return size_estimate_; }
 
+  // Tests if this array-type key has "holes". Used in cases where a compound
+  // key references an auto-generated primary key.
+  bool HasHoles() const;
+
+  // Returns a copy of this array-type key, but with "holes" replaced by the
+  // given primary key. Used in cases where a compound key references an
+  // auto-generated primary key.
+  IndexedDBKey FillHoles(const IndexedDBKey&) const WARN_UNUSED_RESULT;
+
  private:
   int CompareTo(const IndexedDBKey& other) const;
 
@@ -74,7 +83,10 @@ class BLINK_COMMON_EXPORT IndexedDBKey {
 };
 
 // An index id, and corresponding set of keys to insert.
-using IndexedDBIndexKeys = std::pair<int64_t, std::vector<IndexedDBKey>>;
+struct IndexedDBIndexKeys {
+  int64_t id;
+  std::vector<IndexedDBKey> keys;
+};
 
 }  // namespace blink
 

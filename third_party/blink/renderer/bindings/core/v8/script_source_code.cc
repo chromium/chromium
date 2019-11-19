@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_source_code.h"
 
 #include "third_party/blink/renderer/core/loader/resource/script_resource.h"
+#include "third_party/blink/renderer/platform/loader/fetch/cached_metadata_handler.h"
 
 namespace blink {
 

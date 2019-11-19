@@ -22,16 +22,17 @@
 #include "content/browser/renderer_host/media/media_stream_ui_proxy.h"
 #include "content/browser/renderer_host/media/video_capture_host.h"
 #include "content/browser/renderer_host/media/video_capture_manager.h"
+#include "content/public/common/content_client.h"
 #include "content/public/common/content_switches.h"
+#include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
-#include "content/public/test/test_browser_thread_bundle.h"
 #include "content/test/test_content_browser_client.h"
 #include "media/audio/audio_system_impl.h"
 #include "media/audio/mock_audio_manager.h"
 #include "media/audio/test_audio_thread.h"
 #include "media/base/media_switches.h"
 #include "media/capture/video_capture_types.h"
-#include "mojo/public/cpp/bindings/binding.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "net/url_request/url_request_context.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -65,11 +66,15 @@ void VideoInputDevicesEnumerated(base::Closure quit_closure,
   std::move(quit_closure).Run();
 }
 
-}  // namespace
-
 // Id used to identify the capture session between renderer and
 // video_capture_host. This is an arbitrary value.
-static const int kDeviceId = 555;
+const base::UnguessableToken& DeviceId() {
+  static const base::NoDestructor<base::UnguessableToken> device_id(
+      base::UnguessableToken::Deserialize(555, 555));
+  return *device_id;
+}
+
+}  // namespace
 
 ACTION_P2(ExitMessageLoop, task_runner, quit_closure) {
   task_runner->PostTask(FROM_HERE, quit_closure);
@@ -89,14 +94,12 @@ class VideoCaptureTest : public testing::Test,
                          public media::mojom::VideoCaptureObserver {
  public:
   VideoCaptureTest()
-      : thread_bundle_(content::TestBrowserThreadBundle::IO_MAINLOOP),
+      : task_environment_(content::BrowserTaskEnvironment::IO_MAINLOOP),
         audio_manager_(std::make_unique<media::MockAudioManager>(
             std::make_unique<media::TestAudioThread>())),
         audio_system_(
             std::make_unique<media::AudioSystemImpl>(audio_manager_.get())),
-        task_runner_(base::ThreadTaskRunnerHandle::Get()),
-        opened_session_id_(kInvalidMediaCaptureSessionId),
-        observer_binding_(this) {}
+        task_runner_(base::ThreadTaskRunnerHandle::Get()) {}
   ~VideoCaptureTest() override { audio_manager_->Shutdown(); }
 
   void SetUp() override {
@@ -142,11 +145,13 @@ class VideoCaptureTest : public testing::Test,
       base::RunLoop run_loop;
       MediaDevicesManager::BoolDeviceTypes devices_to_enumerate;
       devices_to_enumerate[blink::MEDIA_DEVICE_TYPE_VIDEO_INPUT] = true;
+      MediaDeviceSaltAndOrigin salt_and_origin =
+          GetMediaDeviceSaltAndOrigin(render_process_id, render_frame_id);
       media_stream_manager_->media_devices_manager()->EnumerateDevices(
           devices_to_enumerate,
           base::BindOnce(&VideoInputDevicesEnumerated, run_loop.QuitClosure(),
-                         browser_context_.GetMediaDeviceIDSalt(),
-                         security_origin, &video_devices));
+                         salt_and_origin.device_id_salt, salt_and_origin.origin,
+                         &video_devices));
       run_loop.Run();
     }
     ASSERT_FALSE(video_devices.empty());
@@ -156,16 +161,15 @@ class VideoCaptureTest : public testing::Test,
       base::RunLoop run_loop;
       media_stream_manager_->OpenDevice(
           render_process_id, render_frame_id, requester_id, page_request_id,
-          video_devices[0].device_id, blink::MEDIA_DEVICE_VIDEO_CAPTURE,
-          MediaDeviceSaltAndOrigin{browser_context_.GetMediaDeviceIDSalt(),
-                                   browser_context_.GetMediaDeviceIDSalt(),
-                                   security_origin},
+          video_devices[0].device_id,
+          blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE,
+          GetMediaDeviceSaltAndOrigin(render_process_id, render_frame_id),
           base::BindOnce(&VideoCaptureTest::OnDeviceOpened,
                          base::Unretained(this), run_loop.QuitClosure()),
           MediaStreamManager::DeviceStoppedCallback());
       run_loop.Run();
     }
-    ASSERT_NE(blink::MediaStreamDevice::kNoId, opened_session_id_);
+    ASSERT_FALSE(opened_session_id_.is_empty());
   }
 
   void CloseSession() {
@@ -173,7 +177,7 @@ class VideoCaptureTest : public testing::Test,
       return;
     media_stream_manager_->CancelRequest(opened_device_label_);
     opened_device_label_.clear();
-    opened_session_id_ = kInvalidMediaCaptureSessionId;
+    opened_session_id_ = base::UnguessableToken();
   }
 
  protected:
@@ -206,9 +210,8 @@ class VideoCaptureTest : public testing::Test,
         .Times(AnyNumber())
         .WillRepeatedly(ExitMessageLoop(task_runner_, run_loop.QuitClosure()));
 
-    media::mojom::VideoCaptureObserverPtr observer;
-    observer_binding_.Bind(mojo::MakeRequest(&observer));
-    host_->Start(kDeviceId, opened_session_id_, params, std::move(observer));
+    host_->Start(DeviceId(), opened_session_id_, params,
+                 observer_receiver_.BindNewPipeAndPassRemote());
 
     run_loop.Run();
   }
@@ -227,13 +230,12 @@ class VideoCaptureTest : public testing::Test,
     // capture is stopped immediately.
     EXPECT_CALL(*this, OnStateChanged(media::mojom::VideoCaptureState::STARTED))
         .Times(AtMost(1));
-    media::mojom::VideoCaptureObserverPtr observer;
-    observer_binding_.Bind(mojo::MakeRequest(&observer));
-    host_->Start(kDeviceId, opened_session_id_, params, std::move(observer));
+    host_->Start(DeviceId(), opened_session_id_, params,
+                 observer_receiver_.BindNewPipeAndPassRemote());
 
     EXPECT_CALL(*this,
                 OnStateChanged(media::mojom::VideoCaptureState::STOPPED));
-    host_->Stop(kDeviceId);
+    host_->Stop(DeviceId());
     run_loop.RunUntilIdle();
   }
 
@@ -242,7 +244,7 @@ class VideoCaptureTest : public testing::Test,
     base::RunLoop run_loop;
 
     EXPECT_CALL(*this, OnStateChanged(media::mojom::VideoCaptureState::PAUSED));
-    host_->Pause(kDeviceId);
+    host_->Pause(DeviceId());
 
     media::VideoCaptureParams params;
     params.requested_format = media::VideoCaptureFormat(
@@ -250,7 +252,7 @@ class VideoCaptureTest : public testing::Test,
 
     EXPECT_CALL(*this,
                 OnStateChanged(media::mojom::VideoCaptureState::RESUMED));
-    host_->Resume(kDeviceId, opened_session_id_, params);
+    host_->Resume(DeviceId(), opened_session_id_, params);
     run_loop.RunUntilIdle();
   }
 
@@ -259,7 +261,7 @@ class VideoCaptureTest : public testing::Test,
 
     EXPECT_CALL(*this, OnStateChanged(media::mojom::VideoCaptureState::STOPPED))
         .WillOnce(ExitMessageLoop(task_runner_, run_loop.QuitClosure()));
-    host_->Stop(kDeviceId);
+    host_->Stop(DeviceId());
 
     run_loop.Run();
 
@@ -278,8 +280,7 @@ class VideoCaptureTest : public testing::Test,
 
   void SimulateError() {
     EXPECT_CALL(*this, OnStateChanged(media::mojom::VideoCaptureState::FAILED));
-    VideoCaptureControllerID id(kDeviceId);
-    host_->OnError(id,
+    host_->OnError(DeviceId(),
                    media::VideoCaptureError::kIntentionalErrorRaisedByUnitTest);
     base::RunLoop().RunUntilIdle();
   }
@@ -296,25 +297,25 @@ class VideoCaptureTest : public testing::Test,
                       const blink::MediaStreamDevice& opened_device) {
     if (success) {
       opened_device_label_ = label;
-      opened_session_id_ = opened_device.session_id;
+      opened_session_id_ = opened_device.session_id();
     }
     std::move(quit_closure).Run();
   }
 
-  // |media_stream_manager_| needs to outlive |thread_bundle_| because it is a
-  // MessageLoopCurrent::DestructionObserver.
+  // |media_stream_manager_| needs to outlive |task_environment_| because it is
+  // a MessageLoopCurrent::DestructionObserver.
   std::unique_ptr<MediaStreamManager> media_stream_manager_;
-  const content::TestBrowserThreadBundle thread_bundle_;
+  const content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<media::AudioManager> audio_manager_;
   std::unique_ptr<media::AudioSystem> audio_system_;
   content::TestBrowserContext browser_context_;
   content::TestContentBrowserClient browser_client_;
   const scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
-  int opened_session_id_;
+  base::UnguessableToken opened_session_id_;
   std::string opened_device_label_;
 
   std::unique_ptr<VideoCaptureHost> host_;
-  mojo::Binding<media::mojom::VideoCaptureObserver> observer_binding_;
+  mojo::Receiver<media::mojom::VideoCaptureObserver> observer_receiver_{this};
 
   DISALLOW_COPY_AND_ASSIGN(VideoCaptureTest);
 };

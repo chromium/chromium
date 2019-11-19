@@ -19,10 +19,20 @@ base::FilePath GetContentsPath() {
 
   // Up to Contents.
   if (base::mac::IsBackgroundOnlyProcess()) {
-    // The running executable is the helper. Go up five steps:
-    // Contents/Frameworks/Helper.app/Contents/MacOS/Helper
-    // ^ to here                                     ^ from here
-    path = path.DirName().DirName().DirName().DirName().DirName();
+    // The running executable is the helper, located at:
+    // Content Shell.app/Contents/Frameworks/
+    // Content Shell Framework.framework/Versions/C/Helpers/Content Shell
+    // Helper.app/ Contents/MacOS/Content Shell Helper. Go up nine steps to get
+    // to the main bundle's Contents directory.
+    path = path.DirName()
+               .DirName()
+               .DirName()
+               .DirName()
+               .DirName()
+               .DirName()
+               .DirName()
+               .DirName()
+               .DirName();
   } else {
     // One step up to MacOS, another to Contents.
     path = path.DirName().DirName();
@@ -52,11 +62,12 @@ void OverrideOuterBundlePath() {
 }
 
 void OverrideChildProcessPath() {
-  base::FilePath helper_path =
-      GetFrameworksPath().Append("Content Shell Helper.app")
-                                            .Append("Contents")
-                                            .Append("MacOS")
-                                            .Append("Content Shell Helper");
+  base::FilePath helper_path = base::mac::FrameworkBundlePath()
+                                   .Append("Helpers")
+                                   .Append("Content Shell Helper.app")
+                                   .Append("Contents")
+                                   .Append("MacOS")
+                                   .Append("Content Shell Helper");
 
   base::PathService::Override(content::CHILD_PROCESS_EXE, helper_path);
 }

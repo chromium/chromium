@@ -21,8 +21,6 @@ class OverlayManagerCast : public OverlayManagerOzone {
   std::unique_ptr<OverlayCandidatesOzone> CreateOverlayCandidates(
       gfx::AcceleratedWidget w) override;
 
-  bool SupportsOverlays() const override;
-
  private:
   DISALLOW_COPY_AND_ASSIGN(OverlayManagerCast);
 };

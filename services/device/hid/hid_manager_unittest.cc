@@ -8,7 +8,10 @@
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "build/build_config.h"
-#include "mojo/public/cpp/bindings/associated_binding.h"
+#include "mojo/public/cpp/bindings/associated_receiver.h"
+#include "mojo/public/cpp/bindings/pending_associated_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "services/device/device_service_test_base.h"
 #include "services/device/hid/hid_manager_impl.h"
 #include "services/device/hid/mock_hid_connection.h"
@@ -28,10 +31,11 @@ const char* kTestDeviceIds[] = {"A", "B"};
 
 class MockHidManagerClient : public mojom::HidManagerClient {
  public:
-  MockHidManagerClient() : binding_(this) {}
+  MockHidManagerClient() = default;
+  ~MockHidManagerClient() override = default;
 
-  void Bind(mojom::HidManagerClientAssociatedRequest request) {
-    binding_.Bind(std::move(request));
+  void Bind(mojo::PendingAssociatedReceiver<mojom::HidManagerClient> receiver) {
+    receiver_.Bind(std::move(receiver));
   }
 
   void DeviceAdded(mojom::HidDeviceInfoPtr device_info) override {
@@ -44,8 +48,8 @@ class MockHidManagerClient : public mojom::HidManagerClient {
     std::move(quit_closure_).Run();
   }
 
-  void SetConnection(mojom::HidConnectionPtr hid_connection) {
-    hid_connection_ = std::move(hid_connection);
+  void SetConnection(mojo::PendingRemote<mojom::HidConnection> hid_connection) {
+    hid_connection_.Bind(std::move(hid_connection));
   }
 
   mojom::HidConnection* GetConnection() { return hid_connection_.get(); }
@@ -57,8 +61,8 @@ class MockHidManagerClient : public mojom::HidManagerClient {
   void SetExpectGUID(std::string guid) { expect_guid_ = guid; }
 
  private:
-  mojo::AssociatedBinding<mojom::HidManagerClient> binding_;
-  mojom::HidConnectionPtr hid_connection_;
+  mojo::AssociatedReceiver<mojom::HidManagerClient> receiver_{this};
+  mojo::Remote<mojom::HidConnection> hid_connection_;
   base::OnceClosure quit_closure_;
   std::string expect_guid_;
 
@@ -75,7 +79,7 @@ void OnGetDevices(base::OnceClosure quit_closure,
 
 void OnConnect(base::OnceClosure quit_closure,
                MockHidManagerClient* client,
-               mojom::HidConnectionPtr connection) {
+               mojo::PendingRemote<mojom::HidConnection> connection) {
   DCHECK(client);
   DCHECK(connection);
   client->SetConnection(std::move(connection));
@@ -128,7 +132,8 @@ class HidManagerTest : public DeviceServiceTestBase {
     // Transfer the ownership of the |mock_hid_service| to HidManagerImpl.
     // It is safe to use the |mock_hid_service_| in this test.
     HidManagerImpl::SetHidServiceForTesting(std::move(mock_hid_service));
-    connector()->BindInterface(mojom::kServiceName, &hid_manager_);
+    connector()->Connect(mojom::kServiceName,
+                         hid_manager_.BindNewPipeAndPassReceiver());
   }
 
   void TearDown() override { HidManagerImpl::SetHidServiceForTesting(nullptr); }
@@ -141,7 +146,7 @@ class HidManagerTest : public DeviceServiceTestBase {
     mock_hid_service_->RemoveDevice(platform_device_id);
   }
 
-  mojom::HidManagerPtr hid_manager_;
+  mojo::Remote<mojom::HidManager> hid_manager_;
   MockHidService* mock_hid_service_;
 
   DISALLOW_COPY_AND_ASSIGN(HidManagerTest);
@@ -179,8 +184,8 @@ TEST_F(HidManagerTest, GetDevicesAndSetClient) {
   mock_hid_service_->FirstEnumerationComplete();
 
   auto client = std::make_unique<MockHidManagerClient>();
-  mojom::HidManagerClientAssociatedPtrInfo hid_manager_client;
-  client->Bind(mojo::MakeRequest(&hid_manager_client));
+  mojo::PendingAssociatedRemote<mojom::HidManagerClient> hid_manager_client;
+  client->Bind(hid_manager_client.InitWithNewEndpointAndPassReceiver());
 
   // Call GetDevicesAndSetClient, expect 1 device will be received in
   // OnGetDevices().
@@ -228,8 +233,8 @@ TEST_F(HidManagerTest, TestHidConnectionInterface) {
   mock_hid_service_->FirstEnumerationComplete();
 
   auto client = std::make_unique<MockHidManagerClient>();
-  mojom::HidManagerClientAssociatedPtrInfo hid_manager_client;
-  client->Bind(mojo::MakeRequest(&hid_manager_client));
+  mojo::PendingAssociatedRemote<mojom::HidManagerClient> hid_manager_client;
+  client->Bind(hid_manager_client.InitWithNewEndpointAndPassReceiver());
 
   // Call GetDevicesAndSetClient, expect 1 device will be received in
   // OnGetDevices().
@@ -246,6 +251,8 @@ TEST_F(HidManagerTest, TestHidConnectionInterface) {
     base::RunLoop run_loop;
     hid_manager_->Connect(
         device0->device_guid(),
+        /*connection_client=*/mojo::NullRemote(),
+        /*watcher=*/mojo::NullRemote(),
         base::BindOnce(&OnConnect, run_loop.QuitClosure(), client.get()));
     run_loop.Run();
   }

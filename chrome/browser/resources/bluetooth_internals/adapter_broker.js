@@ -7,18 +7,18 @@
  *     chrome://bluetooth-internals/.
  */
 cr.define('adapter_broker', function() {
-  /** @typedef {bluetooth.mojom.AdapterProxy} */
-  var AdapterProxy;
-  /** @typedef {bluetooth.mojom.DeviceProxy} */
-  var DeviceProxy;
-  /** @typedef {bluetooth.mojom.DiscoverySessionProxy} */
-  var DiscoverySessionProxy;
+  /** @typedef {bluetooth.mojom.AdapterRemote} */
+  let AdapterRemote;
+  /** @typedef {bluetooth.mojom.DeviceRemote} */
+  let DeviceRemote;
+  /** @typedef {bluetooth.mojom.DiscoverySessionRemote} */
+  let DiscoverySessionRemote;
 
   /**
    * Enum of adapter property names. Used for adapterchanged events.
    * @enum {string}
    */
-  var AdapterProperty = {
+  const AdapterProperty = {
     DISCOVERABLE: 'discoverable',
     DISCOVERING: 'discovering',
     POWERED: 'powered',
@@ -29,18 +29,20 @@ cr.define('adapter_broker', function() {
    * The proxy class of an adapter and router of adapter events.
    * Exposes an EventTarget interface that allows other object to subscribe to
    * to specific AdapterClient events.
-   * Provides proxy access to Adapter functions. Converts parameters to Mojo
+   * Provides remote access to Adapter functions. Converts parameters to Mojo
    * handles and back when necessary.
    *
    * @implements {bluetooth.mojom.AdapterClientInterface}
    */
   class AdapterBroker extends cr.EventTarget {
-    /** @param {!AdapterProxy} adapter */
+    /** @param {!AdapterRemote} adapter */
     constructor(adapter) {
       super();
-      this.adapterClient_ = new bluetooth.mojom.AdapterClient(this);
+      this.adapterClientReceiver_ =
+          new bluetooth.mojom.AdapterClientReceiver(this);
       this.adapter_ = adapter;
-      this.adapter_.setClient(this.adapterClient_.createProxy());
+      this.adapter_.setClient(
+          this.adapterClientReceiver_.$.bindNewPipeAndPassRemote());
     }
 
     presentChanged(present) {
@@ -104,8 +106,8 @@ cr.define('adapter_broker', function() {
         if (response.result != bluetooth.mojom.ConnectResult.SUCCESS) {
           // TODO(crbug.com/663394): Replace with more descriptive error
           // messages.
-          var ConnectResult = bluetooth.mojom.ConnectResult;
-          var errorString = Object.keys(ConnectResult).find(function(key) {
+          const ConnectResult = bluetooth.mojom.ConnectResult;
+          const errorString = Object.keys(ConnectResult).find(function(key) {
             return ConnectResult[key] === response.result;
           });
 
@@ -135,7 +137,7 @@ cr.define('adapter_broker', function() {
 
     /**
      * Requests the adapter to start a new discovery session.
-     * @return {!Promise<!bluetooth.mojom.DiscoverySessionProxy>}
+     * @return {!Promise<!bluetooth.mojom.DiscoverySessionRemote>}
      */
     startDiscoverySession() {
       return this.adapter_.startDiscoverySession().then(function(response) {
@@ -148,19 +150,23 @@ cr.define('adapter_broker', function() {
     }
   }
 
-  var adapterBroker = null;
+  let adapterBroker = null;
 
   /**
    * Initializes an AdapterBroker if one doesn't exist.
+   * @param {!mojom.BluetoothInternalsHandlerRemote=}
+   *     opt_bluetoothInternalsHandler
    * @return {!Promise<!adapter_broker.AdapterBroker>} resolves with
    *     AdapterBroker, rejects if Bluetooth is not supported.
    */
-  function getAdapterBroker() {
+  function getAdapterBroker(opt_bluetoothInternalsHandler) {
     if (adapterBroker) {
       return Promise.resolve(adapterBroker);
     }
 
-    var bluetoothInternalsHandler = mojom.BluetoothInternalsHandler.getProxy();
+    const bluetoothInternalsHandler = opt_bluetoothInternalsHandler ?
+        opt_bluetoothInternalsHandler :
+        mojom.BluetoothInternalsHandler.getRemote();
 
     // Get an Adapter service.
     return bluetoothInternalsHandler.getAdapter().then(function(response) {

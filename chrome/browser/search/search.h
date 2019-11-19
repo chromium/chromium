@@ -19,22 +19,16 @@ class WebContents;
 
 namespace search {
 
-// For reporting Cacheable NTP navigations.
-enum CacheableNTPLoad {
-  CACHEABLE_NTP_LOAD_FAILED = 0,
-  CACHEABLE_NTP_LOAD_SUCCEEDED = 1,
-  CACHEABLE_NTP_LOAD_MAX = 2
-};
-
 // Returns whether Google is selected as the default search engine.
 bool DefaultSearchProviderIsGoogle(Profile* profile);
 bool DefaultSearchProviderIsGoogle(
     const TemplateURLService* template_url_service);
 
-// Returns true if |url| corresponds to a New Tab page.
-// TODO(treib): This is confusingly named, as it includes URLs that are related
-// to an NTP, but aren't an NTP themselves (such as the NTP's service worker).
-bool IsNTPURL(const GURL& url, Profile* profile);
+// Returns true if |url| corresponds to a New Tab page or its service worker.
+bool IsNTPOrRelatedURL(const GURL& url, Profile* profile);
+
+// Returns whether a |url| corresponds to a New Tab page.
+bool IsNTPURL(const GURL& url);
 
 // Returns true if the active navigation entry of |contents| is a New Tab page
 // rendered in an Instant process. This is the last committed entry if it

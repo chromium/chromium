@@ -1,0 +1,40 @@
+<!doctype html>
+<!--
+WebXR page without any code specific to one test
+-->
+<html>
+  <head>
+    <link rel="stylesheet" type="text/css" href="../resources/webxr_e2e.css">
+  </head>
+  <body>
+    <canvas id="webgl-canvas"></canvas>
+    <script src="../../../../../../third_party/blink/web_tests/resources/testharness.js"></script>
+    <script src="../resources/webxr_e2e.js"></script>
+    <script>var shouldAutoCreateNonImmersiveSession = false;</script>
+    <script src="../resources/webxr_boilerplate.js"></script>
+    <script>
+      function setupImmersiveSessionToRequestHeight() {
+        immersiveSessionInit = {
+          requiredFeatures: ['local-floor']
+        };
+      }
+
+      function setupImmersiveSessionToRequestBounded() {
+        immersiveSessionInit = {
+          requiredFeatures: ['bounded-floor']
+        };
+      }
+
+      function setupImmersiveSessionToRequestDefault() {
+        immersiveSessionInit = {};
+      }
+
+      function verifySessionConsentError(sessionType) {
+        assert_not_equals(sessionInfos[sessionType].error, null);
+        let err = sessionInfos[sessionType].error;
+        assert_true(err instanceof DOMException, "Session should be rejected with a DOMException");
+        assert_equals(err.name, "NotSupportedError", "Error should be of type NotSupportedError");
+      }
+    </script>
+  </body>
+</html>

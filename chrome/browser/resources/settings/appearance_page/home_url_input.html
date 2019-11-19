@@ -20,6 +20,10 @@
         width: 100%;
         --cr-input-width: 50%;
       }
+
+      cr-input::part(row-container) {
+        justify-content: normal;
+      }
     </style>
     <!-- Max length of 100 KB to prevent browser from freezing. -->
     <cr-input id="input" value="{{value}}" error-message="$i18n{notValid}"

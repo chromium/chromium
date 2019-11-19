@@ -30,11 +30,11 @@
 #include "ppapi/shared_impl/file_system_util.h"
 #include "ppapi/shared_impl/file_type_conversion.h"
 #include "ppapi/shared_impl/time_conversion.h"
-#include "storage/browser/fileapi/file_observers.h"
-#include "storage/browser/fileapi/file_system_context.h"
-#include "storage/browser/fileapi/file_system_operation_runner.h"
-#include "storage/browser/fileapi/task_runner_bound_observer_list.h"
-#include "storage/common/fileapi/file_system_util.h"
+#include "storage/browser/file_system/file_observers.h"
+#include "storage/browser/file_system/file_system_context.h"
+#include "storage/browser/file_system/file_system_operation_runner.h"
+#include "storage/browser/file_system/task_runner_bound_observer_list.h"
+#include "storage/common/file_system/file_system_util.h"
 
 namespace content {
 
@@ -109,8 +109,9 @@ PepperFileIOHost::PepperFileIOHost(BrowserPpapiHostImpl* host,
                                    PP_Resource resource)
     : ResourceHost(host->GetPpapiHost(), instance, resource),
       browser_ppapi_host_(host),
-      task_runner_(base::CreateSequencedTaskRunnerWithTraits(
-          {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
+      task_runner_(base::CreateSequencedTaskRunner(
+          {base::ThreadPool(), base::MayBlock(),
+           base::TaskPriority::USER_VISIBLE,
            base::TaskShutdownBehavior::BLOCK_SHUTDOWN})),
       file_(task_runner_.get()),
       open_flags_(0),
@@ -204,7 +205,7 @@ int32_t PepperFileIOHost::OnHostMsgOpen(
     if (!CanOpenFileSystemURLWithPepperFlags(
             open_flags, render_process_id_, file_system_url_))
       return PP_ERROR_NOACCESS;
-    base::PostTaskWithTraitsAndReplyWithResult(
+    base::PostTaskAndReplyWithResult(
         FROM_HERE, {BrowserThread::UI},
         base::Bind(&GetUIThreadStuffForInternalFileSystems, render_process_id_),
         base::Bind(&PepperFileIOHost::GotUIThreadStuffForInternalFileSystems,
@@ -214,7 +215,7 @@ int32_t PepperFileIOHost::OnHostMsgOpen(
     base::FilePath path = file_ref_host->GetExternalFilePath();
     if (!CanOpenWithPepperFlags(open_flags, render_process_id_, path))
       return PP_ERROR_NOACCESS;
-    base::PostTaskWithTraitsAndReplyWithResult(
+    base::PostTaskAndReplyWithResult(
         FROM_HERE, {BrowserThread::UI},
         base::Bind(&GetResolvedRenderProcessId, render_process_id_),
         base::Bind(&PepperFileIOHost::GotResolvedRenderProcessId, AsWeakPtr(),
@@ -395,7 +396,7 @@ int32_t PepperFileIOHost::OnHostMsgRequestOSFileHandle(
 
   GURL document_url =
       browser_ppapi_host_->GetDocumentURLForInstance(pp_instance());
-  base::PostTaskWithTraitsAndReplyWithResult(
+  base::PostTaskAndReplyWithResult(
       FROM_HERE, {BrowserThread::UI},
       base::Bind(&GetPluginAllowedToCallRequestOSFileHandle, render_process_id_,
                  document_url),

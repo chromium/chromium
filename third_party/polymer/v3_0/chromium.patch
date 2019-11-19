@@ -1,0 +1,184 @@
+diff --git a/components-chromium/font-roboto/roboto.js b/components-chromium/font-roboto/roboto.js
+index 02aebd81b0df..342d26d6f797 100644
+--- a/components-chromium/font-roboto/roboto.js
++++ b/components-chromium/font-roboto/roboto.js
+@@ -17,7 +17,6 @@ if (!window.polymerSkipLoadingFontRoboto) {
+   link.rel = 'stylesheet';
+   link.type = 'text/css';
+   link.crossOrigin = 'anonymous';
+-  link.href =
+-      'https://fonts.googleapis.com/css?family=Roboto+Mono:400,700|Roboto:400,300,300italic,400italic,500,500italic,700,700italic';
++  link.href = 'chrome://resources/css/roboto.css';
+   document.head.appendChild(link);
+ }
+--- a/components-chromium/iron-a11y-announcer/iron-a11y-announcer.js
++++ b/components-chromium/iron-a11y-announcer/iron-a11y-announcer.js
+@@ -46,7 +46,7 @@ Note: announcements are only audible if you have a screen reader enabled.
+ @group Iron Elements
+ @demo demo/index.html
+ */
+-export const IronA11yAnnouncer = Polymer({
++export var IronA11yAnnouncer = Polymer({
+   _template: html`
+     <style>
+       :host {
+--- a/components-chromium/iron-iconset-svg/iron-iconset-svg.js
++++ b/components-chromium/iron-iconset-svg/iron-iconset-svg.js
+@@ -134,6 +134,18 @@ Polymer({
+     return null;
+   },
+
++  /**
++   * Produce installable clone of the SVG element matching `id` in this
++   * iconset, or `undefined` if there is no matching element.
++   * @param {string} iconName Name of the icon to apply.
++   * @param {boolean} targetIsRTL Whether the target element is RTL.
++   * @return {Element} Returns an installable clone of the SVG element
++   *     matching `id`.
++   */
++  createIcon: function(iconName, targetIsRTL) {
++    return this._cloneIcon(iconName, this.rtlMirroring && targetIsRTL);
++  },
++
+   /**
+    * Remove an icon from the given element by undoing the changes effected
+    * by `applyIcon`.
+diff --git a/components-chromium/polymer/lib/legacy/legacy-element-mixin.js b/components-chromium/polymer/lib/legacy/legacy-element-mixin.js
+index 21fa65c0208d..bd591b6dd341 100644
+--- a/components-chromium/polymer/lib/legacy/legacy-element-mixin.js
++++ b/components-chromium/polymer/lib/legacy/legacy-element-mixin.js
+@@ -10,7 +10,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
+ import '../../../shadycss/entrypoints/apply-shim.js';
+ import { ElementMixin } from '../mixins/element-mixin.js';
+ import { GestureEventListeners } from '../mixins/gesture-event-listeners.js';
+-import { DirMixin } from '../mixins/dir-mixin.js';
+ import { dedupingMixin } from '../utils/mixin.js';
+ import '../utils/render-status.js';
+ import '../utils/unresolved.js';
+@@ -42,11 +41,10 @@ export const LegacyElementMixin = dedupingMixin((base) => {
+    * @constructor
+    * @implements {Polymer_ElementMixin}
+    * @implements {Polymer_GestureEventListeners}
+-   * @implements {Polymer_DirMixin}
+    * @extends {HTMLElement}
+    * @private
+    */
+-  const legacyElementBase = DirMixin(GestureEventListeners(ElementMixin(base)));
++  const legacyElementBase = GestureEventListeners(ElementMixin(base));
+ 
+   /**
+    * Map of simple names to touch action names
+--- a/components-chromium/polymer/lib/mixins/template-stamp.js
++++ b/components-chromium/polymer/lib/mixins/template-stamp.js
+@@ -204,9 +204,7 @@ export const TemplateStamp = dedupingMixin(
+       if (!template._templateInfo) {
+         let templateInfo = template._templateInfo = {};
+         templateInfo.nodeInfoList = [];
+-        templateInfo.stripWhiteSpace =
+-          (outerTemplateInfo && outerTemplateInfo.stripWhiteSpace) ||
+-          template.hasAttribute('strip-whitespace');
++        templateInfo.stripWhiteSpace = true;
+         this._parseTemplateContent(template, templateInfo, {parent: null});
+       }
+       return template._templateInfo;
+diff --git a/components-chromium/iron-list/iron-list.js b/components-chromium/iron-list/iron-list.js
+index 43c59653a39b..26652936735c 100644
+--- a/components-chromium/iron-list/iron-list.js
++++ b/components-chromium/iron-list/iron-list.js
+@@ -376,7 +376,15 @@
+      * there's some offset between the scrolling element and the list. For
+      * example: a header is placed above the list.
+      */
+-    scrollOffset: {type: Number, value: 0}
++    scrollOffset: {type: Number, value: 0},
++
++    /**
++     * If set to true, focus on an element will be preserved after rerender.
++     */
++    preserveFocus: {
++      type: Boolean,
++      value: false
++    }
+   },
+ 
+   observers: [
+@@ -1067,10 +1075,52 @@
+   },
+ 
+   /**
++   * Finds and returns the focused element (both within self and children's
++   * Shadow DOM).
++   * @return {?HTMLElement}
++   */
++  _getFocusedElement: function() {
++    function doSearch(node, query) {
++      let result = null;
++      let type = node.nodeType;
++      if (type == Node.ELEMENT_NODE || type == Node.DOCUMENT_FRAGMENT_NODE)
++        result = node.querySelector(query);
++      if (result)
++        return result;
++
++      let child = node.firstChild;
++      while (child !== null && result === null) {
++        result = doSearch(child, query);
++        child = child.nextSibling;
++      }
++      if (result)
++        return result;
++
++      const shadowRoot = node.shadowRoot;
++      return shadowRoot ? doSearch(shadowRoot, query) : null;
++    }
++
++    // Find out if any of the items are focused first, and only search
++    // recursively in the item that contains focus, to avoid a slow
++    // search of the entire list.
++    const focusWithin = doSearch(this, ':focus-within');
++    return focusWithin ? doSearch(focusWithin, ':focus') : null;
++  },
++
++  /**
+    * Called when the items have changed. That is, reassignments
+    * to `items`, splices or updates to a single item.
+    */
+   _itemsChanged: function(change) {
++    var rendering = /^items(\.splices){0,1}$/.test(change.path);
++    var lastFocusedIndex, focusedElement;
++    if (rendering && this.preserveFocus) {
++      lastFocusedIndex = this._focusedVirtualIndex;
++      focusedElement = this._getFocusedElement();
++    }
++
++    var preservingFocus = rendering && this.preserveFocus && focusedElement;
++
+     if (change.path === 'items') {
+       this._virtualStart = 0;
+       this._physicalTop = 0;
+@@ -1082,7 +1132,7 @@
+       this._physicalItems = this._physicalItems || [];
+       this._physicalSizes = this._physicalSizes || [];
+       this._physicalStart = 0;
+-      if (this._scrollTop > this._scrollOffset) {
++      if (this._scrollTop > this._scrollOffset && !preservingFocus) {
+         this._resetScrollPosition(0);
+       }
+       this._removeFocusedItem();
+@@ -1114,6 +1164,17 @@
+     } else if (change.path !== 'items.length') {
+       this._forwardItemPath(change.path, change.value);
+     }
++
++    // If the list was in focus when updated, preserve the focus on item.
++    if (preservingFocus) {
++      flush();
++      focusedElement.blur();  // paper- elements breaks when focused twice.
++      this._focusPhysicalItem(
++          Math.min(this.items.length - 1, lastFocusedIndex));
++      if (!this._isIndexVisible(this._focusedVirtualIndex)) {
++        this.scrollToIndex(this._focusedVirtualIndex);
++      }
++    }
+   },
+ 
+   _forwardItemPath: function(path, value) {

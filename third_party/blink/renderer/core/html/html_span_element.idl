@@ -24,6 +24,8 @@
  */
 
 // https://html.spec.whatwg.org/C/#the-span-element
-[HTMLConstructor]
-interface HTMLSpanElement : HTMLElement {
+[
+    Exposed=Window,
+    HTMLConstructor
+] interface HTMLSpanElement : HTMLElement {
 };

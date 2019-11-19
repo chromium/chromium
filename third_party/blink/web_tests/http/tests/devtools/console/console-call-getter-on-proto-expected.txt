@@ -4,7 +4,7 @@ console-call-getter-on-proto.js:27 B {value: 239}
     foo: 239
     value: 239
     __proto__: A
-        constructor: ƒ ()
         foo: 239
+        constructor: ƒ ()
         __proto__: Object
 

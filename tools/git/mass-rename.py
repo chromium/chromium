@@ -13,6 +13,7 @@ To use:
   3) look at git diff (without --cached) to see what the damage is
 """
 
+from __future__ import print_function
 
 import os
 import subprocess
@@ -31,15 +32,15 @@ def main():
   lines = out.splitlines()
   for item, line in enumerate(lines, 1):
     # Print progress
-    print '[%d/%d]' % (item, len(lines)),
+    print('[%d/%d]' % (item, len(lines)), end=' ')
 
     parts = line.split('\t')
     if len(parts) != 3:
-      print 'Skipping: %s -- not a rename?' % parts
+      print('Skipping: %s -- not a rename?' % parts)
       continue
     attrs, fro, to = parts
     if attrs.split()[4].startswith('R'):
-      print 'Moving: %s' % fro
+      print('Moving: %s' % fro)
       subprocess.check_call([
         sys.executable,
         os.path.join(BASE_DIR, 'move_source_file.py'),
@@ -47,7 +48,7 @@ def main():
         '--no_error_for_non_source_file',
         fro, to])
     else:
-      print 'Skipping: %s -- not a rename?' % fro
+      print('Skipping: %s -- not a rename?' % fro)
   return 0
 
 

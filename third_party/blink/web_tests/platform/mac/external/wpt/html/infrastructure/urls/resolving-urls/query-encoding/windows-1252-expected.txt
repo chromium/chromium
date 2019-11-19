@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 101 tests; 67 PASS, 32 FAIL, 2 TIMEOUT, 0 NOTRUN.
+Found 101 tests; 66 PASS, 33 FAIL, 2 TIMEOUT, 0 NOTRUN.
 PASS load nested browsing context <frame src>
 PASS load nested browsing context <iframe src>
 PASS load nested browsing context <object data>
@@ -72,7 +72,7 @@ PASS URL constructor, url
 PASS URL constructor, base
 PASS Scheme ftp (getting <a>.href)
 PASS Scheme file (getting <a>.href)
-PASS Scheme gopher (getting <a>.href)
+FAIL Scheme gopher (getting <a>.href) assert_true: expected substring %E5 got gopher://example.invalid/?x=%C3%A5 expected true got false
 PASS Scheme http (getting <a>.href)
 PASS Scheme https (getting <a>.href)
 FAIL Scheme ws (getting <a>.href) assert_true: expected substring %C3%A5 got ws://example.invalid/?x=%E5 expected true got false

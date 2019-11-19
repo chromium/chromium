@@ -7,6 +7,7 @@
 #include "base/command_line.h"
 #include "base/lazy_instance.h"
 #include "base/strings/string_util.h"
+#include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "extensions/common/switches.h"
 
@@ -24,16 +25,13 @@ class CommonSwitches {
   CommonSwitches()
       : force_dev_mode_highlighting(switches::kForceDevModeHighlighting,
                                     FeatureSwitch::DEFAULT_DISABLED),
-        prompt_for_external_extensions(
-#if defined(CHROMIUM_BUILD)
-            switches::kPromptForExternalExtensions,
-#else
-            nullptr,
-#endif
+        // Intentionally no flag since turning this off outside of tests
+        // is a security risk.
+        prompt_for_external_extensions(nullptr,
 #if defined(OS_WIN) || defined(OS_MACOSX)
-            FeatureSwitch::DEFAULT_ENABLED),
+                                       FeatureSwitch::DEFAULT_ENABLED),
 #else
-            FeatureSwitch::DEFAULT_DISABLED),
+                                       FeatureSwitch::DEFAULT_DISABLED),
 #endif
         error_console(switches::kErrorConsole, FeatureSwitch::DEFAULT_ENABLED),
         enable_override_bookmarks_ui(switches::kEnableOverrideBookmarksUI,
@@ -44,11 +42,11 @@ class CommonSwitches {
                          FeatureSwitch::DEFAULT_ENABLED),
         load_media_router_component_extension(
             kLoadMediaRouterComponentExtensionFlag,
-#if defined(GOOGLE_CHROME_BUILD)
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
             FeatureSwitch::DEFAULT_ENABLED)
 #else
             FeatureSwitch::DEFAULT_DISABLED)
-#endif  // defined(GOOGLE_CHROME_BUILD)
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
   {
   }
 

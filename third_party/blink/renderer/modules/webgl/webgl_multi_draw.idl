@@ -20,4 +20,23 @@ interface WebGLMultiDraw {
                               (Int32Array or sequence<long>) offsetsList,
                               GLuint offsetsOffset,
                               GLsizei drawcount);
+
+  void multiDrawArraysInstancedWEBGL(GLenum mode,
+                                     (Int32Array or sequence<long>) firstsList,
+                                     GLuint firstsOffset,
+                                     (Int32Array or sequence<long>) countsList,
+                                     GLuint countsOffset,
+                                     (Int32Array or sequence<long>) instanceCountsList,
+                                     GLuint instanceCountsOffset,
+                                     GLsizei drawcount);
+
+  void multiDrawElementsInstancedWEBGL(GLenum mode,
+                                       (Int32Array or sequence<long>) countsList,
+                                       GLuint countsOffset,
+                                       GLenum type,
+                                       (Int32Array or sequence<long>) offsetsList,
+                                       GLuint offsetsOffset,
+                                       (Int32Array or sequence<long>) instanceCountsList,
+                                       GLuint instanceCountsOffset,
+                                       GLsizei drawcount);
 };

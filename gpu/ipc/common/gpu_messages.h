@@ -14,6 +14,7 @@
 #include <vector>
 
 #include "base/memory/shared_memory.h"
+#include "base/optional.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
 #include "components/viz/common/resources/resource_format.h"
@@ -28,6 +29,7 @@
 #include "gpu/ipc/common/gpu_command_buffer_traits.h"
 #include "gpu/ipc/common/gpu_param_traits.h"
 #include "gpu/ipc/common/surface_handle.h"
+#include "gpu/ipc/common/vulkan_ycbcr_info.h"
 #include "ipc/ipc_channel_handle.h"
 #include "ipc/ipc_message_macros.h"
 #include "ui/gfx/color_space.h"
@@ -40,6 +42,7 @@
 #include "ui/gfx/native_widget_types.h"
 #include "ui/gfx/presentation_feedback.h"
 #include "ui/gfx/swap_result.h"
+#include "ui/gl/gpu_preference.h"
 #include "url/ipc/url_param_traits.h"
 
 #if defined(OS_MACOSX)
@@ -105,6 +108,18 @@ IPC_STRUCT_BEGIN(GpuChannelMsg_CreateGMBSharedImage_Params)
   IPC_STRUCT_MEMBER(uint32_t, release_id)
 IPC_STRUCT_END()
 
+#if defined(OS_WIN)
+IPC_STRUCT_BEGIN(GpuChannelMsg_CreateSwapChain_Params)
+  IPC_STRUCT_MEMBER(gpu::Mailbox, front_buffer_mailbox)
+  IPC_STRUCT_MEMBER(gpu::Mailbox, back_buffer_mailbox)
+  IPC_STRUCT_MEMBER(viz::ResourceFormat, format)
+  IPC_STRUCT_MEMBER(gfx::Size, size)
+  IPC_STRUCT_MEMBER(gfx::ColorSpace, color_space)
+  IPC_STRUCT_MEMBER(uint32_t, usage)
+  IPC_STRUCT_MEMBER(uint32_t, release_id)
+IPC_STRUCT_END()
+#endif  // OS_WIN
+
 IPC_STRUCT_BEGIN(GpuChannelMsg_ScheduleImageDecode_Params)
   IPC_STRUCT_MEMBER(std::vector<uint8_t>, encoded_data)
   IPC_STRUCT_MEMBER(gfx::Size, output_size)
@@ -153,10 +168,34 @@ IPC_MESSAGE_ROUTED1(GpuChannelMsg_CreateSharedImageWithData,
                     GpuChannelMsg_CreateSharedImageWithData_Params /* params */)
 IPC_MESSAGE_ROUTED1(GpuChannelMsg_CreateGMBSharedImage,
                     GpuChannelMsg_CreateGMBSharedImage_Params /* params */)
-IPC_MESSAGE_ROUTED2(GpuChannelMsg_UpdateSharedImage,
+
+// The following IPC message, that can be used by the browser or renderers,
+// updates the SharedImage referenced by |id| after its contents are modified
+// (e.g: its GpuMemoryBuffer is modified via the CPU or through external
+// devices).
+// The sync token in the shared image sequence at position |release_id| will be
+// released once this command has been executed service side.
+// |in_fence_handle|, if not null, represents a fence that will be waited on
+// before reading the contents represented by the shared image.
+IPC_MESSAGE_ROUTED3(GpuChannelMsg_UpdateSharedImage,
                     gpu::Mailbox /* id */,
-                    uint32_t /* release_id */)
+                    uint32_t /* release_id */,
+                    gfx::GpuFenceHandle /* in_fence_handle */)
 IPC_MESSAGE_ROUTED1(GpuChannelMsg_DestroySharedImage, gpu::Mailbox /* id */)
+#if defined(OS_WIN)
+IPC_MESSAGE_ROUTED1(GpuChannelMsg_CreateSwapChain,
+                    GpuChannelMsg_CreateSwapChain_Params /* params */)
+IPC_MESSAGE_ROUTED2(GpuChannelMsg_PresentSwapChain,
+                    gpu::Mailbox /* mailbox */,
+                    uint32_t /* release_id */)
+#endif  // OS_WIN
+#if defined(OS_FUCHSIA)
+IPC_MESSAGE_ROUTED2(GpuChannelMsg_RegisterSysmemBufferCollection,
+                    gfx::SysmemBufferCollectionId /* id */,
+                    zx::channel /* token */)
+IPC_MESSAGE_ROUTED1(GpuChannelMsg_ReleaseSysmemBufferCollection,
+                    gfx::SysmemBufferCollectionId /* id */)
+#endif  // OS_FUCHSIA
 IPC_MESSAGE_ROUTED1(GpuChannelMsg_RegisterSharedImageUploadBuffer,
                     base::ReadOnlySharedMemoryRegion /* shm */)
 
@@ -176,6 +215,11 @@ IPC_MESSAGE_CONTROL0(GpuChannelMsg_CrashForTesting)
 // messages have been received.
 IPC_SYNC_MESSAGE_CONTROL0_0(GpuChannelMsg_Nop)
 
+// Creates a StreamTexture attached to the provided |stream_id|.
+IPC_SYNC_MESSAGE_CONTROL1_1(GpuChannelMsg_CreateStreamTexture,
+                            int32_t, /* stream_id */
+                            bool /* succeeded */)
+
 #if defined(OS_ANDROID)
 //------------------------------------------------------------------------------
 // Tells the StreamTexture to send its SurfaceTexture to the browser process,
@@ -183,16 +227,26 @@ IPC_SYNC_MESSAGE_CONTROL0_0(GpuChannelMsg_Nop)
 IPC_MESSAGE_ROUTED1(GpuStreamTextureMsg_ForwardForSurfaceRequest,
                     base::UnguessableToken)
 
-// Tells the GPU process to set the size of StreamTexture from the given
-// stream Id.
-IPC_MESSAGE_ROUTED1(GpuStreamTextureMsg_SetSize, gfx::Size /* size */)
-
 // Tells the service-side instance to start sending frame available
 // notifications.
 IPC_MESSAGE_ROUTED0(GpuStreamTextureMsg_StartListening)
 
+// Inform the renderer that a new frame with VulkanYcbcrInfo is available.
+IPC_MESSAGE_ROUTED1(GpuStreamTextureMsg_FrameWithYcbcrInfoAvailable,
+                    base::Optional<gpu::VulkanYCbCrInfo>)
+
 // Inform the renderer that a new frame is available.
 IPC_MESSAGE_ROUTED0(GpuStreamTextureMsg_FrameAvailable)
+
+// Create a SharedImage for the current StreamTexture at the provided |size|.
+IPC_MESSAGE_ROUTED3(GpuStreamTextureMsg_CreateSharedImage,
+                    gpu::Mailbox /* mailbox */,
+                    gfx::Size /* size */,
+                    uint32_t /* release_id */)
+
+// Destroys the StreamTexture attached to the provided |stream_id|.
+IPC_MESSAGE_ROUTED0(GpuStreamTextureMsg_Destroy)
+
 #endif
 
 //------------------------------------------------------------------------------
@@ -241,6 +295,10 @@ IPC_MESSAGE_ROUTED3(GpuCommandBufferMsg_AsyncFlush,
 // Sent by the GPU process to display messages in the console.
 IPC_MESSAGE_ROUTED1(GpuCommandBufferMsg_ConsoleMsg,
                     GPUCommandBufferConsoleMessage /* msg */)
+
+// Sent by the GPU process to notify the renderer process of a GPU switch.
+IPC_MESSAGE_ROUTED1(GpuCommandBufferMsg_GpuSwitched,
+                    gl::GpuPreference /* active_gpu_heuristic */)
 
 // Register an existing shared memory transfer buffer. The id that can be
 // used to identify the transfer buffer from a command buffer.
@@ -291,12 +349,6 @@ IPC_MESSAGE_ROUTED1(GpuCommandBufferMsg_CreateImage,
 
 // Destroy a previously created image.
 IPC_MESSAGE_ROUTED1(GpuCommandBufferMsg_DestroyImage, int32_t /* id */)
-
-// Attaches an external image stream to the client texture.
-IPC_SYNC_MESSAGE_ROUTED2_1(GpuCommandBufferMsg_CreateStreamTexture,
-                           uint32_t, /* client_texture_id */
-                           int32_t,  /* stream_id */
-                           bool /* succeeded */)
 
 // Send a GPU fence handle and store it for the specified gpu fence ID.
 IPC_MESSAGE_ROUTED2(GpuCommandBufferMsg_CreateGpuFenceFromHandle,

@@ -54,7 +54,7 @@ assert_prefixed_computed_style("filter", "hue-rotate()", "hue-rotate(0deg)"); //
 assert_prefixed_computed_style("filter", "invert(1)"); // Integer value
 assert_prefixed_computed_style("filter", "invert(1.0)", "invert(1)"); // Float value converts to integer
 assert_prefixed_computed_style("filter", "invert(0)"); // Zero value
-assert_prefixed_computed_style("filter", "invert()", "invert(0)"); // No arguments
+assert_prefixed_computed_style("filter", "invert()", "invert(1)"); // No arguments
 assert_prefixed_computed_style("filter", "invert(0.5) invert(0.25)"); // Multiple values
 
 assert_prefixed_computed_style("filter", "opacity(1)"); // Integer value
@@ -66,7 +66,7 @@ assert_prefixed_computed_style("filter", "opacity(0.5) opacity(0.25)"); // Multi
 assert_prefixed_computed_style("filter", "brightness(1)"); // Integer value
 assert_prefixed_computed_style("filter", "brightness(1.0)", "brightness(1)"); // Float value converts to integer
 assert_prefixed_computed_style("filter", "brightness(0)"); // Zero value
-assert_prefixed_computed_style("filter", "brightness()", "brightness(0)"); // No arguments
+assert_prefixed_computed_style("filter", "brightness()", "brightness(1)"); // No arguments
 assert_prefixed_computed_style("filter", "brightness(0.5) brightness(0.25)"); // Multiple values
 
 assert_prefixed_computed_style("filter", "contrast(1)"); // Integer value

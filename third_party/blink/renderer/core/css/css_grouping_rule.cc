@@ -34,8 +34,9 @@
 #include "third_party/blink/renderer/core/css/css_style_sheet.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
-#include "third_party/blink/renderer/core/frame/use_counter.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
@@ -64,7 +65,7 @@ unsigned CSSGroupingRule::insertRule(const ExecutionContext* execution_context,
   }
 
   CSSStyleSheet* style_sheet = parentStyleSheet();
-  CSSParserContext* context = CSSParserContext::CreateWithStyleSheet(
+  auto* context = MakeGarbageCollected<CSSParserContext>(
       ParserContext(execution_context->GetSecureContextMode()), style_sheet);
   StyleRuleBase* new_rule = CSSParser::ParseRule(
       context, style_sheet ? style_sheet->Contents() : nullptr, rule_string);
@@ -147,9 +148,11 @@ CSSRule* CSSGroupingRule::Item(unsigned index) const {
 }
 
 CSSRuleList* CSSGroupingRule::cssRules() const {
-  if (!rule_list_cssom_wrapper_)
-    rule_list_cssom_wrapper_ = LiveCSSRuleList<CSSGroupingRule>::Create(
-        const_cast<CSSGroupingRule*>(this));
+  if (!rule_list_cssom_wrapper_) {
+    rule_list_cssom_wrapper_ =
+        MakeGarbageCollected<LiveCSSRuleList<CSSGroupingRule>>(
+            const_cast<CSSGroupingRule*>(this));
+  }
   return rule_list_cssom_wrapper_.Get();
 }
 

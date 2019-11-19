@@ -13,8 +13,8 @@ namespace chromeos {
 
 class MockAutoEnrollmentCheckScreen : public AutoEnrollmentCheckScreen {
  public:
-  MockAutoEnrollmentCheckScreen(BaseScreenDelegate* base_screen_delegate,
-                                AutoEnrollmentCheckScreenView* view,
+  MockAutoEnrollmentCheckScreen(AutoEnrollmentCheckScreenView* view,
+                                ErrorScreen* error_screen,
                                 const base::RepeatingClosure& exit_callback);
   ~MockAutoEnrollmentCheckScreen() override;
 

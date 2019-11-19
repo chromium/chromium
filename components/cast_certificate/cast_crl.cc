@@ -137,13 +137,12 @@ bool VerifyCRL(const Crl& crl,
   net::SimplePathBuilderDelegate path_builder_delegate(
       2048, net::SimplePathBuilderDelegate::DigestPolicy::kWeakAllowSha1);
 
-  net::CertPathBuilder::Result result;
   net::CertPathBuilder path_builder(
       parsed_cert.get(), trust_store, &path_builder_delegate, verification_time,
       net::KeyPurpose::ANY_EKU, net::InitialExplicitPolicy::kFalse,
       {net::AnyPolicy()}, net::InitialPolicyMappingInhibit::kFalse,
-      net::InitialAnyPolicyInhibit::kFalse, &result);
-  path_builder.Run();
+      net::InitialAnyPolicyInhibit::kFalse);
+  net::CertPathBuilder::Result result = path_builder.Run();
   if (!result.HasValidPath()) {
     VLOG(2) << "CRL - Issuer certificate verification failed.";
     // TODO(crbug.com/634443): Log the error information.

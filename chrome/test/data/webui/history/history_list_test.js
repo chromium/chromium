@@ -38,7 +38,7 @@ suite('<history-list>', function() {
         createHistoryInfo(),
         [createHistoryEntry('2015-01-01', 'http://example.com')]);
 
-    return PolymerTest.flushTasks()
+    return test_util.flushTasks()
         .then(function() {
           assertEquals(element.historyData_.length, 1);
           Polymer.dom.flush();
@@ -47,11 +47,11 @@ suite('<history-list>', function() {
           assertEquals(1, items.length);
           items[0].$.checkbox.click();
           assertDeepEquals([true], element.historyData_.map(i => i.selected));
-          return PolymerTest.flushTasks();
+          return test_util.flushTasks();
         })
         .then(function() {
           toolbar.deleteSelectedItems();
-          return PolymerTest.flushTasks();
+          return test_util.flushTasks();
         })
         .then(() => new Promise(resolve => {
                 registerMessageCallback('removeVisits', this, resolve);
@@ -59,10 +59,10 @@ suite('<history-list>', function() {
                 assertTrue(dialog.open);
                 element.$$('.action-button').click();
               }))
-        .then(PolymerTest.flushTasks)
+        .then(test_util.flushTasks)
         .then(function() {
           deleteComplete();
-          return PolymerTest.flushTasks();
+          return test_util.flushTasks();
         })
         .then(function() {
           assertEquals(element.historyData_.length, 0);
@@ -71,7 +71,7 @@ suite('<history-list>', function() {
 
   test('cancelling selection of multiple items', function() {
     app.historyResult(createHistoryInfo(), TEST_HISTORY_RESULTS);
-    return PolymerTest.flushTasks().then(function() {
+    return test_util.flushTasks().then(function() {
       Polymer.dom.flush();
       const items = polymerSelectAll(element, 'history-item');
 
@@ -99,7 +99,7 @@ suite('<history-list>', function() {
 
   test('selection of multiple items using shift click', function() {
     app.historyResult(createHistoryInfo(), TEST_HISTORY_RESULTS);
-    return PolymerTest.flushTasks().then(function() {
+    return test_util.flushTasks().then(function() {
       Polymer.dom.flush();
       const items = polymerSelectAll(element, 'history-item');
 
@@ -159,7 +159,7 @@ suite('<history-list>', function() {
 
   test('selection of all items using ctrl + a', function() {
     app.historyResult(createHistoryInfo(), TEST_HISTORY_RESULTS);
-    return PolymerTest.flushTasks().then(function() {
+    return test_util.flushTasks().then(function() {
       const field = toolbar.$['main-toolbar'].getSearchField();
       field.blur();
       assertFalse(field.showingSearch);
@@ -183,7 +183,7 @@ suite('<history-list>', function() {
   test('disabling ctrl + a command on syncedTabs page', function() {
     app.historyResult(createHistoryInfo(), TEST_HISTORY_RESULTS);
     app.selectedPage_ = 'syncedTabs';
-    return PolymerTest.flushTasks().then(function() {
+    return test_util.flushTasks().then(function() {
       const field = toolbar.$['main-toolbar'].getSearchField();
       field.blur();
       assertFalse(field.showingSearch);
@@ -200,7 +200,7 @@ suite('<history-list>', function() {
   test('setting first and last items', function() {
     app.historyResult(createHistoryInfo(), TEST_HISTORY_RESULTS);
 
-    return PolymerTest.flushTasks().then(function() {
+    return test_util.flushTasks().then(function() {
       Polymer.dom.flush();
       const items = polymerSelectAll(element, 'history-item');
       assertTrue(items[0].isCardStart);
@@ -217,7 +217,7 @@ suite('<history-list>', function() {
     app.historyResult(createHistoryInfo(), TEST_HISTORY_RESULTS);
     app.historyResult(createHistoryInfo(), ADDITIONAL_RESULTS);
 
-    return PolymerTest.flushTasks().then(function() {
+    return test_util.flushTasks().then(function() {
       Polymer.dom.flush();
       const items = polymerSelectAll(element, 'history-item');
       assertTrue(items[3].isCardStart);
@@ -234,12 +234,12 @@ suite('<history-list>', function() {
   test('deleting multiple items from view', function() {
     app.historyResult(createHistoryInfo(), TEST_HISTORY_RESULTS);
     app.historyResult(createHistoryInfo(), ADDITIONAL_RESULTS);
-    return PolymerTest.flushTasks()
+    return test_util.flushTasks()
         .then(function() {
 
           element.removeItemsByIndex_([2, 5, 7]);
 
-          return PolymerTest.flushTasks();
+          return test_util.flushTasks();
         })
         .then(function() {
           Polymer.dom.flush();
@@ -264,7 +264,7 @@ suite('<history-list>', function() {
         [createHistoryEntry('2016-03-15', 'https://www.google.com')]);
     element.searchedTerm = 'Google';
 
-    return PolymerTest.flushTasks().then(function() {
+    return test_util.flushTasks().then(function() {
       Polymer.dom.flush();
       const item = element.$$('history-item');
       assertTrue(item.isCardStart);
@@ -283,14 +283,14 @@ suite('<history-list>', function() {
   test('correct display message when no history available', function() {
     app.historyResult(createHistoryInfo(), []);
 
-    return PolymerTest.flushTasks()
+    return test_util.flushTasks()
         .then(function() {
           assertFalse(element.$['no-results'].hidden);
           assertNotEquals('', element.$['no-results'].textContent.trim());
           assertTrue(element.$['infinite-list'].hidden);
 
           app.historyResult(createHistoryInfo(), TEST_HISTORY_RESULTS);
-          return PolymerTest.flushTasks();
+          return test_util.flushTasks();
         })
         .then(function() {
           assertTrue(element.$['no-results'].hidden);
@@ -302,7 +302,7 @@ suite('<history-list>', function() {
     app.queryState_.queryingDisabled = false;
     app.historyResult(createHistoryInfo(), TEST_HISTORY_RESULTS);
     let items;
-    return PolymerTest.flushTasks()
+    return test_util.flushTasks()
         .then(function() {
           return new Promise(resolve => {
             registerMessageCallback('queryHistory', this, resolve);
@@ -318,7 +318,7 @@ suite('<history-list>', function() {
           app.historyResult(
               createHistoryInfo('www.google.com'), TEST_HISTORY_RESULTS);
 
-          return PolymerTest.flushTasks();
+          return test_util.flushTasks();
         })
         .then(function() {
           assertEquals(
@@ -341,7 +341,7 @@ suite('<history-list>', function() {
     for (let i = 0; i < 10; i++) {
       app.historyResult(createHistoryInfo(), TEST_HISTORY_RESULTS);
     }
-    return PolymerTest.flushTasks()
+    return test_util.flushTasks()
         .then(function() {
           assertFalse(app.toolbarShadow_);
           element.$['infinite-list'].scrollToIndex(20);
@@ -361,7 +361,7 @@ suite('<history-list>', function() {
     app.historyResult(
         createHistoryInfo('ex'),
         [createHistoryEntry('2016-06-9', 'https://www.example.com')]);
-    return PolymerTest.flushTasks(20).then(function() {
+    return test_util.flushTasks(20).then(function() {
       Polymer.dom.flush();
       const item = element.$$('history-item');
       item.$.checkbox.click();
@@ -380,7 +380,7 @@ suite('<history-list>', function() {
     const dialog = element.$.dialog.get();
     app.historyResult(createHistoryInfo(), TEST_HISTORY_RESULTS);
     app.historyResult(createHistoryInfo(), ADDITIONAL_RESULTS);
-    return PolymerTest.flushTasks()
+    return test_util.flushTasks()
         .then(function() {
           Polymer.dom.flush();
           const items = polymerSelectAll(element, 'history-item');
@@ -389,11 +389,11 @@ suite('<history-list>', function() {
           items[5].$.checkbox.click();
           items[7].$.checkbox.click();
 
-          return PolymerTest.flushTasks();
+          return test_util.flushTasks();
         })
         .then(function() {
           toolbar.deleteSelectedItems();
-          return PolymerTest.flushTasks();
+          return test_util.flushTasks();
         })
         .then(() => new Promise(resolve => {
                 registerMessageCallback('removeVisits', this, resolve);
@@ -402,10 +402,10 @@ suite('<history-list>', function() {
                 assertTrue(dialog.open);
                 element.$$('.action-button').click();
               }))
-        .then(PolymerTest.flushTasks)
+        .then(test_util.flushTasks)
         .then(function() {
           deleteComplete();
-          return PolymerTest.flushTasks();
+          return test_util.flushTasks();
         })
         .then(function() {
           assertEquals(element.historyData_.length, 5);
@@ -429,7 +429,7 @@ suite('<history-list>', function() {
   test('delete via menu button', function() {
     app.historyResult(createHistoryInfo(), TEST_HISTORY_RESULTS);
     let items;
-    return PolymerTest.flushTasks()
+    return test_util.flushTasks()
         .then(function() {
           Polymer.dom.flush();
           items = polymerSelectAll(element, 'history-item');
@@ -443,10 +443,10 @@ suite('<history-list>', function() {
             element.$$('#menuRemoveButton').click();
           });
         })
-        .then(PolymerTest.flushTasks)
+        .then(test_util.flushTasks)
         .then(function() {
           deleteComplete();
-          return PolymerTest.flushTasks();
+          return test_util.flushTasks();
         })
         .then(function() {
           assertDeepEquals(
@@ -468,7 +468,7 @@ suite('<history-list>', function() {
     app.historyResult(createHistoryInfo(), TEST_HISTORY_RESULTS);
     const dialog = element.$.dialog.get();
     let items;
-    return PolymerTest.flushTasks()
+    return test_util.flushTasks()
         .then(function() {
           Polymer.dom.flush();
           items = polymerSelectAll(element, 'history-item');
@@ -476,7 +476,7 @@ suite('<history-list>', function() {
           // Dialog should not appear when there is no item selected.
           MockInteractions.pressAndReleaseKeyOn(
               document.body, 46, '', 'Delete');
-          return PolymerTest.flushTasks();
+          return test_util.flushTasks();
         })
         .then(function() {
           assertFalse(dialog.open);
@@ -488,7 +488,7 @@ suite('<history-list>', function() {
 
           MockInteractions.pressAndReleaseKeyOn(
               document.body, 46, '', 'Delete');
-          return PolymerTest.flushTasks();
+          return test_util.flushTasks();
         })
         .then(function() {
           assertTrue(dialog.open);
@@ -497,7 +497,7 @@ suite('<history-list>', function() {
 
           MockInteractions.pressAndReleaseKeyOn(
               document.body, 8, '', 'Backspace');
-          return PolymerTest.flushTasks();
+          return test_util.flushTasks();
         })
         .then(function() {
           assertTrue(dialog.open);
@@ -524,17 +524,17 @@ suite('<history-list>', function() {
     app.historyResult(createHistoryInfo(), TEST_HISTORY_RESULTS);
     app.historyResult(createHistoryInfo(), ADDITIONAL_RESULTS);
 
-    return PolymerTest.flushTasks()
+    return test_util.flushTasks()
         .then(function() {
           Polymer.dom.flush();
           const items = polymerSelectAll(element, 'history-item');
 
           items[2].$.checkbox.click();
-          return PolymerTest.flushTasks();
+          return test_util.flushTasks();
         })
         .then(function() {
           toolbar.deleteSelectedItems();
-          return PolymerTest.flushTasks();
+          return test_util.flushTasks();
         })
         .then(function() {
           // Confirmation dialog should appear.
@@ -544,7 +544,7 @@ suite('<history-list>', function() {
 
           return waitForEvent(window, 'popstate');
         })
-        .then(PolymerTest.flushTasks)
+        .then(test_util.flushTasks)
         .then(function() {
           assertFalse(element.$.dialog.getIfExists().open);
         });
@@ -555,7 +555,7 @@ suite('<history-list>', function() {
     app.historyResult(createHistoryInfo(), [
       createHistoryEntry('2016-03-15', fileURL),
     ]);
-    return PolymerTest.flushTasks()
+    return test_util.flushTasks()
         .then(function() {
           Polymer.dom.flush();
           const items = polymerSelectAll(element, 'history-item');

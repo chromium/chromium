@@ -45,6 +45,7 @@
 #include "third_party/blink/renderer/core/workers/worker_thread.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
+#include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "v8/include/v8.h"
 
 namespace blink {
@@ -73,7 +74,7 @@ WorkerThreadDebugger::~WorkerThreadDebugger() {
 
 void WorkerThreadDebugger::ReportConsoleMessage(
     ExecutionContext* context,
-    MessageSource source,
+    mojom::ConsoleMessageSource source,
     mojom::ConsoleMessageLevel level,
     const String& message,
     SourceLocation* location) {
@@ -101,7 +102,6 @@ void WorkerThreadDebugger::WorkerThreadDestroyed(WorkerThread* worker_thread) {
   worker_threads_.erase(worker_context_group_id);
   if (worker_context_group_id == paused_context_group_id_) {
     paused_context_group_id_ = kInvalidContextGroupId;
-    nested_runner_->QuitNow();
   }
 }
 
@@ -133,8 +133,9 @@ void WorkerThreadDebugger::ContextWillBeDestroyed(
 void WorkerThreadDebugger::ExceptionThrown(WorkerThread* worker_thread,
                                            ErrorEvent* event) {
   worker_thread->GetWorkerReportingProxy().ReportConsoleMessage(
-      kJSMessageSource, mojom::ConsoleMessageLevel::kError,
-      event->MessageForConsole(), event->Location());
+      mojom::ConsoleMessageSource::kJavaScript,
+      mojom::ConsoleMessageLevel::kError, event->MessageForConsole(),
+      event->Location());
 
   const String default_message = "Uncaught";
   ScriptState* script_state =
@@ -178,11 +179,7 @@ void WorkerThreadDebugger::runMessageLoopOnPause(int context_group_id) {
   WorkerThread* thread = worker_threads_.at(context_group_id);
   DCHECK(!thread->GlobalScope()->IsClosing());
   thread->GetWorkerInspectorController()->FlushProtocolNotifications();
-  thread->GlobalScope()->SetLifecycleState(mojom::FrameLifecycleState::kPaused);
-  auto pause_handle = thread->GetScheduler()->Pause();
-  if (!nested_runner_)
-    nested_runner_ = Platform::Current()->CreateNestedMessageLoopRunner();
-  nested_runner_->Run();
+  thread->Pause();
 }
 
 void WorkerThreadDebugger::quitMessageLoopOnPause() {
@@ -192,10 +189,7 @@ void WorkerThreadDebugger::quitMessageLoopOnPause() {
   WorkerThread* thread = worker_threads_.at(paused_context_group_id_);
   paused_context_group_id_ = kInvalidContextGroupId;
   DCHECK(!thread->GlobalScope()->IsClosing());
-
-  nested_runner_->QuitNow();
-  thread->GlobalScope()->SetLifecycleState(
-      mojom::FrameLifecycleState::kRunning);
+  thread->Resume();
 }
 
 void WorkerThreadDebugger::muteMetrics(int context_group_id) {
@@ -241,12 +235,13 @@ void WorkerThreadDebugger::consoleAPIMessage(
   if (!worker_threads_.Contains(context_group_id))
     return;
   WorkerThread* worker_thread = worker_threads_.at(context_group_id);
-  std::unique_ptr<SourceLocation> location =
-      SourceLocation::Create(ToCoreString(url), line_number, column_number,
-                             stack_trace ? stack_trace->clone() : nullptr, 0);
+  std::unique_ptr<SourceLocation> location = std::make_unique<SourceLocation>(
+      ToCoreString(url), line_number, column_number,
+      stack_trace ? stack_trace->clone() : nullptr, 0);
   worker_thread->GetWorkerReportingProxy().ReportConsoleMessage(
-      kConsoleAPIMessageSource, V8MessageLevelToMessageLevel(level),
-      ToCoreString(message), location.get());
+      mojom::ConsoleMessageSource::kConsoleApi,
+      V8MessageLevelToMessageLevel(level), ToCoreString(message),
+      location.get());
 }
 
 void WorkerThreadDebugger::consoleClear(int context_group_id) {

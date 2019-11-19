@@ -19,6 +19,7 @@ Polymer({
       type: Boolean,
       value: false,
       notify: true,
+      observer: 'onExpandedChange_',
     },
 
     /**
@@ -31,13 +32,20 @@ Polymer({
     },
 
     /** A11y text descriptor for this control. */
-    alt: String,
+    alt: {
+      type: String,
+      observer: 'onAltChange_',
+    },
 
     tabIndex: {
       type: Number,
       value: 0,
     },
   },
+
+  observers: [
+    'updateAriaExpanded_(disabled, expanded)',
+  ],
 
   listeners: {
     click: 'toggleExpand_',
@@ -57,20 +65,20 @@ Polymer({
     this.$.icon.focus();
   },
 
-  /**
-   * @param {boolean} expanded
-   * @private
-   */
-  getAriaPressed_: function(expanded) {
-    return expanded ? 'true' : 'false';
+  /** @private */
+  onAltChange_: function() {
+    if (this.alt) {
+      this.$.icon.removeAttribute('aria-labelledby');
+      this.$.icon.setAttribute('aria-label', this.alt);
+    } else {
+      this.$.icon.removeAttribute('aria-label');
+      this.$.icon.setAttribute('aria-labelledby', 'label');
+    }
   },
 
-  /**
-   * @param {boolean} expanded
-   * @private
-   */
-  iconName_: function(expanded) {
-    return expanded ? 'icon-expand-less' : 'icon-expand-more';
+  /** @private */
+  onExpandedChange_: function() {
+    this.$.icon.ironIcon = this.expanded ? 'cr:expand-less' : 'cr:expand-more';
   },
 
   /**
@@ -83,7 +91,17 @@ Polymer({
     event.stopPropagation();
     event.preventDefault();
 
+    this.scrollIntoViewIfNeeded();
     this.expanded = !this.expanded;
     cr.ui.focusWithoutInk(this.$.icon);
+  },
+
+  /** @private */
+  updateAriaExpanded_: function() {
+    if (this.disabled) {
+      this.$.icon.removeAttribute('aria-expanded');
+    } else {
+      this.$.icon.setAttribute('aria-expanded', this.expanded);
+    }
   },
 });

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 enum XRHandedness {
+  "none",
   "left",
   "right"
 };
@@ -16,8 +17,12 @@ enum XRTargetRayMode {
 [
     SecureContext,
     Exposed=Window,
-    OriginTrialEnabled=WebXR
+    RuntimeEnabled=WebXR
 ] interface XRInputSource {
   readonly attribute XRHandedness handedness;
   readonly attribute XRTargetRayMode targetRayMode;
+  [SameObject] readonly attribute XRSpace targetRaySpace;
+  [SameObject] readonly attribute XRSpace? gripSpace;
+  [SameObject, Measure, RuntimeEnabled=WebXrGamepadModule] readonly attribute Gamepad? gamepad;
+  [SameObject, SaveSameObject] readonly attribute FrozenArray<DOMString> profiles;
 };

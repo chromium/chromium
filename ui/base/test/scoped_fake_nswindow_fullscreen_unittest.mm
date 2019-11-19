@@ -7,9 +7,9 @@
 #import "base/mac/mac_util.h"
 #import "base/mac/scoped_nsobject.h"
 #import "base/mac/sdk_forward_declarations.h"
-#include "base/message_loop/message_loop.h"
-#import "testing/gtest_mac.h"
+#include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#import "testing/gtest_mac.h"
 #import "ui/base/test/windowed_nsnotification_observer.h"
 #import "ui/gfx/mac/nswindow_frame_controls.h"
 
@@ -41,7 +41,8 @@ namespace test {
 
 // Test the order of notifications sent when faking fullscreen transitions.
 TEST(ScopedFakeNSWindowFullscreenTest, TestOrdering) {
-  base::MessageLoopForUI message_loop;
+  base::test::SingleThreadTaskEnvironment task_environment(
+      base::test::SingleThreadTaskEnvironment::MainThreadType::UI);
 
   NSUInteger style_mask = NSTexturedBackgroundWindowMask | NSTitledWindowMask |
                           NSClosableWindowMask | NSMiniaturizableWindowMask |

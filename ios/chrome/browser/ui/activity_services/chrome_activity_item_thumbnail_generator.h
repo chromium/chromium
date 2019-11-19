@@ -8,16 +8,24 @@
 #import <CoreGraphics/CoreGraphics.h>
 #import <UIKit/UIKit.h>
 
-@class Tab;
+namespace web {
+class WebState;
+}
 
-// Block returning a thumbnail at the specified size. May return nil.
-typedef UIImage* (^ThumbnailGeneratorBlock)(const CGSize&);
+// ChromeActivityItemThumbnailGenerator will be used to retrieve activity items
+// thumbnail given WebState.
+@interface ChromeActivityItemThumbnailGenerator : NSObject
 
-namespace activity_services {
+// Default initializer. |webState| must not be nullptr.
+- (instancetype)initWithWebState:(web::WebState*)webState
+    NS_DESIGNATED_INITIALIZER;
 
-// Returns a thumbnail generator for the tab |tab|. |tab| must not be nil.
-ThumbnailGeneratorBlock ThumbnailGeneratorForTab(Tab* tab);
+// ChromeActivityItemThumbnailGenerator must be created with a WebState.
+- (instancetype)init NS_UNAVAILABLE;
 
-}  // namespace activity_services
+// Returns a thumbnail at the specified size. May return nil.
+- (UIImage*)thumbnailWithSize:(const CGSize&)size;
+
+@end
 
 #endif  // IOS_CHROME_BROWSER_UI_ACTIVITY_SERVICES_CHROME_ACTIVITY_ITEM_THUMBNAIL_GENERATOR_H_

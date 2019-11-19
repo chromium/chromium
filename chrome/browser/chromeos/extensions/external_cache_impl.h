@@ -34,10 +34,6 @@ namespace network {
 class SharedURLLoaderFactory;
 }
 
-namespace service_manager {
-class Connector;
-}
-
 namespace chromeos {
 
 class ExternalCacheDelegate;
@@ -101,13 +97,7 @@ class ExternalCacheImpl : public ExternalCache,
 
   void set_flush_on_put(bool flush_on_put) { flush_on_put_ = flush_on_put; }
 
-  void use_null_connector_for_test() { use_null_connector_ = true; }
-
  private:
-  // Gets service manager connector this external cache instance should use.
-  // Might be null in tests - see use_null_connector_for_test().
-  service_manager::Connector* GetConnector();
-
   // Notifies the that the cache has been updated, providing
   // extensions loader with an updated list of extensions.
   void UpdateExtensionLoader();
@@ -147,8 +137,6 @@ class ExternalCacheImpl : public ExternalCache,
   // Whether to flush the crx file after putting into |local_cache_|.
   bool flush_on_put_ = false;
 
-  bool use_null_connector_ = false;
-
   // This is the list of extensions currently configured.
   std::unique_ptr<base::DictionaryValue> extensions_;
 
@@ -163,7 +151,7 @@ class ExternalCacheImpl : public ExternalCache,
   content::NotificationRegistrar notification_registrar_;
 
   // Weak factory for callbacks.
-  base::WeakPtrFactory<ExternalCacheImpl> weak_ptr_factory_;
+  base::WeakPtrFactory<ExternalCacheImpl> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ExternalCacheImpl);
 };

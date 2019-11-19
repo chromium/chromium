@@ -1,0 +1,215 @@
+\bdsl\s+de\s+grand\s+sault\s+falls\s+grand\s+sault\s+grand\s+falls\b	grand falls
+\bsainte\s+catherine\s+de\s+la\s+jacques\s+cartier\b	ste catherine de la j cartier
+\bmadawaska\s+maliseet\s+frst\s+nation\b	madawaska
+\bregional\s+county\s+municipality\b	
+\bshediac\s+bridge\s+shediac\s+river\b	shediac bridge
+\bnewfoundland\s+and\s+labrador\b	nl
+\bterritoires\s+du\s+nord\s+ouest\b	nt
+\bdsl\s+de\s+grand\s+sault\s+falls\b	grand falls
+\bregional\s+municipality\s+of\b	
+\bgrand\s+sault\s+grand\s+falls\b	grand falls
+\bterre\s+neuve\s+et\s+labrador\b	nl
+\bbay\s+de\s+verde\s+peninsula\b	bvd
+\bile\s+du\s+prince\s+edouard\b	pe
+\bnorthwest\s+territories\b	nt
+\bregional\s+municipality\b	
+\bcolombie\s+britannique\b	bc
+\bprince\s+edward\s+island\b	pe
+\bregional\s+district\s+of\b	
+\bfrench\s+village\s+york\b	french village
+\bhead\s+of\s+bay\s+despoir\b	head bay d'espoir
+\bterritoire\s+du\s+yukon\b	yt
+\bnouveau\s+brunswick\b	nb
+\bregional\s+district\b	
+\bbritish\s+columbia\b	bc
+\bcanton\s+stanstead\b	stanstead
+\bmd\s+of\s+bonnyville\b	bonnyville
+\bnouvelle\s+ecosse\b	ns
+\bst\s+george\s+brant\b	saint george
+\byukon\s+territory\b	yt
+\bchisholm\s+mills\b	chisholm
+\bsackville\s+road\b	sackville
+\bnational\s+park\b	
+\bnew\s+brunswick\b	nb
+\bplacentia\s+bay\b	pb
+\bbeaver\s+brook\b	beaverbrook
+\bmetropolitan\b	
+\bnewfoundland\b	nl
+\brichibouctou\b	richibucto
+\bsaskatchewan\b	sk
+\bfortune\s+bay\b	fb
+\bnova\s+scotia\b	ns
+\bsubdivision\b	subdiv
+\bsutton\s+west\b	sutton
+\bterre\s+neuve\b	nl
+\btownship\s+of\b	
+\btrinity\s+bay\b	tb
+\bbelliveaus\b	belliveau
+\bconcession\b	conc
+\bcul\s+de\s+sac\b	cds
+\bcul\-de\-sac\b	cds
+\bde\s+riviere\b	riviere
+\bexpressway\b	expy
+\bmackinnons\b	mckinnons
+\bnorth\s+side\b	northside
+\bpine\s+ridge\b	pineridge
+\brond\s+point\b	rdpt
+\brond\-point\b	rdpt
+\balternate\b	alt
+\bautoroute\b	aut
+\bboulevard\b	blvd
+\bcarrefour\b	carref
+\bcounty\s+of\b	
+\bcroissant\b	crois
+\bdiversion\b	divers
+\bechangeur\b	ech
+\besplanade\b	espl
+\bextension\b	exten
+\bhalf\s+moon\b	halfmoon
+\bhighlands\b	hghlds
+\bkuskonook\b	kuskanook
+\bpromenade\b	prom
+\bturnabout\b	trnabt
+\bbusiness\b	bus
+\bcrescent\b	cres
+\bcrossing\b	cross
+\bjunction\b	
+\bmanitoba\b	mb
+\bmountain\b	mtn
+\boak\s+hill\b	oakhill
+\bpleasent\b	pleasant
+\bterrasse\b	tsse
+\btownline\b	tline
+\btownship\b	
+\balberta\b	ab
+\bby\s+pass\b	bypass
+\bcircuit\b	circt
+\bcity\s+of\b	
+\bcorners\b	crnrs
+\bestates\b	estate
+\bfreeway\b	fwy
+\bgardens\b	gdns
+\bgrounds\b	grnds
+\bharbour\b	harbr
+\bheights\b	hts
+\bherbert\b	hebert
+\bhighway\b	hwy
+\bimpasse\b	imp
+\bkeenans\b	keenan
+\bl\'islet\b	
+\bla\s+have\b	lahave
+\blanding\b	landng
+\blookout\b	lkout
+\bnarrows\b	
+\bnunavut\b	nu
+\bontario\b	on
+\borchard\b	orch
+\bparkway\b	pky
+\bpassage\b	pass
+\bpathway\b	ptway
+\bplateau\b	plat
+\breserve\b	
+\bsentier\b	sent
+\bstation\b	
+\bterrace\b	terr
+\bthicket\b	thick
+\btown\s+of\b	
+\bvillage\b	
+\bavenue\b	av
+\bbakers\b	baker
+\bcanada\b	ca
+\bcanton\b	
+\bcenter\b	
+\bcentre\b	
+\bchemin\b	ch
+\bcircle\b	cir
+\bcounty\b	
+\bharbor\b	harbr
+\bisland\b	
+\bl\'isle\b	isle
+\blimits\b	lmts
+\bmackay\b	mckay
+\bmcgrey\b	mcgray
+\bpointe\b	pte
+\bquebec\b	qc
+\bruelle\b	rle
+\bsainte\b	
+\bsiding\b	
+\bsmiths\b	smith
+\bsquare\b	sq
+\bstreet\b	
+\bvalley\b	
+\bcarre\b	car
+\bclose\b	cl
+\bcourt\b	crt
+\bdrive\b	dr
+\bfirst\b	fst
+\bforks\b	
+\bgrove\b	grv
+\bmanns\b	mann
+\bmetro\b	
+\bmount\b	mt
+\bnorth\b	n
+\bouest\b	o
+\bplace\b	pl
+\bpoint\b	pt
+\brange\b	rg
+\broute\b	rt
+\bsaint\b	
+\bsouth\b	s
+\btrail\b	trl
+\byukon\b	yt
+\bboul\b	blvd
+\bcity\b	
+\bcove\b	
+\beast\b	
+\bfrst\b	fst
+\blake\b	
+\blane\b	ln
+\bnord\b	n
+\bpark\b	
+\bpkwy\b	pky
+\broad\b	
+\bwest\b	o
+\bave\b	av
+\bbay\b	
+\bbdv\b	
+\bblp\b	
+\bcan\b	ca
+\bcbd\b	
+\bctr\b	
+\bdes\b	
+\bere\b	
+\best\b	
+\bile\b	
+\blab\b	
+\bndb\b	
+\bnth\b	n
+\bont\b	on
+\bpei\b	pe
+\brte\b	rt
+\bsal\b	
+\bsmb\b	
+\bste\b	
+\bsth\b	s
+\bsud\b	s
+\bbb\b	
+\bcb\b	
+\bco\b	
+\bd\'\b	
+\bde\b	
+\bdu\b	
+\ber\b	
+\bfn\b	
+\bgb\b	
+\bnd\b	
+\bpk\b	
+\brd\b	
+\bre\b	
+\bst\b	
+\bth\b	
+\bwb\b	
+\bc\b	
+\bd\b	
+\be\b	
+\bw\b	o

@@ -14,7 +14,7 @@
 
 <script>
 
-    description("This tests that the aria 'none' role works by successfully removing the element from the AX tree.");
+    description("This tests that the aria 'none' role works by successfully ignoring the element in the AX tree.");
 
     if (window.accessibilityController) {
 
@@ -22,7 +22,7 @@
           body.focus();
 
           var firstChild = accessibilityController.focusedElement.childAtIndex(0);
-          shouldBe("firstChild.role", "'AXRole: AXLink'");
+          shouldBeTrue("firstChild.isIgnored");
     }
 
 </script>

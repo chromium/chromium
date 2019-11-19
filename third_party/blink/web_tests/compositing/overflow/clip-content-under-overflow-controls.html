@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <style>
 .composited {
-  transform: translateZ(0);
+  will-change: transform;
 }
 
 .container {
@@ -56,10 +56,6 @@
   width:15px;
 }
 </style>
-<script>
-if (window.testRunner)
-    testRunner.dumpAsTextWithPixelResults(); // Only useful as a pixel test
-</script>
 <!-- No red should be visible, only a solid green square. -->
 <div class="container composited">
   <div class="normalContentArea"></div>

@@ -107,6 +107,10 @@ class MODULES_EXPORT DynamicsCompressorNode final : public AudioNode {
   AudioParam* attack() const;
   AudioParam* release() const;
 
+  // InspectorHelperMixin
+  void ReportDidCreate() final;
+  void ReportWillBeDestroyed() final;
+
  private:
   DynamicsCompressorHandler& GetDynamicsCompressorHandler() const;
 

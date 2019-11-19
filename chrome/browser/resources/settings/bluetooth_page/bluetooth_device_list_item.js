@@ -19,7 +19,20 @@ Polymer({
     device: {
       type: Object,
     },
+
+    /**
+     * Uses getDeviceName_ as a label for a11y. It will be added as an
+     * attribute on this top-level bluetooth-device-list-item.
+     */
+    ariaLabel: {
+      type: String,
+      notify: true,
+      reflectToAttribute: true,
+      computed: 'getDeviceName_(device)',
+    },
   },
+
+  hostAttributes: {role: 'button'},
 
   /**
    * @param {!Event} event
@@ -88,8 +101,15 @@ Polymer({
     if (!this.hasConnectionStatusText_(device)) {
       return '';
     }
-    return this.i18n(
-        device.connected ? 'bluetoothConnected' : 'bluetoothNotConnected');
+    if (device.connecting) {
+      return this.i18n('bluetoothConnecting');
+    }
+    if (!device.connected) {
+      return this.i18n('bluetoothNotConnected');
+    }
+    return device.batteryPercentage !== undefined ?
+        this.i18n('bluetoothConnectedWithBattery', device.batteryPercentage) :
+        this.i18n('bluetoothConnected');
   },
 
   /**
@@ -99,7 +119,7 @@ Polymer({
    * @private
    */
   hasConnectionStatusText_: function(device) {
-    return !!device.paired && !device.connecting;
+    return !!(device.paired || device.connecting);
   },
 
   /**
@@ -125,24 +145,24 @@ Polymer({
       case 'computer':
         return 'cr:computer';
       case 'phone':
-        return 'settings:smartphone';
+        return 'os-settings:smartphone';
       case 'audio':
       case 'carAudio':
-        return 'settings:headset';
+        return 'os-settings:headset';
       case 'video':
         return 'cr:videocam';
       case 'joystick':
       case 'gamepad':
-        return 'settings:gamepad';
+        return 'os-settings:gamepad';
       case 'keyboard':
       case 'keyboardMouseCombo':
-        return 'settings:keyboard';
+        return 'os-settings:keyboard';
       case 'tablet':
-        return 'settings:tablet';
+        return 'os-settings:tablet';
       case 'mouse':
-        return 'settings:mouse';
+        return 'os-settings:mouse';
       default:
-        return device.connected ? 'settings:bluetooth-connected' :
+        return device.connected ? 'os-settings:bluetooth-connected' :
                                   'cr:bluetooth';
     }
   },

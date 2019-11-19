@@ -5,13 +5,27 @@
 'use strict';
 
 /**
+ * @implements {MetadataParserLogger}
+ * @final
+ */
+class NoLogger {
+  constructor() {
+    this.verbose = false;
+  }
+
+  error() {}
+  log() {}
+  vlog() {}
+}
+
+/**
  * Test case for ordinal exif encoding and decoding.
  */
 function testExifEncodeAndDecode() {
-  var canvas = getSampleCanvas();
-  var data = canvas.toDataURL('image/jpeg');
+  const canvas = getSampleCanvas();
+  const data = canvas.toDataURL('image/jpeg');
 
-  var metadata = /** @type {!MetadataItem} */ ({
+  const metadata = /** @type {!MetadataItem} */ ({
     mediaMimeType: 'image/jpeg',
     modificationTime: new Date(2015, 0, 7, 15, 30, 6),
     ifd: {
@@ -30,8 +44,7 @@ function testExifEncodeAndDecode() {
       },
       exif: {
         // Lens model
-        42036:
-            {id: 0xa434, format: 2, componentCount: 10, value: 'LensModel\0'}
+        42036: {id: 0xa434, format: 2, componentCount: 10, value: 'LensModel\0'}
       },
       gps: {
         // GPS latitude ref
@@ -40,38 +53,29 @@ function testExifEncodeAndDecode() {
     }
   });
 
-  var encoder = ImageEncoder.encodeMetadata(metadata, canvas, 1);
+  const encoder = ImageEncoder.encodeMetadata(metadata, canvas, 1);
 
   // Assert that ExifEncoder is returned.
   assertTrue(encoder instanceof ExifEncoder);
 
-  var encodedResult = encoder.encode();
+  const encodedResult = encoder.encode();
 
   // Decode encoded exif data.
-  var exifParser = new ExifParser(this);
-
-  // Redirect .log and .vlog to console.log for debugging.
-  exifParser.log = function(arg) {
-    console.log(arg);
-  };
-  exifParser.vlog = function(arg) {
-    console.log(arg);
-  };
-
-  var parsedMetadata = {};
-  var byteReader = new ByteReader(encodedResult);
-  byteReader.readString(2 + 2); // Skip marker and size.
+  const exifParser = new ExifParser(new NoLogger());
+  const parsedMetadata = {};
+  const byteReader = new ByteReader(encodedResult);
+  byteReader.readString(2 + 2);  // Skip marker and size.
   exifParser.parseExifSection(parsedMetadata, encodedResult, byteReader);
 
   // Check ifd.image.
-  assertEquals(1, parsedMetadata.ifd.image[0x112].value); // Orientation
+  assertEquals(1, parsedMetadata.ifd.image[0x112].value);  // Orientation
 
   // Since thumbnail is compressed with JPEG, compression must be 6.
   assertEquals(6, parsedMetadata.ifd.image[0x102].value);
 
   // Check ifd.exif.
-  assertEquals(1920, parsedMetadata.ifd.exif[0xA002].value); // PixelXDimension
-  assertEquals(1080, parsedMetadata.ifd.exif[0xA003].value); // PixelYDimension
+  assertEquals(1920, parsedMetadata.ifd.exif[0xA002].value);  // PixelXDimension
+  assertEquals(1080, parsedMetadata.ifd.exif[0xA003].value);  // PixelYDimension
 
   // These fields should be copied correctly.
   // Manufacture
@@ -84,8 +88,8 @@ function testExifEncodeAndDecode() {
   assertEquals('N\0', parsedMetadata.ifd.gps[0x1].value);
 
   // Software should be set as the Gallery app
-  assertEquals('Chrome OS Gallery App\0',
-      parsedMetadata.ifd.image[0x131].value);
+  assertEquals(
+      'Chrome OS Gallery App\0', parsedMetadata.ifd.image[0x131].value);
 
   // Datetime should be updated.
   assertEquals('2015:01:07 15:30:06\0', parsedMetadata.ifd.image[0x132].value);
@@ -100,13 +104,13 @@ function testExifEncodeAndDecode() {
  * @return {number} Expected thumbnail size.
  */
 function measureExpectedThumbnailSize_() {
-  var canvas = getSampleCanvas();
-  var metadata = /** @type {!MetadataItem} */ ({
+  const canvas = getSampleCanvas();
+  const metadata = /** @type {!MetadataItem} */ ({
     mediaMimeType: 'image/jpeg',
     modificationTime: new Date(2015, 0, 7, 15, 30, 6)
   });
 
-  var encoder = ImageEncoder.encodeMetadata(metadata, canvas, 1);
+  const encoder = ImageEncoder.encodeMetadata(metadata, canvas, 1);
   /** @suppress {accessControls} */
   function getThumbnailDataUrlForTest() {
     return encoder.thumbnailDataUrl;
@@ -122,13 +126,13 @@ function measureExpectedThumbnailSize_() {
  * @param {boolean} expectThumbnail True if thumbnail is expected to be written.
  */
 function largeExifDataTestHelper_(largeFieldValueSize, expectThumbnail) {
-  var canvas = getSampleCanvas();
+  const canvas = getSampleCanvas();
 
   // Generate a long string.
-  var longString = '0'.repeat(largeFieldValueSize - 1);
+  let longString = '0'.repeat(largeFieldValueSize - 1);
   longString += '\0';
 
-  var metadata = /** @type{!MetadataItem} */ ({
+  const metadata = /** @type{!MetadataItem} */ ({
     mediaMimeType: 'image/jpeg',
     modificationTime: new Date(2015, 0, 7, 15, 30, 6),
     ifd: {
@@ -144,17 +148,16 @@ function largeExifDataTestHelper_(largeFieldValueSize, expectThumbnail) {
     }
   });
 
-  var encoder = ImageEncoder.encodeMetadata(metadata, canvas, 1);
+  const encoder = ImageEncoder.encodeMetadata(metadata, canvas, 1);
 
   // For failure case, an error is thrown.
-  var encodedResult = encoder.encode();
+  const encodedResult = encoder.encode();
 
   // Decode encoded exif data and check thumbnail is written or not.
-  var exifParser =
-      new ExifParser(/** @type{MetadataParserLogger} */ ({verbose: false}));
-  var parsedMetadata = {};
-  var byteReader = new ByteReader(encodedResult);
-  byteReader.readString(2 + 2); // Skip marker and size.
+  const exifParser = new ExifParser(new NoLogger());
+  const parsedMetadata = {};
+  const byteReader = new ByteReader(encodedResult);
+  byteReader.readString(2 + 2);  // Skip marker and size.
   exifParser.parseExifSection(parsedMetadata, encodedResult, byteReader);
 
   assertEquals(expectThumbnail, !!parsedMetadata.thumbnailURL);
@@ -167,7 +170,7 @@ function testLargeExifDataSmallCase() {
   // 158 bytes: other exif data except value of the large field.
   largeExifDataTestHelper_(
       ExifEncoder.MAXIMUM_EXIF_DATA_SIZE - measureExpectedThumbnailSize_() -
-      ExifEncoder.THUMBNAIL_METADATA_SIZE - 158 - 1,
+          ExifEncoder.THUMBNAIL_METADATA_SIZE - 158 - 1,
       true);
 }
 
@@ -177,7 +180,7 @@ function testLargeExifDataSmallCase() {
 function testLargeExifDataBoundaryCase() {
   largeExifDataTestHelper_(
       ExifEncoder.MAXIMUM_EXIF_DATA_SIZE - measureExpectedThumbnailSize_() -
-      ExifEncoder.THUMBNAIL_METADATA_SIZE - 158,
+          ExifEncoder.THUMBNAIL_METADATA_SIZE - 158,
       true);
 }
 
@@ -187,6 +190,6 @@ function testLargeExifDataBoundaryCase() {
 function testLargeExifDataExceedsCase() {
   largeExifDataTestHelper_(
       ExifEncoder.MAXIMUM_EXIF_DATA_SIZE - measureExpectedThumbnailSize_() -
-      ExifEncoder.THUMBNAIL_METADATA_SIZE - 158 + 1,
+          ExifEncoder.THUMBNAIL_METADATA_SIZE - 158 + 1,
       false);
 }

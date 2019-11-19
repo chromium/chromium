@@ -34,21 +34,6 @@ namespace {
 const char kTestUserId[] = "testUserId";
 const char kTestUserPrivateKey[] = "kTestUserPrivateKey";
 
-class FakeSecureMessageDelegateFactory
-    : public multidevice::SecureMessageDelegateImpl::Factory {
- public:
-  // multidevice::SecureMessageDelegateImpl::Factory:
-  std::unique_ptr<multidevice::SecureMessageDelegate> BuildInstance() override {
-    multidevice::FakeSecureMessageDelegate* delegate =
-        new multidevice::FakeSecureMessageDelegate();
-    created_delegates_.push_back(delegate);
-    return base::WrapUnique(delegate);
-  }
-
- private:
-  std::vector<multidevice::FakeSecureMessageDelegate*> created_delegates_;
-};
-
 std::vector<cryptauth::ExternalDeviceInfo>
 CreateExternalDeviceInfosForRemoteDevices(
     const multidevice::RemoteDeviceList remote_devices) {
@@ -157,7 +142,7 @@ class DeviceSyncRemoteDeviceProviderImplTest : public testing::Test {
   void SetUp() override {
     fake_device_manager_ = std::make_unique<FakeCryptAuthDeviceManager>();
     fake_secure_message_delegate_factory_ =
-        std::make_unique<FakeSecureMessageDelegateFactory>();
+        std::make_unique<multidevice::FakeSecureMessageDelegateFactory>();
     multidevice::SecureMessageDelegateImpl::Factory::SetInstanceForTesting(
         fake_secure_message_delegate_factory_.get());
     test_device_loader_factory_ =
@@ -206,7 +191,7 @@ class DeviceSyncRemoteDeviceProviderImplTest : public testing::Test {
     return test_device_loader_factory_->test_device_infos_[val];
   }
 
-  std::unique_ptr<FakeSecureMessageDelegateFactory>
+  std::unique_ptr<multidevice::FakeSecureMessageDelegateFactory>
       fake_secure_message_delegate_factory_;
 
   std::unique_ptr<FakeCryptAuthDeviceManager> fake_device_manager_;

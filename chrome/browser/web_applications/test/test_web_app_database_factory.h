@@ -5,8 +5,13 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_TEST_TEST_WEB_APP_DATABASE_FACTORY_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_TEST_TEST_WEB_APP_DATABASE_FACTORY_H_
 
+#include <memory>
+#include <set>
+
 #include "base/macros.h"
+#include "chrome/browser/web_applications/components/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_database_factory.h"
+#include "chrome/browser/web_applications/web_app_registrar.h"
 
 namespace syncer {
 class ModelTypeStore;
@@ -26,6 +31,12 @@ class TestWebAppDatabaseFactory : public AbstractWebAppDatabaseFactory {
   syncer::OnceModelTypeStoreFactory GetStoreFactory() override;
 
   syncer::ModelTypeStore* store() { return store_.get(); }
+
+  Registry ReadRegistry() const;
+
+  std::set<AppId> ReadAllAppIds() const;
+
+  void WriteRegistry(const Registry& registry);
 
  private:
   std::unique_ptr<syncer::ModelTypeStore> store_;

@@ -4,6 +4,7 @@
 
 import("//third_party/closure_compiler/compile_js.gni")
 import("//third_party/closure_compiler/js_unit_tests.gni")
+import("//ui/file_manager/base/gn/js_test_gen_html.gni")
 
 js_type_check("closure_compile_module") {
   deps = [
@@ -34,24 +35,24 @@ js_library("commands") {
     ":image_util",
     ":image_view",
     ":viewport",
-    "../../../file_manager/foreground/elements:files_toast",
+    "//ui/file_manager/file_manager/foreground/elements:files_toast",
   ]
 }
 
 js_library("exif_encoder") {
   deps = [
     ":image_encoder",
-    "../../../file_manager/foreground/js/metadata:exif_constants",
-    "../../../file_manager/foreground/js/metadata:metadata_item",
+    "//ui/file_manager/file_manager/foreground/js/metadata:exif_constants",
+    "//ui/file_manager/file_manager/foreground/js/metadata:metadata_item",
   ]
-  externs_list = [ "../../../externs/exif_entry.js" ]
+  externs_list = [ "//ui/file_manager/externs/exif_entry.js" ]
 }
 
 js_unittest("exif_encoder_unittest") {
   deps = [
     ":exif_encoder",
     ":test_util",
-    "../../../file_manager/foreground/js/metadata:exif_parser",
+    "//ui/file_manager/file_manager/foreground/js/metadata:exif_parser",
     "//ui/webui/resources/js:webui_resource_test",
   ]
 }
@@ -105,17 +106,17 @@ js_library("image_editor_prompt") {
 js_library("image_editor_toolbar") {
   deps = [
     ":image_util",
-    "..:gallery_util",
-    "../../../file_manager/common/js:util",
-    "../../../file_manager/foreground/elements:files_tooltip",
+    "//ui/file_manager/file_manager/common/js:util",
+    "//ui/file_manager/file_manager/foreground/elements:files_tooltip",
+    "//ui/file_manager/gallery/js/:gallery_util",
   ]
-  externs_list = [ "../../../externs/paper_elements.js" ]
+  externs_list = [ "//ui/file_manager/externs/paper_elements.js" ]
 }
 
 js_library("image_encoder") {
   deps = [
     ":image_util",
-    "../../../file_manager/foreground/js/metadata:metadata_item",
+    "//ui/file_manager/file_manager/foreground/js/metadata:metadata_item",
     "//ui/webui/resources/js:assert",
   ]
 }
@@ -124,28 +125,28 @@ js_unittest("image_encoder_unittest") {
   deps = [
     ":image_encoder",
     ":test_util",
-    "../../../file_manager/foreground/js/metadata:metadata_parser",
     "//ui/file_manager/base/js:test_error_reporting",
+    "//ui/file_manager/file_manager/foreground/js/metadata:metadata_parser",
   ]
-  externs_list = [ "../../../externs/metadata_worker_window.js" ]
+  externs_list = [ "//ui/file_manager/externs/metadata_worker_window.js" ]
 }
 
 js_library("image_loader") {
   deps = [
     ":image_util",
-    "..:gallery_item",
-    "../../../file_manager/common/js:file_type",
-    "../../../file_manager/common/js:metrics_base",
-    "../../../file_manager/common/js:util",
-    "../../../file_manager/foreground/js/metadata:metadata_model",
-    "../../../image_loader:image_loader_client",
+    "//ui/file_manager/file_manager/common/js:file_type",
+    "//ui/file_manager/file_manager/common/js:metrics_base",
+    "//ui/file_manager/file_manager/common/js:util",
+    "//ui/file_manager/file_manager/foreground/js/metadata:metadata_model",
+    "//ui/file_manager/gallery/js/:gallery_item",
+    "//ui/file_manager/image_loader:image_loader_client",
   ]
 }
 
 js_library("image_resize") {
   deps = [
     ":image_editor_mode",
-    "../../../file_manager/foreground/js/ui:files_alert_dialog",
+    "//ui/file_manager/file_manager/foreground/js/ui:files_alert_dialog",
   ]
 }
 
@@ -172,9 +173,9 @@ js_library("image_view") {
     ":image_loader",
     ":image_util",
     ":viewport",
-    "..:gallery_item",
-    "../../../file_manager/common/js:metrics_base",
-    "../../../file_manager/foreground/js:thumbnail_loader",
+    "//ui/file_manager/file_manager/common/js:metrics_base",
+    "//ui/file_manager/file_manager/foreground/js:thumbnail_loader",
+    "//ui/file_manager/gallery/js/:gallery_item",
     "//ui/webui/resources/js:assert",
   ]
 }
@@ -182,7 +183,7 @@ js_library("image_view") {
 js_unittest("image_view_unittest") {
   deps = [
     ":image_view",
-    "..:mock_gallery_item",
+    "//ui/file_manager/gallery/js/:mock_gallery_item",
     "//ui/webui/resources/js:webui_resource_test",
   ]
 }
@@ -197,19 +198,19 @@ js_library("viewport") {
   ]
 }
 
-js_unit_tests("unit_tests") {
+js_test_gen_html("js_test_gen_html") {
   deps = [
     ":exif_encoder_unittest",
     ":image_encoder_unittest",
     ":image_view_unittest",
   ]
-  mocks = [ "../../../file_manager/foreground/js/metadata/metadata_dispatcher_mock_deps.js" ]
+  mocks = [ "//ui/file_manager/file_manager/foreground/js/metadata/metadata_dispatcher_mock_deps.js" ]
 }
 
 group("closure_compile") {
   testonly = true
   deps = [
     ":closure_compile_module",
-    ":unit_tests_type_check",
+    ":js_test_gen_html_type_check_auto",
   ]
 }

@@ -238,16 +238,6 @@ void UpdateEnabledTypesInDataBase(sql::Database* db, int type, int version) {
   statement_update.Run();
 }
 
-// Deletes a previously enabled |type| from the Enabled table.
-void DeleteEnabledTypesInDataBase(sql::Database* db, int type) {
-  static const char kSqlDelete[] =
-      "DELETE FROM " ENABLED_TYPES_TABLE_NAME " WHERE type == ?";
-
-  sql::Statement statement_delete(db->GetUniqueStatement(kSqlDelete));
-  statement_delete.BindInt(0, type);
-  statement_delete.Run();
-}
-
 // Checks the current set of enabled types (with their current version)
 // and where a type is now disabled or has a different version, cleans up
 // any associated blacklist entries.
@@ -268,17 +258,12 @@ void CheckAndReconcileEnabledTypesWithDataBase(
         ClearBlacklistForTypeInDataBase(db, type);
         UpdateEnabledTypesInDataBase(db, type, current_version);
       }
-      // Erase entry from the local map to detect any newly disabled types.
-      stored_entries.erase(stored_it);
     }
   }
-
-  // Now check for any types that are no longer enabled.
-  for (auto stored_it : stored_entries) {
-    int type = stored_it.first;
-    ClearBlacklistForTypeInDataBase(db, type);
-    DeleteEnabledTypesInDataBase(db, type);
-  }
+  // Do not delete types that are not in |allowed_types|. They will get cleaned
+  // up eventually when they expire if the type is truly gone. However, if the
+  // type has been removed temporarily (like in a holdback experiment), then
+  // it'll still be around for the next time it is used.
 }
 
 void LoadBlackListFromDataBase(

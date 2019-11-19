@@ -13,13 +13,13 @@
 #include "base/run_loop.h"
 #include "base/sequenced_task_runner.h"
 #include "base/strings/sys_string_conversions.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "ios/chrome/browser/chrome_paths.h"
 #import "ios/chrome/browser/sessions/session_ios.h"
 #import "ios/chrome/browser/sessions/session_service_ios.h"
 #import "ios/chrome/browser/sessions/session_window_ios.h"
-#import "ios/web/public/crw_session_storage.h"
+#import "ios/web/public/session/crw_session_storage.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/gtest_mac.h"
 #include "testing/platform_test.h"
@@ -96,7 +96,7 @@ class SessionServiceTest : public PlatformTest {
 
  private:
   base::ScopedTempDir scoped_temp_directory_;
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_;
   SessionServiceIOS* session_service_;
   NSString* directory_;
 

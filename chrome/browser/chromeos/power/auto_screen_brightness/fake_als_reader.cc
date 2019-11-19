@@ -8,7 +8,7 @@ namespace chromeos {
 namespace power {
 namespace auto_screen_brightness {
 
-FakeAlsReader::FakeAlsReader() : weak_ptr_factory_(this) {}
+FakeAlsReader::FakeAlsReader() {}
 
 FakeAlsReader::~FakeAlsReader() = default;
 

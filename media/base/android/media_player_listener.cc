@@ -10,7 +10,7 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/single_thread_task_runner.h"
-#include "jni/MediaPlayerListener_jni.h"
+#include "media/base/android/media_jni_headers/MediaPlayerListener_jni.h"
 #include "media/base/android/media_player_bridge.h"
 
 using base::android::AttachCurrentThread;

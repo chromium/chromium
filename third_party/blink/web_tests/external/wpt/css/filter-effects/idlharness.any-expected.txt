@@ -1,0 +1,490 @@
+This is a testharness.js-based test.
+Found 486 tests; 476 PASS, 10 FAIL, 0 TIMEOUT, 0 NOTRUN.
+PASS idl_test setup
+PASS idl_test validation
+PASS SVGFilterElement includes SVGURIReference: member names are unique
+PASS SVGFEBlendElement includes SVGFilterPrimitiveStandardAttributes: member names are unique
+PASS SVGFEColorMatrixElement includes SVGFilterPrimitiveStandardAttributes: member names are unique
+PASS SVGFEComponentTransferElement includes SVGFilterPrimitiveStandardAttributes: member names are unique
+PASS SVGFECompositeElement includes SVGFilterPrimitiveStandardAttributes: member names are unique
+PASS SVGFEConvolveMatrixElement includes SVGFilterPrimitiveStandardAttributes: member names are unique
+PASS SVGFEDiffuseLightingElement includes SVGFilterPrimitiveStandardAttributes: member names are unique
+PASS SVGFEDisplacementMapElement includes SVGFilterPrimitiveStandardAttributes: member names are unique
+PASS SVGFEDropShadowElement includes SVGFilterPrimitiveStandardAttributes: member names are unique
+PASS SVGFEFloodElement includes SVGFilterPrimitiveStandardAttributes: member names are unique
+PASS SVGFEGaussianBlurElement includes SVGFilterPrimitiveStandardAttributes: member names are unique
+PASS SVGFEImageElement includes SVGFilterPrimitiveStandardAttributes: member names are unique
+PASS SVGFEImageElement includes SVGURIReference: member names are unique
+PASS SVGFEMergeElement includes SVGFilterPrimitiveStandardAttributes: member names are unique
+PASS SVGFEMorphologyElement includes SVGFilterPrimitiveStandardAttributes: member names are unique
+PASS SVGFEOffsetElement includes SVGFilterPrimitiveStandardAttributes: member names are unique
+PASS SVGFESpecularLightingElement includes SVGFilterPrimitiveStandardAttributes: member names are unique
+PASS SVGFETileElement includes SVGFilterPrimitiveStandardAttributes: member names are unique
+PASS SVGFETurbulenceElement includes SVGFilterPrimitiveStandardAttributes: member names are unique
+PASS SVGElement includes GlobalEventHandlers: member names are unique
+PASS SVGElement includes DocumentAndElementEventHandlers: member names are unique
+PASS SVGElement includes SVGElementInstance: member names are unique
+PASS SVGElement includes HTMLOrSVGElement: member names are unique
+PASS Element includes ParentNode: member names are unique
+PASS Element includes NonDocumentTypeChildNode: member names are unique
+PASS Element includes ChildNode: member names are unique
+PASS Element includes Slotable: member names are unique
+PASS SVGFilterElement interface: existence and properties of interface object
+PASS SVGFilterElement interface object length
+PASS SVGFilterElement interface object name
+PASS SVGFilterElement interface: existence and properties of interface prototype object
+PASS SVGFilterElement interface: existence and properties of interface prototype object's "constructor" property
+PASS SVGFilterElement interface: existence and properties of interface prototype object's @@unscopables property
+PASS SVGFilterElement interface: attribute filterUnits
+PASS SVGFilterElement interface: attribute primitiveUnits
+PASS SVGFilterElement interface: attribute x
+PASS SVGFilterElement interface: attribute y
+PASS SVGFilterElement interface: attribute width
+PASS SVGFilterElement interface: attribute height
+PASS SVGFEBlendElement interface: existence and properties of interface object
+PASS SVGFEBlendElement interface object length
+PASS SVGFEBlendElement interface object name
+PASS SVGFEBlendElement interface: existence and properties of interface prototype object
+PASS SVGFEBlendElement interface: existence and properties of interface prototype object's "constructor" property
+PASS SVGFEBlendElement interface: existence and properties of interface prototype object's @@unscopables property
+PASS SVGFEBlendElement interface: constant SVG_FEBLEND_MODE_UNKNOWN on interface object
+PASS SVGFEBlendElement interface: constant SVG_FEBLEND_MODE_UNKNOWN on interface prototype object
+PASS SVGFEBlendElement interface: constant SVG_FEBLEND_MODE_NORMAL on interface object
+PASS SVGFEBlendElement interface: constant SVG_FEBLEND_MODE_NORMAL on interface prototype object
+PASS SVGFEBlendElement interface: constant SVG_FEBLEND_MODE_MULTIPLY on interface object
+PASS SVGFEBlendElement interface: constant SVG_FEBLEND_MODE_MULTIPLY on interface prototype object
+PASS SVGFEBlendElement interface: constant SVG_FEBLEND_MODE_SCREEN on interface object
+PASS SVGFEBlendElement interface: constant SVG_FEBLEND_MODE_SCREEN on interface prototype object
+PASS SVGFEBlendElement interface: constant SVG_FEBLEND_MODE_DARKEN on interface object
+PASS SVGFEBlendElement interface: constant SVG_FEBLEND_MODE_DARKEN on interface prototype object
+PASS SVGFEBlendElement interface: constant SVG_FEBLEND_MODE_LIGHTEN on interface object
+PASS SVGFEBlendElement interface: constant SVG_FEBLEND_MODE_LIGHTEN on interface prototype object
+PASS SVGFEBlendElement interface: constant SVG_FEBLEND_MODE_OVERLAY on interface object
+PASS SVGFEBlendElement interface: constant SVG_FEBLEND_MODE_OVERLAY on interface prototype object
+PASS SVGFEBlendElement interface: constant SVG_FEBLEND_MODE_COLOR_DODGE on interface object
+PASS SVGFEBlendElement interface: constant SVG_FEBLEND_MODE_COLOR_DODGE on interface prototype object
+PASS SVGFEBlendElement interface: constant SVG_FEBLEND_MODE_COLOR_BURN on interface object
+PASS SVGFEBlendElement interface: constant SVG_FEBLEND_MODE_COLOR_BURN on interface prototype object
+PASS SVGFEBlendElement interface: constant SVG_FEBLEND_MODE_HARD_LIGHT on interface object
+PASS SVGFEBlendElement interface: constant SVG_FEBLEND_MODE_HARD_LIGHT on interface prototype object
+PASS SVGFEBlendElement interface: constant SVG_FEBLEND_MODE_SOFT_LIGHT on interface object
+PASS SVGFEBlendElement interface: constant SVG_FEBLEND_MODE_SOFT_LIGHT on interface prototype object
+PASS SVGFEBlendElement interface: constant SVG_FEBLEND_MODE_DIFFERENCE on interface object
+PASS SVGFEBlendElement interface: constant SVG_FEBLEND_MODE_DIFFERENCE on interface prototype object
+PASS SVGFEBlendElement interface: constant SVG_FEBLEND_MODE_EXCLUSION on interface object
+PASS SVGFEBlendElement interface: constant SVG_FEBLEND_MODE_EXCLUSION on interface prototype object
+PASS SVGFEBlendElement interface: constant SVG_FEBLEND_MODE_HUE on interface object
+PASS SVGFEBlendElement interface: constant SVG_FEBLEND_MODE_HUE on interface prototype object
+PASS SVGFEBlendElement interface: constant SVG_FEBLEND_MODE_SATURATION on interface object
+PASS SVGFEBlendElement interface: constant SVG_FEBLEND_MODE_SATURATION on interface prototype object
+PASS SVGFEBlendElement interface: constant SVG_FEBLEND_MODE_COLOR on interface object
+PASS SVGFEBlendElement interface: constant SVG_FEBLEND_MODE_COLOR on interface prototype object
+PASS SVGFEBlendElement interface: constant SVG_FEBLEND_MODE_LUMINOSITY on interface object
+PASS SVGFEBlendElement interface: constant SVG_FEBLEND_MODE_LUMINOSITY on interface prototype object
+PASS SVGFEBlendElement interface: attribute in1
+PASS SVGFEBlendElement interface: attribute in2
+PASS SVGFEBlendElement interface: attribute mode
+PASS SVGFEBlendElement interface: attribute x
+PASS SVGFEBlendElement interface: attribute y
+PASS SVGFEBlendElement interface: attribute width
+PASS SVGFEBlendElement interface: attribute height
+PASS SVGFEBlendElement interface: attribute result
+PASS SVGFEColorMatrixElement interface: existence and properties of interface object
+PASS SVGFEColorMatrixElement interface object length
+PASS SVGFEColorMatrixElement interface object name
+PASS SVGFEColorMatrixElement interface: existence and properties of interface prototype object
+PASS SVGFEColorMatrixElement interface: existence and properties of interface prototype object's "constructor" property
+PASS SVGFEColorMatrixElement interface: existence and properties of interface prototype object's @@unscopables property
+PASS SVGFEColorMatrixElement interface: constant SVG_FECOLORMATRIX_TYPE_UNKNOWN on interface object
+PASS SVGFEColorMatrixElement interface: constant SVG_FECOLORMATRIX_TYPE_UNKNOWN on interface prototype object
+PASS SVGFEColorMatrixElement interface: constant SVG_FECOLORMATRIX_TYPE_MATRIX on interface object
+PASS SVGFEColorMatrixElement interface: constant SVG_FECOLORMATRIX_TYPE_MATRIX on interface prototype object
+PASS SVGFEColorMatrixElement interface: constant SVG_FECOLORMATRIX_TYPE_SATURATE on interface object
+PASS SVGFEColorMatrixElement interface: constant SVG_FECOLORMATRIX_TYPE_SATURATE on interface prototype object
+PASS SVGFEColorMatrixElement interface: constant SVG_FECOLORMATRIX_TYPE_HUEROTATE on interface object
+PASS SVGFEColorMatrixElement interface: constant SVG_FECOLORMATRIX_TYPE_HUEROTATE on interface prototype object
+PASS SVGFEColorMatrixElement interface: constant SVG_FECOLORMATRIX_TYPE_LUMINANCETOALPHA on interface object
+PASS SVGFEColorMatrixElement interface: constant SVG_FECOLORMATRIX_TYPE_LUMINANCETOALPHA on interface prototype object
+PASS SVGFEColorMatrixElement interface: attribute in1
+PASS SVGFEColorMatrixElement interface: attribute type
+PASS SVGFEColorMatrixElement interface: attribute values
+PASS SVGFEColorMatrixElement interface: attribute x
+PASS SVGFEColorMatrixElement interface: attribute y
+PASS SVGFEColorMatrixElement interface: attribute width
+PASS SVGFEColorMatrixElement interface: attribute height
+PASS SVGFEColorMatrixElement interface: attribute result
+PASS SVGFEComponentTransferElement interface: existence and properties of interface object
+PASS SVGFEComponentTransferElement interface object length
+PASS SVGFEComponentTransferElement interface object name
+PASS SVGFEComponentTransferElement interface: existence and properties of interface prototype object
+PASS SVGFEComponentTransferElement interface: existence and properties of interface prototype object's "constructor" property
+PASS SVGFEComponentTransferElement interface: existence and properties of interface prototype object's @@unscopables property
+PASS SVGFEComponentTransferElement interface: attribute in1
+PASS SVGFEComponentTransferElement interface: attribute x
+PASS SVGFEComponentTransferElement interface: attribute y
+PASS SVGFEComponentTransferElement interface: attribute width
+PASS SVGFEComponentTransferElement interface: attribute height
+PASS SVGFEComponentTransferElement interface: attribute result
+PASS SVGComponentTransferFunctionElement interface: existence and properties of interface object
+PASS SVGComponentTransferFunctionElement interface object length
+PASS SVGComponentTransferFunctionElement interface object name
+PASS SVGComponentTransferFunctionElement interface: existence and properties of interface prototype object
+PASS SVGComponentTransferFunctionElement interface: existence and properties of interface prototype object's "constructor" property
+PASS SVGComponentTransferFunctionElement interface: existence and properties of interface prototype object's @@unscopables property
+PASS SVGComponentTransferFunctionElement interface: constant SVG_FECOMPONENTTRANSFER_TYPE_UNKNOWN on interface object
+PASS SVGComponentTransferFunctionElement interface: constant SVG_FECOMPONENTTRANSFER_TYPE_UNKNOWN on interface prototype object
+PASS SVGComponentTransferFunctionElement interface: constant SVG_FECOMPONENTTRANSFER_TYPE_IDENTITY on interface object
+PASS SVGComponentTransferFunctionElement interface: constant SVG_FECOMPONENTTRANSFER_TYPE_IDENTITY on interface prototype object
+PASS SVGComponentTransferFunctionElement interface: constant SVG_FECOMPONENTTRANSFER_TYPE_TABLE on interface object
+PASS SVGComponentTransferFunctionElement interface: constant SVG_FECOMPONENTTRANSFER_TYPE_TABLE on interface prototype object
+PASS SVGComponentTransferFunctionElement interface: constant SVG_FECOMPONENTTRANSFER_TYPE_DISCRETE on interface object
+PASS SVGComponentTransferFunctionElement interface: constant SVG_FECOMPONENTTRANSFER_TYPE_DISCRETE on interface prototype object
+PASS SVGComponentTransferFunctionElement interface: constant SVG_FECOMPONENTTRANSFER_TYPE_LINEAR on interface object
+PASS SVGComponentTransferFunctionElement interface: constant SVG_FECOMPONENTTRANSFER_TYPE_LINEAR on interface prototype object
+PASS SVGComponentTransferFunctionElement interface: constant SVG_FECOMPONENTTRANSFER_TYPE_GAMMA on interface object
+PASS SVGComponentTransferFunctionElement interface: constant SVG_FECOMPONENTTRANSFER_TYPE_GAMMA on interface prototype object
+PASS SVGComponentTransferFunctionElement interface: attribute type
+PASS SVGComponentTransferFunctionElement interface: attribute tableValues
+PASS SVGComponentTransferFunctionElement interface: attribute slope
+PASS SVGComponentTransferFunctionElement interface: attribute intercept
+PASS SVGComponentTransferFunctionElement interface: attribute amplitude
+PASS SVGComponentTransferFunctionElement interface: attribute exponent
+PASS SVGComponentTransferFunctionElement interface: attribute offset
+PASS SVGFEFuncRElement interface: existence and properties of interface object
+PASS SVGFEFuncRElement interface object length
+PASS SVGFEFuncRElement interface object name
+PASS SVGFEFuncRElement interface: existence and properties of interface prototype object
+PASS SVGFEFuncRElement interface: existence and properties of interface prototype object's "constructor" property
+PASS SVGFEFuncRElement interface: existence and properties of interface prototype object's @@unscopables property
+PASS SVGFEFuncGElement interface: existence and properties of interface object
+PASS SVGFEFuncGElement interface object length
+PASS SVGFEFuncGElement interface object name
+PASS SVGFEFuncGElement interface: existence and properties of interface prototype object
+PASS SVGFEFuncGElement interface: existence and properties of interface prototype object's "constructor" property
+PASS SVGFEFuncGElement interface: existence and properties of interface prototype object's @@unscopables property
+PASS SVGFEFuncBElement interface: existence and properties of interface object
+PASS SVGFEFuncBElement interface object length
+PASS SVGFEFuncBElement interface object name
+PASS SVGFEFuncBElement interface: existence and properties of interface prototype object
+PASS SVGFEFuncBElement interface: existence and properties of interface prototype object's "constructor" property
+PASS SVGFEFuncBElement interface: existence and properties of interface prototype object's @@unscopables property
+PASS SVGFEFuncAElement interface: existence and properties of interface object
+PASS SVGFEFuncAElement interface object length
+PASS SVGFEFuncAElement interface object name
+PASS SVGFEFuncAElement interface: existence and properties of interface prototype object
+PASS SVGFEFuncAElement interface: existence and properties of interface prototype object's "constructor" property
+PASS SVGFEFuncAElement interface: existence and properties of interface prototype object's @@unscopables property
+PASS SVGFECompositeElement interface: existence and properties of interface object
+PASS SVGFECompositeElement interface object length
+PASS SVGFECompositeElement interface object name
+PASS SVGFECompositeElement interface: existence and properties of interface prototype object
+PASS SVGFECompositeElement interface: existence and properties of interface prototype object's "constructor" property
+PASS SVGFECompositeElement interface: existence and properties of interface prototype object's @@unscopables property
+PASS SVGFECompositeElement interface: constant SVG_FECOMPOSITE_OPERATOR_UNKNOWN on interface object
+PASS SVGFECompositeElement interface: constant SVG_FECOMPOSITE_OPERATOR_UNKNOWN on interface prototype object
+PASS SVGFECompositeElement interface: constant SVG_FECOMPOSITE_OPERATOR_OVER on interface object
+PASS SVGFECompositeElement interface: constant SVG_FECOMPOSITE_OPERATOR_OVER on interface prototype object
+PASS SVGFECompositeElement interface: constant SVG_FECOMPOSITE_OPERATOR_IN on interface object
+PASS SVGFECompositeElement interface: constant SVG_FECOMPOSITE_OPERATOR_IN on interface prototype object
+PASS SVGFECompositeElement interface: constant SVG_FECOMPOSITE_OPERATOR_OUT on interface object
+PASS SVGFECompositeElement interface: constant SVG_FECOMPOSITE_OPERATOR_OUT on interface prototype object
+PASS SVGFECompositeElement interface: constant SVG_FECOMPOSITE_OPERATOR_ATOP on interface object
+PASS SVGFECompositeElement interface: constant SVG_FECOMPOSITE_OPERATOR_ATOP on interface prototype object
+PASS SVGFECompositeElement interface: constant SVG_FECOMPOSITE_OPERATOR_XOR on interface object
+PASS SVGFECompositeElement interface: constant SVG_FECOMPOSITE_OPERATOR_XOR on interface prototype object
+PASS SVGFECompositeElement interface: constant SVG_FECOMPOSITE_OPERATOR_ARITHMETIC on interface object
+PASS SVGFECompositeElement interface: constant SVG_FECOMPOSITE_OPERATOR_ARITHMETIC on interface prototype object
+PASS SVGFECompositeElement interface: attribute in1
+PASS SVGFECompositeElement interface: attribute in2
+PASS SVGFECompositeElement interface: attribute operator
+PASS SVGFECompositeElement interface: attribute k1
+PASS SVGFECompositeElement interface: attribute k2
+PASS SVGFECompositeElement interface: attribute k3
+PASS SVGFECompositeElement interface: attribute k4
+PASS SVGFECompositeElement interface: attribute x
+PASS SVGFECompositeElement interface: attribute y
+PASS SVGFECompositeElement interface: attribute width
+PASS SVGFECompositeElement interface: attribute height
+PASS SVGFECompositeElement interface: attribute result
+PASS SVGFEConvolveMatrixElement interface: existence and properties of interface object
+PASS SVGFEConvolveMatrixElement interface object length
+PASS SVGFEConvolveMatrixElement interface object name
+PASS SVGFEConvolveMatrixElement interface: existence and properties of interface prototype object
+PASS SVGFEConvolveMatrixElement interface: existence and properties of interface prototype object's "constructor" property
+PASS SVGFEConvolveMatrixElement interface: existence and properties of interface prototype object's @@unscopables property
+PASS SVGFEConvolveMatrixElement interface: constant SVG_EDGEMODE_UNKNOWN on interface object
+PASS SVGFEConvolveMatrixElement interface: constant SVG_EDGEMODE_UNKNOWN on interface prototype object
+PASS SVGFEConvolveMatrixElement interface: constant SVG_EDGEMODE_DUPLICATE on interface object
+PASS SVGFEConvolveMatrixElement interface: constant SVG_EDGEMODE_DUPLICATE on interface prototype object
+PASS SVGFEConvolveMatrixElement interface: constant SVG_EDGEMODE_WRAP on interface object
+PASS SVGFEConvolveMatrixElement interface: constant SVG_EDGEMODE_WRAP on interface prototype object
+PASS SVGFEConvolveMatrixElement interface: constant SVG_EDGEMODE_NONE on interface object
+PASS SVGFEConvolveMatrixElement interface: constant SVG_EDGEMODE_NONE on interface prototype object
+PASS SVGFEConvolveMatrixElement interface: attribute in1
+PASS SVGFEConvolveMatrixElement interface: attribute orderX
+PASS SVGFEConvolveMatrixElement interface: attribute orderY
+PASS SVGFEConvolveMatrixElement interface: attribute kernelMatrix
+PASS SVGFEConvolveMatrixElement interface: attribute divisor
+PASS SVGFEConvolveMatrixElement interface: attribute bias
+PASS SVGFEConvolveMatrixElement interface: attribute targetX
+PASS SVGFEConvolveMatrixElement interface: attribute targetY
+PASS SVGFEConvolveMatrixElement interface: attribute edgeMode
+PASS SVGFEConvolveMatrixElement interface: attribute kernelUnitLengthX
+PASS SVGFEConvolveMatrixElement interface: attribute kernelUnitLengthY
+PASS SVGFEConvolveMatrixElement interface: attribute preserveAlpha
+PASS SVGFEConvolveMatrixElement interface: attribute x
+PASS SVGFEConvolveMatrixElement interface: attribute y
+PASS SVGFEConvolveMatrixElement interface: attribute width
+PASS SVGFEConvolveMatrixElement interface: attribute height
+PASS SVGFEConvolveMatrixElement interface: attribute result
+PASS SVGFEDiffuseLightingElement interface: existence and properties of interface object
+PASS SVGFEDiffuseLightingElement interface object length
+PASS SVGFEDiffuseLightingElement interface object name
+PASS SVGFEDiffuseLightingElement interface: existence and properties of interface prototype object
+PASS SVGFEDiffuseLightingElement interface: existence and properties of interface prototype object's "constructor" property
+PASS SVGFEDiffuseLightingElement interface: existence and properties of interface prototype object's @@unscopables property
+PASS SVGFEDiffuseLightingElement interface: attribute in1
+PASS SVGFEDiffuseLightingElement interface: attribute surfaceScale
+PASS SVGFEDiffuseLightingElement interface: attribute diffuseConstant
+PASS SVGFEDiffuseLightingElement interface: attribute kernelUnitLengthX
+PASS SVGFEDiffuseLightingElement interface: attribute kernelUnitLengthY
+PASS SVGFEDiffuseLightingElement interface: attribute x
+PASS SVGFEDiffuseLightingElement interface: attribute y
+PASS SVGFEDiffuseLightingElement interface: attribute width
+PASS SVGFEDiffuseLightingElement interface: attribute height
+PASS SVGFEDiffuseLightingElement interface: attribute result
+PASS SVGFEDistantLightElement interface: existence and properties of interface object
+PASS SVGFEDistantLightElement interface object length
+PASS SVGFEDistantLightElement interface object name
+PASS SVGFEDistantLightElement interface: existence and properties of interface prototype object
+PASS SVGFEDistantLightElement interface: existence and properties of interface prototype object's "constructor" property
+PASS SVGFEDistantLightElement interface: existence and properties of interface prototype object's @@unscopables property
+PASS SVGFEDistantLightElement interface: attribute azimuth
+PASS SVGFEDistantLightElement interface: attribute elevation
+PASS SVGFEPointLightElement interface: existence and properties of interface object
+PASS SVGFEPointLightElement interface object length
+PASS SVGFEPointLightElement interface object name
+PASS SVGFEPointLightElement interface: existence and properties of interface prototype object
+PASS SVGFEPointLightElement interface: existence and properties of interface prototype object's "constructor" property
+PASS SVGFEPointLightElement interface: existence and properties of interface prototype object's @@unscopables property
+PASS SVGFEPointLightElement interface: attribute x
+PASS SVGFEPointLightElement interface: attribute y
+PASS SVGFEPointLightElement interface: attribute z
+PASS SVGFESpotLightElement interface: existence and properties of interface object
+PASS SVGFESpotLightElement interface object length
+PASS SVGFESpotLightElement interface object name
+PASS SVGFESpotLightElement interface: existence and properties of interface prototype object
+PASS SVGFESpotLightElement interface: existence and properties of interface prototype object's "constructor" property
+PASS SVGFESpotLightElement interface: existence and properties of interface prototype object's @@unscopables property
+PASS SVGFESpotLightElement interface: attribute x
+PASS SVGFESpotLightElement interface: attribute y
+PASS SVGFESpotLightElement interface: attribute z
+PASS SVGFESpotLightElement interface: attribute pointsAtX
+PASS SVGFESpotLightElement interface: attribute pointsAtY
+PASS SVGFESpotLightElement interface: attribute pointsAtZ
+PASS SVGFESpotLightElement interface: attribute specularExponent
+PASS SVGFESpotLightElement interface: attribute limitingConeAngle
+PASS SVGFEDisplacementMapElement interface: existence and properties of interface object
+PASS SVGFEDisplacementMapElement interface object length
+PASS SVGFEDisplacementMapElement interface object name
+PASS SVGFEDisplacementMapElement interface: existence and properties of interface prototype object
+PASS SVGFEDisplacementMapElement interface: existence and properties of interface prototype object's "constructor" property
+PASS SVGFEDisplacementMapElement interface: existence and properties of interface prototype object's @@unscopables property
+PASS SVGFEDisplacementMapElement interface: constant SVG_CHANNEL_UNKNOWN on interface object
+PASS SVGFEDisplacementMapElement interface: constant SVG_CHANNEL_UNKNOWN on interface prototype object
+PASS SVGFEDisplacementMapElement interface: constant SVG_CHANNEL_R on interface object
+PASS SVGFEDisplacementMapElement interface: constant SVG_CHANNEL_R on interface prototype object
+PASS SVGFEDisplacementMapElement interface: constant SVG_CHANNEL_G on interface object
+PASS SVGFEDisplacementMapElement interface: constant SVG_CHANNEL_G on interface prototype object
+PASS SVGFEDisplacementMapElement interface: constant SVG_CHANNEL_B on interface object
+PASS SVGFEDisplacementMapElement interface: constant SVG_CHANNEL_B on interface prototype object
+PASS SVGFEDisplacementMapElement interface: constant SVG_CHANNEL_A on interface object
+PASS SVGFEDisplacementMapElement interface: constant SVG_CHANNEL_A on interface prototype object
+PASS SVGFEDisplacementMapElement interface: attribute in1
+PASS SVGFEDisplacementMapElement interface: attribute in2
+PASS SVGFEDisplacementMapElement interface: attribute scale
+PASS SVGFEDisplacementMapElement interface: attribute xChannelSelector
+PASS SVGFEDisplacementMapElement interface: attribute yChannelSelector
+PASS SVGFEDisplacementMapElement interface: attribute x
+PASS SVGFEDisplacementMapElement interface: attribute y
+PASS SVGFEDisplacementMapElement interface: attribute width
+PASS SVGFEDisplacementMapElement interface: attribute height
+PASS SVGFEDisplacementMapElement interface: attribute result
+PASS SVGFEDropShadowElement interface: existence and properties of interface object
+PASS SVGFEDropShadowElement interface object length
+PASS SVGFEDropShadowElement interface object name
+PASS SVGFEDropShadowElement interface: existence and properties of interface prototype object
+PASS SVGFEDropShadowElement interface: existence and properties of interface prototype object's "constructor" property
+PASS SVGFEDropShadowElement interface: existence and properties of interface prototype object's @@unscopables property
+PASS SVGFEDropShadowElement interface: attribute in1
+PASS SVGFEDropShadowElement interface: attribute dx
+PASS SVGFEDropShadowElement interface: attribute dy
+PASS SVGFEDropShadowElement interface: attribute stdDeviationX
+PASS SVGFEDropShadowElement interface: attribute stdDeviationY
+PASS SVGFEDropShadowElement interface: operation setStdDeviation(float, float)
+PASS SVGFEDropShadowElement interface: attribute x
+PASS SVGFEDropShadowElement interface: attribute y
+PASS SVGFEDropShadowElement interface: attribute width
+PASS SVGFEDropShadowElement interface: attribute height
+PASS SVGFEDropShadowElement interface: attribute result
+PASS SVGFEFloodElement interface: existence and properties of interface object
+PASS SVGFEFloodElement interface object length
+PASS SVGFEFloodElement interface object name
+PASS SVGFEFloodElement interface: existence and properties of interface prototype object
+PASS SVGFEFloodElement interface: existence and properties of interface prototype object's "constructor" property
+PASS SVGFEFloodElement interface: existence and properties of interface prototype object's @@unscopables property
+PASS SVGFEFloodElement interface: attribute x
+PASS SVGFEFloodElement interface: attribute y
+PASS SVGFEFloodElement interface: attribute width
+PASS SVGFEFloodElement interface: attribute height
+PASS SVGFEFloodElement interface: attribute result
+PASS SVGFEGaussianBlurElement interface: existence and properties of interface object
+PASS SVGFEGaussianBlurElement interface object length
+PASS SVGFEGaussianBlurElement interface object name
+PASS SVGFEGaussianBlurElement interface: existence and properties of interface prototype object
+PASS SVGFEGaussianBlurElement interface: existence and properties of interface prototype object's "constructor" property
+PASS SVGFEGaussianBlurElement interface: existence and properties of interface prototype object's @@unscopables property
+FAIL SVGFEGaussianBlurElement interface: constant SVG_EDGEMODE_UNKNOWN on interface object assert_own_property: expected property "SVG_EDGEMODE_UNKNOWN" missing
+FAIL SVGFEGaussianBlurElement interface: constant SVG_EDGEMODE_UNKNOWN on interface prototype object assert_own_property: expected property "SVG_EDGEMODE_UNKNOWN" missing
+FAIL SVGFEGaussianBlurElement interface: constant SVG_EDGEMODE_DUPLICATE on interface object assert_own_property: expected property "SVG_EDGEMODE_DUPLICATE" missing
+FAIL SVGFEGaussianBlurElement interface: constant SVG_EDGEMODE_DUPLICATE on interface prototype object assert_own_property: expected property "SVG_EDGEMODE_DUPLICATE" missing
+FAIL SVGFEGaussianBlurElement interface: constant SVG_EDGEMODE_WRAP on interface object assert_own_property: expected property "SVG_EDGEMODE_WRAP" missing
+FAIL SVGFEGaussianBlurElement interface: constant SVG_EDGEMODE_WRAP on interface prototype object assert_own_property: expected property "SVG_EDGEMODE_WRAP" missing
+FAIL SVGFEGaussianBlurElement interface: constant SVG_EDGEMODE_NONE on interface object assert_own_property: expected property "SVG_EDGEMODE_NONE" missing
+FAIL SVGFEGaussianBlurElement interface: constant SVG_EDGEMODE_NONE on interface prototype object assert_own_property: expected property "SVG_EDGEMODE_NONE" missing
+PASS SVGFEGaussianBlurElement interface: attribute in1
+PASS SVGFEGaussianBlurElement interface: attribute stdDeviationX
+PASS SVGFEGaussianBlurElement interface: attribute stdDeviationY
+FAIL SVGFEGaussianBlurElement interface: attribute edgeMode assert_true: The prototype object must have a property "edgeMode" expected true got false
+PASS SVGFEGaussianBlurElement interface: operation setStdDeviation(float, float)
+PASS SVGFEGaussianBlurElement interface: attribute x
+PASS SVGFEGaussianBlurElement interface: attribute y
+PASS SVGFEGaussianBlurElement interface: attribute width
+PASS SVGFEGaussianBlurElement interface: attribute height
+PASS SVGFEGaussianBlurElement interface: attribute result
+PASS SVGFEImageElement interface: existence and properties of interface object
+PASS SVGFEImageElement interface object length
+PASS SVGFEImageElement interface object name
+PASS SVGFEImageElement interface: existence and properties of interface prototype object
+PASS SVGFEImageElement interface: existence and properties of interface prototype object's "constructor" property
+PASS SVGFEImageElement interface: existence and properties of interface prototype object's @@unscopables property
+PASS SVGFEImageElement interface: attribute preserveAspectRatio
+FAIL SVGFEImageElement interface: attribute crossOrigin assert_true: The prototype object must have a property "crossOrigin" expected true got false
+PASS SVGFEImageElement interface: attribute x
+PASS SVGFEImageElement interface: attribute y
+PASS SVGFEImageElement interface: attribute width
+PASS SVGFEImageElement interface: attribute height
+PASS SVGFEImageElement interface: attribute result
+PASS SVGFEMergeElement interface: existence and properties of interface object
+PASS SVGFEMergeElement interface object length
+PASS SVGFEMergeElement interface object name
+PASS SVGFEMergeElement interface: existence and properties of interface prototype object
+PASS SVGFEMergeElement interface: existence and properties of interface prototype object's "constructor" property
+PASS SVGFEMergeElement interface: existence and properties of interface prototype object's @@unscopables property
+PASS SVGFEMergeElement interface: attribute x
+PASS SVGFEMergeElement interface: attribute y
+PASS SVGFEMergeElement interface: attribute width
+PASS SVGFEMergeElement interface: attribute height
+PASS SVGFEMergeElement interface: attribute result
+PASS SVGFEMergeNodeElement interface: existence and properties of interface object
+PASS SVGFEMergeNodeElement interface object length
+PASS SVGFEMergeNodeElement interface object name
+PASS SVGFEMergeNodeElement interface: existence and properties of interface prototype object
+PASS SVGFEMergeNodeElement interface: existence and properties of interface prototype object's "constructor" property
+PASS SVGFEMergeNodeElement interface: existence and properties of interface prototype object's @@unscopables property
+PASS SVGFEMergeNodeElement interface: attribute in1
+PASS SVGFEMorphologyElement interface: existence and properties of interface object
+PASS SVGFEMorphologyElement interface object length
+PASS SVGFEMorphologyElement interface object name
+PASS SVGFEMorphologyElement interface: existence and properties of interface prototype object
+PASS SVGFEMorphologyElement interface: existence and properties of interface prototype object's "constructor" property
+PASS SVGFEMorphologyElement interface: existence and properties of interface prototype object's @@unscopables property
+PASS SVGFEMorphologyElement interface: constant SVG_MORPHOLOGY_OPERATOR_UNKNOWN on interface object
+PASS SVGFEMorphologyElement interface: constant SVG_MORPHOLOGY_OPERATOR_UNKNOWN on interface prototype object
+PASS SVGFEMorphologyElement interface: constant SVG_MORPHOLOGY_OPERATOR_ERODE on interface object
+PASS SVGFEMorphologyElement interface: constant SVG_MORPHOLOGY_OPERATOR_ERODE on interface prototype object
+PASS SVGFEMorphologyElement interface: constant SVG_MORPHOLOGY_OPERATOR_DILATE on interface object
+PASS SVGFEMorphologyElement interface: constant SVG_MORPHOLOGY_OPERATOR_DILATE on interface prototype object
+PASS SVGFEMorphologyElement interface: attribute in1
+PASS SVGFEMorphologyElement interface: attribute operator
+PASS SVGFEMorphologyElement interface: attribute radiusX
+PASS SVGFEMorphologyElement interface: attribute radiusY
+PASS SVGFEMorphologyElement interface: attribute x
+PASS SVGFEMorphologyElement interface: attribute y
+PASS SVGFEMorphologyElement interface: attribute width
+PASS SVGFEMorphologyElement interface: attribute height
+PASS SVGFEMorphologyElement interface: attribute result
+PASS SVGFEOffsetElement interface: existence and properties of interface object
+PASS SVGFEOffsetElement interface object length
+PASS SVGFEOffsetElement interface object name
+PASS SVGFEOffsetElement interface: existence and properties of interface prototype object
+PASS SVGFEOffsetElement interface: existence and properties of interface prototype object's "constructor" property
+PASS SVGFEOffsetElement interface: existence and properties of interface prototype object's @@unscopables property
+PASS SVGFEOffsetElement interface: attribute in1
+PASS SVGFEOffsetElement interface: attribute dx
+PASS SVGFEOffsetElement interface: attribute dy
+PASS SVGFEOffsetElement interface: attribute x
+PASS SVGFEOffsetElement interface: attribute y
+PASS SVGFEOffsetElement interface: attribute width
+PASS SVGFEOffsetElement interface: attribute height
+PASS SVGFEOffsetElement interface: attribute result
+PASS SVGFESpecularLightingElement interface: existence and properties of interface object
+PASS SVGFESpecularLightingElement interface object length
+PASS SVGFESpecularLightingElement interface object name
+PASS SVGFESpecularLightingElement interface: existence and properties of interface prototype object
+PASS SVGFESpecularLightingElement interface: existence and properties of interface prototype object's "constructor" property
+PASS SVGFESpecularLightingElement interface: existence and properties of interface prototype object's @@unscopables property
+PASS SVGFESpecularLightingElement interface: attribute in1
+PASS SVGFESpecularLightingElement interface: attribute surfaceScale
+PASS SVGFESpecularLightingElement interface: attribute specularConstant
+PASS SVGFESpecularLightingElement interface: attribute specularExponent
+PASS SVGFESpecularLightingElement interface: attribute kernelUnitLengthX
+PASS SVGFESpecularLightingElement interface: attribute kernelUnitLengthY
+PASS SVGFESpecularLightingElement interface: attribute x
+PASS SVGFESpecularLightingElement interface: attribute y
+PASS SVGFESpecularLightingElement interface: attribute width
+PASS SVGFESpecularLightingElement interface: attribute height
+PASS SVGFESpecularLightingElement interface: attribute result
+PASS SVGFETileElement interface: existence and properties of interface object
+PASS SVGFETileElement interface object length
+PASS SVGFETileElement interface object name
+PASS SVGFETileElement interface: existence and properties of interface prototype object
+PASS SVGFETileElement interface: existence and properties of interface prototype object's "constructor" property
+PASS SVGFETileElement interface: existence and properties of interface prototype object's @@unscopables property
+PASS SVGFETileElement interface: attribute in1
+PASS SVGFETileElement interface: attribute x
+PASS SVGFETileElement interface: attribute y
+PASS SVGFETileElement interface: attribute width
+PASS SVGFETileElement interface: attribute height
+PASS SVGFETileElement interface: attribute result
+PASS SVGFETurbulenceElement interface: existence and properties of interface object
+PASS SVGFETurbulenceElement interface object length
+PASS SVGFETurbulenceElement interface object name
+PASS SVGFETurbulenceElement interface: existence and properties of interface prototype object
+PASS SVGFETurbulenceElement interface: existence and properties of interface prototype object's "constructor" property
+PASS SVGFETurbulenceElement interface: existence and properties of interface prototype object's @@unscopables property
+PASS SVGFETurbulenceElement interface: constant SVG_TURBULENCE_TYPE_UNKNOWN on interface object
+PASS SVGFETurbulenceElement interface: constant SVG_TURBULENCE_TYPE_UNKNOWN on interface prototype object
+PASS SVGFETurbulenceElement interface: constant SVG_TURBULENCE_TYPE_FRACTALNOISE on interface object
+PASS SVGFETurbulenceElement interface: constant SVG_TURBULENCE_TYPE_FRACTALNOISE on interface prototype object
+PASS SVGFETurbulenceElement interface: constant SVG_TURBULENCE_TYPE_TURBULENCE on interface object
+PASS SVGFETurbulenceElement interface: constant SVG_TURBULENCE_TYPE_TURBULENCE on interface prototype object
+PASS SVGFETurbulenceElement interface: constant SVG_STITCHTYPE_UNKNOWN on interface object
+PASS SVGFETurbulenceElement interface: constant SVG_STITCHTYPE_UNKNOWN on interface prototype object
+PASS SVGFETurbulenceElement interface: constant SVG_STITCHTYPE_STITCH on interface object
+PASS SVGFETurbulenceElement interface: constant SVG_STITCHTYPE_STITCH on interface prototype object
+PASS SVGFETurbulenceElement interface: constant SVG_STITCHTYPE_NOSTITCH on interface object
+PASS SVGFETurbulenceElement interface: constant SVG_STITCHTYPE_NOSTITCH on interface prototype object
+PASS SVGFETurbulenceElement interface: attribute baseFrequencyX
+PASS SVGFETurbulenceElement interface: attribute baseFrequencyY
+PASS SVGFETurbulenceElement interface: attribute numOctaves
+PASS SVGFETurbulenceElement interface: attribute seed
+PASS SVGFETurbulenceElement interface: attribute stitchTiles
+PASS SVGFETurbulenceElement interface: attribute type
+PASS SVGFETurbulenceElement interface: attribute x
+PASS SVGFETurbulenceElement interface: attribute y
+PASS SVGFETurbulenceElement interface: attribute width
+PASS SVGFETurbulenceElement interface: attribute height
+PASS SVGFETurbulenceElement interface: attribute result
+Harness: the test ran to completion.
+

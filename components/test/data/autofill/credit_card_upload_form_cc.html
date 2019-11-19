@@ -1,0 +1,68 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN">
+<!--
+Copyright 2017 The Chromium Authors. All rights reserved.
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<html>
+<head>
+<title>Credit Card Upload Test - Form with credit card</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+</head>
+<body>
+  <form id="checkout" name="checkout" action="/credit_card_upload_done.html" method="post">
+    <div>Name on card: <input type="text" name="name_cc" autocomplete="cc-name"></div>
+    <div>Credit card number: <input type="text" name="cc_number" autocomplete="cc-number"></div>
+    <div>Expiry Date:
+    <select name="cc_month_exp" id="cc_month_exp_id" autocomplete="cc-month-exp">
+      <option value="1">01</option>
+      <option value="2">02</option>
+      <option value="3">03</option>
+      <option value="4">04</option>
+      <option value="5">05</option>
+      <option value="6">06</option>
+      <option value="7">07</option>
+      <option value="8">08</option>
+      <option value="9">09</option>
+      <option value="10">10</option>
+      <option value="11">11</option>
+      <option value="12">12</option>
+    </select>
+    /
+    <input type="text" name="cc_year_exp" id="cc_year_exp_id" placeholder="YYYY" autocomplete="cc-exp-year"></div>
+    <div>CVC: <input name="cc_cvc" autocomplete="cc-csc"></div>
+    <hr>
+    <button id="fill_form" type="button">Fill entire form with default (MasterCard) values</button>
+    <button id="add_fields" type="button">Add more fields for current form</button>
+    <button id="submit" type="submit">Submit</button>
+  </form>
+  <script type="text/javascript">
+    function getNextYear() {
+    var nextYear = new Date();
+    nextYear.setFullYear(nextYear.getFullYear() + 1);
+    return nextYear.getFullYear();
+  }
+
+  document.getElementById("fill_form").addEventListener(
+      "click",
+      function() {
+        document.getElementsByName("name_cc")[0].value = "John Smith";
+        document.getElementsByName("cc_number")[0].value = "5454545454545454";
+        document.getElementsByName("cc_month_exp")[0].value = "12";
+        document.getElementsByName("cc_year_exp")[0].value = getNextYear();
+        document.getElementsByName("cc_cvc")[0].value = "123";
+      });
+
+      document.getElementById("add_fields").addEventListener(
+      "click",
+      function() {
+        let form = document.getElementById('checkout');
+        let zip_input = document.createElement('input');
+        zip_input.setAttribute('type', 'text');
+        zip_input.setAttribute('value', '123456');
+        form.insertBefore(zip_input, form.elements[form.elements.length - 2]);
+      });
+</script>
+</body>
+</html>

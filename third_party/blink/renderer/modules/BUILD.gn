@@ -3,7 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/config/chromecast_build.gni")
-import("//build/split_static_library.gni")
+import("//testing/libfuzzer/fuzzer_test.gni")
 import("//third_party/blink/renderer/bindings/bindings.gni")
 import("//third_party/blink/renderer/bindings/modules/v8/generated.gni")
 import("//third_party/blink/renderer/bindings/modules/v8/v8.gni")
@@ -11,17 +11,11 @@ import("//third_party/blink/renderer/build/scripts/scripts.gni")
 import("//third_party/blink/renderer/modules/modules.gni")
 import("//third_party/blink/renderer/modules/modules_idl_files.gni")
 
-visibility = [ "//third_party/blink/renderer/*" ]
-
-if (!is_component_build && is_win) {
-  # This target as a static library (for non-component builds) is >2GB for
-  # official builds and some goma builds on Windows. This causes linking to
-  # fail. As a workaround, force using a split static library for these
-  # configurations.
-  modules_target_type = "split_static_library"
-} else {
-  modules_target_type = "component"
+if (is_android) {
+  import("//build/config/android/rules.gni")
 }
+
+visibility = [ "//third_party/blink/renderer/*" ]
 
 config("modules_implementation") {
   defines = [ "BLINK_MODULES_IMPLEMENTATION=1" ]
@@ -33,12 +27,8 @@ make_names("module_names") {
   deps = []  # Don't use default deps (otherwise it will be circular).
 }
 
-target("jumbo_" + modules_target_type, "modules") {
+jumbo_component("modules") {
   output_name = "blink_modules"
-
-  if (modules_target_type == "split_static_library") {
-    split_count = 5
-  }
 
   visibility = []  # Allow re-assignment of list.
   visibility = [ "//third_party/blink/*" ]
@@ -73,14 +63,7 @@ target("jumbo_" + modules_target_type, "modules") {
     "//tools/v8_context_snapshot:use_v8_context_snapshot",
   ]
 
-  deps = [
-    ":make_modules_generated",
-    ":module_names",
-    "//net:net",
-    "//third_party/blink/renderer/bindings/modules:generated",
-    "//third_party/blink/renderer/bindings/modules/v8:bindings_modules_impl",
-    "//third_party/blink/renderer/bindings/modules/v8:bindings_modules_origin_trial_features",
-    "//third_party/blink/renderer/core",
+  sub_modules = [
     "//third_party/blink/renderer/modules/accessibility",
     "//third_party/blink/renderer/modules/animationworklet",
     "//third_party/blink/renderer/modules/app_banner",
@@ -96,10 +79,12 @@ target("jumbo_" + modules_target_type, "modules") {
     "//third_party/blink/renderer/modules/canvas",
     "//third_party/blink/renderer/modules/clipboard",
     "//third_party/blink/renderer/modules/contacts_picker",
+    "//third_party/blink/renderer/modules/content_index",
     "//third_party/blink/renderer/modules/cookie_store",
     "//third_party/blink/renderer/modules/credentialmanager",
     "//third_party/blink/renderer/modules/crypto",
     "//third_party/blink/renderer/modules/csspaint",
+    "//third_party/blink/renderer/modules/compression",
     "//third_party/blink/renderer/modules/device_orientation",
     "//third_party/blink/renderer/modules/document_metadata",
     "//third_party/blink/renderer/modules/donottrack",
@@ -110,12 +95,15 @@ target("jumbo_" + modules_target_type, "modules") {
     "//third_party/blink/renderer/modules/filesystem",
     "//third_party/blink/renderer/modules/gamepad",
     "//third_party/blink/renderer/modules/geolocation",
+    "//third_party/blink/renderer/modules/hid",
     "//third_party/blink/renderer/modules/idle",
     "//third_party/blink/renderer/modules/imagecapture",
+    "//third_party/blink/renderer/modules/image_downloader",
     "//third_party/blink/renderer/modules/indexeddb",
     "//third_party/blink/renderer/modules/installation",
     "//third_party/blink/renderer/modules/installedapp",
     "//third_party/blink/renderer/modules/keyboard",
+    "//third_party/blink/renderer/modules/launch",
     "//third_party/blink/renderer/modules/locks",
     "//third_party/blink/renderer/modules/manifest",
     "//third_party/blink/renderer/modules/media_capabilities",
@@ -125,6 +113,9 @@ target("jumbo_" + modules_target_type, "modules") {
     "//third_party/blink/renderer/modules/mediasession",
     "//third_party/blink/renderer/modules/mediasource",
     "//third_party/blink/renderer/modules/mediastream",
+    "//third_party/blink/renderer/modules/media",
+    "//third_party/blink/renderer/modules/webrtc",
+    "//third_party/blink/renderer/modules/native_file_system",
     "//third_party/blink/renderer/modules/navigatorcontentutils",
     "//third_party/blink/renderer/modules/netinfo",
     "//third_party/blink/renderer/modules/nfc",
@@ -138,17 +129,17 @@ target("jumbo_" + modules_target_type, "modules") {
     "//third_party/blink/renderer/modules/push_messaging",
     "//third_party/blink/renderer/modules/quota",
     "//third_party/blink/renderer/modules/remoteplayback",
+    "//third_party/blink/renderer/modules/scheduler",
+    "//third_party/blink/renderer/modules/screen_enumeration",
     "//third_party/blink/renderer/modules/screen_orientation",
     "//third_party/blink/renderer/modules/sensor",
-    "//third_party/blink/renderer/modules/serial",
     "//third_party/blink/renderer/modules/service_worker",
     "//third_party/blink/renderer/modules/shapedetection",
+    "//third_party/blink/renderer/modules/sms",
     "//third_party/blink/renderer/modules/speech",
     "//third_party/blink/renderer/modules/srcobject",
     "//third_party/blink/renderer/modules/storage",
-    "//third_party/blink/renderer/modules/time_zone_monitor",
     "//third_party/blink/renderer/modules/vibration",
-    "//third_party/blink/renderer/modules/vr",
     "//third_party/blink/renderer/modules/wake_lock",
     "//third_party/blink/renderer/modules/webaudio",
     "//third_party/blink/renderer/modules/webdatabase",
@@ -157,15 +148,32 @@ target("jumbo_" + modules_target_type, "modules") {
     "//third_party/blink/renderer/modules/webmidi",
     "//third_party/blink/renderer/modules/webshare",
     "//third_party/blink/renderer/modules/websockets",
+    "//third_party/blink/renderer/modules/webtransport",
     "//third_party/blink/renderer/modules/webusb",
     "//third_party/blink/renderer/modules/worklet",
     "//third_party/blink/renderer/modules/xr",
+  ]
+
+  deps = [
+    ":make_modules_generated",
+    ":module_names",
+    "//jingle:webrtc_glue",
+    "//net:net",
+    "//third_party/blink/renderer/bindings/modules:generated",
+    "//third_party/blink/renderer/bindings/modules/v8:bindings_modules_impl",
+    "//third_party/blink/renderer/bindings/modules/v8:bindings_modules_origin_trial_features",
+    "//third_party/blink/renderer/core",
     "//third_party/icu",
-    "//third_party/webrtc/pc:libjingle_peerconnection",
-    "//third_party/webrtc/rtc_base:rtc_base",
-    "//third_party/webrtc_overrides:init_webrtc",
+    "//third_party/webrtc_overrides:webrtc_component",
     "//third_party/zlib",
   ]
+
+  public_deps = sub_modules
+  allow_circular_includes_from = sub_modules
+
+  if (!is_android) {
+    deps += [ "//third_party/blink/renderer/modules/serial" ]
+  }
 
   if (is_win) {
     cflags = [ "/wd4334" ]  # Result of 32-bit shift implicitly converted to 64 bits.
@@ -201,8 +209,8 @@ jumbo_source_set("modules_testing") {
     "service_worker/testing/internals_service_worker.h",
     "speech/testing/internals_speech_synthesis.cc",
     "speech/testing/internals_speech_synthesis.h",
-    "speech/testing/platform_speech_synthesizer_mock.cc",
-    "speech/testing/platform_speech_synthesizer_mock.h",
+    "speech/testing/mojom_speech_synthesis_mock.cc",
+    "speech/testing/mojom_speech_synthesis_mock.h",
     "vibration/testing/internals_vibration.cc",
     "vibration/testing/internals_vibration.h",
     "webaudio/testing/internals_web_audio.cc",
@@ -253,10 +261,13 @@ jumbo_source_set("unit_tests") {
     "canvas/canvas2d/canvas_rendering_context_2d_test.cc",
     "canvas/htmlcanvas/html_canvas_element_module_test.cc",
     "canvas/offscreencanvas/offscreen_canvas_test.cc",
+    "content_index/content_description_type_converter_test.cc",
     "credentialmanager/credentials_container_test.cc",
     "credentialmanager/password_credential_test.cc",
+    "csspaint/document_paint_definition_test.cc",
     "csspaint/paint_rendering_context_2d_test.cc",
     "csspaint/paint_worklet_global_scope_test.cc",
+    "csspaint/paint_worklet_proxy_client_test.cc",
     "csspaint/paint_worklet_test.cc",
     "device_orientation/device_motion_event_pump_unittest.cc",
     "device_orientation/device_orientation_event_pump_unittest.cc",
@@ -277,9 +288,15 @@ jumbo_source_set("unit_tests") {
     "indexeddb/mock_web_idb_database.h",
     "indexeddb/mock_web_idb_factory.cc",
     "indexeddb/mock_web_idb_factory.h",
+    "indexeddb/mock_web_idb_transaction.cc",
+    "indexeddb/mock_web_idb_transaction.h",
     "indexeddb/web_idb_cursor_impl_unittest.cc",
-    "indexeddb/web_idb_database_impl_unittest.cc",
+    "indexeddb/web_idb_transaction_impl_unittest.cc",
     "manifest/image_resource_type_converters_test.cc",
+    "manifest/manifest_manager_unittest.cc",
+    "manifest/manifest_parser_unittest.cc",
+    "manifest/manifest_type_converters_unittest.cc",
+    "media/webmediaplayer_util_unittest.cc",
     "media_controls/elements/media_control_animated_arrow_container_element_test.cc",
     "media_controls/elements/media_control_display_cutout_fullscreen_button_element_test.cc",
     "media_controls/elements/media_control_input_element_test.cc",
@@ -292,10 +309,35 @@ jumbo_source_set("unit_tests") {
     "media_controls/media_controls_impl_test.cc",
     "media_controls/media_controls_orientation_lock_delegate_test.cc",
     "media_controls/media_controls_rotate_to_fullscreen_delegate_test.cc",
+    "mediacapturefromelement/canvas_capture_handler_unittest.cc",
+    "mediacapturefromelement/html_audio_element_capturer_source_unittest.cc",
+    "mediacapturefromelement/html_video_element_capturer_source_unittest.cc",
+    "mediarecorder/audio_track_recorder_unittest.cc",
+    "mediarecorder/media_recorder_handler_unittest.cc",
+    "mediarecorder/video_track_recorder_unittest.cc",
+    "mediasession/media_session_test.cc",
     "mediastream/media_constraints_test.cc",
     "mediastream/media_devices_test.cc",
+    "mediastream/media_stream_audio_processor_test.cc",
+    "mediastream/media_stream_constraints_util_audio_test.cc",
+    "mediastream/media_stream_constraints_util_sets_test.cc",
+    "mediastream/media_stream_constraints_util_test.cc",
+    "mediastream/media_stream_constraints_util_video_content_test.cc",
+    "mediastream/media_stream_constraints_util_video_device_test.cc",
+    "mediastream/media_stream_device_observer_test.cc",
+    "mediastream/media_stream_video_capturer_source_test.cc",
+    "mediastream/media_stream_video_renderer_sink_test.cc",
+    "mediastream/media_stream_video_source_test.cc",
+    "mediastream/media_stream_video_track_test.cc",
+    "mediastream/mock_mojo_media_stream_dispatcher_host.cc",
+    "mediastream/mock_mojo_media_stream_dispatcher_host.h",
+    "mediastream/processed_local_audio_source_test.cc",
+    "mediastream/user_media_client_test.cc",
+    "mediastream/video_track_adapter_unittest.cc",
+    "mediastream/webaudio_media_stream_audio_sink_test.cc",
+    "mediastream/webmediaplayer_ms_test.cc",
+    "nfc/nfc_proxy_test.cc",
     "notifications/notification_data_test.cc",
-    "notifications/notification_image_loader_test.cc",
     "notifications/notification_resources_loader_test.cc",
     "payments/abort_test.cc",
     "payments/can_make_payment_test.cc",
@@ -316,13 +358,28 @@ jumbo_source_set("unit_tests") {
     "peerconnection/adapters/quic_packet_transport_adapter_test.cc",
     "peerconnection/byte_buffer_queue_test.cc",
     "peerconnection/call_setup_state_tracker_unittest.cc",
+    "peerconnection/media_stream_remote_video_source_test.cc",
+    "peerconnection/media_stream_track_metrics_test.cc",
+    "peerconnection/media_stream_video_webrtc_sink_test.cc",
+    "peerconnection/peer_connection_dependency_factory_test.cc",
+    "peerconnection/peer_connection_tracker_test.cc",
     "peerconnection/rtc_data_channel_test.cc",
     "peerconnection/rtc_ice_transport_test.cc",
     "peerconnection/rtc_ice_transport_test.h",
+    "peerconnection/rtc_peer_connection_handler_test.cc",
     "peerconnection/rtc_peer_connection_test.cc",
     "peerconnection/rtc_quic_stream_test.cc",
     "peerconnection/rtc_quic_transport_test.cc",
     "peerconnection/rtc_quic_transport_test.h",
+    "peerconnection/rtc_rtp_receiver_impl_test.cc",
+    "peerconnection/rtc_rtp_sender_impl_test.cc",
+    "peerconnection/rtc_rtp_transceiver_impl_test.cc",
+    "peerconnection/rtc_sctp_transport_test.cc",
+    "peerconnection/transceiver_state_surfacer_test.cc",
+    "peerconnection/webrtc_audio_renderer_test.cc",
+    "peerconnection/webrtc_media_stream_track_adapter_map_test.cc",
+    "peerconnection/webrtc_media_stream_track_adapter_test.cc",
+    "peerconnection/webrtc_set_description_observer_test.cc",
     "picture_in_picture/picture_in_picture_controller_test.cc",
     "presentation/mock_presentation_service.h",
     "presentation/presentation_availability_state_test.cc",
@@ -334,11 +391,19 @@ jumbo_source_set("unit_tests") {
     "push_messaging/push_subscription_test.cc",
     "remoteplayback/remote_playback_test.cc",
     "screen_orientation/screen_orientation_controller_impl_test.cc",
+    "sensor/ambient_light_sensor_test.cc",
+    "sensor/sensor_test_utils.cc",
+    "sensor/sensor_test_utils.h",
     "service_worker/service_worker_container_test.cc",
     "service_worker/service_worker_installed_scripts_manager_test.cc",
+    "service_worker/service_worker_timeout_timer_test.cc",
     "service_worker/thread_safe_script_container_test.cc",
     "service_worker/web_embedded_worker_impl_test.cc",
-    "wake_lock/screen_wake_lock_test.cc",
+    "wake_lock/wake_lock_manager_test.cc",
+    "wake_lock/wake_lock_sentinel_test.cc",
+    "wake_lock/wake_lock_test.cc",
+    "wake_lock/wake_lock_test_utils.cc",
+    "wake_lock/wake_lock_test_utils.h",
     "webaudio/audio_basic_processor_handler_test.cc",
     "webaudio/audio_context_autoplay_test.cc",
     "webaudio/audio_context_test.cc",
@@ -350,12 +415,25 @@ jumbo_source_set("unit_tests") {
     "webaudio/script_processor_node_test.cc",
     "webaudio/stereo_panner_node_test.cc",
     "webdatabase/quota_tracker_test.cc",
+    "webshare/navigator_share_test.cc",
     "websockets/dom_websocket_test.cc",
+    "websockets/mock_websocket_channel.cc",
+    "websockets/mock_websocket_channel.h",
     "websockets/websocket_channel_impl_test.cc",
+    "websockets/websocket_common_test.cc",
+    "websockets/websocket_message_chunk_accumulator_test.cc",
+    "websockets/websocket_stream_test.cc",
     "worklet/animation_and_paint_worklet_thread_test.cc",
     "worklet/worklet_thread_test_common.cc",
     "worklet/worklet_thread_test_common.h",
+    "xr/xr_rigid_transform_test.cc",
+    "xr/xr_test_utils.cc",
+    "xr/xr_view_test.cc",
   ]
+
+  if (is_android) {
+    sources += [ "payments/skip_to_gpay_utils_test.cc" ]
+  }
 
   configs += [
     "//third_party/blink/renderer:config",
@@ -366,23 +444,30 @@ jumbo_source_set("unit_tests") {
   deps = [
     ":modules",
     ":modules_testing",
+    "//media:test_support",
     "//net:quic_test_tools",
-    "//services/device/public/cpp/test:test_support",
-    "//services/viz/public/interfaces:interfaces_blink",
+    "//services/device/public/cpp:test_support",
+    "//services/viz/public/mojom:mojom_blink",
     "//skia",
     "//testing/gmock",
     "//testing/gtest",
+    "//third_party/blink/public:blink_headers",
     "//third_party/blink/renderer/core",
     "//third_party/blink/renderer/modules/gamepad:unit_tests",
+    "//third_party/blink/renderer/modules/hid:unit_tests",
+    "//third_party/blink/renderer/modules/native_file_system:unit_tests",
     "//third_party/blink/renderer/modules/storage:unit_tests",
+    "//third_party/blink/renderer/modules/webtransport:unit_tests",
     "//third_party/blink/renderer/platform",
     "//third_party/blink/renderer/platform/wtf",
-    "//third_party/webrtc/rtc_base:rtc_base",
+    "//third_party/opus",
+    "//third_party/webrtc_overrides:webrtc_component",
     "//v8",
   ]
 
   data_deps = [
     ":accessibility_unittests_data",
+    ":mediastream_unittests_data",
   ]
 }
 
@@ -390,4 +475,42 @@ group("accessibility_unittests_data") {
   data = [
     "accessibility/testing/data/",
   ]
+}
+
+group("mediastream_unittests_data") {
+  data = [
+    "//media/test/data/",
+  ]
+}
+
+fuzzer_test("web_app_manifest_fuzzer") {
+  sources = [
+    "manifest/manifest_fuzzer.cc",
+  ]
+
+  dict = "manifest/manifest_fuzzer.dict"
+  seed_corpus = "manifest/fuzzer_seed_corpus"
+
+  deps = [
+    ":modules",
+    "//third_party/blink/renderer/platform:blink_fuzzer_test_support",
+  ]
+}
+
+if (use_libfuzzer) {
+  fuzzer_test("media_capabilities_fuzzer") {
+    sources = [
+      "media_capabilities/media_capabilities_fuzzer.cc",
+    ]
+
+    seed_corpus = "media_capabilities/fuzzer_seed_corpus"
+
+    deps = [
+      ":modules",
+      "//third_party/blink/renderer/modules/media_capabilities:fuzzer_media_configuration_proto",
+      "//third_party/blink/renderer/platform:blink_fuzzer_test_support",
+      "//third_party/libprotobuf-mutator",
+      "//third_party/protobuf:protobuf_lite",
+    ]
+  }
 }

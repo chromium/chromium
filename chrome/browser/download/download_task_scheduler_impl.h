@@ -13,16 +13,14 @@
 #include "base/memory/weak_ptr.h"
 #include "components/download/public/task/task_scheduler.h"
 
-namespace content {
-class BrowserContext;
-}  // namespace content
+class SimpleFactoryKey;
 
 // A TaskScheduler implementation that doesn't do anything but posts the task
 // after the specified delay.
 // If Chrome is shut down, the implementation will not automatically restart it.
 class DownloadTaskSchedulerImpl : public download::TaskScheduler {
  public:
-  explicit DownloadTaskSchedulerImpl(content::BrowserContext* context);
+  explicit DownloadTaskSchedulerImpl(SimpleFactoryKey* key);
   ~DownloadTaskSchedulerImpl() override;
 
   // TaskScheduler implementation.
@@ -38,13 +36,13 @@ class DownloadTaskSchedulerImpl : public download::TaskScheduler {
   void RunScheduledTask(download::DownloadTaskType task_type);
   void OnTaskFinished(bool reschedule);
 
-  content::BrowserContext* context_;
+  SimpleFactoryKey* key_;
 
   // Keeps track of scheduled tasks so that they can be cancelled.
   std::map<download::DownloadTaskType, base::CancelableClosure>
       scheduled_tasks_;
 
-  base::WeakPtrFactory<DownloadTaskSchedulerImpl> weak_factory_;
+  base::WeakPtrFactory<DownloadTaskSchedulerImpl> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(DownloadTaskSchedulerImpl);
 };

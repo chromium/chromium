@@ -15,7 +15,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.RetryOnFailure;
@@ -26,6 +25,7 @@ import org.chromium.chrome.browser.browsing_data.BrowsingDataType;
 import org.chromium.chrome.browser.browsing_data.TimePeriod;
 import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -59,7 +59,7 @@ public class BrowsingDataBridgeTest {
     }
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
         mActionTester.tearDown();
     }
 
@@ -70,12 +70,9 @@ public class BrowsingDataBridgeTest {
     @SmallTest
     @RetryOnFailure
     public void testNoCalls() throws Exception {
-        ThreadUtils.runOnUiThreadBlocking(new Runnable() {
-            @Override
-            public void run() {
-                BrowsingDataBridge.getInstance().clearBrowsingData(
-                        mListener, new int[] {}, TimePeriod.ALL_TIME);
-            }
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            BrowsingDataBridge.getInstance().clearBrowsingData(
+                    mListener, new int[] {}, TimePeriod.ALL_TIME);
         });
         mCallbackHelper.waitForCallback(0);
         assertThat(mActionTester.toString(), getActions(),
@@ -88,12 +85,9 @@ public class BrowsingDataBridgeTest {
     @Test
     @SmallTest
     public void testCookiesDeleted() throws Exception {
-        ThreadUtils.runOnUiThreadBlocking(new Runnable() {
-            @Override
-            public void run() {
-                BrowsingDataBridge.getInstance().clearBrowsingData(
-                        mListener, new int[] {BrowsingDataType.COOKIES}, TimePeriod.LAST_HOUR);
-            }
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            BrowsingDataBridge.getInstance().clearBrowsingData(
+                    mListener, new int[] {BrowsingDataType.COOKIES}, TimePeriod.LAST_HOUR);
         });
         mCallbackHelper.waitForCallback(0);
         assertThat(mActionTester.toString(), getActions(),
@@ -122,12 +116,9 @@ public class BrowsingDataBridgeTest {
     @Test
     @SmallTest
     public void testHistoryDeleted() throws Exception {
-        ThreadUtils.runOnUiThreadBlocking(new Runnable() {
-            @Override
-            public void run() {
-                BrowsingDataBridge.getInstance().clearBrowsingData(
-                        mListener, new int[] {BrowsingDataType.HISTORY}, TimePeriod.LAST_DAY);
-            }
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            BrowsingDataBridge.getInstance().clearBrowsingData(
+                    mListener, new int[] {BrowsingDataType.HISTORY}, TimePeriod.LAST_DAY);
         });
         mCallbackHelper.waitForCallback(0);
         assertThat(mActionTester.toString(), getActions(),
@@ -142,15 +133,13 @@ public class BrowsingDataBridgeTest {
     @Test
     @SmallTest
     public void testClearingSiteSettingsAndCache() throws Exception {
-        ThreadUtils.runOnUiThreadBlocking(new Runnable() {
-            @Override
-            public void run() {
-                BrowsingDataBridge.getInstance().clearBrowsingData(mListener,
-                        new int[] {
-                                BrowsingDataType.CACHE, BrowsingDataType.SITE_SETTINGS,
-                        },
-                        TimePeriod.FOUR_WEEKS);
-            }
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            BrowsingDataBridge.getInstance().clearBrowsingData(mListener,
+                    new int[] {
+                            BrowsingDataType.CACHE,
+                            BrowsingDataType.SITE_SETTINGS,
+                    },
+                    TimePeriod.FOUR_WEEKS);
         });
         mCallbackHelper.waitForCallback(0);
         assertThat(mActionTester.toString(), getActions(),
@@ -165,16 +154,14 @@ public class BrowsingDataBridgeTest {
     @Test
     @SmallTest
     public void testClearingSiteSettingsAndCacheWithImportantSites() throws Exception {
-        ThreadUtils.runOnUiThreadBlocking(new Runnable() {
-            @Override
-            public void run() {
-                BrowsingDataBridge.getInstance().clearBrowsingDataExcludingDomains(mListener,
-                        new int[] {
-                                BrowsingDataType.CACHE, BrowsingDataType.SITE_SETTINGS,
-                        },
-                        TimePeriod.FOUR_WEEKS, new String[] {"google.com"}, new int[] {1},
-                        new String[0], new int[0]);
-            }
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            BrowsingDataBridge.getInstance().clearBrowsingDataExcludingDomains(mListener,
+                    new int[] {
+                            BrowsingDataType.CACHE,
+                            BrowsingDataType.SITE_SETTINGS,
+                    },
+                    TimePeriod.FOUR_WEEKS, new String[] {"google.com"}, new int[] {1},
+                    new String[0], new int[0]);
         });
         mCallbackHelper.waitForCallback(0);
         assertThat(mActionTester.toString(), getActions(),
@@ -192,17 +179,17 @@ public class BrowsingDataBridgeTest {
     @Test
     @SmallTest
     public void testClearingAll() throws Exception {
-        ThreadUtils.runOnUiThreadBlocking(new Runnable() {
-            @Override
-            public void run() {
-                BrowsingDataBridge.getInstance().clearBrowsingData(mListener,
-                        new int[] {
-                                BrowsingDataType.CACHE, BrowsingDataType.COOKIES,
-                                BrowsingDataType.FORM_DATA, BrowsingDataType.HISTORY,
-                                BrowsingDataType.PASSWORDS, BrowsingDataType.SITE_SETTINGS,
-                        },
-                        TimePeriod.LAST_WEEK);
-            }
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            BrowsingDataBridge.getInstance().clearBrowsingData(mListener,
+                    new int[] {
+                            BrowsingDataType.CACHE,
+                            BrowsingDataType.COOKIES,
+                            BrowsingDataType.FORM_DATA,
+                            BrowsingDataType.HISTORY,
+                            BrowsingDataType.PASSWORDS,
+                            BrowsingDataType.SITE_SETTINGS,
+                    },
+                    TimePeriod.LAST_WEEK);
         });
         mCallbackHelper.waitForCallback(0);
         assertThat(mActionTester.toString(), getActions(),

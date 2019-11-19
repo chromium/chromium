@@ -5,10 +5,15 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_METRICS_ADDRESS_FORM_EVENT_LOGGER_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_METRICS_ADDRESS_FORM_EVENT_LOGGER_H_
 
-#include "components/autofill/core/browser/autofill_data_model.h"
+#include <string>
+
+#include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/autofill_metrics.h"
+#include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/metrics/form_event_logger_base.h"
 #include "components/autofill/core/browser/metrics/form_events.h"
+#include "components/autofill/core/browser/sync_utils.h"
 
 namespace autofill {
 
@@ -38,6 +43,9 @@ class AddressFormEventLogger : public FormEventLoggerBase {
   void RecordPollSuggestions() override;
   void RecordParseForm() override;
   void RecordShowSuggestions() override;
+  void OnLog(const std::string& name,
+             FormEvent event,
+             const FormStructure& form) const override;
 };
 
 }  // namespace autofill

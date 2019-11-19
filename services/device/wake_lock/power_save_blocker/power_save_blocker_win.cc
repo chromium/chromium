@@ -20,7 +20,7 @@ namespace {
 HANDLE CreatePowerRequest(POWER_REQUEST_TYPE type,
                           const std::string& description) {
   if (type == PowerRequestExecutionRequired &&
-      base::win::GetVersion() == base::win::VERSION_WIN7) {
+      base::win::GetVersion() == base::win::Version::WIN7) {
     return INVALID_HANDLE_VALUE;
   }
 
@@ -49,7 +49,7 @@ void DeletePowerRequest(POWER_REQUEST_TYPE type, HANDLE handle) {
     return;
 
   if (type == PowerRequestExecutionRequired &&
-      base::win::GetVersion() == base::win::VERSION_WIN7) {
+      base::win::GetVersion() == base::win::Version::WIN7) {
     return;
   }
 
@@ -103,7 +103,7 @@ POWER_REQUEST_TYPE PowerSaveBlocker::Delegate::RequestType() {
       type_ == mojom::WakeLockType::kPreventDisplaySleepAllowDimming)
     return PowerRequestDisplayRequired;
 
-  if (base::win::GetVersion() == base::win::VERSION_WIN7)
+  if (base::win::GetVersion() == base::win::Version::WIN7)
     return PowerRequestSystemRequired;
 
   return PowerRequestExecutionRequired;

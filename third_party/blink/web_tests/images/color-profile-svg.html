@@ -1,7 +1,5 @@
 <!DOCTYPE html>
 <html>
-<script src="../resources/run-after-layout-and-paint.js"></script>
-
 <style>
   body { overflow: hidden; margin: 0px }
 </style>
@@ -10,21 +8,9 @@
 <body>
  <svg width="800px" height="400px">
    <pattern id="pattern" patternUnits="userSpaceOnUse" width="400" height="400">
-     <image onload="top.load()" xlink:href="resources/red-at-12-oclock-with-color-profile.jpg" width="400" height="400"/>
+     <image xlink:href="resources/red-at-12-oclock-with-color-profile.jpg" width="400" height="400"/>
    </pattern>
    <rect width="800" height="400" style="fill: url(#pattern)"/>
  </svg>
 </body>
-
-<script>
-function load() {
-  if (window.testRunner)
-    runAfterLayoutAndPaint(function() { testRunner.notifyDone() });
-}
-
-if (window.testRunner) {
-  testRunner.dumpAsTextWithPixelResults();
-  testRunner.waitUntilDone();
-}
-</script>
 </html>

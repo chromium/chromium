@@ -1,3 +1,0 @@
-CONSOLE ERROR: Refused to load 'data:application/x-blink-test-plugin' (MIME type '') because it violates the following Content Security Policy Directive: 'plugin-types application/x-invalid-type'. When enforcing the 'plugin-types' directive, the plugin's media type must be explicitly declared with a 'type' attribute on the containing element (e.g. '<object type="[TYPE GOES HERE]" ...>').
-
-Given a `plugin-types` directive, plugins have to declare a type explicitly. No declared type, no load. This test passes if there's a console message above and "FAIL!" isn't logged. 

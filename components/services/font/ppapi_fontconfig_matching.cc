@@ -11,6 +11,7 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 
+#include <memory>
 #include <string>
 
 #include "base/posix/eintr_wrapper.h"
@@ -127,10 +128,12 @@ int MatchFontFaceWithFallback(const std::string& face,
                               bool is_italic,
                               uint32_t charset,
                               uint32_t fallback_family) {
-  FcLangSet* langset = FcLangSetCreate();
-  bool is_lgc = MSCharSetToFontconfig(langset, charset);
-  FcPattern* pattern = FcPatternCreate();
-  FcPatternAddString(pattern, FC_FAMILY,
+  std::unique_ptr<FcLangSet, decltype(&FcLangSetDestroy)> langset(
+      FcLangSetCreate(), &FcLangSetDestroy);
+  bool is_lgc = MSCharSetToFontconfig(langset.get(), charset);
+  std::unique_ptr<FcPattern, decltype(&FcPatternDestroy)> pattern(
+      FcPatternCreate(), &FcPatternDestroy);
+  FcPatternAddString(pattern.get(), FC_FAMILY,
                      reinterpret_cast<const FcChar8*>(face.c_str()));
 
   // TODO(thestig) Check if we can access Chrome's per-script font preference
@@ -152,20 +155,22 @@ int MatchFontFaceWithFallback(const std::string& face,
   if (!generic_font_name.empty()) {
     const FcChar8* fc_generic_font_name =
         reinterpret_cast<const FcChar8*>(generic_font_name.c_str());
-    FcPatternAddString(pattern, FC_FAMILY, fc_generic_font_name);
+    FcPatternAddString(pattern.get(), FC_FAMILY, fc_generic_font_name);
   }
 
   if (is_bold)
-    FcPatternAddInteger(pattern, FC_WEIGHT, FC_WEIGHT_BOLD);
+    FcPatternAddInteger(pattern.get(), FC_WEIGHT, FC_WEIGHT_BOLD);
   if (is_italic)
-    FcPatternAddInteger(pattern, FC_SLANT, FC_SLANT_ITALIC);
-  FcPatternAddLangSet(pattern, FC_LANG, langset);
-  FcPatternAddBool(pattern, FC_SCALABLE, FcTrue);
-  FcConfigSubstitute(nullptr, pattern, FcMatchPattern);
-  FcDefaultSubstitute(pattern);
+    FcPatternAddInteger(pattern.get(), FC_SLANT, FC_SLANT_ITALIC);
+  FcPatternAddLangSet(pattern.get(), FC_LANG, langset.get());
+  FcPatternAddBool(pattern.get(), FC_SCALABLE, FcTrue);
+  FcConfigSubstitute(nullptr, pattern.get(), FcMatchPattern);
+  FcDefaultSubstitute(pattern.get());
 
   FcResult result;
-  FcFontSet* font_set = FcFontSort(nullptr, pattern, 0, nullptr, &result);
+  std::unique_ptr<FcFontSet, decltype(&FcFontSetDestroy)> font_set(
+      FcFontSort(nullptr, pattern.get(), 0, nullptr, &result),
+      &FcFontSetDestroy);
   int font_fd = -1;
   int good_enough_index = -1;
   bool good_enough_index_set = false;
@@ -258,10 +263,6 @@ int MatchFontFaceWithFallback(const std::string& face,
       font_fd = HANDLE_EINTR(open(filename.c_str(), O_RDONLY));
     }
   }
-
-  if (font_set)
-    FcFontSetDestroy(font_set);
-  FcPatternDestroy(pattern);
 
   return font_fd;
 }

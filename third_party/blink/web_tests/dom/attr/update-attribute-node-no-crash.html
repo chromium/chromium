@@ -1,26 +1,30 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-<script src="../../resources/js-test.js"></script>
+<title>Updating value of replaced attribute node</title>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
 </head>
 <body>
 <iframe></iframe>
 <div id="test" style="background-color: red"></div>
 <script>
-description("Updating value of replaced attribute node");
 var element = document.getElementById("test");
 var attr = document.createAttribute("STYLE");
 // This aligns with Trident rather than Gecko.
-shouldBeEqualToString("replaced = element.setAttributeNode(attr); replaced.name", "style");
-shouldBeEqualToString("replaced.value", "background-color: red");
-shouldBeEqualToString("attr.name", "style");
-shouldBeEqualToString("attr.value", "");
-shouldBeEqualToString("element.getAttribute('style')", "");
-shouldBeEqualToString("element.getAttribute('StyLE')", "");
+replaced = element.setAttributeNode(attr);
+assert_equals(replaced.name, "style");
+assert_equals(replaced.value, "background-color: red");
+assert_equals(attr.name, "style");
+assert_equals(attr.value, "");
+assert_equals(element.getAttribute('style'), "");
+assert_equals(element.getAttribute('StyLE'), "");
 // Setting the value must correctly locate attribute on the element and update it,
 // even if the local name differs. PASS if no crash (crbug.com/376718)
-shouldBeEqualToString("attr.value = 'background-color: green'; attr.value", "background-color: green");
-shouldBeEqualToString("element.getAttribute('stylE')", "background-color: green");
+attr.value = 'background-color: green';
+assert_equals(attr.value, "background-color: green");
+assert_equals(element.getAttribute('stylE'), "background-color: green");
+done();
 </script>
 </body>
 </html>

@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/style/style_path.h"
 #include "third_party/blink/renderer/core/svg/svg_path_byte_stream.h"
 #include "third_party/blink/renderer/core/svg/svg_path_utilities.h"
+#include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
 
@@ -20,14 +21,12 @@ namespace cssvalue {
 
 class CSSPathValue : public CSSValue {
  public:
-  static CSSPathValue* Create(scoped_refptr<StylePath>,
-                              PathSerializationFormat = kNoTransformation);
-  static CSSPathValue* Create(std::unique_ptr<SVGPathByteStream>,
-                              PathSerializationFormat = kNoTransformation);
-
   static CSSPathValue& EmptyPathValue();
 
-  CSSPathValue(scoped_refptr<StylePath>, PathSerializationFormat);
+  explicit CSSPathValue(scoped_refptr<StylePath>,
+                        PathSerializationFormat = kNoTransformation);
+  explicit CSSPathValue(std::unique_ptr<SVGPathByteStream>,
+                        PathSerializationFormat = kNoTransformation);
 
   StylePath* GetStylePath() const { return style_path_.get(); }
   String CustomCSSText() const;
@@ -45,9 +44,13 @@ class CSSPathValue : public CSSValue {
   const PathSerializationFormat serialization_format_;
 };
 
-DEFINE_CSS_VALUE_TYPE_CASTS(CSSPathValue, IsPathValue());
-
 }  // namespace cssvalue
+
+template <>
+struct DowncastTraits<cssvalue::CSSPathValue> {
+  static bool AllowFrom(const CSSValue& value) { return value.IsPathValue(); }
+};
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_PATH_VALUE_H_

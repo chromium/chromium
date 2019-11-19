@@ -9,6 +9,9 @@
 
 syntax = "proto2";
 
+option java_multiple_files = true;
+option java_package = "org.chromium.components.sync.protocol";
+
 option optimize_for = LITE_RUNTIME;
 
 package sync_pb;
@@ -83,6 +86,26 @@ message AutofillSpecifics {
   // optional AutofillCreditCardSpecifics deprecated_credit_card = 6;
 }
 
+// TODO(crbug.com/1020740): Deprecated, remove this once dependent change is
+// done. Use WalletCreditCardCloudTokenData instead.
+message CloudTokenData {
+  // Last 4-5 digits of the Cloud Primary Account Number (CPAN).
+  optional string suffix = 1;
+
+  // CPAN Month number 1-12.
+  optional int32 exp_month = 2;
+
+  // CPAN Four-digit year (e.g. 2017).
+  optional int32 exp_year = 3;
+
+  // URL of the card art to be displayed for CPAN.
+  optional string art_fife_url = 4;
+
+  // Opaque identifier for the cloud token associated with the payment
+  // instrument.
+  optional string instrument_token = 5;
+}
+
 message WalletMaskedCreditCard {
   enum WalletCardStatus {
     VALID = 0;
@@ -136,6 +159,12 @@ message WalletMaskedCreditCard {
 
   // Issuing Bank name which is internationalized (e.g. "Chase", "工商银行")
   optional string bank_name = 10;
+
+  // TODO(crbug.com/1020740): Deprecated, remove this once dependent change is
+  // done.
+  // Use WalletCreditCardCloudTokenData instead. This field will be set if
+  // a cloud token is available for the instrument.
+  optional CloudTokenData cloud_token_data = 11;
 }
 
 // Different than an AutofillProfile because this represents some known address
@@ -185,12 +214,38 @@ message PaymentsCustomerData {
   optional string id = 1;
 }
 
+// Contains information about the cloud token data of server credit cards.
+message WalletCreditCardCloudTokenData {
+  // Server-generated ID string for the card this cloud token data is related
+  // to. This should match the id in WalletMaskedCreditCard for to fetch the
+  // corresponding actual card data. Note this is not unique across all cloud
+  // token data, which means one card can have multiple sets of cloud token data
+  // with the same masked_card_id.
+  optional string masked_card_id = 1;
+
+  // Last 4-5 digits of the Cloud Primary Account Number (CPAN).
+  optional string suffix = 2;
+
+  // CPAN Month number 1-12.
+  optional int32 exp_month = 3;
+
+  // CPAN Four-digit year (e.g. 2017).
+  optional int32 exp_year = 4;
+
+  // URL of the card art to be displayed for CPAN.
+  optional string art_fife_url = 5;
+
+  // Opaque identifier for the cloud token.
+  optional string instrument_token = 6;
+}
+
 message AutofillWalletSpecifics {
   enum WalletInfoType {
     UNKNOWN = 0;
     MASKED_CREDIT_CARD = 1;
     POSTAL_ADDRESS = 2;
     CUSTOMER_DATA = 3;
+    CREDIT_CARD_CLOUD_TOKEN_DATA = 4;
   }
 
   optional WalletInfoType type = 1;
@@ -204,6 +259,10 @@ message AutofillWalletSpecifics {
 
   // This field exists if and only if the "type" field equals to CUSTOMER_DATA.
   optional PaymentsCustomerData customer_data = 4;
+
+  // This field exists if and only if the "type" field equals to
+  // CREDIT_CARD_CLOUD_TOKEN_DATA.
+  optional WalletCreditCardCloudTokenData cloud_token_data = 5;
 }
 
 // Wallet card and address usage information that can be synced.

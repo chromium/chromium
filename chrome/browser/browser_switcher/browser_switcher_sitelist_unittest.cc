@@ -41,10 +41,11 @@ std::unique_ptr<base::Value> StringArrayToValue(
 class BrowserSwitcherSitelistTest : public testing::Test {
  public:
   void Initialize(const std::vector<const char*>& url_list,
-                  const std::vector<const char*>& url_greylist) {
+                  const std::vector<const char*>& url_greylist,
+                  bool enabled = true) {
     BrowserSwitcherPrefs::RegisterProfilePrefs(prefs_backend_.registry());
     prefs_backend_.SetManagedPref(prefs::kEnabled,
-                                  std::make_unique<base::Value>(true));
+                                  std::make_unique<base::Value>(enabled));
     prefs_backend_.SetManagedPref(prefs::kUrlList,
                                   StringArrayToValue(url_list));
     prefs_backend_.SetManagedPref(prefs::kUrlGreylist,
@@ -54,6 +55,7 @@ class BrowserSwitcherSitelistTest : public testing::Test {
   }
 
   bool ShouldSwitch(const GURL& url) { return sitelist_->ShouldSwitch(url); }
+  Decision GetDecision(const GURL& url) { return sitelist_->GetDecision(url); }
 
   sync_preferences::TestingPrefServiceSyncable* prefs_backend() {
     return &prefs_backend_;
@@ -65,6 +67,44 @@ class BrowserSwitcherSitelistTest : public testing::Test {
   std::unique_ptr<BrowserSwitcherPrefs> prefs_;
   std::unique_ptr<BrowserSwitcherSitelist> sitelist_;
 };
+
+TEST_F(BrowserSwitcherSitelistTest, CanonicalizeRule) {
+  std::string rule = "Example.Com";
+  CanonicalizeRule(&rule);
+  EXPECT_EQ("example.com", rule);
+
+  rule = "Example.Com/";
+  CanonicalizeRule(&rule);
+  EXPECT_EQ("//example.com/", rule);
+
+  rule = "!Example.Com/Abc";
+  CanonicalizeRule(&rule);
+  EXPECT_EQ("!//example.com/Abc", rule);
+
+  rule = "/Example.Com";
+  CanonicalizeRule(&rule);
+  EXPECT_EQ("/Example.Com", rule);
+
+  rule = "//Example.Com";
+  CanonicalizeRule(&rule);
+  EXPECT_EQ("//example.com/", rule);
+
+  rule = "!//Example.Com";
+  CanonicalizeRule(&rule);
+  EXPECT_EQ("!//example.com/", rule);
+
+  rule = "HTTP://EXAMPLE.COM";
+  CanonicalizeRule(&rule);
+  EXPECT_EQ("http://example.com/", rule);
+
+  rule = "HTTP://EXAMPLE.COM/ABC";
+  CanonicalizeRule(&rule);
+  EXPECT_EQ("http://example.com/ABC", rule);
+
+  rule = "User@Example.Com:8080/Test";
+  CanonicalizeRule(&rule);
+  EXPECT_EQ("//User@example.com:8080/Test", rule);
+}
 
 TEST_F(BrowserSwitcherSitelistTest, ShouldRedirectWildcard) {
   // A "*" by itself means everything matches.
@@ -182,21 +222,28 @@ TEST_F(BrowserSwitcherSitelistTest, ShouldIgnoreNonManagedPrefs) {
 TEST_F(BrowserSwitcherSitelistTest, SetIeemSitelist) {
   Initialize({}, {});
   ParsedXml ieem;
-  ieem.sitelist = {"example.com"};
-  ieem.greylist = {"foo.example.com"};
+  ieem.rules = {"example.com"};
   sitelist()->SetIeemSitelist(std::move(ieem));
   EXPECT_TRUE(ShouldSwitch(GURL("http://example.com/")));
   EXPECT_TRUE(ShouldSwitch(GURL("http://bar.example.com/")));
-  EXPECT_FALSE(ShouldSwitch(GURL("http://foo.example.com/")));
   EXPECT_FALSE(ShouldSwitch(GURL("http://google.com/")));
 }
 
 TEST_F(BrowserSwitcherSitelistTest, SetExternalSitelist) {
   Initialize({}, {});
   ParsedXml external;
-  external.sitelist = {"example.com"};
-  external.greylist = {"foo.example.com"};
+  external.rules = {"example.com"};
   sitelist()->SetExternalSitelist(std::move(external));
+  EXPECT_TRUE(ShouldSwitch(GURL("http://example.com/")));
+  EXPECT_TRUE(ShouldSwitch(GURL("http://bar.example.com/")));
+  EXPECT_FALSE(ShouldSwitch(GURL("http://google.com/")));
+}
+
+TEST_F(BrowserSwitcherSitelistTest, SetExternalGreylist) {
+  Initialize({"example.com"}, {});
+  ParsedXml external;
+  external.rules = {"foo.example.com"};
+  sitelist()->SetExternalGreylist(std::move(external));
   EXPECT_TRUE(ShouldSwitch(GURL("http://example.com/")));
   EXPECT_TRUE(ShouldSwitch(GURL("http://bar.example.com/")));
   EXPECT_FALSE(ShouldSwitch(GURL("http://foo.example.com/")));
@@ -206,22 +253,42 @@ TEST_F(BrowserSwitcherSitelistTest, SetExternalSitelist) {
 TEST_F(BrowserSwitcherSitelistTest, All3Sources) {
   Initialize({"google.com"}, {"mail.google.com"});
   ParsedXml ieem;
-  ieem.sitelist = {"example.com"};
-  ieem.greylist = {"foo.example.com"};
+  ieem.rules = {"example.com"};
   sitelist()->SetIeemSitelist(std::move(ieem));
   ParsedXml external;
-  external.sitelist = {"yahoo.com"};
-  external.greylist = {"finance.yahoo.com"};
+  external.rules = {"yahoo.com"};
   sitelist()->SetExternalSitelist(std::move(external));
   EXPECT_TRUE(ShouldSwitch(GURL("http://google.com/")));
   EXPECT_TRUE(ShouldSwitch(GURL("http://drive.google.com/")));
   EXPECT_FALSE(ShouldSwitch(GURL("http://mail.google.com/")));
   EXPECT_TRUE(ShouldSwitch(GURL("http://example.com/")));
   EXPECT_TRUE(ShouldSwitch(GURL("http://bar.example.com/")));
-  EXPECT_FALSE(ShouldSwitch(GURL("http://foo.example.com/")));
   EXPECT_TRUE(ShouldSwitch(GURL("http://yahoo.com/")));
   EXPECT_TRUE(ShouldSwitch(GURL("http://news.yahoo.com/")));
-  EXPECT_FALSE(ShouldSwitch(GURL("http://finance.yahoo.com/")));
+}
+
+TEST_F(BrowserSwitcherSitelistTest, BrowserSwitcherDisabled) {
+  Initialize({"example.com"}, {}, false);
+  EXPECT_FALSE(ShouldSwitch(GURL("http://example.com/")));
+  EXPECT_EQ(Decision(kStay, kDisabled, ""),
+            GetDecision(GURL("http://example.com/")));
+}
+
+TEST_F(BrowserSwitcherSitelistTest, CheckReason) {
+  Initialize({"foo.invalid.com", "!example.com"},
+             {"//foo.invalid.com/foobar", "invalid.com"});
+  EXPECT_EQ(Decision(kStay, kProtocol, ""),
+            GetDecision(GURL("ftp://example.com/")));
+  EXPECT_EQ(Decision(kStay, kDefault, ""),
+            GetDecision(GURL("http://google.com/")));
+  EXPECT_EQ(Decision(kStay, kDefault, ""),
+            GetDecision(GURL("http://bar.invalid.com/")));
+  EXPECT_EQ(Decision(kStay, kSitelist, "!example.com"),
+            GetDecision(GURL("http://example.com/")));
+  EXPECT_EQ(Decision(kGo, kSitelist, "foo.invalid.com"),
+            GetDecision(GURL("http://foo.invalid.com/")));
+  EXPECT_EQ(Decision(kStay, kGreylist, "//foo.invalid.com/foobar"),
+            GetDecision(GURL("http://foo.invalid.com/foobar")));
 }
 
 }  // namespace browser_switcher

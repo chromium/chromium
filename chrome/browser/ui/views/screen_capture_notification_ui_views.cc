@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/screen_capture_notification_ui.h"
 
 #include "base/macros.h"
+#include "base/scoped_observer.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/views/chrome_views_export.h"
 #include "chrome/grit/generated_resources.h"
@@ -30,23 +31,13 @@
 #endif
 
 #if defined(OS_CHROMEOS)
-#include "ash/shell.h"  // mash-ok
-#include "mojo/public/cpp/bindings/type_converter.h"
-#include "services/ws/public/cpp/property_type_converters.h"
-#include "services/ws/public/mojom/window_manager.mojom.h"
-#include "ui/base/ui_base_features.h"
-#include "ui/display/display.h"
-#include "ui/display/screen.h"
+#include "ash/shell.h"
 #endif
 
 namespace {
 
 const int kHorizontalMargin = 10;
-const float kWindowAlphaValue = 0.85f;
-const int kPaddingVertical = 5;
-const int kPaddingHorizontal = 10;
-
-namespace {
+const float kWindowAlphaValue = 0.96f;
 
 // A ClientView that overrides NonClientHitTest() so that the whole window area
 // acts as a window caption, except a rect specified using set_client_rect().
@@ -61,7 +52,7 @@ class NotificationBarClientView : public views::ClientView {
 
   void set_client_rect(const gfx::Rect& rect) { rect_ = rect; }
 
-  // views::ClientView overrides.
+  // views::ClientView:
   int NonClientHitTest(const gfx::Point& point) override {
     if (!bounds().Contains(point))
       return HTNOWHERE;
@@ -78,26 +69,22 @@ class NotificationBarClientView : public views::ClientView {
   DISALLOW_COPY_AND_ASSIGN(NotificationBarClientView);
 };
 
-}  // namespace
-
 // ScreenCaptureNotificationUI implementation using Views.
-class ScreenCaptureNotificationUIViews
-    : public ScreenCaptureNotificationUI,
-      public views::WidgetDelegateView,
-      public views::ButtonListener,
-      public views::LinkListener {
+class ScreenCaptureNotificationUIViews : public ScreenCaptureNotificationUI,
+                                         public views::WidgetDelegateView,
+                                         public views::ButtonListener,
+                                         public views::LinkListener,
+                                         public views::ViewObserver {
  public:
   explicit ScreenCaptureNotificationUIViews(const base::string16& text);
   ~ScreenCaptureNotificationUIViews() override;
 
-  // ScreenCaptureNotificationUI interface.
-  gfx::NativeViewId OnStarted(base::OnceClosure stop_callback,
-                              base::RepeatingClosure source_callback) override;
+  // ScreenCaptureNotificationUI:
+  gfx::NativeViewId OnStarted(
+      base::OnceClosure stop_callback,
+      content::MediaStreamUI::SourceCallback source_callback) override;
 
-  // views::View overrides.
-  void Layout() override;
-
-  // views::WidgetDelegateView overrides.
+  // views::WidgetDelegateView:
   void DeleteDelegate() override;
   views::ClientView* CreateClientView(views::Widget* widget) override;
   views::NonClientFrameView* CreateNonClientFrameView(
@@ -107,11 +94,14 @@ class ScreenCaptureNotificationUIViews
   bool ShouldShowCloseButton() const override;
   bool CanActivate() const override;
 
-  // views::ButtonListener interface.
+  // views::ButtonListener:
   void ButtonPressed(views::Button* sender, const ui::Event& event) override;
 
-  // views::LinkListener interface.
+  // views::LinkListener:
   void LinkClicked(views::Link* source, int event_flags) override;
+
+  // views::ViewObserver:
+  void OnViewBoundsChanged(View* observed_view) override;
 
  private:
   // Helper to call |stop_callback_|.
@@ -119,61 +109,61 @@ class ScreenCaptureNotificationUIViews
   // Helper to call |source_callback_|.
   void NotifySourceChange();
 
-  const base::string16 text_;
   base::OnceClosure stop_callback_;
-  base::RepeatingClosure source_callback_;
-  NotificationBarClientView* client_view_;
-  views::ImageView* gripper_;
-  views::Label* label_;
-  views::Button* source_button_;
-  views::Button* stop_button_;
-  views::Link* hide_link_;
+  content::MediaStreamUI::SourceCallback source_callback_;
+  ScopedObserver<views::View, views::ViewObserver> bounds_observer_{this};
+  NotificationBarClientView* client_view_ = nullptr;
+  views::ImageView* gripper_ = nullptr;
+  views::Label* label_ = nullptr;
+  views::Button* source_button_ = nullptr;
+  views::Button* stop_button_ = nullptr;
+  views::Link* hide_link_ = nullptr;
+  const base::string16 text_;
 
   DISALLOW_COPY_AND_ASSIGN(ScreenCaptureNotificationUIViews);
 };
 
 ScreenCaptureNotificationUIViews::ScreenCaptureNotificationUIViews(
     const base::string16& text)
-    : text_(text),
-      client_view_(nullptr),
-      gripper_(nullptr),
-      label_(nullptr),
-      source_button_(nullptr),
-      stop_button_(nullptr),
-      hide_link_(nullptr) {
+    : text_(text) {
   set_owned_by_client();
 
   SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::kHorizontal, gfx::Insets(), kHorizontalMargin));
+      views::BoxLayout::Orientation::kHorizontal, gfx::Insets(),
+      kHorizontalMargin));
 
-  gripper_ = new views::ImageView();
-  gripper_->SetImage(
-      ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
-          IDR_SCREEN_CAPTURE_NOTIFICATION_GRIP));
-  AddChildView(gripper_);
+  auto gripper = std::make_unique<views::ImageView>();
+  gripper->SetImage(ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
+      IDR_SCREEN_CAPTURE_NOTIFICATION_GRIP));
+  gripper_ = AddChildView(std::move(gripper));
 
-  label_ = new views::Label();
-  AddChildView(label_);
+  label_ = AddChildView(std::make_unique<views::Label>());
 
   base::string16 source_text =
       l10n_util::GetStringUTF16(IDS_MEDIA_SCREEN_CAPTURE_NOTIFICATION_SOURCE);
-  source_button_ =
+  auto source_button =
       views::MdTextButton::CreateSecondaryUiButton(this, source_text);
-  AddChildView(source_button_);
+  source_button_ = AddChildView(std::move(source_button));
 
   base::string16 stop_text =
       l10n_util::GetStringUTF16(IDS_MEDIA_SCREEN_CAPTURE_NOTIFICATION_STOP);
-  stop_button_ =
+  auto stop_button =
       views::MdTextButton::CreateSecondaryUiBlueButton(this, stop_text);
-  AddChildView(stop_button_);
+  stop_button_ = AddChildView(std::move(stop_button));
 
   // TODO(jiayl): IDS_PASSWORDS_PAGE_VIEW_HIDE_BUTTON is used for the need to
   // merge to M34. Change it to a new IDS_ after the merge.
-  hide_link_ = new views::Link(
+  auto hide_link = std::make_unique<views::Link>(
       l10n_util::GetStringUTF16(IDS_PASSWORDS_PAGE_VIEW_HIDE_BUTTON));
-  hide_link_->set_listener(this);
-  hide_link_->SetUnderline(false);
-  AddChildView(hide_link_);
+  hide_link->set_listener(this);
+  hide_link->SetUnderline(false);
+  hide_link_ = AddChildView(std::move(hide_link));
+
+  // The client rect for NotificationBarClientView uses the bounds for the
+  // following views.
+  bounds_observer_.Add(source_button_);
+  bounds_observer_.Add(stop_button_);
+  bounds_observer_.Add(hide_link_);
 }
 
 ScreenCaptureNotificationUIViews::~ScreenCaptureNotificationUIViews() {
@@ -184,7 +174,10 @@ ScreenCaptureNotificationUIViews::~ScreenCaptureNotificationUIViews() {
 
 gfx::NativeViewId ScreenCaptureNotificationUIViews::OnStarted(
     base::OnceClosure stop_callback,
-    base::RepeatingClosure source_callback) {
+    content::MediaStreamUI::SourceCallback source_callback) {
+  if (GetWidget())
+    return 0;
+
   stop_callback_ = std::move(stop_callback);
   source_callback_ = std::move(source_callback);
 
@@ -202,25 +195,18 @@ gfx::NativeViewId ScreenCaptureNotificationUIViews::OnStarted(
   params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   params.opacity = views::Widget::InitParams::TRANSLUCENT_WINDOW;
   params.remove_standard_frame = true;
-  params.keep_on_top = true;
+  params.z_order = ui::ZOrderLevel::kFloatingUIElement;
+  params.name = "ScreenCaptureNotificationUIViews";
 
 #if defined(OS_CHROMEOS)
   // TODO(sergeyu): The notification bar must be shown on the monitor that's
   // being captured. Make sure it's always the case. Currently we always capture
   // the primary monitor.
-  if (!features::IsUsingWindowService()) {
-    params.context = ash::Shell::GetPrimaryRootWindow();
-  } else {
-    const display::Display primary_display =
-        display::Screen::GetScreen()->GetPrimaryDisplay();
-    params.mus_properties[ws::mojom::WindowManager::kDisplayId_InitProperty] =
-        mojo::ConvertTo<std::vector<uint8_t>>(primary_display.id());
-  }
+  params.context = ash::Shell::GetPrimaryRootWindow();
 #endif
 
-  widget->set_frame_type(views::Widget::FRAME_TYPE_FORCE_CUSTOM);
-  widget->Init(params);
-  widget->SetAlwaysOnTop(true);
+  widget->set_frame_type(views::Widget::FrameType::kForceCustom);
+  widget->Init(std::move(params));
 
   SetBackground(views::CreateSolidBackground(GetNativeTheme()->GetSystemColor(
       ui::NativeTheme::kColorId_DialogBackground)));
@@ -242,20 +228,7 @@ gfx::NativeViewId ScreenCaptureNotificationUIViews::OnStarted(
   widget->SetOpacity(kWindowAlphaValue);
   widget->SetVisibleOnAllWorkspaces(true);
 
-#if defined(OS_WIN)
-  return gfx::NativeViewId(views::HWNDForWidget(widget));
-#else
   return 0;
-#endif
-}
-
-void ScreenCaptureNotificationUIViews::Layout() {
-  View::Layout();
-
-  gfx::Rect client_rect = source_button_->bounds();
-  client_rect.Union(stop_button_->bounds());
-  client_rect.Union(hide_link_->bounds());
-  client_view_->set_client_rect(client_rect);
 }
 
 void ScreenCaptureNotificationUIViews::DeleteDelegate() {
@@ -272,9 +245,9 @@ views::ClientView* ScreenCaptureNotificationUIViews::CreateClientView(
 views::NonClientFrameView*
 ScreenCaptureNotificationUIViews::CreateNonClientFrameView(
     views::Widget* widget) {
-  views::BubbleFrameView* frame = new views::BubbleFrameView(
-      gfx::Insets(), gfx::Insets(kPaddingVertical, kPaddingHorizontal,
-                                 kPaddingVertical, kPaddingHorizontal));
+  constexpr auto kPadding = gfx::Insets(5, 10);
+  views::BubbleFrameView* frame =
+      new views::BubbleFrameView(gfx::Insets(), kPadding);
   SkColor color = widget->GetNativeTheme()->GetSystemColor(
       ui::NativeTheme::kColorId_DialogBackground);
   frame->SetBubbleBorder(std::unique_ptr<views::BubbleBorder>(
@@ -317,9 +290,17 @@ void ScreenCaptureNotificationUIViews::LinkClicked(views::Link* source,
   GetWidget()->Minimize();
 }
 
+void ScreenCaptureNotificationUIViews::OnViewBoundsChanged(
+    View* observed_view) {
+  gfx::Rect client_rect = source_button_->bounds();
+  client_rect.Union(stop_button_->bounds());
+  client_rect.Union(hide_link_->bounds());
+  client_view_->set_client_rect(client_rect);
+}
+
 void ScreenCaptureNotificationUIViews::NotifySourceChange() {
   if (!source_callback_.is_null())
-    source_callback_.Run();
+    source_callback_.Run(content::DesktopMediaID());
 }
 
 void ScreenCaptureNotificationUIViews::NotifyStopped() {

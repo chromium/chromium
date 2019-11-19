@@ -63,7 +63,7 @@ TEST_F(ClientCertStoreMacTest, FilterOutThePreferredCert) {
   EXPECT_FALSE(cert_1->IsIssuedByEncoded(authority_2));
 
   std::vector<scoped_refptr<X509Certificate> > certs;
-  scoped_refptr<SSLCertRequestInfo> request(new SSLCertRequestInfo());
+  auto request = base::MakeRefCounted<SSLCertRequestInfo>();
   request->cert_authorities = authority_2;
 
   ClientCertIdentityList selected_certs;
@@ -85,7 +85,7 @@ TEST_F(ClientCertStoreMacTest, PreferredCertGoesFirst) {
 
   std::vector<scoped_refptr<X509Certificate> > certs;
   certs.push_back(cert_2);
-  scoped_refptr<SSLCertRequestInfo> request(new SSLCertRequestInfo());
+  auto request = base::MakeRefCounted<SSLCertRequestInfo>();
 
   ClientCertIdentityList selected_certs;
   bool rv = SelectClientCertsGivenPreferred(

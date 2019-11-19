@@ -169,7 +169,7 @@ void PinBackend::Set(const AccountId& account_id,
 
   if (cryptohome_backend_) {
     // If |user_context| is null, then the token timed out.
-    UserContext* user_context = storage->GetUserContext(token);
+    const UserContext* user_context = storage->GetUserContext(token);
     if (!user_context) {
       PostResponse(std::move(did_set), false);
       return;
@@ -201,7 +201,7 @@ void PinBackend::Remove(const AccountId& account_id,
 
   if (cryptohome_backend_) {
     // If |user_context| is null, then the token timed out.
-    UserContext* user_context = storage->GetUserContext(token);
+    const UserContext* user_context = storage->GetUserContext(token);
     if (!user_context) {
       PostResponse(std::move(did_remove), false);
       return;

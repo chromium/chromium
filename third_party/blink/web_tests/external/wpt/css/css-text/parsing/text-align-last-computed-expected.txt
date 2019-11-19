@@ -1,0 +1,11 @@
+This is a testharness.js-based test.
+PASS Property text-align-last value 'auto' computes to 'auto'
+PASS Property text-align-last value 'start' computes to 'start'
+PASS Property text-align-last value 'end' computes to 'end'
+PASS Property text-align-last value 'left' computes to 'left'
+PASS Property text-align-last value 'right' computes to 'right'
+PASS Property text-align-last value 'center' computes to 'center'
+PASS Property text-align-last value 'justify' computes to 'justify'
+FAIL Property text-align-last value 'match-parent' computes to 'match-parent' assert_true: 'match-parent' is a supported value for text-align-last. expected true got false
+Harness: the test ran to completion.
+

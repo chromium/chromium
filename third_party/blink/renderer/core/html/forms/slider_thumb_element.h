@@ -33,6 +33,9 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_FORMS_SLIDER_THUMB_ELEMENT_H_
 
 #include "third_party/blink/renderer/core/html/html_div_element.h"
+#include "third_party/blink/renderer/platform/geometry/layout_point.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 
 namespace blink {
@@ -43,8 +46,6 @@ class TouchEvent;
 
 class SliderThumbElement final : public HTMLDivElement {
  public:
-  static SliderThumbElement* Create(Document&);
-
   SliderThumbElement(Document&);
 
   void SetPositionFromValue();
@@ -53,14 +54,14 @@ class SliderThumbElement final : public HTMLDivElement {
   void DefaultEventHandler(Event&) override;
   bool WillRespondToMouseMoveEvents() override;
   bool WillRespondToMouseClickEvents() override;
-  void DetachLayoutTree(const AttachContext& = AttachContext()) override;
+  void DetachLayoutTree(bool performing_reattach) override;
   const AtomicString& ShadowPseudoId() const override;
   HTMLInputElement* HostInput() const;
   void SetPositionFromPoint(const LayoutPoint&);
   void StopDragging();
 
  private:
-  LayoutObject* CreateLayoutObject(const ComputedStyle&) override;
+  LayoutObject* CreateLayoutObject(const ComputedStyle&, LegacyLayout) override;
   scoped_refptr<ComputedStyle> CustomStyleForLayoutObject() final;
   Element& CloneWithoutAttributesAndChildren(Document&) const override;
   bool IsDisabledFormControl() const override;
@@ -75,11 +76,14 @@ class SliderThumbElement final : public HTMLDivElement {
 
 inline Element& SliderThumbElement::CloneWithoutAttributesAndChildren(
     Document& factory) const {
-  return *Create(factory);
+  return *MakeGarbageCollected<SliderThumbElement>(factory);
 }
 
 // FIXME: There are no ways to check if a node is a SliderThumbElement.
-DEFINE_ELEMENT_TYPE_CASTS(SliderThumbElement, IsHTMLElement());
+template <>
+struct DowncastTraits<SliderThumbElement> {
+  static bool AllowFrom(const Node& node) { return node.IsHTMLElement(); }
+};
 
 class SliderContainerElement final : public HTMLDivElement {
  public:
@@ -91,7 +95,6 @@ class SliderContainerElement final : public HTMLDivElement {
 
   explicit SliderContainerElement(Document&);
 
-  DECLARE_NODE_FACTORY(SliderContainerElement);
   HTMLInputElement* HostInput() const;
   void DefaultEventHandler(Event&) override;
   void HandleTouchEvent(TouchEvent*);
@@ -100,7 +103,7 @@ class SliderContainerElement final : public HTMLDivElement {
   void RemoveAllEventListeners() override;
 
  private:
-  LayoutObject* CreateLayoutObject(const ComputedStyle&) override;
+  LayoutObject* CreateLayoutObject(const ComputedStyle&, LegacyLayout) override;
   scoped_refptr<ComputedStyle> CustomStyleForLayoutObject() final;
   const AtomicString& ShadowPseudoId() const override;
   Direction GetDirection(LayoutPoint&, LayoutPoint&);

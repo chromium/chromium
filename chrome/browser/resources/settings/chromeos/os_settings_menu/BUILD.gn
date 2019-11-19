@@ -1,0 +1,19 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/closure_compiler/compile_js.gni")
+
+js_type_check("closure_compile") {
+  deps = [
+    ":os_settings_menu",
+  ]
+}
+
+js_library("os_settings_menu") {
+  deps = [
+    "../..:route",
+    "//third_party/polymer/v1_0/components-chromium/iron-collapse:iron-collapse-extracted",
+    "//third_party/polymer/v1_0/components-chromium/paper-ripple:paper-ripple-extracted",
+  ]
+}

@@ -7,12 +7,12 @@
 
 #include <stddef.h>
 
-#include <list>
 #include <map>
 
 #include "base/macros.h"
 #include "build/build_config.h"
 #include "components/omnibox/browser/autocomplete_match.h"
+#include "components/omnibox/browser/match_compare.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "url/gurl.h"
 
@@ -28,19 +28,19 @@ class AutocompleteResult {
  public:
   typedef ACMatches::const_iterator const_iterator;
   typedef ACMatches::iterator iterator;
+  using MatchDedupComparator = std::pair<GURL, bool>;
 
   // Max number of matches we'll show from the various providers.
-  static size_t GetMaxMatches();
+  static size_t GetMaxMatches(bool is_zero_suggest = false);
 
   AutocompleteResult();
   ~AutocompleteResult();
 
-  // Copies matches from |old_matches| to provide a consistant result set. See
-  // comments in code for specifics. Will clear |old_matches| if this result is
-  // empty().
-  void CopyOldMatches(const AutocompleteInput& input,
-                      AutocompleteResult* old_matches,
-                      TemplateURLService* template_url_service);
+  // Moves matches from |old_matches| to provide a consistent result set.
+  // |old_matches| is mutated during this, and should not be used afterwards.
+  void TransferOldMatches(const AutocompleteInput& input,
+                          AutocompleteResult* old_matches,
+                          TemplateURLService* template_url_service);
 
   // Adds a new set of matches to the result set.  Does not re-sort.  Calls
   // PossiblySwapContentsAndDescriptionForURLSuggestion(input)" on all added
@@ -50,11 +50,18 @@ class AutocompleteResult {
 
   // Removes duplicates, puts the list in sorted order and culls to leave only
   // the best GetMaxMatches() matches. Sets the default match to the best match
-  // and updates the alternate nav URL. On desktop, it filters the matches to be
-  // either all tail suggestions (except for the first match) or no tail
-  // suggestions.
+  // and updates the alternate nav URL.
+  //
+  // |preserve_default_match| can be used to prevent the default match from
+  // being surprisingly swapped out during the asynchronous pass. If it has a
+  // value, this method searches the results for that match, and promotes it to
+  // the top. But we don't add back that match if it doesn't already exist.
+  //
+  // On desktop, it filters the matches to be either all tail suggestions
+  // (except for the first match) or no tail suggestions.
   void SortAndCull(const AutocompleteInput& input,
-                   TemplateURLService* template_url_service);
+                   TemplateURLService* template_url_service,
+                   const AutocompleteMatch* preserve_default_match = nullptr);
 
   // Creates and adds any dedicated Pedal matches triggered by existing matches.
   // This should be the only place where new Pedal suggestions are introduced
@@ -94,10 +101,25 @@ class AutocompleteResult {
   bool TopMatchIsStandaloneVerbatimMatch() const;
 
   // Returns the first match in |matches| which might be chosen as default.
-  static ACMatches::const_iterator FindTopMatch(const ACMatches& matches);
-  static ACMatches::iterator FindTopMatch(ACMatches* matches);
+  // If |kOmniboxPreserveDefaultMatchScore| is enabled and the page is not
+  // the fake box, the scores are not demoted by type.
+  static ACMatches::const_iterator FindTopMatch(const AutocompleteInput& input,
+                                                const ACMatches& matches);
+  static ACMatches::iterator FindTopMatch(const AutocompleteInput& input,
+                                          ACMatches* matches);
 
-  const GURL& alternate_nav_url() const { return alternate_nav_url_; }
+  // If the top match is a Search Entity, and it was deduplicated with a
+  // non-entity match, split off the non-entity match from the list of
+  // duplicates and promote it to the top.
+  static void DiscourageTopMatchFromBeingSearchEntity(ACMatches* matches);
+
+  // Just a helper function to encapsulate the logic of deciding how many
+  // matches to keep, with respect to configured maximums, URL limits,
+  // and relevancies.
+  static size_t CalculateNumMatches(
+      bool input_from_omnibox_focus,
+      const ACMatches& matches,
+      const CompareWithDemoteByType<AutocompleteMatch>& comparing_object);
 
   // Clears the matches for this result set.
   void Reset();
@@ -112,20 +134,10 @@ class AutocompleteResult {
   void Validate() const;
 #endif  // DCHECK_IS_ON()
 
-  // Compute the "alternate navigation URL" for a given match. This is obtained
-  // by interpreting the user input directly as a URL. See comments on
-  // |alternate_nav_url_|.
+  // Returns a URL to offer the user as an alternative navigation when they
+  // open |match| after typing in |input|.
   static GURL ComputeAlternateNavUrl(const AutocompleteInput& input,
                                      const AutocompleteMatch& match);
-
-  // Sort |matches| by destination, taking into account demotions based on
-  // |page_classification| when resolving ties about which of several
-  // duplicates to keep.  The matches are also deduplicated. Duplicate matches
-  // are stored in the |duplicate_matches| vector of the corresponding
-  // AutocompleteMatch.
-  static void SortAndDedupMatches(
-      metrics::OmniboxEventProto::PageClassification page_classification,
-      ACMatches* matches);
 
   // Prepend missing tail suggestion prefixes in results, if present.
   void InlineTailPrefixes();
@@ -134,8 +146,24 @@ class AutocompleteResult {
   // See base/trace_event/memory_usage_estimator.h for more info.
   size_t EstimateMemoryUsage() const;
 
+  // Get a list of comparators used for deduping for the matches in this result.
+  std::vector<MatchDedupComparator> GetMatchDedupComparators() const;
+
+  // Logs metrics for when |new_result| replaces |old_result| asynchronously.
+  // |old_result| a list of the comparators for the old matches.
+  static void LogAsynchronousUpdateMetrics(
+      const std::vector<MatchDedupComparator>& old_result,
+      const AutocompleteResult& new_result);
+
  private:
   FRIEND_TEST_ALL_PREFIXES(AutocompleteResultTest, ConvertsOpenTabsCorrectly);
+  FRIEND_TEST_ALL_PREFIXES(AutocompleteResultTest,
+                           PedalSuggestionsRemainUnique);
+  FRIEND_TEST_ALL_PREFIXES(AutocompleteResultTest,
+                           TestGroupSuggestionsBySearchVsURL);
+  FRIEND_TEST_ALL_PREFIXES(AutocompleteResultTest,
+                           DemoteOnDeviceSearchSuggestions);
+  friend class HistoryURLProviderTest;
 
   typedef std::map<AutocompleteProvider*, ACMatches> ProviderToMatches;
 
@@ -147,14 +175,12 @@ class AutocompleteResult {
   typedef ACMatches::iterator::difference_type matches_difference_type;
 #endif
 
-  // Examines |first| and |second| and returns the one that is preferred based
-  // on the constraints we want to enforce when deduping. Note that this may
-  // modify the relevance, allowed_to_be_default_match, or inline_autocompletion
-  // values of the returned match.
-  static std::list<ACMatches::iterator>::iterator BetterMatch(
-      std::list<ACMatches::iterator>::iterator first,
-      std::list<ACMatches::iterator>::iterator second,
-      metrics::OmniboxEventProto::PageClassification page_classification);
+  // Modifies |matches| such that any duplicate matches are coalesced into
+  // representative "best" matches. The erased matches are moved into the
+  // |duplicate_matches| members of their representative matches.
+  static void DeduplicateMatches(
+      metrics::OmniboxEventProto::PageClassification page_classification,
+      ACMatches* matches);
 
   // Returns true if |matches| contains a match with the same destination as
   // |match|.
@@ -164,16 +190,21 @@ class AutocompleteResult {
   // If there are both tail and non-tail suggestions (ignoring one default
   // match), remove the tail suggestions.  If the only default matches are tail
   // suggestions, remove the non-tail suggestions.
-  static void MaybeCullTailSuggestions(ACMatches* matches);
+  static void MaybeCullTailSuggestions(
+      ACMatches* matches,
+      const CompareWithDemoteByType<AutocompleteMatch>& comparing_object);
 
-  // Populates |provider_to_matches| from |matches_|.
-  void BuildProviderToMatches(ProviderToMatches* provider_to_matches) const;
+  // Populates |provider_to_matches| from |matches_|. This AutocompleteResult
+  // should not be used after the 'move' version.
+  void BuildProviderToMatchesCopy(ProviderToMatches* provider_to_matches) const;
+  void BuildProviderToMatchesMove(ProviderToMatches* provider_to_matches);
 
-  // Copies matches into this result. |old_matches| gives the matches from the
-  // last result, and |new_matches| the results from this result.
+  // Moves matches into this result. |old_matches| gives the matches from the
+  // last result, and |new_matches| the results from this result. |old_matches|
+  // should not be used afterwards.
   void MergeMatchesByProvider(
       metrics::OmniboxEventProto::PageClassification page_classification,
-      const ACMatches& old_matches,
+      ACMatches* old_matches,
       const ACMatches& new_matches);
 
   // This pulls the relevant fields out of a match for comparison with other
@@ -181,21 +212,35 @@ class AutocompleteResult {
   // collapse similar URLs if necessary, and whether the match is a calculator
   // suggestion, because we don't want to dedupe them against URLs that simply
   // happen to go to the same destination.
-  static std::pair<GURL, bool> GetMatchComparisonFields(
+  static MatchDedupComparator GetMatchComparisonFields(
       const AutocompleteMatch& match);
+
+  // This method reduces the number of navigation suggestions to that of
+  // |max_url_matches| but will allow more if there are no other types to
+  // replace them.
+  void LimitNumberOfURLsShown(
+      size_t max_url_count,
+      const CompareWithDemoteByType<AutocompleteMatch>& comparing_object);
+
+  // This method implements a stateful stable partition. Matches which are
+  // search types, and their submatches regardless of type, are shifted
+  // earlier in the range, while non-search types and their submatches
+  // are shifted later.
+  static void GroupSuggestionsBySearchVsURL(iterator begin, iterator end);
+
+  // If we have SearchProvider search suggestions, demote OnDeviceProvider
+  // search suggestions, since, which in general have lower quality than
+  // SearchProvider search suggestions. The demotion can happen in two ways,
+  // controlled by Finch (1. decrease-relevances or 2. remove-suggestions):
+  // 1. Decrease the on device search suggestion relevances that they will
+  //    always be shown after SearchProvider search suggestions.
+  // 2. Set the relevances of OnDeviceProvider search suggestions to 0, such
+  //    that they will be removed from result list later.
+  void DemoteOnDeviceSearchSuggestions();
 
   ACMatches matches_;
 
   const_iterator default_match_;
-
-  // The "alternate navigation URL", if any, for this result set.  This is a URL
-  // to try offering as a navigational option in case the user navigated to the
-  // URL of the default match but intended something else.  For example, if the
-  // user's local intranet contains site "foo", and the user types "foo", we
-  // default to searching for "foo" when the user may have meant to navigate
-  // there.  In cases like this, the default match will point to the "search for
-  // 'foo'" result, and this will contain "http://foo/".
-  GURL alternate_nav_url_;
 
   DISALLOW_COPY_AND_ASSIGN(AutocompleteResult);
 };

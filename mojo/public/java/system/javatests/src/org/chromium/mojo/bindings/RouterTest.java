@@ -4,7 +4,7 @@
 
 package org.chromium.mojo.bindings;
 
-import android.support.test.filters.SmallTest;
+import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -45,7 +45,7 @@ public class RouterTest {
      * @see MojoTestCase#setUp()
      */
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         Core core = CoreImpl.getInstance();
         Pair<MessagePipeHandle, MessagePipeHandle> handles = core.createMessagePipe(null);
         mHandle = handles.first;

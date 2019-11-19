@@ -13,7 +13,7 @@
 #include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace chromeos {
@@ -79,7 +79,7 @@ class FileFlusherTest : public testing::Test {
   }
 
  private:
-  content::TestBrowserThreadBundle thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
   base::ScopedTempDir temp_dir_;
   std::map<base::FilePath, int> flush_counts_;
 
@@ -89,9 +89,9 @@ class FileFlusherTest : public testing::Test {
 TEST_F(FileFlusherTest, Flush) {
   std::unique_ptr<FileFlusher> flusher(CreateFileFlusher());
   base::RunLoop run_loop;
-  flusher->RequestFlush(GetTestFilePath("dir1"), std::vector<base::FilePath>(),
+  flusher->RequestFlush(GetTestFilePath("dir1"), /*recursive=*/false,
                         base::Closure());
-  flusher->RequestFlush(GetTestFilePath("dir2"), std::vector<base::FilePath>(),
+  flusher->RequestFlush(GetTestFilePath("dir2"), /*recursive=*/false,
                         run_loop.QuitClosure());
   run_loop.Run();
 
@@ -104,36 +104,13 @@ TEST_F(FileFlusherTest, Flush) {
   EXPECT_EQ(1, GetFlushCount("dir2/file3"));
 }
 
-TEST_F(FileFlusherTest, Exclude) {
-  std::unique_ptr<FileFlusher> flusher(CreateFileFlusher());
-
-  std::vector<base::FilePath> excludes;
-  // Relative exclude
-  excludes.push_back(base::FilePath::FromUTF8Unsafe("file1"));
-  // Absolute exclude
-  excludes.push_back(GetTestFilePath("dir1/file2"));
-  // Invalid exclude will be ignored.
-  excludes.push_back(base::FilePath::FromUTF8Unsafe("Bad file"));
-
-  base::RunLoop run_loop;
-  flusher->RequestFlush(GetTestFilePath("dir1"), excludes,
-                        run_loop.QuitClosure());
-  run_loop.Run();
-
-  EXPECT_EQ(0, GetFlushCount("dir1/file1"));
-  EXPECT_EQ(0, GetFlushCount("dir1/file2"));
-  EXPECT_EQ(1, GetFlushCount("dir1/file3"));
-
-  EXPECT_EQ(0, GetFlushCount("dir1/Bad file"));
-}
-
 TEST_F(FileFlusherTest, DuplicateRequests) {
   std::unique_ptr<FileFlusher> flusher(CreateFileFlusher());
   base::RunLoop run_loop;
   flusher->PauseForTest();
-  flusher->RequestFlush(GetTestFilePath("dir1"), std::vector<base::FilePath>(),
+  flusher->RequestFlush(GetTestFilePath("dir1"), /*recursive=*/false,
                         base::Closure());
-  flusher->RequestFlush(GetTestFilePath("dir1"), std::vector<base::FilePath>(),
+  flusher->RequestFlush(GetTestFilePath("dir1"), /*recursive=*/false,
                         run_loop.QuitClosure());
   flusher->ResumeForTest();
   run_loop.Run();

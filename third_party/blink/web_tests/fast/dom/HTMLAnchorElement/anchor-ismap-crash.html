@@ -12,6 +12,6 @@ window.onerror = t.step_func_done(function(message) {
   //This error is because of "javascript:" url is not expected in case of ismap
   //This can not be caught in try-catch block as the click() execution could
   //finish before Syntax error was thrown from '<a href="javascript:">'
-  assert_equals(message, 'Uncaught SyntaxError: Unexpected token ?');
+  assert_equals(message, 'Uncaught SyntaxError: Unexpected token \'?\'');
 });
 </script>

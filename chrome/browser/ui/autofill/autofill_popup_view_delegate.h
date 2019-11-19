@@ -63,10 +63,6 @@ class AutofillPopupViewDelegate {
   virtual const std::vector<autofill::Suggestion> GetSuggestions() = 0;
 
 #if !defined(OS_ANDROID)
-  // Changes the typesetter used for eliding text. TODO(tapted): Remove this
-  // when autofill_popup_base_view_cocoa.mm is obsolete.
-  virtual void SetTypesetter(gfx::Typesetter typesetter) = 0;
-
   // Returns elided values and labels for the given |row|.
   virtual int GetElidedValueWidthForRow(int row) = 0;
   virtual int GetElidedLabelWidthForRow(int row) = 0;

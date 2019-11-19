@@ -1,0 +1,6 @@
+file://third_party/blink/renderer/modules/hid/OWNERS
+
+odejesush@chromium.org
+
+# COMPONENT: Blink>HID
+# TEAM: device-dev@chromium.org

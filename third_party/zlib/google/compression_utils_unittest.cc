@@ -55,6 +55,19 @@ TEST(CompressionUtilsTest, GzipUncompression) {
   EXPECT_EQ(golden_data, uncompressed_data);
 }
 
+TEST(CompressionUtilsTest, GzipUncompressionFromStringPieceToString) {
+  base::StringPiece compressed_data(
+      reinterpret_cast<const char*>(kCompressedData),
+      base::size(kCompressedData));
+
+  std::string uncompressed_data;
+  EXPECT_TRUE(GzipUncompress(compressed_data, &uncompressed_data));
+
+  std::string golden_data(reinterpret_cast<const char*>(kData),
+                          base::size(kData));
+  EXPECT_EQ(golden_data, uncompressed_data);
+}
+
 // Checks that compressing/decompressing input > 256 bytes works as expected.
 TEST(CompressionUtilsTest, LargeInput) {
   const size_t kSize = 32 * 1024;

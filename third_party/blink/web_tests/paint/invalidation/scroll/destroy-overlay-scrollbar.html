@@ -1,10 +1,8 @@
 <!DOCTYPE html>
 <script src="../resources/text-based-repaint.js"></script>
 <script>
-if (window.internals) {
-  internals.runtimeFlags.overlayScrollbarsEnabled = true;
-  internals.settings.setMockScrollbarsEnabled(true);
-}
+if (window.internals)
+  internals.useMockOverlayScrollbars();
 function repaintTest() {
   document.getElementById('content').style.height = '100px';
 }

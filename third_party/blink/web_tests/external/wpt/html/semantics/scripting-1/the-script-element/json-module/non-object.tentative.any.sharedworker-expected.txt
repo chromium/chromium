@@ -1,0 +1,8 @@
+This is a testharness.js-based test.
+FAIL Non-object: null promise_test: Unhandled rejection with value: object "TypeError: Module scripts are not supported on WorkerGlobalScope yet (see https://crbug.com/680046)."
+FAIL Non-object: true promise_test: Unhandled rejection with value: object "TypeError: Module scripts are not supported on WorkerGlobalScope yet (see https://crbug.com/680046)."
+FAIL Non-object: false promise_test: Unhandled rejection with value: object "TypeError: Module scripts are not supported on WorkerGlobalScope yet (see https://crbug.com/680046)."
+FAIL Non-object: string promise_test: Unhandled rejection with value: object "TypeError: Module scripts are not supported on WorkerGlobalScope yet (see https://crbug.com/680046)."
+FAIL Non-object: array promise_test: Unhandled rejection with value: object "TypeError: Module scripts are not supported on WorkerGlobalScope yet (see https://crbug.com/680046)."
+Harness: the test ran to completion.
+

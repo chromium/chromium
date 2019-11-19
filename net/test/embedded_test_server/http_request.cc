@@ -45,11 +45,10 @@ GURL HttpRequest::GetURL() const {
 }
 
 HttpRequestParser::HttpRequestParser()
-    : http_request_(new HttpRequest()),
+    : http_request_(std::make_unique<HttpRequest>()),
       buffer_position_(0),
       state_(STATE_HEADERS),
-      declared_content_length_(0) {
-}
+      declared_content_length_(0) {}
 
 HttpRequestParser::~HttpRequestParser() = default;
 
@@ -162,7 +161,7 @@ HttpRequestParser::ParseResult HttpRequestParser::ParseHeaders() {
   } else if (http_request_->headers.count("Transfer-Encoding") > 0) {
     if (http_request_->headers["Transfer-Encoding"] == "chunked") {
       http_request_->has_content = true;
-      chunked_decoder_.reset(new HttpChunkedDecoder());
+      chunked_decoder_ = std::make_unique<HttpChunkedDecoder>();
       state_ = STATE_CONTENT;
       return WAITING;
     }
@@ -222,7 +221,7 @@ std::unique_ptr<HttpRequest> HttpRequestParser::GetRequest() {
 
   // Prepare for parsing a new request.
   state_ = STATE_HEADERS;
-  http_request_.reset(new HttpRequest());
+  http_request_ = std::make_unique<HttpRequest>();
   buffer_.clear();
   buffer_position_ = 0;
   declared_content_length_ = 0;

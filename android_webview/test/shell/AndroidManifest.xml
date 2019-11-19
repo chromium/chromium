@@ -8,7 +8,6 @@
 
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="org.chromium.android_webview.shell">
-  <uses-sdk android:minSdkVersion="19" android:targetSdkVersion="23" />
   <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
   <uses-permission android:name="android.permission.INTERNET"/>
   <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS"/>
@@ -30,6 +29,7 @@
         android:configChanges="orientation|keyboardHidden|keyboard|screenSize">
       <intent-filter>
         <action android:name="android.intent.action.MAIN" />
+        <category android:name="android.intent.category.DEFAULT" />
         <category android:name="android.intent.category.LAUNCHER" />
       </intent-filter>
     </activity>
@@ -65,7 +65,7 @@
              android:isolatedProcess="false"
              android:exported="false" />
     <!-- If you change the variations services, also see
-         android_webview/apk/java/AndroidManifest.xml. -->
+         android_webview/nonembedded/java/AndroidManifest.xml. -->
     <service android:name="org.chromium.android_webview.services.VariationsSeedServer"
              android:exported="true"
              android:process=":webview_service" />

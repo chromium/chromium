@@ -13,9 +13,7 @@
 #include "chromeos/components/multidevice/expiring_remote_device_cache.h"
 #include "chromeos/components/multidevice/logging/logging.h"
 #include "chromeos/components/multidevice/remote_device.h"
-#include "chromeos/services/device_sync/public/mojom/constants.mojom.h"
 #include "chromeos/services/device_sync/public/mojom/device_sync.mojom.h"
-#include "services/service_manager/public/cpp/connector.h"
 
 namespace chromeos {
 
@@ -42,26 +40,22 @@ void DeviceSyncClientImpl::Factory::SetInstanceForTesting(
 
 DeviceSyncClientImpl::Factory::~Factory() = default;
 
-std::unique_ptr<DeviceSyncClient> DeviceSyncClientImpl::Factory::BuildInstance(
-    service_manager::Connector* connector) {
-  return base::WrapUnique(new DeviceSyncClientImpl(connector));
+std::unique_ptr<DeviceSyncClient>
+DeviceSyncClientImpl::Factory::BuildInstance() {
+  return std::make_unique<DeviceSyncClientImpl>();
 }
 
-DeviceSyncClientImpl::DeviceSyncClientImpl(
-    service_manager::Connector* connector)
-    : DeviceSyncClientImpl(connector, base::ThreadTaskRunnerHandle::Get()) {}
+DeviceSyncClientImpl::DeviceSyncClientImpl()
+    : expiring_device_cache_(
+          std::make_unique<multidevice::ExpiringRemoteDeviceCache>()) {}
 
-DeviceSyncClientImpl::DeviceSyncClientImpl(
-    service_manager::Connector* connector,
-    scoped_refptr<base::TaskRunner> task_runner)
-    : binding_(this),
-      expiring_device_cache_(
-          std::make_unique<multidevice::ExpiringRemoteDeviceCache>()),
-      weak_ptr_factory_(this) {
-  connector->BindInterface(mojom::kServiceName, &device_sync_ptr_);
-  device_sync_ptr_->AddObserver(GenerateInterfacePtr(), base::OnceClosure());
+DeviceSyncClientImpl::~DeviceSyncClientImpl() = default;
 
-  // Delay calling these until after the constructor finishes.
+void DeviceSyncClientImpl::Initialize(
+    scoped_refptr<base::TaskRunner> task_runner) {
+  device_sync_->AddObserver(GenerateRemote(), base::OnceClosure());
+
+  // Delay calling these until after initialization finishes.
   task_runner->PostTask(
       FROM_HERE, base::BindOnce(&DeviceSyncClientImpl::LoadLocalDeviceMetadata,
                                 weak_ptr_factory_.GetWeakPtr()));
@@ -70,7 +64,9 @@ DeviceSyncClientImpl::DeviceSyncClientImpl(
                                        weak_ptr_factory_.GetWeakPtr()));
 }
 
-DeviceSyncClientImpl::~DeviceSyncClientImpl() = default;
+mojo::Remote<mojom::DeviceSync>* DeviceSyncClientImpl::GetDeviceSyncRemote() {
+  return &device_sync_;
+}
 
 void DeviceSyncClientImpl::OnEnrollmentFinished() {
   // Before notifying observers that enrollment has finished, sync down the
@@ -89,12 +85,12 @@ void DeviceSyncClientImpl::OnNewDevicesSynced() {
 
 void DeviceSyncClientImpl::ForceEnrollmentNow(
     mojom::DeviceSync::ForceEnrollmentNowCallback callback) {
-  device_sync_ptr_->ForceEnrollmentNow(std::move(callback));
+  device_sync_->ForceEnrollmentNow(std::move(callback));
 }
 
 void DeviceSyncClientImpl::ForceSyncNow(
     mojom::DeviceSync::ForceSyncNowCallback callback) {
-  device_sync_ptr_->ForceSyncNow(std::move(callback));
+  device_sync_->ForceSyncNow(std::move(callback));
 }
 
 multidevice::RemoteDeviceRefList DeviceSyncClientImpl::GetSyncedDevices() {
@@ -116,22 +112,27 @@ void DeviceSyncClientImpl::SetSoftwareFeatureState(
     bool enabled,
     bool is_exclusive,
     mojom::DeviceSync::SetSoftwareFeatureStateCallback callback) {
-  device_sync_ptr_->SetSoftwareFeatureState(
-      public_key, software_feature, enabled, is_exclusive, std::move(callback));
+  device_sync_->SetSoftwareFeatureState(public_key, software_feature, enabled,
+                                        is_exclusive, std::move(callback));
 }
 
 void DeviceSyncClientImpl::FindEligibleDevices(
     multidevice::SoftwareFeature software_feature,
     FindEligibleDevicesCallback callback) {
-  device_sync_ptr_->FindEligibleDevices(
+  device_sync_->FindEligibleDevices(
       software_feature,
       base::BindOnce(&DeviceSyncClientImpl::OnFindEligibleDevicesCompleted,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
+void DeviceSyncClientImpl::GetDevicesActivityStatus(
+    mojom::DeviceSync::GetDevicesActivityStatusCallback callback) {
+  device_sync_->GetDevicesActivityStatus(std::move(callback));
+}
+
 void DeviceSyncClientImpl::GetDebugInfo(
     mojom::DeviceSync::GetDebugInfoCallback callback) {
-  device_sync_ptr_->GetDebugInfo(std::move(callback));
+  device_sync_->GetDebugInfo(std::move(callback));
 }
 
 void DeviceSyncClientImpl::AttemptToBecomeReady() {
@@ -154,13 +155,13 @@ void DeviceSyncClientImpl::AttemptToBecomeReady() {
 }
 
 void DeviceSyncClientImpl::LoadSyncedDevices() {
-  device_sync_ptr_->GetSyncedDevices(
+  device_sync_->GetSyncedDevices(
       base::BindOnce(&DeviceSyncClientImpl::OnGetSyncedDevicesCompleted,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
 void DeviceSyncClientImpl::LoadLocalDeviceMetadata() {
-  device_sync_ptr_->GetLocalDeviceMetadata(
+  device_sync_->GetLocalDeviceMetadata(
       base::BindOnce(&DeviceSyncClientImpl::OnGetLocalDeviceMetadataCompleted,
                      weak_ptr_factory_.GetWeakPtr()));
 }
@@ -241,14 +242,13 @@ void DeviceSyncClientImpl::OnFindEligibleDevicesCompleted(
   std::move(callback).Run(result_code, eligible_devices, ineligible_devices);
 }
 
-mojom::DeviceSyncObserverPtr DeviceSyncClientImpl::GenerateInterfacePtr() {
-  mojom::DeviceSyncObserverPtr interface_ptr;
-  binding_.Bind(mojo::MakeRequest(&interface_ptr));
-  return interface_ptr;
+mojo::PendingRemote<mojom::DeviceSyncObserver>
+DeviceSyncClientImpl::GenerateRemote() {
+  return observer_receiver_.BindNewPipeAndPassRemote();
 }
 
 void DeviceSyncClientImpl::FlushForTesting() {
-  device_sync_ptr_.FlushForTesting();
+  device_sync_.FlushForTesting();
 }
 
 }  // namespace device_sync

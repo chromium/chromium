@@ -140,6 +140,12 @@ std::set<std::string> SyncStorageBackend::GetKnownExtensionIDs(
   return result;
 }
 
+void SyncStorageBackend::WaitUntilReadyToSync(base::OnceClosure done) {
+  DCHECK(IsOnBackendSequence());
+  // This class is ready to sync immediately upon construction.
+  std::move(done).Run();
+}
+
 syncer::SyncDataList SyncStorageBackend::GetAllSyncData(syncer::ModelType type)
     const {
   DCHECK(IsOnBackendSequence());

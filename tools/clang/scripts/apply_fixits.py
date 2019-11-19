@@ -18,6 +18,8 @@
 # 3. Apply the fixits with this script:
 #      python apply_fixits.py -p <build_directory> < generated-fixits
 
+from __future__ import print_function
+
 import argparse
 import collections
 import fileinput
@@ -65,8 +67,8 @@ def main():
       last_fixit = None
       for fixit in v:
         if fixit.start_line != fixit.end_line:
-          print 'error: multiline fixits not supported! file: %s, fixit: %s' % (
-              k, fixit)
+          print('error: multiline fixits not supported! file: %s, fixit: %s' %
+                (k, fixit))
           sys.exit(1)
         if fixit == last_fixit:
           continue

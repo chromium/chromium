@@ -5,15 +5,17 @@
 # Do not add any imports to non-//build directories here.
 # Some projects (e.g. V8) do not have non-build directories DEPS'ed in.
 import("//build/config/android/config.gni")
+import("//build/config/android/copy_ex.gni")
+import("//build/config/coverage/coverage.gni")
 import("//build/config/dcheck_always_on.gni")
 import("//build/config/python.gni")
 import("//build/config/sanitizers/sanitizers.gni")
+import("//build/util/generate_wrapper.gni")
 import("//build_overrides/build.gni")
-
 assert(is_android)
 
 # These identify targets that have .build_config files (except for android_apk,
-# java_binary, resource_rewriter, android_app_bundle since we never need to
+# java_binary, android_app_bundle since we never need to
 # depend on these).
 _java_target_whitelist = [
   "*:*_java",
@@ -40,7 +42,6 @@ _java_target_whitelist = [
 # Targets that match the whitelist but are not actually java targets.
 _java_target_blacklist = [ "*:*_unpack_aar" ]
 
-_default_proguard_jar_path = "//third_party/proguard/lib/proguard.jar"
 _r8_path = "//third_party/r8/lib/r8.jar"
 
 _dexdump_path = "$android_sdk_build_tools/dexdump"
@@ -108,8 +109,7 @@ template("write_build_config") {
 
   # Don't need to enforce naming scheme for these targets since we never
   # consider them in dependency chains.
-  if (_type != "android_apk" && _type != "java_binary" &&
-      _type != "resource_rewriter" && _type != "dist_jar" &&
+  if (_type != "android_apk" && _type != "java_binary" && _type != "dist_jar" &&
       _type != "java_annotation_processor" && _type != "dist_aar" &&
       _type != "android_app_bundle") {
     set_sources_assignment_filter(_java_target_whitelist)
@@ -227,12 +227,15 @@ template("write_build_config") {
       args += [ "--annotation-processor-configs=$_rebased_processor_configs" ]
     }
 
+    # Dex path for library targets, or the the intermediate library for apks.
     if (defined(invoker.dex_path)) {
       args += [
         "--dex-path",
         rebase_path(invoker.dex_path, root_build_dir),
       ]
     }
+
+    # Dex path for the final apk.
     if (defined(invoker.final_dex_path)) {
       args += [
         "--final-dex-path",
@@ -309,25 +312,33 @@ template("write_build_config") {
     }
     if (defined(invoker.r_text)) {
       args += [
-        "--r-text",
+        "--r-text-path",
         rebase_path(invoker.r_text, root_build_dir),
       ]
     }
-
+    if (defined(invoker.res_size_info_path)) {
+      args += [
+        "--res-size-info",
+        rebase_path(invoker.res_size_info_path, root_build_dir),
+      ]
+    }
     if (defined(invoker.resource_dirs)) {
       resource_dirs = rebase_path(invoker.resource_dirs, root_build_dir)
       args += [ "--resource-dirs=$resource_dirs" ]
     }
-
     if (defined(invoker.proto_resources_path)) {
       _rebased_proto_resources =
           rebase_path(invoker.proto_resources_path, root_build_dir)
       args += [ "--apk-proto-resources=$_rebased_proto_resources" ]
     }
-
-    if (defined(invoker.module_rtxt_path)) {
-      _rebased_rtxt_path = rebase_path(invoker.module_rtxt_path, root_build_dir)
-      args += [ "--module-rtxt-path=$_rebased_rtxt_path" ]
+    if (defined(invoker.r_text_path)) {
+      _rebased_rtxt_path = rebase_path(invoker.r_text_path, root_build_dir)
+      args += [ "--r-text-path=$_rebased_rtxt_path" ]
+    }
+    if (defined(invoker.module_pathmap_path)) {
+      _rebased_pathmap_path =
+          rebase_path(invoker.module_pathmap_path, root_build_dir)
+      args += [ "--module-pathmap-path=$_rebased_pathmap_path" ]
     }
 
     if (defined(invoker.shared_libraries_runtime_deps_file)) {
@@ -345,6 +356,10 @@ template("write_build_config") {
         "--base-whitelist-rtxt-path",
         rebase_path(invoker.base_whitelist_rtxt_path, root_build_dir),
       ]
+    }
+
+    if (defined(invoker.is_base_module) && invoker.is_base_module) {
+      args += [ "--is-base-module" ]
     }
 
     if (defined(invoker.loadable_modules) && invoker.loadable_modules != []) {
@@ -376,17 +391,27 @@ template("write_build_config") {
       args += [ "--secondary-native-libs=$_rebased_secondary_abi_modules" ]
     }
 
+    if (defined(invoker.native_lib_placeholders) &&
+        invoker.native_lib_placeholders != []) {
+      args += [ "--native-lib-placeholders=${invoker.native_lib_placeholders}" ]
+    }
+
+    if (defined(invoker.secondary_native_lib_placeholders) &&
+        invoker.secondary_native_lib_placeholders != []) {
+      args += [ "--secondary-native-lib-placeholders=${invoker.secondary_native_lib_placeholders}" ]
+    }
+
     if (defined(invoker.uncompress_shared_libraries) &&
         invoker.uncompress_shared_libraries) {
       args += [ "--uncompress-shared-libraries" ]
     }
 
     if (defined(invoker.apk_path)) {
+      # TODO(tiborg): Remove APK path from build config and use
+      # install_artifacts from metadata instead.
       _rebased_apk_path = rebase_path(invoker.apk_path, root_build_dir)
-      _incremental_allowed =
-          defined(invoker.incremental_allowed) && invoker.incremental_allowed
       args += [ "--apk-path=$_rebased_apk_path" ]
-      if (_incremental_allowed) {
+      if (defined(invoker.incremental_apk_path)) {
         _rebased_incremental_apk_path =
             rebase_path(invoker.incremental_apk_path, root_build_dir)
         _rebased_incremental_install_json_path =
@@ -415,19 +440,6 @@ template("write_build_config") {
           rebase_path(invoker.bundled_srcjars, root_build_dir)
       args += [ "--bundled-srcjars=$_rebased_bundled_srcjars" ]
     }
-    if (defined(invoker.classpath_deps)) {
-      _classpath_deps_configs = []
-      foreach(d, invoker.classpath_deps) {
-        _target_label = get_label_info(d, "label_no_toolchain")
-        deps += [ "$_target_label$build_config_target_suffix" ]
-        _dep_gen_dir = get_label_info(d, "target_gen_dir")
-        _dep_name = get_label_info(d, "name")
-        _classpath_deps_configs += [ "$_dep_gen_dir/$_dep_name.build_config" ]
-      }
-      _rebased_classpath_deps_configs =
-          rebase_path(_classpath_deps_configs, root_build_dir)
-      args += [ "--classpath-deps-configs=$_rebased_classpath_deps_configs" ]
-    }
     if (defined(invoker.input_jars_paths)) {
       _rebased_input_jars_paths =
           rebase_path(invoker.input_jars_paths, root_build_dir)
@@ -446,6 +458,23 @@ template("write_build_config") {
           rebase_path(invoker.proguard_configs, root_build_dir)
       args += [ "--proguard-configs=$_rebased_proguard_configs" ]
     }
+    if (defined(invoker.static_library_dependent_targets)) {
+      _dependent_configs = []
+      foreach(_target, invoker.static_library_dependent_targets) {
+        _target_name = _target.name
+        _target_label = get_label_info(_target_name, "label_no_toolchain")
+        deps += [ "$_target_label$build_config_target_suffix" ]
+        _dep_gen_dir = get_label_info(_target_name, "target_gen_dir")
+        _dep_name = get_label_info(_target_name, "name")
+        _config =
+            rebase_path("$_dep_gen_dir/$_dep_name.build_config", root_build_dir)
+        _dependent_configs += [ _config ]
+        if (_target.is_resource_ids_provider) {
+          args += [ "--resource-ids-provider=$_config" ]
+        }
+      }
+      args += [ "--static-library-dependent-configs=$_dependent_configs" ]
+    }
     if (defined(invoker.gradle_treat_as_prebuilt) &&
         invoker.gradle_treat_as_prebuilt) {
       args += [ "--gradle-treat-as-prebuilt" ]
@@ -455,6 +484,22 @@ template("write_build_config") {
         "--main-class",
         invoker.main_class,
       ]
+    }
+    if (defined(invoker.base_module_target)) {
+      _target_label =
+          get_label_info(invoker.base_module_target, "label_no_toolchain")
+      _dep_gen_dir = get_label_info(_target_label, "target_gen_dir")
+      _dep_name = get_label_info(_target_label, "name")
+      deps += [ "$_target_label$build_config_target_suffix" ]
+      args += [
+        "--base-module-build-config",
+        rebase_path("$_dep_gen_dir/$_dep_name.build_config", root_build_dir),
+      ]
+    }
+    if (defined(invoker.module_build_configs)) {
+      _rebased_configs =
+          rebase_path(invoker.module_build_configs, root_build_dir)
+      args += [ "--module-build-configs=$_rebased_configs" ]
     }
     if (current_toolchain != default_toolchain) {
       # This has to be a built-time error rather than a GN assert because many
@@ -478,65 +523,25 @@ template("write_build_config") {
   }
 }
 
-# Copy a list of file into a destination directory. Potentially renaming
-# files are they are copied. This also ensures that symlinks are followed
-# during the copy (i.e. the symlinks are never copied, only their content).
-#
-# Variables:
-#  dest: Destination directory path.
-#  sources: List of source files or directories to copy to dest.
-#  renaming_sources: Optional list of source file paths that will be renamed
-#    during the copy operation. If provided, renaming_destinations is required.
-#  renaming_destinations: Optional list of destination file paths, required
-#    when renaming_sources is provided. Both lists should have the same size
-#    and matching entries.
-#  args: Optional. Additionnal arguments to the copy_ex.py script.
-#
-#  The following variables have the usual GN meaning: data, deps, inputs,
-#  outputs, testonly, visibility.
-#
-template("copy_ex") {
-  set_sources_assignment_filter([])
-  action_with_pydeps(target_name) {
+template("generate_android_wrapper") {
+  generate_wrapper(target_name) {
     forward_variables_from(invoker,
+                           "*",
                            [
-                             "data",
-                             "deps",
-                             "outputs",
                              "testonly",
                              "visibility",
                            ])
-    sources = []
-    if (defined(invoker.sources)) {
-      sources += invoker.sources
-    }
-    if (defined(invoker.inputs)) {
-      inputs = invoker.inputs
-    }
-
-    script = "//build/android/gyp/copy_ex.py"
-
-    args = [
-      "--dest",
-      rebase_path(invoker.dest, root_build_dir),
+    forward_variables_from(invoker,
+                           [
+                             "testonly",
+                             "visibility",
+                           ])
+    generator_script = "//build/android/gyp/generate_android_wrapper.py"
+    sources = [
+      "//build/android/gyp/util/build_utils.py",
+      "//build/gn_helpers.py",
+      "//build/util/generate_wrapper.py",
     ]
-    rebased_sources = rebase_path(sources, root_build_dir)
-    args += [ "--files=$rebased_sources" ]
-
-    if (defined(invoker.args)) {
-      args += invoker.args
-    }
-
-    if (defined(invoker.renaming_sources) &&
-        defined(invoker.renaming_destinations)) {
-      sources += invoker.renaming_sources
-      rebased_renaming_sources =
-          rebase_path(invoker.renaming_sources, root_build_dir)
-      args += [ "--renaming-sources=$rebased_renaming_sources" ]
-
-      renaming_destinations = invoker.renaming_destinations
-      args += [ "--renaming-destinations=$renaming_destinations" ]
-    }
   }
 }
 
@@ -546,8 +551,7 @@ template("test_runner_script") {
   testonly = true
   _test_name = invoker.test_name
   _test_type = invoker.test_type
-  _incremental_install =
-      defined(invoker.incremental_install) && invoker.incremental_install
+  _incremental_apk = defined(invoker.incremental_apk) && invoker.incremental_apk
 
   _runtime_deps =
       !defined(invoker.ignore_all_data_deps) || !invoker.ignore_all_data_deps
@@ -577,7 +581,24 @@ template("test_runner_script") {
     }
   }
 
-  action_with_pydeps(target_name) {
+  if (defined(invoker.apk_under_test)) {
+    _install_artifacts_json =
+        "${target_gen_dir}/${target_name}.install_artifacts"
+    generated_file("${target_name}__install_artifacts") {
+      deps = [
+        invoker.apk_under_test,
+      ]
+      output_conversion = "json"
+      outputs = [
+        _install_artifacts_json,
+      ]
+      data_keys = [ "install_artifacts" ]
+      rebase = root_build_dir
+    }
+  }
+
+  generate_android_wrapper(target_name) {
+    wrapper_script = "$root_build_dir/bin/run_${_test_name}"
     forward_variables_from(invoker,
                            [
                              "data_deps",
@@ -586,31 +607,45 @@ template("test_runner_script") {
     if (!defined(deps)) {
       deps = []
     }
+
     if (!defined(data_deps)) {
       data_deps = []
     }
 
-    script = "//build/android/gyp/create_test_runner_script.py"
+    if (defined(android_test_runner_script)) {
+      executable = android_test_runner_script
+    } else {
+      executable = "//build/android/test_runner.py"
+    }
 
+    deps = []
+    if (defined(invoker.deps)) {
+      deps = invoker.deps
+    }
+    data_deps = []
+    if (defined(invoker.data_deps)) {
+      data_deps = invoker.data_deps
+    }
+    data = []
+
+    executable_args = [
+      _test_type,
+      "--output-directory",
+      "@WrappedPath(.)",
+    ]
     data_deps += [
       "//build/android:test_runner_py",
       "//build/android:logdog_wrapper_py",
     ]
 
-    data = []
-
-    test_runner_args = [
-      _test_type,
-      "--output-directory",
-      rebase_path(root_build_dir, root_build_dir),
-    ]
-
     if (_runtime_deps) {
       deps += [ ":$_runtime_deps_target" ]
       data += [ _runtime_deps_file ]
-      test_runner_args += [
+      _rebased_runtime_deps_file =
+          rebase_path(_runtime_deps_file, root_build_dir)
+      executable_args += [
         "--runtime-deps-path",
-        rebase_path(_runtime_deps_file, root_build_dir),
+        "@WrappedPath(${_rebased_runtime_deps_file})",
       ]
     }
 
@@ -628,94 +663,113 @@ template("test_runner_script") {
       assert(
           defined(invoker.executable_dist_dir),
           "Must define either apk_target or executable_dist_dir for test_runner_script()")
-      test_runner_args += [
+      _rebased_executable_dist_dir =
+          rebase_path(invoker.executable_dist_dir, root_build_dir)
+      executable_args += [
         "--executable-dist-dir",
-        rebase_path(invoker.executable_dist_dir, root_build_dir),
+        "@WrappedPath(${_rebased_executable_dist_dir})",
       ]
     }
 
     _device_test = true
     if (_test_type == "gtest") {
       assert(defined(invoker.test_suite))
-      test_runner_args += [
+      executable_args += [
         "--suite",
         invoker.test_suite,
       ]
-    } else if (_test_type == "instrumentation") {
-      _test_apk = "@FileArg($_rebased_apk_build_config:deps_info:apk_path)"
-      if (_incremental_install) {
-        _test_apk = "@FileArg($_rebased_apk_build_config:deps_info:incremental_apk_path)"
-      }
-      test_runner_args += [
-        "--test-apk=$_test_apk",
-        "--test-jar",
-        rebase_path(invoker.test_jar, root_build_dir),
-      ]
-      if (defined(invoker.apk_under_test)) {
-        deps += [ "${invoker.apk_under_test}$build_config_target_suffix" ]
-        _apk_under_test_build_config =
-            get_label_info(invoker.apk_under_test, "target_gen_dir") + "/" +
-            get_label_info(invoker.apk_under_test, "name") + ".build_config"
-        _rebased_apk_under_test_build_config =
-            rebase_path(_apk_under_test_build_config, root_build_dir)
-        _apk_under_test =
-            "@FileArg($_rebased_apk_under_test_build_config:deps_info:apk_path)"
-        if (_incremental_install) {
-          _apk_under_test = "@FileArg($_rebased_apk_under_test_build_config:deps_info:incremental_apk_path)"
-        }
-        test_runner_args += [ "--apk-under-test=$_apk_under_test" ]
-      }
-      if (defined(invoker.proguard_enabled) && invoker.proguard_enabled) {
-        test_runner_args += [ "--enable-java-deobfuscation" ]
-      }
-      if (emma_coverage) {
+      if (use_clang_coverage) {
         # Set a default coverage output directory (can be overridden by user
         # passing the same flag).
-        test_runner_args += [
+        _rebased_coverage_dir =
+            rebase_path("$root_out_dir/coverage", root_build_dir)
+        executable_args += [
           "--coverage-dir",
-          rebase_path("$root_out_dir/coverage", root_build_dir),
+          "@WrappedPath(${_rebased_coverage_dir})",
+        ]
+      }
+    } else if (_test_type == "instrumentation") {
+      _test_apk = "@WrappedPath(@FileArg($_rebased_apk_build_config:deps_info:apk_path))"
+      if (_incremental_apk) {
+        _test_apk = "@WrappedPath(@FileArg($_rebased_apk_build_config:deps_info:incremental_apk_path))"
+      }
+      _rebased_test_jar = rebase_path(invoker.test_jar, root_build_dir)
+      executable_args += [
+        "--test-apk",
+        _test_apk,
+        "--test-jar",
+        "@WrappedPath(${_rebased_test_jar})",
+      ]
+      if (defined(invoker.apk_under_test)) {
+        if (_incremental_apk) {
+          deps += [ "${invoker.apk_under_test}$build_config_target_suffix" ]
+          _apk_under_test_build_config =
+              get_label_info(invoker.apk_under_test, "target_gen_dir") + "/" +
+              get_label_info(invoker.apk_under_test, "name") + ".build_config"
+          _rebased_apk_under_test_build_config =
+              rebase_path(_apk_under_test_build_config, root_build_dir)
+          _apk_under_test = "@WrappedPath(@FileArg($_rebased_apk_under_test_build_config:deps_info:incremental_apk_path))"
+        } else {
+          deps += [ ":${target_name}__install_artifacts" ]
+          _rebased_install_artifacts_json =
+              rebase_path(_install_artifacts_json, root_build_dir)
+          _apk_under_test =
+              "@WrappedPath(@FileArg($_rebased_install_artifacts_json[]))"
+        }
+        executable_args += [
+          "--apk-under-test",
+          _apk_under_test,
+        ]
+      }
+      if (defined(invoker.proguard_enabled) && invoker.proguard_enabled) {
+        executable_args += [ "--enable-java-deobfuscation" ]
+      }
+      if (use_jacoco_coverage) {
+        # Set a default coverage output directory (can be overridden by user
+        # passing the same flag).
+        _rebased_coverage_dir =
+            rebase_path("$root_out_dir/coverage", root_build_dir)
+        executable_args += [
+          "--coverage-dir",
+          "@WrappedPath(${_rebased_coverage_dir})",
         ]
       }
     } else if (_test_type == "junit") {
       assert(defined(invoker.test_suite))
       _device_test = false
-      test_runner_args += [
+      executable_args += [
         "--test-suite",
         invoker.test_suite,
       ]
-      if (defined(invoker.android_manifest_path)) {
-        test_runner_args += [
-          "--android-manifest-path",
-          rebase_path(invoker.android_manifest_path, root_build_dir),
-        ]
-      } else if (defined(invoker.package_name)) {
-        test_runner_args += [
-          "--package-name",
-          invoker.package_name,
-        ]
-      } else {
-        assert(false, "Must specify a package_name or android_manifest_path")
-      }
 
       deps += [ ":${invoker.test_suite}$build_config_target_suffix" ]
       _junit_binary_build_config =
           "${target_gen_dir}/${invoker.test_suite}.build_config"
-      _rebased_build_config =
-          rebase_path("$_junit_binary_build_config", root_build_dir)
-      test_runner_args += [
-        "--resource-zips",
-        "@FileArg($_rebased_build_config:resources:dependency_zips)",
-      ]
 
-      test_runner_args += [
+      _rebased_robolectric_runtime_deps_dir =
+          rebase_path("$root_build_dir/lib.java/third_party/robolectric",
+                      root_build_dir)
+      _rebased_resource_apk = rebase_path(invoker.resource_apk, root_build_dir)
+      executable_args += [
+        "--resource-apk",
+        "@WrappedPath(${_rebased_resource_apk})",
         "--robolectric-runtime-deps-dir",
-        rebase_path("$root_build_dir/lib.java/third_party/robolectric",
-                    root_build_dir),
+        "@WrappedPath(${_rebased_robolectric_runtime_deps_dir})",
       ]
+      if (use_jacoco_coverage) {
+        # Set a default coverage output directory (can be overridden by user
+        # passing the same flag).
+        _rebased_coverage_dir =
+            rebase_path("$root_out_dir/coverage", root_build_dir)
+        executable_args += [
+          "--coverage-dir",
+          "@WrappedPath(${_rebased_coverage_dir})",
+        ]
+      }
     } else if (_test_type == "linker") {
-      test_runner_args += [
+      executable_args += [
         "--test-apk",
-        "@FileArg($_rebased_apk_build_config:deps_info:apk_path)",
+        "@WrappedPath(@FileArg($_rebased_apk_build_config:deps_info:apk_path))",
       ]
     } else {
       assert(false, "Invalid test type: $_test_type.")
@@ -727,116 +781,92 @@ template("test_runner_script") {
         _build_config = get_label_info(additional_apk, "target_gen_dir") + "/" +
                         get_label_info(additional_apk, "name") + ".build_config"
         _rebased_build_config = rebase_path(_build_config, root_build_dir)
-        test_runner_args += [
+        executable_args += [
           "--additional-apk",
-          "@FileArg($_rebased_build_config:deps_info:apk_path)",
-          "--additional-apk-incremental",
-          "@FileArg($_rebased_build_config:deps_info:incremental_apk_path)",
+          "@WrappedPath(@FileArg($_rebased_build_config:deps_info:apk_path))",
         ]
       }
     }
     if (defined(invoker.shard_timeout)) {
-      test_runner_args += [ "--shard-timeout=${invoker.shard_timeout}" ]
+      executable_args += [ "--shard-timeout=${invoker.shard_timeout}" ]
     }
-    if (_incremental_install) {
-      test_runner_args += [
+    if (_incremental_apk) {
+      executable_args += [
         "--test-apk-incremental-install-json",
-        "@FileArg($_rebased_apk_build_config:deps_info:incremental_install_json_path)",
+        "@WrappedPath(@FileArg($_rebased_apk_build_config:deps_info:incremental_install_json_path))",
       ]
       if (defined(invoker.apk_under_test)) {
-        test_runner_args += [
+        executable_args += [
           "--apk-under-test-incremental-install-json",
-          "@FileArg($_rebased_apk_under_test_build_config:deps_info:incremental_install_json_path)",
+          "@WrappedPath(@FileArg($_rebased_apk_under_test_build_config:deps_info:incremental_install_json_path))",
         ]
       }
-      test_runner_args += [ "--fast-local-dev" ]
+      executable_args += [ "--fast-local-dev" ]
     }
     if (_device_test && is_asan) {
-      test_runner_args += [ "--tool=asan" ]
+      executable_args += [ "--tool=asan" ]
     }
 
-    if (defined(invoker.generated_script)) {
-      assert(_test_name != "" || true)  # Mark _test_name as used.
-      generated_script = invoker.generated_script
-    } else {
-      generated_script = "$root_build_dir/bin/run_${_test_name}"
-    }
-    outputs = [
-      generated_script,
-    ]
-    data += [ generated_script ]
-
-    args = [
-      "--script-output-path",
-      rebase_path(generated_script, root_build_dir),
-    ]
-    if (defined(android_test_runner_script)) {
-      args += [
-        "--test-runner-path",
-        android_test_runner_script,
-      ]
+    if (defined(invoker.modules)) {
+      foreach(module, invoker.modules) {
+        executable_args += [
+          "--module",
+          module,
+        ]
+      }
     }
 
-    args += test_runner_args
+    if (defined(invoker.fake_modules)) {
+      foreach(fake_module, invoker.fake_modules) {
+        executable_args += [
+          "--fake-module",
+          fake_module,
+        ]
+      }
+    }
+
+    if (defined(invoker.extra_args)) {
+      executable_args += invoker.extra_args
+    }
   }
 }
 
 template("stack_script") {
-  action_with_pydeps(target_name) {
+  generate_wrapper(target_name) {
     forward_variables_from(invoker,
                            [
-                             "data_deps",
                              "deps",
                              "testonly",
                            ])
-    if (!defined(deps)) {
-      deps = []
-    }
-    if (!defined(data_deps)) {
-      data_deps = []
-    }
-
-    data_deps +=
-        [ "//third_party/android_platform/development/scripts:stack_py" ]
-
-    script = "//build/android/gyp/create_stack_script.py"
-
     _stack_target_name = invoker.stack_target_name
-    _stack_script = "//third_party/android_platform/development/scripts/stack"
 
-    _generated_script = "$root_build_dir/bin/stack_${_stack_target_name}"
-
-    outputs = [
-      _generated_script,
+    data_deps = [
+      "//third_party/android_platform/development/scripts:stack_py",
     ]
-    data = [
-      _generated_script,
-    ]
+    if (defined(invoker.data_deps)) {
+      data_deps += invoker.data_deps
+    }
 
-    args = [
+    executable = "//third_party/android_platform/development/scripts/stack"
+    wrapper_script = "$root_build_dir/bin/stack_${_stack_target_name}"
+
+    executable_args = [
       "--output-directory",
-      rebase_path(root_build_dir, root_build_dir),
-      "--script-path",
-      rebase_path(_stack_script, root_build_dir),
-      "--script-output-path",
-      rebase_path(_generated_script, root_build_dir),
+      "@WrappedPath(.)",
       "--arch=$target_cpu",
     ]
-    if (defined(invoker.packed_libraries)) {
-      args += [
-        "--packed-libs",
-        invoker.packed_libraries,
-      ]
-    }
   }
 }
 
 if (enable_java_templates) {
   android_sdk_jar = "$android_sdk/android.jar"
   android_default_aapt_path = "$android_sdk_build_tools/aapt"
-  android_default_aapt2_path = "$android_sdk_build_tools/aapt2"
 
   template("android_lint") {
+    _min_sdk_version = 19
+    if (defined(invoker.min_sdk_version)) {
+      _min_sdk_version = invoker.min_sdk_version
+    }
     action_with_pydeps(target_name) {
       forward_variables_from(invoker,
                              [
@@ -896,6 +926,7 @@ if (enable_java_templates) {
         "--result-path",
         rebase_path(_result_path, root_build_dir),
         "--include-unexpected-failures",
+        "--min-sdk-version=$_min_sdk_version",
       ]
       if (defined(invoker.android_manifest)) {
         inputs += [ invoker.android_manifest ]
@@ -910,10 +941,7 @@ if (enable_java_templates) {
       }
 
       if (defined(invoker.create_cache) && invoker.create_cache) {
-        args += [
-          "--create-cache",
-          "--silent",
-        ]
+        args += [ "--silent" ]
       } else {
         inputs += invoker.java_files
         inputs += [ invoker.build_config ]
@@ -937,6 +965,10 @@ if (enable_java_templates) {
             "--resource-sources=@FileArg($_rebased_build_config:deps_info:owned_resources_zips)",
           ]
         }
+      }
+
+      if (defined(invoker.manifest_package)) {
+        args += [ "--manifest-package=${invoker.manifest_package}" ]
       }
     }
   }
@@ -987,6 +1019,22 @@ if (enable_java_templates) {
         "@FileArg($_rebased_build_config:android:sdk_jars)",
       ]
 
+      if (defined(invoker.disable_r8_outlining) &&
+          invoker.disable_r8_outlining) {
+        args += [ "--disable-outlining" ]
+      }
+
+      if (defined(testonly) && testonly) {
+        args += [ "--is-test-only" ]
+      }
+
+      if (defined(invoker.is_static_library) && invoker.is_static_library) {
+        args += [
+          "--extra-mapping-output-paths",
+          "@FileArg($_rebased_build_config:deps_info:static_library_proguard_mapping_output_paths)",
+        ]
+      }
+
       if (defined(invoker.config_output_path)) {
         _config_output_path = invoker.config_output_path
         outputs += [ _config_output_path ]
@@ -1003,12 +1051,18 @@ if (enable_java_templates) {
             rebase_path(_expected_configs_file, root_build_dir),
           ]
           if (check_android_configuration) {
-            args += [ "--verify-expected-configs" ]
+            _failed_proguard_expectation_file =
+                "$android_configuration_failure_dir/" +
+                "${invoker.failed_proguard_expectation_file}"
+            args += [
+              "--proguard-expectations-failure-file",
+              rebase_path(_failed_proguard_expectation_file, root_build_dir),
+            ]
           }
         }
       }
 
-      if (!defined(invoker.proguard_jar_path) || use_r8) {
+      if (!defined(invoker.proguard_jar_path)) {
         if (defined(invoker.proguard_jar_path)) {
           not_needed(invoker, [ "proguard_jar_path" ])
         }
@@ -1041,8 +1095,6 @@ if (enable_java_templates) {
   #     the classpath extracted from the build_config.
   #   script_name: Name of the script to generate.
   #   wrapper_script_args: List of extra arguments to pass to the executable.
-  #   bootclasspath: Optional. list of zip/jar file paths to add to the boot
-  #     class path when the script will invoke javac.
   #
   template("java_binary_script") {
     action_with_pydeps(target_name) {
@@ -1077,10 +1129,10 @@ if (enable_java_templates) {
       }
       args += [ "--classpath=@FileArg($_rebased_build_config:deps_info:java_runtime_classpath)" ]
 
-      if (emma_coverage) {
+      if (use_jacoco_coverage) {
         args += [
           "--classpath",
-          rebase_path("//third_party/android_tools/sdk/tools/lib/emma.jar",
+          rebase_path("//third_party/jacoco/lib/jacocoagent.jar",
                       root_build_dir),
           "--noverify",
         ]
@@ -1088,24 +1140,21 @@ if (enable_java_templates) {
       if (defined(invoker.wrapper_script_args)) {
         args += [ "--" ] + invoker.wrapper_script_args
       }
-      if (defined(invoker.bootclasspath)) {
-        args += [
-          "--bootclasspath",
-          rebase_path(invoker.bootclasspath, root_build_dir),
-        ]
-      }
     }
   }
 
+  # Variables
+  #   apply_mapping: The path to the ProGuard mapping file to apply.
+  #   disable_incremental: Disable incremental dexing.
   template("dex") {
     assert(defined(invoker.output))
 
     _proguard_enabled =
         defined(invoker.proguard_enabled) && invoker.proguard_enabled
     _proguarding_with_r8 =
-        _proguard_enabled && (!defined(invoker.proguard_jar_path) || use_r8)
+        _proguard_enabled && !defined(invoker.proguard_jar_path)
     _enable_multidex =
-        defined(invoker.enable_multidex) && invoker.enable_multidex
+        !defined(invoker.enable_multidex) || invoker.enable_multidex
     _enable_main_dex_list =
         _enable_multidex &&
         (!defined(invoker.min_sdk_version) || invoker.min_sdk_version < 21)
@@ -1115,18 +1164,16 @@ if (enable_java_templates) {
       }
     }
 
-    assert(!(defined(invoker.input_jars) && _proguard_enabled),
-           "input_jars can't be specified when proguarding a dex.")
+    assert(!_proguard_enabled || !(defined(invoker.input_dex_filearg) ||
+                                       defined(invoker.input_classes_filearg) ||
+                                       defined(invoker.input_class_jars)),
+           "Cannot explicitly set inputs when proguarding a dex.")
+
+    assert(!(defined(invoker.apply_mapping) && !_proguard_enabled),
+           "apply_mapping can only be specified if proguard is enabled.")
 
     if (_enable_main_dex_list) {
       _main_dex_rules = "//build/android/main_dex_classes.flags"
-    }
-
-    if (!_proguarding_with_r8) {
-      _dexing_jars = []
-      if (defined(invoker.input_jars)) {
-        _dexing_jars += invoker.input_jars
-      }
     }
 
     if (_proguard_enabled) {
@@ -1137,17 +1184,19 @@ if (enable_java_templates) {
       } else {
         _proguard_output_path = invoker.output + ".proguard.jar"
         _proguard_target_name = "${target_name}__proguard"
-        _dexing_jars += [ _proguard_output_path ]
       }
 
       proguard(_proguard_target_name) {
         forward_variables_from(invoker,
                                [
                                  "build_config",
+                                 "disable_r8_outlining",
                                  "deps",
+                                 "failed_proguard_expectation_file",
                                  "proguard_expectations_file",
                                  "proguard_jar_path",
                                  "proguard_mapping_path",
+                                 "is_static_library",
                                  "testonly",
                                ])
         inputs = []
@@ -1163,44 +1212,44 @@ if (enable_java_templates) {
           "--proguard-configs=@FileArg($_rebased_build_config:deps_info:proguard_all_configs)",
           "--input-paths=@FileArg($_rebased_build_config:deps_info:java_runtime_classpath)",
         ]
-        if (defined(invoker.proguard_config_exclusions)) {
-          _rebased_proguard_config_exclusions =
-              rebase_path(invoker.proguard_config_exclusions, root_build_dir)
-          args += [
-            "--proguard-config-exclusions=$_rebased_proguard_config_exclusions",
-          ]
-        }
         if (defined(invoker.proguard_args)) {
           args += invoker.proguard_args
         }
 
-        if (_proguarding_with_r8 && defined(invoker.min_sdk_version)) {
+        if (defined(invoker.repackage_classes)) {
+          args += [
+            "--repackage-classes",
+            "${invoker.repackage_classes}",
+          ]
+        }
+
+        if (defined(invoker.apply_mapping)) {
+          _rebased_apply_mapping_path =
+              rebase_path(invoker.apply_mapping, root_build_dir)
+          args += [ "--apply-mapping=$_rebased_apply_mapping_path" ]
+        }
+
+        if (defined(invoker.min_sdk_version)) {
           args += [
             "--min-api",
             "${invoker.min_sdk_version}",
           ]
         }
 
-        if (_enable_multidex && _proguarding_with_r8) {
-          if (_enable_main_dex_list) {
-            if (defined(invoker.extra_main_dex_proguard_config)) {
-              args += [
-                "--main-dex-rules-path",
-                rebase_path(invoker.extra_main_dex_proguard_config,
-                            root_build_dir),
-              ]
-              inputs += [ invoker.extra_main_dex_proguard_config ]
-            }
+        if (_proguarding_with_r8 && _enable_main_dex_list) {
+          if (defined(invoker.extra_main_dex_proguard_config)) {
             args += [
               "--main-dex-rules-path",
-              rebase_path(_main_dex_rules, root_build_dir),
+              rebase_path(invoker.extra_main_dex_proguard_config,
+                          root_build_dir),
             ]
-            inputs += [ _main_dex_rules ]
-          } else {
-            if (defined(invoker.extra_main_dex_proguard_config)) {
-              not_needed(invoker, [ "extra_main_dex_proguard_config" ])
-            }
+            inputs += [ invoker.extra_main_dex_proguard_config ]
           }
+          args += [
+            "--main-dex-rules-path",
+            rebase_path(_main_dex_rules, root_build_dir),
+          ]
+          inputs += [ _main_dex_rules ]
         }
 
         output_path = _proguard_output_path
@@ -1211,6 +1260,18 @@ if (enable_java_templates) {
     }
 
     if (!_proguarding_with_r8) {
+      _input_class_jars = []
+      if (defined(invoker.input_class_jars)) {
+        _input_class_jars = invoker.input_class_jars
+      }
+      if (_proguard_enabled) {
+        _input_class_jars += [ _proguard_output_path ]
+      }
+      if (_input_class_jars != []) {
+        _rebased_input_class_jars =
+            rebase_path(_input_class_jars, root_build_dir)
+      }
+
       if (_enable_main_dex_list) {
         _main_dex_list_path = invoker.output + ".main_dex_list"
         _main_dex_list_target_name = "${target_name}__main_dex_list"
@@ -1227,20 +1288,15 @@ if (enable_java_templates) {
           # http://crbug.com/725224. Fix for bots running out of memory.
           pool = "//build/toolchain:link_pool($default_toolchain)"
 
-          if (defined(invoker.proguard_jar_path)) {
-            _proguard_jar_path = invoker.proguard_jar_path
-          } else {
-            _proguard_jar_path = _default_proguard_jar_path
-          }
-
           _shrinked_android = "$android_sdk_build_tools/lib/shrinkedAndroid.jar"
           _dx = "$android_sdk_build_tools/lib/dx.jar"
+          _r8 = "//third_party/r8/lib/r8.jar"
           inputs = [
-            _main_dex_rules,
-            _dx,
-            _proguard_jar_path,
-            _shrinked_android,
-          ]
+                     _main_dex_rules,
+                     _dx,
+                     _r8,
+                     _shrinked_android,
+                   ] + _input_class_jars
 
           outputs = [
             _main_dex_list_path,
@@ -1257,8 +1313,8 @@ if (enable_java_templates) {
             rebase_path(_main_dex_list_path, root_build_dir),
             "--main-dex-rules-path",
             rebase_path(_main_dex_rules, root_build_dir),
-            "--proguard-path",
-            rebase_path(_proguard_jar_path, root_build_dir),
+            "--r8-path",
+            rebase_path(_r8, root_build_dir),
           ]
 
           if (defined(invoker.extra_main_dex_proguard_config)) {
@@ -1280,14 +1336,17 @@ if (enable_java_templates) {
             ]
           }
 
-          if (defined(invoker.input_jar_classpath)) {
+          if (defined(invoker.input_classes_filearg)) {
             inputs += [ invoker.build_config ]
-            args += [ "--inputs=@FileArg(${invoker.input_jar_classpath})" ]
+            args +=
+                [ "--class-inputs-filearg=${invoker.input_classes_filearg}" ]
           }
-
-          inputs += _dexing_jars
-          if (_dexing_jars != []) {
-            args += rebase_path(_dexing_jars, root_build_dir)
+          if (defined(invoker.main_dex_list_input_classes_filearg)) {
+            inputs += [ invoker.build_config ]
+            args += [ "--class-inputs-filearg=${invoker.main_dex_list_input_classes_filearg}" ]
+          }
+          if (_input_class_jars != []) {
+            args += [ "--class-inputs=${_rebased_input_class_jars}" ]
           }
         }
       }
@@ -1305,17 +1364,23 @@ if (enable_java_templates) {
           invoker.output,
         ]
 
-        _rebased_output = rebase_path(invoker.output, root_build_dir)
-
         args = [
           "--depfile",
           rebase_path(depfile, root_build_dir),
-          "--dex-path",
-          _rebased_output,
+          "--output",
+          rebase_path(outputs[0], root_build_dir),
         ]
 
         if (_proguard_enabled) {
           deps += [ ":${_proguard_target_name}" ]
+        } else if (enable_incremental_d8 &&
+                   !(defined(invoker.disable_incremental) &&
+                     invoker.disable_incremental)) {
+          # Don't use incremental dexing for ProGuarded inputs as a precaution.
+          args += [
+            "--incremental-dir",
+            rebase_path("$target_out_dir/$target_name", root_build_dir),
+          ]
         }
 
         if (_enable_multidex) {
@@ -1330,14 +1395,17 @@ if (enable_java_templates) {
           }
         }
 
-        if (defined(invoker.input_dex_classpath)) {
+        if (defined(invoker.input_dex_filearg)) {
           inputs += [ invoker.build_config ]
-          args += [ "--inputs=@FileArg(${invoker.input_dex_classpath})" ]
+          args += [ "--dex-inputs-filearg=${invoker.input_dex_filearg}" ]
         }
-
-        inputs += _dexing_jars
-        if (_dexing_jars != []) {
-          args += rebase_path(_dexing_jars, root_build_dir)
+        if (defined(invoker.input_classes_filearg)) {
+          inputs += [ invoker.build_config ]
+          args += [ "--class-inputs-filearg=${invoker.input_classes_filearg}" ]
+        }
+        if (_input_class_jars != []) {
+          inputs += _input_class_jars
+          args += [ "--class-inputs=${_rebased_input_class_jars}" ]
         }
 
         if (defined(invoker.dexlayout_profile)) {
@@ -1378,17 +1446,16 @@ if (enable_java_templates) {
           ]
         }
 
-        _d8_path = "//third_party/r8/lib/d8.jar"
-        inputs += [ _d8_path ]
+        inputs += [ _r8_path ]
         args += [
-          "--d8-jar-path",
-          rebase_path(_d8_path, root_build_dir),
+          "--r8-jar-path",
+          rebase_path(_r8_path, root_build_dir),
         ]
       }
     }
   }
 
-  template("emma_instr") {
+  template("jacoco_instr") {
     action_with_pydeps(target_name) {
       forward_variables_from(invoker,
                              [
@@ -1397,43 +1464,34 @@ if (enable_java_templates) {
                                "testonly",
                              ])
 
-      _coverage_file = "$target_out_dir/${target_name}.em"
-      _source_dirs_listing_file = "$target_out_dir/${target_name}_sources.txt"
-      _emma_jar = "${android_sdk_root}/tools/lib/emma.jar"
+      _sources_json_file = "$target_out_dir/${target_name}_sources.json"
+      _jacococli_jar = "//third_party/jacoco/lib/jacococli.jar"
 
-      script = "//build/android/gyp/emma_instr.py"
+      script = "//build/android/gyp/jacoco_instr.py"
       inputs = invoker.java_files + [
-                 _emma_jar,
+                 _jacococli_jar,
                  invoker.input_jar_path,
                ]
       outputs = [
-        _coverage_file,
-        _source_dirs_listing_file,
+        _sources_json_file,
         invoker.output_jar_path,
       ]
       args = [
-        "instrument_jar",
         "--input-path",
         rebase_path(invoker.input_jar_path, root_build_dir),
         "--output-path",
         rebase_path(invoker.output_jar_path, root_build_dir),
-        "--coverage-file",
-        rebase_path(_coverage_file, root_build_dir),
-        "--sources-list-file",
-        rebase_path(_source_dirs_listing_file, root_build_dir),
-        "--src-root",
-        rebase_path("//", root_build_dir),
-        "--emma-jar",
-        rebase_path(_emma_jar, root_build_dir),
+        "--sources-json-file",
+        rebase_path(_sources_json_file, root_build_dir),
+        "--java-sources-file",
+        rebase_path(invoker.java_sources_file, root_build_dir),
+        "--jacococli-jar",
+        rebase_path(_jacococli_jar, root_build_dir),
       ]
-      _rebased_java_sources_file =
-          rebase_path(invoker.java_sources_file, root_build_dir)
-      args += [ "--java-sources-file=$_rebased_java_sources_file" ]
-
-      if (emma_filter != "") {
+      if (coverage_instrumentation_input_file != "") {
         args += [
-          "--filter-string",
-          emma_filter,
+          "--files-to-instrument",
+          rebase_path(coverage_instrumentation_input_file, root_build_dir),
         ]
       }
     }
@@ -1449,7 +1507,8 @@ if (enable_java_templates) {
   #  enable_build_hooks:
   #  enable_build_hooks_android:
   #  supports_android:
-  #  emma_instrument:
+  #  jacoco_instrument: Use Jacoco-instrumented classes to generate Java
+  #    coverage data.
   #  jar_excluded_patterns: Optional list of .class file patterns to exclude
   #    from the final .jar file.
   #  jar_included_patterns: OPtional list of .class file patterns to include
@@ -1485,11 +1544,10 @@ if (enable_java_templates) {
     _enable_thread_annotations = false
 
     _desugar = defined(invoker.supports_android) && invoker.supports_android
-    _emma_instrument = invoker.emma_instrument
-    _enable_split_compat = defined(invoker.split_compat_class_names)
+    _jacoco_instrument = invoker.jacoco_instrument
+
     _enable_bytecode_rewriter =
-        _enable_assert || _enable_custom_resources ||
-        _enable_thread_annotations || _enable_split_compat
+        _enable_assert || _enable_custom_resources || _enable_thread_annotations
     _is_prebuilt = defined(invoker.is_prebuilt) && invoker.is_prebuilt
     _enable_bytecode_checks = !defined(invoker.enable_bytecode_checks) ||
                               invoker.enable_bytecode_checks
@@ -1572,10 +1630,6 @@ if (enable_java_templates) {
         if (_enable_bytecode_checks) {
           args += [ "--enable-check-class-path" ]
         }
-        if (_enable_split_compat) {
-          args += [ "--split-compat-class-names" ] +
-                  invoker.split_compat_class_names
-        }
         args += [
           "--direct-classpath-jars",
           "@FileArg($_rebased_build_config:javac:classpath)",
@@ -1599,6 +1653,7 @@ if (enable_java_templates) {
       action_with_pydeps(_desugar_target) {
         script = "//build/android/gyp/desugar.py"
         deps = _deps
+        depfile = "$target_gen_dir/$target_name.d"
         if (defined(invoker.deps)) {
           deps += invoker.deps
         }
@@ -1624,6 +1679,8 @@ if (enable_java_templates) {
           # is implemented, see http://crbug.com/885273
           "--classpath=@FileArg($_rebased_build_config:deps_info:javac_full_interface_classpath)",
           "--bootclasspath=@FileArg($_rebased_build_config:android:sdk_interface_jars)",
+          "--depfile",
+          rebase_path(depfile, root_build_dir),
         ]
       }
 
@@ -1668,13 +1725,13 @@ if (enable_java_templates) {
       _previous_output_jar = _filter_output_jar
     }
 
-    if (_emma_instrument) {
-      # Emma must run after desugar (or else desugar sometimes fails).
-      _emma_target = "${target_name}__emma"
-      _emma_input_jar = _previous_output_jar
-      _emma_output_jar = "$target_out_dir/$target_name-instrumented.jar"
+    if (_jacoco_instrument) {
+      # Jacoco must run after desugar (or else desugar sometimes fails).
+      _jacoco_target = "${target_name}__jacoco"
+      _jacoco_input_jar = _previous_output_jar
+      _jacoco_output_jar = "$target_out_dir/$target_name-instrumented.jar"
 
-      emma_instr(_emma_target) {
+      jacoco_instr(_jacoco_target) {
         deps = _deps
         if (defined(invoker.deps)) {
           deps += invoker.deps
@@ -1686,13 +1743,13 @@ if (enable_java_templates) {
                                  "java_sources_file",
                                ])
 
-        input_jar_path = _emma_input_jar
-        output_jar_path = _emma_output_jar
+        input_jar_path = _jacoco_input_jar
+        output_jar_path = _jacoco_output_jar
       }
 
       _deps = []
-      _deps = [ ":$_emma_target" ]
-      _previous_output_jar = _emma_output_jar
+      _deps = [ ":$_jacoco_target" ]
+      _previous_output_jar = _jacoco_output_jar
     }
 
     _output_jar_target = "${target_name}__copy"
@@ -1758,21 +1815,16 @@ if (enable_java_templates) {
         rebase_path(invoker.output_manifest, root_build_dir),
         "--extras",
         "@FileArg($_rebased_build_config:extra_android_manifests)",
+        "--min-sdk-version=${invoker.min_sdk_version}",
+        "--target-sdk-version=${invoker.target_sdk_version}",
       ]
 
-      if (defined(invoker.expected_manifest)) {
-        inputs += [ invoker.expected_manifest ]
-        _normalized_output = "${invoker.output_manifest}.normalized"
-        outputs += [ _normalized_output ]
-        args += [
-          "--expected-manifest",
-          rebase_path(invoker.expected_manifest, root_build_dir),
-          "--normalized-output",
-          rebase_path(_normalized_output, root_build_dir),
-        ]
-        if (check_android_configuration) {
-          args += [ "--verify-expected-manifest" ]
-        }
+      if (defined(invoker.manifest_package)) {
+        args += [ "--manifest-package=${invoker.manifest_package}" ]
+      }
+
+      if (defined(invoker.max_sdk_version)) {
+        args += [ "--max-sdk-version=${invoker.max_sdk_version}" ]
       }
     }
   }
@@ -1813,10 +1865,6 @@ if (enable_java_templates) {
   #   shared_resources: (optional)
   #     If true, generate an R.java file that uses non-final resource ID
   #     variables and an onResourcesLoaded() method.
-  #
-  #   v14_skip: (optional)
-  #     If true, skip generation of v14 compatible resources.
-  #     (see generate_v14_compatible_resources.py for details).
   #
   # Output variables:
   #   zip_path: (optional)
@@ -1884,9 +1932,9 @@ if (enable_java_templates) {
         "--include-resources=@FileArg($_rebased_build_config:android:sdk_jars)",
         "--aapt-path",
         rebase_path(_android_aapt_path, root_build_dir),
-        "--dependencies-res-zips=@FileArg($_rebased_build_config:resources:dependency_zips)",
-        "--extra-res-packages=@FileArg($_rebased_build_config:resources:extra_package_names)",
-        "--extra-r-text-files=@FileArg($_rebased_build_config:resources:extra_r_text_files)",
+        "--dependencies-res-zips=@FileArg($_rebased_build_config:deps_info:dependency_zips)",
+        "--extra-res-packages=@FileArg($_rebased_build_config:deps_info:extra_package_names)",
+        "--extra-r-text-files=@FileArg($_rebased_build_config:deps_info:extra_r_text_files)",
       ]
 
       if (defined(invoker.android_manifest)) {
@@ -1947,12 +1995,12 @@ if (enable_java_templates) {
         ]
       }
 
-      if (defined(invoker.shared_resources) && invoker.shared_resources) {
-        args += [ "--shared-resources" ]
+      if (defined(invoker.strip_drawables) && invoker.strip_drawables) {
+        args += [ "--strip-drawables" ]
       }
 
-      if (defined(invoker.v14_skip) && invoker.v14_skip) {
-        args += [ "--v14-skip" ]
+      if (defined(invoker.shared_resources) && invoker.shared_resources) {
+        args += [ "--shared-resources" ]
       }
     }
   }
@@ -2007,6 +2055,11 @@ if (enable_java_templates) {
   #     Restrict compiled locale-dependent resources to a specific whitelist.
   #     NOTE: This is a list of Chromium locale names, not Android ones.
   #
+  #   r_java_root_package_name: (optional)
+  #     Short package name for this target's root R java file (ex. input of
+  #     "base" would become "gen.base_module" for the root R java package name).
+  #     Optional as defaults to "base".
+  #
   #   resource_blacklist_regex: (optional)
   #
   #   resource_blacklist_exceptions: (optional)
@@ -2018,49 +2071,72 @@ if (enable_java_templates) {
   #
   #   post_process_script: (optional)
   #
-  #   proto_format: (optional). If true, compiles resources into protocol
-  #     buffer format.
-  #
   #   package_name: (optional)
-  #     Name of the package for the purpose of assigning package ID.
+  #     Name of the package for the purpose of creating R class.
   #
-  #   package_name_to_id_mapping: (optional)
-  #     List containing mapping from package names to package IDs. It will be
-  #     used to determine which package ID to assign if package_name variable
-  #     was passed in.
+  #   package_id: (optional)
+  #     Use a custom package ID in resource IDs.
+  #
+  #   arsc_package_name: (optional)
+  #     Use this package name in the arsc file rather than the package name
+  #     found in the AndroidManifest.xml. Does not affect the package name
+  #     used in AndroidManifest.xml.
+  #
+  #   resource_ids_provider_dep: (optional)
+  #     Use resource IDs provided by another APK target when compiling resources
+  #     (via. "aapt2 link --stable-ids")
+  #
+  #   short_resource_paths: (optional)
+  #     Rename the paths within a the apk to be randomly generated short
+  #     strings to reduce binary size.
+  #
+  #   strip_resource_names: (optional)
+  #     Strip resource names from the resources table of the apk.
   #
   # Output variables:
-  #   output:  Path to a zip file containing the compiled resources.
+  #   arsc_output: Path to output .ap_ file (optional).
+  #
+  #   proto_output: Path to output .proto.ap_ file (optional).
+  #
+  #   optimized_arsc_output: Path to optimized .ap_ file (optional).
+  #
+  #   optimized_proto_output: Path to optimized .proto.ap_ file (optional).
   #
   #   r_text_out_path: (optional):
   #       Path for the corresponding generated R.txt file.
   #
-  #   srcjar_path: (optional)
-  #       Path to a generated .srcjar containing the generated R.java sources
-  #       for all dependent resource libraries.
+  #   resources_path_map_out_path: (optional):
+  #       Path for the generated map between original resource paths and
+  #       shortend resource paths.
   #
   #   proguard_file: (optional)
   #       Path to proguard configuration file for this apk target.
   #
   #   proguard_file_main_dex: (optional)
   #
-  #
   template("compile_resources") {
     _compile_resources_target_name = target_name
-    _compiled_resources_path = invoker.output
-
-    if (defined(invoker.srcjar_path)) {
-      _srcjar_path = invoker.srcjar_path
+    if (defined(invoker.arsc_output)) {
+      _arsc_output = invoker.arsc_output
     }
+    if (defined(invoker.optimized_arsc_output)) {
+      _optimized_arsc_output = invoker.optimized_arsc_output
+    }
+    _final_srcjar_path = "${target_gen_dir}/${target_name}.srcjar"
+    _intermediate_srcjar_path = _final_srcjar_path
     if (defined(invoker.post_process_script)) {
       _compile_resources_target_name = "${target_name}__intermediate"
-      _compiled_resources_path =
-          get_path_info(_compiled_resources_path, "dir") + "/" +
-          get_path_info(_compiled_resources_path, "name") + ".intermediate.ap_"
-      _srcjar_path = "${_srcjar_path}.intermediate.srcjar"
+      _intermediate_srcjar_path =
+          "${target_gen_dir}/${target_name}.intermediate.srcjar"
+      _intermediate_path =
+          get_path_info(_arsc_output, "dir") + "/" +
+          get_path_info(_arsc_output, "name") + ".intermediate.ap_"
+      if (defined(_optimized_arsc_output)) {
+        _optimized_arsc_output = _intermediate_path
+      } else {
+        _arsc_output = _intermediate_path
+      }
     }
-
-    _proto_format = defined(invoker.proto_format) && invoker.proto_format
 
     # NOTE: Regarding the names of the depfiles used by this template:
     #       They all have the same prefix, related to invoker.target_name,
@@ -2071,7 +2147,6 @@ if (enable_java_templates) {
     #
     #       _1.d for the unprocessed compiled resources.
     #       _2.d for the optional processed compiled resources.
-    #       _3.d for the proto-compiled resources.
 
     action_with_pydeps(_compile_resources_target_name) {
       set_sources_assignment_filter([])
@@ -2082,20 +2157,11 @@ if (enable_java_templates) {
                                "visibility",
                              ])
       script = "//build/android/gyp/compile_resources.py"
-
       depfile = "$target_gen_dir/${invoker.target_name}_1.d"
-      outputs = []
-
-      _android_aapt_path = android_default_aapt_path
-      _android_aapt2_path = android_sdk_tools_bundle_aapt2
-      if (_proto_format) {
-        depfile = "$target_gen_dir/${invoker.target_name}_3.d"
-      }
 
       inputs = [
         invoker.build_config,
-        _android_aapt_path,
-        _android_aapt2_path,
+        android_sdk_tools_bundle_aapt2,
       ]
 
       _rebased_build_config = rebase_path(invoker.build_config, root_build_dir)
@@ -2104,31 +2170,29 @@ if (enable_java_templates) {
         "--depfile",
         rebase_path(depfile, root_build_dir),
         "--include-resources=@FileArg($_rebased_build_config:android:sdk_jars)",
-        "--aapt-path",
-        rebase_path(_android_aapt_path, root_build_dir),
         "--aapt2-path",
-        rebase_path(_android_aapt2_path, root_build_dir),
-        "--dependencies-res-zips=@FileArg($_rebased_build_config:resources:dependency_zips)",
-        "--extra-res-packages=@FileArg($_rebased_build_config:resources:extra_package_names)",
-        "--extra-r-text-files=@FileArg($_rebased_build_config:resources:extra_r_text_files)",
+        rebase_path(android_sdk_tools_bundle_aapt2, root_build_dir),
+        "--dependencies-res-zips=@FileArg($_rebased_build_config:deps_info:dependency_zips)",
+        "--extra-res-packages=@FileArg($_rebased_build_config:deps_info:extra_package_names)",
+        "--extra-r-text-files=@FileArg($_rebased_build_config:deps_info:extra_r_text_files)",
+        "--extra-main-r-text-files=@FileArg($_rebased_build_config:deps_info:extra_main_r_text_files)",
+        "--min-sdk-version=${invoker.min_sdk_version}",
+        "--target-sdk-version=${invoker.target_sdk_version}",
       ]
 
       inputs += [ invoker.android_manifest ]
+      outputs = [
+        _intermediate_srcjar_path,
+      ]
       args += [
         "--android-manifest",
         rebase_path(invoker.android_manifest, root_build_dir),
+        "--srcjar-out",
+        rebase_path(_intermediate_srcjar_path, root_build_dir),
       ]
-
-      if (defined(invoker.package_name_to_id_mapping)) {
-        args += [
-          "--package-name-to-id-mapping=${invoker.package_name_to_id_mapping}",
-        ]
-      }
-
       if (defined(invoker.no_xml_namespaces) && invoker.no_xml_namespaces) {
         args += [ "--no-xml-namespaces" ]
       }
-
       if (defined(invoker.version_code)) {
         args += [
           "--version-code",
@@ -2141,37 +2205,70 @@ if (enable_java_templates) {
           invoker.version_name,
         ]
       }
-      if (defined(_compiled_resources_path)) {
-        _info_path = invoker.output + ".info"
-        outputs += [
-          _compiled_resources_path,
-          _info_path,
-        ]
+      if (defined(_arsc_output)) {
+        outputs += [ _arsc_output ]
         args += [
-          "--apk-path",
-          rebase_path(_compiled_resources_path, root_build_dir),
-          "--apk-info-path",
-          rebase_path(_info_path, root_build_dir),
+          "--arsc-path",
+          rebase_path(_arsc_output, root_build_dir),
+        ]
+      }
+      if (defined(invoker.proto_output)) {
+        outputs += [ invoker.proto_output ]
+        args += [
+          "--proto-path",
+          rebase_path(invoker.proto_output, root_build_dir),
+        ]
+      }
+      if (defined(invoker.size_info_path)) {
+        outputs += [ invoker.size_info_path ]
+        args += [
+          "--info-path",
+          rebase_path(invoker.size_info_path, root_build_dir),
+        ]
+      }
+      if (defined(_optimized_arsc_output)) {
+        outputs += [ _optimized_arsc_output ]
+        args += [
+          "--optimized-arsc-path",
+          rebase_path(_optimized_arsc_output, root_build_dir),
+        ]
+      }
+      if (defined(invoker.optimized_proto_output)) {
+        outputs += [ invoker.optimized_proto_output ]
+        args += [
+          "--optimized-proto-path",
+          rebase_path(invoker.optimized_proto_output, root_build_dir),
+        ]
+      }
+      if (defined(invoker.resources_config_path)) {
+        inputs += [ invoker.resources_config_path ]
+        args += [
+          "--resources-config-path",
+          rebase_path(invoker.resources_config_path, root_build_dir),
+        ]
+      }
+      if (defined(invoker.short_resource_paths) &&
+          invoker.short_resource_paths) {
+        args += [ "--short-resource-paths" ]
+        if (defined(invoker.resources_path_map_out_path)) {
+          outputs += [ invoker.resources_path_map_out_path ]
+          args += [
+            "--resources-path-map-out-path",
+            rebase_path(invoker.resources_path_map_out_path, root_build_dir),
+          ]
+        }
+      }
+
+      if (defined(invoker.r_java_root_package_name)) {
+        args += [
+          "--r-java-root-package-name",
+          invoker.r_java_root_package_name,
         ]
       }
 
-      if (defined(invoker.optimize_resources) && invoker.optimize_resources) {
-        args += [ "--optimize-resources" ]
-        if (defined(invoker.resources_config_path)) {
-          inputs += [ invoker.resources_config_path ]
-          args += [
-            "--resources-config-path",
-            rebase_path(invoker.resources_config_path, root_build_dir),
-          ]
-        }
-
-        if (defined(invoker.unoptimized_resources_path)) {
-          args += [
-            "--unoptimized-resources-path",
-            rebase_path(invoker.unoptimized_resources_path, root_build_dir),
-          ]
-          outputs += [ invoker.unoptimized_resources_path ]
-        }
+      if (defined(invoker.strip_resource_names) &&
+          invoker.strip_resource_names) {
+        args += [ "--strip-resource-names" ]
       }
 
       # Useful to have android:debuggable in the manifest even for Release
@@ -2188,23 +2285,11 @@ if (enable_java_templates) {
         ]
       }
 
-      if (defined(_srcjar_path)) {
-        outputs += [ _srcjar_path ]
+      if (defined(invoker.rename_manifest_package)) {
         args += [
-          "--srcjar-out",
-          rebase_path(_srcjar_path, root_build_dir),
+          "--rename-manifest-package",
+          invoker.rename_manifest_package,
         ]
-      }
-
-      if (defined(invoker.custom_package)) {
-        args += [
-          "--custom-package",
-          invoker.custom_package,
-        ]
-      }
-
-      if (_proto_format) {
-        args += [ "--proto-format" ]
       }
 
       # Define the flags related to shared resources.
@@ -2213,21 +2298,26 @@ if (enable_java_templates) {
       # generated resources table is correct. It should be 0x02 for runtime
       # shared libraries, and 0x7f otherwise.
 
-      _expected_resources_pkg_id = "0x7f"
       if (defined(invoker.shared_resources) && invoker.shared_resources) {
         args += [ "--shared-resources" ]
-        _expected_resources_pkg_id = "0x02"
-      } else if (defined(invoker.app_as_shared_lib) &&
-                 invoker.app_as_shared_lib) {
+      }
+      if (defined(invoker.app_as_shared_lib) && invoker.app_as_shared_lib) {
         args += [ "--app-as-shared-lib" ]
       }
-
-      # NOTE: It is not possible to check the resources package ID of
-      # proto-compiled APKs at the moment.
-      if (!_proto_format) {
-        args += [ "--check-resources-pkg-id=$_expected_resources_pkg_id" ]
-      } else {
-        assert(_expected_resources_pkg_id != "")  # Mark as used.
+      if (defined(invoker.package_id)) {
+        args += [ "--package-id=${invoker.package_id}" ]
+      }
+      if (defined(invoker.package_name)) {
+        args += [
+          "--package-name",
+          invoker.package_name,
+        ]
+      }
+      if (defined(invoker.arsc_package_name)) {
+        args += [
+          "--arsc-package-name",
+          invoker.arsc_package_name,
+        ]
       }
 
       if (defined(invoker.shared_resources_whitelist)) {
@@ -2294,8 +2384,52 @@ if (enable_java_templates) {
         args += invoker.args
       }
 
-      if (defined(invoker.package_name)) {
-        args += [ "--package-name=${invoker.package_name}" ]
+      if (defined(invoker.emit_ids_out_path)) {
+        outputs += [ invoker.emit_ids_out_path ]
+        _rebased_emit_ids_path =
+            rebase_path(invoker.emit_ids_out_path, root_out_dir)
+        args += [ "--emit-ids-out=$_rebased_emit_ids_path" ]
+      }
+
+      if (defined(invoker.resource_ids_provider_dep)) {
+        _compile_res_dep =
+            "${invoker.resource_ids_provider_dep}__compile_resources"
+        _gen_dir = get_label_info(_compile_res_dep, "target_gen_dir")
+        _name = get_label_info(_compile_res_dep, "name")
+        _resource_ids_path = "$_gen_dir/$_name.resource_ids"
+        inputs += [ _resource_ids_path ]
+        _rebased_ids_path = rebase_path(_resource_ids_path, root_out_dir)
+        args += [ "--use-resource-ids-path=$_rebased_ids_path" ]
+        deps += [ _compile_res_dep ]
+      }
+
+      if (defined(invoker.max_sdk_version)) {
+        _max_sdk_version = invoker.max_sdk_version
+        args += [ "--max-sdk-version=$_max_sdk_version" ]
+      }
+      if (defined(invoker.expected_manifest)) {
+        inputs += [ invoker.expected_manifest ]
+        _normalized_output = "${invoker.android_manifest}.normalized"
+        outputs += [ _normalized_output ]
+        args += [
+          "--android-manifest-expected",
+          rebase_path(invoker.expected_manifest, root_build_dir),
+          "--android-manifest-normalized",
+          rebase_path(_normalized_output, root_build_dir),
+        ]
+        if (check_android_configuration) {
+          _manfiest_expectations_failure_filepath =
+              "$android_configuration_failure_dir/" +
+              "${invoker.failed_manifest_expectation_file}"
+          args += [
+            "--android-manifest-expectations-failure-file",
+            rebase_path(_manfiest_expectations_failure_filepath,
+                        root_build_dir),
+          ]
+        }
+      }
+      if (defined(invoker.manifest_package)) {
+        args += [ "--manifest-package=${invoker.manifest_package}" ]
       }
     }
 
@@ -2306,33 +2440,42 @@ if (enable_java_templates) {
         args = [
           "--depfile",
           rebase_path(depfile, root_build_dir),
-          "--apk-path",
-          rebase_path(_compiled_resources_path, root_build_dir),
-          "--output",
-          rebase_path(invoker.output, root_build_dir),
           "--srcjar-in",
-          rebase_path(_srcjar_path, root_build_dir),
+          rebase_path(_intermediate_srcjar_path, root_build_dir),
           "--srcjar-out",
-          rebase_path(invoker.srcjar_path, root_build_dir),
+          rebase_path(_final_srcjar_path, root_build_dir),
+        ]
+        if (defined(_optimized_arsc_output)) {
+          _input_apk = _optimized_arsc_output
+          _output_apk = invoker.optimized_arsc_output
+        } else {
+          _input_apk = _arsc_output
+          _output_apk = invoker.arsc_output
+        }
+        args += [
+          "--apk-path",
+          rebase_path(_input_apk, root_build_dir),
+          "--output",
+          rebase_path(_output_apk, root_build_dir),
         ]
         if (defined(invoker.shared_resources_whitelist)) {
           args += [
             "--r-text-whitelist",
             rebase_path(invoker.shared_resources_whitelist, root_build_dir),
-            "--r-text",
+            "--r-text-path",
             rebase_path(invoker.r_text_out_path, root_build_dir),
           ]
         }
         inputs = [
-          _srcjar_path,
-          _compiled_resources_path,
+          _input_apk,
+          _intermediate_srcjar_path,
         ]
         if (defined(invoker.post_process_script_inputs)) {
           inputs += invoker.post_process_script_inputs
         }
         outputs = [
-          invoker.output,
-          invoker.srcjar_path,
+          _output_apk,
+          _final_srcjar_path,
         ]
         public_deps = [
           ":${_compile_resources_target_name}",
@@ -2347,7 +2490,7 @@ if (enable_java_templates) {
   #   build_config: Path to APK's build config file. Used to extract the
   #       list of input .jar files from its dependencies.
   #   name: Name of the apk or app bundle (e.g. "Foo.apk").
-  #   packaged_resources_path: Path to .ap_ file.
+  #   res_size_info_path: Path to input .ap_.info file (for apks).
   #
   template("create_size_info_files") {
     action_with_pydeps(target_name) {
@@ -2384,7 +2527,7 @@ if (enable_java_templates) {
           args += [
             "--jar-files=@FileArg($_rebased_build_config:deps_info:unprocessed_jar_path)",
             "--jar-files=@FileArg($_rebased_build_config:deps_info:javac_full_classpath)",
-            "--resource-apk=@FileArg($_rebased_build_config:deps_info:proto_resources_path)",
+            "--in-res-info-path=@FileArg($_rebased_build_config:deps_info:res_size_info)",
             "--assets=@FileArg($_rebased_build_config:assets)",
             "--uncompressed-assets=@FileArg($_rebased_build_config:uncompressed_assets)",
           ]
@@ -2392,15 +2535,15 @@ if (enable_java_templates) {
       } else {
         inputs = [
           invoker.build_config,
-          invoker.packaged_resources_path,
+          invoker.res_size_info_path,
         ]
         _rebased_build_config =
             rebase_path(invoker.build_config, root_build_dir)
         args += [
           "--jar-files=@FileArg($_rebased_build_config:deps_info:jar_path)",
           "--jar-files=@FileArg($_rebased_build_config:deps_info:javac_full_classpath)",
-          "--resource-apk",
-          rebase_path(invoker.packaged_resources_path, root_build_dir),
+          "--in-res-info-path",
+          rebase_path(invoker.res_size_info_path, root_build_dir),
           "--assets=@FileArg($_rebased_build_config:assets)",
           "--uncompressed-assets=@FileArg($_rebased_build_config:uncompressed_assets)",
         ]
@@ -2417,7 +2560,6 @@ if (enable_java_templates) {
   #       asset information.
   #   deps: Specifies the dependencies of this target.
   #   dex_path: Path to classes.dex file to include (optional).
-  #   exclude_dex: Omit .dex files from the .apk (optional).
   #   packaged_resources_path: Path to .ap_ to use.
   #   output_apk_path: Output path for the generated .apk.
   #   native_lib_placeholders: List of placeholder filenames to add to the apk
@@ -2430,8 +2572,6 @@ if (enable_java_templates) {
   #     secondary ABI.
   #   secondary_abi_native_libs_filearg: (optional). @FileArg() of additional
   #     secondary ABI native libs.
-  #   write_asset_list: Adds an extra file to the assets, which contains a list of
-  #     all other asset files.
   #   keystore_path: Path to keystore to use for signing.
   #   keystore_name: Key alias to use.
   #   keystore_password: Keystore password.
@@ -2454,7 +2594,6 @@ if (enable_java_templates) {
         _secondary_native_lib_placeholders =
             invoker.secondary_native_lib_placeholders
       }
-      _exclude_dex = defined(invoker.exclude_dex) && invoker.exclude_dex
 
       script = "//build/android/gyp/apkbuilder.py"
       depfile = "$target_gen_dir/$target_name.d"
@@ -2470,9 +2609,6 @@ if (enable_java_templates) {
                  _apksigner,
                  _zipalign,
                ]
-      if (defined(invoker.dex_path)) {
-        inputs += [ invoker.dex_path ]
-      }
 
       outputs = [
         invoker.output_apk_path,
@@ -2517,10 +2653,7 @@ if (enable_java_templates) {
         # an APK build_config.
         args += [ "--java-resources=@FileArg($_rebased_build_config:java_resources_jars)" ]
       }
-      if (defined(invoker.write_asset_list) && invoker.write_asset_list) {
-        args += [ "--write-asset-list" ]
-      }
-      if (defined(invoker.dex_path) && !_exclude_dex) {
+      if (defined(invoker.dex_path)) {
         _rebased_dex_path = rebase_path(invoker.dex_path, root_build_dir)
         args += [ "--dex-file=$_rebased_dex_path" ]
       }
@@ -2552,178 +2685,6 @@ if (enable_java_templates) {
       if (defined(invoker.uncompress_shared_libraries) &&
           invoker.uncompress_shared_libraries) {
         args += [ "--uncompress-shared-libraries=True" ]
-      }
-    }
-  }
-
-  # Packages resources, assets, dex, and native libraries into an apk. Signs and
-  # zipaligns the apk.
-  template("create_apk") {
-    set_sources_assignment_filter([])
-    forward_variables_from(invoker, [ "testonly" ])
-
-    _final_apk_path = invoker.apk_path
-
-    if (defined(invoker.dex_path)) {
-      _dex_path = invoker.dex_path
-    }
-    _load_library_from_apk = invoker.load_library_from_apk
-    assert(_load_library_from_apk || true)
-
-    _deps = []
-    if (defined(invoker.deps)) {
-      _deps = invoker.deps
-    }
-    _incremental_deps = []
-    if (defined(invoker.incremental_deps)) {
-      _incremental_deps = invoker.incremental_deps
-    }
-    _native_libs = []
-    if (defined(invoker.native_libs)) {
-      _native_libs = invoker.native_libs
-    }
-    _native_libs_even_when_incremental = []
-    if (defined(invoker.native_libs_even_when_incremental) &&
-        invoker.native_libs_even_when_incremental != []) {
-      _native_libs_even_when_incremental =
-          invoker.native_libs_even_when_incremental
-    }
-
-    _shared_resources =
-        defined(invoker.shared_resources) && invoker.shared_resources
-    assert(_shared_resources || true)  # Mark as used.
-
-    _keystore_path = invoker.keystore_path
-    _keystore_name = invoker.keystore_name
-    _keystore_password = invoker.keystore_password
-
-    package_apk(target_name) {
-      forward_variables_from(invoker,
-                             [
-                               "apk_name",
-                               "assets_build_config",
-                               "exclude_dex",
-                               "native_lib_placeholders",
-                               "native_libs_filearg",
-                               "packaged_resources_path",
-                               "secondary_native_lib_placeholders",
-                               "secondary_abi_native_libs_filearg",
-                               "secondary_abi_loadable_modules",
-                               "uncompress_dex",
-                               "uncompress_shared_libraries",
-                               "write_asset_list",
-                             ])
-      if (!defined(uncompress_shared_libraries)) {
-        uncompress_shared_libraries = _load_library_from_apk
-      }
-      deps = _deps
-      native_libs = _native_libs + _native_libs_even_when_incremental
-      keystore_path = _keystore_path
-      keystore_name = _keystore_name
-      keystore_password = _keystore_password
-
-      if (defined(_dex_path)) {
-        dex_path = _dex_path
-      }
-
-      output_apk_path = _final_apk_path
-    }
-
-    _incremental_allowed =
-        defined(invoker.incremental_allowed) && invoker.incremental_allowed
-    if (_incremental_allowed) {
-      _android_manifest = invoker.android_manifest
-      _base_path = invoker.base_path
-
-      _incremental_final_apk_path_helper =
-          process_file_template(
-              [ _final_apk_path ],
-              "{{source_dir}}/{{source_name_part}}_incremental.apk")
-      _incremental_final_apk_path = _incremental_final_apk_path_helper[0]
-
-      _incremental_compiled_resources_path = "${_base_path}_incremental.ap_"
-      _incremental_compile_resources_target_name =
-          "${target_name}_incremental__compile_resources"
-      _incremental_android_manifest =
-          get_label_info(_incremental_compile_resources_target_name,
-                         "target_gen_dir") + "/AndroidManifest.xml"
-
-      if (defined(invoker.unoptimized_resources_path)) {
-        _incremental_packaged_resources_path =
-            invoker.unoptimized_resources_path
-      } else {
-        _incremental_packaged_resources_path = invoker.packaged_resources_path
-      }
-
-      _rebased_build_config =
-          rebase_path(invoker.assets_build_config, root_build_dir)
-
-      action_with_pydeps(_incremental_compile_resources_target_name) {
-        deps = _incremental_deps
-        script =
-            "//build/android/incremental_install/generate_android_manifest.py"
-        inputs = [
-          _android_manifest,
-          invoker.assets_build_config,
-          _incremental_packaged_resources_path,
-        ]
-        outputs = [
-          # Output the non-compiled manifest for easy debugging (as opposed to
-          # generating to a temp file).
-          _incremental_android_manifest,
-          _incremental_compiled_resources_path,
-        ]
-
-        args = [
-          "--src-manifest",
-          rebase_path(_android_manifest, root_build_dir),
-          "--out-manifest",
-          rebase_path(_incremental_android_manifest, root_build_dir),
-          "--in-apk",
-          rebase_path(_incremental_packaged_resources_path, root_build_dir),
-          "--out-apk",
-          rebase_path(_incremental_compiled_resources_path, root_build_dir),
-          "--aapt-path",
-          rebase_path(android_default_aapt_path, root_build_dir),
-          "--android-sdk-jars=@FileArg($_rebased_build_config:android:sdk_jars)",
-        ]
-        if (disable_incremental_isolated_processes) {
-          args += [ "--disable-isolated-processes" ]
-        }
-      }
-
-      package_apk("${target_name}_incremental") {
-        forward_variables_from(invoker,
-                               [
-                                 "assets_build_config",
-                                 "secondary_abi_loadable_modules",
-                                 "uncompress_shared_libraries",
-                               ])
-        _dex_target = "//build/android/incremental_install:bootstrap_java__dex"
-        deps = _incremental_deps + [
-                 ":${_incremental_compile_resources_target_name}",
-                 _dex_target,
-               ]
-
-        if (defined(_dex_path)) {
-          dex_path =
-              get_label_info(_dex_target, "target_gen_dir") + "/bootstrap.dex"
-        }
-
-        native_libs = _native_libs_even_when_incremental
-        keystore_path = _keystore_path
-        keystore_name = _keystore_name
-        keystore_password = _keystore_password
-
-        # http://crbug.com/384638
-        _has_native_libs =
-            defined(invoker.native_libs_filearg) || _native_libs != []
-        if (_has_native_libs && _native_libs_even_when_incremental == []) {
-          native_lib_placeholders = [ "libfix.crbug.384638.so" ]
-        }
-
-        output_apk_path = _incremental_final_apk_path
-        packaged_resources_path = _incremental_compiled_resources_path
       }
     }
   }
@@ -2850,8 +2811,7 @@ if (enable_java_templates) {
         "--jar-path=$_rebased_javac_jar_path",
         "--java-srcjars=$_rebased_java_srcjars",
         "--java-version=1.8",
-        "--full-classpath=@FileArg($_rebased_build_config:deps_info:javac_full_classpath)",
-        "--interface-classpath=@FileArg($_rebased_build_config:deps_info:javac_full_interface_classpath)",
+        "--classpath=@FileArg($_rebased_build_config:deps_info:javac_full_interface_classpath)",
         "--processorpath=@FileArg($_rebased_build_config:javac:processor_classpath)",
         "--processors=@FileArg($_rebased_build_config:javac:processor_classes)",
       ]
@@ -2864,24 +2824,22 @@ if (enable_java_templates) {
       if (_chromium_code) {
         args += [ "--chromium-code=1" ]
       }
-
-      # Use errorprone with checks disabled when !enable_errorprone so that
-      # compile results are the same across machines.
-      # TODO(crbug.com/693079): Add javac to DEPS and use it for the
-      #     !enable_errorprone case.
-      deps += [ "//third_party/errorprone:errorprone($default_toolchain)" ]
-      args += [
-        "--errorprone-path",
-        "bin/errorprone",
-      ]
+      if (defined(invoker.jar_excluded_patterns)) {
+        args += [ "--jar-info-exclude-globs=${invoker.jar_excluded_patterns}" ]
+      }
 
       if (invoker.enable_errorprone) {
-        deps += [ "//tools/android/errorprone_plugin:errorprone_plugin_java($default_toolchain)" ]
-        _rebased_errorprone_processorpath = [
-          "lib.java/tools/android/errorprone_plugin/errorprone_plugin_java.jar",
-        ]
+        # Our custom plugin pulls in the main errorprone dep transitively.
+        _errorprone_dep =
+            "//tools/android/errorprone_plugin:errorprone_plugin_java"
+        deps += [ _errorprone_dep ]
+        _dep_gen_dir = get_label_info(_errorprone_dep, "target_gen_dir")
+        _dep_name = get_label_info(_errorprone_dep, "name")
+        _rebased_errorprone_buildconfig =
+            rebase_path("$_dep_gen_dir/$_dep_name.build_config", root_build_dir)
         args += [
-          "--processorpath=$_rebased_errorprone_processorpath",
+          "--processorpath=@FileArg($_rebased_errorprone_buildconfig:deps_info:jar_path)",
+          "--processorpath=@FileArg($_rebased_errorprone_buildconfig:deps_info:javac_full_classpath)",
           "--enable-errorprone",
         ]
       }
@@ -3004,9 +2962,9 @@ if (enable_java_templates) {
   #    provided, this is determined automatically, based on the location of
   #    the source files (i.e. anything under third_party/ is not
   #    Chromium-specific unless it is in a 'chromium' sub-directory).
-  #  emma_never_instrument: Optional. If provided, whether to forbid
-  #    instrumentation with the Emma coverage processor. If not provided,
-  #    this is controlled by the global emma_coverage build arg variable
+  #  jacoco_never_instrument: Optional. If provided, whether to forbid
+  #    instrumentation with the Jacoco coverage processor. If not provided,
+  #    this is controlled by the global use_jacoco_coverage build arg variable
   #    and only used for non-test Chromium code.
   #  include_android_sdk: Optional. Whether or not the android SDK dep
   #    should be added to deps. Defaults to true for non-system libraries
@@ -3018,9 +2976,6 @@ if (enable_java_templates) {
   #  input_jars_paths: Optional list of additional .jar file paths, which will
   #    be added to the compile-time classpath when building this target (but
   #    not to the runtime classpath).
-  #  classpath_deps: Optional list of additional java library dependencies,
-  #    whose .jar files will be added to the compile-time classpath when
-  #    building this target (but not to the runtime classpath).
   #  gradle_treat_as_prebuilt: Cause generate_gradle.py to reference this
   #    library via its built .jar rather than including its .java sources.
   #  proguard_enabled: Optional. True to enable ProGuard obfuscation.
@@ -3040,6 +2995,8 @@ if (enable_java_templates) {
   #    from the final .jar file.
   #  jar_included_patterns: Optional list of .class file patterns to include
   #    in the final .jar file. jar_excluded_patterns take precedence over this.
+  #  min_sdk_version: Optional. The minimum Android SDK version this target
+  #    supports.
   #
   # For 'android_apk' and 'android_app_bundle_module' targets only:
   #
@@ -3049,16 +3006,16 @@ if (enable_java_templates) {
   #    android_manifest.
   #  apk_under_test: For 'android_apk' targets used to test other APKs,
   #    this is the target name of APK being tested.
-  #  incremental_allowed: Optional (default false). True to allow the
-  #    generation of incremental APKs ('android_apk' targets only).
-  #  incremental_apk_path: If incremental_allowed, path to the incremental
-  #    output APK.
-  #  incremental_install_json_path: If incremental_allowed, path to the output
-  #    incremental install json configuration file.
+  #  incremental_apk_path: Path to the incremental APK.
+  #  incremental_install_json_path: Path to the incremental install json.
+  #  native_lib_placeholders: Optional. List of placeholder filenames to add to
+  #    the APK.
   #  proguard_mapping_path: Path to .mapping file produced from ProGuard step.
   #  shared_libraries_runtime_deps_file: Optional. Path to a file listing the
   #    native shared libraries required at runtime by the APK.
   #  secondary_abi_shared_libraries_runtime_deps_file:
+  #  secondary_native_lib_placeholders: Optional. List of placeholder filenames
+  #    to add to the APK for the secondary ABI.
   #  extra_shared_libraries: Optional list of extra native libraries to
   #    be stored in the APK.
   #  uncompress_shared_libraries: Optional. True to store native shared
@@ -3066,16 +3023,16 @@ if (enable_java_templates) {
   #  proto_resources_path: The path of an zip archive containing the APK's
   #    resources compiled to the protocol buffer format (instead of regular
   #    binary xml + resources.arsc).
-  #  module_rtxt_path: The path of the R.txt file generated when compiling the
-  #    resources for the bundle module.
+  #  r_text_path: The path of the R.txt file generated when compiling the
+  #    resources for this target.
+  #  module_pathmap_path: The path of the pathmap file generated when compiling
+  #    the resources for the bundle module, if path shortening is enabled.
   #  base_whitelist_rtxt_path: The path of the R.txt file containing the
   #    list of string resources to keep in the base split APK for any bundle
   #    that uses this target.
   #
   # For 'java_binary' and 'junit_binary' targets only. Ignored by others:
   #
-  #  bootclasspath: Optional list of boot class paths used by the generated
-  #    wrapper script.
   #  wrapper_script_name: Optional name for the generated wrapper script.
   #    Default is main target name.
   #  wrapper_script_args: Optional list of extra arguments used by the
@@ -3145,6 +3102,13 @@ if (enable_java_templates) {
       if (defined(invoker.final_jar_path)) {
         _final_jar_path = invoker.final_jar_path
       }
+
+      # For static libraries, the javac jar output is created at the intermediate
+      # path so that it can be processed by another target and moved to the final
+      # spot that the .build_config knows about. Technically this should be done
+      # for the ijar as well, but this is only used for APK targets where
+      # the ijar path isn't actually used.
+      _build_config_jar_path = _final_jar_path
       _final_ijar_path =
           get_path_info(_final_jar_path, "dir") + "/" +
           get_path_info(_final_jar_path, "name") + ".interface.jar"
@@ -3160,7 +3124,7 @@ if (enable_java_templates) {
       }
 
       if (_supports_android) {
-        _dex_path = "$target_gen_dir/$_main_target_name.dex.jar"
+        _dex_path = "$target_out_dir/$_main_target_name.dex.jar"
         if (defined(invoker.dex_path)) {
           _dex_path = invoker.dex_path
         }
@@ -3213,13 +3177,16 @@ if (enable_java_templates) {
     }
 
     if (defined(_final_jar_path)) {
-      _emma_instrument = emma_coverage && _chromium_code && _java_files != [] &&
-                         (!defined(invoker.testonly) || !invoker.testonly)
-      if (defined(invoker.emma_never_instrument)) {
-        _emma_instrument = !invoker.emma_never_instrument && _emma_instrument
+      _jacoco_instrument =
+          use_jacoco_coverage && _chromium_code && _java_files != [] &&
+          !_is_java_binary && !_is_annotation_processor &&
+          (!defined(invoker.testonly) || !invoker.testonly)
+      if (defined(invoker.jacoco_never_instrument)) {
+        _jacoco_instrument =
+            !invoker.jacoco_never_instrument && _jacoco_instrument
       }
-      if (_emma_instrument) {
-        _accumulated_deps += [ "//third_party/android_tools:emma_device_java" ]
+      if (_jacoco_instrument) {
+        _accumulated_deps += [ "//third_party/jacoco:jacocoagent_java" ]
       }
     }
 
@@ -3239,7 +3206,7 @@ if (enable_java_templates) {
       if (defined(invoker.alternative_android_sdk_dep)) {
         _accumulated_deps += [ invoker.alternative_android_sdk_dep ]
       } else {
-        _accumulated_deps += [ "//third_party/android_tools:android_sdk_java" ]
+        _accumulated_deps += [ "//third_party/android_sdk:android_sdk_java" ]
       }
     }
 
@@ -3254,7 +3221,6 @@ if (enable_java_templates) {
                              [
                                "annotation_processor_deps",
                                "base_whitelist_rtxt_path",
-                               "classpath_deps",
                                "gradle_treat_as_prebuilt",
                                "input_jars_paths",
                                "loadable_modules",
@@ -3262,6 +3228,7 @@ if (enable_java_templates) {
                                "proguard_configs",
                                "proguard_enabled",
                                "proguard_mapping_path",
+                               "r_text_path",
                                "secondary_abi_loadable_modules",
                                "type",
                              ])
@@ -3273,8 +3240,12 @@ if (enable_java_templates) {
               "android_manifest_dep",
               "extra_shared_libraries",
               "final_dex_path",
+              "native_lib_placeholders",
+              "res_size_info_path",
               "secondary_abi_shared_libraries_runtime_deps_file",
+              "secondary_native_lib_placeholders",
               "shared_libraries_runtime_deps_file",
+              "static_library_dependent_targets",
               "uncompress_shared_libraries",
             ])
       }
@@ -3283,7 +3254,6 @@ if (enable_java_templates) {
                                [
                                  "apk_path",
                                  "apk_under_test",
-                                 "incremental_allowed",
                                  "incremental_apk_path",
                                  "incremental_install_json_path",
                                ])
@@ -3291,8 +3261,10 @@ if (enable_java_templates) {
       if (type == "android_app_bundle_module") {
         forward_variables_from(invoker,
                                [
+                                 "base_module_target",
+                                 "is_base_module",
+                                 "module_pathmap_path",
                                  "proto_resources_path",
-                                 "module_rtxt_path",
                                ])
       }
       build_config = _build_config
@@ -3307,7 +3279,7 @@ if (enable_java_templates) {
                                invoker.bypass_platform_checks
 
       if (defined(_final_jar_path)) {
-        jar_path = _final_jar_path
+        jar_path = _build_config_jar_path
         ijar_path = _final_ijar_path
         unprocessed_jar_path = _unprocessed_jar_path
       }
@@ -3344,9 +3316,6 @@ if (enable_java_templates) {
     if (defined(invoker.android_manifest_dep)) {
       _accumulated_deps += [ invoker.android_manifest_dep ]
     }
-    if (defined(invoker.classpath_deps)) {
-      _accumulated_deps += invoker.classpath_deps
-    }
     if (defined(invoker.annotation_processor_deps)) {
       _accumulated_deps += invoker.annotation_processor_deps
     }
@@ -3354,6 +3323,14 @@ if (enable_java_templates) {
     # TODO(agrieve): Enable lint for _has_sources rather than just _java_files.
     _lint_enabled = _java_files != [] && _supports_android && _chromium_code &&
                     !disable_android_lint
+    if (!_lint_enabled) {
+      if (defined(invoker.min_sdk_version)) {
+        not_needed(invoker, [ "min_sdk_version" ])
+      }
+      if (defined(invoker.manifest_package)) {
+        not_needed(invoker, [ "manifest_package" ])
+      }
+    }
     if (defined(invoker.enable_errorprone)) {
       _enable_errorprone = invoker.enable_errorprone
     } else {
@@ -3395,6 +3372,7 @@ if (enable_java_templates) {
         "processor_args_javac",
         "provider_configurations",
         "javac_args",
+        "jar_excluded_patterns",
       ]
       compile_java_helper(_compile_java_target) {
         forward_variables_from(invoker, _compile_java_forward_variables)
@@ -3424,6 +3402,11 @@ if (enable_java_templates) {
       if (_lint_enabled) {
         _android_lint_target = "${_main_target_name}__lint"
         android_lint(_android_lint_target) {
+          forward_variables_from(invoker,
+                                 [
+                                   "min_sdk_version",
+                                   "manifest_package",
+                                 ])
           if (invoker.type == "android_apk" ||
               invoker.type == "android_app_bundle_module") {
             forward_variables_from(invoker, [ "android_manifest" ])
@@ -3483,7 +3466,6 @@ if (enable_java_templates) {
                                    "enable_bytecode_rewriter",
                                    "jar_excluded_patterns",
                                    "jar_included_patterns",
-                                   "split_compat_class_names",
                                  ])
           is_prebuilt = _is_prebuilt
           supports_android = _supports_android
@@ -3491,27 +3473,31 @@ if (enable_java_templates) {
           enable_build_hooks_android = _enable_build_hooks_android
           build_config = _build_config
           input_jar_path = _unprocessed_jar_path
-          emma_instrument = _emma_instrument
-          if (_emma_instrument) {
+          jacoco_instrument = _jacoco_instrument
+          if (_jacoco_instrument) {
             java_files = _java_files
             java_sources_file = _java_sources_file
           }
           output_jar_path = _final_jar_path
-          if (_has_sources) {
-            deps = _accumulated_public_deps  # compile & build_config
-          } else {
-            deps = _accumulated_deps + _accumulated_public_deps
-          }
+          deps = _accumulated_deps + _accumulated_public_deps
         }
         _accumulated_public_deps += [ ":$_process_prebuilt_target_name" ]
 
         if (defined(_dex_path)) {
           dex("${target_name}__dex") {
-            input_jars = [ _final_jar_path ]
+            input_class_jars = [ _final_jar_path ]
+
+            # There's no value in per-class dexing prebuilts since they never
+            # change just one class at a time.
+            disable_incremental = _is_prebuilt
             output = _dex_path
             deps = [
               ":$_process_prebuilt_target_name",
             ]
+
+            # Should never need multidex when compiling individual libraries.
+            # Disabling multidex saves on having to create a main_dex_list.
+            enable_multidex = false
           }
           _accumulated_public_deps += [ ":${target_name}__dex" ]
         }
@@ -3570,7 +3556,6 @@ if (enable_java_templates) {
       java_binary_script("${target_name}__java_binary_script") {
         forward_variables_from(invoker,
                                [
-                                 "bootclasspath",
                                  "main_class",
                                  "wrapper_script_args",
                                ])
@@ -3611,32 +3596,32 @@ if (enable_java_templates) {
 
 # Create a zip archive corresponding to an application bundle module.
 #
-# Compile all the components of a given android_apk_or_module() target into a zip archive
-# suitable to later create an android_app_bundle() target. This archive's format is very
-# similar to that on an APK, except for a few differences in internal directory
-# layouts, and the fact that resources, as well ass xml files, are compiled using a
-# protocol-buffer based format (instead of the regular binary xml + resources.arsc).
+# Compile all the components of a given android_apk_or_module() target into a
+# zip archive suitable to later create an android_app_bundle() target. This
+# archive's format is very similar to that on an APK, except for a few
+# differences in internal directory layouts, and the fact that resources, as
+# well as xml files, are compiled using a protocol-buffer based format (instead
+# of the regular binary xml + resources.arsc).
 #
 # A final application bundle is built from one or more module bundle modules,
 # plus some configuration file.
 #
 # Variables:
 #   module_zip_path: Output module path.
-#
 #   build_config: Path to build_config of the android_apk_or_module() target.
-#
-#   dex_path_file_arg: Path to the module's dex file passed directly to the
-#     creation script. Must be a rebased path or @FileArg expression.
-#
-#   native_lib_placeholders: List of placeholder filenames to add to each
-#     APK split (optional).
-#
-#   secondary_native_lib_placeholders: List of placeholder filenames to add
-#     to each APK split's secondary ABI (optional).
-#
+#   dex_path: If module is proguarded separately from the base module, dex_path
+#     is the path to its dex file and is passed directly to the creation script.
+#     Otherwise, dex_path is undefined and we retrieve the module's dex file
+#     using its build_config.
+#   module_name: The module's name.
+#   native_libraries_config: Path to file listing native libraries to be
+#     packaged into each module.
+#   is_multi_abi: If true will add a library placeholder for the missing ABI if
+#     either the primary or the secondary ABI has no native libraries set.
 template("create_android_app_bundle_module") {
-  _build_config = invoker.build_config
-  _rebased_build_config = rebase_path(_build_config, root_build_dir)
+  _rebased_build_config = rebase_path(invoker.build_config, root_build_dir)
+  _rebased_native_libraries_config =
+      rebase_path(invoker.native_libraries_config, root_build_dir)
 
   action_with_pydeps(target_name) {
     forward_variables_from(invoker,
@@ -3656,7 +3641,8 @@ template("create_android_app_bundle_module") {
     #       .build_config through @FileArg() references (see below) and
     #       will be listed in the generated depfile instead.
     inputs = [
-      _build_config,
+      invoker.build_config,
+      invoker.native_libraries_config,
     ]
     outputs = [
       invoker.module_zip_path,
@@ -3667,32 +3653,43 @@ template("create_android_app_bundle_module") {
       "--format=bundle-module",
       "--output-apk",
       rebase_path(invoker.module_zip_path, root_build_dir),
-      "--dex-file=@FileArg($_rebased_build_config:final_dex:path)",
       "--resource-apk=@FileArg(" +
           "$_rebased_build_config:deps_info:proto_resources_path)",
       "--assets=@FileArg($_rebased_build_config:assets)",
       "--uncompressed-assets=@FileArg(" +
           "$_rebased_build_config:uncompressed_assets)",
-      "--native-libs=@FileArg($_rebased_build_config:native:libraries)",
-      "--native-libs=@FileArg($_rebased_build_config:native:extra_shared_libraries)",
+      "--native-libs=@FileArg($_rebased_native_libraries_config" +
+          ":${invoker.module_name})",
+      "--native-lib-placeholders=@FileArg($_rebased_build_config" +
+          ":native:native_library_placeholders)",
+      "--secondary-native-lib-placeholders=@FileArg($_rebased_build_config" +
+          ":native:secondary_native_library_placeholders)",
       "--android-abi=$android_app_abi",
       "--uncompress-shared-libraries=@FileArg(" +
           "$_rebased_build_config:native:uncompress_shared_libraries)",
     ]
     if (defined(android_app_secondary_abi)) {
+      _rebased_secondary_abi_native_libraries_config =
+          rebase_path(invoker.secondary_abi_native_libraries_config,
+                      root_build_dir)
       args += [
-        "--secondary-native-libs=@FileArg(" +
-            "$_rebased_build_config:native:secondary_abi_libraries)",
+        "--secondary-native-libs",
+        "@FileArg($_rebased_secondary_abi_native_libraries_config" +
+            ":${invoker.module_name})",
         "--secondary-android-abi=$android_app_secondary_abi",
       ]
     }
-    if (defined(invoker.native_lib_placeholders) &&
-        invoker.native_lib_placeholders != []) {
-      args += [ "--native-lib-placeholders=${invoker.native_lib_placeholders}" ]
+    if (defined(invoker.is_multi_abi) && invoker.is_multi_abi) {
+      args += [ "--is-multi-abi" ]
     }
-    if (defined(invoker.secondary_native_lib_placeholders) &&
-        invoker.secondary_native_lib_placeholders != []) {
-      args += [ "--secondary-native-lib-placeholders=${invoker.secondary_native_lib_placeholders}" ]
+
+    # Use either provided dex path or build config path based on type of module.
+    if (defined(invoker.dex_path)) {
+      inputs += [ invoker.dex_path ]
+      _rebased_dex_path = rebase_path(invoker.dex_path, root_build_dir)
+      args += [ "--dex-file=$_rebased_dex_path" ]
+    } else {
+      args += [ "--dex-file=@FileArg($_rebased_build_config:final_dex:path)" ]
     }
   }
 }
@@ -3706,13 +3703,14 @@ template("create_android_app_bundle_module") {
 #   input_dex_zip: Path to zipped dex files to split.
 #   all_modules: Path to list of all modules. Each Module must have
 #     build_config, name, and build_config_target properties.
+#   feature_jars_args: Optional list of args to be passed to dexsplitter.py.
+#     If used should include the jars owned by each feature (in the same order
+#     as all_modules). Allows invoker to pull the list of jars from a different
+#     .build_config than the module's .build_config.
 template("dexsplitter") {
   action_with_pydeps(target_name) {
     forward_variables_from(invoker, [ "deps" ])
     script = "//build/android/gyp/dexsplitter.py"
-    inputs = [
-      invoker.input_dex_zip,
-    ]
     _stamp = "${target_gen_dir}/${target_name}.stamp"
     outputs = [
       _stamp,
@@ -3738,10 +3736,66 @@ template("dexsplitter") {
       args += [
         "--feature-name",
         _feature_module.name,
-        "--feature-jars=@FileArg($_rebased_module_build_config:deps_info:java_runtime_classpath)",
         "--dex-dest=@FileArg($_rebased_module_build_config:final_dex:path)",
       ]
+      if (!defined(invoker.feature_jars_args)) {
+        args += [ "--feature-jars=@FileArg($_rebased_module_build_config:deps_info:java_runtime_classpath)" ]
+      }
       deps += [ _feature_module.build_config_target ]
+    }
+    if (defined(invoker.feature_jars_args)) {
+      args += invoker.feature_jars_args
+    }
+  }
+}
+
+# Allots native libraries depended on by feature modules to the module the
+# libraries should be packaged into. The packaging module may be different from
+# the dependee module in case a library is depended on by multiple modules. In
+# that case the library will be allotted to the closest ancestor given a module
+# dependency tree (see |parent| below).
+#
+# Variables:
+#   modules: List of scopes with the following format:
+#     name: The module's name.
+#     parent: The module's parent's name.
+#     build_config: Path to the module's build config.
+#     build_config_target: Target creating |build_config|.
+#   native_libraries_filearg_keys: Keys to be used in
+#     @FileArg(|build_config|:<keys>) expressions pointing to a list of native
+#     libraries to consider in |build_config|.
+#   output: Path to native libraries config.
+template("allot_native_libraries") {
+  action_with_pydeps(target_name) {
+    script = "//build/android/gyp/allot_native_libraries.py"
+    args = [
+      "--output",
+      rebase_path(invoker.output, root_build_dir),
+    ]
+    outputs = [
+      invoker.output,
+    ]
+    deps = []
+    if (defined(invoker.deps)) {
+      deps += invoker.deps
+    }
+    inputs = []
+    foreach(_module, invoker.modules) {
+      deps += [ _module.build_config_target ]
+      inputs += [ _module.build_config ]
+      _rebased_build_config = rebase_path(_module.build_config, root_out_dir)
+      foreach(_key, invoker.native_libraries_filearg_keys) {
+        args += [
+          "--libraries",
+          "${_module.name},@FileArg($_rebased_build_config:$_key)",
+        ]
+      }
+      if (defined(_module.parent)) {
+        args += [
+          "--dep",
+          "${_module.parent}:${_module.name}",
+        ]
+      }
     }
   }
 }

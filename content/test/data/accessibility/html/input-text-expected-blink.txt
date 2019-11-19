@@ -1,4 +1,6 @@
 rootWebArea
 ++genericContainer
-++++textField name='Name' textSelStart=0 textSelEnd=0
+++++textField inputType='text' name='Name' textSelStart=0 textSelEnd=0
+++++++staticText name='Name'
+++++++++inlineTextBox name='Name'
 ++++++genericContainer

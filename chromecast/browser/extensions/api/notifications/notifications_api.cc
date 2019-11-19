@@ -10,10 +10,6 @@ namespace extensions {
 namespace cast {
 namespace api {
 
-void NotificationsApiFunction::Destruct() const {
-  delete this;
-}
-
 ExtensionFunction::ResponseAction NotificationsCreateFunction::Run() {
   return RespondNow(Error("Not implemented"));
 }

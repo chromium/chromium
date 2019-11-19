@@ -10,16 +10,14 @@
 test(function() {
     var divElement = document.querySelector("div");
 
-    var rect = divElement.getBoundingClientRect();
     // Test that elementFromPoint hits div element.
-    assert_equals(document.elementFromPoint(100.25, 12), divElement);
+    assert_equals(document.elementFromPoint(100.249, 12), divElement);
 
-    // Page zoom factor of 3.0 should still hit div element.
+    // Page zoom factor should not affect result.
     eventSender.setPageZoomFactor(3.0);
-    assert_equals(document.elementFromPoint(100.25, 12), divElement);
+    assert_equals(document.elementFromPoint(100.249, 12), divElement);
 
-    // Page zoom factor of 4.0 should hit body element as the fraction will not be snapped.
     eventSender.setPageZoomFactor(4.0);
-    assert_equals(document.elementFromPoint(100.25, 12), document.body);
+    assert_equals(document.elementFromPoint(100.249, 12), divElement);
 });
 </script>

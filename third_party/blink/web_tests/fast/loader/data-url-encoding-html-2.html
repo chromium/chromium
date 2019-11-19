@@ -2,21 +2,21 @@
 <meta charset="koi8-r">
 <script src="../../resources/testharness.js"></script>
 <script src="../../resources/testharnessreport.js"></script>
-<body onload="doTest()">
-<iframe src="data:text/html,<meta charset='utf-8'><body>ðÒÏ×ÅÒËÁ</body>"></iframe>
-<iframe src="data:text/html,<meta charset='utf-8'><body foo='#'>ðÒÏ×ÅÒËÁ</body>"></iframe>
-<iframe src="data:text/html,<meta charset='utf-8'><body>%D0%9F%D1%80%D0%BE%D0%B2%D0%B5%D1%80%D0%BA%D0%B0</body>"></iframe>
+<body>
 <script>
-function doTest() {
-  test(() => {
-    assert_equals(window.frames[0].document.body.innerHTML, "ðÒÏ×ÅÒËÁ");
-  }, "Test that data: URLs without charset are handled correctly in the first frame.");
-  test(() => {
-    assert_equals(window.frames[1].document.body.innerHTML, "ðÒÏ×ÅÒËÁ");
-  }, "Test that data: URLs without charset are handled correctly in the second frame.");
-  test(() => {
-    assert_equals(window.frames[2].document.body.innerHTML, "ðÒÏ×ÅÒËÁ");
-  }, "Test that data: URLs without charset are handled correctly in the third frame.");
-}
+async_test(t => {
+  var count = 0;
+    window.addEventListener('message', t.step_func(e => {
+      assert_equals(e.data.value, "ðÒÏ×ÅÒËÁ");
+      count++;
+      if (count == 3) {
+        t.done();
+      }
+    }));
+});
 </script>
+<iframe src="data:text/html,<meta charset='utf-8'><body><div>ðÒÏ×ÅÒËÁ</div><script>window.parent.postMessage({frame: 1, value: document.body.firstChild.innerHTML}, '*');</script></body>"></iframe>
+<iframe src="data:text/html,<meta charset='utf-8'><body foo='%23'><div>ðÒÏ×ÅÒËÁ</div><script>window.parent.postMessage({frame: 2, value: document.body.firstChild.innerHTML}, '*');</script></body>"></iframe>
+<iframe src="data:text/html,<meta charset='utf-8'><body><div>%D1%86%E2%95%9F%D1%86%E2%96%93%D1%86%E2%96%90%D1%86%E2%89%88%D1%86%E2%94%98%D1%86%E2%96%93%D1%86%E2%96%80%D1%86%E2%94%82</div><script>window.parent.postMessage({frame: 3, value: document.body.firstChild.innerHTML}, '*');</script></body>"></iframe>
+
 </body>

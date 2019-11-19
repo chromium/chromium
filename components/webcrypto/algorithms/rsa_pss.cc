@@ -4,7 +4,8 @@
 
 #include <stdint.h>
 
-#include "base/memory/ptr_util.h"
+#include <memory>
+
 #include "components/webcrypto/algorithms/rsa.h"
 #include "components/webcrypto/algorithms/rsa_sign.h"
 #include "components/webcrypto/status.h"
@@ -57,7 +58,7 @@ class RsaPssImplementation : public RsaHashedAlgorithm {
 }  // namespace
 
 std::unique_ptr<AlgorithmImplementation> CreateRsaPssImplementation() {
-  return base::WrapUnique(new RsaPssImplementation);
+  return std::make_unique<RsaPssImplementation>();
 }
 
 }  // namespace webcrypto

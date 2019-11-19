@@ -57,14 +57,17 @@ OfflineItem OfflineItemConversions::CreateOfflineItem(
   item.file_path = page.file_path;
   item.mime_type = GetMimeType();
   item.page_url = page.url;
-  item.original_url = page.original_url;
+  item.original_url = page.original_url_if_different;
   item.progress.value = 100;
   item.progress.max = 100;
   item.progress.unit = OfflineItemProgressUnit::PERCENTAGE;
   item.is_suggested = is_suggested;
   item.is_openable = true;
   item.externally_removed = page.file_missing_time != base::Time();
+  item.description = page.snippet;
+  item.attribution = page.attribution;
 
+  // TODO(carlosk): Set item.ignore_visuals here to the right thing.
   return item;
 }
 

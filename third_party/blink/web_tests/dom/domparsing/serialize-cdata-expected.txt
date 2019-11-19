@@ -1,5 +1,0 @@
-Test for bug 11772: XMLSerializer.serializeToString incorrect value for CDATA nodes.
-
-Should say PASS below.
-
-PASS

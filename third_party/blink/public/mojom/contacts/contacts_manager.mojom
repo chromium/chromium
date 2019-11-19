@@ -4,11 +4,21 @@
 
 module blink.mojom;
 
-// As per https://github.com/beverloo/contact-api.
+import "components/payments/mojom/payment_request_data.mojom";
+
+// Simple representation of an icon.
+struct ContactIconBlob {
+  string mime_type;
+  array<uint8> data;
+};
+
+// As per https://wicg.github.io/contact-api/spec/.
 struct ContactInfo {
   array<string>? name;
   array<string>? email;
   array<string>? tel;
+  array<payments.mojom.PaymentAddress>? address;
+  array<ContactIconBlob>? icon;
 };
 
 // The Contacts Manager lives in the browser process and can be initiated by the
@@ -18,6 +28,7 @@ interface ContactsManager {
   // website. The array of contacts returned can be null, in case of an error,
   // for example if the dialog cannot be shown. The array is empty if the user
   // does not select any contacts (e.g. cancels selection).
-  Select(bool multiple, bool include_names, bool include_emails, bool include_tel)
+  Select(bool multiple, bool include_names, bool include_emails,
+         bool include_tel, bool include_addresses, bool include_icons)
       => (array<ContactInfo>? contacts);
 };

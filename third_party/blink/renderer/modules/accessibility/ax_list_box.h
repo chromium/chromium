@@ -38,8 +38,6 @@ class AXObjectCacheImpl;
 
 class AXListBox final : public AXLayoutObject {
  public:
-  static AXListBox* Create(LayoutObject*, AXObjectCacheImpl&);
-
   AXListBox(LayoutObject*, AXObjectCacheImpl&);
   ~AXListBox() override;
 

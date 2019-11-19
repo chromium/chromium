@@ -11,19 +11,11 @@ import subprocess
 import sys
 
 
-# Its existence signifies an Android checkout.
-ANDROID_ONLY_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                                os.pardir, os.pardir,
-                                'third_party', 'android_tools')
-
-
 def main():
-  # Some Windows bots inadvertently have third_party/android_tools installed,
+  # Some Windows bots inadvertently have third_party/android_sdk installed,
   # but are unable to run download_from_google_storage because depot_tools
   # is not in their path, so avoid failure and bail.
   if sys.platform == 'win32':
-    return 0
-  if not os.path.exists(ANDROID_ONLY_DIR):
     return 0
   subprocess.check_call([
       'download_from_google_storage',

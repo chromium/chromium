@@ -8,10 +8,10 @@
 
 #include "base/bind.h"
 #include "base/memory/ref_counted.h"
-#include "base/message_loop/message_loop.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/mock_callback.h"
+#include "base/test/task_environment.h"
 #include "remoting/signaling/mock_signal_strategy.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -96,7 +96,7 @@ class IqSenderTest : public testing::Test {
     return result;
   }
 
-  base::MessageLoop message_loop_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
   MockSignalStrategy signal_strategy_;
   std::unique_ptr<IqSender> sender_;
   base::MockCallback<IqSender::ReplyCallback> callback_;

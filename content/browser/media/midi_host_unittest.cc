@@ -11,12 +11,15 @@
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
+#include "content/public/test/browser_task_environment.h"
 #include "content/public/test/mock_render_process_host.h"
 #include "content/public/test/test_browser_context.h"
-#include "content/public/test/test_browser_thread_bundle.h"
 #include "media/midi/midi_manager.h"
 #include "media/midi/midi_service.h"
-#include "mojo/public/cpp/bindings/strong_binding.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace content {
@@ -48,8 +51,7 @@ struct MidiEvent {
 
 class FakeMidiManager : public midi::MidiManager {
  public:
-  explicit FakeMidiManager(midi::MidiService* service)
-      : MidiManager(service), weak_factory_(this) {}
+  explicit FakeMidiManager(midi::MidiService* service) : MidiManager(service) {}
   ~FakeMidiManager() override = default;
 
   base::WeakPtr<FakeMidiManager> GetWeakPtr() {
@@ -65,14 +67,14 @@ class FakeMidiManager : public midi::MidiManager {
   }
   std::vector<MidiEvent> events_;
 
-  base::WeakPtrFactory<FakeMidiManager> weak_factory_;
+  base::WeakPtrFactory<FakeMidiManager> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(FakeMidiManager);
 };
 
 class FakeMidiManagerFactory : public midi::MidiService::ManagerFactory {
  public:
-  FakeMidiManagerFactory() : weak_factory_(this) {}
+  FakeMidiManagerFactory() {}
   ~FakeMidiManagerFactory() override = default;
   std::unique_ptr<midi::MidiManager> Create(
       midi::MidiService* service) override {
@@ -91,7 +93,7 @@ class FakeMidiManagerFactory : public midi::MidiService::ManagerFactory {
  private:
   base::WeakPtr<FakeMidiManager> manager_;
 
-  base::WeakPtrFactory<FakeMidiManagerFactory> weak_factory_;
+  base::WeakPtrFactory<FakeMidiManagerFactory> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(FakeMidiManagerFactory);
 };
@@ -132,13 +134,11 @@ class MidiHostTest : public testing::Test {
     factory_ = factory->GetWeakPtr();
     service_ = std::make_unique<midi::MidiService>(std::move(factory));
     host_ = std::make_unique<MidiHostForTesting>(rph_->GetID(), service_.get());
-    midi::mojom::MidiSessionClientPtr ptr;
-    midi::mojom::MidiSessionClientRequest request = mojo::MakeRequest(&ptr);
-    mojo::MakeStrongBinding(std::make_unique<MidiSessionClientForTesting>(),
-                            std::move(request));
-    midi::mojom::MidiSessionRequest session_request =
-        mojo::MakeRequest(&session_);
-    host_->StartSession(std::move(session_request), std::move(ptr));
+    mojo::PendingRemote<midi::mojom::MidiSessionClient> client_remote;
+    mojo::MakeSelfOwnedReceiver(std::make_unique<MidiSessionClientForTesting>(),
+                                client_remote.InitWithNewPipeAndPassReceiver());
+    host_->StartSession(session_.BindNewPipeAndPassReceiver(),
+                        std::move(client_remote));
   }
   ~MidiHostTest() override {
     session_.reset();
@@ -185,7 +185,7 @@ class MidiHostTest : public testing::Test {
   int GetNumberOfBadMessages() { return rph_->bad_msg_count(); }
 
  private:
-  TestBrowserThreadBundle thread_bundle_;
+  BrowserTaskEnvironment task_environment_;
   std::unique_ptr<BrowserContext> browser_context_;
   std::unique_ptr<MockRenderProcessHost> rph_;
 
@@ -194,7 +194,7 @@ class MidiHostTest : public testing::Test {
   base::WeakPtr<FakeMidiManagerFactory> factory_;
   std::unique_ptr<midi::MidiService> service_;
   std::unique_ptr<MidiHostForTesting> host_;
-  midi::mojom::MidiSessionPtr session_;
+  mojo::Remote<midi::mojom::MidiSession> session_;
 
   DISALLOW_COPY_AND_ASSIGN(MidiHostTest);
 };

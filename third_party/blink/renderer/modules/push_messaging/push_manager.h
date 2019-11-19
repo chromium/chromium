@@ -32,7 +32,7 @@ class MODULES_EXPORT PushManager final : public ScriptWrappable {
 
   // Web-exposed methods:
   ScriptPromise subscribe(ScriptState* script_state,
-                          const PushSubscriptionOptionsInit* options,
+                          const PushSubscriptionOptionsInit* options_init,
                           ExceptionState& exception_state);
   ScriptPromise getSubscription(ScriptState* script_state);
   ScriptPromise permissionState(ScriptState* script_state,

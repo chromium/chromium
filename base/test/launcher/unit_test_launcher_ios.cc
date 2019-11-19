@@ -16,7 +16,8 @@ namespace base {
 
 int LaunchUnitTests(int argc,
                     char** argv,
-                    RunTestSuiteCallback run_test_suite) {
+                    RunTestSuiteCallback run_test_suite,
+                    size_t retry_limit) {
   return LaunchUnitTestsSerially(argc, argv, std::move(run_test_suite));
 }
 

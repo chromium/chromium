@@ -3,7 +3,7 @@
      Use of this source code is governed by a BSD-style license that can be
      found in the LICENSE file. -->
 
-<org.chromium.chrome.browser.widget.emptybackground.EmptyBackgroundViewTablet
+<org.chromium.chrome.browser.ui.tablet.emptybackground.EmptyBackgroundViewTablet
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/empty_container"
@@ -31,7 +31,7 @@
             android:layout_weight="1.0"
             android:layout_height="wrap_content"
             android:layout_width="0dp" />
-        <org.chromium.chrome.browser.widget.incognitotoggle.IncognitoToggleButtonTablet
+        <org.chromium.chrome.browser.ui.tablet.emptybackground.incognitotoggle.IncognitoToggleButtonTablet
             android:id="@+id/empty_incognito_toggle_button"
             android:layout_width="48dp"
             android:layout_height="@dimen/toolbar_height_no_shadow"
@@ -45,11 +45,11 @@
             style="@style/ToolbarButton"
             android:layout_width="48dp"
             android:layout_height="@dimen/toolbar_height_no_shadow"
-            android:src="@drawable/ic_more_vert_black_24dp"
+            android:src="@drawable/ic_more_vert_24dp"
             android:scaleType="center"
             android:contentDescription="@string/accessibility_toolbar_btn_menu"
             android:paddingStart="2dp"
             app:tint="@color/tint_on_dark_bg"
             />
     </LinearLayout>
-</org.chromium.chrome.browser.widget.emptybackground.EmptyBackgroundViewTablet>
+</org.chromium.chrome.browser.ui.tablet.emptybackground.EmptyBackgroundViewTablet>

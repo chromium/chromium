@@ -27,6 +27,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.FileUtils;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.CallbackHelper;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.webapk.shell_apk.test.dex_optimizer.IDexOptimizerService;
@@ -129,7 +130,7 @@ public class DexLoaderTest {
     }
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
         mContext.unbindService(mServiceConnection);
     }
 
@@ -176,6 +177,7 @@ public class DexLoaderTest {
      */
     @Test
     @MediumTest
+    @DisableIf.Build(sdk_is_greater_than = 25, message = "crbug.com/999363")
     public void testLoadFromLocalDataDir() {
         ClassLoader loader = mDexLoader.load(
                 mRemoteContext, DEX_ASSET_NAME, CANARY_CLASS_NAME, null, mLocalDexDir);

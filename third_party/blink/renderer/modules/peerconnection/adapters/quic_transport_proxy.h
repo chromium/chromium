@@ -5,16 +5,16 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_PEERCONNECTION_ADAPTERS_QUIC_TRANSPORT_PROXY_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_PEERCONNECTION_ADAPTERS_QUIC_TRANSPORT_PROXY_H_
 
-#include <unordered_map>
-#include <vector>
-
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/single_thread_task_runner.h"
 #include "base/threading/thread_checker.h"
+#include "third_party/blink/renderer/modules/peerconnection/adapters/p2p_quic_transport.h"
 #include "third_party/blink/renderer/modules/peerconnection/adapters/p2p_quic_transport_factory.h"
 #include "third_party/blink/renderer/modules/peerconnection/adapters/p2p_quic_transport_stats.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/hash_map.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "third_party/webrtc/api/scoped_refptr.h"
 
 namespace blink {
@@ -43,7 +43,7 @@ class QuicTransportProxy final {
 
     // Called when the QUIC handshake finishes and fingerprints have been
     // verified.
-    virtual void OnConnected() {}
+    virtual void OnConnected(P2PQuicNegotiatedParams negotiated_params) {}
     // Called when the remote side has indicated it is closed.
     virtual void OnRemoteStopped() {}
     // Called when the connection is closed due to a QUIC error. This can happen
@@ -57,6 +57,11 @@ class QuicTransportProxy final {
     // |request_id| maps to |request_id| used in GetStats().
     virtual void OnStats(uint32_t request_id,
                          const P2PQuicTransportStats& stats) {}
+    // Called when the datagram (sent with SendDatagram) has been
+    // consumed by the QUIC library and sent on the network.
+    virtual void OnDatagramSent() {}
+    // Called when we receive a datagram from the remote side.
+    virtual void OnDatagramReceived(Vector<uint8_t> datagram) {}
   };
 
   // Construct a Proxy with the underlying QUIC implementation running on the
@@ -81,6 +86,8 @@ class QuicTransportProxy final {
 
   QuicStreamProxy* CreateStream();
 
+  void SendDatagram(Vector<uint8_t> datagram);
+
   // Gathers stats on the host thread, then returns them asynchronously with
   // Delegate::OnStats. The |request_id| is used to map the GetStats call to the
   // returned stats.
@@ -92,24 +99,25 @@ class QuicTransportProxy final {
  private:
   // Callbacks from QuicTransportHost.
   friend class QuicTransportHost;
-  void OnConnected();
+  void OnConnected(P2PQuicNegotiatedParams negotiated_params);
   void OnRemoteStopped();
   void OnConnectionFailed(const std::string& error_details, bool from_remote);
   void OnStream(std::unique_ptr<QuicStreamProxy> stream_proxy);
   void OnStats(uint32_t request_id, const P2PQuicTransportStats& stats);
+  void OnDatagramSent();
+  void OnDatagramReceived(Vector<uint8_t> datagram);
 
   // Since the Host is deleted on the host thread (Via OnTaskRunnerDeleter), as
   // long as this is alive it is safe to post tasks to it (using unretained).
   std::unique_ptr<QuicTransportHost, base::OnTaskRunnerDeleter> host_;
   Delegate* const delegate_;
   IceTransportProxy* ice_transport_proxy_;
-  std::unordered_map<QuicStreamProxy*, std::unique_ptr<QuicStreamProxy>>
-      stream_proxies_;
+  HashMap<QuicStreamProxy*, std::unique_ptr<QuicStreamProxy>> stream_proxies_;
 
   THREAD_CHECKER(thread_checker_);
 
   // Must be the last member.
-  base::WeakPtrFactory<QuicTransportProxy> weak_ptr_factory_;
+  base::WeakPtrFactory<QuicTransportProxy> weak_ptr_factory_{this};
 };
 
 }  // namespace blink

@@ -43,7 +43,7 @@ class INVALIDATION_EXPORT PushClientChannel
   // If not connected, connects with the given credentials.  If
   // already connected, the next connection attempt will use the given
   // credentials.
-  void UpdateCredentials(const std::string& email,
+  void UpdateCredentials(const CoreAccountId& account_id,
                          const std::string& token) override;
   int GetInvalidationClientType() override;
 

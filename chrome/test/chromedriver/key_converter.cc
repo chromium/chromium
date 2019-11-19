@@ -35,7 +35,7 @@ const ModifierMaskAndKeyCode kModifiers[] = {
 // points defined by the Unicode standard.
 const ui::KeyboardCode kSpecialWebDriverKeys[] = {
     ui::VKEY_UNKNOWN,   // \uE000
-    ui::VKEY_UNKNOWN,
+    ui::VKEY_CANCEL,  // \uE001
     ui::VKEY_HELP,
     ui::VKEY_BACK,
     ui::VKEY_TAB,
@@ -617,7 +617,7 @@ Status ConvertKeysToKeyEvents(const base::string16& client_keys,
 Status ConvertKeyActionToKeyEvent(const base::DictionaryValue* action_object,
                                   base::DictionaryValue* input_state,
                                   bool is_key_down,
-                                  std::vector<KeyEvent>* key_events) {
+                                  std::list<KeyEvent>* key_events) {
   std::string raw_key;
   if (!action_object->GetString("value", &raw_key))
     return Status(kUnknownError, "missing 'value'");

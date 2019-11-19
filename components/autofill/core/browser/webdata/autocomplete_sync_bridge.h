@@ -12,7 +12,9 @@
 #include "base/optional.h"
 #include "base/scoped_observer.h"
 #include "base/supports_user_data.h"
+#include "base/threading/thread_checker.h"
 #include "components/autofill/core/browser/webdata/autofill_change.h"
+#include "components/autofill/core/browser/webdata/autofill_webdata_backend.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service_observer.h"
 #include "components/sync/model/metadata_change_list.h"
 #include "components/sync/model/model_error.h"
@@ -22,7 +24,6 @@
 namespace autofill {
 
 class AutofillTable;
-class AutofillWebDataBackend;
 class AutofillWebDataService;
 
 class AutocompleteSyncBridge
@@ -78,8 +79,9 @@ class AutocompleteSyncBridge
   // SupportsUserData, so it's guaranteed to outlive |this|.
   AutofillWebDataBackend* const web_data_backend_;
 
-  ScopedObserver<AutofillWebDataBackend, AutocompleteSyncBridge>
-      scoped_observer_;
+  ScopedObserver<AutofillWebDataBackend,
+                 AutofillWebDataServiceObserverOnDBSequence>
+      scoped_observer_{this};
 
   DISALLOW_COPY_AND_ASSIGN(AutocompleteSyncBridge);
 };

@@ -1,0 +1,42 @@
+{
+  "layers": [
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF"
+    },
+    {
+      "name": "LayoutBlockFlow DIV class='accelerated-stacking-context'",
+      "bounds": [784, 90],
+      "contentsOpaque": true,
+      "backgroundColor": "#0000FF",
+      "transform": 1
+    },
+    {
+      "name": "LayoutBlockFlow DIV id='intermediary' class='accelerated-no-stacking-context'",
+      "bounds": [784, 90],
+      "contentsOpaque": true,
+      "backfaceVisibility": "hidden",
+      "backgroundColor": "#008000",
+      "transform": 1
+    },
+    {
+      "name": "ContentsLayer for LayoutImage IMG class='accelerated blended'",
+      "bounds": [160, 90],
+      "transform": 1
+    }
+  ],
+  "transforms": [
+    {
+      "id": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [8, 8, 0, 1]
+      ]
+    }
+  ]
+}
+

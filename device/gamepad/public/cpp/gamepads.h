@@ -5,6 +5,8 @@
 #ifndef DEVICE_GAMEPAD_PUBLIC_CPP_GAMEPADS_H_
 #define DEVICE_GAMEPAD_PUBLIC_CPP_GAMEPADS_H_
 
+#include "base/component_export.h"
+
 #include "device/gamepad/public/cpp/gamepad.h"
 
 namespace device {
@@ -14,7 +16,7 @@ namespace device {
 // This structure is intentionally POD and fixed size so that it can be stored
 // in shared memory between hardware polling threads and the rest of the
 // browser.
-class Gamepads {
+class COMPONENT_EXPORT(GAMEPAD_PUBLIC) Gamepads {
  public:
   static constexpr size_t kItemsLengthCap = 4;
 

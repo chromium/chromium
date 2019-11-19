@@ -88,6 +88,7 @@ export class Node {
     cloneNode._renderer = this._renderer;
 
     cloneNode._dirtyTRS = this._dirtyTRS;
+    cloneNode._dirtyWorldMatrix = this._dirtyWorldMatrix;
 
     if (this._translation) {
       cloneNode._translation = vec3.create();
@@ -104,14 +105,12 @@ export class Node {
       vec3.copy(cloneNode._scale, this._scale);
     }
 
-    // Only copy the matrices if they're not already dirty.
-    if (!cloneNode._dirtyTRS && this._matrix) {
+    if (this._matrix) {
       cloneNode._matrix = mat4.create();
       mat4.copy(cloneNode._matrix, this._matrix);
     }
 
-    cloneNode._dirtyWorldMatrix = this._dirtyWorldMatrix;
-    if (!cloneNode._dirtyWorldMatrix && this._worldMatrix) {
+    if (this._worldMatrix) {
       cloneNode._worldMatrix = mat4.create();
       mat4.copy(cloneNode._worldMatrix, this._worldMatrix);
     }
@@ -126,6 +125,7 @@ export class Node {
       for (let child of this.children) {
         cloneNode.addNode(child.clone());
       }
+      cloneNode.setMatrixDirty();
     });
 
     return cloneNode;
@@ -228,8 +228,8 @@ export class Node {
 
   get worldMatrix() {
     if (!this._worldMatrix) {
-      this._dirtyWorldMatrix = true;
       this._worldMatrix = mat4.create();
+      this.setMatrixDirty();
     }
 
     if (this._dirtyWorldMatrix || this._dirtyTRS) {
@@ -329,9 +329,9 @@ export class Node {
       return;
     }
 
-    let index = this._renderPrimitives._instances.indexOf(primitive);
+    let index = this._renderPrimitives.indexOf(primitive);
     if (index > -1) {
-      this._renderPrimitives._instances.splice(index, 1);
+      this._renderPrimitives.splice(index, 1);
 
       index = primitive._instances.indexOf(this);
       if (index > -1) {

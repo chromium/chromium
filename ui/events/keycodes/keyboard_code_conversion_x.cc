@@ -581,7 +581,8 @@ KeyboardCode KeyboardCodeFromXKeyEvent(const XEvent* xev) {
   // 8. If not found, fallback to find with the hardware code in US layout.
 
   KeySym keysym = NoSymbol;
-  XEvent xkeyevent = {0};
+  XEvent xkeyevent;
+  xkeyevent.xkey = {};
   if (xev->type == GenericEvent) {
     // Convert the XI2 key event into a core key event so that we can
     // continue to use XLookupString() until crbug.com/367732 is complete.
@@ -962,7 +963,8 @@ DomCode CodeFromXEvent(const XEvent* xev) {
 }
 
 uint16_t GetCharacterFromXEvent(const XEvent* xev) {
-  XEvent xkeyevent = {0};
+  XEvent xkeyevent;
+  xkeyevent.xkey = {};
   const XKeyEvent* xkey = NULL;
   if (xev->type == GenericEvent) {
     // Convert the XI2 key event into a core key event so that we can
@@ -978,7 +980,8 @@ uint16_t GetCharacterFromXEvent(const XEvent* xev) {
 }
 
 DomKey GetDomKeyFromXEvent(const XEvent* xev) {
-  XEvent xkeyevent = {0};
+  XEvent xkeyevent;
+  xkeyevent.xkey = {};
   XKeyEvent xkey;
   if (xev->type == GenericEvent) {
     // Convert the XI2 key event into a core key event so that we can

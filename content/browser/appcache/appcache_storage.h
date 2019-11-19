@@ -44,40 +44,43 @@ struct HttpResponseInfoIOBuffer;
 
 class CONTENT_EXPORT AppCacheStorage {
  public:
-  using UsageMap = std::map<url::Origin, int64_t>;
-
   class CONTENT_EXPORT Delegate {
    public:
-    // If retrieval fails, 'collection' will be NULL.
+    Delegate(const Delegate&) = delete;
+    Delegate& operator=(const Delegate&) = delete;
+
+    // If retrieval fails, |collection| will be null.
     virtual void OnAllInfo(AppCacheInfoCollection* collection) {}
 
-    // If a load fails the 'cache' will be NULL.
+    // If the load fails, |cache| will be null.
     virtual void OnCacheLoaded(AppCache* cache, int64_t cache_id) {}
 
-    // If a load fails the 'group' will be NULL.
+    // If the load fails, |group| will be null.
     virtual void OnGroupLoaded(
         AppCacheGroup* group, const GURL& manifest_url) {}
 
-    // If successfully stored 'success' will be true.
+    // If successfully stored, |success| will be true.
     virtual void OnGroupAndNewestCacheStored(
         AppCacheGroup* group, AppCache* newest_cache, bool success,
         bool would_exceed_quota) {}
 
-    // If the operation fails, success will be false.
+    // If the operation fails, |success| will be false.
     virtual void OnGroupMadeObsolete(AppCacheGroup* group,
                                      bool success,
                                      int response_code) {}
 
-    // If a load fails the 'response_info' will be NULL.
+    // If a load fails, |response_info| will be null.
     virtual void OnResponseInfoLoaded(AppCacheResponseInfo* response_info,
                                       int64_t response_id) {}
 
-    // If no response is found, entry.response_id() and
-    // fallback_entry.response_id() will be kAppCacheNoResponseId.
-    // If the response is the entry for an intercept or fallback
-    // namespace, the url of the namespece entry is returned.
-    // If a response is found, the cache id and manifest url of the
-    // containing cache and group are also returned.
+    // If no response is found, |entry|'s response_id() and |fallback_entry|'s
+    // response_id() will be kAppCacheNoResponseId.
+    //
+    // If the response is the entry for an intercept or fallback namespace,
+    // |namespace_entry_url| refers to the entry. Otherwise, it is empty.
+    //
+    // If a response is found, |cache_id|, |group_id|, and |manifest_url|
+    // identify the cache containing the response.
     virtual void OnMainResponseFound(const GURL& url,
                                      const AppCacheEntry& entry,
                                      const GURL& namespace_entry_url,
@@ -87,7 +90,10 @@ class CONTENT_EXPORT AppCacheStorage {
                                      const GURL& mainfest_url) {}
 
    protected:
-    virtual ~Delegate() {}
+    // The constructor and destructor exist to facilitate subclassing, and
+    // should not be called directly.
+    Delegate() noexcept = default;
+    virtual ~Delegate() = default;
   };
 
   explicit AppCacheStorage(AppCacheServiceImpl* service);
@@ -211,7 +217,7 @@ class CONTENT_EXPORT AppCacheStorage {
   AppCacheWorkingSet* working_set() { return &working_set_; }
 
   // A map of origins to usage.
-  const UsageMap* usage_map() { return &usage_map_; }
+  const std::map<url::Origin, int64_t>& usage_map() const { return usage_map_; }
 
   // Simple ptr back to the service object that owns us.
   AppCacheServiceImpl* service() { return service_; }
@@ -224,15 +230,6 @@ class CONTENT_EXPORT AppCacheStorage {
   friend class content::AppCacheResponseTest;
   friend class content::appcache_storage_unittest::AppCacheStorageTest;
 
-  // Helper to call a collection of delegates.
-#define FOR_EACH_DELEGATE(delegates, func_and_args)                 \
-  do {                                                              \
-    for (const scoped_refptr<DelegateReference>& ref : delegates) { \
-      if (ref.get()->delegate)                                      \
-        ref.get()->delegate->func_and_args;                         \
-    }                                                               \
-  } while (0)
-
   // Helper used to manage multiple references to a 'delegate' and to
   // allow all pending callbacks to that delegate to be easily cancelled.
   struct CONTENT_EXPORT DelegateReference :
@@ -244,17 +241,28 @@ class CONTENT_EXPORT AppCacheStorage {
 
     void CancelReference() {
       storage->delegate_references_.erase(delegate);
-      storage = NULL;
-      delegate = NULL;
+      storage = nullptr;
+      delegate = nullptr;
     }
 
    private:
     friend class base::RefCounted<DelegateReference>;
-
-    virtual ~DelegateReference();
+    ~DelegateReference();
   };
-  using DelegateReferenceMap = std::map<Delegate*, DelegateReference*>;
-  using DelegateReferenceVector = std::vector<scoped_refptr<DelegateReference>>;
+
+  // Helper for calling a function on a collection of delegates.
+  //
+  // ForEachCallable: (AppCacheStorage::Delegate*) -> void
+  template <typename ForEachCallable>
+  static void ForEachDelegate(
+      const std::vector<scoped_refptr<DelegateReference>>& delegates,
+      const ForEachCallable& callable) {
+    for (const scoped_refptr<DelegateReference>& delegate_ref : delegates) {
+      Delegate* delegate = delegate_ref->delegate;
+      if (delegate != nullptr)
+        callable(delegate);
+    }
+  }
 
   // Helper used to manage an async LoadResponseInfo calls on behalf of
   // multiple callers.
@@ -281,12 +289,12 @@ class CONTENT_EXPORT AppCacheStorage {
     GURL manifest_url_;
     int64_t response_id_;
     std::unique_ptr<AppCacheResponseReader> reader_;
-    DelegateReferenceVector delegates_;
+    std::vector<scoped_refptr<DelegateReference>> delegates_;
     scoped_refptr<HttpResponseInfoIOBuffer> info_buffer_;
   };
 
   DelegateReference* GetDelegateReference(Delegate* delegate) {
-    DelegateReferenceMap::iterator iter =
+    std::map<Delegate*, DelegateReference*>::iterator iter =
         delegate_references_.find(delegate);
     if (iter != delegate_references_.end())
       return iter->second;
@@ -322,10 +330,11 @@ class CONTENT_EXPORT AppCacheStorage {
   int64_t last_group_id_;
   int64_t last_response_id_;
 
-  UsageMap usage_map_;  // maps origin to usage
+  // Maps origin to padded usage.
+  std::map<url::Origin, int64_t> usage_map_;
   AppCacheWorkingSet working_set_;
   AppCacheServiceImpl* service_;
-  DelegateReferenceMap delegate_references_;
+  std::map<Delegate*, DelegateReference*> delegate_references_;
 
   // Note that the ResponseInfoLoadTask items add themselves to this map.
   std::map<int64_t, std::unique_ptr<ResponseInfoLoadTask>> pending_info_loads_;
@@ -342,7 +351,7 @@ class CONTENT_EXPORT AppCacheStorage {
 
   // The WeakPtrFactory below must occur last in the class definition so they
   // get destroyed last.
-  base::WeakPtrFactory<AppCacheStorage> weak_factory_;
+  base::WeakPtrFactory<AppCacheStorage> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(AppCacheStorage);
 };

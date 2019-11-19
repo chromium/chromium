@@ -16,6 +16,7 @@ import static android.support.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.not;
+import static org.junit.Assert.assertTrue;
 
 import static org.chromium.chrome.browser.modaldialog.ModalDialogTestUtils.checkCurrentPresenter;
 import static org.chromium.chrome.browser.modaldialog.ModalDialogTestUtils.checkDialogDismissalCause;
@@ -50,9 +51,11 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.OmniboxTestUtils;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
+import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.test.util.UiRestriction;
 
@@ -90,6 +93,7 @@ public class TabModalPresenterTest {
 
     private ChromeTabbedActivity mActivity;
     private ModalDialogManager mManager;
+    private TabModalPresenter mTabModalPresenter;
     private TestObserver mTestObserver;
     private Integer mExpectedDismissalCause;
 
@@ -103,9 +107,8 @@ public class TabModalPresenterTest {
                 .getToolbarLayoutForTesting()
                 .getLocationBar()
                 .addUrlFocusChangeListener(mTestObserver);
-        TabModalPresenter presenter =
-                (TabModalPresenter) mManager.getPresenterForTest(ModalDialogType.TAB);
-        presenter.disableAnimationForTest();
+        mTabModalPresenter = (TabModalPresenter) mManager.getPresenterForTest(ModalDialogType.TAB);
+        mTabModalPresenter.disableAnimationForTest();
     }
 
     @Test
@@ -123,7 +126,7 @@ public class TabModalPresenterTest {
         final ViewGroup containerParent = presenter.getContainerParentForTest();
 
         ThreadUtils.runOnUiThreadBlocking(() -> {
-            Assert.assertTrue(containerParent.indexOfChild(dialogContainer)
+            assertTrue(containerParent.indexOfChild(dialogContainer)
                     > containerParent.indexOfChild(controlContainer));
         });
 
@@ -133,7 +136,7 @@ public class TabModalPresenterTest {
         OmniboxTestUtils.toggleUrlBarFocus(urlBar, true);
         mTestObserver.onUrlFocusChangedCallback.waitForCallback(callCount);
         ThreadUtils.runOnUiThreadBlocking(() -> {
-            Assert.assertTrue(containerParent.indexOfChild(dialogContainer)
+            assertTrue(containerParent.indexOfChild(dialogContainer)
                     < containerParent.indexOfChild(controlContainer));
         });
 
@@ -142,7 +145,7 @@ public class TabModalPresenterTest {
         OmniboxTestUtils.toggleUrlBarFocus(urlBar, false);
         mTestObserver.onUrlFocusChangedCallback.waitForCallback(callCount);
         ThreadUtils.runOnUiThreadBlocking(() -> {
-            Assert.assertTrue(containerParent.indexOfChild(dialogContainer)
+            assertTrue(containerParent.indexOfChild(dialogContainer)
                     > containerParent.indexOfChild(controlContainer));
         });
 
@@ -397,6 +400,36 @@ public class TabModalPresenterTest {
     @Test
     @SmallTest
     @Feature({"ModalDialog"})
+    public void testDismiss_CancelOnTouchOutside() throws Exception {
+        PropertyModel dialog1 = createDialog(mActivity, "1", null);
+
+        // Show a tab modal dialog and verify it shows.
+        showDialog(mManager, dialog1, ModalDialogType.TAB);
+        onView(withId(R.id.tab_modal_dialog_container))
+                .check(matches(hasDescendant(withText("1"))));
+        checkCurrentPresenter(mManager, ModalDialogType.TAB);
+
+        // Click dialog container and verify the dialog is not dismissed.
+        final View dialogContainer = mTabModalPresenter.getDialogContainerForTest();
+        assertTrue(dialogContainer.isClickable());
+        TestThreadUtils.runOnUiThreadBlocking(dialogContainer::performClick);
+        onView(withId(R.id.tab_modal_dialog_container))
+                .check(matches(hasDescendant(withText("1"))));
+        checkCurrentPresenter(mManager, ModalDialogType.TAB);
+
+        // Enable cancel on touch outside and verify the dialog is dismissed.
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> dialog1.set(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE, true));
+        assertTrue(dialogContainer.isClickable());
+        TestThreadUtils.runOnUiThreadBlocking(dialogContainer::performClick);
+        onView(withId(R.id.tab_modal_dialog_container))
+                .check(matches(not(hasDescendant(withText("1")))));
+        checkCurrentPresenter(mManager, null);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"ModalDialog"})
     public void testDismiss_DismissalCause_BackPressed() throws Exception {
         PropertyModel dialog1 = createDialog(mActivity, "1", mTestObserver);
         mExpectedDismissalCause = DialogDismissalCause.NAVIGATE_BACK_OR_TOUCH_OUTSIDE;
@@ -449,7 +482,7 @@ public class TabModalPresenterTest {
 
     private void checkBrowserControls(boolean restricted) {
         if (restricted) {
-            Assert.assertTrue("All tabs should be obscured", mActivity.isViewObscuringAllTabs());
+            assertTrue("All tabs should be obscured", mActivity.isViewObscuringAllTabs());
             onView(allOf(isDisplayed(), withId(R.id.menu_button))).check(matches(not(isEnabled())));
         } else {
             Assert.assertFalse("Tabs shouldn't be obscured", mActivity.isViewObscuringAllTabs());

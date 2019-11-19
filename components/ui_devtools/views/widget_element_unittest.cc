@@ -29,7 +29,7 @@ class WidgetElementTest : public views::ViewsTestBase {
     views::Widget::InitParams params =
         CreateParams(views::Widget::InitParams::TYPE_WINDOW);
     params.name = kWidgetName;
-    widget_->Init(params);
+    widget_->Init(std::move(params));
 
     delegate_.reset(new testing::NiceMock<MockUIElementDelegate>);
     element_.reset(new WidgetElement(widget_, delegate_.get(), nullptr));
@@ -111,23 +111,16 @@ TEST_F(WidgetElementTest, GetVisible) {
 }
 
 TEST_F(WidgetElementTest, GetAttributes) {
-  std::unique_ptr<protocol::Array<std::string>> attrs =
-      element()->GetAttributes();
+  std::vector<std::string> attrs = element()->GetAttributes();
 
-  DCHECK_EQ(attrs->length(), 4U);
-
-  EXPECT_EQ(attrs->get(0), "name");
-  EXPECT_EQ(attrs->get(1), kWidgetName);
-
-  DCHECK(!widget()->IsActive());
-  EXPECT_EQ(attrs->get(2), "active");
-  EXPECT_EQ(attrs->get(3), "false");
+  ASSERT_FALSE(widget()->IsActive());
+  EXPECT_THAT(attrs,
+              testing::ElementsAre("name", kWidgetName, "active", "false"));
 
   widget()->Activate();
   attrs = element()->GetAttributes();
-  DCHECK_EQ(attrs->length(), 4U);
-  EXPECT_EQ(attrs->get(2), "active");
-  EXPECT_EQ(attrs->get(3), "true");
+  EXPECT_THAT(attrs,
+              testing::ElementsAre("name", kWidgetName, "active", "true"));
 }
 
 TEST_F(WidgetElementTest, GetNodeWindowAndScreenBounds) {

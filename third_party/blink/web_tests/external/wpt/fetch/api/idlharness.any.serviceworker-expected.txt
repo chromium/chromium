@@ -1,0 +1,145 @@
+This is a testharness.js-based test.
+Found 141 tests; 135 PASS, 6 FAIL, 0 TIMEOUT, 0 NOTRUN.
+PASS idl_test setup
+PASS idl_test validation
+PASS Partial interface mixin WindowOrWorkerGlobalScope: original interface mixin defined
+PASS Partial interface mixin WindowOrWorkerGlobalScope: member names are unique
+PASS Partial interface Window: member names are unique
+PASS Request includes Body: member names are unique
+PASS Response includes Body: member names are unique
+PASS Window includes GlobalEventHandlers: member names are unique
+PASS Window includes WindowEventHandlers: member names are unique
+PASS Window includes WindowOrWorkerGlobalScope: member names are unique
+PASS Window includes AnimationFrameProvider: member names are unique
+PASS Window includes WindowSessionStorage: member names are unique
+PASS Window includes WindowLocalStorage: member names are unique
+PASS WorkerGlobalScope includes WindowOrWorkerGlobalScope: member names are unique
+PASS Headers interface: existence and properties of interface object
+PASS Headers interface object length
+PASS Headers interface object name
+PASS Headers interface: existence and properties of interface prototype object
+PASS Headers interface: existence and properties of interface prototype object's "constructor" property
+PASS Headers interface: existence and properties of interface prototype object's @@unscopables property
+PASS Headers interface: operation append(ByteString, ByteString)
+PASS Headers interface: operation delete(ByteString)
+PASS Headers interface: operation get(ByteString)
+PASS Headers interface: operation has(ByteString)
+PASS Headers interface: operation set(ByteString, ByteString)
+PASS Headers interface: iterable<ByteString, ByteString>
+PASS Headers must be primary interface of new Headers()
+PASS Stringification of new Headers()
+PASS Headers interface: new Headers() must inherit property "append(ByteString, ByteString)" with the proper type
+PASS Headers interface: calling append(ByteString, ByteString) on new Headers() with too few arguments must throw TypeError
+PASS Headers interface: new Headers() must inherit property "delete(ByteString)" with the proper type
+PASS Headers interface: calling delete(ByteString) on new Headers() with too few arguments must throw TypeError
+PASS Headers interface: new Headers() must inherit property "get(ByteString)" with the proper type
+PASS Headers interface: calling get(ByteString) on new Headers() with too few arguments must throw TypeError
+PASS Headers interface: new Headers() must inherit property "has(ByteString)" with the proper type
+PASS Headers interface: calling has(ByteString) on new Headers() with too few arguments must throw TypeError
+PASS Headers interface: new Headers() must inherit property "set(ByteString, ByteString)" with the proper type
+PASS Headers interface: calling set(ByteString, ByteString) on new Headers() with too few arguments must throw TypeError
+PASS Request interface: existence and properties of interface object
+PASS Request interface object length
+PASS Request interface object name
+PASS Request interface: existence and properties of interface prototype object
+PASS Request interface: existence and properties of interface prototype object's "constructor" property
+PASS Request interface: existence and properties of interface prototype object's @@unscopables property
+PASS Request interface: attribute method
+PASS Request interface: attribute url
+PASS Request interface: attribute headers
+PASS Request interface: attribute destination
+PASS Request interface: attribute referrer
+PASS Request interface: attribute referrerPolicy
+PASS Request interface: attribute mode
+PASS Request interface: attribute credentials
+PASS Request interface: attribute cache
+PASS Request interface: attribute redirect
+PASS Request interface: attribute integrity
+PASS Request interface: attribute keepalive
+FAIL Request interface: attribute isReloadNavigation assert_true: The prototype object must have a property "isReloadNavigation" expected true got false
+PASS Request interface: attribute isHistoryNavigation
+PASS Request interface: attribute signal
+PASS Request interface: operation clone()
+FAIL Request interface: attribute body assert_true: The prototype object must have a property "body" expected true got false
+PASS Request interface: attribute bodyUsed
+PASS Request interface: operation arrayBuffer()
+PASS Request interface: operation blob()
+PASS Request interface: operation formData()
+PASS Request interface: operation json()
+PASS Request interface: operation text()
+PASS Request must be primary interface of new Request('about:blank')
+PASS Stringification of new Request('about:blank')
+PASS Request interface: new Request('about:blank') must inherit property "method" with the proper type
+PASS Request interface: new Request('about:blank') must inherit property "url" with the proper type
+PASS Request interface: new Request('about:blank') must inherit property "headers" with the proper type
+PASS Request interface: new Request('about:blank') must inherit property "destination" with the proper type
+PASS Request interface: new Request('about:blank') must inherit property "referrer" with the proper type
+PASS Request interface: new Request('about:blank') must inherit property "referrerPolicy" with the proper type
+PASS Request interface: new Request('about:blank') must inherit property "mode" with the proper type
+PASS Request interface: new Request('about:blank') must inherit property "credentials" with the proper type
+PASS Request interface: new Request('about:blank') must inherit property "cache" with the proper type
+PASS Request interface: new Request('about:blank') must inherit property "redirect" with the proper type
+PASS Request interface: new Request('about:blank') must inherit property "integrity" with the proper type
+PASS Request interface: new Request('about:blank') must inherit property "keepalive" with the proper type
+FAIL Request interface: new Request('about:blank') must inherit property "isReloadNavigation" with the proper type assert_inherits: property "isReloadNavigation" not found in prototype chain
+PASS Request interface: new Request('about:blank') must inherit property "isHistoryNavigation" with the proper type
+PASS Request interface: new Request('about:blank') must inherit property "signal" with the proper type
+PASS Request interface: new Request('about:blank') must inherit property "clone()" with the proper type
+FAIL Request interface: new Request('about:blank') must inherit property "body" with the proper type assert_inherits: property "body" not found in prototype chain
+PASS Request interface: new Request('about:blank') must inherit property "bodyUsed" with the proper type
+PASS Request interface: new Request('about:blank') must inherit property "arrayBuffer()" with the proper type
+PASS Request interface: new Request('about:blank') must inherit property "blob()" with the proper type
+PASS Request interface: new Request('about:blank') must inherit property "formData()" with the proper type
+PASS Request interface: new Request('about:blank') must inherit property "json()" with the proper type
+PASS Request interface: new Request('about:blank') must inherit property "text()" with the proper type
+PASS Response interface: existence and properties of interface object
+PASS Response interface object length
+PASS Response interface object name
+PASS Response interface: existence and properties of interface prototype object
+PASS Response interface: existence and properties of interface prototype object's "constructor" property
+PASS Response interface: existence and properties of interface prototype object's @@unscopables property
+PASS Response interface: operation error()
+PASS Response interface: operation redirect(USVString, unsigned short)
+PASS Response interface: attribute type
+PASS Response interface: attribute url
+PASS Response interface: attribute redirected
+PASS Response interface: attribute status
+PASS Response interface: attribute ok
+PASS Response interface: attribute statusText
+PASS Response interface: attribute headers
+FAIL Response interface: attribute trailer assert_true: The prototype object must have a property "trailer" expected true got false
+PASS Response interface: operation clone()
+PASS Response interface: attribute body
+PASS Response interface: attribute bodyUsed
+PASS Response interface: operation arrayBuffer()
+PASS Response interface: operation blob()
+PASS Response interface: operation formData()
+PASS Response interface: operation json()
+PASS Response interface: operation text()
+PASS Response must be primary interface of new Response()
+PASS Stringification of new Response()
+PASS Response interface: new Response() must inherit property "error()" with the proper type
+PASS Response interface: new Response() must inherit property "redirect(USVString, unsigned short)" with the proper type
+PASS Response interface: calling redirect(USVString, unsigned short) on new Response() with too few arguments must throw TypeError
+PASS Response interface: new Response() must inherit property "type" with the proper type
+PASS Response interface: new Response() must inherit property "url" with the proper type
+PASS Response interface: new Response() must inherit property "redirected" with the proper type
+PASS Response interface: new Response() must inherit property "status" with the proper type
+PASS Response interface: new Response() must inherit property "ok" with the proper type
+PASS Response interface: new Response() must inherit property "statusText" with the proper type
+PASS Response interface: new Response() must inherit property "headers" with the proper type
+FAIL Response interface: new Response() must inherit property "trailer" with the proper type assert_inherits: property "trailer" not found in prototype chain
+PASS Response interface: new Response() must inherit property "clone()" with the proper type
+PASS Response interface: new Response() must inherit property "body" with the proper type
+PASS Response interface: new Response() must inherit property "bodyUsed" with the proper type
+PASS Response interface: new Response() must inherit property "arrayBuffer()" with the proper type
+PASS Response interface: new Response() must inherit property "blob()" with the proper type
+PASS Response interface: new Response() must inherit property "formData()" with the proper type
+PASS Response interface: new Response() must inherit property "json()" with the proper type
+PASS Response interface: new Response() must inherit property "text()" with the proper type
+PASS Window interface: existence and properties of interface object
+PASS WorkerGlobalScope interface: operation fetch(RequestInfo, RequestInit)
+PASS WorkerGlobalScope interface: self must inherit property "fetch(RequestInfo, RequestInit)" with the proper type
+PASS WorkerGlobalScope interface: calling fetch(RequestInfo, RequestInit) on self with too few arguments must throw TypeError
+Harness: the test ran to completion.
+

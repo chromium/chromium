@@ -4,22 +4,22 @@
 
 mojom = "//gpu/ipc/common/gpu_info.mojom"
 public_headers = [ "//gpu/config/gpu_info.h" ]
-traits_headers = [ "//gpu/ipc/common/gpu_info_struct_traits.h" ]
+traits_headers = [ "//gpu/ipc/common/gpu_info_mojom_traits.h" ]
 sources = [
-  "//gpu/ipc/common/gpu_info_struct_traits.cc",
+  "//gpu/ipc/common/gpu_info_mojom_traits.cc",
 ]
 public_deps = [
   "//gpu/config",
-  "//ui/gfx/geometry/mojo",
+  "//ui/gfx/geometry/mojom",
 ]
 type_mappings = [
-  "gpu.mojom.CollectInfoResult=gpu::CollectInfoResult",
-  "gpu.mojom.Dx12VulkanVersionInfo=gpu::Dx12VulkanVersionInfo",
-  "gpu.mojom.GpuDevice=gpu::GPUInfo::GPUDevice",
-  "gpu.mojom.GpuInfo=gpu::GPUInfo",
-  "gpu.mojom.VideoCodecProfile=gpu::VideoCodecProfile",
-  "gpu.mojom.VideoDecodeAcceleratorSupportedProfile=gpu::VideoDecodeAcceleratorSupportedProfile",
-  "gpu.mojom.VideoDecodeAcceleratorCapabilities=gpu::VideoDecodeAcceleratorCapabilities",
-  "gpu.mojom.VideoEncodeAcceleratorSupportedProfile=gpu::VideoEncodeAcceleratorSupportedProfile",
-  "gpu.mojom.ImageDecodeAcceleratorSupportedProfile=gpu::ImageDecodeAcceleratorSupportedProfile",
+  "gpu.mojom.CollectInfoResult=::gpu::CollectInfoResult",
+  "gpu.mojom.Dx12VulkanVersionInfo=::gpu::Dx12VulkanVersionInfo",
+  "gpu.mojom.GpuDevice=::gpu::GPUInfo::GPUDevice",
+  "gpu.mojom.GpuInfo=::gpu::GPUInfo",
+  "gpu.mojom.VideoCodecProfile=::gpu::VideoCodecProfile",
+  "gpu.mojom.VideoDecodeAcceleratorSupportedProfile=::gpu::VideoDecodeAcceleratorSupportedProfile",
+  "gpu.mojom.VideoDecodeAcceleratorCapabilities=::gpu::VideoDecodeAcceleratorCapabilities",
+  "gpu.mojom.VideoEncodeAcceleratorSupportedProfile=::gpu::VideoEncodeAcceleratorSupportedProfile",
+  "gpu.mojom.ImageDecodeAcceleratorSupportedProfile=::gpu::ImageDecodeAcceleratorSupportedProfile",
 ]

@@ -26,6 +26,7 @@
 #include "build/build_config.h"
 #include "media/base/video_types.h"
 #include "media/gpu/buildflags.h"
+#include "media/gpu/chromeos/fourcc.h"
 #include "media/gpu/macros.h"
 #include "media/gpu/v4l2/generic_v4l2_device.h"
 #include "ui/gfx/native_pixmap.h"
@@ -137,7 +138,7 @@ bool GenericV4L2Device::ClearDevicePollInterrupt() {
 }
 
 bool GenericV4L2Device::Initialize() {
-  VLOGF(2);
+  DVLOGF(3);
   static bool v4l2_functions_initialized = PostSandboxInitialization();
   if (!v4l2_functions_initialized) {
     VLOGF(1) << "Failed to initialize LIBV4L2 libs";
@@ -148,7 +149,7 @@ bool GenericV4L2Device::Initialize() {
 }
 
 bool GenericV4L2Device::Open(Type type, uint32_t v4l2_pixfmt) {
-  VLOGF(2);
+  DVLOGF(3);
   std::string path = GetDevicePathFor(type, v4l2_pixfmt);
 
   if (path.empty()) {
@@ -175,7 +176,7 @@ std::vector<base::ScopedFD> GenericV4L2Device::GetDmabufsForV4L2Buffer(
     int index,
     size_t num_planes,
     enum v4l2_buf_type buf_type) {
-  VLOGF(2);
+  DVLOGF(3);
   DCHECK(V4L2_TYPE_IS_MULTIPLANAR(buf_type));
 
   std::vector<base::ScopedFD> dmabuf_fds;
@@ -200,7 +201,7 @@ std::vector<base::ScopedFD> GenericV4L2Device::GetDmabufsForV4L2Buffer(
 bool GenericV4L2Device::CanCreateEGLImageFrom(uint32_t v4l2_pixfmt) {
   static uint32_t kEGLImageDrmFmtsSupported[] = {
     DRM_FORMAT_ARGB8888,
-#if defined(ARCH_CPU_ARMEL)
+#if defined(ARCH_CPU_ARM_FAMILY)
     DRM_FORMAT_NV12,
     DRM_FORMAT_YVU420,
 #endif
@@ -227,7 +228,8 @@ EGLImageKHR GenericV4L2Device::CreateEGLImage(
     return EGL_NO_IMAGE_KHR;
   }
 
-  VideoPixelFormat vf_format = V4L2PixFmtToVideoPixelFormat(v4l2_pixfmt);
+  VideoPixelFormat vf_format =
+      Fourcc::FromV4L2PixFmt(v4l2_pixfmt).ToVideoPixelFormat();
   // Number of components, as opposed to the number of V4L2 planes, which is
   // just a buffer count.
   size_t num_planes = VideoFrame::NumPlanes(vf_format);
@@ -291,7 +293,8 @@ scoped_refptr<gl::GLImage> GenericV4L2Device::CreateGLImage(
     const std::vector<base::ScopedFD>& dmabuf_fds) {
   DVLOGF(3);
   DCHECK(CanCreateEGLImageFrom(fourcc));
-  VideoPixelFormat vf_format = V4L2PixFmtToVideoPixelFormat(fourcc);
+  VideoPixelFormat vf_format =
+      Fourcc::FromV4L2PixFmt(fourcc).ToVideoPixelFormat();
   size_t num_planes = VideoFrame::NumPlanes(vf_format);
   DCHECK_LE(num_planes, 3u);
   DCHECK_LE(dmabuf_fds.size(), num_planes);
@@ -312,9 +315,6 @@ scoped_refptr<gl::GLImage> GenericV4L2Device::CreateGLImage(
       return nullptr;
     }
   }
-  for (auto& fd : duped_fds) {
-    native_pixmap_handle.fds.emplace_back(fd.release(), true /* auto_close */);
-  }
 
   // For existing formats, if we have less buffers (V4L2 planes) than
   // components (planes), the remaining planes are stored in the last
@@ -327,7 +327,8 @@ scoped_refptr<gl::GLImage> GenericV4L2Device::CreateGLImage(
   for (size_t p = 0; p < num_planes; ++p) {
     native_pixmap_handle.planes.emplace_back(
         VideoFrame::RowBytes(p, vf_format, size.width()), plane_offset,
-        VideoFrame::PlaneSize(vf_format, p, size).GetArea());
+        VideoFrame::PlaneSize(vf_format, p, size).GetArea(),
+        std::move(duped_fds[p]));
 
     if (v4l2_plane + 1 < dmabuf_fds.size()) {
       ++v4l2_plane;
@@ -356,7 +357,7 @@ scoped_refptr<gl::GLImage> GenericV4L2Device::CreateGLImage(
       ui::OzonePlatform::GetInstance()
           ->GetSurfaceFactoryOzone()
           ->CreateNativePixmapFromHandle(0, size, buffer_format,
-                                         native_pixmap_handle);
+                                         std::move(native_pixmap_handle));
 
   DCHECK(pixmap);
 
@@ -482,7 +483,7 @@ bool GenericV4L2Device::OpenDevicePath(const std::string& path, Type type) {
   if (type == Type::kEncoder &&
       HANDLE_EINTR(v4l2_fd_open(device_fd_.get(), V4L2_DISABLE_CONVERSION)) !=
           -1) {
-    VLOGF(2) << "Using libv4l2 for " << path;
+    DVLOGF(3) << "Using libv4l2 for " << path;
     use_libv4l2_ = true;
   }
 #endif
@@ -490,7 +491,7 @@ bool GenericV4L2Device::OpenDevicePath(const std::string& path, Type type) {
 }
 
 void GenericV4L2Device::CloseDevice() {
-  VLOGF(2);
+  DVLOGF(3);
 #if BUILDFLAG(USE_LIBV4L2)
   if (use_libv4l2_ && device_fd_.is_valid())
     v4l2_close(device_fd_.release());

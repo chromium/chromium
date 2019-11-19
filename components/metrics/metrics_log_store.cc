@@ -5,7 +5,7 @@
 #include "components/metrics/metrics_log_store.h"
 
 #include "components/metrics/metrics_pref_names.h"
-#include "components/metrics/persisted_logs_metrics_impl.h"
+#include "components/metrics/unsent_log_store_metrics_impl.h"
 #include "components/prefs/pref_registry_simple.h"
 
 namespace metrics {
@@ -13,19 +13,19 @@ namespace metrics {
 namespace {
 
 // The number of "initial" logs to save, and hope to send during a future Chrome
-// session.  Initial logs contain crash stats, and are pretty small.
-const size_t kInitialLogsPersistLimit = 20;
+// session. Initial logs contain crash stats, and are pretty small.
+const size_t kInitialLogsSaveLimit = 20;
 
 // The number of ongoing logs to save persistently, and hope to
-// send during a this or future sessions.  Note that each log may be pretty
+// send during a this or future sessions. Note that each log may be pretty
 // large, as presumably the related "initial" log wasn't sent (probably nothing
-// was, as the user was probably off-line).  As a result, the log probably kept
-// accumulating while the "initial" log was stalled, and couldn't be sent.  As a
+// was, as the user was probably off-line). As a result, the log probably kept
+// accumulating while the "initial" log was stalled, and couldn't be sent. As a
 // result, we don't want to save too many of these mega-logs.
 // A "standard shutdown" will create a small log, including just the data that
 // was not yet been transmitted, and that is normal (to have exactly one
 // ongoing_log_ at startup).
-const size_t kOngoingLogsPersistLimit = 8;
+const size_t kOngoingLogsSaveLimit = 8;
 
 // The number of bytes of logs to save of each type (initial/ongoing).
 // This ensures that a reasonable amount of history will be stored even if there
@@ -44,19 +44,17 @@ MetricsLogStore::MetricsLogStore(PrefService* local_state,
                                  size_t max_ongoing_log_size,
                                  const std::string& signing_key)
     : unsent_logs_loaded_(false),
-      initial_log_queue_(std::unique_ptr<PersistedLogsMetricsImpl>(
-                             new PersistedLogsMetricsImpl()),
+      initial_log_queue_(std::make_unique<UnsentLogStoreMetricsImpl>(),
                          local_state,
                          prefs::kMetricsInitialLogs,
-                         kInitialLogsPersistLimit,
+                         kInitialLogsSaveLimit,
                          kStorageByteLimitPerLogType,
                          0,
                          signing_key),
-      ongoing_log_queue_(std::unique_ptr<PersistedLogsMetricsImpl>(
-                             new PersistedLogsMetricsImpl()),
+      ongoing_log_queue_(std::make_unique<UnsentLogStoreMetricsImpl>(),
                          local_state,
                          prefs::kMetricsOngoingLogs,
-                         kOngoingLogsPersistLimit,
+                         kOngoingLogsSaveLimit,
                          kStorageByteLimitPerLogType,
                          max_ongoing_log_size,
                          signing_key) {}

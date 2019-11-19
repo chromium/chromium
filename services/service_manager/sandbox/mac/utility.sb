@@ -15,3 +15,12 @@
 
 ; No additional resource access needed.
 
+; This is available in 10.15+, and rolled out as a Finch experiment.
+(if (param-true? filter-syscalls)
+  (when (defined? 'syscall-unix)
+    (deny syscall-unix (with send-signal SIGSYS))
+    (allow syscall-unix
+      (syscall-number SYS_psynch_cvwait)
+      (syscall-number SYS_sendto)
+      (syscall-number SYS_socketpair)
+)))

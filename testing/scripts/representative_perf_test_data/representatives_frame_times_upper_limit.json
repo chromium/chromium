@@ -1,0 +1,196 @@
+{
+  "win": {
+    "balls_css_transition_2_properties": {
+      "avg": 88.519,
+      "ci_095": 26.992
+    },
+    "many_planets_deep": {
+      "avg": 16.679,
+      "ci_095": 0.169
+    },
+    "web_animation_value_type_transform_complex": {
+      "avg": 47.464,
+      "ci_095": 1.228
+    },
+    "nvidia_vertex_buffer_object": {
+      "avg": 17.918,
+      "ci_095": 3.238
+    },
+    "runway_2019": {
+      "avg": 28.237,
+      "ci_095": 28.279
+    },
+    "css_animations_simultaneous_inline_style": {
+      "avg": 25.100,
+      "ci_095": 0.711
+    },
+    "aquarium_20k": {
+      "avg": 123.389,
+      "ci_095": 4.392
+    },
+    "canvas_to_blob": {
+      "avg": 30.395,
+      "ci_095": 12.237
+    },
+    "cc_poster_circle": {
+      "avg": 16.678,
+      "ci_095": 0.067
+    },
+    "js_poster_circle": {
+      "avg": 16.679,
+      "ci_095": 0.113
+    },
+    "web_animations_staggered_triggering_page": {
+      "avg": 16.862,
+      "ci_095": 0.245
+    },
+    "aquarium": {
+      "avg": 16.699,
+      "ci_095": 0.304
+    },
+    "css_value_type_shadow": {
+      "avg": 47.344,
+      "ci_095": 1.018
+    },
+    "filter_terrain_svg": {
+      "avg": 30.466,
+      "ci_095": 0.212
+    },
+    "css_transitions_inline_style": {
+      "avg": 19.283,
+      "ci_095": 3.280
+    }
+  },
+  "mac": {
+    "mix_blend_mode_animation_screen": {
+      "avg": 96.183,
+      "ci_095": 2.947
+    },
+    "twitch_2018": {
+      "avg": 33.002,
+      "ci_095": 18.294
+    },
+    "balls_javascript_canvas": {
+      "avg": 40.793,
+      "ci_095": 1.419
+    },
+    "transform_transitions_js_block": {
+      "avg": 16.758,
+      "ci_095": 0.442
+    },
+    "web_animations_staggered_infinite_iterations": {
+      "avg": 16.692,
+      "ci_095": 0.291
+    },
+    "fill_shapes": {
+      "avg": 36.591,
+      "ci_095": 1.719
+    },
+    "css_value_type_shadow": {
+      "avg": 65.745,
+      "ci_095": 16.053
+    },
+    "animometer_webgl_attrib_arrays": {
+      "avg": 16.862,
+      "ci_095": 0.636
+    },
+    "web_animation_value_type_transform_simple": {
+      "avg": 48.286,
+      "ci_095": 2.421
+    },
+    "canvas_05000_pixels_per_second": {
+      "avg": 16.685,
+      "ci_095": 0.333
+    },
+    "bouncing_clipped_rectangles": {
+      "avg": 537.025,
+      "ci_095": 168.527
+    },
+    "ie_chalkboard": {
+      "avg": 66.825,
+      "ci_095": 39.904
+    },
+    "new_tilings": {
+      "avg": 23.163,
+      "ci_095": 1.13
+    },
+    "chip_tune": {
+      "avg": 16.737,
+      "ci_095": 0.453
+    },
+    "extra_large_texture_uploads": {
+      "avg": 58.721,
+      "ci_095": 2.462
+    },
+    "css_value_type_filter": {
+      "avg": 86.254,
+      "ci_095": 1.79
+    }
+  },
+  "android": {
+    "mix_blend_mode_animation_screen": {
+      "avg": 511.313,
+      "ci_095": 233.908
+    },
+    "twitch_2018": {
+      "avg": 19.843,
+      "ci_095": 6.112
+    },
+    "balls_javascript_canvas": {
+      "avg": 191.168,
+      "ci_095": 18.935
+    },
+    "transform_transitions_js_block": {
+      "avg": 16.652,
+      "ci_095": 0.065
+    },
+    "web_animations_staggered_infinite_iterations": {
+      "avg": 47.653,
+      "ci_095": 4.68
+    },
+    "text_10000_pixels_per_second": {
+      "avg": 16.813,
+      "ci_095": 0.543
+    },
+    "motion_mark_canvas_fill_shapes": {
+      "avg": 143.318,
+      "ci_095": 31.915
+    },
+    "css_value_type_shadow": {
+      "avg": 229.602,
+      "ci_095": 32.759
+    },
+    "animometer_webgl_attrib_arrays": {
+      "avg": 412.827,
+      "ci_095": 110.526
+    },
+    "canvas_05000_pixels_per_second": {
+      "avg": 16.857,
+      "ci_095": 0.609
+    },
+    "bouncing_clipped_rectangles": {
+      "avg": 396.708,
+      "ci_095": 106.785
+    },
+    "ie_chalkboard": {
+      "avg": 1429.4,
+      "ci_095": 1327.254
+    },
+    "new_tilings": {
+      "avg": 16.793,
+      "ci_095": 0.388
+    },
+    "extra_large_texture_uploads": {
+      "avg": 191.029,
+      "ci_095": 22.701
+    },
+    "web_animation_value_type_transform_simple": {
+      "avg": 308.001,
+      "ci_095": 54.104
+    },
+    "css_value_type_filter": {
+      "avg": 581.157,
+      "ci_095": 145.986
+    }
+  }
+}

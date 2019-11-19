@@ -13,6 +13,7 @@ Running: testGetterAndSetter
     }
     isOwn : true
     name : "foo"
+    private : false
     setter : {
         description : "set foo(value) { }"
         objectId : <string>
@@ -33,6 +34,7 @@ Running: testGetterOnly
     }
     isOwn : true
     name : "foo"
+    private : false
     synthetic : false
     wasThrown : false
     writable : false

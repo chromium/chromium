@@ -5,7 +5,7 @@
 module printing.mojom;
 
 import "mojo/public/mojom/base/shared_memory.mojom";
-import "ui/gfx/geometry/mojo/geometry.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
 import "url/mojom/url.mojom";
 
 // This set of interfaces is used to do Nup PDF conversion.

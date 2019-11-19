@@ -1,22 +1,41 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="hi">
+<translation id="1482734542997480527">इस डिवाइस को <ph name="ENROLLMENT_DOMAIN" /> प्रबंधित करता है और आपकी गतिविधि पर नज़र रख सकता है.</translation>
 <translation id="1510238584712386396">लॉन्चर</translation>
 <translation id="1734367976349034509">यह डिवाइस एंटरप्राइज़ द्वारा प्रबंधित है</translation>
+<translation id="1930797645656624981">Chrome OS के इनपुट के तरीके की सेवा</translation>
+<translation id="1979103255016296513">पासवर्ड बदलने का समय निकल चुका है</translation>
 <translation id="2049639323467105390">यह डिवाइस <ph name="DOMAIN" /> द्वारा प्रबंधित है.</translation>
 <translation id="2083960536266308407">स्क्रीन पर कुछ नहीं मिला</translation>
 <translation id="2338501278241028356">आस-पास के डिवाइस खोजने के लिए ब्लूटूथ चालू करें</translation>
 <translation id="2805756323405976993">ऐप्स</translation>
 <translation id="2872961005593481000">शट डाउन करें</translation>
-<translation id="3147142846278915599">लॉन्‍चर (ऐप्‍स समन्‍वयित किए जा रहे हैं...)</translation>
-<translation id="4731797938093519117">अभिभावक एक्सेस</translation>
+<translation id="3008341117444806826">रीफ़्रेश करें</translation>
+<translation id="3838338534323494292">नया पासवर्ड</translation>
+<translation id="4003259559679196451"><ph name="ENROLLMENT_DOMAIN" /> इस डिवाइस को प्रबंधित करता है. इसके पास उपयोगकर्ता की सभी गतिविधियों का ऐक्सेस है. इन गतिविधियों में उपयोगकर्ता के किसी वेबपेज पर जाने, उसके पासवर्ड, और ईमेल की जानकारी शामिल होती है.</translation>
+<translation id="4227825898293920515"><ph name="TIME" /> में पासवर्ड की समयसीमा खत्म हो जाएगी</translation>
+<translation id="4429881212383817840">Kerberos टिकट की समयसीमा जल्द ही खत्म होने वाली है</translation>
+<translation id="445059817448385655">पुराना पासवर्ड</translation>
+<translation id="467510802200863975">पासवर्ड मेल नहीं खाते</translation>
+<translation id="4731797938093519117">अभिभावक ऐक्सेस</translation>
+<translation id="4890353053343094602">तुरंत कोई नया पासवर्ड चुनें</translation>
 <translation id="5212543919916444558">मुझे आपकी स्क्रीन पर ऐसा कुछ नहीं मिला जिसमें मैं आपकी सहायता कर पाऊं.
 मुझे कुछ पूछने के लिए माइक टैप करके देखें.</translation>
-<translation id="5222676887888702881">प्रस्थान करें</translation>
-<translation id="5457599981699367932">अतिथि के रूप में ब्राउज़ करें</translation>
+<translation id="5222676887888702881">साइन आउट करें</translation>
+<translation id="5317780077021120954">सेव करें</translation>
+<translation id="5332948983412042822">कोई नया पासवर्ड चुनें</translation>
+<translation id="5457599981699367932">मेहमान के रूप में ब्राउज़ करें</translation>
 <translation id="54609108002486618">प्रबंधित</translation>
 <translation id="5832805196449965646">व्‍यक्ति जोड़ें</translation>
-<translation id="5895138241574237353">पुन: प्रारंभ करें</translation>
+<translation id="5895138241574237353">फिर से प्रारंभ करें</translation>
+<translation id="6058625436358447366">पूरा करने के लिए, पुराना और नया पासवर्ड डालें</translation>
+<translation id="6106186594183574873">पूरा करने के लिए, पुराना पासवर्ड डालें</translation>
+<translation id="6146993107019042706">खत्म करने के लिए, नया पासवर्ड डालें</translation>
 <translation id="7658239707568436148">अभी नहीं</translation>
+<translation id="7690294790491645610">नए पासवर्ड की पुष्टि करें</translation>
+<translation id="808894953321890993">पासवर्ड बदलें</translation>
+<translation id="8747900814994928677">बदलाव की पुष्टि करें</translation>
+<translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> के लिए टिकट रीफ़्रेश करें</translation>
 <translation id="9111102763498581341">अनलॉक करें</translation>
 </translationbundle>

@@ -37,8 +37,8 @@ ServiceDiscoveryClientImpl::~ServiceDiscoveryClientImpl() {
 std::unique_ptr<ServiceWatcher>
 ServiceDiscoveryClientImpl::CreateServiceWatcher(
     const std::string& service_type,
-    const ServiceWatcher::UpdatedCallback& callback) {
-  return std::make_unique<ServiceWatcherImpl>(service_type, callback,
+    ServiceWatcher::UpdatedCallback callback) {
+  return std::make_unique<ServiceWatcherImpl>(service_type, std::move(callback),
                                               mdns_client_);
 }
 
@@ -59,13 +59,14 @@ ServiceDiscoveryClientImpl::CreateLocalDomainResolver(
       domain, address_family, std::move(callback), mdns_client_);
 }
 
-ServiceWatcherImpl::ServiceWatcherImpl(
-    const std::string& service_type,
-    const ServiceWatcher::UpdatedCallback& callback,
-    net::MDnsClient* mdns_client)
-    : service_type_(service_type), callback_(callback), started_(false),
-      actively_refresh_services_(false), mdns_client_(mdns_client) {
-}
+ServiceWatcherImpl::ServiceWatcherImpl(const std::string& service_type,
+                                       ServiceWatcher::UpdatedCallback callback,
+                                       net::MDnsClient* mdns_client)
+    : service_type_(service_type),
+      callback_(std::move(callback)),
+      started_(false),
+      actively_refresh_services_(false),
+      mdns_client_(mdns_client) {}
 
 void ServiceWatcherImpl::Start() {
   DCHECK(!started_);
@@ -533,9 +534,9 @@ void LocalDomainResolverImpl::OnTransactionComplete(
 
   if (transactions_finished_ == 1 &&
       address_family_ == net::ADDRESS_FAMILY_UNSPECIFIED) {
-    timeout_callback_.Reset(base::Bind(
-        &LocalDomainResolverImpl::SendResolvedAddresses,
-        base::Unretained(this)));
+    timeout_callback_.Reset(
+        base::BindOnce(&LocalDomainResolverImpl::SendResolvedAddresses,
+                       base::Unretained(this)));
 
     base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
         FROM_HERE, timeout_callback_.callback(),

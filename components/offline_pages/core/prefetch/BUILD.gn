@@ -46,6 +46,8 @@ static_library("prefetch") {
     "prefetch_service_impl.h",
     "prefetch_types.cc",
     "prefetch_types.h",
+    "server_forbidden_check_request.cc",
+    "server_forbidden_check_request.h",
     "store/prefetch_downloader_quota.cc",
     "store/prefetch_downloader_quota.h",
     "store/prefetch_store.cc",
@@ -74,8 +76,8 @@ static_library("prefetch") {
     "tasks/generate_page_bundle_task.h",
     "tasks/get_operation_task.cc",
     "tasks/get_operation_task.h",
-    "tasks/get_thumbnail_info_task.cc",
-    "tasks/get_thumbnail_info_task.h",
+    "tasks/get_visuals_info_task.cc",
+    "tasks/get_visuals_info_task.h",
     "tasks/import_archives_task.cc",
     "tasks/import_archives_task.h",
     "tasks/import_cleanup_task.cc",
@@ -88,13 +90,15 @@ static_library("prefetch") {
     "tasks/metrics_finalization_task.h",
     "tasks/page_bundle_update_task.cc",
     "tasks/page_bundle_update_task.h",
+    "tasks/remove_url_task.cc",
+    "tasks/remove_url_task.h",
     "tasks/sent_get_operation_cleanup_task.cc",
     "tasks/sent_get_operation_cleanup_task.h",
     "tasks/stale_entry_finalizer_task.cc",
     "tasks/stale_entry_finalizer_task.h",
-    "thumbnail_fetch_by_url.cc",
-    "thumbnail_fetch_by_url.h",
     "thumbnail_fetcher.h",
+    "visuals_fetch_by_url.cc",
+    "visuals_fetch_by_url.h",
   ]
 
   public_deps = [
@@ -211,8 +215,6 @@ source_set("unit_tests") {
   sources = [
     "generate_page_bundle_request_unittest.cc",
     "get_operation_request_unittest.cc",
-    "prefetch_dispatcher_impl_unittest.cc",
-    "prefetch_download_flow_unittest.cc",
     "prefetch_downloader_impl_unittest.cc",
     "prefetch_gcm_app_handler_unittest.cc",
     "prefetch_importer_impl_unittest.cc",
@@ -222,6 +224,7 @@ source_set("unit_tests") {
     "prefetch_request_fetcher_unittest.cc",
     "prefetch_request_operation_response_unittest.cc",
     "prefetch_server_urls_unittest.cc",
+    "server_forbidden_check_request_unittest.cc",
     "store/prefetch_downloader_quota_unittest.cc",
     "store/prefetch_store_schema_unittest.cc",
     "store/prefetch_store_unittest.cc",
@@ -234,7 +237,7 @@ source_set("unit_tests") {
     "tasks/generate_page_bundle_reconcile_task_unittest.cc",
     "tasks/generate_page_bundle_task_unittest.cc",
     "tasks/get_operation_task_unittest.cc",
-    "tasks/get_thumbnail_info_task_unittest.cc",
+    "tasks/get_visuals_info_task_unittest.cc",
     "tasks/import_archives_task_unittest.cc",
     "tasks/import_cleanup_task_unittest.cc",
     "tasks/import_completed_task_unittest.cc",
@@ -254,6 +257,7 @@ source_set("unit_tests") {
     "//components/download/public/background_service/test:test_support",
     "//components/gcm_driver/instance_id",
     "//components/image_fetcher/core:test_support",
+    "//components/offline_pages/buildflags",
     "//components/offline_pages/core",
     "//components/offline_pages/core:switches",
     "//components/offline_pages/core:test_support",
@@ -269,5 +273,10 @@ source_set("unit_tests") {
     "//testing/gmock",
     "//testing/gtest",
     "//url",
+  ]
+
+  sources += [
+    "prefetch_dispatcher_impl_unittest.cc",
+    "prefetch_download_flow_unittest.cc",
   ]
 }

@@ -22,7 +22,7 @@ class WebContents;
 // tab has been launched, the user of this class will be informed with the
 // content::WebContents instance associated with the tab.
 class ServiceTabLauncher {
-  using TabLaunchedCallback = base::Callback<void(content::WebContents*)>;
+  using TabLaunchedCallback = base::OnceCallback<void(content::WebContents*)>;
 
  public:
   // Returns the singleton instance of the service tab launcher.
@@ -33,7 +33,7 @@ class ServiceTabLauncher {
   // the tab is avialable. This method must only be called from the UI thread.
   void LaunchTab(content::BrowserContext* browser_context,
                  const content::OpenURLParams& params,
-                 const TabLaunchedCallback& callback);
+                 TabLaunchedCallback callback);
 
   // To be called when the tab for |request_id| has launched, with the
   // associated |web_contents|. The WebContents must not yet have started

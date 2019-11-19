@@ -1,0 +1,64 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("flags") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "about_flags.h",
+    "about_flags.mm",
+    "ios_chrome_flag_descriptions.cc",
+    "ios_chrome_flag_descriptions.h",
+  ]
+
+  deps = [
+    "//base",
+    "//components/autofill/core/common",
+    "//components/autofill/ios/browser",
+    "//components/dom_distiller/core",
+    "//components/feature_engagement/public",
+    "//components/flags_ui",
+    "//components/flags_ui:switches",
+    "//components/invalidation/impl:feature_list",
+    "//components/ntp_tiles",
+    "//components/omnibox/browser",
+    "//components/omnibox/common",
+    "//components/password_manager/core/common",
+    "//components/payments/core",
+    "//components/search_provider_logos",
+    "//components/security_state/core",
+    "//components/send_tab_to_self",
+    "//components/signin/core/browser",
+    "//components/signin/ios/browser",
+    "//components/signin/public/base",
+    "//components/strings:components_strings",
+    "//components/sync/driver",
+    "//components/translate/core/browser",
+    "//components/ukm/ios:features",
+    "//components/unified_consent",
+    "//components/variations",
+    "//ios/chrome/app/strings:ios_strings",
+    "//ios/chrome/browser",
+    "//ios/chrome/browser/browsing_data:feature_flags",
+    "//ios/chrome/browser/crash_report:flags",
+    "//ios/chrome/browser/crash_report/breadcrumbs:feature_flags",
+    "//ios/chrome/browser/drag_and_drop",
+    "//ios/chrome/browser/find_in_page:feature_flags",
+    "//ios/chrome/browser/passwords:feature_flags",
+    "//ios/chrome/browser/reading_list:features",
+    "//ios/chrome/browser/ui:feature_flags",
+    "//ios/chrome/browser/ui/dialogs:feature_flags",
+    "//ios/chrome/browser/ui/fullscreen:feature_flags",
+    "//ios/chrome/browser/ui/infobars:feature_flags",
+    "//ios/chrome/browser/ui/settings/autofill:feature_flags",
+    "//ios/chrome/browser/ui/table_view:feature_flags",
+    "//ios/chrome/browser/ui/toolbar/public:feature_flags",
+    "//ios/chrome/browser/ui/toolbar_container:feature_flags",
+    "//ios/chrome/browser/web:feature_flags",
+    "//ios/public/provider/chrome/browser",
+    "//ios/web/common",
+    "//ios/web/common:user_agent",
+    "//ios/web/common:web_view_creation_util",
+    "//ios/web/public",
+  ]
+}

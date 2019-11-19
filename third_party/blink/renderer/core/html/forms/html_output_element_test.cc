@@ -8,21 +8,22 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/dom_token_list.h"
 #include "third_party/blink/renderer/core/html_names.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
 
 namespace blink {
 
 TEST(HTMLLinkElementSizesAttributeTest,
      setHTMLForProperty_updatesForAttribute) {
-  Document* document = Document::CreateForTest();
-  HTMLOutputElement* element = HTMLOutputElement::Create(*document);
-  EXPECT_EQ(g_null_atom, element->getAttribute(html_names::kForAttr));
+  auto* document = MakeGarbageCollected<Document>();
+  auto* element = MakeGarbageCollected<HTMLOutputElement>(*document);
+  EXPECT_EQ(g_null_atom, element->FastGetAttribute(html_names::kForAttr));
   element->htmlFor()->setValue("  strawberry ");
-  EXPECT_EQ("  strawberry ", element->getAttribute(html_names::kForAttr));
+  EXPECT_EQ("  strawberry ", element->FastGetAttribute(html_names::kForAttr));
 }
 
 TEST(HTMLOutputElementTest, setForAttribute_updatesHTMLForPropertyValue) {
-  Document* document = Document::CreateForTest();
-  HTMLOutputElement* element = HTMLOutputElement::Create(*document);
+  auto* document = MakeGarbageCollected<Document>();
+  auto* element = MakeGarbageCollected<HTMLOutputElement>(*document);
   DOMTokenList* for_tokens = element->htmlFor();
   EXPECT_EQ(g_null_atom, for_tokens->value());
   element->setAttribute(html_names::kForAttr, "orange grape");

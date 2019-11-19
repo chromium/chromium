@@ -12,68 +12,68 @@
 namespace headless {
 
 HeadlessClipboard::HeadlessClipboard()
-    : default_store_type_(ui::CLIPBOARD_TYPE_COPY_PASTE) {}
+    : default_store_buffer_(ui::ClipboardBuffer::kCopyPaste) {}
 
 HeadlessClipboard::~HeadlessClipboard() = default;
 
 void HeadlessClipboard::OnPreShutdown() {}
 
-uint64_t HeadlessClipboard::GetSequenceNumber(ui::ClipboardType type) const {
-  return GetStore(type).sequence_number;
+uint64_t HeadlessClipboard::GetSequenceNumber(
+    ui::ClipboardBuffer buffer) const {
+  return GetStore(buffer).sequence_number;
 }
 
 bool HeadlessClipboard::IsFormatAvailable(const ui::ClipboardFormatType& format,
-                                          ui::ClipboardType type) const {
-  const DataStore& store = GetStore(type);
-  return store.data.find(format) != store.data.end();
+                                          ui::ClipboardBuffer buffer) const {
+  return base::Contains(GetStore(buffer).data, format);
 }
 
-void HeadlessClipboard::Clear(ui::ClipboardType type) {
-  GetStore(type).Clear();
+void HeadlessClipboard::Clear(ui::ClipboardBuffer buffer) {
+  GetStore(buffer).Clear();
 }
 
-void HeadlessClipboard::ReadAvailableTypes(ui::ClipboardType type,
+void HeadlessClipboard::ReadAvailableTypes(ui::ClipboardBuffer buffer,
                                            std::vector<base::string16>* types,
                                            bool* contains_filenames) const {
   types->clear();
 
-  if (IsFormatAvailable(ui::ClipboardFormatType::GetPlainTextType(), type))
+  if (IsFormatAvailable(ui::ClipboardFormatType::GetPlainTextType(), buffer))
     types->push_back(base::UTF8ToUTF16(ui::kMimeTypeText));
-  if (IsFormatAvailable(ui::ClipboardFormatType::GetHtmlType(), type))
+  if (IsFormatAvailable(ui::ClipboardFormatType::GetHtmlType(), buffer))
     types->push_back(base::UTF8ToUTF16(ui::kMimeTypeHTML));
 
-  if (IsFormatAvailable(ui::ClipboardFormatType::GetRtfType(), type))
+  if (IsFormatAvailable(ui::ClipboardFormatType::GetRtfType(), buffer))
     types->push_back(base::UTF8ToUTF16(ui::kMimeTypeRTF));
-  if (IsFormatAvailable(ui::ClipboardFormatType::GetBitmapType(), type))
+  if (IsFormatAvailable(ui::ClipboardFormatType::GetBitmapType(), buffer))
     types->push_back(base::UTF8ToUTF16(ui::kMimeTypePNG));
 
   *contains_filenames = false;
 }
 
-void HeadlessClipboard::ReadText(ui::ClipboardType type,
+void HeadlessClipboard::ReadText(ui::ClipboardBuffer buffer,
                                  base::string16* result) const {
   std::string result8;
-  ReadAsciiText(type, &result8);
+  ReadAsciiText(buffer, &result8);
   *result = base::UTF8ToUTF16(result8);
 }
 
-void HeadlessClipboard::ReadAsciiText(ui::ClipboardType type,
+void HeadlessClipboard::ReadAsciiText(ui::ClipboardBuffer buffer,
                                       std::string* result) const {
   result->clear();
-  const DataStore& store = GetStore(type);
+  const DataStore& store = GetStore(buffer);
   auto it = store.data.find(ui::ClipboardFormatType::GetPlainTextType());
   if (it != store.data.end())
     *result = it->second;
 }
 
-void HeadlessClipboard::ReadHTML(ui::ClipboardType type,
+void HeadlessClipboard::ReadHTML(ui::ClipboardBuffer buffer,
                                  base::string16* markup,
                                  std::string* src_url,
                                  uint32_t* fragment_start,
                                  uint32_t* fragment_end) const {
   markup->clear();
   src_url->clear();
-  const DataStore& store = GetStore(type);
+  const DataStore& store = GetStore(buffer);
   auto it = store.data.find(ui::ClipboardFormatType::GetHtmlType());
   if (it != store.data.end())
     *markup = base::UTF8ToUTF16(it->second);
@@ -82,20 +82,20 @@ void HeadlessClipboard::ReadHTML(ui::ClipboardType type,
   *fragment_end = base::checked_cast<uint32_t>(markup->size());
 }
 
-void HeadlessClipboard::ReadRTF(ui::ClipboardType type,
+void HeadlessClipboard::ReadRTF(ui::ClipboardBuffer buffer,
                                 std::string* result) const {
   result->clear();
-  const DataStore& store = GetStore(type);
+  const DataStore& store = GetStore(buffer);
   auto it = store.data.find(ui::ClipboardFormatType::GetRtfType());
   if (it != store.data.end())
     *result = it->second;
 }
 
-SkBitmap HeadlessClipboard::ReadImage(ui::ClipboardType type) const {
-  return GetStore(type).image;
+SkBitmap HeadlessClipboard::ReadImage(ui::ClipboardBuffer buffer) const {
+  return GetStore(buffer).image;
 }
 
-void HeadlessClipboard::ReadCustomData(ui::ClipboardType clipboard_type,
+void HeadlessClipboard::ReadCustomData(ui::ClipboardBuffer clipboard_buffer,
                                        const base::string16& type,
                                        base::string16* result) const {}
 
@@ -117,13 +117,22 @@ void HeadlessClipboard::ReadData(const ui::ClipboardFormatType& format,
     *result = it->second;
 }
 
-void HeadlessClipboard::WriteObjects(ui::ClipboardType type,
-                                     const ObjectMap& objects) {
-  Clear(type);
-  default_store_type_ = type;
+void HeadlessClipboard::WritePortableRepresentations(ui::ClipboardBuffer buffer,
+                                                     const ObjectMap& objects) {
+  Clear(buffer);
+  default_store_buffer_ = buffer;
   for (const auto& kv : objects)
-    DispatchObject(static_cast<ObjectType>(kv.first), kv.second);
-  default_store_type_ = ui::CLIPBOARD_TYPE_COPY_PASTE;
+    DispatchPortableRepresentation(kv.first, kv.second);
+  default_store_buffer_ = ui::ClipboardBuffer::kCopyPaste;
+}
+
+void HeadlessClipboard::WritePlatformRepresentations(
+    ui::ClipboardBuffer buffer,
+    std::vector<Clipboard::PlatformRepresentation> platform_representations) {
+  Clear(buffer);
+  default_store_buffer_ = buffer;
+  DispatchPlatformRepresentations(std::move(platform_representations));
+  default_store_buffer_ = ui::ClipboardBuffer::kCopyPaste;
 }
 
 void HeadlessClipboard::WriteText(const char* text_data, size_t text_len) {
@@ -131,8 +140,8 @@ void HeadlessClipboard::WriteText(const char* text_data, size_t text_len) {
   GetDefaultStore().data[ui::ClipboardFormatType::GetPlainTextType()] = text;
   // Create a dummy entry.
   GetDefaultStore().data[ui::ClipboardFormatType::GetPlainTextType()];
-  if (IsSupportedClipboardType(ui::CLIPBOARD_TYPE_SELECTION)) {
-    GetStore(ui::CLIPBOARD_TYPE_SELECTION)
+  if (IsSupportedClipboardBuffer(ui::ClipboardBuffer::kSelection)) {
+    GetStore(ui::ClipboardBuffer::kSelection)
         .data[ui::ClipboardFormatType::GetPlainTextType()] = text;
   }
 }
@@ -196,25 +205,25 @@ void HeadlessClipboard::DataStore::Clear() {
 }
 
 const HeadlessClipboard::DataStore& HeadlessClipboard::GetStore(
-    ui::ClipboardType type) const {
-  CHECK(IsSupportedClipboardType(type));
-  return stores_[type];
+    ui::ClipboardBuffer buffer) const {
+  CHECK(IsSupportedClipboardBuffer(buffer));
+  return stores_[buffer];
 }
 
 HeadlessClipboard::DataStore& HeadlessClipboard::GetStore(
-    ui::ClipboardType type) {
-  CHECK(IsSupportedClipboardType(type));
-  DataStore& store = stores_[type];
+    ui::ClipboardBuffer buffer) {
+  CHECK(IsSupportedClipboardBuffer(buffer));
+  DataStore& store = stores_[buffer];
   ++store.sequence_number;
   return store;
 }
 
 const HeadlessClipboard::DataStore& HeadlessClipboard::GetDefaultStore() const {
-  return GetStore(default_store_type_);
+  return GetStore(default_store_buffer_);
 }
 
 HeadlessClipboard::DataStore& HeadlessClipboard::GetDefaultStore() {
-  return GetStore(default_store_type_);
+  return GetStore(default_store_buffer_);
 }
 
 }  // namespace headless

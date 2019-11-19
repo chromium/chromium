@@ -172,7 +172,7 @@ class GalleryWatchManager
   // pointers.
   BrowserContextSubscriptionMap browser_context_subscription_map_;
 
-  base::WeakPtrFactory<GalleryWatchManager> weak_factory_;
+  base::WeakPtrFactory<GalleryWatchManager> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(GalleryWatchManager);
 };

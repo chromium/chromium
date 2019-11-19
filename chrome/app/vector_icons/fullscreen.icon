@@ -1,0 +1,40 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// From https://material.io/resources/icons/?icon=fullscreen&style=baseline,
+// converted via skiaify:
+
+CANVAS_DIMENSIONS, 24,
+MOVE_TO, 7, 14,
+H_LINE_TO, 5,
+R_V_LINE_TO, 5,
+R_H_LINE_TO, 5,
+R_V_LINE_TO, -2,
+H_LINE_TO, 7,
+R_V_LINE_TO, -3,
+CLOSE,
+R_MOVE_TO, -2, -4,
+R_H_LINE_TO, 2,
+V_LINE_TO, 7,
+R_H_LINE_TO, 3,
+V_LINE_TO, 5,
+H_LINE_TO, 5,
+R_V_LINE_TO, 5,
+CLOSE,
+R_MOVE_TO, 12, 7,
+R_H_LINE_TO, -3,
+R_V_LINE_TO, 2,
+R_H_LINE_TO, 5,
+R_V_LINE_TO, -5,
+R_H_LINE_TO, -2,
+R_V_LINE_TO, 3,
+CLOSE,
+MOVE_TO, 14, 5,
+R_V_LINE_TO, 2,
+R_H_LINE_TO, 3,
+R_V_LINE_TO, 3,
+R_H_LINE_TO, 2,
+V_LINE_TO, 5,
+R_H_LINE_TO, -5,
+CLOSE

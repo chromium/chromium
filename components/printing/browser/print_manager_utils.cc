@@ -4,7 +4,6 @@
 
 #include "components/printing/browser/print_manager_utils.h"
 
-#include "components/printing/browser/features.h"
 #include "components/printing/browser/print_composite_client.h"
 #include "components/printing/common/print_messages.h"
 #include "content/public/browser/site_isolation_policy.h"
@@ -36,9 +35,7 @@ void CreateCompositeClientIfNeeded(content::WebContents* web_contents,
   // where OOPIF is used such as isolate-extensions, but should be good for
   // feature testing purpose. Eventually, we will remove this check and use pdf
   // compositor service by default for printing.
-  if (content::SiteIsolationPolicy::ShouldPdfCompositorBeEnabledForOopifs() ||
-      base::FeatureList::IsEnabled(
-          features::kUsePdfCompositorServiceForPrint)) {
+  if (content::SiteIsolationPolicy::ShouldPdfCompositorBeEnabledForOopifs()) {
     PrintCompositeClient::CreateForWebContents(web_contents);
     PrintCompositeClient::FromWebContents(web_contents)
         ->SetUserAgent(user_agent);

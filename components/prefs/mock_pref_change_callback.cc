@@ -13,8 +13,8 @@ MockPrefChangeCallback::MockPrefChangeCallback(PrefService* prefs)
 MockPrefChangeCallback::~MockPrefChangeCallback() {}
 
 PrefChangeRegistrar::NamedChangeCallback MockPrefChangeCallback::GetCallback() {
-  return base::Bind(&MockPrefChangeCallback::OnPreferenceChanged,
-                    base::Unretained(this));
+  return base::BindRepeating(&MockPrefChangeCallback::OnPreferenceChanged,
+                             base::Unretained(this));
 }
 
 void MockPrefChangeCallback::Expect(const std::string& pref_name,

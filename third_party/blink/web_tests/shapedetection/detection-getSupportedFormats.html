@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<link rel="help" href="https://wicg.github.io/shape-detection-api/#dom-barcodedetector-getsupportedformats">
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+<script src="file:///gen/layout_test_data/mojo/public/js/mojo_bindings.js"></script>
+<script src="file:///gen/services/shape_detection/public/mojom/barcodedetection_provider.mojom.js"></script>
+<script>
+
+promise_test(async t => {
+  // Disable built-in support for barcode detection to test fallback handling.
+  const interceptor = new MojoInterfaceInterceptor(
+          shapeDetection.mojom.BarcodeDetectionProvider.name, "context", true);
+  interceptor.oninterfacerequest = e => e.handle.close();
+  interceptor.start();
+
+  const result = await BarcodeDetector.getSupportedFormats();
+  assert_equals(result.length, 0, 'result.length');
+
+  interceptor.stop();
+}, 'getSupportedFormats() resolves with empty list when unsupported');
+
+</script>

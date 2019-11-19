@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<script src="../../../fast/forms/resources/common.js"></script>
+<script src="../../../fast/forms/resources/picker-common.js"></script>
+<script src="../../../fast/forms/calendar-picker/resources/calendar-picker-common.js"></script>
+</head>
+<body>
+<input type="time" id="time" value="14:15" step="1">
+<script>
+
+let t = async_test('Test select AM value in time popup');
+
+function selectValue() {
+  let timeElement = document.getElementById("time");
+  timeElement.addEventListener("change", t.step_func_done(() => {
+    assert_equals(timeElement.value, "06:16:00");
+  }));
+  clickTimeCellAt(0, 4);
+  clickTimeCellAt(1, 1);
+  clickTimeCellAt(3, 1);
+  clickSubmitTimeButton();
+}
+
+t.step(() => {
+  openPicker(document.getElementById('time'), t.step_func(selectValue),  t.step_func_done(() => {
+    assert_false(internals.runtimeFlags.formControlsRefreshEnabled, "Popup did not open.");
+  }));
+});
+</script>
+</body>
+</html>

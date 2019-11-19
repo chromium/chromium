@@ -1,0 +1,10 @@
+include_rules = [
+ "+chrome/lib/lifecycle/public/android/java/src/org/chromium/chrome/browser/lifecycle",
+ "+chrome/browser/ui/android/styles",
+ "+chrome/browser/ui/android/widget",
+
+ "+components/feature_engagement/public/android/java/src/org/chromium/components/feature_engagement",
+ "+components/module_installer",
+
+ "+content/public/android/java/src/org/chromium/content_public/browser",
+]

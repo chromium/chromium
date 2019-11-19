@@ -28,11 +28,13 @@
 
 #include "third_party/blink/renderer/core/layout/layout_image_resource.h"
 
+#include "third_party/blink/public/resources/grit/blink_image_resources.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/layout/layout_image.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/svg/graphics/svg_image_for_container.h"
 #include "third_party/blink/renderer/platform/graphics/placeholder_image.h"
+#include "ui/base/resource/scale_factor.h"
 
 namespace blink {
 
@@ -128,13 +130,14 @@ Image* LayoutImageResource::BrokenImage(float device_scale_factor) {
   // TODO(schenney): Replace static resources with dynamically
   // generated ones, to support a wider range of device scale factors.
   if (device_scale_factor >= 2) {
-    DEFINE_STATIC_REF(Image, broken_image_hi_res,
-                      (Image::LoadPlatformResource("missingImage@2x")));
+    DEFINE_STATIC_REF(
+        Image, broken_image_hi_res,
+        (Image::LoadPlatformResource(IDR_BROKENIMAGE, ui::SCALE_FACTOR_200P)));
     return broken_image_hi_res;
   }
 
   DEFINE_STATIC_REF(Image, broken_image_lo_res,
-                    (Image::LoadPlatformResource("missingImage")));
+                    (Image::LoadPlatformResource(IDR_BROKENIMAGE)));
   return broken_image_lo_res;
 }
 
@@ -169,10 +172,9 @@ scoped_refptr<Image> LayoutImageResource::GetImage(
     return image;
 
   KURL url;
-  Node* node = layout_object_->GetNode();
-  if (node && node->IsElementNode()) {
-    const AtomicString& url_string = ToElement(node)->ImageSourceURL();
-    url = node->GetDocument().CompleteURL(url_string);
+  if (auto* element = DynamicTo<Element>(layout_object_->GetNode())) {
+    const AtomicString& url_string = element->ImageSourceURL();
+    url = element->GetDocument().CompleteURL(url_string);
   }
   return SVGImageForContainer::Create(
       ToSVGImage(image), container_size,

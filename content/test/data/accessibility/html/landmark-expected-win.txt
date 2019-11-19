@@ -1,11 +1,11 @@
 ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE
-++IA2_ROLE_HEADER xml-roles:banner
+++IA2_ROLE_LANDMARK xml-roles:banner
 ++++ROLE_SYSTEM_STATICTEXT name='This is a header element.'
 ++IA2_ROLE_LANDMARK xml-roles:complementary
 ++++ROLE_SYSTEM_STATICTEXT name='This is an aside element.'
 ++IA2_ROLE_SECTION
 ++++ROLE_SYSTEM_STATICTEXT name='This is an address element.'
-++IA2_ROLE_FOOTER xml-roles:contentinfo
+++IA2_ROLE_LANDMARK xml-roles:contentinfo
 ++++ROLE_SYSTEM_STATICTEXT name='This is a footer element.'
 ++IA2_ROLE_FORM
 ++++ROLE_SYSTEM_STATICTEXT name='This is a form element.'
@@ -15,7 +15,7 @@ ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE
 ++++ROLE_SYSTEM_STATICTEXT name='This is a nav element.'
 ++ROLE_SYSTEM_APPLICATION xml-roles:application
 ++++ROLE_SYSTEM_STATICTEXT name='This is an ARIA application landmark.'
-++IA2_ROLE_HEADER xml-roles:banner
+++IA2_ROLE_LANDMARK xml-roles:banner
 ++++ROLE_SYSTEM_STATICTEXT name='This is an ARIA banner landmark.'
 ++IA2_ROLE_LANDMARK xml-roles:complementary
 ++++ROLE_SYSTEM_STATICTEXT name='This is an ARIA complementary landmark.'

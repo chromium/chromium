@@ -38,10 +38,6 @@ const char kDisableOfferStoreUnmaskedWalletCards[] =
 const char kEnableOfferStoreUnmaskedWalletCards[] =
     "enable-offer-store-unmasked-wallet-cards";
 
-// Enables suggestions with substring matching instead of prefix matching.
-const char kEnableSuggestionsWithSubstringMatch[] =
-    "enable-suggestions-with-substring-match";
-
 // Ignores autocomplete="off" for Autofill data (profiles + credit cards).
 const char kIgnoreAutocompleteOffForAutofill[] =
     "ignore-autocomplete-off-autofill";

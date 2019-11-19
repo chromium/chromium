@@ -7,8 +7,11 @@
 #include "base/base64.h"
 #include "base/bind.h"
 #include "base/feature_list.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
-#include "components/data_use_measurement/core/data_use_user_data.h"
+#include "base/rand_util.h"
+#include "base/task/post_task.h"
+#include "base/threading/sequenced_task_runner_handle.h"
 #include "components/encrypted_messages/encrypted_message.pb.h"
 #include "components/encrypted_messages/message_encrypter.h"
 #include "components/metrics/metrics_log_uploader.h"
@@ -25,6 +28,29 @@ namespace {
 
 const base::Feature kHttpRetryFeature{"UMAHttpRetry",
                                       base::FEATURE_ENABLED_BY_DEFAULT};
+
+// Run ablation on UMA collector connectivity to client. This study will
+// ablate a clients upload of all logs that use |metrics::ReportingService|
+// to upload logs. This include |metrics::MetricsReportingService| for uploading
+// UMA logs. |ukm::UKMReportionService| for uploading UKM logs.
+// Rappor service use |rappor::LogUploader| which is not a
+// |metrics::ReportingService| so, it won't be ablated.
+// similar frequency.
+// To restrict the study to UMA or UKM, set the "service-affected" param.
+const base::Feature kAblateMetricsLogUploadFeature{
+    "AblateMetricsLogUpload", base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Fraction of Collector uploads that should be failed artificially.
+constexpr base::FeatureParam<int> kParamFailureRate{
+    &kAblateMetricsLogUploadFeature, "failure-rate", 100};
+
+// HTTP Error code to pass when artificially failing uploads.
+constexpr base::FeatureParam<int> kParamErrorCode{
+    &kAblateMetricsLogUploadFeature, "error-code", 503};
+
+// Service type to ablate. Can be "UMA" or "UKM". Leave it empty to ablate all.
+constexpr base::FeatureParam<std::string> kParamAblateServiceType{
+    &kAblateMetricsLogUploadFeature, "service-type", ""};
 
 // Constants used for encrypting logs that are sent over HTTP. The
 // corresponding private key is used by the metrics server to decrypt logs.
@@ -80,17 +106,15 @@ net::NetworkTrafficAnnotationTag GetNetworkTrafficAnnotation(
       semantics {
         sender: "Metrics UKM Log Uploader"
         description:
-          "Report of usage statistics that are keyed by URLs to Chromium, "
-          "sent only if the profile has History Sync. This includes "
-          "information about the web pages you visit and your usage of them, "
-          "such as page load speed. This will also include URLs and "
-          "statistics related to downloaded files. If Extension Sync is "
-          "enabled, these statistics will also include information about "
-          "the extensions that have been installed from Chrome Web Store. "
-          "Google only stores usage statistics associated with published "
-          "extensions, and URLs that are known by Google’s search index. "
-          "Usage statistics are tied to a pseudonymous machine identifier "
-          "and not to your email address."
+          "Report of usage statistics that are keyed by URLs to Chromium. This "
+          "includes information about the web pages you visit and your usage "
+          "of them, such as page load speed. This will also include URLs and "
+          "statistics related to downloaded files. These statistics may also "
+          "include information about the extensions that have been installed "
+          "from Chrome Web Store. Google only stores usage statistics "
+          "associated with published extensions, and URLs that are known by "
+          "Google’s search index. Usage statistics are tied to a "
+          "pseudonymous machine identifier and not to your email address."
         trigger:
           "Reports are automatically generated on startup and at intervals "
           "while Chromium is running with Sync enabled."
@@ -101,11 +125,13 @@ net::NetworkTrafficAnnotationTag GetNetworkTrafficAnnotation(
       policy {
         cookies_allowed: NO
         setting:
-          "Users can enable or disable this feature by disabling "
-          "'Automatically send usage statistics and crash reports to Google' "
-          "in Chromium's settings under Advanced Settings, Privacy. This is "
-          "only enabled if all active profiles have History/Extension Sync "
-          "enabled without a Sync passphrase."
+          "Users can enable or disable this feature by disabling 'Make "
+          "searches and browsing better' in Chrome's settings under Advanced "
+          "Settings, Privacy. This has to be enabled for all active profiles. "
+          "This is only enabled if the user has 'Help improve Chrome's "
+          "features and performance' enabled in the same settings menu. "
+          "Information about the installed extensions is sent only if "
+          "Extension Sync is enabled."
         chrome_policy {
           MetricsReportingEnabled {
             policy_options {mode: MANDATORY}
@@ -217,12 +243,10 @@ void NetMetricsLogUploader::UploadLogToURL(
     const GURL& url) {
   DCHECK(!log_hash.empty());
 
-  // TODO(crbug.com/808498): Restore the data use measurement when bug is fixed.
-
   auto resource_request = std::make_unique<network::ResourceRequest>();
   resource_request->url = url;
   // Drop cookies and auth data.
-  resource_request->allow_credentials = false;
+  resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
   resource_request->method = "POST";
 
   std::string reporting_info_string = SerializeReportingInfo(reporting_info);
@@ -284,6 +308,25 @@ void NetMetricsLogUploader::UploadLogToURL(
     url_loader_->AttachStringForUpload(compressed_log_data, mime_type_);
   }
 
+  if (base::FeatureList::IsEnabled(kAblateMetricsLogUploadFeature)) {
+    int failure_rate = kParamFailureRate.Get();
+    std::string service_restrict = kParamAblateServiceType.Get();
+    bool should_ablate =
+        service_restrict.empty() ||
+        (service_type_ == MetricsLogUploader::UMA &&
+         service_restrict == "UMA") ||
+        (service_type_ == MetricsLogUploader::UKM && service_restrict == "UKM");
+    if (should_ablate && base::RandInt(0, 99) < failure_rate) {
+      // Simulate collector outage by not actually trying to upload the
+      // logs but instead call on_upload_complete_ immediately.
+      bool was_https = url.SchemeIs(url::kHttpsScheme);
+      url_loader_.reset();
+      base::SequencedTaskRunnerHandle::Get()->PostTask(
+          FROM_HERE, base::BindOnce(on_upload_complete_, kParamErrorCode.Get(),
+                                    net::ERR_FAILED, was_https));
+      return;
+    }
+  }
   // It's safe to use |base::Unretained(this)| here, because |this| owns
   // the |url_loader_|, and the callback will be cancelled if the |url_loader_|
   // is destroyed.

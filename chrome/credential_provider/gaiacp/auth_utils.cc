@@ -15,6 +15,7 @@
 #include "base/stl_util.h"
 #include "chrome/credential_provider/gaiacp/gcp_utils.h"
 #include "chrome/credential_provider/gaiacp/logging.h"
+#include "chrome/credential_provider/gaiacp/os_user_manager.h"
 
 namespace credential_provider {
 
@@ -187,7 +188,7 @@ HRESULT KerbInteractiveUnlockLogonPack(
              input_logon->UserName.Length + input_logon->Password.Length;
 
   KERB_INTERACTIVE_UNLOCK_LOGON* output_unlock_logon =
-      reinterpret_cast<KERB_INTERACTIVE_UNLOCK_LOGON*>(CoTaskMemAlloc(cb));
+      reinterpret_cast<KERB_INTERACTIVE_UNLOCK_LOGON*>(::CoTaskMemAlloc(cb));
   if (!output_unlock_logon) {
     LOGFN(ERROR) << "Failed to allocate kerberos logon package.";
     return E_OUTOFMEMORY;
@@ -233,6 +234,74 @@ HRESULT KerbInteractiveUnlockLogonPack(
   return S_OK;
 }
 
+HRESULT UnpackUserInfoFromAuthenticationBuffer(
+    const CREDENTIAL_PROVIDER_CREDENTIAL_SERIALIZATION* cpcs,
+    base::string16* domain,
+    base::string16* username) {
+  DCHECK(cpcs);
+  DCHECK(domain);
+  DCHECK(username);
+  domain->clear();
+  username->clear();
+  KERB_INTERACTIVE_UNLOCK_LOGON* pkiul =
+      reinterpret_cast<KERB_INTERACTIVE_UNLOCK_LOGON*>(cpcs->rgbSerialization);
+  ULONG buffer_size = cpcs->cbSerialization;
+  KERB_INTERACTIVE_LOGON* pkil = &pkiul->Logon;
+
+  base::string16 serialization_domain;
+  base::string16 serialization_username;
+  // Check to see if the buffer is packed:
+  // 1. Ensure that the buffer can possibly contain the serialization.
+  // 2. Also if the range described by each (Buffer + MaximumSize) falls
+  // within the total bytecount, we can be pretty confident that the Buffers
+  // are actually offsets and that this is a packed credential.
+  if (sizeof(*pkiul) <= buffer_size &&
+      (reinterpret_cast<ptrdiff_t>(pkil->LogonDomainName.Buffer) +
+           pkil->LogonDomainName.MaximumLength <=
+       static_cast<ptrdiff_t>(buffer_size)) &&
+      (reinterpret_cast<ptrdiff_t>(pkil->UserName.Buffer) +
+           pkil->UserName.MaximumLength <=
+       static_cast<ptrdiff_t>(buffer_size)) &&
+      (reinterpret_cast<ptrdiff_t>(pkil->Password.Buffer) +
+           pkil->Password.MaximumLength <=
+       static_cast<ptrdiff_t>(buffer_size))) {
+    // When the authentication package is packed, then each buffer is not
+    // null terminated and the next buffer starts at the end of the previous
+    // one. Also the buffers are stored in the order that they are declared
+    // in the structure.
+
+    if (pkil->LogonDomainName.Buffer && pkil->UserName.Buffer) {
+      const wchar_t* domain_buffer_pos = reinterpret_cast<wchar_t*>(
+          (reinterpret_cast<ptrdiff_t>(pkiul) +
+           reinterpret_cast<ptrdiff_t>(pkil->LogonDomainName.Buffer)));
+
+      const wchar_t* username_buffer_pos = reinterpret_cast<wchar_t*>(
+          (reinterpret_cast<ptrdiff_t>(pkiul) +
+           reinterpret_cast<ptrdiff_t>(pkil->UserName.Buffer)));
+      serialization_domain = base::string16(
+          domain_buffer_pos,
+          pkil->LogonDomainName.MaximumLength / sizeof(domain_buffer_pos[0]));
+      serialization_username = base::string16(
+          username_buffer_pos,
+          pkil->UserName.MaximumLength / sizeof(username_buffer_pos[0]));
+    }
+  } else {
+    // If the authentication package is not packed, assume that the buffer
+    // points to a null terminated string.
+    serialization_domain = pkiul->Logon.LogonDomainName.Buffer;
+    serialization_username = pkiul->Logon.UserName.Buffer;
+  }
+
+  if (serialization_domain.length() && serialization_username.length()) {
+    *domain = serialization_domain;
+    *username = serialization_username;
+    return S_OK;
+  }
+  return E_FAIL;
+}
+
+}  // namespace
+
 // Gets the auth package id for NEGOSSP_NAME_A.
 HRESULT GetAuthenticationPackageId(ULONG* id) {
   DCHECK(id);
@@ -257,7 +326,45 @@ HRESULT GetAuthenticationPackageId(ULONG* id) {
   return hr;
 }
 
-}  // namespace
+HRESULT DetermineUserSidFromAuthenticationBuffer(
+    const CREDENTIAL_PROVIDER_CREDENTIAL_SERIALIZATION* cpcs,
+    base::string16* sid) {
+  DCHECK(sid);
+
+  sid->clear();
+
+  base::string16 serialization_domain;
+  base::string16 serialization_username;
+  HRESULT hr = UnpackUserInfoFromAuthenticationBuffer(
+      cpcs, &serialization_domain, &serialization_username);
+
+  if (SUCCEEDED(hr)) {
+    hr = OSUserManager::Get()->GetUserSID(serialization_domain.c_str(),
+                                          serialization_username.c_str(), sid);
+    // The function GetUserSID strictly checks the domain that is passed in and
+    // determines if a user really exists in that domain. However the behavior
+    // of RDP connections is more lenient. You can enter any domain you want
+    // when connecting and if a user in that specific domain is not found, RDP
+    // will fall back to trying to sign in the local user with the same
+    // username. To emulate that behavior, we try to also check if there is a
+    // user on the local domain we could possibly signin and return the SID for
+    // that user if it exists.
+    if (FAILED(hr)) {
+      base::string16 local_domain = OSUserManager::GetLocalDomain();
+      if (!base::EqualsCaseInsensitiveASCII(local_domain,
+                                            serialization_domain)) {
+        hr = OSUserManager::Get()->GetUserSID(
+            local_domain.c_str(), serialization_username.c_str(), sid);
+
+        if (FAILED(hr)) {
+          LOGFN(ERROR) << "GetUserSID hr=" << putHR(hr);
+          return hr;
+        }
+      }
+    }
+  }
+  return S_OK;
+}
 
 HRESULT BuildCredPackAuthenticationBuffer(
     BSTR domain,
@@ -288,7 +395,7 @@ HRESULT BuildCredPackAuthenticationBuffer(
                                          &protected_password);
 
   // Zero out the unencrypted copy of the password.
-  ::RtlSecureZeroMemory(&copy_password[0], copy_password.size());
+  SecurelyClearBuffer(&copy_password[0], copy_password.size());
   if (FAILED(hr)) {
     LOGFN(ERROR) << "ProtectIfNecessaryAndCopyPassword hr=" << putHR(hr);
     return hr;
@@ -296,7 +403,7 @@ HRESULT BuildCredPackAuthenticationBuffer(
 
   // Protected password may still be insecure so make sure to zero it out.
   base::ScopedClosureRunner zero_buffer_on_exit(
-      base::BindOnce(base::IgnoreResult(&RtlSecureZeroMemory),
+      base::BindOnce(base::IgnoreResult(&SecurelyClearBuffer),
                      &protected_password[0], protected_password.size()));
 
   wchar_t* logon_domain = domain;

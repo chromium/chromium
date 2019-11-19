@@ -40,10 +40,12 @@ class ManifestUnitTest : public testing::Test {
     EXPECT_EQ(type == Manifest::TYPE_HOSTED_APP, manifest->is_hosted_app());
     EXPECT_EQ(type == Manifest::TYPE_SHARED_MODULE,
               manifest->is_shared_module());
+    EXPECT_EQ(type == Manifest::TYPE_LOGIN_SCREEN_EXTENSION,
+              manifest->is_login_screen_extension());
   }
 
   // Helper function that replaces the Manifest held by |manifest| with a copy
-  // with its |key| changed to |value|. If |value| is NULL, then |key| will
+  // with its |key| changed to |value|. If |value| is nullptr, then |key| will
   // instead be deleted.
   void MutateManifest(std::unique_ptr<Manifest>* manifest,
                       const std::string& key,
@@ -52,9 +54,23 @@ class ManifestUnitTest : public testing::Test {
     if (value)
       manifest_value->Set(key, std::move(value));
     else
-      manifest_value->Remove(key, NULL);
+      manifest_value->Remove(key, nullptr);
     manifest->reset(
         new Manifest(Manifest::INTERNAL, std::move(manifest_value)));
+  }
+
+  // Helper function that replaces the manifest held by |manifest| with a copy
+  // and uses the |for_login_screen| during creation to determine its type.
+  void MutateManifestForLoginScreen(std::unique_ptr<Manifest>* manifest,
+                                    bool for_login_screen) {
+    auto manifest_value = manifest->get()->value()->CreateDeepCopy();
+    if (for_login_screen) {
+      *manifest = Manifest::CreateManifestForLoginScreen(
+          Manifest::EXTERNAL_POLICY, std::move(manifest_value));
+    } else {
+      *manifest = std::make_unique<Manifest>(Manifest::INTERNAL,
+                                             std::move(manifest_value));
+    }
   }
 
   std::string default_value_;
@@ -114,43 +130,48 @@ TEST_F(ManifestUnitTest, ExtensionTypes) {
   // By default, the type is Extension.
   AssertType(manifest.get(), Manifest::TYPE_EXTENSION);
 
+  // Login screen extension
+  MutateManifestForLoginScreen(&manifest, true);
+  AssertType(manifest.get(), Manifest::TYPE_LOGIN_SCREEN_EXTENSION);
+  MutateManifestForLoginScreen(&manifest, false);
+
   // Theme.
   MutateManifest(&manifest, keys::kTheme,
                  std::make_unique<base::DictionaryValue>());
   AssertType(manifest.get(), Manifest::TYPE_THEME);
-  MutateManifest(
-      &manifest, keys::kTheme, NULL);
+  MutateManifest(&manifest, keys::kTheme, nullptr);
 
   // Shared module.
   MutateManifest(&manifest, keys::kExport,
                  std::make_unique<base::DictionaryValue>());
   AssertType(manifest.get(), Manifest::TYPE_SHARED_MODULE);
-  MutateManifest(
-      &manifest, keys::kExport, NULL);
+  MutateManifest(&manifest, keys::kExport, nullptr);
 
   // Packaged app.
   MutateManifest(&manifest, keys::kApp,
                  std::make_unique<base::DictionaryValue>());
   AssertType(manifest.get(), Manifest::TYPE_LEGACY_PACKAGED_APP);
 
+  // Packaged app for login screen remains a packaged app.
+  MutateManifestForLoginScreen(&manifest, true);
+  AssertType(manifest.get(), Manifest::TYPE_LEGACY_PACKAGED_APP);
+  MutateManifestForLoginScreen(&manifest, false);
+
   // Platform app with event page.
   MutateManifest(&manifest, keys::kPlatformAppBackground,
                  std::make_unique<base::DictionaryValue>());
   AssertType(manifest.get(), Manifest::TYPE_PLATFORM_APP);
-  MutateManifest(
-      &manifest, keys::kPlatformAppBackground, NULL);
+  MutateManifest(&manifest, keys::kPlatformAppBackground, nullptr);
 
   // Hosted app.
   MutateManifest(&manifest, keys::kWebURLs,
                  std::make_unique<base::ListValue>());
   AssertType(manifest.get(), Manifest::TYPE_HOSTED_APP);
-  MutateManifest(
-      &manifest, keys::kWebURLs, NULL);
+  MutateManifest(&manifest, keys::kWebURLs, nullptr);
   MutateManifest(&manifest, keys::kLaunchWebURL,
                  std::make_unique<base::Value>("foo"));
   AssertType(manifest.get(), Manifest::TYPE_HOSTED_APP);
-  MutateManifest(
-      &manifest, keys::kLaunchWebURL, NULL);
+  MutateManifest(&manifest, keys::kLaunchWebURL, nullptr);
 }
 
 // Verifies that the getters filter restricted keys.
@@ -168,7 +189,7 @@ TEST_F(ManifestUnitTest, RestrictedKeys) {
   EXPECT_TRUE(warnings.empty());
 
   // "Commands" requires manifest version 2.
-  const base::Value* output = NULL;
+  const base::Value* output = nullptr;
   MutateManifest(&manifest, keys::kCommands,
                  std::make_unique<base::DictionaryValue>());
   EXPECT_FALSE(manifest->HasKey(keys::kCommands));
@@ -191,8 +212,7 @@ TEST_F(ManifestUnitTest, RestrictedKeys) {
   AssertType(manifest.get(), Manifest::TYPE_PLATFORM_APP);
   EXPECT_FALSE(manifest->HasKey(keys::kPageAction));
   EXPECT_FALSE(manifest->Get(keys::kPageAction, &output));
-  MutateManifest(
-      &manifest, keys::kPlatformAppBackground, NULL);
+  MutateManifest(&manifest, keys::kPlatformAppBackground, nullptr);
 
   // Platform apps also can't have a "Commands" key.
   EXPECT_FALSE(manifest->HasKey(keys::kCommands));

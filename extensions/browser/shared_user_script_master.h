@@ -10,6 +10,7 @@
 
 #include "base/macros.h"
 #include "base/scoped_observer.h"
+#include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
 #include "extensions/browser/extension_user_script_loader.h"
 #include "extensions/common/extension.h"
@@ -20,8 +21,6 @@ class BrowserContext;
 }
 
 namespace extensions {
-
-class ExtensionRegistry;
 
 // Manages statically-defined user scripts for all extensions. Owns a
 // UserScriptLoader to which file loading and shared memory management
@@ -53,7 +52,7 @@ class SharedUserScriptMaster : public ExtensionRegistryObserver {
   content::BrowserContext* browser_context_;
 
   ScopedObserver<ExtensionRegistry, ExtensionRegistryObserver>
-      extension_registry_observer_;
+      extension_registry_observer_{this};
 
   DISALLOW_COPY_AND_ASSIGN(SharedUserScriptMaster);
 };

@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<body>
+  <portal src="activate-portal.html"></portal>
+  <script>
+    var loadPromise = new Promise(r => {
+      window.onload = r;
+    });
+
+    function activate() {
+      return document.querySelector("portal").activate();
+    }
+  </script>
+</body>

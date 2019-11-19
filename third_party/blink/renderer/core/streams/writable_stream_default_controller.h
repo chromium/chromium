@@ -6,7 +6,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_STREAMS_WRITABLE_STREAM_DEFAULT_CONTROLLER_H_
 
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
-#include "third_party/blink/renderer/platform/bindings/trace_wrapper_member.h"
 #include "v8/include/v8.h"
 
 namespace blink {
@@ -87,8 +86,22 @@ class WritableStreamDefaultController final : public ScriptWrappable {
                     v8::Local<v8::Value> chunk,
                     double chunk_size);
 
+  // https://streams.spec.whatwg.org/#writable-stream-default-controller-error
+  // TODO(ricea): Make this private.
+  static void Error(ScriptState*,
+                    WritableStreamDefaultController*,
+                    v8::Local<v8::Value> error);
+
   // Exposed to WritableStreamNative. Not part of the standard.
   bool Started() const { return started_; }
+
+  //
+  // Used by TransformStream
+  //
+  // https://streams.spec.whatwg.org/#writable-stream-default-controller-error-if-needed
+  static void ErrorIfNeeded(ScriptState*,
+                            WritableStreamDefaultController*,
+                            v8::Local<v8::Value> error);
 
   void Trace(Visitor*) override;
 
@@ -99,11 +112,6 @@ class WritableStreamDefaultController final : public ScriptWrappable {
   // https://streams.spec.whatwg.org/#writable-stream-default-controller-advance-queue-if-needed
   static void AdvanceQueueIfNeeded(ScriptState*,
                                    WritableStreamDefaultController*);
-
-  // https://streams.spec.whatwg.org/#writable-stream-default-controller-error-if-needed
-  static void ErrorIfNeeded(ScriptState*,
-                            WritableStreamDefaultController*,
-                            v8::Local<v8::Value> error);
 
   // https://streams.spec.whatwg.org/#writable-stream-default-controller-process-close
   static void ProcessClose(ScriptState*, WritableStreamDefaultController*);
@@ -116,28 +124,23 @@ class WritableStreamDefaultController final : public ScriptWrappable {
   // https://streams.spec.whatwg.org/#writable-stream-default-controller-get-backpressure
   static bool GetBackpressure(const WritableStreamDefaultController*);
 
-  // https://streams.spec.whatwg.org/#writable-stream-default-controller-error
-  static void Error(ScriptState*,
-                    WritableStreamDefaultController*,
-                    v8::Local<v8::Value> error);
-
   // Most member variables correspond 1:1 with the internal slots in the
   // standard. See
   // https://streams.spec.whatwg.org/#ws-default-controller-internal-slots.
-  TraceWrapperMember<StreamAlgorithm> abort_algorithm_;
-  TraceWrapperMember<StreamAlgorithm> close_algorithm_;
-  TraceWrapperMember<WritableStreamNative> controlled_writable_stream_;
+  Member<StreamAlgorithm> abort_algorithm_;
+  Member<StreamAlgorithm> close_algorithm_;
+  Member<WritableStreamNative> controlled_writable_stream_;
 
   // |queue_| covers both the [[queue]] and [[queueTotalSize]] internal slots.
   // Instead of chunks in the queue being wrapped in an object, they are
   // stored-as-is, and the `"close"` marker in the queue is represented by an
   // empty queue together with the |close_queued_| flag being set.
-  TraceWrapperMember<QueueWithSizes> queue_;
+  Member<QueueWithSizes> queue_;
   bool close_queued_ = false;
   bool started_ = false;
   double strategy_high_water_mark_ = 0.0;
-  TraceWrapperMember<StrategySizeAlgorithm> strategy_size_algorithm_;
-  TraceWrapperMember<StreamAlgorithm> write_algorithm_;
+  Member<StrategySizeAlgorithm> strategy_size_algorithm_;
+  Member<StreamAlgorithm> write_algorithm_;
 };
 
 }  // namespace blink

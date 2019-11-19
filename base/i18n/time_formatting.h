@@ -47,10 +47,6 @@ enum DateFormat {
   DATE_FORMAT_MONTH_WEEKDAY_DAY,
 };
 
-// TODO(derat@chromium.org): Update all of these functions to return boolean
-// "success" values and use out-params for formatted strings:
-// http://crbug.com/698802
-
 // Returns the time of day, e.g., "3:07 PM".
 BASE_I18N_EXPORT string16 TimeFormatTimeOfDay(const Time& time);
 

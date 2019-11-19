@@ -1,0 +1,27 @@
+Tests that element tree is updated after activation.
+
+
+Running: testSetUp
+- <html>
+      <head></head>
+    - <body>
+        - <div>
+            - <portal src="http://devtools.oopif.test:8000/devtools/oopif/resources/empty.html">
+                - #document
+                    - <html>
+                          <head></head>
+                          <body>\n\n</body>
+                      </html>
+              </portal>
+          </div>
+      </body>
+  </html>
+
+Running: testActivate
+
+Running: testAfterActivate
+- <html>
+      <head></head>
+      <body>\n\n</body>
+  </html>
+

@@ -361,7 +361,8 @@ void KeywordProvider::Start(const AutocompleteInput& input,
   } else {
     for (TemplateURLService::TURLsAndMeaningfulLengths::const_iterator i(
              matches.begin());
-         (i != matches.end()) && (matches_.size() < kMaxMatches); ++i) {
+         (i != matches.end()) && (matches_.size() < provider_max_matches_);
+         ++i) {
       // Skip keywords that we've already added.  It's possible we may have
       // retrieved the same keyword twice.  For example, the keyword
       // "abc.abc.com" may be retrieved for the input "abc" from the full
@@ -398,7 +399,7 @@ bool KeywordProvider::ExtractKeywordFromInput(
     const TemplateURLService* template_url_service,
     base::string16* keyword,
     base::string16* remaining_input) {
-  if ((input.type() == metrics::OmniboxInputType::INVALID))
+  if ((input.type() == metrics::OmniboxInputType::EMPTY))
     return false;
 
   DCHECK(template_url_service);
@@ -505,16 +506,14 @@ void KeywordProvider::FillInURLAndContents(
       // No query input; return a generic, no-destination placeholder.
       match->contents.assign(
           l10n_util::GetStringUTF16(IDS_EMPTY_KEYWORD_VALUE));
-      match->contents_class.push_back(
-          ACMatchClassification(0, ACMatchClassification::DIM));
+      match->contents_class.emplace_back(0, ACMatchClassification::DIM);
     } else {
       // Keyword or extension that has no replacement text (aka a shorthand for
       // a URL).
       match->destination_url = GURL(element->url());
       match->contents.assign(element->short_name());
-      AutocompleteMatch::ClassifyLocationInString(0, match->contents.length(),
-          match->contents.length(), ACMatchClassification::NONE,
-          &match->contents_class);
+      if (!element->short_name().empty())
+        match->contents_class.emplace_back(0, ACMatchClassification::MATCH);
     }
   } else {
     // Create destination URL by escaping user input and substituting into
@@ -529,8 +528,7 @@ void KeywordProvider::FillInURLAndContents(
     match->destination_url = GURL(element_ref.ReplaceSearchTerms(
         search_terms_args, GetTemplateURLService()->search_terms_data()));
     match->contents = remaining_input;
-    match->contents_class.push_back(
-        ACMatchClassification(0, ACMatchClassification::NONE));
+    match->contents_class.emplace_back(0, ACMatchClassification::NONE);
   }
 }
 

@@ -1,0 +1,8 @@
+Tests that service worker requests are intercepted when DevTools attached after start.
+Response before interception enabled: Fetched for real!
+[renderer] Request to http://127.0.0.1:8000/inspector-protocol/fetch/resources/service-worker-import.js, type: Script
+Imported script after interception enabled: overriden imported script!
+[renderer] Request to http://127.0.0.1:8000/inspector-protocol/fetch/resources/service-worker.html, type: XHR
+[renderer] Request to http://127.0.0.1:8000/inspector-protocol/fetch/resources/fetch-data.txt, type: XHR
+Response after interception enabled: overriden response body
+

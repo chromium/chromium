@@ -11,7 +11,6 @@
 #include "base/files/file.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/ref_counted.h"
-#include "base/memory/shared_memory.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/process/process.h"
 #include "content/common/content_export.h"
@@ -116,8 +115,6 @@ class RendererPpapiHost {
   // returns a handle that should be sent in exactly one IPC message. Upon
   // receipt, the remote side then owns that handle. Note: if sending the
   // message fails, the returned handle is properly closed by the IPC system.
-  virtual base::SharedMemoryHandle ShareSharedMemoryHandleWithRemote(
-      const base::SharedMemoryHandle& handle) = 0;
   virtual base::UnsafeSharedMemoryRegion
   ShareUnsafeSharedMemoryRegionWithRemote(
       const base::UnsafeSharedMemoryRegion& region) = 0;

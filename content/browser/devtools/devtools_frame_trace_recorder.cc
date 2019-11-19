@@ -13,7 +13,8 @@
 #include "base/bind.h"
 #include "base/memory/ref_counted.h"
 #include "base/trace_event/trace_event_impl.h"
-#include "components/viz/common/quads/compositor_frame_metadata.h"
+#include "build/build_config.h"
+#include "cc/trees/render_frame_metadata.h"
 #include "content/browser/devtools/devtools_traceable_screenshot.h"
 #include "content/browser/frame_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_view_base.h"
@@ -31,7 +32,7 @@ void FrameCaptured(base::TimeTicks timestamp, const SkBitmap& bitmap) {
   if (bitmap.drawsNothing())
     return;
   if (DevToolsTraceableScreenshot::GetNumberOfInstances() >=
-      DevToolsFrameTraceRecorder::kMaximumNumberOfScreenshots) {
+      DevToolsTraceableScreenshot::kMaximumNumberOfScreenshots) {
     return;
   }
   TRACE_EVENT_OBJECT_SNAPSHOT_WITH_ID_AND_TIMESTAMP(
@@ -42,13 +43,13 @@ void FrameCaptured(base::TimeTicks timestamp, const SkBitmap& bitmap) {
 }
 
 void CaptureFrame(RenderFrameHostImpl* host,
-                  const viz::CompositorFrameMetadata& metadata) {
+                  const cc::RenderFrameMetadata& metadata) {
   RenderWidgetHostViewBase* view =
       static_cast<RenderWidgetHostViewBase*>(host->GetView());
   if (!view)
     return;
   if (DevToolsTraceableScreenshot::GetNumberOfInstances() >=
-      DevToolsFrameTraceRecorder::kMaximumNumberOfScreenshots) {
+      DevToolsTraceableScreenshot::kMaximumNumberOfScreenshots) {
     return;
   }
 
@@ -82,18 +83,15 @@ DevToolsFrameTraceRecorder::~DevToolsFrameTraceRecorder() { }
 
 void DevToolsFrameTraceRecorder::OnSynchronousSwapCompositorFrame(
     RenderFrameHostImpl* host,
-    const viz::CompositorFrameMetadata& frame_metadata) {
+    const cc::RenderFrameMetadata& metadata) {
   if (!host || !ScreenshotCategoryEnabled()) {
-    last_metadata_.reset();
     return;
   }
 
   bool is_new_trace;
   TRACE_EVENT_IS_NEW_TRACE(&is_new_trace);
-  if (!is_new_trace && last_metadata_)
-    CaptureFrame(host, *last_metadata_);
-  last_metadata_.reset(new viz::CompositorFrameMetadata);
-  *last_metadata_ = frame_metadata.Clone();
+  if (!is_new_trace)
+    CaptureFrame(host, metadata);
 }
 
 }  // namespace content

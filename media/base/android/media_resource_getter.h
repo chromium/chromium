@@ -15,6 +15,10 @@
 #include "media/base/media_export.h"
 #include "url/gurl.h"
 
+namespace url {
+class Origin;
+}
+
 namespace media {
 
 // Class for asynchronously retrieving resources for a media URL. All callbacks
@@ -44,6 +48,7 @@ class MEDIA_EXPORT MediaResourceGetter {
   // Method for getting the cookies for a given URL.
   virtual void GetCookies(const GURL& url,
                           const GURL& site_for_cookies,
+                          const url::Origin& top_frame_origin,
                           GetCookieCB callback) = 0;
 
   // Method for getting the platform path from a file system URL.

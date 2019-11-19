@@ -12,7 +12,9 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequenced_task_runner.h"
 #include "media/base/media_log.h"
-#include "media/mojo/interfaces/media_log.mojom.h"
+#include "media/mojo/mojom/media_log.mojom.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
+#include "mojo/public/cpp/bindings/pending_associated_remote.h"
 
 namespace media {
 
@@ -20,8 +22,9 @@ namespace media {
 class MojoMediaLog final : public MediaLog {
  public:
   // TODO(sandersd): Template on Ptr type to support non-associated.
-  explicit MojoMediaLog(mojom::MediaLogAssociatedPtrInfo remote_media_log,
-                        scoped_refptr<base::SequencedTaskRunner> task_runner);
+  explicit MojoMediaLog(
+      mojo::PendingAssociatedRemote<mojom::MediaLog> remote_media_log,
+      scoped_refptr<base::SequencedTaskRunner> task_runner);
   ~MojoMediaLog() final;
 
  protected:
@@ -30,14 +33,14 @@ class MojoMediaLog final : public MediaLog {
   void AddEventLocked(std::unique_ptr<MediaLogEvent> event) override;
 
  private:
-  mojom::MediaLogAssociatedPtr remote_media_log_;
+  mojo::AssociatedRemote<mojom::MediaLog> remote_media_log_;
 
   // The mojo service thread on which we'll access |remote_media_log_|.
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
   base::WeakPtr<MojoMediaLog> weak_this_;
 
-  base::WeakPtrFactory<MojoMediaLog> weak_ptr_factory_;
+  base::WeakPtrFactory<MojoMediaLog> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(MojoMediaLog);
 };

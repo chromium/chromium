@@ -12,12 +12,6 @@
 #include "build/build_config.h"
 #include "net/dns/mock_host_resolver.h"
 
-namespace base {
-namespace test {
-class ScopedTaskEnvironment;
-}
-}
-
 namespace net {
 class NetworkChangeNotifier;
 }

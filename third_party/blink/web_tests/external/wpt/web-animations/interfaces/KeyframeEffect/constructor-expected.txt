@@ -1,17 +1,19 @@
 This is a testharness.js-based test.
-Found 167 tests; 155 PASS, 12 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 173 tests; 172 PASS, 1 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS A KeyframeEffect can be constructed with no frames
 PASS easing values are parsed correctly when passed to the KeyframeEffect constructor in KeyframeEffectOptions
 PASS Invalid easing values are correctly rejected when passed to the KeyframeEffect constructor in KeyframeEffectOptions
-FAIL composite values are parsed correctly when passed to the KeyframeEffect constructor in property-indexed keyframes assert_equals: resulting composite for 'accumulate' expected "accumulate" but got "replace"
-FAIL composite values are parsed correctly when passed to the KeyframeEffect constructor in regular keyframes assert_equals: resulting composite for 'accumulate' expected "accumulate" but got "replace"
+PASS composite values are parsed correctly when passed to the KeyframeEffect constructor in property-indexed keyframes
+PASS composite values are parsed correctly when passed to the KeyframeEffect constructor in regular keyframes
 PASS composite value is auto if the composite operation specified on the keyframe effect is being used
 PASS A KeyframeEffect can be constructed with a one property two value property-indexed keyframes specification
 PASS A KeyframeEffect constructed with a one property two value property-indexed keyframes specification roundtrips
-FAIL A KeyframeEffect can be constructed with a one shorthand property two value property-indexed keyframes specification assert_equals: properties on ComputedKeyframe #0 should match expected "composite,computedOffset,easing,margin,offset" but got "composite,computedOffset,easing,marginBottom,marginLeft,marginRight,marginTop,offset"
+PASS A KeyframeEffect can be constructed with a one shorthand property two value property-indexed keyframes specification
 PASS A KeyframeEffect constructed with a one shorthand property two value property-indexed keyframes specification roundtrips
-FAIL A KeyframeEffect can be constructed with a two property (one shorthand and one of its longhand components) two value property-indexed keyframes specification assert_equals: properties on ComputedKeyframe #0 should match expected "composite,computedOffset,easing,margin,marginTop,offset" but got "composite,computedOffset,easing,marginBottom,marginLeft,marginRight,marginTop,offset"
+PASS A KeyframeEffect can be constructed with a two property (one shorthand and one of its longhand components) two value property-indexed keyframes specification
 PASS A KeyframeEffect constructed with a two property (one shorthand and one of its longhand components) two value property-indexed keyframes specification roundtrips
+PASS A KeyframeEffect can be constructed with a two property (one shorthand and one of its shorthand components) two value property-indexed keyframes specification
+PASS A KeyframeEffect constructed with a two property (one shorthand and one of its shorthand components) two value property-indexed keyframes specification roundtrips
 PASS A KeyframeEffect can be constructed with a two property two value property-indexed keyframes specification
 PASS A KeyframeEffect constructed with a two property two value property-indexed keyframes specification roundtrips
 PASS A KeyframeEffect can be constructed with a two property property-indexed keyframes specification with different numbers of values
@@ -22,8 +24,8 @@ PASS A KeyframeEffect can be constructed with a one property two value property-
 PASS A KeyframeEffect constructed with a one property two value property-indexed keyframes specification that needs to stringify its values roundtrips
 PASS A KeyframeEffect can be constructed with a property-indexed keyframes specification with a CSS variable reference
 PASS A KeyframeEffect constructed with a property-indexed keyframes specification with a CSS variable reference roundtrips
-FAIL A KeyframeEffect can be constructed with a property-indexed keyframes specification with a CSS variable reference in a shorthand property assert_equals: properties on ComputedKeyframe #0 should match expected "composite,computedOffset,easing,margin,offset" but got "composite,computedOffset,easing,marginBottom,marginLeft,marginRight,marginTop,offset"
-FAIL A KeyframeEffect constructed with a property-indexed keyframes specification with a CSS variable reference in a shorthand property roundtrips assert_equals: properties on ComputedKeyframe #0 should match expected "composite,computedOffset,easing,marginBottom,marginLeft,marginRight,marginTop,offset" but got "composite,computedOffset,easing,offset"
+PASS A KeyframeEffect can be constructed with a property-indexed keyframes specification with a CSS variable reference in a shorthand property
+PASS A KeyframeEffect constructed with a property-indexed keyframes specification with a CSS variable reference in a shorthand property roundtrips
 PASS A KeyframeEffect can be constructed with a one property one value property-indexed keyframes specification
 PASS A KeyframeEffect constructed with a one property one value property-indexed keyframes specification roundtrips
 PASS A KeyframeEffect can be constructed with a one property one non-array value property-indexed keyframes specification
@@ -32,6 +34,8 @@ PASS A KeyframeEffect can be constructed with a one property two value property-
 PASS A KeyframeEffect constructed with a one property two value property-indexed keyframes specification where the first value is invalid roundtrips
 PASS A KeyframeEffect can be constructed with a one property two value property-indexed keyframes specification where the second value is invalid
 PASS A KeyframeEffect constructed with a one property two value property-indexed keyframes specification where the second value is invalid roundtrips
+PASS A KeyframeEffect can be constructed with a property-indexed keyframes specification with a CSS variable as the property
+PASS A KeyframeEffect constructed with a property-indexed keyframes specification with a CSS variable as the property roundtrips
 PASS A KeyframeEffect can be constructed with a property-indexed keyframe with a single offset
 PASS A KeyframeEffect constructed with a property-indexed keyframe with a single offset roundtrips
 PASS A KeyframeEffect can be constructed with a property-indexed keyframe with an array of offsets
@@ -72,7 +76,7 @@ PASS A KeyframeEffect can be constructed with a property-indexed keyframe with a
 PASS A KeyframeEffect constructed with a property-indexed keyframe with an array of easings that is too long roundtrips
 PASS A KeyframeEffect can be constructed with a property-indexed keyframe with a single composite operation
 PASS A KeyframeEffect constructed with a property-indexed keyframe with a single composite operation roundtrips
-FAIL A KeyframeEffect can be constructed with a property-indexed keyframe with a composite array assert_equals: value for 'composite' on ComputedKeyframe #2 expected "accumulate" but got "replace"
+PASS A KeyframeEffect can be constructed with a property-indexed keyframe with a composite array
 PASS A KeyframeEffect constructed with a property-indexed keyframe with a composite array roundtrips
 PASS A KeyframeEffect can be constructed with a property-indexed keyframe with a composite array that is too short
 PASS A KeyframeEffect constructed with a property-indexed keyframe with a composite array that is too short roundtrips
@@ -86,9 +90,9 @@ PASS A KeyframeEffect can be constructed with a one property two keyframe sequen
 PASS A KeyframeEffect constructed with a one property two keyframe sequence roundtrips
 PASS A KeyframeEffect can be constructed with a two property two keyframe sequence
 PASS A KeyframeEffect constructed with a two property two keyframe sequence roundtrips
-FAIL A KeyframeEffect can be constructed with a one shorthand property two keyframe sequence assert_equals: properties on ComputedKeyframe #0 should match expected "composite,computedOffset,easing,margin,offset" but got "composite,computedOffset,easing,marginBottom,marginLeft,marginRight,marginTop,offset"
+PASS A KeyframeEffect can be constructed with a one shorthand property two keyframe sequence
 PASS A KeyframeEffect constructed with a one shorthand property two keyframe sequence roundtrips
-FAIL A KeyframeEffect can be constructed with a two property (a shorthand and one of its component longhands) two keyframe sequence assert_equals: properties on ComputedKeyframe #0 should match expected "composite,computedOffset,easing,margin,marginTop,offset" but got "composite,computedOffset,easing,marginBottom,marginLeft,marginRight,marginTop,offset"
+PASS A KeyframeEffect can be constructed with a two property (a shorthand and one of its component longhands) two keyframe sequence
 PASS A KeyframeEffect constructed with a two property (a shorthand and one of its component longhands) two keyframe sequence roundtrips
 PASS A KeyframeEffect can be constructed with a two property keyframe sequence where one property is missing from the first keyframe
 PASS A KeyframeEffect constructed with a two property keyframe sequence where one property is missing from the first keyframe roundtrips
@@ -98,8 +102,10 @@ PASS A KeyframeEffect can be constructed with a one property two keyframe sequen
 PASS A KeyframeEffect constructed with a one property two keyframe sequence that needs to stringify its values roundtrips
 PASS A KeyframeEffect can be constructed with a keyframe sequence with a CSS variable reference
 PASS A KeyframeEffect constructed with a keyframe sequence with a CSS variable reference roundtrips
-FAIL A KeyframeEffect can be constructed with a keyframe sequence with a CSS variable reference in a shorthand property assert_equals: properties on ComputedKeyframe #0 should match expected "composite,computedOffset,easing,margin,offset" but got "composite,computedOffset,easing,marginBottom,marginLeft,marginRight,marginTop,offset"
-FAIL A KeyframeEffect constructed with a keyframe sequence with a CSS variable reference in a shorthand property roundtrips assert_equals: properties on ComputedKeyframe #0 should match expected "composite,computedOffset,easing,marginBottom,marginLeft,marginRight,marginTop,offset" but got "composite,computedOffset,easing,offset"
+PASS A KeyframeEffect can be constructed with a keyframe sequence with a CSS variable reference in a shorthand property
+PASS A KeyframeEffect constructed with a keyframe sequence with a CSS variable reference in a shorthand property roundtrips
+PASS A KeyframeEffect can be constructed with a keyframe sequence with a CSS variable as its property
+PASS A KeyframeEffect constructed with a keyframe sequence with a CSS variable as its property roundtrips
 PASS A KeyframeEffect can be constructed with a keyframe sequence with duplicate values for a given interior offset
 PASS A KeyframeEffect constructed with a keyframe sequence with duplicate values for a given interior offset roundtrips
 PASS A KeyframeEffect can be constructed with a keyframe sequence with duplicate values for offsets 0 and 1

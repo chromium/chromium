@@ -24,7 +24,8 @@ namespace ui {
 namespace {
 
 bool HasFocusableChild(const AXNode* node) {
-  for (auto* child : node->children()) {
+  for (size_t i = 0; i < node->GetUnignoredChildCount(); ++i) {
+    AXNode* child = node->GetUnignoredChildAtIndex(i);
     if (child->data().HasState(ax::mojom::State::kFocusable) ||
         HasFocusableChild(child)) {
       return true;
@@ -34,8 +35,9 @@ bool HasFocusableChild(const AXNode* node) {
 }
 
 bool HasOnlyTextChildren(const AXNode* node) {
-  for (auto* child : node->children()) {
-    if (!child->IsTextNode())
+  for (size_t i = 0; i < node->GetUnignoredChildCount(); ++i) {
+    AXNode* child = node->GetUnignoredChildAtIndex(i);
+    if (!child->IsText())
       return false;
   }
   return true;
@@ -52,7 +54,7 @@ bool IsSimpleTextControl(const AXNode* node, uint32_t state) {
 }
 
 bool IsRichTextEditable(const AXNode* node) {
-  const AXNode* parent = node->parent();
+  const AXNode* parent = node->GetUnignoredParent();
   return node->data().HasState(ax::mojom::State::kRichlyEditable) &&
          (!parent ||
           !parent->data().HasState(ax::mojom::State::kRichlyEditable));
@@ -74,10 +76,10 @@ bool IsNativeTextControl(const AXNode* node) {
 }
 
 bool IsLeaf(const AXNode* node) {
-  if (node->child_count() == 0)
+  if (node->children().empty())
     return true;
 
-  if (IsNativeTextControl(node) || node->IsTextNode()) {
+  if (IsNativeTextControl(node) || node->IsText()) {
     return true;
   }
 
@@ -98,11 +100,12 @@ bool IsLeaf(const AXNode* node) {
 }
 
 base::string16 GetInnerText(const AXNode* node) {
-  if (node->IsTextNode()) {
+  if (node->IsText()) {
     return node->data().GetString16Attribute(ax::mojom::StringAttribute::kName);
   }
   base::string16 text;
-  for (auto* child : node->children()) {
+  for (size_t i = 0; i < node->GetUnignoredChildCount(); ++i) {
+    AXNode* child = node->GetUnignoredChildAtIndex(i);
     text += GetInnerText(child);
   }
   return text;
@@ -129,7 +132,8 @@ base::string16 GetValue(const AXNode* node, bool show_password) {
 }
 
 bool HasOnlyTextAndImageChildren(const AXNode* node) {
-  for (auto* child : node->children()) {
+  for (size_t i = 0; i < node->GetUnignoredChildCount(); ++i) {
+    AXNode* child = node->GetUnignoredChildAtIndex(i);
     if (child->data().role != ax::mojom::Role::kStaticText &&
         child->data().role != ax::mojom::Role::kImage) {
       return false;
@@ -141,7 +145,8 @@ bool HasOnlyTextAndImageChildren(const AXNode* node) {
 bool IsFocusable(const AXNode* node) {
   if (node->data().role == ax::mojom::Role::kIframe ||
       node->data().role == ax::mojom::Role::kIframePresentational ||
-      (node->data().role == ax::mojom::Role::kRootWebArea && node->parent())) {
+      (node->data().role == ax::mojom::Role::kRootWebArea &&
+       node->GetUnignoredParent())) {
     return node->data().HasStringAttribute(ax::mojom::StringAttribute::kName);
   }
   return node->data().HasState(ax::mojom::State::kFocusable);
@@ -158,7 +163,7 @@ base::string16 GetText(const AXNode* node, bool show_password) {
       node->data().GetIntAttribute(ax::mojom::IntAttribute::kNameFrom));
   if (ui::IsListItem(node->data().role) &&
       name_from == ax::mojom::NameFrom::kContents) {
-    if (node->child_count() > 0 && !HasOnlyTextChildren(node))
+    if (!node->children().empty() && !HasOnlyTextChildren(node))
       return base::string16();
   }
 
@@ -208,7 +213,8 @@ base::string16 GetText(const AXNode* node, bool show_password) {
   if (text.empty() &&
       (HasOnlyTextChildren(node) ||
        (IsFocusable(node) && HasOnlyTextAndImageChildren(node)))) {
-    for (auto* child : node->children()) {
+    for (size_t i = 0; i < node->GetUnignoredChildCount(); ++i) {
+      AXNode* child = node->GetUnignoredChildAtIndex(i);
       text += GetText(child, show_password);
     }
   }
@@ -286,7 +292,7 @@ void WalkAXTreeDepthFirst(const AXNode* node,
                           AssistantNode* result) {
   result->text = GetText(node, config->show_password);
   result->class_name =
-      AXRoleToAndroidClassName(node->data().role, node->parent() != nullptr);
+      AXRoleToAndroidClassName(node->data().role, node->GetUnignoredParent());
   result->role = AXRoleToString(node->data().role);
 
   result->text_size = -1.0;
@@ -320,7 +326,7 @@ void WalkAXTreeDepthFirst(const AXNode* node,
   const gfx::Rect& absolute_rect =
       gfx::ToEnclosingRect(tree->GetTreeBounds(node));
   gfx::Rect parent_relative_rect = absolute_rect;
-  bool is_root = node->parent() == nullptr;
+  bool is_root = !node->GetUnignoredParent();
   if (!is_root) {
     parent_relative_rect.Offset(-rect.OffsetFromOrigin());
   }
@@ -330,8 +336,9 @@ void WalkAXTreeDepthFirst(const AXNode* node,
   if (IsLeaf(node) && update.has_tree_data) {
     int start_selection = 0;
     int end_selection = 0;
-    if (update.tree_data.sel_anchor_object_id == node->id()) {
-      start_selection = update.tree_data.sel_anchor_offset;
+    AXTree::Selection unignored_selection = tree->GetUnignoredSelection();
+    if (unignored_selection.anchor_object_id == node->id()) {
+      start_selection = unignored_selection.anchor_offset;
       config->should_select_leaf = true;
     }
 
@@ -340,8 +347,8 @@ void WalkAXTreeDepthFirst(const AXNode* node,
           static_cast<int32_t>(GetText(node, config->show_password).length());
     }
 
-    if (update.tree_data.sel_focus_object_id == node->id()) {
-      end_selection = update.tree_data.sel_focus_offset;
+    if (unignored_selection.focus_object_id == node->id()) {
+      end_selection = unignored_selection.focus_offset;
       config->should_select_leaf = false;
     }
     if (end_selection > 0)
@@ -349,7 +356,8 @@ void WalkAXTreeDepthFirst(const AXNode* node,
           base::make_optional<gfx::Range>(start_selection, end_selection);
   }
 
-  for (auto* child : node->children()) {
+  for (size_t i = 0; i < node->GetUnignoredChildCount(); ++i) {
+    AXNode* child = node->GetUnignoredChildAtIndex(i);
     auto* n = AddChild(assistant_tree);
     result->children_indices.push_back(assistant_tree->nodes.size() - 1);
     WalkAXTreeDepthFirst(child, absolute_rect, update, tree, config,

@@ -263,7 +263,7 @@ bool DriveServiceOnWorker::HasRefreshToken() const {
   return false;
 }
 
-void DriveServiceOnWorker::Initialize(const std::string& account_id) {
+void DriveServiceOnWorker::Initialize(const CoreAccountId& account_id) {
   NOTREACHED();
 }
 

@@ -36,7 +36,7 @@ else
 var flag = false;
 es.onmessage = function (e) { flag = (e.data == "hello"); };
 var evt = document.createEvent("MessageEvent");
-evt.initMessageEvent("message", false, false, "hello", null, null, null, null);
+evt.initMessageEvent("message", false, false, "hello", undefined, undefined, undefined, undefined);
 es.dispatchEvent(evt);
 if (flag) {
     log("PASS: dispatching event on an EventSource triggers attribute listener");

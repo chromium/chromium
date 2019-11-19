@@ -67,14 +67,27 @@ public class FakeInstanceIDWithSubtype extends InstanceIDWithSubtype {
                 throw new IllegalStateException("Expected exactly one InstanceID, but there are "
                         + sSubtypeInstances.size());
             }
+            final String subType = sSubtypeInstances.values().iterator().next().getSubtype();
+            return Pair.create(subType, getAuthorizedEntityForSubtype(subType));
+        }
+    }
+
+    /**
+     * If an instanceID exists for subtype, and it has exactly one token, this returns
+     * the authorizedEntity of the token. Otherwise it throws.
+     */
+    public static String getAuthorizedEntityForSubtype(String subtype) {
+        synchronized (sSubtypeInstancesLock) {
             FakeInstanceIDWithSubtype iid =
-                    (FakeInstanceIDWithSubtype) sSubtypeInstances.values().iterator().next();
+                    (FakeInstanceIDWithSubtype) sSubtypeInstances.get(subtype);
+            if (iid == null) {
+                throw new IllegalStateException("No subtype instance found for " + subtype);
+            }
             if (iid.mTokens.size() != 1) {
                 throw new IllegalStateException(
                         "Expected exactly one token, but there are " + iid.mTokens.size());
             }
-            String authorizedEntity = iid.mTokens.keySet().iterator().next().split(",", 3)[1];
-            return Pair.create(iid.getSubtype(), authorizedEntity);
+            return iid.mTokens.keySet().iterator().next().split(",", 3)[1];
         }
     }
 

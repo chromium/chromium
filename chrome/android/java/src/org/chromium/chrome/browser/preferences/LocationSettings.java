@@ -6,11 +6,14 @@ package org.chromium.chrome.browser.preferences;
 
 import android.Manifest;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.VisibleForTesting;
 import org.chromium.base.annotations.CalledByNative;
+import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.AppHooks;
+import org.chromium.chrome.browser.preferences.website.WebsitePreferenceBridge;
 import org.chromium.components.location.LocationSettingsDialogContext;
 import org.chromium.components.location.LocationSettingsDialogOutcome;
 import org.chromium.components.location.LocationUtils;
@@ -74,7 +77,7 @@ public class LocationSettings {
             final long nativeCallback) {
         WindowAndroid window = webContents.getTopLevelNativeWindow();
         if (window == null) {
-            nativeOnLocationSettingsDialogOutcome(
+            LocationSettingsJni.get().onLocationSettingsDialogOutcome(
                     nativeCallback, LocationSettingsDialogOutcome.NO_PROMPT);
             return;
         }
@@ -82,7 +85,8 @@ public class LocationSettings {
                 promptContext, window, new Callback<Integer>() {
                     @Override
                     public void onResult(Integer result) {
-                        nativeOnLocationSettingsDialogOutcome(nativeCallback, result);
+                        LocationSettingsJni.get().onLocationSettingsDialogOutcome(
+                                nativeCallback, result);
                     }
                 });
     }
@@ -99,7 +103,7 @@ public class LocationSettings {
      * Returns whether Chrome's user-configurable location setting is enabled.
      */
     public boolean isChromeLocationSettingEnabled() {
-        return PrefServiceBridge.getInstance().isAllowLocationEnabled();
+        return WebsitePreferenceBridge.isAllowLocationEnabled();
     }
 
     @VisibleForTesting
@@ -107,5 +111,8 @@ public class LocationSettings {
         sInstance = instance;
     }
 
-    private static native void nativeOnLocationSettingsDialogOutcome(long callback, int result);
+    @NativeMethods
+    interface Natives {
+        void onLocationSettingsDialogOutcome(long callback, int result);
+    }
 }

@@ -44,12 +44,12 @@ class AudioPipelineImpl : public AvPipelineImpl {
   void OnUpdateConfig(StreamId id,
                       const ::media::AudioDecoderConfig& audio_config,
                       const ::media::VideoDecoderConfig& video_config) override;
-  const EncryptionScheme& GetEncryptionScheme(StreamId id) const override;
+  EncryptionScheme GetEncryptionScheme(StreamId id) const override;
   std::unique_ptr<StreamDecryptor> CreateDecryptor() override;
 
   CmaBackend::AudioDecoder* const audio_decoder_;
 
-  AudioConfig audio_config_;
+  EncryptionScheme encryption_scheme_ = EncryptionScheme::kUnencrypted;
 
   DISALLOW_COPY_AND_ASSIGN(AudioPipelineImpl);
 };

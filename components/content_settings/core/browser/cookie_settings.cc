@@ -5,17 +5,19 @@
 #include "components/content_settings/core/browser/cookie_settings.h"
 
 #include "base/bind.h"
+#include "base/feature_list.h"
 #include "base/logging.h"
 #include "components/content_settings/core/browser/content_settings_utils.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
+#include "components/content_settings/core/common/features.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "extensions/buildflags/buildflags.h"
-#include "net/base/net_errors.h"
-#include "net/base/static_cookie_policy.h"
+#include "net/cookies/cookie_util.h"
 #include "url/gurl.h"
 
 namespace content_settings {
@@ -23,28 +25,34 @@ namespace content_settings {
 CookieSettings::CookieSettings(
     HostContentSettingsMap* host_content_settings_map,
     PrefService* prefs,
+    bool is_incognito,
     const char* extension_scheme)
     : host_content_settings_map_(host_content_settings_map),
+      is_incognito_(is_incognito),
       extension_scheme_(extension_scheme),
-      block_third_party_cookies_(
-          prefs->GetBoolean(prefs::kBlockThirdPartyCookies)) {
+      block_third_party_cookies_(false) {
   pref_change_registrar_.Init(prefs);
   pref_change_registrar_.Add(
       prefs::kBlockThirdPartyCookies,
-      base::Bind(&CookieSettings::OnBlockThirdPartyCookiesChanged,
+      base::Bind(&CookieSettings::OnCookiePreferencesChanged,
                  base::Unretained(this)));
+  pref_change_registrar_.Add(
+      prefs::kCookieControlsMode,
+      base::Bind(&CookieSettings::OnCookiePreferencesChanged,
+                 base::Unretained(this)));
+  OnCookiePreferencesChanged();
 }
 
 ContentSetting CookieSettings::GetDefaultCookieSetting(
     std::string* provider_id) const {
   return host_content_settings_map_->GetDefaultContentSetting(
-      CONTENT_SETTINGS_TYPE_COOKIES, provider_id);
+      ContentSettingsType::COOKIES, provider_id);
 }
 
 void CookieSettings::GetCookieSettings(
     ContentSettingsForOneType* settings) const {
   host_content_settings_map_->GetSettingsForOneType(
-      CONTENT_SETTINGS_TYPE_COOKIES, std::string(), settings);
+      ContentSettingsType::COOKIES, std::string(), settings);
 }
 
 void CookieSettings::RegisterProfilePrefs(
@@ -52,26 +60,54 @@ void CookieSettings::RegisterProfilePrefs(
   registry->RegisterBooleanPref(
       prefs::kBlockThirdPartyCookies, false,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+  registry->RegisterIntegerPref(
+      prefs::kCookieControlsMode,
+      static_cast<int>(kImprovedCookieControlsDefaultInIncognito.Get()
+                           ? CookieControlsMode::kIncognitoOnly
+                           : CookieControlsMode::kOff),
+      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
 }
 
 void CookieSettings::SetDefaultCookieSetting(ContentSetting setting) {
   DCHECK(IsValidSetting(setting));
   host_content_settings_map_->SetDefaultContentSetting(
-      CONTENT_SETTINGS_TYPE_COOKIES, setting);
+      ContentSettingsType::COOKIES, setting);
 }
 
 void CookieSettings::SetCookieSetting(const GURL& primary_url,
                                       ContentSetting setting) {
   DCHECK(IsValidSetting(setting));
   host_content_settings_map_->SetContentSettingDefaultScope(
-      primary_url, GURL(), CONTENT_SETTINGS_TYPE_COOKIES, std::string(),
+      primary_url, GURL(), ContentSettingsType::COOKIES, std::string(),
       setting);
 }
 
 void CookieSettings::ResetCookieSetting(const GURL& primary_url) {
   host_content_settings_map_->SetNarrowestContentSetting(
-      primary_url, GURL(), CONTENT_SETTINGS_TYPE_COOKIES,
+      primary_url, GURL(), ContentSettingsType::COOKIES,
       CONTENT_SETTING_DEFAULT);
+}
+
+bool CookieSettings::IsThirdPartyAccessAllowed(const GURL& first_party_url) {
+  // Use GURL() as an opaque primary url to check if any site
+  // could access cookies in a 3p context on |first_party_url|.
+  return IsCookieAccessAllowed(GURL(), first_party_url);
+}
+
+void CookieSettings::SetThirdPartyCookieSetting(const GURL& first_party_url,
+                                                ContentSetting setting) {
+  DCHECK(IsValidSetting(setting));
+  host_content_settings_map_->SetContentSettingCustomScope(
+      ContentSettingsPattern::Wildcard(),
+      ContentSettingsPattern::FromURLNoWildcard(first_party_url),
+      ContentSettingsType::COOKIES, std::string(), setting);
+}
+
+void CookieSettings::ResetThirdPartyCookieSetting(const GURL& first_party_url) {
+  host_content_settings_map_->SetContentSettingCustomScope(
+      ContentSettingsPattern::Wildcard(),
+      ContentSettingsPattern::FromURLNoWildcard(first_party_url),
+      ContentSettingsType::COOKIES, std::string(), CONTENT_SETTING_DEFAULT);
 }
 
 bool CookieSettings::IsStorageDurable(const GURL& origin) const {
@@ -79,9 +115,31 @@ bool CookieSettings::IsStorageDurable(const GURL& origin) const {
   // https://crbug.com/539538
   ContentSetting setting = host_content_settings_map_->GetContentSetting(
       origin /*primary*/, origin /*secondary*/,
-      CONTENT_SETTINGS_TYPE_DURABLE_STORAGE,
+      ContentSettingsType::DURABLE_STORAGE,
       std::string() /*resource_identifier*/);
   return setting == CONTENT_SETTING_ALLOW;
+}
+
+void CookieSettings::GetSettingForLegacyCookieAccess(
+    const std::string& cookie_domain,
+    ContentSetting* setting) const {
+  DCHECK(setting);
+
+  // The content setting patterns are treated as domains, not URLs, so the
+  // scheme is irrelevant (so we can just arbitrarily pass false).
+  GURL cookie_domain_url = net::cookie_util::CookieOriginToURL(
+      cookie_domain, false /* secure scheme */);
+
+  *setting = host_content_settings_map_->GetContentSetting(
+      cookie_domain_url, GURL(), ContentSettingsType::LEGACY_COOKIE_ACCESS,
+      std::string() /* resource_identifier */);
+}
+
+bool CookieSettings::ShouldIgnoreSameSiteRestrictions(
+    const GURL& url,
+    const GURL& site_for_cookies) const {
+  return site_for_cookies.SchemeIs(kChromeUIScheme) &&
+         url.SchemeIsCryptographic();
 }
 
 void CookieSettings::ShutdownOnUIThread() {
@@ -89,31 +147,42 @@ void CookieSettings::ShutdownOnUIThread() {
   pref_change_registrar_.RemoveAll();
 }
 
-void CookieSettings::GetCookieSetting(const GURL& url,
-                                      const GURL& first_party_url,
-                                      content_settings::SettingSource* source,
-                                      ContentSetting* cookie_setting) const {
-  DCHECK(cookie_setting);
-  // Auto-allow in extensions or for WebUI embedded in a secure origin.
+bool CookieSettings::ShouldAlwaysAllowCookies(
+    const GURL& url,
+    const GURL& first_party_url) const {
   if (first_party_url.SchemeIs(kChromeUIScheme) &&
       url.SchemeIsCryptographic()) {
-    *cookie_setting = CONTENT_SETTING_ALLOW;
-    return;
+    return true;
   }
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   if (url.SchemeIs(extension_scheme_) &&
       first_party_url.SchemeIs(extension_scheme_)) {
+    return true;
+  }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
+  return false;
+}
+
+void CookieSettings::GetCookieSettingInternal(
+    const GURL& url,
+    const GURL& first_party_url,
+    bool is_third_party_request,
+    content_settings::SettingSource* source,
+    ContentSetting* cookie_setting) const {
+  DCHECK(cookie_setting);
+  // Auto-allow in extensions or for WebUI embedding a secure origin.
+  if (ShouldAlwaysAllowCookies(url, first_party_url)) {
     *cookie_setting = CONTENT_SETTING_ALLOW;
     return;
   }
-#endif
 
   // First get any host-specific settings.
   SettingInfo info;
   std::unique_ptr<base::Value> value =
       host_content_settings_map_->GetWebsiteSetting(
-          url, first_party_url, CONTENT_SETTINGS_TYPE_COOKIES, std::string(),
+          url, first_party_url, ContentSettingsType::COOKIES, std::string(),
           &info);
   if (source)
     *source = info.source;
@@ -124,26 +193,61 @@ void CookieSettings::GetCookieSetting(const GURL& url,
                      info.secondary_pattern.MatchesAllHosts() &&
                      ShouldBlockThirdPartyCookies() &&
                      !first_party_url.SchemeIs(extension_scheme_);
-  net::StaticCookiePolicy policy(
-      net::StaticCookiePolicy::BLOCK_ALL_THIRD_PARTY_COOKIES);
 
   // We should always have a value, at least from the default provider.
   DCHECK(value);
   ContentSetting setting = ValueToContentSetting(value.get());
-  bool block =
-      block_third && policy.CanAccessCookies(url, first_party_url) != net::OK;
+  bool block = block_third && is_third_party_request;
   *cookie_setting = block ? CONTENT_SETTING_BLOCK : setting;
 }
 
 CookieSettings::~CookieSettings() {
 }
 
-void CookieSettings::OnBlockThirdPartyCookiesChanged() {
+bool CookieSettings::IsCookieControlsEnabled() {
+  if (base::FeatureList::IsEnabled(
+          kImprovedCookieControlsForThirdPartyCookieBlocking) &&
+      pref_change_registrar_.prefs()->GetBoolean(
+          prefs::kBlockThirdPartyCookies)) {
+    return true;
+  }
+
+  if (!base::FeatureList::IsEnabled(kImprovedCookieControls))
+    return false;
+
+  CookieControlsMode mode = static_cast<CookieControlsMode>(
+      pref_change_registrar_.prefs()->GetInteger(prefs::kCookieControlsMode));
+
+  switch (mode) {
+    case CookieControlsMode::kOn:
+      return true;
+    case CookieControlsMode::kIncognitoOnly:
+      return is_incognito_;
+    case CookieControlsMode::kOff:
+      return false;
+  }
+  return false;
+}
+
+void CookieSettings::OnCookiePreferencesChanged() {
   DCHECK(thread_checker_.CalledOnValidThread());
 
-  base::AutoLock auto_lock(lock_);
-  block_third_party_cookies_ = pref_change_registrar_.prefs()->GetBoolean(
-      prefs::kBlockThirdPartyCookies);
+  bool new_block_third_party_cookies =
+      pref_change_registrar_.prefs()->GetBoolean(
+          prefs::kBlockThirdPartyCookies) ||
+      IsCookieControlsEnabled();
+
+  // Safe to read |block_third_party_cookies_| without locking here because the
+  // only place that writes to it is this method and it will always be run on
+  // the same thread.
+  if (block_third_party_cookies_ != new_block_third_party_cookies) {
+    {
+      base::AutoLock auto_lock(lock_);
+      block_third_party_cookies_ = new_block_third_party_cookies;
+    }
+    for (Observer& obs : observers_)
+      obs.OnThirdPartyCookieBlockingChanged(new_block_third_party_cookies);
+  }
 }
 
 bool CookieSettings::ShouldBlockThirdPartyCookies() const {

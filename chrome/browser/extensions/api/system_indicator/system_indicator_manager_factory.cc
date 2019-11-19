@@ -5,7 +5,6 @@
 #include "chrome/browser/extensions/api/system_indicator/system_indicator_manager_factory.h"
 
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/extensions/api/extension_action/extension_action_api.h"
 #include "chrome/browser/extensions/api/system_indicator/system_indicator_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
@@ -15,10 +14,10 @@
 namespace extensions {
 
 // static
-SystemIndicatorManager* SystemIndicatorManagerFactory::GetForProfile(
-    Profile* profile) {
+SystemIndicatorManager* SystemIndicatorManagerFactory::GetForContext(
+    content::BrowserContext* context) {
   return static_cast<SystemIndicatorManager*>(
-      GetInstance()->GetServiceForBrowserContext(profile, true));
+      GetInstance()->GetServiceForBrowserContext(context, true));
 }
 
 // static
@@ -31,7 +30,6 @@ SystemIndicatorManagerFactory::SystemIndicatorManagerFactory()
         "SystemIndicatorManager",
         BrowserContextDependencyManager::GetInstance()) {
   DependsOn(ExtensionsBrowserClient::Get()->GetExtensionSystemFactory());
-  DependsOn(ExtensionActionAPI::GetFactoryInstance());
 }
 
 SystemIndicatorManagerFactory::~SystemIndicatorManagerFactory() {}
@@ -44,6 +42,13 @@ KeyedService* SystemIndicatorManagerFactory::BuildServiceInstanceFor(
 
   return new SystemIndicatorManager(static_cast<Profile*>(profile),
                                     status_tray);
+}
+
+bool SystemIndicatorManagerFactory::ServiceIsCreatedWithBrowserContext() const {
+  // The SystemIndicatorManager monitors extensions being loaded and unloaded
+  // to check if they have system indicators specified. In order to observe
+  // these, it needs to be created at profile initialization.
+  return true;
 }
 
 }  // namespace extensions

@@ -7,10 +7,9 @@
 
 #include "base/base64.h"
 #include "chrome/browser/sync/test/integration/encryption_helper.h"
-#include "components/browser_sync/profile_sync_service.h"
 #include "components/sync/base/passphrase_enums.h"
 #include "components/sync/base/sync_base_switches.h"
-#include "components/sync/base/system_encryptor.h"
+#include "components/sync/driver/profile_sync_service.h"
 #include "components/sync/engine/sync_engine_switches.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -28,10 +27,11 @@ bool GetServerNigori(fake_server::FakeServer* fake_server,
   return true;
 }
 
-void InitCustomPassphraseCryptographerFromNigori(
+std::unique_ptr<syncer::Cryptographer>
+InitCustomPassphraseCryptographerFromNigori(
     const sync_pb::NigoriSpecifics& nigori,
-    syncer::Cryptographer* cryptographer,
     const std::string& passphrase) {
+  auto cryptographer = std::make_unique<syncer::DirectoryCryptographer>();
   sync_pb::EncryptedData keybag = nigori.encryption_keybag();
   cryptographer->SetPendingKeys(keybag);
 
@@ -39,22 +39,24 @@ void InitCustomPassphraseCryptographerFromNigori(
   switch (syncer::ProtoKeyDerivationMethodToEnum(
       nigori.custom_passphrase_key_derivation_method())) {
     case syncer::KeyDerivationMethod::PBKDF2_HMAC_SHA1_1003:
-      ASSERT_TRUE(cryptographer->DecryptPendingKeys(
+      EXPECT_TRUE(cryptographer->DecryptPendingKeys(
           {syncer::KeyDerivationParams::CreateForPbkdf2(), passphrase}));
       break;
     case syncer::KeyDerivationMethod::SCRYPT_8192_8_11:
-      ASSERT_TRUE(base::Base64Decode(
+      EXPECT_TRUE(base::Base64Decode(
           nigori.custom_passphrase_key_derivation_salt(), &decoded_salt));
-      ASSERT_TRUE(cryptographer->DecryptPendingKeys(
+      EXPECT_TRUE(cryptographer->DecryptPendingKeys(
           {syncer::KeyDerivationParams::CreateForScrypt(decoded_salt),
            passphrase}));
       break;
     case syncer::KeyDerivationMethod::UNSUPPORTED:
       // This test cannot pass since we wouldn't know how to decrypt data
       // encrypted using an unsupported method.
-      FAIL() << "Unsupported key derivation method encountered: "
-             << nigori.custom_passphrase_key_derivation_method();
+      ADD_FAILURE() << "Unsupported key derivation method encountered: "
+                    << nigori.custom_passphrase_key_derivation_method();
   }
+
+  return cryptographer;
 }
 
 sync_pb::NigoriSpecifics CreateCustomPassphraseNigori(
@@ -96,8 +98,7 @@ sync_pb::NigoriSpecifics CreateCustomPassphraseNigori(
   // keybag using a key derived from that passphrase). However, in some migrated
   // states, the keybag might also additionally contain an old, pre-migration
   // key.
-  syncer::SystemEncryptor encryptor;
-  syncer::Cryptographer cryptographer(&encryptor);
+  syncer::DirectoryCryptographer cryptographer;
   bool add_key_result = cryptographer.AddKey(params);
   DCHECK(add_key_result);
   bool get_keys_result =
@@ -114,8 +115,7 @@ sync_pb::EntitySpecifics GetEncryptedBookmarkEntitySpecifics(
 
   sync_pb::EntitySpecifics wrapped_entity_specifics;
   *wrapped_entity_specifics.mutable_bookmark() = bookmark_specifics;
-  syncer::SystemEncryptor encryptor;
-  syncer::Cryptographer cryptographer(&encryptor);
+  syncer::DirectoryCryptographer cryptographer;
   bool add_key_result = cryptographer.AddKey(key_params);
   DCHECK(add_key_result);
   bool encrypt_result = cryptographer.Encrypt(
@@ -141,41 +141,75 @@ void SetNigoriInFakeServer(fake_server::FakeServer* fake_server,
 }  // namespace encryption_helper
 
 ServerNigoriChecker::ServerNigoriChecker(
-    browser_sync::ProfileSyncService* service,
+    syncer::ProfileSyncService* service,
     fake_server::FakeServer* fake_server,
     syncer::PassphraseType expected_passphrase_type)
     : SingleClientStatusChangeChecker(service),
       fake_server_(fake_server),
       expected_passphrase_type_(expected_passphrase_type) {}
 
-bool ServerNigoriChecker::IsExitConditionSatisfied() {
+bool ServerNigoriChecker::IsExitConditionSatisfied(std::ostream* os) {
+  *os << "Waiting for a Nigori node with the proper passphrase type to become "
+         "available on the server.";
+
   std::vector<sync_pb::SyncEntity> nigori_entities =
       fake_server_->GetPermanentSyncEntitiesByModelType(syncer::NIGORI);
   EXPECT_LE(nigori_entities.size(), 1U);
   return !nigori_entities.empty() &&
-         syncer::ProtoPassphraseTypeToEnum(
+         syncer::ProtoPassphraseInt32ToEnum(
              nigori_entities[0].specifics().nigori().passphrase_type()) ==
              expected_passphrase_type_;
 }
 
-std::string ServerNigoriChecker::GetDebugMessage() const {
-  return "Waiting for a Nigori node with the proper passphrase type to become "
-         "available on the server.";
+ServerNigoriKeyNameChecker::ServerNigoriKeyNameChecker(
+    const std::string& expected_key_name,
+    syncer::ProfileSyncService* service,
+    fake_server::FakeServer* fake_server)
+    : SingleClientStatusChangeChecker(service),
+      fake_server_(fake_server),
+      expected_key_name_(expected_key_name) {}
+
+bool ServerNigoriKeyNameChecker::IsExitConditionSatisfied(std::ostream* os) {
+  std::vector<sync_pb::SyncEntity> nigori_entities =
+      fake_server_->GetPermanentSyncEntitiesByModelType(syncer::NIGORI);
+  DCHECK_EQ(nigori_entities.size(), 1U);
+
+  const std::string given_key_name =
+      nigori_entities[0].specifics().nigori().encryption_keybag().key_name();
+
+  *os << "Waiting for a Nigori node with proper key bag encryption key name ("
+      << expected_key_name_ << ") to become available on the server."
+      << "The server key bag encryption key name is " << given_key_name << ".";
+  return given_key_name == expected_key_name_;
 }
 
 PassphraseRequiredStateChecker::PassphraseRequiredStateChecker(
-    browser_sync::ProfileSyncService* service,
+    syncer::ProfileSyncService* service,
     bool desired_state)
     : SingleClientStatusChangeChecker(service), desired_state_(desired_state) {}
 
-bool PassphraseRequiredStateChecker::IsExitConditionSatisfied() {
-  return service()->GetUserSettings()->IsPassphraseRequiredForDecryption() ==
-         desired_state_;
+bool PassphraseRequiredStateChecker::IsExitConditionSatisfied(
+    std::ostream* os) {
+  *os << "Waiting until decryption passphrase is " +
+             std::string(desired_state_ ? "required" : "not required");
+  return service()
+             ->GetUserSettings()
+             ->IsPassphraseRequiredForPreferredDataTypes() == desired_state_;
 }
 
-std::string PassphraseRequiredStateChecker::GetDebugMessage() const {
-  return "Waiting until decryption passphrase is " +
-         std::string(desired_state_ ? "required" : "not required");
+TrustedVaultKeyRequiredStateChecker::TrustedVaultKeyRequiredStateChecker(
+    syncer::ProfileSyncService* service,
+    bool desired_state)
+    : SingleClientStatusChangeChecker(service), desired_state_(desired_state) {}
+
+bool TrustedVaultKeyRequiredStateChecker::IsExitConditionSatisfied(
+    std::ostream* os) {
+  *os << "Waiting until trusted vault keys are " +
+             std::string(desired_state_ ? "required" : "not required");
+  return service()
+             ->GetUserSettings()
+             ->IsTrustedVaultKeyRequiredForPreferredDataTypes() ==
+         desired_state_;
 }
 
 ScopedScryptFeatureToggler::ScopedScryptFeatureToggler(

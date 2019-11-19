@@ -16,36 +16,34 @@
 
 namespace device {
 
-// Data structure containing information about relying party that invoked
-// WebAuth API. Includes a relying party id, an optional relying party name,,
-// and optional relying party display image url.
-class COMPONENT_EXPORT(DEVICE_FIDO) PublicKeyCredentialRpEntity {
+// PublicKeyCredentialRpEntity identifies the web application creating or
+// challenging a WebAuthn credential.
+//
+// https://www.w3.org/TR/webauthn/#dictdef-publickeycredentialrpentity
+struct COMPONENT_EXPORT(DEVICE_FIDO) PublicKeyCredentialRpEntity {
  public:
   static base::Optional<PublicKeyCredentialRpEntity> CreateFromCBORValue(
       const cbor::Value& cbor);
 
-  explicit PublicKeyCredentialRpEntity(std::string rp_id);
+  PublicKeyCredentialRpEntity();
+  explicit PublicKeyCredentialRpEntity(std::string id);
+  PublicKeyCredentialRpEntity(std::string id,
+                              base::Optional<std::string> name,
+                              base::Optional<GURL> icon_url);
   PublicKeyCredentialRpEntity(const PublicKeyCredentialRpEntity& other);
   PublicKeyCredentialRpEntity(PublicKeyCredentialRpEntity&& other);
   PublicKeyCredentialRpEntity& operator=(
       const PublicKeyCredentialRpEntity& other);
   PublicKeyCredentialRpEntity& operator=(PublicKeyCredentialRpEntity&& other);
+  bool operator==(const PublicKeyCredentialRpEntity& other) const;
   ~PublicKeyCredentialRpEntity();
 
-  cbor::Value ConvertToCBOR() const;
-
-  PublicKeyCredentialRpEntity& SetRpName(std::string rp_name);
-  PublicKeyCredentialRpEntity& SetRpIconUrl(GURL icon_url);
-
-  const std::string& rp_id() const { return rp_id_; }
-  const base::Optional<std::string>& rp_name() const { return rp_name_; }
-  const base::Optional<GURL>& rp_icon_url() const { return rp_icon_url_; }
-
- private:
-  std::string rp_id_;
-  base::Optional<std::string> rp_name_;
-  base::Optional<GURL> rp_icon_url_;
+  std::string id;
+  base::Optional<std::string> name;
+  base::Optional<GURL> icon_url;
 };
+
+cbor::Value AsCBOR(const PublicKeyCredentialRpEntity&);
 
 }  // namespace device
 

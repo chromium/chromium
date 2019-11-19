@@ -1,5 +1,6 @@
 include_rules = [
   "+content/public/browser",
+  "+components/keyed_service/content",
   "+crypto/random.h",
   "+gpu/config/gpu_info.h",
   "+services/device/public",
@@ -12,4 +13,8 @@ specific_include_rules = {
   '.*_[a-z]*test\.cc': [
     "+content/public/test",
   ],
+  '.*internal_authenticator_impl\.(cc|h)': [
+    "+content/browser/webauth/authenticator_common.h",
+    "+third_party/blink/public/mojom/webauthn/internal_authenticator.mojom.h",
+  ]
 }

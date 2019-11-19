@@ -9,7 +9,7 @@
 
 namespace base {
 namespace test {
-class ScopedTaskEnvironment;
+class TaskEnvironment;
 }  // namespace test
 }  // namespace base
 
@@ -25,7 +25,7 @@ class ArTestSuite : public base::TestSuite {
   void Shutdown() override;
 
  private:
-  std::unique_ptr<base::test::ScopedTaskEnvironment> scoped_task_environment_;
+  std::unique_ptr<base::test::TaskEnvironment> task_environment_;
 
   DISALLOW_COPY_AND_ASSIGN(ArTestSuite);
 };

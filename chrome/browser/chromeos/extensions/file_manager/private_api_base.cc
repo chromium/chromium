@@ -22,16 +22,16 @@ constexpr base::TimeDelta kDefaultVerySlowOperationThreshold =
 
 }  // namespace
 
-LoggedUIThreadExtensionFunction::LoggedUIThreadExtensionFunction()
+LoggedExtensionFunction::LoggedExtensionFunction()
     : log_on_completion_(false),
       slow_threshold_(kDefaultSlowOperationThreshold),
       very_slow_threshold_(kDefaultVerySlowOperationThreshold) {
   start_time_ = base::TimeTicks::Now();
 }
 
-LoggedUIThreadExtensionFunction::~LoggedUIThreadExtensionFunction() = default;
+LoggedExtensionFunction::~LoggedExtensionFunction() = default;
 
-void LoggedUIThreadExtensionFunction::OnResponded() {
+void LoggedExtensionFunction::OnResponded() {
   base::TimeDelta elapsed = base::TimeTicks::Now() - start_time_;
 
   const ChromeExtensionFunctionDetails chrome_details(this);
@@ -61,10 +61,10 @@ void LoggedUIThreadExtensionFunction::OnResponded() {
                 "ms)",
                 name(), request_id(), elapsed.InMilliseconds());
   }
-  UIThreadExtensionFunction::OnResponded();
+  ExtensionFunction::OnResponded();
 }
 
-void LoggedUIThreadExtensionFunction::SetWarningThresholds(
+void LoggedExtensionFunction::SetWarningThresholds(
     base::TimeDelta slow_threshold,
     base::TimeDelta very_slow_threshold) {
   slow_threshold_ = slow_threshold;

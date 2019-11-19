@@ -68,44 +68,58 @@
                     atIndex:(int)atIndex
                      reason:(int)reason;
 
+// Invoked before a batched operations begins. The observer can use this
+// notification if it is interested in considering all those individual
+// operations as a single mutation of the WebStateList (e.g. considering
+// insertion of multiple tabs as a restoration operation).
+- (void)webStateListWillBeginBatchOperation:(WebStateList*)webStateList;
+
+// Invoked after the completion of batched operations. The observer can
+// investigate the state of the WebStateList to detect any changes that
+// were performed on it during the batch (e.g. detect that all tabs were
+// closed at once).
+- (void)webStateListBatchOperationEnded:(WebStateList*)webStateList;
+
 @end
 
 // Observer that bridges WebStateList events to an Objective-C observer that
 // implements the WebStateListObserver protocol (the observer is *not* owned).
-class WebStateListObserverBridge : public WebStateListObserver {
+class WebStateListObserverBridge final : public WebStateListObserver {
  public:
   explicit WebStateListObserverBridge(id<WebStateListObserving> observer);
-  ~WebStateListObserverBridge() override;
+  ~WebStateListObserverBridge() final;
 
  private:
   // WebStateListObserver implementation.
   void WebStateInsertedAt(WebStateList* web_state_list,
                           web::WebState* web_state,
                           int index,
-                          bool activating) override;
+                          bool activating) final;
   void WebStateMoved(WebStateList* web_state_list,
                      web::WebState* web_state,
                      int from_index,
-                     int to_index) override;
+                     int to_index) final;
   void WebStateReplacedAt(WebStateList* web_state_list,
                           web::WebState* old_web_state,
                           web::WebState* new_web_state,
-                          int index) override;
+                          int index) final;
   void WillDetachWebStateAt(WebStateList* web_state_list,
                             web::WebState* web_state,
-                            int index) override;
+                            int index) final;
   void WebStateDetachedAt(WebStateList* web_state_list,
                           web::WebState* web_state,
-                          int index) override;
+                          int index) final;
   void WillCloseWebStateAt(WebStateList* web_state_list,
                            web::WebState* web_state,
                            int index,
-                           bool user_action) override;
+                           bool user_action) final;
   void WebStateActivatedAt(WebStateList* web_state_list,
                            web::WebState* old_web_state,
                            web::WebState* new_web_state,
                            int active_index,
-                           int reason) override;
+                           int reason) final;
+  void WillBeginBatchOperation(WebStateList* web_state_list) final;
+  void BatchOperationEnded(WebStateList* web_state_list) final;
 
   __weak id<WebStateListObserving> observer_ = nil;
 

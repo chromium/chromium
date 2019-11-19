@@ -37,10 +37,6 @@ class HTMLElement;
 
 class AXMenuListPopup final : public AXMockObject {
  public:
-  static AXMenuListPopup* Create(AXObjectCacheImpl& ax_object_cache) {
-    return MakeGarbageCollected<AXMenuListPopup>(ax_object_cache);
-  }
-
   explicit AXMenuListPopup(AXObjectCacheImpl&);
 
   AXRestriction Restriction() const override;

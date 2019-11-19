@@ -44,8 +44,8 @@ class WebGLBuffer final : public WebGLSharedPlatform3DObject {
 
   bool HasEverBeenBound() const { return Object() && initial_target_; }
 
-  void SetSize(long long size) { size_ = size; }
-  long long GetSize() const { return size_; }
+  void SetSize(int64_t size) { size_ = size; }
+  int64_t GetSize() const { return size_; }
 
  protected:
   void DeleteObjectImpl(gpu::gles2::GLES2Interface*) override;
@@ -54,7 +54,7 @@ class WebGLBuffer final : public WebGLSharedPlatform3DObject {
   bool IsBuffer() const override { return true; }
 
   GLenum initial_target_;
-  long long size_;
+  int64_t size_;
 };
 
 }  // namespace blink

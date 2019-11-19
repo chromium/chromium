@@ -7711,6 +7711,120 @@ static_assert(
     offsetof(MultiDrawArraysInstancedCHROMIUM, drawcount) == 32,
     "offset of MultiDrawArraysInstancedCHROMIUM drawcount should be 32");
 
+struct MultiDrawArraysInstancedBaseInstanceCHROMIUM {
+  typedef MultiDrawArraysInstancedBaseInstanceCHROMIUM ValueType;
+  static const CommandId kCmdId = kMultiDrawArraysInstancedBaseInstanceCHROMIUM;
+  static const cmd::ArgFlags kArgFlags = cmd::kFixed;
+  static const uint8_t cmd_flags = CMD_FLAG_SET_TRACE_LEVEL(2);
+
+  static uint32_t ComputeSize() {
+    return static_cast<uint32_t>(sizeof(ValueType));  // NOLINT
+  }
+
+  void SetHeader() { header.SetCmd<ValueType>(); }
+
+  void Init(GLenum _mode,
+            uint32_t _firsts_shm_id,
+            uint32_t _firsts_shm_offset,
+            uint32_t _counts_shm_id,
+            uint32_t _counts_shm_offset,
+            uint32_t _instance_counts_shm_id,
+            uint32_t _instance_counts_shm_offset,
+            uint32_t _baseinstances_shm_id,
+            uint32_t _baseinstances_shm_offset,
+            GLsizei _drawcount) {
+    SetHeader();
+    mode = _mode;
+    firsts_shm_id = _firsts_shm_id;
+    firsts_shm_offset = _firsts_shm_offset;
+    counts_shm_id = _counts_shm_id;
+    counts_shm_offset = _counts_shm_offset;
+    instance_counts_shm_id = _instance_counts_shm_id;
+    instance_counts_shm_offset = _instance_counts_shm_offset;
+    baseinstances_shm_id = _baseinstances_shm_id;
+    baseinstances_shm_offset = _baseinstances_shm_offset;
+    drawcount = _drawcount;
+  }
+
+  void* Set(void* cmd,
+            GLenum _mode,
+            uint32_t _firsts_shm_id,
+            uint32_t _firsts_shm_offset,
+            uint32_t _counts_shm_id,
+            uint32_t _counts_shm_offset,
+            uint32_t _instance_counts_shm_id,
+            uint32_t _instance_counts_shm_offset,
+            uint32_t _baseinstances_shm_id,
+            uint32_t _baseinstances_shm_offset,
+            GLsizei _drawcount) {
+    static_cast<ValueType*>(cmd)->Init(
+        _mode, _firsts_shm_id, _firsts_shm_offset, _counts_shm_id,
+        _counts_shm_offset, _instance_counts_shm_id,
+        _instance_counts_shm_offset, _baseinstances_shm_id,
+        _baseinstances_shm_offset, _drawcount);
+    return NextCmdAddress<ValueType>(cmd);
+  }
+
+  gpu::CommandHeader header;
+  uint32_t mode;
+  uint32_t firsts_shm_id;
+  uint32_t firsts_shm_offset;
+  uint32_t counts_shm_id;
+  uint32_t counts_shm_offset;
+  uint32_t instance_counts_shm_id;
+  uint32_t instance_counts_shm_offset;
+  uint32_t baseinstances_shm_id;
+  uint32_t baseinstances_shm_offset;
+  int32_t drawcount;
+};
+
+static_assert(
+    sizeof(MultiDrawArraysInstancedBaseInstanceCHROMIUM) == 44,
+    "size of MultiDrawArraysInstancedBaseInstanceCHROMIUM should be 44");
+static_assert(offsetof(MultiDrawArraysInstancedBaseInstanceCHROMIUM, header) ==
+                  0,
+              "offset of MultiDrawArraysInstancedBaseInstanceCHROMIUM header "
+              "should be 0");
+static_assert(
+    offsetof(MultiDrawArraysInstancedBaseInstanceCHROMIUM, mode) == 4,
+    "offset of MultiDrawArraysInstancedBaseInstanceCHROMIUM mode should be 4");
+static_assert(offsetof(MultiDrawArraysInstancedBaseInstanceCHROMIUM,
+                       firsts_shm_id) == 8,
+              "offset of MultiDrawArraysInstancedBaseInstanceCHROMIUM "
+              "firsts_shm_id should be 8");
+static_assert(offsetof(MultiDrawArraysInstancedBaseInstanceCHROMIUM,
+                       firsts_shm_offset) == 12,
+              "offset of MultiDrawArraysInstancedBaseInstanceCHROMIUM "
+              "firsts_shm_offset should be 12");
+static_assert(offsetof(MultiDrawArraysInstancedBaseInstanceCHROMIUM,
+                       counts_shm_id) == 16,
+              "offset of MultiDrawArraysInstancedBaseInstanceCHROMIUM "
+              "counts_shm_id should be 16");
+static_assert(offsetof(MultiDrawArraysInstancedBaseInstanceCHROMIUM,
+                       counts_shm_offset) == 20,
+              "offset of MultiDrawArraysInstancedBaseInstanceCHROMIUM "
+              "counts_shm_offset should be 20");
+static_assert(offsetof(MultiDrawArraysInstancedBaseInstanceCHROMIUM,
+                       instance_counts_shm_id) == 24,
+              "offset of MultiDrawArraysInstancedBaseInstanceCHROMIUM "
+              "instance_counts_shm_id should be 24");
+static_assert(offsetof(MultiDrawArraysInstancedBaseInstanceCHROMIUM,
+                       instance_counts_shm_offset) == 28,
+              "offset of MultiDrawArraysInstancedBaseInstanceCHROMIUM "
+              "instance_counts_shm_offset should be 28");
+static_assert(offsetof(MultiDrawArraysInstancedBaseInstanceCHROMIUM,
+                       baseinstances_shm_id) == 32,
+              "offset of MultiDrawArraysInstancedBaseInstanceCHROMIUM "
+              "baseinstances_shm_id should be 32");
+static_assert(offsetof(MultiDrawArraysInstancedBaseInstanceCHROMIUM,
+                       baseinstances_shm_offset) == 36,
+              "offset of MultiDrawArraysInstancedBaseInstanceCHROMIUM "
+              "baseinstances_shm_offset should be 36");
+static_assert(offsetof(MultiDrawArraysInstancedBaseInstanceCHROMIUM,
+                       drawcount) == 40,
+              "offset of MultiDrawArraysInstancedBaseInstanceCHROMIUM "
+              "drawcount should be 40");
+
 struct MultiDrawElementsCHROMIUM {
   typedef MultiDrawElementsCHROMIUM ValueType;
   static const CommandId kCmdId = kMultiDrawElementsCHROMIUM;
@@ -7882,6 +7996,162 @@ static_assert(offsetof(MultiDrawElementsInstancedCHROMIUM,
 static_assert(
     offsetof(MultiDrawElementsInstancedCHROMIUM, drawcount) == 36,
     "offset of MultiDrawElementsInstancedCHROMIUM drawcount should be 36");
+
+struct MultiDrawElementsInstancedBaseVertexBaseInstanceCHROMIUM {
+  typedef MultiDrawElementsInstancedBaseVertexBaseInstanceCHROMIUM ValueType;
+  static const CommandId kCmdId =
+      kMultiDrawElementsInstancedBaseVertexBaseInstanceCHROMIUM;
+  static const cmd::ArgFlags kArgFlags = cmd::kFixed;
+  static const uint8_t cmd_flags = CMD_FLAG_SET_TRACE_LEVEL(2);
+
+  static uint32_t ComputeSize() {
+    return static_cast<uint32_t>(sizeof(ValueType));  // NOLINT
+  }
+
+  void SetHeader() { header.SetCmd<ValueType>(); }
+
+  void Init(GLenum _mode,
+            uint32_t _counts_shm_id,
+            uint32_t _counts_shm_offset,
+            GLenum _type,
+            uint32_t _offsets_shm_id,
+            uint32_t _offsets_shm_offset,
+            uint32_t _instance_counts_shm_id,
+            uint32_t _instance_counts_shm_offset,
+            uint32_t _basevertices_shm_id,
+            uint32_t _basevertices_shm_offset,
+            uint32_t _baseinstances_shm_id,
+            uint32_t _baseinstances_shm_offset,
+            GLsizei _drawcount) {
+    SetHeader();
+    mode = _mode;
+    counts_shm_id = _counts_shm_id;
+    counts_shm_offset = _counts_shm_offset;
+    type = _type;
+    offsets_shm_id = _offsets_shm_id;
+    offsets_shm_offset = _offsets_shm_offset;
+    instance_counts_shm_id = _instance_counts_shm_id;
+    instance_counts_shm_offset = _instance_counts_shm_offset;
+    basevertices_shm_id = _basevertices_shm_id;
+    basevertices_shm_offset = _basevertices_shm_offset;
+    baseinstances_shm_id = _baseinstances_shm_id;
+    baseinstances_shm_offset = _baseinstances_shm_offset;
+    drawcount = _drawcount;
+  }
+
+  void* Set(void* cmd,
+            GLenum _mode,
+            uint32_t _counts_shm_id,
+            uint32_t _counts_shm_offset,
+            GLenum _type,
+            uint32_t _offsets_shm_id,
+            uint32_t _offsets_shm_offset,
+            uint32_t _instance_counts_shm_id,
+            uint32_t _instance_counts_shm_offset,
+            uint32_t _basevertices_shm_id,
+            uint32_t _basevertices_shm_offset,
+            uint32_t _baseinstances_shm_id,
+            uint32_t _baseinstances_shm_offset,
+            GLsizei _drawcount) {
+    static_cast<ValueType*>(cmd)->Init(
+        _mode, _counts_shm_id, _counts_shm_offset, _type, _offsets_shm_id,
+        _offsets_shm_offset, _instance_counts_shm_id,
+        _instance_counts_shm_offset, _basevertices_shm_id,
+        _basevertices_shm_offset, _baseinstances_shm_id,
+        _baseinstances_shm_offset, _drawcount);
+    return NextCmdAddress<ValueType>(cmd);
+  }
+
+  gpu::CommandHeader header;
+  uint32_t mode;
+  uint32_t counts_shm_id;
+  uint32_t counts_shm_offset;
+  uint32_t type;
+  uint32_t offsets_shm_id;
+  uint32_t offsets_shm_offset;
+  uint32_t instance_counts_shm_id;
+  uint32_t instance_counts_shm_offset;
+  uint32_t basevertices_shm_id;
+  uint32_t basevertices_shm_offset;
+  uint32_t baseinstances_shm_id;
+  uint32_t baseinstances_shm_offset;
+  int32_t drawcount;
+};
+
+static_assert(
+    sizeof(MultiDrawElementsInstancedBaseVertexBaseInstanceCHROMIUM) == 56,
+    "size of MultiDrawElementsInstancedBaseVertexBaseInstanceCHROMIUM should "
+    "be 56");
+static_assert(
+    offsetof(MultiDrawElementsInstancedBaseVertexBaseInstanceCHROMIUM,
+             header) == 0,
+    "offset of MultiDrawElementsInstancedBaseVertexBaseInstanceCHROMIUM header "
+    "should be 0");
+static_assert(
+    offsetof(MultiDrawElementsInstancedBaseVertexBaseInstanceCHROMIUM, mode) ==
+        4,
+    "offset of MultiDrawElementsInstancedBaseVertexBaseInstanceCHROMIUM mode "
+    "should be 4");
+static_assert(
+    offsetof(MultiDrawElementsInstancedBaseVertexBaseInstanceCHROMIUM,
+             counts_shm_id) == 8,
+    "offset of MultiDrawElementsInstancedBaseVertexBaseInstanceCHROMIUM "
+    "counts_shm_id should be 8");
+static_assert(
+    offsetof(MultiDrawElementsInstancedBaseVertexBaseInstanceCHROMIUM,
+             counts_shm_offset) == 12,
+    "offset of MultiDrawElementsInstancedBaseVertexBaseInstanceCHROMIUM "
+    "counts_shm_offset should be 12");
+static_assert(
+    offsetof(MultiDrawElementsInstancedBaseVertexBaseInstanceCHROMIUM, type) ==
+        16,
+    "offset of MultiDrawElementsInstancedBaseVertexBaseInstanceCHROMIUM type "
+    "should be 16");
+static_assert(
+    offsetof(MultiDrawElementsInstancedBaseVertexBaseInstanceCHROMIUM,
+             offsets_shm_id) == 20,
+    "offset of MultiDrawElementsInstancedBaseVertexBaseInstanceCHROMIUM "
+    "offsets_shm_id should be 20");
+static_assert(
+    offsetof(MultiDrawElementsInstancedBaseVertexBaseInstanceCHROMIUM,
+             offsets_shm_offset) == 24,
+    "offset of MultiDrawElementsInstancedBaseVertexBaseInstanceCHROMIUM "
+    "offsets_shm_offset should be 24");
+static_assert(
+    offsetof(MultiDrawElementsInstancedBaseVertexBaseInstanceCHROMIUM,
+             instance_counts_shm_id) == 28,
+    "offset of MultiDrawElementsInstancedBaseVertexBaseInstanceCHROMIUM "
+    "instance_counts_shm_id should be 28");
+static_assert(
+    offsetof(MultiDrawElementsInstancedBaseVertexBaseInstanceCHROMIUM,
+             instance_counts_shm_offset) == 32,
+    "offset of MultiDrawElementsInstancedBaseVertexBaseInstanceCHROMIUM "
+    "instance_counts_shm_offset should be 32");
+static_assert(
+    offsetof(MultiDrawElementsInstancedBaseVertexBaseInstanceCHROMIUM,
+             basevertices_shm_id) == 36,
+    "offset of MultiDrawElementsInstancedBaseVertexBaseInstanceCHROMIUM "
+    "basevertices_shm_id should be 36");
+static_assert(
+    offsetof(MultiDrawElementsInstancedBaseVertexBaseInstanceCHROMIUM,
+             basevertices_shm_offset) == 40,
+    "offset of MultiDrawElementsInstancedBaseVertexBaseInstanceCHROMIUM "
+    "basevertices_shm_offset should be 40");
+static_assert(
+    offsetof(MultiDrawElementsInstancedBaseVertexBaseInstanceCHROMIUM,
+             baseinstances_shm_id) == 44,
+    "offset of MultiDrawElementsInstancedBaseVertexBaseInstanceCHROMIUM "
+    "baseinstances_shm_id should be 44");
+static_assert(
+    offsetof(MultiDrawElementsInstancedBaseVertexBaseInstanceCHROMIUM,
+             baseinstances_shm_offset) == 48,
+    "offset of MultiDrawElementsInstancedBaseVertexBaseInstanceCHROMIUM "
+    "baseinstances_shm_offset should be 48");
+static_assert(
+    offsetof(MultiDrawElementsInstancedBaseVertexBaseInstanceCHROMIUM,
+             drawcount) == 52,
+    "offset of MultiDrawElementsInstancedBaseVertexBaseInstanceCHROMIUM "
+    "drawcount should be 52");
 
 struct StencilFunc {
   typedef StencilFunc ValueType;
@@ -12368,6 +12638,117 @@ static_assert(offsetof(DispatchCompute, num_groups_y) == 8,
 static_assert(offsetof(DispatchCompute, num_groups_z) == 12,
               "offset of DispatchCompute num_groups_z should be 12");
 
+struct DispatchComputeIndirect {
+  typedef DispatchComputeIndirect ValueType;
+  static const CommandId kCmdId = kDispatchComputeIndirect;
+  static const cmd::ArgFlags kArgFlags = cmd::kFixed;
+  static const uint8_t cmd_flags = CMD_FLAG_SET_TRACE_LEVEL(2);
+
+  static uint32_t ComputeSize() {
+    return static_cast<uint32_t>(sizeof(ValueType));  // NOLINT
+  }
+
+  void SetHeader() { header.SetCmd<ValueType>(); }
+
+  void Init(GLintptr _offset) {
+    SetHeader();
+    offset = _offset;
+  }
+
+  void* Set(void* cmd, GLintptr _offset) {
+    static_cast<ValueType*>(cmd)->Init(_offset);
+    return NextCmdAddress<ValueType>(cmd);
+  }
+
+  gpu::CommandHeader header;
+  int32_t offset;
+};
+
+static_assert(sizeof(DispatchComputeIndirect) == 8,
+              "size of DispatchComputeIndirect should be 8");
+static_assert(offsetof(DispatchComputeIndirect, header) == 0,
+              "offset of DispatchComputeIndirect header should be 0");
+static_assert(offsetof(DispatchComputeIndirect, offset) == 4,
+              "offset of DispatchComputeIndirect offset should be 4");
+
+struct DrawArraysIndirect {
+  typedef DrawArraysIndirect ValueType;
+  static const CommandId kCmdId = kDrawArraysIndirect;
+  static const cmd::ArgFlags kArgFlags = cmd::kFixed;
+  static const uint8_t cmd_flags = CMD_FLAG_SET_TRACE_LEVEL(2);
+
+  static uint32_t ComputeSize() {
+    return static_cast<uint32_t>(sizeof(ValueType));  // NOLINT
+  }
+
+  void SetHeader() { header.SetCmd<ValueType>(); }
+
+  void Init(GLenum _mode, GLuint _offset) {
+    SetHeader();
+    mode = _mode;
+    offset = _offset;
+  }
+
+  void* Set(void* cmd, GLenum _mode, GLuint _offset) {
+    static_cast<ValueType*>(cmd)->Init(_mode, _offset);
+    return NextCmdAddress<ValueType>(cmd);
+  }
+
+  gpu::CommandHeader header;
+  uint32_t mode;
+  uint32_t offset;
+};
+
+static_assert(sizeof(DrawArraysIndirect) == 12,
+              "size of DrawArraysIndirect should be 12");
+static_assert(offsetof(DrawArraysIndirect, header) == 0,
+              "offset of DrawArraysIndirect header should be 0");
+static_assert(offsetof(DrawArraysIndirect, mode) == 4,
+              "offset of DrawArraysIndirect mode should be 4");
+static_assert(offsetof(DrawArraysIndirect, offset) == 8,
+              "offset of DrawArraysIndirect offset should be 8");
+
+struct DrawElementsIndirect {
+  typedef DrawElementsIndirect ValueType;
+  static const CommandId kCmdId = kDrawElementsIndirect;
+  static const cmd::ArgFlags kArgFlags = cmd::kFixed;
+  static const uint8_t cmd_flags = CMD_FLAG_SET_TRACE_LEVEL(2);
+
+  static uint32_t ComputeSize() {
+    return static_cast<uint32_t>(sizeof(ValueType));  // NOLINT
+  }
+
+  void SetHeader() { header.SetCmd<ValueType>(); }
+
+  void Init(GLenum _mode, GLenum _type, GLuint _offset) {
+    SetHeader();
+    mode = _mode;
+    type = _type;
+    offset = _offset;
+  }
+
+  void* Set(void* cmd, GLenum _mode, GLenum _type, GLuint _offset) {
+    static_cast<ValueType*>(cmd)->Init(_mode, _type, _offset);
+    return NextCmdAddress<ValueType>(cmd);
+  }
+
+  gpu::CommandHeader header;
+  uint32_t mode;
+  uint32_t type;
+  uint32_t offset;
+};
+
+static_assert(sizeof(DrawElementsIndirect) == 16,
+              "size of DrawElementsIndirect should be 16");
+static_assert(offsetof(DrawElementsIndirect, header) == 0,
+              "offset of DrawElementsIndirect header should be 0");
+static_assert(offsetof(DrawElementsIndirect, mode) == 4,
+              "offset of DrawElementsIndirect mode should be 4");
+static_assert(offsetof(DrawElementsIndirect, type) == 8,
+              "offset of DrawElementsIndirect type should be 8");
+static_assert(offsetof(DrawElementsIndirect, offset) == 12,
+              "offset of DrawElementsIndirect offset should be 12");
+
 struct GetProgramInterfaceiv {
   typedef GetProgramInterfaceiv ValueType;
   static const CommandId kCmdId = kGetProgramInterfaceiv;
@@ -13785,6 +14166,71 @@ static_assert(offsetof(DrawArraysInstancedANGLE, count) == 12,
 static_assert(offsetof(DrawArraysInstancedANGLE, primcount) == 16,
               "offset of DrawArraysInstancedANGLE primcount should be 16");
 
+struct DrawArraysInstancedBaseInstanceANGLE {
+  typedef DrawArraysInstancedBaseInstanceANGLE ValueType;
+  static const CommandId kCmdId = kDrawArraysInstancedBaseInstanceANGLE;
+  static const cmd::ArgFlags kArgFlags = cmd::kFixed;
+  static const uint8_t cmd_flags = CMD_FLAG_SET_TRACE_LEVEL(2);
+
+  static uint32_t ComputeSize() {
+    return static_cast<uint32_t>(sizeof(ValueType));  // NOLINT
+  }
+
+  void SetHeader() { header.SetCmd<ValueType>(); }
+
+  void Init(GLenum _mode,
+            GLint _first,
+            GLsizei _count,
+            GLsizei _primcount,
+            GLuint _baseinstance) {
+    SetHeader();
+    mode = _mode;
+    first = _first;
+    count = _count;
+    primcount = _primcount;
+    baseinstance = _baseinstance;
+  }
+
+  void* Set(void* cmd,
+            GLenum _mode,
+            GLint _first,
+            GLsizei _count,
+            GLsizei _primcount,
+            GLuint _baseinstance) {
+    static_cast<ValueType*>(cmd)->Init(_mode, _first, _count, _primcount,
+                                       _baseinstance);
+    return NextCmdAddress<ValueType>(cmd);
+  }
+
+  gpu::CommandHeader header;
+  uint32_t mode;
+  int32_t first;
+  int32_t count;
+  int32_t primcount;
+  uint32_t baseinstance;
+};
+
+static_assert(sizeof(DrawArraysInstancedBaseInstanceANGLE) == 24,
+              "size of DrawArraysInstancedBaseInstanceANGLE should be 24");
+static_assert(
+    offsetof(DrawArraysInstancedBaseInstanceANGLE, header) == 0,
+    "offset of DrawArraysInstancedBaseInstanceANGLE header should be 0");
+static_assert(
+    offsetof(DrawArraysInstancedBaseInstanceANGLE, mode) == 4,
+    "offset of DrawArraysInstancedBaseInstanceANGLE mode should be 4");
+static_assert(
+    offsetof(DrawArraysInstancedBaseInstanceANGLE, first) == 8,
+    "offset of DrawArraysInstancedBaseInstanceANGLE first should be 8");
+static_assert(
+    offsetof(DrawArraysInstancedBaseInstanceANGLE, count) == 12,
+    "offset of DrawArraysInstancedBaseInstanceANGLE count should be 12");
+static_assert(
+    offsetof(DrawArraysInstancedBaseInstanceANGLE, primcount) == 16,
+    "offset of DrawArraysInstancedBaseInstanceANGLE primcount should be 16");
+static_assert(
+    offsetof(DrawArraysInstancedBaseInstanceANGLE, baseinstance) == 20,
+    "offset of DrawArraysInstancedBaseInstanceANGLE baseinstance should be 20");
+
 struct DrawElementsInstancedANGLE {
   typedef DrawElementsInstancedANGLE ValueType;
   static const CommandId kCmdId = kDrawElementsInstancedANGLE;
@@ -13843,6 +14289,95 @@ static_assert(offsetof(DrawElementsInstancedANGLE, index_offset) == 16,
               "offset of DrawElementsInstancedANGLE index_offset should be 16");
 static_assert(offsetof(DrawElementsInstancedANGLE, primcount) == 20,
               "offset of DrawElementsInstancedANGLE primcount should be 20");
+
+struct DrawElementsInstancedBaseVertexBaseInstanceANGLE {
+  typedef DrawElementsInstancedBaseVertexBaseInstanceANGLE ValueType;
+  static const CommandId kCmdId =
+      kDrawElementsInstancedBaseVertexBaseInstanceANGLE;
+  static const cmd::ArgFlags kArgFlags = cmd::kFixed;
+  static const uint8_t cmd_flags = CMD_FLAG_SET_TRACE_LEVEL(2);
+
+  static uint32_t ComputeSize() {
+    return static_cast<uint32_t>(sizeof(ValueType));  // NOLINT
+  }
+
+  void SetHeader() { header.SetCmd<ValueType>(); }
+
+  void Init(GLenum _mode,
+            GLsizei _count,
+            GLenum _type,
+            GLuint _index_offset,
+            GLsizei _primcount,
+            GLint _basevertex,
+            GLuint _baseinstance) {
+    SetHeader();
+    mode = _mode;
+    count = _count;
+    type = _type;
+    index_offset = _index_offset;
+    primcount = _primcount;
+    basevertex = _basevertex;
+    baseinstance = _baseinstance;
+  }
+
+  void* Set(void* cmd,
+            GLenum _mode,
+            GLsizei _count,
+            GLenum _type,
+            GLuint _index_offset,
+            GLsizei _primcount,
+            GLint _basevertex,
+            GLuint _baseinstance) {
+    static_cast<ValueType*>(cmd)->Init(_mode, _count, _type, _index_offset,
+                                       _primcount, _basevertex, _baseinstance);
+    return NextCmdAddress<ValueType>(cmd);
+  }
+
+  gpu::CommandHeader header;
+  uint32_t mode;
+  int32_t count;
+  uint32_t type;
+  uint32_t index_offset;
+  int32_t primcount;
+  int32_t basevertex;
+  uint32_t baseinstance;
+};
+
+static_assert(
+    sizeof(DrawElementsInstancedBaseVertexBaseInstanceANGLE) == 32,
+    "size of DrawElementsInstancedBaseVertexBaseInstanceANGLE should be 32");
+static_assert(offsetof(DrawElementsInstancedBaseVertexBaseInstanceANGLE,
+                       header) == 0,
+              "offset of DrawElementsInstancedBaseVertexBaseInstanceANGLE "
+              "header should be 0");
+static_assert(offsetof(DrawElementsInstancedBaseVertexBaseInstanceANGLE,
+                       mode) == 4,
+              "offset of DrawElementsInstancedBaseVertexBaseInstanceANGLE mode "
+              "should be 4");
+static_assert(offsetof(DrawElementsInstancedBaseVertexBaseInstanceANGLE,
+                       count) == 8,
+              "offset of DrawElementsInstancedBaseVertexBaseInstanceANGLE "
+              "count should be 8");
+static_assert(offsetof(DrawElementsInstancedBaseVertexBaseInstanceANGLE,
+                       type) == 12,
+              "offset of DrawElementsInstancedBaseVertexBaseInstanceANGLE type "
+              "should be 12");
+static_assert(offsetof(DrawElementsInstancedBaseVertexBaseInstanceANGLE,
+                       index_offset) == 16,
+              "offset of DrawElementsInstancedBaseVertexBaseInstanceANGLE "
+              "index_offset should be 16");
+static_assert(offsetof(DrawElementsInstancedBaseVertexBaseInstanceANGLE,
+                       primcount) == 20,
+              "offset of DrawElementsInstancedBaseVertexBaseInstanceANGLE "
+              "primcount should be 20");
+static_assert(offsetof(DrawElementsInstancedBaseVertexBaseInstanceANGLE,
+                       basevertex) == 24,
+              "offset of DrawElementsInstancedBaseVertexBaseInstanceANGLE "
+              "basevertex should be 24");
+static_assert(offsetof(DrawElementsInstancedBaseVertexBaseInstanceANGLE,
+                       baseinstance) == 28,
+              "offset of DrawElementsInstancedBaseVertexBaseInstanceANGLE "
+              "baseinstance should be 28");
 
 struct VertexAttribDivisorANGLE {
   typedef VertexAttribDivisorANGLE ValueType;
@@ -14279,48 +14814,6 @@ static_assert(offsetof(LoseContextCHROMIUM, current) == 4,
               "offset of LoseContextCHROMIUM current should be 4");
 static_assert(offsetof(LoseContextCHROMIUM, other) == 8,
               "offset of LoseContextCHROMIUM other should be 8");
-
-struct InsertFenceSyncCHROMIUM {
-  typedef InsertFenceSyncCHROMIUM ValueType;
-  static const CommandId kCmdId = kInsertFenceSyncCHROMIUM;
-  static const cmd::ArgFlags kArgFlags = cmd::kFixed;
-  static const uint8_t cmd_flags = CMD_FLAG_SET_TRACE_LEVEL(1);
-
-  static uint32_t ComputeSize() {
-    return static_cast<uint32_t>(sizeof(ValueType));  // NOLINT
-  }
-
-  void SetHeader() { header.SetCmd<ValueType>(); }
-
-  void Init(GLuint64 _release_count) {
-    SetHeader();
-    GLES2Util::MapUint64ToTwoUint32(static_cast<uint64_t>(_release_count),
-                                    &release_count_0, &release_count_1);
-  }
-
-  void* Set(void* cmd, GLuint64 _release_count) {
-    static_cast<ValueType*>(cmd)->Init(_release_count);
-    return NextCmdAddress<ValueType>(cmd);
-  }
-
-  GLuint64 release_count() const volatile {
-    return static_cast<GLuint64>(
-        GLES2Util::MapTwoUint32ToUint64(release_count_0, release_count_1));
-  }
-
-  gpu::CommandHeader header;
-  uint32_t release_count_0;
-  uint32_t release_count_1;
-};
-
-static_assert(sizeof(InsertFenceSyncCHROMIUM) == 12,
-              "size of InsertFenceSyncCHROMIUM should be 12");
-static_assert(offsetof(InsertFenceSyncCHROMIUM, header) == 0,
-              "offset of InsertFenceSyncCHROMIUM header should be 0");
-static_assert(offsetof(InsertFenceSyncCHROMIUM, release_count_0) == 4,
-              "offset of InsertFenceSyncCHROMIUM release_count_0 should be 4");
-static_assert(offsetof(InsertFenceSyncCHROMIUM, release_count_1) == 8,
-              "offset of InsertFenceSyncCHROMIUM release_count_1 should be 8");
 
 struct UnpremultiplyAndDitherCopyCHROMIUM {
   typedef UnpremultiplyAndDitherCopyCHROMIUM ValueType;
@@ -14839,8 +15332,8 @@ struct ScheduleDCLayerCHROMIUM {
 
   void SetHeader() { header.SetCmd<ValueType>(); }
 
-  void Init(GLuint _y_texture_id,
-            GLuint _uv_texture_id,
+  void Init(GLuint _texture_0,
+            GLuint _texture_1,
             GLint _z_order,
             GLint _content_x,
             GLint _content_y,
@@ -14863,8 +15356,8 @@ struct ScheduleDCLayerCHROMIUM {
             GLint _clip_height,
             GLuint _protected_video_type) {
     SetHeader();
-    y_texture_id = _y_texture_id;
-    uv_texture_id = _uv_texture_id;
+    texture_0 = _texture_0;
+    texture_1 = _texture_1;
     z_order = _z_order;
     content_x = _content_x;
     content_y = _content_y;
@@ -14889,8 +15382,8 @@ struct ScheduleDCLayerCHROMIUM {
   }
 
   void* Set(void* cmd,
-            GLuint _y_texture_id,
-            GLuint _uv_texture_id,
+            GLuint _texture_0,
+            GLuint _texture_1,
             GLint _z_order,
             GLint _content_x,
             GLint _content_y,
@@ -14913,7 +15406,7 @@ struct ScheduleDCLayerCHROMIUM {
             GLint _clip_height,
             GLuint _protected_video_type) {
     static_cast<ValueType*>(cmd)->Init(
-        _y_texture_id, _uv_texture_id, _z_order, _content_x, _content_y,
+        _texture_0, _texture_1, _z_order, _content_x, _content_y,
         _content_width, _content_height, _quad_x, _quad_y, _quad_width,
         _quad_height, _transform_c1r1, _transform_c2r1, _transform_c1r2,
         _transform_c2r2, _transform_tx, _transform_ty, _is_clipped, _clip_x,
@@ -14922,8 +15415,8 @@ struct ScheduleDCLayerCHROMIUM {
   }
 
   gpu::CommandHeader header;
-  uint32_t y_texture_id;
-  uint32_t uv_texture_id;
+  uint32_t texture_0;
+  uint32_t texture_1;
   int32_t z_order;
   int32_t content_x;
   int32_t content_y;
@@ -14951,10 +15444,10 @@ static_assert(sizeof(ScheduleDCLayerCHROMIUM) == 96,
               "size of ScheduleDCLayerCHROMIUM should be 96");
 static_assert(offsetof(ScheduleDCLayerCHROMIUM, header) == 0,
               "offset of ScheduleDCLayerCHROMIUM header should be 0");
-static_assert(offsetof(ScheduleDCLayerCHROMIUM, y_texture_id) == 4,
-              "offset of ScheduleDCLayerCHROMIUM y_texture_id should be 4");
-static_assert(offsetof(ScheduleDCLayerCHROMIUM, uv_texture_id) == 8,
-              "offset of ScheduleDCLayerCHROMIUM uv_texture_id should be 8");
+static_assert(offsetof(ScheduleDCLayerCHROMIUM, texture_0) == 4,
+              "offset of ScheduleDCLayerCHROMIUM texture_0 should be 4");
+static_assert(offsetof(ScheduleDCLayerCHROMIUM, texture_1) == 8,
+              "offset of ScheduleDCLayerCHROMIUM texture_1 should be 8");
 static_assert(offsetof(ScheduleDCLayerCHROMIUM, z_order) == 12,
               "offset of ScheduleDCLayerCHROMIUM z_order should be 12");
 static_assert(offsetof(ScheduleDCLayerCHROMIUM, content_x) == 16,
@@ -16445,6 +16938,39 @@ static_assert(offsetof(ProgramPathFragmentInputGenCHROMIUM,
               "offset of ProgramPathFragmentInputGenCHROMIUM coeffs_shm_offset "
               "should be 24");
 
+struct ContextVisibilityHintCHROMIUM {
+  typedef ContextVisibilityHintCHROMIUM ValueType;
+  static const CommandId kCmdId = kContextVisibilityHintCHROMIUM;
+  static const cmd::ArgFlags kArgFlags = cmd::kFixed;
+  static const uint8_t cmd_flags = CMD_FLAG_SET_TRACE_LEVEL(3);
+
+  static uint32_t ComputeSize() {
+    return static_cast<uint32_t>(sizeof(ValueType));  // NOLINT
+  }
+
+  void SetHeader() { header.SetCmd<ValueType>(); }
+
+  void Init(GLboolean _visibility) {
+    SetHeader();
+    visibility = _visibility;
+  }
+
+  void* Set(void* cmd, GLboolean _visibility) {
+    static_cast<ValueType*>(cmd)->Init(_visibility);
+    return NextCmdAddress<ValueType>(cmd);
+  }
+
+  gpu::CommandHeader header;
+  uint32_t visibility;
+};
+
+static_assert(sizeof(ContextVisibilityHintCHROMIUM) == 8,
+              "size of ContextVisibilityHintCHROMIUM should be 8");
+static_assert(offsetof(ContextVisibilityHintCHROMIUM, header) == 0,
+              "offset of ContextVisibilityHintCHROMIUM header should be 0");
+static_assert(offsetof(ContextVisibilityHintCHROMIUM, visibility) == 4,
+              "offset of ContextVisibilityHintCHROMIUM visibility should be 4");
+
 struct CoverageModulationCHROMIUM {
   typedef CoverageModulationCHROMIUM ValueType;
   static const CommandId kCmdId = kCoverageModulationCHROMIUM;
@@ -16504,34 +17030,6 @@ static_assert(sizeof(BlendBarrierKHR) == 4,
               "size of BlendBarrierKHR should be 4");
 static_assert(offsetof(BlendBarrierKHR, header) == 0,
               "offset of BlendBarrierKHR header should be 0");
-
-struct ApplyScreenSpaceAntialiasingCHROMIUM {
-  typedef ApplyScreenSpaceAntialiasingCHROMIUM ValueType;
-  static const CommandId kCmdId = kApplyScreenSpaceAntialiasingCHROMIUM;
-  static const cmd::ArgFlags kArgFlags = cmd::kFixed;
-  static const uint8_t cmd_flags = CMD_FLAG_SET_TRACE_LEVEL(3);
-
-  static uint32_t ComputeSize() {
-    return static_cast<uint32_t>(sizeof(ValueType));  // NOLINT
-  }
-
-  void SetHeader() { header.SetCmd<ValueType>(); }
-
-  void Init() { SetHeader(); }
-
-  void* Set(void* cmd) {
-    static_cast<ValueType*>(cmd)->Init();
-    return NextCmdAddress<ValueType>(cmd);
-  }
-
-  gpu::CommandHeader header;
-};
-
-static_assert(sizeof(ApplyScreenSpaceAntialiasingCHROMIUM) == 4,
-              "size of ApplyScreenSpaceAntialiasingCHROMIUM should be 4");
-static_assert(
-    offsetof(ApplyScreenSpaceAntialiasingCHROMIUM, header) == 0,
-    "offset of ApplyScreenSpaceAntialiasingCHROMIUM header should be 0");
 
 struct BindFragDataLocationIndexedEXTBucket {
   typedef BindFragDataLocationIndexedEXTBucket ValueType;
@@ -17395,9 +17893,9 @@ static_assert(
     offsetof(SetReadbackBufferShadowAllocationINTERNAL, size) == 16,
     "offset of SetReadbackBufferShadowAllocationINTERNAL size should be 16");
 
-struct FramebufferTextureMultiviewLayeredANGLE {
-  typedef FramebufferTextureMultiviewLayeredANGLE ValueType;
-  static const CommandId kCmdId = kFramebufferTextureMultiviewLayeredANGLE;
+struct FramebufferTextureMultiviewOVR {
+  typedef FramebufferTextureMultiviewOVR ValueType;
+  static const CommandId kCmdId = kFramebufferTextureMultiviewOVR;
   static const cmd::ArgFlags kArgFlags = cmd::kFixed;
   static const uint8_t cmd_flags = CMD_FLAG_SET_TRACE_LEVEL(1);
 
@@ -17443,30 +17941,24 @@ struct FramebufferTextureMultiviewLayeredANGLE {
   int32_t numViews;
 };
 
-static_assert(sizeof(FramebufferTextureMultiviewLayeredANGLE) == 28,
-              "size of FramebufferTextureMultiviewLayeredANGLE should be 28");
+static_assert(sizeof(FramebufferTextureMultiviewOVR) == 28,
+              "size of FramebufferTextureMultiviewOVR should be 28");
+static_assert(offsetof(FramebufferTextureMultiviewOVR, header) == 0,
+              "offset of FramebufferTextureMultiviewOVR header should be 0");
+static_assert(offsetof(FramebufferTextureMultiviewOVR, target) == 4,
+              "offset of FramebufferTextureMultiviewOVR target should be 4");
 static_assert(
-    offsetof(FramebufferTextureMultiviewLayeredANGLE, header) == 0,
-    "offset of FramebufferTextureMultiviewLayeredANGLE header should be 0");
+    offsetof(FramebufferTextureMultiviewOVR, attachment) == 8,
+    "offset of FramebufferTextureMultiviewOVR attachment should be 8");
+static_assert(offsetof(FramebufferTextureMultiviewOVR, texture) == 12,
+              "offset of FramebufferTextureMultiviewOVR texture should be 12");
+static_assert(offsetof(FramebufferTextureMultiviewOVR, level) == 16,
+              "offset of FramebufferTextureMultiviewOVR level should be 16");
 static_assert(
-    offsetof(FramebufferTextureMultiviewLayeredANGLE, target) == 4,
-    "offset of FramebufferTextureMultiviewLayeredANGLE target should be 4");
-static_assert(
-    offsetof(FramebufferTextureMultiviewLayeredANGLE, attachment) == 8,
-    "offset of FramebufferTextureMultiviewLayeredANGLE attachment should be 8");
-static_assert(
-    offsetof(FramebufferTextureMultiviewLayeredANGLE, texture) == 12,
-    "offset of FramebufferTextureMultiviewLayeredANGLE texture should be 12");
-static_assert(
-    offsetof(FramebufferTextureMultiviewLayeredANGLE, level) == 16,
-    "offset of FramebufferTextureMultiviewLayeredANGLE level should be 16");
-static_assert(offsetof(FramebufferTextureMultiviewLayeredANGLE,
-                       baseViewIndex) == 20,
-              "offset of FramebufferTextureMultiviewLayeredANGLE baseViewIndex "
-              "should be 20");
-static_assert(
-    offsetof(FramebufferTextureMultiviewLayeredANGLE, numViews) == 24,
-    "offset of FramebufferTextureMultiviewLayeredANGLE numViews should be 24");
+    offsetof(FramebufferTextureMultiviewOVR, baseViewIndex) == 20,
+    "offset of FramebufferTextureMultiviewOVR baseViewIndex should be 20");
+static_assert(offsetof(FramebufferTextureMultiviewOVR, numViews) == 24,
+              "offset of FramebufferTextureMultiviewOVR numViews should be 24");
 
 struct MaxShaderCompilerThreadsKHR {
   typedef MaxShaderCompilerThreadsKHR ValueType;
@@ -17518,7 +18010,7 @@ struct CreateAndTexStorage2DSharedImageINTERNALImmediate {
 
   void SetHeader() { header.SetCmdByTotalSize<ValueType>(ComputeSize()); }
 
-  void Init(GLuint _texture, const GLbyte* _mailbox, GLenum _internalformat) {
+  void Init(GLuint _texture, GLenum _internalformat, const GLbyte* _mailbox) {
     SetHeader();
     texture = _texture;
     internalformat = _internalformat;
@@ -17527,9 +18019,9 @@ struct CreateAndTexStorage2DSharedImageINTERNALImmediate {
 
   void* Set(void* cmd,
             GLuint _texture,
-            const GLbyte* _mailbox,
-            GLenum _internalformat) {
-    static_cast<ValueType*>(cmd)->Init(_texture, _mailbox, _internalformat);
+            GLenum _internalformat,
+            const GLbyte* _mailbox) {
+    static_cast<ValueType*>(cmd)->Init(_texture, _internalformat, _mailbox);
     const uint32_t size = ComputeSize();
     return NextImmediateCmdAddressTotalSize<ValueType>(cmd, size);
   }

@@ -17,7 +17,8 @@ EffectModel::StringToCompositeOperation(const String& composite_string) {
     return base::nullopt;
   if (composite_string == "add")
     return kCompositeAdd;
-  // TODO(crbug.com/788440): Support accumulate.
+  if (composite_string == "accumulate")
+    return kCompositeAccumulate;
   return kCompositeReplace;
 }
 
@@ -26,6 +27,8 @@ String EffectModel::CompositeOperationToString(
   if (!composite)
     return "auto";
   switch (composite.value()) {
+    case EffectModel::kCompositeAccumulate:
+      return "accumulate";
     case EffectModel::kCompositeAdd:
       return "add";
     case EffectModel::kCompositeReplace:

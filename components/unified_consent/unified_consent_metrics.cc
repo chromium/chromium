@@ -7,9 +7,10 @@
 #include <utility>
 
 #include "base/metrics/histogram_macros.h"
+#include "build/build_config.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/prefs/pref_service.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/user_selectable_type.h"
 #include "components/sync/driver/sync_user_settings.h"
 #include "components/unified_consent/pref_names.h"
 
@@ -33,11 +34,10 @@ enum class SyncDataType {
   kPasswords = 8,
   kAutofill = 9,
   kPayments = 10,
+  kSync = 11,
 
-  kMaxValue = kPayments
+  kMaxValue = kSync
 };
-
-typedef std::pair<SyncDataType, syncer::ModelType> DT;
 
 // Records a sample in the SyncAndGoogleServicesSettings histogram. Wrapped in a
 // function to avoid code size issues caused by histogram macros.
@@ -65,6 +65,55 @@ void RecordSyncDataTypeSample(SyncDataType data_type) {
       data_type);
 }
 
+// Checks states of sync data types and records corresponding histogram.
+// Returns true if a sample was recorded.
+bool RecordSyncSetupDataTypesImpl(syncer::SyncUserSettings* sync_settings,
+                                  PrefService* pref_service) {
+#if defined(OS_ANDROID)
+  if (!sync_settings->IsSyncRequested()) {
+    RecordSyncDataTypeSample(SyncDataType::kSync);
+    return true;  // Don't record states of data types if sync is disabled.
+  }
+#endif
+
+  bool metric_recorded = false;
+
+  std::vector<std::pair<SyncDataType, syncer::UserSelectableType>> sync_types;
+  sync_types.emplace_back(SyncDataType::kBookmarks,
+                          syncer::UserSelectableType::kBookmarks);
+  sync_types.emplace_back(SyncDataType::kHistory,
+                          syncer::UserSelectableType::kHistory);
+  sync_types.emplace_back(SyncDataType::kSettings,
+                          syncer::UserSelectableType::kPreferences);
+  sync_types.emplace_back(SyncDataType::kTabs,
+                          syncer::UserSelectableType::kTabs);
+  sync_types.emplace_back(SyncDataType::kPasswords,
+                          syncer::UserSelectableType::kPasswords);
+  sync_types.emplace_back(SyncDataType::kAutofill,
+                          syncer::UserSelectableType::kAutofill);
+#if !defined(OS_ANDROID)
+  sync_types.emplace_back(SyncDataType::kApps,
+                          syncer::UserSelectableType::kApps);
+  sync_types.emplace_back(SyncDataType::kExtensions,
+                          syncer::UserSelectableType::kExtensions);
+  sync_types.emplace_back(SyncDataType::kThemes,
+                          syncer::UserSelectableType::kThemes);
+#endif
+
+  for (const auto& data_type : sync_types) {
+    if (!sync_settings->GetSelectedTypes().Has(data_type.second)) {
+      RecordSyncDataTypeSample(data_type.first);
+      metric_recorded = true;
+    }
+  }
+
+  if (!autofill::prefs::IsPaymentsIntegrationEnabled(pref_service)) {
+    RecordSyncDataTypeSample(SyncDataType::kPayments);
+    metric_recorded = true;
+  }
+  return metric_recorded;
+}
+
 }  // namespace
 
 void RecordSettingsHistogram(PrefService* pref_service) {
@@ -77,29 +126,7 @@ void RecordSettingsHistogram(PrefService* pref_service) {
 
 void RecordSyncSetupDataTypesHistrogam(syncer::SyncUserSettings* sync_settings,
                                        PrefService* pref_service) {
-  bool metric_recorded = false;
-
-  for (DT data_type : {DT(SyncDataType::kApps, syncer::APPS),
-                       DT(SyncDataType::kBookmarks, syncer::BOOKMARKS),
-                       DT(SyncDataType::kExtensions, syncer::EXTENSIONS),
-                       DT(SyncDataType::kHistory, syncer::TYPED_URLS),
-                       DT(SyncDataType::kSettings, syncer::PREFERENCES),
-                       DT(SyncDataType::kThemes, syncer::THEMES),
-                       DT(SyncDataType::kTabs, syncer::PROXY_TABS),
-                       DT(SyncDataType::kPasswords, syncer::PASSWORDS),
-                       DT(SyncDataType::kAutofill, syncer::AUTOFILL)}) {
-    if (!sync_settings->GetChosenDataTypes().Has(data_type.second)) {
-      RecordSyncDataTypeSample(data_type.first);
-      metric_recorded = true;
-    }
-  }
-
-  if (!autofill::prefs::IsPaymentsIntegrationEnabled(pref_service)) {
-    RecordSyncDataTypeSample(SyncDataType::kPayments);
-    metric_recorded = true;
-  }
-
-  if (!metric_recorded)
+  if (!RecordSyncSetupDataTypesImpl(sync_settings, pref_service))
     RecordSyncDataTypeSample(SyncDataType::kNone);
 }
 

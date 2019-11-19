@@ -28,8 +28,6 @@ namespace cc {
 class Layer;
 }
 
-struct NavigateParams;
-
 namespace android {
 class TabWebContentsDelegateAndroid;
 class TabContentManager;
@@ -38,10 +36,6 @@ class TabContentManager;
 namespace content {
 class DevToolsAgentHost;
 class WebContents;
-}
-
-namespace prerender {
-class PrerenderManager;
 }
 
 class TabAndroid {
@@ -107,15 +101,6 @@ class TabAndroid {
   void SetWindowSessionID(SessionID window_id);
   void SetSyncId(int sync_id);
 
-  void HandlePopupNavigation(NavigateParams* params);
-
-  bool HasPrerenderedUrl(GURL gurl);
-
-  // Returns true if this tab is currently presented in the context of custom
-  // tabs. Tabs can be moved between different activities so the returned value
-  // might change over the lifetime of the tab.
-  bool IsCurrentlyACustomTab();
-
   // Methods called from Java via JNI -----------------------------------------
 
   void Destroy(JNIEnv* env, const base::android::JavaParamRef<jobject>& obj);
@@ -134,17 +119,15 @@ class TabAndroid {
         const base::android::JavaParamRef<jobject>& jweb_contents_delegate,
         const base::android::JavaParamRef<jobject>& jcontext_menu_populator);
   void DestroyWebContents(JNIEnv* env,
-                          const base::android::JavaParamRef<jobject>& obj,
-                          jboolean delete_native);
+                          const base::android::JavaParamRef<jobject>& obj);
+  void ReleaseWebContents(JNIEnv* env,
+                          const base::android::JavaParamRef<jobject>& obj);
   void OnPhysicalBackingSizeChanged(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& obj,
       const base::android::JavaParamRef<jobject>& jweb_contents,
       jint width,
       jint height);
-  base::android::ScopedJavaLocalRef<jobject> GetProfileAndroid(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj);
   TabLoadStatus LoadUrl(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& obj,
@@ -173,80 +156,19 @@ class TabAndroid {
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& obj);
 
-  void CreateHistoricalTab(JNIEnv* env,
-                           const base::android::JavaParamRef<jobject>& obj);
-
-  static void CreateHistoricalTabFromContents(
-      content::WebContents* web_contents);
-
-  void UpdateBrowserControlsState(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj,
-      jint constraints,
-      jint current,
-      jboolean animate);
-
   void LoadOriginalImage(JNIEnv* env,
                          const base::android::JavaParamRef<jobject>& obj);
-
-  jlong GetBookmarkId(JNIEnv* env,
-                      const base::android::JavaParamRef<jobject>& obj,
-                      jboolean only_editable);
 
   void SetInterceptNavigationDelegate(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& obj,
       const base::android::JavaParamRef<jobject>& delegate);
 
-  // TODO(dtrainor): Remove this, pull content_layer() on demand.
-  void AttachToTabContentManager(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj,
-      const base::android::JavaParamRef<jobject>& jtab_content_manager);
-
-  void ClearThumbnailPlaceholder(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj);
-
-  bool HasPrerenderedUrl(JNIEnv* env,
-                         const base::android::JavaParamRef<jobject>& obj,
-                         const base::android::JavaParamRef<jstring>& url);
-
-  void SetWebappManifestScope(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj,
-      const base::android::JavaParamRef<jstring>& scope);
-
-  const GURL& GetWebappManifestScope() const { return webapp_manifest_scope_; }
-
-  void SetPictureInPictureEnabled(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj,
-      jboolean enabled);
-
-  bool IsPictureInPictureEnabled() const;
-
-  void EnableEmbeddedMediaExperience(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj,
-      jboolean enabled);
-
-  bool ShouldEnableEmbeddedMediaExperience() const;
-
   scoped_refptr<content::DevToolsAgentHost> GetDevToolsAgentHost();
 
   void SetDevToolsAgentHost(scoped_refptr<content::DevToolsAgentHost> host);
 
-  void AttachDetachedTab(JNIEnv* env,
-                         const base::android::JavaParamRef<jobject>& obj);
-
-  bool AreRendererInputEventsIgnored(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj);
-
  private:
-  prerender::PrerenderManager* GetPrerenderManager() const;
-
   JavaObjectWeakGlobalRef weak_java_tab_;
 
   // Identifier of the window the tab is in.
@@ -260,10 +182,6 @@ class TabAndroid {
       web_contents_delegate_;
   scoped_refptr<content::DevToolsAgentHost> devtools_host_;
   std::unique_ptr<browser_sync::SyncedTabDelegateAndroid> synced_tab_delegate_;
-
-  GURL webapp_manifest_scope_;
-  bool picture_in_picture_enabled_;
-  bool embedded_media_experience_enabled_;
 
   DISALLOW_COPY_AND_ASSIGN(TabAndroid);
 };

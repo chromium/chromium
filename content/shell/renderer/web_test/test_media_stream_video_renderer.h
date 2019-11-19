@@ -27,7 +27,6 @@ class TestMediaStreamVideoRenderer : public blink::WebMediaStreamVideoRenderer {
       const scoped_refptr<base::SingleThreadTaskRunner>& io_task_runner,
       const gfx::Size& size,
       const base::TimeDelta& frame_duration,
-      const base::Closure& error_cb,
       const RepaintCB& repaint_cb);
 
   // blink::WebMediaStreamVideoRenderer implementation.
@@ -55,7 +54,6 @@ class TestMediaStreamVideoRenderer : public blink::WebMediaStreamVideoRenderer {
 
   base::TimeDelta current_time_;
   base::TimeDelta frame_duration_;
-  base::Closure error_cb_;
   RepaintCB repaint_cb_;
 
   DISALLOW_COPY_AND_ASSIGN(TestMediaStreamVideoRenderer);

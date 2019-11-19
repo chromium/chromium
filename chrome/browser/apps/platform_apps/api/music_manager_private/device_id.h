@@ -46,11 +46,13 @@ class DeviceId {
 
   // The traits of the task that retrieves the device id.
   //
+  // ThreadPool(): This should run on a background thread.
   // MayBlock(): Since this requires fetching disk.
   // TaskPriority: USER_VISIBLE. Though this might be conservative, depending
   //   on how GetDeviceId() is used.
   static constexpr base::TaskTraits traits() {
-    return {base::MayBlock(), base::TaskPriority::USER_VISIBLE};
+    return {base::ThreadPool(), base::MayBlock(),
+            base::TaskPriority::USER_VISIBLE};
   }
 };
 

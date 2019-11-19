@@ -10,16 +10,18 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
+#include "base/test/gmock_callback_support.h"
+#include "base/test/gtest_util.h"
 #include "base/test/test_message_loop.h"
-#include "media/base/gmock_callback_support.h"
 #include "media/base/mock_filters.h"
 #include "media/cdm/cdm_proxy_context.h"
-#include "media/mojo/interfaces/cdm_proxy.mojom.h"
+#include "media/mojo/mojom/cdm_proxy.mojom.h"
 #include "media/mojo/services/mojo_cdm_proxy.h"
 #include "media/mojo/services/mojo_cdm_proxy_service.h"
 #include "media/mojo/services/mojo_cdm_service_context.h"
 #include "mojo/public/cpp/bindings/binding.h"
 #include "mojo/public/cpp/bindings/interface_request.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using ::testing::_;
@@ -44,7 +46,7 @@ class MockCdmProxyContext : public CdmProxyContext {};
 
 class MockCdmProxy : public media::CdmProxy, public media::CdmContext {
  public:
-  MockCdmProxy() : weak_factory_(this) {}
+  MockCdmProxy() {}
   ~MockCdmProxy() override = default;
 
   // media::CdmProxy implementation.
@@ -84,7 +86,7 @@ class MockCdmProxy : public media::CdmProxy, public media::CdmContext {
 
  private:
   MockCdmProxyContext mock_cdm_proxy_context_;
-  base::WeakPtrFactory<MockCdmProxy> weak_factory_;
+  base::WeakPtrFactory<MockCdmProxy> weak_factory_{this};
 };
 
 class MockCdmProxyClient : public cdm::CdmProxyClient {
@@ -117,9 +119,10 @@ class MojoCdmProxyTest : public ::testing::Test {
 
   MojoCdmProxyTest() {
     // Client side setup.
-    mojom::CdmProxyPtr cdm_proxy_ptr;
-    auto request = mojo::MakeRequest(&cdm_proxy_ptr);
-    mojo_cdm_proxy_.reset(new MojoCdmProxy(std::move(cdm_proxy_ptr), &client_));
+    mojo::PendingRemote<mojom::CdmProxy> cdm_proxy_remote;
+    auto receiver = cdm_proxy_remote.InitWithNewPipeAndPassReceiver();
+    mojo_cdm_proxy_.reset(
+        new MojoCdmProxy(std::move(cdm_proxy_remote), &client_));
     cdm_proxy_ = mojo_cdm_proxy_.get();
 
     // Service side setup.
@@ -127,9 +130,9 @@ class MojoCdmProxyTest : public ::testing::Test {
     mock_cdm_proxy_ = mock_cdm_proxy.get();
     mojo_cdm_proxy_service_.reset(new MojoCdmProxyService(
         std::move(mock_cdm_proxy), &mojo_cdm_service_context_));
-    binding_.reset(new mojo::Binding<mojom::CdmProxy>(
-        mojo_cdm_proxy_service_.get(), std::move(request)));
-    binding_->set_connection_error_handler(base::BindOnce(
+    receiver_.reset(new mojo::Receiver<mojom::CdmProxy>(
+        mojo_cdm_proxy_service_.get(), std::move(receiver)));
+    receiver_->set_disconnect_handler(base::BindOnce(
         &MojoCdmProxyTest::OnConnectionError, base::Unretained(this)));
 
     base::RunLoop().RunUntilIdle();
@@ -260,7 +263,7 @@ class MojoCdmProxyTest : public ::testing::Test {
   void OnConnectionError() { mojo_cdm_proxy_service_.reset(); }
 
   void ForceConnectionError() {
-    binding_->CloseWithReason(2, "Test closed connection.");
+    receiver_->ResetWithReason(2, "Test closed connection.");
     mojo_cdm_proxy_service_.reset();
     base::RunLoop().RunUntilIdle();
   }
@@ -276,7 +279,7 @@ class MojoCdmProxyTest : public ::testing::Test {
   // Service side members.
   MojoCdmServiceContext mojo_cdm_service_context_;
   std::unique_ptr<MojoCdmProxyService> mojo_cdm_proxy_service_;
-  std::unique_ptr<mojo::Binding<mojom::CdmProxy>> binding_;
+  std::unique_ptr<mojo::Receiver<mojom::CdmProxy>> receiver_;
   MockCdmProxy* mock_cdm_proxy_ = nullptr;
 
   // Media component side members.
@@ -293,6 +296,11 @@ TEST_F(MojoCdmProxyTest, Initialize) {
 
 TEST_F(MojoCdmProxyTest, Initialize_Failure) {
   Initialize(Status::kFail);
+}
+
+TEST_F(MojoCdmProxyTest, Initialize_Twice) {
+  Initialize();
+  EXPECT_CHECK_DEATH(Initialize());
 }
 
 TEST_F(MojoCdmProxyTest, Process) {

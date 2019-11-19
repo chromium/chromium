@@ -8,7 +8,7 @@
 #include "base/location.h"
 #include "base/stl_util.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "chromeos/dbus/session_manager_client.h"
+#include "chromeos/dbus/session_manager/session_manager_client.h"
 
 namespace policy {
 
@@ -24,24 +24,21 @@ constexpr base::TimeDelta kPollInterval = base::TimeDelta::FromDays(1);
 
 ServerBackedStateKeysBroker::ServerBackedStateKeysBroker(
     chromeos::SessionManagerClient* session_manager_client)
-    : session_manager_client_(session_manager_client),
-      requested_(false),
-      initial_retrieval_completed_(false),
-      weak_factory_(this) {}
+    : session_manager_client_(session_manager_client), requested_(false) {}
 
 ServerBackedStateKeysBroker::~ServerBackedStateKeysBroker() {
 }
 
 ServerBackedStateKeysBroker::Subscription
 ServerBackedStateKeysBroker::RegisterUpdateCallback(
-    const base::Closure& callback) {
+    const base::RepeatingClosure& callback) {
   if (!available())
     FetchStateKeys();
   return update_callbacks_.Add(callback);
 }
 
 void ServerBackedStateKeysBroker::RequestStateKeys(StateKeysCallback callback) {
-  if (pending()) {
+  if (!available()) {
     request_callbacks_.push_back(std::move(callback));
     FetchStateKeys();
     return;
@@ -49,7 +46,6 @@ void ServerBackedStateKeysBroker::RequestStateKeys(StateKeysCallback callback) {
 
   if (!callback.is_null())
     std::move(callback).Run(state_keys_);
-  return;
 }
 
 // static
@@ -68,15 +64,14 @@ void ServerBackedStateKeysBroker::FetchStateKeys() {
 
 void ServerBackedStateKeysBroker::StoreStateKeys(
     const std::vector<std::string>& state_keys) {
-  bool send_notification = !initial_retrieval_completed_;
+  bool send_notification = !available();
 
   requested_ = false;
   if (state_keys.empty()) {
     LOG(WARNING) << "Failed to obtain server-backed state keys.";
-  } else if (base::ContainsValue(state_keys, std::string())) {
+  } else if (base::Contains(state_keys, std::string())) {
     LOG(WARNING) << "Bad state keys.";
   } else {
-    initial_retrieval_completed_ = true;
     send_notification |= state_keys_ != state_keys;
     state_keys_ = state_keys;
   }

@@ -1,0 +1,42 @@
+<html>
+<br> <img id="pngBlob"/>
+
+<script>
+  if (window.testRunner) {
+    testRunner.waitUntilDone();
+  }
+  // source content as canvas
+  var htmlCanvas = document.createElement('canvas');
+  htmlCanvas.width = 60;
+  htmlCanvas.height = 60;
+  var htmlCanvasCtx = htmlCanvas.getContext("2d");
+  htmlCanvasCtx.fillStyle = "blue";
+  htmlCanvasCtx.fillRect(0, 0, 15, 60);
+  htmlCanvasCtx.fillStyle = "red";
+  htmlCanvasCtx.fillRect(15, 0, 45, 30);
+  htmlCanvasCtx.fillStyle = "green";
+  htmlCanvasCtx.fillRect(15, 30, 45, 30);
+
+  var canNewOffscreen = new OffscreenCanvas(60,60);
+  var ctxNewOffscreen = canNewOffscreen.getContext("bitmaprenderer");
+  var canToBlobOffscreen = new OffscreenCanvas(60,60);
+  var ctxToBlobOffscreen = canToBlobOffscreen.getContext("bitmaprenderer");
+  createImageBitmap(htmlCanvas).then(function(bmap){
+    // This offscreen canvas will be used in several tests
+    ctxNewOffscreen.transferFromImageBitmap(bmap);
+
+    // Fill canvasToBlob
+    var pngImage = document.getElementById("pngBlob");
+    canNewOffscreen.convertToBlob().then(function(blob){
+      pngImage.src = URL.createObjectURL(blob);
+      if (window.testRunner) {
+        requestAnimationFrame(() => {
+          testRunner.notifyDone();
+        });
+      }
+    })
+
+  });
+
+</script>
+</html>

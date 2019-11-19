@@ -7,9 +7,9 @@
 
 #include <memory>
 
+#include "base/component_export.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "ui/ozone/ozone_export.h"
 
 namespace base {
 class SingleThreadTaskRunner;
@@ -24,7 +24,7 @@ class FakeGpuProcessHost;
 // Helper class for applications that do not have a dedicated GPU channel.
 //
 // This sets up message forwarding between the "gpu" and "ui" threads.
-class OZONE_EXPORT OzoneGpuTestHelper {
+class COMPONENT_EXPORT(OZONE) OzoneGpuTestHelper {
  public:
   OzoneGpuTestHelper();
   virtual ~OzoneGpuTestHelper();

@@ -1,0 +1,89 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/config.gni")
+import("//build/config/android/rules.gni")
+
+weblayer_client_manifest =
+    "$target_gen_dir/weblayer_client_manifest/AndroidManifest.xml"
+
+jinja_template("weblayer_client_manifest") {
+  input = "AndroidManifest.xml"
+  output = weblayer_client_manifest
+}
+
+android_resources("client_resources") {
+  resource_dirs = [ "res" ]
+  android_manifest = weblayer_client_manifest
+  android_manifest_dep = ":weblayer_client_manifest"
+}
+
+android_library("java") {
+  java_files = [
+    "org/chromium/weblayer/Browser.java",
+    "org/chromium/weblayer/BrowserFragment.java",
+    "org/chromium/weblayer/BrowsingDataType.java",
+    "org/chromium/weblayer/Callback.java",
+    "org/chromium/weblayer/ChildProcessService.java",
+    "org/chromium/weblayer/DownloadCallback.java",
+    "org/chromium/weblayer/ErrorPageCallback.java",
+    "org/chromium/weblayer/FullscreenCallback.java",
+    "org/chromium/weblayer/ListenableFuture.java",
+    "org/chromium/weblayer/ListenableResult.java",
+    "org/chromium/weblayer/LoadError.java",
+    "org/chromium/weblayer/NavigationCallback.java",
+    "org/chromium/weblayer/NavigationController.java",
+    "org/chromium/weblayer/Navigation.java",
+    "org/chromium/weblayer/NavigationState.java",
+    "org/chromium/weblayer/NewTabCallback.java",
+    "org/chromium/weblayer/NewTabType.java",
+    "org/chromium/weblayer/ObserverList.java",
+    "org/chromium/weblayer/Profile.java",
+    "org/chromium/weblayer/Tab.java",
+    "org/chromium/weblayer/TabCallback.java",
+    "org/chromium/weblayer/TabListCallback.java",
+    "org/chromium/weblayer/ThreadCheck.java",
+    "org/chromium/weblayer/UnsupportedVersionException.java",
+    "org/chromium/weblayer/WebLayer.java",
+    "org/chromium/weblayer/WebLayerFileProvider.java",
+  ]
+
+  deps = [
+    ":client_resources",
+    ":weblayer_client_manifest",
+    "//third_party/android_deps:androidx_annotation_annotation_java",
+    "//third_party/android_deps:com_android_support_support_compat_java",
+    "//third_party/android_deps:com_android_support_support_fragment_java",
+    "//weblayer/browser/java:interfaces_java",
+  ]
+
+  android_manifest_for_lint = weblayer_client_manifest
+}
+
+dist_aar("client_aar") {
+  deps = [
+    ":java",
+    ":weblayer_client_manifest",
+  ]
+
+  # The aar should only include weblayer files. The client will provide the
+  # support library.
+  jar_included_patterns = [
+    "org/chromium/weblayer/*",
+    "org/chromium/weblayer_private/*",
+  ]
+  resource_included_patterns = [ "*/weblayer/public/java/*" ]
+
+  # R files are excluded because they are not used in the client lib and depend
+  # on other generated chromium R classes.
+  jar_excluded_patterns = [
+    "org/chromium/weblayer/client/R\$*.class",
+    "org/chromium/weblayer/client/R.class",
+  ]
+
+  # dist_aar does not take the manifest from libraries in deps, so we have to
+  # specify again here.
+  android_manifest = weblayer_client_manifest
+  output = "$root_build_dir/WebLayerClient.aar"
+}

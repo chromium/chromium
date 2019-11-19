@@ -1,0 +1,13 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+enum IDBTransactionDurability { "default", "strict", "relaxed" };
+
+dictionary IDBTransactionOptions {
+    // If durability is "relaxed", then the transaction will not be flushed
+    // to disk.  This is more performant at the cost of durability.  If it is
+    // "strict", then it will always be flushed to disk.  "default" leaves the
+    // decision up to the implementation.
+    IDBTransactionDurability durability = "default";
+};

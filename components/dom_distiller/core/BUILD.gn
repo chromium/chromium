@@ -20,21 +20,17 @@ static_library("core") {
     "distiller.h",
     "distiller_page.cc",
     "distiller_page.h",
+    "distiller_ui_handle.h",
     "distiller_url_fetcher.cc",
     "distiller_url_fetcher.h",
     "dom_distiller_constants.cc",
     "dom_distiller_constants.h",
     "dom_distiller_features.cc",
     "dom_distiller_features.h",
-    "dom_distiller_model.cc",
-    "dom_distiller_model.h",
-    "dom_distiller_observer.h",
     "dom_distiller_request_view_base.cc",
     "dom_distiller_request_view_base.h",
     "dom_distiller_service.cc",
     "dom_distiller_service.h",
-    "dom_distiller_store.cc",
-    "dom_distiller_store.h",
     "dom_distiller_switches.cc",
     "dom_distiller_switches.h",
     "experiments.cc",
@@ -63,13 +59,11 @@ static_library("core") {
   ]
   deps = [
     "//base",
-    "//components/data_use_measurement/core",
     "//components/leveldb_proto",
     "//components/pref_registry",
     "//components/prefs",
     "//components/resources",
     "//components/strings",
-    "//components/sync",
     "//components/variations",
     "//services/network/public/cpp:cpp",
     "//skia",
@@ -90,8 +84,6 @@ static_library("core") {
 static_library("test_support") {
   testonly = true
   sources = [
-    "dom_distiller_test_util.cc",
-    "dom_distiller_test_util.h",
     "fake_distiller.cc",
     "fake_distiller.h",
     "fake_distiller_page.cc",
@@ -103,7 +95,6 @@ static_library("test_support") {
     ":core",
     "//base",
     "//components/leveldb_proto:test_support",
-    "//components/sync",
     "//testing/gmock",
     "//testing/gtest",
     "//url",
@@ -132,10 +123,8 @@ source_set("unit_tests") {
     "distilled_page_prefs_unittests.cc",
     "distiller_unittest.cc",
     "distiller_url_fetcher_unittest.cc",
-    "dom_distiller_model_unittest.cc",
     "dom_distiller_request_view_base_unittest.cc",
     "dom_distiller_service_unittest.cc",
-    "dom_distiller_store_unittest.cc",
     "page_features_unittest.cc",
     "task_tracker_unittest.cc",
     "url_utils_unittest.cc",
@@ -150,7 +139,6 @@ source_set("unit_tests") {
     "//components/leveldb_proto:test_support",
     "//components/resources",
     "//components/strings",
-    "//components/sync",
     "//components/sync_preferences:test_support",
     "//net:test_support",
     "//services/network:test_support",
@@ -171,7 +159,6 @@ if (is_android) {
       "android/java/src/org/chromium/components/dom_distiller/core/DomDistillerService.java",
       "android/java/src/org/chromium/components/dom_distiller/core/DomDistillerUrlUtils.java",
     ]
-    jni_package = "dom_distiller_core"
   }
 
   java_cpp_enum("distiller_type_java") {

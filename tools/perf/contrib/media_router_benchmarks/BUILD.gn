@@ -1,0 +1,13 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+copy("telemetry_extension_resources") {
+  sources = [
+    "extension/manifest.json",
+    "extension/script.js",
+  ]
+  outputs = [
+    "$root_out_dir/media_router/telemetry_extension/{{source_file_part}}",
+  ]
+}

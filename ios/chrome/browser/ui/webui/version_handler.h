@@ -21,9 +21,9 @@ class VersionHandler : public web::WebUIIOSMessageHandler {
   // content::WebUIMessageHandler implementation.
   void RegisterMessages() override;
 
-  // Callback for the "requestVersionInfo" message. This asynchronously requests
-  // the list of variations.
-  void HandleRequestVersionInfo(const base::ListValue* args);
+  // Callback for the "requestVariationInfo" message. This responds immediately
+  // with the list of variations.
+  void HandleRequestVariationInfo(const base::ListValue* args);
 
  private:
   DISALLOW_COPY_AND_ASSIGN(VersionHandler);

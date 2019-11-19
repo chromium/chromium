@@ -3,8 +3,9 @@
 <script>
 for (var i=0; i<350; ++i) {
     var img = document.createElement("img");
-    img.style.webkitTransform = "rotate("+(i/2)+"deg) translateZ(0)";
-    img.style.webkitTransformOrigin = "300px 300px";
+    img.style.transform = "rotate("+(i/2)+"deg)";
+    img.style.willChange = "transform";
+    img.style.transformOrigin = "300px 300px";
     img.style.position = "absolute";
     img.style.opacity = 0.2;
     document.body.appendChild(img);

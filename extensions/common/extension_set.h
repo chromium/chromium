@@ -5,27 +5,28 @@
 #ifndef EXTENSIONS_COMMON_EXTENSION_SET_H_
 #define EXTENSIONS_COMMON_EXTENSION_SET_H_
 
-#include <stddef.h>
-
 #include <iterator>
 #include <map>
 #include <string>
+#include <utility>
 
-#include "base/callback.h"
-#include "base/gtest_prod_util.h"
+#include "base/files/file_path.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "extensions/common/extension.h"
-#include "url/gurl.h"
+#include "extensions/common/extension_id.h"
+
+class GURL;
 
 namespace extensions {
+class URLPatternSet;
 
 // The one true extension container. Extensions are identified by their id.
 // Only one extension can be in the set with a given ID.
 class ExtensionSet {
  public:
   typedef std::pair<base::FilePath, std::string> ExtensionPathAndDefaultLocale;
-  typedef std::map<std::string, scoped_refptr<const Extension> > ExtensionMap;
+  typedef std::map<ExtensionId, scoped_refptr<const Extension>> ExtensionMap;
 
   // Iteration over the values of the map (given that it's an ExtensionSet,
   // it should iterate like a set iterator).
@@ -73,7 +74,7 @@ class ExtensionSet {
   const_iterator end() const { return const_iterator(extensions_.end()); }
 
   // Returns true if the set contains the specified extension.
-  bool Contains(const std::string& id) const;
+  bool Contains(const ExtensionId& id) const;
 
   // Adds the specified extension to the set. The set becomes an owner. Any
   // previous extension with the same ID is removed.
@@ -86,14 +87,14 @@ class ExtensionSet {
 
   // Removes the specified extension.
   // Returns true if the set contained the specified extension.
-  bool Remove(const std::string& id);
+  bool Remove(const ExtensionId& id);
 
   // Removes all extensions.
   void Clear();
 
   // Returns the extension ID, or empty if none. This includes web URLs that
   // are part of an extension's web extent.
-  std::string GetExtensionOrAppIDByURL(const GURL& url) const;
+  ExtensionId GetExtensionOrAppIDByURL(const GURL& url) const;
 
   // Returns the Extension, or NULL if none.  This includes web URLs that are
   // part of an extension's web extent.
@@ -120,7 +121,7 @@ class ExtensionSet {
   bool InSameExtent(const GURL& old_url, const GURL& new_url) const;
 
   // Look up an Extension object by id.
-  const Extension* GetByID(const std::string& id) const;
+  const Extension* GetByID(const ExtensionId& id) const;
 
   // Gets the IDs of all extensions in the set.
   ExtensionIdSet GetIDs() const;

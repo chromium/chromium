@@ -13,6 +13,7 @@
 
 #include "base/logging.h"
 #include "base/stl_util.h"
+#include "base/win/win_util.h"
 #include "media/base/timestamp_constants.h"
 
 namespace media {
@@ -24,8 +25,10 @@ static DWORD GetArea(const BITMAPINFOHEADER& info_header) {
 }
 
 SinkInputPin::SinkInputPin(IBaseFilter* filter, SinkFilterObserver* observer)
-    : PinBase(filter), requested_frame_rate_(0), observer_(observer) {
-}
+    : PinBase(filter),
+      requested_frame_rate_(0),
+      flip_y_(false),
+      observer_(observer) {}
 
 void SinkInputPin::SetRequestedMediaFormat(
     VideoPixelFormat pixel_format,
@@ -74,12 +77,6 @@ bool SinkInputPin::IsMediaTypeValid(const AM_MEDIA_TYPE* media_type) {
     resulting_format_.pixel_format = PIXEL_FORMAT_YUY2;
     return true;
   }
-  // This format is added after http:/crbug.com/508413.
-  if (sub_type == MEDIASUBTYPE_UYVY &&
-      pvi->bmiHeader.biCompression == MAKEFOURCC('U', 'Y', 'V', 'Y')) {
-    resulting_format_.pixel_format = PIXEL_FORMAT_UYVY;
-    return true;
-  }
   if (sub_type == MEDIASUBTYPE_MJPG &&
       pvi->bmiHeader.biCompression == MAKEFOURCC('M', 'J', 'P', 'G')) {
     resulting_format_.pixel_format = PIXEL_FORMAT_MJPEG;
@@ -92,7 +89,8 @@ bool SinkInputPin::IsMediaTypeValid(const AM_MEDIA_TYPE* media_type) {
   }
   if (sub_type == MEDIASUBTYPE_RGB32 &&
       pvi->bmiHeader.biCompression == BI_RGB) {
-    resulting_format_.pixel_format = PIXEL_FORMAT_RGB32;
+    resulting_format_.pixel_format = PIXEL_FORMAT_ARGB;
+    flip_y_ = true;
     return true;
   }
   if (sub_type == kMediaSubTypeY16 &&
@@ -111,11 +109,8 @@ bool SinkInputPin::IsMediaTypeValid(const AM_MEDIA_TYPE* media_type) {
     return true;
   }
 
-#ifndef NDEBUG
-  WCHAR guid_str[128];
-  StringFromGUID2(sub_type, guid_str, base::size(guid_str));
-  DVLOG(2) << __func__ << " unsupported media type: " << guid_str;
-#endif
+  DVLOG(2) << __func__ << " unsupported media type: "
+           << base::win::String16FromGUID(sub_type);
   return false;
 }
 
@@ -231,7 +226,8 @@ HRESULT SinkInputPin::Receive(IMediaSample* sample) {
     timestamp = base::TimeDelta::FromMicroseconds(start_time / 10);
   }
 
-  observer_->FrameReceived(buffer, length, resulting_format_, timestamp);
+  observer_->FrameReceived(buffer, length, resulting_format_, timestamp,
+                           flip_y_);
   return S_OK;
 }
 

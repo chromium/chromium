@@ -14,19 +14,6 @@ const char kEnableBackgroundTracing[] = "enable-background-tracing";
 // This flag will be ignored if --trace-startup or --trace-shutdown is provided.
 const char kTraceConfigFile[]               = "trace-config-file";
 
-// Causes TRACE_EVENT flags to be recorded beginning with shutdown. Optionally,
-// can specify the specific trace categories to include (e.g.
-// --trace-shutdown=base,net) otherwise, all events are recorded.
-// --trace-shutdown-file can be used to control where the trace log gets stored
-// to since there is otherwise no way to access the result.
-const char kTraceShutdown[]                 = "trace-shutdown";
-
-// If supplied, sets the file which shutdown tracing will be stored into, if
-// omitted the default will be used "chrometrace.log" in the current directory.
-// Has no effect unless --trace-shutdown is also supplied.
-// Example: --trace-shutdown --trace-shutdown-file=/tmp/trace_event.log
-const char kTraceShutdownFile[]             = "trace-shutdown-file";
-
 // Causes TRACE_EVENT flags to be recorded from startup. Optionally, can
 // specify the specific trace categories to include (e.g.
 // --trace-startup=base,net) otherwise, all events are recorded. Setting this
@@ -50,31 +37,41 @@ const char kTraceStartupDuration[]          = "trace-startup-duration";
 // all events since startup.
 const char kTraceStartupFile[]              = "trace-startup-file";
 
-// If supplied, sets the tracing record mode; otherwise, the default
+// If supplied, sets the tracing record mode and options; otherwise, the default
 // "record-until-full" mode will be used.
 const char kTraceStartupRecordMode[] = "trace-startup-record-mode";
 
-// Enables the perfetto tracing backend. We need a separate command line
-// argument from the kTracingPerfettoBackend feature, because feature flags are
-// parsed too late during startup for early startup tracing support.
-// TODO(eseckler): When perfetto becomes the default, replace this with
-// --disable-perfetto for legacy startup tracing support.
-const char kEnablePerfetto[] = "enable-perfetto";
+// Specifies the coordinator of the startup tracing session. If the legacy
+// tracing backend is used instead of perfetto, providing this flag is not
+// necessary. Valid values: 'controller', 'devtools', or 'system'. Defaults to
+// 'controller'.
+//
+// If 'controller' is specified, the session is controlled and stopped via the
+// TracingController (e.g. to implement the timeout).
+//
+// If 'devtools' is specified, the startup tracing session will be owned by
+// DevTools and thus can be controlled (i.e. stopped) via the DevTools Tracing
+// domain on the first session connected to the browser endpoint.
+//
+// If 'system' is specified, the system Perfetto service should already be
+// tracing on a supported platform (currently only Android). Session is stopped
+// through the normal methods for stopping system traces.
+const char kTraceStartupOwner[] = "trace-startup-owner";
+
+// If the perfetto tracing backend is used, this enables privacy filtering in
+// the TraceEvent data sources for the startup tracing session.
+const char kTraceStartupEnablePrivacyFiltering[] =
+    "trace-startup-enable-privacy-filtering";
 
 // Repeat internable data for each TraceEvent in the perfetto proto format.
 const char kPerfettoDisableInterning[] = "perfetto-disable-interning";
 
 // If supplied, will enable Perfetto startup tracing and stream the
-// output to the given file.
+// output to the given file. On Android, if no file is provided, automatically
+// generate a file to write the output to.
 // TODO(oysteine): Remove once Perfetto starts early enough after
 // process startup to be able to replace the legacy startup tracing.
 const char kPerfettoOutputFile[] = "perfetto-output-file";
-
-// If enabled (and perfetto is enabled), the data sources will write trace
-// events in the new TraceEvent proto format instead of the ChromeEventBundle
-// format.
-// TODO(eseckler): Remove this when we remove ChromeEventBundle support.
-const char kPerfettoUseNewProtos[] = "perfetto-use-new-protos";
 
 // Sends a pretty-printed version of tracing info to the console.
 const char kTraceToConsole[]                = "trace-to-console";

@@ -10,6 +10,8 @@ Example:
   tools/resources/list_unused_grit_header.py ui/strings/ui_strings.grd chrome ui
 """
 
+from __future__ import print_function
+
 import os
 import sys
 import xml.etree.ElementTree
@@ -20,7 +22,7 @@ IF_ELSE_THEN_TAGS = ('if', 'else', 'then')
 
 
 def Usage(prog_name):
-  print prog_name, 'GRD_FILE PATHS_TO_SCAN'
+  print(prog_name, 'GRD_FILE PATHS_TO_SCAN')
 
 
 def FilterResourceIds(resource_id):
@@ -197,13 +199,13 @@ def main(argv):
   paths_to_scan = argv[2:]
   for f in paths_to_scan:
     if not os.path.exists(f):
-      print 'Error: %s does not exist' % f
+      print('Error: %s does not exist' % f)
       return 1
 
   tree = xml.etree.ElementTree.parse(grd_file)
   grit_header = GetOutputHeaderFile(tree)
   if not grit_header:
-    print 'Error: %s does not generate any output headers.' % grd_file
+    print('Error: %s does not generate any output headers.' % grd_file)
     return 1
 
   resources = GetResourcesForGrdFile(tree, grd_file)
@@ -222,10 +224,10 @@ def main(argv):
       if not NeedsGritInclude(grit_header, resources, path_to_scan):
         files_with_unneeded_grit_includes.append(path_to_scan)
     else:
-      print 'Warning: Skipping %s' % path_to_scan
+      print('Warning: Skipping %s' % path_to_scan)
 
   if files_with_unneeded_grit_includes:
-    print '\n'.join(files_with_unneeded_grit_includes)
+    print('\n'.join(files_with_unneeded_grit_includes))
     return 2
   return 0
 

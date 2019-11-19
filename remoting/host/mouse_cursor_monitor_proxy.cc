@@ -115,7 +115,7 @@ void MouseCursorMonitorProxy::Core::OnMouseCursorPosition(
 MouseCursorMonitorProxy::MouseCursorMonitorProxy(
     scoped_refptr<base::SingleThreadTaskRunner> capture_task_runner,
     const webrtc::DesktopCaptureOptions& options)
-    : capture_task_runner_(capture_task_runner), weak_factory_(this) {
+    : capture_task_runner_(capture_task_runner) {
   core_.reset(new Core(weak_factory_.GetWeakPtr()));
   capture_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&Core::CreateMouseCursorMonitor,

@@ -7,13 +7,12 @@
 #include "content/public/browser/browser_context.h"
 #include "extensions/browser/declarative_user_script_manager_factory.h"
 #include "extensions/browser/declarative_user_script_master.h"
-#include "extensions/browser/extension_registry.h"
 
 namespace extensions {
 
 DeclarativeUserScriptManager::DeclarativeUserScriptManager(
     content::BrowserContext* browser_context)
-    : browser_context_(browser_context), extension_registry_observer_(this) {
+    : browser_context_(browser_context) {
   extension_registry_observer_.Add(ExtensionRegistry::Get(browser_context));
 }
 

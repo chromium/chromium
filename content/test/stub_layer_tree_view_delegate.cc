@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "cc/metrics/begin_main_frame_metrics.h"
 #include "cc/trees/layer_tree_frame_sink.h"
 #include "cc/trees/swap_promise.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
@@ -17,9 +18,8 @@ void StubLayerTreeViewDelegate::RequestNewLayerTreeFrameSink(
   std::move(callback).Run(nullptr);
 }
 
-std::unique_ptr<cc::SwapPromise>
-StubLayerTreeViewDelegate::RequestCopyOfOutputForWebTest(
-    std::unique_ptr<viz::CopyOutputRequest> request) {
+std::unique_ptr<cc::BeginMainFrameMetrics>
+StubLayerTreeViewDelegate::GetBeginMainFrameMetrics() {
   return nullptr;
 }
 

@@ -7,12 +7,15 @@
 
 #include "ash/app_list/model/app_list_model_export.h"
 
-namespace app_list {
+namespace ash {
+enum class AppListConfigType;
 
 class APP_LIST_MODEL_EXPORT AppListItemObserver {
  public:
   // Invoked after item's icon is changed.
-  virtual void ItemIconChanged() {}
+  // |config_type| The app list configuration type for which the item icon
+  // changed.
+  virtual void ItemIconChanged(ash::AppListConfigType config_type) {}
 
   // Invoked after item's name is changed.
   virtual void ItemNameChanged() {}
@@ -30,6 +33,6 @@ class APP_LIST_MODEL_EXPORT AppListItemObserver {
   virtual ~AppListItemObserver() {}
 };
 
-}  // namespace app_list
+}  // namespace ash
 
 #endif  // ASH_APP_LIST_MODEL_APP_LIST_ITEM_OBSERVER_H_

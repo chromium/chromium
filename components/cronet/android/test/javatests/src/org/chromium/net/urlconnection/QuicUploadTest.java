@@ -9,6 +9,7 @@ import static org.junit.Assert.assertEquals;
 import static org.chromium.net.CronetTestRule.getContext;
 
 import android.support.test.filters.SmallTest;
+import android.support.test.runner.AndroidJUnit4;
 
 import org.json.JSONObject;
 import org.junit.Before;
@@ -16,7 +17,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.net.CronetEngine;
 import org.chromium.net.CronetTestRule;
@@ -33,7 +33,7 @@ import java.util.Arrays;
 /**
  * Tests HttpURLConnection upload using QUIC.
  */
-@RunWith(BaseJUnit4ClassRunner.class)
+@RunWith(AndroidJUnit4.class)
 public class QuicUploadTest {
     @Rule
     public final CronetTestRule mTestRule = new CronetTestRule();

@@ -22,6 +22,7 @@ bool ShouldUpdateTextInputState(const content::TextInputState& old_state,
          old_state.can_compose_inline != new_state.can_compose_inline;
 #elif defined(OS_MACOSX)
   return old_state.type != new_state.type ||
+         old_state.flags != new_state.flags ||
          old_state.can_compose_inline != new_state.can_compose_inline;
 #elif defined(OS_ANDROID)
   // On Android, TextInputState update is sent only if there is some change in

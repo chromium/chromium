@@ -76,4 +76,8 @@ bool IsTraceEventArgsWhitelisted(
   return false;
 }
 
+bool IsTraceMetadataWhitelisted(const std::string& name) {
+  return false;
+}
+
 }  // namespace android_webview

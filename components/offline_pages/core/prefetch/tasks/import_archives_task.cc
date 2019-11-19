@@ -24,10 +24,11 @@ namespace {
 std::unique_ptr<std::vector<PrefetchArchiveInfo>> GetArchivesSync(
     sql::Database* db) {
   static const char kSql[] =
-      "SELECT offline_id, client_namespace, guid, requested_url,"
-      "  final_archived_url, title, file_path, file_size"
+      "SELECT offline_id,client_namespace,guid,requested_url,"
+      "final_archived_url,title,file_path,file_size,favicon_url,snippet,"
+      "attribution"
       " FROM prefetch_items"
-      " WHERE state = ?";
+      " WHERE state=?";
   sql::Statement statement(db->GetCachedStatement(SQL_FROM_HERE, kSql));
   statement.BindInt(0, static_cast<int>(PrefetchItemState::DOWNLOADED));
 
@@ -45,6 +46,9 @@ std::unique_ptr<std::vector<PrefetchArchiveInfo>> GetArchivesSync(
     archive.file_path =
         store_utils::FromDatabaseFilePath(statement.ColumnString(6));
     archive.file_size = statement.ColumnInt64(7);
+    archive.favicon_url = GURL(statement.ColumnString(8));
+    archive.snippet = statement.ColumnString(9);
+    archive.attribution = statement.ColumnString(10);
     if (!archives)
       archives = std::make_unique<std::vector<PrefetchArchiveInfo>>();
     archives->push_back(archive);
@@ -56,8 +60,8 @@ std::unique_ptr<std::vector<PrefetchArchiveInfo>> GetArchivesSync(
 bool UpdateToImportingStateSync(int64_t offline_id, sql::Database* db) {
   static const char kSql[] =
       "UPDATE prefetch_items"
-      " SET state = ?"
-      " WHERE offline_id = ?";
+      " SET state=?"
+      " WHERE offline_id=?";
 
   sql::Statement statement(db->GetCachedStatement(SQL_FROM_HERE, kSql));
   statement.BindInt(0, static_cast<int>(PrefetchItemState::IMPORTING));
@@ -92,9 +96,7 @@ GetArchivesAndUpdateToImportingStateSync(sql::Database* db) {
 
 ImportArchivesTask::ImportArchivesTask(PrefetchStore* prefetch_store,
                                        PrefetchImporter* prefetch_importer)
-    : prefetch_store_(prefetch_store),
-      prefetch_importer_(prefetch_importer),
-      weak_ptr_factory_(this) {}
+    : prefetch_store_(prefetch_store), prefetch_importer_(prefetch_importer) {}
 
 ImportArchivesTask::~ImportArchivesTask() {}
 

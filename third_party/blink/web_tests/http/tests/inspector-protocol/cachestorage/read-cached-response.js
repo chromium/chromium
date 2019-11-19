@@ -4,7 +4,7 @@
       `Tests reading cached response from the protocol.`);
 
   async function dumpResponse(cacheId, entry) {
-    var {error, result} = await dp.CacheStorage.requestCachedResponse({cacheId, requestURL: entry ? entry.requestURL : null});
+    var {error, result} = await dp.CacheStorage.requestCachedResponse({cacheId, requestURL: entry ? entry.requestURL : null, requestHeaders: []});
     if (error) {
       testRunner.log(`Error: ${error.message} ${error.data || ""}`);
       return;

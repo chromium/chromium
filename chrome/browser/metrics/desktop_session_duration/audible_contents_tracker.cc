@@ -36,28 +36,21 @@ void AudibleContentsTracker::OnTabStripModelChanged(
     TabStripModel* tab_strip_model,
     const TabStripModelChange& change,
     const TabStripSelectionChange& selection) {
-  if (change.type() != TabStripModelChange::kRemoved &&
-      change.type() != TabStripModelChange::kReplaced)
-    return;
-
-  for (const auto& delta : change.deltas()) {
-    content::WebContents* removed_contents = nullptr;
-    content::WebContents* added_contents = nullptr;
-    if (change.type() == TabStripModelChange::kReplaced) {
-      removed_contents = delta.replace.old_contents;
-      added_contents = delta.replace.new_contents;
-    } else if (delta.remove.will_be_deleted) {
-      removed_contents = delta.remove.contents;
+  if (change.type() == TabStripModelChange::kRemoved) {
+    auto* remove = change.GetRemove();
+    if (remove->will_be_deleted) {
+      for (const auto& contents : remove->contents)
+        RemoveAudibleWebContents(contents.contents);
     }
-
-    if (removed_contents)
-      RemoveAudibleWebContents(removed_contents);
-
-    if (added_contents) {
+  } else if (change.type() == TabStripModelChange::kReplaced) {
+    auto* replace = change.GetReplace();
+    if (replace->old_contents)
+      RemoveAudibleWebContents(replace->old_contents);
+    if (replace->new_contents) {
       auto* audible_helper =
-          RecentlyAudibleHelper::FromWebContents(added_contents);
+          RecentlyAudibleHelper::FromWebContents(replace->new_contents);
       if (audible_helper->WasRecentlyAudible())
-        AddAudibleWebContents(added_contents);
+        AddAudibleWebContents(replace->new_contents);
     }
   }
 }

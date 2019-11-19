@@ -159,16 +159,9 @@ void InputMethodBase::OnInputMethodChanged() const {
 }
 
 ui::EventDispatchDetails InputMethodBase::DispatchKeyEventPostIME(
-    ui::KeyEvent* event,
-    ResultCallback result_callback) const {
-  if (delegate_) {
-    return delegate_->DispatchKeyEventPostIME(event,
-                                              std::move(result_callback));
-  }
-
-  if (result_callback)
-    std::move(result_callback).Run(false, false);
-  return EventDispatchDetails();
+    ui::KeyEvent* event) const {
+  return delegate_ ? delegate_->DispatchKeyEventPostIME(event)
+                   : ui::EventDispatchDetails();
 }
 
 void InputMethodBase::NotifyTextInputStateChanged(
@@ -218,7 +211,7 @@ std::vector<gfx::Rect> InputMethodBase::GetCompositionBounds(
 bool InputMethodBase::SendFakeProcessKeyEvent(bool pressed) const {
   KeyEvent evt(pressed ? ET_KEY_PRESSED : ET_KEY_RELEASED,
                pressed ? VKEY_PROCESSKEY : VKEY_UNKNOWN, EF_IME_FABRICATED_KEY);
-  ignore_result(DispatchKeyEventPostIME(&evt, base::NullCallback()));
+  ignore_result(DispatchKeyEventPostIME(&evt));
   return evt.stopped_propagation();
 }
 
@@ -250,6 +243,19 @@ void InputMethodBase::UpdateCompositionText(const CompositionText& composition_,
   SendFakeProcessKeyEvent(false);
 }
 
+#if defined(OS_CHROMEOS)
+bool InputMethodBase::SetCompositionRange(
+    uint32_t before,
+    uint32_t after,
+    const std::vector<ui::ImeTextSpan>& text_spans) {
+  return false;
+}
+
+bool InputMethodBase::SetSelectionRange(uint32_t start, uint32_t end) {
+  return false;
+}
+#endif
+
 void InputMethodBase::DeleteSurroundingText(int32_t offset, uint32_t length) {}
 
 SurroundingTextInfo InputMethodBase::GetSurroundingTextInfo() {
@@ -269,17 +275,27 @@ SurroundingTextInfo InputMethodBase::GetSurroundingTextInfo() {
 }
 
 void InputMethodBase::SendKeyEvent(KeyEvent* event) {
-  sending_key_event_ = true;
   if (track_key_events_for_testing_) {
     key_events_for_testing_.push_back(std::make_unique<KeyEvent>(*event));
   }
   ui::EventDispatchDetails details = DispatchKeyEvent(event);
   DCHECK(!details.dispatcher_destroyed);
-  sending_key_event_ = false;
 }
 
 InputMethod* InputMethodBase::GetInputMethod() {
   return this;
+}
+
+void InputMethodBase::ConfirmCompositionText(bool reset_engine,
+                                             bool keep_selection) {
+  TextInputClient* client = GetTextInputClient();
+  if (client && client->HasCompositionText())
+    client->ConfirmCompositionText(keep_selection);
+}
+
+bool InputMethodBase::HasCompositionText() {
+  TextInputClient* client = GetTextInputClient();
+  return client && client->HasCompositionText();
 }
 
 const std::vector<std::unique_ptr<ui::KeyEvent>>&

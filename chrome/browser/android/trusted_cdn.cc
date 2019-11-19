@@ -11,13 +11,13 @@
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/no_destructor.h"
+#include "chrome/android/chrome_jni_headers/TrustedCdn_jni.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/offline_pages/offline_page_utils.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
-#include "jni/TrustedCdn_jni.h"
 #include "url/gurl.h"
 
 using base::android::ConvertUTF8ToJavaString;

@@ -1,0 +1,18 @@
+{
+    "images": [
+        {
+            "idiom": "universal",
+            "scale": "2x",
+            "filename": "clear_browsing_data_cached_images@2x.png"
+        },
+        {
+            "idiom": "universal",
+            "scale": "3x",
+            "filename": "clear_browsing_data_cached_images@3x.png"
+        }
+    ],
+    "info": {
+        "version": 1,
+        "author": "xcode"
+    }
+}

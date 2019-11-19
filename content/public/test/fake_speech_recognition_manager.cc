@@ -95,9 +95,8 @@ void FakeSpeechRecognitionManager::StartSession(int session_id) {
             base::Unretained(this)));
   }
   if (!recognition_started_closure_.is_null()) {
-    base::PostTaskWithTraits(
-        FROM_HERE, {BrowserThread::UI},
-        base::BindOnce(&RunCallback, recognition_started_closure_));
+    base::PostTask(FROM_HERE, {BrowserThread::UI},
+                   base::BindOnce(&RunCallback, recognition_started_closure_));
   }
 }
 
@@ -125,13 +124,13 @@ void FakeSpeechRecognitionManager::AbortAllSessionsForRenderFrame(
 }
 
 const SpeechRecognitionSessionConfig&
-    FakeSpeechRecognitionManager::GetSessionConfig(int session_id) const {
+FakeSpeechRecognitionManager::GetSessionConfig(int session_id) {
   EXPECT_EQ(session_id, session_id_);
   return session_config_;
 }
 
 SpeechRecognitionSessionContext FakeSpeechRecognitionManager::GetSessionContext(
-    int session_id) const {
+    int session_id) {
   EXPECT_EQ(session_id, session_id_);
   return session_ctx_;
 }

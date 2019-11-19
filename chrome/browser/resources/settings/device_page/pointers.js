@@ -30,6 +30,17 @@ Polymer({
       value: [1, 2, 3, 4, 5],
       readOnly: true,
     },
+
+    /**
+     * TODO(zentaro): Remove this conditional once the feature is launched.
+     * @private
+     */
+    allowDisableAcceleration_: {
+      type: Boolean,
+      value: function() {
+        return loadTimeData.getBoolean('allowDisableMouseAcceleration');
+      },
+    },
   },
 
   // Used to correctly identify when the mouse button has been released.

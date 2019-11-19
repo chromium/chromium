@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="resources/snav-testharness.js"></script>
+
+<style>
+  body {
+    font: 15px Ahem;
+  }
+
+  a, iframe {
+    position: absolute;
+    left: 5px;
+  }
+
+  .blocker {
+    position: absolute;
+    left: 0px;
+    width: 500px;
+    height: 55px;
+    background-color: green;
+  }
+</style>
+
+<div style="width: 500px; height: 600px">
+  <a id="start" style="top: 10px;" href="a">Start</a>
+
+  <a href="a" style="top: 80px;">Fully Obscured Link</a>
+  <div class="blocker" style="top: 60px;"></div>
+
+  <a id="partially_obscured" style="top: 160px;" href="a">Partially Obscured Link</a>
+  <div class="blocker" style="width: 150px; top: 140px;"></div>
+
+  <a id="obscured_by_transparent_element" style="top: 240px" href="a">Obscured by transparent element</a>
+  <div class="blocker" style="top: 220px; opacity: 0"></div>
+
+  <a id="partially_obscured_by_transparent_element" style="top: 320px" href="a">Partially obscured by transparent element</a>
+  <div class="blocker" style="width: 150px; top: 300px; opacity: 0"></div>
+
+  <a id="unobscured_at_outside_of_viewport" style="left: -50px; top: 400px" href="a">Unobscured at outside of viewport</a>
+  <div class="blocker" style="top: 380px;"></div>
+
+  <iframe style="top: 480px;" width=200 height=50 frameborder="0" srcdoc="
+    <!DOCTYPE html>
+    <body id='body_in_iframe' style='font: 15px Ahem'>
+      <a id='link_in_iframe' href='a'>Link in iframe</a>
+    </bdoy>
+  "></iframe>
+
+  <a id="end" style="top: 560px;" href="a">End</a>
+</div>
+
+<script>
+  // This test checks that navigation isn't performed to an element
+  // that is obscured (by another element).
+  snav.assertSnavEnabledAndTestable();
+
+  const t = async_test("Test obscured elements during spatial navigation.");
+
+  onload = t.step_func(() => {
+    // Start at a known place.
+    document.getElementById("start").focus();
+
+    // In this step, fully obscured element will be skipped.
+    snav.triggerMove('Down');
+    assert_equals(document.activeElement,
+                  document.getElementById("partially_obscured"),
+                  "Fully obscured element should be skipped. Partially obscured element should be focused.");
+
+    snav.triggerMove('Down');
+    assert_equals(document.activeElement,
+                  document.getElementById("obscured_by_transparent_element"),
+                  "Obscured due to transparent element should be focused.");
+
+    snav.triggerMove('Down');
+    assert_equals(document.activeElement,
+                  document.getElementById("partially_obscured_by_transparent_element"),
+                  "(Partially) Obscured due to transparent element should be focused.");
+
+    snav.triggerMove('Down');
+    assert_not_equals(document.activeElement,
+                  document.getElementById("unobscured_at_outside_of_viewport"),
+                  "Element's visible part that located at outside of viewport should not be accounted.");
+
+    assert_equals(window.internals.interestedElement,
+                  document.querySelector("iframe").contentDocument.getElementById("body_in_iframe"),
+                  "Body element should be focused first, when we navigate to visible iframe.");
+
+    snav.triggerMove('Down');
+    assert_equals(window.internals.interestedElement,
+                  document.querySelector("iframe").contentDocument.getElementById("link_in_iframe"),
+                  "Focus should be moved to unobscured element in iframe.");
+
+    snav.triggerMove('Down');
+    assert_equals(window.internals.interestedElement,
+                  document.getElementById("end"),
+                  "Focus should escape from iframe.");
+
+    t.done();
+  });
+</script>

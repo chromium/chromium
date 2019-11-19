@@ -8,6 +8,7 @@
 #include "base/scoped_observer.h"
 #include "base/supports_user_data.h"
 #include "components/content_settings/core/browser/content_settings_observer.h"
+#include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/safe_browsing/proto/csd.pb.h"
 #include "components/sessions/core/session_id.h"
@@ -17,8 +18,6 @@
 namespace content {
 class NavigationHandle;
 }
-
-class HostContentSettingsMap;
 
 namespace safe_browsing {
 class SafeBrowsingNavigationObserverManager;
@@ -159,7 +158,7 @@ class SafeBrowsingNavigationObserver : public base::SupportsUserData::Data,
 
   base::Time last_user_gesture_timestamp_;
   ScopedObserver<HostContentSettingsMap, content_settings::Observer>
-      content_settings_observer_;
+      content_settings_observer_{this};
 
   DISALLOW_COPY_AND_ASSIGN(SafeBrowsingNavigationObserver);
 };

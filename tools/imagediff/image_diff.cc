@@ -41,6 +41,9 @@ static const char kOptionPollStdin[] = "use-stdin";
 static const char kOptionCompareHistograms[] = "histogram";
 // Causes the app to output an image that visualizes the difference.
 static const char kOptionGenerateDiff[] = "diff";
+// Causes the app to have a tolerance for difference in output. To account for
+// differences which occur when running vs hardware GPU output.
+static const char kOptionFuzzyDiff[] = "fuzzy-diff";
 
 // Return codes used by this utility.
 static const int kStatusSame = 0;
@@ -143,7 +146,9 @@ class Image {
   std::vector<unsigned char> data_;
 };
 
-float PercentageDifferent(const Image& baseline, const Image& actual) {
+float PercentageDifferent(const Image& baseline,
+                          const Image& actual,
+                          bool fuzzy_diff) {
   int w = std::min(baseline.w(), actual.w());
   int h = std::min(baseline.h(), actual.h());
 
@@ -151,8 +156,35 @@ float PercentageDifferent(const Image& baseline, const Image& actual) {
   int pixels_different = 0;
   for (int y = 0; y < h; y++) {
     for (int x = 0; x < w; x++) {
-      if (baseline.pixel_at(x, y) != actual.pixel_at(x, y))
+      if (fuzzy_diff) {
+        uint32_t pixel_base = baseline.pixel_at(x, y);
+        uint32_t pixel_actual = actual.pixel_at(x, y);
+        if (pixel_base == pixel_actual)
+          continue;
+        // The pixels are in an rgba format.
+        uint8_t subpixels_base[4];
+        uint8_t subpixels_actual[4];
+        subpixels_base[0] = pixel_base & 0xFF;
+        subpixels_actual[0] = pixel_actual & 0xFF;
+        subpixels_base[1] = (pixel_base >> 8) & 0xFF;
+        subpixels_actual[1] = (pixel_actual >> 8) & 0xFF;
+        subpixels_base[2] = (pixel_base >> 16) & 0xFF;
+        subpixels_actual[2] = (pixel_actual >> 16) & 0xFF;
+        subpixels_base[3] = (pixel_base >> 24) & 0xFF;
+        subpixels_actual[3] = (pixel_actual >> 24) & 0xFF;
+
+        for (int i = 0; i < 4; i++) {
+          uint8_t subpixel_diff = subpixels_base[i] > subpixels_actual[i]
+                                      ? subpixels_base[i] - subpixels_actual[i]
+                                      : subpixels_actual[i] - subpixels_base[i];
+          if (subpixel_diff > 1) {
+            pixels_different++;
+            break;
+          }
+        }
+      } else if (baseline.pixel_at(x, y) != actual.pixel_at(x, y)) {
         pixels_different++;
+      }
     }
   }
 
@@ -251,7 +283,8 @@ void PrintHelp() {
 
 int CompareImages(const base::FilePath& file1,
                   const base::FilePath& file2,
-                  bool compare_histograms) {
+                  bool compare_histograms,
+                  bool fuzzy_diff) {
   Image actual_image;
   Image baseline_image;
 
@@ -266,17 +299,18 @@ int CompareImages(const base::FilePath& file1,
     return kStatusError;
   }
 
+  float tolerance = fuzzy_diff ? 1.0f : 0.0f;
   if (compare_histograms) {
     float percent = HistogramPercentageDifferent(actual_image, baseline_image);
-    const char* passed = percent > 0.0 ? "failed" : "passed";
+    const char* passed = percent > tolerance ? "failed" : "passed";
     printf("histogram diff: %01.2f%% %s\n", percent, passed);
   }
 
   const char* diff_name = compare_histograms ? "exact diff" : "diff";
-  float percent = PercentageDifferent(actual_image, baseline_image);
-  const char* passed = percent > 0.0 ? "failed" : "passed";
+  float percent = PercentageDifferent(actual_image, baseline_image, fuzzy_diff);
+  const char* passed = percent > tolerance ? "failed" : "passed";
   printf("%s: %01.2f%% %s\n", diff_name, percent, passed);
-  if (percent > 0.0) {
+  if (percent > tolerance) {
     // failure: The WebKit version also writes the difference image to
     // stdout, which seems excessive for our needs.
     return kStatusDifferent;
@@ -331,7 +365,10 @@ int CompareImages(const base::FilePath& file1,
 */
 }
 
-bool CreateImageDiff(const Image& image1, const Image& image2, Image* out) {
+bool CreateImageDiff(const Image& image1,
+                     const Image& image2,
+                     bool fuzzy_diff,
+                     Image* out) {
   int w = std::min(image1.w(), image2.w());
   int h = std::min(image1.h(), image2.h());
   *out = Image(image1);
@@ -355,10 +392,17 @@ bool CreateImageDiff(const Image& image1, const Image& image2, Image* out) {
     }
   }
 
-  return same;
+  if (!fuzzy_diff) {
+    return same;
+  }
+
+  float percent = PercentageDifferent(image1, image2, fuzzy_diff);
+  return percent < 1.0f;
 }
 
-int DiffImages(const base::FilePath& file1, const base::FilePath& file2,
+int DiffImages(const base::FilePath& file1,
+               const base::FilePath& file2,
+               bool fuzzy_diff,
                const base::FilePath& out_file) {
   Image actual_image;
   Image baseline_image;
@@ -375,7 +419,8 @@ int DiffImages(const base::FilePath& file1, const base::FilePath& file2,
   }
 
   Image diff_image;
-  bool same = CreateImageDiff(baseline_image, actual_image, &diff_image);
+  bool same =
+      CreateImageDiff(baseline_image, actual_image, fuzzy_diff, &diff_image);
   if (same)
     return kStatusSame;
 
@@ -407,6 +452,7 @@ int main(int argc, const char* argv[]) {
   base::CommandLine::Init(argc, argv);
   const base::CommandLine& parsed_command_line =
       *base::CommandLine::ForCurrentProcess();
+  bool fuzzy_diff = parsed_command_line.HasSwitch(kOptionFuzzyDiff);
   bool histograms = parsed_command_line.HasSwitch(kOptionCompareHistograms);
   if (parsed_command_line.HasSwitch(kOptionPollStdin)) {
     // Watch stdin for filenames.
@@ -419,8 +465,10 @@ int main(int argc, const char* argv[]) {
       if (!filename1.empty()) {
         // CompareImages writes results to stdout unless an error occurred.
         base::FilePath filename2 = FilePathFromASCII(stdin_buffer);
-        if (CompareImages(filename1, filename2, histograms) == kStatusError)
+        if (CompareImages(filename1, filename2, histograms, fuzzy_diff) ==
+            kStatusError) {
           printf("error\n");
+        }
         fflush(stdout);
         filename1 = base::FilePath();
       } else {
@@ -435,13 +483,12 @@ int main(int argc, const char* argv[]) {
   const base::CommandLine::StringVector& args = parsed_command_line.GetArgs();
   if (parsed_command_line.HasSwitch(kOptionGenerateDiff)) {
     if (args.size() == 3) {
-      return DiffImages(base::FilePath(args[0]),
-                        base::FilePath(args[1]),
-                        base::FilePath(args[2]));
+      return DiffImages(base::FilePath(args[0]), base::FilePath(args[1]),
+                        fuzzy_diff, base::FilePath(args[2]));
     }
   } else if (args.size() == 2) {
-    return CompareImages(
-        base::FilePath(args[0]), base::FilePath(args[1]), histograms);
+    return CompareImages(base::FilePath(args[0]), base::FilePath(args[1]),
+                         fuzzy_diff, histograms);
   }
 
   PrintHelp();

@@ -7,10 +7,12 @@
 
 #include <stdint.h>
 
+#include <memory>
 #include <set>
 #include <unordered_map>
 
 #include "base/observer_list.h"
+#include "ui/accessibility/ax_enums.mojom-forward.h"
 #include "ui/accessibility/ax_export.h"
 #include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -23,6 +25,7 @@ class AXTableInfo;
 class AXTree;
 class AXTreeObserver;
 struct AXTreeUpdateState;
+class AXLanguageDetectionManager;
 
 // AXTree is a live, managed tree of AXNode objects that can receive
 // updates from another AXTreeSource via AXTreeUpdates, and it can be
@@ -51,6 +54,10 @@ class AX_EXPORT AXTree : public AXNode::OwnerTree {
   AXNode* root() const { return root_; }
 
   const AXTreeData& data() const { return data_; }
+
+  // AXNode::OwnerTree override.
+  // Returns the globally unique ID of this accessibility tree.
+  AXTreeID GetAXTreeID() const override;
 
   // AXNode::OwnerTree override.
   // Returns the AXNode with the given |id| if it is part of this AXTree.
@@ -145,6 +152,20 @@ class AX_EXPORT AXTree : public AXNode::OwnerTree {
   // set_size values, minimizing the size of the cache.
   int32_t GetSetSize(const AXNode& node, const AXNode* ordered_set) override;
 
+  Selection GetUnignoredSelection() const override;
+
+  bool GetTreeUpdateInProgressState() const override;
+  void SetTreeUpdateInProgressState(bool set_tree_update_value);
+
+  // AXNode::OwnerTree override.
+  // Returns true if the tree represents a paginated document
+  bool HasPaginationSupport() const override;
+
+  // Language detection manager, entry point to language detection features.
+  // TODO(chrishall): Should this be stored by pointer or value?
+  //                  When should we initialize this?
+  std::unique_ptr<AXLanguageDetectionManager> language_detection_manager;
+
  private:
   friend class AXTableInfoTest;
 
@@ -161,25 +182,84 @@ class AX_EXPORT AXTree : public AXNode::OwnerTree {
   AXTableInfo* GetTableInfo(const AXNode* table_node) const override;
 
   AXNode* CreateNode(AXNode* parent,
-                     int32_t id,
-                     int32_t index_in_parent,
+                     AXNode::AXID id,
+                     size_t index_in_parent,
                      AXTreeUpdateState* update_state);
+
+  // Accumulates the work that will be required to update the AXTree.
+  // This allows us to notify observers of structure changes when the
+  // tree is still in a stable and unchanged state.
+  bool ComputePendingChanges(const AXTreeUpdate& update,
+                             AXTreeUpdateState& update_state);
+
+  // Populates |update_state| with information about actions that will
+  // be performed on the tree during the update, such as adding or
+  // removing nodes in the tree. Returns true on success.
+  // Nothing within this call should modify tree structure or node data.
+  bool ComputePendingChangesToNode(const AXNodeData& new_data,
+                                   bool is_new_root,
+                                   AXTreeUpdateState* update_state);
 
   // This is called from within Unserialize(), it returns true on success.
   bool UpdateNode(const AXNodeData& src,
                   bool is_new_root,
                   AXTreeUpdateState* update_state);
 
-  void CallNodeChangeCallbacks(AXNode* node,
-                               const AXNodeData& old_data,
-                               const AXNodeData& new_data);
+  // Notify the delegate that the subtree rooted at |node| will be
+  // destroyed or reparented.
+  void NotifySubtreeWillBeReparentedOrDeleted(
+      AXNode* node,
+      const AXTreeUpdateState* update_state);
+
+  // Notify the delegate that |node| will be destroyed or reparented.
+  void NotifyNodeWillBeReparentedOrDeleted(
+      AXNode* node,
+      const AXTreeUpdateState* update_state);
+
+  // Notify the delegate that |node| and all of its descendants will be
+  // destroyed. This function is called during AXTree teardown.
+  void RecursivelyNotifyNodeDeletedForTreeTeardown(AXNode* node);
+
+  // Notify the delegate that the node marked by |node_id| has been deleted.
+  // We are passing the node id instead of ax node is because by the time this
+  // function is called, the ax node in the tree will already have been
+  // destroyed.
+  void NotifyNodeHasBeenDeleted(AXNode::AXID node_id);
+
+  // Notify the delegate that |node| has been created or reparented.
+  void NotifyNodeHasBeenReparentedOrCreated(
+      AXNode* node,
+      const AXTreeUpdateState* update_state);
+
+  // Notify the delegate that a node will change its data.
+  void NotifyNodeDataWillChange(const AXNodeData& old_data,
+                                const AXNodeData& new_data);
+
+  // Notify the delegate that |node| has changed its data.
+  void NotifyNodeDataHasBeenChanged(AXNode* node,
+                                    const AXNodeData& old_data,
+                                    const AXNodeData& new_data);
 
   void UpdateReverseRelations(AXNode* node, const AXNodeData& new_data);
 
-  void OnRootChanged();
+  // Returns true if all pending changes in the |update_state| have been
+  // handled. If this returns false, the |error_| message will be populated.
+  // It's a fatal error to have pending changes after exhausting
+  // the AXTreeUpdate.
+  bool ValidatePendingChangesComplete(const AXTreeUpdateState& update_state);
 
-  // Notify the delegate that the subtree rooted at |node| will be destroyed,
-  // then call DestroyNodeAndSubtree on it.
+  // Modifies |update_state| so that it knows what subtree and nodes are
+  // going to be destroyed for the subtree rooted at |node|.
+  void MarkSubtreeForDestruction(AXNode::AXID node_id,
+                                 AXTreeUpdateState* update_state);
+
+  // Modifies |update_state| so that it knows what nodes are
+  // going to be destroyed for the subtree rooted at |node|.
+  void MarkNodesForDestructionRecursive(AXNode::AXID node_id,
+                                        AXTreeUpdateState* update_state);
+
+  // Validates that destroying the subtree rooted at |node| has required
+  // information in |update_state|, then calls DestroyNodeAndSubtree on it.
   void DestroySubtree(AXNode* node, AXTreeUpdateState* update_state);
 
   // Call Destroy() on |node|, and delete it from the id map, and then
@@ -187,9 +267,8 @@ class AX_EXPORT AXTree : public AXNode::OwnerTree {
   void DestroyNodeAndSubtree(AXNode* node, AXTreeUpdateState* update_state);
 
   // Iterate over the children of |node| and for each child, destroy the
-  // child and its subtree if its id is not in |new_child_ids|. Returns
-  // true on success, false on fatal error.
-  bool DeleteOldChildren(AXNode* node,
+  // child and its subtree if its id is not in |new_child_ids|.
+  void DeleteOldChildren(AXNode* node,
                          const std::vector<int32_t>& new_child_ids,
                          AXTreeUpdateState* update_state);
 
@@ -202,6 +281,14 @@ class AX_EXPORT AXTree : public AXNode::OwnerTree {
                             const std::vector<int32_t>& new_child_ids,
                             std::vector<AXNode*>* new_children,
                             AXTreeUpdateState* update_state);
+
+  // Internal implementation of RelativeToTreeBounds. It calls itself
+  // recursively but ensures that it can only do so exactly once!
+  gfx::RectF RelativeToTreeBoundsInternal(const AXNode* node,
+                                          gfx::RectF node_bounds,
+                                          bool* offscreen,
+                                          bool clip_bounds,
+                                          bool allow_recursion) const;
 
   base::ObserverList<AXTreeObserver> observers_;
   AXNode* root_ = nullptr;
@@ -235,6 +322,7 @@ class AX_EXPORT AXTree : public AXNode::OwnerTree {
   struct OrderedSetInfo {
     int32_t pos_in_set;
     int32_t set_size;
+    int32_t lowest_hierarchical_level;
     OrderedSetInfo() : pos_in_set(0), set_size(0) {}
     ~OrderedSetInfo() {}
   };
@@ -261,6 +349,12 @@ class AX_EXPORT AXTree : public AXNode::OwnerTree {
 
   // AXTree owns pointers so copying is non-trivial.
   DISALLOW_COPY_AND_ASSIGN(AXTree);
+
+  // Indicates if the tree is updating.
+  bool tree_update_in_progress_ = false;
+
+  // Indicates if the tree represents a paginated document
+  bool has_pagination_support_ = false;
 };
 
 }  // namespace ui

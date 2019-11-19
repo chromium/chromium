@@ -10,9 +10,3 @@
 setup-pin-keyboard {
   margin-top: 17px;
 }
-
-#done-illustration {
-  height: 264px;
-  margin-top: 38px; /* 64px from subtitle baseline. */
-  width: 264px;
-}

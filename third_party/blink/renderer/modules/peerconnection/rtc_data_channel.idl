@@ -40,13 +40,11 @@ enum RTCDataChannelState {
 ] interface RTCDataChannel : EventTarget {
     readonly attribute USVString label;
     readonly attribute boolean ordered;
-    // TODO(foolip): |maxRetransmitTime| is called |maxPacketLifeTime| in the
-    // spec and both it and |maxRetransmits| are nullable.
-    [Measure] readonly attribute unsigned short maxRetransmitTime;
-    [Measure] readonly attribute unsigned short maxRetransmits;
+    readonly attribute unsigned short? maxPacketLifeTime;
+    readonly attribute unsigned short? maxRetransmits;
     readonly attribute USVString protocol;
     readonly attribute boolean negotiated;
-    readonly attribute unsigned short id;
+    readonly attribute unsigned short? id;
     readonly attribute RTCDataChannelState readyState;
     readonly attribute unsigned long bufferedAmount;
              attribute unsigned long bufferedAmountLowThreshold;

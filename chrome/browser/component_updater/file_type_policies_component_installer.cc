@@ -89,8 +89,9 @@ void FileTypePoliciesComponentInstallerPolicy::ComponentReady(
   VLOG(1) << "Component ready, version " << version.GetString() << " in "
           << install_dir.value();
 
-  base::PostTaskWithTraits(
-      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+  base::PostTask(
+      FROM_HERE,
+      {base::ThreadPool(), base::MayBlock(), base::TaskPriority::BEST_EFFORT},
       base::BindOnce(&LoadFileTypesFromDisk, GetInstalledPath(install_dir)));
 }
 

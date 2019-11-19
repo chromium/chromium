@@ -1,0 +1,13 @@
+CONSOLE ERROR: line 13: WebSocket connection to 'ws://localhost:8880/handshake-fail-by-unauthorized' failed: HTTP Authentication failed; no valid credentials available
+Devtools should show error message when WebSocket handshake fails by HTTP 401 Unauthorized.
+
+On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
+
+PASS isOpened is false
+PASS isClosed is true
+PASS isError is true
+PASS isTimedOut is false
+PASS successfullyParsed is true
+
+TEST COMPLETE
+

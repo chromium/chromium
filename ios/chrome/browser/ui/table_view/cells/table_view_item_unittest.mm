@@ -38,7 +38,7 @@ TEST_F(TableViewItemTest, ConfigureCellWithStyler) {
   ASSERT_TRUE([cell isMemberOfClass:[TableViewCell class]]);
 
   ChromeTableViewStyler* styler = [[ChromeTableViewStyler alloc] init];
-  UIColor* testColor = [UIColor redColor];
+  UIColor* testColor = UIColor.redColor;
   styler.tableViewBackgroundColor = testColor;
   [item configureCell:cell withStyler:styler];
   EXPECT_NSEQ(testColor, cell.backgroundColor);
@@ -54,7 +54,7 @@ TEST_F(TableViewItemTest, NoBackgroundColorIfBackgroundViewIsPresent) {
   cell.backgroundView = [[UIView alloc] init];
 
   ChromeTableViewStyler* styler = [[ChromeTableViewStyler alloc] init];
-  UIColor* testColor = [UIColor redColor];
+  UIColor* testColor = UIColor.redColor;
   styler.tableViewBackgroundColor = testColor;
   [item configureCell:cell withStyler:styler];
   EXPECT_FALSE([testColor isEqual:cell.backgroundColor]);

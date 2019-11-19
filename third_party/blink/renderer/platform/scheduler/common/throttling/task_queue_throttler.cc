@@ -6,6 +6,8 @@
 
 #include <cstdint>
 
+#include "base/debug/stack_trace.h"
+
 #include "base/bind.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
@@ -74,8 +76,7 @@ TaskQueueThrottler::TaskQueueThrottler(
       tracing_controller_(tracing_controller),
       tick_clock_(thread_scheduler->GetTickClock()),
       time_domain_(new ThrottledTimeDomain()),
-      allow_throttling_(true),
-      weak_factory_(this) {
+      allow_throttling_(true) {
   pump_throttled_tasks_closure_.Reset(base::BindRepeating(
       &TaskQueueThrottler::PumpThrottledTasks, weak_factory_.GetWeakPtr()));
   forward_immediate_work_callback_ =
@@ -89,31 +90,25 @@ TaskQueueThrottler::~TaskQueueThrottler() {
   // It's possible for queues to be still throttled, so we need to tidy up
   // before unregistering the time domain.
   for (const TaskQueueMap::value_type& map_entry : queue_details_) {
-    TaskQueue* task_queue = map_entry.first;
+    TaskQueue* task_queue = map_entry.key;
     if (IsThrottled(task_queue)) {
       task_queue->SetTimeDomain(thread_scheduler_->GetActiveTimeDomain());
       task_queue->RemoveFence();
     }
-    if (map_entry.second.throttling_ref_count != 0)
-      task_queue->SetObserver(nullptr);
   }
 
   thread_scheduler_->UnregisterTimeDomain(time_domain_.get());
 }
 
 void TaskQueueThrottler::IncreaseThrottleRefCount(TaskQueue* task_queue) {
-  std::pair<TaskQueueMap::iterator, bool> insert_result =
-      queue_details_.insert(std::make_pair(task_queue, Metadata()));
-  insert_result.first->second.throttling_ref_count++;
-
-  // If ref_count is 1, the task queue is newly throttled.
-  if (insert_result.first->second.throttling_ref_count != 1)
+  auto insert_result = queue_details_.insert(
+      task_queue, std::make_unique<Metadata>(task_queue, this));
+  if (!insert_result.stored_value->value->IncrementRefCount())
     return;
 
+  // Task queue is newly throttled.
   TRACE_EVENT1("renderer.scheduler", "TaskQueueThrottler_TaskQueueThrottled",
                "task_queue", task_queue);
-
-  task_queue->SetObserver(this);
 
   if (!allow_throttling_)
     return;
@@ -138,15 +133,11 @@ void TaskQueueThrottler::DecreaseThrottleRefCount(TaskQueue* task_queue) {
 
   if (iter == queue_details_.end())
     return;
-  if (iter->second.throttling_ref_count == 0)
-    return;
-  if (--iter->second.throttling_ref_count != 0)
+  if (!iter->value->DecrementRefCount())
     return;
 
   TRACE_EVENT1("renderer.scheduler", "TaskQueueThrottler_TaskQueueUnthrottled",
                "task_queue", task_queue);
-
-  task_queue->SetObserver(nullptr);
 
   MaybeDeleteQueueMetadata(iter);
 
@@ -164,7 +155,7 @@ bool TaskQueueThrottler::IsThrottled(TaskQueue* task_queue) const {
   auto find_it = queue_details_.find(task_queue);
   if (find_it == queue_details_.end())
     return false;
-  return find_it->second.throttling_ref_count > 0;
+  return find_it->value->throttling_ref_count() > 0;
 }
 
 void TaskQueueThrottler::ShutdownTaskQueue(TaskQueue* task_queue) {
@@ -177,7 +168,8 @@ void TaskQueueThrottler::ShutdownTaskQueue(TaskQueue* task_queue) {
   task_queue->SetTimeDomain(thread_scheduler_->GetActiveTimeDomain());
   task_queue->RemoveFence();
 
-  std::unordered_set<BudgetPool*> budget_pools = find_it->second.budget_pools;
+  // Copy intended.
+  auto budget_pools = find_it->value->budget_pools();
   for (BudgetPool* budget_pool : budget_pools) {
     budget_pool->UnregisterQueue(task_queue);
   }
@@ -214,7 +206,7 @@ void TaskQueueThrottler::OnQueueNextWakeUpChanged(
   if (find_it == queue_details_.end())
     return;
 
-  for (BudgetPool* budget_pool : find_it->second.budget_pools) {
+  for (BudgetPool* budget_pool : find_it->value->budget_pools()) {
     budget_pool->OnQueueNextWakeUpChanged(queue, now, next_wake_up);
   }
 
@@ -233,10 +225,10 @@ void TaskQueueThrottler::PumpThrottledTasks() {
   LazyNow lazy_now(tick_clock_);
 
   for (const auto& pair : budget_pools_)
-    pair.first->OnWakeUp(lazy_now.Now());
+    pair.key->OnWakeUp(lazy_now.Now());
 
   for (const TaskQueueMap::value_type& map_entry : queue_details_) {
-    TaskQueue* task_queue = map_entry.first;
+    TaskQueue* task_queue = map_entry.key;
     UpdateQueueSchedulingLifecycleStateInternal(lazy_now.Now(), task_queue,
                                                 true);
   }
@@ -287,14 +279,14 @@ CPUTimeBudgetPool* TaskQueueThrottler::CreateCPUTimeBudgetPool(
     const char* name) {
   CPUTimeBudgetPool* time_budget_pool = new CPUTimeBudgetPool(
       name, this, tracing_controller_, tick_clock_->NowTicks());
-  budget_pools_[time_budget_pool] = base::WrapUnique(time_budget_pool);
+  budget_pools_.Set(time_budget_pool, base::WrapUnique(time_budget_pool));
   return time_budget_pool;
 }
 
 WakeUpBudgetPool* TaskQueueThrottler::CreateWakeUpBudgetPool(const char* name) {
   WakeUpBudgetPool* wake_up_budget_pool =
       new WakeUpBudgetPool(name, this, tick_clock_->NowTicks());
-  budget_pools_[wake_up_budget_pool] = base::WrapUnique(wake_up_budget_pool);
+  budget_pools_.Set(wake_up_budget_pool, base::WrapUnique(wake_up_budget_pool));
   return wake_up_budget_pool;
 }
 
@@ -308,7 +300,7 @@ void TaskQueueThrottler::OnTaskRunTimeReported(TaskQueue* task_queue,
   if (find_it == queue_details_.end())
     return;
 
-  for (BudgetPool* budget_pool : find_it->second.budget_pools) {
+  for (BudgetPool* budget_pool : find_it->value->budget_pools()) {
     budget_pool->RecordTaskRunTime(task_queue, start_time, end_time);
   }
 }
@@ -410,7 +402,7 @@ base::Optional<QueueBlockType> TaskQueueThrottler::GetQueueBlockType(
 
   bool has_new_tasks_only_block = false;
 
-  for (BudgetPool* budget_pool : find_it->second.budget_pools) {
+  for (BudgetPool* budget_pool : find_it->value->budget_pools()) {
     if (!budget_pool->CanRunTasksAt(now, false)) {
       if (budget_pool->GetBlockType() == QueueBlockType::kAllTasks)
         return QueueBlockType::kAllTasks;
@@ -436,16 +428,17 @@ void TaskQueueThrottler::AsValueInto(base::trace_event::TracedValue* state,
 
   state->BeginDictionary("time_budget_pools");
   for (const auto& map_entry : budget_pools_) {
-    BudgetPool* pool = map_entry.first;
+    BudgetPool* pool = map_entry.key;
     pool->AsValueInto(state, now);
   }
   state->EndDictionary();
 
   state->BeginDictionary("queue_details");
   for (const auto& map_entry : queue_details_) {
-    state->BeginDictionaryWithCopiedName(PointerToString(map_entry.first));
-    state->SetInteger("throttling_ref_count",
-                      static_cast<int>(map_entry.second.throttling_ref_count));
+    state->BeginDictionaryWithCopiedName(PointerToString(map_entry.key));
+    state->SetInteger(
+        "throttling_ref_count",
+        static_cast<int>(map_entry.value->throttling_ref_count()));
     state->EndDictionary();
   }
   state->EndDictionary();
@@ -453,25 +446,25 @@ void TaskQueueThrottler::AsValueInto(base::trace_event::TracedValue* state,
 
 void TaskQueueThrottler::AddQueueToBudgetPool(TaskQueue* queue,
                                               BudgetPool* budget_pool) {
-  std::pair<TaskQueueMap::iterator, bool> insert_result =
-      queue_details_.insert(std::make_pair(queue, Metadata()));
+  auto insert_result =
+      queue_details_.insert(queue, std::make_unique<Metadata>(queue, this));
 
-  Metadata& metadata = insert_result.first->second;
+  Metadata* metadata = insert_result.stored_value->value.get();
 
-  DCHECK(metadata.budget_pools.find(budget_pool) ==
-         metadata.budget_pools.end());
+  DCHECK(metadata->budget_pools().find(budget_pool) ==
+         metadata->budget_pools().end());
 
-  metadata.budget_pools.insert(budget_pool);
+  metadata->budget_pools().insert(budget_pool);
 }
 
 void TaskQueueThrottler::RemoveQueueFromBudgetPool(TaskQueue* queue,
                                                    BudgetPool* budget_pool) {
   auto find_it = queue_details_.find(queue);
   DCHECK(find_it != queue_details_.end() &&
-         find_it->second.budget_pools.find(budget_pool) !=
-             find_it->second.budget_pools.end());
+         find_it->value->budget_pools().find(budget_pool) !=
+             find_it->value->budget_pools().end());
 
-  find_it->second.budget_pools.erase(budget_pool);
+  find_it->value->budget_pools().erase(budget_pool);
 
   MaybeDeleteQueueMetadata(find_it);
 }
@@ -489,7 +482,7 @@ base::TimeTicks TaskQueueThrottler::GetNextAllowedRunTime(
   if (find_it == queue_details_.end())
     return next_run_time;
 
-  for (BudgetPool* budget_pool : find_it->second.budget_pools) {
+  for (BudgetPool* budget_pool : find_it->value->budget_pools()) {
     next_run_time = std::max(
         next_run_time, budget_pool->GetNextAllowedRunTime(desired_run_time));
   }
@@ -504,7 +497,7 @@ bool TaskQueueThrottler::CanRunTasksAt(TaskQueue* queue,
   if (find_it == queue_details_.end())
     return true;
 
-  for (BudgetPool* budget_pool : find_it->second.budget_pools) {
+  for (BudgetPool* budget_pool : find_it->value->budget_pools()) {
     if (!budget_pool->CanRunTasksAt(moment, is_wake_up))
       return false;
   }
@@ -521,7 +514,7 @@ base::Optional<base::TimeTicks> TaskQueueThrottler::GetTimeTasksCanRunUntil(
   if (find_it == queue_details_.end())
     return result;
 
-  for (BudgetPool* budget_pool : find_it->second.budget_pools) {
+  for (BudgetPool* budget_pool : find_it->value->budget_pools()) {
     result = Min(result, budget_pool->GetTimeTasksCanRunUntil(now, is_wake_up));
   }
 
@@ -529,8 +522,10 @@ base::Optional<base::TimeTicks> TaskQueueThrottler::GetTimeTasksCanRunUntil(
 }
 
 void TaskQueueThrottler::MaybeDeleteQueueMetadata(TaskQueueMap::iterator it) {
-  if (it->second.throttling_ref_count == 0 && it->second.budget_pools.empty())
+  if (it->value->throttling_ref_count() == 0 &&
+      it->value->budget_pools().IsEmpty()) {
     queue_details_.erase(it);
+  }
 }
 
 void TaskQueueThrottler::DisableThrottling() {
@@ -540,10 +535,10 @@ void TaskQueueThrottler::DisableThrottling() {
   allow_throttling_ = false;
 
   for (const auto& map_entry : queue_details_) {
-    if (map_entry.second.throttling_ref_count == 0)
+    if (map_entry.value->throttling_ref_count() == 0)
       continue;
 
-    TaskQueue* queue = map_entry.first;
+    TaskQueue* queue = map_entry.key;
 
     queue->SetTimeDomain(thread_scheduler_->GetActiveTimeDomain());
     queue->RemoveFence();
@@ -564,10 +559,10 @@ void TaskQueueThrottler::EnableThrottling() {
   LazyNow lazy_now(tick_clock_);
 
   for (const auto& map_entry : queue_details_) {
-    if (map_entry.second.throttling_ref_count == 0)
+    if (map_entry.value->throttling_ref_count() == 0)
       continue;
 
-    TaskQueue* queue = map_entry.first;
+    TaskQueue* queue = map_entry.key;
 
     // Throttling is enabled and task queue should be blocked immediately
     // to enforce task alignment.
@@ -577,6 +572,42 @@ void TaskQueueThrottler::EnableThrottling() {
   }
 
   TRACE_EVENT0("renderer.scheduler", "TaskQueueThrottler_EnableThrottling");
+}
+
+TaskQueueThrottler::Metadata::Metadata(base::sequence_manager::TaskQueue* queue,
+                                       TaskQueueThrottler* throttler)
+    : queue_(queue), throttler_(throttler) {}
+
+TaskQueueThrottler::Metadata::~Metadata() {
+  if (throttling_ref_count_ > 0)
+    queue_->SetObserver(nullptr);
+}
+
+bool TaskQueueThrottler::Metadata::IncrementRefCount() {
+  if (throttling_ref_count_++ == 0) {
+    queue_->SetObserver(this);
+    return true;
+  }
+  return false;
+}
+
+// Returns true if |throttling_ref_count_| is now zero.
+bool TaskQueueThrottler::Metadata::DecrementRefCount() {
+  if (throttling_ref_count_ == 0)
+    return false;
+  if (--throttling_ref_count_ == 0) {
+    queue_->SetObserver(nullptr);
+    return true;
+  }
+  return false;
+}
+
+void TaskQueueThrottler::Metadata::OnPostTask(base::Location from_here,
+                                              base::TimeDelta delay) {}
+
+void TaskQueueThrottler::Metadata::OnQueueNextWakeUpChanged(
+    base::TimeTicks wake_up) {
+  throttler_->OnQueueNextWakeUpChanged(queue_, wake_up);
 }
 
 }  // namespace scheduler

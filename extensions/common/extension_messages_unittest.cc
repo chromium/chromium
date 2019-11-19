@@ -42,7 +42,7 @@ void CompareExtension(const Extension& extension1,
 
 void AddPattern(const std::string& pattern, URLPatternSet* extent) {
   URLPattern parsed(URLPattern::SCHEME_ALL);
-  parsed.Parse(pattern, URLPattern::ALLOW_WILDCARD_FOR_EFFECTIVE_TLD);
+  parsed.Parse(pattern);
   extent->AddPattern(parsed);
 }
 
@@ -75,7 +75,7 @@ TEST(ExtensionMessageTypesTest, TestLoadedParams) {
                          URLPatternSet(), URLPatternSet()));
   }
   URLPatternSet runtime_blocked_hosts;
-  AddPattern("*://*.example.*/*", &runtime_blocked_hosts);
+  AddPattern("*://*.example.com/*", &runtime_blocked_hosts);
   URLPatternSet runtime_allowed_hosts;
   AddPattern("*://good.example.com/*", &runtime_allowed_hosts);
   extension->permissions_data()->SetPolicyHostRestrictions(

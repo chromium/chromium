@@ -12,6 +12,7 @@ namespace switches {
 // each in the .cc file.
 
 extern const char kMetricsRecordingOnly[];
+extern const char kMetricsUploadIntervalSec[];
 extern const char kResetVariationState[];
 extern const char kForceEnableMetricsReporting[];
 

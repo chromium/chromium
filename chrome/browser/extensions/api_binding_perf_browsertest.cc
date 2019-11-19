@@ -2,14 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
-#include "extensions/common/extension_features.h"
 #include "extensions/test/test_extension_dir.h"
 
 namespace extensions {
@@ -26,31 +24,13 @@ namespace {
 // test executable.
 #define LOCAL_TEST(TestName) DISABLED_ ## TestName
 
-enum BindingsType { NATIVE_BINDINGS, JAVASCRIPT_BINDINGS };
-
-class APIBindingPerfBrowserTest
-    : public ExtensionBrowserTest,
-      public ::testing::WithParamInterface<BindingsType> {
+class APIBindingPerfBrowserTest : public ExtensionBrowserTest {
  protected:
   APIBindingPerfBrowserTest() {}
   ~APIBindingPerfBrowserTest() override {}
 
-  void SetUp() override {
-    if (GetParam() == NATIVE_BINDINGS) {
-      scoped_feature_list_.InitAndEnableFeature(
-          extensions_features::kNativeCrxBindings);
-    } else {
-      DCHECK_EQ(JAVASCRIPT_BINDINGS, GetParam());
-      scoped_feature_list_.InitAndDisableFeature(
-          extensions_features::kNativeCrxBindings);
-    }
-    ExtensionBrowserTest::SetUp();
-  }
-
   void SetUpOnMainThread() override {
     ExtensionBrowserTest::SetUpOnMainThread();
-    embedded_test_server()->ServeFilesFromDirectory(
-        base::FilePath(FILE_PATH_LITERAL("chrome/test/data")));
     EXPECT_TRUE(embedded_test_server()->Start());
   }
 
@@ -64,8 +44,6 @@ class APIBindingPerfBrowserTest
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-
   DISALLOW_COPY_AND_ASSIGN(APIBindingPerfBrowserTest);
 };
 
@@ -83,7 +61,7 @@ const char kSimpleContentScriptManifest[] =
     "  'permissions': [ 'storage' ]"
     "}";
 
-IN_PROC_BROWSER_TEST_P(APIBindingPerfBrowserTest,
+IN_PROC_BROWSER_TEST_F(APIBindingPerfBrowserTest,
                        LOCAL_TEST(ManyFramesWithNoContentScript)) {
   ui_test_utils::NavigateToURL(browser(),
                                embedded_test_server()->GetURL(
@@ -93,7 +71,7 @@ IN_PROC_BROWSER_TEST_P(APIBindingPerfBrowserTest,
   LOG(INFO) << "Executed in " << time_elapsed.InMillisecondsF() << " ms";
 }
 
-IN_PROC_BROWSER_TEST_P(APIBindingPerfBrowserTest,
+IN_PROC_BROWSER_TEST_F(APIBindingPerfBrowserTest,
                        LOCAL_TEST(ManyFramesWithEmptyContentScript)) {
   TestExtensionDir extension_dir;
   extension_dir.WriteManifestWithSingleQuotes(kSimpleContentScriptManifest);
@@ -109,7 +87,7 @@ IN_PROC_BROWSER_TEST_P(APIBindingPerfBrowserTest,
   LOG(INFO) << "Executed in " << time_elapsed.InMillisecondsF() << " ms";
 }
 
-IN_PROC_BROWSER_TEST_P(APIBindingPerfBrowserTest,
+IN_PROC_BROWSER_TEST_F(APIBindingPerfBrowserTest,
                        LOCAL_TEST(ManyFramesWithStorageAndRuntime)) {
   TestExtensionDir extension_dir;
   extension_dir.WriteManifestWithSingleQuotes(kSimpleContentScriptManifest);
@@ -125,13 +103,6 @@ IN_PROC_BROWSER_TEST_P(APIBindingPerfBrowserTest,
   base::TimeDelta time_elapsed = RunTestAndReportTime();
   LOG(INFO) << "Executed in " << time_elapsed.InMillisecondsF() << " ms";
 }
-
-INSTANTIATE_TEST_SUITE_P(Native,
-                         APIBindingPerfBrowserTest,
-                         ::testing::Values(NATIVE_BINDINGS));
-INSTANTIATE_TEST_SUITE_P(JavaScript,
-                         APIBindingPerfBrowserTest,
-                         ::testing::Values(JAVASCRIPT_BINDINGS));
 
 }  // namespace
 }  // namespace extensions

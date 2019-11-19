@@ -9,11 +9,12 @@
 }
 
 .step h1 {
-  color: #333;
+  color: rgb(32, 33, 36); /* #202124 */
   font-weight: normal;
 }
 
 .step p {
+  color: rgb(95, 99, 104); /* #5F6368 */
   line-height: 1.5;
 }
 

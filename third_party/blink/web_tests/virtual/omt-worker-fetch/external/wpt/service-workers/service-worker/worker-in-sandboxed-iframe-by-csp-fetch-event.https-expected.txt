@@ -1,0 +1,8 @@
+This is a testharness.js-based test.
+PASS Prepare a service worker.
+PASS Prepare an iframe sandboxed by CSP HTTP header with allow-scripts.
+PASS Prepare an iframe sandboxed by CSP HTTP header with allow-scripts and allow-same-origin.
+PASS Fetch request from a worker in iframe sandboxed by CSP HTTP header allow-scripts flag
+FAIL Fetch request from a worker in iframe sandboxed by CSP HTTP header with allow-scripts and allow-same-origin flag assert_equals: The request should be handled by SW. expected 1 but got 0
+Harness: the test ran to completion.
+

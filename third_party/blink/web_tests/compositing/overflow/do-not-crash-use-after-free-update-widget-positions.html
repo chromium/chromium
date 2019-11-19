@@ -36,6 +36,8 @@
   }
 
   function iframeOnLoad() {
+    w3Iframe.onload = undefined;
+
     bodyElement.appendChild(acronymElement);
     acronymElement.offsetWidth;
 

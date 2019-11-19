@@ -1,7 +1,7 @@
 [document web]
 ++[section]
 ++++[canvas]
-++++++[text] name='Static fallback'
+++++++[static] name='Static fallback'
 ++++[canvas]
 ++++++[link] name='Interactive fallback'
-++++++++[text] name='Interactive fallback'
+++++++++[static] name='Interactive fallback'

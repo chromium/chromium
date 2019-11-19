@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_MANAGED_UI_H_
 #define CHROME_BROWSER_UI_MANAGED_UI_H_
 
+#include "base/strings/string16.h"
+
 class Profile;
 
 namespace chrome {
@@ -20,6 +22,19 @@ namespace chrome {
 // N.B.: This is independent of Chrome OS's system tray message for enterprise
 // users.
 bool ShouldDisplayManagedUi(Profile* profile);
+
+// The label for the App Menu item for Managed UI.
+base::string16 GetManagedUiMenuItemLabel(Profile* profile);
+
+// The label for the WebUI footnote for Managed UI indicating that the browser
+// is managed. These strings contain HTML for an <a> element.
+base::string16 GetManagedUiWebUILabel(Profile* profile);
+
+#if defined(OS_CHROMEOS)
+// The label for the WebUI footnote for Managed UI indicating that the device
+// is mananged. These strings contain HTML for an <a> element.
+base::string16 GetDeviceManagedUiWebUILabel(Profile* profile);
+#endif
 
 }  // namespace chrome
 

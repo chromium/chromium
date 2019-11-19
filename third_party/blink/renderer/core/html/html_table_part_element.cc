@@ -30,20 +30,20 @@
 #include "third_party/blink/renderer/core/css_value_keywords.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
-#include "third_party/blink/renderer/core/frame/use_counter.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/html_table_element.h"
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
 #include "third_party/blink/renderer/core/html_names.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/weborigin/referrer.h"
 
 namespace blink {
 
-using namespace html_names;
-
 bool HTMLTablePartElement::IsPresentationAttribute(
     const QualifiedName& name) const {
-  if (name == kBgcolorAttr || name == kBackgroundAttr || name == kValignAttr ||
-      name == kAlignAttr || name == kHeightAttr)
+  if (name == html_names::kBgcolorAttr || name == html_names::kBackgroundAttr ||
+      name == html_names::kValignAttr || name == html_names::kAlignAttr ||
+      name == html_names::kHeightAttr)
     return true;
   return HTMLElement::IsPresentationAttribute(name);
 }
@@ -52,9 +52,9 @@ void HTMLTablePartElement::CollectStyleForPresentationAttribute(
     const QualifiedName& name,
     const AtomicString& value,
     MutableCSSPropertyValueSet* style) {
-  if (name == kBgcolorAttr) {
-    AddHTMLColorToStyle(style, CSSPropertyBackgroundColor, value);
-  } else if (name == kBackgroundAttr) {
+  if (name == html_names::kBgcolorAttr) {
+    AddHTMLColorToStyle(style, CSSPropertyID::kBackgroundColor, value);
+  } else if (name == html_names::kBackgroundAttr) {
     String url = StripLeadingAndTrailingHTMLSpaces(value);
     if (!url.IsEmpty()) {
       UseCounter::Count(
@@ -63,46 +63,49 @@ void HTMLTablePartElement::CollectStyleForPresentationAttribute(
       CSSImageValue* image_value =
           CSSImageValue::Create(url, GetDocument().CompleteURL(url),
                                 Referrer(GetDocument().OutgoingReferrer(),
-                                         GetDocument().GetReferrerPolicy()));
+                                         GetDocument().GetReferrerPolicy()),
+                                OriginClean::kTrue);
       style->SetProperty(
           CSSPropertyValue(GetCSSPropertyBackgroundImage(), *image_value));
     }
-  } else if (name == kValignAttr) {
-    if (DeprecatedEqualIgnoringCase(value, "top"))
-      AddPropertyToPresentationAttributeStyle(style, CSSPropertyVerticalAlign,
-                                              CSSValueTop);
-    else if (DeprecatedEqualIgnoringCase(value, "middle"))
-      AddPropertyToPresentationAttributeStyle(style, CSSPropertyVerticalAlign,
-                                              CSSValueMiddle);
-    else if (DeprecatedEqualIgnoringCase(value, "bottom"))
-      AddPropertyToPresentationAttributeStyle(style, CSSPropertyVerticalAlign,
-                                              CSSValueBottom);
-    else if (DeprecatedEqualIgnoringCase(value, "baseline"))
-      AddPropertyToPresentationAttributeStyle(style, CSSPropertyVerticalAlign,
-                                              CSSValueBaseline);
-    else
-      AddPropertyToPresentationAttributeStyle(style, CSSPropertyVerticalAlign,
-                                              value);
-  } else if (name == kAlignAttr) {
+  } else if (name == html_names::kValignAttr) {
+    if (DeprecatedEqualIgnoringCase(value, "top")) {
+      AddPropertyToPresentationAttributeStyle(
+          style, CSSPropertyID::kVerticalAlign, CSSValueID::kTop);
+    } else if (DeprecatedEqualIgnoringCase(value, "middle")) {
+      AddPropertyToPresentationAttributeStyle(
+          style, CSSPropertyID::kVerticalAlign, CSSValueID::kMiddle);
+    } else if (DeprecatedEqualIgnoringCase(value, "bottom")) {
+      AddPropertyToPresentationAttributeStyle(
+          style, CSSPropertyID::kVerticalAlign, CSSValueID::kBottom);
+    } else if (DeprecatedEqualIgnoringCase(value, "baseline")) {
+      AddPropertyToPresentationAttributeStyle(
+          style, CSSPropertyID::kVerticalAlign, CSSValueID::kBaseline);
+    } else {
+      AddPropertyToPresentationAttributeStyle(
+          style, CSSPropertyID::kVerticalAlign, value);
+    }
+  } else if (name == html_names::kAlignAttr) {
     if (DeprecatedEqualIgnoringCase(value, "middle") ||
-        DeprecatedEqualIgnoringCase(value, "center"))
-      AddPropertyToPresentationAttributeStyle(style, CSSPropertyTextAlign,
-                                              CSSValueWebkitCenter);
-    else if (DeprecatedEqualIgnoringCase(value, "absmiddle"))
-      AddPropertyToPresentationAttributeStyle(style, CSSPropertyTextAlign,
-                                              CSSValueCenter);
-    else if (DeprecatedEqualIgnoringCase(value, "left"))
-      AddPropertyToPresentationAttributeStyle(style, CSSPropertyTextAlign,
-                                              CSSValueWebkitLeft);
-    else if (DeprecatedEqualIgnoringCase(value, "right"))
-      AddPropertyToPresentationAttributeStyle(style, CSSPropertyTextAlign,
-                                              CSSValueWebkitRight);
-    else
-      AddPropertyToPresentationAttributeStyle(style, CSSPropertyTextAlign,
+        DeprecatedEqualIgnoringCase(value, "center")) {
+      AddPropertyToPresentationAttributeStyle(style, CSSPropertyID::kTextAlign,
+                                              CSSValueID::kWebkitCenter);
+    } else if (DeprecatedEqualIgnoringCase(value, "absmiddle")) {
+      AddPropertyToPresentationAttributeStyle(style, CSSPropertyID::kTextAlign,
+                                              CSSValueID::kCenter);
+    } else if (DeprecatedEqualIgnoringCase(value, "left")) {
+      AddPropertyToPresentationAttributeStyle(style, CSSPropertyID::kTextAlign,
+                                              CSSValueID::kWebkitLeft);
+    } else if (DeprecatedEqualIgnoringCase(value, "right")) {
+      AddPropertyToPresentationAttributeStyle(style, CSSPropertyID::kTextAlign,
+                                              CSSValueID::kWebkitRight);
+    } else {
+      AddPropertyToPresentationAttributeStyle(style, CSSPropertyID::kTextAlign,
                                               value);
-  } else if (name == kHeightAttr) {
+    }
+  } else if (name == html_names::kHeightAttr) {
     if (!value.IsEmpty())
-      AddHTMLLengthToStyle(style, CSSPropertyHeight, value);
+      AddHTMLLengthToStyle(style, CSSPropertyID::kHeight, value);
   } else {
     HTMLElement::CollectStyleForPresentationAttribute(name, value, style);
   }
@@ -110,9 +113,9 @@ void HTMLTablePartElement::CollectStyleForPresentationAttribute(
 
 HTMLTableElement* HTMLTablePartElement::FindParentTable() const {
   ContainerNode* parent = FlatTreeTraversal::Parent(*this);
-  while (parent && !IsHTMLTableElement(*parent))
+  while (parent && !IsA<HTMLTableElement>(*parent))
     parent = FlatTreeTraversal::Parent(*parent);
-  return ToHTMLTableElement(parent);
+  return To<HTMLTableElement>(parent);
 }
 
 }  // namespace blink

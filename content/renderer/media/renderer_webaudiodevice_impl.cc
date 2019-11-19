@@ -17,7 +17,9 @@
 #include "content/renderer/render_frame_impl.h"
 #include "content/renderer/render_thread_impl.h"
 #include "media/base/audio_timestamp_helper.h"
+#include "media/base/limits.h"
 #include "media/base/silent_sink_suspender.h"
+#include "third_party/blink/public/platform/audio/web_audio_device_source_type.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_view.h"
 
@@ -31,20 +33,20 @@ namespace content {
 
 namespace {
 
-AudioDeviceFactory::SourceType GetLatencyHintSourceType(
+blink::WebAudioDeviceSourceType GetLatencyHintSourceType(
     WebAudioLatencyHint::AudioContextLatencyCategory latency_category) {
   switch (latency_category) {
     case WebAudioLatencyHint::kCategoryInteractive:
-      return AudioDeviceFactory::kSourceWebAudioInteractive;
+      return blink::WebAudioDeviceSourceType::kWebAudioInteractive;
     case WebAudioLatencyHint::kCategoryBalanced:
-      return AudioDeviceFactory::kSourceWebAudioBalanced;
+      return blink::WebAudioDeviceSourceType::kWebAudioBalanced;
     case WebAudioLatencyHint::kCategoryPlayback:
-      return AudioDeviceFactory::kSourceWebAudioPlayback;
+      return blink::WebAudioDeviceSourceType::kWebAudioPlayback;
     case WebAudioLatencyHint::kCategoryExact:
-      return AudioDeviceFactory::kSourceWebAudioExact;
+      return blink::WebAudioDeviceSourceType::kWebAudioExact;
   }
   NOTREACHED();
-  return AudioDeviceFactory::kSourceWebAudioInteractive;
+  return blink::WebAudioDeviceSourceType::kWebAudioInteractive;
 }
 
 int GetOutputBufferSize(const blink::WebAudioLatencyHint& latency_hint,
@@ -73,7 +75,8 @@ int GetOutputBufferSize(const blink::WebAudioLatencyHint& latency_hint,
           base::TimeDelta::FromSecondsD(latency_hint.Seconds()),
           hardware_params.sample_rate(), hardware_params.frames_per_buffer(),
           hardware_capabilities.min_frames_per_buffer,
-          hardware_capabilities.max_frames_per_buffer);
+          hardware_capabilities.max_frames_per_buffer,
+          media::limits::kMaxWebAudioBufferSize);
       break;
     default:
       NOTREACHED();
@@ -95,9 +98,10 @@ int FrameIdFromCurrentContext() {
   return render_frame ? render_frame->GetRoutingID() : MSG_ROUTING_NONE;
 }
 
-media::AudioParameters GetOutputDeviceParameters(int frame_id,
-                                                 int session_id,
-                                                 const std::string& device_id) {
+media::AudioParameters GetOutputDeviceParameters(
+    int frame_id,
+    const base::UnguessableToken& session_id,
+    const std::string& device_id) {
   return AudioDeviceFactory::GetOutputDeviceInfo(frame_id,
                                                  {session_id, device_id})
       .output_params();
@@ -110,12 +114,12 @@ std::unique_ptr<RendererWebAudioDeviceImpl> RendererWebAudioDeviceImpl::Create(
     int channels,
     const blink::WebAudioLatencyHint& latency_hint,
     WebAudioDevice::RenderCallback* callback,
-    int session_id) {
+    const base::UnguessableToken& session_id) {
   return std::unique_ptr<RendererWebAudioDeviceImpl>(
-      new RendererWebAudioDeviceImpl(layout, channels, latency_hint, callback,
-                                     session_id,
-                                     base::Bind(&GetOutputDeviceParameters),
-                                     base::Bind(&FrameIdFromCurrentContext)));
+      new RendererWebAudioDeviceImpl(
+          layout, channels, latency_hint, callback, session_id,
+          base::BindOnce(&GetOutputDeviceParameters),
+          base::BindOnce(&FrameIdFromCurrentContext)));
 }
 
 RendererWebAudioDeviceImpl::RendererWebAudioDeviceImpl(
@@ -123,18 +127,18 @@ RendererWebAudioDeviceImpl::RendererWebAudioDeviceImpl(
     int channels,
     const blink::WebAudioLatencyHint& latency_hint,
     WebAudioDevice::RenderCallback* callback,
-    int session_id,
-    const OutputDeviceParamsCallback& device_params_cb,
-    const RenderFrameIdCallback& render_frame_id_cb)
+    const base::UnguessableToken& session_id,
+    OutputDeviceParamsCallback device_params_cb,
+    RenderFrameIdCallback render_frame_id_cb)
     : latency_hint_(latency_hint),
       client_callback_(callback),
       session_id_(session_id),
-      frame_id_(render_frame_id_cb.Run()) {
+      frame_id_(std::move(render_frame_id_cb).Run()) {
   DCHECK(client_callback_);
-  DCHECK_NE(frame_id_, MSG_ROUTING_NONE);
+  DCHECK(session_id.is_empty() || frame_id_ != MSG_ROUTING_NONE);
 
   media::AudioParameters hardware_params(
-      device_params_cb.Run(frame_id_, session_id_, std::string()));
+      std::move(device_params_cb).Run(frame_id_, session_id_, std::string()));
 
   // On systems without audio hardware the returned parameters may be invalid.
   // In which case just choose whatever we want for the fake device.

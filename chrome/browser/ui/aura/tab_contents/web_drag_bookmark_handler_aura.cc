@@ -33,6 +33,7 @@ void WebDragBookmarkHandlerAura::DragInitialize(WebContents* contents) {
 }
 
 void WebDragBookmarkHandlerAura::OnDragOver() {
+  DCHECK(web_contents_);
   if (bookmark_tab_helper_ && bookmark_tab_helper_->bookmark_drag_delegate()) {
     if (bookmark_drag_data_.is_valid())
       bookmark_tab_helper_->bookmark_drag_delegate()->OnDragOver(

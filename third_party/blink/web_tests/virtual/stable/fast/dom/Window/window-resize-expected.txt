@@ -1,0 +1,143 @@
+This test makes sure that we have similar behavior as other browsers when resizing and moving a window outside of the screen. This test will fail in some dimensions when run manually because of inconsistencies of when the window can and cannot go behind the doc.
+
+On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
+
+
+
+window.resizeTo Tests
+
+
+Testing - resizeTo: Too Big
+PASS window.outerWidth == screen.availWidth is true
+
+
+Testing - resizeTo: Too Small
+PASS window.outerWidth == 100 is true
+
+
+Testing - resizeTo: Full Screen Out of Bounds
+PASS window.screenY == screen.availTop is true
+PASS window.outerHeight == screen.availHeight is true
+PASS window.screenX == screen.availLeft is true
+PASS window.outerWidth == screen.availWidth is true
+
+
+Testing - resizeTo: Not Full Screen Out of Bounds
+PASS window.outerHeight + window.screenY - screen.availTop == screen.availHeight is true
+PASS window.outerWidth + window.screenX - screen.availLeft == screen.availWidth is true
+
+
+window.resizeBy Tests
+
+
+Testing - resizeBy: Too Small
+PASS window.outerWidth == 100 is true
+
+
+Testing - resizeBy: Too Big
+PASS window.outerWidth == screen.availWidth is true
+
+
+window.moveTo Tests
+
+
+Testing - moveTo: Top Left
+PASS window.screenY == screen.availTop is true
+PASS window.screenX == screen.availLeft is true
+
+
+Testing - moveTo: Top
+PASS window.screenY == screen.availTop is true
+PASS window.screenX == screen.availLeft is true
+
+
+Testing - moveTo: Top Right
+PASS window.screenY == screen.availTop is true
+PASS window.outerWidth == screen.availWidth is true
+
+
+Testing - moveTo: Right
+PASS window.screenY == screen.availTop is true
+PASS window.outerWidth == screen.availWidth is true
+
+
+Testing - moveTo: Bottom Right
+PASS window.outerHeight == screen.availHeight is true
+PASS window.outerWidth == screen.availWidth is true
+
+
+Testing - moveTo: Bottom
+PASS window.outerHeight == screen.availHeight is true
+PASS window.screenX == screen.availLeft is true
+
+
+Testing - moveTo: Bottom Left
+PASS window.outerHeight == screen.availHeight is true
+PASS window.screenX == screen.availLeft is true
+
+
+Testing - moveTo: Left
+PASS window.screenY == screen.availTop is true
+PASS window.screenX == screen.availLeft is true
+
+
+window.moveBy Tests
+
+
+Testing - moveBy: Zero Zero
+PASS window.screenX == previousScreenX is true
+PASS window.screenY == previousScreenY is true
+
+
+Testing - moveBy: One Zero
+PASS window.screenX == previousScreenX + 1 is true
+PASS window.screenY == previousScreenY is true
+
+
+Testing - moveBy: Zero One
+PASS window.screenX == previousScreenX is true
+PASS window.screenY == previousScreenY + 1 is true
+
+
+Testing - moveBy: Top Left
+PASS window.screenY == screen.availTop is true
+PASS window.screenX == screen.availLeft is true
+
+
+Testing - moveBy: Top
+PASS window.screenY == screen.availTop is true
+PASS window.screenX == screen.availLeft is true
+
+
+Testing - moveBy: Top Right
+PASS window.screenY == screen.availTop is true
+PASS window.outerWidth == screen.availWidth is true
+
+
+Testing - moveBy: Right
+PASS window.screenY == screen.availTop is true
+PASS window.outerWidth == screen.availWidth is true
+
+
+Testing - moveBy: Bottom Right
+PASS window.outerHeight == screen.availHeight is true
+PASS window.outerWidth == screen.availWidth is true
+
+
+Testing - moveBy: Bottom
+PASS window.outerHeight == screen.availHeight is true
+
+
+Testing - moveBy: Bottom Left
+PASS window.outerHeight == screen.availHeight is true
+PASS window.screenX == screen.availLeft is true
+
+
+Testing - moveBy: Left
+PASS window.screenX == screen.availLeft is true
+
+
+PASS successfullyParsed is true
+
+TEST COMPLETE
+

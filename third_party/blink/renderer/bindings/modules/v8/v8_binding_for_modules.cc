@@ -25,7 +25,7 @@
 
 #include "third_party/blink/renderer/bindings/modules/v8/v8_binding_for_modules.h"
 
-#include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom-shared.h"
+#include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_script_value_factory.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_array_buffer.h"
@@ -49,8 +49,8 @@
 #include "third_party/blink/renderer/modules/indexeddb/idb_key_range.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_tracing.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_value.h"
-#include "third_party/blink/renderer/platform/shared_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
+#include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
@@ -95,7 +95,7 @@ v8::Local<v8::Value> ToV8(const IDBKey* key,
     case mojom::IDBKeyType::Min:
       NOTREACHED();
       return v8::Local<v8::Value>();
-    case mojom::IDBKeyType::Null:
+    case mojom::IDBKeyType::None:
       return v8::Null(isolate);
     case mojom::IDBKeyType::Number:
       return v8::Number::New(isolate, key->Number());
@@ -176,6 +176,14 @@ static const size_t kMaximumDepth = 2000;
 static const size_t kMaximumDepth = 1000;
 #endif
 
+// Convert a script value to an Indexed DB key. If the result cannot be
+// converted, nullptr is returned. Special case: if an array is being
+// converted, and a potential subkey cannot be converted, then the array is
+// returned but with an 'Invalid' entry; this is used for "multi-entry"
+// indexes where an array with invalid members is permitted will later be
+// sanitized.
+// A V8 exception may be thrown on bad data or by script's getters; if so,
+// callers should not make further V8 calls.
 static std::unique_ptr<IDBKey> CreateIDBKeyFromValue(
     v8::Isolate* isolate,
     v8::Local<v8::Value> value,
@@ -188,22 +196,21 @@ static std::unique_ptr<IDBKey> CreateIDBKeyFromValue(
   if (value->IsDate() && !std::isnan(value.As<v8::Date>()->ValueOf()))
     return IDBKey::CreateDate(value.As<v8::Date>()->ValueOf());
 
-  // https://w3c.github.io/IndexedDB/#convert-a-key-to-a-value
   if (value->IsArrayBuffer()) {
     DOMArrayBuffer* buffer = V8ArrayBuffer::ToImpl(value.As<v8::Object>());
-    if (buffer->IsNeutered()) {
-      exception_state.ThrowTypeError("The ArrayBuffer is neutered.");
+    if (buffer->IsDetached()) {
+      exception_state.ThrowTypeError("The ArrayBuffer is detached.");
       return nullptr;
     }
     const char* start = static_cast<const char*>(buffer->Data());
-    size_t length = buffer->ByteLength();
+    size_t length = buffer->ByteLengthAsSizeT();
     return IDBKey::CreateBinary(SharedBuffer::Create(start, length));
   }
   if (value->IsArrayBufferView()) {
     DOMArrayBufferView* view =
         V8ArrayBufferView::ToImpl(value.As<v8::Object>());
-    if (view->buffer()->IsNeutered()) {
-      exception_state.ThrowTypeError("The viewed ArrayBuffer is neutered.");
+    if (view->buffer()->IsDetached()) {
+      exception_state.ThrowTypeError("The viewed ArrayBuffer is detached.");
       return nullptr;
     }
     const char* start = static_cast<const char*>(view->BaseAddress());
@@ -220,8 +227,9 @@ static std::unique_ptr<IDBKey> CreateIDBKeyFromValue(
       return nullptr;
     stack.push_back(array);
 
-    IDBKey::KeyArray subkeys;
     uint32_t length = array->Length();
+    IDBKey::KeyArray subkeys;
+    subkeys.ReserveInitialCapacity(length);
     v8::TryCatch block(isolate);
     v8::Local<v8::Context> context = isolate->GetCurrentContext();
     for (uint32_t i = 0; i < length; ++i) {
@@ -239,10 +247,14 @@ static std::unique_ptr<IDBKey> CreateIDBKeyFromValue(
       }
       std::unique_ptr<IDBKey> subkey =
           CreateIDBKeyFromValue(isolate, item, stack, exception_state);
+      if (exception_state.HadException()) {
+        exception_state.RethrowV8Exception(block.Exception());
+        return nullptr;
+      }
       if (!subkey)
-        subkeys.push_back(IDBKey::CreateInvalid());
+        subkeys.emplace_back(IDBKey::CreateInvalid());
       else
-        subkeys.push_back(std::move(subkey));
+        subkeys.emplace_back(std::move(subkey));
     }
 
     stack.pop_back();
@@ -251,6 +263,16 @@ static std::unique_ptr<IDBKey> CreateIDBKeyFromValue(
   return nullptr;
 }
 
+// Convert a script value to an Indexed DB key. If the result cannot be
+// converted, an 'Invalid' key is returned. Special case: if an array is being
+// converted, and a potential subkey cannot be converted, then the array is
+// returned but with an 'Invalid' entry; this is used for "multi-entry"
+// indexes where an array with invalid members is permitted will later be
+// sanitized. This is used to implement both of the following spec algorithms:
+// https://w3c.github.io/IndexedDB/#convert-value-to-key
+// https://w3c.github.io/IndexedDB/#convert-a-value-to-a-multientry-key
+// A V8 exception may be thrown on bad data or by script's getters; if so,
+// callers should not make further V8 calls.
 static std::unique_ptr<IDBKey> CreateIDBKeyFromValue(
     v8::Isolate* isolate,
     v8::Local<v8::Value> value,
@@ -290,6 +312,14 @@ static Vector<String> ParseKeyPath(const String& key_path) {
   return elements;
 }
 
+// Evaluate a key path string against a value and return a key. It must be
+// called repeatedly for array-type key paths. Failure in the evaluation steps
+// (per spec) is represented by returning nullptr. Failure to convert the result
+// to a key is representing by returning an 'Invalid' key. (An array with
+// invalid members will be returned if needed.)
+// https://w3c.github.io/IndexedDB/#evaluate-a-key-path-on-a-value
+// A V8 exception may be thrown on bad data or by script's getters; if so,
+// callers should not make further V8 calls.
 static std::unique_ptr<IDBKey> CreateIDBKeyFromValueAndKeyPath(
     v8::Isolate* isolate,
     v8::Local<v8::Value> v8_value,
@@ -371,6 +401,14 @@ static std::unique_ptr<IDBKey> CreateIDBKeyFromValueAndKeyPath(
   return CreateIDBKeyFromValue(isolate, v8_value, exception_state);
 }
 
+// Evaluate a key path against a value and return a key. For string-type
+// paths, nullptr is returned if evaluation of the path fails, and an
+// 'Invalid' key if evaluation succeeds but conversion fails. For array-type
+// paths, nullptr is returned if evaluation of any sub-path fails, otherwise
+// an array key is returned (with potentially 'Invalid' members).
+// https://w3c.github.io/IndexedDB/#evaluate-a-key-path-on-a-value
+// A V8 exception may be thrown on bad data or by script's getters; if so,
+// callers should not make further V8 calls.
 static std::unique_ptr<IDBKey> CreateIDBKeyFromValueAndKeyPath(
     v8::Isolate* isolate,
     v8::Local<v8::Value> value,
@@ -379,20 +417,77 @@ static std::unique_ptr<IDBKey> CreateIDBKeyFromValueAndKeyPath(
   DCHECK(!key_path.IsNull());
   v8::HandleScope handle_scope(isolate);
   if (key_path.GetType() == mojom::IDBKeyPathType::Array) {
-    IDBKey::KeyArray result;
     const Vector<String>& array = key_path.Array();
-    for (wtf_size_t i = 0; i < array.size(); ++i) {
-      result.emplace_back(CreateIDBKeyFromValueAndKeyPath(
-          isolate, value, array[i], exception_state));
-      if (!result.back())
+    IDBKey::KeyArray result;
+    result.ReserveInitialCapacity(array.size());
+    for (const String& path : array) {
+      auto key = CreateIDBKeyFromValueAndKeyPath(isolate, value, path,
+                                                 exception_state);
+      if (exception_state.HadException())
         return nullptr;
+      // Evaluation of path failed - overall failure.
+      if (!key)
+        return nullptr;
+      result.emplace_back(std::move(key));
     }
+    // An array key is always returned, even if members may be invalid.
     return IDBKey::CreateArray(std::move(result));
   }
 
   DCHECK_EQ(key_path.GetType(), mojom::IDBKeyPathType::String);
   return CreateIDBKeyFromValueAndKeyPath(isolate, value, key_path.GetString(),
                                          exception_state);
+}
+
+// Evaluate an index's key path against a value and return a key. This
+// handles the special case for indexes where a compound key path
+// may result in "holes", depending on the store's properties.
+// Otherwise, nullptr is returned.
+// https://w3c.github.io/IndexedDB/#evaluate-a-key-path-on-a-value
+// A V8 exception may be thrown on bad data or by script's getters; if so,
+// callers should not make further V8 calls.
+static std::unique_ptr<IDBKey> CreateIDBKeyFromValueAndKeyPaths(
+    v8::Isolate* isolate,
+    v8::Local<v8::Value> value,
+    const IDBKeyPath& store_key_path,
+    const IDBKeyPath& index_key_path,
+    ExceptionState& exception_state) {
+  DCHECK(!index_key_path.IsNull());
+  v8::HandleScope handle_scope(isolate);
+  if (index_key_path.GetType() == mojom::IDBKeyPathType::Array) {
+    const Vector<String>& array = index_key_path.Array();
+    const bool uses_inline_keys =
+        store_key_path.GetType() == mojom::IDBKeyPathType::String;
+    IDBKey::KeyArray result;
+    result.ReserveInitialCapacity(array.size());
+    for (const String& path : array) {
+      auto key = CreateIDBKeyFromValueAndKeyPath(isolate, value, path,
+                                                 exception_state);
+      if (exception_state.HadException())
+        return nullptr;
+      if (!key && uses_inline_keys && store_key_path.GetString() == path) {
+        // Compound keys that include the store's inline primary key which
+        // will be generated lazily are represented as "holes".
+        key = IDBKey::CreateNone();
+      } else if (!key) {
+        // Key path evaluation failed.
+        return nullptr;
+      } else if (!key->IsValid()) {
+        // An Invalid key is returned if not valid in this case (but not the
+        // other CreateIDBKeyFromValueAndKeyPath function) because:
+        // * Invalid members are only allowed for multi-entry arrays.
+        // * Array key paths can't be multi-entry.
+        return IDBKey::CreateInvalid();
+      }
+
+      result.emplace_back(std::move(key));
+    }
+    return IDBKey::CreateArray(std::move(result));
+  }
+
+  DCHECK_EQ(index_key_path.GetType(), mojom::IDBKeyPathType::String);
+  return CreateIDBKeyFromValueAndKeyPath(
+      isolate, value, index_key_path.GetString(), exception_state);
 }
 
 // Deserialize just the value data & blobInfo from the given IDBValue.
@@ -629,13 +724,12 @@ ScriptValue DeserializeScriptValue(ScriptState* script_state,
   v8::Isolate* isolate = script_state->GetIsolate();
   v8::HandleScope handle_scope(isolate);
   if (!serialized_value)
-    return ScriptValue::CreateNull(script_state);
+    return ScriptValue::CreateNull(script_state->GetIsolate());
 
   SerializedScriptValue::DeserializeOptions options;
   options.blob_info = blob_info;
   options.read_wasm_from_stream = read_wasm_from_stream;
-  return ScriptValue(script_state,
-                     serialized_value->Deserialize(isolate, options));
+  return ScriptValue(isolate, serialized_value->Deserialize(isolate, options));
 }
 
 SQLValue NativeValueTraits<SQLValue>::NativeValue(
@@ -669,6 +763,17 @@ std::unique_ptr<IDBKey> NativeValueTraits<std::unique_ptr<IDBKey>>::NativeValue(
                                          exception_state);
 }
 
+std::unique_ptr<IDBKey> NativeValueTraits<std::unique_ptr<IDBKey>>::NativeValue(
+    v8::Isolate* isolate,
+    v8::Local<v8::Value> value,
+    ExceptionState& exception_state,
+    const IDBKeyPath& store_key_path,
+    const IDBKeyPath& index_key_path) {
+  IDB_TRACE("createIDBKeyFromValueAndKeyPaths");
+  return CreateIDBKeyFromValueAndKeyPaths(isolate, value, store_key_path,
+                                          index_key_path, exception_state);
+}
+
 IDBKeyRange* NativeValueTraits<IDBKeyRange*>::NativeValue(
     v8::Isolate* isolate,
     v8::Local<v8::Value> value,
@@ -686,8 +791,7 @@ void AssertPrimaryKeyValidOrInjectable(ScriptState* script_state,
   ScriptState::Scope scope(script_state);
   v8::Isolate* isolate = script_state->GetIsolate();
   ScriptValue key_value = ScriptValue::From(script_state, value->PrimaryKey());
-  ScriptValue script_value(script_state,
-                           DeserializeIDBValueData(isolate, value));
+  ScriptValue script_value(isolate, DeserializeIDBValueData(isolate, value));
 
   DummyExceptionStateForTesting exception_state;
   std::unique_ptr<IDBKey> expected_key = CreateIDBKeyFromValueAndKeyPath(

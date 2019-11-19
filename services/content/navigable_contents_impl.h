@@ -8,15 +8,13 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/unguessable_token.h"
-#include "mojo/public/cpp/bindings/binding.h"
-#include "services/content/public/cpp/buildflags.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "services/content/public/mojom/navigable_contents.mojom.h"
 #include "services/content/public/mojom/navigable_contents_factory.mojom.h"
 #include "ui/gfx/native_widget_types.h"
-
-namespace views {
-class RemoteViewProvider;
-}
 
 namespace content {
 
@@ -29,25 +27,20 @@ class NavigableContentsView;
 // roughly analogous to a WebContentsImpl.
 class NavigableContentsImpl : public mojom::NavigableContents {
  public:
-  NavigableContentsImpl(Service* service,
-                        mojom::NavigableContentsParamsPtr params,
-                        mojom::NavigableContentsRequest request,
-                        mojom::NavigableContentsClientPtr client);
+  NavigableContentsImpl(
+      Service* service,
+      mojom::NavigableContentsParamsPtr params,
+      mojo::PendingReceiver<mojom::NavigableContents> receiver,
+      mojo::PendingRemote<mojom::NavigableContentsClient> client);
   ~NavigableContentsImpl() override;
 
  private:
   // mojom::NavigableContents:
   void Navigate(const GURL& url, mojom::NavigateParamsPtr params) override;
   void GoBack(mojom::NavigableContents::GoBackCallback callback) override;
-  void CreateView(bool in_service_process,
-                  CreateViewCallback callback) override;
+  void CreateView(CreateViewCallback callback) override;
   void Focus() override;
   void FocusThroughTabTraversal(bool reverse) override;
-
-#if BUILDFLAG(ENABLE_REMOTE_NAVIGABLE_CONTENTS_VIEW)
-  void OnEmbedTokenReceived(CreateViewCallback callback,
-                            const base::UnguessableToken& token);
-#endif
 
   // Used (indirectly) by the client library when run in the same process as the
   // service. See the |CreateView()| implementation for details.
@@ -55,14 +48,10 @@ class NavigableContentsImpl : public mojom::NavigableContents {
 
   Service* const service_;
 
-  mojo::Binding<mojom::NavigableContents> binding_;
-  mojom::NavigableContentsClientPtr client_;
+  mojo::Receiver<mojom::NavigableContents> receiver_;
+  mojo::Remote<mojom::NavigableContentsClient> client_;
   std::unique_ptr<NavigableContentsDelegate> delegate_;
   gfx::NativeView native_content_view_;
-
-#if BUILDFLAG(ENABLE_REMOTE_NAVIGABLE_CONTENTS_VIEW)
-  std::unique_ptr<views::RemoteViewProvider> remote_view_provider_;
-#endif
 
   base::WeakPtrFactory<NavigableContentsImpl> weak_ptr_factory_{this};
 

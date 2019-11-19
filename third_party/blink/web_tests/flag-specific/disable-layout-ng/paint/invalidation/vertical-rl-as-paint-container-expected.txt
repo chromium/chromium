@@ -1,0 +1,50 @@
+{
+  "layers": [
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF"
+    },
+    {
+      "name": "LayoutBlockFlow DIV id='target'",
+      "bounds": [600, 400],
+      "backfaceVisibility": "hidden",
+      "paintInvalidations": [
+        {
+          "object": "InlineTextBox 'Lorem ipsum dolor'",
+          "rect": [520, 0, 80, 340],
+          "reason": "style change"
+        },
+        {
+          "object": "InlineTextBox 'adipiscing elit.'",
+          "rect": [520, 0, 80, 340],
+          "reason": "style change"
+        },
+        {
+          "object": "InlineTextBox 'consectetur'",
+          "rect": [520, 0, 80, 340],
+          "reason": "style change"
+        },
+        {
+          "object": "InlineTextBox 'sit amet,'",
+          "rect": [520, 0, 80, 340],
+          "reason": "style change"
+        }
+      ],
+      "transform": 1
+    }
+  ],
+  "transforms": [
+    {
+      "id": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [8, 8, 0, 1]
+      ]
+    }
+  ]
+}
+

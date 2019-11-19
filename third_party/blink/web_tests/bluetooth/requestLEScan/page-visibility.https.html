@@ -1,0 +1,54 @@
+<!doctype html>
+<title>RequestLEScan Visiblility Test</title>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../../resources/testdriver.js"></script>
+<script src="../../resources/testdriver-vendor.js"></script>
+<script src="../../external/wpt/bluetooth/resources/bluetooth-helpers.js"></script>
+<script src="../../external/wpt/bluetooth/resources/bluetooth-scanning-helpers.js"></script>
+<script>
+'use strict';
+
+let ble_scan;
+bluetooth_test(async (t) => {
+  navigator.bluetooth.addEventListener('advertisementreceived', () => {
+    t.unreached_func('Should not receive advertisementreceived if the page was hidden');
+  });
+
+  const fake_central = await navigator.bluetooth.test.simulateCentral({state: 'powered-on'});
+
+  await callWithTrustedClick(async () => {
+    ble_scan = await navigator.bluetooth.requestLEScan(
+        {acceptAllAdvertisements: true});
+  });
+  assert_true(ble_scan.active, "ble_scan.active should be true since we just requested it");
+
+  let scan_result = {
+    deviceAddress: '09:09:09:09:09:09',
+    rssi: 100,
+    scanRecord: {
+      txPower: 20,
+    },
+  };
+
+  testRunner.setPageVisibility('hidden');
+  assert_false(ble_scan.active, "ble_scan.active should be false after visiblility change");
+
+  // We should not receive a bluetooth scan result if the page was put into the background.
+  fake_central.simulateAdvertisementReceived(scan_result);
+
+  testRunner.setPageVisibility('visible');
+  assert_false(ble_scan.active, "ble_scan.active should still be false after page returns to being visible");
+
+  // We should not receive a bluetooth scan result even if the page returns to being visible
+  fake_central.simulateAdvertisementReceived(scan_result);
+
+  // We want to make sure that there is time between the simulation of
+  // the event and leaving this test so that we don't accidently miss
+  // the event.
+  function wait(ms) {
+    return new Promise(resolve => step_timeout(resolve, ms));
+  }
+  return wait(500);
+}, 'requestLEScan active=false post page visiblility change.');
+</script>

@@ -31,4 +31,4 @@ interface SVGFEOffsetElement : SVGElement {
     [MeasureAs=SVG1DOMFilter] readonly attribute SVGAnimatedNumber dy;
 };
 
-SVGFEOffsetElement implements SVGFilterPrimitiveStandardAttributes;
+SVGFEOffsetElement includes SVGFilterPrimitiveStandardAttributes;

@@ -15,7 +15,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_test_views_delegate.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/permissions/permission_message_test_util.h"
@@ -56,7 +56,7 @@ class AppInfoPermissionsPanelTest : public testing::Test {
   }
 
   // We need the UI thread in order to construct UI elements in the view.
-  content::TestBrowserThreadBundle thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
   ChromeTestViewsDelegate views_delegate_;
   TestingProfile profile_;  // Needs BrowserThread::UI.
 };

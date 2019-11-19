@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>navigator.clipboard.writeText() succeeds when permission granted</title>
+<link rel="help" href="https://w3c.github.io/clipboard-apis/#async-clipboard-api">
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<script src="../../../http/tests/resources/permissions-helper.js"></script>
+<script>
+promise_test(async () => {
+  await PermissionsHelper.setPermission('clipboard-write', 'granted');
+  await navigator.clipboard.writeText('xyz');
+}, 'navigator.clipboard.writeText() succeeds when permission granted');
+</script>

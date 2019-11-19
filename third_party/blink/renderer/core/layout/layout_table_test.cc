@@ -13,8 +13,9 @@ namespace {
 
 class LayoutTableTest : public RenderingTest {
  protected:
+  // TODO(958381) Make these tests TableNG compatible.
   LayoutTable* GetTableByElementId(const char* id) {
-    return ToLayoutTable(GetLayoutObjectByElementId(id));
+    return To<LayoutTable>(GetLayoutObjectByElementId(id));
   }
 };
 
@@ -29,11 +30,11 @@ TEST_F(LayoutTableTest, OverflowViaOutline) {
   )HTML");
   auto* target = GetTableByElementId("target");
   EXPECT_EQ(LayoutRect(0, 0, 100, 200), target->SelfVisualOverflowRect());
-  ToElement(target->GetNode())
+  To<Element>(target->GetNode())
       ->setAttribute(html_names::kStyleAttr, "outline: 2px solid black");
 
   auto* child = GetTableByElementId("child");
-  ToElement(child->GetNode())
+  To<Element>(child->GetNode())
       ->setAttribute(html_names::kStyleAttr, "outline: 2px solid black");
 
   target->GetFrameView()->UpdateAllLifecyclePhases(
@@ -66,26 +67,27 @@ TEST_F(LayoutTableTest, OverflowWithCollapsedBorders) {
 
   // The table's border box rect covers all collapsed borders of the first
   // row, and bottom collapsed borders of the last row.
-  LayoutRect expected_border_box_rect = table->PhysicalContentBoxRect();
+  auto expected_border_box_rect = table->PhysicalContentBoxRect();
   expected_border_box_rect.ExpandEdges(LayoutUnit(2), LayoutUnit(5),
                                        LayoutUnit(0), LayoutUnit(1));
-  EXPECT_EQ(expected_border_box_rect, table->BorderBoxRect());
+  EXPECT_EQ(expected_border_box_rect, table->PhysicalBorderBoxRect());
 
   // The table's self visual overflow rect covers all collapsed borders, but
   // not visual overflows (outlines) from descendants.
-  LayoutRect expected_self_visual_overflow = table->PhysicalContentBoxRect();
+  auto expected_self_visual_overflow = table->PhysicalContentBoxRect();
   expected_self_visual_overflow.ExpandEdges(LayoutUnit(2), LayoutUnit(10),
                                             LayoutUnit(0), LayoutUnit(10));
-  EXPECT_EQ(expected_self_visual_overflow, table->SelfVisualOverflowRect());
+  EXPECT_EQ(expected_self_visual_overflow,
+            table->PhysicalSelfVisualOverflowRect());
   // For this table, its layout overflow equals self visual overflow.
-  EXPECT_EQ(expected_self_visual_overflow, table->LayoutOverflowRect());
+  EXPECT_EQ(expected_self_visual_overflow, table->PhysicalLayoutOverflowRect());
 
   // The table's visual overflow covers self visual overflow and content visual
   // overflows.
-  LayoutRect expected_visual_overflow = table->PhysicalContentBoxRect();
+  auto expected_visual_overflow = table->PhysicalContentBoxRect();
   expected_visual_overflow.ExpandEdges(LayoutUnit(6), LayoutUnit(10),
                                        LayoutUnit(8), LayoutUnit(10));
-  EXPECT_EQ(expected_visual_overflow, table->VisualOverflowRect());
+  EXPECT_EQ(expected_visual_overflow, table->PhysicalVisualOverflowRect());
 }
 
 TEST_F(LayoutTableTest, CollapsedBorders) {
@@ -272,13 +274,21 @@ TEST_F(LayoutTableTest, OutOfOrderHeadAndBody) {
     <table>
   )HTML");
   auto* table = GetTableByElementId("table");
-  EXPECT_EQ(ToLayoutTableSection(GetLayoutObjectByElementId("head")),
+  EXPECT_EQ(ToInterface<LayoutNGTableSectionInterface>(
+                GetLayoutObjectByElementId("head"))
+                ->ToLayoutObject(),
             table->TopSection());
-  EXPECT_EQ(ToLayoutTableSection(GetLayoutObjectByElementId("body")),
+  EXPECT_EQ(ToInterface<LayoutNGTableSectionInterface>(
+                GetLayoutObjectByElementId("body"))
+                ->ToLayoutObject(),
             table->TopNonEmptySection());
-  EXPECT_EQ(ToLayoutTableSection(GetLayoutObjectByElementId("body")),
+  EXPECT_EQ(ToInterface<LayoutNGTableSectionInterface>(
+                GetLayoutObjectByElementId("body"))
+                ->ToLayoutObject(),
             table->BottomSection());
-  EXPECT_EQ(ToLayoutTableSection(GetLayoutObjectByElementId("body")),
+  EXPECT_EQ(ToInterface<LayoutNGTableSectionInterface>(
+                GetLayoutObjectByElementId("body"))
+                ->ToLayoutObject(),
             table->BottomNonEmptySection());
 }
 
@@ -290,13 +300,21 @@ TEST_F(LayoutTableTest, OutOfOrderFootAndBody) {
     <table>
   )HTML");
   auto* table = GetTableByElementId("table");
-  EXPECT_EQ(ToLayoutTableSection(GetLayoutObjectByElementId("body")),
+  EXPECT_EQ(ToInterface<LayoutNGTableSectionInterface>(
+                GetLayoutObjectByElementId("body"))
+                ->ToLayoutObject(),
             table->TopSection());
-  EXPECT_EQ(ToLayoutTableSection(GetLayoutObjectByElementId("body")),
+  EXPECT_EQ(ToInterface<LayoutNGTableSectionInterface>(
+                GetLayoutObjectByElementId("body"))
+                ->ToLayoutObject(),
             table->TopNonEmptySection());
-  EXPECT_EQ(ToLayoutTableSection(GetLayoutObjectByElementId("foot")),
+  EXPECT_EQ(ToInterface<LayoutNGTableSectionInterface>(
+                GetLayoutObjectByElementId("foot"))
+                ->ToLayoutObject(),
             table->BottomSection());
-  EXPECT_EQ(ToLayoutTableSection(GetLayoutObjectByElementId("body")),
+  EXPECT_EQ(ToInterface<LayoutNGTableSectionInterface>(
+                GetLayoutObjectByElementId("body"))
+                ->ToLayoutObject(),
             table->BottomNonEmptySection());
 }
 
@@ -309,13 +327,21 @@ TEST_F(LayoutTableTest, OutOfOrderHeadFootAndBody) {
     <table>
   )HTML");
   auto* table = GetTableByElementId("table");
-  EXPECT_EQ(ToLayoutTableSection(GetLayoutObjectByElementId("head")),
+  EXPECT_EQ(ToInterface<LayoutNGTableSectionInterface>(
+                GetLayoutObjectByElementId("head"))
+                ->ToLayoutObject(),
             table->TopSection());
-  EXPECT_EQ(ToLayoutTableSection(GetLayoutObjectByElementId("head")),
+  EXPECT_EQ(ToInterface<LayoutNGTableSectionInterface>(
+                GetLayoutObjectByElementId("head"))
+                ->ToLayoutObject(),
             table->TopNonEmptySection());
-  EXPECT_EQ(ToLayoutTableSection(GetLayoutObjectByElementId("foot")),
+  EXPECT_EQ(ToInterface<LayoutNGTableSectionInterface>(
+                GetLayoutObjectByElementId("foot"))
+                ->ToLayoutObject(),
             table->BottomSection());
-  EXPECT_EQ(ToLayoutTableSection(GetLayoutObjectByElementId("foot")),
+  EXPECT_EQ(ToInterface<LayoutNGTableSectionInterface>(
+                GetLayoutObjectByElementId("foot"))
+                ->ToLayoutObject(),
             table->BottomNonEmptySection());
 }
 
@@ -330,11 +356,28 @@ TEST_F(LayoutTableTest, VisualOverflowCleared) {
   )HTML");
   auto* table = GetTableByElementId("table");
   EXPECT_EQ(LayoutRect(-3, -3, 66, 66), table->SelfVisualOverflowRect());
-  ToElement(table->GetNode())
+  To<Element>(table->GetNode())
       ->setAttribute(html_names::kStyleAttr, "box-shadow: initial");
   GetDocument().View()->UpdateAllLifecyclePhases(
       DocumentLifecycle::LifecycleUpdateReason::kTest);
   EXPECT_EQ(LayoutRect(0, 0, 50, 50), table->SelfVisualOverflowRect());
+}
+
+TEST_F(LayoutTableTest, HasNonCollapsedBorderDecoration) {
+  SetBodyInnerHTML("<table id='table'></table>");
+  auto* table = GetTableByElementId("table");
+  EXPECT_FALSE(table->HasNonCollapsedBorderDecoration());
+
+  To<Element>(table->GetNode())
+      ->setAttribute(html_names::kStyleAttr, "border: 1px solid black");
+  GetDocument().View()->UpdateAllLifecyclePhasesExceptPaint();
+  EXPECT_TRUE(table->HasNonCollapsedBorderDecoration());
+
+  To<Element>(table->GetNode())
+      ->setAttribute(html_names::kStyleAttr,
+                     "border: 1px solid black; border-collapse: collapse");
+  GetDocument().View()->UpdateAllLifecyclePhasesExceptPaint();
+  EXPECT_FALSE(table->HasNonCollapsedBorderDecoration());
 }
 
 }  // anonymous namespace

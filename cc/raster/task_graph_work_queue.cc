@@ -215,7 +215,7 @@ void TaskGraphWorkQueue::ScheduleTasks(NamespaceToken token, TaskGraph* graph) {
                     }))
       continue;
 
-    DCHECK(!base::ContainsValue(task_namespace.completed_tasks, node.task));
+    DCHECK(!base::Contains(task_namespace.completed_tasks, node.task));
     node.task->state().DidCancel();
     task_namespace.completed_tasks.push_back(node.task);
   }
@@ -225,12 +225,13 @@ void TaskGraphWorkQueue::ScheduleTasks(NamespaceToken token, TaskGraph* graph) {
     ready_to_run_namespaces_it.second.clear();
   }
   for (auto& namespace_it : namespaces_) {
-    auto& task_namespace = namespace_it.second;
-    for (auto& ready_to_run_tasks_it : task_namespace.ready_to_run_tasks) {
+    auto& task_namespace_to_check = namespace_it.second;
+    for (auto& ready_to_run_tasks_it :
+         task_namespace_to_check.ready_to_run_tasks) {
       auto& ready_to_run_tasks = ready_to_run_tasks_it.second;
       uint16_t category = ready_to_run_tasks_it.first;
       if (!ready_to_run_tasks.empty()) {
-        ready_to_run_namespaces_[category].push_back(&task_namespace);
+        ready_to_run_namespaces_[category].push_back(&task_namespace_to_check);
       }
     }
   }
@@ -239,8 +240,9 @@ void TaskGraphWorkQueue::ScheduleTasks(NamespaceToken token, TaskGraph* graph) {
   // way that they form a heap.
   for (auto& it : ready_to_run_namespaces_) {
     uint16_t category = it.first;
-    auto& task_namespace = it.second;
-    std::make_heap(task_namespace.begin(), task_namespace.end(),
+    auto& ready_to_run_task_namespace = it.second;
+    std::make_heap(ready_to_run_task_namespace.begin(),
+                   ready_to_run_task_namespace.end(),
                    CompareTaskNamespacePriority(category));
   }
 }
@@ -301,8 +303,9 @@ void TaskGraphWorkQueue::CompleteTask(PrioritizedTask completed_task) {
   // Now iterate over all dependents to decrement dependencies and check if they
   // are ready to run.
   bool ready_to_run_namespaces_has_heap_properties = true;
-  for (DependentIterator it(&task_namespace->graph, task.get()); it; ++it) {
-    TaskGraph::Node& dependent_node = *it;
+  for (DependentIterator dependent_it(&task_namespace->graph, task.get());
+       dependent_it; ++dependent_it) {
+    TaskGraph::Node& dependent_node = *dependent_it;
 
     DCHECK_LT(0u, dependent_node.dependencies);
     dependent_node.dependencies--;
@@ -326,7 +329,7 @@ void TaskGraphWorkQueue::CompleteTask(PrioritizedTask completed_task) {
         TaskNamespace::Vector& ready_to_run_namespaces =
             ready_to_run_namespaces_[dependent_node.category];
 
-        DCHECK(!base::ContainsValue(ready_to_run_namespaces, task_namespace));
+        DCHECK(!base::Contains(ready_to_run_namespaces, task_namespace));
         ready_to_run_namespaces.push_back(task_namespace);
       }
       ready_to_run_namespaces_has_heap_properties = false;
@@ -336,9 +339,9 @@ void TaskGraphWorkQueue::CompleteTask(PrioritizedTask completed_task) {
   // Rearrange the task namespaces in |ready_to_run_namespaces_| in such a way
   // that they yet again form a heap.
   if (!ready_to_run_namespaces_has_heap_properties) {
-    for (auto& it : ready_to_run_namespaces_) {
-      uint16_t category = it.first;
-      auto& ready_to_run_namespaces = it.second;
+    for (auto& ready_to_run_it : ready_to_run_namespaces_) {
+      uint16_t category = ready_to_run_it.first;
+      auto& ready_to_run_namespaces = ready_to_run_it.second;
       std::make_heap(ready_to_run_namespaces.begin(),
                      ready_to_run_namespaces.end(),
                      CompareTaskNamespacePriority(category));

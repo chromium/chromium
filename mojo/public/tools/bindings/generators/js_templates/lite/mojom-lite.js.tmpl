@@ -8,8 +8,11 @@ goog.require('mojo.internal');
 {%- if interfaces %}
 goog.require('mojo.internal.interfaceSupport');
 {%- endif %}
-{% endif %}
-
+{% for kind in module.imported_kinds.values() %}
+goog.require('{{kind|lite_js_import_name}}');
+{%- endfor %}
+{% else %}
 mojo.internal.exportModule('{{module.namespace}}');
+{% endif %}
 
 {% include "lite/module_definition.tmpl" %}

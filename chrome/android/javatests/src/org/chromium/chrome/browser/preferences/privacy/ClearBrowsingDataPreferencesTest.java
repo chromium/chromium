@@ -10,14 +10,14 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-import android.content.Intent;
-import android.preference.CheckBoxPreference;
-import android.preference.Preference;
-import android.preference.PreferenceScreen;
+import android.os.Build;
 import android.support.test.filters.LargeTest;
 import android.support.test.filters.MediumTest;
 import android.support.v4.util.ArraySet;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.preference.CheckBoxPreference;
+import android.support.v7.preference.Preference;
+import android.support.v7.preference.PreferenceScreen;
 import android.widget.Button;
 import android.widget.ListView;
 
@@ -29,33 +29,35 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.RetryOnFailure;
 import org.chromium.chrome.browser.ChromeActivity;
 import org.chromium.chrome.browser.ChromeFeatureList;
 import org.chromium.chrome.browser.ChromeSwitches;
-import org.chromium.chrome.browser.ShortcutHelper;
 import org.chromium.chrome.browser.browsing_data.ClearBrowsingDataTab;
-import org.chromium.chrome.browser.preferences.PrefServiceBridge;
+import org.chromium.chrome.browser.notifications.channels.SiteChannelsManager;
 import org.chromium.chrome.browser.preferences.Preferences;
 import org.chromium.chrome.browser.preferences.privacy.ClearBrowsingDataPreferences.DialogOption;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabState;
 import org.chromium.chrome.browser.webapps.TestFetchStorageCallback;
 import org.chromium.chrome.browser.webapps.WebappDataStorage;
+import org.chromium.chrome.browser.webapps.WebappInfo;
 import org.chromium.chrome.browser.webapps.WebappRegistry;
 import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.chrome.test.util.browser.signin.SigninTestUtil;
+import org.chromium.chrome.test.util.browser.webapps.WebappTestHelper;
 import org.chromium.content_public.browser.NavigationController;
 import org.chromium.content_public.browser.NavigationEntry;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.Criteria;
 import org.chromium.content_public.browser.test.util.CriteriaHelper;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.EmbeddedTestServer;
 
 import java.net.URL;
@@ -63,16 +65,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
 /**
  * Integration tests for ClearBrowsingDataPreferences.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
-// Disable notifications for the default search engine so that it doesn't interfere with important
-// sites tests.
-@CommandLineFlags.
-Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, "disable-features=GrantNotificationsToDSE"})
+@CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @RetryOnFailure
 public class ClearBrowsingDataPreferencesTest {
     @Rule
@@ -87,10 +87,19 @@ public class ClearBrowsingDataPreferencesTest {
 
         mActivityTestRule.startMainActivityOnBlankPage();
         mTestServer = mActivityTestRule.getTestServer();
+
+        // There can be some left-over notification channels from other tests.
+        // TODO(crbug.com/951402): Find a general solution to avoid leaking channels between tests.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            TestThreadUtils.runOnUiThreadBlocking(() -> {
+                SiteChannelsManager manager = SiteChannelsManager.getInstance();
+                manager.deleteAllSiteChannels();
+            });
+        }
     }
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
         SigninTestUtil.tearDownAuthForTest();
     }
 
@@ -117,9 +126,9 @@ public class ClearBrowsingDataPreferencesTest {
                 ClearBrowsingDataPreferencesAdvanced.class.getName());
         ClearBrowsingDataFetcher fetcher = new ClearBrowsingDataFetcher();
         ClearBrowsingDataPreferences fragment =
-                (ClearBrowsingDataPreferences) preferences.getFragmentForTest();
+                (ClearBrowsingDataPreferences) preferences.getMainFragment();
         fragment.setClearBrowsingDataFetcher(fetcher);
-        ThreadUtils.runOnUiThreadBlocking(fetcher::fetchImportantSites);
+        TestThreadUtils.runOnUiThreadBlocking(fetcher::fetchImportantSites);
         return preferences;
     }
 
@@ -138,9 +147,9 @@ public class ClearBrowsingDataPreferencesTest {
         setDataTypesToClear(
                 new ArraySet<>(Arrays.asList(DialogOption.CLEAR_COOKIES_AND_SITE_DATA)));
         final ClearBrowsingDataPreferences preferences =
-                (ClearBrowsingDataPreferences) startPreferences().getFragmentForTest();
+                (ClearBrowsingDataPreferences) startPreferences().getMainFragment();
 
-        ThreadUtils.runOnUiThreadBlocking(() -> clickClearButton(preferences));
+        TestThreadUtils.runOnUiThreadBlocking(() -> clickClearButton(preferences));
         waitForProgressToComplete(preferences);
 
         Assert.assertTrue(WebappRegistry.getRegisteredWebappIdsForTesting().isEmpty());
@@ -153,20 +162,20 @@ public class ClearBrowsingDataPreferencesTest {
     @Test
     @MediumTest
     public void testClearingHistoryClearsWebappScopesAndLaunchTimes() throws Exception {
-        Intent shortcutIntent = ShortcutHelper.createWebappShortcutIntentForTesting("id", "url");
+        WebappInfo webappInfo = WebappTestHelper.createWebappInfo("id", "url");
         TestFetchStorageCallback callback = new TestFetchStorageCallback();
         WebappRegistry.getInstance().register("first", callback);
         callback.waitForCallback(0);
-        callback.getStorage().updateFromShortcutIntent(shortcutIntent);
+        callback.getStorage().updateFromWebappInfo(webappInfo);
 
         Assert.assertEquals(new HashSet<>(Arrays.asList("first")),
                 WebappRegistry.getRegisteredWebappIdsForTesting());
 
         setDataTypesToClear(new ArraySet<>(Arrays.asList(DialogOption.CLEAR_HISTORY)));
         final ClearBrowsingDataPreferences preferences =
-                (ClearBrowsingDataPreferences) startPreferences().getFragmentForTest();
+                (ClearBrowsingDataPreferences) startPreferences().getMainFragment();
 
-        ThreadUtils.runOnUiThreadBlocking(() -> clickClearButton(preferences));
+        TestThreadUtils.runOnUiThreadBlocking(() -> clickClearButton(preferences));
         waitForProgressToComplete(preferences);
 
         Assert.assertEquals(new HashSet<>(Arrays.asList("first")),
@@ -185,13 +194,13 @@ public class ClearBrowsingDataPreferencesTest {
      */
     @Test
     @MediumTest
-    public void testClearingEverything() throws Exception {
+    public void testClearingEverything() {
         setDataTypesToClear(ClearBrowsingDataPreferences.getAllOptions());
 
         final ClearBrowsingDataPreferences preferences =
-                (ClearBrowsingDataPreferences) startPreferences().getFragmentForTest();
+                (ClearBrowsingDataPreferences) startPreferences().getMainFragment();
 
-        ThreadUtils.runOnUiThreadBlocking(() -> {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
             PreferenceScreen screen = preferences.getPreferenceScreen();
 
             for (int i = 0; i < screen.getPreferenceCount(); ++i) {
@@ -227,11 +236,11 @@ public class ClearBrowsingDataPreferencesTest {
         @Override
         public void run() {
             ClearBrowsingDataPreferences fragment =
-                    (ClearBrowsingDataPreferences) mPreferences.getFragmentForTest();
+                    (ClearBrowsingDataPreferences) mPreferences.getMainFragment();
             PreferenceScreen screen = fragment.getPreferenceScreen();
 
             // Enable the dialog and click the "Clear" button.
-            ((ClearBrowsingDataPreferences) mPreferences.getFragmentForTest())
+            ((ClearBrowsingDataPreferences) mPreferences.getMainFragment())
                     .getClearBrowsingDataFetcher()
                     .enableDialogAboutOtherFormsOfBrowsingHistory();
             clickClearButton(fragment);
@@ -257,7 +266,7 @@ public class ClearBrowsingDataPreferencesTest {
         @Override
         public boolean isSatisfied() {
             ClearBrowsingDataPreferences fragment =
-                    (ClearBrowsingDataPreferences) mPreferences.getFragmentForTest();
+                    (ClearBrowsingDataPreferences) mPreferences.getMainFragment();
             return fragment == null || !fragment.isVisible();
         }
     }
@@ -269,7 +278,7 @@ public class ClearBrowsingDataPreferencesTest {
      */
     @Test
     @LargeTest
-    public void testDialogAboutOtherFormsOfBrowsingHistory() throws Exception {
+    public void testDialogAboutOtherFormsOfBrowsingHistory() {
         // Sign in.
         SigninTestUtil.addAndSignInTestAccount();
         OtherFormsOfHistoryDialogFragment.clearShownPreferenceForTesting(
@@ -279,7 +288,7 @@ public class ClearBrowsingDataPreferencesTest {
         // "Clear" button won't be enabled.
         setDataTypesToClear(new ArraySet<>(Arrays.asList(DialogOption.CLEAR_CACHE)));
         final Preferences preferences1 = startPreferences();
-        ThreadUtils.runOnUiThreadBlocking(
+        TestThreadUtils.runOnUiThreadBlocking(
                 new OpenPreferencesEnableDialogAndClickClearRunnable(preferences1));
 
         // The dialog about other forms of history is not shown. The Clear Browsing Data preferences
@@ -289,7 +298,7 @@ public class ClearBrowsingDataPreferencesTest {
         // Reopen Clear Browsing Data preferences, this time with history selected for clearing.
         setDataTypesToClear(new ArraySet<>(Arrays.asList(DialogOption.CLEAR_HISTORY)));
         final Preferences preferences2 = startPreferences();
-        ThreadUtils.runOnUiThreadBlocking(
+        TestThreadUtils.runOnUiThreadBlocking(
                 new OpenPreferencesEnableDialogAndClickClearRunnable(preferences2));
 
         // The dialog about other forms of history should now be shown.
@@ -297,17 +306,17 @@ public class ClearBrowsingDataPreferencesTest {
             @Override
             public boolean isSatisfied() {
                 ClearBrowsingDataPreferences fragment =
-                        (ClearBrowsingDataPreferences) preferences2.getFragmentForTest();
+                        (ClearBrowsingDataPreferences) preferences2.getMainFragment();
                 OtherFormsOfHistoryDialogFragment dialog =
                         fragment.getDialogAboutOtherFormsOfBrowsingHistory();
-                return dialog != null;
+                return dialog != null && dialog.getActivity() != null;
             }
         });
 
         // Close that dialog.
-        ThreadUtils.runOnUiThreadBlocking(() -> {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
             ClearBrowsingDataPreferences fragment =
-                    (ClearBrowsingDataPreferences) preferences2.getFragmentForTest();
+                    (ClearBrowsingDataPreferences) preferences2.getMainFragment();
             fragment.getDialogAboutOtherFormsOfBrowsingHistory().onClick(
                     null, AlertDialog.BUTTON_POSITIVE);
         });
@@ -318,7 +327,7 @@ public class ClearBrowsingDataPreferencesTest {
         // Reopen Clear Browsing Data preferences and clear history once again.
         setDataTypesToClear(new ArraySet<>(Arrays.asList(DialogOption.CLEAR_HISTORY)));
         final Preferences preferences3 = startPreferences();
-        ThreadUtils.runOnUiThreadBlocking(
+        TestThreadUtils.runOnUiThreadBlocking(
                 new OpenPreferencesEnableDialogAndClickClearRunnable(preferences3));
 
         // The dialog about other forms of browsing history is still enabled, and history has been
@@ -355,10 +364,20 @@ public class ClearBrowsingDataPreferencesTest {
                 Assert.assertNotNull(preferences);
                 if (preferences.getImportantSitesDialogFragment() == null
                         || !preferences.getImportantSitesDialogFragment().getDialog().isShowing()) {
+                    updateFailureReason("Dialog was null or not shown.");
                     return false;
                 }
                 ListView sitesList = preferences.getImportantSitesDialogFragment().getSitesList();
-                return sitesList.getAdapter().getCount() == numImportantSites;
+                if (sitesList.getAdapter().getCount() != numImportantSites) {
+                    updateFailureReason(
+                            String.format(Locale.US, "Adapter item count, %d, did not match %d",
+                                    sitesList.getAdapter().getCount(), numImportantSites));
+                    return false;
+                }
+                updateFailureReason(
+                        String.format(Locale.US, "ListView child count, %d, expected to be >= %d",
+                                sitesList.getChildCount(), numImportantSites));
+                return sitesList.getChildCount() >= numImportantSites;
             }
         });
     }
@@ -379,6 +398,7 @@ public class ClearBrowsingDataPreferencesTest {
     @Test
     @MediumTest
     @Feature({"SiteEngagement"})
+    @DisableIf.Build(sdk_is_greater_than = 25, message = "crbug.com/999361")
     public void testImportantSitesDialogNoFiltering() throws Exception {
         // Sign in.
         SigninTestUtil.addAndSignInTestAccount();
@@ -388,7 +408,7 @@ public class ClearBrowsingDataPreferencesTest {
         final String serverOrigin = mTestServer.getURL("/");
         final String[] importantOrigins = {"http://www.facebook.com", serverOrigin};
         // First mark our origins as important.
-        ThreadUtils.runOnUiThreadBlocking(getMarkOriginsAsImportantRunnable(importantOrigins));
+        TestThreadUtils.runOnUiThreadBlocking(getMarkOriginsAsImportantRunnable(importantOrigins));
 
         // Load the page and clear any set storage.
         mActivityTestRule.loadUrl(testUrl + "#clear");
@@ -404,14 +424,14 @@ public class ClearBrowsingDataPreferencesTest {
                 "true", mActivityTestRule.runJavaScriptCodeInCurrentTab("hasAllStorage()"));
 
         ClearBrowsingDataPreferences preferences =
-                (ClearBrowsingDataPreferences) startPreferences().getFragmentForTest();
+                (ClearBrowsingDataPreferences) startPreferences().getMainFragment();
 
         // Clear in root preference.
-        ThreadUtils.runOnUiThreadBlocking(getPressClearRunnable(preferences));
+        TestThreadUtils.runOnUiThreadBlocking(getPressClearRunnable(preferences));
         // Check that the important sites dialog is shown, and the list is visible.
         waitForImportantDialogToShow(preferences, 2);
         // Clear in important dialog.
-        ThreadUtils.runOnUiThreadBlocking(
+        TestThreadUtils.runOnUiThreadBlocking(
                 getPressButtonInImportantDialogRunnable(preferences, AlertDialog.BUTTON_POSITIVE));
         waitForProgressToComplete(preferences);
 
@@ -439,7 +459,7 @@ public class ClearBrowsingDataPreferencesTest {
         final String serverOrigin = mTestServer.getURL("/");
         final String[] importantOrigins = {"http://www.facebook.com", serverOrigin};
         // First mark our origins as important.
-        ThreadUtils.runOnUiThreadBlocking(getMarkOriginsAsImportantRunnable(importantOrigins));
+        TestThreadUtils.runOnUiThreadBlocking(getMarkOriginsAsImportantRunnable(importantOrigins));
 
         // Load the page and clear any set storage.
         mActivityTestRule.loadUrl(testUrl + "#clear");
@@ -451,12 +471,12 @@ public class ClearBrowsingDataPreferencesTest {
 
         Preferences preferences = startPreferences();
         ClearBrowsingDataPreferences fragment =
-                (ClearBrowsingDataPreferences) preferences.getFragmentForTest();
-        ThreadUtils.runOnUiThreadBlocking(getPressClearRunnable(fragment));
+                (ClearBrowsingDataPreferences) preferences.getMainFragment();
+        TestThreadUtils.runOnUiThreadBlocking(getPressClearRunnable(fragment));
         // Check that the important sites dialog is shown, and the list is visible.
         waitForImportantDialogToShow(fragment, 2);
         // Press the cancel button.
-        ThreadUtils.runOnUiThreadBlocking(
+        TestThreadUtils.runOnUiThreadBlocking(
                 getPressButtonInImportantDialogRunnable(fragment, AlertDialog.BUTTON_NEGATIVE));
         preferences.finish();
         mActivityTestRule.loadUrl(testUrl);
@@ -482,7 +502,7 @@ public class ClearBrowsingDataPreferencesTest {
         final String[] importantOrigins = {"http://www.facebook.com", serverOrigin};
 
         // First mark our origins as important.
-        ThreadUtils.runOnUiThreadBlocking(getMarkOriginsAsImportantRunnable(importantOrigins));
+        TestThreadUtils.runOnUiThreadBlocking(getMarkOriginsAsImportantRunnable(importantOrigins));
 
         // Load the page and clear any set storage.
         mActivityTestRule.loadUrl(testUrl + "#clear");
@@ -494,12 +514,12 @@ public class ClearBrowsingDataPreferencesTest {
 
         final Preferences preferences = startPreferences();
         final ClearBrowsingDataPreferences fragment =
-                (ClearBrowsingDataPreferences) preferences.getFragmentForTest();
+                (ClearBrowsingDataPreferences) preferences.getMainFragment();
 
         // Uncheck the first item (our internal web server).
-        ThreadUtils.runOnUiThreadBlocking(getPressClearRunnable(fragment));
+        TestThreadUtils.runOnUiThreadBlocking(getPressClearRunnable(fragment));
         waitForImportantDialogToShow(fragment, 2);
-        ThreadUtils.runOnUiThreadBlocking(() -> {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
             ListView sitesList = fragment.getImportantSitesDialogFragment().getSitesList();
             sitesList.performItemClick(
                     sitesList.getChildAt(0), 0, sitesList.getAdapter().getItemId(0));
@@ -516,7 +536,7 @@ public class ClearBrowsingDataPreferencesTest {
         });
 
         // Click the clear button.
-        ThreadUtils.runOnUiThreadBlocking(
+        TestThreadUtils.runOnUiThreadBlocking(
                 getPressButtonInImportantDialogRunnable(fragment, AlertDialog.BUTTON_POSITIVE));
 
         waitForProgressToComplete(fragment);
@@ -531,7 +551,7 @@ public class ClearBrowsingDataPreferencesTest {
     @Test
     @EnableFeatures(ChromeFeatureList.REMOVE_NAVIGATION_HISTORY)
     @MediumTest
-    public void testNavigationDeletion() throws Exception {
+    public void testNavigationDeletion() {
         final String url1 = mTestServer.getURL("/chrome/test/data/browsing_data/a.html");
         final String url2 = mTestServer.getURL("/chrome/test/data/browsing_data/b.html");
 
@@ -546,8 +566,8 @@ public class ClearBrowsingDataPreferencesTest {
         // Clear history.
         setDataTypesToClear(new ArraySet<>(Arrays.asList(DialogOption.CLEAR_HISTORY)));
         ClearBrowsingDataPreferences preferences =
-                (ClearBrowsingDataPreferences) startPreferences().getFragmentForTest();
-        ThreadUtils.runOnUiThreadBlocking(() -> clickClearButton(preferences));
+                (ClearBrowsingDataPreferences) startPreferences().getMainFragment();
+        TestThreadUtils.runOnUiThreadBlocking(() -> clickClearButton(preferences));
         waitForProgressToComplete(preferences);
 
         // Check navigation entries.
@@ -562,7 +582,7 @@ public class ClearBrowsingDataPreferencesTest {
     @Test
     @MediumTest
     @EnableFeatures(ChromeFeatureList.REMOVE_NAVIGATION_HISTORY)
-    public void testFrozenNavigationDeletion() throws Exception {
+    public void testFrozenNavigationDeletion() {
         final String url1 = mTestServer.getURL("/chrome/test/data/browsing_data/a.html");
         final String url2 = mTestServer.getURL("/chrome/test/data/browsing_data/b.html");
 
@@ -571,12 +591,13 @@ public class ClearBrowsingDataPreferencesTest {
         mActivityTestRule.loadUrl(url2);
         Tab[] frozen = new Tab[1];
         WebContents[] restored = new WebContents[1];
-        ThreadUtils.runOnUiThreadBlocking(() -> {
-            TabState state = tab.getState();
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            TabState state = TabState.from(tab);
             mActivityTestRule.getActivity().getCurrentTabModel().closeTab(tab);
             frozen[0] = mActivityTestRule.getActivity().getCurrentTabCreator().createFrozenTab(
                     state, tab.getId(), 1);
-            restored[0] = frozen[0].getState().contentsState.restoreContentsFromByteBuffer(false);
+            restored[0] =
+                    TabState.from(frozen[0]).contentsState.restoreContentsFromByteBuffer(false);
         });
 
         // Check content of frozen state.
@@ -588,13 +609,14 @@ public class ClearBrowsingDataPreferencesTest {
         // Delete history.
         setDataTypesToClear(new ArraySet<>(Arrays.asList(DialogOption.CLEAR_HISTORY)));
         ClearBrowsingDataPreferences preferences =
-                (ClearBrowsingDataPreferences) startPreferences().getFragmentForTest();
-        ThreadUtils.runOnUiThreadBlocking(() -> clickClearButton(preferences));
+                (ClearBrowsingDataPreferences) startPreferences().getMainFragment();
+        TestThreadUtils.runOnUiThreadBlocking(() -> clickClearButton(preferences));
         waitForProgressToComplete(preferences);
 
         // Check that frozen state was cleaned up.
-        ThreadUtils.runOnUiThreadBlocking(() -> {
-            restored[0] = frozen[0].getState().contentsState.restoreContentsFromByteBuffer(false);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            restored[0] =
+                    TabState.from(frozen[0]).contentsState.restoreContentsFromByteBuffer(false);
         });
         controller = restored[0].getNavigationController();
         assertEquals(0, controller.getLastCommittedEntryIndex());
@@ -613,10 +635,10 @@ public class ClearBrowsingDataPreferencesTest {
     }
 
     private void setDataTypesToClear(final Set<Integer> typesToClear) {
-        ThreadUtils.runOnUiThreadBlocking(() -> {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
             for (@DialogOption Integer option : ClearBrowsingDataPreferences.getAllOptions()) {
                 boolean enabled = typesToClear.contains(option);
-                PrefServiceBridge.getInstance().setBrowsingDataDeletionPreference(
+                BrowsingDataBridge.getInstance().setBrowsingDataDeletionPreference(
                         ClearBrowsingDataPreferences.getDataType(option),
                         ClearBrowsingDataTab.ADVANCED, enabled);
             }

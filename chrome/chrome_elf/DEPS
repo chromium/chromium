@@ -1,0 +1,11 @@
+include_rules = [
+  "+chrome/app/chrome_crash_reporter_client_win.h",
+  "+chrome/chrome_elf",
+  "+chrome/common/chrome_switches.h",
+  "+chrome/install_static",
+  "+components/crash/content/app/crashpad.h",
+  "+components/crash/core/common/crash_keys.h",
+  "+sandbox",
+  "+third_party/breakpad/breakpad/src/client",
+  "+third_party/crashpad/crashpad/client/crashpad_client.h",
+]

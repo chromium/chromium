@@ -1,0 +1,10 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module viz.mojom;
+
+// Used to indicate the vertical scroll direction of the root layer. Note that
+// |kNull| is only used to represent the absence of a vertical scroll direction.
+// See components/viz/common/vertical_scroll_direction.h.
+enum VerticalScrollDirection { kNull, kDown, kUp };

@@ -7,7 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
-#include "ios/web/public/user_agent.h"
+#include "ios/web/common/user_agent.h"
 
 @protocol BrowserCommands;
 

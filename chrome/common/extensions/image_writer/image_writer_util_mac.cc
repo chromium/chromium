@@ -5,11 +5,18 @@
 #include "chrome/common/extensions/image_writer/image_writer_util_mac.h"
 
 #include <CoreFoundation/CoreFoundation.h>
+#include <IOKit/IOBSD.h>
+#include <IOKit/storage/IOMedia.h>
 
+#include "base/mac/foundation_util.h"
+#include "base/mac/mach_logging.h"
 #include "base/mac/scoped_cftyperef.h"
 #include "base/mac/scoped_ioobject.h"
+#include "base/strings/sys_string_conversions.h"
 
 namespace extensions {
+
+namespace {
 
 bool IsUsbDevice(io_object_t disk_obj) {
   io_object_t current_obj = disk_obj;
@@ -37,6 +44,69 @@ bool IsUsbDevice(io_object_t disk_obj) {
   }
 
   return false;
+}
+
+}  // namespace
+
+bool IsSuitableRemovableStorageDevice(io_object_t disk_obj,
+                                      std::string* out_bsd_name,
+                                      uint64_t* out_size_in_bytes,
+                                      bool* out_removable) {
+  base::ScopedCFTypeRef<CFMutableDictionaryRef> dict;
+  kern_return_t result = IORegistryEntryCreateCFProperties(
+      disk_obj, dict.InitializeInto(), kCFAllocatorDefault, 0);
+  if (result != KERN_SUCCESS) {
+    MACH_LOG(ERROR, result) << "Unable to get properties of disk object.";
+    return false;
+  }
+
+  // Do not allow Core Storage volumes, even though they are marked as "whole
+  // media", as they are entirely contained on a different volume.
+  CFBooleanRef cf_corestorage = base::mac::GetValueFromDictionary<CFBooleanRef>(
+      dict, CFSTR("CoreStorage"));
+  if (cf_corestorage && CFBooleanGetValue(cf_corestorage))
+    return false;
+
+  // Do not allow APFS containers, even though they are marked as "whole
+  // media", as they are entirely contained on a different volume.
+  CFStringRef cf_content =
+      base::mac::GetValueFromDictionary<CFStringRef>(dict, CFSTR("Content"));
+  if (cf_content &&
+      CFStringCompare(cf_content, CFSTR("EF57347C-0000-11AA-AA11-00306543ECAC"),
+                      0) == kCFCompareEqualTo) {
+    return false;
+  }
+
+  CFBooleanRef cf_removable = base::mac::GetValueFromDictionary<CFBooleanRef>(
+      dict, CFSTR(kIOMediaRemovableKey));
+  bool removable = CFBooleanGetValue(cf_removable);
+  bool is_usb = IsUsbDevice(disk_obj);
+
+  if (!removable && !is_usb)
+    return false;
+
+  if (out_size_in_bytes) {
+    CFNumberRef cf_media_size = base::mac::GetValueFromDictionary<CFNumberRef>(
+        dict, CFSTR(kIOMediaSizeKey));
+    if (cf_media_size)
+      CFNumberGetValue(cf_media_size, kCFNumberLongLongType, out_size_in_bytes);
+    else
+      *out_size_in_bytes = 0;
+  }
+
+  if (out_bsd_name) {
+    CFStringRef cf_bsd_name = base::mac::GetValueFromDictionary<CFStringRef>(
+        dict, CFSTR(kIOBSDNameKey));
+    if (out_bsd_name)
+      *out_bsd_name = base::SysCFStringRefToUTF8(cf_bsd_name);
+    else
+      *out_bsd_name = std::string();
+  }
+
+  if (out_removable)
+    *out_removable = removable;
+
+  return true;
 }
 
 }  // namespace extensions

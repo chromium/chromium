@@ -42,15 +42,17 @@ class CONTENT_EXPORT SSLManager {
   // Entry point for SSLCertificateErrors.  This function begins the process
   // of resolving a certificate error during an SSL connection.  SSLManager
   // will adjust the security UI and either call |CancelSSLRequest| or
-  // |ContinueSSLRequest| of |delegate|.
+  // |ContinueSSLRequest| of |delegate|. |is_main_frame_request| is true only
+  // when the request is for a navigation in the main frame.
   //
   // This can be called on the UI or IO thread. It will call |delegate| on the
   // same thread.
   static void OnSSLCertificateError(
       const base::WeakPtr<SSLErrorHandler::Delegate>& delegate,
-      ResourceType resource_type,
+      bool is_main_frame_request,
       const GURL& url,
       const base::Callback<WebContents*(void)>& web_contents_getter,
+      int net_error,
       const net::SSLInfo& ssl_info,
       bool fatal);
 
@@ -62,6 +64,7 @@ class CONTENT_EXPORT SSLManager {
       const GURL& url,
       int render_process_id,
       int render_frame_id,
+      int net_error,
       const net::SSLInfo& ssl_info,
       bool fatal);
 
@@ -74,7 +77,8 @@ class CONTENT_EXPORT SSLManager {
   NavigationControllerImpl* controller() { return controller_; }
 
   void DidCommitProvisionalLoad(const LoadCommittedDetails& details);
-  void DidStartResourceResponse(const GURL& url, bool has_certificate_errors);
+  void DidStartResourceResponse(const url::Origin& origin_of_final_response_url,
+                                bool has_certificate_errors);
 
   // The following methods are called when a page includes insecure
   // content. These methods update the SSLStatus on the NavigationEntry
@@ -92,11 +96,7 @@ class CONTENT_EXPORT SSLManager {
 
  private:
   // Helper method for handling certificate errors.
-  //
-  // |expired_previous_decision| indicates whether a user decision had been
-  // previously made but the decision has expired.
-  void OnCertErrorInternal(std::unique_ptr<SSLErrorHandler> handler,
-                           bool expired_previous_decision);
+  void OnCertErrorInternal(std::unique_ptr<SSLErrorHandler> handler);
 
   // Updates the NavigationEntry's |content_status| flags according to state in
   // |ssl_host_state_delegate|. |add_content_status_flags| and

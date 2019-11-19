@@ -1,0 +1,54 @@
+// Copyright 2018 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.test.mojom;
+
+import "url/mojom/url.mojom";
+import "third_party/blink/public/mojom/webauthn/authenticator.mojom";
+
+// Application protocol that the virtual authenticator should simulate.
+enum ClientToAuthenticatorProtocol {
+  U2F,
+  CTAP2,
+};
+
+// Attributes that the virtual authenticator should simulate.
+struct VirtualAuthenticatorOptions {
+  ClientToAuthenticatorProtocol protocol;
+  blink.mojom.AuthenticatorTransport transport;
+  blink.mojom.AuthenticatorAttachment attachment;
+  bool has_resident_key;
+  bool has_user_verification;
+};
+
+// Encapsulates both public (key handle) and private information associated
+// with a single registration on a single virtual authenticator device.
+struct RegisteredKey {
+  array<uint8> key_handle;
+  array<uint8> application_parameter;
+  // The EC private key in PKCS#8 format.
+  array<uint8> private_key;
+  int32 counter;
+};
+
+// Represents a stateful virtual authenticator device.
+interface VirtualAuthenticator {
+  GetUniqueId() => (string id);
+
+  AddRegistration(RegisteredKey key) => (bool added);
+  GetRegistrations() => (array<RegisteredKey> keys);
+  ClearRegistrations() => ();
+
+  SetUserPresence(bool present) => ();
+  GetUserPresence() => (bool present);
+};
+
+// Manages a virtual environment where the Web Authentication API talks to a
+// set of virtual authenticators instead of real physical devices.
+interface VirtualAuthenticatorManager {
+  CreateAuthenticator(VirtualAuthenticatorOptions options) => (pending_remote<VirtualAuthenticator> authenticator);
+  GetAuthenticators() => (array<pending_remote<VirtualAuthenticator>> authenticators);
+  RemoveAuthenticator(string id) => (bool removed);
+  ClearAuthenticators() => ();
+};

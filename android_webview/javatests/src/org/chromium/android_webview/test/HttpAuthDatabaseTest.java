@@ -27,19 +27,19 @@ public class HttpAuthDatabaseTest {
     private static final String TEST_DATABASE = "http_auth_for_HttpAuthDatabaseTest.db";
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         InstrumentationRegistry.getTargetContext().deleteDatabase(TEST_DATABASE);
     }
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
         InstrumentationRegistry.getTargetContext().deleteDatabase(TEST_DATABASE);
     }
 
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
-    public void testAccessHttpAuthUsernamePassword() throws Exception {
+    public void testAccessHttpAuthUsernamePassword() {
         HttpAuthDatabase instance = HttpAuthDatabase.newInstance(
                 InstrumentationRegistry.getTargetContext(), TEST_DATABASE);
 

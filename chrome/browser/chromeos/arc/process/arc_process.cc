@@ -40,7 +40,7 @@ const std::unordered_set<ProcessState>& ProtectedBackgroundStates() {
                                   ProcessState::FOREGROUND_SERVICE,
                                   ProcessState::BOUND_FOREGROUND_SERVICE,
                                   ProcessState::IMPORTANT_FOREGROUND,
-                                  ProcessState::IMPORTANT_FOREGROUND});
+                                  ProcessState::IMPORTANT_BACKGROUND});
   return *kProtectedBackgroundStates;
 }
 
@@ -89,6 +89,8 @@ bool ArcProcess::operator<(const ArcProcess& rhs) const {
 ArcProcess::ArcProcess(ArcProcess&& other) = default;
 ArcProcess& ArcProcess::operator=(ArcProcess&& other) = default;
 
+// TODO(wvk): Use a simple switch/case instead of std::unordered_set lookup,
+// it will likely be faster.
 bool ArcProcess::IsImportant() const {
   return ImportantStates().count(process_state()) == 1 || IsArcProtected();
 }

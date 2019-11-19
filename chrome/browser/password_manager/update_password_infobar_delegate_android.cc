@@ -17,6 +17,7 @@
 #include "components/infobars/core/infobar.h"
 #include "components/password_manager/core/browser/password_bubble_experiment.h"
 #include "components/password_manager/core/browser/password_form_metrics_recorder.h"
+#include "components/password_manager/core/browser/password_ui_utils.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/sync/driver/sync_service.h"
 #include "content/public/browser/web_contents.h"
@@ -39,9 +40,9 @@ void UpdatePasswordInfoBarDelegate::Create(
 
 UpdatePasswordInfoBarDelegate::~UpdatePasswordInfoBarDelegate() {
   password_manager::metrics_util::LogUpdateUIDismissalReason(infobar_response_);
-  passwords_state_.form_manager()
-      ->GetMetricsRecorder()
-      ->RecordUIDismissalReason(infobar_response_);
+  if (auto* recorder = passwords_state_.form_manager()->GetMetricsRecorder()) {
+    recorder->RecordUIDismissalReason(infobar_response_);
+  }
 }
 
 base::string16 UpdatePasswordInfoBarDelegate::GetBranding() const {
@@ -51,11 +52,7 @@ base::string16 UpdatePasswordInfoBarDelegate::GetBranding() const {
 }
 
 bool UpdatePasswordInfoBarDelegate::ShowMultipleAccounts() const {
-  const password_manager::PasswordFormManagerForUI* form_manager =
-      passwords_state_.form_manager();
-  bool is_password_overriden =
-      form_manager && form_manager->IsPasswordOverridden();
-  return GetCurrentForms().size() > 1 && !is_password_overriden;
+  return GetCurrentForms().size() > 1;
 }
 
 const std::vector<std::unique_ptr<autofill::PasswordForm>>&
@@ -77,10 +74,11 @@ UpdatePasswordInfoBarDelegate::UpdatePasswordInfoBarDelegate(
   if (is_smartlock_branding_enabled)
     SetDetailsMessage(l10n_util::GetStringUTF16(IDS_SAVE_PASSWORD_FOOTER));
 
-  // TODO(melandory): Add histograms, crbug.com/577129
-  form_to_update->GetMetricsRecorder()->RecordPasswordBubbleShown(
-      form_to_update->GetCredentialSource(),
-      password_manager::metrics_util::AUTOMATIC_WITH_PASSWORD_PENDING_UPDATE);
+  if (auto* recorder = form_to_update->GetMetricsRecorder()) {
+    recorder->RecordPasswordBubbleShown(
+        form_to_update->GetCredentialSource(),
+        password_manager::metrics_util::AUTOMATIC_WITH_PASSWORD_PENDING_UPDATE);
+  }
 
   passwords_state_.set_client(
       ChromePasswordManagerClient::FromWebContents(web_contents));
@@ -115,10 +113,11 @@ bool UpdatePasswordInfoBarDelegate::Accept() {
     int form_index = update_password_infobar->GetIdOfSelectedUsername();
     DCHECK_GE(form_index, 0);
     DCHECK_LT(static_cast<size_t>(form_index), GetCurrentForms().size());
-    form_manager->Update(*GetCurrentForms()[form_index]);
-  } else {
-    form_manager->Update(form_manager->GetPendingCredentials());
+    UpdatePasswordFormUsernameAndPassword(
+        GetCurrentForms()[form_index]->username_value,
+        form_manager->GetPendingCredentials().password_value, form_manager);
   }
+  form_manager->Save();
   return true;
 }
 

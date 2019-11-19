@@ -1,0 +1,18 @@
+This is a testharness.js-based test.
+FAIL e.style['color-scheme'] = "normal" should set the property value assert_not_equals: property should be set got disallowed value ""
+FAIL e.style['color-scheme'] = "light" should set the property value assert_not_equals: property should be set got disallowed value ""
+FAIL e.style['color-scheme'] = "dark" should set the property value assert_not_equals: property should be set got disallowed value ""
+FAIL e.style['color-scheme'] = "light dark" should set the property value assert_not_equals: property should be set got disallowed value ""
+FAIL e.style['color-scheme'] = "dark light" should set the property value assert_not_equals: property should be set got disallowed value ""
+FAIL e.style['color-scheme'] = "only light" should set the property value assert_not_equals: property should be set got disallowed value ""
+FAIL e.style['color-scheme'] = "light only" should set the property value assert_not_equals: property should be set got disallowed value ""
+FAIL e.style['color-scheme'] = "light light" should set the property value assert_not_equals: property should be set got disallowed value ""
+FAIL e.style['color-scheme'] = "dark dark" should set the property value assert_not_equals: property should be set got disallowed value ""
+FAIL e.style['color-scheme'] = "light purple" should set the property value assert_not_equals: property should be set got disallowed value ""
+FAIL e.style['color-scheme'] = "purple dark interesting" should set the property value assert_not_equals: property should be set got disallowed value ""
+FAIL e.style['color-scheme'] = "inherit" should set the property value assert_not_equals: property should be set got disallowed value ""
+FAIL e.style['color-scheme'] = "initial" should set the property value assert_not_equals: property should be set got disallowed value ""
+FAIL e.style['color-scheme'] = "unset" should set the property value assert_not_equals: property should be set got disallowed value ""
+FAIL e.style['color-scheme'] = "revert" should set the property value assert_not_equals: property should be set got disallowed value ""
+Harness: the test ran to completion.
+

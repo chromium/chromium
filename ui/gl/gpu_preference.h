@@ -7,18 +7,18 @@
 
 namespace gl {
 
-// On dual-GPU systems, expresses a preference for using the integrated
-// or discrete GPU. On systems that have dual-GPU support (see
+// On dual-GPU systems, expresses a preference for using the low power
+// or high performance GPU. On systems that have dual-GPU support (see
 // GpuDataManagerImpl), resource sharing only works between
 // contexts that are created with the same GPU preference.
 //
 // This API will likely need to be adjusted as the functionality is
 // implemented on more operating systems.
-enum GpuPreference {
-  GpuPreferenceNone,
-  PreferIntegratedGpu,
-  PreferDiscreteGpu,
-  GpuPreferenceLast = PreferDiscreteGpu
+enum class GpuPreference {
+  kDefault,
+  kLowPower,
+  kHighPerformance,
+  kMaxValue = kHighPerformance
 };
 
 }  // namespace gl

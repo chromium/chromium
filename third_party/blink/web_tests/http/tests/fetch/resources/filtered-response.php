@@ -3,9 +3,12 @@
 header('Set-Cookie: cookie3=test-cookie');
 header('Set-Cookie2: cookie4=test-cookie2');
 
+$content = "Success.";
+
 // Headers NOT filtered in 'CORS filtered response'
 header('Cache-Control: private, no-store, no-cache, must-revalidate');
 header('Content-Language: test-content-language');
+header('Content-Length: ' . strlen($content));
 header('Content-Type: test-content-type');
 header('Expires: test-expires');
 header('Last-Modified: test-last-modified');
@@ -19,5 +22,5 @@ header('X-test2: test-x-test2');
 
 header('Access-Control-Allow-Origin: *');
 
-echo "Success.";
+echo $content;
 ?>

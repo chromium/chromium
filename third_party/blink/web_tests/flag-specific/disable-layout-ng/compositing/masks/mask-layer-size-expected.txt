@@ -1,0 +1,33 @@
+{
+  "layers": [
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF"
+    },
+    {
+      "name": "LayoutBlockFlow DIV id='masked'",
+      "bounds": [400, 200],
+      "backgroundColor": "#000000",
+      "transform": 1
+    },
+    {
+      "name": "Mask Layer",
+      "bounds": [400, 200],
+      "transform": 1
+    }
+  ],
+  "transforms": [
+    {
+      "id": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [10, 10, 0, 1]
+      ]
+    }
+  ]
+}
+

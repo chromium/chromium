@@ -11,6 +11,20 @@ WorkerSettings::WorkerSettings(Settings* settings) {
     this->CopyFlagValuesFromSettings(settings);
 }
 
+WorkerSettings::WorkerSettings(
+    bool disable_reading_from_canvas,
+    bool strict_mixed_content_checking,
+    bool allow_running_of_insecure_content,
+    bool strictly_block_blockable_mixed_content,
+    const GenericFontFamilySettings& generic_font_family_settings)
+    : disable_reading_from_canvas_(disable_reading_from_canvas),
+      strict_mixed_content_checking_(strict_mixed_content_checking),
+      allow_running_of_insecure_content_(allow_running_of_insecure_content),
+      strictly_block_blockable_mixed_content_(
+          strictly_block_blockable_mixed_content) {
+  generic_font_family_settings.IsolatedCopyTo(generic_font_family_settings_);
+}
+
 std::unique_ptr<WorkerSettings> WorkerSettings::Copy(
     WorkerSettings* old_settings) {
   std::unique_ptr<WorkerSettings> new_settings =

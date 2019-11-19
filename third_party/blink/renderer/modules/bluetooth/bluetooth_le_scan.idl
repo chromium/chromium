@@ -8,7 +8,7 @@
     RuntimeEnabled=WebBluetoothScanning,
     SecureContext
 ] interface BluetoothLEScan {
-  readonly attribute FrozenArray<BluetoothLEScanFilter> filters;
+  readonly attribute FrozenArray<BluetoothLEScanFilterInit> filters;
   readonly attribute boolean keepRepeatedDevices;
   readonly attribute boolean acceptAllAdvertisements;
   readonly attribute boolean active;

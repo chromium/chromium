@@ -18,8 +18,7 @@ import java.util.Arrays;
  * Currently, this only includes checks against a few {@link android.os.Build} values.
  */
 public class DisableIfSkipCheck extends SkipCheck {
-
-    private static final String TAG = "cr_base_test";
+    private static final String TAG = "base_test";
 
     @Override
     public boolean shouldSkip(FrameworkMethod method) {

@@ -7,6 +7,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/global_error/global_error.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/test/views/chrome_test_views_delegate.h"
@@ -35,10 +36,8 @@ class MockGlobalErrorWithStandardBubble : public GlobalErrorWithStandardBubble {
   MOCK_METHOD0(GetBubbleViewIcon, gfx::Image());
   MOCK_METHOD0(GetBubbleViewTitle, base::string16());
   MOCK_METHOD0(GetBubbleViewMessage, std::vector<base::string16>());
-  MOCK_METHOD0(GetBubbleViewAcceptButtonLabel, base::string16());
   MOCK_CONST_METHOD0(ShouldShowCloseButton, bool());
   MOCK_METHOD0(ShouldAddElevationIconToAcceptButton, bool());
-  MOCK_METHOD0(GetBubbleViewCancelButtonLabel, base::string16());
   MOCK_METHOD1(BubbleViewDidClose, void(Browser* browser));
   MOCK_METHOD1(OnBubbleViewDidClose, void(Browser* browser));
   MOCK_METHOD1(BubbleViewAcceptButtonPressed, void(Browser* browser));
@@ -53,6 +52,13 @@ class MockGlobalErrorWithStandardBubble : public GlobalErrorWithStandardBubble {
   MOCK_METHOD0(MenuItemLabel, base::string16());
   MOCK_METHOD1(ExecuteMenuItem, void(Browser* browser));
   MOCK_METHOD0(GetBubbleViewMessages, std::vector<base::string16>());
+
+  base::string16 GetBubbleViewAcceptButtonLabel() {
+    return base::UTF8ToUTF16("Ok");
+  }
+  base::string16 GetBubbleViewCancelButtonLabel() {
+    return base::UTF8ToUTF16("Cancel");
+  }
 
  private:
   DISALLOW_COPY_AND_ASSIGN(MockGlobalErrorWithStandardBubble);
@@ -70,8 +76,8 @@ class GlobalErrorBubbleViewTest : public testing::Test {
         button_(nullptr, base::string16()),
         view_(std::make_unique<GlobalErrorBubbleView>(
             &arg_view_,
-            gfx::Rect(anchor_point_, gfx::Size()),
-            arrow_,
+            gfx::Rect(gfx::Point(), gfx::Size()),
+            views::BubbleBorder::NONE,
             nullptr,
             mock_global_error_with_standard_bubble_->AsWeakPtr())) {}
 
@@ -80,8 +86,6 @@ class GlobalErrorBubbleViewTest : public testing::Test {
   std::unique_ptr<StrictMock<MockGlobalErrorWithStandardBubble>>
       mock_global_error_with_standard_bubble_;
   views::View arg_view_;
-  const gfx::Point anchor_point_;
-  views::BubbleBorder::Arrow arrow_;
   views::LabelButton button_;
   std::unique_ptr<GlobalErrorBubbleView> view_;
 
@@ -109,25 +113,8 @@ TEST_F(GlobalErrorBubbleViewTest, Basic) {
   view_->WindowClosing();
 
   EXPECT_CALL(*mock_global_error_with_standard_bubble_,
-              GetBubbleViewAcceptButtonLabel());
-  EXPECT_CALL(*mock_global_error_with_standard_bubble_,
-              ShouldAddElevationIconToAcceptButton())
-      .WillOnce(Return(false));
-  view_->UpdateButton(&button_, ui::DIALOG_BUTTON_OK);
-
-  EXPECT_CALL(*mock_global_error_with_standard_bubble_,
               ShouldShowCloseButton());
   view_->ShouldShowCloseButton();
-
-  EXPECT_CALL(*mock_global_error_with_standard_bubble_,
-              GetBubbleViewAcceptButtonLabel());
-  EXPECT_CALL(*mock_global_error_with_standard_bubble_,
-              GetBubbleViewCancelButtonLabel());
-  view_->GetDialogButtonLabel(ui::DIALOG_BUTTON_OK);
-  view_->GetDialogButtonLabel(ui::DIALOG_BUTTON_CANCEL);
-
-  EXPECT_CALL(*mock_global_error_with_standard_bubble_,
-              GetBubbleViewCancelButtonLabel());
   view_->GetDialogButtons();
 
   EXPECT_CALL(*mock_global_error_with_standard_bubble_,
@@ -144,14 +131,7 @@ TEST_F(GlobalErrorBubbleViewTest, ErrorIsNull) {
   view_->GetWindowTitle();
   view_->WindowClosing();
 
-  view_->UpdateButton(&button_, ui::DIALOG_BUTTON_OK);
   view_->ShouldShowCloseButton();
-
-  EXPECT_EQ(base::string16(),
-            view_->GetDialogButtonLabel(ui::DIALOG_BUTTON_OK));
-  EXPECT_EQ(base::string16(),
-            view_->GetDialogButtonLabel(ui::DIALOG_BUTTON_CANCEL));
-  EXPECT_EQ(ui::DIALOG_BUTTON_NONE, view_->GetDialogButtons());
 
   view_->Cancel();
   view_->Accept();

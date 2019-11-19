@@ -11,8 +11,6 @@
 #include "base/callback_forward.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/observer_list.h"
-#include "base/observer_list_types.h"
 #include "chromecast/browser/cast_web_view.h"
 #include "url/gurl.h"
 
@@ -21,46 +19,21 @@ class BrowserContext;
 class SiteInstance;
 }  // namespace content
 
-namespace extensions {
-class Extension;
-}  // namespace extensions
-
 namespace chromecast {
 
-class CastWebContentsManager;
-
-struct ActiveWebview {
-  CastWebView* web_view;
-  int id;
-};
+class CastWebService;
 
 class CastWebViewFactory : public CastWebView::Observer {
  public:
-  class Observer : public base::CheckedObserver {
-   public:
-    virtual void OnCastWebViewCreated(CastWebView* web_view) {}
-    virtual void OnCastWebViewDestroyed(CastWebView* web_view) {}
-
-   protected:
-    ~Observer() override {}
-  };
-
   explicit CastWebViewFactory(content::BrowserContext* browser_context);
   ~CastWebViewFactory() override;
 
   virtual std::unique_ptr<CastWebView> CreateWebView(
       const CastWebView::CreateParams& params,
-      CastWebContentsManager* web_contents_manager,
+      CastWebService* web_service,
       scoped_refptr<content::SiteInstance> site_instance,
-      const extensions::Extension* extension,
       const GURL& initial_url);
 
-  void AddObserver(Observer* observer);
-  void RemoveObserver(Observer* observer);
-
-  const std::vector<ActiveWebview>& active_webviews() const {
-    return active_webviews_;
-  }
   content::BrowserContext* browser_context() const { return browser_context_; }
 
  protected:
@@ -69,10 +42,6 @@ class CastWebViewFactory : public CastWebView::Observer {
 
   content::BrowserContext* const browser_context_;
   base::RepeatingCallback<void(CastWebView*, int)> register_callback_;
-  base::ObserverList<Observer> observer_list_;
-
-  std::vector<ActiveWebview> active_webviews_;
-  int next_id_ = 1;
 
   DISALLOW_COPY_AND_ASSIGN(CastWebViewFactory);
 };

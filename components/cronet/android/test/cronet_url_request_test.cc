@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "jni/CronetUrlRequestTest_jni.h"
+#include "components/cronet/android/cronet_tests_jni_headers/CronetUrlRequestTest_jni.h"
 #include "net/base/load_flags.h"
 
 using base::android::JavaParamRef;

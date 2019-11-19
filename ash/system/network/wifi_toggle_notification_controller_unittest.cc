@@ -5,10 +5,14 @@
 #include "ash/system/network/wifi_toggle_notification_controller.h"
 
 #include "ash/shell.h"
+#include "ash/system/model/system_tray_model.h"
+#include "ash/system/network/tray_network_state_model.h"
 #include "ash/system/tray/system_tray_notifier.h"
 #include "ash/test/ash_test_base.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
+#include "base/run_loop.h"
+#include "chromeos/dbus/shill/shill_clients.h"
 #include "chromeos/network/network_handler.h"
+#include "chromeos/services/network_config/public/cpp/cros_network_config_test_helper.h"
 #include "components/prefs/testing_pref_service.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/message_center/message_center.h"
@@ -24,25 +28,15 @@ class WifiToggleNotificationControllerTest : public AshTestBase {
 
   // testing::Test:
   void SetUp() override {
-    chromeos::DBusThreadManager::Initialize();
-    // Initializing NetworkHandler before ash is more like production.
-    chromeos::NetworkHandler::Initialize();
     AshTestBase::SetUp();
-    chromeos::NetworkHandler::Get()->InitializePrefServices(&profile_prefs_,
-                                                            &local_state_);
-    // Networking stubs may have asynchronous initialization.
+
+    // NOTE: This is necessary to give the TrayNetworkStateModel a chance to
+    // sync its list of network devices.
     base::RunLoop().RunUntilIdle();
   }
 
-  void TearDown() override {
-    // This roughly matches production shutdown order.
-    chromeos::NetworkHandler::Get()->ShutdownPrefServices();
-    AshTestBase::TearDown();
-    chromeos::NetworkHandler::Shutdown();
-    chromeos::DBusThreadManager::Shutdown();
-  }
-
  private:
+  chromeos::network_config::CrosNetworkConfigTestHelper network_config_helper_;
   TestingPrefServiceSimple profile_prefs_;
   TestingPrefServiceSimple local_state_;
 

@@ -34,7 +34,8 @@ extern const CGFloat kLinkTapAreaMinimum;
 + (NSArray*)buttonsForLinkFrames:(NSArray*)linkFrames
                              URL:(const GURL&)URL
                       lineHeight:(CGFloat)lineHeight
-              accessibilityLabel:(NSString*)label;
+              accessibilityLabel:(NSString*)label
+                 accessibilityID:(NSString*)accessibilityID;
 
 // The URL passed upon initialization.
 @property(nonatomic, readonly) GURL URL;

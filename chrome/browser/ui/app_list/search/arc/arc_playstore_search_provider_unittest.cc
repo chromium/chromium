@@ -78,7 +78,7 @@ TEST_F(ArcPlayStoreSearchProviderTest, Basic) {
 
   // Check that the result size of a query doesn't exceed the |kMaxResults|.
   provider->Start(base::UTF8ToUTF16(kQuery));
-  const app_list::SearchProvider::Results& results = provider->results();
+  const SearchProvider::Results& results = provider->results();
   ASSERT_GT(results.size(), 0u);
   // Play Store returns |kMaxResults| results, but the first one (GMail) already
   // has Chrome extension installed, so it will be skipped.
@@ -95,8 +95,8 @@ TEST_F(ArcPlayStoreSearchProviderTest, Basic) {
     EXPECT_EQ(results[i]->rating(), i);
     const bool is_instant_app = i % 2 == 0;
     EXPECT_EQ(results[i]->result_type(),
-              is_instant_app ? ash::SearchResultType::kInstantApp
-                             : ash::SearchResultType::kPlayStoreApp);
+              is_instant_app ? ash::AppListSearchResultType::kInstantApp
+                             : ash::AppListSearchResultType::kPlayStoreApp);
   }
 }
 

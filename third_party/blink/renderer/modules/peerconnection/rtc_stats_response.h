@@ -39,8 +39,6 @@ class RTCStatsResponse final : public RTCStatsResponseBase {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static RTCStatsResponse* Create();
-
   RTCStatsResponse();
 
   const HeapVector<Member<RTCLegacyStatsReport>>& result() const {

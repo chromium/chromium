@@ -13,13 +13,13 @@ strict digraph printer_flow {
 	  NEW_ZEROCONF_PRINTER [label="A new zeroconf\nprinter appears"];
 	  NEW_USER_PRINTER [label="User adds\nprinter in settings"];
 	  NEW_ENTERPRISE_PRINTER [label="A new enterprise\nprinter appears"];
-  }	 
-						 
+  }
+
 	// Ending nodes
 	{
 		rank=same;
 		node [shape=doublecircle; margin=0];
-		CONFIGURED_PRINTERS  [label="In CONFIGURED\nprinters list"];		
+		SAVED_PRINTERS  [label="In SAVED\nprinters list"];
 		ENTERPRISE_PRINTERS [label="In ENTERPRISE\nprinters list"];
 		AUTOMATIC_PRINTERS [label="In AUTOMATIC\nprinters list"];
 		DISCOVERED_PRINTERS [label="In DISCOVERED\nprinters list"];
@@ -36,7 +36,7 @@ strict digraph printer_flow {
 
 	USER_PRINTS [label="User prints\nusing printer"];
 	USER_REMOVES_IN_SETTINGS [label="User removes\nin settings"];
-	
+
 	NEW_USB_PRINTER -> CAN_AUTOCONFIGURE;
 	NEW_ZEROCONF_PRINTER -> CAN_AUTOCONFIGURE;
 	NEW_ENTERPRISE_PRINTER -> ENTERPRISE_PRINTERS;
@@ -53,12 +53,11 @@ strict digraph printer_flow {
 
 	AVAILABLE_AS_DISCOVERED -> NEW_USER_PRINTER;
 
-	USER_PRINTS -> CONFIGURED_PRINTERS;
-	NEW_USER_PRINTER -> CONFIGURED_PRINTERS;
-	CONFIGURED_PRINTERS -> USER_REMOVES_IN_SETTINGS;
+	USER_PRINTS -> SAVED_PRINTERS;
+	NEW_USER_PRINTER -> SAVED_PRINTERS;
+	SAVED_PRINTERS -> USER_REMOVES_IN_SETTINGS;
 	USER_REMOVES_IN_SETTINGS -> NEW_ZEROCONF_PRINTER;
 	USER_REMOVES_IN_SETTINGS -> NEW_USB_PRINTER;
 	USER_REMOVES_IN_SETTINGS -> DELETED;
 }
-	
-	 
+

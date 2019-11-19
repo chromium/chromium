@@ -1,0 +1,51 @@
+<html>
+<body>
+<script>
+  function output_results_if_complete() {
+      if (++images == expectedNumberImages) {
+          document.getElementById('results').innerHTML =
+              document.getElementsByTagName('img')[0].width + 'x' +
+              document.getElementsByTagName('img')[0].height + ' ' +
+              document.getElementsByTagName('img')[1].width + 'x' +
+              document.getElementsByTagName('img')[1].height + ' ' +
+              document.getElementsByTagName('img')[2].width + 'x' +
+              document.getElementsByTagName('img')[2].height;
+          if (window.testRunner) {
+              setTimeout(function() { testRunner.notifyDone() }, 0);
+          }
+      }
+  }
+
+  function preload_decode_append_img(url, parentNodeId) {
+      const img = new Image();
+      img.src = url;
+      img.decode().then(() => {
+          document.getElementById(parentNodeId).appendChild(img);
+          output_results_if_complete();
+      }).catch(() => {
+          var error = document.createElement('p');
+          error.innerText = 'Error loading image'
+          document.body.appendChild(error);
+      });
+  }
+
+  var images = 0;
+  var expectedNumberImages = 3;
+  preload_decode_append_img('../resources/test.webp', 'test');
+  preload_decode_append_img('../resources/test2.webp', 'test2');
+  preload_decode_append_img('../resources/test3.webp', 'test3');
+
+  if (window.testRunner) {
+      testRunner.dumpAsText();
+      testRunner.waitUntilDone();
+  }
+
+</script>
+<div>
+  <span id="test"></span>
+  <span id="test2"></span>
+  <span id="test3"></span>
+</div>
+<div id="results"></div>
+</body>
+</html>

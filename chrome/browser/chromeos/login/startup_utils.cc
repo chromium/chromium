@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/command_line.h"
+#include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "base/system/sys_info.h"
 #include "base/task/post_task.h"
@@ -137,8 +138,9 @@ bool StartupUtils::IsDeviceRegistered() {
       g_browser_process->local_state()->GetInteger(prefs::kDeviceRegistered);
   if (value > 0) {
     // Recreate flag file in case it was lost.
-    base::PostTaskWithTraits(
-        FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
+    base::PostTask(
+        FROM_HERE,
+        {base::ThreadPool(), base::TaskPriority::BEST_EFFORT, base::MayBlock()},
         base::BindOnce(&CreateOobeCompleteFlagFile));
     return true;
   } else if (value == 0) {
@@ -158,12 +160,14 @@ bool StartupUtils::IsDeviceRegistered() {
 void StartupUtils::MarkDeviceRegistered(base::OnceClosure done_callback) {
   SaveIntegerPreferenceForced(prefs::kDeviceRegistered, 1);
   if (done_callback.is_null()) {
-    base::PostTaskWithTraits(
-        FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
+    base::PostTask(
+        FROM_HERE,
+        {base::ThreadPool(), base::TaskPriority::BEST_EFFORT, base::MayBlock()},
         base::BindOnce(&CreateOobeCompleteFlagFile));
   } else {
-    base::PostTaskWithTraitsAndReply(
-        FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
+    base::PostTaskAndReply(
+        FROM_HERE,
+        {base::ThreadPool(), base::TaskPriority::BEST_EFFORT, base::MayBlock()},
         base::BindOnce(&CreateOobeCompleteFlagFile), std::move(done_callback));
   }
 }

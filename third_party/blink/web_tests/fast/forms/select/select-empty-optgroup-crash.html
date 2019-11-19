@@ -4,6 +4,9 @@ function submitForm()
 {
     if (window.testRunner)
         testRunner.dumpAsText();
+    if (sessionStorage.submitted)
+        return;
+    sessionStorage.submitted = true;
     document.getElementById("submitform").submit();
 }
 </script>

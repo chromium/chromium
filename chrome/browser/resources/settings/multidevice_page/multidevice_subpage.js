@@ -12,10 +12,7 @@ cr.exportPath('settings');
 Polymer({
   is: 'settings-multidevice-subpage',
 
-  behaviors: [
-    MultiDeviceFeatureBehavior,
-    CrNetworkListenerBehavior,
-  ],
+  behaviors: [MultiDeviceFeatureBehavior],
 
   properties: {
     /**
@@ -25,24 +22,6 @@ Polymer({
     routes: {
       type: Object,
       value: settings.routes,
-    },
-
-    /** Overridden from NetworkListenerBehavior. */
-    networkingPrivate: {
-      type: Object,
-      value: chrome.networkingPrivate,
-    },
-
-    /** Overridden from NetworkListenerBehavior. */
-    networkListChangeSubscriberSelectors_: {
-      type: Array,
-      value: () => ['settings-multidevice-tether-item'],
-    },
-
-    /** Overridden from NetworkListenerBehavior. */
-    networksChangeSubscriberSelectors_: {
-      type: Array,
-      value: () => ['settings-multidevice-tether-item'],
     },
   },
 
@@ -129,9 +108,19 @@ Polymer({
    * @private
    */
   doesAndroidMessagesRequireSetUp_: function() {
-    // The pairing state is preferred over the FeatureState here since
-    // FeatureState.UNAVAILABLE_SUITE_DISABLED is returned when the suite is
-    // disabled, regardless if Messages requires further setup.
-    return !this.pageContentData.isAndroidSmsPairingComplete;
+    return this.getFeatureState(settings.MultiDeviceFeature.MESSAGES) ===
+        settings.MultiDeviceFeatureState.FURTHER_SETUP_REQUIRED;
   },
+
+  /**
+   * @return {boolean}
+   * @private
+   */
+  isAndroidMessagesSetupButtonDisabled_: function() {
+    const messagesFeatureState =
+        this.getFeatureState(settings.MultiDeviceFeature.MESSAGES);
+    return !this.isSuiteOn() ||
+        messagesFeatureState ===
+        settings.MultiDeviceFeatureState.PROHIBITED_BY_POLICY;
+  }
 });

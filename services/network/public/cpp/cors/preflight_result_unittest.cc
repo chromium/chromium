@@ -20,128 +20,128 @@ using PreflightResultTest = ::testing::Test;
 struct TestCase {
   const std::string allow_methods;
   const std::string allow_headers;
-  const mojom::FetchCredentialsMode cache_credentials_mode;
+  const mojom::CredentialsMode cache_credentials_mode;
 
   const std::string request_method;
   const std::string request_headers;
-  const mojom::FetchCredentialsMode request_credentials_mode;
+  const mojom::CredentialsMode request_credentials_mode;
 
   const base::Optional<CorsErrorStatus> expected_result;
 };
 
 const TestCase method_cases[] = {
     // Found in the preflight response.
-    {"OPTIONS", "", mojom::FetchCredentialsMode::kOmit, "OPTIONS", "",
-     mojom::FetchCredentialsMode::kOmit, base::nullopt},
-    {"GET", "", mojom::FetchCredentialsMode::kOmit, "GET", "",
-     mojom::FetchCredentialsMode::kOmit, base::nullopt},
-    {"HEAD", "", mojom::FetchCredentialsMode::kOmit, "HEAD", "",
-     mojom::FetchCredentialsMode::kOmit, base::nullopt},
-    {"POST", "", mojom::FetchCredentialsMode::kOmit, "POST", "",
-     mojom::FetchCredentialsMode::kOmit, base::nullopt},
-    {"PUT", "", mojom::FetchCredentialsMode::kOmit, "PUT", "",
-     mojom::FetchCredentialsMode::kOmit, base::nullopt},
-    {"DELETE", "", mojom::FetchCredentialsMode::kOmit, "DELETE", "",
-     mojom::FetchCredentialsMode::kOmit, base::nullopt},
+    {"OPTIONS", "", mojom::CredentialsMode::kOmit, "OPTIONS", "",
+     mojom::CredentialsMode::kOmit, base::nullopt},
+    {"GET", "", mojom::CredentialsMode::kOmit, "GET", "",
+     mojom::CredentialsMode::kOmit, base::nullopt},
+    {"HEAD", "", mojom::CredentialsMode::kOmit, "HEAD", "",
+     mojom::CredentialsMode::kOmit, base::nullopt},
+    {"POST", "", mojom::CredentialsMode::kOmit, "POST", "",
+     mojom::CredentialsMode::kOmit, base::nullopt},
+    {"PUT", "", mojom::CredentialsMode::kOmit, "PUT", "",
+     mojom::CredentialsMode::kOmit, base::nullopt},
+    {"DELETE", "", mojom::CredentialsMode::kOmit, "DELETE", "",
+     mojom::CredentialsMode::kOmit, base::nullopt},
 
     // Found in the safe list.
-    {"", "", mojom::FetchCredentialsMode::kOmit, "GET", "",
-     mojom::FetchCredentialsMode::kOmit, base::nullopt},
-    {"", "", mojom::FetchCredentialsMode::kOmit, "HEAD", "",
-     mojom::FetchCredentialsMode::kOmit, base::nullopt},
-    {"", "", mojom::FetchCredentialsMode::kOmit, "POST", "",
-     mojom::FetchCredentialsMode::kOmit, base::nullopt},
+    {"", "", mojom::CredentialsMode::kOmit, "GET", "",
+     mojom::CredentialsMode::kOmit, base::nullopt},
+    {"", "", mojom::CredentialsMode::kOmit, "HEAD", "",
+     mojom::CredentialsMode::kOmit, base::nullopt},
+    {"", "", mojom::CredentialsMode::kOmit, "POST", "",
+     mojom::CredentialsMode::kOmit, base::nullopt},
 
     // By '*'.
-    {"*", "", mojom::FetchCredentialsMode::kOmit, "OPTIONS", "",
-     mojom::FetchCredentialsMode::kOmit, base::nullopt},
+    {"*", "", mojom::CredentialsMode::kOmit, "OPTIONS", "",
+     mojom::CredentialsMode::kOmit, base::nullopt},
 
     // Cache allowing multiple methods.
-    {"GET, PUT, DELETE", "", mojom::FetchCredentialsMode::kOmit, "GET", "",
-     mojom::FetchCredentialsMode::kOmit, base::nullopt},
-    {"GET, PUT, DELETE", "", mojom::FetchCredentialsMode::kOmit, "PUT", "",
-     mojom::FetchCredentialsMode::kOmit, base::nullopt},
-    {"GET, PUT, DELETE", "", mojom::FetchCredentialsMode::kOmit, "DELETE", "",
-     mojom::FetchCredentialsMode::kOmit, base::nullopt},
+    {"GET, PUT, DELETE", "", mojom::CredentialsMode::kOmit, "GET", "",
+     mojom::CredentialsMode::kOmit, base::nullopt},
+    {"GET, PUT, DELETE", "", mojom::CredentialsMode::kOmit, "PUT", "",
+     mojom::CredentialsMode::kOmit, base::nullopt},
+    {"GET, PUT, DELETE", "", mojom::CredentialsMode::kOmit, "DELETE", "",
+     mojom::CredentialsMode::kOmit, base::nullopt},
 
     // Not found in the preflight response and the safe lit.
-    {"", "", mojom::FetchCredentialsMode::kOmit, "OPTIONS", "",
-     mojom::FetchCredentialsMode::kOmit,
+    {"", "", mojom::CredentialsMode::kOmit, "OPTIONS", "",
+     mojom::CredentialsMode::kOmit,
      CorsErrorStatus(mojom::CorsError::kMethodDisallowedByPreflightResponse,
                      "OPTIONS")},
-    {"", "", mojom::FetchCredentialsMode::kOmit, "PUT", "",
-     mojom::FetchCredentialsMode::kOmit,
+    {"", "", mojom::CredentialsMode::kOmit, "PUT", "",
+     mojom::CredentialsMode::kOmit,
      CorsErrorStatus(mojom::CorsError::kMethodDisallowedByPreflightResponse,
                      "PUT")},
-    {"", "", mojom::FetchCredentialsMode::kOmit, "DELETE", "",
-     mojom::FetchCredentialsMode::kOmit,
+    {"", "", mojom::CredentialsMode::kOmit, "DELETE", "",
+     mojom::CredentialsMode::kOmit,
      CorsErrorStatus(mojom::CorsError::kMethodDisallowedByPreflightResponse,
                      "DELETE")},
-    {"GET", "", mojom::FetchCredentialsMode::kOmit, "PUT", "",
-     mojom::FetchCredentialsMode::kOmit,
+    {"GET", "", mojom::CredentialsMode::kOmit, "PUT", "",
+     mojom::CredentialsMode::kOmit,
      CorsErrorStatus(mojom::CorsError::kMethodDisallowedByPreflightResponse,
                      "PUT")},
-    {"GET, POST, DELETE", "", mojom::FetchCredentialsMode::kOmit, "PUT", "",
-     mojom::FetchCredentialsMode::kOmit,
+    {"GET, POST, DELETE", "", mojom::CredentialsMode::kOmit, "PUT", "",
+     mojom::CredentialsMode::kOmit,
      CorsErrorStatus(mojom::CorsError::kMethodDisallowedByPreflightResponse,
                      "PUT")},
 
     // Request method is normalized to upper-case, but allowed methods is not.
     // Comparison is in case-sensitive, that means allowed methods should be in
     // upper case.
-    {"put", "", mojom::FetchCredentialsMode::kOmit, "PUT", "",
-     mojom::FetchCredentialsMode::kOmit,
+    {"put", "", mojom::CredentialsMode::kOmit, "PUT", "",
+     mojom::CredentialsMode::kOmit,
      CorsErrorStatus(mojom::CorsError::kMethodDisallowedByPreflightResponse,
                      "PUT")},
-    {"put", "", mojom::FetchCredentialsMode::kOmit, "put", "",
-     mojom::FetchCredentialsMode::kOmit,
+    {"put", "", mojom::CredentialsMode::kOmit, "put", "",
+     mojom::CredentialsMode::kOmit,
      CorsErrorStatus(mojom::CorsError::kMethodDisallowedByPreflightResponse,
                      "put")},
-    {"PUT", "", mojom::FetchCredentialsMode::kOmit, "put", "",
-     mojom::FetchCredentialsMode::kOmit, base::nullopt},
+    {"PUT", "", mojom::CredentialsMode::kOmit, "put", "",
+     mojom::CredentialsMode::kOmit, base::nullopt},
     // ... But, GET is always allowed by the safe list.
-    {"get", "", mojom::FetchCredentialsMode::kOmit, "GET", "",
-     mojom::FetchCredentialsMode::kOmit, base::nullopt},
+    {"get", "", mojom::CredentialsMode::kOmit, "GET", "",
+     mojom::CredentialsMode::kOmit, base::nullopt},
 };
 
 const TestCase header_cases[] = {
     // Found in the preflight response.
-    {"GET", "X-MY-HEADER", mojom::FetchCredentialsMode::kOmit, "GET",
-     "X-MY-HEADER:t", mojom::FetchCredentialsMode::kOmit, base::nullopt},
-    {"GET", "X-MY-HEADER, Y-MY-HEADER", mojom::FetchCredentialsMode::kOmit,
-     "GET", "X-MY-HEADER:t\r\nY-MY-HEADER:t",
-     mojom::FetchCredentialsMode::kOmit, base::nullopt},
-    {"GET", "x-my-header, Y-MY-HEADER", mojom::FetchCredentialsMode::kOmit,
-     "GET", "X-MY-HEADER:t\r\ny-my-header:t",
-     mojom::FetchCredentialsMode::kOmit, base::nullopt},
+    {"GET", "X-MY-HEADER", mojom::CredentialsMode::kOmit, "GET",
+     "X-MY-HEADER:t", mojom::CredentialsMode::kOmit, base::nullopt},
+    {"GET", "X-MY-HEADER, Y-MY-HEADER", mojom::CredentialsMode::kOmit, "GET",
+     "X-MY-HEADER:t\r\nY-MY-HEADER:t", mojom::CredentialsMode::kOmit,
+     base::nullopt},
+    {"GET", "x-my-header, Y-MY-HEADER", mojom::CredentialsMode::kOmit, "GET",
+     "X-MY-HEADER:t\r\ny-my-header:t", mojom::CredentialsMode::kOmit,
+     base::nullopt},
 
     // Found in the safe list.
-    {"GET", "", mojom::FetchCredentialsMode::kOmit, "GET", "Accept:*/*",
-     mojom::FetchCredentialsMode::kOmit, base::nullopt},
+    {"GET", "", mojom::CredentialsMode::kOmit, "GET", "Accept:*/*",
+     mojom::CredentialsMode::kOmit, base::nullopt},
 
     // By '*'.
-    {"GET", "*", mojom::FetchCredentialsMode::kOmit, "GET", "xyzzy:t",
-     mojom::FetchCredentialsMode::kOmit, base::nullopt},
-    {"GET", "*", mojom::FetchCredentialsMode::kInclude, "GET", "xyzzy:t",
-     mojom::FetchCredentialsMode::kOmit,
+    {"GET", "*", mojom::CredentialsMode::kOmit, "GET", "xyzzy:t",
+     mojom::CredentialsMode::kOmit, base::nullopt},
+    {"GET", "*", mojom::CredentialsMode::kInclude, "GET", "xyzzy:t",
+     mojom::CredentialsMode::kOmit,
      CorsErrorStatus(mojom::CorsError::kHeaderDisallowedByPreflightResponse,
                      "xyzzy")},
 
     // Forbidden headers can pass.
-    {"GET", "", mojom::FetchCredentialsMode::kOmit, "GET",
-     "Host: www.google.com", mojom::FetchCredentialsMode::kOmit, base::nullopt},
+    {"GET", "", mojom::CredentialsMode::kOmit, "GET", "Host: www.google.com",
+     mojom::CredentialsMode::kOmit, base::nullopt},
 
     // Not found in the preflight response and the safe list.
-    {"GET", "", mojom::FetchCredentialsMode::kOmit, "GET", "X-MY-HEADER:t",
-     mojom::FetchCredentialsMode::kOmit,
+    {"GET", "", mojom::CredentialsMode::kOmit, "GET", "X-MY-HEADER:t",
+     mojom::CredentialsMode::kOmit,
      CorsErrorStatus(mojom::CorsError::kHeaderDisallowedByPreflightResponse,
                      "x-my-header")},
-    {"GET", "X-SOME-OTHER-HEADER", mojom::FetchCredentialsMode::kOmit, "GET",
-     "X-MY-HEADER:t", mojom::FetchCredentialsMode::kOmit,
+    {"GET", "X-SOME-OTHER-HEADER", mojom::CredentialsMode::kOmit, "GET",
+     "X-MY-HEADER:t", mojom::CredentialsMode::kOmit,
      CorsErrorStatus(mojom::CorsError::kHeaderDisallowedByPreflightResponse,
                      "x-my-header")},
-    {"GET", "X-MY-HEADER", mojom::FetchCredentialsMode::kOmit, "GET",
-     "X-MY-HEADER:t\r\nY-MY-HEADER:t", mojom::FetchCredentialsMode::kOmit,
+    {"GET", "X-MY-HEADER", mojom::CredentialsMode::kOmit, "GET",
+     "X-MY-HEADER:t\r\nY-MY-HEADER:t", mojom::CredentialsMode::kOmit,
      CorsErrorStatus(mojom::CorsError::kHeaderDisallowedByPreflightResponse,
                      "y-my-header")},
 };
@@ -152,7 +152,7 @@ TEST_F(PreflightResultTest, MaxAge) {
   PreflightResult::SetTickClockForTesting(tick_clock.get());
 
   std::unique_ptr<PreflightResult> result1 =
-      PreflightResult::Create(mojom::FetchCredentialsMode::kOmit, base::nullopt,
+      PreflightResult::Create(mojom::CredentialsMode::kOmit, base::nullopt,
                               base::nullopt, std::string("573"), nullptr);
   EXPECT_EQ(base::TimeTicks() + base::TimeDelta::FromSeconds(573),
             result1->absolute_expiry_time());
@@ -161,7 +161,7 @@ TEST_F(PreflightResultTest, MaxAge) {
   // should not cache such results. PreflightResult expresses it as a result
   // with 'Access-Control-Max-Age: 0'.
   std::unique_ptr<PreflightResult> result2 =
-      PreflightResult::Create(mojom::FetchCredentialsMode::kOmit, base::nullopt,
+      PreflightResult::Create(mojom::CredentialsMode::kOmit, base::nullopt,
                               base::nullopt, std::string("-765"), nullptr);
   EXPECT_EQ(base::TimeTicks(), result2->absolute_expiry_time());
 
@@ -222,21 +222,18 @@ TEST_F(PreflightResultTest, EnsureRequest) {
   }
 
   struct {
-    const mojom::FetchCredentialsMode cache_credentials_mode;
-    const mojom::FetchCredentialsMode request_credentials_mode;
+    const mojom::CredentialsMode cache_credentials_mode;
+    const mojom::CredentialsMode request_credentials_mode;
     const bool expected_result;
   } credentials_cases[] = {
       // Different credential modes.
-      {mojom::FetchCredentialsMode::kInclude,
-       mojom::FetchCredentialsMode::kOmit, true},
-      {mojom::FetchCredentialsMode::kInclude,
-       mojom::FetchCredentialsMode::kInclude, true},
+      {mojom::CredentialsMode::kInclude, mojom::CredentialsMode::kOmit, true},
+      {mojom::CredentialsMode::kInclude, mojom::CredentialsMode::kInclude,
+       true},
 
       // Credential mode mismatch.
-      {mojom::FetchCredentialsMode::kOmit, mojom::FetchCredentialsMode::kOmit,
-       true},
-      {mojom::FetchCredentialsMode::kOmit,
-       mojom::FetchCredentialsMode::kInclude, false},
+      {mojom::CredentialsMode::kOmit, mojom::CredentialsMode::kOmit, true},
+      {mojom::CredentialsMode::kOmit, mojom::CredentialsMode::kInclude, false},
   };
 
   for (const auto& test : credentials_cases) {

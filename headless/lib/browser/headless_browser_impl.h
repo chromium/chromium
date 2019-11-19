@@ -106,7 +106,7 @@ class HEADLESS_EXPORT HeadlessBrowserImpl : public HeadlessBrowser,
   scoped_refptr<content::DevToolsAgentHost> agent_host_;
   std::unique_ptr<HeadlessRequestContextManager>
       system_request_context_manager_;
-  base::WeakPtrFactory<HeadlessBrowserImpl> weak_ptr_factory_;
+  base::WeakPtrFactory<HeadlessBrowserImpl> weak_ptr_factory_{this};
 
  private:
   DISALLOW_COPY_AND_ASSIGN(HeadlessBrowserImpl);

@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/feature_list.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_util.h"
@@ -19,24 +18,6 @@
 #include "ipc/ipc_sender.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_response_headers.h"
-#include "third_party/blink/public/common/features.h"
-
-namespace {
-
-class StringData final : public content::RequestPeer::ReceivedData {
- public:
-  explicit StringData(const std::string& data) : data_(data) {}
-
-  const char* payload() override { return data_.data(); }
-  int length() override { return data_.size(); }
-
- private:
-  const std::string data_;
-
-  DISALLOW_COPY_AND_ASSIGN(StringData);
-};
-
-}  // namespace
 
 ExtensionLocalizationPeer::DataPipeState::DataPipeState()
     : source_watcher_(FROM_HERE, mojo::SimpleWatcher::ArmingPolicy::MANUAL),
@@ -80,20 +61,18 @@ void ExtensionLocalizationPeer::OnUploadProgress(uint64_t position,
 
 bool ExtensionLocalizationPeer::OnReceivedRedirect(
     const net::RedirectInfo& redirect_info,
-    const network::ResourceResponseInfo& info) {
+    network::mojom::URLResponseHeadPtr head) {
   NOTREACHED();
   return false;
 }
 
 void ExtensionLocalizationPeer::OnReceivedResponse(
-    const network::ResourceResponseInfo& info) {
-  response_info_ = info;
+    network::mojom::URLResponseHeadPtr head) {
+  response_head_ = std::move(head);
 }
 
 void ExtensionLocalizationPeer::OnStartLoadingResponseBody(
     mojo::ScopedDataPipeConsumerHandle body) {
-  DCHECK(!response_source_.has_value());
-  response_source_ = ResponseSource::kDataPipe;
   data_pipe_state_.body_state_ = DataPipeState::BodyState::kReadingBody;
   data_pipe_state_.source_handle_ = std::move(body);
   data_pipe_state_.source_watcher_.Watch(
@@ -105,14 +84,6 @@ void ExtensionLocalizationPeer::OnStartLoadingResponseBody(
   data_pipe_state_.source_watcher_.ArmOrNotify();
 }
 
-void ExtensionLocalizationPeer::OnReceivedData(
-    std::unique_ptr<ReceivedData> data) {
-  if (!response_source_.has_value())
-    response_source_ = ResponseSource::kNonDataPipe;
-  DCHECK_EQ(ResponseSource::kNonDataPipe, response_source_.value());
-  data_.append(data->payload(), data->length());
-}
-
 void ExtensionLocalizationPeer::OnTransferSizeUpdated(int transfer_size_diff) {
   original_peer_->OnTransferSizeUpdated(transfer_size_diff);
 }
@@ -122,37 +93,25 @@ void ExtensionLocalizationPeer::OnCompletedRequest(
   if (completion_status_.has_value()) {
     // This means that we've already returned error status to the original peer
     // due to an error on the data pipe.
-    DCHECK_EQ(ResponseSource::kDataPipe, response_source_.value());
     return;
   }
   completion_status_ = status;
-  if (response_source_ &&
-      response_source_.value() == ResponseSource::kDataPipe) {
-    if (status.error_code != net::OK) {
-      data_pipe_state_.source_watcher_.Cancel();
-      data_pipe_state_.source_handle_.reset();
-      data_pipe_state_.destination_watcher_.Cancel();
-      data_pipe_state_.destination_handle_.reset();
-      data_pipe_state_.body_state_ = DataPipeState::BodyState::kDone;
-    }
 
-    if (data_pipe_state_.body_state_ != DataPipeState::BodyState::kDone) {
-      // Still reading, or sending the body. Wait until all data has been read,
-      // and sent to the |original_peer_|.
-      return;
-    }
+  if (status.error_code != net::OK) {
+    data_pipe_state_.source_watcher_.Cancel();
+    data_pipe_state_.source_handle_.reset();
+    data_pipe_state_.destination_watcher_.Cancel();
+    data_pipe_state_.destination_handle_.reset();
+    data_pipe_state_.body_state_ = DataPipeState::BodyState::kDone;
+  }
 
-    // We've sent all the body to the peer. Complete the request.
-    CompleteRequest();
+  if (data_pipe_state_.body_state_ != DataPipeState::BodyState::kDone) {
+    // Still reading, or sending the body. Wait until all data has been read,
+    // and sent to the |original_peer_|.
     return;
   }
 
-  DCHECK(!response_source_.has_value() ||
-         response_source_.value() == ResponseSource::kNonDataPipe);
-
-  original_peer_->OnReceivedResponse(response_info_);
-  if (status.error_code == net::OK)
-    ReplaceMessages();
+  // We've sent all the body to the peer. Complete the request.
   CompleteRequest();
 }
 
@@ -163,7 +122,6 @@ scoped_refptr<base::TaskRunner> ExtensionLocalizationPeer::GetTaskRunner() {
 void ExtensionLocalizationPeer::OnReadableBody(
     MojoResult,
     const mojo::HandleSignalsState&) {
-  DCHECK_EQ(ResponseSource::kDataPipe, response_source_.value());
   DCHECK(data_pipe_state_.source_handle_.is_valid());
   DCHECK_EQ(DataPipeState::BodyState::kReadingBody,
             data_pipe_state_.body_state_);
@@ -203,7 +161,6 @@ void ExtensionLocalizationPeer::OnReadableBody(
 }
 
 void ExtensionLocalizationPeer::StartSendingBody() {
-  DCHECK_EQ(ResponseSource::kDataPipe, response_source_.value());
   DCHECK(!data_pipe_state_.source_handle_.is_valid());
   DCHECK_EQ(DataPipeState::BodyState::kReadingBody,
             data_pipe_state_.body_state_);
@@ -223,7 +180,7 @@ void ExtensionLocalizationPeer::StartSendingBody() {
     return;
   }
 
-  original_peer_->OnReceivedResponse(response_info_);
+  original_peer_->OnReceivedResponse(std::move(response_head_));
   original_peer_->OnStartLoadingResponseBody(std::move(consumer_to_send));
 
   data_pipe_state_.destination_watcher_.Watch(
@@ -238,7 +195,6 @@ void ExtensionLocalizationPeer::StartSendingBody() {
 void ExtensionLocalizationPeer::OnWritableBody(
     MojoResult,
     const mojo::HandleSignalsState&) {
-  DCHECK_EQ(ResponseSource::kDataPipe, response_source_.value());
   DCHECK(data_pipe_state_.destination_handle_.is_valid());
   DCHECK_EQ(DataPipeState::BodyState::kSendingBody,
             data_pipe_state_.body_state_);
@@ -315,8 +271,7 @@ void ExtensionLocalizationPeer::CompleteRequest() {
   DCHECK(completion_status_.has_value());
   // Body should have been sent to the origial peer at this point when it's
   // from a data pipe.
-  DCHECK(response_source_ != ResponseSource::kDataPipe ||
-         data_pipe_state_.body_state_ == DataPipeState::BodyState::kDone);
+  DCHECK_EQ(DataPipeState::BodyState::kDone, data_pipe_state_.body_state_);
 
   if (completion_status_->error_code != net::OK) {
     // We failed to load the resource.
@@ -327,29 +282,5 @@ void ExtensionLocalizationPeer::CompleteRequest() {
     return;
   }
 
-  // Empty body.
-  if (!response_source_.has_value()) {
-    if (base::FeatureList::IsEnabled(
-            blink::features::kResourceLoadViaDataPipe)) {
-      mojo::ScopedDataPipeConsumerHandle consumer_to_send;
-      MojoResult result = mojo::CreateDataPipe(
-          nullptr, &data_pipe_state_.destination_handle_, &consumer_to_send);
-      if (result != MOJO_RESULT_OK) {
-        original_peer_->OnCompletedRequest(network::URLLoaderCompletionStatus(
-            net::ERR_INSUFFICIENT_RESOURCES));
-        return;
-      }
-
-      // Call OnStartLoadingResponseBody() to align with other loaders:
-      // https://crbug.com/826868.
-      original_peer_->OnStartLoadingResponseBody(std::move(consumer_to_send));
-      data_pipe_state_.destination_handle_.reset();
-    }
-    original_peer_->OnCompletedRequest(completion_status_.value());
-    return;
-  }
-
-  if (response_source_.value() == ResponseSource::kNonDataPipe)
-    original_peer_->OnReceivedData(std::make_unique<StringData>(data_));
   original_peer_->OnCompletedRequest(completion_status_.value());
 }

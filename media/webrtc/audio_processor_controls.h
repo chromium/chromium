@@ -8,6 +8,10 @@
 #include "base/callback.h"
 #include "third_party/webrtc/api/media_stream_interface.h"
 
+namespace base {
+class File;
+}
+
 namespace media {
 
 class AudioProcessorControls {

@@ -3,7 +3,7 @@ Tests that the panel transitions to the overview view when navigating to an inte
 Before selecting origin view:
 <DIV class=widget vbox security-main-view >
     <DIV class=security-summary >
-        <DIV class=security-summary-section-title >
+        <DIV class=security-summary-section-title role=heading aria-level=1 >
 Security overview
         </DIV>
         <DIV class=lock-spectrum >
@@ -20,7 +20,7 @@ Security overview
                 </DIV>
             </DIV>
         </DIV>
-        <DIV class=security-summary-text >
+        <DIV class=security-summary-text role=heading aria-level=2 >
         </DIV>
     </DIV>
     <DIV class=security-explanation-list security-explanations-main >
@@ -30,20 +30,20 @@ Security overview
 </DIV>
 Panel on origin view before interstitial:
 <DIV class=widget vbox security-origin-view slot=insertion-point-main >
-    <STYLE type=text/css >
+    <STYLE >
     </STYLE>
-    <STYLE type=text/css >
+    <STYLE >
     </STYLE>
     <DIV class=title-section >
-        <DIV class=title-section-header >
+        <DIV class=title-section-header role=heading aria-level=1 >
 Origin
         </DIV>
         <DIV class=origin-display >
-            <SPAN class=security-property security-property-secure >
+            <SPAN class=security-property security-property-insecure >
             </SPAN>
             <SPAN >
-                <SPAN class=url-scheme-secure >
-https
+                <SPAN class=url-scheme-insecure >
+http
                 </SPAN>
                 <SPAN class=url-scheme-separator >
 ://
@@ -54,13 +54,13 @@ foo.test
             </SPAN>
         </DIV>
         <DIV class=view-network-button >
-            <BUTTON class=origin-button text-button type=button >
+            <SPAN class=devtools-link origin-button role=link >
 View requests in Network Panel
-            </BUTTON>
+            </SPAN>
         </DIV>
     </DIV>
     <DIV class=origin-view-section >
-        <DIV class=origin-view-section-title >
+        <DIV class=origin-view-section-title role=heading aria-level=2 >
 Not secure
         </DIV>
         <DIV >
@@ -71,7 +71,7 @@ Your connection to this origin is not secure.
 After interstitial is shown:
 <DIV class=widget vbox security-main-view >
     <DIV class=security-summary >
-        <DIV class=security-summary-section-title >
+        <DIV class=security-summary-section-title role=heading aria-level=1 >
 Security overview
         </DIV>
         <DIV class=lock-spectrum >
@@ -88,7 +88,7 @@ Security overview
                 </DIV>
             </DIV>
         </DIV>
-        <DIV class=security-summary-text >
+        <DIV class=security-summary-text role=heading aria-level=2 >
         </DIV>
     </DIV>
     <DIV class=security-explanation-list security-explanations-main >

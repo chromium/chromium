@@ -33,23 +33,19 @@
 #include "base/location.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/task_type.h"
-#include "third_party/blink/public/platform/web_database_observer.h"
-#include "third_party/blink/public/platform/web_security_origin.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/webdatabase/database.h"
 #include "third_party/blink/renderer/modules/webdatabase/database_context.h"
-#include "third_party/blink/renderer/platform/cross_thread_functional.h"
+#include "third_party/blink/renderer/modules/webdatabase/web_database_host.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
 
 void SQLTransactionClient::DidCommitWriteTransaction(Database* database) {
-  if (Platform::Current()->DatabaseObserver()) {
-    Platform::Current()->DatabaseObserver()->DatabaseModified(
-        WebSecurityOrigin(database->GetSecurityOrigin()),
-        database->StringIdentifier());
-  }
+  WebDatabaseHost::GetInstance().DatabaseModified(
+      *database->GetSecurityOrigin(), database->StringIdentifier());
 }
 
 bool SQLTransactionClient::DidExceedQuota(Database* database) {

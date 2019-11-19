@@ -1,0 +1,13 @@
+This is a testharness.js-based test.
+PASS e.style['border-inline-start-width'] = "10px" should set the property value
+FAIL e.style['border-inline-start-width'] = "calc(10px + 0.5em)" should set the property value assert_equals: serialization should be canonical expected "calc(0.5em + 10px)" but got "calc(10px + 0.5em)"
+PASS e.style['border-inline-start-width'] = "thick" should set the property value
+PASS e.style['border-inline-start-width'] = "thin" should set the property value
+PASS e.style['border-inline-end-width'] = "0" should set the property value
+FAIL e.style['border-inline-end-width'] = "calc(10px - 0.5em)" should set the property value assert_equals: serialization should be canonical expected "calc(-0.5em + 10px)" but got "calc(10px - 0.5em)"
+PASS e.style['border-inline-end-width'] = "medium" should set the property value
+PASS e.style['border-inline-width'] = "10px" should set the property value
+FAIL e.style['border-inline-width'] = "medium calc(10px + 0.5em)" should set the property value assert_equals: serialization should be canonical expected "medium calc(0.5em + 10px)" but got "medium calc(10px + 0.5em)"
+PASS e.style['border-inline-width'] = "10px 10px" should set the property value
+Harness: the test ran to completion.
+

@@ -88,7 +88,7 @@ class WebrtcConnectionToClient : public ConnectionToClient,
 
   std::unique_ptr<HostControlDispatcher> control_dispatcher_;
   std::unique_ptr<HostEventDispatcher> event_dispatcher_;
-  base::WeakPtrFactory<WebrtcConnectionToClient> weak_factory_;
+  base::WeakPtrFactory<WebrtcConnectionToClient> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(WebrtcConnectionToClient);
 };

@@ -18,6 +18,8 @@
 #include "components/download/public/common/download_interrupt_reasons.h"
 #include "components/download/public/common/download_item.h"
 #include "components/download/public/common/input_stream.h"
+#include "components/services/quarantine/public/mojom/quarantine.mojom.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 
 class GURL;
@@ -70,8 +72,7 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadFile {
   // Add an input stream to write into a slice of the file, used for
   // parallel download.
   virtual void AddInputStream(std::unique_ptr<InputStream> stream,
-                              int64_t offset,
-                              int64_t length) = 0;
+                              int64_t offset) = 0;
 
   // Rename the download file to |full_path|.  If that file exists
   // |full_path| will be uniquified by suffixing " (<number>)" to the
@@ -82,11 +83,16 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadFile {
   // Rename the download file to |full_path| and annotate it with
   // "Mark of the Web" information about its source.  No uniquification
   // will be performed.
-  virtual void RenameAndAnnotate(const base::FilePath& full_path,
-                                 const std::string& client_guid,
-                                 const GURL& source_url,
-                                 const GURL& referrer_url,
-                                 const RenameCompletionCallback& callback) = 0;
+  // |remote_quarantine| must be connected to an instance of the Quarantine
+  // service. In the unexpected case that |remote_quarantine| is invalid, or the
+  // service otherwise fails, mark-of-the-web is manually applied as a fallback.
+  virtual void RenameAndAnnotate(
+      const base::FilePath& full_path,
+      const std::string& client_guid,
+      const GURL& source_url,
+      const GURL& referrer_url,
+      mojo::PendingRemote<quarantine::mojom::Quarantine> remote_quarantine,
+      const RenameCompletionCallback& callback) = 0;
 
   // Detach the file so it is not deleted on destruction.
   virtual void Detach() = 0;
@@ -109,18 +115,24 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadFile {
   virtual void Resume() = 0;
 
 #if defined(OS_ANDROID)
-  // Create an intermediate URI to write the download file. Once completes,
-  // |callback| is called with a content URI to be written into.
-  virtual void CreateIntermediateUriForPublish(
+  // Renames the download file to an intermediate URI. If current_path is a
+  // content URI, it will be used for the renaming. Otherwise, A new
+  // intermediate URI will be created to write the download file. Once
+  // completes, |callback| is called with a content URI to be written into.
+  virtual void RenameToIntermediateUri(
       const GURL& original_url,
       const GURL& referrer_url,
       const base::FilePath& file_name,
       const std::string& mime_type,
+      const base::FilePath& current_path,
       const RenameCompletionCallback& callback) = 0;
 
   // Publishes the download to public. Once completes, |callback| is called with
   // the final content URI.
   virtual void PublishDownload(const RenameCompletionCallback& callback) = 0;
+
+  // Returns the suggested file path from the system.
+  virtual base::FilePath GetDisplayName() = 0;
 #endif  // defined(OS_ANDROID)
 };
 

@@ -28,9 +28,9 @@ static void TestMediaQuery(MediaQuerySetTestCase test,
     output.Append(", ");
   }
   if (test.output)
-    ASSERT_STREQ(test.output, output.ToString().Ascii().data());
+    ASSERT_EQ(test.output, output.ToString());
   else
-    ASSERT_STREQ(test.input, output.ToString().Ascii().data());
+    ASSERT_EQ(test.input, output.ToString());
 }
 
 TEST(MediaQuerySetTest, Basic) {

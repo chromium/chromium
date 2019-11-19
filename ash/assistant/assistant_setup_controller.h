@@ -10,26 +10,19 @@
 
 #include "ash/assistant/assistant_controller_observer.h"
 #include "ash/assistant/ui/assistant_view_delegate.h"
-#include "ash/public/interfaces/assistant_controller.mojom.h"
-#include "ash/public/interfaces/assistant_setup.mojom.h"
+#include "ash/public/cpp/assistant/assistant_setup.h"
 #include "base/macros.h"
-#include "mojo/public/cpp/bindings/binding.h"
+#include "base/memory/weak_ptr.h"
 
 namespace ash {
 
 class AssistantController;
 
-class AssistantSetupController : public mojom::AssistantSetupController,
-                                 public AssistantControllerObserver,
+class AssistantSetupController : public AssistantControllerObserver,
                                  public AssistantViewDelegateObserver {
  public:
   explicit AssistantSetupController(AssistantController* assistant_controller);
   ~AssistantSetupController() override;
-
-  void BindRequest(mojom::AssistantSetupControllerRequest request);
-
-  // mojom::AssistantSetupController:
-  void SetAssistantSetup(mojom::AssistantSetupPtr assistant_setup) override;
 
   // AssistantControllerObserver:
   void OnAssistantControllerConstructed() override;
@@ -41,16 +34,14 @@ class AssistantSetupController : public mojom::AssistantSetupController,
   // AssistantViewDelegateObserver:
   void OnOptInButtonPressed() override;
 
-  void StartOnboarding(bool relaunch,
-                       mojom::FlowType type = mojom::FlowType::CONSENT_FLOW);
+  void StartOnboarding(bool relaunch, FlowType type = FlowType::kConsentFlow);
 
  private:
+  void OnOptInFlowFinished(bool completed);
+
   AssistantController* const assistant_controller_;  // Owned by Shell.
 
-  mojo::Binding<mojom::AssistantSetupController> binding_;
-
-  // Interface to AssistantSetup in chrome/browser.
-  mojom::AssistantSetupPtr assistant_setup_;
+  base::WeakPtrFactory<AssistantSetupController> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(AssistantSetupController);
 };

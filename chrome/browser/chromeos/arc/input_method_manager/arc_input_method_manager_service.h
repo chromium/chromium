@@ -16,10 +16,11 @@
 #include "chrome/browser/chromeos/arc/input_method_manager/arc_input_method_manager_bridge.h"
 #include "chrome/browser/chromeos/arc/input_method_manager/input_connection_impl.h"
 #include "chrome/browser/chromeos/input_method/input_method_engine.h"
-#include "components/arc/common/input_method_manager.mojom.h"
+#include "components/arc/mojom/input_method_manager.mojom.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "ui/base/ime/chromeos/input_method_manager.h"
+#include "ui/base/ime/ime_bridge_observer.h"
 
 namespace content {
 class BrowserContext;
@@ -33,7 +34,8 @@ class ArcInputMethodManagerService
     : public KeyedService,
       public ArcInputMethodManagerBridge::Delegate,
       public chromeos::input_method::InputMethodManager::ImeMenuObserver,
-      public chromeos::input_method::InputMethodManager::Observer {
+      public chromeos::input_method::InputMethodManager::Observer,
+      public ui::IMEBridgeObserver {
  public:
   class Observer : public base::CheckedObserver {
    public:
@@ -83,6 +85,10 @@ class ArcInputMethodManagerService
                           Profile* profile,
                           bool show_message) override;
 
+  // ui::IMEBridgeObserver overrides:
+  void OnRequestSwitchEngine() override {}
+  void OnInputContextHandlerChanged() override;
+
   // Called when a11y keyboard option changed and disables ARC IME while a11y
   // keyboard option is enabled.
   void OnAccessibilityStatusChanged(
@@ -121,10 +127,6 @@ class ArcInputMethodManagerService
   // Notifies InputMethodManager's observers of possible ARC IME state changes.
   void NotifyInputMethodManagerObservers(bool is_tablet_mode);
 
-  // Called by InputMethodEngineObserver.
-  void OnArcImeActivated();
-  void OnArcImeDeactivated();
-
   bool IsVirtualKeyboardShown() const;
   void SendShowVirtualKeyboard();
   void SendHideVirtualKeyboard();
@@ -134,14 +136,22 @@ class ArcInputMethodManagerService
 
   std::unique_ptr<ArcInputMethodManagerBridge> imm_bridge_;
   std::set<std::string> active_arc_ime_ids_;
+  std::set<std::string> ime_ids_allowed_in_clamshell_mode_;
   bool is_virtual_keyboard_shown_;
-  bool is_removing_imm_entry_;
+  // This flag is set to true while updating ARC IMEs entries in IMM to avoid
+  // exposing incomplete state.
+  bool is_updating_imm_entry_;
 
   // ArcInputMethodManager installs a proxy IME to redirect IME related events
   // from/to ARC IMEs in the container. The below two variables are for the
   // proxy IME.
   const std::string proxy_ime_extension_id_;
   std::unique_ptr<chromeos::InputMethodEngine> proxy_ime_engine_;
+
+  // The currently active input method, observed for
+  // OnShowVirtualKeyboardIfEnabled.
+  ui::InputMethod* input_method_ = nullptr;
+  bool is_arc_ime_active_ = false;
 
   std::unique_ptr<InputConnectionImpl> active_connection_;
 

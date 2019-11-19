@@ -48,13 +48,18 @@
 
 <dom-module id="oobe-hid-detection-md">
   <template>
+    <link rel="stylesheet" href="oobe_dialog_host.css">
     <link rel="stylesheet" href="oobe_hid_detection.css">
     <link rel="stylesheet" href="oobe_flex_layout.css">
     <oobe-dialog has-buttons>
       <iron-icon icon="oobe-hid-detection:bluetooth" slot="oobe-icon">
       </iron-icon>
-      <h1 slot="title" i18n-content="hidDetectionInvitation"></h1>
-      <div slot="subtitle" i18n-content="hidDetectionPrerequisites"></div>
+      <h1 slot="title">
+        [[i18nDynamic(locale, 'hidDetectionInvitation')]]
+      </h1>
+      <div slot="subtitle">
+        [[i18nDynamic(locale, 'hidDetectionPrerequisites')]]
+      </div>
       <div slot="footer" class="flex layout vertical">
         <div class="layout vertical justified hid-selection-entry">
           <div class="flex layout horizontal center">
@@ -66,20 +71,20 @@
                 hidden="[[!tickIsVisible_(mouseState_)]]"
                 src="chrome://theme/IDR_BLUETOOTH_PAIRING_TICK">
             <div id="mouse-label-searching" aria-live="polite"
-                i18n-content="hidDetectionMouseSearching"
                 hidden="[[notEq_(mouseState_, screen.CONNECTION.SEARCHING)]]">
+              [[i18nDynamic(locale, 'hidDetectionMouseSearching')]]
             </div>
             <div id="mouse-label-usb" aria-live="polite"
-                i18n-content="hidDetectionUSBMouseConnected"
                 hidden="[[notEq_(mouseState_, screen.CONNECTION.USB)]]">
+              [[i18nDynamic(locale, 'hidDetectionUSBMouseConnected')]]
             </div>
             <div id="mouse-label-connected" aria-live="polite"
-                i18n-content="hidDetectionPointingDeviceConnected"
                 hidden="[[notEq_(mouseState_, screen.CONNECTION.CONNECTED)]]">
+              [[i18nDynamic(locale, 'hidDetectionPointingDeviceConnected')]]
             </div>
             <div id="mouse-label-paired" aria-live="polite"
-                i18n-content="hidDetectionBTMousePaired"
                 hidden="[[notEq_(mouseState_, screen.CONNECTION.PAIRED)]]">
+              [[i18nDynamic(locale, 'hidDetectionBTMousePaired')]]
             </div>
           </div>
         </div>
@@ -93,13 +98,13 @@
                 hidden="[[!tickIsVisible_(keyboardState_)]]"
                 src="chrome://theme/IDR_BLUETOOTH_PAIRING_TICK">
             <div aria-live="polite"
-                i18n-content="hidDetectionKeyboardSearching"
                 hidden="[[notEq_(keyboardState_, screen.CONNECTION.SEARCHING)]]"
                 >
+              [[i18nDynamic(locale, 'hidDetectionKeyboardSearching')]]
             </div>
             <div aria-live="polite"
-                i18n-content="hidDetectionUSBKeyboardConnected"
                 hidden="[[notEq_(keyboardState_, screen.CONNECTION.USB)]]">
+              [[i18nDynamic(locale, 'hidDetectionUSBKeyboardConnected')]]
             </div>
             <div aria-live="polite"
                 hidden="[[notEq_(keyboardState_, screen.CONNECTION.PAIRED)]]">
@@ -131,8 +136,8 @@
                 class="bluetooth-keyboard-button">
             </div>
             <div id="hid-keyboard-pincode-sym-7"
-                i18n-content="hidDetectionBTEnterKey"
                 class="bluetooth-keyboard-button">
+              [[i18nDynamic(locale, 'hidDetectionBTEnterKey')]]
             </div>
           </div>
         </div>
@@ -140,8 +145,7 @@
       <div slot="bottom-buttons" class="flex layout horizontal end-justified">
         <oobe-text-button inverse on-tap="onHIDContinueTap_"
             disabled="[[continueButtonDisabled]]">
-          <div i18n-content="hidDetectionContinue">
-          </div>
+          <div>[[i18nDynamic(locale, 'hidDetectionContinue')]]</div>
         </oobe-text-button>
       </div>
     </oobe-dialog>

@@ -3,12 +3,15 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/editing/relocatable_position.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
 
 namespace blink {
 
 RelocatablePosition::RelocatablePosition(const Position& position)
     : range_(position.IsNotNull()
-                 ? Range::Create(*position.GetDocument(), position, position)
+                 ? MakeGarbageCollected<Range>(*position.GetDocument(),
+                                               position,
+                                               position)
                  : nullptr) {}
 
 RelocatablePosition::~RelocatablePosition() {

@@ -42,8 +42,8 @@ void CompositingLayerPropertyUpdater::Update(const LayoutObject& object) {
          // during printing.
          object.GetDocument().Printing());
 
-  LayoutPoint layout_snapped_paint_offset =
-      fragment_data.PaintOffset() - mapping->SubpixelAccumulation();
+  PhysicalOffset layout_snapped_paint_offset =
+      fragment_data.PaintOffset() - paint_layer->SubpixelAccumulation();
   IntPoint snapped_paint_offset = RoundedIntPoint(layout_snapped_paint_offset);
 
 #if DCHECK_IS_ON()
@@ -53,9 +53,12 @@ void CompositingLayerPropertyUpdater::Update(const LayoutObject& object) {
   // visible subtree can be non-composited despite we expected it to, this
   // resulted in the paint offset used by CompositedLayerMapping to mismatch.
   bool subpixel_accumulation_may_be_bogus = paint_layer->SubtreeIsInvisible();
-  if (!subpixel_accumulation_may_be_bogus) {
-    DCHECK_EQ(layout_snapped_paint_offset, snapped_paint_offset)
-        << object.DebugName();
+  if (!subpixel_accumulation_may_be_bogus &&
+      layout_snapped_paint_offset != PhysicalOffset(snapped_paint_offset)) {
+    // TODO(crbug.com/925377): Fix the root cause.
+    DLOG(ERROR) << "Paint offset pixel snapping error for " << object
+                << " expected: " << snapped_paint_offset
+                << " actual: " << layout_snapped_paint_offset;
   }
 #endif
 
@@ -64,20 +67,8 @@ void CompositingLayerPropertyUpdater::Update(const LayoutObject& object) {
       [&fragment_data, &snapped_paint_offset,
        &container_layer_state](GraphicsLayer* graphics_layer) {
         if (graphics_layer) {
-          if (!container_layer_state) {
+          if (!container_layer_state)
             container_layer_state = fragment_data.LocalBorderBoxProperties();
-            // Before BlinkGenPropertyTrees, CSS clip could not be composited so
-            // we should avoid setting it on the layer itself.
-            if (!RuntimeEnabledFeatures::BlinkGenPropertyTreesEnabled() &&
-                !RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-              if (const auto* properties = fragment_data.PaintProperties()) {
-                if (const auto* css_clip = properties->CssClip()) {
-                  DCHECK(css_clip->Parent());
-                  container_layer_state->SetClip(*css_clip->Parent());
-                }
-              }
-            }
-          }
           graphics_layer->SetLayerState(
               *container_layer_state,
               snapped_paint_offset + graphics_layer->OffsetFromLayoutObject());
@@ -85,7 +76,6 @@ void CompositingLayerPropertyUpdater::Update(const LayoutObject& object) {
       };
   SetContainerLayerState(mapping->MainGraphicsLayer());
   SetContainerLayerState(mapping->DecorationOutlineLayer());
-  SetContainerLayerState(mapping->ChildClippingMaskLayer());
 
   bool is_root_scroller =
       CompositingReasonFinder::RequiresCompositingForRootScroller(*paint_layer);
@@ -172,8 +162,16 @@ void CompositingLayerPropertyUpdater::Update(const LayoutObject& object) {
 
   auto* main_graphics_layer = mapping->MainGraphicsLayer();
   if (main_graphics_layer->ContentsLayer()) {
-    main_graphics_layer->SetContentsPropertyTreeState(
-        fragment_data.ContentsProperties());
+    IntPoint offset;
+    // The offset should be zero when the layer has ReplacedContentTransform,
+    // because the offset has been baked into ReplacedContentTransform.
+    if (!fragment_data.PaintProperties() ||
+        !fragment_data.PaintProperties()->ReplacedContentTransform()) {
+      offset = main_graphics_layer->ContentsRect().Location() +
+               main_graphics_layer->GetOffsetFromTransformNode();
+    }
+    main_graphics_layer->SetContentsLayerState(
+        fragment_data.ContentsProperties(), offset);
   }
 
   if (auto* squashing_layer = mapping->SquashingLayer()) {
@@ -203,31 +201,6 @@ void CompositingLayerPropertyUpdater::Update(const LayoutObject& object) {
 
     mask_layer->SetLayerState(
         state, snapped_paint_offset + mask_layer->OffsetFromLayoutObject());
-  }
-
-  if (auto* ancestor_clipping_mask_layer =
-          mapping->AncestorClippingMaskLayer()) {
-    PropertyTreeState state(
-        fragment_data.PreTransform(),
-        mapping->ClipInheritanceAncestor()
-            ->GetLayoutObject()
-            .FirstFragment()
-            .PostOverflowClip(),
-        // This is a hack to incorporate mask-based clip-path. Really should be
-        // nullptr or some dummy.
-        fragment_data.PreFilter());
-    ancestor_clipping_mask_layer->SetLayerState(
-        state, snapped_paint_offset +
-                   ancestor_clipping_mask_layer->OffsetFromLayoutObject());
-  }
-
-  if (auto* child_clipping_mask_layer = mapping->ChildClippingMaskLayer()) {
-    PropertyTreeState state = fragment_data.LocalBorderBoxProperties();
-    // Same hack as for ancestor_clipping_mask_layer.
-    state.SetEffect(fragment_data.PreFilter());
-    child_clipping_mask_layer->SetLayerState(
-        state, snapped_paint_offset +
-                   child_clipping_mask_layer->OffsetFromLayoutObject());
   }
 }
 

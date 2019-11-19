@@ -2,24 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import <EarlGrey/EarlGrey.h>
 #import <UIKit/UIKit.h>
 #import <XCTest/XCTest.h>
 
 #include "base/bind.h"
-#include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
-#import "base/test/ios/wait_util.h"
-#import "ios/chrome/app/main_controller.h"
-#import "ios/chrome/browser/tabs/tab_model.h"
-#import "ios/chrome/browser/ui/tab_grid/tab_grid_egtest_util.h"
 #include "ios/chrome/grit/ios_strings.h"
-#import "ios/chrome/test/app/chrome_test_util.h"
-#import "ios/chrome/test/app/tab_test_util.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
+#import "ios/testing/earl_grey/earl_grey_test.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "net/test/embedded_test_server/request_handler_util.h"
@@ -28,50 +21,14 @@
 #error "This file requires ARC support."
 #endif
 
-using chrome_test_util::ButtonWithAccessibilityLabelId;
 using chrome_test_util::TabGridDoneButton;
 using chrome_test_util::TabGridIncognitoTabsPanelButton;
 using chrome_test_util::TabGridNewIncognitoTabButton;
 using chrome_test_util::TabGridNewTabButton;
 using chrome_test_util::TabGridOpenButton;
 using chrome_test_util::TabGridOpenTabsPanelButton;
-// using chrome_test_util::TabletTabSwitcherCloseButton;
-// using chrome_test_util::TabletTabSwitcherIncognitoTabsPanelButton;
-// using chrome_test_util::TabletTabSwitcherNewIncognitoTabButton;
-// using chrome_test_util::TabletTabSwitcherNewTabButton;
-// using chrome_test_util::TabletTabSwitcherOpenButton;
-// using chrome_test_util::TabletTabSwitcherOpenTabsPanelButton;
 
 namespace {
-
-// Returns the tab model for non-incognito tabs.
-TabModel* GetNormalTabModel() {
-  return chrome_test_util::GetMainController()
-      .interfaceProvider.mainInterface.tabModel;
-}
-
-// Shows the tab switcher by tapping the switcher button.  Works on both phone
-// and tablet.
-void ShowTabSwitcher() {
-  id<GREYMatcher> matcher = TabGridOpenButton();
-  DCHECK(matcher);
-
-  // Perform a tap with a timeout. Occasionally EG doesn't sync up properly to
-  // the animations of tab switcher, so it is necessary to poll here.
-  GREYCondition* tapTabSwitcher =
-      [GREYCondition conditionWithName:@"Tap tab switcher button"
-                                 block:^BOOL {
-                                   NSError* error;
-                                   [[EarlGrey selectElementWithMatcher:matcher]
-                                       performAction:grey_tap()
-                                               error:&error];
-                                   return error == nil;
-                                 }];
-
-  // Wait until 2 seconds for the tap.
-  BOOL hasClicked = [tapTabSwitcher waitWithTimeout:2];
-  GREYAssertTrue(hasClicked, @"Tab switcher could not be clicked.");
-}
 
 // Hides the tab switcher by tapping the switcher button.  Works on both phone
 // and tablet.
@@ -117,8 +74,8 @@ std::unique_ptr<net::test_server::HttpResponse> HandleQueryTitle(
 // Rotate the device back to portrait if needed, since some tests attempt to run
 // in landscape.
 - (void)tearDown {
-  [EarlGrey rotateDeviceToOrientation:UIDeviceOrientationPortrait
-                           errorOrNil:nil];
+  [ChromeEarlGrey rotateDeviceToOrientation:UIDeviceOrientationPortrait
+                                      error:nil];
   [super tearDown];
 }
 
@@ -138,33 +95,30 @@ std::unique_ptr<net::test_server::HttpResponse> HandleQueryTitle(
 
 // Tests entering the tab switcher when one normal tab is open.
 - (void)testEnterSwitcherWithOneNormalTab {
-  ShowTabSwitcher();
+  [ChromeEarlGrey showTabSwitcher];
 }
 
 // Tests entering the tab switcher when more than one normal tab is open.
 - (void)testEnterSwitcherWithMultipleNormalTabs {
   [ChromeEarlGreyUI openNewTab];
   [ChromeEarlGreyUI openNewTab];
-
-  ShowTabSwitcher();
+  [ChromeEarlGrey showTabSwitcher];
 }
 
 // Tests entering the tab switcher when one incognito tab is open.
 - (void)testEnterSwitcherWithOneIncognitoTab {
   [ChromeEarlGreyUI openNewIncognitoTab];
-  [GetNormalTabModel() closeAllTabs];
-
-  ShowTabSwitcher();
+  [ChromeEarlGrey closeAllNormalTabs];
+  [ChromeEarlGrey showTabSwitcher];
 }
 
 // Tests entering the tab switcher when more than one incognito tab is open.
 - (void)testEnterSwitcherWithMultipleIncognitoTabs {
   [ChromeEarlGreyUI openNewIncognitoTab];
-  [GetNormalTabModel() closeAllTabs];
+  [ChromeEarlGrey closeAllNormalTabs];
   [ChromeEarlGreyUI openNewIncognitoTab];
   [ChromeEarlGreyUI openNewIncognitoTab];
-
-  ShowTabSwitcher();
+  [ChromeEarlGrey showTabSwitcher];
 }
 
 // Tests entering the switcher when multiple tabs of both types are open.
@@ -172,8 +126,7 @@ std::unique_ptr<net::test_server::HttpResponse> HandleQueryTitle(
   [ChromeEarlGreyUI openNewTab];
   [ChromeEarlGreyUI openNewIncognitoTab];
   [ChromeEarlGreyUI openNewIncognitoTab];
-
-  ShowTabSwitcher();
+  [ChromeEarlGrey showTabSwitcher];
 }
 
 // Tests entering the tab switcher by closing the last normal tab.
@@ -184,7 +137,7 @@ std::unique_ptr<net::test_server::HttpResponse> HandleQueryTitle(
 // Tests entering the tab switcher by closing the last incognito tab.
 - (void)testEnterSwitcherByClosingLastIncognitoTab {
   [ChromeEarlGreyUI openNewIncognitoTab];
-  [GetNormalTabModel() closeAllTabs];
+  [ChromeEarlGrey closeAllNormalTabs];
   [ChromeEarlGrey closeAllTabsInCurrentMode];
 }
 
@@ -197,12 +150,12 @@ std::unique_ptr<net::test_server::HttpResponse> HandleQueryTitle(
   [ChromeEarlGrey loadURL:[self makeURLForTitle:tab1_title]];
 
   // Enter and leave the switcher.
-  ShowTabSwitcher();
+  [ChromeEarlGrey showTabSwitcher];
   ShowTabViewController();
 
   // Verify that the original tab is visible again.
   [ChromeEarlGrey
-      waitForWebViewContainingText:base::SysNSStringToUTF8(tab1_title)];
+      waitForWebStateContainingText:base::SysNSStringToUTF8(tab1_title)];
 }
 
 // Tests exiting the switcher by tapping the new tab button or selecting new tab
@@ -212,14 +165,14 @@ std::unique_ptr<net::test_server::HttpResponse> HandleQueryTitle(
   [self setUpTestServer];
 
   // Enter the switcher and open a new tab using the new tab button.
-  ShowTabSwitcher();
+  [ChromeEarlGrey showTabSwitcher];
   id<GREYMatcher> matcher = TabGridNewTabButton();
   [[EarlGrey selectElementWithMatcher:matcher] performAction:grey_tap()];
 
   // Load a URL in this newly-created tab and verify that the tab is visible.
   [ChromeEarlGrey loadURL:[self makeURLForTitle:tab1_title]];
   [ChromeEarlGrey
-      waitForWebViewContainingText:base::SysNSStringToUTF8(tab1_title)];
+      waitForWebStateContainingText:base::SysNSStringToUTF8(tab1_title)];
 }
 
 // Tests exiting the switcher by tapping the new incognito tab button or
@@ -230,17 +183,17 @@ std::unique_ptr<net::test_server::HttpResponse> HandleQueryTitle(
 
   // Set up by creating a new incognito tab and closing all normal tabs.
   [ChromeEarlGreyUI openNewIncognitoTab];
-  [GetNormalTabModel() closeAllTabs];
+  [ChromeEarlGrey closeAllNormalTabs];
 
   // Enter the switcher and open a new incognito tab using the new tab button.
-  ShowTabSwitcher();
+  [ChromeEarlGrey showTabSwitcher];
   id<GREYMatcher> matcher = TabGridNewIncognitoTabButton();
   [[EarlGrey selectElementWithMatcher:matcher] performAction:grey_tap()];
 
   // Load a URL in this newly-created tab and verify that the tab is visible.
   [ChromeEarlGrey loadURL:[self makeURLForTitle:tab1_title]];
   [ChromeEarlGrey
-      waitForWebViewContainingText:base::SysNSStringToUTF8(tab1_title)];
+      waitForWebStateContainingText:base::SysNSStringToUTF8(tab1_title)];
 }
 
 // Tests exiting the switcher by opening a new tab in the other tab model.
@@ -250,7 +203,7 @@ std::unique_ptr<net::test_server::HttpResponse> HandleQueryTitle(
   [self setUpTestServer];
 
   // Go from normal mode to incognito mode.
-  ShowTabSwitcher();
+  [ChromeEarlGrey showTabSwitcher];
   [[EarlGrey selectElementWithMatcher:TabGridIncognitoTabsPanelButton()]
       performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:TabGridNewIncognitoTabButton()]
@@ -259,10 +212,10 @@ std::unique_ptr<net::test_server::HttpResponse> HandleQueryTitle(
   // Load a URL in this newly-created tab and verify that the tab is visible.
   [ChromeEarlGrey loadURL:[self makeURLForTitle:incognito_title]];
   [ChromeEarlGrey
-      waitForWebViewContainingText:base::SysNSStringToUTF8(incognito_title)];
+      waitForWebStateContainingText:base::SysNSStringToUTF8(incognito_title)];
 
   // Go from incognito mode to normal mode.
-  ShowTabSwitcher();
+  [ChromeEarlGrey showTabSwitcher];
   [[EarlGrey selectElementWithMatcher:TabGridOpenTabsPanelButton()]
       performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:TabGridNewTabButton()]
@@ -271,7 +224,7 @@ std::unique_ptr<net::test_server::HttpResponse> HandleQueryTitle(
   // Load a URL in this newly-created tab and verify that the tab is visible.
   [ChromeEarlGrey loadURL:[self makeURLForTitle:normal_title]];
   [ChromeEarlGrey
-      waitForWebViewContainingText:base::SysNSStringToUTF8(normal_title)];
+      waitForWebStateContainingText:base::SysNSStringToUTF8(normal_title)];
 }
 
 // Tests exiting the tab switcher by selecting a normal tab.
@@ -288,15 +241,15 @@ std::unique_ptr<net::test_server::HttpResponse> HandleQueryTitle(
   [ChromeEarlGreyUI openNewTab];
   [ChromeEarlGrey loadURL:[self makeURLForTitle:tab3_title]];
 
-  ShowTabSwitcher();
+  [ChromeEarlGrey showTabSwitcher];
   SelectTab(tab1_title);
   [ChromeEarlGrey
-      waitForWebViewContainingText:base::SysNSStringToUTF8(tab1_title)];
+      waitForWebStateContainingText:base::SysNSStringToUTF8(tab1_title)];
 
-  ShowTabSwitcher();
+  [ChromeEarlGrey showTabSwitcher];
   SelectTab(tab3_title);
   [ChromeEarlGrey
-      waitForWebViewContainingText:base::SysNSStringToUTF8(tab3_title)];
+      waitForWebStateContainingText:base::SysNSStringToUTF8(tab3_title)];
 }
 
 // Tests exiting the tab switcher by selecting an incognito tab.
@@ -313,17 +266,17 @@ std::unique_ptr<net::test_server::HttpResponse> HandleQueryTitle(
   [ChromeEarlGrey loadURL:[self makeURLForTitle:tab2_title]];
   [ChromeEarlGreyUI openNewIncognitoTab];
   [ChromeEarlGrey loadURL:[self makeURLForTitle:tab3_title]];
-  [GetNormalTabModel() closeAllTabs];
+  [ChromeEarlGrey closeAllNormalTabs];
 
-  ShowTabSwitcher();
+  [ChromeEarlGrey showTabSwitcher];
   SelectTab(tab1_title);
   [ChromeEarlGrey
-      waitForWebViewContainingText:base::SysNSStringToUTF8(tab1_title)];
+      waitForWebStateContainingText:base::SysNSStringToUTF8(tab1_title)];
 
-  ShowTabSwitcher();
+  [ChromeEarlGrey showTabSwitcher];
   SelectTab(tab3_title);
   [ChromeEarlGrey
-      waitForWebViewContainingText:base::SysNSStringToUTF8(tab3_title)];
+      waitForWebStateContainingText:base::SysNSStringToUTF8(tab3_title)];
 }
 
 // Tests exiting the tab switcher by selecting a tab in the other tab model.
@@ -337,22 +290,22 @@ std::unique_ptr<net::test_server::HttpResponse> HandleQueryTitle(
   [ChromeEarlGreyUI openNewIncognitoTab];
   [ChromeEarlGrey loadURL:[self makeURLForTitle:incognito_title]];
 
-  ShowTabSwitcher();
+  [ChromeEarlGrey showTabSwitcher];
   // Switch to the normal panel and select the one tab that is there.
   [[EarlGrey selectElementWithMatcher:TabGridOpenTabsPanelButton()]
       performAction:grey_tap()];
   SelectTab(normal_title);
   [ChromeEarlGrey
-      waitForWebViewContainingText:base::SysNSStringToUTF8(normal_title)];
+      waitForWebStateContainingText:base::SysNSStringToUTF8(normal_title)];
 
-  ShowTabSwitcher();
+  [ChromeEarlGrey showTabSwitcher];
   // Switch to the incognito panel and select the one tab that is there.
   [[EarlGrey selectElementWithMatcher:TabGridIncognitoTabsPanelButton()]
       performAction:grey_tap()];
 
   SelectTab(incognito_title);
   [ChromeEarlGrey
-      waitForWebViewContainingText:base::SysNSStringToUTF8(incognito_title)];
+      waitForWebStateContainingText:base::SysNSStringToUTF8(incognito_title)];
 }
 
 // Tests switching back and forth between the normal and incognito BVCs.
@@ -380,28 +333,28 @@ std::unique_ptr<net::test_server::HttpResponse> HandleQueryTitle(
   [ChromeEarlGrey loadURL:[self makeURLForTitle:tab_title]];
 
   // Show the tab switcher and return to the BVC, in portrait.
-  [EarlGrey rotateDeviceToOrientation:UIDeviceOrientationPortrait
-                           errorOrNil:nil];
-  ShowTabSwitcher();
+  [ChromeEarlGrey rotateDeviceToOrientation:UIDeviceOrientationPortrait
+                                      error:nil];
+  [ChromeEarlGrey showTabSwitcher];
   SelectTab(tab_title);
   [ChromeEarlGrey
-      waitForWebViewContainingText:base::SysNSStringToUTF8(tab_title)];
+      waitForWebStateContainingText:base::SysNSStringToUTF8(tab_title)];
 
   // Show the tab switcher and return to the BVC, in landscape.
-  [EarlGrey rotateDeviceToOrientation:UIDeviceOrientationLandscapeLeft
-                           errorOrNil:nil];
-  ShowTabSwitcher();
+  [ChromeEarlGrey rotateDeviceToOrientation:UIDeviceOrientationLandscapeLeft
+                                      error:nil];
+  [ChromeEarlGrey showTabSwitcher];
   SelectTab(tab_title);
   [ChromeEarlGrey
-      waitForWebViewContainingText:base::SysNSStringToUTF8(tab_title)];
+      waitForWebStateContainingText:base::SysNSStringToUTF8(tab_title)];
 
   // Show the tab switcher and return to the BVC, in portrait.
-  [EarlGrey rotateDeviceToOrientation:UIDeviceOrientationPortrait
-                           errorOrNil:nil];
-  ShowTabSwitcher();
+  [ChromeEarlGrey rotateDeviceToOrientation:UIDeviceOrientationPortrait
+                                      error:nil];
+  [ChromeEarlGrey showTabSwitcher];
   SelectTab(tab_title);
   [ChromeEarlGrey
-      waitForWebViewContainingText:base::SysNSStringToUTF8(tab_title)];
+      waitForWebStateContainingText:base::SysNSStringToUTF8(tab_title)];
 }
 
 @end

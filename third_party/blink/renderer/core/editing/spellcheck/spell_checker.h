@@ -49,8 +49,6 @@ class WebTextCheckClient;
 
 class CORE_EXPORT SpellChecker final : public GarbageCollected<SpellChecker> {
  public:
-  static SpellChecker* Create(LocalFrame&);
-
   explicit SpellChecker(LocalFrame&);
 
   void Trace(Visitor*);

@@ -37,6 +37,8 @@ extern const char kClearKeyCdmFileSystemId[];
 //   e.g. WidevineCdm/_platform_specific/win_x64
 // Otherwise, returns an empty path.
 // TODO(xhwang): Use this function in Widevine CDM component installer.
+base::FilePath GetPlatformSpecificDirectory(
+    const base::FilePath& cdm_base_path);
 base::FilePath GetPlatformSpecificDirectory(const std::string& cdm_base_path);
 
 }  // namespace media

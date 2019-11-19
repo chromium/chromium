@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2019 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<resources>
+    <!-- The following styles may be used to style views provided by a CustomViewBinder or attached
+         to the app menu as headers or footers. -->
+
+    <!-- Styling for an app menu item row. -->
+    <style name="AppMenuItem">
+        <item name="android:paddingStart">16dp</item>
+        <item name="android:paddingEnd">16dp</item>
+        <item name="android:background">?attr/listChoiceBackgroundIndicator</item>
+    </style>
+
+    <!-- Styling for an icon in an app menu icon row. -->
+    <style name="OverflowMenuButton">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:background">?attr/listChoiceBackgroundIndicator</item>
+        <item name="android:scaleType">center</item>
+        <item name="tint">@color/standard_mode_tint</item>
+    </style>
+</resources>

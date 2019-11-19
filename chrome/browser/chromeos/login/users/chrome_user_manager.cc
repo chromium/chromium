@@ -108,6 +108,8 @@ LoginState::LoggedInUserType ChromeUserManager::GetLoggedInUserType(
     case user_manager::USER_TYPE_ACTIVE_DIRECTORY:
       // NOTE(olsen) There's no LOGGED_IN_USER_ACTIVE_DIRECTORY - is it needed?
       return LoginState::LOGGED_IN_USER_REGULAR;
+    case user_manager::USER_TYPE_WEB_KIOSK_APP:
+      return LoginState::LOGGED_IN_USER_KIOSK_APP;
     case user_manager::NUM_USER_TYPES:
       break;  // Go to invalid-type handling code.
       // Since there is no default, the compiler warns about unhandled types.
@@ -120,18 +122,6 @@ LoginState::LoggedInUserType ChromeUserManager::GetLoggedInUserType(
 ChromeUserManager* ChromeUserManager::Get() {
   user_manager::UserManager* user_manager = user_manager::UserManager::Get();
   return user_manager ? static_cast<ChromeUserManager*>(user_manager) : NULL;
-}
-
-// static
-user_manager::UserList
-ChromeUserManager::GetUsersAllowedAsSupervisedUserManagers(
-    const user_manager::UserList& user_list) {
-  user_manager::UserList result;
-  for (user_manager::User* user : user_list) {
-    if (user->GetType() == user_manager::USER_TYPE_REGULAR)
-      result.push_back(user);
-  }
-  return result;
 }
 
 }  // namespace chromeos

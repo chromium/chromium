@@ -72,7 +72,7 @@ QuitWithAppsController::QuitWithAppsController()
     rich_notification_data.buttons.push_back(suppression_button_info);
   }
 
-  notification_.reset(new message_center::Notification(
+  notification_ = std::make_unique<message_center::Notification>(
       message_center::NOTIFICATION_TYPE_SIMPLE, kQuitWithAppsNotificationID,
       l10n_util::GetStringUTF16(IDS_QUIT_WITH_APPS_TITLE),
       l10n_util::GetStringUTF16(IDS_QUIT_WITH_APPS_EXPLANATION),
@@ -82,7 +82,7 @@ QuitWithAppsController::QuitWithAppsController()
       GURL(kQuitWithAppsOriginUrl),
       message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
                                  kQuitWithAppsNotificationID),
-      rich_notification_data, this));
+      rich_notification_data, this);
 }
 
 QuitWithAppsController::~QuitWithAppsController() {}
@@ -135,7 +135,7 @@ bool QuitWithAppsController::ShouldQuit() {
   if (hosted_app_quit_notification_) {
     bool hosted_apps_open = false;
     for (Browser* browser : *BrowserList::GetInstance()) {
-      if (!browser->is_app())
+      if (!browser->deprecated_is_app())
         continue;
 
       ExtensionRegistry* registry = ExtensionRegistry::Get(browser->profile());
@@ -186,7 +186,8 @@ bool QuitWithAppsController::ShouldQuit() {
     CloseNotification(notification_profile_);
   notification_profile_ = profiles[0];
   NotificationDisplayService::GetForProfile(notification_profile_)
-      ->Display(NotificationHandler::Type::TRANSIENT, *notification_);
+      ->Display(NotificationHandler::Type::TRANSIENT, *notification_,
+                /*metadata=*/nullptr);
 
   // Always return false, the notification UI can be used to quit all apps which
   // will cause Chrome to quit.

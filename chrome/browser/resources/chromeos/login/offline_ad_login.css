@@ -22,7 +22,6 @@ oobe-dialog [slot='subtitle'] {
 
 .encryption-subtitle {
   color: --google-grey-600;
-  font: 13px Roboto, sans-serif;
   padding-bottom: 9px;
   padding-top: 9px;
 }

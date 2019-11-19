@@ -7,6 +7,6 @@
     "content_security_policy": "sandbox;"
   },
   "content_security_policy" : {
-    "extension_pages" : "script-src google.com;"
+    "extension_pages" : "default-src;"
   }
 }

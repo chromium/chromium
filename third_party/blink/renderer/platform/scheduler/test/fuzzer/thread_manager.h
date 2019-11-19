@@ -6,7 +6,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_TEST_FUZZER_THREAD_MANAGER_H_
 
 #include <memory>
-#include <vector>
 
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -19,28 +18,32 @@
 #include "third_party/blink/renderer/platform/scheduler/test/fuzzer/proto/sequence_manager_test_description.pb.h"
 #include "third_party/blink/renderer/platform/scheduler/test/fuzzer/sequence_manager_fuzzer_processor.h"
 #include "third_party/blink/renderer/platform/scheduler/test/fuzzer/task_queue_with_voters.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace base {
 namespace sequence_manager {
 
 // Used by the SequenceManagerFuzzerProcessor to execute actions on a thread.
 class PLATFORM_EXPORT ThreadManager {
+  USING_FAST_MALLOC(ThreadManager);
+
  public:
   // |initial_time| is the time in which |this| was instantiated.
-  ThreadManager(TimeTicks initial_time,
+  ThreadManager(base::TimeTicks initial_time,
                 SequenceManagerFuzzerProcessor* processor);
 
   ~ThreadManager();
 
   // Returns the time of the underlying task runner.
-  TimeTicks NowTicks();
+  base::TimeTicks NowTicks();
 
   // Returns the delay of the oldest pending task on the thread |this| is bound
   // to.
-  TimeDelta NextPendingTaskDelay();
+  base::TimeDelta NextPendingTaskDelay();
 
   // Advances the clock of the underlying task runner by |delta|.
-  void AdvanceMockTickClock(TimeDelta delta);
+  void AdvanceMockTickClock(base::TimeDelta delta);
 
   // Used to create a thread and register it with the thread pool manager owned
   // by |processor_|.
@@ -54,14 +57,16 @@ class PLATFORM_EXPORT ThreadManager {
       const google::protobuf::RepeatedPtrField<
           SequenceManagerTestDescription::Action>& initial_thread_actions);
 
-  const std::vector<SequenceManagerFuzzerProcessor::TaskForTest>&
-  ordered_tasks() const;
+  const Vector<SequenceManagerFuzzerProcessor::TaskForTest>& ordered_tasks()
+      const;
 
-  const std::vector<SequenceManagerFuzzerProcessor::ActionForTest>&
-  ordered_actions() const;
+  const Vector<SequenceManagerFuzzerProcessor::ActionForTest>& ordered_actions()
+      const;
 
  protected:
   class Task {
+    USING_FAST_MALLOC(Task);
+
    public:
     explicit Task(ThreadManager* thread_manager);
     ~Task() = default;
@@ -72,7 +77,7 @@ class PLATFORM_EXPORT ThreadManager {
 
     // Should outlive |this|.
     ThreadManager* thread_manager_;
-    base::WeakPtrFactory<Task> weak_ptr_factory_;
+    base::WeakPtrFactory<Task> weak_ptr_factory_{this};
   };
 
   void RunAction(const SequenceManagerTestDescription::Action& action);
@@ -122,7 +127,7 @@ class PLATFORM_EXPORT ThreadManager {
   // Used to delete |task| from |pending_tasks_|.
   void DeleteTask(Task* task);
 
-  TaskQueueWithVoters* GetTaskQueueFor(uint64_t task_queue_id);
+  scoped_refptr<TaskQueueWithVoters> GetTaskQueueFor(uint64_t task_queue_id);
 
   // Used to protect |task_queues_| and |pending_tasks_|.
   Lock lock_;
@@ -135,20 +140,20 @@ class PLATFORM_EXPORT ThreadManager {
 
   // For testing purposes, this should follow the order in which queues
   // were created on the thread in which |this| was instantiated.
-  std::vector<std::unique_ptr<TaskQueueWithVoters>> task_queues_;
+  Vector<scoped_refptr<TaskQueueWithVoters>> task_queues_;
 
   // Used to be able to cancel pending tasks from the sequence manager. For
   // testing purposes, this should follow the order in which the tasks were
   // posted to the thread in which |this| was instantiated.
-  std::vector<std::unique_ptr<Task>> pending_tasks_;
+  Vector<std::unique_ptr<Task>> pending_tasks_;
 
   // For Testing. Used to log tasks in their order of execution on the
   // thread in which |this| was instantiated.
-  std::vector<SequenceManagerFuzzerProcessor::TaskForTest> ordered_tasks_;
+  Vector<SequenceManagerFuzzerProcessor::TaskForTest> ordered_tasks_;
 
   // For Testing. Used to log actions in their order of execution on the
   // thread in which |this| was instantiated.
-  std::vector<SequenceManagerFuzzerProcessor::ActionForTest> ordered_actions_;
+  Vector<SequenceManagerFuzzerProcessor::ActionForTest> ordered_actions_;
 
   // Outlives this class. |processor_| owns a thread pool manager that creates
   // threads.

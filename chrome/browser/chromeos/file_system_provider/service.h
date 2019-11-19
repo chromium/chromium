@@ -35,7 +35,7 @@
 #include "extensions/browser/extension_registry_observer.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_id.h"
-#include "storage/browser/fileapi/watcher_manager.h"
+#include "storage/browser/file_system/watcher_manager.h"
 
 namespace extensions {
 class ExtensionRegistry;
@@ -211,7 +211,7 @@ class Service : public KeyedService,
   base::ThreadChecker thread_checker_;
   ProviderMap provider_map_;
 
-  base::WeakPtrFactory<Service> weak_ptr_factory_;
+  base::WeakPtrFactory<Service> weak_ptr_factory_{this};
   DISALLOW_COPY_AND_ASSIGN(Service);
 };
 

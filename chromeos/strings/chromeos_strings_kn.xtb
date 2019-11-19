@@ -1,21 +1,40 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="kn">
+<translation id="1482734542997480527">ಈ ಸಾಧನವನ್ನು <ph name="ENROLLMENT_DOMAIN" /> ನಿರ್ವಹಿಸುತ್ತದೆ ಮತ್ತು ನಿಮ್ಮ ಚಟುವಟಿಕೆಯ ಮೇಲೆ ಗಮನವಿಡಲು ಇದಕ್ಕೆ ಸಾಧ್ಯವಾಗಬಹುದು.</translation>
 <translation id="1510238584712386396">ಲಾಂಚರ್</translation>
 <translation id="1734367976349034509">ಈ ಸಾಧನವನ್ನು ಎಂಟರ್‌ಪ್ರೈಸ್ ನಿರ್ವಹಣೆ ಮಾಡುತ್ತಿದೆ</translation>
+<translation id="1930797645656624981">Chrome OS ಇನ್‌ಪುಟ್ ವಿಧಾನ ಸೇವೆ</translation>
+<translation id="1979103255016296513">ಪಾಸ್‌ವರ್ಡ್ ಬದಲಾವಣೆ ಮಾಡಲು ತೀರಾ ತಡವಾಗಿದೆ</translation>
 <translation id="2049639323467105390">ಈ ಸಾಧನವು <ph name="DOMAIN" /> ನಿಂದ ನಿರ್ವಹಿಸಲ್ಪಟ್ಟಿದೆ.</translation>
 <translation id="2083960536266308407">ಸ್ಕ್ರೀನ್‌ ಮೇಲೆ ಏನೂ ಕಾಣಿಸಿಲ್ಲ</translation>
 <translation id="2338501278241028356">ಸಮೀಪದ ಸಾಧನಗಳನ್ನು ಅನ್ವೇಷಿಸಲು ಬ್ಲೂಟೂತ್ ಆನ್ ಮಾಡಿ</translation>
 <translation id="2805756323405976993">ಆಪ್ಸ್‌‌</translation>
 <translation id="2872961005593481000">ಮುಚ್ಚಿಬಿಡಿ </translation>
-<translation id="3147142846278915599">ಲಾಂಚರ್ (ಅಪ್ಲಿಕೇಶನ್‌ಗಳನ್ನು ಸಿಂಕ್ ಮಾಡಲಾಗುತ್ತಿದೆ...)</translation>
+<translation id="3008341117444806826">ರಿಫ್ರೆಶ್ ಮಾಡಿ</translation>
+<translation id="3838338534323494292">ಹೊಸ ಪಾಸ್‌ವರ್ಡ್</translation>
+<translation id="4003259559679196451">ಈ ಸಾಧನವನ್ನು <ph name="ENROLLMENT_DOMAIN" /> ನಿರ್ವಹಿಸುತ್ತದೆ ಮತ್ತು ಬಳಕೆದಾರರು ಭೇಟಿ ನೀಡಿದ ವೆಬ್‌ಪುಟಗಳು, ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಹಾಗೂ ಇಮೇಲ್ ಸೇರಿದಂತೆ ಅವರ ಎಲ್ಲಾ ಚಟುವಟಿಕೆಗಳಿಗೆ ಪ್ರವೇಶ ಹೊಂದಿರುತ್ತದೆ.</translation>
+<translation id="4227825898293920515"><ph name="TIME" /> ಸಮಯದಲ್ಲಿ ಪಾಸ್‌ವರ್ಡ್‌ನ ಅವಧಿ ಮುಗಿಯಲಿದೆ</translation>
+<translation id="4429881212383817840">Kerberos ಟಿಕೆಟ್ ಶೀಘ್ರದಲ್ಲೇ ಅವಧಿ ಮೀರಲಿದೆ</translation>
+<translation id="445059817448385655">ಹಳೆಯ ಪಾಸ್‌ವರ್ಡ್‌</translation>
+<translation id="467510802200863975">ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಹೊಂದಾಣಿಕೆಯಾಗುತ್ತಿಲ್ಲ</translation>
 <translation id="4731797938093519117">ಪೋಷಕ ಪ್ರವೇಶ ಬಟನ್‌</translation>
+<translation id="4890353053343094602">ಹೊಸದೊಂದನ್ನು ತತ್‌ಕ್ಷಣ ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="5212543919916444558">ನಾನು ನಿಮಗೆ ಸಹಾಯ ಮಾಡಬಹುದಾದ ಯಾವುದೇ ವಿಷಯ ನಿಮ್ಮ ಸ್ಕ್ರೀನ್ ಮೇಲೆ ನನಗೆ ಕಾಣಿಸಿಲ್ಲ. ನನ್ನ ಬಳಿ ಏನಾದರೂ ಕೇಳಬೇಕಿದ್ದರೆ, ಮೈಕ್ ಟ್ಯಾಪ್ ಮಾಡಿ.</translation>
 <translation id="5222676887888702881">ಸೈನ್ ಔಟ್</translation>
+<translation id="5317780077021120954">ಉಳಿಸು</translation>
+<translation id="5332948983412042822">ಈಗ ಹೊಸದೊಂದನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="5457599981699367932">ಅತಿಥಿಯಾಗಿ ಬ್ರೌಸ್ ಮಾಡಿ</translation>
 <translation id="54609108002486618">ನಿರ್ವಹಿಸಲಾಗಿದೆ</translation>
 <translation id="5832805196449965646">ವ್ಯಕ್ತಿಯನ್ನು ಸೇರಿಸು</translation>
 <translation id="5895138241574237353">ಮರುಪ್ರಾರಂಭಿಸಿ</translation>
+<translation id="6058625436358447366">ಪೂರ್ಣಗೊಳಿಸಲು, ನಿಮ್ಮ ಹಳೆಯ ಹಾಗೂ ಹೊಸ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ನಮೂದಿಸಿ</translation>
+<translation id="6106186594183574873">ಪೂರ್ಣಗೊಳಿಸಲು, ನಿಮ್ಮ ಹಳೆಯ ಪಾಸ್‌ವರ್ಡ್ ನಮೂದಿಸಿ</translation>
+<translation id="6146993107019042706">ಪೂರ್ಣಗೊಳಿಸಲು, ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್ ನಮೂದಿಸಿ</translation>
 <translation id="7658239707568436148">ರದ್ದುಮಾಡಿ</translation>
+<translation id="7690294790491645610">ಹೊಸ ಪಾಸ್‌ವರ್ಡ್ ಖಚಿತಪಡಿಸಿ</translation>
+<translation id="808894953321890993">ಪಾಸ್‌ವರ್ಡ್ ಬದಲಿಸಿ</translation>
+<translation id="8747900814994928677">ಬದಲಾವಣೆಯನ್ನು ದೃಢೀಕರಿಸಿ</translation>
+<translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> ಗಾಗಿ ಟಿಕೆಟ್ ರಿಫ್ರೆಶ್ ಮಾಡಿ</translation>
 <translation id="9111102763498581341">ಅನ್‌ಲಾಕ್</translation>
 </translationbundle>

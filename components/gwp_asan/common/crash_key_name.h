@@ -6,13 +6,12 @@
 #define COMPONENTS_GWP_ASAN_COMMON_CRASH_KEY_NAME_H_
 
 namespace gwp_asan {
-namespace internal {
 
-// The name of the crash key used to convey the address of the
-// AllocatorBaseState to the crash handler.
-const char kGpaCrashKey[] = "allocator-base-state-address";
+// The name of the crash key used to convey the address of the AllocatorState
+// for the malloc/PartitionAlloc hooks to the crash handler.
+const char kMallocCrashKey[] = "gwp-asan-malloc";
+const char kPartitionAllocCrashKey[] = "gwp-asan-partitionalloc";
 
-}  // namespace internal
 }  // namespace gwp_asan
 
 #endif  // COMPONENTS_GWP_ASAN_COMMON_CRASH_KEY_NAME_H_

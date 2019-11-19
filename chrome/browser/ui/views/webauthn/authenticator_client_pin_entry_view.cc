@@ -9,6 +9,7 @@
 
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/color_palette.h"
@@ -30,7 +31,6 @@ std::unique_ptr<views::Textfield> MakePinTextField(
 
   auto field = std::make_unique<views::Textfield>();
   field->SetTextInputType(ui::TextInputType::TEXT_INPUT_TYPE_PASSWORD);
-  field->SetBackgroundColor(gfx::kGoogleGrey100);
   field->SetMinimumWidthInChars(kMinWidthInChars);
   field->SetDefaultWidthInChars(kDefaultWidthInChars);
   field->SetBorder(views::CreateSolidSidedBorder(0, 0, kBottomBorderThickness,
@@ -48,7 +48,7 @@ AuthenticatorClientPinEntryView::AuthenticatorClientPinEntryView(
     : delegate_(delegate),
       show_confirmation_text_field_(show_confirmation_text_field) {
   views::GridLayout* layout =
-      SetLayoutManager(std::make_unique<views::GridLayout>(this));
+      SetLayoutManager(std::make_unique<views::GridLayout>());
   views::ColumnSet* columns = layout->AddColumnSet(0);
 
   columns->AddColumn(views::GridLayout::LEADING, views::GridLayout::LEADING,
@@ -66,8 +66,7 @@ AuthenticatorClientPinEntryView::AuthenticatorClientPinEntryView(
       views::style::CONTEXT_LABEL, views::style::STYLE_PRIMARY);
   pin_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   pin_label->SetEnabledColor(gfx::kGoogleBlue500);
-  auto* pin_label_ptr = pin_label.get();
-  layout->AddView(pin_label.release());
+  auto* pin_label_ptr = layout->AddView(std::move(pin_label));
 
   views::View* confirmation_label_ptr = nullptr;
   if (show_confirmation_text_field_) {
@@ -77,32 +76,28 @@ AuthenticatorClientPinEntryView::AuthenticatorClientPinEntryView(
     confirmation_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
     confirmation_label->SetEnabledColor(gfx::kGoogleBlue500);
     confirmation_label_ptr = confirmation_label.get();
-    layout->AddView(confirmation_label.release());
+    layout->AddView(std::move(confirmation_label));
   }
 
   layout->StartRow(views::GridLayout::kFixedSize, 0);
 
-  auto pin_text_field = MakePinTextField(this, pin_label_ptr);
-  pin_text_field_ = pin_text_field.get();
-  layout->AddView(pin_text_field.release());
+  pin_text_field_ = layout->AddView(MakePinTextField(this, pin_label_ptr));
 
   if (show_confirmation_text_field_) {
     DCHECK(confirmation_label_ptr);
     auto confirmation_text_field =
         MakePinTextField(this, confirmation_label_ptr);
     confirmation_text_field_ = confirmation_text_field.get();
-    layout->AddView(confirmation_text_field.release());
+    layout->AddView(std::move(confirmation_text_field));
   }
 
   layout->StartRow(views::GridLayout::kFixedSize, 0);
 
   auto error_label = std::make_unique<views::Label>(
-      base::string16(), views::style::CONTEXT_LABEL,
-      views::style::STYLE_PRIMARY);
+      base::string16(), views::style::CONTEXT_LABEL, STYLE_RED);
   error_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  error_label->SetEnabledColor(gfx::kGoogleRed500);
-  error_label_ = error_label.get();
-  layout->AddView(error_label.release(), 3 /* col_span */, 1 /* row_span */);
+  error_label_ = layout->AddView(std::move(error_label), 3 /* col_span */,
+                                 1 /* row_span */);
 }
 
 AuthenticatorClientPinEntryView::~AuthenticatorClientPinEntryView() = default;
@@ -111,6 +106,7 @@ void AuthenticatorClientPinEntryView::UpdateError(const base::string16& text) {
   error_label_->SetVisible(true);
   error_label_->SetText(text);
   error_label_->SizeToPreferredSize();
+  Layout();
 }
 
 void AuthenticatorClientPinEntryView::RequestFocus() {

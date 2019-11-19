@@ -50,7 +50,7 @@ class ASH_EXPORT UnifiedSliderBubbleController
 
   // chromeos::CrasAudioHandler::AudioObserver:
   void OnOutputNodeVolumeChanged(uint64_t node_id, int volume) override;
-  void OnOutputMuteChanged(bool mute_on, bool system_adjust) override;
+  void OnOutputMuteChanged(bool mute_on) override;
 
   // UnifiedSystemTrayModel::Observer:
   void OnDisplayBrightnessChanged(bool by_user) override;

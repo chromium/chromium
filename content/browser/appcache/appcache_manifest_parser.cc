@@ -37,6 +37,7 @@
 #include <utility>
 
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "url/gurl.h"
@@ -223,6 +224,123 @@ bool ScopeMatches(const GURL& manifest_url, const GURL& namespace_url) {
                           base::CompareCase::SENSITIVE);
 }
 
+// Records UMA metrics for parsing one AppCache manifest.
+//
+// The manifest parser accumulates metrics data in an instance of this class by
+// calling the Record*() methods. When the manifest is successfully parsed, the
+// accumuated metrics are logged by calling RecordParseSuccess(). Metrics for
+// manifests that don't parse are discarded.
+class ParseMetricsRecorder {
+ public:
+  ParseMetricsRecorder() = default;
+  ~ParseMetricsRecorder() = default;
+
+  // Manifest starts with Chrome-specific header, not standard header.
+  void RecordChromeHeader() {
+#if DCHECK_IS_ON()
+    DCHECK(!finalized_) << "RecordParseSucccess() already called";
+#endif  // DCHECK_IS_ON()
+    has_chrome_header_ = true;
+  }
+
+  // Manifest served with the MIME type that enables dangerous features.
+  void RecordDangerousMode() { used_dangerous_mode_ = true; }
+
+  // Chrome-specific isPattern used in a valid NETWORK: entry.
+  void RecordNetworkPattern() {
+#if DCHECK_IS_ON()
+    DCHECK(!finalized_) << "RecordParseSucccess() already called";
+#endif  // DCHECK_IS_ON()
+    has_network_pattern_ = true;
+  }
+
+  // Chrome-specific isPattern used in a valid CHROMIUM-INTERCEPT: entry.
+  void RecordInterceptPattern() {
+#if DCHECK_IS_ON()
+    DCHECK(!finalized_) << "RecordParseSucccess() already called";
+#endif  // DCHECK_IS_ON()
+    has_intercept_pattern_ = true;
+  }
+
+  // Chrome-specific isPattern used in a valid FALLBACK: entry.
+  void RecordFallbackPattern() {
+#if DCHECK_IS_ON()
+    DCHECK(!finalized_) << "RecordParseSucccess() already called";
+#endif  // DCHECK_IS_ON()
+    has_fallback_pattern_ = true;
+  }
+
+  // Manifest contains a valid Chrome-specific CHROMIUM-INTERCEPT: entry.
+  void RecordInterceptEntry() {
+#if DCHECK_IS_ON()
+    DCHECK(!finalized_) << "RecordParseSucccess() already called";
+#endif  // DCHECK_IS_ON()
+    has_intercept_entry_ = true;
+  }
+
+  // Called after the parser has successfully consumed the entire manifest.
+  //
+  // Must be called exactly once. No other Record*() method may be called after
+  // this method is called.
+  void RecordParseSuccess() {
+#if DCHECK_IS_ON()
+    DCHECK(!finalized_) << "RecordParseSucccess() already called";
+    finalized_ = true;
+#endif  // DCHECK_IS_ON()
+
+    base::UmaHistogramBoolean("appcache.Manifest.ChromeHeader",
+                              has_chrome_header_);
+    base::UmaHistogramBoolean("appcache.Manifest.DangerousMode",
+                              used_dangerous_mode_);
+    base::UmaHistogramBoolean("appcache.Manifest.NetworkPattern",
+                              has_network_pattern_);
+    base::UmaHistogramBoolean("appcache.Manifest.FallbackPattern",
+                              has_fallback_pattern_);
+    base::UmaHistogramEnumeration("appcache.Manifest.InterceptUsage",
+                                  GetInterceptUsage());
+    base::UmaHistogramBoolean("appcache.Manifest.Pattern",
+                              has_network_pattern_ || has_intercept_pattern_ ||
+                                  has_fallback_pattern_);
+  }
+
+ private:
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class InterceptUsage {
+    // The manifest contains no intercept entry.
+    kNone = 0,
+    // The manifest contains at least one intercept entry. All entries use exact
+    // URLs.
+    kExact = 1,
+    // The manifest contains at least one intercept entry. At least one
+    // intercept entry uses a pattern URL.
+    kPattern = 2,
+    // Required by base::UmaHistogramEnumeration(). Must be last in the enum.
+    kMaxValue = kPattern,
+  };
+
+  InterceptUsage GetInterceptUsage() {
+    if (!has_intercept_entry_) {
+      DCHECK(!has_intercept_pattern_);
+      return InterceptUsage::kNone;
+    }
+    return has_intercept_pattern_ ? InterceptUsage::kPattern
+                                  : InterceptUsage::kExact;
+  }
+
+  bool has_chrome_header_ = false;
+  bool used_dangerous_mode_ = false;
+  bool has_network_pattern_ = false;
+  bool has_intercept_pattern_ = false;
+  bool has_fallback_pattern_ = false;
+  bool has_intercept_entry_ = false;
+
+#if DCHECK_IS_ON()
+  // True after RecordParseSuccess() was called.
+  bool finalized_ = false;
+#endif  // DCHECK_IS_ON()
+};
+
 }  // namespace
 
 AppCacheManifest::AppCacheManifest() = default;
@@ -243,6 +361,10 @@ bool ParseManifest(const GURL& manifest_url,
   DCHECK(!manifest.online_whitelist_all);
   DCHECK(!manifest.did_ignore_intercept_namespaces);
   DCHECK(!manifest.did_ignore_fallback_namespaces);
+
+  ParseMetricsRecorder parse_metrics;
+  if (parse_mode == PARSE_MANIFEST_ALLOWING_DANGEROUS_FEATURES)
+    parse_metrics.RecordDangerousMode();
 
   Mode mode = Mode::kExplicit;
 
@@ -276,9 +398,8 @@ bool ParseManifest(const GURL& manifest_url,
     // CHROMIUM-INTERCEPT will be ignored by other browsers.
     // See https://crbug.com/101565
 
-    // TODO(pwnall): Add a UMA metric to see if we can remove support for this
-    //               non-standard signature.
     data = data.substr(kChromiumSignature.length());
+    parse_metrics.RecordChromeHeader();
   } else {
     return false;
   }
@@ -351,16 +472,19 @@ bool ParseManifest(const GURL& manifest_url,
 
       if (mode == Mode::kExplicit) {
         manifest.explicit_urls.insert(namespace_url.spec());
-      } else {
-        // Chrome supports URL patterns in manifests. This is not standardized.
-        // An URL record followed by the "isPattern" token is considered a
-        // pattern.
-
-        // TODO(pwnall): Add a UMA metric to see if we can remove this feature.
-        bool is_pattern = NextTokenIsPatternMatchingFlag(line);
-        manifest.online_whitelist_namespaces.emplace_back(AppCacheNamespace(
-            APPCACHE_NETWORK_NAMESPACE, namespace_url, GURL(), is_pattern));
+        continue;
       }
+
+      // Chrome supports URL patterns in manifests. This is not standardized.
+      // An URL record followed by the "isPattern" token is considered a
+      // pattern.
+
+      bool is_pattern = NextTokenIsPatternMatchingFlag(line);
+      if (is_pattern)
+        parse_metrics.RecordNetworkPattern();
+
+      manifest.online_whitelist_namespaces.emplace_back(AppCacheNamespace(
+          APPCACHE_NETWORK_NAMESPACE, namespace_url, GURL(), is_pattern));
       continue;
     }
 
@@ -396,10 +520,13 @@ bool ParseManifest(const GURL& manifest_url,
       if (manifest_url.GetOrigin() != target_url.GetOrigin())
         continue;
 
-      // TODO(pwnall): Add a UMA metric to see if we can remove this feature.
       bool is_pattern = NextTokenIsPatternMatchingFlag(line);
+      if (is_pattern)
+        parse_metrics.RecordInterceptPattern();
+
       manifest.intercept_namespaces.emplace_back(
           APPCACHE_INTERCEPT_NAMESPACE, namespace_url, target_url, is_pattern);
+      parse_metrics.RecordInterceptEntry();
       continue;
     }
 
@@ -425,20 +552,21 @@ bool ParseManifest(const GURL& manifest_url,
       if (manifest_url.GetOrigin() != fallback_url.GetOrigin())
         continue;
 
-      // TODO(pwnall): Add a UMA metric to see if we can remove this feature.
       bool is_pattern = NextTokenIsPatternMatchingFlag(line);
+      if (is_pattern)
+        parse_metrics.RecordFallbackPattern();
 
       // Store regardless of duplicate namespace URL. Only the first match will
       // ever be used.
       manifest.fallback_namespaces.emplace_back(
-          AppCacheNamespace(APPCACHE_FALLBACK_NAMESPACE, namespace_url,
-                            fallback_url, is_pattern));
+          APPCACHE_FALLBACK_NAMESPACE, namespace_url, fallback_url, is_pattern);
       continue;
     }
 
     NOTREACHED() << "Unimplemented AppCache manifest parser mode";
   }
 
+  parse_metrics.RecordParseSuccess();
   return true;
 }
 

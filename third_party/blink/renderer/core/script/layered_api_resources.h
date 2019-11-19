@@ -27,35 +27,43 @@ struct LayeredAPIResource {
 };
 
 const LayeredAPIResource kLayeredAPIResources[] = {
-    {"blank/index.js", IDR_LAYERED_API_BLANK_INDEX_JS, Module::kBlank},
+    {"blank/index.mjs", IDR_LAYERED_API_BLANK_INDEX_MJS, Module::kBlank},
 
-    {"kv-storage/async_iterator.js",
-     IDR_LAYERED_API_KV_STORAGE_ASYNC_ITERATOR_JS, Module::kKvStorage},
-    {"kv-storage/idb_utils.js", IDR_LAYERED_API_KV_STORAGE_IDB_UTILS_JS,
+    {"elements/internal/reflection.mjs",
+     IDR_LAYERED_API_ELEMENTS_INTERNAL_REFLECTION_MJS,
+     Module::kElementsInternal},
+
+    {"elements/switch/face_utils.mjs",
+     IDR_LAYERED_API_ELEMENTS_SWITCH_FACE_UTILS_MJS, Module::kElementsSwitch},
+    {"elements/switch/index.mjs", IDR_LAYERED_API_ELEMENTS_SWITCH_INDEX_MJS,
+     Module::kElementsSwitch},
+    {"elements/switch/style.mjs", IDR_LAYERED_API_ELEMENTS_SWITCH_STYLE_MJS,
+     Module::kElementsSwitch},
+    {"elements/switch/track.mjs", IDR_LAYERED_API_ELEMENTS_SWITCH_TRACK_MJS,
+     Module::kElementsSwitch},
+
+    {"elements/toast/index.mjs", IDR_LAYERED_API_ELEMENTS_TOAST_INDEX_MJS,
+     Module::kElementsToast},
+
+    {"elements/virtual-scroller/find-element.mjs",
+     IDR_LAYERED_API_ELEMENTS_VIRTUAL_SCROLLER_FIND_ELEMENT_MJS,
+     Module::kElementsVirtualScroller},
+    {"elements/virtual-scroller/index.mjs",
+     IDR_LAYERED_API_ELEMENTS_VIRTUAL_SCROLLER_INDEX_MJS,
+     Module::kElementsVirtualScroller},
+    {"elements/virtual-scroller/sets.mjs",
+     IDR_LAYERED_API_ELEMENTS_VIRTUAL_SCROLLER_SETS_MJS,
+     Module::kElementsVirtualScroller},
+    {"elements/virtual-scroller/visibility-manager.mjs",
+     IDR_LAYERED_API_ELEMENTS_VIRTUAL_SCROLLER_VISIBILITY_MANAGER_MJS,
+     Module::kElementsVirtualScroller},
+
+    {"kv-storage/async_iterator.mjs",
+     IDR_LAYERED_API_KV_STORAGE_ASYNC_ITERATOR_MJS, Module::kKvStorage},
+    {"kv-storage/idb_utils.mjs", IDR_LAYERED_API_KV_STORAGE_IDB_UTILS_MJS,
      Module::kKvStorage},
-    {"kv-storage/index.js", IDR_LAYERED_API_KV_STORAGE_INDEX_JS,
+    {"kv-storage/index.mjs", IDR_LAYERED_API_KV_STORAGE_INDEX_MJS,
      Module::kKvStorage},
-
-    {"virtual-scroller/index.js", IDR_LAYERED_API_VIRTUAL_SCROLLER_INDEX_JS,
-     Module::kVirtualScroller},
-    {"virtual-scroller/item-source.js",
-     IDR_LAYERED_API_VIRTUAL_SCROLLER_ITEM_SOURCE_JS, Module::kVirtualScroller},
-    {"virtual-scroller/virtual-repeater.js",
-     IDR_LAYERED_API_VIRTUAL_SCROLLER_VIRTUAL_REPEATER_JS,
-     Module::kVirtualScroller},
-    {"virtual-scroller/virtual-scroller.js",
-     IDR_LAYERED_API_VIRTUAL_SCROLLER_VIRTUAL_SCROLLER_JS,
-     Module::kVirtualScroller},
-
-    {"virtual-scroller/layouts/layout-1d-base.js",
-     IDR_LAYERED_API_VIRTUAL_SCROLLER_LAYOUTS_LAYOUT_1D_BASE_JS,
-     Module::kVirtualScroller},
-    {"virtual-scroller/layouts/layout-1d-grid.js",
-     IDR_LAYERED_API_VIRTUAL_SCROLLER_LAYOUTS_LAYOUT_1D_GRID_JS,
-     Module::kVirtualScroller},
-    {"virtual-scroller/layouts/layout-1d.js",
-     IDR_LAYERED_API_VIRTUAL_SCROLLER_LAYOUTS_LAYOUT_1D_JS,
-     Module::kVirtualScroller},
 
 };
 

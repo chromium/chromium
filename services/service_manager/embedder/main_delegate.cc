@@ -40,7 +40,7 @@ void MainDelegate::AdjustServiceProcessCommandLine(
     base::CommandLine* command_line) {}
 
 void MainDelegate::OnServiceManagerInitialized(
-    const base::Closure& quit_closure,
+    const base::RepeatingClosure& quit_closure,
     BackgroundServiceManager* service_manager) {}
 
 std::unique_ptr<Service> MainDelegate::CreateEmbeddedService(

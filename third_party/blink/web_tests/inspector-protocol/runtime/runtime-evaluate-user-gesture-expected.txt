@@ -1,0 +1,26 @@
+Tests that Runtime.evaluate works with userGesture flag.
+
+Running test: testInitialUserActivation
+{
+    result : {
+        type : boolean
+        value : false
+    }
+}
+
+Running test: testActiveWithoutUserGesture
+{
+    result : {
+        type : boolean
+        value : false
+    }
+}
+
+Running test: testActiveWithUserGesture
+{
+    result : {
+        type : boolean
+        value : true
+    }
+}
+

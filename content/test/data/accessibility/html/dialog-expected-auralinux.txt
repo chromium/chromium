@@ -1,3 +1,3 @@
 [document web]
 ++[dialog]
-++++[text] name='Text in dialog'
+++++[static] name='Text in dialog'

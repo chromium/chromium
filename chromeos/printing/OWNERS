@@ -1,6 +1,7 @@
 skau@chromium.org
 thestig@chromium.org
-xdai@chromium.org
+zentaro@chromium.org
+luum@chromium.org
 
-#TEAM: cros-printing-dev@chromium.org
-#COMPONENT: Internals>Printing>CUPS
+# TEAM: cros-printing-dev@chromium.org
+# COMPONENT: Internals>Printing>CUPS

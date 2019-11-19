@@ -28,12 +28,6 @@ public class BuildConfig {
     public static MAYBE_FINAL boolean IS_MULTIDEX_ENABLED MAYBE_FALSE;
 #endif
 
-#if defined(_FIREBASE_APP_ID)
-    public static MAYBE_FINAL String FIREBASE_APP_ID = QUOTE(_FIREBASE_APP_ID);
-#else
-    public static MAYBE_FINAL String FIREBASE_APP_ID = "";
-#endif
-
 #if defined(_DCHECK_IS_ON)
     public static MAYBE_FINAL boolean DCHECK_IS_ON = true;
 #else
@@ -46,20 +40,10 @@ public class BuildConfig {
     public static MAYBE_FINAL boolean IS_UBSAN MAYBE_FALSE;
 #endif
 
-    // Sorted list of locales that have a compressed .pak within assets.
-    // Stored as an array because AssetManager.list() is slow.
-#if defined(COMPRESSED_LOCALE_LIST)
-    public static MAYBE_FINAL String[] COMPRESSED_LOCALES = COMPRESSED_LOCALE_LIST;
+#if defined(_IS_CHROME_BRANDED)
+    public static MAYBE_FINAL boolean IS_CHROME_BRANDED = true;
 #else
-    public static MAYBE_FINAL String[] COMPRESSED_LOCALES = {};
-#endif
-
-    // Sorted list of locales that have an uncompressed .pak within assets.
-    // Stored as an array because AssetManager.list() is slow.
-#if defined(UNCOMPRESSED_LOCALE_LIST)
-    public static MAYBE_FINAL String[] UNCOMPRESSED_LOCALES = UNCOMPRESSED_LOCALE_LIST;
-#else
-    public static MAYBE_FINAL String[] UNCOMPRESSED_LOCALES = {};
+    public static MAYBE_FINAL boolean IS_CHROME_BRANDED MAYBE_FALSE;
 #endif
 
     // The ID of the android string resource that stores the product version.
@@ -70,5 +54,30 @@ public class BuildConfig {
 #else
     // Default value, do not use.
     public static MAYBE_FINAL int R_STRING_PRODUCT_VERSION MAYBE_ZERO;
+#endif
+
+    // Minimum SDK Version supported by this apk.
+    // Be cautious when using this value, as it can happen that older apks get
+    // installed on newer Android version (e.g. when a device goes through a
+    // system upgrade). It is also convenient for developing to have all
+    // features available through a single APK.
+    // However, it's pretty safe to assument that a feature specific to KitKat
+    // will never be needed in an APK with MIN_SDK_VERSION = Oreo.
+#if defined(_MIN_SDK_VERSION)
+    public static MAYBE_FINAL int MIN_SDK_VERSION = _MIN_SDK_VERSION;
+#else
+    public static MAYBE_FINAL int MIN_SDK_VERSION = 1;
+#endif
+
+#if defined(_IS_BUNDLE)
+    public static MAYBE_FINAL boolean IS_BUNDLE = true;
+#else
+    public static MAYBE_FINAL boolean IS_BUNDLE MAYBE_FALSE;
+#endif
+
+#if defined(_IS_INCREMENTAL_INSTALL)
+    public static MAYBE_FINAL boolean IS_INCREMENTAL_INSTALL = true;
+#else
+    public static MAYBE_FINAL boolean IS_INCREMENTAL_INSTALL MAYBE_FALSE;
 #endif
 }

@@ -1,0 +1,38 @@
+{
+  "layers": [
+    {
+      "name": "Scrolling background of LayoutView #document",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF",
+      "paintInvalidations": [
+        {
+          "object": "LayoutNGBlockFlow HTML",
+          "rect": [0, 0, 402, 202],
+          "reason": "chunk appeared"
+        },
+        {
+          "object": "LayoutSVGRect rect",
+          "rect": [211, 11, 180, 180],
+          "reason": "paint property change"
+        },
+        {
+          "object": "LayoutSVGRect rect",
+          "rect": [210, 10, 180, 180],
+          "reason": "paint property change"
+        },
+        {
+          "object": "LayoutSVGRoot svg",
+          "rect": [11, 11, 180, 180],
+          "reason": "paint property change"
+        },
+        {
+          "object": "LayoutSVGRoot svg",
+          "rect": [10, 10, 180, 180],
+          "reason": "paint property change"
+        }
+      ]
+    }
+  ]
+}
+

@@ -8,6 +8,7 @@
 
 #include "base/allocator/partition_allocator/address_space_randomization.h"
 #include "base/allocator/partition_allocator/page_allocator.h"
+#include "base/allocator/partition_allocator/random.h"
 #include "base/bind.h"
 #include "base/bit_cast.h"
 #include "base/bits.h"
@@ -17,8 +18,8 @@
 #include "base/rand_util.h"
 #include "base/system/sys_info.h"
 #include "base/task/post_task.h"
-#include "base/task/task_scheduler/task_scheduler.h"
 #include "base/task/task_traits.h"
+#include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "gin/per_isolate_data.h"
@@ -30,13 +31,13 @@ namespace {
 base::LazyInstance<V8Platform>::Leaky g_v8_platform = LAZY_INSTANCE_INITIALIZER;
 
 constexpr base::TaskTraits kLowPriorityTaskTraits = {
-    base::TaskPriority::BEST_EFFORT};
+    base::ThreadPool(), base::TaskPriority::BEST_EFFORT};
 
 constexpr base::TaskTraits kDefaultTaskTraits = {
-    base::TaskPriority::USER_VISIBLE};
+    base::ThreadPool(), base::TaskPriority::USER_VISIBLE};
 
 constexpr base::TaskTraits kBlockingTaskTraits = {
-    base::TaskPriority::USER_BLOCKING};
+    base::ThreadPool(), base::TaskPriority::USER_BLOCKING};
 
 void PrintStackTrace() {
   base::debug::StackTrace trace;
@@ -206,7 +207,7 @@ class PageAllocator : public v8::PageAllocator {
   size_t CommitPageSize() override { return base::kSystemPageSize; }
 
   void SetRandomMmapSeed(int64_t seed) override {
-    base::SetRandomPageBaseSeed(seed);
+    base::SetMmapSeedForTesting(seed);
   }
 
   void* GetRandomMmapAddr() override { return base::GetRandomPageBase(); }
@@ -230,12 +231,16 @@ class PageAllocator : public v8::PageAllocator {
     DCHECK_LT(new_length, length);
     uint8_t* release_base = reinterpret_cast<uint8_t*>(address) + new_length;
     size_t release_size = length - new_length;
-#if defined(OS_POSIX)
+#if defined(OS_POSIX) || defined(OS_FUCHSIA)
     // On POSIX, we can unmap the trailing pages.
     base::FreePages(release_base, release_size);
-#else  // defined(OS_WIN)
-    // On Windows, we can only de-commit the trailing pages.
+#elif defined(OS_WIN)
+    // On Windows, we can only de-commit the trailing pages. FreePages() will
+    // still free all pages in the region including the released tail, so it's
+    // safe to just decommit the tail.
     base::DecommitSystemPages(release_base, release_size);
+#else
+#error Unsupported platform
 #endif
     return true;
   }
@@ -321,6 +326,36 @@ class V8Platform::TracingControllerImpl : public v8::TracingController {
     memcpy(&result, &handle, sizeof(result));
     return result;
   }
+  uint64_t AddTraceEventWithTimestamp(
+      char phase,
+      const uint8_t* category_enabled_flag,
+      const char* name,
+      const char* scope,
+      uint64_t id,
+      uint64_t bind_id,
+      int32_t num_args,
+      const char** arg_names,
+      const uint8_t* arg_types,
+      const uint64_t* arg_values,
+      std::unique_ptr<v8::ConvertableToTraceFormat>* arg_convertables,
+      unsigned int flags,
+      int64_t timestampMicroseconds) override {
+    base::trace_event::TraceArguments args(
+        num_args, arg_names, arg_types,
+        reinterpret_cast<const unsigned long long*>(arg_values),
+        arg_convertables);
+    DCHECK_LE(num_args, 2);
+    base::TimeTicks timestamp =
+        base::TimeTicks() +
+        base::TimeDelta::FromMicroseconds(timestampMicroseconds);
+    base::trace_event::TraceEventHandle handle =
+        TRACE_EVENT_API_ADD_TRACE_EVENT_WITH_THREAD_ID_AND_TIMESTAMP(
+            phase, category_enabled_flag, name, scope, id, bind_id,
+            TRACE_EVENT_API_CURRENT_THREAD_ID, timestamp, &args, flags);
+    uint64_t result;
+    memcpy(&result, &handle, sizeof(result));
+    return result;
+  }
   void UpdateTraceEventDuration(const uint8_t* category_enabled_flag,
                                 const char* name,
                                 uint64_t handle) override {
@@ -371,58 +406,38 @@ int V8Platform::NumberOfWorkerThreads() {
   // V8Platform assumes the scheduler uses the same set of workers for default
   // and user blocking tasks.
   const int num_foreground_workers =
-      base::TaskScheduler::GetInstance()
+      base::ThreadPoolInstance::Get()
           ->GetMaxConcurrentNonBlockedTasksWithTraitsDeprecated(
               kDefaultTaskTraits);
   DCHECK_EQ(num_foreground_workers,
-            base::TaskScheduler::GetInstance()
+            base::ThreadPoolInstance::Get()
                 ->GetMaxConcurrentNonBlockedTasksWithTraitsDeprecated(
                     kBlockingTaskTraits));
   return std::max(1, num_foreground_workers);
 }
 
 void V8Platform::CallOnWorkerThread(std::unique_ptr<v8::Task> task) {
-  base::PostTaskWithTraits(FROM_HERE, kDefaultTaskTraits,
-                           base::BindOnce(&v8::Task::Run, std::move(task)));
+  base::PostTask(FROM_HERE, kDefaultTaskTraits,
+                 base::BindOnce(&v8::Task::Run, std::move(task)));
 }
 
 void V8Platform::CallBlockingTaskOnWorkerThread(
     std::unique_ptr<v8::Task> task) {
-  base::PostTaskWithTraits(FROM_HERE, kBlockingTaskTraits,
-                           base::BindOnce(&v8::Task::Run, std::move(task)));
+  base::PostTask(FROM_HERE, kBlockingTaskTraits,
+                 base::BindOnce(&v8::Task::Run, std::move(task)));
 }
 
 void V8Platform::CallLowPriorityTaskOnWorkerThread(
     std::unique_ptr<v8::Task> task) {
-  base::PostTaskWithTraits(FROM_HERE, kLowPriorityTaskTraits,
-                           base::BindOnce(&v8::Task::Run, std::move(task)));
+  base::PostTask(FROM_HERE, kLowPriorityTaskTraits,
+                 base::BindOnce(&v8::Task::Run, std::move(task)));
 }
 
 void V8Platform::CallDelayedOnWorkerThread(std::unique_ptr<v8::Task> task,
                                            double delay_in_seconds) {
-  base::PostDelayedTaskWithTraits(
-      FROM_HERE, kDefaultTaskTraits,
-      base::BindOnce(&v8::Task::Run, std::move(task)),
-      base::TimeDelta::FromSecondsD(delay_in_seconds));
-}
-
-void V8Platform::CallOnForegroundThread(v8::Isolate* isolate, v8::Task* task) {
-  PerIsolateData* data = PerIsolateData::From(isolate);
-  data->task_runner()->PostTask(std::unique_ptr<v8::Task>(task));
-}
-
-void V8Platform::CallDelayedOnForegroundThread(v8::Isolate* isolate,
-                                               v8::Task* task,
-                                               double delay_in_seconds) {
-  PerIsolateData* data = PerIsolateData::From(isolate);
-  data->task_runner()->PostDelayedTask(std::unique_ptr<v8::Task>(task),
-                                       delay_in_seconds);
-}
-
-void V8Platform::CallIdleOnForegroundThread(v8::Isolate* isolate,
-                                            v8::IdleTask* task) {
-  PerIsolateData* data = PerIsolateData::From(isolate);
-  data->task_runner()->PostIdleTask(std::unique_ptr<v8::IdleTask>(task));
+  base::PostDelayedTask(FROM_HERE, kDefaultTaskTraits,
+                        base::BindOnce(&v8::Task::Run, std::move(task)),
+                        base::TimeDelta::FromSecondsD(delay_in_seconds));
 }
 
 bool V8Platform::IdleTasksEnabled(v8::Isolate* isolate) {

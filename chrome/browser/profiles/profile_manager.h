@@ -10,12 +10,15 @@
 #include <stddef.h>
 
 #include <list>
+#include <map>
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
+#include "base/observer_list.h"
 #include "base/threading/thread_checker.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
@@ -28,13 +31,14 @@
 
 class ProfileAttributesStorage;
 class ProfileInfoCache;
+class ProfileManagerObserver;
 
 class ProfileManager : public content::NotificationObserver,
                        public Profile::Delegate {
  public:
-  typedef base::RepeatingCallback<void(Profile*, Profile::CreateStatus)>
-      CreateCallback;
-  typedef base::OnceCallback<void(Profile*)> ProfileLoadedCallback;
+  using CreateCallback =
+      base::RepeatingCallback<void(Profile*, Profile::CreateStatus)>;
+  using ProfileLoadedCallback = base::OnceCallback<void(Profile*)>;
 
   explicit ProfileManager(const base::FilePath& user_data_dir);
   ~ProfileManager() override;
@@ -83,6 +87,9 @@ class ProfileManager : public content::NotificationObserver,
   // browser is started normally or is restarted after crash. On other
   // platforms, this returns the default profile.
   static Profile* CreateInitialProfile();
+
+  void AddObserver(ProfileManagerObserver* observer);
+  void RemoveObserver(ProfileManagerObserver* observer);
 
   // Returns a profile for a specific profile directory within the user data
   // dir. This will return an existing profile it had already been created,
@@ -227,14 +234,11 @@ class ProfileManager : public content::NotificationObserver,
   // for testing. If |addToStorage|, adds to ProfileAttributesStorage as well.
   // If |start_deferred_task_runners|, starts the deferred task runners.
   // Use ONLY in tests.
-  void RegisterTestingProfile(Profile* profile,
+  void RegisterTestingProfile(std::unique_ptr<Profile> profile,
                               bool addToStorage,
                               bool start_deferred_task_runners);
 
   const base::FilePath& user_data_dir() const { return user_data_dir_; }
-
-  // For ChromeOS, determines if the user has logged in to a real profile.
-  bool IsLoggedIn() const { return logged_in_; }
 
   // content::NotificationObserver implementation.
   void Observe(int type,
@@ -247,21 +251,22 @@ class ProfileManager : public content::NotificationObserver,
                         bool is_new_profile) override;
 
  protected:
-  // Does final initial actions.
-  virtual void DoFinalInit(Profile* profile, bool go_off_the_record);
-  virtual void DoFinalInitForServices(Profile* profile, bool go_off_the_record);
-  virtual void DoFinalInitLogging(Profile* profile);
-
   // Creates a new profile by calling into the profile's profile creation
   // method. Virtual so that unittests can return a TestingProfile instead
   // of the Profile's result. Returns null if creation fails.
-  virtual Profile* CreateProfileHelper(const base::FilePath& path);
+  virtual std::unique_ptr<Profile> CreateProfileHelper(
+      const base::FilePath& path);
 
   // Creates a new profile asynchronously by calling into the profile's
   // asynchronous profile creation method. Virtual so that unittests can return
   // a TestingProfile instead of the Profile's result.
-  virtual Profile* CreateProfileAsyncHelper(const base::FilePath& path,
-                                            Delegate* delegate);
+  virtual std::unique_ptr<Profile> CreateProfileAsyncHelper(
+      const base::FilePath& path,
+      Delegate* delegate);
+
+  void set_do_final_services_init(bool do_final_services_init) {
+    do_final_services_init_ = do_final_services_init;
+  }
 
  private:
   friend class TestingProfileManager;
@@ -271,7 +276,7 @@ class ProfileManager : public content::NotificationObserver,
   // This struct contains information about profiles which are being loaded or
   // were loaded.
   struct ProfileInfo {
-    ProfileInfo(Profile* profile, bool created);
+    ProfileInfo(std::unique_ptr<Profile> profile, bool created);
 
     ~ProfileInfo();
 
@@ -286,6 +291,11 @@ class ProfileManager : public content::NotificationObserver,
     DISALLOW_COPY_AND_ASSIGN(ProfileInfo);
   };
 
+  // Does final initial actions.
+  void DoFinalInit(ProfileInfo* profile_info, bool go_off_the_record);
+  void DoFinalInitForServices(Profile* profile, bool go_off_the_record);
+  void DoFinalInitLogging(Profile* profile);
+
   // Returns the profile of the active user and / or the off the record profile
   // if needed. This adds the profile to the ProfileManager if it doesn't
   // already exist. The method will return NULL if the profile doesn't exist
@@ -295,10 +305,10 @@ class ProfileManager : public content::NotificationObserver,
       const base::FilePath& user_data_dir);
 
   // Adds a pre-existing Profile object to the set managed by this
-  // ProfileManager. This ProfileManager takes ownership of the Profile.
+  // ProfileManager.
   // The Profile should not already be managed by this ProfileManager.
   // Returns true if the profile was added, false otherwise.
-  bool AddProfile(Profile* profile);
+  bool AddProfile(std::unique_ptr<Profile> profile);
 
   // Synchronously creates and returns a profile. This handles both the full
   // creation and adds it to the set managed by this ProfileManager. Returns
@@ -324,7 +334,7 @@ class ProfileManager : public content::NotificationObserver,
 
   // Registers profile with given info. Returns pointer to created ProfileInfo
   // entry.
-  ProfileInfo* RegisterProfile(Profile* profile, bool created);
+  ProfileInfo* RegisterProfile(std::unique_ptr<Profile> profile, bool created);
 
   // Returns ProfileInfo associated with given |path|, registered earlier with
   // RegisterProfile.
@@ -348,14 +358,19 @@ class ProfileManager : public content::NotificationObserver,
   // (desktop) Guest User profile and (desktop) System Profile.
   void SetNonPersonalProfilePrefs(Profile* profile);
 
-  // For ChromeOS, determines if profile should be otr.
+  // Determines if profile should be OTR.
   bool ShouldGoOffTheRecord(Profile* profile);
 
   void RunCallbacks(const std::vector<CreateCallback>& callbacks,
                     Profile* profile,
                     Profile::CreateStatus status);
 
+  void SaveActiveProfiles();
+
 #if !defined(OS_ANDROID)
+  void OnBrowserOpened(Browser* browser);
+  void OnBrowserClosed(Browser* browser);
+
   // Updates the last active user of the current session.
   // On Chrome OS updating this user will have no effect since when browser is
   // restored after crash there's another preference that is taken into account.
@@ -395,6 +410,10 @@ class ProfileManager : public content::NotificationObserver,
       const base::FilePath& profile_dir);
 #endif  // !defined(OS_ANDROID)
 
+  // Destroy after |profile_info_cache_| since Profile destruction may trigger
+  // some observers to unregister themselves.
+  base::ObserverList<ProfileManagerObserver> observers_;
+
   // Object to cache various information about profiles. Contains information
   // about every profile which has been created for this instance of Chrome,
   // if it has not been explicitly deleted. It must be destroyed after
@@ -410,10 +429,10 @@ class ProfileManager : public content::NotificationObserver,
   // Indicates that a user has logged in and that the profile specified
   // in the --login-profile command line argument should be used as the
   // default.
-  bool logged_in_;
+  bool logged_in_ = false;
 
 #if !defined(OS_ANDROID)
-  BrowserListObserver browser_list_observer_;
+  BrowserListObserver browser_list_observer_{this};
 #endif  // !defined(OS_ANDROID)
 
   // Maps profile path to ProfileInfo (if profile has been created). Use
@@ -431,7 +450,10 @@ class ProfileManager : public content::NotificationObserver,
   // On startup we launch the active profiles in the order they became active
   // during the last run. This is why they are kept in a list, not in a set.
   std::vector<Profile*> active_profiles_;
-  bool closing_all_browsers_;
+  bool closing_all_browsers_ = false;
+
+  // Controls whether to initialize some services. Only disabled for testing.
+  bool do_final_services_init_ = true;
 
   // TODO(chrome/browser/profiles/OWNERS): Usage of this in profile_manager.cc
   // should likely be turned into DCHECK_CURRENTLY_ON(BrowserThread::UI) for
@@ -449,9 +471,8 @@ class ProfileManagerWithoutInit : public ProfileManager {
  public:
   explicit ProfileManagerWithoutInit(const base::FilePath& user_data_dir);
 
- protected:
-  void DoFinalInitForServices(Profile*, bool) override {}
-  void DoFinalInitLogging(Profile*) override {}
+ private:
+  DISALLOW_COPY_AND_ASSIGN(ProfileManagerWithoutInit);
 };
 
 #endif  // CHROME_BROWSER_PROFILES_PROFILE_MANAGER_H_

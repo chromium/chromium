@@ -17,7 +17,8 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/macros.h"
-#include "base/memory/shared_memory.h"
+#include "base/memory/shared_memory_mapping.h"
+#include "base/memory/writable_shared_memory_region.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
@@ -41,7 +42,7 @@ void BusyWork(std::vector<std::string>* vec) {
   int64_t test_value = 0;
   for (int i = 0; i < 100000; ++i) {
     ++test_value;
-    vec->push_back(Int64ToString(test_value));
+    vec->push_back(NumberToString(test_value));
   }
 }
 
@@ -657,14 +658,19 @@ TEST(ProcessMetricsTestLinux, GetPageFaultCounts) {
   ASSERT_GT(counts.minor, 0);
   ASSERT_GE(counts.major, 0);
 
+  // Allocate and touch memory. Touching it is required to make sure that the
+  // page fault count goes up, as memory is typically mapped lazily.
   {
-    // Allocate and touch memory. Touching it is required to make sure that the
-    // page fault count goes up, as memory is typically mapped lazily.
-    const size_t kMappedSize = 4 * (1 << 20);
-    SharedMemory memory;
-    ASSERT_TRUE(memory.CreateAndMapAnonymous(kMappedSize));
-    memset(memory.memory(), 42, kMappedSize);
-    memory.Unmap();
+    const size_t kMappedSize = 4 << 20;  // 4 MiB.
+
+    WritableSharedMemoryRegion region =
+        WritableSharedMemoryRegion::Create(kMappedSize);
+    ASSERT_TRUE(region.IsValid());
+
+    WritableSharedMemoryMapping mapping = region.Map();
+    ASSERT_TRUE(mapping.IsValid());
+
+    memset(mapping.memory(), 42, kMappedSize);
   }
 
   PageFaultCounts counts_after;

@@ -13,6 +13,7 @@
 
 #include "base/macros.h"
 #include "base/time/time.h"
+#include "chrome/browser/metrics/cached_metrics_profile.h"
 #include "components/metrics/metrics_provider.h"
 #include "third_party/metrics_proto/extension_install.pb.h"
 
@@ -69,11 +70,6 @@ class ExtensionsMetricsProvider : public metrics::MetricsProvider {
                            uint32_t client_key);
 
  private:
-  // Returns the profile for which extensions will be gathered.  Once a
-  // suitable profile has been found, future calls will continue to return the
-  // same value so that reported extensions are consistent.
-  Profile* GetMetricsProfile();
-
   // Writes whether any loaded profiles have extensions not from the webstore.
   void ProvideOffStoreMetric(metrics::SystemProfileProto* system_profile);
 
@@ -89,10 +85,7 @@ class ExtensionsMetricsProvider : public metrics::MetricsProvider {
   // The MetricsStateManager from which the client ID is obtained.
   metrics::MetricsStateManager* metrics_state_manager_;
 
-  // The profile for which extensions are gathered for the occupied bucket
-  // metric. Once a profile is found its value is cached here so that
-  // GetMetricsProfile() can return a consistent value.
-  Profile* cached_profile_;
+  metrics::CachedMetricsProfile cached_profile_;
 
   // The time of our last recorded sample.
   base::Time last_sample_time_;

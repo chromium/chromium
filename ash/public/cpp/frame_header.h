@@ -10,8 +10,8 @@
 #include "base/strings/string16.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/ui_base_types.h"
-#include "ui/gfx/animation/animation_delegate.h"
 #include "ui/gfx/animation/slide_animation.h"
+#include "ui/views/animation/animation_delegate_views.h"
 #include "ui/views/window/frame_caption_button.h"
 
 namespace gfx {
@@ -26,13 +26,20 @@ class Widget;
 }  // namespace views
 
 namespace ash {
+class CaptionButtonModel;
 
 // Helper class for managing the window header.
-class ASH_PUBLIC_EXPORT FrameHeader : public gfx::AnimationDelegate {
+class ASH_PUBLIC_EXPORT FrameHeader : public views::AnimationDelegateViews {
  public:
   enum Mode { MODE_ACTIVE, MODE_INACTIVE };
 
+  static FrameHeader* Get(views::Widget* widget);
+
   ~FrameHeader() override;
+
+  const base::string16& frame_text_override() const {
+    return frame_text_override_;
+  }
 
   // Returns the header's minimum width.
   int GetMinimumHeaderWidth() const;
@@ -65,6 +72,7 @@ class ASH_PUBLIC_EXPORT FrameHeader : public gfx::AnimationDelegate {
   void SetLeftHeaderView(views::View* view);
   void SetBackButton(views::FrameCaptionButton* view);
   views::FrameCaptionButton* GetBackButton() const;
+  const CaptionButtonModel* GetCaptionButtonModel() const;
 
   // Updates the frame header painting to reflect a change in frame colors.
   virtual void UpdateFrameColors() = 0;
@@ -73,7 +81,7 @@ class ASH_PUBLIC_EXPORT FrameHeader : public gfx::AnimationDelegate {
   // regardless of what WidgetDelegate::ShouldShowWindowTitle() returns.
   void SetFrameTextOverride(const base::string16& frame_text_override);
 
-  // gfx::AnimationDelegate:
+  // views::AnimationDelegateViews:
   void AnimationProgressed(const gfx::Animation* animation) override;
 
  protected:

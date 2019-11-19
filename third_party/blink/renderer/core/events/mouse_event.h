@@ -55,7 +55,7 @@ class CORE_EXPORT MouseEvent : public UIEventWithKeyState {
 
   static MouseEvent* Create(const AtomicString& event_type,
                             const MouseEventInit*,
-                            TimeTicks platform_time_stamp,
+                            base::TimeTicks platform_time_stamp,
                             SyntheticEventType,
                             WebMenuSourceType);
 
@@ -70,11 +70,11 @@ class CORE_EXPORT MouseEvent : public UIEventWithKeyState {
 
   MouseEvent(const AtomicString& type,
              const MouseEventInit*,
-             TimeTicks platform_time_stamp,
+             base::TimeTicks platform_time_stamp,
              SyntheticEventType = kRealOrIndistinguishable,
              WebMenuSourceType = kMenuSourceNone);
   MouseEvent(const AtomicString& type, const MouseEventInit* init)
-      : MouseEvent(type, init, CurrentTimeTicks()) {}
+      : MouseEvent(type, init, base::TimeTicks::Now()) {}
   MouseEvent();
   ~MouseEvent() override;
 

@@ -81,14 +81,14 @@ class ListBuilder {
 
   template <typename T>
   ListBuilder& Append(T in_value) {
-    list_->GetList().emplace_back(in_value);
+    list_->Append(in_value);
     return *this;
   }
 
   // See note on DictionaryBuilder::Set().
   template <typename T>
   ListBuilder& Append(std::unique_ptr<T> in_value) {
-    list_->GetList().push_back(std::move(*in_value));
+    list_->Append(std::move(*in_value));
     return *this;
   }
 

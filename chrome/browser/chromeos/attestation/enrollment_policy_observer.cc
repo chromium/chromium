@@ -19,7 +19,7 @@
 #include "chrome/browser/chromeos/attestation/attestation_key_payload.pb.h"
 #include "chrome/browser/chromeos/settings/cros_settings.h"
 #include "chromeos/cryptohome/cryptohome_parameters.h"
-#include "chromeos/dbus/cryptohome_client.h"
+#include "chromeos/dbus/cryptohome/cryptohome_client.h"
 #include "chromeos/dbus/dbus_method_call_status.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "components/account_id/account_id.h"
@@ -69,8 +69,7 @@ EnrollmentPolicyObserver::EnrollmentPolicyObserver(
       cryptohome_client_(nullptr),
       num_retries_(0),
       retry_limit_(kRetryLimit),
-      retry_delay_(kRetryDelay),
-      weak_factory_(this) {
+      retry_delay_(kRetryDelay) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   device_settings_service_->AddObserver(this);
   Start();
@@ -84,8 +83,7 @@ EnrollmentPolicyObserver::EnrollmentPolicyObserver(
       policy_client_(policy_client),
       cryptohome_client_(cryptohome_client),
       num_retries_(0),
-      retry_delay_(kRetryDelay),
-      weak_factory_(this) {
+      retry_delay_(kRetryDelay) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   device_settings_service_->AddObserver(this);
   Start();
@@ -130,7 +128,7 @@ void EnrollmentPolicyObserver::Start() {
   request_in_flight_ = true;
 
   if (!cryptohome_client_)
-    cryptohome_client_ = DBusThreadManager::Get()->GetCryptohomeClient();
+    cryptohome_client_ = CryptohomeClient::Get();
 
   GetEnrollmentId();
 }
@@ -161,7 +159,7 @@ void EnrollmentPolicyObserver::HandleEnrollmentId(
 
 void EnrollmentPolicyObserver::RescheduleGetEnrollmentId() {
   if (++num_retries_ < retry_limit_) {
-    base::PostDelayedTaskWithTraits(
+    base::PostDelayedTask(
         FROM_HERE, {content::BrowserThread::UI},
         base::BindOnce(&EnrollmentPolicyObserver::GetEnrollmentId,
                        weak_factory_.GetWeakPtr()),

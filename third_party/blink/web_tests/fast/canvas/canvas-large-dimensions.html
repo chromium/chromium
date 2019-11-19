@@ -21,11 +21,10 @@ function testLargeDimension(size, isWidth) {
 }
 
 testScenarios = [['Test Width = 1000', 1000, true],
-                 ['Test Width = 10000', 10000, true],
-                 ['Test Width = 32000', 32000, true],
-                 
                  ['Test Height = 1000', 1000, false],
+                 ['Test Width = 10000', 10000, true],
                  ['Test Height = 10000', 10000, false],
+                 ['Test Width = 32000', 32000, true],
                  ['Test Height = 32000', 32000, false]];
 
 generate_tests(testLargeDimension, testScenarios);

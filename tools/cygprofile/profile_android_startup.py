@@ -10,6 +10,8 @@ support for web page replay, device forwarding, and fake certificate authority
 to make runs repeatable.
 """
 
+from __future__ import print_function
+
 import argparse
 import logging
 import os
@@ -25,9 +27,7 @@ from devil.android import device_errors
 from devil.android import device_utils
 from devil.android import flag_changer
 from devil.android import forwarder
-from devil.android.ndk import abis
 from devil.android.sdk import intent
-from devil.android.sdk import version_codes
 
 sys.path.append(os.path.join(_SRC_PATH, 'build', 'android'))
 import devil_chromium
@@ -55,7 +55,7 @@ def _DownloadFromCloudStorage(bucket, sha1_file_name):
   """Download the given file based on a hash file."""
   cmd = ['download_from_google_storage', '--no_resume',
          '--bucket', bucket, '-s', sha1_file_name]
-  print 'Executing command ' + ' '.join(cmd)
+  print('Executing command ' + ' '.join(cmd))
   process = subprocess.Popen(cmd)
   process.wait()
   if process.returncode != 0:
@@ -114,7 +114,7 @@ class WprManager(object):
 
   def _BringUpWpr(self):
     """Start the WPR server on the host and the forwarder on the device."""
-    print 'Starting WPR on host...'
+    print('Starting WPR on host...')
     _DownloadFromCloudStorage(self._WPR_BUCKET, self._wpr_archive_hash)
     if binary_manager.NeedsInit():
       binary_manager.InitDependencyManager([])
@@ -126,7 +126,7 @@ class WprManager(object):
 
   def _StopWpr(self):
     """ Stop the WPR and forwarder."""
-    print 'Stopping WPR on host...'
+    print('Stopping WPR on host...')
     if self._wpr_server:
       self._wpr_server.StopServer()
       self._wpr_server = None
@@ -138,7 +138,7 @@ class WprManager(object):
     if not self._wpr_server:
       logging.warning('No host WPR server to forward to.')
       return
-    print 'Starting device forwarder...'
+    print('Starting device forwarder...')
     forwarder.Forwarder.Map([(0, self._host_http_port),
                              (0, self._host_https_port)],
                             self._device)
@@ -168,10 +168,10 @@ class WprManager(object):
   def _StopForwarder(self):
     """Shuts down the port forwarding service."""
     if self._flag_changer:
-      print 'Restoring flags while stopping forwarder, but why?...'
+      print('Restoring flags while stopping forwarder, but why?...')
       self._flag_changer.Restore()
       self._flag_changer = None
-    print 'Stopping device forwarder...'
+    print('Stopping device forwarder...')
     forwarder.Forwarder.UnmapAllDevicePorts(self._device)
 
 
@@ -193,7 +193,7 @@ class AndroidProfileTool(object):
       os.path.dirname(__file__), 'memory_top_10_mobile_000.wprgo')
 
   def __init__(self, output_directory, host_profile_dir, use_wpr, urls,
-               simulate_user, device=None):
+               simulate_user, device, debug=False):
     """Constructor.
 
     Args:
@@ -203,28 +203,19 @@ class AndroidProfileTool(object):
       urls: (str) URLs to load. Have to be contained in the WPR archive if
                   use_wpr is True.
       simulate_user: (bool) Whether to simulate a user.
+      device: (DeviceUtils) Android device selected to be used to
+                            generate orderfile.
+      debug: (bool) Use simpler, non-representative debugging profile.
     """
-    if device is None:
-      devices = device_utils.DeviceUtils.HealthyDevices()
-      assert devices, 'Expected at least one connected device'
-      # Favor device running Android version[K,L] if exists.
-      # Code ordering is not yet supported on Monochrome.
-      preferred_device = None
-      for device in devices:
-        device_version = device.build_version_sdk
-        if (device_version >= version_codes.KITKAT
-            and device_version <= version_codes.LOLLIPOP_MR1):
-         preferred_device = device
-         break
-      self._device = preferred_device if preferred_device else devices[0]
-    else:
-      self._device = device_utils.DeviceUtils(device)
+    assert device, 'Expected a valid device'
+    self._device = device
     self._cygprofile_tests = os.path.join(
         output_directory, 'cygprofile_unittests')
     self._host_profile_dir = host_profile_dir
     self._use_wpr = use_wpr
     self._urls = urls
     self._simulate_user = simulate_user
+    self._debug = debug
     self._SetUpDevice()
     self._pregenerated_profiles = None
 
@@ -275,7 +266,7 @@ class AndroidProfileTool(object):
     """
     if self._pregenerated_profiles:
       logging.info('Using pregenerated profiles instead of running profile')
-      logging.info('Profile files: %s', '\n'.join(self._pregenerated_profiles))
+      logging.info('Profile files:\n%s', '\n'.join(self._pregenerated_profiles))
       return self._pregenerated_profiles
     self._device.adb.Logcat(clear=True)
     self._Install(apk)
@@ -318,12 +309,16 @@ class AndroidProfileTool(object):
       logging.info('Profile files: %s', '\n'.join(self._pregenerated_profiles))
       return self._pregenerated_profiles
     logging.info('Running system health profile')
+    profile_benchmark = 'orderfile_generation.training'
+    if self._debug:
+      logging.info('Using reduced debugging profile')
+      profile_benchmark = 'orderfile_generation.debugging'
     self._SetUpDeviceFolders()
     self._RunCommand(['tools/perf/run_benchmark',
                       '--device={}'.format(self._device.serial),
                       '--browser=exact',
                       '--browser-executable={}'.format(apk),
-                      'orderfile_generation.training'])
+                      profile_benchmark])
     data = self._PullProfileData()
     self._DeleteDeviceData()
     return data
@@ -339,7 +334,7 @@ class AndroidProfileTool(object):
       The process's return code.
     """
     root = constants.DIR_SOURCE_ROOT
-    print 'Executing {} in {}'.format(' '.join(command), root)
+    print('Executing {} in {}'.format(' '.join(command), root))
     process = subprocess.Popen(command, cwd=root, env=os.environ)
     process.wait()
     return process.returncode
@@ -389,7 +384,7 @@ class AndroidProfileTool(object):
     Args:
       apk: The location of the chrome apk to profile.
     """
-    print 'Installing apk...'
+    print('Installing apk...')
     self._device.Install(apk)
 
   def _SetUpDevice(self):
@@ -398,11 +393,11 @@ class AndroidProfileTool(object):
     """
     # We need to have adb root in order to pull profile data
     try:
-      print 'Enabling root...'
+      print('Enabling root...')
       self._device.EnableRoot()
       # SELinux need to be in permissive mode, otherwise the process cannot
       # write the log files.
-      print 'Putting SELinux in permissive mode...'
+      print('Putting SELinux in permissive mode...')
       self._device.RunShellCommand(['setenforce', '0'], check_return=True)
     except device_errors.CommandFailedError as e:
       # TODO(jbudorick) Handle this exception appropriately once interface
@@ -410,20 +405,20 @@ class AndroidProfileTool(object):
       logging.error(str(e))
 
   def _SetChromeFlags(self, package_info):
-    print 'Setting Chrome flags...'
+    print('Setting Chrome flags...')
     changer = flag_changer.FlagChanger(
         self._device, package_info.cmdline_file)
     changer.AddFlags(['--no-sandbox', '--disable-fre'])
     return changer
 
   def _RestoreChromeFlags(self, changer):
-    print 'Restoring Chrome flags...'
+    print('Restoring Chrome flags...')
     if changer:
       changer.Restore()
 
   def _SetUpDeviceFolders(self):
     """Creates folders on the device to store profile data."""
-    print 'Setting up device folders...'
+    print('Setting up device folders...')
     self._DeleteDeviceData()
     self._device.RunShellCommand(['mkdir', '-p', self._DEVICE_PROFILE_DIR],
                                  check_return=True)
@@ -436,7 +431,7 @@ class AndroidProfileTool(object):
           check_return=True)
 
   def _StartChrome(self, package_info, url):
-    print 'Launching chrome...'
+    print('Launching chrome...')
     self._device.StartActivity(
         intent.Intent(package=package_info.package,
                       activity=package_info.activity,
@@ -469,7 +464,7 @@ class AndroidProfileTool(object):
     Raises:
       NoProfileDataError: No data was found on the device.
     """
-    print 'Pulling profile data...'
+    print('Pulling profile data...')
     self._SetUpHostFolders()
     self._device.PullFile(self._DEVICE_PROFILE_DIR, self._host_profile_dir,
                           timeout=300)
@@ -544,9 +539,12 @@ def main():
   trace_directory = args.trace_directory
   if not trace_directory:
     trace_directory = os.path.join(args.output_directory, 'profile_data')
+  devices = device_utils.DeviceUtils.HealthyDevices()
+  assert devices, 'Expected at least one connected device'
   profiler = AndroidProfileTool(
       args.output_directory, host_profile_dir=trace_directory,
-      use_wpr=not args.no_wpr, urls=args.urls, simulate_user=args.simulate_user)
+      use_wpr=not args.no_wpr, urls=args.urls, simulate_user=args.simulate_user,
+      device=devices[0])
   profiler.CollectProfile(args.apk_path, package_info)
   return 0
 

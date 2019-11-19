@@ -2,7 +2,6 @@
 <script src="../resources/gc.js"></script>
 <script src="../resources/testharness.js"></script>
 <script src="../resources/testharnessreport.js"></script>
-<script src="../resources/run-after-layout-and-paint.js"></script>
 
 <!--
 
@@ -13,7 +12,7 @@ Spec: https://wicg.github.io/aom/spec/
 -->
 
 <script>
-test_after_layout_and_paint(function(t) {
+test(function(t) {
     assert_true(internals.runtimeFlags.accessibilityObjectModelEnabled);
 }, "Make sure that Accessibility Object Model is enabled");
 </script>
@@ -25,7 +24,7 @@ test_after_layout_and_paint(function(t) {
 </div>
 
 <script>
-test_after_layout_and_paint(function(t) {
+test(function(t) {
     var listbox = document.getElementById("listbox");
     var option1 = document.getElementById("option1");
     listbox.focus();
@@ -36,9 +35,12 @@ test_after_layout_and_paint(function(t) {
 
     listbox.accessibleNode.activeDescendant = option1.accessibleNode;
 
-    assert_true(axListbox.ariaActiveDescendantElement().isEqual(axOption1));
-    // Active Descendant also makes the option selected.
-    assert_true(axOption1.isSelected);
+    assert_equals(axListbox.ariaActiveDescendantElement(), undefined);
+
+    // Previously, Active Descendant also makes the option selected. This check
+    // is here to verify that this no longer happens now that AccessibleNode is
+    // becoming uncoupled from the Accessibility Tree.
+    assert_false(axOption1.isSelected);
 }, "AccessibleNode.activeDescendant");
 </script>
 
@@ -46,7 +48,7 @@ test_after_layout_and_paint(function(t) {
 <div id="details">Details</div>
 
 <script>
-test_after_layout_and_paint(function(t) {
+test(function(t) {
     var input1 = document.getElementById("input1");
     var details = document.getElementById("details");
     var axInput1 = accessibilityController.accessibleElementById("input1");
@@ -55,7 +57,7 @@ test_after_layout_and_paint(function(t) {
 
     input1.accessibleNode.details = details.accessibleNode;
 
-    assert_true(axInput1.ariaDetailsElement().isEqual(axDetails));
+    assert_equals(axInput1.ariaDetailsElement(), undefined);
 }, "AccessibleNode.details");
 </script>
 
@@ -63,7 +65,7 @@ test_after_layout_and_paint(function(t) {
 <div id="errorMessage">ErrorMessage</div>
 
 <script>
-test_after_layout_and_paint(function(t) {
+test(function(t) {
     var input2 = document.getElementById("input2");
     var errorMessage = document.getElementById("errorMessage");
     var axInput2 = accessibilityController.accessibleElementById("input2");
@@ -72,6 +74,6 @@ test_after_layout_and_paint(function(t) {
 
     input2.accessibleNode.errorMessage = errorMessage.accessibleNode;
 
-    assert_true(axInput2.ariaErrorMessageElement().isEqual(axErrorMessage));
+    assert_equals(axInput2.ariaErrorMessageElement(), undefined);
 }, "AccessibleNode.errorMessage");
 </script>

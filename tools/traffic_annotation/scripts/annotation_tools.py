@@ -4,10 +4,18 @@
 
 """Tools for annotation test scripts."""
 
+from __future__ import print_function
+
+import json
 import os
 import subprocess
 import sys
 
+script_dir = os.path.dirname(os.path.realpath(__file__))
+tool_dir = os.path.abspath(os.path.join(script_dir, '../../clang/pylib'))
+sys.path.insert(0, tool_dir)
+
+from clang import compile_db
 
 class NetworkTrafficAnnotationTools():
   def __init__(self, build_path=None):
@@ -61,6 +69,28 @@ class NetworkTrafficAnnotationTools():
     return all(os.path.exists(
         os.path.join(path, item)) for item in ('gen', 'build.ninja'))
 
+  def GetCompDBFiles(self, generate_compdb):
+    """Gets the list of files.
+
+    Args:
+      generate_compdb: if true, generate a new compdb and write it to
+                       compile_commands.json.
+
+    Returns:
+      A set of absolute filepaths, with all compile-able C++ files (based on the
+      compilation database).
+    """
+    if generate_compdb:
+      compile_commands = compile_db.GenerateWithNinja(self.build_path)
+      compdb_path = os.path.join(self.build_path, 'compile_commands.json')
+      with open(compdb_path, 'w') as f:
+        f.write(json.dumps(compile_commands, indent=2))
+
+    compdb = compile_db.Read(self.build_path)
+    return set(
+        os.path.abspath(os.path.join(self.build_path, e['file']))
+        for e in compdb)
+
   def GetModifiedFiles(self):
     """Gets the list of modified files from git. Returns None if any error
     happens.
@@ -112,9 +142,10 @@ class NetworkTrafficAnnotationTools():
       return_code: int Auditor's exit code.
     """
 
+    command_line = [self.auditor_path, "--build-path=" + self.build_path] + args
+
     command = subprocess.Popen(
-        [self.auditor_path, "--build-path=" + self.build_path] + args,
-        stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        command_line, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     stdout_text, stderr_text = command.communicate()
     return_code = command.returncode
 

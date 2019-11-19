@@ -17,7 +17,7 @@ TEST(BarcodeTest, Small) {
   for (unsigned char in_bits = 0; in_bits < 255; in_bits++) {
     EXPECT_TRUE(EncodeBarcode(in_bits, frame));
     unsigned char out_bits = ~in_bits;
-    EXPECT_TRUE(DecodeBarcode(frame, &out_bits));
+    EXPECT_TRUE(DecodeBarcode(*frame, &out_bits));
     EXPECT_EQ(in_bits, out_bits);
   }
 }
@@ -29,28 +29,28 @@ TEST(BarcodeTest, Large) {
   std::vector<bool> out_bits(1024);
   for (int i = 0; i < 1024; i++) in_bits[i] = true;
   EXPECT_TRUE(EncodeBarcode(in_bits, frame));
-  EXPECT_TRUE(DecodeBarcode(frame, &out_bits));
+  EXPECT_TRUE(DecodeBarcode(*frame, &out_bits));
   for (int i = 0; i < 1024; i++) {
     EXPECT_EQ(in_bits[i], out_bits[i]);
   }
 
   for (int i = 0; i < 1024; i++) in_bits[i] = false;
   EXPECT_TRUE(EncodeBarcode(in_bits, frame));
-  EXPECT_TRUE(DecodeBarcode(frame, &out_bits));
+  EXPECT_TRUE(DecodeBarcode(*frame, &out_bits));
   for (int i = 0; i < 1024; i++) {
     EXPECT_EQ(in_bits[i], out_bits[i]);
   }
 
   for (int i = 0; i < 1024; i++) in_bits[i] = (i & 1) == 0;
   EXPECT_TRUE(EncodeBarcode(in_bits, frame));
-  EXPECT_TRUE(DecodeBarcode(frame, &out_bits));
+  EXPECT_TRUE(DecodeBarcode(*frame, &out_bits));
   for (int i = 0; i < 1024; i++) {
     EXPECT_EQ(in_bits[i], out_bits[i]);
   }
 
   for (int i = 0; i < 1024; i++) in_bits[i] = (i & 1) == 1;
   EXPECT_TRUE(EncodeBarcode(in_bits, frame));
-  EXPECT_TRUE(DecodeBarcode(frame, &out_bits));
+  EXPECT_TRUE(DecodeBarcode(*frame, &out_bits));
   for (int i = 0; i < 1024; i++) {
     EXPECT_EQ(in_bits[i], out_bits[i]);
   }

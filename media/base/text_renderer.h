@@ -132,7 +132,7 @@ class MEDIA_EXPORT TextRenderer {
   PendingEosSet pending_eos_set_;
 
   // NOTE: Weak pointers must be invalidated before all other member variables.
-  base::WeakPtrFactory<TextRenderer> weak_factory_;
+  base::WeakPtrFactory<TextRenderer> weak_factory_{this};
 
   DISALLOW_IMPLICIT_CONSTRUCTORS(TextRenderer);
 };

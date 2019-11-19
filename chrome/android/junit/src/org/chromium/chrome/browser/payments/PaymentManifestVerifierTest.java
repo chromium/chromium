@@ -32,6 +32,8 @@ import java.util.Set;
 @RunWith(RobolectricTestRunner.class)
 @Config(sdk = 21, manifest = Config.NONE)
 public class PaymentManifestVerifierTest {
+    private static final String ERROR_MESSAGE = "This is an error message.";
+
     private final URI mMethodName;
     private final ResolveInfo mAlicePay;
     private final ResolveInfo mBobPay;
@@ -139,7 +141,7 @@ public class PaymentManifestVerifierTest {
                     @Override
                     public void downloadPaymentMethodManifest(
                             URI uri, ManifestDownloadCallback callback) {
-                        callback.onManifestDownloadFailure();
+                        callback.onManifestDownloadFailure(ERROR_MESSAGE);
                     }
 
                     @Override
@@ -167,7 +169,7 @@ public class PaymentManifestVerifierTest {
 
                     @Override
                     public void downloadWebAppManifest(URI uri, ManifestDownloadCallback callback) {
-                        callback.onManifestDownloadFailure();
+                        callback.onManifestDownloadFailure(ERROR_MESSAGE);
                     }
 
                     @Override
@@ -288,7 +290,7 @@ public class PaymentManifestVerifierTest {
             @Override
             public void downloadWebAppManifest(URI uri, ManifestDownloadCallback callback) {
                 if (mDownloadWebAppManifestCounter++ == 0) {
-                    callback.onManifestDownloadFailure();
+                    callback.onManifestDownloadFailure(ERROR_MESSAGE);
                 } else {
                     callback.onWebAppManifestDownloadSuccess("some content");
                 }

@@ -5,6 +5,9 @@
 #ifndef EXTENSIONS_BROWSER_API_MANAGEMENT_MANAGEMENT_API_H_
 #define EXTENSIONS_BROWSER_API_MANAGEMENT_MANAGEMENT_API_H_
 
+#include <memory>
+#include <string>
+
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "base/scoped_observer.h"
@@ -17,14 +20,14 @@
 #include "extensions/browser/extension_function.h"
 #include "extensions/browser/extension_registry_observer.h"
 #include "extensions/browser/preload_check.h"
-
-struct WebApplicationInfo;
+#include "services/data_decoder/public/cpp/data_decoder.h"
 
 namespace extensions {
+
 class ExtensionRegistry;
 class RequirementsChecker;
 
-class ManagementGetAllFunction : public UIThreadExtensionFunction {
+class ManagementGetAllFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("management.getAll", MANAGEMENT_GETALL)
 
@@ -35,7 +38,7 @@ class ManagementGetAllFunction : public UIThreadExtensionFunction {
   ResponseAction Run() override;
 };
 
-class ManagementGetFunction : public UIThreadExtensionFunction {
+class ManagementGetFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("management.get", MANAGEMENT_GET)
 
@@ -46,7 +49,7 @@ class ManagementGetFunction : public UIThreadExtensionFunction {
   ResponseAction Run() override;
 };
 
-class ManagementGetSelfFunction : public UIThreadExtensionFunction {
+class ManagementGetSelfFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("management.getSelf", MANAGEMENT_GETSELF)
 
@@ -57,8 +60,7 @@ class ManagementGetSelfFunction : public UIThreadExtensionFunction {
   ResponseAction Run() override;
 };
 
-class ManagementGetPermissionWarningsByIdFunction
-    : public UIThreadExtensionFunction {
+class ManagementGetPermissionWarningsByIdFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("management.getPermissionWarningsById",
                              MANAGEMENT_GETPERMISSIONWARNINGSBYID)
@@ -71,14 +73,13 @@ class ManagementGetPermissionWarningsByIdFunction
 };
 
 class ManagementGetPermissionWarningsByManifestFunction
-    : public UIThreadExtensionFunction {
+    : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("management.getPermissionWarningsByManifest",
                              MANAGEMENT_GETPERMISSIONWARNINGSBYMANIFEST)
 
-  // Called when utility process finishes.
-  void OnParseSuccess(std::unique_ptr<base::Value> value);
-  void OnParseFailure(const std::string& error);
+  // Called when manifest parsing is finished.
+  void OnParse(data_decoder::DataDecoder::ValueOrError result);
 
  protected:
   ~ManagementGetPermissionWarningsByManifestFunction() override {}
@@ -87,7 +88,7 @@ class ManagementGetPermissionWarningsByManifestFunction
   ResponseAction Run() override;
 };
 
-class ManagementLaunchAppFunction : public UIThreadExtensionFunction {
+class ManagementLaunchAppFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("management.launchApp", MANAGEMENT_LAUNCHAPP)
 
@@ -98,7 +99,7 @@ class ManagementLaunchAppFunction : public UIThreadExtensionFunction {
   ResponseAction Run() override;
 };
 
-class ManagementSetEnabledFunction : public UIThreadExtensionFunction {
+class ManagementSetEnabledFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("management.setEnabled", MANAGEMENT_SETENABLED)
 
@@ -122,7 +123,7 @@ class ManagementSetEnabledFunction : public UIThreadExtensionFunction {
   std::unique_ptr<RequirementsChecker> requirements_checker_;
 };
 
-class ManagementUninstallFunctionBase : public UIThreadExtensionFunction {
+class ManagementUninstallFunctionBase : public ExtensionFunction {
  public:
   ManagementUninstallFunctionBase();
 
@@ -167,7 +168,7 @@ class ManagementUninstallSelfFunction : public ManagementUninstallFunctionBase {
   ResponseAction Run() override;
 };
 
-class ManagementCreateAppShortcutFunction : public UIThreadExtensionFunction {
+class ManagementCreateAppShortcutFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("management.createAppShortcut",
                              MANAGEMENT_CREATEAPPSHORTCUT)
@@ -184,7 +185,7 @@ class ManagementCreateAppShortcutFunction : public UIThreadExtensionFunction {
   ResponseAction Run() override;
 };
 
-class ManagementSetLaunchTypeFunction : public UIThreadExtensionFunction {
+class ManagementSetLaunchTypeFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("management.setLaunchType",
                              MANAGEMENT_SETLAUNCHTYPE)
@@ -195,15 +196,14 @@ class ManagementSetLaunchTypeFunction : public UIThreadExtensionFunction {
   ResponseAction Run() override;
 };
 
-class ManagementGenerateAppForLinkFunction : public UIThreadExtensionFunction {
+class ManagementGenerateAppForLinkFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("management.generateAppForLink",
                              MANAGEMENT_GENERATEAPPFORLINK)
 
   ManagementGenerateAppForLinkFunction();
 
-  void FinishCreateBookmarkApp(const Extension* extension,
-                               const WebApplicationInfo& web_app_info);
+  void FinishCreateWebApp(const std::string& web_app_id, bool install_success);
 
  protected:
   ~ManagementGenerateAppForLinkFunction() override;
@@ -212,6 +212,57 @@ class ManagementGenerateAppForLinkFunction : public UIThreadExtensionFunction {
 
  private:
   std::unique_ptr<AppForLinkDelegate> app_for_link_delegate_;
+};
+
+class ManagementCanInstallReplacementAndroidAppFunction
+    : public ExtensionFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("management.canInstallReplacementAndroidApp",
+                             MANAGEMENT_CANINSTALLREPLACEMENTANDROIDAPP)
+
+  ManagementCanInstallReplacementAndroidAppFunction();
+
+ protected:
+  ~ManagementCanInstallReplacementAndroidAppFunction() override;
+
+  ResponseAction Run() override;
+
+ private:
+  void OnFinishedAndroidAppCheck(bool result);
+};
+
+class ManagementInstallReplacementAndroidAppFunction
+    : public ExtensionFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("management.installReplacementAndroidApp",
+                             MANAGEMENT_INSTALLREPLACEMENTANDROIDAPP)
+
+  ManagementInstallReplacementAndroidAppFunction();
+
+ protected:
+  ~ManagementInstallReplacementAndroidAppFunction() override;
+
+  ResponseAction Run() override;
+
+ private:
+  void OnAppInstallInitiated(bool installable);
+};
+
+class ManagementInstallReplacementWebAppFunction : public ExtensionFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("management.installReplacementWebApp",
+                             MANAGEMENT_INSTALLREPLACEMENTWEBAPP)
+
+  ManagementInstallReplacementWebAppFunction();
+
+ protected:
+  ~ManagementInstallReplacementWebAppFunction() override;
+
+  ResponseAction Run() override;
+
+ private:
+  void FinishResponse(
+      ManagementAPIDelegate::InstallOrLaunchWebAppResult result);
 };
 
 class ManagementEventRouter : public ExtensionRegistryObserver {
@@ -241,7 +292,7 @@ class ManagementEventRouter : public ExtensionRegistryObserver {
   content::BrowserContext* browser_context_;
 
   ScopedObserver<ExtensionRegistry, ExtensionRegistryObserver>
-      extension_registry_observer_;
+      extension_registry_observer_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ManagementEventRouter);
 };

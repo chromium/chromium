@@ -33,6 +33,7 @@ struct SamplerState {
   GLenum compare_mode;
   GLfloat max_lod;
   GLfloat min_lod;
+  GLfloat max_anisotropy_ext;
 };
 
 class GPU_GLES2_EXPORT Sampler : public base::RefCounted<Sampler> {

@@ -30,15 +30,12 @@ class USB_MIDI_EXPORT UsbMidiDeviceFactoryAndroid
 
   void OnUsbMidiDeviceRequestDone(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& caller,
       const base::android::JavaParamRef<jobjectArray>& devices);
   void OnUsbMidiDeviceAttached(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& caller,
       const base::android::JavaParamRef<jobject>& device);
   void OnUsbMidiDeviceDetached(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& caller,
       jint index);
 
  private:

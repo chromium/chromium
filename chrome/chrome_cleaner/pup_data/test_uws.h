@@ -9,8 +9,9 @@
 
 namespace chrome_cleaner {
 
-extern const UwSId kGoogleTestAUwSID;
-extern const UwSId kGoogleTestBUwSID;
+constexpr UwSId kGoogleTestAUwSID = 341;
+constexpr UwSId kGoogleTestBUwSID = 342;
+constexpr UwSId kGoogleTestCUwSID = 343;
 
 extern const char kGoogleTestAUwEID[];
 extern const char kGoogleTestBUwEID[];

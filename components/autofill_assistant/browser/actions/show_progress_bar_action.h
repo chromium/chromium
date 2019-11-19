@@ -14,13 +14,13 @@ namespace autofill_assistant {
 // An action to show the current progress.
 class ShowProgressBarAction : public Action {
  public:
-  explicit ShowProgressBarAction(const ActionProto& proto);
+  explicit ShowProgressBarAction(ActionDelegate* delegate,
+                                 const ActionProto& proto);
   ~ShowProgressBarAction() override;
 
  private:
   // Overrides Action:
-  void InternalProcessAction(ActionDelegate* delegate,
-                             ProcessActionCallback callback) override;
+  void InternalProcessAction(ProcessActionCallback callback) override;
 
   DISALLOW_COPY_AND_ASSIGN(ShowProgressBarAction);
 };

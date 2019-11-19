@@ -10,12 +10,11 @@
 #include "content/public/browser/browser_context.h"
 #include "extensions/browser/api/idle/idle_api_constants.h"
 #include "extensions/browser/event_router.h"
-#include "extensions/browser/extension_registry.h"
 #include "extensions/common/api/idle.h"
 #include "extensions/common/extension.h"
 
 #if defined(OS_CHROMEOS)
-#include "chromeos/dbus/power_policy_controller.h"
+#include "chromeos/dbus/power/power_policy_controller.h"
 #endif
 
 namespace keys = extensions::idle_api_constants;
@@ -124,8 +123,7 @@ IdleManager::IdleManager(content::BrowserContext* context)
     : context_(context),
       last_state_(ui::IDLE_STATE_ACTIVE),
       idle_time_provider_(new DefaultIdleProvider()),
-      event_delegate_(new DefaultEventDelegate(context)),
-      extension_registry_observer_(this) {}
+      event_delegate_(new DefaultEventDelegate(context)) {}
 
 IdleManager::~IdleManager() {
 }

@@ -28,9 +28,9 @@ namespace extensions {
 
 namespace {
 
-void CallbackWrapper(const base::Callback<void(bool)>& callback,
+void CallbackWrapper(base::OnceCallback<void(bool)> callback,
                      ContentSetting status) {
-  callback.Run(status == CONTENT_SETTING_ALLOW);
+  std::move(callback).Run(status == CONTENT_SETTING_ALLOW);
 }
 
 }  // anonymous namespace
@@ -38,8 +38,7 @@ void CallbackWrapper(const base::Callback<void(bool)>& callback,
 ChromeWebViewPermissionHelperDelegate::ChromeWebViewPermissionHelperDelegate(
     WebViewPermissionHelper* web_view_permission_helper)
     : WebViewPermissionHelperDelegate(web_view_permission_helper),
-      plugin_auth_host_bindings_(web_contents(), this),
-      weak_factory_(this) {}
+      plugin_auth_host_bindings_(web_contents(), this) {}
 
 ChromeWebViewPermissionHelperDelegate::~ChromeWebViewPermissionHelperDelegate()
 {}
@@ -95,24 +94,22 @@ void ChromeWebViewPermissionHelperDelegate::OnOpenPDF(const GURL& url) {
 void ChromeWebViewPermissionHelperDelegate::CanDownload(
     const GURL& url,
     const std::string& request_method,
-    const base::Callback<void(bool)>& callback) {
+    base::OnceCallback<void(bool)> callback) {
   base::DictionaryValue request_info;
   request_info.SetString(guest_view::kUrl, url.spec());
   web_view_permission_helper()->RequestPermission(
-      WEB_VIEW_PERMISSION_TYPE_DOWNLOAD,
-      request_info,
-      base::Bind(
+      WEB_VIEW_PERMISSION_TYPE_DOWNLOAD, request_info,
+      base::BindOnce(
           &ChromeWebViewPermissionHelperDelegate::OnDownloadPermissionResponse,
-          weak_factory_.GetWeakPtr(),
-          callback),
+          weak_factory_.GetWeakPtr(), std::move(callback)),
       false /* allowed_by_default */);
 }
 
 void ChromeWebViewPermissionHelperDelegate::OnDownloadPermissionResponse(
-    const base::Callback<void(bool)>& callback,
+    base::OnceCallback<void(bool)> callback,
     bool allow,
     const std::string& user_input) {
-  callback.Run(allow && web_view_guest()->attached());
+  std::move(callback).Run(allow && web_view_guest()->attached());
 }
 
 void ChromeWebViewPermissionHelperDelegate::RequestPointerLockPermission(
@@ -147,7 +144,7 @@ void ChromeWebViewPermissionHelperDelegate::RequestGeolocationPermission(
     int bridge_id,
     const GURL& requesting_frame,
     bool user_gesture,
-    const base::Callback<void(bool)>& callback) {
+    base::OnceCallback<void(bool)> callback) {
   base::DictionaryValue request_info;
   request_info.SetString(guest_view::kUrl, requesting_frame.spec());
   request_info.SetBoolean(guest_view::kUserGesture, user_gesture);
@@ -159,7 +156,7 @@ void ChromeWebViewPermissionHelperDelegate::RequestGeolocationPermission(
       base::BindOnce(&ChromeWebViewPermissionHelperDelegate::
                          OnGeolocationPermissionResponse,
                      weak_factory_.GetWeakPtr(), bridge_id, user_gesture,
-                     base::Bind(&CallbackWrapper, callback));
+                     base::BindOnce(&CallbackWrapper, std::move(callback)));
   int request_id = web_view_permission_helper()->RequestPermission(
       WEB_VIEW_PERMISSION_TYPE_GEOLOCATION, request_info,
       std::move(permission_callback), false /* allowed_by_default */);
@@ -169,7 +166,7 @@ void ChromeWebViewPermissionHelperDelegate::RequestGeolocationPermission(
 void ChromeWebViewPermissionHelperDelegate::OnGeolocationPermissionResponse(
     int bridge_id,
     bool user_gesture,
-    const base::Callback<void(ContentSetting)>& callback,
+    base::OnceCallback<void(ContentSetting)> callback,
     bool allow,
     const std::string& user_input) {
   // The <webview> embedder has allowed the permission. We now need to make sure
@@ -177,7 +174,7 @@ void ChromeWebViewPermissionHelperDelegate::OnGeolocationPermissionResponse(
   RemoveBridgeID(bridge_id);
 
   if (!allow || !web_view_guest()->attached()) {
-    callback.Run(CONTENT_SETTING_BLOCK);
+    std::move(callback).Run(CONTENT_SETTING_BLOCK);
     return;
   }
 
@@ -198,13 +195,12 @@ void ChromeWebViewPermissionHelperDelegate::OnGeolocationPermissionResponse(
   Profile* profile = Profile::FromBrowserContext(
       web_view_guest()->browser_context());
   PermissionManager::Get(profile)->RequestPermission(
-      CONTENT_SETTINGS_TYPE_GEOLOCATION, web_contents->GetMainFrame(),
+      ContentSettingsType::GEOLOCATION, web_contents->GetMainFrame(),
       web_view_guest()
           ->embedder_web_contents()
           ->GetLastCommittedURL()
           .GetOrigin(),
-      user_gesture,
-      callback);
+      user_gesture, std::move(callback));
 }
 
 void ChromeWebViewPermissionHelperDelegate::CancelGeolocationPermissionRequest(
@@ -226,58 +222,22 @@ int ChromeWebViewPermissionHelperDelegate::RemoveBridgeID(int bridge_id) {
 void ChromeWebViewPermissionHelperDelegate::RequestFileSystemPermission(
     const GURL& url,
     bool allowed_by_default,
-    const base::Callback<void(bool)>& callback) {
+    base::OnceCallback<void(bool)> callback) {
   base::DictionaryValue request_info;
   request_info.SetString(guest_view::kUrl, url.spec());
   web_view_permission_helper()->RequestPermission(
-      WEB_VIEW_PERMISSION_TYPE_FILESYSTEM,
-      request_info,
-      base::Bind(&ChromeWebViewPermissionHelperDelegate::
-                     OnFileSystemPermissionResponse,
-                 weak_factory_.GetWeakPtr(),
-                 callback),
+      WEB_VIEW_PERMISSION_TYPE_FILESYSTEM, request_info,
+      base::BindOnce(&ChromeWebViewPermissionHelperDelegate::
+                         OnFileSystemPermissionResponse,
+                     weak_factory_.GetWeakPtr(), std::move(callback)),
       allowed_by_default);
 }
 
 void ChromeWebViewPermissionHelperDelegate::OnFileSystemPermissionResponse(
-    const base::Callback<void(bool)>& callback,
+    base::OnceCallback<void(bool)> callback,
     bool allow,
     const std::string& user_input) {
-  callback.Run(allow && web_view_guest()->attached());
-}
-
-void ChromeWebViewPermissionHelperDelegate::FileSystemAccessedAsync(
-    int render_process_id,
-    int render_frame_id,
-    int request_id,
-    const GURL& url,
-    bool blocked_by_policy) {
-  RequestFileSystemPermission(
-      url,
-      !blocked_by_policy,
-      base::Bind(&ChromeWebViewPermissionHelperDelegate::
-                     FileSystemAccessedAsyncResponse,
-                 weak_factory_.GetWeakPtr(),
-                 render_process_id,
-                 render_frame_id,
-                 request_id,
-                 url));
-}
-
-void ChromeWebViewPermissionHelperDelegate::FileSystemAccessedAsyncResponse(
-    int render_process_id,
-    int render_frame_id,
-    int request_id,
-    const GURL& url,
-    bool allowed) {
-  TabSpecificContentSettings::FileSystemAccessed(
-      render_process_id, render_frame_id, url, !allowed);
-  content::RenderFrameHost* rfh =
-      content::RenderFrameHost::FromID(render_process_id, render_frame_id);
-  if (rfh) {
-    rfh->Send(new ChromeViewMsg_RequestFileSystemAccessAsyncResponse(
-        render_frame_id, request_id, allowed));
-  }
+  std::move(callback).Run(allow && web_view_guest()->attached());
 }
 
 }  // namespace extensions

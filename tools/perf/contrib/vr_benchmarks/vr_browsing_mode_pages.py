@@ -8,11 +8,44 @@ from telemetry import page
 from telemetry import story
 from telemetry.page import shared_page_state
 from devil.android.sdk import intent  # pylint: disable=import-error
-from contrib.vr_benchmarks import shared_android_vr_page_state as vr_state
+from contrib.vr_benchmarks import shared_vr_page_state as vr_state
 from contrib.vr_benchmarks.vr_sample_page import VrSamplePage
 from contrib.vr_benchmarks.vr_story_set import VrStorySet
-from page_sets import top_10_mobile
 from page_sets import key_mobile_sites_smooth as smooth_sites
+
+
+# List of URLs taken from the legacy memory.top_10_mobile benchmark.
+URL_LIST = [
+    # Why: #1 (Alexa) most visited page worldwide, picked a reasonable
+    # search term
+    'https://www.google.co.uk/#hl=en&q=science',
+    # Why: #2 (Alexa) most visited page worldwide, picked the most liked
+    # page
+    'https://m.facebook.com/rihanna',
+    # Why: #3 (Alexa) most visited page worldwide, picked a reasonable
+    # search term
+    'http://m.youtube.com/results?q=science',
+    # Why: #4 (Alexa) most visited page worldwide, picked a reasonable search
+    # term
+    'http://search.yahoo.com/search;_ylt=?p=google',
+    # Why: #5 (Alexa) most visited page worldwide, picked a reasonable search
+    # term
+    'http://www.baidu.com/s?word=google',
+    # Why: #6 (Alexa) most visited page worldwide, picked a reasonable page
+    'http://en.m.wikipedia.org/wiki/Science',
+    # Why: #10 (Alexa) most visited page worldwide, picked the most followed
+    # user
+    'https://mobile.twitter.com/justinbieber?skip_interstitial=true',
+    # Why: #11 (Alexa) most visited page worldwide, picked a reasonable
+    # page
+    'http://www.amazon.com/gp/aw/s/?k=nexus',
+    # Why: #13 (Alexa) most visited page worldwide, picked the first real
+    # page
+    'http://m.intl.taobao.com/group-purchase.html',
+    # Why: #18 (Alexa) most visited page worldwide, picked a reasonable
+    # search term
+    'http://yandex.ru/touchsearch?text=science',
+]
 
 
 def _EnterVrViaNfc(current_page, action_runner):
@@ -72,7 +105,7 @@ class VrBrowsingModeWprPage(page.Page):
         page_set=page_set,
         name=name,
         extra_browser_args=extra_browser_args,
-        shared_page_state_class=vr_state.SharedAndroidVrPageState)
+        shared_page_state_class=vr_state.AndroidSharedVrPageState)
     self._shared_page_state = None
 
   def RunPageInteractions(self, action_runner):
@@ -97,18 +130,15 @@ class VrBrowsingModePageSet(VrStorySet):
 
 
 class VrBrowsingModeWprPageSet(VrStorySet):
-  """Pageset for VR browsing mode on WPR recordings of live sites.
-
-  Re-uses the URL list and WPR archive from the memory.top_10_mobile benchmark.
-  """
+  """Pageset for VR browsing mode on WPR recordings of live sites."""
 
   def __init__(self, use_fake_pose_tracker=True):
     super(VrBrowsingModeWprPageSet, self).__init__(
-        archive_data_file='../../page_sets/data/memory_top_10_mobile.json',
+        archive_data_file='data/memory_top_10_mobile.json',
         cloud_storage_bucket=story.PARTNER_BUCKET,
         use_fake_pose_tracker=use_fake_pose_tracker)
 
-    for url in top_10_mobile.URL_LIST:
+    for url in URL_LIST:
       name = re.sub(r'\W+', '_', url)
       self.AddStory(VrBrowsingModeWprPage(self, url, name))
 

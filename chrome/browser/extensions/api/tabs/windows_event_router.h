@@ -12,6 +12,7 @@
 #include "base/macros.h"
 #include "base/scoped_observer.h"
 #include "build/build_config.h"
+#include "chrome/browser/extensions/window_controller_list.h"
 #include "chrome/browser/extensions/window_controller_list_observer.h"
 #include "content/public/browser/notification_observer.h"
 #include "content/public/browser/notification_registrar.h"
@@ -32,7 +33,6 @@ namespace extensions {
 
 class AppWindow;
 class AppWindowController;
-class WindowControllerList;
 
 // The WindowsEventRouter sends chrome.windows.* events to listeners
 // inside extension process renderers. The router listens to *all* events,
@@ -97,11 +97,11 @@ class WindowsEventRouter : public AppWindowRegistry::Observer,
 
   // Observed AppWindowRegistry.
   ScopedObserver<AppWindowRegistry, AppWindowRegistry::Observer>
-      observed_app_registry_;
+      observed_app_registry_{this};
 
   // Observed WindowControllerList.
   ScopedObserver<WindowControllerList, WindowControllerListObserver>
-      observed_controller_list_;
+      observed_controller_list_{this};
 
   DISALLOW_COPY_AND_ASSIGN(WindowsEventRouter);
 };

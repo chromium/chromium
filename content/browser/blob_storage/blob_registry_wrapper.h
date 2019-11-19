@@ -31,7 +31,8 @@ class BlobRegistryWrapper
       scoped_refptr<ChromeBlobStorageContext> blob_storage_context,
       scoped_refptr<storage::FileSystemContext> file_system_context);
 
-  void Bind(int process_id, blink::mojom::BlobRegistryRequest request);
+  void Bind(int process_id,
+            mojo::PendingReceiver<blink::mojom::BlobRegistry> receiver);
 
  private:
   BlobRegistryWrapper();

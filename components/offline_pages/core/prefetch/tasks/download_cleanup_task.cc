@@ -151,8 +151,7 @@ DownloadCleanupTask::DownloadCleanupTask(
     : prefetch_dispatcher_(prefetch_dispatcher),
       prefetch_store_(prefetch_store),
       outstanding_download_ids_(outstanding_download_ids),
-      success_downloads_(success_downloads),
-      weak_ptr_factory_(this) {}
+      success_downloads_(success_downloads) {}
 
 DownloadCleanupTask::~DownloadCleanupTask() {}
 

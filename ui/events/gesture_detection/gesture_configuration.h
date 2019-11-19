@@ -158,6 +158,13 @@ class GESTURE_DETECTION_EXPORT GestureConfiguration {
   int set_show_press_delay_in_ms(int val) {
     return show_press_delay_in_ms_ = val;
   }
+  bool single_pointer_cancel_enabled() const {
+    return single_pointer_cancel_enabled_;
+  }
+  void set_single_pointer_cancel_enabled(bool enabled) {
+    single_pointer_cancel_enabled_ = enabled;
+  }
+
   float span_slop() const { return span_slop_; }
   bool swipe_enabled() const { return swipe_enabled_; }
   void set_swipe_enabled(bool val) { swipe_enabled_ = val; }
@@ -244,6 +251,9 @@ class GESTURE_DETECTION_EXPORT GestureConfiguration {
   int scroll_debounce_interval_in_ms_;
   int semi_long_press_time_in_ms_;
   int show_press_delay_in_ms_;
+  // When enabled, a cancel action affects only the corresponding pointer (vs
+  // all pointers active at that time).
+  bool single_pointer_cancel_enabled_;
   float span_slop_;
   bool swipe_enabled_;
   bool two_finger_tap_enabled_;

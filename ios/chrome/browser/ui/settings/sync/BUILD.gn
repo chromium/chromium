@@ -11,8 +11,6 @@ source_set("sync") {
     "sync_encryption_passphrase_table_view_controller.mm",
     "sync_encryption_table_view_controller.h",
     "sync_encryption_table_view_controller.mm",
-    "sync_settings_table_view_controller.h",
-    "sync_settings_table_view_controller.mm",
   ]
   deps = [
     "//base",
@@ -20,8 +18,10 @@ source_set("sync") {
     "//components/browser_sync",
     "//components/google/core/common",
     "//components/prefs",
+    "//components/signin/public/identity_manager/objc",
     "//components/strings",
     "//components/sync",
+    "//components/unified_consent",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser",
     "//ios/chrome/browser",
@@ -44,9 +44,9 @@ source_set("sync") {
     "//ios/chrome/browser/ui/table_view",
     "//ios/chrome/browser/ui/table_view/cells",
     "//ios/chrome/browser/ui/util",
+    "//ios/chrome/common/colors",
     "//ios/public/provider/chrome/browser",
     "//ios/public/provider/chrome/browser/signin",
-    "//services/identity/public/objc",
     "//ui/base",
     "//url",
   ]
@@ -59,16 +59,14 @@ source_set("unit_tests") {
     "sync_create_passphrase_table_view_controller_unittest.mm",
     "sync_encryption_passphrase_table_view_controller_unittest.mm",
     "sync_encryption_table_view_controller_unittest.mm",
-    "sync_settings_table_view_controller_unittest.mm",
   ]
   deps = [
     ":sync",
     "//base/test:test_support",
-    "//base/test:test_support",
     "//components/autofill/core/common",
-    "//components/browser_sync:test_support",
     "//components/google/core/common",
     "//components/strings",
+    "//components/sync:test_support",
     "//components/sync_preferences",
     "//components/sync_preferences:test_support",
     "//components/unified_consent",

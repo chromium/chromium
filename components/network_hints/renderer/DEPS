@@ -1,5 +1,6 @@
 include_rules = [
   "+components/network_hints/common",
   "+content/public/renderer",
+  "+mojo",
   "+third_party/blink/public",
 ]

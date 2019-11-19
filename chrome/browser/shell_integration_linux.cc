@@ -36,6 +36,7 @@
 #include "base/threading/scoped_blocking_call.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_restrictions.h"
+#include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/browser/shell_integration.h"
 #include "chrome/common/buildflags.h"
@@ -117,7 +118,7 @@ bool SetDefaultWebClient(const std::string& protocol) {
     argv.push_back(kXdgSettingsDefaultSchemeHandler);
     argv.push_back(protocol);
   }
-  argv.push_back(GetDesktopName(env.get()));
+  argv.push_back(chrome::GetDesktopName(env.get()));
 
   int exit_code;
   bool ran_ok = LaunchXdgUtility(argv, &exit_code);
@@ -153,7 +154,7 @@ shell_integration::DefaultWebClientState GetIsDefaultWebClient(
     argv.push_back(kXdgSettingsDefaultSchemeHandler);
     argv.push_back(protocol);
   }
-  argv.push_back(GetDesktopName(env.get()));
+  argv.push_back(chrome::GetDesktopName(env.get()));
 
   std::string reply;
   int success_code;
@@ -246,15 +247,6 @@ std::string QuoteCommandLineForDesktopFileExec(
 #if defined(USE_GLIB)
 const char kDesktopEntry[] = "Desktop Entry";
 const char kXdgOpenShebang[] = "#!/usr/bin/env xdg-open";
-#endif
-
-// TODO(loyso): shell_integraion_linux.cc won't compile with app_list disabled?
-#if BUILDFLAG(ENABLE_APP_LIST)
-#if defined(GOOGLE_CHROME_BUILD)
-const char kAppListDesktopName[] = "chrome-app-list";
-#else  // CHROMIUM_BUILD
-const char kAppListDesktopName[] = "chromium-app-list";
-#endif
 #endif
 
 }  // namespace
@@ -406,41 +398,19 @@ std::string GetProgramClassClass(const base::CommandLine& command_line,
 std::string GetProgramClassName() {
   std::unique_ptr<base::Environment> env(base::Environment::Create());
   return internal::GetProgramClassName(*base::CommandLine::ForCurrentProcess(),
-                                       GetDesktopName(env.get()));
+                                       chrome::GetDesktopName(env.get()));
 }
 
 std::string GetProgramClassClass() {
   std::unique_ptr<base::Environment> env(base::Environment::Create());
   return internal::GetProgramClassClass(*base::CommandLine::ForCurrentProcess(),
-                                        GetDesktopName(env.get()));
-}
-
-std::string GetDesktopName(base::Environment* env) {
-#if defined(GOOGLE_CHROME_BUILD)
-  version_info::Channel product_channel(chrome::GetChannel());
-  switch (product_channel) {
-    case version_info::Channel::DEV:
-      return "google-chrome-unstable.desktop";
-    case version_info::Channel::BETA:
-      return "google-chrome-beta.desktop";
-    default:
-      return "google-chrome.desktop";
-  }
-#else  // CHROMIUM_BUILD
-  // Allow $CHROME_DESKTOP to override the built-in value, so that development
-  // versions can set themselves as the default without interfering with
-  // non-official, packaged versions using the built-in value.
-  std::string name;
-  if (env->GetVar("CHROME_DESKTOP", &name) && !name.empty())
-    return name;
-  return "chromium-browser.desktop";
-#endif
+                                        chrome::GetDesktopName(env.get()));
 }
 
 std::string GetIconName() {
-#if defined(GOOGLE_CHROME_BUILD)
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   return "google-chrome";
-#else  // CHROMIUM_BUILD
+#else  // BUILDFLAG(CHROMIUM_BRANDING)
   return "chromium-browser";
 #endif
 }
@@ -518,21 +488,22 @@ std::vector<base::FilePath> GetExistingProfileShortcutFilenames(
   return shortcut_paths;
 }
 
-std::string GetDesktopFileContents(
-    const base::FilePath& chrome_exe_path,
-    const std::string& app_name,
-    const GURL& url,
-    const std::string& extension_id,
-    const base::string16& title,
-    const std::string& icon_name,
-    const base::FilePath& profile_path,
-    const std::string& categories,
-    bool no_display) {
+std::string GetDesktopFileContents(const base::FilePath& chrome_exe_path,
+                                   const std::string& app_name,
+                                   const GURL& url,
+                                   const std::string& extension_id,
+                                   const base::string16& title,
+                                   const std::string& icon_name,
+                                   const base::FilePath& profile_path,
+                                   const std::string& categories,
+                                   const std::string& mime_type,
+                                   bool no_display) {
   base::CommandLine cmd_line = shell_integration::CommandLineArgsForLauncher(
       url, extension_id, profile_path);
   cmd_line.SetProgram(chrome_exe_path);
   return GetDesktopFileContentsForCommand(cmd_line, app_name, url, title,
-                                          icon_name, categories, no_display);
+                                          icon_name, categories, mime_type,
+                                          no_display);
 }
 
 std::string GetDesktopFileContentsForCommand(
@@ -542,6 +513,7 @@ std::string GetDesktopFileContentsForCommand(
     const base::string16& title,
     const std::string& icon_name,
     const std::string& categories,
+    const std::string& mime_type,
     bool no_display) {
 #if defined(USE_GLIB)
   // Although not required by the spec, Nautilus on Ubuntu Karmic creates its
@@ -584,6 +556,13 @@ std::string GetDesktopFileContentsForCommand(
   if (!categories.empty()) {
     g_key_file_set_string(
         key_file, kDesktopEntry, "Categories", categories.c_str());
+  }
+
+  // Set the "MimeType" key.
+  if (!mime_type.empty() && mime_type.find("\n") == std::string::npos &&
+      mime_type.find("\r") == std::string::npos) {
+    g_key_file_set_string(key_file, kDesktopEntry, "MimeType",
+                          mime_type.c_str());
   }
 
   // Set the "NoDisplay" key.
@@ -655,49 +634,6 @@ std::string GetDirectoryFileContents(const base::string16& title,
   return std::string();
 #endif
 }
-
-#if BUILDFLAG(ENABLE_APP_LIST)
-bool CreateAppListDesktopShortcut(
-    const std::string& wm_class,
-    const std::string& title) {
-  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
-                                                base::BlockingType::MAY_BLOCK);
-
-  base::FilePath desktop_name(kAppListDesktopName);
-  base::FilePath shortcut_filename = desktop_name.AddExtension("desktop");
-
-  // We do not want duplicate shortcuts. Delete any that already exist and
-  // replace them.
-  DeleteShortcutInApplicationsMenu(shortcut_filename, base::FilePath());
-
-  base::FilePath chrome_exe_path = GetChromeExePath();
-  if (chrome_exe_path.empty()) {
-    NOTREACHED();
-    return false;
-  }
-
-  gfx::ImageFamily icon_images;
-  ui::ResourceBundle& resource_bundle = ui::ResourceBundle::GetSharedInstance();
-  icon_images.Add(*resource_bundle.GetImageSkiaNamed(IDR_APP_LIST_16));
-  icon_images.Add(*resource_bundle.GetImageSkiaNamed(IDR_APP_LIST_32));
-  icon_images.Add(*resource_bundle.GetImageSkiaNamed(IDR_APP_LIST_48));
-  icon_images.Add(*resource_bundle.GetImageSkiaNamed(IDR_APP_LIST_256));
-  std::string icon_name = CreateShortcutIcon(icon_images, desktop_name);
-
-  base::CommandLine command_line(chrome_exe_path);
-  command_line.AppendSwitch(switches::kShowAppList);
-  std::string contents =
-      GetDesktopFileContentsForCommand(command_line,
-                                       wm_class,
-                                       GURL(),
-                                       base::UTF8ToUTF16(title),
-                                       icon_name,
-                                       kAppListCategories,
-                                       false);
-  return CreateShortcutInApplicationsMenu(
-      shortcut_filename, contents, base::FilePath(), "");
-}
-#endif
 
 }  // namespace shell_integration_linux
 

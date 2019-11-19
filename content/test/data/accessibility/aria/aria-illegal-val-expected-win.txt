@@ -5,9 +5,9 @@ ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE
 ++ROLE_SYSTEM_OUTLINEITEM name='Checked illegal' CHECKED IA2_STATE_CHECKABLE checkable:true
 ++IA2_ROLE_SECTION name='Current illegal' current:true
 ++IA2_ROLE_SECTION name='Disabled illegal' UNAVAILABLE
-++IA2_ROLE_SECTION name='Dropeffect illegal' dropeffect:X-ILLEGAL
+++IA2_ROLE_SECTION name='Dropeffect illegal' dropeffect:none
 ++ROLE_SYSTEM_OUTLINEITEM name='Expanded illegal' EXPANDED
-++IA2_ROLE_SECTION name='Grabbed illegal' grabbed:X-ILLEGAL
+++IA2_ROLE_SECTION name='Grabbed illegal'
 ++ROLE_SYSTEM_BUTTONMENU name='Haspopup illegal' HASPOPUP haspopup:menu
 ++IA2_ROLE_SECTION name='Invalid illegal' IA2_STATE_INVALID_ENTRY
 ++ROLE_SYSTEM_CLIENT name='Live illegal' live:X-ILLEGAL relevant:additions text atomic:false

@@ -69,22 +69,8 @@ class TestDelegate : public PasswordsPrivateDelegate {
   }
   ~TestDelegate() override {}
 
-  void SendSavedPasswordsList() override {
-    PasswordsPrivateEventRouter* router =
-        PasswordsPrivateEventRouterFactory::GetForProfile(profile_);
-    if (router)
-      router->OnSavedPasswordsListChanged(current_entries_);
-  }
-
   void GetSavedPasswordsList(UiEntriesCallback callback) override {
     std::move(callback).Run(current_entries_);
-  }
-
-  void SendPasswordExceptionsList() override {
-    PasswordsPrivateEventRouter* router =
-        PasswordsPrivateEventRouterFactory::GetForProfile(profile_);
-    if (router)
-      router->OnPasswordExceptionsListChanged(current_exceptions_);
   }
 
   void GetPasswordExceptionsList(
@@ -181,6 +167,20 @@ class TestDelegate : public PasswordsPrivateDelegate {
   bool cancelExportPasswordsTriggered = false;
 
  private:
+  void SendSavedPasswordsList() {
+    PasswordsPrivateEventRouter* router =
+        PasswordsPrivateEventRouterFactory::GetForProfile(profile_);
+    if (router)
+      router->OnSavedPasswordsListChanged(current_entries_);
+  }
+
+  void SendPasswordExceptionsList() {
+    PasswordsPrivateEventRouter* router =
+        PasswordsPrivateEventRouterFactory::GetForProfile(profile_);
+    if (router)
+      router->OnPasswordExceptionsListChanged(current_exceptions_);
+  }
+
   // The current list of entries/exceptions. Cached here so that when new
   // observers are added, this delegate can send the current lists without
   // having to request them from |password_manager_presenter_| again.

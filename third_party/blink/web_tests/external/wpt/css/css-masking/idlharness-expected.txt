@@ -1,5 +1,14 @@
 This is a testharness.js-based test.
 PASS idl_test setup
+PASS idl_test validation
+PASS SVGElement includes GlobalEventHandlers: member names are unique
+PASS SVGElement includes DocumentAndElementEventHandlers: member names are unique
+PASS SVGElement includes SVGElementInstance: member names are unique
+PASS SVGElement includes HTMLOrSVGElement: member names are unique
+PASS Element includes ParentNode: member names are unique
+PASS Element includes NonDocumentTypeChildNode: member names are unique
+PASS Element includes ChildNode: member names are unique
+PASS Element includes Slotable: member names are unique
 FAIL SVGClipPathElement interface: existence and properties of interface object assert_equals: prototype of SVGClipPathElement is not SVGElement expected function "function SVGElement() { [native code] }" but got function "function SVGGraphicsElement() { [native code] }"
 PASS SVGClipPathElement interface object length
 PASS SVGClipPathElement interface object name

@@ -1,0 +1,18 @@
+{
+  "distribution":{
+     "make_chrome_default":true,
+     "system_level":true,
+     "multi_install":true,
+     "verbose_logging":true,
+     "chrome":true,
+     "require_eula":false,
+     "skip_first_run_ui":true,
+     "import_bookmarks":false,
+     "show_welcome_page":true,
+     "import_search_engine":false,
+     "import_history":false,
+     "alternate_shortcut_text":false,
+     "create_all_shortcuts":true,
+     "do_not_launch_chrome":true
+  }
+}

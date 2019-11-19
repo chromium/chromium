@@ -72,7 +72,7 @@ IN_PROC_BROWSER_TEST_F(UsingRealWebcam_WebRtcWebcamBrowserTest,
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url(embedded_test_server()->GetURL(
       "/media/getusermedia-real-webcam.html"));
-  NavigateToURL(shell(), url);
+  EXPECT_TRUE(NavigateToURL(shell(), url));
 
   if (!IsWebcamAvailableOnSystem(shell()->web_contents())) {
     DVLOG(0) << "No video device; skipping test...";

@@ -18,7 +18,10 @@ Polymer({
 
   properties: {
     /** @private {string} */
-    newWordValue_: String,
+    newWordValue_: {
+      type: String,
+      value: '',
+    },
 
     /**
      * Needed by GlobalScrollTargetBehavior.
@@ -66,33 +69,81 @@ Polymer({
   },
 
   /**
+   * Adds the word in the new-word input to the dictionary.
+   * @private
+   */
+  addWordFromInput_: function() {
+    // Spaces are allowed, but removing leading and trailing whitespace.
+    const word = this.getTrimmedNewWord_();
+    this.newWordValue_ = '';
+    if (word) {
+      this.languageSettingsPrivate.addSpellcheckWord(word);
+    }
+  },
+
+  /**
    * Check if the field is empty or invalid.
-   * @param {string} word
    * @return {boolean}
    * @private
    */
-  disableAddButton_: function(word) {
-    return word.trim().length == 0 || this.isWordInvalid_(word);
+  disableAddButton_: function() {
+    return this.getTrimmedNewWord_().length == 0 || this.isWordInvalid_();
+  },
+
+  /**
+   * @return {string}
+   * @private
+   */
+  getErrorMessage_: function() {
+    if (this.newWordIsTooLong_()) {
+      return loadTimeData.getString('addDictionaryWordLengthError');
+    }
+    if (this.newWordAlreadyAdded_()) {
+      return loadTimeData.getString('addDictionaryWordDuplicateError');
+    }
+    return '';
+  },
+
+  /**
+   * @return {string}
+   * @private
+   */
+  getTrimmedNewWord_: function() {
+    return this.newWordValue_.trim();
   },
 
   /**
    * If the word is invalid, returns true (or a message if one is provided).
    * Otherwise returns false.
-   * @param {string} word
-   * @param {string} duplicateError
-   * @param {string} lengthError
-   * @return {string|boolean}
+   * @return {boolean}
    * @private
    */
-  isWordInvalid_: function(word, duplicateError, lengthError) {
-    const trimmedWord = word.trim();
-    if (this.words_.indexOf(trimmedWord) != -1) {
-      return duplicateError || true;
-    } else if (trimmedWord.length > MAX_CUSTOM_DICTIONARY_WORD_BYTES) {
-      return lengthError || true;
-    }
+  isWordInvalid_: function() {
+    return this.newWordAlreadyAdded_() || this.newWordIsTooLong_();
+  },
 
-    return false;
+  /**
+   * @return {boolean}
+   * @private
+   */
+  newWordAlreadyAdded_: function() {
+    return this.words_.includes(this.getTrimmedNewWord_());
+  },
+
+  /**
+   * @return {boolean}
+   * @private
+   */
+  newWordIsTooLong_: function() {
+    return this.getTrimmedNewWord_().length > MAX_CUSTOM_DICTIONARY_WORD_BYTES;
+  },
+
+  /**
+   * Handles tapping on the Add Word button.
+   */
+  onAddWordTap_: function(e) {
+    this.addWordFromInput_();
+    this.$.newWord.focus();
   },
 
   /**
@@ -120,7 +171,7 @@ Polymer({
     }
 
     for (const word of added) {
-      if (this.words_.indexOf(word) == -1) {
+      if (!this.words_.includes(word)) {
         this.unshift('words_', word);
       }
     }
@@ -141,20 +192,11 @@ Polymer({
    * @param {!CustomEvent<!{key: string}>} e
    */
   onKeysPress_: function(e) {
-    if (e.detail.key == 'enter' &&
-        !this.disableAddButton_(this.newWordValue_)) {
+    if (e.detail.key == 'enter' && !this.disableAddButton_()) {
       this.addWordFromInput_();
     } else if (e.detail.key == 'esc') {
       e.detail.keyboardEvent.target.value = '';
     }
-  },
-
-  /**
-   * Handles tapping on the Add Word button.
-   */
-  onAddWordTap_: function(e) {
-    this.addWordFromInput_();
-    this.$.newWord.focus();
   },
 
   /**
@@ -163,19 +205,5 @@ Polymer({
    */
   onRemoveWordTap_: function(e) {
     this.languageSettingsPrivate.removeSpellcheckWord(e.model.item);
-  },
-
-  /**
-   * Adds the word in the new-word input to the dictionary.
-   */
-  addWordFromInput_: function() {
-    // Spaces are allowed, but removing leading and trailing whitespace.
-    const word = this.newWordValue_.trim();
-    this.newWordValue_ = '';
-    if (!word) {
-      return;
-    }
-
-    this.languageSettingsPrivate.addSpellcheckWord(word);
   },
 });

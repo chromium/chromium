@@ -5,8 +5,12 @@
 #ifndef CHROMEOS_SERVICES_DEVICE_SYNC_FAKE_CRYPTAUTH_GCM_MANAGER_H_
 #define CHROMEOS_SERVICES_DEVICE_SYNC_FAKE_CRYPTAUTH_GCM_MANAGER_H_
 
+#include <string>
+
 #include "base/macros.h"
 #include "base/observer_list.h"
+#include "base/optional.h"
+#include "chromeos/services/device_sync/cryptauth_feature_type.h"
 #include "chromeos/services/device_sync/cryptauth_gcm_manager.h"
 
 namespace chromeos {
@@ -37,10 +41,14 @@ class FakeCryptAuthGCMManager : public CryptAuthGCMManager {
   void CompleteRegistration(const std::string& registration_id);
 
   // Simulates receiving a re-enroll push message from GCM.
-  void PushReenrollMessage();
+  void PushReenrollMessage(
+      const base::Optional<std::string>& session_id,
+      const base::Optional<CryptAuthFeatureType>& feature_type);
 
   // Simulates receiving a re-sync push message from GCM.
-  void PushResyncMessage();
+  void PushResyncMessage(
+      const base::Optional<std::string>& session_id,
+      const base::Optional<CryptAuthFeatureType>& feature_type);
 
   // CryptAuthGCMManager:
   void StartListening() override;

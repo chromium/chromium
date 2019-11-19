@@ -6,7 +6,6 @@
 
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/platform/web_callbacks.h"
 #include "third_party/blink/renderer/modules/presentation/mock_presentation_service.h"
 #include "third_party/blink/renderer/modules/presentation/presentation_availability_callbacks.h"
 #include "third_party/blink/renderer/modules/presentation/presentation_availability_observer.h"
@@ -21,7 +20,10 @@ namespace blink {
 using mojom::blink::ScreenAvailability;
 
 class MockPresentationAvailabilityObserver
-    : public PresentationAvailabilityObserver {
+    : public GarbageCollected<MockPresentationAvailabilityObserver>,
+      public PresentationAvailabilityObserver {
+  USING_GARBAGE_COLLECTED_MIXIN(MockPresentationAvailabilityObserver);
+
  public:
   explicit MockPresentationAvailabilityObserver(const Vector<KURL>& urls)
       : urls_(urls) {}
@@ -53,27 +55,35 @@ class PresentationAvailabilityStateTest : public testing::Test {
         url3_(KURL("https://www.example.com/3.html")),
         url4_(KURL("https://www.example.com/4.html")),
         urls_({url1_, url2_, url3_, url4_}),
-        mock_observer_all_urls_(urls_),
-        mock_observer1_({url1_, url2_, url3_}),
-        mock_observer2_({url2_, url3_, url4_}),
-        mock_observer3_({url2_, url3_}),
-        mock_observers_({&mock_observer1_, &mock_observer2_, &mock_observer3_}),
+        mock_observer_all_urls_(
+            MakeGarbageCollected<MockPresentationAvailabilityObserver>(urls_)),
+        mock_observer1_(
+            MakeGarbageCollected<MockPresentationAvailabilityObserver>(
+                Vector<KURL>({url1_, url2_, url3_}))),
+        mock_observer2_(
+            MakeGarbageCollected<MockPresentationAvailabilityObserver>(
+                Vector<KURL>({url2_, url3_, url4_}))),
+        mock_observer3_(
+            MakeGarbageCollected<MockPresentationAvailabilityObserver>(
+                Vector<KURL>({url2_, url3_}))),
+        mock_observers_({mock_observer1_, mock_observer2_, mock_observer3_}),
         mock_presentation_service_(),
-        state_(&mock_presentation_service_) {}
+        state_(MakeGarbageCollected<PresentationAvailabilityState>(
+            &mock_presentation_service_)) {}
 
   ~PresentationAvailabilityStateTest() override = default;
 
   void ChangeURLState(const KURL& url, ScreenAvailability state) {
     if (state != ScreenAvailability::UNKNOWN)
-      state_.UpdateAvailability(url, state);
+      state_->UpdateAvailability(url, state);
   }
 
   void RequestAvailabilityAndAddObservers() {
-    for (auto* mock_observer : mock_observers_) {
-      state_.RequestAvailability(
+    for (auto& mock_observer : mock_observers_) {
+      state_->RequestAvailability(
           mock_observer->Urls(),
-          std::make_unique<MockPresentationAvailabilityCallbacks>());
-      state_.AddObserver(mock_observer);
+          MakeGarbageCollected<MockPresentationAvailabilityCallbacks>());
+      state_->AddObserver(mock_observer);
     }
   }
 
@@ -82,7 +92,7 @@ class PresentationAvailabilityStateTest : public testing::Test {
   // |mock_callback|.
   void TestRequestAvailability(
       const Vector<KURL>& urls,
-      const std::vector<ScreenAvailability>& states,
+      const Vector<ScreenAvailability>& states,
       MockPresentationAvailabilityCallbacks* mock_callback) {
     DCHECK_EQ(urls.size(), states.size());
 
@@ -94,9 +104,7 @@ class PresentationAvailabilityStateTest : public testing::Test {
           .Times(1);
     }
 
-    state_.RequestAvailability(
-        urls,
-        std::unique_ptr<MockPresentationAvailabilityCallbacks>(mock_callback));
+    state_->RequestAvailability(urls, mock_callback);
     for (wtf_size_t i = 0; i < urls.size(); i++)
       ChangeURLState(urls[i], states[i]);
   }
@@ -107,14 +115,14 @@ class PresentationAvailabilityStateTest : public testing::Test {
   const KURL url3_;
   const KURL url4_;
   const Vector<KURL> urls_;
-  MockPresentationAvailabilityObserver mock_observer_all_urls_;
-  MockPresentationAvailabilityObserver mock_observer1_;
-  MockPresentationAvailabilityObserver mock_observer2_;
-  MockPresentationAvailabilityObserver mock_observer3_;
-  std::vector<MockPresentationAvailabilityObserver*> mock_observers_;
+  Persistent<MockPresentationAvailabilityObserver> mock_observer_all_urls_;
+  Persistent<MockPresentationAvailabilityObserver> mock_observer1_;
+  Persistent<MockPresentationAvailabilityObserver> mock_observer2_;
+  Persistent<MockPresentationAvailabilityObserver> mock_observer3_;
+  Vector<Persistent<MockPresentationAvailabilityObserver>> mock_observers_;
 
   MockPresentationService mock_presentation_service_;
-  PresentationAvailabilityState state_;
+  Persistent<PresentationAvailabilityState> state_;
 };
 
 TEST_F(PresentationAvailabilityStateTest, RequestAvailability) {
@@ -124,33 +132,33 @@ TEST_F(PresentationAvailabilityStateTest, RequestAvailability) {
                 StopListeningForScreenAvailability(url));
   }
 
-  state_.RequestAvailability(
-      urls_, std::make_unique<MockPresentationAvailabilityCallbacks>());
-  state_.UpdateAvailability(url1_, ScreenAvailability::AVAILABLE);
+  state_->RequestAvailability(
+      urls_, MakeGarbageCollected<MockPresentationAvailabilityCallbacks>());
+  state_->UpdateAvailability(url1_, ScreenAvailability::AVAILABLE);
 
   for (const auto& url : urls_)
     EXPECT_CALL(mock_presentation_service_, ListenForScreenAvailability(url));
 
-  state_.AddObserver(&mock_observer_all_urls_);
+  state_->AddObserver(mock_observer_all_urls_);
 
-  EXPECT_CALL(mock_observer_all_urls_,
+  EXPECT_CALL(*mock_observer_all_urls_,
               AvailabilityChanged(ScreenAvailability::UNAVAILABLE));
-  state_.UpdateAvailability(url1_, ScreenAvailability::UNAVAILABLE);
-  EXPECT_CALL(mock_observer_all_urls_,
+  state_->UpdateAvailability(url1_, ScreenAvailability::UNAVAILABLE);
+  EXPECT_CALL(*mock_observer_all_urls_,
               AvailabilityChanged(ScreenAvailability::AVAILABLE));
-  state_.UpdateAvailability(url1_, ScreenAvailability::AVAILABLE);
+  state_->UpdateAvailability(url1_, ScreenAvailability::AVAILABLE);
   for (const auto& url : urls_) {
     EXPECT_CALL(mock_presentation_service_,
                 StopListeningForScreenAvailability(url));
   }
-  state_.RemoveObserver(&mock_observer_all_urls_);
+  state_->RemoveObserver(mock_observer_all_urls_);
 
   // After RemoveObserver(), |mock_observer_all_urls_| should no longer be
   // notified.
-  EXPECT_CALL(mock_observer_all_urls_,
+  EXPECT_CALL(*mock_observer_all_urls_,
               AvailabilityChanged(ScreenAvailability::UNAVAILABLE))
       .Times(0);
-  state_.UpdateAvailability(url1_, ScreenAvailability::UNAVAILABLE);
+  state_->UpdateAvailability(url1_, ScreenAvailability::UNAVAILABLE);
 }
 
 TEST_F(PresentationAvailabilityStateTest,
@@ -158,35 +166,34 @@ TEST_F(PresentationAvailabilityStateTest,
   for (const auto& url : urls_)
     EXPECT_CALL(mock_presentation_service_, ListenForScreenAvailability(url));
 
-  state_.AddObserver(&mock_observer_all_urls_);
+  state_->AddObserver(mock_observer_all_urls_);
 
-  EXPECT_CALL(mock_observer_all_urls_,
+  EXPECT_CALL(*mock_observer_all_urls_,
               AvailabilityChanged(ScreenAvailability::SOURCE_NOT_SUPPORTED));
-  state_.UpdateAvailability(url1_, ScreenAvailability::SOURCE_NOT_SUPPORTED);
+  state_->UpdateAvailability(url1_, ScreenAvailability::SOURCE_NOT_SUPPORTED);
 
   for (const auto& url : urls_) {
     EXPECT_CALL(mock_presentation_service_,
                 StopListeningForScreenAvailability(url));
   }
-  state_.RemoveObserver(&mock_observer_all_urls_);
+  state_->RemoveObserver(mock_observer_all_urls_);
 }
 
 TEST_F(PresentationAvailabilityStateTest,
        RequestAvailabilityOneUrlNoAvailabilityChange) {
-  auto* mock_callback =
-      new testing::StrictMock<MockPresentationAvailabilityCallbacks>();
+  auto* mock_callback = MakeGarbageCollected<
+      testing::StrictMock<MockPresentationAvailabilityCallbacks>>();
 
   EXPECT_CALL(mock_presentation_service_, ListenForScreenAvailability(url1_))
       .Times(1);
 
-  state_.RequestAvailability(
-      Vector<KURL>({url1_}),
-      std::unique_ptr<PresentationAvailabilityCallbacks>(mock_callback));
+  state_->RequestAvailability(Vector<KURL>({url1_}), mock_callback);
 }
 
 TEST_F(PresentationAvailabilityStateTest,
        RequestAvailabilityOneUrlBecomesAvailable) {
-  auto* mock_callback = new MockPresentationAvailabilityCallbacks();
+  auto* mock_callback =
+      MakeGarbageCollected<MockPresentationAvailabilityCallbacks>();
   EXPECT_CALL(*mock_callback, Resolve(true));
 
   TestRequestAvailability({url1_}, {ScreenAvailability::AVAILABLE},
@@ -195,7 +202,8 @@ TEST_F(PresentationAvailabilityStateTest,
 
 TEST_F(PresentationAvailabilityStateTest,
        RequestAvailabilityOneUrlBecomesNotCompatible) {
-  auto* mock_callback = new MockPresentationAvailabilityCallbacks();
+  auto* mock_callback =
+      MakeGarbageCollected<MockPresentationAvailabilityCallbacks>();
   EXPECT_CALL(*mock_callback, Resolve(false));
 
   TestRequestAvailability({url1_}, {ScreenAvailability::SOURCE_NOT_SUPPORTED},
@@ -204,7 +212,8 @@ TEST_F(PresentationAvailabilityStateTest,
 
 TEST_F(PresentationAvailabilityStateTest,
        RequestAvailabilityOneUrlBecomesUnavailable) {
-  auto* mock_callback = new MockPresentationAvailabilityCallbacks();
+  auto* mock_callback =
+      MakeGarbageCollected<MockPresentationAvailabilityCallbacks>();
   EXPECT_CALL(*mock_callback, Resolve(false));
 
   TestRequestAvailability({url1_}, {ScreenAvailability::UNAVAILABLE},
@@ -213,7 +222,8 @@ TEST_F(PresentationAvailabilityStateTest,
 
 TEST_F(PresentationAvailabilityStateTest,
        RequestAvailabilityOneUrlBecomesUnsupported) {
-  auto* mock_callback = new MockPresentationAvailabilityCallbacks();
+  auto* mock_callback =
+      MakeGarbageCollected<MockPresentationAvailabilityCallbacks>();
   EXPECT_CALL(*mock_callback, RejectAvailabilityNotSupported());
 
   TestRequestAvailability({url1_}, {ScreenAvailability::DISABLED},
@@ -222,7 +232,8 @@ TEST_F(PresentationAvailabilityStateTest,
 
 TEST_F(PresentationAvailabilityStateTest,
        RequestAvailabilityMultipleUrlsAllBecomesAvailable) {
-  auto* mock_callback = new MockPresentationAvailabilityCallbacks();
+  auto* mock_callback =
+      MakeGarbageCollected<MockPresentationAvailabilityCallbacks>();
   EXPECT_CALL(*mock_callback, Resolve(true)).Times(1);
 
   TestRequestAvailability(
@@ -233,7 +244,8 @@ TEST_F(PresentationAvailabilityStateTest,
 
 TEST_F(PresentationAvailabilityStateTest,
        RequestAvailabilityMultipleUrlsAllBecomesUnavailable) {
-  auto* mock_callback = new MockPresentationAvailabilityCallbacks();
+  auto* mock_callback =
+      MakeGarbageCollected<MockPresentationAvailabilityCallbacks>();
   EXPECT_CALL(*mock_callback, Resolve(false)).Times(1);
 
   TestRequestAvailability(
@@ -244,7 +256,8 @@ TEST_F(PresentationAvailabilityStateTest,
 
 TEST_F(PresentationAvailabilityStateTest,
        RequestAvailabilityMultipleUrlsAllBecomesNotCompatible) {
-  auto* mock_callback = new MockPresentationAvailabilityCallbacks();
+  auto* mock_callback =
+      MakeGarbageCollected<MockPresentationAvailabilityCallbacks>();
   EXPECT_CALL(*mock_callback, Resolve(false)).Times(1);
 
   TestRequestAvailability({url1_, url2_},
@@ -255,7 +268,8 @@ TEST_F(PresentationAvailabilityStateTest,
 
 TEST_F(PresentationAvailabilityStateTest,
        RequestAvailabilityMultipleUrlsAllBecomesUnsupported) {
-  auto* mock_callback = new MockPresentationAvailabilityCallbacks();
+  auto* mock_callback =
+      MakeGarbageCollected<MockPresentationAvailabilityCallbacks>();
   EXPECT_CALL(*mock_callback, RejectAvailabilityNotSupported()).Times(1);
 
   TestRequestAvailability(
@@ -267,25 +281,25 @@ TEST_F(PresentationAvailabilityStateTest,
 TEST_F(PresentationAvailabilityStateTest,
        RequestAvailabilityReturnsDirectlyForAlreadyListeningUrls) {
   // First getAvailability() call.
-  auto* mock_callback_1 = new MockPresentationAvailabilityCallbacks();
+  auto* mock_callback_1 =
+      MakeGarbageCollected<MockPresentationAvailabilityCallbacks>();
   EXPECT_CALL(*mock_callback_1, Resolve(false)).Times(1);
 
-  std::vector<ScreenAvailability> state_seq = {ScreenAvailability::UNAVAILABLE,
-                                               ScreenAvailability::AVAILABLE,
-                                               ScreenAvailability::UNAVAILABLE};
+  Vector<ScreenAvailability> state_seq = {ScreenAvailability::UNAVAILABLE,
+                                          ScreenAvailability::AVAILABLE,
+                                          ScreenAvailability::UNAVAILABLE};
   TestRequestAvailability({url1_, url2_, url3_}, state_seq, mock_callback_1);
 
   // Second getAvailability() call.
-  for (const auto& url : mock_observer3_.Urls()) {
+  for (const auto& url : mock_observer3_->Urls()) {
     EXPECT_CALL(mock_presentation_service_, ListenForScreenAvailability(url))
         .Times(1);
   }
-  auto* mock_callback_2 = new MockPresentationAvailabilityCallbacks();
+  auto* mock_callback_2 =
+      MakeGarbageCollected<MockPresentationAvailabilityCallbacks>();
   EXPECT_CALL(*mock_callback_2, Resolve(true)).Times(1);
 
-  state_.RequestAvailability(
-      mock_observer3_.Urls(),
-      std::unique_ptr<MockPresentationAvailabilityCallbacks>(mock_callback_2));
+  state_->RequestAvailability(mock_observer3_->Urls(), mock_callback_2);
 }
 
 TEST_F(PresentationAvailabilityStateTest, StartListeningListenToEachURLOnce) {
@@ -306,11 +320,11 @@ TEST_F(PresentationAvailabilityStateTest, StopListeningListenToEachURLOnce) {
         .Times(1);
   }
 
-  EXPECT_CALL(mock_observer1_,
+  EXPECT_CALL(*mock_observer1_,
               AvailabilityChanged(ScreenAvailability::UNAVAILABLE));
-  EXPECT_CALL(mock_observer2_,
+  EXPECT_CALL(*mock_observer2_,
               AvailabilityChanged(ScreenAvailability::UNAVAILABLE));
-  EXPECT_CALL(mock_observer3_,
+  EXPECT_CALL(*mock_observer3_,
               AvailabilityChanged(ScreenAvailability::UNAVAILABLE));
 
   RequestAvailabilityAndAddObservers();
@@ -318,8 +332,8 @@ TEST_F(PresentationAvailabilityStateTest, StopListeningListenToEachURLOnce) {
   // Clean up callbacks.
   ChangeURLState(url2_, ScreenAvailability::UNAVAILABLE);
 
-  for (auto* mock_observer : mock_observers_)
-    state_.RemoveObserver(mock_observer);
+  for (auto& mock_observer : mock_observers_)
+    state_->RemoveObserver(mock_observer);
 }
 
 TEST_F(PresentationAvailabilityStateTest,
@@ -342,19 +356,19 @@ TEST_F(PresentationAvailabilityStateTest,
 
   RequestAvailabilityAndAddObservers();
 
-  for (auto* mock_observer : mock_observers_)
-    state_.AddObserver(mock_observer);
+  for (auto& mock_observer : mock_observers_)
+    state_->AddObserver(mock_observer);
 
-  EXPECT_CALL(mock_observer1_,
+  EXPECT_CALL(*mock_observer1_,
               AvailabilityChanged(ScreenAvailability::UNAVAILABLE));
-  EXPECT_CALL(mock_observer2_,
+  EXPECT_CALL(*mock_observer2_,
               AvailabilityChanged(ScreenAvailability::UNAVAILABLE));
-  EXPECT_CALL(mock_observer3_,
+  EXPECT_CALL(*mock_observer3_,
               AvailabilityChanged(ScreenAvailability::UNAVAILABLE));
 
   // Clean up callbacks.
   ChangeURLState(url2_, ScreenAvailability::UNAVAILABLE);
-  state_.RemoveObserver(&mock_observer1_);
+  state_->RemoveObserver(mock_observer1_);
 }
 
 TEST_F(PresentationAvailabilityStateTest,
@@ -364,18 +378,18 @@ TEST_F(PresentationAvailabilityStateTest,
         .Times(1);
   }
 
-  EXPECT_CALL(mock_observer1_,
+  EXPECT_CALL(*mock_observer1_,
               AvailabilityChanged(ScreenAvailability::AVAILABLE));
 
   RequestAvailabilityAndAddObservers();
 
   ChangeURLState(url1_, ScreenAvailability::AVAILABLE);
 
-  EXPECT_CALL(mock_observer1_,
+  EXPECT_CALL(*mock_observer1_,
               AvailabilityChanged(ScreenAvailability::UNAVAILABLE));
   ChangeURLState(url1_, ScreenAvailability::UNAVAILABLE);
 
-  EXPECT_CALL(mock_observer1_,
+  EXPECT_CALL(*mock_observer1_,
               AvailabilityChanged(ScreenAvailability::SOURCE_NOT_SUPPORTED));
   ChangeURLState(url1_, ScreenAvailability::SOURCE_NOT_SUPPORTED);
 }
@@ -387,7 +401,7 @@ TEST_F(PresentationAvailabilityStateTest,
         .Times(1);
   }
 
-  for (auto* mock_observer : mock_observers_) {
+  for (auto& mock_observer : mock_observers_) {
     EXPECT_CALL(*mock_observer,
                 AvailabilityChanged(ScreenAvailability::AVAILABLE));
   }
@@ -396,7 +410,7 @@ TEST_F(PresentationAvailabilityStateTest,
 
   ChangeURLState(url2_, ScreenAvailability::AVAILABLE);
 
-  for (auto* mock_observer : mock_observers_) {
+  for (auto& mock_observer : mock_observers_) {
     EXPECT_CALL(*mock_observer,
                 AvailabilityChanged(ScreenAvailability::UNAVAILABLE));
   }
@@ -411,7 +425,7 @@ TEST_F(PresentationAvailabilityStateTest,
   }
 
   RequestAvailabilityAndAddObservers();
-  for (auto* mock_observer : mock_observers_) {
+  for (auto& mock_observer : mock_observers_) {
     EXPECT_CALL(*mock_observer,
                 AvailabilityChanged(ScreenAvailability::SOURCE_NOT_SUPPORTED));
   }

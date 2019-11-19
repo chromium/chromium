@@ -3,8 +3,8 @@
 # found in the LICENSE file.
 
 # To create CIPD package run the following command.
-# cipd create --pkg-def cipd.yaml -tag version:27.0.0-cr0
+# cipd create --pkg-def cipd.yaml -tag version:28.0.0-cr0
 package: chromium/third_party/android_deps/libs/com_android_support_appcompat_v7
 description: "Android AppCompat Library v7"
 data:
-- file: appcompat-v7-27.0.0.aar
+- file: appcompat-v7-28.0.0.aar

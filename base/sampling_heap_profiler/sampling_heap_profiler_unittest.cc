@@ -10,6 +10,7 @@
 #include "base/allocator/allocator_shim.h"
 #include "base/debug/alias.h"
 #include "base/rand_util.h"
+#include "base/synchronization/waitable_event.h"
 #include "base/threading/simple_thread.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -27,6 +28,18 @@ class SamplingHeapProfilerTest : public ::testing::Test {
 
   size_t GetNextSample(size_t mean_interval) {
     return PoissonAllocationSampler::GetNextSampleInterval(mean_interval);
+  }
+
+  static int GetRunningSessionsCount() {
+    return SamplingHeapProfiler::Get()->running_sessions_;
+  }
+
+  static void RunStartStopLoop(SamplingHeapProfiler* profiler) {
+    for (int i = 0; i < 100000; ++i) {
+      profiler->Start();
+      EXPECT_LE(1, GetRunningSessionsCount());
+      profiler->Stop();
+    }
   }
 };
 
@@ -180,14 +193,14 @@ void CheckAllocationPattern(void (*allocate_callback)()) {
 
 TEST_F(SamplingHeapProfilerTest, DISABLED_ParallelLargeSmallStats) {
   CheckAllocationPattern([]() {
-    SimpleThread* t1 = new MyThread1();
-    SimpleThread* t2 = new MyThread2();
-    t1->Start();
-    t2->Start();
+    MyThread1 t1;
+    MyThread1 t2;
+    t1.Start();
+    t2.Start();
     for (int i = 0; i < kNumberOfAllocations; ++i)
       Allocate3();
-    t1->Join();
-    t2->Join();
+    t1.Join();
+    t2.Join();
   });
 }
 
@@ -235,6 +248,41 @@ TEST_F(SamplingHeapProfilerTest, MANUAL_SamplerMicroBenchmark) {
       (t2 - t0).InMillisecondsF());
 
   sampler->RemoveSamplesObserver(&collector);
+}
+
+class StartStopThread : public SimpleThread {
+ public:
+  StartStopThread(WaitableEvent* event)
+      : SimpleThread("MyThread2"), event_(event) {}
+  void Run() override {
+    auto* profiler = SamplingHeapProfiler::Get();
+    event_->Signal();
+    SamplingHeapProfilerTest::RunStartStopLoop(profiler);
+  }
+
+ private:
+  WaitableEvent* event_;
+};
+
+TEST_F(SamplingHeapProfilerTest, StartStop) {
+  auto* profiler = SamplingHeapProfiler::Get();
+  EXPECT_EQ(0, GetRunningSessionsCount());
+  profiler->Start();
+  EXPECT_EQ(1, GetRunningSessionsCount());
+  profiler->Start();
+  EXPECT_EQ(2, GetRunningSessionsCount());
+  profiler->Stop();
+  EXPECT_EQ(1, GetRunningSessionsCount());
+  profiler->Stop();
+  EXPECT_EQ(0, GetRunningSessionsCount());
+
+  WaitableEvent event;
+  StartStopThread thread(&event);
+  thread.Start();
+  event.Wait();
+  RunStartStopLoop(profiler);
+  thread.Join();
+  EXPECT_EQ(0, GetRunningSessionsCount());
 }
 
 }  // namespace base

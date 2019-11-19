@@ -1,0 +1,12 @@
+This is a testharness.js-based test.
+PASS When a=msid is absent, the track should still be associated with a stream
+PASS Source-level msid should be ignored if media-level msid is present
+PASS Source-level msid should be parsed if media-level msid is absent
+PASS Source-level msid should be ignored, or an error should be thrown, if a different media-level msid is present
+PASS stream ids should be found even if msid-semantic is absent
+FAIL a=msid:- should result in a track event with no streams promise_test: Unhandled rejection with value: object "OperationError: Failed to execute 'setRemoteDescription' on 'RTCPeerConnection': Failed to parse SessionDescription. a=msid:- Expects 2 fields."
+FAIL Duplicate a=msid should result in a track event with one stream assert_equals: track event has one stream expected 1 but got 2
+PASS Applying a remote description with removed msid should trigger firing a removetrack event on the corresponding stream
+PASS Applying a remote description with a new msid should trigger firing an event with populated streams
+Harness: the test ran to completion.
+

@@ -10,8 +10,8 @@
 #include <vector>
 
 #include "components/autofill/core/browser/autofill_field.h"
-#include "components/autofill/core/browser/autofill_profile.h"
-#include "components/autofill/core/browser/credit_card.h"
+#include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/proto/server.pb.h"
 
@@ -112,9 +112,6 @@ AutofillProfile GetIncompleteProfile2();
 // Returns a verified profile full of dummy info.
 AutofillProfile GetVerifiedProfile();
 
-// Returns a verified profile full of dummy info, different to the above.
-AutofillProfile GetVerifiedProfile2();
-
 // Returns a server profile full of dummy info.
 AutofillProfile GetServerProfile();
 
@@ -127,11 +124,12 @@ CreditCard GetCreditCard();
 // Returns a credit card full of dummy info, different to the above.
 CreditCard GetCreditCard2();
 
-// Returns a verified credit card full of dummy info.
-CreditCard GetVerifiedCreditCard();
+// Returns an expired credit card full of fake info.
+CreditCard GetExpiredCreditCard();
 
-// Returns a verified credit card full of dummy info, different to the above.
-CreditCard GetVerifiedCreditCard2();
+// Returns an incomplete credit card full of fake info with card holder's name
+// missing.
+CreditCard GetIncompleteCreditCard();
 
 // Returns a masked server card full of dummy info.
 CreditCard GetMaskedServerCard();
@@ -178,11 +176,19 @@ void SetProfileInfo(AutofillProfile* profile,
                     const char* phone);
 
 void SetProfileInfoWithGuid(AutofillProfile* profile,
-    const char* guid, const char* first_name, const char* middle_name,
-    const char* last_name, const char* email, const char* company,
-    const char* address1, const char* address2, const char* city,
-    const char* state, const char* zipcode, const char* country,
-    const char* phone);
+                            const char* guid,
+                            const char* first_name,
+                            const char* middle_name,
+                            const char* last_name,
+                            const char* email,
+                            const char* company,
+                            const char* address1,
+                            const char* address2,
+                            const char* city,
+                            const char* state,
+                            const char* zipcode,
+                            const char* country,
+                            const char* phone);
 
 // A unit testing utility that is common to a number of the Autofill unit
 // tests.  |SetCreditCardInfo| provides a quick way to populate a credit card
@@ -260,6 +266,7 @@ void GenerateTestAutofillPopup(
 
 std::string ObfuscatedCardDigitsAsUTF8(const std::string& str);
 
+std::string NextMonth();
 std::string LastYear();
 std::string NextYear();
 std::string TenYearsFromNow();

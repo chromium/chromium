@@ -15,6 +15,8 @@ Example usage:
        --isolate-server touch-isolate.appspot.com
 """
 
+from __future__ import print_function
+
 import argparse
 import os
 import shutil
@@ -39,7 +41,7 @@ def main():
   script_dir = os.path.dirname(os.path.abspath(__file__))
   tmp_dir = tempfile.mkdtemp(prefix='swarming_xcode')
   try:
-    print 'Making isolate.'
+    print('Making isolate.')
     shutil.copyfile(os.path.join(script_dir, 'swarming_xcode_install.py'),
                     os.path.join(tmp_dir, 'swarming_xcode_install.py'))
     shutil.copyfile(os.path.join(script_dir, 'mac_toolchain.py'),
@@ -52,7 +54,7 @@ def main():
     ]
     isolate_hash = subprocess.check_output(cmd).split()[0]
 
-    print 'Running swarming_xcode_install.'
+    print('Running swarming_xcode_install.')
     # TODO(crbug.com/765361): The dimensions below should be updated once
     # swarming for iOS is fleshed out, likely removing xcode_version 9 and
     # adding different dimensions.
@@ -70,7 +72,7 @@ def main():
       'python', 'swarming_xcode_install.py',
     ]
     subprocess.check_call(cmd)
-    print 'All tasks completed.'
+    print('All tasks completed.')
 
   finally:
     shutil.rmtree(tmp_dir)

@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-PASS Initial iceConnectionState should be new
-PASS Closing the connection should set iceConnectionState to closed
-PASS connection with one data channel should eventually have connected or completed connection state
-FAIL connection with one data channel should eventually have connected connection state Cannot read property 'transport' of undefined
-Harness: the test ran to completion.
-

@@ -27,6 +27,13 @@ class PropertyTreeState;
 class PLATFORM_EXPORT EffectPaintPropertyNode
     : public PaintPropertyNode<EffectPaintPropertyNode> {
  public:
+  struct AnimationState {
+    AnimationState() {}
+    bool is_running_opacity_animation_on_compositor = false;
+    bool is_running_filter_animation_on_compositor = false;
+    bool is_running_backdrop_filter_animation_on_compositor = false;
+  };
+
   // To make it less verbose and more readable to construct and update a node,
   // a struct with default values is used to represent the state.
   struct State {
@@ -46,53 +53,65 @@ class PLATFORM_EXPORT EffectPaintPropertyNode
     CompositorFilterOperations filter;
     float opacity = 1;
     CompositorFilterOperations backdrop_filter;
-    gfx::RRectF backdrop_filter_bounds;
+    base::Optional<gfx::RRectF> backdrop_filter_bounds;
     SkBlendMode blend_mode = SkBlendMode::kSrcOver;
     // === End of effects ===
-    // TODO(crbug.com/937929): Put these into CompositingReasons when we can
-    // detect composited animation status changes in LayoutObject::SetStyle().
-    bool is_running_opacity_animation_on_compositor = false;
-    bool is_running_filter_animation_on_compositor = false;
-    bool is_running_backdrop_filter_animation_on_compositor = false;
     CompositingReasons direct_compositing_reasons = CompositingReason::kNone;
     CompositorElementId compositor_element_id;
+    // The compositor element id for any masks that are applied to elements that
+    // also have backdrop-filters applied.
+    CompositorElementId backdrop_mask_element_id;
+    // TODO(crbug.com/900241): Use direct_compositing_reasons to check for
+    // active animations when we can track animations for each property type.
+    bool has_active_opacity_animation = false;
+    bool has_active_filter_animation = false;
+    bool has_active_backdrop_filter_animation = false;
     // The offset of the origin of filters in local_transform_space.
     FloatPoint filters_origin;
 
-    PaintPropertyChangeType CheckChange(const State& other) {
+    PaintPropertyChangeType ComputeChange(
+        const State& other,
+        const AnimationState& animation_state) {
       if (local_transform_space != other.local_transform_space ||
           output_clip != other.output_clip ||
           color_filter != other.color_filter ||
           backdrop_filter_bounds != other.backdrop_filter_bounds ||
           blend_mode != other.blend_mode ||
-          direct_compositing_reasons != other.direct_compositing_reasons ||
-          compositor_element_id != other.compositor_element_id ||
           filters_origin != other.filters_origin) {
         return PaintPropertyChangeType::kChangedOnlyValues;
       }
       bool opacity_changed = opacity != other.opacity;
-      if (opacity_changed && !is_running_opacity_animation_on_compositor) {
+      bool opacity_change_is_simple =
+          opacity_changed && opacity != 1.f && other.opacity != 1.f;
+      if (opacity_changed && !opacity_change_is_simple &&
+          !animation_state.is_running_opacity_animation_on_compositor) {
         return PaintPropertyChangeType::kChangedOnlyValues;
       }
       bool filter_changed = filter != other.filter;
-      if (filter_changed && !is_running_filter_animation_on_compositor) {
+      if (filter_changed &&
+          !animation_state.is_running_filter_animation_on_compositor) {
         return PaintPropertyChangeType::kChangedOnlyValues;
       }
       bool backdrop_filter_changed = backdrop_filter != other.backdrop_filter;
       if (backdrop_filter_changed &&
-          !is_running_backdrop_filter_animation_on_compositor) {
+          !animation_state.is_running_backdrop_filter_animation_on_compositor) {
         return PaintPropertyChangeType::kChangedOnlyValues;
       }
-      if (is_running_opacity_animation_on_compositor !=
-              other.is_running_opacity_animation_on_compositor ||
-          is_running_filter_animation_on_compositor !=
-              other.is_running_filter_animation_on_compositor ||
-          is_running_backdrop_filter_animation_on_compositor !=
-              other.is_running_backdrop_filter_animation_on_compositor) {
-        return PaintPropertyChangeType::kChangedOnlyCompositedAnimationStatus;
-      }
+      bool non_reraster_values_changed =
+          direct_compositing_reasons != other.direct_compositing_reasons ||
+          compositor_element_id != other.compositor_element_id;
+      bool simple_values_changed =
+          opacity_change_is_simple &&
+          !animation_state.is_running_opacity_animation_on_compositor;
+      if (non_reraster_values_changed && simple_values_changed)
+        return PaintPropertyChangeType::kChangedOnlyValues;
+      if (non_reraster_values_changed)
+        return PaintPropertyChangeType::kChangedOnlyNonRerasterValues;
+      if (simple_values_changed)
+        return PaintPropertyChangeType::kChangedOnlySimpleValues;
+
       if (opacity_changed || filter_changed || backdrop_filter_changed) {
-        return PaintPropertyChangeType::kChangedOnlyCompositedAnimationValues;
+        return PaintPropertyChangeType::kChangedOnlyCompositedValues;
       }
       return PaintPropertyChangeType::kUnchanged;
     }
@@ -113,28 +132,31 @@ class PLATFORM_EXPORT EffectPaintPropertyNode
         &parent, State{}, true /* is_parent_alias */));
   }
 
-  PaintPropertyChangeType Update(const EffectPaintPropertyNode& parent,
-                                 State&& state) {
+  PaintPropertyChangeType Update(
+      const EffectPaintPropertyNode& parent,
+      State&& state,
+      const AnimationState& animation_state = AnimationState()) {
     auto parent_changed = SetParent(&parent);
-    auto state_changed = state_.CheckChange(state);
+    auto state_changed = state_.ComputeChange(state, animation_state);
     if (state_changed != PaintPropertyChangeType::kUnchanged) {
       DCHECK(!IsParentAlias()) << "Changed the state of an alias node.";
       state_ = std::move(state);
-      SetChanged();
-      Validate();
+      AddChanged(state_changed);
     }
     return std::max(parent_changed, state_changed);
   }
 
   // Checks if the accumulated effect from |this| to |relative_to_state
-  // .Effect()| has changed in the space of |relative_to_state.Transform()|.
-  // We check for changes of not only effect nodes, but also LocalTransformSpace
-  // relative to |relative_to_state.Transform()| of the effect nodes having
-  // filters that move pixels. Change of OutputClip is not checked and the
-  // caller should check in other ways. |transform_not_to_check| specifies the
-  // transform node that the caller has checked or will check its change in
-  // other ways and this function should treat it as unchanged.
-  bool Changed(const PropertyTreeState& relative_to_state,
+  // .Effect()| has changed, at least significance of |change|, in the space of
+  // |relative_to_state.Transform()|. We check for changes of not only effect
+  // nodes, but also LocalTransformSpace relative to |relative_to_state
+  // .Transform()| of the effect nodes having filters that move pixels. Change
+  // of OutputClip is not checked and the caller should check in other ways.
+  // |transform_not_to_check| specifies the transform node that the caller has
+  // checked or will check its change in other ways and this function should
+  // treat it as unchanged.
+  bool Changed(PaintPropertyChangeType change,
+               const PropertyTreeState& relative_to_state,
                const TransformPaintPropertyNode* transform_not_to_check) const;
 
   const TransformPaintPropertyNode& LocalTransformSpace() const {
@@ -167,8 +189,12 @@ class PLATFORM_EXPORT EffectPaintPropertyNode
     return state_.backdrop_filter;
   }
 
-  const gfx::RRectF& BackdropFilterBounds() const {
+  const base::Optional<gfx::RRectF>& BackdropFilterBounds() const {
     return state_.backdrop_filter_bounds;
+  }
+
+  const CompositorElementId& BackdropMaskElementId() const {
+    return state_.backdrop_mask_element_id;
   }
 
   bool HasFilterThatMovesPixels() const {
@@ -181,6 +207,12 @@ class PLATFORM_EXPORT EffectPaintPropertyNode
     return state_.filters_origin;
   }
 
+  bool HasRealEffects() const {
+    return Opacity() != 1.0f || GetColorFilter() != kColorFilterNone ||
+           BlendMode() != SkBlendMode::kSrcOver || !Filter().IsEmpty() ||
+           !BackdropFilter().IsEmpty();
+  }
+
   // Returns a rect covering the pixels that can be affected by pixels in
   // |inputRect|. The rects are in the space of localTransformSpace.
   FloatRect MapRect(const FloatRect& input_rect) const;
@@ -188,26 +220,33 @@ class PLATFORM_EXPORT EffectPaintPropertyNode
   bool HasDirectCompositingReasons() const {
     return DirectCompositingReasons() != CompositingReason::kNone;
   }
-  bool HasActiveOpacityAnimation() const {
+
+  // TODO(crbug.com/900241): Use HaveActiveXXXAnimation() instead of this
+  // function when we can track animations for each property type.
+  bool RequiresCompositingForAnimation() const {
     return DirectCompositingReasons() &
-           CompositingReason::kActiveOpacityAnimation;
+           CompositingReason::kComboActiveAnimation;
   }
-  bool IsRunningOpacityAnimationOnCompositor() const {
-    return state_.is_running_opacity_animation_on_compositor;
+  bool HasActiveOpacityAnimation() const {
+    return state_.has_active_opacity_animation;
+    // TODO(crbug.com/900241): Use the following code when we can track
+    // animations for each property type.
+    // return DirectCompositingReasons() &
+    //        CompositingReason::kActiveOpacityAnimation;
   }
   bool HasActiveFilterAnimation() const {
-    return DirectCompositingReasons() &
-           CompositingReason::kActiveFilterAnimation;
-  }
-  bool IsRunningFilterAnimationOnCompositor() const {
-    return state_.is_running_filter_animation_on_compositor;
+    return state_.has_active_filter_animation;
+    // TODO(crbug.com/900241): Use the following code when we can track
+    // animations for each property type.
+    // return DirectCompositingReasons() &
+    //        CompositingReason::kActiveFilterAnimation;
   }
   bool HasActiveBackdropFilterAnimation() const {
-    return DirectCompositingReasons() &
-           CompositingReason::kActiveBackdropFilterAnimation;
-  }
-  bool IsRunningBackdropFilterAnimationOnCompositor() const {
-    return state_.is_running_backdrop_filter_animation_on_compositor;
+    return state_.has_active_backdrop_filter_animation;
+    // TODO(crbug.com/900241): Use the following code when we can track
+    // animations for each property type.
+    // return DirectCompositingReasons() &
+    //        CompositingReason::kActiveBackdropFilterAnimation;
   }
 
   const CompositorElementId& GetCompositorElementId() const {
@@ -229,15 +268,6 @@ class PLATFORM_EXPORT EffectPaintPropertyNode
   CompositingReasons DirectCompositingReasons() const {
     DCHECK(!Parent() || !IsParentAlias());
     return state_.direct_compositing_reasons;
-  }
-
-  void Validate() const {
-    DCHECK(!IsRunningOpacityAnimationOnCompositor() ||
-           HasActiveOpacityAnimation());
-    DCHECK(!IsRunningFilterAnimationOnCompositor() ||
-           HasActiveFilterAnimation());
-    DCHECK(!IsRunningBackdropFilterAnimationOnCompositor() ||
-           HasActiveBackdropFilterAnimation());
   }
 
   State state_;

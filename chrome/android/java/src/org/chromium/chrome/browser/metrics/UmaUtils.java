@@ -9,6 +9,7 @@ import android.os.SystemClock;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.MainDex;
+import org.chromium.base.annotations.NativeMethods;
 
 /**
  * Utilities to support startup metrics - Android version.
@@ -73,7 +74,7 @@ public class UmaUtils {
      * is, and there was user consent, then metrics and crashes would be reported
      */
     public static boolean isClientInMetricsReportingSample() {
-        return nativeIsClientInMetricsReportingSample();
+        return UmaUtilsJni.get().isClientInMetricsReportingSample();
     }
 
     /**
@@ -82,7 +83,7 @@ public class UmaUtils {
      * This should only be set once, and only during first-run.
      */
     public static void recordMetricsReportingDefaultOptIn(boolean optIn) {
-        nativeRecordMetricsReportingDefaultOptIn(optIn);
+        UmaUtilsJni.get().recordMetricsReportingDefaultOptIn(optIn);
     }
 
     @CalledByNative
@@ -100,6 +101,9 @@ public class UmaUtils {
         UmaSessionStats.changeMetricsReportingConsent(enabled);
     }
 
-    private static native boolean nativeIsClientInMetricsReportingSample();
-    private static native void nativeRecordMetricsReportingDefaultOptIn(boolean optIn);
+    @NativeMethods
+    interface Natives {
+        boolean isClientInMetricsReportingSample();
+        void recordMetricsReportingDefaultOptIn(boolean optIn);
+    }
 }

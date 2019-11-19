@@ -15,6 +15,7 @@
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/scoped_blocking_call.h"
+#include "base/threading/scoped_thread_priority.h"
 #include "base/win/scoped_handle.h"
 #include "net/base/escape.h"
 #include "net/base/ip_endpoint.h"
@@ -55,16 +56,16 @@ GetConnectionAttributes() {
   if (result != ERROR_SUCCESS)
     return wlan_connection_attributes;
 
-  WLAN_INTERFACE_INFO_LIST* interface_list_ptr = NULL;
+  WLAN_INTERFACE_INFO_LIST* interface_list_ptr = nullptr;
   result =
-      wlanapi.enum_interfaces_func(client.Get(), NULL, &interface_list_ptr);
+      wlanapi.enum_interfaces_func(client.Get(), nullptr, &interface_list_ptr);
   if (result != ERROR_SUCCESS)
     return wlan_connection_attributes;
   std::unique_ptr<WLAN_INTERFACE_INFO_LIST, internal::WlanApiDeleter>
       interface_list(interface_list_ptr);
 
   // Assume at most one connected wifi interface.
-  WLAN_INTERFACE_INFO* info = NULL;
+  WLAN_INTERFACE_INFO* info = nullptr;
   for (unsigned i = 0; i < interface_list->dwNumberOfItems; ++i) {
     if (interface_list->InterfaceInfo[i].isState ==
         wlan_interface_state_connected) {
@@ -73,7 +74,7 @@ GetConnectionAttributes() {
     }
   }
 
-  if (info == NULL)
+  if (info == nullptr)
     return wlan_connection_attributes;
 
   WLAN_CONNECTION_ATTRIBUTES* conn_info_ptr = nullptr;
@@ -81,7 +82,7 @@ GetConnectionAttributes() {
   WLAN_OPCODE_VALUE_TYPE op_code;
   result = wlanapi.query_interface_func(
       client.Get(), &info->InterfaceGuid, wlan_intf_opcode_current_connection,
-      NULL, &conn_info_size, reinterpret_cast<VOID**>(&conn_info_ptr),
+      nullptr, &conn_info_size, reinterpret_cast<VOID**>(&conn_info_ptr),
       &op_code);
   wlan_connection_attributes.reset(conn_info_ptr);
   if (result == ERROR_SUCCESS)
@@ -103,11 +104,12 @@ WlanApi& WlanApi::GetInstance() {
 }
 
 WlanApi::WlanApi() : initialized(false) {
-  // Use an absolute path to load the DLL to avoid DLL preloading attacks.
-  static const wchar_t* const kDLL = L"%WINDIR%\\system32\\wlanapi.dll";
-  wchar_t path[MAX_PATH] = {0};
-  ExpandEnvironmentStrings(kDLL, path, base::size(path));
-  module = ::LoadLibraryEx(path, NULL, LOAD_WITH_ALTERED_SEARCH_PATH);
+  // Mitigate the issues caused by loading DLLs on a background thread
+  // (http://crbug/973868).
+  base::ScopedThreadMayLoadLibraryOnBackgroundThread priority_boost(FROM_HERE);
+
+  HMODULE module =
+      ::LoadLibraryEx(L"wlanapi.dll", nullptr, LOAD_LIBRARY_SEARCH_SYSTEM32);
   if (!module)
     return;
 
@@ -131,7 +133,7 @@ WlanApi::WlanApi() : initialized(false) {
 bool GetNetworkListImpl(NetworkInterfaceList* networks,
                         int policy,
                         const IP_ADAPTER_ADDRESSES* adapters) {
-  for (const IP_ADAPTER_ADDRESSES* adapter = adapters; adapter != NULL;
+  for (const IP_ADAPTER_ADDRESSES* adapter = adapters; adapter != nullptr;
        adapter = adapter->Next) {
     // Ignore the loopback device.
     if (adapter->IfType == IF_TYPE_SOFTWARE_LOOPBACK) {
@@ -147,7 +149,7 @@ bool GetNetworkListImpl(NetworkInterfaceList* networks,
     // but don't ignore any GUEST side adapters with a description like:
     // VMware Accelerated AMD PCNet Adapter #2
     if ((policy & EXCLUDE_HOST_SCOPE_VIRTUAL_INTERFACES) &&
-        strstr(adapter->AdapterName, "VMnet") != NULL) {
+        strstr(adapter->AdapterName, "VMnet") != nullptr) {
       continue;
     }
 
@@ -289,8 +291,8 @@ class WifiOptionSetter : public ScopedWifiOptions {
     if (result != ERROR_SUCCESS)
       return;
 
-    WLAN_INTERFACE_INFO_LIST* interface_list_ptr = NULL;
-    result = wlanapi.enum_interfaces_func(client_.Get(), NULL,
+    WLAN_INTERFACE_INFO_LIST* interface_list_ptr = nullptr;
+    result = wlanapi.enum_interfaces_func(client_.Get(), nullptr,
                                           &interface_list_ptr);
     if (result != ERROR_SUCCESS)
       return;
@@ -301,21 +303,15 @@ class WifiOptionSetter : public ScopedWifiOptions {
       WLAN_INTERFACE_INFO* info = &interface_list->InterfaceInfo[i];
       if (options & WIFI_OPTIONS_DISABLE_SCAN) {
         BOOL data = false;
-        wlanapi.set_interface_func(client_.Get(),
-                                   &info->InterfaceGuid,
+        wlanapi.set_interface_func(client_.Get(), &info->InterfaceGuid,
                                    wlan_intf_opcode_background_scan_enabled,
-                                   sizeof(data),
-                                   &data,
-                                   NULL);
+                                   sizeof(data), &data, nullptr);
       }
       if (options & WIFI_OPTIONS_MEDIA_STREAMING_MODE) {
         BOOL data = true;
-        wlanapi.set_interface_func(client_.Get(),
-                                   &info->InterfaceGuid,
+        wlanapi.set_interface_func(client_.Get(), &info->InterfaceGuid,
                                    wlan_intf_opcode_media_streaming_mode,
-                                   sizeof(data),
-                                   &data,
-                                   NULL);
+                                   sizeof(data), &data, nullptr);
       }
     }
   }

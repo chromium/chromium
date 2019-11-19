@@ -11,7 +11,7 @@
 
 namespace syncer {
 
-// Status of sync server connection, sync token and token request.
+// Status of sync server connection, OAuth2 access token and token request.
 struct SyncTokenStatus {
   SyncTokenStatus();
 
@@ -19,15 +19,17 @@ struct SyncTokenStatus {
   base::Time connection_status_update_time;
   ConnectionStatus connection_status = CONNECTION_NOT_ATTEMPTED;
 
-  // The last times when an OAuth2 access token was requested and received.
+  // The last times when an OAuth2 access token was requested, and when a
+  // response was received (whether successful or not).
   base::Time token_request_time;
-  base::Time token_receive_time;
+  base::Time token_response_time;
+
+  // The error we received for the last OAuth2 access token request (or
+  // AuthErrorNone() if it succeeded).
+  GoogleServiceAuthError last_get_token_error;
 
   // Whether we currently have an OAuth2 access token.
   bool has_token = false;
-
-  // The error returned by OAuth2TokenService for the last token request.
-  GoogleServiceAuthError last_get_token_error;
 
   // The time when the next token request is scheduled, or a null time if no
   // request is scheduled.

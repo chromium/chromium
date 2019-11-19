@@ -6,18 +6,20 @@
 #define ASH_EVENTS_SELECT_TO_SPEAK_EVENT_HANDLER_H_
 
 #include "ash/ash_export.h"
-#include "ash/public/interfaces/accessibility_controller.mojom.h"
 #include "base/macros.h"
+#include "ui/events/event.h"
 #include "ui/events/event_handler.h"
 
 namespace ash {
+
+class SelectToSpeakEventHandlerDelegate;
 
 // SelectToSpeakEventHandler sends touch, mouse and key events to
 // the Select-to-Speak extension (via the delegate) when it is enabled.
 class ASH_EXPORT SelectToSpeakEventHandler : public ui::EventHandler {
  public:
   explicit SelectToSpeakEventHandler(
-      mojom::SelectToSpeakEventHandlerDelegatePtr delegate_ptr);
+      SelectToSpeakEventHandlerDelegate* delegate);
   ~SelectToSpeakEventHandler() override;
 
   // Called when the Select-to-Speak extension changes state. |is_selecting| is
@@ -25,9 +27,6 @@ class ASH_EXPORT SelectToSpeakEventHandler : public ui::EventHandler {
   // which case this handler needs to start forwarding those events if it was
   // in an inactive state.
   void SetSelectToSpeakStateSelecting(bool is_selecting);
-
-  // For testing usage only.
-  void FlushMojoForTest();
 
  private:
   // ui::EventHandler:
@@ -98,12 +97,12 @@ class ASH_EXPORT SelectToSpeakEventHandler : public ui::EventHandler {
 
   State state_ = INACTIVE;
 
-  ui::PointerId touch_id_ = ui::PointerDetails::kUnknownPointerId;
+  ui::PointerId touch_id_ = ui::kPointerIdUnknown;
 
   ui::EventPointerType touch_type_ = ui::EventPointerType::POINTER_TYPE_UNKNOWN;
 
   // The delegate used to send key events to the Select-to-Speak extension.
-  mojom::SelectToSpeakEventHandlerDelegatePtr delegate_ptr_;
+  SelectToSpeakEventHandlerDelegate* delegate_;
 
   DISALLOW_COPY_AND_ASSIGN(SelectToSpeakEventHandler);
 };

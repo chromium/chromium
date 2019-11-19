@@ -1,5 +1,6 @@
 include_rules = [
   "+components/url_formatter",
+  "+components/leveldb_proto/public",
   "+crypto",
   "+ios/net",
   "+ios/web",
@@ -10,9 +11,6 @@ include_rules = [
   "+services/network/public/cpp",
   "+services/network/public/mojom",
   "+ui",
-
-  # Needed to embed the ServiceManager in //ios/web.
-  "+services/service_manager",
 
   # For tests.
   "+ios/testing",

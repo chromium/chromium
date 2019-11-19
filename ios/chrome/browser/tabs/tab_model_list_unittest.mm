@@ -7,11 +7,13 @@
 #include "ios/chrome/browser/application_context.h"
 #include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #include "ios/chrome/browser/browser_state/test_chrome_browser_state_manager.h"
+#import "ios/chrome/browser/main/browser_web_state_list_delegate.h"
 #import "ios/chrome/browser/sessions/test_session_service.h"
 #import "ios/chrome/browser/tabs/tab_model.h"
 #import "ios/chrome/browser/tabs/tab_model_list_observer.h"
+#import "ios/chrome/browser/web_state_list/web_state_list.h"
 #include "ios/chrome/test/ios_chrome_scoped_testing_chrome_browser_state_manager.h"
-#include "ios/web/public/test/test_web_thread_bundle.h"
+#include "ios/web/public/test/web_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
@@ -40,18 +42,28 @@ class TabModelListTest : public PlatformTest {
   TabModelListTest()
       : scoped_browser_state_manager_(
             std::make_unique<TestChromeBrowserStateManager>(
-                TestChromeBrowserState::Builder().Build())) {}
+                TestChromeBrowserState::Builder().Build())),
+        web_state_list_delegate_(
+            std::make_unique<BrowserWebStateListDelegate>()),
+        web_state_list_(
+            std::make_unique<WebStateList>(web_state_list_delegate_.get())),
+        otr_web_state_list_delegate_(
+            std::make_unique<BrowserWebStateListDelegate>()),
+        otr_web_state_list_(
+            std::make_unique<WebStateList>(web_state_list_delegate_.get())) {}
 
   TabModel* CreateTabModel() {
     return [[TabModel alloc]
         initWithSessionService:[[TestSessionService alloc] init]
-                  browserState:browser_state()];
+                  browserState:browser_state()
+                  webStateList:web_state_list_.get()];
   }
 
   TabModel* CreateOffTheRecordTabModel() {
     return [[TabModel alloc]
         initWithSessionService:[[TestSessionService alloc] init]
-                  browserState:otr_browser_state()];
+                  browserState:otr_browser_state()
+                  webStateList:otr_web_state_list_.get()];
   }
 
   NSArray<TabModel*>* RegisteredTabModels() {
@@ -73,8 +85,14 @@ class TabModelListTest : public PlatformTest {
   }
 
  private:
-  web::TestWebThreadBundle thread_bundle_;
+  web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingChromeBrowserStateManager scoped_browser_state_manager_;
+
+  std::unique_ptr<WebStateListDelegate> web_state_list_delegate_;
+  std::unique_ptr<WebStateList> web_state_list_;
+
+  std::unique_ptr<WebStateListDelegate> otr_web_state_list_delegate_;
+  std::unique_ptr<WebStateList> otr_web_state_list_;
 
   DISALLOW_COPY_AND_ASSIGN(TabModelListTest);
 };
@@ -105,7 +123,7 @@ TEST_F(TabModelListTest, RegisterAndUnregisterTabModels) {
   EXPECT_CALL(observer, TabModelUnregisteredFromBrowserState(
                             Eq(tab_model), Eq(otr_browser_state())))
       .Times(0);
-  [tab_model browserStateDestroyed];
+  [tab_model disconnect];
   EXPECT_EQ([RegisteredTabModels() count], 0u);
 
   TabModelList::RemoveObserver(&observer);
@@ -137,7 +155,7 @@ TEST_F(TabModelListTest, RegisterAndUnregisterOffTheRecordTabModels) {
   EXPECT_CALL(observer, TabModelUnregisteredFromBrowserState(
                             Eq(tab_model), Eq(browser_state())))
       .Times(0);
-  [tab_model browserStateDestroyed];
+  [tab_model disconnect];
   EXPECT_EQ([RegisteredOffTheRecordTabModels() count], 0u);
 
   TabModelList::RemoveObserver(&observer);
@@ -156,8 +174,8 @@ TEST_F(TabModelListTest, SupportsMultipleTabModels) {
   EXPECT_NE([RegisteredTabModels() indexOfObject:tab_model2],
             static_cast<NSUInteger>(NSNotFound));
 
-  [tab_model1 browserStateDestroyed];
-  [tab_model2 browserStateDestroyed];
+  [tab_model1 disconnect];
+  [tab_model2 disconnect];
 
   EXPECT_EQ([RegisteredTabModels() count], 0u);
 }
@@ -175,8 +193,8 @@ TEST_F(TabModelListTest, SupportsMultipleOffTheRecordTabModels) {
   EXPECT_NE([RegisteredOffTheRecordTabModels() indexOfObject:tab_model2],
             static_cast<NSUInteger>(NSNotFound));
 
-  [tab_model1 browserStateDestroyed];
-  [tab_model2 browserStateDestroyed];
+  [tab_model1 disconnect];
+  [tab_model2 disconnect];
 
   EXPECT_EQ([RegisteredOffTheRecordTabModels() count], 0u);
 }

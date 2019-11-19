@@ -13,7 +13,6 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_base.h"
 #include "fuchsia/engine/browser/context_impl.h"
-#include "fuchsia/fidl/chromium/web/cpp/fidl.h"
 
 namespace cr_fuchsia {
 
@@ -29,19 +28,19 @@ class WebEngineBrowserTest : public content::BrowserTestBase {
   static void SetContextClientChannel(zx::channel channel);
 
   // Creates a Frame for this Context.
-  // |observer|: If set, specifies the navigation observer for the Frame.
-  chromium::web::FramePtr CreateFrame(
-      chromium::web::NavigationEventObserver* observer);
+  // |listener|: If set, specifies the navigation listener for the Frame.
+  fuchsia::web::FramePtr CreateFrame(
+      fuchsia::web::NavigationEventListener* listener);
 
   // Gets the client object for the Context service.
-  chromium::web::ContextPtr& context() { return context_; }
+  fuchsia::web::ContextPtr& context() { return context_; }
 
   // Gets the underlying ContextImpl service instance.
   ContextImpl* context_impl() const;
 
-  fidl::BindingSet<chromium::web::NavigationEventObserver>&
-  navigation_observer_bindings() {
-    return navigation_observer_bindings_;
+  fidl::BindingSet<fuchsia::web::NavigationEventListener>&
+  navigation_listener_bindings() {
+    return navigation_listener_bindings_;
   }
 
   void set_test_server_root(const base::FilePath& path) {
@@ -55,9 +54,9 @@ class WebEngineBrowserTest : public content::BrowserTestBase {
 
  private:
   base::FilePath test_server_root_;
-  chromium::web::ContextPtr context_;
-  fidl::BindingSet<chromium::web::NavigationEventObserver>
-      navigation_observer_bindings_;
+  fuchsia::web::ContextPtr context_;
+  fidl::BindingSet<fuchsia::web::NavigationEventListener>
+      navigation_listener_bindings_;
 
   DISALLOW_COPY_AND_ASSIGN(WebEngineBrowserTest);
 };

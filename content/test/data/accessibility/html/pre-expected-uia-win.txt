@@ -1,0 +1,9 @@
+document
+++region
+++++description Name='This test is to check   pre<newline>formatting.'
+++group
+++++description Name='This test is to check   pre<newline>formatting'
+++group
+++++description Name='This test is to check   pre<newline>formatting.'
+++group
+++++description Name='This test is to check pre formatting.'

@@ -10,9 +10,11 @@
 #include <string>
 
 #include "base/compiler_specific.h"
+#include "base/feature_list.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
+#include "third_party/skia/include/core/SkTypeface.h"
 #include "ui/gfx/gfx_export.h"
 #include "ui/gfx/platform_font.h"
 
@@ -21,29 +23,18 @@ struct IDWriteFont;
 
 namespace gfx {
 
-namespace internal {
-class SystemFonts;
-}
+// Deprecation of PlatformFontWin (See http://crbug.com/944227).
+extern GFX_EXPORT const base::Feature kPlatformFontSkiaOnWindows;
 
 class GFX_EXPORT PlatformFontWin : public PlatformFont {
  public:
-  enum class SystemFont : int {
-    kCaption = 0,
-    kSmallCaption,
-    kMenu,
-    kStatus,
-    kMessage
-  };
-
-  // Represents an optional override of system font and scale.
-  struct FontAdjustment {
-    base::string16 font_family_override;
-    double font_scale = 1.0;
-  };
-
   PlatformFontWin();
-  explicit PlatformFontWin(NativeFont native_font);
   PlatformFontWin(const std::string& font_name, int font_size);
+
+  // Wraps the provided SkTypeface without triggering a font rematch.
+  PlatformFontWin(sk_sp<SkTypeface> typeface,
+                  int font_size_pixels,
+                  const base::Optional<FontRenderParams>& params);
 
   // Dialog units to pixels conversion.
   // See http://support.microsoft.com/kb/145994 for details.
@@ -53,19 +44,6 @@ class GFX_EXPORT PlatformFontWin : public PlatformFont {
   int vertical_dlus_to_pixels(int dlus)  const {
     return dlus * font_ref_->height() / 8;
   }
-
-  // Callback that returns the minimum height that should be used for
-  // gfx::Fonts. Optional. If not specified, the minimum font size is 0.
-  typedef int (*GetMinimumFontSizeCallback)();
-  static void SetGetMinimumFontSizeCallback(
-      GetMinimumFontSizeCallback callback);
-
-  // Callback that adjusts a SystemFontInfo to meet suitability requirements
-  // of the embedding application. Optional. If not specified, no adjustments
-  // are performed other than clamping to a minimum font size if
-  // |get_minimum_font_size_callback| is specified.
-  typedef void (*AdjustFontCallback)(FontAdjustment* font_adjustment);
-  static void SetAdjustFontCallback(AdjustFontCallback callback);
 
   // Returns the font name for the system locale. Some fonts, particularly
   // East Asian fonts, have different names per locale. If the localized font
@@ -83,43 +61,22 @@ class GFX_EXPORT PlatformFontWin : public PlatformFont {
   int GetExpectedTextWidth(int length) override;
   int GetStyle() const override;
   const std::string& GetFontName() const override;
-  std::string GetActualFontNameForTesting() const override;
+  std::string GetActualFontName() const override;
   int GetFontSize() const override;
   const FontRenderParams& GetFontRenderParams() override;
-  NativeFont GetNativeFont() const override;
+  sk_sp<SkTypeface> GetNativeSkTypefaceIfAvailable() const override;
+
+  NativeFont GetNativeFont() const;
 
   // Called once during initialization if we should be retrieving font metrics
   // from skia and DirectWrite.
   static void SetDirectWriteFactory(IDWriteFactory* factory);
 
-  static bool IsDirectWriteEnabled();
-
-  // Returns the specified Windows system font, suitable for drawing on screen
-  // elements.
-  static const Font& GetSystemFont(SystemFont system_font);
-
-  // Apply a font adjustment to an existing font.
-  static Font AdjustExistingFont(NativeFont existing_font,
-                                 const FontAdjustment& font_adjustment);
-
  private:
-  friend class internal::SystemFonts;
-  FRIEND_TEST_ALL_PREFIXES(RenderTextTest, HarfBuzz_UniscribeFallback);
   FRIEND_TEST_ALL_PREFIXES(PlatformFontWinTest, Metrics_SkiaVersusGDI);
   FRIEND_TEST_ALL_PREFIXES(PlatformFontWinTest, DirectWriteFontSubstitution);
-  FRIEND_TEST_ALL_PREFIXES(PlatformFontWinTest, AdjustFontSize);
-  FRIEND_TEST_ALL_PREFIXES(PlatformFontWinTest,
-                           AdjustFontSize_MinimumSizeSpecified);
-  FRIEND_TEST_ALL_PREFIXES(PlatformFontWinTest, AdjustLOGFONT_NoAdjustment);
-  FRIEND_TEST_ALL_PREFIXES(PlatformFontWinTest, AdjustLOGFONT_ChangeFace);
-  FRIEND_TEST_ALL_PREFIXES(PlatformFontWinTest, AdjustLOGFONT_ScaleDown);
-  FRIEND_TEST_ALL_PREFIXES(PlatformFontWinTest,
-                           AdjustLOGFONT_ScaleDownWithRounding);
-  FRIEND_TEST_ALL_PREFIXES(PlatformFontWinTest,
-                           AdjustLOGFONT_ScaleUpWithFaceChange);
-  FRIEND_TEST_ALL_PREFIXES(PlatformFontWinTest,
-                           AdjustLOGFONT_ScaleUpWithRounding);
 
+  explicit PlatformFontWin(NativeFont native_font);
   ~PlatformFontWin() override;
 
   // Chrome text drawing bottoms out in the Windows GDI functions that take an
@@ -164,7 +121,6 @@ class GFX_EXPORT PlatformFontWin : public PlatformFont {
 
    private:
     friend class base::RefCounted<HFontRef>;
-    FRIEND_TEST_ALL_PREFIXES(RenderTextTest, HarfBuzz_UniscribeFallback);
     FRIEND_TEST_ALL_PREFIXES(PlatformFontWinTest, Metrics_SkiaVersusGDI);
     FRIEND_TEST_ALL_PREFIXES(PlatformFontWinTest, DirectWriteFontSubstitution);
 
@@ -230,17 +186,6 @@ class GFX_EXPORT PlatformFontWin : public PlatformFont {
       HFONT gdi_font,
       const TEXTMETRIC& font_metrics);
 
-  // Adjust a font smaller or larger, subject to the global minimum size.
-  // |lf_height| is the height as reported by the LOGFONT structure, and may
-  // be positive or negative (but is typically negative, indicating character
-  // size rather than cell size). The absolute value of |lf_size| will be
-  // adjusted by |size_delta| and then returned with the original sign.
-  static int AdjustFontSize(int lf_height, int size_delta);
-
-  // Adjust a LOGFONT structure for optional size scale and face override.
-  static void AdjustLOGFONT(const FontAdjustment& font_adjustment,
-                            LOGFONT* logfont);
-
   // Takes control of a native font (e.g. from CreateFontIndirect()) and wraps
   // it in a Font object to manage its lifespan. Note that |hfont| may not be
   // valid after the call; use the returned Font object instead.
@@ -256,14 +201,8 @@ class GFX_EXPORT PlatformFontWin : public PlatformFont {
   // Indirect reference to the HFontRef, which references the underlying HFONT.
   scoped_refptr<HFontRef> font_ref_;
 
-  // Pointer to the global IDWriteFactory interface.
-  static IDWriteFactory* direct_write_factory_;
-
-  // Font adjustment callback.
-  static AdjustFontCallback adjust_font_callback_;
-
-  // Minimum size callback.
-  static GetMinimumFontSizeCallback get_minimum_font_size_callback_;
+  // An optional typeface when the font is constructed from a typeface.
+  sk_sp<SkTypeface> typeface_;
 
   DISALLOW_COPY_AND_ASSIGN(PlatformFontWin);
 };

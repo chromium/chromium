@@ -46,11 +46,6 @@ class CORE_EXPORT DevToolsHost final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static DevToolsHost* Create(InspectorFrontendClient* client,
-                              LocalFrame* frontend_frame) {
-    return MakeGarbageCollected<DevToolsHost>(client, frontend_frame);
-  }
-
   DevToolsHost(InspectorFrontendClient*, LocalFrame* frontend_frame);
   ~DevToolsHost() override;
 

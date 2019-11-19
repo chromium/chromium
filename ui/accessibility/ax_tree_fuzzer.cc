@@ -26,6 +26,17 @@ extern "C" int LLVMFuzzerTestOneInput(const unsigned char* data, size_t size) {
     initial_state.nodes.push_back(node);
   }
 
+  // Don't test absurdly large trees, it might time out.
+#if defined(NDEBUG)
+  constexpr size_t kMaxNodes = 500000;
+#else
+  constexpr size_t kMaxNodes = 50000;
+#endif
+  if (initial_state.nodes.size() > kMaxNodes) {
+    LOG(WARNING) << "Skipping input because it's too large";
+    return 0;
+  }
+
   // Run with --v=1 to aid in debugging a specific crash.
   VLOG(1) << "Input accessibility tree:\n" << initial_state.ToString();
 

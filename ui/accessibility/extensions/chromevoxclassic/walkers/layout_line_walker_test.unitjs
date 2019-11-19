@@ -1,0 +1,179 @@
+// Copyright 2014 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Include test fixture.
+GEN_INCLUDE(['//ui/accessibility/extensions/chromevoxclassic/testing/chromevox_unittest_base.js']);
+
+/**
+ * Test fixture.
+ * @constructor
+ * @extends {ChromeVoxUnitTestBase}
+ */
+function ChromeVoxLayoutLineWalkerUnitTest() {}
+
+ChromeVoxLayoutLineWalkerUnitTest.prototype = {
+  __proto__: ChromeVoxUnitTestBase.prototype,
+
+  /** @override */
+  closureModuleDeps: [
+    'TestMsgs',
+    'cvox.CursorSelection',
+    'cvox.LayoutLineWalker',
+  ],
+
+  /** @override */
+  setUp: function() {
+    this.loadHtml(
+     '<div id="1">' +
+      '<p id="a">Demonstrating that in-line links like ' +
+        '<a id="aa" href="google.com">google</a> ' +
+        'are considered a single layout line.' +
+      '</p>' +
+      '<p id="b">' +
+        'This includes a paragraph that has a lot of text like this one. ' +
+        '<a id="bb" href="wikipedia.com">Wikipedia</a> ' +
+        'is a great example of a site that this walker becomes valuable.<br>' +
+        'Braille also benefits greatly from this type of formatting since ' +
+        'some displays can handle lots of text like 80 cell displays!' +
+      '</p>' +
+     '</div>'
+    );
+    Msgs = TestMsgs;
+    this.walker = new cvox.LayoutLineWalker();
+
+    this.a = cvox.CursorSelection.fromNode($('a'));
+    this.aa = cvox.CursorSelection.fromNode($('aa'));
+    this.b = cvox.CursorSelection.fromNode($('b'));
+    this.bb = cvox.CursorSelection.fromNode($('bb'));
+
+    this.line1Text = 'Demonstrating that in-line links like google are' +
+        ' considered a single layout line.';
+
+    this.line2Text = 'This includes a paragraph that has a lot of text' +
+        ' like this one. Wikipedia is a great example of a site that this' +
+        ' walker becomes valuable.';
+
+    this.line3Text =
+        'Braille also benefits greatly from this type of formatting since ' +
+        'some displays can handle lots of text like 80 cell displays!';
+
+    this.line1Description =
+        [{'context': '', 'text': 'Demonstrating that in-line links like',
+          'userValue': '', 'annotation': '', 'earcons': [], 'personality': null,
+          'hint': '', 'category': null},
+         {'context': '', 'text': 'google', 'userValue': '', 'annotation': 'Link',
+          'earcons': [cvox.Earcon.LINK], 'personality': null,
+          hint: '', 'category': null},
+         {'context': '', 'text': 'are considered a single layout line.',
+          'userValue': '', 'annotation': '', 'earcons': [], 'personality': null,
+          'hint': '', 'category': null}];
+
+    this.line2Description =
+        [{'context': '', 'text':
+          'This includes a paragraph that has a lot of text like this one.',
+          'userValue': '', 'annotation': '', 'earcons': [], 'personality': null,
+          'hint': '', 'category': null},
+         {'context': '',
+          'text': 'Wikipedia',
+          'userValue': '',
+          'annotation': 'Link',
+          'earcons': [cvox.Earcon.LINK],
+          'personality': null,
+          'hint': '', 'category': null},
+         {'context': '', 'text':
+          'is a great example of a site that this walker becomes valuable.',
+          'userValue': '',
+          'annotation': '', 'earcons': [], 'personality': null,
+          'hint': '', 'category': null}];
+  }
+};
+
+TEST_F('ChromeVoxLayoutLineWalkerUnitTest', 'Sync', function() {
+  var sel = cvox.CursorSelection.fromNode($('1'));
+  sel = this.walker.sync(sel);
+  assertEquals(this.line1Text, sel.getText());
+
+  sel = this.walker.sync(this.a);
+  assertEquals(this.line1Text, sel.getText());
+
+  sel = this.walker.sync(this.aa);
+  assertEquals(this.line1Text, sel.getText());
+
+  sel = this.walker.sync(this.b);
+  assertEquals(this.line2Text, sel.getText());
+
+  sel = this.walker.sync(this.bb);
+  assertEquals(this.line2Text, sel.getText());
+
+  // Reversed sync.
+  sel = this.walker.sync(this.a).setReversed(true);
+  assertEquals(this.line1Text, sel.getText());
+
+  sel = this.walker.sync(this.aa).setReversed(true);
+  assertEquals(this.line1Text, sel.getText());
+
+  sel = this.walker.sync(this.b).setReversed(true);
+  assertEquals(this.line2Text, sel.getText());
+
+  sel = this.walker.sync(this.bb).setReversed(true);
+  assertEquals(this.line2Text, sel.getText());
+});
+
+/** Tests description of valid selections. */
+TEST_F('ChromeVoxLayoutLineWalkerUnitTest', 'Description', function() {
+  var sel = this.walker.sync(this.a);
+  assertEqualsJSON(this.line1Description,
+                   this.walker.getDescription(sel, sel));
+
+  var sel = this.walker.sync(this.b);
+  assertEqualsJSON(this.line2Description, this.walker.getDescription(sel, sel));
+});
+
+
+/** Tests back/forward movement. */
+TEST_F('ChromeVoxLayoutLineWalkerUnitTest', 'BackForward', function() {
+  var sel = this.walker.sync(this.a);
+
+  // Beginning of second line.
+  sel = this.walker.next(sel);
+  assertEquals(Text, sel.start.node.constructor);
+  assertEquals(this.b.start.node.id, sel.start.node.parentNode.id);
+  assertEquals(null, sel.start.node.previousSibling);
+  assertEquals(this.bb.start.node.id, sel.start.node.nextSibling.id);
+  assertEquals(0, sel.start.index);
+
+  // End of second line.
+  assertEquals(Text, sel.end.node.constructor);
+  assertEquals(this.b.end.node.id, sel.end.node.parentNode.id);
+  assertEquals(HTMLBRElement, sel.end.node.nextSibling.constructor);
+  assertEquals(this.bb.start.node.id, sel.end.node.previousSibling.id);
+  assertEquals(64, sel.end.index);
+
+  // Last line.
+  var last = this.walker.next(sel);
+  assertEquals(this.line3Text, last.getText());
+
+  // Wrap.
+  assertEquals(null, this.walker.next(last));
+
+  // Reverse.
+  sel = last.setReversed(true);
+
+  // Second line.
+  sel = this.walker.next(sel);
+  assertEquals(this.line2Text, sel.getText());
+
+  // Next always returns an unreversed selection for line granularity. Reverse
+  // it to move backward.
+  sel.setReversed(true);
+
+  // First line.
+  sel = this.walker.next(sel);
+  assertEquals(this.line1Text, sel.getText());
+
+  // Wrap.
+  sel.setReversed(true);
+  sel = this.walker.next(sel);
+  assertEquals(null, sel);
+});

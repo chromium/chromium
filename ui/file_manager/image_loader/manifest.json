@@ -12,14 +12,13 @@
       "fileSystem": ["requestFileSystem"]
     },
     "fileManagerPrivate",
-    "https://www.googledrive.com/",
-    "https://lh3.googleusercontent.com/",
     "storage"
   ],
-  "content_security_policy": "default-src 'none'; script-src 'self' blob: filesystem: chrome://resources chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj; style-src 'self' blob: filesystem:; frame-src 'self' blob: filesystem:; img-src 'self' blob: filesystem: data:; media-src 'self' blob: filesystem:; connect-src 'self' blob: filesystem: https://www.googledrive.com https://lh3.googleusercontent.com",
+  "content_security_policy": "default-src 'none'; script-src 'self' 'wasm-eval' blob: filesystem: chrome://resources chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj; style-src 'self' blob: filesystem:; frame-src 'self' blob: filesystem:; img-src 'self' blob: filesystem: data:; media-src 'self' blob: filesystem:; connect-src 'self' blob: filesystem:",
   "background": {
     "scripts": [
       "chrome://resources/js/assert.js",
+      "piex/piex.js.wasm",
       "background_scripts.js"
     ],
     "persistent": false

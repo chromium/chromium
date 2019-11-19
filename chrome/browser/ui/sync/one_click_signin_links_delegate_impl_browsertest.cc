@@ -10,19 +10,6 @@
 
 using OneClickSigninLinksDelegateBrowserTest = InProcessBrowserTest;
 
-IN_PROC_BROWSER_TEST_F(OneClickSigninLinksDelegateBrowserTest, AdvancedLink) {
-  std::unique_ptr<OneClickSigninLinksDelegate> delegate_(
-      new OneClickSigninLinksDelegateImpl(browser()));
-
-  int starting_tab_count = browser()->tab_strip_model()->count();
-
-  // The current tab should be replaced.
-  delegate_->OnAdvancedLinkClicked();
-
-  int tab_count = browser()->tab_strip_model()->count();
-  EXPECT_EQ(starting_tab_count, tab_count);
-}
-
 IN_PROC_BROWSER_TEST_F(OneClickSigninLinksDelegateBrowserTest, LearnMoreLink) {
   std::unique_ptr<OneClickSigninLinksDelegate> delegate_(
       new OneClickSigninLinksDelegateImpl(browser()));

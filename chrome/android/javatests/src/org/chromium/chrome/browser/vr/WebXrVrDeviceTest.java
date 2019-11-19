@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.vr;
 
 import static org.chromium.chrome.browser.vr.XrTestFramework.PAGE_LOAD_TIMEOUT_S;
 import static org.chromium.chrome.browser.vr.XrTestFramework.POLL_TIMEOUT_SHORT_MS;
-import static org.chromium.chrome.test.util.ChromeRestriction.RESTRICTION_TYPE_SVR;
 import static org.chromium.chrome.test.util.ChromeRestriction.RESTRICTION_TYPE_VIEWER_DAYDREAM;
 
 import android.graphics.PointF;
@@ -31,7 +30,6 @@ import org.chromium.chrome.browser.ChromeSwitches;
 import org.chromium.chrome.browser.vr.rules.XrActivityRestriction;
 import org.chromium.chrome.browser.vr.util.NativeUiUtils;
 import org.chromium.chrome.browser.vr.util.NfcSimUtils;
-import org.chromium.chrome.browser.vr.util.VrShellDelegateUtils;
 import org.chromium.chrome.browser.vr.util.VrTestRuleUtils;
 import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
@@ -40,13 +38,13 @@ import java.util.List;
 import java.util.concurrent.Callable;
 
 /**
- * End-to-end tests for WebVR where the choice of test device has a greater
+ * End-to-end tests for WebXR where the choice of test device has a greater
  * impact than the usual Daydream-ready vs. non-Daydream-ready effect.
  */
 @RunWith(ParameterizedRunner.class)
 @UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
-@CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, "enable-webvr"})
-@MinAndroidSdkLevel(Build.VERSION_CODES.KITKAT) // WebVR is only supported on K+
+@CommandLineFlags.
+Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, "enable-features=LogJsConsoleMessages"})
 public class WebXrVrDeviceTest {
     @ClassParameter
     private static List<ParameterSet> sClassParams =
@@ -56,7 +54,6 @@ public class WebXrVrDeviceTest {
 
     private ChromeActivityTestRule mTestRule;
     private WebXrVrTestFramework mWebXrVrTestFramework;
-    private WebVrTestFramework mWebVrTestFramework;
 
     public WebXrVrDeviceTest(Callable<ChromeActivityTestRule> callable) throws Exception {
         mTestRule = callable.call();
@@ -64,49 +61,8 @@ public class WebXrVrDeviceTest {
     }
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         mWebXrVrTestFramework = new WebXrVrTestFramework(mTestRule);
-        mWebVrTestFramework = new WebVrTestFramework(mTestRule);
-    }
-
-    /**
-     * Tests that the reported WebVR capabilities match expectations on the devices the WebVR tests
-     * are run on continuously.
-     */
-    @Test
-    @MediumTest
-    @XrActivityRestriction({XrActivityRestriction.SupportedActivity.ALL})
-    public void testDeviceCapabilitiesMatchExpectations() throws InterruptedException {
-        mWebVrTestFramework.loadUrlAndAwaitInitialization(
-                WebVrTestFramework.getFileUrlForHtmlTestFile(
-                        "test_device_capabilities_match_expectations"),
-                PAGE_LOAD_TIMEOUT_S);
-        mWebVrTestFramework.executeStepAndWait(
-                "stepCheckDeviceCapabilities('" + Build.DEVICE + "')");
-        mWebVrTestFramework.endTest();
-    }
-
-    /**
-     * Tests that the magic-window-only GVR-less implementation causes a VRDisplay to be present
-     * when GVR isn't present and has expected capabilities.
-     */
-    @Test
-    @MediumTest
-    @XrActivityRestriction({XrActivityRestriction.SupportedActivity.ALL})
-    @Restriction(RESTRICTION_TYPE_SVR)
-    public void testGvrlessMagicWindowCapabilities() throws InterruptedException {
-        // Make Chrome think that VrCore is not installed
-        VrShellDelegateUtils.setVrCoreCompatibility(VrCoreCompatibility.VR_NOT_AVAILABLE);
-
-        mWebVrTestFramework.loadUrlAndAwaitInitialization(
-                WebVrTestFramework.getFileUrlForHtmlTestFile(
-                        "test_device_capabilities_match_expectations"),
-                PAGE_LOAD_TIMEOUT_S);
-        Assert.assertTrue(mWebVrTestFramework.xrDeviceFound());
-        mWebVrTestFramework.executeStepAndWait(
-                "stepCheckDeviceCapabilities('VR Orientation Device')");
-        mWebVrTestFramework.endTest();
-        VrShellDelegateUtils.getDelegateInstance().overrideVrCoreVersionCheckerForTesting(null);
     }
 
     /**
@@ -114,11 +70,10 @@ public class WebXrVrDeviceTest {
      */
     @Test
     @MediumTest
-    @CommandLineFlags
-            .Remove({"enable-webvr"})
             @CommandLineFlags.Add({"enable-features=WebXR"})
             @XrActivityRestriction({XrActivityRestriction.SupportedActivity.ALL})
-            public void testWebXrCapabilities() throws InterruptedException {
+            @MinAndroidSdkLevel(Build.VERSION_CODES.LOLLIPOP) // WebXR is only supported on L+
+            public void testWebXrCapabilities() {
         mWebXrVrTestFramework.loadUrlAndAwaitInitialization(
                 WebXrVrTestFramework.getFileUrlForHtmlTestFile("test_webxr_capabilities"),
                 PAGE_LOAD_TIMEOUT_S);
@@ -136,14 +91,15 @@ public class WebXrVrDeviceTest {
      */
     @Test
     @MediumTest
-    @CommandLineFlags
-            .Remove({"enable-webvr"})
             @CommandLineFlags.Add({"enable-features=WebXR"})
             @Restriction(RESTRICTION_TYPE_VIEWER_DAYDREAM)
-            public void testForNullPosesInInlineVrPostImmersive() throws InterruptedException {
+            @MinAndroidSdkLevel(Build.VERSION_CODES.LOLLIPOP) // WebXR is only supported on L+
+            public void testForNullPosesInInlineVrPostImmersive() {
         mWebXrVrTestFramework.loadUrlAndAwaitInitialization(
                 WebXrVrTestFramework.getFileUrlForHtmlTestFile("test_inline_vr_poses"),
                 PAGE_LOAD_TIMEOUT_S);
+        mWebXrVrTestFramework.enterMagicWindowSessionWithUserGestureOrFail();
+
         mWebXrVrTestFramework.enterSessionWithUserGestureOrFail();
         Assert.assertTrue("Browser did not enter VR", VrShellDelegate.isInVr());
 
@@ -171,16 +127,16 @@ public class WebXrVrDeviceTest {
      */
     @Test
     @MediumTest
-    @CommandLineFlags
-            .Remove({"enable-webvr"})
-            @CommandLineFlags.Add({"enable-features=WebXR"})
-            @Restriction(RESTRICTION_TYPE_VIEWER_DAYDREAM)
-            public void testForNullPosesInInlineVrFromNfc() throws InterruptedException {
+    @CommandLineFlags.Add({"enable-features=WebXR"})
+    @Restriction(RESTRICTION_TYPE_VIEWER_DAYDREAM)
+    @MinAndroidSdkLevel(Build.VERSION_CODES.LOLLIPOP) // WebXR is only supported on L+
+    public void testForNullPosesInInlineVrFromNfc() {
         mWebXrVrTestFramework.loadUrlAndAwaitInitialization(
                 WebXrVrTestFramework.getFileUrlForHtmlTestFile("test_inline_vr_poses"),
                 PAGE_LOAD_TIMEOUT_S);
         NfcSimUtils.simNfcScanUntilVrEntry(mTestRule.getActivity());
 
+        mWebXrVrTestFramework.enterMagicWindowSessionWithUserGestureOrFail();
         mWebXrVrTestFramework.executeStepAndWait("posesTurnedOffStep()");
 
         mWebXrVrTestFramework.executeStepAndWait("resetCounters()");
@@ -204,16 +160,16 @@ public class WebXrVrDeviceTest {
      */
     @Test
     @MediumTest
-    @CommandLineFlags
-            .Remove({"enable-webvr"})
-            @CommandLineFlags.Add({"enable-features=WebXR"})
-            @Restriction(RESTRICTION_TYPE_VIEWER_DAYDREAM)
-            public void testForNullPosesInInlineVrOnNavigation() throws InterruptedException {
+    @CommandLineFlags.Add({"enable-features=WebXR"})
+    @Restriction(RESTRICTION_TYPE_VIEWER_DAYDREAM)
+    @MinAndroidSdkLevel(Build.VERSION_CODES.LOLLIPOP) // WebXR is only supported on L+
+    public void testForNullPosesInInlineVrOnNavigation() {
         NfcSimUtils.simNfcScanUntilVrEntry(mTestRule.getActivity());
         mWebXrVrTestFramework.loadUrlAndAwaitInitialization(
                 WebXrVrTestFramework.getFileUrlForHtmlTestFile("test_inline_vr_poses"),
                 PAGE_LOAD_TIMEOUT_S);
 
+        mWebXrVrTestFramework.enterMagicWindowSessionWithUserGestureOrFail();
         mWebXrVrTestFramework.executeStepAndWait("posesTurnedOffStep()");
 
         mWebXrVrTestFramework.executeStepAndWait("resetCounters()");

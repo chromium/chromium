@@ -40,5 +40,9 @@ void TimeTrayItemView::OnSessionStateChanged(
   time_view_->SetTextColorBasedOnSession(state);
 }
 
+const char* TimeTrayItemView::GetClassName() const {
+  return "TimeTrayItemView";
+}
+
 }  // namespace tray
 }  // namespace ash

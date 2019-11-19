@@ -14,7 +14,7 @@
 #include "third_party/blink/renderer/core/input/boundary_event_dispatcher.h"
 #include "third_party/blink/renderer/core/input/touch_event_manager.h"
 #include "third_party/blink/renderer/core/page/touch_adjustment.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 
 namespace blink {
@@ -24,8 +24,8 @@ class MouseEventManager;
 
 // This class takes care of dispatching all pointer events and keeps track of
 // properties of active pointer events.
-class CORE_EXPORT PointerEventManager
-    : public GarbageCollectedFinalized<PointerEventManager> {
+class CORE_EXPORT PointerEventManager final
+    : public GarbageCollected<PointerEventManager> {
  public:
   PointerEventManager(LocalFrame&, MouseEventManager&);
   void Trace(blink::Visitor*);
@@ -75,8 +75,8 @@ class CORE_EXPORT PointerEventManager
 
   void ElementRemoved(Element*);
 
-  void SetPointerCapture(PointerId, Element*);
-  void ReleasePointerCapture(PointerId, Element*);
+  bool SetPointerCapture(PointerId, Element*);
+  bool ReleasePointerCapture(PointerId, Element*);
   void ReleaseMousePointerCapture();
 
   // See Element::hasPointerCapture(PointerId).
@@ -89,16 +89,16 @@ class CORE_EXPORT PointerEventManager
 
   // Returns whether pointerId is for an active touch pointerevent and whether
   // the last event was sent to the given frame.
-  bool IsTouchPointerIdActiveOnFrame(PointerId, LocalFrame*) const;
+  bool IsPointerIdActiveOnFrame(PointerId, LocalFrame*) const;
 
   // Returns true if the primary pointerdown corresponding to the given
   // |uniqueTouchEventId| was canceled. Also drops stale ids from
   // |m_touchIdsForCanceledPointerdowns|.
   bool PrimaryPointerdownCanceled(uint32_t unique_touch_event_id);
 
-  void ProcessPendingPointerCaptureForPointerLock(const WebMouseEvent&);
-
   void RemoveLastMousePosition();
+
+  Element* GetMouseCaptureTarget();
 
   // Sends any outstanding events. For example it notifies TouchEventManager
   // to group any changes to touch since last FlushEvents and send the touch
@@ -168,7 +168,8 @@ class CORE_EXPORT PointerEventManager
       const AtomicString& mouse_event_name,
       const WebMouseEvent&,
       const Vector<WebMouseEvent>& coalesced_events,
-      const Vector<WebMouseEvent>& predicted_events);
+      const Vector<WebMouseEvent>& predicted_events,
+      const String& canvas_region_id);
 
   // Returns PointerEventTarget for a WebTouchPoint, hit-testing as necessary.
   event_handling_util::PointerEventTarget ComputePointerEventTarget(
@@ -189,6 +190,13 @@ class CORE_EXPORT PointerEventManager
                           EventTarget* entered_target,
                           PointerEvent*);
   void SetElementUnderPointer(PointerEvent*, Element*);
+
+  // First movement after entering a new frame should be 0 as the new frame
+  // doesn't have the info for the previous events. This function sets the
+  // LastPosition to be same as current event position when target is in
+  // different frame, so that movement_x/y will be 0.
+  void SetLastPointerPositionForFrameBoundary(const WebPointerEvent& event,
+                                              Element* target);
 
   // Processes the assignment of |m_pointerCaptureTarget| from
   // |m_pendingPointerCaptureTarget| and sends the got/lostpointercapture
@@ -225,6 +233,10 @@ class CORE_EXPORT PointerEventManager
   bool ShouldAdjustPointerEvent(const WebPointerEvent&) const;
   // Adjust coordinates so it can be used to find the best clickable target.
   void AdjustTouchPointerEvent(WebPointerEvent&);
+
+  // Check if the SkipTouchEventFilter experiment is configured to skip
+  // filtering on the given event.
+  bool ShouldFilterEvent(PointerEvent* pointer_event);
 
   // NOTE: If adding a new field to this class please ensure that it is
   // cleared in |PointerEventManager::clear()|.
@@ -268,6 +280,12 @@ class CORE_EXPORT PointerEventManager
   // The pointerId of the PointerEvent currently being dispatched within this
   // frame or 0 if none.
   PointerId dispatching_pointer_id_;
+
+  // These flags are set for the SkipTouchEventFilter experiment. The
+  // experiment either skips filtering discrete (touch start/end) events to the
+  // main thread, or all events (touch start/end/move).
+  bool skip_touch_filter_discrete_ = false;
+  bool skip_touch_filter_all_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(PointerEventManager);
 };

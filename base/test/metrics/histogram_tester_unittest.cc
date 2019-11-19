@@ -155,4 +155,18 @@ TEST_F(HistogramTesterTest, TestGetAllChangedHistograms) {
       results.find("Histogram: Test1.Test2.Test3 recorded 1 new samples"));
 }
 
+TEST_F(HistogramTesterTest, MissingHistogramMeansEmptyBuckets) {
+  // When a histogram hasn't been instantiated, expecting counts of zero should
+  // still succeed.
+  static const char kHistogram[] = "MissingHistogramMeansEmptyBucketsHistogram";
+  HistogramTester tester;
+
+  tester.ExpectBucketCount(kHistogram, 42, 0);
+  tester.ExpectTotalCount(kHistogram, 0);
+  EXPECT_TRUE(tester.GetAllSamples(kHistogram).empty());
+  EXPECT_EQ(0, tester.GetBucketCount(kHistogram, 42));
+  EXPECT_EQ(0,
+            tester.GetHistogramSamplesSinceCreation(kHistogram)->TotalCount());
+}
+
 }  // namespace base

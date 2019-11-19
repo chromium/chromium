@@ -176,24 +176,18 @@ TEST_F(SQLiteFeaturesTest, BooleanSupport) {
   EXPECT_TRUE(!s.ColumnBool(3)) << " default FALSE added by altering the table";
 }
 
-#if defined(OS_FUCHSIA)
-// If the platform cannot support SQLite mmap'ed I/O, make sure SQLite isn't
-// offering to support it.
-TEST_F(SQLiteFeaturesTest, NoMmap) {
-  // For recent versions of SQLite, SQLITE_MAX_MMAP_SIZE=0 can be used to
-  // disable mmap support.  Alternately, sqlite3_config() could be used.  In
-  // that case, the pragma will run successfully, but the size will always be 0.
-  //
-  // MojoVFS implements a no-op for xFileControl().  PRAGMA mmap_size is
-  // implemented in terms of SQLITE_FCNTL_MMAP_SIZE.  In that case, the pragma
-  // will succeed but with no effect.
-  ignore_result(db().Execute("PRAGMA mmap_size = 1048576"));
-  sql::Statement s(db().GetUniqueStatement("PRAGMA mmap_size"));
-  ASSERT_TRUE(!s.Step() || !s.ColumnInt64(0));
-}
-#endif  // defined(OS_FUCHSIA)
+TEST_F(SQLiteFeaturesTest, IcuEnabled) {
+  sql::Statement lower_en(
+      db().GetUniqueStatement("SELECT lower('I', 'en_us')"));
+  ASSERT_TRUE(lower_en.Step());
+  EXPECT_EQ("i", lower_en.ColumnString(0));
 
-#if !defined(OS_FUCHSIA)
+  sql::Statement lower_tr(
+      db().GetUniqueStatement("SELECT lower('I', 'tr_tr')"));
+  ASSERT_TRUE(lower_tr.Step());
+  EXPECT_EQ("\u0131", lower_tr.ColumnString(0));
+}
+
 // Verify that OS file writes are reflected in the memory mapping of a
 // memory-mapped file.  Normally SQLite writes to memory-mapped files using
 // memcpy(), which should stay consistent.  Our SQLite is slightly patched to
@@ -265,7 +259,6 @@ TEST_F(SQLiteFeaturesTest, Mmap) {
     ASSERT_EQ('4', m.data()[kOffset]);
   }
 }
-#endif  // !defined(OS_FUCHSIA)
 
 // Verify that http://crbug.com/248608 is fixed.  In this bug, the
 // compiled regular expression is effectively cached with the prepared

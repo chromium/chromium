@@ -43,9 +43,9 @@ struct EVENTS_DEVICES_EXPORT TouchscreenDevice : public InputDevice {
   // True if the specified touchscreen device is stylus capable.
   bool has_stylus = false;
   // Id of the display the touch device targets.
-  // NOTE: when obtaining TouchscreenDevice from InputDeviceManager this value
+  // NOTE: when obtaining TouchscreenDevice from DeviceDataManager this value
   // may not have been updated. See
-  // InputDeviceManager::AreTouchscreenTargetDisplaysValid() for details.
+  // DeviceDataManager::AreTouchscreenTargetDisplaysValid() for details.
   int64_t target_display_id = display::kInvalidDisplayId;
 
   // NOTE: If adding fields please update mojo/input_devices.mojom.

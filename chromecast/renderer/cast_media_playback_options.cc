@@ -11,7 +11,6 @@
 #include "base/callback.h"
 #include "base/logging.h"
 #include "content/public/renderer/render_frame.h"
-#include "mojo/public/cpp/bindings/associated_binding_set.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
 
 namespace chromecast {
@@ -30,7 +29,7 @@ CastMediaPlaybackOptions::CastMediaPlaybackOptions(
 
   render_frame->GetAssociatedInterfaceRegistry()->AddInterface(
       base::BindRepeating(
-          &CastMediaPlaybackOptions::OnMediaPlaybackOptionsAssociatedRequest,
+          &CastMediaPlaybackOptions::OnMediaPlaybackOptionsAssociatedReceiver,
           base::Unretained(this)));
 }
 
@@ -85,9 +84,10 @@ void CastMediaPlaybackOptions::SetUseCmaRenderer(bool enable) {
       renderer_media_playback_options_);
 }
 
-void CastMediaPlaybackOptions::OnMediaPlaybackOptionsAssociatedRequest(
-    chromecast::shell::mojom::MediaPlaybackOptionsAssociatedRequest request) {
-  bindings_.AddBinding(this, std::move(request));
+void CastMediaPlaybackOptions::OnMediaPlaybackOptionsAssociatedReceiver(
+    mojo::PendingAssociatedReceiver<
+        chromecast::shell::mojom::MediaPlaybackOptions> receiver) {
+  receivers_.Add(this, std::move(receiver));
 }
 
 }  // namespace chromecast

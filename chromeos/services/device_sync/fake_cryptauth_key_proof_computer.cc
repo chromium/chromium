@@ -24,12 +24,13 @@ FakeCryptAuthKeyProofComputer::~FakeCryptAuthKeyProofComputer() = default;
 base::Optional<std::string> FakeCryptAuthKeyProofComputer::ComputeKeyProof(
     const CryptAuthKey& key,
     const std::string& payload,
-    const std::string& salt) {
+    const std::string& salt,
+    const base::Optional<std::string>& info) {
   if (should_return_null_)
     return base::nullopt;
 
-  return kFakeKeyProofPrefix + std::string("_") + key.handle() +
-         std::string("_") + payload + std::string("_") + salt;
+  return kFakeKeyProofPrefix + std::string("_") + std::string("_") + payload +
+         std::string("_") + salt + (info ? "_" + *info : "");
 }
 
 }  // namespace device_sync

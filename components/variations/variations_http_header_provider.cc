@@ -194,8 +194,6 @@ void VariationsHttpHeaderProvider::InitVariationIDsCacheIfNeeded() {
   DCHECK(base::ThreadTaskRunnerHandle::IsSet());
   base::FieldTrialList::AddObserver(this);
 
-  base::TimeTicks before_time = base::TimeTicks::Now();
-
   base::FieldTrial::ActiveGroups initial_groups;
   base::FieldTrialList::GetActiveFieldTrialGroups(&initial_groups);
 
@@ -208,11 +206,6 @@ void VariationsHttpHeaderProvider::InitVariationIDsCacheIfNeeded() {
                       GOOGLE_WEB_PROPERTIES_TRIGGER);
   }
   UpdateVariationIDsHeaderValue();
-
-  UMA_HISTOGRAM_CUSTOM_COUNTS(
-      "Variations.HeaderConstructionTime",
-      (base::TimeTicks::Now() - before_time).InMicroseconds(), 1,
-      base::TimeDelta::FromSeconds(1).InMicroseconds(), 50);
 
   variation_ids_cache_initialized_ = true;
 }
@@ -264,10 +257,9 @@ std::string VariationsHttpHeaderProvider::GenerateBase64EncodedProto(
       case GOOGLE_WEB_PROPERTIES_TRIGGER:
         proto.add_trigger_variation_id(entry.first);
         break;
-      case CHROME_SYNC_EVENT_LOGGER:
       case ID_COLLECTION_COUNT:
-        // These cases included to get full enum coverage for switch, so that
-        // new enums introduce compiler warnings. Nothing to do for these.
+        // This case included to get full enum coverage for switch, so that
+        // new enums introduce compiler warnings. Nothing to do for this.
         break;
     }
   }
@@ -281,10 +273,10 @@ std::string VariationsHttpHeaderProvider::GenerateBase64EncodedProto(
   // This is the bottleneck for the creation of the header, so validate the size
   // here. Force a hard maximum on the ID count in case the Variations server
   // returns too many IDs and DOSs receiving servers with large requests.
-  DCHECK_LE(total_id_count, 20U);
+  DCHECK_LE(total_id_count, 35U);
   UMA_HISTOGRAM_COUNTS_100("Variations.Headers.ExperimentCount",
                            total_id_count);
-  if (total_id_count > 30)
+  if (total_id_count > 50)
     return std::string();
 
   std::string serialized;

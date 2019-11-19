@@ -1,0 +1,18 @@
+# Copyright 2017 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+mojom = "//ui/gfx/image/mojom/image.mojom"
+public_headers = [
+  "//third_party/skia/include/core/SkBitmap.h",
+  "//ui/gfx/image/image_skia_rep.h",
+  "//ui/gfx/image/image_skia.h",
+]
+traits_headers = [ "//ui/gfx/image/mojom/image_skia_mojom_traits.h" ]
+public_deps = [
+  "//ui/gfx/image/mojom:mojom_traits",
+]
+type_mappings = [
+  "gfx.mojom.ImageSkia=::gfx::ImageSkia[nullable_is_same_type]",
+  "gfx.mojom.ImageSkiaRep=::gfx::ImageSkiaRep[nullable_is_same_type]",
+]

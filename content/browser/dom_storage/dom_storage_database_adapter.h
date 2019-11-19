@@ -11,8 +11,8 @@
 
 #include <string>
 
+#include "content/browser/dom_storage/dom_storage_types.h"
 #include "content/common/content_export.h"
-#include "content/common/dom_storage/dom_storage_types.h"
 
 namespace base {
 namespace trace_event {

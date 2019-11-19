@@ -12,10 +12,8 @@ import android.os.Parcel;
 import android.os.Process;
 
 import org.chromium.android_webview.AwBrowserProcess;
-import org.chromium.android_webview.AwResource;
+import org.chromium.android_webview.common.AwResource;
 import org.chromium.android_webview.shell.R;
-import org.chromium.base.CommandLine;
-import org.chromium.base.ContextUtils;
 
 /**
  * This is a service for imitating a second browser process in the application.
@@ -51,11 +49,9 @@ public class SecondBrowserProcess extends Service {
         return START_STICKY;
     }
 
-    private void startBrowserProcess() throws Exception {
-        CommandLine.initFromFile("/data/local/tmp/android-webview-command-line");
+    private void startBrowserProcess() {
         AwResource.setResources(this.getResources());
         AwResource.setConfigKeySystemUuidMapping(R.array.config_key_system_uuid_mapping);
-        ContextUtils.initApplicationContext(getApplicationContext());
         AwBrowserProcess.loadLibrary(null);
         AwBrowserProcess.start();
     }

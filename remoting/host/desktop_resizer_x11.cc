@@ -9,6 +9,7 @@
 #include "base/command_line.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
+#include "base/numerics/ranges.h"
 #include "remoting/base/logging.h"
 #include "remoting/host/linux/x11_util.h"
 #include "ui/gfx/x/x11.h"
@@ -217,10 +218,10 @@ std::list<ScreenResolution> DesktopResizerX11::GetSupportedResolutions(
     XRRGetScreenSizeRange(display_, root_,
                           &min_width, &min_height,
                           &max_width, &max_height);
-    int width = std::min(std::max(preferred.dimensions().width(), min_width),
-                         max_width);
-    int height = std::min(std::max(preferred.dimensions().height(), min_height),
-                          max_height);
+    int width = base::ClampToRange(preferred.dimensions().width(), min_width,
+                                   max_width);
+    int height = base::ClampToRange(preferred.dimensions().height(), min_height,
+                                    max_height);
     // Additionally impose a minimum size of 640x480, since anything smaller
     // doesn't seem very useful.
     ScreenResolution actual(

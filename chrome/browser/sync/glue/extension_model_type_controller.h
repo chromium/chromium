@@ -14,15 +14,14 @@ class Profile;
 namespace browser_sync {
 
 // Controller with custom logic to start the extensions machinery when sync is
-// starting. Analogous to ExtensionDataTypeController and
-// ThemeDataTypeController.
+// starting.
 class ExtensionModelTypeController
     : public syncer::SyncableServiceBasedModelTypeController {
  public:
   ExtensionModelTypeController(
       syncer::ModelType type,
       syncer::OnceModelTypeStoreFactory store_factory,
-      SyncableServiceProvider syncable_service_provider,
+      base::WeakPtr<syncer::SyncableService> syncable_service,
       const base::RepeatingClosure& dump_stack,
       Profile* profile);
   ~ExtensionModelTypeController() override;

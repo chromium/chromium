@@ -12,19 +12,17 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/weak_ptr.h"
 #include "base/path_service.h"
-#include "base/run_loop.h"
-#include "base/task/post_task.h"
 #include "base/version.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "extensions/browser/content_hash_fetcher.h"
 #include "extensions/browser/content_verifier/test_utils.h"
-#include "extensions/browser/extension_file_task_runner.h"
 #include "extensions/browser/extensions_test.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension_paths.h"
 #include "extensions/common/file_util.h"
 #include "mojo/public/cpp/bindings/binding_set.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/http/http_status_code.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
@@ -35,67 +33,6 @@
 
 namespace extensions {
 
-// Used to hold the result of a callback from the ContentHashFetcher.
-struct ContentHashFetcherResult {
-  std::string extension_id;
-  bool success;
-  bool was_cancelled;
-  std::set<base::FilePath> mismatch_paths;
-};
-
-// Allows waiting for the callback from a ContentHash, returning the
-// data that was passed to that callback.
-class ContentHashWaiter {
- public:
-  ContentHashWaiter()
-      : reply_task_runner_(base::SequencedTaskRunnerHandle::Get()) {}
-
-  std::unique_ptr<ContentHashFetcherResult> CreateAndWaitForCallback(
-      const ContentHash::ExtensionKey& key,
-      ContentHash::FetchParams fetch_params) {
-    GetExtensionFileTaskRunner()->PostTask(
-        FROM_HERE,
-        base::BindOnce(&ContentHashWaiter::CreateContentHash,
-                       base::Unretained(this), key, std::move(fetch_params)));
-    run_loop_.Run();
-    DCHECK(result_);
-    return std::move(result_);
-  }
-
- private:
-  void CreatedCallback(scoped_refptr<ContentHash> content_hash,
-                       bool was_cancelled) {
-    if (!reply_task_runner_->RunsTasksInCurrentSequence()) {
-      reply_task_runner_->PostTask(
-          FROM_HERE,
-          base::BindOnce(&ContentHashWaiter::CreatedCallback,
-                         base::Unretained(this), content_hash, was_cancelled));
-      return;
-    }
-
-    result_ = std::make_unique<ContentHashFetcherResult>();
-    result_->extension_id = content_hash->extension_key().extension_id;
-    result_->success = content_hash->succeeded();
-    result_->was_cancelled = was_cancelled;
-    result_->mismatch_paths = content_hash->hash_mismatch_unix_paths();
-
-    run_loop_.QuitWhenIdle();
-  }
-
-  void CreateContentHash(const ContentHash::ExtensionKey& key,
-                         ContentHash::FetchParams fetch_params) {
-    ContentHash::Create(key, std::move(fetch_params),
-                        ContentHash::IsCancelledCallback(),
-                        base::BindOnce(&ContentHashWaiter::CreatedCallback,
-                                       base::Unretained(this)));
-  }
-
-  scoped_refptr<base::SequencedTaskRunner> reply_task_runner_;
-  base::RunLoop run_loop_;
-  std::unique_ptr<ContentHashFetcherResult> result_;
-  DISALLOW_COPY_AND_ASSIGN(ContentHashWaiter);
-};
-
 // Installs and tests various functionality of an extension loaded without
 // verified_contents.json file.
 class ContentHashFetcherTest : public ExtensionsTest {
@@ -103,7 +40,7 @@ class ContentHashFetcherTest : public ExtensionsTest {
   ContentHashFetcherTest()
       // We need a real IO thread to be able to entercept the network request
       // for the missing verified_contents.json file.
-      : ExtensionsTest(content::TestBrowserThreadBundle::REAL_IO_THREAD),
+      : ExtensionsTest(content::BrowserTaskEnvironment::REAL_IO_THREAD),
         test_shared_loader_factory_(
             base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
                 &test_url_loader_factory_)) {}
@@ -130,25 +67,25 @@ class ContentHashFetcherTest : public ExtensionsTest {
     return true;
   }
 
-  std::unique_ptr<ContentHashFetcherResult> DoHashFetch() {
+  std::unique_ptr<ContentHashResult> DoHashFetch() {
     if (!extension_.get() || !delegate_.get()) {
       ADD_FAILURE() << "No valid extension_ or delegate_, "
                        "did you forget to call LoadTestExtension()?";
       return nullptr;
     }
 
-    network::mojom::URLLoaderFactoryPtr url_loader_factory_ptr;
-    test_url_loader_factory_.Clone(mojo::MakeRequest(&url_loader_factory_ptr));
-    network::mojom::URLLoaderFactoryPtrInfo url_loader_factory_ptr_info =
-        url_loader_factory_ptr.PassInterface();
+    mojo::PendingRemote<network::mojom::URLLoaderFactory>
+        url_loader_factory_remote;
+    test_url_loader_factory_.Clone(
+        url_loader_factory_remote.InitWithNewPipeAndPassReceiver());
 
-    std::unique_ptr<ContentHashFetcherResult> result =
+    std::unique_ptr<ContentHashResult> result =
         ContentHashWaiter().CreateAndWaitForCallback(
-            ContentHash::ExtensionKey(extension_->id(), extension_->path(),
-                                      extension_->version(),
-                                      delegate_->GetPublicKey()),
-            ContentHash::FetchParams(std::move(url_loader_factory_ptr_info),
-                                     fetch_url_));
+            ContentHash::FetchKey(extension_->id(), extension_->path(),
+                                  extension_->version(),
+                                  std::move(url_loader_factory_remote),
+                                  fetch_url_, delegate_->GetPublicKey()),
+            ContentVerifierDelegate::VerifierSourceType::SIGNED_HASHES);
 
     delegate_.reset();
 
@@ -182,7 +119,7 @@ class ContentHashFetcherTest : public ExtensionsTest {
 
   void RegisterInterceptionWithFailure(const GURL& url, int net_error) {
     test_url_loader_factory_.AddResponse(
-        GURL(url), network::ResourceResponseHead(), std::string(),
+        GURL(url), network::mojom::URLResponseHead::New(), std::string(),
         network::URLLoaderCompletionStatus(net_error));
   }
 
@@ -232,7 +169,7 @@ TEST_F(ContentHashFetcherTest, MissingVerifiedContents) {
   RegisterInterception(fetch_url(), GetResourcePath("verified_contents.json"));
 
   // Make sure the fetch was successful.
-  std::unique_ptr<ContentHashFetcherResult> result = DoHashFetch();
+  std::unique_ptr<ContentHashResult> result = DoHashFetch();
   ASSERT_TRUE(result.get());
   EXPECT_TRUE(result->success);
   EXPECT_FALSE(result->was_cancelled);
@@ -255,7 +192,7 @@ TEST_F(ContentHashFetcherTest, FetchInvalidVerifiedContents) {
   RegisterInterception(fetch_url(),
                        GetResourcePath("invalid_verified_contents.json"));
 
-  std::unique_ptr<ContentHashFetcherResult> result = DoHashFetch();
+  std::unique_ptr<ContentHashResult> result = DoHashFetch();
   ASSERT_TRUE(result.get());
   EXPECT_FALSE(result->success);
   EXPECT_FALSE(result->was_cancelled);
@@ -277,7 +214,7 @@ TEST_F(ContentHashFetcherTest, Fetch404VerifiedContents) {
   RegisterInterceptionWithFailure(fetch_url(), net::HTTP_NOT_FOUND);
 
   // Make sure the fetch was *not* successful.
-  std::unique_ptr<ContentHashFetcherResult> result = DoHashFetch();
+  std::unique_ptr<ContentHashResult> result = DoHashFetch();
   ASSERT_TRUE(result.get());
   EXPECT_FALSE(result->success);
   EXPECT_FALSE(result->was_cancelled);
@@ -302,12 +239,11 @@ TEST_F(ContentHashFetcherTest, MissingVerifiedContentsAndCorrupt) {
   RegisterInterception(fetch_url(), GetResourcePath("verified_contents.json"));
 
   // Make sure the fetch was *not* successful.
-  std::unique_ptr<ContentHashFetcherResult> result = DoHashFetch();
+  std::unique_ptr<ContentHashResult> result = DoHashFetch();
   ASSERT_NE(nullptr, result.get());
   EXPECT_TRUE(result->success);
   EXPECT_FALSE(result->was_cancelled);
-  EXPECT_TRUE(
-      base::ContainsKey(result->mismatch_paths, script_path.BaseName()));
+  EXPECT_TRUE(base::Contains(result->mismatch_paths, script_path.BaseName()));
 
   // Make sure the verified_contents.json file was written into the extension's
   // install dir.

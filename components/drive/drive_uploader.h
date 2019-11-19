@@ -16,6 +16,8 @@
 #include "base/threading/thread_checker.h"
 #include "components/drive/service/drive_service_interface.h"
 #include "google_apis/drive/drive_api_error_codes.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "services/device/public/mojom/wake_lock_provider.mojom.h"
 
 class GURL;
@@ -123,9 +125,10 @@ class DriveUploaderInterface {
 class DriveUploader : public DriveUploaderInterface {
  public:
   // In unittest, the |wake_lock_provider| is set as nullptr.
-  DriveUploader(DriveServiceInterface* drive_service,
-                const scoped_refptr<base::TaskRunner>& blocking_task_runner,
-                device::mojom::WakeLockProviderPtr wake_lock_provider);
+  DriveUploader(
+      DriveServiceInterface* drive_service,
+      const scoped_refptr<base::TaskRunner>& blocking_task_runner,
+      mojo::PendingRemote<device::mojom::WakeLockProvider> wake_lock_provider);
 
   ~DriveUploader() override;
 
@@ -227,6 +230,8 @@ class DriveUploader : public DriveUploaderInterface {
       google_apis::DriveApiErrorCode error,
       std::unique_ptr<google_apis::FileResource> entry);
 
+  device::mojom::WakeLockProvider* GetWakeLockProvider();
+
   // The class is expected to run on UI thread.
   base::ThreadChecker thread_checker_;
 
@@ -237,11 +242,11 @@ class DriveUploader : public DriveUploaderInterface {
   scoped_refptr<base::TaskRunner> blocking_task_runner_;
   scoped_refptr<RefCountedBatchRequest> current_batch_request_;
 
-  device::mojom::WakeLockProviderPtr wake_lock_provider_;
+  mojo::Remote<device::mojom::WakeLockProvider> wake_lock_provider_;
 
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.
-  base::WeakPtrFactory<DriveUploader> weak_ptr_factory_;
+  base::WeakPtrFactory<DriveUploader> weak_ptr_factory_{this};
   DISALLOW_COPY_AND_ASSIGN(DriveUploader);
 };
 

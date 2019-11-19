@@ -1,0 +1,29 @@
+<!doctype HTML>
+<html>
+<meta charset="utf8">
+<title>Display Locking: flex layout with child lock (reference)</title>
+<link rel="author" title="Vladimir Levin" href="mailto:vmpstr@chromium.org">
+<link rel="help" href="https://github.com/WICG/display-locking">
+
+<style>
+#flexer {
+  display: flex;
+  width: 200px;
+  height: 300px;
+  background: lightgreen;
+}
+#container {
+  background: lightblue;
+}
+#sizer {
+  width: 123px;
+  height: 234px;
+}
+</style>
+
+<div id="flexer">
+  <div id="container">
+    <div id="sizer"></div>
+  </div>
+</div>
+

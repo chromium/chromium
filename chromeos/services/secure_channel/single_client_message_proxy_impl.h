@@ -12,14 +12,14 @@
 #include "chromeos/services/secure_channel/client_connection_parameters.h"
 #include "chromeos/services/secure_channel/public/mojom/secure_channel.mojom.h"
 #include "chromeos/services/secure_channel/single_client_message_proxy.h"
-#include "mojo/public/cpp/bindings/binding.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 namespace chromeos {
 
 namespace secure_channel {
 
 // Concrete SingleClientMessageProxy implementation, which utilizes a
-// ChannelImpl and MessageReceiverPtr to send/receive messages.
+// ChannelImpl and mojo::Remote<MessageReceiver> to send/receive messages.
 class SingleClientMessageProxyImpl : public SingleClientMessageProxy,
                                      public ChannelImpl::Delegate {
  public:
@@ -65,7 +65,7 @@ class SingleClientMessageProxyImpl : public SingleClientMessageProxy,
 
   std::unique_ptr<ClientConnectionParameters> client_connection_parameters_;
   std::unique_ptr<ChannelImpl> channel_;
-  mojom::MessageReceiverPtr message_receiver_ptr_;
+  mojo::Remote<mojom::MessageReceiver> message_receiver_remote_;
 
   DISALLOW_COPY_AND_ASSIGN(SingleClientMessageProxyImpl);
 };

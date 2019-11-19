@@ -5,6 +5,8 @@
 package org.chromium.components.variations.firstrun;
 
 import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.Matchers.greaterThanOrEqualTo;
+import static org.hamcrest.Matchers.lessThanOrEqualTo;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -34,6 +36,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.net.HttpURLConnection;
+import java.util.Date;
 
 /**
  * Tests for VariationsSeedFetcher
@@ -61,7 +64,6 @@ public class VariationsSeedFetcherTest {
                 .getServerConnection(VariationsSeedFetcher.VariationsPlatform.ANDROID, sRestrict,
                         sMilestone, sChannel);
         mPrefs = ContextUtils.getAppSharedPreferences();
-        mPrefs.edit().clear().apply();
     }
 
     @After
@@ -82,19 +84,25 @@ public class VariationsSeedFetcherTest {
         when(mConnection.getResponseCode()).thenReturn(HttpURLConnection.HTTP_OK);
         when(mConnection.getHeaderField("X-Seed-Signature")).thenReturn("signature");
         when(mConnection.getHeaderField("X-Country")).thenReturn("Nowhere Land");
-        when(mConnection.getHeaderField("Date")).thenReturn("A date");
         when(mConnection.getHeaderField("IM")).thenReturn("gzip");
         when(mConnection.getInputStream())
                 .thenReturn(new ByteArrayInputStream(ApiCompatibilityUtils.getBytesUtf8("1234")));
 
+        long startTime = new Date().getTime();
         mFetcher.fetchSeed(sRestrict, sMilestone, sChannel);
+        long endTime = new Date().getTime();
 
         assertThat(mPrefs.getString(VariationsSeedBridge.VARIATIONS_FIRST_RUN_SEED_SIGNATURE, ""),
                 equalTo("signature"));
         assertThat(mPrefs.getString(VariationsSeedBridge.VARIATIONS_FIRST_RUN_SEED_COUNTRY, ""),
                 equalTo("Nowhere Land"));
-        assertThat(mPrefs.getString(VariationsSeedBridge.VARIATIONS_FIRST_RUN_SEED_DATE, ""),
-                equalTo("A date"));
+        long seedDate = mPrefs.getLong(VariationsSeedBridge.VARIATIONS_FIRST_RUN_SEED_DATE, 0);
+        // We use *OrEqualTo comparisons here to account for when both points in time fall into the
+        // same tick of the clock.
+        assertThat("Seed date should be after the test start time", seedDate,
+                greaterThanOrEqualTo(startTime));
+        assertThat("Seed date should be before the test end time", seedDate,
+                lessThanOrEqualTo(endTime));
         assertTrue(mPrefs.getBoolean(
                 VariationsSeedBridge.VARIATIONS_FIRST_RUN_SEED_IS_GZIP_COMPRESSED, false));
         assertThat(mPrefs.getString(VariationsSeedBridge.VARIATIONS_FIRST_RUN_SEED_BASE64, ""),
@@ -144,7 +152,7 @@ public class VariationsSeedFetcherTest {
      * Test method for {@link VariationsSeedFetcher#getConnectionString()} has URl params.
      */
     @Test
-    public void testGetConnectionString_HasParams() throws IOException {
+    public void testGetConnectionString_HasParams() {
         String urlString = mFetcher.getConnectionString(
                 VariationsSeedFetcher.VariationsPlatform.ANDROID, sRestrict, sMilestone, sChannel);
 

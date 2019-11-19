@@ -39,8 +39,8 @@ dictionary TestDictionary {
     Dictionary dictionaryMember;
     [RuntimeEnabled=RuntimeFeature] boolean runtimeMember;
     [RuntimeEnabled=RuntimeFeature] boolean runtimeSecondMember;
-    [OriginTrialEnabled=FeatureName] boolean originTrialMember;
-    [OriginTrialEnabled=FeatureName1] boolean originTrialSecondMember;
+    [RuntimeEnabled=FeatureName] boolean originTrialMember;
+    [RuntimeEnabled=FeatureName1] boolean originTrialSecondMember;
     record<ByteString, byte> recordMember;
     record<USVString, TestObject> garbageCollectedRecordMember;
     record<ByteString, (long or boolean)> unionInRecordMember;

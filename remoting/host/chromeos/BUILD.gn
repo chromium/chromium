@@ -27,7 +27,7 @@ source_set("chromeos") {
     "//ppapi/host",
     "//remoting/protocol",
     "//skia",
-    "//third_party/webrtc/modules/desktop_capture",
+    "//third_party/webrtc_overrides:webrtc_component",
     "//ui/aura",
     "//ui/compositor",
     "//ui/events",

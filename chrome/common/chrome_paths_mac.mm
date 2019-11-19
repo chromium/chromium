@@ -11,9 +11,9 @@
 #include "base/base_paths.h"
 #include "base/logging.h"
 #import "base/mac/foundation_util.h"
-#import "base/mac/scoped_nsautorelease_pool.h"
 #include "base/memory/free_deleter.h"
 #include "base/path_service.h"
+#include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_paths_internal.h"
@@ -24,46 +24,50 @@ namespace {
 // implementation of chrome::OuterAppBundle(), which should be the only
 // caller.
 NSBundle* OuterAppBundleInternal() {
-  base::mac::ScopedNSAutoreleasePool pool;
+  @autoreleasepool {
+    if (!base::mac::AmIBundled()) {
+      // If unbundled (as in a test), there's no app bundle.
+      return nil;
+    }
 
-  if (!base::mac::AmIBundled()) {
-    // If unbundled (as in a test), there's no app bundle.
-    return nil;
+    if (!base::mac::IsBackgroundOnlyProcess()) {
+      // Shortcut: in the browser process, just return the main app bundle.
+      return [[NSBundle mainBundle] retain];
+    }
+
+    // From C.app/Contents/Frameworks/C.framework/Versions/1.2.3.4, go up five
+    // steps to C.app.
+    base::FilePath framework_path = chrome::GetFrameworkBundlePath();
+    base::FilePath outer_app_dir =
+        framework_path.DirName().DirName().DirName().DirName().DirName();
+    const char* outer_app_dir_c = outer_app_dir.value().c_str();
+    NSString* outer_app_dir_ns =
+        [NSString stringWithUTF8String:outer_app_dir_c];
+
+    return [[NSBundle bundleWithPath:outer_app_dir_ns] retain];
   }
-
-  if (!base::mac::IsBackgroundOnlyProcess()) {
-    // Shortcut: in the browser process, just return the main app bundle.
-    return [[NSBundle mainBundle] retain];
-  }
-
-  // From C.app/Contents/Versions/1.2.3.4, go up three steps to get to C.app.
-  base::FilePath versioned_dir = chrome::GetVersionedDirectory();
-  base::FilePath outer_app_dir = versioned_dir.DirName().DirName().DirName();
-  const char* outer_app_dir_c = outer_app_dir.value().c_str();
-  NSString* outer_app_dir_ns = [NSString stringWithUTF8String:outer_app_dir_c];
-
-  return [[NSBundle bundleWithPath:outer_app_dir_ns] retain];
 }
 
 char* ProductDirNameForBundle(NSBundle* chrome_bundle) {
-  const char* product_dir_name = NULL;
-  base::mac::ScopedNSAutoreleasePool pool;
+  @autoreleasepool {
+    const char* product_dir_name = NULL;
 
-  NSString* product_dir_name_ns =
-      [chrome_bundle objectForInfoDictionaryKey:@"CrProductDirName"];
-  product_dir_name = [product_dir_name_ns fileSystemRepresentation];
+    NSString* product_dir_name_ns =
+        [chrome_bundle objectForInfoDictionaryKey:@"CrProductDirName"];
+    product_dir_name = [product_dir_name_ns fileSystemRepresentation];
 
-  if (!product_dir_name) {
-#if defined(GOOGLE_CHROME_BUILD)
-    product_dir_name = "Google/Chrome";
+    if (!product_dir_name) {
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+      product_dir_name = "Google/Chrome";
 #else
-    product_dir_name = "Chromium";
+      product_dir_name = "Chromium";
 #endif
-  }
+    }
 
-  // Leaked, but the only caller initializes a static with this result, so it
-  // only happens once, and that's OK.
-  return strdup(product_dir_name);
+    // Leaked, but the only caller initializes a static with this result, so it
+    // only happens once, and that's OK.
+    return strdup(product_dir_name);
+  }
 }
 
 // ProductDirName returns the name of the directory inside
@@ -149,29 +153,6 @@ bool GetUserVideosDirectory(base::FilePath* result) {
   return base::mac::GetUserDirectory(NSMoviesDirectory, result);
 }
 
-base::FilePath GetVersionedDirectory() {
-  // Start out with the path to the running executable.
-  base::FilePath path;
-  base::PathService::Get(base::FILE_EXE, &path);
-
-  // One step up to MacOS, another to Contents.
-  path = path.DirName().DirName();
-  DCHECK_EQ(path.BaseName().value(), "Contents");
-
-  if (base::mac::IsBackgroundOnlyProcess()) {
-    // path identifies the helper .app's Contents directory in the browser
-    // .app's versioned directory.  Go up two steps to get to the browser
-    // .app's versioned directory.
-    path = path.DirName().DirName();
-    DCHECK_EQ(path.BaseName().value(), kChromeVersion);
-  } else {
-    // Go into the versioned directory.
-    path = path.Append("Versions").Append(kChromeVersion);
-  }
-
-  return path;
-}
-
 base::FilePath GetFrameworkBundlePath() {
   // It's tempting to use +[NSBundle bundleWithIdentifier:], but it's really
   // slow (about 30ms on 10.5 and 10.6), despite Apple's documentation stating
@@ -183,9 +164,41 @@ base::FilePath GetFrameworkBundlePath() {
   // is the approach that is used here.  NSBundle is also documented as being
   // not thread-safe, and thread safety may be a concern here.
 
-  // The framework bundle is at a known path and name from the browser .app's
-  // versioned directory.
-  return GetVersionedDirectory().Append(kFrameworkName);
+  // Start out with the path to the running executable.
+  base::FilePath path;
+  base::PathService::Get(base::FILE_EXE, &path);
+
+  // One step up to MacOS, another to Contents.
+  path = path.DirName().DirName();
+  DCHECK_EQ(path.BaseName().value(), "Contents");
+
+  if (base::mac::IsBackgroundOnlyProcess()) {
+    // |path| is Chromium.app/Contents/Frameworks/Chromium Framework.framework/
+    // Versions/X/Helpers/Chromium Helper.app/Contents. Go up three times to
+    // the versioned framework directory.
+    path = path.DirName().DirName().DirName();
+  } else {
+    // |path| is Chromium.app/Contents, so go down to
+    // Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions/X.
+    path = path.Append("Frameworks")
+               .Append(kFrameworkName)
+               .Append("Versions")
+               .Append(kChromeVersion);
+  }
+  DCHECK_EQ(path.BaseName().value(), kChromeVersion);
+  DCHECK_EQ(path.DirName().BaseName().value(), "Versions");
+  DCHECK_EQ(path.DirName().DirName().BaseName().value(), kFrameworkName);
+  DCHECK_EQ(path.DirName().DirName().DirName().BaseName().value(),
+            "Frameworks");
+  DCHECK_EQ(path.DirName()
+                .DirName()
+                .DirName()
+                .DirName()
+                .DirName()
+                .BaseName()
+                .Extension(),
+            ".app");
+  return path;
 }
 
 bool GetLocalLibraryDirectory(base::FilePath* result) {

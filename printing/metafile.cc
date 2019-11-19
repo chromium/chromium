@@ -37,8 +37,8 @@ bool Metafile::SaveTo(base::File* file) const {
   if (!GetDataAsVector(&buffer))
     return false;
 
-  int size = base::checked_cast<int>(buffer.size());
-  if (file->WriteAtCurrentPos(&buffer[0], size) != size) {
+  if (!file->WriteAtCurrentPosAndCheck(
+          base::as_bytes(base::make_span(buffer)))) {
     DLOG(ERROR) << "Failed to save file.";
     return false;
   }

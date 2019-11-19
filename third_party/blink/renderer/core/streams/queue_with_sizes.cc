@@ -23,7 +23,7 @@ bool IsFiniteNonNegativeNumber(double v) {
 }  // namespace
 
 class QueueWithSizes::ValueSizePair final
-    : public GarbageCollectedFinalized<ValueSizePair> {
+    : public GarbageCollected<ValueSizePair> {
  public:
   ValueSizePair(v8::Local<v8::Value> value, double size, v8::Isolate* isolate)
       : value_(isolate, value), size_(size) {}

@@ -13,9 +13,9 @@
 #include "media/mojo/buildflags.h"
 #include "media/mojo/clients/mojo_audio_decoder.h"
 #include "media/mojo/clients/mojo_video_decoder.h"
-#include "media/mojo/interfaces/audio_decoder.mojom.h"
-#include "media/mojo/interfaces/interface_factory.mojom.h"
-#include "mojo/public/cpp/bindings/interface_request.h"
+#include "media/mojo/mojom/audio_decoder.mojom.h"
+#include "media/mojo/mojom/interface_factory.mojom.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 
 namespace media {
 
@@ -32,11 +32,12 @@ void MojoDecoderFactory::CreateAudioDecoders(
     MediaLog* media_log,
     std::vector<std::unique_ptr<AudioDecoder>>* audio_decoders) {
 #if BUILDFLAG(ENABLE_MOJO_AUDIO_DECODER)
-  mojom::AudioDecoderPtr audio_decoder_ptr;
-  interface_factory_->CreateAudioDecoder(mojo::MakeRequest(&audio_decoder_ptr));
+  mojo::PendingRemote<mojom::AudioDecoder> audio_decoder;
+  interface_factory_->CreateAudioDecoder(
+      audio_decoder.InitWithNewPipeAndPassReceiver());
 
   audio_decoders->push_back(std::make_unique<MojoAudioDecoder>(
-      task_runner, std::move(audio_decoder_ptr)));
+      task_runner, std::move(audio_decoder)));
 #endif
 }
 
@@ -48,15 +49,32 @@ void MojoDecoderFactory::CreateVideoDecoders(
     const gfx::ColorSpace& target_color_space,
     std::vector<std::unique_ptr<VideoDecoder>>* video_decoders) {
 #if BUILDFLAG(ENABLE_MOJO_VIDEO_DECODER)
-  // If MojoVideoDecoder is not enabled, then return without adding anything.
-  if (!base::FeatureList::IsEnabled(media::kMojoVideoDecoder))
-    return;
-  mojom::VideoDecoderPtr video_decoder_ptr;
-  interface_factory_->CreateVideoDecoder(mojo::MakeRequest(&video_decoder_ptr));
+
+#if defined(OS_WIN)
+  // If the D3D11VideoDecoder is enabled, then push a kAlternate decoder ahead
+  // of the default one.
+  if (base::FeatureList::IsEnabled(media::kD3D11VideoDecoder)) {
+    mojo::PendingRemote<mojom::VideoDecoder> d3d11_video_decoder_remote;
+    interface_factory_->CreateVideoDecoder(
+        d3d11_video_decoder_remote.InitWithNewPipeAndPassReceiver());
+
+    video_decoders->push_back(std::make_unique<MojoVideoDecoder>(
+        task_runner, gpu_factories, media_log,
+        std::move(d3d11_video_decoder_remote),
+        VideoDecoderImplementation::kAlternate, request_overlay_info_cb,
+        target_color_space));
+  }
+#endif  // defined(OS_WIN)
+  mojo::PendingRemote<mojom::VideoDecoder> d3d11_video_decoder_remote;
+  interface_factory_->CreateVideoDecoder(
+      d3d11_video_decoder_remote.InitWithNewPipeAndPassReceiver());
 
   video_decoders->push_back(std::make_unique<MojoVideoDecoder>(
-      task_runner, gpu_factories, media_log, std::move(video_decoder_ptr),
-      request_overlay_info_cb, target_color_space));
+      task_runner, gpu_factories, media_log,
+      std::move(d3d11_video_decoder_remote),
+      VideoDecoderImplementation::kDefault, request_overlay_info_cb,
+      target_color_space));
+
 #endif
 }
 

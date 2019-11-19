@@ -34,4 +34,4 @@ interface SVGFESpecularLightingElement : SVGElement {
     [MeasureAs=SVG1DOMFilter] readonly attribute SVGAnimatedNumber kernelUnitLengthY;
 };
 
-SVGFESpecularLightingElement implements SVGFilterPrimitiveStandardAttributes;
+SVGFESpecularLightingElement includes SVGFilterPrimitiveStandardAttributes;

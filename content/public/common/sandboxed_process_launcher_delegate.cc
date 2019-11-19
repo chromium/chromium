@@ -44,4 +44,10 @@ base::EnvironmentMap SandboxedProcessLauncherDelegate::GetEnvironment() {
 }
 #endif  // defined(OS_POSIX)
 
+#if defined(OS_MACOSX)
+bool SandboxedProcessLauncherDelegate::DisclaimResponsibility() {
+  return false;
+}
+#endif
+
 }  // namespace content

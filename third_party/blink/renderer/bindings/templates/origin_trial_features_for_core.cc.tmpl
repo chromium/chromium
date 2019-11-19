@@ -60,7 +60,7 @@ void InstallOriginTrialFeaturesForCore(
   {% endfor %}
 }
 
-void InstallPendingOriginTrialFeatureForCore(const String& feature,
+void InstallPendingOriginTrialFeatureForCore(OriginTrialFeature feature,
                                              const ScriptState* script_state) {
   (*g_old_install_pending_origin_trial_feature_function)(feature, script_state);
 
@@ -72,23 +72,28 @@ void InstallPendingOriginTrialFeatureForCore(const String& feature,
   v8::Isolate* isolate = script_state->GetIsolate();
   const DOMWrapperWorld& world = script_state->World();
   V8PerContextData* context_data = script_state->PerContextData();
-  {% for feature in installers_by_feature %}
-  if (feature == {{feature.name_constant}}) {
-    {% for installer in feature.installers %}
-    {% if installer.interface_is_global %}
-    {{installer.v8_class_or_partial}}::{{installer.install_method}}(
-        isolate, world, script_state->GetContext()->Global(),
-        v8::Local<v8::Object>(), v8::Local<v8::Function>());
-    {% else %}
-    if (context_data->GetExistingConstructorAndPrototypeForType(
-            {{installer.v8_class}}::GetWrapperTypeInfo(), &prototype_object, &interface_object)) {
+  switch (feature) {
+    {% for feature in installers_by_feature %}
+    case {{feature.name_constant}}: {
+      {% for installer in feature.installers %}
+      {% if installer.interface_is_global %}
       {{installer.v8_class_or_partial}}::{{installer.install_method}}(
-          isolate, world, v8::Local<v8::Object>(), prototype_object, interface_object);
+          isolate, world, script_state->GetContext()->Global(),
+          v8::Local<v8::Object>(), v8::Local<v8::Function>());
+      {% else %}
+      if (context_data->GetExistingConstructorAndPrototypeForType(
+              {{installer.v8_class}}::GetWrapperTypeInfo(), &prototype_object, &interface_object)) {
+        {{installer.v8_class_or_partial}}::{{installer.install_method}}(
+            isolate, world, v8::Local<v8::Object>(), prototype_object, interface_object);
+      }
+      {% endif %}
+      {% endfor %}
+      break;
     }
-    {% endif %}
     {% endfor %}
+    default:
+      break;
   }
-  {% endfor %}
   {% endif %}
 }
 

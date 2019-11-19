@@ -32,7 +32,7 @@ if ({{item.check_expression}})
 
 
 {% macro declare_enum_validation_variable(enum_values, enum_variable='kValidValues') %}
-const char* {{enum_variable}}[] = {
+const char* const {{enum_variable}}[] = {
 {% for enum_value in enum_values %}
 {% if enum_value is none %}
     nullptr,

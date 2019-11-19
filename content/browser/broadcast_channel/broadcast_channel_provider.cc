@@ -7,9 +7,8 @@
 #include "base/bind.h"
 #include "base/stl_util.h"
 #include "content/browser/child_process_security_policy_impl.h"
-#include "mojo/public/cpp/bindings/associated_binding.h"
-#include "mojo/public/cpp/bindings/interface_ptr_set.h"
-#include "mojo/public/cpp/bindings/strong_binding.h"
+#include "mojo/public/cpp/bindings/associated_receiver.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
 
 namespace content {
 
@@ -19,11 +18,14 @@ namespace content {
 class BroadcastChannelProvider::Connection
     : public blink::mojom::BroadcastChannelClient {
  public:
-  Connection(const url::Origin& origin,
-             const std::string& name,
-             blink::mojom::BroadcastChannelClientAssociatedPtrInfo client,
-             blink::mojom::BroadcastChannelClientAssociatedRequest connection,
-             BroadcastChannelProvider* service);
+  Connection(
+      const url::Origin& origin,
+      const std::string& name,
+      mojo::PendingAssociatedRemote<blink::mojom::BroadcastChannelClient>
+          client,
+      mojo::PendingAssociatedReceiver<blink::mojom::BroadcastChannelClient>
+          connection,
+      BroadcastChannelProvider* service);
 
   void OnMessage(blink::CloneableMessage message) override;
   void MessageToClient(const blink::CloneableMessage& message) const {
@@ -32,14 +34,15 @@ class BroadcastChannelProvider::Connection
   const url::Origin& origin() const { return origin_; }
   const std::string& name() const { return name_; }
 
-  void set_connection_error_handler(const base::Closure& error_handler) {
-    binding_.set_connection_error_handler(error_handler);
-    client_.set_connection_error_handler(error_handler);
+  void set_connection_error_handler(
+      const base::RepeatingClosure& error_handler) {
+    receiver_.set_disconnect_handler(error_handler);
+    client_.set_disconnect_handler(error_handler);
   }
 
  private:
-  mojo::AssociatedBinding<blink::mojom::BroadcastChannelClient> binding_;
-  blink::mojom::BroadcastChannelClientAssociatedPtr client_;
+  mojo::AssociatedReceiver<blink::mojom::BroadcastChannelClient> receiver_;
+  mojo::AssociatedRemote<blink::mojom::BroadcastChannelClient> client_;
 
   BroadcastChannelProvider* service_;
   url::Origin origin_;
@@ -49,15 +52,15 @@ class BroadcastChannelProvider::Connection
 BroadcastChannelProvider::Connection::Connection(
     const url::Origin& origin,
     const std::string& name,
-    blink::mojom::BroadcastChannelClientAssociatedPtrInfo client,
-    blink::mojom::BroadcastChannelClientAssociatedRequest connection,
+    mojo::PendingAssociatedRemote<blink::mojom::BroadcastChannelClient> client,
+    mojo::PendingAssociatedReceiver<blink::mojom::BroadcastChannelClient>
+        connection,
     BroadcastChannelProvider* service)
-    : binding_(this, std::move(connection)),
+    : receiver_(this, std::move(connection)),
+      client_(std::move(client)),
       service_(service),
       origin_(origin),
-      name_(name) {
-  client_.Bind(std::move(client));
-}
+      name_(name) {}
 
 void BroadcastChannelProvider::Connection::OnMessage(
     blink::CloneableMessage message) {
@@ -66,20 +69,29 @@ void BroadcastChannelProvider::Connection::OnMessage(
 
 BroadcastChannelProvider::BroadcastChannelProvider() {}
 
-mojo::BindingId BroadcastChannelProvider::Connect(
+mojo::ReceiverId BroadcastChannelProvider::Connect(
     RenderProcessHostId render_process_host_id,
-    blink::mojom::BroadcastChannelProviderRequest request) {
-  return bindings_.AddBinding(this, std::move(request), render_process_host_id);
+    mojo::PendingReceiver<blink::mojom::BroadcastChannelProvider> receiver) {
+  return receivers_.Add(this, std::move(receiver), render_process_host_id);
 }
 
 void BroadcastChannelProvider::ConnectToChannel(
     const url::Origin& origin,
     const std::string& name,
-    blink::mojom::BroadcastChannelClientAssociatedPtrInfo client,
-    blink::mojom::BroadcastChannelClientAssociatedRequest connection) {
-  RenderProcessHostId process_id = bindings_.dispatch_context();
+    mojo::PendingAssociatedRemote<blink::mojom::BroadcastChannelClient> client,
+    mojo::PendingAssociatedReceiver<blink::mojom::BroadcastChannelClient>
+        connection) {
+  RenderProcessHostId process_id = receivers_.current_context();
   auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
-  if (!policy->CanAccessDataForOrigin(process_id, origin)) {
+
+  // TODO(943887): Replace HasSecurityState() call with something that can
+  // preserve security state after process shutdown. The security state check
+  // is a temporary solution to avoid crashes when this method is run after the
+  // process associated with |process_id| has been destroyed. It temporarily
+  // restores the old behavior of always allowing access if the process is gone.
+  // See https://crbug.com/943027 for details.
+  if (!policy->CanAccessDataForOrigin(process_id, origin) &&
+      policy->HasSecurityState(process_id)) {
     mojo::ReportBadMessage("BROADCAST_CHANNEL_INVALID_ORIGIN");
     return;
   }
@@ -87,8 +99,8 @@ void BroadcastChannelProvider::ConnectToChannel(
   std::unique_ptr<Connection> c(new Connection(origin, name, std::move(client),
                                                std::move(connection), this));
   c->set_connection_error_handler(
-      base::Bind(&BroadcastChannelProvider::UnregisterConnection,
-                 base::Unretained(this), c.get()));
+      base::BindRepeating(&BroadcastChannelProvider::UnregisterConnection,
+                          base::Unretained(this), c.get()));
   connections_[origin].insert(std::make_pair(name, std::move(c)));
 }
 

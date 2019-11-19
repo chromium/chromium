@@ -39,6 +39,12 @@
         "description": "Accessibility gestures fired by the touch exploration controller."
       },
       {
+        "id": "SwitchAccessCommand",
+        "type": "string",
+        "enum": [ "select", "next", "previous" ],
+        "description": "Commands that can be triggered by switch activation."
+      },
+      {
         "id": "SyntheticKeyboardEventType",
         "type": "string",
         "description": "The event to send",
@@ -103,9 +109,65 @@
         "type": "string",
         "description": "The state of the Select-to-Speak extension",
         "enum": ["selecting", "speaking", "inactive"]
+      },
+      {
+        "id": "FocusType",
+        "type": "string",
+        "description": "The type of visual appearance for the focus ring.",
+        "enum": ["glow", "solid", "dashed"]
+      },
+      {
+        "id": "FocusRingInfo",
+        "type": "object",
+        "properties": {
+          "rects": {
+            "type": "array",
+            "items": { "$ref": "ScreenRect" },
+            "description": "Array of rectangles to draw the accessibility focus ring around."
+          },
+          "type": {
+            "$ref": "FocusType",
+            "description": "The FocusType for the ring."
+          },
+          "color": {
+            "type": "string",
+            "description": "A CSS-style color string (e.g. #3F8213) that describes the primary color of the focus ring."
+          },
+          "secondaryColor": {
+            "type": "string",
+            "description": "A CSS-style color string (e.g. #3F82E4) that describes the secondary color of the focus ring, if there is one.",
+            "optional": true
+          },
+          "id": {
+            "type": "string",
+            "description": "An identifier for this focus ring, unique within the extension.",
+            "optional": true
+          }
+        }
       }
     ],
     "functions": [
+      {
+        "name": "getDisplayLanguage",
+        "type": "function",
+        "nocompile": true,
+        "description": "Called to translate languageCodeToTranslate into human-readable string in the language specified by targetLanguageCode",
+        "parameters": [
+          {
+            "name": "languageCodeToTranslate",
+            "type": "string"
+          },
+          {
+            "name": "targetLanguageCode",
+            "type": "string"
+          }
+        ],
+        "returns": {
+          "type": "string",
+          "description": "The human-readable language string in the provided language."
+        },
+        "platforms": ["chromeos"]
+      },
       {
         "name": "getBatteryDescription",
         "type": "function",
@@ -138,21 +200,15 @@
         ]
       },
       {
-        "name": "setFocusRing",
+        "name": "setFocusRings",
         "type": "function",
-        "description": "Sets the bounds of the accessibility focus ring.",
+        "description": "Sets the given accessibility focus rings for this extension.",
         "parameters": [
           {
-            "name": "rects",
+            "name": "focusRings",
             "type": "array",
-            "items": { "$ref": "ScreenRect" },
-            "description": "Array of rectangles to draw the accessibility focus ring around."
-          },
-          {
-            "name": "color",
-            "type": "string",
-            "description": "CSS-style hex color string beginning with # like #FF9982 or #EEE.",
-            "optional": true
+            "items": { "$ref": "FocusRingInfo" },
+            "description": "Array of focus rings to draw."
           }
         ]
       },
@@ -203,24 +259,6 @@
             "description": "True to darken screen; false to undarken screen."
           }
         ]
-      },
-      {
-        "name": "setSwitchAccessKeys",
-        "type": "function",
-        "description": "Change the keyboard keys captured by Switch Access.",
-        "parameters": [
-          {
-            "name": "key_codes",
-            "type": "array",
-            "items": {
-              "type": "integer",
-              "minimum": 48, // '0' key
-              "maximum": 90  // 'z' key
-            },
-            "description": "The key codes for the keys that will be captured."
-          }
-        ],
-        "platforms": ["chromeos"]
       },
       {
             "name": "setSwitchAccessMenuState",
@@ -322,10 +360,46 @@
         "platforms": ["chromeos"]
       },
       {
+        "name": "onScrollableBoundsForPointFound",
+        "type": "function",
+        "description": "Called by the Autoclick extension when findScrollableBoundsForPoint has found a scrolling container. |rect| will be the bounds of the nearest scrollable ancestor of the node at the point requested using findScrollableBoundsForPoint.",
+        "parameters": [
+          {
+            "name": "rect",
+            "$ref": "ScreenRect"
+          }
+        ],
+        "platforms": ["chromeos"]
+      },
+      {
         "name": "toggleDictation",
         "type": "function",
         "description": "Toggles dictation between active and inactive states.",
         "parameters": [],
+        "platforms": ["chromeos"]
+      },
+      {
+        "name": "setVirtualKeyboardVisible",
+        "type": "function",
+        "description": "Shows or hides the virtual keyboard.",
+        "parameters": [
+          {
+            "name": "isVisible",
+            "type": "boolean"
+          }
+        ],
+        "platforms": ["chromeos"]
+      },
+      {
+        "name": "openSettingsSubpage",
+        "type": "function",
+        "description": "Opens a specified settings subpage. To open a page with url chrome://settings/manageAccessibility/tts, pass in the substring 'manageAccessibility/tts'.",
+        "parameters": [
+          {
+            "name": "subpage",
+            "type": "string"
+          }
+        ],
         "platforms": ["chromeos"]
       }
     ],
@@ -366,6 +440,18 @@
         "platforms": ["chromeos"]
       },
       {
+        "name": "onSwitchAccessCommand",
+        "type": "function",
+        "description": "Called when Chrome OS has received a key event corresponding to a Switch Access command.",
+        "parameters": [
+          {
+            "name": "command",
+            "$ref": "SwitchAccessCommand"
+          }
+        ],
+        "platforms": ["chromeos"]
+      },
+      {
         "name": "onAnnounceForAccessibility",
         "type": "function",
         "description": "Called when an internal component within accessibility wants to force speech output for an accessibility extension. Do not use without approval from accessibility owners.",
@@ -375,6 +461,24 @@
             "type": "array",
             "items": { "type": "string" },
             "description": "Text to be announced."
+          }
+        ],
+        "platforms": ["chromeos"]
+      },
+      {
+        "name": "findScrollableBoundsForPoint",
+        "type": "function",
+        "description": "Called when an internal component within accessibility wants to find the nearest scrolling container at a given screen coordinate. Used in Automatic Clicks.",
+        "parameters": [
+          {
+            "name": "x",
+            "type": "number",
+            "description": "X screen coordinate of the point."
+          },
+          {
+            "name": "y",
+            "type": "number",
+            "description": "Y screen coordinate of the point."
           }
         ],
         "platforms": ["chromeos"]

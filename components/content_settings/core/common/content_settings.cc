@@ -27,53 +27,60 @@ struct HistogramValue {
 //
 // TODO(raymes): We should use a sparse histogram here on the hash of the
 // content settings type name instead.
-//
-// The array size must be explicit for the static_asserts below.
-constexpr size_t kNumHistogramValues = 43;
-constexpr HistogramValue kHistogramValue[kNumHistogramValues] = {
-    {CONTENT_SETTINGS_TYPE_COOKIES, 0},
-    {CONTENT_SETTINGS_TYPE_IMAGES, 1},
-    {CONTENT_SETTINGS_TYPE_JAVASCRIPT, 2},
-    {CONTENT_SETTINGS_TYPE_PLUGINS, 3},
-    {CONTENT_SETTINGS_TYPE_POPUPS, 4},
-    {CONTENT_SETTINGS_TYPE_GEOLOCATION, 5},
-    {CONTENT_SETTINGS_TYPE_NOTIFICATIONS, 6},
-    {CONTENT_SETTINGS_TYPE_AUTO_SELECT_CERTIFICATE, 7},
-    {CONTENT_SETTINGS_TYPE_MIXEDSCRIPT, 10},
-    {CONTENT_SETTINGS_TYPE_MEDIASTREAM_MIC, 12},
-    {CONTENT_SETTINGS_TYPE_MEDIASTREAM_CAMERA, 13},
-    {CONTENT_SETTINGS_TYPE_PROTOCOL_HANDLERS, 14},
-    {CONTENT_SETTINGS_TYPE_PPAPI_BROKER, 15},
-    {CONTENT_SETTINGS_TYPE_AUTOMATIC_DOWNLOADS, 16},
-    {CONTENT_SETTINGS_TYPE_MIDI_SYSEX, 17},
-    {CONTENT_SETTINGS_TYPE_SSL_CERT_DECISIONS, 19},
-    {CONTENT_SETTINGS_TYPE_PROTECTED_MEDIA_IDENTIFIER, 21},
-    {CONTENT_SETTINGS_TYPE_APP_BANNER, 22},
-    {CONTENT_SETTINGS_TYPE_SITE_ENGAGEMENT, 23},
-    {CONTENT_SETTINGS_TYPE_DURABLE_STORAGE, 24},
-    {CONTENT_SETTINGS_TYPE_BLUETOOTH_GUARD, 26},
-    {CONTENT_SETTINGS_TYPE_BACKGROUND_SYNC, 27},
-    {CONTENT_SETTINGS_TYPE_AUTOPLAY, 28},
-    {CONTENT_SETTINGS_TYPE_IMPORTANT_SITE_INFO, 30},
-    {CONTENT_SETTINGS_TYPE_PERMISSION_AUTOBLOCKER_DATA, 31},
-    {CONTENT_SETTINGS_TYPE_ADS, 32},
-    {CONTENT_SETTINGS_TYPE_ADS_DATA, 33},
-    {CONTENT_SETTINGS_TYPE_PASSWORD_PROTECTION, 34},
-    {CONTENT_SETTINGS_TYPE_MEDIA_ENGAGEMENT, 35},
-    {CONTENT_SETTINGS_TYPE_SOUND, 36},
-    {CONTENT_SETTINGS_TYPE_CLIENT_HINTS, 37},
-    {CONTENT_SETTINGS_TYPE_SENSORS, 38},
-    {CONTENT_SETTINGS_TYPE_ACCESSIBILITY_EVENTS, 39},
-    {CONTENT_SETTINGS_TYPE_CLIPBOARD_READ, 40},
-    {CONTENT_SETTINGS_TYPE_CLIPBOARD_WRITE, 41},
-    {CONTENT_SETTINGS_TYPE_PLUGINS_DATA, 42},
-    {CONTENT_SETTINGS_TYPE_PAYMENT_HANDLER, 43},
-    {CONTENT_SETTINGS_TYPE_USB_GUARD, 44},
-    {CONTENT_SETTINGS_TYPE_BACKGROUND_FETCH, 45},
-    {CONTENT_SETTINGS_TYPE_INTENT_PICKER_DISPLAY, 46},
-    {CONTENT_SETTINGS_TYPE_IDLE_DETECTION, 47},
-    {CONTENT_SETTINGS_TYPE_SERIAL_GUARD, 48},
-    {CONTENT_SETTINGS_TYPE_SERIAL_CHOOSER_DATA, 49},
+constexpr HistogramValue kHistogramValue[] = {
+    {ContentSettingsType::COOKIES, 0},
+    {ContentSettingsType::IMAGES, 1},
+    {ContentSettingsType::JAVASCRIPT, 2},
+    {ContentSettingsType::PLUGINS, 3},
+    {ContentSettingsType::POPUPS, 4},
+    {ContentSettingsType::GEOLOCATION, 5},
+    {ContentSettingsType::NOTIFICATIONS, 6},
+    {ContentSettingsType::AUTO_SELECT_CERTIFICATE, 7},
+    {ContentSettingsType::MIXEDSCRIPT, 10},
+    {ContentSettingsType::MEDIASTREAM_MIC, 12},
+    {ContentSettingsType::MEDIASTREAM_CAMERA, 13},
+    {ContentSettingsType::PROTOCOL_HANDLERS, 14},
+    {ContentSettingsType::PPAPI_BROKER, 15},
+    {ContentSettingsType::AUTOMATIC_DOWNLOADS, 16},
+    {ContentSettingsType::MIDI_SYSEX, 17},
+    {ContentSettingsType::SSL_CERT_DECISIONS, 19},
+    {ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER, 21},
+    {ContentSettingsType::APP_BANNER, 22},
+    {ContentSettingsType::SITE_ENGAGEMENT, 23},
+    {ContentSettingsType::DURABLE_STORAGE, 24},
+    {ContentSettingsType::BLUETOOTH_GUARD, 26},
+    {ContentSettingsType::BACKGROUND_SYNC, 27},
+    {ContentSettingsType::AUTOPLAY, 28},
+    {ContentSettingsType::IMPORTANT_SITE_INFO, 30},
+    {ContentSettingsType::PERMISSION_AUTOBLOCKER_DATA, 31},
+    {ContentSettingsType::ADS, 32},
+    {ContentSettingsType::ADS_DATA, 33},
+    {ContentSettingsType::PASSWORD_PROTECTION, 34},
+    {ContentSettingsType::MEDIA_ENGAGEMENT, 35},
+    {ContentSettingsType::SOUND, 36},
+    {ContentSettingsType::CLIENT_HINTS, 37},
+    {ContentSettingsType::SENSORS, 38},
+    {ContentSettingsType::ACCESSIBILITY_EVENTS, 39},
+    {ContentSettingsType::CLIPBOARD_READ, 40},
+    {ContentSettingsType::CLIPBOARD_WRITE, 41},
+    {ContentSettingsType::PLUGINS_DATA, 42},
+    {ContentSettingsType::PAYMENT_HANDLER, 43},
+    {ContentSettingsType::USB_GUARD, 44},
+    {ContentSettingsType::BACKGROUND_FETCH, 45},
+    {ContentSettingsType::INTENT_PICKER_DISPLAY, 46},
+    {ContentSettingsType::IDLE_DETECTION, 47},
+    {ContentSettingsType::SERIAL_GUARD, 48},
+    {ContentSettingsType::SERIAL_CHOOSER_DATA, 49},
+    {ContentSettingsType::PERIODIC_BACKGROUND_SYNC, 50},
+    {ContentSettingsType::BLUETOOTH_SCANNING, 51},
+    {ContentSettingsType::HID_GUARD, 52},
+    {ContentSettingsType::HID_CHOOSER_DATA, 53},
+    {ContentSettingsType::WAKE_LOCK_SCREEN, 54},
+    {ContentSettingsType::WAKE_LOCK_SYSTEM, 55},
+    {ContentSettingsType::LEGACY_COOKIE_ACCESS, 56},
+    {ContentSettingsType::NATIVE_FILE_SYSTEM_WRITE_GUARD, 57},
+    {ContentSettingsType::INSTALLED_WEB_APP_METADATA, 58},
+    {ContentSettingsType::NFC, 59},
 };
 
 }  // namespace
@@ -94,9 +101,11 @@ int ContentSettingTypeToHistogramValue(ContentSettingsType content_setting,
                         [](const HistogramValue& a, const HistogramValue& b) {
                           return a.type < b.type;
                         }));
-  static_assert(kHistogramValue[kNumHistogramValues - 1].type ==
-                    CONTENT_SETTINGS_NUM_TYPES - 1,
-                "Update content settings histogram lookup");
+  static_assert(
+      kHistogramValue[base::size(kHistogramValue) - 1].type ==
+          ContentSettingsType(
+              static_cast<int32_t>(ContentSettingsType::NUM_TYPES) - 1),
+      "Update content settings histogram lookup");
 
   const HistogramValue* found = std::lower_bound(
       std::begin(kHistogramValue), std::end(kHistogramValue), content_setting,
@@ -147,11 +156,12 @@ ContentSetting ContentSettingPatternSource::GetContentSetting() const {
 // static
 bool RendererContentSettingRules::IsRendererContentSetting(
     ContentSettingsType content_type) {
-  return content_type == CONTENT_SETTINGS_TYPE_IMAGES ||
-         content_type == CONTENT_SETTINGS_TYPE_JAVASCRIPT ||
-         content_type == CONTENT_SETTINGS_TYPE_AUTOPLAY ||
-         content_type == CONTENT_SETTINGS_TYPE_CLIENT_HINTS ||
-         content_type == CONTENT_SETTINGS_TYPE_POPUPS;
+  return content_type == ContentSettingsType::IMAGES ||
+         content_type == ContentSettingsType::JAVASCRIPT ||
+         content_type == ContentSettingsType::AUTOPLAY ||
+         content_type == ContentSettingsType::CLIENT_HINTS ||
+         content_type == ContentSettingsType::POPUPS ||
+         content_type == ContentSettingsType::MIXEDSCRIPT;
 }
 
 RendererContentSettingRules::RendererContentSettingRules() {}

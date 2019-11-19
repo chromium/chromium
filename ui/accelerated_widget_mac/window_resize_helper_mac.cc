@@ -22,13 +22,13 @@ namespace {
 
 class WrappedTask;
 class PumpableTaskRunner;
-typedef std::list<WrappedTask*> WrappedTaskQueue;
-typedef base::Callback<void(base::WaitableEvent*, base::TimeDelta)>
-    EventTimedWaitCallback;
+using WrappedTaskQueue = std::list<WrappedTask*>;
+using EventTimedWaitCallback =
+    base::RepeatingCallback<void(base::WaitableEvent*, base::TimeDelta)>;
 
 // A wrapper for IPCs and tasks that we may potentially execute in
 // WaitForSingleTaskToRun. Because these tasks are sent to two places to run,
-// we to wrap them in this structure and track whether or not they have run
+// we have to wrap them in this structure and track whether or not they have run
 // yet, to avoid running them twice.
 class WrappedTask {
  public:
@@ -66,7 +66,7 @@ class PumpableTaskRunner : public base::SingleThreadTaskRunner {
 
   // Enqueue WrappedTask and post it to |target_task_runner_|.
   bool EnqueueAndPostWrappedTask(const base::Location& from_here,
-                                 WrappedTask* task,
+                                 std::unique_ptr<WrappedTask> task,
                                  base::TimeDelta delay);
 
   // Wait at most |max_delay| to run an enqueued task.
@@ -167,7 +167,7 @@ void WrappedTask::RemoveFromTaskRunnerQueue() {
     pumpable_task_runner_->task_queue_.erase(iterator_);
     iterator_ = pumpable_task_runner_->task_queue_.end();
   }
-  pumpable_task_runner_ = NULL;
+  pumpable_task_runner_.reset();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -242,7 +242,7 @@ bool PumpableTaskRunner::WaitForSingleWrappedTaskToRun(
 
 bool PumpableTaskRunner::EnqueueAndPostWrappedTask(
     const base::Location& from_here,
-    WrappedTask* task,
+    std::unique_ptr<WrappedTask> task,
     base::TimeDelta delay) {
   task->AddToTaskRunnerQueue(this);
 
@@ -252,7 +252,7 @@ bool PumpableTaskRunner::EnqueueAndPostWrappedTask(
   event_.Signal();
 
   return target_task_runner_->PostDelayedTask(
-      from_here, base::Bind(&WrappedTask::Run, base::Owned(task)), delay);
+      from_here, base::BindOnce(&WrappedTask::Run, std::move(task)), delay);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -262,7 +262,7 @@ bool PumpableTaskRunner::PostDelayedTask(const base::Location& from_here,
                                          base::OnceClosure task,
                                          base::TimeDelta delay) {
   return EnqueueAndPostWrappedTask(
-      from_here, new WrappedTask(std::move(task), delay), delay);
+      from_here, std::make_unique<WrappedTask>(std::move(task), delay), delay);
 }
 
 bool PumpableTaskRunner::PostNonNestableDelayedTask(
@@ -298,7 +298,8 @@ void WindowResizeHelperMac::Init(
     const scoped_refptr<base::SingleThreadTaskRunner>& target_task_runner) {
   DCHECK(!task_runner_);
   task_runner_ = new PumpableTaskRunner(
-      base::Bind(&WindowResizeHelperMac::EventTimedWait), target_task_runner);
+      base::BindRepeating(&WindowResizeHelperMac::EventTimedWait),
+      target_task_runner);
 }
 
 void WindowResizeHelperMac::ShutdownForTests() {

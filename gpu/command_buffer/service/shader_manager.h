@@ -58,6 +58,7 @@ class GPU_GLES2_EXPORT Shader : public base::RefCounted<Shader> {
   // Returns true if we are ready to call DoCompile. If we have not yet called
   // RequestCompile or if we've already compiled, returns false.
   bool CanCompile() { return shader_state_ == kShaderStateCompileRequested; }
+  bool HasCompiled() { return shader_state_ == kShaderStateCompiled; }
   void DoCompile();
   void RefreshTranslatedShaderSource();
 

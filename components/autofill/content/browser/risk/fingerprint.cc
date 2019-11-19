@@ -28,6 +28,7 @@
 #include "base/timer/timer.h"
 #include "base/values.h"
 #include "components/autofill/content/browser/risk/proto/fingerprint.pb.h"
+#include "components/autofill/core/common/autofill_clock.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/font_list_async.h"
 #include "content/public/browser/gpu_data_manager.h"
@@ -40,6 +41,7 @@
 #include "content/public/common/webplugininfo.h"
 #include "gpu/config/gpu_info.h"
 #include "mojo/public/cpp/bindings/interface_request.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "ppapi/buildflags/buildflags.h"
 #include "services/device/public/cpp/geolocation/geoposition.h"
 #include "services/device/public/mojom/constants.mojom.h"
@@ -65,7 +67,7 @@ const int kTimeoutSeconds = 4;
 
 // Returns the delta between the local timezone and UTC.
 base::TimeDelta GetTimezoneOffset() {
-  const base::Time utc = base::Time::Now();
+  const base::Time utc = AutofillClock::Now();
 
   base::Time::Exploded local;
   utc.LocalExplode(&local);
@@ -81,7 +83,7 @@ base::TimeDelta GetTimezoneOffset() {
 // "Mac OS X 10.6.8".
 std::string GetOperatingSystemVersion() {
   return base::SysInfo::OperatingSystemName() + " " +
-      base::SysInfo::OperatingSystemVersion();
+         base::SysInfo::OperatingSystemVersion();
 }
 
 // Adds the list of |fonts| to the |machine|.
@@ -106,8 +108,7 @@ void AddFontsToFingerprint(const base::ListValue& fonts,
 void AddPluginsToFingerprint(const std::vector<content::WebPluginInfo>& plugins,
                              Fingerprint::MachineCharacteristics* machine) {
   for (const content::WebPluginInfo& it : plugins) {
-    Fingerprint::MachineCharacteristics::Plugin* plugin =
-        machine->add_plugin();
+    Fingerprint::MachineCharacteristics::Plugin* plugin = machine->add_plugin();
     plugin->set_name(base::UTF16ToUTF8(it.name));
     plugin->set_description(base::UTF16ToUTF8(it.desc));
     for (const content::WebPluginMimeType& mime_type : it.mime_types)
@@ -163,7 +164,7 @@ void AddCpuInfoToFingerprint(Fingerprint::MachineCharacteristics* machine) {
 
 // Writes info about the machine's GPU into the |machine|.
 void AddGpuInfoToFingerprint(Fingerprint::MachineCharacteristics* machine,
-                             const content::GpuDataManager& gpu_data_manager) {
+                             content::GpuDataManager& gpu_data_manager) {
   if (!gpu_data_manager.IsEssentialGpuInfoAvailable())
     return;
 
@@ -175,7 +176,6 @@ void AddGpuInfoToFingerprint(Fingerprint::MachineCharacteristics* machine,
   graphics->set_vendor_id(active_gpu.vendor_id);
   graphics->set_device_id(active_gpu.device_id);
   graphics->set_driver_version(active_gpu.driver_version);
-  graphics->set_driver_date(active_gpu.driver_date);
 }
 
 // Waits for all asynchronous data required for the fingerprint to be loaded,
@@ -221,7 +221,8 @@ class FingerprintDataLoader : public content::GpuDataManagerObserver {
 
   // Ensures that any observer registrations for the GPU data are cleaned up by
   // the time this object is destroyed.
-  ScopedObserver<content::GpuDataManager, FingerprintDataLoader> gpu_observer_;
+  ScopedObserver<content::GpuDataManager, content::GpuDataManagerObserver>
+      gpu_observer_{this};
 
   // Data that will be passed on to the next loading phase.  See the comment for
   // GetFingerprint() for a description of these variables.
@@ -241,8 +242,8 @@ class FingerprintDataLoader : public content::GpuDataManagerObserver {
   std::vector<content::WebPluginInfo> plugins_;
   bool waiting_on_plugins_;
   device::mojom::Geoposition geoposition_;
-  device::mojom::GeolocationPtr geolocation_;
-  device::mojom::GeolocationContextPtr geolocation_context_;
+  mojo::Remote<device::mojom::Geolocation> geolocation_;
+  mojo::Remote<device::mojom::GeolocationContext> geolocation_context_;
 
   // Timer to enforce a maximum timeout before the |callback_| is called, even
   // if not all asynchronous data has been loaded.
@@ -253,7 +254,7 @@ class FingerprintDataLoader : public content::GpuDataManagerObserver {
 
   // For invalidating asynchronous callbacks that might arrive after |this|
   // instance is destroyed.
-  base::WeakPtrFactory<FingerprintDataLoader> weak_ptr_factory_;
+  base::WeakPtrFactory<FingerprintDataLoader> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(FingerprintDataLoader);
 };
@@ -273,7 +274,6 @@ FingerprintDataLoader::FingerprintDataLoader(
     base::OnceCallback<void(std::unique_ptr<Fingerprint>)> callback,
     service_manager::Connector* connector)
     : gpu_data_manager_(content::GpuDataManager::GetInstance()),
-      gpu_observer_(this),
       obfuscated_gaia_id_(obfuscated_gaia_id),
       window_bounds_(window_bounds),
       content_bounds_(content_bounds),
@@ -285,8 +285,7 @@ FingerprintDataLoader::FingerprintDataLoader(
       user_agent_(user_agent),
       install_time_(install_time),
       waiting_on_plugins_(true),
-      callback_(std::move(callback)),
-      weak_ptr_factory_(this) {
+      callback_(std::move(callback)) {
   DCHECK(!install_time_.is_null());
 
   timeout_timer_.Start(
@@ -298,7 +297,7 @@ FingerprintDataLoader::FingerprintDataLoader(
   if (gpu_data_manager_->GpuAccessAllowed(nullptr) &&
       !gpu_data_manager_->IsEssentialGpuInfoAvailable()) {
     gpu_observer_.Add(gpu_data_manager_);
-    gpu_data_manager_->RequestCompleteGpuInfoIfNeeded();
+    OnGpuInfoUpdate();
   }
 
 #if BUILDFLAG(ENABLE_PLUGINS)
@@ -315,9 +314,10 @@ FingerprintDataLoader::FingerprintDataLoader(
 
   // Load geolocation data.
   DCHECK(connector);
-  connector->BindInterface(device::mojom::kServiceName,
-                           mojo::MakeRequest(&geolocation_context_));
-  geolocation_context_->BindGeolocation(mojo::MakeRequest(&geolocation_));
+  connector->Connect(device::mojom::kServiceName,
+                     geolocation_context_.BindNewPipeAndPassReceiver());
+  geolocation_context_->BindGeolocation(
+      geolocation_.BindNewPipeAndPassReceiver());
   geolocation_->SetHighAccuracy(false);
   geolocation_->QueryNextPosition(
       base::BindOnce(&FingerprintDataLoader::OnGotGeoposition,
@@ -433,7 +433,7 @@ void FingerprintDataLoader::FillFingerprint() {
 
   Fingerprint::Metadata* metadata = fingerprint->mutable_metadata();
   metadata->set_timestamp_ms(
-      (base::Time::Now() - base::Time::UnixEpoch()).InMilliseconds());
+      (AutofillClock::Now() - base::Time::UnixEpoch()).InMilliseconds());
   metadata->set_obfuscated_gaia_id(obfuscated_gaia_id_);
   metadata->set_fingerprinter_version(kFingerprinterVersion);
 
@@ -483,7 +483,7 @@ void GetFingerprint(
   gfx::Rect content_bounds = web_contents->GetContainerBounds();
 
   content::ScreenInfo screen_info;
-  const content::RenderWidgetHostView* host_view =
+  content::RenderWidgetHostView* host_view =
       web_contents->GetRenderWidgetHostView();
   if (host_view)
     host_view->GetRenderWidgetHost()->GetScreenInfo(&screen_info);

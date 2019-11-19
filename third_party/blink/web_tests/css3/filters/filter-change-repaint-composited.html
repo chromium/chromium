@@ -8,7 +8,7 @@
     <style>
         .box {
             /* force a composited layer */
-            transform: translate3d(0, 0, 0);
+            will-change: transform;
             float: left;
             height: 50px;
             width: 50px;
@@ -75,20 +75,13 @@
 
     <script src="../../resources/run-after-layout-and-paint.js"></script>
     <script>
-        if (window.testRunner) {
-            testRunner.dumpAsTextWithPixelResults();
-            testRunner.waitUntilDone();
-        }
-
         function repaintTest()
         {
             runAfterLayoutAndPaint(function() {
                 var items = document.getElementsByClassName('before');
                 while (items.length)
                     items[0].classList.remove("before");
-                if (window.testRunner)
-                    testRunner.notifyDone();
-            });
+            }, true);
         }
     </script>
 </head>

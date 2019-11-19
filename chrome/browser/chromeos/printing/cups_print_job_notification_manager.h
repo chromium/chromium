@@ -6,18 +6,17 @@
 #define CHROME_BROWSER_CHROMEOS_PRINTING_CUPS_PRINT_JOB_NOTIFICATION_MANAGER_H_
 
 #include <memory>
-#include <string>
 #include <unordered_map>
 
 #include "base/macros.h"
 #include "chrome/browser/chromeos/printing/cups_print_job_manager.h"
-#include "chrome/browser/chromeos/printing/cups_print_job_notification.h"
 
 class Profile;
 
 namespace chromeos {
 
 class CupsPrintJob;
+class CupsPrintJobNotification;
 
 class CupsPrintJobNotificationManager : public CupsPrintJobManager::Observer {
  public:

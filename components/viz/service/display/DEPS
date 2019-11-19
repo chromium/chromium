@@ -8,6 +8,11 @@ include_rules = [
   "+cc/resources",
   "+cc/scheduler",
   "+components/viz/service/surfaces",
+  "+components/viz/service/display_embedder/overlay_candidate_validator_android.h",
+  "+components/viz/service/display_embedder/overlay_candidate_validator_mac.h",
+  "+components/viz/service/display_embedder/overlay_candidate_validator_ozone.h",
+  "+components/viz/service/display_embedder/overlay_candidate_validator_surface_control.h",
+  "+components/viz/service/display_embedder/overlay_candidate_validator_win.h",
   "+gpu/command_buffer/client",
   "+gpu/command_buffer/common",
   "+gpu/GLES2",
@@ -19,16 +24,24 @@ include_rules = [
   "+third_party/khronos",
   "+third_party/skia",
   "+ui/latency",
+  "+ui/gfx/video_types.h",
   "+ui/gl/ca_renderer_layer_params.h",
   "+ui/gl/dc_renderer_layer_params.h",
   "+ui/gl/trace_util.h",
+  "+gpu/ipc/common/vulkan_ycbcr_info.h",
+  "+gpu/ipc/scheduler_sequence.h",
+  "+gpu/config/gpu_driver_bug_workaround_type.h",
 ]
 
 specific_include_rules = {
-  "dc_layer_overlay.cc|overlay_unittest.cc": [
+  "dc_layer_overlay.cc|overlay_dc_unittest.cc": [
     # TODO(danakj): gl_switches.h brings runtime flags into the compositor which
     # makes testing coverage harder/less clear, it should not be here.
     "+ui/gl/gl_switches.h",
+  ],
+  "overlay_strategy_underlay_cast\.*" : [
+    "+chromecast/media/service/mojom/video_geometry_setter.mojom.h",
+    "+mojo/public",
   ],
   ".*_(unit|pixel|perf)test\.cc": [
     "+cc/test",

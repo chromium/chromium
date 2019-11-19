@@ -1,0 +1,11 @@
+This is a testharness.js-based test.
+PASS 1111
+PASS 1111&#x20;
+PASS &#x20;1111
+PASS &#x20;1111&#x20;
+PASS 1111<br>
+PASS 1111<br>&#x20;
+FAIL 1111&#x20;<br> assert_approx_equals: expected 20 +/- 1 but got 23
+FAIL 1111&#x20;<br>&#x20; assert_approx_equals: expected 20 +/- 1 but got 23
+Harness: the test ran to completion.
+

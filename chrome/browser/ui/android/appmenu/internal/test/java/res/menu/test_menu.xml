@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2019 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="HardcodedText">
+    <item android:id="@+id/menu_item_one"
+        android:title="Menu Item One" />
+    <item android:id="@+id/menu_item_two"
+        android:title="Menu Item Two" />
+    <item android:id="@+id/menu_item_three"
+        android:title="Menu Item Three" />
+    <item android:id="@+id/icon_row_menu_id"
+        android:title="@null">
+        <menu>
+            <item android:id="@+id/icon_one"
+                android:title="Icon One" />
+            <item android:id="@+id/icon_two"
+                android:title="Icon Two"
+                android:titleCondensed="2" />
+            <item android:id="@+id/icon_three"
+                android:title="Icon Three" />
+        </menu>
+    </item>
+</menu>

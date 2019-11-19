@@ -8,9 +8,9 @@
 #include "components/autofill/core/common/form_data.h"
 #import "components/autofill/ios/browser/form_suggestion.h"
 #include "components/password_manager/ios/account_select_fill_data.h"
-#include "ios/web/public/web_state/web_frame.h"
-#include "ios/web/public/web_state/web_frame_util.h"
-#import "ios/web/public/web_state/web_state.h"
+#include "ios/web/public/js_messaging/web_frame.h"
+#include "ios/web/public/js_messaging/web_frame_util.h"
+#import "ios/web/public/web_state.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

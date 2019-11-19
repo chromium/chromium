@@ -46,11 +46,6 @@
       "chromium_builder_asan"
     ]
   },
-  "Mac ASAN Debug": {
-    "additional_compile_targets": [
-      "chromium_builder_asan"
-    ]
-  },
   "Mac ASAN Release": {
     "additional_compile_targets": [
       "chromium_builder_asan"

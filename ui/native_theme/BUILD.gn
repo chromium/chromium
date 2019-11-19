@@ -10,6 +10,8 @@ jumbo_component("native_theme") {
   sources = [
     "caption_style.cc",
     "caption_style.h",
+    "caption_style_mac.mm",
+    "caption_style_win.cc",
     "common_theme.cc",
     "common_theme.h",
     "native_theme.cc",
@@ -58,6 +60,7 @@ jumbo_component("native_theme") {
     libs = [
       "CoreGraphics.framework",
       "AppKit.framework",
+      "MediaAccessibility.framework",
     ]
   }
 }
@@ -80,6 +83,8 @@ if (is_win) {
       "//ui/display",
       "//ui/gfx",
     ]
+
+    libs = [ "uxtheme.lib" ]
   }
 } else {
   jumbo_source_set("native_theme_browser") {
@@ -111,8 +116,16 @@ test("native_theme_unittests") {
     sources += [ "native_theme_mac_unittest.cc" ]
   }
 
+  if (is_win) {
+    sources += [
+      "caption_style_win_unittest.cc",
+      "native_theme_win_unittest.cc",
+    ]
+  }
+
   deps = [
     ":native_theme",
+    ":native_theme_browser",
     "//base/test:run_all_unittests",
     "//base/test:test_support",
     "//skia",

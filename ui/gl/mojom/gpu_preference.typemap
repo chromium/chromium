@@ -1,0 +1,12 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+mojom = "//ui/gl/mojom/gpu_preference.mojom"
+public_headers = [ "//ui/gl/gpu_preference.h" ]
+traits_headers = [ "//ui/gl/mojom/gpu_preference_mojom_traits.h" ]
+sources = []
+public_deps = [
+  "//ui/gl",
+]
+type_mappings = [ "gl.mojom.GpuPreference=::gl::GpuPreference" ]

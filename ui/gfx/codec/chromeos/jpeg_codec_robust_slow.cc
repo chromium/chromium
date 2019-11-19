@@ -9,6 +9,7 @@
 #include <memory>
 
 #include "base/logging.h"
+#include "base/numerics/safe_conversions.h"
 
 extern "C" {
 // IJG provides robust JPEG decode
@@ -43,14 +44,6 @@ void IjgErrorExit(jpeg_common_struct* cinfo) {
 
 namespace {
 
-struct IjgJpegDecoderState {
-  IjgJpegDecoderState(const unsigned char* in, size_t len)
-      : input_buffer(in), input_buffer_length(len) {}
-
-  const unsigned char* input_buffer;
-  size_t input_buffer_length;
-};
-
 // Callback to initialize the source.
 //
 // From the JPEG library:
@@ -58,10 +51,10 @@ struct IjgJpegDecoderState {
 //   actually read. May leave bytes_in_buffer set to 0 (in which case a
 //   fill_input_buffer() call will occur immediately)."
 void IjgInitSource(j_decompress_ptr cinfo) {
-  IjgJpegDecoderState* state =
-      static_cast<IjgJpegDecoderState*>(cinfo->client_data);
-  cinfo->src->next_input_byte = state->input_buffer;
-  cinfo->src->bytes_in_buffer = state->input_buffer_length;
+  auto* compressed_data =
+      static_cast<base::span<const uint8_t>*>(cinfo->client_data);
+  cinfo->src->next_input_byte = compressed_data->data();
+  cinfo->src->bytes_in_buffer = compressed_data->size();
 }
 
 // Callback to fill the buffer. Since our buffer already contains all the data,
@@ -118,7 +111,7 @@ void IjgTermSource(j_decompress_ptr cinfo) {}
 #if !defined(JCS_EXTENSIONS)
 // Converts one row of rgb data to rgba data by adding a fully-opaque alpha
 // value.
-void AddAlpha(const unsigned char* rgb, int pixel_width, unsigned char* rgba) {
+void AddAlpha(const uint8_t* rgb, int pixel_width, uint8_t* rgba) {
   for (int x = 0; x < pixel_width; x++) {
     memcpy(&rgba[x * 4], &rgb[x * 3], 3);
     rgba[x * 4 + 3] = 0xff;
@@ -127,10 +120,10 @@ void AddAlpha(const unsigned char* rgb, int pixel_width, unsigned char* rgba) {
 
 // Converts one row of RGB data to BGRA by reordering the color components and
 // adding alpha values of 0xff.
-void RGBtoBGRA(const unsigned char* bgra, int pixel_width, unsigned char* rgb) {
+void RGBtoBGRA(const uint8_t* bgra, int pixel_width, uint8_t* rgb) {
   for (int x = 0; x < pixel_width; x++) {
-    const unsigned char* pixel_in = &bgra[x * 3];
-    unsigned char* pixel_out = &rgb[x * 4];
+    const uint8_t* pixel_in = &bgra[x * 3];
+    uint8_t* pixel_out = &rgb[x * 4];
     pixel_out[0] = pixel_in[2];
     pixel_out[1] = pixel_in[1];
     pixel_out[2] = pixel_in[0];
@@ -149,12 +142,12 @@ struct JpegRobustDecompressStructDeleter {
 
 }  // namespace
 
-bool JPEGCodecRobustSlow::Decode(const unsigned char* input,
-                                 size_t input_size,
+bool JPEGCodecRobustSlow::Decode(base::span<const uint8_t> compressed_data,
                                  ColorFormat format,
-                                 std::vector<unsigned char>* output,
+                                 std::vector<uint8_t>* output,
                                  int* w,
-                                 int* h) {
+                                 int* h,
+                                 base::Optional<size_t> max_decoded_num_bytes) {
   std::unique_ptr<jpeg_decompress_struct, JpegRobustDecompressStructDeleter>
       cinfo(new jpeg_decompress_struct);
   output->clear();
@@ -185,8 +178,7 @@ bool JPEGCodecRobustSlow::Decode(const unsigned char* input,
   srcmgr.term_source = IjgTermSource;
   cinfo->src = &srcmgr;
 
-  IjgJpegDecoderState state(input, input_size);
-  cinfo->client_data = &state;
+  cinfo->client_data = &compressed_data;
 
   // fill the file metadata into our buffer
   if (jpeg_read_header(cinfo.get(), true) != JPEG_HEADER_OK)
@@ -237,83 +229,83 @@ bool JPEGCodecRobustSlow::Decode(const unsigned char* input,
   *w = cinfo->output_width;
   *h = cinfo->output_height;
 
-  jpeg_start_decompress(cinfo.get());
-
   // FIXME(brettw) we may want to allow the capability for callers to request
   // how to align row lengths as we do for the compressor.
-  int row_read_stride = cinfo->output_width * cinfo->output_components;
+  const size_t decoded_row_stride =
+      cinfo->output_width *
+      base::saturated_cast<size_t>(cinfo->output_components);
+  void (*converter)(const uint8_t* rgb, int w, uint8_t* out) = nullptr;
+  size_t output_row_stride;
 
-#ifdef JCS_EXTENSIONS
-  // Create memory for a decoded image and write decoded lines to the memory
-  // without conversions same as JPEGCodec::Encode().
-  int row_write_stride = row_read_stride;
-  output->resize(row_write_stride * cinfo->output_height);
-
-  for (int row = 0; row < static_cast<int>(cinfo->output_height); row++) {
-    unsigned char* rowptr = &(*output)[row * row_write_stride];
-    if (!jpeg_read_scanlines(cinfo.get(), &rowptr, 1))
-      return false;
-  }
+#if defined(JCS_EXTENSIONS)
+  // Easy case: rows need no pixel format conversion.
+  output_row_stride = decoded_row_stride;
 #else
   if (format == FORMAT_RGB) {
-    // easy case, row needs no conversion
-    int row_write_stride = row_read_stride;
-    output->resize(row_write_stride * cinfo->output_height);
-
-    for (int row = 0; row < static_cast<int>(cinfo->output_height); row++) {
-      unsigned char* rowptr = &(*output)[row * row_write_stride];
-      if (!jpeg_read_scanlines(cinfo.get(), &rowptr, 1))
-        return false;
-    }
+    // Easy case: rows need no pixel format conversion.
+    output_row_stride = decoded_row_stride;
   } else {
-    // Rows need conversion to output format: read into a temporary buffer and
-    // expand to the final one. Performance: we could avoid the extra
-    // allocation by doing the expansion in-place.
-    int row_write_stride;
-    void (*converter)(const unsigned char* rgb, int w, unsigned char* out);
+    // Rows will need a pixel format conversion to output format.
     if (format == FORMAT_RGBA ||
         (format == FORMAT_SkBitmap && SK_R32_SHIFT == 0)) {
-      row_write_stride = cinfo->output_width * 4;
+      output_row_stride = cinfo->output_width * 4;
       converter = AddAlpha;
     } else if (format == FORMAT_BGRA ||
                (format == FORMAT_SkBitmap && SK_B32_SHIFT == 0)) {
-      row_write_stride = cinfo->output_width * 4;
+      output_row_stride = cinfo->output_width * 4;
       converter = RGBtoBGRA;
     } else {
       NOTREACHED() << "Invalid pixel format";
-      jpeg_destroy_decompress(cinfo.get());
       return false;
-    }
-
-    output->resize(row_write_stride * cinfo->output_height);
-
-    std::unique_ptr<unsigned char[]> row_data(
-        new unsigned char[row_read_stride]);
-    unsigned char* rowptr = row_data.get();
-    for (int row = 0; row < static_cast<int>(cinfo->output_height); row++) {
-      if (!jpeg_read_scanlines(cinfo.get(), &rowptr, 1))
-        return false;
-      converter(rowptr, *w, &(*output)[row * row_write_stride]);
     }
   }
 #endif
+
+  const size_t output_num_bytes = output_row_stride * cinfo->output_height;
+  if (max_decoded_num_bytes && output_num_bytes > *max_decoded_num_bytes)
+    return false;
+
+  jpeg_start_decompress(cinfo.get());
+
+  output->resize(output_num_bytes);
+  if (converter) {
+    // The decoded pixels need to be converted to the output format. We reuse
+    // this temporary buffer to decode each row and then write their converted
+    // form to the real output buffer.
+    auto row_data = std::make_unique<uint8_t[]>(decoded_row_stride);
+    uint8_t* rowptr = row_data.get();
+    for (size_t row = 0; row < cinfo->output_height; ++row) {
+      if (!jpeg_read_scanlines(cinfo.get(), &rowptr, 1))
+        return false;
+      converter(rowptr, *w, &(*output)[row * output_row_stride]);
+    }
+  } else {
+    for (size_t row = 0; row < cinfo->output_height; ++row) {
+      uint8_t* rowptr = &(*output)[row * output_row_stride];
+      if (!jpeg_read_scanlines(cinfo.get(), &rowptr, 1))
+        return false;
+    }
+  }
 
   jpeg_finish_decompress(cinfo.get());
   return true;
 }
 
 // static
-SkBitmap* JPEGCodecRobustSlow::Decode(const unsigned char* input,
-                                      size_t input_size) {
+std::unique_ptr<SkBitmap> JPEGCodecRobustSlow::Decode(
+    base::span<const uint8_t> compressed_data,
+    base::Optional<size_t> max_decoded_num_bytes) {
   int w, h;
-  std::vector<unsigned char> data_vector;
-  if (!Decode(input, input_size, FORMAT_SkBitmap, &data_vector, &w, &h))
-    return NULL;
+  std::vector<uint8_t> data_vector;
+  if (!Decode(compressed_data, FORMAT_SkBitmap, &data_vector, &w, &h,
+              max_decoded_num_bytes)) {
+    return nullptr;
+  }
 
   // Skia only handles 32 bit images.
   int data_length = w * h * 4;
 
-  SkBitmap* bitmap = new SkBitmap();
+  auto bitmap = std::make_unique<SkBitmap>();
   bitmap->allocN32Pixels(w, h);
   memcpy(bitmap->getAddr32(0, 0), &data_vector[0], data_length);
 

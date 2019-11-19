@@ -1,0 +1,35 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("alert_view_controller") {
+  sources = [
+    "alert_action.h",
+    "alert_action.mm",
+    "alert_consumer.h",
+    "alert_view_controller.h",
+    "alert_view_controller.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/chrome/browser/ui/elements",
+    "//ios/chrome/browser/ui/presenters",
+    "//ios/chrome/browser/ui/util",
+    "//ios/chrome/common/colors",
+    "//ios/chrome/common/ui_util",
+  ]
+  libs = [ "UIKit.framework" ]
+  configs += [ "//build/config/compiler:enable_arc" ]
+}
+
+source_set("unit_tests") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  testonly = true
+  sources = [
+    "alert_view_controller_unittest.mm",
+  ]
+  deps = [
+    ":alert_view_controller",
+    "//testing/gtest:gtest",
+  ]
+}

@@ -9,20 +9,21 @@
 #include "base/bind.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "base/time/time.h"
 #include "chrome/common/pref_names.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_types.h"
 
 namespace {
-// Delay between the scheduling and actual computing/reporting of stats.
-const int kComputeStatisticsDelaySeconds = 5;
-
 // Pref name for the persistent timestamp of the last stats reporting.
 const char kWeeklyStatsReportingTimestamp[] =
     "explore_sites.weekly_stats_reporting_timestamp";
 }  // namespace
 
 namespace explore_sites {
+
+// static
+constexpr base::TimeDelta HistoryStatisticsReporter::kComputeStatisticsDelay;
 
 // static
 void HistoryStatisticsReporter::RegisterPrefs(PrefRegistrySimple* registry) {
@@ -33,14 +34,10 @@ void HistoryStatisticsReporter::RegisterPrefs(PrefRegistrySimple* registry) {
 // from HistoryService::CountUniqueHostsVisitedLastMonth)
 HistoryStatisticsReporter::HistoryStatisticsReporter(
     history::HistoryService* history_service,
-    PrefService* prefs,
-    base::Clock* clock)
+    PrefService* prefs)
     : history_service_(history_service),
       prefs_(prefs),
-      clock_(clock),
-      cancelable_task_tracker_(new base::CancelableTaskTracker()),
-      history_service_observer_(this),
-      weak_ptr_factory_(this) {}
+      history_service_observer_(this) {}
 
 HistoryStatisticsReporter::~HistoryStatisticsReporter() {
   history_service_observer_.RemoveAll();
@@ -54,18 +51,14 @@ void HistoryStatisticsReporter::ScheduleReportStatistics() {
 
   // If we've already reported metrics during last week, bail out.
   base::Time last_report_time = prefs_->GetTime(kWeeklyStatsReportingTimestamp);
-  if (last_report_time > clock_->Now() - base::TimeDelta::FromDays(7))
+  if (last_report_time > base::Time::Now() - base::TimeDelta::FromDays(7))
     return;
-  prefs_->SetTime(kWeeklyStatsReportingTimestamp, clock_->Now());
-
-  base::TimeDelta computeStatisticsDelay =
-      base::TimeDelta::FromSeconds(kComputeStatisticsDelaySeconds);
 
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&HistoryStatisticsReporter::MaybeReportStatistics,
                      weak_ptr_factory_.GetWeakPtr()),
-      computeStatisticsDelay);
+      kComputeStatisticsDelay);
 }
 
 void HistoryStatisticsReporter::OnHistoryServiceLoaded(
@@ -93,9 +86,9 @@ void HistoryStatisticsReporter::MaybeReportStatistics() {
 
 void HistoryStatisticsReporter::ComputeStatistics() {
   history_service_->CountUniqueHostsVisitedLastMonth(
-      base::BindRepeating(&HistoryStatisticsReporter::ReportStatistics,
-                          weak_ptr_factory_.GetWeakPtr()),
-      cancelable_task_tracker_.get());
+      base::BindOnce(&HistoryStatisticsReporter::ReportStatistics,
+                     weak_ptr_factory_.GetWeakPtr()),
+      &cancelable_task_tracker_);
 }
 
 void HistoryStatisticsReporter::ReportStatistics(
@@ -103,5 +96,7 @@ void HistoryStatisticsReporter::ReportStatistics(
   if (!result.success)
     return;
   UMA_HISTOGRAM_COUNTS_1000("ExploreSites.MonthlyHostCount", result.count);
+  // Remember when stats were reported to skip attempts until next week.
+  prefs_->SetTime(kWeeklyStatsReportingTimestamp, base::Time::Now());
 }
 }  // namespace explore_sites

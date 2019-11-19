@@ -32,6 +32,7 @@
 
 #include "third_party/blink/renderer/core/dom/container_node.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/dom/node_traversal.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
@@ -160,11 +161,10 @@ Node* SmartClip::FindBestOverlappingNode(Node* root_node,
 
   while (node) {
     IntRect node_rect = node->PixelSnappedBoundingBox();
-
-    if (node->IsElementNode() &&
+    auto* element = DynamicTo<Element>(node);
+    if (element &&
         DeprecatedEqualIgnoringCase(
-            ToElement(node)->FastGetAttribute(html_names::kAriaHiddenAttr),
-            "true")) {
+            element->FastGetAttribute(html_names::kAriaHiddenAttr), "true")) {
       node = NodeTraversal::NextSkippingChildren(*node, root_node);
       continue;
     }
@@ -195,7 +195,7 @@ Node* SmartClip::FindBestOverlappingNode(Node* root_node,
 bool SmartClip::ShouldSkipBackgroundImage(Node* node) {
   DCHECK(node);
   // Apparently we're only interested in background images on spans and divs.
-  if (!IsHTMLSpanElement(*node) && !IsHTMLDivElement(*node))
+  if (!IsA<HTMLSpanElement>(*node) && !IsHTMLDivElement(*node))
     return true;
 
   // This check actually makes a bit of sense. If you're going to sprite an
@@ -233,8 +233,8 @@ String SmartClip::ExtractTextFromNode(Node* node) {
 
   StringBuilder result;
   for (Node& current_node : NodeTraversal::InclusiveDescendantsOf(*node)) {
-    const ComputedStyle* style = current_node.EnsureComputedStyle();
-    if (style && style->UserSelect() == EUserSelect::kNone)
+    const ComputedStyle* style = current_node.GetComputedStyle();
+    if (!style || style->UserSelect() == EUserSelect::kNone)
       continue;
 
     if (Node* node_from_frame = NodeInsideFrame(&current_node))

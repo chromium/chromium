@@ -8,18 +8,18 @@
 #include <utility>
 
 #include "base/command_line.h"
+#include "build/branding_buildflags.h"
 #include "chrome/browser/extensions/updater/extension_updater_switches.h"
 #include "chrome/browser/google/google_brand.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/crx_file/crx_verifier.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/update_client/update_query_params.h"
 #include "content/public/browser/storage_partition.h"
-#include "content/public/common/service_manager_connection.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/updater/extension_downloader.h"
 #include "extensions/common/verifier_formats.h"
-#include "services/identity/public/cpp/identity_manager.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 using extensions::ExtensionDownloader;
@@ -30,18 +30,17 @@ std::unique_ptr<ExtensionDownloader>
 ChromeExtensionDownloaderFactory::CreateForURLLoaderFactory(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     ExtensionDownloaderDelegate* delegate,
-    service_manager::Connector* connector,
     crx_file::VerifierFormat required_verifier_format,
     const base::FilePath& profile_path) {
-  std::unique_ptr<ExtensionDownloader> downloader(new ExtensionDownloader(
-      delegate, std::move(url_loader_factory), connector,
-      required_verifier_format, profile_path));
-#if defined(GOOGLE_CHROME_BUILD)
+  std::unique_ptr<ExtensionDownloader> downloader(
+      new ExtensionDownloader(delegate, std::move(url_loader_factory),
+                              required_verifier_format, profile_path));
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   std::string brand;
   google_brand::GetBrand(&brand);
-  if (!brand.empty() && !google_brand::IsOrganic(brand))
+  if (!google_brand::IsOrganic(brand))
     downloader->set_brand_code(brand);
-#endif  // defined(GOOGLE_CHROME_BUILD)
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
   std::string manifest_query_params =
       UpdateQueryParams::Get(UpdateQueryParams::CRX);
   base::CommandLine* command_line =
@@ -58,16 +57,10 @@ std::unique_ptr<ExtensionDownloader>
 ChromeExtensionDownloaderFactory::CreateForProfile(
     Profile* profile,
     ExtensionDownloaderDelegate* delegate) {
-  service_manager::Connector* connector =
-      content::ServiceManagerConnection::GetForProcess()->GetConnector();
   std::unique_ptr<ExtensionDownloader> downloader = CreateForURLLoaderFactory(
       content::BrowserContext::GetDefaultStoragePartition(profile)
           ->GetURLLoaderFactoryForBrowserProcess(),
-      delegate, connector,
-      extensions::GetPolicyVerifierFormat(
-          extensions::ExtensionPrefs::Get(profile)
-              ->InsecureExtensionUpdatesEnabled()),
-      profile->GetPath());
+      delegate, extensions::GetPolicyVerifierFormat(), profile->GetPath());
 
   // NOTE: It is not obvious why it is OK to pass raw pointers to the token
   // service and identity manager here. The logic is as follows:

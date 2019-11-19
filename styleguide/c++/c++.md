@@ -18,11 +18,13 @@ request review for a change to this file. If there's no consensus,
 
 Blink code in `third_party/WebKit` uses [Blink style](blink-c++.md).
 
-## C++11 features
+## Modern C++ features
 
-Google style has adopted most C++11 features, but Chromium has a more
-restricted set. The status of C++11 features in Chromium is tracked in the
-separate [C++11 use in Chromium](https://chromium-cpp.appspot.com/) page.
+Some features of C++ remain forbidden, even as Chromium adopts newer versions
+of the C++ language and standard library. These should be similar to those
+allowed in Google style, but may occasionally differ. The status of modern C++
+features in Chromium is tracked in the separate
+[C++ use in Chromium](https://chromium-cpp.appspot.com/) page.
 
 ## Naming
 
@@ -35,42 +37,12 @@ separate [C++11 use in Chromium](https://chromium-cpp.appspot.com/) page.
     with the `ForTesting` suffix. This is checked at presubmit time to ensure
     these functions are only called by test files.
 
-  * Test-only constructors cannot have the `ForTesting` suffix. Instead, they
-    should be declared protected with a test-only subclass, or private with a
-    test-only friend class. They should be commented as `For testing only`.
-
-  * Test-only free functions should generally live within a test_support
-    target.
-
-  * `#if defined(UNIT_TEST)` is problematic and discouraged.
-
 ## Code formatting
 
   * Put `*` and `&` by the type rather than the variable name.
-
-  * When you derive from a base class, group any overriding functions in your
-    header file in one labeled section. Use the override specifier on all these
-    functions.
-
+  * In class declarations, group function overrides together within each access
+    control section, with one labeled group per parent class.
   * Prefer `(foo == 0)` to `(0 == foo)`.
-
-  * Prefer putting delegate classes in their own header files. Implementors of
-    the delegate interface will often be included elsewhere, which will often
-    cause more coupling with the header of the main class.
-
-  * Don't use else after return. So use:
-    ```c++
-      if (foo)
-        return 1;
-      return 2;
-    ```
-    instead of:
-    ```c++
-      if (foo)
-        return 1;
-      else
-        return 2;
-    ```
 
 ## Unnamed namespaces
 
@@ -82,13 +54,10 @@ reduce the size of entry point tables.
 
 ## Exporting symbols
 
-When building shared libraries and DLLs, we need to indicate which functions
-and classes should be visible outside of the library, and which should only be
-visible inside the library.
-
-Symbols can be exported by annotating with a `<COMPONENT>_EXPORT` macro name
-(where `<COMPONENT>` is the name of the component being built, e.g. BASE, NET,
-CONTENT, etc.). Class annotations should precede the class name:
+Symbols can be exported (made visible outside of a shared library/DLL) by
+annotating with a `<COMPONENT>_EXPORT` macro name (where `<COMPONENT>` is the
+name of the component being built, e.g. BASE, NET, CONTENT, etc.). Class
+annotations should precede the class name:
 ```c++
 class FOO_EXPORT Foo {
   void Bar();
@@ -102,18 +71,9 @@ Function annotations should precede the return type:
 class FooSingleton {
   FOO_EXPORT Foo& GetFoo();
   FOO_EXPORT Foo& SetFooForTesting(Foo* foo);
-  void SetFoo(Foo* foo);
+  void SetFoo(Foo* foo);  // Not exported.
 };
 ```
-
-These examples result in `Foo::Bar()`, `Foo::Baz()`, `FooSingleton::GetFoo()`,
-and `FooSingleton::SetFooForTesting()` all being available outside of the DLL,
-but not `FooSingleton::SetFoo()`.
-
-Whether something is exported is distinct from whether it is public or private,
-or even whether it would normally be considered part of the external API. For
-example, if part of the external API is an inlined function that calls a
-private function, that private function must be exported as well.
 
 ## Multiple inheritance
 
@@ -125,9 +85,7 @@ suffix). Consider whether composition could solve the problem instead.
 ## Inline functions
 
 Simple accessors should generally be the only inline functions. These should be
-named `unix_hacker_style()`. Virtual functions should never be declared this way.
-For more detail, consult the [C++ Dos and Don'ts](c++-dos-and-donts.md) section
-on inlining.
+named using `snake_case()`. Virtual functions should never be declared this way.
 
 ## Logging
 
@@ -140,10 +98,8 @@ For the rare case when logging needs to stay in the codebase for a while,
 prefer `DVLOG(1)` to other logging methods. This avoids bloating the release
 executable and in debug can be selectively enabled at runtime by command-line
 arguments:
-
-  * `--v=n` sets the global log level to n (default 0). All log statements with a
-    log level less than or equal to the global level will be printed.
-
+  * `--v=n` sets the global log level to n (default 0). All log statements with
+    a log level less than or equal to the global level will be printed.
   * `--vmodule=mod=n[,mod=n,...]` overrides the global log level for the module
     mod. Supplying the string foo for mod will affect all files named foo.cc,
     while supplying a wildcard like `*bar/baz*` will affect all files with
@@ -178,46 +134,27 @@ Place platform-specific #includes in their own section below the "normal"
 ## Types
 
   * Use `size_t` for object and allocation sizes, object counts, array and
-    pointer offsets, vector indices, and so on. The signed types are
-    incorrect and unsafe for these purposes (e.g. integer overflow behavior for
-    signed types is undefined in the C and C++ standards, while the behavior is
-    defined for unsigned types). The C++ STL and libc are good guides here: they
-    use `size_t` and `foo::size_type` for very good reasons.
-
-  * Use `size_t` directly in preference to `std::string::size_type` and similar.
-
-  * Occasionally classes may have a good reason to use a type other than `size_t`
-    for one of these concepts, e.g. as a storage space optimization. In these
-    cases, continue to use `size_t` in public-facing function declarations,
-    and continue to use unsigned types internally (e.g. `uint32_t`).
-
-  * Be aware that `size_t` (object sizes and indices), `off_t` (file offsets),
-    `ptrdiff_t` (the difference between two pointer values), `intptr_t` (an
-    integer type large enough to hold the value of a pointer), `uint32_t`,
-    `uint64_t`, and so on are not necessarily the same. Use the right type for
-    your purpose. `CheckedNumeric` is an ergonomic way to perform safe
-    arithmetic and casting with and between these different types.
-
+    pointer offsets, vector indices, and so on. This prevents casts when
+    dealing with STL APIs, and if followed consistently across the codebase,
+    minimizes casts elsewhere.
+  * Occasionally classes may have a good reason to use a type other than
+    `size_t` for one of these concepts, e.g. as a storage space optimization. In
+    these cases, continue to use `size_t` in public-facing function
+    declarations, and continue to use unsigned types internally (e.g.
+    `uint32_t`).
   * Follow [Google C++ casting
     conventions](https://google.github.io/styleguide/cppguide.html#Casting)
     to convert arithmetic types when you know the conversion is safe. Use
     `checked_cast<T>` (from `base/numerics/safe_conversions.h`) when you need to
     `CHECK` that the source value is in range for the destination type. Use
     `saturated_cast<T>` if you instead wish to clamp out-of-range values.
-
-  * Do not use unsigned types to mean "this value should never be < 0". For
-    that, use assertions or run-time checks (as appropriate).
-
-  * In cases where the exact size of the type matters (e.g. a 32-bit pixel
-    value, a bitmask, or a counter that has to be a particular width), use one
-    of the sized types from `<stdint.h>`, e.g. `uint32_t`.
-
+    `CheckedNumeric` is an ergonomic way to perform safe arithmetic and casting
+    in many cases.
   * When passing values across network or process boundaries, use
     explicitly-sized types for safety, since the sending and receiving ends may
     not have been compiled with the same sizes for things like `int` and
     `size_t`. However, to the greatest degree possible, avoid letting these
     sized types bleed through the APIs of the layers in question.
-
   * Don't use `std::wstring`. Use `base::string16` or `base::FilePath` instead.
     (Windows-specific code interfacing with system APIs using `wstring` and
     `wchar_t` can still use `string16` and `char16`; it is safe to assume that
@@ -228,22 +165,18 @@ Place platform-specific #includes in their own section below the "normal"
 When functions need to take raw or smart pointers as parameters, use the
 following conventions. Here we refer to the parameter type as `T` and name as
 `t`.
-
-  * If the function does not modify `t`'s ownership, declare the param as `T*`. The
-    caller is expected to ensure `t` stays alive as long as necessary, generally
-    through the duration of the call. Exception: In rare cases (e.g. using
-    lambdas with STL algorithms over containers of `unique_ptr<>`s), you may be
-    forced to declare the param as `const std::unique_ptr<T>&`. Do this only when
-    required.
-
+  * If the function does not modify `t`'s ownership, declare the param as `T*`.
+    The caller is expected to ensure `t` stays alive as long as necessary,
+    generally through the duration of the call. Exception: In rare cases (e.g.
+    using lambdas with STL algorithms over containers of `unique_ptr<>`s), you
+    may be forced to declare the param as `const std::unique_ptr<T>&`. Do this
+    only when required.
   * If the function takes ownership of a non-refcounted object, declare the
     param as `std::unique_ptr<T>`.
-
   * If the function (at least sometimes) takes a ref on a refcounted object,
     declare the param as `scoped_refptr<T>`. The caller can decide
     whether it wishes to transfer ownership (by calling `std::move(t)` when
     passing `t`) or retain its ref (by simply passing t directly).
-
   * In short, functions should never take ownership of parameters passed as raw
     pointers, and there should rarely be a need to pass smart pointers by const
     ref.
@@ -277,7 +210,8 @@ forward-declare the type.
 
 ## File headers
 
-All files in Chromium start with a common license header. That header should look like this:
+All files in Chromium start with a common license header. That header should
+look like this:
 
 ```c++
 // Copyright $YEAR The Chromium Authors. All rights reserved.
@@ -286,18 +220,15 @@ All files in Chromium start with a common license header. That header should loo
 ```
 
 Some important notes about this header:
-
   * There is no `(c)` after `Copyright`.
-
-  * `$YEAR` should be set to the current year at the time a file is created, and not changed thereafter.
-
-  * For files specific to Chromium OS, replace the word Chromium with the phrase Chromium OS.
-
+  * `$YEAR` should be set to the current year at the time a file is created, and
+    not changed thereafter.
+  * For files specific to Chromium OS, replace the word Chromium with the phrase
+    Chromium OS.
   * If the style changes, don't bother to update existing files to comply with
     the new style. For the same reason, don't just blindly copy an existing
     file's header when creating a new file, since the existing file may use an
     outdated style.
-
   * The Chromium project hosts mirrors of some upstream open-source projects.
     When contributing to these portions of the repository, retain the existing
     file headers.
@@ -314,40 +245,37 @@ The `CHECK()` macro will cause an immediate crash if its condition is not met.
 (debug builds and some bot configurations, but not end-user builds).
 `NOTREACHED()` is equivalent to `DCHECK(false)`. Here are some rules for using
 these:
-
   * Use `DCHECK()` or `NOTREACHED()` as assertions, e.g. to document pre- and
     post-conditions. A `DCHECK()` means "this condition must always be true",
     not "this condition is normally true, but perhaps not in exceptional
     cases." Things like disk corruption or strange network errors are examples
     of exceptional circumstances that nevertheless should not result in
     `DCHECK()` failure.
-
   * A consequence of this is that you should not handle DCHECK() failures, even
-    if failure would result in a crash. Attempting to handle a `DCHECK()` failure
-    is a statement that the `DCHECK()` can fail, which contradicts the point of
-    writing the `DCHECK()`. In particular, do not write code like the following:
+    if failure would result in a crash. Attempting to handle a `DCHECK()`
+    failure is a statement that the `DCHECK()` can fail, which contradicts the
+    point of writing the `DCHECK()`. In particular, do not write code like the
+    following:
     ```c++
       DCHECK(foo);
-      if (!foo) ...  // Can't succeed!
+      if (!foo)  // Eliminate this code.
+        ...
 
-      if (!bar) {
+      if (!bar) {  // Replace this whole conditional with "DCHECK(bar);".
         NOTREACHED();
-        return;  // Replace this whole conditional with "DCHECK(bar);" and keep going instead.
+        return;
       }
     ```
-
   * Use `CHECK()` if the consequence of a failed assertion would be a security
     vulnerability, where crashing the browser is preferable. Because this takes
     down the whole browser, sometimes there are better options than `CHECK()`.
     For example, if a renderer sends the browser process a malformed IPC, an
     attacker may control the renderer, but we can simply kill the offending
     renderer instead of crashing the whole browser.
-
   * You can temporarily use `CHECK()` instead of `DCHECK()` when trying to
     force crashes in release builds to sniff out which of your assertions is
     failing. Don't leave these in the codebase forever; remove them or change
     them back once you've solved the problem.
-
   * Don't use these macros in tests, as they crash the test binary and leave
     bots in a bad state. Use the `ASSERT_xx()` and `EXPECT_xx()` family of
     macros, which report failures gracefully and can continue running other
@@ -356,9 +284,7 @@ these:
 ## Miscellany
 
   * Use UTF-8 file encodings and LF line endings.
-
   * Unit tests and performance tests should be placed in the same directory as
     the functionality they're testing.
-
   * The [C++ Dos and Don'ts](c++-dos-and-donts.md) page has more helpful
     information.

@@ -39,6 +39,28 @@ class CONTENT_EXPORT ServiceWorkerCacheWriter {
  public:
   using OnWriteCompleteCallback = base::OnceCallback<void(net::Error)>;
 
+  // This class defines the interfaces of observer that observes write
+  // operations. The observer is notified when response info or data
+  // will be written to storage.
+  class WriteObserver {
+   public:
+    // Called before response info is written to storage.
+    // Returns net::OK if success. Other values are treated as errors.
+    virtual int WillWriteInfo(
+        scoped_refptr<HttpResponseInfoIOBuffer> response_info) = 0;
+
+    // Called before response data is written to storage.
+    // Return value is used by cache writer to decide what to do next. A net
+    // error code should be returned (e.g. net::OK, net::ERR_IO_PENDING). If it
+    // returns net::ERR_IO_PENDING, the cache writer waits until the callback
+    // is called asynchronously. Otherwise the callback should not be called.
+    // The parameter of the callback specifies result of the operation.
+    virtual int WillWriteData(
+        scoped_refptr<net::IOBuffer> data,
+        int length,
+        base::OnceCallback<void(net::Error)> callback) = 0;
+  };
+
   // Create a cache writer instance that copies a script already in storage. The
   // script is read by |copy_reader|.
   static std::unique_ptr<ServiceWorkerCacheWriter> CreateForCopy(
@@ -109,7 +131,16 @@ class CONTENT_EXPORT ServiceWorkerCacheWriter {
   // Returns true when the cache writer is created by CreateForCopy().
   bool IsCopying() const;
 
+  // Returns the resource ID being written to storage.
+  int64_t WriterResourceId() const;
+
+  void set_write_observer(WriteObserver* write_observer) {
+    write_observer_ = write_observer;
+  }
+
  private:
+  friend class ServiceWorkerUpdateCheckTestUtils;
+
   // States for the state machine.
   //
   // The state machine flows roughly like this: if there is no existing cache
@@ -216,13 +247,22 @@ class CONTENT_EXPORT ServiceWorkerCacheWriter {
   int ReadDataHelper(const std::unique_ptr<ServiceWorkerResponseReader>& reader,
                      net::IOBuffer* buf,
                      int buf_len);
-  int WriteInfoHelper(
-      const std::unique_ptr<ServiceWorkerResponseWriter>& writer,
-      HttpResponseInfoIOBuffer* buf);
-  int WriteDataHelper(
-      const std::unique_ptr<ServiceWorkerResponseWriter>& writer,
-      net::IOBuffer* buf,
-      int buf_len);
+  // If no write observer is set through set_write_observer(),
+  // WriteInfo() operates the same as WriteInfoToResponseWriter() and
+  // WriteData() operates the same as WriteDataToResponseWriter().
+  // If observer is set, the argument |response_info| or |data| is first sent
+  // to observer then WriteInfoToResponseWriter() or
+  // WriteDataToResponseWriter() is called.
+  int WriteInfo(scoped_refptr<HttpResponseInfoIOBuffer> response_info);
+  int WriteData(scoped_refptr<net::IOBuffer> data, int length);
+  int WriteInfoToResponseWriter(
+      scoped_refptr<HttpResponseInfoIOBuffer> response_info);
+  int WriteDataToResponseWriter(scoped_refptr<net::IOBuffer> data, int length);
+
+  // Called when |write_observer_| finishes its WillWriteData() operation.
+  void OnWillWriteDataCompleted(scoped_refptr<net::IOBuffer> data,
+                                int length,
+                                net::Error error);
 
   // Callback used by the above helpers for their IO operations. This is only
   // run when those IO operations complete asynchronously, in which case it
@@ -272,10 +312,12 @@ class CONTENT_EXPORT ServiceWorkerCacheWriter {
   // cache writer pauses immediately.
   const bool pause_when_not_identical_;
 
+  WriteObserver* write_observer_ = nullptr;
+
   std::unique_ptr<ServiceWorkerResponseReader> compare_reader_;
   std::unique_ptr<ServiceWorkerResponseReader> copy_reader_;
   std::unique_ptr<ServiceWorkerResponseWriter> writer_;
-  base::WeakPtrFactory<ServiceWorkerCacheWriter> weak_factory_;
+  base::WeakPtrFactory<ServiceWorkerCacheWriter> weak_factory_{this};
 };
 
 }  // namespace content

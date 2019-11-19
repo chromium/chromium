@@ -6,7 +6,7 @@
 
 #include "third_party/blink/renderer/core/css/media_query_evaluator.h"
 #include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
-#include "third_party/blink/renderer/core/css/parser/sizes_calc_parser.h"
+#include "third_party/blink/renderer/core/css/parser/sizes_math_function_parser.h"
 #include "third_party/blink/renderer/core/media_type_names.h"
 
 namespace blink {
@@ -40,7 +40,7 @@ bool SizesAttributeParser::CalculateLengthInPixels(CSSParserTokenRange range,
       return true;
     }
   } else if (type == kFunctionToken) {
-    SizesCalcParser calc_parser(range, media_values_);
+    SizesMathFunctionParser calc_parser(range, media_values_);
     if (!calc_parser.IsValid())
       return false;
     result = calc_parser.Result();

@@ -18,13 +18,12 @@ import("//testing/test.gni")
 # - dict - a dictionary file for the fuzzer.
 # - environment_variables - certain whitelisted environment variables for the
 # fuzzer (AFL_DRIVER_DONT_DEFER is the only one allowed currently).
-# - libfuzzer_options - options for the fuzzer (e.g. -max_len=N or -timeout=N).
+# - libfuzzer_options - options for the fuzzer (e.g. -close_fd_mask=N).
 # - asan_options - AddressSanitizer options (e.g. allow_user_segv_handler=1).
 # - msan_options - MemorySanitizer options.
 # - ubsan_options - UndefinedBehaviorSanitizer options.
 # - seed_corpus - a directory with seed corpus.
 # - seed_corpus_deps - dependencies for generating the seed corpus.
-# - skip_owners - if true, skips writing the owners file.
 #
 # If use_libfuzzer gn flag is defined, then proper fuzzer would be build.
 # Without use_libfuzzer or use_afl a unit-test style binary would be built on
@@ -35,13 +34,17 @@ import("//testing/test.gni")
 # config (.options file) file would be generated or modified in root output
 # dir (next to test).
 template("fuzzer_test") {
-  if (!disable_libfuzzer && (use_fuzzing_engine || use_drfuzz || is_linux)) {
+  if (!disable_libfuzzer && use_fuzzing_engine) {
     assert(defined(invoker.sources), "Need sources in $target_name.")
 
     test_deps = [ "//testing/libfuzzer:libfuzzer_main" ]
+    test_data_deps = []
 
     if (defined(invoker.deps)) {
       test_deps += invoker.deps
+    }
+    if (defined(invoker.data_deps)) {
+      test_data_deps += invoker.data_deps
     }
 
     if (defined(invoker.seed_corpus) || defined(invoker.seed_corpuses)) {
@@ -81,7 +84,9 @@ template("fuzzer_test") {
         deps = [ "//testing/libfuzzer:seed_corpus" ] + seed_corpus_deps
       }
 
-      test_deps += [ ":" + target_name + "_seed_corpus" ]
+      if (archive_seed_corpus) {
+        test_deps += [ ":" + target_name + "_seed_corpus" ]
+      }
     }
 
     if (defined(invoker.dict) || defined(invoker.libfuzzer_options) ||
@@ -150,35 +155,39 @@ template("fuzzer_test") {
       test_deps += [ ":" + config_file_name ]
     }
 
-    # Generate .owners file (if skip_owners is not true).
-    owners_file_name = target_name + ".owners"
-    action(owners_file_name) {
-      script = "//testing/libfuzzer/gen_fuzzer_owners.py"
-      args = [
-        "--owners",
-        rebase_path("$root_build_dir/" + owners_file_name, root_build_dir),
-      ]
+    if (use_fuzzing_engine) {
+      # Generating owners files is slow, only enable when fuzzing engine is
+      # used.
+      owners_file_name = target_name + ".owners"
+      action(owners_file_name) {
+        script = "//testing/libfuzzer/gen_fuzzer_owners.py"
+        pool = "//testing/libfuzzer:fuzzer_owners_pool"
+        args = [
+          "--owners",
+          rebase_path("$root_build_dir/" + owners_file_name, root_build_dir),
+        ]
 
-      if (defined(invoker.sources) && invoker.sources != []) {
-        args += [ "--sources" ] + rebase_path(invoker.sources, "//")
-      } else if (defined(invoker.deps) && invoker.deps != []) {
-        _full_deps = []
-        foreach(_dep, invoker.deps) {
-          _full_deps += [ get_label_info(_dep, "dir") + ":" +
-                          get_label_info(_dep, "name") ]
+        if (defined(invoker.sources) && invoker.sources != []) {
+          args += [ "--sources" ] + rebase_path(invoker.sources, "//")
+        } else if (defined(invoker.deps) && invoker.deps != []) {
+          _full_deps = []
+          foreach(_dep, invoker.deps) {
+            _full_deps += [ get_label_info(_dep, "dir") + ":" +
+                            get_label_info(_dep, "name") ]
+          }
+          args += [
+                    "--build-dir",
+                    rebase_path("$root_build_dir/", root_build_dir),
+                    "--deps",
+                  ] + _full_deps
         }
-        args += [
-                  "--build-dir",
-                  rebase_path("$root_build_dir/", root_build_dir),
-                  "--deps",
-                ] + _full_deps
-      }
 
-      outputs = [
-        "$root_build_dir/$owners_file_name",
-      ]
+        outputs = [
+          "$root_build_dir/$owners_file_name",
+        ]
+      }
+      test_data_deps += [ ":" + owners_file_name ]
     }
-    test_deps += [ ":" + owners_file_name ]
 
     test(target_name) {
       forward_variables_from(invoker,
@@ -192,6 +201,7 @@ template("fuzzer_test") {
                                "libs",
                              ])
       deps = test_deps
+      data_deps = test_data_deps
 
       if (defined(invoker.additional_configs)) {
         configs += invoker.additional_configs
@@ -210,11 +220,6 @@ template("fuzzer_test") {
       if (is_mac) {
         sources += [ "//testing/libfuzzer/libfuzzer_exports.h" ]
       }
-
-      # Used to isolate fuzzer corpus and run fuzzer targets on swarming.
-      data = [
-        "//testing/libfuzzer/fuzzer_corpus_for_bots/${target_name}/",
-      ]
     }
   } else {
     # noop on unsupported platforms.

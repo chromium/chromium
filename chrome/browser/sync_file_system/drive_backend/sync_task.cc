@@ -24,7 +24,7 @@ void CallRunExclusive(const base::WeakPtr<ExclusiveTask>& task,
 
 }  // namespace
 
-ExclusiveTask::ExclusiveTask() : weak_ptr_factory_(this) {}
+ExclusiveTask::ExclusiveTask() {}
 ExclusiveTask::~ExclusiveTask() {}
 
 void ExclusiveTask::RunPreflight(std::unique_ptr<SyncTaskToken> token) {

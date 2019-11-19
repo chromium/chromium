@@ -1,0 +1,8 @@
+{
+  "name": "ExtensionB",
+  "description": "Helper extension that gets uninstalled during test.",
+  "version": "1.0",
+  "manifest_version": 2,
+  // Note: This extension will also be loaded as SW extension in tests.
+  "background": {"scripts": ["background.js"], "persistent": false}
+}

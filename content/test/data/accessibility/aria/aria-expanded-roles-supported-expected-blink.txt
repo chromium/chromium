@@ -1,0 +1,84 @@
+rootWebArea
+++genericContainer
+++++alert
+++++alertDialog
+++++application expanded
+++++article
+++++banner
+++++blockquote
+++++button expanded
+++++caption
+++++cell expanded
+++++checkBox expanded
+++++columnHeader expanded
+++++comboBoxGrouping expanded
+++++complementary
+++++contentInfo
+++++definition
+++++contentDeletion
+++++dialog
+++++list
+++++document
+++++emphasis
+++++feed
+++++figure
+++++form
+++++grid
+++++cell expanded
+++++group
+++++heading
+++++image
+++++contentInsertion
+++++genericContainer
+++++genericContainer
+++++link expanded
+++++list
+++++listBox expanded
+++++listItem
+++++log
+++++main
+++++marquee
+++++math
+++++menu
+++++menuBar
+++++menuItem expanded
+++++menuItemCheckBox expanded
+++++menuItemRadio expanded
+++++meter
+++++navigation
+++++none
+++++note
+++++listBoxOption
+++++paragraph
+++++presentational
+++++progressIndicator
+++++radioButton
+++++radioGroup
+++++region
+++++row expanded
+++++rowHeader expanded
+++++scrollBar
+++++search
+++++searchBox
+++++splitter
+++++splitter
+++++slider
+++++spinButton
+++++status
+++++strong
+++++genericContainer
+++++genericContainer
+++++switch expanded
+++++tab expanded
+++++table
+++++tabList
+++++tabPanel
+++++term
+++++textField
+++++time
+++++timer
+++++toolbar
+++++tooltip
+++++tree
+++++treeGrid
+++++treeItem expanded

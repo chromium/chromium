@@ -32,12 +32,16 @@ def LoginDesktopAccount(action_runner, credential,
       action_runner, password, 'input[type=password]')
 
   login_button_function = (
-      'document.getElementsByName("signin")[0]')
+      '''document.querySelectorAll("[aria-label^='Sign in']")[0]''')
   action_runner.WaitForElement(element_function=login_button_function)
   action_runner.ClickElement(element_function=login_button_function)
 
+  action_runner.Wait(2)
+  # This reload is needed for opening desktop page on mobile device
+  action_runner.ReloadPage()
+
   search_bar_function = (
-      'document.getElementsByClassName("nav-search-bar")[0]')
+      "document.getElementById('extended-nav-search')")
   action_runner.WaitForElement(element_function=search_bar_function)
 
 
@@ -51,12 +55,12 @@ def LoginMobileAccount(action_runner, credential,
   action_runner.Navigate('https://www.linkedin.com/uas/login')
   action_runner.Wait(1) # Error page happens if this wait is not here.
   login_utils.InputWithSelector(
-      action_runner, '%s@gmail.com' % account_name, 'input[type=email]')
+      action_runner, '%s@gmail.com' % account_name, 'input[name=session_key]')
   login_utils.InputWithSelector(
-      action_runner, password, 'input[type=password]')
+      action_runner, password, 'input[name=session_password]')
 
   login_button_function = (
-      'document.getElementById("signin-submit")')
+      '''document.querySelectorAll("[aria-label^='Sign in']")[0]''')
   action_runner.WaitForElement(element_function=login_button_function)
   action_runner.ClickElement(element_function=login_button_function)
 

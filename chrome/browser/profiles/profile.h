@@ -7,17 +7,19 @@
 #ifndef CHROME_BROWSER_PROFILES_PROFILE_H_
 #define CHROME_BROWSER_PROFILES_PROFILE_H_
 
+#include <memory>
 #include <string>
 
-#include "base/logging.h"
+#include "base/files/file_path.h"
 #include "base/macros.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/observer_list.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
-#include "components/domain_reliability/clear_mode.h"
-#include "components/keyed_service/core/simple_factory_key.h"
 #include "content/public/browser/browser_context.h"
-#include "content/public/browser/content_browser_client.h"
-#include "services/network/public/mojom/network_service.mojom-forward.h"
+#include "mojo/public/cpp/bindings/remote.h"
+#include "services/network/public/mojom/network_context.mojom-forward.h"
+#include "url/gurl.h"
 
 #if !defined(OS_ANDROID)
 class ChromeZoomLevelPrefs;
@@ -26,6 +28,7 @@ class ChromeZoomLevelPrefs;
 class ExtensionSpecialStoragePolicy;
 class PrefService;
 class PrefStore;
+class ProfileKey;
 class TestingProfile;
 
 namespace base {
@@ -36,6 +39,23 @@ namespace content {
 class WebUI;
 }
 
+namespace identity {
+namespace mojom {
+class IdentityService;
+}  // namespace mojom
+}  // namespace identity
+
+namespace policy {
+class SchemaRegistryService;
+class ProfilePolicyConnector;
+class UserCloudPolicyManager;
+
+#if defined(OS_CHROMEOS)
+class ActiveDirectoryPolicyManager;
+class UserCloudPolicyManagerChromeOS;
+#endif
+}  // namespace policy
+
 namespace network {
 class SharedURLLoaderFactory;
 }
@@ -43,6 +63,9 @@ class SharedURLLoaderFactory;
 namespace user_prefs {
 class PrefRegistrySyncable;
 }
+
+class OffTheRecordProfileIOData;
+class ProfileObserver;
 
 // Instead of adding more members to Profile, consider creating a
 // KeyedService. See
@@ -111,9 +134,9 @@ class Profile : public content::BrowserContext {
   // CREATE_MODE_ASYNCHRONOUS then the profile is initialized asynchronously.
   // Can return null if |create_mode| is CREATE_MODE_SYNCHRONOUS and the
   // creation of the profile directory fails.
-  static Profile* CreateProfile(const base::FilePath& path,
-                                Delegate* delegate,
-                                CreateMode create_mode);
+  static std::unique_ptr<Profile> CreateProfile(const base::FilePath& path,
+                                                Delegate* delegate,
+                                                CreateMode create_mode);
 
   // Returns the profile corresponding to the given browser context.
   static Profile* FromBrowserContext(content::BrowserContext* browser_context);
@@ -121,10 +144,24 @@ class Profile : public content::BrowserContext {
   // Returns the profile corresponding to the given WebUI.
   static Profile* FromWebUI(content::WebUI* web_ui);
 
-  // Returns the SimpleFactoryKey asscociated with this |profile|.
-  static SimpleFactoryKey* GetSimpleFactoryKey(Profile* profile);
+  void AddObserver(ProfileObserver* observer);
+  void RemoveObserver(ProfileObserver* observer);
 
   // content::BrowserContext implementation ------------------------------------
+
+  // Returns the path of the directory where this context's data is stored.
+  base::FilePath GetPath() override = 0;
+  virtual base::FilePath GetPath() const = 0;
+
+  // Return whether this context is off the record. Default is false.
+  // Note that for Chrome this covers BOTH Incognito mode and Guest sessions.
+  bool IsOffTheRecord() override = 0;
+  virtual bool IsOffTheRecord() const = 0;
+
+  // Returns the creation time of this profile. This will either be the creation
+  // time of the profile directory or, for ephemeral off-the-record profiles,
+  // the creation time of the profile object instance.
+  virtual base::Time GetCreationTime() const = 0;
 
   // Typesafe upcast.
   virtual TestingProfile* AsTestingProfile();
@@ -136,9 +173,6 @@ class Profile : public content::BrowserContext {
   // Returns the username associated with this profile, if any. In non-test
   // implementations, this is usually the Google-services email address.
   virtual std::string GetProfileUserName() const = 0;
-
-  // Returns the profile type.
-  virtual ProfileType GetProfileType() const = 0;
 
   // Return the incognito version of this profile. The returned pointer
   // is owned by the receiving profile. If the receiving profile is off the
@@ -201,14 +235,6 @@ class Profile : public content::BrowserContext {
   // (i.e. HasOffTheRecordProfile is false).
   virtual PrefService* GetReadOnlyOffTheRecordPrefs();
 
-  // Returns the main request context.
-  virtual net::URLRequestContextGetter* GetRequestContext() = 0;
-
-  // Returns a callback (which must be executed on the IO thread) that returns
-  // the cookie store for the chrome-extensions:// scheme.
-  virtual base::OnceCallback<net::CookieStore*()>
-  GetExtensionsCookieStoreGetter() = 0;
-
   // Returns the main URLLoaderFactory.
   virtual scoped_refptr<network::SharedURLLoaderFactory>
   GetURLLoaderFactory() = 0;
@@ -219,18 +245,41 @@ class Profile : public content::BrowserContext {
   // versa).
   virtual bool IsSameProfile(Profile* profile) = 0;
 
+  // Returns whether two profiles are the same and of the same type.
+  bool IsSameProfileAndType(Profile* profile) {
+    return IsSameProfile(profile) &&
+           GetProfileType() == profile->GetProfileType();
+  }
+
   // Returns the time the profile was started. This is not the time the profile
   // was created, rather it is the time the user started chrome and logged into
   // this profile. For the single profile case, this corresponds to the time
   // the user started chrome.
   virtual base::Time GetStartTime() const = 0;
 
-  // Returns the key used by the original profile to index KeyedService
-  // instances created by a SimpleKeyedServiceFactory.
-  virtual SimpleFactoryKey* GetOriginalKey() const = 0;
-  // Returns the key used by an incognito profile to index KeyedService
-  // instances created by a SimpleKeyedServiceFactory.
-  virtual SimpleFactoryKey* GetOffTheRecordKey() const = 0;
+  // Returns the key used to index KeyedService instances created by a
+  // SimpleKeyedServiceFactory, more strictly typed as a ProfileKey.
+  virtual ProfileKey* GetProfileKey() const = 0;
+
+  // Returns the SchemaRegistryService.
+  virtual policy::SchemaRegistryService* GetPolicySchemaRegistryService() = 0;
+
+#if defined(OS_CHROMEOS)
+  // Returns the UserCloudPolicyManagerChromeOS.
+  virtual policy::UserCloudPolicyManagerChromeOS*
+  GetUserCloudPolicyManagerChromeOS() = 0;
+
+  // Returns the ActiveDirectoryPolicyManager.
+  virtual policy::ActiveDirectoryPolicyManager*
+  GetActiveDirectoryPolicyManager() = 0;
+#else
+  // Returns the UserCloudPolicyManager.
+  virtual policy::UserCloudPolicyManager* GetUserCloudPolicyManager() = 0;
+#endif
+
+  virtual policy::ProfilePolicyConnector* GetProfilePolicyConnector() = 0;
+  virtual const policy::ProfilePolicyConnector* GetProfilePolicyConnector()
+      const = 0;
 
   // Returns the last directory that was chosen for uploading or opening a file.
   virtual base::FilePath last_selected_directory() = 0;
@@ -276,7 +325,28 @@ class Profile : public content::BrowserContext {
 
   std::string GetDebugName();
 
-  // Returns whether it is a guest session.
+  // IsRegularProfile() and IsIncognitoProfile() are mutually exclusive.
+  // IsSystemProfile() implies that IsRegularProfile() is true.
+  // IsOffTheRecord() is true for the off the record profile of incognito mode
+  // and guest sessions.
+
+  // Returns whether it's a regular profile.
+  bool IsRegularProfile() const;
+
+  // Returns whether it is an Incognito profile. An Incognito profile is an
+  // off-the-record profile that is not a guest profile.
+  bool IsIncognitoProfile() const;
+
+  // Returns true if this is an off the record profile that is independent from
+  // its original regular profile. This covers OTR profiles that are directly
+  // created using CreateOffTheRecordProfile() (such as done by
+  // IndependentOTRProfileManager). Calling GetOffTheRecordProfile on their
+  // GetOriginProfile will not point to themselves.
+  // This type of usage is not recommended.
+  virtual bool IsIndependentOffTheRecordProfile() = 0;
+
+  // Returns whether it is a guest session. This covers both the guest profile
+  // and its parent.
   virtual bool IsGuestSession() const;
 
   // Returns whether it is a system profile.
@@ -310,9 +380,13 @@ class Profile : public content::BrowserContext {
 
   // Creates NetworkContext for the specified isolated app (or for the profile
   // itself, if |relative_path| is empty).
-  virtual network::mojom::NetworkContextPtr CreateNetworkContext(
+  virtual mojo::Remote<network::mojom::NetworkContext> CreateNetworkContext(
       bool in_memory,
       const base::FilePath& relative_partition_path);
+
+  // Exposes access to the profile's Identity Service instance. This may return
+  // null if the profile does not have a corresponding service instance.
+  virtual identity::mojom::IdentityService* GetIdentityService();
 
   // Stop sending accessibility events until ResumeAccessibilityEvents().
   // Calls to Pause nest; no events will be sent until the number of
@@ -344,7 +418,9 @@ class Profile : public content::BrowserContext {
   // ProfileDestroyer, but in tests, some are not.
   void MaybeSendDestroyedNotification();
 
-  // Creates an OffTheRecordProfile which points to this Profile.
+  // Creates an OffTheRecordProfile which points to this Profile. The caller is
+  // responsible for sending a NOTIFICATION_PROFILE_CREATED when the profile is
+  // correctly assigned to its owner.
   Profile* CreateOffTheRecordProfile();
 
 #if !defined(OS_ANDROID)
@@ -353,7 +429,17 @@ class Profile : public content::BrowserContext {
   double GetDefaultZoomLevelForProfile();
 #endif
 
+  // Wipes all data for this profile.
+  void Wipe();
+
+  virtual void SetCreationTimeForTesting(base::Time creation_time) = 0;
+
  protected:
+  friend class OffTheRecordProfileIOData;
+
+  // Returns the profile type.
+  virtual ProfileType GetProfileType() const = 0;
+
   void set_is_guest_profile(bool is_guest_profile) {
     is_guest_profile_ = is_guest_profile;
   }
@@ -366,6 +452,8 @@ class Profile : public content::BrowserContext {
   // Profile.
   static PrefStore* CreateExtensionPrefStore(Profile*,
                                              bool incognito_pref_store);
+
+  void NotifyOffTheRecordProfileCreated(Profile* off_the_record);
 
  private:
   bool restored_last_session_;
@@ -384,6 +472,8 @@ class Profile : public content::BrowserContext {
 
   // A non-browsing profile not associated to a user. Sample use: User-Manager.
   bool is_system_profile_;
+
+  base::ObserverList<ProfileObserver> observers_;
 
   DISALLOW_COPY_AND_ASSIGN(Profile);
 };

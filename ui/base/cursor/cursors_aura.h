@@ -16,18 +16,21 @@ namespace ui {
 
 const int kAnimatedCursorFrameDelayMs = 25;
 
+// Returns CSS cursor name from an Aura cursor ID.
+UI_BASE_EXPORT const char* CursorCssNameFromId(CursorType id);
+
 // Returns data about |id|, where id is a cursor constant like
 // ui::CursorType::kHelp. The IDR will be placed in |resource_id| and the
 // hotspots for the different DPIs will be placed in |hot_1x| and |hot_2x|.
 // Returns false if |id| is invalid.
-bool UI_BASE_EXPORT GetCursorDataFor(CursorSize cursor_size,
+UI_BASE_EXPORT bool GetCursorDataFor(CursorSize cursor_size,
                                      CursorType id,
                                      float scale_factor,
                                      int* resource_id,
                                      gfx::Point* point);
 
 // Like above, but for animated cursors.
-bool UI_BASE_EXPORT GetAnimatedCursorDataFor(CursorSize cursor_size,
+UI_BASE_EXPORT bool GetAnimatedCursorDataFor(CursorSize cursor_size,
                                              CursorType id,
                                              float scale_factor,
                                              int* resource_id,

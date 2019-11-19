@@ -14,7 +14,7 @@ Oilpan is a garbage collection system in Blink.
 The lifetime of objects allocated by Oilpan is automatically managed.
 The following objects are allocated by Oilpan:
 
-* Objects that inherit from GarbageCollected<T> or GarbageCollectedFinalized<T>.
+* Objects that inherit from GarbageCollected<T>.
 
 * HeapVector<T>, HeapHashSet<T>, HeapHashMap<T, U> etc
 
@@ -72,8 +72,7 @@ The following is a basic rule to determine which of Oilpan or PartitionAlloc
 you should use when allocating a new object:
 
 * Use Oilpan if you want a GC to manage the lifetime of the object.
-You need to make the object inherit from GarbageCollected<T> or
-GarbageCollectedFinalized<T>. See
+You need to make the object inherit from GarbageCollected<T>. See
 [BlinkGCAPIReference.md](../heap/BlinkGCAPIReference.md) to learn
 programming with Oilpan.
 

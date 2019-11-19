@@ -41,8 +41,6 @@ class ExtensionLoadingTest : public ExtensionBrowserTest {
 // Check the fix for http://crbug.com/178542.
 IN_PROC_BROWSER_TEST_F(ExtensionLoadingTest,
                        UpgradeAfterNavigatingFromOverriddenNewTabPage) {
-  embedded_test_server()->ServeFilesFromDirectory(
-      base::FilePath(FILE_PATH_LITERAL("chrome/test/data")));
   ASSERT_TRUE(embedded_test_server()->Start());
 
   TestExtensionDir extension_dir;
@@ -106,8 +104,6 @@ IN_PROC_BROWSER_TEST_F(ExtensionLoadingTest,
 
 IN_PROC_BROWSER_TEST_F(ExtensionLoadingTest,
                        UpgradeAddingNewTabPagePermissionNoPrompt) {
-  embedded_test_server()->ServeFilesFromDirectory(
-      base::FilePath(FILE_PATH_LITERAL("chrome/test/data")));
   ASSERT_TRUE(embedded_test_server()->Start());
 
   TestExtensionDir extension_dir;
@@ -168,8 +164,6 @@ IN_PROC_BROWSER_TEST_F(ExtensionLoadingTest,
 // Tests the behavior described in http://crbug.com/532088.
 IN_PROC_BROWSER_TEST_F(ExtensionLoadingTest,
                        KeepAliveWithDevToolsOpenOnReload) {
-  embedded_test_server()->ServeFilesFromDirectory(
-      base::FilePath(FILE_PATH_LITERAL("chrome/test/data")));
   ASSERT_TRUE(embedded_test_server()->Start());
 
   TestExtensionDir extension_dir;

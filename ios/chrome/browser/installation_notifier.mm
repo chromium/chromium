@@ -11,7 +11,7 @@
 
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
-#include "ios/web/public/web_thread.h"
+#include "ios/web/public/thread/web_thread.h"
 #include "net/base/backoff_entry.h"
 #include "url/gurl.h"
 
@@ -141,7 +141,6 @@ const net::BackoffEntry::Policy kPollingBackoffPolicy = {
       [observers removeObject:weakReferenceToObserver];
       if ([observers count] == 0) {
         [_installedAppObservers removeObjectForKey:scheme];
-        UMA_HISTOGRAM_BOOLEAN("NativeAppLauncher.InstallationDetected", NO);
       }
     }
   }
@@ -190,7 +189,6 @@ const net::BackoffEntry::Policy kPollingBackoffPolicy = {
       }
       if (![keysToDelete containsObject:scheme]) {
         [keysToDelete addObject:scheme];
-        UMA_HISTOGRAM_BOOLEAN("NativeAppLauncher.InstallationDetected", YES);
       }
     } else {
       keepPolling = YES;

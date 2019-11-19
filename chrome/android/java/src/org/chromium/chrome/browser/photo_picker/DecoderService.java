@@ -16,12 +16,13 @@ import android.os.SystemClock;
 import org.chromium.base.CommandLine;
 import org.chromium.base.Log;
 import org.chromium.base.PathUtils;
-import org.chromium.base.ThreadUtils;
 import org.chromium.base.annotations.MainDex;
+import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.library_loader.LibraryProcessType;
-import org.chromium.base.library_loader.ProcessInitException;
-import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
+import org.chromium.base.task.PostTask;
+import org.chromium.chrome.browser.ChromeApplication;
+import org.chromium.content_public.browser.UiThreadTaskTraits;
 
 import java.io.FileDescriptor;
 import java.io.IOException;
@@ -53,20 +54,17 @@ public class DecoderService extends Service {
         if (!CommandLine.isInitialized()) {
             CommandLine.init(null);
         }
-        try {
-            // The decoder service relies on PathUtils.
-            ThreadUtils.runOnUiThreadBlocking(() -> {
-                PathUtils.setPrivateDataDirectorySuffix(
-                        ChromeBrowserInitializer.PRIVATE_DATA_DIRECTORY_SUFFIX);
-            });
 
-            LibraryLoader.getInstance().ensureInitialized(LibraryProcessType.PROCESS_CHILD);
-            nativeInitializePhotoPickerSandbox();
+        // The decoder service relies on PathUtils.
+        PostTask.runSynchronously(UiThreadTaskTraits.DEFAULT, () -> {
+            PathUtils.setPrivateDataDirectorySuffix(
+                    ChromeApplication.PRIVATE_DATA_DIRECTORY_SUFFIX);
+        });
 
-            mNativeLibraryAndSandboxInitialized = true;
-        } catch (ProcessInitException e) {
-            Log.e(TAG, "Unable to initialize the native library and sandbox", e);
-        }
+        LibraryLoader.getInstance().ensureInitialized(LibraryProcessType.PROCESS_CHILD);
+        DecoderServiceJni.get().initializePhotoPickerSandbox();
+
+        mNativeLibraryAndSandboxInitialized = true;
 
         super.onCreate();
     }
@@ -148,7 +146,10 @@ public class DecoderService extends Service {
         }
     };
 
-    // Initializes the seccomp-bpf sandbox when it's supported by the device. Records the sandbox
-    // status to the Android.SeccompStatus.PhotoPickerSandbox histogram.
-    private static native void nativeInitializePhotoPickerSandbox();
+    @NativeMethods
+    interface Natives {
+        // Initializes the seccomp-bpf sandbox when it's supported by the device. Records the
+        // sandbox status to the Android.SeccompStatus.PhotoPickerSandbox histogram.
+        void initializePhotoPickerSandbox();
+    }
 }

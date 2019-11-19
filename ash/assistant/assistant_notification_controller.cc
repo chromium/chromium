@@ -8,15 +8,16 @@
 #include <utility>
 
 #include "ash/assistant/assistant_controller.h"
+#include "ash/assistant/assistant_notification_expiry_monitor.h"
 #include "ash/assistant/util/deep_link_util.h"
-#include "ash/new_window_controller.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "ash/public/cpp/vector_icons/vector_icons.h"
-#include "ash/public/interfaces/voice_interaction_controller.mojom.h"
+#include "ash/public/mojom/assistant_controller.mojom.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/voice_interaction/voice_interaction_controller.h"
 #include "base/strings/utf_string_conversions.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
@@ -81,7 +82,7 @@ bool IsValidActionUrl(const GURL& action_url) {
 AssistantNotificationController::AssistantNotificationController(
     AssistantController* assistant_controller)
     : assistant_controller_(assistant_controller),
-      binding_(this),
+      expiry_monitor_(this),
       notifier_id_(GetNotifierId()) {
   AddModelObserver(this);
   assistant_controller_->AddObserver(this);
@@ -94,9 +95,9 @@ AssistantNotificationController::~AssistantNotificationController() {
   RemoveModelObserver(this);
 }
 
-void AssistantNotificationController::BindRequest(
-    mojom::AssistantNotificationControllerRequest request) {
-  binding_.Bind(std::move(request));
+void AssistantNotificationController::BindReceiver(
+    mojo::PendingReceiver<mojom::AssistantNotificationController> receiver) {
+  receiver_.Bind(std::move(receiver));
 }
 
 void AssistantNotificationController::AddModelObserver(
@@ -196,12 +197,16 @@ void AssistantNotificationController::RemoveAllNotifications(bool from_server) {
   model_.RemoveAllNotifications(from_server);
 }
 
+void AssistantNotificationController::SetQuietMode(bool enabled) {
+  message_center::MessageCenter::Get()->SetQuietMode(enabled);
+}
+
 // AssistantNotificationModelObserver ------------------------------------------
 
 void AssistantNotificationController::OnNotificationAdded(
     const AssistantNotification* notification) {
   // Do not show system notifications if the setting is disabled.
-  if (!Shell::Get()->voice_interaction_controller()->notification_enabled())
+  if (!AssistantState::Get()->notification_enabled().value_or(true))
     return;
 
   // We only show system notifications in the Message Center.
@@ -215,7 +220,7 @@ void AssistantNotificationController::OnNotificationAdded(
 void AssistantNotificationController::OnNotificationUpdated(
     const AssistantNotification* notification) {
   // Do not show system notifications if the setting is disabled.
-  if (!Shell::Get()->voice_interaction_controller()->notification_enabled())
+  if (!AssistantState::Get()->notification_enabled().value_or(true))
     return;
 
   // If the notification that was updated is *not* a system notification, we
@@ -267,7 +272,10 @@ void AssistantNotificationController::OnNotificationClicked(
 
   // Open the action url if it is valid.
   if (IsValidActionUrl(action_url)) {
-    assistant_controller_->OpenUrl(action_url);
+    // Note that we copy construct a new GURL as our |notification| may be
+    // destroyed during the |OpenUrl| sequence leaving |action_url| in a bad
+    // state.
+    assistant_controller_->OpenUrl(GURL(action_url));
     model_.RemoveNotificationById(id, /*from_server=*/false);
     return;
   }

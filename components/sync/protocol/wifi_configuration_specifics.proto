@@ -1,0 +1,89 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+//
+// Sync protocol datatype extension for Wi-Fi configuration items.
+
+// If you change or add any fields in this file, update proto_visitors.h and
+// potentially proto_enum_conversions.{h, cc}.
+
+syntax = "proto2";
+
+option java_multiple_files = true;
+option java_package = "org.chromium.components.sync.protocol";
+
+option optimize_for = LITE_RUNTIME;
+
+package sync_pb;
+
+import "encryption.proto";
+
+message WifiConfigurationSpecificsData {
+  // SSID encoded to hex, letters should be upper case and 0x prefix should be
+  // omitted. For example, ssid "network" would be provided as "6E6574776F726B".
+  optional bytes hex_ssid = 1;
+  enum SecurityType {
+    SECURITY_TYPE_UNSPECIFIED = 0;
+    SECURITY_TYPE_NONE = 1;
+    SECURITY_TYPE_WEP = 2;
+    SECURITY_TYPE_PSK = 3;  // WPA-PSK or RSN-PSK
+  }
+  optional SecurityType security_type = 2;
+  // The passphrase can be ASCII, UTF-8, or a string of hex digits.
+  optional bytes passphrase = 3;
+  enum AutomaticallyConnectOption {
+    AUTOMATICALLY_CONNECT_UNSPECIFIED = 0;
+    AUTOMATICALLY_CONNECT_DISABLED = 1;
+    AUTOMATICALLY_CONNECT_ENABLED = 2;
+  }
+  optional AutomaticallyConnectOption automatically_connect = 4;
+  enum IsPreferredOption {
+    IS_PREFERRED_UNSPECIFIED = 0;
+    IS_PREFERRED_DISABLED = 1;
+    IS_PREFERRED_ENABLED = 2;
+  }
+  optional IsPreferredOption is_preferred = 5;
+  enum MeteredOption {
+    METERED_OPTION_UNSPECIFIED = 0;
+    METERED_OPTION_NO = 1;
+    METERED_OPTION_YES = 2;
+    // Allows the device to use heuristics to determine if network is metered.
+    METERED_OPTION_AUTO = 3;
+  }
+  optional MeteredOption metered = 6;
+  message ProxyConfiguration {
+    enum ProxyOption {
+      PROXY_OPTION_UNSPECIFIED = 0;
+      PROXY_OPTION_DISABLED = 1;
+      // Use a Proxy Auto-config(PAC) Url, set in proxy_url
+      PROXY_OPTION_AUTOMATIC = 2;
+      // Uses Web Proxy Auto-Discovery Protocol (WPAD) to discover the proxy
+      // settings using DHCP/DNS.
+      PROXY_OPTION_AUTODISCOVERY = 3;
+      // User sets proxy_url, proxy_port, and whitelisted_domains manually.
+      PROXY_OPTION_MANUAL = 4;
+    }
+    optional ProxyOption proxy_option = 1;
+    // Only set if PROXY_OPTION_AUTOMATIC or PROXY_OPTION_MANUAL.
+    optional string proxy_url = 2;
+    // Only set if PROXY_OPTION_MANUAL.
+    optional int32 proxy_port = 3;
+    // Only set if PROXY_OPTION_MANUAL.
+    repeated string whitelisted_domains = 4;
+  }
+  optional ProxyConfiguration proxy_configuration = 7;
+  // List of DNS servers to be used.  Up to 4.
+  repeated string custom_dns = 8;
+  // This is represented by the UNIX timestamp, ms since epoch.
+  optional int64 last_update_timestamp = 9;
+}
+
+message WifiConfigurationSpecifics {
+  // The actual wifi configuration data. Contains an encrypted
+  // WifiConfigurationSpecificsData message.
+  optional EncryptedData encrypted = 1;
+  // An unsynced field for use internally on the client. This field should
+  // never be set in any network-based communications because it contains
+  // unencrypted material.
+  optional WifiConfigurationSpecificsData client_only_encrypted_data = 2;
+}

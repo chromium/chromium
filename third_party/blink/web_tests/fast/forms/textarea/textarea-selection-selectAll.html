@@ -1,0 +1,19 @@
+<!doctype html>
+<meta charset=utf-8>
+<title>This test selectAll in textarea.</title>
+<link rel="author" title="yu.han" href="mailto:yuzhehan@chromium.org">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/#dom-textarea/input-setselectionrange">
+<script src=../../../resources/testharness.js></script>
+<script src=../../../resources/testharnessreport.js></script>
+<div id=log></div>
+<form id="form"><textarea id="form-textarea"></textarea></form>
+<script>
+test(function() {
+    var textarea = document.getElementById('form-textarea');
+    textarea.value = 'a\n';
+    textarea.focus();
+    document.execCommand('selectAll');
+    assert_equals(textarea.selectionStart, 0, 'textarea.selectionStart');
+    assert_equals(textarea.selectionEnd, 2, 'textarea.selectionEnd');
+}, 'textarea selection index is correct when text ends in newline');
+</script>

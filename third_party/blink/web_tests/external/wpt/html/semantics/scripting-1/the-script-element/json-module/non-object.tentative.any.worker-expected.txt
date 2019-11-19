@@ -1,0 +1,8 @@
+This is a testharness.js-based test.
+FAIL Non-object: null promise_test: Unhandled rejection with value: object "TypeError: Failed to fetch dynamically imported module: http://web-platform.test:8001/html/semantics/scripting-1/the-script-element/json-module/null.json"
+FAIL Non-object: true promise_test: Unhandled rejection with value: object "TypeError: Failed to fetch dynamically imported module: http://web-platform.test:8001/html/semantics/scripting-1/the-script-element/json-module/true.json"
+FAIL Non-object: false promise_test: Unhandled rejection with value: object "TypeError: Failed to fetch dynamically imported module: http://web-platform.test:8001/html/semantics/scripting-1/the-script-element/json-module/false.json"
+FAIL Non-object: string promise_test: Unhandled rejection with value: object "TypeError: Failed to fetch dynamically imported module: http://web-platform.test:8001/html/semantics/scripting-1/the-script-element/json-module/string.json"
+FAIL Non-object: array promise_test: Unhandled rejection with value: object "TypeError: Failed to fetch dynamically imported module: http://web-platform.test:8001/html/semantics/scripting-1/the-script-element/json-module/array.json"
+Harness: the test ran to completion.
+

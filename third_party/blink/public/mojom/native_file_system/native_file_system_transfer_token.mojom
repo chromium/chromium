@@ -1,0 +1,18 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+import "mojo/public/mojom/base/unguessable_token.mojom";
+
+// This interface represents an opaque token that can be used to pass a
+// reference to a file or directory to certain API calls, or when transferring
+// the handle over postMessage style APIs.
+interface NativeFileSystemTransferToken {
+  GetInternalID() => (mojo_base.mojom.UnguessableToken id);
+
+  // Used by BroadcastChannels to clone multiple FileSystemHandles from a
+  // single serialized FileSystemHandle.
+  Clone(pending_receiver<NativeFileSystemTransferToken> token_clone);
+};

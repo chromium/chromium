@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+<head>
+<script>
+testRunner.dumpAsText();
+testRunner.waitUntilDone();
+</script>
+<script src='../resources/picker-common.js'></script>
+</head>
+<body>
+<input type='color' id='color' value='#ff0000' list>
+
+<p id='description' style='opacity: 0'></p>
+<div id='console' style='opacity: 0'></div>
+
+<script>
+let descriptionContainer = document.getElementById('description');
+var colorControl = document.getElementById('color');
+openPicker(colorControl, openPickerCallback);
+
+function openPickerCallback() {
+  // The color suggestion picker popup should close when the input type changes.
+  colorControl.type = 'text';
+  if (internals.pagePopupWindow) {
+    descriptionContainer.append('Popup did not close when the input type changed.');
+  } else {
+    descriptionContainer.append('Popup closed when the input type changed.');
+  }
+  descriptionContainer.append(document.createElement('br'), 'TEST COMPLETE');
+  testRunner.notifyDone();
+}
+</script>
+</body>
+</html>

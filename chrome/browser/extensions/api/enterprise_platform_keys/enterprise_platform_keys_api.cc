@@ -45,8 +45,7 @@ std::string StringFromVector(const std::vector<uint8_t>& v) {
 }  // namespace
 
 EnterprisePlatformKeysInternalGenerateKeyFunction::
-    ~EnterprisePlatformKeysInternalGenerateKeyFunction() {
-}
+    ~EnterprisePlatformKeysInternalGenerateKeyFunction() = default;
 
 ExtensionFunction::ResponseAction
 EnterprisePlatformKeysInternalGenerateKeyFunction::Run() {
@@ -64,9 +63,7 @@ EnterprisePlatformKeysInternalGenerateKeyFunction::Run() {
   DCHECK(service);
 
   service->GenerateRSAKey(
-      platform_keys_token_id,
-      params->modulus_length,
-      extension_id(),
+      platform_keys_token_id, params->modulus_length, extension_id(),
       base::Bind(
           &EnterprisePlatformKeysInternalGenerateKeyFunction::OnGeneratedKey,
           this));
@@ -86,8 +83,7 @@ void EnterprisePlatformKeysInternalGenerateKeyFunction::OnGeneratedKey(
 }
 
 EnterprisePlatformKeysGetCertificatesFunction::
-    ~EnterprisePlatformKeysGetCertificatesFunction() {
-}
+    ~EnterprisePlatformKeysGetCertificatesFunction() {}
 
 ExtensionFunction::ResponseAction
 EnterprisePlatformKeysGetCertificatesFunction::Run() {
@@ -118,8 +114,7 @@ void EnterprisePlatformKeysGetCertificatesFunction::OnGotCertificates(
 
   std::unique_ptr<base::ListValue> client_certs(new base::ListValue());
   for (net::CertificateList::const_iterator it = certs->begin();
-       it != certs->end();
-       ++it) {
+       it != certs->end(); ++it) {
     base::StringPiece cert_der =
         net::x509_util::CryptoBufferAsStringPiece((*it)->cert_buffer());
     client_certs->Append(std::make_unique<base::Value>(
@@ -132,8 +127,7 @@ void EnterprisePlatformKeysGetCertificatesFunction::OnGotCertificates(
 }
 
 EnterprisePlatformKeysImportCertificateFunction::
-    ~EnterprisePlatformKeysImportCertificateFunction() {
-}
+    ~EnterprisePlatformKeysImportCertificateFunction() {}
 
 ExtensionFunction::ResponseAction
 EnterprisePlatformKeysImportCertificateFunction::Run() {
@@ -157,8 +151,7 @@ EnterprisePlatformKeysImportCertificateFunction::Run() {
     return RespondNow(Error(kEnterprisePlatformErrorInvalidX509Cert));
 
   chromeos::platform_keys::ImportCertificate(
-      platform_keys_token_id,
-      cert_x509,
+      platform_keys_token_id, cert_x509,
       base::Bind(&EnterprisePlatformKeysImportCertificateFunction::
                      OnImportedCertificate,
                  this),
@@ -176,8 +169,7 @@ void EnterprisePlatformKeysImportCertificateFunction::OnImportedCertificate(
 }
 
 EnterprisePlatformKeysRemoveCertificateFunction::
-    ~EnterprisePlatformKeysRemoveCertificateFunction() {
-}
+    ~EnterprisePlatformKeysRemoveCertificateFunction() {}
 
 ExtensionFunction::ResponseAction
 EnterprisePlatformKeysRemoveCertificateFunction::Run() {
@@ -201,8 +193,7 @@ EnterprisePlatformKeysRemoveCertificateFunction::Run() {
     return RespondNow(Error(kEnterprisePlatformErrorInvalidX509Cert));
 
   chromeos::platform_keys::RemoveCertificate(
-      platform_keys_token_id,
-      cert_x509,
+      platform_keys_token_id, cert_x509,
       base::Bind(&EnterprisePlatformKeysRemoveCertificateFunction::
                      OnRemovedCertificate,
                  this),
@@ -220,8 +211,7 @@ void EnterprisePlatformKeysRemoveCertificateFunction::OnRemovedCertificate(
 }
 
 EnterprisePlatformKeysInternalGetTokensFunction::
-    ~EnterprisePlatformKeysInternalGetTokensFunction() {
-}
+    ~EnterprisePlatformKeysInternalGetTokensFunction() {}
 
 ExtensionFunction::ResponseAction
 EnterprisePlatformKeysInternalGetTokensFunction::Run() {
@@ -246,8 +236,7 @@ void EnterprisePlatformKeysInternalGetTokensFunction::OnGotTokens(
   std::vector<std::string> token_ids;
   for (std::vector<std::string>::const_iterator it =
            platform_keys_token_ids->begin();
-       it != platform_keys_token_ids->end();
-       ++it) {
+       it != platform_keys_token_ids->end(); ++it) {
     std::string token_id = platform_keys::PlatformKeysTokenIdToApiId(*it);
     if (token_id.empty()) {
       Respond(Error(kEnterprisePlatformErrorInternal));
@@ -260,13 +249,7 @@ void EnterprisePlatformKeysInternalGetTokensFunction::OnGotTokens(
 }
 
 EnterprisePlatformKeysChallengeMachineKeyFunction::
-    EnterprisePlatformKeysChallengeMachineKeyFunction()
-    : default_impl_(new EPKPChallengeMachineKey), impl_(default_impl_.get()) {}
-
-EnterprisePlatformKeysChallengeMachineKeyFunction::
-    EnterprisePlatformKeysChallengeMachineKeyFunction(
-        EPKPChallengeMachineKey* impl_for_testing)
-    : impl_(impl_for_testing) {}
+    EnterprisePlatformKeysChallengeMachineKeyFunction() = default;
 
 EnterprisePlatformKeysChallengeMachineKeyFunction::
     ~EnterprisePlatformKeysChallengeMachineKeyFunction() = default;
@@ -276,39 +259,32 @@ EnterprisePlatformKeysChallengeMachineKeyFunction::Run() {
   std::unique_ptr<api_epk::ChallengeMachineKey::Params> params(
       api_epk::ChallengeMachineKey::Params::Create(*args_));
   EXTENSION_FUNCTION_VALIDATE(params);
-  ChallengeKeyCallback callback = base::Bind(
+  chromeos::attestation::TpmChallengeKeyCallback callback = base::BindOnce(
       &EnterprisePlatformKeysChallengeMachineKeyFunction::OnChallengedKey,
       this);
   // base::Unretained is safe on impl_ since its life-cycle matches |this| and
   // |callback| holds a reference to |this|.
-  base::Closure task = base::Bind(
-      &EPKPChallengeMachineKey::Run, base::Unretained(impl_),
-      scoped_refptr<UIThreadExtensionFunction>(AsUIThreadExtensionFunction()),
-      callback, StringFromVector(params->challenge),
+  base::OnceClosure task = base::BindOnce(
+      &EPKPChallengeKey::Run, base::Unretained(&impl_),
+      chromeos::attestation::KEY_DEVICE, scoped_refptr<ExtensionFunction>(this),
+      std::move(callback), StringFromVector(params->challenge),
       params->register_key ? *params->register_key : false);
-  base::PostTaskWithTraits(FROM_HERE, {content::BrowserThread::UI}, task);
+  base::PostTask(FROM_HERE, {content::BrowserThread::UI}, std::move(task));
   return RespondLater();
 }
 
 void EnterprisePlatformKeysChallengeMachineKeyFunction::OnChallengedKey(
-    bool success,
-    const std::string& data) {
-  if (success) {
-    Respond(ArgumentList(
-        api_epk::ChallengeMachineKey::Results::Create(VectorFromString(data))));
+    const chromeos::attestation::TpmChallengeKeyResult& result) {
+  if (result.IsSuccess()) {
+    Respond(ArgumentList(api_epk::ChallengeMachineKey::Results::Create(
+        VectorFromString(result.data))));
   } else {
-    Respond(Error(data));
+    Respond(Error(result.GetErrorMessage()));
   }
 }
 
 EnterprisePlatformKeysChallengeUserKeyFunction::
-    EnterprisePlatformKeysChallengeUserKeyFunction()
-    : default_impl_(new EPKPChallengeUserKey), impl_(default_impl_.get()) {}
-
-EnterprisePlatformKeysChallengeUserKeyFunction::
-    EnterprisePlatformKeysChallengeUserKeyFunction(
-        EPKPChallengeUserKey* impl_for_testing)
-    : impl_(impl_for_testing) {}
+    EnterprisePlatformKeysChallengeUserKeyFunction() = default;
 
 EnterprisePlatformKeysChallengeUserKeyFunction::
     ~EnterprisePlatformKeysChallengeUserKeyFunction() = default;
@@ -318,26 +294,26 @@ EnterprisePlatformKeysChallengeUserKeyFunction::Run() {
   std::unique_ptr<api_epk::ChallengeUserKey::Params> params(
       api_epk::ChallengeUserKey::Params::Create(*args_));
   EXTENSION_FUNCTION_VALIDATE(params);
-  ChallengeKeyCallback callback = base::Bind(
+  chromeos::attestation::TpmChallengeKeyCallback callback = base::Bind(
       &EnterprisePlatformKeysChallengeUserKeyFunction::OnChallengedKey, this);
   // base::Unretained is safe on impl_ since its life-cycle matches |this| and
   // |callback| holds a reference to |this|.
-  base::Closure task = base::Bind(
-      &EPKPChallengeUserKey::Run, base::Unretained(impl_),
-      scoped_refptr<UIThreadExtensionFunction>(AsUIThreadExtensionFunction()),
-      callback, StringFromVector(params->challenge), params->register_key);
-  base::PostTaskWithTraits(FROM_HERE, {content::BrowserThread::UI}, task);
+  base::OnceClosure task = base::BindOnce(
+      &EPKPChallengeKey::Run, base::Unretained(&impl_),
+      chromeos::attestation::KEY_USER, scoped_refptr<ExtensionFunction>(this),
+      std::move(callback), StringFromVector(params->challenge),
+      params->register_key);
+  base::PostTask(FROM_HERE, {content::BrowserThread::UI}, std::move(task));
   return RespondLater();
 }
 
 void EnterprisePlatformKeysChallengeUserKeyFunction::OnChallengedKey(
-    bool success,
-    const std::string& data) {
-  if (success) {
-    Respond(ArgumentList(
-        api_epk::ChallengeUserKey::Results::Create(VectorFromString(data))));
+    const chromeos::attestation::TpmChallengeKeyResult& result) {
+  if (result.IsSuccess()) {
+    Respond(ArgumentList(api_epk::ChallengeUserKey::Results::Create(
+        VectorFromString(result.data))));
   } else {
-    Respond(Error(data));
+    Respond(Error(result.GetErrorMessage()));
   }
 }
 

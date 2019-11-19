@@ -14,7 +14,6 @@
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/memory/shared_memory.h"
 #include "base/synchronization/waitable_event.h"
 #include "gpu/command_buffer/service/texture_manager.h"
 #include "gpu/config/gpu_info.h"
@@ -91,7 +90,7 @@ class GpuVideoDecodeAccelerator
   ~GpuVideoDecodeAccelerator() override;
 
   // Handlers for IPC messages.
-  void OnDecode(const BitstreamBuffer& bitstream_buffer);
+  void OnDecode(BitstreamBuffer bitstream_buffer);
   void OnAssignPictureBuffers(
       const std::vector<int32_t>& buffer_ids,
       const std::vector<PictureBuffer::TextureIds>& texture_ids);
@@ -163,7 +162,7 @@ class GpuVideoDecodeAccelerator
   AndroidOverlayMojoFactoryCB overlay_factory_cb_;
 
   // Weak pointers will be invalidated on IO thread.
-  base::WeakPtrFactory<Client> weak_factory_for_io_;
+  base::WeakPtrFactory<Client> weak_factory_for_io_{this};
 
   // Protects |uncleared_textures_| when DCHECK is on. This is for debugging
   // only. We don't want to hold a lock on IO thread. When DCHECK is off,

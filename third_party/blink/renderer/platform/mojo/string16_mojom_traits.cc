@@ -7,48 +7,32 @@
 #include <cstring>
 
 #include "base/containers/span.h"
+#include "base/strings/latin1_string_conversions.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/base/big_buffer_mojom_traits.h"
 
 namespace mojo {
 
-// static
-void* StructTraits<mojo_base::mojom::String16DataView,
-                   WTF::String>::SetUpContext(const WTF::String& input) {
-  // If it is null (i.e., StructTraits<>::IsNull() returns true), this method is
-  // guaranteed not to be called.
-  DCHECK(!input.IsNull());
+MaybeOwnedString16::MaybeOwnedString16(base::string16 owned_storage)
+    : owned_storage_(owned_storage),
+      unowned_(base::make_span(
+          reinterpret_cast<const uint16_t*>(owned_storage_.data()),
+          owned_storage_.size())) {}
 
-  if (!input.Is8Bit())
-    return nullptr;
+MaybeOwnedString16::MaybeOwnedString16(base::span<const uint16_t> unowned)
+    : unowned_(unowned) {}
 
-  return new base::string16(input.Characters8(),
-                            input.Characters8() + input.length());
-}
+MaybeOwnedString16::~MaybeOwnedString16() = default;
 
 // static
-void StructTraits<mojo_base::mojom::String16DataView,
-                  WTF::String>::TearDownContext(const WTF::String& input,
-                                                void* context) {
-  delete static_cast<base::string16*>(context);
-}
-
-// static
-base::span<const uint16_t>
-StructTraits<mojo_base::mojom::String16DataView, WTF::String>::data(
-    const WTF::String& input,
-    void* context) {
-  auto* contextObject = static_cast<base::string16*>(context);
-  DCHECK_EQ(input.Is8Bit(), !!contextObject);
-
-  if (contextObject) {
-    return base::make_span(
-        reinterpret_cast<const uint16_t*>(contextObject->data()),
-        contextObject->size());
+MaybeOwnedString16 StructTraits<mojo_base::mojom::String16DataView,
+                                WTF::String>::data(const WTF::String& input) {
+  if (input.Is8Bit()) {
+    return MaybeOwnedString16(base::Latin1OrUTF16ToUTF16(
+        input.length(), input.Characters8(), nullptr));
   }
-
-  return base::make_span(
-      reinterpret_cast<const uint16_t*>(input.Characters16()), input.length());
+  return MaybeOwnedString16(base::make_span(
+      reinterpret_cast<const uint16_t*>(input.Characters16()), input.length()));
 }
 
 // static
@@ -70,14 +54,10 @@ mojo_base::BigBuffer StructTraits<mojo_base::mojom::BigString16DataView,
   if (input.Is8Bit()) {
     base::string16 input16(input.Characters8(),
                            input.Characters8() + input.length());
-    return mojo_base::BigBuffer(
-        base::make_span(reinterpret_cast<const uint8_t*>(input16.data()),
-                        input16.size() * sizeof(UChar)));
+    return mojo_base::BigBuffer(base::as_bytes(base::make_span(input16)));
   }
 
-  return mojo_base::BigBuffer(
-      base::make_span(reinterpret_cast<const uint8_t*>(input.Characters16()),
-                      input.length() * sizeof(UChar)));
+  return mojo_base::BigBuffer(base::as_bytes(input.Span16()));
 }
 
 // static

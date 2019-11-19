@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/views/chrome_cleaner_reboot_dialog_win.h"
 
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/safe_browsing/chrome_cleaner/chrome_cleaner_controller_win.h"
 #include "chrome/browser/safe_browsing/chrome_cleaner/chrome_cleaner_reboot_dialog_controller_impl_win.h"
 #include "chrome/browser/safe_browsing/chrome_cleaner/mock_chrome_cleaner_controller_win.h"
@@ -22,10 +21,6 @@ namespace {
 // functionality tests.
 class ChromeCleanerRebootDialog : public DialogBrowserTest {
  public:
-  void SetUpInProcessBrowserTestFixture() override {
-    scoped_feature_list_.InitAndEnableFeature(kRebootPromptDialogFeature);
-  }
-
   // DialogBrowserTest overrides.
   void ShowUi(const std::string& name) override {
     ON_CALL(mock_cleaner_controller_, state())
@@ -40,8 +35,6 @@ class ChromeCleanerRebootDialog : public DialogBrowserTest {
   // Since the DialogBrowserTest can be run interactively, we use NiceMock here
   // to suppress warnings about uninteresting calls.
   ::testing::NiceMock<MockChromeCleanerController> mock_cleaner_controller_;
-
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(ChromeCleanerRebootDialog, InvokeUi_default) {

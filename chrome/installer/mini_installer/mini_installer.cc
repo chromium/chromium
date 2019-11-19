@@ -32,11 +32,12 @@
 
 #include <sddl.h>
 #include <shellapi.h>
-#include <stdlib.h>
 #include <stddef.h>
+#include <stdlib.h>
 
 #include <initializer_list>
 
+#include "build/branding_buildflags.h"
 #include "chrome/installer/mini_installer/appid.h"
 #include "chrome/installer/mini_installer/configuration.h"
 #include "chrome/installer/mini_installer/decompress.h"
@@ -62,7 +63,7 @@ struct Context {
 // TODO(grt): Frame this in terms of whether or not the brand supports
 // integation with Omaha, where Google Update is the Google-specific fork of
 // the open-source Omaha project.
-#if defined(GOOGLE_CHROME_BUILD)
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 // Opens the Google Update ClientState key. If |binaries| is false, opens the
 // key for Google Chrome or Chrome SxS (canary). If |binaries| is true and an
 // existing multi-install Chrome is being updated, opens the key for the
@@ -141,7 +142,7 @@ void SetInstallerFlags(const Configuration& configuration) {
     }
   }
 }
-#endif  // GOOGLE_CHROME_BUILD
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 // Gets the setup.exe path from Registry by looking at the value of Uninstall
 // string.  |size| is measured in wchar_t units.
@@ -874,7 +875,7 @@ ProcessExitResult WMain(HMODULE module) {
   if (!GetWorkDir(module, &base_path, &exit_code))
     return exit_code;
 
-#if defined(GOOGLE_CHROME_BUILD)
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   // Set the magic suffix in registry to try full installer next time. We ignore
   // any errors here and we try to set the suffix for user level unless
   // GoogleUpdateIsMachine=1 is present in the environment or --system-level is
@@ -899,7 +900,7 @@ ProcessExitResult WMain(HMODULE module) {
   if (ShouldDeleteExtractedFiles())
     DeleteExtractedFiles(base_path.get(), archive_path.get(), setup_path.get());
 
-#if defined(GOOGLE_CHROME_BUILD)
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   WriteInstallResults(configuration, exit_code);
 #endif
 

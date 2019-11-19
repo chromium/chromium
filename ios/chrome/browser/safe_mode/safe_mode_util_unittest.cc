@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <mach-o/dyld.h>
 #include <stddef.h>
 #include <string.h>
 
@@ -37,12 +38,18 @@ TEST_F(SafeModeUtilTest, GetAllImages) {
   EXPECT_TRUE(found_lib_system);
 }
 
+// Tests that safe_mode_util::GetLoadedImages filters by path.
 TEST_F(SafeModeUtilTest, GetSomeImages) {
   vector<string> all_images = safe_mode_util::GetLoadedImages(nullptr);
-  vector<string> usr_lib_images = safe_mode_util::GetLoadedImages("/usr/lib/");
-  // There should be images under /usr/lib/, but not all of them are.
-  EXPECT_GT(usr_lib_images.size(), 0U);
-  EXPECT_LT(usr_lib_images.size(), all_images.size());
+  ASSERT_GT(all_images.size(), 0U);
+
+  // Use the path of the first item to test filtering.
+  string dir_name = base::FilePath(all_images[0]).DirName().value();
+
+  vector<string> filtered_images =
+      safe_mode_util::GetLoadedImages(dir_name.c_str());
+  EXPECT_GT(filtered_images.size(), 0U);
+  EXPECT_LT(filtered_images.size(), all_images.size());
 }
 
 }  // namespace

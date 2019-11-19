@@ -13,11 +13,11 @@
 #include "base/macros.h"
 #include "base/optional.h"
 #include "base/time/time.h"
-#include "net/base/network_change_notifier.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/device/geolocation/geolocation_provider.h"
 #include "services/device/geolocation/network_location_request.h"
 #include "services/device/public/mojom/geoposition.mojom.h"
+#include "services/network/public/cpp/network_connection_tracker.h"
 
 namespace device {
 
@@ -29,12 +29,13 @@ struct WifiData;
 // Sequencing:
 // * Must be created, used, and destroyed on the same sequence.
 class PublicIpAddressLocationNotifier
-    : public net::NetworkChangeNotifier::NetworkChangeObserver {
+    : public network::NetworkConnectionTracker::NetworkConnectionObserver {
  public:
   // Creates a notifier that uses the specified Google |api_key| and
   // |url_loader_factory| for network location requests.
   PublicIpAddressLocationNotifier(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      network::NetworkConnectionTracker* network_connection_tracker,
       const std::string& api_key);
   ~PublicIpAddressLocationNotifier() override;
 
@@ -58,11 +59,10 @@ class PublicIpAddressLocationNotifier
   // Sequence checker for all methods.
   SEQUENCE_CHECKER(sequence_checker_);
 
-  // NetworkChangeNotifier::NetworkChangeObserver:
+  // NetworkConnectionTracker::NetworkConnectionObserver:
   // Network change notifications tend to come in a cluster in a short time, so
   // this just sets a task to run ReactToNetworkChange after a short time.
-  void OnNetworkChanged(
-      net::NetworkChangeNotifier::ConnectionType type) override;
+  void OnConnectionChanged(network::mojom::ConnectionType type) override;
 
   // Actually react to a network change, starting a network geolocation request
   // if any clients are waiting.
@@ -94,6 +94,10 @@ class PublicIpAddressLocationNotifier
   // SharedURLLoaderFactory for network geolocation requests.
   const scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 
+  // Used to listen to network connection changes.
+  // Must outlive this object.
+  network::NetworkConnectionTracker* network_connection_tracker_;
+
   // Used to make calls to the Maps geolocate API.
   // Empty unless a call is currently in progress.
   std::unique_ptr<NetworkLocationRequest> network_location_request_;
@@ -106,7 +110,7 @@ class PublicIpAddressLocationNotifier
       network_traffic_annotation_tag_;
 
   // Weak references to |this| for posted tasks.
-  base::WeakPtrFactory<PublicIpAddressLocationNotifier> weak_ptr_factory_;
+  base::WeakPtrFactory<PublicIpAddressLocationNotifier> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(PublicIpAddressLocationNotifier);
 };

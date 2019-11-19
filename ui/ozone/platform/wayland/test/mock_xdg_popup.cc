@@ -26,7 +26,10 @@ const struct zxdg_popup_v6_interface kZxdgPopupV6Impl = {
     &Grab,             // grab
 };
 
-MockXdgPopup::MockXdgPopup(wl_resource* resource) : ServerObject(resource) {}
+MockXdgPopup::MockXdgPopup(wl_resource* resource, const void* implementation)
+    : ServerObject(resource) {
+  SetImplementationUnretained(resource, implementation, this);
+}
 
 MockXdgPopup::~MockXdgPopup() {}
 

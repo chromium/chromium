@@ -32,6 +32,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_MEDIA_HTML_MEDIA_SOURCE_H_
 
 #include <memory>
+#include "third_party/blink/public/platform/web_time_range.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/fileapi/url_registry.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
@@ -66,8 +67,15 @@ class CORE_EXPORT HTMLMediaSource : public URLRegistrable,
   virtual void Close() = 0;
   virtual bool IsClosed() const = 0;
   virtual double duration() const = 0;
+
+  // 'Internal' in these methods doesn't mean private, it means that they are
+  // internal to chromium and are not exposed to JavaScript.
+
+  // The JavaScript exposed version of this is Buffered.
+  virtual WebTimeRanges BufferedInternal() const = 0;
+
+  virtual WebTimeRanges SeekableInternal() const = 0;
   virtual TimeRanges* Buffered() const = 0;
-  virtual TimeRanges* Seekable() const = 0;
   virtual void OnTrackChanged(TrackBase*) = 0;
 
   // URLRegistrable

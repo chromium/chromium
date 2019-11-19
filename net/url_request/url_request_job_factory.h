@@ -46,15 +46,6 @@ class NET_EXPORT URLRequestJobFactory {
       URLRequest* request,
       NetworkDelegate* network_delegate) const = 0;
 
-  virtual URLRequestJob* MaybeInterceptRedirect(
-      URLRequest* request,
-      NetworkDelegate* network_delegate,
-      const GURL& location) const = 0;
-
-  virtual URLRequestJob* MaybeInterceptResponse(
-      URLRequest* request,
-      NetworkDelegate* network_delegate) const = 0;
-
   virtual bool IsHandledProtocol(const std::string& scheme) const = 0;
 
   virtual bool IsSafeRedirectTarget(const GURL& location) const = 0;

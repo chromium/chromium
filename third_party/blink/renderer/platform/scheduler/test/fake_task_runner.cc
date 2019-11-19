@@ -5,7 +5,6 @@
 #include "third_party/blink/renderer/platform/scheduler/test/fake_task_runner.h"
 
 #include <algorithm>
-#include <deque>
 #include <utility>
 
 #include "base/callback.h"
@@ -26,7 +25,7 @@ class FakeTaskRunner::Data : public WTF::ThreadSafeRefCounted<Data> {
   }
 
   using PendingTask = FakeTaskRunner::PendingTask;
-  std::deque<PendingTask>::iterator FindRunnableTask() {
+  Deque<PendingTask>::iterator FindRunnableTask() {
     // TODO(tkent): This should return an item which has the minimum |second|.
     return std::find_if(
         task_queue_.begin(), task_queue_.end(),
@@ -34,7 +33,7 @@ class FakeTaskRunner::Data : public WTF::ThreadSafeRefCounted<Data> {
   }
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
-  std::deque<PendingTask> task_queue_;
+  Deque<PendingTask> task_queue_;
   base::TimeTicks time_;
 
  private:
@@ -79,7 +78,7 @@ void FakeTaskRunner::AdvanceTimeAndRun(base::TimeDelta delta) {
   }
 }
 
-std::deque<std::pair<base::OnceClosure, base::TimeTicks>>
+Deque<std::pair<base::OnceClosure, base::TimeTicks>>
 FakeTaskRunner::TakePendingTasksForTesting() {
   return std::move(data_->task_queue_);
 }

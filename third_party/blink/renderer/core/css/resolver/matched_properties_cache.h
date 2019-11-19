@@ -37,9 +37,13 @@ class ComputedStyle;
 class StyleResolverState;
 
 class CachedMatchedProperties final
-    : public GarbageCollectedFinalized<CachedMatchedProperties> {
+    : public GarbageCollected<CachedMatchedProperties> {
  public:
-  HeapVector<MatchedProperties> matched_properties;
+  // Caches data of MachedProperties. See MatchedPropertiesCache::Cache for
+  // semantics.
+  Vector<UntracedMember<CSSPropertyValueSet>> matched_properties;
+  Vector<MatchedProperties::Data> matched_properties_types;
+
   scoped_refptr<ComputedStyle> computed_style;
   scoped_refptr<ComputedStyle> parent_computed_style;
 
@@ -47,55 +51,11 @@ class CachedMatchedProperties final
            const ComputedStyle& parent_style,
            const MatchedPropertiesVector&);
   void Clear();
-  void Trace(blink::Visitor* visitor) { visitor->Trace(matched_properties); }
-};
 
-// Specialize the HashTraits for CachedMatchedProperties to check for dead
-// entries in the MatchedPropertiesCache.
-struct CachedMatchedPropertiesHashTraits
-    : HashTraits<Member<CachedMatchedProperties>> {
-  static const WTF::WeakHandlingFlag kWeakHandlingFlag = WTF::kWeakHandling;
+  void Trace(blink::Visitor*) {}
 
-  static bool IsAlive(Member<CachedMatchedProperties>& cached_properties) {
-    // Semantics see |CachedMatchedPropertiesHashTraits::TraceInCollection|.
-    if (cached_properties) {
-      for (const auto& matched_properties :
-           cached_properties->matched_properties) {
-        if (!ThreadHeap::IsHeapObjectAlive(matched_properties.properties)) {
-          return false;
-        }
-      }
-    }
-    return true;
-  }
-
-  template <typename VisitorDispatcher>
-  static bool TraceInCollection(
-      VisitorDispatcher visitor,
-      Member<CachedMatchedProperties>& cached_properties,
-      WTF::WeakHandlingFlag weakness) {
-    // Only honor the cache's weakness semantics if the collection is traced
-    // with |kWeakPointersActWeak|. Otherwise just trace the cachedProperties
-    // strongly, i.e., call trace on it.
-    if (cached_properties && weakness == WTF::kWeakHandling) {
-      // A given cache entry is only kept alive if none of the MatchedProperties
-      // in the CachedMatchedProperties value contain a dead "properties" field.
-      // If there is a dead field the entire cache entry is removed.
-      for (const auto& matched_properties :
-           cached_properties->matched_properties) {
-        if (!ThreadHeap::IsHeapObjectAlive(matched_properties.properties)) {
-          // For now report the cache entry as dead. This might not
-          // be the final result if in a subsequent call for this entry,
-          // the "properties" field has been marked via another path.
-          return true;
-        }
-      }
-    }
-    // At this point none of the entries in the matchedProperties vector
-    // had a dead "properties" field so trace CachedMatchedProperties strongly.
-    visitor->Trace(cached_properties);
-    return false;
-  }
+  bool operator==(const MatchedPropertiesVector& properties);
+  bool operator!=(const MatchedPropertiesVector& properties);
 };
 
 class CORE_EXPORT MatchedPropertiesCache {
@@ -122,11 +82,17 @@ class CORE_EXPORT MatchedPropertiesCache {
   void Trace(blink::Visitor*);
 
  private:
+  // The cache is mapping a hash to a cached entry where the entry is kept as
+  // long as *all* properties referred to by the entry are alive. This requires
+  // custom weakness which is managed through
+  // |RemoveCachedMatchedPropertiesWithDeadEntries|.
   using Cache = HeapHashMap<unsigned,
                             Member<CachedMatchedProperties>,
                             DefaultHash<unsigned>::Hash,
-                            HashTraits<unsigned>,
-                            CachedMatchedPropertiesHashTraits>;
+                            HashTraits<unsigned>>;
+
+  void RemoveCachedMatchedPropertiesWithDeadEntries(const WeakCallbackInfo&);
+
   Cache cache_;
   DISALLOW_COPY_AND_ASSIGN(MatchedPropertiesCache);
 };

@@ -56,6 +56,9 @@ void ProxyPolicyProvider::RefreshPolicies() {
 
 void ProxyPolicyProvider::OnUpdatePolicy(
     ConfigurationPolicyProvider* provider) {
+  if (block_policy_updates_for_testing_)
+    return;
+
   DCHECK_EQ(delegate_, provider);
   std::unique_ptr<PolicyBundle> bundle(new PolicyBundle());
   bundle->CopyFrom(delegate_->policies());

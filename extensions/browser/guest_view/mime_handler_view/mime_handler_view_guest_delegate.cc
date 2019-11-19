@@ -12,4 +12,8 @@ bool MimeHandlerViewGuestDelegate::HandleContextMenu(
   return false;
 }
 
+void MimeHandlerViewGuestDelegate::RecordLoadMetric(
+    bool in_main_frame,
+    const std::string& mime_type) {}
+
 }  // namespace extensions

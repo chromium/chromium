@@ -14,6 +14,7 @@
 
 #include "base/mac/bundle_locations.h"
 #include "base/macros.h"
+#include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "google_apis/gaia/gaia_switches.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -37,7 +38,10 @@
 
 // After this test, for the remainder of this compilation unit, we
 // need official keys to not be used.
-#undef GOOGLE_CHROME_BUILD
+#undef BUILDFLAG_INTERNAL_CHROMIUM_BRANDING
+#undef BUILDFLAG_INTERNAL_GOOGLE_CHROME_BRANDING
+#define BUILDFLAG_INTERNAL_CHROMIUM_BRANDING() (1)
+#define BUILDFLAG_INTERNAL_GOOGLE_CHROME_BRANDING() (0)
 #undef USE_OFFICIAL_GOOGLE_API_KEYS
 
 // Override some keys using both preprocessor defines and Info.plist entries.

@@ -8,7 +8,6 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/workers/worklet_global_scope.h"
-#include "third_party/blink/renderer/modules/csspaint/paint_worklet_pending_generator_registry.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
@@ -29,8 +28,7 @@ class MODULES_EXPORT PaintWorkletGlobalScope final : public WorkletGlobalScope {
   static PaintWorkletGlobalScope* Create(
       LocalFrame*,
       std::unique_ptr<GlobalScopeCreationParams>,
-      WorkerReportingProxy&,
-      PaintWorkletPendingGeneratorRegistry*);
+      WorkerReportingProxy&);
 
   // Creates an worklet-thread bound PaintWorkletGlobalScope.
   static PaintWorkletGlobalScope* Create(
@@ -39,8 +37,7 @@ class MODULES_EXPORT PaintWorkletGlobalScope final : public WorkletGlobalScope {
 
   PaintWorkletGlobalScope(LocalFrame*,
                           std::unique_ptr<GlobalScopeCreationParams>,
-                          WorkerReportingProxy&,
-                          PaintWorkletPendingGeneratorRegistry*);
+                          WorkerReportingProxy&);
   PaintWorkletGlobalScope(std::unique_ptr<GlobalScopeCreationParams>,
                           WorkerThread*);
   ~PaintWorkletGlobalScope() override;
@@ -63,15 +60,8 @@ class MODULES_EXPORT PaintWorkletGlobalScope final : public WorkletGlobalScope {
 
   // The implementation of the "paint definition" concept:
   // https://drafts.css-houdini.org/css-paint-api/#paint-definition
-  typedef HeapHashMap<String, TraceWrapperMember<CSSPaintDefinition>>
-      DefinitionMap;
+  typedef HeapHashMap<String, Member<CSSPaintDefinition>> DefinitionMap;
   DefinitionMap paint_definitions_;
-
-  // Only used for main-thread bound PaintWorkletGlobalScopes.
-  // TODO(smcgruer): Move elsewhere for worklet-thread bound
-  // PaintWorkletGlobalScope.
-  Member<PaintWorkletPendingGeneratorRegistry> pending_generator_registry_ =
-      nullptr;
 
   // Tracks whether this PaintWorkletGlobalScope has been registered with a
   // PaintWorkletProxyClient. Only used in worklet-thread bound

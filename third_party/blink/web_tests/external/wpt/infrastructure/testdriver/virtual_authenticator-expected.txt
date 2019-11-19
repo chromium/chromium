@@ -1,0 +1,10 @@
+This is a testharness.js-based test.
+FAIL Can create an authenticator promise_test: Unhandled rejection with value: object "Error: unimplemented"
+FAIL Can add a credential promise_test: Unhandled rejection with value: object "Error: unimplemented"
+FAIL Can get the credentials promise_test: Unhandled rejection with value: object "Error: unimplemented"
+FAIL Can remove a credential promise_test: Unhandled rejection with value: object "Error: unimplemented"
+FAIL Can remove all credentials promise_test: Unhandled rejection with value: object "Error: unimplemented"
+FAIL Can set user verified promise_test: Unhandled rejection with value: object "Error: unimplemented"
+FAIL Can remove a virtual authenticator promise_test: Unhandled rejection with value: object "Error: unimplemented"
+Harness: the test ran to completion.
+

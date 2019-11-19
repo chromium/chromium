@@ -55,9 +55,9 @@ class ManagementPolicy {
 
     // Providers should return false if a user may not install the |extension|,
     // or load or run it if it has already been installed.
-    // TODO(treib,pam): The method name is misleading, since this applies to all
-    // extension installations, not just user-initiated ones. Fix either the
-    // name or the semantics. crbug.com/461747
+    // TODO(crbug.com/461747): The method name is misleading, since this applies
+    // to all extension installations, not just user-initiated ones. Fix either
+    // the name or the semantics.
     virtual bool UserMayLoad(const Extension* extension,
                              base::string16* error) const;
 
@@ -70,9 +70,9 @@ class ManagementPolicy {
     // Providers should return false if a user may not enable, disable, or
     // uninstall the |extension|, or change its usage options (incognito
     // permission, file access, etc.).
-    // TODO(treib,pam): The method name is misleading, since this applies to all
-    // setting modifications, not just user-initiated ones. Fix either the
-    // name or the semantics. crbug.com/461747
+    // TODO(crbug.com/461747): The method name is misleading, since this applies
+    // to all setting modifications, not just user-initiated ones. Fix either
+    // the name or the semantics.
     virtual bool UserMayModifySettings(const Extension* extension,
                                        base::string16* error) const;
 
@@ -101,6 +101,11 @@ class ManagementPolicy {
     virtual bool MustRemainInstalled(const Extension* extension,
                                      base::string16* error) const;
 
+    // Providers should return true for extensions that should be force
+    // uninstalled.
+    virtual bool ShouldForceUninstall(const Extension* extension,
+                                      base::string16* error) const;
+
    private:
     DISALLOW_COPY_AND_ASSIGN(Provider);
   };
@@ -122,7 +127,7 @@ class ManagementPolicy {
   // extension. If not, |error| may be set to an appropriate message.
   // Installed extensions failing this check are disabled with the reason
   // DISABLE_BLOCKED_BY_POLICY.
-  // TODO(treib,pam): Misleading name; see comment in Provider. crbug.com/461747
+  // TODO(crbug.com/461747): Misleading name; see comment in Provider.
   bool UserMayLoad(const Extension* extension, base::string16* error) const;
 
   // Returns false if the user should not be allowed to install the given
@@ -133,7 +138,7 @@ class ManagementPolicy {
   // Returns true if the user is permitted to enable, disable, or uninstall the
   // given extension, or change the extension's usage options (incognito mode,
   // file access, etc.). If not, |error| may be set to an appropriate message.
-  // TODO(treib,pam): Misleading name; see comment in Provider. crbug.com/461747
+  // TODO(crbug.com/461747): Misleading name; see comment in Provider.
   bool UserMayModifySettings(const Extension* extension,
                              base::string16* error) const;
 
@@ -159,6 +164,15 @@ class ManagementPolicy {
   // function returns true.
   bool MustRemainInstalled(const Extension* extension,
                            base::string16* error) const;
+
+  // Returns true for extensions that should be force uninstalled.
+  bool ShouldForceUninstall(const Extension* extension,
+                            base::string16* error) const;
+
+  // Returns true if the |extension| should be repaired upon corruption.
+  // Note that this method doesn't check whether extension is corrupted or not
+  // (it's job of ContentVerifier).
+  bool ShouldRepairIfCorrupted(const Extension* extension);
 
   // For use in testing.
   void UnregisterAllProviders();

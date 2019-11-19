@@ -30,7 +30,7 @@ KURL mock_path_as_kurl() {
 
 }  // namespace
 
-class TestableFileWriter : public GarbageCollectedFinalized<TestableFileWriter>,
+class TestableFileWriter : public GarbageCollected<TestableFileWriter>,
                            public FileWriterBase {
   USING_GARBAGE_COLLECTED_MIXIN(TestableFileWriter);
 
@@ -67,7 +67,7 @@ class TestableFileWriter : public GarbageCollectedFinalized<TestableFileWriter>,
   bool received_cancel_;
 
   int received_did_write_count_;
-  long long received_did_write_bytes_total_;
+  int64_t received_did_write_bytes_total_;
   bool received_did_write_complete_;
   bool received_did_truncate_;
   bool received_did_fail_;

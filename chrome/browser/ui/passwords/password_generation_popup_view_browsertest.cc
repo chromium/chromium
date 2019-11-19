@@ -21,20 +21,25 @@ namespace autofill {
 class TestPasswordGenerationPopupController
     : public PasswordGenerationPopupControllerImpl {
  public:
-  TestPasswordGenerationPopupController(content::WebContents* web_contents,
-                                        gfx::NativeView native_view)
+  explicit TestPasswordGenerationPopupController(
+      content::WebContents* web_contents)
       : PasswordGenerationPopupControllerImpl(
             gfx::RectF(0, 0, 10, 10),
-            PasswordForm(),
-            base::string16(),
-            10,
+            autofill::password_generation::PasswordGenerationUIData(
+                /*bounds=*/gfx::RectF(0, 0, 10, 10),
+                /*max_length=*/10,
+                /*generation_element=*/base::string16(),
+                /*generation_element_renderer_id=*/100,
+                /*is_generation_element_password_type=*/true,
+                /*text_direction=*/base::i18n::TextDirection(),
+                PasswordForm()),
             password_manager::ContentPasswordManagerDriverFactory::
                 FromWebContents(web_contents)
                     ->GetDriverForFrame(web_contents->GetMainFrame())
                     ->AsWeakPtr(),
             nullptr /* PasswordGenerationPopupObserver*/,
             web_contents,
-            native_view) {}
+            web_contents->GetMainFrame()) {}
 
   ~TestPasswordGenerationPopupController() override {}
 
@@ -46,8 +51,6 @@ class PasswordGenerationPopupViewTest : public InProcessBrowserTest {
   content::WebContents* GetWebContents() {
     return browser()->tab_strip_model()->GetActiveWebContents();
   }
-
-  gfx::NativeView GetNativeView() { return GetWebContents()->GetNativeView(); }
 
   std::unique_ptr<PasswordGenerationPopupViewTester> GetViewTester() {
     return PasswordGenerationPopupViewTester::For(controller_->view());
@@ -61,30 +64,23 @@ class PasswordGenerationPopupViewTest : public InProcessBrowserTest {
 // editing dialog doesn't crash.
 IN_PROC_BROWSER_TEST_F(PasswordGenerationPopupViewTest,
                        MouseMovementInEditingPopup) {
-  controller_ = new autofill::TestPasswordGenerationPopupController(
-      GetWebContents(), GetNativeView());
+  controller_ =
+      new autofill::TestPasswordGenerationPopupController(GetWebContents());
   controller_->Show(PasswordGenerationPopupController::kEditGeneratedPassword);
 
   GetViewTester()->SimulateMouseMovementAt(gfx::Point(1, 1));
 
-  // Deletes |controller_|.
-  controller_->HideAndDestroy();
-}
-
-// Verify that we calling Show() with an invalid container does not crash.
-// Regression test for crbug.com/439618.
-IN_PROC_BROWSER_TEST_F(PasswordGenerationPopupViewTest, InvalidContainerView) {
-  controller_ = new autofill::TestPasswordGenerationPopupController(
-      GetWebContents(), NULL);
-  controller_->Show(PasswordGenerationPopupController::kOfferGeneration);
+  // This hides the popup and destroys the controller.
+  GetWebContents()->Close();
 }
 
 // Verify that destroying web contents with visible popup does not crash.
 IN_PROC_BROWSER_TEST_F(PasswordGenerationPopupViewTest,
                        CloseWebContentsWithVisiblePopup) {
-  controller_ = new autofill::TestPasswordGenerationPopupController(
-      GetWebContents(), GetNativeView());
+  controller_ =
+      new autofill::TestPasswordGenerationPopupController(GetWebContents());
   controller_->Show(PasswordGenerationPopupController::kEditGeneratedPassword);
+
   GetWebContents()->Close();
 }
 

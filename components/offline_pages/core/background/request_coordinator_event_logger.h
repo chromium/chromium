@@ -31,6 +31,9 @@ class RequestCoordinatorEventLogger : public OfflineEventLogger {
 
   void RecordUpdateRequestFailed(const std::string& name_space,
                                  UpdateRequestResult result);
+
+  void RecordAddRequestFailed(const std::string& name_space,
+                              AddRequestResult result);
 };
 
 }  // namespace offline_pages

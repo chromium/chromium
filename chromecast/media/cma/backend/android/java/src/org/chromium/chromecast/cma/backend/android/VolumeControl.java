@@ -18,6 +18,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
+import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chromecast.media.AudioContentType;
 
 /**
@@ -89,9 +90,13 @@ class VolumeControl {
         /** Sets the given mute state in AudioManager. */
         void setMuted(boolean muted) {
             if (DEBUG_LEVEL >= 1) Log.i(TAG, "setMuted: muted=" + muted);
-            int direction = muted ? AudioManager.ADJUST_MUTE : AudioManager.ADJUST_UNMUTE;
-            int flag = 0;
-            mAudioManager.adjustStreamVolume(mStreamType, direction, flag);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                int direction = muted ? AudioManager.ADJUST_MUTE : AudioManager.ADJUST_UNMUTE;
+                int flag = 0;
+                mAudioManager.adjustStreamVolume(mStreamType, direction, flag);
+            } else {
+                mAudioManager.setStreamMute(mStreamType, muted);
+            }
         }
 
         /** Refreshes the stored mute state by reading it from AudioManager.
@@ -213,7 +218,8 @@ class VolumeControl {
             if (DEBUG_LEVEL >= 1) {
                 Log.i(TAG, "New volume for castType " + castType + " is " + s.getVolumeLevel());
             }
-            nativeOnVolumeChange(mNativeVolumeControl, castType, s.getVolumeLevel());
+            VolumeControlJni.get().onVolumeChange(
+                    mNativeVolumeControl, VolumeControl.this, castType, s.getVolumeLevel());
         }
     }
 
@@ -228,7 +234,8 @@ class VolumeControl {
             if (DEBUG_LEVEL >= 1) {
                 Log.i(TAG, "New mute state for castType " + castType + " is " + s.isMuted());
             }
-            nativeOnMuteChange(mNativeVolumeControl, castType, s.isMuted());
+            VolumeControlJni.get().onMuteChange(
+                    mNativeVolumeControl, VolumeControl.this, castType, s.isMuted());
         }
     }
 
@@ -269,11 +276,12 @@ class VolumeControl {
         return 0;
     }
 
-    //
-    // JNI functions in native land.
-    //
-    private native void nativeOnVolumeChange(
-            long nativeVolumeControlAndroid, int type, float level);
-    private native void nativeOnMuteChange(
-            long nativeVolumeControlAndroid, int type, boolean muted);
+    @NativeMethods
+    interface Natives {
+        void onVolumeChange(
+                long nativeVolumeControlAndroid, VolumeControl caller, int type, float level);
+
+        void onMuteChange(
+                long nativeVolumeControlAndroid, VolumeControl caller, int type, boolean muted);
+    }
 }

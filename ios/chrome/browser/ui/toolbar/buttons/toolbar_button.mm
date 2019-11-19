@@ -20,26 +20,6 @@ const CGFloat kSpotlightCornerRadius = 7;
 }  // namespace
 
 @implementation ToolbarButton
-@synthesize visibilityMask = _visibilityMask;
-@synthesize guideName = _guideName;
-@synthesize hiddenInCurrentSizeClass = _hiddenInCurrentSizeClass;
-@synthesize hiddenInCurrentState = _hiddenInCurrentState;
-@synthesize spotlighted = _spotlighted;
-@synthesize dimmed = _dimmed;
-@synthesize configuration = _configuration;
-@synthesize spotlightView = _spotlightView;
-
-+ (instancetype)toolbarButtonWithImageForNormalState:(UIImage*)normalImage
-                            imageForHighlightedState:(UIImage*)highlightedImage
-                               imageForDisabledState:(UIImage*)disabledImage {
-  ToolbarButton* button = [[self class] buttonWithType:UIButtonTypeCustom];
-  [button setImage:normalImage forState:UIControlStateNormal];
-  [button setImage:highlightedImage forState:UIControlStateHighlighted];
-  [button setImage:disabledImage forState:UIControlStateDisabled];
-  [button setImage:highlightedImage forState:UIControlStateSelected];
-  button.translatesAutoresizingMaskIntoConstraints = NO;
-  return button;
-}
 
 + (instancetype)toolbarButtonWithImage:(UIImage*)image {
   ToolbarButton* button = [[self class] buttonWithType:UIButtonTypeSystem];
@@ -81,6 +61,8 @@ const CGFloat kSpotlightCornerRadius = 7;
     self.hiddenInCurrentSizeClass = newHiddenValue;
     [self setHiddenForCurrentStateAndSizeClass];
   }
+
+  [self checkNamedGuide];
 }
 
 - (void)setHiddenInCurrentState:(BOOL)hiddenInCurrentState {
@@ -121,10 +103,10 @@ const CGFloat kSpotlightCornerRadius = 7;
 }
 
 - (UIControlState)state {
-  DCHECK(ControlStateSpotlighted & UIControlStateApplication);
+  DCHECK(kControlStateSpotlighted & UIControlStateApplication);
   UIControlState state = [super state];
   if (self.spotlighted)
-    state |= ControlStateSpotlighted;
+    state |= kControlStateSpotlighted;
   return state;
 }
 
@@ -146,7 +128,9 @@ const CGFloat kSpotlightCornerRadius = 7;
   spotlightView.userInteractionEnabled = NO;
   spotlightView.layer.cornerRadius = kSpotlightCornerRadius;
   spotlightView.backgroundColor = self.configuration.buttonsSpotlightColor;
-  [self addSubview:spotlightView];
+  // Make sure that the spotlightView is below the image to avoid changing the
+  // color of the image.
+  [self insertSubview:spotlightView belowSubview:self.imageView];
   AddSameCenterConstraints(self, spotlightView);
   [spotlightView.widthAnchor constraintEqualToConstant:kSpotlightSize].active =
       YES;
@@ -160,13 +144,18 @@ const CGFloat kSpotlightCornerRadius = 7;
 // Checks if the button should be visible based on its hiddenInCurrentSizeClass
 // and hiddenInCurrentState properties, then updates its visibility accordingly.
 - (void)setHiddenForCurrentStateAndSizeClass {
-  BOOL previouslyHidden = self.hidden;
   self.hidden = self.hiddenInCurrentState || self.hiddenInCurrentSizeClass;
 
-  if (!self.hidden && previouslyHidden != self.hidden && self.guideName) {
-    // The button is appearing. At this point, if it has a layout guide
-    // associated, it should constraint it to itself.
-    [NamedGuide guideWithName:self.guideName view:self].constrainedView = self;
+  [self checkNamedGuide];
+}
+
+// Checks whether the named guide associated with this button, if there is one,
+// should be updated.
+- (void)checkNamedGuide {
+  if (!self.hidden && self.guideName) {
+    NamedGuide* guide = [NamedGuide guideWithName:self.guideName view:self];
+    if (guide.constrainedView != self)
+      guide.constrainedView = self;
   }
 }
 

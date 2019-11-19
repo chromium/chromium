@@ -13,14 +13,14 @@
 #include "third_party/blink/renderer/core/dom/task_type_traits.h"
 #include "third_party/blink/renderer/core/execution_context/context_lifecycle_observer.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
 
 // Represents a set of task runners of the parent execution context, or default
 // task runners for the current thread if no execution context is available.
 class CORE_EXPORT ParentExecutionContextTaskRunners final
-    : public GarbageCollectedFinalized<ParentExecutionContextTaskRunners>,
+    : public GarbageCollected<ParentExecutionContextTaskRunners>,
       public ContextLifecycleObserver {
   USING_GARBAGE_COLLECTED_MIXIN(ParentExecutionContextTaskRunners);
 

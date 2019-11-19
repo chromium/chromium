@@ -5,9 +5,9 @@
 #include "content/browser/screenlock_monitor/screenlock_monitor.h"
 
 #include "base/macros.h"
-#include "base/message_loop/message_loop.h"
 #include "base/message_loop/message_loop_current.h"
 #include "base/run_loop.h"
+#include "base/test/task_environment.h"
 #include "content/browser/screenlock_monitor/screenlock_monitor_source.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -61,7 +61,7 @@ class ScreenlockMonitorTest : public testing::Test {
   std::unique_ptr<ScreenlockMonitor> screenlock_monitor_;
 
  private:
-  base::MessageLoop message_loop_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
 
   DISALLOW_COPY_AND_ASSIGN(ScreenlockMonitorTest);
 };

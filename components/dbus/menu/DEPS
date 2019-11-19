@@ -1,0 +1,6 @@
+include_rules = [
+  "+dbus",
+  "+ui/base",
+  "+ui/events/keycodes",
+  "+ui/gfx/image",
+]

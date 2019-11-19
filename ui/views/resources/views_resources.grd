@@ -15,27 +15,6 @@
       <structure type="chrome_scaled_image" name="IDR_APP_TOP_CENTER" file="app_top_center.png" />
       <structure type="chrome_scaled_image" name="IDR_APP_TOP_LEFT" file="app_top_left.png" />
       <structure type="chrome_scaled_image" name="IDR_APP_TOP_RIGHT" file="app_top_right.png" />
-      <structure type="chrome_scaled_image" name="IDR_BUTTON_DISABLED" file="common/button_inactive.png" />
-      <structure type="chrome_scaled_image" name="IDR_BUTTON_FOCUSED_HOVER" file="common/button_focused_hover.png" />
-      <structure type="chrome_scaled_image" name="IDR_BUTTON_FOCUSED_NORMAL" file="common/button_focused.png" />
-      <structure type="chrome_scaled_image" name="IDR_BUTTON_FOCUSED_PRESSED" file="common/button_focused_pressed.png" />
-      <structure type="chrome_scaled_image" name="IDR_BUTTON_HOVER" file="common/button_hover.png" />
-      <structure type="chrome_scaled_image" name="IDR_BUTTON_NORMAL" file="common/button.png" />
-      <structure type="chrome_scaled_image" name="IDR_BUTTON_PRESSED" file="common/button_pressed.png" />
-      <structure type="chrome_scaled_image" name="IDR_CHECKBOX" file="common/checkbox.png" />
-      <structure type="chrome_scaled_image" name="IDR_CHECKBOX_CHECKED" file="common/checkbox_checked.png" />
-      <structure type="chrome_scaled_image" name="IDR_CHECKBOX_CHECKED_DISABLED" file="common/checkbox_checked_inactive.png" />
-      <structure type="chrome_scaled_image" name="IDR_CHECKBOX_CHECKED_HOVER" file="common/checkbox_checked_hover.png" />
-      <structure type="chrome_scaled_image" name="IDR_CHECKBOX_CHECKED_PRESSED" file="common/checkbox_checked_pressed.png" />
-      <structure type="chrome_scaled_image" name="IDR_CHECKBOX_DISABLED" file="common/checkbox_inactive.png" />
-      <structure type="chrome_scaled_image" name="IDR_CHECKBOX_FOCUSED" file="common/checkbox_focused.png" />
-      <structure type="chrome_scaled_image" name="IDR_CHECKBOX_FOCUSED_CHECKED" file="common/checkbox_focused_checked.png" />
-      <structure type="chrome_scaled_image" name="IDR_CHECKBOX_FOCUSED_CHECKED_HOVER" file="common/checkbox_focused_checked_hover.png" />
-      <structure type="chrome_scaled_image" name="IDR_CHECKBOX_FOCUSED_CHECKED_PRESSED" file="common/checkbox_focused_checked_pressed.png" />
-      <structure type="chrome_scaled_image" name="IDR_CHECKBOX_FOCUSED_HOVER" file="common/checkbox_focused_hover.png" />
-      <structure type="chrome_scaled_image" name="IDR_CHECKBOX_FOCUSED_PRESSED" file="common/checkbox_focused_pressed.png" />
-      <structure type="chrome_scaled_image" name="IDR_CHECKBOX_HOVER" file="common/checkbox_hover.png" />
-      <structure type="chrome_scaled_image" name="IDR_CHECKBOX_PRESSED" file="common/checkbox_pressed.png" />
       <structure type="chrome_scaled_image" name="IDR_CLOSE" file="close.png" />
       <structure type="chrome_scaled_image" name="IDR_CLOSE_H" file="close_hover.png" />
       <structure type="chrome_scaled_image" name="IDR_CLOSE_P" file="close_pressed.png" />
@@ -44,8 +23,6 @@
       <structure type="chrome_scaled_image" name="IDR_CONTENT_BOTTOM_RIGHT_CORNER" file="content_bottom_right_corner.png" />
       <structure type="chrome_scaled_image" name="IDR_CONTENT_LEFT_SIDE" file="content_left_side.png" />
       <structure type="chrome_scaled_image" name="IDR_CONTENT_RIGHT_SIDE" file="content_right_side.png" />
-      <structure type="chrome_scaled_image" name="IDR_FOLDER_OPEN" file="common/folder_open.png" />
-      <structure type="chrome_scaled_image" name="IDR_FOLDER_OPEN_RTL" file="common/folder_open_rtl.png" />
       <structure type="chrome_scaled_image" name="IDR_FRAME" file="frame_default.png" />
       <structure type="chrome_scaled_image" name="IDR_FRAME_INACTIVE" file="frame_default_inactive.png" />
       <structure type="chrome_scaled_image" name="IDR_MAXIMIZE" file="maximize.png" />
@@ -54,20 +31,6 @@
       <structure type="chrome_scaled_image" name="IDR_MINIMIZE" file="minimize.png" />
       <structure type="chrome_scaled_image" name="IDR_MINIMIZE_H" file="minimize_hover.png" />
       <structure type="chrome_scaled_image" name="IDR_MINIMIZE_P" file="minimize_pressed.png" />
-      <structure type="chrome_scaled_image" name="IDR_RADIO" file="common/radio.png" />
-      <structure type="chrome_scaled_image" name="IDR_RADIO_CHECKED" file="common/radio_checked.png" />
-      <structure type="chrome_scaled_image" name="IDR_RADIO_CHECKED_DISABLED" file="common/radio_checked_inactive.png" />
-      <structure type="chrome_scaled_image" name="IDR_RADIO_CHECKED_HOVER" file="common/radio_checked_hover.png" />
-      <structure type="chrome_scaled_image" name="IDR_RADIO_CHECKED_PRESSED" file="common/radio_checked_pressed.png" />
-      <structure type="chrome_scaled_image" name="IDR_RADIO_DISABLED" file="common/radio_inactive.png" />
-      <structure type="chrome_scaled_image" name="IDR_RADIO_FOCUSED" file="common/radio_focused.png" />
-      <structure type="chrome_scaled_image" name="IDR_RADIO_FOCUSED_CHECKED" file="common/radio_focused_checked.png" />
-      <structure type="chrome_scaled_image" name="IDR_RADIO_FOCUSED_CHECKED_HOVER" file="common/radio_focused_checked_hover.png" />
-      <structure type="chrome_scaled_image" name="IDR_RADIO_FOCUSED_CHECKED_PRESSED" file="common/radio_focused_checked_pressed.png" />
-      <structure type="chrome_scaled_image" name="IDR_RADIO_FOCUSED_HOVER" file="common/radio_focused_hover.png" />
-      <structure type="chrome_scaled_image" name="IDR_RADIO_FOCUSED_PRESSED" file="common/radio_focused_pressed.png" />
-      <structure type="chrome_scaled_image" name="IDR_RADIO_HOVER" file="common/radio_hover.png" />
-      <structure type="chrome_scaled_image" name="IDR_RADIO_PRESSED" file="common/radio_pressed.png" />
       <structure type="chrome_scaled_image" name="IDR_RESTORE" file="restore.png" />
       <structure type="chrome_scaled_image" name="IDR_RESTORE_H" file="restore_hover.png" />
       <structure type="chrome_scaled_image" name="IDR_RESTORE_P" file="restore_pressed.png" />

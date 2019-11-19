@@ -2,9 +2,6 @@
 <body style="overflow:hidden;">
 <canvas id="canvas" width=600 height=600 style="border:5px solid black">
 <script>
-if (window.testRunner)
-  testRunner.dumpAsTextWithPixelResults();
-
 var ctx = document.getElementById('canvas').getContext('2d');
 var lingrad = ctx.createLinearGradient(0,0,600,600);
 lingrad.addColorStop(0, '#00ABEB');

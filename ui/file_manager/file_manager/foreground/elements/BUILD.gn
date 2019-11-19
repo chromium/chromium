@@ -3,6 +3,8 @@
 # found in the LICENSE file.
 
 import("//third_party/closure_compiler/compile_js.gni")
+import("//third_party/closure_compiler/js_unit_tests.gni")
+import("//ui/file_manager/base/gn/js_test_gen_html.gni")
 
 visibility = [ "//ui/file_manager/file_manager/foreground/*" ]
 
@@ -11,12 +13,15 @@ group("closure_compile") {
   visibility += [ "//ui/file_manager:closure_compile" ]
   deps = [
     ":closure_compile_module",
+    ":js_test_gen_html_type_check_auto",
   ]
 }
 
 js_type_check("closure_compile_module") {
   deps = [
+    ":files_format_dialog",
     ":files_icon_button",
+    ":files_message",
     ":files_metadata_box",
     ":files_metadata_entry",
     ":files_quick_view",
@@ -26,6 +31,21 @@ js_type_check("closure_compile_module") {
     ":files_toast",
     ":files_toggle_ripple",
     ":files_tooltip",
+    ":xf_activity_complete",
+    ":xf_button",
+    ":xf_circular_progress",
+    ":xf_display_panel",
+    ":xf_panel_item",
+  ]
+}
+
+js_library("files_format_dialog") {
+  deps = [
+    "//ui/file_manager/file_manager/common/js:util",
+    "//ui/webui/resources/cr_elements/cr_button:cr_button",
+    "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog",
+    "//ui/webui/resources/cr_elements/cr_input:cr_input",
+    "//ui/webui/resources/js:i18n_behavior",
   ]
 }
 
@@ -33,6 +53,21 @@ js_library("files_icon_button") {
   deps = [
     "//third_party/polymer/v1_0/components-chromium/iron-behaviors:iron-button-state-extracted",
     "//third_party/polymer/v1_0/components-chromium/iron-behaviors:iron-control-state-extracted",
+  ]
+}
+
+js_library("files_message") {
+  deps = [
+    "//ui/webui/resources/cr_elements/cr_button:cr_button",
+    "//ui/webui/resources/cr_elements/cr_icon_button:cr_icon_button",
+    "//ui/webui/resources/js:assert",
+  ]
+}
+
+js_unittest("files_message_unittest") {
+  deps = [
+    ":files_message",
+    "//ui/webui/resources/js:webui_resource_test",
   ]
 }
 
@@ -45,7 +80,10 @@ js_library("files_metadata_entry") {
 js_library("files_quick_view") {
   deps = [
     ":files_metadata_box",
-    "../../../externs:webview_tag",
+  ]
+  externs_list = [
+    "$externs_path/chrome_extensions.js",
+    "$externs_path/webview_tag.js",
   ]
 }
 
@@ -64,7 +102,6 @@ js_library("files_safe_media_webview_content") {
 # TODO(tapted): Move this to //ui/file_manager/base.
 js_library("files_toast") {
   visibility += [ "//ui/file_manager/gallery/*" ]
-  externs_list = [ "$externs_path/web_animations.js" ]
 }
 
 # TODO(tapted): Move this to //ui/file_manager/base.
@@ -75,4 +112,65 @@ js_library("files_toggle_ripple") {
 # TODO(tapted): Move this to //ui/file_manager/base.
 js_library("files_tooltip") {
   visibility += [ "//ui/file_manager/gallery/*" ]
+}
+
+js_unittest("files_tooltip_unittest") {
+  deps = [
+    ":files_tooltip",
+    "//ui/file_manager/base/js:test_error_reporting",
+    "//ui/webui/resources/js:webui_resource_test",
+  ]
+}
+
+js_unittest("files_toast_unittest") {
+  deps = [
+    ":files_toast",
+    "//ui/webui/resources/js:webui_resource_test",
+  ]
+}
+
+js_unittest("files_xf_elements_unittest") {
+  deps = [
+    ":xf_display_panel",
+    "//ui/webui/resources/js:assert",
+    "//ui/webui/resources/js:webui_resource_test",
+  ]
+}
+
+js_test_gen_html("js_test_gen_html") {
+  deps = [
+    ":files_message_unittest",
+    ":files_toast_unittest",
+    ":files_tooltip_unittest",
+    ":files_xf_elements_unittest",
+  ]
+  html_import = true
+}
+
+js_library("xf_activity_complete") {
+}
+
+js_library("xf_button") {
+  deps = [
+    "//ui/webui/resources/cr_elements/cr_button:cr_button",
+    "//ui/webui/resources/cr_elements/cr_icon_button:cr_icon_button",
+  ]
+}
+
+js_library("xf_circular_progress") {
+}
+
+js_library("xf_display_panel") {
+  deps = [
+    ":xf_panel_item",
+    "//ui/file_manager/file_manager/common/js:util",
+  ]
+}
+
+js_library("xf_panel_item") {
+  deps = [
+    ":xf_activity_complete",
+    ":xf_button",
+    ":xf_circular_progress",
+  ]
 }

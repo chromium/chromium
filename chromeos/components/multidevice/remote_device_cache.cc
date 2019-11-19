@@ -42,7 +42,7 @@ RemoteDeviceCache::~RemoteDeviceCache() = default;
 void RemoteDeviceCache::SetRemoteDevices(
     const RemoteDeviceList& remote_devices) {
   for (const auto& remote_device : remote_devices) {
-    if (base::ContainsKey(remote_device_map_, remote_device.GetDeviceId())) {
+    if (base::Contains(remote_device_map_, remote_device.GetDeviceId())) {
       // TODO(khorimoto): Do not overwrite device metadata if the new device
       // contains a stale timestamp; see https://crbug.com/856746.
 
@@ -71,7 +71,7 @@ RemoteDeviceRefList RemoteDeviceCache::GetRemoteDevices() const {
 
 base::Optional<RemoteDeviceRef> RemoteDeviceCache::GetRemoteDevice(
     const std::string& device_id) const {
-  if (!base::ContainsKey(remote_device_map_, device_id))
+  if (!base::Contains(remote_device_map_, device_id))
     return base::nullopt;
 
   return RemoteDeviceRef(remote_device_map_.at(device_id));

@@ -3,6 +3,7 @@ public_headers = [
   "//ipc/ipc_message_utils.h",
   "//net/cookies/cookie_options.h",
   "//net/cookies/canonical_cookie.h",
+  "//net/cookies/cookie_change_dispatcher.h",
   "//net/cookies/cookie_constants.h",
 ]
 traits_headers =
@@ -14,9 +15,16 @@ public_deps = [
   "//net",
 ]
 type_mappings = [
-  "network.mojom.CookiePriority=net::CookiePriority",
-  "network.mojom.CookieSameSite=net::CookieSameSite",
-  "network.mojom.CookieSameSiteFilter=net::CookieOptions::SameSiteCookieContext",
-  "network.mojom.CookieOptions=net::CookieOptions",
-  "network.mojom.CanonicalCookie=net::CanonicalCookie",
+  "network.mojom.CookiePriority=::net::CookiePriority",
+  "network.mojom.CookieSameSite=::net::CookieSameSite",
+  "network.mojom.CookieSameSiteContext=::net::CookieOptions::SameSiteCookieContext",
+  "network.mojom.CookieAccessSemantics=::net::CookieAccessSemantics",
+  "network.mojom.CookieOptions=::net::CookieOptions",
+  "network.mojom.CanonicalCookie=::net::CanonicalCookie",
+  "network.mojom.CookieInclusionStatusWarningReason=::net::CanonicalCookie::CookieInclusionStatus::WarningReason",
+  "network.mojom.CookieInclusionStatus=::net::CanonicalCookie::CookieInclusionStatus[move_only]",
+  "network.mojom.CookieWithStatus=::net::CookieWithStatus",
+  "network.mojom.CookieAndLineWithStatus=::net::CookieAndLineWithStatus",
+  "network.mojom.CookieChangeCause=::net::CookieChangeCause",
+  "network.mojom.CookieChangeInfo=::net::CookieChangeInfo",
 ]

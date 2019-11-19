@@ -13,6 +13,7 @@
 
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/unsafe_shared_memory_region.h"
 #include "base/unguessable_token.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
 #include "gpu/command_buffer/common/mailbox.h"
@@ -20,13 +21,12 @@
 #include "media/base/overlay_info.h"
 #include "media/base/video_decoder.h"
 #include "media/base/video_types.h"
-#include "media/video/video_decode_accelerator.h"
+#include "media/video/supported_video_decoder_config.h"
 #include "media/video/video_encode_accelerator.h"
 #include "ui/gfx/gpu_memory_buffer.h"
 
 namespace base {
 class SingleThreadTaskRunner;
-class SharedMemory;
 }  // namespace base
 
 namespace gfx {
@@ -35,20 +35,17 @@ class Size;
 }
 
 namespace gpu {
-class ContextSupport;
 class GpuMemoryBufferManager;
 class SharedImageInterface;
-struct SyncToken;
 }
 
-namespace ws {
-class ContextProviderCommandBuffer;
-}  // namespace ws
+namespace viz {
+class ContextProvider;
+}  // namespace viz
 
 namespace media {
 
 class MediaLog;
-class VideoDecodeAccelerator;
 
 // Helper interface for specifying factories needed to instantiate a hardware
 // video accelerator.
@@ -63,7 +60,6 @@ class MEDIA_EXPORT GpuVideoAcceleratorFactories {
   enum class OutputFormat {
     UNDEFINED = 0,    // Unset state
     I420,             // 3 x R8 GMBs
-    UYVY,             // One 422 GMB
     NV12_SINGLE_GMB,  // One NV12 GMB
     NV12_DUAL_GMB,    // One R8, one RG88 GMB
     XR30,             // 10:10:10:2 BGRX in one GMB (Usually Mac)
@@ -82,41 +78,23 @@ class MEDIA_EXPORT GpuVideoAcceleratorFactories {
   virtual int32_t GetCommandBufferRouteId() = 0;
 
   // Return true if |config| is potentially supported by a decoder created with
-  // CreateVideoDecoder().
+  // CreateVideoDecoder() using |implementation|.
   //
   // May be called on any thread.
-  virtual bool IsDecoderConfigSupported(const VideoDecoderConfig& config) = 0;
+  virtual bool IsDecoderConfigSupported(
+      VideoDecoderImplementation implementation,
+      const VideoDecoderConfig& config) = 0;
 
   virtual std::unique_ptr<media::VideoDecoder> CreateVideoDecoder(
       MediaLog* media_log,
-      const RequestOverlayInfoCB& request_overlay_info_cb,
-      const gfx::ColorSpace& target_color_space) = 0;
-
-  // Caller owns returned pointer, but should call Destroy() on it (instead of
-  // directly deleting) for proper destruction, as per the
-  // VideoDecodeAccelerator interface.
-  virtual std::unique_ptr<VideoDecodeAccelerator>
-  CreateVideoDecodeAccelerator() = 0;
+      VideoDecoderImplementation implementation,
+      const RequestOverlayInfoCB& request_overlay_info_cb) = 0;
 
   // Caller owns returned pointer, but should call Destroy() on it (instead of
   // directly deleting) for proper destruction, as per the
   // VideoEncodeAccelerator interface.
   virtual std::unique_ptr<VideoEncodeAccelerator>
   CreateVideoEncodeAccelerator() = 0;
-
-  // Allocate & delete native textures.
-  virtual bool CreateTextures(int32_t count,
-                              const gfx::Size& size,
-                              std::vector<uint32_t>* texture_ids,
-                              std::vector<gpu::Mailbox>* texture_mailboxes,
-                              uint32_t texture_target) = 0;
-  virtual void DeleteTexture(uint32_t texture_id) = 0;
-  virtual gpu::SyncToken CreateSyncToken() = 0;
-  virtual void ShallowFlushCHROMIUM() = 0;
-
-  virtual void WaitSyncToken(const gpu::SyncToken& sync_token) = 0;
-  virtual void SignalSyncToken(const gpu::SyncToken& sync_token,
-                               base::OnceClosure callback) = 0;
 
   virtual std::unique_ptr<gfx::GpuMemoryBuffer> CreateGpuMemoryBuffer(
       const gfx::Size& size,
@@ -135,12 +113,6 @@ class MEDIA_EXPORT GpuVideoAcceleratorFactories {
   virtual OutputFormat VideoFrameOutputFormat(
       VideoPixelFormat pixel_format) = 0;
 
-  // Returns a GL Context that can be used on the task runner associated with
-  // the same instance of GpuVideoAcceleratorFactories.
-  // nullptr will be returned in cases where a context couldn't be created or
-  // the context was lost.
-  virtual gpu::gles2::GLES2Interface* ContextGL() = 0;
-
   // Returns a SharedImageInterface that can be used (on any thread) to allocate
   // and update shared images.
   // nullptr will be returned in cases where a context couldn't be created or
@@ -152,25 +124,18 @@ class MEDIA_EXPORT GpuVideoAcceleratorFactories {
   // ShouldUseGpuMemoryBuffersForVideoFrames return false.
   virtual gpu::GpuMemoryBufferManager* GpuMemoryBufferManager() = 0;
 
-  // Allocate & return a shared memory segment.
-  virtual std::unique_ptr<base::SharedMemory> CreateSharedMemory(
+  // Allocate & return an unsafe shared memory region
+  virtual base::UnsafeSharedMemoryRegion CreateSharedMemoryRegion(
       size_t size) = 0;
 
   // Returns the task runner the video accelerator runs on.
   virtual scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner() = 0;
 
-  // Return the capabilities of video decode accelerator, which includes the
-  // supported codec profiles.
-  virtual VideoDecodeAccelerator::Capabilities
-  GetVideoDecodeAcceleratorCapabilities() = 0;
-
   // Returns the supported codec profiles of video encode accelerator.
   virtual VideoEncodeAccelerator::SupportedProfiles
   GetVideoEncodeAcceleratorSupportedProfiles() = 0;
 
-  virtual scoped_refptr<ws::ContextProviderCommandBuffer>
-  GetMediaContextProvider() = 0;
-  virtual gpu::ContextSupport* GetMediaContextProviderContextSupport() = 0;
+  virtual scoped_refptr<viz::ContextProvider> GetMediaContextProvider() = 0;
 
   // Sets the current pipeline rendering color space.
   virtual void SetRenderingColorSpace(const gfx::ColorSpace& color_space) = 0;

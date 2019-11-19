@@ -47,7 +47,7 @@ base::FilePath GetConfigPath() {
 std::unique_ptr<PrefService> PrefServiceHelper::CreatePrefService(
     PrefRegistrySimple* registry) {
   const base::FilePath config_path(GetConfigPath());
-  VLOG(1) << "Loading config from " << config_path.value();
+  DVLOG(1) << "Loading config from " << config_path.value();
 
   registry->RegisterBooleanPref(prefs::kMetricsIsNewClientID, false);
   // Opt-in stats default to true to handle two different cases:

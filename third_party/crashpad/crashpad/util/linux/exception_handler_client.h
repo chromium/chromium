@@ -15,6 +15,7 @@
 #ifndef CRASHPAD_UTIL_LINUX_EXCEPTION_HANDLER_CLIENT_H_
 #define CRASHPAD_UTIL_LINUX_EXCEPTION_HANDLER_CLIENT_H_
 
+#include <sys/socket.h>
 #include <sys/types.h>
 
 #include "base/macros.h"
@@ -28,9 +29,22 @@ class ExceptionHandlerClient {
   //! \brief Constructs this object.
   //!
   //! \param[in] sock A socket connected to an ExceptionHandlerServer.
-  explicit ExceptionHandlerClient(int sock);
+  //! \param[in] multiple_clients `true` if this socket may be used by multiple
+  //!     clients.
+  ExceptionHandlerClient(int sock, bool multiple_clients);
 
   ~ExceptionHandlerClient();
+
+  //! \brief Communicates with the handler to determine its credentials.
+  //!
+  //! If using a multi-client socket, this method should be called before
+  //! sharing the client socket end, or the handler's response may not be
+  //! received.
+  //!
+  //! \param[out] creds The handler process' credentials, valid if this method
+  //!     returns `true`.
+  //! \return `true` on success. Otherwise, `false` with a message logged.
+  bool GetHandlerCredentials(ucred* creds);
 
   //! \brief Request a crash dump from the ExceptionHandlerServer.
   //!
@@ -38,7 +52,7 @@ class ExceptionHandlerClient {
   //!
   //! \param[in] info Information about this client.
   //! \return 0 on success or an error code on failure.
-  int RequestCrashDump(const ClientInformation& info);
+  int RequestCrashDump(const ExceptionHandlerProtocol::ClientInformation& info);
 
   //! \brief Uses `prctl(PR_SET_PTRACER, ...)` to set the process with
   //!     process ID \a pid as the ptracer for this process.
@@ -53,12 +67,17 @@ class ExceptionHandlerClient {
   void SetCanSetPtracer(bool can_set_ptracer);
 
  private:
-  int SendCrashDumpRequest(const ClientInformation& info);
+  int SendCrashDumpRequest(
+      const ExceptionHandlerProtocol::ClientInformation& info,
+      VMAddress stack_pointer);
+  int SignalCrashDump(const ExceptionHandlerProtocol::ClientInformation& info,
+                      VMAddress stack_pointer);
   int WaitForCrashDumpComplete();
 
   int server_sock_;
   pid_t ptracer_;
   bool can_set_ptracer_;
+  bool multiple_clients_;
 
   DISALLOW_COPY_AND_ASSIGN(ExceptionHandlerClient);
 };

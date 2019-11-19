@@ -30,19 +30,33 @@
 
 #include "third_party/blink/renderer/platform/weborigin/origin_access_entry.h"
 
-#include "services/network/public/mojom/cors.mojom-shared.h"
+#include "services/network/public/mojom/cors.mojom-blink.h"
+#include "third_party/blink/renderer/platform/weborigin/known_ports.h"
+#include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 
 namespace blink {
 
 OriginAccessEntry::OriginAccessEntry(
-    const String& protocol,
-    const String& host,
-    network::mojom::CorsOriginAccessMatchMode match_mode,
+    const SecurityOrigin& origin,
+    network::mojom::CorsDomainMatchMode match_mode,
     network::mojom::CorsOriginAccessMatchPriority priority)
-    : private_(std::string(protocol.Utf8().data()),
-               std::string(host.Utf8().data()),
+    : private_(origin.Protocol().Ascii(),
+               origin.Domain().Ascii(),
+               origin.EffectivePort(),
                match_mode,
+               network::mojom::CorsPortMatchMode::kAllowOnlySpecifiedPort,
+               priority) {}
+
+OriginAccessEntry::OriginAccessEntry(
+    const KURL& url,
+    network::mojom::CorsDomainMatchMode match_mode,
+    network::mojom::CorsOriginAccessMatchPriority priority)
+    : private_(url.Protocol().Ascii().data(),
+               url.Host().Ascii().data(),
+               url.Port() ? url.Port() : DefaultPortForProtocol(url.Protocol()),
+               match_mode,
+               network::mojom::CorsPortMatchMode::kAllowOnlySpecifiedPort,
                priority) {}
 
 OriginAccessEntry::OriginAccessEntry(OriginAccessEntry&& from) = default;
@@ -54,11 +68,15 @@ network::cors::OriginAccessEntry::MatchResult OriginAccessEntry::MatchesOrigin(
 
 network::cors::OriginAccessEntry::MatchResult OriginAccessEntry::MatchesDomain(
     const SecurityOrigin& origin) const {
-  return private_.MatchesDomain(origin.ToUrlOrigin());
+  return private_.MatchesDomain(origin.Host().Ascii());
 }
 
 bool OriginAccessEntry::HostIsIPAddress() const {
   return private_.host_is_ip_address();
+}
+
+String OriginAccessEntry::registrable_domain() const {
+  return String(private_.registrable_domain().c_str());
 }
 
 }  // namespace blink

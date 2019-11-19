@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+FAIL e.style['-webkit-line-clamp'] = "none" should set the property value assert_not_equals: property should be set got disallowed value ""
+PASS e.style['-webkit-line-clamp'] = "1" should set the property value
+PASS e.style['-webkit-line-clamp'] = "6" should set the property value
+Harness: the test ran to completion.
+

@@ -20,7 +20,7 @@ namespace syncer {
 NonBlockingTypeCommitContribution::NonBlockingTypeCommitContribution(
     ModelType type,
     const sync_pb::DataTypeContext& context,
-    const CommitRequestDataList& commit_requests,
+    CommitRequestDataList commit_requests,
     ModelTypeWorker* worker,
     Cryptographer* cryptographer,
     PassphraseType passphrase_type,
@@ -31,7 +31,7 @@ NonBlockingTypeCommitContribution::NonBlockingTypeCommitContribution(
       cryptographer_(cryptographer),
       passphrase_type_(passphrase_type),
       context_(context),
-      commit_requests_(commit_requests),
+      commit_requests_(std::move(commit_requests)),
       cleaned_up_(false),
       debug_info_emitter_(debug_info_emitter),
       only_commit_specifics_(only_commit_specifics) {}
@@ -52,13 +52,13 @@ void NonBlockingTypeCommitContribution::AddToCommitMessage(
   for (const auto& commit_request : commit_requests_) {
     sync_pb::SyncEntity* sync_entity = commit_message->add_entries();
     if (only_commit_specifics_) {
-      DCHECK(!commit_request.entity->is_deleted());
+      DCHECK(!commit_request->entity->is_deleted());
       DCHECK(!cryptographer_);
       // Only send specifics to server for commit-only types.
       sync_entity->mutable_specifics()->CopyFrom(
-          commit_request.entity->specifics);
+          commit_request->entity->specifics);
     } else {
-      PopulateCommitProto(commit_request, sync_entity);
+      PopulateCommitProto(type_, *commit_request, sync_entity);
       AdjustCommitProto(sync_entity);
     }
 
@@ -68,9 +68,9 @@ void NonBlockingTypeCommitContribution::AddToCommitMessage(
         !sync_entity->specifics().password().has_client_only_encrypted_data());
 
     // Update the relevant counter based on the type of the commit request.
-    if (commit_request.entity->is_deleted()) {
+    if (commit_request->entity->is_deleted()) {
       counters->num_deletion_commits_attempted++;
-    } else if (commit_request.base_version <= 0) {
+    } else if (commit_request->base_version <= 0) {
       counters->num_creation_commits_attempted++;
     } else {
       counters->num_update_commits_attempted++;
@@ -110,7 +110,7 @@ SyncerError NonBlockingTypeCommitContribution::ProcessCommitResponse(
       case sync_pb::CommitResponse::SUCCESS: {
         ++successes;
         CommitResponseData response_data;
-        const CommitRequestData& commit_request = commit_requests_[i];
+        const CommitRequestData& commit_request = *commit_requests_[i];
         response_data.id = entry_response.id_string();
         if (response_data.id != commit_request.entity->id) {
           // Server has changed the sync id in the request. Write back the
@@ -126,7 +126,7 @@ SyncerError NonBlockingTypeCommitContribution::ProcessCommitResponse(
         response_list.push_back(response_data);
 
         status->increment_num_successful_commits();
-        if (commit_request.entity->specifics.has_bookmark()) {
+        if (type_ == BOOKMARKS) {
           status->increment_num_successful_bookmark_commits();
         }
 
@@ -178,22 +178,25 @@ size_t NonBlockingTypeCommitContribution::GetNumEntries() const {
 
 // static
 void NonBlockingTypeCommitContribution::PopulateCommitProto(
+    ModelType type,
     const CommitRequestData& commit_entity,
     sync_pb::SyncEntity* commit_proto) {
-  const EntityData& entity_data = commit_entity.entity.value();
+  const EntityData& entity_data = *commit_entity.entity;
   commit_proto->set_id_string(entity_data.id);
-  // Populate client_defined_unique_tag only for non-bookmark data types.
-  if (!entity_data.specifics.has_bookmark()) {
-    commit_proto->set_client_defined_unique_tag(entity_data.client_tag_hash);
+  // Populate client_defined_unique_tag only for non-bookmark and non-Nigori
+  // data types.
+  if (type != BOOKMARKS && type != NIGORI) {
+    commit_proto->set_client_defined_unique_tag(
+        entity_data.client_tag_hash.value());
   }
   commit_proto->set_version(commit_entity.base_version);
   commit_proto->set_deleted(entity_data.is_deleted());
   commit_proto->set_folder(entity_data.is_folder);
-  commit_proto->set_name(entity_data.non_unique_name);
+  commit_proto->set_name(entity_data.name);
 
   if (!entity_data.is_deleted()) {
     // Handle bookmarks separately.
-    if (entity_data.specifics.has_bookmark()) {
+    if (type == BOOKMARKS) {
       // position_in_parent field is set only for legacy reasons.  See comments
       // in sync.proto for more information.
       commit_proto->set_position_in_parent(

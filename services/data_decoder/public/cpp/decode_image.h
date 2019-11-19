@@ -9,17 +9,18 @@
 
 #include <vector>
 
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
+#include "services/data_decoder/public/mojom/data_decoder_service.mojom.h"
 #include "services/data_decoder/public/mojom/image_decoder.mojom.h"
 
 namespace gfx {
 class Size;
 }
 
-namespace service_manager {
-class Connector;
-}
-
 namespace data_decoder {
+
+class DataDecoder;
 
 const uint64_t kDefaultMaxSizeInBytes = 128 * 1024 * 1024;
 
@@ -32,7 +33,20 @@ const uint64_t kDefaultMaxSizeInBytes = 128 * 1024 * 1024;
 // Upon completion, |callback| is invoked on the calling thread TaskRunner with
 // an SkBitmap argument. The SkBitmap will be null on failure and non-null on
 // success.
-void DecodeImage(service_manager::Connector* connector,
+//
+// This always uses an isolated instance of the Data Decoder service. To use a
+// shared instance, call the signature below which takes a DataDecoder.
+void DecodeImageIsolated(const std::vector<uint8_t>& encoded_bytes,
+                         mojom::ImageCodec codec,
+                         bool shrink_to_fit,
+                         uint64_t max_size_in_bytes,
+                         const gfx::Size& desired_image_frame_size,
+                         mojom::ImageDecoder::DecodeImageCallback callback);
+
+// Same as above but uses |data_decoder| to potentially share a service instance
+// with other operations. |callback| will only be invoked if |data_decoder| is
+// still alive by the time the decode operation is complete.
+void DecodeImage(DataDecoder* data_decoder,
                  const std::vector<uint8_t>& encoded_bytes,
                  mojom::ImageCodec codec,
                  bool shrink_to_fit,
@@ -43,7 +57,19 @@ void DecodeImage(service_manager::Connector* connector,
 // Helper function to decode an animation via the data_decoder service. Any
 // image with multiple frames is considered an animation, so long as the frames
 // are all the same size.
-void DecodeAnimation(service_manager::Connector* connector,
+//
+// This always uses an isolated instance of the Data Decoder service. To use a
+// shared instance, call the signature below which takes a DataDecoder.
+void DecodeAnimationIsolated(
+    const std::vector<uint8_t>& encoded_bytes,
+    bool shrink_to_fit,
+    uint64_t max_size_in_bytes,
+    mojom::ImageDecoder::DecodeAnimationCallback callback);
+
+// Same as above but uses |data_decoder| to potentially share a service instance
+// with other operations. |callback| will only be invoked if |data_decoder| is
+// still alive by the time the decode operation is complete.
+void DecodeAnimation(DataDecoder* data_decoder,
                      const std::vector<uint8_t>& encoded_bytes,
                      bool shrink_to_fit,
                      uint64_t max_size_in_bytes,

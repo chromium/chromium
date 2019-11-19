@@ -39,8 +39,7 @@ namespace gin {
 
 namespace {
 
-// None of these globals are ever freed nor closed.
-base::MemoryMappedFile* g_mapped_natives = nullptr;
+// This global is never freed nor closed.
 base::MemoryMappedFile* g_mapped_snapshot = nullptr;
 
 bool GenerateEntropy(unsigned char* buffer, size_t amount) {
@@ -60,8 +59,6 @@ void GetMappedFileData(base::MemoryMappedFile* mapped_file,
 }
 
 #if defined(V8_USE_EXTERNAL_STARTUP_DATA)
-
-const char kNativesFileName[] = "natives_blob.bin";
 
 #if defined(OS_ANDROID)
 const char kV8ContextSnapshotFileName64[] = "v8_context_snapshot_64.bin";
@@ -100,9 +97,9 @@ void GetV8FilePath(const char* file_name, base::FilePath* path_out) {
   *path_out =
       base::FilePath(FILE_PATH_LITERAL("assets")).AppendASCII(file_name);
 #elif defined(OS_MACOSX)
-  base::ScopedCFTypeRef<CFStringRef> natives_file_name(
+  base::ScopedCFTypeRef<CFStringRef> bundle_resource(
       base::SysUTF8ToCFStringRef(file_name));
-  *path_out = base::mac::PathForFrameworkBundleResource(natives_file_name);
+  *path_out = base::mac::PathForFrameworkBundleResource(bundle_resource);
 #else
   base::FilePath data_path;
   bool r = base::PathService::Get(base::DIR_ASSETS, &data_path);
@@ -166,17 +163,6 @@ base::File OpenV8File(const char* file_name,
       }
     } else if (file.error_details() != base::File::FILE_ERROR_IN_USE) {
       result = OpenV8FileResult::FAILED_OTHER;
-#ifdef OS_WIN
-      // TODO(oth): temporary diagnostics for http://crbug.com/479537
-      std::string narrow(kNativesFileName);
-      base::FilePath::StringType nativesBlob(narrow.begin(), narrow.end());
-      if (path.BaseName().value() == nativesBlob) {
-        base::File::Error file_error = file.error_details();
-        base::debug::Alias(&file_error);
-        LOG(FATAL) << "Failed to open V8 file '" << path.value()
-                   << "' (reason: " << file.error_details() << ")";
-      }
-#endif  // OS_WIN
       break;
     } else if (kMaxOpenAttempts - 1 != attempt) {
       base::PlatformThread::Sleep(
@@ -225,11 +211,47 @@ void V8Initializer::Initialize(IsolateHolder::ScriptMode mode) {
                                sizeof(no_flush_bytecode) - 1);
   }
 
+  if (!base::FeatureList::IsEnabled(features::kV8LazyFeedbackAllocation)) {
+    static const char no_lazy_feedback_allocation[] =
+        "--no-lazy-feedback-allocation";
+    v8::V8::SetFlagsFromString(no_lazy_feedback_allocation,
+                               sizeof(no_lazy_feedback_allocation) - 1);
+  }
+
   if (!base::FeatureList::IsEnabled(features::kV8MemoryReducerForSmallHeaps)) {
     static const char no_memory_reducer[] =
         "--no-memory-reducer-for-small-heaps";
     v8::V8::SetFlagsFromString(no_memory_reducer,
                                sizeof(no_memory_reducer) - 1);
+  }
+
+  if (base::FeatureList::IsEnabled(features::kV8HugeMaxOldGenerationSize)) {
+    static const char huge_max_old_generation_size[] =
+        "--huge_max_old_generation_size";
+    v8::V8::SetFlagsFromString(huge_max_old_generation_size,
+                               sizeof(huge_max_old_generation_size) - 1);
+  }
+
+  if (base::FeatureList::IsEnabled(features::kV8GCBackgroundSchedule)) {
+    static const char gc_experiment_background_schedule[] =
+        "--gc_experiment_background_schedule";
+    v8::V8::SetFlagsFromString(gc_experiment_background_schedule,
+                               sizeof(gc_experiment_background_schedule) - 1);
+  }
+
+  if (base::FeatureList::IsEnabled(features::kV8GCLessCompaction)) {
+    static const char gc_experiment_less_compaction[] =
+        "--gc_experiment_less_compaction";
+    v8::V8::SetFlagsFromString(gc_experiment_less_compaction,
+                               sizeof(gc_experiment_less_compaction) - 1);
+  }
+
+  if (base::FeatureList::IsEnabled(features::kV8GCAlwaysPromoteYoungMC)) {
+    static const char gc_experiment_always_promote_young_mc[] =
+        "--always_promote_young_mc";
+    v8::V8::SetFlagsFromString(
+        gc_experiment_always_promote_young_mc,
+        sizeof(gc_experiment_always_promote_young_mc) - 1);
   }
 
   if (IsolateHolder::kStrictMode == mode) {
@@ -238,10 +260,6 @@ void V8Initializer::Initialize(IsolateHolder::ScriptMode mode) {
   }
 
 #if defined(V8_USE_EXTERNAL_STARTUP_DATA)
-  v8::StartupData natives;
-  GetMappedFileData(g_mapped_natives, &natives);
-  v8::V8::SetNativesDataBlob(&natives);
-
   if (g_mapped_snapshot) {
     v8::StartupData snapshot;
     GetMappedFileData(g_mapped_snapshot, &snapshot);
@@ -256,22 +274,15 @@ void V8Initializer::Initialize(IsolateHolder::ScriptMode mode) {
 }
 
 // static
-void V8Initializer::GetV8ExternalSnapshotData(v8::StartupData* natives,
-                                              v8::StartupData* snapshot) {
-  GetMappedFileData(g_mapped_natives, natives);
+void V8Initializer::GetV8ExternalSnapshotData(v8::StartupData* snapshot) {
   GetMappedFileData(g_mapped_snapshot, snapshot);
 }
 
 // static
-void V8Initializer::GetV8ExternalSnapshotData(const char** natives_data_out,
-                                              int* natives_size_out,
-                                              const char** snapshot_data_out,
+void V8Initializer::GetV8ExternalSnapshotData(const char** snapshot_data_out,
                                               int* snapshot_size_out) {
-  v8::StartupData natives;
   v8::StartupData snapshot;
-  GetV8ExternalSnapshotData(&natives, &snapshot);
-  *natives_data_out = natives.data;
-  *natives_size_out = natives.raw_size;
+  GetV8ExternalSnapshotData(&snapshot);
   *snapshot_data_out = snapshot.data;
   *snapshot_size_out = snapshot.raw_size;
 }
@@ -290,16 +301,6 @@ void V8Initializer::LoadV8Snapshot(V8SnapshotFileType snapshot_file_type) {
   base::File file =
       OpenV8File(GetSnapshotFileName(snapshot_file_type), &file_region);
   LoadV8SnapshotFromFile(std::move(file), &file_region, snapshot_file_type);
-}
-
-// static
-void V8Initializer::LoadV8Natives() {
-  if (g_mapped_natives)
-    return;
-
-  base::MemoryMappedFile::Region file_region;
-  base::File file = OpenV8File(kNativesFileName, &file_region);
-  LoadV8NativesFromFile(std::move(file), &file_region);
 }
 
 // static
@@ -329,34 +330,7 @@ void V8Initializer::LoadV8SnapshotFromFile(
                             V8_LOAD_MAX_VALUE);
 }
 
-// static
-void V8Initializer::LoadV8NativesFromFile(
-    base::File natives_file,
-    base::MemoryMappedFile::Region* natives_file_region) {
-  if (g_mapped_natives)
-    return;
-
-  CHECK(natives_file.IsValid());
-
-  base::MemoryMappedFile::Region region =
-      base::MemoryMappedFile::Region::kWholeFile;
-  if (natives_file_region) {
-    region = *natives_file_region;
-  }
-
-  if (!MapV8File(std::move(natives_file), region, &g_mapped_natives)) {
-    LOG(FATAL) << "Couldn't mmap v8 natives data file";
-  }
-}
-
 #if defined(OS_ANDROID)
-// static
-base::FilePath V8Initializer::GetNativesFilePath() {
-  base::FilePath path;
-  GetV8FilePath(kNativesFileName, &path);
-  return path;
-}
-
 // static
 base::FilePath V8Initializer::GetSnapshotFilePath(
     bool abi_32_bit,

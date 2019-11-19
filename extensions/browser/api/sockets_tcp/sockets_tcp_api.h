@@ -13,6 +13,7 @@
 #include "base/macros.h"
 #include "extensions/browser/api/socket/socket_api.h"
 #include "extensions/common/api/sockets_tcp.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/network/public/mojom/tcp_socket.mojom.h"
 
 namespace extensions {
@@ -261,12 +262,13 @@ class SocketsTcpSecureFunction : public TCPSocketAsyncApiFunction {
   void AsyncWorkStart() override;
 
  private:
-  void TlsConnectDone(int result,
-                      network::mojom::TLSClientSocketPtr tls_socket,
-                      const net::IPEndPoint& local_addr,
-                      const net::IPEndPoint& peer_addr,
-                      mojo::ScopedDataPipeConsumerHandle receive_pipe_handle,
-                      mojo::ScopedDataPipeProducerHandle send_pipe_handle);
+  void TlsConnectDone(
+      int result,
+      mojo::PendingRemote<network::mojom::TLSClientSocket> tls_socket,
+      const net::IPEndPoint& local_addr,
+      const net::IPEndPoint& peer_addr,
+      mojo::ScopedDataPipeConsumerHandle receive_pipe_handle,
+      mojo::ScopedDataPipeProducerHandle send_pipe_handle);
 
   bool paused_;
   bool persistent_;

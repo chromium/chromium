@@ -5,17 +5,14 @@
 #include <utility>
 
 #include "base/macros.h"
+#include "base/no_destructor.h"
 #include "base/run_loop.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/task/post_task.h"
+#include "base/test/task_environment.h"
+#include "components/services/font/font_service_app.h"
 #include "components/services/font/public/cpp/font_loader.h"
-#include "components/services/font/public/cpp/manifest.h"
-#include "components/services/font/public/interfaces/constants.mojom.h"
-#include "components/services/font/public/interfaces/font_service.mojom.h"
+#include "components/services/font/public/mojom/font_service.mojom.h"
 #include "ppapi/buildflags/buildflags.h"
-#include "services/service_manager/public/cpp/connector.h"
-#include "services/service_manager/public/cpp/manifest_builder.h"
-#include "services/service_manager/public/cpp/test/test_service.h"
-#include "services/service_manager/public/cpp/test/test_service_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkFontStyle.h"
 
@@ -40,7 +37,7 @@ std::string GetPostscriptNameFromFile(base::File& font_file) {
     return "";
 
   std::vector<char> file_contents;
-  file_contents.reserve(file_size);
+  file_contents.resize(file_size);
   CHECK_EQ(file_size, font_file.Read(0, file_contents.data(), file_size));
   std::string font_family_name;
   FT_Library library;
@@ -57,30 +54,32 @@ std::string GetPostscriptNameFromFile(base::File& font_file) {
 }
 #endif
 
-const char kTestServiceName[] = "font_service_unittests";
+mojo::PendingRemote<mojom::FontService> ConnectToBackgroundFontService() {
+  mojo::PendingRemote<mojom::FontService> remote;
+  base::CreateSequencedTaskRunner({base::ThreadPool(), base::MayBlock(),
+                                   base::WithBaseSyncPrimitives(),
+                                   base::TaskPriority::USER_BLOCKING})
+      ->PostTask(FROM_HERE,
+                 base::BindOnce(
+                     [](mojo::PendingReceiver<mojom::FontService> receiver) {
+                       static base::NoDestructor<FontServiceApp> service;
+                       service->BindReceiver(std::move(receiver));
+                     },
+                     remote.InitWithNewPipeAndPassReceiver()));
+  return remote;
+}
 
 class FontLoaderTest : public testing::Test {
  public:
-  FontLoaderTest()
-      : test_service_manager_(
-            {GetManifest(),
-             service_manager::ManifestBuilder()
-                 .WithServiceName(kTestServiceName)
-                 .RequireCapability(mojom::kServiceName, "font_service")
-                 .Build()}),
-        test_service_(
-            test_service_manager_.RegisterTestInstance(kTestServiceName)),
-        font_loader_(test_service_.connector()) {}
+  FontLoaderTest() = default;
   ~FontLoaderTest() override = default;
 
  protected:
   FontLoader* font_loader() { return &font_loader_; }
 
  private:
-  base::test::ScopedTaskEnvironment task_environment_;
-  service_manager::TestServiceManager test_service_manager_;
-  service_manager::TestService test_service_;
-  FontLoader font_loader_;
+  base::test::TaskEnvironment task_environment_;
+  FontLoader font_loader_{ConnectToBackgroundFontService()};
 
   DISALLOW_COPY_AND_ASSIGN(FontLoaderTest);
 };

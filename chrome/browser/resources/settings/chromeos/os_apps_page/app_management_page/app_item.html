@@ -1,0 +1,42 @@
+<link rel="import" href="chrome://resources/html/polymer.html">
+
+<link rel="import" href="actions.html">
+<link rel="import" href="shared_style.html">
+<link rel="import" href="shared_vars.html">
+<link rel="import" href="store_client.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_icons_css.html">
+
+<dom-module id="app-management-app-item">
+  <template>
+    <style include="app-management-shared-css cr-icons">
+      :host {
+        align-items: center;
+        border-bottom: var(--card-separator);
+        color: var(--cros-default-text-color);
+        cursor: pointer;
+        display: flex;
+        flex-direction: row;
+        font-weight: 400;
+        height: 48px;
+      }
+
+      #app-title {
+        flex: 1;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      #app-icon {
+        height: 32px;
+        margin-inline-end: 20px;
+        margin-inline-start: 24px;
+        width: 32px;
+      }
+    </style>
+    <img id="app-icon" src="[[iconUrlFromId_(app)]]"
+        alt="[[app.title]] app icon." aria-hidden="true">
+    <div id="app-title" aria-hidden="true">[[app.title]]</div>
+    <slot name="right-content"></slot>
+  </template>
+ <script src="app_item.js"></script>
+</dom-module>

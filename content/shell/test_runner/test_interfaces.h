@@ -10,11 +10,9 @@
 
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "content/shell/test_runner/mock_web_theme_engine.h"
 
 namespace blink {
 class WebLocalFrame;
-class WebThemeEngine;
 class WebURL;
 class WebView;
 }
@@ -47,7 +45,6 @@ class TestInterfaces {
   TestRunner* GetTestRunner();
   WebTestDelegate* GetDelegate();
   const std::vector<WebViewTestProxy*>& GetWindowList();
-  blink::WebThemeEngine* GetThemeEngine();
 
  private:
   std::unique_ptr<GamepadController> gamepad_controller_;
@@ -56,8 +53,6 @@ class TestInterfaces {
 
   std::vector<WebViewTestProxy*> window_list_;
   blink::WebView* main_view_;
-
-  std::unique_ptr<MockWebThemeEngine> theme_engine_;
 
   DISALLOW_COPY_AND_ASSIGN(TestInterfaces);
 };

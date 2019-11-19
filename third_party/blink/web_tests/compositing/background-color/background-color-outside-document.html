@@ -9,16 +9,6 @@ if (window.internals) {
         internals.setPageScaleFactor(0.5);
     });
 }
-if (window.testRunner) {
-    testRunner.dumpAsTextWithPixelResults();
-    testRunner.waitUntilDone();
-    addEventListener('load', function() {
-        testRunner.setCustomTextOutput(
-            "This test passes if the entire background is green " +
-            "(including the region outside the html element).");
-        testRunner.notifyDone();
-    });
-}
 
 </script>
 <meta name="viewport" content="width=device-width, minimum-scale=0.5, initial-scale=1, maximum-scale=1.25">

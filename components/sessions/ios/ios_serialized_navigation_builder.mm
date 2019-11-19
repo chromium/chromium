@@ -5,9 +5,10 @@
 #include "components/sessions/ios/ios_serialized_navigation_builder.h"
 
 #include "components/sessions/core/serialized_navigation_entry.h"
-#include "ios/web/public/favicon_status.h"
-#include "ios/web/public/navigation_item.h"
-#include "ios/web/public/referrer.h"
+#include "ios/web/public/favicon/favicon_status.h"
+#include "ios/web/public/navigation/navigation_item.h"
+#include "ios/web/public/navigation/referrer.h"
+#include "ios/web/public/session/crw_navigation_item_storage.h"
 
 namespace sessions {
 
@@ -26,6 +27,26 @@ IOSSerializedNavigationBuilder::FromNavigationItem(
   navigation.timestamp_ = item.GetTimestamp();
   if (item.GetFavicon().valid)
     navigation.favicon_url_ = item.GetFavicon().url;
+
+  return navigation;
+}
+
+SerializedNavigationEntry
+IOSSerializedNavigationBuilder::FromNavigationStorageItem(
+    int index,
+    CRWNavigationItemStorage* item) {
+  // Create a NavigationItem to reserve a UniqueID.
+  auto navigation_item = web::NavigationItem::Create();
+  SerializedNavigationEntry navigation;
+  navigation.index_ = index;
+  navigation.unique_id_ = navigation_item->GetUniqueID();
+  navigation.referrer_url_ = item.referrer.url;
+  navigation.referrer_policy_ = item.referrer.policy;
+  navigation.virtual_url_ = item.virtualURL;
+  navigation.title_ = item.title;
+  // Use reload transition type to avoid incorrect increase for typed count.
+  navigation.transition_type_ = ui::PAGE_TRANSITION_RELOAD;
+  navigation.timestamp_ = item.timestamp;
 
   return navigation;
 }

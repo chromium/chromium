@@ -3,13 +3,16 @@
 # found in the LICENSE file.
 
 import("//build_overrides/build.gni")
+import("//third_party/abseil-cpp/abseil_clients.gni")
 
+# Usage of Abseil in Chromium is guarded by an explicit opt-in list, before
+# adding projects to this list please reach out to cxx@chromium.org and CC:
+# - https://cs.chromium.org/chromium/src/third_party/abseil-cpp/OWNERS
+#
+# More information can be found at:
+# https://docs.google.com/document/d/1DgS1-A3rzboTLjpf4m1sqkJgWjnY_Ru2dokk1X1vBDU
 if (build_with_chromium) {
-  visibility = [
-    "//third_party/webrtc/*",
-    "//third_party/abseil-cpp/*",
-    "//third_party/googletest:gtest",
-  ]
+  visibility = absl_visibility
 } else {
   visibility = [ "*" ]
 }
@@ -49,6 +52,25 @@ source_set("fixed_array") {
   ]
 }
 
+source_set("inlined_vector_internal") {
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [
+    "//build/config/compiler:no_chromium_code",
+    "//third_party/abseil-cpp:absl_default_cflags_cc",
+  ]
+  public_configs = [ "//third_party/abseil-cpp:absl_include_config" ]
+  public = [
+    "internal/inlined_vector.h",
+  ]
+  deps = [
+    ":compressed_tuple",
+    "../base:core_headers",
+    "../memory",
+    "../meta:type_traits",
+    "../types:span",
+  ]
+}
+
 source_set("inlined_vector") {
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [
@@ -60,6 +82,7 @@ source_set("inlined_vector") {
     "inlined_vector.h",
   ]
   deps = [
+    ":inlined_vector_internal",
     "../algorithm",
     "../base:core_headers",
     "../base:throw_delegate",
@@ -95,6 +118,9 @@ source_set("test_instance_tracker") {
   ]
   public = [
     "internal/test_instance_tracker.h",
+  ]
+  deps = [
+    "../types:compare",
   ]
   visibility = []
   visibility += [ "../*" ]
@@ -292,21 +318,6 @@ source_set("hashtable_debug_hooks") {
   ]
 }
 
-source_set("hashtablez_force_sampling") {
-  configs -= [ "//build/config/compiler:chromium_code" ]
-  configs += [
-    "//build/config/compiler:no_chromium_code",
-    "//third_party/abseil-cpp:absl_default_cflags_cc",
-  ]
-  public_configs = [ "//third_party/abseil-cpp:absl_include_config" ]
-  sources = [
-    "internal/hashtablez_force_sampling.cc",
-  ]
-  deps = [
-    ":hashtablez_sampler",
-  ]
-}
-
 source_set("hashtablez_sampler") {
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [
@@ -357,6 +368,7 @@ source_set("raw_hash_map") {
   deps = [
     ":container_memory",
     ":raw_hash_set",
+    "../base:throw_delegate",
   ]
 }
 
@@ -522,6 +534,41 @@ source_set("unordered_set_constructor_test") {
   deps = [
     ":hash_generator_testing",
     ":hash_policy_testing",
+    "../meta:type_traits",
+    "//testing/gtest",
+  ]
+}
+
+source_set("unordered_set_members_test") {
+  testonly = true
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [
+    "//build/config/compiler:no_chromium_code",
+    "//third_party/abseil-cpp:absl_default_cflags_cc",
+  ]
+  public_configs = [ "//third_party/abseil-cpp:absl_include_config" ]
+  public = [
+    "internal/unordered_set_members_test.h",
+  ]
+  deps = [
+    "../meta:type_traits",
+    "//testing/gtest",
+  ]
+}
+
+source_set("unordered_map_members_test") {
+  testonly = true
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [
+    "//build/config/compiler:no_chromium_code",
+    "//third_party/abseil-cpp:absl_default_cflags_cc",
+  ]
+  public_configs = [ "//third_party/abseil-cpp:absl_include_config" ]
+  public = [
+    "internal/unordered_map_members_test.h",
+  ]
+  deps = [
+    "../meta:type_traits",
     "//testing/gtest",
   ]
 }
@@ -559,5 +606,35 @@ source_set("unordered_set_modifiers_test") {
     ":hash_generator_testing",
     ":hash_policy_testing",
     "//testing/gtest",
+  ]
+}
+
+source_set("btree") {
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [
+    "//build/config/compiler:no_chromium_code",
+    "//third_party/abseil-cpp:absl_default_cflags_cc",
+  ]
+  public_configs = [ "//third_party/abseil-cpp:absl_include_config" ]
+  sources = [
+    "internal/btree.h",
+    "internal/btree_container.h",
+  ]
+  public = [
+    "btree_map.h",
+    "btree_set.h",
+  ]
+  deps = [
+    ":common",
+    ":compressed_tuple",
+    ":container_memory",
+    ":layout",
+    "../base:core_headers",
+    "../base:throw_delegate",
+    "../memory",
+    "../meta:type_traits",
+    "../strings",
+    "../types:compare",
+    "../utility",
   ]
 }

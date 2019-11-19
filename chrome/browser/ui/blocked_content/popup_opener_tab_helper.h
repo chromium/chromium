@@ -22,8 +22,11 @@ namespace content {
 class WebContents;
 }
 
-class PopupTracker;
+namespace ui {
 class ScopedVisibilityTracker;
+}
+
+class PopupTracker;
 
 // This class tracks WebContents for the purpose of logging metrics related to
 // popup openers.
@@ -70,7 +73,7 @@ class PopupOpenerTabHelper
   const base::TickClock* tick_clock_;
 
   // Keeps track of the total foreground time for this tab.
-  std::unique_ptr<ScopedVisibilityTracker> visibility_tracker_;
+  std::unique_ptr<ui::ScopedVisibilityTracker> visibility_tracker_;
 
   // Measures the time this WebContents opened a popup.
   base::TimeTicks last_popup_open_time_;

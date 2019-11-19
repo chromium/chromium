@@ -12,7 +12,6 @@
 <translation id="2159915644201199628">Kan afbeelding niet decoderen: '<ph name="IMAGE_NAME" />'</translation>
 <translation id="2350172092385603347">Lokalisatie gebruikt, maar er is geen 'default_locale' opgegeven in het manifest.</translation>
 <translation id="2576842806987913196">Er is al een CRX-bestand aanwezig met deze naam.</translation>
-<translation id="2753617847762399167">Illegaal pad (absoluut of relatief met '..'): '<ph name="IMAGE_PATH" />'</translation>
 <translation id="2785530881066938471">Kan bestand '<ph name="RELATIVE_PATH" />' niet laden voor inhoudsscript. Het bestand bevat geen UTF-8-codering.</translation>
 <translation id="2903070246402204397"><ph name="EXTENSION_NAME" /> (extensie-ID '<ph name="EXTENSION_ID" />') is geblokkeerd door de beheerder. <ph name="ADMIN_INFO" /></translation>
 <translation id="2988488679308982380">Kan pakket niet installeren: '<ph name="ERROR_CODE" />'</translation>
@@ -38,8 +37,6 @@
 <translation id="5436430103864390185">Gevormde vensters worden niet ondersteund.</translation>
 <translation id="5456409301717116725">Deze extensie bevat het sleutelbestand '<ph name="KEY_PATH" />'. Dit is waarschijnlijk niet je bedoeling.</translation>
 <translation id="5486326529110362464">Invoerwaarde voor persoonlijke sleutel moet aanwezig zijn.</translation>
-<translation id="5627523580512561598">extensie <ph name="EXTENSION_NAME" /></translation>
-<translation id="5960890139610307736">ExtensionView: <ph name="EXTENSIONVIEW_TAG_NAME" /></translation>
 <translation id="5972529113578162692">De beheerder van deze machine vereist dat <ph name="EXTENSION_NAME" /> wordt geïnstalleerd. Deze kan niet worden verwijderd.</translation>
 <translation id="6027032947578871493">Onbekend product <ph name="PRODUCT_ID" /> van <ph name="VENDOR_NAME" /> (serienummer <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="6068932090455285721"><ph name="PRODUCT_NAME" /> van leverancier <ph name="VENDOR_ID" /></translation>
@@ -51,7 +48,6 @@
 <translation id="6542618148162044354"><ph name="APP_NAME" /> vraagt om toegang tot een of meer van je apparaten:</translation>
 <translation id="657064425229075395">Kan achtergrondscript '<ph name="BACKGROUND_SCRIPT" />' niet laden.</translation>
 <translation id="6580950983454333167"><ph name="PRODUCT_NAME" /> van <ph name="VENDOR_NAME" /> (serienummer <ph name="SERIAL_NUMBER" />)</translation>
-<translation id="6731255991101203740">Kan geen directory maken voor het uitpakken van: '<ph name="DIRECTORY_PATH" />'</translation>
 <translation id="677806580227005219">Mimehandler: <ph name="MIMEHANDLERVIEW_TAG_NAME" /></translation>
 <translation id="6840444547062817500">Deze extensie heeft zichzelf te vaak opnieuw geladen.</translation>
 <translation id="7003844668372540529">Onbekend product <ph name="PRODUCT_ID" /> van <ph name="VENDOR_NAME" /></translation>

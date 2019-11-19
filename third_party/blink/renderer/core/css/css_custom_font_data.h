@@ -32,7 +32,7 @@ class CSSCustomFontData final : public CustomFontData {
   enum FallbackVisibility { kInvisibleFallback, kVisibleFallback };
 
   static scoped_refptr<CSSCustomFontData> Create(
-      RemoteFontFaceSource* source,
+      CSSFontFaceSource* source,
       FallbackVisibility visibility) {
     return base::AdoptRef(new CSSCustomFontData(source, visibility));
   }
@@ -57,7 +57,7 @@ class CSSCustomFontData final : public CustomFontData {
   void ClearFontFaceSource() override { font_face_source_ = nullptr; }
 
  private:
-  CSSCustomFontData(RemoteFontFaceSource* source, FallbackVisibility visibility)
+  CSSCustomFontData(CSSFontFaceSource* source, FallbackVisibility visibility)
       : font_face_source_(source),
         fallback_visibility_(visibility),
         is_loading_(false) {
@@ -67,7 +67,7 @@ class CSSCustomFontData final : public CustomFontData {
 
   // TODO(Oilpan): consider moving (Custom)FontFace hierarchy to the heap,
   // thereby making this reference a Member<>.
-  WeakPersistent<RemoteFontFaceSource> font_face_source_;
+  WeakPersistent<CSSFontFaceSource> font_face_source_;
   FallbackVisibility fallback_visibility_;
   mutable bool is_loading_;
 };

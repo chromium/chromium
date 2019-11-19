@@ -7,16 +7,14 @@
 #include <utility>
 
 #include "base/logging.h"
-#include "chrome/browser/chromeos/login/screens/base_screen_delegate.h"
 #include "chrome/browser/chromeos/login/wizard_controller.h"
+#include "chrome/browser/ui/webui/chromeos/login/encryption_migration_screen_handler.h"
 
 namespace chromeos {
 
 EncryptionMigrationScreen::EncryptionMigrationScreen(
-    BaseScreenDelegate* base_screen_delegate,
     EncryptionMigrationScreenView* view)
-    : BaseScreen(base_screen_delegate, OobeScreen::SCREEN_ENCRYPTION_MIGRATION),
-      view_(view) {
+    : BaseScreen(EncryptionMigrationScreenView::kScreenId), view_(view) {
   DCHECK(view_);
   if (view_)
     view_->SetDelegate(this);
@@ -27,6 +25,12 @@ EncryptionMigrationScreen::~EncryptionMigrationScreen() {
     view_->SetDelegate(nullptr);
 }
 
+void EncryptionMigrationScreen::OnViewDestroyed(
+    EncryptionMigrationScreenView* view) {
+  if (view_ == view)
+    view_ = nullptr;
+}
+
 void EncryptionMigrationScreen::Show() {
   if (view_)
     view_->Show();
@@ -35,12 +39,6 @@ void EncryptionMigrationScreen::Show() {
 void EncryptionMigrationScreen::Hide() {
   if (view_)
     view_->Hide();
-}
-
-void EncryptionMigrationScreen::OnViewDestroyed(
-    EncryptionMigrationScreenView* view) {
-  if (view_ == view)
-    view_ = nullptr;
 }
 
 void EncryptionMigrationScreen::SetUserContext(

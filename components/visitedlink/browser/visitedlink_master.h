@@ -405,8 +405,9 @@ class VisitedLinkMaster : public VisitedLinkCommon {
 
   // Task runner for posting file tasks.
   scoped_refptr<base::SequencedTaskRunner> file_task_runner_ =
-      base::CreateSequencedTaskRunnerWithTraits(
-          {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
+      base::CreateSequencedTaskRunner(
+          {base::ThreadPool(), base::MayBlock(),
+           base::TaskPriority::USER_VISIBLE,
            base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
 
   // When non-NULL, indicates we are in database rebuild mode and points to
@@ -475,7 +476,7 @@ class VisitedLinkMaster : public VisitedLinkCommon {
   // will be false in production.
   bool suppress_rebuild_ = false;
 
-  base::WeakPtrFactory<VisitedLinkMaster> weak_ptr_factory_;
+  base::WeakPtrFactory<VisitedLinkMaster> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(VisitedLinkMaster);
 };

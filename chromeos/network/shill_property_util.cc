@@ -91,9 +91,9 @@ std::string GetSSIDFromProperties(const base::Value& properties,
   }
 
   std::string ssid;
-  std::vector<uint8_t> raw_ssid_bytes;
-  if (base::HexStringToBytes(hex_ssid, &raw_ssid_bytes)) {
-    ssid = std::string(raw_ssid_bytes.begin(), raw_ssid_bytes.end());
+  std::string ssid_bytes;
+  if (base::HexStringToString(hex_ssid, &ssid_bytes)) {
+    ssid = ssid_bytes;
     VLOG(2) << "GetSSIDFromProperties: " << name << " HexSsid=" << hex_ssid
             << " SSID=" << ssid;
   } else {

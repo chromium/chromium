@@ -9,13 +9,13 @@
 
 namespace service_manager {
 
-InterfaceProvider::InterfaceProvider() : weak_factory_(this) {
+InterfaceProvider::InterfaceProvider() {
   pending_request_ = MakeRequest(&interface_provider_);
 }
 
 InterfaceProvider::InterfaceProvider(
     mojom::InterfaceProviderPtr interface_provider)
-    : interface_provider_(std::move(interface_provider)), weak_factory_(this) {}
+    : interface_provider_(std::move(interface_provider)) {}
 
 InterfaceProvider::~InterfaceProvider() {}
 
@@ -45,8 +45,9 @@ void InterfaceProvider::Forward(const ForwardCallback& callback) {
 }
 
 void InterfaceProvider::SetConnectionLostClosure(
-    const base::Closure& connection_lost_closure) {
-  interface_provider_.set_connection_error_handler(connection_lost_closure);
+    base::OnceClosure connection_lost_closure) {
+  interface_provider_.set_connection_error_handler(
+      std::move(connection_lost_closure));
 }
 
 base::WeakPtr<InterfaceProvider> InterfaceProvider::GetWeakPtr() {

@@ -10,7 +10,7 @@
 #include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
-#include "components/autofill/core/browser/credit_card.h"
+#include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/strings/grit/components_strings.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -38,26 +38,17 @@ struct SecurityCodeCardTypePair {
 
 // From https://www.paypalobjects.com/en_US/vhelp/paypalmanager_help/credit_card_numbers.htm
 const char* const kValidNumbers[] = {
-    "378282246310005",
-    "3714 4963 5398 431",
-    "3787-3449-3671-000",
-    "5610591081018250",
-    "3056 9309 0259 04",
-    "3852-0000-0232-37",
-    "6011111111111117",
-    "6011 0009 9013 9424",
-    "3530-1113-3330-0000",
+    "378282246310005",     "3714 4963 5398 431",  "3787-3449-3671-000",
+    "5610591081018250",    "3056 9309 0259 04",   "3852-0000-0232-37",
+    "6011111111111117",    "6011 0009 9013 9424", "3530-1113-3330-0000",
     "3566002020360505",
     "5555 5555 5555 4444",  // Mastercard.
     "5105-1051-0510-5100",
     "4111111111111111",  // Visa.
-    "4012 8888 8888 1881",
-    "4222-2222-2222-2",
-    "5019717010103742",
-    "6331101999990016",
-    "6247130048162403",
-    "4532261615476013542", // Visa, 19 digits.
-    "6362970000457013", // Elo
+    "4012 8888 8888 1881", "4222-2222-2222-2",    "5019717010103742",
+    "6331101999990016",    "6247130048162403",
+    "4532261615476013542",  // Visa, 19 digits.
+    "6362970000457013",     // Elo
 };
 const char* const kInvalidNumbers[] = {
   "4111 1111 112", /* too short */
@@ -78,15 +69,15 @@ const IntExpirationDate kInvalidCreditCardIntExpirationDate[] = {
   { 2015, 0 },  // Zero is legal in the CC class but is not a valid date.
 };
 const SecurityCodeCardTypePair kValidSecurityCodeCardTypePairs[] = {
-  { "323",  kGenericCard }, // 3-digit CSC.
-  { "3234", kAmericanExpressCard }, // 4-digit CSC.
+    {"323", kGenericCard},           // 3-digit CSC.
+    {"3234", kAmericanExpressCard},  // 4-digit CSC.
 };
 const SecurityCodeCardTypePair kInvalidSecurityCodeCardTypePairs[] = {
-  { "32", kGenericCard }, // CSC too short.
-  { "323", kAmericanExpressCard }, // CSC too short.
-  { "3234", kGenericCard }, // CSC too long.
-  { "12345", kAmericanExpressCard }, // CSC too long.
-  { "asd", kGenericCard }, // non-numeric CSC.
+    {"32", kGenericCard},             // CSC too short.
+    {"323", kAmericanExpressCard},    // CSC too short.
+    {"3234", kGenericCard},           // CSC too long.
+    {"12345", kAmericanExpressCard},  // CSC too long.
+    {"asd", kGenericCard},            // non-numeric CSC.
 };
 const char* const kValidEmailAddress[] = {
   "user@example",
@@ -100,6 +91,14 @@ const char* const kInvalidEmailAddress[] = {
   "user@",
   "user@=example.com"
 };
+const char* const kUnplausibleCreditCardExpirationYears[] = {
+    "2009", "2134", "1111", "abcd", "2101"};
+const char* const kPlausibleCreditCardExpirationYears[] = {"2018", "2099",
+                                                           "2010", "2050"};
+const char* const kUnplausibleCreditCardCVCNumbers[] = {"abc", "21", "11111",
+                                                        "21a1"};
+const char* const kPlausibleCreditCardCVCNumbers[] = {"1234", "2099", "111",
+                                                      "982"};
 }  // namespace
 
 TEST(AutofillValidation, IsValidCreditCardNumber) {
@@ -110,6 +109,36 @@ TEST(AutofillValidation, IsValidCreditCardNumber) {
   for (const char* invalid_number : kInvalidNumbers) {
     SCOPED_TRACE(invalid_number);
     EXPECT_FALSE(IsValidCreditCardNumber(ASCIIToUTF16(invalid_number)));
+  }
+}
+
+// Tests the plausibility of supplied credit card expiration years.
+TEST(AutofillValidation, IsPlausibleCreditCardExparationYear) {
+  for (const char* plausible_year : kPlausibleCreditCardExpirationYears) {
+    EXPECT_TRUE(
+        IsPlausible4DigitExpirationYear(base::ASCIIToUTF16(plausible_year)))
+        << plausible_year;
+  }
+
+  for (const char* unplausible_year : kUnplausibleCreditCardExpirationYears) {
+    EXPECT_FALSE(
+        IsPlausible4DigitExpirationYear(base::ASCIIToUTF16(unplausible_year)))
+        << unplausible_year;
+  }
+}
+
+// Test the plausibility of supplied CVC numbers.
+TEST(AutofillValidation, IsPlausibleCreditCardCVCNumber) {
+  for (const char* plausible_cvc : kPlausibleCreditCardCVCNumbers) {
+    EXPECT_TRUE(
+        IsPlausibleCreditCardCVCNumber(base::ASCIIToUTF16(plausible_cvc)))
+        << plausible_cvc;
+  }
+
+  for (const char* unplausible_cvc : kUnplausibleCreditCardCVCNumbers) {
+    EXPECT_FALSE(
+        IsPlausibleCreditCardCVCNumber(base::ASCIIToUTF16(unplausible_cvc)))
+        << unplausible_cvc;
   }
 }
 
@@ -347,8 +376,8 @@ TEST_P(AutofillCCNumberValidationTest, IsValidCreditCardNumber) {
   }
 }
 
-const static std::set<std::string> kAllBasicCardNetworks{
-    "amex",       "discover", "diners",   "elo",  "jcb",
+static const std::set<std::string> kAllBasicCardNetworks{
+    "amex",       "discover", "diners",   "elo", "jcb",
     "mastercard", "mir",      "unionpay", "visa"};
 
 INSTANTIATE_TEST_SUITE_P(
@@ -451,11 +480,13 @@ INSTANTIATE_TEST_SUITE_P(
 class AutofillIsUPIVirtualPaymentAddress
     : public testing::TestWithParam<std::string> {};
 
-TEST_P(AutofillIsUPIVirtualPaymentAddress, IsUPIVirtualPaymentAddress) {
+TEST_P(AutofillIsUPIVirtualPaymentAddress, IsUPIVirtualPaymentAddress_Banks) {
   // Expected format is user@bank
-  EXPECT_TRUE(IsUPIVirtualPaymentAddress(ASCIIToUTF16("user@" + GetParam())));
+  EXPECT_TRUE(
+      IsUPIVirtualPaymentAddress(ASCIIToUTF16("user.name-1@" + GetParam())));
 
-  // Deviations should not match: bank, @bank, user@prefixbank, user@banksuffix.
+  // Deviations should not match: bank, @bank, user@prefixbank, user@banksuffix,
+  // disallowed symbols.
   EXPECT_FALSE(IsUPIVirtualPaymentAddress(ASCIIToUTF16(GetParam())));
   EXPECT_FALSE(IsUPIVirtualPaymentAddress(ASCIIToUTF16(GetParam() + "@")));
   EXPECT_FALSE(IsUPIVirtualPaymentAddress(ASCIIToUTF16("@" + GetParam())));
@@ -463,6 +494,7 @@ TEST_P(AutofillIsUPIVirtualPaymentAddress, IsUPIVirtualPaymentAddress) {
       IsUPIVirtualPaymentAddress(ASCIIToUTF16("user@invalid" + GetParam())));
   EXPECT_FALSE(
       IsUPIVirtualPaymentAddress(ASCIIToUTF16("user@" + GetParam() + ".com")));
+  EXPECT_FALSE(IsUPIVirtualPaymentAddress(ASCIIToUTF16("~user@" + GetParam())));
 }
 
 INSTANTIATE_TEST_SUITE_P(UPIVirtualPaymentAddress,
@@ -493,5 +525,44 @@ INSTANTIATE_TEST_SUITE_P(UPIVirtualPaymentAddress,
                                          "united",
                                          "vijb",
                                          "ybl"));
+
+TEST(AutofillValidation, IsUPIVirtualPaymentAddress_Others) {
+  EXPECT_TRUE(
+      IsUPIVirtualPaymentAddress(ASCIIToUTF16("12345@HDFC0000001.ifsc.npci")));
+  EXPECT_TRUE(
+      IsUPIVirtualPaymentAddress(ASCIIToUTF16("234567890123@aadhaar.npci")));
+  EXPECT_TRUE(
+      IsUPIVirtualPaymentAddress(ASCIIToUTF16("9800011111@mobile.npci")));
+  EXPECT_TRUE(
+      IsUPIVirtualPaymentAddress(ASCIIToUTF16("1234123412341234@rupay.npci")));
+}
+
+class AutofillIsInternationalBankAccountNumber
+    : public testing::TestWithParam<std::string> {};
+
+INSTANTIATE_TEST_SUITE_P(InternationalBankAccountNumber,
+                         AutofillIsInternationalBankAccountNumber,
+                         testing::Values("MT84MALT011000012345MTLCAST001S",
+                                         "SC18SSCB11010000000000001497USD",
+                                         "MD24AG000225100013104168",
+                                         "BH67BMAG00001299123456",
+                                         "LI21088100002324013AA",
+                                         "NO9386011117947",
+                                         "FR1420041010050500013M02606",
+                                         "LB62099900000001001901229114"));
+
+TEST_P(AutofillIsInternationalBankAccountNumber,
+       IsInternationalBankAccountNumber) {
+  EXPECT_TRUE(IsInternationalBankAccountNumber(ASCIIToUTF16(GetParam())))
+      << GetParam();
+  EXPECT_TRUE(
+      IsInternationalBankAccountNumber(ASCIIToUTF16(" " + GetParam() + " ")));
+  EXPECT_FALSE(
+      IsInternationalBankAccountNumber(ASCIIToUTF16("DE" + GetParam())));
+  EXPECT_FALSE(
+      IsInternationalBankAccountNumber(ASCIIToUTF16(GetParam() + ".")));
+  EXPECT_FALSE(IsInternationalBankAccountNumber(
+      ASCIIToUTF16(GetParam() + "0000000000000000000000000000000000000")));
+}
 
 }  // namespace autofill

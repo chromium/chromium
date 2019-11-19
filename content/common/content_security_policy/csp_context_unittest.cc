@@ -59,7 +59,7 @@ ContentSecurityPolicy BuildPolicy(CSPDirective::Name directive_name,
   return ContentSecurityPolicy(
       ContentSecurityPolicyHeader(
           std::string(),  // header
-          blink::mojom::ContentSecurityPolicyType::kEnforce,
+          network::mojom::ContentSecurityPolicyType::kEnforce,
           blink::kWebContentSecurityPolicySourceHTTP),
       {CSPDirective(directive_name,
                     CSPSourceList(false, false, false, sources))},
@@ -203,7 +203,7 @@ TEST(CSPContextTest, CheckCSPDisposition) {
   // Add a report-only policy.
   ContentSecurityPolicy report_only =
       BuildPolicy(CSPDirective::DefaultSrc, {source});
-  report_only.header.type = blink::mojom::ContentSecurityPolicyType::kReport;
+  report_only.header.type = network::mojom::ContentSecurityPolicyType::kReport;
   context.AddContentSecurityPolicy(report_only);
 
   // With CHECK_ALL_CSP, both policies should be checked and violations should

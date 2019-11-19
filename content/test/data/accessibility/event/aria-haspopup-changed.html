@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<body>
+  <input id="input0" aria-label="input0" role="combobox">
+  <input id="input1" aria-label="input1" role="combobox">
+  <input id="input2" aria-label="input2" role="combobox">
+  <input id="input3" aria-label="input3" role="combobox">
+  <input id="input4" aria-label="input4" role="combobox">
+  <input id="input5" aria-label="input5" role="combobox">
+  <input id="input6" aria-label="input6" role="combobox">
+  <input id="input7" aria-label="input7" role="combobox" aria-haspopup="true">
+  <script>
+    function go() {
+      // Set aria-haspopup from combobox default(listbox)->listbox;
+      // should not fire an event.
+      document.getElementById('input0').setAttribute('aria-haspopup', 'listbox');
+
+      // Set aria-haspopup from combobox default(listbox, false)->false;
+      // should fire an event.
+      document.getElementById('input1').setAttribute('aria-haspopup', 'false');
+
+      // Set aria-haspopup from combobox default(listbox)->true(menu);
+      // should fire an event.
+      document.getElementById('input2').setAttribute('aria-haspopup', 'true');
+
+      // Set aria-haspopup from combobox default(listbox)->menu;
+      // should fire an event.
+      document.getElementById('input3').setAttribute('aria-haspopup', 'menu');
+
+      // Set aria-haspopup from combobox default(listbox)->tree;
+      // should fire an event.
+      document.getElementById('input4').setAttribute('aria-haspopup', 'tree');
+
+      // Set aria-haspopup from combobox default(listbox)->grid;
+      // should fire an event.
+      document.getElementById('input5').setAttribute('aria-haspopup', 'grid');
+
+      // Set aria-haspopup from combobox default(listbox)->dialog;
+      // should fire an event.
+      document.getElementById('input6').setAttribute('aria-haspopup', 'dialog');
+
+      // Remove aria-haspopup. Set aria-haspopup from true(menu)->default(listbox);
+      // should fire an event.
+      document.getElementById('input7').removeAttribute('aria-haspopup');
+    }
+  </script>
+</body>
+</html>

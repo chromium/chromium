@@ -16,6 +16,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.RetryOnFailure;
 import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.util.UrlConstants;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
@@ -37,7 +38,7 @@ public class MainActivityWithURLTest {
     @Test
     @SmallTest
     @Feature({"Navigation"})
-    public void testLaunchActivityWithURL() throws Exception {
+    public void testLaunchActivityWithURL() {
         EmbeddedTestServer testServer =
                 EmbeddedTestServer.createAndStartServer(InstrumentationRegistry.getContext());
         try {
@@ -59,7 +60,7 @@ public class MainActivityWithURLTest {
     @Test
     @SmallTest
     @Feature({"Navigation"})
-    public void testLaunchActivity() throws Exception {
+    public void testLaunchActivity() {
         // Launch chrome
         mActivityTestRule.startMainActivityFromLauncher();
         String currentUrl = mActivityTestRule.getActivity().getActivityTab().getUrl();
@@ -74,7 +75,7 @@ public class MainActivityWithURLTest {
     @Test
     @SmallTest
     @Feature({"Navigation"})
-    public void testNewTabPageLaunch() throws Exception {
+    public void testNewTabPageLaunch() {
         // Launch chrome with NTP.
         mActivityTestRule.startMainActivityWithURL(UrlConstants.NTP_URL);
         String currentUrl = mActivityTestRule.getActivity().getActivityTab().getUrl();

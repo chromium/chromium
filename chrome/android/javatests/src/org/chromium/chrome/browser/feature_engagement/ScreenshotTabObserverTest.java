@@ -12,7 +12,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.MetricsUtils;
@@ -22,6 +21,7 @@ import org.chromium.chrome.browser.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.List;
 
@@ -42,17 +42,18 @@ public class ScreenshotTabObserverTest {
     public void setUp() throws Exception {
         mActivityTestRule.startMainActivityOnBlankPage();
         mTab = mActivityTestRule.getActivity().getActivityTab();
-        ThreadUtils.runOnUiThreadBlocking(
+        TestThreadUtils.runOnUiThreadBlocking(
                 (Runnable) () -> mObserver = ScreenshotTabObserver.from(mTab));
     }
 
     @Test
     @SmallTest
+    @DisabledTest
     public void testScreenshotUserCounts() {
         UserActionTester userActionTester = new UserActionTester();
         mObserver.onScreenshotTaken();
         // Must wait for the user action to arrive on the UI thread before checking it.
-        ThreadUtils.runOnUiThreadBlocking((Runnable) () -> {
+        TestThreadUtils.runOnUiThreadBlocking((Runnable) () -> {
             List<String> actions = userActionTester.getActions();
             Assert.assertEquals("Tab.Screenshot", actions.get(0));
         });
@@ -70,7 +71,7 @@ public class ScreenshotTabObserverTest {
         MetricsUtils.HistogramDelta histogramDeltaTwoScreenshots =
                 new MetricsUtils.HistogramDelta("Tab.Screenshot.ScreenshotsPerPage", 2);
         mObserver.onScreenshotTaken();
-        ThreadUtils.runOnUiThreadBlocking((Runnable) () -> mTab.destroy());
+        TestThreadUtils.runOnUiThreadBlocking((Runnable) () -> mTab.destroy());
         // Check the first 3 buckets of the NumberOfScrenshots metric.
         Assert.assertEquals("Should be no pages with zero snapshots reported", 0,
                 histogramDeltaZeroScreenshots.getDelta());
@@ -89,7 +90,7 @@ public class ScreenshotTabObserverTest {
                 new MetricsUtils.HistogramDelta("Tab.Screenshot.ScreenshotsPerPage", 2);
         mObserver.onScreenshotTaken();
         mObserver.onScreenshotTaken();
-        ThreadUtils.runOnUiThreadBlocking((Runnable) () -> mTab.destroy());
+        TestThreadUtils.runOnUiThreadBlocking((Runnable) () -> mTab.destroy());
         Assert.assertEquals("Should be one page with two snapshots reported", 1,
                 histogramDeltaTwoScreenshots.getDelta());
     }
@@ -107,7 +108,7 @@ public class ScreenshotTabObserverTest {
                 new MetricsUtils.HistogramDelta("Tab.Screenshot.Action", 2);
         mObserver.onScreenshotTaken();
         mObserver.onActionPerformedAfterScreenshot(ScreenshotTabObserver.SCREENSHOT_ACTION_SHARE);
-        ThreadUtils.runOnUiThreadBlocking((Runnable) () -> mTab.destroy());
+        TestThreadUtils.runOnUiThreadBlocking((Runnable) () -> mTab.destroy());
         Assert.assertEquals("Should be no none actions reported", 0,
                 histogramDeltaScreenshotNoAction.getDelta());
         Assert.assertEquals("Should be one share action reported", 1,

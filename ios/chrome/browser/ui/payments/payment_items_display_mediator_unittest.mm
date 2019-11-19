@@ -23,10 +23,16 @@ class PaymentRequestPaymentItemsDisplayMediatorTest
       public PlatformTest {
  protected:
   // PlatformTest:
-  void SetUp() override { DoSetUp(); }
+  void SetUp() override {
+    PlatformTest::SetUp();
+    DoSetUp();
+  }
 
   // PlatformTest:
-  void TearDown() override { DoTearDown(); }
+  void TearDown() override {
+    DoTearDown();
+    PlatformTest::TearDown();
+  }
 };
 
 // Tests that the expected total item is created.

@@ -4,8 +4,7 @@
 
 // https://wicg.github.io/mst-content-hint/#extension-to-mediastreamtrack
 [
-    ImplementedAs=MediaStreamTrackContentHint,
-    RuntimeEnabled=MediaStreamTrackContentHint
+    ImplementedAs=MediaStreamTrackContentHint
 ] partial interface MediaStreamTrack {
     [Measure] attribute DOMString contentHint;
 };

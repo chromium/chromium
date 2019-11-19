@@ -1,14 +1,12 @@
 include_rules = [
  "+chrome/browser/ui/views",
  "+chrome/services/app_service/public",
- "+services/ws/public/cpp",
  "+third_party/libaddressinput",
+ "+services/tracing/public",
 ]
 
 specific_include_rules = {
   "chrome_views_delegate_chromeos\.cc": [
-    # TODO(mash): Fix. https://crbug.com/631545
-    "+ash/accelerators/accelerator_controller.h",
     # TODO(mash): Fix. https://crbug.com/826456
     "+ash/shell.h",
     "+ash/wm/window_state.h",
@@ -25,5 +23,6 @@ specific_include_rules = {
   ".*test.*": [
    "!ash",
    "+ash/public",
+   "+ash/keyboard/ui/public",
   ],
 }

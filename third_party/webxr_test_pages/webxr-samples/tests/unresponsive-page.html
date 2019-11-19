@@ -1,0 +1,120 @@
+<!doctype html>
+<!--
+Copyright 2018 The Immersive Web Community Group
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of
+this software and associated documentation files (the "Software"), to deal in
+the Software without restriction, including without limitation the rights to
+use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
+the Software, and to permit persons to whom the Software is furnished to do so,
+subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+-->
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta name='viewport' content='width=device-width, initial-scale=1, user-scalable=no'>
+    <meta name='mobile-web-app-capable' content='yes'>
+    <meta name='apple-mobile-web-app-capable' content='yes'>
+
+    <title>Unresponsive Page</title>
+
+    <link href='../css/common.css' rel='stylesheet'></link>
+
+    <!--The polyfill is not needed for browser that have native API support,
+        but is linked by these samples for wider compatibility.-->
+    <!--script src='https://cdn.jsdelivr.net/npm/webxr-polyfill@latest/build/webxr-polyfill.js'></script-->
+    <script src='../js/xrray-polyfill.js' type='module'></script>
+    <script src='../js/webxr-polyfill.js'></script>
+
+    <script src='../js/webxr-button.js'></script>
+  </head>
+  <body>
+    <header>
+      <details open>
+        <summary>Unresponsive Page</summary>
+        <p>
+          This page mimics a poorly behaved page which requests a session but
+          never begins requesting or processing frames.
+          <a class="back" href="./index.html">Back</a>
+        </p>
+      </details>
+    </header>
+    <main style='text-align: center;'>
+      <p>Click 'Enter XR' to see content</p>
+    </main>
+    <script type="module">
+      import {createWebGLContext} from '../js/cottontail/src/core/renderer.js';
+      import {QueryArgs} from '../js/cottontail/src/util/query-args.js';
+
+      // If requested, initialize the WebXR polyfill
+      if (QueryArgs.getBool('allowPolyfill', false)) {
+        var polyfill = new WebXRPolyfill();
+      }
+
+      // XR globals.
+      let xrButton = null;
+
+      // Checks to see if WebXR is available and, if so, queries a list of
+      // XRDevices that are connected to the system.
+      function initXR() {
+        // Adds a helper button to the page that indicates if any XRDevices are
+        // available and let's the user pick between them if there's multiple.
+        xrButton = new XRDeviceButton({
+          onRequestSession: onRequestSession,
+          onEndSession: onEndSession,
+          supportedSessionTypes: ['immersive-vr']
+        });
+        document.querySelector('header').appendChild(xrButton.domElement);
+      }
+
+      // Called when the user selects a device to present to. In response we
+      // will request an exclusive session from that device.
+      function onRequestSession() {
+        navigator.xr.requestSession('immersive-vr').then(onSessionStarted);
+      }
+
+      // Called when we've successfully acquired a XRSession. In response we
+      // will set up the necessary session state and kick off the frame loop.
+      function onSessionStarted(session) {
+        session.mode = 'immersive-vr';
+        // This informs the 'Enter XR' button that the session has started and
+        // that it should display 'Exit XR' instead.
+        xrButton.setSession(session);
+
+        // Listen for the sessions 'end' event so we can respond if the user
+        // or UA ends the session for any reason.
+        session.addEventListener('end', onSessionEnded);
+
+        // Normally we'd set up our context, request a reference space, and then
+        // start a frame loop here, but we want to pretend to be stalled.
+      }
+
+      // Called when the user clicks the 'Exit XR' button. In response we end
+      // the session.
+      function onEndSession(session) {
+        session.end();
+      }
+
+      // Called either when the user has explicitly ended the session (like in
+      // onEndSession()) or when the UA has ended the session for any reason.
+      // At this point the session object is no longer usable and should be
+      // discarded.
+      function onSessionEnded(event) {
+        xrButton.setSession(null);
+      }
+
+      // Start the XR application.
+      initXR();
+    </script>
+  </body>
+</html>

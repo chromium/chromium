@@ -9,6 +9,7 @@
 #include "base/files/file_path.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -22,9 +23,7 @@ namespace {
 
 // Parse a JSON query string into a base::Value.
 base::Value ParseJsonQueryString(const std::string& query) {
-  const std::string json = net::UnescapeURLComponent(
-      query, net::UnescapeRule::SPACES | net::UnescapeRule::PATH_SEPARATORS |
-                 net::UnescapeRule::URL_SPECIAL_CHARS_EXCEPT_PATH_SEPARATORS);
+  const std::string json = net::UnescapeBinaryURLComponent(query);
   std::unique_ptr<base::Value> value = base::JSONReader::ReadDeprecated(json);
   return value ? std::move(*value) : base::Value();
 }
@@ -36,17 +35,6 @@ std::string PrettyPrintEscapedJson(const std::string& query) {
                                      base::JSONWriter::OPTIONS_PRETTY_PRINT,
                                      &pretty_json);
   return pretty_json;
-}
-
-base::Value MakeSimpleDictionary(
-    std::vector<std::pair<std::string, std::string>> entries) {
-  std::vector<std::pair<std::string, std::unique_ptr<base::Value>>> storage;
-  storage.reserve(entries.size());
-  for (auto& entry : entries) {
-    storage.emplace_back(std::move(entry.first), std::make_unique<base::Value>(
-                                                     std::move(entry.second)));
-  }
-  return base::Value(std::move(storage));
 }
 
 TEST(FileManagerUrlUtilTest, GetFileManagerMainPageUrl) {
@@ -61,7 +49,9 @@ TEST(FileManagerUrlUtilTest, GetFileManagerMainPageUrlWithParams_NoFileTypes) {
       GURL("filesystem:chrome-extension://abc/Downloads/foo.txt"), "foo.txt",
       nullptr,  // No file types
       0,        // Hence no file type index.
-      FILE_PATH_LITERAL("txt"));
+      FILE_PATH_LITERAL("txt"),
+      false  // show_android_picker_apps
+  );
   EXPECT_EQ(extensions::kExtensionScheme, url.scheme());
   EXPECT_EQ("hhaomjibdihmijegdhdafkllkbggdgoj", url.host());
   EXPECT_EQ("/main.html", url.path());
@@ -69,21 +59,20 @@ TEST(FileManagerUrlUtilTest, GetFileManagerMainPageUrlWithParams_NoFileTypes) {
   EXPECT_TRUE(url.query().find("+") == std::string::npos);
   EXPECT_TRUE(url.query().find("%20") != std::string::npos);
   // With DriveFS, Drive is always allowed where native paths are.
-  EXPECT_EQ(MakeSimpleDictionary({
-                {"allowedPaths",
-                 base::FeatureList::IsEnabled(chromeos::features::kDriveFs)
-                     ? "nativeOrDrivePath"
-                     : "nativePath"},
-                {"currentDirectoryURL",
-                 "filesystem:chrome-extension://abc/Downloads/"},
-                {"defaultExtension", "txt"},
-                {"selectionURL",
-                 "filesystem:chrome-extension://abc/Downloads/foo.txt"},
-                {"targetName", "foo.txt"},
-                {"title", "some title"},
-                {"type", "open-file"},
-            }),
-            ParseJsonQueryString(url.query()));
+  EXPECT_EQ(base::StringPrintf(
+                "{\n"
+                "   \"allowedPaths\": \"nativeOrDrivePath\",\n"
+                "   \"currentDirectoryURL\": "
+                "\"filesystem:chrome-extension://abc/Downloads/\",\n"
+                "   \"defaultExtension\": \"txt\",\n"
+                "   \"selectionURL\": "
+                "\"filesystem:chrome-extension://abc/Downloads/foo.txt\",\n"
+                "   \"showAndroidPickerApps\": false,\n"
+                "   \"targetName\": \"foo.txt\",\n"
+                "   \"title\": \"some title\",\n"
+                "   \"type\": \"open-file\"\n"
+                "}\n"),
+            PrettyPrintEscapedJson(url.query()));
 }
 
 TEST(FileManagerUrlUtilTest,
@@ -105,14 +94,14 @@ TEST(FileManagerUrlUtilTest,
   file_types.allowed_paths = ui::SelectFileDialog::FileTypeInfo::ANY_PATH;
 
   const GURL url = GetFileManagerMainPageUrlWithParams(
-      ui::SelectFileDialog::SELECT_OPEN_FILE,
-      base::UTF8ToUTF16("some title"),
+      ui::SelectFileDialog::SELECT_OPEN_FILE, base::UTF8ToUTF16("some title"),
       GURL("filesystem:chrome-extension://abc/Downloads/"),
-      GURL("filesystem:chrome-extension://abc/Downloads/foo.txt"),
-      "foo.txt",
+      GURL("filesystem:chrome-extension://abc/Downloads/foo.txt"), "foo.txt",
       &file_types,
       1,  // The file type index is 1-based.
-      FILE_PATH_LITERAL("txt"));
+      FILE_PATH_LITERAL("txt"),
+      true  // show_android_picker_apps
+  );
   EXPECT_EQ(extensions::kExtensionScheme, url.scheme());
   EXPECT_EQ("hhaomjibdihmijegdhdafkllkbggdgoj", url.host());
   EXPECT_EQ("/main.html", url.path());
@@ -129,6 +118,7 @@ TEST(FileManagerUrlUtilTest,
       "   \"includeAllFiles\": false,\n"
       "   \"selectionURL\": "
       "\"filesystem:chrome-extension://abc/Downloads/foo.txt\",\n"
+      "   \"showAndroidPickerApps\": true,\n"
       "   \"targetName\": \"foo.txt\",\n"
       "   \"title\": \"some title\",\n"
       "   \"type\": \"open-file\",\n"

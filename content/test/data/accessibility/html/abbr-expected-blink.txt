@@ -1,9 +1,10 @@
 rootWebArea
-++paragraph
-++++staticText name='The '
-++++++inlineTextBox name='The '
-++++abbr name='World Health Organization'
-++++++staticText name='WHO'
-++++++++inlineTextBox name='WHO'
-++++staticText name=' was founded in 1948.'
-++++++inlineTextBox name=' was founded in 1948.'
+++genericContainer ignored
+++++paragraph
+++++++staticText name='The '
+++++++++inlineTextBox name='The '
+++++++abbr name='World Health Organization'
+++++++++staticText name='WHO'
+++++++++++inlineTextBox name='WHO'
+++++++staticText name=' was founded in 1948.'
+++++++++inlineTextBox name=' was founded in 1948.'

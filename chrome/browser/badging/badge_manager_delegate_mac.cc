@@ -11,20 +11,16 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/common/mac/app_shim.mojom.h"
 
-namespace {}  // namespace
-
 namespace badging {
 
-BadgeManagerDelegateMac::BadgeManagerDelegateMac(Profile* profile)
-    : BadgeManagerDelegate(profile) {}
+BadgeManagerDelegateMac::BadgeManagerDelegateMac(Profile* profile,
+                                                 BadgeManager* badge_manager)
+    : BadgeManagerDelegate(profile, badge_manager) {}
 
-void BadgeManagerDelegateMac::OnBadgeSet(const std::string& app_id,
-                                         base::Optional<uint64_t> contents) {
-  SetAppBadgeLabel(app_id, badging::GetBadgeString(contents));
-}
-
-void BadgeManagerDelegateMac::OnBadgeCleared(const std::string& app_id) {
-  SetAppBadgeLabel(app_id, "");
+void BadgeManagerDelegateMac::OnAppBadgeUpdated(const web_app::AppId& app_id) {
+  const base::Optional<BadgeManager::BadgeValue>& badge =
+      badge_manager()->GetBadgeValue(app_id);
+  SetAppBadgeLabel(app_id, badge ? badging::GetBadgeString(badge.value()) : "");
 }
 
 void BadgeManagerDelegateMac::SetAppBadgeLabel(const std::string& app_id,
@@ -33,9 +29,9 @@ void BadgeManagerDelegateMac::SetAppBadgeLabel(const std::string& app_id,
   if (!shim_handler)
     return;
 
-  // On OSX all app instances share a dock icon, so we only need to set the
+  // On macOS all app instances share a dock icon, so we only need to set the
   // badge label once.
-  AppShimHost* shim_host = shim_handler->FindHost(profile_, app_id);
+  AppShimHost* shim_host = shim_handler->FindHost(profile(), app_id);
   if (!shim_host)
     return;
 

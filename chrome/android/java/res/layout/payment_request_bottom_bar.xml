@@ -10,8 +10,11 @@
     android:id="@+id/bottom_bar"
     android:layout_height="wrap_content"
     android:layout_width="match_parent"
-    android:padding="@dimen/editor_dialog_section_large_spacing"
-    android:background="@color/modern_primary_color"
+    android:paddingTop="@dimen/payments_request_bottom_bar_vertical_padding"
+    android:paddingBottom="@dimen/payments_request_bottom_bar_vertical_padding"
+    android:paddingStart="@dimen/payments_request_bottom_bar_horizontal_padding"
+    android:paddingEnd="@dimen/payments_request_bottom_bar_horizontal_padding"
+    android:background="@color/payment_request_bg"
     android:visibility="gone" >
 
     <ImageView
@@ -36,14 +39,14 @@
     <org.chromium.ui.widget.ButtonCompat
         android:id="@+id/button_secondary"
         android:layout_width="wrap_content"
-        android:layout_height="36dp"
+        android:layout_height="wrap_content"
         android:text="@string/payments_edit_button"
         style="@style/TextButton" />
 
     <org.chromium.ui.widget.ButtonCompat
         android:id="@+id/button_primary"
         android:layout_width="wrap_content"
-        android:layout_height="36dp"
+        android:layout_height="wrap_content"
         android:text="@string/payments_pay_button"
         style="@style/FilledButton.Flat" />
 </org.chromium.chrome.browser.payments.ui.PaymentRequestBottomBar>

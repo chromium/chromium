@@ -15,7 +15,7 @@ class MenuInsertionDelegateWin {
   virtual int GetInsertionIndex(HMENU native_menu) = 0;
 
  protected:
-  virtual ~MenuInsertionDelegateWin() {}
+  virtual ~MenuInsertionDelegateWin() = default;
 };
 
 }  // namespace views

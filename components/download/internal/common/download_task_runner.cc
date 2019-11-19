@@ -20,16 +20,23 @@ namespace {
 // necessitating the use of a COM single-threaded apartment sequence.
 base::LazyCOMSTATaskRunner g_download_task_runner =
     LAZY_COM_STA_TASK_RUNNER_INITIALIZER(
-        base::TaskTraits(base::MayBlock(), base::TaskPriority::USER_VISIBLE),
+        base::TaskTraits(base::ThreadPool(),
+                         base::MayBlock(),
+                         base::TaskPriority::USER_VISIBLE),
         base::SingleThreadTaskRunnerThreadMode::SHARED);
 #else
 base::LazySequencedTaskRunner g_download_task_runner =
     LAZY_SEQUENCED_TASK_RUNNER_INITIALIZER(
-        base::TaskTraits(base::MayBlock(), base::TaskPriority::USER_VISIBLE));
+        base::TaskTraits(base::ThreadPool(),
+                         base::MayBlock(),
+                         base::TaskPriority::USER_VISIBLE));
 #endif
 
 base::LazyInstance<scoped_refptr<base::SingleThreadTaskRunner>>::
     DestructorAtExit g_io_task_runner = LAZY_INSTANCE_INITIALIZER;
+
+base::LazyInstance<scoped_refptr<base::SequencedTaskRunner>>::DestructorAtExit
+    g_db_task_runner = LAZY_INSTANCE_INITIALIZER;
 
 // Lock to protect |g_io_task_runner|
 base::Lock& GetIOTaskRunnerLock() {
@@ -57,6 +64,16 @@ void SetIOTaskRunner(
 scoped_refptr<base::SingleThreadTaskRunner> GetIOTaskRunner() {
   base::AutoLock auto_lock(GetIOTaskRunnerLock());
   return g_io_task_runner.Get();
+}
+
+void SetDownloadDBTaskRunnerForTesting(
+    const scoped_refptr<base::SequencedTaskRunner>& task_runner) {
+  DCHECK(task_runner);
+  g_db_task_runner.Get() = task_runner;
+}
+
+scoped_refptr<base::SequencedTaskRunner> GetDownloadDBTaskRunnerForTesting() {
+  return g_db_task_runner.Get();
 }
 
 }  // namespace download

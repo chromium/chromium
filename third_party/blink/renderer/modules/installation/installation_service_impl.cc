@@ -7,7 +7,7 @@
 #include <memory>
 #include <utility>
 
-#include "mojo/public/cpp/bindings/strong_binding.h"
+#include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -20,9 +20,11 @@ InstallationServiceImpl::InstallationServiceImpl(LocalFrame& frame)
 // static
 void InstallationServiceImpl::Create(
     LocalFrame* frame,
-    mojom::blink::InstallationServiceRequest request) {
-  mojo::MakeStrongBinding(std::make_unique<InstallationServiceImpl>(*frame),
-                          std::move(request));
+    mojo::PendingReceiver<mojom::blink::InstallationService> receiver) {
+  // See https://bit.ly/2S0zRAS for task types.
+  mojo::MakeSelfOwnedReceiver(std::make_unique<InstallationServiceImpl>(*frame),
+                              std::move(receiver),
+                              frame->GetTaskRunner(TaskType::kMiscPlatformAPI));
 }
 
 void InstallationServiceImpl::OnInstall() {

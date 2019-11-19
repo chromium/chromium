@@ -22,6 +22,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Process;
 import android.support.test.filters.SmallTest;
+import android.support.test.runner.AndroidJUnit4;
 
 import org.json.JSONObject;
 import org.junit.After;
@@ -33,7 +34,6 @@ import org.junit.runner.RunWith;
 import org.chromium.base.FileUtils;
 import org.chromium.base.PathUtils;
 import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.net.CronetTestRule.CronetTestFramework;
 import org.chromium.net.CronetTestRule.OnlyRunNativeCronet;
@@ -58,7 +58,7 @@ import java.util.concurrent.atomic.AtomicReference;
 /**
  * Test CronetEngine.
  */
-@RunWith(BaseJUnit4ClassRunner.class)
+@RunWith(AndroidJUnit4.class)
 @JNINamespace("cronet")
 public class CronetUrlRequestContextTest {
     @Rule

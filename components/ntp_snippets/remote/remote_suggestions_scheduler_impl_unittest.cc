@@ -21,7 +21,6 @@
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
 #include "components/ntp_snippets/features.h"
-#include "components/ntp_snippets/logger.h"
 #include "components/ntp_snippets/ntp_snippets_constants.h"
 #include "components/ntp_snippets/pref_names.h"
 #include "components/ntp_snippets/remote/persistent_scheduler.h"
@@ -31,8 +30,8 @@
 #include "components/ntp_snippets/user_classifier.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
-#include "components/variations/variations_params_manager.h"
 #include "components/web_resource/web_resource_pref_names.h"
+#include "net/base/mock_network_change_notifier.h"
 #include "net/base/network_change_notifier.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -162,11 +161,15 @@ class MockRemoteSuggestionsProvider : public RemoteSuggestionsProvider {
   MOCK_METHOD1(OnSignInStateChanged, void(bool));
 };
 
-class FakeOfflineNetworkChangeNotifier : public net::NetworkChangeNotifier {
+class FakeOfflineNetworkChangeNotifier {
  public:
-  ConnectionType GetCurrentConnectionType() const override {
-    return NetworkChangeNotifier::CONNECTION_NONE;
+  FakeOfflineNetworkChangeNotifier() {
+    notifier_->SetConnectionType(net::NetworkChangeNotifier::CONNECTION_NONE);
   }
+
+ private:
+  std::unique_ptr<net::test::MockNetworkChangeNotifier> notifier_ =
+      net::test::MockNetworkChangeNotifier::Create();
 };
 
 }  // namespace
@@ -178,11 +181,11 @@ class RemoteSuggestionsSchedulerImplTest : public ::testing::Test {
         default_variation_params_{{"scheduler_trigger_types",
                                    "persistent_scheduler_wake_up,ntp_opened,"
                                    "browser_foregrounded,browser_cold_start"}},
-        params_manager_(ntp_snippets::kArticleSuggestionsFeature.name,
-                        default_variation_params_,
-                        {kArticleSuggestionsFeature.name}),
         user_classifier_(/*pref_service=*/nullptr,
                          base::DefaultClock::GetInstance()) {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        ntp_snippets::kArticleSuggestionsFeature, default_variation_params_);
+
     RemoteSuggestionsSchedulerImpl::RegisterProfilePrefs(
         utils_.pref_service()->registry());
     RequestThrottler::RegisterProfilePrefs(utils_.pref_service()->registry());
@@ -204,7 +207,7 @@ class RemoteSuggestionsSchedulerImplTest : public ::testing::Test {
 
     scheduler_ = std::make_unique<RemoteSuggestionsSchedulerImpl>(
         &persistent_scheduler_, &user_classifier_, utils_.pref_service(),
-        &local_state_, &test_clock_, &debug_logger_);
+        &local_state_, &test_clock_);
     scheduler_->SetProvider(provider_.get());
   }
 
@@ -213,10 +216,9 @@ class RemoteSuggestionsSchedulerImplTest : public ::testing::Test {
     std::map<std::string, std::string> params = default_variation_params_;
     params[param_name] = param_value;
 
-    params_manager_.ClearAllVariationParams();
-    params_manager_.SetVariationParamsWithFeatureAssociations(
-        ntp_snippets::kArticleSuggestionsFeature.name, params,
-        {ntp_snippets::kArticleSuggestionsFeature.name});
+    scoped_feature_list_.Reset();
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        ntp_snippets::kArticleSuggestionsFeature, params);
   }
 
   bool IsEulaNotifierAvailable() {
@@ -241,7 +243,7 @@ class RemoteSuggestionsSchedulerImplTest : public ::testing::Test {
 
  protected:
   std::map<std::string, std::string> default_variation_params_;
-  variations::testing::VariationParamsManager params_manager_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 
   void ActivateProviderAndEula() {
     SetEulaAcceptedPref();
@@ -287,7 +289,6 @@ class RemoteSuggestionsSchedulerImplTest : public ::testing::Test {
   base::SimpleTestClock test_clock_;
   std::unique_ptr<MockRemoteSuggestionsProvider> provider_;
   std::unique_ptr<RemoteSuggestionsSchedulerImpl> scheduler_;
-  Logger debug_logger_;
 
   DISALLOW_COPY_AND_ASSIGN(RemoteSuggestionsSchedulerImplTest);
 };

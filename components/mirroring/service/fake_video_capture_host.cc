@@ -12,21 +12,21 @@
 namespace mirroring {
 
 FakeVideoCaptureHost::FakeVideoCaptureHost(
-    media::mojom::VideoCaptureHostRequest request)
-    : binding_(this, std::move(request)) {}
+    mojo::PendingReceiver<media::mojom::VideoCaptureHost> receiver)
+    : receiver_(this, std::move(receiver)) {}
 FakeVideoCaptureHost::~FakeVideoCaptureHost() {}
 
 void FakeVideoCaptureHost::Start(
-    int32_t device_id,
-    int32_t session_id,
+    const base::UnguessableToken& device_id,
+    const base::UnguessableToken& session_id,
     const media::VideoCaptureParams& params,
-    media::mojom::VideoCaptureObserverPtr observer) {
+    mojo::PendingRemote<media::mojom::VideoCaptureObserver> observer) {
   ASSERT_TRUE(observer);
-  observer_ = std::move(observer);
+  observer_.Bind(std::move(observer));
   observer_->OnStateChanged(media::mojom::VideoCaptureState::STARTED);
 }
 
-void FakeVideoCaptureHost::Stop(int32_t device_id) {
+void FakeVideoCaptureHost::Stop(const base::UnguessableToken& device_id) {
   if (!observer_)
     return;
 

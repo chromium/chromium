@@ -27,13 +27,6 @@ namespace safe_browsing {
 // scheme.
 std::string ShortURLForReporting(const GURL& url);
 
-// UMA histogram helper for logging "SB2.NoUserActionResourceLoadingDelay".
-// Logs the total delay caused by SafeBrowsing for a resource load, if the
-// SafeBrowsing interstitial page is not showed. At most one value is reported
-// for each resource load. If SafeBrowsing causes delays at different stages of
-// a load, the sum of all the delays will be reported.
-void LogNoUserActionResourceLoadingDelay(base::TimeDelta time);
-
 // Gets the |ProfileManagementStatus| for the current machine. The method
 // currently works only on Windows and ChromeOS. The |bpc| parameter is used
 // only on ChromeOS, and may be |nullptr|.

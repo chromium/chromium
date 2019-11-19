@@ -17,8 +17,11 @@
   <message name="IDS_GENERIC_USER_AVATAR_LABEL" desc="Label shown for the user that is currently active, when there are multiple user accounts.">
     Current user
   </message>
-  <message name="IDS_INCOGNITO_BUBBLE_ACCESSIBLE_TITLE" desc="Accessible title of the avatar menu, opened in incognito mode.">
-    Incognito
+  <message name="IDS_INCOGNITO_BUBBLE_ACCESSIBLE_TITLE" desc="Accessible title of the avatar menu, opened in incognito mode. The message also shows the number of open incognito windows if they are more than one. [ICU Syntax]">
+      {0, plural,
+        =1 {Incognito}
+        other {# open incognito windows}
+      }
   </message>
   <message name="IDS_AVATAR_BUTTON_INCOGNITO" desc="Short label for the avatar button when the user is in incognito mode and the number of open incognito windows if there are more than one incognito window open. [ICU Syntax]" meaning="This window is browsing in incognito mode and there are more than one incognito windows open. The counter is not shown when there is only one incognito window open.">
     {0, plural,
@@ -81,6 +84,9 @@
   <message name="IDS_PROFILES_SYNC_COMPLETE_TITLE" desc="Title of the profile card when sync is complete.">
     Syncing to
   </message>
+  <message name="IDS_PROFILES_OPEN_SYNC_SETTINGS_BUTTON" desc="Button in the profile menu to open sync settings when sync is on.">
+    Sync is on
+  </message>
   <message name="IDS_PROFILES_DICE_SIGNIN_BUTTON" desc="Button in the profile user menu to sign in and turn on Sync.">
     Turn on sync...
   </message>
@@ -102,6 +108,12 @@
   <message name="IDS_PROFILES_EXIT_GUEST" desc="Button in the avatar menu bubble view for exiting the active guest session.">
     Exit Guest
   </message>
+  <message name="IDS_PROFILES_CLOSE_X_WINDOWS_BUTTON" desc="Button in the profile menu to close all windows of the current profile. This is not used for zero windows.">
+    {0, plural,
+    =1 {Close # window}
+    other {Close # windows}
+    }
+  </message>
   <message name="IDS_PROFILES_SIGNIN_PROMO" desc="Text describing the benefits of signing in.">
     Sign in to get your bookmarks, history, passwords, and other settings on all your devices.
   </message>
@@ -115,11 +127,8 @@
     Addresses and more
   </message>
   <if expr="not use_titlecase">
-    <message name="IDS_PROFILES_DICE_SIGNIN_WITH_ANOTHER_ACCOUNT_BUTTON" desc="Button to sign in and turn on Sync with another web account.">
-      Sync to another account
-    </message>
-    <message name="IDS_PROFILES_DICE_USE_ANOTHER_ACCOUNT_BUTTON" desc="Button to use another account to sign in and turn on Sync.">
-      Use another account
+    <message name="IDS_PROFILES_OTHER_PROFILES_TITLE" desc="Title in the profile menu of the 'other profiles' section.">
+      Other people
     </message>
     <message name="IDS_PROFILES_PROFILE_MANAGE_ACCOUNTS_BUTTON" desc="Button in the avatar menu bubble view used to manage accounts for a profile.">
       Your accounts
@@ -138,11 +147,8 @@
     </message>
   </if>
   <if expr="use_titlecase">
-    <message name="IDS_PROFILES_DICE_SIGNIN_WITH_ANOTHER_ACCOUNT_BUTTON" desc="Button to sign in and turn on Sync with another web account.">
-      Sync to Another Account
-    </message>
-    <message name="IDS_PROFILES_DICE_USE_ANOTHER_ACCOUNT_BUTTON" desc="Button to use another account to sign in and turn on Sync.">
-      Use Another Account
+    <message name="IDS_PROFILES_OTHER_PROFILES_TITLE" desc="Title in the profile menu of the 'other profiles' section.">
+      Other People
     </message>
     <message name="IDS_PROFILES_PROFILE_MANAGE_ACCOUNTS_BUTTON" desc="Button in the avatar menu bubble view used to manage accounts for a profile.">
       Your Accounts
@@ -325,6 +331,93 @@
   <message name="IDS_DEFAULT_AVATAR_LABEL_25" desc="The label for the sun and cloud avatar.">
     Sun and clouds
   </message>
+  <message name="IDS_DEFAULT_AVATAR_LABEL_27" desc="The label for the cat avatar.">
+    Cat
+  </message>
+  <message name="IDS_DEFAULT_AVATAR_LABEL_28" desc="The label for the corgi avatar.">
+    Corgi
+  </message>
+  <message name="IDS_DEFAULT_AVATAR_LABEL_29" desc="The label for the dragon avatar.">
+    Dragon
+  </message>
+  <message name="IDS_DEFAULT_AVATAR_LABEL_30" desc="The label for the elephant avatar.">
+    Elephant
+  </message>
+  <message name="IDS_DEFAULT_AVATAR_LABEL_31" desc="The label for the fox avatar.">
+    Fox
+  </message>
+  <message name="IDS_DEFAULT_AVATAR_LABEL_32" desc="The label for the monkey avatar.">
+    Monkey
+  </message>
+  <message name="IDS_DEFAULT_AVATAR_LABEL_33" desc="The label for the panda avatar.">
+    Panda
+  </message>
+  <message name="IDS_DEFAULT_AVATAR_LABEL_34" desc="The label for the penguin avatar.">
+    Penguin
+  </message>
+  <message name="IDS_DEFAULT_AVATAR_LABEL_35" desc="The label for the butterfly avatar.">
+    Butterfly
+  </message>
+  <message name="IDS_DEFAULT_AVATAR_LABEL_36" desc="The label for the rabbit avatar.">
+    Rabbit
+  </message>
+  <message name="IDS_DEFAULT_AVATAR_LABEL_37" desc="The label for the unicorn avatar.">
+    Unicorn
+  </message>
+  <message name="IDS_DEFAULT_AVATAR_LABEL_38" desc="The label for the basketball avatar.">
+    Basketball
+  </message>
+  <message name="IDS_DEFAULT_AVATAR_LABEL_39" desc="The label for the bike avatar.">
+    Bike
+  </message>
+  <message name="IDS_DEFAULT_AVATAR_LABEL_40" desc="The label for the bird avatar.">
+    Bird
+  </message>
+  <message name="IDS_DEFAULT_AVATAR_LABEL_41" desc="The label for the cheese avatar.">
+    Cheese
+  </message>
+  <message name="IDS_DEFAULT_AVATAR_LABEL_42" desc="The label for the football avatar.">
+    Football
+  </message>
+  <message name="IDS_DEFAULT_AVATAR_LABEL_43" desc="The label for the ramen avatar.">
+    Ramen
+  </message>
+  <message name="IDS_DEFAULT_AVATAR_LABEL_44" desc="The label for the sunglasses avatar.">
+    Sunglasses
+  </message>
+  <message name="IDS_DEFAULT_AVATAR_LABEL_45" desc="The label for the sushi avatar.">
+    Sushi
+  </message>
+  <message name="IDS_DEFAULT_AVATAR_LABEL_46" desc="The label for the tamagotchi avatar.">
+    Tamagotchi
+  </message>
+  <message name="IDS_DEFAULT_AVATAR_LABEL_47" desc="The label for the vinyl avatar.">
+    Vinyl
+  </message>
+  <message name="IDS_DEFAULT_AVATAR_LABEL_48" desc="The label for the avocado avatar.">
+    Avocado
+  </message>
+  <message name="IDS_DEFAULT_AVATAR_LABEL_49" desc="The label for the cappuccino avatar.">
+    Cappuccino
+  </message>
+  <message name="IDS_DEFAULT_AVATAR_LABEL_50" desc="The label for the icecream avatar.">
+    Icecream
+  </message>
+  <message name="IDS_DEFAULT_AVATAR_LABEL_51" desc="The label for the icewater avatar.">
+    Icewater
+  </message>
+  <message name="IDS_DEFAULT_AVATAR_LABEL_52" desc="The label for the melon avatar.">
+    Melon
+  </message>
+  <message name="IDS_DEFAULT_AVATAR_LABEL_53" desc="The label for the onigiri avatar.">
+    Onigiri
+  </message>
+  <message name="IDS_DEFAULT_AVATAR_LABEL_54" desc="The label for the pizza avatar.">
+    Pizza
+  </message>
+  <message name="IDS_DEFAULT_AVATAR_LABEL_55" desc="The label for the sandwich avatar.">
+    Sandwich
+  </message>
 
   <message name="IDS_PROFILES_LOCAL_PROFILE_STATE" desc="This is displayed underneath the profile name for profiles that are not signed in to sync.">
     Not signed in
@@ -378,6 +471,9 @@
     <!-- Create Profile Dialog -->
     <message name="IDS_PROFILES_CREATE_TITLE" desc="Title of the create profile dialog">
       Add person
+    </message>
+    <message name="IDS_PROFILES_CREATE_NAME_PLACEHOLDER" desc="Name placeholder in the input field of the create profile dialog.">
+      Name
     </message>
     <message name="IDS_PROFILES_CREATE_LOCAL_ERROR" desc="Message shown when a local error (for example, a disk error) occurs during profile creation.">
       The new user couldn't be created. Please check your hard drive space and permissions and try again.

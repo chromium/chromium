@@ -15,6 +15,15 @@ namespace data_reduction_proxy {
 
 struct DataReductionProxyTypeInfo;
 
+// Availability status of data reduction QUIC proxy.
+enum QuicProxyStatus {
+  QUIC_PROXY_STATUS_AVAILABLE,
+  QUIC_PROXY_NOT_SUPPORTED,
+  QUIC_PROXY_STATUS_MARKED_AS_BROKEN,
+  QUIC_PROXY_DISABLED_VIA_FIELD_TRIAL,
+  QUIC_PROXY_STATUS_BOUNDARY
+};
+
 // Records a data reduction proxy bypass event as a "BlockType" if
 // |bypass_all| is true and as a "BypassType" otherwise. Records the event as
 // "Primary" if |is_primary| is true and "Fallback" otherwise.
@@ -109,6 +118,11 @@ bool IsProxyBypassedAtTime(const net::ProxyRetryInfoMap& retry_map,
                            const net::ProxyServer& proxy_server,
                            base::TimeTicks t,
                            base::TimeDelta* retry_delay);
+
+// Returns true if the proxy supports QUIC.
+bool IsQuicProxy(const net::ProxyServer& proxy_server);
+
+void RecordQuicProxyStatus(QuicProxyStatus status);
 
 }  // namespace data_reduction_proxy
 

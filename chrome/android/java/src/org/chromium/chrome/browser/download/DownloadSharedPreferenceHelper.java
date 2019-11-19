@@ -6,9 +6,10 @@ package org.chromium.chrome.browser.download;
 
 import android.content.SharedPreferences;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ObserverList;
-import org.chromium.base.VisibleForTesting;
 import org.chromium.components.offline_items_collection.ContentId;
 
 import java.util.ArrayList;

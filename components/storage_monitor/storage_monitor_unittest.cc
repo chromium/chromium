@@ -8,7 +8,7 @@
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/waitable_event.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "components/storage_monitor/mock_removable_storage_observer.h"
 #include "components/storage_monitor/test_storage_monitor.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -24,7 +24,7 @@ void SetLatch(bool* called) {
 namespace storage_monitor {
 
 TEST(StorageMonitorTest, TestInitialize) {
-  base::test::ScopedTaskEnvironment task_environment;
+  base::test::SingleThreadTaskEnvironment task_environment;
   TestStorageMonitor::Destroy();
   TestStorageMonitor monitor;
   EXPECT_FALSE(monitor.init_called());
@@ -39,7 +39,7 @@ TEST(StorageMonitorTest, TestInitialize) {
 
 TEST(StorageMonitorTest, DeviceAttachDetachNotifications) {
   TestStorageMonitor::Destroy();
-  base::test::ScopedTaskEnvironment task_environment;
+  base::test::SingleThreadTaskEnvironment task_environment;
   const std::string kDeviceId1 = "dcim:UUID:FFF0-0001";
   const std::string kDeviceId2 = "dcim:UUID:FFF0-0002";
   MockRemovableStorageObserver observer1;
@@ -82,7 +82,7 @@ TEST(StorageMonitorTest, DeviceAttachDetachNotifications) {
 
 TEST(StorageMonitorTest, GetAllAvailableStoragesEmpty) {
   TestStorageMonitor::Destroy();
-  base::test::ScopedTaskEnvironment task_environment;
+  base::test::SingleThreadTaskEnvironment task_environment;
   TestStorageMonitor monitor;
   std::vector<StorageInfo> devices = monitor.GetAllAvailableStorages();
   EXPECT_EQ(0U, devices.size());
@@ -90,7 +90,7 @@ TEST(StorageMonitorTest, GetAllAvailableStoragesEmpty) {
 
 TEST(StorageMonitorTest, GetAllAvailableStorageAttachDetach) {
   TestStorageMonitor::Destroy();
-  base::test::ScopedTaskEnvironment task_environment;
+  base::test::SingleThreadTaskEnvironment task_environment;
   TestStorageMonitor monitor;
   const std::string kDeviceId1 = "dcim:UUID:FFF0-0042";
   const base::FilePath kDevicePath1(FILE_PATH_LITERAL("/testfoo"));

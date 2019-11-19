@@ -22,8 +22,7 @@ TestIPCMessageSender::TestIPCMessageSender() {}
 TestIPCMessageSender::~TestIPCMessageSender() {}
 void TestIPCMessageSender::SendRequestIPC(
     ScriptContext* context,
-    std::unique_ptr<ExtensionHostMsg_Request_Params> params,
-    binding::RequestThread thread) {
+    std::unique_ptr<ExtensionHostMsg_Request_Params> params) {
   last_params_ = std::move(params);
 }
 

@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/paint/frame_set_painter.h"
 
+#include "third_party/blink/renderer/core/display_lock/display_lock_context.h"
 #include "third_party/blink/renderer/core/html/html_frame_set_element.h"
 #include "third_party/blink/renderer/core/layout/layout_frame_set.h"
 #include "third_party/blink/renderer/core/paint/paint_info.h"
@@ -82,7 +83,7 @@ static bool ShouldPaintBorderAfter(const LayoutFrameSet::GridAxis& axis,
 }
 
 void FrameSetPainter::PaintBorders(const PaintInfo& paint_info,
-                                   const LayoutPoint& paint_offset) {
+                                   const PhysicalOffset& paint_offset) {
   if (DrawingRecorder::UseCachedDrawingIfPossible(
           paint_info.context, layout_frame_set_, paint_info.phase))
     return;
@@ -105,8 +106,8 @@ void FrameSetPainter::PaintBorders(const PaintInfo& paint_info,
       if (ShouldPaintBorderAfter(layout_frame_set_.Columns(), c)) {
         PaintColumnBorder(
             paint_info,
-            PixelSnappedIntRect(LayoutRect(
-                paint_offset.X() + x_pos, paint_offset.Y() + y_pos,
+            PixelSnappedIntRect(PhysicalRect(
+                paint_offset.left + x_pos, paint_offset.top + y_pos,
                 border_thickness, layout_frame_set_.Size().Height() - y_pos)));
         x_pos += border_thickness;
       }
@@ -117,8 +118,8 @@ void FrameSetPainter::PaintBorders(const PaintInfo& paint_info,
     y_pos += layout_frame_set_.Rows().sizes_[r];
     if (ShouldPaintBorderAfter(layout_frame_set_.Rows(), r)) {
       PaintRowBorder(paint_info,
-                     PixelSnappedIntRect(LayoutRect(
-                         paint_offset.X(), paint_offset.Y() + y_pos,
+                     PixelSnappedIntRect(PhysicalRect(
+                         paint_offset.left, paint_offset.top + y_pos,
                          layout_frame_set_.Size().Width(), border_thickness)));
       y_pos += border_thickness;
     }
@@ -126,6 +127,9 @@ void FrameSetPainter::PaintBorders(const PaintInfo& paint_info,
 }
 
 void FrameSetPainter::PaintChildren(const PaintInfo& paint_info) {
+  if (paint_info.DescendantPaintingBlocked())
+    return;
+
   // Paint only those children that fit in the grid.
   // Remaining frames are "hidden".
   // See also LayoutFrameSet::positionFrames.

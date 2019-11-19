@@ -32,12 +32,13 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_EVENTS_ERROR_EVENT_H_
 
 #include <memory>
+
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/bindings/core/v8/source_location.h"
+#include "third_party/blink/renderer/bindings/core/v8/world_safe_v8_reference.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/events/error_event_init.h"
 #include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
-#include "third_party/blink/renderer/platform/bindings/trace_wrapper_v8_reference.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -107,8 +108,7 @@ class ErrorEvent final : public Event {
   String unsanitized_message_;
   String sanitized_message_;
   std::unique_ptr<SourceLocation> location_;
-  TraceWrapperV8Reference<v8::Value> error_;
-
+  WorldSafeV8Reference<v8::Value> error_;
   scoped_refptr<DOMWrapperWorld> world_;
 };
 

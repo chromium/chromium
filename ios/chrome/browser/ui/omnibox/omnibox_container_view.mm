@@ -5,7 +5,9 @@
 #import "ios/chrome/browser/ui/omnibox/omnibox_container_view.h"
 
 #import "ios/chrome/browser/ui/omnibox/omnibox_text_field_ios.h"
+#include "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/ui/util/animation_util.h"
+#import "ios/chrome/browser/ui/util/named_guide.h"
 #include "ios/chrome/browser/ui/util/rtl_geometry.h"
 #include "ios/chrome/browser/ui/util/ui_util.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
@@ -21,11 +23,15 @@
 #endif
 
 namespace {
-const CGFloat kleadingImageViewEdgeOffset = 9;
+// Size of the leading image view.
+const CGFloat kLeadingImageSize = 30;
+// Offset from the leading edge to the image view (used when the image is
+// shown).
+const CGFloat kleadingImageViewEdgeOffset = 7;
 // Offset from the leading edge to the textfield when no image is shown.
 const CGFloat kTextFieldLeadingOffsetNoImage = 16;
 // Space between the leading button and the textfield when a button is shown.
-const CGFloat kTextFieldLeadingOffsetImage = 6;
+const CGFloat kTextFieldLeadingOffsetImage = 14;
 // Space between the clear button and the edge of the omnibox.
 const CGFloat kTextFieldClearButtonTrailingOffset = 4;
 
@@ -94,6 +100,18 @@ const CGFloat kTextFieldClearButtonTrailingOffset = 4;
   return self;
 }
 
+- (void)attachLayoutGuides {
+  [NamedGuide guideWithName:kOmniboxTextFieldGuide view:self].constrainedView =
+      self.textField;
+
+  // The leading image view can be not present, in which case the guide
+  // shouldn't be attached.
+  if (self.leadingImageView.superview) {
+    [NamedGuide guideWithName:kOmniboxLeadingImageGuide view:self]
+        .constrainedView = self.leadingImageView;
+  }
+}
+
 - (void)setLeadingImageHidden:(BOOL)hidden {
   if (hidden) {
     [_leadingImageView removeFromSuperview];
@@ -137,29 +155,45 @@ const CGFloat kTextFieldClearButtonTrailingOffset = 4;
 - (void)createLeadingImageView {
   _leadingImageView = [[UIImageView alloc] init];
   _leadingImageView.translatesAutoresizingMaskIntoConstraints = NO;
-  [_leadingImageView
-      setContentCompressionResistancePriority:UILayoutPriorityRequired
-                                      forAxis:UILayoutConstraintAxisHorizontal];
-  [_leadingImageView
-      setContentCompressionResistancePriority:UILayoutPriorityRequired
-                                      forAxis:UILayoutConstraintAxisVertical];
-  [_leadingImageView
-      setContentHuggingPriority:UILayoutPriorityDefaultLow
-                        forAxis:UILayoutConstraintAxisHorizontal];
-  [_leadingImageView setContentHuggingPriority:UILayoutPriorityRequired
-                                       forAxis:UILayoutConstraintAxisVertical];
+  _leadingImageView.contentMode = UIViewContentModeCenter;
 
-  // Sometimes the image view is not hidden and has no image. Then it doesn't
-  // have an intrinsic size. In this case the omnibox should appear the same as
-  // with hidden image view. Add a placeholder width constraint.
-  CGFloat placeholderSize = kTextFieldLeadingOffsetNoImage -
-                            kleadingImageViewEdgeOffset -
-                            kTextFieldLeadingOffsetImage;
-  NSLayoutConstraint* placeholderWidthConstraint =
-      [_leadingImageView.widthAnchor constraintEqualToConstant:placeholderSize];
-  // The priority must be higher than content hugging.
-  placeholderWidthConstraint.priority = UILayoutPriorityDefaultLow + 1;
-  placeholderWidthConstraint.active = YES;
+  // When the flag is enabled, the image view is always shown. Its width should
+  // also be constant.
+  if (base::FeatureList::IsEnabled(kNewOmniboxPopupLayout)) {
+    [NSLayoutConstraint activateConstraints:@[
+      [_leadingImageView.widthAnchor
+          constraintEqualToConstant:kLeadingImageSize],
+      [_leadingImageView.heightAnchor
+          constraintEqualToAnchor:_leadingImageView.widthAnchor],
+    ]];
+  } else {
+    [_leadingImageView
+        setContentCompressionResistancePriority:UILayoutPriorityRequired
+                                        forAxis:
+                                            UILayoutConstraintAxisHorizontal];
+    [_leadingImageView
+        setContentCompressionResistancePriority:UILayoutPriorityRequired
+                                        forAxis:UILayoutConstraintAxisVertical];
+    [_leadingImageView
+        setContentHuggingPriority:UILayoutPriorityDefaultLow
+                          forAxis:UILayoutConstraintAxisHorizontal];
+    [_leadingImageView
+        setContentHuggingPriority:UILayoutPriorityRequired
+                          forAxis:UILayoutConstraintAxisVertical];
+
+    // Sometimes the image view is not hidden and has no image. Then it doesn't
+    // have an intrinsic size. In this case the omnibox should appear the same
+    // as with hidden image view. Add a placeholder width constraint.
+    CGFloat placeholderSize = kTextFieldLeadingOffsetNoImage -
+                              kleadingImageViewEdgeOffset -
+                              kTextFieldLeadingOffsetImage;
+    NSLayoutConstraint* placeholderWidthConstraint =
+        [_leadingImageView.widthAnchor
+            constraintEqualToConstant:placeholderSize];
+    // The priority must be higher than content hugging.
+    placeholderWidthConstraint.priority = UILayoutPriorityDefaultLow + 1;
+    placeholderWidthConstraint.active = YES;
+  }
 }
 
 @end

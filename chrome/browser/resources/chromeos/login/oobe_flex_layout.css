@@ -53,6 +53,10 @@
   align-items: flex-end;
 }
 
+.layout.stretch {
+  align-items: stretch;
+}
+
 /* alignment in main axis */
 
 .layout.start-justified {

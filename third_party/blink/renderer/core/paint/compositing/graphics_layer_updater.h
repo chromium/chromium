@@ -28,7 +28,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_COMPOSITING_GRAPHICS_LAYER_UPDATER_H_
 
 #include "third_party/blink/renderer/platform/graphics/graphics_layer.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
 
@@ -55,12 +55,30 @@ class GraphicsLayerUpdater {
   static void AssertNeedsToUpdateGraphicsLayerBitsCleared(PaintLayer&);
 #endif
 
- private:
-  class UpdateContext;
+  class UpdateContext {
+   public:
+    UpdateContext();
+    UpdateContext(const UpdateContext& other, const PaintLayer& layer);
+    const PaintLayer* CompositingContainer(const PaintLayer& layer) const;
+    const PaintLayer* CompositingStackingContext() const;
 
+    // Offset of this PaintLayer's LayoutObject relative to the position of its
+    // main GraphicsLayer.
+    IntSize object_offset_delta;
+
+    // The object_offset_delta of the compositing ancestor.
+    IntSize parent_object_offset_delta;
+
+   private:
+    const PaintLayer* compositing_stacking_context_;
+    const PaintLayer* compositing_ancestor_;
+    bool use_slow_path_;
+  };
+
+ private:
   void UpdateRecursive(PaintLayer&,
                        UpdateType,
-                       const UpdateContext&,
+                       UpdateContext&,
                        Vector<PaintLayer*>& layers_needing_paint_invalidation);
 
   bool needs_rebuild_tree_;

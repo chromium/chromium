@@ -37,18 +37,13 @@ cast_source_set("crash") {
   deps = [
     "//base",
     "//chromecast/base",
+    "//chromecast/base:cast_sys_info_util",
     "//chromecast/base:cast_version",
     "//components/crash/core/common",
     "//components/metrics",
     "//components/prefs",
     "//third_party/breakpad:client",
   ]
-
-  if (chromecast_branding == "public") {
-    deps += [ "//chromecast/base:cast_sys_info" ]
-  } else {
-    deps += [ "//chromecast/base:cast_sys_info_shlib" ]
-  }
 }
 
 cast_executable("crash_uploader") {
@@ -60,14 +55,10 @@ cast_executable("crash_uploader") {
     ":crash",
     "//base",
     "//chromecast/base",
-    "//chromecast/base:cast_sys_info",
+    "//chromecast/base:default_create_sys_info",
     "//chromecast/public",
     "//chromecast/system/reboot:reboot_util",
   ]
-
-  if (chromecast_branding != "public") {
-    deps += [ "//chromecast/base:cast_sys_info_shlib" ]
-  }
 }
 
 cast_source_set("test_support") {
@@ -100,7 +91,7 @@ if (is_linux) {
       "//base",
       "//base/test:run_all_unittests",
       "//base/test:test_support",
-      "//chromecast/base:cast_sys_info",
+      "//chromecast/base:dummy_cast_sys_info",
       "//chromecast/base:test_support",
       "//components/metrics",
       "//components/prefs:test_support",

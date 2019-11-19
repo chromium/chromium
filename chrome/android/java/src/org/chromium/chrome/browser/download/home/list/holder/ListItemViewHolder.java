@@ -48,6 +48,8 @@ public abstract class ListItemViewHolder extends ViewHolder {
                 return InProgressVideoViewHolder.create(parent);
             case ListUtils.ViewType.IN_PROGRESS_IMAGE:
                 return InProgressImageViewHolder.create(parent);
+            case ListUtils.ViewType.PAGINATION_HEADER:
+                return PaginationViewHolder.create(parent);
         }
 
         assert false;

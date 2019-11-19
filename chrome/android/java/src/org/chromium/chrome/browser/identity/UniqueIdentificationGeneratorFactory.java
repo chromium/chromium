@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.identity;
 
-import org.chromium.base.VisibleForTesting;
+import androidx.annotation.VisibleForTesting;
 
 import java.util.HashMap;
 import java.util.Map;

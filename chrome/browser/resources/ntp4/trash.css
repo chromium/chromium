@@ -1,0 +1,59 @@
+/* Copyright (c) 2012 The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+.trash {
+  -webkit-appearance: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: inline-block;
+  outline: none;
+  padding: 0;
+  position: relative;
+  width: 30px;
+}
+
+.trash > span {
+  display: inline-block;
+}
+
+.trash > .can,
+.trash > .lid {
+  background: url(./images/trash.png) 0 0 no-repeat;
+  left: 8px;
+  position: absolute;
+  right: 8px;
+  top: 2px;
+}
+
+.trash > .lid {
+  height: 6px;
+  transform-origin: -7% 100%;
+  transition: transform 150ms;
+  width: 14px;
+}
+
+html[dir='rtl'] .trash > .lid {
+  transform-origin: 107% 100%;
+}
+
+.trash:-webkit-any(:focus, :hover, .open) > .lid {
+  transform: rotate(-45deg);
+  transition: transform 250ms;
+}
+
+html[dir='rtl'] .trash:-webkit-any(:focus, :hover, .open) > .lid {
+  transform: rotate(45deg);
+}
+
+.trash > .can {
+  background-position: -1px -4px;
+  height: 12px;
+  /* The margins match the background position offsets. */
+  margin-left: 1px;
+  /* The right margin is one greater due to a shadow on the trash image. */
+  margin-right: 2px;
+  margin-top: 4px;
+  width: 11px;
+}

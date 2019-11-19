@@ -82,6 +82,9 @@ struct BASE_EXPORT PartitionRootBase {
   ALWAYS_INLINE void DecommitSystemPages(void* address, size_t length);
   ALWAYS_INLINE void RecommitSystemPages(void* address, size_t length);
 
+  // Frees memory from this partition, if possible, by decommitting pages.
+  // |flags| is an OR of base::PartitionPurgeFlags.
+  virtual void PurgeMemory(int flags) = 0;
   void DecommitEmptyPages();
 };
 
@@ -104,8 +107,8 @@ ALWAYS_INLINE void* PartitionRootBase::AllocFromBucket(PartitionBucket* bucket,
     // the size metadata.
     DCHECK(page->get_raw_size() == 0);
     internal::PartitionFreelistEntry* new_head =
-        internal::PartitionFreelistEntry::Transform(
-            static_cast<internal::PartitionFreelistEntry*>(ret)->next);
+        internal::EncodedPartitionFreelistEntry::Decode(
+            page->freelist_head->next);
     page->freelist_head = new_head;
     page->num_allocated_slots++;
   } else {

@@ -53,8 +53,9 @@ void FakeOobeConfigurationClient::CheckForOobeConfiguration(
       base::CommandLine::ForCurrentProcess()->GetSwitchValuePath(
           chromeos::switches::kFakeOobeConfiguration);
 
-  base::PostTaskWithTraitsAndReplyWithResult(
-      FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
+  base::PostTaskAndReplyWithResult(
+      FROM_HERE,
+      {base::ThreadPool(), base::TaskPriority::BEST_EFFORT, base::MayBlock()},
       base::BindOnce(&LoadConfigurationFile, path),
       base::BindOnce(&OnConfigurationLoaded, std::move(callback)));
 }

@@ -15,11 +15,6 @@
 #include "components/policy/policy_constants.h"
 #include "components/version_info/version_info.h"
 
-bool ChromeCrashReporterClient::GetCrashMetricsLocation(
-    base::FilePath* metrics_dir) {
-  return base::PathService::Get(chrome::DIR_USER_DATA, metrics_dir);
-}
-
 bool ChromeCrashReporterClient::ReportingIsEnforcedByPolicy(
     bool* breakpad_enabled) {
   base::ScopedCFTypeRef<CFStringRef> key(

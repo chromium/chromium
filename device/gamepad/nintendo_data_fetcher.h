@@ -7,17 +7,18 @@
 
 #include <memory>
 #include <string>
+#include <unordered_map>
 
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "device/gamepad/gamepad_data_fetcher.h"
 #include "device/gamepad/nintendo_controller.h"
 #include "device/gamepad/public/cpp/gamepads.h"
-#include "mojo/public/cpp/bindings/associated_binding.h"
+#include "mojo/public/cpp/bindings/associated_receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "services/device/public/mojom/hid.mojom.h"
 
 namespace device {
-
 // Nintendo controllers are not typical HID gamepads and cannot be easily
 // supported through the platform data fetchers. However, when they are HID
 // devices we can use the HID backend to enumerate and initialize them.
@@ -45,6 +46,8 @@ class DEVICE_GAMEPAD_EXPORT NintendoDataFetcher : public GamepadDataFetcher,
  public:
   using Factory = GamepadDataFetcherFactoryImpl<NintendoDataFetcher,
                                                 GAMEPAD_SOURCE_NINTENDO>;
+  using ControllerMap =
+      std::unordered_map<int, std::unique_ptr<NintendoController>>;
 
   NintendoDataFetcher();
   ~NintendoDataFetcher() override;
@@ -72,6 +75,8 @@ class DEVICE_GAMEPAD_EXPORT NintendoDataFetcher : public GamepadDataFetcher,
       int source_id,
       mojom::GamepadHapticsManager::ResetVibrationActuatorCallback callback,
       scoped_refptr<base::SequencedTaskRunner> callback_runner) override;
+
+  const ControllerMap& GetControllersForTesting() const { return controllers_; }
 
  private:
   // GamepadDataFetcher implementation.
@@ -104,11 +109,11 @@ class DEVICE_GAMEPAD_EXPORT NintendoDataFetcher : public GamepadDataFetcher,
   int next_source_id_ = 0;
 
   // A mapping from source ID to connected Nintendo Switch devices.
-  std::unordered_map<int, std::unique_ptr<NintendoController>> controllers_;
+  ControllerMap controllers_;
 
-  mojom::HidManagerPtr hid_manager_;
-  mojo::AssociatedBinding<mojom::HidManagerClient> binding_;
-  base::WeakPtrFactory<NintendoDataFetcher> weak_factory_;
+  mojo::Remote<mojom::HidManager> hid_manager_;
+  mojo::AssociatedReceiver<mojom::HidManagerClient> receiver_{this};
+  base::WeakPtrFactory<NintendoDataFetcher> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(NintendoDataFetcher);
 };

@@ -36,23 +36,8 @@ namespace webrtcAudioPrivate {
     boolean isDefault;
   };
 
-  callback GenericDoneCallback = void();
   callback GetSinksCallback = void(SinkInfo[] sinkInfo);
   callback SinkIdCallback = void(DOMString sinkId);
-
-  dictionary RequestInfo {
-    // The tab identifier from the chrome.tabs API, if the request is from a
-    // tab.
-    long? tabId;
-    // The guest process id for the requester, if the request is from a
-    // webview.
-    long? guestProcessId;
-  };
-
-  dictionary AudioExperiments {
-    // Enables or disables the new acoustic echo canceller (AEC3) in WebRTC.
-    boolean? enableAec3;
-  };
 
   interface Functions {
     // Retrieves a list of available audio sink devices.
@@ -69,15 +54,6 @@ namespace webrtcAudioPrivate {
     static void getAssociatedSink(DOMString securityOrigin,
                                   DOMString sourceIdInOrigin,
                                   SinkIdCallback cb);
-
-    // Sets the active audio experiments.
-    // |request|: Information about the requesting process.
-    // |securityOrigin|: The origin to restrict the settings to.
-    // |audioExperiments|: The experiments to enable or disable.
-    static void setAudioExperiments(RequestInfo request,
-                                    DOMString securityOrigin,
-                                    AudioExperiments audioExperiments,
-                                    GenericDoneCallback callback);
   };
 
   interface Events {

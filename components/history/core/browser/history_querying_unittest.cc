@@ -13,7 +13,8 @@
 #include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/cancelable_task_tracker.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/bind_test_util.h"
+#include "base/test/task_environment.h"
 #include "components/history/core/browser/history_database_params.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/test/test_history_database.h"
@@ -80,14 +81,15 @@ class HistoryQueryTest : public testing::Test {
   void QueryHistory(const std::string& text_query,
                     const QueryOptions& options,
                     QueryResults* results) {
-    history_->QueryHistory(base::UTF8ToUTF16(text_query),
-                           options,
-                           base::Bind(&HistoryQueryTest::QueryHistoryComplete,
-                                      base::Unretained(this)),
+    base::RunLoop loop;
+    history_->QueryHistory(base::UTF8ToUTF16(text_query), options,
+                           base::BindLambdaForTesting([&](QueryResults r) {
+                             *results = std::move(r);
+                             loop.Quit();
+                           }),
                            &tracker_);
     // Will go until ...Complete calls Quit.
-    base::RunLoop().Run();
-    results->Swap(&last_query_results_);
+    loop.Run();
   }
 
   // Test paging through results, with a fixed number of results per page.
@@ -190,23 +192,13 @@ class HistoryQueryTest : public testing::Test {
     }
   }
 
-  void QueryHistoryComplete(QueryResults* results) {
-    results->Swap(&last_query_results_);
-    // Will return out to QueryHistory.
-    base::RunLoop::QuitCurrentWhenIdleDeprecated();
-  }
-
   base::ScopedTempDir temp_dir_;
 
-  base::test::ScopedTaskEnvironment task_environment_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
 
   base::FilePath history_dir_;
 
   base::CancelableTaskTracker tracker_;
-
-  // The QueryHistoryComplete callback will put the results here so QueryHistory
-  // can return them.
-  QueryResults last_query_results_;
 
   DISALLOW_COPY_AND_ASSIGN(HistoryQueryTest);
 };

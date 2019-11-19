@@ -4,6 +4,7 @@
 
 #include "device/bluetooth/bluetooth_device.h"
 
+#include <array>
 #include <iterator>
 #include <memory>
 #include <string>
@@ -11,7 +12,9 @@
 
 #include "base/memory/ptr_util.h"
 #include "base/stl_util.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -377,38 +380,52 @@ BluetoothRemoteGattService* BluetoothDevice::GetGattService(
 }
 
 // static
-std::string BluetoothDevice::CanonicalizeAddress(const std::string& address) {
-  std::string canonicalized = address;
-  if (address.size() == 12) {
-    // Might be an address in the format "1A2B3C4D5E6F". Add separators.
-    for (size_t i = 2; i < canonicalized.size(); i += 3) {
-      canonicalized.insert(i, ":");
-    }
-  }
+std::string BluetoothDevice::CanonicalizeAddress(base::StringPiece address) {
+  std::array<uint8_t, 6> bytes;
 
-  // Verify that the length matches the canonical format "1A:2B:3C:4D:5E:6F".
-  const size_t kCanonicalAddressLength = 17;
-  if (canonicalized.size() != kCanonicalAddressLength)
+  if (!ParseAddress(address, bytes))
     return std::string();
 
-  const char separator = canonicalized[2];
-  for (size_t i = 0; i < canonicalized.size(); ++i) {
-    bool is_separator = (i + 1) % 3 == 0;
-    if (is_separator) {
-      // All separators in the input |address| should be consistent.
-      if (canonicalized[i] != separator)
-        return std::string();
+  std::string canonicalized;
+  canonicalized.reserve(17);
 
-      canonicalized[i] = ':';
-    } else {
-      if (!base::IsHexDigit(canonicalized[i]))
-        return std::string();
-
-      canonicalized[i] = base::ToUpperASCII(canonicalized[i]);
-    }
+  for (size_t i = 0; i < bytes.size(); ++i) {
+    if (i != 0)
+      canonicalized.push_back(':');
+    base::StringAppendF(&canonicalized, "%02X", bytes[i]);
   }
 
   return canonicalized;
+}
+
+bool BluetoothDevice::ParseAddress(base::StringPiece input,
+                                   base::span<uint8_t> output) {
+  if (output.size() != 6)
+    return false;
+
+  // Try parsing addresses that lack separators, like "1A2B3C4D5E6F".
+  if (input.size() == 12)
+    return base::HexStringToSpan(input, output);
+
+  // Try parsing MAC address with separators like: "00:11:22:33:44:55" or
+  // "00-11-22-33-44-55". Separator can be either '-' or ':', but must use the
+  // same style throughout.
+  if (input.size() == 17) {
+    const char separator = input[2];
+    if (separator != '-' && separator != ':')
+      return false;
+    return (input[2] == separator) && (input[5] == separator) &&
+           (input[8] == separator) && (input[11] == separator) &&
+           (input[14] == separator) &&
+           base::HexStringToSpan(input.substr(0, 2), output.subspan<0, 1>()) &&
+           base::HexStringToSpan(input.substr(3, 2), output.subspan<1, 1>()) &&
+           base::HexStringToSpan(input.substr(6, 2), output.subspan<2, 1>()) &&
+           base::HexStringToSpan(input.substr(9, 2), output.subspan<3, 1>()) &&
+           base::HexStringToSpan(input.substr(12, 2), output.subspan<4, 1>()) &&
+           base::HexStringToSpan(input.substr(15, 2), output.subspan<5, 1>());
+  }
+
+  return false;
 }
 
 std::string BluetoothDevice::GetIdentifier() const { return GetAddress(); }
@@ -464,6 +481,20 @@ BluetoothDevice::GetPrimaryServicesByUUID(const BluetoothUUID& service_uuid) {
   }
   return services;
 }
+
+#if defined(OS_CHROMEOS)
+void BluetoothDevice::SetBatteryPercentage(
+    base::Optional<uint8_t> battery_percentage) {
+  if (battery_percentage)
+    DCHECK_LE(battery_percentage.value(), 100);
+
+  if (battery_percentage_ == battery_percentage)
+    return;
+
+  battery_percentage_ = battery_percentage;
+  GetAdapter()->NotifyDeviceBatteryChanged(this);
+}
+#endif
 
 void BluetoothDevice::DidConnectGatt() {
   for (const auto& callback : create_gatt_connection_success_callbacks_) {

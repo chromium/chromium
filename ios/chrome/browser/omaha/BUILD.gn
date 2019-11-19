@@ -18,14 +18,14 @@ source_set("omaha") {
     "//ios/chrome/browser",
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/browser_state_metrics",
-    "//ios/chrome/browser/ui",
+    "//ios/chrome/browser/ui/util",
     "//ios/chrome/browser/upgrade",
     "//ios/chrome/common",
     "//ios/public/provider/chrome/browser",
     "//ios/public/provider/chrome/browser/omaha",
     "//ios/web",
     "//net",
-    "//third_party/libxml",
+    "//third_party/libxml:xml_writer",
     "//url",
   ]
 }

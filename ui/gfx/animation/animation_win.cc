@@ -6,7 +6,7 @@
 
 #include <windows.h>
 
-#include "base/message_loop/message_loop.h"
+#include "base/win/win_util.h"
 
 namespace gfx {
 
@@ -17,7 +17,7 @@ bool Animation::ShouldRenderRichAnimationImpl() {
   if (::SystemParametersInfo(SPI_GETCLIENTAREAANIMATION, 0, &result, 0)) {
     return !!result;
   }
-  return !::GetSystemMetrics(SM_REMOTESESSION);
+  return !base::win::IsCurrentSessionRemote();
 }
 
 // static

@@ -8,12 +8,12 @@
 #include <stdint.h>
 
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "base/base_export.h"
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "base/win/object_watcher.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/windows_types.h"
@@ -37,24 +37,24 @@ class BASE_EXPORT RegKey {
 
   RegKey();
   explicit RegKey(HKEY key);
-  RegKey(HKEY rootkey, const char16* subkey, REGSAM access);
+  RegKey(HKEY rootkey, const wchar_t* subkey, REGSAM access);
   ~RegKey();
 
-  LONG Create(HKEY rootkey, const char16* subkey, REGSAM access);
+  LONG Create(HKEY rootkey, const wchar_t* subkey, REGSAM access);
 
   LONG CreateWithDisposition(HKEY rootkey,
-                             const char16* subkey,
+                             const wchar_t* subkey,
                              DWORD* disposition,
                              REGSAM access);
 
   // Creates a subkey or open it if it already exists.
-  LONG CreateKey(const char16* name, REGSAM access);
+  LONG CreateKey(const wchar_t* name, REGSAM access);
 
   // Opens an existing reg key.
-  LONG Open(HKEY rootkey, const char16* subkey, REGSAM access);
+  LONG Open(HKEY rootkey, const wchar_t* subkey, REGSAM access);
 
   // Opens an existing reg key, given the relative key name.
-  LONG OpenKey(const char16* relative_key_name, REGSAM access);
+  LONG OpenKey(const wchar_t* relative_key_name, REGSAM access);
 
   // Closes this reg key.
   void Close();
@@ -67,51 +67,51 @@ class BASE_EXPORT RegKey {
 
   // Returns false if this key does not have the specified value, or if an error
   // occurrs while attempting to access it.
-  bool HasValue(const char16* value_name) const;
+  bool HasValue(const wchar_t* value_name) const;
 
   // Returns the number of values for this key, or 0 if the number cannot be
   // determined.
   DWORD GetValueCount() const;
 
   // Determines the nth value's name.
-  LONG GetValueNameAt(int index, string16* name) const;
+  LONG GetValueNameAt(int index, std::wstring* name) const;
 
   // True while the key is valid.
   bool Valid() const { return key_ != NULL; }
 
   // Kills a key and everything that lives below it; please be careful when
   // using it.
-  LONG DeleteKey(const char16* name);
+  LONG DeleteKey(const wchar_t* name);
 
   // Deletes an empty subkey.  If the subkey has subkeys or values then this
   // will fail.
-  LONG DeleteEmptyKey(const char16* name);
+  LONG DeleteEmptyKey(const wchar_t* name);
 
   // Deletes a single value within the key.
-  LONG DeleteValue(const char16* name);
+  LONG DeleteValue(const wchar_t* name);
 
   // Getters:
 
   // Reads a REG_DWORD (uint32_t) into |out_value|. If |name| is null or empty,
   // reads the key's default value, if any.
-  LONG ReadValueDW(const char16* name, DWORD* out_value) const;
+  LONG ReadValueDW(const wchar_t* name, DWORD* out_value) const;
 
   // Reads a REG_QWORD (int64_t) into |out_value|. If |name| is null or empty,
   // reads the key's default value, if any.
-  LONG ReadInt64(const char16* name, int64_t* out_value) const;
+  LONG ReadInt64(const wchar_t* name, int64_t* out_value) const;
 
   // Reads a string into |out_value|. If |name| is null or empty, reads
   // the key's default value, if any.
-  LONG ReadValue(const char16* name, string16* out_value) const;
+  LONG ReadValue(const wchar_t* name, std::wstring* out_value) const;
 
   // Reads a REG_MULTI_SZ registry field into a vector of strings. Clears
   // |values| initially and adds further strings to the list. Returns
   // ERROR_CANTREAD if type is not REG_MULTI_SZ.
-  LONG ReadValues(const char16* name, std::vector<string16>* values);
+  LONG ReadValues(const wchar_t* name, std::vector<std::wstring>* values);
 
   // Reads raw data into |data|. If |name| is null or empty, reads the key's
   // default value, if any.
-  LONG ReadValue(const char16* name,
+  LONG ReadValue(const wchar_t* name,
                  void* data,
                  DWORD* dsize,
                  DWORD* dtype) const;
@@ -119,13 +119,13 @@ class BASE_EXPORT RegKey {
   // Setters:
 
   // Sets an int32_t value.
-  LONG WriteValue(const char16* name, DWORD in_value);
+  LONG WriteValue(const wchar_t* name, DWORD in_value);
 
   // Sets a string value.
-  LONG WriteValue(const char16* name, const char16* in_value);
+  LONG WriteValue(const wchar_t* name, const wchar_t* in_value);
 
   // Sets raw data, including type.
-  LONG WriteValue(const char16* name,
+  LONG WriteValue(const wchar_t* name,
                   const void* data,
                   DWORD dsize,
                   DWORD dtype);
@@ -142,15 +142,8 @@ class BASE_EXPORT RegKey {
  private:
   class Watcher;
 
-  // Calls RegDeleteKeyEx on supported platforms, alternatively falls back to
-  // RegDeleteKey.
-  static LONG RegDeleteKeyExWrapper(HKEY hKey,
-                                    const char16* lpSubKey,
-                                    REGSAM samDesired,
-                                    DWORD Reserved);
-
   // Recursively deletes a key and all of its subkeys.
-  static LONG RegDelRecurse(HKEY root_key, const char16* name, REGSAM access);
+  static LONG RegDelRecurse(HKEY root_key, const wchar_t* name, REGSAM access);
 
   HKEY key_;  // The registry key being iterated.
   REGSAM wow64access_;
@@ -163,7 +156,7 @@ class BASE_EXPORT RegKey {
 class BASE_EXPORT RegistryValueIterator {
  public:
   // Constructs a Registry Value Iterator with default WOW64 access.
-  RegistryValueIterator(HKEY root_key, const char16* folder_key);
+  RegistryValueIterator(HKEY root_key, const wchar_t* folder_key);
 
   // Constructs a Registry Key Iterator with specific WOW64 access, one of
   // KEY_WOW64_32KEY or KEY_WOW64_64KEY, or 0.
@@ -171,7 +164,7 @@ class BASE_EXPORT RegistryValueIterator {
   // previously, or a predefined key (e.g. HKEY_LOCAL_MACHINE).
   // See http://msdn.microsoft.com/en-us/library/windows/desktop/aa384129.aspx.
   RegistryValueIterator(HKEY root_key,
-                        const char16* folder_key,
+                        const wchar_t* folder_key,
                         REGSAM wow64access);
 
   ~RegistryValueIterator();
@@ -184,8 +177,8 @@ class BASE_EXPORT RegistryValueIterator {
   // Advances to the next registry entry.
   void operator++();
 
-  const char16* Name() const { return name_.c_str(); }
-  const char16* Value() const { return value_.data(); }
+  const wchar_t* Name() const { return name_.c_str(); }
+  const wchar_t* Value() const { return value_.data(); }
   // ValueSize() is in bytes.
   DWORD ValueSize() const { return value_size_; }
   DWORD Type() const { return type_; }
@@ -196,7 +189,7 @@ class BASE_EXPORT RegistryValueIterator {
   // Reads in the current values.
   bool Read();
 
-  void Initialize(HKEY root_key, const char16* folder_key, REGSAM wow64access);
+  void Initialize(HKEY root_key, const wchar_t* folder_key, REGSAM wow64access);
 
   // The registry key being iterated.
   HKEY key_;
@@ -205,8 +198,8 @@ class BASE_EXPORT RegistryValueIterator {
   int index_;
 
   // Current values.
-  string16 name_;
-  std::vector<char16> value_;
+  std::wstring name_;
+  std::vector<wchar_t> value_;
   DWORD value_size_;
   DWORD type_;
 
@@ -216,7 +209,7 @@ class BASE_EXPORT RegistryValueIterator {
 class BASE_EXPORT RegistryKeyIterator {
  public:
   // Constructs a Registry Key Iterator with default WOW64 access.
-  RegistryKeyIterator(HKEY root_key, const char16* folder_key);
+  RegistryKeyIterator(HKEY root_key, const wchar_t* folder_key);
 
   // Constructs a Registry Value Iterator with specific WOW64 access, one of
   // KEY_WOW64_32KEY or KEY_WOW64_64KEY, or 0.
@@ -224,7 +217,7 @@ class BASE_EXPORT RegistryKeyIterator {
   // previously, or a predefined key (e.g. HKEY_LOCAL_MACHINE).
   // See http://msdn.microsoft.com/en-us/library/windows/desktop/aa384129.aspx.
   RegistryKeyIterator(HKEY root_key,
-                      const char16* folder_key,
+                      const wchar_t* folder_key,
                       REGSAM wow64access);
 
   ~RegistryKeyIterator();
@@ -237,7 +230,7 @@ class BASE_EXPORT RegistryKeyIterator {
   // Advances to the next entry in the folder.
   void operator++();
 
-  const char16* Name() const { return name_; }
+  const wchar_t* Name() const { return name_; }
 
   int Index() const { return index_; }
 
@@ -245,7 +238,7 @@ class BASE_EXPORT RegistryKeyIterator {
   // Reads in the current values.
   bool Read();
 
-  void Initialize(HKEY root_key, const char16* folder_key, REGSAM wow64access);
+  void Initialize(HKEY root_key, const wchar_t* folder_key, REGSAM wow64access);
 
   // The registry key being iterated.
   HKEY key_;
@@ -253,7 +246,7 @@ class BASE_EXPORT RegistryKeyIterator {
   // Current index of the iteration.
   int index_;
 
-  char16 name_[MAX_PATH];
+  wchar_t name_[MAX_PATH];
 
   DISALLOW_COPY_AND_ASSIGN(RegistryKeyIterator);
 };

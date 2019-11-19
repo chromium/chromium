@@ -1,13 +1,11 @@
 [document web]
 ++[section]
 ++++[link] name='unread '
-++++++[text] name='unread '
+++++++[static] name='unread '
 ++++[link] name='read '
-++++++[image] name=''
-++++++[text] name='read '
+++++++[static] name='read '
 ++++[link] name='read '
-++++++[image] name=''
-++++++[text] name='read '
+++++++[static] name='read '
 ++++[link] name='read'
 ++++++[image]
-++++++[text] name='read'
+++++++[static] name='read'

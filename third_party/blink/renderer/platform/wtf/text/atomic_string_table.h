@@ -6,17 +6,17 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_ATOMIC_STRING_TABLE_H_
 
 #include "base/macros.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_impl.h"
+#include "third_party/blink/renderer/platform/wtf/threading.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_export.h"
-#include "third_party/blink/renderer/platform/wtf/wtf_thread_data.h"
 
 namespace WTF {
 
 // The underlying storage that keeps the map of unique AtomicStrings. This is
-// not thread safe and each WTFThreadData has one.
+// not thread safe and each Threading has one.
 class WTF_EXPORT AtomicStringTable final {
   USING_FAST_MALLOC(AtomicStringTable);
 
@@ -26,7 +26,7 @@ class WTF_EXPORT AtomicStringTable final {
 
   // Gets the shared table for the current thread.
   static AtomicStringTable& Instance() {
-    return WtfThreadData().GetAtomicStringTable();
+    return WtfThreading().GetAtomicStringTable();
   }
 
   // Used by system initialization to preallocate enough storage for all of

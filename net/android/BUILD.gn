@@ -11,7 +11,9 @@ android_library("net_java") {
     "java/src/org/chromium/net/AndroidCertVerifyResult.java",
     "java/src/org/chromium/net/AndroidKeyStore.java",
     "java/src/org/chromium/net/AndroidNetworkLibrary.java",
+    "java/src/org/chromium/net/AndroidTelephonyManagerBridge.java",
     "java/src/org/chromium/net/AndroidTrafficStats.java",
+    "java/src/org/chromium/net/DnsStatus.java",
     "java/src/org/chromium/net/GURLUtils.java",
     "java/src/org/chromium/net/HttpNegotiateAuthenticator.java",
     "java/src/org/chromium/net/HttpNegotiateConstants.java",
@@ -20,6 +22,7 @@ android_library("net_java") {
     "java/src/org/chromium/net/NetStringUtil.java",
     "java/src/org/chromium/net/NetworkChangeNotifier.java",
     "java/src/org/chromium/net/NetworkChangeNotifierAutoDetect.java",
+    "java/src/org/chromium/net/ProxyBroadcastReceiver.java",
     "java/src/org/chromium/net/ProxyChangeListener.java",
     "java/src/org/chromium/net/RegistrationPolicyAlwaysRegister.java",
     "java/src/org/chromium/net/RegistrationPolicyApplicationStatus.java",
@@ -28,9 +31,11 @@ android_library("net_java") {
   deps = [
     ":net_thread_stats_uid_java",
     "//base:base_java",
-    "//third_party/android_deps:android_support_annotations_java",
+    "//base:jni_java",
+    "//third_party/android_deps:androidx_annotation_annotation_java",
     "//third_party/jsr-305:jsr_305_javalib",
   ]
+  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   srcjar_deps = [
     ":net_errors_java",
     ":net_android_java_enums_srcjar",
@@ -52,7 +57,7 @@ android_aidl("embedded_test_server_aidl") {
 android_library("embedded_test_server_aidl_java") {
   testonly = true
   deps = [
-    "//third_party/android_deps:android_support_annotations_java",
+    "//third_party/android_deps:androidx_annotation_annotation_java",
   ]
   srcjar_deps = [ ":embedded_test_server_aidl" ]
 }
@@ -72,7 +77,7 @@ android_library("net_java_test_support") {
     ":net_java",
     "//base:base_java",
     "//base:base_java_test_support",
-    "//third_party/android_deps:android_support_annotations_java",
+    "//third_party/android_deps:androidx_annotation_annotation_java",
     "//third_party/android_support_test_runner:rules_java",
     "//third_party/android_support_test_runner:runner_java",
     "//third_party/junit",
@@ -135,6 +140,11 @@ android_apk("net_test_support_apk") {
 
   # Used as an additional_apk in test scripts.
   never_incremental = true
+
+  # Multidex requires a custom Application class to initialize it. Simpler to
+  # just disable it.
+  enable_multidex = false
+
   deps = [
     ":net_java_test_support",
     ":net_java_test_support_provider",
@@ -162,6 +172,7 @@ android_library("net_javatests") {
     "javatests/src/org/chromium/net/NetErrorsTest.java",
     "javatests/src/org/chromium/net/NetworkChangeNotifierNoNativeTest.java",
     "javatests/src/org/chromium/net/NetworkChangeNotifierTest.java",
+    "javatests/src/org/chromium/net/ProxyChangeListenerTest.java",
     "javatests/src/org/chromium/net/X509UtilTest.java",
   ]
   deps = [
@@ -169,9 +180,11 @@ android_library("net_javatests") {
     ":net_java_test_support",
     "//base:base_java",
     "//base:base_java_test_support",
+    "//third_party/android_sdk:android_test_mock_java",
     "//third_party/android_support_test_runner:rules_java",
     "//third_party/android_support_test_runner:runner_java",
     "//third_party/junit",
+    "//third_party/mockito:mockito_java",
   ]
 }
 

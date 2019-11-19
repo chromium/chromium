@@ -40,11 +40,7 @@ int SyncedWindowDelegateAndroid::GetActiveIndex() const {
   return tab_model_->GetActiveIndex();
 }
 
-bool SyncedWindowDelegateAndroid::IsApp() const {
-  return false;
-}
-
-bool SyncedWindowDelegateAndroid::IsTypeTabbed() const {
+bool SyncedWindowDelegateAndroid::IsTypeNormal() const {
   return is_tabbed_activity_;
 }
 

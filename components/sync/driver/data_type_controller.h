@@ -63,6 +63,20 @@ class DataTypeController : public base::SupportsWeakPtr<DataTypeController> {
     MAX_CONFIGURE_RESULT
   };
 
+  // Returned from RegisterWithBackend.
+  enum RegisterWithBackendResult {
+    // Used by non-USS data types which don't use RegisterWithBackend, and by
+    // USS types when RegisterWithBackend is called on an already-registered
+    // type.
+    // TODO(crbug.com/923287): Update the above comment once there are only USS
+    // data types (or get rid of this entry entirely if possible).
+    REGISTRATION_IGNORED,
+    // Indicates that the initial download for this type is already complete.
+    TYPE_ALREADY_DOWNLOADED,
+    // Indicates that the initial download for this type still needs to be done.
+    TYPE_NOT_YET_DOWNLOADED,
+  };
+
   using StartCallback = base::OnceCallback<
       void(ConfigureResult, const SyncMergeResult&, const SyncMergeResult&)>;
 
@@ -82,10 +96,6 @@ class DataTypeController : public base::SupportsWeakPtr<DataTypeController> {
 
   using TypeMap = std::map<ModelType, std::unique_ptr<DataTypeController>>;
   using TypeVector = std::vector<std::unique_ptr<DataTypeController>>;
-
-  // Returns true if the start result should trigger an unrecoverable error.
-  // Public so unit tests can use this function as well.
-  static bool IsUnrecoverableResult(ConfigureResult result);
 
   // Returns true if the datatype started successfully.
   static bool IsSuccessfulResult(ConfigureResult result);
@@ -114,11 +124,10 @@ class DataTypeController : public base::SupportsWeakPtr<DataTypeController> {
                           const ModelLoadCallback& model_load_callback) = 0;
 
   // Registers with sync backend if needed. This function is called by
-  // DataTypeManager before downloading initial data. Non-blocking types need to
-  // pass activation context containing progress marker to sync backend and use
-  // |set_downloaded| to inform the manager whether their initial sync is done.
-  virtual void RegisterWithBackend(
-      base::OnceCallback<void(bool)> set_downloaded,
+  // DataTypeManager before downloading initial data. For non-blocking (USS)
+  // types, returns whether the initial download for this type is already
+  // complete.
+  virtual RegisterWithBackendResult RegisterWithBackend(
       ModelTypeConfigurer* configurer) = 0;
 
   // Will start a potentially asynchronous operation to perform the
@@ -158,12 +167,15 @@ class DataTypeController : public base::SupportsWeakPtr<DataTypeController> {
   // Unique model type for this data type controller.
   ModelType type() const { return type_; }
 
-  // Whether the DataTypeController is ready to start. This is useful if the
-  // datatype itself must make the decision about whether it should be enabled
-  // at all (and therefore whether the initial download of the sync data for
-  // the type should be performed).
-  // Returns true by default.
-  virtual bool ReadyForStart() const;
+  // Whether preconditions are met for the datatype to start. This is useful for
+  // example if the datatype depends on certain user preferences other than the
+  // ones for sync settings themselves.
+  enum class PreconditionState {
+    kPreconditionsMet,
+    kMustStopAndClearData,
+    kMustStopAndKeepData,
+  };
+  virtual PreconditionState GetPreconditionState() const;
 
   // Returns a ListValue representing all nodes for this data type through
   // |callback| on this thread. Can only be called if state() != NOT_RUNNING.

@@ -5,7 +5,7 @@
 if ((typeof mojo === 'undefined') || !mojo.bindingsLibraryInitialized) {
   loadScript('mojo_bindings');
 }
-loadScript('extensions/common/mojo/keep_alive.mojom');
+loadScript('extensions/common/mojom/keep_alive.mojom');
 
 /**
  * An object that keeps the background page alive until closed.

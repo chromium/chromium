@@ -85,8 +85,8 @@ Element* SlotScopedTraversal::Next(const Element& current) {
   DCHECK_NE(current_index, kNotFound);
   for (++current_index; current_index < assigned_nodes.size();
        ++current_index) {
-    if (assigned_nodes[current_index]->IsElementNode())
-      return ToElement(assigned_nodes[current_index]);
+    if (auto* element = DynamicTo<Element>(assigned_nodes[current_index].Get()))
+      return element;
   }
   return nullptr;
 }
@@ -113,10 +113,10 @@ Element* SlotScopedTraversal::Previous(const Element& current) {
   DCHECK_NE(current_index, kNotFound);
   for (; current_index > 0; --current_index) {
     const Member<Node> assigned_node = assigned_nodes[current_index - 1];
-    if (!assigned_node->IsElementNode())
+    auto* element = DynamicTo<Element>(assigned_node.Get());
+    if (!element)
       continue;
-    return LastWithinOrSelfSkippingChildrenOfShadowHost(
-        *ToElement(assigned_node));
+    return LastWithinOrSelfSkippingChildrenOfShadowHost(*element);
   }
   return nullptr;
 }
@@ -124,8 +124,8 @@ Element* SlotScopedTraversal::Previous(const Element& current) {
 Element* SlotScopedTraversal::FirstAssignedToSlot(HTMLSlotElement& slot) {
   const HeapVector<Member<Node>>& assigned_nodes = slot.AssignedNodes();
   for (auto assigned_node : assigned_nodes) {
-    if (assigned_node->IsElementNode())
-      return ToElement(assigned_node);
+    if (auto* element = DynamicTo<Element>(assigned_node.Get()))
+      return element;
   }
   return nullptr;
 }
@@ -134,10 +134,10 @@ Element* SlotScopedTraversal::LastAssignedToSlot(HTMLSlotElement& slot) {
   const HeapVector<Member<Node>>& assigned_nodes = slot.AssignedNodes();
   for (auto assigned_node = assigned_nodes.rbegin();
        assigned_node != assigned_nodes.rend(); ++assigned_node) {
-    if (!(*assigned_node)->IsElementNode())
+    auto* element = DynamicTo<Element>(assigned_node->Get());
+    if (!element)
       continue;
-    return LastWithinOrSelfSkippingChildrenOfShadowHost(
-        *ToElement(*assigned_node));
+    return LastWithinOrSelfSkippingChildrenOfShadowHost(*element);
   }
   return nullptr;
 }

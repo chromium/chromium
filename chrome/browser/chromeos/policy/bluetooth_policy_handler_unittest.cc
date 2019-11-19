@@ -4,7 +4,7 @@
 
 #include "chrome/browser/chromeos/policy/bluetooth_policy_handler.h"
 
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "chrome/browser/chromeos/settings/scoped_testing_cros_settings.h"
 #include "chrome/browser/chromeos/settings/stub_cros_settings_provider.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
@@ -46,7 +46,7 @@ class BluetoothPolicyHandlerTest : public testing::Test {
         chromeos::kAllowBluetooth, allow_bluetooth);
   }
 
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_;
   scoped_refptr<TestingBluetoothAdapter> adapter_;
   chromeos::ScopedTestingCrosSettings scoped_testing_cros_settings_;
 };

@@ -37,12 +37,8 @@ class ChromeOmniboxClient : public OmniboxClient {
   const GURL& GetURL() const override;
   const base::string16& GetTitle() const override;
   gfx::Image GetFavicon() const override;
-  bool IsInstantNTP() const override;
-  bool IsSearchResultsPage() const override;
   bool IsLoading() const override;
   bool IsPasteAndGoEnabled() const override;
-  bool IsNewTabPage(const GURL& url) const override;
-  bool IsHomePage(const GURL& url) const override;
   bool IsDefaultSearchProviderEnabled() const override;
   const SessionID& GetSessionID() const override;
   bookmarks::BookmarkModel* GetBookmarkModel() override;
@@ -69,6 +65,9 @@ class ChromeOmniboxClient : public OmniboxClient {
       const GURL& page_url,
       FaviconFetchedCallback on_favicon_fetched) override;
   gfx::Image GetFaviconForDefaultSearchProvider(
+      FaviconFetchedCallback on_favicon_fetched) override;
+  gfx::Image GetFaviconForKeywordSearchProvider(
+      const TemplateURL* template_url,
       FaviconFetchedCallback on_favicon_fetched) override;
   void OnCurrentMatchChanged(const AutocompleteMatch& match) override;
   void OnTextChanged(const AutocompleteMatch& current_match,

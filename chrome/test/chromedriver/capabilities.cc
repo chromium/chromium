@@ -23,6 +23,8 @@
 #include "chrome/test/chromedriver/chrome/mobile_device.h"
 #include "chrome/test/chromedriver/chrome/page_load_strategy.h"
 #include "chrome/test/chromedriver/chrome/status.h"
+#include "chrome/test/chromedriver/chrome/version.h"
+#include "chrome/test/chromedriver/constants/version.h"
 #include "chrome/test/chromedriver/logging.h"
 #include "chrome/test/chromedriver/session.h"
 #include "chrome/test/chromedriver/util.h"
@@ -100,7 +102,8 @@ Status IgnoreDeprecatedOption(
     const char* option_name,
     const base::Value& option,
     Capabilities* capabilities) {
-  LOG(WARNING) << "Deprecated chrome option is ignored: " << option_name;
+  LOG(WARNING) << "Deprecated " << base::ToLowerASCII(kBrowserShortName)
+               << " option is ignored: " << option_name;
   return Status(kOk);
 }
 
@@ -225,12 +228,20 @@ Status ParseTimeouts(const base::Value& option, Capabilities* capabilities) {
     return Status(kInvalidArgument, "'timeouts' must be a JSON object");
   for (const auto& it : timeouts->DictItems()) {
     int64_t timeout_ms_int64 = -1;
-    if (!GetOptionalSafeInt(timeouts, it.first, &timeout_ms_int64)
-        || timeout_ms_int64 < 0)
-      return Status(kInvalidArgument, "value must be a non-negative integer");
-    base::TimeDelta timeout =
-                          base::TimeDelta::FromMilliseconds(timeout_ms_int64);
+    base::TimeDelta timeout;
     const std::string& type = it.first;
+    if (it.second.is_none()) {
+      if (type == "script")
+        timeout = base::TimeDelta::Max();
+      else
+        return Status(kInvalidArgument, "timeout can not be null");
+    } else {
+      if (!GetOptionalSafeInt(timeouts, it.first, &timeout_ms_int64) ||
+          timeout_ms_int64 < 0)
+        return Status(kInvalidArgument, "value must be a non-negative integer");
+      else
+        timeout = base::TimeDelta::FromMilliseconds(timeout_ms_int64);
+    }
     if (type == "script") {
       capabilities->script_timeout = timeout;
     } else if (type == "pageLoad") {
@@ -254,6 +265,9 @@ Status ParseSwitches(const base::Value& option,
     std::string arg_string;
     if (!switches_list->GetString(i, &arg_string))
       return Status(kInvalidArgument, "each argument must be a string");
+    base::TrimWhitespaceASCII(arg_string, base::TRIM_ALL, &arg_string);
+    if (arg_string.empty() || arg_string == "--")
+      return Status(kInvalidArgument, "argument is empty");
     capabilities->switches.SetUnparsedSwitch(arg_string);
   }
   return Status(kOk);
@@ -342,7 +356,7 @@ Status ParseProxy(bool w3c_compliant,
       // In practice, library implementations are not always consistent,
       // so we accept both formats regardless of the W3C mode setting.
       if (option_value->is_list()) {
-        const base::Value::ListStorage& list = option_value->GetList();
+        base::span<const base::Value> list = option_value->GetList();
         for (const base::Value& item : list) {
           if (!item.is_string())
             return Status(kInvalidArgument,
@@ -383,13 +397,16 @@ Status ParseExcludeSwitches(const base::Value& option,
       return Status(kInvalidArgument,
                     "each switch to be removed must be a string");
     }
+    if (switch_name.substr(0, 2) == "--")
+      switch_name = switch_name.substr(2);
     capabilities->exclude_switches.insert(switch_name);
   }
   return Status(kOk);
 }
 
-Status ParseUseRemoteBrowser(const base::Value& option,
-                               Capabilities* capabilities) {
+Status ParseNetAddress(NetAddress* to_set,
+                       const base::Value& option,
+                       Capabilities* capabilities) {
   std::string server_addr;
   if (!option.GetAsString(&server_addr))
     return Status(kInvalidArgument, "must be 'host:port'");
@@ -404,7 +421,7 @@ Status ParseUseRemoteBrowser(const base::Value& option,
   if (port <= 0)
     return Status(kInvalidArgument, "port must be > 0");
 
-  capabilities->debugger_address = NetAddress(values[0], port);
+  *to_set = NetAddress(values[0], port);
   return Status(kOk);
 }
 
@@ -547,7 +564,8 @@ Status ParseChromeOptions(
     parser_map["excludeSwitches"] = base::Bind(&ParseExcludeSwitches);
     parser_map["loadAsync"] = base::Bind(&IgnoreDeprecatedOption, "loadAsync");
   } else if (is_remote) {
-    parser_map["debuggerAddress"] = base::Bind(&ParseUseRemoteBrowser);
+    parser_map["debuggerAddress"] =
+        base::Bind(&ParseNetAddress, &capabilities->debugger_address);
   } else {
     parser_map["args"] = base::Bind(&ParseSwitches);
     parser_map["binary"] = base::Bind(&ParseFilePath, &capabilities->binary);
@@ -556,8 +574,6 @@ Status ParseChromeOptions(
     parser_map["extensions"] = base::Bind(&ParseExtensions);
     parser_map["extensionLoadTimeout"] =
         base::Bind(&ParseTimeDelta, &capabilities->extension_load_timeout);
-    parser_map["forceDevToolsScreenshot"] = base::Bind(
-        &ParseBoolean, &capabilities->force_devtools_screenshot);
     parser_map["loadAsync"] = base::Bind(&IgnoreDeprecatedOption, "loadAsync");
     parser_map["localState"] =
         base::Bind(&ParseDict, &capabilities->local_state);
@@ -573,8 +589,11 @@ Status ParseChromeOptions(
   for (base::DictionaryValue::Iterator it(*chrome_options); !it.IsAtEnd();
        it.Advance()) {
     if (parser_map.find(it.key()) == parser_map.end()) {
-      return Status(kInvalidArgument,
-                    "unrecognized chrome option: " + it.key());
+      return Status(
+          kInvalidArgument,
+          base::StringPrintf("unrecognized %s option: %s",
+                             base::ToLowerASCII(kBrowserShortName).c_str(),
+                             it.key().c_str()));
     }
     Status status = parser_map[it.key()].Run(it.value(), capabilities);
     if (status.IsError())
@@ -583,7 +602,34 @@ Status ParseChromeOptions(
   return Status(kOk);
 }
 
+Status ParseSeleniumOptions(
+    const base::Value& capability,
+    Capabilities* capabilities) {
+  const base::DictionaryValue* selenium_options = NULL;
+  if (!capability.GetAsDictionary(&selenium_options))
+    return Status(kInvalidArgument, "must be a dictionary");
+  std::map<std::string, Parser> parser_map;
+  parser_map["loggingPrefs"] = base::Bind(&ParseLoggingPrefs);
+
+  for (base::DictionaryValue::Iterator it(*selenium_options); !it.IsAtEnd();
+       it.Advance()) {
+    if (parser_map.find(it.key()) == parser_map.end())
+      continue;
+    Status status = parser_map[it.key()].Run(it.value(), capabilities);
+    if (status.IsError())
+      return Status(kInvalidArgument, "cannot parse " + it.key(), status);
+  }
+  return Status(kOk);
+}
 }  // namespace
+
+bool GetChromeOptionsDictionary(const base::DictionaryValue& params,
+                                const base::DictionaryValue** out) {
+  if (params.GetDictionary(kChromeDriverOptionsKeyPrefixed, out)) {
+    return true;
+  }
+  return params.GetDictionary(kChromeDriverOptionsKey, out);
+}
 
 Switches::Switches() {}
 
@@ -706,7 +752,6 @@ Capabilities::Capabilities()
       android_use_running_app(false),
       detach(false),
       extension_load_timeout(base::TimeDelta::FromSeconds(10)),
-      force_devtools_screenshot(true),
       network_emulation_enabled(false),
       use_automation_extension(true) {}
 
@@ -748,20 +793,35 @@ Status Capabilities::Parse(const base::DictionaryValue& desired_caps,
       base::BindRepeating(&ParseUnhandledPromptBehavior);
 
   // ChromeDriver specific capabilities.
-  // goog:chromeOptions is the current spec conformance, but chromeOptions is
+  // Vendor-prefixed is the current spec conformance, but unprefixed is
   // still supported in legacy mode.
   if (w3c_compliant ||
-      desired_caps.GetDictionary("goog:chromeOptions", nullptr)) {
-    parser_map["goog:chromeOptions"] = base::BindRepeating(&ParseChromeOptions);
+      desired_caps.GetDictionary(kChromeDriverOptionsKeyPrefixed, nullptr)) {
+    parser_map[kChromeDriverOptionsKeyPrefixed] =
+        base::BindRepeating(&ParseChromeOptions);
   } else {
-    parser_map["chromeOptions"] = base::BindRepeating(&ParseChromeOptions);
+    parser_map[kChromeDriverOptionsKey] =
+        base::BindRepeating(&ParseChromeOptions);
   }
-  parser_map["loggingPrefs"] = base::BindRepeating(&ParseLoggingPrefs);
+  // se:options.loggingPrefs and goog:loggingPrefs is spec-compliant name,
+  // but loggingPrefs is still supported in legacy mode.
+  const std::string prefixedLoggingPrefsKey =
+      base::StringPrintf("%s:loggingPrefs", kChromeDriverCompanyPrefix);
+  if (desired_caps.GetDictionary("se:options.loggingPrefs", nullptr)) {
+    parser_map["se:options"] = base::BindRepeating(&ParseSeleniumOptions);
+  } else if (w3c_compliant ||
+             desired_caps.GetDictionary(prefixedLoggingPrefsKey, nullptr)) {
+    parser_map[prefixedLoggingPrefsKey] =
+        base::BindRepeating(&ParseLoggingPrefs);
+  } else {
+    parser_map["loggingPrefs"] = base::BindRepeating(&ParseLoggingPrefs);
+  }
   // Network emulation requires device mode, which is only enabled when
   // mobile emulation is on.
-  if (desired_caps.GetDictionary("goog:chromeOptions.mobileEmulation",
-                                 nullptr) ||
-      desired_caps.GetDictionary("chromeOptions.mobileEmulation", nullptr)) {
+
+  const base::DictionaryValue* chrome_options = nullptr;
+  if (GetChromeOptionsDictionary(desired_caps, &chrome_options) &&
+      chrome_options->GetDictionary("mobileEmulation", nullptr)) {
     parser_map["networkConnectionEnabled"] =
         base::BindRepeating(&ParseBoolean, &network_emulation_enabled);
   }
@@ -790,9 +850,8 @@ Status Capabilities::Parse(const base::DictionaryValue& desired_caps,
   LoggingPrefs::const_iterator iter = logging_prefs.find(
       WebDriverLog::kPerformanceType);
   if (iter == logging_prefs.end() || iter->second == Log::kOff) {
-    const base::DictionaryValue* chrome_options = NULL;
-    if ((desired_caps.GetDictionary("goog:chromeOptions", &chrome_options) ||
-         desired_caps.GetDictionary("chromeOptions", &chrome_options)) &&
+    const base::DictionaryValue* chrome_options = nullptr;
+    if (GetChromeOptionsDictionary(desired_caps, &chrome_options) &&
         chrome_options->HasKey("perfLoggingPrefs")) {
       return Status(kInvalidArgument,
                     "perfLoggingPrefs specified, "
@@ -803,27 +862,13 @@ Status Capabilities::Parse(const base::DictionaryValue& desired_caps,
       WebDriverLog::kDevToolsType);
   if (dt_events_logging_iter == logging_prefs.end()
       || dt_events_logging_iter->second == Log::kOff) {
-    const base::DictionaryValue* chrome_options = NULL;
-    if ((desired_caps.GetDictionary("goog:chromeOptions", &chrome_options) ||
-         desired_caps.GetDictionary("chromeOptions", &chrome_options)) &&
+    const base::DictionaryValue* chrome_options = nullptr;
+    if (GetChromeOptionsDictionary(desired_caps, &chrome_options) &&
         chrome_options->HasKey("devToolsEventsToLog")) {
       return Status(kInvalidArgument,
                     "devToolsEventsToLog specified, "
                     "but devtools events logging was not enabled");
     }
   }
-  return Status(kOk);
-}
-
-Status Capabilities::CheckSupport() const {
-  // TODO(https://crbug.com/chromedriver/1902): pageLoadStrategy=eager not yet
-  // supported.
-  if (page_load_strategy.length() > 0 &&
-      page_load_strategy != PageLoadStrategy::kNormal &&
-      page_load_strategy != PageLoadStrategy::kNone) {
-    return Status(kInvalidArgument, "'pageLoadStrategy=" + page_load_strategy +
-                                        "' not yet supported");
-  }
-
   return Status(kOk);
 }

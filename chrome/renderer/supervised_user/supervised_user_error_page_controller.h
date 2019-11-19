@@ -54,7 +54,7 @@ class SupervisedUserErrorPageController
   // This weak factory is used to generate weak pointers to the controller that
   // are used for the request permission callback, so messages to no longer
   // existing interstitials are ignored.
-  base::WeakPtrFactory<SupervisedUserErrorPageController> weak_factory_;
+  base::WeakPtrFactory<SupervisedUserErrorPageController> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(SupervisedUserErrorPageController);
 };

@@ -21,6 +21,8 @@ character Qof.  It looks sort of like a latin character "p" but it is outside
 the latin-1 character set which will stress character encoding bugs.
 '''
 
+from __future__ import print_function
+
 from grit import lazy_re
 from grit import tclib
 
@@ -51,9 +53,10 @@ _VOWELS = {
   u'U' : u'\u00dc',  # U diaresis
   u'Y' : u'\u00dd',  # Y acute
 }
+_VOWELS_KEYS = set(_VOWELS.keys())
 
 # Matches vowels and P
-_PSUB_RE = lazy_re.compile("(%s)" % '|'.join(_VOWELS.keys() + ['P']))
+_PSUB_RE = lazy_re.compile("(%s)" % '|'.join(_VOWELS_KEYS | {'P'}))
 
 
 # Pseudotranslations previously created.  This is important for performance
@@ -87,14 +90,14 @@ def PseudoString(str):
   outstr = u''
   ix = 0
   while ix < len(str):
-    if str[ix] not in _VOWELS.keys():
+    if str[ix] not in _VOWELS_KEYS:
       outstr += str[ix]
       ix += 1
     else:
       # We want to treat consecutive vowels as one composite vowel.  This is not
       # always accurate e.g. in composite words but good enough.
       consecutive_vowels = u''
-      while ix < len(str) and str[ix] in _VOWELS.keys():
+      while ix < len(str) and str[ix] in _VOWELS_KEYS:
         consecutive_vowels += str[ix]
         ix += 1
       changed_vowels = MapVowels(consecutive_vowels)

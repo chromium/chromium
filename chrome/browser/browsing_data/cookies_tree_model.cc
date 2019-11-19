@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <functional>
 #include <map>
+#include <numeric>
 #include <utility>
 #include <vector>
 
@@ -228,11 +229,10 @@ CookieTreeNode::DetailedInfo& CookieTreeNode::DetailedInfo::InitSessionStorage(
 }
 
 CookieTreeNode::DetailedInfo& CookieTreeNode::DetailedInfo::InitAppCache(
-    const GURL& origin,
-    const blink::mojom::AppCacheInfo* appcache_info) {
+    const content::StorageUsageInfo* usage_info) {
   Init(TYPE_APPCACHE);
-  this->appcache_info = appcache_info;
-  this->origin = url::Origin::Create(origin);
+  this->usage_info = usage_info;
+  origin = usage_info->origin;
   return *this;
 }
 
@@ -319,11 +319,10 @@ int64_t CookieTreeNode::InclusiveSize() const {
 }
 
 int CookieTreeNode::NumberOfCookies() const {
-  int number_of_cookies = 0;
-  for (int i = 0; i < this->child_count(); ++i) {
-    number_of_cookies += this->GetChild(i)->NumberOfCookies();
-  }
-  return number_of_cookies;
+  return std::accumulate(children().cbegin(), children().cend(), 0,
+                         [](int total, const auto& child) {
+                           return total + child->NumberOfCookies();
+                         });
 }
 
 void CookieTreeNode::AddChildSortedByTitle(
@@ -331,7 +330,8 @@ void CookieTreeNode::AddChildSortedByTitle(
   DCHECK(new_child);
   auto iter = std::lower_bound(children().begin(), children().end(), new_child,
                                NodeTitleComparator());
-  GetModel()->Add(this, std::move(new_child), iter - children().begin());
+  GetModel()->Add(this, std::move(new_child),
+                  size_t{iter - children().begin()});
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -379,32 +379,31 @@ class CookieTreeAppCacheNode : public CookieTreeNode {
   // |appcache_info| should remain valid at least as long as the
   // CookieTreeAppCacheNode is valid.
   explicit CookieTreeAppCacheNode(
-      const url::Origin& origin,
-      std::list<blink::mojom::AppCacheInfo>::iterator appcache_info)
-      : CookieTreeNode(base::UTF8ToUTF16(appcache_info->manifest_url.spec())),
-        origin_(origin),
-        appcache_info_(appcache_info) {}
+      std::list<content::StorageUsageInfo>::iterator usage_info)
+      : CookieTreeNode(base::UTF8ToUTF16(usage_info->origin.Serialize())),
+        usage_info_(usage_info) {}
   ~CookieTreeAppCacheNode() override {}
 
   void DeleteStoredObjects() override {
     LocalDataContainer* container = GetLocalDataContainerForNode(this);
 
     if (container) {
-      DCHECK(container->appcache_helper_.get());
-      container->appcache_helper_->DeleteAppCacheGroup(
-          appcache_info_->manifest_url);
-      container->appcache_info_[origin_].erase(appcache_info_);
+      container->appcache_helper_->DeleteAppCaches(usage_info_->origin);
+      container->appcache_info_list_.erase(usage_info_);
     }
   }
   DetailedInfo GetDetailedInfo() const override {
-    return DetailedInfo().InitAppCache(origin_.GetURL(), &*appcache_info_);
+    return DetailedInfo().InitAppCache(&*usage_info_);
   }
 
-  int64_t InclusiveSize() const override { return appcache_info_->size; }
+  int64_t InclusiveSize() const override {
+    return usage_info_->total_size_bytes;
+  }
 
  private:
-  url::Origin origin_;
-  std::list<blink::mojom::AppCacheInfo>::iterator appcache_info_;
+  // |usage_info_| is expected to remain valid as long as this node is valid.
+  std::list<content::StorageUsageInfo>::iterator usage_info_;
+
   DISALLOW_COPY_AND_ASSIGN(CookieTreeAppCacheNode);
 };
 
@@ -849,8 +848,9 @@ CookieTreeHostNode* CookieTreeRootNode::GetOrCreateHostNode(const GURL& url) {
   }
   // Node doesn't exist, insert the new one into the (ordered) children.
   DCHECK(model_);
-  return static_cast<CookieTreeHostNode*>(model_->Add(
-      this, std::move(host_node), (host_node_iterator - children().begin())));
+  return static_cast<CookieTreeHostNode*>(
+      model_->Add(this, std::move(host_node),
+                  size_t{host_node_iterator - children().begin()}));
 }
 
 CookiesTreeModel* CookieTreeRootNode::GetModel() const {
@@ -894,11 +894,10 @@ class CookieTreeCollectionNode : public CookieTreeNode {
   ~CookieTreeCollectionNode() override {}
 
   int64_t InclusiveSize() const final {
-    int64_t total_size = 0;
-    for (int i = 0; i < this->child_count(); ++i) {
-      total_size += this->GetChild(i)->InclusiveSize();
-    }
-    return total_size;
+    return std::accumulate(children().cbegin(), children().cend(), int64_t{0},
+                           [](int64_t total, const auto& child) {
+                             return total + child->InclusiveSize();
+                           });
   }
 
  private:
@@ -1331,11 +1330,10 @@ bool CookieTreeHostNode::CanCreateContentException() const {
 }
 
 int64_t CookieTreeHostNode::InclusiveSize() const {
-  int64_t total_size = 0;
-  for (int i = 0; i < this->child_count(); ++i) {
-    total_size += this->GetChild(i)->InclusiveSize();
-  }
-  return total_size;
+  return std::accumulate(children().cbegin(), children().cend(), int64_t{0},
+                         [](int64_t total, const auto& child) {
+                           return total + child->InclusiveSize();
+                         });
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1385,11 +1383,11 @@ CookiesTreeModel::~CookiesTreeModel() {
 // static
 int CookiesTreeModel::GetSendForMessageID(const net::CanonicalCookie& cookie) {
   if (cookie.IsSecure()) {
-    if (cookie.SameSite() != net::CookieSameSite::NO_RESTRICTION)
+    if (!cookie.IsEffectivelySameSiteNone())
       return IDS_COOKIES_COOKIE_SENDFOR_SECURE_SAME_SITE;
     return IDS_COOKIES_COOKIE_SENDFOR_SECURE;
   }
-  if (cookie.SameSite() != net::CookieSameSite::NO_RESTRICTION)
+  if (!cookie.IsEffectivelySameSiteNone())
     return IDS_COOKIES_COOKIE_SENDFOR_SAME_SITE;
   return IDS_COOKIES_COOKIE_SENDFOR_ANY;
 }
@@ -1453,7 +1451,7 @@ void CookiesTreeModel::DeleteCookieNode(CookieTreeNode* cookie_node) {
   cookie_node->DeleteStoredObjects();
   CookieTreeNode* parent_node = cookie_node->parent();
   Remove(parent_node, cookie_node);
-  if (parent_node->empty())
+  if (parent_node->children().empty())
     DeleteCookieNode(parent_node);
 }
 
@@ -1585,24 +1583,20 @@ void CookiesTreeModel::PopulateAppCacheInfoWithFilter(
     const base::string16& filter) {
   CookieTreeRootNode* root = static_cast<CookieTreeRootNode*>(GetRoot());
 
-  if (container->appcache_info_.empty())
+  if (container->appcache_info_list_.empty())
     return;
 
   notifier->StartBatchUpdate();
-  for (auto& origin : container->appcache_info_) {
-    base::string16 host_node_name = base::UTF8ToUTF16(origin.first.host());
-    if (filter.empty() ||
-        (host_node_name.find(filter) != base::string16::npos)) {
-      CookieTreeHostNode* host_node =
-          root->GetOrCreateHostNode(origin.first.GetURL());
+  for (auto it = container->appcache_info_list_.begin();
+       it != container->appcache_info_list_.end(); ++it) {
+    const GURL url = it->origin.GetURL();
+    if (filter.empty() || (CookieTreeHostNode::TitleForUrl(url).find(filter) !=
+                           base::string16::npos)) {
+      CookieTreeHostNode* host_node = root->GetOrCreateHostNode(url);
       CookieTreeAppCachesNode* appcaches_node =
           host_node->GetOrCreateAppCachesNode();
-
-      for (auto info = origin.second.begin(); info != origin.second.end();
-           ++info) {
-        appcaches_node->AddAppCacheNode(
-            std::make_unique<CookieTreeAppCacheNode>(origin.first, info));
-      }
+      appcaches_node->AddAppCacheNode(
+          std::make_unique<CookieTreeAppCacheNode>(it));
     }
   }
 }
@@ -1957,19 +1951,17 @@ void CookiesTreeModel::MaybeNotifyBatchesEnded() {
 }
 // static
 std::unique_ptr<CookiesTreeModel> CookiesTreeModel::CreateForProfile(
-    Profile* profile,
-    bool omit_cookies) {
+    Profile* profile) {
   auto* storage_partition =
       content::BrowserContext::GetDefaultStoragePartition(profile);
   auto* file_system_context = storage_partition->GetFileSystemContext();
-  auto* cookie_helper =
-      omit_cookies ? nullptr : new BrowsingDataCookieHelper(storage_partition);
 
   auto container = std::make_unique<LocalDataContainer>(
-      cookie_helper, new BrowsingDataDatabaseHelper(profile),
+      new BrowsingDataCookieHelper(storage_partition),
+      new BrowsingDataDatabaseHelper(profile),
       new BrowsingDataLocalStorageHelper(profile),
       /*session_storage_helper=*/nullptr,
-      new BrowsingDataAppCacheHelper(profile),
+      new BrowsingDataAppCacheHelper(storage_partition->GetAppCacheService()),
       new BrowsingDataIndexedDBHelper(storage_partition->GetIndexedDBContext()),
       BrowsingDataFileSystemHelper::Create(file_system_context),
       BrowsingDataQuotaHelper::Create(profile),

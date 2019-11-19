@@ -18,7 +18,7 @@ int main(int argc, const char** argv) {
   log_filename = log_filename.AppendASCII("ash_shell.log");
   logging::LoggingSettings settings;
   settings.logging_dest = logging::LOG_TO_ALL;
-  settings.log_file = log_filename.value().c_str();
+  settings.log_file_path = log_filename.value().c_str();
   settings.delete_old = logging::DELETE_OLD_LOG_FILE;
   logging::InitLogging(settings);
   logging::SetLogItems(true /* process_id */, true /* thread_id */,

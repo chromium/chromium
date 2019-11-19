@@ -1,0 +1,25 @@
+Tests that fetch exposes cookies for CORS XHRs.
+Request to https://site1.a.test/, type: Document
+Request to https://site2.a.test/, type: Document
+Request to https://site1.a.test/post, type: XHR
+Cookies after cross-origin XHR:
+undefined
+Request to https://site2.a.test/post, type: XHR
+Cookies after same-origin XHR:
+CrossOriginCookie=om-nom-nom-nom; SameOriginCookie=me-want-cookie
+Request to https://site1.a.test/post, type: XHR
+Cookies after cross-origin fetch with {credentials: 'include'}:
+CrossOriginCookie=om-nom-nom-nom
+Request to https://site1.a.test/post, type: XHR
+Cookies after cross-origin fetch with {credentials: 'same-origin'}:
+undefined
+Request to https://site2.a.test/post, type: XHR
+Cookies after same-origin fetch with {credentials: 'same-origin'}:
+CrossOriginCookie=om-nom-nom-nom; SameOriginCookie=me-want-cookie
+Request to https://site2.a.test/post, type: XHR
+Cookies after same-origin fetch with {credentials: 'include', mode: 'no-cors'}:
+CrossOriginCookie=om-nom-nom-nom; SameOriginCookie=me-want-cookie
+Request to https://site1.a.test/post, type: XHR
+Cookies after cross-origin fetch with {credentials: 'include', mode: 'no-cors'}:
+CrossOriginCookie=om-nom-nom-nom
+

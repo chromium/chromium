@@ -8,23 +8,21 @@
 #include "base/bind_helpers.h"
 #include "chrome/browser/chromeos/system/input_device_settings.h"
 #include "content/public/browser/browser_thread.h"
-#include "ui/events/devices/input_device_manager.h"
+#include "ui/events/devices/device_data_manager.h"
 
 using content::BrowserThread;
 
 namespace chromeos {
 namespace system {
 
-PointerDeviceObserver::PointerDeviceObserver()
-    : weak_factory_(this) {
-}
+PointerDeviceObserver::PointerDeviceObserver() {}
 
 PointerDeviceObserver::~PointerDeviceObserver() {
-  ui::InputDeviceManager::GetInstance()->RemoveObserver(this);
+  ui::DeviceDataManager::GetInstance()->RemoveObserver(this);
 }
 
 void PointerDeviceObserver::Init() {
-  ui::InputDeviceManager::GetInstance()->AddObserver(this);
+  ui::DeviceDataManager::GetInstance()->AddObserver(this);
 }
 
 void PointerDeviceObserver::CheckDevices() {

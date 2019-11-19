@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+
+<!--
+Copyright 2019 The Chromium Authors. All rights reserved.
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Bottomsheet Behaviour Test</title>
+
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+      }
+      nav {
+        width: 100%;
+        position: fixed;
+        height: 2em;
+        background-color: lightgreen;
+      }
+      p {
+        height: 5em;
+      }
+      .top {
+        background-color: lightblue;
+      }
+      .bottom {
+        background-color: yellow;
+      }
+      .cast {
+        height: 100px;
+        margin: 20px;
+        border: 2px solid black;
+        border-radius: 15px;
+      }
+      .blank {
+        height: 100em;
+      }
+    </style>
+  </head>
+  <body>
+    <nav>Navbar</nav>
+    <p class="top">Top text hidden</p>
+    <div class="cast"></div>
+    <div class="blank">Blank</div>
+    <p id="bottom" class="bottom">Bottom text</p>
+  </body>
+</html>

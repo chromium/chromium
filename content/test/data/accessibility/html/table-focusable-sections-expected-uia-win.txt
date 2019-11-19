@@ -1,0 +1,17 @@
+document Name='Table example - focusable thead, tbody, tfoot'
+++grid Grid.ColumnCount=2 Grid.RowCount=4 Table.RowOrColumnMajor='RowMajor'
+++++group
+++++++row
+++++++++columnheader Name='Sum' GridItem.Column=0 GridItem.ColumnSpan=1 GridItem.Row=0 GridItem.RowSpan=1
+++++++++columnheader Name='Subtraction' GridItem.Column=1 GridItem.ColumnSpan=1 GridItem.Row=0 GridItem.RowSpan=1
+++++group
+++++++row
+++++++++gridcell Name='10' GridItem.Column=0 GridItem.ColumnSpan=1 GridItem.Row=1 GridItem.RowSpan=1
+++++++++gridcell Name='7' GridItem.Column=1 GridItem.ColumnSpan=1 GridItem.Row=1 GridItem.RowSpan=1
+++++++row
+++++++++gridcell Name='2' GridItem.Column=0 GridItem.ColumnSpan=1 GridItem.Row=2 GridItem.RowSpan=1
+++++++++gridcell Name='4' GridItem.Column=1 GridItem.ColumnSpan=1 GridItem.Row=2 GridItem.RowSpan=1
+++++group
+++++++row
+++++++++gridcell Name='12' GridItem.Column=0 GridItem.ColumnSpan=1 GridItem.Row=3 GridItem.RowSpan=1
+++++++++gridcell Name='3' GridItem.Column=1 GridItem.ColumnSpan=1 GridItem.Row=3 GridItem.RowSpan=1

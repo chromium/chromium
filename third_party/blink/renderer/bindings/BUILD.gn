@@ -1,0 +1,170 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/python.gni")
+import("//third_party/blink/renderer/bindings/scripts/scripts.gni")
+import("//third_party/blink/renderer/build/scripts/scripts.gni")
+import("//third_party/blink/renderer/core/core_idl_files.gni")
+import("//third_party/blink/renderer/modules/modules_idl_files.gni")
+
+action("interfaces_info") {
+  script = "$bindings_scripts_dir/compute_interfaces_info_overall.py"
+
+  inputs = [
+    "$bindings_core_output_dir/interfaces_info_core.pickle",
+    "$bindings_modules_output_dir/interfaces_info_modules.pickle",
+  ]
+  outputs = [
+    "$bindings_output_dir/interfaces_info.pickle",
+  ]
+
+  args = [
+    "--",
+    rebase_path("$bindings_core_output_dir/interfaces_info_core.pickle",
+                root_build_dir),
+    rebase_path("$bindings_modules_output_dir/interfaces_info_modules.pickle",
+                root_build_dir),
+    rebase_path("$bindings_output_dir/interfaces_info.pickle", root_build_dir),
+  ]
+
+  public_deps = [
+    "//third_party/blink/renderer/bindings/core:interfaces_info_core",
+    "//third_party/blink/renderer/bindings/modules:interfaces_info_modules",
+  ]
+}
+
+generate_global_constructors("global_constructors_idls") {
+  sources = core_idl_files + core_idl_with_modules_dependency_files
+  global_objects_file =
+      "$bindings_modules_output_dir/global_objects_modules.pickle"
+  interfaces = modules_core_global_constructors_original_interfaces
+  basenames = modules_core_global_constructors_original_interface_basenames
+  component = "core"
+  output_dir = blink_modules_output_dir
+  deps = [
+    "//third_party/blink/renderer/bindings/modules:modules_global_constructors_idls",
+    "//third_party/blink/renderer/bindings/modules:modules_global_objects",
+  ]
+}
+
+template("collect_idl_files") {
+  action_with_pydeps(target_name) {
+    script = "${bindings_scripts_dir}/collect_idl_files.py"
+
+    inputs = invoker.inputs
+    outputs = [
+      invoker.output,
+    ]
+
+    # List input file names in a temporary file.
+    response_file_contents = rebase_path(inputs, root_build_dir)
+    args = [
+      "--idl-list-file",
+      "{{response_file_name}}",
+      "--component",
+      invoker.component,
+      "--output",
+      rebase_path(invoker.output, root_build_dir),
+    ]
+
+    if (defined(invoker.deps)) {
+      deps = invoker.deps
+    }
+  }
+}
+
+collect_idl_files("web_idl_in_core") {
+  # All IDL files in 'core' component.
+  inputs = core_static_interface_idl_files +
+           core_generated_interface_idl_files + core_all_dependency_idl_files
+
+  # The hack of "constructor attributes" for the old bindings generator is not
+  # necessary for the new one.
+  inputs -= core_global_constructors_generated_idl_files
+
+  # Supplemental IDL definitions to support the migration from the old bindings
+  # generator to the new one.
+  inputs += [ "${bindings_scripts_dir}/web_idl/migration_adapter.idl" ]
+
+  # Additional IDL files to test and demonstrate the new IDL compiler.
+  inputs += [ "${bindings_scripts_dir}/web_idl/demonstration_and_testing.idl" ]
+
+  component = "core"
+  output = "${bindings_output_dir}/web_idl_in_core.pickle"
+  deps = [
+    "//third_party/blink/renderer/core:generated_testing_idls_internal_runtime_flags",
+    "//third_party/blink/renderer/core:generated_testing_idls_settings",
+  ]
+}
+
+collect_idl_files("web_idl_in_modules") {
+  # All IDL files in 'modules' component.
+  inputs = modules_definition_idl_files + modules_static_interface_idl_files +
+           modules_static_dependency_idl_files
+  component = "modules"
+  output = "${bindings_output_dir}/web_idl_in_modules.pickle"
+}
+
+action_with_pydeps("web_idl_database") {
+  script = "${bindings_scripts_dir}/build_web_idl_database.py"
+
+  input_data_files = get_target_outputs(":web_idl_in_core") +
+                     get_target_outputs(":web_idl_in_modules")
+  runtime_enabled_features_file = "../platform/runtime_enabled_features.json5"
+  runtime_enabled_features_test_file =
+      "${bindings_scripts_dir}/web_idl/runtime_enabled_features.json5"
+  inputs = input_data_files + [
+             runtime_enabled_features_file,
+             runtime_enabled_features_test_file,
+           ]
+  output_data_file = "${bindings_output_dir}/web_idl_database.pickle"
+  outputs = [
+    output_data_file,
+  ]
+
+  args = [
+           "--output",
+           rebase_path(output_data_file, root_build_dir),
+           "--runtime_enabled_features",
+           rebase_path(runtime_enabled_features_file, root_build_dir),
+           "--runtime_enabled_features",
+           rebase_path(runtime_enabled_features_test_file, root_build_dir),
+           "--",
+         ] + rebase_path(input_data_files, root_build_dir)
+
+  deps = [
+    ":web_idl_in_core",
+    ":web_idl_in_modules",
+  ]
+}
+
+action_with_pydeps("generate_bindings_example") {
+  script = "${bindings_scripts_dir}/generate_bindings.py"
+
+  web_idl_database_outputs = get_target_outputs(":web_idl_database")
+  web_idl_database = web_idl_database_outputs[0]
+
+  inputs = [
+    web_idl_database,
+  ]
+  outputs = [
+    "${bindings_output_dir}/core/v8/v8_example.cc",
+    "${bindings_output_dir}/core/v8/example_dictionary.cc",
+  ]
+
+  args = [
+    "example",
+    "dictionary",
+    "--web_idl_database",
+    rebase_path(web_idl_database, root_build_dir),
+    "--output_dir_core",
+    rebase_path("${bindings_output_dir}/core/v8/", root_build_dir),
+    "--output_dir_modules",
+    rebase_path("${bindings_output_dir}/modules/v8/", root_build_dir),
+  ]
+
+  deps = [
+    ":web_idl_database",
+  ]
+}

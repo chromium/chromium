@@ -1,0 +1,6 @@
+Performance panel loaded.
+Loading a performance model.
+Running aXe on the event log pane.
+aXe violations: []
+
+

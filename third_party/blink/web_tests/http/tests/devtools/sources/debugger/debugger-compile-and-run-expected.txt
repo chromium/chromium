@@ -21,7 +21,7 @@ exceptionDetails:
 Running: testCompileError
 Compiling script
 exceptionDetails:
-   Uncaught SyntaxError: Unexpected token }
+   Uncaught SyntaxError: Unexpected token '}'
    line: 0, column: 0
    no stack trace attached to exceptionDetails
 

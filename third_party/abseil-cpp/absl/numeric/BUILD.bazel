@@ -4,7 +4,7 @@
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
-#      http://www.apache.org/licenses/LICENSE-2.0
+#      https://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,6 +15,7 @@
 load(
     "//absl:copts/configure_copts.bzl",
     "ABSL_DEFAULT_COPTS",
+    "ABSL_DEFAULT_LINKOPTS",
     "ABSL_TEST_COPTS",
 )
 
@@ -31,6 +32,7 @@ cc_library(
     ],
     hdrs = ["int128.h"],
     copts = ABSL_DEFAULT_COPTS,
+    linkopts = ABSL_DEFAULT_LINKOPTS,
     deps = [
         "//absl/base:config",
         "//absl/base:core_headers",
@@ -45,6 +47,7 @@ cc_test(
         "int128_test.cc",
     ],
     copts = ABSL_TEST_COPTS,
+    linkopts = ABSL_DEFAULT_LINKOPTS,
     deps = [
         ":int128",
         "//absl/base",
@@ -59,6 +62,7 @@ cc_test(
     name = "int128_benchmark",
     srcs = ["int128_benchmark.cc"],
     copts = ABSL_TEST_COPTS,
+    linkopts = ABSL_DEFAULT_LINKOPTS,
     tags = ["benchmark"],
     deps = [
         ":int128",

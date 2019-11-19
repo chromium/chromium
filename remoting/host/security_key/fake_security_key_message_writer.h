@@ -50,7 +50,7 @@ class FakeSecurityKeyMessageWriter : public SecurityKeyMessageWriter {
   // Signaled whenever a write is requested.
   base::Closure write_callback_;
 
-  base::WeakPtrFactory<FakeSecurityKeyMessageWriter> weak_factory_;
+  base::WeakPtrFactory<FakeSecurityKeyMessageWriter> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(FakeSecurityKeyMessageWriter);
 };

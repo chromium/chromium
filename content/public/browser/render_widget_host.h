@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "build/build_config.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/native_web_keyboard_event.h"
 #include "content/public/common/drop_data.h"
@@ -35,6 +36,10 @@ class Point;
 
 namespace ui {
 class LatencyInfo;
+}
+
+namespace viz {
+class FrameSinkId;
 }
 
 namespace content {
@@ -124,6 +129,12 @@ class CONTENT_EXPORT RenderWidgetHost : public IPC::Sender {
 
   ~RenderWidgetHost() override {}
 
+  // Returns the viz::FrameSinkId that this object uses to put things on screen.
+  // This value is constant throughout the lifetime of this object. Note that
+  // until a RenderWidgetHostView is created, initialized, and assigned to this
+  // object, viz may not be aware of this FrameSinkId.
+  virtual const viz::FrameSinkId& GetFrameSinkId() = 0;
+
   // Update the text direction of the focused input element and notify it to a
   // renderer process.
   // These functions have two usage scenarios: changing the text direction
@@ -188,21 +199,18 @@ class CONTENT_EXPORT RenderWidgetHost : public IPC::Sender {
   virtual void ForwardGestureEvent(
       const blink::WebGestureEvent& gesture_event) = 0;
 
-  virtual RenderProcessHost* GetProcess() const = 0;
+  virtual RenderProcessHost* GetProcess() = 0;
 
-  virtual int GetRoutingID() const = 0;
+  virtual int GetRoutingID() = 0;
 
   // Gets the View of this RenderWidgetHost. Can be nullptr, e.g. if the
   // RenderWidget is being destroyed or the render process crashed. You should
   // never cache this pointer since it can become nullptr if the renderer
   // crashes, instead you should always ask for it using the accessor.
-  virtual RenderWidgetHostView* GetView() const = 0;
-
-  // Returns true if the renderer is loading, false if not.
-  virtual bool IsLoading() const = 0;
+  virtual RenderWidgetHostView* GetView() = 0;
 
   // Returns true if the renderer is considered unresponsive.
-  virtual bool IsCurrentlyUnresponsive() const = 0;
+  virtual bool IsCurrentlyUnresponsive() = 0;
 
   // Called to propagate updated visual properties to the renderer. Returns
   // whether the renderer has been informed of updated properties.
@@ -233,11 +241,32 @@ class CONTENT_EXPORT RenderWidgetHost : public IPC::Sender {
     virtual void OnInputEventAck(InputEventAckSource source,
                                  InputEventAckState state,
                                  const blink::WebInputEvent&) {}
+
+#if defined(OS_ANDROID)
+    // Not all key events are triggered through InputEvent on Android.
+    // InputEvents are only triggered when user typed in through number bar on
+    // Android keyboard. This function is triggered when text is committed in
+    // input form.
+    virtual void OnImeTextCommittedEvent(const base::string16& text_str) {}
+    // This function is triggered when composing text is updated. Note that
+    // text_str contains all text that is currently under composition rather
+    // than updated text only.
+    virtual void OnImeSetComposingTextEvent(const base::string16& text_str) {}
+    // This function is triggered when composing text is filled into the input
+    // form.
+    virtual void OnImeFinishComposingTextEvent() {}
+#endif
   };
 
   // Add/remove an input event observer.
   virtual void AddInputEventObserver(InputEventObserver* observer) = 0;
   virtual void RemoveInputEventObserver(InputEventObserver* observer) = 0;
+
+#if defined(OS_ANDROID)
+  // Add/remove an Ime input event observer.
+  virtual void AddImeInputEventObserver(InputEventObserver* observer) = 0;
+  virtual void RemoveImeInputEventObserver(InputEventObserver* observer) = 0;
+#endif
 
   // Add and remove observers for widget host events. The order in which
   // notifications are sent to observers is undefined. Observers must be sure to

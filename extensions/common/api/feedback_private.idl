@@ -25,10 +25,6 @@ namespace feedbackPrivate {
     // page is disabled for this flow.
     login,
 
-    // Flow where a prompt to download the Chrome Cleanup Tool is displayed
-    // prior to showing the feedback form.
-    showSrtPrompt,
-
     // Flow when the feedback is requested from the sad tab ("Aw, Snap!") page
     // when the renderer crashes.
     sadTabCrash,
@@ -73,7 +69,6 @@ namespace feedbackPrivate {
     SystemInformation[]? systemInformation;
 
     // True if we have permission to add histograms to this feedback report.
-    // Deprecated and will be ignored.
     boolean? sendHistograms;
 
     // Optional feedback UI flow. Default is the regular user flow.
@@ -96,26 +91,16 @@ namespace feedbackPrivate {
     // Whether or not triggered from Assistant.
     boolean? fromAssistant;
 
+    // Whether or not to include bluetooth logs.
+    boolean? includeBluetoothLogs;
   };
 
   // Status of the sending of a feedback report.
   enum Status {success, delayed};
 
   // The type of the landing page shown to the user when the feedback report is
-  // successfully sent.
-  enum LandingPageType {normal, techstop};
-
-  // Result of presenting the user with a prompt to download SRT.
-  enum SrtPromptResult {
-    // User clicked the "Learn More" button.
-    accepted,
-
-    // User declined the prompt and proceeded to the feedback page.
-    declined,
-
-    // User closed the window altogether.
-    closed
-  };
+  // successfully sent, if one should be shown.
+  enum LandingPageType {normal, techstop, noLandingPage};
 
   // Allowed log sources on Chrome OS.
   enum LogSource {
@@ -217,10 +202,6 @@ namespace feedbackPrivate {
     // translated string to use in the feedback app UI.
     static void getStrings(FeedbackFlow flow, GetStringsCallback callback);
 
-    // Logs whether the user accepted a prompt to try the Software Removal
-    // Tool.
-    static void logSrtPromptResult(SrtPromptResult result);
-
     // Reads from a log source indicated by <code>source</code>.
     // <p>If <code>incremental</code> is false:
     // <ul>
@@ -248,6 +229,11 @@ namespace feedbackPrivate {
     // </ul>
     static void readLogSource(ReadLogSourceParams params,
                               ReadLogSourceCallback callback);
+
+    // Invoked when the extension is complete during sending feedback from the
+    // login page. This is then used to know we can unload the feedback
+    // extension from the login profile.
+    static void loginFeedbackComplete();
   };
 
   interface Events {

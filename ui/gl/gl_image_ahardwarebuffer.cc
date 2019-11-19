@@ -8,31 +8,10 @@
 #include "base/android/scoped_hardware_buffer_fence_sync.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_fence_android_native_fence_sync.h"
+#include "ui/gl/gl_utils.h"
 
 namespace gl {
 namespace {
-
-class ScopedHardwareBufferFenceSyncImpl
-    : public base::android::ScopedHardwareBufferFenceSync {
- public:
-  ScopedHardwareBufferFenceSyncImpl(
-      base::android::ScopedHardwareBufferHandle handle,
-      base::ScopedFD fence_fd)
-      : ScopedHardwareBufferFenceSync(std::move(handle), std::move(fence_fd)) {}
-  ~ScopedHardwareBufferFenceSyncImpl() override = default;
-
-  void SetReadFence(base::ScopedFD fence_fd) override {
-    // Insert a service wait for this fence to ensure any resource reuse is
-    // after it is signaled.
-    gfx::GpuFenceHandle handle;
-    handle.type = gfx::GpuFenceHandleType::kAndroidNativeFenceSync;
-    handle.native_fd =
-        base::FileDescriptor(fence_fd.release(), /*auto_close=*/true);
-    gfx::GpuFence gpu_fence(handle);
-    auto gl_fence = GLFence::CreateFromGpuFence(gpu_fence);
-    gl_fence->ServerWait();
-  }
-};
 
 uint32_t GetBufferFormat(const AHardwareBuffer* buffer) {
   AHardwareBuffer_Desc desc = {};
@@ -56,7 +35,54 @@ unsigned int GLInternalFormat(uint32_t buffer_format) {
   }
 }
 
+unsigned int GLDataType(uint32_t buffer_format) {
+  switch (buffer_format) {
+    case AHARDWAREBUFFER_FORMAT_R8G8B8A8_UNORM:
+    case AHARDWAREBUFFER_FORMAT_R8G8B8X8_UNORM:
+    case AHARDWAREBUFFER_FORMAT_R8G8B8_UNORM:
+      return GL_UNSIGNED_BYTE;
+    case AHARDWAREBUFFER_FORMAT_R16G16B16A16_FLOAT:
+      return GL_HALF_FLOAT_OES;
+    case AHARDWAREBUFFER_FORMAT_R10G10B10A2_UNORM:
+      return GL_UNSIGNED_INT_2_10_10_10_REV;
+    case AHARDWAREBUFFER_FORMAT_R5G6B5_UNORM:
+      return GL_UNSIGNED_SHORT_5_6_5;
+    default:
+      // For all other buffer formats, use GL_UNSIGNED_BYTE as type.
+      return GL_UNSIGNED_BYTE;
+  }
+}
+
 }  // namespace
+
+class GLImageAHardwareBuffer::ScopedHardwareBufferFenceSyncImpl
+    : public base::android::ScopedHardwareBufferFenceSync {
+ public:
+  ScopedHardwareBufferFenceSyncImpl(
+      scoped_refptr<GLImageAHardwareBuffer> image,
+      base::android::ScopedHardwareBufferHandle handle)
+      : ScopedHardwareBufferFenceSync(std::move(handle), base::ScopedFD()),
+        image_(std::move(image)) {}
+  ~ScopedHardwareBufferFenceSyncImpl() override = default;
+
+  void SetReadFence(base::ScopedFD fence_fd, bool has_context) override {
+    DCHECK(fence_fd.is_valid());
+
+    if (!has_context)
+      return;
+
+    gfx::GpuFenceHandle handle;
+    handle.type = gfx::GpuFenceHandleType::kAndroidNativeFenceSync;
+    handle.native_fd =
+        base::FileDescriptor(fence_fd.release(), /*auto_close=*/true);
+    gfx::GpuFence gpu_fence(handle);
+    auto gl_fence = GLFence::CreateFromGpuFence(gpu_fence);
+    gl_fence->ServerWait();
+  }
+
+ private:
+  scoped_refptr<GLImageAHardwareBuffer> image_;
+};
 
 GLImageAHardwareBuffer::GLImageAHardwareBuffer(const gfx::Size& size)
     : GLImageEGL(size) {}
@@ -68,6 +94,7 @@ bool GLImageAHardwareBuffer::Initialize(AHardwareBuffer* buffer,
   handle_ = base::android::ScopedHardwareBufferHandle::Create(buffer);
   uint32_t buffer_format = GetBufferFormat(buffer);
   internal_format_ = GLInternalFormat(buffer_format);
+  data_type_ = GLDataType(buffer_format);
   EGLint attribs[] = {EGL_IMAGE_PRESERVED_KHR, preserved ? EGL_TRUE : EGL_FALSE,
                       EGL_NONE};
   EGLClientBuffer client_buffer = eglGetNativeClientBufferANDROID(buffer);
@@ -77,6 +104,14 @@ bool GLImageAHardwareBuffer::Initialize(AHardwareBuffer* buffer,
 
 unsigned GLImageAHardwareBuffer::GetInternalFormat() {
   return internal_format_;
+}
+
+unsigned GLImageAHardwareBuffer::GetDataType() {
+  return data_type_;
+}
+
+bool GLImageAHardwareBuffer::BindTexImage(unsigned target) {
+  return GLImageEGL::BindTexImage(target);
 }
 
 bool GLImageAHardwareBuffer::CopyTexImage(unsigned target) {
@@ -110,8 +145,7 @@ void GLImageAHardwareBuffer::OnMemoryDump(
 std::unique_ptr<base::android::ScopedHardwareBufferFenceSync>
 GLImageAHardwareBuffer::GetAHardwareBuffer() {
   return std::make_unique<ScopedHardwareBufferFenceSyncImpl>(
-      base::android::ScopedHardwareBufferHandle::Create(handle_.get()),
-      base::ScopedFD());
+      this, base::android::ScopedHardwareBufferHandle::Create(handle_.get()));
 }
 
 }  // namespace gl

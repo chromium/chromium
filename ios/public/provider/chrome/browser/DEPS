@@ -2,7 +2,6 @@ include_rules = [
   "+components/autofill/core/browser",
   "+components/favicon_base",
   "+components/metrics",
-  "+components/signin/ios/browser",
   "+components/sync_sessions",
   "+google_apis/gaia",
   "+ios/web/public",

@@ -6,18 +6,19 @@
 
 namespace tab_ranker {
 
-WindowFeatures::WindowFeatures(SessionID window_id,
-                               metrics::WindowMetricsEvent::Type type)
-    : window_id(window_id), type(type) {}
-
-WindowFeatures::WindowFeatures(const WindowFeatures& other) = default;
-
-WindowFeatures::~WindowFeatures() = default;
+WindowFeatures::WindowFeatures(
+    metrics::WindowMetricsEvent::Type type,
+    metrics::WindowMetricsEvent::ShowState show_state,
+    bool is_active,
+    int tab_count)
+    : type(type),
+      show_state(show_state),
+      is_active(is_active),
+      tab_count(tab_count) {}
 
 bool WindowFeatures::operator==(const WindowFeatures& other) const {
-  return window_id == other.window_id && type == other.type &&
-         show_state == other.show_state && is_active == other.is_active &&
-         tab_count == other.tab_count;
+  return type == other.type && show_state == other.show_state &&
+         is_active == other.is_active && tab_count == other.tab_count;
 }
 
 bool WindowFeatures::operator!=(const WindowFeatures& other) const {

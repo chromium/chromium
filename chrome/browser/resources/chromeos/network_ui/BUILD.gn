@@ -12,10 +12,13 @@ js_type_check("closure_compile") {
 
 js_library("network_ui") {
   deps = [
-    "//ui/webui/resources/cr_elements/chromeos/network:cr_network_icon",
-    "//ui/webui/resources/cr_elements/chromeos/network:cr_onc_types",
+    "//chromeos/services/network_config/public/mojom:mojom_js_library_for_compile",
+    "//ui/webui/resources/cr_components/chromeos/network:mojo_interface_provider",
+    "//ui/webui/resources/cr_components/chromeos/network:network_icon",
+    "//ui/webui/resources/cr_elements/chromeos/network:cr_onc_strings",
     "//ui/webui/resources/js:load_time_data",
     "//ui/webui/resources/js:util",
+    "//ui/webui/resources/js/chromeos:onc_mojo",
   ]
   externs_list = [ "$externs_path/networking_private.js" ]
 }

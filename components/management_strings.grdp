@@ -12,55 +12,73 @@
 
 <grit-part>
   <!-- Title of the page -->
-  <if expr="chromeos">
-    <message name="IDS_MANAGEMENT_TITLE_MANAGED" desc="Title of chrome://management page, shows when device is managed by unknown organization">
+  <message name="IDS_MANAGEMENT_TITLE" desc="Title of management page.">
+    Settings - Management
+  </message>
+  <message name="IDS_MANAGEMENT_TOOLBAR_TITLE" desc="Title of the toolbar in the management page.">
+    Settings
+  </message>
+
+  <!-- Subtitles of the Chrome OS version of the management page -->
+ <if expr="chromeos">
+    <message name="IDS_MANAGEMENT_SUBTITLE_MANAGED" desc="Title of chrome://management page, shows when device is managed by unknown organization">
       Your <ph name="DEVICE_NAME">$1<ex>Chromebook</ex></ph> is managed
     </message>
-    <message name="IDS_MANAGEMENT_TITLE_BY" desc="Title of chrome://management page, shows when device managed by known organization">
-      <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> managed by <ph name="ENROLLMENT_DOMAIN">$2<ex>example.com</ex></ph>
+    <message name="IDS_MANAGEMENT_SUBTITLE_MANAGED_BY" desc="Title of chrome://management page, shows when device managed by known organization">
+      Your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> is managed by <ph name="ENROLLMENT_DOMAIN">$2<ex>example.com</ex></ph>
     </message>
-    <message name="IDS_MANAGEMENT_NOT_MANAGED_TITLE" desc="Message indicating that the device is not managed">
+    <message name="IDS_MANAGEMENT_NOT_MANAGED_SUBTITLE" desc="Message indicating that the device is not managed">
       Your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> is not managed
     </message>
   </if>
+
+  <!-- Subtitles of the browser version of the management page -->
   <if expr="not chromeos">
-    <message name="IDS_MANAGEMENT_TITLE" desc="Title of chrome://management page, which shows the administrator's capabilities in a managed environment">
+      <message name="IDS_MANAGEMENT_SUBTITLE" desc="Title of chrome://management page, which shows the administrator's capabilities in a managed environment">
       Your browser is managed
     </message>
-    <message name="IDS_MANAGEMENT_TITLE_BY" desc="Title of chrome://management page, which shows the administrator's capabilities in a managed environment">
+    <message name="IDS_MANAGEMENT_SUBTITLE_MANAGED_BY" desc="Title of chrome://management page, which shows the administrator's capabilities in a managed environment">
       Your browser is managed by <ph name="ENROLLMENT_DOMAIN">$1<ex>example.com</ex></ph>
     </message>
-    <message name="IDS_MANAGEMENT_NOT_MANAGED_TITLE" desc="Title of chrome://management page for a browser that is not managed">
+    <message name="IDS_MANAGEMENT_NOT_MANAGED_SUBTITLE" desc="Title of chrome://management page for a browser that is not managed">
       Your browser is not managed
     </message>
-    <message name="IDS_MANAGEMENT_BROWSER_NOTICE" desc="Message indicating that the browser is managed by an unknown organization">
-      This browser is managed by a company, school or other organization. Your administrator can change your browser setup remotely. Activity on this device may also be managed outside of Chrome. <ph name="BEGIN_LINK">&lt;a target="_blank" href="$1"&gt;</ph>Learn More<ph name="END_LINK">&lt;/a&gt;</ph>
+  </if>
+
+  <!-- Browser managed status section -->
+  <if expr="not chromeos">
+    <message name="IDS_MANAGEMENT_BROWSER_NOTICE" desc="Message shown when the browser is managed, it indicates what the administrator can do on the browser.">
+      Your administrator can change your browser setup remotely. Activity on this device may also be managed outside of Chrome. <ph name="BEGIN_LINK">&lt;a target="_blank" href="$1"&gt;</ph>Learn More<ph name="END_LINK">&lt;/a&gt;</ph>
     </message>
     <message name="IDS_MANAGEMENT_NOT_MANAGED_NOTICE" desc="Message indicating that the browser is not managed">
       This browser is not managed by a company or other organization. Activity on this device may be managed outside of Chrome. <ph name="BEGIN_LINK">&lt;a target="_blank" href="$1"&gt;</ph>Learn More<ph name="END_LINK">&lt;/a&gt;</ph>
     </message>
-    <message name="IDS_MANAGEMENT_MANAGEMENT_BY_NOTICE" desc="Message indicating that the browser is managed by a known organization">
-      This browser is managed by <ph name="ENROLLMENT_DOMAIN">$1<ex>example.com</ex></ph>. Your administrator can change your browser setup remotely. Activity on this device may also be managed outside of Chrome. <ph name="BEGIN_LINK">&lt;a target="_blank" href="$2"&gt;</ph>Learn More<ph name="END_LINK">&lt;/a&gt;</ph>
+  </if>
+
+  <!-- Chrome OS managed status section -->
+  <if expr="chromeos">
+    <message name="IDS_MANAGEMENT_DEVICE_NOT_MANAGED" desc="Message indicating that the device and account are not managed">
+      This device and account are not managed by a company or other organization.
+    </message>
+    <message name="IDS_MANAGEMENT_DEVICE_MANAGED_BY_ACCOUNT_MANAGED_BY" desc="Message indicating that the device is enterprise enrolled to be managed by an administrator, from a specific domain. And account is managed by an administrator, from another specific domain.">
+      Your device is managed by <ph name="ENROLLMENT_DOMAIN">$1<ex>example.com</ex></ph> and your account is managed by <ph name="ACCOUNT_DOMAIN">$2<ex>example.com</ex></ph>.
+    </message>
+    <message name="IDS_MANAGEMENT_DEVICE_AND_ACCOUNT_MANAGED_BY" desc="Message indicating that the device and account are enterprise enrolled to be managed by an administrator, from a specific domain">
+      Your device and account are managed by <ph name="ENROLLMENT_DOMAIN">$1<ex>example.com</ex></ph>.
+    </message>
+    <message name="IDS_MANAGEMENT_ACCOUNT_MANAGED_BY" desc="Message indicating that the account is enterprise enrolled to be managed by an administrator">
+      Your account is managed by <ph name="ENROLLMENT_DOMAIN">$1<ex>example.com</ex></ph>.
     </message>
   </if>
 
-  <message name="IDS_MANAGEMENT_DEVICE_NOT_MANAGED" desc="Message indicating that the device is not managed">
-    Your device is not managed by an administrator.
-  </message>
-  <message name="IDS_MANAGEMENT_DEVICE_MANAGED_BY" desc="Message indicating that the device is enterprise enrolled to be managed by an administrator, from a specific domain">
-    Your device is managed by <ph name="ENROLLMENT_DOMAIN">$1<ex>example.com</ex></ph>. This means your administrator may remotely configure your device.
-  </message>
-  <message name="IDS_MANAGEMENT_DEVICE_MANAGED_BY_ACCOUNT_MANAGED_BY" desc="Message indicating that the device is enterprise enrolled to be managed by an administrator, from a specific domain. And account is managed by an administrator, from another specific domain.">
-    Your device is managed by <ph name="ENROLLMENT_DOMAIN">$1<ex>example.com</ex></ph > and your account is managed by <ph name="ACCOUNT_DOMAIN">$2<ex>example.com</ex></ph>. This means your administrators may remotely configure your device and account.
-  </message>
-  <message name="IDS_MANAGEMENT_DEVICE_AND_ACCOUNT_MANAGED_BY" desc="Message indicating that the device and account is enterprise enrolled to be managed by an administrator, from a specific domain">
-    Your device and account is managed by <ph name="ENROLLMENT_DOMAIN">$1<ex>example.com</ex></ph>. This means your administrator may remotely configure your device and account.
-  </message>
-  <message name="IDS_MANAGEMENT_ACCOUNT_MANAGED_BY" desc="Message indicating that the account is enterprise enrolled to be managed by an administrator">
-    Your account is managed by <ph name="ENROLLMENT_DOMAIN">$1<ex>example.com</ex></ph>. This means your administrator may remotely configure your account.
-  </message>
-
   <if expr="chromeos">
+    <!-- Strings related to Local trust roots section -->
+    <message name="IDS_MANAGEMENT_LOCAL_TRUST_ROOTS" desc="Title of the types of local trust roots section of the page">
+      Custom root certificates
+    </message>
+    <message name="IDS_MANAGEMENT_TRUST_ROOTS_CONFIGURED" desc="Message describing that the administrators have installed their own certificates">
+      Administrators of this device have set up security certificates that may allow them to see the content of websites you visit.
+    </message>
     <!-- Strings related to device reporting section of the management page -->
     <message name="IDS_MANAGEMENT_DEVICE_REPORTING" desc="Title of the types of device reporting section of the page">
       Device
@@ -83,8 +101,15 @@
     <message name="IDS_MANAGEMENT_REPORT_DEVICE_NETWORK_INTERFACES" desc="Message stating that administrators see device network interfaces.">
       Network addresses
     </message>
+    <message name="IDS_MANAGEMENT_REPORT_PRINTING" desc="Message stating that administrators can see names of printed files.">
+      Names of files that you print
+    </message>
+    <message name="IDS_MANAGEMENT_CROSTINI" desc="Message stating that administrators can see Crostini usage">
+      Linux apps installed and when they were last used
+    </message>
   </if>
 
+  <!-- Strings related to extension reporting section of the management page -->
   <message name="IDS_MANAGEMENT_EXTENSION_REPORTING" desc="Title of the force installed extensions section of the page">
     Extensions
   </message>
@@ -101,13 +126,7 @@
     Permissions
   </message>
 
-  <message name="IDS_MANAGEMENT_LOCAL_TRUST_ROOTS" desc="Title of the types of local trust roots section of the page">
-    Custom root certificates
-  </message>
-  <message name="IDS_MANAGEMENT_TRUST_ROOTS_NOT_CONFIGURED" desc="Message describing that the administrators have not installed certificates">
-    The contents of websites that you visit is not seen by your administrators
-  </message>
-
+  <!-- Strings related to browser reporting section of the management page -->
   <message name="IDS_MANAGEMENT_BROWSER_REPORTING" desc="Title of the types of browser reporting section of the page">
     Browser
   </message>
@@ -121,7 +140,7 @@
     Your device name and network address
   </message>
   <message name="IDS_MANAGEMENT_EXTENSION_REPORT_USERNAME" desc="Message explaining that an extension currently reports the user's username">
-    Usernames for your device and browser
+    Your device username and Chrome username
   </message>
   <message name="IDS_MANAGEMENT_EXTENSION_REPORT_VERSION" desc="Message explaining that an extension currently reports the user's browser and machine version">
     Version information about your device and browser
@@ -129,8 +148,8 @@
   <message name="IDS_MANAGEMENT_EXTENSION_REPORT_EXTENSIONS_PLUGINS" desc="Message explaining that an extension currently reports the user's exensions and plugins">
     Information about installed extensions and plugins
   </message>
-  <message name="IDS_MANAGEMENT_EXTENSION_REPORT_SAFE_BROWSING_WARNINGS" desc="Message explaining that an extension currently reports the user's safe browsing warnings and ignored warnings">
-    <ph name="BEGIN_LINK">&lt;a target="_blank" href="$1"&gt;</ph>Safe Browsing<ph name="END_LINK">&lt;/a&gt;</ph> warnings
+  <message name="IDS_MANAGEMENT_EXTENSION_REPORT_SAFE_BROWSING_WARNINGS" desc="Message explaining that an extension currently reports the user's Safe Browsing warnings and ignored warnings">
+    <ph name="BEGIN_LINK">&lt;a target="_blank" href="$1"&gt;<ex>&lt;a target="_blank" href="https://example.com"&gt;</ex></ph>Safe Browsing<ph name="END_LINK">&lt;/a&gt;<ex>&lt;/a&gt;</ex></ph> warnings
   </message>
   <message name="IDS_MANAGEMENT_EXTENSION_REPORT_USER_BROWSING_DATA" desc="Message explaining that an extension currently reports the user's browsing data">
     Websites you visit and time spent on them
@@ -139,9 +158,32 @@
     Performance data and crash reports
   </message>
 
-  <if expr="chromeos">
-    <message name="IDS_MANAGEMENT_TRUST_ROOTS_CONFIGURED" desc="Message describing that the administrators have installed their own certificates">
-      Your administrator has configured custom root certificates, which may allow the administrator to see the contents of websites that you visit.
-    </message>
-  </if>
+  <!-- Strings related to Chrome Enterprise Threat Protection -->
+  <message name="IDS_MANAGEMENT_THREAT_PROTECTION" desc="Title of the Chrome Enterprise Threat Protection section of the page">
+    Chrome Enterprise Threat Protection
+  </message>
+  <message name="IDS_MANAGEMENT_THREAT_PROTECTION_DESCRIPTION" desc="Description of the Chrome Enterprise Threat Protection section of the page">
+    Your administrator has enabled Chrome Enterprise Threat Protection on your browser. Chrome Enterprise Threat Protection has access to some of your data.
+  </message>
+  <message name="IDS_MANAGEMENT_THREAT_PROTECTION_DESCRIPTION_BY" desc="Description of the Chrome Enterprise Threat Protection section of the page">
+    <ph name="ENROLLMENT_DOMAIN">$1<ex>example.com</ex></ph> has enabled Chrome Enterprise Threat Protection on your browser. Chrome Enterprise Threat Protection has access to some of your data.
+  </message>
+  <message name="IDS_MANAGEMENT_DATA_LOSS_PREVENTION_NAME" desc="Name for the data loss prevention feature">
+    Data Loss Prevention
+  </message>
+  <message name="IDS_MANAGEMENT_DATA_LOSS_PREVENTION_PERMISSIONS" desc="Permissions description for the data loss prevention feature">
+    Scan the contents of the cache and files that you download or upload in Chrome.
+  </message>
+  <message name="IDS_MANAGEMENT_MALWARE_SCANNING_NAME" desc="Name for the malware scanning feature">
+    Malware Scanning
+  </message>
+  <message name="IDS_MANAGEMENT_MALWARE_SCANNING_PERMISSIONS" desc="Permissions description for the malware scanning feature">
+    Scan files that you download or upload in Chrome.
+  </message>
+  <message name="IDS_MANAGEMENT_ENTERPRISE_REPORTING_NAME" desc="Name for the enterprise reporting feature">
+    Enterprise Reporting
+  </message>
+  <message name="IDS_MANAGEMENT_ENTERPRISE_REPORTING_PERMISSIONS" desc="Permissions description for the enterprise reporting feature">
+    Share data about security events that have been flagged by Chrome Enterprise Threat Protection with your Administrator. This may include URLs of pages you visit, file names or metadata, and the username you use to sign in to your device and Chrome.
+  </message>
 </grit-part>

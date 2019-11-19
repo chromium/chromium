@@ -1,0 +1,7 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer description='Text description' name='description' descriptionFrom=attribute
+++++genericContainer description='Description from describedby' name='both' descriptionFrom=relatedElement
+++++tooltip name='Description from describedby'
+++++++staticText name='Description from describedby'
+++++++++inlineTextBox name='Description from describedby'

@@ -24,7 +24,6 @@ class VariationsServiceDevicePolicyTest : public DevicePolicyCrosBrowserTest {
   void SetUpInProcessBrowserTestFixture() override {
     DevicePolicyCrosBrowserTest::SetUpInProcessBrowserTestFixture();
 
-    InstallOwnerKey();
     SetSpecificDevicePolicies();
     RefreshDevicePolicy();
   }

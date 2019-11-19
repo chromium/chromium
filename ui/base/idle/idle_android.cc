@@ -8,7 +8,8 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/logging.h"
 #include "base/memory/singleton.h"
-#include "jni/IdleDetector_jni.h"
+#include "ui/base/idle/idle_internal.h"
+#include "ui/base/ui_base_jni_headers/IdleDetector_jni.h"
 
 using base::android::AttachCurrentThread;
 using base::android::ConvertJavaStringToUTF8;
@@ -71,6 +72,9 @@ int CalculateIdleTime() {
 }
 
 bool CheckIdleStateIsLocked() {
+  if (IdleStateForTesting().has_value())
+    return IdleStateForTesting().value() == IDLE_STATE_LOCKED;
+
   return AndroidIdleMonitor::GetInstance()->CheckIdleStateIsLocked();
 }
 

@@ -34,7 +34,7 @@
 
 #include "base/memory/ptr_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/platform/platform.h"
+#include "third_party/blink/public/common/prerender/prerender_rel_type.h"
 #include "third_party/blink/public/platform/web_cache.h"
 #include "third_party/blink/public/platform/web_prerender.h"
 #include "third_party/blink/public/platform/web_prerendering_support.h"
@@ -162,12 +162,12 @@ class TestPrerenderingSupport : public WebPrerenderingSupport {
 class PrerenderingTest : public testing::Test {
  public:
   ~PrerenderingTest() override {
-    Platform::Current()
-        ->GetURLLoaderMockFactory()
-        ->UnregisterAllURLsAndClearMemoryCache();
+    url_test_helpers::UnregisterAllURLsAndClearMemoryCache();
   }
 
   void Initialize(const char* base_url, const char* file_name) {
+    // TODO(crbug.com/751425): We should use the mock functionality
+    // via |web_view_helper_|.
     url_test_helpers::RegisterMockedURLLoadFromBase(
         WebString::FromUTF8(base_url), blink::test::CoreTestDataPath(),
         WebString::FromUTF8(file_name));
@@ -195,7 +195,7 @@ class PrerenderingTest : public testing::Test {
     Document* document =
         web_view_helper_.LocalMainFrame()->GetFrame()->GetDocument();
     Element* console = document->getElementById("console");
-    DCHECK(IsHTMLUListElement(console));
+    DCHECK(IsA<HTMLUListElement>(console));
     return *console;
   }
 
@@ -207,7 +207,7 @@ class PrerenderingTest : public testing::Test {
     Node* item = NodeTraversal::ChildAt(Console(), 1 + i);
 
     DCHECK(item);
-    DCHECK(IsHTMLLIElement(item));
+    DCHECK(IsA<HTMLLIElement>(item));
     DCHECK(item->hasChildren());
 
     return item->textContent();

@@ -10,9 +10,9 @@
 #import "ios/chrome/browser/ui/bookmarks/bookmark_utils_ios.h"
 #import "ios/chrome/browser/ui/icons/chrome_icon.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
+#import "ios/chrome/common/colors/UIColor+cr_semantic_colors.h"
 #import "ios/chrome/common/ui_util/constraints_ui_util.h"
 #include "ios/chrome/grit/ios_strings.h"
-#import "ios/third_party/material_components_ios/src/components/Typography/src/MaterialTypography.h"
 #include "ui/base/l10n/l10n_util_mac.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -87,7 +87,7 @@
   self.parentFolderNameLabel.font =
       [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
   self.parentFolderNameLabel.adjustsFontForContentSizeCategory = YES;
-  self.parentFolderNameLabel.textColor = [UIColor lightGrayColor];
+  self.parentFolderNameLabel.textColor = UIColor.cr_secondaryLabelColor;
   self.parentFolderNameLabel.textAlignment = NSTextAlignmentRight;
   [self.parentFolderNameLabel
       setContentHuggingPriority:UILayoutPriorityDefaultLow

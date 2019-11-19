@@ -1,17 +1,20 @@
 Name: PLY (Python Lex-Yacc)
-Current version: 3.4
-URL: http://www.dabeaz.com/ply/ply-3.4.tar.gz
+Current version: 3.11
+URL: http://www.dabeaz.com/ply/ply-3.11.tar.gz
 License: BSD
 License File: LICENSE
 Security Critical: no
-Version: 3.4
+Version: 3.11
 
-This directory contains a copy of these ply-3.4 components:
+PLY is used by (at least) the Mojo python bindings, the PPAPI
+IDL generator, and the Blink IDL generator.
 
-README            ply-3.4/README
-Sources           ply-3.4/ply/__init__.py
-                  ply-3.4/ply/lex.py
-                  ply-3.4/ply/yacc.py
+This directory contains a copy of these ply-3.11 components:
+
+README            ply-3.11/README.md
+Sources           ply-3.11/ply/__init__.py
+                  ply-3.11/ply/lex.py
+                  ply-3.11/ply/yacc.py
 
 
 The license is in LICENSE.

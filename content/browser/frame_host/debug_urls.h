@@ -14,7 +14,9 @@ namespace content {
 
 // Checks if the given url is a url used for debugging purposes, and if so
 // handles it and returns true.
-bool HandleDebugURL(const GURL& url, ui::PageTransition transition);
+bool HandleDebugURL(const GURL& url,
+                    ui::PageTransition transition,
+                    bool is_explicit_navigation);
 
 }  // namespace content
 

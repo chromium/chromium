@@ -38,14 +38,13 @@ public class AwWebContentsObserverTest {
     private String mUnreachableWebDataUrl;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         mContentsClient = new TestAwContentsClient();
         mTestContainerView = mActivityTestRule.createAwTestContainerViewOnMainSync(mContentsClient);
         mUnreachableWebDataUrl = AwContentsStatics.getUnreachableWebDataUrl();
         // AwWebContentsObserver constructor must be run on the UI thread.
         InstrumentationRegistry.getInstrumentation().runOnMainSync(
-                ()
-                        -> mWebContentsObserver =
+                () -> mWebContentsObserver =
                                    new AwWebContentsObserver(mTestContainerView.getWebContents(),
                                            mTestContainerView.getAwContents(), mContentsClient));
     }

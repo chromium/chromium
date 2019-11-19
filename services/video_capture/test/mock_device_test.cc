@@ -5,9 +5,8 @@
 #include "services/video_capture/test/mock_device_test.h"
 
 #include "base/bind_helpers.h"
-#include "base/message_loop/message_loop.h"
 #include "base/run_loop.h"
-#include "media/capture/video/video_capture_jpeg_decoder.h"
+#include "base/test/task_environment.h"
 #include "media/capture/video/video_capture_system_impl.h"
 
 using testing::_;
@@ -16,12 +15,13 @@ using testing::InvokeWithoutArgs;
 
 namespace video_capture {
 
-MockDeviceTest::MockDeviceTest() : service_keepalive_(nullptr, base::nullopt) {}
+MockDeviceTest::MockDeviceTest() = default;
 
 MockDeviceTest::~MockDeviceTest() = default;
 
 void MockDeviceTest::SetUp() {
-  message_loop_ = std::make_unique<base::MessageLoop>();
+  task_environment_ =
+      std::make_unique<base::test::SingleThreadTaskEnvironment>();
   auto mock_device_factory = std::make_unique<media::MockDeviceFactory>();
   // We keep a pointer to the MockDeviceFactory as a member so that we can
   // invoke its AddMockDevice(). Ownership of the MockDeviceFactory is moved
@@ -29,14 +29,21 @@ void MockDeviceTest::SetUp() {
   mock_device_factory_ = mock_device_factory.get();
   auto video_capture_system = std::make_unique<media::VideoCaptureSystemImpl>(
       std::move(mock_device_factory));
+#if defined(OS_CHROMEOS)
   mock_device_factory_adapter_ =
       std::make_unique<DeviceFactoryMediaToMojoAdapter>(
           std::move(video_capture_system), base::DoNothing(),
           base::ThreadTaskRunnerHandle::Get());
-  mock_device_factory_adapter_->SetServiceRef(service_keepalive_.CreateRef());
+#else
+  mock_device_factory_adapter_ =
+      std::make_unique<DeviceFactoryMediaToMojoAdapter>(
+          std::move(video_capture_system));
+#endif  // defined(OS_CHROMEOS)
 
-  mock_factory_binding_ = std::make_unique<mojo::Binding<mojom::DeviceFactory>>(
-      mock_device_factory_adapter_.get(), mojo::MakeRequest(&factory_));
+  mock_factory_receiver_ =
+      std::make_unique<mojo::Receiver<mojom::DeviceFactory>>(
+          mock_device_factory_adapter_.get(),
+          factory_.BindNewPipeAndPassReceiver());
 
   media::VideoCaptureDeviceDescriptor mock_descriptor;
   mock_descriptor.device_id = "MockDeviceId";
@@ -51,7 +58,8 @@ void MockDeviceTest::SetUp() {
   // CreateDevice.
   wait_loop.Run();
   factory_->CreateDevice(mock_descriptor.device_id,
-                         mojo::MakeRequest(&device_proxy_), base::DoNothing());
+                         device_remote_.BindNewPipeAndPassReceiver(),
+                         base::DoNothing());
 
   requested_settings_.requested_format.frame_size = gfx::Size(800, 600);
   requested_settings_.requested_format.frame_rate = 15;
@@ -60,8 +68,8 @@ void MockDeviceTest::SetUp() {
   requested_settings_.power_line_frequency =
       media::PowerLineFrequency::FREQUENCY_DEFAULT;
 
-  mock_receiver_ =
-      std::make_unique<MockReceiver>(mojo::MakeRequest(&mock_receiver_proxy_));
+  mock_video_frame_handler_ = std::make_unique<MockVideoFrameHandler>(
+      mock_subscriber_.InitWithNewPipeAndPassReceiver());
 }
 
 }  // namespace video_capture

@@ -7,6 +7,7 @@
 #include "base/logging.h"
 #include "base/mac/scoped_block.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#include "ios/chrome/browser/main/browser.h"
 #include "ios/chrome/browser/signin/authentication_service.h"
 #include "ios/chrome/browser/signin/authentication_service_factory.h"
 #include "ios/chrome/browser/signin/constants.h"
@@ -93,7 +94,7 @@ NSError* IdentityMissingError() {
   BOOL _shouldSignOut;
   BOOL _shouldShowManagedConfirmation;
   BOOL _shouldStartSync;
-  ios::ChromeBrowserState* _browserState;
+  Browser* _browser;
   ChromeIdentity* _browserStateIdentity;
   ChromeIdentity* _identityToSignIn;
   NSString* _identityToSignInHostedDomain;
@@ -109,16 +110,15 @@ NSError* IdentityMissingError() {
 
 #pragma mark - Public methods
 
-- (instancetype)initWithBrowserState:(ios::ChromeBrowserState*)browserState
-                            identity:(ChromeIdentity*)identity
-                     shouldClearData:(ShouldClearData)shouldClearData
-                    postSignInAction:(PostSignInAction)postSignInAction
-            presentingViewController:
-                (UIViewController*)presentingViewController {
+- (instancetype)initWithBrowser:(Browser*)browser
+                       identity:(ChromeIdentity*)identity
+                shouldClearData:(ShouldClearData)shouldClearData
+               postSignInAction:(PostSignInAction)postSignInAction
+       presentingViewController:(UIViewController*)presentingViewController {
   if ((self = [super init])) {
-    DCHECK(browserState);
+    DCHECK(browser);
     DCHECK(presentingViewController);
-    _browserState = browserState;
+    _browser = browser;
     _identityToSignIn = identity;
     _shouldClearData = shouldClearData;
     _postSignInAction = postSignInAction;
@@ -243,6 +243,7 @@ NSError* IdentityMissingError() {
 }
 
 - (void)continueSignin {
+  ios::ChromeBrowserState* browserState = _browser->GetBrowserState();
   if (self.handlingError) {
     // The flow should not continue while the error is being handled, e.g. while
     // the user is being informed of an issue.
@@ -260,16 +261,16 @@ NSError* IdentityMissingError() {
       return;
 
     case FETCH_MANAGED_STATUS:
-      [_performer fetchManagedStatus:_browserState
+      [_performer fetchManagedStatus:browserState
                          forIdentity:_identityToSignIn];
       return;
 
     case CHECK_MERGE_CASE:
       if ([_performer shouldHandleMergeCaseForIdentity:_identityToSignIn
-                                          browserState:_browserState]) {
+                                          browserState:browserState]) {
         if (_shouldClearData == SHOULD_CLEAR_DATA_USER_CHOICE) {
           [_performer promptMergeCaseForIdentity:_identityToSignIn
-                                    browserState:_browserState
+                                         browser:_browser
                                   viewController:_presentingViewController];
           return;
         }
@@ -284,11 +285,11 @@ NSError* IdentityMissingError() {
       return;
 
     case SIGN_OUT_IF_NEEDED:
-      [_performer signOutBrowserState:_browserState];
+      [_performer signOutBrowserState:browserState];
       return;
 
     case CLEAR_DATA:
-      [_performer clearData:_browserState dispatcher:_dispatcher];
+      [_performer clearDataFromBrowser:_browser commandHandler:_dispatcher];
       return;
 
     case SIGN_IN:
@@ -296,7 +297,7 @@ NSError* IdentityMissingError() {
       return;
 
     case START_SYNC:
-      [_performer commitSyncForBrowserState:_browserState];
+      [_performer commitSyncForBrowserState:browserState];
       [self continueSignin];
       return;
 
@@ -306,10 +307,10 @@ NSError* IdentityMissingError() {
 
     case COMPLETE_WITH_FAILURE:
       if (_didSignIn) {
-        [_performer signOutImmediatelyFromBrowserState:_browserState];
+        [_performer signOutImmediatelyFromBrowserState:browserState];
         // Enabling/disabling sync does not take effect in the sync backend
         // until committing changes.
-        [_performer commitSyncForBrowserState:_browserState];
+        [_performer commitSyncForBrowserState:browserState];
       }
       [self completeSignInWithSuccess:NO];
       return;
@@ -330,9 +331,9 @@ NSError* IdentityMissingError() {
 }
 
 - (void)checkSigninSteps {
-  _browserStateIdentity =
-      AuthenticationServiceFactory::GetForBrowserState(_browserState)
-          ->GetAuthenticatedIdentity();
+  _browserStateIdentity = AuthenticationServiceFactory::GetForBrowserState(
+                              _browser->GetBrowserState())
+                              ->GetAuthenticatedIdentity();
   if (_browserStateIdentity)
     _shouldSignOut = YES;
 
@@ -346,7 +347,7 @@ NSError* IdentityMissingError() {
           ->IsValidIdentity(identity)) {
     [_performer signInIdentity:identity
               withHostedDomain:_identityToSignInHostedDomain
-                toBrowserState:_browserState];
+                toBrowserState:_browser->GetBrowserState()];
     _didSignIn = YES;
     [self continueSignin];
   } else {

@@ -68,7 +68,7 @@ bool WebAccessibleResourcesHandler::Parse(Extension* extension,
     *error = base::ASCIIToUTF16(errors::kInvalidWebAccessibleResourcesList);
     return false;
   }
-  const base::Value::ListStorage& list_storage = list_value->GetList();
+  base::span<const base::Value> list_storage = list_value->GetList();
   for (size_t i = 0; i < list_storage.size(); ++i) {
     if (!list_storage[i].is_string()) {
       *error = ErrorUtils::FormatErrorMessageUTF16(

@@ -7,17 +7,17 @@ GEN_INCLUDE(['chromevox_unittest_base.js',
              'mock_feedback.js']);
 
 function speak(text, opt_properties) {
-  cvox.ChromeVox.tts.speak(text, 0, opt_properties);
+  ChromeVox.tts.speak(text, 0, opt_properties);
 }
 
 function braille(text) {
-  var navBraille = cvox.NavBraille.fromText(text);
-  cvox.ChromeVox.braille.write(navBraille);
+  var navBraille = NavBraille.fromText(text);
+  ChromeVox.braille.write(navBraille);
   return navBraille;
 }
 
 function earcon(earconName) {
-  cvox.ChromeVox.earcons.playEarcon(cvox.Earcon[earconName]);
+  ChromeVox.earcons.playEarcon(Earcon[earconName]);
 }
 
 /**
@@ -34,14 +34,14 @@ MockFeedbackUnitTest.prototype = {
   __proto__: ChromeVoxUnitTestBase.prototype,
 
   setUp: function() {
-    cvox.ChromeVox = cvox.ChromeVox || {};
+    window.ChromeVox = window.ChromeVox || {};
   },
 
   closureModuleDeps: [
-    'cvox.BrailleInterface',
-    'cvox.NavBraille',
-    'cvox.TtsInterface',
-    'cvox.AbstractEarcons'
+    'BrailleInterface',
+    'NavBraille',
+    'TtsInterface',
+    'AbstractEarcons'
   ]
 };
 
@@ -186,16 +186,16 @@ TEST_F('MockFeedbackUnitTest', 'SpeechAndEarcons', function() {
     }});
   })
       .expectSpeech('MyButton')
-      .expectEarcon(cvox.Earcon.BUTTON)
+      .expectEarcon(Earcon.BUTTON)
       .call(function() {
         earcon('ALERT_MODAL');
         speak('MyTextField', {startCallback: function() {
           earcon('EDITABLE_TEXT');
         }});
       })
-      .expectEarcon(cvox.Earcon.ALERT_MODAL)
+      .expectEarcon(Earcon.ALERT_MODAL)
       .expectSpeech('MyTextField')
-      .expectEarcon(cvox.Earcon.EDITABLE_TEXT)
+      .expectEarcon(Earcon.EDITABLE_TEXT)
       .replay();
   assertTrue(finishCalled);
 });

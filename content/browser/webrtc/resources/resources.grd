@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<grit latest_public_release="0" current_release="1" output_all_resource_defines="false">
+  <outputs>
+    <output filename="grit/webrtc_internals_resources.h" type="rc_header">
+      <emit emit_type='prepend'></emit>
+    </output>
+    <output filename="webrtc_internals_resources.pak" type="data_package" />
+  </outputs>
+  <translations />
+  <release seq="1">
+    <includes>
+      <include name="IDR_WEBRTC_INTERNALS_HTML"
+               file="webrtc_internals.html"
+               flattenhtml="true"
+               allowexternalscript="true"
+               compress="gzip"
+               type="BINDATA" />
+      <include name="IDR_WEBRTC_INTERNALS_JS"
+               file="webrtc_internals.js"
+               flattenhtml="true"
+               compress="gzip"
+               type="BINDATA" />
+    </includes>
+  </release>
+</grit>

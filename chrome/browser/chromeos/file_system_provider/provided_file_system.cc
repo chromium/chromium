@@ -143,8 +143,7 @@ ProvidedFileSystem::ProvidedFileSystem(
           new RequestManager(profile,
                              file_system_info.provider_id().GetExtensionId(),
                              notification_manager_.get())),
-      watcher_queue_(1),
-      weak_ptr_factory_(this) {
+      watcher_queue_(1) {
   DCHECK_EQ(ProviderId::EXTENSION, file_system_info.provider_id().GetType());
 }
 

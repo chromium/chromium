@@ -36,6 +36,7 @@ enum DistanceModelType {
 };
 
 [
+    Exposed=Window,
     Constructor(BaseAudioContext context, optional PannerOptions options),
     RaisesException=Constructor,
     Measure

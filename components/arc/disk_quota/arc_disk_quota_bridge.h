@@ -6,7 +6,7 @@
 #define COMPONENTS_ARC_DISK_QUOTA_ARC_DISK_QUOTA_BRIDGE_H_
 
 #include "base/macros.h"
-#include "components/arc/common/disk_quota.mojom.h"
+#include "components/arc/mojom/disk_quota.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 namespace content {

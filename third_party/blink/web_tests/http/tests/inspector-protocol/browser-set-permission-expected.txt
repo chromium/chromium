@@ -1,0 +1,31 @@
+Test that permissions can be changed
+- Set: {"name":"background-fetch"} to granted
+- Set: {"name":"persistent-storage"} to prompt
+- Set: {"name":"background-sync"} to denied
+- Failed to set: {"name":"background-fetch"}  error: Unknown permission setting: foo
+- Set: {"name":"background-fetch"} to granted
+- Set: {"name":"background-fetch"} to denied
+- Set: {"name":"background-fetch"} to prompt
+- Set: {"name":"midi","sysex":true} to granted
+- Set: {"name":"midi","sysex":false} to denied
+- Set: {"name":"midi","sysex":false} to prompt
+- Set: {"name":"push","userVisibleOnly":true} to granted
+- Set: {"name":"geolocation"} to granted
+- Set: {"name":"geolocation"} to denied
+[
+    [0] : {"name":"background-fetch"}: granted
+    [1] : {"name":"persistent-storage"}: prompt
+    [2] : {"name":"background-sync"}: denied
+    [3] : {"name":"background-fetch"}: granted
+    [4] : {"name":"background-fetch"}: denied
+    [5] : {"name":"background-fetch"}: prompt
+    [6] : {"name":"midi","sysex":true}: granted
+    [7] : {"name":"midi","sysex":false}: granted
+    [8] : {"name":"midi","sysex":false}: denied
+    [9] : {"name":"midi","sysex":true}: denied
+    [10] : {"name":"midi","sysex":false}: prompt
+    [11] : {"name":"midi","sysex":true}: prompt
+    [12] : {"name":"push","userVisibleOnly":true}: granted
+    [13] : {"name":"geolocation"}: granted
+]
+

@@ -4,7 +4,9 @@
 
 #include "third_party/blink/renderer/modules/bluetooth/bluetooth_error.h"
 
+#include "third_party/blink/public/mojom/bluetooth/web_bluetooth.mojom-blink.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
 
 namespace blink {
 
@@ -35,7 +37,7 @@ DOMException* BluetoothError::CreateNotConnectedException(
       break;
   }
 
-  return DOMException::Create(
+  return MakeGarbageCollected<DOMException>(
       DOMExceptionCode::kNetworkError,
       String::Format(kGATTServerNotConnectedBase, operation_string));
 }
@@ -48,16 +50,16 @@ DOMException* BluetoothError::CreateDOMException(
     case BluetoothErrorCode::kInvalidService:
     case BluetoothErrorCode::kInvalidCharacteristic:
     case BluetoothErrorCode::kInvalidDescriptor:
-      return DOMException::Create(DOMExceptionCode::kInvalidStateError,
-                                  detailed_message);
+      return MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kInvalidStateError, detailed_message);
     case BluetoothErrorCode::kServiceNotFound:
     case BluetoothErrorCode::kCharacteristicNotFound:
     case BluetoothErrorCode::kDescriptorNotFound:
-      return DOMException::Create(DOMExceptionCode::kNotFoundError,
-                                  detailed_message);
+      return MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kNotFoundError, detailed_message);
   }
   NOTREACHED();
-  return DOMException::Create(DOMExceptionCode::kUnknownError);
+  return MakeGarbageCollected<DOMException>(DOMExceptionCode::kUnknownError);
 }
 
 // static
@@ -73,10 +75,11 @@ DOMException* BluetoothError::CreateDOMException(
       // expected to be redirected to the switch above that handles
       // BluetoothErrorCode.
       NOTREACHED();
-      return DOMException::Create(DOMExceptionCode::kUnknownError);
+      return MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kUnknownError);
 #define MAP_ERROR(enumeration, name, message)         \
   case mojom::blink::WebBluetoothResult::enumeration: \
-    return DOMException::Create(name, message);
+    return MakeGarbageCollected<DOMException>(name, message);
 
       // InvalidModificationErrors:
       MAP_ERROR(GATT_INVALID_ATTRIBUTE_LENGTH,
@@ -92,6 +95,8 @@ DOMException* BluetoothError::CreateDOMException(
       MAP_ERROR(DESCRIPTOR_NO_LONGER_EXISTS,
                 DOMExceptionCode::kInvalidStateError,
                 "GATT Descriptor no longer exists.");
+      MAP_ERROR(PROMPT_CANCELED, DOMExceptionCode::kInvalidStateError,
+                "User canceled the permission prompt.");
 
       // NetworkErrors:
       MAP_ERROR(CONNECT_ALREADY_IN_PROGRESS, DOMExceptionCode::kNetworkError,
@@ -193,11 +198,15 @@ DOMException* BluetoothError::CreateDOMException(
                 DOMExceptionCode::kSecurityError,
                 "requestDevice() called from cross-origin iframe.");
 
+      // NotAllowedErrors:
+      MAP_ERROR(SCANNING_BLOCKED, DOMExceptionCode::kNotAllowedError,
+                "requestLEScan() call is blocked by user.");
+
 #undef MAP_ERROR
   }
 
   NOTREACHED();
-  return DOMException::Create(DOMExceptionCode::kUnknownError);
+  return MakeGarbageCollected<DOMException>(DOMExceptionCode::kUnknownError);
 }
 
 }  // namespace blink

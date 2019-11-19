@@ -14,14 +14,13 @@ gaia-card div.gaia-body-text p {
 }
 
 gaia-card p.enterprise-info {
+  @apply --oobe-default-font;
   color: white;
-  font-size: 15px;
   margin: 8px 0 0 0;
 }
 
 gaia-card h1.welcome-message {
   color: white;
-  font-size: 20px;
-  font-weight: normal;
   margin-bottom: 0;
+  @apply --oobe-header-font;
 }

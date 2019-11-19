@@ -7,10 +7,11 @@
 
 #import <XCTest/XCTest.h>
 
+#import "ios/testing/earl_grey/base_earl_grey_test_case.h"
 #import "ios/testing/earl_grey/disabled_test_macros.h"
 
 // Base class for all Showcase Earl Grey tests.
-@interface ShowcaseTestCase : XCTestCase
+@interface ShowcaseTestCase : BaseEarlGreyTestCase
 @end
 
 #endif  // IOS_SHOWCASE_TEST_SHOWCASE_TEST_CASE_H_

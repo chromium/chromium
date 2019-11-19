@@ -12,6 +12,8 @@
 #include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/external_loader.h"
 
+class Profile;
+
 namespace base {
 class DictionaryValue;
 }
@@ -32,7 +34,9 @@ class ExternalPolicyLoader : public ExternalLoader,
     RECOMMENDED
   };
 
-  ExternalPolicyLoader(ExtensionManagement* settings, InstallationType type);
+  ExternalPolicyLoader(Profile* profile,
+                       ExtensionManagement* settings,
+                       InstallationType type);
 
   // ExtensionManagement::Observer implementation
   void OnExtensionManagementSettingsChanged() override;
@@ -50,6 +54,7 @@ class ExternalPolicyLoader : public ExternalLoader,
 
   ~ExternalPolicyLoader() override;
 
+  Profile* profile_;
   ExtensionManagement* settings_;
   InstallationType type_;
 

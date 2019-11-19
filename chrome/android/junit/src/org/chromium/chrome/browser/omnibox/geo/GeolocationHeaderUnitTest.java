@@ -7,11 +7,13 @@ package org.chromium.chrome.browser.omnibox.geo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 import android.content.Context;
 import android.location.Location;
-import android.os.Build;
 import android.os.SystemClock;
 
 import org.junit.Before;
@@ -25,19 +27,18 @@ import org.robolectric.annotation.Config;
 import org.robolectric.annotation.Implementation;
 import org.robolectric.annotation.Implements;
 
-import org.chromium.base.library_loader.ProcessInitException;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.metrics.RecordHistogramJni;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.browser.ContentSettingsType;
-import org.chromium.chrome.browser.omnibox.geo.GeolocationHeaderUnitTest.ShadowRecordHistogram;
-import org.chromium.chrome.browser.omnibox.geo.GeolocationHeaderUnitTest.ShadowUrlUtilities;
-import org.chromium.chrome.browser.omnibox.geo.GeolocationHeaderUnitTest.ShadowWebsitePreferenceBridge;
+import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.omnibox.geo.VisibleNetworks.VisibleCell;
 import org.chromium.chrome.browser.omnibox.geo.VisibleNetworks.VisibleWifi;
 import org.chromium.chrome.browser.preferences.website.ContentSettingValues;
 import org.chromium.chrome.browser.preferences.website.WebsitePreferenceBridge;
+import org.chromium.chrome.browser.preferences.website.WebsitePreferenceBridgeJni;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.util.UrlUtilities;
+import org.chromium.chrome.browser.util.UrlUtilitiesJni;
 import org.chromium.chrome.test.util.browser.Features;
 
 import java.util.Arrays;
@@ -47,9 +48,7 @@ import java.util.HashSet;
  * Robolectric tests for {@link GeolocationHeader}.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE,
-        shadows = {ShadowUrlUtilities.class, ShadowRecordHistogram.class,
-                ShadowWebsitePreferenceBridge.class})
+@Config(manifest = Config.NONE)
 public class GeolocationHeaderUnitTest {
     private static final String SEARCH_URL = "https://www.google.com/search?q=potatoes";
 
@@ -98,17 +97,39 @@ public class GeolocationHeaderUnitTest {
     @Rule
     public TestRule mFeatureProcessor = new Features.JUnitProcessor();
 
+    @Rule
+    public JniMocker mocker = new JniMocker();
+
+    @Mock
+    RecordHistogram.Natives mRecordHistogramJniMock;
+
+    @Mock
+    UrlUtilities.Natives mUrlUtilitiesJniMock;
+
+    @Mock
+    WebsitePreferenceBridge.Natives mWebsitePreferenceBridgeJniMock;
+
     @Mock
     private Tab mTab;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
+        mocker.mock(RecordHistogramJni.TEST_HOOKS, mRecordHistogramJniMock);
+        mocker.mock(UrlUtilitiesJni.TEST_HOOKS, mUrlUtilitiesJniMock);
+        mocker.mock(WebsitePreferenceBridgeJni.TEST_HOOKS, mWebsitePreferenceBridgeJniMock);
         GeolocationTracker.setLocationAgeForTesting(null);
         GeolocationHeader.setLocationSourceForTesting(
                 GeolocationHeader.LocationSource.HIGH_ACCURACY);
         GeolocationHeader.setAppPermissionGrantedForTesting(true);
         when(mTab.isIncognito()).thenReturn(false);
+        when(mWebsitePreferenceBridgeJniMock.getGeolocationSettingForOrigin(
+                     anyString(), anyString(), anyBoolean()))
+                .thenReturn(ContentSettingValues.ALLOW);
+        when(mWebsitePreferenceBridgeJniMock.isPermissionControlledByDSE(
+                     anyInt(), anyString(), anyBoolean()))
+                .thenReturn(true);
+        when(mUrlUtilitiesJniMock.isGoogleSearchUrl(anyString())).thenReturn(true);
         sRefreshVisibleNetworksRequests = 0;
         sRefreshLastKnownLocation = 0;
     }
@@ -200,7 +221,7 @@ public class GeolocationHeaderUnitTest {
     }
 
     @Test
-    public void testGetGeoHeaderOldLocationHighAccuracy() throws ProcessInitException {
+    public void testGetGeoHeaderOldLocationHighAccuracy() {
         GeolocationHeader.setLocationSourceForTesting(
                 GeolocationHeader.LocationSource.HIGH_ACCURACY);
         // Visible networks should be included
@@ -209,7 +230,7 @@ public class GeolocationHeaderUnitTest {
     }
 
     @Test
-    public void testGetGeoHeaderOldLocationBatterySaving() throws ProcessInitException {
+    public void testGetGeoHeaderOldLocationBatterySaving() {
         GeolocationHeader.setLocationSourceForTesting(
                 GeolocationHeader.LocationSource.BATTERY_SAVING);
         checkOldLocation(
@@ -217,21 +238,21 @@ public class GeolocationHeaderUnitTest {
     }
 
     @Test
-    public void testGetGeoHeaderOldLocationGpsOnly() throws ProcessInitException {
+    public void testGetGeoHeaderOldLocationGpsOnly() {
         GeolocationHeader.setLocationSourceForTesting(GeolocationHeader.LocationSource.GPS_ONLY);
         // In GPS only mode, networks should never be included.
         checkOldLocation("X-Geo: w " + ENCODED_PROTO_LOCATION);
     }
 
     @Test
-    public void testGetGeoHeaderOldLocationLocationOff() throws ProcessInitException {
+    public void testGetGeoHeaderOldLocationLocationOff() {
         GeolocationHeader.setLocationSourceForTesting(GeolocationHeader.LocationSource.MASTER_OFF);
         // If the master switch is off, networks should never be included (old location might).
         checkOldLocation("X-Geo: w " + ENCODED_PROTO_LOCATION);
     }
 
     @Test
-    public void testGetGeoHeaderOldLocationAppPermissionDenied() throws ProcessInitException {
+    public void testGetGeoHeaderOldLocationAppPermissionDenied() {
         GeolocationHeader.setLocationSourceForTesting(
                 GeolocationHeader.LocationSource.HIGH_ACCURACY);
         GeolocationHeader.setAppPermissionGrantedForTesting(false);
@@ -275,51 +296,9 @@ public class GeolocationHeaderUnitTest {
         location.setLongitude(LOCATION_LONG);
         location.setAccuracy(LOCATION_ACCURACY);
         location.setTime(time);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-            location.setElapsedRealtimeNanos(SystemClock.elapsedRealtimeNanos()
-                    + 1000000 * (time - System.currentTimeMillis()));
-        }
+        location.setElapsedRealtimeNanos(
+                SystemClock.elapsedRealtimeNanos() + 1000000 * (time - System.currentTimeMillis()));
         return location;
-    }
-
-    /**
-     * Shadow for UrlUtilities
-     */
-    @Implements(UrlUtilities.class)
-    public static class ShadowUrlUtilities {
-        @Implementation
-        public static boolean nativeIsGoogleSearchUrl(String url) {
-            return true;
-        }
-    }
-
-    /**
-     * Shadow for RecordHistogram
-     */
-    @Implements(RecordHistogram.class)
-    public static class ShadowRecordHistogram {
-        @Implementation
-        public static void recordEnumeratedHistogram(String name, int sample, int boundary) {
-            // Noop.
-        }
-    }
-
-    /**
-     * Shadow for WebsitePreferenceBridge
-     */
-    @Implements(WebsitePreferenceBridge.class)
-    public static class ShadowWebsitePreferenceBridge {
-        @Implementation
-        public static boolean isPermissionControlledByDSE(
-                @ContentSettingsType int contentSettingsType, String origin, boolean isIncognito) {
-            return true;
-        }
-
-        @Implementation
-        public static @ContentSettingValues int nativeGetGeolocationSettingForOrigin(
-                String origin, String embedder, boolean isIncognito) {
-            return ContentSettingValues.ALLOW;
-        }
     }
 
     /**

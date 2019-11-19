@@ -18,6 +18,7 @@
 namespace gfx {
 struct CALayerParams;
 struct PresentationFeedback;
+struct SwapTimings;
 }  // namespace gfx
 
 namespace viz {
@@ -25,8 +26,9 @@ namespace viz {
 class VIZ_SERVICE_EXPORT OutputSurfaceClient {
  public:
   // A notification that the swap of the backbuffer to the hardware is complete
-  // and is now visible to the user.
-  virtual void DidReceiveSwapBuffersAck() = 0;
+  // and is now visible to the user, along with timing information on when the
+  // swapping of the backbuffer started and completed.
+  virtual void DidReceiveSwapBuffersAck(const gfx::SwapTimings& timings) = 0;
 
   // For surfaceless/ozone implementations to create damage for the next frame.
   virtual void SetNeedsRedrawRect(const gfx::Rect& damage_rect) = 0;

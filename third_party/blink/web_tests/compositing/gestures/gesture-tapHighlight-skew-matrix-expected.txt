@@ -1,1 +1,0 @@
-This test passes if the entire gray rectangle changes color to green.

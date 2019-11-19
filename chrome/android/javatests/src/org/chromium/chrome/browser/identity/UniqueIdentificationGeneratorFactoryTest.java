@@ -4,8 +4,9 @@
 
 package org.chromium.chrome.browser.identity;
 
-import android.support.annotation.Nullable;
 import android.support.test.filters.SmallTest;
+
+import androidx.annotation.Nullable;
 
 import org.junit.Assert;
 import org.junit.Test;

@@ -1,0 +1,67 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/features.gni")
+import("//testing/test.gni")
+
+static_library("fake_server") {
+  testonly = true
+  sources = [
+    "bookmark_entity_builder.cc",
+    "bookmark_entity_builder.h",
+    "entity_builder_factory.cc",
+    "entity_builder_factory.h",
+    "fake_server.cc",
+    "fake_server.h",
+    "fake_server_http_post_provider.cc",
+    "fake_server_http_post_provider.h",
+    "fake_server_network_resources.cc",
+    "fake_server_network_resources.h",
+    "fake_server_verifier.cc",
+    "fake_server_verifier.h",
+    "sessions_hierarchy.cc",
+    "sessions_hierarchy.h",
+  ]
+
+  deps = [
+    "//base",
+    "//components/sync",
+    "//net",
+    "//services/network/public/cpp:cpp",
+    "//testing/gtest",
+    "//url",
+  ]
+
+  public_deps = [
+    "//testing/gmock",
+    "//third_party/protobuf:protobuf_lite",
+  ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+}
+
+if (is_android) {
+  generate_jni("fake_server_jni") {
+    testonly = true
+    sources = [
+      "//chrome/android/javatests/src/org/chromium/chrome/browser/sync/FakeServerHelper.java",
+    ]
+  }
+
+  static_library("fake_server_android") {
+    testonly = true
+    sources = [
+      "android/fake_server_helper_android.cc",
+      "android/fake_server_helper_android.h",
+    ]
+    deps = [
+      ":fake_server",
+      ":fake_server_jni",
+      "//base",
+      "//components/sync",
+      "//testing/gtest",
+      "//url:url",
+    ]
+  }
+}

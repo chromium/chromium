@@ -10,6 +10,8 @@
 deps = {
     "src/tools/cros/":
         "https://src.chromium.org/chrome/trunk/src/tools/cros/",
+    "src/components/variations/service":
+        "https://src.chromium.org/chrome/trunk/src/variations/service/",
 }
 
 # Both contest/test/gpu and tools/perf will pull in telemetry.
@@ -18,6 +20,6 @@ deps_includes = {
         "https://src.chromium.org/chrome/trunk/src/content/test/gpu/bootstrap_deps",
     "src/tools/perf/bootstrap_deps":
         "https://src.chromium.org/chrome/trunk/src/tools/perf/bootstrap_deps",
-    "src/chrome/browser/policy/test/bootstrap_deps":
-        "https://src.chromium.org/chrome/trunk/src/chrome/browser/policy/test/bootstrap_deps",
+    "src/components/policy/test_support/bootstrap_deps":
+        "https://src.chromium.org/chrome/trunk/src/components/policy/test_support/bootstrap_deps",
 }

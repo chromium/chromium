@@ -30,6 +30,7 @@
 #include <cmath>
 #include <cstdlib>
 
+#include "base/compiler_specific.h"
 #include "third_party/blink/renderer/platform/geometry/float_box.h"
 #include "third_party/blink/renderer/platform/geometry/float_quad.h"
 #include "third_party/blink/renderer/platform/geometry/float_rect.h"
@@ -39,7 +40,6 @@
 #include "third_party/blink/renderer/platform/transforms/affine_transform.h"
 #include "third_party/blink/renderer/platform/transforms/rotation.h"
 #include "third_party/blink/renderer/platform/wtf/assertions.h"
-#include "third_party/blink/renderer/platform/wtf/cpu.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "ui/gfx/transform.h"
@@ -48,7 +48,7 @@
 #include <emmintrin.h>
 #endif
 
-#if HAVE_MIPS_MSA_INTRINSICS
+#if defined(HAVE_MIPS_MSA_INTRINSICS)
 #include "third_party/blink/renderer/platform/cpu/mips/common_macros_msa.h"
 #endif
 
@@ -340,7 +340,7 @@ static bool Inverse(const TransformationMatrix::Matrix4& matrix,
       : "memory", "v0", "v1", "v2", "v3", "v4", "v5", "v6", "v7", "v16", "v17",
         "v18", "v19", "v20", "v21", "v22", "v23", "24", "25", "v26", "v27",
         "v28", "v29", "v30");
-#elif HAVE_MIPS_MSA_INTRINSICS
+#elif defined(HAVE_MIPS_MSA_INTRINSICS)
   const double rDet = 1 / det;
   const double* mat = &(matrix[0][0]);
   v2f64 mat0, mat1, mat2, mat3, mat4, mat5, mat6, mat7;
@@ -789,7 +789,6 @@ static void Slerp(double qa[4], const double qb[4], double t) {
 // End of Supporting Math Functions
 
 TransformationMatrix::TransformationMatrix(const AffineTransform& t) {
-  CheckAlignment();
   SetMatrix(t.A(), t.B(), t.C(), t.D(), t.E(), t.F());
 }
 
@@ -1281,8 +1280,6 @@ TransformationMatrix& TransformationMatrix::Zoom(double zoom_factor) {
 // prod.Multiply(rhs);
 // lhs.MapPoint(rhs.MapPoint(p)) == prod.MapPoint(p)
 // Also 'prod' corresponds to CSS transform:rotateZ(90deg)translate(12px,34px).
-// TODO(crbug.com/584508): As of 2017-04-11, the ARM64 CQ bots skip
-// blink_platform_unittests, therefore the ARM64 branch is not tested by CQ.
 TransformationMatrix& TransformationMatrix::Multiply(
     const TransformationMatrix& mat) {
 #if defined(ARCH_CPU_ARM64)
@@ -1345,7 +1342,7 @@ TransformationMatrix& TransformationMatrix::Multiply(
       : "memory", "x9", "v16", "v17", "v18", "v19", "v20", "v21", "v22", "v23",
         "v24", "v25", "v26", "v27", "v28", "v29", "v30", "v31", "v0", "v1",
         "v2", "v3", "v4", "v5", "v6", "v7");
-#elif HAVE_MIPS_MSA_INTRINSICS
+#elif defined(HAVE_MIPS_MSA_INTRINSICS)
   v2f64 v_right_m0, v_right_m1, v_right_m2, v_right_m3, v_right_m4, v_right_m5,
       v_right_m6, v_right_m7;
   v2f64 v_left_m0, v_left_m1, v_left_m2, v_left_m3, v_left_m4, v_left_m5,
@@ -1434,18 +1431,13 @@ TransformationMatrix& TransformationMatrix::Multiply(
   ST_DP(v_tmp_m1, &(matrix_[2][2]));
   ST_DP(v_tmp_m2, &(matrix_[3][0]));
   ST_DP(v_tmp_m3, &(matrix_[3][2]));
-#elif defined(TRANSFORMATION_MATRIX_USE_X86_64_SSE2)
-  static_assert(alignof(TransformationMatrix) == 16,
-                "TransformationMatrix must be aligned.");
-  static_assert(alignof(TransformationMatrix::Matrix4) == 16,
-                "Matrix4 must be aligned.");
-
+#elif defined(ARCH_CPU_X86_64)
   // x86_64 has 16 XMM registers which is enough to do the multiplication fully
   // in registers.
-  __m128d matrix_block_a = _mm_load_pd(&(matrix_[0][0]));
-  __m128d matrix_block_c = _mm_load_pd(&(matrix_[1][0]));
-  __m128d matrix_block_e = _mm_load_pd(&(matrix_[2][0]));
-  __m128d matrix_block_g = _mm_load_pd(&(matrix_[3][0]));
+  __m128d matrix_block_a = _mm_loadu_pd(&(matrix_[0][0]));
+  __m128d matrix_block_c = _mm_loadu_pd(&(matrix_[1][0]));
+  __m128d matrix_block_e = _mm_loadu_pd(&(matrix_[2][0]));
+  __m128d matrix_block_g = _mm_loadu_pd(&(matrix_[3][0]));
 
   // First column.
   __m128d other_matrix_first_param = _mm_set1_pd(mat.matrix_[0][0]);
@@ -1459,15 +1451,15 @@ TransformationMatrix& TransformationMatrix::Multiply(
   __m128d temp2 = _mm_mul_pd(matrix_block_e, other_matrix_third_param);
   __m128d temp3 = _mm_mul_pd(matrix_block_g, other_matrix_fourth_param);
 
-  __m128d matrix_block_b = _mm_load_pd(&(matrix_[0][2]));
-  __m128d matrix_block_d = _mm_load_pd(&(matrix_[1][2]));
-  __m128d matrix_block_f = _mm_load_pd(&(matrix_[2][2]));
-  __m128d matrix_block_h = _mm_load_pd(&(matrix_[3][2]));
+  __m128d matrix_block_b = _mm_loadu_pd(&(matrix_[0][2]));
+  __m128d matrix_block_d = _mm_loadu_pd(&(matrix_[1][2]));
+  __m128d matrix_block_f = _mm_loadu_pd(&(matrix_[2][2]));
+  __m128d matrix_block_h = _mm_loadu_pd(&(matrix_[3][2]));
 
   accumulator = _mm_add_pd(accumulator, temp1);
   accumulator = _mm_add_pd(accumulator, temp2);
   accumulator = _mm_add_pd(accumulator, temp3);
-  _mm_store_pd(&matrix_[0][0], accumulator);
+  _mm_storeu_pd(&matrix_[0][0], accumulator);
 
   // output02 and output03.
   accumulator = _mm_mul_pd(matrix_block_b, other_matrix_first_param);
@@ -1478,7 +1470,7 @@ TransformationMatrix& TransformationMatrix::Multiply(
   accumulator = _mm_add_pd(accumulator, temp1);
   accumulator = _mm_add_pd(accumulator, temp2);
   accumulator = _mm_add_pd(accumulator, temp3);
-  _mm_store_pd(&matrix_[0][2], accumulator);
+  _mm_storeu_pd(&matrix_[0][2], accumulator);
 
   // Second column.
   other_matrix_first_param = _mm_set1_pd(mat.matrix_[1][0]);
@@ -1495,7 +1487,7 @@ TransformationMatrix& TransformationMatrix::Multiply(
   accumulator = _mm_add_pd(accumulator, temp1);
   accumulator = _mm_add_pd(accumulator, temp2);
   accumulator = _mm_add_pd(accumulator, temp3);
-  _mm_store_pd(&matrix_[1][0], accumulator);
+  _mm_storeu_pd(&matrix_[1][0], accumulator);
 
   // output12 and output13.
   accumulator = _mm_mul_pd(matrix_block_b, other_matrix_first_param);
@@ -1506,7 +1498,7 @@ TransformationMatrix& TransformationMatrix::Multiply(
   accumulator = _mm_add_pd(accumulator, temp1);
   accumulator = _mm_add_pd(accumulator, temp2);
   accumulator = _mm_add_pd(accumulator, temp3);
-  _mm_store_pd(&matrix_[1][2], accumulator);
+  _mm_storeu_pd(&matrix_[1][2], accumulator);
 
   // Third column.
   other_matrix_first_param = _mm_set1_pd(mat.matrix_[2][0]);
@@ -1523,7 +1515,7 @@ TransformationMatrix& TransformationMatrix::Multiply(
   accumulator = _mm_add_pd(accumulator, temp1);
   accumulator = _mm_add_pd(accumulator, temp2);
   accumulator = _mm_add_pd(accumulator, temp3);
-  _mm_store_pd(&matrix_[2][0], accumulator);
+  _mm_storeu_pd(&matrix_[2][0], accumulator);
 
   // output22 and output23.
   accumulator = _mm_mul_pd(matrix_block_b, other_matrix_first_param);
@@ -1534,7 +1526,7 @@ TransformationMatrix& TransformationMatrix::Multiply(
   accumulator = _mm_add_pd(accumulator, temp1);
   accumulator = _mm_add_pd(accumulator, temp2);
   accumulator = _mm_add_pd(accumulator, temp3);
-  _mm_store_pd(&matrix_[2][2], accumulator);
+  _mm_storeu_pd(&matrix_[2][2], accumulator);
 
   // Fourth column.
   other_matrix_first_param = _mm_set1_pd(mat.matrix_[3][0]);
@@ -1551,7 +1543,7 @@ TransformationMatrix& TransformationMatrix::Multiply(
   accumulator = _mm_add_pd(accumulator, temp1);
   accumulator = _mm_add_pd(accumulator, temp2);
   accumulator = _mm_add_pd(accumulator, temp3);
-  _mm_store_pd(&matrix_[3][0], accumulator);
+  _mm_storeu_pd(&matrix_[3][0], accumulator);
 
   // output32 and output33.
   accumulator = _mm_mul_pd(matrix_block_b, other_matrix_first_param);
@@ -1562,7 +1554,7 @@ TransformationMatrix& TransformationMatrix::Multiply(
   accumulator = _mm_add_pd(accumulator, temp1);
   accumulator = _mm_add_pd(accumulator, temp2);
   accumulator = _mm_add_pd(accumulator, temp3);
-  _mm_store_pd(&matrix_[3][2], accumulator);
+  _mm_storeu_pd(&matrix_[3][2], accumulator);
 #else
   Matrix4 tmp;
 
@@ -2030,7 +2022,9 @@ bool TransformationMatrix::Preserves2dAxisAlignment() const {
   if (has_x_or_y_perspective)
     return false;
 
-  constexpr double kEpsilon = std::numeric_limits<double>::epsilon();
+  // Use float epsilon here, not double, to round very small rotations back
+  // to zero.
+  constexpr double kEpsilon = std::numeric_limits<float>::epsilon();
 
   int num_non_zero_in_row_1 = 0;
   int num_non_zero_in_row_2 = 0;
@@ -2079,28 +2073,19 @@ void TransformationMatrix::ToColumnMajorFloatArray(FloatMatrix4& result) const {
 SkMatrix44 TransformationMatrix::ToSkMatrix44(
     const TransformationMatrix& matrix) {
   SkMatrix44 ret(SkMatrix44::kUninitialized_Constructor);
-  ret.setDouble(0, 0, matrix.M11());
-  ret.setDouble(0, 1, matrix.M21());
-  ret.setDouble(0, 2, matrix.M31());
-  ret.setDouble(0, 3, matrix.M41());
-  ret.setDouble(1, 0, matrix.M12());
-  ret.setDouble(1, 1, matrix.M22());
-  ret.setDouble(1, 2, matrix.M32());
-  ret.setDouble(1, 3, matrix.M42());
-  ret.setDouble(2, 0, matrix.M13());
-  ret.setDouble(2, 1, matrix.M23());
-  ret.setDouble(2, 2, matrix.M33());
-  ret.setDouble(2, 3, matrix.M43());
-  ret.setDouble(3, 0, matrix.M14());
-  ret.setDouble(3, 1, matrix.M24());
-  ret.setDouble(3, 2, matrix.M34());
-  ret.setDouble(3, 3, matrix.M44());
+  ret.set4x4(matrix.M11(), matrix.M12(), matrix.M13(), matrix.M14(),
+             matrix.M21(), matrix.M22(), matrix.M23(), matrix.M24(),
+             matrix.M31(), matrix.M32(), matrix.M33(), matrix.M34(),
+             matrix.M41(), matrix.M42(), matrix.M43(), matrix.M44());
   return ret;
 }
 
 gfx::Transform TransformationMatrix::ToTransform(
     const TransformationMatrix& matrix) {
-  return gfx::Transform(TransformationMatrix::ToSkMatrix44(matrix));
+  return gfx::Transform(matrix.M11(), matrix.M21(), matrix.M31(), matrix.M41(),
+                        matrix.M12(), matrix.M22(), matrix.M32(), matrix.M42(),
+                        matrix.M13(), matrix.M23(), matrix.M33(), matrix.M43(),
+                        matrix.M14(), matrix.M24(), matrix.M34(), matrix.M44());
 }
 
 String TransformationMatrix::ToString(bool as_matrix) const {
@@ -2148,9 +2133,9 @@ static double RoundCloseToZero(double number) {
 }
 
 std::unique_ptr<JSONArray> TransformAsJSONArray(const TransformationMatrix& t) {
-  std::unique_ptr<JSONArray> array = JSONArray::Create();
+  auto array = std::make_unique<JSONArray>();
   {
-    std::unique_ptr<JSONArray> row = JSONArray::Create();
+    auto row = std::make_unique<JSONArray>();
     row->PushDouble(RoundCloseToZero(t.M11()));
     row->PushDouble(RoundCloseToZero(t.M12()));
     row->PushDouble(RoundCloseToZero(t.M13()));
@@ -2158,7 +2143,7 @@ std::unique_ptr<JSONArray> TransformAsJSONArray(const TransformationMatrix& t) {
     array->PushArray(std::move(row));
   }
   {
-    std::unique_ptr<JSONArray> row = JSONArray::Create();
+    auto row = std::make_unique<JSONArray>();
     row->PushDouble(RoundCloseToZero(t.M21()));
     row->PushDouble(RoundCloseToZero(t.M22()));
     row->PushDouble(RoundCloseToZero(t.M23()));
@@ -2166,7 +2151,7 @@ std::unique_ptr<JSONArray> TransformAsJSONArray(const TransformationMatrix& t) {
     array->PushArray(std::move(row));
   }
   {
-    std::unique_ptr<JSONArray> row = JSONArray::Create();
+    auto row = std::make_unique<JSONArray>();
     row->PushDouble(RoundCloseToZero(t.M31()));
     row->PushDouble(RoundCloseToZero(t.M32()));
     row->PushDouble(RoundCloseToZero(t.M33()));
@@ -2174,7 +2159,7 @@ std::unique_ptr<JSONArray> TransformAsJSONArray(const TransformationMatrix& t) {
     array->PushArray(std::move(row));
   }
   {
-    std::unique_ptr<JSONArray> row = JSONArray::Create();
+    auto row = std::make_unique<JSONArray>();
     row->PushDouble(RoundCloseToZero(t.M41()));
     row->PushDouble(RoundCloseToZero(t.M42()));
     row->PushDouble(RoundCloseToZero(t.M43()));

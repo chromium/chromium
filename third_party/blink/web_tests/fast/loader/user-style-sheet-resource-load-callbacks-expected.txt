@@ -1,1 +1,0 @@
-This tests that no delegate methods are sent for the user style sheet. No stylesheet load messages should be dumped.

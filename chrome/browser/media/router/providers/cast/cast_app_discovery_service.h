@@ -138,7 +138,7 @@ class CastAppDiscoveryServiceImpl : public CastAppDiscoveryService,
   const base::TickClock* const clock_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-  base::WeakPtrFactory<CastAppDiscoveryServiceImpl> weak_ptr_factory_;
+  base::WeakPtrFactory<CastAppDiscoveryServiceImpl> weak_ptr_factory_{this};
   DISALLOW_COPY_AND_ASSIGN(CastAppDiscoveryServiceImpl);
 };
 

@@ -11,7 +11,7 @@
 #include "ui/views/view.h"
 #include "ui/views/views_export.h"
 
-typedef unsigned int SkColor;
+using SkColor = unsigned int;
 
 namespace views {
 
@@ -39,26 +39,25 @@ class VIEWS_EXPORT SliderListener {
   virtual void SliderDragEnded(Slider* sender) {}
 
  protected:
-  virtual ~SliderListener() {}
+  virtual ~SliderListener() = default;
 };
 
 class VIEWS_EXPORT Slider : public View, public gfx::AnimationDelegate {
  public:
-  // Internal class name.
-  static const char kViewClassName[];
+  METADATA_HEADER(Slider);
 
   explicit Slider(SliderListener* listener);
   ~Slider() override;
 
-  float value() const { return value_; }
+  float GetValue() const;
   void SetValue(float value);
 
-  void set_enable_accessibility_events(bool enabled) {
-    accessibility_events_enabled_ = enabled;
-  }
+  bool GetEnableAccessibilityEvents() const;
+  void SetEnableAccessibilityEvents(bool enabled);
 
-  // Update UI based on control on/off state.
-  void UpdateState(bool control_on);
+  // Gets/Sets IsActive state
+  bool GetIsActive() const;
+  void SetIsActive(bool is_active);
 
  protected:
   // Returns the current position of the thumb on the slider.
@@ -92,7 +91,6 @@ class VIEWS_EXPORT Slider : public View, public gfx::AnimationDelegate {
   void OnSliderDragEnded();
 
   // views::View:
-  const char* GetClassName() const override;
   gfx::Size CalculatePreferredSize() const override;
   bool OnMousePressed(const ui::MouseEvent& event) override;
   bool OnMouseDragged(const ui::MouseEvent& event) override;

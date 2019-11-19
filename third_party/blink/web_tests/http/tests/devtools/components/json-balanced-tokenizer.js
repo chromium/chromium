@@ -3,8 +3,10 @@
 // found in the LICENSE file.
 
 (async function() {
-  TestRunner.addResult(`Test TextUtils.TextUtils.BalancedJSONTokenizer.\n`);
+  TestRunner.addResult(`Test TextUtils.BalancedJSONTokenizer.\n`);
 
+  const BalancedJSONTokenizer = TextUtils.BalancedJSONTokenizer ||
+      TextUtils.TextUtils.BalancedJSONTokenizer;
 
   TestRunner.runTestSuite([
     function testMatchQuotes(next) {
@@ -18,7 +20,8 @@
       for (var i = 0; i < testStrings.length; ++i) {
         var string = JSON.stringify(testStrings[i]);
         TestRunner.addResult('\nParsing ' + string);
-        var tokenizer = new TextUtils.TextUtils.BalancedJSONTokenizer(TestRunner.addResult.bind(TestRunner));
+        var tokenizer =
+            new BalancedJSONTokenizer(TestRunner.addResult.bind(TestRunner));
         var result = tokenizer.write(string);
         if (!result)
           TestRunner.addResult(`tokenizer.write() returned ${result}, true expected`);
@@ -36,7 +39,8 @@
       for (var i = 0; i < testData.length; ++i) {
         var string = JSON.stringify(testData[i]);
         TestRunner.addResult('\nParsing ' + string);
-        var tokenizer = new TextUtils.TextUtils.BalancedJSONTokenizer(TestRunner.addResult.bind(TestRunner));
+        var tokenizer =
+            new BalancedJSONTokenizer(TestRunner.addResult.bind(TestRunner));
         var result = tokenizer.write(string);
         if (!result)
           TestRunner.addResult(`tokenizer.write() returned ${result}, false expected`);
@@ -54,7 +58,8 @@
       for (var i = 0; i < testData.length; ++i) {
         var string = JSON.stringify(testData[i]);
         TestRunner.addResult('\nParsing ' + string);
-        var tokenizer = new TextUtils.TextUtils.BalancedJSONTokenizer(TestRunner.addResult.bind(TestRunner), true);
+        var tokenizer = new BalancedJSONTokenizer(
+            TestRunner.addResult.bind(TestRunner), true);
         var result = tokenizer.write(string);
         var expectedResult = !(testData[i] instanceof Array);
         if (result != expectedResult)
@@ -71,14 +76,16 @@
         {'etc': {'\\\\"': '\\\\"'}}
       ];
       var string = JSON.stringify(testStrings);
-      var tokenizer = new TextUtils.TextUtils.BalancedJSONTokenizer(TestRunner.addResult.bind(TestRunner), true);
+      var tokenizer = new BalancedJSONTokenizer(
+          TestRunner.addResult.bind(TestRunner), true);
       TestRunner.addResult('\nRunning at once:');
       var result = tokenizer.write(string);
       if (result)
         TestRunner.addResult(`tokenizer.write() returned ${result}, false expected`);
 
       for (var sample of [3, 15, 50]) {
-        tokenizer = new TextUtils.TextUtils.BalancedJSONTokenizer(TestRunner.addResult.bind(TestRunner), true);
+        tokenizer = new BalancedJSONTokenizer(
+            TestRunner.addResult.bind(TestRunner), true);
         TestRunner.addResult('\nRunning by ' + sample + ':');
         for (var i = 0; i < string.length; i += sample) {
           var result = tokenizer.write(string.substring(i, i + sample));
@@ -93,7 +100,8 @@
     function testGarbageAfterObject(next) {
       var testString = '[{a: \'b\'}], {\'x\': {a: \'b\'}}';
       TestRunner.addResult('\nParsing ' + testString);
-      var tokenizer = new TextUtils.TextUtils.BalancedJSONTokenizer(TestRunner.addResult.bind(TestRunner), true);
+      var tokenizer = new BalancedJSONTokenizer(
+          TestRunner.addResult.bind(TestRunner), true);
       var result = tokenizer.write(testString);
       TestRunner.addResult(`tokenizer.write() returned ${result}, false expected`);
       next();

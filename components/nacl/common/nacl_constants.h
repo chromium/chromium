@@ -20,9 +20,6 @@ extern const char kPnaclPluginDescription[];
 
 extern const base::FilePath::CharType kInternalNaClPluginFileName[];
 
-extern const char kNaClBrokerServiceName[];
-extern const char kNaClLoaderServiceName[];
-
 }  // namespace nacl
 
 #endif  // COMPONENTS_NACL_COMMON_NACL_CONSTANTS_H_

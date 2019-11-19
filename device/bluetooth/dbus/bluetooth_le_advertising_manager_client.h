@@ -49,37 +49,38 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothLEAdvertisingManagerClient
   // The ErrorCallback is used by advertising manager methods to indicate
   // failure. It receives two arguments: the name of the error in |error_name|
   // and an optional message in |error_message|.
-  using ErrorCallback = base::Callback<void(const std::string& error_name,
-                                            const std::string& error_message)>;
+  using ErrorCallback =
+      base::OnceCallback<void(const std::string& error_name,
+                              const std::string& error_message)>;
 
   // Registers an advertisement with the DBus object path
   // |advertisement_object_path| with BlueZ's advertising manager.
   virtual void RegisterAdvertisement(
       const dbus::ObjectPath& manager_object_path,
       const dbus::ObjectPath& advertisement_object_path,
-      const base::Closure& callback,
-      const ErrorCallback& error_callback) = 0;
+      base::OnceClosure callback,
+      ErrorCallback error_callback) = 0;
 
   // Unregisters an advertisement with the DBus object path
   // |advertisement_object_path| with BlueZ's advertising manager.
   virtual void UnregisterAdvertisement(
       const dbus::ObjectPath& manager_object_path,
       const dbus::ObjectPath& advertisement_object_path,
-      const base::Closure& callback,
-      const ErrorCallback& error_callback) = 0;
+      base::OnceClosure callback,
+      ErrorCallback error_callback) = 0;
 
   // Set's the advertising interval.
   virtual void SetAdvertisingInterval(
       const dbus::ObjectPath& manager_object_path,
       uint16_t min_interval_ms,
       uint16_t max_interval_ms,
-      const base::Closure& callback,
-      const ErrorCallback& error_callback) = 0;
+      base::OnceClosure callback,
+      ErrorCallback error_callback) = 0;
 
   // Resets advertising.
   virtual void ResetAdvertising(const dbus::ObjectPath& manager_object_path,
-                                const base::Closure& callback,
-                                const ErrorCallback& error_callback) = 0;
+                                base::OnceClosure callback,
+                                ErrorCallback error_callback) = 0;
 
   // Creates the instance.
   static BluetoothLEAdvertisingManagerClient* Create();

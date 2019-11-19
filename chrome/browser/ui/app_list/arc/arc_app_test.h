@@ -10,7 +10,7 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "components/arc/common/app.mojom.h"
+#include "components/arc/mojom/app.mojom.h"
 
 namespace arc {
 namespace mojom {

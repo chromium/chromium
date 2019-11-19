@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+FAIL serialization via CSSStyleDeclaration assert_equals: expected "appearance: none;" but got ""
+FAIL serialization via CSSStyleRule assert_equals: expected "#foo { appearance: none; }" but got "#foo { }"
+FAIL serialization via CSSMediaRule assert_equals: expected "@media print {\n  #foo { appearance: none; }\n}" but got "@media print {\n  #foo { }\n}"
+Harness: the test ran to completion.
+

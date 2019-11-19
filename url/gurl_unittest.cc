@@ -539,11 +539,14 @@ TEST(GURLTest, PathForRequest) {
 
   for (size_t i = 0; i < base::size(cases); i++) {
     GURL url(cases[i].input);
-    std::string path_request = url.PathForRequest();
-    EXPECT_EQ(cases[i].expected, path_request);
+    EXPECT_EQ(cases[i].expected, url.PathForRequest());
+    EXPECT_EQ(cases[i].expected, url.PathForRequestPiece());
     EXPECT_EQ(cases[i].inner_expected == NULL, url.inner_url() == NULL);
-    if (url.inner_url() && cases[i].inner_expected)
+    if (url.inner_url() && cases[i].inner_expected) {
       EXPECT_EQ(cases[i].inner_expected, url.inner_url()->PathForRequest());
+      EXPECT_EQ(cases[i].inner_expected,
+                url.inner_url()->PathForRequestPiece());
+    }
   }
 }
 
@@ -566,11 +569,6 @@ TEST(GURLTest, EffectiveIntPort) {
     {"ftp://www.google.com/", 21},
     {"ftp://www.google.com:21/", 21},
     {"ftp://www.google.com:80/", 80},
-
-    // gopher
-    {"gopher://www.google.com/", 70},
-    {"gopher://www.google.com:70/", 70},
-    {"gopher://www.google.com:80/", 80},
 
     // file - no port
     {"file://www.google.com/", PORT_UNSPECIFIED},
@@ -863,9 +861,32 @@ TEST(GURLTest, IsAboutBlank) {
   const std::string kNotAboutBlankUrls[] = {
       "http:blank",      "about:blan",          "about://blank",
       "about:blank/foo", "about://:8000/blank", "about://foo:foo@/blank",
-      "foo@about:blank", "foo:bar@about:blank", "about:blank:8000"};
+      "foo@about:blank", "foo:bar@about:blank", "about:blank:8000",
+      "about:blANk"};
   for (const auto& url : kNotAboutBlankUrls)
     EXPECT_FALSE(GURL(url).IsAboutBlank()) << url;
+}
+
+TEST(GURLTest, IsAboutSrcdoc) {
+  const std::string kAboutSrcdocUrls[] = {
+      "about:srcdoc", "about:srcdoc/", "about:srcdoc?foo", "about:srcdoc/#foo",
+      "about:srcdoc?foo#foo"};
+  for (const auto& url : kAboutSrcdocUrls)
+    EXPECT_TRUE(GURL(url).IsAboutSrcdoc()) << url;
+
+  const std::string kNotAboutSrcdocUrls[] = {"http:srcdoc",
+                                             "about:srcdo",
+                                             "about://srcdoc",
+                                             "about://srcdoc\\",
+                                             "about:srcdoc/foo",
+                                             "about://:8000/srcdoc",
+                                             "about://foo:foo@/srcdoc",
+                                             "foo@about:srcdoc",
+                                             "foo:bar@about:srcdoc",
+                                             "about:srcdoc:8000",
+                                             "about:srCDOc"};
+  for (const auto& url : kNotAboutSrcdocUrls)
+    EXPECT_FALSE(GURL(url).IsAboutSrcdoc()) << url;
 }
 
 TEST(GURLTest, EqualsIgnoringRef) {

@@ -1,17 +1,6 @@
 {
   "layers": [
     {
-      "name": "LayoutView #document",
-      "bounds": [800, 600],
-      "drawsContent": false,
-      "backgroundColor": "#FFFFFF"
-    },
-    {
-      "name": "Scrolling Layer",
-      "bounds": [800, 600],
-      "drawsContent": false
-    },
-    {
       "name": "Scrolling Contents Layer",
       "bounds": [800, 600],
       "contentsOpaque": true,
@@ -38,17 +27,17 @@
           "reason": "style change"
         },
         {
-          "object": "LayoutTableCell TD id='t3'",
+          "object": "LayoutNGTableCell TD id='t3'",
           "rect": [225, 269, 112, 100],
           "reason": "style change"
         },
         {
-          "object": "LayoutTableCell TD id='t1'",
+          "object": "LayoutNGTableCell TD id='t1'",
           "rect": [225, 69, 112, 100],
           "reason": "style change"
         },
         {
-          "object": "LayoutTableCell TD id='t2'",
+          "object": "LayoutNGTableCell TD id='t2'",
           "rect": [8, 269, 110, 100],
           "reason": "style change"
         }

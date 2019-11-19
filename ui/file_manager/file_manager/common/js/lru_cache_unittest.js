@@ -116,15 +116,17 @@ function testLRUCacheWithIndividualSizes() {
   assertEquals(8, cache.size());
 }
 
-/** @constructor */
-function RandomNumberGenerator(seed) {
-  this.x = seed;
-}
+class RandomNumberGenerator {
+  /** @param {number} seed */
+  constructor(seed) {
+    this.x = seed;
+  }
 
-RandomNumberGenerator.prototype.random = function() {
-  this.x = (32453 * this.x + 254119) % (1 << 24);
-  return this.x >> 4;
-};
+  random() {
+    this.x = (32453 * this.x + 254119) % (1 << 24);
+    return this.x >> 4;
+  }
+}
 
 function generateRandom3letters(generator) {
   const ALPHA = 'abcdefghijklmnopqrstuvwxyz';

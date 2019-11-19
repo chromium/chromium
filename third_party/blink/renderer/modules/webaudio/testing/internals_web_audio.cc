@@ -5,7 +5,7 @@
 #include "third_party/blink/renderer/modules/webaudio/testing/internals_web_audio.h"
 
 #include "third_party/blink/renderer/modules/webaudio/audio_node.h"
-#include "third_party/blink/renderer/platform/instance_counters.h"
+#include "third_party/blink/renderer/platform/instrumentation/instance_counters.h"
 
 namespace blink {
 

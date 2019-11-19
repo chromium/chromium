@@ -9,20 +9,11 @@
 #include "third_party/blink/public/platform/web_cursor_info.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/cursor/cursor_util.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/ozone/public/cursor_factory_ozone.h"
-
-namespace {
-const int kDefaultMaxCursorWidth = 64;
-const int kDefaultMaxCursorHeight = 64;
-}
 
 namespace content {
 
 ui::PlatformCursor WebCursor::GetPlatformCursor(const ui::Cursor& cursor) {
-  if (features::IsUsingWindowService())
-    return nullptr;
-
   if (!platform_cursor_) {
     platform_cursor_ = ui::CursorFactoryOzone::GetInstance()->CreateImageCursor(
         cursor.GetBitmap(), cursor.GetHotspot(), cursor.device_scale_factor());
@@ -40,11 +31,9 @@ void WebCursor::SetDisplayInfo(const display::Display& display) {
   rotation_ = display.rotation();
   maximum_cursor_size_ = display.maximum_cursor_size();
   // TODO(oshima): Identify if it's possible to remove this check here and move
-  // the kDefaultMaxCursor{Width,Height} constants to a single place.
-  // crbug.com/603512
+  // the kDefaultMaxSize constants to a single place. crbug.com/603512
   if (maximum_cursor_size_.width() == 0 || maximum_cursor_size_.height() == 0)
-    maximum_cursor_size_ =
-        gfx::Size(kDefaultMaxCursorWidth, kDefaultMaxCursorHeight);
+    maximum_cursor_size_ = gfx::Size(kDefaultMaxSize, kDefaultMaxSize);
   if (platform_cursor_)
     ui::CursorFactoryOzone::GetInstance()->UnrefImageCursor(platform_cursor_);
   platform_cursor_ = NULL;
@@ -56,17 +45,9 @@ float WebCursor::GetCursorScaleFactor(SkBitmap* bitmap) {
   DCHECK_LT(0, maximum_cursor_size_.width());
   DCHECK_LT(0, maximum_cursor_size_.height());
   return std::min(
-      {device_scale_factor_ / custom_scale_,
+      {device_scale_factor_ / info_.image_scale_factor,
        static_cast<float>(maximum_cursor_size_.width()) / bitmap->width(),
        static_cast<float>(maximum_cursor_size_.height()) / bitmap->height()});
-}
-
-void WebCursor::InitPlatformData() {
-  platform_cursor_ = NULL;
-  device_scale_factor_ = 1.f;
-  rotation_ = display::Display::ROTATE_0;
-  maximum_cursor_size_ =
-      gfx::Size(kDefaultMaxCursorWidth, kDefaultMaxCursorHeight);
 }
 
 bool WebCursor::IsPlatformDataEqual(const WebCursor& other) const {

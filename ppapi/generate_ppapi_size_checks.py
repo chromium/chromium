@@ -7,6 +7,8 @@
 have appropriate size checking.
 """
 
+from __future__ import print_function
+
 import optparse
 import os
 import subprocess
@@ -166,12 +168,12 @@ def CheckAndInsert(typeinfo, typeinfo_map):
     return
   elif typeinfo.name in typeinfo_map:
     if typeinfo.size != typeinfo_map[typeinfo.name].size:
-      print "Error: '" + typeinfo.name + "' is", \
+      print("Error: '" + typeinfo.name + "' is", \
           typeinfo_map[typeinfo.name].size, \
           "bytes on target '" + typeinfo_map[typeinfo.name].target + \
-          "', but", typeinfo.size, "on target '" + typeinfo.target + "'"
-      print typeinfo_map[typeinfo.name].parsed_line
-      print typeinfo.parsed_line
+          "', but", typeinfo.size, "on target '" + typeinfo.target + "'")
+      print(typeinfo_map[typeinfo.name].parsed_line)
+      print(typeinfo.parsed_line)
       sys.exit(1)
     else:
       # It's already in the map and the sizes match.
@@ -286,7 +288,7 @@ def main(argv):
   options, args = parser.parse_args(argv)
   if args:
     parser.print_help()
-    print 'ERROR: invalid argument'
+    print('ERROR: invalid argument')
     sys.exit(1)
 
   clang_executable = os.path.join(options.clang_path, 'clang')
@@ -347,15 +349,15 @@ def main(argv):
         # The sizes don't match, but there's no reason they couldn't.  It's
         # probably due to an alignment mismatch between Win32/NaCl vs Linux32/
         # Mac32.
-        print "Error: '" + typename + "' is", typeinfo32.size, \
+        print("Error: '" + typename + "' is", typeinfo32.size, \
             "bytes on target '" + typeinfo32.target + \
-            "', but", typeinfo64.size, "on target '" + typeinfo64.target + "'"
-        print typeinfo32.parsed_line
-        print typeinfo64.parsed_line
+            "', but", typeinfo64.size, "on target '" + typeinfo64.target + "'")
+        print(typeinfo32.parsed_line)
+        print(typeinfo64.parsed_line)
         sys.exit(1)
     else:
-      print "WARNING:  Type '", typename, "' was defined for target '",
-      print typeinfo32.target, ", but not for any 64-bit targets."
+      print("WARNING:  Type '", typename, "' was defined for target '")
+      print(typeinfo32.target, ", but not for any 64-bit targets.")
 
   # Now we have all the information we need to generate our static assertions.
   # Types that have consistent size across architectures will have the static
@@ -421,4 +423,4 @@ def main(argv):
 
 
 if __name__ == '__main__':
-    sys.exit(main(sys.argv[1:]))
+  sys.exit(main(sys.argv[1:]))

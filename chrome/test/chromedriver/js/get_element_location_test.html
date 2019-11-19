@@ -1,0 +1,73 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<style>
+#parent {
+  position: absolute;
+  background: blue;
+  width: 300px;
+  height: 300px;
+  top: 300px;
+  left: 100px;
+}
+
+#child {
+  position: absolute;
+  background: red;
+  top: 60px;
+  left: 50px;
+  width: 200px;
+  height: 100px;
+}
+
+</style>
+</head>
+<script src='test.js'></script>
+<script src='get_element_location.js'></script>
+<script>
+
+function testElementParentCenterLocation() {
+  var parent = document.getElementById('parent');
+  var location = getElementLocation(parent, true);
+  var x = 100 + 0.5 * 300;
+  var y = 300 + 0.5 * 300;
+  assertEquals(Math.floor(x), Math.floor(location.x));
+  assertEquals(Math.floor(y), Math.floor(location.y));
+}
+
+function testElementChildCenterLocation() {
+  var child = document.getElementById('child');
+  var location = getElementLocation(child, true);
+  var x = 150 + 0.5 * 200;
+  var y = 360 + 0.5 * 100;
+  assertEquals(Math.floor(x), Math.floor(location.x));
+  assertEquals(Math.floor(y), Math.floor(location.y));
+}
+
+function testElementParentTopLeftLocation() {
+  var parent = document.getElementById('parent');
+  var location = getElementLocation(parent, false);
+  var x = 100;
+  var y = 300;
+  assertEquals(Math.floor(x), Math.floor(location.x));
+  assertEquals(Math.floor(y), Math.floor(location.y));
+}
+
+function testElementChildCenterTopLeftLocation() {
+  var child = document.getElementById('child');
+  var location = getElementLocation(child, false);
+  var x = 150;
+  var y = 360;
+  assertEquals(Math.floor(x), Math.floor(location.x));
+  assertEquals(Math.floor(y), Math.floor(location.y));
+}
+
+</script>
+<body>
+<h2>position: absolute;</h2>
+<p>The Parent element has position: absolute.</p>
+<div id="parent">Parent: position: absolute, top: 300px, left: 100px.
+  <div id="child">Child: position: absolute, top: 60px, left: 50px.</div>
+</div>
+</body>
+</html>

@@ -11,11 +11,14 @@
 #include "base/rand_util.h"
 #include "base/test/test_suite.h"
 #include "build/build_config.h"
+#include "content/browser/network_service_instance_impl.h"
+#include "content/public/test/test_host_resolver.h"
 #include "content/test/test_blink_web_unit_test_support.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/web/blink.h"
 
 #if defined(USE_AURA)
-#include "ui/aura/test/aura_test_suite_setup.h"
+#include "ui/aura/env.h"
 #endif
 
 #if defined(USE_X11)
@@ -28,6 +31,31 @@
 
 namespace content {
 
+namespace {
+
+// The global NetworkService object could be created in some tests due to
+// various StoragePartition calls. Since it has a mojo pipe that is bound using
+// the current thread, which goes away between tests, we need to destruct it to
+// avoid calls being dropped silently.
+class ResetNetworkServiceBetweenTests : public testing::EmptyTestEventListener {
+ public:
+  ResetNetworkServiceBetweenTests() = default;
+
+  void OnTestEnd(const testing::TestInfo& test_info) override {
+    // If the network::NetworkService object was instantiated during a unit test
+    // it will be deleted because network_service_instance.cc has it in a
+    // SequenceLocalStorageSlot. However we want to synchronously destruct the
+    // InterfacePtr pointing to it to avoid it getting the connection error
+    // later and have other tests use the InterfacePtr that is invalid.
+    ResetNetworkServiceForTesting();
+  }
+
+ private:
+  DISALLOW_COPY_AND_ASSIGN(ResetNetworkServiceBetweenTests);
+};
+
+}  // namespace
+
 UnitTestTestSuite::UnitTestTestSuite(base::TestSuite* test_suite)
     : test_suite_(test_suite) {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
@@ -36,21 +64,15 @@ UnitTestTestSuite::UnitTestTestSuite(base::TestSuite* test_suite)
   std::string disabled =
       command_line->GetSwitchValueASCII(switches::kDisableFeatures);
 
-  // Unit tests don't currently work with the Network Service enabled.
-  // base::TestSuite will reset the FeatureList, so modify the underlying
-  // CommandLine object to disable the network service when it's parsed again.
-  disabled += ",NetworkService";
-  base::CommandLine new_command_line(command_line->GetProgram());
-  base::CommandLine::SwitchMap switches = command_line->GetSwitches();
-  switches.erase(switches::kDisableFeatures);
-  new_command_line.AppendSwitchASCII(switches::kDisableFeatures, disabled);
-  for (const auto& iter : switches)
-    new_command_line.AppendSwitchNative(iter.first, iter.second);
-  *base::CommandLine::ForCurrentProcess() = new_command_line;
+  ForceCreateNetworkServiceDirectlyForTesting();
 
-  // The TaskScheduler created by the test launcher is never destroyed.
+  testing::TestEventListeners& listeners =
+      testing::UnitTest::GetInstance()->listeners();
+  listeners.Append(new ResetNetworkServiceBetweenTests);
+
+  // The ThreadPool created by the test launcher is never destroyed.
   // Similarly, the FeatureList created here is never destroyed so it
-  // can safely be accessed by the TaskScheduler.
+  // can safely be accessed by the ThreadPool.
   std::unique_ptr<base::FeatureList> feature_list =
       std::make_unique<base::FeatureList>();
   feature_list->InitializeFromCommandLine(enabled, disabled);
@@ -59,7 +81,6 @@ UnitTestTestSuite::UnitTestTestSuite(base::TestSuite* test_suite)
 #if defined(OS_FUCHSIA)
   // Use headless ozone platform on Fuchsia by default.
   // TODO(crbug.com/865172): Remove this flag.
-  command_line = base::CommandLine::ForCurrentProcess();
   if (!command_line->HasSwitch(switches::kOzonePlatform))
     command_line->AppendSwitchASCII(switches::kOzonePlatform, "headless");
 #endif
@@ -69,14 +90,14 @@ UnitTestTestSuite::UnitTestTestSuite(base::TestSuite* test_suite)
 #endif
   DCHECK(test_suite);
   blink_test_support_.reset(new TestBlinkWebUnitTestSupport);
+  test_host_resolver_ = std::make_unique<TestHostResolver>();
 }
 
 UnitTestTestSuite::~UnitTestTestSuite() = default;
 
 int UnitTestTestSuite::Run() {
 #if defined(USE_AURA)
-  // Must be initialized after test suites manipulate feature flags.
-  aura::AuraTestSuiteSetup aura_setup;
+  std::unique_ptr<aura::Env> aura_env = aura::Env::CreateInstance();
 #endif
 
   return test_suite_->Run();

@@ -260,10 +260,12 @@ cr.googleTranslate = (function() {
      * @type {boolean}
      */
     get sourceLang() {
-      if (!libReady || !finished || errorCode != ERROR['NONE'])
+      if (!libReady || !finished || errorCode != ERROR['NONE']) {
         return '';
-      if (!lib.getDetectedLanguage)
-        return 'und'; // Defined as translate::kUnknownLanguageCode in C++.
+      }
+      if (!lib.getDetectedLanguage) {
+        return 'und';
+      }  // Defined as translate::kUnknownLanguageCode in C++.
       return lib.getDetectedLanguage();
     },
 
@@ -273,8 +275,9 @@ cr.googleTranslate = (function() {
      * @type {number}
      */
     get loadTime() {
-      if (loadedTime == 0)
+      if (loadedTime == 0) {
         return 0;
+      }
       return loadedTime - injectedTime;
     },
 
@@ -284,8 +287,9 @@ cr.googleTranslate = (function() {
      * @type {number}
      */
     get readyTime() {
-      if (!libReady)
+      if (!libReady) {
         return 0;
+      }
       return readyTime - injectedTime;
     },
 
@@ -294,8 +298,9 @@ cr.googleTranslate = (function() {
      * @type {number}
      */
     get translationTime() {
-      if (!finished)
+      if (!finished) {
         return 0;
+      }
       return endTime - startTime;
     },
 
@@ -311,8 +316,9 @@ cr.googleTranslate = (function() {
     translate: function(originalLang, targetLang) {
       finished = false;
       errorCode = ERROR['NONE'];
-      if (!libReady)
+      if (!libReady) {
         return false;
+      }
       startTime = performance.now();
       try {
         lib.translatePage(originalLang, targetLang, onTranslateProgress);
@@ -407,14 +413,15 @@ cr.googleTranslate = (function() {
       var xhr = new XMLHttpRequest();
       xhr.open('GET', url, true);
       xhr.onreadystatechange = function() {
-        if (this.readyState != this.DONE)
+        if (this.readyState != this.DONE) {
           return;
+        }
         if (this.status != 200) {
           errorCode = ERROR['SCRIPT_LOAD_ERROR'];
           return;
         }
         eval(this.responseText);
-      }
+      };
       xhr.send();
     }
   };

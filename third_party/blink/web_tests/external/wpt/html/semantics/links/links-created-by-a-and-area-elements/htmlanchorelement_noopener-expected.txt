@@ -1,8 +1,0 @@
-This is a testharness.js-based test.
-PASS Check that rel=noopener with target=_self does a normal load
-PASS Check that rel=noopener with target=_parent does a normal load
-PASS Check that rel=noopener with target=_top does a normal load
-FAIL Check that targeting of rel=noopener with a given name ignores an existing window with that name assert_false: expected false got true
-FAIL Check that targeting of rel=noopener with a given name ignores an existing subframe with that name assert_false: expected false got true
-Harness: the test ran to completion.
-

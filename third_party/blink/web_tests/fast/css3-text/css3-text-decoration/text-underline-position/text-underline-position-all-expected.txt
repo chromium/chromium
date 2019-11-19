@@ -1,5 +1,0 @@
-Test if each value (auto and under) works. Auto means the horizontal line should cross the 'p' letter in the word 'ipsum'. Under should not cross the 'p' letter. Bugzilla link: http://webkit.org/b/102795.
-
-auto lorem ipsum
-under lorem ipsum
-auto lorem ipsum under lorem ipsum

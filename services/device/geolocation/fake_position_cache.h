@@ -23,6 +23,7 @@ class FakePositionCache : public PositionCache {
                      const mojom::Geoposition& position) override;
   const mojom::Geoposition* FindPosition(
       const WifiData& wifi_data) const override;
+  size_t GetPositionCacheSize() const override;
   const mojom::Geoposition& GetLastUsedNetworkPosition() const override;
   void SetLastUsedNetworkPosition(const mojom::Geoposition& position) override;
 

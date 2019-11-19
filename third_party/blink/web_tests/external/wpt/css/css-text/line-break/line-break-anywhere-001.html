@@ -1,8 +1,9 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang=en>
 <meta charset="utf-8">
 <title>CSS Text Test: line-break: anywhere</title>
 <link rel="author" title="Florian Rivoal" href="https://florian.rivoal.net/">
+<link rel="help" title="5.3. Line Breaking Strictness: the line-break property" href="https://www.w3.org/TR/css-text-3/#propdef-line-break">
 <link rel="help" href="https://drafts.csswg.org/css-text-3/#valdef-line-break-anywhere">
 <link rel="match" href="reference/line-break-anywhere-001-ref.html">
 <meta name="flags" content="">
@@ -15,7 +16,7 @@
   background: green;
   font-family: monospace;
   width: 1ch;
-  height: 20em;
+  height: 19em;
 }
 #test {
   width: 1ch;
@@ -24,9 +25,12 @@
   font-family: monospace;
   line-break: anywhere;
 }
+span {
+  background: red;
+}
 </style>
 
 <p>Test passes if there is a green rectangle below and no red.</p>
 <div id=green></div>
 <!-- with line breaks everywhere, none of the following characters should stick out from under the green div -->
-<div id=test>aa-a.a)a,a）a&nbsp;a&#xfeff;a&#x2060;a&#x200d;a･a</div>
+<div id=test>aa-a.a)a,a）a<span>&nbsp;</span>a&#xfeff;a&#x2060;a&#x200d;a･a</div>

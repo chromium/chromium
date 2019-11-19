@@ -7,6 +7,8 @@
  * @fileoverview Preamble for JavaScript to be compiled with Closure Compiler.
  * We don't comple against the Closure library, so this provides a minimal set
  * of 'goog' namespace properties to support things like symbol exports.
+ *
+ * @provideGoog
  */
 
 /** @const */

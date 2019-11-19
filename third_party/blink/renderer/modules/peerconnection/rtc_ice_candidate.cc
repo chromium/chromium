@@ -35,10 +35,11 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_object_builder.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
-#include "third_party/blink/renderer/core/frame/use_counter.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_ice_candidate_init.h"
 #include "third_party/blink/renderer/platform/bindings/exception_messages.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 
 namespace blink {
 
@@ -55,8 +56,7 @@ RTCIceCandidate* RTCIceCandidate::Create(
   if (candidate_init->hasSdpMid())
     sdp_mid = candidate_init->sdpMid();
 
-  // TODO(crbug.com/614958): Change default value to -1.
-  uint16_t sdp_m_line_index = 0;
+  base::Optional<uint16_t> sdp_m_line_index;
   if (candidate_init->hasSdpMLineIndex()) {
     sdp_m_line_index = candidate_init->sdpMLineIndex();
   } else {
@@ -65,7 +65,7 @@ RTCIceCandidate* RTCIceCandidate::Create(
   }
 
   return MakeGarbageCollected<RTCIceCandidate>(WebRTCICECandidate::Create(
-      candidate_init->candidate(), sdp_mid, sdp_m_line_index,
+      candidate_init->candidate(), sdp_mid, std::move(sdp_m_line_index),
       candidate_init->usernameFragment()));
 }
 
@@ -87,9 +87,8 @@ String RTCIceCandidate::sdpMid() const {
 }
 
 uint16_t RTCIceCandidate::sdpMLineIndex(bool& is_null) const {
-  // TODO(crbug.com/614958): Handle case when SdpMLineIndex has no value.
-  is_null = false;
-  return web_candidate_->SdpMLineIndex();
+  is_null = !web_candidate_->SdpMLineIndex().has_value();
+  return is_null ? 0 : *web_candidate_->SdpMLineIndex();
 }
 
 scoped_refptr<WebRTCICECandidate> RTCIceCandidate::WebCandidate() const {
@@ -147,7 +146,8 @@ ScriptValue RTCIceCandidate::toJSONForBinding(ScriptState* script_state) {
   V8ObjectBuilder result(script_state);
   result.AddString("candidate", web_candidate_->Candidate());
   result.AddString("sdpMid", web_candidate_->SdpMid());
-  result.AddNumber("sdpMLineIndex", web_candidate_->SdpMLineIndex());
+  if (web_candidate_->SdpMLineIndex())
+    result.AddNumber("sdpMLineIndex", *web_candidate_->SdpMLineIndex());
   return result.GetScriptValue();
 }
 

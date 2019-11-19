@@ -20,6 +20,21 @@
 #error "This file requires ARC support."
 #endif
 
+namespace {
+
+std::unique_ptr<KeyedService> BuildAuthenticationService(
+    web::BrowserState* context) {
+  ios::ChromeBrowserState* browser_state =
+      ios::ChromeBrowserState::FromBrowserState(context);
+  return std::make_unique<AuthenticationService>(
+      browser_state->GetPrefs(),
+      SyncSetupServiceFactory::GetForBrowserState(browser_state),
+      IdentityManagerFactory::GetForBrowserState(browser_state),
+      ProfileSyncServiceFactory::GetForBrowserState(browser_state));
+}
+
+}  // namespace
+
 // static
 AuthenticationService* AuthenticationServiceFactory::GetForBrowserState(
     ios::ChromeBrowserState* browser_state) {
@@ -45,6 +60,12 @@ void AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
   service->Initialize(std::move(delegate));
 }
 
+// static
+AuthenticationServiceFactory::TestingFactory
+AuthenticationServiceFactory::GetDefaultFactory() {
+  return base::BindRepeating(&BuildAuthenticationService);
+}
+
 AuthenticationServiceFactory::AuthenticationServiceFactory()
     : BrowserStateKeyedServiceFactory(
           "AuthenticationService",
@@ -59,13 +80,7 @@ AuthenticationServiceFactory::~AuthenticationServiceFactory() {}
 std::unique_ptr<KeyedService>
 AuthenticationServiceFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
-  ios::ChromeBrowserState* browser_state =
-      ios::ChromeBrowserState::FromBrowserState(context);
-  return std::make_unique<AuthenticationService>(
-      browser_state->GetPrefs(),
-      SyncSetupServiceFactory::GetForBrowserState(browser_state),
-      IdentityManagerFactory::GetForBrowserState(browser_state),
-      ProfileSyncServiceFactory::GetForBrowserState(browser_state));
+  return BuildAuthenticationService(context);
 }
 
 void AuthenticationServiceFactory::RegisterBrowserStatePrefs(

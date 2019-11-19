@@ -9,7 +9,9 @@
 
 #include "base/macros.h"
 #include "chrome/browser/ui/webui/downloads/downloads.mojom.h"
-#include "mojo/public/cpp/bindings/binding.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "ui/base/layout.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 
@@ -30,15 +32,17 @@ class DownloadsUI : public ui::MojoWebUIController,
 
  private:
   void BindPageHandlerFactory(
-      downloads::mojom::PageHandlerFactoryRequest request);
+      mojo::PendingReceiver<downloads::mojom::PageHandlerFactory> receiver);
 
   // downloads::mojom::PageHandlerFactory:
-  void CreatePageHandler(downloads::mojom::PagePtr page,
-                         downloads::mojom::PageHandlerRequest request) override;
+  void CreatePageHandler(
+      mojo::PendingRemote<downloads::mojom::Page> page,
+      mojo::PendingReceiver<downloads::mojom::PageHandler> receiver) override;
 
   std::unique_ptr<DownloadsDOMHandler> page_handler_;
 
-  mojo::Binding<downloads::mojom::PageHandlerFactory> page_factory_binding_;
+  mojo::Receiver<downloads::mojom::PageHandlerFactory> page_factory_receiver_{
+      this};
 
   DISALLOW_COPY_AND_ASSIGN(DownloadsUI);
 };

@@ -3,6 +3,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+from __future__ import print_function
+
 import collections
 import os
 import re
@@ -45,7 +47,7 @@ class TestCyglogToOrderfile(unittest.TestCase):
   def setUp(self):
     self._old_demangle = None
     if not os.path.exists(host_paths.ToolPath('c++filt', 'arm')):
-      print 'Using fake demangling due to missing c++filt binary'
+      print('Using fake demangling due to missing c++filt binary')
       self._old_demangle = symbol_extractor.DemangleSymbol
       symbol_extractor.DemangleSymbol = _FakeDemangle
 

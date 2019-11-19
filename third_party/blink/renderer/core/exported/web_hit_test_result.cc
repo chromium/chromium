@@ -37,12 +37,9 @@
 
 namespace blink {
 
-class WebHitTestResultPrivate
-    : public GarbageCollectedFinalized<WebHitTestResultPrivate> {
+class WebHitTestResultPrivate final
+    : public GarbageCollected<WebHitTestResultPrivate> {
  public:
-  static WebHitTestResultPrivate* Create(const HitTestResult&);
-  static WebHitTestResultPrivate* Create(const WebHitTestResultPrivate&);
-
   WebHitTestResultPrivate(const HitTestResult&);
   WebHitTestResultPrivate(const WebHitTestResultPrivate&);
 
@@ -61,16 +58,6 @@ inline WebHitTestResultPrivate::WebHitTestResultPrivate(
     const WebHitTestResultPrivate& result)
     : result_(result.result_) {}
 
-WebHitTestResultPrivate* WebHitTestResultPrivate::Create(
-    const HitTestResult& result) {
-  return MakeGarbageCollected<WebHitTestResultPrivate>(result);
-}
-
-WebHitTestResultPrivate* WebHitTestResultPrivate::Create(
-    const WebHitTestResultPrivate& result) {
-  return MakeGarbageCollected<WebHitTestResultPrivate>(result);
-}
-
 WebNode WebHitTestResult::GetNode() const {
   return WebNode(private_->Result().InnerNode());
 }
@@ -84,9 +71,19 @@ WebPoint WebHitTestResult::LocalPointWithoutContentBoxOffset() const {
   LayoutObject* object = private_->Result().GetLayoutObject();
   if (object->IsBox()) {
     LayoutBox* box = ToLayoutBox(object);
-    local_point.Move(-RoundedIntSize(box->PhysicalContentBoxOffset()));
+    local_point.MoveBy(-RoundedIntPoint(box->PhysicalContentBoxOffset()));
   }
   return local_point;
+}
+
+bool WebHitTestResult::ContentBoxContainsPoint() const {
+  LayoutObject* object = private_->Result().GetLayoutObject();
+  DCHECK(object);
+  if (!object->IsBox())
+    return false;
+
+  IntPoint local_point = RoundedIntPoint(private_->Result().LocalPoint());
+  return ToLayoutBox(object)->ComputedCSSContentBoxRect().Contains(local_point);
 }
 
 WebElement WebHitTestResult::UrlElement() const {
@@ -106,10 +103,10 @@ bool WebHitTestResult::IsContentEditable() const {
 }
 
 WebHitTestResult::WebHitTestResult(const HitTestResult& result)
-    : private_(WebHitTestResultPrivate::Create(result)) {}
+    : private_(MakeGarbageCollected<WebHitTestResultPrivate>(result)) {}
 
 WebHitTestResult& WebHitTestResult::operator=(const HitTestResult& result) {
-  private_ = WebHitTestResultPrivate::Create(result);
+  private_ = MakeGarbageCollected<WebHitTestResultPrivate>(result);
   return *this;
 }
 
@@ -118,10 +115,12 @@ bool WebHitTestResult::IsNull() const {
 }
 
 void WebHitTestResult::Assign(const WebHitTestResult& info) {
-  if (info.IsNull())
+  if (info.IsNull()) {
     private_.Reset();
-  else
-    private_ = WebHitTestResultPrivate::Create(*info.private_.Get());
+  } else {
+    private_ =
+        MakeGarbageCollected<WebHitTestResultPrivate>(*info.private_.Get());
+  }
 }
 
 void WebHitTestResult::Reset() {

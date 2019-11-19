@@ -9,7 +9,7 @@
 #include "base/run_loop.h"
 #include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "components/url_formatter/url_formatter.h"
 #include "net/base/escape.h"
@@ -266,8 +266,8 @@ TEST(TextEliderTest, TestTrailingEllipsisSlashEllipsisHack) {
 TEST(TextEliderTest, TestElisionSpecialCases) {
 #if defined(OS_WIN)
   // Needed to bypass DCHECK in GetFallbackFont.
-  base::test::ScopedTaskEnvironment task_environment(
-      base::test::ScopedTaskEnvironment::MainThreadType::UI);
+  base::test::SingleThreadTaskEnvironment task_environment(
+      base::test::SingleThreadTaskEnvironment::MainThreadType::UI);
 #endif
   const std::string kEllipsisStr(gfx::kEllipsis);
   const std::vector<Testcase> testcases = {
@@ -453,9 +453,8 @@ const OriginTestData common_tests[] = {
      L"https://www.google.com", L"www.google.com", L"www.google.com"},
     {"Unusual secure scheme (wss)", "wss://www.google.com/",
      L"wss://www.google.com", L"wss://www.google.com", L"www.google.com"},
-    {"Unusual non-secure scheme (gopher)", "gopher://www.google.com/",
-     L"gopher://www.google.com", L"gopher://www.google.com",
-     L"gopher://www.google.com"},
+    {"Unusual non-secure scheme (ftp)", "ftp://www.google.com/",
+     L"ftp://www.google.com", L"ftp://www.google.com", L"ftp://www.google.com"},
     {"Unlisted scheme (chrome)", "chrome://version", L"chrome://version",
      L"chrome://version", L"chrome://version"},
     {"HTTP IP address", "http://173.194.65.103", L"http://173.194.65.103",

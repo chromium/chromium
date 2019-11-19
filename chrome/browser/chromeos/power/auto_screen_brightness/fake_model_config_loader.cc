@@ -8,7 +8,7 @@ namespace chromeos {
 namespace power {
 namespace auto_screen_brightness {
 
-FakeModelConfigLoader::FakeModelConfigLoader() : weak_ptr_factory_(this) {}
+FakeModelConfigLoader::FakeModelConfigLoader() {}
 
 FakeModelConfigLoader::~FakeModelConfigLoader() = default;
 

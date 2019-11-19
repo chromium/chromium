@@ -36,7 +36,9 @@
 #include <stdarg.h> // For va_list and related operations
 #include <stdio.h> // MSVC requires this for _vsnprintf
 #include <vector>
+
 #include <google/protobuf/stubs/common.h>
+#include <google/protobuf/stubs/logging.h>
 
 namespace google {
 namespace protobuf {
@@ -76,7 +78,7 @@ void StringAppendV(string* dst, const char* format, va_list ap) {
       // Error or MSVC running out of space.  MSVC 8.0 and higher
       // can be asked about space needed with the special idiom below:
       va_copy(backup_ap, ap);
-      result = vsnprintf(NULL, 0, format, backup_ap);
+      result = vsnprintf(nullptr, 0, format, backup_ap);
       va_end(backup_ap);
     }
 

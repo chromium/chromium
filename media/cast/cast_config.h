@@ -12,7 +12,7 @@
 
 #include "base/callback.h"
 #include "base/memory/ref_counted.h"
-#include "base/memory/shared_memory.h"
+#include "base/memory/unsafe_shared_memory_region.h"
 #include "base/single_thread_task_runner.h"
 #include "base/time/time.h"
 
@@ -251,7 +251,7 @@ typedef base::Callback<void(scoped_refptr<base::SingleThreadTaskRunner>,
     ReceiveVideoEncodeAcceleratorCallback;
 typedef base::Callback<void(const ReceiveVideoEncodeAcceleratorCallback&)>
     CreateVideoEncodeAcceleratorCallback;
-typedef base::Callback<void(std::unique_ptr<base::SharedMemory>)>
+typedef base::Callback<void(base::UnsafeSharedMemoryRegion)>
     ReceiveVideoEncodeMemoryCallback;
 typedef base::Callback<void(size_t size,
                             const ReceiveVideoEncodeMemoryCallback&)>

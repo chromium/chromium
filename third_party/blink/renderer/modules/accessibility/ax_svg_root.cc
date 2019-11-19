@@ -38,11 +38,6 @@ AXSVGRoot::AXSVGRoot(LayoutObject* layout_object,
 
 AXSVGRoot::~AXSVGRoot() = default;
 
-AXSVGRoot* AXSVGRoot::Create(LayoutObject* layout_object,
-                             AXObjectCacheImpl& ax_object_cache) {
-  return MakeGarbageCollected<AXSVGRoot>(layout_object, ax_object_cache);
-}
-
 void AXSVGRoot::SetParent(AXObject* parent) {
   // Only update the parent to another objcet if it wasn't already set to
   // something. Multiple elements in an HTML document can reference

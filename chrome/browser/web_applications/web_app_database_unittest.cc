@@ -5,75 +5,35 @@
 #include "chrome/browser/web_applications/web_app_database.h"
 
 #include <memory>
-#include <tuple>
 
 #include "base/bind_helpers.h"
-#include "base/message_loop/message_loop.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind_test_util.h"
+#include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/browser/web_applications/components/web_app_helpers.h"
 #include "chrome/browser/web_applications/proto/web_app.pb.h"
 #include "chrome/browser/web_applications/test/test_web_app_database_factory.h"
+#include "chrome/browser/web_applications/test/test_web_app_registry_controller.h"
+#include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "chrome/browser/web_applications/web_app_registry_update.h"
+#include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "components/sync/model/model_type_store.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
 namespace web_app {
 
-bool operator==(const WebApp::IconInfo& icon_info,
-                const WebApp::IconInfo& icon_info2) {
-  return std::tie(icon_info.url, icon_info.size_in_px) ==
-         std::tie(icon_info2.url, icon_info2.size_in_px);
-}
-
-bool operator==(const WebApp& web_app, const WebApp& web_app2) {
-  return std::tie(web_app.app_id(), web_app.name(), web_app.launch_url(),
-                  web_app.description(), web_app.scope(), web_app.theme_color(),
-                  web_app.icons()) ==
-         std::tie(web_app2.app_id(), web_app2.name(), web_app2.launch_url(),
-                  web_app2.description(), web_app2.scope(),
-                  web_app2.theme_color(), web_app2.icons());
-}
-
-bool operator!=(const WebApp& web_app, const WebApp& web_app2) {
-  return !operator==(web_app, web_app2);
-}
-
-namespace {
-
-bool IsRegistryEqual(const Registry& registry, const Registry& registry2) {
-  if (registry.size() != registry2.size())
-    return false;
-
-  for (auto& kv : registry) {
-    const WebApp* web_app = kv.second.get();
-    const WebApp* web_app2 = registry2.at(web_app->app_id()).get();
-    if (*web_app != *web_app2)
-      return false;
-  }
-
-  return true;
-}
-
-}  // namespace
-
-class WebAppDatabaseTest : public testing::Test {
+class WebAppDatabaseTest : public WebAppTest {
  public:
-  WebAppDatabaseTest() {
-    database_factory_ = std::make_unique<TestWebAppDatabaseFactory>();
-    database_ = std::make_unique<WebAppDatabase>(database_factory_.get());
-    registrar_ = std::make_unique<WebAppRegistrar>(database_.get());
-  }
+  void SetUp() override {
+    WebAppTest::SetUp();
 
-  void InitRegistrar() {
-    base::RunLoop run_loop;
-
-    registrar_->Init(base::BindLambdaForTesting([&]() { run_loop.Quit(); }));
-
-    run_loop.Run();
+    test_registry_controller_ =
+        std::make_unique<TestWebAppRegistryController>();
+    test_registry_controller_->SetUp(profile());
   }
 
   static std::unique_ptr<WebApp> CreateWebApp(const std::string& base_url,
@@ -86,14 +46,38 @@ class WebAppDatabaseTest : public testing::Test {
     const std::string scope =
         base_url + "/scope" + base::NumberToString(suffix);
     const base::Optional<SkColor> theme_color = suffix;
+    const base::Optional<SkColor> synced_theme_color = suffix ^ UINT_MAX;
 
     auto app = std::make_unique<WebApp>(app_id);
+
+    // Generate all possible permutations of field values in a random way:
+    if (suffix & 1)
+      app->AddSource(Source::kSystem);
+    if (suffix & 2)
+      app->AddSource(Source::kPolicy);
+    if (suffix & 4)
+      app->AddSource(Source::kWebAppStore);
+    if (suffix & 8)
+      app->AddSource(Source::kSync);
+    if (suffix & 16)
+      app->AddSource(Source::kDefault);
+    if ((suffix & 31) == 0)
+      app->AddSource(Source::kSync);
 
     app->SetName(name);
     app->SetDescription(description);
     app->SetLaunchUrl(GURL(launch_url));
     app->SetScope(GURL(scope));
     app->SetThemeColor(theme_color);
+    app->SetIsLocallyInstalled(!(suffix & 2));
+    app->SetIsInSyncInstall(!(suffix & 4));
+    app->SetUserDisplayMode((suffix & 1) ? DisplayMode::kBrowser
+                                         : DisplayMode::kStandalone);
+
+    const DisplayMode display_modes[4] = {
+        DisplayMode::kBrowser, DisplayMode::kMinimalUi,
+        DisplayMode::kStandalone, DisplayMode::kFullscreen};
+    app->SetDisplayMode(display_modes[(suffix >> 4) & 3]);
 
     const std::string icon_url =
         base_url + "/icon" + base::NumberToString(suffix);
@@ -104,32 +88,24 @@ class WebAppDatabaseTest : public testing::Test {
 
     app->SetIcons(std::move(icons));
 
+    WebApp::SyncData sync_data;
+    sync_data.name = "Sync" + name;
+    sync_data.theme_color = synced_theme_color;
+    app->SetSyncData(std::move(sync_data));
+
     return app;
   }
 
-  Registry ReadRegistry() {
-    Registry registry;
-    base::RunLoop run_loop;
-
-    database_->ReadRegistry(base::BindLambdaForTesting([&](Registry r) {
-      registry = std::move(r);
-      run_loop.Quit();
-    }));
-
-    run_loop.Run();
-    return registry;
-  }
-
   bool IsDatabaseRegistryEqualToRegistrar() {
-    Registry registry = ReadRegistry();
-    return IsRegistryEqual(registrar_->registry(), registry);
+    Registry registry = database_factory().ReadRegistry();
+    return IsRegistryEqual(mutable_registrar().registry(), registry);
   }
 
   void WriteBatch(
       std::unique_ptr<syncer::ModelTypeStore::WriteBatch> write_batch) {
     base::RunLoop run_loop;
 
-    database_factory_->store()->CommitWriteBatch(
+    database_factory().store()->CommitWriteBatch(
         std::move(write_batch),
         base::BindLambdaForTesting(
             [&](const base::Optional<syncer::ModelError>& error) {
@@ -143,7 +119,7 @@ class WebAppDatabaseTest : public testing::Test {
   Registry WriteWebApps(const std::string& base_url, int num_apps) {
     Registry registry;
 
-    auto write_batch = database_factory_->store()->CreateWriteBatch();
+    auto write_batch = database_factory().store()->CreateWriteBatch();
 
     for (int i = 0; i < num_apps; ++i) {
       auto app = CreateWebApp(base_url, i);
@@ -161,85 +137,181 @@ class WebAppDatabaseTest : public testing::Test {
   }
 
  protected:
-  // Must be created before TestWebAppDatabaseFactory.
-  base::MessageLoop message_loop_;
+  TestWebAppRegistryController& controller() {
+    return *test_registry_controller_;
+  }
 
-  std::unique_ptr<TestWebAppDatabaseFactory> database_factory_;
-  std::unique_ptr<WebAppDatabase> database_;
-  std::unique_ptr<WebAppRegistrar> registrar_;
+  TestWebAppDatabaseFactory& database_factory() {
+    return controller().database_factory();
+  }
+
+  WebAppRegistrar& registrar() { return controller().registrar(); }
+
+  WebAppRegistrarMutable& mutable_registrar() {
+    return controller().mutable_registrar();
+  }
+
+  WebAppSyncBridge& sync_bridge() { return controller().sync_bridge(); }
+
+ private:
+  std::unique_ptr<TestWebAppRegistryController> test_registry_controller_;
 };
 
 TEST_F(WebAppDatabaseTest, WriteAndReadRegistry) {
-  InitRegistrar();
-  EXPECT_TRUE(registrar_->is_empty());
+  controller().Init();
+  EXPECT_TRUE(registrar().is_empty());
 
   const int num_apps = 100;
   const std::string base_url = "https://example.com/path";
 
   auto app = CreateWebApp(base_url, 0);
   auto app_id = app->app_id();
-  registrar_->RegisterApp(std::move(app));
+  controller().RegisterApp(std::move(app));
   EXPECT_TRUE(IsDatabaseRegistryEqualToRegistrar());
 
   for (int i = 1; i <= num_apps; ++i) {
     auto extra_app = CreateWebApp(base_url, i);
-    registrar_->RegisterApp(std::move(extra_app));
+    controller().RegisterApp(std::move(extra_app));
   }
   EXPECT_TRUE(IsDatabaseRegistryEqualToRegistrar());
 
-  registrar_->UnregisterApp(app_id);
+  controller().UnregisterApp(app_id);
   EXPECT_TRUE(IsDatabaseRegistryEqualToRegistrar());
 
-  registrar_->UnregisterAll();
+  controller().UnregisterAll();
   EXPECT_TRUE(IsDatabaseRegistryEqualToRegistrar());
+}
+
+TEST_F(WebAppDatabaseTest, WriteAndDeleteAppsWithCallbacks) {
+  controller().Init();
+  EXPECT_TRUE(registrar().is_empty());
+
+  const int num_apps = 10;
+  const std::string base_url = "https://example.com/path";
+
+  RegistryUpdateData::Apps apps_to_create;
+  std::vector<AppId> apps_to_delete;
+  Registry expected_registry;
+
+  for (int i = 0; i < num_apps; ++i) {
+    std::unique_ptr<WebApp> app = CreateWebApp(base_url, i);
+    apps_to_delete.push_back(app->app_id());
+    apps_to_create.push_back(std::move(app));
+
+    std::unique_ptr<WebApp> expected_app = CreateWebApp(base_url, i);
+    expected_registry.emplace(expected_app->app_id(), std::move(expected_app));
+  }
+
+  {
+    base::RunLoop run_loop;
+
+    std::unique_ptr<WebAppRegistryUpdate> update = sync_bridge().BeginUpdate();
+
+    for (std::unique_ptr<WebApp>& web_app : apps_to_create)
+      update->CreateApp(std::move(web_app));
+
+    sync_bridge().CommitUpdate(std::move(update),
+                               base::BindLambdaForTesting([&](bool success) {
+                                 EXPECT_TRUE(success);
+                                 run_loop.Quit();
+                               }));
+    run_loop.Run();
+
+    Registry registry_written = database_factory().ReadRegistry();
+    EXPECT_TRUE(IsRegistryEqual(registry_written, expected_registry));
+  }
+
+  {
+    base::RunLoop run_loop;
+
+    std::unique_ptr<WebAppRegistryUpdate> update = sync_bridge().BeginUpdate();
+
+    for (const AppId& app_id : apps_to_delete)
+      update->DeleteApp(app_id);
+
+    sync_bridge().CommitUpdate(std::move(update),
+                               base::BindLambdaForTesting([&](bool success) {
+                                 EXPECT_TRUE(success);
+                                 run_loop.Quit();
+                               }));
+    run_loop.Run();
+
+    Registry registry_deleted = database_factory().ReadRegistry();
+    EXPECT_TRUE(registry_deleted.empty());
+  }
 }
 
 TEST_F(WebAppDatabaseTest, OpenDatabaseAndReadRegistry) {
   Registry registry = WriteWebApps("https://example.com/path", 100);
 
-  InitRegistrar();
-  EXPECT_TRUE(IsRegistryEqual(registrar_->registry(), registry));
+  controller().Init();
+  EXPECT_TRUE(IsRegistryEqual(mutable_registrar().registry(), registry));
 }
 
 TEST_F(WebAppDatabaseTest, WebAppWithoutOptionalFields) {
-  InitRegistrar();
+  controller().Init();
 
   const auto launch_url = GURL("https://example.com/");
   const AppId app_id = GenerateAppIdFromURL(GURL(launch_url));
+  const std::string name = "Name";
+  const auto user_display_mode = DisplayMode::kBrowser;
 
   auto app = std::make_unique<WebApp>(app_id);
 
+  // Required fields:
   app->SetLaunchUrl(launch_url);
-  EXPECT_TRUE(app->name().empty());
+  app->SetName(name);
+  app->SetUserDisplayMode(user_display_mode);
+  app->SetIsLocallyInstalled(false);
+
+  EXPECT_FALSE(app->HasAnySources());
+  for (int i = Source::kMinValue; i < Source::kMaxValue; ++i) {
+    app->AddSource(static_cast<Source::Type>(i));
+    EXPECT_TRUE(app->HasAnySources());
+  }
+
+  // Let optional fields be empty:
+  EXPECT_EQ(app->display_mode(), DisplayMode::kUndefined);
   EXPECT_TRUE(app->description().empty());
   EXPECT_TRUE(app->scope().is_empty());
   EXPECT_FALSE(app->theme_color().has_value());
+  EXPECT_TRUE(app->icons().empty());
+  EXPECT_FALSE(app->is_in_sync_install());
+  EXPECT_TRUE(app->sync_data().name.empty());
+  EXPECT_FALSE(app->sync_data().theme_color.has_value());
+  controller().RegisterApp(std::move(app));
 
-  // |icons| is mandatory data member for a representation in DB. If no icons,
-  // WebAppDatabase::CreateWebApp(from_proto) returns nullptr.
-  WebApp::Icons icons;
-  icons.push_back({GURL("https://example.com/icon"), 512});
-  app->SetIcons(std::move(icons));
-  registrar_->RegisterApp(std::move(app));
-
-  Registry registry = ReadRegistry();
+  Registry registry = database_factory().ReadRegistry();
   EXPECT_EQ(1UL, registry.size());
 
   std::unique_ptr<WebApp>& app_copy = registry.at(app_id);
 
-  // Mandatory members.
+  // Required fields were serialized:
   EXPECT_EQ(app_id, app_copy->app_id());
   EXPECT_EQ(launch_url, app_copy->launch_url());
+  EXPECT_EQ(name, app_copy->name());
+  EXPECT_EQ(user_display_mode, app_copy->user_display_mode());
+  EXPECT_FALSE(app_copy->is_locally_installed());
 
-  // No optional members.
-  EXPECT_TRUE(app_copy->name().empty());
+  for (int i = Source::kMinValue; i < Source::kMaxValue; ++i) {
+    EXPECT_TRUE(app_copy->HasAnySources());
+    app_copy->RemoveSource(static_cast<Source::Type>(i));
+  }
+  EXPECT_FALSE(app_copy->HasAnySources());
+
+  // No optional fields.
+  EXPECT_EQ(app_copy->display_mode(), DisplayMode::kUndefined);
   EXPECT_TRUE(app_copy->description().empty());
   EXPECT_TRUE(app_copy->scope().is_empty());
   EXPECT_FALSE(app_copy->theme_color().has_value());
+  EXPECT_TRUE(app_copy->icons().empty());
+  EXPECT_FALSE(app_copy->is_in_sync_install());
+  EXPECT_TRUE(app_copy->sync_data().name.empty());
+  EXPECT_FALSE(app_copy->sync_data().theme_color.has_value());
 }
 
 TEST_F(WebAppDatabaseTest, WebAppWithManyIcons) {
-  InitRegistrar();
+  controller().Init();
 
   const int num_icons = 32;
   const std::string base_url = "https://example.com/path";
@@ -257,9 +329,9 @@ TEST_F(WebAppDatabaseTest, WebAppWithManyIcons) {
   }
   app->SetIcons(std::move(icons));
 
-  registrar_->RegisterApp(std::move(app));
+  controller().RegisterApp(std::move(app));
 
-  Registry registry = ReadRegistry();
+  Registry registry = database_factory().ReadRegistry();
   EXPECT_EQ(1UL, registry.size());
 
   std::unique_ptr<WebApp>& app_copy = registry.at(app_id);

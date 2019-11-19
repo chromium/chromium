@@ -1,0 +1,21 @@
+// Copyright 2017 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// The original version of this file lives in the Chromium repository at:
+// src/components/arc/mojom/protected_buffer_manager.mojom
+
+module arc.mojom;
+
+// This interface is exposed by the GPU process for translating dummy handles
+// for secure buffers into a usable shared memory buffer handle. The output of
+// a decryption operation can then be written to that shared memory and will be
+// consumed by the video decoder in the GPU.
+// NOTE: This does not use a shared memory handle for the return type
+// because of incompatibilities between Chrome and Chrome OS mojo versions
+// regarding the structure used for sending shared memory handles.
+// Next Method ID: 1
+interface ProtectedBufferManager {
+  GetProtectedSharedMemoryFromHandle@0(handle dummy_handle)
+      => (handle shared_memory_handle);
+};

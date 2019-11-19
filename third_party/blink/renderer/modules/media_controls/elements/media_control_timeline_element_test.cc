@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/html/media/html_video_element.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/modules/media_controls/media_controls_impl.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
 
 namespace blink {
 
@@ -31,7 +32,7 @@ class MediaControlTimelineElementTest : public PageTestBase {
   void SetUp() override {
     PageTestBase::SetUp(IntSize(100, 100));
 
-    video_ = HTMLVideoElement::Create(GetDocument());
+    video_ = MakeGarbageCollected<HTMLVideoElement>(GetDocument());
     controls_ = MakeGarbageCollected<MediaControlsImpl>(*video_);
     timeline_ = MakeGarbageCollected<MediaControlTimelineElement>(*controls_);
 

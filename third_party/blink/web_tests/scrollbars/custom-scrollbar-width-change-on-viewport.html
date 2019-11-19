@@ -1,0 +1,19 @@
+<!doctype html>
+<title>Changing width of scrollbar propagated from body to viewport</title>
+<style>
+  body { overflow: scroll }
+  body::-webkit-scrollbar {
+    background: red;
+    width: 200px;
+    height: 200px;
+  }
+  .narrow::-webkit-scrollbar {
+    width: 0px;
+    height: 0px;
+  }
+</style>
+<body>
+<script>
+  document.body.offsetTop;
+  document.body.className = "narrow";
+</script>

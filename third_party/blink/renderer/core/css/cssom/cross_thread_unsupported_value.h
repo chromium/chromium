@@ -8,6 +8,7 @@
 #include "base/macros.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/cssom/cross_thread_style_value.h"
+#include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -20,13 +21,27 @@ class CORE_EXPORT CrossThreadUnsupportedValue final
   explicit CrossThreadUnsupportedValue(const String& value) : value_(value) {}
   ~CrossThreadUnsupportedValue() override = default;
 
+  StyleValueType GetType() const override {
+    return StyleValueType::kUnknownType;
+  }
   CSSStyleValue* ToCSSStyleValue() override;
+  std::unique_ptr<CrossThreadStyleValue> IsolatedCopy() const override;
+
+  bool operator==(const CrossThreadStyleValue&) const override;
 
  private:
   friend class CrossThreadStyleValueTest;
 
   String value_;
   DISALLOW_COPY_AND_ASSIGN(CrossThreadUnsupportedValue);
+};
+
+template <>
+struct DowncastTraits<CrossThreadUnsupportedValue> {
+  static bool AllowFrom(const CrossThreadStyleValue& unsupported_value) {
+    return unsupported_value.GetType() ==
+           CrossThreadStyleValue::StyleValueType::kUnknownType;
+  }
 };
 
 }  // namespace blink

@@ -1,0 +1,24 @@
+<template>
+  <style>
+    button.action-link {
+      -webkit-appearance: none;
+      background: none;
+      border: none;
+      color: var(--cr-link-color);
+      cursor: pointer;
+      display: inline-block;
+      font-family: inherit;
+      text-decoration: none;
+    }
+
+    button.action-link[disabled] {
+      color: var(--paper-grey-600);
+      cursor: default;
+      opacity: 0.65;
+    }
+
+    :host-context(html:not(.focus-outline-visible)) button.action-link {
+      outline: none;
+    }
+  </style>
+</template>

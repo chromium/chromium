@@ -6,6 +6,7 @@
 #define DEVICE_FIDO_MAC_KEYCHAIN_H_
 
 #include <stdint.h>
+#include <list>
 #include <set>
 #include <string>
 #include <vector>
@@ -92,10 +93,10 @@ struct COMPONENT_EXPORT(FIDO) Credential {
   DISALLOW_COPY_AND_ASSIGN(Credential);
 };
 
-// Tries to find a credential for the given |rp_id| in the keychain.
-// |credential_id_filter| may be used to select credentials by ID. If it is
-// empty, any credential for the RP matches. If multiple credentials are found,
-// only one is returned.
+// FindCredentialsInKeychain returns a list of credentials for the given
+// |rp_id| with credential IDs matching those from |allowed_credential_ids|,
+// which may not be empty. The returned credentials may be resident or
+// non-resident.
 //
 // An LAContext that has been successfully evaluated using |TouchIdContext| may
 // be passed in |authenticaton_context|, in order to authorize the credential's
@@ -105,11 +106,20 @@ struct COMPONENT_EXPORT(FIDO) Credential {
 // |KeyCreateSignature| if no authentication context was provided, since that
 // would trigger a Touch ID prompt dialog).
 COMPONENT_EXPORT(FIDO)
-base::Optional<Credential> FindCredentialInKeychain(
+std::list<Credential> FindCredentialsInKeychain(
     const std::string& keychain_access_group,
     const std::string& metadata_secret,
     const std::string& rp_id,
-    const std::set<std::vector<uint8_t>>& credential_id_filter,
+    const std::set<std::vector<uint8_t>>& allowed_credential_ids,
+    LAContext* authentication_context) API_AVAILABLE(macosx(10.12.2));
+
+// FindResidentCredentialsInKeychain returns a list of resident credentials for
+// the given |rp_id|.
+COMPONENT_EXPORT(FIDO)
+std::list<Credential> FindResidentCredentialsInKeychain(
+    const std::string& keychain_access_group,
+    const std::string& metadata_secret,
+    const std::string& rp_id,
     LAContext* authentication_context) API_AVAILABLE(macosx(10.12.2));
 
 }  // namespace mac

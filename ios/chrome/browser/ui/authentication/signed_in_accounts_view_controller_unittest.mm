@@ -9,11 +9,13 @@
 #include "base/bind.h"
 #include "base/strings/sys_string_conversions.h"
 #include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/metrics/previous_session_info.h"
+#include "ios/chrome/browser/metrics/previous_session_info_private.h"
 #include "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/authentication_service_fake.h"
 #include "ios/chrome/test/block_cleanup_test.h"
 #include "ios/public/provider/chrome/browser/signin/fake_chrome_identity_service.h"
-#include "ios/web/public/test/test_web_thread_bundle.h"
+#include "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest_mac.h"
 #include "testing/platform_test.h"
 
@@ -40,12 +42,11 @@ class SignedInAccountsViewControllerTest : public BlockCleanupTest {
     identity_service->AddIdentities(
         @[ @"identity1", @"identity2", @"identity3" ]);
     auth_service_->SignIn(
-        [identity_service->GetAllIdentitiesSortedForDisplay() objectAtIndex:0],
-        std::string());
+        [identity_service->GetAllIdentitiesSortedForDisplay() objectAtIndex:0]);
   }
 
  protected:
-  web::TestWebThreadBundle thread_bundle_;
+  web::WebTaskEnvironment task_environment_;
   AuthenticationServiceFake* auth_service_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
 };
@@ -62,7 +63,49 @@ TEST_F(SignedInAccountsViewControllerTest,
 // have changed.
 TEST_F(SignedInAccountsViewControllerTest,
        ShouldBePresentedForBrowserStateNecessary) {
-  auth_service_->SetHaveAccountsChanged(true);
+  auth_service_->SetHaveAccountsChangedWhileInBackground(true);
   EXPECT_TRUE([SignedInAccountsViewController
       shouldBePresentedForBrowserState:browser_state_.get()]);
+}
+
+// Tests that the signed in accounts view shouldn't be presented on the first
+// session after upgrade.
+TEST_F(SignedInAccountsViewControllerTest,
+       ShouldBePresentedForBrowserStateAfterUpgrade) {
+  auth_service_->SetHaveAccountsChangedWhileInBackground(true);
+
+  {
+    [PreviousSessionInfo resetSharedInstanceForTesting];
+    PreviousSessionInfo* prevSessionInfo = [PreviousSessionInfo sharedInstance];
+    [prevSessionInfo setIsFirstSessionAfterUpgrade:YES];
+    [prevSessionInfo setPreviousSessionVersion:nil];
+    EXPECT_TRUE([SignedInAccountsViewController
+        shouldBePresentedForBrowserState:browser_state_.get()]);
+  }
+
+  {
+    [PreviousSessionInfo resetSharedInstanceForTesting];
+    PreviousSessionInfo* prevSessionInfo = [PreviousSessionInfo sharedInstance];
+    [prevSessionInfo setIsFirstSessionAfterUpgrade:YES];
+    EXPECT_TRUE([SignedInAccountsViewController
+        shouldBePresentedForBrowserState:browser_state_.get()]);
+  }
+
+  {
+    [PreviousSessionInfo resetSharedInstanceForTesting];
+    PreviousSessionInfo* prevSessionInfo = [PreviousSessionInfo sharedInstance];
+    [prevSessionInfo setIsFirstSessionAfterUpgrade:YES];
+    [prevSessionInfo setPreviousSessionVersion:@"77.0.1.0"];
+    EXPECT_FALSE([SignedInAccountsViewController
+        shouldBePresentedForBrowserState:browser_state_.get()]);
+  }
+
+  {
+    [PreviousSessionInfo resetSharedInstanceForTesting];
+    PreviousSessionInfo* prevSessionInfo = [PreviousSessionInfo sharedInstance];
+    [prevSessionInfo setIsFirstSessionAfterUpgrade:YES];
+    [prevSessionInfo setPreviousSessionVersion:@"78.0.1.0"];
+    EXPECT_TRUE([SignedInAccountsViewController
+        shouldBePresentedForBrowserState:browser_state_.get()]);
+  }
 }

@@ -24,6 +24,7 @@
 #include "third_party/blink/renderer/core/css/css_custom_ident_value.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
 #include "third_party/blink/renderer/core/css/css_string_value.h"
+#include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -32,13 +33,6 @@ namespace cssvalue {
 
 class CSSCounterValue : public CSSValue {
  public:
-  static CSSCounterValue* Create(CSSCustomIdentValue* identifier,
-                                 CSSIdentifierValue* list_style,
-                                 CSSStringValue* separator) {
-    return MakeGarbageCollected<CSSCounterValue>(identifier, list_style,
-                                                 separator);
-  }
-
   CSSCounterValue(CSSCustomIdentValue* identifier,
                   CSSIdentifierValue* list_style,
                   CSSStringValue* separator)
@@ -66,9 +60,14 @@ class CSSCounterValue : public CSSValue {
   Member<CSSStringValue> separator_;        // string
 };
 
-DEFINE_CSS_VALUE_TYPE_CASTS(CSSCounterValue, IsCounterValue());
-
 }  // namespace cssvalue
+
+template <>
+struct DowncastTraits<cssvalue::CSSCounterValue> {
+  static bool AllowFrom(const CSSValue& value) {
+    return value.IsCounterValue();
+  }
+};
 
 }  // namespace blink
 

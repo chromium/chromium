@@ -7,8 +7,10 @@
 #include <utility>
 
 #include "base/base_paths.h"
+#include "base/base_switches.h"
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
@@ -39,10 +41,6 @@
 
 #if defined(OS_WIN)
 #include "base/win/windows_version.h"
-#endif
-
-#if defined(OS_MACOSX)
-#include "mojo/core/embedder/default_mach_broker.h"
 #endif
 
 namespace service_manager {
@@ -83,9 +81,9 @@ ServiceProcessLauncher::ServiceProcessLauncher(
       service_path_(service_path.empty()
                         ? base::CommandLine::ForCurrentProcess()->GetProgram()
                         : service_path),
-      background_task_runner_(base::CreateSequencedTaskRunnerWithTraits(
-          {base::TaskPriority::USER_VISIBLE, base::WithBaseSyncPrimitives(),
-           base::MayBlock()})) {}
+      background_task_runner_(base::CreateSequencedTaskRunner(
+          {base::ThreadPool(), base::TaskPriority::USER_VISIBLE,
+           base::WithBaseSyncPrimitives(), base::MayBlock()})) {}
 
 ServiceProcessLauncher::~ServiceProcessLauncher() {
   // We don't really need to wait for the process to be joined, as long as it
@@ -106,6 +104,23 @@ mojom::ServicePtr ServiceProcessLauncher::Start(const Identity& target,
       new base::CommandLine(service_path_));
 
   child_command_line->AppendArguments(parent_command_line, false);
+
+  // Add enabled/disabled features from base::FeatureList. These will take
+  // precedence over existing ones (if there is any copied from the
+  // |parent_command_line| above) as they appear later in the arguments list.
+  std::string enabled_features;
+  std::string disabled_features;
+  base::FeatureList::GetInstance()->GetFeatureOverrides(&enabled_features,
+                                                        &disabled_features);
+  if (!enabled_features.empty()) {
+    child_command_line->AppendSwitchASCII(::switches::kEnableFeatures,
+                                          enabled_features);
+  }
+  if (!disabled_features.empty()) {
+    child_command_line->AppendSwitchASCII(::switches::kDisableFeatures,
+                                          disabled_features);
+  }
+
   child_command_line->AppendSwitchASCII(switches::kServiceName, target.name());
 #ifndef NDEBUG
   child_command_line->AppendSwitchASCII("g",
@@ -194,10 +209,19 @@ base::ProcessId ServiceProcessLauncher::ProcessState::LaunchInBackground(
     NOTIMPLEMENTED();
   options.handles_to_transfer = std::move(handle_passing_info);
 #elif defined(OS_POSIX)
-  handle_passing_info.push_back(std::make_pair(STDIN_FILENO, STDIN_FILENO));
-  handle_passing_info.push_back(std::make_pair(STDOUT_FILENO, STDOUT_FILENO));
-  handle_passing_info.push_back(std::make_pair(STDERR_FILENO, STDERR_FILENO));
+  const base::FileHandleMappingVector fd_mapping{
+      {STDIN_FILENO, STDIN_FILENO},
+      {STDOUT_FILENO, STDOUT_FILENO},
+      {STDERR_FILENO, STDERR_FILENO},
+  };
+#if defined(OS_MACOSX)
+  options.fds_to_remap = fd_mapping;
+  options.mach_ports_for_rendezvous = handle_passing_info;
+#else
+  handle_passing_info.insert(handle_passing_info.end(), fd_mapping.begin(),
+                             fd_mapping.end());
   options.fds_to_remap = handle_passing_info;
+#endif  // defined(OS_MACOSX)
 #endif
   DVLOG(2) << "Launching child with command line: "
            << child_command_line->GetCommandLineString();
@@ -210,15 +234,7 @@ base::ProcessId ServiceProcessLauncher::ProcessState::LaunchInBackground(
   } else
 #endif
   {
-#if defined(OS_MACOSX)
-    mojo::core::DefaultMachBroker* mach_broker =
-        mojo::core::DefaultMachBroker::Get();
-    base::AutoLock locker(mach_broker->GetLock());
-#endif
     child_process_ = base::LaunchProcess(*child_command_line, options);
-#if defined(OS_MACOSX)
-    mach_broker->ExpectPid(child_process_.Handle());
-#endif
   }
 
   channel.RemoteProcessLaunchAttempted();

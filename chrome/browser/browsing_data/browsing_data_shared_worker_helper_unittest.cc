@@ -8,7 +8,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/origin.h"
 
@@ -19,7 +19,7 @@ class CannedBrowsingDataSharedWorkerHelperTest : public testing::Test {
   Profile* profile() { return &profile_; }
 
  private:
-  content::TestBrowserThreadBundle thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
 };
 
@@ -61,7 +61,7 @@ TEST_F(CannedBrowsingDataSharedWorkerHelperTest, Delete) {
 
 TEST_F(CannedBrowsingDataSharedWorkerHelperTest, IgnoreExtensionsAndDevTools) {
   const GURL worker1("chrome-extension://abcdefghijklmnopqrstuvwxyz/worker.js");
-  const GURL worker2("chrome-devtools://abcdefghijklmnopqrstuvwxyz/worker.js");
+  const GURL worker2("devtools://abcdefghijklmnopqrstuvwxyz/worker.js");
   std::string name("name");
   const url::Origin constructor_origin1 = url::Origin::Create(worker1);
   const url::Origin constructor_origin2 = url::Origin::Create(worker2);

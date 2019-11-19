@@ -12,6 +12,7 @@
 #include "build/build_config.h"
 
 #if defined(OS_CHROMEOS)
+#include "chromeos/dbus/update_engine_client.h"
 #include "third_party/cros_system_api/dbus/update_engine/dbus-constants.h"
 #endif  // defined(OS_CHROMEOS)
 
@@ -48,8 +49,8 @@ class VersionUpdater {
   // types.
 #if defined(OS_CHROMEOS)
   typedef base::Callback<void(const std::string&)> ChannelCallback;
-  typedef base::OnceCallback<void(update_engine::EndOfLifeStatus status)>
-      EolStatusCallback;
+  using EolInfoCallback =
+      base::OnceCallback<void(chromeos::UpdateEngineClient::EolInfo eol_info)>;
 #endif
 
   // Used to update the client of status changes.
@@ -98,7 +99,8 @@ class VersionUpdater {
                           bool is_powerwash_allowed) = 0;
   virtual void GetChannel(bool get_current_channel,
                           const ChannelCallback& callback) = 0;
-  virtual void GetEolStatus(EolStatusCallback callback) = 0;
+  // Get the End of Life (Auto Update Expiration) Date.
+  virtual void GetEolInfo(EolInfoCallback callback) = 0;
 
   // Sets a one time permission on a certain update in Update Engine.
   // - update_version: the Chrome OS version we want to update to.

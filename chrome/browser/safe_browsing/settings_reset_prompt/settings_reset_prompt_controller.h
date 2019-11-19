@@ -31,7 +31,6 @@ class SettingsResetPromptController {
       std::unique_ptr<BrandcodedDefaultSettings> default_settings);
 
   base::string16 GetWindowTitle() const;
-  base::string16 GetButtonLabel() const;
   base::string16 GetMainText() const;
   // Returns the offset into the main text string where a URL was inserted. To
   // be used by the dialog to apply an appropriate style to the URL text.

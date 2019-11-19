@@ -1,5 +1,9 @@
 <!DOCTYPE>
 <html>
+<script>
+if (window.internals)
+    internals.useMockOverlayScrollbars();
+</script>
 <style>
  #element-container-vw-vh {
    background: green;
@@ -8,8 +12,6 @@
  }
 </style>
 <script>
-if (window.internals)
-    internals.runtimeFlags.overlayScrollbarsEnabled = true;
 if (window.testRunner)
     testRunner.dumpAsText();
 if (window.eventSender)

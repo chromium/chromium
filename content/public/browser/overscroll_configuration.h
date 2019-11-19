@@ -25,26 +25,14 @@ class CONTENT_EXPORT OverscrollConfig {
     kEnabledTouchschreen,
   };
 
-  // Specifies an overscroll controller threshold.
-  enum class Threshold {
-    // Threshold to complete touchpad overscroll, in terms of the percentage of
-    // the display size.
-    kCompleteTouchpad,
+  // These are percentages of the display size.
+  static const float kCompleteTouchpadThresholdPercent;
+  static const float kCompleteTouchscreenThresholdPercent;
 
-    // Threshold to complete touchscreen overscroll, in terms of the percentage
-    // of the display size.
-    kCompleteTouchscreen,
-
-    // Threshold to start touchpad overscroll, in DIPs.
-    kStartTouchpad,
-
-    // Threshold to start touchscreen overscroll, in DIPs.
-    kStartTouchscreen,
-  };
+  static const float kStartTouchpadThresholdDips;
+  static const float kStartTouchscreenThresholdDips;
 
   static PullToRefreshMode GetPullToRefreshMode();
-
-  static float GetThreshold(Threshold threshold);
 
   static bool TouchpadOverscrollHistoryNavigationEnabled();
 

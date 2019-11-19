@@ -1,0 +1,132 @@
+/*
+ * Copyright (C) 2009 Apple Inc. All rights reserved.
+ * Copyright (C) 2013 Google Inc. All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ * 1. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY APPLE COMPUTER, INC. ``AS IS'' AND ANY
+ * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+ * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL APPLE COMPUTER, INC. OR
+ * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+ * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY
+ * OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
+#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_TYPED_ARRAYS_ARRAY_BUFFER_ARRAY_BUFFER_CONTENTS_H_
+#define THIRD_PARTY_BLINK_RENDERER_CORE_TYPED_ARRAYS_ARRAY_BUFFER_ARRAY_BUFFER_CONTENTS_H_
+
+#include "base/allocator/partition_allocator/page_allocator.h"
+#include "base/macros.h"
+#include "base/memory/scoped_refptr.h"
+#include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/assertions.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_copier.h"
+#include "third_party/blink/renderer/platform/wtf/thread_safe_ref_counted.h"
+#include "third_party/blink/renderer/platform/wtf/wtf.h"
+#include "v8/include/v8.h"
+
+namespace blink {
+
+class CORE_EXPORT ArrayBufferContents {
+  DISALLOW_NEW();
+
+ public:
+  // Types that need to be used when injecting external memory.
+  // v8::BackingStore allows specifying a deleter which will be invoked when
+  // v8::BackingStore instance goes out of scope. If the data memory is
+  // allocated using ArrayBufferContents::AllocateMemoryOrNull, it is necessary
+  // to specify ArrayBufferContents::FreeMemory as the DataDeleter.
+  using DataDeleter = void (*)(void* data, size_t length, void* info);
+
+  enum InitializationPolicy { kZeroInitialize, kDontInitialize };
+
+  enum SharingType {
+    kNotShared,
+    kShared,
+  };
+
+  ArrayBufferContents() = default;
+  ArrayBufferContents(size_t num_elements,
+                      size_t element_byte_size,
+                      SharingType is_shared,
+                      InitializationPolicy);
+  ArrayBufferContents(void* data, size_t length, DataDeleter deleter);
+  ArrayBufferContents(ArrayBufferContents&&) = default;
+  explicit ArrayBufferContents(std::shared_ptr<v8::BackingStore> backing_store);
+
+  ~ArrayBufferContents();
+
+  ArrayBufferContents& operator=(ArrayBufferContents&&) = default;
+
+  void Detach();
+
+  // Resets the internal memory so that the ArrayBufferContents is empty.
+  void Reset();
+
+  void* Data() const {
+    DCHECK(!IsShared());
+    return DataMaybeShared();
+  }
+  void* DataShared() const {
+    DCHECK(IsShared());
+    return DataMaybeShared();
+  }
+  void* DataMaybeShared() const {
+    return backing_store_ ? backing_store_->Data() : nullptr;
+  }
+  size_t DataLength() const {
+    return backing_store_ ? backing_store_->ByteLength() : 0;
+  }
+  bool IsShared() const {
+    return backing_store_ ? backing_store_->IsShared() : false;
+  }
+  bool IsValid() const { return backing_store_ && backing_store_->Data(); }
+
+  void Transfer(ArrayBufferContents& other);
+  void ShareWith(ArrayBufferContents& other);
+  void ShareNonSharedForInternalUse(ArrayBufferContents& other);
+  void CopyTo(ArrayBufferContents& other);
+
+  static void* AllocateMemoryOrNull(size_t, InitializationPolicy);
+  static void FreeMemory(void*);
+
+ private:
+  static void* AllocateMemoryWithFlags(size_t, InitializationPolicy, int);
+
+  static void DefaultAdjustAmountOfExternalAllocatedMemoryFunction(
+      int64_t diff);
+
+  std::shared_ptr<v8::BackingStore> backing_store_;
+
+  DISALLOW_COPY_AND_ASSIGN(ArrayBufferContents);
+};
+
+}  // namespace blink
+
+namespace WTF {
+
+template <>
+struct CrossThreadCopier<blink::ArrayBufferContents> {
+  STATIC_ONLY(CrossThreadCopier);
+  using Type = blink::ArrayBufferContents;
+  static Type Copy(Type handle) {
+    return handle;  // This is in fact a move.
+  }
+};
+
+}  // namespace WTF
+
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_TYPED_ARRAYS_ARRAY_BUFFER_ARRAY_BUFFER_CONTENTS_H_

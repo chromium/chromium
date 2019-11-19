@@ -7,6 +7,8 @@
 #include <ApplicationServices/ApplicationServices.h>
 #import <Cocoa/Cocoa.h>
 
+#include "ui/base/idle/idle_internal.h"
+
 @interface MacScreenMonitor : NSObject {
  @private
   BOOL screensaverRunning_;
@@ -92,6 +94,9 @@ int CalculateIdleTime() {
 }
 
 bool CheckIdleStateIsLocked() {
+  if (IdleStateForTesting().has_value())
+    return IdleStateForTesting().value() == IDLE_STATE_LOCKED;
+
   return [g_screenMonitor isScreensaverRunning] ||
       [g_screenMonitor isScreenLocked];
 }

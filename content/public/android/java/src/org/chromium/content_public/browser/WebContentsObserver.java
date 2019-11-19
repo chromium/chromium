@@ -4,7 +4,7 @@
 
 package org.chromium.content_public.browser;
 
-import android.support.annotation.IntDef;
+import androidx.annotation.IntDef;
 
 import org.chromium.blink.mojom.ViewportFit;
 
@@ -74,6 +74,17 @@ public abstract class WebContentsObserver {
      * @param url The validated url for the page.
      */
     public void didStopLoading(String url) {}
+
+    /**
+     * Called when a page's load progress has changed.
+     * @param progress The load progress in the range of [0,1].
+     */
+    public void loadProgressChanged(float progress) {}
+
+    /**
+     * Called when a page's visible security state has changed.
+     */
+    public void didChangeVisibleSecurityState() {}
 
     /**
      * Called when an error occurs while loading a page and/or the page fails to load.
@@ -177,9 +188,16 @@ public abstract class WebContentsObserver {
     public void viewportFitChanged(@ViewportFitType int value) {}
 
     /**
-     * This method is invoked when the WebContents reloads the LoFi images on the page.
+     * This method is invoked when a RenderWidgetHost for a WebContents gains focus.
      */
-    public void didReloadLoFiImages() {}
+    public void onWebContentsFocused() {}
+
+    /**
+     * This method is invoked when a RenderWidgetHost for a WebContents loses focus. This may
+     * be immediately followed by onWebContentsFocused if focus was moving between two
+     * RenderWidgetHosts within the same WebContents.
+     */
+    public void onWebContentsLostFocus() {}
 
     /**
      * Stop observing the web contents and clean up associated references.

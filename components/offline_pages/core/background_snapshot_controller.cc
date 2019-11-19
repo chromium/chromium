@@ -37,8 +37,7 @@ BackgroundSnapshotController::BackgroundSnapshotController(
       delay_after_document_on_load_completed_ms_(
           kDelayAfterDocumentOnLoadCompletedMsBackground),
       delay_after_renovations_completed_ms_(kDelayAfterRenovationsCompletedMs),
-      renovations_enabled_(renovations_enabled),
-      weak_ptr_factory_(this) {
+      renovations_enabled_(renovations_enabled) {
   if (offline_pages::ShouldUseTestingSnapshotDelay()) {
     delay_after_document_on_load_completed_ms_ = kDelayForTests;
     delay_after_renovations_completed_ms_ = kDelayForTests;

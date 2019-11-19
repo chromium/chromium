@@ -13,8 +13,7 @@
 #include "base/base_export.h"
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/message_loop/message_loop.h"
-#include "base/message_loop/message_loop_current.h"
+#include "base/message_loop/message_pump_type.h"
 #include "base/message_loop/timer_slack.h"
 #include "base/sequence_checker.h"
 #include "base/single_thread_task_runner.h"
@@ -30,7 +29,7 @@ class MessagePump;
 class RunLoop;
 
 // IMPORTANT: Instead of creating a base::Thread, consider using
-// base::Create(Sequenced|SingleThread)TaskRunnerWithTraits().
+// base::Create(Sequenced|SingleThread)TaskRunner().
 //
 // A simple thread abstraction that establishes a MessageLoop on a new thread.
 // The consumer uses the MessageLoop of the thread to cause code to execute on
@@ -59,9 +58,9 @@ class RunLoop;
 // Thread object (including ~Thread()).
 class BASE_EXPORT Thread : PlatformThread::Delegate {
  public:
-  class BASE_EXPORT TaskEnvironment {
+  class BASE_EXPORT Delegate {
    public:
-    virtual ~TaskEnvironment() {}
+    virtual ~Delegate() {}
 
     virtual scoped_refptr<SingleThreadTaskRunner> GetDefaultTaskRunner() = 0;
 
@@ -72,30 +71,31 @@ class BASE_EXPORT Thread : PlatformThread::Delegate {
   };
 
   struct BASE_EXPORT Options {
-    typedef Callback<std::unique_ptr<MessagePump>()> MessagePumpFactory;
+    using MessagePumpFactory =
+        RepeatingCallback<std::unique_ptr<MessagePump>()>;
 
     Options();
-    Options(MessageLoop::Type type, size_t size);
+    Options(MessagePumpType type, size_t size);
     Options(Options&& other);
     ~Options();
 
-    // Specifies the type of message loop that will be allocated on the thread.
+    // Specifies the type of message pump that will be allocated on the thread.
     // This is ignored if message_pump_factory.is_null() is false.
-    MessageLoop::Type message_loop_type = MessageLoop::TYPE_DEFAULT;
+    MessagePumpType message_pump_type = MessagePumpType::DEFAULT;
 
-    // An unbound TaskEnvironment that will be bound to the thread. Ownership
-    // of |task_environment| will be transferred to the thread.
+    // An unbound Delegate that will be bound to the thread. Ownership
+    // of |delegate| will be transferred to the thread.
     // TODO(alexclarke): This should be a std::unique_ptr
-    TaskEnvironment* task_environment = nullptr;
+    Delegate* delegate = nullptr;
 
     // Specifies timer slack for thread message loop.
     TimerSlack timer_slack = TIMER_SLACK_NONE;
 
     // Used to create the MessagePump for the MessageLoop. The callback is Run()
     // on the thread. If message_pump_factory.is_null(), then a MessagePump
-    // appropriate for |message_loop_type| is created. Setting this forces the
-    // MessageLoop::Type to TYPE_CUSTOM. This is not compatible with a non-null
-    // |task_environment|.
+    // appropriate for |message_pump_type| is created. Setting this forces the
+    // MessagePumpType to TYPE_CUSTOM. This is not compatible with a non-null
+    // |delegate|.
     MessagePumpFactory message_pump_factory;
 
     // Specifies the maximum stack size that the thread is allowed to use.
@@ -136,7 +136,7 @@ class BASE_EXPORT Thread : PlatformThread::Delegate {
   // init_com_with_mta(false) and then StartWithOptions() with any message loop
   // type other than TYPE_UI.
   void init_com_with_mta(bool use_mta) {
-    DCHECK(!task_environment_);
+    DCHECK(!delegate_);
     com_status_ = use_mta ? MTA : STA;
   }
 #endif
@@ -229,9 +229,8 @@ class BASE_EXPORT Thread : PlatformThread::Delegate {
     // Start().
     DCHECK(owning_sequence_checker_.CalledOnValidSequence() ||
            (id_event_.IsSignaled() && id_ == PlatformThread::CurrentId()) ||
-           task_environment_);
-    return task_environment_ ? task_environment_->GetDefaultTaskRunner()
-                             : nullptr;
+           delegate_);
+    return delegate_ ? delegate_->GetDefaultTaskRunner() : nullptr;
   }
 
   // Returns the name of this thread (for display in debugger too).
@@ -308,9 +307,9 @@ class BASE_EXPORT Thread : PlatformThread::Delegate {
   // Protects |id_| which must only be read while it's signaled.
   mutable WaitableEvent id_event_;
 
-  // The thread's TaskEnvironment and RunLoop are valid only while the thread is
+  // The thread's Delegate and RunLoop are valid only while the thread is
   // alive. Set by the created thread.
-  std::unique_ptr<TaskEnvironment> task_environment_;
+  std::unique_ptr<Delegate> delegate_;
   RunLoop* run_loop_ = nullptr;
 
   // Stores Options::timer_slack_ until the sequence manager has been bound to
@@ -329,25 +328,6 @@ class BASE_EXPORT Thread : PlatformThread::Delegate {
 
   DISALLOW_COPY_AND_ASSIGN(Thread);
 };
-
-namespace internal {
-
-class BASE_EXPORT MessageLoopTaskEnvironment : public Thread::TaskEnvironment {
- public:
-  explicit MessageLoopTaskEnvironment(
-      std::unique_ptr<MessageLoop> message_loop);
-
-  ~MessageLoopTaskEnvironment() override;
-
-  // Thread::TaskEnvironment:
-  scoped_refptr<SingleThreadTaskRunner> GetDefaultTaskRunner() override;
-  void BindToCurrentThread(TimerSlack timer_slack) override;
-
- private:
-  std::unique_ptr<MessageLoop> message_loop_;
-};
-
-}  // namespace internal
 
 }  // namespace base
 

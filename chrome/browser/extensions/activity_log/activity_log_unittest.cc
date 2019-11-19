@@ -27,7 +27,7 @@
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/uninstall_reason.h"
 #include "extensions/common/dom_action_types.h"
@@ -243,7 +243,7 @@ TEST_F(ActivityLogTest, LogPrerender) {
 
   prerender::test_utils::RestorePrerenderMode restore_prerender_mode;
   prerender::PrerenderManager::SetMode(
-      prerender::PrerenderManager::PRERENDER_MODE_ENABLED);
+      prerender::PrerenderManager::DEPRECATED_PRERENDER_MODE_ENABLED);
   prerender::PrerenderManager* prerender_manager =
       prerender::PrerenderManagerFactory::GetForBrowserContext(profile());
 

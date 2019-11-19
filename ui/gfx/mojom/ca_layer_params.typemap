@@ -1,0 +1,17 @@
+# Copyright 2017 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+mojom = "//ui/gfx/mojom/ca_layer_params.mojom"
+public_headers = [ "//ui/gfx/ca_layer_params.h" ]
+traits_headers = [ "//ui/gfx/mojom/ca_layer_params_mojom_traits.h" ]
+sources = [
+  "//ui/gfx/mojom/ca_layer_params_mojom_traits.cc",
+]
+public_deps = [
+  "//ui/gfx",
+]
+deps = [
+  "//ui/gfx/geometry/mojom:mojom_traits",
+]
+type_mappings = [ "gfx.mojom.CALayerParams=::gfx::CALayerParams" ]

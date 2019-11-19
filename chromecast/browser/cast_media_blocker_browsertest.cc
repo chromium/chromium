@@ -45,8 +45,7 @@ class CastMediaBlockerBrowserTest : public CastBrowserTest {
     web_contents_ = NavigateToURL(gurl);
     WaitForLoadStop(web_contents_);
 
-    blocker_ = std::make_unique<CastMediaBlocker>(
-        content::MediaSession::Get(web_contents_));
+    blocker_ = std::make_unique<CastMediaBlocker>(web_contents_);
   }
 
   void BlockAndTestPlayerState(const std::string& media_type, bool blocked) {

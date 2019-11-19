@@ -14,7 +14,7 @@ option optimize_for = LITE_RUNTIME;
 package chrome_cleaner;
 
 // A report to be sent to the Safe Browsing API.
-// Next tag: 21.
+// Next tag: 22.
 message ChromeCleanerReport {
   // Deprecated client_id field that stopped being sent after 20.113.
   reserved 2;
@@ -22,6 +22,8 @@ message ChromeCleanerReport {
   reserved 3;
   // Deprecated removed_uws field that stopped being sent after 16.88.
   reserved 12;
+  // Deprecated progress_stats field that stopped being sent after 39.195.200.
+  reserved 21;
 
   // Environmental data regarding the machine and the Cleaner.
   // Next tag: 11.

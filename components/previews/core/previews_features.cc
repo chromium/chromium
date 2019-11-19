@@ -26,89 +26,85 @@ const base::Feature kPreviews {
 const base::Feature kOfflinePreviews{"OfflinePreviews",
                                      base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Enables the Client Lo-Fi previews.
-const base::Feature kClientLoFi {
-  "ClientLoFi",
+// Support for enabling NoScript previews which includes a base feature
+// and a UserConsistent-specific experiment feature.
+const base::FeatureState kNoScriptDefaultFeatureState =
 #if defined(OS_ANDROID)
-      base::FEATURE_ENABLED_BY_DEFAULT
+    base::FEATURE_ENABLED_BY_DEFAULT;
 #else   // !defined(OS_ANDROID)
-      base::FEATURE_DISABLED_BY_DEFAULT
+    base::FEATURE_DISABLED_BY_DEFAULT;
 #endif  // defined(OS_ANDROID)
-};
-
-// Enables the NoScript previews for Android.
-const base::Feature kNoScriptPreviews {
-  "NoScriptPreviews",
-#if defined(OS_ANDROID)
-      base::FEATURE_ENABLED_BY_DEFAULT
-#else   // !defined(OS_ANDROID)
-      base::FEATURE_DISABLED_BY_DEFAULT
-#endif  // defined(OS_ANDROID)
-};
+const base::Feature kNoScriptPreviews{"NoScriptPreviews",
+                                      kNoScriptDefaultFeatureState};
+const base::Feature kNoScriptPreviewsUserConsistentStudy{
+    "NoScriptPreviewsUserConsistentStudy", kNoScriptDefaultFeatureState};
 
 // Enables the Stale Previews timestamp on Previews infobars.
 const base::Feature kStalePreviewsTimestamp{"StalePreviewsTimestamp",
                                             base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Enables the syncing of the Optimization Hints component, which provides
-// hints for what Previews can be applied on a page load.
-const base::Feature kOptimizationHints {
-  "OptimizationHints",
+// Support for enabling the application of the resource loading hints when
+// loading resources which includes a base feature and a UserConsistent-specific
+// experiment feature.
+const base::FeatureState kResourceLoadingHintsDefaultFeatureState =
 #if defined(OS_ANDROID)
-      base::FEATURE_ENABLED_BY_DEFAULT
+    base::FEATURE_ENABLED_BY_DEFAULT;
 #else   // !defined(OS_ANDROID)
-      base::FEATURE_DISABLED_BY_DEFAULT
+    base::FEATURE_DISABLED_BY_DEFAULT;
 #endif  // defined(OS_ANDROID)
-};
+const base::Feature kResourceLoadingHints{
+    "ResourceLoadingHints", kResourceLoadingHintsDefaultFeatureState};
+const base::Feature kResourceLoadingHintsUserConsistentStudy{
+    "ResourceLoadingHintsUserConsistentStudy",
+    kResourceLoadingHintsDefaultFeatureState};
 
-// Enables Optimization Hints that are marked as experimental. Optimizations are
-// marked experimental by setting an experiment name in the "experiment_name"
-// field of the Optimization proto. This allows experiments at the granularity
-// of a single PreviewType for a single host (or host suffix). The intent is
-// that optimizations that may not work properly for certain sites can be tried
-// at a small scale via Finch experiments. Experimental optimizations can be
-// activated by enabling this feature and passing an experiment name as a
-// parameter called "experiment_name" that matches the experiment name in the
-// Optimization proto.
-const base::Feature kOptimizationHintsExperiments{
-    "OptimizationHintsExperiments", base::FEATURE_DISABLED_BY_DEFAULT};
-
-// Enables the application of the resource loading hints when loading resources.
-const base::Feature kResourceLoadingHints {
-  "ResourceLoadingHints",
-#if defined(OS_ANDROID)
-      base::FEATURE_ENABLED_BY_DEFAULT
-#else   // !defined(OS_ANDROID)
-      base::FEATURE_DISABLED_BY_DEFAULT
-#endif  // defined(OS_ANDROID)
-};
-
-// Enables client redirects to a server-rendered lite page preview.
-const base::Feature kLitePageServerPreviews{"LitePageServerPreviews",
-                                            base::FEATURE_DISABLED_BY_DEFAULT};
-
-// Shows a Previews icon and string in the Android Omnibox instead of an Infobar
-// when enabled. Only works and is honored on Android..
-const base::Feature kAndroidOmniboxPreviewsBadge{
-    "AndroidOmniboxPreviewsBadge", base::FEATURE_DISABLED_BY_DEFAULT};
+// Support for enabling client redirects to a server-rendered lite page preview
+// which includes a base feature and a UserConsistent-specific experiment
+// feature.
+const base::FeatureState kLitePageServerPreviewsDefaultFeatureState =
+    base::FEATURE_DISABLED_BY_DEFAULT;
+const base::Feature kLitePageServerPreviews{
+    "LitePageServerPreviews", kLitePageServerPreviewsDefaultFeatureState};
+const base::Feature kLitePageServerPreviewsUserConsistentStudy{
+    "LitePageServerPreviewsUserConsistentStudy",
+    kLitePageServerPreviewsDefaultFeatureState};
 
 // Provides slow page triggering parameters.
 const base::Feature kSlowPageTriggering{"PreviewsSlowPageTriggering",
                                         base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Allows HTTPS previews to be served via a URLLoader when network service is
-// enabled.
-const base::Feature kHTTPSServerPreviewsUsingURLLoader{
-    "HTTPSServerPreviewsUsingURLLoader", base::FEATURE_DISABLED_BY_DEFAULT};
+// Enables the use of a pref to only trigger Offline Previews when there is a
+// high chance that there is one to serve.
+const base::Feature kOfflinePreviewsFalsePositivePrevention{
+    "OfflinePreviewsFalsePositivePrevention", base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Uses 'Lite Mode' strings instead of 'Data Saver'.
-const base::Feature kDataSaverLiteModeRebranding{
-    "DataSaverLiteModeRebranding", base::FEATURE_DISABLED_BY_DEFAULT};
+// Enables a per-page load holdback experiment using a random coin flip.
+const base::Feature kCoinFlipHoldback{"PreviewsCoinFlipHoldback_UKMOnly",
+                                      base::FEATURE_DISABLED_BY_DEFAULT};
 
-// When enabled, reloading on a preview will cause the session (5 minute) rule
-// to trigger.
-const base::Feature kPreviewsReloadsAreSoftOptOuts{
-    "PreviewsReloadsAreSoftOptOuts", base::FEATURE_DISABLED_BY_DEFAULT};
+// Enables filtering navigation URLs by suffix to exclude navigation that look
+// like media resources from triggering previews. For example,
+// http://chromium.org/video.mp4 would be excluded.
+const base::Feature kExcludedMediaSuffixes{"PreviewsExcludedMediaSuffixes",
+                                           base::FEATURE_ENABLED_BY_DEFAULT};
+
+// Support for enabling DeferAllScript previews which includes a base feature
+// and a UserConsistent-specific experiment feature.
+const base::FeatureState kDeferAllScriptDefaultFeatureState =
+#if defined(OS_ANDROID)
+    base::FEATURE_ENABLED_BY_DEFAULT;
+#else   // !defined(OS_ANDROID)
+    base::FEATURE_DISABLED_BY_DEFAULT;
+#endif  // defined(OS_ANDROID)
+const base::Feature kDeferAllScriptPreviews{"DeferAllScript",
+                                            kDeferAllScriptDefaultFeatureState};
+const base::Feature kDeferAllScriptPreviewsUserConsistentStudy{
+    "DeferAllScriptUserConsistentStudy", kDeferAllScriptDefaultFeatureState};
+
+// Specifies whether the client is eligible to be part of a UserConsistent
+// study. That is, the UserConsistent-specific features should be considered.
+const base::Feature kEligibleForUserConsistentStudy{
+    "EligibleForUserConsistentStudy", base::FEATURE_DISABLED_BY_DEFAULT};
 
 }  // namespace features
 }  // namespace previews

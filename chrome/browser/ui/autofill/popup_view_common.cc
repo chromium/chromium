@@ -9,14 +9,14 @@
 
 #include "build/build_config.h"
 #include "chrome/browser/platform_util.h"
-#include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/browser_window.h"
 #include "ui/gfx/geometry/vector2d.h"
 
 #if defined(OS_ANDROID)
 #include "ui/android/view_android.h"
 #include "ui/android/window_android.h"
 #else  // defined(OS_ANDROID)
+#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "ui/views/widget/widget.h"
 #endif  // !defined(OS_ANDROID)
 

@@ -4,8 +4,7 @@
 
 var newTabUrls = [
   'chrome://newtab/',
-  // The tab URL will be redirected to the Local New Tab Page if
-  // features::kUseGoogleLocalNtp is not enabled.
+  // The tab URL for to the Local New Tab Page.
   'chrome-search://local-ntp/local-ntp.html',
 ];
 
@@ -23,13 +22,17 @@ chrome.test.runTests([
 
   function setupTwoWindows() {
     createWindow(["about:blank", "chrome://newtab/", pageUrl("a")], {},
-                pass(function(winId, tabIds) {
-      secondWindowId = winId;
-      testTabId = tabIds[2];
+                 pass(function(winId, tabIds) {
+      waitForAllTabs(pass(function() {
+        secondWindowId = winId;
+        testTabId = tabIds[2];
 
-      createWindow(["chrome://newtab/", pageUrl("b")], {},
-                           pass(function(winId, tabIds) {
-        thirdWindowId = winId;
+        createWindow(["chrome://newtab/", pageUrl("b")], {},
+                     pass(function(winId, tabIds) {
+          waitForAllTabs(pass(function() {
+            thirdWindowId = winId;
+          }));
+        }));
       }));
     }));
   },
@@ -98,10 +101,16 @@ chrome.test.runTests([
       // Update url.
       chrome.tabs.update(testTabId, {"url": pageUrl("c")},
                          pass(function(tab){
-        chrome.test.assertEq(pageUrl("c"), tab.url);
-        // Check url.
-        chrome.tabs.get(testTabId, pass(function(tab) {
-          assertEq(pageUrl("c"), tab.url);
+        chrome.test.assertEq(pageUrl("a"), tab.url);
+        chrome.test.assertEq('A', tab.title);
+        chrome.test.assertEq(pageUrl("c"), tab.pendingUrl);
+        waitForAllTabs(pass(function() {
+          // Check url
+          chrome.tabs.get(testTabId, pass(function(tab) {
+            assertEq(pageUrl("c"), tab.url);
+            assertEq('C', tab.title);
+            assertEq(undefined, tab.pendingUrl);
+          }));
         }));
       }));
     }));

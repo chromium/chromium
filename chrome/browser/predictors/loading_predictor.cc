@@ -10,9 +10,11 @@
 #include "base/metrics/histogram_macros.h"
 #include "chrome/browser/predictors/loading_data_collector.h"
 #include "chrome/browser/predictors/loading_stats_collector.h"
-#include "chrome/browser/predictors/resource_prefetch_common.h"
+#include "chrome/browser/predictors/navigation_id.h"
 #include "chrome/browser/predictors/resource_prefetch_predictor.h"
 #include "content/public/browser/browser_thread.h"
+#include "net/base/network_isolation_key.h"
+#include "url/origin.h"
 
 namespace predictors {
 
@@ -26,7 +28,7 @@ const base::TimeDelta kMinDelayBetweenPreconnectRequests =
 // Returns true iff |prediction| is not empty.
 bool AddInitialUrlToPreconnectPrediction(const GURL& initial_url,
                                          PreconnectPrediction* prediction) {
-  GURL initial_origin = initial_url.GetOrigin();
+  url::Origin initial_origin = url::Origin::Create(initial_url);
   // Open minimum 2 sockets to the main frame host to speed up the loading if a
   // main page has a redirect to the same host. This is because there can be a
   // race between reading the server redirect response and sending a new request
@@ -37,10 +39,12 @@ bool AddInitialUrlToPreconnectPrediction(const GURL& initial_url,
       prediction->requests.front().origin == initial_origin) {
     prediction->requests.front().num_sockets =
         std::max(prediction->requests.front().num_sockets, kMinSockets);
-  } else if (initial_origin.is_valid() &&
-             initial_origin.SchemeIsHTTPOrHTTPS()) {
-    prediction->requests.emplace(prediction->requests.begin(), initial_origin,
-                                 kMinSockets);
+  } else if (!initial_origin.opaque() &&
+             (initial_origin.scheme() == url::kHttpScheme ||
+              initial_origin.scheme() == url::kHttpsScheme)) {
+    prediction->requests.emplace(
+        prediction->requests.begin(), initial_origin, kMinSockets,
+        net::NetworkIsolationKey(initial_origin, initial_origin));
   }
 
   return !prediction->requests.empty();
@@ -60,8 +64,7 @@ LoadingPredictor::LoadingPredictor(const LoadingPredictorConfig& config,
       loading_data_collector_(std::make_unique<LoadingDataCollector>(
           resource_prefetch_predictor_.get(),
           stats_collector_.get(),
-          config)),
-      weak_factory_(this) {}
+          config)) {}
 
 LoadingPredictor::~LoadingPredictor() {
   DCHECK(shutdown_);
@@ -232,7 +235,10 @@ void LoadingPredictor::HandleOmniboxHint(const GURL& url, bool preconnectable) {
     if (is_new_origin || now - last_omnibox_preconnect_time_ >=
                              kMinDelayBetweenPreconnectRequests) {
       last_omnibox_preconnect_time_ = now;
-      preconnect_manager()->StartPreconnectUrl(url, true);
+      // Not to be confused with |origin|.
+      url::Origin url_origin = url::Origin::Create(url);
+      preconnect_manager()->StartPreconnectUrl(
+          url, true, net::NetworkIsolationKey(url_origin, url_origin));
     }
     return;
   }

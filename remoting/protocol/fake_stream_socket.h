@@ -12,7 +12,6 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
-#include "net/base/completion_callback.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "remoting/protocol/p2p_stream_socket.h"
 #include "remoting/protocol/stream_channel_factory.h"
@@ -103,7 +102,7 @@ class FakeStreamSocket : public P2PStreamSocket {
   int input_pos_ = 0;
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
-  base::WeakPtrFactory<FakeStreamSocket> weak_factory_;
+  base::WeakPtrFactory<FakeStreamSocket> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(FakeStreamSocket);
 };
@@ -148,7 +147,7 @@ class FakeStreamChannelFactory : public StreamChannelFactory {
   bool async_write_ = false;
 
   base::WeakPtr<FakeStreamChannelFactory> peer_factory_;
-  base::WeakPtrFactory<FakeStreamChannelFactory> weak_factory_;
+  base::WeakPtrFactory<FakeStreamChannelFactory> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(FakeStreamChannelFactory);
 };

@@ -1,0 +1,2 @@
+The mojo interfaces in this component have a separate out-of-Chromium consumer,
+so we moved the interfaces from //media to here.

@@ -14,11 +14,9 @@
 #include <utility>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/sequenced_task_runner.h"
 #include "base/values.h"
 #include "cc/base/unique_notifier.h"
-#include "cc/paint/color_space_transfer_cache_entry.h"
 #include "cc/raster/raster_buffer_provider.h"
 #include "cc/raster/raster_source.h"
 #include "cc/resources/memory_history.h"
@@ -82,15 +80,20 @@ class CC_EXPORT TileManagerClient {
   virtual void SetIsLikelyToRequireADraw(bool is_likely_to_require_a_draw) = 0;
 
   // Requests the color space into which tiles should be rasterized.
-  virtual RasterColorSpace GetRasterColorSpace() const = 0;
+  virtual const gfx::ColorSpace& GetRasterColorSpace() const = 0;
 
   // Requests that a pending tree be scheduled to invalidate content on the
   // pending on active tree. This is currently used when tiles that are
   // rasterized with missing images need to be invalidated.
   virtual void RequestImplSideInvalidationForCheckerImagedTiles() = 0;
 
+  // Returns the frame index to display for the given image on the given tree.
   virtual size_t GetFrameIndexForImage(const PaintImage& paint_image,
                                        WhichTree tree) const = 0;
+
+  // Returns the sample count to use if MSAA is enabled for a tile.
+  virtual int GetMSAASampleCountForRaster(
+      const scoped_refptr<DisplayItemList>& display_list) = 0;
 
  protected:
   virtual ~TileManagerClient() {}
@@ -136,7 +139,11 @@ class CC_EXPORT TileManager : CheckerImageTrackerClient {
               scoped_refptr<base::SequencedTaskRunner> image_worker_task_runner,
               size_t scheduled_raster_task_limit,
               const TileManagerSettings& tile_manager_settings);
+
+  TileManager(const TileManager&) = delete;
   ~TileManager() override;
+
+  TileManager& operator=(const TileManager&) = delete;
 
   // Assigns tile memory and schedules work to prepare tiles for drawing.
   // This step occurs after Commit and at most once per BeginFrame. It can be
@@ -199,7 +206,7 @@ class CC_EXPORT TileManager : CheckerImageTrackerClient {
           resource_pool_->AcquireResource(
               tiles[i]->desired_texture_size(),
               raster_buffer_provider_->GetResourceFormat(),
-              client_->GetRasterColorSpace().color_space);
+              client_->GetRasterColorSpace());
       raster_buffer_provider_->AcquireBufferForRaster(resource, 0, 0);
       // The raster here never really happened, cuz tests. So just add an
       // arbitrary sync token.
@@ -210,7 +217,7 @@ class CC_EXPORT TileManager : CheckerImageTrackerClient {
       }
       bool exported = resource_pool_->PrepareForExport(resource);
       DCHECK(exported);
-      draw_info.SetResource(std::move(resource), false, false, false);
+      draw_info.SetResource(std::move(resource), false, false);
       draw_info.set_resource_ready_for_draw();
     }
   }
@@ -292,9 +299,6 @@ class CC_EXPORT TileManager : CheckerImageTrackerClient {
 
   void set_active_url(const GURL& url) { active_url_ = url; }
 
-  void SetPaintWorkletLayerPainter(
-      std::unique_ptr<PaintWorkletLayerPainter> painter);
-
  protected:
   friend class Tile;
   // Must be called by tile during destruction.
@@ -353,6 +357,7 @@ class CC_EXPORT TileManager : CheckerImageTrackerClient {
   void FreeResourcesForTileAndNotifyClientIfTileWasReadyToDraw(Tile* tile);
   scoped_refptr<TileTask> CreateRasterTask(
       const PrioritizedTile& prioritized_tile,
+      const gfx::ColorSpace& raster_color_space,
       PrioritizedWorkToSchedule* work_to_schedule);
 
   std::unique_ptr<EvictionTilePriorityQueue>
@@ -385,19 +390,21 @@ class CC_EXPORT TileManager : CheckerImageTrackerClient {
 
   void PartitionImagesForCheckering(
       const PrioritizedTile& prioritized_tile,
+      const gfx::ColorSpace& raster_color_space,
       std::vector<DrawImage>* sync_decoded_images,
       std::vector<PaintImage>* checkered_images,
       const gfx::Rect* invalidated_rect,
       base::flat_map<PaintImage::Id, size_t>* image_to_frame_index = nullptr);
   void AddCheckeredImagesToDecodeQueue(
       const PrioritizedTile& prioritized_tile,
+      const gfx::ColorSpace& raster_color_space,
       CheckerImageTracker::DecodeType decode_type,
       CheckerImageTracker::ImageDecodeQueue* image_decode_queue);
 
   std::unique_ptr<base::trace_event::ConvertableToTraceFormat>
   ScheduledTasksStateAsValue() const;
 
-  bool UsePartialRaster() const;
+  bool UsePartialRaster(int msaa_sample_count) const;
 
   void FlushAndIssueSignals();
   void CheckPendingGpuWorkAndIssueSignals();
@@ -468,11 +475,10 @@ class CC_EXPORT TileManager : CheckerImageTrackerClient {
   // different. The |task_set_finished_weak_ptr_factory_| is invalidated any
   // time new tasks are scheduled, preventing a race when the callback has
   // been scheduled but not yet executed.
-  base::WeakPtrFactory<TileManager> task_set_finished_weak_ptr_factory_;
+  base::WeakPtrFactory<TileManager> task_set_finished_weak_ptr_factory_{this};
   // The |ready_to_draw_callback_weak_ptr_factory_| is never invalidated.
-  base::WeakPtrFactory<TileManager> ready_to_draw_callback_weak_ptr_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(TileManager);
+  base::WeakPtrFactory<TileManager> ready_to_draw_callback_weak_ptr_factory_{
+      this};
 };
 
 }  // namespace cc

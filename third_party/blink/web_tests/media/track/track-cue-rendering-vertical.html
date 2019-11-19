@@ -9,7 +9,10 @@ video.src = "../content/test.ogv";
 
 testRunner.waitUntilDone();
 video.onseeked = function() {
-    testRunner.notifyDone();
+    // Wait for one rAF to ensure the thumbnail is onscreen, which helps reduce
+    // flaky failures.
+    if (window.testRunner)
+        requestAnimationFrame(_ => testRunner.notifyDone());
 }
 
 video.currentTime = 0.75;

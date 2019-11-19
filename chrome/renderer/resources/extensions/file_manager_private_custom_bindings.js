@@ -4,26 +4,17 @@
 
 // Custom binding for the fileManagerPrivate API.
 
-// Bindings
-var binding =
-    apiBridge || require('binding').Binding.create('fileManagerPrivate');
-var registerArgumentMassager = bindingUtil ?
-    $Function.bind(bindingUtil.registerEventArgumentMassager, bindingUtil) :
-    require('event_bindings').registerArgumentMassager;
-
 // Natives
 var fileManagerPrivateNatives = requireNative('file_manager_private');
 
 // Internals
-var fileManagerPrivateInternal = getInternalApi ?
-    getInternalApi('fileManagerPrivateInternal') :
-    require('binding').Binding.create('fileManagerPrivateInternal').generate();
+var fileManagerPrivateInternal = getInternalApi('fileManagerPrivateInternal');
 
 // Shorthands
 var GetFileSystem = fileManagerPrivateNatives.GetFileSystem;
 var GetExternalFileEntry = fileManagerPrivateNatives.GetExternalFileEntry;
 
-binding.registerCustomHook(function(bindingsAPI) {
+apiBridge.registerCustomHook(function(bindingsAPI) {
   // For FilesAppEntry types that wraps a native entry, returns the native entry
   // to be able to send to fileManagerPrivate API.
   function getEntryURL(entry) {
@@ -63,7 +54,7 @@ binding.registerCustomHook(function(bindingsAPI) {
 
     // So |callback| doesn't break if response is not defined.
     if (!response)
-      response = {};
+      response = [];
 
     if (callback)
       callback(response);
@@ -131,12 +122,6 @@ binding.registerCustomHook(function(bindingsAPI) {
     fileManagerPrivateInternal.pinDriveFile(url, pin, callback);
   });
 
-  apiFunctions.setHandleRequest(
-      'ensureFileDownloaded', function(entry, callback) {
-        var url = getEntryURL(entry);
-        fileManagerPrivateInternal.ensureFileDownloaded(url, callback);
-      });
-
   apiFunctions.setHandleRequest('executeTask',
       function(taskId, entries, callback) {
         var urls = entries.map(function(entry) {
@@ -164,27 +149,6 @@ binding.registerCustomHook(function(bindingsAPI) {
   apiFunctions.setHandleRequest('getDownloadUrl', function(entry, callback) {
     var url = getEntryURL(entry);
     fileManagerPrivateInternal.getDownloadUrl(url, callback);
-  });
-
-  apiFunctions.setHandleRequest('requestDriveShare', function(
-        entry, shareType, callback) {
-    var url = getEntryURL(entry);
-    fileManagerPrivateInternal.requestDriveShare(url, shareType, callback);
-  });
-
-  apiFunctions.setHandleRequest('setEntryTag', function(
-        entry, visibility, key, value, callback) {
-    var url = getEntryURL(entry);
-    fileManagerPrivateInternal.setEntryTag(
-        url, visibility, key, value, callback);
-  });
-
-  apiFunctions.setHandleRequest('cancelFileTransfers', function(
-        entries, callback) {
-    var urls = entries.map(function(entry) {
-      return getEntryURL(entry);
-    });
-    fileManagerPrivateInternal.cancelFileTransfers(urls, callback);
   });
 
   apiFunctions.setHandleRequest('startCopy', function(
@@ -229,24 +193,25 @@ binding.registerCustomHook(function(bindingsAPI) {
   });
 
   apiFunctions.setHandleRequest(
-      'sharePathsWithCrostini', function(entries, persist, callback) {
+      'sharePathsWithCrostini', function(vmName, entries, persist, callback) {
         const urls = entries.map((entry) => {
           return getEntryURL(entry);
         });
         fileManagerPrivateInternal.sharePathsWithCrostini(
-            urls, persist, callback);
+            vmName, urls, persist, callback);
       });
 
   apiFunctions.setHandleRequest(
-      'unsharePathWithCrostini', function(entry, callback) {
+      'unsharePathWithCrostini', function(vmName, entry, callback) {
         fileManagerPrivateInternal.unsharePathWithCrostini(
-            getEntryURL(entry), callback);
+            vmName, getEntryURL(entry), callback);
       });
 
   apiFunctions.setHandleRequest(
-      'getCrostiniSharedPaths', function(observeFirstForSession, callback) {
+      'getCrostiniSharedPaths',
+      function(observeFirstForSession, vmName, callback) {
         fileManagerPrivateInternal.getCrostiniSharedPaths(
-            observeFirstForSession,
+            observeFirstForSession, vmName,
             function(entryDescriptions, firstForSession) {
               callback(entryDescriptions.map(function(description) {
                 return GetExternalFileEntry(description);
@@ -271,17 +236,40 @@ binding.registerCustomHook(function(bindingsAPI) {
     var url = getEntryURL(entry);
     fileManagerPrivateInternal.getThumbnail(url, cropToSquare, callback);
   });
+
+  apiFunctions.setCustomCallback('searchFiles',
+      function(name, request, callback, response) {
+    if (response && !response.error && response.entries) {
+      response.entries = response.entries.map(function(entry) {
+        return GetExternalFileEntry(entry);
+      });
+    }
+
+    // So |callback| doesn't break if response is not defined.
+    if (!response) {
+      response = {};
+    }
+
+    if (callback) {
+      callback(response.entries);
+    }
+  });
+
+  apiFunctions.setHandleRequest('importCrostiniImage', function(entry) {
+    const url = getEntryURL(entry);
+    fileManagerPrivateInternal.importCrostiniImage(url);
+  });
 });
 
-registerArgumentMassager('fileManagerPrivate.onDirectoryChanged',
-                         function(args, dispatch) {
+bindingUtil.registerEventArgumentMassager(
+    'fileManagerPrivate.onDirectoryChanged', function(args, dispatch) {
   // Convert the entry arguments into a real Entry object.
   args[0].entry = GetExternalFileEntry(args[0].entry);
   dispatch(args);
 });
 
-registerArgumentMassager('fileManagerPrivate.onCrostiniSharedPathsChanged',
-                         function(args, dispatch) {
+bindingUtil.registerEventArgumentMassager(
+    'fileManagerPrivate.onCrostiniChanged', function(args, dispatch) {
   // Convert entries arguments into real Entry objects.
   const entries = args[0].entries;
   for (let i = 0; i < entries.length; i++) {
@@ -289,6 +277,3 @@ registerArgumentMassager('fileManagerPrivate.onCrostiniSharedPathsChanged',
   }
   dispatch(args);
 });
-
-if (!apiBridge)
-  exports.$set('binding', binding.generate());

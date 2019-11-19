@@ -12,6 +12,7 @@
 #include "base/task/post_task.h"
 #include "base/test/bind_test_util.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/chromeos/arc/arc_support_host.h"
 #include "chrome/browser/chromeos/arc/auth/arc_active_directory_enrollment_token_fetcher.h"
 #include "chrome/browser/chromeos/arc/extensions/fake_arc_support.h"
@@ -20,8 +21,7 @@
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/dbus/fake_cryptohome_client.h"
+#include "chromeos/dbus/cryptohome/fake_cryptohome_client.h"
 #include "components/arc/arc_util.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
 #include "components/policy/core/common/policy_switches.h"
@@ -53,7 +53,9 @@ using Status = ArcActiveDirectoryEnrollmentTokenFetcher::Status;
 std::string GetDmServerUrl() {
   policy ::BrowserPolicyConnectorChromeOS* const connector =
       g_browser_process->platform_part()->browser_policy_connector_chromeos();
-  return connector->device_management_service()->GetServerUrl();
+  return connector->device_management_service()
+      ->configuration()
+      ->GetDMServerUrl();
 }
 
 // Observer for FakeArcSupport.
@@ -242,14 +244,6 @@ class ArcActiveDirectoryEnrollmentTokenFetcherBrowserTest
     SetArcAvailableCommandLineForTesting(command_line);
   }
 
-  void SetUpInProcessBrowserTestFixture() override {
-    // Set fake cryptohome, because we want to fail DMToken retrieval
-    auto cryptohome_client = std::make_unique<chromeos::FakeCryptohomeClient>();
-    fake_cryptohome_client_ = cryptohome_client.get();
-    chromeos::DBusThreadManager::GetSetterForTesting()->SetCryptohomeClient(
-        std::move(cryptohome_client));
-  }
-
   void SetUpOnMainThread() override {
     support_host_ = std::make_unique<ArcSupportHost>(browser()->profile());
     support_host_->SetErrorDelegate(this);
@@ -272,9 +266,9 @@ class ArcActiveDirectoryEnrollmentTokenFetcherBrowserTest
   // ArcActiveDirectoryEnrollmentTokenFetcher will succeed to fetch the DM
   // token.
   void StoreCorrectDmToken() {
-    fake_cryptohome_client_->set_system_salt(
+    chromeos::FakeCryptohomeClient::Get()->set_system_salt(
         chromeos::FakeCryptohomeClient::GetStubSystemSalt());
-    fake_cryptohome_client_->SetServiceIsAvailable(true);
+    chromeos::FakeCryptohomeClient::Get()->SetServiceIsAvailable(true);
     // Store a fake DM token.
     base::RunLoop run_loop;
     auto dm_token_storage = std::make_unique<policy::DMTokenStorage>(
@@ -295,8 +289,9 @@ class ArcActiveDirectoryEnrollmentTokenFetcherBrowserTest
   // Does not store a correct DM token.
   // ArcActiveDirectoryEnrollmentTokenFetcher will fail to fetch the DM token.
   void FailDmToken() {
-    fake_cryptohome_client_->set_system_salt(std::vector<uint8_t>());
-    fake_cryptohome_client_->SetServiceIsAvailable(true);
+    chromeos::FakeCryptohomeClient::Get()->set_system_salt(
+        std::vector<uint8_t>());
+    chromeos::FakeCryptohomeClient::Get()->SetServiceIsAvailable(true);
   }
 
   void FetchEnrollmentToken(base::RunLoop* run_loop,
@@ -374,8 +369,6 @@ class ArcActiveDirectoryEnrollmentTokenFetcherBrowserTest
   void OnSendFeedbackClicked() override {}
 
   std::unique_ptr<ArcSupportHost> support_host_;
-  // DBusThreadManager owns this.
-  chromeos::FakeCryptohomeClient* fake_cryptohome_client_;
 
   DISALLOW_COPY_AND_ASSIGN(ArcActiveDirectoryEnrollmentTokenFetcherBrowserTest);
 };
@@ -440,15 +433,15 @@ IN_PROC_BROWSER_TEST_F(ArcActiveDirectoryEnrollmentTokenFetcherBrowserTest,
 
   test_url_loader_factory_.SetInterceptor(
       base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
-        network::ResourceResponseHead head;
+        auto head = network::mojom::URLResponseHead::New();
         std::string status_line("HTTP/1.1 904 ARC Disabled");
         std::string headers = status_line + "\nContent-type: text/html\n\n";
-        head.headers = new net::HttpResponseHeaders(
-            net::HttpUtil::AssembleRawHeaders(headers.c_str(), headers.size()));
+        head->headers = base::MakeRefCounted<net::HttpResponseHeaders>(
+            net::HttpUtil::AssembleRawHeaders(headers));
         network::URLLoaderCompletionStatus status;
 
-        test_url_loader_factory_.AddResponse(request.url, head, std::string(),
-                                             status);
+        test_url_loader_factory_.AddResponse(request.url, std::move(head),
+                                             std::string(), status);
       }));
   base::RunLoop run_loop;
   ExpectEnrollmentTokenFetchFails(&run_loop, Status::ARC_DISABLED);

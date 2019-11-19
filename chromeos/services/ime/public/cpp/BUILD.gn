@@ -4,13 +4,15 @@
 
 import("//build/buildflag_header.gni")
 import("//chromeos/services/ime/public/features.gni")
+import("//testing/libfuzzer/fuzzer_test.gni")
+import("//third_party/libprotobuf-mutator/fuzzable_proto_library.gni")
 
 buildflag_header("buildflags") {
   header = "buildflags.h"
 
   flags = [
-    "ENABLE_CROS_IME_DECODER=$enable_cros_ime_decoder",
-    "ENABLE_CROS_IME_EXAMPLE_SO=$enable_cros_ime_example_so",
+    "ENABLE_CROS_IME_SHARED_DATA=$enable_cros_ime_shared_data",
+    "ENABLE_CROS_IME_SANITY_TEST_SO=$enable_cros_ime_sanity_test_so",
   ]
 }
 
@@ -107,15 +109,23 @@ source_set("rulebased_unit_tests") {
   ]
 }
 
-source_set("manifest") {
-  sources = [
-    "manifest.cc",
-    "manifest.h",
-  ]
+if (use_libfuzzer) {
+  fuzzable_proto_library("rulebased_fuzzer_proto") {
+    sources = [
+      "rulebased/rulebased_fuzzer.proto",
+    ]
+  }
 
-  deps = [
-    "//base",
-    "//chromeos/services/ime/public/mojom",
-    "//services/service_manager/public/cpp",
-  ]
+  fuzzer_test("rulebased_fuzzer") {
+    sources = [
+      "rulebased/rulebased_fuzzer.cc",
+    ]
+    seed_corpus = "rulebased/test_data"
+    deps = [
+      ":rulebased",
+      ":rulebased_fuzzer_proto",
+      "//base",
+      "//third_party/libprotobuf-mutator",
+    ]
+  }
 }

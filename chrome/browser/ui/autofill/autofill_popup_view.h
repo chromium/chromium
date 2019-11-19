@@ -7,6 +7,7 @@
 
 #include <stddef.h>
 
+#include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "base/strings/string16.h"
 #include "chrome/browser/ui/autofill/autofill_popup_view_delegate.h"
@@ -33,8 +34,12 @@ class AutofillPopupView {
   // Refreshes the position and redraws popup when suggestions change.
   virtual void OnSuggestionsChanged() = 0;
 
+  // Return the autofill popup view's ax unique id.
+  virtual base::Optional<int32_t> GetAxUniqueId() = 0;
+
   // Factory function for creating the view.
-  static AutofillPopupView* Create(AutofillPopupController* controller);
+  static AutofillPopupView* Create(
+      base::WeakPtr<AutofillPopupController> controller);
 
  protected:
   virtual ~AutofillPopupView() {}

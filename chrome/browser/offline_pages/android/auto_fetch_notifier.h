@@ -25,8 +25,9 @@ bool AutoFetchInProgressNotificationCanceled();
 void AutoFetchCancellationComplete();
 
 // Triggers the auto-fetch complete notification. See AutoFetchNotifier.java.
-void ShowAutoFetchCompleteNotification(const base::string16& pageTitle,
-                                       const std::string& originalUrl,
+void ShowAutoFetchCompleteNotification(const base::string16& page_title,
+                                       const std::string& original_url,
+                                       const std::string& final_url,
                                        int android_tab_id,
                                        int64_t offline_id);
 

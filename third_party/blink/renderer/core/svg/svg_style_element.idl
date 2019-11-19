@@ -26,12 +26,13 @@
 
 // https://svgwg.org/svg2-draft/styling.html#InterfaceSVGStyleElement
 
+[Exposed=Window]
 interface SVGStyleElement : SVGElement {
     attribute DOMString type;
     attribute DOMString media;
     [MeasureAs=SVGStyleElementTitle] attribute DOMString title;
 
-    // SVGStyleElement implements LinkStyle
+    // SVGStyleElement includes LinkStyle
     // https://drafts.csswg.org/cssom/#the-linkstyle-interface
     readonly attribute StyleSheet? sheet;
 

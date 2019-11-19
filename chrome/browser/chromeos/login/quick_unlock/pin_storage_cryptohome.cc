@@ -109,19 +109,15 @@ void OnCryptohomedServiceAvailable(int attempt,
     return;
   }
 
-  chromeos::DBusThreadManager::Get()
-      ->GetCryptohomeClient()
-      ->GetSupportedKeyPolicies(
-          cryptohome::GetSupportedKeyPoliciesRequest(),
-          base::BindOnce(&OnGetSupportedKeyPolicies, std::move(result)));
+  CryptohomeClient::Get()->GetSupportedKeyPolicies(
+      cryptohome::GetSupportedKeyPoliciesRequest(),
+      base::BindOnce(&OnGetSupportedKeyPolicies, std::move(result)));
 }
 
 void CheckForCryptohomedService(int attempt,
                                 PinStorageCryptohome::BoolCallback result) {
-  chromeos::DBusThreadManager::Get()
-      ->GetCryptohomeClient()
-      ->WaitForServiceToBeAvailable(base::BindOnce(
-          &OnCryptohomedServiceAvailable, attempt, std::move(result)));
+  CryptohomeClient::Get()->WaitForServiceToBeAvailable(base::BindOnce(
+      &OnCryptohomedServiceAvailable, attempt, std::move(result)));
 }
 
 }  // namespace
@@ -151,7 +147,7 @@ base::Optional<Key> PinStorageCryptohome::TransformKey(
   return result;
 }
 
-PinStorageCryptohome::PinStorageCryptohome() : weak_factory_(this) {
+PinStorageCryptohome::PinStorageCryptohome() {
   SystemSaltGetter::Get()->GetSystemSalt(base::AdaptCallbackForRepeating(
       base::BindOnce(&PinStorageCryptohome::OnSystemSaltObtained,
                      weak_factory_.GetWeakPtr())));
@@ -163,7 +159,7 @@ void PinStorageCryptohome::IsPinSetInCryptohome(const AccountId& account_id,
                                                 BoolCallback result) const {
   cryptohome::GetKeyDataRequest request;
   request.mutable_key()->mutable_data()->set_label(kCryptohomePinLabel);
-  chromeos::DBusThreadManager::Get()->GetCryptohomeClient()->GetKeyDataEx(
+  chromeos::CryptohomeClient::Get()->GetKeyDataEx(
       cryptohome::CreateAccountIdentifierFromAccountId(account_id),
       cryptohome::AuthorizationRequest(), request,
       base::AdaptCallbackForRepeating(
@@ -263,7 +259,7 @@ void PinStorageCryptohome::CanAuthenticate(const AccountId& account_id,
                                            BoolCallback result) const {
   cryptohome::GetKeyDataRequest request;
   request.mutable_key()->mutable_data()->set_label(kCryptohomePinLabel);
-  chromeos::DBusThreadManager::Get()->GetCryptohomeClient()->GetKeyDataEx(
+  chromeos::CryptohomeClient::Get()->GetKeyDataEx(
       cryptohome::CreateAccountIdentifierFromAccountId(account_id),
       cryptohome::AuthorizationRequest(), request,
       base::AdaptCallbackForRepeating(

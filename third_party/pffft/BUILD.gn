@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/arm.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//testing/test.gni")
 
@@ -11,6 +12,11 @@ config("common_config") {
       # Required to use math constants from math.h.
       "_USE_MATH_DEFINES",
     ]
+  }
+
+  # PFFFT doesn't support SIMD on mipsel, so build a scalar version.
+  if ((current_cpu == "arm" && !arm_use_neon) || current_cpu == "mipsel") {
+    defines = [ "PFFFT_SIMD_DISABLE" ]
   }
 }
 

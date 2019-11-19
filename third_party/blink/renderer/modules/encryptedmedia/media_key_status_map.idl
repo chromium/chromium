@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// https://w3c.github.io/encrypted-media/#idl-def-MediaKeyStatusMap
+// https://w3c.github.io/encrypted-media/#mediakeystatusmap-interface
 
 enum MediaKeyStatus {
     "usable",
@@ -15,6 +15,7 @@ enum MediaKeyStatus {
 };
 
 [
+    Exposed=Window,
     SecureContext
 ] interface MediaKeyStatusMap {
     iterable <BufferSource, MediaKeyStatus>;

@@ -1,0 +1,23 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chromecast/chromecast.gni")
+
+cast_source_set("gpu") {
+  sources = [
+    "cast_content_gpu_client.cc",
+    "cast_content_gpu_client.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chromecast/media/service/mojom",
+    "//components/viz/common",
+    "//components/viz/service",
+    "//content/public/child",
+    "//content/public/gpu",
+  ]
+
+  defines = [ "IS_CHROMECAST" ]
+}

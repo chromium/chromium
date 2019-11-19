@@ -39,6 +39,9 @@ void PrintMetricsForRecvStreams(const base::DictionaryValue& pc_dict,
                                 const std::string& modifier,
                                 const std::string& video_codec);
 
+bool WriteCompareVideosOutputAsHistogram(const std::string& test_label,
+                                         const std::string& output);
+
 }  // namespace test
 
 #endif  // CHROME_BROWSER_MEDIA_WEBRTC_WEBRTC_BROWSERTEST_PERF_H_

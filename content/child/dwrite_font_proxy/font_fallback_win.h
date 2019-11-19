@@ -55,6 +55,7 @@ class FontFallback
 
   bool GetCachedFont(const base::string16& text,
                      const wchar_t* base_family_name,
+                     const wchar_t* locale,
                      DWRITE_FONT_WEIGHT base_weight,
                      DWRITE_FONT_STYLE base_style,
                      DWRITE_FONT_STRETCH base_stretch,
@@ -62,7 +63,8 @@ class FontFallback
                      uint32_t* mapped_length);
 
   void AddCachedFamily(Microsoft::WRL::ComPtr<IDWriteFontFamily> family,
-                       const wchar_t* base_family_name);
+                       const wchar_t* base_family_name,
+                       const wchar_t* locale);
 
  private:
   blink::mojom::DWriteFontProxy& GetFontProxy();

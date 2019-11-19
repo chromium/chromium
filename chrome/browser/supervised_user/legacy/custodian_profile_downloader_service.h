@@ -10,6 +10,8 @@
 #include "chrome/browser/profiles/profile_downloader_delegate.h"
 #include "components/keyed_service/core/keyed_service.h"
 
+class Profile;
+
 class CustodianProfileDownloaderService : public KeyedService,
                                           public ProfileDownloaderDelegate {
  public:
@@ -34,7 +36,8 @@ class CustodianProfileDownloaderService : public KeyedService,
   bool NeedsProfilePicture() const override;
   int GetDesiredImageSideLength() const override;
   std::string GetCachedPictureURL() const override;
-  Profile* GetBrowserProfile() override;
+  signin::IdentityManager* GetIdentityManager() override;
+  network::mojom::URLLoaderFactory* GetURLLoaderFactory() override;
   bool IsPreSignin() const override;
   void OnProfileDownloadSuccess(ProfileDownloader* downloader) override;
   void OnProfileDownloadFailure(

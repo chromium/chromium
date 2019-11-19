@@ -23,10 +23,10 @@
 #import "ios/chrome/browser/geolocation/omnibox_geolocation_controller+Testing.h"
 #import "ios/chrome/browser/geolocation/omnibox_geolocation_local_state.h"
 #import "ios/web/public/browser_state.h"
-#include "ios/web/public/navigation_item.h"
-#import "ios/web/public/navigation_manager.h"
-#import "ios/web/public/web_state/web_state.h"
-#import "ios/web/public/web_state/web_state_observer_bridge.h"
+#include "ios/web/public/navigation/navigation_item.h"
+#import "ios/web/public/navigation/navigation_manager.h"
+#import "ios/web/public/web_state.h"
+#import "ios/web/public/web_state_observer_bridge.h"
 #include "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -79,14 +79,6 @@ typedef enum {
 // Name of the histogram recording HeaderState.
 const char* const kGeolocationHeaderSentOrNotHistogram =
     "Geolocation.HeaderSentOrNot";
-
-// Name of the histogram recording location acquisition time.
-const char* const kOmniboxQueryGeolocationAcquisitionTimeHistogram =
-    "Omnibox.QueryGeolocationAcquisitionTime";
-
-// Name of the histogram recording estimated location accuracy.
-const char* const kOmniboxQueryGeolocationHorizontalAccuracyHistogram =
-    "Omnibox.QueryGeolocationHorizontalAccuracy";
 
 // Name of the histogram recording AuthorizationAction for an existing user.
 const char* const kGeolocationAuthorizationActionExistingUser =
@@ -301,18 +293,6 @@ const char* const kGeolocationAuthorizationActionNewUser =
               @{ @"X-Geo" : [currentLocation cr_xGeoString] };
           item->AddHttpRequestHeaders(locationHTTPHeaders);
           headerState = kHeaderStateSent;
-
-          NSTimeInterval acquisitionInterval =
-              currentLocation.cr_acquisitionInterval;
-          base::TimeDelta acquisitionTime = base::TimeDelta::FromMilliseconds(
-              acquisitionInterval * base::Time::kMillisecondsPerSecond);
-          UMA_HISTOGRAM_TIMES(kOmniboxQueryGeolocationAcquisitionTimeHistogram,
-                              acquisitionTime);
-
-          double horizontalAccuracy = currentLocation.horizontalAccuracy;
-          UMA_HISTOGRAM_COUNTS_10000(
-              kOmniboxQueryGeolocationHorizontalAccuracyHistogram,
-              horizontalAccuracy);
         }
         break;
       }

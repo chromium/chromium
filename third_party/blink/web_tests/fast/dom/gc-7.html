@@ -22,8 +22,9 @@ function doit()
     frameDoc = frame.contentDocument;
     spanB = frame.contentDocument.getElementById("span-B");
     spanB.customProperty = "B";
+    frame.srcdoc = "";
     frame.onload = frameLoaded;
-    frame.src = 'about:blank'
+    frame.src = "about:blank";
 }
 
 if (window.testRunner) {
@@ -50,5 +51,5 @@ themselves: "B", "[object HTMLSpanElement]", "[object HTMLSpanElement]", "[objec
 <div id="output">
 </div>
 
-<iframe id="frame" src='data:text/html,<div id="div"><span id="span-A"><span id="span-B"><span id="span-C">original span</span></span></span></div>'>
+<iframe id="frame" srcdoc='<div id="div"><span id="span-A"><span id="span-B"><span id="span-C">original span</span></span></span></div>'>
 </body>

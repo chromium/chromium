@@ -205,10 +205,20 @@ message Study {
     KIOSK   = 3;
   }
 
+  // Enum to pass as optional bool.
+  enum OptionalBool {
+    // Neither True nor False. (For cases like missing / unset / default etc.)
+    OPTIONAL_BOOL_MISSING = 0;
+    // Explicit True.
+    OPTIONAL_BOOL_TRUE = 1;
+    // Explicit False.
+    OPTIONAL_BOOL_FALSE = 2;
+  }
+
   // Filtering criteria specifying whether this study is applicable to a given
   // Chrome instance.
   //
-  // Next tag: 16
+  // Next tag: 19
   message Filter {
     // The start date of the study in Unix time format. (Seconds since midnight
     // January 1, 1970 UTC). See: http://en.wikipedia.org/wiki/Unix_time
@@ -237,6 +247,23 @@ message Study {
     // Optional - if not specified, there is no maximum version.
     // Ex: "19.*"
     optional string max_version = 3;
+
+    // The minimum OS version for this study, allowing a trailing '*' character
+    // for pattern matching. Inclusive. (To check for a match, iterate over each
+    // component checking >= until a * or end of string is reached.) OS versions
+    // are sanitized into a list of digits separated by dots like so:
+    //  Windows:  "6.2.7601 SP1"      --> "6.2.7601.1"
+    //  Mac OS X: "10.11.2"           --> "10.11.2"
+    //  Linux:    "4.13.0-27-generic" --> "4.13.0"
+    // Optional - if not specified, there is no minimum version.
+    optional string min_os_version = 16;
+
+    // The maximum OS version for this study, allowing a trailing '*' character
+    // for pattern matching. Inclusive. (To check for a match, iterate over each
+    // component checking <= until a * or end of string is reached.)
+    // Optional - if not specified, there is no minimum version.
+    // Ex: See |min_os_version| for details.
+    optional string max_os_version = 17;
 
     // List of channels that will receive this study. If omitted, the study
     // applies to all channels.
@@ -272,7 +299,8 @@ message Study {
     // Takes the same range of values as form_factor, e.g. [PHONE, TABLET].
     repeated FormFactor exclude_form_factor = 14;
 
-    // List of Chrome OS hardware classes that will receive this study.
+    // List of hardware classes that will receive this study.
+    // This supports Chrome OS and as of M77, Android.
     //
     // Starting with Chrome M67, this does a case insensitive match on the same
     // hardware class field that is reported to UMA in the SystemProfileProto's
@@ -288,7 +316,8 @@ message Study {
     // Ex: ["veyron_minnie", "daisy"]
     repeated string hardware_class = 8;
 
-    // List of Chrome OS hardware classes that will be excluded in this study.
+    // List of hardware classes that will be excluded in this study.
+    // This supports Chrome OS and as of M77, Android.
     //
     // Starting with Chrome M67, this does a case insensitive match on the same
     // hardware class field that is reported to UMA in the SystemProfileProto's
@@ -319,6 +348,14 @@ message Study {
     // Specifies whether the config should apply to low-end devices only. This
     // is currently only supported on Android.
     optional bool is_low_end_device = 15;
+
+    // Specifies whether the config should apply to enterprise or non-enterprise
+    // only. If omitted, the config applies to both groups.
+    // - On windows and mac, machines on a domain network are considered
+    //   enterprise.
+    // - On chromeOS, registered mode determines enterprise status.
+    // - Android, iOS, and linux consider all clients as non-enterprise.
+    optional bool is_enterprise = 18;
   }
 
   // Filtering criteria for this study. A study that is filtered out for a given

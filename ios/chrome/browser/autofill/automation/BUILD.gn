@@ -3,36 +3,94 @@
 # found in the LICENSE file.
 
 source_set("eg_tests") {
+  defines = [ "CHROME_EARL_GREY_1" ]
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
     "automation_action.h",
     "automation_action.mm",
     "automation_action_egtest.mm",
+    "automation_app_interface.h",
+    "automation_app_interface.mm",
     "automation_egtest.mm",
   ]
-
   deps = [
     "//base",
-    "//components/autofill/core/browser:browser",
+    "//components/autofill/core/browser",
+    "//components/autofill/ios/browser",
     "//components/autofill/ios/browser:autofill_test_bundle_data",
-    "//components/autofill/ios/browser:browser",
     "//components/strings",
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser/autofill:autofill",
-    "//ios/chrome/browser/infobars",
-    "//ios/chrome/browser/ui/infobars:infobars_ui",
-    "//ios/chrome/browser/ui/infobars:test_support",
-    "//ios/chrome/browser/ui/toolbar/buttons",
-    "//ios/chrome/browser/ui/toolbar/public",
-    "//ios/chrome/browser/ui/util",
-    "//ios/chrome/browser/ui/util",
+    "//ios/chrome/browser/autofill",
+    "//ios/chrome/browser/browser_state",
+    "//ios/chrome/browser/ui/infobars:constants",
     "//ios/chrome/test/app:test_support",
     "//ios/chrome/test/earl_grey:test_support",
     "//ios/testing/earl_grey:earl_grey_support",
-    "//ios/web:earl_grey_test_support",
+    "//ios/web/public/js_messaging",
+    "//ios/web/public/test:element_selector",
     "//ios/web/public/test/http_server:http_server",
-    "//ui/base",
+    "//net:test_support",
+  ]
+  libs = [ "XCTest.framework" ]
+}
+
+source_set("eg2_tests") {
+  defines = [ "CHROME_EARL_GREY_2" ]
+  configs += [
+    "//build/config/compiler:enable_arc",
+    "//build/config/ios:xctest_config",
+  ]
+  testonly = true
+  sources = [
+    "automation_action.h",
+    "automation_action.mm",
+    "automation_action_egtest.mm",
+    "automation_app_interface.h",
+    "automation_egtest.mm",
+  ]
+  deps = [
+    "//base",
+    "//base/test:test_support",
+    "//components/autofill/core/browser",
+    "//components/autofill/ios/browser:autofill_test_bundle_data",
+    "//components/strings",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/autofill:constants",
+    "//ios/chrome/browser/ui/infobars:constants",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//ios/third_party/earl_grey2:test_lib",
+    "//ios/web/public/test:element_selector",
+    "//net:test_support",
+  ]
+  libs = [ "XCTest.framework" ]
+}
+
+source_set("eg_app_support+eg2") {
+  defines = [ "CHROME_EARL_GREY_2" ]
+  configs += [
+    "//build/config/compiler:enable_arc",
+    "//build/config/ios:xctest_config",
+  ]
+  testonly = true
+  sources = [
+    "automation_app_interface.h",
+    "automation_app_interface.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/autofill/core/browser",
+    "//components/autofill/ios/browser",
+    "//components/strings",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/autofill",
+    "//ios/chrome/browser/browser_state",
+    "//ios/chrome/test/app:test_support",
+    "//ios/testing:nserror_support",
+    "//ios/testing/earl_grey:eg_app_support+eg2",
+    "//ios/web/public",
+    "//ios/web/public/js_messaging",
   ]
   libs = [ "XCTest.framework" ]
 }

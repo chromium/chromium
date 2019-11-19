@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL Microphone is not exposed in mediaDevices.enumerateDevices() assert_in_array: value "audioinput" not in array ["videoinput", "audiooutput"]
+Harness: the test ran to completion.
+

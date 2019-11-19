@@ -47,7 +47,6 @@ class SyncableServiceBasedBridge : public ModelTypeSyncBridge {
   ~SyncableServiceBasedBridge() override;
 
   // ModelTypeSyncBridge implementation.
-  void OnSyncStarting(const DataTypeActivationRequest& request) override;
   std::unique_ptr<MetadataChangeList> CreateMetadataChangeList() override;
   base::Optional<ModelError> MergeSyncData(
       std::unique_ptr<MetadataChangeList> metadata_change_list,
@@ -62,7 +61,7 @@ class SyncableServiceBasedBridge : public ModelTypeSyncBridge {
   bool SupportsGetClientTag() const override;
   bool SupportsGetStorageKey() const override;
   ConflictResolution ResolveConflict(
-      const EntityData& local_data,
+      const std::string& storage_key,
       const EntityData& remote_data) const override;
   void ApplyStopSyncChanges(
       std::unique_ptr<MetadataChangeList> delete_metadata_change_list) override;
@@ -82,7 +81,8 @@ class SyncableServiceBasedBridge : public ModelTypeSyncBridge {
                             const base::Optional<ModelError>& error);
   void OnReadAllMetadataForInit(const base::Optional<ModelError>& error,
                                 std::unique_ptr<MetadataBatch> metadata_batch);
-  base::Optional<ModelError> MaybeStartSyncableService() WARN_UNUSED_RESULT;
+  void OnSyncableServiceReady(std::unique_ptr<MetadataBatch> metadata_batch);
+  base::Optional<ModelError> StartSyncableService() WARN_UNUSED_RESULT;
   SyncChangeList StoreAndConvertRemoteChanges(
       std::unique_ptr<MetadataChangeList> metadata_change_list,
       EntityChangeList input_entity_change_list);
@@ -100,7 +100,6 @@ class SyncableServiceBasedBridge : public ModelTypeSyncBridge {
 
   const ModelType type_;
   SyncableService* const syncable_service_;
-  OnceModelTypeStoreFactory store_factory_;
 
   std::unique_ptr<ModelTypeStore> store_;
   bool syncable_service_started_;
@@ -111,7 +110,7 @@ class SyncableServiceBasedBridge : public ModelTypeSyncBridge {
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  base::WeakPtrFactory<SyncableServiceBasedBridge> weak_ptr_factory_;
+  base::WeakPtrFactory<SyncableServiceBasedBridge> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(SyncableServiceBasedBridge);
 };

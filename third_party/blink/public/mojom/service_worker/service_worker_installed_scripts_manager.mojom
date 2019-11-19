@@ -9,8 +9,8 @@ import "url/mojom/url.mojom";
 // This is sent from the browser to the renderer on starting worker.
 // Contains information about the scripts of an installed service worker.
 struct ServiceWorkerInstalledScriptsInfo {
-  ServiceWorkerInstalledScriptsManager& manager_request;
-  ServiceWorkerInstalledScriptsManagerHost manager_host_ptr;
+  pending_receiver<ServiceWorkerInstalledScriptsManager> manager_receiver;
+  pending_remote<ServiceWorkerInstalledScriptsManagerHost> manager_host_remote;
   array<url.mojom.Url> installed_urls;
 };
 

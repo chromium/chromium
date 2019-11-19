@@ -3,12 +3,12 @@ Name,Size
 .bss,1300456
 .data,101768
 .data.rel.ro,1065224
-.other,33984171
+.other,33902635
 .rel.dyn,2655384
 .rodata,5927652
 .strtab,34841854
 .symtab,17166112
-.text,35900712
+.text,35982248
 
 GroupCount,Address,SizeWithoutPadding,Padding,NumAliases,PSS,Section,Name
 ,0x2de7000,4,0,1,4.0,d,google::protobuf::internal::pLinuxKernelCmpxchg
@@ -16,23 +16,21 @@ GroupCount,Address,SizeWithoutPadding,Padding,NumAliases,PSS,Section,Name
 ,0x2de7008,152,0,1,152.0,d,base::android::kBaseRegisteredMethods
 ,0x2de70a0,4,0,1,4.0,d,base::android::g_renderer_histogram_code
 ,0x2de70a4,4,0,1,4.0,d,base::android::g_library_version_number
-,0x2dffd88,0,101600,1,101600.0,d,** symbol gap 0 (end of section)
 ,0x2cd8500,56,0,1,56.0,R,ChromeMainDelegateAndroid [vtable]
 ,0x2cd8538,24,0,1,24.0,R,mojo::MessageReceiver [vtable]
 ,0x2cd8550,12,0,1,12.0,R,kMethodsAnimationFrameTimeHistogram
-,0x2ddc608,0,1065132,1,1065132.0,R,** symbol gap 0 (end of section)
 ,0x2c176f0,56,0,1,56.0,R,ChromeMainDelegate [vtable]
 ,0x2c17728,24,0,1,24.0,R,chrome::mojom::FieldTrialRecorder [vtable]
 ,0x2c17740,789904,0,1,789904.0,R,chrome::mojom::FieldTrialRecorderProxy [vtable]
 ,0x2cd84e0,16,16,1,32.0,R,.Lswitch.table.45
 ,0x2cd84f0,8,0,1,8.0,R,kSystemClassPrefixes
-,0x0,0,33984171,1,33984171.0,o,Overhead: ELF file
-,0x266e600,5,0,2,2.5,r,string literal
-,0x266e600,5,0,2,2.5,r,string literal
-,0x266e605,16,0,1,16.0,r,string literal
+,0x0,0,33902635,1,33902635.0,o,Overhead: ELF file
+,0x266e600,5,0,2,2.5,r,"""Str1"""
+,0x266e600,5,0,2,2.5,r,"""Str1"""
+,0x266e605,16,0,1,16.0,r,"""String literal2"""
 ,0x266e630,16,27,1,43.0,r,** merge strings
 ,0x284d600,3425,1961920,1,1965345.0,r,** merge constants
-2,,0,3286115,1,3286115.0,r,** symbol gaps
+,0x284e364,0,3,1,3.0,r,** symbol gap 0
 ,0x284e364,8,0,1,8.0,r,
 ,0x284e370,40,4,1,44.0,r,Name
 ,0x284e398,32,0,1,32.0,r,chrome::mojom::FilePatcher::Name_
@@ -43,7 +41,7 @@ GroupCount,Address,SizeWithoutPadding,Padding,NumAliases,PSS,Section,Name
 ,0x28d948,28,0,1,28.0,t,_GLOBAL__sub_I_pacing_sender.cc
 ,0x28d964,38,0,1,38.0,t,extFromUUseMapping
 ,0x28d98a,32,0,1,32.0,t,extFromUUseMapping
-3,,0,35826678,1,35826678.0,t,** symbol gaps
+2,,0,9758,1,9758.0,t,** symbol gaps
 ,0x28f000,448,0,1,448.0,t,ucnv_extMatchFromU
 ,0x28f1c8,20,8,1,28.0,t,_GLOBAL__sub_I_SkDeviceProfile.cpp
 ,0x28f1e0,69120,4,1,69124.0,t,foo_bar

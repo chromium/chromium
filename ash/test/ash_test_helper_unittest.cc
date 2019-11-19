@@ -4,7 +4,7 @@
 
 #include "ash/test/ash_test_helper.h"
 
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/window_event_dispatcher.h"
 #include "ui/views/widget/widget.h"
@@ -21,7 +21,8 @@ class AshTestHelperTest : public testing::Test {
   void SetUp() override {
     testing::Test::SetUp();
     ash_test_helper_ = std::make_unique<AshTestHelper>();
-    ash_test_helper_->SetUp(true);
+    AshTestHelper::InitParams init_params;
+    ash_test_helper_->SetUp(std::move(init_params));
   }
 
   void TearDown() override {
@@ -32,8 +33,8 @@ class AshTestHelperTest : public testing::Test {
   AshTestHelper* ash_test_helper() { return ash_test_helper_.get(); }
 
  private:
-  base::test::ScopedTaskEnvironment scoped_task_environment_{
-      base::test::ScopedTaskEnvironment::MainThreadType::UI};
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::MainThreadType::UI};
 
   std::unique_ptr<AshTestHelper> ash_test_helper_;
 
@@ -52,7 +53,7 @@ TEST_F(AshTestHelperTest, AshTestHelper) {
   Widget::InitParams params;
   params.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   params.context = ash_test_helper()->CurrentContext();
-  w1->Init(params);
+  w1->Init(std::move(params));
   w1->Show();
   EXPECT_TRUE(w1->IsActive());
   EXPECT_TRUE(w1->IsVisible());

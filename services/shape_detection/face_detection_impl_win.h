@@ -16,7 +16,7 @@
 
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "mojo/public/cpp/bindings/strong_binding.h"
+#include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/shape_detection/public/mojom/facedetection.mojom.h"
 
 class SkBitmap;
@@ -34,8 +34,8 @@ class FaceDetectionImplWin : public mojom::FaceDetection {
       ABI::Windows::Graphics::Imaging::BitmapPixelFormat pixel_format);
   ~FaceDetectionImplWin() override;
 
-  void SetBinding(mojo::StrongBindingPtr<mojom::FaceDetection> binding) {
-    binding_ = std::move(binding);
+  void SetReceiver(mojo::SelfOwnedReceiverRef<mojom::FaceDetection> receiver) {
+    receiver_ = std::move(receiver);
   }
 
   // mojom::FaceDetection implementation.
@@ -62,9 +62,9 @@ class FaceDetectionImplWin : public mojom::FaceDetection {
   ABI::Windows::Graphics::Imaging::BitmapPixelFormat pixel_format_;
 
   DetectCallback detected_face_callback_;
-  mojo::StrongBindingPtr<mojom::FaceDetection> binding_;
+  mojo::SelfOwnedReceiverRef<mojom::FaceDetection> receiver_;
 
-  base::WeakPtrFactory<FaceDetectionImplWin> weak_factory_;
+  base::WeakPtrFactory<FaceDetectionImplWin> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(FaceDetectionImplWin);
 };

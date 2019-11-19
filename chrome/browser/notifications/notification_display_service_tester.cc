@@ -138,6 +138,11 @@ void NotificationDisplayServiceTester::SetNotificationAddedClosure(
   display_service_->SetNotificationAddedClosure(std::move(closure));
 }
 
+void NotificationDisplayServiceTester::SetNotificationClosedClosure(
+    base::RepeatingClosure closure) {
+  display_service_->SetNotificationClosedClosure(std::move(closure));
+}
+
 std::vector<message_center::Notification>
 NotificationDisplayServiceTester::GetDisplayedNotificationsForType(
     NotificationHandler::Type type) {

@@ -2,8 +2,12 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-# Instantiate grit. This will produce a script target to run grit, and a
-# static library that compiles the .cc files.
+# Instantiate grit. This will produce a script target to run grit (named
+# ${target_name}_grit), and a static library that compiles the .cc files.
+#
+# In general, code should depend on the static library. However, if the
+# generated files are only processed by other actions to generate other
+# files, it is possible to depend on the script target directly.
 #
 # Parameters
 #
@@ -91,10 +95,9 @@ import("//build/config/compiler/compiler.gni")
 import("//build/config/compute_inputs_for_analyze.gni")
 import("//build/config/crypto.gni")
 import("//build/config/features.gni")
+import("//build/config/sanitizers/sanitizers.gni")
 import("//build/config/ui.gni")
 import("//build/toolchain/gcc_toolchain.gni")  # For enable_resource_whitelist_generation
-import("//third_party/closure_compiler/closure_args.gni")
-
 if (enable_resource_whitelist_generation) {
   assert(target_os == "android" || target_os == "win",
          "unsupported platform for resource whitelist generation")
@@ -104,6 +107,13 @@ if (enable_resource_whitelist_generation) {
 }
 
 grit_defines = []
+
+if (is_mac || is_win || is_linux || is_ios) {
+  grit_defines += [
+    "-D",
+    "scale_factors=2x",
+  ]
+}
 
 # Mac and iOS want Title Case strings.
 use_titlecase_in_grd_files = is_mac || is_ios
@@ -134,8 +144,6 @@ if (is_chromeos) {
   grit_defines += [
     "-D",
     "chromeos",
-    "-D",
-    "scale_factors=2x",
   ]
 }
 
@@ -181,13 +189,6 @@ if (is_android) {
   ]
 }
 
-if (is_mac || is_ios) {
-  grit_defines += [
-    "-D",
-    "scale_factors=2x",
-  ]
-}
-
 # When cross-compiling, explicitly pass the target system to grit.
 if (current_toolchain != host_toolchain) {
   if (is_android) {
@@ -222,10 +223,9 @@ if (current_toolchain != host_toolchain) {
   }
 }
 
-# TODO(aberent): Enable for other platforms once the build machines have
-#                Java on them (and hence can run the closure compiler).
-_strip_resource_files = is_android
-_js_minifier = "//third_party/closure_compiler/js_minify.py"
+_strip_resource_files = is_android && is_official_build
+_js_minifier = "//tools/grit/minify_with_uglify.py"
+_css_minifier = "//tools/grit/minimize_css.py"
 
 grit_resource_id_file = "//tools/gritsettings/resource_ids"
 grit_info_script = "//tools/grit/grit_info.py"
@@ -314,13 +314,11 @@ template("grit") {
       get_path_info(rebase_path(invoker.outputs, ".", output_dir), "abspath")
 
   # Add .info output for all pak files
-  set_sources_assignment_filter([ "*.pak" ])
-  sources = grit_outputs
-  pak_grit_outputs = grit_outputs - sources
-  sources = []
   pak_info_outputs = []
-  foreach(output, pak_grit_outputs) {
-    pak_info_outputs += [ "${output}.info" ]
+  foreach(output, grit_outputs) {
+    if (get_path_info(output, "extension") == "pak") {
+      pak_info_outputs += [ output + ".info" ]
+    }
   }
 
   grit_custom_target = target_name + "_grit"
@@ -361,6 +359,22 @@ template("grit") {
              "--depend-on-stamp",
            ] + grit_defines
 
+    # Add brotli executable if using brotli.
+    if (defined(invoker.use_brotli) && invoker.use_brotli) {
+      brotli_target = "//third_party/brotli:brotli($host_toolchain)"
+      brotli_executable = get_label_info(brotli_target, "root_out_dir") + "/" +
+                          get_label_info(brotli_target, "name")
+      if (host_os == "win") {
+        brotli_executable += ".exe"
+      }
+
+      inputs += [ brotli_executable ]
+      args += [
+        "--brotli",
+        rebase_path(brotli_executable, root_build_dir),
+      ]
+    }
+
     # Add extra defines with -D flags.
     define_args = []
     if (defined(invoker.defines)) {
@@ -375,35 +389,34 @@ template("grit") {
     args += define_args + grit_flags + assert_files_flags
 
     if (enable_resource_whitelist_generation) {
-      set_sources_assignment_filter([ "*.rc" ])
-      sources = grit_outputs
-      rc_grit_outputs = grit_outputs - sources
-      sources = []
+      rc_grit_outputs = []
+      foreach(output, grit_outputs) {
+        if (get_path_info(output, "extension") == "rc") {
+          rc_grit_outputs += [ output ]
+        }
+      }
 
       if (rc_grit_outputs != []) {
         # Resource whitelisting cannot be used with .rc files.
         # Make sure that there aren't any .pak outputs which would require
         # whitelist annotations.
-        assert(pak_grit_outputs == [], "can't combine .pak and .rc outputs")
+        assert(pak_info_outputs == [], "can't combine .pak and .rc outputs")
       } else {
         args += [ "--whitelist-support" ]
       }
     }
     if (_strip_resource_files) {
       js_minifier_command = rebase_path(_js_minifier, root_build_dir)
-      js_minifier_command = "$js_minifier_command --closure_args"
-      foreach(closure_arg,
-              common_closure_args + minifying_closure_args +
-                  default_disabled_closure_args) {
-        js_minifier_command = "$js_minifier_command $closure_arg"
-      }
+      css_minifier_command = rebase_path(_css_minifier, root_build_dir)
       args += [
         "--js-minifier",
         js_minifier_command,
+        "--css-minifier",
+        css_minifier_command,
       ]
       inputs += [
         _js_minifier,
-        "//third_party/closure_compiler/compiler/compiler.jar",
+        _css_minifier,
       ]
     }
 
@@ -442,6 +455,13 @@ template("grit") {
     deps = [
       "//tools/grit:grit_sources",
     ]
+    if (defined(invoker.use_brotli) && invoker.use_brotli) {
+      if (is_mac && is_asan) {
+        deps += [ "//tools/grit:brotli_mac_asan_workaround" ]
+      } else {
+        deps += [ "//third_party/brotli:brotli($host_toolchain)" ]
+      }
+    }
     if (defined(invoker.deps)) {
       deps += invoker.deps
     }
@@ -457,7 +477,14 @@ template("grit") {
 
     # Since we generate a file, we need to be run before the targets that
     # depend on us.
-    sources = grit_outputs
+    sources = []
+    foreach(output, grit_outputs) {
+      extension = get_path_info(output, "extension")
+      if (extension != "json" && extension != "gz" && extension != "pak" &&
+          extension != "xml") {
+        sources += [ output ]
+      }
+    }
 
     # Deps set on the template invocation will go on the action that runs
     # grit above rather than this library. This target needs to depend on the
@@ -465,6 +492,10 @@ template("grit") {
     # script as inputs.
     public_deps = [
       ":$grit_custom_target",
+    ]
+
+    deps = [
+      "//base",
     ]
 
     if (defined(invoker.public_configs)) {

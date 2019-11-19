@@ -1,0 +1,61 @@
+// Copyright 2017 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module performance_manager.mojom;
+
+import "mojo/public/mojom/base/process_id.mojom";
+import "mojo/public/mojom/base/time.mojom";
+import "components/performance_manager/public/mojom/lifecycle.mojom";
+
+// Any new type here needs to be mirrored between coordination_unit_types.h and
+// coordination_unit.mojom, and have mappings between the two defined in
+// coordination_unit_mojom_traits.h/.cc (see comment in coordination_unit_id.h).
+enum CoordinationUnitType {
+  kFrame,
+  kPage,
+  kProcess,
+  kSystem,
+};
+
+// Intervention policy status. This mirrors the definitions used by the
+// InterventionPolicyDatabase defined in
+// chrome/browser/resource_coordinator/intervention_policy_database.proto
+enum InterventionPolicy {
+  // The frame/page policy is yet unknown. This is the state while a frame is
+  // still loading.
+  kUnknown,
+  // The frame/page has explicitly opted-in to an intervention.
+  kOptIn,
+  // The frame/page has explicitly opted-out from an intervention.
+  kOptOut,
+  // The frame/page has neither opted-in or opted-out. The intervention will be
+  // applied usings its own heuristics.
+  kDefault,
+};
+
+// Interface used by a blink::Document to communicate state associated with
+// resource management to the embedder.
+interface DocumentCoordinationUnit {
+  // Property signals.
+  SetNetworkAlmostIdle();
+  SetLifecycleState(LifecycleState state);
+  SetHasNonEmptyBeforeUnload(bool has_nonempty_beforeunload);
+
+  // Sets the freeze policy set via origin trial for the document. Invoked once
+  // after finishing to parse the document. The freeze policies of all frames on
+  // a page are aggregated to determine whether the page as a whole can be
+  // frozen.
+  SetOriginTrialFreezePolicy(InterventionPolicy policy);
+
+  SetIsAdFrame();
+
+  // Event signals.
+  OnNonPersistentNotificationCreated();
+};
+
+interface ProcessCoordinationUnit {
+  // Property signals.
+  SetExpectedTaskQueueingDuration(mojo_base.mojom.TimeDelta duration);
+  SetMainThreadTaskLoadIsLow(bool main_thread_task_load_is_low);
+};

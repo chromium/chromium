@@ -54,11 +54,6 @@ class CORE_EXPORT WorkerNavigator final
   USING_GARBAGE_COLLECTED_MIXIN(WorkerNavigator);
 
  public:
-  static WorkerNavigator* Create(const String& user_agent,
-                                 ExecutionContext* context) {
-    return MakeGarbageCollected<WorkerNavigator>(user_agent, context);
-  }
-
   explicit WorkerNavigator(const String&, ExecutionContext* context);
   ~WorkerNavigator() override;
 

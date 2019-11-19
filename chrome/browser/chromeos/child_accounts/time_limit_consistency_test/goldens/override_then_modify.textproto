@@ -1,0 +1,102 @@
+supported_platforms: [ANDROID, CHROME_OS]
+
+# Override created for bedtime, then bedtime is altered.
+cases {
+  input {
+    window_limits {
+      effective_day: MONDAY
+      starts_at {
+        hour: 23
+        minute: 0
+      }
+      ends_at {
+        hour: 8
+        minute: 0
+      }
+      # Monday, Jan 28th 2019 at 11:25pm
+      last_updated_millis: 1548717900000
+    }
+    overrides {
+      action: UNLOCK_WINDOW_LIMIT
+      # Monday, Jan 28th 2019 at 11:20pm
+      created_at_millis: 1548717600000
+    }
+  }
+  current_state {
+    # Monday, Jan 28th 2019 at 11:30pm
+    time_millis: 1548718200000
+    timezone: "GMT"
+  }
+  output {
+    is_locked: true
+    active_policy: FIXED_LIMIT
+    next_active_policy: NO_ACTIVE_POLICY
+    # Tuesday, Jan 29th 2019 at 8:00am
+    next_unlocking_time_millis: 1548748800000
+  }
+}
+
+# Override created after hitting usage limit, then usage limit quota is updated
+# to a value bigger than the current usage.
+cases {
+  input {
+    usage_limits {
+      effective_day: THURSDAY
+      usage_quota_mins: 120
+      # Thursday, Feb 21st 2019 at 2:50pm
+      last_updated_millis: 1550760600000
+    }
+    overrides {
+      action: UNLOCK_USAGE_LIMIT
+      # Thursday, Feb 21st 2019 at 2:40pm
+      created_at_millis: 1550760000000
+    }
+  }
+  current_state {
+    # Thursday, Feb 21st 2019 at 3:00pm
+    time_millis: 1550761200000
+    timezone: "GMT"
+    # 1 hour
+    usage_millis: 3600000
+  }
+  output {
+    is_locked: false
+    active_policy: NO_ACTIVE_POLICY
+    next_active_policy: USAGE_LIMIT
+    # 1 hour
+    remaining_quota_millis: 3600000
+  }
+}
+
+# Override created after hitting usage limit, then usage limit quota is updated
+# to a value smaller than the current usage.
+cases {
+  input {
+    usage_limits {
+      effective_day: THURSDAY
+      usage_quota_mins: 45
+      # Thursday, Feb 21st 2019 at 2:50pm
+      last_updated_millis: 1550760600000
+    }
+    overrides {
+      action: UNLOCK_USAGE_LIMIT
+      # Thursday, Feb 21st 2019 at 2:40pm
+      created_at_millis: 1550760000000
+    }
+  }
+  current_state {
+    # Thursday, Feb 21st 2019 at 3:00pm
+    time_millis: 1550761200000
+    timezone: "GMT"
+    # 1 hour
+    usage_millis: 3600000
+  }
+  output {
+    is_locked: true
+    active_policy: USAGE_LIMIT
+    # Friday, Feb 22nd 2019 at 6:00am
+    next_unlocking_time_millis: 1550815200000
+    next_active_policy: NO_ACTIVE_POLICY
+    remaining_quota_millis: 0
+  }
+}

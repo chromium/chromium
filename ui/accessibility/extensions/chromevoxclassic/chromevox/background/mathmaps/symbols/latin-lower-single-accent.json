@@ -1,0 +1,1912 @@
+[
+{"category": "Ll",
+ "names": [],
+ "key": "00E0",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter a with grave",
+   "alternative": "latin small letter a grave",
+   "short": "a grave"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "00E1",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter a with acute",
+   "alternative": "latin small letter a acute",
+   "short": "a acute"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "00E2",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter a with circumflex",
+   "alternative": "latin small letter a hat",
+   "short": "a hat"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "00E3",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter a with tilde",
+   "alternative": "latin small letter a tilde",
+   "short": "a tilde"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "00E4",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter a with diaeresis",
+   "alternative": "latin small letter a double overdot",
+   "short": "a double overdot"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "00E5",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter a with ring above",
+   "alternative": "latin small letter a ring",
+   "short": "a ring"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "00E7",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter c with cedilla",
+   "alternative": "latin small letter c cedilla",
+   "short": "c cedilla"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "00E8",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter e with grave",
+   "alternative": "latin small letter e grave",
+   "short": "e grave"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "00E9",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter e with acute",
+   "alternative": "latin small letter e acute",
+   "short": "e acute"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "00EA",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter e with circumflex",
+   "alternative": "latin small letter e hat",
+   "short": "e hat"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "00EB",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter e with diaeresis",
+   "alternative": "latin small letter e double overdot",
+   "short": "e double overdot"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "00EC",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter i with grave",
+   "alternative": "latin small letter i grave",
+   "short": "i grave"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "00ED",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter i with acute",
+   "alternative": "latin small letter i acute",
+   "short": "i acute"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "00EE",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter i with circumflex",
+   "alternative": "latin small letter i hat",
+   "short": "i hat"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "00EF",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter i with diaeresis",
+   "alternative": "latin small letter i double overdot",
+   "short": "i double overdot"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "00F1",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter n with tilde",
+   "alternative": "latin small letter n tilde",
+   "short": "n tilde"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "00F2",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter o with grave",
+   "alternative": "latin small letter o grave",
+   "short": "o grave"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "00F3",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter o with acute",
+   "alternative": "latin small letter o acute",
+   "short": "o acute"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "00F4",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter o with circumflex",
+   "alternative": "latin small letter o hat",
+   "short": "o hat"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "00F5",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter o with tilde",
+   "alternative": "latin small letter o tilde",
+   "short": "o tilde"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "00F6",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter o with diaeresis",
+   "alternative": "latin small letter o double overdot",
+   "short": "o double overdot"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "00F9",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter u with grave",
+   "alternative": "latin small letter u grave",
+   "short": "u grave"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "00FA",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter u with acute",
+   "alternative": "latin small letter u acute",
+   "short": "u acute"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "00FB",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter u with circumflex",
+   "alternative": "latin small letter u hat",
+   "short": "u hat"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "00FC",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter u with diaeresis",
+   "alternative": "latin small letter u double overdot",
+   "short": "u double overdot"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "00FD",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter y with acute",
+   "alternative": "latin small letter y acute",
+   "short": "y acute"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "00FF",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter y with diaeresis",
+   "alternative": "latin small letter y double overdot",
+   "short": "y double overdot"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "0101",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter a with macron",
+   "alternative": "latin small letter a overbar",
+   "short": "a overbar"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "0103",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter a with breve",
+   "alternative": "latin small letter a breve",
+   "short": "a breve"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "0105",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter a with ogonek",
+   "alternative": "latin small letter a ogonek",
+   "short": "a ogonek"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "0107",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter c with acute",
+   "alternative": "latin small letter c acute",
+   "short": "c acute"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "0109",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter c with circumflex",
+   "alternative": "latin small letter c hat",
+   "short": "c hat"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "010B",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter c with dot above",
+   "alternative": "latin small letter c dot",
+   "short": "c overdot"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "010D",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter c with caron",
+   "alternative": "latin small letter c hacek",
+   "short": "c caron"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "010F",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter d with caron",
+   "alternative": "latin small letter d hacek",
+   "short": "d caron"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "0113",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter e with macron",
+   "alternative": "latin small letter e overbar",
+   "short": "e overbar"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "0115",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter e with breve",
+   "alternative": "latin small letter e breve",
+   "short": "e breve"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "0117",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter e with dot above",
+   "alternative": "latin small letter e dot",
+   "short": "e overdot"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "0119",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter e with ogonek",
+   "alternative": "latin small letter e ogonek",
+   "short": "e ogonek"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "011B",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter e with caron",
+   "alternative": "latin small letter e hacek",
+   "short": "e caron"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "011D",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter g with circumflex",
+   "alternative": "latin small letter g hat",
+   "short": "g hat"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "011F",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter g with breve",
+   "alternative": "latin small letter g breve",
+   "short": "g breve"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "0121",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter g with dot above",
+   "alternative": "latin small letter g dot",
+   "short": "g overdot"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "0123",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter g with cedilla",
+   "alternative": "latin small letter g cedilla",
+   "short": "g cedilla"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "0125",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter h with circumflex",
+   "alternative": "latin small letter h hat",
+   "short": "h hat"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "0129",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter i with tilde",
+   "alternative": "latin small letter i tilde",
+   "short": "i tilde"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "012B",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter i with macron",
+   "alternative": "latin small letter i overbar",
+   "short": "i overbar"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "012D",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter i with breve",
+   "alternative": "latin small letter i breve",
+   "short": "i breve"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "012F",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter i with ogonek",
+   "alternative": "latin small letter i ogonek",
+   "short": "i ogonek"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "0131",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter dotless i",
+   "alternative": "latin small letter dotless i",
+   "short": "dotless i"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "0135",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter j circumflex",
+   "alternative": "latin small letter j hat",
+   "short": "j hat"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "0137",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter k with cedilla",
+   "alternative": "latin small letter k cedilla",
+   "short": "k cedilla"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "013A",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter l with acute",
+   "alternative": "latin small letter l acute",
+   "short": "l acute"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "013C",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter l with cedilla",
+   "alternative": "latin small letter l cedilla",
+   "short": "l cedilla"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "013E",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter l with caron",
+   "alternative": "latin small letter l hacek",
+   "short": "l caron"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "0140",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter l with middle dot",
+   "alternative": "latin small letter l middle dot",
+   "short": "l middle dot"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "0144",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter n with acute",
+   "alternative": "latin small letter n acute",
+   "short": "n acute"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "0146",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter n with cedilla",
+   "alternative": "latin small letter n cedilla",
+   "short": "n cedilla"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "0148",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter n with caron",
+   "alternative": "latin small letter n hacek",
+   "short": "n caron"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "014D",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter o macron",
+   "alternative": "latin small letter o overbar",
+   "short": "o overbar"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "014F",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter o with breve",
+   "alternative": "latin small letter o breve",
+   "short": "o breve"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "0151",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter o with double acute",
+   "alternative": "latin small letter o double acute",
+   "short": "o double acute"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "0155",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter r with acute",
+   "alternative": "latin small letter r acute",
+   "short": "r acute"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "0157",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter r with cedilla",
+   "alternative": "latin small letter r cedilla",
+   "short": "r cedilla"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "0159",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter r with caron",
+   "alternative": "latin small letter r hacek",
+   "short": "r caron"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "015B",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter s with acute",
+   "alternative": "latin small letter s acute",
+   "short": "s acute"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "015D",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter s with circumflex",
+   "alternative": "latin small letter s hat",
+   "short": "s hat"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "015F",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter s with cedilla",
+   "alternative": "latin small letter s cedilla",
+   "short": "s cedilla"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "0161",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter s with caron",
+   "alternative": "latin small letter s hacek",
+   "short": "s caron"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "0163",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter t with cedilla",
+   "alternative": "latin small letter t cedilla",
+   "short": "t cedilla"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "0165",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter t with caron",
+   "alternative": "latin small letter t hacek",
+   "short": "t caron"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "0169",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter u with tilde",
+   "alternative": "latin small letter u tilde",
+   "short": "u tilde"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "016B",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter u with macron",
+   "alternative": "latin small letter u overbar",
+   "short": "u overbar"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "016D",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter u with breve",
+   "alternative": "latin small letter u breve",
+   "short": "u breve"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "016F",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter u with ring above",
+   "alternative": "latin small letter u ring",
+   "short": "u ring"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "0171",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter u with double acute",
+   "alternative": "latin small letter u double acute",
+   "short": "u double acute"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "0173",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter u with ogonek",
+   "alternative": "latin small letter u ogonek",
+   "short": "u ogonek"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "0175",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter w with circumflex",
+   "alternative": "latin small letter w hat",
+   "short": "w hat"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "0177",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter y with circumflex",
+   "alternative": "latin small letter y hat",
+   "short": "y hat"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "017A",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter z with acute",
+   "alternative": "latin small letter z acute",
+   "short": "z acute"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "017C",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter z with dot above",
+   "alternative": "latin small letter z dot",
+   "short": "z overdot"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "017E",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter z with caron",
+   "alternative": "latin small letter z hacek",
+   "short": "z caron"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "01CE",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter a with caron",
+   "alternative": "latin small letter a hacek",
+   "short": "a caron"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "01D0",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter i with caron",
+   "alternative": "latin small letter i hacek",
+   "short": "i caron"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "01D2",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter o with caron",
+   "alternative": "latin small letter o hacek",
+   "short": "o caron"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "01D4",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter u with caron",
+   "alternative": "latin small letter u hacek",
+   "short": "u caron"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "01E7",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter g with caron",
+   "alternative": "latin small letter g hacek",
+   "short": "g caron"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "01E9",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter k with caron",
+   "alternative": "latin small letter k hacek",
+   "short": "k caron"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "01EB",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter o with ogonek",
+   "alternative": "latin small letter o ogonek",
+   "short": "o ogonek"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "01F0",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter j with caron",
+   "alternative": "latin small letter j hacek",
+   "short": "j caron"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "01F5",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter g with acute",
+   "alternative": "latin small letter g acute",
+   "short": "g acute"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "01F9",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter n with grave",
+   "alternative": "latin small letter n grave",
+   "short": "n grave"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "0201",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter a with double grave",
+   "alternative": "latin small letter a double grave",
+   "short": "a double grave"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "0203",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter a with inverted breve",
+   "alternative": "latin small letter a inverted breve",
+   "short": "a inverted breve"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "0205",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter e with double grave",
+   "alternative": "latin small letter e double grave",
+   "short": "e double grave"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "0207",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter e with inverted breve",
+   "alternative": "latin small letter e inverted breve",
+   "short": "e inverted breve"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "0209",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter i with double grave",
+   "alternative": "latin small letter i double grave",
+   "short": "i double grave"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "020B",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter i with inverted breve",
+   "alternative": "latin small letter i inverted breve",
+   "short": "i inverted breve"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "020D",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter o with double grave",
+   "alternative": "latin small letter o double grave",
+   "short": "o double grave"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "020F",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter o with inverted breve",
+   "alternative": "latin small letter o inverted breve",
+   "short": "o inverted breve"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "0211",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter r with double grave",
+   "alternative": "latin small letter r double grave",
+   "short": "r double grave"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "0213",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter r with inverted breve",
+   "alternative": "latin small letter r inverted breve",
+   "short": "r inverted breve"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "0215",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter u with double grave",
+   "alternative": "latin small letter u double grave",
+   "short": "u double grave"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "0217",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter u with inverted breve",
+   "alternative": "latin small letter u inverted breve",
+   "short": "u inverted breve"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "0219",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter s with comma below",
+   "alternative": "latin small letter s comma below",
+   "short": "s comma below"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "021B",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter t with comma below",
+   "alternative": "latin small letter t comma below",
+   "short": "t comma below"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "021F",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter h with caron",
+   "alternative": "latin small letter h caron",
+   "short": "h caron"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "0227",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter a with dot above",
+   "alternative": "latin small letter a overdot",
+   "short": "a overdot"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "0229",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter e with cedilla",
+   "alternative": "latin small letter e cedilla",
+   "short": "e cedilla"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "022F",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter o with dot above",
+   "alternative": "latin small letter o overdot",
+   "short": "o overdot"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "0233",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter y with macron",
+   "alternative": "latin small letter y overbar",
+   "short": "y overbar"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "0237",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter dotless j",
+   "alternative": "latin small letter dotless j",
+   "short": "dotless j"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "1E01",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter a ring below",
+   "alternative": "latin small letter a ring below",
+   "short": "a ring below"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "1E03",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter b with dot above",
+   "alternative": "latin small letter b overdot",
+   "short": "b overdot"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "1E05",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter b with dot below",
+   "alternative": "latin small letter b underdot",
+   "short": "b underdot"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "1E07",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter b with line below",
+   "alternative": "latin small letter b underbar",
+   "short": "b underbar"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "1E0B",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter d with dot above",
+   "alternative": "latin small letter d overdot",
+   "short": "d overdot"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "1E0D",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter d with dot below",
+   "alternative": "latin small letter d underdot",
+   "short": "d underdot"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "1E0F",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter d with line below",
+   "alternative": "latin small letter d underbar",
+   "short": "d underbar"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "1E11",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter d with cedilla",
+   "alternative": "latin small letter d cedilla",
+   "short": "d cedilla"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "1E13",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter d with circumflex below",
+   "alternative": "latin small letter d underhat",
+   "short": "d underhat"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "1E19",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter e with circumflex below",
+   "alternative": "latin small letter e underhat",
+   "short": "e underhat"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "1E1B",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter e with tilde below",
+   "alternative": "latin small letter e tilde below",
+   "short": "e tilde below"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "1E1F",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter f with dot above",
+   "alternative": "latin small letter f overdot",
+   "short": "f overdot"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "1E21",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter g with macron",
+   "alternative": "latin small letter g overbar",
+   "short": "g overbar"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "1E23",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter h with dot above",
+   "alternative": "latin small letter h overdot",
+   "short": "h overdot"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "1E25",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter h with dot below",
+   "alternative": "latin small letter h underdot",
+   "short": "h underdot"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "1E27",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter h with diaeresis",
+   "alternative": "latin small letter h double overdot",
+   "short": "h double overdot"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "1E29",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter h with cedilla",
+   "alternative": "latin small letter h cedilla",
+   "short": "h cedilla"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "1E2B",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter h with breve below",
+   "alternative": "latin small letter h breve below",
+   "short": "h breve below"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "1E2D",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter i with tilde below",
+   "alternative": "latin small letter i tilde below",
+   "short": "i tilde below"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "1E31",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter k with acute",
+   "alternative": "latin small letter k acute",
+   "short": "k acute"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "1E33",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter k with dot below",
+   "alternative": "latin small letter k underdot",
+   "short": "k underdot"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "1E35",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter k with line below",
+   "alternative": "latin small letter k underbar",
+   "short": "k underbar"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "1E37",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter l with dot below",
+   "alternative": "latin small letter l underdot",
+   "short": "l underdot"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "1E3B",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter l with line below",
+   "alternative": "latin small letter l underbar",
+   "short": "l underbar"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "1E3D",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter l with circumflex below",
+   "alternative": "latin small letter l underhat",
+   "short": "l underhat"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "1E3F",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter m with acute",
+   "alternative": "latin small letter m acute",
+   "short": "m acute"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "1E41",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter m with dot above",
+   "alternative": "latin small letter m overdot",
+   "short": "m overdot"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "1E43",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter m with dot below",
+   "alternative": "latin small letter m underdot",
+   "short": "m underdot"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "1E45",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter n with dot above",
+   "alternative": "latin small letter n overdot",
+   "short": "n overdot"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "1E47",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter n with dot below",
+   "alternative": "latin small letter n underdot",
+   "short": "n underdot"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "1E49",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter n with line below",
+   "alternative": "latin small letter n underbar",
+   "short": "n underbar"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "1E4B",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter n with circumflex below",
+   "alternative": "latin small letter n underhat",
+   "short": "n underhat"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "1E55",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter p with acute",
+   "alternative": "latin small letter p acute",
+   "short": "p acute"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "1E57",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter p with dot above",
+   "alternative": "latin small letter p overdot",
+   "short": "p overdot"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "1E59",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter r with dot above",
+   "alternative": "latin small letter r overdot",
+   "short": "r overdot"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "1E5B",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter r with dot below",
+   "alternative": "latin small letter r underdot",
+   "short": "r underdot"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "1E5F",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter r with line below",
+   "alternative": "latin small letter r underbar",
+   "short": "r underbar"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "1E61",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter s with dot above",
+   "alternative": "latin small letter s overdot",
+   "short": "s overdot"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "1E63",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter s with dot below",
+   "alternative": "latin small letter s underdot",
+   "short": "s underdot"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "1E6B",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter t with dot above",
+   "alternative": "latin small letter t overdot",
+   "short": "t overdot"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "1E6D",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter t with dot below",
+   "alternative": "latin small letter t underdot",
+   "short": "t underdot"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "1E6F",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter t with line below",
+   "alternative": "latin small letter t underbar",
+   "short": "t underbar"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "1E71",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter t with circumflex below",
+   "alternative": "latin small letter t underhat",
+   "short": "t underhat"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "1E73",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter u with diaeresis below",
+   "alternative": "latin small letter u double underdot",
+   "short": "u double underdot"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "1E75",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter u with tilde below",
+   "alternative": "latin small letter u tilde below",
+   "short": "u tilde below"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "1E77",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter u with circumflex below",
+   "alternative": "latin small letter u underhat",
+   "short": "u underhat"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "1E7D",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter v with tilde",
+   "alternative": "latin small letter v tilde",
+   "short": "v tilde"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "1E7F",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter v with dot below",
+   "alternative": "latin small letter v underdot",
+   "short": "v underdot"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "1E81",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter w with grave",
+   "alternative": "latin small letter w grave",
+   "short": "w grave"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "1E83",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter w with acute",
+   "alternative": "latin small letter w acute",
+   "short": "w acute"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "1E85",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter w with diaeresis",
+   "alternative": "latin small letter w double overdot",
+   "short": "w double overdot"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "1E87",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter w with dot above",
+   "alternative": "latin small letter w overdot",
+   "short": "w overdot"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "1E89",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter w with dot below",
+   "alternative": "latin small letter w underdot",
+   "short": "w underdot"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "1E8B",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter x with dot above",
+   "alternative": "latin small letter x overdot",
+   "short": "x overdot"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "1E8D",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter x with diaeresis",
+   "alternative": "latin small letter x double overdot",
+   "short": "x double overdot"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "1E8F",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter y with dot above",
+   "alternative": "latin small letter y overdot",
+   "short": "y overdot"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "1E91",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter z with circumflex",
+   "alternative": "latin small letter z hat",
+   "short": "z hat"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "1E93",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter z with dot below",
+   "alternative": "latin small letter z underdot",
+   "short": "z underdot"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "1E95",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter z with line below",
+   "alternative": "latin small letter z underbar",
+   "short": "z underbar"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "1E96",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter h with line below",
+   "alternative": "latin small letter h underbar",
+   "short": "h underbar"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "1E97",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter t with diaeresis",
+   "alternative": "latin small letter t double overdot",
+   "short": "t double overdot"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "1E98",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter w with ring above",
+   "alternative": "latin small letter w ring",
+   "short": "w ring"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "1E99",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter y with ring above",
+   "alternative": "latin small letter y ring",
+   "short": "y ring"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "1E9A",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter a with right half ring",
+   "alternative": "latin small letter a right half ring",
+   "short": "a right half ring"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "1EA1",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter a with dot below",
+   "alternative": "latin small letter a underdot",
+   "short": "a underdot"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "1EA3",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter a with hook above",
+   "alternative": "latin small letter a hook",
+   "short": "a hook"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "1EB9",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter e with dot below",
+   "alternative": "latin small letter e underdot",
+   "short": "e underdot"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "1EBB",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter e with hook above",
+   "alternative": "latin small letter e hook",
+   "short": "e hook"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "1EBD",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter e with tilde",
+   "alternative": "latin small letter e tilde",
+   "short": "e tilde"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "1EC9",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter i with hook above",
+   "alternative": "latin small letter i hook",
+   "short": "i hook"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "1ECB",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter i with dot below",
+   "alternative": "latin small letter i underdot",
+   "short": "i underdot"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "1ECD",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter o with dot below",
+   "alternative": "latin small letter o underdot",
+   "short": "o underdot"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "1ECF",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter o with hook above",
+   "alternative": "latin small letter o hook",
+   "short": "o hook"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "1EE5",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter u with dot below",
+   "alternative": "latin small letter u underdot",
+   "short": "u underdot"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "1EE7",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter u with hook above",
+   "alternative": "latin small letter u hook",
+   "short": "u hook"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "1EF3",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter y with grave",
+   "alternative": "latin small letter y grave",
+   "short": "y grave"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "1EF5",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter y with dot below",
+   "alternative": "latin small letter y underdot",
+   "short": "y underdot"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "1EF7",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter y with hook above",
+   "alternative": "latin small letter y hook",
+   "short": "y hook"
+  }}},
+{"category": "Ll",
+ "names": [],
+ "key": "1EF9",
+ "active": true,
+ "mappings": {
+  "default": {
+   "default": "latin small letter y with tilde",
+   "alternative": "latin small letter y tilde",
+   "short": "y tilde"
+  }}}
+]

@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<!-- Generate token with the command:
+generate_token.py http://127.0.0.1:8000 NotificationTriggers --expire-timestamp=2000000000
+-- -->
+<meta http-equiv="origin-trial" content="Ar/KWF7nX8nSBH6dLt01Bjp+FAQ+k3iCerNiAxxA1X2PbkIFVEcfyfTK6ZWji1pnzA53qRRWFahwaS5ScBgYVwwAAABceyJvcmlnaW4iOiAiaHR0cDovLzEyNy4wLjAuMTo4MDAwIiwgImZlYXR1cmUiOiAiTm90aWZpY2F0aW9uVHJpZ2dlcnMiLCAiZXhwaXJ5IjogMjAwMDAwMDAwMH0=" />
+<title>NotificationTriggers - interfaces exposed by origin trial</title>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../../resources/origin-trials-helper.js"></script>
+<script>
+test(t => {
+  OriginTrialsHelper.check_properties_exist(this,
+      {
+        'Notification': ['showTrigger'],
+      },
+  );
+}, "NotificationTriggers interfaces in Origin-Trial enabled document.");
+
+</script>

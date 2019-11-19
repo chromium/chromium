@@ -16,13 +16,14 @@
 #include "base/lazy_instance.h"
 #include "base/logging.h"
 #include "base/strings/stringize_macros.h"
+#include "build/branding_buildflags.h"
 #include "google_apis/gaia/gaia_switches.h"
 
 #if defined(OS_MACOSX)
 #include "google_apis/google_api_keys_mac.h"
 #endif
 
-#if defined(GOOGLE_CHROME_BUILD) || defined(USE_OFFICIAL_GOOGLE_API_KEYS)
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING) || defined(USE_OFFICIAL_GOOGLE_API_KEYS)
 #include "google_apis/internal/google_chrome_api_keys.h"
 #include "google_apis/internal/metrics_signing_key.h"
 #endif
@@ -78,8 +79,8 @@
 #define GOOGLE_API_KEY_PHYSICAL_WEB_TEST DUMMY_API_TOKEN
 #endif
 
-#if !defined(GOOGLE_API_KEY_REMOTING_FTL)
-#define GOOGLE_API_KEY_REMOTING_FTL DUMMY_API_TOKEN
+#if !defined(GOOGLE_API_KEY_REMOTING)
+#define GOOGLE_API_KEY_REMOTING DUMMY_API_TOKEN
 #endif
 
 // These are used as shortcuts for developers and users providing
@@ -97,7 +98,7 @@
 namespace google_apis {
 
 const char kAPIKeysDevelopersHowToURL[] =
-    "http://www.chromium.org/developers/how-tos/api-keys";
+    "https://www.chromium.org/developers/how-tos/api-keys";
 
 // This is used as a lazy instance to determine keys once and cache them.
 class APIKeyCache {
@@ -107,7 +108,7 @@ class APIKeyCache {
     base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
 
     api_key_ = CalculateKeyValue(
-        GOOGLE_API_KEY, STRINGIZE_NO_EXPANSION(GOOGLE_API_KEY), NULL,
+        GOOGLE_API_KEY, STRINGIZE_NO_EXPANSION(GOOGLE_API_KEY), nullptr,
         std::string(), environment.get(), command_line);
 
 // A special non-stable key is at the moment defined only for Android Chrome.
@@ -120,30 +121,24 @@ class APIKeyCache {
     api_key_non_stable_ = api_key_;
 #endif
 
-    api_key_remoting_ftl_ =
-        CalculateKeyValue(GOOGLE_API_KEY_REMOTING_FTL,
-                          STRINGIZE_NO_EXPANSION(GOOGLE_API_KEY_REMOTING_FTL),
-                          NULL, std::string(), environment.get(), command_line);
+    api_key_remoting_ = CalculateKeyValue(
+        GOOGLE_API_KEY_REMOTING,
+        STRINGIZE_NO_EXPANSION(GOOGLE_API_KEY_REMOTING), nullptr, std::string(),
+        environment.get(), command_line);
 
-    metrics_key_ =
-        CalculateKeyValue(GOOGLE_METRICS_SIGNING_KEY,
-                          STRINGIZE_NO_EXPANSION(GOOGLE_METRICS_SIGNING_KEY),
-                          NULL, std::string(), environment.get(), command_line);
+    metrics_key_ = CalculateKeyValue(
+        GOOGLE_METRICS_SIGNING_KEY,
+        STRINGIZE_NO_EXPANSION(GOOGLE_METRICS_SIGNING_KEY), nullptr,
+        std::string(), environment.get(), command_line);
 
-    std::string default_client_id =
-        CalculateKeyValue(GOOGLE_DEFAULT_CLIENT_ID,
-                          STRINGIZE_NO_EXPANSION(GOOGLE_DEFAULT_CLIENT_ID),
-                          NULL,
-                          std::string(),
-                          environment.get(),
-                          command_line);
-    std::string default_client_secret =
-        CalculateKeyValue(GOOGLE_DEFAULT_CLIENT_SECRET,
-                          STRINGIZE_NO_EXPANSION(GOOGLE_DEFAULT_CLIENT_SECRET),
-                          NULL,
-                          std::string(),
-                          environment.get(),
-                          command_line);
+    std::string default_client_id = CalculateKeyValue(
+        GOOGLE_DEFAULT_CLIENT_ID,
+        STRINGIZE_NO_EXPANSION(GOOGLE_DEFAULT_CLIENT_ID), nullptr,
+        std::string(), environment.get(), command_line);
+    std::string default_client_secret = CalculateKeyValue(
+        GOOGLE_DEFAULT_CLIENT_SECRET,
+        STRINGIZE_NO_EXPANSION(GOOGLE_DEFAULT_CLIENT_SECRET), nullptr,
+        std::string(), environment.get(), command_line);
 
     // We currently only allow overriding the baked-in values for the
     // default OAuth2 client ID and secret using a command-line
@@ -168,48 +163,30 @@ class APIKeyCache {
 
     client_ids_[CLIENT_CLOUD_PRINT] = CalculateKeyValue(
         GOOGLE_CLIENT_ID_CLOUD_PRINT,
-        STRINGIZE_NO_EXPANSION(GOOGLE_CLIENT_ID_CLOUD_PRINT),
-        NULL,
-        default_client_id,
-        environment.get(),
-        command_line);
+        STRINGIZE_NO_EXPANSION(GOOGLE_CLIENT_ID_CLOUD_PRINT), nullptr,
+        default_client_id, environment.get(), command_line);
     client_secrets_[CLIENT_CLOUD_PRINT] = CalculateKeyValue(
         GOOGLE_CLIENT_SECRET_CLOUD_PRINT,
-        STRINGIZE_NO_EXPANSION(GOOGLE_CLIENT_SECRET_CLOUD_PRINT),
-        NULL,
-        default_client_secret,
-        environment.get(),
-        command_line);
+        STRINGIZE_NO_EXPANSION(GOOGLE_CLIENT_SECRET_CLOUD_PRINT), nullptr,
+        default_client_secret, environment.get(), command_line);
 
     client_ids_[CLIENT_REMOTING] = CalculateKeyValue(
         GOOGLE_CLIENT_ID_REMOTING,
-        STRINGIZE_NO_EXPANSION(GOOGLE_CLIENT_ID_REMOTING),
-        NULL,
-        default_client_id,
-        environment.get(),
-        command_line);
+        STRINGIZE_NO_EXPANSION(GOOGLE_CLIENT_ID_REMOTING), nullptr,
+        default_client_id, environment.get(), command_line);
     client_secrets_[CLIENT_REMOTING] = CalculateKeyValue(
         GOOGLE_CLIENT_SECRET_REMOTING,
-        STRINGIZE_NO_EXPANSION(GOOGLE_CLIENT_SECRET_REMOTING),
-        NULL,
-        default_client_secret,
-        environment.get(),
-        command_line);
+        STRINGIZE_NO_EXPANSION(GOOGLE_CLIENT_SECRET_REMOTING), nullptr,
+        default_client_secret, environment.get(), command_line);
 
     client_ids_[CLIENT_REMOTING_HOST] = CalculateKeyValue(
         GOOGLE_CLIENT_ID_REMOTING_HOST,
-        STRINGIZE_NO_EXPANSION(GOOGLE_CLIENT_ID_REMOTING_HOST),
-        NULL,
-        default_client_id,
-        environment.get(),
-        command_line);
+        STRINGIZE_NO_EXPANSION(GOOGLE_CLIENT_ID_REMOTING_HOST), nullptr,
+        default_client_id, environment.get(), command_line);
     client_secrets_[CLIENT_REMOTING_HOST] = CalculateKeyValue(
         GOOGLE_CLIENT_SECRET_REMOTING_HOST,
-        STRINGIZE_NO_EXPANSION(GOOGLE_CLIENT_SECRET_REMOTING_HOST),
-        NULL,
-        default_client_secret,
-        environment.get(),
-        command_line);
+        STRINGIZE_NO_EXPANSION(GOOGLE_CLIENT_SECRET_REMOTING_HOST), nullptr,
+        default_client_secret, environment.get(), command_line);
   }
 
   std::string api_key() const { return api_key_; }
@@ -217,7 +194,7 @@ class APIKeyCache {
   void set_api_key(const std::string& api_key) { api_key_ = api_key; }
 #endif
   std::string api_key_non_stable() const { return api_key_non_stable_; }
-  std::string api_key_remoting_ftl() const { return api_key_remoting_ftl_; }
+  std::string api_key_remoting() const { return api_key_remoting_; }
 
   std::string metrics_key() const { return metrics_key_; }
 
@@ -276,7 +253,7 @@ class APIKeyCache {
     }
 #endif
 
-#if !defined(GOOGLE_CHROME_BUILD)
+#if !BUILDFLAG(GOOGLE_CHROME_BRANDING)
     // Don't allow using the environment to override API keys for official
     // Google Chrome builds. There have been reports of mangled environments
     // affecting users (crbug.com/710575).
@@ -294,7 +271,7 @@ class APIKeyCache {
     }
 
     if (key_value == DUMMY_API_TOKEN) {
-#if defined(GOOGLE_CHROME_BUILD)
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
       // No key should be unset in an official build except the
       // GOOGLE_DEFAULT_* keys.  The default keys don't trigger this
       // check as their "unset" value is not DUMMY_API_TOKEN.
@@ -315,7 +292,7 @@ class APIKeyCache {
 
   std::string api_key_;
   std::string api_key_non_stable_;
-  std::string api_key_remoting_ftl_;
+  std::string api_key_remoting_;
   std::string metrics_key_;
   std::string client_ids_[CLIENT_NUM_ITEMS];
   std::string client_secrets_[CLIENT_NUM_ITEMS];
@@ -336,8 +313,8 @@ std::string GetNonStableAPIKey() {
   return g_api_key_cache.Get().api_key_non_stable();
 }
 
-std::string GetRemotingFtlAPIKey() {
-  return g_api_key_cache.Get().api_key_remoting_ftl();
+std::string GetRemotingAPIKey() {
+  return g_api_key_cache.Get().api_key_remoting();
 }
 
 #if defined(OS_IOS)
@@ -386,7 +363,7 @@ std::string GetSpdyProxyAuthValue() {
 }
 
 bool IsGoogleChromeAPIKeyUsed() {
-#if defined(GOOGLE_CHROME_BUILD) || defined(USE_OFFICIAL_GOOGLE_API_KEYS)
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING) || defined(USE_OFFICIAL_GOOGLE_API_KEYS)
   return true;
 #else
   return false;

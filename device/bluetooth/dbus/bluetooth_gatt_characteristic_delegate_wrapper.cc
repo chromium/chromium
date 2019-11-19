@@ -17,23 +17,21 @@ BluetoothGattCharacteristicDelegateWrapper::
 
 void BluetoothGattCharacteristicDelegateWrapper::GetValue(
     const dbus::ObjectPath& device_path,
-    const device::BluetoothLocalGattService::Delegate::ValueCallback& callback,
-    const device::BluetoothLocalGattService::Delegate::ErrorCallback&
-        error_callback) {
+    device::BluetoothLocalGattService::Delegate::ValueCallback callback,
+    device::BluetoothLocalGattService::Delegate::ErrorCallback error_callback) {
   service()->GetDelegate()->OnCharacteristicReadRequest(
-      GetDeviceWithPath(device_path), characteristic_, 0, callback,
-      error_callback);
+      GetDeviceWithPath(device_path), characteristic_, 0, std::move(callback),
+      std::move(error_callback));
 }
 
 void BluetoothGattCharacteristicDelegateWrapper::SetValue(
     const dbus::ObjectPath& device_path,
     const std::vector<uint8_t>& value,
-    const base::Closure& callback,
-    const device::BluetoothLocalGattService::Delegate::ErrorCallback&
-        error_callback) {
+    base::OnceClosure callback,
+    device::BluetoothLocalGattService::Delegate::ErrorCallback error_callback) {
   service()->GetDelegate()->OnCharacteristicWriteRequest(
-      GetDeviceWithPath(device_path), characteristic_, value, 0, callback,
-      error_callback);
+      GetDeviceWithPath(device_path), characteristic_, value, 0,
+      std::move(callback), std::move(error_callback));
 }
 
 void BluetoothGattCharacteristicDelegateWrapper::StartNotifications(
@@ -54,12 +52,11 @@ void BluetoothGattCharacteristicDelegateWrapper::PrepareSetValue(
     const std::vector<uint8_t>& value,
     int offset,
     bool has_subsequent_request,
-    const base::Closure& callback,
-    const device::BluetoothLocalGattService::Delegate::ErrorCallback&
-        error_callback) {
+    base::OnceClosure callback,
+    device::BluetoothLocalGattService::Delegate::ErrorCallback error_callback) {
   service()->GetDelegate()->OnCharacteristicPrepareWriteRequest(
       GetDeviceWithPath(device_path), characteristic_, value, offset,
-      has_subsequent_request, callback, error_callback);
+      has_subsequent_request, std::move(callback), std::move(error_callback));
 }
 
 }  // namespace bluez

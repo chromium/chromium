@@ -2,11 +2,10 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 from telemetry import story
-
 from telemetry.util import statistics
-from telemetry.value import scalar
 
 from page_sets import press_story
+
 
 _GB = 1024 * 1024 * 1024
 
@@ -53,7 +52,8 @@ DESCRIPTIONS = {
 
 
 class OctaneStory(press_story.PressStory):
-  URL='http://chromium.github.io/octane/index.html?auto=1'
+  URL = 'http://chromium.github.io/octane/index.html?auto=1'
+  NAME = 'Octane'
 
   def RunNavigateSteps(self, action_runner):
     total_memory = (
@@ -90,18 +90,15 @@ class OctaneStory(press_story.PressStory):
       if 'Skipped' not in score_and_name[1]:
         name = score_and_name[0]
         score = float(score_and_name[1])
-        self.AddJavascriptMetricValue(scalar.ScalarValue(
-            self, name, 'score', score, important=False,
-            description=DESCRIPTIONS.get(name)))
+        self.AddMeasurement(name, 'score', score,
+                            description=DESCRIPTIONS.get(name))
 
         # Collect all test scores to compute geometric mean.
         all_scores.append(score)
     total = statistics.GeometricMean(all_scores)
-    self.AddJavascriptMetricSummaryValue(
-        scalar.ScalarValue(None, 'Total.Score', 'score', total,
-                           description='Geometric mean of the scores of each '
-                           'individual benchmark in the Octane '
-                           'benchmark collection.'))
+    self.AddMeasurement('Total.Score', 'score', total,
+                        description='Geometric mean of the scores of each '
+                        'individual benchmark in the Octane collection.')
 
 
 class OctaneStorySet(story.StorySet):

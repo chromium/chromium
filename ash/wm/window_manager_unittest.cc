@@ -329,7 +329,7 @@ TEST_F(WindowManagerTest, ActivateOnMouse) {
     // First set the focus to the child |w11|.
     generator.ClickLeftButton();
     EXPECT_EQ(w11.get(), focus_client->GetFocusedWindow());
-    EXPECT_EQ(w1.get(), wm::GetActiveWindow());
+    EXPECT_EQ(w1.get(), window_util::GetActiveWindow());
 
     // Then click the parent active window. The focus shouldn't move.
     gfx::Point left_top = w1->bounds().origin();
@@ -338,7 +338,7 @@ TEST_F(WindowManagerTest, ActivateOnMouse) {
     generator.MoveMouseTo(left_top);
     generator.ClickLeftButton();
     EXPECT_EQ(w11.get(), focus_client->GetFocusedWindow());
-    EXPECT_EQ(w1.get(), wm::GetActiveWindow());
+    EXPECT_EQ(w1.get(), window_util::GetActiveWindow());
   }
 
   // Clicking on a non-focusable window inside a background window should still

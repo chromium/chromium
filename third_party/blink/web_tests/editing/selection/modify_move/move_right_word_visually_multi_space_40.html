@@ -1,0 +1,170 @@
+<!doctype html>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<script src="../../assert_selection.js"></script>
+<script>
+if (window.internals)
+  internals.settings.setEditingBehavior('win');
+
+selection_test(
+  '<div contenteditable dir="rtl" style="white-space:pre">|    אבצ    abc    דעפ     </div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl" style="white-space:pre">|    אבצ    abc    דעפ     </div>',
+  '40-0 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl" style="white-space:pre"> |   אבצ    abc    דעפ     </div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl" style="white-space:pre">|    אבצ    abc    דעפ     </div>',
+  '40-1 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl" style="white-space:pre">  |  אבצ    abc    דעפ     </div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl" style="white-space:pre">|    אבצ    abc    דעפ     </div>',
+  '40-2 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl" style="white-space:pre">   | אבצ    abc    דעפ     </div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl" style="white-space:pre">|    אבצ    abc    דעפ     </div>',
+  '40-3 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl" style="white-space:pre">    |אבצ    abc    דעפ     </div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl" style="white-space:pre">|    אבצ    abc    דעפ     </div>',
+  '40-4 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl" style="white-space:pre">    א|בצ    abc    דעפ     </div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl" style="white-space:pre">    |אבצ    abc    דעפ     </div>',
+  '40-5 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl" style="white-space:pre">    אב|צ    abc    דעפ     </div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl" style="white-space:pre">    |אבצ    abc    דעפ     </div>',
+  '40-6 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl" style="white-space:pre">    אבצ|    abc    דעפ     </div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl" style="white-space:pre">    |אבצ    abc    דעפ     </div>',
+  '40-7 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl" style="white-space:pre">    אבצ |   abc    דעפ     </div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl" style="white-space:pre">    |אבצ    abc    דעפ     </div>',
+  '40-8 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl" style="white-space:pre">    אבצ  |  abc    דעפ     </div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl" style="white-space:pre">    |אבצ    abc    דעפ     </div>',
+  '40-9 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl" style="white-space:pre">    אבצ   | abc    דעפ     </div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl" style="white-space:pre">    |אבצ    abc    דעפ     </div>',
+  '40-10 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl" style="white-space:pre">    אבצ    |abc    דעפ     </div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl" style="white-space:pre">    |אבצ    abc    דעפ     </div>',
+  '40-11 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl" style="white-space:pre">    אבצ    a|bc    דעפ     </div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl" style="white-space:pre">    אבצ    |abc    דעפ     </div>',
+  '40-12 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl" style="white-space:pre">    אבצ    ab|c    דעפ     </div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl" style="white-space:pre">    אבצ    |abc    דעפ     </div>',
+  '40-13 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl" style="white-space:pre">    אבצ    abc|    דעפ     </div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl" style="white-space:pre">    אבצ    |abc    דעפ     </div>',
+  '40-14 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl" style="white-space:pre">    אבצ    abc |   דעפ     </div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl" style="white-space:pre">    אבצ    |abc    דעפ     </div>',
+  '40-15 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl" style="white-space:pre">    אבצ    abc  |  דעפ     </div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl" style="white-space:pre">    אבצ    |abc    דעפ     </div>',
+  '40-16 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl" style="white-space:pre">    אבצ    abc   | דעפ     </div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl" style="white-space:pre">    אבצ    |abc    דעפ     </div>',
+  '40-17 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl" style="white-space:pre">    אבצ    abc    |דעפ     </div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl" style="white-space:pre">    אבצ    |abc    דעפ     </div>',
+  '40-18 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl" style="white-space:pre">    אבצ    abc    ד|עפ     </div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl" style="white-space:pre">    אבצ    abc    |דעפ     </div>',
+  '40-19 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl" style="white-space:pre">    אבצ    abc    דע|פ     </div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl" style="white-space:pre">    אבצ    abc    |דעפ     </div>',
+  '40-20 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl" style="white-space:pre">    אבצ    abc    דעפ|     </div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl" style="white-space:pre">    אבצ    abc    |דעפ     </div>',
+  '40-21 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl" style="white-space:pre">    אבצ    abc    דעפ |    </div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl" style="white-space:pre">    אבצ    abc    |דעפ     </div>',
+  '40-22 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl" style="white-space:pre">    אבצ    abc    דעפ  |   </div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl" style="white-space:pre">    אבצ    abc    |דעפ     </div>',
+  '40-23 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl" style="white-space:pre">    אבצ    abc    דעפ   |  </div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl" style="white-space:pre">    אבצ    abc    |דעפ     </div>',
+  '40-24 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl" style="white-space:pre">    אבצ    abc    דעפ    | </div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl" style="white-space:pre">    אבצ    abc    |דעפ     </div>',
+  '40-25 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl" style="white-space:pre">    אבצ    abc    דעפ     |</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl" style="white-space:pre">    אבצ    abc    |דעפ     </div>',
+  '40-26 right word');
+</script>

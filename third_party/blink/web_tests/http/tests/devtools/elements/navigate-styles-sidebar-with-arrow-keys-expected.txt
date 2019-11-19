@@ -9,19 +9,19 @@ element.style {}
 
 Navigating with arrow keys
 Editing: false
-<style>…</style>div#foo {}
+<style>div#foo {}
 
 Editing: false
-<style>…</style>#foo {}
+<style>#foo {}
 
 Editing: false
-<style>…</style>div {}
+<style>div {}
 
 Editing: false
 user agent stylesheetdiv {}
 
 Editing: false
-<style>…</style>div {}
+<style>div {}
 
 Typing should start editing
 Editing: true
@@ -29,7 +29,7 @@ t
 
 Pressing escape again should restore focus
 Editing: false
-<style>…</style>div {}
+<style>div {}
 
 Pressing enter should start editing selector
 Editing: true

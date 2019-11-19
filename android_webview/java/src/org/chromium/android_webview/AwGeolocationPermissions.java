@@ -128,4 +128,19 @@ public final class AwGeolocationPermissions {
 
         return PREF_PREFIX + origin;
     }
+
+    /* package */
+    static void migrateGeolocationPreferences(
+            SharedPreferences oldPrefs, SharedPreferences newPrefs) {
+        SharedPreferences.Editor oldPrefsEditor = oldPrefs.edit();
+
+        SharedPreferences.Editor newPrefsEditor = newPrefs.edit();
+
+        for (String name : oldPrefs.getAll().keySet()) {
+            if (name.startsWith(AwGeolocationPermissions.PREF_PREFIX)) {
+                newPrefsEditor.putBoolean(name, oldPrefs.getBoolean(name, false)).apply();
+                oldPrefsEditor.remove(name).apply();
+            }
+        }
+    }
 }

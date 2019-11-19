@@ -10,5 +10,8 @@ specific_include_rules = {
   "(theme_painter|fallback_theme)\.cc": [
     "+ui/native_theme/native_theme.h",
     "+ui/native_theme/native_theme_base.h",
+  ],
+  ".*test\.cc": [
+    "+base/test/trace_event_analyzer.h",
   ]
 }

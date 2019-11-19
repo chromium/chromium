@@ -18,8 +18,10 @@
  */
 
 // https://html.spec.whatwg.org/C/#the-script-element
-[HTMLConstructor]
-interface HTMLScriptElement : HTMLElement {
+[
+    Exposed=Window,
+    HTMLConstructor
+] interface HTMLScriptElement : HTMLElement {
     [CEReactions, Reflect, URL, RaisesException=Setter] attribute ScriptURLString src;
     [CEReactions, Reflect] attribute DOMString type;
     [CEReactions, Reflect] attribute boolean noModule;
@@ -29,7 +31,7 @@ interface HTMLScriptElement : HTMLElement {
     [CEReactions, Reflect, ReflectOnly=("anonymous","use-credentials"), ReflectEmpty="anonymous", ReflectInvalid="anonymous"] attribute DOMString? crossOrigin;
     [CEReactions, RaisesException=Setter] attribute ScriptString text;
     [CEReactions, Reflect, ReflectOnly=("", "no-referrer", "no-referrer-when-downgrade", "same-origin", "origin", "strict-origin", "origin-when-cross-origin", "strict-origin-when-cross-origin", "unsafe-url"), ReflectEmpty="", ReflectInvalid=""] attribute DOMString? referrerPolicy;
-    [CEReactions, MeasureAs=PriorityHints, OriginTrialEnabled=PriorityHints, Reflect, ReflectOnly=("low", "auto", "high"), ReflectMissing="auto", ReflectInvalid="auto"] attribute DOMString importance;
+    [CEReactions, MeasureAs=PriorityHints, RuntimeEnabled=PriorityHints, Reflect, ReflectOnly=("low", "auto", "high"), ReflectMissing="auto", ReflectInvalid="auto"] attribute DOMString importance;
 
     // obsolete members
     // https://html.spec.whatwg.org/C/#HTMLScriptElement-partial

@@ -3,6 +3,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+from __future__ import print_function
+
 import glob
 import optparse
 import os.path
@@ -226,7 +228,7 @@ def RunTestsOnce(url, options):
   file_mapping = dict(options.map_files)
   for filename in options.files:
     file_mapping[os.path.basename(filename)] = filename
-  for server_path, real_path in file_mapping.iteritems():
+  for _, real_path in file_mapping.items():
     if not os.path.exists(real_path):
       raise AssertionError('\'%s\' does not exist.' % real_path)
   mime_types = {}
@@ -385,7 +387,7 @@ def RunFromCommandLine():
   options, args = parser.parse_args()
 
   if len(args) != 0:
-    print args
+    print(args)
     parser.error('Invalid arguments')
 
   # Validate the URL

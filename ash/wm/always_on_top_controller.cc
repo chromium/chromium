@@ -6,6 +6,7 @@
 
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/window_properties.h"
+#include "ash/wm/desks/desks_util.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/workspace/workspace_layout_manager.h"
 #include "ui/aura/client/aura_constants.h"
@@ -13,13 +14,15 @@
 
 namespace ash {
 
+DEFINE_UI_CLASS_PROPERTY_KEY(bool, kDisallowReparentKey, false)
+
 AlwaysOnTopController::AlwaysOnTopController(
     aura::Window* always_on_top_container,
     aura::Window* pip_container)
     : always_on_top_container_(always_on_top_container),
       pip_container_(pip_container) {
-  DCHECK_NE(kShellWindowId_DefaultContainer, always_on_top_container_->id());
-  DCHECK_NE(kShellWindowId_DefaultContainer, pip_container_->id());
+  DCHECK(!desks_util::IsDeskContainer(always_on_top_container_));
+  DCHECK(!desks_util::IsDeskContainer(pip_container_));
   always_on_top_container_->SetLayoutManager(
       new WorkspaceLayoutManager(always_on_top_container_));
   pip_container_->SetLayoutManager(new WorkspaceLayoutManager(pip_container_));
@@ -41,11 +44,19 @@ aura::Window* AlwaysOnTopController::GetContainer(aura::Window* window) const {
   DCHECK(always_on_top_container_);
   DCHECK(pip_container_);
 
-  if (!window->GetProperty(aura::client::kAlwaysOnTopKey)) {
-    return always_on_top_container_->GetRootWindow()->GetChildById(
-        kShellWindowId_DefaultContainer);
+  // On other platforms, there are different window levels. For now, treat any
+  // window with non-normal level as "always on top". Perhaps the nuance of
+  // multiple levels will be needed later.
+  if (window->GetProperty(aura::client::kZOrderingKey) ==
+      ui::ZOrderLevel::kNormal) {
+    aura::Window* root = always_on_top_container_->GetRootWindow();
+
+    // TODO(afakhry): Do we need to worry about the context of |window| here? Or
+    // is it safe to assume that |window| should always be parented to the
+    // active desks' container.
+    return desks_util::GetActiveDeskContainerForRoot(root);
   }
-  if (window->parent() && wm::GetWindowState(window)->IsPip())
+  if (window->parent() && WindowState::Get(window)->IsPip())
     return pip_container_;
 
   return always_on_top_container_;
@@ -56,21 +67,26 @@ void AlwaysOnTopController::SetLayoutManagerForTest(
   always_on_top_container_->SetLayoutManager(layout_manager.release());
 }
 
+void AlwaysOnTopController::SetDisallowReparent(aura::Window* window) {
+  window->SetProperty(kDisallowReparentKey, true);
+}
+
 void AlwaysOnTopController::AddWindow(aura::Window* window) {
   window->AddObserver(this);
-  wm::GetWindowState(window)->AddObserver(this);
+  WindowState::Get(window)->AddObserver(this);
 }
 
 void AlwaysOnTopController::RemoveWindow(aura::Window* window) {
   window->RemoveObserver(this);
-  wm::GetWindowState(window)->RemoveObserver(this);
+  WindowState::Get(window)->RemoveObserver(this);
 }
 
 void AlwaysOnTopController::ReparentWindow(aura::Window* window) {
   DCHECK(window->type() == aura::client::WINDOW_TYPE_NORMAL ||
          window->type() == aura::client::WINDOW_TYPE_POPUP);
   aura::Window* container = GetContainer(window);
-  if (window->parent() != container)
+  if (window->parent() != container &&
+      !window->GetProperty(ash::kDisallowReparentKey))
     container->AddChild(window);
 }
 
@@ -91,7 +107,7 @@ void AlwaysOnTopController::OnWindowPropertyChanged(aura::Window* window,
                                                     const void* key,
                                                     intptr_t old) {
   if (window != always_on_top_container_ && window != pip_container_ &&
-      key == aura::client::kAlwaysOnTopKey) {
+      key == aura::client::kZOrderingKey) {
     ReparentWindow(window);
   }
 }
@@ -109,8 +125,8 @@ void AlwaysOnTopController::OnWindowDestroying(aura::Window* window) {
 }
 
 void AlwaysOnTopController::OnPreWindowStateTypeChange(
-    wm::WindowState* window_state,
-    mojom::WindowStateType old_type) {
+    WindowState* window_state,
+    WindowStateType old_type) {
   ReparentWindow(window_state->window());
 }
 

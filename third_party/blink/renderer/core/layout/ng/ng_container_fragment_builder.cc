@@ -7,50 +7,44 @@
 #include "third_party/blink/renderer/core/layout/ng/exclusions/ng_exclusion_space.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_physical_line_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_block_break_token.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_layout_result.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_fragment.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/text/writing_mode.h"
 
 namespace blink {
 
-NGContainerFragmentBuilder& NGContainerFragmentBuilder::AddChild(
-    const NGLayoutResult& child,
-    const NGLogicalOffset& child_offset) {
+namespace {
+
+bool IsInlineContainerForNode(const NGBlockNode& node,
+                              const LayoutObject* inline_container) {
+  return inline_container && inline_container->IsLayoutInline() &&
+         inline_container->CanContainOutOfFlowPositionedElement(
+             node.Style().GetPosition());
+}
+
+}  // namespace
+
+void NGContainerFragmentBuilder::AddChild(
+    const NGPhysicalContainerFragment& child,
+    const LogicalOffset& child_offset,
+    const LayoutInline* inline_container) {
+  PropagateChildData(child, child_offset, inline_container);
+  AddChildInternal(&child, child_offset);
+}
+
+// Propagate data in |child| to this fragment. The |child| will then be added as
+// a child fragment or a child fragment item.
+void NGContainerFragmentBuilder::PropagateChildData(
+    const NGPhysicalContainerFragment& child,
+    const LogicalOffset& child_offset,
+    const LayoutInline* inline_container) {
   // Collect the child's out of flow descendants.
   // child_offset is offset of inline_start/block_start vertex.
   // Candidates need offset of top/left vertex.
-  const auto& out_of_flow_descendants = child.OutOfFlowPositionedDescendants();
-  if (!out_of_flow_descendants.IsEmpty()) {
-    NGLogicalOffset top_left_offset;
-    NGPhysicalSize child_size = child.PhysicalFragment()->Size();
-    switch (GetWritingMode()) {
-      case WritingMode::kHorizontalTb:
-        top_left_offset =
-            (IsRtl(Direction()))
-                ? NGLogicalOffset{child_offset.inline_offset + child_size.width,
-                                  child_offset.block_offset}
-                : child_offset;
-        break;
-      case WritingMode::kVerticalRl:
-      case WritingMode::kSidewaysRl:
-        top_left_offset =
-            (IsRtl(Direction()))
-                ? NGLogicalOffset{child_offset.inline_offset +
-                                      child_size.height,
-                                  child_offset.block_offset + child_size.width}
-                : NGLogicalOffset{child_offset.inline_offset,
-                                  child_offset.block_offset + child_size.width};
-        break;
-      case WritingMode::kVerticalLr:
-      case WritingMode::kSidewaysLr:
-        top_left_offset = (IsRtl(Direction()))
-                              ? NGLogicalOffset{child_offset.inline_offset +
-                                                    child_size.height,
-                                                child_offset.block_offset}
-                              : child_offset;
-        break;
-    }
+  if (child.HasOutOfFlowPositionedDescendants()) {
+    const auto& out_of_flow_descendants =
+        child.OutOfFlowPositionedDescendants();
+    PhysicalSize child_size = child.Size();
 
     // We can end up in a case where we need to account for the relative
     // position of an element to correctly determine the static position of a
@@ -62,109 +56,143 @@ NGContainerFragmentBuilder& NGContainerFragmentBuilder::AddChild(
     // </div>
     // TODO(layout-dev): This code should eventually be removed once we handle
     // relative positioned objects directly in the fragment tree.
-    if (LayoutBox* child_box =
-            ToLayoutBoxOrNull(child.PhysicalFragment()->GetLayoutObject())) {
-      top_left_offset +=
-          NGPhysicalOffset(child_box->OffsetForInFlowPosition())
-              .ConvertToLogical(GetWritingMode(), Direction(), NGPhysicalSize(),
-                                NGPhysicalSize());
+    LogicalOffset offset = child_offset;
+    if (const LayoutBox* child_box =
+            ToLayoutBoxOrNull(child.GetLayoutObject())) {
+      offset += PhysicalOffset(child_box->OffsetForInFlowPosition())
+                    .ConvertToLogical(GetWritingMode(), Direction(),
+                                      PhysicalSize(), PhysicalSize());
     }
 
-    for (const NGOutOfFlowPositionedDescendant& descendant :
-         out_of_flow_descendants) {
-      oof_positioned_candidates_.push_back(
-          NGOutOfFlowPositionedCandidate(descendant, top_left_offset));
+    for (const auto& descendant : out_of_flow_descendants) {
+      NGLogicalStaticPosition static_position =
+          descendant.static_position.ConvertToLogical(GetWritingMode(),
+                                                      Direction(), child_size);
+      static_position.offset += offset;
+
+      const LayoutInline* new_inline_container = descendant.inline_container;
+      if (!descendant.inline_container &&
+          IsInlineContainerForNode(descendant.node, inline_container))
+        new_inline_container = inline_container;
+
+      oof_positioned_candidates_.emplace_back(descendant.node, static_position,
+                                              new_inline_container);
     }
   }
 
-  if (child.HasOrthogonalFlowRoots())
+  // For the |has_orthogonal_flow_roots_| flag, we don't care about the type of
+  // child (OOF-positioned, etc), it is for *any* descendant.
+  if (child.HasOrthogonalFlowRoots() ||
+      !IsParallelWritingMode(child.Style().GetWritingMode(),
+                             Style().GetWritingMode()))
     has_orthogonal_flow_roots_ = true;
 
   // We only need to report if inflow or floating elements depend on the
   // percentage resolution block-size. OOF-positioned children resolve their
   // percentages against the "final" size of their parent.
-  if (child.DependsOnPercentageBlockSize() &&
-      !child.PhysicalFragment()->IsOutOfFlowPositioned())
-    has_child_that_depends_on_percentage_block_size_ = true;
+  if (child.DependsOnPercentageBlockSize() && !child.IsOutOfFlowPositioned())
+    has_descendant_that_depends_on_percentage_block_size_ = true;
 
-  return AddChild(child.PhysicalFragment(), child_offset);
+  // The |may_have_descendant_above_block_start_| flag is used to determine if
+  // a fragment can be re-used when preceding floats are present. This is
+  // relatively rare, and is true if:
+  //  - An inflow child is positioned above our block-start edge.
+  //  - Any inflow descendants (within the same formatting-context) which *may*
+  //    have a child positioned above our block-start edge.
+  if ((child_offset.block_offset < LayoutUnit() &&
+       !child.IsOutOfFlowPositioned()) ||
+      (!child.IsBlockFormattingContextRoot() && !child.IsLineBox() &&
+       child.MayHaveDescendantAboveBlockStart()))
+    may_have_descendant_above_block_start_ = true;
+
+  // Compute |has_floating_descendants_for_paint_| to optimize tree traversal
+  // in paint.
+  if (!has_floating_descendants_for_paint_) {
+    // TODO(layout-dev): The |NGPhysicalFragment::IsAtomicInline| check should
+    // be checking for any children which paint all phases atomically.
+    if (child.IsFloating() || child.IsLegacyLayoutRoot() ||
+        (child.HasFloatingDescendantsForPaint() && !child.IsAtomicInline()))
+      has_floating_descendants_for_paint_ = true;
+  }
+
+  // The |has_adjoining_object_descendants_| is used to determine if a fragment
+  // can be re-used when preceding floats are present.
+  // If a fragment doesn't have any adjoining object descendants, and is
+  // self-collapsing, it can be "shifted" anywhere.
+  if (!has_adjoining_object_descendants_) {
+    if (!child.IsBlockFormattingContextRoot() &&
+        child.HasAdjoiningObjectDescendants())
+      has_adjoining_object_descendants_ = true;
+  }
+
+  // Collect any (block) break tokens, unless this is a fragmentation context
+  // root. Break tokens should only escape a fragmentation context at the
+  // discretion of the fragmentation context.
+  if (has_block_fragmentation_ && !is_fragmentation_context_root_) {
+    if (const NGBreakToken* child_break_token = child.BreakToken()) {
+      switch (child.Type()) {
+        case NGPhysicalFragment::kFragmentBox:
+        case NGPhysicalFragment::kFragmentRenderedLegend:
+          child_break_tokens_.push_back(child_break_token);
+          break;
+        case NGPhysicalFragment::kFragmentLineBox:
+          // NGInlineNode produces multiple line boxes in an anonymous box. We
+          // won't know up front which line box to insert a fragment break
+          // before (due to widows), so keep them all until we know.
+          inline_break_tokens_.push_back(child_break_token);
+          break;
+        case NGPhysicalFragment::kFragmentText:
+        default:
+          NOTREACHED();
+          break;
+      }
+    }
+  }
 }
 
-NGContainerFragmentBuilder& NGContainerFragmentBuilder::AddChild(
+void NGContainerFragmentBuilder::AddChildInternal(
     scoped_refptr<const NGPhysicalFragment> child,
-    const NGLogicalOffset& child_offset) {
-  NGBreakToken* child_break_token = child->BreakToken();
-  if (child_break_token && has_block_fragmentation_) {
-    switch (child->Type()) {
-      case NGPhysicalFragment::kFragmentBox:
-      case NGPhysicalFragment::kFragmentRenderedLegend:
-        if (ToNGBlockBreakToken(child_break_token)->HasLastResortBreak())
-          has_last_resort_break_ = true;
-        child_break_tokens_.push_back(child_break_token);
-        break;
-      case NGPhysicalFragment::kFragmentLineBox:
-        // NGInlineNode produces multiple line boxes in an anonymous box. We
-        // won't know up front which line box to insert a fragment break before
-        // (due to widows), so keep them all until we know.
-        inline_break_tokens_.push_back(child_break_token);
-        break;
-      case NGPhysicalFragment::kFragmentText:
-      default:
-        NOTREACHED();
-        break;
-    }
+    const LogicalOffset& child_offset) {
+  // In order to know where list-markers are within the children list (for the
+  // |NGSimplifiedLayoutAlgorithm|) we always place them as the first child.
+  if (child->IsListMarker()) {
+    children_.push_front(ChildWithOffset(child_offset, std::move(child)));
+    return;
   }
 
-  // Compute |has_floating_descendants_| to optimize tree traversal in paint.
-  if (!has_floating_descendants_) {
-    if (child->IsFloating()) {
-      has_floating_descendants_ = true;
-    } else if (child->IsContainer() && !child->IsBlockFormattingContextRoot() &&
-               ToNGPhysicalContainerFragment(*child).HasFloatingDescendants()) {
-      has_floating_descendants_ = true;
-    }
-  }
-
-  if (!IsParallelWritingMode(child->Style().GetWritingMode(),
-                             Style().GetWritingMode()))
-    has_orthogonal_flow_roots_ = true;
-
-  children_.emplace_back(std::move(child));
-  offsets_.push_back(child_offset);
-  return *this;
+  children_.emplace_back(child_offset, std::move(child));
 }
 
-NGLogicalOffset NGContainerFragmentBuilder::GetChildOffset(
-    const LayoutObject* child) const {
-  for (wtf_size_t i = 0; i < children_.size(); ++i) {
-    if (children_[i]->GetLayoutObject() == child)
-      return offsets_[i];
+LogicalOffset NGContainerFragmentBuilder::GetChildOffset(
+    const LayoutObject* object) const {
+  for (const auto& child : children_) {
+    if (child.fragment->GetLayoutObject() == object)
+      return child.offset;
 
     // TODO(layout-dev): ikilpatrick thinks we may need to traverse
     // further than the initial line-box children for a nested inline
     // container. We could not come up with a testcase, it would be
     // something with split inlines, and nested oof/fixed descendants maybe.
-    if (children_[i]->IsLineBox()) {
+    if (child.fragment->IsLineBox()) {
       const auto& line_box_fragment =
-          ToNGPhysicalLineBoxFragment(*children_[i]);
+          To<NGPhysicalLineBoxFragment>(*child.fragment);
       for (const auto& line_box_child : line_box_fragment.Children()) {
-        if (line_box_child->GetLayoutObject() == child) {
-          return offsets_[i] + line_box_child.Offset().ConvertToLogical(
-                                   GetWritingMode(), Direction(),
-                                   line_box_fragment.Size(),
-                                   line_box_child->Size());
+        if (line_box_child->GetLayoutObject() == object) {
+          return child.offset + line_box_child.Offset().ConvertToLogical(
+                                    GetWritingMode(), Direction(),
+                                    line_box_fragment.Size(),
+                                    line_box_child->Size());
         }
       }
     }
   }
   NOTREACHED();
-  return NGLogicalOffset();
+  return LogicalOffset();
 }
 
-NGContainerFragmentBuilder&
-NGContainerFragmentBuilder::AddOutOfFlowChildCandidate(
+void NGContainerFragmentBuilder::AddOutOfFlowChildCandidate(
     NGBlockNode child,
-    const NGLogicalOffset& child_offset,
+    const LogicalOffset& child_offset,
     base::Optional<TextDirection> container_direction) {
   DCHECK(child);
   DCHECK(layout_object_ && !layout_object_->IsLayoutInline() ||
@@ -174,97 +202,67 @@ NGContainerFragmentBuilder::AddOutOfFlowChildCandidate(
   // As all inline-level fragments are built in the line-logical coordinate
   // system (Direction() is kLtr), we need to know the direction of the
   // parent element to correctly determine an OOF childs static position.
-  TextDirection direction = container_direction.value_or(Direction());
+  TextDirection direction = container_direction.value_or(TextDirection::kLtr);
 
-  oof_positioned_candidates_.push_back(NGOutOfFlowPositionedCandidate(
-      NGOutOfFlowPositionedDescendant(
-          child, NGStaticPosition::Create(GetWritingMode(), direction,
-                                          NGPhysicalOffset())),
-      child_offset));
-
-  return *this;
+  oof_positioned_candidates_.emplace_back(
+      child,
+      NGLogicalStaticPosition{
+          child_offset,
+          IsLtr(direction) ? NGLogicalStaticPosition::InlineEdge::kInlineStart
+                           : NGLogicalStaticPosition::InlineEdge::kInlineEnd,
+          NGLogicalStaticPosition::BlockEdge::kBlockStart});
 }
 
-NGContainerFragmentBuilder& NGContainerFragmentBuilder::AddOutOfFlowDescendant(
-    NGOutOfFlowPositionedDescendant descendant) {
+void NGContainerFragmentBuilder::AddOutOfFlowDescendant(
+    const NGLogicalOutOfFlowPositionedNode& descendant) {
   oof_positioned_descendants_.push_back(descendant);
-  return *this;
 }
 
-void NGContainerFragmentBuilder::GetAndClearOutOfFlowDescendantCandidates(
-    Vector<NGOutOfFlowPositionedDescendant>* descendant_candidates,
+void NGContainerFragmentBuilder::SwapOutOfFlowPositionedCandidates(
+    Vector<NGLogicalOutOfFlowPositionedNode>* candidates,
     const LayoutObject* current_container) {
-  DCHECK(descendant_candidates->IsEmpty());
+  DCHECK(candidates->IsEmpty());
 
-  if (oof_positioned_candidates_.size() == 0)
-    return;
+  // The |oof_positioned_candidates_| list may get additional candidates, in the
+  // following case:
+  //  - If an absolute-positioned element gets added to the builder, and it has
+  //    a fixed-positioned descendant.
+  std::swap(oof_positioned_candidates_, *candidates);
 
-  descendant_candidates->ReserveCapacity(oof_positioned_candidates_.size());
-
-  DCHECK_GE(InlineSize(), LayoutUnit());
-  DCHECK_GE(BlockSize(), LayoutUnit());
-  NGPhysicalSize builder_physical_size =
-      ToNGPhysicalSize(Size(), GetWritingMode());
-
-  for (NGOutOfFlowPositionedCandidate& candidate : oof_positioned_candidates_) {
-    NGPhysicalOffset child_offset = candidate.child_offset.ConvertToPhysical(
-        GetWritingMode(), Direction(), builder_physical_size, NGPhysicalSize());
-
-    NGStaticPosition builder_relative_position;
-    builder_relative_position.type = candidate.descendant.static_position.type;
-    builder_relative_position.offset =
-        child_offset + candidate.descendant.static_position.offset;
-
+  for (auto& candidate : *candidates) {
     // If we are inside the inline algorithm, (and creating a fragment for a
     // <span> or similar), we may add a child (e.g. an atomic-inline) which has
     // OOF descandants.
     //
     // This checks if the object creating this box will be the container for
     // the given descendant.
-    const LayoutObject* inline_container =
-        candidate.descendant.inline_container;
-    if (!inline_container && layout_object_ &&
-        layout_object_->IsLayoutInline() &&
-        layout_object_->CanContainOutOfFlowPositionedElement(
-            candidate.descendant.node.Style().GetPosition()))
-      inline_container = layout_object_;
+    if (!candidate.inline_container &&
+        IsInlineContainerForNode(candidate.node, layout_object_))
+      candidate.inline_container = ToLayoutInline(layout_object_);
 
-    descendant_candidates->push_back(NGOutOfFlowPositionedDescendant(
-        candidate.descendant.node, builder_relative_position,
-        inline_container));
-    NGLogicalOffset container_offset =
-        builder_relative_position.offset.ConvertToLogical(
-            GetWritingMode(), Direction(), builder_physical_size,
-            NGPhysicalSize());
-    candidate.descendant.node.SaveStaticOffsetForLegacy(container_offset,
-                                                        current_container);
+    // Ensure that the inline_container is a continuation root.
+    if (candidate.inline_container) {
+      candidate.inline_container =
+          ToLayoutInline(candidate.inline_container->ContinuationRoot());
+    }
+
+    // Copy-back the static-position for legacy.
+    candidate.node.SaveStaticOffsetForLegacy(candidate.static_position.offset,
+                                             current_container);
   }
 
-  // Clear our current canidate list. This may get modified again if the
-  // current fragment is a containing block, and AddChild is called with a
-  // descendant from this list.
-  //
-  // The descendant may be a "position: absolute" which contains a "position:
-  // fixed" for example. (This fragment isn't the containing block for the
-  // fixed descendant).
-  oof_positioned_candidates_.Shrink(0);
+  DCHECK(oof_positioned_candidates_.IsEmpty());
 }
 
-void NGContainerFragmentBuilder::
-    MoveOutOfFlowDescendantCandidatesToDescendants() {
-  GetAndClearOutOfFlowDescendantCandidates(&oof_positioned_descendants_,
-                                           nullptr);
-}
-
-#ifndef NDEBUG
+#if DCHECK_IS_ON()
 
 String NGContainerFragmentBuilder::ToString() const {
   StringBuilder builder;
-  builder.Append(String::Format("ContainerFragment %.2fx%.2f, Children %u\n",
-                                InlineSize().ToFloat(), BlockSize().ToFloat(),
-                                children_.size()));
+  builder.AppendFormat("ContainerFragment %.2fx%.2f, Children %u\n",
+                       InlineSize().ToFloat(), BlockSize().ToFloat(),
+                       children_.size());
   for (auto& child : children_) {
-    builder.Append(child->DumpFragmentTree(
+    builder.Append(child.fragment->DumpFragmentTree(
         NGPhysicalFragment::DumpAll & ~NGPhysicalFragment::DumpHeaderText));
   }
   return builder.ToString();

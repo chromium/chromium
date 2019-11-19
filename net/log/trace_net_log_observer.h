@@ -41,7 +41,7 @@ class NET_EXPORT TraceNetLogObserver
 
  private:
   NetLog* net_log_to_watch_;
-  base::WeakPtrFactory<TraceNetLogObserver> weak_factory_;
+  base::WeakPtrFactory<TraceNetLogObserver> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(TraceNetLogObserver);
 };

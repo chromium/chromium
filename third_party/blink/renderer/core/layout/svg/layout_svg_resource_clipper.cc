@@ -84,9 +84,10 @@ ClipStrategy DetermineClipStrategy(const SVGElement& element) {
     return ModifyStrategyForClipPath(use_layout_object->StyleRef(),
                                      shape_strategy);
   }
-  if (!element.IsSVGGraphicsElement())
+  auto* svg_graphics_element = DynamicTo<SVGGraphicsElement>(element);
+  if (!svg_graphics_element)
     return ClipStrategy::kNone;
-  return DetermineClipStrategy(ToSVGGraphicsElement(element));
+  return DetermineClipStrategy(*svg_graphics_element);
 }
 
 bool ContributesToClip(const SVGElement& element) {
@@ -238,7 +239,8 @@ AffineTransform LayoutSVGResourceClipper::CalculateClipTransform(
 bool LayoutSVGResourceClipper::HitTestClipContent(
     const FloatRect& object_bounding_box,
     const HitTestLocation& location) const {
-  if (!SVGLayoutSupport::IntersectsClipPath(*this, location))
+  if (!SVGLayoutSupport::IntersectsClipPath(*this, object_bounding_box,
+                                            location))
     return false;
 
   TransformedHitTestLocation local_location(
@@ -256,7 +258,7 @@ bool LayoutSVGResourceClipper::HitTestClipContent(
     DCHECK(!layout_object->IsBoxModelObject() ||
            !ToLayoutBoxModelObject(layout_object)->HasSelfPaintingLayer());
 
-    if (layout_object->NodeAtPoint(result, *local_location, LayoutPoint(),
+    if (layout_object->NodeAtPoint(result, *local_location, PhysicalOffset(),
                                    kHitTestForeground))
       return true;
   }

@@ -26,6 +26,7 @@
 #include "net/ssl/ssl_connection_status_flags.h"
 #include "net/ssl/ssl_info.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
+#include "third_party/boringssl/src/include/openssl/bytestring.h"
 #include "third_party/boringssl/src/include/openssl/err.h"
 #include "third_party/boringssl/src/include/openssl/pool.h"
 #include "third_party/boringssl/src/include/openssl/ssl.h"
@@ -44,7 +45,8 @@ class SocketDataIndex {
  public:
   static SocketDataIndex* GetInstance();
   SocketDataIndex() {
-    ssl_socket_data_index_ = SSL_get_ex_new_index(0, 0, 0, 0, 0);
+    ssl_socket_data_index_ =
+        SSL_get_ex_new_index(0, nullptr, nullptr, nullptr, nullptr);
   }
 
   // This is the index used with SSL_get_ex_data to retrieve the owner
@@ -141,6 +143,13 @@ class SSLServerContextImpl::SocketImpl : public SSLServerSocket,
                                                       size_t max_out);
   void OnPrivateKeyComplete(Error error, const std::vector<uint8_t>& signature);
 
+  static int ALPNSelectCallback(SSL* ssl,
+                                const uint8_t** out,
+                                uint8_t* out_len,
+                                const uint8_t* in,
+                                unsigned in_len,
+                                void* arg);
+
   // SocketBIOAdapter::Delegate implementation.
   void OnReadReady() override;
   void OnWriteReady() override;
@@ -201,7 +210,9 @@ class SSLServerContextImpl::SocketImpl : public SSLServerSocket,
   State next_handshake_state_;
   bool completed_handshake_;
 
-  base::WeakPtrFactory<SocketImpl> weak_factory_;
+  NextProto negotiated_protocol_;
+
+  base::WeakPtrFactory<SocketImpl> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(SocketImpl);
 };
@@ -217,7 +228,7 @@ SSLServerContextImpl::SocketImpl::SocketImpl(
       transport_socket_(std::move(transport_socket)),
       next_handshake_state_(STATE_NONE),
       completed_handshake_(false),
-      weak_factory_(this) {
+      negotiated_protocol_(kProtoUnknown) {
   ssl_.reset(SSL_new(context_->ssl_ctx_.get()));
   SSL_set_app_data(ssl_.get(), this);
   SSL_set_shed_handshake_config(ssl_.get(), 1);
@@ -296,9 +307,8 @@ SSLServerContextImpl::SocketImpl::PrivateKeySignCallback(uint8_t* out,
   signature_result_ = ERR_IO_PENDING;
   context_->private_key_->Sign(
       algorithm, base::make_span(in, in_len),
-      base::BindRepeating(
-          &SSLServerContextImpl::SocketImpl::OnPrivateKeyComplete,
-          weak_factory_.GetWeakPtr()));
+      base::BindOnce(&SSLServerContextImpl::SocketImpl::OnPrivateKeyComplete,
+                     weak_factory_.GetWeakPtr()));
   return ssl_private_key_retry;
 }
 
@@ -332,6 +342,41 @@ void SSLServerContextImpl::SocketImpl::OnPrivateKeyComplete(
   if (signature_result_ == OK)
     signature_ = signature;
   DoHandshakeLoop(ERR_IO_PENDING);
+}
+
+int SSLServerContextImpl::SocketImpl::ALPNSelectCallback(SSL* ssl,
+                                                         const uint8_t** out,
+                                                         uint8_t* out_len,
+                                                         const uint8_t* in,
+                                                         unsigned in_len,
+                                                         void* arg) {
+  SSLServerContextImpl::SocketImpl* socket =
+      static_cast<SSLServerContextImpl::SocketImpl*>(SSL_get_ex_data(
+          ssl, SocketDataIndex::GetInstance()->ssl_socket_data_index_));
+
+  // Iterate over the server protocols in preference order.
+  for (NextProto server_proto :
+       socket->context_->ssl_server_config_.alpn_protos) {
+    const char* server_proto_str = NextProtoToString(server_proto);
+
+    // See if the client advertised the corresponding protocol.
+    CBS cbs;
+    CBS_init(&cbs, in, in_len);
+    while (CBS_len(&cbs) != 0) {
+      CBS client_proto;
+      if (!CBS_get_u8_length_prefixed(&cbs, &client_proto)) {
+        return SSL_TLSEXT_ERR_NOACK;
+      }
+      if (base::StringPiece(
+              reinterpret_cast<const char*>(CBS_data(&client_proto)),
+              CBS_len(&client_proto)) == server_proto_str) {
+        *out = CBS_data(&client_proto);
+        *out_len = CBS_len(&client_proto);
+        return SSL_TLSEXT_ERR_OK;
+      }
+    }
+  }
+  return SSL_TLSEXT_ERR_NOACK;
 }
 
 int SSLServerContextImpl::SocketImpl::Handshake(
@@ -405,7 +450,7 @@ int SSLServerContextImpl::SocketImpl::Read(IOBuffer* buf,
   if (rv == ERR_IO_PENDING) {
     user_read_callback_ = std::move(callback);
   } else {
-    user_read_buf_ = NULL;
+    user_read_buf_ = nullptr;
     user_read_buf_len_ = 0;
   }
 
@@ -429,7 +474,7 @@ int SSLServerContextImpl::SocketImpl::Write(
   if (rv == ERR_IO_PENDING) {
     user_write_callback_ = std::move(callback);
   } else {
-    user_write_buf_ = NULL;
+    user_write_buf_ = nullptr;
     user_write_buf_len_ = 0;
   }
   return rv;
@@ -485,13 +530,11 @@ bool SSLServerContextImpl::SocketImpl::WasEverUsed() const {
 }
 
 bool SSLServerContextImpl::SocketImpl::WasAlpnNegotiated() const {
-  NOTIMPLEMENTED();
-  return false;
+  return negotiated_protocol_ != kProtoUnknown;
 }
 
 NextProto SSLServerContextImpl::SocketImpl::GetNegotiatedProtocol() const {
-  // ALPN is not supported by this class.
-  return kProtoUnknown;
+  return negotiated_protocol_;
 }
 
 bool SSLServerContextImpl::SocketImpl::GetSSLInfo(SSLInfo* ssl_info) {
@@ -593,9 +636,8 @@ int SSLServerContextImpl::SocketImpl::DoPayloadRead() {
   int net_error =
       MapOpenSSLErrorWithDetails(ssl_error, err_tracer, &error_info);
   if (net_error != ERR_IO_PENDING) {
-    net_log_.AddEvent(
-        NetLogEventType::SSL_READ_ERROR,
-        CreateNetLogOpenSSLErrorCallback(net_error, ssl_error, error_info));
+    NetLogOpenSSLError(net_log_, NetLogEventType::SSL_READ_ERROR, net_error,
+                       ssl_error, error_info);
   }
   return net_error;
 }
@@ -614,9 +656,8 @@ int SSLServerContextImpl::SocketImpl::DoPayloadWrite() {
   int net_error =
       MapOpenSSLErrorWithDetails(ssl_error, err_tracer, &error_info);
   if (net_error != ERR_IO_PENDING) {
-    net_log_.AddEvent(
-        NetLogEventType::SSL_WRITE_ERROR,
-        CreateNetLogOpenSSLErrorCallback(net_error, ssl_error, error_info));
+    NetLogOpenSSLError(net_log_, NetLogEventType::SSL_WRITE_ERROR, net_error,
+                       ssl_error, error_info);
   }
   return net_error;
 }
@@ -658,6 +699,15 @@ int SSLServerContextImpl::SocketImpl::DoHandshake() {
       if (!client_cert_)
         return ERR_SSL_CLIENT_AUTH_CERT_BAD_FORMAT;
     }
+
+    const uint8_t* alpn_proto = nullptr;
+    unsigned alpn_len = 0;
+    SSL_get0_alpn_selected(ssl_.get(), &alpn_proto, &alpn_len);
+    if (alpn_len > 0) {
+      base::StringPiece proto(reinterpret_cast<const char*>(alpn_proto),
+                              alpn_len);
+      negotiated_protocol_ = NextProtoFromString(proto);
+    }
   } else {
     int ssl_error = SSL_get_error(ssl_.get(), rv);
 
@@ -684,9 +734,8 @@ int SSLServerContextImpl::SocketImpl::DoHandshake() {
     } else {
       LOG(ERROR) << "handshake failed; returned " << rv << ", SSL error code "
                  << ssl_error << ", net_error " << net_error;
-      net_log_.AddEvent(
-          NetLogEventType::SSL_HANDSHAKE_ERROR,
-          CreateNetLogOpenSSLErrorCallback(net_error, ssl_error, error_info));
+      NetLogOpenSSLError(net_log_, NetLogEventType::SSL_HANDSHAKE_ERROR,
+                         net_error, ssl_error, error_info);
     }
   }
   return net_error;
@@ -701,7 +750,7 @@ void SSLServerContextImpl::SocketImpl::DoReadCallback(int rv) {
   DCHECK(rv != ERR_IO_PENDING);
   DCHECK(!user_read_callback_.is_null());
 
-  user_read_buf_ = NULL;
+  user_read_buf_ = nullptr;
   user_read_buf_len_ = 0;
   std::move(user_read_callback_).Run(rv);
 }
@@ -710,7 +759,7 @@ void SSLServerContextImpl::SocketImpl::DoWriteCallback(int rv) {
   DCHECK(rv != ERR_IO_PENDING);
   DCHECK(!user_write_callback_.is_null());
 
-  user_write_buf_ = NULL;
+  user_write_buf_ = nullptr;
   user_write_buf_len_ = 0;
   std::move(user_write_callback_).Run(rv);
 }
@@ -906,14 +955,17 @@ void SSLServerContextImpl::Init() {
 
   if (ssl_server_config_.client_cert_type !=
           SSLServerConfig::ClientCertType::NO_CLIENT_CERT &&
-      !ssl_server_config_.cert_authorities_.empty()) {
+      !ssl_server_config_.cert_authorities.empty()) {
     bssl::UniquePtr<STACK_OF(CRYPTO_BUFFER)> stack(sk_CRYPTO_BUFFER_new_null());
-    for (const auto& authority : ssl_server_config_.cert_authorities_) {
+    for (const auto& authority : ssl_server_config_.cert_authorities) {
       sk_CRYPTO_BUFFER_push(stack.get(),
                             x509_util::CreateCryptoBuffer(authority).release());
     }
     SSL_CTX_set0_client_CAs(ssl_ctx_.get(), stack.release());
   }
+
+  SSL_CTX_set_alpn_select_cb(ssl_ctx_.get(), &SocketImpl::ALPNSelectCallback,
+                             nullptr);
 }
 
 SSLServerContextImpl::~SSLServerContextImpl() = default;

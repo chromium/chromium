@@ -76,7 +76,7 @@ std::unique_ptr<net::test_server::HttpResponse> HandleFullHashRequest(
   const base::TimeDelta* delay = nullptr;
   for (const HashPrefix& prefix : request_prefixes) {
     for (const auto& response : response_map) {
-      FullHash full_hash = GetFullHash(response.first);
+      FullHash full_hash = V4ProtocolManagerUtil::GetFullHash(response.first);
       if (V4ProtocolManagerUtil::FullHashMatchesHashPrefix(full_hash, prefix)) {
         ThreatMatch* match = find_full_hashes_response.add_matches();
         *match = response.second;

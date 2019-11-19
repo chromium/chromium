@@ -5,22 +5,21 @@
 package org.chromium.chrome.browser.browserservices;
 
 import android.os.Bundle;
-import android.support.customtabs.CustomTabsService;
-import android.support.customtabs.CustomTabsSessionToken;
-import android.support.customtabs.TrustedWebUtils;
 import android.support.v7.app.AppCompatActivity;
 
+import androidx.annotation.Nullable;
+import androidx.browser.customtabs.CustomTabsSessionToken;
+
 import org.chromium.base.Log;
-import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.chrome.browser.ChromeApplication;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
-import org.chromium.chrome.browser.preferences.PreferencesLauncher;
-import org.chromium.chrome.browser.preferences.website.SettingsNavigationSource;
+import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 
 /**
- * Launched by {@link android.support.customtabs.TrustedWebUtils#launchBrowserSiteSettings}.
- * Verifies that url provided in intent has valid Digital Asset Link with the calling application,
- * and if successful, launches site-settings activity for that url.
+ * Launched by Trusted Web Activity apps when the user clears data.
+ * Redirects to the site-settings activity showing the websites associated with the calling app.
+ * The calling app's identity is established using {@link CustomTabsSessionToken} provided in the
+ * intent.
  */
 public class ManageTrustedWebActivityDataActivity extends AppCompatActivity {
 
@@ -29,54 +28,37 @@ public class ManageTrustedWebActivityDataActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (LibraryLoader.getInstance().isInitialized()) {
-            verifyOriginAndLaunchSettings();
-        } else {
-            logNativeNotLoaded();
-        }
+        launchSettings();
         finish();
     }
 
-    private void verifyOriginAndLaunchSettings() {
-        Origin origin = new Origin(getIntent().getData());
-        if (isVerifiedOrigin(origin)) {
-            new TrustedWebActivityUmaRecorder().recordOpenedSettingsViaManageSpace();
-            startActivity(PreferencesLauncher.createIntentForSingleWebsitePreferences(this,
-                    origin.toString(), SettingsNavigationSource.TWA_MANAGE_SPACE_ACTIVITY));
-        } else {
-            logVerificationFailed();
+    private void launchSettings() {
+        String packageName = getClientPackageName();
+        if (packageName == null) {
+            logNoPackageName();
+            finish();
+            return;
         }
+        new TrustedWebActivityUmaRecorder(ChromeBrowserInitializer.getInstance())
+                .recordOpenedSettingsViaManageSpace();
+        TrustedWebActivitySettingsLauncher.launchForPackageName(this, packageName);
     }
 
-    private boolean isVerifiedOrigin(Origin origin) {
+    @Nullable
+    private String getClientPackageName() {
         CustomTabsSessionToken session =
                 CustomTabsSessionToken.getSessionTokenFromIntent(getIntent());
         if (session == null) {
-            return false;
+            return null;
         }
 
         CustomTabsConnection connection =
                 ChromeApplication.getComponent().resolveCustomTabsConnection();
-        String clientPackageName = connection.getClientPackageNameForSession(session);
-        if (clientPackageName == null) {
-            return false;
-        }
-
-        // We expect that origin has been verified on the client side, and here we synchronously
-        // check if a result of a successful verification has been cached.
-        return OriginVerifier.wasPreviouslyVerified(clientPackageName, origin,
-                CustomTabsService.RELATION_HANDLE_ALL_URLS);
+        return connection.getClientPackageNameForSession(session);
     }
 
-    private void logNativeNotLoaded() {
-        Log.e(TAG, "Chrome's native libraries not initialized. Please call CustomTabsClient#warmup"
-                + " before TrustedWebUtils#launchBrowserSiteSettings.");
-    }
-
-    private void logVerificationFailed() {
-        Log.e(TAG, "Failed to verify " + getIntent().getData() + " while launching site settings."
-                + " Please use CustomTabsSession#validateRelationship to verify this origin"
-                + " before launching an intent with "
-                + TrustedWebUtils.ACTION_MANAGE_TRUSTED_WEB_ACTIVITY_DATA);
+    private void logNoPackageName() {
+        Log.e(TAG, "Package name for incoming intent couldn't be resolved. "
+                + "Was a CustomTabSession created and added to the intent?");
     }
 }

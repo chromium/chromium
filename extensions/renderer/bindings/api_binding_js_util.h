@@ -44,7 +44,6 @@ class APIBindingJSUtil final : public gin::Wrappable<APIBindingJSUtil> {
   void SendRequest(gin::Arguments* arguments,
                    const std::string& name,
                    const std::vector<v8::Local<v8::Value>>& request_args,
-                   v8::Local<v8::Value> schemas_unused,
                    v8::Local<v8::Value> options);
 
   // A handler to register an argument massager for a specific event.
@@ -55,11 +54,8 @@ class APIBindingJSUtil final : public gin::Wrappable<APIBindingJSUtil> {
 
   // A handler to allow custom bindings to create custom extension API event
   // objects (e.g. foo.onBar).
-  // TODO(devlin): Currently, we ignore schema. We may want to take it into
-  // account.
   void CreateCustomEvent(gin::Arguments* arguments,
                          v8::Local<v8::Value> v8_event_name,
-                         v8::Local<v8::Value> unused_schema,
                          bool supports_filters,
                          bool supports_lazy_listeners);
 

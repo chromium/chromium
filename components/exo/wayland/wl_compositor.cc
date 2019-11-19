@@ -6,12 +6,18 @@
 
 #include <wayland-server-protocol-core.h>
 
+#include <memory>
+
 #include "base/bind.h"
 #include "components/exo/buffer.h"
 #include "components/exo/display.h"
 #include "components/exo/surface.h"
 #include "components/exo/wayland/server_util.h"
 #include "third_party/skia/include/core/SkRegion.h"
+
+#if defined(OS_CHROMEOS)
+#include "components/exo/wayland/zwp_linux_explicit_synchronization.h"
+#endif
 
 namespace exo {
 namespace wayland {
@@ -59,12 +65,8 @@ void surface_attach(wl_client* client,
                     wl_resource* buffer,
                     int32_t x,
                     int32_t y) {
-  // TODO(reveman): Implement buffer offset support.
-  DLOG_IF(WARNING, x || y) << "Unsupported buffer offset: "
-                           << gfx::Point(x, y).ToString();
-
   GetUserDataAs<Surface>(resource)->Attach(
-      buffer ? GetUserDataAs<Buffer>(buffer) : nullptr);
+      buffer ? GetUserDataAs<Buffer>(buffer) : nullptr, gfx::Vector2d(x, y));
 }
 
 void surface_damage(wl_client* client,
@@ -125,7 +127,14 @@ void surface_set_input_region(wl_client* client,
 }
 
 void surface_commit(wl_client* client, wl_resource* resource) {
-  GetUserDataAs<Surface>(resource)->Commit();
+  Surface* surface = GetUserDataAs<Surface>(resource);
+
+#if defined(OS_CHROMEOS)
+  if (!linux_surface_synchronization_validate_commit(surface))
+    return;
+#endif
+
+  surface->Commit();
 }
 
 void surface_set_buffer_transform(wl_client* client,
@@ -213,7 +222,7 @@ void compositor_create_region(wl_client* client,
       wl_resource_create(client, &wl_region_interface, 1, id);
 
   SetImplementation(region_resource, &region_implementation,
-                    base::WrapUnique(new SkRegion));
+                    std::make_unique<SkRegion>());
 }
 
 const struct wl_compositor_interface compositor_implementation = {

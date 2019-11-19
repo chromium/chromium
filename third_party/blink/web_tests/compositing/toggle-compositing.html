@@ -10,9 +10,9 @@
         var count = 0;
         var intervalID = window.setInterval(function() {
             var target = document.getElementById("target");
-            target.style.webkitTransform = "translateZ(0)";
+            target.style.willChange = "transform";
             document.body.offsetTop;
-            target.style.removeProperty("-webkit-transform");
+            target.style.removeProperty("willChange");
             
             if (++count == 10) {
               window.clearInterval(intervalID);

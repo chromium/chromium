@@ -30,8 +30,8 @@
 
 
 /*
- * typedef void (*PushAllRegistersCallback)(SafePointBarrier*, ThreadState*, intptr_t*);
- * extern "C" void PushAllRegisters(SafePointBarrier*, ThreadState*, PushAllRegistersCallback)
+ * typedef void (*PushAllRegistersCallback)(ThreadState*, intptr_t*);
+ * extern "C" void PushAllRegisters(ThreadState*, PushAllRegistersCallback)
  */
 
 .type PushAllRegisters, %function
@@ -51,10 +51,10 @@ PushAllRegisters:
         sw $s6,40($sp)
         sw $s7,44($sp)
         sw $ra,48($sp)
-        // Pass the two first arguments untouched in a0 and a1 and the
+        // Pass the first argument untouched in a0 and the
         // stack pointer to the callback.
-        move $t9,$a2
-        move $a2,$sp
+        move $t9,$a1
+        move $a1,$sp
         jalr $t9
         // Restore return address, adjust stack and return. No
         // callee-saved register was changed so we do not have to

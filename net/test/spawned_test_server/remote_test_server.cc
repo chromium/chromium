@@ -14,7 +14,7 @@
 #include "base/files/file_util.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
-#include "base/message_loop/message_loop.h"
+#include "base/message_loop/message_pump_type.h"
 #include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -150,10 +150,9 @@ bool RemoteTestServer::BlockUntilStarted() {
   }
 
   if (ocsp_proxy_) {
-    const base::Value* ocsp_port_value = server_data().FindKey("ocsp_port");
-    if (ocsp_port_value && ocsp_port_value->is_int()) {
-      ocsp_proxy_->Start(
-          IPEndPoint(config_.address(), ocsp_port_value->GetInt()));
+    base::Optional<int> ocsp_port_value = server_data().FindIntKey("ocsp_port");
+    if (ocsp_port_value) {
+      ocsp_proxy_->Start(IPEndPoint(config_.address(), *ocsp_port_value));
     } else {
       LOG(WARNING) << "testserver.py didn't return ocsp_port.";
     }
@@ -201,7 +200,7 @@ bool RemoteTestServer::Init(const base::FilePath& document_root) {
   config_ = RemoteTestServerConfig::Load();
 
   bool thread_started = io_thread_.StartWithOptions(
-      base::Thread::Options(base::MessageLoop::TYPE_IO, 0));
+      base::Thread::Options(base::MessagePumpType::IO, 0));
   CHECK(thread_started);
 
   // Unlike LocalTestServer, RemoteTestServer passes relative paths to the test

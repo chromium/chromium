@@ -28,9 +28,9 @@ class ShortcutsBackend;
 // Note: The history index rebuild task is created from main thread, usually
 // during SetUp(), performed on DB thread and must be deleted on main thread.
 // Run main loop to process delete task, to prevent leaks.
-// Note that these tests have switched to using a ScopedTaskEnvironment,
+// Note that these tests have switched to using a TaskEnvironment,
 // so clearing that task queue is done through
-// scoped_task_environment_.RunUntilIdle().
+// task_environment_.RunUntilIdle().
 class FakeAutocompleteProviderClient : public MockAutocompleteProviderClient {
  public:
   explicit FakeAutocompleteProviderClient(bool create_history_db = true);

@@ -16,7 +16,8 @@ class TestNativeTheme : public NativeTheme {
   ~TestNativeTheme() override;
 
   // NativeTheme:
-  SkColor GetSystemColor(ColorId color_id) const override;
+  SkColor GetSystemColor(ColorId color_id,
+                         ColorScheme color_scheme) const override;
   gfx::Size GetPartSize(Part part,
                         State state,
                         const ExtraParams& extra) const override;
@@ -24,17 +25,27 @@ class TestNativeTheme : public NativeTheme {
              Part part,
              State state,
              const gfx::Rect& rect,
-             const ExtraParams& extra) const override;
+             const ExtraParams& extra,
+             ColorScheme color_scheme) const override;
   bool SupportsNinePatch(Part part) const override;
   gfx::Size GetNinePatchCanvasSize(Part part) const override;
   gfx::Rect GetNinePatchAperture(Part part) const override;
   bool UsesHighContrastColors() const override;
-  bool SystemDarkModeEnabled() const override;
+  bool ShouldUseDarkColors() const override;
+  PreferredColorScheme GetPreferredColorScheme() const override;
 
   void SetDarkMode(bool dark_mode) { dark_mode_ = dark_mode; }
+  void SetUsesHighContrastColors(bool high_contrast) {
+    high_contrast_ = high_contrast;
+  }
+  void AddColorSchemeNativeThemeObserver(NativeTheme* theme_to_update);
 
  private:
   bool dark_mode_ = false;
+  bool high_contrast_ = false;
+
+  std::unique_ptr<NativeTheme::ColorSchemeNativeThemeObserver>
+      color_scheme_observer_;
 
   DISALLOW_COPY_AND_ASSIGN(TestNativeTheme);
 };

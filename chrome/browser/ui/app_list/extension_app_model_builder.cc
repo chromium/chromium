@@ -88,10 +88,10 @@ void ExtensionAppModelBuilder::OnBeginExtensionInstall(
     return;
 
   // Icons from the webstore can be unusual sizes. Once installed,
-  // ExtensionAppItem uses AppListConfig::instance().grid_icon_dimension() to
-  // load it, so be consistent with that.
+  // ExtensionAppItem uses ash::AppListConfig::instance().grid_icon_dimension()
+  // to load it, so be consistent with that.
   const int icon_dimension =
-      app_list::AppListConfig::instance().grid_icon_dimension();
+      ash::AppListConfig::instance().grid_icon_dimension();
   gfx::Size icon_size(icon_dimension, icon_dimension);
   gfx::ImageSkia resized(gfx::ImageSkiaOperations::CreateResizedImage(
       params.installing_icon, skia::ImageOperations::RESIZE_BEST, icon_size));
@@ -149,12 +149,8 @@ void ExtensionAppModelBuilder::OnAppInstalled(
 void ExtensionAppModelBuilder::OnAppUninstalled(
     content::BrowserContext* browser_context,
     const std::string& app_id) {
-  if (service()) {
-    DVLOG(2) << service() << ": OnAppUninstalled: " << app_id.substr(0, 8);
-    service()->RemoveUninstalledItem(app_id);
-    return;
-  }
-  model_updater()->RemoveUninstalledItem(app_id);
+  const bool unsynced_change = false;
+  RemoveApp(app_id, unsynced_change);
 }
 
 void ExtensionAppModelBuilder::OnDisabledExtensionUpdated(

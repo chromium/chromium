@@ -24,7 +24,7 @@
 #include <algorithm>
 #include <vector>
 
-#include "base/hash.h"
+#include "base/hash/hash.h"
 #include "base/macros.h"
 
 int main(int argc, char **argv) {

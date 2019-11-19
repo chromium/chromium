@@ -25,7 +25,8 @@
 
 #include "third_party/blink/renderer/core/css/style_engine_context.h"
 
-#include "third_party/blink/renderer/core/frame/use_counter.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 
 namespace blink {
 
@@ -38,8 +39,7 @@ void StyleEngineContext::AddingPendingSheet(const Document& document) {
   if (!added_pending_sheet_before_body_) {
     added_pending_sheet_before_body_ = !document.body();
     if (!added_pending_sheet_before_body_) {
-      UseCounter::Count(document,
-                        WebFeature::kPendingStylesheetAddedAfterBodyStarted);
+      document.CountUse(WebFeature::kPendingStylesheetAddedAfterBodyStarted);
     }
   }
 }

@@ -8,9 +8,9 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/message_loop/message_loop.h"
 #include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/test/task_environment.h"
 #include "device/gamepad/gamepad_data_fetcher.h"
 #include "device/gamepad/gamepad_service.h"
 #include "device/gamepad/gamepad_shared_buffer.h"
@@ -58,11 +58,9 @@ class GamepadTestHelper {
   GamepadTestHelper();
   virtual ~GamepadTestHelper();
 
-  base::MessageLoop& message_loop() { return message_loop_; }
-
  private:
   // This must be constructed before the system monitor.
-  base::MessageLoop message_loop_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
 
   DISALLOW_COPY_AND_ASSIGN(GamepadTestHelper);
 };

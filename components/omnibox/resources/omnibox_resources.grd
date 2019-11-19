@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Note: Got a string or any bit of user-facing UI text?  Please use /components/omnibox_strings.grdp instead.
+     These resources are not processed by translation because the content is already localized.
+     See https://crbug.com/954348#c12 for links about why preprocessed resources are separated from strings. -->
+<grit latest_public_release="0" current_release="1"
+      output_all_resource_defines="false" source_lang_id="en" enc_check="möl">
+  <outputs>
+    <output filename="grit/omnibox_resources.h" type="rc_header">
+      <emit emit_type='prepend'></emit>
+    </output>
+    <output filename="omnibox_resources_am.pak" type="data_package" lang="am" />
+    <output filename="omnibox_resources_ar.pak" type="data_package" lang="ar" />
+    <output filename="omnibox_resources_bg.pak" type="data_package" lang="bg" />
+    <output filename="omnibox_resources_bn.pak" type="data_package" lang="bn" />
+    <output filename="omnibox_resources_ca.pak" type="data_package" lang="ca" />
+    <output filename="omnibox_resources_cs.pak" type="data_package" lang="cs" />
+    <output filename="omnibox_resources_da.pak" type="data_package" lang="da" />
+    <output filename="omnibox_resources_de.pak" type="data_package" lang="de" />
+    <output filename="omnibox_resources_el.pak" type="data_package" lang="el" />
+    <output filename="omnibox_resources_en-US.pak" type="data_package" lang="en" />
+    <output filename="omnibox_resources_en-GB.pak" type="data_package" lang="en-GB" />
+    <output filename="omnibox_resources_es.pak" type="data_package" lang="es" />
+    <if expr="is_ios">
+      <!-- iOS uses es-MX for es-419 -->
+      <output filename="omnibox_resources_es-MX.pak" type="data_package" lang="es-419" />
+    </if>
+    <if expr="not is_ios">
+      <output filename="omnibox_resources_es-419.pak" type="data_package" lang="es-419" />
+    </if>
+    <output filename="omnibox_resources_et.pak" type="data_package" lang="et" />
+    <output filename="omnibox_resources_fa.pak" type="data_package" lang="fa" />
+    <output filename="omnibox_resources_fake-bidi.pak" type="data_package" lang="fake-bidi" />
+    <output filename="omnibox_resources_fi.pak" type="data_package" lang="fi" />
+    <output filename="omnibox_resources_fil.pak" type="data_package" lang="fil" />
+    <output filename="omnibox_resources_fr.pak" type="data_package" lang="fr" />
+    <output filename="omnibox_resources_gu.pak" type="data_package" lang="gu" />
+    <output filename="omnibox_resources_he.pak" type="data_package" lang="he" />
+    <output filename="omnibox_resources_hi.pak" type="data_package" lang="hi" />
+    <output filename="omnibox_resources_hr.pak" type="data_package" lang="hr" />
+    <output filename="omnibox_resources_hu.pak" type="data_package" lang="hu" />
+    <output filename="omnibox_resources_id.pak" type="data_package" lang="id" />
+    <output filename="omnibox_resources_it.pak" type="data_package" lang="it" />
+    <output filename="omnibox_resources_ja.pak" type="data_package" lang="ja" />
+    <output filename="omnibox_resources_kn.pak" type="data_package" lang="kn" />
+    <output filename="omnibox_resources_ko.pak" type="data_package" lang="ko" />
+    <output filename="omnibox_resources_lt.pak" type="data_package" lang="lt" />
+    <output filename="omnibox_resources_lv.pak" type="data_package" lang="lv" />
+    <output filename="omnibox_resources_ml.pak" type="data_package" lang="ml" />
+    <output filename="omnibox_resources_mr.pak" type="data_package" lang="mr" />
+    <output filename="omnibox_resources_ms.pak" type="data_package" lang="ms" />
+    <output filename="omnibox_resources_nl.pak" type="data_package" lang="nl" />
+    <!-- The translation console uses 'no' for Norwegian Bokmål. It should
+         be 'nb'. -->
+    <output filename="omnibox_resources_nb.pak" type="data_package" lang="no" />
+    <output filename="omnibox_resources_pl.pak" type="data_package" lang="pl" />
+    <if expr="is_ios">
+      <!-- iOS uses pt for pt-BR -->
+      <output filename="omnibox_resources_pt.pak" type="data_package" lang="pt-BR" />
+    </if>
+    <if expr="not is_ios">
+      <output filename="omnibox_resources_pt-BR.pak" type="data_package" lang="pt-BR" />
+    </if>
+    <output filename="omnibox_resources_pt-PT.pak" type="data_package" lang="pt-PT" />
+    <output filename="omnibox_resources_ro.pak" type="data_package" lang="ro" />
+    <output filename="omnibox_resources_ru.pak" type="data_package" lang="ru" />
+    <output filename="omnibox_resources_sk.pak" type="data_package" lang="sk" />
+    <output filename="omnibox_resources_sl.pak" type="data_package" lang="sl" />
+    <output filename="omnibox_resources_sr.pak" type="data_package" lang="sr" />
+    <output filename="omnibox_resources_sv.pak" type="data_package" lang="sv" />
+    <output filename="omnibox_resources_sw.pak" type="data_package" lang="sw" />
+    <output filename="omnibox_resources_ta.pak" type="data_package" lang="ta" />
+    <output filename="omnibox_resources_te.pak" type="data_package" lang="te" />
+    <output filename="omnibox_resources_th.pak" type="data_package" lang="th" />
+    <output filename="omnibox_resources_tr.pak" type="data_package" lang="tr" />
+    <output filename="omnibox_resources_uk.pak" type="data_package" lang="uk" />
+    <output filename="omnibox_resources_vi.pak" type="data_package" lang="vi" />
+    <output filename="omnibox_resources_zh-CN.pak" type="data_package" lang="zh-CN" />
+    <output filename="omnibox_resources_zh-TW.pak" type="data_package" lang="zh-TW" />
+  </outputs>
+  <release seq="1" allow_pseudo="false">
+    <includes>
+      <!-- These resources do not require translation or further processing because they are already handled by a separate localization process. -->
+      <if expr="lang == 'de'">
+        <include name="IDR_OMNIBOX_PEDAL_CONCEPTS" file="omnibox_pedal_concepts_de.json" type="BINDATA" compress="gzip" />
+      </if>
+      <if expr="lang == 'en'">
+        <include name="IDR_OMNIBOX_PEDAL_CONCEPTS" file="omnibox_pedal_concepts_en.json" type="BINDATA" compress="gzip" />
+      </if>
+      <if expr="lang == 'fr'">
+        <include name="IDR_OMNIBOX_PEDAL_CONCEPTS" file="omnibox_pedal_concepts_fr.json" type="BINDATA" compress="gzip" />
+      </if>
+      <if expr="lang == 'ja'">
+        <include name="IDR_OMNIBOX_PEDAL_CONCEPTS" file="omnibox_pedal_concepts_ja.json" type="BINDATA" compress="gzip" />
+      </if>
+      <if expr="lang == 'zh-CN'">
+        <include name="IDR_OMNIBOX_PEDAL_CONCEPTS" file="omnibox_pedal_concepts_zh-CN.json" type="BINDATA" compress="gzip" />
+      </if>
+      <if expr="lang not in ['de', 'en', 'fr', 'ja', 'zh-CN']">
+        <!-- Fall back to English for unsupported languages. -->
+        <include name="IDR_OMNIBOX_PEDAL_CONCEPTS" file="omnibox_pedal_concepts_en.json" type="BINDATA" compress="gzip" />
+      </if>
+    </includes>
+  </release>
+</grit>

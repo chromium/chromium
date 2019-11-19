@@ -11,6 +11,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
+#include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/common/chrome_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -73,7 +74,7 @@ TEST(ChromePaths, DefaultUserDataDir) {
   base::PathService::Get(base::DIR_HOME, &home_dir);
 
   std::string expected_branding;
-#if defined(GOOGLE_CHROME_BUILD)
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   // TODO(skobes): Test channel suffixes with $CHROME_VERSION_EXTRA.
   expected_branding = "google-chrome";
 #else

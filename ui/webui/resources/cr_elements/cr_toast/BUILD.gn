@@ -3,12 +3,71 @@
 # found in the LICENSE file.
 
 import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/polymer/polymer.gni")
 
 js_type_check("closure_compile") {
   deps = [
     ":cr_toast",
+    ":cr_toast_manager",
   ]
 }
 
 js_library("cr_toast") {
+}
+
+js_library("cr_toast_manager") {
+  deps = [
+    ":cr_toast",
+    "//third_party/polymer/v1_0/components-chromium/iron-a11y-announcer:iron-a11y-announcer-extracted",
+    "//ui/webui/resources/js:assert",
+    "//ui/webui/resources/js:cr",
+  ]
+}
+
+polymer_modulizer("cr_toast") {
+  js_file = "cr_toast.js"
+  html_file = "cr_toast.html"
+  html_type = "dom-module"
+}
+
+polymer_modulizer("cr_toast_manager") {
+  js_file = "cr_toast_manager.js"
+  html_file = "cr_toast_manager.html"
+  html_type = "dom-module"
+  auto_imports = [ "ui/webui/resources/html/assert.html|assert" ]
+  namespace_rewrites = [
+    "cr.toastManager.setInstance|setInstance",
+    "cr.toastManager.CrToastManagerElement|CrToastManagerElement",
+  ]
+}
+
+js_type_check("closure_compile_module") {
+  is_polymer3 = true
+  deps = [
+    ":cr_toast.m",
+    ":cr_toast_manager.m",
+  ]
+}
+
+js_library("cr_toast.m") {
+  sources = [
+    "$root_gen_dir/ui/webui/resources/cr_elements/cr_toast/cr_toast.m.js",
+  ]
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+  extra_deps = [ ":cr_toast_module" ]
+}
+
+js_library("cr_toast_manager.m") {
+  sources = [
+    "$root_gen_dir/ui/webui/resources/cr_elements/cr_toast/cr_toast_manager.m.js",
+  ]
+  deps = [
+    ":cr_toast.m",
+    "//third_party/polymer/v3_0/components-chromium/iron-a11y-announcer:iron-a11y-announcer",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/js:assert.m",
+  ]
+  extra_deps = [ ":cr_toast_manager_module" ]
 }

@@ -36,7 +36,7 @@ class TestEventObserver : public ui::EventObserver {
 
 class EventMonitorTest : public WidgetTest {
  public:
-  EventMonitorTest() : widget_(nullptr) {}
+  EventMonitorTest() = default;
 
   // testing::Test:
   void SetUp() override {
@@ -54,7 +54,7 @@ class EventMonitorTest : public WidgetTest {
   }
 
  protected:
-  Widget* widget_;
+  Widget* widget_ = nullptr;
   std::unique_ptr<ui::test::EventGenerator> generator_;
   TestEventObserver observer_;
 

@@ -6,6 +6,7 @@
 
 #include <memory>
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/css/forced_colors.h"
 #include "third_party/blink/renderer/core/css/media_list.h"
 #include "third_party/blink/renderer/core/css/media_values_cached.h"
 #include "third_party/blink/renderer/core/css/media_values_initial_viewport.h"
@@ -15,6 +16,7 @@
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/media_type_names.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
@@ -173,6 +175,30 @@ MediaQueryEvaluatorTestCase g_non_ua_sheet_immersive_test_cases[] = {
     {nullptr, 0}  // Do not remove the terminator line.
 };
 
+MediaQueryEvaluatorTestCase g_forcedcolors_active_cases[] = {
+    {"(forced-colors: active)", 1},
+    {"(forced-colors: none)", 0},
+    {nullptr, 0}  // Do not remove the terminator line.
+};
+
+MediaQueryEvaluatorTestCase g_forcedcolors_none_cases[] = {
+    {"(forced-colors: active)", 0},
+    {"(forced-colors: none)", 1},
+    {nullptr, 0}  // Do not remove the terminator line.
+};
+
+MediaQueryEvaluatorTestCase g_navigationcontrols_back_button_cases[] = {
+    {"(navigation-controls: back-button)", 1},
+    {"(navigation-controls: none)", 0},
+    {nullptr, 0}  // Do not remove the terminator line.
+};
+
+MediaQueryEvaluatorTestCase g_navigationcontrols_none_cases[] = {
+    {"(navigation-controls: back-button)", 0},
+    {"(navigation-controls: none)", 1},
+    {nullptr, 0}  // Do not remove the terminator line.
+};
+
 void TestMQEvaluator(MediaQueryEvaluatorTestCase* test_cases,
                      const MediaQueryEvaluator& media_query_evaluator,
                      CSSParserMode mode) {
@@ -211,13 +237,13 @@ TEST(MediaQueryEvaluatorTest, Cached) {
   data.three_d_enabled = true;
   data.media_type = media_type_names::kScreen;
   data.strict_mode = true;
-  data.display_mode = kWebDisplayModeBrowser;
+  data.display_mode = blink::mojom::DisplayMode::kBrowser;
   data.display_shape = kDisplayShapeRect;
   data.immersive_mode = false;
 
   // Default values.
   {
-    MediaValues* media_values = MediaValuesCached::Create(data);
+    auto* media_values = MakeGarbageCollected<MediaValuesCached>(data);
     MediaQueryEvaluator media_query_evaluator(*media_values);
     TestMQEvaluator(g_screen_test_cases, media_query_evaluator);
     TestMQEvaluator(g_viewport_test_cases, media_query_evaluator);
@@ -229,7 +255,7 @@ TEST(MediaQueryEvaluatorTest, Cached) {
   // Print values.
   {
     data.media_type = media_type_names::kPrint;
-    MediaValues* media_values = MediaValuesCached::Create(data);
+    auto* media_values = MakeGarbageCollected<MediaValuesCached>(data);
     MediaQueryEvaluator media_query_evaluator(*media_values);
     TestMQEvaluator(g_print_test_cases, media_query_evaluator);
     data.media_type = media_type_names::kScreen;
@@ -239,7 +265,7 @@ TEST(MediaQueryEvaluatorTest, Cached) {
   {
     data.color_bits_per_component = 0;
     data.monochrome_bits_per_component = 8;
-    MediaValues* media_values = MediaValuesCached::Create(data);
+    auto* media_values = MakeGarbageCollected<MediaValuesCached>(data);
     MediaQueryEvaluator media_query_evaluator(*media_values);
     TestMQEvaluator(g_monochrome_test_cases, media_query_evaluator);
     data.color_bits_per_component = 24;
@@ -249,7 +275,7 @@ TEST(MediaQueryEvaluatorTest, Cached) {
   // Immersive values.
   {
     data.immersive_mode = true;
-    MediaValues* media_values = MediaValuesCached::Create(data);
+    auto* media_values = MakeGarbageCollected<MediaValuesCached>(data);
     MediaQueryEvaluator media_query_evaluator(*media_values);
     TestMQEvaluator(g_immersive_test_cases, media_query_evaluator,
                     kUASheetMode);
@@ -259,8 +285,7 @@ TEST(MediaQueryEvaluatorTest, Cached) {
 }
 
 TEST(MediaQueryEvaluatorTest, Dynamic) {
-  std::unique_ptr<DummyPageHolder> page_holder =
-      DummyPageHolder::Create(IntSize(500, 500));
+  auto page_holder = std::make_unique<DummyPageHolder>(IntSize(500, 500));
   page_holder->GetFrameView().SetMediaType(media_type_names::kScreen);
 
   MediaQueryEvaluator media_query_evaluator(&page_holder->GetFrame());
@@ -270,8 +295,7 @@ TEST(MediaQueryEvaluatorTest, Dynamic) {
 }
 
 TEST(MediaQueryEvaluatorTest, DynamicNoView) {
-  std::unique_ptr<DummyPageHolder> page_holder =
-      DummyPageHolder::Create(IntSize(500, 500));
+  auto page_holder = std::make_unique<DummyPageHolder>(IntSize(500, 500));
   LocalFrame* frame = &page_holder->GetFrame();
   page_holder.reset();
   ASSERT_EQ(nullptr, frame->View());
@@ -284,7 +308,7 @@ TEST(MediaQueryEvaluatorTest, CachedFloatViewport) {
   MediaValuesCached::MediaValuesCachedData data;
   data.viewport_width = 600.5;
   data.viewport_height = 700.125;
-  MediaValues* media_values = MediaValuesCached::Create(data);
+  auto* media_values = MakeGarbageCollected<MediaValuesCached>(data);
 
   MediaQueryEvaluator media_query_evaluator(*media_values);
   TestMQEvaluator(g_float_viewport_test_cases, media_query_evaluator);
@@ -294,7 +318,7 @@ TEST(MediaQueryEvaluatorTest, CachedFloatViewportNonFloatFriendly) {
   MediaValuesCached::MediaValuesCachedData data;
   data.viewport_width = 821;
   data.viewport_height = 821;
-  MediaValues* media_values = MediaValuesCached::Create(data);
+  auto* media_values = MakeGarbageCollected<MediaValuesCached>(data);
 
   MediaQueryEvaluator media_query_evaluator(*media_values);
   TestMQEvaluator(g_float_non_friendly_viewport_test_cases,
@@ -302,8 +326,7 @@ TEST(MediaQueryEvaluatorTest, CachedFloatViewportNonFloatFriendly) {
 }
 
 TEST(MediaQueryEvaluatorTest, InitialViewport) {
-  std::unique_ptr<DummyPageHolder> page_holder =
-      DummyPageHolder::Create(IntSize(500, 500));
+  auto page_holder = std::make_unique<DummyPageHolder>(IntSize(500, 500));
   page_holder->GetFrameView().SetMediaType(media_type_names::kScreen);
   page_holder->GetFrameView().SetLayoutSizeFixedToFrameSize(false);
   page_holder->GetFrameView().SetInitialViewportSize(IntSize(500, 500));
@@ -311,13 +334,13 @@ TEST(MediaQueryEvaluatorTest, InitialViewport) {
   page_holder->GetFrameView().SetFrameRect(IntRect(0, 0, 800, 800));
 
   MediaQueryEvaluator media_query_evaluator(
-      MediaValuesInitialViewport::Create(page_holder->GetFrame()));
+      MakeGarbageCollected<MediaValuesInitialViewport>(
+          page_holder->GetFrame()));
   TestMQEvaluator(g_viewport_test_cases, media_query_evaluator);
 }
 
 TEST(MediaQueryEvaluatorTest, DynamicImmersive) {
-  std::unique_ptr<DummyPageHolder> page_holder =
-      DummyPageHolder::Create(IntSize(500, 500));
+  auto page_holder = std::make_unique<DummyPageHolder>(IntSize(500, 500));
   page_holder->GetFrameView().SetMediaType(media_type_names::kScreen);
 
   MediaQueryEvaluator media_query_evaluator(&page_holder->GetFrame());
@@ -327,6 +350,26 @@ TEST(MediaQueryEvaluatorTest, DynamicImmersive) {
                   kUASheetMode);
   page_holder->GetDocument().GetSettings()->SetImmersiveModeEnabled(true);
   TestMQEvaluator(g_immersive_test_cases, media_query_evaluator, kUASheetMode);
+}
+
+TEST(MediaQueryEvaluatorTest, CachedForcedColors) {
+  ScopedForcedColorsForTest scoped_feature(true);
+
+  MediaValuesCached::MediaValuesCachedData data;
+  data.forced_colors = ForcedColors::kNone;
+  MediaValues* media_values = MakeGarbageCollected<MediaValuesCached>(data);
+
+  // Forced colors - none.
+  MediaQueryEvaluator media_query_evaluator(*media_values);
+  TestMQEvaluator(g_forcedcolors_none_cases, media_query_evaluator);
+
+  // Forced colors - active.
+  {
+    data.forced_colors = ForcedColors::kActive;
+    MediaValues* media_values = MakeGarbageCollected<MediaValuesCached>(data);
+    MediaQueryEvaluator media_query_evaluator(*media_values);
+    TestMQEvaluator(g_forcedcolors_active_cases, media_query_evaluator);
+  }
 }
 
 }  // namespace blink

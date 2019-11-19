@@ -1,7 +1,6 @@
 <!DOCTYPE HTML>
 <script src="../resources/testharness.js"></script>
 <script src="../resources/testharnessreport.js"></script>
-<script src="../resources/run-after-layout-and-paint.js"></script>
 
 <div id="treeitem1" role="treeitem" tabindex="-1">X</div>
 <div id="option1" role="option" tabindex="-1">X</div>
@@ -27,117 +26,117 @@ function axElementById(id) {
     return accessibilityController.accessibleElementById(id);
 }
 
-test_after_layout_and_paint(function(t) {
+test(function(t) {
     var ax = axElementById("treeitem1");
     assert_equals(ax.restriction, "none");
 }, "Tree item enabled");
 
-test_after_layout_and_paint(function(t) {
+test(function(t) {
     var ax = axElementById("option1");
     assert_equals(ax.restriction, "none");
 }, "Option enabled");
 
-test_after_layout_and_paint(function(t) {
+test(function(t) {
     var ax = axElementById("tab1");
     assert_equals(ax.restriction, "none");
 }, "Tab enabled");
 
-test_after_layout_and_paint(function(t) {
+test(function(t) {
     var ax = axElementById("gridcell1");
     assert_equals(ax.restriction, "none");
 }, "Grid cell enabled");
 
-test_after_layout_and_paint(function(t) {
+test(function(t) {
     var ax = axElementById("checkbox1");
     assert_equals(ax.restriction, "none");
 }, "Check boxs enabled");
 
-test_after_layout_and_paint(function(t) {
+test(function(t) {
     var ax = axElementById("treeitem1");
     assert_equals(ax.isSelectable, true);
 }, "Tree item selectable");
 
-test_after_layout_and_paint(function(t) {
+test(function(t) {
     var ax = axElementById("option1");
     assert_equals(ax.isSelectable, true);
 }, "Option selectable");
 
-test_after_layout_and_paint(function(t) {
+test(function(t) {
     var ax = axElementById("tab1");
     assert_equals(ax.isSelectable, true);
 }, "Tab selectable");
 
-test_after_layout_and_paint(function(t) {
+test(function(t) {
     var ax = axElementById("gridcell1");
     assert_equals(ax.isSelectable, true);
 }, "Grid cell selectable");
 
-test_after_layout_and_paint(function(t) {
+test(function(t) {
     var ax = axElementById("checkbox1");
     assert_equals(ax.isSelectable, false);
 }, "Check box not selectable because it is not a selectable role");
 
-test_after_layout_and_paint(function(t) {
+test(function(t) {
     var ax = axElementById("treeitem2");
     assert_equals(ax.isSelected, true);
 }, "Tree item selected");
 
-test_after_layout_and_paint(function(t) {
+test(function(t) {
     var ax = axElementById("option2");
     assert_equals(ax.isSelected, true);
 }, "Option selected");
 
-test_after_layout_and_paint(function(t) {
+test(function(t) {
     var ax = axElementById("tab2");
     assert_equals(ax.isSelected, true);
 }, "Tab selected");
 
-test_after_layout_and_paint(function(t) {
+test(function(t) {
     var ax = axElementById("gridcell2");
     assert_equals(ax.isSelected, true);
 }, "Grid cell selected");
 
-test_after_layout_and_paint(function(t) {
+test(function(t) {
     var ax = axElementById("checkbox2");
     assert_equals(ax.isSelected, false);
 }, "Check box not selected because it is not a selectable role");
 
-test_after_layout_and_paint(function(t) {
+test(function(t) {
     var ax = axElementById("treeitem3");
     assert_equals(ax.isSelectable, false);
 }, "Tree item not selectable if disabled");
 
-test_after_layout_and_paint(function(t) {
+test(function(t) {
     var ax = axElementById("option3");
     assert_equals(ax.isSelectable, false);
 }, "Option not selectable if disabled");
 
-test_after_layout_and_paint(function(t) {
+test(function(t) {
     var ax = axElementById("tab3");
     assert_equals(ax.isSelectable, false);
 }, "Tab not selectable if disabled");
 
-test_after_layout_and_paint(function(t) {
+test(function(t) {
     var ax = axElementById("gridcell3");
     assert_equals(ax.isSelectable, false);
 }, "Grid cell not selectable if disabled");
 
-test_after_layout_and_paint(function(t) {
+test(function(t) {
     var ax = axElementById("treeitem3");
     assert_equals(ax.isSelected, false);
 }, "Tree item not selected if disabled");
 
-test_after_layout_and_paint(function(t) {
+test(function(t) {
     var ax = axElementById("option3");
     assert_equals(ax.isSelected, false);
 }, "Option not selected if disabled");
 
-test_after_layout_and_paint(function(t) {
+test(function(t) {
     var ax = axElementById("tab3");
     assert_equals(ax.isSelected, false);
 }, "Tab not selected if disabled");
 
-test_after_layout_and_paint(function(t) {
+test(function(t) {
     var ax = axElementById("gridcell3");
     assert_equals(ax.isSelected, false);
 }, "Grid cell not selected if disabled");

@@ -35,6 +35,7 @@
 #include "third_party/blink/renderer/core/svg/svg_number.h"
 #include "third_party/blink/renderer/core/svg/svg_string.h"
 #include "third_party/blink/renderer/core/xlink_names.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
 
 namespace blink {
 
@@ -55,8 +56,8 @@ String ComputeCSSPropertyValue(SVGElement* element, CSSPropertyID id) {
   // Don't include any properties resulting from CSS Transitions/Animations or
   // SMIL animations, as we want to retrieve the "base value".
   element->SetUseOverrideComputedStyle(true);
-  String value =
-      CSSComputedStyleDeclaration::Create(element)->GetPropertyValue(id);
+  String value = MakeGarbageCollected<CSSComputedStyleDeclaration>(element)
+                     ->GetPropertyValue(id);
   element->SetUseOverrideComputedStyle(false);
   return value;
 }
@@ -98,19 +99,17 @@ QualifiedName ConstructQualifiedName(const SVGElement& svg_element,
 
 }  // unnamed namespace
 
+SVGAnimateElement::SVGAnimateElement(Document& document)
+    : SVGAnimateElement(svg_names::kAnimateTag, document) {}
+
 SVGAnimateElement::SVGAnimateElement(const QualifiedName& tag_name,
                                      Document& document)
     : SVGAnimationElement(tag_name, document),
       type_(kAnimatedUnknown),
-      css_property_id_(CSSPropertyInvalid),
+      css_property_id_(CSSPropertyID::kInvalid),
       from_property_value_type_(kRegularPropertyValue),
       to_property_value_type_(kRegularPropertyValue),
       attribute_type_(kAttributeTypeAuto) {}
-
-SVGAnimateElement* SVGAnimateElement::Create(Document& document) {
-  return MakeGarbageCollected<SVGAnimateElement>(svg_names::kAnimateTag,
-                                                 document);
-}
 
 SVGAnimateElement::~SVGAnimateElement() = default;
 
@@ -156,12 +155,10 @@ void SVGAnimateElement::ParseAttribute(
     const AttributeModificationParams& params) {
   if (params.name == svg_names::kAttributeTypeAttr) {
     SetAttributeType(params.new_value);
-    AnimationAttributeChanged();
     return;
   }
   if (params.name == svg_names::kAttributeNameAttr) {
     SetAttributeName(ConstructQualifiedName(*this, params.new_value));
-    AnimationAttributeChanged();
     return;
   }
   SVGAnimationElement::ParseAttribute(params);
@@ -178,13 +175,13 @@ void SVGAnimateElement::ResolveTargetProperty() {
     // http://www.w3.org/TR/SVG/animate.html#AnimationAttributesAndProperties
     if (type_ == kAnimatedTransformList) {
       type_ = kAnimatedUnknown;
-      css_property_id_ = CSSPropertyInvalid;
+      css_property_id_ = CSSPropertyID::kInvalid;
     }
   } else {
     type_ = SVGElement::AnimatedPropertyTypeForCSSAttribute(AttributeName());
     css_property_id_ = type_ != kAnimatedUnknown
                            ? cssPropertyID(AttributeName().LocalName())
-                           : CSSPropertyInvalid;
+                           : CSSPropertyID::kInvalid;
   }
   // Blacklist <script> targets here for now to prevent unpleasantries. This
   // also disallows the perfectly "valid" animation of 'className' on said
@@ -192,7 +189,7 @@ void SVGAnimateElement::ResolveTargetProperty() {
   // this can be removed.
   if (IsSVGScriptElement(*targetElement())) {
     type_ = kAnimatedUnknown;
-    css_property_id_ = CSSPropertyInvalid;
+    css_property_id_ = CSSPropertyID::kInvalid;
   }
   DCHECK(type_ != kAnimatedPoint && type_ != kAnimatedStringList &&
          type_ != kAnimatedTransform && type_ != kAnimatedTransformList);
@@ -201,22 +198,26 @@ void SVGAnimateElement::ResolveTargetProperty() {
 void SVGAnimateElement::ClearTargetProperty() {
   target_property_ = nullptr;
   type_ = kAnimatedUnknown;
-  css_property_id_ = CSSPropertyInvalid;
+  css_property_id_ = CSSPropertyID::kInvalid;
 }
 
-AnimatedPropertyType SVGAnimateElement::GetAnimatedPropertyType() {
-  if (!targetElement())
-    return kAnimatedUnknown;
-  ResolveTargetProperty();
-  return type_;
+void SVGAnimateElement::UpdateTargetProperty() {
+  if (SVGElement* target = targetElement())
+    ResolveTargetProperty();
+  else
+    ClearTargetProperty();
 }
 
-bool SVGAnimateElement::HasValidTarget() {
+AnimatedPropertyType SVGAnimateElement::GetAnimatedPropertyType() const {
+  // TODO(fs): Should be possible to DCHECK targetElement() here instead.
+  return !targetElement() ? kAnimatedUnknown : type_;
+}
+
+bool SVGAnimateElement::HasValidTarget() const {
   if (!SVGAnimationElement::HasValidTarget())
     return false;
   if (AttributeName() == AnyQName())
     return false;
-  ResolveTargetProperty();
   if (type_ == kAnimatedUnknown)
     return false;
   // Always animate CSS properties using the ApplyCSSAnimation code path,
@@ -225,12 +226,6 @@ bool SVGAnimateElement::HasValidTarget() {
   // ignore the animation.
   return IsTargetAttributeCSSProperty(*targetElement(), AttributeName()) ||
          GetAttributeType() != kAttributeTypeCSS;
-}
-
-bool SVGAnimateElement::ShouldApplyAnimation(
-    const SVGElement& target_element,
-    const QualifiedName& attribute_name) {
-  return target_element.parentNode() && HasValidTarget();
 }
 
 SVGPropertyBase* SVGAnimateElement::CreatePropertyForAttributeAnimation(
@@ -252,24 +247,24 @@ SVGPropertyBase* SVGAnimateElement::CreatePropertyForCSSAnimation(
   // The instance will not have full context info. (e.g. SVGLengthMode)
   switch (type_) {
     case kAnimatedColor:
-      return SVGColorProperty::Create(value);
+      return MakeGarbageCollected<SVGColorProperty>(value);
     case kAnimatedNumber: {
-      SVGNumber* property = SVGNumber::Create();
+      auto* property = MakeGarbageCollected<SVGNumber>();
       property->SetValueAsString(value);
       return property;
     }
     case kAnimatedLength: {
-      SVGLength* property = SVGLength::Create();
+      auto* property = MakeGarbageCollected<SVGLength>();
       property->SetValueAsString(value);
       return property;
     }
     case kAnimatedLengthList: {
-      SVGLengthList* property = SVGLengthList::Create();
+      auto* property = MakeGarbageCollected<SVGLengthList>();
       property->SetValueAsString(value);
       return property;
     }
     case kAnimatedString: {
-      SVGString* property = SVGString::Create();
+      auto* property = MakeGarbageCollected<SVGString>();
       property->SetValueAsString(value);
       return property;
     }
@@ -318,17 +313,29 @@ SVGPropertyBase* SVGAnimateElement::AdjustForInheritance(
   // value type directly to avoid the String parsing.
   DCHECK(targetElement());
   Element* parent = targetElement()->parentElement();
-  if (!parent || !parent->IsSVGElement())
+  auto* svg_parent = DynamicTo<SVGElement>(parent);
+  if (!svg_parent)
     return property_value;
-  SVGElement* svg_parent = ToSVGElement(parent);
   // Replace 'inherit' by its computed property value.
   String value = ComputeCSSPropertyValue(svg_parent, css_property_id_);
   return CreatePropertyForAnimation(value);
 }
 
-void SVGAnimateElement::CalculateAnimatedValue(float percentage,
-                                               unsigned repeat_count,
-                                               SVGSMILElement* result_element) {
+static SVGPropertyBase* DiscreteSelectValue(AnimationMode animation_mode,
+                                            float percentage,
+                                            SVGPropertyBase* from,
+                                            SVGPropertyBase* to) {
+  if ((animation_mode == kFromToAnimation && percentage > 0.5) ||
+      animation_mode == kToAnimation || percentage == 1) {
+    return to;
+  }
+  return from;
+}
+
+void SVGAnimateElement::CalculateAnimatedValue(
+    float percentage,
+    unsigned repeat_count,
+    SVGSMILElement* result_element) const {
   DCHECK(result_element);
   DCHECK(targetElement());
   if (!IsSVGAnimateElement(*result_element))
@@ -340,8 +347,7 @@ void SVGAnimateElement::CalculateAnimatedValue(float percentage,
   DCHECK_EQ(from_property_->GetType(), GetAnimatedPropertyType());
   DCHECK(to_property_);
 
-  SVGAnimateElement* result_animation_element =
-      ToSVGAnimateElement(result_element);
+  auto* result_animation_element = To<SVGAnimateElement>(result_element);
   DCHECK(result_animation_element->animated_value_);
   DCHECK_EQ(result_animation_element->GetAnimatedPropertyType(),
             GetAnimatedPropertyType());
@@ -353,7 +359,7 @@ void SVGAnimateElement::CalculateAnimatedValue(float percentage,
     percentage = percentage < 0.5 ? 0 : 1;
 
   // Target element might have changed.
-  SVGElement* target_element = this->targetElement();
+  SVGElement* target_element = targetElement();
 
   // Values-animation accumulates using the last values entry corresponding to
   // the end of duration time.
@@ -370,8 +376,16 @@ void SVGAnimateElement::CalculateAnimatedValue(float percentage,
   from_value = AdjustForInheritance(from_value, from_property_value_type_);
   to_value = AdjustForInheritance(to_value, to_property_value_type_);
 
+  // If the animated type can only be animated discretely, then do that here,
+  // replacing |result_element|s animated value.
+  if (!AnimatedPropertyTypeSupportsAddition()) {
+    result_animation_element->animated_value_ = DiscreteSelectValue(
+        GetAnimationMode(), percentage, from_value, to_value);
+    return;
+  }
+
   animated_value->CalculateAnimatedValue(
-      this, percentage, repeat_count, from_value, to_value,
+      *this, percentage, repeat_count, from_value, to_value,
       to_at_end_of_duration_value, target_element);
 }
 
@@ -418,108 +432,78 @@ bool SVGAnimateElement::CalculateFromAndByValues(const String& from_string,
 }
 
 void SVGAnimateElement::ResetAnimatedType() {
-  ResolveTargetProperty();
-
-  SVGElement* target_element = this->targetElement();
-  const QualifiedName& attribute_name = this->AttributeName();
-
-  if (!ShouldApplyAnimation(*target_element, attribute_name))
-    return;
+  DCHECK(targetElement());
   if (IsAnimatingSVGDom()) {
     // SVG DOM animVal animation code-path.
     animated_value_ = target_property_->CreateAnimatedValue();
     DCHECK_EQ(animated_value_->GetType(), type_);
-    target_element->SetAnimatedAttribute(attribute_name, animated_value_);
     return;
   }
   DCHECK(IsAnimatingCSSProperty());
   // Presentation attributes which has an SVG DOM representation should use the
   // "SVG DOM" code-path (above.)
-  DCHECK(SVGElement::IsAnimatableCSSProperty(attribute_name));
+  DCHECK(SVGElement::IsAnimatableCSSProperty(AttributeName()));
 
   // CSS properties animation code-path.
-  String base_value = ComputeCSSPropertyValue(target_element, css_property_id_);
+  String base_value =
+      ComputeCSSPropertyValue(targetElement(), css_property_id_);
   animated_value_ = CreatePropertyForAnimation(base_value);
 }
 
 void SVGAnimateElement::ClearAnimatedType() {
-  if (!animated_value_)
-    return;
+  SVGElement* target_element = targetElement();
+  DCHECK(target_element);
 
-  // The animated property lock is held for the "result animation" (see
-  // SMILTimeContainer::updateAnimations()) while we're processing an animation
-  // group. We will very likely crash later if we clear the animated type while
-  // the lock is held. See crbug.com/581546.
-  DCHECK(!AnimatedTypeIsLocked());
-
-  SVGElement* target_element = this->targetElement();
-  if (!target_element) {
-    animated_value_.Clear();
-    return;
-  }
-
-  bool should_apply = ShouldApplyAnimation(*target_element, AttributeName());
+  // CSS properties animation code-path.
   if (IsAnimatingCSSProperty()) {
-    // CSS properties animation code-path.
-    if (should_apply) {
-      MutableCSSPropertyValueSet* property_set =
-          target_element->EnsureAnimatedSMILStyleProperties();
-      if (property_set->RemoveProperty(css_property_id_)) {
-        target_element->SetNeedsStyleRecalc(
-            kLocalStyleChange, StyleChangeReasonForTracing::Create(
-                                   style_change_reason::kAnimation));
-      }
-    }
-  }
-  if (IsAnimatingSVGDom()) {
-    // SVG DOM animVal animation code-path.
-    target_element->ClearAnimatedAttribute(AttributeName());
-    if (should_apply)
-      target_element->InvalidateAnimatedAttribute(AttributeName());
-  }
-
-  animated_value_.Clear();
-  ClearTargetProperty();
-}
-
-void SVGAnimateElement::ApplyResultsToTarget() {
-  DCHECK_NE(GetAnimatedPropertyType(), kAnimatedUnknown);
-
-  // Early exit if our animated type got destructed by a previous
-  // endedActiveInterval().
-  if (!animated_value_)
-    return;
-
-  if (!ShouldApplyAnimation(*targetElement(), AttributeName()))
-    return;
-
-  // We do update the style and the animation property independent of each
-  // other.
-  if (IsAnimatingCSSProperty()) {
-    // CSS properties animation code-path.
-    // Convert the result of the animation to a String and apply it as CSS
-    // property on the target.
     MutableCSSPropertyValueSet* property_set =
-        targetElement()->EnsureAnimatedSMILStyleProperties();
-    if (property_set
-            ->SetProperty(
-                css_property_id_, animated_value_->ValueAsString(), false,
-                targetElement()->GetDocument().GetSecureContextMode(), nullptr)
-            .did_change) {
-      targetElement()->SetNeedsStyleRecalc(
+        target_element->EnsureAnimatedSMILStyleProperties();
+    if (property_set->RemoveProperty(css_property_id_)) {
+      target_element->SetNeedsStyleRecalc(
           kLocalStyleChange,
           StyleChangeReasonForTracing::Create(style_change_reason::kAnimation));
     }
   }
-  if (IsAnimatingSVGDom()) {
-    // SVG DOM animVal animation code-path.
-    // At this point the SVG DOM values are already changed, unlike for CSS.
-    // We only have to trigger update notifications here.
-    targetElement()->InvalidateAnimatedAttribute(AttributeName());
-  }
+  // SVG DOM animVal animation code-path.
+  if (IsAnimatingSVGDom())
+    target_element->ClearAnimatedAttribute(AttributeName());
+
+  animated_value_.Clear();
 }
 
-bool SVGAnimateElement::AnimatedPropertyTypeSupportsAddition() {
+void SVGAnimateElement::ApplyResultsToTarget() {
+  DCHECK_NE(GetAnimatedPropertyType(), kAnimatedUnknown);
+  DCHECK(animated_value_);
+  DCHECK(targetElement());
+
+  // We do update the style and the animation property independent of each
+  // other.
+  SVGElement* target_element = targetElement();
+
+  // CSS properties animation code-path.
+  if (IsAnimatingCSSProperty()) {
+    // Convert the result of the animation to a String and apply it as CSS
+    // property on the target_element.
+    MutableCSSPropertyValueSet* properties =
+        target_element->EnsureAnimatedSMILStyleProperties();
+    auto animated_value_string = animated_value_->ValueAsString();
+    auto secure_context_mode =
+        target_element->GetDocument().GetSecureContextMode();
+    auto set_result =
+        properties->SetProperty(css_property_id_, animated_value_string, false,
+                                secure_context_mode, nullptr);
+    if (set_result.did_change) {
+      target_element->SetNeedsStyleRecalc(
+          kLocalStyleChange,
+          StyleChangeReasonForTracing::Create(style_change_reason::kAnimation));
+    }
+  }
+  // SVG DOM animVal animation code-path.
+  if (IsAnimatingSVGDom())
+    target_element->SetAnimatedAttribute(AttributeName(), animated_value_);
+}
+
+bool SVGAnimateElement::AnimatedPropertyTypeSupportsAddition() const {
   // http://www.w3.org/TR/SVG/animate.html#AnimationAttributesAndProperties.
   switch (GetAnimatedPropertyType()) {
     case kAnimatedBoolean:
@@ -533,7 +517,7 @@ bool SVGAnimateElement::AnimatedPropertyTypeSupportsAddition() {
   }
 }
 
-bool SVGAnimateElement::IsAdditive() {
+bool SVGAnimateElement::IsAdditive() const {
   if (GetAnimationMode() == kByAnimation ||
       GetAnimationMode() == kFromByAnimation) {
     if (!AnimatedPropertyTypeSupportsAddition())
@@ -555,39 +539,40 @@ float SVGAnimateElement::CalculateDistance(const String& from_string,
 
 void SVGAnimateElement::WillChangeAnimationTarget() {
   SVGAnimationElement::WillChangeAnimationTarget();
-  if (targetElement())
-    ClearAnimatedType();
+  // Should be cleared by the above.
+  DCHECK(!animated_value_);
+  from_property_.Clear();
+  to_property_.Clear();
+  to_at_end_of_duration_property_.Clear();
 }
 
 void SVGAnimateElement::DidChangeAnimationTarget() {
+  // Call this before calling the super-class, because it will check
+  // HasValidTarget() which depends on the animation type being resolved.
+  UpdateTargetProperty();
   SVGAnimationElement::DidChangeAnimationTarget();
-  ResetAnimatedPropertyType();
 }
 
 void SVGAnimateElement::SetAttributeName(const QualifiedName& attribute_name) {
+  if (attribute_name == attribute_name_)
+    return;
   WillChangeAnimationTarget();
   attribute_name_ = attribute_name;
   DidChangeAnimationTarget();
 }
 
-void SVGAnimateElement::SetAttributeType(const AtomicString& attribute_type) {
+void SVGAnimateElement::SetAttributeType(
+    const AtomicString& attribute_type_string) {
+  AttributeType attribute_type = kAttributeTypeAuto;
+  if (attribute_type_string == "CSS")
+    attribute_type = kAttributeTypeCSS;
+  else if (attribute_type_string == "XML")
+    attribute_type = kAttributeTypeXML;
+  if (attribute_type == attribute_type_)
+    return;
   WillChangeAnimationTarget();
-  if (attribute_type == "CSS")
-    attribute_type_ = kAttributeTypeCSS;
-  else if (attribute_type == "XML")
-    attribute_type_ = kAttributeTypeXML;
-  else
-    attribute_type_ = kAttributeTypeAuto;
+  attribute_type_ = attribute_type;
   DidChangeAnimationTarget();
-}
-
-void SVGAnimateElement::ResetAnimatedPropertyType() {
-  DCHECK(!animated_value_);
-  InvalidatedValuesCache();
-  from_property_.Clear();
-  to_property_.Clear();
-  to_at_end_of_duration_property_.Clear();
-  ClearTargetProperty();
 }
 
 void SVGAnimateElement::Trace(blink::Visitor* visitor) {

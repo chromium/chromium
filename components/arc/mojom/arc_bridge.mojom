@@ -1,0 +1,238 @@
+// Copyright 2015 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module arc.mojom;
+
+import "components/arc/mojom/accessibility_helper.mojom";
+import "components/arc/mojom/app.mojom";
+import "components/arc/mojom/app_permissions.mojom";
+import "components/arc/mojom/appfuse.mojom";
+import "components/arc/mojom/audio.mojom";
+import "components/arc/mojom/auth.mojom";
+import "components/arc/mojom/backup_settings.mojom";
+import "components/arc/mojom/bluetooth.mojom";
+import "components/arc/mojom/boot_phase_monitor.mojom";
+import "components/arc/mojom/camera.mojom";
+import "components/arc/mojom/cast_receiver.mojom";
+import "components/arc/mojom/cert_store.mojom";
+import "components/arc/mojom/clipboard.mojom";
+import "components/arc/mojom/crash_collector.mojom";
+import "components/arc/mojom/disk_quota.mojom";
+import "components/arc/mojom/enterprise_reporting.mojom";
+import "components/arc/mojom/file_system.mojom";
+import "components/arc/mojom/ime.mojom";
+import "components/arc/mojom/input_method_manager.mojom";
+import "components/arc/mojom/intent_helper.mojom";
+import "components/arc/mojom/keymaster.mojom";
+import "components/arc/mojom/kiosk.mojom";
+import "components/arc/mojom/lock_screen.mojom";
+import "components/arc/mojom/media_session.mojom";
+import "components/arc/mojom/metrics.mojom";
+import "components/arc/mojom/midis.mojom";
+import "components/arc/mojom/net.mojom";
+import "components/arc/mojom/notifications.mojom";
+import "components/arc/mojom/obb_mounter.mojom";
+import "components/arc/mojom/oemcrypto.mojom";
+import "components/arc/mojom/pip.mojom";
+import "components/arc/mojom/policy.mojom";
+import "components/arc/mojom/power.mojom";
+import "components/arc/mojom/print.mojom";
+import "components/arc/mojom/print_spooler.mojom";
+import "components/arc/mojom/process.mojom";
+import "components/arc/mojom/property.mojom";
+import "components/arc/mojom/rotation_lock.mojom";
+import "components/arc/mojom/screen_capture.mojom";
+import "components/arc/mojom/storage_manager.mojom";
+import "components/arc/mojom/timer.mojom";
+import "components/arc/mojom/tracing.mojom";
+import "components/arc/mojom/tts.mojom";
+import "components/arc/mojom/usb_host.mojom";
+import "components/arc/mojom/video.mojom";
+import "components/arc/mojom/voice_interaction_arc_home.mojom";
+import "components/arc/mojom/voice_interaction_framework.mojom";
+import "components/arc/mojom/volume_mounter.mojom";
+import "components/arc/mojom/wake_lock.mojom";
+import "components/arc/mojom/wallpaper.mojom";
+
+// Next MinVersion: 49
+// Deprecated method IDs: 101, 105
+// Next method ID: 154
+interface ArcBridgeHost {
+  // Keep the entries alphabetical. In order to do so without breaking
+  // compatibility with the ARC instance, explicitly assign each interface a
+  // unique ordinal.
+
+  // Notifies Chrome that the AccessibilityHelperInstance interface is ready.
+  [MinVersion=21] OnAccessibilityHelperInstanceReady@127(
+      AccessibilityHelperInstance instance_ptr);
+
+  // Notifies Chrome that the AppInstance interface is ready.
+  OnAppInstanceReady@100(AppInstance instance_ptr);
+
+  // Notifies Chrome that the AppPermissionsInstance interface is ready.
+  [MinVersion=44] OnAppPermissionsInstanceReady@149(AppPermissionsInstance instance_ptr);
+
+  // Notifies Chrome that the AppfuseInstance interface is ready.
+  [MinVersion=40] OnAppfuseInstanceReady@145(AppfuseInstance instance_ptr);
+
+  // Notifies Chrome that the AudioInstance interface is ready.
+  [MinVersion=8] OnAudioInstanceReady@115(AudioInstance instance_ptr);
+
+  // Notifies Chrome that the AuthInstance interface is ready.
+  [MinVersion=1] OnAuthInstanceReady@106(AuthInstance instance_ptr);
+
+  // Notifies Chrome that the BackupSettingsInstance interface is ready.
+  [MinVersion=33] OnBackupSettingsInstanceReady@138(BackupSettingsInstance instance_ptr);
+
+  // Notifies Chrome that the BluetoothInstance interface is ready.
+  [MinVersion=9] OnBluetoothInstanceReady@113(BluetoothInstance instance_ptr);
+
+  // Notifies Chrome that the BootPhaseMonitorInstance interface is ready.
+  [MinVersion=19] OnBootPhaseMonitorInstanceReady@125(
+      BootPhaseMonitorInstance instance_ptr);
+
+  // Notifies Chrome that the CameraInstance is ready.
+  [MinVersion=46] OnCameraInstanceReady@151(CameraInstance instance_ptr);
+
+  // Notifies Chrome that the CastReceiverInstance interface is ready.
+  [MinVersion=27] OnCastReceiverInstanceReady@132(
+      CastReceiverInstance instance_ptr);
+
+  // Notifies Chrome that the CertStoreInstance interface is ready.
+  [MinVersion=31] OnCertStoreInstanceReady@136(
+      CertStoreInstance instance_ptr);
+
+  // Notifies Chrome that the ClipboardInstance interface is ready.
+  [MinVersion=2] OnClipboardInstanceReady@109(ClipboardInstance instance_ptr);
+
+  // Notifies Chrome that the CrashCollectorInstance interface is ready.
+  [MinVersion=7] OnCrashCollectorInstanceReady@112(
+      CrashCollectorInstance instance_ptr);
+
+  // Notifies Chrome that the DiskQuotaInstance interface is ready.
+  [MinVersion=39] OnDiskQuotaInstanceReady@144(DiskQuotaInstance instance_ptr);
+
+  // Notifies Chrome that the EnterpriseReportingInstance interface is ready.
+  [MinVersion=15] OnEnterpriseReportingInstanceReady@122(
+      EnterpriseReportingInstance instance_ptr);
+
+  // Notifies Chrome that the FileSystemInstance interface is ready.
+  [MinVersion=13] OnFileSystemInstanceReady@119(
+      FileSystemInstance instance_ptr);
+
+  // Notifies Chrome that the ImeInstance interface is ready.
+  [MinVersion=3] OnImeInstanceReady@110(ImeInstance instance_ptr);
+
+  // Notifies Chrome that the InputMethodManagerInstance interface is ready.
+  [MinVersion=38] OnInputMethodManagerInstanceReady@143(
+      InputMethodManagerInstance instance_ptr);
+
+  // Notifies Chrome that the IntentHelperInstance interface is ready.
+  [MinVersion=4] OnIntentHelperInstanceReady@111(
+      IntentHelperInstance instance_ptr);
+
+  // Notifies Chrome that the KeymasterInstance interface is ready.
+  [MinVersion=47] OnKeymasterInstanceReady@152(KeymasterInstance instance_ptr);
+
+  // Notifies Chrome that the KioskInstance interface is ready.
+  [MinVersion=20] OnKioskInstanceReady@126(KioskInstance instance_ptr);
+
+  // Notifies Chrome that the LockScreenInstance interface is ready.
+  [MinVersion=29] OnLockScreenInstanceReady@134(LockScreenInstance instance_ptr);
+
+  // Notifies Chrome that the MediaSessionInstance interface is ready.
+  [MinVersion=43] OnMediaSessionInstanceReady@148(MediaSessionInstance instance_ptr);
+
+  // Notifies Chrome that the MetricsInstance interface is ready.
+  [MinVersion=10] OnMetricsInstanceReady@116(MetricsInstance instance_ptr);
+
+  // Notifies Chrome that the MidisInstance interface is ready.
+  [MinVersion=30] OnMidisInstanceReady@135(MidisInstance instance_ptr);
+
+  // Notifies Chrome that the NetInstance interface is ready.
+  [MinVersion=5] OnNetInstanceReady@108(NetInstance instance_ptr);
+
+  // Notifies Chrome that the NotificationsInstance interface is ready.
+  OnNotificationsInstanceReady@102(NotificationsInstance instance_ptr);
+
+  // Notifies Chrome that the ObbMounter interface is ready.
+  [MinVersion=14] OnObbMounterInstanceReady@120(ObbMounterInstance instance_ptr);
+
+  // Notifies Chrome that the OemCryptoInstance interface is ready.
+  [MinVersion=28] OnOemCryptoInstanceReady@133(OemCryptoInstance instance_ptr);
+
+  // Notifies Chrome that the PipInstance interface is ready.
+  [MinVersion=41] OnPipInstanceReady@146(PipInstance instance_ptr);
+
+  // Notifies Chrome that the PolicyInstance interface is ready.
+  [MinVersion=7] OnPolicyInstanceReady@114(PolicyInstance instance_ptr);
+
+  // Notifies Chrome that the PowerInstance interface is ready.
+  OnPowerInstanceReady@103(PowerInstance instance_ptr);
+
+  // Notifies Chrome that the PrintInstance interface is ready.
+  [MinVersion=16] OnPrintInstanceReady@121(PrintInstance instance_ptr);
+
+  // Notifies Chrome that the PrintSpoolerInstance interface is ready.
+  [MinVersion=45] OnPrintSpoolerInstanceReady@150(
+                      PrintSpoolerInstance instance_ptr);
+
+  // Notifies Chrome that the ProcessInstance interface is ready.
+  OnProcessInstanceReady@104(ProcessInstance instance_ptr);
+
+  // Notifies Chrome that the PropertyInstance interface is ready.
+  [MinVersion=42] OnPropertyInstanceReady@147(PropertyInstance instance_ptr);
+
+  // Notifies Chrome that the RotationLockInstance interface is ready.
+  [MinVersion=32] OnRotationLockInstanceReady@137(RotationLockInstance instance_ptr);
+
+  // Notifies Chrome that the ScreenCaptureInstance interface is ready.
+  [MinVersion=35] OnScreenCaptureInstanceReady@140(ScreenCaptureInstance instance_ptr);
+
+  // Notifies Chrome that the SmartCardManagerInstance interface is ready.
+  [MinVersion=48] OnSmartCardManagerInstanceReady@153(
+      SmartCardManagerInstance instance_ptr);
+
+  // Notifies Chrome that the StorageManagerInstance interface is ready.
+  [MinVersion=12] OnStorageManagerInstanceReady@118(StorageManagerInstance instance_ptr);
+
+  // Notifies Chrome that the TimerInstance interface is ready.
+  [MinVersion=36] OnTimerInstanceReady@141(TimerInstance instance_ptr);
+
+  // Notifies Chrome that the TracingInstance interface is ready.
+  [MinVersion=22] OnTracingInstanceReady@128(TracingInstance instance_ptr);
+
+  // Notifies Chrome that the TtsInstance interface is ready.
+  [MinVersion=17] OnTtsInstanceReady@123(TtsInstance instance_ptr);
+
+  // Notifies Chrome that the UsbHostInstance interface is ready.
+  [MinVersion=34] OnUsbHostInstanceReady@139(UsbHostInstance instance_ptr);
+
+  // Notifies Chrome that the VideoInstance interface is ready.
+  [MinVersion=6] OnVideoInstanceReady@107(VideoInstance instance_ptr);
+
+  // Notifies Chrome that the VoiceInteractionArcHomeInstance is ready.
+  [MinVersion=24] OnVoiceInteractionArcHomeInstanceReady@130(
+                      VoiceInteractionArcHomeInstance instance_ptr);
+
+  // Notifies Chrome that the VoiceInteractionFrameworkInstance is ready.
+  [MinVersion=23] OnVoiceInteractionFrameworkInstanceReady@129(
+                      VoiceInteractionFrameworkInstance instance_ptr);
+
+  // Notifies Chrome that the VolumeMounter interface is ready.
+  [MinVersion=25] OnVolumeMounterInstanceReady@131(VolumeMounterInstance instance_ptr);
+
+  // Notifies Chrome that the WakeLockInstance interface is ready.
+  [MinVersion=37] OnWakeLockInstanceReady@142(WakeLockInstance instance_ptr);
+
+  // Notifies Chrome that the WallpaperInstance interface is ready.
+  [MinVersion=18] OnWallpaperInstanceReady@124(WallpaperInstance instance_ptr);
+};
+
+interface ArcBridgeInstance {
+  // Establishes full-duplex communication with the host.
+  // |host_ptr| is the MessagePipe endpoint that is bound to the
+  // ArcBridgeHostPtr binding.
+  Init@0(ArcBridgeHost host_ptr);
+};

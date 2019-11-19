@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<script src="/js-test-resources/js-test.js"></script>
+<script src="/resources/get-host-info.js"></script>
+<script>
+if (window.internals)
+  internals.runtimeFlags.navigatorLanguageInInsecureContextEnabled = false;
+let is_secure_context = window.location.origin != get_host_info().UNAUTHENTICATED_ORIGIN;
+let is_secure_text = is_secure_context ? "secure" : "insecure";
+description('Test navigator.language and navigator.languages in ' + is_secure_text + ' context.')
+window.jsTestIsAsync = true;
+shouldBe('navigator.language', '"en-US"');
+shouldBe('navigator.languages.length', '1');
+shouldBe('navigator.languages[0]', '"en-US"');
+finishJSTest();
+</script>

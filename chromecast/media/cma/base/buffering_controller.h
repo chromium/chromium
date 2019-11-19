@@ -14,6 +14,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
+#include "base/timer/timer.h"
 
 namespace chromecast {
 namespace media {
@@ -61,6 +62,7 @@ class BufferingController {
   // state is relaxed (we don't want to wait more).
   void OnBufferingStateChanged(bool force_notification,
                                bool buffering_timeout);
+  void BufferingTimeoutExceeded();
 
   // Updates the high buffer level threshold to |high_level_threshold|
   // if needed.
@@ -94,6 +96,9 @@ class BufferingController {
   base::Time begin_buffering_time_;
   base::Time last_buffer_end_time_;
   bool initial_buffering_;
+
+  bool buffering_timeout_exceeded_;
+  base::OneShotTimer buffering_timer_;
 
   // Buffering level for each individual stream.
   typedef std::list<scoped_refptr<BufferingState> > StreamList;

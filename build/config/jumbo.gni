@@ -2,45 +2,21 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/split_static_library.gni")  # When someone uses that target_type
+import("//build/config/nacl/config.gni")  # To see if jumbo should be turned off
 import("//build/toolchain/goma.gni")
 
 declare_args() {
-  # If true, use a jumbo build (files compiled together) to speed up
-  # compilation.
   use_jumbo_build = false
-
-  # A list of build targets to exclude from jumbo builds, for optimal
-  # round trip time when frequently changing a set of cpp files. The
-  # targets can be just the short name (in which case it matches any
-  # target with that name), a directory prefixed with the root
-  # specifier //, or a full build target label.
-  #
-  # Example:
-  # These would all exclude the "browser" target in a file
-  # content/browser/BUILD.gn, and potentially more.
-  #
-  # jumbo_build_excluded = [ "browser" ]
-  # jumbo_build_excluded = [ "//content/browser" ]
-  # jumbo_build_excluded = [ "//content/browser:browser" ]
   jumbo_build_excluded = []
-
-  # How many files to group on average. Smaller numbers give more
-  # parallellism, higher numbers give less total CPU usage. Higher
-  # numbers also give longer single-file recompilation times.
-  #
-  # Recommendations:
-  # Higher numbers than 100 does not reduce wall clock compile times
-  # even for 4 cores or less so no reason to go higher than 100.
-  # Going from 50 to 100 with a 4 core CPU saves about 3% CPU time and
-  # 3% wall clock time in a tree with blink, v8 and content
-  # jumbofied. At the same time it increases the compile time for the
-  # largest jumbo chunks by 10-20% and reduces the chance to use all
-  # available CPU cores. So set the default to 50 to balance between
-  # high and low-core build performance. -1 means do the default which
-  # varies depending on whether goma is enabled.
   jumbo_file_merge_limit = -1
 }
+
+# TODO(crbug.com/994387): Remove all uses of the jumbo_* templates from the
+# BUILD.gn files, and then remove this whole file.
+assert(!use_jumbo_build,
+       "The jumbo build is no longer supported. Please remove any uses of " +
+           "'use_jumbo_build', 'jumbo_build_excluded', or " +
+           "'jumbo_file_merge_limit' from your args.gn file and re-run GN.")
 
 # Normal builds benefit from lots of jumbification
 jumbo_file_merge_default = 50
@@ -48,9 +24,9 @@ jumbo_file_merge_default = 50
 # Goma builds benefit from more parallelism
 jumbo_file_merge_goma = 8
 
-# Use one of the targets jumbo_source_set, jumbo_static_library,
-# jumbo_split_static_library or jumbo_component to generate a target
-# which merges sources if possible to compile much faster.
+# Use one of the targets jumbo_source_set, jumbo_static_library, or
+# jumbo_component to generate a target which merges sources if possible to
+# compile much faster.
 #
 # Special values.
 #
@@ -76,6 +52,11 @@ template("internal_jumbo_target") {
     use_jumbo_build_for_target = true
   }
   if (defined(invoker.never_build_jumbo) && invoker.never_build_jumbo) {
+    use_jumbo_build_for_target = false
+  }
+  if (is_nacl_irt || is_nacl_nonsfi) {
+    # The code is barely compatible with the nacl toolchain anymore and we
+    # don't want to stress it further with jumbo compilation units.
     use_jumbo_build_for_target = false
   }
 
@@ -208,11 +189,6 @@ template("internal_jumbo_target") {
   }
 
   target_type = invoker.target_type
-  if (use_jumbo_build_for_target && target_type == "split_static_library") {
-    # Meaningless and also impossible if split_count > len(jumbo_files)
-    target_type = "static_library"
-    not_needed(invoker, [ "split_count" ])
-  }
 
   # Perform the actual operation, either on the original sources or
   # the sources post-jumbo merging.
@@ -271,22 +247,6 @@ set_defaults("jumbo_static_library") {
   # This sets the default list of configs when the jumbo_static_library target
   # is defined. The default_compiler_configs comes from BUILDCONFIG.gn and
   # is the list normally applied to static libraries and source sets.
-  configs = default_compiler_configs
-}
-
-# See documentation above by "internal_jumbo_target".
-template("jumbo_split_static_library") {
-  internal_jumbo_target(target_name) {
-    target_type = "split_static_library"
-    forward_variables_from(invoker, "*")
-  }
-}
-
-set_defaults("jumbo_split_static_library") {
-  # This sets the default list of configs when the
-  # jumbo_split_static_library target is defined. The
-  # default_compiler_configs comes from BUILDCONFIG.gn and is the list
-  # normally applied to static libraries and source sets.
   configs = default_compiler_configs
 }
 

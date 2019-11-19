@@ -37,6 +37,10 @@
 #include "third_party/blink/public/platform/web_encrypted_media_types.h"
 #include "third_party/blink/public/platform/web_vector.h"
 
+namespace media {
+enum class EmeInitDataType;
+}
+
 namespace blink {
 
 class WebEncryptedMediaKeyInformation;
@@ -81,7 +85,7 @@ class BLINK_PLATFORM_EXPORT WebContentDecryptionModuleSession {
   virtual void SetClientInterface(Client*) = 0;
   virtual WebString SessionId() const = 0;
 
-  virtual void InitializeNewSession(WebEncryptedMediaInitDataType,
+  virtual void InitializeNewSession(media::EmeInitDataType,
                                     const unsigned char* init_data,
                                     size_t init_data_length,
                                     WebEncryptedMediaSessionType,

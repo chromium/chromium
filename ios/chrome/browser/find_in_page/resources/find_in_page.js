@@ -11,9 +11,13 @@
  * selected one in orange color;
  */
 
-// Requires __crWeb.findInPage provided by __crWeb.allFramesWebBundle.
-
 (function() {
+/**
+   * Namespace for this file.
+   * This overrides the ios/web find in page implementation to ensure there are
+   * no unintended collisions.
+   */
+__gCrWeb.findInPage = {};
 
 /**
  * A string made by concatenating textContent.toLowerCase() of all TEXT nodes

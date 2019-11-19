@@ -25,7 +25,7 @@
   await TestRunner.NetworkAgent.setCacheDisabled(false);
   TestRunner.addResult('Requesting content: ');
   var resource = ApplicationTestRunner.resourceMatchingURL('dynamic-script.js');
-  var content = await resource.requestContent();
+  var { content } = await resource.requestContent();
   TestRunner.assertTrue(!!content, 'No content available.');
   TestRunner.addResult('Resource url: ' + resource.url);
   TestRunner.addResult('Resource content: ' + content);

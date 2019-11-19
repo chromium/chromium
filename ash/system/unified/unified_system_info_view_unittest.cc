@@ -4,7 +4,8 @@
 
 #include "ash/system/unified/unified_system_info_view.h"
 
-#include "ash/session/session_controller.h"
+#include "ash/public/cpp/ash_features.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/session/test_session_controller_client.h"
 #include "ash/shell.h"
 #include "ash/system/model/enterprise_domain_model.h"
@@ -12,6 +13,7 @@
 #include "ash/system/unified/unified_system_tray_controller.h"
 #include "ash/system/unified/unified_system_tray_model.h"
 #include "ash/test/ash_test_base.h"
+#include "base/test/scoped_feature_list.h"
 
 namespace ash {
 
@@ -22,9 +24,13 @@ class UnifiedSystemInfoViewTest : public AshTestBase {
 
   void SetUp() override {
     AshTestBase::SetUp();
-    model_ = std::make_unique<UnifiedSystemTrayModel>();
+    model_ = std::make_unique<UnifiedSystemTrayModel>(nullptr);
     controller_ = std::make_unique<UnifiedSystemTrayController>(model_.get());
     info_view_ = std::make_unique<UnifiedSystemInfoView>(controller_.get());
+
+    scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
+    scoped_feature_list_->InitAndDisableFeature(
+        features::kManagedDeviceUIRedesign);
   }
 
   void TearDown() override {
@@ -41,13 +47,14 @@ class UnifiedSystemInfoViewTest : public AshTestBase {
   std::unique_ptr<UnifiedSystemTrayModel> model_;
   std::unique_ptr<UnifiedSystemTrayController> controller_;
   std::unique_ptr<UnifiedSystemInfoView> info_view_;
+  std::unique_ptr<base::test::ScopedFeatureList> scoped_feature_list_;
 
   DISALLOW_COPY_AND_ASSIGN(UnifiedSystemInfoViewTest);
 };
 
 TEST_F(UnifiedSystemInfoViewTest, EnterpriseManagedVisible) {
   // By default, EnterpriseManagedView is not shown.
-  EXPECT_FALSE(info_view()->enterprise_managed_->visible());
+  EXPECT_FALSE(info_view()->enterprise_managed_->GetVisible());
 
   // Simulate enterprise information becoming available.
   const bool active_directory = false;
@@ -57,7 +64,7 @@ TEST_F(UnifiedSystemInfoViewTest, EnterpriseManagedVisible) {
       ->SetEnterpriseDisplayDomain("example.com", active_directory);
 
   // EnterpriseManagedView should be shown.
-  EXPECT_TRUE(info_view()->enterprise_managed_->visible());
+  EXPECT_TRUE(info_view()->enterprise_managed_->GetVisible());
 }
 
 TEST_F(UnifiedSystemInfoViewTest, EnterpriseManagedVisibleForActiveDirectory) {
@@ -70,24 +77,24 @@ TEST_F(UnifiedSystemInfoViewTest, EnterpriseManagedVisibleForActiveDirectory) {
       ->SetEnterpriseDisplayDomain(empty_domain, active_directory);
 
   // EnterpriseManagedView should be shown.
-  EXPECT_TRUE(info_view()->enterprise_managed_->visible());
+  EXPECT_TRUE(info_view()->enterprise_managed_->GetVisible());
 }
 
 using UnifiedSystemInfoViewNoSessionTest = NoSessionAshTestBase;
 
 TEST_F(UnifiedSystemInfoViewNoSessionTest, SupervisedVisible) {
   std::unique_ptr<UnifiedSystemTrayModel> model_ =
-      std::make_unique<UnifiedSystemTrayModel>();
+      std::make_unique<UnifiedSystemTrayModel>(nullptr);
   std::unique_ptr<UnifiedSystemTrayController> controller_ =
       std::make_unique<UnifiedSystemTrayController>(model_.get());
 
-  SessionController* session = Shell::Get()->session_controller();
+  SessionControllerImpl* session = Shell::Get()->session_controller();
   ASSERT_FALSE(session->IsActiveUserSessionStarted());
 
   // Before login the supervised user view is invisible.
   std::unique_ptr<UnifiedSystemInfoView> info_view_;
   info_view_ = std::make_unique<UnifiedSystemInfoView>(controller_.get());
-  EXPECT_FALSE(info_view_->supervised_->visible());
+  EXPECT_FALSE(info_view_->supervised_->GetVisible());
   info_view_.reset();
 
   // Simulate a supervised user logging in.
@@ -95,13 +102,13 @@ TEST_F(UnifiedSystemInfoViewNoSessionTest, SupervisedVisible) {
   client->Reset();
   client->AddUserSession("child@test.com", user_manager::USER_TYPE_SUPERVISED);
   client->SetSessionState(session_manager::SessionState::ACTIVE);
-  mojom::UserSessionPtr user_session = session->GetUserSession(0)->Clone();
-  user_session->custodian_email = "parent@test.com";
+  UserSession user_session = *session->GetUserSession(0);
+  user_session.custodian_email = "parent@test.com";
   session->UpdateUserSession(std::move(user_session));
 
   // Now the supervised user view is visible.
   info_view_ = std::make_unique<UnifiedSystemInfoView>(controller_.get());
-  ASSERT_TRUE(info_view_->supervised_->visible());
+  ASSERT_TRUE(info_view_->supervised_->GetVisible());
 }
 
 }  // namespace ash

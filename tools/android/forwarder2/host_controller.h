@@ -34,7 +34,8 @@ class HostController {
  public:
   // Callback used for self-deletion when an error happens so that the client
   // can perform some cleanup work before deleting the HostController instance.
-  typedef base::Callback<void(std::unique_ptr<HostController>)> ErrorCallback;
+  using ErrorCallback =
+      base::OnceCallback<void(std::unique_ptr<HostController>)>;
 
   // If |device_port| is zero then a dynamic port is allocated (and retrievable
   // through device_port() below).
@@ -44,7 +45,7 @@ class HostController {
       int host_port,
       int adb_port,
       int exit_notifier_fd,
-      const ErrorCallback& error_callback);
+      ErrorCallback error_callback);
 
   ~HostController();
 
@@ -60,7 +61,7 @@ class HostController {
                  int device_port,
                  int host_port,
                  int adb_port,
-                 const ErrorCallback& error_callback,
+                 ErrorCallback error_callback,
                  std::unique_ptr<Socket> adb_control_socket,
                  std::unique_ptr<PipeNotifier> delete_controller_notifier);
 

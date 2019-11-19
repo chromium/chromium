@@ -6,11 +6,10 @@
 
 #include "chrome/browser/chromeos/policy/user_cloud_policy_manager_chromeos.h"
 #include "chrome/browser/chromeos/policy/user_cloud_policy_token_forwarder.h"
-#include "chrome/browser/chromeos/policy/user_policy_manager_factory_chromeos.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
-#include "services/identity/public/cpp/identity_manager.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 
 namespace policy {
 
@@ -25,7 +24,6 @@ UserCloudPolicyTokenForwarderFactory::UserCloudPolicyTokenForwarderFactory()
         "UserCloudPolicyTokenForwarder",
         BrowserContextDependencyManager::GetInstance()) {
   DependsOn(IdentityManagerFactory::GetInstance());
-  DependsOn(UserPolicyManagerFactoryChromeOS::GetInstance());
 }
 
 UserCloudPolicyTokenForwarderFactory::~UserCloudPolicyTokenForwarderFactory() {}
@@ -34,9 +32,8 @@ KeyedService* UserCloudPolicyTokenForwarderFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   Profile* profile = static_cast<Profile*>(context);
   UserCloudPolicyManagerChromeOS* manager =
-      UserPolicyManagerFactoryChromeOS::GetCloudPolicyManagerForProfile(
-          profile);
-  identity::IdentityManager* identity_manager =
+      profile->GetUserCloudPolicyManagerChromeOS();
+  signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
   if (!manager || !identity_manager)
     return nullptr;

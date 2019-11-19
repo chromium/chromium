@@ -8,6 +8,8 @@
 #include <memory>
 #include <set>
 #include <string>
+#include <utility>
+#include <vector>
 
 #include "build/build_config.h"
 
@@ -73,11 +75,11 @@ class UI_BASE_EXPORT OSExchangeData {
   // Encapsulates the info about a file to be downloaded.
   struct UI_BASE_EXPORT DownloadFileInfo {
     DownloadFileInfo(const base::FilePath& filename,
-                     DownloadFileProvider* downloader);
+                     std::unique_ptr<DownloadFileProvider> downloader);
     ~DownloadFileInfo();
 
     base::FilePath filename;
-    scoped_refptr<DownloadFileProvider> downloader;
+    std::unique_ptr<DownloadFileProvider> downloader;
   };
 
   // Provider defines the platform specific part of OSExchangeData that
@@ -121,7 +123,19 @@ class UI_BASE_EXPORT OSExchangeData {
     virtual bool GetFileContents(base::FilePath* filename,
                                  std::string* file_contents) const = 0;
     virtual bool HasFileContents() const = 0;
-    virtual void SetDownloadFileInfo(const DownloadFileInfo& download) = 0;
+    virtual bool HasVirtualFilenames() const = 0;
+    virtual bool GetVirtualFilenames(
+        std::vector<FileInfo>* file_names) const = 0;
+    virtual bool GetVirtualFilesAsTempFiles(
+        base::OnceCallback<void(
+            const std::vector<std::pair</*temp path*/ base::FilePath,
+                                        /*display name*/ base::FilePath>>&)>
+            callback) const = 0;
+    virtual void SetVirtualFileContentsForTesting(
+        const std::vector<std::pair<base::FilePath, std::string>>&
+            filenames_and_contents,
+        DWORD tymed) = 0;
+    virtual void SetDownloadFileInfo(DownloadFileInfo* download) = 0;
 #endif
 
 #if defined(USE_AURA)
@@ -213,8 +227,46 @@ class UI_BASE_EXPORT OSExchangeData {
   bool GetFileContents(base::FilePath* filename,
                        std::string* file_contents) const;
 
+  // Methods used to query and retrieve file data from a drag source
+  // IDataObject implementation packaging the data with the
+  // CFSTR_FILEDESCRIPTOR/CFSTR_FILECONTENTS clipboard formats instead of the
+  // more common CF_HDROP. These formats are intended to represent "virtual
+  // files," not files that live on the platform file system. For a drop target
+  // to read the file contents, it must be streamed from the drag source
+  // application.
+
+  // Method that returns true if there are virtual files packaged in the data
+  // store.
+  bool HasVirtualFilenames() const;
+
+  // Retrieves names of any "virtual files" in the data store packaged using the
+  // CFSTR_FILEDESCRIPTOR/CFSTR_FILECONTENTS clipboard formats instead of the
+  // more common CF_HDROP used for "real files." Real files are preferred over
+  // virtual files here to avoid duplication, as the data store may package
+  // the same file lists using different formats. GetVirtualFilenames just
+  // retrieves the display names but not the temp file paths. The temp files
+  // are only created upon drop via a call to the async method
+  // GetVirtualFilesAsTempFiles.
+  bool GetVirtualFilenames(std::vector<FileInfo>* file_names) const;
+
+  // Retrieves "virtual file" contents via creation of intermediary temp files.
+  // Method is called on dropping on the Chromium drop target. Since creating
+  // the temp files involves file I/O, the method is asynchronous and the caller
+  // must provide a callback function that receives a vector of pairs of temp
+  // file paths and display names. Method immediately returns false if there are
+  // no virtual files in the data object, in which case the callback will never
+  // be invoked.
+  // TODO(https://crbug.com/951574): Implement virtual file extraction to
+  // dynamically stream data to the renderer when File's bytes are actually
+  // requested
+  bool GetVirtualFilesAsTempFiles(
+      base::OnceCallback<void(const std::vector</*temp path*/ std::pair<
+                                  base::FilePath,
+                                  /*display name*/ base::FilePath>>&)> callback)
+      const;
+
   // Adds a download file with full path (CF_HDROP).
-  void SetDownloadFileInfo(const DownloadFileInfo& download);
+  void SetDownloadFileInfo(DownloadFileInfo* download);
 #endif
 
 #if defined(USE_AURA)
@@ -222,6 +274,7 @@ class UI_BASE_EXPORT OSExchangeData {
   // text/html and CF_HTML.
   void SetHtml(const base::string16& html, const GURL& base_url);
   bool GetHtml(base::string16* html, GURL* base_url) const;
+  bool HasHtml() const;
 #endif
 
  private:

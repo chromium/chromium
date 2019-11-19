@@ -11,10 +11,14 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/sync_socket.h"
 #include "base/unguessable_token.h"
-#include "media/mojo/interfaces/audio_data_pipe.mojom.h"
-#include "media/mojo/interfaces/audio_input_stream.mojom.h"
-#include "media/mojo/interfaces/audio_logging.mojom.h"
-#include "mojo/public/cpp/bindings/binding.h"
+#include "media/mojo/mojom/audio_data_pipe.mojom.h"
+#include "media/mojo/mojom/audio_input_stream.mojom.h"
+#include "media/mojo/mojom/audio_logging.mojom.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/bindings/shared_remote.h"
 #include "services/audio/input_controller.h"
 #include "services/audio/public/mojom/audio_processing.mojom.h"
 #include "services/audio/stream_monitor_coordinator.h"
@@ -40,20 +44,21 @@ class InputStream final : public media::mojom::AudioInputStream,
                               const base::Optional<base::UnguessableToken>&)>;
   using DeleteCallback = base::OnceCallback<void(InputStream*)>;
 
-  InputStream(CreatedCallback created_callback,
-              DeleteCallback delete_callback,
-              media::mojom::AudioInputStreamRequest request,
-              media::mojom::AudioInputStreamClientPtr client,
-              media::mojom::AudioInputStreamObserverPtr observer,
-              media::mojom::AudioLogPtr log,
-              media::AudioManager* manager,
-              std::unique_ptr<UserInputMonitor> user_input_monitor,
-              const std::string& device_id,
-              const media::AudioParameters& params,
-              uint32_t shared_memory_count,
-              bool enable_agc,
-              StreamMonitorCoordinator* stream_monitor_coordinator,
-              mojom::AudioProcessingConfigPtr processing_config);
+  InputStream(
+      CreatedCallback created_callback,
+      DeleteCallback delete_callback,
+      mojo::PendingReceiver<media::mojom::AudioInputStream> receiver,
+      mojo::PendingRemote<media::mojom::AudioInputStreamClient> client,
+      mojo::PendingRemote<media::mojom::AudioInputStreamObserver> observer,
+      mojo::PendingRemote<media::mojom::AudioLog> log,
+      media::AudioManager* manager,
+      std::unique_ptr<UserInputMonitor> user_input_monitor,
+      const std::string& device_id,
+      const media::AudioParameters& params,
+      uint32_t shared_memory_count,
+      bool enable_agc,
+      StreamMonitorCoordinator* stream_monitor_coordinator,
+      mojom::AudioProcessingConfigPtr processing_config);
   ~InputStream() override;
 
   const base::UnguessableToken& id() const { return id_; }
@@ -75,10 +80,10 @@ class InputStream final : public media::mojom::AudioInputStream,
 
   const base::UnguessableToken id_;
 
-  mojo::Binding<media::mojom::AudioInputStream> binding_;
-  media::mojom::AudioInputStreamClientPtr client_;
-  media::mojom::AudioInputStreamObserverPtr observer_;
-  const scoped_refptr<media::mojom::ThreadSafeAudioLogPtr> log_;
+  mojo::Receiver<media::mojom::AudioInputStream> receiver_;
+  mojo::Remote<media::mojom::AudioInputStreamClient> client_;
+  mojo::Remote<media::mojom::AudioInputStreamObserver> observer_;
+  const mojo::SharedRemote<media::mojom::AudioLog> log_;
 
   // Notify stream client on creation.
   CreatedCallback created_callback_;
@@ -93,7 +98,7 @@ class InputStream final : public media::mojom::AudioInputStream,
 
   SEQUENCE_CHECKER(owning_sequence_);
 
-  base::WeakPtrFactory<InputStream> weak_factory_;
+  base::WeakPtrFactory<InputStream> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(InputStream);
 };

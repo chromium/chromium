@@ -1,19 +1,19 @@
 [document web]
-++[table] name='Browser and Engine' cols=2 headers=('Browser', 'Engine'); rows=3 headers=(NONE); caption=true; spans=(all: 1x1)
-++++[caption]
-++++++[text] name='Browser and Engine'
+++[table] name='Browser and Engine' labelled-by cols=2 headers=('Browser', 'Engine'); rows=3 headers=(NONE); caption=true; spans=(all: 1x1)
+++++[caption] label-for
+++++++[static] name='Browser and Engine'
 ++++[table row]
-++++++[column header] name='Browser'
-++++++++[text] name='Browser'
-++++++[column header] name='Engine'
-++++++++[text] name='Engine'
+++++++[column header] name='Browser' (row=0, col=0, row_span=1, col_span=1, n_row_headers=0, n_col_headers=0)
+++++++++[static] name='Browser'
+++++++[column header] name='Engine' (row=0, col=1, row_span=1, col_span=1, n_row_headers=0, n_col_headers=0)
+++++++++[static] name='Engine'
 ++++[table row]
-++++++[table cell] name='Chrome'
-++++++++[text] name='Chrome'
-++++++[table cell] name='Blink'
-++++++++[text] name='Blink'
+++++++[table cell] name='Chrome' (row=1, col=0, row_span=1, col_span=1, n_row_headers=0, n_col_headers=1)
+++++++++[static] name='Chrome'
+++++++[table cell] name='Blink' (row=1, col=1, row_span=1, col_span=1, n_row_headers=0, n_col_headers=1)
+++++++++[static] name='Blink'
 ++++[table row]
-++++++[table cell] name='Safari'
-++++++++[text] name='Safari'
-++++++[table cell] name='WebKit'
-++++++++[text] name='WebKit'
+++++++[table cell] name='Safari' (row=2, col=0, row_span=1, col_span=1, n_row_headers=0, n_col_headers=1)
+++++++++[static] name='Safari'
+++++++[table cell] name='WebKit' (row=2, col=1, row_span=1, col_span=1, n_row_headers=0, n_col_headers=1)
+++++++++[static] name='WebKit'

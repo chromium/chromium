@@ -5,8 +5,9 @@
 package org.chromium.chrome.browser.widget.prefeditor;
 
 import android.graphics.drawable.Drawable;
-import android.support.annotation.Nullable;
 import android.text.TextUtils;
+
+import androidx.annotation.Nullable;
 
 /**
  * An option that the user can select, e.g., a shipping option, a shipping address, or a payment
@@ -16,6 +17,8 @@ public class EditableOption implements Completable {
     // By default an editable option is complete. It is up to the subclass to update this value if
     // the payment option is not complete.
     protected boolean mIsComplete = true;
+    // By default a complete editable option should have max completeness score.
+    protected int mCompletenessScore = Integer.MAX_VALUE;
     protected boolean mIsEditable;
     protected String mEditMessage;
     protected String mEditTitle;
@@ -48,6 +51,11 @@ public class EditableOption implements Completable {
     @Override
     public boolean isComplete() {
         return mIsComplete;
+    }
+
+    @Override
+    public int getCompletenessScore() {
+        return mCompletenessScore;
     }
 
     /**

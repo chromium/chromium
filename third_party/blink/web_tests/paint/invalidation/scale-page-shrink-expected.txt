@@ -1,1 +1,0 @@
-This test must be run in DumpRenderTree as a pixel test. There should not be visual aritfacts after scaling the page.

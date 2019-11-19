@@ -15,7 +15,7 @@
 #include "util/fuchsia/koid_utilities.h"
 
 #include <fuchsia/sysinfo/c/fidl.h>
-#include <lib/fdio/util.h>
+#include <lib/fdio/fdio.h>
 #include <lib/zx/channel.h>
 #include <lib/zx/job.h>
 #include <lib/zx/process.h>
@@ -48,33 +48,6 @@ T CastHandle(zx::handle handle) {
   return T(std::move(handle));
 }
 
-zx::job GetRootJob() {
-  ScopedFileHandle sysinfo(
-      LoggingOpenFileForRead(base::FilePath("/dev/misc/sysinfo")));
-  if (!sysinfo.is_valid())
-    return zx::job();
-
-  zx::channel channel;
-  zx_status_t status = fdio_get_service_handle(sysinfo.release(),
-                                               channel.reset_and_get_address());
-  if (status != ZX_OK) {
-    ZX_LOG(ERROR, status) << "fdio_get_service_handle";
-    return zx::job();
-  }
-
-  zx::handle root_job;
-  zx_status_t fidl_status = fuchsia_sysinfo_DeviceGetRootJob(
-      channel.get(), &status, root_job.reset_and_get_address());
-  if (fidl_status != ZX_OK) {
-    ZX_LOG(ERROR, fidl_status) << "fuchsia_sysinfo_DeviceGetRootJob";
-    return zx::job();
-  } else if (status != ZX_OK) {
-    ZX_LOG(ERROR, status) << "fuchsia_sysinfo_DeviceGetRootJob";
-    return zx::job();
-  }
-  return CastHandle<zx::job>(std::move(root_job));
-}
-
 // Returns null handle if |koid| is not found or an error occurs. If |was_found|
 // is non-null then it will be set, to distinguish not-found from other errors.
 template <typename T, typename U>
@@ -90,35 +63,6 @@ T GetChildHandleByKoid(const U& parent, zx_koid_t child_koid, bool* was_found) {
   }
 
   return CastHandle<T>(std::move(handle));
-}
-
-// Returns an invalid handle if the |koid| was found, but was of the wrong
-// type, or we could not open a handle to it.
-zx::process FindProcess(const zx::job& job, zx_koid_t koid, bool* was_found) {
-  DCHECK(!*was_found);
-
-  // Look for |koid| as a direct descendent of |job|.
-  auto process = GetChildHandleByKoid<zx::process>(job, koid, was_found);
-  if (*was_found) {
-    // |koid| was found. |process| may still be null, e.g. if a handle could not
-    // be opened to it.
-    return process;
-  }
-
-  // |koid| was not found under |job|, so search child jobs, if any.
-  // Since we only hold a handle to the job we are currently enumerating, child
-  // jobs may go away mid-enumeration.
-  for (auto child_koid : GetChildKoids(job, ZX_INFO_JOB_CHILDREN)) {
-    zx::job child_job = GetChildHandleByKoid<zx::job>(job, child_koid, nullptr);
-    if (!child_job.is_valid())
-      continue;
-    zx::process process = FindProcess(child_job, koid, was_found);
-    if (*was_found)
-      return process;
-  }
-
-  DCHECK(!*was_found);
-  return zx::process();
 }
 
 }  // namespace
@@ -193,18 +137,6 @@ zx_koid_t GetKoidForHandle(const zx::object_base& object) {
     return ZX_KOID_INVALID;
   }
   return info.koid;
-}
-
-// TODO(scottmg): This implementation uses some debug/temporary/hacky APIs and
-// ioctls that are currently the only way to go from pid to handle. This should
-// hopefully eventually be replaced by more or less a single
-// zx_debug_something() syscall.
-zx::process GetProcessFromKoid(zx_koid_t koid) {
-  bool was_found = false;
-  zx::process result = FindProcess(GetRootJob(), koid, &was_found);
-  if (!result.is_valid())
-    LOG(ERROR) << "process " << koid << " not found";
-  return result;
 }
 
 }  // namespace crashpad

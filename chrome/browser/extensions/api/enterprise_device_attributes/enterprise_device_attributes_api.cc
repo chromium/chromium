@@ -7,6 +7,7 @@
 #include "base/values.h"
 #include "chrome/browser/app_mode/app_mode_utils.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/chromeos/policy/browser_policy_connector_chromeos.h"
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
@@ -19,8 +20,13 @@ namespace extensions {
 
 namespace {
 
-// Checks for the current browser context if the user is affiliated.
+// Checks for the current browser context if the user is affiliated or belongs
+// to the sign-in profile.
 bool IsPermittedToGetDeviceAttributes(content::BrowserContext* context) {
+  if (chromeos::ProfileHelper::IsSigninProfile(
+          Profile::FromBrowserContext(context))) {
+    return true;
+  }
   const user_manager::User* user =
       chromeos::ProfileHelper::Get()->GetUserByProfile(
           Profile::FromBrowserContext(context));

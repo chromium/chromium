@@ -100,8 +100,7 @@ GCMChannelStatusSyncer::GCMChannelStatusSyncer(
       poll_interval_seconds_(
           GCMChannelStatusRequest::default_poll_interval_seconds()),
       custom_poll_interval_use_count_(0),
-      delay_removed_for_testing_(false),
-      weak_ptr_factory_(this) {
+      delay_removed_for_testing_(false) {
   gcm_enabled_ = prefs_->GetBoolean(prefs::kGCMChannelStatus);
   poll_interval_seconds_ = prefs_->GetInteger(
       prefs::kGCMChannelPollIntervalSeconds);

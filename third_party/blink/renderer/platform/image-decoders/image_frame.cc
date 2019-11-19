@@ -122,6 +122,10 @@ bool ImageFrame::AllocatePixelData(int new_width,
                                    sk_sp<SkColorSpace> color_space) {
   // AllocatePixelData() should only be called once.
   DCHECK(!Width() && !Height());
+#ifdef FUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION
+  if (new_width > 1000 || new_height > 1000)
+    return false;
+#endif
 
   SkImageInfo info = SkImageInfo::MakeN32(
       new_width, new_height,

@@ -33,11 +33,6 @@
 
 namespace blink {
 
-DataTransferItemList* DataTransferItemList::Create(DataTransfer* data_transfer,
-                                                   DataObject* list) {
-  return MakeGarbageCollected<DataTransferItemList>(data_transfer, list);
-}
-
 uint32_t DataTransferItemList::length() const {
   if (!data_transfer_->CanReadTypes())
     return 0;
@@ -51,7 +46,7 @@ DataTransferItem* DataTransferItemList::item(uint32_t index) {
   if (!item)
     return nullptr;
 
-  return DataTransferItem::Create(data_transfer_, item);
+  return MakeGarbageCollected<DataTransferItem>(data_transfer_, item);
 }
 
 void DataTransferItemList::deleteItem(uint32_t index,
@@ -82,7 +77,7 @@ DataTransferItem* DataTransferItemList::add(const String& data,
         "An item already exists for type '" + type + "'.");
     return nullptr;
   }
-  return DataTransferItem::Create(data_transfer_, item);
+  return MakeGarbageCollected<DataTransferItem>(data_transfer_, item);
 }
 
 DataTransferItem* DataTransferItemList::add(File* file) {
@@ -91,7 +86,7 @@ DataTransferItem* DataTransferItemList::add(File* file) {
   DataObjectItem* item = data_object_->Add(file);
   if (!item)
     return nullptr;
-  return DataTransferItem::Create(data_transfer_, item);
+  return MakeGarbageCollected<DataTransferItem>(data_transfer_, item);
 }
 
 DataTransferItemList::DataTransferItemList(DataTransfer* data_transfer,

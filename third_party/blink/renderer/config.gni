@@ -14,12 +14,12 @@ if (current_cpu == "arm") {
 }
 
 declare_args() {
-  # TODO: send a PSA out to tell people to switch to blink_symbol_level
-  # and remove this.
-  # If true, doesn't compile debug symbols into webcore reducing the
-  # size of the binary and increasing the speed of gdb.
-  remove_webcore_debug_symbols = false
+  # If true, use PFFFT for WebAudio FFT support. Do not use for Mac because the
+  # FFT library there is much faster.
+  use_webaudio_pffft = target_os != "mac"
+}
 
+declare_args() {
   # How many symbols to include in the build of blink. This affects
   # the performance of the build since the symbols are large and dealing with
   # them is slow.
@@ -34,28 +34,16 @@ declare_args() {
   # If true, defaults image interpolation to low quality.
   use_low_quality_image_interpolation = is_android
 
-  # If true, ffmpeg will be used for decoding audio.
-  use_webaudio_ffmpeg = !is_mac && !is_android
+  # If true, ffmpeg will be used for computing FFTs for WebAudio
+  use_webaudio_ffmpeg = !is_mac && !is_android && !use_webaudio_pffft
 
   # If true, webgl2-compute context will be supported.
   support_webgl2_compute_context = !is_android
 }
 
-# Whether Android build uses OpenMAX DL FFT. Currently supported only on
-# ARMv7+, ARM64, x86 or x64 without webview. Also enables WebAudio support.
-# Whether WebAudio is actually available depends on runtime settings and flags.
-use_openmax_dl_fft =
-    is_android && (current_cpu == "x86" || current_cpu == "x64" ||
-                   (current_cpu == "arm" && arm_version >= 7) ||
-                   current_cpu == "arm64" || current_cpu == "mipsel")
-
 # feature_defines_list ---------------------------------------------------------
 
 feature_defines_list = []
-
-if (is_debug) {
-  feature_defines_list += [ "WTF_USE_DYNAMIC_ANNOTATIONS=1" ]
-}
 
 if (use_low_quality_image_interpolation) {
   feature_defines_list += [ "WTF_USE_LOW_QUALITY_IMAGE_INTERPOLATION=1" ]
@@ -69,33 +57,18 @@ if (support_webgl2_compute_context) {
   feature_defines_list += [ "SUPPORT_WEBGL2_COMPUTE_CONTEXT=1" ]
 }
 
-if (use_openmax_dl_fft) {
-  feature_defines_list += [ "WTF_USE_WEBAUDIO_OPENMAX_DL_FFT=1" ]
+if (use_webaudio_pffft) {
+  feature_defines_list += [ "WTF_USE_WEBAUDIO_PFFFT=1" ]
 }
 
-if (use_default_render_theme) {
-  # Mirrors the USE_DEFAULT_RENDER_THEME buildflag_header in WebKit/public.
-  # If/when Blink can use buildflag headers, this should be removed in
-  # preference to that.
-  feature_defines_list += [ "WTF_USE_DEFAULT_RENDER_THEME=1" ]
-}
-
-assert(
-    blink_symbol_level == -1 || !remove_webcore_debug_symbols,
-    "blink_symbol_level and remove_webcore_debug_symbols cannot both be set.")
-
-if (remove_webcore_debug_symbols) {
-  if (is_win && symbol_level != 0) {
-    # If we use no_symbols on Windows when symbol_level is not zero then no
-    # PDB will be generated but ninja will be expecting one. This would mean
-    # that the build would always be dirty. Using minimal_symbols in this
-    # situation keeps the build times fast (roughly identical to no_symbols)
-    # while still generating a PDB to keep ninja happy (and it gives us proper
-    # call stacks).
-    blink_symbol_level = 1
-  } else {
-    blink_symbol_level = 0
-  }
+if (blink_symbol_level == 0 && is_win && symbol_level != 0) {
+  # If we use no_symbols on Windows when symbol_level is not zero then no
+  # PDB will be generated but ninja will be expecting one. This would mean
+  # that the build would always be dirty. Using minimal_symbols in this
+  # situation keeps the build times fast (roughly identical to no_symbols)
+  # while still generating a PDB to keep ninja happy (and it gives us proper
+  # call stacks).
+  blink_symbol_level = 1
 }
 
 if (blink_symbol_level == 2) {

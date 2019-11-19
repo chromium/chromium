@@ -4,7 +4,7 @@
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//   http://www.apache.org/licenses/LICENSE-2.0
+//   https://www.apache.org/licenses/LICENSE-2.0
 //
 //   Unless required by applicable law or agreed to in writing, software
 //   distributed under the License is distributed on an "AS IS" BASIS,
@@ -37,7 +37,7 @@ std::string Format(const T& t) {
 
 }  // namespace
 
-#if __cpp_constexpr >= 201304 || _MSC_VER >= 1910
+#if __cpp_constexpr >= 201304 || (defined(_MSC_VER) && _MSC_VER >= 1910)
 // Construction constexpr tests
 
 TEST(CivilTime, Normal) {
@@ -319,7 +319,7 @@ TEST(CivilTime, YearDay) {
   constexpr int yd = get_yearday(cd);
   static_assert(yd == 28, "YearDay");
 }
-#endif  // __cpp_constexpr >= 201304 || _MSC_VER >= 1910
+#endif  // __cpp_constexpr >= 201304 || (defined(_MSC_VER) && _MSC_VER >= 1910)
 
 // The remaining tests do not use constexpr.
 
@@ -821,6 +821,8 @@ TEST(CivilTime, Properties) {
   EXPECT_EQ(4, ss.hour());
   EXPECT_EQ(5, ss.minute());
   EXPECT_EQ(6, ss.second());
+  EXPECT_EQ(weekday::tuesday, get_weekday(ss));
+  EXPECT_EQ(34, get_yearday(ss));
 
   civil_minute mm(2015, 2, 3, 4, 5, 6);
   EXPECT_EQ(2015, mm.year());
@@ -829,6 +831,8 @@ TEST(CivilTime, Properties) {
   EXPECT_EQ(4, mm.hour());
   EXPECT_EQ(5, mm.minute());
   EXPECT_EQ(0, mm.second());
+  EXPECT_EQ(weekday::tuesday, get_weekday(mm));
+  EXPECT_EQ(34, get_yearday(mm));
 
   civil_hour hh(2015, 2, 3, 4, 5, 6);
   EXPECT_EQ(2015, hh.year());
@@ -837,6 +841,8 @@ TEST(CivilTime, Properties) {
   EXPECT_EQ(4, hh.hour());
   EXPECT_EQ(0, hh.minute());
   EXPECT_EQ(0, hh.second());
+  EXPECT_EQ(weekday::tuesday, get_weekday(hh));
+  EXPECT_EQ(34, get_yearday(hh));
 
   civil_day d(2015, 2, 3, 4, 5, 6);
   EXPECT_EQ(2015, d.year());
@@ -855,6 +861,8 @@ TEST(CivilTime, Properties) {
   EXPECT_EQ(0, m.hour());
   EXPECT_EQ(0, m.minute());
   EXPECT_EQ(0, m.second());
+  EXPECT_EQ(weekday::sunday, get_weekday(m));
+  EXPECT_EQ(32, get_yearday(m));
 
   civil_year y(2015, 2, 3, 4, 5, 6);
   EXPECT_EQ(2015, y.year());
@@ -863,6 +871,8 @@ TEST(CivilTime, Properties) {
   EXPECT_EQ(0, y.hour());
   EXPECT_EQ(0, y.minute());
   EXPECT_EQ(0, y.second());
+  EXPECT_EQ(weekday::thursday, get_weekday(y));
+  EXPECT_EQ(1, get_yearday(y));
 }
 
 TEST(CivilTime, OutputStream) {
@@ -1035,7 +1045,7 @@ TEST(CivilTime, LeapYears) {
 
 TEST(CivilTime, FirstThursdayInMonth) {
   const civil_day nov1(2014, 11, 1);
-  const civil_day thursday = prev_weekday(nov1, weekday::thursday) + 7;
+  const civil_day thursday = next_weekday(nov1 - 1, weekday::thursday);
   EXPECT_EQ("2014-11-06", Format(thursday));
 
   // Bonus: Date of Thanksgiving in the United States

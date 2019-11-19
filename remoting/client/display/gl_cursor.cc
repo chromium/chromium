@@ -18,7 +18,7 @@ namespace {
 const int kDefaultCursorDataSize = 32 * 32 * GlRenderLayer::kBytesPerPixel;
 }  // namespace
 
-GlCursor::GlCursor() : weak_factory_(this) {}
+GlCursor::GlCursor() {}
 
 GlCursor::~GlCursor() {
   DCHECK(thread_checker_.CalledOnValidThread());

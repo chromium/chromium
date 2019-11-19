@@ -7,7 +7,9 @@
 interface RTCRtpReceiver {
     readonly attribute MediaStreamTrack track;
     [RuntimeEnabled=RTCDtlsTransport] readonly attribute RTCDtlsTransport? transport;
-    [RuntimeEnabled=RTCDtlsTransport] readonly attribute RTCDtlsTransport? rtcp_transport;
+    [RuntimeEnabled=RTCDtlsTransport] readonly attribute RTCDtlsTransport? rtcpTransport;
+    // https://henbos.github.io/webrtc-extensions/#dom-rtcrtpreceiver-playoutdelayhint
+    [RaisesException, Measure] attribute double? playoutDelayHint;
     static RTCRtpCapabilities?            getCapabilities(DOMString kind);
     RTCRtpReceiveParameters               getParameters();
     sequence<RTCRtpSynchronizationSource> getSynchronizationSources();

@@ -13,7 +13,7 @@
 #include "base/bind.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/sync_socket.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_parameters.h"
@@ -54,7 +54,7 @@ class SyncReaderBitstreamTest : public TestWithParam<OverflowTestCase> {
   ~SyncReaderBitstreamTest() override {}
 
  private:
-  base::test::ScopedTaskEnvironment env_;
+  base::test::TaskEnvironment env_;
 };
 
 TEST_P(SyncReaderBitstreamTest, BitstreamBufferOverflow_DoesNotWriteOOB) {

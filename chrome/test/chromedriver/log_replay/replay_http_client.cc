@@ -20,14 +20,14 @@ std::string UrlPath(const std::string& url) {
 }  // namespace
 
 ReplayHttpClient::ReplayHttpClient(
-    const NetAddress& address,
+    const DevToolsEndpoint& endpoint,
     network::mojom::URLLoaderFactory* factory,
     const SyncWebSocketFactory& socket_factory,
     std::unique_ptr<DeviceMetrics> device_metrics,
     std::unique_ptr<std::set<WebViewInfo::Type>> window_types,
     std::string page_load_strategy,
     const base::FilePath& log_path)
-    : DevToolsHttpClient(address,
+    : DevToolsHttpClient(endpoint,
                          factory,
                          socket_factory,
                          std::move(device_metrics),

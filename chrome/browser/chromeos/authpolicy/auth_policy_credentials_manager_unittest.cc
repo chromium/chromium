@@ -16,12 +16,12 @@
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/dbus/auth_policy/fake_auth_policy_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/dbus/fake_auth_policy_client.h"
 #include "chromeos/network/network_handler.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user_manager.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace chromeos {
@@ -52,6 +52,7 @@ class AuthPolicyCredentialsManagerTest : public testing::Test {
   void SetUp() override {
     chromeos::DBusThreadManager::Initialize();
     chromeos::NetworkHandler::Initialize();
+    AuthPolicyClient::InitializeFake();
     fake_auth_policy_client()->DisableOperationDelayForTesting();
 
     TestingProfile::Builder profile_builder;
@@ -83,8 +84,9 @@ class AuthPolicyCredentialsManagerTest : public testing::Test {
   void TearDown() override {
     EXPECT_CALL(*mock_user_manager(), Shutdown());
     profile_.reset();
-    chromeos::NetworkHandler::Shutdown();
-    chromeos::DBusThreadManager::Shutdown();
+    AuthPolicyClient::Shutdown();
+    NetworkHandler::Shutdown();
+    DBusThreadManager::Shutdown();
   }
 
  protected:
@@ -94,8 +96,7 @@ class AuthPolicyCredentialsManagerTest : public testing::Test {
     return auth_policy_credentials_manager_;
   }
   chromeos::FakeAuthPolicyClient* fake_auth_policy_client() const {
-    return static_cast<chromeos::FakeAuthPolicyClient*>(
-        chromeos::DBusThreadManager::Get()->GetAuthPolicyClient());
+    return chromeos::FakeAuthPolicyClient::Get();
   }
 
   MockUserManager* mock_user_manager() {
@@ -126,7 +127,7 @@ class AuthPolicyCredentialsManagerTest : public testing::Test {
     testing::Mock::VerifyAndClearExpectations(mock_user_manager());
   }
 
-  content::TestBrowserThreadBundle thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
   AccountId account_id_;
   std::unique_ptr<TestingProfile> profile_;
 

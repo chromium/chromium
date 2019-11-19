@@ -1,0 +1,5 @@
+# Feature will be unified with send_tab_to_self in a sharing hub in a future
+# release; owners should be shared.
+file://components/send_tab_to_self/OWNERS
+
+# COMPONENT: UI>Browser>Sharing

@@ -20,3 +20,10 @@ Local changes:
 * Make sure HB_gain is not NaN in an attempt to fix chromium:826914
 * Saturate add to avoid int overflow to fix chromium:842528. This should be
   reverted when updating to v1.3
+* Apply https://github.com/xiph/opus/commit/4f4b11c2398e96134dc62ee794bfe33ecd6e9bd2
+* Apply https://git.xiph.org/?p=opus.git;a=commit;h=812ae3fb5c589aaafe761b8ebf86bcbbb8f0ed76
+* Apply https://git.xiph.org/?p=opus.git;a=commit;h=cd529ed
+* Apply https://github.com/xiph/opus/commit/cdaf661e8d3e85770bf06db8cff12ae6be7fa2a6
+
+Opus' own unit tests are located in ./src/tests
+Additional chromium tests are located in ./tests

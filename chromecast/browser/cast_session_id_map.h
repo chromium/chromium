@@ -48,7 +48,7 @@ class CastSessionIdMap {
   class GroupObserver;
   friend class base::NoDestructor<CastSessionIdMap>;
 
-  CastSessionIdMap(base::SequencedTaskRunner* task_runner);
+  explicit CastSessionIdMap(base::SequencedTaskRunner* task_runner);
   ~CastSessionIdMap();
 
   // Callback for the group being destroyed.
@@ -66,7 +66,6 @@ class CastSessionIdMap {
   // This must be called on the |task_runner_|.
   std::string GetSessionIdInternal(std::string group_id);
 
-  const bool supports_group_id_;
   base::flat_map<
       std::string,
       std::pair<std::string /* group_id */, std::unique_ptr<GroupObserver>>>

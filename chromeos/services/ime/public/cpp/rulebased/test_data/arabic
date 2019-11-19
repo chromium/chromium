@@ -1,0 +1,20 @@
+# Created from RulebasedImeTest.Arabic
+engine_id: AR
+key_events {
+  code: KEY_A
+  shift: true
+  altgr: false
+  caps_lock: false
+}
+key_events {
+  code: KEY_B
+  shift: false
+  altgr: false
+  caps_lock: false
+}
+key_events {
+  code: SPACE
+  shift: false
+  altgr: false
+  caps_lock: false
+}

@@ -4,7 +4,7 @@
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//      http://www.apache.org/licenses/LICENSE-2.0
+//      https://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -38,6 +38,7 @@
 //   ABSL_RAW_LOG(ERROR, "Failed foo with %i: %s", status, error);
 // This will print an almost standard log line like this to stderr only:
 //   E0821 211317 file.cc:123] RAW: Failed foo with 22: bad_file
+
 #define ABSL_RAW_LOG(severity, ...)                                            \
   do {                                                                         \
     constexpr const char* absl_raw_logging_internal_basename =                 \
@@ -79,13 +80,13 @@
         absl_raw_logging_internal_basename, __LINE__, message);       \
   } while (0)
 
-#define ABSL_INTERNAL_CHECK(condition, message)               \
-  do {                                                        \
-    if (ABSL_PREDICT_FALSE(!(condition))) {                   \
+#define ABSL_INTERNAL_CHECK(condition, message)                    \
+  do {                                                             \
+    if (ABSL_PREDICT_FALSE(!(condition))) {                        \
       std::string death_message = "Check " #condition " failed: "; \
       death_message += std::string(message);                       \
-      ABSL_INTERNAL_LOG(FATAL, death_message);                \
-    }                                                         \
+      ABSL_INTERNAL_LOG(FATAL, death_message);                     \
+    }                                                              \
   } while (0)
 
 #define ABSL_RAW_LOGGING_INTERNAL_INFO ::absl::LogSeverity::kInfo

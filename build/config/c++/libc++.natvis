@@ -1,0 +1,358 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<AutoVisualizer
+  xmlns="http://schemas.microsoft.com/vstudio/debugger/natvis/2010">
+
+  <!-- libc++'s __compressed_pair is an internal type used pervasively for
+       doing the empty base class optimization.
+
+       __compressed_pair<U,V> derives from __compressed_pair_elem<U,0> and
+       __compressed_pair_elem<V,1>. __compressed_pair_elem<T> is specialized on
+       a 3rd template parameter:
+       * if T is empty and non-final the 3rd param is 1 and it derives from T
+       * else it has a member variable __value_ of type T
+  -->
+  <Type Name="std::__1::__compressed_pair_elem&lt;*,*,0&gt;">
+    <DisplayString>{__value_}</DisplayString>
+    <Expand>
+      <ExpandedItem>__value_</ExpandedItem>
+    </Expand>
+  </Type>
+  <Type Name="std::__1::__compressed_pair_elem&lt;*,*,1&gt;">
+    <DisplayString>{*($T1*)this}</DisplayString>
+    <Expand>
+      <ExpandedItem>*($T1*)this</ExpandedItem>
+    </Expand>
+  </Type>
+
+  <Type Name="std::__1::array&lt;*,*&gt;">
+    <DisplayString>{{ size={$T2} }}</DisplayString>
+    <Expand>
+      <ArrayItems>
+        <Size>$T2</Size>
+        <ValuePointer>__elems_</ValuePointer>
+      </ArrayItems>
+    </Expand>
+  </Type>
+
+  <!--libc++'s short string optimization:
+      A basic_string is 3 size_t words long. In the "alternate string layout"
+      that we use, they are: pointer to data, size, capacity.
+      (In the normal layout, it's capacity, size, data instead.)
+      If a string is short enough that it fits in these three size_ts instead,
+      the string data is stored inline in these 3 words, with the last byte of
+      the storage storing the length of the string.
+      The highest bit of the "capacity" word is set for normal, "long" strings,
+      and that bit needs to be masked out to know the real capacity.
+      If this bit is not set, the string data is stored inline.
+      (In the normal layout, if the lowest bit in the first byte is set,
+      it's a "long" string, requiring a long string to always have even
+      capacity. A short string here stores its length in the first byte
+      and the inline data in the remaining storage.)
+  -->
+
+  <Type Name="std::__1::basic_string&lt;char,*&gt;">
+    <!--<Intrinsic Name="is_long"
+            Expression="((__rep*)&amp;__r_)-&gt;__s.__size_ &amp; 0x80" />-->
+    <!-- The above doesn't work because of https://llvm.org/PR41615
+         TODO(thakis): Now that we have clang r362038, try the above approach
+                       again.
+         The below assumes the alternate string layout and little endianness :/
+    -->
+    <Intrinsic Name="is_long"
+        Expression="*(((char*)this) + 3*sizeof(size_t) - 1) &amp; 0x80" />
+    <DisplayString Condition="is_long()">{*(char**)this}</DisplayString>
+    <DisplayString Condition="!is_long()">{(char*)this}</DisplayString>
+    <StringView Condition="is_long()">*(char**)this</StringView>
+    <StringView Condition="!is_long()">(char*)this</StringView>
+    <Expand>
+      <Item Name="[size]" Condition="is_long()"
+          ExcludeView="simple">((size_t*)this)[1]</Item>
+      <Item Name="[size]" Condition="!is_long()"
+          ExcludeView="simple">*(((char*)this) + 3*sizeof(size_t) - 1)</Item>
+      <Item Name="[capacity]" Condition="is_long()" ExcludeView="simple">
+        ((size_t*)this)[2] &amp; (~((size_t)0) &gt;&gt; 1)
+      </Item>
+      <Item Name="[capacity]" Condition="!is_long()"
+          ExcludeView="simple">22</Item>
+      <ArrayItems>
+        <Size Condition="is_long()">((size_t*)this)[1]</Size>
+        <Size Condition="!is_long()">
+          *(((char*)this) + 3*sizeof(size_t) - 1)
+        </Size>
+        <ValuePointer Condition="is_long()">*(char**)this</ValuePointer>
+        <ValuePointer Condition="!is_long()">(char*)this</ValuePointer>
+      </ArrayItems>
+    </Expand>
+  </Type>
+
+  <Type Name="std::__1::basic_string&lt;wchar_t,*&gt;">
+    <Intrinsic Name="is_long"
+        Expression="*(((char*)this) + 3*sizeof(size_t) - 1) &amp; 0x80" />
+    <DisplayString Condition="is_long()">{*(wchar_t**)this}</DisplayString>
+    <DisplayString Condition="!is_long()">{(wchar_t*)this}</DisplayString>
+    <StringView Condition="is_long()">*(wchar_t**)this</StringView>
+    <StringView Condition="!is_long()">(wchar_t*)this</StringView>
+    <Expand>
+      <Item Name="[size]" Condition="is_long()"
+          ExcludeView="simple">((size_t*)this)[1]</Item>
+      <Item Name="[size]" Condition="!is_long()"
+          ExcludeView="simple">*(((char*)this) + 3*sizeof(size_t) - 1)</Item>
+      <Item Name="[capacity]" Condition="is_long()" ExcludeView="simple">
+        ((size_t*)this)[2] &amp; (~((size_t)0) &gt;&gt; 1)
+      </Item>
+      <Item Name="[capacity]" Condition="!is_long()"
+          ExcludeView="simple">10</Item>
+      <ArrayItems>
+        <Size Condition="is_long()">((size_t*)this)[1]</Size>
+        <Size Condition="!is_long()">
+          *(((char*)this) + 3*sizeof(size_t) - 1)
+        </Size>
+        <ValuePointer Condition="is_long()">*(wchar_t**)this</ValuePointer>
+        <ValuePointer Condition="!is_long()">(wchar_t*)this</ValuePointer>
+      </ArrayItems>
+    </Expand>
+  </Type>
+
+  <Type Name="std::__1::deque&lt;*,*&gt;">
+    <Intrinsic Name="size" Expression="*(size_type*)&amp;__size_" />
+    <Intrinsic Name="block_size"
+        Expression="sizeof($T1) &lt; 256 ? 4096 / sizeof($T1) : 16" />
+    <DisplayString>{{ size={size()} }}</DisplayString>
+    <Expand>
+      <IndexListItems>
+        <Size>size()</Size>
+        <ValueNode>
+          *(*(__map_.__begin_ + ($i + __start_) / block_size()) +
+                                ($i + __start_) % block_size())
+        </ValueNode>
+      </IndexListItems>
+    </Expand>
+  </Type>
+
+  <Type Name="std::__1::forward_list&lt;*&gt;">
+    <Intrinsic Name="head"
+        Expression="((__node_pointer)&amp;__before_begin_)-&gt;__next_" />
+    <DisplayString Condition="head() == 0">empty</DisplayString>
+    <DisplayString Condition="head() != 0">non-empty</DisplayString>
+    <Expand>
+      <LinkedListItems>
+        <HeadPointer>head()</HeadPointer>
+        <NextPointer>__next_</NextPointer>
+        <ValueNode>__value_</ValueNode>
+      </LinkedListItems>
+    </Expand>
+  </Type>
+
+  <!-- Note: Not in __1! But will win over the one in stl.natvis -->
+  <Type Name="std::initializer_list&lt;*&gt;">
+    <DisplayString>{{ size={__size_} }}</DisplayString>
+    <Expand>
+      <ArrayItems>
+        <Size>__size_</Size>
+        <ValuePointer>__begin_</ValuePointer>
+      </ArrayItems>
+    </Expand>
+  </Type>
+
+  <Type Name="std::__1::list&lt;*&gt;">
+    <Intrinsic Name="size" Expression="*(size_type*)&amp;__size_alloc_" />
+    <DisplayString>{{ size={size()} }}</DisplayString>
+    <Expand>
+      <LinkedListItems>
+        <Size>size()</Size>
+        <HeadPointer>__end_.__next_</HeadPointer>
+        <NextPointer>__next_</NextPointer>
+        <ValueNode>
+          ((std::__1::list&lt;$T1,$T2&gt;::__node_pointer)this)
+              -&gt;__value_
+        </ValueNode>
+      </LinkedListItems>
+    </Expand>
+  </Type>
+
+  <Type Name="std::__1::map&lt;*&gt;">
+    <Intrinsic Name="size" Expression="*(size_type*)&amp;__tree_.__pair3_" />
+    <DisplayString>{{ size={size()} }}</DisplayString>
+    <Expand>
+      <Item Name="[size]">size()</Item>
+      <TreeItems>
+        <Size>size()</Size>
+        <HeadPointer>
+          ((__node_pointer)&amp;__tree_.__pair1_)-&gt;__left_
+        </HeadPointer>
+        <LeftPointer>
+          ((std::__1::map&lt;$T1,$T2,$T3,$T4&gt;::__node_pointer)this)
+              -&gt;__left_
+        </LeftPointer>
+        <RightPointer>
+          ((std::__1::map&lt;$T1,$T2,$T3,$T4&gt;::__node_pointer)this)
+              -&gt;__right_
+        </RightPointer>
+        <ValueNode>
+          ((std::__1::map&lt;$T1,$T2,$T3,$T4&gt;::__node_pointer)this)
+              -&gt;__value_.__cc
+        </ValueNode>
+      </TreeItems>
+    </Expand>
+  </Type>
+
+  <Type Name="std::__1::multimap&lt;*&gt;">
+    <Intrinsic Name="size" Expression="*(size_type*)&amp;__tree_.__pair3_" />
+    <DisplayString>{{ size={size()} }}</DisplayString>
+    <Expand>
+      <Item Name="[size]">size()</Item>
+      <TreeItems>
+        <Size>size()</Size>
+        <HeadPointer>
+          ((__node_pointer)&amp;__tree_.__pair1_)-&gt;__left_
+        </HeadPointer>
+        <LeftPointer>
+          ((std::__1::multimap&lt;$T1,$T2,$T3,$T4&gt;::__node_pointer)this)
+              -&gt;__left_
+        </LeftPointer>
+        <RightPointer>
+          ((std::__1::multimap&lt;$T1,$T2,$T3,$T4&gt;::__node_pointer)this)
+              -&gt;__right_
+        </RightPointer>
+        <ValueNode>
+          ((std::__1::multimap&lt;$T1,$T2,$T3,$T4&gt;::__node_pointer)this)
+              -&gt;__value_.__cc
+        </ValueNode>
+      </TreeItems>
+    </Expand>
+  </Type>
+
+  <Type Name="std::__1::multiset&lt;*&gt;">
+    <Intrinsic Name="size" Expression="*(size_type*)&amp;__tree_.__pair3_" />
+    <DisplayString>{{ size={size()} }}</DisplayString>
+    <Expand>
+      <Item Name="[size]">size()</Item>
+      <TreeItems>
+        <Size>size()</Size>
+        <HeadPointer>
+          ((__base::__node_pointer)&amp;__tree_.__pair1_)-&gt;__left_
+        </HeadPointer>
+        <LeftPointer>
+          ((std::__1::multiset&lt;$T1,$T2,$T3&gt;::__base::__node_pointer)this)
+              -&gt;__left_
+        </LeftPointer>
+        <RightPointer>
+          ((std::__1::multiset&lt;$T1,$T2,$T3&gt;::__base::__node_pointer)this)
+              -&gt;__right_
+        </RightPointer>
+        <ValueNode>
+          ((std::__1::multiset&lt;$T1,$T2,$T3&gt;::__base::__node_pointer)this)
+              -&gt;__value_
+        </ValueNode>
+      </TreeItems>
+    </Expand>
+  </Type>
+
+
+  <Type Name="std::__1::set&lt;*&gt;">
+    <Intrinsic Name="size" Expression="*(size_type*)&amp;__tree_.__pair3_" />
+    <DisplayString>{{ size={size()} }}</DisplayString>
+    <Expand>
+      <Item Name="[size]">size()</Item>
+      <TreeItems>
+        <Size>size()</Size>
+        <HeadPointer>
+          ((__base::__node_pointer)&amp;__tree_.__pair1_)-&gt;__left_
+        </HeadPointer>
+        <LeftPointer>
+          ((std::__1::set&lt;$T1,$T2,$T3&gt;::__base::__node_pointer)this)
+              -&gt;__left_
+        </LeftPointer>
+        <RightPointer>
+          ((std::__1::set&lt;$T1,$T2,$T3&gt;::__base::__node_pointer)this)
+              -&gt;__right_
+        </RightPointer>
+        <ValueNode>
+          ((std::__1::set&lt;$T1,$T2,$T3&gt;::__base::__node_pointer)this)
+              -&gt;__value_
+        </ValueNode>
+      </TreeItems>
+    </Expand>
+  </Type>
+
+  <Type Name="std::__1::stack&lt;*&gt;">
+    <AlternativeType Name="std::__1::queue&lt;*&gt;" />
+    <DisplayString>{c}</DisplayString>
+    <Expand>
+      <ExpandedItem>c</ExpandedItem>
+    </Expand>
+  </Type>
+
+  <Type Name="std::__1::priority_queue&lt;*&gt;">
+    <DisplayString>{c}</DisplayString>
+    <Expand>
+      <ExpandedItem>c</ExpandedItem>
+      <Item Name="[comp]">comp</Item>
+    </Expand>
+  </Type>
+
+  <Type Name="std::__1::unique_ptr&lt;*&gt;">
+    <Intrinsic Name="value" Expression="*($T1**)&amp;__ptr_" />
+    <SmartPointer Usage="Minimal">value()</SmartPointer>
+      <DisplayString Condition="value() == 0">empty</DisplayString>
+      <DisplayString Condition="value() != 0">
+        unique_ptr {value()}</DisplayString>
+      <Expand>
+        <Item Condition="value() != 0" Name="[ptr]">value()</Item>
+      </Expand>
+  </Type>
+
+<Type Name="std::__1::unordered_map&lt;*&gt;">
+    <AlternativeType Name="std::__1::unordered_multimap&lt;*&gt;" />
+    <AlternativeType Name="std::__1::unordered_multiset&lt;*&gt;" />
+    <AlternativeType Name="std::__1::unordered_set&lt;*&gt;" />
+    <Intrinsic Name="size" Expression="*(size_type*)&amp;__table_.__p2_" />
+    <Intrinsic Name="bucket_count"
+        Expression="*(size_type*)&amp;
+                    ((__table::__bucket_list_deleter*)
+                        ((void**)&amp;__table_.__bucket_list_ + 1))
+                        -&gt;__data_" />
+    <DisplayString>{{ size={size()} }}</DisplayString>
+    <Expand>
+      <Item Name="[bucket_count]">bucket_count()</Item>
+      <Item Name="[load_factor]">
+        bucket_count() != 0 ? (float)size() / bucket_count() : 0.f</Item>
+      <Item Name="[max_load_factor]">*(float*)&amp;__table_.__p3_</Item>
+      <!-- Use CustomListItems instead of LinkedListItems because we
+        need to cast to __table::__node_pointer and LinkedListItems
+        evaluates <Value> in the context of the node, not of the container,
+        so we'd have to say std::unordered_map<$T1,...>::__table::__node_pointer
+        and then we couldn't share this <Type> between unordered_(multi)map
+        and unordered_(multi)set. -->
+      <CustomListItems>
+        <Variable Name="node"
+            InitialValue="*(__table::__next_pointer*)&amp;__table_.__p1_" />
+        <Size>size()</Size>
+        <Loop>
+          <Item>(*(__table::__node_pointer*)&amp;node)-&gt;__value_</Item>
+          <Exec>node = node-&gt;__next_</Exec>
+        </Loop>
+      </CustomListItems>
+    </Expand>
+  </Type>
+  <!-- This is the node __value_ of an unordered_(multi)map. Expand it through
+    a separate formatter instead of in the <Item> expression above so that the
+    same <Type> works for unordered_(multi)set and unordered_(multi)map. -->
+  <Type Name="std::__1::__hash_value_type&lt;*&gt;">
+    <DisplayString>{__cc}</DisplayString>
+    <Expand>
+      <ExpandedItem>__cc</ExpandedItem>
+    </Expand>
+  </Type>
+
+  <Type Name="std::__1::vector&lt;*&gt;">
+    <Intrinsic Name="size" Expression="__end_ - __begin_" />
+    <DisplayString>{{ size={size()} }}</DisplayString>
+    <Expand>
+      <ArrayItems>
+        <Size>size()</Size>
+        <ValuePointer>__begin_</ValuePointer>
+      </ArrayItems>
+    </Expand>
+  </Type>
+</AutoVisualizer>

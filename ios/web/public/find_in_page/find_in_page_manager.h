@@ -6,7 +6,7 @@
 #define IOS_WEB_PUBLIC_FIND_IN_PAGE_FIND_IN_PAGE_MANAGER_H_
 
 #include "base/macros.h"
-#import "ios/web/public/web_state/web_state_user_data.h"
+#import "ios/web/public/web_state_user_data.h"
 
 @class NSString;
 
@@ -16,15 +16,15 @@ class FindInPageManagerDelegate;
 
 // Indicates what action the FindinPageManager should take.
 enum class FindInPageOptions {
-  // Search for a string. Highlight and scroll to the first result if
-  // string is found. TODO(crbug.com/925149): Does not support strings with
-  // non-ascii.
+  // Searches for a string. Highlights all matches. Selects and scrolls to the
+  // first result if string is found. Selecting refers to highlighting in a
+  // unique manner different from the other matches.
   FindInPageSearch = 1,
-  // Highlight and scroll to the next result if there is one. Otherwise, nothing
+  // Selects and scrolls to the next result if there is one. Otherwise, nothing
   // will change. Loop back to the first result if currently on last result. If
   // passed before a Find() with FindInPageSearch call, nothing will change.
   FindInPageNext,
-  // Highlight and scroll to the previous result if there is one. Otherwise,
+  // Selects and scrolls to the previous result if there is one. Otherwise,
   // nothing will change. Loop to last result if currently on first result. If
   // passed before a Find() with FindInPageSearch call, nothing will change.
   FindInPagePrevious,
@@ -37,10 +37,11 @@ class FindInPageManager : public web::WebStateUserData<FindInPageManager> {
   // on |options|. |query| must not be null if |options| is |FindInPageSearch|.
   // |query| is ignored if |options| is not |FindInPageSearch|. If new search is
   // started before previous search finishes, old request will be discarded.
+  // Check CanSearchContent() before calling Find().
   //
-  // FindInPageManagerDelegate::DidCountMatches() will be called to return the
-  // total matches found if FindInPageSearch is passed, assuming it hasn't been
-  // discarded. FindInPageManagerDelegate::DidHighlightMatch() will also be
+  // FindInPageManagerDelegate::DidHighlightMatches() will be called to return
+  // the total matches found if FindInPageSearch is passed, assuming it hasn't
+  // been discarded. FindInPageManagerDelegate::DidSelectMatch() will also be
   // called if matches were found to inform client of the new match that was
   // highlighted for all FindInPageOptions.
   virtual void Find(NSString* query, FindInPageOptions options) = 0;
@@ -48,6 +49,10 @@ class FindInPageManager : public web::WebStateUserData<FindInPageManager> {
   // Removes any highlighting. Does nothing if Find() with
   // FindInPageOptions::FindInPageSearch is never called.
   virtual void StopFinding() = 0;
+
+  // Returns false if page content can not be searched (for example: an image)
+  // or if search is not supported (for example: PDF files).
+  virtual bool CanSearchContent() = 0;
 
   virtual FindInPageManagerDelegate* GetDelegate() = 0;
   virtual void SetDelegate(FindInPageManagerDelegate* delegate) = 0;

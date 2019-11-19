@@ -1,0 +1,15 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/buildflag_header.gni")
+import("//build/config/chrome_build.gni")
+
+# Allow browser tests that startup with --gcpw-signin flag only on
+# non-Google Chrome builds.
+can_test_gcpw_signin_startup = !is_chrome_branded
+
+buildflag_header("buildflags") {
+  header = "buildflags.h"
+  flags = [ "CAN_TEST_GCPW_SIGNIN_STARTUP=$can_test_gcpw_signin_startup" ]
+}

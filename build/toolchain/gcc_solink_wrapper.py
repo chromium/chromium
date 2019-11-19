@@ -94,6 +94,14 @@ def main():
   fast_env = dict(os.environ)
   fast_env['LC_ALL'] = 'C'
 
+  # Extract the --link-only argument, which goes for a ride through ldflags into
+  # the command, but is meant to be intercepted by this wrapper script (not
+  # passed to the linker). https://crbug.com/954311 tracks finding a better way
+  # to plumb this argument.
+  link_only = '--link-only' in args.command
+  if link_only:
+    args.command.remove('--link-only')
+
   # First, run the actual link.
   command = wrapper_utils.CommandToRun(args.command)
   result = wrapper_utils.RunLinkWithOptionalMapFile(command, env=fast_env,
@@ -101,6 +109,26 @@ def main():
 
   if result != 0:
     return result
+
+  # If only linking, we are likely generating a partitioned .so that will be
+  # split apart later. In that case:
+  #
+  # - The TOC file optimization isn't useful, because the partition libraries
+  #   must always be re-extracted if the combined library changes (and nothing
+  #   should be depending on the combined library's dynamic symbol table).
+  # - Stripping isn't necessary, because the combined library is not used in
+  #   production or published.
+  #
+  # Both of these operations could still be done, they're needless work, and
+  # tools would need to be updated to handle and/or not complain about
+  # partitioned libraries. Instead, to keep Ninja happy, simply create dummy
+  # files for the TOC and stripped lib.
+  if link_only:
+    with open(args.output, 'w'):
+      pass
+    with open(args.tocfile, 'w'):
+      pass
+    return 0
 
   # Next, generate the contents of the TOC file.
   result, toc = CollectTOC(args)

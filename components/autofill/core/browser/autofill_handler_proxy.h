@@ -15,7 +15,9 @@ class AutofillProvider;
 // This class forwards AutofillHandler calls to AutofillProvider.
 class AutofillHandlerProxy : public AutofillHandler {
  public:
-  AutofillHandlerProxy(AutofillDriver* driver, AutofillProvider* provider);
+  AutofillHandlerProxy(AutofillDriver* driver,
+                       LogManager* log_manager,
+                       AutofillProvider* provider);
   ~AutofillHandlerProxy() override;
 
   void OnFocusNoLongerOnForm() override;
@@ -39,7 +41,7 @@ class AutofillHandlerProxy : public AutofillHandler {
  protected:
   void OnFormSubmittedImpl(const FormData& form,
                            bool known_success,
-                           SubmissionSource source) override;
+                           mojom::SubmissionSource source) override;
 
   void OnTextFieldDidChangeImpl(const FormData& form,
                                 const FormFieldData& field,
@@ -72,7 +74,7 @@ class AutofillHandlerProxy : public AutofillHandler {
 
  private:
   AutofillProvider* provider_;
-  base::WeakPtrFactory<AutofillHandlerProxy> weak_ptr_factory_;
+  base::WeakPtrFactory<AutofillHandlerProxy> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(AutofillHandlerProxy);
 };

@@ -5,7 +5,7 @@
 #ifndef UI_ACCESSIBILITY_PLATFORM_AX_PLATFORM_NODE_MAC_H_
 #define UI_ACCESSIBILITY_PLATFORM_AX_PLATFORM_NODE_MAC_H_
 
-#import <Foundation/Foundation.h>
+#import <Cocoa/Cocoa.h>
 
 #include "base/mac/scoped_nsobject.h"
 #include "base/macros.h"
@@ -23,7 +23,7 @@ class AXPlatformNodeMac : public AXPlatformNodeBase {
   // AXPlatformNode.
   gfx::NativeViewAccessible GetNativeViewAccessible() override;
   void NotifyAccessibilityEvent(ax::mojom::Event event_type) override;
-  void AnnounceText(base::string16& text) override;
+  void AnnounceText(const base::string16& text) override;
 
   // AXPlatformNodeBase.
   void Destroy() override;
@@ -49,7 +49,7 @@ AX_EXPORT bool IsNameExposedInAXValueForRole(ax::mojom::Role role);
 }  // namespace ui
 
 AX_EXPORT
-@interface AXPlatformNodeCocoa : NSObject
+@interface AXPlatformNodeCocoa : NSAccessibilityElement<NSAccessibility>
 
 // Maps AX roles to native roles. Returns NSAccessibilityUnknownRole if not
 // found.

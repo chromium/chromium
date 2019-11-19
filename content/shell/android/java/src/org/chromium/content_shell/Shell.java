@@ -26,6 +26,7 @@ import android.widget.TextView.OnEditorActionListener;
 import org.chromium.base.Callback;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
+import org.chromium.base.annotations.NativeMethods;
 import org.chromium.components.embedder_support.view.ContentView;
 import org.chromium.components.embedder_support.view.ContentViewRenderView;
 import org.chromium.content_public.browser.ActionModeCallbackHelper;
@@ -112,7 +113,7 @@ public class Shell extends LinearLayout {
      */
     public void close() {
         if (mNativeShell == 0) return;
-        nativeCloseShell(mNativeShell);
+        ShellJni.get().closeShell(mNativeShell);
     }
 
     @CalledByNative
@@ -296,6 +297,8 @@ public class Shell extends LinearLayout {
         Context context = getContext();
         ContentView cv = ContentView.createContentView(context, webContents);
         mViewAndroidDelegate = new ShellViewAndroidDelegate(cv);
+        assert (mWebContents != webContents);
+        if (mWebContents != null) mWebContents.clearNativeReference();
         webContents.initialize(
                 "", mViewAndroidDelegate, cv, mWindow, WebContents.createDefaultInternalsHolder());
         mWebContents = webContents;
@@ -404,5 +407,8 @@ public class Shell extends LinearLayout {
         }
     }
 
-    private static native void nativeCloseShell(long shellPtr);
+    @NativeMethods
+    interface Natives {
+        void closeShell(long shellPtr);
+    }
 }

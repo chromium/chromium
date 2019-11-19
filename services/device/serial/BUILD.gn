@@ -65,7 +65,7 @@ if (is_win || (is_linux && use_udev) || is_mac) {
     }
 
     if (is_chromeos) {
-      deps += [ "//chromeos/dbus" ]
+      deps += [ "//chromeos/dbus/permission_broker" ]
     }
 
     if (is_mac) {

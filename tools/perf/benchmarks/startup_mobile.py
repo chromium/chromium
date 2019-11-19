@@ -8,6 +8,7 @@ import logging
 from core import perf_benchmark
 
 from telemetry.core import android_platform
+from telemetry.core import util as core_util
 from telemetry.internal.browser import browser_finder
 from telemetry.timeline import chrome_trace_category_filter
 from telemetry.util import wpr_modes
@@ -30,29 +31,46 @@ from devil.android.sdk import intent # pylint: disable=import-error
 # 1. Configure for Release Official flavor to get the most representative
 #    results:
 #    shell> gn gen --args='use_goma=true target_os="android" target_cpu="arm" \
-#           is_debug=false is_official_build=true' gn_android/ReleaseOfficial
+#           is_debug=false is_official_build=true' out/AndroidReleaseOfficial
 #
-# 2. Build Monochrome:
-#    shell> autoninja -C gn_android/ReleaseOfficial monochrome_apk
+# 2.1. Build Monochrome:
+#    shell> autoninja -C out/AndroidReleaseOfficial monochrome_apk
+#
+# 2.2. Build the (pseudo) Maps PWA launcher (it will be auto-installed later):
+#    shell> autoninja -C out/AndroidReleaseOfficial/ maps_go_webapk
 #
 # 3. Invoke Telemetry:
-#    shell> CHROMIUM_OUTPUT_DIR=gn_android/ReleaseOfficial \
+#    shell> CHROMIUM_OUTPUT_DIR=out/AndroidReleaseOfficial \
 #               tools/perf/run_benchmark -v startup.mobile \
 #               --browser=android-chrome \
 #               --output-dir=/tmp/avoid-polluting-chrome-tree \
 #               --also-run-disabled-tests
 #
-# The "--also-run-disabled-tests" is necessary because the benchmark is disabled
-# in expectations.config to avoid failures on Android versions below M. This
-# override is also used on internal bots. See: http://crbug.com/894744 and
-# http://crbug.com/849907.
+# Important notes on the flags:
+# --also-run-disabled-tests - is necessary because the benchmark is disabled in
+#     expectations.config to avoid failures on Android versions below M. This
+#     override is also used on internal bots. See: http://crbug.com/894744 and
+#     http://crbug.com/849907.
+# --browser=android-chrome - *must* be used *instead* of "android-chromium". The
+#     latter may silently produce subtly incorrect results. This is because
+#     MonohromePublic initialization path is less optimized than Monochrome
+#     (no orderfile, no library prefetch, etc.)
+# -v - in some cases the benchmark does not run in non-verbose mode, details
+#     unknown.
+#
+# Recording a WPR archive and uploading it:
+# shell> CHROMIUM_OUTPUT_DIR=out/AndroidReleaseOfficial tools/perf/record_wpr \
+#            mobile_startup_benchmark --browser=android-chrome \
+#            --also-run-disabled-tests --story-filter=maps_pwa:with_http_cache \
+#            --output-dir=/tmp/maps_pwa_output --upload
+# Note: "startup_mobile_benchmark" instead of "startup.mobile".
 
 _NUMBER_OF_ITERATIONS = 10
 _MAX_BATTERY_TEMP = 32
 
 class _MobileStartupSharedState(story_module.SharedState):
 
-  def __init__(self, test, finder_options, story_set):
+  def __init__(self, test, finder_options, story_set, possible_browser=None):
     """
     Args:
       test: opaquely passed to parent class constructor.
@@ -60,22 +78,38 @@ class _MobileStartupSharedState(story_module.SharedState):
       story_set: opaquely passed to parent class constructor.
     """
     super(_MobileStartupSharedState, self).__init__(
-        test, finder_options, story_set)
+        test, finder_options, story_set, possible_browser)
     self._finder_options = finder_options
-    self._possible_browser = browser_finder.FindBrowser(self._finder_options)
+    if not self._possible_browser:
+      self._possible_browser = browser_finder.FindBrowser(self._finder_options)
     self._current_story = None
     # Allow using this shared state only on Android.
     assert isinstance(self.platform, android_platform.AndroidPlatform)
     self._finder_options.browser_options.browser_user_agent_type = 'mobile'
+    self._finder_options.browser_options.AppendExtraBrowserArgs(
+        '--skip-webapk-verification')
     self.platform.Initialize()
-    assert finder_options.browser_options.wpr_mode != wpr_modes.WPR_RECORD, (
-        'Recording WPR archives is not supported for this benchmark.')
+    self.platform.SetFullPerformanceModeEnabled(True)
+    maps_webapk = core_util.FindLatestApkOnHost(
+        finder_options.chrome_root, 'MapsWebApk.apk')
+    if not maps_webapk:
+      raise Exception('MapsWebApk not found! Follow the Mini-HOWTO in '
+                      'startup_mobile.py')
+    self.platform.InstallApplication(maps_webapk)
     wpr_mode = wpr_modes.WPR_REPLAY
+    self._number_of_iterations = _NUMBER_OF_ITERATIONS
     if finder_options.use_live_sites:
       wpr_mode = wpr_modes.WPR_OFF
-    self.platform.SetFullPerformanceModeEnabled(True)
+    elif finder_options.browser_options.wpr_mode == wpr_modes.WPR_RECORD:
+      wpr_mode = wpr_modes.WPR_RECORD
+      # When recording a WPR archive only load the story page once.
+      self._number_of_iterations = 1
     self.platform.network_controller.Open(wpr_mode)
     self._story_set = story_set
+
+  @property
+  def number_of_iterations(self):
+    return self._number_of_iterations
 
   @property
   def platform(self):
@@ -93,7 +127,8 @@ class _MobileStartupSharedState(story_module.SharedState):
     self.platform.StartActivity(
         intent.Intent(package=self._possible_browser.settings.package,
                       activity=self._possible_browser.settings.activity,
-                      action=None, data=url),
+                      data=url,
+                      action='android.intent.action.VIEW'),
         blocking=True)
 
   def LaunchCCT(self, url):
@@ -106,8 +141,20 @@ class _MobileStartupSharedState(story_module.SharedState):
     self.platform.StartActivity(
         intent.Intent(package=self._possible_browser.settings.package,
                       activity=self._possible_browser.settings.activity,
-                      action=None, data=url, extras=cct_extras),
+                      data=url, extras=cct_extras,
+                      action='android.intent.action.VIEW'),
+        blocking=True)
 
+  def LaunchMapsPwa(self):
+    # Launches a bound webapk. The APK should be installed by the shared state
+    # constructor. Upon launch, Chrome extracts the icon and the URL from the
+    # APK.
+    self.platform.WaitForBatteryTemperature(_MAX_BATTERY_TEMP)
+    self.platform.StartActivity(
+        intent.Intent(package='org.chromium.maps_go_webapk',
+                      activity='org.chromium.webapk.shell_apk.MainActivity',
+                      category='android.intent.category.LAUNCHER',
+                      action='android.intent.action.MAIN'),
         blocking=True)
 
   @contextlib.contextmanager
@@ -145,8 +192,7 @@ class _MobileStartupSharedState(story_module.SharedState):
     self._current_story = None
     self._possible_browser.CleanUpEnvironment()
 
-  def DumpStateUponFailure(self, story, results):
-    del story
+  def DumpStateUponStoryRunFailure(self, results):
     del results
     # Note: Dumping state of objects upon errors, e.g. of the browser, is
     # handled individually by the context managers that handle their lifetime.
@@ -156,7 +202,7 @@ class _MobileStartupSharedState(story_module.SharedState):
 
 
 def _DriveMobileStartupWithIntent(state, flush_caches):
-  for _ in xrange(_NUMBER_OF_ITERATIONS):
+  for _ in xrange(state.number_of_iterations):
     # TODO(pasko): Find a way to fail the benchmark when WPR is set up
     # incorrectly and error pages get loaded.
     state.LaunchBrowser('http://bbc.co.uk', flush_caches)
@@ -189,8 +235,22 @@ class _MobileStartupWithCctIntentStory(story_module.Story):
         _MobileStartupSharedState, name='cct:coldish:bbc')
 
   def Run(self, state):
-    for _ in xrange(_NUMBER_OF_ITERATIONS):
+    for _ in xrange(state.number_of_iterations):
       state.LaunchCCT('http://bbc.co.uk')
+      with state.FindBrowser() as browser:
+        action_runner = browser.foreground_tab.action_runner
+        action_runner.tab.WaitForDocumentReadyStateToBeComplete()
+
+
+class _MapsPwaStartupStory(story_module.Story):
+  def __init__(self):
+    super(_MapsPwaStartupStory, self).__init__(
+        _MobileStartupSharedState, name='maps_pwa:with_http_cache')
+
+  def Run(self, state):
+    for _ in xrange(state.number_of_iterations):
+      # TODO(pasko): Flush HTTP cache for 'maps_pwa:no_http_cache'.
+      state.LaunchMapsPwa()
       with state.FindBrowser() as browser:
         action_runner = browser.foreground_tab.action_runner
         action_runner.tab.WaitForDocumentReadyStateToBeComplete()
@@ -204,12 +264,15 @@ class _MobileStartupStorySet(story_module.StorySet):
     self.AddStory(_MobileStartupWithIntentStory())
     self.AddStory(_MobileStartupWithIntentStoryWarm())
     self.AddStory(_MobileStartupWithCctIntentStory())
+    self.AddStory(_MapsPwaStartupStory())
 
 
 @benchmark.Info(emails=['pasko@chromium.org',
                         'chrome-android-perf-status@chromium.org'],
                 component='Speed>Metrics>SystemHealthRegressions')
 class MobileStartupBenchmark(perf_benchmark.PerfBenchmark):
+  """Startup benchmark for Chrome on Android."""
+
   SUPPORTED_PLATFORMS = [story_module.expectations.ANDROID_NOT_WEBVIEW]
 
   def CreateCoreTimelineBasedMeasurementOptions(self):

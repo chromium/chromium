@@ -24,7 +24,7 @@ source_set("windows") {
     "//base",
     "//skia",
     "//ui/base",
-    "//ui/display/manager",
+    "//ui/display/fake",
     "//ui/events",
     "//ui/events/ozone:events_ozone_layout",
     "//ui/events/platform",

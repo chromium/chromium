@@ -12,10 +12,6 @@
 #include "base/test/simple_test_tick_clock.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 
-namespace chromeos {
-class FakeSessionManagerClient;
-}  // namespace chromeos
-
 namespace ash {
 
 class LockStateController;
@@ -83,9 +79,6 @@ class PowerButtonTestBase : public AshTestBase {
   // off is not ignored since we will ignore the repeated power button up if
   // they come too close.
   void AdvanceClockToAvoidIgnoring();
-
-  // Ownership is passed on to chromeos::DBusThreadManager.
-  chromeos::FakeSessionManagerClient* session_manager_client_ = nullptr;
 
   PowerButtonController* power_button_controller_ = nullptr;  // Not owned.
   LockStateController* lock_state_controller_ = nullptr;      // Not owned.

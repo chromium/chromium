@@ -17,6 +17,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.test.AwActivityTestRule.PopupInfo;
+import org.chromium.android_webview.test.TestAwContentsClient.ShouldInterceptRequestHelper;
 import org.chromium.android_webview.test.util.CommonResources;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Feature;
@@ -26,8 +27,10 @@ import org.chromium.content_public.browser.test.util.Criteria;
 import org.chromium.content_public.browser.test.util.CriteriaHelper;
 import org.chromium.content_public.browser.test.util.DOMUtils;
 import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.util.TestWebServer;
 
+import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
@@ -56,7 +59,7 @@ public class PopupWindowTest {
     }
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
         if (mWebServer != null) {
             mWebServer.shutdown();
         }
@@ -112,8 +115,7 @@ public class PopupWindowTest {
         }
         final DummyJavaScriptInterface obj = new DummyJavaScriptInterface();
 
-        InstrumentationRegistry.getInstrumentation().runOnMainSync(
-                () -> popupContents.addJavascriptInterface(obj, "dummy"));
+        AwActivityTestRule.addJavascriptInterfaceOnUiThread(popupContents, obj, "dummy");
 
         mActivityTestRule.loadPopupContents(mParentContents, popupInfo, null);
 
@@ -208,30 +210,51 @@ public class PopupWindowTest {
                 "<script>"
                         + "function tryOpenWindow() {"
                         + "  window.popupWindow = window.open('" + popupPath + "');"
-                        + "  window.popupWindow.console = {};"
                         + "}"
                         + "function modifyDomOfPopup() {"
                         + "  window.popupWindow.document.body.innerHTML = 'Hello from the parent!';"
                         + "}</script>");
 
-        final String popupPageHtml = CommonResources.makeHtmlPageFrom(
-                "<title>" + POPUP_TITLE + "</title>",
-                "This is a popup window");
-
         mActivityTestRule.triggerPopup(mParentContents, mParentContentsClient, mWebServer,
-                parentPageHtml, popupPageHtml, popupPath, "tryOpenWindow()");
-        PopupInfo popupInfo = mActivityTestRule.connectPendingPopup(mParentContents);
-        Assert.assertEquals(
-                POPUP_TITLE, mActivityTestRule.getTitleOnUiThread(popupInfo.popupContents));
-
+                parentPageHtml, null /* 204 response */, popupPath, "tryOpenWindow()");
+        PopupInfo popupInfo = mActivityTestRule.createPopupContents(mParentContents);
         TestCallbackHelperContainer.OnPageFinishedHelper onPageFinishedHelper =
                 popupInfo.popupContentsClient.getOnPageFinishedHelper();
-        final int onPageFinishedCallCount = onPageFinishedHelper.getCallCount();
-
-        mActivityTestRule.executeJavaScriptAndWaitForResult(
-                mParentContents, mParentContentsClient, "modifyDomOfPopup()");
-        // Test that |waitForCallback| does not time out.
-        onPageFinishedHelper.waitForCallback(onPageFinishedCallCount);
+        ShouldInterceptRequestHelper shouldInterceptRequestHelper =
+                popupInfo.popupContentsClient.getShouldInterceptRequestHelper();
+        int onPageFinishedCount = onPageFinishedHelper.getCallCount();
+        int shouldInterceptRequestCount = shouldInterceptRequestHelper.getCallCount();
+        // Modify DOM before navigation gets committed. Once it gets committed, then
+        // DidAccessInitialDocument does not get triggered.
+        popupInfo.popupContentsClient.getShouldInterceptRequestHelper().runDuringFirstTimeCallback(
+                () -> {
+                    ThreadUtils.assertOnBackgroundThread();
+                    try {
+                        // Ensures that we modify DOM before navigation gets committed.
+                        mActivityTestRule.executeJavaScriptAndWaitForResult(
+                                mParentContents, mParentContentsClient, "modifyDomOfPopup()");
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                });
+        mActivityTestRule.loadPopupContents(mParentContents, popupInfo, null);
+        shouldInterceptRequestHelper.waitForCallback(shouldInterceptRequestCount);
+        // Modifying DOM in the middle while loading a popup window - this causes navigation state
+        // change through AwWebContentsDelegateAdapter#navigationStateChanged(), resulting in an
+        // additional onPageFinished() callback. Also, this eventually affects commit stage of the
+        // navigation which creates additional navigationStateChanged() and one additional
+        // onPageFinished() callback.
+        onPageFinishedHelper.waitForCallback(onPageFinishedCount, 4);
+        // This is the URL that gets shown to the user because parent changed DOM of the popup
+        // window.
+        List<String> urlList = onPageFinishedHelper.getUrlList();
+        Assert.assertEquals("about:blank", urlList.get(onPageFinishedCount));
+        // Note that in this test we do not stop the navigation and we still navigate to the page
+        // that we wanted. The loaded page does not have the changed DOM. This is slightly different
+        // from the original workflow in b/19325392 as there is no good hook to stop navigation and
+        // trigger DidAccessInitialDocument at the same time.
+        Assert.assertTrue(urlList.get(onPageFinishedCount + 2).endsWith(popupPath));
+        Assert.assertTrue(urlList.get(onPageFinishedCount + 3).endsWith(popupPath));
     }
 
     @Test
@@ -260,10 +283,10 @@ public class PopupWindowTest {
 
         // Now long press on some texts and see if the text handles show up.
         DOMUtils.longPressNode(popupContents.getWebContents(), "plain_text");
-        SelectionPopupController controller = ThreadUtils.runOnUiThreadBlocking(
+        SelectionPopupController controller = TestThreadUtils.runOnUiThreadBlocking(
                 () -> SelectionPopupController.fromWebContents(popupContents.getWebContents()));
         assertWaitForSelectActionBarStatus(true, controller);
-        Assert.assertTrue(ThreadUtils.runOnUiThreadBlocking(() -> controller.hasSelection()));
+        Assert.assertTrue(TestThreadUtils.runOnUiThreadBlocking(() -> controller.hasSelection()));
 
         // Now hide the select action bar. This should hide the text handles and
         // clear the selection.
@@ -292,7 +315,7 @@ public class PopupWindowTest {
     }
 
     private void runPopupUserGestureTest(boolean hasOpener) throws Throwable {
-        ThreadUtils.runOnUiThreadBlocking(() -> {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
             mParentContents.getSettings().setJavaScriptEnabled(true);
             mParentContents.getSettings().setSupportMultipleWindows(true);
             mParentContents.getSettings().setJavaScriptCanOpenWindowsAutomatically(true);

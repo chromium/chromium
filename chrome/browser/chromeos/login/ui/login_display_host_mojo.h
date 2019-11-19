@@ -9,14 +9,18 @@
 #include <string>
 #include <vector>
 
+#include "base/callback_forward.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
-#include "chrome/browser/chromeos/login/ui/kiosk_app_menu_updater.h"
+#include "chrome/browser/chromeos/login/challenge_response_auth_keys_loader.h"
+#include "chrome/browser/chromeos/login/security_token_pin_dialog_host_ash_impl.h"
 #include "chrome/browser/chromeos/login/ui/login_display_host_common.h"
 #include "chrome/browser/chromeos/login/ui/oobe_ui_dialog_delegate.h"
 #include "chrome/browser/ui/ash/login_screen_client.h"
+#include "chrome/browser/ui/webui/chromeos/login/oobe_ui.h"
 #include "chromeos/login/auth/auth_status_consumer.h"
+#include "chromeos/login/auth/challenge_response_key.h"
 
 namespace chromeos {
 
@@ -31,7 +35,8 @@ class MojoSystemInfoDispatcher;
 // screen.
 class LoginDisplayHostMojo : public LoginDisplayHostCommon,
                              public LoginScreenClient::Delegate,
-                             public AuthStatusConsumer {
+                             public AuthStatusConsumer,
+                             public OobeUI::Observer {
  public:
   LoginDisplayHostMojo();
   ~LoginDisplayHostMojo() override;
@@ -50,9 +55,6 @@ class LoginDisplayHostMojo : public LoginDisplayHostCommon,
   // Show whitelist check failed error. Happens after user completes online
   // signin but whitelist check fails.
   void ShowWhitelistCheckFailedError();
-
-  // Show unrecoverable cryptohome error dialog.
-  void ShowUnrecoverableCrypthomeErrorDialog();
 
   // Displays detailed error screen for error with ID |error_id|.
   void ShowErrorScreen(LoginDisplay::SigninError error_id);
@@ -73,7 +75,7 @@ class LoginDisplayHostMojo : public LoginDisplayHostCommon,
   WebUILoginView* GetWebUILoginView() const override;
   void OnFinalize() override;
   void SetStatusAreaVisible(bool visible) override;
-  void StartWizard(OobeScreen first_screen) override;
+  void StartWizard(OobeScreenId first_screen) override;
   WizardController* GetWizardController() override;
   void OnStartUserAdding() override;
   void CancelUserAdding() override;
@@ -81,33 +83,36 @@ class LoginDisplayHostMojo : public LoginDisplayHostCommon,
   void OnPreferencesChanged() override;
   void OnStartAppLaunch() override;
   void OnStartArcKiosk() override;
+  void OnStartWebKiosk() override;
   void OnBrowserCreated() override;
-  void ShowGaiaDialog(
-      bool can_close,
-      const base::Optional<AccountId>& prefilled_account) override;
+  void ShowGaiaDialog(bool can_close,
+                      const AccountId& prefilled_account) override;
   void HideOobeDialog() override;
-  void UpdateOobeDialogSize(int width, int height) override;
-  void UpdateOobeDialogState(ash::mojom::OobeDialogState state) override;
+  void UpdateOobeDialogState(ash::OobeDialogState state) override;
   const user_manager::UserList GetUsers() override;
   void OnCancelPasswordChangedFlow() override;
   void ShowFeedback() override;
   void ShowResetScreen() override;
   void HandleDisplayCaptivePortal() override;
   void UpdateAddUserButtonStatus() override;
+  void RequestSystemInfoUpdate() override;
 
   // LoginScreenClient::Delegate:
   void HandleAuthenticateUserWithPasswordOrPin(
       const AccountId& account_id,
       const std::string& password,
       bool authenticated_by_pin,
-      AuthenticateUserWithPasswordOrPinCallback callback) override;
+      base::OnceCallback<void(bool)> callback) override;
   void HandleAuthenticateUserWithExternalBinary(
       const AccountId& account_id,
-      AuthenticateUserWithExternalBinaryCallback callback) override;
+      base::OnceCallback<void(bool)> callback) override;
   void HandleEnrollUserWithExternalBinary(
-      EnrollUserWithExternalBinaryCallback callback) override;
+      base::OnceCallback<void(bool)> callback) override;
   void HandleAuthenticateUserWithEasyUnlock(
       const AccountId& account_id) override;
+  void HandleAuthenticateUserWithChallengeResponse(
+      const AccountId& account_id,
+      base::OnceCallback<void(bool)> callback) override;
   void HandleHardlockPod(const AccountId& account_id) override;
   void HandleOnFocusPod(const AccountId& account_id) override;
   void HandleOnNoPodFocused() override;
@@ -120,20 +125,46 @@ class LoginDisplayHostMojo : public LoginDisplayHostCommon,
   // AuthStatusConsumer:
   void OnAuthFailure(const AuthFailure& error) override;
   void OnAuthSuccess(const UserContext& user_context) override;
+  void OnPasswordChangeDetected() override;
+  void OnOldEncryptionDetected(const UserContext& user_context,
+                               bool has_incomplete_migration) override;
+
+  // OobeUI::Observer:
+  void OnCurrentScreenChanged(OobeScreenId current_screen,
+                              OobeScreenId new_screen) override;
+  void OnDestroyingOobeUI() override;
 
  private:
   void LoadOobeDialog();
 
+  // Callback to be invoked when the |challenge_response_auth_keys_loader_|
+  // completes building the currently available challenge-response keys. Used
+  // only during the challenge-response authentication.
+  void OnChallengeResponseKeysPrepared(
+      const AccountId& account_id,
+      base::OnceCallback<void(bool)> on_auth_complete_callback,
+      std::vector<ChallengeResponseKey> challenge_response_keys);
+
+  // Helper methods to show and hide the dialog.
+  void ShowDialog();
+  void ShowFullScreen();
+  void HideDialog();
+
+  // Adds this as a |OobeUI::Observer| if it has not already been added as one.
+  void ObserveOobeUI();
+
+  // Removes this as a |OobeUI::Observer| if it has been added as an observer.
+  void StopObservingOobeUI();
+
   // State associated with a pending authentication attempt.
   struct AuthState {
-    AuthState(AccountId account_id,
-              AuthenticateUserWithPasswordOrPinCallback callback);
+    AuthState(AccountId account_id, base::OnceCallback<void(bool)> callback);
     ~AuthState();
 
     // Account that is being authenticated.
     AccountId account_id;
     // Callback that should be executed the authentication result is available.
-    AuthenticateUserWithPasswordOrPinCallback callback;
+    base::OnceCallback<void(bool)> callback;
   };
   std::unique_ptr<AuthState> pending_auth_state_;
 
@@ -146,7 +177,7 @@ class LoginDisplayHostMojo : public LoginDisplayHostCommon,
 
   // Called after host deletion.
   std::vector<base::OnceClosure> completion_callbacks_;
-  OobeUIDialogDelegate* dialog_ = nullptr;
+  OobeUIDialogDelegate* dialog_ = nullptr;  // Not owned.
   bool can_close_dialog_ = true;
   std::unique_ptr<WizardController> wizard_controller_;
 
@@ -157,8 +188,6 @@ class LoginDisplayHostMojo : public LoginDisplayHostCommon,
   // The account id of the user pod that's being focused.
   AccountId focused_pod_account_id_;
 
-  KioskAppMenuUpdater kiosk_updater_;
-
   // Fetches system information and sends it to the UI over mojo.
   std::unique_ptr<MojoSystemInfoDispatcher> system_info_updater_;
 
@@ -167,7 +196,14 @@ class LoginDisplayHostMojo : public LoginDisplayHostCommon,
   // first OnStartSigninScreen and remains true afterward.
   bool signin_screen_started_ = false;
 
-  base::WeakPtrFactory<LoginDisplayHostMojo> weak_factory_;
+  ChallengeResponseAuthKeysLoader challenge_response_auth_keys_loader_;
+
+  SecurityTokenPinDialogHostAshImpl security_token_pin_dialog_host_ash_impl_;
+
+  // Set if this has been added as a |OobeUI::Observer|.
+  bool added_as_oobe_observer_ = false;
+
+  base::WeakPtrFactory<LoginDisplayHostMojo> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(LoginDisplayHostMojo);
 };

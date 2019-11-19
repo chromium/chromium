@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_MARKERS_SPELL_CHECK_MARKER_H_
 
 #include "third_party/blink/renderer/core/editing/markers/document_marker.h"
+#include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
 
@@ -29,11 +30,12 @@ class CORE_EXPORT SpellCheckMarker : public DocumentMarker {
 
 bool CORE_EXPORT IsSpellCheckMarker(const DocumentMarker&);
 
-DEFINE_TYPE_CASTS(SpellCheckMarker,
-                  DocumentMarker,
-                  marker,
-                  IsSpellCheckMarker(*marker),
-                  IsSpellCheckMarker(marker));
+template <>
+struct DowncastTraits<SpellCheckMarker> {
+  static bool AllowFrom(const DocumentMarker& marker) {
+    return IsSpellCheckMarker(marker);
+  }
+};
 
 }  // namespace blink
 

@@ -12,7 +12,6 @@
 #include "base/memory/ref_counted_delete_on_sequence.h"
 #include "base/observer_list.h"
 #include "base/supports_user_data.h"
-#include "components/autofill/core/browser/webdata/autofill_webdata.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_backend.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/webdata/common/web_data_results.h"
@@ -53,6 +52,7 @@ class AutofillWebDataBackendImpl
       scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner,
       scoped_refptr<base::SingleThreadTaskRunner> db_task_runner,
       const base::Closure& on_changed_callback,
+      const base::Closure& on_address_conversion_completed_callback,
       const base::Callback<void(syncer::ModelType)>& on_sync_started_callback);
 
   void SetAutofillProfileChangedCallback(
@@ -69,12 +69,9 @@ class AutofillWebDataBackendImpl
       const AutofillProfileChange& change) override;
   void NotifyOfCreditCardChanged(const CreditCardChange& change) override;
   void NotifyOfMultipleAutofillChanges() override;
+  void NotifyOfAddressConversionCompleted() override;
   void NotifyThatSyncHasStarted(syncer::ModelType model_type) override;
-
-  // TODO(crbug.com/920214): Deprecated, will be removed when
-  // autocomplete retention policy shipped. Replaced by
-  // RemoveExpiredAutocompleteEntries.
-  void RemoveExpiredFormElements() override;
+  void CommitChanges() override;
 
   // Returns a SupportsUserData object that may be used to store data accessible
   // from the DB sequence. Should be called only from the DB sequence, and will
@@ -133,6 +130,15 @@ class AutofillWebDataBackendImpl
   std::unique_ptr<WDTypedResult> GetAutofillProfiles(WebDatabase* db);
   std::unique_ptr<WDTypedResult> GetServerProfiles(WebDatabase* db);
 
+  // Converts server profiles to local profiles, comparing profiles using
+  // |app_locale| and filling in |primary_account_email| into newly converted
+  // profiles. The task only converts profiles that have not been converted
+  // before.
+  WebDatabase::State ConvertWalletAddressesAndUpdateWalletCards(
+      const std::string& app_locale,
+      const std::string& primary_account_email,
+      WebDatabase* db);
+
   // Returns the number of values such that all for autofill entries with that
   // value, the interval between creation date and last usage is entirely
   // contained between [|begin|, |end|).
@@ -155,8 +161,7 @@ class AutofillWebDataBackendImpl
                                       WebDatabase* db);
 
   // Removes a credit card from the web database. Valid only for local cards.
-  WebDatabase::State RemoveCreditCard(const std::string& guid,
-                                      WebDatabase* db);
+  WebDatabase::State RemoveCreditCard(const std::string& guid, WebDatabase* db);
 
   // Adds a full server credit card to the web database.
   WebDatabase::State AddFullServerCreditCard(const CreditCard& credit_card,
@@ -179,6 +184,8 @@ class AutofillWebDataBackendImpl
 
   WebDatabase::State UpdateServerAddressMetadata(const AutofillProfile& profile,
                                                  WebDatabase* db);
+
+  WebDatabase::State AddVPA(const std::string& vpa_id, WebDatabase* db);
 
   // Returns the PaymentsCustomerData from the database.
   std::unique_ptr<WDTypedResult> GetPaymentsCustomerData(WebDatabase* db);
@@ -232,11 +239,6 @@ class AutofillWebDataBackendImpl
   // by this object. Is created on first call to |GetDBUserData()|.
   std::unique_ptr<SupportsUserDataAggregatable> user_data_;
 
-  // TODO(crbug.com/920214): Deprecated, will be removed when
-  // autocomplete retention policy shipped. Replaced by
-  // RemoveExpiredAutocompleteEntries.
-  WebDatabase::State RemoveExpiredFormElementsImpl(WebDatabase* db);
-
   base::ObserverList<AutofillWebDataServiceObserverOnDBSequence>::Unchecked
       db_observer_list_;
 
@@ -245,6 +247,7 @@ class AutofillWebDataBackendImpl
   scoped_refptr<WebDatabaseBackend> web_database_backend_;
 
   base::Closure on_changed_callback_;
+  base::Closure on_address_conversion_completed_callback_;
   base::Callback<void(syncer::ModelType)> on_sync_started_callback_;
 
   base::RepeatingCallback<void(const AutofillProfileDeepChange&)>

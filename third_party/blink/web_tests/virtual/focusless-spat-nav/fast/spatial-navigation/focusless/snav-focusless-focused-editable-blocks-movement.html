@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<script src="../../../../../resources/testharness.js"></script>
+<script src="../../../../../resources/testharnessreport.js"></script>
+<script src="file:///gen/layout_test_data/mojo/public/js/mojo_bindings.js"></script>
+<script src="file:///gen/third_party/blink/public/mojom/page/spatial_navigation.mojom.js"></script>
+<script src="../../../../../fast/spatial-navigation/resources/mock-snav-service.js"></script>
+<script src="../../../../../fast/spatial-navigation/resources/snav-testharness.js"></script>
+
+<style>
+  .box {
+    width: 100px;
+    height: 30px;
+    margin: 5px;
+    border: 1px solid black;
+    display: inline-block;
+  }
+</style>
+
+<div class="box" tabindex="0">Top-Left</div>
+<div class="box" tabindex="0">Top</div>
+
+<div class="container">
+  <div class="box" tabindex="0">Left</div>
+  <input class="box" id="input" type="text" value="center">
+  <div class="box" tabindex="0">Right</div>
+</div>
+
+<div class="box" tabindex="0">Bottom-Left</div>
+<div class="box" tabindex="0">Bottom</div>
+
+<script>
+  // This test ensures that when an editable has focus, arrow keys don't cause
+  // spatial-navigation movement.
+  let first = document.getElementById("first");
+  let second = document.getElementById("second");
+  let third = document.getElementById("third");
+
+  let input = document.getElementById("input");
+
+  function testDirection(direction, expectMove) {
+    // We move twice because the first move will be interpreted as an editor
+    // command while the second will be ignored by the editor. We shouldn't
+    // move interest in either case.
+    snav.triggerMove(direction);
+    snav.triggerMove(direction);
+
+    if (expectMove) {
+      assert_not_equals(
+          window.internals.interestedElement,
+          input,
+          direction + " key expected to move interest but didn't,");
+    } else {
+      assert_equals(
+          window.internals.interestedElement,
+          input,
+          direction + " key did not expect to move interest but did,");
+    }
+
+    // Reset focus so the focused input box starts in a consistent state (fully
+    // selected) for the next test.
+    eventSender.keyDown('Escape');
+    eventSender.keyDown('Enter');
+  }
+
+  test(() => {
+    // Move interest to editable 'input' box and focus it.
+    snav.triggerMove('Down');
+    snav.triggerMove('Down');
+    snav.triggerMove('Right');
+    eventSender.keyDown('Enter');
+    assert_equals(document.activeElement, input);
+    assert_equals(window.internals.interestedElement, input);
+
+    // Ensure directional keys don't cause spatial navigation to move interest.
+    // We move twice because the first move will be interpreted as an editor
+    // command while the second will be ignored by the editor. We shouldn't
+    // move interest in either case.
+    let expectMove = false;
+    testDirection('Down', expectMove);
+    testDirection('Left', expectMove);
+    testDirection('Right', expectMove);
+    testDirection('Up', expectMove);
+
+    // Ensure removing focus allows movement again.
+    eventSender.keyDown('Escape');
+
+    expectMove = true;
+    testDirection('Down', expectMove);
+  }, "Enter key moves focus into interested element");
+</script>

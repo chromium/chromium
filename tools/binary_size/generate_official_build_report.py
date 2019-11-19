@@ -85,15 +85,19 @@ def _WriteReportsJson(out):
 def _UploadReports(reports_json_path, base_url, *ndjson_paths):
   for path in ndjson_paths:
     dst = os.path.join(base_url, os.path.basename(path))
-    subprocess.check_call(['gsutil.py', 'cp', '-a', 'public-read', path, dst])
+    cmd = ['gsutil.py', 'cp', '-a', 'public-read', path, dst]
+    logging.warning(' '.join(cmd))
+    subprocess.check_call(cmd)
 
   with open(reports_json_path, 'w') as f:
     _WriteReportsJson(f)
 
-  subprocess.check_call([
+  cmd = [
       'gsutil.py', 'cp', '-a', 'public-read', reports_json_path,
       _REPORTS_JSON_GS_URL
-  ])
+  ]
+  logging.warning(' '.join(cmd))
+  subprocess.check_call(cmd)
 
 
 def main():
@@ -134,9 +138,10 @@ def main():
     diff_report_path = os.path.join(
         tmp_dir, 'report_{}_{}.ndjson'.format(ref_version, args.version))
     reports_json_path = os.path.join(tmp_dir, 'reports.json')
-    reports_base_url = os.path.join(
-        _REPORTS_GS_URL, args.arch,
-        os.path.splitext(os.path.basename(args.size_path))[0])
+    report_basename = os.path.splitext(os.path.basename(args.size_path))[0]
+    # Maintain name through transition to bundles.
+    report_basename = report_basename.replace('.minimal.apks', '.apk')
+    reports_base_url = os.path.join(_REPORTS_GS_URL, args.arch, report_basename)
 
     _FetchSizeFileForVersion(args.gs_size_url, ref_version, args.gs_size_path,
                              ref_size_path)

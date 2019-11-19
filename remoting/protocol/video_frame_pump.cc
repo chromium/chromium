@@ -54,8 +54,7 @@ VideoFramePump::VideoFramePump(
           base::Bind(&VideoFramePump::SendKeepAlivePacket,
                      base::Unretained(this))),
       capture_scheduler_(base::Bind(&VideoFramePump::CaptureNextFrame,
-                                    base::Unretained(this))),
-      weak_factory_(this) {
+                                    base::Unretained(this))) {
   DCHECK(encoder_);
   DCHECK(video_stub_);
 

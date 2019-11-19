@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2018 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="12dp"
+        android:paddingBottom="14dp"
+        android:paddingStart="24dp"
+        android:paddingEnd="24dp"
+        android:gravity="center_horizontal"
+        android:orientation="vertical">
+
+        <!-- Image background -->
+        <ImageView
+            android:id="@+id/onboarding_image"
+            tools:ignore="contentDescription"
+            android:layout_width="250dp"
+            android:layout_height="wrap_content"
+            android:scaleType="centerCrop"
+            android:src="@drawable/autofill_assistant_onboarding_bg"
+            android:layout_marginTop="12dp" />
+
+        <!-- "Try Google Assistant in Chrome" -->
+        <ImageView
+            android:id="@+id/onboarding_try_assistant"
+            tools:ignore="contentDescription"
+            android:layout_width="185dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:src="@drawable/autofill_assistant_onboarding_try" />
+
+        <!-- Subtitle (e.g., 'Google Assistant saves you time...')-->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:layout_weight="1"/>
+            <!-- The subtitle takes 4/6 of the screen width. -->
+            <TextView
+                android:id="@+id/onboarding_subtitle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="4"
+                android:layout_marginTop="24dp"
+                android:textAppearance="@style/TextAppearance.AssistantBlackBody"
+                android:gravity="center_horizontal"
+                android:text="@string/autofill_assistant_init_message" />
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:layout_weight="1"/>
+        </LinearLayout>
+
+        <!-- Separator -->
+        <LinearLayout
+            android:id="@+id/onboarding_separator"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:gravity="center_horizontal"
+            android:orientation="horizontal"
+            android:weightSum="1.0">
+            <View style="@style/HorizontalDivider"
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:layout_weight="0.33"/>
+        </LinearLayout>
+        <Space android:layout_width="0dp" android:layout_height="24dp"/>
+
+        <!-- Terms and Conditions message and link -->
+        <LinearLayout
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:paddingBottom="9dp">
+            <TextView
+                android:id="@+id/google_terms_message"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="0dp"
+                android:layout_gravity="center"
+                android:textAppearance="@style/TextAppearance.AssistantBlackCaption"
+                android:text="@string/autofill_assistant_google_terms_description" />
+        </LinearLayout>
+
+        <!-- Layout for the buttons -->
+        <Space android:layout_width="0dp" android:layout_height="18dp"/>
+        <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="bottom|center"
+        android:orientation="horizontal">
+
+        <!-- 'No' button -->
+        <org.chromium.ui.widget.ButtonCompat
+            android:id="@+id/button_init_not_ok"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:singleLine="true"
+            android:gravity="center"
+            android:text="@string/cancel"
+            style="@style/TextButton" />
+
+        <Space
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"/>
+
+        <!-- 'Yes' button -->
+        <org.chromium.ui.widget.ButtonCompat
+            android:id="@+id/button_init_ok"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:singleLine="true"
+            android:gravity="center"
+            android:text="@string/init_ok"
+            style="FilledButton.Flat" />
+        </LinearLayout>
+    </LinearLayout>
+</ScrollView>

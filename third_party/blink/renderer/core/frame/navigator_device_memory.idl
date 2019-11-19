@@ -5,9 +5,8 @@
 // https://github.com/w3c/device-memory#the-web-exposed-api
 
 [
-    NoInterfaceObject,
-    Exposed=(Window,Worker)
-] interface NavigatorDeviceMemory {
-    [HighEntropy,MeasureAs=NavigatorDeviceMemory,RuntimeEnabled=NavigatorDeviceMemory,SecureContext]
+    Exposed=(Window, Worker)
+] interface mixin NavigatorDeviceMemory {
+    [HighEntropy,MeasureAs=NavigatorDeviceMemory,SecureContext]
     readonly attribute float deviceMemory;
 };

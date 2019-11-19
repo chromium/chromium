@@ -200,7 +200,7 @@ base::Process NamespaceSandbox::LaunchProcessWithOptions(
       std::make_pair(CLONE_NEWNET, kSandboxNETNSEnvironmentVarName),
   };
 
-  base::EnvironmentMap* environ = &launch_options_copy.environ;
+  base::EnvironmentMap* environ = &launch_options_copy.environment;
   for (const auto& entry : clone_flag_environ) {
     const int flag = entry.first;
     const char* environ_name = entry.second;

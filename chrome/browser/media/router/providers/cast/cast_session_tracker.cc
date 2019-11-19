@@ -14,6 +14,8 @@ namespace media_router {
 
 CastSessionTracker::Observer::~Observer() = default;
 
+CastSessionTracker::~CastSessionTracker() = default;
+
 // static
 CastSessionTracker* CastSessionTracker::GetInstance() {
   if (instance_for_test_)
@@ -65,8 +67,6 @@ CastSessionTracker::CastSessionTracker(
                         base::BindOnce(&CastSessionTracker::InitOnIoThread,
                                        base::Unretained(this)));
 }
-
-CastSessionTracker::~CastSessionTracker() = default;
 
 // This method needs to be separate from the constructor because the constructor
 // needs to be called from the UI thread, but observers can only be added in an

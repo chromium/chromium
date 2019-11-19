@@ -9,7 +9,7 @@
 #include <set>
 
 #include "ash/ash_export.h"
-#include "ash/system/message_center/message_center_controller.h"
+#include "ash/public/cpp/notifier_settings_observer.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
 #include "ui/message_center/public/cpp/notifier_id.h"
@@ -20,6 +20,7 @@
 
 namespace views {
 class Label;
+class ScrollBar;
 class ToggleButton;
 }  // namespace views
 
@@ -27,10 +28,9 @@ namespace ash {
 
 // A class to show the list of notifier extensions / URL patterns and allow
 // users to customize the settings.
-class ASH_EXPORT NotifierSettingsView
-    : public views::View,
-      public views::ButtonListener,
-      public MessageCenterController::NotifierSettingsListener {
+class ASH_EXPORT NotifierSettingsView : public views::View,
+                                        public views::ButtonListener,
+                                        public NotifierSettingsObserver {
  public:
   explicit NotifierSettingsView();
   ~NotifierSettingsView() override;
@@ -39,14 +39,15 @@ class ASH_EXPORT NotifierSettingsView
 
   void SetQuietModeState(bool is_quiet_mode);
 
-  // NotifierSettingsListener:
-  void OnNotifierListUpdated(
-      const std::vector<mojom::NotifierUiDataPtr>& ui_data) override;
-  void UpdateNotifierIcon(const message_center::NotifierId& notifier_id,
-                          const gfx::ImageSkia& icon) override;
+  // NotifierSettingsObserver:
+  void OnNotifiersUpdated(
+      const std::vector<NotifierMetadata>& notifiers) override;
+  void OnNotifierIconUpdated(const message_center::NotifierId& notifier_id,
+                             const gfx::ImageSkia& icon) override;
 
-  // Overridden from views::View:
+  // views::View:
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
+  const char* GetClassName() const override;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(NotifierSettingsViewTest, TestLearnMoreButton);
@@ -55,16 +56,18 @@ class ASH_EXPORT NotifierSettingsView
   class ASH_EXPORT NotifierButton : public views::Button,
                                     public views::ButtonListener {
    public:
-    NotifierButton(const mojom::NotifierUiData& notifier_ui_data,
+    NotifierButton(const NotifierMetadata& notifier,
                    views::ButtonListener* listener);
     ~NotifierButton() override;
 
     void UpdateIconImage(const gfx::ImageSkia& icon);
     void SetChecked(bool checked);
-    bool checked() const;
+    bool GetChecked() const;
     const message_center::NotifierId& notifier_id() const {
       return notifier_id_;
     }
+    // views::Button:
+    const char* GetClassName() const override;
 
    private:
     // Overridden from views::ButtonListener:
@@ -76,9 +79,9 @@ class ASH_EXPORT NotifierSettingsView
     void GridChanged();
 
     message_center::NotifierId notifier_id_;
-    views::ImageView* icon_view_;
-    views::Label* name_view_;
-    views::Checkbox* checkbox_;
+    views::ImageView* icon_view_ = nullptr;
+    views::Label* name_view_ = nullptr;
+    views::Checkbox* checkbox_ = nullptr;
 
     DISALLOW_COPY_AND_ASSIGN(NotifierButton);
   };
@@ -93,12 +96,13 @@ class ASH_EXPORT NotifierSettingsView
   // Overridden from views::ButtonListener:
   void ButtonPressed(views::Button* sender, const ui::Event& event) override;
 
-  views::ImageView* quiet_mode_icon_;
-  views::ToggleButton* quiet_mode_toggle_;
-  views::View* header_view_;
-  views::Label* top_label_;
-  views::ScrollView* scroller_;
-  views::View* no_notifiers_view_;
+  views::ImageView* quiet_mode_icon_ = nullptr;
+  views::ToggleButton* quiet_mode_toggle_ = nullptr;
+  views::View* header_view_ = nullptr;
+  views::Label* top_label_ = nullptr;
+  views::ScrollBar* scroll_bar_ = nullptr;
+  views::ScrollView* scroller_ = nullptr;
+  views::View* no_notifiers_view_ = nullptr;
   std::set<NotifierButton*> buttons_;
 
   DISALLOW_COPY_AND_ASSIGN(NotifierSettingsView);

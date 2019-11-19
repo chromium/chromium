@@ -177,4 +177,15 @@ MockClientGpuControl::MockClientGpuControl() = default;
 
 MockClientGpuControl::~MockClientGpuControl() = default;
 
+FakeDecoderClient::~FakeDecoderClient() = default;
+void FakeDecoderClient::OnConsoleMessage(int32_t, const std::string&) {}
+void FakeDecoderClient::CacheShader(const std::string&, const std::string&) {}
+void FakeDecoderClient::OnFenceSyncRelease(uint64_t) {}
+void FakeDecoderClient::OnDescheduleUntilFinished() {}
+void FakeDecoderClient::OnRescheduleAfterFinished() {}
+void FakeDecoderClient::OnSwapBuffers(uint64_t, uint32_t) {}
+void FakeDecoderClient::ScheduleGrContextCleanup() {}
+void FakeDecoderClient::SetActiveURL(GURL) {}
+void FakeDecoderClient::HandleReturnData(base::span<const uint8_t>) {}
+
 }  // namespace gpu

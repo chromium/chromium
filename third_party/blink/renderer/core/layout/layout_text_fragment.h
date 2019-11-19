@@ -41,20 +41,19 @@ class CORE_EXPORT LayoutTextFragment : public LayoutText {
  public:
   ~LayoutTextFragment() override;
 
-  // |style| is used for checking |ForceLegacyLayout()|.
-  static LayoutTextFragment* Create(const ComputedStyle& style,
-                                    Node*,
+  static LayoutTextFragment* Create(Node*,
                                     StringImpl*,
                                     int start_offset,
-                                    int length);
-  static LayoutTextFragment* CreateAnonymous(const ComputedStyle& style,
-                                             PseudoElement&,
-                                             StringImpl*);
-  static LayoutTextFragment* CreateAnonymous(const ComputedStyle& style,
-                                             PseudoElement&,
+                                    int length,
+                                    LegacyLayout);
+  static LayoutTextFragment* CreateAnonymous(PseudoElement&,
+                                             StringImpl*,
+                                             LegacyLayout);
+  static LayoutTextFragment* CreateAnonymous(PseudoElement&,
                                              StringImpl*,
                                              unsigned start,
-                                             unsigned length);
+                                             unsigned length,
+                                             LegacyLayout);
 
   Position PositionForCaretOffset(unsigned) const override;
   base::Optional<unsigned> CaretOffsetForPosition(
@@ -75,9 +74,6 @@ class CORE_EXPORT LayoutTextFragment : public LayoutText {
 
   scoped_refptr<StringImpl> OriginalText() const override;
 
-  void SetText(scoped_refptr<StringImpl>,
-               bool force = false,
-               bool avoid_layout_and_only_paint = false) override;
   void SetTextFragment(scoped_refptr<StringImpl>,
                        unsigned start,
                        unsigned length);
@@ -104,14 +100,17 @@ class CORE_EXPORT LayoutTextFragment : public LayoutText {
   LayoutText* GetFirstLetterPart() const override;
 
  protected:
+  friend class LayoutObjectFactory;
   LayoutTextFragment(Node*, StringImpl*, int start_offset, int length);
   void WillBeDestroyed() override;
 
  private:
   LayoutBlock* BlockForAccompanyingFirstLetter() const;
   UChar PreviousCharacter() const override;
+  void TextDidChange() override;
 
-  void UpdateHitTestResult(HitTestResult&, const LayoutPoint&) const override;
+  void UpdateHitTestResult(HitTestResult&,
+                           const PhysicalOffset&) const override;
 
   unsigned start_;
   unsigned fragment_length_;

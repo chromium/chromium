@@ -1,0 +1,5 @@
+[document web]
+++[section]
+++++[push button] name='Cut' keyshortcuts:Ctrl+X
+++++[push button] name='Copy' keyshortcuts:Ctrl+C
+++++[push button] name='Paste' keyshortcuts:Ctrl+V

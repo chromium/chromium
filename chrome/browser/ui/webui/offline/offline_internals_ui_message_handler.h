@@ -134,7 +134,8 @@ class OfflineInternalsUIMessageHandler : public content::WebUIMessageHandler {
   offline_pages::PrefetchService* prefetch_service_;
 
   // Factory for creating references in callbacks.
-  base::WeakPtrFactory<OfflineInternalsUIMessageHandler> weak_ptr_factory_;
+  base::WeakPtrFactory<OfflineInternalsUIMessageHandler> weak_ptr_factory_{
+      this};
 
   DISALLOW_COPY_AND_ASSIGN(OfflineInternalsUIMessageHandler);
 };

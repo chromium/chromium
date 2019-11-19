@@ -2,21 +2,18 @@
 <!-- Copyright 2016 The Chromium Authors. All rights reserved.
      Use of this source code is governed by a BSD-style license that can be
      found in the LICENSE file. -->
-
 <!-- Header containing information about the site.
      Java code inflating this layout manages the hiding and adjustment of elements in the layout.
      Request dialog: Displays an X in the top right corner, allowing the user to close it.
      Result dialog:  Displays no X.  Title goes all the way to the end.
 -->
-<merge xmlns:android="http://schemas.android.com/apk/res/android" >
-
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
     <org.chromium.chrome.browser.payments.ui.PaymentRequestHeader
         android:id="@+id/header"
         android:layout_height="wrap_content"
         android:layout_width="match_parent"
-        android:minHeight="64dp"
-        android:background="@color/modern_primary_color" >
-
+        android:minHeight="64dp">
         <ImageView
             android:id="@+id/icon_view"
             android:layout_height="24dp"
@@ -26,7 +23,6 @@
             android:layout_gravity="start|center_vertical"
             android:importantForAccessibility="no"
             android:scaleType="centerInside" />
-
         <LinearLayout
             android:id="@+id/page_info"
             android:layout_height="wrap_content"
@@ -37,7 +33,6 @@
             android:layout_marginTop="@dimen/payments_section_vertical_spacing"
             android:layout_gravity="center_vertical"
             android:orientation="vertical">
-
             <TextView
                 android:id="@+id/page_title"
                 android:layout_height="wrap_content"
@@ -47,7 +42,6 @@
                 android:maxLines="1"
                 android:singleLine="true"
                 android:textAppearance="@style/TextAppearance.PaymentRequestHeaderTitle" />
-
             <TextView
                 android:id="@+id/hostname"
                 android:layout_height="wrap_content"
@@ -59,7 +53,6 @@
                 android:singleLine="true"
                 android:textAppearance="@style/TextAppearance.BlackBody" />
         </LinearLayout>
-
         <ImageView
             android:id="@+id/close_button"
             android:layout_gravity="end|center_vertical"
@@ -68,7 +61,7 @@
             android:src="@drawable/btn_close"
             android:contentDescription="@string/close"
             android:background="?attr/selectableItemBackground"
-            android:scaleType="center" />
+            android:scaleType="center"
+            app:tint="@color/standard_mode_tint" />
     </org.chromium.chrome.browser.payments.ui.PaymentRequestHeader>
-
 </merge>

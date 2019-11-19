@@ -7,9 +7,11 @@
 
 #include "base/memory/weak_ptr.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "mojo/public/cpp/bindings/binding_set.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "services/device/public/mojom/sensor_provider.mojom.h"
-#include "third_party/blink/public/platform/modules/permissions/permission_status.mojom.h"
+#include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
 
 namespace content {
 
@@ -25,7 +27,7 @@ class SensorProviderProxyImpl final : public device::mojom::SensorProvider {
                           RenderFrameHost* render_frame_host);
   ~SensorProviderProxyImpl() override;
 
-  void Bind(device::mojom::SensorProviderRequest request);
+  void Bind(mojo::PendingReceiver<device::mojom::SensorProvider> receiver);
 
  private:
   // SensorProvider implementation.
@@ -38,12 +40,12 @@ class SensorProviderProxyImpl final : public device::mojom::SensorProvider {
                                     blink::mojom::PermissionStatus);
   void OnConnectionError();
 
-  mojo::BindingSet<device::mojom::SensorProvider> binding_set_;
+  mojo::ReceiverSet<device::mojom::SensorProvider> receiver_set_;
   PermissionControllerImpl* permission_controller_;
   RenderFrameHost* render_frame_host_;
-  device::mojom::SensorProviderPtr sensor_provider_;
+  mojo::Remote<device::mojom::SensorProvider> sensor_provider_;
 
-  base::WeakPtrFactory<SensorProviderProxyImpl> weak_factory_;
+  base::WeakPtrFactory<SensorProviderProxyImpl> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(SensorProviderProxyImpl);
 };

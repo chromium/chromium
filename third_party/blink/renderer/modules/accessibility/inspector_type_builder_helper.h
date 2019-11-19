@@ -12,7 +12,10 @@
 
 namespace blink {
 
-using namespace protocol::Accessibility;
+using protocol::Accessibility::AXProperty;
+using protocol::Accessibility::AXValue;
+using protocol::Accessibility::AXValueSource;
+namespace AXValueTypeEnum = protocol::Accessibility::AXValueTypeEnum;
 
 std::unique_ptr<AXProperty> CreateProperty(const String& name,
                                            std::unique_ptr<AXValue>);

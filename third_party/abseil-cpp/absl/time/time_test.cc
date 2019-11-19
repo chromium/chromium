@@ -4,7 +4,7 @@
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//      http://www.apache.org/licenses/LICENSE-2.0
+//      https://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,6 +13,10 @@
 // limitations under the License.
 
 #include "absl/time/time.h"
+
+#if defined(_MSC_VER)
+#include <winsock2.h>  // for timeval
+#endif
 
 #include <chrono>  // NOLINT(build/c++11)
 #include <cstring>
@@ -28,7 +32,7 @@
 
 namespace {
 
-#if GTEST_USES_SIMPLE_RE
+#if defined(GTEST_USES_SIMPLE_RE) && GTEST_USES_SIMPLE_RE
 const char kZoneAbbrRE[] = ".*";  // just punt
 #else
 const char kZoneAbbrRE[] = "[A-Za-z]{3,4}|[-+][0-9]{2}([0-9]{2})?";
@@ -108,7 +112,7 @@ TEST(Time, UnixEpoch) {
   const auto ci = absl::UTCTimeZone().At(absl::UnixEpoch());
   EXPECT_EQ(absl::CivilSecond(1970, 1, 1, 0, 0, 0), ci.cs);
   EXPECT_EQ(absl::ZeroDuration(), ci.subsecond);
-  EXPECT_EQ(absl::Weekday::thursday, absl::GetWeekday(absl::CivilDay(ci.cs)));
+  EXPECT_EQ(absl::Weekday::thursday, absl::GetWeekday(ci.cs));
 }
 
 TEST(Time, Breakdown) {
@@ -119,14 +123,14 @@ TEST(Time, Breakdown) {
   auto ci = tz.At(t);
   EXPECT_CIVIL_INFO(ci, 1969, 12, 31, 19, 0, 0, -18000, false);
   EXPECT_EQ(absl::ZeroDuration(), ci.subsecond);
-  EXPECT_EQ(absl::Weekday::wednesday, absl::GetWeekday(absl::CivilDay(ci.cs)));
+  EXPECT_EQ(absl::Weekday::wednesday, absl::GetWeekday(ci.cs));
 
   // Just before the epoch.
   t -= absl::Nanoseconds(1);
   ci = tz.At(t);
   EXPECT_CIVIL_INFO(ci, 1969, 12, 31, 18, 59, 59, -18000, false);
   EXPECT_EQ(absl::Nanoseconds(999999999), ci.subsecond);
-  EXPECT_EQ(absl::Weekday::wednesday, absl::GetWeekday(absl::CivilDay(ci.cs)));
+  EXPECT_EQ(absl::Weekday::wednesday, absl::GetWeekday(ci.cs));
 
   // Some time later.
   t += absl::Hours(24) * 2735;
@@ -135,7 +139,7 @@ TEST(Time, Breakdown) {
   ci = tz.At(t);
   EXPECT_CIVIL_INFO(ci, 1977, 6, 28, 14, 30, 15, -14400, true);
   EXPECT_EQ(8, ci.subsecond / absl::Nanoseconds(1));
-  EXPECT_EQ(absl::Weekday::tuesday, absl::GetWeekday(absl::CivilDay(ci.cs)));
+  EXPECT_EQ(absl::Weekday::tuesday, absl::GetWeekday(ci.cs));
 }
 
 TEST(Time, AdditiveOperators) {
@@ -975,15 +979,15 @@ TEST(Time, ConversionSaturation) {
   EXPECT_CIVIL_INFO(ci, std::numeric_limits<int64_t>::max(), 12, 31, 23,
                             59, 59, 0, false);
   EXPECT_EQ(absl::InfiniteDuration(), ci.subsecond);
-  EXPECT_EQ(absl::Weekday::thursday, absl::GetWeekday(absl::CivilDay(ci.cs)));
-  EXPECT_EQ(365, absl::GetYearDay(absl::CivilDay(ci.cs)));
+  EXPECT_EQ(absl::Weekday::thursday, absl::GetWeekday(ci.cs));
+  EXPECT_EQ(365, absl::GetYearDay(ci.cs));
   EXPECT_STREQ("-00", ci.zone_abbr);  // artifact of TimeZone::At()
   ci = utc.At(absl::InfinitePast());
   EXPECT_CIVIL_INFO(ci, std::numeric_limits<int64_t>::min(), 1, 1, 0, 0,
                             0, 0, false);
   EXPECT_EQ(-absl::InfiniteDuration(), ci.subsecond);
-  EXPECT_EQ(absl::Weekday::sunday, absl::GetWeekday(absl::CivilDay(ci.cs)));
-  EXPECT_EQ(1, absl::GetYearDay(absl::CivilDay(ci.cs)));
+  EXPECT_EQ(absl::Weekday::sunday, absl::GetWeekday(ci.cs));
+  EXPECT_EQ(1, absl::GetYearDay(ci.cs));
   EXPECT_STREQ("-00", ci.zone_abbr);  // artifact of TimeZone::At()
 
   // Approach the maximal Time value from below.

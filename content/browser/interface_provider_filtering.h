@@ -10,24 +10,26 @@
 #include "base/macros.h"
 #include "base/strings/string_piece.h"
 #include "content/common/content_export.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "services/service_manager/public/mojom/interface_provider.mojom.h"
 
 namespace content {
 
 // Filters interface requests received from an execution context of the type
 // corresponding to |spec| in the renderer process with ID |process_id|.
-// |request| is the InterfaceProviderRequest from the renderer; an equivalent
-// InterfaceProviderRequest where GetInterface requests have been filtered.
+// |receiver| is the PendingReceiver<InterfaceProvider> from the renderer; an
+// equivalent PendingReceiver<InterfaceProvider> where GetInterface receivers
+// have been filtered.
 //
 // If |process_id| does not refer to a renderer process or if that renderer's
 // BrowserContext does not have a Connector, the connection is broken instead;
-// that is, |request| and the InterfacePtr corresponding to the returned request
-// are both closed.
-service_manager::mojom::InterfaceProviderRequest
+// that is, |receiver| and the mojo::PendingRemote<Interface> corresponding
+// to the returned receiver are both closed.
+mojo::PendingReceiver<service_manager::mojom::InterfaceProvider>
 FilterRendererExposedInterfaces(
     const char* spec,
     int process_id,
-    service_manager::mojom::InterfaceProviderRequest request);
+    mojo::PendingReceiver<service_manager::mojom::InterfaceProvider> receiver);
 
 namespace test {
 

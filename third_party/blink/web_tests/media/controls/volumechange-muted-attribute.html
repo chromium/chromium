@@ -2,8 +2,8 @@
 <html>
 <title>This tests that controls are properly updated when muted content attribute is changed.</title>
 <script src="../media-controls.js"></script>
-<audio controls muted></audio>
-<video controls muted></video>
+<audio preload="auto" controls muted></audio>
+<video preload="auto" controls muted></video>
 <script>
   var audio = document.querySelector('audio');
   enableTestMode(audio);

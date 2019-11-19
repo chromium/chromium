@@ -17,83 +17,8 @@
 <template id="target-template">T</template>
 <script src="resources/interpolation-test.js"></script>
 <script>
-assertInterpolation({
-  property: 'caret-color',
-  from: neutralKeyframe,
-  to: 'green',
-}, [
-  {at: -0.3, is: 'rgb(255, 255, 0)'},
-  {at: 0, is: 'rgb(255, 255, 0)'},
-  {at: 0.3, is: 'rgb(179, 217, 0)'},
-  {at: 0.6, is: 'rgb(102, 179, 0)'},
-  {at: 1, is: 'rgb(0, 128, 0)'},
-  {at: 1.5, is: 'rgb(0, 65, 0)'},
-]);
-
-assertNoInterpolation({
-  property: 'caret-color',
-  from: 'initial',
-  to: 'green',
-});
-
-assertNoInterpolation({
-  property: 'caret-color',
-  from: 'auto',
-  to: 'green',
-});
-
-assertInterpolation({
-  property: 'caret-color',
-  from: 'currentColor',
-  to: 'green',
-}, [
-  {at: -0.3, is: 'rgb(0, 0, 0)'},
-  {at: 0, is: 'rgb(0, 0, 0)'},
-  {at: 0.3, is: 'rgb(0, 38, 0)'},
-  {at: 0.6, is: 'rgb(0, 77, 0)'},
-  {at: 1, is: 'rgb(0, 128, 0)'},
-  {at: 1.5, is: 'rgb(0, 192, 0)'},
-]);
-
-assertInterpolation({
-  property: 'caret-color',
-  from: 'inherit',
-  to: 'green',
-}, [
-  {at: -0.3, is: 'rgb(0, 0, 255)'},
-  {at: 0, is: 'rgb(0, 0, 255)'},
-  {at: 0.3, is: 'rgb(0, 38, 179)'},
-  {at: 0.6, is: 'rgb(0, 77, 102)'},
-  {at: 1, is: 'rgb(0, 128, 0)'},
-  {at: 1.5, is: 'rgb(0, 192, 0)'},
-]);
-
-assertInterpolation({
-  property: 'caret-color',
-  from: 'unset',
-  to: 'green',
-}, [
-  {at: -0.3, is: 'rgb(0, 0, 255)'},
-  {at: 0, is: 'rgb(0, 0, 255)'},
-  {at: 0.3, is: 'rgb(0, 38, 179)'},
-  {at: 0.6, is: 'rgb(0, 77, 102)'},
-  {at: 1, is: 'rgb(0, 128, 0)'},
-  {at: 1.5, is: 'rgb(0, 192, 0)'},
-]);
-
-assertInterpolation({
-  property: 'caret-color',
-  from: 'black',
-  to: 'orange',
-}, [
-  {at: -0.3, is: 'rgb(0, 0, 0)'},
-  {at: 0, is: 'rgb(0, 0, 0)'},
-  {at: 0.3, is: 'rgb(77, 50, 0)'},
-  {at: 0.6, is: 'rgb(153, 99, 0)'},
-  {at: 1, is: 'rgb(255, 165, 0)'},
-  {at: 1.5, is: 'rgb(255, 248, 0)'},
-]);
-
+// New tests should be added to external/wpt/css/css-ui/animation/caret-color-interpolation.html,
+// but these legacy tests are kept here as they rely on prefixed values.
 assertInterpolation({
   property: 'caret-color',
   from: '-webkit-activelink',

@@ -1,0 +1,45 @@
+Tests that adopted portal is rendered inline correctly.
+
+
+Running: testSetUp
+- <html>
+      <head></head>
+    - <body>
+        - <portal src="append-predecessor.html">
+            - #document
+                - <html>
+                      <head></head>
+                    - <body>
+                        - <script>
+                              window.onportalactivate = e => {\n      var portal = e.adoptPredecessor();\n      document.body.appendChild(portal);\n    }\n
+                          </script>
+                      </body>
+                  </html>
+          </portal>
+        - <script>
+              function activate() {\n      var portal = document.querySelector('portal');\n      setTimeout(() => {\n        portal.activate().then(() => { document.body.removeChild(portal); })\n      });\n    }\n
+          </script>
+      </body>
+  </html>
+
+Running: testAfterActivate
+- <html>
+      <head></head>
+    - <body>
+        - <script>
+              window.onportalactivate = e => {\n      var portal = e.adoptPredecessor();\n      document.body.appendChild(portal);\n    }\n
+          </script>
+        - <portal>
+            - #document
+                - <html>
+                      <head></head>
+                    - <body>
+                        - <script>
+                              function activate() {\n      var portal = document.querySelector('portal');\n      setTimeout(() => {\n        portal.activate().then(() => { document.body.removeChild(portal); })\n      });\n    }\n
+                          </script>
+                      </body>
+                  </html>
+          </portal>
+      </body>
+  </html>
+

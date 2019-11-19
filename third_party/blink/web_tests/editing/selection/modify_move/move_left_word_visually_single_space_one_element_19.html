@@ -1,0 +1,236 @@
+<!doctype html>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<script src="../../assert_selection.js"></script>
+<script>
+if (window.internals)
+  internals.settings.setEditingBehavior('win');
+
+selection_test(
+  '<div contenteditable dir="ltr">|abc def this<span>is</span><span>one</span><span>word</span>end opq rst </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr">|abc def this<span>is</span><span>one</span><span>word</span>end opq rst </div>',
+  '19-0 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr">a|bc def this<span>is</span><span>one</span><span>word</span>end opq rst </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr">|abc def this<span>is</span><span>one</span><span>word</span>end opq rst </div>',
+  '19-1 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr">ab|c def this<span>is</span><span>one</span><span>word</span>end opq rst </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr">|abc def this<span>is</span><span>one</span><span>word</span>end opq rst </div>',
+  '19-2 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr">abc| def this<span>is</span><span>one</span><span>word</span>end opq rst </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr">|abc def this<span>is</span><span>one</span><span>word</span>end opq rst </div>',
+  '19-3 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr">abc |def this<span>is</span><span>one</span><span>word</span>end opq rst </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr">|abc def this<span>is</span><span>one</span><span>word</span>end opq rst </div>',
+  '19-4 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr">abc d|ef this<span>is</span><span>one</span><span>word</span>end opq rst </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr">abc |def this<span>is</span><span>one</span><span>word</span>end opq rst </div>',
+  '19-5 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr">abc de|f this<span>is</span><span>one</span><span>word</span>end opq rst </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr">abc |def this<span>is</span><span>one</span><span>word</span>end opq rst </div>',
+  '19-6 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr">abc def| this<span>is</span><span>one</span><span>word</span>end opq rst </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr">abc |def this<span>is</span><span>one</span><span>word</span>end opq rst </div>',
+  '19-7 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr">abc def |this<span>is</span><span>one</span><span>word</span>end opq rst </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr">abc |def this<span>is</span><span>one</span><span>word</span>end opq rst </div>',
+  '19-8 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr">abc def t|his<span>is</span><span>one</span><span>word</span>end opq rst </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr">abc def |this<span>is</span><span>one</span><span>word</span>end opq rst </div>',
+  '19-9 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr">abc def th|is<span>is</span><span>one</span><span>word</span>end opq rst </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr">abc def |this<span>is</span><span>one</span><span>word</span>end opq rst </div>',
+  '19-10 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr">abc def thi|s<span>is</span><span>one</span><span>word</span>end opq rst </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr">abc def |this<span>is</span><span>one</span><span>word</span>end opq rst </div>',
+  '19-11 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr">abc def this|<span>is</span><span>one</span><span>word</span>end opq rst </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr">abc def |this<span>is</span><span>one</span><span>word</span>end opq rst </div>',
+  '19-12 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr">abc def this<span>|is</span><span>one</span><span>word</span>end opq rst </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr">abc def |this<span>is</span><span>one</span><span>word</span>end opq rst </div>',
+  '19-13 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr">abc def this<span>i|s</span><span>one</span><span>word</span>end opq rst </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr">abc def |this<span>is</span><span>one</span><span>word</span>end opq rst </div>',
+  '19-14 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr">abc def this<span>is|</span><span>one</span><span>word</span>end opq rst </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr">abc def |this<span>is</span><span>one</span><span>word</span>end opq rst </div>',
+  '19-15 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr">abc def this<span>is</span><span>|one</span><span>word</span>end opq rst </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr">abc def |this<span>is</span><span>one</span><span>word</span>end opq rst </div>',
+  '19-16 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr">abc def this<span>is</span><span>o|ne</span><span>word</span>end opq rst </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr">abc def |this<span>is</span><span>one</span><span>word</span>end opq rst </div>',
+  '19-17 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr">abc def this<span>is</span><span>on|e</span><span>word</span>end opq rst </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr">abc def |this<span>is</span><span>one</span><span>word</span>end opq rst </div>',
+  '19-18 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr">abc def this<span>is</span><span>one|</span><span>word</span>end opq rst </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr">abc def |this<span>is</span><span>one</span><span>word</span>end opq rst </div>',
+  '19-19 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr">abc def this<span>is</span><span>one</span><span>|word</span>end opq rst </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr">abc def |this<span>is</span><span>one</span><span>word</span>end opq rst </div>',
+  '19-20 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr">abc def this<span>is</span><span>one</span><span>w|ord</span>end opq rst </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr">abc def |this<span>is</span><span>one</span><span>word</span>end opq rst </div>',
+  '19-21 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr">abc def this<span>is</span><span>one</span><span>wo|rd</span>end opq rst </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr">abc def |this<span>is</span><span>one</span><span>word</span>end opq rst </div>',
+  '19-22 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr">abc def this<span>is</span><span>one</span><span>wor|d</span>end opq rst </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr">abc def |this<span>is</span><span>one</span><span>word</span>end opq rst </div>',
+  '19-23 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr">abc def this<span>is</span><span>one</span><span>word|</span>end opq rst </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr">abc def |this<span>is</span><span>one</span><span>word</span>end opq rst </div>',
+  '19-24 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr">abc def this<span>is</span><span>one</span><span>word</span>|end opq rst </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr">abc def |this<span>is</span><span>one</span><span>word</span>end opq rst </div>',
+  '19-25 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr">abc def this<span>is</span><span>one</span><span>word</span>e|nd opq rst </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr">abc def |this<span>is</span><span>one</span><span>word</span>end opq rst </div>',
+  '19-26 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr">abc def this<span>is</span><span>one</span><span>word</span>en|d opq rst </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr">abc def |this<span>is</span><span>one</span><span>word</span>end opq rst </div>',
+  '19-27 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr">abc def this<span>is</span><span>one</span><span>word</span>end| opq rst </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr">abc def |this<span>is</span><span>one</span><span>word</span>end opq rst </div>',
+  '19-28 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr">abc def this<span>is</span><span>one</span><span>word</span>end |opq rst </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr">abc def |this<span>is</span><span>one</span><span>word</span>end opq rst </div>',
+  '19-29 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr">abc def this<span>is</span><span>one</span><span>word</span>end o|pq rst </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr">abc def this<span>is</span><span>one</span><span>word</span>end |opq rst </div>',
+  '19-30 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr">abc def this<span>is</span><span>one</span><span>word</span>end op|q rst </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr">abc def this<span>is</span><span>one</span><span>word</span>end |opq rst </div>',
+  '19-31 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr">abc def this<span>is</span><span>one</span><span>word</span>end opq| rst </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr">abc def this<span>is</span><span>one</span><span>word</span>end |opq rst </div>',
+  '19-32 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr">abc def this<span>is</span><span>one</span><span>word</span>end opq |rst </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr">abc def this<span>is</span><span>one</span><span>word</span>end |opq rst </div>',
+  '19-33 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr">abc def this<span>is</span><span>one</span><span>word</span>end opq r|st </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr">abc def this<span>is</span><span>one</span><span>word</span>end opq |rst </div>',
+  '19-34 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr">abc def this<span>is</span><span>one</span><span>word</span>end opq rs|t </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr">abc def this<span>is</span><span>one</span><span>word</span>end opq |rst </div>',
+  '19-35 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr">abc def this<span>is</span><span>one</span><span>word</span>end opq rst| </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr">abc def this<span>is</span><span>one</span><span>word</span>end opq |rst </div>',
+  '19-36 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr">abc def this<span>is</span><span>one</span><span>word</span>end opq rst |</div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr">abc def this<span>is</span><span>one</span><span>word</span>end opq |rst </div>',
+  '19-37 left word');
+</script>

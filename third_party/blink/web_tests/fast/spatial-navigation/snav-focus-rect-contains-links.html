@@ -1,0 +1,45 @@
+<!doctype html>
+<a id="outerA" href="www" style="margin-left: 150px">outerA</a>
+<div id="containerA" style="width: 300px; height: 300px; background: pink; position: relative; margin: 20px" tabindex="0">
+  <div id="containerB" style="width: 270px; height: 270px; background: yellow; position: relative; top: 15px; left: 15px" tabindex="0">
+    <!-- The focusables' DOM order is not the same as their layout order.
+         SpatNav should prioritize layout order. -->
+    <a id="innerB" href="www" style="position: absolute; top: 150px; left: 20px">innerB</a>
+    <a id="innerC" href="www" style="position: absolute; top: 150px; left: 170px">innerC</a>
+    <a id="innerD" href="www" style="position: absolute; top: 230px; left: 130px">innerD</a>
+    <a id="innerA" href="www" style="position: absolute; top: 20px; left: 130px">innerA</a>
+  </div>
+</div>
+<a id="outerB" href="www" style="margin-left: 150px">outerB</a>
+
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="resources/snav-testharness.js"></script>
+<script>
+  var resultMap = [
+    ["Down", "outerA"],
+    ["Down", "containerA"],
+    ["Down", "containerB"],
+    ["Down", "innerA"],
+    ["Down", "innerC"],
+    ["Down", "innerD"],
+    ["Down", "outerB"],
+    ["Up", "containerA"],
+    ["Up", "containerB"],
+    ["Up", "innerD"],
+    ["Up", "innerC"],
+    ["Up", "innerA"],
+    ["Up", "outerA"],
+  ];
+  snav.assertFocusMoves(resultMap);
+</script>
+
+<p><em>Manual test instruction: Ensure that all links are reachable. Especially, when the
+yellow "container" is focused, ensure that its "inner" focusables can be reached.</em></p>
+
+<p>Once the bottommost inner node gets focus, we exit the complete stack of
+containers at once (moving to #outerB from #innerD). Note that we don't go back to
+one of the containers because that would create focus traps.</p>
+
+<p>Also, when holding one of the four directional keys, ensure that the page is fully scrolled
+in that direction. Especially, ensure that focus does not get stuck inside the container.</p>

@@ -43,7 +43,7 @@ std::unordered_map<string, string> parameters_ = {
 void CheckExpansion(const string& uri_template,
                     const string& expected_expansion,
                     bool expected_validity = true,
-                    const std::set<string>* expected_vars = NULL) {
+                    const std::set<string>* expected_vars = nullptr) {
   string result;
   std::set<string> vars_found;
   EXPECT_EQ(expected_validity,

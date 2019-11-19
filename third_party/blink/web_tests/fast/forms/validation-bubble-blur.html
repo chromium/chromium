@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<input required>
+<script>
+async_test(t => {
+  let input = document.querySelector('input');
+  assert_own_property(window, 'internals');
+  input.reportValidity();
+  assert_true(internals.isValidationMessageVisible(input));
+  assert_equals(document.activeElement, input);
+
+  input.blur();
+  requestAnimationFrame(t.step_func_done(() => {
+    assert_false(internals.isValidationMessageVisible(input));
+  }));
+}, 'Ensure that removing focus from an invalid control with ' +
+    'a validation bubble closes the validation bubble.');
+</script>

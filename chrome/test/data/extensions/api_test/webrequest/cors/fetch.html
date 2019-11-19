@@ -1,0 +1,16 @@
+<!--
+ * Copyright 2019 The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+-->
+<script>
+const params = (new URL(location.href)).searchParams;
+const hostname = 'cors.example.com';
+const origin = location.protocol + '//' + hostname + ':' + location.port;
+const path = params.get('path');
+const url = origin + '/extensions/api_test/webrequest/cors/' + path;
+const withPreflight = params.has('with-preflight');
+const headers = withPreflight? {'x-foo': 'x-bar'} : undefined;
+
+fetch(url, { headers, cache: 'no-store' });
+</script>

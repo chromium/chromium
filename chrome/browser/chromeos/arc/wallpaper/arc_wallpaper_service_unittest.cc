@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 #include <memory>
+#include <string>
 #include <utility>
 
 #include "ash/public/cpp/ash_pref_names.h"
@@ -20,15 +21,15 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/cryptohome/system_salt_getter.h"
-#include "components/arc/arc_bridge_service.h"
 #include "components/arc/arc_service_manager.h"
+#include "components/arc/session/arc_bridge_service.h"
 #include "components/arc/test/connection_holder_util.h"
 #include "components/arc/test/fake_wallpaper_instance.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user_names.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -60,7 +61,7 @@ class FailureDecodeRequestSender
 class ArcWallpaperServiceTest : public testing::Test {
  public:
   ArcWallpaperServiceTest()
-      : thread_bundle_(std::make_unique<content::TestBrowserThreadBundle>()),
+      : task_environment_(std::make_unique<content::BrowserTaskEnvironment>()),
         user_manager_(new chromeos::FakeChromeUserManager()),
         user_manager_enabler_(base::WrapUnique(user_manager_)) {}
   ~ArcWallpaperServiceTest() override = default;
@@ -83,8 +84,7 @@ class ArcWallpaperServiceTest : public testing::Test {
     // Wallpaper
     wallpaper_controller_client_ =
         std::make_unique<WallpaperControllerClient>();
-    wallpaper_controller_client_->InitForTesting(
-        test_wallpaper_controller_.CreateInterfacePtr());
+    wallpaper_controller_client_->InitForTesting(&test_wallpaper_controller_);
 
     // Arc services
     arc_service_manager_.set_browser_context(&testing_profile_);
@@ -119,7 +119,7 @@ class ArcWallpaperServiceTest : public testing::Test {
   TestWallpaperController test_wallpaper_controller_;
 
  private:
-  std::unique_ptr<content::TestBrowserThreadBundle> thread_bundle_;
+  std::unique_ptr<content::BrowserTaskEnvironment> task_environment_;
   chromeos::FakeChromeUserManager* const user_manager_ = nullptr;
   user_manager::ScopedUserManager user_manager_enabler_;
   arc::ArcServiceManager arc_service_manager_;
@@ -135,7 +135,6 @@ class ArcWallpaperServiceTest : public testing::Test {
 TEST_F(ArcWallpaperServiceTest, SetDefaultWallpaper) {
   test_wallpaper_controller_.ClearCounts();
   service_->SetDefaultWallpaper();
-  wallpaper_controller_client_->FlushForTesting();
   EXPECT_EQ(1, test_wallpaper_controller_.set_default_wallpaper_count());
 }
 
@@ -144,7 +143,6 @@ TEST_F(ArcWallpaperServiceTest, SetAndGetWallpaper) {
       std::make_unique<SuccessDecodeRequestSender>());
   std::vector<uint8_t> bytes;
   service_->SetWallpaper(bytes, 10 /*wallpaper_id=*/);
-  wallpaper_controller_client_->FlushForTesting();
   ASSERT_EQ(1u, wallpaper_instance_->changed_ids().size());
   EXPECT_EQ(10, wallpaper_instance_->changed_ids()[0]);
 
@@ -152,7 +150,6 @@ TEST_F(ArcWallpaperServiceTest, SetAndGetWallpaper) {
       base::BindOnce([](std::vector<uint8_t>* out,
                         const std::vector<uint8_t>& bytes) { *out = bytes; },
                      &bytes));
-  wallpaper_controller_client_->FlushForTesting();
   content::RunAllTasksUntilIdle();
   ASSERT_NE(0u, bytes.size());
 }
@@ -162,7 +159,6 @@ TEST_F(ArcWallpaperServiceTest, SetWallpaperFailure) {
       std::make_unique<FailureDecodeRequestSender>());
   std::vector<uint8_t> bytes;
   service_->SetWallpaper(bytes, 10 /*wallpaper_id=*/);
-  wallpaper_controller_client_->FlushForTesting();
 
   // For failure case, ArcWallpaperService reports that wallpaper is changed to
   // requested wallpaper (ID=10), then reports that the wallpaper is changed

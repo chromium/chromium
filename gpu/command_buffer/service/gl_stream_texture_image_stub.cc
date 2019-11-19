@@ -16,6 +16,9 @@ gfx::Size GLStreamTextureImageStub::GetSize() {
 unsigned GLStreamTextureImageStub::GetInternalFormat() {
   return 0;
 }
+unsigned GLStreamTextureImageStub::GetDataType() {
+  return 0;
+}
 GLStreamTextureImageStub::BindOrCopy
 GLStreamTextureImageStub::ShouldBindOrCopy() {
   return BIND;

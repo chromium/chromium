@@ -16,13 +16,13 @@
  @private
   base::Closure disconnect_callback_;
   base::string16 username_;
-  IBOutlet NSTextField* connectedToField_;
-  IBOutlet NSButton* disconnectButton_;
 }
 
 - (id)initWithCallback:(const base::Closure&)disconnect_callback
-              username:(const std::string&)username;
-- (IBAction)stopSharing:(id)sender;
+              username:(const std::string&)username
+                window:(NSWindow*)window;
+- (void)initializeWindow;
+- (void)stopSharing:(id)sender;
 @end
 
 // A floating window with a custom border. The custom border and background

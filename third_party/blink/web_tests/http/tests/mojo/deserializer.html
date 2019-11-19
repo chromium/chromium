@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/gen/layout_test_data/mojo/public/js/mojo_bindings_lite.js"></script>
+<script src="/gen/mojo/public/interfaces/bindings/tests/deserializer.test-mojom-lite.js"></script>
+<script>
+'use strict';
+
+test(() => {
+  const data = new Uint32Array([
+    0, 0,     // header
+    8899,     // v1
+    9988,     // v2
+    7777, 0   // v3
+    ]);
+  const dataview = new DataView(data.buffer);
+  const s = deserializer.TestStruct_Deserialize(dataview);
+  assert_equals(s.v1, 8899);
+  assert_equals(s.v2, 9988);
+  assert_equals(s.v3, 7777);
+}, 'deserializer');
+
+</script>

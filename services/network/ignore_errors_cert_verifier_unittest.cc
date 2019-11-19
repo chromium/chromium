@@ -94,7 +94,9 @@ static void GetNonWhitelistedTestCert(scoped_refptr<X509Certificate>* out) {
 
 static CertVerifier::RequestParams MakeRequestParams(
     const scoped_refptr<X509Certificate>& cert) {
-  return CertVerifier::RequestParams(cert, "example.com", 0, "");
+  return CertVerifier::RequestParams(cert, "example.com", /*flags=*/0,
+                                     /*ocsp_response=*/std::string(),
+                                     /*sct_list=*/std::string());
 }
 
 static void GetWhitelistedTestCert(scoped_refptr<X509Certificate>* out) {

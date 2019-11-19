@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+
+<!-- The presence of a frame causes the crash in https://crbug.com/895511 -->
+<iframe></iframe>
+
+<div id="dialog-host"></div>
+
+<script>
+  test(function() {
+    var fragment = document.createDocumentFragment();
+    var dialog = document.createElement('dialog');
+    fragment.appendChild(dialog);
+
+    var dialogHost = document.getElementById('dialog-host');
+    var root = dialogHost.createShadowRoot();
+    root.appendChild(fragment);
+    // This test passes if it does not crash.
+  }, 'Append fragment with dialog to shadow root');
+</script>

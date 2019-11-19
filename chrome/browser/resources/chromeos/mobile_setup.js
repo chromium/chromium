@@ -147,8 +147,8 @@ cr.define('mobile', function() {
      * created.
      * If deviceInfo provides post data to be sent to the payment URL, the
      * webview will be initilized using
-     * <code>mobile.util.postDeviceDataToWebview</code>, otherwise the payment
-     * URL will be loaded directly into the webview.
+     * <code>webviewPost.util.postDeviceDataToWebview</code>, otherwise the
+     * payment URL will be loaded directly into the webview.
      *
      * Note that the portal frame webview will only ever contain data and web
      * URLs - it will never embed the mobile setup extension resources.
@@ -188,7 +188,8 @@ cr.define('mobile', function() {
           this.sendInitialMessage_.bind(this, deviceInfo.payment_url));
 
       if (deviceInfo.post_data && deviceInfo.post_data.length) {
-        mobile.util.postDeviceDataToWebview(frame, deviceInfo);
+        webviewPost.util.postDeviceDataToWebview(
+            frame, deviceInfo.payment_url, deviceInfo.post_data);
       } else {
         frame.src = deviceInfo.payment_url;
       }

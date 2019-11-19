@@ -141,8 +141,11 @@ shouldBe("dc.reliable", "true");
 shouldBe("dc.ordered", "false");
 shouldNotThrow('dc = pc.createDataChannel("label3", {maxRetransmits:0});');
 shouldBe("dc.reliable", "false");
-shouldNotThrow('dc = pc.createDataChannel("label3", {maxRetransmitTime:0});');
+shouldNotThrow('dc = pc.createDataChannel("label3", {maxPacketLifeTime:0});');
 shouldBe("dc.reliable", "false");
+// Test that older name has stopped affecting the reliability mode.
+shouldNotThrow('dc = pc.createDataChannel("label3", {maxRetransmitTime:0});');
+shouldBe("dc.reliable", "true");
 
 pc = new RTCPeerConnection();
 pc2 = new RTCPeerConnection();

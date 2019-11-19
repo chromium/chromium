@@ -11,13 +11,13 @@ import android.content.Context;
 import android.os.Build;
 import android.util.Log;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.ApiCompatibilityUtils;
-import org.chromium.base.BuildConfig;
 import org.chromium.base.BuildInfo;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.PiiElider;
 import org.chromium.base.StrictModeContext;
-import org.chromium.base.VisibleForTesting;
 import org.chromium.base.annotations.MainDex;
 import org.chromium.chrome.browser.ChromeVersionInfo;
 import org.chromium.components.crash.CrashKeys;
@@ -82,7 +82,7 @@ public class PureJavaExceptionReporter {
     @VisibleForTesting
     void createAndUploadReport(Throwable javaException) {
         // It is OK to do IO in main thread when we know there is a crash happens.
-        try (StrictModeContext unused = StrictModeContext.allowDiskWrites()) {
+        try (StrictModeContext ignored = StrictModeContext.allowDiskWrites()) {
             createReport(javaException);
             flushToFile();
             uploadReport();
@@ -145,7 +145,7 @@ public class PureJavaExceptionReporter {
                 PiiElider.sanitizeStacktrace(Log.getStackTraceString(javaException)));
         addPairedString(EARLY_JAVA_EXCEPTION, "true");
         addPairedString(PACKAGE,
-                String.format("%s v%s (%s)", BuildConfig.FIREBASE_APP_ID, buildInfo.versionCode,
+                String.format("%s v%s (%s)", BuildInfo.getFirebaseAppId(), buildInfo.versionCode,
                         buildInfo.versionName));
         addPairedString(CUSTOM_THEMES, buildInfo.customThemes);
         addPairedString(RESOURCES_VERSION, buildInfo.resourcesVersion);
@@ -181,9 +181,7 @@ public class PureJavaExceptionReporter {
         if (ChromeVersionInfo.isBetaBuild()) {
             return "beta";
         }
-        if (ChromeVersionInfo.isStableBuild()) {
-            return "stable";
-        }
+        // An empty string indicates the stable channel.
         return "";
     }
 

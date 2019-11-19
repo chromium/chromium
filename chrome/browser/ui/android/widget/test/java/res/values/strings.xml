@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2019 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<resources>
+    <string name="promo_dialog_test_header">Promo Dialog Test Header</string>
+    <string name="promo_dialog_test_subheader">Promo dialog test sub-header</string>
+    <string name="promo_dialog_test_primary_button">OK</string>
+    <string name="promo_dialog_test_secondary_button">Cancel</string>
+    <string name="promo_dialog_test_footer">Learn more</string>
+</resources>

@@ -8,10 +8,9 @@
 #error "This file requires ARC support."
 #endif
 
-// The accessibility identifier of the privacy settings collection view.
-NSString* const kClearBrowsingDataCollectionViewAccessibilityIdentifier =
-    @"kClearBrowsingDataCollectionViewAccessibilityIdentifier";
-// The accessibility identifiers of the cells in the collection view.
+NSString* const kClearBrowsingDataViewAccessibilityIdentifier =
+    @"kClearBrowsingDataViewAccessibilityIdentifier";
+
 NSString* const kClearBrowsingHistoryCellAccessibilityIdentifier =
     @"kClearBrowsingHistoryCellAccessibilityIdentifier";
 NSString* const kClearCookiesCellAccessibilityIdentifier =

@@ -4,5 +4,5 @@
 
 mojom = "//gpu/ipc/common/context_result.mojom"
 public_headers = [ "//gpu/command_buffer/common/context_result.h" ]
-traits_headers = [ "//gpu/ipc/common/context_result_struct_traits.h" ]
-type_mappings = [ "gpu.mojom.ContextResult=gpu::ContextResult" ]
+traits_headers = [ "//gpu/ipc/common/context_result_mojom_traits.h" ]
+type_mappings = [ "gpu.mojom.ContextResult=::gpu::ContextResult" ]

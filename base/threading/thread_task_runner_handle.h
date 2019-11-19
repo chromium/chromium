@@ -23,6 +23,10 @@ namespace base {
 class BASE_EXPORT ThreadTaskRunnerHandle {
  public:
   // Gets the SingleThreadTaskRunner for the current thread.
+  // DEPRECATED: Prefer base::CurrentThread() instead or
+  // base::GetContinuationTaskRunner() if you need to post a continuation of the
+  // current task. See threading_and_tasks.md for details.
+  // TODO(scheduler-dev): Migrate all instances.
   static const scoped_refptr<SingleThreadTaskRunner>& Get() WARN_UNUSED_RESULT;
 
   // Returns true if the SingleThreadTaskRunner is already created for

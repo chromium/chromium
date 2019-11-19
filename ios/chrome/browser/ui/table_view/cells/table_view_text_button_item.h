@@ -14,14 +14,32 @@
 
 // Text being displayed above the button.
 @property(nonatomic, readwrite, strong) NSString* text;
+
+// Text being displayed above the button alignment.
+@property(nonatomic, readwrite, assign) NSTextAlignment textAlignment;
+
 // Text for cell button.
 @property(nonatomic, readwrite, strong) NSString* buttonText;
+
+// Button text color.
+@property(nonatomic, strong) UIColor* buttonTextColor;
+
+// Whether the button text will be bold or not. Default is YES.
+@property(nonatomic, assign) BOOL boldButtonText;
 
 // Button background color. Default is custom blue color.
 @property(nonatomic, strong) UIColor* buttonBackgroundColor;
 
 // Accessibility identifier that will assigned to the button.
 @property(nonatomic, strong) NSString* buttonAccessibilityIdentifier;
+
+// Whether the Item's button should be enabled or not. Button is enabled by
+// default.
+@property(nonatomic, assign, getter=isEnabled) BOOL enabled;
+
+// If YES the item's button width will expand to match the cell's. If NO the
+// button will maintain its intrinsic size based on its title. NO by default.
+@property(nonatomic, assign) BOOL disableButtonIntrinsicWidth;
 
 @end
 
@@ -31,8 +49,18 @@
 
 // Cell text information.
 @property(nonatomic, strong) UILabel* textLabel;
+
 // Action button. Note: Set action method in the TableView datasource method.
 @property(nonatomic, strong) UIButton* button;
+
+// Enables spacing between items. If there's only one item (e.g. just a button),
+// disable the spacing or an extra top padding will be added.
+- (void)enableItemSpacing:(BOOL)enable;
+
+// If |disabled| is YES the button's width will expand to match the cell's
+// container. If NO, the button will maintain its intrinsic size based on its
+// title.
+- (void)disableButtonIntrinsicWidth:(BOOL)disable;
 
 @end
 

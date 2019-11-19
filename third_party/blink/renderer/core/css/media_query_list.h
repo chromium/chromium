@@ -50,10 +50,6 @@ class CORE_EXPORT MediaQueryList final
   USING_GARBAGE_COLLECTED_MIXIN(MediaQueryList);
 
  public:
-  static MediaQueryList* Create(ExecutionContext*,
-                                MediaQueryMatcher*,
-                                scoped_refptr<MediaQuerySet>);
-
   MediaQueryList(ExecutionContext*,
                  MediaQueryMatcher*,
                  scoped_refptr<MediaQuerySet>);

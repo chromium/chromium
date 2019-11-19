@@ -14,7 +14,7 @@ java_cpp_enum("location_settings_dialog_enums_java") {
 android_library("location_java") {
   deps = [
     "//base:base_java",
-    "//third_party/android_deps:android_support_annotations_java",
+    "//third_party/android_deps:androidx_annotation_annotation_java",
     "//ui/android:ui_java",
   ]
   java_files =

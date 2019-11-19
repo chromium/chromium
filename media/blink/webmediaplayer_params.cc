@@ -25,7 +25,7 @@ WebMediaPlayerParams::WebMediaPlayerParams(
     base::WeakPtr<MediaObserver> media_observer,
     bool enable_instant_source_buffer_gc,
     bool embedded_media_experience_enabled,
-    mojom::MediaMetricsProviderPtr metrics_provider,
+    mojo::PendingRemote<mojom::MediaMetricsProvider> metrics_provider,
     CreateSurfaceLayerBridgeCB create_bridge_callback,
     scoped_refptr<viz::ContextProvider> context_provider,
     blink::WebMediaPlayer::SurfaceLayerMode use_surface_layer_for_video,

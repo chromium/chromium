@@ -26,11 +26,10 @@ const char kDefaultSandboxedPageCSP[] =
     "sandbox allow-scripts allow-forms allow-popups allow-modals; "
     "script-src 'self' 'unsafe-inline' 'unsafe-eval'; child-src 'self';";
 const char kDefaultExtensionPagesCSP[] =
-    "script-src 'self' blob: filesystem: chrome-extension-resource:; "
+    "script-src 'self' blob: filesystem:; "
     "object-src 'self' blob: filesystem:;";
 const char kDefaultIsolatedWorldCSP_BypassMainWorld[] = "";
-const char kDefaultIsolatedWorldCSP_Secure[] =
-    "script-src 'self'; object-src 'self'; worker-src 'self'";
+const char kDefaultSecureCSP[] = "script-src 'self'; object-src 'self';";
 
 }  // namespace
 
@@ -122,10 +121,10 @@ TEST_F(CSPInfoUnitTest, CSPDictionary_ExtensionPages) {
   struct {
     const char* file_name;
     const char* csp;
-  } cases[] = {
-      {"csp_dictionary_valid.json", "default-src 'none';"},
-      {"csp_empty_valid.json", "script-src 'self'; object-src 'self';"},
-      {"csp_empty_dictionary_valid.json", kDefaultExtensionPagesCSP}};
+  } cases[] = {{"csp_dictionary_valid_1.json", "default-src 'none'"},
+               {"csp_dictionary_valid_2.json",
+                "worker-src 'self'; script-src; default-src 'self'"},
+               {"csp_empty_dictionary_valid.json", kDefaultSecureCSP}};
 
   // Verify that keys::kContentSecurityPolicy key can be used as a dictionary on
   // trunk.
@@ -162,7 +161,18 @@ TEST_F(CSPInfoUnitTest, CSPDictionary_ExtensionPages) {
                      keys::kContentSecurityPolicy_ExtensionPagesPath)),
         Testcase("csp_invalid_3.json",
                  GetInvalidManifestKeyError(
-                     keys::kContentSecurityPolicy_ExtensionPagesPath))};
+                     keys::kContentSecurityPolicy_ExtensionPagesPath)),
+        Testcase(
+            "csp_missing_src.json",
+            ErrorUtils::FormatErrorMessage(
+                errors::kInvalidCSPMissingSecureSrc,
+                keys::kContentSecurityPolicy_ExtensionPagesPath, "script-src")),
+        Testcase("csp_insecure_src.json",
+                 ErrorUtils::FormatErrorMessage(
+                     errors::kInvalidCSPInsecureValueError,
+                     keys::kContentSecurityPolicy_ExtensionPagesPath,
+                     "'unsafe-eval'", "worker-src")),
+    };
     RunTestcases(testcases, base::size(testcases), EXPECT_TYPE_ERROR);
   }
 }
@@ -180,7 +190,7 @@ TEST_F(CSPInfoUnitTest, CSPDictionary_Sandbox) {
     const char* expected_csp;
   } success_cases[] = {
       {"sandbox_dictionary_1.json", "/test", kCustomSandboxedCSP},
-      {"sandbox_dictionary_1.json", "/index", kDefaultExtensionPagesCSP},
+      {"sandbox_dictionary_1.json", "/index", kDefaultSecureCSP},
       {"sandbox_dictionary_2.json", "/test", kDefaultSandboxedPageCSP},
       {"sandbox_dictionary_2.json", "/index", kCustomExtensionPagesCSP},
   };
@@ -216,12 +226,11 @@ TEST_F(CSPInfoUnitTest, CSPDictionary_IsolatedWorlds) {
     const char* file_name;
     const char* expected_csp;
   } success_cases[] = {
-      {"isolated_world_csp_dictionary_default_v2.json",
-       kDefaultIsolatedWorldCSP_Secure},
+      {"isolated_world_csp_dictionary_default_v2.json", kDefaultSecureCSP},
       {"isolated_world_csp_no_dictionary_default_v2.json",
        kDefaultIsolatedWorldCSP_BypassMainWorld},
-      {"csp_dictionary_empty_v3.json", kDefaultIsolatedWorldCSP_Secure},
-      {"csp_dictionary_missing_v3.json", kDefaultIsolatedWorldCSP_Secure},
+      {"csp_dictionary_empty_v3.json", kDefaultSecureCSP},
+      {"csp_dictionary_missing_v3.json", kDefaultSecureCSP},
       {"isolated_world_csp_valid.json",
        "script-src 'self'; object-src http://localhost:80;"}};
 
@@ -257,8 +266,6 @@ TEST_F(CSPInfoUnitTest, CSPDictionary_IsolatedWorlds) {
 // key is mandatory for manifest v3 extensions and that defaults are applied
 // correctly.
 TEST_F(CSPInfoUnitTest, CSPDictionaryMandatoryForV3) {
-  ScopedCurrentChannel channel(version_info::Channel::UNKNOWN);
-
   LoadAndExpectError("csp_invalid_type_v3.json",
                      GetInvalidManifestKeyError(keys::kContentSecurityPolicy));
 
@@ -273,10 +280,10 @@ TEST_F(CSPInfoUnitTest, CSPDictionaryMandatoryForV3) {
     const std::string* isolated_world_csp =
         CSPInfo::GetIsolatedWorldCSP(*extension);
     ASSERT_TRUE(isolated_world_csp);
-    EXPECT_EQ(kDefaultIsolatedWorldCSP_Secure, *isolated_world_csp);
+    EXPECT_EQ(kDefaultSecureCSP, *isolated_world_csp);
     EXPECT_EQ(kDefaultSandboxedPageCSP,
               CSPInfo::GetSandboxContentSecurityPolicy(extension.get()));
-    EXPECT_EQ(kDefaultExtensionPagesCSP,
+    EXPECT_EQ(kDefaultSecureCSP,
               CSPInfo::GetExtensionPagesCSP(extension.get()));
   }
 }

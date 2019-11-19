@@ -11,9 +11,10 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/chromeos/arc/icon_decode_request.h"
 #include "chrome/browser/ui/app_list/app_list_controller_delegate.h"
-#include "components/arc/arc_bridge_service.h"
 #include "components/arc/arc_service_manager.h"
+#include "components/arc/session/arc_bridge_service.h"
 #include "third_party/skia/include/core/SkPath.h"
+#include "ui/base/models/simple_menu_model.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/image/canvas_image_source.h"
 #include "ui/gfx/image/image_skia_operations.h"
@@ -51,7 +52,7 @@ bool LaunchIntent(const std::string& intent_uri, int64_t display_id) {
 class AvatarImageSource : public gfx::CanvasImageSource {
  public:
   AvatarImageSource(gfx::ImageSkia avatar, int size)
-      : CanvasImageSource(gfx::Size(size, size), false), radius_(size / 2) {
+      : CanvasImageSource(gfx::Size(size, size)), radius_(size / 2) {
     avatar_ = gfx::ImageSkiaOperations::CreateResizedImage(
         avatar, skia::ImageOperations::RESIZE_BEST, gfx::Size(size, size));
   }
@@ -78,9 +79,7 @@ class AvatarImageSource : public gfx::CanvasImageSource {
 ArcAppDataSearchResult::ArcAppDataSearchResult(
     arc::mojom::AppDataResultPtr data,
     AppListControllerDelegate* list_controller)
-    : data_(std::move(data)),
-      list_controller_(list_controller),
-      weak_ptr_factory_(this) {
+    : data_(std::move(data)), list_controller_(list_controller) {
   SetTitle(base::UTF8ToUTF16(data_->label));
   set_id(kAppDataSearchPrefix + launch_intent_uri());
   if (data_->type == arc::mojom::AppDataResultType::PERSON) {
@@ -99,7 +98,7 @@ ArcAppDataSearchResult::ArcAppDataSearchResult(
   icon_decode_request_ = std::make_unique<arc::IconDecodeRequest>(
       base::BindOnce(&ArcAppDataSearchResult::ApplyIcon,
                      weak_ptr_factory_.GetWeakPtr()),
-      app_list::AppListConfig::instance().search_tile_icon_dimension());
+      ash::AppListConfig::instance().search_tile_icon_dimension());
   icon_decode_request_->StartWithOptions(icon_png_data().value());
 }
 
@@ -123,6 +122,18 @@ void ArcAppDataSearchResult::ApplyIcon(const gfx::ImageSkia& icon) {
     return;
   }
   SetIcon(icon);
+}
+
+ash::SearchResultType ArcAppDataSearchResult::GetSearchResultType() const {
+  switch (data_->type) {
+    case arc::mojom::AppDataResultType::PERSON:
+      return ash::APP_DATA_RESULT_PERSON;
+    case arc::mojom::AppDataResultType::NOTE_DOCUMENT:
+      return ash::APP_DATA_RESULT_NOTE_DOCUMENT;
+    default:
+      NOTREACHED();
+      return ash::SEARCH_RESULT_TYPE_BOUNDARY;
+  }
 }
 
 }  // namespace app_list

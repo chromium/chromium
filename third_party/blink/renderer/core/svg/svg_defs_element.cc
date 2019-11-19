@@ -25,12 +25,11 @@
 
 namespace blink {
 
-inline SVGDefsElement::SVGDefsElement(Document& document)
+SVGDefsElement::SVGDefsElement(Document& document)
     : SVGGraphicsElement(svg_names::kDefsTag, document) {}
 
-DEFINE_NODE_FACTORY(SVGDefsElement)
-
-LayoutObject* SVGDefsElement::CreateLayoutObject(const ComputedStyle&) {
+LayoutObject* SVGDefsElement::CreateLayoutObject(const ComputedStyle&,
+                                                 LegacyLayout) {
   return new LayoutSVGHiddenContainer(this);
 }
 

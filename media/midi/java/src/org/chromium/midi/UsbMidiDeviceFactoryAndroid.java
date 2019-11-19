@@ -18,6 +18,7 @@ import android.os.Parcelable;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
+import org.chromium.base.annotations.NativeMethods;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -107,8 +108,8 @@ class UsbMidiDeviceFactoryAndroid {
      * Enumerates USB-MIDI devices.
      * If there are devices having USB-MIDI interfaces, this function requests permission for
      * accessing the device to the user.
-     * When the permission request is accepted or rejected,  nativeOnUsbMidiDeviceRequestDone
-     * will be called.
+     * When the permission request is accepted or rejected,
+     * UsbMidiDeviceFactoryAndroidJni.get().onUsbMidiDeviceRequestDone will be called.
      *
      * If there are no USB-MIDI interfaces, this function returns false.
      * @return true if some permission requests are in progress.
@@ -184,7 +185,7 @@ class UsbMidiDeviceFactoryAndroid {
                     return;
                 }
                 if (mNativePointer != 0) {
-                    nativeOnUsbMidiDeviceDetached(mNativePointer, i);
+                    UsbMidiDeviceFactoryAndroidJni.get().onUsbMidiDeviceDetached(mNativePointer, i);
                 }
                 return;
             }
@@ -236,10 +237,12 @@ class UsbMidiDeviceFactoryAndroid {
         }
 
         if (mIsEnumeratingDevices) {
-            nativeOnUsbMidiDeviceRequestDone(mNativePointer, mDevices.toArray());
+            UsbMidiDeviceFactoryAndroidJni.get().onUsbMidiDeviceRequestDone(
+                    mNativePointer, mDevices.toArray());
             mIsEnumeratingDevices = false;
         } else if (midiDevice != null) {
-            nativeOnUsbMidiDeviceAttached(mNativePointer, midiDevice);
+            UsbMidiDeviceFactoryAndroidJni.get().onUsbMidiDeviceAttached(
+                    mNativePointer, midiDevice);
         }
     }
 
@@ -252,10 +255,10 @@ class UsbMidiDeviceFactoryAndroid {
         ContextUtils.getApplicationContext().unregisterReceiver(mReceiver);
     }
 
-    private static native void nativeOnUsbMidiDeviceRequestDone(
-            long nativeUsbMidiDeviceFactoryAndroid, Object[] devices);
-    private static native void nativeOnUsbMidiDeviceAttached(
-            long nativeUsbMidiDeviceFactoryAndroid, Object device);
-    private static native void nativeOnUsbMidiDeviceDetached(
-            long nativeUsbMidiDeviceFactoryAndroid, int index);
+    @NativeMethods
+    interface Natives {
+        void onUsbMidiDeviceRequestDone(long nativeUsbMidiDeviceFactoryAndroid, Object[] devices);
+        void onUsbMidiDeviceAttached(long nativeUsbMidiDeviceFactoryAndroid, Object device);
+        void onUsbMidiDeviceDetached(long nativeUsbMidiDeviceFactoryAndroid, int index);
+    }
 }

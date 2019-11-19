@@ -19,20 +19,26 @@ class BrowserSwitcherServiceWin : public BrowserSwitcherService {
   explicit BrowserSwitcherServiceWin(Profile* profile);
   ~BrowserSwitcherServiceWin() override;
 
-  void OnBrowserSwitcherPrefsChanged(BrowserSwitcherPrefs* prefs);
-
   static void SetIeemSitelistUrlForTesting(const std::string& url);
+
+  // BrowserSwitcherService:
+  std::vector<RulesetSource> GetRulesetSources() override;
+
+  void LoadRulesFromPrefs() override;
 
  protected:
   // BrowserSwitcherService:
-  std::vector<RulesetSource> GetRulesetSources() override;
   void OnAllRulesetsParsed() override;
+
+  void OnBrowserSwitcherPrefsChanged(
+      BrowserSwitcherPrefs* prefs,
+      const std::vector<std::string>& changed_prefs) override;
 
  private:
   // Returns the URL to fetch to get Internet Explorer's Enterprise Mode
   // sitelist, based on policy. Returns an empty (invalid) URL if IE's SiteList
-  // policy is unset.
-  static GURL GetIeemSitelistUrl();
+  // policy is unset, or if |use_ie_sitelist| is false.
+  GURL GetIeemSitelistUrl();
 
   void OnIeemSitelistParsed(ParsedXml xml);
 
@@ -42,14 +48,18 @@ class BrowserSwitcherServiceWin : public BrowserSwitcherService {
   void SavePrefsToFile();
   // Delete the "cache.dat" file created by |SavePrefsToFile()|. This call does
   // not block, it only posts a task to a worker thread.
-  void DeletePrefsFile() const;
+  void DeletePrefsFile();
+  // Delete the "sitelistcache.dat" file that might be left from the LBS
+  // extension, or from a previous Chrome version. Called during initialization.
+  void DeleteSitelistCacheFile();
 
-  std::unique_ptr<XmlDownloader> ieem_downloader_;
+  // Updates or cleans up cache.dat and sitelistcache.dat, based on whether
+  // BrowserSwitcher is enabled or disabled.
+  void UpdateAllCacheFiles();
 
-  std::unique_ptr<BrowserSwitcherPrefs::CallbackSubscription>
-      prefs_subscription_;
+  scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner_;
 
-  base::WeakPtrFactory<BrowserSwitcherServiceWin> weak_ptr_factory_;
+  base::WeakPtrFactory<BrowserSwitcherServiceWin> weak_ptr_factory_{this};
 
   DISALLOW_IMPLICIT_CONSTRUCTORS(BrowserSwitcherServiceWin);
 };

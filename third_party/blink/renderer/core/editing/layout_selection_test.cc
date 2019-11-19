@@ -12,9 +12,7 @@
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/layout_text.h"
 #include "third_party/blink/renderer/core/layout/layout_text_fragment.h"
-#include "third_party/blink/renderer/core/layout/ng/inline/ng_physical_text_fragment.h"
-#include "third_party/blink/renderer/core/layout/ng/layout_ng_block_flow.h"
-#include "third_party/blink/renderer/core/paint/ng/ng_paint_fragment.h"
+#include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_cursor.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/assertions.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
@@ -33,21 +31,22 @@ static LayoutTextFragment* FirstLetterPartFor(
 class LayoutSelectionTestBase : public EditingTestBase {
  protected:
   static void PrintText(std::ostream& ostream, const Text& text) {
-    ostream << "'" << text.data().Utf8().data() << "'";
+    ostream << "'" << text.data().Utf8() << "'";
   }
 
   static void PrintLayoutTextInfo(const FrameSelection& selection,
                                   std::ostream& ostream,
                                   const LayoutText& layout_text,
                                   SelectionState state) {
-    const auto fragments = NGPaintFragment::InlineFragmentsFor(&layout_text);
-    if (fragments.IsInLayoutNGInlineFormattingContext()) {
-      const unsigned text_start =
-          ToNGPhysicalTextFragment(fragments.begin()->PhysicalFragment())
-              .StartOffset();
-      for (const NGPaintFragment* fragment : fragments) {
+    if (layout_text.IsInLayoutNGInlineFormattingContext()) {
+      NGInlineCursor cursor(*layout_text.RootInlineFormattingContext());
+      cursor.MoveTo(layout_text);
+      if (!cursor)
+        return;
+      const unsigned text_start = cursor.CurrentTextStartOffset();
+      for (; cursor; cursor.MoveToNextForSameLayoutObject()) {
         const LayoutSelectionStatus status =
-            selection.ComputeLayoutSelectionStatus(*fragment);
+            selection.ComputeLayoutSelectionStatus(cursor);
         if (state == SelectionState::kNone && status.start == status.end)
           continue;
         ostream << "(" << status.start - text_start << ","
@@ -81,10 +80,10 @@ class LayoutSelectionTestBase : public EditingTestBase {
                                  std::ostream& ostream,
                                  const Node& node,
                                  wtf_size_t depth) {
-    if (const Text* text = ToTextOrNull(node))
+    if (const Text* text = DynamicTo<Text>(node))
       PrintText(ostream, *text);
-    else if (const Element* element = ToElementOrNull(node))
-      ostream << element->tagName().Utf8().data();
+    else if (const auto* element = DynamicTo<Element>(node))
+      ostream << element->tagName().Utf8();
     else
       ostream << node;
 
@@ -96,7 +95,7 @@ class LayoutSelectionTestBase : public EditingTestBase {
     PrintLayoutObjectInfo(selection, ostream, layout_object);
     if (LayoutTextFragment* first_letter = FirstLetterPartFor(layout_object)) {
       ostream << std::endl
-              << RepeatString("  ", depth + 1).Utf8().data() << ":first-letter";
+              << RepeatString("  ", depth + 1).Utf8() << ":first-letter";
       PrintLayoutObjectInfo(selection, ostream, first_letter);
     }
   }
@@ -105,14 +104,14 @@ class LayoutSelectionTestBase : public EditingTestBase {
                                    std::ostream& ostream,
                                    const Node& node,
                                    wtf_size_t depth) {
-    ostream << RepeatString("  ", depth).Utf8().data();
-    if (IsHTMLStyleElement(node)) {
+    ostream << RepeatString("  ", depth).Utf8();
+    if (IsA<HTMLStyleElement>(node)) {
       ostream << "<style> ";
       return;
     }
     PrintSelectionInfo(selection, ostream, node, depth);
     if (ShadowRoot* shadow_root = node.GetShadowRoot()) {
-      ostream << std::endl << RepeatString("  ", depth + 1).Utf8().data();
+      ostream << std::endl << RepeatString("  ", depth + 1).Utf8();
       ostream << "#shadow-root ";
       for (Node* child = shadow_root->firstChild(); child;
            child = child->nextSibling()) {
@@ -777,7 +776,7 @@ TEST_P(LayoutSelectionTest, ClearByRemoveNode) {
 
   Node* baz = GetDocument().body()->lastChild();
   baz->remove();
-  GetDocument().UpdateStyleAndLayoutIgnorePendingStylesheets();
+  GetDocument().UpdateStyleAndLayout();
   Selection().CommitAppearanceIfNeeded();
   EXPECT_EQ(
       "BODY, Contain, NotInvalidate \n"
@@ -808,9 +807,9 @@ TEST_P(LayoutSelectionTest, ClearByRemoveLayoutObject) {
       "    'baz', End(0,3), ShouldInvalidate ",
       DumpSelectionInfo());
 
-  Element* span_baz = ToElement(GetDocument().body()->lastChild());
-  span_baz->SetInlineStyleProperty(CSSPropertyDisplay, CSSValueNone);
-  GetDocument().UpdateStyleAndLayoutIgnorePendingStylesheets();
+  auto* span_baz = To<Element>(GetDocument().body()->lastChild());
+  span_baz->SetInlineStyleProperty(CSSPropertyID::kDisplay, CSSValueID::kNone);
+  GetDocument().UpdateStyleAndLayout();
   Selection().CommitAppearanceIfNeeded();
   EXPECT_EQ(
       "BODY, Contain, NotInvalidate \n"
@@ -854,7 +853,7 @@ TEST_P(LayoutSelectionTest, ClearBySlotChange) {
       GetDocument().body()->firstChild()->GetShadowRoot()->QuerySelector(
           "slot");
   slot->setAttribute("name", "s2");
-  GetDocument().UpdateStyleAndLayoutIgnorePendingStylesheets();
+  GetDocument().UpdateStyleAndLayout();
   Selection().CommitAppearanceIfNeeded();
   EXPECT_EQ(
       "BODY, Contain, NotInvalidate \n"
@@ -944,32 +943,6 @@ TEST_P(LayoutSelectionTest, InvalidateSlot) {
       DumpSelectionInfo());
 }
 
-static const NGPaintFragment* FindNGPaintFragmentInternal(
-    const NGPaintFragment* paint,
-    const LayoutObject* layout_object) {
-  if (paint->GetLayoutObject() == layout_object)
-    return paint;
-  for (const NGPaintFragment* child : paint->Children()) {
-    if (const NGPaintFragment* child_fragment =
-            FindNGPaintFragmentInternal(child, layout_object))
-      return child_fragment;
-  }
-  return nullptr;
-}
-
-static const NGPaintFragment& GetNGPaintFragment(
-    const LayoutObject* layout_object) {
-  DCHECK(layout_object->IsText());
-  LayoutBlockFlow* block_flow = layout_object->ContainingNGBlockFlow();
-  DCHECK(block_flow);
-  DCHECK(block_flow->IsLayoutNGMixin());
-  LayoutNGBlockFlow* layout_ng = ToLayoutNGBlockFlow(block_flow);
-  const NGPaintFragment* paint_fragment =
-      FindNGPaintFragmentInternal(layout_ng->PaintFragment(), layout_object);
-  DCHECK(paint_fragment);
-  return *paint_fragment;
-}
-
 class NGLayoutSelectionTest
     : public LayoutSelectionTestBase,
       private ScopedLayoutNGForTest,
@@ -979,10 +952,11 @@ class NGLayoutSelectionTest
       : ScopedLayoutNGForTest(true),
         ScopedPaintUnderInvalidationCheckingForTest(true) {}
 
+ protected:
   const Text* GetFirstTextNode() {
     for (const Node& runner : NodeTraversal::StartsAt(*GetDocument().body())) {
-      if (runner.IsTextNode())
-        return &ToText(runner);
+      if (auto* text_node = DynamicTo<Text>(runner))
+        return text_node;
     }
     NOTREACHED();
     return nullptr;
@@ -990,17 +964,22 @@ class NGLayoutSelectionTest
 
   bool IsFirstTextLineBreak(const std::string& selection_text) {
     SetSelectionAndUpdateLayoutSelection(selection_text);
-    const Text* const first_text = GetFirstTextNode();
-    const NGPaintFragment& fragment =
-        GetNGPaintFragment(first_text->GetLayoutObject());
+    const LayoutText& first_text = *GetFirstTextNode()->GetLayoutObject();
     const LayoutSelectionStatus& status =
-        Selection().ComputeLayoutSelectionStatus(fragment);
+        ComputeLayoutSelectionStatus(first_text);
     return status.line_break == SelectSoftLineBreak::kSelected;
   }
 
   LayoutSelectionStatus ComputeLayoutSelectionStatus(const Node& node) {
-    return Selection().ComputeLayoutSelectionStatus(
-        GetNGPaintFragment(node.GetLayoutObject()));
+    return ComputeLayoutSelectionStatus(*node.GetLayoutObject());
+  }
+
+  LayoutSelectionStatus ComputeLayoutSelectionStatus(
+      const LayoutObject& layout_object) const {
+    DCHECK(layout_object.IsText());
+    NGInlineCursor cursor(*layout_object.RootInlineFormattingContext());
+    cursor.MoveTo(layout_object);
+    return Selection().ComputeLayoutSelectionStatus(cursor);
   }
 
   void SetSelectionAndUpdateLayoutSelection(const std::string& selection_text) {
@@ -1053,7 +1032,7 @@ TEST_F(NGLayoutSelectionTest, TwoNGBlockFlows) {
   LayoutObject* const foo =
       GetDocument().body()->firstChild()->firstChild()->GetLayoutObject();
   EXPECT_EQ(LayoutSelectionStatus(1u, 3u, SelectSoftLineBreak::kSelected),
-            Selection().ComputeLayoutSelectionStatus(GetNGPaintFragment(foo)));
+            ComputeLayoutSelectionStatus(*foo));
   LayoutObject* const bar = GetDocument()
                                 .body()
                                 ->firstChild()
@@ -1061,7 +1040,7 @@ TEST_F(NGLayoutSelectionTest, TwoNGBlockFlows) {
                                 ->firstChild()
                                 ->GetLayoutObject();
   EXPECT_EQ(LayoutSelectionStatus(0u, 2u, SelectSoftLineBreak::kNotSelected),
-            Selection().ComputeLayoutSelectionStatus(GetNGPaintFragment(bar)));
+            ComputeLayoutSelectionStatus(*bar));
 }
 
 // TODO(editing-dev): Once LayoutNG supports editing, we should change this
@@ -1123,15 +1102,14 @@ TEST_F(NGLayoutSelectionTest, LineBreakBasic) {
   EXPECT_FALSE(IsFirstTextLineBreak("<div>f^oo|</div>"));
   EXPECT_FALSE(IsFirstTextLineBreak("<div>f^oo<!--|--></div>"));
   EXPECT_FALSE(IsFirstTextLineBreak("<div>f^oo</div>|"));
-  // TODO(yoichio): Fix the test. See LayoutSelection::IsLineBreak.
-  // EXPECT_FALSE(IsFirstTextLineBreak(
-  //    "<div style='display:inline-block'>f^oo</div>bar|"));
 }
 
 TEST_F(NGLayoutSelectionTest, LineBreakInlineBlock) {
   LoadAhem();
   EXPECT_FALSE(
       IsFirstTextLineBreak("<div style='display:inline-block'>^x</div>y|"));
+  EXPECT_FALSE(
+      IsFirstTextLineBreak("<div style='display:inline-block'>f^oo</div>bar|"));
 }
 
 TEST_F(NGLayoutSelectionTest, LineBreakImage) {
@@ -1155,9 +1133,8 @@ TEST_F(NGLayoutSelectionTest, BRStatus) {
   LayoutObject* const layout_br =
       GetDocument().QuerySelector("br")->GetLayoutObject();
   CHECK(layout_br->IsBR());
-  EXPECT_EQ(
-      LayoutSelectionStatus(3u, 4u, SelectSoftLineBreak::kNotSelected),
-      Selection().ComputeLayoutSelectionStatus(GetNGPaintFragment(layout_br)));
+  EXPECT_EQ(LayoutSelectionStatus(3u, 4u, SelectSoftLineBreak::kNotSelected),
+            ComputeLayoutSelectionStatus(*layout_br));
 }
 
 // https://crbug.com/907186
@@ -1166,9 +1143,8 @@ TEST_F(NGLayoutSelectionTest, WBRStatus) {
       "<div style=\"width:0\">^foo<wbr>bar|</div>");
   const LayoutObject* layout_wbr =
       GetDocument().QuerySelector("wbr")->GetLayoutObject();
-  EXPECT_EQ(
-      LayoutSelectionStatus(3u, 4u, SelectSoftLineBreak::kSelected),
-      Selection().ComputeLayoutSelectionStatus(GetNGPaintFragment(layout_wbr)));
+  EXPECT_EQ(LayoutSelectionStatus(3u, 4u, SelectSoftLineBreak::kSelected),
+            ComputeLayoutSelectionStatus(*layout_wbr));
 }
 
 }  // namespace blink

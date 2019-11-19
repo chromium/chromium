@@ -128,8 +128,6 @@ class DisplayInfoProvider : public display::DisplayObserver {
       int64_t primary_display_id);
 
  private:
-  static DisplayInfoProvider* Create();
-
   // Update the content of the |unit| obtained for |display| using
   // platform specific method.
   virtual void UpdateDisplayUnitInfoForPlatform(

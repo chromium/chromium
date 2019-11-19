@@ -6,8 +6,6 @@
 
 #include <utility>
 
-#include "ash/public/interfaces/ash_display_controller.mojom.h"
-#include "ash/public/interfaces/constants.mojom.h"
 #include "ash/shell.h"
 #include "ash/wm/screen_dimmer.h"
 #include "base/bind.h"
@@ -42,23 +40,10 @@ class DisplayServiceProvider::Impl {
   void ReleaseDisplayOwnership(base::OnceCallback<void(bool)> callback);
 
  private:
-  // Tests may not have a service_manager::Connector. Connect() is called
-  // whenever ash_display_controller_ is used to lazily connect as needed.
-  bool Connect();
-
-  mojom::AshDisplayControllerPtr ash_display_controller_;
   std::unique_ptr<ScreenDimmer> screen_dimmer_;
 
   DISALLOW_COPY_AND_ASSIGN(Impl);
 };
-
-bool DisplayServiceProvider::Impl::Connect() {
-  if (ash_display_controller_)
-    return true;
-  Shell::Get()->connector()->BindInterface(mojom::kServiceName,
-                                           &ash_display_controller_);
-  return !!ash_display_controller_;
-}
 
 void DisplayServiceProvider::Impl::SetDimming(bool dimmed) {
   if (!screen_dimmer_) {
@@ -70,26 +55,26 @@ void DisplayServiceProvider::Impl::SetDimming(bool dimmed) {
 
 void DisplayServiceProvider::Impl::TakeDisplayOwnership(
     base::OnceCallback<void(bool)> callback) {
-  if (!Connect()) {
+  if (!Shell::Get()->display_configurator()) {
     LOG(ERROR) << "Display Controller not connected";
     std::move(callback).Run(false);
     return;
   }
-  ash_display_controller_->TakeDisplayControl(std::move(callback));
+  Shell::Get()->display_configurator()->TakeControl(std::move(callback));
 }
 
 void DisplayServiceProvider::Impl::ReleaseDisplayOwnership(
     base::OnceCallback<void(bool)> callback) {
-  if (!Connect()) {
+  if (!Shell::Get()->display_configurator()) {
     LOG(ERROR) << "Display Controller not connected";
     std::move(callback).Run(false);
     return;
   }
-  ash_display_controller_->RelinquishDisplayControl(std::move(callback));
+  Shell::Get()->display_configurator()->RelinquishControl(std::move(callback));
 }
 
 DisplayServiceProvider::DisplayServiceProvider()
-    : impl_(std::make_unique<Impl>()), weak_ptr_factory_(this) {}
+    : impl_(std::make_unique<Impl>()) {}
 
 DisplayServiceProvider::~DisplayServiceProvider() = default;
 

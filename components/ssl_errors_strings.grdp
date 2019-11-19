@@ -13,7 +13,7 @@
 
   <message name="IDS_CERT_ERROR_EXPIRED_DETAILS" desc="Details for an expired X509 certificate [ICU Syntax]">
     {1, plural,
-     =1 {This server could not prove that it is <ph name="DOMAIN">&lt;strong&gt;{0}<ex>paypal.com</ex>&lt;/strong&gt;</ph>; its security certificate expired yesterday. This may be caused by a misconfiguration or an attacker intercepting your connection. Your computer's clock is currently set to <ph name="CURRENT_DATE">{2, date, full}<ex>Monday, July 16, 2012</ex></ph>. Does that look right? If not, you should correct your system's clock and then refresh this page.}
+     =1 {This server could not prove that it is <ph name="DOMAIN">&lt;strong&gt;{0}<ex>paypal.com</ex>&lt;/strong&gt;</ph>; its security certificate expired in the last day. This may be caused by a misconfiguration or an attacker intercepting your connection. Your computer's clock is currently set to <ph name="CURRENT_DATE">{2, date, full}<ex>Monday, July 16, 2012</ex></ph>. Does that look right? If not, you should correct your system's clock and then refresh this page.}
      other {This server could not prove that it is <ph name="DOMAIN">&lt;strong&gt;{0}<ex>paypal.com</ex>&lt;/strong&gt;</ph>; its security certificate expired # days ago. This may be caused by a misconfiguration or an attacker intercepting your connection. Your computer's clock is currently set to <ph name="CURRENT_DATE">{2, date, full}<ex>Monday, July 16, 2012</ex></ph>. Does that look right? If not, you should correct your system's clock and then refresh this page.}}
   </message>
   <message name="IDS_CERT_ERROR_EXPIRED_DESCRIPTION" desc="Description for an expired X509 certificate">

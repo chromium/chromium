@@ -72,8 +72,6 @@ class HudWithRootLayerChange : public HeadsUpDisplayTest {
     }
   }
 
-  void AfterTest() override {}
-
  private:
   scoped_refptr<Layer> root_layer1_;
   scoped_refptr<Layer> root_layer2_;
@@ -95,8 +93,6 @@ class HeadsUpDisplaySizeWithFPS : public LayerTreeTest {
     EXPECT_EQ(gfx::Size(256, 256), layer_tree_host()->hud_layer()->bounds());
     EndTest();
   }
-
-  void AfterTest() override {}
 };
 
 SINGLE_AND_MULTI_THREAD_TEST_F(HeadsUpDisplaySizeWithFPS);

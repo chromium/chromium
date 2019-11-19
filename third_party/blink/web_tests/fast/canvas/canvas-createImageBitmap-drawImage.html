@@ -73,12 +73,13 @@ video.addEventListener("canplaythrough",
                        t_video.step_func(function() {
                            return runTests(t_video, video);
                         }), false);
+video.preload = "auto";
 video.src = "resources/pattern.ogv";
 
 
 function runTests(t, element) {
     imageBitmaps = {};
-    var p1 = createImageBitmap(element).then(function (image) { 
+    var p1 = createImageBitmap(element).then(function (image) {
         imageBitmaps.noCrop = image });
     var p2 = createImageBitmap(element, 0, 0, 10, 10).then(
         function (image) { imageBitmaps.crop = image });
@@ -176,7 +177,7 @@ function checkPixelsRef(refPixel, ctx, pixels, tolerance) {
     }
 }
 
-function checkPixels(ctx, redPixels, greenPixels, bluePixels, blackPixels, 
+function checkPixels(ctx, redPixels, greenPixels, bluePixels, blackPixels,
          transparentPixels, tolerance) {
     checkPixelsRef(redPixel, ctx, redPixels, tolerance);
     checkPixelsRef(greenPixel, ctx, greenPixels, tolerance);
@@ -215,7 +216,7 @@ function checkNoCrop(ctx, imageBitmap, tolerance) {
     bluePixels = [[9, 11]];;
     blackPixels = [[11, 11], [19, 19]];
     transparentPixels = [[1, 21], [21, 1], [21, 21]];
-    checkPixels(ctx, redPixels, greenPixels, bluePixels, blackPixels, 
+    checkPixels(ctx, redPixels, greenPixels, bluePixels, blackPixels,
                 transparentPixels, tolerance);
 
     // shrunk to (0, 0), (10, 10)
@@ -226,7 +227,7 @@ function checkNoCrop(ctx, imageBitmap, tolerance) {
     bluePixels = [[4, 6]];
     blackPixels = [[6, 6], [9, 9]];
     transparentPixels = [[1, 11], [11, 1], [11, 11]];
-    checkPixels(ctx, redPixels, greenPixels, bluePixels, blackPixels, 
+    checkPixels(ctx, redPixels, greenPixels, bluePixels, blackPixels,
                 transparentPixels, tolerance);
 
     // shrunk to (10, 10), (20, 20)
@@ -237,7 +238,7 @@ function checkNoCrop(ctx, imageBitmap, tolerance) {
     bluePixels = [[14, 16]];
     blackPixels = [[16, 16], [19, 19]];
     transparentPixels = [[11, 21], [21, 11], [21, 21]];
-    checkPixels(ctx, redPixels, greenPixels, bluePixels, blackPixels, 
+    checkPixels(ctx, redPixels, greenPixels, bluePixels, blackPixels,
                 transparentPixels, tolerance);
 
     // black should be drawn to (10, 10), (20, 20)
@@ -281,7 +282,7 @@ function checkCropCenter(ctx, imageBitmap, tolerance) {
     bluePixels = [[4, 6]];
     blackPixels = [[6, 6], [9, 9]];
     transparentPixels = [[11, 11], [1, 11], [11, 1]];
-    checkPixels(ctx, redPixels, greenPixels, bluePixels, blackPixels, 
+    checkPixels(ctx, redPixels, greenPixels, bluePixels, blackPixels,
                 transparentPixels, tolerance);
 
     // should be drawn to (0, 0), (20, 20) with all four colors
@@ -292,7 +293,7 @@ function checkCropCenter(ctx, imageBitmap, tolerance) {
     bluePixels = [[8, 11]];
     blackPixels = [[11, 11], [18, 18]];
     transparentPixels = [[22, 22], [1, 21], [21, 1]];
-    checkPixels(ctx, redPixels, greenPixels, bluePixels, blackPixels, 
+    checkPixels(ctx, redPixels, greenPixels, bluePixels, blackPixels,
                 transparentPixels, tolerance);
 }
 
@@ -322,7 +323,7 @@ function checkOverCrop(ctx, imageBitmap, tolerance) {
     bluePixels = [[9, 11]];
     blackPixels = [[11, 11], [19, 19]];
     transparentPixels = [[1, 21], [21, 1], [21, 21]];
-    checkPixels(ctx, redPixels, greenPixels, bluePixels, blackPixels, 
+    checkPixels(ctx, redPixels, greenPixels, bluePixels, blackPixels,
                 transparentPixels, tolerance);
 
     // shrunk to (0, 0), (10, 10)
@@ -333,7 +334,7 @@ function checkOverCrop(ctx, imageBitmap, tolerance) {
     bluePixels = [[4, 6]];
     blackPixels = [[6, 6], [9, 9]];
     transparentPixels = [[1, 11], [11, 1], [11, 11]];
-    checkPixels(ctx, redPixels, greenPixels, bluePixels, blackPixels, 
+    checkPixels(ctx, redPixels, greenPixels, bluePixels, blackPixels,
                 transparentPixels, tolerance);
 }
 

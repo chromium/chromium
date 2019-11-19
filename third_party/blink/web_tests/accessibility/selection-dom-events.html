@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+
+<p id="para">This is a test</p>
+
+<script>
+    test(() =>
+    {
+        var para = document.getElementById('para');
+        var selectstartCount = 0;
+        para.addEventListener('selectstart', (e) => {
+            selectstartCount++;
+            if (selectstartCount === 1)
+                e.preventDefault();
+        }, true);
+
+        var axPara = accessibilityController.accessibleElementById('para');
+        assert_false(axPara.setSelection(axPara, 0, axPara, 1));
+        assert_true(axPara.setSelection(axPara, 0, axPara, 1));
+    }, 'Test that setting the selection via the accessibility API can be canceled by JavaScript running on the page.');
+</script>

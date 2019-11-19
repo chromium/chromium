@@ -31,4 +31,17 @@ std::string HkdfSha256(base::StringPiece secret,
   return key;
 }
 
+std::vector<uint8_t> HkdfSha256(base::span<const uint8_t> secret,
+                                base::span<const uint8_t> salt,
+                                base::span<const uint8_t> info,
+                                size_t derived_key_size) {
+  std::vector<uint8_t> ret;
+  ret.resize(derived_key_size);
+  int result =
+      ::HKDF(ret.data(), derived_key_size, EVP_sha256(), secret.data(),
+             secret.size(), salt.data(), salt.size(), info.data(), info.size());
+  DCHECK(result);
+  return ret;
+}
+
 }  // namespace crypto

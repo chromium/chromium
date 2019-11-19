@@ -12,6 +12,7 @@ import android.widget.FrameLayout;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
+import org.chromium.base.annotations.NativeMethods;
 import org.chromium.components.embedder_support.view.ContentViewRenderView;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
@@ -36,7 +37,7 @@ public class ShellManager extends FrameLayout {
      */
     public ShellManager(final Context context, AttributeSet attrs) {
         super(context, attrs);
-        nativeInit(this);
+        ShellManagerJni.get().init(this);
     }
 
     /**
@@ -84,7 +85,7 @@ public class ShellManager extends FrameLayout {
     public void launchShell(String url) {
         ThreadUtils.assertOnUiThread();
         Shell previousShell = mActiveShell;
-        nativeLaunchShell(url);
+        ShellManagerJni.get().launchShell(url);
         if (previousShell != null) previousShell.close();
     }
 
@@ -144,6 +145,9 @@ public class ShellManager extends FrameLayout {
         }
     }
 
-    private static native void nativeInit(Object shellManagerInstance);
-    private static native void nativeLaunchShell(String url);
+    @NativeMethods
+    interface Natives {
+        void init(Object shellManagerInstance);
+        void launchShell(String url);
+    }
 }

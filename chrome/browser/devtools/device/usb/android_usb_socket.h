@@ -81,7 +81,7 @@ class AndroidUsbSocket : public net::StreamSocket {
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  base::WeakPtrFactory<AndroidUsbSocket> weak_factory_;
+  base::WeakPtrFactory<AndroidUsbSocket> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(AndroidUsbSocket);
 };

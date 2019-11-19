@@ -1,4 +1,10 @@
 <!DOCTYPE HTML>
+<script>
+if (window.internals) {
+    internals.useMockOverlayScrollbars();
+    internals.settings.setPreferCompositingToLCDTextEnabled(false);
+}
+</script>
 <style>
 #scroller {
     overflow: scroll;
@@ -21,12 +27,6 @@
     height: 500px;
 }
 </style>
-<script>
-if (window.internals) {
-    internals.runtimeFlags.overlayScrollbarsEnabled = true;
-    internals.settings.setPreferCompositingToLCDTextEnabled(false);
-}
-</script>
 <div id='scroller'>
     <div id='fixed'></div>
     <div id='scrolled'></div>

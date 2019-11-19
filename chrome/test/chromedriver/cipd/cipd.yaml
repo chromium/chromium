@@ -1,0 +1,14 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# To create CIPD package run the following command.
+# cipd create --pkg-def cipd.yaml -tag version:<commit position>
+#
+# From https://commondatastorage.googleapis.com/chromium-browser-snapshots/index.html
+# TODO: Remove this CIPD package once chromedriver can be built with target_os=="android"
+
+package: chromium/chrome/test/chromedriver/cipd
+description: Archive of Chrome Driver Binaries
+data:
+  - file: linux/chromedriver

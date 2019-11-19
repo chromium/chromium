@@ -12,7 +12,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/ref_counted.h"
 #include "content/common/page_state_serialization.h"
-#include "jni/ResourceRequestBody_jni.h"
+#include "content/public/android/content_jni_headers/ResourceRequestBody_jni.h"
 #include "services/network/public/cpp/resource_request_body.h"
 
 using base::android::JavaParamRef;

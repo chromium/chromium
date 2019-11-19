@@ -17,10 +17,6 @@
 #include "content/public/common/page_zoom.h"
 #include "extensions/browser/extension_function_registry.h"
 
-namespace {
-  const char kDelegateIsNull[] = "delegate is null";
-}
-
 namespace extensions {
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -37,8 +33,7 @@ ExtensionFunction::ResponseAction SettingsPrivateSetPrefFunction::Run() {
 
   SettingsPrivateDelegate* delegate =
       SettingsPrivateDelegateFactory::GetForBrowserContext(browser_context());
-  if (delegate == nullptr)
-    return RespondNow(Error(kDelegateIsNull));
+  DCHECK(delegate);
 
   settings_private::SetPrefResult result =
       delegate->SetPref(parameters->name, parameters->value.get());
@@ -71,11 +66,8 @@ SettingsPrivateGetAllPrefsFunction::~SettingsPrivateGetAllPrefsFunction() {
 ExtensionFunction::ResponseAction SettingsPrivateGetAllPrefsFunction::Run() {
   SettingsPrivateDelegate* delegate =
       SettingsPrivateDelegateFactory::GetForBrowserContext(browser_context());
-
-  if (delegate == nullptr)
-    return RespondNow(Error(kDelegateIsNull));
-  else
-    return RespondNow(OneArgument(delegate->GetAllPrefs()));
+  DCHECK(delegate);
+  return RespondNow(OneArgument(delegate->GetAllPrefs()));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -92,8 +84,7 @@ ExtensionFunction::ResponseAction SettingsPrivateGetPrefFunction::Run() {
 
   SettingsPrivateDelegate* delegate =
       SettingsPrivateDelegateFactory::GetForBrowserContext(browser_context());
-  if (delegate == nullptr)
-    return RespondNow(Error(kDelegateIsNull));
+  DCHECK(delegate);
 
   std::unique_ptr<base::Value> value = delegate->GetPref(parameters->name);
   if (value->is_none())
@@ -114,11 +105,8 @@ ExtensionFunction::ResponseAction
     SettingsPrivateGetDefaultZoomFunction::Run() {
   SettingsPrivateDelegate* delegate =
       SettingsPrivateDelegateFactory::GetForBrowserContext(browser_context());
-
-  if (delegate == nullptr)
-    return RespondNow(Error(kDelegateIsNull));
-  else
-    return RespondNow(OneArgument(delegate->GetDefaultZoom()));
+  DCHECK(delegate);
+  return RespondNow(OneArgument(delegate->GetDefaultZoom()));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -137,9 +125,7 @@ ExtensionFunction::ResponseAction
 
   SettingsPrivateDelegate* delegate =
       SettingsPrivateDelegateFactory::GetForBrowserContext(browser_context());
-  if (delegate == nullptr)
-    return RespondNow(Error(kDelegateIsNull));
-
+  DCHECK(delegate);
   delegate->SetDefaultZoom(parameters->zoom);
   return RespondNow(OneArgument(std::make_unique<base::Value>(true)));
 }

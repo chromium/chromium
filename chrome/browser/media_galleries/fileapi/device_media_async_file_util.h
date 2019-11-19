@@ -15,8 +15,8 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "storage/browser/blob/shareable_file_reference.h"
-#include "storage/browser/fileapi/async_file_util.h"
-#include "storage/browser/fileapi/watcher_manager.h"
+#include "storage/browser/file_system/async_file_util.h"
+#include "storage/browser/file_system/watcher_manager.h"
 
 namespace storage {
 class FileSystemOperationContext;
@@ -196,7 +196,7 @@ class DeviceMediaAsyncFileUtil : public storage::AsyncFileUtil {
   scoped_refptr<MediaPathFilterWrapper> media_path_filter_wrapper_;
 
   // For callbacks that may run after destruction.
-  base::WeakPtrFactory<DeviceMediaAsyncFileUtil> weak_ptr_factory_;
+  base::WeakPtrFactory<DeviceMediaAsyncFileUtil> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(DeviceMediaAsyncFileUtil);
 };

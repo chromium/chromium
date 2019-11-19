@@ -14,10 +14,11 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/chrome_device_id_helper.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "components/signin/core/browser/ubertoken_fetcher.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/signin/public/identity_manager/ubertoken_fetcher.h"
+#include "google_apis/gaia/gaia_auth_fetcher.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "net/base/escape.h"
-#include "services/identity/public/cpp/identity_manager.h"
 
 namespace extensions {
 
@@ -29,13 +30,9 @@ GaiaWebAuthFlow::GaiaWebAuthFlow(Delegate* delegate,
     : delegate_(delegate),
       profile_(profile),
       account_id_(token_key->account_id) {
-  TRACE_EVENT_ASYNC_BEGIN2("identity",
-                           "GaiaWebAuthFlow",
-                           this,
-                           "extension_id",
-                           token_key->extension_id,
-                           "account_id",
-                           token_key->account_id);
+  TRACE_EVENT_ASYNC_BEGIN2("identity", "GaiaWebAuthFlow", this, "extension_id",
+                           token_key->extension_id, "account_id",
+                           token_key->account_id.id);
 
   const char kOAuth2RedirectPathFormat[] = "/%s";
   const char kOAuth2AuthorizeFormat[] =
@@ -93,8 +90,7 @@ void GaiaWebAuthFlow::Start() {
       account_id_,
       base::BindOnce(&GaiaWebAuthFlow::OnUbertokenFetchComplete,
                      base::Unretained(this)),
-      gaia::GaiaSource::kChrome, profile_->GetURLLoaderFactory(),
-      /*bound_to_channel_id=*/false);
+      gaia::GaiaSource::kChrome, profile_->GetURLLoaderFactory());
 }
 
 void GaiaWebAuthFlow::OnUbertokenFetchComplete(GoogleServiceAuthError error,

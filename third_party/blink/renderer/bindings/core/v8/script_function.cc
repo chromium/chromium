@@ -34,7 +34,8 @@ ScriptValue ScriptFunction::Call(ScriptValue) {
 }
 
 void ScriptFunction::CallRaw(const v8::FunctionCallbackInfo<v8::Value>& args) {
-  ScriptValue result = Call(ScriptValue(GetScriptState(), args[0]));
+  ScriptValue result =
+      Call(ScriptValue(GetScriptState()->GetIsolate(), args[0]));
   V8SetReturnValue(args, result.V8Value());
 }
 

@@ -27,12 +27,12 @@
 
 #include "base/optional.h"
 #include "build/build_config.h"
+#include "cc/input/scrollbar.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_mouse_event.h"
 #include "third_party/blink/public/platform/web_point.h"
 #include "third_party/blink/public/platform/web_rect.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar.h"
-#include "third_party/blink/renderer/core/scroll/scrollbar_theme_mock.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar_theme_overlay_mock.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
@@ -49,95 +49,13 @@
 
 namespace blink {
 
-bool ScrollbarTheme::g_mock_scrollbars_enabled_ = false;
+void ScrollbarTheme::Paint(const Scrollbar& scrollbar,
+                           GraphicsContext& graphics_context) {
+  PaintTrackButtonsTickmarks(graphics_context, scrollbar, IntPoint());
 
-static inline bool ShouldPaintScrollbarPart(const IntRect& part_rect,
-                                            const CullRect& cull_rect) {
-  return (!part_rect.IsEmpty()) || cull_rect.Intersects(part_rect);
-}
-
-bool ScrollbarTheme::Paint(const Scrollbar& scrollbar,
-                           GraphicsContext& graphics_context,
-                           const CullRect& cull_rect) {
-  // Create the ScrollbarControlPartMask based on the cullRect
-  ScrollbarControlPartMask scroll_mask = kNoPart;
-
-  IntRect back_button_start_paint_rect;
-  IntRect back_button_end_paint_rect;
-  IntRect forward_button_start_paint_rect;
-  IntRect forward_button_end_paint_rect;
-  if (HasButtons(scrollbar)) {
-    back_button_start_paint_rect =
-        BackButtonRect(scrollbar, kBackButtonStartPart, true);
-    if (ShouldPaintScrollbarPart(back_button_start_paint_rect, cull_rect))
-      scroll_mask |= kBackButtonStartPart;
-    back_button_end_paint_rect =
-        BackButtonRect(scrollbar, kBackButtonEndPart, true);
-    if (ShouldPaintScrollbarPart(back_button_end_paint_rect, cull_rect))
-      scroll_mask |= kBackButtonEndPart;
-    forward_button_start_paint_rect =
-        ForwardButtonRect(scrollbar, kForwardButtonStartPart, true);
-    if (ShouldPaintScrollbarPart(forward_button_start_paint_rect, cull_rect))
-      scroll_mask |= kForwardButtonStartPart;
-    forward_button_end_paint_rect =
-        ForwardButtonRect(scrollbar, kForwardButtonEndPart, true);
-    if (ShouldPaintScrollbarPart(forward_button_end_paint_rect, cull_rect))
-      scroll_mask |= kForwardButtonEndPart;
-  }
-
-  IntRect start_track_rect;
-  IntRect thumb_rect;
-  IntRect end_track_rect;
-  IntRect track_paint_rect = TrackRect(scrollbar, true);
-  scroll_mask |= kTrackBGPart;
-  bool thumb_present = HasThumb(scrollbar);
-  if (thumb_present) {
-    IntRect track = TrackRect(scrollbar);
-    SplitTrack(scrollbar, track, start_track_rect, thumb_rect, end_track_rect);
-    if (ShouldPaintScrollbarPart(thumb_rect, cull_rect))
-      scroll_mask |= kThumbPart;
-    if (ShouldPaintScrollbarPart(start_track_rect, cull_rect))
-      scroll_mask |= kBackTrackPart;
-    if (ShouldPaintScrollbarPart(end_track_rect, cull_rect))
-      scroll_mask |= kForwardTrackPart;
-  }
-
-  // Paint the scrollbar background (only used by custom CSS scrollbars).
-  PaintScrollbarBackground(graphics_context, scrollbar);
-
-  // Paint the back and forward buttons.
-  if (scroll_mask & kBackButtonStartPart)
-    PaintButton(graphics_context, scrollbar, back_button_start_paint_rect,
-                kBackButtonStartPart);
-  if (scroll_mask & kBackButtonEndPart)
-    PaintButton(graphics_context, scrollbar, back_button_end_paint_rect,
-                kBackButtonEndPart);
-  if (scroll_mask & kForwardButtonStartPart)
-    PaintButton(graphics_context, scrollbar, forward_button_start_paint_rect,
-                kForwardButtonStartPart);
-  if (scroll_mask & kForwardButtonEndPart)
-    PaintButton(graphics_context, scrollbar, forward_button_end_paint_rect,
-                kForwardButtonEndPart);
-
-  if (scroll_mask & kTrackBGPart)
-    PaintTrackBackground(graphics_context, scrollbar, track_paint_rect);
-
-  if ((scroll_mask & kForwardTrackPart) || (scroll_mask & kBackTrackPart)) {
-    // Paint the track pieces above and below the thumb.
-    if (scroll_mask & kBackTrackPart)
-      PaintTrackPiece(graphics_context, scrollbar, start_track_rect,
-                      kBackTrackPart);
-    if (scroll_mask & kForwardTrackPart)
-      PaintTrackPiece(graphics_context, scrollbar, end_track_rect,
-                      kForwardTrackPart);
-
-    PaintTickmarks(graphics_context, scrollbar, track_paint_rect);
-  }
-
-  if (scroll_mask & kThumbPart)
+  IntRect thumb_rect = ThumbRect(scrollbar);
+  if (HasThumb(scrollbar))
     PaintThumbWithOpacity(graphics_context, scrollbar, thumb_rect);
-
-  return true;
 }
 
 ScrollbarPart ScrollbarTheme::HitTest(const Scrollbar& scrollbar,
@@ -188,23 +106,26 @@ ScrollbarPart ScrollbarTheme::HitTest(const Scrollbar& scrollbar,
 
 void ScrollbarTheme::PaintScrollCorner(
     GraphicsContext& context,
+    const Scrollbar* vertical_scrollbar,
     const DisplayItemClient& display_item_client,
-    const IntRect& corner_rect) {
+    const IntRect& corner_rect,
+    WebColorScheme color_scheme) {
   if (corner_rect.IsEmpty())
     return;
 
-  if (DrawingRecorder::UseCachedDrawingIfPossible(
-          context, display_item_client, DisplayItem::kScrollbarCorner))
+  if (DrawingRecorder::UseCachedDrawingIfPossible(context, display_item_client,
+                                                  DisplayItem::kScrollCorner))
     return;
 
   DrawingRecorder recorder(context, display_item_client,
-                           DisplayItem::kScrollbarCorner);
+                           DisplayItem::kScrollCorner);
 #if defined(OS_MACOSX)
   context.FillRect(corner_rect, Color::kWhite);
 #else
   Platform::Current()->ThemeEngine()->Paint(
       context.Canvas(), WebThemeEngine::kPartScrollbarCorner,
-      WebThemeEngine::kStateNormal, WebRect(corner_rect), nullptr);
+      WebThemeEngine::kStateNormal, WebRect(corner_rect), nullptr,
+      color_scheme);
 #endif
 }
 
@@ -219,9 +140,7 @@ void ScrollbarTheme::PaintTickmarks(GraphicsContext& context,
   if (rect.Height() <= 0 || rect.Width() <= 0)
     return;
 
-  // Get the tickmarks for the frameview.
-  Vector<IntRect> tickmarks;
-  scrollbar.GetTickmarks(tickmarks);
+  Vector<IntRect> tickmarks = scrollbar.GetTickmarks();
   if (!tickmarks.size())
     return;
 
@@ -234,10 +153,10 @@ void ScrollbarTheme::PaintTickmarks(GraphicsContext& context,
   GraphicsContextStateSaver state_saver(context);
   context.SetShouldAntialias(false);
 
-  for (Vector<IntRect>::const_iterator i = tickmarks.begin();
-       i != tickmarks.end(); ++i) {
+  for (const IntRect& tickmark : tickmarks) {
     // Calculate how far down (in %) the tick-mark should appear.
-    const float percent = static_cast<float>(i->Y()) / scrollbar.TotalSize();
+    const float percent =
+        static_cast<float>(tickmark.Y()) / scrollbar.TotalSize();
 
     // Calculate how far down (in pixels) the tick-mark should appear.
     const int y_pos = rect.Y() + (rect.Height() * percent);
@@ -252,14 +171,14 @@ void ScrollbarTheme::PaintTickmarks(GraphicsContext& context,
 #endif
 }
 
-TimeDelta ScrollbarTheme::OverlayScrollbarFadeOutDelay() const {
+base::TimeDelta ScrollbarTheme::OverlayScrollbarFadeOutDelay() const {
   // On Mac, fading is controlled by the painting code in ScrollAnimatorMac.
-  return TimeDelta();
+  return base::TimeDelta();
 }
 
-TimeDelta ScrollbarTheme::OverlayScrollbarFadeOutDuration() const {
+base::TimeDelta ScrollbarTheme::OverlayScrollbarFadeOutDuration() const {
   // On Mac, fading is controlled by the painting code in ScrollAnimatorMac.
-  return TimeDelta();
+  return base::TimeDelta();
 }
 
 int ScrollbarTheme::ThumbPosition(const Scrollbar& scrollbar,
@@ -362,62 +281,65 @@ void ScrollbarTheme::SplitTrack(const Scrollbar& scrollbar,
   }
 }
 
-TimeDelta ScrollbarTheme::InitialAutoscrollTimerDelay() {
-  return TimeDelta::FromMilliseconds(250);
+base::TimeDelta ScrollbarTheme::InitialAutoscrollTimerDelay() {
+  return kInitialAutoscrollTimerDelay;
 }
 
-TimeDelta ScrollbarTheme::AutoscrollTimerDelay() {
-  return TimeDelta::FromMilliseconds(50);
+base::TimeDelta ScrollbarTheme::AutoscrollTimerDelay() {
+  return base::TimeDelta::FromSecondsD(1.f / kAutoscrollMultiplier);
 }
 
-ScrollbarTheme& ScrollbarTheme::DeprecatedStaticGetTheme() {
-  if (ScrollbarTheme::MockScrollbarsEnabled()) {
-    if (RuntimeEnabledFeatures::OverlayScrollbarsEnabled()) {
-      DEFINE_STATIC_LOCAL(ScrollbarThemeOverlayMock, overlay_mock_theme, ());
-      return overlay_mock_theme;
-    }
-
-    DEFINE_STATIC_LOCAL(ScrollbarThemeMock, mock_theme, ());
-    return mock_theme;
+ScrollbarTheme& ScrollbarTheme::GetTheme() {
+  if (MockScrollbarsEnabled()) {
+    // We only support mock overlay scrollbars.
+    DCHECK(OverlayScrollbarsEnabled());
+    DEFINE_STATIC_LOCAL(ScrollbarThemeOverlayMock, overlay_mock_theme, ());
+    return overlay_mock_theme;
   }
   return NativeTheme();
 }
 
-void ScrollbarTheme::SetMockScrollbarsEnabled(bool flag) {
-  g_mock_scrollbars_enabled_ = flag;
-}
+void ScrollbarTheme::PaintTrackAndButtons(GraphicsContext& context,
+                                          const Scrollbar& scrollbar,
+                                          const IntPoint& offset) {
+  // CustomScrollbarTheme must override this method.
+  DCHECK(!scrollbar.IsCustomScrollbar());
 
-bool ScrollbarTheme::MockScrollbarsEnabled() {
-  return g_mock_scrollbars_enabled_;
-}
+  if (DrawingRecorder::UseCachedDrawingIfPossible(
+          context, scrollbar, DisplayItem::kScrollbarTrackAndButtons))
+    return;
+  DrawingRecorder recorder(context, scrollbar,
+                           DisplayItem::kScrollbarTrackAndButtons);
 
-DisplayItem::Type ScrollbarTheme::ButtonPartToDisplayItemType(
-    ScrollbarPart part) {
-  switch (part) {
-    case kBackButtonStartPart:
-      return DisplayItem::kScrollbarBackButtonStart;
-    case kBackButtonEndPart:
-      return DisplayItem::kScrollbarBackButtonEnd;
-    case kForwardButtonStartPart:
-      return DisplayItem::kScrollbarForwardButtonStart;
-    case kForwardButtonEndPart:
-      return DisplayItem::kScrollbarForwardButtonEnd;
-    default:
-      NOTREACHED();
-      return DisplayItem::kScrollbarBackButtonStart;
+  if (HasButtons(scrollbar)) {
+    IntRect back_button_rect = BackButtonRect(scrollbar, kBackButtonStartPart);
+    back_button_rect.MoveBy(offset);
+    PaintButton(context, scrollbar, back_button_rect, kBackButtonStartPart);
+
+    IntRect forward_button_rect =
+        ForwardButtonRect(scrollbar, kForwardButtonEndPart);
+    forward_button_rect.MoveBy(offset);
+    PaintButton(context, scrollbar, forward_button_rect, kForwardButtonEndPart);
+
+    // Non-custom scrollbars don't have kBackButtonEndPart and
+    // kForwardButtonStartPart.
+    DCHECK(BackButtonRect(scrollbar, kBackButtonEndPart).IsEmpty());
+    DCHECK(ForwardButtonRect(scrollbar, kForwardButtonStartPart).IsEmpty());
   }
+
+  IntRect track_rect = TrackRect(scrollbar);
+  track_rect.MoveBy(offset);
+  PaintTrack(context, scrollbar, track_rect);
 }
 
-DisplayItem::Type ScrollbarTheme::TrackPiecePartToDisplayItemType(
-    ScrollbarPart part) {
-  switch (part) {
-    case kBackTrackPart:
-      return DisplayItem::kScrollbarBackTrack;
-    case kForwardTrackPart:
-      return DisplayItem::kScrollbarForwardTrack;
-    default:
-      NOTREACHED();
-      return DisplayItem::kScrollbarBackTrack;
+void ScrollbarTheme::PaintTrackButtonsTickmarks(GraphicsContext& context,
+                                                const Scrollbar& scrollbar,
+                                                const IntPoint& offset) {
+  PaintTrackAndButtons(context, scrollbar, offset);
+  if (scrollbar.HasTickmarks()) {
+    IntRect track_rect = TrackRect(scrollbar);
+    track_rect.MoveBy(offset);
+    PaintTickmarks(context, scrollbar, track_rect);
   }
 }
 

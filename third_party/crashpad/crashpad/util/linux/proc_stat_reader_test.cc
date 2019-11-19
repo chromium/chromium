@@ -21,6 +21,7 @@
 #include "base/logging.h"
 #include "gtest/gtest.h"
 #include "test/linux/fake_ptrace_connection.h"
+#include "util/misc/time.h"
 #include "util/thread/thread.h"
 
 namespace crashpad {
@@ -34,8 +35,13 @@ TEST(ProcStatReader, Basic) {
   ProcStatReader stat;
   ASSERT_TRUE(stat.Initialize(&connection, getpid()));
 
+  timespec boot_time_ts;
+  ASSERT_TRUE(GetBootTime(&boot_time_ts));
+  timeval boot_time;
+  TimespecToTimeval(boot_time_ts, &boot_time);
+
   timeval start_time;
-  ASSERT_TRUE(stat.StartTime(&start_time));
+  ASSERT_TRUE(stat.StartTime(boot_time, &start_time));
 
   time_t now;
   time(&now);
@@ -56,30 +62,38 @@ pid_t gettid() {
   return syscall(SYS_gettid);
 }
 
-void GetStartTime(timeval* start_time) {
+void GetStartTime(const timeval& boot_time, timeval* start_time) {
   FakePtraceConnection connection;
   ASSERT_TRUE(connection.Initialize(getpid()));
 
   ProcStatReader stat;
   ASSERT_TRUE(stat.Initialize(&connection, gettid()));
-  ASSERT_TRUE(stat.StartTime(start_time));
+  ASSERT_TRUE(stat.StartTime(boot_time, start_time));
 }
 
 class StatTimeThread : public Thread {
  public:
-  StatTimeThread(timeval* start_time) : start_time_(start_time) {}
+  StatTimeThread(const timeval& boot_time, timeval* start_time)
+      : boot_time_(boot_time), start_time_(start_time) {}
 
  private:
-  void ThreadMain() override { GetStartTime(start_time_); }
+  void ThreadMain() override { GetStartTime(boot_time_, start_time_); }
+
+  const timeval& boot_time_;
   timeval* start_time_;
 };
 
 TEST(ProcStatReader, Threads) {
+  timespec boot_time_ts;
+  ASSERT_TRUE(GetBootTime(&boot_time_ts));
+  timeval boot_time;
+  TimespecToTimeval(boot_time_ts, &boot_time);
+
   timeval main_time;
-  ASSERT_NO_FATAL_FAILURE(GetStartTime(&main_time));
+  ASSERT_NO_FATAL_FAILURE(GetStartTime(boot_time, &main_time));
 
   timeval thread_time;
-  StatTimeThread thread(&thread_time);
+  StatTimeThread thread(boot_time, &thread_time);
   thread.Start();
   ASSERT_NO_FATAL_FAILURE(thread.Join());
 
@@ -89,7 +103,7 @@ TEST(ProcStatReader, Threads) {
          time_t thread_sec,
          suseconds_t thread_usec) {
         return (thread_sec > main_sec) ||
-               (thread_sec == main_sec && thread_usec > main_usec);
+               (thread_sec == main_sec && thread_usec >= main_usec);
       },
       main_time.tv_sec,
       main_time.tv_usec,

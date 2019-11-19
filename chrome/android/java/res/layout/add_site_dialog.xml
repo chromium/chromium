@@ -11,7 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/website_settings_add_site_site_url" />
-    <org.chromium.chrome.browser.widget.AlertDialogEditText
+    <org.chromium.chrome.browser.ui.widget.text.AlertDialogEditText
         android:id="@+id/site"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

@@ -36,7 +36,6 @@
 #include "third_party/blink/renderer/core/clipboard/system_clipboard.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
-#include "third_party/blink/renderer/core/dom/user_gesture_indicator.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -55,19 +54,13 @@
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_request.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_response.h"
-#include "third_party/blink/renderer/platform/shared_buffer.h"
+#include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
 
 class FrontendMenuProvider final : public ContextMenuProvider {
  public:
-  static FrontendMenuProvider* Create(DevToolsHost* devtools_host,
-                                      WebVector<WebMenuItemInfo> items) {
-    return MakeGarbageCollected<FrontendMenuProvider>(devtools_host,
-                                                      std::move(items));
-  }
-
   FrontendMenuProvider(DevToolsHost* devtools_host,
                        WebVector<WebMenuItemInfo> items)
       : devtools_host_(devtools_host), items_(std::move(items)) {}
@@ -132,8 +125,6 @@ void DevToolsHost::EvaluateScript(const String& expression) {
   if (!script_state)
     return;
   ScriptState::Scope scope(script_state);
-  std::unique_ptr<UserGestureIndicator> gesture_indicator =
-      LocalFrame::NotifyUserActivation(frontend_frame_);
   v8::MicrotasksScope microtasks(script_state->GetIsolate(),
                                  v8::MicrotasksScope::kRunMicrotasks);
   ScriptSourceCode source_code(expression, ScriptSourceLocationType::kInternal,
@@ -159,12 +150,14 @@ float DevToolsHost::zoomFactor() {
   // use-zoom-for-dsf mode.
   const ChromeClient* client =
       frontend_frame_->View()->GetChromeClient();
-  float window_to_viewport_ratio = client->WindowToViewportScalar(1.0f);
+  float window_to_viewport_ratio =
+      client->WindowToViewportScalar(frontend_frame_, 1.0f);
   return zoom_factor / window_to_viewport_ratio;
 }
 
 void DevToolsHost::copyText(const String& text) {
   SystemClipboard::GetInstance().WritePlainText(text);
+  SystemClipboard::GetInstance().CommitWrite();
 }
 
 static String EscapeUnicodeNonCharacters(const String& str) {
@@ -201,8 +194,8 @@ void DevToolsHost::ShowContextMenu(LocalFrame* target_frame,
                                    float y,
                                    WebVector<WebMenuItemInfo> items) {
   DCHECK(frontend_frame_);
-  FrontendMenuProvider* menu_provider =
-      FrontendMenuProvider::Create(this, std::move(items));
+  auto* menu_provider =
+      MakeGarbageCollected<FrontendMenuProvider>(this, std::move(items));
   menu_provider_ = menu_provider;
   float zoom = target_frame->PageZoomFactor();
   {

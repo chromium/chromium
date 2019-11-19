@@ -1,149 +1,149 @@
 [document web]
 ++[landmark] xml-roles:banner
-++++[text] name='This is a header element.'
+++++[static] name='This is a header element.'
 ++[landmark] xml-roles:complementary
-++++[text] name='This is an aside element.'
+++++[static] name='This is an aside element.'
 ++[section]
-++++[text] name='This is an address element.'
-++[footer] xml-roles:contentinfo
-++++[text] name='This is a footer element.'
-++[form]
-++++[text] name='This is a form element.'
-++[landmark] xml-roles:main
-++++[text] name='This is a main element.'
-++[landmark] xml-roles:navigation
-++++[text] name='This is a nav element.'
-++[embedded component] xml-roles:application
-++++[text] name='This is an ARIA application landmark.'
-++[landmark] xml-roles:banner
-++++[text] name='This is an ARIA banner landmark.'
-++[landmark] xml-roles:complementary
-++++[text] name='This is an ARIA complementary landmark.'
+++++[static] name='This is an address element.'
 ++[landmark] xml-roles:contentinfo
-++++[text] name='This is an ARIA contentinfo landmark.'
+++++[static] name='This is a footer element.'
+++[form]
+++++[static] name='This is a form element.'
+++[landmark] xml-roles:main
+++++[static] name='This is a main element.'
+++[landmark] xml-roles:navigation
+++++[static] name='This is a nav element.'
+++[embedded component] xml-roles:application
+++++[static] name='This is an ARIA application landmark.'
+++[landmark] xml-roles:banner
+++++[static] name='This is an ARIA banner landmark.'
+++[landmark] xml-roles:complementary
+++++[static] name='This is an ARIA complementary landmark.'
+++[landmark] xml-roles:contentinfo
+++++[static] name='This is an ARIA contentinfo landmark.'
 ++[form] xml-roles:form
-++++[text] name='This is an ARIA form landmark.'
+++++[static] name='This is an ARIA form landmark.'
 ++[landmark] xml-roles:main
-++++[text] name='This is an ARIA main landmark.'
+++++[static] name='This is an ARIA main landmark.'
 ++[landmark] xml-roles:navigation
-++++[text] name='This is an ARIA navigation landmark.'
+++++[static] name='This is an ARIA navigation landmark.'
 ++[landmark] xml-roles:search
-++++[text] name='This is an ARIA search landmark.'
+++++[static] name='This is an ARIA search landmark.'
 ++[article] xml-roles:article
 ++++[section]
-++++++[text] name='This should NOT banner role.'
+++++++[static] name='This should NOT banner role.'
 ++[landmark] xml-roles:complementary
 ++++[section]
-++++++[text] name='This should NOT have banner role.'
+++++++[static] name='This should NOT have banner role.'
 ++[landmark] xml-roles:navigation
 ++++[section]
-++++++[text] name='This should NOT have banner role.'
+++++++[static] name='This should NOT have banner role.'
 ++[section] xml-roles:region
 ++++[section]
-++++++[text] name='This should NOT have banner role.'
+++++++[static] name='This should NOT have banner role.'
 ++[block quote]
 ++++[section]
-++++++[text] name='This should NOT have banner role.'
+++++++[static] name='This should NOT have banner role.'
 ++[panel]
 ++++[toggle button] name='Details'
-++++++[text] name='Details'
+++++++[static] name='Details'
 ++[panel]
 ++++[section]
-++++++[text] name='This should NOT have banner role.'
+++++++[static] name='This should NOT have banner role.'
 ++[panel] xml-roles:figure
 ++++[section]
-++++++[text] name='This should NOT have banner role.'
+++++++[static] name='This should NOT have banner role.'
 ++[panel] xml-roles:group
 ++++[section]
-++++++[text] name='This should NOT have banner role.'
+++++++[static] name='This should NOT have banner role.'
 ++[landmark] xml-roles:main
 ++++[section]
-++++++[text] name='This should NOT have banner role.'
+++++++[static] name='This should NOT have banner role.'
 ++[article] xml-roles:article
 ++++[section]
-++++++[text] name='This should NOT banner role.'
+++++++[static] name='This should NOT banner role.'
 ++[landmark] xml-roles:complementary
 ++++[section]
-++++++[text] name='This should NOT have banner role.'
+++++++[static] name='This should NOT have banner role.'
 ++[landmark] xml-roles:navigation
 ++++[section]
-++++++[text] name='This should NOT have banner role.'
+++++++[static] name='This should NOT have banner role.'
 ++[section] xml-roles:region
 ++++[section]
-++++++[text] name='This should NOT have banner role.'
+++++++[static] name='This should NOT have banner role.'
 ++[block quote]
 ++++[section]
-++++++[text] name='This should NOT have banner role.'
+++++++[static] name='This should NOT have banner role.'
 ++[panel]
 ++++[toggle button] name='Details'
-++++++[text] name='Details'
+++++++[static] name='Details'
 ++[panel]
 ++++[section]
-++++++[text] name='This should NOT have banner role.'
+++++++[static] name='This should NOT have banner role.'
 ++[panel] xml-roles:figure
 ++++[section]
-++++++[text] name='This should NOT have banner role.'
+++++++[static] name='This should NOT have banner role.'
 ++[section]
-++++[text] name='This should NOT have banner role.'
+++++[static] name='This should NOT have banner role.'
 ++[landmark] xml-roles:main
 ++++[section]
-++++++[text] name='This should NOT have banner role.'
+++++++[static] name='This should NOT have banner role.'
 ++[article] xml-roles:article
 ++++[section]
-++++++[text] name='This should NOT footer role.'
+++++++[static] name='This should NOT footer role.'
 ++[landmark] xml-roles:complementary
 ++++[section]
-++++++[text] name='This should NOT have footer role.'
+++++++[static] name='This should NOT have footer role.'
 ++[landmark] xml-roles:navigation
 ++++[section]
-++++++[text] name='This should NOT have footer role.'
+++++++[static] name='This should NOT have footer role.'
 ++[section] xml-roles:region
 ++++[section]
-++++++[text] name='This should NOT have footer role.'
+++++++[static] name='This should NOT have footer role.'
 ++[block quote]
 ++++[section]
-++++++[text] name='This should NOT have footer role.'
+++++++[static] name='This should NOT have footer role.'
 ++[panel]
 ++++[toggle button] name='Details'
-++++++[text] name='Details'
+++++++[static] name='Details'
 ++[panel]
 ++++[section]
-++++++[text] name='This should NOT have footer role.'
+++++++[static] name='This should NOT have footer role.'
 ++[panel] xml-roles:figure
 ++++[section]
-++++++[text] name='This should NOT have footer role.'
+++++++[static] name='This should NOT have footer role.'
 ++[section]
-++++[text] name='This should NOT have footer role.'
+++++[static] name='This should NOT have footer role.'
 ++[landmark] xml-roles:main
 ++++[section]
-++++++[text] name='This should NOT have footer role.'
+++++++[static] name='This should NOT have footer role.'
 ++[article] xml-roles:article
 ++++[section]
-++++++[text] name='This should NOT footer role.'
+++++++[static] name='This should NOT footer role.'
 ++[landmark] xml-roles:complementary
 ++++[section]
-++++++[text] name='This should NOT have footer role.'
+++++++[static] name='This should NOT have footer role.'
 ++[landmark] xml-roles:navigation
 ++++[section]
-++++++[text] name='This should NOT have footer role.'
+++++++[static] name='This should NOT have footer role.'
 ++[section] xml-roles:region
 ++++[section]
-++++++[text] name='This should NOT have footer role.'
+++++++[static] name='This should NOT have footer role.'
 ++[block quote]
 ++++[section]
-++++++[text] name='This should NOT have footer role.'
+++++++[static] name='This should NOT have footer role.'
 ++[panel]
 ++++[toggle button] name='Details'
-++++++[text] name='Details'
+++++++[static] name='Details'
 ++[panel]
 ++++[section]
-++++++[text] name='This should NOT have footer role.'
+++++++[static] name='This should NOT have footer role.'
 ++[panel] xml-roles:figure
 ++++[section]
-++++++[text] name='This should NOT have footer role.'
+++++++[static] name='This should NOT have footer role.'
 ++[panel] xml-roles:group
 ++++[section]
-++++++[text] name='This should NOT have footer role.'
+++++++[static] name='This should NOT have footer role.'
 ++[landmark] xml-roles:main
 ++++[section]
-++++++[text] name='This should NOT have footer role.'
+++++++[static] name='This should NOT have footer role.'

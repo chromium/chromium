@@ -58,7 +58,7 @@ def unwrap_nullable_if_needed(idl_type):
 
 # Context for V8 bindings
 
-def dictionary_context(dictionary, interfaces_info):
+def dictionary_context(dictionary, interfaces_info, component_info):
     includes.clear()
     includes.update(DICTIONARY_CPP_INCLUDES)
 
@@ -66,7 +66,7 @@ def dictionary_context(dictionary, interfaces_info):
         raise Exception(
             'Dictionary cannot be RuntimeEnabled: %s' % dictionary.name)
 
-    members = [member_context(dictionary, member)
+    members = [member_context(dictionary, member, component_info)
                for member in sorted(dictionary.members,
                                     key=operator.attrgetter('name'))]
 
@@ -80,6 +80,7 @@ def dictionary_context(dictionary, interfaces_info):
         if member['origin_trial_feature_name']:
             has_origin_trial_members = True
             includes.add('core/origin_trials/origin_trials.h')
+            includes.add('core/execution_context/execution_context.h')
             break
 
     cpp_class = v8_utilities.cpp_name(dictionary)
@@ -105,7 +106,7 @@ def dictionary_context(dictionary, interfaces_info):
     return context
 
 
-def member_context(dictionary, member):
+def member_context(_, member, component_info):
     extended_attributes = member.extended_attributes
     idl_type = member.idl_type
     idl_type.add_includes_for_type(extended_attributes)
@@ -148,6 +149,7 @@ def member_context(dictionary, member):
     has_value_or_default = snake_case_name + "_has_value_or_default"
     getter_name = getter_name_for_dictionary_member(member)
     is_deprecated_dictionary = unwrapped_idl_type.name == 'Dictionary'
+    runtime_features = component_info['runtime_enabled_features']
 
     return {
         'cpp_default_value': cpp_default_value,
@@ -171,8 +173,10 @@ def member_context(dictionary, member):
         'is_string_type': idl_type.preprocessed_type.is_string_type,
         'is_required': member.is_required,
         'name': member.name,
-        'origin_trial_feature_name': v8_utilities.origin_trial_feature_name(member),  # [OriginTrialEnabled]
-        'runtime_enabled_feature_name': v8_utilities.runtime_enabled_feature_name(member),  # [RuntimeEnabled]
+        'origin_trial_feature_name':
+            v8_utilities.origin_trial_feature_name(member, runtime_features),  # [RuntimeEnabled] for origin trial
+        'runtime_enabled_feature_name':
+            v8_utilities.runtime_enabled_feature_name(member, runtime_features),  # [RuntimeEnabled] if not in origin trial
         'setter_name': setter_name_for_dictionary_member(member),
         'has_value_or_default': has_value_or_default,
         'null_setter_name': null_setter_name_for_dictionary_member(member),
@@ -279,6 +283,8 @@ def member_impl_context(member, interfaces_info, header_includes,
         non_null_type.is_enum or
         non_null_type.is_wrapper_type) else ''
 
+    extended_attributes = member.extended_attributes
+
     return {
         'cpp_default_value': cpp_default_value,
         'cpp_name': cpp_name,
@@ -289,10 +295,10 @@ def member_impl_context(member, interfaces_info, header_includes,
         'has_method_name': has_method_name_for_dictionary_member(member),
         'is_nullable': idl_type.is_nullable,
         'is_traceable': idl_type.is_traceable,
-        'member_cpp_type': idl_type.cpp_type_args(used_in_cpp_sequence=True),
+        'member_cpp_type': idl_type.cpp_type_args(used_in_cpp_sequence=True, extended_attributes=extended_attributes),
         'null_setter_name': null_setter_name_for_dictionary_member(member),
         'nullable_indicator_name': nullable_indicator_name,
-        'rvalue_cpp_type': idl_type.cpp_type_args(used_as_rvalue_type=True),
+        'rvalue_cpp_type': idl_type.cpp_type_args(used_as_rvalue_type=True, extended_attributes=extended_attributes),
         'setter_inline': setter_inline,
         'setter_name': setter_name_for_dictionary_member(member),
         'setter_value': setter_value,

@@ -4,9 +4,10 @@
 
 package org.chromium.chrome.browser.ntp;
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import org.chromium.base.annotations.CalledByNative;
+import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 
@@ -34,13 +35,13 @@ public class RecentlyClosedBridge implements RecentlyClosedTabManager {
      * @param profile The Profile whose recently closed tabs will be queried.
      */
     public RecentlyClosedBridge(Profile profile) {
-        mNativeBridge = nativeInit(profile);
+        mNativeBridge = RecentlyClosedBridgeJni.get().init(RecentlyClosedBridge.this, profile);
     }
 
     @Override
     public void destroy() {
         assert mNativeBridge != 0;
-        nativeDestroy(mNativeBridge);
+        RecentlyClosedBridgeJni.get().destroy(mNativeBridge, RecentlyClosedBridge.this);
         mNativeBridge = 0;
         mTabsUpdatedRunnable = null;
     }
@@ -53,24 +54,28 @@ public class RecentlyClosedBridge implements RecentlyClosedTabManager {
     @Override
     public List<RecentlyClosedTab> getRecentlyClosedTabs(int maxTabCount) {
         List<RecentlyClosedTab> tabs = new ArrayList<RecentlyClosedTab>();
-        boolean received = nativeGetRecentlyClosedTabs(mNativeBridge, tabs, maxTabCount);
+        boolean received = RecentlyClosedBridgeJni.get().getRecentlyClosedTabs(
+                mNativeBridge, RecentlyClosedBridge.this, tabs, maxTabCount);
         return received ? tabs : null;
     }
 
     @Override
     public boolean openRecentlyClosedTab(
             Tab tab, RecentlyClosedTab recentTab, int windowOpenDisposition) {
-        return nativeOpenRecentlyClosedTab(mNativeBridge, tab, recentTab.id, windowOpenDisposition);
+        return RecentlyClosedBridgeJni.get().openRecentlyClosedTab(
+                mNativeBridge, RecentlyClosedBridge.this, tab, recentTab.id, windowOpenDisposition);
     }
 
     @Override
     public void openRecentlyClosedTab() {
-        nativeOpenMostRecentlyClosedTab(mNativeBridge);
+        RecentlyClosedBridgeJni.get().openMostRecentlyClosedTab(
+                mNativeBridge, RecentlyClosedBridge.this);
     }
 
     @Override
     public void clearRecentlyClosedTabs() {
-        nativeClearRecentlyClosedTabs(mNativeBridge);
+        RecentlyClosedBridgeJni.get().clearRecentlyClosedTabs(
+                mNativeBridge, RecentlyClosedBridge.this);
     }
 
     /**
@@ -81,12 +86,17 @@ public class RecentlyClosedBridge implements RecentlyClosedTabManager {
         if (mTabsUpdatedRunnable != null) mTabsUpdatedRunnable.run();
     }
 
-    private native long nativeInit(Profile profile);
-    private native void nativeDestroy(long nativeRecentlyClosedTabsBridge);
-    private native boolean nativeGetRecentlyClosedTabs(
-            long nativeRecentlyClosedTabsBridge, List<RecentlyClosedTab> tabs, int maxTabCount);
-    private native boolean nativeOpenRecentlyClosedTab(long nativeRecentlyClosedTabsBridge,
-            Tab tab, int recentTabId, int windowOpenDisposition);
-    private native boolean nativeOpenMostRecentlyClosedTab(long nativeRecentlyClosedTabsBridge);
-    private native void nativeClearRecentlyClosedTabs(long nativeRecentlyClosedTabsBridge);
+    @NativeMethods
+    interface Natives {
+        long init(RecentlyClosedBridge caller, Profile profile);
+        void destroy(long nativeRecentlyClosedTabsBridge, RecentlyClosedBridge caller);
+        boolean getRecentlyClosedTabs(long nativeRecentlyClosedTabsBridge,
+                RecentlyClosedBridge caller, List<RecentlyClosedTab> tabs, int maxTabCount);
+        boolean openRecentlyClosedTab(long nativeRecentlyClosedTabsBridge,
+                RecentlyClosedBridge caller, Tab tab, int recentTabId, int windowOpenDisposition);
+        boolean openMostRecentlyClosedTab(
+                long nativeRecentlyClosedTabsBridge, RecentlyClosedBridge caller);
+        void clearRecentlyClosedTabs(
+                long nativeRecentlyClosedTabsBridge, RecentlyClosedBridge caller);
+    }
 }

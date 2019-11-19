@@ -8,4 +8,4 @@ public_headers =
 traits_headers =
     [ "//third_party/blink/renderer/platform/mojo/big_string_mojom_traits.h" ]
 type_mappings =
-    [ "mojo_base.mojom.BigString=WTF::String[nullable_is_same_type]" ]
+    [ "mojo_base.mojom.BigString=::WTF::String[nullable_is_same_type]" ]

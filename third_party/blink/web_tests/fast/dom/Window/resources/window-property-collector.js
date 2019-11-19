@@ -103,6 +103,9 @@ function emitExpectedResult(path, expected)
     case "history.scrollRestoration":
         expected = "'auto'";
         break;
+    case "scheduler.currentTaskQueue.priority":
+        expected = "'default'";
+        break;
     }
 
     insertExpectedResult(path, expected);

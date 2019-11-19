@@ -83,8 +83,8 @@ class LayoutSVGContainer : public LayoutSVGModelObject {
   FloatRect StrokeBoundingBox() const final { return stroke_bounding_box_; }
 
   bool NodeAtPoint(HitTestResult&,
-                   const HitTestLocation& location_in_container,
-                   const LayoutPoint& accumulated_offset,
+                   const HitTestLocation&,
+                   const PhysicalOffset& accumulated_offset,
                    HitTestAction) override;
 
   // Called during layout to update the local transform.

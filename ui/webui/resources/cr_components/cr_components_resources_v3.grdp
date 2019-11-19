@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<grit-part>
+  <include name="IDR_WEBUI_MANAGED_FOOTNOTE_M_JS"
+         file="${root_gen_dir}/ui/webui/resources/cr_components/managed_footnote/managed_footnote.m.js"
+         use_base_dir="false"
+         type="BINDATA"
+         compress="gzip" />
+</grit-part>

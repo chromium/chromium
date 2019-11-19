@@ -7,6 +7,23 @@
 
 namespace explore_sites {
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// This enum should be kept in sync with ExploreSitesCatalogUpdateRequestSource
+// in enums.xml.
+//
+// A Java counterpart will be generated for this enum.
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.explore_sites
+enum class ExploreSitesCatalogUpdateRequestSource {
+  kNewTabPage = 0,
+  kExploreSitesPage = 1,
+  kBackground = 2,
+  // Default to the old enum style because the
+  // RecordEnumeratedHistogram method on the java side requires it.
+  kNumEntries = 3,
+};
+
 // Methods for interacting with the Java side via JNI.
 class ExploreSitesBridge {
  public:

@@ -24,11 +24,6 @@ AXRadioInput::AXRadioInput(LayoutObject* layout_object,
   RequestUpdateToNextNode(false);
 }
 
-AXRadioInput* AXRadioInput::Create(LayoutObject* layout_object,
-                                   AXObjectCacheImpl& ax_object_cache) {
-  return MakeGarbageCollected<AXRadioInput>(layout_object, ax_object_cache);
-}
-
 void AXRadioInput::UpdatePosAndSetSize(int position) {
   if (position)
     pos_in_set_ = position;

@@ -15,7 +15,8 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
@@ -29,11 +30,10 @@
 #include "components/ntp_snippets/remote/test_utils.h"
 #include "components/ntp_snippets/user_classifier.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/variations/entropy_provider.h"
-#include "components/variations/variations_params_manager.h"
 #include "net/http/http_util.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
-#include "services/identity/public/cpp/identity_test_environment.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -148,20 +148,20 @@ class MockSnippetsAvailableCallback {
 };
 
 void ParseJson(const std::string& json,
-               const SuccessCallback& success_callback,
-               const ErrorCallback& error_callback) {
+               SuccessCallback success_callback,
+               ErrorCallback error_callback) {
   base::JSONReader json_reader;
-  std::unique_ptr<base::Value> value = json_reader.ReadToValueDeprecated(json);
+  base::Optional<base::Value> value = json_reader.ReadToValue(json);
   if (value) {
-    success_callback.Run(std::move(value));
+    std::move(success_callback).Run(std::move(*value));
   } else {
-    error_callback.Run(json_reader.GetErrorMessage());
+    std::move(error_callback).Run(json_reader.GetErrorMessage());
   }
 }
 
 void ParseJsonDelayed(const std::string& json,
-                      const SuccessCallback& success_callback,
-                      const ErrorCallback& error_callback) {
+                      SuccessCallback success_callback,
+                      ErrorCallback error_callback) {
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&ParseJson, json, std::move(success_callback),
@@ -177,16 +177,12 @@ class RemoteSuggestionsFetcherImplTest : public testing::Test {
       : default_variation_params_(
             {{"send_top_languages", "true"},
              {"send_user_class", "true"},
-             {"append_request_priority_as_query_parameter", "true"}}),
-        params_manager_(ntp_snippets::kArticleSuggestionsFeature.name,
-                        default_variation_params_,
-                        {ntp_snippets::kArticleSuggestionsFeature.name}) {
+             {"append_request_priority_as_query_parameter", "true"}}) {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        ntp_snippets::kArticleSuggestionsFeature, default_variation_params_);
     UserClassifier::RegisterProfilePrefs(utils_.pref_service()->registry());
     user_classifier_ = std::make_unique<UserClassifier>(
         utils_.pref_service(), base::DefaultClock::GetInstance());
-    // Increase initial time such that ticks are non-zero.
-    scoped_task_environment_.FastForwardBy(
-        base::TimeDelta::FromMilliseconds(1234));
     ResetFetcher();
   }
 
@@ -205,7 +201,7 @@ class RemoteSuggestionsFetcherImplTest : public testing::Test {
         base::BindRepeating(&ParseJsonDelayed), GetFetchEndpoint(), api_key,
         user_classifier_.get());
 
-    fetcher_->SetClockForTesting(scoped_task_environment_.GetMockClock());
+    fetcher_->SetClockForTesting(task_environment_.GetMockClock());
   }
 
   void SignIn() { identity_test_env_.MakePrimaryAccountAvailable(kTestEmail); }
@@ -219,7 +215,7 @@ class RemoteSuggestionsFetcherImplTest : public testing::Test {
   RemoteSuggestionsFetcherImpl& fetcher() { return *fetcher_; }
   MockSnippetsAvailableCallback& mock_callback() { return mock_callback_; }
   void FastForwardUntilNoTasksRemain() {
-    scoped_task_environment_.FastForwardUntilNoTasksRemain();
+    task_environment_.FastForwardUntilNoTasksRemain();
   }
   base::HistogramTester& histogram_tester() { return histogram_tester_; }
 
@@ -234,39 +230,38 @@ class RemoteSuggestionsFetcherImplTest : public testing::Test {
     std::map<std::string, std::string> params = default_variation_params_;
     params[param_name] = value;
 
-    params_manager_.ClearAllVariationParams();
-    params_manager_.SetVariationParamsWithFeatureAssociations(
-        ntp_snippets::kArticleSuggestionsFeature.name, params,
-        {ntp_snippets::kArticleSuggestionsFeature.name});
+    scoped_feature_list_.Reset();
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        ntp_snippets::kArticleSuggestionsFeature, params);
   }
 
   void SetFakeResponse(const GURL& request_url,
                        const std::string& response_data,
                        net::HttpStatusCode response_code,
                        net::Error error) {
-    network::ResourceResponseHead head;
+    auto head = network::mojom::URLResponseHead::New();
     std::string headers(base::StringPrintf(
         "HTTP/1.1 %d %s\nContent-type: application/json\n\n",
         static_cast<int>(response_code), GetHttpReasonPhrase(response_code)));
-    head.headers = new net::HttpResponseHeaders(
-        net::HttpUtil::AssembleRawHeaders(headers.c_str(), headers.size()));
-    head.mime_type = "application/json";
+    head->headers = base::MakeRefCounted<net::HttpResponseHeaders>(
+        net::HttpUtil::AssembleRawHeaders(headers));
+    head->mime_type = "application/json";
     network::URLLoaderCompletionStatus status(error);
     status.decoded_body_length = response_data.size();
-    test_url_loader_factory_.AddResponse(request_url, head, response_data,
-                                         status);
+    test_url_loader_factory_.AddResponse(request_url, std::move(head),
+                                         response_data, status);
   }
 
  protected:
-  base::test::ScopedTaskEnvironment scoped_task_environment_{
-      base::test::ScopedTaskEnvironment::MainThreadType::MOCK_TIME};
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   std::map<std::string, std::string> default_variation_params_;
-  identity::IdentityTestEnvironment identity_test_env_;
+  signin::IdentityTestEnvironment identity_test_env_;
   network::TestURLLoaderFactory test_url_loader_factory_;
 
  private:
   test::RemoteSuggestionsTestUtils utils_;
-  variations::testing::VariationParamsManager params_manager_;
+  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<RemoteSuggestionsFetcherImpl> fetcher_;
   std::unique_ptr<UserClassifier> user_classifier_;
   MockSnippetsAvailableCallback mock_callback_;

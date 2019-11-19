@@ -12,7 +12,7 @@
 #include "chromecast/browser/cast_browser_context.h"
 #include "chromecast/browser/cast_browser_process.h"
 #include "chromecast/browser/cast_content_window.h"
-#include "chromecast/browser/cast_web_contents_manager.h"
+#include "chromecast/browser/cast_web_service.h"
 #include "chromecast/browser/cast_web_view_factory.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
@@ -47,9 +47,9 @@ void CastBrowserTest::PreRunTestOnMainThread() {
   metrics::CastMetricsHelper::GetInstance()->SetDummySessionIdForTesting();
   web_view_factory_ = std::make_unique<CastWebViewFactory>(
       CastBrowserProcess::GetInstance()->browser_context());
-  web_contents_manager_ = std::make_unique<CastWebContentsManager>(
+  web_service_ = std::make_unique<CastWebService>(
       CastBrowserProcess::GetInstance()->browser_context(),
-      web_view_factory_.get());
+      web_view_factory_.get(), nullptr /* window_manager */);
 }
 
 void CastBrowserTest::PostRunTestOnMainThread() {
@@ -58,13 +58,14 @@ void CastBrowserTest::PostRunTestOnMainThread() {
 
 content::WebContents* CastBrowserTest::CreateWebView() {
   CastWebView::CreateParams params;
-  params.delegate = this;
-  params.enabled_for_dev = true;
-  params.window_params.delegate = this;
+  params.delegate = weak_factory_.GetWeakPtr();
+  params.web_contents_params.delegate = weak_factory_.GetWeakPtr();
+  params.web_contents_params.use_cma_renderer = true;
+  params.web_contents_params.enabled_for_dev = true;
+  params.window_params.delegate = weak_factory_.GetWeakPtr();
   cast_web_view_ =
-      web_contents_manager_->CreateWebView(params, nullptr, /* site_instance */
-                                           nullptr,         /* extension */
-                                           GURL() /* initial_url */);
+      web_service_->CreateWebView(params, nullptr, /* site_instance */
+                                  GURL() /* initial_url */);
 
   return cast_web_view_->web_contents();
 }
@@ -83,14 +84,7 @@ content::WebContents* CastBrowserTest::NavigateToURL(const GURL& url) {
   return web_contents;
 }
 
-void CastBrowserTest::OnPageStateChanged(CastWebContents* cast_web_contents) {}
-
-void CastBrowserTest::OnPageStopped(CastWebContents* cast_web_contents,
-                                    int error_code) {}
-
 void CastBrowserTest::OnWindowDestroyed() {}
-
-void CastBrowserTest::OnKeyEvent(const ui::KeyEvent& key_event) {}
 
 void CastBrowserTest::OnVisibilityChange(VisibilityType visibility_type) {}
 
@@ -106,12 +100,5 @@ std::string CastBrowserTest::GetId() {
   return "";
 }
 
-bool CastBrowserTest::OnAddMessageToConsoleReceived(
-    int32_t level,
-    const base::string16& message,
-    int32_t line_no,
-    const base::string16& source_id) {
-  return false;
-}
 }  // namespace shell
 }  // namespace chromecast

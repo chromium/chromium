@@ -10,6 +10,7 @@ module.exports = {
   },
   'parserOptions': {
     'ecmaVersion': 2017,
+    'sourceType': 'module',
   },
   'rules': {
     // Enabled checks.
@@ -26,6 +27,22 @@ module.exports = {
         'message': 'Use $(\'id\') or getSVGElement(\'id\') ' +
             'from chrome://resources/js/util.js instead of ' +
             'document.getElementById(\'id\')',
+      },
+      {
+        'property': '__lookupGetter__',
+        'message': 'Use Object.getOwnPropertyDescriptor',
+      },
+      {
+        'property': '__lookupSetter__',
+        'message': 'Use Object.getOwnPropertyDescriptor',
+      },
+      {
+        'property': '__defineGetter__',
+        'message': 'Use Object.defineProperty',
+      },
+      {
+        'property': '__defineSetter__',
+        'message': 'Use Object.defineProperty',
       },
     ],
     'semi': ['error', 'always'],

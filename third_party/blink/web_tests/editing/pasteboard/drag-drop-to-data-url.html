@@ -3,7 +3,7 @@
 <script src="../../resources/testharnessreport.js"></script>
 <p>Check you can't drag into a data URL</p>
 <div><span id="dragme">hello</span></div>
-<iframe id="target" src="data:text/html;charset=utf-8,%3Cbody%20contentEditable%3Dtrue%3E%0D%0A"></iframe>
+<iframe id="target" srcdoc='<body contenteditable="true"></body>'></iframe>
 <script>
 var target = document.getElementById("target");
 var t = async_test('Drag-And-Drop to Data URL');
@@ -34,7 +34,7 @@ function dragDropIt() {
 function dropIt() {
     // Drop it off to the frame
     eventSender.mouseUp();
-    assert_equals(target.contentDocument.body.outerHTML, '<body contenteditable="true">\n</body>');
+    assert_equals(target.contentDocument.body.outerHTML, '<body contenteditable="true"></body>');
     t.done();
 }
 </script>

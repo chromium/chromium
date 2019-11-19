@@ -23,6 +23,8 @@ class ChromeMimeHandlerViewGuestDelegate : public MimeHandlerViewGuestDelegate {
   // MimeHandlerViewGuestDelegate.
   bool HandleContextMenu(content::WebContents* web_contents,
                          const content::ContextMenuParams& params) override;
+  void RecordLoadMetric(bool in_main_frame,
+                        const std::string& mime_type) override;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(ChromeMimeHandlerViewGuestDelegate);

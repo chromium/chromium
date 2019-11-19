@@ -30,7 +30,8 @@ WebContents::CreateParams::CreateParams(BrowserContext* context,
       context(nullptr),
       renderer_initiated_creation(false),
       desired_renderer_state(kOkayToHaveRendererProcess),
-      starting_sandbox_flags(blink::WebSandboxFlags::kNone) {}
+      starting_sandbox_flags(blink::WebSandboxFlags::kNone),
+      is_never_visible(false) {}
 
 WebContents::CreateParams::CreateParams(const CreateParams& other) = default;
 

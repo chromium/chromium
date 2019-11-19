@@ -43,8 +43,9 @@ VolumeManagerCommon.FileSystemType = {
  * @const
  */
 VolumeManagerCommon.FileSystemTypeVolumeNameLengthLimit = {
-  VFAT: 11,
-  EXFAT: 15,
+  'vfat': 11,
+  'exfat': 15,
+  'ntfs': 32,
 };
 
 /**
@@ -65,11 +66,11 @@ VolumeManagerCommon.RootType = {
   // Root for a drive volume.
   DRIVE: 'drive',
 
-  // The grand root entry of Team Drives in Drive volume.
-  TEAM_DRIVES_GRAND_ROOT: 'team_drives_grand_root',
+  // The grand root entry of Shared Drives in Drive volume.
+  SHARED_DRIVES_GRAND_ROOT: 'shared_drives_grand_root',
 
-  // Root directory of a Team Drive.
-  TEAM_DRIVE: 'team_drive',
+  // Root directory of a Shared Drive.
+  SHARED_DRIVE: 'team_drive',
 
   // Root for a MTP volume.
   MTP: 'mtp',
@@ -123,6 +124,9 @@ VolumeManagerCommon.RootType = {
 
   // Root directory of an external media folder under computers grand root.
   EXTERNAL_MEDIA: 'external_media',
+
+  // Root directory of an SMB file share.
+  SMB: 'smb',
 };
 Object.freeze(VolumeManagerCommon.RootType);
 
@@ -140,8 +144,8 @@ VolumeManagerCommon.RootTypesForUMA = [
   VolumeManagerCommon.RootType.ARCHIVE,                           // 1
   VolumeManagerCommon.RootType.REMOVABLE,                         // 2
   VolumeManagerCommon.RootType.DRIVE,                             // 3
-  VolumeManagerCommon.RootType.TEAM_DRIVES_GRAND_ROOT,            // 4
-  VolumeManagerCommon.RootType.TEAM_DRIVE,                        // 5
+  VolumeManagerCommon.RootType.SHARED_DRIVES_GRAND_ROOT,          // 4
+  VolumeManagerCommon.RootType.SHARED_DRIVE,                      // 5
   VolumeManagerCommon.RootType.MTP,                               // 6
   VolumeManagerCommon.RootType.PROVIDED,                          // 7
   VolumeManagerCommon.RootType.DRIVE_OTHER,                       // 8
@@ -159,6 +163,7 @@ VolumeManagerCommon.RootTypesForUMA = [
   VolumeManagerCommon.RootType.COMPUTER,                          // 20
   VolumeManagerCommon.RootType.EXTERNAL_MEDIA,                    // 21
   VolumeManagerCommon.RootType.DOCUMENTS_PROVIDER,                // 22
+  VolumeManagerCommon.RootType.SMB,                               // 23
 ];
 console.assert(
     Object.keys(VolumeManagerCommon.RootType).length ===
@@ -243,6 +248,7 @@ VolumeManagerCommon.VolumeType = {
   CROSTINI: 'crostini',
   ANDROID_FILES: 'android_files',
   MY_FILES: 'my_files',
+  SMB: 'smb',
 };
 
 /**
@@ -268,7 +274,8 @@ VolumeManagerCommon.VolumeType.isNative = type => {
       type === VolumeManagerCommon.VolumeType.ANDROID_FILES ||
       type === VolumeManagerCommon.VolumeType.CROSTINI ||
       type === VolumeManagerCommon.VolumeType.REMOVABLE ||
-      type === VolumeManagerCommon.VolumeType.ARCHIVE;
+      type === VolumeManagerCommon.VolumeType.ARCHIVE ||
+      type === VolumeManagerCommon.VolumeType.SMB;
 };
 
 Object.freeze(VolumeManagerCommon.VolumeType);
@@ -287,8 +294,8 @@ VolumeManagerCommon.getVolumeTypeFromRootType = rootType => {
     case VolumeManagerCommon.RootType.REMOVABLE:
       return VolumeManagerCommon.VolumeType.REMOVABLE;
     case VolumeManagerCommon.RootType.DRIVE:
-    case VolumeManagerCommon.RootType.TEAM_DRIVES_GRAND_ROOT:
-    case VolumeManagerCommon.RootType.TEAM_DRIVE:
+    case VolumeManagerCommon.RootType.SHARED_DRIVES_GRAND_ROOT:
+    case VolumeManagerCommon.RootType.SHARED_DRIVE:
     case VolumeManagerCommon.RootType.DRIVE_OTHER:
     case VolumeManagerCommon.RootType.DRIVE_OFFLINE:
     case VolumeManagerCommon.RootType.DRIVE_SHARED_WITH_ME:
@@ -312,6 +319,8 @@ VolumeManagerCommon.getVolumeTypeFromRootType = rootType => {
       return VolumeManagerCommon.VolumeType.ANDROID_FILES;
     case VolumeManagerCommon.RootType.MY_FILES:
       return VolumeManagerCommon.VolumeType.MY_FILES;
+    case VolumeManagerCommon.RootType.SMB:
+      return VolumeManagerCommon.VolumeType.SMB;
   }
   assertNotReached('Unknown root type: ' + rootType);
 };
@@ -344,6 +353,8 @@ VolumeManagerCommon.getRootTypeFromVolumeType = volumeType => {
       return VolumeManagerCommon.RootType.PROVIDED;
     case VolumeManagerCommon.VolumeType.REMOVABLE:
       return VolumeManagerCommon.RootType.REMOVABLE;
+    case VolumeManagerCommon.VolumeType.SMB:
+      return VolumeManagerCommon.RootType.SMB;
   }
   assertNotReached('Unknown volume type: ' + volumeType);
 };
@@ -388,9 +399,9 @@ VolumeManagerCommon.getMediaViewRootTypeFromVolumeId = volumeId => {
  */
 VolumeManagerCommon.VOLUME_ALREADY_MOUNTED = 'volume_already_mounted';
 
-VolumeManagerCommon.TEAM_DRIVES_DIRECTORY_NAME = 'team_drives';
-VolumeManagerCommon.TEAM_DRIVES_DIRECTORY_PATH =
-    '/' + VolumeManagerCommon.TEAM_DRIVES_DIRECTORY_NAME;
+VolumeManagerCommon.SHARED_DRIVES_DIRECTORY_NAME = 'team_drives';
+VolumeManagerCommon.SHARED_DRIVES_DIRECTORY_PATH =
+    '/' + VolumeManagerCommon.SHARED_DRIVES_DIRECTORY_NAME;
 
 /**
  * This is the top level directory name for Computers in drive that are using

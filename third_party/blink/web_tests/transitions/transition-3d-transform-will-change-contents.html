@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<style>
+#target {
+  width:100px;
+  height: 100px;
+  background: blue;
+  transition-duration: 0.1s;
+  transform: translate3d(10px, 0, 0);
+  will-change: contents;
+}
+#target.changed {
+  width: 400px;
+  transform: translate3d(20px, 0, 0);
+}
+</style>
+<div id="target"></div>
+<script src="../resources/run-after-layout-and-paint.js"></script>
+<script>
+if (window.testRunner)
+  testRunner.waitUntilDone();
+runAfterLayoutAndPaint(() => {
+  target.addEventListener('transitionend', () => {
+    if (window.testRunner)
+     testRunner.notifyDone();
+  });
+  target.classList.add('changed');
+});
+</script>

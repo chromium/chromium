@@ -43,6 +43,16 @@
 // UIAlertControllerStyleActionSheet.
 @property(nonatomic, assign) UIAlertControllerStyle alertStyle;
 
+// Allows replacing title with an attributed string. |updateAttributedText| must
+// be called afterward.
+@property(nonatomic, copy) NSAttributedString* attributedTitle;
+// Allows replacing message with an attributed string. |updateAttributedText|
+// must be called afterward.
+@property(nonatomic, copy) NSAttributedString* attributedMessage;
+
+// Updates text based on current |attributedTitle| and |attributedMessage|.
+- (void)updateAttributedText;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_ALERT_COORDINATOR_ACTION_SHEET_COORDINATOR_H_

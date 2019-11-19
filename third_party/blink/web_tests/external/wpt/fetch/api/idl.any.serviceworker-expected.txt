@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 129 tests; 120 PASS, 9 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 129 tests; 123 PASS, 6 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS Partial interface mixin WindowOrWorkerGlobalScope: original interface mixin defined
 PASS Headers interface: existence and properties of interface object
@@ -126,8 +126,8 @@ PASS Response interface: new Response() must inherit property "formData()" with 
 PASS Response interface: new Response() must inherit property "json()" with the proper type
 PASS Response interface: new Response() must inherit property "text()" with the proper type
 PASS Window interface: existence and properties of interface object
-FAIL WorkerGlobalScope interface: operation fetch(RequestInfo, RequestInit) assert_unreached: Should have rejected: calling operation with this = null didn't throw TypeError Reached unreachable code
-FAIL WorkerGlobalScope interface: self must inherit property "fetch(RequestInfo, RequestInit)" with the proper type assert_inherits: property "fetch" found on object expected in prototype chain
-FAIL WorkerGlobalScope interface: calling fetch(RequestInfo, RequestInit) on self with too few arguments must throw TypeError assert_inherits: property "fetch" found on object expected in prototype chain
+PASS WorkerGlobalScope interface: operation fetch(RequestInfo, RequestInit)
+PASS WorkerGlobalScope interface: self must inherit property "fetch(RequestInfo, RequestInit)" with the proper type
+PASS WorkerGlobalScope interface: calling fetch(RequestInfo, RequestInit) on self with too few arguments must throw TypeError
 Harness: the test ran to completion.
 

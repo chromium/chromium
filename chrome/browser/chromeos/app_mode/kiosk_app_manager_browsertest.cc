@@ -21,6 +21,7 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/chromeos/app_mode/fake_cws.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_app_data.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_app_manager_observer.h"
@@ -34,8 +35,10 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chromeos/constants/chromeos_switches.h"
 #include "chromeos/settings/cros_settings_names.h"
+#include "components/crx_file/crx_verifier.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "content/public/test/test_utils.h"
+#include "extensions/browser/sandboxed_unpacker.h"
 #include "extensions/common/extension.h"
 #include "net/base/host_port_pair.h"
 #include "net/dns/mock_host_resolver.h"
@@ -177,7 +180,10 @@ class AppDataLoadWaiter : public KioskAppManagerObserver {
   }
 
   void OnKioskExtensionDownloadFailed(const std::string& app_id) override {
-    OnKioskAppDataLoadFailure(app_id);
+    // Intentionally nothing to do here. Most tests which use this helper don't
+    // care about extension downloading, only about fetching its app data. Also
+    // fake_cws()->SetNoUpdate creates extension which will fail to download due
+    // to missing update URL in manifest.
   }
 
   scoped_refptr<content::MessageLoopRunner> runner_;
@@ -225,7 +231,10 @@ class ExternalCachePutWaiter {
 
 class KioskAppManagerTest : public InProcessBrowserTest {
  public:
-  KioskAppManagerTest() : settings_helper_(false), fake_cws_(new FakeCWS()) {}
+  KioskAppManagerTest()
+      : settings_helper_(false),
+        fake_cws_(new FakeCWS()),
+        verifier_format_override_(crx_file::VerifierFormat::CRX3) {}
   ~KioskAppManagerTest() override {}
 
   // InProcessBrowserTest overrides:
@@ -261,11 +270,12 @@ class KioskAppManagerTest : public InProcessBrowserTest {
   }
 
   void TearDownOnMainThread() override {
+    owner_settings_service_.reset();
     settings_helper_.RestoreRealDeviceSettingsProvider();
   }
 
   std::string GetAppIds() const {
-    KioskAppManager::Apps apps;
+    KioskAppManager::AppList apps;
     manager()->GetApps(&apps);
 
     std::string str;
@@ -345,13 +355,13 @@ class KioskAppManagerTest : public InProcessBrowserTest {
     return manager()->GetCachedCrx(app_id, file_path, version);
   }
 
-  void UpdateAppData() { manager()->UpdateAppData(); }
+  void UpdateAppsFromPolicy() { manager()->UpdateAppsFromPolicy(); }
 
   void CheckAppData(const std::string& app_id,
                     const std::string& expected_app_name,
                     const std::string& expected_required_platform_version) {
     // Check manifest data is cached correctly.
-    KioskAppManager::Apps apps;
+    KioskAppManager::AppList apps;
     manager()->GetApps(&apps);
     ASSERT_EQ(1u, apps.size());
     EXPECT_EQ(app_id, apps[0].app_id);
@@ -389,12 +399,9 @@ class KioskAppManagerTest : public InProcessBrowserTest {
     EXPECT_EQ(expected_required_platform_version, required_platform_version);
 
     base::FilePath expected_icon_path;
-    ASSERT_TRUE(
-        base::PathService::Get(chrome::DIR_USER_DATA, &expected_icon_path));
+    manager()->GetKioskAppIconCacheDir(&expected_icon_path);
     expected_icon_path =
-        expected_icon_path.AppendASCII(KioskAppManager::kIconCacheDir)
-            .AppendASCII(app_id)
-            .AddExtension(".png");
+        expected_icon_path.AppendASCII(app_id).AddExtension(".png");
     EXPECT_EQ(expected_icon_path.value(), icon_path_string);
   }
 
@@ -459,6 +466,8 @@ class KioskAppManagerTest : public InProcessBrowserTest {
  private:
   base::ScopedTempDir temp_dir_;
   std::unique_ptr<FakeCWS> fake_cws_;
+  extensions::SandboxedUnpacker::ScopedVerifierFormatOverrideForTest
+      verifier_format_override_;
 
   DISALLOW_COPY_AND_ASSIGN(KioskAppManagerTest);
 };
@@ -574,7 +583,8 @@ IN_PROC_BROWSER_TEST_F(KioskAppManagerTest, UpdateAppDataFromProfile) {
   CheckAppData("app_1", "Updated App1 Name", "1234");
 }
 
-IN_PROC_BROWSER_TEST_F(KioskAppManagerTest, UpdateAppDataFromCrx) {
+// Flaky; https://crbug.com/783450
+IN_PROC_BROWSER_TEST_F(KioskAppManagerTest, DISABLED_UpdateAppDataFromCrx) {
   const char kAppId[] = "iiigpodgfihagabpagjehoocpakbnclp";
   const char kAppName[] = "Test Kiosk App";
 
@@ -681,7 +691,7 @@ IN_PROC_BROWSER_TEST_F(KioskAppManagerTest, DownloadNewApp) {
 IN_PROC_BROWSER_TEST_F(KioskAppManagerTest, RemoveApp) {
   // Add a new app.
   RunAddNewAppTest(kTestLocalFsKioskApp, "1.0.0", kTestLocalFsKioskAppName, "");
-  KioskAppManager::Apps apps;
+  KioskAppManager::AppList apps;
   manager()->GetApps(&apps);
   ASSERT_EQ(1u, apps.size());
   base::FilePath crx_path;
@@ -708,7 +718,7 @@ IN_PROC_BROWSER_TEST_F(KioskAppManagerTest, RemoveApp) {
 IN_PROC_BROWSER_TEST_F(KioskAppManagerTest, UpdateApp) {
   // Add a version 1 app first.
   RunAddNewAppTest(kTestLocalFsKioskApp, "1.0.0", kTestLocalFsKioskAppName, "");
-  KioskAppManager::Apps apps;
+  KioskAppManager::AppList apps;
   manager()->GetApps(&apps);
   ASSERT_EQ(1u, apps.size());
   base::FilePath crx_path;
@@ -725,7 +735,7 @@ IN_PROC_BROWSER_TEST_F(KioskAppManagerTest, UpdateApp) {
       kTestLocalFsKioskApp,
       "abbjjkefakmllanciinhgjgjamdmlbdg_v2_read_and_verify_data.crx", "2.0.0");
   AppDataLoadWaiter waiter(manager(), 1);
-  UpdateAppData();
+  UpdateAppsFromPolicy();
   waiter.Wait();
   EXPECT_TRUE(waiter.loaded());
 
@@ -756,7 +766,7 @@ IN_PROC_BROWSER_TEST_F(KioskAppManagerTest, UpdateApp) {
 IN_PROC_BROWSER_TEST_F(KioskAppManagerTest, UpdateAndRemoveApp) {
   // Add a version 1 app first.
   RunAddNewAppTest(kTestLocalFsKioskApp, "1.0.0", kTestLocalFsKioskAppName, "");
-  KioskAppManager::Apps apps;
+  KioskAppManager::AppList apps;
   manager()->GetApps(&apps);
   ASSERT_EQ(1u, apps.size());
   base::FilePath v1_crx_path;
@@ -773,7 +783,7 @@ IN_PROC_BROWSER_TEST_F(KioskAppManagerTest, UpdateAndRemoveApp) {
       kTestLocalFsKioskApp,
       "abbjjkefakmllanciinhgjgjamdmlbdg_v2_read_and_verify_data.crx", "2.0.0");
   AppDataLoadWaiter waiter(manager(), 1);
-  UpdateAppData();
+  UpdateAppsFromPolicy();
   waiter.Wait();
   EXPECT_TRUE(waiter.loaded());
 

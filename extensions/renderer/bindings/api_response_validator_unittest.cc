@@ -102,8 +102,6 @@ class APIResponseValidatorTest : public APIBindingTest {
 };
 
 TEST_F(APIResponseValidatorTest, TestValidation) {
-  using namespace api_errors;
-
   v8::HandleScope handle_scope(isolate());
   v8::Local<v8::Context> context = MainContext();
 
@@ -117,7 +115,9 @@ TEST_F(APIResponseValidatorTest, TestValidation) {
       context, kMethodName, StringToV8Vector(context, "[1]"), std::string(),
       APIResponseValidator::CallbackType::kCallerProvided);
   EXPECT_EQ(kMethodName, failure_method().value_or("no value"));
-  EXPECT_EQ(ArgumentError("str", InvalidType(kTypeString, kTypeInteger)),
+  EXPECT_EQ(api_errors::ArgumentError(
+                "str", api_errors::InvalidType(api_errors::kTypeString,
+                                               api_errors::kTypeInteger)),
             failure_error().value_or("no value"));
 }
 

@@ -15,9 +15,11 @@ import android.widget.TextView;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.annotations.CalledByNative;
+import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ResourceId;
-import org.chromium.chrome.browser.widget.accessibility.AccessibleTextView;
+import org.chromium.chrome.browser.ShortcutHelper;
+import org.chromium.chrome.browser.ui.widget.text.AccessibleTextView;
 
 /**
  * An ambient infobar to tell the user that the current site they are visiting is a PWA.
@@ -28,10 +30,16 @@ public class InstallableAmbientBadgeInfoBar extends InfoBar implements View.OnCl
     private boolean mIsHiding;
 
     @CalledByNative
-    private static InfoBar show(
-            int enumeratedIconId, Bitmap iconBitmap, String messageText, String url) {
+    private static InfoBar show(int enumeratedIconId, Bitmap iconBitmap, String messageText,
+            String url, boolean isIconAdaptive) {
         int drawableId = ResourceId.mapToDrawableId(enumeratedIconId);
-        return new InstallableAmbientBadgeInfoBar(drawableId, iconBitmap, messageText, url);
+
+        Bitmap iconBitmapToUse = iconBitmap;
+        if (isIconAdaptive && ShortcutHelper.doesAndroidSupportMaskableIcons()) {
+            iconBitmapToUse = ShortcutHelper.generateAdaptiveIconBitmap(iconBitmap);
+        }
+
+        return new InstallableAmbientBadgeInfoBar(drawableId, iconBitmapToUse, messageText, url);
     }
 
     @Override
@@ -73,7 +81,8 @@ public class InstallableAmbientBadgeInfoBar extends InfoBar implements View.OnCl
     public void onClick(View v) {
         if (getNativeInfoBarPtr() == 0 || mIsHiding) return;
 
-        nativeAddToHomescreen(getNativeInfoBarPtr());
+        InstallableAmbientBadgeInfoBarJni.get().addToHomescreen(
+                getNativeInfoBarPtr(), InstallableAmbientBadgeInfoBar.this);
     }
 
     /**
@@ -84,10 +93,14 @@ public class InstallableAmbientBadgeInfoBar extends InfoBar implements View.OnCl
      */
     private InstallableAmbientBadgeInfoBar(
             int iconDrawableId, Bitmap iconBitmap, String messageText, String url) {
-        super(iconDrawableId, iconBitmap, null);
+        super(iconDrawableId, 0, null, iconBitmap);
         mMessageText = messageText;
         mUrl = url;
     }
 
-    private native void nativeAddToHomescreen(long nativeInstallableAmbientBadgeInfoBar);
+    @NativeMethods
+    interface Natives {
+        void addToHomescreen(
+                long nativeInstallableAmbientBadgeInfoBar, InstallableAmbientBadgeInfoBar caller);
+    }
 }

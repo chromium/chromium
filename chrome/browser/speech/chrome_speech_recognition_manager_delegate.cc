@@ -101,10 +101,9 @@ void ChromeSpeechRecognitionManagerDelegate::CheckRecognitionIsAllowed(
 
   // Check that the render frame type is appropriate, and whether or not we
   // need to request permission from the user.
-  base::PostTaskWithTraits(
-      FROM_HERE, {BrowserThread::UI},
-      base::BindOnce(&CheckRenderFrameType, std::move(callback),
-                     render_process_id, render_frame_id));
+  base::PostTask(FROM_HERE, {BrowserThread::UI},
+                 base::BindOnce(&CheckRenderFrameType, std::move(callback),
+                                render_process_id, render_frame_id));
 }
 
 content::SpeechRecognitionEventListener*
@@ -139,7 +138,7 @@ void ChromeSpeechRecognitionManagerDelegate::CheckRenderFrameType(
     // This happens for extensions. Manifest should be checked for permission.
     allowed = true;
     check_permission = false;
-    base::PostTaskWithTraits(
+    base::PostTask(
         FROM_HERE, {BrowserThread::IO},
         base::BindOnce(std::move(callback), check_permission, allowed));
     return;
@@ -166,7 +165,7 @@ void ChromeSpeechRecognitionManagerDelegate::CheckRenderFrameType(
   check_permission = true;
 #endif
 
-  base::PostTaskWithTraits(
+  base::PostTask(
       FROM_HERE, {BrowserThread::IO},
       base::BindOnce(std::move(callback), check_permission, allowed));
 }

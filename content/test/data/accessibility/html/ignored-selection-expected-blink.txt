@@ -1,0 +1,12 @@
+rootWebArea
+++genericContainer ignored
+++++paragraph ignored invisible
+++++staticText name='this text is not ignored' TreeData.textSelStartOffset=0
+++++++inlineTextBox name='this text is not ignored'
+++++genericContainer ignored invisible
+++++++staticText ignored invisible name='this text is ignored'
+++++genericContainer
+++++++staticText name='after selection' TreeData.textSelEndOffset=0
+++++++++inlineTextBox name='after selection'
+++++staticText name='Done'
+++++++inlineTextBox name='Done'

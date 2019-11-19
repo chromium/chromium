@@ -6,6 +6,7 @@ package org.chromium.net.smoke;
 
 import android.support.test.InstrumentationRegistry;
 import android.support.test.filters.SmallTest;
+import android.support.test.runner.AndroidJUnit4;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -14,13 +15,12 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.net.UrlRequest;
 
 /**
  * HTTP2 Tests.
  */
-@RunWith(BaseJUnit4ClassRunner.class)
+@RunWith(AndroidJUnit4.class)
 public class Http2Test {
     private TestSupport.TestServer mServer;
 

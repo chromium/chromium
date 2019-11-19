@@ -4,42 +4,42 @@ Tests removing event listeners in the Elements sidebar panel.
 ======== click ========
 == Raw
 [expanded] button#nodeRemoveevent-listener-sidebar-remove.js:16
-    useCapture: false
-    passive: false
-    once: false
     handler: function f() {}
+    once: false
+    passive: false
+    useCapture: false
 
 ======== mouseover ========
 == Raw
 [expanded] button#nodeRemoveevent-listener-sidebar-remove.js:16
-    useCapture: false
-    passive: false
-    once: false
     handler: function f() {}
+    once: false
+    passive: false
+    useCapture: false
 Listeners after removal:
 
 ======== mouseover ========
 == Raw
 [expanded] button#nodeRemoveevent-listener-sidebar-remove.js:16
-    useCapture: false
-    passive: false
-    once: false
     handler: function f() {}
+    once: false
+    passive: false
+    useCapture: false
 Listeners for sibling node:
 
 ======== click ========
 == Raw
 [expanded] button#node-siblingRemoveevent-listener-sidebar-remove.js:17
-    useCapture: false
-    passive: false
-    once: false
     handler: function g() {}
+    once: false
+    passive: false
+    useCapture: false
 
 ======== mouseover ========
 == Raw
 [expanded] button#node-siblingRemoveevent-listener-sidebar-remove.js:17
-    useCapture: false
-    passive: false
-    once: false
     handler: function g() {}
+    once: false
+    passive: false
+    useCapture: false
 

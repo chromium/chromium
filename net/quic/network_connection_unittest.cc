@@ -5,7 +5,7 @@
 #include "net/quic/network_connection.h"
 
 #include "base/run_loop.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "net/base/mock_network_change_notifier.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -68,7 +68,7 @@ TEST_F(NetworkConnectionTest, ConnectionWifi) {
 }
 
 TEST_F(NetworkConnectionTest, ConnectionChange) {
-  base::test::ScopedTaskEnvironment scoped_task_environment;
+  base::test::TaskEnvironment task_environment;
 
   notifier_->SetConnectionType(CONNECTION_2G);
 

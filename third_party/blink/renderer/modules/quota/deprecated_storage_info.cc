@@ -33,8 +33,10 @@
 #include "base/location.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/modules/quota/deprecated_storage_quota.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 
 namespace blink {
 
@@ -45,6 +47,10 @@ void DeprecatedStorageInfo::queryUsageAndQuota(
     int storage_type,
     V8StorageUsageCallback* success_callback,
     V8StorageErrorCallback* error_callback) {
+  // The BlinkIDL definition for queryUsageAndQuota() already has a [Measure]
+  // attribute, so the kQuotaRead use counter must be explicitly updated.
+  UseCounter::Count(ExecutionContext::From(script_state),
+                    WebFeature::kQuotaRead);
   // Dispatching the request to DeprecatedStorageQuota, as this interface is
   // deprecated in favor of DeprecatedStorageQuota.
   DeprecatedStorageQuota* storage_quota = GetStorageQuota(storage_type);
@@ -64,6 +70,10 @@ void DeprecatedStorageInfo::requestQuota(
     uint64_t new_quota_in_bytes,
     V8StorageQuotaCallback* success_callback,
     V8StorageErrorCallback* error_callback) {
+  // The BlinkIDL definition for requestQuota() already has a [Measure]
+  // attribute, so the kQuotaRead use counter must be explicitly updated.
+  UseCounter::Count(ExecutionContext::From(script_state),
+                    WebFeature::kQuotaRead);
   // Dispatching the request to DeprecatedStorageQuota, as this interface is
   // deprecated in favor of DeprecatedStorageQuota.
   DeprecatedStorageQuota* storage_quota = GetStorageQuota(storage_type);
@@ -81,14 +91,16 @@ DeprecatedStorageQuota* DeprecatedStorageInfo::GetStorageQuota(
     int storage_type) {
   switch (storage_type) {
     case kTemporary:
-      if (!temporary_storage_)
-        temporary_storage_ =
-            DeprecatedStorageQuota::Create(DeprecatedStorageQuota::kTemporary);
+      if (!temporary_storage_) {
+        temporary_storage_ = MakeGarbageCollected<DeprecatedStorageQuota>(
+            DeprecatedStorageQuota::kTemporary);
+      }
       return temporary_storage_.Get();
     case kPersistent:
-      if (!persistent_storage_)
-        persistent_storage_ =
-            DeprecatedStorageQuota::Create(DeprecatedStorageQuota::kPersistent);
+      if (!persistent_storage_) {
+        persistent_storage_ = MakeGarbageCollected<DeprecatedStorageQuota>(
+            DeprecatedStorageQuota::kPersistent);
+      }
       return persistent_storage_.Get();
   }
   return nullptr;

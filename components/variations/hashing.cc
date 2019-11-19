@@ -6,7 +6,7 @@
 
 #include <string.h>
 
-#include "base/sha1.h"
+#include "base/hash/sha1.h"
 #include "base/sys_byteorder.h"
 
 namespace variations {

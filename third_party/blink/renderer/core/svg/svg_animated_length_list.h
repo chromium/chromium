@@ -45,13 +45,6 @@ class SVGAnimatedLengthList final : public ScriptWrappable,
   USING_GARBAGE_COLLECTED_MIXIN(SVGAnimatedLengthList);
 
  public:
-  static SVGAnimatedLengthList* Create(SVGElement* context_element,
-                                       const QualifiedName& attribute_name,
-                                       SVGLengthList* initial_value) {
-    return MakeGarbageCollected<SVGAnimatedLengthList>(
-        context_element, attribute_name, initial_value);
-  }
-
   SVGAnimatedLengthList(SVGElement* context_element,
                         const QualifiedName& attribute_name,
                         SVGLengthList* initial_value)

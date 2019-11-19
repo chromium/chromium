@@ -12,6 +12,7 @@
 #include "components/viz/common/resources/returned_resource.h"
 #include "components/viz/common/resources/single_release_callback.h"
 #include "components/viz/test/test_context_provider.h"
+#include "gpu/command_buffer/common/shared_image_usage.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -482,17 +483,16 @@ TEST_P(ClientResourceProviderTest, ReturnedSyncTokensArePassedToClient) {
 
   MockReleaseCallback release;
 
-  GLuint texture;
-  context_provider()->ContextGL()->GenTextures(1, &texture);
-  context_provider()->ContextGL()->BindTexture(GL_TEXTURE_2D, texture);
-  gpu::Mailbox mailbox;
-  context_provider()->ContextGL()->ProduceTextureDirectCHROMIUM(texture,
-                                                                mailbox.name);
-  gpu::SyncToken sync_token;
-  context_provider()->ContextGL()->GenSyncTokenCHROMIUM(sync_token.GetData());
+  auto* sii = context_provider()->SharedImageInterface();
+  gpu::Mailbox mailbox = sii->CreateSharedImage(
+      ResourceFormat::RGBA_8888, gfx::Size(1, 1), gfx::ColorSpace(),
+      gpu::SHARED_IMAGE_USAGE_GLES2 | gpu::SHARED_IMAGE_USAGE_DISPLAY);
+  gpu::SyncToken sync_token = sii->GenUnverifiedSyncToken();
 
+  constexpr gfx::Size size(64, 64);
   auto tran = TransferableResource::MakeGL(mailbox, GL_LINEAR, GL_TEXTURE_2D,
-                                           sync_token);
+                                           sync_token, size,
+                                           false /* is_overlay_candidate */);
   ResourceId resource = provider().ImportResource(
       tran, SingleReleaseCallback::Create(base::BindOnce(
                 &MockReleaseCallback::Released, base::Unretained(&release))));

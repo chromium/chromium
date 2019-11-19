@@ -34,19 +34,18 @@ std::string ScreenlockIconSource::GetSource() const {
 }
 
 void ScreenlockIconSource::StartDataRequest(
-    const std::string& path,
-    const content::ResourceRequestInfo::WebContentsGetter& wc_getter,
+    const GURL& url,
+    const content::WebContents::Getter& wc_getter,
     const content::URLDataSource::GotDataCallback& callback) {
   if (!icon_provider_) {
     callback.Run(GetDefaultIcon().As1xPNGBytes().get());
     return;
   }
 
-  GURL url(chrome::kChromeUIScreenlockIconURL + path);
-  std::string username = net::UnescapeURLComponent(
-      url.path().substr(1),
-      net::UnescapeRule::URL_SPECIAL_CHARS_EXCEPT_PATH_SEPARATORS |
-          net::UnescapeRule::PATH_SEPARATORS | net::UnescapeRule::SPACES);
+  // TODO(crbug/1009127): Make sure |url| matches
+  // |chrome::kChromeUIScreenlockIconURL| now that |url| is available.
+  std::string username =
+      net::UnescapeBinaryURLComponent(url.path_piece().substr(1));
 
   gfx::Image image = icon_provider_->GetIcon(username);
   if (image.IsEmpty()) {

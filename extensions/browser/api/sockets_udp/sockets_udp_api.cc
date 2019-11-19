@@ -96,17 +96,18 @@ bool SocketsUdpCreateFunction::Prepare() {
   params_ = sockets_udp::Create::Params::Create(*args_);
   EXTENSION_FUNCTION_VALIDATE(params_.get());
 
-  network::mojom::UDPSocketReceiverPtr receiver_ptr;
-  socket_receiver_request_ = mojo::MakeRequest(&receiver_ptr);
+  mojo::PendingRemote<network::mojom::UDPSocketListener> listener_remote;
+  socket_listener_receiver_ = listener_remote.InitWithNewPipeAndPassReceiver();
   content::BrowserContext::GetDefaultStoragePartition(browser_context())
       ->GetNetworkContext()
-      ->CreateUDPSocket(mojo::MakeRequest(&socket_), std::move(receiver_ptr));
+      ->CreateUDPSocket(socket_.InitWithNewPipeAndPassReceiver(),
+                        std::move(listener_remote));
   return true;
 }
 
 void SocketsUdpCreateFunction::Work() {
   ResumableUDPSocket* socket = new ResumableUDPSocket(
-      std::move(socket_), std::move(socket_receiver_request_),
+      std::move(socket_), std::move(socket_listener_receiver_),
       extension_->id());
 
   sockets_udp::SocketProperties* properties = params_->properties.get();
@@ -210,7 +211,7 @@ void SocketsUdpBindFunction::AsyncWorkStart() {
     return;
   }
   socket->Bind(params_->address, params_->port,
-               base::BindRepeating(&SocketsUdpBindFunction::OnCompleted, this));
+               base::BindOnce(&SocketsUdpBindFunction::OnCompleted, this));
 }
 
 void SocketsUdpBindFunction::OnCompleted(int net_result) {
@@ -404,7 +405,7 @@ void SocketsUdpJoinGroupFunction::AsyncWorkStart() {
 
   socket->JoinGroup(
       params_->address,
-      base::BindRepeating(&SocketsUdpJoinGroupFunction::OnCompleted, this));
+      base::BindOnce(&SocketsUdpJoinGroupFunction::OnCompleted, this));
 }
 
 void SocketsUdpJoinGroupFunction::OnCompleted(int net_result) {
@@ -443,7 +444,7 @@ void SocketsUdpLeaveGroupFunction::AsyncWorkStart() {
   }
   socket->LeaveGroup(
       params_->address,
-      base::BindRepeating(&SocketsUdpLeaveGroupFunction::OnCompleted, this));
+      base::BindOnce(&SocketsUdpLeaveGroupFunction::OnCompleted, this));
 }
 
 void SocketsUdpLeaveGroupFunction::OnCompleted(int result) {
@@ -555,7 +556,7 @@ void SocketsUdpSetBroadcastFunction::AsyncWorkStart() {
 
   socket->SetBroadcast(
       params_->enabled,
-      base::BindRepeating(&SocketsUdpSetBroadcastFunction::OnCompleted, this));
+      base::BindOnce(&SocketsUdpSetBroadcastFunction::OnCompleted, this));
 }
 
 void SocketsUdpSetBroadcastFunction::OnCompleted(int net_result) {

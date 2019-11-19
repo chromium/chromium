@@ -9,7 +9,7 @@
 #include "base/base64.h"
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/timer/mock_timer.h"
 #include "chromeos/components/multidevice/remote_device_test_util.h"
 #include "chromeos/components/tether/fake_active_host.h"
@@ -169,7 +169,7 @@ class ConnectionPreserverImplTest : public testing::Test {
     remote_device_to_client_channel_destruction_count_map_[remote_device]++;
   }
 
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_;
 
   NetworkStateTestHelper helper_{true /* use_default_devices_and_services */};
 

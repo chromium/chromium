@@ -45,7 +45,7 @@ void SVGForeignObjectPainter::PaintLayer(const PaintInfo& paint_info) {
       // cull rects under transform are intentionally reset to infinity,
       // to improve cache invalidation performance in the pre-paint tree
       // walk (see https://http://crrev.com/482854).
-      CullRect::Infinite(), paint_info.GetGlobalPaintFlags(), LayoutSize());
+      CullRect::Infinite(), paint_info.GetGlobalPaintFlags(), PhysicalOffset());
   PaintLayerPainter(*layout_svg_foreign_object_.Layer())
       .Paint(paint_info.context, layer_painting_info, paint_info.PaintFlags());
 }
@@ -54,6 +54,7 @@ void SVGForeignObjectPainter::Paint(const PaintInfo& paint_info) {
   PaintInfo paint_info_before_filtering(paint_info);
   ScopedSVGPaintState paint_state(layout_svg_foreign_object_,
                                   paint_info_before_filtering);
+
   if (paint_state.GetPaintInfo().phase == PaintPhase::kForeground &&
       !paint_state.ApplyClipMaskAndFilterIfNecessary())
     return;

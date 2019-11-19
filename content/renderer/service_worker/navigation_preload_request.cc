@@ -15,25 +15,25 @@
 namespace content {
 
 NavigationPreloadRequest::NavigationPreloadRequest(
-    base::WeakPtr<ServiceWorkerContextClient> owner,
+    ServiceWorkerContextClient* owner,
     int fetch_event_id,
     const GURL& url,
     blink::mojom::FetchEventPreloadHandlePtr preload_handle)
-    : owner_(std::move(owner)),
+    : owner_(owner),
       fetch_event_id_(fetch_event_id),
       url_(url),
       url_loader_(std::move(preload_handle->url_loader)),
-      binding_(this, std::move(preload_handle->url_loader_client_request)) {}
+      receiver_(this, std::move(preload_handle->url_loader_client_receiver)) {}
 
 NavigationPreloadRequest::~NavigationPreloadRequest() = default;
 
 void NavigationPreloadRequest::OnReceiveResponse(
-    const network::ResourceResponseHead& response_head) {
+    network::mojom::URLResponseHeadPtr response_head) {
   DCHECK(!response_);
   response_ = std::make_unique<blink::WebURLResponse>();
   // TODO(horo): Set report_security_info to true when DevTools is attached.
   const bool report_security_info = false;
-  WebURLLoaderImpl::PopulateURLResponse(url_, response_head, response_.get(),
+  WebURLLoaderImpl::PopulateURLResponse(url_, *response_head, response_.get(),
                                         report_security_info,
                                         -1 /* request_id */);
   MaybeReportResponseToOwner();
@@ -41,22 +41,21 @@ void NavigationPreloadRequest::OnReceiveResponse(
 
 void NavigationPreloadRequest::OnReceiveRedirect(
     const net::RedirectInfo& redirect_info,
-    const network::ResourceResponseHead& response_head) {
+    network::mojom::URLResponseHeadPtr response_head) {
   DCHECK(!response_);
   DCHECK(net::HttpResponseHeaders::IsRedirectResponseCode(
-      response_head.headers->response_code()));
+      response_head->headers->response_code()));
 
-  CHECK(owner_);
   response_ = std::make_unique<blink::WebURLResponse>();
-  WebURLLoaderImpl::PopulateURLResponse(url_, response_head, response_.get(),
+  WebURLLoaderImpl::PopulateURLResponse(url_, *response_head, response_.get(),
                                         false /* report_security_info */,
                                         -1 /* request_id */);
   owner_->OnNavigationPreloadResponse(fetch_event_id_, std::move(response_),
                                       mojo::ScopedDataPipeConsumerHandle());
   // This will delete |this|.
   owner_->OnNavigationPreloadComplete(
-      fetch_event_id_, response_head.response_start,
-      response_head.encoded_data_length, 0 /* encoded_body_length */,
+      fetch_event_id_, response_head->response_start,
+      response_head->encoded_data_length, 0 /* encoded_body_length */,
       0 /* decoded_body_length */);
 }
 
@@ -68,7 +67,7 @@ void NavigationPreloadRequest::OnUploadProgress(
 }
 
 void NavigationPreloadRequest::OnReceiveCachedMetadata(
-    const std::vector<uint8_t>& data) {}
+    mojo_base::BigBuffer data) {}
 
 void NavigationPreloadRequest::OnTransferSizeUpdated(
     int32_t transfer_size_diff) {}
@@ -106,7 +105,6 @@ void NavigationPreloadRequest::OnComplete(
     return;
   }
 
-  CHECK(owner_);
   if (response_) {
     // When the response body from the server is empty, OnComplete() is called
     // without OnStartLoadingResponseBody().
@@ -123,7 +121,6 @@ void NavigationPreloadRequest::OnComplete(
 void NavigationPreloadRequest::MaybeReportResponseToOwner() {
   if (!response_ || !body_.is_valid())
     return;
-  CHECK(owner_);
   owner_->OnNavigationPreloadResponse(fetch_event_id_, std::move(response_),
                                       std::move(body_));
 }
@@ -131,7 +128,6 @@ void NavigationPreloadRequest::MaybeReportResponseToOwner() {
 void NavigationPreloadRequest::ReportErrorToOwner(
     const std::string& message,
     const std::string& unsanitized_message) {
-  CHECK(owner_);
   // This will delete |this|.
   owner_->OnNavigationPreloadError(
       fetch_event_id_, std::make_unique<blink::WebServiceWorkerError>(

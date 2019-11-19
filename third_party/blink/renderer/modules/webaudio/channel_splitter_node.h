@@ -68,6 +68,10 @@ class ChannelSplitterNode final : public AudioNode {
                                      ExceptionState&);
 
   ChannelSplitterNode(BaseAudioContext&, unsigned number_of_outputs);
+
+  // InspectorHelperMixin
+  void ReportDidCreate() final;
+  void ReportWillBeDestroyed() final;
 };
 
 }  // namespace blink

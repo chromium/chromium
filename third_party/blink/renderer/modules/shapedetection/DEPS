@@ -1,7 +1,8 @@
 include_rules = [
     "+services/shape_detection/public/mojom",
     "+services/service_manager/public/cpp",
-    "+skia/public/interfaces/bitmap.mojom-blink.h",
+    "+skia/public/mojom/bitmap.mojom-blink.h",
+    "+skia/public/mojom/bitmap.mojom-blink-forward.h",
     "-third_party/blink/renderer/modules",
     "+third_party/blink/renderer/modules/canvas/canvas2d",
     "+third_party/blink/renderer/modules/imagecapture/point_2d.h",

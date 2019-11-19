@@ -8,7 +8,6 @@
 #import <UIKit/UIKit.h>
 
 @class FirstRunConfiguration;
-@class Tab;
 @protocol SyncPresenter;
 
 namespace base {
@@ -17,6 +16,9 @@ class TimeTicks;
 
 namespace ios {
 class ChromeBrowserState;
+}
+namespace web {
+class WebState;
 }
 
 // Notification sent when the first run ends, right before dimissing the Terms
@@ -45,7 +47,7 @@ void WriteFirstRunSentinelAndRecordMetrics(
 
 // Methods for writing sentinel and recording metrics and posting notifications
 void FinishFirstRun(ios::ChromeBrowserState* browserState,
-                    Tab* tab,
+                    web::WebState* web_state,
                     FirstRunConfiguration* config,
                     id<SyncPresenter> presenter);
 

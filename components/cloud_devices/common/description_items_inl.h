@@ -49,7 +49,7 @@ bool ListCapability<Option, Traits>::LoadFrom(
       description.GetItem(Traits::GetCapabilityPath(), base::Value::Type::LIST);
   if (!options_value)
     return false;
-  const base::Value::ListStorage& options = options_value->GetList();
+  base::span<const base::Value> options = options_value->GetList();
   for (const base::Value& option_value : options) {
     Option option;
     if (!option_value.is_dict() || !Traits::Load(option_value, &option))
@@ -68,7 +68,7 @@ void ListCapability<Option, Traits>::SaveTo(
   for (const Option& option : options_) {
     base::Value option_value(base::Value::Type::DICTIONARY);
     Traits::Save(option, &option_value);
-    options_list->GetList().emplace_back(std::move(option_value));
+    options_list->Append(std::move(option_value));
   }
 }
 
@@ -133,7 +133,7 @@ bool SelectionCapability<Option, Traits>::LoadFrom(const base::Value& dict) {
       dict.FindKeyOfType(json::kKeyOption, base::Value::Type::LIST);
   if (!options_value)
     return false;
-  const base::Value::ListStorage& options = options_value->GetList();
+  base::span<const base::Value> options = options_value->GetList();
   for (const base::Value& option_value : options) {
     Option option;
     if (!option_value.is_dict() || !Traits::Load(option_value, &option))
@@ -157,7 +157,7 @@ void SelectionCapability<Option, Traits>::SaveTo(base::Value* dict) const {
     if (base::checked_cast<int>(i) == default_idx_)
       option_value.SetKey(json::kKeyIsDefault, base::Value(true));
     Traits::Save(options_[i], &option_value);
-    options_list.GetList().emplace_back(std::move(option_value));
+    options_list.Append(std::move(option_value));
   }
   dict->SetKey(json::kKeyOption, std::move(options_list));
 }

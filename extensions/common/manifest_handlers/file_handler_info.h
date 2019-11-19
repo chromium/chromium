@@ -10,38 +10,18 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "components/services/app_service/public/cpp/file_handler_info.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest_handler.h"
 
 namespace extensions {
 
-struct FileHandlerInfo {
-  FileHandlerInfo();
-  FileHandlerInfo(const FileHandlerInfo& other);
-  ~FileHandlerInfo();
-
-  // The id of this handler.
-  std::string id;
-
-  // File extensions associated with this handler.
-  std::set<std::string> extensions;
-
-  // MIME types associated with this handler.
-  std::set<std::string> types;
-
-  // True if the handler can manage directories.
-  bool include_directories;
-
-  // A verb describing the intent of the handler.
-  std::string verb;
-};
-
-typedef std::vector<FileHandlerInfo> FileHandlersInfo;
+using FileHandlersInfo = std::vector<apps::FileHandlerInfo>;
 
 struct FileHandlerMatch {
   FileHandlerMatch();
   ~FileHandlerMatch();
-  const FileHandlerInfo* handler = nullptr;
+  const apps::FileHandlerInfo* handler = nullptr;
 
   // True if the handler matched on MIME type
   bool matched_mime = false;
@@ -72,16 +52,6 @@ class FileHandlersParser : public ManifestHandler {
 
   DISALLOW_COPY_AND_ASSIGN(FileHandlersParser);
 };
-
-namespace file_handler_verbs {
-
-// Supported verbs for file handlers.
-extern const char kOpenWith[];
-extern const char kAddTo[];
-extern const char kPackWith[];
-extern const char kShareWith[];
-
-}  // namespace file_handler_verbs
 
 }  // namespace extensions
 

@@ -1,0 +1,3 @@
+[document web]
+++[document frame] xml-roles:document
+++++[static] name='aria role document'

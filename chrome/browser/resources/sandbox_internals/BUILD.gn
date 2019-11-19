@@ -1,0 +1,38 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/closure_compiler/compile_js.gni")
+
+js_type_check("closure_compile") {
+  if (is_win) {
+    deps = [
+      ":sandbox_internals_win",
+    ]
+  }
+  if (is_android || is_linux) {
+    deps = [
+      ":sandbox_internals",
+    ]
+  }
+}
+
+js_library("sandbox_internals") {
+  # Android & Linux both need _externs for type checks as they share a js file.
+  deps = [
+    ":sandbox_android_externs",
+    "//ui/webui/resources/js:cr",
+    "//ui/webui/resources/js:load_time_data",
+    "//ui/webui/resources/js:util",
+  ]
+}
+
+js_library("sandbox_android_externs") {
+}
+
+js_library("sandbox_internals_win") {
+  deps = [
+    "//ui/webui/resources/js:cr",
+    "//ui/webui/resources/js:util",
+  ]
+}

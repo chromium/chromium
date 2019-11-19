@@ -49,14 +49,14 @@ import org.objectweb.asm.Opcodes;
  */
 class AssertionEnablerClassAdapter extends ClassVisitor {
     AssertionEnablerClassAdapter(ClassVisitor visitor) {
-        super(Opcodes.ASM5, visitor);
+        super(Opcodes.ASM7, visitor);
     }
 
     @Override
     public MethodVisitor visitMethod(final int access, final String name, String desc,
             String signature, String[] exceptions) {
         return new RewriteAssertMethodVisitor(
-                Opcodes.ASM5, super.visitMethod(access, name, desc, signature, exceptions));
+                Opcodes.ASM7, super.visitMethod(access, name, desc, signature, exceptions));
     }
 
     static class RewriteAssertMethodVisitor extends MethodVisitor {

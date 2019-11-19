@@ -5,7 +5,7 @@
 #include "gin/shell_runner.h"
 
 #include "base/compiler_specific.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "gin/array_buffer.h"
 #include "gin/converter.h"
@@ -25,12 +25,11 @@ using v8::String;
 namespace gin {
 
 TEST(RunnerTest, Run) {
-  base::test::ScopedTaskEnvironment scoped_task_environment;
+  base::test::SingleThreadTaskEnvironment task_environment;
   std::string source = "this.result = 'PASS';\n";
 
 #ifdef V8_USE_EXTERNAL_STARTUP_DATA
   gin::V8Initializer::LoadV8Snapshot();
-  gin::V8Initializer::LoadV8Natives();
 #endif
 
   gin::IsolateHolder::Initialize(gin::IsolateHolder::kStrictMode,

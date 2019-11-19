@@ -16,8 +16,8 @@ namespace blink {
 void InlineBoxPainterBase::PaintBoxDecorationBackground(
     BoxPainterBase& box_painter,
     const PaintInfo& paint_info,
-    const LayoutPoint& paint_offset,
-    LayoutRect adjusted_frame_rect,
+    const PhysicalOffset& paint_offset,
+    const PhysicalRect& adjusted_frame_rect,
     BackgroundImageGeometry geometry,
     bool object_has_multiple_boxes,
     bool include_logical_left_edge,
@@ -49,7 +49,7 @@ void InlineBoxPainterBase::PaintBoxDecorationBackground(
       // FIXME: What the heck do we do with RTL here? The math we're using is
       // obviously not right, but it isn't even clear how this should work at
       // all.
-      LayoutRect image_strip_paint_rect =
+      PhysicalRect image_strip_paint_rect =
           PaintRectForImageStrip(adjusted_frame_rect, TextDirection::kLtr);
       GraphicsContextStateSaver state_saver(paint_info.context);
       paint_info.context.Clip(adjusted_clip_rect);
@@ -64,7 +64,7 @@ void InlineBoxPainterBase::PaintFillLayers(BoxPainterBase& box_painter,
                                            const PaintInfo& info,
                                            const Color& c,
                                            const FillLayer& layer,
-                                           const LayoutRect& rect,
+                                           const PhysicalRect& rect,
                                            BackgroundImageGeometry& geometry,
                                            bool object_has_multiple_boxes) {
   // FIXME: This should be a for loop or similar. It's a little non-trivial to
@@ -81,7 +81,7 @@ void InlineBoxPainterBase::PaintFillLayer(BoxPainterBase& box_painter,
                                           const PaintInfo& paint_info,
                                           const Color& c,
                                           const FillLayer& fill_layer,
-                                          const LayoutRect& paint_rect,
+                                          const PhysicalRect& paint_rect,
                                           BackgroundImageGeometry& geometry,
                                           bool object_has_multiple_boxes) {
   StyleImage* img = fill_layer.GetImage();
@@ -97,14 +97,14 @@ void InlineBoxPainterBase::PaintFillLayer(BoxPainterBase& box_painter,
   // Handle fill images that clone or spans multiple lines.
   bool multi_line = object_has_multiple_boxes &&
                     style_.BoxDecorationBreak() != EBoxDecorationBreak::kClone;
-  LayoutRect rect = multi_line
-                        ? PaintRectForImageStrip(paint_rect, style_.Direction())
-                        : paint_rect;
+  PhysicalRect rect =
+      multi_line ? PaintRectForImageStrip(paint_rect, style_.Direction())
+                 : paint_rect;
   GraphicsContextStateSaver state_saver(paint_info.context);
   paint_info.context.Clip(PixelSnappedIntRect(paint_rect));
   box_painter.PaintFillLayer(paint_info, c, fill_layer, rect,
                              kBackgroundBleedNone, geometry, multi_line,
-                             paint_rect.Size());
+                             paint_rect.size);
 }
 
 }  // namespace blink

@@ -1,0 +1,13 @@
+// Copyright 2018 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module performance_manager.mojom;
+
+// A lifecycle unit (a page, frame, tab or application) can be in one of
+// these lifecycle states.
+enum LifecycleState {
+  kRunning,
+  kFrozen,
+  kDiscarded
+};

@@ -4,6 +4,8 @@
 
 #include "media/base/fake_audio_worker.h"
 
+#include <utility>
+
 #include "base/bind.h"
 #include "base/bind_helpers.h"
 #include "base/cancelable_callback.h"
@@ -16,6 +18,7 @@
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 #include "media/base/audio_parameters.h"
+#include "media/base/audio_timestamp_helper.h"
 
 namespace media {
 
@@ -26,7 +29,7 @@ class FakeAudioWorker::Worker
          const AudioParameters& params);
 
   bool IsStopped();
-  void Start(const base::Closure& worker_cb);
+  void Start(FakeAudioWorker::Callback worker_cb);
   void Stop();
 
  private:
@@ -45,11 +48,13 @@ class FakeAudioWorker::Worker
   void DoRead();
 
   const scoped_refptr<base::SingleThreadTaskRunner> worker_task_runner_;
-  const base::TimeDelta buffer_duration_;
+  const int sample_rate_;
+  const int frames_per_read_;
 
   base::Lock worker_cb_lock_;  // Held while mutating or running |worker_cb_|.
-  base::Closure worker_cb_ GUARDED_BY(worker_cb_lock_);
-  base::TimeTicks next_read_time_;
+  FakeAudioWorker::Callback worker_cb_ GUARDED_BY(worker_cb_lock_);
+  base::TimeTicks first_read_time_;
+  int64_t frames_elapsed_;
 
   // Used to cancel any delayed tasks still inside the worker loop's queue.
   base::CancelableClosure worker_task_cb_;
@@ -68,22 +73,32 @@ FakeAudioWorker::~FakeAudioWorker() {
   DCHECK(worker_->IsStopped());
 }
 
-void FakeAudioWorker::Start(const base::Closure& worker_cb) {
+void FakeAudioWorker::Start(FakeAudioWorker::Callback worker_cb) {
   DCHECK(worker_->IsStopped());
-  worker_->Start(worker_cb);
+  worker_->Start(std::move(worker_cb));
 }
 
 void FakeAudioWorker::Stop() {
   worker_->Stop();
 }
 
+// static
+base::TimeDelta FakeAudioWorker::ComputeFakeOutputDelay(
+    const AudioParameters& params) {
+  // Typical delay values used by real AudioOutputStreams on Win, Mac, and Linux
+  // tend to be around 1.5X to 3X of the buffer duration. So, 2X is chosen as a
+  // general-purpose value.
+  constexpr int kDelayFactor = 2;
+  return AudioTimestampHelper::FramesToTime(
+      params.frames_per_buffer() * kDelayFactor, params.sample_rate());
+}
+
 FakeAudioWorker::Worker::Worker(
     const scoped_refptr<base::SingleThreadTaskRunner>& worker_task_runner,
     const AudioParameters& params)
     : worker_task_runner_(worker_task_runner),
-      buffer_duration_(base::TimeDelta::FromMicroseconds(
-          params.frames_per_buffer() * base::Time::kMicrosecondsPerSecond /
-          static_cast<float>(params.sample_rate()))) {
+      sample_rate_(params.sample_rate()),
+      frames_per_read_(params.frames_per_buffer()) {
   // Worker can be constructed on any thread, but will DCHECK that its
   // Start/Stop methods are called from the same thread.
   DETACH_FROM_THREAD(thread_checker_);
@@ -98,13 +113,13 @@ bool FakeAudioWorker::Worker::IsStopped() {
   return !worker_cb_;
 }
 
-void FakeAudioWorker::Worker::Start(const base::Closure& worker_cb) {
+void FakeAudioWorker::Worker::Start(FakeAudioWorker::Callback worker_cb) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(worker_cb);
   {
     base::AutoLock scoped_lock(worker_cb_lock_);
     DCHECK(!worker_cb_);
-    worker_cb_ = worker_cb;
+    worker_cb_ = std::move(worker_cb);
   }
   worker_task_runner_->PostTask(FROM_HERE,
                                 base::BindOnce(&Worker::DoStart, this));
@@ -112,7 +127,8 @@ void FakeAudioWorker::Worker::Start(const base::Closure& worker_cb) {
 
 void FakeAudioWorker::Worker::DoStart() {
   DCHECK(worker_task_runner_->BelongsToCurrentThread());
-  next_read_time_ = base::TimeTicks::Now();
+  first_read_time_ = base::TimeTicks::Now();
+  frames_elapsed_ = 0;
   worker_task_cb_.Reset(base::Bind(&Worker::DoRead, this));
   worker_task_cb_.callback().Run();
 }
@@ -137,24 +153,40 @@ void FakeAudioWorker::Worker::DoCancel() {
 void FakeAudioWorker::Worker::DoRead() {
   DCHECK(worker_task_runner_->BelongsToCurrentThread());
 
+  const base::TimeTicks read_time =
+      first_read_time_ +
+      AudioTimestampHelper::FramesToTime(frames_elapsed_, sample_rate_);
+  frames_elapsed_ += frames_per_read_;
+  base::TimeTicks next_read_time =
+      first_read_time_ +
+      AudioTimestampHelper::FramesToTime(frames_elapsed_, sample_rate_);
+
+  base::TimeTicks now;
   {
     base::AutoLock scoped_lock(worker_cb_lock_);
+    // Important to sample the clock after waiting to acquire the lock.
+    now = base::TimeTicks::Now();
+
+    // Note: Even if we're late, this callback must be called. In many cases we
+    // are driving an underlying "samples consumed" based clock with these
+    // calls.
     if (worker_cb_)
-      worker_cb_.Run();
+      worker_cb_.Run(read_time, now);
   }
 
-  // Need to account for time spent here due to the cost of |worker_cb| as well
-  // as the imprecision of PostDelayedTask().
-  const base::TimeTicks now = base::TimeTicks::Now();
-  base::TimeDelta delay = next_read_time_ + buffer_duration_ - now;
-
-  // If we're behind, find the next nearest ontime interval.
-  if (delay < base::TimeDelta())
-    delay += buffer_duration_ * (-delay / buffer_duration_ + 1);
-  next_read_time_ = now + delay;
+  // If we're behind, find the next nearest ontime interval. Note, we could be
+  // behind many intervals (e.g., if the system is resuming from sleep).
+  if (next_read_time <= now) {
+    frames_elapsed_ = AudioTimestampHelper::TimeToFrames(now - first_read_time_,
+                                                         sample_rate_);
+    frames_elapsed_ =
+        ((frames_elapsed_ / frames_per_read_) + 1) * frames_per_read_;
+    next_read_time = first_read_time_ + AudioTimestampHelper::FramesToTime(
+                                            frames_elapsed_, sample_rate_);
+  }
 
   worker_task_runner_->PostDelayedTask(FROM_HERE, worker_task_cb_.callback(),
-                                       delay);
+                                       next_read_time - now);
 }
 
 }  // namespace media

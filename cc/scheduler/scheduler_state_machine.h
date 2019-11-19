@@ -10,7 +10,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "cc/cc_export.h"
 #include "cc/scheduler/commit_earlyout_reason.h"
 #include "cc/scheduler/draw_result.h"
@@ -48,7 +47,10 @@ class CC_EXPORT SchedulerStateMachine {
  public:
   // settings must be valid for the lifetime of this class.
   explicit SchedulerStateMachine(const SchedulerSettings& settings);
+  SchedulerStateMachine(const SchedulerStateMachine&) = delete;
   ~SchedulerStateMachine();
+
+  SchedulerStateMachine& operator=(const SchedulerStateMachine&) = delete;
 
   enum class LayerTreeFrameSinkState {
     NONE,
@@ -86,13 +88,15 @@ class CC_EXPORT SchedulerStateMachine {
       BeginImplFrameDeadlineMode mode);
 
   enum class BeginMainFrameState {
-    IDLE,
-    SENT,
-    STARTED,
-    READY_TO_COMMIT,
+    IDLE,             // A new BeginMainFrame can start.
+    SENT,             // A BeginMainFrame has already been issued.
+    READY_TO_COMMIT,  // A previously issued BeginMainFrame has been processed,
+                      // and is ready to commit.
   };
   static const char* BeginMainFrameStateToString(BeginMainFrameState state);
 
+  // When a redraw is forced, it goes through a complete commit -> activation ->
+  // draw cycle. Until a redraw has been forced, it remains in IDLE state.
   enum class ForcedRedrawOnTimeoutState {
     IDLE,
     WAITING_FOR_COMMIT,
@@ -107,9 +111,7 @@ class CC_EXPORT SchedulerStateMachine {
   }
 
   bool CommitPending() const {
-    return begin_main_frame_state_ == BeginMainFrameState::SENT ||
-           begin_main_frame_state_ == BeginMainFrameState::STARTED ||
-           begin_main_frame_state_ == BeginMainFrameState::READY_TO_COMMIT;
+    return begin_main_frame_state_ != BeginMainFrameState::IDLE;
   }
 
   bool NewActiveTreeLikely() const {
@@ -269,9 +271,6 @@ class CC_EXPORT SchedulerStateMachine {
   // frame sink is not ready to receive frames.
   void SetSkipDraw(bool skip);
 
-  // Indicates that scheduled BeginMainFrame is started.
-  void NotifyBeginMainFrameStarted();
-
   // Indicates that the pending tree is ready for activation. Returns whether
   // the notification received updated the state for the current pending tree,
   // if any.
@@ -281,6 +280,7 @@ class CC_EXPORT SchedulerStateMachine {
   void NotifyReadyToDraw();
 
   enum class AnimationWorkletState { PROCESSING, IDLE };
+  enum class PaintWorkletState { PROCESSING, IDLE };
   enum class TreeType { ACTIVE, PENDING };
 
   // Indicates if currently processing animation worklets for the active or
@@ -288,6 +288,11 @@ class CC_EXPORT SchedulerStateMachine {
   // extended or activation delayed.
   void NotifyAnimationWorkletStateChange(AnimationWorkletState state,
                                          TreeType tree);
+
+  // Sets whether asynchronous paint worklets are running. Paint worklets
+  // running should block activation of the pending tree, as it isn't fully
+  // painted until they are done.
+  void NotifyPaintWorkletStateChange(PaintWorkletState state);
 
   void SetNeedsImplSideInvalidation(bool needs_first_draw_on_activation);
 
@@ -375,6 +380,9 @@ class CC_EXPORT SchedulerStateMachine {
       LayerTreeFrameSinkState::NONE;
   BeginImplFrameState begin_impl_frame_state_ = BeginImplFrameState::IDLE;
   BeginMainFrameState begin_main_frame_state_ = BeginMainFrameState::IDLE;
+
+  // A redraw is forced when too many checkerboarded-frames are produced during
+  // an animation.
   ForcedRedrawOnTimeoutState forced_redraw_state_ =
       ForcedRedrawOnTimeoutState::IDLE;
 
@@ -442,8 +450,16 @@ class CC_EXPORT SchedulerStateMachine {
   bool next_invalidation_needs_first_draw_on_activation_ = false;
   bool should_defer_invalidation_for_fast_main_frame_ = true;
   bool begin_frame_is_animate_only_ = false;
-  bool processing_animation_worklets_for_active_tree_ = false;
+
+  // Number of async mutation cycles for the active tree that are in-flight or
+  // queued.  Can be 0, 1 or 2.
+  int processing_animation_worklets_for_active_tree_ = 0;
+  // Indicates if an aysnc mutation cycle is in-flight or queued for the pending
+  // tree.  Only one can be running or queued at any time.
   bool processing_animation_worklets_for_pending_tree_ = false;
+  // Indicates if asychronous paint worklet painting is ongoing for the pending
+  // tree. During this time we should not activate the pending tree.
+  bool processing_paint_worklets_for_pending_tree_ = false;
 
   // Set to true if the main thread fails to respond with a commit or abort the
   // main frame before the draw deadline on the previous impl frame.
@@ -457,9 +473,6 @@ class CC_EXPORT SchedulerStateMachine {
   // If set to true, the pending tree must be drawn at least once after
   // activation before a new tree can be activated.
   bool pending_tree_needs_first_draw_on_activation_ = false;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SchedulerStateMachine);
 };
 
 }  // namespace cc

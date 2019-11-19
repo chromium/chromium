@@ -19,8 +19,8 @@
 #include "components/spellcheck/common/spellcheck.mojom.h"
 #include "components/spellcheck/renderer/custom_dictionary_engine.h"
 #include "components/spellcheck/spellcheck_buildflags.h"
-#include "mojo/public/cpp/bindings/binding_set.h"
-#include "services/service_manager/public/cpp/binder_registry.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
 
 class SpellcheckLanguage;
 struct SpellCheckResult;
@@ -59,8 +59,8 @@ class SpellCheck : public base::SupportsWeakPtr<SpellCheck>,
     USE_NATIVE_CHECKER,  // Use native checker to double-check.
   };
 
-  SpellCheck(service_manager::BinderRegistry* registry,
-             service_manager::LocalInterfaceProvider* embedder_provider);
+  explicit SpellCheck(
+      service_manager::LocalInterfaceProvider* embedder_provider);
   ~SpellCheck() override;
 
   void AddSpellcheckLanguage(base::File file, const std::string& language);
@@ -100,11 +100,12 @@ class SpellCheck : public base::SupportsWeakPtr<SpellCheck>,
       const base::string16& text,
       blink::WebVector<blink::WebTextCheckingResult>* results);
 
+#if BUILDFLAG(USE_RENDERER_SPELLCHECKER)
   // Requests to spellcheck the specified text in the background. This function
   // posts a background task and calls SpellCheckParagraph() in the task.
-#if !BUILDFLAG(USE_BROWSER_SPELLCHECKER)
-  void RequestTextChecking(const base::string16& text,
-                           blink::WebTextCheckingCompletion* completion);
+  void RequestTextChecking(
+      const base::string16& text,
+      std::unique_ptr<blink::WebTextCheckingCompletion> completion);
 #endif
 
   // Creates a list of WebTextCheckingResult objects (used by WebKit) from a
@@ -125,6 +126,10 @@ class SpellCheck : public base::SupportsWeakPtr<SpellCheck>,
   // Remove observer on dictionary update event.
   void RemoveDictionaryUpdateObserver(DictionaryUpdateObserver* observer);
 
+  // Binds receivers for the SpellChecker interface.
+  void BindReceiver(
+      mojo::PendingReceiver<spellcheck::mojom::SpellChecker> receiver);
+
  private:
    friend class SpellCheckTest;
    FRIEND_TEST_ALL_PREFIXES(SpellCheckTest, GetAutoCorrectionWord_EN_US);
@@ -139,9 +144,6 @@ class SpellCheck : public base::SupportsWeakPtr<SpellCheck>,
        const std::vector<std::vector<base::string16>>& suggestions_list,
        std::vector<base::string16>* optional_suggestions);
 
-   // Binds requests for the SpellChecker interface.
-   void SpellCheckerRequest(spellcheck::mojom::SpellCheckerRequest request);
-
    // spellcheck::mojom::SpellChecker:
    void Initialize(
        std::vector<spellcheck::mojom::SpellCheckBDictLanguagePtr> dictionaries,
@@ -155,24 +157,24 @@ class SpellCheck : public base::SupportsWeakPtr<SpellCheck>,
    void NotifyDictionaryObservers(
        const blink::WebVector<blink::WebString>& words_added);
 
-#if !BUILDFLAG(USE_BROWSER_SPELLCHECKER)
-  // Posts delayed spellcheck task and clear it if any.
-  // Takes ownership of |request|.
-  void PostDelayedSpellCheckTask(SpellcheckRequest* request);
+#if BUILDFLAG(USE_RENDERER_SPELLCHECKER)
+   // Posts delayed spellcheck task and clear it if any.
+   // Takes ownership of |request|.
+   void PostDelayedSpellCheckTask(SpellcheckRequest* request);
 
-  // Performs spell checking from the request queue.
-  void PerformSpellCheck(SpellcheckRequest* request);
+   // Performs spell checking from the request queue.
+   void PerformSpellCheck(SpellcheckRequest* request);
 
-  // The parameters of a pending background-spellchecking request. When WebKit
-  // sends a background-spellchecking request before initializing hunspell,
-  // we save its parameters and start spellchecking after we finish initializing
-  // hunspell. (When WebKit sends two or more requests, we cancel the previous
-  // requests so we do not have to use vectors.)
-  std::unique_ptr<SpellcheckRequest> pending_request_param_;
+   // The parameters of a pending background-spellchecking request. When WebKit
+   // sends a background-spellchecking request before initializing hunspell,
+   // we save its parameters and start spellchecking after we finish
+   // initializing hunspell. (When WebKit sends two or more requests, we cancel
+   // the previous requests so we do not have to use vectors.)
+   std::unique_ptr<SpellcheckRequest> pending_request_param_;
 #endif
 
-  // Bindings for SpellChecker clients.
-  mojo::BindingSet<spellcheck::mojom::SpellChecker> bindings_;
+  // Receivers for SpellChecker clients.
+  mojo::ReceiverSet<spellcheck::mojom::SpellChecker> receivers_;
 
   // A vector of objects used to actually check spelling, one for each enabled
   // language.
@@ -190,7 +192,7 @@ class SpellCheck : public base::SupportsWeakPtr<SpellCheck>,
   base::ObserverList<DictionaryUpdateObserver>::Unchecked
       dictionary_update_observers_;
 
-  base::WeakPtrFactory<SpellCheck> weak_factory_;
+  base::WeakPtrFactory<SpellCheck> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(SpellCheck);
 };

@@ -20,9 +20,8 @@
 #include "base/system/sys_info.h"
 #include "base/task/post_task.h"
 #include "base/time/time.h"
-#include "chrome/browser/media/webrtc/webrtc_log_uploader.h"
 #include "chrome/common/channel_info.h"
-#include "chrome/common/media/webrtc_logging_messages.h"
+#include "chrome/common/media/webrtc_logging.mojom.h"
 #include "components/version_info/version_info.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -39,6 +38,7 @@
 #include "net/base/network_interfaces.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 #include "services/service_manager/sandbox/features.h"
+#include "services/service_manager/sandbox/sandbox_type.h"
 
 #if defined(OS_LINUX)
 #include "base/linux_util.h"
@@ -53,11 +53,27 @@
 #endif
 
 using base::NumberToString;
-using content::BrowserThread;
 
 namespace {
 
-std::string FormatMetaDataAsLogMessage(const MetaDataMap& meta_data) {
+void ForwardMessageViaTaskRunner(
+    scoped_refptr<base::SequencedTaskRunner> task_runner,
+    base::Callback<void(const std::string&)> callback,
+    const std::string& message) {
+  task_runner->PostTask(FROM_HERE,
+                        base::BindOnce(std::move(callback), message));
+}
+
+std::string Format(const std::string& message,
+                   base::Time timestamp,
+                   base::Time start_time) {
+  int32_t interval_ms =
+      static_cast<int32_t>((timestamp - start_time).InMilliseconds());
+  return base::StringPrintf("[%03d:%03d] %s", interval_ms / 1000,
+                            interval_ms % 1000, message.c_str());
+}
+
+std::string FormatMetaDataAsLogMessage(const WebRtcLogMetaDataMap& meta_data) {
   std::string message;
   for (auto& kv : meta_data) {
     message += kv.first + ": " + kv.second + '\n';
@@ -104,38 +120,6 @@ std::string IPAddressToSensitiveString(const net::IPAddress& address) {
 
 }  // namespace
 
-WebRtcLogBuffer::WebRtcLogBuffer()
-    : buffer_(),
-      circular_(&buffer_[0], sizeof(buffer_), sizeof(buffer_) / 2, false),
-      read_only_(false) {}
-
-WebRtcLogBuffer::~WebRtcLogBuffer() {
-  DCHECK(read_only_ || thread_checker_.CalledOnValidThread());
-}
-
-void WebRtcLogBuffer::Log(const std::string& message) {
-  DCHECK(thread_checker_.CalledOnValidThread());
-  DCHECK(!read_only_);
-  circular_.Write(message.c_str(), message.length());
-  const char eol = '\n';
-  circular_.Write(&eol, 1);
-}
-
-webrtc_logging::PartialCircularBuffer WebRtcLogBuffer::Read() {
-  DCHECK(thread_checker_.CalledOnValidThread());
-  DCHECK(read_only_);
-  return webrtc_logging::PartialCircularBuffer(&buffer_[0], sizeof(buffer_));
-}
-
-void WebRtcLogBuffer::SetComplete() {
-  DCHECK(thread_checker_.CalledOnValidThread());
-  DCHECK(!read_only_) << "Already set? (programmer error)";
-  read_only_ = true;
-  // Detach from the current thread so that we can check reads on a different
-  // thread.  This is to make sure that Read()s still happen on one thread only.
-  thread_checker_.DetachFromThread();
-}
-
 WebRtcTextLogHandler::WebRtcTextLogHandler(int render_process_id)
     : render_process_id_(render_process_id), logging_state_(CLOSED) {}
 
@@ -147,18 +131,19 @@ WebRtcTextLogHandler::~WebRtcTextLogHandler() {
 }
 
 WebRtcTextLogHandler::LoggingState WebRtcTextLogHandler::GetState() const {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return logging_state_;
 }
 
 bool WebRtcTextLogHandler::GetChannelIsClosing() const {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return channel_is_closing_;
 }
 
-void WebRtcTextLogHandler::SetMetaData(std::unique_ptr<MetaDataMap> meta_data,
-                                       const GenericDoneCallback& callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+void WebRtcTextLogHandler::SetMetaData(
+    std::unique_ptr<WebRtcLogMetaDataMap> meta_data,
+    const GenericDoneCallback& callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!callback.is_null());
 
   if (channel_is_closing_) {
@@ -192,7 +177,7 @@ void WebRtcTextLogHandler::SetMetaData(std::unique_ptr<MetaDataMap> meta_data,
 
 bool WebRtcTextLogHandler::StartLogging(WebRtcLogUploader* log_uploader,
                                         const GenericDoneCallback& callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!callback.is_null());
 
   if (channel_is_closing_) {
@@ -217,17 +202,17 @@ bool WebRtcTextLogHandler::StartLogging(WebRtcLogUploader* log_uploader,
   DCHECK(!log_buffer_);
   log_buffer_.reset(new WebRtcLogBuffer());
   if (!meta_data_)
-    meta_data_.reset(new MetaDataMap());
+    meta_data_.reset(new WebRtcLogMetaDataMap());
 
-  base::PostTaskWithTraits(
-      FROM_HERE, {BrowserThread::UI},
-      base::BindOnce(&WebRtcTextLogHandler::GetNetworkInterfaceListOnUIThread,
-                     this, std::move(callback)));
+  content::GetNetworkService()->GetNetworkList(
+      net::EXCLUDE_HOST_SCOPE_VIRTUAL_INTERFACES,
+      base::BindOnce(&WebRtcTextLogHandler::OnGetNetworkInterfaceList,
+                     weak_factory_.GetWeakPtr(), std::move(callback)));
   return true;
 }
 
 void WebRtcTextLogHandler::StartDone(const GenericDoneCallback& callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!callback.is_null());
 
   if (channel_is_closing_) {
@@ -246,7 +231,7 @@ void WebRtcTextLogHandler::StartDone(const GenericDoneCallback& callback) {
 }
 
 bool WebRtcTextLogHandler::StopLogging(const GenericDoneCallback& callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!callback.is_null());
 
   if (channel_is_closing_) {
@@ -263,12 +248,14 @@ bool WebRtcTextLogHandler::StopLogging(const GenericDoneCallback& callback) {
   stop_callback_ = callback;
   logging_state_ = STOPPING;
 
-  content::WebRtcLog::ClearLogMessageCallback(render_process_id_);
+  base::PostTask(FROM_HERE, {content::BrowserThread::IO},
+                 base::BindOnce(&content::WebRtcLog::ClearLogMessageCallback,
+                                render_process_id_));
   return true;
 }
 
 void WebRtcTextLogHandler::StopDone() {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(stop_callback_);
 
   if (channel_is_closing_) {
@@ -291,15 +278,17 @@ void WebRtcTextLogHandler::StopDone() {
 }
 
 void WebRtcTextLogHandler::ChannelClosing() {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
-
-  if (logging_state_ == STARTING || logging_state_ == STARTED)
-    content::WebRtcLog::ClearLogMessageCallback(render_process_id_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (logging_state_ == STARTING || logging_state_ == STARTED) {
+    base::PostTask(FROM_HERE, {content::BrowserThread::IO},
+                   base::BindOnce(&content::WebRtcLog::ClearLogMessageCallback,
+                                  render_process_id_));
+  }
   channel_is_closing_ = true;
 }
 
 void WebRtcTextLogHandler::DiscardLog() {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(logging_state_ == STOPPED ||
          (channel_is_closing_ && logging_state_ != CLOSED));
 
@@ -312,8 +301,8 @@ void WebRtcTextLogHandler::DiscardLog() {
 
 void WebRtcTextLogHandler::ReleaseLog(
     std::unique_ptr<WebRtcLogBuffer>* log_buffer,
-    std::unique_ptr<MetaDataMap>* meta_data) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+    std::unique_ptr<WebRtcLogMetaDataMap>* meta_data) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(logging_state_ == STOPPED ||
          (channel_is_closing_ && logging_state_ != CLOSED));
   DCHECK(log_buffer_);
@@ -334,7 +323,7 @@ void WebRtcTextLogHandler::ReleaseLog(
 }
 
 void WebRtcTextLogHandler::LogToCircularBuffer(const std::string& message) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_NE(logging_state_, CLOSED);
   if (log_buffer_) {
     log_buffer_->Log(message);
@@ -342,22 +331,23 @@ void WebRtcTextLogHandler::LogToCircularBuffer(const std::string& message) {
 }
 
 void WebRtcTextLogHandler::LogMessage(const std::string& message) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (logging_state_ == STARTED && !channel_is_closing_) {
-    LogToCircularBuffer(WebRtcLoggingMessageData::Format(
-        message, base::Time::Now(), logging_started_time_));
+    LogToCircularBuffer(
+        Format(message, base::Time::Now(), logging_started_time_));
   }
 }
 
-void WebRtcTextLogHandler::LogWebRtcLoggingMessageData(
-    const WebRtcLoggingMessageData& message) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  LogToCircularBuffer(message.Format(logging_started_time_));
+void WebRtcTextLogHandler::LogWebRtcLoggingMessage(
+    const chrome::mojom::WebRtcLoggingMessage* message) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  LogToCircularBuffer(
+      Format(message->data, message->timestamp, logging_started_time_));
 }
 
 bool WebRtcTextLogHandler::ExpectLoggingStateStopped(
     const GenericDoneCallback& callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (logging_state_ != STOPPED) {
     FireGenericDoneCallback(callback, false,
                             "Logging not stopped or no log open.");
@@ -370,13 +360,13 @@ void WebRtcTextLogHandler::FireGenericDoneCallback(
     const GenericDoneCallback& callback,
     bool success,
     const std::string& error_message) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!callback.is_null());
 
   if (error_message.empty()) {
     DCHECK(success);
-    base::PostTaskWithTraits(FROM_HERE, {BrowserThread::UI},
-                             base::BindOnce(callback, success, error_message));
+    base::SequencedTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE, base::BindOnce(callback, success, error_message));
     return;
   }
 
@@ -404,40 +394,19 @@ void WebRtcTextLogHandler::FireGenericDoneCallback(
       base::StrCat({error_message, ". State=", state_string(), ". Channel is ",
                     channel_is_closing_ ? "" : "not ", "closing."});
 
-  base::PostTaskWithTraits(
-      FROM_HERE, {BrowserThread::UI},
-      base::BindOnce(callback, success, error_message_with_state));
+  base::SequencedTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE, base::BindOnce(callback, success, error_message_with_state));
 }
 
 void WebRtcTextLogHandler::SetWebAppId(int web_app_id) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   web_app_id_ = web_app_id;
-}
-
-void WebRtcTextLogHandler::GetNetworkInterfaceListOnUIThread(
-    const GenericDoneCallback& callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  content::GetNetworkService()->GetNetworkList(
-      net::EXCLUDE_HOST_SCOPE_VIRTUAL_INTERFACES,
-      base::BindOnce(&WebRtcTextLogHandler::OnGetNetworkInterfaceList, this,
-                     std::move(callback)));
 }
 
 void WebRtcTextLogHandler::OnGetNetworkInterfaceList(
     const GenericDoneCallback& callback,
     const base::Optional<net::NetworkInterfaceList>& networks) {
-  base::PostTaskWithTraits(
-      FROM_HERE, {BrowserThread::IO},
-      base::BindOnce(
-          &WebRtcTextLogHandler::LogInitialInfoOnIOThread, this,
-          std::move(callback),
-          networks.has_value() ? *networks : net::NetworkInterfaceList()));
-}
-
-void WebRtcTextLogHandler::LogInitialInfoOnIOThread(
-    const GenericDoneCallback& callback,
-    const net::NetworkInterfaceList& network_list) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (logging_state_ != STARTING || channel_is_closing_) {
     FireGenericDoneCallback(callback, false, "Logging cancelled.");
@@ -504,21 +473,24 @@ void WebRtcTextLogHandler::LogInitialInfoOnIOThread(
                       ", gl-version=" + gpu_info.gl_version);
 
   // AudioService features
-  auto enabled_or_disabled_string = [](auto& feature) {
+  auto enabled_or_disabled_feature_string = [](auto& feature) {
     return base::FeatureList::IsEnabled(feature) ? "enabled" : "disabled";
   };
+  auto enabled_or_disabled_bool_string = [](bool value) {
+    return value ? "enabled" : "disabled";
+  };
   LogToCircularBuffer(base::StrCat(
-      {"AudioService: AudioStreams=",
-       enabled_or_disabled_string(features::kAudioServiceAudioStreams),
-       ", OutOfProcess=",
-       enabled_or_disabled_string(features::kAudioServiceOutOfProcess),
+      {"AudioService: OutOfProcess=",
+       enabled_or_disabled_feature_string(features::kAudioServiceOutOfProcess),
        ", LaunchOnStartup=",
-       enabled_or_disabled_string(features::kAudioServiceLaunchOnStartup),
+       enabled_or_disabled_feature_string(
+           features::kAudioServiceLaunchOnStartup),
        ", Sandbox=",
-       enabled_or_disabled_string(
-           service_manager::features::kAudioServiceSandbox),
+       enabled_or_disabled_bool_string(
+           service_manager::IsAudioSandboxEnabled()),
        ", ApmInAudioService=",
-       enabled_or_disabled_string(features::kWebRtcApmInAudioService)}));
+       enabled_or_disabled_bool_string(
+           media::IsWebRtcApmInAudioServiceEnabled())}));
 
   // Audio manager
   // On some platforms, this can vary depending on build flags and failure
@@ -531,6 +503,9 @@ void WebRtcTextLogHandler::LogInitialInfoOnIOThread(
       audio_manager ? audio_manager->GetName() : "Out of process"));
 
   // Network interfaces
+  const net::NetworkInterfaceList empty_network_list;
+  const net::NetworkInterfaceList& network_list =
+      networks.has_value() ? *networks : empty_network_list;
   LogToCircularBuffer("Discovered " +
                       base::NumberToString(network_list.size()) +
                       " network interfaces:");
@@ -548,6 +523,15 @@ void WebRtcTextLogHandler::LogInitialInfoOnIOThread(
   // renderer to start logging here, but for the time being
   // WebRtcLoggingHandlerHost::StartLogging will be responsible for sending
   // that IPC message.
-  content::WebRtcLog::SetLogMessageCallback(
-      render_process_id_, base::Bind(&WebRtcTextLogHandler::LogMessage, this));
+
+  // TODO(darin): Change SetLogMessageCallback to run on the UI thread.
+
+  auto log_message_callback = base::Bind(
+      &ForwardMessageViaTaskRunner, base::SequencedTaskRunnerHandle::Get(),
+      base::Bind(&WebRtcTextLogHandler::LogMessage,
+                 weak_factory_.GetWeakPtr()));
+  base::PostTask(
+      FROM_HERE, {content::BrowserThread::IO},
+      base::BindOnce(&content::WebRtcLog::SetLogMessageCallback,
+                     render_process_id_, std::move(log_message_callback)));
 }

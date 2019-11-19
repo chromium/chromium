@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "chrome/chrome_cleaner/ipc/chrome_prompt_ipc.h"
-#include "components/chrome_cleaner/public/interfaces/chrome_prompt.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace chrome_cleaner {
@@ -21,19 +20,29 @@ class MockChromePromptIPC : public ChromePromptIPC {
 
   MOCK_METHOD1(Initialize, void(ErrorHandler* error_handler));
 
-  // Workaround for GMock's limitation, in which MOCK_METHOD* doesn't accept
-  // base::OnceCallback parameters. Will forward any calls to
-  // MockPostPromptUserTask() and pass along a raw pointer for |callback|.
-  void PostPromptUserTask(
-      const std::vector<base::FilePath>& files_to_delete,
-      const std::vector<base::string16>& registry_keys,
+  MOCK_METHOD2(TryDeleteExtensions,
+               void(base::OnceClosure delete_allowed_callback,
+                    base::OnceClosure delete_not_allowed_callback));
+
+  // Workaround for GMock's limitation, in which MOCK_METHOD* doesn't
+  // accept base::OnceCallback parameters. Will forward any calls to
+  // MockPost*() and pass along a raw pointer for |callback|.
+  void PostPromptUserTask(const std::vector<base::FilePath>& files_to_delete,
+                          const std::vector<base::string16>& registry_keys,
+                          const std::vector<base::string16>& extension_ids,
+                          PromptUserCallback callback) override;
+  void PostDisableExtensionsTask(
       const std::vector<base::string16>& extension_ids,
-      mojom::ChromePrompt::PromptUserCallback callback) override;
+      DisableExtensionsCallback callback) override;
+
   MOCK_METHOD4(MockPostPromptUserTask,
                void(const std::vector<base::FilePath>& files_to_delete,
                     const std::vector<base::string16>& registry_keys,
                     const std::vector<base::string16>& extension_ids,
-                    mojom::ChromePrompt::PromptUserCallback* callback));
+                    PromptUserCallback* callback));
+  MOCK_METHOD2(MockPostDisableExtensionsTask,
+               void(const std::vector<base::string16>& extension_ids,
+                    DisableExtensionsCallback* callback));
 };
 
 }  // namespace chrome_cleaner

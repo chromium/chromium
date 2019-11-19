@@ -8,6 +8,7 @@
 #include "chrome/browser/background_fetch/background_fetch_delegate_impl.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/download/download_service_factory.h"
+#include "chrome/browser/metrics/ukm_background_recorder_service.h"
 #include "chrome/browser/offline_items_collection/offline_content_aggregator_factory.h"
 #include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
@@ -38,6 +39,7 @@ BackgroundFetchDelegateFactory::BackgroundFetchDelegateFactory()
   DependsOn(DownloadServiceFactory::GetInstance());
   DependsOn(HostContentSettingsMapFactory::GetInstance());
   DependsOn(OfflineContentAggregatorFactory::GetInstance());
+  DependsOn(ukm::UkmBackgroundRecorderFactory::GetInstance());
 }
 
 BackgroundFetchDelegateFactory::~BackgroundFetchDelegateFactory() {}

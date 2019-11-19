@@ -24,6 +24,8 @@ class AuraWindowObserver : public aura::WindowObserver {
  public:
   AuraWindowObserver(const aura::Window* popup_window, base::RunLoop* run_loop)
       : popup_window_(popup_window), run_loop_(run_loop) {}
+  AuraWindowObserver(const AuraWindowObserver&) = delete;
+  AuraWindowObserver& operator=(const AuraWindowObserver&) = delete;
 
   // aura::WindowObserver:
   void OnWindowVisibilityChanged(aura::Window* window, bool visible) override {
@@ -34,8 +36,6 @@ class AuraWindowObserver : public aura::WindowObserver {
  private:
   const aura::Window* const popup_window_;
   base::RunLoop* const run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(AuraWindowObserver);
 };
 
 }  // namespace

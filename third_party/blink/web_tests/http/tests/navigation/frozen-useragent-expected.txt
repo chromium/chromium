@@ -1,0 +1,3 @@
+Tests for frozen user agent working properly as defined by https://github.com/WICG/ua-client-hints
+UserAgent should match one of the frozen UA strings: true
+Navigator.platform should match the corresponding frozen user agent: true

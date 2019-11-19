@@ -20,9 +20,9 @@
 #include "components/policy/core/common/policy_switches.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "net/base/network_change_notifier.h"
 #include "net/url_request/url_request_context_getter.h"
-#include "services/identity/public/cpp/identity_manager.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace em = enterprise_management;
@@ -45,7 +45,7 @@ UserPolicySigninService::UserPolicySigninService(
     PrefService* local_state,
     DeviceManagementService* device_management_service,
     UserCloudPolicyManager* policy_manager,
-    identity::IdentityManager* identity_manager,
+    signin::IdentityManager* identity_manager,
     scoped_refptr<network::SharedURLLoaderFactory> system_url_loader_factory)
     : UserPolicySigninServiceBase(profile,
                                   local_state,
@@ -53,8 +53,7 @@ UserPolicySigninService::UserPolicySigninService(
                                   policy_manager,
                                   identity_manager,
                                   system_url_loader_factory),
-      profile_prefs_(profile->GetPrefs()),
-      weak_factory_(this) {}
+      profile_prefs_(profile->GetPrefs()) {}
 
 UserPolicySigninService::~UserPolicySigninService() {}
 

@@ -7,11 +7,12 @@
 #include "base/bind.h"
 #include "base/macros.h"
 #include "base/run_loop.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/values.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/dbus/fake_shill_device_client.h"
-#include "chromeos/dbus/fake_shill_manager_client.h"
+#include "chromeos/dbus/shill/fake_shill_device_client.h"
+#include "chromeos/dbus/shill/shill_clients.h"
+#include "chromeos/dbus/shill/shill_manager_client.h"
 #include "chromeos/network/network_device_handler_impl.h"
 #include "chromeos/network/network_state_handler.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -33,14 +34,14 @@ const char kDefaultPin[] = "1111";
 class NetworkDeviceHandlerTest : public testing::Test {
  public:
   NetworkDeviceHandlerTest()
-      : scoped_task_environment_(
-            base::test::ScopedTaskEnvironment::MainThreadType::UI) {}
+      : task_environment_(
+            base::test::SingleThreadTaskEnvironment::MainThreadType::UI) {}
   ~NetworkDeviceHandlerTest() override = default;
 
   void SetUp() override {
-    fake_device_client_ = new FakeShillDeviceClient;
-    DBusThreadManager::GetSetterForTesting()->SetShillDeviceClient(
-        std::unique_ptr<ShillDeviceClient>(fake_device_client_));
+    shill_clients::InitializeFakes();
+    fake_device_client_ = ShillDeviceClient::Get();
+    fake_device_client_->GetTestInterface()->ClearDevices();
 
     success_callback_ = base::Bind(&NetworkDeviceHandlerTest::SuccessCallback,
                                    base::Unretained(this));
@@ -61,8 +62,8 @@ class NetworkDeviceHandlerTest : public testing::Test {
     // Add devices after handlers have been initialized.
     ShillDeviceClient::TestInterface* device_test =
         fake_device_client_->GetTestInterface();
-    device_test->AddDevice(
-        kDefaultCellularDevicePath, shill::kTypeCellular, "cellular1");
+    device_test->AddDevice(kDefaultCellularDevicePath, shill::kTypeCellular,
+                           "cellular1");
     device_test->AddDevice(kDefaultWifiDevicePath, shill::kTypeWifi, "wifi1");
 
     base::ListValue test_ip_configs;
@@ -78,7 +79,7 @@ class NetworkDeviceHandlerTest : public testing::Test {
     network_state_handler_->Shutdown();
     network_device_handler_.reset();
     network_state_handler_.reset();
-    DBusThreadManager::Shutdown();
+    shill_clients::Shutdown();
   }
 
   void ErrorCallback(const std::string& error_name,
@@ -87,9 +88,7 @@ class NetworkDeviceHandlerTest : public testing::Test {
     result_ = error_name;
   }
 
-  void SuccessCallback() {
-    result_ = kResultSuccess;
-  }
+  void SuccessCallback() { result_ = kResultSuccess; }
 
   void PropertiesSuccessCallback(const std::string& device_path,
                                  const base::DictionaryValue& properties) {
@@ -102,10 +101,28 @@ class NetworkDeviceHandlerTest : public testing::Test {
     result_ = result;
   }
 
+  void GetDeviceProperties(const std::string& device_path,
+                           const std::string& expected_result) {
+    network_device_handler_->GetDeviceProperties(
+        device_path, properties_success_callback_, error_callback_);
+    base::RunLoop().RunUntilIdle();
+    ASSERT_EQ(expected_result, result_);
+  }
+
+  void ExpectDeviceProperty(const std::string& device_path,
+                            const std::string& property_name,
+                            const std::string& expected_value) {
+    GetDeviceProperties(device_path, kResultSuccess);
+    std::string value;
+    ASSERT_TRUE(
+        properties_->GetStringWithoutPathExpansion(property_name, &value));
+    ASSERT_EQ(value, expected_value);
+  }
+
  protected:
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
   std::string result_;
-  FakeShillDeviceClient* fake_device_client_ = nullptr;
+  ShillDeviceClient* fake_device_client_ = nullptr;
   std::unique_ptr<NetworkDeviceHandler> network_device_handler_;
   std::unique_ptr<NetworkStateHandler> network_state_handler_;
   base::Closure success_callback_;
@@ -216,6 +233,211 @@ TEST_F(NetworkDeviceHandlerTest, CellularAllowRoaming) {
   EXPECT_FALSE(allow_roaming);
 }
 
+TEST_F(NetworkDeviceHandlerTest,
+       ResetUsbEthernetMacAddressSourceForSecondaryUsbDevices) {
+  ShillDeviceClient::TestInterface* device_test =
+      fake_device_client_->GetTestInterface();
+
+  constexpr char kSource[] = "some_source1";
+
+  constexpr char kUsbEthernetDevicePath1[] = "usb_ethernet_device1";
+  device_test->AddDevice(kUsbEthernetDevicePath1, shill::kTypeEthernet, "eth1");
+  device_test->SetDeviceProperty(
+      kUsbEthernetDevicePath1, shill::kDeviceBusTypeProperty,
+      base::Value(shill::kDeviceBusTypeUsb), /*notify_changed=*/true);
+  device_test->SetDeviceProperty(kUsbEthernetDevicePath1,
+                                 shill::kLinkUpProperty, base::Value(true),
+                                 /*notify_changed=*/true);
+  device_test->SetDeviceProperty(kUsbEthernetDevicePath1,
+                                 shill::kUsbEthernetMacAddressSourceProperty,
+                                 base::Value("source_to_override1"),
+                                 /*notify_changed=*/true);
+  constexpr char kUsbEthernetDevicePath2[] = "usb_ethernet_device2";
+  device_test->AddDevice(kUsbEthernetDevicePath2, shill::kTypeEthernet, "eth2");
+  device_test->SetDeviceProperty(
+      kUsbEthernetDevicePath2, shill::kDeviceBusTypeProperty,
+      base::Value(shill::kDeviceBusTypeUsb), /*notify_changed=*/true);
+  device_test->SetDeviceProperty(kUsbEthernetDevicePath2,
+                                 shill::kLinkUpProperty, base::Value(true),
+                                 /*notify_changed=*/true);
+  device_test->SetDeviceProperty(kUsbEthernetDevicePath2,
+                                 shill::kUsbEthernetMacAddressSourceProperty,
+                                 base::Value(kSource),
+                                 /*notify_changed=*/true);
+  constexpr char kUsbEthernetDevicePath3[] = "usb_ethernet_device3";
+  device_test->AddDevice(kUsbEthernetDevicePath3, shill::kTypeEthernet, "eth3");
+  device_test->SetDeviceProperty(
+      kUsbEthernetDevicePath3, shill::kDeviceBusTypeProperty,
+      base::Value(shill::kDeviceBusTypeUsb), /*notify_changed=*/true);
+  device_test->SetDeviceProperty(kUsbEthernetDevicePath3,
+                                 shill::kLinkUpProperty, base::Value(true),
+                                 /*notify_changed=*/true);
+  device_test->SetDeviceProperty(kUsbEthernetDevicePath3,
+                                 shill::kUsbEthernetMacAddressSourceProperty,
+                                 base::Value("source_to_override2"),
+                                 /*notify_changed=*/true);
+
+  network_device_handler_->SetUsbEthernetMacAddressSource(kSource);
+  base::RunLoop().RunUntilIdle();
+
+  // Expect to reset source property for eth1 and eth3 since eth2 already has
+  // needed source value.
+  ASSERT_NO_FATAL_FAILURE(ExpectDeviceProperty(
+      kUsbEthernetDevicePath1, shill::kUsbEthernetMacAddressSourceProperty,
+      "usb_adapter_mac"));
+  ASSERT_NO_FATAL_FAILURE(ExpectDeviceProperty(
+      kUsbEthernetDevicePath2, shill::kUsbEthernetMacAddressSourceProperty,
+      kSource));
+  ASSERT_NO_FATAL_FAILURE(ExpectDeviceProperty(
+      kUsbEthernetDevicePath3, shill::kUsbEthernetMacAddressSourceProperty,
+      "usb_adapter_mac"));
+}
+
+TEST_F(NetworkDeviceHandlerTest, UsbEthernetMacAddressSourceNotSupported) {
+  ShillDeviceClient::TestInterface* device_test =
+      fake_device_client_->GetTestInterface();
+
+  constexpr char kSourceToOverride[] = "source_to_override";
+  constexpr char kUsbEthernetDevicePath[] = "usb_ethernet_device1";
+  device_test->AddDevice(kUsbEthernetDevicePath, shill::kTypeEthernet, "eth1");
+  device_test->SetDeviceProperty(
+      kUsbEthernetDevicePath, shill::kDeviceBusTypeProperty,
+      base::Value(shill::kDeviceBusTypeUsb), /*notify_changed=*/true);
+  device_test->SetDeviceProperty(kUsbEthernetDevicePath, shill::kLinkUpProperty,
+                                 base::Value(true),
+                                 /*notify_changed=*/true);
+  device_test->SetDeviceProperty(kUsbEthernetDevicePath,
+                                 shill::kUsbEthernetMacAddressSourceProperty,
+                                 base::Value(kSourceToOverride),
+                                 /*notify_changed=*/true);
+  device_test->SetUsbEthernetMacAddressSourceError(
+      kUsbEthernetDevicePath, shill::kErrorResultNotSupported);
+
+  network_device_handler_->SetUsbEthernetMacAddressSource("some_source1");
+  base::RunLoop().RunUntilIdle();
+
+  // Expect to do not change MAC address source property, because eth1 does not
+  // support |some_source1|.
+  ASSERT_NO_FATAL_FAILURE(ExpectDeviceProperty(
+      kUsbEthernetDevicePath, shill::kUsbEthernetMacAddressSourceProperty,
+      kSourceToOverride));
+
+  constexpr char kSource2[] = "some_source2";
+  device_test->SetUsbEthernetMacAddressSourceError(kUsbEthernetDevicePath, "");
+  network_device_handler_->SetUsbEthernetMacAddressSource(kSource2);
+  base::RunLoop().RunUntilIdle();
+
+  // Expect to change MAC address source property, because eth1 supports
+  // |some_source2|.
+  ASSERT_NO_FATAL_FAILURE(ExpectDeviceProperty(
+      kUsbEthernetDevicePath, shill::kUsbEthernetMacAddressSourceProperty,
+      kSource2));
+}
+
+TEST_F(NetworkDeviceHandlerTest, UsbEthernetMacAddressSource) {
+  ShillDeviceClient::TestInterface* device_test =
+      fake_device_client_->GetTestInterface();
+
+  constexpr char kUsbEthernetDevicePath1[] = "ubs_ethernet_device1";
+  device_test->AddDevice(kUsbEthernetDevicePath1, shill::kTypeEthernet, "eth1");
+  device_test->SetDeviceProperty(
+      kUsbEthernetDevicePath1, shill::kDeviceBusTypeProperty,
+      base::Value(shill::kDeviceBusTypeUsb), /*notify_changed=*/true);
+
+  constexpr char kUsbEthernetDevicePath2[] = "usb_ethernet_device2";
+  device_test->AddDevice(kUsbEthernetDevicePath2, shill::kTypeEthernet, "eth2");
+  device_test->SetDeviceProperty(
+      kUsbEthernetDevicePath2, shill::kDeviceBusTypeProperty,
+      base::Value(shill::kDeviceBusTypeUsb), /*notify_changed=*/true);
+  device_test->SetDeviceProperty(kUsbEthernetDevicePath2,
+                                 shill::kAddressProperty,
+                                 base::Value("abcdef123456"),
+                                 /*notify_changed=*/true);
+  device_test->SetDeviceProperty(kUsbEthernetDevicePath2,
+                                 shill::kLinkUpProperty, base::Value(true),
+                                 /*notify_changed=*/true);
+  device_test->SetUsbEthernetMacAddressSourceError(
+      kUsbEthernetDevicePath2, shill::kErrorResultNotSupported);
+
+  constexpr char kUsbEthernetDevicePath3[] = "usb_ethernet_device3";
+  device_test->AddDevice(kUsbEthernetDevicePath3, shill::kTypeEthernet, "eth3");
+  device_test->SetDeviceProperty(
+      kUsbEthernetDevicePath3, shill::kDeviceBusTypeProperty,
+      base::Value(shill::kDeviceBusTypeUsb), /*notify_changed=*/true);
+  device_test->SetDeviceProperty(kUsbEthernetDevicePath3,
+                                 shill::kAddressProperty,
+                                 base::Value("123456abcdef"),
+                                 /*notify_changed=*/true);
+  device_test->SetDeviceProperty(kUsbEthernetDevicePath3,
+                                 shill::kLinkUpProperty, base::Value(true),
+                                 /*notify_changed=*/true);
+
+  constexpr char kPciEthernetDevicePath[] = "pci_ethernet_device";
+  device_test->AddDevice(kPciEthernetDevicePath, shill::kTypeEthernet, "eth4");
+  device_test->SetDeviceProperty(
+      kPciEthernetDevicePath, shill::kDeviceBusTypeProperty,
+      base::Value(shill::kDeviceBusTypePci), /*notify_changed=*/true);
+
+  // Expect property change on eth3, because:
+  //   1) eth2 device is connected to the internet, but does not support MAC
+  //      address change;
+  //   2) eth3 device is connected to the internet and supports MAC address
+  //      change.
+  constexpr char kSource1[] = "some_source1";
+  network_device_handler_->SetUsbEthernetMacAddressSource(kSource1);
+  base::RunLoop().RunUntilIdle();
+
+  ASSERT_NO_FATAL_FAILURE(ExpectDeviceProperty(
+      kUsbEthernetDevicePath3, shill::kUsbEthernetMacAddressSourceProperty,
+      kSource1));
+
+  // Expect property change on eth3, because device is connected to the
+  // internet.
+  const char* kSource2 = shill::kUsbEthernetMacAddressSourceBuiltinAdapterMac;
+  network_device_handler_->SetUsbEthernetMacAddressSource(kSource2);
+  base::RunLoop().RunUntilIdle();
+
+  ASSERT_NO_FATAL_FAILURE(ExpectDeviceProperty(
+      kUsbEthernetDevicePath3, shill::kUsbEthernetMacAddressSourceProperty,
+      kSource2));
+
+  // Expect property change back to "usb_adapter_mac" on eth3, because device
+  // is not connected to the internet.
+  device_test->SetDeviceProperty(kUsbEthernetDevicePath3,
+                                 shill::kLinkUpProperty, base::Value(false),
+                                 /*notify_changed=*/true);
+  base::RunLoop().RunUntilIdle();
+
+  ASSERT_NO_FATAL_FAILURE(ExpectDeviceProperty(
+      kUsbEthernetDevicePath3, shill::kUsbEthernetMacAddressSourceProperty,
+      "usb_adapter_mac"));
+
+  // Expect property change back to "usb_adapter_mac" on eth1, because both
+  // builtin PCI eth4 and eth1 have the same MAC address and connected to the
+  // internet.
+  device_test->SetDeviceProperty(kUsbEthernetDevicePath1,
+                                 shill::kLinkUpProperty, base::Value(true),
+                                 /*notify_changed=*/true);
+  device_test->SetDeviceProperty(kPciEthernetDevicePath, shill::kLinkUpProperty,
+                                 base::Value(true),
+                                 /*notify_changed=*/true);
+  base::RunLoop().RunUntilIdle();
+
+  ASSERT_NO_FATAL_FAILURE(ExpectDeviceProperty(
+      kUsbEthernetDevicePath1, shill::kUsbEthernetMacAddressSourceProperty,
+      "usb_adapter_mac"));
+
+  // Expect property change on eth1, because device is connected to the
+  // internet and builtin PCI eth4 and eth1 have different MAC addresses.
+  constexpr char kSource3[] = "some_source3";
+  network_device_handler_->SetUsbEthernetMacAddressSource(kSource3);
+  base::RunLoop().RunUntilIdle();
+
+  ASSERT_NO_FATAL_FAILURE(ExpectDeviceProperty(
+      kUsbEthernetDevicePath1, shill::kUsbEthernetMacAddressSourceProperty,
+      kSource3));
+}
+
 TEST_F(NetworkDeviceHandlerTest, SetWifiTDLSEnabled) {
   // We add a wifi device by default, initial call should succeed.
   fake_device_client_->GetTestInterface()->SetTDLSState(
@@ -284,46 +506,17 @@ TEST_F(NetworkDeviceHandlerTest, GetWifiTDLSStatus) {
   EXPECT_EQ(NetworkDeviceHandler::kErrorDeviceMissing, result_);
 }
 
-TEST_F(NetworkDeviceHandlerTest, RequestRefreshIPConfigs) {
-  network_device_handler_->RequestRefreshIPConfigs(
-      kDefaultWifiDevicePath, success_callback_, error_callback_);
-  base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(kResultSuccess, result_);
-  // TODO(stevenjb): Add test interface to ShillIPConfigClient and test
-  // refresh calls.
-}
-
-TEST_F(NetworkDeviceHandlerTest, SetCarrier) {
-  const char kCarrier[] = "carrier";
-
-  // Test that the success callback gets called.
-  network_device_handler_->SetCarrier(
-      kDefaultCellularDevicePath, kCarrier, success_callback_, error_callback_);
-  base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(kResultSuccess, result_);
-
-  // Test that the shill error propagates to the error callback.
-  network_device_handler_->SetCarrier(
-      kUnknownCellularDevicePath, kCarrier, success_callback_, error_callback_);
-  base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(NetworkDeviceHandler::kErrorDeviceMissing, result_);
-}
-
 TEST_F(NetworkDeviceHandlerTest, RequirePin) {
   // Test that the success callback gets called.
-  network_device_handler_->RequirePin(kDefaultCellularDevicePath,
-                                      true,
-                                      kDefaultPin,
-                                      success_callback_,
+  network_device_handler_->RequirePin(kDefaultCellularDevicePath, true,
+                                      kDefaultPin, success_callback_,
                                       error_callback_);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(kResultSuccess, result_);
 
   // Test that the shill error propagates to the error callback.
-  network_device_handler_->RequirePin(kUnknownCellularDevicePath,
-                                      true,
-                                      kDefaultPin,
-                                      success_callback_,
+  network_device_handler_->RequirePin(kUnknownCellularDevicePath, true,
+                                      kDefaultPin, success_callback_,
                                       error_callback_);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(NetworkDeviceHandler::kErrorDeviceMissing, result_);
@@ -331,18 +524,14 @@ TEST_F(NetworkDeviceHandlerTest, RequirePin) {
 
 TEST_F(NetworkDeviceHandlerTest, EnterPin) {
   // Test that the success callback gets called.
-  network_device_handler_->EnterPin(kDefaultCellularDevicePath,
-                                    kDefaultPin,
-                                    success_callback_,
-                                    error_callback_);
+  network_device_handler_->EnterPin(kDefaultCellularDevicePath, kDefaultPin,
+                                    success_callback_, error_callback_);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(kResultSuccess, result_);
 
   // Test that the shill error propagates to the error callback.
-  network_device_handler_->EnterPin(kUnknownCellularDevicePath,
-                                    kDefaultPin,
-                                    success_callback_,
-                                    error_callback_);
+  network_device_handler_->EnterPin(kUnknownCellularDevicePath, kDefaultPin,
+                                    success_callback_, error_callback_);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(NetworkDeviceHandler::kErrorDeviceMissing, result_);
 }
@@ -352,20 +541,14 @@ TEST_F(NetworkDeviceHandlerTest, UnblockPin) {
   const char kPin[] = "1234";
 
   // Test that the success callback gets called.
-  network_device_handler_->UnblockPin(kDefaultCellularDevicePath,
-                                      kPin,
-                                      kPuk,
-                                      success_callback_,
-                                      error_callback_);
+  network_device_handler_->UnblockPin(kDefaultCellularDevicePath, kPin, kPuk,
+                                      success_callback_, error_callback_);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(kResultSuccess, result_);
 
   // Test that the shill error propagates to the error callback.
-  network_device_handler_->UnblockPin(kUnknownCellularDevicePath,
-                                      kPin,
-                                      kPuk,
-                                      success_callback_,
-                                      error_callback_);
+  network_device_handler_->UnblockPin(kUnknownCellularDevicePath, kPin, kPuk,
+                                      success_callback_, error_callback_);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(NetworkDeviceHandler::kErrorDeviceMissing, result_);
 }
@@ -374,7 +557,8 @@ TEST_F(NetworkDeviceHandlerTest, ChangePin) {
   const char kNewPin[] = "1234";
   const char kIncorrectPin[] = "9999";
 
-  fake_device_client_->SetSimLocked(kDefaultCellularDevicePath, true);
+  fake_device_client_->GetTestInterface()->SetSimLocked(
+      kDefaultCellularDevicePath, true);
 
   // Test that the success callback gets called.
   network_device_handler_->ChangePin(

@@ -7,9 +7,9 @@
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_script_value_factory.h"
 #include "third_party/blink/renderer/core/imagebitmap/image_bitmap.h"
+#include "third_party/blink/renderer/core/typed_arrays/array_buffer/array_buffer_contents.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_shared_array_buffer.h"
-#include "third_party/blink/renderer/platform/wtf/typed_arrays/array_buffer_contents.h"
 
 namespace blink {
 
@@ -20,14 +20,13 @@ UnpackedSerializedScriptValue::UnpackedSerializedScriptValue(
   auto& array_buffer_contents = value_->array_buffer_contents_array_;
   if (!array_buffer_contents.IsEmpty()) {
     array_buffers_.Grow(array_buffer_contents.size());
-    std::transform(
-        array_buffer_contents.begin(), array_buffer_contents.end(),
-        array_buffers_.begin(),
-        [](WTF::ArrayBufferContents& contents) -> DOMArrayBufferBase* {
-          if (contents.IsShared())
-            return DOMSharedArrayBuffer::Create(contents);
-          return DOMArrayBuffer::Create(contents);
-        });
+    std::transform(array_buffer_contents.begin(), array_buffer_contents.end(),
+                   array_buffers_.begin(),
+                   [](ArrayBufferContents& contents) -> DOMArrayBufferBase* {
+                     if (contents.IsShared())
+                       return DOMSharedArrayBuffer::Create(contents);
+                     return DOMArrayBuffer::Create(contents);
+                   });
     array_buffer_contents.clear();
   }
 

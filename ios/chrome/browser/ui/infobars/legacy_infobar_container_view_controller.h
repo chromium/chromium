@@ -32,6 +32,9 @@ class FullscreenController;
 // The delegate used to position the InfoBarContainer in the view.
 @property(nonatomic, weak) id<InfobarPositioner> positioner;
 
+// If YES the Container Fullscreen support will be disabled.
+@property(nonatomic, assign) BOOL disableFullscreenSupport;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_INFOBARS_LEGACY_INFOBAR_CONTAINER_VIEW_CONTROLLER_H_

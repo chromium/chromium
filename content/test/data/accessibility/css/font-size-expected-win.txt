@@ -1,0 +1,45 @@
+ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE font-size:7.5pt font-size:8.5pt font-size:9pt font-size:10pt font-size:10.5pt font-size:11.5pt font-size:15pt font-size:30pt font-size:37.5pt font-size:75pt font-size:10pt font-size:11pt font-size:12pt font-size:13pt font-size:14pt font-size:15pt font-size:20pt font-size:40pt font-size:50pt font-size:100pt
+++IA2_ROLE_PARAGRAPH font-size:7.5pt
+++++ROLE_SYSTEM_STATICTEXT name='10.2340920823px' font-size:7.5pt
+++IA2_ROLE_PARAGRAPH font-size:7.5pt
+++++ROLE_SYSTEM_STATICTEXT name='10px' font-size:7.5pt
+++IA2_ROLE_PARAGRAPH font-size:8.5pt
+++++ROLE_SYSTEM_STATICTEXT name='11px' font-size:8.5pt
+++IA2_ROLE_PARAGRAPH font-size:9pt
+++++ROLE_SYSTEM_STATICTEXT name='12px' font-size:9pt
+++IA2_ROLE_PARAGRAPH font-size:10pt
+++++ROLE_SYSTEM_STATICTEXT name='13px' font-size:10pt
+++IA2_ROLE_PARAGRAPH font-size:10.5pt
+++++ROLE_SYSTEM_STATICTEXT name='14px' font-size:10.5pt
+++IA2_ROLE_PARAGRAPH font-size:11.5pt
+++++ROLE_SYSTEM_STATICTEXT name='15px' font-size:11.5pt
+++IA2_ROLE_PARAGRAPH font-size:15pt
+++++ROLE_SYSTEM_STATICTEXT name='20px' font-size:15pt
+++IA2_ROLE_PARAGRAPH font-size:30pt
+++++ROLE_SYSTEM_STATICTEXT name='40px' font-size:30pt
+++IA2_ROLE_PARAGRAPH font-size:37.5pt
+++++ROLE_SYSTEM_STATICTEXT name='50px' font-size:37.5pt
+++IA2_ROLE_PARAGRAPH font-size:75pt
+++++ROLE_SYSTEM_STATICTEXT name='100px' font-size:75pt
+++IA2_ROLE_PARAGRAPH font-size:10pt
+++++ROLE_SYSTEM_STATICTEXT name='10.2340920823pt' font-size:10pt
+++IA2_ROLE_PARAGRAPH font-size:10pt
+++++ROLE_SYSTEM_STATICTEXT name='10pt' font-size:10pt
+++IA2_ROLE_PARAGRAPH font-size:11pt
+++++ROLE_SYSTEM_STATICTEXT name='11pt' font-size:11pt
+++IA2_ROLE_PARAGRAPH font-size:12pt
+++++ROLE_SYSTEM_STATICTEXT name='12pt' font-size:12pt
+++IA2_ROLE_PARAGRAPH font-size:13pt
+++++ROLE_SYSTEM_STATICTEXT name='13pt' font-size:13pt
+++IA2_ROLE_PARAGRAPH font-size:14pt
+++++ROLE_SYSTEM_STATICTEXT name='14pt' font-size:14pt
+++IA2_ROLE_PARAGRAPH font-size:15pt
+++++ROLE_SYSTEM_STATICTEXT name='15pt' font-size:15pt
+++IA2_ROLE_PARAGRAPH font-size:20pt
+++++ROLE_SYSTEM_STATICTEXT name='20pt' font-size:20pt
+++IA2_ROLE_PARAGRAPH font-size:40pt
+++++ROLE_SYSTEM_STATICTEXT name='40pt' font-size:40pt
+++IA2_ROLE_PARAGRAPH font-size:50pt
+++++ROLE_SYSTEM_STATICTEXT name='50pt' font-size:50pt
+++IA2_ROLE_PARAGRAPH font-size:100pt
+++++ROLE_SYSTEM_STATICTEXT name='100pt' font-size:100pt

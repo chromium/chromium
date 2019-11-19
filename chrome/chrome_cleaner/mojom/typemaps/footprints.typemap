@@ -1,0 +1,20 @@
+# Copyright 2017 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+mojom = "//chrome/chrome_cleaner/mojom/footprints.mojom"
+public_headers = [
+  "//base/files/file_path.h",
+  "//base/strings/string16.h",
+]
+traits_headers =
+    [ "//chrome/chrome_cleaner/mojom/typemaps/footprints_mojom_traits.h" ]
+sources = [
+  "//chrome/chrome_cleaner/mojom/typemaps/footprints_mojom_traits.cc",
+]
+
+type_mappings = [
+  "chrome_cleaner.mojom.FilePath=::base::FilePath",
+  "chrome_cleaner.mojom.RegistryKey=::base::string16",
+  "chrome_cleaner.mojom.ExtensionId=::base::string16",
+]

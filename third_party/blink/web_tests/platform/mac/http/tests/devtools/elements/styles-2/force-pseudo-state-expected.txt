@@ -1,0 +1,118 @@
+Tests that forced element state is reflected in the DOM tree and Styles pane.
+
+
+DIV with :hover and :active
+[expanded] 
+element.style { ()
+
+[expanded] 
+div:active, a:active { (<style>)
+    font-weight: bold;
+
+[expanded] 
+div:hover, a:hover { (<style>)
+    color: red;
+
+[expanded] 
+div { (user agent stylesheet)
+    display: block;
+
+======== Inherited from body#mainBody.main1.main2.mainpage ========
+[expanded] 
+Style Attribute { ()
+/-- overloaded --/     font-weight: normal;
+
+======== Inherited from html ========
+[expanded] 
+html { (user agent stylesheet)
+/-- overloaded --/     color: -internal-root-color;
+
+- <html> [subtreeMarkerCount:1]
+    + <head>…</head>
+    - <body id="mainBody" class="main1 main2 mainpage" style="font-weight: normal; width: 85%; background-image: url(bar.png)"> [subtreeMarkerCount:1]
+          <div id="div">Test text</div> [markers:[pseudo-state-marker=hover,active], subtreeMarkerCount:1]
+      </body>
+  </html>
+
+DIV with :active and :focus
+[expanded] 
+element.style { ()
+
+[expanded] 
+div:active, a:active { (<style>)
+    font-weight: bold;
+
+[expanded] 
+div:focus, a:focus { (<style>)
+    border: 1px solid green;
+        border-top-color: green;
+        border-top-style: solid;
+        border-top-width: 1px;
+        border-right-color: green;
+        border-right-style: solid;
+        border-right-width: 1px;
+        border-bottom-color: green;
+        border-bottom-style: solid;
+        border-bottom-width: 1px;
+        border-left-color: green;
+        border-left-style: solid;
+        border-left-width: 1px;
+        border-image-source: initial;
+        border-image-slice: initial;
+        border-image-width: initial;
+        border-image-outset: initial;
+        border-image-repeat: initial;
+
+[expanded] 
+:focus { (user agent stylesheet)
+    outline: -webkit-focus-ring-color auto 5px;
+        outline-color: -webkit-focus-ring-color;
+        outline-style: auto;
+        outline-width: 5px;
+
+[expanded] 
+div { (user agent stylesheet)
+    display: block;
+
+======== Inherited from body#mainBody.main1.main2.mainpage ========
+[expanded] 
+Style Attribute { ()
+/-- overloaded --/     font-weight: normal;
+
+======== Inherited from html ========
+[expanded] 
+html { (user agent stylesheet)
+    color: -internal-root-color;
+
+- <html> [subtreeMarkerCount:1]
+    + <head>…</head>
+    - <body id="mainBody" class="main1 main2 mainpage" style="font-weight: normal; width: 85%; background-image: url(bar.png)"> [subtreeMarkerCount:1]
+          <div id="div">Test text</div> [markers:[pseudo-state-marker=active,focus], subtreeMarkerCount:1]
+      </body>
+  </html>
+
+DIV with no forced state
+[expanded] 
+element.style { ()
+
+[expanded] 
+div { (user agent stylesheet)
+    display: block;
+
+======== Inherited from body#mainBody.main1.main2.mainpage ========
+[expanded] 
+Style Attribute { ()
+    font-weight: normal;
+
+======== Inherited from html ========
+[expanded] 
+html { (user agent stylesheet)
+    color: -internal-root-color;
+
+- <html>
+    + <head>…</head>
+    - <body id="mainBody" class="main1 main2 mainpage" style="font-weight: normal; width: 85%; background-image: url(bar.png)">
+          <div id="div">Test text</div>
+      </body>
+  </html>
+

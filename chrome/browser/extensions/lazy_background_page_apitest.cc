@@ -66,8 +66,7 @@ namespace {
 // unloaded before listening to the background page notifications.
 class LoadedIncognitoObserver : public ExtensionRegistryObserver {
  public:
-  explicit LoadedIncognitoObserver(Profile* profile)
-      : profile_(profile), extension_registry_observer_(this) {
+  explicit LoadedIncognitoObserver(Profile* profile) : profile_(profile) {
     extension_registry_observer_.Add(ExtensionRegistry::Get(profile_));
   }
 
@@ -88,7 +87,7 @@ class LoadedIncognitoObserver : public ExtensionRegistryObserver {
 
   Profile* profile_;
   ScopedObserver<ExtensionRegistry, ExtensionRegistryObserver>
-      extension_registry_observer_;
+      extension_registry_observer_{this};
   std::unique_ptr<LazyBackgroundObserver> original_complete_;
   std::unique_ptr<LazyBackgroundObserver> incognito_complete_;
 };
@@ -302,9 +301,10 @@ IN_PROC_BROWSER_TEST_F(LazyBackgroundPageApiTest, WaitForView) {
   EXPECT_FALSE(IsBackgroundPageAlive(last_loaded_extension_id()));
 }
 
+// Flaky. https://crbug.com/1006634
 // Tests that the lazy background page stays alive until all network requests
 // are complete.
-IN_PROC_BROWSER_TEST_F(LazyBackgroundPageApiTest, WaitForRequest) {
+IN_PROC_BROWSER_TEST_F(LazyBackgroundPageApiTest, DISABLED_WaitForRequest) {
   ASSERT_TRUE(StartEmbeddedTestServer());
 
   LazyBackgroundObserver page_complete;

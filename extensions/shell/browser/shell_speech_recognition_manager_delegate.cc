@@ -76,7 +76,7 @@ void ShellSpeechRecognitionManagerDelegate::CheckRecognitionIsAllowed(
   // |render_process_id| field, which is needed later to retrieve the profile.
   DCHECK_NE(context.render_process_id, 0);
 
-  base::PostTaskWithTraits(
+  base::PostTask(
       FROM_HERE, {BrowserThread::UI},
       base::BindOnce(&CheckRenderFrameType, std::move(callback),
                      context.render_process_id, context.render_frame_id));
@@ -119,7 +119,7 @@ void ShellSpeechRecognitionManagerDelegate::CheckRenderFrameType(
     }
   }
 
-  base::PostTaskWithTraits(
+  base::PostTask(
       FROM_HERE, {BrowserThread::IO},
       base::BindOnce(std::move(callback), check_permission, allowed));
 }

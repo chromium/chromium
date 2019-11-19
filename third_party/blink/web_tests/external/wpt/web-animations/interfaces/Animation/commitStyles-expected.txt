@@ -1,0 +1,35 @@
+This is a testharness.js-based test.
+FAIL Commits styles animation.commitStyles is not a function
+FAIL Commits styles for an animation that has been removed promise_test: Unhandled rejection with value: object "TypeError: animA.commitStyles is not a function"
+FAIL Commits shorthand styles animation.commitStyles is not a function
+FAIL Commits logical properties animation.commitStyles is not a function
+FAIL Commits values calculated mid-interval animation.commitStyles is not a function
+FAIL Commits variables as their computed values animation.commitStyles is not a function
+FAIL Commits em units as pixel values animation.commitStyles is not a function
+FAIL Commits the intermediate value of an animation in the middle of stack promise_test: Unhandled rejection with value: object "TypeError: animA.persist is not a function"
+FAIL Triggers mutation observers when updating style promise_test: Unhandled rejection with value: object "TypeError: animation.commitStyles is not a function"
+FAIL Does NOT trigger mutation observers when the change to style is redundant promise_test: Unhandled rejection with value: object "TypeError: animation.commitStyles is not a function"
+FAIL Throws if the target element is a pseudo element assert_throws: function "() => {
+    animation.commitStyles();
+  }" threw object "TypeError: animation.commitStyles is not a function" that is not a DOMException NoModificationAllowedError: property "code" is equal to undefined, expected 7
+FAIL Throws if the target element is not something with a style attribute assert_throws: function "() => {
+    animation.commitStyles();
+  }" threw object "TypeError: animation.commitStyles is not a function" that is not a DOMException NoModificationAllowedError: property "code" is equal to undefined, expected 7
+FAIL Throws if the target effect is display:none assert_throws: function "() => {
+    animation.commitStyles();
+  }" threw object "TypeError: animation.commitStyles is not a function" that is not a DOMException InvalidStateError: property "code" is equal to undefined, expected 11
+FAIL Throws if the target effect's ancestor is display:none assert_throws: function "() => {
+    animation.commitStyles();
+  }" threw object "TypeError: animation.commitStyles is not a function" that is not a DOMException InvalidStateError: property "code" is equal to undefined, expected 11
+FAIL Treats display:contents as rendered animation.commitStyles is not a function
+FAIL Treats display:contents in a display:none subtree as not rendered assert_throws: function "() => {
+    animation.commitStyles();
+  }" threw object "TypeError: animation.commitStyles is not a function" that is not a DOMException InvalidStateError: property "code" is equal to undefined, expected 11
+FAIL Throws if the target effect is disconnected assert_throws: function "() => {
+    animation.commitStyles();
+  }" threw object "TypeError: animation.commitStyles is not a function" that is not a DOMException InvalidStateError: property "code" is equal to undefined, expected 11
+FAIL Checks the pseudo element condition before the not rendered condition assert_throws: function "() => {
+    animation.commitStyles();
+  }" threw object "TypeError: animation.commitStyles is not a function" that is not a DOMException NoModificationAllowedError: property "code" is equal to undefined, expected 7
+Harness: the test ran to completion.
+

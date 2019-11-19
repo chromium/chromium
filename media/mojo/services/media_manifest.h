@@ -10,6 +10,7 @@
 namespace media {
 
 const service_manager::Manifest& GetMediaManifest();
+const service_manager::Manifest& GetMediaRendererManifest();
 
 }  // namespace media
 

@@ -153,11 +153,10 @@ void FileDescriptorWatcher::Controller::Watcher::
 
 FileDescriptorWatcher::Controller::Controller(MessagePumpForIO::Mode mode,
                                               int fd,
-                                              const Closure& callback)
+                                              const RepeatingClosure& callback)
     : callback_(callback),
       io_thread_task_runner_(
-          tls_fd_watcher.Get().Get()->io_thread_task_runner()),
-      weak_factory_(this) {
+          tls_fd_watcher.Get().Get()->io_thread_task_runner()) {
   DCHECK(!callback_.is_null());
   DCHECK(io_thread_task_runner_);
   watcher_ = std::make_unique<Watcher>(weak_factory_.GetWeakPtr(), mode, fd);
@@ -175,7 +174,7 @@ FileDescriptorWatcher::Controller::~Controller() {
     // thread. This ensures that the file descriptor is never accessed after
     // this destructor returns.
     //
-    // Use a ScopedClosureRunner to ensure that |done| is signalled even if the
+    // Use a ScopedClosureRunner to ensure that |done| is signaled even if the
     // thread doesn't run any more tasks (if PostTask returns true, it means
     // that the task was queued, but it doesn't mean that a RunLoop will run the
     // task before the queue is deleted).
@@ -252,12 +251,12 @@ FileDescriptorWatcher::~FileDescriptorWatcher() {
 }
 
 std::unique_ptr<FileDescriptorWatcher::Controller>
-FileDescriptorWatcher::WatchReadable(int fd, const Closure& callback) {
+FileDescriptorWatcher::WatchReadable(int fd, const RepeatingClosure& callback) {
   return WrapUnique(new Controller(MessagePumpForIO::WATCH_READ, fd, callback));
 }
 
 std::unique_ptr<FileDescriptorWatcher::Controller>
-FileDescriptorWatcher::WatchWritable(int fd, const Closure& callback) {
+FileDescriptorWatcher::WatchWritable(int fd, const RepeatingClosure& callback) {
   return WrapUnique(
       new Controller(MessagePumpForIO::WATCH_WRITE, fd, callback));
 }

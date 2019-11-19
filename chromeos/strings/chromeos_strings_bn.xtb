@@ -1,21 +1,40 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="bn">
+<translation id="1482734542997480527"><ph name="ENROLLMENT_DOMAIN" /> এই ডিভাইস ম্যানেজ করে এবং এটি আপনার অ্যাক্টিভিটি মনিটর করতে পারে।</translation>
 <translation id="1510238584712386396">লঞ্চার</translation>
 <translation id="1734367976349034509">এই ডিভাইসটি এন্টারপ্রাইজ পরিচালিত</translation>
+<translation id="1930797645656624981">Chrome OS ইনপুট পদ্ধতি পরিষেবা</translation>
+<translation id="1979103255016296513">পাসওয়ার্ড পরিবর্তন করার সময় পেরিয়ে গেছে</translation>
 <translation id="2049639323467105390">এই ডিভাইস <ph name="DOMAIN" /> দ্বারা পরিচালিত হয়৷</translation>
 <translation id="2083960536266308407">স্ক্রিনে কিছুই পাওয়া যায়নি</translation>
 <translation id="2338501278241028356">আশেপাশের ডিভাইস খুঁজে পেতে ব্লুটুথ চালু করুন</translation>
 <translation id="2805756323405976993">অ্যাপ্স</translation>
 <translation id="2872961005593481000">বন্ধ করুন</translation>
-<translation id="3147142846278915599">লঞ্চার (অ্যাপ সিঙ্ক করা হচ্ছে...)</translation>
+<translation id="3008341117444806826">রিফ্রেশ করুন</translation>
+<translation id="3838338534323494292">নতুন পাসওয়ার্ড</translation>
+<translation id="4003259559679196451"><ph name="ENROLLMENT_DOMAIN" /> এই ডিভাইস ম্যানেজ করে এবং ব্যবহারকারী দেখেছেন এমন ওয়েবসাইট, পাসওয়ার্ড ও ইমেলে সহ তার সব অ্যাক্টিভিটি সংক্রান্ত ডেটা অ্যাক্সেস করতে পারে।</translation>
+<translation id="4227825898293920515">পাসওয়ার্ডের মেয়াদ <ph name="TIME" />-এ শেষ হবে</translation>
+<translation id="4429881212383817840">Kerberos টিকিটের মেয়াদ শীঘ্রই শেষ হয়ে যাবে</translation>
+<translation id="445059817448385655">পুরনো পাসওয়ার্ড</translation>
+<translation id="467510802200863975">পাসওয়ার্ড মিলছে না</translation>
 <translation id="4731797938093519117">অভিভাবকীয় অ্যাক্সেস</translation>
+<translation id="4890353053343094602">অবিলম্বে একটি নতুন পাসওয়ার্ড বেছে নিন</translation>
 <translation id="5212543919916444558">আপনাকে সাহায্য করতে পারি এমন কিছুই আপনার স্ক্রিনে আমি খুঁজে পাইনি। আমাকে কিছু জিজ্ঞাসা করতে মাইকে ট্যাপ করুন।</translation>
-<translation id="5222676887888702881">প্রস্থান করুন</translation>
+<translation id="5222676887888702881">সাইন-আউট করুন</translation>
+<translation id="5317780077021120954">সেভ করুন</translation>
+<translation id="5332948983412042822">এবার একটি নতুন পাসওয়ার্ড বেছে নিন</translation>
 <translation id="5457599981699367932">অতিথি হিসাবে ব্রাউজ করুন</translation>
 <translation id="54609108002486618">পরিচালিত</translation>
 <translation id="5832805196449965646">একজন ব্যক্তিকে যোগ করুন</translation>
 <translation id="5895138241574237353">পুনর্সূচনা</translation>
+<translation id="6058625436358447366">সম্পূর্ণ করতে, আপনার পুরনো ও নতুন পাসওয়ার্ড লিখুন</translation>
+<translation id="6106186594183574873">সম্পূর্ণ করতে, আপনার পুরনো পাসওয়ার্ড লিখুন</translation>
+<translation id="6146993107019042706">সম্পূর্ণ করতে, আপনার নতুন পাসওয়ার্ড লিখুন</translation>
 <translation id="7658239707568436148">বাতিল</translation>
+<translation id="7690294790491645610">নতুন পাসওয়ার্ড নিশ্চিত করুন</translation>
+<translation id="808894953321890993">পাসওয়ার্ড পরিবর্তন করুন</translation>
+<translation id="8747900814994928677">পরিবর্তন কনফার্ম করুন</translation>
+<translation id="910415269708673980"><ph name="PRINCIPAL_NAME" />-এর টিকিট রিফ্রেশ করুন</translation>
 <translation id="9111102763498581341">আনলক</translation>
 </translationbundle>

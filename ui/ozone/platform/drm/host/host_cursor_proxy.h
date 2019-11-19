@@ -5,9 +5,11 @@
 #ifndef UI_OZONE_PLATFORM_DRM_HOST_HOST_CURSOR_PROXY_H_
 #define UI_OZONE_PLATFORM_DRM_HOST_HOST_CURSOR_PROXY_H_
 
+#include "mojo/public/cpp/bindings/associated_remote.h"
+#include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/ozone/platform/drm/host/drm_cursor.h"
-#include "ui/ozone/public/interfaces/device_cursor.mojom.h"
+#include "ui/ozone/public/mojom/device_cursor.mojom.h"
 
 namespace ui {
 
@@ -18,8 +20,10 @@ namespace ui {
 // priviledged process.
 class HostCursorProxy : public DrmCursorProxy {
  public:
-  HostCursorProxy(ui::ozone::mojom::DeviceCursorPtr main_cursor_ptr,
-                  ui::ozone::mojom::DeviceCursorPtr evdev_cursor_ptr);
+  HostCursorProxy(
+      mojo::PendingAssociatedRemote<ui::ozone::mojom::DeviceCursor> main_cursor,
+      mojo::PendingAssociatedRemote<ui::ozone::mojom::DeviceCursor>
+          evdev_cursor);
   ~HostCursorProxy() override;
 
  private:
@@ -32,8 +36,8 @@ class HostCursorProxy : public DrmCursorProxy {
   void InitializeOnEvdevIfNecessary() override;
 
   // Mojo implementation of the DrmCursorProxy.
-  ui::ozone::mojom::DeviceCursorPtr main_cursor_ptr_ = nullptr;
-  ui::ozone::mojom::DeviceCursorPtr evdev_cursor_ptr_ = nullptr;
+  mojo::AssociatedRemote<ui::ozone::mojom::DeviceCursor> main_cursor_;
+  mojo::AssociatedRemote<ui::ozone::mojom::DeviceCursor> evdev_cursor_;
 
   base::PlatformThreadRef ui_thread_ref_;
   bool evdev_bound_ = false;

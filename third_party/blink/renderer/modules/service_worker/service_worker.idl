@@ -40,7 +40,11 @@ enum ServiceWorkerState {
 
 [
     ActiveScriptWrappable,
-    SecureContext
+    SecureContext,
+    // TODO(https://crbug.com/999023): Expose this to Worker (not only to
+    // ServiceWorker) after Service Worker APIs are supported on dedicated
+    // workers and shared workers.
+    Exposed=(Window,ServiceWorker)
 ] interface ServiceWorker : EventTarget {
 
     [CallWith=ScriptState, RaisesException] void postMessage(any message, sequence<object> transfer);
@@ -52,4 +56,4 @@ enum ServiceWorkerState {
     attribute EventHandler onstatechange;
 };
 
-ServiceWorker implements AbstractWorker;
+ServiceWorker includes AbstractWorker;

@@ -6,7 +6,10 @@
 #define CONTENT_BROWSER_WORKER_HOST_WORKER_SCRIPT_LOADER_FACTORY_H_
 
 #include "base/macros.h"
-#include "content/common/navigation_subresource_loader_params.h"
+#include "base/memory/weak_ptr.h"
+#include "content/browser/navigation_subresource_loader_params.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 
 namespace network {
@@ -16,19 +19,18 @@ class SharedURLLoaderFactory;
 namespace content {
 
 class AppCacheHost;
-class ServiceWorkerProviderHost;
+class BrowserContext;
+class ServiceWorkerNavigationHandle;
 class ResourceContext;
 class WorkerScriptLoader;
 
-// S13nServiceWorker:
 // WorkerScriptLoaderFactory creates a WorkerScriptLoader to load the main
 // script for a web worker (dedicated worker or shared worker), which follows
 // redirects and sets the controller service worker on the web worker if needed.
 // It's an error to call CreateLoaderAndStart() more than a total of one time
 // across this object or any of its clones.
 //
-// This is created per one web worker. All functions of this class must be
-// called on the IO thread.
+// This is created per one web worker. It lives on the UI thread.
 class CONTENT_EXPORT WorkerScriptLoaderFactory
     : public network::mojom::URLLoaderFactory {
  public:
@@ -36,40 +38,47 @@ class CONTENT_EXPORT WorkerScriptLoaderFactory
   // the IO thread.
   using ResourceContextGetter = base::RepeatingCallback<ResourceContext*(void)>;
 
+  // Returns the browser context, or nullptr during shutdown. Must be called on
+  // the UI thread.
+  using BrowserContextGetter = base::RepeatingCallback<BrowserContext*(void)>;
+
   // |loader_factory| is used to load the script if the load is not intercepted
   // by a feature like service worker. Typically it will load the script from
   // the NetworkService. However, it may internally contain non-NetworkService
   // factories used for non-http(s) URLs, e.g., a chrome-extension:// URL.
   WorkerScriptLoaderFactory(
       int process_id,
-      base::WeakPtr<ServiceWorkerProviderHost> service_worker_provider_host,
+      ServiceWorkerNavigationHandle* service_worker_handle,
       base::WeakPtr<AppCacheHost> appcache_host,
-      const ResourceContextGetter& resource_context_getter,
+      const BrowserContextGetter& browser_context_getter,
       scoped_refptr<network::SharedURLLoaderFactory> loader_factory);
   ~WorkerScriptLoaderFactory() override;
 
   // network::mojom::URLLoaderFactory:
-  void CreateLoaderAndStart(network::mojom::URLLoaderRequest request,
-                            int32_t routing_id,
-                            int32_t request_id,
-                            uint32_t options,
-                            const network::ResourceRequest& resource_request,
-                            network::mojom::URLLoaderClientPtr client,
-                            const net::MutableNetworkTrafficAnnotationTag&
-                                traffic_annotation) override;
-  void Clone(network::mojom::URLLoaderFactoryRequest request) override;
+  void CreateLoaderAndStart(
+      mojo::PendingReceiver<network::mojom::URLLoader> receiver,
+      int32_t routing_id,
+      int32_t request_id,
+      uint32_t options,
+      const network::ResourceRequest& resource_request,
+      mojo::PendingRemote<network::mojom::URLLoaderClient> client,
+      const net::MutableNetworkTrafficAnnotationTag& traffic_annotation)
+      override;
+  void Clone(mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver)
+      override;
 
   base::WeakPtr<WorkerScriptLoader> GetScriptLoader() { return script_loader_; }
 
  private:
   const int process_id_;
-  base::WeakPtr<ServiceWorkerProviderHost> service_worker_provider_host_;
+  base::WeakPtr<ServiceWorkerNavigationHandle> service_worker_handle_;
   base::WeakPtr<AppCacheHost> appcache_host_;
-  ResourceContextGetter resource_context_getter_;
+  BrowserContextGetter browser_context_getter_;
   scoped_refptr<network::SharedURLLoaderFactory> loader_factory_;
 
-  // This is owned by StrongBinding associated with the given URLLoaderRequest,
-  // and invalidated after request completion or failure.
+  // This is owned by SelfOwnedReceiver associated with the given
+  // mojo::PendingReceiver<URLLoader>, and invalidated after receiver completion
+  // or failure.
   base::WeakPtr<WorkerScriptLoader> script_loader_;
 
   DISALLOW_COPY_AND_ASSIGN(WorkerScriptLoaderFactory);

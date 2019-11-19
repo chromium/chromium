@@ -27,15 +27,12 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_FILESYSTEM_DOM_WINDOW_FILE_SYSTEM_H_
 
 #include "third_party/blink/renderer/platform/heap/handle.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
 
-class ChooseFileSystemEntriesOptions;
 class LocalDOMWindow;
-class ScriptPromise;
-class ScriptState;
 class V8EntryCallback;
 class V8ErrorCallback;
 class V8FileSystemCallback;
@@ -46,7 +43,7 @@ class DOMWindowFileSystem {
  public:
   static void webkitRequestFileSystem(LocalDOMWindow&,
                                       int type,
-                                      long long size,
+                                      int64_t size,
                                       V8FileSystemCallback*,
                                       V8ErrorCallback*);
   static void webkitResolveLocalFileSystemURL(LocalDOMWindow&,
@@ -60,11 +57,6 @@ class DOMWindowFileSystem {
     kTemporary,
     kPersistent,
   };
-
-  static ScriptPromise chooseFileSystemEntries(
-      ScriptState*,
-      LocalDOMWindow&,
-      const ChooseFileSystemEntriesOptions*);
 };
 
 }  // namespace blink

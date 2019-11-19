@@ -84,7 +84,7 @@ int APIENTRY wWinMain(HINSTANCE hInstance,
   base::FilePath log_file_path = cmdline->GetSwitchValuePath("log-file");
   if (!log_file_path.empty()) {
     settings.logging_dest = logging::LOG_TO_FILE;
-    settings.log_file = log_file_path.value().c_str();
+    settings.log_file_path = log_file_path.value().c_str();
   }
 
   logging::InitLogging(settings);
@@ -105,13 +105,20 @@ int APIENTRY wWinMain(HINSTANCE hInstance,
     }
   }
 
-  logging::SetEventSource("GCP", GCP_CATEGORY, MSG_LOG_MESSAGE);
+  logging::SetEventSource("GCPW", GCPW_CATEGORY, MSG_LOG_MESSAGE);
 
   // Make sure the process exits cleanly on unexpected errors.
   base::EnableTerminationOnHeapCorruption();
   base::EnableTerminationOnOutOfMemory();
   base::win::RegisterInvalidParamHandler();
   base::win::SetupCRT(*base::CommandLine::ForCurrentProcess());
+
+  // If the program is being run to either enable or disable stats, do that
+  // and exit.
+  if (cmdline->HasSwitch(credential_provider::switches::kEnableStats) ||
+      cmdline->HasSwitch(credential_provider::switches::kDisableStats)) {
+    return credential_provider::EnableStatsCollection(*cmdline);
+  }
 
   base::FilePath gcp_setup_exe_path;
   hr = credential_provider::GetPathToDllFromHandle(hInstance,
@@ -133,8 +140,10 @@ int APIENTRY wWinMain(HINSTANCE hInstance,
   LOGFN(INFO) << "Module: " << gcp_setup_exe_path;
   LOGFN(INFO) << "Args: " << lpCmdLine;
   LOGFN(INFO) << "Version: " << TEXT(CHROME_VERSION_STRING);
+
   LOGFN(INFO) << "Windows: "
-              << base::win::OSInfo::GetInstance()->Kernel32BaseVersion();
+              << base::win::OSInfo::GetInstance()->Kernel32BaseVersion()
+              << " Version:" << credential_provider::GetWindowsVersion();
 
   // If running from omaha, make sure machine install is used.
   if (IsPerUserInstallFromGoogleUpdate()) {

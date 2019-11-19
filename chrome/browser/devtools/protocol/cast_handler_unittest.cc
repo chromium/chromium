@@ -11,7 +11,7 @@
 #include "chrome/browser/media/router/test/mock_media_router.h"
 #include "chrome/browser/sessions/session_tab_helper.h"
 #include "chrome/common/media_router/media_sink.h"
-#include "chrome/common/media_router/media_source_helper.h"
+#include "chrome/common/media_router/media_source.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 
 using testing::_;
@@ -124,7 +124,7 @@ TEST_F(CastHandlerTest, StartTabMirroring) {
   // Make |router_| return a successful result. |callback| should be notified of
   // the success.
   EXPECT_CALL(*router_, CreateRouteInternal(
-                            media_router::MediaSourceForTab(
+                            media_router::MediaSource::ForTab(
                                 SessionTabHelper::IdForTab(web_contents()).id())
                                 .id(),
                             kSinkId1, _, _, _, _, _))

@@ -28,9 +28,9 @@
 [ImplementedAs=StorageArea]
 interface Storage {
     [RaisesException=Getter] readonly attribute unsigned long length;
-    [RaisesException] DOMString? key(unsigned long index);
-    [LogActivity, RaisesException] getter DOMString? getItem(DOMString key);
-    [LogActivity, RaisesException] setter void setItem(DOMString key, DOMString value);
-    [LogActivity, RaisesException] deleter void removeItem(DOMString key);
-    [LogActivity, RaisesException] void clear();
+    [RaisesException, MeasureAs=DOMStorageRead] DOMString? key(unsigned long index);
+    [LogActivity, RaisesException, MeasureAs=DOMStorageRead] getter DOMString? getItem(DOMString key);
+    [LogActivity, RaisesException, MeasureAs=DOMStorageWrite] setter void setItem(DOMString key, DOMString value);
+    [LogActivity, RaisesException, MeasureAs=DOMStorageWrite] deleter void removeItem(DOMString key);
+    [LogActivity, RaisesException, MeasureAs=DOMStorageWrite] void clear();
 };

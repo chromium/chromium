@@ -5,18 +5,15 @@
 #ifndef ANDROID_WEBVIEW_BROWSER_AW_COOKIE_ACCESS_POLICY_H_
 #define ANDROID_WEBVIEW_BROWSER_AW_COOKIE_ACCESS_POLICY_H_
 
-#include "base/lazy_instance.h"
 #include "base/macros.h"
+#include "base/no_destructor.h"
 #include "base/synchronization/lock.h"
-#include "net/base/static_cookie_policy.h"
-#include "net/cookies/canonical_cookie.h"
-#include "net/url_request/url_request.h"
-
-namespace content {
-class ResourceContext;
-}
 
 class GURL;
+
+namespace net {
+class URLRequest;
+}  // namespace net
 
 namespace android_webview {
 
@@ -27,83 +24,40 @@ class AwCookieAccessPolicy {
  public:
   static AwCookieAccessPolicy* GetInstance();
 
-  // Can we read/write any cookies?
+  // Can we read/write any cookies? Can be called from any thread.
   bool GetShouldAcceptCookies();
   void SetShouldAcceptCookies(bool allow);
 
   // Can we read/write third party cookies?
   // |render_process_id| and |render_frame_id| must be valid.
   // Navigation requests are not associated with a renderer process. In this
-  // case, |frame_tree_node_id| must be valid instead.
+  // case, |frame_tree_node_id| must be valid instead. Can only be called from
+  // the IO thread.
   bool GetShouldAcceptThirdPartyCookies(int render_process_id,
                                         int render_frame_id,
                                         int frame_tree_node_id);
   bool GetShouldAcceptThirdPartyCookies(const net::URLRequest& request);
 
-  // These are the functions called when operating over cookies from the
-  // network. See NetworkDelegate for further descriptions.
-  bool OnCanGetCookies(const net::URLRequest& request,
-                       const net::CookieList& cookie_list);
-  bool OnCanSetCookie(const net::URLRequest& request,
-                      const net::CanonicalCookie& cookie,
-                      net::CookieOptions* options);
-
-  // These are the functions called when operating over cookies from the
-  // renderer. See ContentBrowserClient for further descriptions.
-  bool AllowGetCookie(const GURL& url,
-                      const GURL& first_party,
-                      const net::CookieList& cookie_list,
-                      content::ResourceContext* context,
-                      int render_process_id,
-                      int render_frame_id);
-  bool AllowSetCookie(const GURL& url,
-                      const GURL& first_party,
-                      const net::CanonicalCookie& cookie,
-                      content::ResourceContext* context,
-                      int render_process_id,
-                      int render_frame_id);
+  // Whether or not to allow cookies for requests with these parameters.
+  bool AllowCookies(const GURL& url,
+                    const GURL& first_party,
+                    int render_process_id,
+                    int render_frame_id);
 
  private:
-  friend struct base::LazyInstanceTraitsBase<AwCookieAccessPolicy>;
+  friend class base::NoDestructor<AwCookieAccessPolicy>;
+  friend class AwCookieAccessPolicyTest;
 
   AwCookieAccessPolicy();
   ~AwCookieAccessPolicy();
+
+  bool CanAccessCookies(const GURL& url,
+                        const GURL& site_for_cookies,
+                        bool accept_third_party_cookies);
   bool accept_cookies_;
   base::Lock lock_;
 
   DISALLOW_COPY_AND_ASSIGN(AwCookieAccessPolicy);
-};
-
-class AwStaticCookiePolicy {
- public:
-  AwStaticCookiePolicy(bool allow_global_access,
-                       bool allow_third_party_access);
-
-  bool accept_cookies() const {
-    return accept_cookies_;
-  }
-
-  bool accept_third_party_cookies() const {
-    return accept_third_party_cookies_;
-  }
-
-  bool AllowGet(const GURL& url, const GURL& first_party) const;
-  bool AllowSet(const GURL& url, const GURL& first_party) const;
-
- private:
-  const bool accept_cookies_;
-  const bool accept_third_party_cookies_;
-
-  // We have two bits of state but only three different cases:
-  // If !ShouldAcceptCookies
-  //    then reject all cookies.
-  // If ShouldAcceptCookies and !ShouldAcceptThirdPartyCookies
-  //    then reject third party.
-  // If ShouldAcceptCookies and ShouldAcceptThirdPartyCookies
-  //    then allow all cookies.
-  net::StaticCookiePolicy::Type GetPolicy(const GURL& url) const;
-
-  DISALLOW_COPY_AND_ASSIGN(AwStaticCookiePolicy);
 };
 
 }  // namespace android_webview

@@ -12,7 +12,8 @@ import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputConnection;
 
 import org.chromium.base.Log;
-import org.chromium.base.ThreadUtils;
+import org.chromium.base.task.PostTask;
+import org.chromium.content_public.browser.UiThreadTaskTraits;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
@@ -21,7 +22,7 @@ import java.util.concurrent.atomic.AtomicReference;
  * This is a fake View that is only exposed to InputMethodManager.
  */
 public class ThreadedInputConnectionProxyView extends View {
-    private static final String TAG = "cr_Ime";
+    private static final String TAG = "Ime";
     private static final boolean DEBUG_LOGS = false;
 
     private final Handler mImeThreadHandler;
@@ -89,7 +90,7 @@ public class ThreadedInputConnectionProxyView extends View {
     @Override
     public InputConnection onCreateInputConnection(final EditorInfo outAttrs) {
         if (DEBUG_LOGS) Log.w(TAG, "onCreateInputConnection");
-        return ThreadUtils.runOnUiThreadBlockingNoException(() -> {
+        return PostTask.runSynchronously(UiThreadTaskTraits.USER_BLOCKING, () -> {
             mFactory.setTriggerDelayedOnCreateInputConnection(false);
             InputConnection connection = mContainerView.onCreateInputConnection(outAttrs);
             mFactory.setTriggerDelayedOnCreateInputConnection(true);

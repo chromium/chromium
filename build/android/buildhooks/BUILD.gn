@@ -2,11 +2,11 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/android/rules.gni")
 import("//build/config/android/config.gni")
+import("//build/config/android/rules.gni")
 
 java_library("build_hooks_java") {
-  emma_never_instrument = true
+  jacoco_never_instrument = true
   java_files = [ "java/org/chromium/build/BuildHooks.java" ]
 
   # Make all targets pull in the try-with-resources support files.
@@ -35,7 +35,7 @@ java_cpp_template("base_build_hooks_config") {
 build_hooks_android_impl = "java/org/chromium/build/BuildHooksAndroidImpl.java"
 
 android_library("build_hooks_android_java") {
-  emma_never_instrument = true
+  jacoco_never_instrument = true
   java_files = [
     "java/org/chromium/build/BuildHooksAndroid.java",
     build_hooks_android_impl,
@@ -49,7 +49,7 @@ android_library("build_hooks_android_java") {
 # This default implementation is used if an android_apk target doesn't
 # specify a different implementation via build_hooks_android_impl_deps.
 android_library("build_hooks_android_impl_java") {
-  emma_never_instrument = true
+  jacoco_never_instrument = true
   java_files = [ build_hooks_android_impl ]
   deps = [
     ":build_hooks_android_java",

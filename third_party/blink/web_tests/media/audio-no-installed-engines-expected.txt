@@ -1,1 +1,2 @@
+CONSOLE ERROR: Uncaught (in promise) NotSupportedError: Failed to load because no supported source was found.
 PASSED -- crash using Audio with no installed engines bug 27479.

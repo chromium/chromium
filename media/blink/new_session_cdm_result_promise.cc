@@ -75,14 +75,14 @@ void NewSessionCdmResultPromise::resolve(const std::string& session_id) {
   SessionInitStatus status = SessionInitStatus::UNKNOWN_STATUS;
   new_session_created_cb_.Run(session_id, &status);
 
-  if (!base::ContainsValue(expected_statuses_, status)) {
+  if (!base::Contains(expected_statuses_, status)) {
     reject(Exception::INVALID_STATE_ERROR, 0,
            "Cannot finish session initialization");
     return;
   }
 
   MarkPromiseSettled();
-  ReportCdmResultUMA(key_system_uma_prefix_ + uma_name_,
+  ReportCdmResultUMA(key_system_uma_prefix_ + uma_name_, 0,
                      ConvertStatusToUMAResult(status));
 
   // Only report time for promise resolution (not rejection).
@@ -99,7 +99,7 @@ void NewSessionCdmResultPromise::reject(CdmPromise::Exception exception_code,
            << ", error_message = " << error_message;
 
   MarkPromiseSettled();
-  ReportCdmResultUMA(uma_name_,
+  ReportCdmResultUMA(key_system_uma_prefix_ + uma_name_, system_code,
                      ConvertCdmExceptionToResultForUMA(exception_code));
   web_cdm_result_.CompleteWithError(ConvertCdmException(exception_code),
                                     system_code,

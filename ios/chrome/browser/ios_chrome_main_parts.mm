@@ -17,6 +17,7 @@
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/flags_ui/pref_service_flags_storage.h"
+#include "components/language/core/browser/pref_names.h"
 #include "components/language_usage_metrics/language_usage_metrics.h"
 #include "components/metrics/expired_histogram_util.h"
 #include "components/metrics/metrics_service.h"
@@ -26,26 +27,27 @@
 #include "components/prefs/pref_service.h"
 #include "components/rappor/rappor_service_impl.h"
 #include "components/translate/core/browser/translate_download_manager.h"
+#include "components/ukm/ios/features.h"
 #include "components/variations/field_trial_config/field_trial_util.h"
 #include "components/variations/service/variations_service.h"
 #include "components/variations/synthetic_trials_active_group_id_provider.h"
 #include "components/variations/variations_crash_keys.h"
 #include "components/variations/variations_http_header_provider.h"
-#include "ios/chrome/browser/about_flags.h"
 #include "ios/chrome/browser/application_context_impl.h"
 #include "ios/chrome/browser/browser_state/browser_state_keyed_service_factories.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state_manager.h"
 #include "ios/chrome/browser/chrome_paths.h"
 #import "ios/chrome/browser/first_run/first_run.h"
+#include "ios/chrome/browser/flags/about_flags.h"
 #include "ios/chrome/browser/install_time_util.h"
 #include "ios/chrome/browser/metrics/ios_expired_histograms_array.h"
 #include "ios/chrome/browser/open_from_clipboard/create_clipboard_recent_content.h"
 #include "ios/chrome/browser/pref_names.h"
 #include "ios/chrome/browser/translate/translate_service_ios.h"
 #include "ios/public/provider/chrome/browser/chrome_browser_provider.h"
-#include "ios/web/public/web_task_traits.h"
-#include "ios/web/public/web_thread.h"
+#include "ios/web/public/thread/web_task_traits.h"
+#include "ios/web/public/thread/web_thread.h"
 #include "net/base/network_change_notifier.h"
 #include "net/http/http_network_layer.h"
 #include "net/http/http_stream_factory.h"
@@ -95,11 +97,12 @@ void IOSChromeMainParts::PreCreateThreads() {
 
   // The initial read is done synchronously, the TaskPriority is thus only used
   // for flushes to disks and BACKGROUND is therefore appropriate. Priority of
-  // remaining BACKGROUND+BLOCK_SHUTDOWN tasks is bumped by the TaskScheduler on
+  // remaining BACKGROUND+BLOCK_SHUTDOWN tasks is bumped by the ThreadPool on
   // shutdown.
   scoped_refptr<base::SequencedTaskRunner> local_state_task_runner =
-      base::CreateSequencedTaskRunnerWithTraits(
-          {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+      base::CreateSequencedTaskRunner(
+          {base::ThreadPool(), base::MayBlock(),
+           base::TaskPriority::BEST_EFFORT,
            base::TaskShutdownBehavior::BLOCK_SHUTDOWN});
 
   base::FilePath local_state_path;
@@ -183,7 +186,8 @@ void IOSChromeMainParts::PreMainMessageLoopRun() {
 
   TranslateServiceIOS::Initialize();
   language_usage_metrics::LanguageUsageMetrics::RecordAcceptLanguages(
-      last_used_browser_state->GetPrefs()->GetString(prefs::kAcceptLanguages));
+      last_used_browser_state->GetPrefs()->GetString(
+          language::prefs::kAcceptLanguages));
   language_usage_metrics::LanguageUsageMetrics::RecordApplicationLanguage(
       application_context_->GetApplicationLocale());
 
@@ -209,7 +213,7 @@ void IOSChromeMainParts::PostDestroyThreads() {
 // This will be called after the command-line has been mutated by about:flags
 void IOSChromeMainParts::SetupFieldTrials() {
   base::SetRecordActionTaskRunner(
-      base::CreateSingleThreadTaskRunnerWithTraits({web::WebThread::UI}));
+      base::CreateSingleThreadTaskRunner({web::WebThread::UI}));
 
   // Initialize FieldTrialList to support FieldTrials that use one-time
   // randomization.
@@ -228,10 +232,13 @@ void IOSChromeMainParts::SetupFieldTrials() {
 
   // On iOS, GPU benchmarking is not supported. So, pass in a dummy value for
   // the name of the switch that enables gpu benchmarking.
+  // TODO(crbug.com/988603): This should also set up extra switch-dependent
+  // feature overrides.
   application_context_->GetVariationsService()->SetupFieldTrials(
       "dummy-enable-gpu-benchmarking", switches::kEnableFeatures,
       switches::kDisableFeatures,
       /*unforceable_field_trials=*/std::set<std::string>(), variation_ids,
+      std::vector<base::FeatureList::FeatureOverrideInfo>(),
       std::move(feature_list), &ios_field_trials_);
 }
 
@@ -246,10 +253,15 @@ void IOSChromeMainParts::SetupMetrics() {
 }
 
 void IOSChromeMainParts::StartMetricsRecording() {
-  bool wifiOnly = local_state_->GetBoolean(prefs::kMetricsReportingWifiOnly);
   bool isConnectionCellular = net::NetworkChangeNotifier::IsConnectionCellular(
       net::NetworkChangeNotifier::GetConnectionType());
-  bool mayUpload = !wifiOnly || !isConnectionCellular;
+  bool mayUpload = false;
+  if (base::FeatureList::IsEnabled(kUmaCellular)) {
+    mayUpload = !isConnectionCellular;
+  } else {
+    bool wifiOnly = local_state_->GetBoolean(prefs::kMetricsReportingWifiOnly);
+    mayUpload = !wifiOnly || !isConnectionCellular;
+  }
 
   application_context_->GetMetricsServicesManager()->UpdateUploadPermissions(
       mayUpload);

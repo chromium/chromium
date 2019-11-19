@@ -1,11 +1,11 @@
 <link rel="import" href="../../html/polymer.html">
 
 <link rel="import" href="../cr_icon_button/cr_icon_button.html">
-<link rel="import" href="../cr_search_field/cr_search_field_behavior.html">
 <link rel="import" href="../cr_icons_css.html">
+<link rel="import" href="../cr_search_field/cr_search_field_behavior.html">
 <link rel="import" href="../icons.html">
 <link rel="import" href="../shared_style_css.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/paper-icon-button/paper-icon-button-light.html">
+<link rel="import" href="../shared_vars_css.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/paper-spinner/paper-spinner-lite.html">
 
 <dom-module id="cr-toolbar-search-field">
@@ -24,23 +24,28 @@
         display: none !important;
       }
 
-      paper-icon-button-light {
-        height: 32px;
-        margin: 6px;
-        min-width: 32px;
-        padding: 6px;
-        width: 32px;
-      }
-
       cr-icon-button {
-        --cr-icon-button-color: white;
-        --cr-icon-button-icon-padding: 6px;
-        --cr-icon-button-ripple-color: white;
+        --cr-icon-button-fill-color-focus: var(
+            --cr-toolbar-search-field-input-bg-color,
+            var(--cr-toolbar-background-color));
+        --cr-icon-button-size: 32px;
         margin: 6px;
       }
 
-      :host-context([dark]) cr-icon-button {
-        --cr-icon-button-color: var(--google-grey-200);
+      @media (prefers-color-scheme: light) {
+        cr-icon-button {
+          --cr-icon-button-fill-color: var(
+              --cr-toolbar-search-field-input-color,
+              white);
+        }
+      }
+
+      @media (prefers-color-scheme: dark) {
+        cr-icon-button {
+          --cr-icon-button-fill-color: var(
+              --cr-toolbar-search-field-input-color,
+              var(--google-grey-refresh-500));
+        }
       }
 
       #icon {
@@ -48,12 +53,20 @@
       }
 
       #prompt {
+        --cr-toolbar-search-field-prompt-opacity: .7;
         opacity: 0;
+      }
+
+      @media (prefers-color-scheme: dark) {
+        #prompt {
+          --cr-toolbar-search-field-prompt-opacity: 1;
+        }
       }
 
       paper-spinner-lite {
         @apply --cr-icon-height-width;
-        --paper-spinner-color: white;
+        --paper-spinner-color:
+            var(--cr-toolbar-search-field-input-color, white);
         margin: 0 6px;
         opacity: 0;
         padding: 6px;
@@ -98,7 +111,7 @@
         -webkit-appearance: none;
         background: transparent;
         border: none;
-        color: white;
+        color: var(--cr-toolbar-search-field-input-color, white);
         font: inherit;
         outline: none;
         padding: 0;
@@ -113,16 +126,21 @@
 
       /** Wide layout. */
       :host(:not([narrow])) {
-        background: rgba(0, 0, 0, 0.22);
-        border-radius: 2px;
+        background:
+            var(--cr-toolbar-search-field-background, rgba(0, 0, 0, 0.22));
+        border-radius:
+            var(--cr-toolbar-search-field-border-radius, 2px);
         cursor: text;
         padding-inline-end: 0;
         width: var(--cr-toolbar-field-width, 680px);
       }
 
-      :host(:not([narrow]):not([showing-search])) #icon,
+      :host(:not([narrow]):not([showing-search])) #icon {
+        opacity: .7;
+      }
+
       :host(:not([narrow])) #prompt {
-        opacity: 0.7;
+        opacity: var(--cr-toolbar-search-field-prompt-opacity);
       }
 
       :host([narrow]:not([showing-search])) #searchTerm {
@@ -165,10 +183,8 @@
           spellcheck="false">
     </div>
     <template is="dom-if" if="[[hasSearchText]]">
-      <paper-icon-button-light class="icon-toolbar-cancel">
-        <button id="clearSearch" title="[[clearLabel]]" on-tap="clearSearch_">
-        </button>
-      </paper-icon-button-light>
+      <cr-icon-button id="clearSearch" iron-icon="cr:cancel"
+          title="[[clearLabel]]" on-click="clearSearch_"></cr-icon-button>
     </template>
   </template>
   <script src="cr_toolbar_search_field.js"></script>

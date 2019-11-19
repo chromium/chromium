@@ -11,7 +11,7 @@
 #include "base/macros.h"
 #include "base/timer/timer.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "services/identity/public/cpp/identity_manager.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 
 struct CoreAccountInfo;
 class PrefRegistrySimple;
@@ -21,9 +21,9 @@ namespace base {
 class Time;
 }  // namespace base
 
-namespace identity {
+namespace signin {
 struct AccountsInCookieJarInfo;
-}  // namespace identity
+}  // namespace signin
 
 namespace signin_metrics {
 enum class AccountRelation;
@@ -35,7 +35,7 @@ enum class ReportingType;
 // is to watch for changes in relation between Chrome and content area accounts
 // and emit metrics about their relation.
 class AccountInvestigator : public KeyedService,
-                            public identity::IdentityManager::Observer {
+                            public signin::IdentityManager::Observer {
  public:
   // The targeted interval to perform periodic reporting. If chrome is not
   // active at the end of an interval, reporting will be done as soon as
@@ -43,7 +43,7 @@ class AccountInvestigator : public KeyedService,
   static const base::TimeDelta kPeriodicReportingInterval;
 
   AccountInvestigator(PrefService* pref_service,
-                      identity::IdentityManager* identity_manager);
+                      signin::IdentityManager* identity_manager);
   ~AccountInvestigator() override;
 
   static void RegisterPrefs(PrefRegistrySimple* registry);
@@ -54,9 +54,9 @@ class AccountInvestigator : public KeyedService,
   // KeyedService:
   void Shutdown() override;
 
-  // identity::IdentityManager::Observer:
+  // signin::IdentityManager::Observer:
   void OnAccountsInCookieUpdated(
-      const identity::AccountsInCookieJarInfo& accounts_in_cookie_jar_info,
+      const signin::AccountsInCookieJarInfo& accounts_in_cookie_jar_info,
       const GoogleServiceAuthError& error) override;
 
  private:
@@ -109,7 +109,7 @@ class AccountInvestigator : public KeyedService,
       signin_metrics::ReportingType type);
 
   PrefService* pref_service_;
-  identity::IdentityManager* identity_manager_;
+  signin::IdentityManager* identity_manager_;
 
   // Handles invoking our periodic logic at the right time. As part of our
   // handling of this call we reset the timer for the next loop.

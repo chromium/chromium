@@ -7,14 +7,16 @@
 #import <UIKit/UIKit.h>
 
 #include "base/metrics/histogram_macros.h"
+#include "components/ukm/ios/ukm_url_recorder.h"
 #include "ios/chrome/browser/chrome_url_constants.h"
 #import "ios/chrome/browser/metrics/previous_session_info.h"
 #import "ios/chrome/browser/prerender/prerender_service.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
-#import "ios/web/public/navigation_item.h"
-#import "ios/web/public/navigation_manager.h"
-#import "ios/web/public/web_state/navigation_context.h"
-#import "ios/web/public/web_state/web_state.h"
+#import "ios/web/public/navigation/navigation_context.h"
+#import "ios/web/public/navigation/navigation_item.h"
+#import "ios/web/public/navigation/navigation_manager.h"
+#import "ios/web/public/web_state.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 #include "ui/base/page_transition_types.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -288,9 +290,13 @@ void TabUsageRecorder::RendererTerminated(web::WebState* terminated_web_state,
   UMA_HISTOGRAM_ENUMERATION(kRendererTerminationStateHistogram,
                             static_cast<int>(web_state_state),
                             static_cast<int>(TERMINATION_TAB_STATE_COUNT));
-
   if (!web_state_visible) {
-    DCHECK(!WebStateAlreadyEvicted(terminated_web_state));
+    if (WebStateAlreadyEvicted(terminated_web_state)) {
+      // A web state may get notified multiple times that it's been evicted.
+      // To avoid double-counting, don't do any further processing if this
+      // happens.
+      return;
+    }
     evicted_web_states_[terminated_web_state] =
         EVICTED_DUE_TO_RENDERER_TERMINATION;
   }
@@ -326,6 +332,17 @@ void TabUsageRecorder::RendererTerminated(web::WebState* terminated_web_state,
       live_web_states_count + termination_timestamps_.size();
   UMA_HISTOGRAM_COUNTS_100(kRendererTerminationRecentlyAliveRenderers,
                            recently_live_web_states_count);
+
+  ukm::SourceId source_id =
+      ukm::GetSourceIdForWebStateDocument(terminated_web_state);
+  if (source_id != ukm::kInvalidSourceId) {
+    ukm::builders::IOS_RendererGone(source_id)
+        .SetInForeground(web_state_state)
+        .SetSawMemoryWarning(saw_memory_warning)
+        .SetAliveRendererCount(live_web_states_count)
+        .SetAliveRecentlyRendererCount(recently_live_web_states_count)
+        .Record(ukm::UkmRecorder::Get());
+  }
 }
 
 void TabUsageRecorder::AppDidEnterBackground() {

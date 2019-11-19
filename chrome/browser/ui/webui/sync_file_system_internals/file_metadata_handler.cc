@@ -25,8 +25,7 @@ using sync_file_system::SyncServiceState;
 namespace syncfs_internals {
 
 FileMetadataHandler::FileMetadataHandler(Profile* profile)
-    : profile_(profile),
-      weak_factory_(this) {}
+    : profile_(profile) {}
 
 FileMetadataHandler::~FileMetadataHandler() {}
 

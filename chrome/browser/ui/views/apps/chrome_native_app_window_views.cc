@@ -118,14 +118,15 @@ void ChromeNativeAppWindowViews::InitializeDefaultWindow(
     // TODO(skuhne): If we run into an application which should have a shadow
     // but does not have, a new attribute has to be added.
     if (IsFrameless())
-      init_params.shadow_type = views::Widget::InitParams::SHADOW_TYPE_NONE;
+      init_params.shadow_type = views::Widget::InitParams::ShadowType::kNone;
   }
-  init_params.keep_on_top = create_params.always_on_top;
+  if (create_params.always_on_top)
+    init_params.z_order = ui::ZOrderLevel::kFloatingWindow;
   init_params.visible_on_all_workspaces =
       create_params.visible_on_all_workspaces;
 
   OnBeforeWidgetInit(create_params, &init_params, widget());
-  widget()->Init(init_params);
+  widget()->Init(std::move(init_params));
 
   // The frame insets are required to resolve the bounds specifications
   // correctly. So we set the window bounds and constraints now.
@@ -205,8 +206,8 @@ ui::WindowShowState ChromeNativeAppWindowViews::GetRestoredState() const {
   return ui::SHOW_STATE_NORMAL;
 }
 
-bool ChromeNativeAppWindowViews::IsAlwaysOnTop() const {
-  return widget()->IsAlwaysOnTop();
+ui::ZOrderLevel ChromeNativeAppWindowViews::GetZOrderLevel() const {
+  return widget()->GetZOrderLevel();
 }
 
 // views::WidgetDelegate implementation.
@@ -348,11 +349,11 @@ void ChromeNativeAppWindowViews::InitializeWindow(
   active_frame_color_ = create_params.active_frame_color;
   inactive_frame_color_ = create_params.inactive_frame_color;
   InitializeDefaultWindow(create_params);
-  extension_keybinding_registry_.reset(new ExtensionKeybindingRegistryViews(
-      Profile::FromBrowserContext(app_window->browser_context()),
-      widget()->GetFocusManager(),
-      extensions::ExtensionKeybindingRegistry::PLATFORM_APPS_ONLY,
-      NULL));
+  extension_keybinding_registry_ =
+      std::make_unique<ExtensionKeybindingRegistryViews>(
+          Profile::FromBrowserContext(app_window->browser_context()),
+          widget()->GetFocusManager(),
+          extensions::ExtensionKeybindingRegistry::PLATFORM_APPS_ONLY, nullptr);
 }
 
 void ChromeNativeAppWindowViews::EnsureAppIconCreated() {

@@ -4,6 +4,7 @@
 
 #include "chromeos/services/assistant/platform/file_provider_impl.h"
 
+#include "base/files/file_util.h"
 #include "base/logging.h"
 #include "chromeos/grit/chromeos_resources.h"
 #include "chromeos/services/assistant/utils.h"

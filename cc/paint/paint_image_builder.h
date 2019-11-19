@@ -9,6 +9,7 @@
 #include "cc/paint/paint_image.h"
 #include "cc/paint/paint_image_generator.h"
 #include "cc/paint/paint_op_buffer.h"
+#include "cc/paint/paint_worklet_input.h"
 #include "cc/paint/skia_paint_image_generator.h"
 #include "third_party/skia/include/core/SkImage.h"
 

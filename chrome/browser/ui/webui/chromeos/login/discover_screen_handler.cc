@@ -6,18 +6,14 @@
 
 #include "chrome/browser/chromeos/login/screens/discover_screen.h"
 
-namespace {
-
-const char kJsScreenPath[] = "login.DiscoverScreen";
-
-}  // namespace
-
 namespace chromeos {
+
+constexpr StaticOobeScreenId DiscoverScreenView::kScreenId;
 
 DiscoverScreenHandler::DiscoverScreenHandler(
     JSCallsContainer* js_calls_container)
     : BaseScreenHandler(kScreenId, js_calls_container) {
-  set_call_js_prefix(kJsScreenPath);
+  set_user_acted_method_path("login.DiscoverScreen.userActed");
 }
 
 DiscoverScreenHandler::~DiscoverScreenHandler() {}
@@ -26,7 +22,7 @@ void DiscoverScreenHandler::DeclareLocalizedValues(
     ::login::LocalizedValuesBuilder* builder) {}
 
 void DiscoverScreenHandler::RegisterMessages() {
-  BaseWebUIHandler::RegisterMessages();
+  BaseScreenHandler::RegisterMessages();
   discover_ui_.RegisterMessages(web_ui());
 }
 

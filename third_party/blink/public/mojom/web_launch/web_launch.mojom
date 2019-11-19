@@ -1,0 +1,21 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+import "third_party/blink/public/mojom/native_file_system/native_file_system_directory_handle.mojom";
+import "url/mojom/url.mojom";
+
+// Interface for getting the cause of page loads to blink. This service lives
+// in blink and is used to implement the File Handling proposal:
+// https://github.com/WICG/file-handling/blob/master/explainer.md
+// TODO(harrisjay): Replace link to explainer with link to spec, when
+// available.
+//
+// An instance of this service is tied to a LocalFrame.
+interface WebLaunchService {
+  // Used to notify a frame that it was opened with |files|. This
+  // method is fire-and-forget.
+  SetLaunchFiles(array<NativeFileSystemEntry> files);
+};

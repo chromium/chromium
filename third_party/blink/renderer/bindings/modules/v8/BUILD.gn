@@ -50,12 +50,13 @@ idl_compiler("generate_bindings_modules_v8_partial_interfaces_for_testing") {
 }
 
 generate_origin_trial_features("bindings_modules_origin_trial_features") {
-  sources =
-      modules_idl_files + modules_global_constructors_generated_idl_files +
-      modules_dependency_idl_files
+  sources = modules_idl_files + modules_generated_dependency_idl_files +
+            modules_dependency_idl_files
   component = "modules"
   output_dir = bindings_modules_output_dir + "/v8"
   deps = [
+    "//third_party/blink/renderer/bindings:global_constructors_idls",
+    "//third_party/blink/renderer/bindings/modules:interfaces_info_modules",
     "//third_party/blink/renderer/bindings/modules:modules_global_constructors_idls",
   ]
 }
@@ -64,7 +65,7 @@ action("bindings_modules_v8_generated_init_partial") {
   script = "$bindings_scripts_dir/generate_init_partial_interfaces.py"
 
   inputs = [
-    "$bindings_modules_output_dir/InterfacesInfoOverall.pickle",
+    "$bindings_output_dir/interfaces_info.pickle",
   ]
   outputs = [
     bindings_modules_generated_init_partial_interfaces_file,
@@ -83,7 +84,7 @@ action("bindings_modules_v8_generated_init_partial") {
   ]
 
   deps = [
-    "//third_party/blink/renderer/bindings/modules:interfaces_info",
+    "//third_party/blink/renderer/bindings:interfaces_info",
   ]
 }
 
@@ -96,12 +97,12 @@ group("generate_mojo_bindings") {
 
   deps = [
     "//device/gamepad/public/mojom:mojom_blink_headers",
-    "//device/usb/public/mojom:mojom_blink_headers",
     "//device/vr/public/mojom:mojom_blink_headers",
     "//media/capture/mojom:image_capture_blink_headers",
     "//media/midi:mojo_blink_headers",
     "//services/device/public/mojom:generic_sensor_headers",
     "//services/device/public/mojom:mojom_blink_headers",
+    "//services/device/public/mojom:usb_blink_headers",
     "//services/shape_detection/public/mojom:mojom_blink_headers",
 
     # IndexedDB Mojom Blink headers are provided by the mojom_modules
@@ -124,14 +125,9 @@ blink_modules_sources("bindings_modules_impl") {
     ":bindings_modules_origin_trial_features",
     ":bindings_modules_v8_generated",
     ":generate_mojo_bindings",
+    "//third_party/blink/renderer/modules/mediarecorder:buildflags",
+    "//third_party/dawn/src/dawn:dawn_headers",
   ]
-
-  if (!is_component_build && is_win) {
-    # This target as a static library (for non-component builds) is >4GB on
-    # Windows, this causes linking to fail. As a workaround, split it into
-    # multiple shards.
-    split_count = 5
-  }
 }
 
 action("generate_v8_context_snapshot_external_references") {
@@ -160,9 +156,7 @@ action("generate_v8_context_snapshot_external_references") {
   ]
 
   deps = [
-    "//third_party/blink/renderer/bindings/core:interfaces_info_individual_core",
-    "//third_party/blink/renderer/bindings/modules:interfaces_info",
-    "//third_party/blink/renderer/bindings/modules:interfaces_info_individual_modules",
+    "//third_party/blink/renderer/bindings:interfaces_info",
     "//third_party/blink/renderer/bindings/scripts:cached_jinja_templates",
     "//third_party/blink/renderer/bindings/scripts:cached_lex_yacc_tables",
   ]

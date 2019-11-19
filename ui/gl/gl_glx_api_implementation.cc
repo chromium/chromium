@@ -5,11 +5,13 @@
 #include "ui/gl/gl_glx_api_implementation.h"
 
 #include "base/command_line.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_implementation.h"
 #include "ui/gl/gl_surface_glx.h"
+#include "ui/gl/gl_version_info.h"
 
 namespace gl {
 
@@ -120,7 +122,8 @@ void TraceGLXApi::SetDisabledExtensions(
   }
 }
 
-bool GetGLWindowSystemBindingInfoGLX(GLWindowSystemBindingInfo* info) {
+bool GetGLWindowSystemBindingInfoGLX(const GLVersionInfo& gl_info,
+                                     GLWindowSystemBindingInfo* info) {
   Display* display = glXGetCurrentDisplay();
   const int kDefaultScreen = 0;
   const char* vendor =
@@ -136,7 +139,32 @@ bool GetGLWindowSystemBindingInfoGLX(GLWindowSystemBindingInfo* info) {
     info->version = version;
   if (extensions)
     info->extensions = extensions;
-  info->direct_rendering = !!glXIsDirect(display, glXGetCurrentContext());
+  if (glXIsDirect(display, glXGetCurrentContext())) {
+    info->direct_rendering_version = "2";
+    bool using_mesa = gl_info.driver_vendor.find("Mesa") != std::string::npos ||
+                      gl_info.driver_version.find("Mesa") != std::string::npos;
+    if (using_mesa) {
+      std::vector<std::string> split_version =
+          base::SplitString(gl_info.driver_version, ".", base::TRIM_WHITESPACE,
+                            base::SPLIT_WANT_ALL);
+      int ext_code, first_event, first_error;
+      unsigned major_num = 0;
+      base::StringToUint(split_version[0], &major_num);
+      // Mesa after version 17 will reliably use DRI3 when available.
+      if (major_num >= 17 && XQueryExtension(display, "DRI3", &ext_code,
+                                             &first_event, &first_error)) {
+        info->direct_rendering_version = "2.3";
+      } else if (XQueryExtension(display, "DRI2", &ext_code, &first_event,
+                                 &first_error)) {
+        info->direct_rendering_version = "2.2";
+      } else if (XQueryExtension(display, "DRI", &ext_code, &first_event,
+                                 &first_error)) {
+        info->direct_rendering_version = "2.1";
+      }
+    }
+  } else {
+    info->direct_rendering_version = "1";
+  }
   return true;
 }
 

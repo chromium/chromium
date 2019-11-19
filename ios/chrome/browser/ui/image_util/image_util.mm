@@ -6,8 +6,6 @@
 #import <UIKit/UIKit.h>
 
 #import "ios/chrome/browser/ui/image_util/image_util.h"
-
-#include "third_party/google_toolbox_for_mac/src/iPhone/GTMUIImage+Resize.h"
 #include "ui/gfx/color_analysis.h"
 #include "ui/gfx/image/image.h"
 

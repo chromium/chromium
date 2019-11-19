@@ -4,7 +4,30 @@
 
 #include "third_party/blink/public/common/messaging/message_port_channel.h"
 
+#include "base/memory/ref_counted.h"
+#include "base/synchronization/lock.h"
+#include "mojo/public/cpp/system/message_pipe.h"
+
 namespace blink {
+
+class MessagePortChannel::State : public base::RefCountedThreadSafe<State> {
+ public:
+  State();
+  explicit State(mojo::ScopedMessagePipeHandle handle);
+
+  mojo::ScopedMessagePipeHandle TakeHandle();
+
+  const mojo::ScopedMessagePipeHandle& handle() const { return handle_; }
+
+ private:
+  friend class base::RefCountedThreadSafe<State>;
+  ~State();
+
+  // Guards access to the fields below.
+  base::Lock lock_;
+
+  mojo::ScopedMessagePipeHandle handle_;
+};
 
 MessagePortChannel::~MessagePortChannel() = default;
 

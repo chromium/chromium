@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/toolbar/toolbar_actions_bar_bubble_delegate.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "extensions/browser/blocked_action_type.h"
+#include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/common/user_script.h"
@@ -36,7 +37,6 @@ class Message;
 
 namespace extensions {
 class Extension;
-class ExtensionRegistry;
 
 // The provider for ExtensionActions corresponding to scripts which are actively
 // running or need permission.
@@ -251,9 +251,9 @@ class ExtensionActionRunner : public content::WebContentsObserver,
   TestObserver* test_observer_;
 
   ScopedObserver<ExtensionRegistry, ExtensionRegistryObserver>
-      extension_registry_observer_;
+      extension_registry_observer_{this};
 
-  base::WeakPtrFactory<ExtensionActionRunner> weak_factory_;
+  base::WeakPtrFactory<ExtensionActionRunner> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ExtensionActionRunner);
 };

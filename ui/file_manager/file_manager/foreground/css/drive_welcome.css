@@ -80,10 +80,6 @@
   font-size: 16px;
 }
 
-.drive-welcome.header .drive-welcome-dismiss {
-  display: none;
-}
-
 .drive-welcome.header .drive-welcome-links {
   z-index: 1;
 }
@@ -191,10 +187,6 @@ html[dir='rtl'] .drive-welcome.header .banner-people {
 .drive-welcome.page .drive-welcome-text {
   font-size: 13px;
   margin-bottom: 24px;
-}
-
-.drive-welcome.page .drive-welcome-dismiss {
-  margin-left: 20px;
 }
 
 .drive-welcome.page .drive-welcome-links {

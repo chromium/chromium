@@ -1,5 +1,6 @@
 .gradle/
 .idea/
+.settings/
 local.properties
 buildSrc/.gradle/
 buildSrc/build/

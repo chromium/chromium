@@ -31,6 +31,7 @@
 <translation id="4769065380738716500">Слике су замењене „alt“ текстом.</translation>
 <translation id="4896660567607030658">Без повратних информација, само приказуј курсор.</translation>
 <translation id="4937901943818762779">Дозволи анимиране слике, али само једном.</translation>
+<translation id="4949131196216960195">Притисните &lt;span class='key'&gt;тастер за претрагу&lt;/span&gt; + &lt;img src='increase_brightness.png'&gt; (тастер за појачавање осветљења или F7) да бисте укључили навигацију курсором. Притисните га поново да бисте га искључили.</translation>
 <translation id="4954450790315188152">Кад је омогућена навигација курсором:</translation>
 <translation id="5041932793799765940">Прилагођавање боја</translation>
 <translation id="5094574508723441140">Већи контраст</translation>
@@ -60,7 +61,6 @@
 <translation id="7658239707568436148">Откажи</translation>
 <translation id="786423340267544509">Додај оквир елементима са атрибутима aria-describedat или longdesc.</translation>
 <translation id="7942349550061667556">Црвена</translation>
-<translation id="8254860724243898966">Притисните &lt;span class='key'&gt;Alt&lt;/span&gt; + &lt;img src='increase_brightness.png'&gt; (тастер за појачавање осветљења или F7) да бисте укључили навигацију курсором. Притисните исту комбинацију тастера поново да бисте искључили ову функцију.</translation>
 <translation id="8260673944985561857">Опције за навигацију курсором</translation>
 <translation id="8321034316479930120">Смернице за анимацију</translation>
 <translation id="8480209185614411573">Високи контраст</translation>

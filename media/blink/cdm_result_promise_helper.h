@@ -43,6 +43,7 @@ MEDIA_BLINK_EXPORT blink::WebEncryptedMediaKeyInformation::KeyStatus
 ConvertCdmKeyStatus(media::CdmKeyInformation::KeyStatus key_status);
 
 MEDIA_BLINK_EXPORT void ReportCdmResultUMA(const std::string& uma_name,
+                                           uint32_t system_code,
                                            CdmResultForUMA result);
 
 }  // namespace media

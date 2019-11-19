@@ -8,6 +8,7 @@
 #include <algorithm>
 #include <string>
 
+#include "base/macros.h"
 #include "base/strings/string16.h"
 #include "printing/page_range.h"
 #include "printing/page_setup.h"
@@ -15,6 +16,12 @@
 #include "printing/printing_export.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
+
+#if defined(OS_CHROMEOS)
+#include <map>
+
+#include "base/values.h"
+#endif  // defined(OS_CHROMEOS)
 
 namespace printing {
 
@@ -58,8 +65,11 @@ class PRINTING_EXPORT PrintSettings {
     }
   };
 
+#if defined(OS_CHROMEOS)
+  using AdvancedSettings = std::map<std::string, base::Value>;
+#endif  // defined(OS_CHROMEOS)
+
   PrintSettings();
-  PrintSettings(const PrintSettings& other);
   ~PrintSettings();
 
   // Reinitialize the settings to the default values.
@@ -82,9 +92,7 @@ class PRINTING_EXPORT PrintSettings {
   }
   // Media properties requested by the user. Translated into device media by the
   // platform specific layers.
-  const RequestedMedia& requested_media() const {
-    return requested_media_;
-  }
+  const RequestedMedia& requested_media() const { return requested_media_; }
 
   // Set printer printable area in in device units.
   // Some platforms already provide flipped area. Set |landscape_needs_flip|
@@ -126,7 +134,7 @@ class PRINTING_EXPORT PrintSettings {
   int device_units_per_inch() const {
 #if defined(OS_MACOSX)
     return 72;
-#else  // defined(OS_MACOSX)
+#else   // defined(OS_MACOSX)
     return dpi();
 #endif  // defined(OS_MACOSX)
   }
@@ -175,7 +183,7 @@ class PRINTING_EXPORT PrintSettings {
   bool printer_is_textonly() const {
     return printer_type_ == PrinterType::TYPE_TEXTONLY;
   }
-  bool printer_is_xps() const { return printer_type_ == PrinterType::TYPE_XPS;}
+  bool printer_is_xps() const { return printer_type_ == PrinterType::TYPE_XPS; }
   bool printer_is_ps2() const {
     return printer_type_ == PrinterType::TYPE_POSTSCRIPT_LEVEL2;
   }
@@ -200,7 +208,15 @@ class PRINTING_EXPORT PrintSettings {
 
   void set_username(const std::string& username) { username_ = username; }
   const std::string& username() const { return username_; }
-#endif
+
+  void set_pin_value(const std::string& pin_value) { pin_value_ = pin_value; }
+  const std::string& pin_value() const { return pin_value_; }
+
+  AdvancedSettings& advanced_settings() { return advanced_settings_; }
+  const AdvancedSettings& advanced_settings() const {
+    return advanced_settings_;
+  }
+#endif  // defined(OS_CHROMEOS)
 
   // Cookie generator. It is used to initialize PrintedDocument with its
   // associated PrintSettings, to be sure that each generated PrintedPage is
@@ -287,7 +303,15 @@ class PRINTING_EXPORT PrintSettings {
 
   // Username if it's required by the printer.
   std::string username_;
+
+  // PIN code entered by the user.
+  std::string pin_value_;
+
+  // Advanced settings.
+  AdvancedSettings advanced_settings_;
 #endif
+
+  DISALLOW_COPY_AND_ASSIGN(PrintSettings);
 };
 
 }  // namespace printing

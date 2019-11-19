@@ -13,14 +13,13 @@ class Visitor;
 class GamepadCommon {};
 class ScriptWrappable {};
 
-class Gamepad final : public GarbageCollectedFinalized<Gamepad>,
+class Gamepad final : public GarbageCollected<Gamepad>,
                       public GamepadCommon,
                       public ScriptWrappable {
-public:
-    virtual const WrapperTypeInfo *wrapperTypeInfo() const {}
-    void Trace(Visitor *);
+ public:
+  virtual const WrapperTypeInfo* wrapperTypeInfo() const {}
+  void Trace(Visitor*);
 };
-
 }
 
 #endif

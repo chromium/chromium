@@ -11,12 +11,8 @@
 // Fake implementation of ShellRiskDataLoader.
 @implementation ShellRiskDataLoader
 
-#pragma mark CWVCreditCardVerifierDataSource
-
-- (void)creditCardVerifier:(CWVCreditCardVerifier*)creditCardVerifier
-    getRiskDataWithCompletionHandler:
-        (void (^)(NSString* riskData))completionHandler {
-  completionHandler(@"dummy-risk-data");
+- (NSString*)riskData {
+  return @"dummy-risk-data";
 }
 
 @end

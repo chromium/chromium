@@ -1,11 +1,11 @@
-<link rel="import" href="chrome://resources/html/polymer.html">
+<link rel="import" href="../../html/polymer.html">
 
-<link rel="import" href="chrome://resources/cr_elements/cr_input/cr_input.html">
-<link rel="import" href="chrome://resources/cr_elements/icons.html">
-<link rel="import" href="chrome://resources/cr_elements/shared_style_css.html">
-<link rel="import" href="chrome://resources/cr_elements/shared_vars_css.html">
+<link rel="import" href="../cr_icon_button/cr_icon_button.html">
+<link rel="import" href="../cr_input/cr_input.html">
+<link rel="import" href="../icons.html">
+<link rel="import" href="../shared_style_css.html">
+<link rel="import" href="../shared_vars_css.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/paper-icon-button/paper-icon-button-light.html">
 <link rel="import" href="cr_search_field_behavior.html">
 
 <dom-module id="cr-search-field">
@@ -24,67 +24,38 @@
         width: 16px;
       }
 
-      cr-input {
-        --cr-input-background-color: white;
-        --cr-input-row-container: {
-          height: 100%;
-        }
-        --cr-input-container: {
-          border-radius: 0;
-          height: 100%;
-        }
-        --cr-input-inner-container: {
-          height: 100%;
-        }
+      #searchInput {
+        --cr-input-background-color: transparent;
+        --cr-input-border-bottom: 1px solid var(--cr-secondary-text-color);
+        --cr-input-border-radius: 0;
         --cr-input-error-display: none;
-        --cr-input-input: {
-          height: 100%;
-          border-bottom: 1px solid var(--cr-secondary-text-color);
-        }
+        --cr-input-min-height: 24px;
         --cr-input-padding-end: 0;
         --cr-input-padding-start: 0;
         --cr-input-padding-bottom: 2px;
         --cr-input-padding-top: 2px;
         align-self: stretch;
+        color: var(--cr-primary-text-color);
         display: block;
-        vertical-align: middle;
+        font-size: 92.3076923%;  /* To 12px from 13px. */
         width: 160px;  /* Special width for search input. */
       }
 
-      :host-context([dark]) cr-input {
-        /* TODO(dbeam): needing to use inherit here seems silly. In light mode,
-         * the background color is just matched (i.e. the parent's background is
-         * white, but this element also explicitly sets its background and the
-         * background of the container cr-input to white). Can we just not set
-         * these rules? */
-        --cr-input-background-color: inherit;
-      }
-
-      :host([has-search-text]) cr-input {
+      :host([has-search-text]) #searchInput {
         --cr-input-padding-end: 20px;
       }
 
-      #searchInput {
-        font-size: 92.3076923%;  /* To 12px from 13px. */
-        min-height: 24px;
-      }
-
-      #searchInput {
-        color: var(--cr-primary-text-color);
-      }
-
-      #clearSearchContainer {
+      #clearSearch {
         /* A 16px icon that fits on the input line. */
-        background-size: 16px;
-        height: 24px;
+        --cr-icon-button-icon-size: 16px;
+        --cr-icon-button-size: 24px;
         margin-inline-end: -4px;
         margin-inline-start: 4px;
         position: absolute;
         right: 0;
-        width: 24px;
       }
 
-      :host-context([dir='rtl']) #clearSearchContainer {
+      :host-context([dir='rtl']) #clearSearch {
         left: 0;
         right: auto;
       }
@@ -93,11 +64,10 @@
     <cr-input id="searchInput" on-search="onSearchTermSearch"
         on-input="onSearchTermInput" aria-label$="[[label]]" type="search"
         autofocus="[[autofocus]]" placeholder="[[label]]" spellcheck="false">
-      <paper-icon-button-light id="clearSearchContainer" class="icon-cancel"
-          hidden$="[[!hasSearchText]]" slot="suffix">
-        <button id="clearSearch" on-click="onTapClear_" title="[[clearLabel]]">
-        </button>
-      </paper-icon-button-light>
+      <cr-icon-button id="clearSearch" class="icon-cancel"
+          hidden$="[[!hasSearchText]]" slot="suffix" on-click="onTapClear_"
+          title="[[clearLabel]]">
+      </cr-icon-button>
     </cr-input>
   </template>
   <script src="cr_search_field.js"></script>

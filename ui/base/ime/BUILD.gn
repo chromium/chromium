@@ -3,13 +3,11 @@
 # found in the LICENSE file.
 
 import("//build/config/jumbo.gni")
-import("//build/config/jumbo.gni")
-import("//build/config/linux/pangocairo/pangocairo.gni")
 import("//build/config/ui.gni")
-import("//testing/test.gni")
 
 source_set("text_input_types") {
   sources = [
+    "text_input_action.h",
     "text_input_flags.h",
     "text_input_mode.h",
     "text_input_type.h",
@@ -27,10 +25,9 @@ jumbo_component("ime_types") {
     "ime_text_span.h",
     "infolist_entry.cc",
     "infolist_entry.h",
-    "ui_base_ime_types_export.h",
   ]
 
-  defines = [ "UI_BASE_IME_TYPES_IMPLEMENTATION" ]
+  defines = [ "IS_UI_BASE_IME_TYPES_IMPL" ]
 
   deps = [
     "//base",
@@ -62,25 +59,17 @@ jumbo_component("ime") {
     "constants.h",
     "ime_bridge.cc",
     "ime_bridge.h",
+    "ime_candidate_window_handler_interface.h",
     "ime_engine_handler_interface.h",
     "ime_input_context_handler_interface.h",
     "input_method.h",
     "input_method_base.cc",
     "input_method_base.h",
-    "input_method_chromeos.cc",
-    "input_method_chromeos.h",
-    "input_method_delegate.cc",
     "input_method_delegate.h",
-    "input_method_factory.cc",
-    "input_method_factory.h",
-    "input_method_initializer.cc",
-    "input_method_initializer.h",
     "input_method_keyboard_controller.h",
     "input_method_keyboard_controller_observer.h",
     "input_method_keyboard_controller_stub.cc",
     "input_method_keyboard_controller_stub.h",
-    "input_method_mac.h",
-    "input_method_mac.mm",
     "input_method_minimal.cc",
     "input_method_minimal.h",
     "input_method_observer.h",
@@ -91,172 +80,23 @@ jumbo_component("ime") {
     "text_edit_commands.h",
     "text_input_client.cc",
     "text_input_client.h",
-    "ui_base_ime_export.h",
-    "win/imm32_manager.cc",
-    "win/imm32_manager.h",
-    "win/on_screen_keyboard_display_manager_input_pane.cc",
-    "win/on_screen_keyboard_display_manager_input_pane.h",
-    "win/on_screen_keyboard_display_manager_tab_tip.cc",
-    "win/on_screen_keyboard_display_manager_tab_tip.h",
-    "win/tsf_bridge.cc",
-    "win/tsf_bridge.h",
-    "win/tsf_event_router.cc",
-    "win/tsf_event_router.h",
-    "win/tsf_input_scope.cc",
-    "win/tsf_input_scope.h",
-    "win/tsf_text_store.cc",
-    "win/tsf_text_store.h",
   ]
 
-  if (is_chromeos) {
-    sources += [
-      "chromeos/component_extension_ime_manager.cc",
-      "chromeos/component_extension_ime_manager.h",
-      "chromeos/extension_ime_util.cc",
-      "chromeos/extension_ime_util.h",
-      "chromeos/fake_ime_keyboard.cc",
-      "chromeos/fake_ime_keyboard.h",
-      "chromeos/fake_input_method_delegate.cc",
-      "chromeos/fake_input_method_delegate.h",
-      "chromeos/ime_candidate_window_handler_interface.h",
-      "chromeos/ime_keyboard.cc",
-      "chromeos/ime_keyboard.h",
-      "chromeos/ime_keymap.cc",
-      "chromeos/ime_keymap.h",
-      "chromeos/input_method_delegate.h",
-      "chromeos/input_method_descriptor.cc",
-      "chromeos/input_method_descriptor.h",
-      "chromeos/input_method_manager.cc",
-      "chromeos/input_method_manager.h",
-      "chromeos/input_method_util.cc",
-      "chromeos/input_method_util.h",
-      "chromeos/mock_component_extension_ime_manager.cc",
-      "chromeos/mock_component_extension_ime_manager.h",
-      "chromeos/mock_component_extension_ime_manager_delegate.cc",
-      "chromeos/mock_component_extension_ime_manager_delegate.h",
-      "chromeos/mock_ime_candidate_window_handler.cc",
-      "chromeos/mock_ime_candidate_window_handler.h",
-      "chromeos/mock_ime_engine_handler.cc",
-      "chromeos/mock_ime_engine_handler.h",
-    ]
-  }
-
-  # TODO(jschuh): crbug.com/167187 fix size_t to int truncations.
-  configs += [ "//build/config/compiler:no_size_t_to_int_warning" ]
-
-  defines = [ "UI_BASE_IME_IMPLEMENTATION" ]
-
-  deps = [
-    "//base",
-    "//base:i18n",
-    "//base/third_party/dynamic_annotations",
-    "//net",
-    "//third_party/icu",
-    "//ui/base",
-    "//ui/display",
-    "//ui/events",
-    "//ui/gfx",
-    "//ui/gfx/geometry",
-    "//ui/gfx/range",
-    "//url",
-  ]
+  defines = [ "IS_UI_BASE_IME_IMPL" ]
 
   public_deps = [
     ":ime_types",
+    ":text_input_types",
+    "//base",
+    "//base:i18n",
+    "//skia",
+    "//third_party/icu",
+    "//ui/base/ime/mojom",
+    "//ui/events",
+    "//ui/events:dom_keycode_converter",
+    "//ui/events:events",
+    "//ui/gfx",
+    "//ui/gfx/geometry",
+    "//ui/gfx/range",
   ]
-
-  if (is_desktop_linux) {
-    sources += [
-      "input_method_auralinux.cc",
-      "input_method_auralinux.h",
-    ]
-  }
-
-  if (is_linux) {
-    public_deps += [ "//ui/base/ime/linux" ]
-  }
-
-  if (!is_chromeos && is_linux) {
-    sources += [
-      "linux/text_edit_command_auralinux.cc",
-      "linux/text_edit_command_auralinux.h",
-      "linux/text_edit_key_bindings_delegate_auralinux.cc",
-      "linux/text_edit_key_bindings_delegate_auralinux.h",
-    ]
-  }
-
-  if (!toolkit_views && !use_aura) {
-    sources -= [
-      "input_method_factory.cc",
-      "input_method_factory.h",
-      "input_method_minimal.cc",
-      "input_method_minimal.h",
-    ]
-  }
-
-  if (is_chromeos) {
-    deps += [
-      "//chromeos",
-      "//services/ws/public/cpp/input_devices",
-      "//ui/base/ime/chromeos/public/interfaces",
-      "//ui/chromeos/strings",
-    ]
-    sources += [
-      "chromeos/ime_keyboard_mus.cc",
-      "chromeos/ime_keyboard_mus.h",
-    ]
-  }
-
-  if (use_pangocairo) {
-    configs += [ "//build/config/linux/pangocairo" ]
-    sources += [
-      "composition_text_util_pango.cc",
-      "composition_text_util_pango.h",
-    ]
-  }
-  if (use_x11) {
-    configs += [ "//build/config/linux:x11" ]
-    deps += [ "//ui/gfx/x" ]
-  }
-
-  if (is_win) {
-    cflags = [ "/wd4324" ]  # Structure was padded due to __declspec(align()), which is
-                            # uninteresting.
-
-    sources += [
-      "input_method_win_base.cc",
-      "input_method_win_base.h",
-      "input_method_win_imm32.cc",
-      "input_method_win_imm32.h",
-      "input_method_win_tsf.cc",
-      "input_method_win_tsf.h",
-    ]
-    libs = [ "imm32.lib" ]
-
-    jumbo_excluded_sources = [
-      # tsf_text_store.cc needs INITGUID to be defined before
-      # including any header to properly generate GUID objects. That
-      # is not guaranteed when included in a jumbo build.
-      "win/tsf_text_store.cc",
-    ]
-  }
-
-  if (is_mac) {
-    libs = [ "AppKit.framework" ]
-  }
-
-  if (is_fuchsia) {
-    sources += [
-      "fuchsia/input_method_keyboard_controller_fuchsia.cc",
-      "fuchsia/input_method_keyboard_controller_fuchsia.h",
-      "input_method_fuchsia.cc",
-      "input_method_fuchsia.h",
-    ]
-
-    deps += [
-      "//third_party/fuchsia-sdk/sdk:ui_input",
-      "//ui/events",
-      "//ui/events:dom_keycode_converter",
-    ]
-  }
 }

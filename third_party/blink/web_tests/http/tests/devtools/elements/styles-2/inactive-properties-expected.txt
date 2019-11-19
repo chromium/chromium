@@ -5,13 +5,13 @@ color: rgb(0, 0, 0);
 display: block;
     block - div user agent stylesheet
 text-align: right;
-    right - #inspected <style>…</style>
+    right - #inspected <style>
     OVERLOADED -webkit-left - element.style
 [expanded] 
 element.style { ()
 
 [expanded] 
-#inspected { (<style>…</style>)
+#inspected { (<style>)
 /-- overloaded --/     text-align: left;
 /-- overloaded --/     text-align: bar;
     text-align: right;

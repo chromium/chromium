@@ -1,1 +1,1 @@
--keepnames class org.hamcrest.** { *; }
+-keep class org.hamcrest.** { *; }

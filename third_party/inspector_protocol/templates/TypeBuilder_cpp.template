@@ -101,13 +101,13 @@ std::unique_ptr<{{type.id}}> {{type.id}}::clone() const
 
 {{config.exported.string_out}} {{type.id}}::toJSONString() const
 {
-    String json = toValue()->serializeToJSON();
+    String json = toValue()->toJSONString();
     return {{config.exported.to_string_out % "json"}};
 }
 
 void {{type.id}}::writeBinary(std::vector<uint8_t>* out) const
 {
-    toValue()->writeBinary(out);
+    toValue()->AppendSerialized(out);
 }
 
 // static
@@ -203,12 +203,7 @@ void Frontend::flush()
     m_frontendChannel->flushProtocolNotifications();
 }
 
-void Frontend::sendRawNotification(String notification)
-{
-    m_frontendChannel->sendProtocolNotification(InternalRawNotification::fromJSON(std::move(notification)));
-}
-
-void Frontend::sendRawNotification(std::vector<uint8_t> notification)
+void Frontend::sendRawCBORNotification(std::vector<uint8_t> notification)
 {
     m_frontendChannel->sendProtocolNotification(InternalRawNotification::fromBinary(std::move(notification)));
 }
@@ -385,7 +380,6 @@ void DispatcherImpl::{{command.name}}(int callId, const String& method, const Pr
       {% endif %}
     return;
     {% else %}
-    std::unique_ptr<DispatcherBase::WeakPtr> weak = weakPtr();
     std::unique_ptr<{{command_name_title}}CallbackImpl> callback(new {{command.name | to_title_case}}CallbackImpl(weakPtr(), callId, method, message));
     m_backend->{{command.name | to_method_case}}(
       {%- for property in command.parameters -%}

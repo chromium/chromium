@@ -1,0 +1,32 @@
+// Copyright 2017 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module viz.mojom;
+
+import "gpu/ipc/common/mailbox.mojom";
+import "gpu/ipc/common/sync_token.mojom";
+import "services/viz/public/mojom/compositing/copy_output_result.mojom";
+import "mojo/public/mojom/base/unguessable_token.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
+
+// See components/viz/common/frame_sinks/copy_output_request.h.
+struct CopyOutputRequest {
+  CopyOutputResultFormat result_format;
+
+  // Set both to (1,1) for no scaling. Both must have positive X and Y values.
+  gfx.mojom.Vector2d scale_from;
+  gfx.mojom.Vector2d scale_to;
+
+  mojo_base.mojom.UnguessableToken? source;
+  gfx.mojom.Rect? area;
+  gfx.mojom.Rect? result_selection;
+
+  pending_remote<CopyOutputResultSender> result_sender;
+};
+
+// When the display compositor is ready to respond to the CopyOutputRequest,
+// it uses this interface to send back the result.
+interface CopyOutputResultSender {
+  SendResult(CopyOutputResult result);
+};

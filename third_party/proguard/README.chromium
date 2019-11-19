@@ -1,6 +1,6 @@
 Name: Proguard
 URL: http://proguard.sourceforge.net/
-Version: 5.2.1_and_6.0.3
+Version: 6.0.3
 Date: June 22, 2016
 License: GPL v2
 License File: NOT_SHIPPED
@@ -10,7 +10,3 @@ Description:
 This directory includes proguard.jar to allow Chromium to shrink, optimize java
 classes for Android, as well as retrace.jar, to allow for deobfuscation of stack
 traces.
-
-Proguard is kept at 5.2.1 because all newer versions were found to optimize in a
-way that breaks Chrome. Retrace is at 6.0.3 because version 5.2.1 was found to
-infinite loop when deobfuscating certainly strings.

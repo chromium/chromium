@@ -159,9 +159,9 @@ TEST(IPCTest, CrossCallStrPacking) {
   SharedMemIPCClient client(mem);
 
   CrossCallReturn answer;
-  uint32_t tag1 = 666;
+  IpcTag tag1 = IpcTag::PING1;
   const wchar_t* text = L"98765 - 43210";
-  base::string16 copied_text;
+  std::wstring copied_text;
   CrossCallParamsEx* actual_params;
 
   CrossCall(client, tag1, text, &answer);
@@ -173,7 +173,7 @@ TEST(IPCTest, CrossCallStrPacking) {
   copied_text.clear();
 
   // Check with an empty string.
-  uint32_t tag2 = 777;
+  IpcTag tag2 = IpcTag::PING2;
   const wchar_t* null_text = nullptr;
   CrossCall(client, tag2, null_text, &answer);
   actual_params = reinterpret_cast<CrossCallParamsEx*>(client.GetBuffer());
@@ -188,7 +188,7 @@ TEST(IPCTest, CrossCallStrPacking) {
   EXPECT_TRUE(actual_params->GetParameterStr(0, &copied_text));
   EXPECT_TRUE(copied_text.empty());
 
-  uint32_t tag3 = 888;
+  IpcTag tag3 = IpcTag::PING1;
   param_size = 1;
   copied_text.clear();
 
@@ -208,7 +208,7 @@ TEST(IPCTest, CrossCallStrPacking) {
   EXPECT_STREQ(text, copied_text.c_str());
 
   param_size = 1;
-  base::string16 copied_text_p0, copied_text_p2;
+  std::wstring copied_text_p0, copied_text_p2;
 
   const wchar_t* text2 = L"AeFG";
   CrossCall(client, tag1, text2, null_text, text, &answer);
@@ -237,8 +237,8 @@ TEST(IPCTest, CrossCallIntPacking) {
   client_control->server_alive = HANDLE(1);
   FixChannels(client_control, base_start, kIPCChannelSize, FIX_PONG_READY);
 
-  uint32_t tag1 = 999;
-  uint32_t tag2 = 111;
+  IpcTag tag1 = IpcTag::PING1;
+  IpcTag tag2 = IpcTag::PING2;
   const wchar_t* text = L"godzilla";
   CrossCallParamsEx* actual_params;
 
@@ -303,7 +303,7 @@ TEST(IPCTest, CrossCallIntPacking) {
 TEST(IPCTest, CrossCallValidation) {
   // First a sanity test with a well formed parameter object.
   unsigned long value = 124816;
-  const uint32_t kTag = 33;
+  IpcTag kTag = IpcTag::PING1;
   const uint32_t kBufferSize = 256;
   ActualCallParams<1, kBufferSize> params_1(kTag);
   params_1.CopyParamIn(0, &value, sizeof(value), false, UINT32_TYPE);
@@ -393,7 +393,7 @@ DWORD WINAPI QuickResponseServer(PVOID param) {
 
 class CrossCallParamsMock : public CrossCallParams {
  public:
-  CrossCallParamsMock(uint32_t tag, uint32_t params_count)
+  CrossCallParamsMock(IpcTag tag, uint32_t params_count)
       : CrossCallParams(tag, params_count) {}
 };
 
@@ -438,9 +438,9 @@ TEST(IPCTest, ClientFastServer) {
   EXPECT_EQ(kBusyChannel, client_control->channels[1].state);
   EXPECT_EQ(kFreeChannel, client_control->channels[2].state);
 
-  EXPECT_EQ(0u, client_control->channels[1].ipc_tag);
+  EXPECT_EQ(IpcTag::UNUSED, client_control->channels[1].ipc_tag);
 
-  uint32_t tag = 7654;
+  IpcTag tag = IpcTag::PING1;
   CrossCallReturn answer;
   CrossCallParamsMock* params1 = new (buff1) CrossCallParamsMock(tag, 1);
   FakeOkAnswerInChannel(buff1);
@@ -465,7 +465,7 @@ TEST(IPCTest, ClientFastServer) {
   events.pong = client_control->channels[0].pong_event;
   events.state = &client_control->channels[0].state;
 
-  tag = 4567;
+  tag = IpcTag::PING2;
   CrossCallParamsMock* params2 = new (buff0) CrossCallParamsMock(tag, 1);
   FakeOkAnswerInChannel(buff0);
 
@@ -542,7 +542,7 @@ TEST(IPCTest, ClientSlowServer) {
   ::Sleep(1);
 
   void* buff0 = client.GetBuffer();
-  uint32_t tag = 4321;
+  IpcTag tag = IpcTag::PING1;
   CrossCallReturn answer;
   CrossCallParamsMock* params1 = new (buff0) CrossCallParamsMock(tag, 1);
   FakeOkAnswerInChannel(buff0);
@@ -564,12 +564,10 @@ TEST(IPCTest, ClientSlowServer) {
 // but only CallOneHandler should be used.
 class UnitTestIPCDispatcher : public Dispatcher {
  public:
-  enum { CALL_ONE_TAG = 78, CALL_TWO_TAG = 87 };
-
   UnitTestIPCDispatcher();
   ~UnitTestIPCDispatcher() override {}
 
-  bool SetupService(InterceptionManager* manager, int service) override {
+  bool SetupService(InterceptionManager* manager, IpcTag service) override {
     return true;
   }
 
@@ -584,10 +582,10 @@ class UnitTestIPCDispatcher : public Dispatcher {
 };
 
 UnitTestIPCDispatcher::UnitTestIPCDispatcher() {
-  static const IPCCall call_one = {{CALL_ONE_TAG, {VOIDPTR_TYPE, UINT32_TYPE}},
+  static const IPCCall call_one = {{IpcTag::PING1, {VOIDPTR_TYPE, UINT32_TYPE}},
                                    reinterpret_cast<CallbackGeneric>(
                                        &UnitTestIPCDispatcher::CallOneHandler)};
-  static const IPCCall call_two = {{CALL_TWO_TAG, {VOIDPTR_TYPE, UINT32_TYPE}},
+  static const IPCCall call_two = {{IpcTag::PING2, {VOIDPTR_TYPE, UINT32_TYPE}},
                                    reinterpret_cast<CallbackGeneric>(
                                        &UnitTestIPCDispatcher::CallTwoHandler)};
   ipc_calls_.push_back(call_one);
@@ -608,7 +606,7 @@ TEST(IPCTest, SharedMemServerTests) {
   CrossCallReturn answer;
   HANDLE bar = HANDLE(191919);
   DWORD foo = 6767676;
-  CrossCall(client, UnitTestIPCDispatcher::CALL_ONE_TAG, bar, foo, &answer);
+  CrossCall(client, IpcTag::PING1, bar, foo, &answer);
   void* buff = client.GetBuffer();
   ASSERT_TRUE(buff);
 

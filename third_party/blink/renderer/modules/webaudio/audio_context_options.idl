@@ -8,4 +8,5 @@ dictionary AudioContextOptions {
     // seconds, without taking into account double buffering (same as
     // AudioContext.baseLatency).
     (AudioContextLatencyCategory or double) latencyHint = "interactive";
+    float sampleRate;
 };

@@ -5,24 +5,29 @@
 #ifndef CHROMECAST_NET_CONNECTIVITY_CHECKER_IMPL_H_
 #define CHROMECAST_NET_CONNECTIVITY_CHECKER_IMPL_H_
 
+#include <memory>
+
 #include "base/cancelable_callback.h"
 #include "base/macros.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "chromecast/net/connectivity_checker.h"
-#include "net/base/network_change_notifier.h"
-#include "net/url_request/url_request.h"
+#include "services/network/public/cpp/network_connection_tracker.h"
 
 class GURL;
 
 namespace base {
 class SingleThreadTaskRunner;
-}
+}  // namespace base
 
 namespace net {
-class SSLInfo;
-class URLRequest;
-class URLRequestContext;
-class URLRequestContextGetter;
-}
+class HttpResponseHeaders;
+}  // namespace net
+
+namespace network {
+class SharedURLLoaderFactory;
+class SimpleURLLoader;
+}  // namespace network
 
 namespace chromecast {
 
@@ -30,13 +35,14 @@ namespace chromecast {
 // to given url.
 class ConnectivityCheckerImpl
     : public ConnectivityChecker,
-      public net::URLRequest::Delegate,
-      public net::NetworkChangeNotifier::NetworkChangeObserver {
+      public network::NetworkConnectionTracker::NetworkConnectionObserver {
  public:
   // Connectivity checking and initialization will run on task_runner.
   static scoped_refptr<ConnectivityCheckerImpl> Create(
       scoped_refptr<base::SingleThreadTaskRunner> task_runner,
-      net::URLRequestContextGetter* url_request_context_getter);
+      std::unique_ptr<network::SharedURLLoaderFactoryInfo>
+          url_loader_factory_info,
+      network::NetworkConnectionTracker* network_connection_tracker);
 
   // ConnectivityChecker implementation:
   bool Connected() const override;
@@ -44,25 +50,23 @@ class ConnectivityCheckerImpl
 
  protected:
   explicit ConnectivityCheckerImpl(
-      scoped_refptr<base::SingleThreadTaskRunner> task_runner);
+      scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+      network::NetworkConnectionTracker* network_connection_tracker);
   ~ConnectivityCheckerImpl() override;
 
  private:
-  // UrlRequest::Delegate implementation:
-  void OnResponseStarted(net::URLRequest* request, int net_error) override;
-  void OnReadCompleted(net::URLRequest* request, int bytes_read) override;
-  void OnSSLCertificateError(net::URLRequest* request,
-                             const net::SSLInfo& ssl_info,
-                             bool fatal) override;
-
   // Initializes ConnectivityChecker
-  void Initialize(net::URLRequestContextGetter* url_request_context_getter);
+  void Initialize(std::unique_ptr<network::SharedURLLoaderFactoryInfo>
+                      url_loader_factory_info);
 
-  // net::NetworkChangeNotifier::NetworkChangeObserver implementation:
-  void OnNetworkChanged(
-      net::NetworkChangeNotifier::ConnectionType type) override;
+  // network::NetworkConnectionTracker::NetworkConnectionObserver
+  // implementation:
+  void OnConnectionChanged(network::mojom::ConnectionType type) override;
 
-  void OnNetworkChangedInternal();
+  void OnConnectionChangedInternal();
+
+  void OnConnectivityCheckComplete(
+      scoped_refptr<net::HttpResponseHeaders> headers);
 
   // Cancels current connectivity checking in progress.
   void Cancel();
@@ -85,16 +89,17 @@ class ConnectivityCheckerImpl
   void CheckInternal();
 
   std::unique_ptr<GURL> connectivity_check_url_;
-  net::URLRequestContext* url_request_context_;
-  std::unique_ptr<net::URLRequest> url_request_;
+  scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
+  std::unique_ptr<network::SimpleURLLoader> url_loader_;
   const scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
+  network::NetworkConnectionTracker* const network_connection_tracker_;
 
   // connected_lock_ protects access to connected_ which is shared across
   // threads.
   mutable base::Lock connected_lock_;
   bool connected_;
 
-  net::NetworkChangeNotifier::ConnectionType connection_type_;
+  network::mojom::ConnectionType connection_type_;
   // Number of connectivity check errors.
   unsigned int check_errors_;
   bool network_changed_pending_;
@@ -102,6 +107,9 @@ class ConnectivityCheckerImpl
   // Note: Cancelling this timeout can cause the destructor for this class to be
   // called.
   base::CancelableCallback<void()> timeout_;
+
+  base::WeakPtr<ConnectivityCheckerImpl> weak_this_;
+  base::WeakPtrFactory<ConnectivityCheckerImpl> weak_factory_;
 
   DISALLOW_COPY_AND_ASSIGN(ConnectivityCheckerImpl);
 };

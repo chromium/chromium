@@ -16,7 +16,7 @@
 #include "chrome/browser/chromeos/policy/cached_policy_key_loader_chromeos.h"
 #include "chromeos/cryptohome/cryptohome_parameters.h"
 #include "chromeos/dbus/cryptohome/rpc.pb.h"
-#include "chromeos/dbus/session_manager_client.h"
+#include "chromeos/dbus/session_manager/session_manager_client.h"
 #include "components/account_id/account_id.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/policy/core/common/cloud/cloud_policy_validator.h"
@@ -102,7 +102,7 @@ class PreSigninPolicyFetcher : public CloudPolicyClient::Observer {
   void OnUnmountTemporaryUserHome(
       RetrievePolicyResponseType retrieve_policy_response,
       const std::string& policy_blob,
-      base::Optional<bool> unmount_success);
+      base::Optional<cryptohome::BaseReply> reply);
 
   void OnCachedPolicyValidated(UserCloudPolicyValidator* validator);
 
@@ -154,7 +154,7 @@ class PreSigninPolicyFetcher : public CloudPolicyClient::Observer {
   // Used to load the policy key provided by session manager as a file.
   std::unique_ptr<CachedPolicyKeyLoaderChromeOS> cached_policy_key_loader_;
 
-  base::WeakPtrFactory<PreSigninPolicyFetcher> weak_ptr_factory_;
+  base::WeakPtrFactory<PreSigninPolicyFetcher> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(PreSigninPolicyFetcher);
 };

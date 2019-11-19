@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2019 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<resources>
+    <!-- The amount to fade the edges of the menu to indicate more content is available
+         via scrolling. -->
+    <dimen name="menu_vertical_fade_distance">15dp</dimen>
+    <dimen name="menu_negative_vertical_offset_not_top_anchored">44dp</dimen>
+
+    <!-- Menu button dragging related dimensions -->
+    <dimen name="auto_scroll_full_velocity">500dp</dimen>
+</resources>

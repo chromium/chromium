@@ -24,13 +24,13 @@ import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
 
 import org.chromium.base.Callback;
-import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeActivity;
 import org.chromium.chrome.browser.ChromeSwitches;
 import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
@@ -53,10 +53,9 @@ public class PasswordGenerationDialogTest {
     public void setUp() throws InterruptedException {
         mActivityTestRule.startMainActivityOnBlankPage();
         mDialog = new PasswordGenerationDialogCoordinator(mActivityTestRule.getActivity());
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> mDialog.showDialog(mGeneratedPassword,
-                        mExplanationString,
-                        mOnPasswordAcceptedOrRejectedCallback));
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> mDialog.showDialog(mGeneratedPassword, mExplanationString,
+                                mOnPasswordAcceptedOrRejectedCallback));
     }
 
     @Test

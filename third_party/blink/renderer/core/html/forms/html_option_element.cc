@@ -44,10 +44,10 @@
 
 namespace blink {
 
-using namespace html_names;
-
 HTMLOptionElement::HTMLOptionElement(Document& document)
-    : HTMLElement(kOptionTag, document), is_selected_(false) {}
+    : HTMLElement(html_names::kOptionTag, document), is_selected_(false) {
+  EnsureUserAgentShadowRoot();
+}
 
 // An explicit empty destructor should be in html_option_element.cc, because
 // if an implicit destructor is used or an empty destructor is defined in
@@ -55,12 +55,6 @@ HTMLOptionElement::HTMLOptionElement(Document& document)
 // msvc tries to expand the destructor and causes
 // a compile error because of lack of ComputedStyle definition.
 HTMLOptionElement::~HTMLOptionElement() = default;
-
-HTMLOptionElement* HTMLOptionElement::Create(Document& document) {
-  HTMLOptionElement* option = MakeGarbageCollected<HTMLOptionElement>(document);
-  option->EnsureUserAgentShadowRoot();
-  return option;
-}
 
 HTMLOptionElement* HTMLOptionElement::CreateForJSConstructor(
     Document& document,
@@ -81,7 +75,7 @@ HTMLOptionElement* HTMLOptionElement::CreateForJSConstructor(
   if (!value.IsNull())
     element->setValue(value);
   if (default_selected)
-    element->setAttribute(kSelectedAttr, g_empty_atom);
+    element->setAttribute(html_names::kSelectedAttr, g_empty_atom);
   element->SetSelected(selected);
 
   return element;
@@ -95,7 +89,7 @@ bool HTMLOptionElement::SupportsFocus() const {
 }
 
 bool HTMLOptionElement::MatchesDefaultPseudoClass() const {
-  return FastHasAttribute(kSelectedAttr);
+  return FastHasAttribute(html_names::kSelectedAttr);
 }
 
 bool HTMLOptionElement::MatchesEnabledPseudoClass() const {
@@ -108,7 +102,7 @@ String HTMLOptionElement::DisplayLabel() const {
 
   // WinIE does not use the label attribute, so as a quirk, we ignore it.
   if (!document.InQuirksMode())
-    text = FastGetAttribute(kLabelAttr);
+    text = FastGetAttribute(html_names::kLabelAttr);
 
   // FIXME: The following treats an element with the label attribute set to
   // the empty string the same as an element with no label attribute at all.
@@ -173,21 +167,21 @@ int HTMLOptionElement::ListIndex() const {
 void HTMLOptionElement::ParseAttribute(
     const AttributeModificationParams& params) {
   const QualifiedName& name = params.name;
-  if (name == kValueAttr) {
+  if (name == html_names::kValueAttr) {
     if (HTMLDataListElement* data_list = OwnerDataListElement())
       data_list->OptionElementChildrenChanged();
-  } else if (name == kDisabledAttr) {
+  } else if (name == html_names::kDisabledAttr) {
     if (params.old_value.IsNull() != params.new_value.IsNull()) {
       PseudoStateChanged(CSSSelector::kPseudoDisabled);
       PseudoStateChanged(CSSSelector::kPseudoEnabled);
       if (LayoutObject* o = GetLayoutObject())
         o->InvalidateIfControlStateChanged(kEnabledControlState);
     }
-  } else if (name == kSelectedAttr) {
+  } else if (name == html_names::kSelectedAttr) {
     if (params.old_value.IsNull() != params.new_value.IsNull() && !is_dirty_)
       SetSelected(!params.new_value.IsNull());
     PseudoStateChanged(CSSSelector::kPseudoDefault);
-  } else if (name == kLabelAttr) {
+  } else if (name == html_names::kLabelAttr) {
     UpdateLabel();
   } else {
     HTMLElement::ParseAttribute(params);
@@ -195,7 +189,7 @@ void HTMLOptionElement::ParseAttribute(
 }
 
 String HTMLOptionElement::value() const {
-  const AtomicString& value = FastGetAttribute(kValueAttr);
+  const AtomicString& value = FastGetAttribute(html_names::kValueAttr);
   if (!value.IsNull())
     return value;
   return CollectOptionInnerText()
@@ -204,7 +198,7 @@ String HTMLOptionElement::value() const {
 }
 
 void HTMLOptionElement::setValue(const AtomicString& value) {
-  setAttribute(kValueAttr, value);
+  setAttribute(html_names::kValueAttr, value);
 }
 
 bool HTMLOptionElement::Selected() const {
@@ -264,6 +258,21 @@ void HTMLOptionElement::SetSelectedState(bool selected) {
   }
 }
 
+void HTMLOptionElement::SetMultiSelectFocusedState(bool focused) {
+  if (is_multi_select_focused_ == focused)
+    return;
+
+  if (auto* select = OwnerSelectElement()) {
+    DCHECK(select->IsMultiple());
+    is_multi_select_focused_ = focused;
+    PseudoStateChanged(CSSSelector::kPseudoMultiSelectFocus);
+  }
+}
+
+bool HTMLOptionElement::IsMultiSelectFocused() const {
+  return is_multi_select_focused_;
+}
+
 void HTMLOptionElement::SetDirty(bool value) {
   is_dirty_ = value;
 }
@@ -284,15 +293,15 @@ HTMLDataListElement* HTMLOptionElement::OwnerDataListElement() const {
 HTMLSelectElement* HTMLOptionElement::OwnerSelectElement() const {
   if (!parentNode())
     return nullptr;
-  if (auto* select = ToHTMLSelectElementOrNull(*parentNode()))
+  if (auto* select = DynamicTo<HTMLSelectElement>(*parentNode()))
     return select;
-  if (IsHTMLOptGroupElement(*parentNode()))
-    return ToHTMLSelectElementOrNull(parentNode()->parentNode());
+  if (IsA<HTMLOptGroupElement>(*parentNode()))
+    return DynamicTo<HTMLSelectElement>(parentNode()->parentNode());
   return nullptr;
 }
 
 String HTMLOptionElement::label() const {
-  const AtomicString& label = FastGetAttribute(kLabelAttr);
+  const AtomicString& label = FastGetAttribute(html_names::kLabelAttr);
   if (!label.IsNull())
     return label;
   return CollectOptionInnerText()
@@ -301,25 +310,25 @@ String HTMLOptionElement::label() const {
 }
 
 void HTMLOptionElement::setLabel(const AtomicString& label) {
-  setAttribute(kLabelAttr, label);
+  setAttribute(html_names::kLabelAttr, label);
 }
 
 String HTMLOptionElement::TextIndentedToRespectGroupLabel() const {
   ContainerNode* parent = parentNode();
-  if (parent && IsHTMLOptGroupElement(*parent))
+  if (parent && IsA<HTMLOptGroupElement>(*parent))
     return "    " + DisplayLabel();
   return DisplayLabel();
 }
 
 bool HTMLOptionElement::OwnElementDisabled() const {
-  return FastHasAttribute(kDisabledAttr);
+  return FastHasAttribute(html_names::kDisabledAttr);
 }
 
 bool HTMLOptionElement::IsDisabledFormControl() const {
   if (OwnElementDisabled())
     return true;
   if (Element* parent = parentElement())
-    return IsHTMLOptGroupElement(*parent) && parent->IsDisabledFormControl();
+    return IsA<HTMLOptGroupElement>(*parent) && parent->IsDisabledFormControl();
   return false;
 }
 
@@ -333,19 +342,20 @@ Node::InsertionNotificationRequest HTMLOptionElement::InsertedInto(
     ContainerNode& insertion_point) {
   HTMLElement::InsertedInto(insertion_point);
   if (HTMLSelectElement* select = OwnerSelectElement()) {
-    if (&insertion_point == select || (IsHTMLOptGroupElement(insertion_point) &&
-                                       insertion_point.parentNode() == select))
+    if (&insertion_point == select ||
+        (IsA<HTMLOptGroupElement>(insertion_point) &&
+         insertion_point.parentNode() == select))
       select->OptionInserted(*this, is_selected_);
   }
   return kInsertionDone;
 }
 
 void HTMLOptionElement::RemovedFrom(ContainerNode& insertion_point) {
-  if (auto* select = ToHTMLSelectElementOrNull(insertion_point)) {
-    if (!parentNode() || IsHTMLOptGroupElement(*parentNode()))
+  if (auto* select = DynamicTo<HTMLSelectElement>(insertion_point)) {
+    if (!parentNode() || IsA<HTMLOptGroupElement>(*parentNode()))
       select->OptionRemoved(*this);
-  } else if (IsHTMLOptGroupElement(insertion_point)) {
-    select = ToHTMLSelectElementOrNull(insertion_point.parentNode());
+  } else if (IsA<HTMLOptGroupElement>(insertion_point)) {
+    select = DynamicTo<HTMLSelectElement>(insertion_point.parentNode());
     if (select)
       select->OptionRemoved(*this);
   }
@@ -358,7 +368,8 @@ String HTMLOptionElement::CollectOptionInnerText() const {
     if (node->IsTextNode())
       text.Append(node->nodeValue());
     // Text nodes inside script elements are not part of the option text.
-    if (node->IsElementNode() && ToElement(node)->IsScriptElement())
+    auto* element = DynamicTo<Element>(node);
+    if (element && element->IsScriptElement())
       node = NodeTraversal::NextSkippingChildren(*node, this);
     else
       node = NodeTraversal::Next(*node, this);

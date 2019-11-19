@@ -3,7 +3,6 @@
 <script src="../../../resources/testharnessreport.js"></script>
 <script src="../../assert_selection.js"></script>
 <script>
-const usesBidiAffinity = window.internals && internals.runtimeFlags.bidiCaretAffinityEnabled;
 
 selection_test(
   '<div contenteditable dir="ltr">|abc\u05D0\u05D1\u05D2123def</div>',
@@ -26,29 +25,25 @@ selection_test(
 selection_test(
   '<div contenteditable dir="ltr">abc|\u05D0\u05D1\u05D2123def</div>',
   selection => selection.modify('move', 'left', 'character'),
-  usesBidiAffinity
-      ? '<div contenteditable dir="ltr">abc\u05d0|\u05d1\u05d2123def</div>'
-      : '<div contenteditable dir="ltr">ab|c\u05D0\u05D1\u05D2123def</div>',
+  '<div contenteditable dir="ltr">ab|c\u05D0\u05D1\u05D2123def</div>',
   '15-3 ltr left character');
 
 selection_test(
   '<div contenteditable dir="ltr">abc\u05D0|\u05D1\u05D2123def</div>',
   selection => selection.modify('move', 'left', 'character'),
-  '<div contenteditable dir="ltr">abc\u05D0\u05D1|\u05D2123def</div>',
+  '<div contenteditable dir="ltr">abc|\u05D0\u05D1\u05D2123def</div>',
   '15-4 ltr left character');
 
 selection_test(
   '<div contenteditable dir="ltr">abc\u05D0\u05D1|\u05D2123def</div>',
   selection => selection.modify('move', 'left', 'character'),
-  usesBidiAffinity
-      ? '<div contenteditable dir="ltr">abc\u05d0\u05d1\u05d2|123def</div>'
-      : '<div contenteditable dir="ltr">abc\u05D0\u05D1\u05D212|3def</div>',
+  '<div contenteditable dir="ltr">abc\u05D0|\u05D1\u05D2123def</div>',
   '15-5 ltr left character');
 
 selection_test(
   '<div contenteditable dir="ltr">abc\u05D0\u05D1\u05D2|123def</div>',
   selection => selection.modify('move', 'left', 'character'),
-  '<div contenteditable dir="ltr">ab|c\u05D0\u05D1\u05D2123def</div>',
+  '<div contenteditable dir="ltr">abc\u05D0\u05D1|\u05D2123def</div>',
   '15-6 ltr left character');
 
 selection_test(
@@ -66,7 +61,7 @@ selection_test(
 selection_test(
   '<div contenteditable dir="ltr">abc\u05D0\u05D1\u05D2123|def</div>',
   selection => selection.modify('move', 'left', 'character'),
-  '<div contenteditable dir="ltr">abc\u05D0|\u05D1\u05D2123def</div>',
+  '<div contenteditable dir="ltr">abc\u05D0\u05D1\u05D212|3def</div>',
   '15-9 ltr left character');
 
 selection_test(

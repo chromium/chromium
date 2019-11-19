@@ -1,0 +1,6 @@
+include_rules = [
+  "+chrome/browser/image_fetcher",
+  "+chrome/browser/ui/android/widget",
+  "+content/public/android/java/src/org/chromium/content_public/browser",
+  "+content/public/android/java/src/org/chromium/content/browser/picker",
+]

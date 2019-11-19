@@ -34,7 +34,6 @@ chrome.test.runTests([
                 ActivationState: 'NotActivated',
                 AllowRoaming: false,
                 AutoConnect: true,
-                Carrier: 'Cellular1_Carrier',
                 Family: 'GSM',
                 HomeProvider: {
                   Code: '000000',

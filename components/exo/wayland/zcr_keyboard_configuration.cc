@@ -21,11 +21,6 @@ namespace wayland {
 
 namespace {
 
-// Send a keyboard layout name instead of XKB contents.
-// TODO(tetsui): Remove when the change becomes default.
-const base::Feature kSendKeyboardLayoutNameFeature{
-    "ExoSendKeyboardLayoutName", base::FEATURE_ENABLED_BY_DEFAULT};
-
 ////////////////////////////////////////////////////////////////////////////////
 // keyboard_device_configuration interface:
 
@@ -70,8 +65,6 @@ class WaylandKeyboardDeviceConfigurationDelegate
   void OnCapsLockChanged(bool enabled) override {}
 
   void OnKeyboardLayoutNameChanged(const std::string& layout_name) override {
-    if (!base::FeatureList::IsEnabled(kSendKeyboardLayoutNameFeature))
-      return;
     zcr_keyboard_device_configuration_v1_send_layout_change(
         resource_, layout_name.c_str());
   }

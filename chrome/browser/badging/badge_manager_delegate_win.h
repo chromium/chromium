@@ -10,21 +10,20 @@
 #include "base/optional.h"
 #include "chrome/browser/badging/badge_manager_delegate.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/extensions/hosted_app_browser_controller.h"
 
 class Profile;
 
 namespace badging {
 
+class BadgeManager;
+
 // Windows specific implementation of the BadgeManagerDelegate.
 class BadgeManagerDelegateWin : public BadgeManagerDelegate {
  public:
-  explicit BadgeManagerDelegateWin(Profile* profile);
+  explicit BadgeManagerDelegateWin(Profile* profile,
+                                   BadgeManager* badge_manager);
 
-  void OnBadgeSet(const std::string& app_id,
-                  base::Optional<uint64_t> contents) override;
-
-  void OnBadgeCleared(const std::string& app_id) override;
+  void OnAppBadgeUpdated(const web_app::AppId& app_id) override;
 
  private:
   // Determines if a browser is for a specific hosted app, on this profile.

@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/task/post_task.h"
 #include "chrome/browser/plugins/plugin_info_host_impl.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/renderer_host/pepper/chrome_browser_pepper_host_factory.h"
@@ -13,8 +14,11 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pepper_permission_util.h"
 #include "components/version_info/version_info.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/render_process_host.h"
 #include "extensions/buildflags/buildflags.h"
+#include "mojo/public/cpp/bindings/pending_associated_receiver.h"
+#include "mojo/public/cpp/bindings/self_owned_associated_receiver.h"
 #include "ppapi/host/ppapi_host.h"
 #include "ppapi/shared_impl/ppapi_switches.h"
 #include "services/service_manager/public/cpp/binder_registry.h"
@@ -29,6 +33,22 @@
 #endif
 
 namespace plugins {
+namespace {
+void BindPluginInfoHost(
+    int render_process_id,
+    mojo::PendingAssociatedReceiver<chrome::mojom::PluginInfoHost> receiver) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  content::RenderProcessHost* host =
+      content::RenderProcessHost::FromID(render_process_id);
+  if (!host)
+    return;
+
+  Profile* profile = Profile::FromBrowserContext(host->GetBrowserContext());
+  mojo::MakeSelfOwnedAssociatedReceiver(
+      std::make_unique<PluginInfoHostImpl>(render_process_id, profile),
+      std::move(receiver));
+}
+}  // namespace
 
 ChromeContentBrowserClientPluginsPart::ChromeContentBrowserClientPluginsPart() {
 }
@@ -41,10 +61,8 @@ void ChromeContentBrowserClientPluginsPart::ExposeInterfacesToRenderer(
     service_manager::BinderRegistry* registry,
     blink::AssociatedInterfaceRegistry* associated_registry,
     content::RenderProcessHost* host) {
-  Profile* profile = Profile::FromBrowserContext(host->GetBrowserContext());
-  host->GetChannel()->AddAssociatedInterfaceForIOThread(base::Bind(
-      &PluginInfoHostImpl::OnPluginInfoHostRequest,
-      base::MakeRefCounted<PluginInfoHostImpl>(host->GetID(), profile)));
+  associated_registry->AddInterface(
+      base::BindRepeating(&BindPluginInfoHost, host->GetID()));
 }
 
 bool ChromeContentBrowserClientPluginsPart::

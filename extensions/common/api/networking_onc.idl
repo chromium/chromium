@@ -4,8 +4,8 @@
 
 // <p>
 //   The <code>chrome.networking.onc</code> API is used for configuring
-//   network connections (Cellular, Ethernet, VPN, WiFi or WiMAX).
-//   This API is available in Chrome OS kiosk sessions.
+//   network connections (Cellular, Ethernet, VPN or WiFi).
+//   This API is available in auto-launched Chrome OS kiosk sessions.
 // </p>
 // <p>
 //   Network connection configurations are specified following
@@ -52,7 +52,7 @@ namespace networking.onc {
   };
 
   enum NetworkType {
-    All, Cellular, Ethernet, Tether, VPN, Wireless, WiFi, WiMAX
+    All, Cellular, Ethernet, Tether, VPN, Wireless, WiFi
   };
 
   enum ProxySettingsType {
@@ -295,8 +295,14 @@ namespace networking.onc {
     // The IP address for a connection. Can be IPv4 or IPv6 address, depending
     // on value of <code>Type</code>.
     DOMString? IPAddress;
+    // Array of IP blocks in CIDR notation, see onc_spec.md for details.
+    DOMString[]? ExcludedRoutes;
+    // Array of IP blocks in CIDR notation, see onc_spec.md for details.
+    DOMString[]? IncludedRoutes;
     // Array of addresses used for name servers.
     DOMString[]? NameServers;
+    // Array of strings for name resolution, see onc_spec.md for details.
+    DOMString[]? SearchDomains;
     // The routing prefix.
     long? RoutingPrefix;
     // The IP configuration type. Can be <code>IPv4</code> or <code>IPv6</code>.
@@ -425,8 +431,6 @@ namespace networking.onc {
     ActivationStateType? ActivationState;
     // Whether roaming is allowed for the network.
     boolean? AllowRoaming;
-    // The name of the carrier for which the cellular device is configured.
-    DOMString? Carrier;
     // Cellular device technology family - <code>CDMA</code> or
     // <code>GSM</code>.
     DOMString? Family;
@@ -449,8 +453,6 @@ namespace networking.onc {
     // Online payment portal a user can use to sign-up for or modify a mobile
     // data plan.
     PaymentPortal? PaymentPortal;
-    // The revision of the Preferred Roaming List loaded in the modem.
-    long? PRLVersion;
     // The roaming state of the cellular modem on the current network.
     DOMString? RoamingState;
     // True when a cellular network scan is in progress.
@@ -466,8 +468,6 @@ namespace networking.onc {
     long? SignalStrength;
     // Whether the cellular network supports scanning.
     boolean? SupportNetworkScan;
-    // A list of supported carriers.
-    DOMString[]? SupportedCarriers;
   };
 
   dictionary ManagedCellularProperties {
@@ -479,8 +479,6 @@ namespace networking.onc {
     ActivationStateType? ActivationState;
     // See $(ref:CellularProperties.AllowRoaming).
     boolean? AllowRoaming;
-    // See $(ref:CellularProperties.Carrier).
-    ManagedDOMString? Carrier;
     // See $(ref:CellularProperties.Family).
     DOMString? Family;
     // See $(ref:CellularProperties.FirmwareRevision).
@@ -499,8 +497,6 @@ namespace networking.onc {
     DOMString? NetworkTechnology;
     // See $(ref:CellularProperties.PaymentPortal).
     PaymentPortal? PaymentPortal;
-    // See $(ref:CellularProperties.PRLVersion).
-    long? PRLVersion;
     // See $(ref:CellularProperties.RoamingState).
     DOMString? RoamingState;
     // See $(ref:CellularProperties.Scanning).
@@ -515,8 +511,6 @@ namespace networking.onc {
     long? SignalStrength;
     // See $(ref:CellularProperties.SupportNetworkScan).
     boolean? SupportNetworkScan;
-    // See $(ref:CellularProperties.SupportedCarriers).
-    DOMString[]? SupportedCarriers;
   };
 
   dictionary CellularStateProperties {
@@ -660,25 +654,12 @@ namespace networking.onc {
     DOMString? TetheringState;
   };
 
+  // Deprecated
   dictionary WiMAXProperties {
     // Whether the network should be connected automatically.
     boolean? AutoConnect;
     // The network EAP properties.
     EAPProperties? EAP;
-    // The network signal strength.
-    long? SignalStrength;
-  };
-
-  dictionary ManagedWiMAXProperties {
-    // See $(ref:WiMAXProperties.AutoConnect).
-    ManagedBoolean? AutoConnect;
-    // See $(ref:WiMAXProperties.SignalStrength).
-    long? SignalStrength;
-  };
-
-  dictionary WiMAXStateProperties {
-    // See $(ref:WiMAXProperties.SignalStrength).
-    long? SignalStrength;
   };
 
   dictionary NetworkConfigProperties {
@@ -702,7 +683,7 @@ namespace networking.onc {
     VPNProperties? VPN;
     // See $(ref:NetworkProperties.WiFi).
     WiFiProperties? WiFi;
-    // See $(ref:NetworkProperties.WiMAX).
+    // Deprecated.
     WiMAXProperties? WiMAX;
   };
 
@@ -760,8 +741,6 @@ namespace networking.onc {
     VPNProperties? VPN;
     // For WiFi networks, the network WiFi properties.
     WiFiProperties? WiFi;
-    // For WiMAX networks, the network WiMAX properties.
-    WiMAXProperties? WiMAX;
   };
 
   [noinline_doc]
@@ -806,8 +785,6 @@ namespace networking.onc {
     ManagedVPNProperties? VPN;
     // See $(ref:NetworkProperties.WiFi).
     ManagedWiFiProperties? WiFi;
-    // See $(ref:NetworkProperties.WiMAX).
-    ManagedWiMAXProperties? WiMAX;
   };
 
   dictionary NetworkStateProperties {
@@ -835,8 +812,6 @@ namespace networking.onc {
     VPNStateProperties? VPN;
     // See $(ref:NetworkProperties.WiFi).
     WiFiStateProperties? WiFi;
-    // See $(ref:NetworkProperties.WiMAX).
-    WiMAXStateProperties? WiMAX;
   };
 
   dictionary DeviceStateProperties {
@@ -852,8 +827,7 @@ namespace networking.onc {
     // The current state of the device.
     DeviceStateType State;
 
-    // The network type associated with the device (Cellular, Ethernet, WiFi, or
-    // WiMAX).
+    // The network type associated with the device (Cellular, Ethernet or WiFi).
     NetworkType Type;
   };
 

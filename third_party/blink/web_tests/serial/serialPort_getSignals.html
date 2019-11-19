@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+<script src="file:///gen/layout_test_data/mojo/public/js/mojo_bindings.js"></script>
+<script src="file:///gen/mojo/public/mojom/base/unguessable_token.mojom.js"></script>
+<script src="file:///gen/third_party/blink/public/mojom/serial/serial.mojom.js"></script>
+<script src="resources/serial-test-utils.js"></script>
+<script>
+serial_test(async (t, fake) => {
+  const { port, fakePort } = await getFakeSerialPort(fake);
+  await promise_rejects(t, 'InvalidStateError', port.getSignals());
+}, 'getSignals() rejects if the port is not open');
+
+serial_test(async (t, fake) => {
+  const { port, fakePort } = await getFakeSerialPort(fake);
+  await port.open({ baudrate: 9600 });
+
+  let expectedSignals = { dcd: false, cts: false, ri: false, dsr: false };
+  fakePort.simulateInputSignals(expectedSignals);
+  let signals = await port.getSignals();
+  assert_object_equals(signals, expectedSignals);
+
+  expectedSignals.dcd = true;
+  fakePort.simulateInputSignals(expectedSignals);
+  signals = await port.getSignals();
+  assert_object_equals(signals, expectedSignals, 'DCD set');
+
+  expectedSignals.cts = true;
+  fakePort.simulateInputSignals(expectedSignals);
+  signals = await port.getSignals();
+  assert_object_equals(signals, expectedSignals, 'CTS set');
+
+  expectedSignals.ri = true;
+  fakePort.simulateInputSignals(expectedSignals);
+  signals = await port.getSignals();
+  assert_object_equals(signals, expectedSignals, 'RI set');
+
+  expectedSignals.dsr = true;
+  fakePort.simulateInputSignals(expectedSignals);
+  signals = await port.getSignals();
+  assert_object_equals(signals, expectedSignals, 'DSR set');
+}, 'getSignals() returns the current state of input control signals');
+</script>

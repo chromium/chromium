@@ -11,7 +11,6 @@
 #include "base/macros.h"
 #include "components/viz/common/viz_common_export.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
-#include "gpu/command_buffer/common/mailbox_holder.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -24,7 +23,6 @@ class Vector2dF;
 
 namespace gpu {
 class ContextSupport;
-struct Mailbox;
 }  // namespace gpu
 
 namespace viz {
@@ -166,27 +164,11 @@ class VIZ_COMMON_EXPORT GLHelper {
   // TODO(crbug.com/870036): DEPRECATED. This will be moved to be closer to its
   // one caller soon.
   void ReadbackTextureAsync(GLuint texture,
+                            GLenum texture_target,
                             const gfx::Size& dst_size,
                             unsigned char* out,
                             SkColorType color_type,
                             base::OnceCallback<void(bool)> callback);
-
-  // Creates a mailbox holder that is attached to the given texture id, with a
-  // sync point to wait on before using the mailbox. Returns a holder with an
-  // empty mailbox on failure.
-  // Note the texture is assumed to be GL_TEXTURE_2D.
-  //
-  // TODO(crbug.com/870036): DEPRECATED. This will be moved to be closer to its
-  // one caller soon.
-  gpu::MailboxHolder ProduceMailboxHolderFromTexture(GLuint texture_id);
-
-  // Creates a texture and consumes a mailbox into it. Returns 0 on failure.
-  // Note the mailbox is assumed to be GL_TEXTURE_2D.
-  //
-  // TODO(crbug.com/870036): DEPRECATED. This will be moved to be closer to its
-  // one caller soon.
-  GLuint ConsumeMailboxToTexture(const gpu::Mailbox& mailbox,
-                                 const gpu::SyncToken& sync_token);
 
   // Caches all intermediate textures and programs needed to scale any subset of
   // a source texture at a fixed scaling ratio.
@@ -465,17 +447,14 @@ class VIZ_COMMON_EXPORT ReadbackYUVInterface {
   // method comments for the meaning/semantics of |src_texture_size| and
   // |output_rect|. The process is:
   //
-  //   1. Sync-wait and then consume and take ownership of the source texture
-  //      provided by |mailbox|.
-  //   2. Scale the source texture to an intermediate texture.
-  //   3. Planarize, producing textures containing the Y, U, and V planes.
-  //   4. Read-back the planar data, copying it into the given output
+  //   1. Scale the source texture to an intermediate texture.
+  //   2. Planarize, producing textures containing the Y, U, and V planes.
+  //   3. Read-back the planar data, copying it into the given output
   //      destination. |paste_location| specifies the where to place the output
   //      pixels: Rect(paste_location.origin(), output_rect.size()).
-  //   5. Run |callback| with true on success, false on failure (with no output
+  //   4. Run |callback| with true on success, false on failure (with no output
   //      modified).
-  virtual void ReadbackYUV(const gpu::Mailbox& mailbox,
-                           const gpu::SyncToken& sync_token,
+  virtual void ReadbackYUV(GLuint texture,
                            const gfx::Size& src_texture_size,
                            const gfx::Rect& output_rect,
                            int y_plane_row_stride_bytes,

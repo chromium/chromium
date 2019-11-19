@@ -15,10 +15,6 @@
 #include "storage/browser/quota/special_storage_policy.h"
 #include "url/gurl.h"
 
-namespace content {
-class BrowserContext;
-}
-
 namespace content_settings {
 class CookieSettings;
 }
@@ -47,8 +43,7 @@ class ExtensionSpecialStoragePolicy : public storage::SpecialStoragePolicy {
   CreateDeleteCookieOnExitPredicate() override;
 
   // Methods used by the ExtensionService to populate this class.
-  void GrantRightsForExtension(const extensions::Extension* extension,
-                               content::BrowserContext* browser_context);
+  void GrantRightsForExtension(const extensions::Extension* extension);
   void RevokeRightsForExtension(const extensions::Extension* extension);
   void RevokeRightsForAllExtensions();
 

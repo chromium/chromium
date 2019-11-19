@@ -1,0 +1,84 @@
+<style include="animations">
+  .container {
+    text-align: center;
+  }
+
+  .logo {
+    content: url(../images/module_icons/set_default_light.svg);
+    display: inline-block;
+    height: 38px;
+    margin-bottom: 16px;
+    width: 42px;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .logo {
+      content: url(../images/module_icons/set_default_dark.svg);
+    }
+  }
+
+  .illustration {
+    content: url(../images/set_default_light.svg);
+    margin: auto;
+    width: 454px;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .illustration {
+      content: url(../images/set_default_dark.svg);
+    }
+  }
+
+  h1 {
+    color: var(--cr-primary-text-color);
+    font-size: 1.5rem;
+    font-weight: 500;
+    line-height: 2.5rem;
+    margin: 0;
+    outline: none;
+  }
+
+  h2 {
+    color: var(--cr-secondary-text-color);
+    font-size: 1.25rem;
+    font-weight: unset;
+    line-height: 1.875rem;
+    margin: auto;
+    margin-bottom: 48px;
+    margin-top: 16px;
+    max-width: 400px;
+  }
+
+  .button-bar {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 64px;
+  }
+
+<if expr="is_win">
+  iron-icon[icon='cr:open-in-new'] {
+    height: 20px;
+    margin-inline-start: 6px;
+    margin-inline-end: -10px;
+    width: 20px;
+  }
+</if>
+</style>
+<div class="container">
+  <div class="logo"></div>
+  <h1 tabindex="-1">$i18n{setDefaultHeader}</h1>
+  <h2>$i18n{setDefaultSubHeader}</h2>
+  <div class="illustration slide-in" aria-hidden="true"></div>
+  <div class="button-bar">
+    <cr-button id="decline-button" on-click="onDeclineClick_">
+      $i18n{skip}
+    </cr-button>
+    <step-indicator model="[[indicatorModel]]"></step-indicator>
+    <cr-button class="action-button" on-click="onSetDefaultClick_">
+      $i18n{setDefaultConfirm}
+<if expr="is_win">
+      <iron-icon icon="cr:open-in-new" hidden="[[!isWin10]]"></iron-icon>
+</if>
+    </cr-button>
+  </div>
+</div>

@@ -7,57 +7,75 @@
 
 #include <stdint.h>
 
-#include <string>
-
 #include "net/base/net_export.h"
 
 namespace net {
 
-// NetLogCaptureMode specifies the granularity of events that should be emitted
-// to the log. It is a simple wrapper around an integer, so it should be passed
-// to functions by value rather than by reference.
-class NET_EXPORT NetLogCaptureMode {
- public:
-  // NOTE: Default assignment and copy constructor are OK.
+// NetLogCaptureMode specifies the logging level.
+//
+// It is used to control which events are emitted to the log, and what level of
+// detail is included in their parameters.
+//
+// The capture mode is expressed as a number, where higher values imply more
+// information.
+//
+// Note the numeric values are used in a bitfield (NetLogCaptureModeSet) so must
+// be sequential starting from 0, and not exceed 31.
+enum class NetLogCaptureMode : uint32_t {
+  // Default logging level, which is expected to be light-weight and
+  // does best-effort stripping of privacy/security sensitive data.
+  //
+  //  * Includes most HTTP request/response headers, but strips cookies and
+  //    auth.
+  //  * Does not include the full bytes read/written to sockets.
+  kDefault = 0,
 
-  // The default constructor creates a capture mode equivalent to
-  // Default().
-  NetLogCaptureMode();
+  // Logging level that includes everything from kDefault, plus sensitive data
+  // that it may have strippped.
+  //
+  //  * Includes cookies and authentication headers.
+  //  * Does not include the full bytes read/written to sockets.
+  kIncludeSensitive,
 
-  // Constructs a capture mode which logs basic events and event parameters.
-  //    include_cookies_and_credentials() --> false
-  //    include_socket_bytes() --> false
-  static NetLogCaptureMode Default();
+  // Logging level that includes everything that is possible to be logged.
+  //
+  //  * Includes the actual bytes read/written to sockets
+  //  * Will result in large log files.
+  kEverything,
 
-  // Constructs a capture mode which logs basic events, and additionally makes
-  // no effort to strip cookies and credentials.
-  //    include_cookies_and_credentials() --> true
-  //    include_socket_bytes() --> false
-  // TODO(bnc): Consider renaming to IncludePrivacyInfo().
-  static NetLogCaptureMode IncludeCookiesAndCredentials();
-
-  // Constructs a capture mode which logs the data sent/received from sockets.
-  //    include_cookies_and_credentials() --> true
-  //    include_socket_bytes() --> true
-  static NetLogCaptureMode IncludeSocketBytes();
-
-  // If include_cookies_and_credentials() is true , then it is OK to log
-  // events which contain cookies, credentials or other privacy sensitive data.
-  // TODO(bnc): Consider renaming to include_privacy_info().
-  bool include_cookies_and_credentials() const;
-
-  // If include_socket_bytes() is true, then it is OK to output the actual
-  // bytes read/written from the network, even if it contains private data.
-  bool include_socket_bytes() const;
-
-  bool operator==(NetLogCaptureMode mode) const;
-  bool operator!=(NetLogCaptureMode mode) const;
-
- private:
-  explicit NetLogCaptureMode(uint32_t value);
-
-  int32_t value_;
+  kLast = kEverything,
 };
+
+// Bitfield of NetLogCaptureMode, that should be initialized to zero for empty
+// set. Bit "i" being set means that the set contains NetLogCaptureMode with
+// value "i".
+//
+// Use the NetLogCaptureModeSet*() functions to operate on it.
+using NetLogCaptureModeSet = uint32_t;
+
+inline NetLogCaptureModeSet NetLogCaptureModeToBit(
+    NetLogCaptureMode capture_mode) {
+  return 1 << static_cast<uint32_t>(capture_mode);
+}
+
+inline bool NetLogCaptureModeSetContains(NetLogCaptureMode capture_mode,
+                                         NetLogCaptureModeSet set) {
+  return (set & NetLogCaptureModeToBit(capture_mode)) != 0;
+}
+
+inline bool NetLogCaptureModeSetAdd(NetLogCaptureMode value,
+                                    NetLogCaptureModeSet* set) {
+  return *set |= NetLogCaptureModeToBit(value);
+}
+
+// Returns true if |capture_mode| permits logging sensitive values such as
+// cookies and credentials.
+NET_EXPORT bool NetLogCaptureIncludesSensitive(NetLogCaptureMode capture_mode);
+
+// Returns true if |capture_mode| permits logging the full request/response
+// bytes from sockets.
+NET_EXPORT bool NetLogCaptureIncludesSocketBytes(
+    NetLogCaptureMode capture_mode);
 
 }  // namespace net
 

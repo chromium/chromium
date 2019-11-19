@@ -10,5 +10,3 @@
 
 NSString* const kFieldTrialValueKey = @"FieldTrialValue";
 NSString* const kFieldTrialVersionKey = @"FieldTrialVersion";
-
-NSNumber* const kCopiedContentBehaviorVersion = [NSNumber numberWithInt:0];

@@ -9,14 +9,10 @@ namespace blink {
 
 enum MapCoordinatesMode {
   kIsFixed = 1 << 0,
-  kUseTransforms = 1 << 1,
 
-  // When walking up the containing block chain, applies a container flip for
-  // the first element found, if any, for which isFlippedBlocksWritingMode is
-  // true. This option should generally be used when mapping a source rect in
-  // the "physical coordinates with flipped block-flow" coordinate space (see
-  // LayoutBoxModelObject.h) to one in a physical destination space.
-  kApplyContainerFlip = 1 << 2,
+  // Only needed in some special cases to intentionally ignore transforms.
+  kIgnoreTransforms = 1 << 2,
+
   kTraverseDocumentBoundaries = 1 << 3,
 
   // Ignore offset adjustments caused by position:sticky calculations when
@@ -26,6 +22,10 @@ enum MapCoordinatesMode {
   // Ignore scroll offset from container, i.e. scrolling has no effect on mapped
   // position.
   kIgnoreScrollOffset = 1 << 5,
+
+  // If the local root frame has a remote frame parent, apply the offset from
+  // the remote frame parent to the local root.
+  kApplyRemoteRootFrameOffset = 1 << 6,
 };
 typedef unsigned MapCoordinatesFlags;
 

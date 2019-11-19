@@ -1,11 +1,6 @@
 // Copyright (c) 2012 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-//
-// Due to restrictions of most operating systems, we don't directly map each
-// type of custom data to a native data transfer type. Instead, we serialize
-// each key-value pair into the pickle as a pair of string objects, and then
-// write the binary data in the pickle to the native data transfer object.
 
 #ifndef UI_BASE_CLIPBOARD_CUSTOM_DATA_HELPER_H_
 #define UI_BASE_CLIPBOARD_CUSTOM_DATA_HELPER_H_
@@ -20,6 +15,10 @@
 #include "base/strings/string16.h"
 #include "build/build_config.h"
 
+// Due to restrictions of most operating systems, we don't directly map each
+// type of custom data to a native data transfer type. Instead, we serialize
+// each key-value pair into the pickle as a pair of string objects, and then
+// write the binary data in the pickle to the native data transfer object.
 namespace base {
 class Pickle;
 }

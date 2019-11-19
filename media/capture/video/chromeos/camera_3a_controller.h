@@ -9,7 +9,7 @@
 
 #include "base/cancelable_callback.h"
 #include "media/base/media_export.h"
-#include "media/capture/video/chromeos/mojo/camera3.mojom.h"
+#include "media/capture/video/chromeos/mojom/camera3.mojom.h"
 #include "media/capture/video/chromeos/request_manager.h"
 
 namespace media {
@@ -134,7 +134,7 @@ class CAPTURE_EXPORT Camera3AController
 
   base::CancelableOnceClosure delayed_ae_unlock_callback_;
 
-  base::WeakPtrFactory<Camera3AController> weak_ptr_factory_;
+  base::WeakPtrFactory<Camera3AController> weak_ptr_factory_{this};
 
   DISALLOW_IMPLICIT_CONSTRUCTORS(Camera3AController);
 };

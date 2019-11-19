@@ -12,19 +12,20 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.ThreadUtils;
+import org.chromium.base.task.PostTask;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.RetryOnFailure;
 import org.chromium.chrome.browser.ChromeSwitches;
+import org.chromium.chrome.browser.ShortcutHelper;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.chrome.test.util.browser.WebappTestPage;
+import org.chromium.chrome.test.util.browser.webapps.WebApkInfoBuilder;
+import org.chromium.chrome.test.util.browser.webapps.WebappTestPage;
+import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.net.test.EmbeddedTestServerRule;
-
-import java.util.HashMap;
 
 /**
  * Tests the WebApkUpdateDataFetcher.
@@ -53,6 +54,9 @@ public class WebApkUpdateDataFetcherTest {
     // Murmur2 hash of icon at {@link WEB_MANIFEST_WITH_LONG_ICON_MURMUR2_HASH}.
     private static final String LONG_ICON_MURMUR2_HASH = "13495109619211221667";
 
+    private static final String WEB_MANIFEST_URL_MASKABLE =
+            "/chrome/test/data/banners/manifest_maskable.json";
+
     // Scope for {@link WEB_MANIFEST_URL1}, {@link WEB_MANIFEST_URL2} and
     // {@link WEB_MANIFEST_WITH_LONG_ICON_MURMUR2_HASH}.
     private static final String WEB_MANIFEST_SCOPE = "/chrome/test/data";
@@ -66,6 +70,7 @@ public class WebApkUpdateDataFetcherTest {
         private boolean mWebApkCompatible;
         private String mName;
         private String mPrimaryIconMurmur2Hash;
+        private boolean mIsPrimaryIconMaskable;
 
         @Override
         public void onGotManifestData(
@@ -74,6 +79,7 @@ public class WebApkUpdateDataFetcherTest {
             mWebApkCompatible = true;
             mName = fetchedInfo.name();
             mPrimaryIconMurmur2Hash = fetchedInfo.iconUrlToMurmur2HashMap().get(primaryIconUrl);
+            mIsPrimaryIconMaskable = fetchedInfo.isIconAdaptive();
             notifyCalled();
         }
 
@@ -88,6 +94,10 @@ public class WebApkUpdateDataFetcherTest {
         public String primaryIconMurmur2Hash() {
             return mPrimaryIconMurmur2Hash;
         }
+
+        public boolean isPrimaryIconMaskable() {
+            return mIsPrimaryIconMaskable;
+        }
     }
 
     @Before
@@ -100,15 +110,12 @@ public class WebApkUpdateDataFetcherTest {
     private void startWebApkUpdateDataFetcher(final String scopeUrl,
             final String manifestUrl, final WebApkUpdateDataFetcher.Observer observer) {
         final WebApkUpdateDataFetcher fetcher = new WebApkUpdateDataFetcher();
-        ThreadUtils.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                WebApkInfo oldInfo = WebApkInfo.create("", "", scopeUrl, null, null, null, null,
-                        null, -1, -1, -1, -1, -1, "random.package", -1, manifestUrl, "",
-                        WebApkInfo.WebApkDistributor.BROWSER, new HashMap<String, String>(), null,
-                        false /* forceNavigation */, false /* useTransparentSplash */, null /* shareData */);
-                fetcher.start(mTab, oldInfo, observer);
-            }
+        PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () -> {
+            WebApkInfoBuilder oldWebApkInfoBuilder =
+                    new WebApkInfoBuilder("random.package", "" /* url */);
+            oldWebApkInfoBuilder.setScope(scopeUrl);
+            oldWebApkInfoBuilder.setManifestUrl(manifestUrl);
+            fetcher.start(mTab, oldWebApkInfoBuilder.build(), observer);
         });
     }
 
@@ -129,6 +136,28 @@ public class WebApkUpdateDataFetcherTest {
 
         Assert.assertTrue(waiter.isWebApkCompatible());
         Assert.assertEquals(WEB_MANIFEST_NAME1, waiter.name());
+        Assert.assertFalse(waiter.isPrimaryIconMaskable());
+    }
+
+    /**
+     * Test that WebApkUpdateDataFetcher selects a maskable icon when
+     * 1. the manifest has a maskable icon, and
+     * 2. the Android version >= 26 (which supports adaptive icon).
+     */
+    @Test
+    @MediumTest
+    @Feature({"WebApk"})
+    public void testLaunchWithMaskablePrimaryIconManifestUrl() throws Exception {
+        WebappTestPage.navigateToServiceWorkerPageWithManifest(
+                mTestServerRule.getServer(), mTab, WEB_MANIFEST_URL_MASKABLE);
+
+        CallbackWaiter waiter = new CallbackWaiter();
+        startWebApkUpdateDataFetcher(mTestServerRule.getServer().getURL(WEB_MANIFEST_SCOPE),
+                mTestServerRule.getServer().getURL(WEB_MANIFEST_URL_MASKABLE), waiter);
+        waiter.waitForCallback(0);
+
+        Assert.assertEquals(
+                ShortcutHelper.doesAndroidSupportMaskableIcons(), waiter.isPrimaryIconMaskable());
     }
 
     /**

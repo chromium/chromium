@@ -29,6 +29,7 @@
 #include "google_apis/gcm/engine/unregistration_request.h"
 #include "google_apis/gcm/protocol/android_checkin.pb.h"
 #include "google_apis/gcm/protocol/checkin.pb.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "net/http/http_status_code.h"
 #include "services/network/public/mojom/proxy_resolving_socket.mojom.h"
 
@@ -67,13 +68,15 @@ class GCMInternalsBuilder {
       base::Clock* clock,
       ConnectionFactory* connection_factory,
       GCMStore* gcm_store,
+      scoped_refptr<base::SequencedTaskRunner> io_task_runner,
       GCMStatsRecorder* recorder);
   virtual std::unique_ptr<ConnectionFactory> BuildConnectionFactory(
       const std::vector<GURL>& endpoints,
       const net::BackoffEntry::Policy& backoff_policy,
-      base::RepeatingCallback<
-          void(network::mojom::ProxyResolvingSocketFactoryRequest)>
+      base::RepeatingCallback<void(
+          mojo::PendingReceiver<network::mojom::ProxyResolvingSocketFactory>)>
           get_socket_factory_callback,
+      scoped_refptr<base::SequencedTaskRunner> io_task_runner,
       GCMStatsRecorder* recorder,
       network::NetworkConnectionTracker* network_connection_tracker);
 };
@@ -113,8 +116,9 @@ class GCMClientImpl
       const ChromeBuildInfo& chrome_build_info,
       const base::FilePath& store_path,
       const scoped_refptr<base::SequencedTaskRunner>& blocking_task_runner,
-      base::RepeatingCallback<
-          void(network::mojom::ProxyResolvingSocketFactoryRequest)>
+      scoped_refptr<base::SequencedTaskRunner> io_task_runner,
+      base::RepeatingCallback<void(
+          mojo::PendingReceiver<network::mojom::ProxyResolvingSocketFactory>)>
           get_socket_factory_callback,
       const scoped_refptr<network::SharedURLLoaderFactory>& url_loader_factory,
       network::NetworkConnectionTracker* network_connection_tracker,
@@ -137,7 +141,7 @@ class GCMClientImpl
   void SetAccountTokens(
       const std::vector<AccountTokenInfo>& account_tokens) override;
   void UpdateAccountMapping(const AccountMapping& account_mapping) override;
-  void RemoveAccountMapping(const std::string& account_id) override;
+  void RemoveAccountMapping(const CoreAccountId& account_id) override;
   void SetLastTokenFetchTime(const base::Time& time) override;
   void UpdateHeartbeatTimer(
       std::unique_ptr<base::RetainingOneShotTimer> timer) override;
@@ -369,12 +373,14 @@ class GCMClientImpl
 
   std::unique_ptr<ConnectionFactory> connection_factory_;
   base::RepeatingCallback<void(
-      network::mojom::ProxyResolvingSocketFactoryRequest)>
+      mojo::PendingReceiver<network::mojom::ProxyResolvingSocketFactory>)>
       get_socket_factory_callback_;
 
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 
   network::NetworkConnectionTracker* network_connection_tracker_;
+
+  scoped_refptr<base::SequencedTaskRunner> io_task_runner_;
 
   // Controls receiving and sending of packets and reliable message queueing.
   // Must be destroyed before |network_session_|.
@@ -404,13 +410,13 @@ class GCMClientImpl
   std::map<std::string, std::pair<std::string, std::string>> instance_id_data_;
 
   // Factory for creating references when scheduling periodic checkin.
-  base::WeakPtrFactory<GCMClientImpl> periodic_checkin_ptr_factory_;
+  base::WeakPtrFactory<GCMClientImpl> periodic_checkin_ptr_factory_{this};
 
   // Factory for wiping out GCM store.
-  base::WeakPtrFactory<GCMClientImpl> destroying_gcm_store_ptr_factory_;
+  base::WeakPtrFactory<GCMClientImpl> destroying_gcm_store_ptr_factory_{this};
 
   // Factory for creating references in callbacks.
-  base::WeakPtrFactory<GCMClientImpl> weak_ptr_factory_;
+  base::WeakPtrFactory<GCMClientImpl> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(GCMClientImpl);
 };

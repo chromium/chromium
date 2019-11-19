@@ -25,7 +25,7 @@
 #include "components/security_interstitials/content/unsafe_resource.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "net/base/completion_callback.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 namespace history {
 class HistoryService;
@@ -167,7 +167,7 @@ class ThreatDetails : public content::WebContentsObserver {
   void RequestThreatDOMDetails(content::RenderFrameHost* frame);
 
   void OnReceivedThreatDOMDetails(
-      mojom::ThreatReporterPtr threat_reporter,
+      mojo::Remote<mojom::ThreatReporter> threat_reporter,
       content::RenderFrameHost* sender,
       std::vector<mojom::ThreatDOMDetailsNodePtr> params);
 
@@ -178,12 +178,14 @@ class ThreatDetails : public content::WebContentsObserver {
   // ID of the element within the frame. |tag_name| is the tag of the element.
   // |parent_element_node_id| is the unique ID of the parent element within the
   // frame. |attributes| contains the names and values of the element's
-  // attributes. |resource| is set if this element is a resource.
+  // attributes. |inner_html| is set if the element contains inline JavaScript.
+  // |resource| is set if this element is a resource.
   void AddDomElement(const int frame_tree_node_id,
                      const int element_node_id,
                      const std::string& tag_name,
                      const int parent_element_node_id,
                      const std::vector<mojom::AttributeNameValuePtr> attributes,
+                     const std::string& inner_html,
                      const ClientSafeBrowsingReportRequest::Resource* resource);
 
   // Populates the referrer chain data in |report_|. This may be skipped if the
@@ -232,11 +234,6 @@ class ThreatDetails : public content::WebContentsObserver {
   // How many times this user has visited this page before.
   int num_visits_;
 
-  // Keeps track of whether we have an ambiguous DOM in this report. This can
-  // happen when the HTML Elements returned by a renderer can't be
-  // associated with a parent Element in the parent frame.
-  bool ambiguous_dom_;
-
   // Whether this report should be trimmed down to only ad tags, not the entire
   // page contents. Used for sampling ads.
   bool trim_to_ad_tags_;
@@ -272,7 +269,7 @@ class ThreatDetails : public content::WebContentsObserver {
   std::vector<content::RenderFrameHost*> pending_render_frame_hosts_;
 
   // Used for references to |this| bound in callbacks.
-  base::WeakPtrFactory<ThreatDetails> weak_factory_;
+  base::WeakPtrFactory<ThreatDetails> weak_factory_{this};
 
   FRIEND_TEST_ALL_PREFIXES(ThreatDetailsTest, HistoryServiceUrls);
   FRIEND_TEST_ALL_PREFIXES(ThreatDetailsTest, HttpsResourceSanitization);

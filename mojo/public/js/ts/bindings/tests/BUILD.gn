@@ -1,0 +1,23 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//mojo/public/tools/bindings/mojom.gni")
+
+# Partial copy of //mojo/public/interfaces/bindings/tests:test_interfaces. Used
+# to incrementally develop Typescript bindings.
+mojom("test_interfaces") {
+  testonly = true
+  sources = [
+    "constants.test-mojom",
+    "module.test-mojom",
+  ]
+  use_typescript_sources = true
+}
+
+source_set("tests") {
+  testonly = true
+  deps = [
+    ":test_interfaces_js",
+  ]
+}

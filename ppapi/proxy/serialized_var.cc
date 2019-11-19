@@ -28,7 +28,7 @@ void DefaultHandleWriter(base::Pickle* m, const SerializedHandle& handle) {
 // SerializedVar::Inner --------------------------------------------------------
 
 SerializedVar::Inner::Inner()
-    : serialization_rules_(NULL),
+    : serialization_rules_(nullptr),
       var_(PP_MakeUndefined()),
       instance_(0),
       cleanup_mode_(CLEANUP_NONE),
@@ -72,7 +72,7 @@ PP_Var SerializedVar::Inner::GetVar() {
 #else
   if (raw_var_data_.get()) {
     var_ = raw_var_data_->CreatePPVar(instance_);
-    raw_var_data_.reset(NULL);
+    raw_var_data_.reset(nullptr);
   }
 
   return var_;
@@ -84,7 +84,7 @@ void SerializedVar::Inner::SetVar(PP_Var var) {
   // serialization rules pointer already.
   DCHECK(serialization_rules_.get());
   var_ = var;
-  raw_var_data_.reset(NULL);
+  raw_var_data_.reset(nullptr);
 }
 
 void SerializedVar::Inner::SetInstance(PP_Instance instance) {
@@ -93,7 +93,7 @@ void SerializedVar::Inner::SetInstance(PP_Instance instance) {
 
 void SerializedVar::Inner::ForceSetVarValueForTest(PP_Var value) {
   var_ = value;
-  raw_var_data_.reset(NULL);
+  raw_var_data_.reset(nullptr);
 }
 
 void SerializedVar::Inner::WriteToMessage(base::Pickle* m) const {
@@ -101,7 +101,7 @@ void SerializedVar::Inner::WriteToMessage(base::Pickle* m) const {
   // always have been set.
   //
   // When sending a message, it should be difficult to trigger this if you're
-  // using the SerializedVarSendInput class and giving a non-NULL dispatcher.
+  // using the SerializedVarSendInput class and giving a non-null dispatcher.
   // Make sure you're using the proper "Send" helper class.
   //
   // It should be more common to see this when handling an incoming message
@@ -353,7 +353,7 @@ PP_Var* SerializedVarVectorReceiveInput::Get(Dispatcher* dispatcher,
   }
 
   *array_size = static_cast<uint32_t>(serialized_.size());
-  return deserialized_.empty() ? NULL : &deserialized_[0];
+  return deserialized_.empty() ? nullptr : &deserialized_[0];
 }
 
 // SerializedVarReturnValue ----------------------------------------------------
@@ -389,8 +389,7 @@ SerializedVar SerializedVarReturnValue::Convert(Dispatcher* dispatcher,
 SerializedVarOutParam::SerializedVarOutParam(SerializedVar* serialized)
     : serialized_(serialized),
       writable_var_(PP_MakeUndefined()),
-      dispatcher_(NULL) {
-}
+      dispatcher_(nullptr) {}
 
 SerializedVarOutParam::~SerializedVarOutParam() {
   if (serialized_->inner_->serialization_rules()) {
@@ -418,11 +417,10 @@ PP_Var* SerializedVarOutParam::OutParam(Dispatcher* dispatcher) {
 
 SerializedVarVectorOutParam::SerializedVarVectorOutParam(
     std::vector<SerializedVar>* serialized)
-    : dispatcher_(NULL),
+    : dispatcher_(nullptr),
       serialized_(serialized),
       count_(0),
-      array_(NULL) {
-}
+      array_(nullptr) {}
 
 SerializedVarVectorOutParam::~SerializedVarVectorOutParam() {
   DCHECK(dispatcher_);

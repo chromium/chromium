@@ -46,20 +46,20 @@ public class AwStrictModeTest {
     private StrictMode.VmPolicy mOldVmPolicy;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         mContentsClient = new TestAwContentsClient();
         enableStrictModeOnUiThreadSync();
     }
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
         disableStrictModeOnUiThreadSync();
     }
 
     @Test
     @LargeTest
     @Feature({"AndroidWebView"})
-    public void testStartup() throws Exception {
+    public void testStartup() {
         startEverythingSync();
     }
 
@@ -106,7 +106,7 @@ public class AwStrictModeTest {
         });
     }
 
-    private void startEverythingSync() throws Exception {
+    private void startEverythingSync() {
         mActivityTestRule.getActivity();
         mActivityTestRule.createAwBrowserContext();
         mActivityTestRule.startBrowserProcess();

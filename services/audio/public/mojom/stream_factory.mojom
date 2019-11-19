@@ -4,11 +4,11 @@
 
 module audio.mojom;
 
-import "media/mojo/interfaces/audio_data_pipe.mojom";
-import "media/mojo/interfaces/audio_input_stream.mojom";
-import "media/mojo/interfaces/audio_logging.mojom";
-import "media/mojo/interfaces/audio_output_stream.mojom";
-import "media/mojo/interfaces/audio_parameters.mojom";
+import "media/mojo/mojom/audio_data_pipe.mojom";
+import "media/mojo/mojom/audio_input_stream.mojom";
+import "media/mojo/mojom/audio_logging.mojom";
+import "media/mojo/mojom/audio_output_stream.mojom";
+import "media/mojo/mojom/audio_parameters.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
 import "services/audio/public/mojom/audio_processing.mojom";
 
@@ -39,10 +39,10 @@ interface StreamFactory {
   // implementation. |processing_config| should be set if audio processing by
   // the service is desired.
   CreateInputStream(
-    media.mojom.AudioInputStream& stream,
-    media.mojom.AudioInputStreamClient client,
-    media.mojom.AudioInputStreamObserver? observer,
-    media.mojom.AudioLog? log,
+    pending_receiver<media.mojom.AudioInputStream> stream,
+    pending_remote<media.mojom.AudioInputStreamClient> client,
+    pending_remote<media.mojom.AudioInputStreamObserver>? observer,
+    pending_remote<media.mojom.AudioLog>? log,
     string device_id, media.mojom.AudioParameters params,
     uint32 shared_memory_count, bool enable_agc,
     handle<shared_buffer>? key_press_count_buffer,
@@ -67,9 +67,9 @@ interface StreamFactory {
   // is used to connect the stream to input streams that need to analyze the
   // output signal as part of their processing.
   CreateOutputStream(
-    media.mojom.AudioOutputStream& stream,
-    associated media.mojom.AudioOutputStreamObserver? observer,
-    media.mojom.AudioLog? log,
+    pending_receiver<media.mojom.AudioOutputStream> stream,
+    pending_associated_remote<media.mojom.AudioOutputStreamObserver>? observer,
+    pending_remote<media.mojom.AudioLog>? log,
     string device_id, media.mojom.AudioParameters params,
     mojo_base.mojom.UnguessableToken group_id,
     mojo_base.mojom.UnguessableToken? processing_id)
@@ -84,7 +84,7 @@ interface StreamFactory {
   // output streams must remain muted until they are shut down, the binding to
   // the muter must not be closed until after all other streams' binding. (This
   // is the reason for the associated request argument.)
-  BindMuter(associated LocalMuter& request,
+  BindMuter(pending_associated_receiver<LocalMuter> receiver,
             mojo_base.mojom.UnguessableToken group_id);
 
   // Creates an AudioInputStream that provides the result of looping-back and
@@ -94,11 +94,12 @@ interface StreamFactory {
   // and the result are as described in CreateInputStream() above, except for
   // |stream_id|. Loopback streams have no ID, since they cannot be used in
   // echo cancellation.
-  CreateLoopbackStream(media.mojom.AudioInputStream& stream,
-                       media.mojom.AudioInputStreamClient client,
-                       media.mojom.AudioInputStreamObserver observer,
-                       media.mojom.AudioParameters params,
-                       uint32 shared_memory_count,
-                       mojo_base.mojom.UnguessableToken group_id)
+  CreateLoopbackStream(
+      pending_receiver<media.mojom.AudioInputStream> receiver,
+      pending_remote<media.mojom.AudioInputStreamClient> client,
+      pending_remote<media.mojom.AudioInputStreamObserver> observer,
+      media.mojom.AudioParameters params,
+      uint32 shared_memory_count,
+      mojo_base.mojom.UnguessableToken group_id)
     => (media.mojom.ReadOnlyAudioDataPipe? data_pipe);
 };

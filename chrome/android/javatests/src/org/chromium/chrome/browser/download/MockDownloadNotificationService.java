@@ -10,12 +10,14 @@ import android.app.Notification;
 import android.content.Intent;
 import android.graphics.Bitmap;
 
-import org.chromium.base.ThreadUtils;
+import org.junit.Assert;
+
 import org.chromium.chrome.browser.util.IntentUtils;
 import org.chromium.components.offline_items_collection.ContentId;
 import org.chromium.components.offline_items_collection.FailState;
 import org.chromium.components.offline_items_collection.OfflineItem.Progress;
 import org.chromium.components.offline_items_collection.PendingState;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -66,7 +68,7 @@ public class MockDownloadNotificationService extends DownloadNotificationService
             final boolean isSupportedMimeType, final boolean isOpenable, final Bitmap icon,
             final String originalUrl, final boolean shouldPromoteOrigin, final String referrer,
             final long totalBytes) {
-        return ThreadUtils.runOnUiThreadBlockingNoException(
+        return TestThreadUtils.runOnUiThreadBlockingNoException(
                 ()
                         -> MockDownloadNotificationService.super.notifyDownloadSuccessful(id,
                                 filePath, fileName, systemDownloadId, isOffTheRecord,
@@ -80,7 +82,7 @@ public class MockDownloadNotificationService extends DownloadNotificationService
             final long startTime, final boolean isOffTheRecord,
             final boolean canDownloadWhileMetered, final boolean isTransient, final Bitmap icon,
             final String originalUrl, final boolean shouldPromoteOrigin) {
-        ThreadUtils.runOnUiThreadBlocking(
+        TestThreadUtils.runOnUiThreadBlocking(
                 ()
                         -> MockDownloadNotificationService.super.notifyDownloadProgress(id,
                                 fileName, progress, bytesReceived, timeRemainingInMillis, startTime,
@@ -93,7 +95,7 @@ public class MockDownloadNotificationService extends DownloadNotificationService
             boolean isAutoResumable, boolean isOffTheRecord, boolean isTransient, Bitmap icon,
             final String originalUrl, final boolean shouldPromoteOrigin, boolean hasUserGesture,
             boolean forceRebuild, @PendingState int pendingState) {
-        ThreadUtils.runOnUiThreadBlocking(
+        TestThreadUtils.runOnUiThreadBlocking(
                 ()
                         -> MockDownloadNotificationService.super.notifyDownloadPaused(id, fileName,
                                 isResumable, isAutoResumable, isOffTheRecord, isTransient, icon,
@@ -105,7 +107,7 @@ public class MockDownloadNotificationService extends DownloadNotificationService
     public void notifyDownloadFailed(final ContentId id, final String fileName, final Bitmap icon,
             final String originalUrl, final boolean shouldPromoteOrigin, boolean isOffTheRecord,
             @FailState int failState) {
-        ThreadUtils.runOnUiThreadBlocking(
+        TestThreadUtils.runOnUiThreadBlocking(
                 ()
                         -> MockDownloadNotificationService.super.notifyDownloadFailed(id, fileName,
                                 icon, originalUrl, shouldPromoteOrigin, isOffTheRecord, failState));
@@ -113,7 +115,7 @@ public class MockDownloadNotificationService extends DownloadNotificationService
 
     @Override
     public void notifyDownloadCanceled(final ContentId id, boolean hasUserGesture) {
-        ThreadUtils.runOnUiThreadBlocking(
+        TestThreadUtils.runOnUiThreadBlocking(
                 ()
                         -> MockDownloadNotificationService.super.notifyDownloadCanceled(
                                 id, hasUserGesture));
@@ -122,5 +124,6 @@ public class MockDownloadNotificationService extends DownloadNotificationService
     @Override
     void resumeDownload(Intent intent) {
         mResumedDownloads.add(IntentUtils.safeGetStringExtra(intent, EXTRA_DOWNLOAD_CONTENTID_ID));
+        Assert.assertTrue(IntentUtils.safeGetBooleanExtra(intent, EXTRA_IS_AUTO_RESUMPTION, false));
     }
 }

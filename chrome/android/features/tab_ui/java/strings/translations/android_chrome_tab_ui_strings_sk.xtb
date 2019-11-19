@@ -1,0 +1,29 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="sk">
+<translation id="1075622780330595106">V poslednom čase ste nepoužili tento počet kariet: <ph name="NUMBER_OF_TABS" />. Chcete ich zavrieť?</translation>
+<translation id="1181037720776840403">Odstrániť</translation>
+<translation id="125153950246128346">Klepnutím zobrazíte ďalšiu kartu</translation>
+<translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> karta}few{<ph name="TABS_COUNT_MANY" /> karty}many{<ph name="TABS_COUNT_MANY" /> tabs}other{<ph name="TABS_COUNT_MANY" /> kariet}}</translation>
+<translation id="257674075312929031">Skupina</translation>
+<translation id="2613747923081026172">Vytvoriť skupinu</translation>
+<translation id="2671423594960767771">Zdieľať skupinu</translation>
+<translation id="2977480621796371840">Odstrániť zo skupiny</translation>
+<translation id="4212246570487010370">Pokračovať v prehliadaní</translation>
+<translation id="4648718555153979859">Vaše karty sú tu zoskupené</translation>
+<translation id="5007392906805964215">Prezrieť</translation>
+<translation id="5073204694187207510">Skryť mriežku na celú obrazovku</translation>
+<translation id="5082793167783849073">Ak chcete rýchlo porovnať stránky, vytvorte skupinu. Začnite pridržaním ľubovoľného odkazu.</translation>
+<translation id="5580090775658607195">Počet zoskupených kariet: <ph name="TAB_COUNT" /></translation>
+<translation id="5792534911093536736">Viac kariet</translation>
+<translation id="58326064309361797">Karty zoskupíte presunutím</translation>
+<translation id="6040143037577758943">Zavrieť</translation>
+<translation id="6193448654517602979">Vyberte karty</translation>
+<translation id="6615455863669487791">Zobraziť</translation>
+<translation id="6840760312327750441">Ak chcete zoskupiť karty, pridržte niektorú z nich. Potom ju presuňte na inú.</translation>
+<translation id="7151209024774799310">Oddeliť karty od skupiny</translation>
+<translation id="7559245342362162951">Zobraziť karty skupiny v mriežke na celú obrazovku</translation>
+<translation id="9150694013019234766">Prepínajte karty v skupine kariet v dolnej časti obrazovky</translation>
+<translation id="9169594135889675189">Pridať novú kartu do skupiny</translation>
+<translation id="959682366969460160">Usporiadanie položiek</translation>
+</translationbundle>

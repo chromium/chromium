@@ -1,0 +1,17 @@
+<div id="container">
+  <select><option id="child"></option></select>
+</div>
+<script>
+  window.onload = _ => {
+    let child = document.getElementById("child");
+    let container = document.getElementById("container");
+
+    doc = document.implementation.createDocument( "svg", null);
+    doc.adoptNode(child);
+    container.parentNode.removeChild(container);
+  }
+
+  if (window.testRunner)
+    testRunner.dumpAsText();
+</script>
+This test passes if it doesn't crash.

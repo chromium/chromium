@@ -5,30 +5,31 @@
 #include "ash/dbus/ash_dbus_services.h"
 
 #include "ash/dbus/display_service_provider.h"
+#include "ash/dbus/gesture_properties_service_provider.h"
 #include "ash/dbus/liveness_service_provider.h"
 #include "ash/dbus/url_handler_service_provider.h"
-#include "ash/shell.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
+#include "base/feature_list.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/dbus/services/cros_dbus_service.h"
-#include "chromeos/dbus/session_manager_client.h"
 #include "dbus/object_path.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
 namespace ash {
 
-AshDBusServices::AshDBusServices() {
-  // DBusThreadManager is initialized in Chrome or in AshService::InitForMash().
-  CHECK(chromeos::DBusThreadManager::IsInitialized());
-
-  dbus::Bus* system_bus =
-      chromeos::DBusThreadManager::Get()->IsUsingFakes()
-          ? nullptr
-          : chromeos::DBusThreadManager::Get()->GetSystemBus();
+AshDBusServices::AshDBusServices(dbus::Bus* system_bus) {
   display_service_ = chromeos::CrosDBusService::Create(
       system_bus, chromeos::kDisplayServiceName,
       dbus::ObjectPath(chromeos::kDisplayServicePath),
       chromeos::CrosDBusService::CreateServiceProviderList(
           std::make_unique<DisplayServiceProvider>()));
+  if (base::FeatureList::IsEnabled(
+          chromeos::features::kGesturePropertiesDBusService)) {
+    gesture_properties_service_ = chromeos::CrosDBusService::Create(
+        system_bus, chromeos::kGesturePropertiesServiceName,
+        dbus::ObjectPath(chromeos::kGesturePropertiesServicePath),
+        chromeos::CrosDBusService::CreateServiceProviderList(
+            std::make_unique<GesturePropertiesServiceProvider>()));
+  }
   liveness_service_ = chromeos::CrosDBusService::Create(
       system_bus, chromeos::kLivenessServiceName,
       dbus::ObjectPath(chromeos::kLivenessServicePath),
@@ -41,14 +42,9 @@ AshDBusServices::AshDBusServices() {
           std::make_unique<UrlHandlerServiceProvider>()));
 }
 
-void AshDBusServices::EmitAshInitialized() {
-  chromeos::DBusThreadManager::Get()
-      ->GetSessionManagerClient()
-      ->EmitAshInitialized();
-}
-
 AshDBusServices::~AshDBusServices() {
   display_service_.reset();
+  gesture_properties_service_.reset();
   liveness_service_.reset();
   url_handler_service_.reset();
 }

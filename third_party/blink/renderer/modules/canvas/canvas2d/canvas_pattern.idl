@@ -23,7 +23,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 [
-    Exposed(Worker OffscreenCanvas, Window StableBlinkFeatures)
+    Exposed=(Window,Worker)
 ] interface CanvasPattern {
 
     [RaisesException] void setTransform(optional DOMMatrix2DInit transform);

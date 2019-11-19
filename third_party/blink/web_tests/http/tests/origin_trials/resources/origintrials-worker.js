@@ -59,6 +59,20 @@ expect_failure_worker_implied = () => {
   done();
 }
 
+// Test whether the origin-trial-enabled attributes are *NOT* attached in a
+// worker where the trial is not enabled for the OS.
+expect_failure_worker_invalid_os = () => {
+  // Use |worker_type| to make the test descriptions unique when multiple
+  // workers are created in a single test file.
+  var worker_type = get_worker_type();
+  test(() => {
+    var testObject = self.internals.originTrialsTest();
+    assert_false('invalidOSAttribute' in testObject);
+    assert_equals(testObject.invalidOSAttribute, undefined);
+  }, 'Invalid OS attribute should not exist in ' + worker_type + ' worker');
+  done();
+}
+
 // Test whether the origin-trial-enabled attributes are attached in a worker
 // where the trial is enabled.
 // This is deliberately just a minimal set of tests to ensure that trials are

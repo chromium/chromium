@@ -9,6 +9,7 @@
 
 #include "base/ios/block_types.h"
 
+class Browser;
 @class BrowserCoordinator;
 @class BrowserViewController;
 @class TabModel;
@@ -39,6 +40,8 @@ class ChromeBrowserState;
 @property(nonatomic, readonly) BrowserViewController* bvc;
 // The tab model to which the current tab belongs.
 @property(nonatomic, readonly) TabModel* tabModel;
+// The active browser.
+@property(nonatomic, readonly) Browser* browser;
 // The browser state for this interface.
 @property(nonatomic, readonly) ios::ChromeBrowserState* browserState;
 // YES if the tab view is available for user interaction.
@@ -73,10 +76,6 @@ class ChromeBrowserState;
 @property(nonatomic, readonly) id<BrowserInterface> mainInterface;
 // The incognito interface. Its |incognito| property must be YES.
 @property(nonatomic, readonly) id<BrowserInterface> incognitoInterface;
-
-// Legacy methods that affect multiple (or no) interfaces.
-// Halts all tabs from all interfaces.
-- (void)haltAllTabs;
 
 // Clean up the device sharing manager.
 - (void)cleanDeviceSharingManager;

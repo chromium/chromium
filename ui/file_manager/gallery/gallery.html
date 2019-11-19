@@ -16,11 +16,11 @@
 
   <script src="chrome://resources/js/util.js"></script>
 
+  <link rel="import" href="chrome://resources/cr_elements/cr_button/cr_button.html">
   <link rel="import" href="chrome://resources/cr_elements/cr_checkbox/cr_checkbox.html">
   <link rel="import" href="chrome://resources/cr_elements/cr_slider/cr_slider.html">
   <link rel="import" href="chrome://resources/cr_elements/cr_input/cr_input.html">
   <link rel="import" href="chrome://resources/cr_elements/shared_vars_css.html">
-  <link rel="import" href="chrome://resources/polymer/v1_0/paper-button/paper-button.html">
   <link rel="import" href="chrome://resources/polymer/v1_0/paper-progress/paper-progress.html">
   <link rel="import" href="chrome://resources/polymer/v1_0/paper-ripple/paper-ripple.html">
   <link rel="import" href="chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/foreground/elements/files_ripple.html">
@@ -32,13 +32,11 @@
 </head>
 <body>
   <custom-style>
-    <style is="custom-style">
+    <style>
       cr-checkbox {
         --cr-checkbox-checked-box-color: white;
         --cr-checkbox-label-color: white;
-        --cr-checkbox-label-container: {
-          -webkit-padding-start: 6px;
-        };
+        --cr-checkbox-label-padding-start: 6px;
         --cr-checkbox-mark-color: black;
         --cr-checkbox-ripple-checked-color: white;
         --cr-checkbox-ripple-size: 38px;
@@ -56,32 +54,20 @@
         --paper-progress-container-color: rgba(0, 0, 0, 0.3);
         --paper-progress-active-color: #1AC222;
       }
-      paper-button {
-        --paper-button-ink-color: black;
+      cr-button {
+        --ink-color: black;
+        border: none;
+        box-shadow: none;
       }
       files-toggle-ripple {
-        --files-toggle-ripple-activated: {
-          opacity: 0.4;
-        };
+        --files-toggle-ripple-activated-opacity: 0.4;
       }
 
       cr-input {
-        --cr-form-field-label: {
-          color: rgba(255, 255, 255, 0.54);
-          display: block;
-          font-size: var(--cr-form-field-label-font-size);
-          letter-spacing: 0.4px;
-          line-height: var(--cr-form-field-label-font-size);
-          margin-bottom: 0;
-        }
         --cr-input-background-color: transparent;
+        --cr-input-border-bottom: 1px solid var(--paper-grey-800);
+        --cr-input-border-radius: 0;
         --cr-input-color: white;
-        --cr-input-container: {
-          border-radius: 0;
-        }
-        --cr-input-input: {
-          border-bottom: 1px solid var(--paper-grey-800);
-        }
         --cr-input-padding-end: 0;
         --cr-input-padding-start: 0;
         --cr-input-error-display: none;
@@ -167,7 +153,7 @@
         </div>
         <div class="edit-bar-spacer"></div>
         <div class="exit-button-spacer">
-          <paper-button class="exit" i18n-content="GALLERY_EXIT"></paper-button>
+          <cr-button class="exit" i18n-content="GALLERY_EXIT"></cr-button>
         </div>
       </div>
       <div class="bubble" hidden>

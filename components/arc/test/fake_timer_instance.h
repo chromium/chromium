@@ -7,7 +7,7 @@
 
 #include <vector>
 
-#include "components/arc/common/timer.mojom.h"
+#include "components/arc/mojom/timer.mojom.h"
 
 namespace arc {
 

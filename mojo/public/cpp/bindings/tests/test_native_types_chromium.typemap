@@ -16,8 +16,8 @@ deps = [
 ]
 
 type_mappings = [
-  "mojo.test.PickledEnum=mojo::test::PickledEnumChromium",
-  "mojo.test.PickledStruct=mojo::test::PickledStructChromium[move_only]",
-  "mojo.test.TestNativeStructMojom=mojo::test::TestNativeStruct",
-  "mojo.test.TestNativeStructWithAttachmentsMojom=mojo::test::TestNativeStructWithAttachments[move_only]",
+  "mojo.test.PickledEnum=::mojo::test::PickledEnumChromium",
+  "mojo.test.PickledStruct=::mojo::test::PickledStructChromium[move_only]",
+  "mojo.test.TestNativeStructMojom=::mojo::test::TestNativeStruct",
+  "mojo.test.TestNativeStructWithAttachmentsMojom=::mojo::test::TestNativeStructWithAttachments[move_only]",
 ]

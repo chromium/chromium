@@ -36,7 +36,7 @@ void AppCacheWorkingSet::AddCache(AppCache* cache) {
   DCHECK(cache->cache_id() != blink::mojom::kAppCacheNoCacheId);
   int64_t cache_id = cache->cache_id();
   DCHECK(caches_.find(cache_id) == caches_.end());
-  caches_.insert(CacheMap::value_type(cache_id, cache));
+  caches_.emplace(cache_id, cache);
 }
 
 void AppCacheWorkingSet::RemoveCache(AppCache* cache) {
@@ -48,9 +48,8 @@ void AppCacheWorkingSet::AddGroup(AppCacheGroup* group) {
     return;
   const GURL& url = group->manifest_url();
   DCHECK(groups_.find(url) == groups_.end());
-  groups_.insert(GroupMap::value_type(url, group));
-  groups_by_origin_[url::Origin::Create(url)].insert(
-      GroupMap::value_type(url, group));
+  groups_.emplace(url, group);
+  groups_by_origin_[url::Origin::Create(url)].emplace(url, group);
 }
 
 void AppCacheWorkingSet::RemoveGroup(AppCacheGroup* group) {
@@ -72,7 +71,7 @@ void AppCacheWorkingSet::AddResponseInfo(AppCacheResponseInfo* info) {
   DCHECK(info->response_id() != blink::mojom::kAppCacheNoResponseId);
   int64_t response_id = info->response_id();
   DCHECK(response_infos_.find(response_id) == response_infos_.end());
-  response_infos_.insert(ResponseInfoMap::value_type(response_id, info));
+  response_infos_.emplace(response_id, info);
 }
 
 void AppCacheWorkingSet::RemoveResponseInfo(AppCacheResponseInfo* info) {

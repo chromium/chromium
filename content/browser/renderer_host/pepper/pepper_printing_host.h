@@ -41,7 +41,7 @@ class CONTENT_EXPORT PepperPrintingHost : public ppapi::host::ResourceHost {
 
   std::unique_ptr<PepperPrintSettingsManager> print_settings_manager_;
 
-  base::WeakPtrFactory<PepperPrintingHost> weak_factory_;
+  base::WeakPtrFactory<PepperPrintingHost> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(PepperPrintingHost);
 };

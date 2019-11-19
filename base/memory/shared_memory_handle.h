@@ -33,6 +33,9 @@ namespace base {
 // address space of the current process.
 // TODO(erikchen): This class should have strong ownership semantics to prevent
 // leaks of the underlying OS resource. https://crbug.com/640840.
+//
+// DEPRECATED - Use {Writable,ReadOnly}SharedMemoryRegion instead.
+// http://crbug.com/795291
 class BASE_EXPORT SharedMemoryHandle {
  public:
   // The default constructor returns an invalid SharedMemoryHandle.

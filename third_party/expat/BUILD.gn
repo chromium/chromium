@@ -19,17 +19,19 @@ if (is_linux && !is_chromecast && !use_fuzzing_engine) {
   }
 } else {
   config("expat_config") {
-    include_dirs = [ "files/lib" ]
+    include_dirs = [
+      "src/expat/lib",
+      "include/expat_config",
+    ]
     defines = [ "XML_STATIC" ]
   }
 
   static_library("expat") {
     sources = [
-      "files/lib/expat.h",
-      "files/lib/loadlibrary.c",
-      "files/lib/xmlparse.c",
-      "files/lib/xmlrole.c",
-      "files/lib/xmltok.c",
+      "src/expat/lib/expat.h",
+      "src/expat/lib/xmlparse.c",
+      "src/expat/lib/xmlrole.c",
+      "src/expat/lib/xmltok.c",
     ]
 
     public_configs = [ ":expat_config" ]
@@ -41,6 +43,8 @@ if (is_linux && !is_chromecast && !use_fuzzing_engine) {
 
     defines = [ "_LIB" ]
     if (is_win) {
+      # expat expects to define WIN32_LEAN_AND_MEAN itself
+      configs -= [ "//build/config/win:lean_and_mean" ]
       defines += [ "COMPILED_FROM_DSP" ]
     } else {
       defines += [ "HAVE_EXPAT_CONFIG_H" ]

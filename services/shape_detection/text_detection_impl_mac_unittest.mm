@@ -10,8 +10,8 @@
 #include "base/mac/scoped_cftyperef.h"
 #include "base/mac/scoped_nsobject.h"
 #include "base/mac/sdk_forward_declarations.h"
-#include "base/message_loop/message_loop.h"
 #include "base/run_loop.h"
+#include "base/test/task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/utils/mac/SkCGUtils.h"
@@ -34,7 +34,7 @@ class TextDetectionImplMacTest : public ::testing::Test {
   MOCK_METHOD1(Detection, void(size_t));
 
   API_AVAILABLE(macosx(10.11)) std::unique_ptr<TextDetectionImplMac> impl_;
-  const base::MessageLoop message_loop_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
 };
 
 TEST_F(TextDetectionImplMacTest, CreateAndDestroy) {}
@@ -90,11 +90,12 @@ TEST_F(TextDetectionImplMacTest, ScanOnce) {
     ASSERT_TRUE(SkCreateBitmapFromCGImage(&bitmap, cg_image));
 
     base::RunLoop run_loop;
-    base::Closure quit_closure = run_loop.QuitClosure();
     // Send the image to Detect() and expect the response in callback.
-    EXPECT_CALL(*this, Detection(1)).WillOnce(RunClosure(quit_closure));
-    impl_->Detect(bitmap, base::Bind(&TextDetectionImplMacTest::DetectCallback,
-                                     base::Unretained(this)));
+    EXPECT_CALL(*this, Detection(1))
+        .WillOnce(RunClosure(run_loop.QuitClosure()));
+    impl_->Detect(bitmap,
+                  base::BindOnce(&TextDetectionImplMacTest::DetectCallback,
+                                 base::Unretained(this)));
 
     run_loop.Run();
   }

@@ -31,6 +31,7 @@
 #include "third_party/blink/renderer/core/svg/svg_transform_list_tear_off.h"
 
 #include "third_party/blink/renderer/core/svg/svg_transform_tear_off.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
 
 namespace blink {
 
@@ -47,7 +48,7 @@ SVGTransformListTearOff::~SVGTransformListTearOff() = default;
 
 SVGTransformTearOff* SVGTransformListTearOff::createSVGTransformFromMatrix(
     SVGMatrixTearOff* matrix) const {
-  return SVGTransformTearOff::Create(matrix);
+  return MakeGarbageCollected<SVGTransformTearOff>(matrix);
 }
 
 SVGTransformTearOff* SVGTransformListTearOff::consolidate(

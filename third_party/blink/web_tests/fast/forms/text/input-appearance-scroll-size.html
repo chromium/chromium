@@ -1,0 +1,44 @@
+<html>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<body>
+<p>An input element can have its scrollWidth/scrollHeight changed while being
+temporarily in preview state. This test ensures that these two values do not
+depend on the configured font type (the preview always happens with default
+font).</p>
+<div><input id="referenceInput" style="width: 10px; height: 6px"></div>
+<div><input id="modifiedInput" style="font: 12px Times; width: 10px; height: 6px"></div>
+<div><textarea id="referenceTextArea" style="width: 10px; height: 6px"></textarea></div>
+<div><textarea id="modifiedTextArea" style="font: 12px Times; width: 10px; height: 6px"></textarea></div>
+<script>
+test(() => {
+    var reference = document.getElementById('referenceInput');
+    var modified = document.getElementById('modifiedInput');
+
+    var value = 'Foooooooooooooooooooooooooooooooooooo';
+    internals.setSuggestedValue(reference, value);
+    internals.setSuggestedValue(modified, value);
+
+    assert_equals(reference.scrollWidth, modified.scrollWidth,
+        'Elements should have same scrollWidth');
+    assert_equals(reference.scrollHeight, modified.scrollHeight,
+        'Elements should have same scrollHeight');
+}, 'Testing that <input> elements\' scroll size does not depend on font type.');
+
+test(() => {
+    var reference = document.getElementById('referenceTextArea');
+    var modified = document.getElementById('modifiedTextArea');
+
+    var value = 'Foooooooooooooooooooooooooooooooooooo';
+    internals.setSuggestedValue(reference, value);
+    internals.setSuggestedValue(modified, value);
+
+    assert_equals(reference.scrollWidth, modified.scrollWidth,
+        'Elements should have same scrollWidth');
+    assert_equals(reference.scrollHeight, modified.scrollHeight,
+        'Elements should have same scrollHeight');
+}, 'Testing that <textarea> elements\' scroll size does not depend on font type.');
+</script>
+</body>
+</html>
+

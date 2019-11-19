@@ -2,7 +2,7 @@ Verify that text editor's mimeType gets changed as UISourceCode gets renamed.
 
 
 Running: Open foo.js editor
-Text editor mimeType: text/javascript
+Text editor mimeType: text/jsx
 
 Running: Rename foo.js => foo.css
 Text editor mimeType: text/css

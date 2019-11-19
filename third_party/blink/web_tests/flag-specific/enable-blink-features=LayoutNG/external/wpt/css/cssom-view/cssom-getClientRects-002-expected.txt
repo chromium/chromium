@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-PASS CSSOM View - GetClientRects().length is the same regardless source new lines
-Harness: the test ran to completion.
-

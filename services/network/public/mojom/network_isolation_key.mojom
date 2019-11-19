@@ -1,0 +1,15 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module network.mojom;
+
+import "url/mojom/origin.mojom";
+
+// Mapped to net::NetworkIsolationKey.
+struct NetworkIsolationKey {
+  // Keeping optional to allow clients that do not populate top frame origin.
+  // TODO(crbug.com/910721): This will eventually always be populated.
+  url.mojom.Origin? top_frame_origin;
+  url.mojom.Origin? frame_origin;
+};

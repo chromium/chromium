@@ -36,7 +36,6 @@ class JSONGeneratorTest(unittest.TestCase):
 
     def setUp(self):
         self.builder_name = 'DUMMY_BUILDER_NAME'
-        self.build_name = 'DUMMY_BUILD_NAME'
         self.build_number = 'DUMMY_BUILDER_NUMBER'
 
         # For archived results.

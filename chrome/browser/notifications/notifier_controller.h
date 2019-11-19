@@ -8,11 +8,14 @@
 #include <memory>
 #include <vector>
 
-#include "ash/public/interfaces/ash_message_center_controller.mojom.h"
+#include "ash/public/cpp/notifier_metadata.h"
 #include "base/macros.h"
-#include "ui/message_center/public/cpp/notifier_id.h"
 
 class Profile;
+
+namespace message_center {
+struct NotifierId;
+}
 
 // An interface to control Notifiers, grouped by NotifierType. Controllers are
 // responsible for both collating display data and toggling settings in response
@@ -33,7 +36,7 @@ class NotifierController {
   // Returns notifiers to display in the settings UI. Not all notifiers appear
   // in settings. If the source starts loading for icon images, it needs to call
   // Observer::OnIconImageUpdated after the icon is loaded.
-  virtual std::vector<ash::mojom::NotifierUiDataPtr> GetNotifierList(
+  virtual std::vector<ash::NotifierMetadata> GetNotifierList(
       Profile* profile) = 0;
 
   // Set notifier enabled. |notifier_id| must have notifier type that can be

@@ -173,6 +173,12 @@ paper-ripple {
 .gallery .video-container > .video {
   max-height: 100%;
   max-width: 100%;
+
+  /*
+   * Since r614513, <video> elements take focus on click which causes yellow
+   * lines to appear unless the outline is disabled. See crbug/917503.
+   */
+  outline: none;
 }
 
 /*
@@ -540,7 +546,7 @@ html[dir='rtl'] .gallery .toolbar .bubble {
   justify-content: flex-end;
 }
 
-.gallery .edit-mode-toolbar .exit-button-spacer paper-button {
+.gallery .edit-mode-toolbar .exit-button-spacer cr-button {
   color: white;
   font-weight: bold;
   margin-inline-end: 8px;
@@ -611,7 +617,7 @@ html[dir='rtl'] .gallery .toolbar .bubble {
   visibility: visible;
 }
 
-.gallery > .toolbar paper-button,
+.gallery > .toolbar cr-button,
 .gallery > .toolbar button {
   border-radius: 2px;
   margin: 0 8px;
@@ -632,7 +638,7 @@ html[dir='rtl'] .gallery .toolbar .bubble {
   position: relative;
 }
 
-.gallery > .toolbar paper-button:focus,
+.gallery > .toolbar cr-button:focus,
 .gallery > .toolbar button:focus {
   background-color: rgba(255, 255, 255, 0.2);
 }
@@ -711,7 +717,7 @@ html[dir='rtl'] .gallery .toolbar .bubble {
 
 .gallery[mode='slide'] .icon.slide-mode,
 .gallery[mode='thumbnail'] .icon.thumbnail-mode,
-paper-button[disabled],
+cr-button[disabled],
 button[disabled] {
   display: none;
 }

@@ -7,7 +7,7 @@
 
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/bindings/name_client.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/type_traits.h"
 
 namespace blink {
@@ -24,14 +24,6 @@ class NameTrait {
   STATIC_ONLY(NameTrait);
 
  public:
-  static constexpr bool HideInternalName() {
-#if defined(OFFICIAL_BUILD) || !(defined(COMPILER_GCC) || defined(__clang__))
-    return true;
-#else
-    return false;
-#endif
-  }
-
   static HeapObjectName GetName(const void* obj) {
     return GetNameFor(static_cast<const T*>(obj));
   }
@@ -42,17 +34,10 @@ class NameTrait {
   }
 
   static HeapObjectName GetNameFor(...) {
-    // For non-official builds construct the name of a type from a compiler
-    // intrinsic.
-    //
-    // Do not include such type information in official builds to
-    // (a) safe binary size on string literals, and
-    // (b) avoid exposing internal types until a proper DevTools frontend
-    //     implementation is present.
-#if defined(OFFICIAL_BUILD) || !(defined(COMPILER_GCC) || defined(__clang__))
-    return {"InternalNode", true};
-#else
-    DCHECK(!HideInternalName());
+    if (NameClient::HideInternalName())
+      return {"InternalNode", true};
+
+    DCHECK(!NameClient::HideInternalName());
     static const char* leaky_class_name = nullptr;
     if (leaky_class_name)
       return {leaky_class_name, false};
@@ -67,7 +52,6 @@ class NameTrait {
     const std::string name = raw.substr(start_pos, len).c_str();
     leaky_class_name = strcpy(new char[name.length() + 1], name.c_str());
     return {leaky_class_name, false};
-#endif
   }
 };
 

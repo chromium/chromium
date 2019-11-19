@@ -38,7 +38,6 @@ interface TestSyncMaster {
 
   AsyncEcho(int32 value) => (int32 result);
 
-  SendInterface(associated TestSync ptr);
-
-  SendRequest(associated TestSync& request);
+  SendRemote(pending_associated_remote<TestSync> remote);
+  SendReceiver(pending_associated_receiver<TestSync> receiver);
 };

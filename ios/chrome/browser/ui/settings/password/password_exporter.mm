@@ -43,8 +43,9 @@ enum class ReauthenticationStatus {
 - (void)serializePasswords:
             (std::vector<std::unique_ptr<autofill::PasswordForm>>)passwords
                    handler:(void (^)(std::string))serializedPasswordsHandler {
-  base::PostTaskWithTraitsAndReplyWithResult(
-      FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_BLOCKING},
+  base::PostTaskAndReplyWithResult(
+      FROM_HERE,
+      {base::ThreadPool(), base::MayBlock(), base::TaskPriority::USER_BLOCKING},
       base::BindOnce(&password_manager::PasswordCSVWriter::SerializePasswords,
                      std::move(passwords)),
       base::BindOnce(serializedPasswordsHandler));
@@ -89,8 +90,9 @@ enum class ReauthenticationStatus {
     }
     return WriteToURLStatus::SUCCESS;
   };
-  base::PostTaskWithTraitsAndReplyWithResult(
-      FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_BLOCKING},
+  base::PostTaskAndReplyWithResult(
+      FROM_HERE,
+      {base::ThreadPool(), base::MayBlock(), base::TaskPriority::USER_BLOCKING},
       base::BindOnce(writeToFile), base::BindOnce(handler));
 }
 
@@ -174,10 +176,6 @@ enum class ReauthenticationStatus {
 
 - (void)cancelExport {
   self.exportState = ExportState::CANCELLING;
-  UMA_HISTOGRAM_ENUMERATION(
-      "PasswordManager.ExportPasswordsToCSVResult",
-      password_manager::metrics_util::ExportPasswordsResult::USER_ABORTED,
-      password_manager::metrics_util::ExportPasswordsResult::COUNT);
 }
 
 #pragma mark -  Private methods
@@ -190,20 +188,17 @@ enum class ReauthenticationStatus {
     (std::vector<std::unique_ptr<autofill::PasswordForm>>)passwords {
   self.passwordCount = passwords.size();
 
-  base::Time exportPreparationStart = base::Time::Now();
   __weak PasswordExporter* weakSelf = self;
-  void (^onPasswordsSerialized)(std::string) = ^(
-      std::string serializedPasswords) {
-    PasswordExporter* strongSelf = weakSelf;
-    if (!strongSelf)
-      return;
-    strongSelf.serializedPasswords =
-        base::SysUTF8ToNSString(serializedPasswords);
-    strongSelf.serializingFinished = YES;
-    UMA_HISTOGRAM_MEDIUM_TIMES("PasswordManager.TimeReadingExportedPasswords",
-                               base::Time::Now() - exportPreparationStart);
-    [strongSelf tryExporting];
-  };
+  void (^onPasswordsSerialized)(std::string) =
+      ^(std::string serializedPasswords) {
+        PasswordExporter* strongSelf = weakSelf;
+        if (!strongSelf)
+          return;
+        strongSelf.serializedPasswords =
+            base::SysUTF8ToNSString(serializedPasswords);
+        strongSelf.serializingFinished = YES;
+        [strongSelf tryExporting];
+      };
 
   [_passwordSerializerBridge serializePasswords:std::move(passwords)
                                         handler:onPasswordsSerialized];
@@ -246,10 +241,6 @@ enum class ReauthenticationStatus {
       [self writePasswordsToFile];
       break;
     case ReauthenticationStatus::FAILED:
-      UMA_HISTOGRAM_ENUMERATION(
-          "PasswordManager.ExportPasswordsToCSVResult",
-          password_manager::metrics_util::ExportPasswordsResult::USER_ABORTED,
-          password_manager::metrics_util::ExportPasswordsResult::COUNT);
       [self resetExportState];
       break;
     default:
@@ -276,10 +267,6 @@ enum class ReauthenticationStatus {
     [self showExportErrorAlertWithLocalizedReason:
               l10n_util::GetNSString(
                   IDS_IOS_EXPORT_PASSWORDS_UNKNOWN_ERROR_ALERT_MESSAGE)];
-    UMA_HISTOGRAM_ENUMERATION(
-        "PasswordManager.ExportPasswordsToCSVResult",
-        password_manager::metrics_util::ExportPasswordsResult::WRITE_FAILED,
-        password_manager::metrics_util::ExportPasswordsResult::COUNT);
     [self resetExportState];
     return;
   }
@@ -311,10 +298,6 @@ enum class ReauthenticationStatus {
             showExportErrorAlertWithLocalizedReason:
                 l10n_util::GetNSString(
                     IDS_IOS_EXPORT_PASSWORDS_OUT_OF_SPACE_ALERT_MESSAGE)];
-        UMA_HISTOGRAM_ENUMERATION(
-            "PasswordManager.ExportPasswordsToCSVResult",
-            password_manager::metrics_util::ExportPasswordsResult::WRITE_FAILED,
-            password_manager::metrics_util::ExportPasswordsResult::COUNT);
         [strongSelf resetExportState];
         break;
       case WriteToURLStatus::UNKNOWN_ERROR:
@@ -322,10 +305,6 @@ enum class ReauthenticationStatus {
             showExportErrorAlertWithLocalizedReason:
                 l10n_util::GetNSString(
                     IDS_IOS_EXPORT_PASSWORDS_UNKNOWN_ERROR_ALERT_MESSAGE)];
-        UMA_HISTOGRAM_ENUMERATION(
-            "PasswordManager.ExportPasswordsToCSVResult",
-            password_manager::metrics_util::ExportPasswordsResult::WRITE_FAILED,
-            password_manager::metrics_util::ExportPasswordsResult::COUNT);
         [strongSelf resetExportState];
         break;
       default:
@@ -347,8 +326,9 @@ enum class ReauthenticationStatus {
 - (void)deleteTemporaryFile:(NSURL*)passwordsTempFileURL {
   NSURL* uniqueDirectoryURL =
       [passwordsTempFileURL URLByDeletingLastPathComponent];
-  base::PostTaskWithTraits(
-      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+  base::PostTask(
+      FROM_HERE,
+      {base::ThreadPool(), base::MayBlock(), base::TaskPriority::BEST_EFFORT},
       base::BindOnce(^{
         NSFileManager* fileManager = [NSFileManager defaultManager];
         base::ScopedBlockingCall scoped_blocking_call(
@@ -371,12 +351,6 @@ enum class ReauthenticationStatus {
                           NSArray* returnedItems, NSError* activityError) {
                         [weakSelf deleteTemporaryFile:passwordsTempFileURL];
                       }];
-  UMA_HISTOGRAM_ENUMERATION(
-      "PasswordManager.ExportPasswordsToCSVResult",
-      password_manager::metrics_util::ExportPasswordsResult::SUCCESS,
-      password_manager::metrics_util::ExportPasswordsResult::COUNT);
-  UMA_HISTOGRAM_COUNTS_1M("PasswordManager.ExportedPasswordsPerUserInCSV",
-                          self.passwordCount);
 }
 
 #pragma mark - ForTesting

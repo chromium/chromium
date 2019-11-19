@@ -35,15 +35,16 @@
 #include "services/network/public/cpp/network_quality_tracker.h"
 #include "services/network/public/mojom/network_service.mojom-forward.h"
 
-class ChromeChildProcessWatcher;
-class ChromeDeviceClient;
+class BatteryMetrics;
 class ChromeFeatureListCreator;
 class ChromeMetricsServicesManagerClient;
-class ChromeResourceDispatcherHostDelegate;
 class DevToolsAutoOpener;
 class RemoteDebuggingServer;
 class PrefRegistrySimple;
+class SecureOriginPrefsObserver;
+class SiteIsolationPrefsObserver;
 class SystemNotificationHelper;
+class StartupData;
 
 #if BUILDFLAG(ENABLE_PLUGINS)
 class PluginsResourceService;
@@ -61,10 +62,6 @@ namespace gcm {
 class GCMDriver;
 }
 
-namespace net_log {
-class ChromeNetLog;
-}
-
 namespace policy {
 class ChromeBrowserPolicyConnector;
 class PolicyService;
@@ -78,11 +75,10 @@ class WebRtcEventLogManager;
 class BrowserProcessImpl : public BrowserProcess,
                            public KeepAliveStateObserver {
  public:
-  // |chrome_feature_list_creator| should not be null. The BrowserProcessImpl
+  // |startup_data| should not be null. The BrowserProcessImpl
   // will take the PrefService owned by the creator as the Local State instead
   // of loading the JSON file from disk.
-  explicit BrowserProcessImpl(
-      ChromeFeatureListCreator* chrome_feature_list_creator);
+  explicit BrowserProcessImpl(StartupData* startup_data);
   ~BrowserProcessImpl() override;
 
   // Called to complete initialization.
@@ -129,14 +125,12 @@ class BrowserProcessImpl : public BrowserProcess,
       metrics_services_manager::MetricsServicesManagerClient* client);
 
   // BrowserProcess implementation.
-  void ResourceDispatcherHostCreated() override;
   void EndSession() override;
   void FlushLocalStateAndReply(base::OnceClosure reply) override;
   metrics_services_manager::MetricsServicesManager* GetMetricsServicesManager()
       override;
   metrics::MetricsService* metrics_service() override;
   rappor::RapporServiceImpl* rappor_service() override;
-  IOThread* io_thread() override;
   // TODO(qinmin): Remove this method as callers can retrieve the global
   // instance from SystemNetworkContextManager directly.
   SystemNetworkContextManager* system_network_context_manager() override;
@@ -146,7 +140,6 @@ class BrowserProcessImpl : public BrowserProcess,
   WatchDogThread* watchdog_thread() override;
   ProfileManager* profile_manager() override;
   PrefService* local_state() override;
-  net::URLRequestContextGetter* system_request_context() override;
   variations::VariationsService* variations_service() override;
   BrowserProcessPlatformPart* platform_part() override;
   extensions::EventRouterForwarder* extension_event_router_forwarder() override;
@@ -180,14 +173,17 @@ class BrowserProcessImpl : public BrowserProcess,
   optimization_guide::OptimizationGuideService* optimization_guide_service()
       override;
 
+  StartupData* startup_data() override;
+
 #if defined(OS_WIN) || (defined(OS_LINUX) && !defined(OS_CHROMEOS))
   void StartAutoupdateTimer() override;
 #endif
 
-  net_log::ChromeNetLog* net_log() override;
   component_updater::ComponentUpdateService* component_updater() override;
+#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
   component_updater::SupervisedUserWhitelistInstaller*
   supervised_user_whitelist_installer() override;
+#endif
   MediaFileSystemRegistry* media_file_system_registry() override;
   WebRtcLogUploader* webrtc_log_uploader() override;
   network_time::NetworkTimeTracker* network_time_tracker() override;
@@ -195,9 +191,6 @@ class BrowserProcessImpl : public BrowserProcess,
   resource_coordinator::TabManager* GetTabManager() override;
   resource_coordinator::ResourceCoordinatorParts* resource_coordinator_parts()
       override;
-  shell_integration::DefaultWebClientState CachedDefaultWebClientState()
-      override;
-  prefs::InProcessPrefServiceFactory* pref_service_factory() const override;
 
   static void RegisterPrefs(PrefRegistrySimple* registry);
 
@@ -229,10 +222,7 @@ class BrowserProcessImpl : public BrowserProcess,
   void CreateGCMDriver();
   void CreatePhysicalWebDataSource();
 
-  void ApplyAllowCrossOriginAuthPromptPolicy();
   void ApplyDefaultBrowserPolicy();
-
-  void CacheDefaultWebClientState();
 
   // Methods called to control our lifetime. The browser process can be "pinned"
   // to make sure it keeps running.
@@ -245,8 +235,6 @@ class BrowserProcessImpl : public BrowserProcess,
 
   std::unique_ptr<metrics_services_manager::MetricsServicesManager>
       metrics_services_manager_;
-
-  std::unique_ptr<IOThread> io_thread_;
 
   bool created_watchdog_thread_ = false;
   std::unique_ptr<WatchDogThread> watchdog_thread_;
@@ -351,15 +339,13 @@ class BrowserProcessImpl : public BrowserProcess,
   // BrowserProcessImpl to create the |local_state_|.
   ChromeFeatureListCreator* chrome_feature_list_creator_;
 
+  StartupData* startup_data_;
+
   // Ensures that the observers of plugin/print disable/enable state
   // notifications are properly added and removed.
   PrefChangeRegistrar pref_change_registrar_;
 
-  // Lives here so can safely log events on shutdown.
-  std::unique_ptr<net_log::ChromeNetLog> net_log_;
-
-  std::unique_ptr<ChromeResourceDispatcherHostDelegate>
-      resource_dispatcher_host_delegate_;
+  std::unique_ptr<BatteryMetrics> battery_metrics_;
 
 #if defined(OS_WIN) || (defined(OS_LINUX) && !defined(OS_CHROMEOS))
   base::RepeatingTimer autoupdate_timer_;
@@ -377,8 +363,10 @@ class BrowserProcessImpl : public BrowserProcess,
   // but some users of component updater only install per-user.
   std::unique_ptr<component_updater::ComponentUpdateService> component_updater_;
 
+#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
   std::unique_ptr<component_updater::SupervisedUserWhitelistInstaller>
       supervised_user_whitelist_installer_;
+#endif
 
 #if BUILDFLAG(ENABLE_PLUGINS)
   std::unique_ptr<PluginsResourceService> plugins_resource_service_;
@@ -403,16 +391,11 @@ class BrowserProcessImpl : public BrowserProcess,
 
   std::unique_ptr<gcm::GCMDriver> gcm_driver_;
 
-  std::unique_ptr<ChromeChildProcessWatcher> child_process_watcher_;
-
-  std::unique_ptr<ChromeDeviceClient> device_client_;
-
-  shell_integration::DefaultWebClientState cached_default_web_client_state_ =
-      shell_integration::UNKNOWN_DEFAULT;
-
   std::unique_ptr<resource_coordinator::ResourceCoordinatorParts>
       resource_coordinator_parts_;
-  std::unique_ptr<prefs::InProcessPrefServiceFactory> pref_service_factory_;
+
+  std::unique_ptr<SecureOriginPrefsObserver> secure_origin_prefs_observer_;
+  std::unique_ptr<SiteIsolationPrefsObserver> site_isolation_prefs_observer_;
 
 #if !defined(OS_ANDROID)
   // Called to signal the process' main message loop to exit.

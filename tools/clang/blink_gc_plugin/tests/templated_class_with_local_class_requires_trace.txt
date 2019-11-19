@@ -1,26 +1,20 @@
 In file included from templated_class_with_local_class_requires_trace.cpp:5:
 ./templated_class_with_local_class_requires_trace.h:22:1: warning: [blink-gc] Class 'TemplatedObject<blink::HeapObject>' contains invalid fields.
-class TemplatedObject final
+class TemplatedObject final : public GarbageCollected<TemplatedObject<T>> {
 ^
-./templated_class_with_local_class_requires_trace.h:46:5: note: [blink-gc] std::unique_ptr field 'm_uniqueRef' to a GC managed class declared here:
-    std::unique_ptr<T> m_uniqueRef;
+./templated_class_with_local_class_requires_trace.h:43:3: note: [blink-gc] std::unique_ptr field 'm_uniqueRef' to a GC managed class declared here:
+  std::unique_ptr<T> m_uniqueRef;
+  ^
+./templated_class_with_local_class_requires_trace.h:29:3: warning: [blink-gc] Class 'Local' contains invalid fields.
+  class Local final : public GarbageCollected<Local> {
+  ^
+./templated_class_with_local_class_requires_trace.h:38:5: note: [blink-gc] std::unique_ptr field 'm_object' to a GC managed class declared here:
+    std::unique_ptr<HeapObject> m_object;
     ^
-./templated_class_with_local_class_requires_trace.h:32:5: warning: [blink-gc] Class 'Local' contains invalid fields.
-    class Local final : public GarbageCollected<Local> {
+./templated_class_with_local_class_requires_trace.h:31:5: warning: [blink-gc] Class 'Local' has untraced or not traceable fields.
+    void Trace(Visitor* visitor) {
     ^
-./templated_class_with_local_class_requires_trace.h:41:9: note: [blink-gc] std::unique_ptr field 'm_object' to a GC managed class declared here:
-        std::unique_ptr<HeapObject> m_object;
-        ^
-./templated_class_with_local_class_requires_trace.h:32:5: warning: [blink-gc] Class 'Local' requires finalization.
-    class Local final : public GarbageCollected<Local> {
+./templated_class_with_local_class_requires_trace.h:38:5: note: [blink-gc] Untraceable field 'm_object' declared here:
+    std::unique_ptr<HeapObject> m_object;
     ^
-./templated_class_with_local_class_requires_trace.h:41:9: note: [blink-gc] Field 'm_object' requiring finalization declared here:
-        std::unique_ptr<HeapObject> m_object;
-        ^
-./templated_class_with_local_class_requires_trace.h:34:9: warning: [blink-gc] Class 'Local' has untraced or not traceable fields.
-        void Trace(Visitor* visitor)
-        ^
-./templated_class_with_local_class_requires_trace.h:41:9: note: [blink-gc] Untraceable field 'm_object' declared here:
-        std::unique_ptr<HeapObject> m_object;
-        ^
-4 warnings generated.
+3 warnings generated.

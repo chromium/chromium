@@ -300,7 +300,7 @@ void MediaQueryData::Clear() {
 }
 
 std::unique_ptr<MediaQuery> MediaQueryData::TakeMediaQuery() {
-  std::unique_ptr<MediaQuery> media_query = MediaQuery::Create(
+  std::unique_ptr<MediaQuery> media_query = std::make_unique<MediaQuery>(
       restrictor_, std::move(media_type_), std::move(expressions_));
   Clear();
   return media_query;

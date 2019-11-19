@@ -121,23 +121,29 @@ PROCESS_TYPE_STRUCT_BEGIN(dyld_all_image_infos)
   // the runtimes that use versions 14 and 15 were built with SDKs that did not
   // have this extra padding, it’s necessary to treat the element at index 4 on
   // 32-bit systems as outside of the version 14 and 15 structure. This is why
-  // |reserved| is only declared a 4-element array, with a special end_14_15
-  // member (not present in the native definition) available to indicate the
-  // end of the native version 14 and 15 structure, preceding the padding in the
-  // 32-bit structure that would natively be addressed at index 4 of |reserved|.
-  // Treat reserved_4_32 as only available in version 16 of the structure.
+  // |reserved| is only declared a 4-element array, with a special end_14 member
+  // (not present in the native definition) available to indicate the end of the
+  // native version 14 structure and the 10.12 version 15 structure, preceding
+  // the padding in the 32-bit structure that would natively be addressed at
+  // index 4 of |reserved|. Treat reserved_4_32 as only available in version 16
+  // of the structure.
   PROCESS_TYPE_STRUCT_MEMBER(UIntPtr, reserved, [4])
   PROCESS_TYPE_STRUCT_MEMBER(Reserved64_64Only, reserved_4_64)
   PROCESS_TYPE_STRUCT_MEMBER(Reserved64_64Only, reserved_5)
   PROCESS_TYPE_STRUCT_MEMBER(Reserved64_64Only, reserved_6)
   PROCESS_TYPE_STRUCT_MEMBER(Reserved64_64Only, reserved_7)
   PROCESS_TYPE_STRUCT_MEMBER(Reserved64_64Only, reserved_8)
-  PROCESS_TYPE_STRUCT_MEMBER(Nothing, end_14_15)
+  PROCESS_TYPE_STRUCT_MEMBER(Nothing, end_14)
   PROCESS_TYPE_STRUCT_MEMBER(Reserved32_32Only, reserved_4_32)
 
-  // Version 16 (macOS 10.13)
+  // Version 15 (macOS 10.13). <mach-o/dyld_images.h> incorrectly claims that
+  // these were introduced at version 16. These fields are not present in macOS
+  // 10.12, which also identifies its structure as version 15.
   PROCESS_TYPE_STRUCT_MEMBER(UIntPtr, compact_dyld_image_info_addr)
   PROCESS_TYPE_STRUCT_MEMBER(ULong, compact_dyld_image_info_size)  // size_t
+
+  // Version 16 (macOS 10.15)
+  PROCESS_TYPE_STRUCT_MEMBER(uint32_t, platform)  // dyld_platform_t
 PROCESS_TYPE_STRUCT_END(dyld_all_image_infos)
 
 #endif  // ! PROCESS_TYPE_STRUCT_IMPLEMENT_INTERNAL_READ_INTO &&

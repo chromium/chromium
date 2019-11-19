@@ -47,12 +47,12 @@ URLFetcherCore::Registry::Registry() = default;
 URLFetcherCore::Registry::~Registry() = default;
 
 void URLFetcherCore::Registry::AddURLFetcherCore(URLFetcherCore* core) {
-  DCHECK(!base::ContainsKey(fetchers_, core));
+  DCHECK(!base::Contains(fetchers_, core));
   fetchers_.insert(core);
 }
 
 void URLFetcherCore::Registry::RemoveURLFetcherCore(URLFetcherCore* core) {
-  DCHECK(base::ContainsKey(fetchers_, core));
+  DCHECK(base::Contains(fetchers_, core));
   fetchers_.erase(core);
 }
 
@@ -81,8 +81,7 @@ URLFetcherCore::URLFetcherCore(
       load_flags_(LOAD_NORMAL),
       allow_credentials_(base::nullopt),
       response_code_(URLFetcher::RESPONSE_CODE_INVALID),
-      url_request_data_key_(NULL),
-      was_fetched_via_proxy_(false),
+      url_request_data_key_(nullptr),
       was_cached_(false),
       received_response_content_length_(0),
       total_received_bytes_(0),
@@ -126,8 +125,8 @@ void URLFetcherCore::Stop() {
   if (delegate_task_runner_)  // May be NULL in tests.
     DCHECK(delegate_task_runner_->RunsTasksInCurrentSequence());
 
-  delegate_ = NULL;
-  fetcher_ = NULL;
+  delegate_ = nullptr;
+  fetcher_ = nullptr;
   if (!network_task_runner_.get())
     return;
   if (network_task_runner_->RunsTasksInCurrentSequence()) {
@@ -315,17 +314,13 @@ HttpResponseHeaders* URLFetcherCore::GetResponseHeaders() const {
 
 // TODO(panayiotis): remote_endpoint_ is written in the IO thread,
 // if this is accessed in the UI thread, this could result in a race.
-// Same for response_headers_ above and was_fetched_via_proxy_ below.
+// Same for response_headers_ above.
 IPEndPoint URLFetcherCore::GetSocketAddress() const {
   return remote_endpoint_;
 }
 
 const ProxyServer& URLFetcherCore::ProxyServerUsed() const {
   return proxy_server_;
-}
-
-bool URLFetcherCore::WasFetchedViaProxy() const {
-  return was_fetched_via_proxy_;
 }
 
 bool URLFetcherCore::WasCached() const {
@@ -368,7 +363,7 @@ void URLFetcherCore::ReceivedContentWasMalformed() {
 bool URLFetcherCore::GetResponseAsString(
     std::string* out_response_string) const {
   URLFetcherStringWriter* string_writer =
-      response_writer_ ? response_writer_->AsStringWriter() : NULL;
+      response_writer_ ? response_writer_->AsStringWriter() : nullptr;
   if (!string_writer)
     return false;
 
@@ -381,7 +376,7 @@ bool URLFetcherCore::GetResponseAsFilePath(bool take_ownership,
   DCHECK(delegate_task_runner_->RunsTasksInCurrentSequence());
 
   URLFetcherFileWriter* file_writer =
-      response_writer_ ? response_writer_->AsFileWriter() : NULL;
+      response_writer_ ? response_writer_->AsFileWriter() : nullptr;
   if (!file_writer)
     return false;
 
@@ -412,7 +407,6 @@ void URLFetcherCore::OnReceivedRedirect(URLRequest* request,
     url_ = redirect_info.new_url;
     response_code_ = request_->GetResponseCode();
     proxy_server_ = request_->proxy_server();
-    was_fetched_via_proxy_ = request_->was_fetched_via_proxy();
     was_cached_ = request_->was_cached();
     total_received_bytes_ += request_->GetTotalReceivedBytes();
     int result = request->Cancel();
@@ -430,7 +424,6 @@ void URLFetcherCore::OnResponseStarted(URLRequest* request, int net_error) {
     response_headers_ = request_->response_headers();
     remote_endpoint_ = request_->GetResponseRemoteEndpoint();
     proxy_server_ = request_->proxy_server();
-    was_fetched_via_proxy_ = request_->was_fetched_via_proxy();
     was_cached_ = request_->was_cached();
     total_response_bytes_ = request_->GetExpectedContentSize();
   }
@@ -490,7 +483,7 @@ void URLFetcherCore::OnReadCompleted(URLRequest* request,
     // No more data to write.
     const int result = response_writer_->Finish(
         bytes_read > 0 ? OK : bytes_read,
-        base::Bind(&URLFetcherCore::DidFinishWriting, this));
+        base::BindOnce(&URLFetcherCore::DidFinishWriting, this));
     if (result != ERR_IO_PENDING)
       DidFinishWriting(result);
   }
@@ -534,7 +527,7 @@ void URLFetcherCore::StartOnIOThread() {
     response_writer_.reset(new URLFetcherStringWriter);
 
   const int result = response_writer_->Initialize(
-      base::Bind(&URLFetcherCore::DidInitializeWriter, this));
+      base::BindOnce(&URLFetcherCore::DidInitializeWriter, this));
   if (result != ERR_IO_PENDING)
     DidInitializeWriter(result);
 }
@@ -714,9 +707,9 @@ void URLFetcherCore::CancelURLRequest(int error) {
   // references to URLFetcher::Core at this point so it may take a while to
   // delete the object, but we cannot delay the destruction of the request
   // context.
-  request_context_getter_ = NULL;
+  request_context_getter_ = nullptr;
   initiator_.reset();
-  url_request_data_key_ = NULL;
+  url_request_data_key_ = nullptr;
   url_request_create_data_callback_.Reset();
   was_cancelled_ = true;
 }
@@ -805,9 +798,9 @@ void URLFetcherCore::RetryOrCompleteUrlFetch() {
     return;
   }
 
-  request_context_getter_ = NULL;
+  request_context_getter_ = nullptr;
   initiator_.reset();
-  url_request_data_key_ = NULL;
+  url_request_data_key_ = nullptr;
   url_request_create_data_callback_.Reset();
   bool posted = delegate_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&URLFetcherCore::OnCompletedURLRequest, this,
@@ -863,9 +856,8 @@ void URLFetcherCore::CompleteAddingUploadDataChunk(
 int URLFetcherCore::WriteBuffer(scoped_refptr<DrainableIOBuffer> data) {
   while (data->BytesRemaining() > 0) {
     const int result = response_writer_->Write(
-        data.get(),
-        data->BytesRemaining(),
-        base::Bind(&URLFetcherCore::DidWriteBuffer, this, data));
+        data.get(), data->BytesRemaining(),
+        base::BindOnce(&URLFetcherCore::DidWriteBuffer, this, data));
     if (result < 0) {
       if (result != ERR_IO_PENDING)
         DidWriteBuffer(data, result);

@@ -10,9 +10,7 @@
 // guest_view_iframe.js into this file.
 
 var CreateEvent = require('guestViewEvents').CreateEvent;
-var GuestViewInternal = getInternalApi ?
-    getInternalApi('guestViewInternal') :
-    require('binding').Binding.create('guestViewInternal').generate();
+var GuestViewInternal = getInternalApi('guestViewInternal');
 var GuestViewInternalNatives = requireNative('guest_view_internal');
 
 // Events.
@@ -370,9 +368,7 @@ GuestView.prototype.getId = function() {
 };
 
 // Exports
-if (!apiBridge) {
-  exports.$set('GuestView', GuestView);
-  // TODO(mcnee): Don't export GuestViewImpl once guest_view_iframe.js is gone.
-  exports.$set('GuestViewImpl', GuestViewImpl);
-  exports.$set('ResizeEvent', ResizeEvent);
-}
+exports.$set('GuestView', GuestView);
+// TODO(mcnee): Don't export GuestViewImpl once guest_view_iframe.js is gone.
+exports.$set('GuestViewImpl', GuestViewImpl);
+exports.$set('ResizeEvent', ResizeEvent);

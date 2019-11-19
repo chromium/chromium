@@ -5,11 +5,11 @@
 mojom = "//sandbox/mac/mojom/seatbelt_extension_token.mojom"
 public_headers = [ "//sandbox/mac/seatbelt_extension_token.h" ]
 traits_headers =
-    [ "//sandbox/mac/mojom/seatbelt_extension_token_struct_traits.h" ]
+    [ "//sandbox/mac/mojom/seatbelt_extension_token_mojom_traits.h" ]
 sources = [
-  "//sandbox/mac/mojom/seatbelt_extension_token_struct_traits.cc",
+  "//sandbox/mac/mojom/seatbelt_extension_token_mojom_traits.cc",
 ]
 deps = [
   "//sandbox/mac:seatbelt_extension",
 ]
-type_mappings = [ "sandbox.mac.mojom.SeatbeltExtensionToken=sandbox::SeatbeltExtensionToken[move_only]" ]
+type_mappings = [ "sandbox.mac.mojom.SeatbeltExtensionToken=::sandbox::SeatbeltExtensionToken[move_only]" ]

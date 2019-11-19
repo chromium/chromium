@@ -12,12 +12,13 @@
 
 namespace base {
 
-// Structure contains result of a single EXPECT/ASSERT/SUCCESS.
+// Structure contains result of a single EXPECT/ASSERT/SUCCESS/SKIP.
 struct TestResultPart {
   enum Type {
     kSuccess,          // SUCCESS
     kNonFatalFailure,  // EXPECT
     kFatalFailure,     // ASSERT
+    kSkip,             // SKIP
   };
   Type type;
 

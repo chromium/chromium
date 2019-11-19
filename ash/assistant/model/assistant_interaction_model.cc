@@ -91,7 +91,7 @@ void AssistantInteractionModel::CommitPendingQuery() {
   pending_query_ = std::make_unique<AssistantNullQuery>();
 
   NotifyCommittedQueryChanged();
-  NotifyPendingQueryCleared();
+  NotifyPendingQueryCleared(/*due_to_commit=*/true);
 }
 
 void AssistantInteractionModel::ClearPendingQuery() {
@@ -99,11 +99,11 @@ void AssistantInteractionModel::ClearPendingQuery() {
     return;
 
   pending_query_ = std::make_unique<AssistantNullQuery>();
-  NotifyPendingQueryCleared();
+  NotifyPendingQueryCleared(/*due_to_commit=*/false);
 }
 
 void AssistantInteractionModel::SetPendingResponse(
-    std::unique_ptr<AssistantResponse> pending_response) {
+    scoped_refptr<AssistantResponse> pending_response) {
   pending_response_ = std::move(pending_response);
 }
 
@@ -156,9 +156,9 @@ void AssistantInteractionModel::NotifyPendingQueryChanged() {
     observer.OnPendingQueryChanged(*pending_query_);
 }
 
-void AssistantInteractionModel::NotifyPendingQueryCleared() {
+void AssistantInteractionModel::NotifyPendingQueryCleared(bool due_to_commit) {
   for (AssistantInteractionModelObserver& observer : observers_)
-    observer.OnPendingQueryCleared();
+    observer.OnPendingQueryCleared(due_to_commit);
 }
 
 void AssistantInteractionModel::NotifyResponseChanged() {

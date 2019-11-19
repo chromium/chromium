@@ -23,7 +23,7 @@ namespace device {
 // versions, options, AAGUID(Authenticator Attestation GUID), other
 // authenticator device information.
 // https://fidoalliance.org/specs/fido-v2.0-rd-20170927/fido-client-to-authenticator-protocol-v2.0-rd-20170927.html#authenticatorGetInfo
-class COMPONENT_EXPORT(DEVICE_FIDO) AuthenticatorGetInfoResponse {
+struct COMPONENT_EXPORT(DEVICE_FIDO) AuthenticatorGetInfoResponse {
  public:
   AuthenticatorGetInfoResponse(base::flat_set<ProtocolVersion> versions,
                                base::span<const uint8_t, kAaguidLength> aaguid);
@@ -31,38 +31,21 @@ class COMPONENT_EXPORT(DEVICE_FIDO) AuthenticatorGetInfoResponse {
   AuthenticatorGetInfoResponse& operator=(AuthenticatorGetInfoResponse&& other);
   ~AuthenticatorGetInfoResponse();
 
-  AuthenticatorGetInfoResponse& SetMaxMsgSize(uint32_t max_msg_size);
-  AuthenticatorGetInfoResponse& SetPinProtocols(
-      std::vector<uint8_t> pin_protocols);
-  AuthenticatorGetInfoResponse& SetExtensions(
-      std::vector<std::string> extensions);
-  AuthenticatorGetInfoResponse& SetOptions(
-      const AuthenticatorSupportedOptions& options);
+  static std::vector<uint8_t> EncodeToCBOR(
+      const AuthenticatorGetInfoResponse& response);
 
-  const base::flat_set<ProtocolVersion>& versions() const { return versions_; }
-  const std::array<uint8_t, kAaguidLength>& aaguid() const { return aaguid_; }
-  const base::Optional<uint32_t>& max_msg_size() const { return max_msg_size_; }
-  const base::Optional<std::vector<uint8_t>>& pin_protocol() const {
-    return pin_protocols_;
-  }
-  const base::Optional<std::vector<std::string>>& extensions() const {
-    return extensions_;
-  }
-  const AuthenticatorSupportedOptions& options() const { return options_; }
+  base::flat_set<ProtocolVersion> versions;
+  std::array<uint8_t, kAaguidLength> aaguid;
+  base::Optional<uint32_t> max_msg_size;
+  base::Optional<uint32_t> max_credential_count_in_list;
+  base::Optional<uint32_t> max_credential_id_length;
+  base::Optional<std::vector<uint8_t>> pin_protocols;
+  base::Optional<std::vector<std::string>> extensions;
+  AuthenticatorSupportedOptions options;
 
  private:
-  base::flat_set<ProtocolVersion> versions_;
-  std::array<uint8_t, kAaguidLength> aaguid_;
-  base::Optional<uint32_t> max_msg_size_;
-  base::Optional<std::vector<uint8_t>> pin_protocols_;
-  base::Optional<std::vector<std::string>> extensions_;
-  AuthenticatorSupportedOptions options_;
-
   DISALLOW_COPY_AND_ASSIGN(AuthenticatorGetInfoResponse);
 };
-
-COMPONENT_EXPORT(DEVICE_FIDO)
-std::vector<uint8_t> EncodeToCBOR(const AuthenticatorGetInfoResponse& response);
 
 }  // namespace device
 

@@ -24,22 +24,26 @@ public class SendTabToSelfEntry {
     public final long sharedTime;
     /** The time that the tab was navigated to. */
     public final long originalNavigationTime;
+    /** The cache guid of the target device. */
+    public final String targetDeviceSyncCacheGuid;
 
     public SendTabToSelfEntry(String guid, String url, String title, long sharedTime,
-            long originalNavigationTime, String deviceName) {
+            long originalNavigationTime, String deviceName, String targetDeviceSyncCacheGuid) {
         this.guid = guid;
         this.url = url;
         this.title = title;
         this.sharedTime = sharedTime;
         this.originalNavigationTime = originalNavigationTime;
         this.deviceName = deviceName;
+        this.targetDeviceSyncCacheGuid = targetDeviceSyncCacheGuid;
     }
 
     /** Used by native code in order to create a new object of this type. */
     @CalledByNative
     private static SendTabToSelfEntry createSendTabToSelfEntry(String mGuid, String mUrl,
-            String mTitle, long mSharedTime, long mOriginalNavigationTime, String mDeviceName) {
-        return new SendTabToSelfEntry(
-                mGuid, mUrl, mTitle, mSharedTime, mOriginalNavigationTime, mDeviceName);
+            String mTitle, long mSharedTime, long mOriginalNavigationTime, String mDeviceName,
+            String targetDeviceSyncCacheGuid) {
+        return new SendTabToSelfEntry(mGuid, mUrl, mTitle, mSharedTime, mOriginalNavigationTime,
+                mDeviceName, targetDeviceSyncCacheGuid);
     }
 }

@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include "base/guid.h"
 #include "base/macros.h"
 #include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
@@ -14,8 +15,8 @@
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/test/bookmark_test_helpers.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_thread.h"
-#include "content/public/test/test_browser_thread_bundle.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -49,14 +50,14 @@ class PartnerBookmarksShimTest : public testing::Test {
                                   const base::string16& title) {
     if (!parent)
       parent = model_->bookmark_bar_node();
-    return model_->AddURL(parent, parent->child_count(), title, url);
+    return model_->AddURL(parent, parent->children().size(), title, url);
   }
 
   const BookmarkNode* AddFolder(const BookmarkNode* parent,
                                 const base::string16& title) {
     if (!parent)
       parent = model_->bookmark_bar_node();
-    return model_->AddFolder(parent, parent->child_count(), title);
+    return model_->AddFolder(parent, parent->children().size(), title);
   }
 
  protected:
@@ -78,7 +79,7 @@ class PartnerBookmarksShimTest : public testing::Test {
 
   std::unique_ptr<TestingProfile> profile_;
 
-  content::TestBrowserThreadBundle thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
 
   BookmarkModel* model_;
   MockObserver observer_;
@@ -89,27 +90,20 @@ class PartnerBookmarksShimTest : public testing::Test {
 
 TEST_F(PartnerBookmarksShimTest, GetNodeByID) {
   std::unique_ptr<BookmarkPermanentNode> root_partner_node =
-      std::make_unique<BookmarkPermanentNode>(0);
+      std::make_unique<BookmarkPermanentNode>(0, BookmarkNode::FOLDER);
   BookmarkPermanentNode* root_partner_node_ptr = root_partner_node.get();
-  BookmarkNode* partner_folder1 =
-      root_partner_node->Add(std::make_unique<BookmarkNode>(1, GURL()),
-                             root_partner_node->child_count());
-  partner_folder1->set_type(BookmarkNode::FOLDER);
+  BookmarkNode* partner_folder1 = root_partner_node->Add(
+      std::make_unique<BookmarkNode>(1, base::GenerateGUID(), GURL()));
 
-  BookmarkNode* partner_folder2 =
-      partner_folder1->Add(std::make_unique<BookmarkNode>(2, GURL()),
-                           partner_folder1->child_count());
-  partner_folder2->set_type(BookmarkNode::FOLDER);
+  BookmarkNode* partner_folder2 = partner_folder1->Add(
+      std::make_unique<BookmarkNode>(2, base::GenerateGUID(), GURL()));
 
-  BookmarkNode* partner_bookmark1 = partner_folder1->Add(
-      std::make_unique<BookmarkNode>(3, GURL("http://www.a.com")),
-      partner_folder1->child_count());
-  partner_bookmark1->set_type(BookmarkNode::URL);
+  partner_folder1->Add(std::make_unique<BookmarkNode>(
+      3, base::GenerateGUID(), GURL("http://www.a.com")));
 
-  BookmarkNode* partner_bookmark2 = partner_folder2->Add(
-      std::make_unique<BookmarkNode>(4, GURL("http://www.b.com")),
-      partner_folder2->child_count());
-  partner_bookmark2->set_type(BookmarkNode::URL);
+  BookmarkNode* partner_bookmark2 =
+      partner_folder2->Add(std::make_unique<BookmarkNode>(
+          4, base::GenerateGUID(), GURL("http://www.b.com")));
 
   PartnerBookmarksShim* shim = partner_bookmarks_shim();
   ASSERT_FALSE(shim->IsLoaded());
@@ -135,12 +129,10 @@ TEST_F(PartnerBookmarksShimTest, ObserverNotifiedOfLoadWithPartnerBookmarks) {
   EXPECT_CALL(observer_, PartnerShimLoaded(_)).Times(0);
   int64_t id = 5;
   std::unique_ptr<BookmarkPermanentNode> root_partner_node =
-      std::make_unique<BookmarkPermanentNode>(id++);
+      std::make_unique<BookmarkPermanentNode>(id++, BookmarkNode::FOLDER);
 
-  BookmarkNode* partner_bookmark1 = root_partner_node->Add(
-      std::make_unique<BookmarkNode>(id++, GURL("http://www.a.com")),
-      root_partner_node->child_count());
-  partner_bookmark1->set_type(BookmarkNode::URL);
+  root_partner_node->Add(std::make_unique<BookmarkNode>(
+      id++, base::GenerateGUID(), GURL("http://www.a.com")));
 
   PartnerBookmarksShim* shim = partner_bookmarks_shim();
   shim->AddObserver(&observer_);
@@ -157,39 +149,36 @@ TEST_F(PartnerBookmarksShimTest, RemoveBookmarks) {
   EXPECT_CALL(observer_, PartnerShimChanged(shim)).Times(0);
 
   std::unique_ptr<BookmarkPermanentNode> root_partner_node =
-      std::make_unique<BookmarkPermanentNode>(0);
+      std::make_unique<BookmarkPermanentNode>(0, BookmarkNode::FOLDER);
   BookmarkPermanentNode* root_partner_node_ptr = root_partner_node.get();
   root_partner_node->SetTitle(base::ASCIIToUTF16("Partner bookmarks"));
 
   BookmarkNode* partner_folder1 = root_partner_node->Add(
-      std::make_unique<BookmarkNode>(1, GURL("http://www.a.net")),
-      root_partner_node->child_count());
-  partner_folder1->set_type(BookmarkNode::FOLDER);
+      std::make_unique<BookmarkNode>(1, base::GenerateGUID(), GURL()));
+  partner_folder1->SetTitle(base::ASCIIToUTF16("a.net"));
 
   BookmarkNode* partner_folder2 = root_partner_node->Add(
-      std::make_unique<BookmarkNode>(2, GURL("http://www.b.net")),
-      root_partner_node->child_count());
-  partner_folder2->set_type(BookmarkNode::FOLDER);
+      std::make_unique<BookmarkNode>(2, base::GenerateGUID(), GURL()));
+  partner_folder2->SetTitle(base::ASCIIToUTF16("b.net"));
 
-  BookmarkNode* partner_bookmark1 = partner_folder1->Add(
-      std::make_unique<BookmarkNode>(3, GURL("http://www.a.com")),
-      partner_folder1->child_count());
-  partner_bookmark1->set_type(BookmarkNode::URL);
+  BookmarkNode* partner_bookmark1 =
+      partner_folder1->Add(std::make_unique<BookmarkNode>(
+          3, base::GenerateGUID(), GURL("http://www.a.com")));
+  partner_bookmark1->SetTitle(base::ASCIIToUTF16("a.com"));
 
-  BookmarkNode* partner_bookmark2 = partner_folder2->Add(
-      std::make_unique<BookmarkNode>(4, GURL("http://www.b.com")),
-      partner_folder2->child_count());
-  partner_bookmark2->set_type(BookmarkNode::URL);
+  BookmarkNode* partner_bookmark2 =
+      partner_folder2->Add(std::make_unique<BookmarkNode>(
+          4, base::GenerateGUID(), GURL("http://www.b.com")));
+  partner_bookmark2->SetTitle(base::ASCIIToUTF16("b.com"));
 
   BookmarkNode* partner_folder3 = partner_folder2->Add(
-      std::make_unique<BookmarkNode>(5, GURL("http://www.c.net")),
-      partner_folder2->child_count());
-  partner_folder3->set_type(BookmarkNode::FOLDER);
+      std::make_unique<BookmarkNode>(5, base::GenerateGUID(), GURL()));
+  partner_folder3->SetTitle(base::ASCIIToUTF16("c.net"));
 
-  BookmarkNode* partner_bookmark3 = partner_folder3->Add(
-      std::make_unique<BookmarkNode>(6, GURL("http://www.c.com")),
-      partner_folder3->child_count());
-  partner_bookmark3->set_type(BookmarkNode::URL);
+  BookmarkNode* partner_bookmark3 =
+      partner_folder3->Add(std::make_unique<BookmarkNode>(
+          6, base::GenerateGUID(), GURL("http://www.c.com")));
+  partner_bookmark3->SetTitle(base::ASCIIToUTF16("c.com"));
 
   ASSERT_FALSE(shim->IsLoaded());
   EXPECT_CALL(observer_, PartnerShimLoaded(shim)).Times(1);
@@ -251,32 +240,26 @@ TEST_F(PartnerBookmarksShimTest, RenameBookmarks) {
   EXPECT_CALL(observer_, PartnerShimChanged(shim)).Times(0);
 
   std::unique_ptr<BookmarkPermanentNode> root_partner_node =
-      std::make_unique<BookmarkPermanentNode>(0);
+      std::make_unique<BookmarkPermanentNode>(0, BookmarkNode::FOLDER);
   BookmarkPermanentNode* root_partner_node_ptr = root_partner_node.get();
   root_partner_node->SetTitle(base::ASCIIToUTF16("Partner bookmarks"));
 
   BookmarkNode* partner_folder1 = root_partner_node->Add(
-      std::make_unique<BookmarkNode>(1, GURL("http://www.a.net")),
-      root_partner_node->child_count());
-  partner_folder1->set_type(BookmarkNode::FOLDER);
+      std::make_unique<BookmarkNode>(1, base::GenerateGUID(), GURL()));
   partner_folder1->SetTitle(base::ASCIIToUTF16("a.net"));
 
   BookmarkNode* partner_folder2 = root_partner_node->Add(
-      std::make_unique<BookmarkNode>(2, GURL("http://www.b.net")),
-      root_partner_node->child_count());
-  partner_folder2->set_type(BookmarkNode::FOLDER);
+      std::make_unique<BookmarkNode>(2, base::GenerateGUID(), GURL()));
   partner_folder2->SetTitle(base::ASCIIToUTF16("b.net"));
 
-  BookmarkNode* partner_bookmark1 = partner_folder1->Add(
-      std::make_unique<BookmarkNode>(3, GURL("http://www.a.com")),
-      partner_folder1->child_count());
-  partner_bookmark1->set_type(BookmarkNode::URL);
+  BookmarkNode* partner_bookmark1 =
+      partner_folder1->Add(std::make_unique<BookmarkNode>(
+          3, base::GenerateGUID(), GURL("http://www.a.com")));
   partner_bookmark1->SetTitle(base::ASCIIToUTF16("a.com"));
 
-  BookmarkNode* partner_bookmark2 = partner_folder2->Add(
-      std::make_unique<BookmarkNode>(4, GURL("http://www.b.com")),
-      partner_folder2->child_count());
-  partner_bookmark2->set_type(BookmarkNode::URL);
+  BookmarkNode* partner_bookmark2 =
+      partner_folder2->Add(std::make_unique<BookmarkNode>(
+          4, base::GenerateGUID(), GURL("http://www.b.com")));
   partner_bookmark2->SetTitle(base::ASCIIToUTF16("b.com"));
 
   ASSERT_FALSE(shim->IsLoaded());
@@ -341,25 +324,21 @@ TEST_F(PartnerBookmarksShimTest, SaveLoadProfile) {
     EXPECT_CALL(observer_, PartnerShimChanged(shim)).Times(0);
 
     std::unique_ptr<BookmarkPermanentNode> root_partner_node =
-        std::make_unique<BookmarkPermanentNode>(0);
+        std::make_unique<BookmarkPermanentNode>(0, BookmarkNode::FOLDER);
     root_partner_node->SetTitle(base::ASCIIToUTF16("Partner bookmarks"));
 
     BookmarkNode* partner_folder1 = root_partner_node->Add(
-        std::make_unique<BookmarkNode>(1, GURL("http://a.net")),
-        root_partner_node->child_count());
-    partner_folder1->set_type(BookmarkNode::FOLDER);
+        std::make_unique<BookmarkNode>(1, base::GenerateGUID(), GURL()));
     partner_folder1->SetTitle(base::ASCIIToUTF16("a.net"));
 
-    BookmarkNode* partner_bookmark1 = partner_folder1->Add(
-        std::make_unique<BookmarkNode>(3, GURL("http://a.com")),
-        partner_folder1->child_count());
-    partner_bookmark1->set_type(BookmarkNode::URL);
+    BookmarkNode* partner_bookmark1 =
+        partner_folder1->Add(std::make_unique<BookmarkNode>(
+            3, base::GenerateGUID(), GURL("http://a.com")));
     partner_bookmark1->SetTitle(base::ASCIIToUTF16("a.com"));
 
-    BookmarkNode* partner_bookmark2 = partner_folder1->Add(
-        std::make_unique<BookmarkNode>(5, GURL("http://b.com")),
-        partner_folder1->child_count());
-    partner_bookmark2->set_type(BookmarkNode::URL);
+    BookmarkNode* partner_bookmark2 =
+        partner_folder1->Add(std::make_unique<BookmarkNode>(
+            5, base::GenerateGUID(), GURL("http://b.com")));
     partner_bookmark2->SetTitle(base::ASCIIToUTF16("b.com"));
 
     ASSERT_FALSE(shim->IsLoaded());
@@ -400,19 +379,17 @@ TEST_F(PartnerBookmarksShimTest, DisableEditing) {
   EXPECT_CALL(observer_, PartnerShimChanged(shim)).Times(0);
 
   std::unique_ptr<BookmarkPermanentNode> root_partner_node =
-      std::make_unique<BookmarkPermanentNode>(0);
+      std::make_unique<BookmarkPermanentNode>(0, BookmarkNode::FOLDER);
   root_partner_node->SetTitle(base::ASCIIToUTF16("Partner bookmarks"));
 
-  BookmarkNode* partner_bookmark1 = root_partner_node->Add(
-      std::make_unique<BookmarkNode>(3, GURL("http://a")),
-      root_partner_node->child_count());
-  partner_bookmark1->set_type(BookmarkNode::URL);
+  BookmarkNode* partner_bookmark1 =
+      root_partner_node->Add(std::make_unique<BookmarkNode>(
+          3, base::GenerateGUID(), GURL("http://a")));
   partner_bookmark1->SetTitle(base::ASCIIToUTF16("a"));
 
-  BookmarkNode* partner_bookmark2 = root_partner_node->Add(
-      std::make_unique<BookmarkNode>(3, GURL("http://b")),
-      root_partner_node->child_count());
-  partner_bookmark2->set_type(BookmarkNode::URL);
+  BookmarkNode* partner_bookmark2 =
+      root_partner_node->Add(std::make_unique<BookmarkNode>(
+          3, base::GenerateGUID(), GURL("http://b")));
   partner_bookmark2->SetTitle(base::ASCIIToUTF16("b"));
 
   ASSERT_FALSE(shim->IsLoaded());
@@ -431,4 +408,79 @@ TEST_F(PartnerBookmarksShimTest, DisableEditing) {
   PartnerBookmarksShim::DisablePartnerBookmarksEditing();
   EXPECT_EQ(base::ASCIIToUTF16("a"), shim->GetTitle(partner_bookmark1));
   EXPECT_TRUE(shim->IsReachable(partner_bookmark2));
+}
+
+TEST_F(PartnerBookmarksShimTest, GetPartnerBookmarksMatchingProperties) {
+  std::unique_ptr<BookmarkPermanentNode> root_partner_node =
+      std::make_unique<BookmarkPermanentNode>(0, BookmarkNode::FOLDER);
+  BookmarkNode* partner_folder1 = root_partner_node->Add(
+      std::make_unique<BookmarkNode>(1, base::GenerateGUID(), GURL()));
+  partner_folder1->SetTitle(base::ASCIIToUTF16("Folder1"));
+
+  BookmarkNode* partner_folder2 = partner_folder1->Add(
+      std::make_unique<BookmarkNode>(2, base::GenerateGUID(), GURL()));
+  partner_folder2->SetTitle(base::ASCIIToUTF16("Folder2"));
+
+  BookmarkNode* partner_bookmark1 =
+      partner_folder1->Add(std::make_unique<BookmarkNode>(
+          3, base::GenerateGUID(), GURL("http://www.ugtdat.com")));
+  partner_bookmark1->SetTitle(base::ASCIIToUTF16("wx"));
+
+  BookmarkNode* partner_bookmark2 =
+      partner_folder2->Add(std::make_unique<BookmarkNode>(
+          4, base::GenerateGUID(), GURL("http://argbhl.com")));
+  partner_bookmark2->SetTitle(base::ASCIIToUTF16("wx yz"));
+
+  PartnerBookmarksShim* shim = partner_bookmarks_shim();
+  ASSERT_FALSE(shim->IsLoaded());
+  shim->SetPartnerBookmarksRoot(std::move(root_partner_node));
+  ASSERT_TRUE(shim->IsLoaded());
+
+  // Ensure that search returns case-insensitive matches for title only.
+  std::vector<const BookmarkNode*> nodes;
+  bookmarks::QueryFields query;
+  query.word_phrase_query.reset(new base::string16(base::ASCIIToUTF16("WX")));
+  shim->GetPartnerBookmarksMatchingProperties(query, 100, &nodes);
+  ASSERT_EQ(2u, nodes.size());
+  ASSERT_EQ(partner_bookmark1, nodes[1]);
+  ASSERT_EQ(partner_bookmark2, nodes[0]);
+
+  // Ensure that every word in the search must have a match.
+  nodes.clear();
+  query.word_phrase_query.reset(new base::string16(base::ASCIIToUTF16("WX Y")));
+  shim->GetPartnerBookmarksMatchingProperties(query, 100, &nodes);
+  ASSERT_EQ(1u, nodes.size());
+  ASSERT_EQ(partner_bookmark2, nodes[0]);
+
+  // Ensure that search returns matches for URL only.
+  nodes.clear();
+  query.word_phrase_query.reset(
+      new base::string16(base::ASCIIToUTF16("dat.com")));
+  shim->GetPartnerBookmarksMatchingProperties(query, 100, &nodes);
+  ASSERT_EQ(1u, nodes.size());
+  ASSERT_EQ(partner_bookmark1, nodes[0]);
+
+  // Ensure that folders appear in search results, and that max_count is
+  // effective.
+  nodes.clear();
+  query.word_phrase_query.reset(
+      new base::string16(base::ASCIIToUTF16("folder")));
+
+  shim->GetPartnerBookmarksMatchingProperties(query, 100, &nodes);
+  ASSERT_EQ(2u, nodes.size());
+
+  nodes.clear();
+  shim->GetPartnerBookmarksMatchingProperties(query, 1, &nodes);
+  ASSERT_EQ(1u, nodes.size());
+
+  nodes.clear();
+  shim->GetPartnerBookmarksMatchingProperties(query, 0, &nodes);
+  ASSERT_EQ(0u, nodes.size());
+
+  // Test a scenario with no search results.
+  nodes.clear();
+  query.word_phrase_query.reset(
+      new base::string16(base::ASCIIToUTF16("foo.com")));
+  shim->GetPartnerBookmarksMatchingProperties(query, 100, &nodes);
+  ASSERT_EQ(0u, nodes.size());
 }

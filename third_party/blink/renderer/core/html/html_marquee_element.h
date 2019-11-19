@@ -35,8 +35,6 @@ class HTMLMarqueeElement final : public HTMLElement {
  public:
   void Trace(Visitor*) override;
 
-  static HTMLMarqueeElement* Create(Document&);
-
   explicit HTMLMarqueeElement(Document&);
 
   InsertionNotificationRequest InsertedInto(ContainerNode&) final;

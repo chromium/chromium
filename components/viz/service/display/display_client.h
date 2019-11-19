@@ -11,11 +11,8 @@ namespace gfx {
 struct CALayerParams;
 }  // namespace gfx
 
-namespace ui {
-class LatencyInfo;
-}  // namespace ui
-
 namespace viz {
+class FrameSinkId;
 
 class DisplayClient {
  public:
@@ -29,11 +26,9 @@ class DisplayClient {
   virtual void DisplayDidReceiveCALayerParams(
       const gfx::CALayerParams& ca_layer_params) = 0;
   virtual void DisplayDidCompleteSwapWithSize(const gfx::Size& pixel_size) = 0;
-
-  // Notifies that a swap has occured after some latency info with snapshot
-  // component reached the display.
-  virtual void DidSwapAfterSnapshotRequestReceived(
-      const std::vector<ui::LatencyInfo>& latency_info) = 0;
+  virtual void SetPreferredFrameInterval(base::TimeDelta interval) = 0;
+  virtual base::TimeDelta GetPreferredFrameIntervalForFrameSinkId(
+      const FrameSinkId& id) = 0;
 };
 
 }  // namespace viz

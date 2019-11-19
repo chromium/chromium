@@ -160,7 +160,6 @@ namespace developerPrivate {
 
   enum ControllerType {
     POLICY,
-    CHILD_CUSTODIAN,
     SUPERVISED_USER_CUSTODIAN
   };
 

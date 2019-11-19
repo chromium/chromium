@@ -12,8 +12,8 @@
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "base/optional.h"
-#include "components/browser_sync/profile_sync_service.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/user_selectable_type.h"
+#include "components/sync/driver/profile_sync_service.h"
 #include "components/sync/engine/cycle/sync_cycle_snapshot.h"
 
 class Profile;
@@ -47,6 +47,9 @@ class ProfileSyncServiceHarness {
   // Signs in to a primary account without actually enabling sync the feature.
   bool SignInPrimaryAccount();
 
+  // This is similar to click the reset button on chrome.google.com/sync.
+  void ResetSyncForPrimaryAccount();
+
 #if !defined(OS_CHROMEOS)
   // Signs out of the primary account. ChromeOS doesn't have the concept of
   // sign-out, so this only exists on other platforms.
@@ -63,23 +66,24 @@ class ProfileSyncServiceHarness {
   // to process changes.
   bool SetupSync();
 
-  // Enables and configures sync only for the given |synced_datatypes|.
+  // Enables and configures sync only for the given |selected_types|.
   // Does not wait for sync to be ready to process changes -- callers need to
   // ensure this by calling AwaitSyncSetupCompletion() or
   // AwaitSyncTransportActive().
   // Returns true on success.
-  bool SetupSyncNoWaitForCompletion(syncer::ModelTypeSet synced_datatypes);
+  bool SetupSyncNoWaitForCompletion(
+      syncer::UserSelectableTypeSet selected_types);
 
   // Same as SetupSyncNoWaitForCompletion(), but also sets the given encryption
   // passphrase during setup.
   bool SetupSyncWithEncryptionPassphraseNoWaitForCompletion(
-      syncer::ModelTypeSet synced_datatypes,
+      syncer::UserSelectableTypeSet selected_types,
       const std::string& passphrase);
 
   // Same as SetupSyncNoWaitForCompletion(), but also sets the given decryption
   // passphrase during setup.
   bool SetupSyncWithDecryptionPassphraseNoWaitForCompletion(
-      syncer::ModelTypeSet synced_datatypes,
+      syncer::UserSelectableTypeSet selected_types,
       const std::string& passphrase);
 
   // Signals that sync setup is complete, and that PSS may begin syncing.
@@ -102,11 +106,6 @@ class ProfileSyncServiceHarness {
   void StopSyncServiceWithoutClearingData();
   // Starts the sync service after a previous stop.
   bool StartSyncService();
-
-  // Returns whether this client has unsynced items. Avoid verifying false
-  // return values, because tests typically shouldn't make assumptions about
-  // other datatypes.
-  bool HasUnsyncedItems();
 
   // Calling this acts as a barrier and blocks the caller until |this| and
   // |partner| have both completed a sync cycle.  When calling this method,
@@ -132,7 +131,8 @@ class ProfileSyncServiceHarness {
 
   // Blocks the caller until sync setup is complete, and sync-the-feature is
   // active. Returns true if and only if sync setup completed successfully. Make
-  // sure to call SetupSync() or one of its variants before.
+  // sure to actually start sync setup (usually by calling SetupSync() or one of
+  // its variants) before.
   bool AwaitSyncSetupCompletion();
 
   // Blocks the caller until the sync transport layer is active. Returns true if
@@ -140,19 +140,21 @@ class ProfileSyncServiceHarness {
   bool AwaitSyncTransportActive();
 
   // Returns the ProfileSyncService member of the sync client.
-  browser_sync::ProfileSyncService* service() const { return service_; }
+  syncer::ProfileSyncService* service() const { return service_; }
 
   // Returns the debug name for this profile. Used for logging.
   const std::string& profile_debug_name() const { return profile_debug_name_; }
 
-  // Enables sync for a particular sync datatype. Returns true on success.
-  bool EnableSyncForDatatype(syncer::ModelType datatype);
+  // Enables sync for a particular selectable sync type (will enable sync for
+  // all corresponding datatypes). Returns true on success.
+  bool EnableSyncForType(syncer::UserSelectableType type);
 
-  // Disables sync for a particular sync datatype. Returns true on success.
-  bool DisableSyncForDatatype(syncer::ModelType datatype);
+  // Disables sync for a particular selectable sync type (will enable sync for
+  // all corresponding datatypes). Returns true on success.
+  bool DisableSyncForType(syncer::UserSelectableType type);
 
-  // Enables sync for all sync datatypes. Returns true on success.
-  bool EnableSyncForAllDatatypes();
+  // Enables sync for all registered sync datatypes. Returns true on success.
+  bool EnableSyncForRegisteredDatatypes();
 
   // Disables sync for all sync datatypes. Returns true on success.
   bool DisableSyncForAllDatatypes();
@@ -180,7 +182,7 @@ class ProfileSyncServiceHarness {
   // |encryption_mode|.
   // If |encryption_mode| is kDecryption or kEncryption, |encryption_passphrase|
   // has to have a value which will be used to properly setup sync.
-  bool SetupSyncImpl(syncer::ModelTypeSet synced_datatypes,
+  bool SetupSyncImpl(syncer::UserSelectableTypeSet selected_types,
                      EncryptionSetupMode encryption_mode,
                      const base::Optional<std::string>& encryption_passphrase);
 
@@ -199,7 +201,7 @@ class ProfileSyncServiceHarness {
   Profile* const profile_;
 
   // ProfileSyncService object associated with |profile_|.
-  browser_sync::ProfileSyncService* const service_;
+  syncer::ProfileSyncService* const service_;
 
   // Prevents Sync from running until configuration is complete.
   std::unique_ptr<syncer::SyncSetupInProgressHandle> sync_blocker_;

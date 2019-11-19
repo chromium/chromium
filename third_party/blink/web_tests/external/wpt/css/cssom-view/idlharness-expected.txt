@@ -1,0 +1,383 @@
+This is a testharness.js-based test.
+Found 379 tests; 304 PASS, 75 FAIL, 0 TIMEOUT, 0 NOTRUN.
+PASS idl_test setup
+PASS idl_test validation
+PASS Partial interface Window: original interface defined
+PASS Partial interface Window: member names are unique
+PASS Partial interface Document: original interface defined
+PASS Partial interface Document: member names are unique
+PASS Partial interface Element: original interface defined
+PASS Partial interface Element: member names are unique
+PASS Partial interface HTMLElement: original interface defined
+PASS Partial interface HTMLElement: member names are unique
+PASS Partial interface HTMLImageElement: original interface defined
+PASS Partial interface HTMLImageElement: member names are unique
+PASS Partial interface Range: original interface defined
+PASS Partial interface Range: member names are unique
+PASS Partial interface MouseEvent: original interface defined
+FAIL Partial interface MouseEvent: member names are unique assert_true: member screenX is unique expected true got false
+PASS Partial dictionary MouseEventInit: original dictionary defined
+FAIL Partial dictionary MouseEventInit: member names are unique assert_true: member screenX is unique expected true got false
+PASS Partial interface Element[2]: member names are unique
+PASS Partial interface Window[2]: member names are unique
+PASS Partial interface UIEvent: member names are unique
+PASS Partial interface Document[2]: member names are unique
+PASS Partial interface Document[3]: member names are unique
+PASS Partial interface HTMLImageElement[2]: member names are unique
+PASS Partial interface Document[4]: member names are unique
+PASS Partial interface Window[3]: member names are unique
+PASS Text includes GeometryUtils: member names are unique
+PASS Text includes Slotable: member names are unique
+PASS Element includes GeometryUtils: member names are unique
+PASS Element includes ParentNode: member names are unique
+PASS Element includes NonDocumentTypeChildNode: member names are unique
+PASS Element includes ChildNode: member names are unique
+PASS Element includes Slotable: member names are unique
+PASS CSSPseudoElement includes GeometryUtils: member names are unique
+PASS Document includes GeometryUtils: member names are unique
+PASS Document includes GlobalEventHandlers: member names are unique
+PASS Document includes DocumentAndElementEventHandlers: member names are unique
+PASS Document includes NonElementParentNode: member names are unique
+PASS Document includes ParentNode: member names are unique
+PASS Document includes XPathEvaluatorBase: member names are unique
+PASS HTMLElement includes ElementCSSInlineStyle: member names are unique
+PASS HTMLElement includes GlobalEventHandlers: member names are unique
+PASS HTMLElement includes DocumentAndElementEventHandlers: member names are unique
+PASS HTMLElement includes ElementContentEditable: member names are unique
+PASS HTMLElement includes HTMLOrSVGElement: member names are unique
+PASS Window includes GlobalEventHandlers: member names are unique
+PASS Window includes WindowEventHandlers: member names are unique
+PASS Window includes WindowOrWorkerGlobalScope: member names are unique
+PASS Window includes AnimationFrameProvider: member names are unique
+PASS Window includes WindowSessionStorage: member names are unique
+PASS Window includes WindowLocalStorage: member names are unique
+PASS CharacterData includes NonDocumentTypeChildNode: member names are unique
+PASS CharacterData includes ChildNode: member names are unique
+PASS MediaQueryList interface: existence and properties of interface object
+PASS MediaQueryList interface object length
+PASS MediaQueryList interface object name
+PASS MediaQueryList interface: existence and properties of interface prototype object
+PASS MediaQueryList interface: existence and properties of interface prototype object's "constructor" property
+PASS MediaQueryList interface: existence and properties of interface prototype object's @@unscopables property
+PASS MediaQueryList interface: attribute media
+PASS MediaQueryList interface: attribute matches
+PASS MediaQueryList interface: operation addListener(EventListener)
+PASS MediaQueryList interface: operation removeListener(EventListener)
+PASS MediaQueryList interface: attribute onchange
+PASS MediaQueryList must be primary interface of matchMedia("all")
+PASS Stringification of matchMedia("all")
+PASS MediaQueryList interface: matchMedia("all") must inherit property "media" with the proper type
+PASS MediaQueryList interface: matchMedia("all") must inherit property "matches" with the proper type
+PASS MediaQueryList interface: matchMedia("all") must inherit property "addListener(EventListener)" with the proper type
+PASS MediaQueryList interface: calling addListener(EventListener) on matchMedia("all") with too few arguments must throw TypeError
+PASS MediaQueryList interface: matchMedia("all") must inherit property "removeListener(EventListener)" with the proper type
+PASS MediaQueryList interface: calling removeListener(EventListener) on matchMedia("all") with too few arguments must throw TypeError
+PASS MediaQueryList interface: matchMedia("all") must inherit property "onchange" with the proper type
+PASS MediaQueryListEvent interface: existence and properties of interface object
+PASS MediaQueryListEvent interface object length
+PASS MediaQueryListEvent interface object name
+PASS MediaQueryListEvent interface: existence and properties of interface prototype object
+PASS MediaQueryListEvent interface: existence and properties of interface prototype object's "constructor" property
+PASS MediaQueryListEvent interface: existence and properties of interface prototype object's @@unscopables property
+PASS MediaQueryListEvent interface: attribute media
+PASS MediaQueryListEvent interface: attribute matches
+PASS MediaQueryListEvent must be primary interface of new MediaQueryListEvent("change")
+PASS Stringification of new MediaQueryListEvent("change")
+PASS MediaQueryListEvent interface: new MediaQueryListEvent("change") must inherit property "media" with the proper type
+PASS MediaQueryListEvent interface: new MediaQueryListEvent("change") must inherit property "matches" with the proper type
+PASS Screen interface: existence and properties of interface object
+PASS Screen interface object length
+PASS Screen interface object name
+PASS Screen interface: existence and properties of interface prototype object
+PASS Screen interface: existence and properties of interface prototype object's "constructor" property
+PASS Screen interface: existence and properties of interface prototype object's @@unscopables property
+PASS Screen interface: attribute availWidth
+PASS Screen interface: attribute availHeight
+PASS Screen interface: attribute width
+PASS Screen interface: attribute height
+PASS Screen interface: attribute colorDepth
+PASS Screen interface: attribute pixelDepth
+PASS Screen must be primary interface of screen
+PASS Stringification of screen
+PASS Screen interface: screen must inherit property "availWidth" with the proper type
+PASS Screen interface: screen must inherit property "availHeight" with the proper type
+PASS Screen interface: screen must inherit property "width" with the proper type
+PASS Screen interface: screen must inherit property "height" with the proper type
+PASS Screen interface: screen must inherit property "colorDepth" with the proper type
+PASS Screen interface: screen must inherit property "pixelDepth" with the proper type
+FAIL CaretPosition interface: existence and properties of interface object assert_own_property: self does not have own property "CaretPosition" expected property "CaretPosition" missing
+FAIL CaretPosition interface object length assert_own_property: self does not have own property "CaretPosition" expected property "CaretPosition" missing
+FAIL CaretPosition interface object name assert_own_property: self does not have own property "CaretPosition" expected property "CaretPosition" missing
+FAIL CaretPosition interface: existence and properties of interface prototype object assert_own_property: self does not have own property "CaretPosition" expected property "CaretPosition" missing
+FAIL CaretPosition interface: existence and properties of interface prototype object's "constructor" property assert_own_property: self does not have own property "CaretPosition" expected property "CaretPosition" missing
+FAIL CaretPosition interface: existence and properties of interface prototype object's @@unscopables property assert_own_property: self does not have own property "CaretPosition" expected property "CaretPosition" missing
+FAIL CaretPosition interface: attribute offsetNode assert_own_property: self does not have own property "CaretPosition" expected property "CaretPosition" missing
+FAIL CaretPosition interface: attribute offset assert_own_property: self does not have own property "CaretPosition" expected property "CaretPosition" missing
+FAIL CaretPosition interface: operation getClientRect() assert_own_property: self does not have own property "CaretPosition" expected property "CaretPosition" missing
+FAIL CaretPosition must be primary interface of document.caretPositionFromPoint(5, 5) assert_equals: Unexpected exception when evaluating object expected null but got object "TypeError: document.caretPositionFromPoint is not a function"
+FAIL Stringification of document.caretPositionFromPoint(5, 5) assert_equals: Unexpected exception when evaluating object expected null but got object "TypeError: document.caretPositionFromPoint is not a function"
+FAIL CaretPosition interface: document.caretPositionFromPoint(5, 5) must inherit property "offsetNode" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "TypeError: document.caretPositionFromPoint is not a function"
+FAIL CaretPosition interface: document.caretPositionFromPoint(5, 5) must inherit property "offset" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "TypeError: document.caretPositionFromPoint is not a function"
+FAIL CaretPosition interface: document.caretPositionFromPoint(5, 5) must inherit property "getClientRect()" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "TypeError: document.caretPositionFromPoint is not a function"
+FAIL CSSPseudoElement interface: operation getBoxQuads(BoxQuadOptions) assert_own_property: self does not have own property "CSSPseudoElement" expected property "CSSPseudoElement" missing
+FAIL CSSPseudoElement interface: operation convertQuadFromNode(DOMQuadInit, GeometryNode, ConvertCoordinateOptions) assert_own_property: self does not have own property "CSSPseudoElement" expected property "CSSPseudoElement" missing
+FAIL CSSPseudoElement interface: operation convertRectFromNode(DOMRectReadOnly, GeometryNode, ConvertCoordinateOptions) assert_own_property: self does not have own property "CSSPseudoElement" expected property "CSSPseudoElement" missing
+FAIL CSSPseudoElement interface: operation convertPointFromNode(DOMPointInit, GeometryNode, ConvertCoordinateOptions) assert_own_property: self does not have own property "CSSPseudoElement" expected property "CSSPseudoElement" missing
+PASS MouseEvent interface: attribute screenX
+PASS MouseEvent interface: attribute screenY
+PASS MouseEvent interface: attribute pageX
+PASS MouseEvent interface: attribute pageY
+PASS MouseEvent interface: attribute clientX
+PASS MouseEvent interface: attribute clientY
+PASS MouseEvent interface: attribute x
+PASS MouseEvent interface: attribute y
+PASS MouseEvent interface: attribute offsetX
+PASS MouseEvent interface: attribute offsetY
+PASS MouseEvent interface: new MouseEvent("foo") must inherit property "screenX" with the proper type
+PASS MouseEvent interface: new MouseEvent("foo") must inherit property "screenY" with the proper type
+PASS MouseEvent interface: new MouseEvent("foo") must inherit property "pageX" with the proper type
+PASS MouseEvent interface: new MouseEvent("foo") must inherit property "pageY" with the proper type
+PASS MouseEvent interface: new MouseEvent("foo") must inherit property "clientX" with the proper type
+PASS MouseEvent interface: new MouseEvent("foo") must inherit property "clientY" with the proper type
+PASS MouseEvent interface: new MouseEvent("foo") must inherit property "x" with the proper type
+PASS MouseEvent interface: new MouseEvent("foo") must inherit property "y" with the proper type
+PASS MouseEvent interface: new MouseEvent("foo") must inherit property "offsetX" with the proper type
+PASS MouseEvent interface: new MouseEvent("foo") must inherit property "offsetY" with the proper type
+PASS HTMLElement interface: attribute offsetParent
+PASS HTMLElement interface: attribute offsetTop
+PASS HTMLElement interface: attribute offsetLeft
+PASS HTMLElement interface: attribute offsetWidth
+PASS HTMLElement interface: attribute offsetHeight
+PASS HTMLElement interface: document.createElement("div") must inherit property "offsetParent" with the proper type
+PASS HTMLElement interface: document.createElement("div") must inherit property "offsetTop" with the proper type
+PASS HTMLElement interface: document.createElement("div") must inherit property "offsetLeft" with the proper type
+PASS HTMLElement interface: document.createElement("div") must inherit property "offsetWidth" with the proper type
+PASS HTMLElement interface: document.createElement("div") must inherit property "offsetHeight" with the proper type
+PASS Element interface: document.createElement("div") must inherit property "getClientRects()" with the proper type
+PASS Element interface: document.createElement("div") must inherit property "getBoundingClientRect()" with the proper type
+PASS Element interface: document.createElement("div") must inherit property "scrollIntoView([object Object],[object Object])" with the proper type
+PASS Element interface: calling scrollIntoView([object Object],[object Object]) on document.createElement("div") with too few arguments must throw TypeError
+PASS Element interface: document.createElement("div") must inherit property "scroll(ScrollToOptions)" with the proper type
+PASS Element interface: calling scroll(ScrollToOptions) on document.createElement("div") with too few arguments must throw TypeError
+PASS Element interface: document.createElement("div") must inherit property "scroll(unrestricted double, unrestricted double)" with the proper type
+PASS Element interface: calling scroll(unrestricted double, unrestricted double) on document.createElement("div") with too few arguments must throw TypeError
+PASS Element interface: document.createElement("div") must inherit property "scrollTo(ScrollToOptions)" with the proper type
+PASS Element interface: calling scrollTo(ScrollToOptions) on document.createElement("div") with too few arguments must throw TypeError
+PASS Element interface: document.createElement("div") must inherit property "scrollTo(unrestricted double, unrestricted double)" with the proper type
+PASS Element interface: calling scrollTo(unrestricted double, unrestricted double) on document.createElement("div") with too few arguments must throw TypeError
+PASS Element interface: document.createElement("div") must inherit property "scrollBy(ScrollToOptions)" with the proper type
+PASS Element interface: calling scrollBy(ScrollToOptions) on document.createElement("div") with too few arguments must throw TypeError
+PASS Element interface: document.createElement("div") must inherit property "scrollBy(unrestricted double, unrestricted double)" with the proper type
+PASS Element interface: calling scrollBy(unrestricted double, unrestricted double) on document.createElement("div") with too few arguments must throw TypeError
+PASS Element interface: document.createElement("div") must inherit property "scrollTop" with the proper type
+PASS Element interface: document.createElement("div") must inherit property "scrollLeft" with the proper type
+PASS Element interface: document.createElement("div") must inherit property "scrollWidth" with the proper type
+PASS Element interface: document.createElement("div") must inherit property "scrollHeight" with the proper type
+PASS Element interface: document.createElement("div") must inherit property "clientTop" with the proper type
+PASS Element interface: document.createElement("div") must inherit property "clientLeft" with the proper type
+PASS Element interface: document.createElement("div") must inherit property "clientWidth" with the proper type
+PASS Element interface: document.createElement("div") must inherit property "clientHeight" with the proper type
+FAIL Element interface: document.createElement("div") must inherit property "getBoxQuads(BoxQuadOptions)" with the proper type assert_inherits: property "getBoxQuads" not found in prototype chain
+FAIL Element interface: calling getBoxQuads(BoxQuadOptions) on document.createElement("div") with too few arguments must throw TypeError assert_inherits: property "getBoxQuads" not found in prototype chain
+FAIL Element interface: document.createElement("div") must inherit property "convertQuadFromNode(DOMQuadInit, GeometryNode, ConvertCoordinateOptions)" with the proper type assert_inherits: property "convertQuadFromNode" not found in prototype chain
+FAIL Element interface: calling convertQuadFromNode(DOMQuadInit, GeometryNode, ConvertCoordinateOptions) on document.createElement("div") with too few arguments must throw TypeError assert_inherits: property "convertQuadFromNode" not found in prototype chain
+FAIL Element interface: document.createElement("div") must inherit property "convertRectFromNode(DOMRectReadOnly, GeometryNode, ConvertCoordinateOptions)" with the proper type assert_inherits: property "convertRectFromNode" not found in prototype chain
+FAIL Element interface: calling convertRectFromNode(DOMRectReadOnly, GeometryNode, ConvertCoordinateOptions) on document.createElement("div") with too few arguments must throw TypeError assert_inherits: property "convertRectFromNode" not found in prototype chain
+FAIL Element interface: document.createElement("div") must inherit property "convertPointFromNode(DOMPointInit, GeometryNode, ConvertCoordinateOptions)" with the proper type assert_inherits: property "convertPointFromNode" not found in prototype chain
+FAIL Element interface: calling convertPointFromNode(DOMPointInit, GeometryNode, ConvertCoordinateOptions) on document.createElement("div") with too few arguments must throw TypeError assert_inherits: property "convertPointFromNode" not found in prototype chain
+PASS HTMLImageElement interface: attribute x
+PASS HTMLImageElement interface: attribute y
+PASS HTMLImageElement interface: document.createElement("img") must inherit property "x" with the proper type
+PASS HTMLImageElement interface: document.createElement("img") must inherit property "y" with the proper type
+PASS HTMLElement interface: document.createElement("img") must inherit property "offsetParent" with the proper type
+PASS HTMLElement interface: document.createElement("img") must inherit property "offsetTop" with the proper type
+PASS HTMLElement interface: document.createElement("img") must inherit property "offsetLeft" with the proper type
+PASS HTMLElement interface: document.createElement("img") must inherit property "offsetWidth" with the proper type
+PASS HTMLElement interface: document.createElement("img") must inherit property "offsetHeight" with the proper type
+PASS Element interface: document.createElement("img") must inherit property "getClientRects()" with the proper type
+PASS Element interface: document.createElement("img") must inherit property "getBoundingClientRect()" with the proper type
+PASS Element interface: document.createElement("img") must inherit property "scrollIntoView([object Object],[object Object])" with the proper type
+PASS Element interface: calling scrollIntoView([object Object],[object Object]) on document.createElement("img") with too few arguments must throw TypeError
+PASS Element interface: document.createElement("img") must inherit property "scroll(ScrollToOptions)" with the proper type
+PASS Element interface: calling scroll(ScrollToOptions) on document.createElement("img") with too few arguments must throw TypeError
+PASS Element interface: document.createElement("img") must inherit property "scroll(unrestricted double, unrestricted double)" with the proper type
+PASS Element interface: calling scroll(unrestricted double, unrestricted double) on document.createElement("img") with too few arguments must throw TypeError
+PASS Element interface: document.createElement("img") must inherit property "scrollTo(ScrollToOptions)" with the proper type
+PASS Element interface: calling scrollTo(ScrollToOptions) on document.createElement("img") with too few arguments must throw TypeError
+PASS Element interface: document.createElement("img") must inherit property "scrollTo(unrestricted double, unrestricted double)" with the proper type
+PASS Element interface: calling scrollTo(unrestricted double, unrestricted double) on document.createElement("img") with too few arguments must throw TypeError
+PASS Element interface: document.createElement("img") must inherit property "scrollBy(ScrollToOptions)" with the proper type
+PASS Element interface: calling scrollBy(ScrollToOptions) on document.createElement("img") with too few arguments must throw TypeError
+PASS Element interface: document.createElement("img") must inherit property "scrollBy(unrestricted double, unrestricted double)" with the proper type
+PASS Element interface: calling scrollBy(unrestricted double, unrestricted double) on document.createElement("img") with too few arguments must throw TypeError
+PASS Element interface: document.createElement("img") must inherit property "scrollTop" with the proper type
+PASS Element interface: document.createElement("img") must inherit property "scrollLeft" with the proper type
+PASS Element interface: document.createElement("img") must inherit property "scrollWidth" with the proper type
+PASS Element interface: document.createElement("img") must inherit property "scrollHeight" with the proper type
+PASS Element interface: document.createElement("img") must inherit property "clientTop" with the proper type
+PASS Element interface: document.createElement("img") must inherit property "clientLeft" with the proper type
+PASS Element interface: document.createElement("img") must inherit property "clientWidth" with the proper type
+PASS Element interface: document.createElement("img") must inherit property "clientHeight" with the proper type
+FAIL Element interface: document.createElement("img") must inherit property "getBoxQuads(BoxQuadOptions)" with the proper type assert_inherits: property "getBoxQuads" not found in prototype chain
+FAIL Element interface: calling getBoxQuads(BoxQuadOptions) on document.createElement("img") with too few arguments must throw TypeError assert_inherits: property "getBoxQuads" not found in prototype chain
+FAIL Element interface: document.createElement("img") must inherit property "convertQuadFromNode(DOMQuadInit, GeometryNode, ConvertCoordinateOptions)" with the proper type assert_inherits: property "convertQuadFromNode" not found in prototype chain
+FAIL Element interface: calling convertQuadFromNode(DOMQuadInit, GeometryNode, ConvertCoordinateOptions) on document.createElement("img") with too few arguments must throw TypeError assert_inherits: property "convertQuadFromNode" not found in prototype chain
+FAIL Element interface: document.createElement("img") must inherit property "convertRectFromNode(DOMRectReadOnly, GeometryNode, ConvertCoordinateOptions)" with the proper type assert_inherits: property "convertRectFromNode" not found in prototype chain
+FAIL Element interface: calling convertRectFromNode(DOMRectReadOnly, GeometryNode, ConvertCoordinateOptions) on document.createElement("img") with too few arguments must throw TypeError assert_inherits: property "convertRectFromNode" not found in prototype chain
+FAIL Element interface: document.createElement("img") must inherit property "convertPointFromNode(DOMPointInit, GeometryNode, ConvertCoordinateOptions)" with the proper type assert_inherits: property "convertPointFromNode" not found in prototype chain
+FAIL Element interface: calling convertPointFromNode(DOMPointInit, GeometryNode, ConvertCoordinateOptions) on document.createElement("img") with too few arguments must throw TypeError assert_inherits: property "convertPointFromNode" not found in prototype chain
+PASS Window interface: operation matchMedia(CSSOMString)
+PASS Window interface: attribute screen
+PASS Window interface: operation moveTo(long, long)
+PASS Window interface: operation moveBy(long, long)
+PASS Window interface: operation resizeTo(long, long)
+PASS Window interface: operation resizeBy(long, long)
+PASS Window interface: attribute innerWidth
+PASS Window interface: attribute innerHeight
+PASS Window interface: attribute scrollX
+PASS Window interface: attribute pageXOffset
+PASS Window interface: attribute scrollY
+PASS Window interface: attribute pageYOffset
+PASS Window interface: operation scroll(ScrollToOptions)
+PASS Window interface: operation scroll(unrestricted double, unrestricted double)
+PASS Window interface: operation scrollTo(ScrollToOptions)
+PASS Window interface: operation scrollTo(unrestricted double, unrestricted double)
+PASS Window interface: operation scrollBy(ScrollToOptions)
+PASS Window interface: operation scrollBy(unrestricted double, unrestricted double)
+PASS Window interface: attribute screenX
+PASS Window interface: attribute screenLeft
+PASS Window interface: attribute screenY
+PASS Window interface: attribute screenTop
+PASS Window interface: attribute outerWidth
+PASS Window interface: attribute outerHeight
+PASS Window interface: attribute devicePixelRatio
+PASS Window interface: window must inherit property "matchMedia(CSSOMString)" with the proper type
+PASS Window interface: calling matchMedia(CSSOMString) on window with too few arguments must throw TypeError
+PASS Window interface: window must inherit property "screen" with the proper type
+PASS Window interface: window must inherit property "moveTo(long, long)" with the proper type
+PASS Window interface: calling moveTo(long, long) on window with too few arguments must throw TypeError
+PASS Window interface: window must inherit property "moveBy(long, long)" with the proper type
+PASS Window interface: calling moveBy(long, long) on window with too few arguments must throw TypeError
+PASS Window interface: window must inherit property "resizeTo(long, long)" with the proper type
+PASS Window interface: calling resizeTo(long, long) on window with too few arguments must throw TypeError
+PASS Window interface: window must inherit property "resizeBy(long, long)" with the proper type
+PASS Window interface: calling resizeBy(long, long) on window with too few arguments must throw TypeError
+PASS Window interface: window must inherit property "innerWidth" with the proper type
+PASS Window interface: window must inherit property "innerHeight" with the proper type
+PASS Window interface: window must inherit property "scrollX" with the proper type
+PASS Window interface: window must inherit property "pageXOffset" with the proper type
+PASS Window interface: window must inherit property "scrollY" with the proper type
+PASS Window interface: window must inherit property "pageYOffset" with the proper type
+PASS Window interface: window must inherit property "scroll(ScrollToOptions)" with the proper type
+PASS Window interface: calling scroll(ScrollToOptions) on window with too few arguments must throw TypeError
+PASS Window interface: window must inherit property "scroll(unrestricted double, unrestricted double)" with the proper type
+PASS Window interface: calling scroll(unrestricted double, unrestricted double) on window with too few arguments must throw TypeError
+PASS Window interface: window must inherit property "scrollTo(ScrollToOptions)" with the proper type
+PASS Window interface: calling scrollTo(ScrollToOptions) on window with too few arguments must throw TypeError
+PASS Window interface: window must inherit property "scrollTo(unrestricted double, unrestricted double)" with the proper type
+PASS Window interface: calling scrollTo(unrestricted double, unrestricted double) on window with too few arguments must throw TypeError
+PASS Window interface: window must inherit property "scrollBy(ScrollToOptions)" with the proper type
+PASS Window interface: calling scrollBy(ScrollToOptions) on window with too few arguments must throw TypeError
+PASS Window interface: window must inherit property "scrollBy(unrestricted double, unrestricted double)" with the proper type
+PASS Window interface: calling scrollBy(unrestricted double, unrestricted double) on window with too few arguments must throw TypeError
+PASS Window interface: window must inherit property "screenX" with the proper type
+PASS Window interface: window must inherit property "screenLeft" with the proper type
+PASS Window interface: window must inherit property "screenY" with the proper type
+PASS Window interface: window must inherit property "screenTop" with the proper type
+PASS Window interface: window must inherit property "outerWidth" with the proper type
+PASS Window interface: window must inherit property "outerHeight" with the proper type
+PASS Window interface: window must inherit property "devicePixelRatio" with the proper type
+PASS Document interface: operation elementFromPoint(double, double)
+PASS Document interface: operation elementsFromPoint(double, double)
+FAIL Document interface: operation caretPositionFromPoint(double, double) assert_own_property: interface prototype object missing non-static operation expected property "caretPositionFromPoint" missing
+PASS Document interface: attribute scrollingElement
+FAIL Document interface: operation getBoxQuads(BoxQuadOptions) assert_own_property: interface prototype object missing non-static operation expected property "getBoxQuads" missing
+FAIL Document interface: operation convertQuadFromNode(DOMQuadInit, GeometryNode, ConvertCoordinateOptions) assert_own_property: interface prototype object missing non-static operation expected property "convertQuadFromNode" missing
+FAIL Document interface: operation convertRectFromNode(DOMRectReadOnly, GeometryNode, ConvertCoordinateOptions) assert_own_property: interface prototype object missing non-static operation expected property "convertRectFromNode" missing
+FAIL Document interface: operation convertPointFromNode(DOMPointInit, GeometryNode, ConvertCoordinateOptions) assert_own_property: interface prototype object missing non-static operation expected property "convertPointFromNode" missing
+PASS Document interface: document must inherit property "elementFromPoint(double, double)" with the proper type
+PASS Document interface: calling elementFromPoint(double, double) on document with too few arguments must throw TypeError
+PASS Document interface: document must inherit property "elementsFromPoint(double, double)" with the proper type
+PASS Document interface: calling elementsFromPoint(double, double) on document with too few arguments must throw TypeError
+FAIL Document interface: document must inherit property "caretPositionFromPoint(double, double)" with the proper type assert_inherits: property "caretPositionFromPoint" not found in prototype chain
+FAIL Document interface: calling caretPositionFromPoint(double, double) on document with too few arguments must throw TypeError assert_inherits: property "caretPositionFromPoint" not found in prototype chain
+PASS Document interface: document must inherit property "scrollingElement" with the proper type
+FAIL Document interface: document must inherit property "getBoxQuads(BoxQuadOptions)" with the proper type assert_inherits: property "getBoxQuads" not found in prototype chain
+FAIL Document interface: calling getBoxQuads(BoxQuadOptions) on document with too few arguments must throw TypeError assert_inherits: property "getBoxQuads" not found in prototype chain
+FAIL Document interface: document must inherit property "convertQuadFromNode(DOMQuadInit, GeometryNode, ConvertCoordinateOptions)" with the proper type assert_inherits: property "convertQuadFromNode" not found in prototype chain
+FAIL Document interface: calling convertQuadFromNode(DOMQuadInit, GeometryNode, ConvertCoordinateOptions) on document with too few arguments must throw TypeError assert_inherits: property "convertQuadFromNode" not found in prototype chain
+FAIL Document interface: document must inherit property "convertRectFromNode(DOMRectReadOnly, GeometryNode, ConvertCoordinateOptions)" with the proper type assert_inherits: property "convertRectFromNode" not found in prototype chain
+FAIL Document interface: calling convertRectFromNode(DOMRectReadOnly, GeometryNode, ConvertCoordinateOptions) on document with too few arguments must throw TypeError assert_inherits: property "convertRectFromNode" not found in prototype chain
+FAIL Document interface: document must inherit property "convertPointFromNode(DOMPointInit, GeometryNode, ConvertCoordinateOptions)" with the proper type assert_inherits: property "convertPointFromNode" not found in prototype chain
+FAIL Document interface: calling convertPointFromNode(DOMPointInit, GeometryNode, ConvertCoordinateOptions) on document with too few arguments must throw TypeError assert_inherits: property "convertPointFromNode" not found in prototype chain
+PASS Element interface: operation getClientRects()
+PASS Element interface: operation getBoundingClientRect()
+PASS Element interface: operation scrollIntoView([object Object],[object Object])
+PASS Element interface: operation scroll(ScrollToOptions)
+PASS Element interface: operation scroll(unrestricted double, unrestricted double)
+PASS Element interface: operation scrollTo(ScrollToOptions)
+PASS Element interface: operation scrollTo(unrestricted double, unrestricted double)
+PASS Element interface: operation scrollBy(ScrollToOptions)
+PASS Element interface: operation scrollBy(unrestricted double, unrestricted double)
+PASS Element interface: attribute scrollTop
+PASS Element interface: attribute scrollLeft
+PASS Element interface: attribute scrollWidth
+PASS Element interface: attribute scrollHeight
+PASS Element interface: attribute clientTop
+PASS Element interface: attribute clientLeft
+PASS Element interface: attribute clientWidth
+PASS Element interface: attribute clientHeight
+FAIL Element interface: operation getBoxQuads(BoxQuadOptions) assert_own_property: interface prototype object missing non-static operation expected property "getBoxQuads" missing
+FAIL Element interface: operation convertQuadFromNode(DOMQuadInit, GeometryNode, ConvertCoordinateOptions) assert_own_property: interface prototype object missing non-static operation expected property "convertQuadFromNode" missing
+FAIL Element interface: operation convertRectFromNode(DOMRectReadOnly, GeometryNode, ConvertCoordinateOptions) assert_own_property: interface prototype object missing non-static operation expected property "convertRectFromNode" missing
+FAIL Element interface: operation convertPointFromNode(DOMPointInit, GeometryNode, ConvertCoordinateOptions) assert_own_property: interface prototype object missing non-static operation expected property "convertPointFromNode" missing
+PASS Element interface: document.createElementNS("x", "y") must inherit property "getClientRects()" with the proper type
+PASS Element interface: document.createElementNS("x", "y") must inherit property "getBoundingClientRect()" with the proper type
+PASS Element interface: document.createElementNS("x", "y") must inherit property "scrollIntoView([object Object],[object Object])" with the proper type
+PASS Element interface: calling scrollIntoView([object Object],[object Object]) on document.createElementNS("x", "y") with too few arguments must throw TypeError
+PASS Element interface: document.createElementNS("x", "y") must inherit property "scroll(ScrollToOptions)" with the proper type
+PASS Element interface: calling scroll(ScrollToOptions) on document.createElementNS("x", "y") with too few arguments must throw TypeError
+PASS Element interface: document.createElementNS("x", "y") must inherit property "scroll(unrestricted double, unrestricted double)" with the proper type
+PASS Element interface: calling scroll(unrestricted double, unrestricted double) on document.createElementNS("x", "y") with too few arguments must throw TypeError
+PASS Element interface: document.createElementNS("x", "y") must inherit property "scrollTo(ScrollToOptions)" with the proper type
+PASS Element interface: calling scrollTo(ScrollToOptions) on document.createElementNS("x", "y") with too few arguments must throw TypeError
+PASS Element interface: document.createElementNS("x", "y") must inherit property "scrollTo(unrestricted double, unrestricted double)" with the proper type
+PASS Element interface: calling scrollTo(unrestricted double, unrestricted double) on document.createElementNS("x", "y") with too few arguments must throw TypeError
+PASS Element interface: document.createElementNS("x", "y") must inherit property "scrollBy(ScrollToOptions)" with the proper type
+PASS Element interface: calling scrollBy(ScrollToOptions) on document.createElementNS("x", "y") with too few arguments must throw TypeError
+PASS Element interface: document.createElementNS("x", "y") must inherit property "scrollBy(unrestricted double, unrestricted double)" with the proper type
+PASS Element interface: calling scrollBy(unrestricted double, unrestricted double) on document.createElementNS("x", "y") with too few arguments must throw TypeError
+PASS Element interface: document.createElementNS("x", "y") must inherit property "scrollTop" with the proper type
+PASS Element interface: document.createElementNS("x", "y") must inherit property "scrollLeft" with the proper type
+PASS Element interface: document.createElementNS("x", "y") must inherit property "scrollWidth" with the proper type
+PASS Element interface: document.createElementNS("x", "y") must inherit property "scrollHeight" with the proper type
+PASS Element interface: document.createElementNS("x", "y") must inherit property "clientTop" with the proper type
+PASS Element interface: document.createElementNS("x", "y") must inherit property "clientLeft" with the proper type
+PASS Element interface: document.createElementNS("x", "y") must inherit property "clientWidth" with the proper type
+PASS Element interface: document.createElementNS("x", "y") must inherit property "clientHeight" with the proper type
+FAIL Element interface: document.createElementNS("x", "y") must inherit property "getBoxQuads(BoxQuadOptions)" with the proper type assert_inherits: property "getBoxQuads" not found in prototype chain
+FAIL Element interface: calling getBoxQuads(BoxQuadOptions) on document.createElementNS("x", "y") with too few arguments must throw TypeError assert_inherits: property "getBoxQuads" not found in prototype chain
+FAIL Element interface: document.createElementNS("x", "y") must inherit property "convertQuadFromNode(DOMQuadInit, GeometryNode, ConvertCoordinateOptions)" with the proper type assert_inherits: property "convertQuadFromNode" not found in prototype chain
+FAIL Element interface: calling convertQuadFromNode(DOMQuadInit, GeometryNode, ConvertCoordinateOptions) on document.createElementNS("x", "y") with too few arguments must throw TypeError assert_inherits: property "convertQuadFromNode" not found in prototype chain
+FAIL Element interface: document.createElementNS("x", "y") must inherit property "convertRectFromNode(DOMRectReadOnly, GeometryNode, ConvertCoordinateOptions)" with the proper type assert_inherits: property "convertRectFromNode" not found in prototype chain
+FAIL Element interface: calling convertRectFromNode(DOMRectReadOnly, GeometryNode, ConvertCoordinateOptions) on document.createElementNS("x", "y") with too few arguments must throw TypeError assert_inherits: property "convertRectFromNode" not found in prototype chain
+FAIL Element interface: document.createElementNS("x", "y") must inherit property "convertPointFromNode(DOMPointInit, GeometryNode, ConvertCoordinateOptions)" with the proper type assert_inherits: property "convertPointFromNode" not found in prototype chain
+FAIL Element interface: calling convertPointFromNode(DOMPointInit, GeometryNode, ConvertCoordinateOptions) on document.createElementNS("x", "y") with too few arguments must throw TypeError assert_inherits: property "convertPointFromNode" not found in prototype chain
+FAIL Text interface: operation getBoxQuads(BoxQuadOptions) assert_own_property: interface prototype object missing non-static operation expected property "getBoxQuads" missing
+FAIL Text interface: operation convertQuadFromNode(DOMQuadInit, GeometryNode, ConvertCoordinateOptions) assert_own_property: interface prototype object missing non-static operation expected property "convertQuadFromNode" missing
+FAIL Text interface: operation convertRectFromNode(DOMRectReadOnly, GeometryNode, ConvertCoordinateOptions) assert_own_property: interface prototype object missing non-static operation expected property "convertRectFromNode" missing
+FAIL Text interface: operation convertPointFromNode(DOMPointInit, GeometryNode, ConvertCoordinateOptions) assert_own_property: interface prototype object missing non-static operation expected property "convertPointFromNode" missing
+FAIL Text interface: document.createTextNode("x") must inherit property "getBoxQuads(BoxQuadOptions)" with the proper type assert_inherits: property "getBoxQuads" not found in prototype chain
+FAIL Text interface: calling getBoxQuads(BoxQuadOptions) on document.createTextNode("x") with too few arguments must throw TypeError assert_inherits: property "getBoxQuads" not found in prototype chain
+FAIL Text interface: document.createTextNode("x") must inherit property "convertQuadFromNode(DOMQuadInit, GeometryNode, ConvertCoordinateOptions)" with the proper type assert_inherits: property "convertQuadFromNode" not found in prototype chain
+FAIL Text interface: calling convertQuadFromNode(DOMQuadInit, GeometryNode, ConvertCoordinateOptions) on document.createTextNode("x") with too few arguments must throw TypeError assert_inherits: property "convertQuadFromNode" not found in prototype chain
+FAIL Text interface: document.createTextNode("x") must inherit property "convertRectFromNode(DOMRectReadOnly, GeometryNode, ConvertCoordinateOptions)" with the proper type assert_inherits: property "convertRectFromNode" not found in prototype chain
+FAIL Text interface: calling convertRectFromNode(DOMRectReadOnly, GeometryNode, ConvertCoordinateOptions) on document.createTextNode("x") with too few arguments must throw TypeError assert_inherits: property "convertRectFromNode" not found in prototype chain
+FAIL Text interface: document.createTextNode("x") must inherit property "convertPointFromNode(DOMPointInit, GeometryNode, ConvertCoordinateOptions)" with the proper type assert_inherits: property "convertPointFromNode" not found in prototype chain
+FAIL Text interface: calling convertPointFromNode(DOMPointInit, GeometryNode, ConvertCoordinateOptions) on document.createTextNode("x") with too few arguments must throw TypeError assert_inherits: property "convertPointFromNode" not found in prototype chain
+PASS Range interface: operation getClientRects()
+PASS Range interface: operation getBoundingClientRect()
+PASS Range interface: new Range() must inherit property "getClientRects()" with the proper type
+PASS Range interface: new Range() must inherit property "getBoundingClientRect()" with the proper type
+Harness: the test ran to completion.
+

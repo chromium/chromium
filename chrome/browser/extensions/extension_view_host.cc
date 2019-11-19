@@ -12,17 +12,19 @@
 #include "chrome/browser/extensions/extension_view.h"
 #include "chrome/browser/extensions/window_controller.h"
 #include "chrome/browser/file_select_helper.h"
-#include "chrome/browser/performance_manager/performance_manager_tab_helper.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/color_chooser.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
 #include "components/autofill/core/browser/autofill_manager.h"
+#include "components/performance_manager/performance_manager_tab_helper.h"
+#include "components/performance_manager/public/performance_manager.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/browser/file_select_listener.h"
 #include "content/public/browser/keyboard_event_processing_result.h"
 #include "content/public/browser/notification_source.h"
+#include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/web_contents.h"
@@ -82,8 +84,22 @@ ExtensionViewHost::ExtensionViewHost(
       autofill::ChromeAutofillClient::FromWebContents(host_contents()),
       g_browser_process->GetApplicationLocale(),
       autofill::AutofillManager::ENABLE_AUTOFILL_DOWNLOAD_MANAGER);
-  performance_manager::PerformanceManagerTabHelper::CreateForWebContents(
-      host_contents());
+  if (performance_manager::PerformanceManager::IsAvailable()) {
+    performance_manager::PerformanceManagerTabHelper::CreateForWebContents(
+        host_contents());
+  }
+
+  // The popup itself cannot be zoomed, but we must specify a zoom level to use.
+  // Otherwise, if a user zooms a page of the same extension, the popup would
+  // use the per-origin zoom level.
+  if (host_type == VIEW_TYPE_EXTENSION_POPUP) {
+    content::HostZoomMap* zoom_map =
+        content::HostZoomMap::GetForWebContents(host_contents());
+    zoom_map->SetTemporaryZoomLevel(
+        host_contents()->GetRenderViewHost()->GetProcess()->GetID(),
+        host_contents()->GetRenderViewHost()->GetRoutingID(),
+        zoom_map->GetDefaultZoomLevel());
+  }
 }
 
 ExtensionViewHost::~ExtensionViewHost() {

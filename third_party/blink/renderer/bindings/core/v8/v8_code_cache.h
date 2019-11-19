@@ -12,7 +12,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding_macros.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "v8/include/v8.h"
 
@@ -27,7 +27,7 @@ class CachedMetadata;
 class KURL;
 class SingleCachedMetadataHandler;
 class ScriptSourceCode;
-class ScriptModuleProduceCacheData;
+class ModuleRecordProduceCacheData;
 
 class CORE_EXPORT V8CodeCache final {
   STATIC_ONLY(V8CodeCache);
@@ -72,7 +72,7 @@ class CORE_EXPORT V8CodeCache final {
                            const ScriptSourceCode&,
                            ProduceCacheOptions);
   static void ProduceCache(v8::Isolate*,
-                           ScriptModuleProduceCacheData*,
+                           ModuleRecordProduceCacheData*,
                            size_t source_text_length,
                            const KURL& source_url,
                            const WTF::TextPosition& source_start_position);

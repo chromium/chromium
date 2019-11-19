@@ -7,7 +7,7 @@
 #include <string>
 
 #include "components/web_cache/browser/web_cache_manager.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using base::Time;
@@ -93,8 +93,10 @@ class WebCacheManagerTest : public testing::Test {
   WebCacheManager* manager() { return &manager_; }
 
  private:
+  // Create the environment before creating the WebCacheManager, because the
+  // latter depends on the UI thread to have been set up correctly.
+  content::BrowserTaskEnvironment task_environment_;
   WebCacheManager manager_;
-  content::TestBrowserThreadBundle test_browser_thread_bundle_;
 };
 
 // static

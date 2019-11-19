@@ -15,6 +15,7 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/optional.h"
+#include "components/autofill/core/common/mojom/autofill_types.mojom.h"
 #include "components/autofill/core/common/password_form.h"
 #include "components/autofill/core/common/signatures_util.h"
 #include "components/password_manager/core/browser/password_form_user_action.h"
@@ -29,7 +30,6 @@ struct FormData;
 
 namespace password_manager {
 
-class FormFetcher;
 struct InteractionsStats;
 
 // The pupose of this class is to record various types of metrics about the
@@ -91,24 +91,6 @@ class PasswordFormMetricsRecorder
     kManagerFillEventBlockedOnInteraction,
     // A credential was autofilled into a form.
     kManagerFillEventAutofilled
-  };
-
-  // Enumerates whether there were `suppressed` credentials. These are stored
-  // credentials that were not filled, even though they might be related to the
-  // observed form. See FormFetcher::GetSuppressed* for details.
-  //
-  // If suppressed credentials exist, it is also recorded whether their username
-  // and/or password matched those submitted.
-  enum SuppressedAccountExistence {
-    kSuppressedAccountNone,
-    // Recorded when there exists a suppressed account, but there was no
-    // submitted form to compare its username and password to.
-    kSuppressedAccountExists,
-    // Recorded when there was a submitted form.
-    kSuppressedAccountExistsDifferentUsername,
-    kSuppressedAccountExistsSameUsername,
-    kSuppressedAccountExistsSameUsernameAndPassword,
-    kSuppressedAccountExistenceMax,
   };
 
   // What the form is used for. kSubmittedFormTypeUnspecified is only set before
@@ -239,10 +221,13 @@ class PasswordFormMetricsRecorder
     // Form is suspected to be a password change form. (Only recorded for old
     // form parser)
     kFormNotGoodForFilling = 3,
-    // User is on an HTTP site where passwords are filled on account selection
-    // (FOAS).
-    kFoasOnHTTP = 4,
-    kMaxValue = kFoasOnHTTP,
+    // User is on a site with an insecure main frame origin.
+    kInsecureOrigin = 4,
+    // The Touch To Fill feature is enabled.
+    kTouchToFill = 5,
+    // Show suggestion on account selection feature is enabled.
+    kFoasFeature = 6,
+    kMaxValue = kFoasFeature,
   };
 
   // This metric records the user experience with the passwords filling. The
@@ -276,6 +261,31 @@ class PasswordFormMetricsRecorder
     kMaxValue = kNoSavedCredentialsAndBlacklistedBySmartBubble,
   };
 
+  // Records whether a password hash was saved or not on Chrome sign-in page.
+  enum class ChromeSignInPageHashSaved {
+    kPasswordTypedHashNotSaved = 0,
+    kHashSaved = 1,
+    kMaxValue = kHashSaved,
+  };
+
+  // Records user actions when Chrome suggests usernames on a page which are
+  // considered to be username first flow.
+  enum class SavingOnUsernameFirstFlow {
+    kSaved = 0,
+    kSavedWithEditedUsername = 1,
+    kNotSaved = 2,
+    kMaxValue = kNotSaved,
+  };
+
+  // Used in UMA histogram, please do NOT reorder.
+  // Metric: "PasswordManager.JavaScriptOnlyValueInSubmittedForm"
+  enum class JsOnlyInput {
+    kOnlyJsInputNoFocus = 0,
+    kOnlyJsInputWithFocus = 1,
+    kAutofillOrUserInput = 2,
+    kMaxValue = kAutofillOrUserInput,
+  };
+
   // The maximum number of combinations of the ManagerAction, UserAction and
   // SubmitResult enums.
   // This is used when recording the actions taken by the form in UMA.
@@ -287,26 +297,11 @@ class PasswordFormMetricsRecorder
       kManagerActionNewMax * static_cast<int>(UserAction::kMax) *
       kSubmitResultMax;
 
-  // The maximum number of combinations recorded into histograms in the
-  // PasswordManager.SuppressedAccount.* family.
-  static constexpr int kMaxSuppressedAccountStats =
-      kSuppressedAccountExistenceMax *
-      PasswordFormMetricsRecorder::kManagerActionNewMax *
-      static_cast<int>(UserAction::kMax) *
-      PasswordFormMetricsRecorder::kSubmitResultMax;
-
   // Called if the user could generate a password for this form.
   void MarkGenerationAvailable();
 
   // Stores the user action associated with a generated password.
   void SetGeneratedPasswordStatus(GeneratedPasswordStatus status);
-
-  // Reports the priority of a PasswordGenerationRequirementsSpec for a
-  // generated password. This can be used for debugging as a 0 means that
-  // no spec was used, a 10 means that the spec came from autofill and was crowd
-  // sourced, a 20 means that it was overrideen per domain and a 30 means that
-  // is was overridden for the form.
-  void ReportSpecPriorityForGeneratedPassword(uint32_t spec_priority);
 
   // Stores the password manager action. During destruction the last
   // set value will be logged.
@@ -316,8 +311,7 @@ class PasswordFormMetricsRecorder
   // matches. Also inspects |manager_action_| to correctly detect if the
   // user chose a credential.
   void CalculateUserAction(
-      const std::map<base::string16, const autofill::PasswordForm*>&
-          best_matches,
+      const std::vector<const autofill::PasswordForm*>& best_matches,
       const autofill::PasswordForm& submitted_form);
 
   // Allow tests to explicitly set a value for |user_action_|.
@@ -340,17 +334,8 @@ class PasswordFormMetricsRecorder
 
   // Call this when a password is saved to indicate which path led to
   // submission.
-  void SetSubmissionIndicatorEvent(autofill::SubmissionIndicatorEvent event);
-
-  // Records all histograms in the PasswordManager.SuppressedAccount.* family.
-  // Takes the FormFetcher intance which owns the login data from PasswordStore.
-  // |pending_credentials| stores credentials when the form was submitted but
-  // success was still unknown. It contains credentials that are ready to be
-  // written (saved or updated) to a password store.
-  void RecordHistogramsOnSuppressedAccounts(
-      bool observed_form_origin_has_cryptographic_scheme,
-      const FormFetcher& form_fetcher,
-      const autofill::PasswordForm& pending_credentials);
+  void SetSubmissionIndicatorEvent(
+      autofill::mojom::SubmissionIndicatorEvent event);
 
   // Records the event that a password bubble was shown.
   void RecordPasswordBubbleShown(
@@ -378,14 +363,6 @@ class PasswordFormMetricsRecorder
   // Records a low entropy hash of the form signature in order to be able to
   // distinguish two forms on the same site.
   void RecordFormSignature(autofill::FormSignature form_signature);
-
-  // Records old and new form parsings comparison result.
-  void RecordParsingsComparisonResult(
-      ParsingComparisonResult comparison_result);
-
-  // Records the comparison of the old and new password form parsing for saving.
-  // |comparison_result| is a bitmask of values from ParsingOnSavingDifference.
-  void RecordParsingOnSavingDifference(uint64_t comparison_result);
 
   // Records the readonly status encoded with parsing success after parsing for
   // filling. The |value| is constructed as follows: The least significant bit
@@ -416,7 +393,28 @@ class PasswordFormMetricsRecorder
       const autofill::FormData& submitted_form,
       const std::set<base::string16>& saved_usernames,
       const std::set<base::string16>& saved_passwords,
+      bool is_blacklisted,
       const std::vector<InteractionsStats>& interactions_stats);
+
+  // Calculates whether all field values in |submitted_form| came from
+  // JavaScript. The result is stored in |js_only_input_|.
+  void CalculateJsOnlyInput(const autofill::FormData& submitted_form);
+
+  void set_user_typed_password_on_chrome_sign_in_page() {
+    user_typed_password_on_chrome_sign_in_page_ = true;
+  }
+
+  void set_password_hash_saved_on_chrome_sing_in_page() {
+    password_hash_saved_on_chrome_sing_in_page_ = true;
+  }
+
+  void set_possible_username_used(bool value) {
+    possible_username_used_ = value;
+  }
+
+  void set_username_updated_in_bubble(bool value) {
+    username_updated_in_bubble_ = value;
+  }
 
  private:
   friend class base::RefCounted<PasswordFormMetricsRecorder>;
@@ -440,29 +438,6 @@ class PasswordFormMetricsRecorder
   // UMA.
   int GetActionsTaken() const;
 
-  // When supplied with the list of all |suppressed_forms| that belong to
-  // certain suppressed credential type (see FormFetcher::GetSuppressed*),
-  // filters that list down to forms whose type matches |manual_or_generated|,
-  // and selects the suppressed account that matches |pending_credentials| most
-  // closely. |pending_credentials| stores credentials when the form was
-  // submitted but success was still unknown. It contains credentials that are
-  // ready to be written (saved or updated) to a password store.
-  SuppressedAccountExistence GetBestMatchingSuppressedAccount(
-      const std::vector<const autofill::PasswordForm*>& suppressed_forms,
-      autofill::PasswordForm::Type manual_or_generated,
-      const autofill::PasswordForm& pending_credentials) const;
-
-  // Encodes a UMA histogram sample for |best_matching_account| and
-  // GetActionsTakenNew(). This is a mixed-based representation of a combination
-  // of four attributes:
-  //  -- whether there were suppressed credentials (and if so, their relation to
-  //     the submitted username/password).
-  //  -- whether the |observed_form_| got ultimately submitted
-  //  -- what action the password manager performed (|manager_action_|),
-  //  -- and what action the user performed (|user_action_|_).
-  int GetHistogramSampleForSuppressedAccounts(
-      SuppressedAccountExistence best_matching_account) const;
-
   // True if the main frame's visible URL, at the time this PasswordFormManager
   // was created, is secure.
   const bool is_main_frame_secure_;
@@ -473,8 +448,6 @@ class PasswordFormMetricsRecorder
   // Contains the generated password's status, which resulted from a user
   // action.
   base::Optional<GeneratedPasswordStatus> generated_password_status_;
-
-  base::Optional<uint32_t> spec_priority_of_generated_password_;
 
   // Tracks which bubble is currently being displayed to the user.
   CurrentBubbleOfInterest current_bubble_ = CurrentBubbleOfInterest::kNone;
@@ -524,7 +497,15 @@ class PasswordFormMetricsRecorder
 
   bool recorded_wait_for_username_reason_ = false;
 
+  bool user_typed_password_on_chrome_sign_in_page_ = false;
+  bool password_hash_saved_on_chrome_sing_in_page_ = false;
+
   base::Optional<FillingAssistance> filling_assistance_;
+
+  bool possible_username_used_ = false;
+  bool username_updated_in_bubble_ = false;
+
+  base::Optional<JsOnlyInput> js_only_input_;
 
   DISALLOW_COPY_AND_ASSIGN(PasswordFormMetricsRecorder);
 };

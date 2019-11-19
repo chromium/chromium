@@ -10,10 +10,10 @@
 #include <memory>
 #include <unordered_map>
 
+#include "base/component_export.h"
 #include "base/macros.h"
 #include "base/synchronization/lock.h"
 #include "build/build_config.h"
-#include "ui/base/x/ui_base_x_export.h"
 #include "ui/gfx/x/x11.h"
 #include "ui/gfx/x/x11_types.h"
 
@@ -30,26 +30,28 @@ namespace ui {
 // Get the XRENDER format id for ARGB32 (Skia's format).
 //
 // NOTE:Currently this don't support multiple screens/displays.
-UI_BASE_X_EXPORT XRenderPictFormat* GetRenderARGB32Format(Display* dpy);
+COMPONENT_EXPORT(UI_BASE_X)
+XRenderPictFormat* GetRenderARGB32Format(Display* dpy);
 
 // --------------------------------------------------------------------------
 // X11 error handling.
 // Sets the X Error Handlers. Passing NULL for either will enable the default
 // error handler, which if called will log the error and abort the process.
-UI_BASE_X_EXPORT void SetX11ErrorHandlers(XErrorHandler error_handler,
-                                          XIOErrorHandler io_error_handler);
+COMPONENT_EXPORT(UI_BASE_X)
+void SetX11ErrorHandlers(XErrorHandler error_handler,
+                         XIOErrorHandler io_error_handler);
 
 // NOTE: This function should not be called directly from the
 // X11 Error handler because it queries the server to decode the
 // error message, which may trigger other errors. A suitable workaround
 // is to post a task in the error handler to call this function.
-UI_BASE_X_EXPORT void LogErrorEventDescription(Display* dpy,
-                                               const XErrorEvent& error_event);
+COMPONENT_EXPORT(UI_BASE_X)
+void LogErrorEventDescription(Display* dpy, const XErrorEvent& error_event);
 
 // --------------------------------------------------------------------------
 // Selects a visual with a preference for alpha support on compositing window
 // managers.
-class UI_BASE_X_EXPORT XVisualManager {
+class COMPONENT_EXPORT(UI_BASE_X) XVisualManager {
  public:
   static XVisualManager* GetInstance();
 
@@ -59,7 +61,13 @@ class UI_BASE_X_EXPORT XVisualManager {
                              Visual** visual,
                              int* depth,
                              Colormap* colormap,
-                             bool* using_argb_visual);
+                             bool* visual_has_alpha);
+
+  bool GetVisualInfo(VisualID visual_id,
+                     Visual** visual,
+                     int* depth,
+                     Colormap* colormap,
+                     bool* visual_has_alpha);
 
   // Called by GpuDataManagerImplPrivate when GPUInfo becomes available.  It is
   // necessary for the GPU process to find out which visuals are best for GL
@@ -91,6 +99,12 @@ class UI_BASE_X_EXPORT XVisualManager {
   };
 
   XVisualManager();
+
+  bool GetVisualInfoImpl(VisualID visual_id,
+                         Visual** visual,
+                         int* depth,
+                         Colormap* colormap,
+                         bool* visual_has_alpha);
 
   mutable base::Lock lock_;
 

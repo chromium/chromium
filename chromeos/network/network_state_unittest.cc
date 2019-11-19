@@ -172,7 +172,8 @@ TEST_F(NetworkStateTest, CaptivePortalState) {
   EXPECT_FALSE(network_state_.is_captive_portal());
 
   // State == portal, kPortalDetection* not set -> is_captive_portal = true
-  EXPECT_TRUE(SetStringProperty(shill::kStateProperty, shill::kStatePortal));
+  EXPECT_TRUE(
+      SetStringProperty(shill::kStateProperty, shill::kStateNoConnectivity));
   SignalInitialPropertiesReceived();
   EXPECT_TRUE(network_state_.is_captive_portal());
 
@@ -308,21 +309,21 @@ TEST_F(NetworkStateTest, ConnectionStateNotVisible) {
   network_state_.set_visible(false);
 
   network_state_.SetConnectionState(shill::kStateConfiguration);
-  EXPECT_EQ(network_state_.connection_state(), shill::kStateDisconnect);
+  EXPECT_EQ(network_state_.connection_state(), shill::kStateIdle);
   EXPECT_FALSE(network_state_.IsConnectingState());
 
   network_state_.SetConnectionState(shill::kStateOnline);
-  EXPECT_EQ(network_state_.connection_state(), shill::kStateDisconnect);
+  EXPECT_EQ(network_state_.connection_state(), shill::kStateIdle);
   EXPECT_FALSE(network_state_.IsConnectedState());
 
   network_state_.SetConnectionState(shill::kStateConfiguration);
-  EXPECT_EQ(network_state_.connection_state(), shill::kStateDisconnect);
+  EXPECT_EQ(network_state_.connection_state(), shill::kStateIdle);
   EXPECT_FALSE(network_state_.IsConnectingState());
 }
 
 TEST_F(NetworkStateTest, TetherProperties) {
   network_state_.set_type_for_testing(kTypeTether);
-  network_state_.set_carrier("Project Fi");
+  network_state_.set_tether_carrier("Project Fi");
   network_state_.set_battery_percentage(85);
   network_state_.set_tether_has_connected_to_host(true);
   network_state_.set_signal_strength(75);

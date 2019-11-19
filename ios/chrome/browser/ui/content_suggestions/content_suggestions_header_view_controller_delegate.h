@@ -7,6 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
+@protocol UserAccountImageUpdateDelegate;
+
 // Delegate for the ContentSuggestionsHeaderViewController.
 @protocol ContentSuggestionsHeaderViewControllerDelegate
 
@@ -15,6 +17,10 @@
 
 // Returns whether the collection is scrolled to its top.
 - (BOOL)isScrolledToTop;
+
+// Register |imageUpdater| object as delegate to refresh UI when user account
+// avatar is changed.
+- (void)registerImageUpdater:(id<UserAccountImageUpdateDelegate>)imageUpdater;
 
 // Returns whether calls that may trigger a URL load are allowed, such as a
 // voice search or focusing the omnibox via the fakebox.

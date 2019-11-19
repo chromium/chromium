@@ -50,7 +50,7 @@ std::unique_ptr<KeyedService> CreateTestingTemplateURLService(
 class SearchEngineTabHelperTest : public ChromeWebTest {
  protected:
   SearchEngineTabHelperTest()
-      : ChromeWebTest(web::TestWebThreadBundle::Options::IO_MAINLOOP) {}
+      : ChromeWebTest(web::WebTaskEnvironment::Options::IO_MAINLOOP) {}
 
   void SetUp() override {
     WebTestWithWebState::SetUp();
@@ -141,6 +141,8 @@ TEST_F(SearchEngineTabHelperTest, AddTemplateURLByOpenSearch) {
   EXPECT_EQ(
       "https://chromium.test/index.php?title=chrooome&search={searchTerms}",
       new_url->data().url());
+  EXPECT_EQ(GURL("https://chromium.test/favicon.ico"),
+            new_url->data().favicon_url);
 }
 
 // Tests that SearchEngineTabHelper can add TemplateURL to TemplateURLService
@@ -186,6 +188,8 @@ TEST_F(SearchEngineTabHelperTest, AddTemplateURLBySearchableURL) {
   EXPECT_EQ(base::UTF8ToUTF16("chromium.test"), new_url->data().keyword());
   EXPECT_EQ(base::UTF8ToUTF16("chromium.test"), new_url->data().short_name());
   EXPECT_EQ(searchable_url.spec(), new_url->data().url());
+  const GURL expected_favicon_url = GURL(page_url.spec() + "favicon.ico");
+  EXPECT_EQ(expected_favicon_url, new_url->data().favicon_url);
 }
 
 // Test fixture for SearchEngineTabHelper class in incognito mode.

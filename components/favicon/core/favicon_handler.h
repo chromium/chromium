@@ -226,7 +226,7 @@ class FaviconHandler {
   void GetFaviconAndUpdateMappingsUnlessIncognito(
       const GURL& icon_url,
       favicon_base::IconType icon_type,
-      const favicon_base::FaviconResultsCallback& callback);
+      favicon_base::FaviconResultsCallback callback);
 
   // See description above class for details.
   void OnFaviconData(const std::vector<favicon_base::FaviconRawBitmapResult>&

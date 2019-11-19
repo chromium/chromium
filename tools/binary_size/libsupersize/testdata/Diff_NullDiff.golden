@@ -3,6 +3,7 @@ Common Metadata:
     elf_build_id=WhatAnAmazingBuildId
     elf_file_name=elf
     elf_mtime={redacted}
+    elf_relocations_count=394087
     git_revision=abc123
     gn_args=var1=true var2="foo"
     linker_name=gold
@@ -20,10 +21,10 @@ Section Sizes (Total=0 bytes (0 bytes)):
     .rodata: 0 bytes (0 bytes) (0.0%)
     .text: 0 bytes (0 bytes) (0.0%)
 
-0 symbols added (+), 0 changed (~), 0 removed (-), 53 unchanged (not shown)
+0 symbols added (+), 0 changed (~), 0 removed (-), 51 unchanged (not shown)
 Added/Removed by section: 
 Of changed symbols, 0 grew, 0 shrank
-Number of unique symbols 50 -> 50 (+0)
+Number of unique symbols 46 -> 46 (+0)
 0 paths added, 0 removed, 0 changed
 
 Showing 0 symbols (0 -> 0 unique) with total pss: 0 bytes

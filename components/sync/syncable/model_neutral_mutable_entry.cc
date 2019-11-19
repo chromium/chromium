@@ -51,7 +51,8 @@ ModelNeutralMutableEntry::ModelNeutralMutableEntry(BaseWriteTransaction* trans,
                                                    ModelType type)
     : Entry(trans), base_write_transaction_(trans) {
   // We allow NIGORI because we allow SyncEncryptionHandler to restore a nigori
-  // across Directory instances (see SyncEncryptionHandler::RestoreNigori).
+  // across Directory instances (see
+  // SyncEncryptionHandler::RestoreNigoriForTesting()).
   if (type != NIGORI)
     DCHECK(IsTypeWithClientGeneratedRoot(type));
   Entry same_type_root(trans, GET_TYPE_ROOT, type);
@@ -235,21 +236,6 @@ void ModelNeutralMutableEntry::PutServerIsDel(bool value) {
     base_write_transaction_->TrackChangesTo(kernel_);
     kernel_->put(SERVER_IS_DEL, value);
     MarkDirty();
-  }
-
-  if (!value || kernel_->ref(IS_UNAPPLIED_UPDATE)) {
-    // Update delete journal for existence status change on server side here
-    // instead of in PutIsDel() because IS_DEL may not be updated due to
-    // early returns when processing updates. And because
-    // UpdateDeleteJournalForServerDelete() checks for SERVER_IS_DEL, it has
-    // to be called on sync thread.
-
-    // Please note that the delete journal applies only to the deletions
-    // originating on the server side (hence the IS_UNAPPLIED_UPDATE check),
-    // but it still makes sense to remove the entry from the delete journal
-    // when it gets undeleted locally.
-    dir()->delete_journal()->UpdateDeleteJournalForServerDelete(
-        base_write_transaction(), old_value, *kernel_);
   }
 }
 

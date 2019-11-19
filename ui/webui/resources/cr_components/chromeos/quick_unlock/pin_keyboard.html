@@ -4,12 +4,12 @@
 
 <link rel="import" href="chrome://resources/html/polymer.html">
 
+<link rel="import" href="chrome://resources/cr_elements/cr_button/cr_button.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_icon_button/cr_icon_button.html">
 <link rel="import" href="chrome://resources/cr_elements/cr_input/cr_input.html">
 <link rel="import" href="chrome://resources/cr_elements/icons.html">
 <link rel="import" href="chrome://resources/cr_elements/shared_vars_css.html">
 <link rel="import" href="chrome://resources/html/i18n_behavior.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/paper-button/paper-button.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/paper-styles/color.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-iconset-svg/iron-iconset-svg.html">
@@ -82,50 +82,44 @@
       }
 
       #backspaceButton {
-        color: var(--pin-keyboard-backspace-color, var(--google-grey-700));
+        --cr-icon-button-color: var(--pin-keyboard-backspace-color,
+            var(--google-grey-700));
+        --cr-icon-button-icon-size: 16px;
+        --cr-icon-button-size: 48px;
         left: 0;
         opacity: var(--pin-keyboard-backspace-opacity, --dark-primary-opacity);
-        padding: 12px;
-        position: absolute;
-        top: 0;
+        position: relative;
+        top: -4px;
       }
 
       #backspaceButton[disabled] {
         opacity: 0.34;
       }
 
-      #backspaceButtonContainer {
-        position: relative;
-        width: var(--backspace-button-width);
-      }
-
-      #backspaceButtonContainer paper-ripple {
-        left: var(--pin-keyboard-backspace-paper-ripple-offset,
-            var(--backspace-button-ripple-left));
-        top: var(--pin-keyboard-backspace-paper-ripple-offset,
-            var(--pin-button-ripple-top));
-      }
-
       .digit-button {
-        --paper-button: {
-          min-width: 0;
-        };
         align-items: center;
         background: none;
-        border-radius: 0;
+        border: 0;
+        box-shadow: none;
         box-sizing: border-box;
         color: var(--google-grey-900);
         display: flex;
         flex-direction: column;
-        height: var(--pin-button-height)
-        justify-content: center;
+        font-weight: 400;
+        height: var(--pin-button-height);
+        justify-content: space-between;
         margin: 0 var(--pin-button-horizontal-margin);
         min-height: 0;
-        opacity: 0.87px;
+        min-width: 0;
+        opacity: 0.87;
         padding: 0;
         width: var(--pin-button-width);
 
         @apply --pin-keyboard-digit-button;
+      }
+
+      :host-context(.focus-outline-visible) .digit-button:focus {
+        font-weight: 500;
       }
 
       .digit-button inner-text {
@@ -147,7 +141,8 @@
       }
 
       paper-ripple {
-        color: var(--google-grey-700);
+        --paper-ripple-opacity: .15;
+        color: var(--google-grey-900);
         height: var(--pin-button-ripple-height);
         left: var(--pin-button-ripple-left);
         top: var(--pin-button-ripple-top);
@@ -181,7 +176,7 @@
         @apply --pin-keyboard-pin-input-style;
       }
 
-      #pinInput[has-content] {
+      #pinInput[make-contrast] {
         --cr-disabled-opacity: var(--dark-primary-opacity);
         opacity: var(--dark-primary-opacity);
       }
@@ -190,108 +185,114 @@
         direction: rtl;
       }
 
-      /* Ensure that all children of paper-button do not consume events. This
+      /* Ensure that all children of cr-button do not consume events. This
        * simplifies the event handler code. */
-      paper-button * {
+      cr-button * {
         pointer-events: none;
       }
     </style>
 
-    <div id="root" on-contextmenu="onContextMenu_" on-tap="onRootTap_">
+    <div id="root" on-tap="onRootTap_">
       <div id="pinInputDiv">
         <cr-input id="pinInput" type="password" value="{{value}}"
-            is-input-rtl$="[[isInputRtl_(value)]]"
-            has-content$="[[hasInput_(value)]]" invalid="[[hasError]]"
+            is-input-rtl$="[[isInputRtl_(value)]]" aria-label="[[ariaLabel]]"
+            make-contrast$="[[hasInputOrFocus_(value, focused_)]]" invalid="[[hasError]]"
             placeholder="[[getInputPlaceholder_(enablePassword,
                 enablePlaceholder)]]"
-            on-keydown="onInputKeyDown_" force-underline$="[[forceUnderline_]]"
+            on-keydown="onInputKeyDown_" force-underline="true"
             disabled="[[isIncognitoUi]]">
         </cr-input>
       </div>
       <slot select="[problem]"></slot>
       <div id="rowsContainer">
         <div class="row">
-          <paper-button class="digit-button" on-tap="onNumberTap_" value="1"
+          <cr-button class="digit-button" on-tap="onNumberTap_" value="1"
               noink>
             <inner-text class="number">[[i18n('pinKeyboard1')]]</inner-text>
-            <inner-text class="letter">&nbsp;</inner-text>
+            <inner-text class="letter"
+                hidden="[[!enableLetters]]">&nbsp;</inner-text>
             <paper-ripple class="circle" center></paper-ripple>
-          </paper-button>
-          <paper-button class="digit-button" on-tap="onNumberTap_" value="2"
+          </cr-button>
+          <cr-button class="digit-button" on-tap="onNumberTap_" value="2"
               noink>
             <inner-text class="number">[[i18n('pinKeyboard2')]]</inner-text>
-            <inner-text class="letter">ABC</inner-text>
+            <inner-text class="letter"
+                hidden="[[!enableLetters]]">ABC</inner-text>
             <paper-ripple class="circle" center></paper-ripple>
-          </paper-button>
-          <paper-button class="digit-button" on-tap="onNumberTap_" value="3"
+          </cr-button>
+          <cr-button class="digit-button" on-tap="onNumberTap_" value="3"
               noink>
             <inner-text class="number">[[i18n('pinKeyboard3')]]</inner-text>
-            <inner-text class="letter">DEF</inner-text>
+            <inner-text class="letter"
+                hidden="[[!enableLetters]]">DEF</inner-text>
             <paper-ripple class="circle" center></paper-ripple>
-          </paper-button>
+          </cr-button>
         </div>
         <div class="row">
-          <paper-button class="digit-button" on-tap="onNumberTap_" value="4"
+          <cr-button class="digit-button" on-tap="onNumberTap_" value="4"
               noink>
             <inner-text class="number">[[i18n('pinKeyboard4')]]</inner-text>
-            <inner-text class="letter">GHI</inner-text>
+            <inner-text class="letter"
+                hidden="[[!enableLetters]]">GHI</inner-text>
             <paper-ripple class="circle" center></paper-ripple>
-          </paper-button>
-          <paper-button class="digit-button" on-tap="onNumberTap_" value="5"
+          </cr-button>
+          <cr-button class="digit-button" on-tap="onNumberTap_" value="5"
               noink>
             <inner-text class="number">[[i18n('pinKeyboard5')]]</inner-text>
-            <inner-text class="letter">JKL</inner-text>
+            <inner-text class="letter"
+                hidden="[[!enableLetters]]">JKL</inner-text>
             <paper-ripple class="circle" center></paper-ripple>
-          </paper-button>
-          <paper-button class="digit-button" on-tap="onNumberTap_" value="6"
+          </cr-button>
+          <cr-button class="digit-button" on-tap="onNumberTap_" value="6"
               noink>
             <inner-text class="number">[[i18n('pinKeyboard6')]]</inner-text>
-            <inner-text class="letter">MNO</inner-text>
+            <inner-text class="letter"
+                hidden="[[!enableLetters]]">MNO</inner-text>
             <paper-ripple class="circle" center></paper-ripple>
-          </paper-button>
+          </cr-button>
         </div>
         <div class="row">
-          <paper-button class="digit-button" on-tap="onNumberTap_" value="7"
+          <cr-button class="digit-button" on-tap="onNumberTap_" value="7"
               noink>
             <inner-text class="number">[[i18n('pinKeyboard7')]]</inner-text>
-            <inner-text class="letter">PQRS</inner-text>
+            <inner-text class="letter"
+                hidden="[[!enableLetters]]">PQRS</inner-text>
             <paper-ripple class="circle" center></paper-ripple>
-          </paper-button>
-          <paper-button class="digit-button" on-tap="onNumberTap_" value="8"
+          </cr-button>
+          <cr-button class="digit-button" on-tap="onNumberTap_" value="8"
               noink>
             <inner-text class="number">[[i18n('pinKeyboard8')]]</inner-text>
-            <inner-text class="letter">TUV</inner-text>
+            <inner-text class="letter"
+                hidden="[[!enableLetters]]">TUV</inner-text>
             <paper-ripple class="circle" center></paper-ripple>
-          </paper-button>
-          <paper-button class="digit-button" on-tap="onNumberTap_" value="9"
+          </cr-button>
+          <cr-button class="digit-button" on-tap="onNumberTap_" value="9"
               noink>
             <inner-text class="number">[[i18n('pinKeyboard9')]]</inner-text>
-            <inner-text class="letter">WXYZ</inner-text>
+            <inner-text class="letter"
+                hidden="[[!enableLetters]]">WXYZ</inner-text>
             <paper-ripple class="circle" center></paper-ripple>
-          </paper-button>
+          </cr-button>
         </div>
         <div class="row bottom-row">
           <div class="digit-button"></div>
-          <paper-button class="digit-button" on-tap="onNumberTap_" value="0"
+          <cr-button class="digit-button" on-tap="onNumberTap_" value="0"
               noink>
             <inner-text class="number">[[i18n('pinKeyboard0')]]</inner-text>
-            <inner-text class="letter">+</inner-text>
+            <inner-text class="letter"
+                hidden="[[!enableLetters]]">+</inner-text>
             <paper-ripple class="circle" center></paper-ripple>
-          </paper-button>
-          <div id="backspaceButtonContainer">
-            <paper-icon-button id="backspaceButton" class="digit-button"
-                disabled$="[[!hasInput_(value)]]"
-                icon="pin-keyboard:backspace"
-                on-tap="onBackspaceTap_"
-                on-pointerdown="onBackspacePointerDown_"
-                on-pointerout="clearAndReset_"
-                on-pointerup="onBackspacePointerUp_"
-                title="[[i18n('pinKeyboardDeleteAccessibleName')]]"
-                noink>
-            </paper-icon-button>
-            <paper-ripple class="circle" center hidden="[[!hasInput_(value)]]">
-            </paper-ripple>
-          </div>
+          </cr-button>
+          <cr-icon-button id="backspaceButton"
+              disabled$="[[!hasInput_(value)]]"
+              iron-icon="pin-keyboard:backspace"
+              on-tap="onBackspaceTap_"
+              on-pointerdown="onBackspacePointerDown_"
+              on-pointerout="clearAndReset_"
+              on-pointerup="onBackspacePointerUp_"
+              on-contextmenu="onBackspaceContextMenu_"
+              title="[[i18n('pinKeyboardDeleteAccessibleName')]]">
+          </cr-icon-button>
         </div>
       </div>
     </div>

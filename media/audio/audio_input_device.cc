@@ -256,7 +256,7 @@ void AudioInputDevice::OnStreamCreated(
   const bool pause_check_during_suspend = true;
 #endif
   alive_checker_ = std::make_unique<AliveChecker>(
-      base::Bind(&AudioInputDevice::DetectedDeadInputStream, this),
+      base::BindRepeating(&AudioInputDevice::DetectedDeadInputStream, this),
       base::TimeDelta::FromSeconds(kCheckMissingCallbacksIntervalSeconds),
       base::TimeDelta::FromSeconds(kMissingCallbacksTimeBeforeErrorSeconds),
       stop_at_first_alive_notification, pause_check_during_suspend);
@@ -460,9 +460,8 @@ void AudioInputDevice::AudioThreadCallback::Process(uint32_t pending_data) {
   const base::TimeTicks now_time = base::TimeTicks::Now();
   DCHECK_GE(now_time, capture_time);
 
-  capture_callback_->Capture(audio_bus,
-                             (now_time - capture_time).InMilliseconds(),
-                             buffer->params.volume, buffer->params.key_pressed);
+  capture_callback_->Capture(audio_bus, capture_time, buffer->params.volume,
+                             buffer->params.key_pressed);
 
   if (++current_segment_id_ >= total_segments_)
     current_segment_id_ = 0u;

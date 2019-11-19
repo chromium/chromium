@@ -1,0 +1,15 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+
+android_resources("java_resources") {
+  # TODO(gayane): remove dependency on chrome/android:chrome_app_java_resources
+  # once strings and common styles move out of chrome/android
+  deps = [
+    "//chrome/android:chrome_app_java_resources",
+  ]
+  resource_dirs = [ "java/res" ]
+  custom_package = "org.chromium.chrome.browser.share.qrcode"
+}

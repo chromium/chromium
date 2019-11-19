@@ -8,6 +8,8 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/values.h"
+#include "url/gurl.h"
+#include "url/origin.h"
 
 namespace blink {
 
@@ -39,7 +41,11 @@ bool OriginPolicyParser::DoParse(base::StringPiece policy_text) {
   base::Value* features = json->FindKey("feature-policy");
   bool features_ok = !features || ParseFeaturePolicies(*features);
 
-  return csp_ok && features_ok;
+  base::Value* first_party_set = json->FindKey("first-party-set");
+  bool first_party_set_ok =
+      !first_party_set || ParseFirstPartySet(*first_party_set);
+
+  return csp_ok && features_ok && first_party_set_ok;
 }
 
 bool OriginPolicyParser::ParseContentSecurityPolicies(
@@ -85,6 +91,36 @@ bool OriginPolicyParser::ParseFeaturePolicy(const base::Value& policy) {
     return false;
 
   policy_->features_.push_back(policy.GetString());
+  return true;
+}
+
+// This will not fail policy parsing, even if the first party set field can't
+// be parsed. Therefore this function always returns true.
+bool OriginPolicyParser::ParseFirstPartySet(
+    const base::Value& first_party_set) {
+  if (!first_party_set.is_list())
+    return true;
+
+  for (const auto& first_party : first_party_set.GetList()) {
+    if (!ParseFirstPartyOrigin(first_party)) {
+      policy_->first_party_set_.clear();
+      return true;
+    }
+  }
+
+  return true;
+}
+
+bool OriginPolicyParser::ParseFirstPartyOrigin(const base::Value& first_party) {
+  if (!first_party.is_string())
+    return false;
+
+  GURL first_party_url(first_party.GetString());
+
+  if (!first_party_url.is_valid() || first_party_url.is_empty())
+    return false;
+
+  policy_->first_party_set_.insert(url::Origin::Create(first_party_url));
   return true;
 }
 

@@ -10,8 +10,8 @@
       {
         "id": "SameSiteStatus",
         "type": "string",
-        "enum": ["no_restriction", "lax", "strict"],
-        "description": "A cookie's 'SameSite' state (https://tools.ietf.org/html/draft-west-first-party-cookies). 'no_restriction' corresponds to a cookie set without a 'SameSite' attribute, 'lax' to 'SameSite=Lax', and 'strict' to 'SameSite=Strict'."
+        "enum": ["no_restriction", "lax", "strict", "unspecified"],
+        "description": "A cookie's 'SameSite' state (https://tools.ietf.org/html/draft-west-first-party-cookies). 'no_restriction' corresponds to a cookie set with 'SameSite=None', 'lax' to 'SameSite=Lax', and 'strict' to 'SameSite=Strict'. 'unspecified' corresponds to a cookie set without the SameSite attribute."
       },
       {
         "id": "Cookie",
@@ -121,7 +121,7 @@
               "path": {"type": "string", "optional": true, "description": "The path of the cookie. Defaults to the path portion of the url parameter."},
               "secure": {"type": "boolean", "optional": true, "description": "Whether the cookie should be marked as Secure. Defaults to false."},
               "httpOnly": {"type": "boolean", "optional": true, "description": "Whether the cookie should be marked as HttpOnly. Defaults to false."},
-              "sameSite": {"$ref": "SameSiteStatus", "optional": true, "description": "The cookie's same-site status: defaults to 'no_restriction'."},
+              "sameSite": {"$ref": "SameSiteStatus", "optional": true, "description": "The cookie's same-site status. Defaults to \"unspecified\", i.e., if omitted, the cookie is set without specifying a SameSite attribute."},
               "expirationDate": {"type": "number", "optional": true, "description": "The expiration date of the cookie as the number of seconds since the UNIX epoch. If omitted, the cookie becomes a session cookie."},
               "storeId": {"type": "string", "optional": true, "description": "The ID of the cookie store in which to set the cookie. By default, the cookie is set in the current execution context's cookie store."}
             }

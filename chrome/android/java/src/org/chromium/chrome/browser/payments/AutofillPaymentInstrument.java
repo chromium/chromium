@@ -5,19 +5,23 @@
 package org.chromium.chrome.browser.payments;
 
 import android.content.Context;
-import android.support.annotation.Nullable;
 import android.support.v7.content.res.AppCompatResources;
 import android.text.TextUtils;
 import android.util.JsonWriter;
 
+import androidx.annotation.IntDef;
+import androidx.annotation.Nullable;
+
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeActivity;
+import org.chromium.chrome.browser.ChromeFeatureList;
 import org.chromium.chrome.browser.autofill.CardType;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.FullCardRequestDelegate;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.NormalizedAddressRequestDelegate;
+import org.chromium.components.payments.ErrorStrings;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.payments.mojom.PaymentDetailsModifier;
 import org.chromium.payments.mojom.PaymentItem;
@@ -25,6 +29,8 @@ import org.chromium.payments.mojom.PaymentMethodData;
 
 import java.io.IOException;
 import java.io.StringWriter;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -35,6 +41,24 @@ import java.util.Set;
  */
 public class AutofillPaymentInstrument extends PaymentInstrument
         implements FullCardRequestDelegate, NormalizedAddressRequestDelegate {
+    // Bit field values are identical to CreditCardCompletionStatus fields in
+    // autofill_card_validation.h. Please modify autofill_card_validation.h after changing these
+    // bits since missing fields on both Android and Desktop are recorded in the same UMA metric:
+    // PaymentRequest.MissingPaymentFields.
+    @IntDef({CompletionStatus.COMPLETE, CompletionStatus.CREDIT_CARD_EXPIRED,
+            CompletionStatus.CREDIT_CARD_NO_CARDHOLDER, CompletionStatus.CREDIT_CARD_NO_NUMBER,
+            CompletionStatus.CREDIT_CARD_NO_BILLING_ADDRESS,
+            CompletionStatus.CREDIT_CARD_TYPE_MISMATCH})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface CompletionStatus {
+        int COMPLETE = 0;
+        int CREDIT_CARD_EXPIRED = 1 << 0;
+        int CREDIT_CARD_NO_CARDHOLDER = 1 << 1;
+        int CREDIT_CARD_NO_NUMBER = 1 << 2;
+        int CREDIT_CARD_NO_BILLING_ADDRESS = 1 << 3;
+        int CREDIT_CARD_TYPE_MISMATCH = 1 << 4;
+    }
+
     private final WebContents mWebContents;
     private final boolean mIsMatchingMerchantsRequestedCardType;
     private CreditCard mCard;
@@ -78,7 +102,7 @@ public class AutofillPaymentInstrument extends PaymentInstrument
                     AppCompatResources.getDrawable(context, card.getIssuerIconDrawableId()));
         }
 
-        checkAndUpateCardCompleteness(context);
+        checkAndUpdateCardCompleteness(context);
     }
 
     @Override
@@ -133,7 +157,10 @@ public class AutofillPaymentInstrument extends PaymentInstrument
 
     @Override
     public boolean canMakePayment() {
-        return mHasValidNumberAndName; // Ignore absence of billing address.
+        return PaymentsExperimentalFeatures.isEnabled(
+                       ChromeFeatureList.STRICT_HAS_ENROLLED_AUTOFILL_INSTRUMENT)
+                ? getMissingFields() == CompletionStatus.COMPLETE && mHaveRequestedAutofillData
+                : mHasValidNumberAndName;
     }
 
     @Override
@@ -268,7 +295,10 @@ public class AutofillPaymentInstrument extends PaymentInstrument
 
     @Override
     public void onFullCardError() {
-        mCallback.onInstrumentDetailsError();
+        // There's no need to disambiguate between user cancelling the CVC unmask and other types of
+        // failures, because a failure to unmask an Autofill card will show the Payment Request UI
+        // again and prompt the user to attempt to complete a transaction using a different card.
+        mCallback.onInstrumentDetailsError(ErrorStrings.USER_CANCELLED);
         mCallback = null;
     }
 
@@ -315,7 +345,7 @@ public class AutofillPaymentInstrument extends PaymentInstrument
 
         updateIdentifierLabelsAndIcon(card.getGUID(), card.getObfuscatedNumber(), card.getName(),
                 null, AppCompatResources.getDrawable(context, card.getIssuerIconDrawableId()));
-        checkAndUpateCardCompleteness(context);
+        checkAndUpdateCardCompleteness(context);
         assert mIsComplete;
         assert mHasValidNumberAndName;
     }
@@ -330,40 +360,55 @@ public class AutofillPaymentInstrument extends PaymentInstrument
      * Does not check that the billing address has all of the required fields. This is done
      * elsewhere to filter out such billing addresses entirely.
      *
-     * Does not check the expiration date. If the card is expired, the user has the opportunity
-     * update the expiration date when providing their CVC in the card unmask dialog.
+     * Does not check the expiration date for mIsComplete. If the card is expired, the user has the
+     * opportunity update the expiration date when providing their CVC in the card unmask dialog.
      *
      * Does not check that the card type is accepted by the merchant. This is done elsewhere to
      * filter out such cards from view entirely.
+     *
+     * Completeness weights for all fields are identiacal to their equivalent in
+     * GetCompletenessScore from autofill_card_validation.cc, Please modify the weights in both
+     * files if needed.
      */
-    private void checkAndUpateCardCompleteness(Context context) {
+    private void checkAndUpdateCardCompleteness(Context context) {
         int editMessageResId = 0; // Zero is the invalid resource Id.
         int editTitleResId = R.string.payments_edit_card;
         int invalidFieldsCount = 0;
+        mCompletenessScore = 0;
+        int missingFields = getMissingFields();
 
-        if (mBillingAddress == null) {
+        // Even though expiration date does not affect mIsComplete, cards with valid expiration date
+        // still score higher than expired cards. This is used to list expired cards after
+        // non-expired cards after sorting instruments.
+        if ((missingFields & CompletionStatus.CREDIT_CARD_EXPIRED) == 0) mCompletenessScore += 6;
+
+        if ((missingFields & CompletionStatus.CREDIT_CARD_NO_BILLING_ADDRESS) == 0) {
+            // Add 10 for complete address.
+            mCompletenessScore += 10;
+        } else {
             editMessageResId = R.string.payments_billing_address_required;
             editTitleResId = R.string.payments_add_billing_address;
             invalidFieldsCount++;
         }
 
         mHasValidNumberAndName = true;
-        if (mCard.getIsLocal()) {
-            if (TextUtils.isEmpty(mCard.getName())) {
-                mHasValidNumberAndName = false;
-                editMessageResId = R.string.payments_name_on_card_required;
-                editTitleResId = R.string.payments_add_name_on_card;
-                invalidFieldsCount++;
-            }
-
-            if (PersonalDataManager.getInstance().getBasicCardIssuerNetwork(
-                        mCard.getNumber().toString(), true)
-                    == null) {
-                mHasValidNumberAndName = false;
-                editMessageResId = R.string.payments_card_number_invalid_validation_message;
-                editTitleResId = R.string.payments_add_valid_card_number;
-                invalidFieldsCount++;
-            }
+        if ((missingFields & CompletionStatus.CREDIT_CARD_NO_CARDHOLDER) == 0) {
+            // Add 8 for complete card holder's name.
+            mCompletenessScore += 8;
+        } else {
+            mHasValidNumberAndName = false;
+            editMessageResId = R.string.payments_name_on_card_required;
+            editTitleResId = R.string.payments_add_name_on_card;
+            invalidFieldsCount++;
+        }
+        if ((missingFields & CompletionStatus.CREDIT_CARD_NO_NUMBER) == 0) {
+            // Add 13 for valid card number.
+            mCompletenessScore += 13;
+        } else {
+            mHasValidNumberAndName = false;
+            editMessageResId = R.string.payments_card_number_invalid_validation_message;
+            editTitleResId = R.string.payments_add_valid_card_number;
+            invalidFieldsCount++;
         }
 
         if (invalidFieldsCount > 1) {
@@ -381,6 +426,12 @@ public class AutofillPaymentInstrument extends PaymentInstrument
         return mCard;
     }
 
+    /** @return The billing address associated with this payment instrument. */
+    @Nullable
+    public AutofillProfile getBillingProfile() {
+        return mBillingAddress;
+    }
+
     @Override
     public String getPreviewString(String labelSeparator, int maxLength) {
         StringBuilder previewString = new StringBuilder(getLabel());
@@ -393,5 +444,34 @@ public class AutofillPaymentInstrument extends PaymentInstrument
         }
         if (previewString.length() < maxLength) return previewString.toString();
         return previewString.substring(0, maxLength / 2);
+    }
+
+    /** @return a bit vector of the card's missing fields. */
+    public int getMissingFields() {
+        int missingFields = CompletionStatus.COMPLETE;
+        if (mBillingAddress == null) {
+            missingFields |= CompletionStatus.CREDIT_CARD_NO_BILLING_ADDRESS;
+        }
+        if (!mCard.hasValidCreditCardExpirationDate()) {
+            missingFields |= CompletionStatus.CREDIT_CARD_EXPIRED;
+        }
+
+        if (mCard.getIsLocal()) {
+            if (TextUtils.isEmpty(mCard.getName())) {
+                missingFields |= CompletionStatus.CREDIT_CARD_NO_CARDHOLDER;
+            }
+
+            if (PersonalDataManager.getInstance().getBasicCardIssuerNetwork(
+                        mCard.getNumber().toString(), true)
+                    == null) {
+                missingFields |= CompletionStatus.CREDIT_CARD_NO_NUMBER;
+            }
+        }
+
+        if (!mIsMatchingMerchantsRequestedCardType) {
+            missingFields |= CompletionStatus.CREDIT_CARD_TYPE_MISMATCH;
+        }
+
+        return missingFields;
     }
 }

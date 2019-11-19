@@ -36,8 +36,6 @@ class CORE_EXPORT HTMLStyleElement final : public HTMLElement,
   USING_GARBAGE_COLLECTED_MIXIN(HTMLStyleElement);
 
  public:
-  static HTMLStyleElement* Create(Document&, const CreateElementFlags);
-
   HTMLStyleElement(Document&, const CreateElementFlags);
   ~HTMLStyleElement() override;
 

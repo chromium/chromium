@@ -13,7 +13,7 @@
       return callback();
     TestRunner.addResult(request.url());
 
-    function contentLoaded(content) {
+    function contentLoaded({ content, error, isEncoded }) {
       TestRunner.addResult('resource.content: ' + content);
       callback();
     }

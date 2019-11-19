@@ -1,0 +1,57 @@
+<!doctype HTML>
+<html>
+<meta charset="utf8">
+<title>Display Locking: style on locked element & child</title>
+<link rel="author" title="Rakina Zata Amni" href="mailto:rakina@chromium.org">
+<link rel="help" href="https://github.com/WICG/display-locking">
+<script src="resources/utils.js"></script>
+
+<div id="container">
+  <div id="child">
+    <div id="grandchild"></div>
+  </div>
+</div>
+
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<script>
+async_test((t) => {
+  async function runTest() {
+    let container = document.getElementById("container");
+    await setInvisible(container);
+
+    container.style = "color: blue;";
+    t.step(() => assert_equals(getComputedStyle(container).color, "rgb(0, 0, 255)", "container color changed to blue"));
+    t.step(() => assert_equals(getComputedStyle(child).color, "rgb(0, 0, 255)", "child inherits blue color"));
+    t.step(() => assert_equals(getComputedStyle(grandchild).color, "rgb(0, 0, 255)", "grandchild inherits blue color"));
+
+    child.style = "color: green;";
+    t.step(() => assert_equals(getComputedStyle(container).color, "rgb(0, 0, 255)", "container color is still blue"));
+    t.step(() => assert_equals(getComputedStyle(child).color, "rgb(0, 128, 0)", "child color changed to green"));
+    t.step(() => assert_equals(getComputedStyle(grandchild).color, "rgb(0, 128, 0)", "grandchild inherits green color"));
+
+    child.style = "";
+
+    // Commit container, lock child.
+    await setVisible(container);
+    await setInvisible(child);
+
+    // Update style outside of the locked subtree.
+    container.style = "color: red;";
+    container.offsetTop;
+
+    // Inheritance works as usual through locked boundaries.
+    t.step(() => assert_equals(getComputedStyle(grandchild).color, "rgb(255, 0, 0)", "grandchild inherits red color"));
+    t.step(() => assert_equals(getComputedStyle(child).color, "rgb(255, 0, 0)", "child inherits red color"));
+    t.step(() => assert_equals(getComputedStyle(container).color, "rgb(255, 0, 0)", "container color changed to red"));
+
+    t.done();
+  }
+
+  window.onload = function() {
+    requestAnimationFrame(() => requestAnimationFrame(runTest));
+  };
+}, "getComputedStyle gets up-to-date style");
+</script>
+

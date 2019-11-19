@@ -81,10 +81,6 @@ class NotificationUIManager {
   // extension ID). Returns true if anything was removed.
   virtual bool CancelAllBySourceOrigin(const GURL& source_origin) = 0;
 
-  // Removes notifications matching |profile_id|. Returns true if any were
-  // removed.
-  virtual bool CancelAllByProfile(ProfileID profile_id) = 0;
-
   // Cancels all pending notifications and closes anything currently showing.
   // Used when the app is terminating.
   virtual void CancelAll() = 0;

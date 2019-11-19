@@ -7,6 +7,12 @@ source_set("webui") {
   sources = [
     "about_ui.cc",
     "about_ui.h",
+    "autofill_and_password_manager_internals/autofill_internals_ui_ios.h",
+    "autofill_and_password_manager_internals/autofill_internals_ui_ios.mm",
+    "autofill_and_password_manager_internals/internals_ui_handler.h",
+    "autofill_and_password_manager_internals/internals_ui_handler.mm",
+    "autofill_and_password_manager_internals/password_manager_internals_ui_ios.h",
+    "autofill_and_password_manager_internals/password_manager_internals_ui_ios.mm",
     "crashes_ui.cc",
     "crashes_ui.h",
     "flags_ui.cc",
@@ -16,8 +22,8 @@ source_set("webui") {
     "mojo_web_ui_ios_controller.h",
     "ntp_tiles_internals_ui.cc",
     "ntp_tiles_internals_ui.h",
-    "password_manager_internals_ui_ios.h",
-    "password_manager_internals_ui_ios.mm",
+    "prefs_internals_ui.cc",
+    "prefs_internals_ui.h",
     "suggestions_ui.cc",
     "suggestions_ui.h",
     "terms_ui.h",
@@ -37,6 +43,8 @@ source_set("webui") {
   deps = [
     "//base",
     "//base:i18n",
+    "//build:branding_buildflags",
+    "//components/autofill/core/browser",
     "//components/crash/core/browser",
     "//components/flags_ui",
     "//components/keyed_service/core",
@@ -55,22 +63,24 @@ source_set("webui") {
     "//ios/chrome/app/resources:ios_resources",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser",
+    "//ios/chrome/browser/autofill",
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/crash_report",
     "//ios/chrome/browser/favicon:favicon",
+    "//ios/chrome/browser/flags",
     "//ios/chrome/browser/metrics",
     "//ios/chrome/browser/ntp_tiles",
     "//ios/chrome/browser/passwords",
     "//ios/chrome/browser/suggestions",
     "//ios/chrome/browser/tabs",
-    "//ios/chrome/browser/ui",
+    "//ios/chrome/browser/ui/util",
+    "//ios/chrome/browser/ui/util:terms_util",
     "//ios/chrome/browser/web:java_script_console",
     "//ios/chrome/browser/web_state_list",
     "//ios/chrome/common",
-    "//ios/web",
+    "//ios/web/public/js_messaging",
+    "//ios/web/public/webui",
     "//net",
-    "//services/service_manager/public/cpp",
-    "//third_party/brotli:dec",
     "//ui/base",
     "//url",
   ]
@@ -88,9 +98,8 @@ source_set("webui_internal") {
   ]
   deps = [
     ":webui",
-    "//base",
     "//components/resources",
-    "//components/signin/core/browser",
+    "//components/signin/public/identity_manager",
     "//ios/chrome/app/resources:ios_resources",
     "//ios/chrome/browser",
     "//ios/chrome/browser/browser_state",
@@ -99,14 +108,20 @@ source_set("webui_internal") {
     "//ios/chrome/browser/ui/webui/gcm",
     "//ios/chrome/browser/ui/webui/net_export",
     "//ios/chrome/browser/ui/webui/sync_internals",
-    "//ios/web",
-    "//services/identity/public/cpp",
+    "//ios/chrome/browser/ui/webui/translate_internals",
     "//url",
+  ]
+
+  public_deps = [
+    "//base",
+    "//components/signin/core/browser",
+    "//ios/web/public/webui",
   ]
 }
 
 source_set("eg_tests") {
   configs += [ "//build/config/compiler:enable_arc" ]
+  defines = [ "CHROME_EARL_GREY_1" ]
   testonly = true
   sources = [
     "inspect/inspect_ui_egtest.mm",
@@ -121,9 +136,36 @@ source_set("eg_tests") {
     "//ios/chrome/browser/ui/omnibox:omnibox_internal",
     "//ios/chrome/test/app:test_support",
     "//ios/chrome/test/earl_grey:test_support",
-    "//ios/web",
+    "//ios/testing/earl_grey:earl_grey_support",
+    "//net:test_support",
     "//ui/base",
-    "//url",
   ]
   libs = [ "XCTest.framework" ]
+}
+
+source_set("eg2_tests") {
+  defines = [ "CHROME_EARL_GREY_2" ]
+  configs += [
+    "//build/config/compiler:enable_arc",
+    "//build/config/ios:xctest_config",
+  ]
+  testonly = true
+  sources = [
+    "inspect/inspect_ui_egtest.mm",
+    "web_ui_egtest.mm",
+  ]
+  deps = [
+    "//base",
+    "//base/test:test_support",
+    "//components/strings",
+    "//components/version_info",
+    "//ios/chrome/browser:chrome_url_constants",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//ios/third_party/earl_grey2:test_lib",
+    "//ios/web/public/test:element_selector",
+    "//net:test_support",
+    "//ui/base",
+  ]
+  libs = [ "UIKit.framework" ]
 }

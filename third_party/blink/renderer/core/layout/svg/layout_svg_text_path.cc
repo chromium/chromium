@@ -99,14 +99,13 @@ std::unique_ptr<PathPositionMapper> LayoutSVGTextPath::LayoutPath() const {
   const SVGLength& start_offset =
       *text_path_element.startOffset()->CurrentValue();
   float path_start_offset = start_offset.ValueAsPercentage();
-  if (start_offset.TypeWithCalcResolved() ==
-      CSSPrimitiveValue::UnitType::kPercentage)
+  if (start_offset.IsPercentage())
     path_start_offset *= author_path_length;
 
   path_start_offset *= offset_scale;
 
-  return PathPositionMapper::Create(path_data, computed_path_length,
-                                    path_start_offset);
+  return std::make_unique<PathPositionMapper>(path_data, computed_path_length,
+                                              path_start_offset);
 }
 
 }  // namespace blink

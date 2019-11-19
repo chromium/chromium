@@ -4,11 +4,15 @@
 
 #include "ash/system/unified/unified_system_info_view.h"
 
+#include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/ash_view_ids.h"
 #include "ash/resources/vector_icons/vector_icons.h"
-#include "ash/session/session_controller.h"
+#include "ash/session/session_controller_impl.h"
+#include "ash/session/session_observer.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/style/ash_color_provider.h"
+#include "ash/style/default_color_constants.h"
 #include "ash/system/enterprise/enterprise_domain_observer.h"
 #include "ash/system/model/clock_model.h"
 #include "ash/system/model/clock_observer.h"
@@ -17,12 +21,12 @@
 #include "ash/system/power/power_status.h"
 #include "ash/system/supervised/supervised_icon_string.h"
 #include "ash/system/tray/system_tray_notifier.h"
-#include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_popup_utils.h"
 #include "base/i18n/time_formatting.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
+#include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/animation/ink_drop_highlight.h"
@@ -36,6 +40,9 @@
 #include "ui/views/layout/fill_layout.h"
 
 namespace ash {
+
+using ContentLayerType = AshColorProvider::ContentLayerType;
+using AshColorMode = AshColorProvider::AshColorMode;
 
 namespace {
 
@@ -59,15 +66,14 @@ class DateView : public views::Button,
   explicit DateView(UnifiedSystemTrayController* controller);
   ~DateView() override;
 
+  // views::Button:
+  const char* GetClassName() const override { return "DateView"; }
+
  private:
   void Update();
 
   // views::Button:
   gfx::Insets GetInsets() const override;
-  std::unique_ptr<views::InkDrop> CreateInkDrop() override;
-  std::unique_ptr<views::InkDropRipple> CreateInkDropRipple() const override;
-  std::unique_ptr<views::InkDropHighlight> CreateInkDropHighlight()
-      const override;
 
   // views::ButtonListener:
   void ButtonPressed(views::Button* sender, const ui::Event& event) override;
@@ -91,13 +97,19 @@ DateView::DateView(UnifiedSystemTrayController* controller)
 
   label_->SetAutoColorReadabilityEnabled(false);
   label_->SetSubpixelRenderingEnabled(false);
-  label_->SetEnabledColor(kUnifiedMenuTextColor);
+  label_->SetEnabledColor(
+      AshColorProvider::Get()->DeprecatedGetContentLayerColor(
+          ContentLayerType::kTextPrimary, kUnifiedMenuTextColor));
   Update();
 
   Shell::Get()->system_tray_model()->clock()->AddObserver(this);
-  TrayPopupUtils::ConfigureTrayPopupButton(this);
 
   SetEnabled(Shell::Get()->system_tray_model()->clock()->IsSettingsAvailable());
+
+  SetInstallFocusRingOnFocus(true);
+  SetFocusForPlatform();
+
+  SetInkDropMode(views::InkDropHostView::InkDropMode::OFF);
 }
 
 DateView::~DateView() {
@@ -122,22 +134,6 @@ gfx::Insets DateView::GetInsets() const {
   return kUnifiedSystemInfoDateViewPadding;
 }
 
-std::unique_ptr<views::InkDrop> DateView::CreateInkDrop() {
-  return TrayPopupUtils::CreateInkDrop(this);
-}
-
-std::unique_ptr<views::InkDropRipple> DateView::CreateInkDropRipple() const {
-  return TrayPopupUtils::CreateInkDropRipple(
-      TrayPopupInkDropStyle::FILL_BOUNDS, this,
-      GetInkDropCenterBasedOnLastEvent());
-}
-
-std::unique_ptr<views::InkDropHighlight> DateView::CreateInkDropHighlight()
-    const {
-  return TrayPopupUtils::CreateInkDropHighlight(
-      TrayPopupInkDropStyle::FILL_BOUNDS, this);
-}
-
 void DateView::OnDateFormatChanged() {}
 
 void DateView::OnSystemClockTimeUpdated() {
@@ -159,6 +155,7 @@ class BatteryView : public views::View, public PowerStatus::Observer {
   // views::View:
   void ChildPreferredSizeChanged(views::View* child) override;
   void ChildVisibilityChanged(views::View* child) override;
+  const char* GetClassName() const override { return "BatteryView"; }
 
   // PowerStatus::Observer:
   void OnPowerStatusChanged() override;
@@ -181,8 +178,8 @@ BatteryView::BatteryView()
       status_(new views::Label) {
   PowerStatus::Get()->AddObserver(this);
 
-  SetLayoutManager(
-      std::make_unique<views::BoxLayout>(views::BoxLayout::kHorizontal));
+  SetLayoutManager(std::make_unique<views::BoxLayout>(
+      views::BoxLayout::Orientation::kHorizontal));
 
   separator_->SetText(
       l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_BATTERY_STATUS_SEPARATOR));
@@ -234,7 +231,8 @@ void BatteryView::Update() {
 void BatteryView::ConfigureLabel(views::Label* label) {
   label->SetAutoColorReadabilityEnabled(false);
   label->SetSubpixelRenderingEnabled(false);
-  label->SetEnabledColor(kUnifiedMenuSecondaryTextColor);
+  label->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
+      ContentLayerType::kTextSecondary, AshColorMode::kDark));
 }
 
 // A base class of the views showing device management state.
@@ -243,10 +241,7 @@ class ManagedStateView : public views::Button {
   ~ManagedStateView() override = default;
 
   // views::Button:
-  std::unique_ptr<views::InkDrop> CreateInkDrop() override;
-  std::unique_ptr<views::InkDropRipple> CreateInkDropRipple() const override;
-  std::unique_ptr<views::InkDropHighlight> CreateInkDropHighlight()
-      const override;
+  const char* GetClassName() const override { return "ManagedStateView"; }
 
  protected:
   ManagedStateView(views::ButtonListener* listener,
@@ -262,46 +257,37 @@ ManagedStateView::ManagedStateView(views::ButtonListener* listener,
                                    const gfx::VectorIcon& icon)
     : Button(listener) {
   SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::kHorizontal, gfx::Insets(), kUnifiedSystemInfoSpacing));
+      views::BoxLayout::Orientation::kHorizontal, gfx::Insets(),
+      kUnifiedSystemInfoSpacing));
 
   auto* label = new views::Label;
   label->SetAutoColorReadabilityEnabled(false);
   label->SetSubpixelRenderingEnabled(false);
-  label->SetEnabledColor(kUnifiedMenuSecondaryTextColor);
+  label->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
+      ContentLayerType::kTextSecondary, AshColorMode::kDark));
   label->SetText(l10n_util::GetStringUTF16(label_id));
   AddChildView(label);
 
   auto* image = new views::ImageView;
-  image->SetImage(gfx::CreateVectorIcon(icon, kUnifiedMenuSecondaryTextColor));
+  image->SetImage(gfx::CreateVectorIcon(
+      icon, AshColorProvider::Get()->GetContentLayerColor(
+                ContentLayerType::kIconSecondary, AshColorMode::kDark)));
   image->SetPreferredSize(
       gfx::Size(kUnifiedSystemInfoHeight, kUnifiedSystemInfoHeight));
   AddChildView(image);
 
-  TrayPopupUtils::ConfigureTrayPopupButton(this);
-}
+  SetInstallFocusRingOnFocus(true);
+  SetFocusForPlatform();
 
-std::unique_ptr<views::InkDrop> ManagedStateView::CreateInkDrop() {
-  return TrayPopupUtils::CreateInkDrop(this);
-}
-
-std::unique_ptr<views::InkDropRipple> ManagedStateView::CreateInkDropRipple()
-    const {
-  return TrayPopupUtils::CreateInkDropRipple(
-      TrayPopupInkDropStyle::FILL_BOUNDS, this,
-      GetInkDropCenterBasedOnLastEvent());
-}
-
-std::unique_ptr<views::InkDropHighlight>
-ManagedStateView::CreateInkDropHighlight() const {
-  return TrayPopupUtils::CreateInkDropHighlight(
-      TrayPopupInkDropStyle::FILL_BOUNDS, this);
+  SetInkDropMode(views::InkDropHostView::InkDropMode::OFF);
 }
 
 // A view that shows whether the device is enterprise managed or not. It updates
 // by observing EnterpriseDomainModel.
 class EnterpriseManagedView : public ManagedStateView,
                               public views::ButtonListener,
-                              public EnterpriseDomainObserver {
+                              public EnterpriseDomainObserver,
+                              public SessionObserver {
  public:
   explicit EnterpriseManagedView(UnifiedSystemTrayController* controller);
   ~EnterpriseManagedView() override;
@@ -311,6 +297,12 @@ class EnterpriseManagedView : public ManagedStateView,
 
   // EnterpriseDomainObserver:
   void OnEnterpriseDomainChanged() override;
+
+  // SessionObserver:
+  void OnLoginStatusChanged(LoginStatus status) override;
+
+  // views::Button:
+  const char* GetClassName() const override { return "EnterpriseManagedView"; }
 
  private:
   void Update();
@@ -327,13 +319,15 @@ EnterpriseManagedView::EnterpriseManagedView(
                        kUnifiedMenuManagedIcon),
       controller_(controller) {
   DCHECK(Shell::Get());
-  set_id(VIEW_ID_TRAY_ENTERPRISE);
+  SetID(VIEW_ID_TRAY_ENTERPRISE);
   Shell::Get()->system_tray_model()->enterprise_domain()->AddObserver(this);
+  Shell::Get()->session_controller()->AddObserver(this);
   Update();
 }
 
 EnterpriseManagedView::~EnterpriseManagedView() {
   Shell::Get()->system_tray_model()->enterprise_domain()->RemoveObserver(this);
+  Shell::Get()->session_controller()->RemoveObserver(this);
 }
 
 void EnterpriseManagedView::ButtonPressed(views::Button* sender,
@@ -345,10 +339,17 @@ void EnterpriseManagedView::OnEnterpriseDomainChanged() {
   Update();
 }
 
+void EnterpriseManagedView::OnLoginStatusChanged(LoginStatus status) {
+  Update();
+}
+
 void EnterpriseManagedView::Update() {
   EnterpriseDomainModel* model =
       Shell::Get()->system_tray_model()->enterprise_domain();
-  SetVisible(model->active_directory_managed() ||
+  SessionControllerImpl* session_controller =
+      Shell::Get()->session_controller();
+  SetVisible(session_controller->ShouldDisplayManagedUI() ||
+             model->active_directory_managed() ||
              !model->enterprise_display_domain().empty());
 
   if (model->active_directory_managed()) {
@@ -367,6 +368,9 @@ class SupervisedUserView : public ManagedStateView {
   SupervisedUserView();
   ~SupervisedUserView() override = default;
 
+  // views::Button:
+  const char* GetClassName() const override { return "SupervisedUserView"; }
+
  private:
   DISALLOW_COPY_AND_ASSIGN(SupervisedUserView);
 };
@@ -383,18 +387,19 @@ SupervisedUserView::SupervisedUserView()
 }  // namespace
 
 UnifiedSystemInfoView::UnifiedSystemInfoView(
-    UnifiedSystemTrayController* controller)
-    : enterprise_managed_(new EnterpriseManagedView(controller)),
-      supervised_(new SupervisedUserView()) {
+    UnifiedSystemTrayController* controller) {
   auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::kHorizontal, kUnifiedMenuItemPadding,
+      views::BoxLayout::Orientation::kHorizontal, kUnifiedSystemInfoViewPadding,
       kUnifiedSystemInfoSpacing));
+  layout->set_cross_axis_alignment(
+      views::BoxLayout::CrossAxisAlignment::kCenter);
 
   AddChildView(new DateView(controller));
 
   if (PowerStatus::Get()->IsBatteryPresent()) {
     auto* separator = new views::Separator();
-    separator->SetColor(kUnifiedMenuSecondaryTextColor);
+    separator->SetColor(AshColorProvider::Get()->GetContentLayerColor(
+        ContentLayerType::kSeparator, AshColorMode::kDark));
     separator->SetPreferredHeight(kUnifiedSystemInfoHeight);
     AddChildView(separator);
 
@@ -405,8 +410,13 @@ UnifiedSystemInfoView::UnifiedSystemInfoView(
   AddChildView(spacing);
   layout->SetFlexForView(spacing, 1);
 
-  AddChildView(enterprise_managed_);
-  AddChildView(supervised_);
+  if (!features::IsManagedDeviceUIRedesignEnabled()) {
+    // UnifiedManagedDeviceView is shown instead.
+    enterprise_managed_ = new EnterpriseManagedView(controller);
+    supervised_ = new SupervisedUserView();
+    AddChildView(enterprise_managed_);
+    AddChildView(supervised_);
+  }
 }
 
 UnifiedSystemInfoView::~UnifiedSystemInfoView() = default;
@@ -417,6 +427,10 @@ void UnifiedSystemInfoView::ChildVisibilityChanged(views::View* child) {
 
 void UnifiedSystemInfoView::ChildPreferredSizeChanged(views::View* child) {
   Layout();
+}
+
+const char* UnifiedSystemInfoView::GetClassName() const {
+  return "UnifiedSystemInfoView";
 }
 
 }  // namespace ash

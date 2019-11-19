@@ -47,9 +47,20 @@ if (crashpad_is_mac) {
     args += rebase_path(outputs, root_build_dir)
     if (crashpad_is_in_chromium) {
       if (!use_system_xcode) {
+        import("//build/config/clang/clang.gni")
+        import("//build/config/mac/mac_sdk.gni")
+        clang_path =
+            rebase_path("$clang_base_path/bin/", root_build_dir) + "clang"
+        mig_path = "$mac_bin_path" + "mig"
+        migcom_path = "$mac_bin_path" + "../libexec/migcom"
+
         args += [
-          "--developer-dir",
-          hermetic_xcode_path,
+          "--clang-path",
+          clang_path,
+          "--mig-path",
+          mig_path,
+          "--migcom-path",
+          migcom_path,
         ]
       }
     }
@@ -98,6 +109,7 @@ static_library("util") {
     "misc/initialization_state_dcheck.h",
     "misc/lexing.cc",
     "misc/lexing.h",
+    "misc/memory_sanitizer.h",
     "misc/metrics.cc",
     "misc/metrics.h",
     "misc/paths.h",
@@ -137,6 +149,7 @@ static_library("util") {
     "numeric/in_range_cast.h",
     "numeric/int128.h",
     "numeric/safe_assignment.h",
+    "process/process_id.h",
     "process/process_memory.cc",
     "process/process_memory.h",
     "process/process_memory_native.h",
@@ -153,6 +166,9 @@ static_library("util") {
     "stdlib/strnlen.cc",
     "stdlib/strnlen.h",
     "stdlib/thread_safe_vector.h",
+    "stream/output_stream_interface.h",
+    "stream/zlib_output_stream.cc",
+    "stream/zlib_output_stream.h",
     "string/split_string.cc",
     "string/split_string.h",
     "synchronization/semaphore.h",
@@ -164,6 +180,8 @@ static_library("util") {
     "thread/worker_thread.cc",
     "thread/worker_thread.h",
   ]
+
+  defines = [ "ZLIB_CONST" ]
 
   if (crashpad_is_posix || crashpad_is_fuchsia) {
     sources += [
@@ -258,12 +276,12 @@ static_library("util") {
 
   deps = []
 
-  if (crashpad_is_linux || crashpad_is_fuchsia) {
+  if (crashpad_is_linux || crashpad_is_fuchsia || crashpad_is_android) {
     sources += [ "net/http_transport_socket.cc" ]
     if (crashpad_use_boringssl_for_http_transport_socket) {
-      defines = [ "CRASHPAD_USE_BORINGSSL" ]
+      defines += [ "CRASHPAD_USE_BORINGSSL" ]
 
-      if (crashpad_is_in_fuchsia) {
+      if (crashpad_is_in_chromium || crashpad_is_in_fuchsia) {
         deps += [ "//third_party/boringssl" ]
       } else {
         libs = [
@@ -272,8 +290,6 @@ static_library("util") {
         ]
       }
     }
-  } else if (crashpad_is_android) {
-    sources += [ "net/http_transport_none.cc" ]
   }
 
   if (crashpad_is_linux || crashpad_is_android) {
@@ -294,6 +310,8 @@ static_library("util") {
       "linux/memory_map.h",
       "linux/proc_stat_reader.cc",
       "linux/proc_stat_reader.h",
+      "linux/proc_task_reader.cc",
+      "linux/proc_task_reader.h",
       "linux/ptrace_broker.cc",
       "linux/ptrace_broker.h",
       "linux/ptrace_client.cc",
@@ -307,14 +325,19 @@ static_library("util") {
       "linux/scoped_pr_set_ptracer.h",
       "linux/scoped_ptrace_attach.cc",
       "linux/scoped_ptrace_attach.h",
+      "linux/socket.cc",
+      "linux/socket.h",
       "linux/thread_info.cc",
       "linux/thread_info.h",
       "linux/traits.h",
       "misc/capture_context_linux.S",
       "misc/paths_linux.cc",
+      "misc/time_linux.cc",
       "posix/process_info_linux.cc",
       "process/process_memory_linux.cc",
       "process/process_memory_linux.h",
+      "process/process_memory_sanitized.cc",
+      "process/process_memory_sanitized.h",
     ]
   }
 
@@ -391,8 +414,17 @@ static_library("util") {
           "win/safe_terminate_process.asm",
         ]
       } else {
-        # TODO: Add assembly code of CaptureContext for Windows ARM64.
-        sources += [ "misc/capture_context_broken.cc" ]
+        # Most Crashpad builds use Microsoft's armasm64.exe macro assembler for
+        # .asm source files. When building in Chromium, clang-cl is used as the
+        # assembler instead. Since the two assemblers recognize different
+        # assembly dialects, the same .asm file can't be used for each. As a
+        # workaround, use a prebuilt .obj file when the Microsoft-dialect
+        # assembler isn't available.
+        if (crashpad_is_in_chromium) {
+          sources += [ "misc/capture_context_win_arm64.obj" ]
+        } else {
+          sources += [ "misc/capture_context_win_arm64.asm" ]
+        }
       }
     } else {
       sources += [
@@ -408,7 +440,6 @@ static_library("util") {
       "fuchsia/koid_utilities.h",
       "fuchsia/scoped_task_suspend.cc",
       "fuchsia/scoped_task_suspend.h",
-      "fuchsia/system_exception_port_key.h",
       "misc/capture_context_fuchsia.S",
       "misc/paths_fuchsia.cc",
       "process/process_memory_fuchsia.cc",
@@ -441,7 +472,10 @@ static_library("util") {
       "Foundation.framework",
       "IOKit.framework",
     ]
-    deps += [ ":mig" ]
+    deps += [
+      ":mig",
+      "../third_party/apple_cf:apple_cf",
+    ]
     include_dirs += [ "$root_build_dir/gen" ]
   }
 
@@ -464,18 +498,11 @@ static_library("util") {
   }
 
   if (crashpad_is_fuchsia) {
-    public_deps += [ "../third_party/fuchsia:zx" ]
+    public_deps += [ "../third_party/fuchsia" ]
   }
-}
 
-if (crashpad_use_boringssl_for_http_transport_socket) {
-  action("generate_test_server_key") {
-    script = "net/generate_test_server_key.py"
-    outputs = [
-      "$root_out_dir/crashpad_util_test_cert.pem",
-      "$root_out_dir/crashpad_util_test_key.pem",
-    ]
-    data = outputs
+  if (crashpad_is_android || crashpad_is_linux) {
+    deps += [ "../third_party/lss" ]
   }
 }
 
@@ -503,12 +530,9 @@ if (!crashpad_is_android) {
     }
 
     if (crashpad_use_boringssl_for_http_transport_socket) {
-      data_deps = [
-        ":generate_test_server_key",
-      ]
       defines = [ "CRASHPAD_USE_BORINGSSL" ]
 
-      if (crashpad_is_in_fuchsia) {
+      if (crashpad_is_in_chromium || crashpad_is_in_fuchsia) {
         deps += [ "//third_party/boringssl" ]
       } else {
         libs = [
@@ -562,6 +586,9 @@ source_set("util_test") {
     "stdlib/strlcpy_test.cc",
     "stdlib/strnlen_test.cc",
     "stdlib/thread_safe_vector_test.cc",
+    "stream/test_output_stream.cc",
+    "stream/test_output_stream.h",
+    "stream/zlib_output_stream_test.cc",
     "string/split_string_test.cc",
     "synchronization/semaphore_test.cc",
     "thread/thread_log_messages_test.cc",
@@ -616,10 +643,13 @@ source_set("util_test") {
       "linux/auxiliary_vector_test.cc",
       "linux/memory_map_test.cc",
       "linux/proc_stat_reader_test.cc",
+      "linux/proc_task_reader_test.cc",
       "linux/ptrace_broker_test.cc",
       "linux/ptracer_test.cc",
       "linux/scoped_ptrace_attach_test.cc",
+      "linux/socket_test.cc",
       "misc/capture_context_test_util_linux.cc",
+      "process/process_memory_sanitized_test.cc",
     ]
   }
 
@@ -663,6 +693,10 @@ source_set("util_test") {
     "../third_party/mini_chromium:base",
     "../third_party/zlib",
   ]
+
+  if (crashpad_is_android || crashpad_is_linux) {
+    deps += [ "../third_party/lss" ]
+  }
 
   if (!crashpad_is_android) {
     data_deps = [

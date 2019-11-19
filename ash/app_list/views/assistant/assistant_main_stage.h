@@ -14,31 +14,28 @@
 #include "ui/views/view.h"
 #include "ui/views/view_observer.h"
 
+namespace views {
+class Label;
+}  // namespace views
+
 namespace ash {
 class AssistantFooterView;
 class AssistantProgressIndicator;
 class AssistantQueryView;
 class AssistantViewDelegate;
 class UiElementContainerView;
-}  // namespace ash
 
-namespace ui {
-class CallbackLayerAnimationObserver;
-}  // namespace ui
-
-namespace app_list {
-
-// AssistantMainStage is the child of AssistantMainView responsible for
+// AppListAssistantMainStage is the child of AssistantMainView responsible for
 // displaying the Assistant interaction to the user. This includes visual
 // affordances for the query, response, as well as suggestions.
-class APP_LIST_EXPORT AssistantMainStage
+class APP_LIST_EXPORT AppListAssistantMainStage
     : public views::View,
       public views::ViewObserver,
       public ash::AssistantInteractionModelObserver,
       public ash::AssistantUiModelObserver {
  public:
-  explicit AssistantMainStage(ash::AssistantViewDelegate* delegate);
-  ~AssistantMainStage() override;
+  explicit AppListAssistantMainStage(ash::AssistantViewDelegate* delegate);
+  ~AppListAssistantMainStage() override;
 
   // views::View:
   const char* GetClassName() const override;
@@ -50,8 +47,9 @@ class APP_LIST_EXPORT AssistantMainStage
   // AssistantInteractionModelObserver:
   void OnCommittedQueryChanged(const ash::AssistantQuery& query) override;
   void OnPendingQueryChanged(const ash::AssistantQuery& query) override;
+  void OnPendingQueryCleared(bool due_to_commit) override;
   void OnResponseChanged(
-      const std::shared_ptr<ash::AssistantResponse>& response) override;
+      const scoped_refptr<ash::AssistantResponse>& response) override;
 
   // AssistantUiModelObserver:
   void OnUiVisibilityChanged(
@@ -62,13 +60,16 @@ class APP_LIST_EXPORT AssistantMainStage
 
  private:
   void InitLayout();
+  views::View* CreateContentLayoutContainer();
+  void InitGreetingLabel();
+  views::View* CreateMainContentLayoutContainer();
+  views::View* CreateDividerLayoutContainer();
+  views::View* CreateFooterLayoutContainer();
 
-  void UpdateFooter();
+  void AnimateInGreetingLabel();
+  void AnimateInFooter();
 
-  void OnFooterAnimationStarted(
-      const ui::CallbackLayerAnimationObserver& observer);
-  bool OnFooterAnimationEnded(
-      const ui::CallbackLayerAnimationObserver& observer);
+  void MaybeHideGreetingLabel();
 
   ash::AssistantViewDelegate* const delegate_;  // Owned by Shell.
 
@@ -77,14 +78,12 @@ class APP_LIST_EXPORT AssistantMainStage
   views::View* horizontal_separator_;
   ash::AssistantQueryView* query_view_;
   ash::UiElementContainerView* ui_element_container_;
+  views::Label* greeting_label_;
   ash::AssistantFooterView* footer_;
 
-  std::unique_ptr<ui::CallbackLayerAnimationObserver>
-      footer_animation_observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(AssistantMainStage);
+  DISALLOW_COPY_AND_ASSIGN(AppListAssistantMainStage);
 };
 
-}  // namespace app_list
+}  // namespace ash
 
 #endif  // ASH_APP_LIST_VIEWS_ASSISTANT_ASSISTANT_MAIN_STAGE_H_

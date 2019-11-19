@@ -1,0 +1,477 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        
+        <title>
+            
+    
+                The Unicode Chapter
+             &mdash;
+    Mako 1.0.14 Documentation
+
+        </title>
+
+        
+            <!-- begin iterate through site-imported + sphinx environment css_files -->
+                <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+                <link rel="stylesheet" href="_static/changelog.css" type="text/css" />
+                <link rel="stylesheet" href="_static/sphinx_paramlinks.css" type="text/css" />
+                <link rel="stylesheet" href="_static/docs.css" type="text/css" />
+            <!-- end iterate through site-imported + sphinx environment css_files -->
+        
+
+        
+    
+
+    <!-- begin layout.mako headers -->
+
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="top" title="Mako 1.0.14 Documentation" href="index.html" />
+        <link rel="next" title="Caching" href="caching.html" />
+        <link rel="prev" title="Filtering and Buffering" href="filtering.html" />
+    <!-- end layout.mako headers -->
+
+
+    </head>
+    <body>
+        
+
+
+
+
+
+
+
+
+
+
+<div id="docs-container">
+
+
+
+<div id="docs-header">
+    <h1>Mako 1.0.14 Documentation</h1>
+
+    <div id="docs-search">
+    Search:
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" size="18" /> <input type="submit" value="Search" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+
+    <div id="docs-version-header">
+        Release: <span class="version-num">1.0.14</span>
+
+    </div>
+
+</div>
+
+<div id="docs-top-navigation">
+    <div id="docs-top-page-control" class="docs-navigation-links">
+        <ul>
+            <li>Prev:
+            <a href="filtering.html" title="previous chapter">Filtering and Buffering</a>
+            </li>
+            <li>Next:
+            <a href="caching.html" title="next chapter">Caching</a>
+            </li>
+
+        <li>
+            <a href="index.html">Table of Contents</a> |
+            <a href="genindex.html">Index</a>
+        </li>
+        </ul>
+    </div>
+
+    <div id="docs-navigation-banner">
+        <a href="index.html">Mako 1.0.14 Documentation</a>
+        » 
+                The Unicode Chapter
+            
+
+        <h2>
+            
+                The Unicode Chapter
+            
+        </h2>
+    </div>
+
+</div>
+
+<div id="docs-body-container">
+
+
+    <div id="docs-sidebar">
+    <div id="sidebar-banner">
+        
+    </div>
+
+    <h3><a href="index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">The Unicode Chapter</a><ul>
+<li><a class="reference internal" href="#specifying-the-encoding-of-a-template-file">Specifying the Encoding of a Template File</a></li>
+<li><a class="reference internal" href="#handling-expressions">Handling Expressions</a></li>
+<li><a class="reference internal" href="#defining-output-encoding">Defining Output Encoding</a><ul>
+<li><a class="reference internal" href="#buffer-selection">Buffer Selection</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#saying-to-heck-with-it-disabling-the-usage-of-unicode-entirely">Saying to Heck with It: Disabling the Usage of Unicode Entirely</a><ul>
+<li><a class="reference internal" href="#rules-for-using-disable-unicode-true">Rules for using <code class="docutils literal notranslate"><span class="pre">disable_unicode=True</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+
+    <h4>Previous Topic</h4>
+    <p>
+    <a href="filtering.html" title="previous chapter">Filtering and Buffering</a>
+    </p>
+    <h4>Next Topic</h4>
+    <p>
+    <a href="caching.html" title="next chapter">Caching</a>
+    </p>
+
+    <h4>Quick Search</h4>
+    <p>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" size="18" /> <input type="submit" value="Search" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </p>
+
+    </div>
+
+    <div id="docs-body" class="withsidebar" >
+        
+<div class="section" id="the-unicode-chapter">
+<span id="unicode-toplevel"></span><h1>The Unicode Chapter<a class="headerlink" href="#the-unicode-chapter" title="Permalink to this headline">¶</a></h1>
+<p>The Python language supports two ways of representing what we
+know as “strings”, i.e. series of characters. In Python 2, the
+two types are <code class="docutils literal notranslate"><span class="pre">string</span></code> and <code class="docutils literal notranslate"><span class="pre">unicode</span></code>, and in Python 3 they are
+<code class="docutils literal notranslate"><span class="pre">bytes</span></code> and <code class="docutils literal notranslate"><span class="pre">string</span></code>. A key aspect of the Python 2 <code class="docutils literal notranslate"><span class="pre">string</span></code> and
+Python 3 <code class="docutils literal notranslate"><span class="pre">bytes</span></code> types are that they contain no information
+regarding what <strong>encoding</strong> the data is stored in. For this
+reason they were commonly referred to as <strong>byte strings</strong> on
+Python 2, and Python 3 makes this name more explicit. The
+origins of this come from Python’s background of being developed
+before the Unicode standard was even available, back when
+strings were C-style strings and were just that, a series of
+bytes. Strings that had only values below 128 just happened to
+be <strong>ASCII</strong> strings and were printable on the console, whereas
+strings with values above 128 would produce all kinds of
+graphical characters and bells.</p>
+<p>Contrast the “byte-string” type with the “unicode/string” type.
+Objects of this latter type are created whenever you say something like
+<code class="docutils literal notranslate"><span class="pre">u&quot;hello</span> <span class="pre">world&quot;</span></code> (or in Python 3, just <code class="docutils literal notranslate"><span class="pre">&quot;hello</span> <span class="pre">world&quot;</span></code>). In this
+case, Python represents each character in the string internally
+using multiple bytes per character (something similar to
+UTF-16). What’s important is that when using the
+<code class="docutils literal notranslate"><span class="pre">unicode</span></code>/<code class="docutils literal notranslate"><span class="pre">string</span></code> type to store strings, Python knows the
+data’s encoding; it’s in its own internal format. Whereas when
+using the <code class="docutils literal notranslate"><span class="pre">string</span></code>/<code class="docutils literal notranslate"><span class="pre">bytes</span></code> type, it does not.</p>
+<p>When Python 2 attempts to treat a byte-string as a string, which
+means it’s attempting to compare/parse its characters, to coerce
+it into another encoding, or to decode it to a unicode object,
+it has to guess what the encoding is. In this case, it will
+pretty much always guess the encoding as <code class="docutils literal notranslate"><span class="pre">ascii</span></code>… and if the
+byte-string contains bytes above value 128, you’ll get an error.
+Python 3 eliminates much of this confusion by just raising an
+error unconditionally if a byte-string is used in a
+character-aware context.</p>
+<p>There is one operation that Python <em>can</em> do with a non-ASCII
+byte-string, and it’s a great source of confusion: it can dump the
+byte-string straight out to a stream or a file, with nary a care
+what the encoding is. To Python, this is pretty much like
+dumping any other kind of binary data (like an image) to a
+stream somewhere. In Python 2, it is common to see programs that
+embed all kinds of international characters and encodings into
+plain byte-strings (i.e. using <code class="docutils literal notranslate"><span class="pre">&quot;hello</span> <span class="pre">world&quot;</span></code> style literals)
+can fly right through their run, sending reams of strings out to
+wherever they are going, and the programmer, seeing the same
+output as was expressed in the input, is now under the illusion
+that his or her program is Unicode-compliant. In fact, their
+program has no unicode awareness whatsoever, and similarly has
+no ability to interact with libraries that <em>are</em> unicode aware.
+Python 3 makes this much less likely by defaulting to unicode as
+the storage format for strings.</p>
+<p>The “pass through encoded data” scheme is what template
+languages like Cheetah and earlier versions of Myghty do by
+default. Mako as of version 0.2 also supports this mode of
+operation when using Python 2, using the <code class="docutils literal notranslate"><span class="pre">disable_unicode=True</span></code>
+flag. However, when using Mako in its default mode of
+unicode-aware, it requires explicitness when dealing with
+non-ASCII encodings. Additionally, if you ever need to handle
+unicode strings and other kinds of encoding conversions more
+intelligently, the usage of raw byte-strings quickly becomes a
+nightmare, since you are sending the Python interpreter
+collections of bytes for which it can make no intelligent
+decisions with regards to encoding. In Python 3 Mako only allows
+usage of native, unicode strings.</p>
+<p>In normal Mako operation, all parsed template constructs and
+output streams are handled internally as Python <code class="docutils literal notranslate"><span class="pre">unicode</span></code>
+objects. It’s only at the point of <a class="reference internal" href="usage.html#mako.template.Template.render" title="mako.template.Template.render"><code class="xref py py-meth docutils literal notranslate"><span class="pre">render()</span></code></a> that this unicode
+stream may be rendered into whatever the desired output encoding
+is. The implication here is that the template developer must
+:ensure that <a class="reference internal" href="#set-template-file-encoding"><span class="std std-ref">the encoding of all non-ASCII templates is explicit</span></a> (still required in Python 3),
+that <a class="reference internal" href="#handling-non-ascii-expressions"><span class="std std-ref">all non-ASCII-encoded expressions are in one way or another
+converted to unicode</span></a>
+(not much of a burden in Python 3), and that <a class="reference internal" href="#defining-output-encoding"><span class="std std-ref">the output stream of the
+template is handled as a unicode stream being encoded to some
+encoding</span></a> (still required in Python 3).</p>
+<div class="section" id="specifying-the-encoding-of-a-template-file">
+<span id="set-template-file-encoding"></span><h2>Specifying the Encoding of a Template File<a class="headerlink" href="#specifying-the-encoding-of-a-template-file" title="Permalink to this headline">¶</a></h2>
+<p>This is the most basic encoding-related setting, and it is
+equivalent to Python’s “magic encoding comment”, as described in
+<a class="reference external" href="http://www.python.org/dev/peps/pep-0263/">pep-0263</a>. Any
+template that contains non-ASCII characters requires that this
+comment be present so that Mako can decode to unicode (and also
+make usage of Python’s AST parsing services). Mako’s lexer will
+use this encoding in order to convert the template source into a
+<code class="docutils literal notranslate"><span class="pre">unicode</span></code> object before continuing its parsing:</p>
+<div class="highlight-mako notranslate"><div class="highlight"><pre><span></span><span class="cp">## -*- coding: utf-8 -*-</span><span class="x"></span>
+
+<span class="x">Alors vous imaginez ma surprise, au lever du jour, quand</span>
+<span class="x">une drôle de petite voix m’a réveillé. Elle disait:</span>
+<span class="x"> « S’il vous plaît… dessine-moi un mouton! »</span></pre></div>
+</div>
+<p>For the picky, the regular expression used is derived from that
+of the above mentioned pep:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">#.*coding[:=]\s*([-\w.]+).*\n</span></pre></div>
+</div>
+<p>The lexer will convert to unicode in all cases, so that if any
+characters exist in the template that are outside of the
+specified encoding (or the default of <code class="docutils literal notranslate"><span class="pre">ascii</span></code>), the error will
+be immediate.</p>
+<p>As an alternative, the template encoding can be specified
+programmatically to either <a class="reference internal" href="usage.html#mako.template.Template" title="mako.template.Template"><code class="xref py py-class docutils literal notranslate"><span class="pre">Template</span></code></a> or <a class="reference internal" href="usage.html#mako.lookup.TemplateLookup" title="mako.lookup.TemplateLookup"><code class="xref py py-class docutils literal notranslate"><span class="pre">TemplateLookup</span></code></a> via
+the <code class="docutils literal notranslate"><span class="pre">input_encoding</span></code> parameter:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">t</span> <span class="o">=</span> <span class="n">TemplateLookup</span><span class="p">(</span><span class="n">directories</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;./&#39;</span><span class="p">],</span> <span class="n">input_encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span></pre></div>
+</div>
+<p>The above will assume all located templates specify <code class="docutils literal notranslate"><span class="pre">utf-8</span></code>
+encoding, unless the template itself contains its own magic
+encoding comment, which takes precedence.</p>
+</div>
+<div class="section" id="handling-expressions">
+<span id="handling-non-ascii-expressions"></span><h2>Handling Expressions<a class="headerlink" href="#handling-expressions" title="Permalink to this headline">¶</a></h2>
+<p>The next area that encoding comes into play is in expression
+constructs. By default, Mako’s treatment of an expression like
+this:</p>
+<div class="highlight-mako notranslate"><div class="highlight"><pre><span></span><span class="cp">${</span><span class="s2">&quot;hello world&quot;</span><span class="cp">}</span><span class="x"></span></pre></div>
+</div>
+<p>looks something like this:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">context</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="nb">unicode</span><span class="p">(</span><span class="s2">&quot;hello world&quot;</span><span class="p">))</span></pre></div>
+</div>
+<p>In Python 3, it’s just:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">context</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="s2">&quot;hello world&quot;</span><span class="p">))</span></pre></div>
+</div>
+<p>That is, <strong>the output of all expressions is run through the
+``unicode`` built-in</strong>. This is the default setting, and can be
+modified to expect various encodings. The <code class="docutils literal notranslate"><span class="pre">unicode</span></code> step serves
+both the purpose of rendering non-string expressions into
+strings (such as integers or objects which contain <code class="docutils literal notranslate"><span class="pre">__str()__</span></code>
+methods), and to ensure that the final output stream is
+constructed as a unicode object. The main implication of this is
+that <strong>any raw byte-strings that contain an encoding other than
+ASCII must first be decoded to a Python unicode object</strong>. It
+means you can’t say this in Python 2:</p>
+<div class="highlight-mako notranslate"><div class="highlight"><pre><span></span><span class="cp">${</span><span class="s2">&quot;voix m’a réveillé.&quot;</span><span class="cp">}</span>  <span class="cp">## error in Python 2!</span><span class="x"></span></pre></div>
+</div>
+<p>You must instead say this:</p>
+<div class="highlight-mako notranslate"><div class="highlight"><pre><span></span><span class="cp">${</span><span class="sa">u</span><span class="s2">&quot;voix m’a réveillé.&quot;</span><span class="cp">}</span>  <span class="cp">## OK !</span><span class="x"></span></pre></div>
+</div>
+<p>Similarly, if you are reading data from a file that is streaming
+bytes, or returning data from some object that is returning a
+Python byte-string containing a non-ASCII encoding, you have to
+explicitly decode to unicode first, such as:</p>
+<div class="highlight-mako notranslate"><div class="highlight"><pre><span></span><span class="cp">${</span><span class="n">call_my_object</span><span class="p">()</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span><span class="cp">}</span><span class="x"></span></pre></div>
+</div>
+<p>Note that filehandles acquired by <code class="docutils literal notranslate"><span class="pre">open()</span></code> in Python 3 default
+to returning “text”, that is the decoding is done for you. See
+Python 3’s documentation for the <code class="docutils literal notranslate"><span class="pre">open()</span></code> built-in for details on
+this.</p>
+<p>If you want a certain encoding applied to <em>all</em> expressions,
+override the <code class="docutils literal notranslate"><span class="pre">unicode</span></code> builtin with the <code class="docutils literal notranslate"><span class="pre">decode</span></code> built-in at the
+<a class="reference internal" href="usage.html#mako.template.Template" title="mako.template.Template"><code class="xref py py-class docutils literal notranslate"><span class="pre">Template</span></code></a> or <a class="reference internal" href="usage.html#mako.lookup.TemplateLookup" title="mako.lookup.TemplateLookup"><code class="xref py py-class docutils literal notranslate"><span class="pre">TemplateLookup</span></code></a> level:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">t</span> <span class="o">=</span> <span class="n">Template</span><span class="p">(</span><span class="n">templatetext</span><span class="p">,</span> <span class="n">default_filters</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;decode.utf8&#39;</span><span class="p">])</span></pre></div>
+</div>
+<p>Note that the built-in <code class="docutils literal notranslate"><span class="pre">decode</span></code> object is slower than the
+<code class="docutils literal notranslate"><span class="pre">unicode</span></code> function, since unlike <code class="docutils literal notranslate"><span class="pre">unicode</span></code> it’s not a Python
+built-in, and it also checks the type of the incoming data to
+determine if string conversion is needed first.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">default_filters</span></code> argument can be used to entirely customize
+the filtering process of expressions. This argument is described
+in <a class="reference internal" href="filtering.html#filtering-default-filters"><span class="std std-ref">The default_filters Argument</span></a>.</p>
+</div>
+<div class="section" id="defining-output-encoding">
+<span id="id1"></span><h2>Defining Output Encoding<a class="headerlink" href="#defining-output-encoding" title="Permalink to this headline">¶</a></h2>
+<p>Now that we have a template which produces a pure unicode output
+stream, all the hard work is done. We can take the output and do
+anything with it.</p>
+<p>As stated in the <a class="reference internal" href="usage.html"><span class="doc">“Usage” chapter</span></a>, both <a class="reference internal" href="usage.html#mako.template.Template" title="mako.template.Template"><code class="xref py py-class docutils literal notranslate"><span class="pre">Template</span></code></a> and
+<a class="reference internal" href="usage.html#mako.lookup.TemplateLookup" title="mako.lookup.TemplateLookup"><code class="xref py py-class docutils literal notranslate"><span class="pre">TemplateLookup</span></code></a> accept <code class="docutils literal notranslate"><span class="pre">output_encoding</span></code> and <code class="docutils literal notranslate"><span class="pre">encoding_errors</span></code>
+parameters which can be used to encode the output in any Python
+supported codec:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mako.template</span> <span class="kn">import</span> <span class="n">Template</span>
+<span class="kn">from</span> <span class="nn">mako.lookup</span> <span class="kn">import</span> <span class="n">TemplateLookup</span>
+
+<span class="n">mylookup</span> <span class="o">=</span> <span class="n">TemplateLookup</span><span class="p">(</span><span class="n">directories</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;/docs&#39;</span><span class="p">],</span> <span class="n">output_encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">,</span> <span class="n">encoding_errors</span><span class="o">=</span><span class="s1">&#39;replace&#39;</span><span class="p">)</span>
+
+<span class="n">mytemplate</span> <span class="o">=</span> <span class="n">mylookup</span><span class="o">.</span><span class="n">get_template</span><span class="p">(</span><span class="s2">&quot;foo.txt&quot;</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="n">mytemplate</span><span class="o">.</span><span class="n">render</span><span class="p">())</span></pre></div>
+</div>
+<p><a class="reference internal" href="usage.html#mako.template.Template.render" title="mako.template.Template.render"><code class="xref py py-meth docutils literal notranslate"><span class="pre">render()</span></code></a> will return a <code class="docutils literal notranslate"><span class="pre">bytes</span></code> object in Python 3 if an output
+encoding is specified. By default it performs no encoding and
+returns a native string.</p>
+<p><a class="reference internal" href="usage.html#mako.template.Template.render_unicode" title="mako.template.Template.render_unicode"><code class="xref py py-meth docutils literal notranslate"><span class="pre">render_unicode()</span></code></a> will return the template output as a Python
+<code class="docutils literal notranslate"><span class="pre">unicode</span></code> object (or <code class="docutils literal notranslate"><span class="pre">string</span></code> in Python 3):</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">print</span><span class="p">(</span><span class="n">mytemplate</span><span class="o">.</span><span class="n">render_unicode</span><span class="p">())</span></pre></div>
+</div>
+<p>The above method disgards the output encoding keyword argument;
+you can encode yourself by saying:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">print</span><span class="p">(</span><span class="n">mytemplate</span><span class="o">.</span><span class="n">render_unicode</span><span class="p">()</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">,</span> <span class="s1">&#39;replace&#39;</span><span class="p">))</span></pre></div>
+</div>
+<div class="section" id="buffer-selection">
+<h3>Buffer Selection<a class="headerlink" href="#buffer-selection" title="Permalink to this headline">¶</a></h3>
+<p>Mako does play some games with the style of buffering used
+internally, to maximize performance. Since the buffer is by far
+the most heavily used object in a render operation, it’s
+important!</p>
+<p>When calling <a class="reference internal" href="usage.html#mako.template.Template.render" title="mako.template.Template.render"><code class="xref py py-meth docutils literal notranslate"><span class="pre">render()</span></code></a> on a template that does not specify any
+output encoding (i.e. it’s <code class="docutils literal notranslate"><span class="pre">ascii</span></code>), Python’s <code class="docutils literal notranslate"><span class="pre">cStringIO</span></code> module,
+which cannot handle encoding of non-ASCII <code class="docutils literal notranslate"><span class="pre">unicode</span></code> objects
+(even though it can send raw byte-strings through), is used for
+buffering. Otherwise, a custom Mako class called
+<code class="docutils literal notranslate"><span class="pre">FastEncodingBuffer</span></code> is used, which essentially is a super
+dumbed-down version of <code class="docutils literal notranslate"><span class="pre">StringIO</span></code> that gathers all strings into
+a list and uses <code class="docutils literal notranslate"><span class="pre">u''.join(elements)</span></code> to produce the final output
+– it’s markedly faster than <code class="docutils literal notranslate"><span class="pre">StringIO</span></code>.</p>
+</div>
+</div>
+<div class="section" id="saying-to-heck-with-it-disabling-the-usage-of-unicode-entirely">
+<span id="unicode-disabled"></span><h2>Saying to Heck with It: Disabling the Usage of Unicode Entirely<a class="headerlink" href="#saying-to-heck-with-it-disabling-the-usage-of-unicode-entirely" title="Permalink to this headline">¶</a></h2>
+<p>Some segments of Mako’s userbase choose to make no usage of
+Unicode whatsoever, and instead would prefer the “pass through”
+approach; all string expressions in their templates return
+encoded byte-strings, and they would like these strings to pass
+right through. The only advantage to this approach is that
+templates need not use <code class="docutils literal notranslate"><span class="pre">u&quot;&quot;</span></code> for literal strings; there’s an
+arguable speed improvement as well since raw byte-strings
+generally perform slightly faster than unicode objects in
+Python. For these users, assuming they’re sticking with Python
+2, they can hit the <code class="docutils literal notranslate"><span class="pre">disable_unicode=True</span></code> flag as so:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># -*- coding:utf-8 -*-</span>
+<span class="kn">from</span> <span class="nn">mako.template</span> <span class="kn">import</span> <span class="n">Template</span>
+
+<span class="n">t</span> <span class="o">=</span> <span class="n">Template</span><span class="p">(</span><span class="s2">&quot;drôle de petite voix m’a réveillé.&quot;</span><span class="p">,</span> <span class="n">disable_unicode</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">input_encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">code</span><span class="p">)</span></pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">disable_unicode</span></code> mode is strictly a Python 2 thing. It is
+not supported at all in Python 3.</p>
+<p>The generated module source code will contain elements like
+these:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># -*- coding:utf-8 -*-</span>
+<span class="c1">#  ...more generated code ...</span>
+
+<span class="k">def</span> <span class="nf">render_body</span><span class="p">(</span><span class="n">context</span><span class="p">,</span><span class="o">**</span><span class="n">pageargs</span><span class="p">):</span>
+    <span class="n">context</span><span class="o">.</span><span class="n">caller_stack</span><span class="o">.</span><span class="n">push_frame</span><span class="p">()</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">__M_locals</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">pageargs</span><span class="o">=</span><span class="n">pageargs</span><span class="p">)</span>
+        <span class="c1"># SOURCE LINE 1</span>
+        <span class="n">context</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;dr</span><span class="se">\xc3\xb4</span><span class="s1">le de petite voix m</span><span class="se">\xe2\x80\x99</span><span class="s1">a r</span><span class="se">\xc3\xa9</span><span class="s1">veill</span><span class="se">\xc3\xa9</span><span class="s1">.&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="s1">&#39;&#39;</span>
+    <span class="k">finally</span><span class="p">:</span>
+        <span class="n">context</span><span class="o">.</span><span class="n">caller_stack</span><span class="o">.</span><span class="n">pop_frame</span><span class="p">()</span></pre></div>
+</div>
+<p>Where above that the string literal used within <a class="reference internal" href="runtime.html#mako.runtime.Context.write" title="mako.runtime.Context.write"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Context.write()</span></code></a>
+is a regular byte-string.</p>
+<p>When <code class="docutils literal notranslate"><span class="pre">disable_unicode=True</span></code> is turned on, the <code class="docutils literal notranslate"><span class="pre">default_filters</span></code>
+argument which normally defaults to <code class="docutils literal notranslate"><span class="pre">[&quot;unicode&quot;]</span></code> now defaults
+to <code class="docutils literal notranslate"><span class="pre">[&quot;str&quot;]</span></code> instead. Setting <code class="docutils literal notranslate"><span class="pre">default_filters</span></code> to the empty list
+<code class="docutils literal notranslate"><span class="pre">[]</span></code> can remove the overhead of the <code class="docutils literal notranslate"><span class="pre">str</span></code> call. Also, in this
+mode you <strong>cannot</strong> safely call <a class="reference internal" href="usage.html#mako.template.Template.render_unicode" title="mako.template.Template.render_unicode"><code class="xref py py-meth docutils literal notranslate"><span class="pre">render_unicode()</span></code></a> – you’ll get
+unicode/decode errors.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">h</span></code> filter (HTML escape) uses a less performant pure Python
+escape function in non-unicode mode. This because
+MarkupSafe only supports Python unicode objects for non-ASCII
+strings.</p>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 0.3.4: </span>In prior versions, it used <code class="docutils literal notranslate"><span class="pre">cgi.escape()</span></code>, which has been replaced
+with a function that also escapes single quotes.</p>
+</div>
+<div class="section" id="rules-for-using-disable-unicode-true">
+<h3>Rules for using <code class="docutils literal notranslate"><span class="pre">disable_unicode=True</span></code><a class="headerlink" href="#rules-for-using-disable-unicode-true" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Don’t use this mode unless you really, really want to and you
+absolutely understand what you’re doing.</p></li>
+<li><p>Don’t use this option just because you don’t want to learn to
+use Unicode properly; we aren’t supporting user issues in this
+mode of operation. We will however offer generous help for the
+vast majority of users who stick to the Unicode program.</p></li>
+<li><p>Python 3 is unicode by default, and the flag is not available
+when running on Python 3.</p></li>
+</ul>
+</div>
+</div>
+</div>
+
+    </div>
+
+</div>
+
+<div id="docs-bottom-navigation" class="docs-navigation-links">
+        Previous:
+        <a href="filtering.html" title="previous chapter">Filtering and Buffering</a>
+        Next:
+        <a href="caching.html" title="next chapter">Caching</a>
+
+    <div id="docs-copyright">
+        &copy; Copyright the Mako authors and contributors.
+        Documentation generated using <a href="http://sphinx.pocoo.org/">Sphinx</a> 2.1.2
+        with Mako templates.
+    </div>
+</div>
+
+</div>
+
+
+
+        
+        
+
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+          URL_ROOT:    './',
+          VERSION:     '1.0.14',
+          COLLAPSE_MODINDEX: false,
+          FILE_SUFFIX: '.html'
+      };
+    </script>
+
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+
+    <!-- begin iterate through sphinx environment script_files -->
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+    <!-- end iterate through sphinx environment script_files -->
+
+    <script type="text/javascript" src="_static/detectmobile.js"></script>
+    <script type="text/javascript" src="_static/init.js"></script>
+
+
+    </body>
+</html>
+
+

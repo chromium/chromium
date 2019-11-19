@@ -19,6 +19,8 @@
 
 #include <vector>
 
+#include "base/macros.h"
+
 namespace crashpad {
 
 //! \brief Stores a minidump stream along with its stream ID.

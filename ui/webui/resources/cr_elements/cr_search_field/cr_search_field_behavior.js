@@ -7,7 +7,7 @@
  * <settings-subpage-search> for a simple implementation.
  * @polymerBehavior
  */
-const CrSearchFieldBehavior = {
+/* #export */ const CrSearchFieldBehavior = {
   properties: {
     label: {
       type: String,
@@ -24,13 +24,10 @@ const CrSearchFieldBehavior = {
       reflectToAttribute: true,
       value: false,
     },
-
-    /** @private */
-    lastValue_: {
-      type: String,
-      value: '',
-    },
   },
+
+  /** @private {string} */
+  effectiveValue_: '',
 
   /** @private {number} */
   searchDelayTimer_: -1,
@@ -55,11 +52,21 @@ const CrSearchFieldBehavior = {
    *     firing for this change.
    */
   setValue: function(value, opt_noEvent) {
-    const searchInput = this.getSearchInput();
-    searchInput.value = value;
+    const updated = this.updateEffectiveValue_(value);
+    this.getSearchInput().value = this.effectiveValue_;
+    if (!updated) {
+      // If the input is only whitespace and value is empty, |hasSearchText|
+      // needs to be updated.
+      if (value == '' && this.hasSearchText) {
+        this.hasSearchText = false;
+      }
+      return;
+    }
 
     this.onSearchTermInput();
-    this.onValueChanged_(value, !!opt_noEvent);
+    if (!opt_noEvent) {
+      this.fire('search-changed', this.effectiveValue_);
+    }
   },
 
   /** @private */
@@ -106,18 +113,27 @@ const CrSearchFieldBehavior = {
    * @private
    */
   onValueChanged_: function(newValue, noEvent) {
-    // Trim leading whitespace and replace consecutive whitespace with single
-    // space. This will prevent empty string searches and searches for
-    // effectively the same query.
-    const effectiveValue = newValue.replace(/\s+/g, ' ').replace(/^\s/, '');
-    if (effectiveValue == this.lastValue_) {
-      return;
+    const updated = this.updateEffectiveValue_(newValue);
+    if (updated && !noEvent) {
+      this.fire('search-changed', this.effectiveValue_);
+    }
+  },
+
+  /**
+   * Trim leading whitespace and replace consecutive whitespace with single
+   * space. This will prevent empty string searches and searches for
+   * effectively the same query.
+   * @param {string} value
+   * @return {boolean}
+   * @private
+   */
+  updateEffectiveValue_: function(value) {
+    const effectiveValue = value.replace(/\s+/g, ' ').replace(/^\s/, '');
+    if (effectiveValue == this.effectiveValue_) {
+      return false;
     }
 
-    this.lastValue_ = effectiveValue;
-
-    if (!noEvent) {
-      this.fire('search-changed', effectiveValue);
-    }
+    this.effectiveValue_ = effectiveValue;
+    return true;
   },
 };

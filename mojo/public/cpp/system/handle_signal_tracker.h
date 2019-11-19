@@ -29,7 +29,7 @@ namespace mojo {
 class MOJO_CPP_SYSTEM_EXPORT HandleSignalTracker {
  public:
   using NotificationCallback =
-      base::Callback<void(const HandleSignalsState& signals_state)>;
+      base::RepeatingCallback<void(const HandleSignalsState& signals_state)>;
 
   // Constructs a tracker which tracks |signals| on |handle|. |signals| may
   // be any single signal flag or any combination of signal flags.
@@ -45,8 +45,8 @@ class MOJO_CPP_SYSTEM_EXPORT HandleSignalTracker {
 
   // Sets an optional callback to be invoked any time the tracker is notified of
   // a relevant state change.
-  void set_notification_callback(const NotificationCallback& callback) {
-    notification_callback_ = callback;
+  void set_notification_callback(NotificationCallback callback) {
+    notification_callback_ = std::move(callback);
   }
 
  private:

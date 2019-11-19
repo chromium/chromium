@@ -29,6 +29,8 @@ table.request-response {
   width: 100%;
   word-break:break-all;
   white-space:pre-wrap;
+  border: 1px solid #cecece;
+  border-radius: 3px;
 }
 table.request-response td {
   width: 50%;

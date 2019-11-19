@@ -1,0 +1,98 @@
+// Copyright 2018 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module ui.ozone.mojom;
+
+import "mojo/public/mojom/base/file_path.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
+import "ui/gfx/mojom/accelerated_widget.mojom";
+import "ui/gfx/mojom/presentation_feedback.mojom";
+import "ui/gfx/mojom/swap_result.mojom";
+import "ui/gfx/mojom/buffer_types.mojom";
+
+// Used by the GPU for communication with the WaylandBufferManagerHost in
+// the browser process.
+interface WaylandBufferManagerHost {
+  // Sets up an associated pipe between the Gpu and Host.
+  SetWaylandBufferManagerGpu(
+      pending_associated_remote<WaylandBufferManagerGpu>
+        buffer_manager_gpu_associated);
+
+  // The following two methods are used either for hardware accelerated
+  // rendering or for the software rendering.
+  //
+  // If hardware accelerated rendering path is taken, this methnod can be used
+  // to ask Wayland to create a wl_buffer based on the |dmabuf_fd| descriptor
+  // for the WaylandWindow, which has the following |widget|. The |size|
+  // is the size of the buffer, the |strides|, |offsets| and |modifiers|
+  // are the descriptions of the drm buffer object. The |format| describes
+  // the buffer format (check gfx::BufferFormat) in fourcc form. The
+  // |planes_count| says how many planes the buffer, backed by the |file|
+  // descriptor has. And the |buffer_id| is a unique id for the buffer, which
+  // is used to identify imported wl_buffers on the browser process side and
+  // map them with the buffer objects on the gpu process side.
+  CreateDmabufBasedBuffer(gfx.mojom.AcceleratedWidget widget,
+                          handle dmabuf_fd,
+                          gfx.mojom.Size size,
+                          array<uint32> strides,
+                          array<uint32> offsets,
+                          array<uint64> modifiers,
+                          uint32 format,
+                          uint32 planes_count,
+                          uint32 buffer_id);
+
+  // If software rendering path is used, this method can be used to ask
+  // Wayland to create a wl_buffer based on the |shm_fd| descriptor.
+  // The |length| is the length of the shared memory, |size|
+  // is the size of buffer and |buffer_id| is the id of the buffer.
+  CreateShmBasedBuffer(gfx.mojom.AcceleratedWidget widget,
+                       handle shm_fd,
+                       uint64 length,
+                       gfx.mojom.Size size,
+                       uint32 buffer_id);
+
+  // These two methods are independent from the type of rendering.
+  //
+  // Destroys a wl_buffer created by WaylandConnection based on the |buffer_id|
+  // for the WaylandWindow, which has the following |widget|. The |buffer_id|
+  // is the unique id of the buffer objects being destroyed on the browser
+  // process side.
+  DestroyBuffer(gfx.mojom.AcceleratedWidget widget, uint32 buffer_id);
+
+  // Attaches a wl_buffer to a WaylandWindow's surface with the following
+  // |widget|. The |damage_region| describes changed the region of the buffer.
+  // The |buffer_id| is a unique id for the buffer, which is used to
+  // identify imported wl_buffers on the browser process side mapped with
+  // the ones on the gpu process.
+  CommitBuffer(gfx.mojom.AcceleratedWidget widget, uint32 buffer_id,
+               gfx.mojom.Rect damage_region);
+};
+
+
+interface WaylandBufferManagerGpu {
+  // Initializes the gpu side buffer manager by passing the interface pointer of
+  // of the WaylandBufferManagerHost that lives in the browser process to it.
+  // Also supplies the gpu side manager with the supported buffer formats and
+  // modifiers so that gpu side clients could be aware of supported modifiers
+  // the Wayland compositor announces. The modifiers may be empty, which means
+  // modifiers are not supported.
+  // The browser process may also request the client to reset gbm device
+  // instance to avoid using zwp_linux_dmabuf protocol by setting
+  // |supports_dma_buf| to false, which results in using wl_egl_surface in a
+  // single process mode, and software rendering in a multiple process mode.
+  Initialize(pending_remote<WaylandBufferManagerHost> remote_host,
+             map<gfx.mojom.BufferFormat,
+                 array<uint64>> buffer_formats_with_modifiers,
+            bool supports_dma_buf);
+
+  // Signals about swap completion.
+  OnSubmission(gfx.mojom.AcceleratedWidget widget,
+               uint32 buffer_id,
+               gfx.mojom.SwapResult swap_result);
+
+  // Signals about presentation.
+  OnPresentation(gfx.mojom.AcceleratedWidget widget,
+                 uint32 buffer_id,
+                 gfx.mojom.PresentationFeedback feedback);
+};

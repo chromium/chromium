@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>CSS RenderSubtree Test: render-subtree with invalid values</title>
+<link rel="author" title="Vladimir Levin" href="mailto:vmpstr@chromium.org">
+<meta name="assert" content="render-subtree supports the full grammar 'none | [invisible || skip-activation || skip-viewport-activation]'.">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/css/support/parsing-testcommon.js"></script>
+</head>
+<body>
+<script>
+test_invalid_value("render-subtree", "none invisible");
+test_invalid_value("render-subtree", "foo-bar");
+test_invalid_value("render-subtree", "foo bar baz");
+test_invalid_value("render-subtree", "invisible skip-activation none");
+test_invalid_value("render-subtree", "invisible skip-activation skip-activation");
+test_invalid_value("render-subtree", "invisible invisible invisible");
+</script>
+</body>
+</html>
+

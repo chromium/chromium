@@ -1,49 +1,45 @@
 {%- macro enum_value(enum, field, index) -%}
 {%- if field.value -%}
-(int) ({{field.value|expression_to_text('i32')}})
+{{field.value|expression_to_text('i32')}};
 {%- elif index == 0 -%}
-0
+{{field.numeric_value}};
 {%- else -%}
-{{enum.fields[index - 1]|name}} + 1
+{{field.numeric_value}}; // {{enum.fields[index - 1]|name}} + 1
 {%- endif -%}
 {%- endmacro -%}
 
 {%- macro enum_def(enum, top_level) -%}
 public {{ 'static ' if not top_level }}final class {{enum|name}} {
-
-{% for field in enum.fields %}
-    public static final int {{field|name}} = {{enum_value(enum, field, loop.index0)}};
-{% endfor %}
-
-{%-   if enum.min_value is not none %}
-    public static final int MIN_VALUE = (int) ({{enum.min_value}});
-{%-   endif %}
-{%-   if enum.max_value is not none %}
-    public static final int MAX_VALUE = (int) ({{enum.max_value}});
-{%-   endif %}
-
     private static final boolean IS_EXTENSIBLE = {% if enum.extensible %}true{% else %}false{% endif %};
+{% for field in enum.fields %}
+    public static final int {{field|name}} = {{enum_value(enum, field, loop.index0)}}
+{%- endfor %}
+
+{%- if enum|covers_continuous_range %}
 
     public static boolean isKnownValue(int value) {
-{%- if enum.fields %}
+        return value >= {{enum.min_value}} && value <= {{enum.max_value}};
+    }
+{%- else %}
+
+    public static boolean isKnownValue(int value) {
+{%-   if enum.fields %}
         switch (value) {
-{%-   for enum_field in enum.fields|groupby('numeric_value') %}
+{%-     for enum_field in enum.fields|groupby('numeric_value') %}
             case {{enum_field[0]}}:
-{%-   endfor %}
+{%-     endfor %}
                 return true;
         }
-{%- endif %}
+{%-   endif %}
         return false;
     }
+{%- endif %}
 
     public static void validate(int value) {
-        if (IS_EXTENSIBLE || isKnownValue(value))
-            return;
-
+        if (IS_EXTENSIBLE || isKnownValue(value)) return;
         throw new DeserializationException("Invalid enum value.");
     }
 
     private {{enum|name}}() {}
-
 }
 {%- endmacro -%}

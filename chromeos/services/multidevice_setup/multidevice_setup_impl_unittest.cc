@@ -8,7 +8,7 @@
 
 #include "base/bind.h"
 #include "base/run_loop.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "chromeos/components/multidevice/remote_device_test_util.h"
 #include "chromeos/services/device_sync/public/cpp/fake_device_sync_client.h"
 #include "chromeos/services/device_sync/public/cpp/fake_gcm_device_info_provider.h"
@@ -615,7 +615,7 @@ class MultiDeviceSetupImplTest : public testing::Test {
 
     EXPECT_FALSE(fake_account_status_change_delegate_notifier()->delegate());
     multidevice_setup_->SetAccountStatusChangeDelegate(
-        fake_account_status_change_delegate_->GenerateInterfacePtr());
+        fake_account_status_change_delegate_->GenerateRemote());
     EXPECT_TRUE(fake_account_status_change_delegate_notifier()->delegate());
   }
 
@@ -629,6 +629,20 @@ class MultiDeviceSetupImplTest : public testing::Test {
     multidevice::RemoteDeviceList eligible_devices_list =
         *last_eligible_devices_list_;
     last_eligible_devices_list_.reset();
+
+    return eligible_devices_list;
+  }
+
+  std::vector<mojom::HostDevicePtr> CallGetEligibleActiveHostDevices() {
+    base::RunLoop run_loop;
+    multidevice_setup_->GetEligibleActiveHostDevices(base::BindOnce(
+        &MultiDeviceSetupImplTest::OnEligibleActiveHostDevicesFetched,
+        base::Unretained(this), run_loop.QuitClosure()));
+    run_loop.Run();
+
+    std::vector<mojom::HostDevicePtr> eligible_devices_list =
+        std::move(*last_eligible_active_devices_list_);
+    last_eligible_active_devices_list_.reset();
 
     return eligible_devices_list;
   }
@@ -810,6 +824,15 @@ class MultiDeviceSetupImplTest : public testing::Test {
     std::move(quit_closure).Run();
   }
 
+  void OnEligibleActiveHostDevicesFetched(
+      base::OnceClosure quit_closure,
+      std::vector<mojom::HostDevicePtr> eligible_active_devices_list) {
+    EXPECT_FALSE(last_eligible_active_devices_list_);
+    last_eligible_active_devices_list_ =
+        std::move(eligible_active_devices_list);
+    std::move(quit_closure).Run();
+  }
+
   void OnSetHostDeviceResult(base::OnceClosure quit_closure, bool success) {
     EXPECT_FALSE(last_set_host_success_);
     last_set_host_success_ = success;
@@ -859,7 +882,7 @@ class MultiDeviceSetupImplTest : public testing::Test {
     std::move(quit_closure).Run();
   }
 
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_;
 
   multidevice::RemoteDeviceRefList test_devices_;
 
@@ -899,6 +922,8 @@ class MultiDeviceSetupImplTest : public testing::Test {
 
   base::Optional<bool> last_debug_event_success_;
   base::Optional<multidevice::RemoteDeviceList> last_eligible_devices_list_;
+  base::Optional<std::vector<mojom::HostDevicePtr>>
+      last_eligible_active_devices_list_;
   base::Optional<bool> last_set_host_success_;
   base::Optional<bool> last_set_host_without_auth_success_;
   base::Optional<
@@ -947,8 +972,7 @@ TEST_F(MultiDeviceSetupImplTest, AccountStatusChangeDelegate) {
 // because it never requires authentication for either enabling or disabling.
 TEST_F(MultiDeviceSetupImplTest, FeatureStateChanges_NoAuthTokenRequired) {
   auto observer = std::make_unique<FakeFeatureStateObserver>();
-  multidevice_setup()->AddFeatureStateObserver(
-      observer->GenerateInterfacePtr());
+  multidevice_setup()->AddFeatureStateObserver(observer->GenerateRemote());
 
   EXPECT_EQ(mojom::FeatureState::kUnavailableNoVerifiedHost,
             CallGetFeatureStates()[mojom::Feature::kInstantTethering]);
@@ -981,8 +1005,7 @@ TEST_F(MultiDeviceSetupImplTest, FeatureStateChanges_NoAuthTokenRequired) {
 TEST_F(MultiDeviceSetupImplTest,
        FeatureStateChanges_AuthTokenRequired_SmartLock) {
   auto observer = std::make_unique<FakeFeatureStateObserver>();
-  multidevice_setup()->AddFeatureStateObserver(
-      observer->GenerateInterfacePtr());
+  multidevice_setup()->AddFeatureStateObserver(observer->GenerateRemote());
 
   EXPECT_EQ(mojom::FeatureState::kUnavailableNoVerifiedHost,
             CallGetFeatureStates()[mojom::Feature::kSmartLock]);
@@ -1025,8 +1048,7 @@ TEST_F(MultiDeviceSetupImplTest,
 TEST_F(MultiDeviceSetupImplTest,
        FeatureStateChanges_AuthTokenRequired_BetterTogetherSuite) {
   auto observer = std::make_unique<FakeFeatureStateObserver>();
-  multidevice_setup()->AddFeatureStateObserver(
-      observer->GenerateInterfacePtr());
+  multidevice_setup()->AddFeatureStateObserver(observer->GenerateRemote());
 
   EXPECT_EQ(mojom::FeatureState::kUnavailableNoVerifiedHost,
             CallGetFeatureStates()[mojom::Feature::kBetterTogetherSuite]);
@@ -1111,7 +1133,7 @@ TEST_F(MultiDeviceSetupImplTest, ComprehensiveHostTest) {
 
   // Add a status observer.
   auto observer = std::make_unique<FakeHostStatusObserver>();
-  multidevice_setup()->AddHostStatusObserver(observer->GenerateInterfacePtr());
+  multidevice_setup()->AddHostStatusObserver(observer->GenerateRemote());
 
   // Simulate a sync occurring; now, all of the test devices are eligible hosts.
   fake_eligible_host_devices_provider()->set_eligible_host_devices(
@@ -1184,6 +1206,29 @@ TEST_F(MultiDeviceSetupImplTest, ComprehensiveHostTest) {
   fake_host_backend_delegate()->NotifyHostChangedOnBackend(base::nullopt);
 }
 
+TEST_F(MultiDeviceSetupImplTest, TestGetEligibleActiveHosts) {
+  // Start with no eligible devices.
+  EXPECT_TRUE(CallGetEligibleActiveHostDevices().empty());
+
+  multidevice::DeviceWithConnectivityStatusList host_device_list;
+  for (auto remote_device_ref : test_devices()) {
+    host_device_list.emplace_back(multidevice::DeviceWithConnectivityStatus(
+        remote_device_ref, cryptauthv2::ConnectivityStatus::ONLINE));
+  }
+  // Simulate a sync occurring; now, all of the test devices are eligible hosts.
+  fake_eligible_host_devices_provider()->set_eligible_active_host_devices(
+      host_device_list);
+
+  std::vector<mojom::HostDevicePtr> result_hosts =
+      CallGetEligibleActiveHostDevices();
+  for (size_t i = 0; i < kNumTestDevices; i++) {
+    EXPECT_EQ(*GetMutableRemoteDevice(test_devices()[i]),
+              result_hosts[i]->remote_device);
+    EXPECT_EQ(cryptauthv2::ConnectivityStatus::ONLINE,
+              result_hosts[i]->connectivity_status);
+  }
+}
+
 TEST_F(MultiDeviceSetupImplTest, TestSetHostDevice_InvalidAuthToken) {
   // Start valid eligible host devices.
   fake_eligible_host_devices_provider()->set_eligible_host_devices(
@@ -1202,7 +1247,7 @@ TEST_F(MultiDeviceSetupImplTest, TestSetHostDevice_InvalidAuthToken) {
 TEST_F(MultiDeviceSetupImplTest, TestSetHostDeviceWithoutAuthToken) {
   // Add a status observer.
   auto observer = std::make_unique<FakeHostStatusObserver>();
-  multidevice_setup()->AddHostStatusObserver(observer->GenerateInterfacePtr());
+  multidevice_setup()->AddHostStatusObserver(observer->GenerateRemote());
 
   // Start valid eligible host devices.
   fake_eligible_host_devices_provider()->set_eligible_host_devices(
@@ -1228,22 +1273,6 @@ TEST_F(MultiDeviceSetupImplTest, TestSetHostDeviceWithoutAuthToken) {
   VerifyCurrentHostStatus(
       mojom::HostStatus::kHostSetLocallyButWaitingForBackendConfirmation,
       test_devices()[0], observer.get(), 1u /* expected_observer_index */);
-}
-
-TEST_F(MultiDeviceSetupImplTest, GetEligibleHostDevicesSortedByTimestamp) {
-  multidevice::RemoteDeviceRefList devices = test_devices();
-
-  // Update the devices in the list such that they are sorted from
-  // least-recently-updated to most-recently-updated. This is the opposite order
-  // that is expected from GetEligibleDevices();
-  for (size_t i = 0; i < devices.size(); ++i)
-    GetMutableRemoteDevice(devices[i])->last_update_time_millis = i;
-  fake_eligible_host_devices_provider()->set_eligible_host_devices(devices);
-
-  // Now, reverse the original list and verify that the returned devices are
-  // sorted in the correct order.
-  std::reverse(devices.begin(), devices.end());
-  EXPECT_EQ(RefListToRawList(devices), CallGetEligibleHostDevices());
 }
 
 }  // namespace multidevice_setup

@@ -5,8 +5,9 @@
 #ifndef CHROME_BROWSER_SSL_INSECURE_SENSITIVE_INPUT_DRIVER_H_
 #define CHROME_BROWSER_SSL_INSECURE_SENSITIVE_INPUT_DRIVER_H_
 
-#include "mojo/public/cpp/bindings/binding_set.h"
-#include "third_party/blink/public/platform/modules/insecure_input/insecure_input_service.mojom.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
+#include "third_party/blink/public/mojom/insecure_input/insecure_input_service.mojom.h"
 
 namespace content {
 class RenderFrameHost;
@@ -24,8 +25,8 @@ class InsecureSensitiveInputDriver : public blink::mojom::InsecureInputService {
       content::RenderFrameHost* render_frame_host);
   ~InsecureSensitiveInputDriver() override;
 
-  void BindInsecureInputServiceRequest(
-      blink::mojom::InsecureInputServiceRequest request);
+  void BindInsecureInputServiceReceiver(
+      mojo::PendingReceiver<blink::mojom::InsecureInputService> receiver);
 
   // blink::mojom::InsecureInputService:
   void DidEditFieldInInsecureContext() override;
@@ -33,7 +34,8 @@ class InsecureSensitiveInputDriver : public blink::mojom::InsecureInputService {
  private:
   content::RenderFrameHost* render_frame_host_;
 
-  mojo::BindingSet<blink::mojom::InsecureInputService> insecure_input_bindings_;
+  mojo::ReceiverSet<blink::mojom::InsecureInputService>
+      insecure_input_receivers_;
 
   DISALLOW_COPY_AND_ASSIGN(InsecureSensitiveInputDriver);
 };

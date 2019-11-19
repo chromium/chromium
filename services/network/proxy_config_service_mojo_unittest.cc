@@ -5,7 +5,7 @@
 #include "services/network/proxy_config_service_mojo.h"
 
 #include "base/macros.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "net/proxy_resolution/proxy_config.h"
 #include "net/proxy_resolution/proxy_config_service.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
@@ -68,11 +68,10 @@ class TestProxyConfigServiceObserver
 class ProxyConfigServiceMojoTest : public testing::Test {
  public:
   ProxyConfigServiceMojoTest()
-      : scoped_task_environment_(
-            base::test::ScopedTaskEnvironment::MainThreadType::IO),
-        proxy_config_service_(mojo::MakeRequest(&config_client_),
+      : task_environment_(base::test::TaskEnvironment::MainThreadType::IO),
+        proxy_config_service_(config_client_.BindNewPipeAndPassReceiver(),
                               base::Optional<net::ProxyConfigWithAnnotation>(),
-                              nullptr),
+                              mojo::NullRemote()),
         observer_(&proxy_config_service_) {
     proxy_config_service_.AddObserver(&observer_);
   }
@@ -84,10 +83,10 @@ class ProxyConfigServiceMojoTest : public testing::Test {
  protected:
   // After notifying a new configuration through |config_client_|, waits for the
   // observers to have been notified.
-  void WaitForConfig() { scoped_task_environment_.RunUntilIdle(); }
+  void WaitForConfig() { task_environment_.RunUntilIdle(); }
 
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
-  mojom::ProxyConfigClientPtr config_client_;
+  base::test::TaskEnvironment task_environment_;
+  mojo::Remote<mojom::ProxyConfigClient> config_client_;
   ProxyConfigServiceMojo proxy_config_service_;
   TestProxyConfigServiceObserver observer_;
 

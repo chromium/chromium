@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/strings/string16.h"
 #include "content/browser/indexed_db/indexed_db_backing_store.h"
 #include "content/browser/indexed_db/indexed_db_database.h"
 #include "third_party/blink/public/common/indexeddb/indexeddb_key.h"
@@ -29,7 +30,7 @@ class IndexWriter {
   explicit IndexWriter(const blink::IndexedDBIndexMetadata& index_metadata);
 
   IndexWriter(const blink::IndexedDBIndexMetadata& index_metadata,
-              const blink::IndexedDBIndexKeys& index_keys);
+              const std::vector<blink::IndexedDBKey>& keys);
 
   bool VerifyIndexKeys(IndexedDBBackingStore* store,
                        IndexedDBBackingStore::Transaction* transaction,
@@ -40,11 +41,12 @@ class IndexWriter {
                        const blink::IndexedDBKey& primary_key,
                        base::string16* error_message) const WARN_UNUSED_RESULT;
 
-  void WriteIndexKeys(const IndexedDBBackingStore::RecordIdentifier& record,
-                      IndexedDBBackingStore* store,
-                      IndexedDBBackingStore::Transaction* transaction,
-                      int64_t database_id,
-                      int64_t object_store_id) const;
+  leveldb::Status WriteIndexKeys(
+      const IndexedDBBackingStore::RecordIdentifier& record,
+      IndexedDBBackingStore* store,
+      IndexedDBBackingStore::Transaction* transaction,
+      int64_t database_id,
+      int64_t object_store_id) const;
 
   ~IndexWriter();
 
@@ -59,7 +61,7 @@ class IndexWriter {
                         bool* allowed) const WARN_UNUSED_RESULT;
 
   const blink::IndexedDBIndexMetadata index_metadata_;
-  blink::IndexedDBIndexKeys index_keys_;
+  const std::vector<blink::IndexedDBKey> keys_;
 
   DISALLOW_COPY_AND_ASSIGN(IndexWriter);
 };

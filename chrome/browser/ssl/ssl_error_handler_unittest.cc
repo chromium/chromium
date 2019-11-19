@@ -31,6 +31,7 @@
 #include "components/network_time/network_time_test_utils.h"
 #include "components/network_time/network_time_tracker.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/security_interstitials/core/ssl_error_options_mask.h"
 #include "components/security_interstitials/core/ssl_error_ui.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -125,29 +126,24 @@ const char kCertWithoutOrganizationOrCommonName[] =
 std::unique_ptr<net::test_server::HttpResponse> WaitForRequest(
     const base::Closure& quit_closure,
     const net::test_server::HttpRequest& request) {
-  base::PostTaskWithTraits(FROM_HERE, {content::BrowserThread::UI},
-                           quit_closure);
+  base::PostTask(FROM_HERE, {content::BrowserThread::UI}, quit_closure);
   return std::make_unique<net::test_server::HungResponse>();
 }
 
 class TestSSLErrorHandler : public SSLErrorHandler {
  public:
-  TestSSLErrorHandler(
-      std::unique_ptr<Delegate> delegate,
-      content::WebContents* web_contents,
-      Profile* profile,
-      int cert_error,
-      const net::SSLInfo& ssl_info,
-      const GURL& request_url,
-      const base::Callback<void(content::CertificateRequestResultType)>&
-          callback)
+  TestSSLErrorHandler(std::unique_ptr<Delegate> delegate,
+                      content::WebContents* web_contents,
+                      Profile* profile,
+                      int cert_error,
+                      const net::SSLInfo& ssl_info,
+                      const GURL& request_url)
       : SSLErrorHandler(std::move(delegate),
                         web_contents,
                         profile,
                         cert_error,
                         ssl_info,
-                        request_url,
-                        callback) {}
+                        request_url) {}
 
   using SSLErrorHandler::StartHandlingError;
 };
@@ -315,9 +311,7 @@ class SSLErrorHandlerNameMismatchTest : public ChromeRenderViewHostTestHarness {
     error_handler_.reset(new TestSSLErrorHandler(
         std::unique_ptr<SSLErrorHandler::Delegate>(delegate_), web_contents(),
         profile(), net::MapCertStatusToNetError(ssl_info_.cert_status),
-        ssl_info_,
-        GURL(),  // request_url
-        base::Callback<void(content::CertificateRequestResultType)>()));
+        ssl_info_, GURL() /*request_url*/));
   }
 
   void TearDown() override {
@@ -579,9 +573,7 @@ class SSLErrorAssistantProtoTest : public ChromeRenderViewHostTestHarness {
     error_handler_.reset(new TestSSLErrorHandler(
         std::unique_ptr<SSLErrorHandler::Delegate>(delegate_), web_contents(),
         profile(), net::MapCertStatusToNetError(ssl_info_.cert_status),
-        ssl_info_,
-        GURL(),  // request_url
-        base::Callback<void(content::CertificateRequestResultType)>()));
+        ssl_info_, GURL() /*request_url*/));
   }
 
   net::SSLInfo ssl_info_;
@@ -596,26 +588,26 @@ class SSLErrorHandlerDateInvalidTest : public ChromeRenderViewHostTestHarness {
  public:
   SSLErrorHandlerDateInvalidTest()
       : ChromeRenderViewHostTestHarness(
-            content::TestBrowserThreadBundle::REAL_IO_THREAD),
+            content::BrowserTaskEnvironment::REAL_IO_THREAD),
         field_trial_test_(new network_time::FieldTrialTest()),
         clock_(new base::SimpleTestClock),
         tick_clock_(new base::SimpleTestTickClock),
         test_server_(new net::EmbeddedTestServer) {
     network_time::NetworkTimeTracker::RegisterPrefs(pref_service_.registry());
+
+    field_trial_test()->SetNetworkQueriesWithVariationsService(
+        false, 0.0,
+        network_time::NetworkTimeTracker::FETCHES_IN_BACKGROUND_ONLY);
   }
 
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
     SSLErrorHandler::ResetConfigForTesting();
 
-    field_trial_test()->SetNetworkQueriesWithVariationsService(
-        false, 0.0,
-        network_time::NetworkTimeTracker::FETCHES_IN_BACKGROUND_ONLY);
-
     base::RunLoop run_loop;
     std::unique_ptr<network::SharedURLLoaderFactoryInfo>
         url_loader_factory_info;
-    base::PostTaskWithTraitsAndReply(
+    base::PostTaskAndReply(
         FROM_HERE, {content::BrowserThread::IO},
         base::BindOnce(CreateURLLoaderFactory, &url_loader_factory_info),
         run_loop.QuitClosure());
@@ -642,9 +634,7 @@ class SSLErrorHandlerDateInvalidTest : public ChromeRenderViewHostTestHarness {
     error_handler_.reset(new TestSSLErrorHandler(
         std::unique_ptr<SSLErrorHandler::Delegate>(delegate_), web_contents(),
         profile(), net::MapCertStatusToNetError(ssl_info_.cert_status),
-        ssl_info_,
-        GURL(),  // request_url
-        base::Callback<void(content::CertificateRequestResultType)>()));
+        ssl_info_, GURL() /*request_url*/));
     error_handler_->SetNetworkTimeTrackerForTesting(tracker_.get());
 
     // Fix flakiness in case system time is off and triggers a bad clock
@@ -1058,7 +1048,13 @@ TEST_F(SSLErrorHandlerNameMismatchTest,
       SSLErrorHandler::SHOW_SSL_INTERSTITIAL_OVERRIDABLE, 1);
 }
 
-TEST_F(SSLErrorHandlerDateInvalidTest, TimeQueryStarted) {
+// Flakily fails on linux_chromium_tsan_rel_ng. http://crbug.com/989128
+#if defined(OS_LINUX) && defined(THREAD_SANITIZER)
+#define MAYBE_TimeQueryStarted DISABLED_TimeQueryStarted
+#else
+#define MAYBE_TimeQueryStarted TimeQueryStarted
+#endif
+TEST_F(SSLErrorHandlerDateInvalidTest, MAYBE_TimeQueryStarted) {
   base::HistogramTester histograms;
   base::Time network_time;
   base::TimeDelta uncertainty;
@@ -1089,7 +1085,14 @@ TEST_F(SSLErrorHandlerDateInvalidTest, TimeQueryStarted) {
 
 // Tests that an SSL interstitial is shown if the accuracy of the system
 // clock can't be determined because network time is unavailable.
-TEST_F(SSLErrorHandlerDateInvalidTest, NoTimeQueries) {
+
+// Flakily fails on linux_chromium_tsan_rel_ng. http://crbug.com/989225
+#if defined(OS_LINUX) && defined(THREAD_SANITIZER)
+#define MAYBE_NoTimeQueries DISABLED_NoTimeQueries
+#else
+#define MAYBE_NoTimeQueries NoTimeQueries
+#endif
+TEST_F(SSLErrorHandlerDateInvalidTest, MAYBE_NoTimeQueries) {
   base::HistogramTester histograms;
   base::Time network_time;
   base::TimeDelta uncertainty;
@@ -1109,7 +1112,14 @@ TEST_F(SSLErrorHandlerDateInvalidTest, NoTimeQueries) {
 
 // Tests that an SSL interstitial is shown if determing the accuracy of
 // the system clock times out (e.g. because a network time query hangs).
-TEST_F(SSLErrorHandlerDateInvalidTest, TimeQueryHangs) {
+
+// Flakily fails on linux_chromium_tsan_rel_ng. http://crbug.com/989289
+#if defined(OS_LINUX) && defined(THREAD_SANITIZER)
+#define MAYBE_TimeQueryHangs DISABLED_TimeQueryHangs
+#else
+#define MAYBE_TimeQueryHangs TimeQueryHangs
+#endif
+TEST_F(SSLErrorHandlerDateInvalidTest, MAYBE_TimeQueryHangs) {
   base::HistogramTester histograms;
   base::Time network_time;
   base::TimeDelta uncertainty;
@@ -1498,64 +1508,4 @@ TEST_F(SSLErrorAssistantProtoTest,
   SSLErrorHandler::SetErrorAssistantProto(std::move(config_proto));
 
   TestNoMITMSoftwareInterstitial();
-}
-
-TEST(SSLErrorHandlerTest, CalculateOptionsMask) {
-  int mask;
-
-  // Non-overridable cert error.
-  mask = SSLErrorHandler::CalculateOptionsMask(
-      net::ERR_SSL_PINNED_KEY_NOT_IN_CERT_CHAIN, /* cert_error */
-      false,                                     /* hard_override_disabled */
-      false, /* should_ssl_errors_be_fatal */
-      false /* expired_previous_decision */);
-  EXPECT_EQ(0, mask);
-  mask = SSLErrorHandler::CalculateOptionsMask(
-      net::ERR_SSL_PINNED_KEY_NOT_IN_CERT_CHAIN, /* cert_error */
-      true,                                      /* hard_override_disabled */
-      false, /* should_ssl_errors_be_fatal */
-      false /* expired_previous_decision */);
-  EXPECT_EQ(security_interstitials::SSLErrorUI::HARD_OVERRIDE_DISABLED, mask);
-  mask = SSLErrorHandler::CalculateOptionsMask(
-      net::ERR_SSL_PINNED_KEY_NOT_IN_CERT_CHAIN, /* cert_error */
-      false,                                     /* hard_override_disabled */
-      true,  /* should_ssl_errors_be_fatal */
-      false /* expired_previous_decision */);
-  EXPECT_EQ(security_interstitials::SSLErrorUI::STRICT_ENFORCEMENT, mask);
-  mask = SSLErrorHandler::CalculateOptionsMask(
-      net::ERR_SSL_PINNED_KEY_NOT_IN_CERT_CHAIN, /* cert_error */
-      false,                                     /* hard_override_disabled */
-      false, /* should_ssl_errors_be_fatal */
-      true /* expired_previous_decision */);
-  EXPECT_EQ(security_interstitials::SSLErrorUI::EXPIRED_BUT_PREVIOUSLY_ALLOWED,
-            mask);
-
-  // Overridable cert error.
-  mask = SSLErrorHandler::CalculateOptionsMask(
-      net::ERR_CERT_DATE_INVALID, /* cert_error */
-      false,                      /* hard_override_disabled */
-      false,                      /* should_ssl_errors_be_fatal */
-      false /* expired_previous_decision */);
-  EXPECT_EQ(security_interstitials::SSLErrorUI::SOFT_OVERRIDE_ENABLED, mask);
-  mask = SSLErrorHandler::CalculateOptionsMask(
-      net::ERR_CERT_DATE_INVALID, /* cert_error */
-      true,                       /* hard_override_disabled */
-      false,                      /* should_ssl_errors_be_fatal */
-      false /* expired_previous_decision */);
-  EXPECT_EQ(security_interstitials::SSLErrorUI::HARD_OVERRIDE_DISABLED, mask);
-  mask = SSLErrorHandler::CalculateOptionsMask(
-      net::ERR_CERT_DATE_INVALID, /* cert_error */
-      false,                      /* hard_override_disabled */
-      true,                       /* should_ssl_errors_be_fatal */
-      false /* expired_previous_decision */);
-  EXPECT_EQ(security_interstitials::SSLErrorUI::STRICT_ENFORCEMENT, mask);
-  mask = SSLErrorHandler::CalculateOptionsMask(
-      net::ERR_CERT_DATE_INVALID, /* cert_error */
-      false,                      /* hard_override_disabled */
-      false,                      /* should_ssl_errors_be_fatal */
-      true /* expired_previous_decision */);
-  EXPECT_EQ(
-      security_interstitials::SSLErrorUI::SOFT_OVERRIDE_ENABLED |
-          security_interstitials::SSLErrorUI::EXPIRED_BUT_PREVIOUSLY_ALLOWED,
-      mask);
 }

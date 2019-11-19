@@ -2,7 +2,6 @@
 <title>Accessibility: elements with -webkit-appearance: none retain the correct role.</title>
 <script src="../resources/testharness.js"></script>
 <script src="../resources/testharnessreport.js"></script>
-<script src="../resources/run-after-layout-and-paint.js"></script>
 <!--
 This test checks that elements with -webkit-appearance: none, do not lose their
 AXRole.
@@ -58,95 +57,95 @@ AXRole.
         assert_equals(axObject.role, expectedRole);
     }
 
-    test_after_layout_and_paint(function () {
+    test(function () {
         check("button", "AXRole: AXButton");
     }, "Test computed AX role for <button>");
 
-    test_after_layout_and_paint(function () {
+    test(function () {
         check("ibutton", "AXRole: AXButton");
     }, "Test computed AX role for <input type=button>");
 
-    test_after_layout_and_paint(function () {
+    test(function () {
         check("icolor", "AXRole: AXColorWell");
     }, "Test computed AX role for <input type=color>");
 
-    test_after_layout_and_paint(function () {
+    test(function () {
         check("idate", "AXRole: AXDateField");
     }, "Test computed AX role for <input type=date>");
 
-    test_after_layout_and_paint(function () {
+    test(function () {
         check("idatetimelocal", "AXRole: AXDateTimeField");
     }, "Test computed AX role for <input type=datetime-local>");
 
-    test_after_layout_and_paint(function () {
+    test(function () {
         check("ifile", "AXRole: AXButton");
     }, "Test computed AX role for <input type=file>");
 
-    test_after_layout_and_paint(function () {
+    test(function () {
         check("imonth", "AXRole: AXDateTimeField");
     }, "Test computed AX role for <input type=month>");
 
-    test_after_layout_and_paint(function () {
+    test(function () {
         check("inumber", "AXRole: AXSpinButton");
     }, "Test computed AX role for <input type=number>");
 
-    test_after_layout_and_paint(function () {
+    test(function () {
         check("ipassword", "AXRole: AXTextField");
     }, "Test computed AX role for <input type=password>");
 
-    test_after_layout_and_paint(function () {
+    test(function () {
         check("iradio", "AXRole: AXRadioButton");
     }, "Test computed AX role for <input type=radio>");
 
-    test_after_layout_and_paint(function () {
+    test(function () {
         check("irange", "AXRole: AXSlider");
     }, "Test computed AX role for <input type=range>");
 
-    test_after_layout_and_paint(function () {
+    test(function () {
         check("ireset", "AXRole: AXButton");
     }, "Test computed AX role for <input type=reset>");
 
-    test_after_layout_and_paint(function () {
-        check("isearch", "AXRole: AXTextField");
+    test(function () {
+        check("isearch", "AXRole: AXSearchBox");
     }, "Test computed AX role for <input type=search>");
 
-    test_after_layout_and_paint(function () {
+    test(function () {
         check("isubmit", "AXRole: AXButton");
     }, "Test computed AX role for <input type=submit>");
 
-    test_after_layout_and_paint(function () {
+    test(function () {
         check("itext", "AXRole: AXTextField");
     }, "Test computed AX role for <input type=text>");
 
-    test_after_layout_and_paint(function () {
+    test(function () {
         check("itime", "AXRole: AXInputTime");
     }, "Test computed AX role for <input type=time>");
 
-    test_after_layout_and_paint(function () {
+    test(function () {
         check("iweek", "AXRole: AXDateTimeField");
     }, "Test computed AX role for <input type=week>");
 
-    test_after_layout_and_paint(function () {
+    test(function () {
         check("idatalist", "AXRole: AXTextFieldWithComboBox");
     }, "Test computed AX role for <input list=datalist>");
 
-    test_after_layout_and_paint(function () {
+    test(function () {
         check("meter", "AXRole: AXMeter");
     }, "Test computed AX role for <meter>");
 
-    test_after_layout_and_paint(function () {
+    test(function () {
         check("progress", "AXRole: AXProgressIndicator");
     }, "Test computed AX role for <progress>");
 
-    test_after_layout_and_paint(function () {
+    test(function () {
         check("textarea", "AXRole: AXTextField");
     }, "Test computed AX role for <textarea>");
 
-    test_after_layout_and_paint(function () {
+    test(function () {
         check("select", "AXRole: AXPopUpButton");
     }, "Test computed AX role for <select>");
 
-    test_after_layout_and_paint(function () {
+    test(function () {
         check("multiselect", "AXRole: AXListBox");
     }, "Test computed AX role for <select multiple>");
 </script>

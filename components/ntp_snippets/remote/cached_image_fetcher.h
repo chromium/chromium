@@ -13,6 +13,7 @@
 #include "base/callback_forward.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
+#include "base/memory/weak_ptr.h"
 #include "components/ntp_snippets/callbacks.h"
 #include "components/ntp_snippets/content_suggestion.h"
 #include "components/ntp_snippets/remote/request_throttler.h"
@@ -92,6 +93,8 @@ class CachedImageFetcher {
   RemoteSuggestionsDatabase* database_;
   // Request throttler for limiting requests to thumbnail images.
   RequestThrottler thumbnail_requests_throttler_;
+
+  base::WeakPtrFactory<CachedImageFetcher> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(CachedImageFetcher);
 };

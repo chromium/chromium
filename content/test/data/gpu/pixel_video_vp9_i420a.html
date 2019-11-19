@@ -1,0 +1,27 @@
+<!DOCTYPE HTML>
+
+<!-- READ BEFORE UPDATING:
+If this test is updated make sure to increment the "revision" value of the
+associated test in content/test/gpu/page_sets/pixel_tests.py. This will ensure
+that the baseline images are regenerated on the next run.
+-->
+
+<html>
+<head>
+<meta name="viewport" content="initial-scale=1">
+<title>VP9 I420A Video test</title>
+<style type="text/css">
+.nomargin {
+  margin: 0px auto;
+}
+</style>
+<script src="pixel_video_test.js"></script>
+</head>
+<body onload="main()">
+<div id="container" style="position:absolute; top:0px; left:0px">
+<video class="nomargin" id="video" width="240" height="135">
+<source src="/media/test/data/four-colors-vp9-i420a.webm" type="video/webm">
+</video>
+</div>
+</body>
+</html>

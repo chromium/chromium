@@ -15,7 +15,7 @@ using base::UserMetricsAction;
 
 KeywordEditorController::KeywordEditorController(Profile* profile)
     : url_model_(TemplateURLServiceFactory::GetForProfile(profile)) {
-  table_model_.reset(new TemplateURLTableModel(url_model_));
+  table_model_ = std::make_unique<TemplateURLTableModel>(url_model_);
 }
 
 KeywordEditorController::~KeywordEditorController() {

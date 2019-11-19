@@ -207,7 +207,7 @@ class AddressValidator {
   // Member variables should appear before the WeakPtrFactory, to ensure that
   // any WeakPtrs to AddressValidator are invalidated before its members
   // variable's destructors are executed, rendering them invalid.
-  base::WeakPtrFactory<AddressValidator> weak_factory_;
+  base::WeakPtrFactory<AddressValidator> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(AddressValidator);
 };

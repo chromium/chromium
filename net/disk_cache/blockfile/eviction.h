@@ -81,7 +81,7 @@ class Eviction {
   bool delay_trim_;
   bool init_;
   bool test_mode_;
-  base::WeakPtrFactory<Eviction> ptr_factory_;
+  base::WeakPtrFactory<Eviction> ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(Eviction);
 };

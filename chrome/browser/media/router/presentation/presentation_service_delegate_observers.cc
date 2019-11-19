@@ -22,7 +22,7 @@ void PresentationServiceDelegateObservers::AddObserver(
   DCHECK(observer);
 
   content::GlobalFrameRoutingId rfh_id(render_process_id, render_frame_id);
-  DCHECK(!base::ContainsKey(observers_, rfh_id));
+  DCHECK(!base::Contains(observers_, rfh_id));
   observers_[rfh_id] = observer;
 }
 

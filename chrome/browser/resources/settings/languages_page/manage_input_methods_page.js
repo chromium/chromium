@@ -7,8 +7,7 @@
  * and disabling input methods. Input methods are grouped by base languages to
  * avoid showing duplicate or ambiguous input methods.
  *
- * @group Chrome Settings Elements
- * @element settings-manage-input-methods-page
+ * TODO(hsuregan): Move to OS settings.
  */
 Polymer({
   is: 'settings-manage-input-methods-page',

@@ -6,8 +6,9 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
-    android:paddingBottom="8dp" >
+    android:paddingBottom="8dp">
 
         <!-- Sets edge padding separately because android:padding doesn't override
              android:paddingStart. -->
@@ -22,6 +23,7 @@
             android:paddingEnd="@dimen/list_item_default_margin"
             android:gravity="center_vertical|start"
             android:text="@string/open_clear_browsing_data_dialog_button"
+            app:verticalInset="0dp"
             style="@style/TextButton" />
 
         <View style="@style/HorizontalDivider" />

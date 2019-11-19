@@ -17,6 +17,3 @@
 # Flaky, https://crbug.com/813631.
 -URLRequestQuicTest.CancelPushIfCached_*
 -URLRequestQuicTest.DoNotCancelPushIfNotFoundInCache
-
-# Flaky hangs, https://crbug.com/913037.
--URLRequestTestHTTP.Redirect30*

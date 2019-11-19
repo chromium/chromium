@@ -60,7 +60,10 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkConnect {
   // Destroys the global NetworkConnect object.
   static void Shutdown();
 
-  // Returns the global NetworkConnect object if initialized or NULL.
+  // Returns true if the global NetworkConnect object is initialized.
+  static bool IsInitialized();
+
+  // Returns the global NetworkConnect object if initialized or null.
   static NetworkConnect* Get();
 
   virtual ~NetworkConnect();

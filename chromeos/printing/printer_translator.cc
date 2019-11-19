@@ -31,6 +31,7 @@ const char kModel[] = "model";
 const char kUri[] = "uri";
 const char kUUID[] = "uuid";
 const char kPpdResource[] = "ppd_resource";
+const char kAutoconf[] = "autoconf";
 const char kGuid[] = "guid";
 
 // Returns true if the uri was retrieved, is valid, and was set on |printer|.
@@ -102,7 +103,7 @@ std::unique_ptr<base::DictionaryValue> CreateEmptyPrinterInfo() {
   printer_info->SetString("ppdManufacturer", "");
   printer_info->SetString("ppdModel", "");
   printer_info->SetString("printerAddress", "");
-  printer_info->SetBoolean("printerAutoconf", false);
+  printer_info->SetBoolean("printerPpdReference.autoconf", false);
   printer_info->SetString("printerDescription", "");
   printer_info->SetString("printerId", "");
   printer_info->SetString("printerManufacturer", "");
@@ -148,13 +149,27 @@ std::unique_ptr<Printer> RecommendedPrinterToPrinter(
   printer->set_source(Printer::SRC_POLICY);
 
   const DictionaryValue* ppd;
-  std::string make_and_model;
-  if (pref.GetDictionary(kPpdResource, &ppd) &&
-      ppd->GetString(kEffectiveModel, &make_and_model)) {
-    printer->mutable_ppd_reference()->effective_make_and_model = make_and_model;
-  } else {
-    // Make and model is mandatory
-    LOG(WARNING) << "Missing model information for policy printer.";
+  if (pref.GetDictionary(kPpdResource, &ppd)) {
+    Printer::PpdReference* ppd_reference = printer->mutable_ppd_reference();
+    std::string make_and_model;
+    if (ppd->GetString(kEffectiveModel, &make_and_model))
+      ppd_reference->effective_make_and_model = make_and_model;
+    bool autoconf;
+    if (ppd->GetBoolean(kAutoconf, &autoconf))
+      ppd_reference->autoconf = autoconf;
+  }
+  if (!printer->ppd_reference().autoconf &&
+      printer->ppd_reference().effective_make_and_model.empty()) {
+    // Either autoconf flag or make and model is mandatory.
+    LOG(WARNING)
+        << "Missing autoconf flag and model information for policy printer.";
+    return nullptr;
+  }
+  if (printer->ppd_reference().autoconf &&
+      !printer->ppd_reference().effective_make_and_model.empty()) {
+    // PPD reference can't contain both autoconf and make and model.
+    LOG(WARNING) << "Autoconf flag is set together with model information for "
+                    "policy printer.";
     return nullptr;
   }
 
@@ -175,7 +190,8 @@ std::unique_ptr<base::DictionaryValue> GetCupsPrinterInfo(
   // NOTE: This assumes the the function IsIppEverywhere() simply returns
   // |printer.ppd_reference_.autoconf|. If the implementation of
   // IsIppEverywhere() changes this will need to be changed as well.
-  printer_info->SetBoolean("printerAutoconf", printer.IsIppEverywhere());
+  printer_info->SetBoolean("printerPpdReference.autoconf",
+                           printer.IsIppEverywhere());
   printer_info->SetString("printerPPDPath",
                           printer.ppd_reference().user_supplied_ppd_url);
 
@@ -199,6 +215,7 @@ std::unique_ptr<base::DictionaryValue> GetCupsPrinterInfo(
     // entire host/path/query block is the printer address for USB.
     printer_info->SetString("printerAddress",
                             printer.uri().substr(strlen("usb://")));
+    printer_info->SetString("ppdManufacturer", printer.manufacturer());
   } else {
     printer_info->SetString("printerAddress",
                             PrinterAddress(uri.host(), uri.port()));

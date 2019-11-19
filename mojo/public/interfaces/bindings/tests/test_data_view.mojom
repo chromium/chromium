@@ -33,7 +33,7 @@ struct TestStruct {
   array<bool> f_bool_array;
   array<int32> f_int32_array;
   array<TestEnum> f_enum_array;
-  array<TestInterface> f_interface_array;
+  array<pending_remote<TestInterface>> f_interface_array;
   array<array<int32>> f_nested_array;
   array<NestedStruct> f_struct_array;
   array<TestUnion> f_union_array;

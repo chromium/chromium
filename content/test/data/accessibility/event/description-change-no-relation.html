@@ -1,0 +1,14 @@
+<!--
+@UIA-WIN-DENY:Text_TextChanged*
+-->
+<!DOCTYPE html>
+<html>
+<body>
+<div id="a" aria-description="1"></div>
+<script>
+  function go() {
+    document.getElementById('a').setAttribute('aria-description', '2');
+  }
+</script>
+</body>
+</html>

@@ -14,10 +14,6 @@
 
 import("../build/crashpad_buildconfig.gni")
 
-if (crashpad_is_in_chromium) {
-  import("//build/config/sanitizers/sanitizers.gni")
-}
-
 static_library("handler") {
   sources = [
     "crash_report_upload_thread.cc",
@@ -46,10 +42,19 @@ static_library("handler") {
   if (crashpad_is_linux || crashpad_is_android) {
     set_sources_assignment_filter([])
     sources += [
+      "linux/capture_snapshot.cc",
+      "linux/capture_snapshot.h",
       "linux/crash_report_exception_handler.cc",
       "linux/crash_report_exception_handler.h",
       "linux/exception_handler_server.cc",
       "linux/exception_handler_server.h",
+    ]
+  }
+
+  if (crashpad_is_linux) {
+    sources += [
+      "linux/cros_crash_report_exception_handler.cc",
+      "linux/cros_crash_report_exception_handler.h",
     ]
   }
 
@@ -88,7 +93,21 @@ static_library("handler") {
   }
 
   if (crashpad_is_fuchsia) {
-    deps += [ "../third_party/fuchsia:zx" ]
+    deps += [ "../third_party/fuchsia" ]
+  }
+}
+
+if (crashpad_is_android) {
+  # CrashpadHandlerMain is defined in a separate target so that it can be
+  # overriden by implementers
+  source_set("crashpad_handler_main") {
+    sources = [
+      "crashpad_handler_main.cc",
+    ]
+
+    deps = [
+      ":handler",
+    ]
   }
 }
 
@@ -181,10 +200,11 @@ if (crashpad_is_android) {
 
     ldflags = [ "-llog" ]
 
-    # TODO(thakis): Remove !using_sanitizer, https://crbug.com/936418
-    if (crashpad_is_in_chromium && !using_sanitizer) {
+    if (crashpad_is_in_chromium) {
       no_default_deps = true
     }
+    remove_configs =
+        [ "//build/config/android:default_orderfile_instrumentation" ]
   }
 }
 

@@ -1,0 +1,53 @@
+// Copyright 2014 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module media.mojom;
+
+import "media/mojo/mojom/media_types.mojom";
+
+// DemuxerStream is modeled after media::DemuxerStream using mojo in order to
+// enable proxying between a media::Pipeline and media::Renderer living in two
+// different applications.
+interface DemuxerStream {
+  // See media::DemuxerStream for descriptions.
+  [Native]
+  enum Type;
+
+  // See media::DemuxerStream for descriptions.
+  [Native]
+  enum Status;
+
+  // Initializes the DemuxerStream. Read() can only be called after the callback
+  // is received. The returned |pipe| will be used to fill out the data section
+  // of the media::DecoderBuffer returned via DemuxerStream::Read(). Only the
+  // config for |type| should be non-null, which is the initial config of the
+  // stream.
+  Initialize() => (Type type,
+                   handle<data_pipe_consumer> pipe,
+                   AudioDecoderConfig? audio_config,
+                   VideoDecoderConfig? video_config);
+
+  // Requests a DecoderBuffer from this stream for decoding and rendering.
+  // See media::DemuxerStream::ReadCB for a general explanation of the fields.
+  //
+  // Notes on the callback:
+  // - If |status| is OK, |buffer| should be non-null and clients must fill out
+  //   the data section of the returned media::DecoderBuffer by reading from
+  //   the |pipe| provided during Initialize().
+  // - If |status| is ABORTED, all other fields should be null.
+  // - If |status| is CONFIG_CHANGED, the config for the stream type should be
+  //   non-null.
+  //
+  // TODO(dalecurtis): Remove this method in favor of serializing everything
+  // into the DataPipe given to Initialize() once DataPipe supports framed data
+  // in a nicer fashion.
+  Read() => (Status status,
+             DecoderBuffer? buffer,
+             AudioDecoderConfig? audio_config,
+             VideoDecoderConfig? video_config);
+
+  // Enables converting bitstream to a format that is expected by the decoder.
+  // For example, H.264/AAC bitstream based packets into H.264 Annex B format.
+  EnableBitstreamConverter();
+};

@@ -1,0 +1,9 @@
+Tests accessibility in the editor pane in sources panel using the axe-core linter.
+All tabs:
+Script snippet #1
+Script snippet #2
+
+
+aXe violations: []
+
+

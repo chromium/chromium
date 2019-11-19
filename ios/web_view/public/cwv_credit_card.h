@@ -11,8 +11,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-CWV_EXPORT
 // Represents a credit card for autofilling payment forms.
+CWV_EXPORT
 @interface CWVCreditCard : NSObject
 
 // The full name of the card holder. e.g. "John Doe".

@@ -446,20 +446,17 @@ void H264Decoder::ConstructReferencePicListsB(
 }
 
 // See 8.2.4
-int H264Decoder::PicNumF(const scoped_refptr<H264Picture>& pic) {
-  if (!pic)
-    return -1;
-
-  if (!pic->long_term)
-    return pic->pic_num;
+int H264Decoder::PicNumF(const H264Picture& pic) {
+  if (!pic.long_term)
+    return pic.pic_num;
   else
     return max_pic_num_;
 }
 
 // See 8.2.4
-int H264Decoder::LongTermPicNumF(const scoped_refptr<H264Picture>& pic) {
-  if (pic->ref && pic->long_term)
-    return pic->long_term_pic_num;
+int H264Decoder::LongTermPicNumF(const H264Picture& pic) {
+  if (pic.ref && pic.long_term)
+    return pic.long_term_pic_num;
   else
     return 2 * (max_long_term_frame_idx_ + 1);
 }
@@ -469,7 +466,7 @@ int H264Decoder::LongTermPicNumF(const scoped_refptr<H264Picture>& pic) {
 static void ShiftRightAndInsert(H264Picture::Vector* v,
                                 int from,
                                 int to,
-                                const scoped_refptr<H264Picture>& pic) {
+                                scoped_refptr<H264Picture> pic) {
   // Security checks, do not disable in Debug mode.
   CHECK(from <= to);
   CHECK(to <= std::numeric_limits<int>::max() - 2);
@@ -484,7 +481,7 @@ static void ShiftRightAndInsert(H264Picture::Vector* v,
   for (int i = to + 1; i > from; --i)
     (*v)[i] = (*v)[i - 1];
 
-  (*v)[from] = pic;
+  (*v)[from] = std::move(pic);
 }
 
 bool H264Decoder::ModifyReferencePicList(const H264SliceHeader* slice_hdr,
@@ -573,7 +570,9 @@ bool H264Decoder::ModifyReferencePicList(const H264SliceHeader* slice_hdr,
 
         for (int src = ref_idx_lx, dst = ref_idx_lx;
              src <= num_ref_idx_lX_active_minus1 + 1; ++src) {
-          if (PicNumF((*ref_pic_listx)[src]) != pic_num_lx)
+          auto* src_pic = (*ref_pic_listx)[src].get();
+          int src_pic_num_lx = src_pic ? PicNumF(*src_pic) : -1;
+          if (src_pic_num_lx != pic_num_lx)
             (*ref_pic_listx)[dst++] = (*ref_pic_listx)[src];
         }
         break;
@@ -594,7 +593,7 @@ bool H264Decoder::ModifyReferencePicList(const H264SliceHeader* slice_hdr,
 
         for (int src = ref_idx_lx, dst = ref_idx_lx;
              src <= num_ref_idx_lX_active_minus1 + 1; ++src) {
-          if (LongTermPicNumF((*ref_pic_listx)[src]) !=
+          if (LongTermPicNumF(*(*ref_pic_listx)[src]) !=
               static_cast<int>(list_mod->long_term_pic_num))
             (*ref_pic_listx)[dst++] = (*ref_pic_listx)[src];
         }
@@ -1224,13 +1223,13 @@ H264Decoder::H264Accelerator::Status H264Decoder::ProcessCurrentSlice() {
     }                                              \
   } while (0)
 
-void H264Decoder::SetStream(int32_t id,
-                            const uint8_t* ptr,
-                            size_t size,
-                            const DecryptConfig* decrypt_config) {
+void H264Decoder::SetStream(int32_t id, const DecoderBuffer& decoder_buffer) {
+  const uint8_t* ptr = decoder_buffer.data();
+  const size_t size = decoder_buffer.data_size();
+  const DecryptConfig* decrypt_config = decoder_buffer.decrypt_config();
+
   DCHECK(ptr);
   DCHECK(size);
-
   DVLOG(4) << "New input stream id: " << id << " at: " << (void*)ptr
            << " size: " << size;
   stream_id_ = id;
@@ -1415,6 +1414,10 @@ H264Decoder::DecodeResult H264Decoder::Decode() {
 
 gfx::Size H264Decoder::GetPicSize() const {
   return pic_size_;
+}
+
+gfx::Rect H264Decoder::GetVisibleRect() const {
+  return visible_rect_;
 }
 
 size_t H264Decoder::GetRequiredNumOfPictures() const {

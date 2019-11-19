@@ -8,7 +8,7 @@
 #include "third_party/blink/public/common/origin_trials/trial_token_validator.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
-#include "third_party/blink/renderer/platform/supplementable.h"
+#include "third_party/blink/renderer/core/origin_trials/origin_trials.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -33,22 +33,12 @@ class ExecutionContext;
 //
 // For more information, see https://github.com/jpchase/OriginTrials.
 class CORE_EXPORT OriginTrialContext final
-    : public GarbageCollectedFinalized<OriginTrialContext>,
-      public Supplement<ExecutionContext> {
-  USING_GARBAGE_COLLECTED_MIXIN(OriginTrialContext);
-
+    : public GarbageCollected<OriginTrialContext> {
  public:
-  static const char kSupplementName[];
+  OriginTrialContext();
+  explicit OriginTrialContext(std::unique_ptr<TrialTokenValidator> validator);
 
-  OriginTrialContext(ExecutionContext&, std::unique_ptr<TrialTokenValidator>);
-
-  // Returns the OriginTrialContext for a specific ExecutionContext, if one
-  // exists.
-  static const OriginTrialContext* From(const ExecutionContext*);
-
-  // Returns the OriginTrialContext for a specific ExecutionContext, creating
-  // one if one does not already exist.
-  static OriginTrialContext* FromOrCreate(ExecutionContext*);
+  void BindExecutionContext(ExecutionContext*);
 
   // Parses an Origin-Trial header as specified in
   // https://jpchase.github.io/OriginTrials/#header into individual tokens.
@@ -65,16 +55,48 @@ class CORE_EXPORT OriginTrialContext final
   // Returns null if no tokens were added to the ExecutionContext.
   static std::unique_ptr<Vector<String>> GetTokens(ExecutionContext*);
 
+  // Returns the navigation trial features that are enabled in the specified
+  // ExecutionContext, that should be forwarded to (and activated in)
+  // ExecutionContexts navigated to from the given ExecutionContext. Returns
+  // null if no such trials were added to the ExecutionContext.
+  static std::unique_ptr<Vector<OriginTrialFeature>>
+  GetEnabledNavigationFeatures(ExecutionContext*);
+
+  // Activates navigation trial features forwarded from the ExecutionContext
+  // that navigated to the specified ExecutionContext. Only features for which
+  // origin_trials::IsCrossNavigationFeature returns true can be activated via
+  // this method. Trials activated via this method will return true from
+  // IsNavigationFeatureActivated, for the specified ExecutionContext.
+  static void ActivateNavigationFeaturesFromInitiator(
+      ExecutionContext*,
+      const Vector<OriginTrialFeature>*);
+
   void AddToken(const String& token);
   void AddTokens(const Vector<String>& tokens);
+  void AddTokens(const SecurityOrigin* origin,
+                 bool is_secure,
+                 const Vector<String>& tokens);
+
+  void ActivateNavigationFeaturesFromInitiator(
+      const Vector<OriginTrialFeature>& features);
 
   // Forces a given origin-trial-enabled feature to be enabled in this context
   // and immediately adds required bindings to already initialized JS contexts.
-  void AddFeature(const String& feature);
+  void AddFeature(OriginTrialFeature feature);
 
-  // Returns true if the trial (and therefore the feature or features it
-  // controls) should be considered enabled for the current execution context.
-  bool IsTrialEnabled(const String& trial_name) const;
+  // Returns true if the feature should be considered enabled for the current
+  // execution context.
+  bool IsFeatureEnabled(OriginTrialFeature feature) const;
+
+  std::unique_ptr<Vector<OriginTrialFeature>> GetEnabledNavigationFeatures()
+      const;
+
+  // Returns true if the navigation feature is activated in the current
+  // ExecutionContext. Navigation features are features that are enabled in one
+  // ExecutionContext, but whose behavior is activated in ExecutionContexts that
+  // are navigated to from that context. For example, if navigating from context
+  // A to B, a navigation feature is enabled in A, and activated in B.
+  bool IsNavigationFeatureActivated(const OriginTrialFeature feature) const;
 
   // Installs JavaScript bindings on the relevant objects for any features which
   // should be enabled by the current set of trial tokens. This method is called
@@ -87,18 +109,29 @@ class CORE_EXPORT OriginTrialContext final
   // enabled.
   void InitializePendingFeatures();
 
-  void Trace(blink::Visitor*) override;
+  void Trace(blink::Visitor*);
 
  private:
   // Validate the trial token. If valid, the trial named in the token is
   // added to the list of enabled trials. Returns true or false to indicate if
   // the token is valid.
-  bool EnableTrialFromToken(const String& token);
+  bool EnableTrialFromToken(const SecurityOrigin* origin,
+                            bool is_secure,
+                            const String& token);
+
+  // Installs JavaScript bindings on the relevant objects for the specified
+  // OriginTrialFeature.
+  void InstallFeature(OriginTrialFeature, ScriptState*);
+
+  const SecurityOrigin* GetSecurityOrigin();
+  bool IsSecureContext();
 
   Vector<String> tokens_;
-  HashSet<String> enabled_trials_;
-  HashSet<String> installed_trials_;
+  HashSet<OriginTrialFeature> enabled_features_;
+  HashSet<OriginTrialFeature> installed_features_;
+  HashSet<OriginTrialFeature> navigation_activated_features_;
   std::unique_ptr<TrialTokenValidator> trial_token_validator_;
+  Member<ExecutionContext> context_;
 };
 
 }  // namespace blink

@@ -113,7 +113,7 @@ bool MessageBundle::AppendReservedMessagesForLocale(
   // Add all reserved messages to the dictionary, but check for collisions.
   auto it = append_messages.begin();
   for (; it != append_messages.end(); ++it) {
-    if (base::ContainsKey(dictionary_, it->first)) {
+    if (base::Contains(dictionary_, it->first)) {
       *error = ErrorUtils::FormatErrorMessage(
           errors::kReservedMessageFound, it->first);
       return false;

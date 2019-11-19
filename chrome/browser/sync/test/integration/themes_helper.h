@@ -69,8 +69,7 @@ class ThemeConditionChecker : public StatusChangeChecker,
   ~ThemeConditionChecker() override;
 
   // Implementation of StatusChangeChecker.
-  std::string GetDebugMessage() const override;
-  bool IsExitConditionSatisfied() override;
+  bool IsExitConditionSatisfied(std::ostream* os) override;
 
   // Implementation of content::NotificationObserver.
   void Observe(int type,
@@ -101,8 +100,7 @@ class ThemePendingInstallChecker : public StatusChangeChecker,
   ~ThemePendingInstallChecker() override;
 
   // Implementation of StatusChangeChecker.
-  std::string GetDebugMessage() const override;
-  bool IsExitConditionSatisfied() override;
+  bool IsExitConditionSatisfied(std::ostream* os) override;
 
   // Implementation of content::NotificationObserver.
   void Observe(int type,

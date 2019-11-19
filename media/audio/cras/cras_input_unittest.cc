@@ -15,6 +15,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "chromeos/audio/cras_audio_handler.h"
+#include "chromeos/dbus/audio/fake_cras_audio_client.h"
 #include "media/audio/audio_device_description.h"
 #include "media/audio/cras/audio_manager_cras.h"
 #include "media/audio/fake_audio_log_factory.h"
@@ -64,14 +65,16 @@ class MockAudioManagerCrasInput : public AudioManagerCras {
 class CrasInputStreamTest : public testing::Test {
  protected:
   CrasInputStreamTest() {
+    chromeos::CrasAudioClient::InitializeFake();
     chromeos::CrasAudioHandler::InitializeForTesting();
     mock_manager_.reset(new StrictMock<MockAudioManagerCrasInput>());
     base::RunLoop().RunUntilIdle();
   }
 
   ~CrasInputStreamTest() override {
-    chromeos::CrasAudioHandler::Shutdown();
     mock_manager_->Shutdown();
+    chromeos::CrasAudioHandler::Shutdown();
+    chromeos::CrasAudioClient::Shutdown();
   }
 
   CrasInputStream* CreateStream(ChannelLayout layout) {

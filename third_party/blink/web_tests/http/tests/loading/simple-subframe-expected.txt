@@ -2,6 +2,7 @@ main frame - DidStartNavigation
 main frame - ReadyToCommitNavigation
 main frame - didCommitLoadForFrame
 frame "f1" - didReceiveTitle: 
+frame "f1" - BeginNavigation request to 'data:text/html,<b>test</b>', http method GET
 frame "f1" - DidStartNavigation
 main frame - didReceiveTitle: 
 main frame - didFinishDocumentLoadForFrame

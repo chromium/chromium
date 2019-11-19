@@ -1,16 +1,9 @@
 specific_include_rules = {
-  # https://crbug.com/875111
-  "multi_user_window_manager_client_impl\.*": [
-    "+ash/multi_user/multi_user_window_manager.h",
-    "+ash/multi_user/multi_user_window_manager_delegate_classic.h",
-  ],
-  # https://crbug.com/875111
-  "multi_user_window_manager_client_impl_unittest\.cc": [
+  "multi_profile_support_unittest\.cc": [
     "+ash/multi_user/user_switch_animator.h",
-    "+ash/session/session_controller.h",
+    "+ash/session/session_controller_impl.h",
     "+ash/ws/window_lookup.h",
   ],
-  # https://crbug.com/875111
   "multi_user_context_menu_chromeos_unittest\.cc": [
     "+ash/test/ash_test_helper.h",
   ],

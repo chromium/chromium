@@ -107,7 +107,7 @@ void DedupingFactory<BaseClassT>::RegisterFactoryMethod(
     const std::string& instance_type,
     typename DedupingFactory<BaseClassT>::Parameterized parameterized,
     FactoryMethod factory_method) {
-  DCHECK(!base::ContainsKey(factory_methods_, instance_type));
+  DCHECK(!base::Contains(factory_methods_, instance_type));
   factory_methods_[instance_type] = factory_method;
   if (parameterized == IS_PARAMETERIZED)
     parameterized_types_.insert(instance_type);
@@ -134,7 +134,7 @@ scoped_refptr<const BaseClassT> DedupingFactory<BaseClassT>::Instantiate(
   // We can take a shortcut for objects that are not parameterized. For those
   // only a single instance may ever exist so we can simplify the creation
   // logic.
-  if (!base::ContainsKey(parameterized_types_, instance_type)) {
+  if (!base::Contains(parameterized_types_, instance_type)) {
     if (prototypes.empty()) {
       scoped_refptr<const BaseClassT> new_object =
           (*factory_method)(instance_type, value, error, bad_message);

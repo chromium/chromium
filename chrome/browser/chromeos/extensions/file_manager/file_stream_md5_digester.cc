@@ -9,7 +9,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "net/base/net_errors.h"
-#include "storage/browser/fileapi/file_stream_reader.h"
+#include "storage/browser/file_system/file_stream_reader.h"
 
 namespace drive {
 namespace util {
@@ -27,35 +27,38 @@ FileStreamMd5Digester::~FileStreamMd5Digester() = default;
 
 void FileStreamMd5Digester::GetMd5Digest(
     std::unique_ptr<storage::FileStreamReader> stream_reader,
-    const ResultCallback& callback) {
+    ResultCallback callback) {
+  // Only one digest can be running at a time.
+  DCHECK(callback_.is_null());
+
+  callback_ = std::move(callback);
   reader_ = std::move(stream_reader);
   base::MD5Init(&md5_context_);
 
   // Start the read/hash.
-  ReadNextChunk(callback);
+  ReadNextChunk();
 }
 
-void FileStreamMd5Digester::ReadNextChunk(const ResultCallback& callback) {
+void FileStreamMd5Digester::ReadNextChunk() {
   const int result =
       reader_->Read(buffer_.get(), kMd5DigestBufferSize,
                     base::BindOnce(&FileStreamMd5Digester::OnChunkRead,
-                                   base::Unretained(this), callback));
+                                   base::Unretained(this)));
   if (result != net::ERR_IO_PENDING)
-    OnChunkRead(callback, result);
+    OnChunkRead(result);
 }
 
-void FileStreamMd5Digester::OnChunkRead(const ResultCallback& callback,
-                                        int bytes_read) {
+void FileStreamMd5Digester::OnChunkRead(int bytes_read) {
   if (bytes_read < 0) {
     // Error - just return empty string.
-    callback.Run("");
+    std::move(callback_).Run("");
     return;
   } else if (bytes_read == 0) {
     // EOF.
     base::MD5Digest digest;
     base::MD5Final(&digest, &md5_context_);
     std::string result = base::MD5DigestToBase16(digest);
-    callback.Run(result);
+    std::move(callback_).Run(std::move(result));
     return;
   }
 
@@ -64,7 +67,7 @@ void FileStreamMd5Digester::OnChunkRead(const ResultCallback& callback,
                   base::StringPiece(buffer_->data(), bytes_read));
 
   // Kick off the next read.
-  ReadNextChunk(callback);
+  ReadNextChunk();
 }
 
 }  // namespace util

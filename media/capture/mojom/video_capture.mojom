@@ -5,7 +5,8 @@
 module media.mojom;
 
 import "media/capture/mojom/video_capture_types.mojom";
-import "ui/gfx/geometry/mojo/geometry.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
+import "mojo/public/mojom/base/unguessable_token.mojom";
 
 // This file decribes the communication between a given Renderer Host interface
 // implementation (VideoCaptureHost) and a remote VideoCaptureObserver.
@@ -81,38 +82,44 @@ interface VideoCaptureHost {
   // Start the |session_id| session with |params|. The video capture will be
   // identified as |device_id|, a new id picked by the renderer process.
   // |observer| will be used for notifications.
-  Start(int32 device_id, int32 session_id, VideoCaptureParams params,
-        VideoCaptureObserver observer);
+  Start(mojo_base.mojom.UnguessableToken device_id,
+        mojo_base.mojom.UnguessableToken session_id,
+        VideoCaptureParams params,
+        pending_remote<VideoCaptureObserver> observer);
 
   // Closes the video capture specified by |device_id|.
-  Stop(int32 device_id);
+  Stop(mojo_base.mojom.UnguessableToken device_id);
 
   // Pauses the video capture specified by |device_id|.
-  Pause(int32 device_id);
+  Pause(mojo_base.mojom.UnguessableToken device_id);
 
   // Resume |device_id| video capture, in |session_id| and with |params|.
-  Resume(int32 device_id, int32 session_id, VideoCaptureParams params);
+  Resume(mojo_base.mojom.UnguessableToken device_id,
+         mojo_base.mojom.UnguessableToken session_id,
+         VideoCaptureParams params);
 
   // Requests that the video capturer send a frame "soon" (e.g., to resolve
   // picture loss or quality issues).
-  RequestRefreshFrame(int32 device_id);
+  RequestRefreshFrame(mojo_base.mojom.UnguessableToken device_id);
 
   // Indicates that a renderer has finished using a previously shared buffer.
-  ReleaseBuffer(int32 device_id, int32 buffer_id,
+  ReleaseBuffer(mojo_base.mojom.UnguessableToken device_id, int32 buffer_id,
                 double consumer_resource_utilization);
 
   // Get the formats supported by a device referenced by |session_id|.
-  GetDeviceSupportedFormats(int32 device_id, int32 session_id)
+  GetDeviceSupportedFormats(mojo_base.mojom.UnguessableToken device_id,
+                            mojo_base.mojom.UnguessableToken session_id)
     => (array<VideoCaptureFormat> formats_supported);
 
   // Get the format(s) in use by a device referenced by |session_id|.
-  GetDeviceFormatsInUse(int32 device_id, int32 session_id)
+  GetDeviceFormatsInUse(mojo_base.mojom.UnguessableToken device_id,
+                        mojo_base.mojom.UnguessableToken session_id)
     => (array<VideoCaptureFormat> formats_in_use);
 
   // Notifies the host about a frame being dropped.
-  OnFrameDropped(int32 device_id,
+  OnFrameDropped(mojo_base.mojom.UnguessableToken device_id,
                  media.mojom.VideoCaptureFrameDropReason reason);
 
   // Sends a log message to the VideoCaptureHost.
-  OnLog(int32 device_id, string message);
+  OnLog(mojo_base.mojom.UnguessableToken device_id, string message);
 };

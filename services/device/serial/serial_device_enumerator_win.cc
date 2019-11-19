@@ -17,6 +17,7 @@
 #include <utility>
 
 #include "base/metrics/histogram_functions.h"
+#include "base/numerics/ranges.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -89,11 +90,6 @@ bool GetProductID(const std::string hardware_id, uint32_t* product_id) {
          base::HexStringToUInt(product_id_str, product_id);
 }
 
-// Returns value clamped to the range of [min, max].
-int Clamp(int value, int min, int max) {
-  return std::min(std::max(value, min), max);
-}
-
 }  // namespace
 
 // static
@@ -109,8 +105,9 @@ std::vector<mojom::SerialPortInfoPtr> SerialDeviceEnumeratorWin::GetDevices() {
   std::vector<mojom::SerialPortInfoPtr> devices = GetDevicesNew();
   std::vector<mojom::SerialPortInfoPtr> old_devices = GetDevicesOld();
 
-  base::UmaHistogramSparse("Hardware.Serial.NewMinusOldDeviceListSize",
-                           Clamp(devices.size() - old_devices.size(), -10, 10));
+  base::UmaHistogramSparse(
+      "Hardware.Serial.NewMinusOldDeviceListSize",
+      base::ClampToRange<int>(devices.size() - old_devices.size(), -10, 10));
 
   // Add devices found from both the new and old methods of enumeration. If a
   // device is found using both the new and the old enumeration method, then we

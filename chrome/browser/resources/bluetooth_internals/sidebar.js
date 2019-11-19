@@ -8,10 +8,10 @@
 
 cr.define('sidebar', function() {
   /** @typedef {{pageName: string, text: string}} */
-  var SidebarItem;
+  let SidebarItem;
 
   /** @const {!Object}*/
-  var PageManager = cr.ui.pageManager.PageManager;
+  const PageManager = cr.ui.pageManager.PageManager;
 
   /**
    * A side menu that lists the currently navigable pages.
@@ -52,10 +52,10 @@ cr.define('sidebar', function() {
      * @param {!SidebarItem} item
      */
     addItem: function(item) {
-      var sidebarItem = document.createElement('li');
+      const sidebarItem = document.createElement('li');
       sidebarItem.dataset.pageName = item.pageName.toLowerCase();
 
-      var button = document.createElement('button');
+      const button = document.createElement('button');
       button.classList.add('custom-appearance');
       button.textContent = item.text;
       button.addEventListener('click', this.onItemClick_.bind(this));
@@ -88,7 +88,7 @@ cr.define('sidebar', function() {
      */
     removeItem: function(pageName) {
       pageName = pageName.toLowerCase();
-      var query = 'li[data-page-name="' + pageName + '"]';
+      const query = 'li[data-page-name="' + pageName + '"]';
       this.sidebarList_.removeChild(this.sidebarList_.querySelector(query));
     },
 

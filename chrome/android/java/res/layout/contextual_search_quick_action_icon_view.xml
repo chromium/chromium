@@ -9,5 +9,4 @@
     android:layout_width="@dimen/contextual_search_bar_image_size"
     android:layout_height="@dimen/contextual_search_bar_image_size"
     android:importantForAccessibility="no"
-    android:scaleType="center"
-    android:background="@color/light_background_color" />
+    android:scaleType="center"/>

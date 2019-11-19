@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html class="reftest-wait">
+<style>
+  canvas {
+    width: 100px;
+    height: 100px;
+    background: green;
+    outline: 50px solid orange;
+    outline-offset: -50px;
+    transform: translateZ(0);
+  }
+</style>
+<canvas id="canvas"></canvas>
+<script>
+var canvas = document.getElementById('canvas');
+var ctx = canvas.getContext('webgl');
+ctx.clearColor(0.0, 0.5, 0.0, 1.0);
+ctx.clear(ctx.COLOR_BUFFER_BIT);
+requestAnimationFrame(ts => {
+document.documentElement.classList.remove("reftest-wait");
+});
+</script>
+</html>

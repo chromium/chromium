@@ -10,6 +10,7 @@
 #include "base/files/file_path.h"
 #include "base/path_service.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/chromeos/policy/browser_policy_connector_chromeos.h"
 #include "chrome/browser/chromeos/policy/cloud_external_data_manager_base_test_util.h"
 #include "chrome/browser/chromeos/policy/device_policy_cros_browser_test.h"
@@ -155,7 +156,7 @@ IN_PROC_BROWSER_TEST_F(DeviceCloudExternalDataPolicyObserverTest, PolicyIsSet) {
                                   _))
       .WillOnce(testing::Invoke(
           [&run_loop](const std::string&, std::string*, const base::FilePath&) {
-            run_loop.QuitClosure().Run();
+            run_loop.Quit();
           }));
 
   SetDeviceNativePrintersExternalData(test::ConstructExternalDataPolicy(
@@ -175,7 +176,7 @@ IN_PROC_BROWSER_TEST_F(DeviceCloudExternalDataPolicyObserverTest,
                                   _))
       .WillOnce(testing::Invoke(
           [&run_loop](const std::string&, std::string*, const base::FilePath&) {
-            run_loop.QuitClosure().Run();
+            run_loop.Quit();
           }));
 
   SetDeviceNativePrintersExternalData(test::ConstructExternalDataPolicy(
@@ -194,7 +195,7 @@ IN_PROC_BROWSER_TEST_F(DeviceCloudExternalDataPolicyObserverTest,
       .WillOnce(
           testing::Invoke([&run_loop_updated](const std::string&, std::string*,
                                               const base::FilePath&) {
-            run_loop_updated.QuitClosure().Run();
+            run_loop_updated.Quit();
           }));
 
   SetDeviceNativePrintersExternalData(test::ConstructExternalDataPolicy(

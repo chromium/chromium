@@ -4,17 +4,19 @@
      found in the LICENSE file.
 -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:gravity="start"
-    style="@style/AlertDialogContent" >
+    style="@style/AlertDialogContent">
 
-    <TextView
+    <org.chromium.chrome.browser.ui.widget.text.TextViewWithCompoundDrawables
         android:id="@+id/text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center_vertical"
         android:textDirection="locale"
-        android:textSize="@dimen/dialog_text_size"
         android:paddingBottom="24dp"
-        android:drawablePadding="8dp" />
+        android:drawablePadding="8dp"
+        android:textAppearance="@style/TextAppearance.BlackBody"
+        app:chromeDrawableTint="@color/default_icon_color_blue" />
 </LinearLayout>

@@ -27,7 +27,7 @@
     UI.panels.sources.sourcesView().currentUISourceCode().requestContent().then(gotContent);
   }
 
-  function gotContent(content) {
+  function gotContent({ content, error, isEncoded }) {
     TestRunner.addResult('');
     TestRunner.addResult('');
     TestRunner.addResult('==== Current Content ====');

@@ -7,7 +7,7 @@
 #include <jni.h>
 
 #include "base/android/jni_android.h"
-#include "jni/ChromeInterfaceRegistrar_jni.h"
+#include "chrome/android/chrome_jni_headers/ChromeInterfaceRegistrar_jni.h"
 
 void RegisterChromeJavaMojoInterfaces() {
   Java_ChromeInterfaceRegistrar_registerMojoInterfaces(

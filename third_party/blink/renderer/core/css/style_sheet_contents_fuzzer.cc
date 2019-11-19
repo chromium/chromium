@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/css/style_sheet_contents.h"
 
+#include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/testing/blink_fuzzer_test_support.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -17,12 +18,12 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   const int is_secure_context_mode =
       (std::hash<size_t>()(data_hash) & std::numeric_limits<int>::max()) % 2;
 
-  blink::CSSParserContext* context = blink::CSSParserContext::Create(
+  auto* context = blink::MakeGarbageCollected<blink::CSSParserContext>(
       is_strict_mode ? blink::kHTMLStandardMode : blink::kHTMLQuirksMode,
       is_secure_context_mode ? blink::SecureContextMode::kSecureContext
                              : blink::SecureContextMode::kInsecureContext);
-  blink::StyleSheetContents* styleSheet =
-      blink::StyleSheetContents::Create(context);
+  auto* styleSheet =
+      blink::MakeGarbageCollected<blink::StyleSheetContents>(context);
 
   styleSheet->ParseString(String::FromUTF8WithLatin1Fallback(
       reinterpret_cast<const char*>(data), size));

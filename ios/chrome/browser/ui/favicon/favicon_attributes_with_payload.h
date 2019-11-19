@@ -13,15 +13,6 @@
 // created by mediator and used as a FaviconAttributes by UI elements.
 @interface FaviconAttributesWithPayload : FaviconAttributes
 
-+ (nullable instancetype)attributesWithImage:(nonnull UIImage*)image;
-+ (nullable instancetype)attributesWithMonogram:(nonnull NSString*)monogram
-                                      textColor:(nonnull UIColor*)textColor
-                                backgroundColor:
-                                    (nonnull UIColor*)backgroundColor
-                         defaultBackgroundColor:(BOOL)defaultBackgroundColor;
-
-- (nullable instancetype)init NS_UNAVAILABLE;
-
 // Type of the icon used to create with FaviconAttributes. Only valid if the
 // favicon has an image.
 @property(nonatomic, assign) favicon_base::IconType iconType;

@@ -7,8 +7,8 @@
 
 #include "base/optional.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/layout/geometry/physical_offset.h"
 #include "third_party/blink/renderer/platform/geometry/float_rect.h"
-#include "third_party/blink/renderer/platform/geometry/layout_point.h"
 #include "third_party/blink/renderer/platform/graphics/path.h"
 
 namespace blink {
@@ -22,7 +22,7 @@ class CORE_EXPORT ClipPathClipper {
  public:
   ClipPathClipper(GraphicsContext&,
                   const LayoutObject&,
-                  const LayoutPoint& paint_offset);
+                  const PhysicalOffset& paint_offset);
   ~ClipPathClipper();
 
   // Returns the reference box used by CSS clip-path. For HTML objects,
@@ -52,7 +52,7 @@ class CORE_EXPORT ClipPathClipper {
  private:
   GraphicsContext& context_;
   const LayoutObject& layout_object_;
-  LayoutPoint paint_offset_;
+  PhysicalOffset paint_offset_;
 };
 
 }  // namespace blink

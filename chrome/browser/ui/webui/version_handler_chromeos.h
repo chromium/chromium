@@ -28,7 +28,7 @@ class VersionHandlerChromeOS : public VersionHandler {
   void OnARCVersion(const std::string& version);
 
  private:
-  base::WeakPtrFactory<VersionHandlerChromeOS> weak_factory_;
+  base::WeakPtrFactory<VersionHandlerChromeOS> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(VersionHandlerChromeOS);
 };

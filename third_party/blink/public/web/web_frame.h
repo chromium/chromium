@@ -33,7 +33,6 @@
 
 #include <memory>
 #include "cc/paint/paint_canvas.h"
-#include "third_party/blink/public/common/feature_policy/feature_policy.h"
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_insecure_request_policy.h"
 #include "third_party/blink/public/web/web_frame_load_type.h"
@@ -52,8 +51,8 @@ class WebRemoteFrame;
 class WebSecurityOrigin;
 class WebView;
 enum class WebSandboxFlags;
+struct FramePolicy;
 struct WebFrameOwnerProperties;
-struct WebRect;
 
 // Frames may be rendered in process ('local') or out of process ('remote').
 // A remote frame is always cross-site; a local frame may be either same-site or
@@ -104,13 +103,13 @@ class BLINK_EXPORT WebFrame {
   // parent is in another process and it dynamically updates this frame's
   // sandbox flags or container policy. The new policy won't take effect until
   // the next navigation.
-  void SetFrameOwnerPolicy(WebSandboxFlags, const blink::ParsedFeaturePolicy&);
+  void SetFrameOwnerPolicy(const FramePolicy&);
 
   // The frame's insecure request policy.
   WebInsecureRequestPolicy GetInsecureRequestPolicy() const;
 
   // The frame's upgrade insecure navigations set.
-  std::vector<unsigned> GetInsecureRequestToUpgrade() const;
+  WebVector<unsigned> GetInsecureRequestToUpgrade() const;
 
   // Updates this frame's FrameOwner properties, such as scrolling, margin,
   // or allowfullscreen.  This is used when this frame's parent is in
@@ -118,14 +117,6 @@ class BLINK_EXPORT WebFrame {
   // TODO(dcheng): Currently, the update only takes effect on next frame
   // navigation.  This matches the in-process frame behavior.
   void SetFrameOwnerProperties(const WebFrameOwnerProperties&);
-
-  // Geometry -----------------------------------------------------------
-
-  // NOTE: These routines do not force page layout so their results may
-  // not be accurate if the page layout is out-of-date.
-
-  // Returns the visible content rect (minus scrollbars, in absolute coordinate)
-  virtual WebRect VisibleContentRect() const = 0;
 
   // Whether to collapse the frame's owner element in the embedder document,
   // that is, to remove it from the layout as if it did not exist. Only works

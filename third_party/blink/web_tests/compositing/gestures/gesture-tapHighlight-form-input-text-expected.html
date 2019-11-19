@@ -7,7 +7,7 @@ input {
 }
 </style>
 <body onload="runTest();">
-<div style="transform: translateZ(0); position: relative; left: 10px; top: 40px">
+<div style="will-change: transform; position: relative; left: 10px; top: 40px">
     <form>
         <div>
             <input id="target" value="Target Input Text">
@@ -23,14 +23,9 @@ function runTest() {
     var clientRect = target.getBoundingClientRect();
     var x = (clientRect.left + clientRect.right) / 2;
     var y = (clientRect.top + clientRect.bottom) / 2;
-    if (window.testRunner) {
-        testRunner.dumpAsTextWithPixelResults();
-        testRunner.waitUntilDone();
-    }
 
     if (window.eventSender) {
         eventSender.gestureShowPress(x, y);
-        window.setTimeout(function () { testRunner.notifyDone(); }, 0);
     } else {
         debug("This test requires DumpRenderTree.");
     }

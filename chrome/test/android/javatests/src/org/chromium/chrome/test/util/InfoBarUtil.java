@@ -6,11 +6,11 @@ package org.chromium.chrome.test.util;
 
 import android.view.View;
 
-import org.chromium.base.ThreadUtils;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.infobar.InfoBar;
 import org.chromium.content_public.browser.test.util.Criteria;
 import org.chromium.content_public.browser.test.util.CriteriaHelper;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.List;
 
@@ -26,12 +26,7 @@ public class InfoBarUtil {
         final View button = infoBar.getView().findViewById(buttonId);
         if (button == null) return false;
         if (click) {
-            ThreadUtils.runOnUiThreadBlocking(new Runnable() {
-                @Override
-                public void run() {
-                    button.performClick();
-                }
-            });
+            TestThreadUtils.runOnUiThreadBlocking(() -> { button.performClick(); });
         }
         return true;
     }

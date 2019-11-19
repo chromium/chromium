@@ -1,0 +1,4 @@
+Verifies that a helpful console message is emitted on websocket failure.
+WebSocket failure console message:
+WebSocket connection to 'ws://localhost:8000/' failed: Error during WebSocket handshake: Unexpected response code: 200
+

@@ -1,0 +1,8 @@
+[document web]
+++[scroll pane]
+++++[page tab] name='Item' selectable
+++++++[heading] name='Item'
+++++++++[static] name='Item'
+++++[page tab] name='Prices' selectable
+++++++[heading] name='Prices'
+++++++++[static] name='Prices'

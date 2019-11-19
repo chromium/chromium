@@ -3,17 +3,18 @@
  * found in the LICENSE file. */
 
 :host {
-  --title-font-size: 28px;
   --title-font-distance-to-baseline: 7px;
-  --subtitle-font-size: 13px;
+  --subtitle-font-size: --oobe-default-font-size;
   --subtitle-font-distance-to-baseline: 3px;
   --subtitle-line-height: 18px;
-  --offline-gaia-dialog-width: 768px;
-  font-family: var(--oobe-default-font-family);
+  @apply --oobe-default-font;
 }
 
 #header-container {
-  padding: 60px 64px 0 64px;
+  padding-bottom: 0;
+  padding-inline-end: var(--oobe-dialog-content-padding);
+  padding-inline-start: var(--oobe-dialog-content-padding);
+  padding-top: var(--oobe-dialog-content-padding);
 }
 
 #header-container[android] {
@@ -21,31 +22,23 @@
 }
 
 #oobe-title {
-  min-height: calc(64px + var(--title-font-distance-to-baseline));
+  padding-top: 20px;
 }
 
 #oobe-title ::slotted(h1) {
-  color: var(--google-grey-900);
-  font-family: var(--oobe-title-font-family);
-  font-size: var(--title-font-size);
-  font-weight: normal;
+  color: var(--oobe-header-text-color);
+  @apply --oobe-header-font;
   margin: 0;
 }
 
 #oobe-subtitle {
-  min-height: calc(64px - var(--title-font-distance-to-baseline));
+  padding-top: 8px;
 }
 
 #oobe-subtitle ::slotted(*) {
-  color: var(--google-grey-700);
-  font-size: var(--subtitle-font-size);
+  color: var(--oobe-subheader-text-color);
   line-height: var(--subtitle-line-height);
-  /* margin 12px = 32 - line-height
-                   - 5 (line height - font size)
-                   + 3 (distance to baseline 13px) */
-  margin: calc(32px - var(--subtitle-line-height)
-               - (var(--subtitle-line-height) - var(--subtitle-font-size))
-               + var(--subtitle-font-distance-to-baseline)) 0 0 0;
+  margin: 0;
 }
 
 #oobe-progress ::slotted(paper-progress) {
@@ -56,7 +49,13 @@
 }
 
 #footer-container {
-  padding: 0 64px;
+  overflow-y: auto;
+  padding-bottom: 0;
+  padding-inline-end: var(--oobe-dialog-content-padding);
+  padding-inline-start: var(--oobe-dialog-content-padding);
+
+  /* TODO(https://crbug.com/1017173) Make it adaptive. */
+  padding-top: 20px;
 }
 
 #footer-container[noFooterPadding] {
@@ -64,29 +63,20 @@
 }
 
 #oobe-bottom {
-  height: 80px;
-  padding: 0 calc(64px - 4px); /* real width - button margin */
+  height: calc(var(--oobe-dialog-footer-height)
+               - 2 * var(--oobe-dialog-footer-padding));
+  /* Width: real padding - button margin */
+  padding: var(--oobe-dialog-footer-padding)
+           calc(var(--oobe-dialog-footer-padding) - 4px);
   z-index: 1;
 }
 
-:host(:not([full-screen-dialog])) #oobe-bottom {
-  padding: 0 calc(32px - 4px); /* real width - button margin */
+#buttons-overlay {
+  background: rgba(var(--google-grey-900-rgb), 0.6);
 }
 
 :host #oobe-bottom[no-buttons-padding] {
   padding: unset;
-}
-
-#oobe-bottom[android] {
-  box-shadow: 0 -1px 1px rgba(0, 0, 0, 0.14);
-}
-
-#oobe-bottom[android][hideShadow] {
-  box-shadow: unset;
-}
-
-#oobe-bottom[android] {
-  height: 60px;
 }
 
 #oobe-bottom ::slotted(*) {
@@ -98,4 +88,8 @@
   --iron-icon-height: 32px;
   --iron-icon-width: 32px;
   --iron-icon-fill-color: var(--google-blue-600);
+}
+
+.slot-container {
+  position: relative;
 }

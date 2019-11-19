@@ -4,14 +4,13 @@
 <script src="../resources/accessibility-helper.js"></script>
 <script src="../resources/testharness.js"></script>
 <script src="../resources/testharnessreport.js"></script>
-<script src="../resources/run-after-layout-and-paint.js"></script>
 </head>
 <body>
 
 <div id="textbox" contentEditable="true">First<p>Second</p></div>
 
 <script>
-async_test_after_layout_and_paint((t) => {
+async_test((t) => {
     // TODO(aboxhall): No longer necessary when updates are processed after layout.
     // Ensure entire a11y tree has already been seen.
     traverseAccessibilityTree(accessibilityController.rootElement);

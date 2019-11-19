@@ -1,0 +1,41 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/protobuf/proto_library.gni")
+
+assert(is_chromeos, "Non-Chrome-OS builds cannot depend on //chromeos")
+
+component("auth_policy") {
+  defines = [ "IS_AUTH_POLICY_IMPL" ]
+
+  deps = [
+    ":authpolicy_proto",
+    "//base",
+    "//chromeos/dbus:common",
+    "//components/account_id",
+    "//dbus",
+
+    # For FakeAuthPolicyClient
+    "//chromeos/dbus/cryptohome:cryptohome_proto",
+    "//chromeos/dbus/session_manager",
+    "//chromeos/tpm",
+    "//components/policy:cloud_policy_proto_generated_compile",
+    "//components/policy/proto",
+  ]
+
+  sources = [
+    "auth_policy_client.cc",
+    "auth_policy_client.h",
+    "fake_auth_policy_client.cc",
+    "fake_auth_policy_client.h",
+  ]
+}
+
+proto_library("authpolicy_proto") {
+  sources = [
+    "//third_party/cros_system_api/dbus/authpolicy/active_directory_info.proto",
+  ]
+
+  proto_out_dir = "chromeos/dbus/auth_policy"
+}

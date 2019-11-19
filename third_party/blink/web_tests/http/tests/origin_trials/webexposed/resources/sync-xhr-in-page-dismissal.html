@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<!--- Generate token with the command:
+tools/origin_trials/generate_token.py http://127.0.0.1:8000 AllowSyncXHRInPageDismissal --expire-timestamp=2000000000
+- --->
+<meta http-equiv="origin-trial" content="AqLbn6J2A0k+teF1WJA9pid0csRR356z7Gcnoq7hfegRNL3A5sf/FNTSgitsYD+bTG1q1iFshX9QvbT/yKJUoAkAAABjeyJvcmlnaW4iOiAiaHR0cDovLzEyNy4wLjAuMTo4MDAwIiwgImZlYXR1cmUiOiAiQWxsb3dTeW5jWEhSSW5QYWdlRGlzbWlzc2FsIiwgImV4cGlyeSI6IDIwMDAwMDAwMDB9">
+<head>
+<script>
+addEventListener("unload", function() {
+  try {
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', '', false);
+    xhr.send(null);
+    parent.xhr_fired = true;
+  } catch (e) {
+    parent.xhr_fired = false;
+  }
+  parent.start_test();
+});
+</script>
+</head>
+<body>
+</body>
+</html>

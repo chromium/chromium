@@ -91,6 +91,11 @@ TEST(SerializedNavigationEntryTest, Pickle) {
       test_data::kExtendedInfoValue2,
       new_navigation.extended_info_map().at(test_data::kExtendedInfoKey2));
 
+  EXPECT_EQ(test_data::kTaskId, new_navigation.task_id());
+  EXPECT_EQ(test_data::kParentTaskId, new_navigation.parent_task_id());
+  EXPECT_EQ(test_data::kRootTaskId, new_navigation.root_task_id());
+  EXPECT_EQ(test_data::kChildrenTaskIds, new_navigation.children_task_ids());
+
   // Fields that are not written to the pickle.
   EXPECT_EQ(0, new_navigation.unique_id());
   EXPECT_EQ(std::string(), new_navigation.encoded_page_state());

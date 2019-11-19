@@ -10,6 +10,7 @@
 #include "base/logging.h"
 #include "base/path_service.h"
 #include "base/threading/thread_restrictions.h"
+#include "build/branding_buildflags.h"
 #include "components/gcm_driver/gcm_driver_constants.h"
 #include "ios/chrome/browser/chrome_paths_internal.h"
 
@@ -20,7 +21,7 @@
 namespace ios {
 namespace {
 
-#if defined(GOOGLE_CHROME_BUILD)
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 const base::FilePath::CharType kProductDirName[] =
     FILE_PATH_LITERAL("Google/Chrome");
 #else

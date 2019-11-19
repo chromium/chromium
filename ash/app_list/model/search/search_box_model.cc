@@ -10,7 +10,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 
-namespace app_list {
+namespace ash {
 
 SearchBoxModel::SearchBoxModel() = default;
 
@@ -99,4 +99,4 @@ void SearchBoxModel::RemoveObserver(SearchBoxModelObserver* observer) {
   observers_.RemoveObserver(observer);
 }
 
-}  // namespace app_list
+}  // namespace ash

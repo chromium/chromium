@@ -23,7 +23,8 @@ namespace device {
 // http://crbug.com/603291
 class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterFactoryWrapper {
  public:
-  using AcquireAdapterCallback = base::OnceCallback<void(BluetoothAdapter*)>;
+  using AcquireAdapterCallback =
+      base::OnceCallback<void(scoped_refptr<BluetoothAdapter>)>;
 
   ~BluetoothAdapterFactoryWrapper();
 
@@ -86,7 +87,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterFactoryWrapper {
   // than we do.
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.
-  base::WeakPtrFactory<BluetoothAdapterFactoryWrapper> weak_ptr_factory_;
+  base::WeakPtrFactory<BluetoothAdapterFactoryWrapper> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(BluetoothAdapterFactoryWrapper);
 };

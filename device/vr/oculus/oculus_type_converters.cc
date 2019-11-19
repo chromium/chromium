@@ -18,10 +18,10 @@ TypeConverter<device::mojom::VRPosePtr, ovrPosef>::Convert(
     const ovrPosef& hmd_pose) {
   device::mojom::VRPosePtr pose = device::mojom::VRPose::New();
   pose->orientation =
-      std::vector<float>({hmd_pose.Orientation.x, hmd_pose.Orientation.y,
-                          hmd_pose.Orientation.z, hmd_pose.Orientation.w});
-  pose->position = std::vector<float>(
-      {hmd_pose.Position.x, hmd_pose.Position.y, hmd_pose.Position.z});
+      gfx::Quaternion(hmd_pose.Orientation.x, hmd_pose.Orientation.y,
+                      hmd_pose.Orientation.z, hmd_pose.Orientation.w);
+  pose->position = gfx::Point3F(hmd_pose.Position.x, hmd_pose.Position.y,
+                                hmd_pose.Position.z);
 
   // TODO: If we want linear/angular velocity, we need to convert a
   // ovrPoseStatef.

@@ -30,10 +30,11 @@ def main():
   html_doc = html_template.substitute({'javascript_file': js_file_contents});
 
   # Construct the data: URL that contains the combined doc.
-  data_url = "data:text/html;base64,%s" % base64.b64encode(html_doc);
+  data_url = "data:text/html;base64,%s" % base64.b64encode(
+      html_doc.encode()).decode()
 
   # And finally stamp the the data URL into the output template.
-  output = output_template.substitute({'data_url': data_url})
+  output = output_template.safe_substitute({'data_url': data_url})
 
   current_contents = ''
   if os.path.isfile(args.output_file):

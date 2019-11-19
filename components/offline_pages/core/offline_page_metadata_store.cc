@@ -4,6 +4,8 @@
 
 #include "components/offline_pages/core/offline_page_metadata_store.h"
 
+#include <utility>
+
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -39,7 +41,38 @@ void ReportStoreEvent(OfflinePagesStoreEvent event) {
 }
 
 bool CreateOfflinePagesTable(sql::Database* db) {
-  static const char kSql[] =
+  static const char kCreateLatestOfflinePagesTableSql[] =
+      "CREATE TABLE IF NOT EXISTS " OFFLINE_PAGES_TABLE_NAME
+      "(offline_id INTEGER PRIMARY KEY NOT NULL,"
+      " creation_time INTEGER NOT NULL,"
+      " file_size INTEGER NOT NULL,"
+      " last_access_time INTEGER NOT NULL,"
+      " access_count INTEGER NOT NULL,"
+      " system_download_id INTEGER NOT NULL DEFAULT 0,"
+      " file_missing_time INTEGER NOT NULL DEFAULT 0,"
+      // upgrade_attempt is deprecated, and should be removed next time the
+      // schema needs to be updated.
+      " upgrade_attempt INTEGER NOT NULL DEFAULT 0,"
+      " client_namespace VARCHAR NOT NULL,"
+      " client_id VARCHAR NOT NULL,"
+      " online_url VARCHAR NOT NULL,"
+      " file_path VARCHAR NOT NULL,"
+      " title VARCHAR NOT NULL DEFAULT '',"
+      " original_url VARCHAR NOT NULL DEFAULT '',"
+      " request_origin VARCHAR NOT NULL DEFAULT '',"
+      " digest VARCHAR NOT NULL DEFAULT '',"
+      " snippet VARCHAR NOT NULL DEFAULT '',"
+      " attribution VARCHAR NOT NULL DEFAULT ''"
+      ")";
+  return db->Execute(kCreateLatestOfflinePagesTableSql);
+}
+
+bool UpgradeWithQuery(sql::Database* db, const char* upgrade_sql) {
+  if (!db->Execute("ALTER TABLE " OFFLINE_PAGES_TABLE_NAME
+                   " RENAME TO temp_" OFFLINE_PAGES_TABLE_NAME)) {
+    return false;
+  }
+  static const char kCreateOfflinePagesTableVersion1Sql[] =
       "CREATE TABLE IF NOT EXISTS " OFFLINE_PAGES_TABLE_NAME
       "(offline_id INTEGER PRIMARY KEY NOT NULL,"
       " creation_time INTEGER NOT NULL,"
@@ -58,15 +91,7 @@ bool CreateOfflinePagesTable(sql::Database* db) {
       " request_origin VARCHAR NOT NULL DEFAULT '',"
       " digest VARCHAR NOT NULL DEFAULT ''"
       ")";
-  return db->Execute(kSql);
-}
-
-bool UpgradeWithQuery(sql::Database* db, const char* upgrade_sql) {
-  if (!db->Execute("ALTER TABLE " OFFLINE_PAGES_TABLE_NAME
-                   " RENAME TO temp_" OFFLINE_PAGES_TABLE_NAME)) {
-    return false;
-  }
-  if (!CreateOfflinePagesTable(db))
+  if (!db->Execute(kCreateOfflinePagesTableVersion1Sql))
     return false;
   if (!db->Execute(upgrade_sql))
     return false;
@@ -174,11 +199,14 @@ bool UpgradeFrom61(sql::Database* db) {
 }
 
 bool CreatePageThumbnailsTable(sql::Database* db) {
+  // TODO: The next schema change that modifies existing columns on this table
+  // should also add "DEFAULT x''" to the definition of the "thumbnail" column.
   static const char kSql[] =
       "CREATE TABLE IF NOT EXISTS page_thumbnails"
       " (offline_id INTEGER PRIMARY KEY NOT NULL,"
       " expiration INTEGER NOT NULL,"
-      " thumbnail BLOB NOT NULL"
+      " thumbnail BLOB NOT NULL,"
+      " favicon BLOB NOT NULL DEFAULT x''"
       ")";
   return db->Execute(kSql);
 }
@@ -244,23 +272,9 @@ bool UpgradeFromLegacyVersion(sql::Database* db) {
 
 bool UpgradeFromVersion1ToVersion2(sql::Database* db,
                                    sql::MetaTable* meta_table) {
-  sql::Transaction transaction(db);
-  if (!transaction.Begin())
-    return false;
-
-  static const char kSql[] = "UPDATE " OFFLINE_PAGES_TABLE_NAME
-                             " SET upgrade_attempt = 5 "
-                             " WHERE client_namespace = 'async_loading'"
-                             " OR client_namespace = 'download'"
-                             " OR client_namespace = 'ntp_suggestions'"
-                             " OR client_namespace = 'browser_actions'";
-
-  sql::Statement statement(db->GetCachedStatement(SQL_FROM_HERE, kSql));
-  if (!statement.Run())
-    return false;
-
   meta_table->SetVersionNumber(2);
-  return transaction.Commit();
+  // No actual changes necessary, because upgrade_attempt was deprecated.
+  return true;
 }
 
 bool UpgradeFromVersion2ToVersion3(sql::Database* db,
@@ -269,10 +283,39 @@ bool UpgradeFromVersion2ToVersion3(sql::Database* db,
   if (!transaction.Begin())
     return false;
 
-  if (!CreatePageThumbnailsTable(db)) {
+  static const char kCreatePageThumbnailsSql[] =
+      "CREATE TABLE IF NOT EXISTS page_thumbnails"
+      " (offline_id INTEGER PRIMARY KEY NOT NULL,"
+      "expiration INTEGER NOT NULL,"
+      "thumbnail BLOB NOT NULL"
+      ")";
+  if (!db->Execute(kCreatePageThumbnailsSql))
     return false;
-  }
+
   meta_table->SetVersionNumber(3);
+  return transaction.Commit();
+}
+
+bool UpgradeFromVersion3ToVersion4(sql::Database* db,
+                                   sql::MetaTable* meta_table) {
+  sql::Transaction transaction(db);
+  if (!transaction.Begin())
+    return false;
+
+  const char kSql[] = "ALTER TABLE " OFFLINE_PAGES_TABLE_NAME
+                      " ADD COLUMN snippet VARCHAR NOT NULL DEFAULT ''; "
+                      "ALTER TABLE " OFFLINE_PAGES_TABLE_NAME
+                      " ADD COLUMN attribution VARCHAR NOT NULL DEFAULT '';";
+  if (!db->Execute(kSql))
+    return false;
+
+  const char kUpgradeThumbnailsTableSql[] =
+      "ALTER TABLE page_thumbnails"
+      " ADD COLUMN favicon BLOB NOT NULL DEFAULT x''";
+  if (!db->Execute(kUpgradeThumbnailsTableSql))
+    return false;
+
+  meta_table->SetVersionNumber(4);
   return transaction.Commit();
 }
 
@@ -302,6 +345,10 @@ bool CreateSchema(sql::Database* db) {
         if (!UpgradeFromVersion2ToVersion3(db, &meta_table))
           return false;
         break;
+      case 3:
+        if (!UpgradeFromVersion3ToVersion4(db, &meta_table))
+          return false;
+        break;
       case OfflinePageMetadataStore::kCurrentVersion:
         return true;
       default:
@@ -310,177 +357,93 @@ bool CreateSchema(sql::Database* db) {
   }
 }
 
-bool PrepareDirectory(const base::FilePath& path) {
-  base::File::Error error = base::File::FILE_OK;
-  if (!base::DirectoryExists(path.DirName())) {
-    if (!base::CreateDirectoryAndGetError(path.DirName(), &error)) {
-      LOG(ERROR) << "Failed to create offline pages db directory: "
-                 << base::File::ErrorToString(error);
-      return false;
-    }
+StoreState InitializationStatusToStoreState(
+    SqlStoreBase::InitializationStatus status) {
+  switch (status) {
+    case SqlStoreBase::InitializationStatus::kNotInitialized:
+      return StoreState::NOT_LOADED;
+    case SqlStoreBase::InitializationStatus::kInProgress:
+      return StoreState::INITIALIZING;
+    case SqlStoreBase::InitializationStatus::kSuccess:
+      return StoreState::LOADED;
+    case SqlStoreBase::InitializationStatus::kFailure:
+      return StoreState::FAILED_LOADING;
   }
-
-  UMA_HISTOGRAM_ENUMERATION("OfflinePages.SQLStorage.CreateDirectoryResult",
-                            -error, -base::File::FILE_ERROR_MAX);
-
-  return true;
-}
-
-bool InitDatabase(sql::Database* db,
-                  const base::FilePath& path,
-                  bool in_memory) {
-  db->set_page_size(4096);
-  db->set_cache_size(500);
-  db->set_histogram_tag("OfflinePageMetadata");
-  db->set_exclusive_locking();
-
-  if (!in_memory && !PrepareDirectory(path))
-    return false;
-
-  bool open_db_result = false;
-  if (in_memory)
-    open_db_result = db->OpenInMemory();
-  else
-    open_db_result = db->Open(path);
-
-  if (!open_db_result) {
-    LOG(ERROR) << "Failed to open database, in memory: " << in_memory;
-    return false;
-  }
-  db->Preload();
-
-  return CreateSchema(db);
-}
-
-void CloseDatabaseSync(
-    sql::Database* db,
-    scoped_refptr<base::SingleThreadTaskRunner> callback_runner,
-    base::OnceClosure callback) {
-  if (db)
-    db->Close();
-  callback_runner->PostTask(FROM_HERE, std::move(callback));
 }
 
 }  // anonymous namespace
 
-// static
-constexpr base::TimeDelta OfflinePageMetadataStore::kClosingDelay;
-
 OfflinePageMetadataStore::OfflinePageMetadataStore(
     scoped_refptr<base::SequencedTaskRunner> background_task_runner)
-    : background_task_runner_(std::move(background_task_runner)),
-      in_memory_(true),
-      state_(StoreState::NOT_LOADED),
-      weak_ptr_factory_(this),
-      closing_weak_ptr_factory_(this) {}
+    : SqlStoreBase("OfflinePageMetadata",
+                   std::move(background_task_runner),
+                   base::FilePath()) {}
 
 OfflinePageMetadataStore::OfflinePageMetadataStore(
     scoped_refptr<base::SequencedTaskRunner> background_task_runner,
     const base::FilePath& path)
-    : background_task_runner_(std::move(background_task_runner)),
-      in_memory_(false),
-      db_file_path_(path.AppendASCII("OfflinePages.db")),
-      state_(StoreState::NOT_LOADED),
-      weak_ptr_factory_(this),
-      closing_weak_ptr_factory_(this) {}
+    : SqlStoreBase("OfflinePageMetadata",
+                   std::move(background_task_runner),
+                   path.AppendASCII("OfflinePages.db")) {}
 
-OfflinePageMetadataStore::~OfflinePageMetadataStore() {
-  if (db_.get() &&
-      !background_task_runner_->DeleteSoon(FROM_HERE, db_.release())) {
-    DLOG(WARNING) << "SQL database will not be deleted.";
-  }
+OfflinePageMetadataStore::~OfflinePageMetadataStore() = default;
+
+base::OnceCallback<bool(sql::Database* db)>
+OfflinePageMetadataStore::GetSchemaInitializationFunction() {
+  return base::BindOnce(&CreateSchema);
 }
 
 StoreState OfflinePageMetadataStore::GetStateForTesting() const {
-  return state_;
+  return InitializationStatusToStoreState(initialization_status_for_testing());
 }
 
-void OfflinePageMetadataStore::SetStateForTesting(StoreState state,
-                                                  bool reset_db) {
-  state_ = state;
-  if (reset_db)
-    db_.reset(nullptr);
-}
-
-void OfflinePageMetadataStore::InitializeInternal(
-    base::OnceClosure pending_command) {
+void OfflinePageMetadataStore::OnOpenStart(base::TimeTicks last_closing_time) {
   TRACE_EVENT_ASYNC_BEGIN1("offline_pages", "Metadata Store", this, "is reopen",
-                           !last_closing_time_.is_null());
-  DCHECK_EQ(state_, StoreState::NOT_LOADED);
-
-  if (!last_closing_time_.is_null()) {
-    ReportStoreEvent(OfflinePagesStoreEvent::kReopened);
-    UMA_HISTOGRAM_CUSTOM_TIMES("OfflinePages.SQLStorage.TimeFromCloseToOpen",
-                               base::TimeTicks::Now() - last_closing_time_,
-                               base::TimeDelta::FromMilliseconds(10),
-                               base::TimeDelta::FromMinutes(10),
-                               50 /* buckets */);
-  } else {
-    ReportStoreEvent(OfflinePagesStoreEvent::kOpenedFirstTime);
-  }
-
-  state_ = StoreState::INITIALIZING;
-  db_.reset(new sql::Database());
-  base::PostTaskAndReplyWithResult(
-      background_task_runner_.get(), FROM_HERE,
-      base::BindOnce(&InitDatabase, db_.get(), db_file_path_, in_memory_),
-      base::BindOnce(&OfflinePageMetadataStore::OnInitializeInternalDone,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     std::move(pending_command)));
+                           !last_closing_time.is_null());
+  ReportStoreEvent(last_closing_time.is_null()
+                       ? OfflinePagesStoreEvent::kOpenedFirstTime
+                       : OfflinePagesStoreEvent::kReopened);
 }
 
-void OfflinePageMetadataStore::OnInitializeInternalDone(
-    base::OnceClosure pending_command,
-    bool success) {
+void OfflinePageMetadataStore::OnOpenDone(bool success) {
   TRACE_EVENT_ASYNC_STEP_PAST1("offline_pages", "Metadata Store", this,
                                "Initializing", "succeeded", success);
-  // TODO(fgorski): DCHECK initialization is in progress, once we have a
-  // relevant value for the store state.
-  if (success) {
-    state_ = StoreState::LOADED;
-  } else {
-    state_ = StoreState::FAILED_LOADING;
-    db_.reset();
+  if (!success) {
     TRACE_EVENT_ASYNC_END0("offline_pages", "Metadata Store", this);
   }
-
-  CHECK(!pending_command.is_null());
-  std::move(pending_command).Run();
-
-  // Execute other pending commands.
-  for (auto command_iter = pending_commands_.begin();
-       command_iter != pending_commands_.end();) {
-    std::move(*command_iter++).Run();
-  }
-
-  pending_commands_.clear();
-
-  if (state_ == StoreState::FAILED_LOADING)
-    state_ = StoreState::NOT_LOADED;
 }
 
-void OfflinePageMetadataStore::CloseInternal() {
-  if (state_ != StoreState::LOADED) {
+void OfflinePageMetadataStore::OnTaskBegin(bool is_initialized) {
+  TRACE_EVENT_ASYNC_BEGIN1("offline_pages", "Metadata Store: task execution",
+                           this, "is store loaded", is_initialized);
+}
+
+void OfflinePageMetadataStore::OnTaskRunComplete() {
+  // Note: the time recorded for this trace step will include thread hop wait
+  // times to the background thread and back.
+  TRACE_EVENT_ASYNC_STEP_PAST0("offline_pages",
+                               "Metadata Store: task execution", this, "Task");
+}
+
+void OfflinePageMetadataStore::OnTaskReturnComplete() {
+  TRACE_EVENT_ASYNC_STEP_PAST0(
+      "offline_pages", "Metadata Store: task execution", this, "Callback");
+  TRACE_EVENT_ASYNC_END0("offline_pages", "Metadata Store: task execution",
+                         this);
+}
+
+void OfflinePageMetadataStore::OnCloseStart(
+    InitializationStatus status_before_close) {
+  if (status_before_close != InitializationStatus::kSuccess) {
     ReportStoreEvent(OfflinePagesStoreEvent::kCloseSkipped);
     return;
   }
   TRACE_EVENT_ASYNC_STEP_PAST0("offline_pages", "Metadata Store", this, "Open");
 
-  last_closing_time_ = base::TimeTicks::Now();
   ReportStoreEvent(OfflinePagesStoreEvent::kClosed);
-
-  state_ = StoreState::NOT_LOADED;
-  background_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          &CloseDatabaseSync, db_.get(), base::ThreadTaskRunnerHandle::Get(),
-          base::BindOnce(&OfflinePageMetadataStore::CloseInternalDone,
-                         weak_ptr_factory_.GetWeakPtr(), std::move(db_))));
 }
 
-void OfflinePageMetadataStore::CloseInternalDone(
-    std::unique_ptr<sql::Database> db) {
-  db.reset();
+void OfflinePageMetadataStore::OnCloseComplete() {
   TRACE_EVENT_ASYNC_STEP_PAST0("offline_pages", "Metadata Store", this,
                                "Closing");
   TRACE_EVENT_ASYNC_END0("offline_pages", "Metadata Store", this);

@@ -6,21 +6,23 @@
 
 #include "base/bind.h"
 #include "base/bind_helpers.h"
+#include "base/containers/span.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/process_memory_dump.h"
-#include "components/services/leveldb/public/cpp/util.h"
-#include "content/public/browser/browser_thread.h"
+#include "components/services/storage/dom_storage/async_dom_storage_database.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
+#include "third_party/leveldatabase/env_chromium.h"
 
 namespace content {
-namespace {
-using leveldb::mojom::BatchedOperation;
-using leveldb::mojom::BatchedOperationPtr;
-using leveldb::mojom::DatabaseError;
-}  // namespace
 
 StorageAreaImpl::Delegate::~Delegate() {}
+
+void StorageAreaImpl::Delegate::PrepareToCommit(
+    std::vector<storage::DomStorageDatabase::KeyValuePair>*
+        extra_entries_to_add,
+    std::vector<storage::DomStorageDatabase::Key>* extra_keys_to_delete) {}
 
 void StorageAreaImpl::Delegate::MigrateData(
     base::OnceCallback<void(std::unique_ptr<ValueMap>)> callback) {
@@ -32,7 +34,7 @@ std::vector<StorageAreaImpl::Change> StorageAreaImpl::Delegate::FixUpData(
   return std::vector<Change>();
 }
 
-void StorageAreaImpl::Delegate::OnMapLoaded(DatabaseError) {}
+void StorageAreaImpl::Delegate::OnMapLoaded(leveldb::Status) {}
 
 bool StorageAreaImpl::s_aggressive_flushing_enabled_ = false;
 
@@ -57,16 +59,16 @@ base::TimeDelta StorageAreaImpl::RateLimiter::ComputeDelayNeeded(
 StorageAreaImpl::CommitBatch::CommitBatch() : clear_all_first(false) {}
 StorageAreaImpl::CommitBatch::~CommitBatch() {}
 
-StorageAreaImpl::StorageAreaImpl(leveldb::mojom::LevelDBDatabase* database,
+StorageAreaImpl::StorageAreaImpl(storage::AsyncDomStorageDatabase* database,
                                  const std::string& prefix,
                                  Delegate* delegate,
                                  const Options& options)
     : StorageAreaImpl(database,
-                      leveldb::StdStringToUint8Vector(prefix),
+                      std::vector<uint8_t>(prefix.begin(), prefix.end()),
                       delegate,
                       options) {}
 
-StorageAreaImpl::StorageAreaImpl(leveldb::mojom::LevelDBDatabase* database,
+StorageAreaImpl::StorageAreaImpl(storage::AsyncDomStorageDatabase* database,
                                  std::vector<uint8_t> prefix,
                                  Delegate* delegate,
                                  const Options& options)
@@ -82,9 +84,8 @@ StorageAreaImpl::StorageAreaImpl(leveldb::mojom::LevelDBDatabase* database,
       data_rate_limiter_(options.max_bytes_per_hour,
                          base::TimeDelta::FromHours(1)),
       commit_rate_limiter_(options.max_commits_per_hour,
-                           base::TimeDelta::FromHours(1)),
-      weak_ptr_factory_(this) {
-  bindings_.set_connection_error_handler(base::BindRepeating(
+                           base::TimeDelta::FromHours(1)) {
+  receivers_.set_disconnect_handler(base::BindRepeating(
       &StorageAreaImpl::OnConnectionError, weak_ptr_factory_.GetWeakPtr()));
 }
 
@@ -97,12 +98,12 @@ StorageAreaImpl::~StorageAreaImpl() {
 void StorageAreaImpl::InitializeAsEmpty() {
   DCHECK_EQ(map_state_, MapState::UNLOADED);
   map_state_ = MapState::LOADING_FROM_DATABASE;
-  OnMapLoaded(leveldb::mojom::DatabaseError::OK,
-              std::vector<leveldb::mojom::KeyValuePtr>());
+  OnMapLoaded(leveldb::Status::OK(), {});
 }
 
-void StorageAreaImpl::Bind(blink::mojom::StorageAreaRequest request) {
-  bindings_.AddBinding(this, std::move(request));
+void StorageAreaImpl::Bind(
+    mojo::PendingReceiver<blink::mojom::StorageArea> receiver) {
+  receivers_.Add(this, std::move(receiver));
   // If the number of bindings is more than 1, then the |client_old_value| sent
   // by the clients need not be valid due to races on updates from multiple
   // clients. So, cache the values in the service. Setting cache mode back to
@@ -110,7 +111,7 @@ void StorageAreaImpl::Bind(blink::mojom::StorageAreaRequest request) {
   // inconsistency due to the async notifications of mutations to the client
   // reaching late.
   if (cache_mode_ == CacheMode::KEYS_ONLY_WHEN_POSSIBLE &&
-      bindings_.size() > 1) {
+      receivers_.size() > 1) {
     SetCacheMode(CacheMode::KEYS_AND_VALUES);
   }
 }
@@ -119,8 +120,9 @@ std::unique_ptr<StorageAreaImpl> StorageAreaImpl::ForkToNewPrefix(
     const std::string& new_prefix,
     Delegate* delegate,
     const Options& options) {
-  return ForkToNewPrefix(leveldb::StdStringToUint8Vector(new_prefix), delegate,
-                         options);
+  return ForkToNewPrefix(
+      std::vector<uint8_t>(new_prefix.begin(), new_prefix.end()), delegate,
+      options);
 }
 
 std::unique_ptr<StorageAreaImpl> StorageAreaImpl::ForkToNewPrefix(
@@ -222,26 +224,13 @@ void StorageAreaImpl::SetCacheModeForTesting(CacheMode cache_mode) {
   SetCacheMode(cache_mode);
 }
 
-mojo::InterfacePtrSetElementId StorageAreaImpl::AddObserver(
-    blink::mojom::StorageAreaObserverAssociatedPtr observer) {
-  if (cache_mode_ == CacheMode::KEYS_AND_VALUES)
-    observer->ShouldSendOldValueOnMutations(false);
-  return observers_.AddPtr(std::move(observer));
-}
-
-bool StorageAreaImpl::HasObserver(mojo::InterfacePtrSetElementId id) {
-  return observers_.HasPtr(id);
-}
-
-blink::mojom::StorageAreaObserverAssociatedPtr StorageAreaImpl::RemoveObserver(
-    mojo::InterfacePtrSetElementId id) {
-  return observers_.RemovePtr(id);
-}
-
 void StorageAreaImpl::AddObserver(
-    blink::mojom::StorageAreaObserverAssociatedPtrInfo observer) {
-  AddObserver(
-      blink::mojom::StorageAreaObserverAssociatedPtr(std::move(observer)));
+    mojo::PendingAssociatedRemote<blink::mojom::StorageAreaObserver> observer) {
+  mojo::AssociatedRemote<blink::mojom::StorageAreaObserver> observer_remote(
+      std::move(observer));
+  if (cache_mode_ == CacheMode::KEYS_AND_VALUES)
+    observer_remote->ShouldSendOldValueOnMutations(false);
+  observers_.Add(std::move(observer_remote));
 }
 
 void StorageAreaImpl::Put(
@@ -279,7 +268,7 @@ void StorageAreaImpl::Put(
         // currently the only observer to these notification is the client
         // itself.
         DVLOG(1) << "Storage area with prefix "
-                 << leveldb::Uint8VectorToStdString(prefix_)
+                 << std::string(prefix_.begin(), prefix_.end())
                  << ": past value has length of " << found->second << ", but:";
         if (client_old_value) {
           DVLOG(1) << "Given past value has incorrect length of "
@@ -315,7 +304,7 @@ void StorageAreaImpl::Put(
   // shrinking changes to pre-existing maps that are over budget.
   if (new_item_size > old_item_size && new_storage_used > max_size_) {
     if (map_state_ == MapState::LOADED_KEYS_ONLY) {
-      bindings_.ReportBadMessage(
+      receivers_.ReportBadMessage(
           "The quota in browser cannot exceed when there is only one "
           "renderer.");
     } else {
@@ -344,16 +333,12 @@ void StorageAreaImpl::Put(
   memory_used_ += new_item_memory - old_item_memory;
   if (!old_value) {
     // We added a new key/value pair.
-    observers_.ForAllPtrs(
-        [&key, &value, &source](blink::mojom::StorageAreaObserver* observer) {
-          observer->KeyAdded(key, value, source);
-        });
+    for (auto& observer : observers_)
+      observer->KeyAdded(key, value, source);
   } else {
     // We changed the value for an existing key.
-    observers_.ForAllPtrs([&key, &value, &source, &old_value](
-                              blink::mojom::StorageAreaObserver* observer) {
+    for (auto& observer : observers_)
       observer->KeyChanged(key, value, old_value.value(), source);
-    });
   }
   std::move(callback).Run(true);
 }
@@ -393,7 +378,7 @@ void StorageAreaImpl::Delete(
       // clients will not contain old value. This is okay since currently the
       // only observer to these notification is the client itself.
       DVLOG(1) << "Storage area with prefix "
-               << leveldb::Uint8VectorToStdString(prefix_)
+               << std::string(prefix_.begin(), prefix_.end())
                << ": past value has length of " << found->second << ", but:";
       if (client_old_value) {
         DVLOG(1) << "Given past value has incorrect length of "
@@ -423,10 +408,8 @@ void StorageAreaImpl::Delete(
       commit_batch_->changed_keys.insert(key);
   }
 
-  observers_.ForAllPtrs(
-      [&key, &source, &old_value](blink::mojom::StorageAreaObserver* observer) {
-        observer->KeyDeleted(key, old_value, source);
-      });
+  for (auto& observer : observers_)
+    observer->KeyDeleted(key, old_value, source);
   std::move(callback).Run(true);
 }
 
@@ -466,9 +449,8 @@ void StorageAreaImpl::DeleteAll(const std::string& source,
 
   storage_used_ = 0;
   memory_used_ = 0;
-  observers_.ForAllPtrs([&source](blink::mojom::StorageAreaObserver* observer) {
+  for (auto& observer : observers_)
     observer->AllDeleted(source);
-  });
   std::move(callback).Run(true);
 }
 
@@ -496,15 +478,16 @@ void StorageAreaImpl::Get(const std::vector<uint8_t>& key,
 }
 
 void StorageAreaImpl::GetAll(
-    blink::mojom::StorageAreaGetAllCallbackAssociatedPtrInfo complete_callback,
+    mojo::PendingAssociatedRemote<blink::mojom::StorageAreaGetAllCallback>
+        complete_callback,
     GetAllCallback callback) {
   // If the map is keys-only and empty, then no loading is necessary.
   if (IsMapLoadedAndEmpty()) {
     std::move(callback).Run(true, std::vector<blink::mojom::KeyValuePtr>());
     if (complete_callback.is_valid()) {
-      blink::mojom::StorageAreaGetAllCallbackAssociatedPtr complete_ptr;
-      complete_ptr.Bind(std::move(complete_callback));
-      complete_ptr->Complete(true);
+      mojo::AssociatedRemote<blink::mojom::StorageAreaGetAllCallback>
+          complete_remote(std::move(complete_callback));
+      complete_remote->Complete(true);
     }
     return;
   }
@@ -526,9 +509,9 @@ void StorageAreaImpl::GetAll(
   }
   std::move(callback).Run(true, std::move(all));
   if (complete_callback.is_valid()) {
-    blink::mojom::StorageAreaGetAllCallbackAssociatedPtr complete_ptr;
-    complete_ptr.Bind(std::move(complete_callback));
-    complete_ptr->Complete(true);
+    mojo::AssociatedRemote<blink::mojom::StorageAreaGetAllCallback>
+        complete_remote(std::move(complete_callback));
+    complete_remote->Complete(true);
   }
 }
 
@@ -539,10 +522,8 @@ void StorageAreaImpl::SetCacheMode(CacheMode cache_mode) {
   }
   cache_mode_ = cache_mode;
   bool should_send_values = cache_mode == CacheMode::KEYS_ONLY_WHEN_POSSIBLE;
-  observers_.ForAllPtrs(
-      [should_send_values](blink::mojom::StorageAreaObserver* observer) {
-        observer->ShouldSendOldValueOnMutations(should_send_values);
-      });
+  for (auto& observer : observers_)
+    observer->ShouldSendOldValueOnMutations(should_send_values);
 
   // If the |keys_only_map_| is loaded and desired state needs values, no point
   // keeping around the map since the next change would require reload. On the
@@ -552,7 +533,7 @@ void StorageAreaImpl::SetCacheMode(CacheMode cache_mode) {
 }
 
 void StorageAreaImpl::OnConnectionError() {
-  if (!bindings_.empty())
+  if (!receivers_.empty())
     return;
   // If any tasks are waiting for load to complete, delay calling the
   // no_bindings_callback_ until all those tasks have completed.
@@ -589,36 +570,44 @@ void StorageAreaImpl::LoadMap(base::OnceClosure completion_callback) {
   map_state_ = MapState::LOADING_FROM_DATABASE;
 
   if (!database_) {
-    OnMapLoaded(DatabaseError::IO_ERROR,
-                std::vector<leveldb::mojom::KeyValuePtr>());
+    OnMapLoaded(leveldb::Status::IOError(""), {});
     return;
   }
 
-  database_->GetPrefixed(prefix_,
-                         base::BindOnce(&StorageAreaImpl::OnMapLoaded,
-                                        weak_ptr_factory_.GetWeakPtr()));
+  database_->RunDatabaseTask(
+      base::BindOnce(
+          [](const storage::DomStorageDatabase::Key& prefix,
+             const storage::DomStorageDatabase& db) {
+            std::vector<storage::DomStorageDatabase::KeyValuePair> data;
+            leveldb::Status status = db.GetPrefixed(prefix, &data);
+            return std::make_tuple(status, std::move(data));
+          },
+          prefix_),
+      base::BindOnce(&StorageAreaImpl::OnMapLoaded,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void StorageAreaImpl::OnMapLoaded(
-    DatabaseError status,
-    std::vector<leveldb::mojom::KeyValuePtr> data) {
+    leveldb::Status status,
+    std::vector<storage::DomStorageDatabase::KeyValuePair> data) {
   DCHECK(keys_values_map_.empty());
   DCHECK_EQ(map_state_, MapState::LOADING_FROM_DATABASE);
 
-  if (data.empty() && status == DatabaseError::OK) {
+  if (data.empty() && status.ok()) {
     delegate_->MigrateData(base::BindOnce(&StorageAreaImpl::OnGotMigrationData,
                                           weak_ptr_factory_.GetWeakPtr()));
     return;
   }
+
   keys_only_map_.clear();
   map_state_ = MapState::LOADED_KEYS_AND_VALUES;
 
   keys_values_map_.clear();
-  for (auto& it : data) {
-    DCHECK_GE(it->key.size(), prefix_.size());
-    keys_values_map_[std::vector<uint8_t>(it->key.begin() + prefix_.size(),
-                                          it->key.end())] =
-        std::move(it->value);
+  for (auto& entry : data) {
+    DCHECK_GE(entry.key.size(), prefix_.size());
+    keys_values_map_[storage::DomStorageDatabase::Key(
+        entry.key.begin() + prefix_.size(), entry.key.end())] =
+        std::move(entry.value);
   }
   CalculateStorageAndMemoryUsed();
 
@@ -650,10 +639,13 @@ void StorageAreaImpl::OnMapLoaded(
   // We proceed without using a backing store, nothing will be persisted but the
   // class is functional for the lifetime of the object.
   delegate_->OnMapLoaded(status);
-  if (status != DatabaseError::OK) {
+  if (!status.ok()) {
     database_ = nullptr;
     SetCacheMode(CacheMode::KEYS_AND_VALUES);
   }
+
+  if (on_load_callback_for_testing_)
+    std::move(on_load_callback_for_testing_).Run();
 
   OnLoadComplete();
 }
@@ -663,7 +655,7 @@ void StorageAreaImpl::OnGotMigrationData(std::unique_ptr<ValueMap> data) {
   keys_values_map_ = data ? std::move(*data) : ValueMap();
   map_state_ = MapState::LOADED_KEYS_AND_VALUES;
   CalculateStorageAndMemoryUsed();
-  delegate_->OnMapLoaded(leveldb::mojom::DatabaseError::OK);
+  delegate_->OnMapLoaded(leveldb::Status::OK());
 
   if (database_ && !empty()) {
     CreateCommitBatchIfNeeded();
@@ -714,7 +706,7 @@ void StorageAreaImpl::OnLoadComplete() {
 
   // We might need to call the no_bindings_callback_ here if bindings became
   // empty while waiting for load to complete.
-  if (bindings_.empty())
+  if (receivers_.empty())
     delegate_->OnNoBindings();
 }
 
@@ -724,10 +716,7 @@ void StorageAreaImpl::CreateCommitBatchIfNeeded() {
   DCHECK(database_);
 
   commit_batch_.reset(new CommitBatch());
-  BrowserThread::PostAfterStartupTask(
-      FROM_HERE, base::ThreadTaskRunnerHandle::Get(),
-      base::BindOnce(&StorageAreaImpl::StartCommitTimer,
-                     weak_ptr_factory_.GetWeakPtr()));
+  StartCommitTimer();
 }
 
 void StorageAreaImpl::StartCommitTimer() {
@@ -774,56 +763,60 @@ void StorageAreaImpl::CommitChanges() {
   commit_rate_limiter_.add_samples(1);
 
   // Commit all our changes in a single batch.
-  std::vector<BatchedOperationPtr> operations = delegate_->PrepareToCommit();
-  bool has_changes = !operations.empty() ||
-                     !commit_batch_->changed_values.empty() ||
-                     !commit_batch_->changed_keys.empty();
-  if (commit_batch_->clear_all_first) {
-    BatchedOperationPtr item = BatchedOperation::New();
-    item->type = leveldb::mojom::BatchOperationType::DELETE_PREFIXED_KEY;
-    item->key = prefix_;
-    operations.push_back(std::move(item));
-  }
+  struct Commit {
+    storage::DomStorageDatabase::Key prefix;
+    bool clear_all_first;
+    std::vector<storage::DomStorageDatabase::KeyValuePair> entries_to_add;
+    std::vector<storage::DomStorageDatabase::Key> keys_to_delete;
+    base::Optional<storage::DomStorageDatabase::Key> copy_to_prefix;
+  };
+
+  Commit commit;
+  commit.prefix = prefix_;
+  commit.clear_all_first = commit_batch_->clear_all_first;
+  delegate_->PrepareToCommit(&commit.entries_to_add, &commit.keys_to_delete);
+
+  const bool has_changes = !commit.entries_to_add.empty() ||
+                           !commit.keys_to_delete.empty() ||
+                           !commit_batch_->changed_values.empty() ||
+                           !commit_batch_->changed_keys.empty();
   size_t data_size = 0;
   if (map_state_ == MapState::LOADED_KEYS_AND_VALUES) {
     DCHECK(commit_batch_->changed_values.empty())
         << "Map state and commit state out of sync.";
     for (const auto& key : commit_batch_->changed_keys) {
       data_size += key.size();
-      BatchedOperationPtr item = BatchedOperation::New();
-      item->key.reserve(prefix_.size() + key.size());
-      item->key.insert(item->key.end(), prefix_.begin(), prefix_.end());
-      item->key.insert(item->key.end(), key.begin(), key.end());
-      auto kv_it = keys_values_map_.find(key);
-      if (kv_it != keys_values_map_.end()) {
-        item->type = leveldb::mojom::BatchOperationType::PUT_KEY;
-        data_size += kv_it->second.size();
-        item->value = kv_it->second;
+      storage::DomStorageDatabase::Key prefixed_key;
+      prefixed_key.reserve(prefix_.size() + key.size());
+      prefixed_key.insert(prefixed_key.end(), prefix_.begin(), prefix_.end());
+      prefixed_key.insert(prefixed_key.end(), key.begin(), key.end());
+      auto it = keys_values_map_.find(key);
+      if (it != keys_values_map_.end()) {
+        data_size += it->second.size();
+        commit.entries_to_add.emplace_back(std::move(prefixed_key), it->second);
       } else {
-        item->type = leveldb::mojom::BatchOperationType::DELETE_KEY;
+        commit.keys_to_delete.push_back(std::move(prefixed_key));
       }
-      operations.push_back(std::move(item));
     }
   } else {
     DCHECK(commit_batch_->changed_keys.empty())
         << "Map state and commit state out of sync.";
     DCHECK_EQ(map_state_, MapState::LOADED_KEYS_ONLY);
-    for (auto& it : commit_batch_->changed_values) {
-      const auto& key = it.first;
+    for (auto& entry : commit_batch_->changed_values) {
+      const auto& key = entry.first;
       data_size += key.size();
-      BatchedOperationPtr item = BatchedOperation::New();
-      item->key.reserve(prefix_.size() + key.size());
-      item->key.insert(item->key.end(), prefix_.begin(), prefix_.end());
-      item->key.insert(item->key.end(), key.begin(), key.end());
-      auto kv_it = keys_only_map_.find(key);
-      if (kv_it != keys_only_map_.end()) {
-        item->type = leveldb::mojom::BatchOperationType::PUT_KEY;
-        data_size += it.second.size();
-        item->value = std::move(it.second);
+      storage::DomStorageDatabase::Key prefixed_key;
+      prefixed_key.reserve(prefix_.size() + key.size());
+      prefixed_key.insert(prefixed_key.end(), prefix_.begin(), prefix_.end());
+      prefixed_key.insert(prefixed_key.end(), key.begin(), key.end());
+      auto it = keys_only_map_.find(key);
+      if (it != keys_only_map_.end()) {
+        data_size += entry.second.size();
+        commit.entries_to_add.emplace_back(std::move(prefixed_key),
+                                           std::move(entry.second));
       } else {
-        item->type = leveldb::mojom::BatchOperationType::DELETE_KEY;
+        commit.keys_to_delete.push_back(std::move(prefixed_key));
       }
-      operations.push_back(std::move(item));
     }
   }
   // Schedule the copy, and ignore if |clear_all_first| is specified and there
@@ -831,11 +824,7 @@ void StorageAreaImpl::CommitChanges() {
   if (commit_batch_->copy_to_prefix) {
     DCHECK(!has_changes);
     DCHECK(!commit_batch_->clear_all_first);
-    BatchedOperationPtr item = BatchedOperation::New();
-    item->type = leveldb::mojom::BatchOperationType::COPY_PREFIXED_KEY;
-    item->key = prefix_;
-    item->value = std::move(commit_batch_->copy_to_prefix.value());
-    operations.push_back(std::move(item));
+    commit.copy_to_prefix = std::move(commit_batch_->copy_to_prefix);
   }
   commit_batch_.reset();
 
@@ -843,26 +832,41 @@ void StorageAreaImpl::CommitChanges() {
 
   ++commit_batches_in_flight_;
 
-  // TODO(michaeln): Currently there is no guarantee LevelDBDatabaseImpl::Write
-  // will run during a clean shutdown. We need that to avoid dataloss.
-  database_->Write(std::move(operations),
-                   base::BindOnce(&StorageAreaImpl::OnCommitComplete,
-                                  weak_ptr_factory_.GetWeakPtr()));
+  database_->RunDatabaseTask(
+      base::BindOnce(
+          [](Commit commit, const storage::DomStorageDatabase& db) {
+            leveldb::WriteBatch batch;
+            if (commit.clear_all_first)
+              db.DeletePrefixed(commit.prefix, &batch);
+            for (const auto& entry : commit.entries_to_add) {
+              batch.Put(leveldb_env::MakeSlice(entry.key),
+                        leveldb_env::MakeSlice(entry.value));
+            }
+            for (const auto& key : commit.keys_to_delete)
+              batch.Delete(leveldb_env::MakeSlice(key));
+            if (commit.copy_to_prefix) {
+              db.CopyPrefixed(commit.prefix, commit.copy_to_prefix.value(),
+                              &batch);
+            }
+            return db.Commit(&batch);
+          },
+          std::move(commit)),
+      base::BindOnce(&StorageAreaImpl::OnCommitComplete,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
-void StorageAreaImpl::OnCommitComplete(DatabaseError error) {
+void StorageAreaImpl::OnCommitComplete(leveldb::Status status) {
   has_committed_data_ = true;
   --commit_batches_in_flight_;
   StartCommitTimer();
 
-  if (error != DatabaseError::OK) {
+  if (!status.ok())
     SetCacheMode(CacheMode::KEYS_AND_VALUES);
-  }
 
   // Call before |DidCommit| as delegate can destroy this object.
   UnloadMapIfPossible();
 
-  delegate_->DidCommit(error);
+  delegate_->DidCommit(status);
 }
 
 void StorageAreaImpl::UnloadMapIfPossible() {

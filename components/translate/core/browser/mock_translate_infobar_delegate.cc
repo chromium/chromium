@@ -36,6 +36,7 @@ MockTranslateInfoBarDelegateFactory::MockTranslateInfoBarDelegateFactory(
     const std::string& target_language) {
   pref_service_ =
       std::make_unique<sync_preferences::TestingPrefServiceSyncable>();
+  language::LanguagePrefs::RegisterProfilePrefs(pref_service_->registry());
   translate::TranslatePrefs::RegisterProfilePrefs(pref_service_->registry());
   pref_service_->registry()->RegisterBooleanPref(prefs::kOfferTranslateEnabled,
                                                  true);

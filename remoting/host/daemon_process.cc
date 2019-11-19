@@ -6,10 +6,10 @@
 
 #include <algorithm>
 #include <string>
+#include <utility>
 
 #include "base/bind.h"
 #include "base/bind_helpers.h"
-#include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -21,6 +21,7 @@
 #include "remoting/host/chromoting_messages.h"
 #include "remoting/host/config_file_watcher.h"
 #include "remoting/host/desktop_session.h"
+#include "remoting/host/host_config.h"
 #include "remoting/host/host_event_logger.h"
 #include "remoting/host/host_exit_codes.h"
 #include "remoting/host/host_status_observer.h"
@@ -112,6 +113,8 @@ bool DaemonProcess::OnMessageReceived(const IPC::Message& message) {
                         StartProcessStatsReport)
     IPC_MESSAGE_HANDLER(ChromotingNetworkToAnyMsg_StopProcessStatsReport,
                         StopProcessStatsReport)
+    IPC_MESSAGE_HANDLER(ChromotingNetworkDaemonMsg_UpdateConfigRefreshToken,
+                        UpdateConfigRefreshToken)
     IPC_MESSAGE_UNHANDLED(handled = false)
   IPC_END_MESSAGE_MAP()
 
@@ -262,17 +265,8 @@ void DaemonProcess::CrashNetworkProcess(const base::Location& location) {
 void DaemonProcess::Initialize() {
   DCHECK(caller_task_runner()->BelongsToCurrentThread());
 
-  const base::CommandLine* command_line =
-      base::CommandLine::ForCurrentProcess();
-  // Get the name of the host configuration file.
-  base::FilePath default_config_dir = remoting::GetConfigDir();
-  base::FilePath config_path = default_config_dir.Append(
-      kDefaultHostConfigFile);
-  if (command_line->HasSwitch(kHostConfigSwitchName)) {
-    config_path = command_line->GetSwitchValuePath(kHostConfigSwitchName);
-  }
   config_watcher_.reset(new ConfigFileWatcher(
-      caller_task_runner(), io_task_runner(), config_path));
+      caller_task_runner(), io_task_runner(), GetConfigPath()));
   config_watcher_->Watch(this);
   host_event_logger_ =
       HostEventLogger::Create(status_monitor_, kApplicationName);
@@ -287,7 +281,7 @@ void DaemonProcess::Stop() {
   OnWorkerProcessStopped();
 
   if (!stopped_callback_.is_null()) {
-    base::ResetAndReturn(&stopped_callback_).Run();
+    std::move(stopped_callback_).Run();
   }
 }
 
@@ -395,6 +389,40 @@ void DaemonProcess::StopProcessStatsReport() {
 void DaemonProcess::OnProcessStats(
     const protocol::AggregatedProcessResourceUsage& usage) {
   SendToNetwork(new ChromotingAnyToNetworkMsg_ReportProcessStats(usage));
+}
+
+base::FilePath DaemonProcess::GetConfigPath() {
+  base::FilePath config_path;
+  const base::CommandLine* command_line =
+      base::CommandLine::ForCurrentProcess();
+  if (command_line->HasSwitch(kHostConfigSwitchName)) {
+    config_path = command_line->GetSwitchValuePath(kHostConfigSwitchName);
+  } else {
+    base::FilePath default_config_dir = remoting::GetConfigDir();
+    config_path = default_config_dir.Append(kDefaultHostConfigFile);
+  }
+  return config_path;
+}
+
+void DaemonProcess::UpdateConfigRefreshToken(const std::string& token) {
+  io_task_runner_->PostTask(FROM_HERE,
+                            base::BindOnce(&UpdateConfigRefreshTokenOnIoThread,
+                                           GetConfigPath(), token));
+}
+
+void DaemonProcess::UpdateConfigRefreshTokenOnIoThread(
+    const base::FilePath& config_file,
+    const std::string& token) {
+  std::unique_ptr<base::DictionaryValue> config =
+      HostConfigFromJsonFile(config_file);
+  if (!config) {
+    LOG(ERROR) << "Failed to read config file for updating.";
+    return;
+  }
+  config->SetString(kOAuthRefreshTokenConfigPath, token);
+  if (!HostConfigToJsonFile(*config, config_file)) {
+    LOG(ERROR) << "Failed to write updated config file.";
+  }
 }
 
 }  // namespace remoting

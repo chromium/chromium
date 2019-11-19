@@ -9,8 +9,8 @@
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/drive/file_system_core_util.h"
 #include "content/public/common/url_constants.h"
-#include "content/public/test/test_browser_thread_bundle.h"
-#include "storage/browser/fileapi/file_system_url.h"
+#include "content/public/test/browser_task_environment.h"
+#include "storage/browser/file_system/file_system_url.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace chromeos {
@@ -18,7 +18,7 @@ namespace chromeos {
 namespace {
 
 // Sets up ProfileManager for testing and marks the current thread as UI by
-// TestBrowserThreadBundle. We need the thread since Profile objects must be
+// BrowserTaskEnvironment. We need the thread since Profile objects must be
 // touched from UI and hence has CHECK/DCHECKs for it.
 class ExternalFileURLUtilTest : public testing::Test {
  protected:
@@ -41,7 +41,7 @@ class ExternalFileURLUtilTest : public testing::Test {
   }
 
  private:
-  content::TestBrowserThreadBundle thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
   TestingProfileManager testing_profile_manager_;
 };
 

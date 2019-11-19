@@ -1,0 +1,22 @@
+Layer list
+{
+  "layers": [
+    {
+      "name": "LayoutView #document",
+      "bounds": [780, 580],
+      "drawsContent": false
+    },
+    {
+      "name": "Scrolling background of LayoutView #document",
+      "bounds": [1200, 900],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF"
+    },
+    {
+      "name": "LayoutCustomScrollbarPart (anonymous)",
+      "bounds": [800, 600],
+      "backgroundColor": "#0000FF"
+    }
+  ]
+}
+

@@ -1,0 +1,216 @@
+# Copyright (c) 2013 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/features.gni")
+import("//testing/libfuzzer/fuzzer_test.gni")
+
+assert(!is_ios)
+
+if (is_android) {
+  import("//build/config/android/rules.gni")  # For generate_jni().
+}
+
+static_library("usb") {
+  # Only targets under //services/device folder can depend on it.
+  visibility = [
+    ":*",
+    "//services/device/usb/mojo:*",
+    "//services/device:*",
+  ]
+
+  sources = [
+    "usb_configuration_android.cc",
+    "usb_configuration_android.h",
+    "usb_descriptors.cc",
+    "usb_descriptors.h",
+    "usb_device.cc",
+    "usb_device.h",
+    "usb_device_android.cc",
+    "usb_device_android.h",
+    "usb_device_handle.cc",
+    "usb_device_handle.h",
+    "usb_device_handle_android.cc",
+    "usb_device_handle_android.h",
+    "usb_device_handle_win.cc",
+    "usb_device_handle_win.h",
+    "usb_device_linux.cc",
+    "usb_device_linux.h",
+    "usb_device_win.cc",
+    "usb_device_win.h",
+    "usb_endpoint_android.cc",
+    "usb_endpoint_android.h",
+    "usb_interface_android.cc",
+    "usb_interface_android.h",
+    "usb_service.cc",
+    "usb_service.h",
+    "usb_service_android.cc",
+    "usb_service_android.h",
+    "usb_service_win.cc",
+    "usb_service_win.h",
+    "webusb_descriptors.cc",
+    "webusb_descriptors.h",
+  ]
+
+  deps = [
+    "//base/third_party/dynamic_annotations",
+    "//components/device_event_log",
+    "//device/base",
+    "//services/device/public/cpp/usb",
+    "//services/device/public/mojom:usb",
+  ]
+
+  public_deps = [
+    "//base",
+    "//url",
+  ]
+
+  if (use_udev) {
+    sources += [
+      "usb_service_linux.cc",
+      "usb_service_linux.h",
+    ]
+    deps += [ "//device/udev_linux" ]
+  }
+
+  if (is_android) {
+    deps += [ ":jni_headers" ]
+  }
+
+  if (is_win || is_mac) {
+    sources += [
+      "scoped_libusb_device_handle.cc",
+      "scoped_libusb_device_handle.h",
+      "scoped_libusb_device_ref.cc",
+      "scoped_libusb_device_ref.h",
+      "usb_context.cc",
+      "usb_context.h",
+      "usb_device_handle_impl.cc",
+      "usb_device_handle_impl.h",
+      "usb_device_impl.cc",
+      "usb_device_impl.h",
+      "usb_error.cc",
+      "usb_error.h",
+      "usb_service_impl.cc",
+      "usb_service_impl.h",
+    ]
+
+    deps += [ "//third_party/libusb" ]
+  }
+
+  if (is_win) {
+    sources += [
+      "scoped_winusb_handle.cc",
+      "scoped_winusb_handle.h",
+    ]
+
+    libs = [
+      "setupapi.lib",
+      "winusb.lib",
+    ]
+  }
+
+  if (is_android || is_chromeos || is_linux) {
+    sources += [
+      "usb_device_handle_usbfs.cc",
+      "usb_device_handle_usbfs.h",
+    ]
+  }
+
+  if (is_chromeos) {
+    deps += [
+      "//chromeos/dbus/permission_broker",
+      "//dbus",
+    ]
+  }
+}
+
+static_library("test_support") {
+  testonly = true
+
+  sources = [
+    "fake_usb_device_handle.cc",
+    "fake_usb_device_handle.h",
+    "mock_usb_device.cc",
+    "mock_usb_device.h",
+    "mock_usb_device_handle.cc",
+    "mock_usb_device_handle.h",
+    "mock_usb_service.cc",
+    "mock_usb_service.h",
+  ]
+
+  deps = [
+    ":usb",
+    "//base",
+    "//testing/gtest",
+  ]
+
+  public_deps = [
+    "//testing/gmock",
+  ]
+}
+
+fuzzer_test("webusb_descriptors_fuzzer") {
+  sources = [
+    "webusb_descriptors_fuzzer.cc",
+  ]
+  deps = [
+    ":test_support",
+    ":usb",
+    "//base",
+    "//base:i18n",
+  ]
+  seed_corpus = "fuzz_corpus"
+  libfuzzer_options = [ "max_len=2048" ]
+}
+
+fuzzer_test("usb_descriptors_fuzzer") {
+  sources = [
+    "usb_descriptors_fuzzer.cc",
+  ]
+  deps = [
+    ":usb",
+    "//mojo/public/cpp/bindings",
+    "//services/device/public/mojom:usb",
+    "//services/device/usb/mojo",
+  ]
+  seed_corpus = "fuzz_corpus"
+  libfuzzer_options = [ "max_len=2048" ]
+}
+
+fuzzer_test("usb_string_read_fuzzer") {
+  sources = [
+    "usb_string_read_fuzzer.cc",
+  ]
+  deps = [
+    ":test_support",
+    ":usb",
+    "//base",
+  ]
+  seed_corpus = "fuzz_corpus"
+  libfuzzer_options = [ "max_len=2048" ]
+}
+
+if (is_android) {
+  java_sources_needing_jni = [
+    "android/java/src/org/chromium/device/usb/ChromeUsbConfiguration.java",
+    "android/java/src/org/chromium/device/usb/ChromeUsbConnection.java",
+    "android/java/src/org/chromium/device/usb/ChromeUsbDevice.java",
+    "android/java/src/org/chromium/device/usb/ChromeUsbEndpoint.java",
+    "android/java/src/org/chromium/device/usb/ChromeUsbInterface.java",
+    "android/java/src/org/chromium/device/usb/ChromeUsbService.java",
+  ]
+
+  generate_jni("jni_headers") {
+    sources = java_sources_needing_jni
+  }
+
+  android_library("java") {
+    java_files = java_sources_needing_jni
+    deps = [
+      "//base:base_java",
+      "//base:jni_java",
+    ]
+    annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+  }
+}

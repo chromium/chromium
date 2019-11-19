@@ -13,9 +13,11 @@
 #include "base/memory/weak_ptr.h"
 #include "media/base/cdm_context.h"
 #include "media/cdm/api/content_decryption_module.h"
-#include "media/mojo/interfaces/cdm_proxy.mojom.h"
+#include "media/mojo/mojom/cdm_proxy.mojom.h"
 #include "media/mojo/services/media_mojo_export.h"
 #include "mojo/public/cpp/bindings/associated_binding.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 namespace media {
 
@@ -23,7 +25,8 @@ namespace media {
 class MEDIA_MOJO_EXPORT MojoCdmProxy : public cdm::CdmProxy,
                                        mojom::CdmProxyClient {
  public:
-  MojoCdmProxy(mojom::CdmProxyPtr cdm_proxy_ptr, cdm::CdmProxyClient* client);
+  MojoCdmProxy(mojo::PendingRemote<mojom::CdmProxy> cdm_proxy_remote,
+               cdm::CdmProxyClient* client);
   ~MojoCdmProxy() override;
 
   // cdm::CdmProxy implementation.
@@ -64,7 +67,7 @@ class MEDIA_MOJO_EXPORT MojoCdmProxy : public cdm::CdmProxy,
   void OnKeySet(media::CdmProxy::Status status);
   void OnKeyRemoved(media::CdmProxy::Status status);
 
-  mojom::CdmProxyPtr cdm_proxy_ptr_;
+  mojo::Remote<mojom::CdmProxy> cdm_proxy_remote_;
   cdm::CdmProxyClient* client_;
 
   mojo::AssociatedBinding<mojom::CdmProxyClient> client_binding_;
@@ -72,7 +75,7 @@ class MEDIA_MOJO_EXPORT MojoCdmProxy : public cdm::CdmProxy,
   int cdm_id_ = CdmContext::kInvalidCdmId;
 
   // NOTE: Weak pointers must be invalidated before all other member variables.
-  base::WeakPtrFactory<MojoCdmProxy> weak_factory_;
+  base::WeakPtrFactory<MojoCdmProxy> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(MojoCdmProxy);
 };

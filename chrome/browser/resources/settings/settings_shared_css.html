@@ -1,15 +1,13 @@
-<link rel="import" href="chrome://resources/cr_elements/paper_button_style_css.html">
 <link rel="import" href="chrome://resources/cr_elements/search_highlight_style_css.html">
 <link rel="import" href="chrome://resources/cr_elements/shared_vars_css.html">
 <link rel="import" href="chrome://resources/cr_elements/shared_style_css.html">
-<link rel="import" href="settings_icons_css.html">
 <link rel="import" href="settings_vars_css.html">
 
 
 <!-- Common styles for Material Design settings. -->
 <dom-module id="settings-shared">
   <template>
-    <style include="settings-icons paper-button-style cr-shared-style search-highlight-style">
+    <style include="cr-shared-style search-highlight-style">
       /* Prevent action-links from being selected to avoid accidental
        * selection when trying to click it. */
       a[is=action-link] {
@@ -31,10 +29,6 @@
 
       iron-icon {
         flex-shrink: 0;  /* Prevent distortion of icons in cramped UI. */
-      }
-
-      iron-icon[icon='cr:check'] {
-       --iron-icon-fill-color: var(--google-green-500);
       }
 
       iron-icon.policy {
@@ -60,25 +54,20 @@
         }
       }
 
-      .separator + paper-icon-button-light {
+      .separator + cr-icon-button {
         margin-inline-start: var(--cr-icon-ripple-margin);
       }
 
-      /* For "Advanced" toggle button. */
-      paper-button[toggles][active] {
-        background-color: var(--paper-grey-300);
-      }
-
       /* Special case for buttons inside of toggle-buttons. */
-      .settings-box settings-toggle-button paper-button:last-of-type {
+      .settings-box settings-toggle-button cr-button:last-of-type {
         margin-inline-end: 16px;
       }
 
       /* Space out multiple buttons in the same row. */
-      .settings-box paper-button + paper-button,
-      .settings-box paper-button + controlled-button,
+      .settings-box cr-button + cr-button,
+      .settings-box cr-button + controlled-button,
       .settings-box controlled-button + controlled-button,
-      .settings-box controlled-button + paper-button {
+      .settings-box controlled-button + cr-button {
         margin-inline-start: 8px;
       }
 
@@ -115,8 +104,16 @@
       }
 
       cr-radio-group:focus {
+        /* TODO(dbeam): why is this here? It looks weird and I'm not sure how to
+         * actually trigger it with mouse/keyboard/screenreader. */
         background-color: var(--google-grey-300);
         outline: none;
+      }
+
+      @media (prefers-color-scheme: dark) {
+        cr-radio-group:focus {
+          background-color: var(--google-grey-800);
+        }
       }
 
       /* See also: .no-min-width below. */
@@ -134,7 +131,13 @@
       }
 
       .header-aligned-button {
-        margin-top: 12px;  /* Align paper-button with <h2>. */
+        margin-top: 12px;  /* Align cr-button with <h2>. */
+      }
+
+      .link-wrapper {
+        align-items: center;
+        display: flex;
+        flex-grow: 1;
       }
 
       /* A list-frame is an outer container for list-items. It is intended to be
@@ -157,7 +160,7 @@
 
       /* A thin separator line under a list item. */
       .list-item.underbar {
-        border-bottom: var(--settings-separator-line);
+        border-bottom: var(--cr-separator-line);
       }
 
       .list-item.selected {
@@ -188,6 +191,13 @@
         min-height: inherit;
       }
 
+      /* Link buttons use FocusOutlineManager to only show outlines when focus
+       * was triggered by keyboard. */
+      :host-context(html:not(.focus-outline-visible))
+          .list-button[is='action-link'] {
+        outline: none;
+      }
+
       /* A row with two lines of text. Often the lower line will be .secondary.
        */
       .two-line {
@@ -204,6 +214,18 @@
        * setting section (page or subpage). */
       .settings-box {
         @apply --cr-section;
+      }
+
+      .settings-box.no-padding {
+        padding: 0;
+      }
+
+      .settings-box.no-padding .margin-matches-padding {
+        margin: 0 var(--cr-section-padding);
+      }
+
+      .settings-box.no-padding > .link-wrapper {
+        padding: 0 var(--cr-section-padding);
       }
 
       .settings-box.two-line {
@@ -251,7 +273,7 @@
       /* A settings-box that is embedded in another settings-box (e.g. a control
        * that is associated with a toggle button). */
       .settings-box.embedded {
-        padding-inline-start: var(--settings-box-row-indent);
+        padding-inline-start: var(--cr-section-indent-padding);
       }
 
       /* The lower line of text in a two-line row. */
@@ -305,26 +327,27 @@
       [scrollable],
       iron-list,
       .list-item {
-        --cr-paper-icon-button-margin: {
-          margin-inline-end: 0;
-          margin-inline-start: var(--cr-icon-button-margin-start);
-        };
+        --cr-icon-button-margin-end: 0;
       }
 
       /* Helper for a list frame to automatically avoid the separator line. */
       .vertical-list > *:not(:first-of-type) {
-        border-top: var(--settings-separator-line);
+        border-top: var(--cr-separator-line);
       }
 
       /* The separator a vertical line like a horizontal rule <hr> tag, but goes
        * the other way. An example is near the |sign out| button on the People
        * settings. */
       .separator {
-        border-inline-start: var(--settings-separator-line);
+        border-inline-start: var(--cr-separator-line);
         flex-shrink: 0;
-        /* Match paper-button's default height. */
+        /* Match cr-button's default height. */
         height: 32px;
         margin: 0 16px;
+      }
+
+      .settings-box.no-padding > .link-wrapper ~ .separator {
+        margin: 0;
       }
 
       .column-header {

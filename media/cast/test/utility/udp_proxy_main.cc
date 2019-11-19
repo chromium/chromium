@@ -13,9 +13,9 @@
 #include "base/command_line.h"
 #include "base/containers/circular_deque.h"
 #include "base/logging.h"
-#include "base/message_loop/message_loop.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_executor.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "media/cast/test/utility/udp_proxy.h"
 #include "net/base/ip_address.h"
@@ -134,7 +134,8 @@ int main(int argc, char** argv) {
   base::AtExitManager at_exit;
   base::CommandLine::Init(argc, argv);
   logging::LoggingSettings settings;
-  settings.logging_dest = logging::LOG_TO_SYSTEM_DEBUG_LOG;
+  settings.logging_dest =
+      logging::LOG_TO_SYSTEM_DEBUG_LOG | logging::LOG_TO_STDERR;
   InitLogging(settings);
 
   if (argc != 5 && argc != 3) {
@@ -208,7 +209,7 @@ int main(int argc, char** argv) {
       media::cast::test::UDPProxy::Create(local_endpoint, remote_endpoint,
                                           std::move(in_pipe),
                                           std::move(out_pipe), NULL));
-  base::MessageLoop message_loop;
+  base::SingleThreadTaskExecutor main_task_executor;
   counter->last_printout = base::TimeTicks::Now();
   CheckByteCounters();
   base::RunLoop().Run();

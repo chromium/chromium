@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<style>
+    body {
+        background-color: lightblue;
+    }
+    canvas {
+        width: 100px;
+        height: 50px;
+    }
+</style>
+
+<body>
+    <canvas id="canvas2"></canvas>
+</body>
+
+<script>
+    function createImage()
+    {
+        var canvas = new OffscreenCanvas(100, 50);
+        var ctx = canvas.getContext("2d");
+        for (var y = 0; y < 50; y += 10) {
+            for (var x = ((y / 10) % 2) ? 0 : 10; x < 100; x += 20) {
+                switch (Math.round(x / 20) % 3) {
+                case 0:
+                    ctx.fillStyle = "#f00";
+                    break;
+                case 1:
+                    ctx.fillStyle = "#0f0";
+                    break;
+                case 2:
+                    ctx.fillStyle = "#00f";
+                    break;
+                }
+                ctx.fillRect(x, y, 10, 10);
+            }
+        }
+        image = canvas.transferToImageBitmap();
+        return image;
+    }
+    var canvas = document.getElementById("canvas2");
+    canvas.width = 100; canvas.height = 50;
+    var ctx = canvas.getContext("2d");
+    var image = createImage();
+    ctx.drawImage(image, 0, 0);
+</script>
+</html>

@@ -55,7 +55,8 @@ class TestSSLPlatformKey : public ThreadedSSLPrivateKey::Delegate {
       }
     }
     size_t sig_len = 0;
-    if (!EVP_DigestSign(ctx.get(), NULL, &sig_len, input.data(), input.size()))
+    if (!EVP_DigestSign(ctx.get(), nullptr, &sig_len, input.data(),
+                        input.size()))
       return ERR_SSL_CLIENT_AUTH_SIGNATURE_FAILED;
     signature->resize(sig_len);
     if (!EVP_DigestSign(ctx.get(), signature->data(), &sig_len, input.data(),

@@ -14,9 +14,10 @@
 #include "base/no_destructor.h"
 #include "base/process/process.h"
 #include "base/run_loop.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/binding.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "services/service_manager/public/cpp/constants.h"
 #include "services/service_manager/public/cpp/identity.h"
 #include "services/service_manager/public/cpp/manifest.h"
@@ -25,7 +26,6 @@
 #include "services/service_manager/public/cpp/service_binding.h"
 #include "services/service_manager/public/cpp/test/test_service_manager.h"
 #include "services/service_manager/public/mojom/constants.mojom.h"
-#include "services/service_manager/public/mojom/service_factory.mojom.h"
 #include "services/service_manager/public/mojom/service_manager.mojom.h"
 #include "services/service_manager/tests/lifecycle/lifecycle.test-mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -58,23 +58,36 @@ const std::vector<Manifest>& GetTestManifests() {
            .Build(),
        ManifestBuilder()
            .WithServiceName(kTestAppName)
+           .WithOptions(ManifestOptionsBuilder()
+                            .WithExecutionMode(
+                                Manifest::ExecutionMode::kStandaloneExecutable)
+                            .WithSandboxType("none")
+                            .Build())
            .ExposeCapability(
                kTestLifecycleControlCapability,
                Manifest::InterfaceList<test::mojom::LifecycleControl>())
            .Build(),
        ManifestBuilder()
            .WithServiceName(kTestParentName)
+           .WithOptions(ManifestOptionsBuilder()
+                            .WithExecutionMode(
+                                Manifest::ExecutionMode::kStandaloneExecutable)
+                            .WithSandboxType("none")
+                            .Build())
            .ExposeCapability(kTestParentCapability,
                              Manifest::InterfaceList<test::mojom::Parent>())
            .RequireCapability(kTestAppName, kTestLifecycleControlCapability)
            .Build(),
        ManifestBuilder()
            .WithServiceName(kTestPackageName)
+           .WithOptions(ManifestOptionsBuilder()
+                            .WithExecutionMode(
+                                Manifest::ExecutionMode::kStandaloneExecutable)
+                            .WithSandboxType("none")
+                            .Build())
            .ExposeCapability(
                kTestLifecycleControlCapability,
                Manifest::InterfaceList<test::mojom::LifecycleControl>())
-           .ExposeCapability("service_manager:service_factory",
-                             Manifest::InterfaceList<mojom::ServiceFactory>())
            .PackageService(
                ManifestBuilder()
                    .WithServiceName(kTestPackageAppNameA)
@@ -231,19 +244,19 @@ class LifecycleTest : public testing::Test {
 
  private:
   std::unique_ptr<InstanceState> TrackInstances() {
-    mojom::ServiceManagerPtr service_manager;
-    connector()->BindInterface(service_manager::mojom::kServiceName,
-                               &service_manager);
-    mojom::ServiceManagerListenerPtr listener;
+    mojo::Remote<mojom::ServiceManager> service_manager;
+    connector()->Connect(service_manager::mojom::kServiceName,
+                         service_manager.BindNewPipeAndPassReceiver());
+    mojo::PendingRemote<mojom::ServiceManagerListener> listener;
     base::RunLoop loop;
-    InstanceState* state =
-        new InstanceState(MakeRequest(&listener), loop.QuitClosure());
+    InstanceState* state = new InstanceState(
+        listener.InitWithNewPipeAndPassReceiver(), loop.QuitClosure());
     service_manager->AddListener(std::move(listener));
     loop.Run();
     return base::WrapUnique(state);
   }
 
-  base::test::ScopedTaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_;
   TestServiceManager test_service_manager_;
   Service test_service_;
   ServiceBinding test_service_binding_;

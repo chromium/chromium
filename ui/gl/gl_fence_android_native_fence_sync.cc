@@ -76,31 +76,42 @@ base::TimeTicks GLFenceAndroidNativeFenceSync::GetStatusChangeTime() {
     return base::TimeTicks();
 
   base::ScopedFD scoped_fd(sync_fd);
+  base::TimeTicks time;
+  GetStatusChangeTimeForFence(sync_fd, &time);
+  return time;
+}
 
-  struct sync_fence_info_data* info;
-  info = sync_fence_info(scoped_fd.get());
-  if (!info)
-    return base::TimeTicks();
+// static
+GLFenceAndroidNativeFenceSync::Status
+GLFenceAndroidNativeFenceSync::GetStatusChangeTimeForFence(
+    int fd,
+    base::TimeTicks* time) {
+  DCHECK_NE(fd, -1);
 
-  struct sync_pt_info* pt_info = nullptr;
-  pt_info = sync_pt_info(info, pt_info);
-  if (!pt_info)
-    return base::TimeTicks();
-
-  base::TimeTicks t = base::TimeTicks() +
-                      base::TimeDelta::FromNanoseconds(pt_info->timestamp_ns);
-
-  if (sync_pt_info(info, pt_info)) {
-    // It is possible that multiple sync_pt_info could be extracted from
-    // sync_fence_info_data. We currently only handle one.
-    DLOG(WARNING) << "Ambiguous status change time. More than one result "
-                     "could be extracted";
-
-    return base::TimeTicks();
+  auto info =
+      std::unique_ptr<sync_fence_info_data, void (*)(sync_fence_info_data*)>{
+          sync_fence_info(fd), sync_fence_info_free};
+  if (!info) {
+    LOG(ERROR) << "sync_fence_info returned null for fd : " << fd;
+    return Status::kInvalid;
   }
 
-  sync_fence_info_free(info);
-  return t;
+  const bool signaled = info->status == 1;
+  if (!signaled)
+    return Status::kNotSignaled;
+
+  struct sync_pt_info* pt_info = nullptr;
+  uint64_t timestamp_ns = 0u;
+  while ((pt_info = sync_pt_info(info.get(), pt_info)))
+    timestamp_ns = std::max(timestamp_ns, pt_info->timestamp_ns);
+
+  if (timestamp_ns == 0u) {
+    LOG(ERROR) << "No timestamp provided from sync_pt_info for fd : " << fd;
+    return Status::kInvalid;
+  }
+
+  *time = base::TimeTicks() + base::TimeDelta::FromNanoseconds(timestamp_ns);
+  return Status::kSignaled;
 }
 
 }  // namespace gl

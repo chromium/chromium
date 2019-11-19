@@ -7,6 +7,8 @@
 
 #include "extensions/common/extension_id.h"
 
+class GURL;
+
 namespace extensions {
 class Extension;
 class Dispatcher;
@@ -36,6 +38,14 @@ class ExtensionsRendererClient {
   // TODO(devlin): Make a RendererExtensionRegistryObserver?
   virtual void OnExtensionLoaded(const Extension& extension) {}
   virtual void OnExtensionUnloaded(const ExtensionId& extension) {}
+
+  // Returns whether or not extension APIs are allowed for the specified
+  // script. The script must be specified in the extension's manifest
+  // background section and the scope must be the root scope of the
+  // extension.
+  virtual bool ExtensionAPIEnabledForServiceWorkerScript(
+      const GURL& scope,
+      const GURL& script_url) const = 0;
 
   // Returns the single instance of |this|.
   static ExtensionsRendererClient* Get();

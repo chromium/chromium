@@ -6,8 +6,8 @@
 
 #include "base/command_line.h"
 #include "base/lazy_instance.h"
-#include "base/message_loop/message_loop.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/task/single_thread_task_executor.h"
 #include "components/webcrypto/algorithm_dispatch.h"
 #include "components/webcrypto/crypto_data.h"
 #include "components/webcrypto/status.h"
@@ -31,7 +31,7 @@ class InitOnce : public blink::Platform {
   ~InitOnce() override {}
 
  private:
-  base::MessageLoop loop_;
+  base::SingleThreadTaskExecutor main_thread_task_executor_;
 };
 
 base::LazyInstance<InitOnce>::Leaky g_once = LAZY_INSTANCE_INITIALIZER;

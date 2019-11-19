@@ -34,8 +34,8 @@ void OpenVRWrapper::SetTestHook(VRTestHook* hook) {
   // maintaining thread safety, typically by not changing the test hook
   // while presenting.
   test_hook_ = hook;
-  if (test_hook_registration_) {
-    test_hook_registration_->SetTestHook(test_hook_);
+  if (service_test_hook_) {
+    service_test_hook_->SetTestHook(test_hook_);
   }
 }
 
@@ -63,15 +63,15 @@ bool OpenVRWrapper::Initialize(bool for_rendering) {
   if (test_hook_) {
     // Allow our mock implementation of OpenVR to be controlled by tests.
     // Note that SetTestHook must be called before CreateDevice, or
-    // test_hook_registration_s will remain null.  This is a good pattern for
+    // service_test_hook_s will remain null.  This is a good pattern for
     // tests anyway, since the alternative is we start mocking part-way through
     // using the device, and end up with race conditions for when we started
     // controlling things.
     vr::EVRInitError eError;
-    test_hook_registration_ = reinterpret_cast<TestHookRegistration*>(
+    service_test_hook_ = static_cast<ServiceTestHook*>(
         vr::VR_GetGenericInterface(kChromeOpenVRTestHookAPI, &eError));
-    if (test_hook_registration_) {
-      test_hook_registration_->SetTestHook(test_hook_);
+    if (service_test_hook_) {
+      service_test_hook_->SetTestHook(test_hook_);
       test_hook_->AttachCurrentThread();
     }
   }
@@ -84,7 +84,7 @@ void OpenVRWrapper::Uninitialize() {
   initialized_ = false;
   system_ = nullptr;
   compositor_ = nullptr;
-  test_hook_registration_ = nullptr;
+  service_test_hook_ = nullptr;
   current_task_runner_ = nullptr;
   if (test_hook_)
     test_hook_->DetachCurrentThread();
@@ -95,17 +95,17 @@ void OpenVRWrapper::Uninitialize() {
 
 VRTestHook* OpenVRWrapper::test_hook_ = nullptr;
 bool OpenVRWrapper::any_initialized_ = false;
-TestHookRegistration* OpenVRWrapper::test_hook_registration_ = nullptr;
+ServiceTestHook* OpenVRWrapper::service_test_hook_ = nullptr;
 
 std::string GetOpenVRString(vr::IVRSystem* vr_system,
-                            vr::TrackedDeviceProperty prop) {
+                            vr::TrackedDeviceProperty prop,
+                            uint32_t device_index) {
   std::string out;
 
   vr::TrackedPropertyError error = vr::TrackedProp_Success;
   char openvr_string[vr::k_unMaxPropertyStringSize];
   vr_system->GetStringTrackedDeviceProperty(
-      vr::k_unTrackedDeviceIndex_Hmd, prop, openvr_string,
-      vr::k_unMaxPropertyStringSize, &error);
+      device_index, prop, openvr_string, vr::k_unMaxPropertyStringSize, &error);
 
   if (error == vr::TrackedProp_Success)
     out = openvr_string;

@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.toolbar.bottom;
 
 import org.chromium.chrome.browser.ThemeColorProvider;
 import org.chromium.chrome.browser.ThemeColorProvider.ThemeColorObserver;
+import org.chromium.chrome.browser.compositor.layouts.EmptyOverviewModeObserver;
 import org.chromium.chrome.browser.compositor.layouts.OverviewModeBehavior;
 import org.chromium.chrome.browser.compositor.layouts.OverviewModeBehavior.OverviewModeObserver;
 
@@ -14,7 +15,7 @@ import org.chromium.chrome.browser.compositor.layouts.OverviewModeBehavior.Overv
  * coordinators, running most of the business logic associated with the tab switcher bottom toolbar,
  * and updating the model accordingly.
  */
-class TabSwitcherBottomToolbarMediator implements OverviewModeObserver, ThemeColorObserver {
+class TabSwitcherBottomToolbarMediator implements ThemeColorObserver {
     /** The model for the tab switcher bottom toolbar that holds all of its state. */
     private final TabSwitcherBottomToolbarModel mModel;
 
@@ -23,6 +24,7 @@ class TabSwitcherBottomToolbarMediator implements OverviewModeObserver, ThemeCol
 
     /** The overview mode manager. */
     private final OverviewModeBehavior mOverviewModeBehavior;
+    private final OverviewModeObserver mOverviewModeObserver;
 
     /**
      * Build a new mediator that handles events from outside the tab switcher bottom toolbar.
@@ -39,7 +41,18 @@ class TabSwitcherBottomToolbarMediator implements OverviewModeObserver, ThemeCol
         mThemeColorProvider.addThemeColorObserver(this);
 
         mOverviewModeBehavior = overviewModeBehavior;
-        mOverviewModeBehavior.addOverviewModeObserver(this);
+        mOverviewModeObserver = new EmptyOverviewModeObserver() {
+            @Override
+            public void onOverviewModeStartedShowing(boolean showToolbar) {
+                mModel.set(TabSwitcherBottomToolbarModel.IS_VISIBLE, true);
+            }
+
+            @Override
+            public void onOverviewModeStartedHiding(boolean showToolbar, boolean delayAnimation) {
+                mModel.set(TabSwitcherBottomToolbarModel.IS_VISIBLE, false);
+            }
+        };
+        mOverviewModeBehavior.addOverviewModeObserver(mOverviewModeObserver);
     }
 
     /**
@@ -53,25 +66,9 @@ class TabSwitcherBottomToolbarMediator implements OverviewModeObserver, ThemeCol
      * Clean up anything that needs to be when the tab switcher bottom toolbar is destroyed.
      */
     void destroy() {
-        if (mOverviewModeBehavior != null) mOverviewModeBehavior.removeOverviewModeObserver(this);
-        if (mThemeColorProvider != null) mThemeColorProvider.removeThemeColorObserver(this);
+        mOverviewModeBehavior.removeOverviewModeObserver(mOverviewModeObserver);
+        mThemeColorProvider.removeThemeColorObserver(this);
     }
-
-    @Override
-    public void onOverviewModeStartedShowing(boolean showToolbar) {
-        mModel.set(TabSwitcherBottomToolbarModel.IS_VISIBLE, true);
-    }
-
-    @Override
-    public void onOverviewModeFinishedShowing() {}
-
-    @Override
-    public void onOverviewModeStartedHiding(boolean showToolbar, boolean delayAnimation) {
-        mModel.set(TabSwitcherBottomToolbarModel.IS_VISIBLE, false);
-    }
-
-    @Override
-    public void onOverviewModeFinishedHiding() {}
 
     @Override
     public void onThemeColorChanged(int primaryColor, boolean shouldAnimate) {

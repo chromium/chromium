@@ -13,15 +13,14 @@
 // The media parser on Android that provides video thumbnail generation utility.
 class MediaParserAndroid : public MediaParser {
  public:
-  MediaParserAndroid(
-      std::unique_ptr<service_manager::ServiceContextRef> service_ref);
+  MediaParserAndroid();
   ~MediaParserAndroid() override;
 
   // MediaParser implementation.
   void ExtractVideoFrame(
       const std::string& mime_type,
       uint32_t total_size,
-      chrome::mojom::MediaDataSourcePtr media_data_source,
+      mojo::PendingRemote<chrome::mojom::MediaDataSource> media_data_source,
       ExtractVideoFrameCallback video_frame_callback) override;
 
  private:

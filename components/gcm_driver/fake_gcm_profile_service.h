@@ -11,7 +11,7 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "components/gcm_driver/common/gcm_messages.h"
+#include "components/gcm_driver/common/gcm_message.h"
 #include "components/gcm_driver/gcm_client.h"
 #include "components/gcm_driver/gcm_profile_service.h"
 
@@ -37,6 +37,10 @@ class FakeGCMProfileService : public GCMProfileService {
 
   const OutgoingMessage& last_sent_message() const {
     return last_sent_message_;
+  }
+
+  const WebPushMessage& last_web_push_message() const {
+    return last_web_push_message_;
   }
 
   const std::string& last_receiver_id() const { return last_receiver_id_; }
@@ -69,6 +73,7 @@ class FakeGCMProfileService : public GCMProfileService {
   std::list<GCMClient::Result> unregister_responses_;
   OutgoingMessage last_sent_message_;
   std::string last_receiver_id_;
+  WebPushMessage last_web_push_message_;
 
   DISALLOW_COPY_AND_ASSIGN(FakeGCMProfileService);
 };

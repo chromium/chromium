@@ -1,12 +1,13 @@
 rootWebArea
-++details
-++++disclosureTriangle collapsed name='details tag'
-++++++staticText name='details tag'
-++++++++inlineTextBox name='details tag'
-++details
-++++disclosureTriangle name='details tag open'
-++++++staticText name='details tag open'
-++++++++inlineTextBox name='details tag open'
-++++paragraph
-++++++staticText name='The details tag with open specifies that the details should be visible (open) to the user.'
-++++++++inlineTextBox name='The details tag with open specifies that the details should be visible (open) to the user.'
+++genericContainer ignored
+++++details
+++++++disclosureTriangle collapsed name='details tag'
+++++++++staticText name='details tag'
+++++++++++inlineTextBox name='details tag'
+++++details
+++++++disclosureTriangle name='details tag open'
+++++++++staticText name='details tag open'
+++++++++++inlineTextBox name='details tag open'
+++++++paragraph
+++++++++staticText name='The details tag with open specifies that the details should be visible (open) to the user.'
+++++++++++inlineTextBox name='The details tag with open specifies that the details should be visible (open) to the user.'

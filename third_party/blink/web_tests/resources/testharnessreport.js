@@ -229,7 +229,10 @@
             }
             outputDocument.body.appendChild(resultsElement);
 
-            if (cachedSelf.testRunner) {
+            // IFrames running tests should not complete the harness as the parent
+            // page will.
+            let shouldCompleteHarness = (window.self == window.top);
+            if (cachedSelf.testRunner && shouldCompleteHarness) {
                 testRunner.notifyDone();
             }
         }

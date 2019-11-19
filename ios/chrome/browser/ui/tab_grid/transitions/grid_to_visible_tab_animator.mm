@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/tab_grid/transitions/grid_to_visible_tab_animator.h"
 
+#include "ios/chrome/browser/crash_report/breakpad_helper.h"
 #import "ios/chrome/browser/ui/tab_grid/transitions/grid_transition_animation.h"
 #import "ios/chrome/browser/ui/tab_grid/transitions/grid_transition_layout.h"
 #import "ios/chrome/browser/ui/tab_grid/transitions/grid_transition_state_providing.h"
@@ -142,8 +143,29 @@
     presentedView.alpha = 1;
     [gridView removeFromSuperview];
   }
+
+  // TODO(crbug.com/959774): The logging below is to better understand a crash
+  // when |-completeTransition| is called. We expect the |toViewController| to
+  // be BVC. We are testing the assumption below that there should be no
+  // presentingViewController, presentedViewController, or parentViewController.
+  UIViewController* toViewController = [self.transitionContext
+      viewControllerForKey:UITransitionContextToViewControllerKey];
+  NSString* toViewControllerName = NSStringFromClass([toViewController class]);
+  NSString* presentingViewControllerName =
+      NSStringFromClass([toViewController.presentingViewController class]);
+  NSString* presentedViewControllerName =
+      NSStringFromClass([toViewController.presentedViewController class]);
+  NSString* parentViewControllerName =
+      NSStringFromClass([toViewController.parentViewController class]);
+  breakpad_helper::SetGridToVisibleTabAnimation(
+      toViewControllerName, presentingViewControllerName,
+      presentedViewControllerName, parentViewControllerName);
+
   // Mark the transition as completed.
   [self.transitionContext completeTransition:YES];
+
+  // Remove the crash log since the presentation completed without a crash.
+  breakpad_helper::RemoveGridToVisibleTabAnimation();
 }
 
 @end

@@ -41,8 +41,8 @@ namespace test {
 namespace {
 
 std::string WindowIDAsString(ui::GestureConsumer* consumer) {
-  return consumer ?
-      base::IntToString(static_cast<Window*>(consumer)->id()) : "?";
+  return consumer ? base::NumberToString(static_cast<Window*>(consumer)->id())
+                  : "?";
 }
 
 #define EXPECT_0_EVENTS(events) \
@@ -196,7 +196,7 @@ class GestureEventConsumeDelegate : public TestWindowDelegate {
 
   void WaitUntilReceivedGesture(ui::EventType type) {
     wait_until_event_ = type;
-    run_loop_.reset(new base::RunLoop());
+    run_loop_ = std::make_unique<base::RunLoop>();
     run_loop_->Run();
   }
 
@@ -2586,12 +2586,12 @@ TEST_F(GestureRecognizerTest, CaptureDoesNotCancelFinishedTouches) {
 
   // End the two touches, one by a touch-release and one by a touch-cancel; to
   // cover both cases.
-  touch0.reset(new ui::TouchEvent(
+  touch0 = std::make_unique<ui::TouchEvent>(
       ui::ET_TOUCH_RELEASED, gfx::Point(20, 20), tes.Now(),
-      ui::PointerDetails(ui::EventPointerType::POINTER_TYPE_TOUCH, 0)));
-  touch1.reset(new ui::TouchEvent(
+      ui::PointerDetails(ui::EventPointerType::POINTER_TYPE_TOUCH, 0));
+  touch1 = std::make_unique<ui::TouchEvent>(
       ui::ET_TOUCH_CANCELLED, gfx::Point(30, 30), tes.Now(),
-      ui::PointerDetails(ui::EventPointerType::POINTER_TYPE_TOUCH, 1)));
+      ui::PointerDetails(ui::EventPointerType::POINTER_TYPE_TOUCH, 1));
   generator.Dispatch(touch0.get());
   generator.Dispatch(touch1.get());
   RunAllPendingInMessageLoop();

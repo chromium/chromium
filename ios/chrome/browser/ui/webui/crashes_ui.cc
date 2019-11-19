@@ -24,8 +24,8 @@
 #include "ios/chrome/browser/crash_report/crash_upload_list.h"
 #include "ios/chrome/browser/metrics/ios_chrome_metrics_service_accessor.h"
 #include "ios/chrome/grit/ios_chromium_strings.h"
-#include "ios/web/public/web_ui_ios_data_source.h"
 #include "ios/web/public/webui/web_ui_ios.h"
+#include "ios/web/public/webui/web_ui_ios_data_source.h"
 #include "ios/web/public/webui/web_ui_ios_message_handler.h"
 
 namespace {
@@ -34,19 +34,19 @@ web::WebUIIOSDataSource* CreateCrashesUIHTMLSource() {
   web::WebUIIOSDataSource* source =
       web::WebUIIOSDataSource::Create(kChromeUICrashesHost);
 
-  for (size_t i = 0; i < crash::kCrashesUILocalizedStringsCount; ++i) {
+  for (size_t i = 0; i < crash_reporter::kCrashesUILocalizedStringsCount; ++i) {
     source->AddLocalizedString(
-        crash::kCrashesUILocalizedStrings[i].name,
-        crash::kCrashesUILocalizedStrings[i].resource_id);
+        crash_reporter::kCrashesUILocalizedStrings[i].name,
+        crash_reporter::kCrashesUILocalizedStrings[i].resource_id);
   }
 
-  source->AddLocalizedString(crash::kCrashesUIShortProductName,
+  source->AddLocalizedString(crash_reporter::kCrashesUIShortProductName,
                              IDS_IOS_SHORT_PRODUCT_NAME);
 
-  source->SetJsonPath("strings.js");
-  source->AddResourcePath(crash::kCrashesUICrashesJS, IDR_CRASH_CRASHES_JS);
+  source->UseStringsJs();
+  source->AddResourcePath(crash_reporter::kCrashesUICrashesJS,
+                          IDR_CRASH_CRASHES_JS);
   source->SetDefaultResource(IDR_CRASH_CRASHES_HTML);
-  source->UseGzip();
   return source;
 }
 
@@ -89,14 +89,14 @@ CrashesDOMHandler::CrashesDOMHandler()
 }
 
 CrashesDOMHandler::~CrashesDOMHandler() {
-  upload_list_->CancelCallback();
+  upload_list_->CancelLoadCallback();
 }
 
 void CrashesDOMHandler::RegisterMessages() {
   upload_list_->Load(base::BindOnce(&CrashesDOMHandler::OnUploadListAvailable,
                                     base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
-      crash::kCrashesUIRequestCrashList,
+      crash_reporter::kCrashesUIRequestCrashList,
       base::BindRepeating(&CrashesDOMHandler::HandleRequestCrashes,
                           base::Unretained(this)));
 }
@@ -124,7 +124,7 @@ void CrashesDOMHandler::UpdateUI() {
       IOSChromeMetricsServiceAccessor::IsMetricsAndCrashReportingEnabled();
   base::ListValue crash_list;
   if (crash_reporting_enabled)
-    crash::UploadListToValue(upload_list_.get(), &crash_list);
+    crash_reporter::UploadListToValue(upload_list_.get(), &crash_list);
   base::Value enabled(crash_reporting_enabled);
   base::Value dynamic_backend(false);
   base::Value manual_uploads(false);
@@ -139,7 +139,8 @@ void CrashesDOMHandler::UpdateUI() {
   args.push_back(&crash_list);
   args.push_back(&version);
   args.push_back(&os_string);
-  web_ui()->CallJavascriptFunction(crash::kCrashesUIUpdateCrashList, args);
+  web_ui()->CallJavascriptFunction(crash_reporter::kCrashesUIUpdateCrashList,
+                                   args);
 }
 
 }  // namespace

@@ -5,6 +5,7 @@
 #include "components/dom_distiller/content/browser/distiller_javascript_utils.h"
 
 #include <string>
+#include <utility>
 
 #include "base/bind.h"
 #include "base/strings/utf_string_conversions.h"
@@ -15,12 +16,12 @@ namespace dom_distiller {
 
 namespace {
 // An invalid world ID to check against.
-const int invalid_world_id = -1;
+const int32_t invalid_world_id = -1;
 // The ID of the world javascript should execute in; init to invalid ID.
-int distiller_javascript_world_id = invalid_world_id;
+int32_t distiller_javascript_world_id = invalid_world_id;
 }  // namespace
 
-void SetDistillerJavaScriptWorldId(const int id) {
+void SetDistillerJavaScriptWorldId(const int32_t id) {
   // Never allow running in main world (0).
   DCHECK(id > content::ISOLATED_WORLD_ID_GLOBAL);
   // Only allow ID to be set once.
@@ -35,17 +36,17 @@ bool DistillerJavaScriptWorldIdIsSet() {
 void RunIsolatedJavaScript(
     content::RenderFrameHost* render_frame_host,
     const std::string& buffer,
-    const content::RenderFrameHost::JavaScriptResultCallback& callback) {
+    content::RenderFrameHost::JavaScriptResultCallback callback) {
   // Make sure world ID was set.
   DCHECK(distiller_javascript_world_id != invalid_world_id);
   render_frame_host->ExecuteJavaScriptInIsolatedWorld(
-      base::UTF8ToUTF16(buffer), callback, distiller_javascript_world_id);
+      base::UTF8ToUTF16(buffer), std::move(callback),
+      distiller_javascript_world_id);
 }
 
 void RunIsolatedJavaScript(content::RenderFrameHost* render_frame_host,
                            const std::string& buffer) {
-  RunIsolatedJavaScript(render_frame_host, buffer,
-                        content::RenderFrameHost::JavaScriptResultCallback());
+  RunIsolatedJavaScript(render_frame_host, buffer, {});
 }
 
 }  // namespace dom_distiller

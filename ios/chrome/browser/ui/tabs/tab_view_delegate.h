@@ -5,6 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_UI_TABS_TAB_VIEW_DELEGATE_H_
 #define IOS_CHROME_BROWSER_UI_TABS_TAB_VIEW_DELEGATE_H_
 
+class GURL;
 @class TabView;
 
 // Protocol to observe events occuring in the tab view.

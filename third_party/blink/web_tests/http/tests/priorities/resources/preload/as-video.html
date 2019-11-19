@@ -1,3 +1,6 @@
 <script src="../common.js"></script>
+<script>
+  observeAndReportResourceLoadPriority(new URL('../../../resources/test.mp4', location));
+</script>
 
-<link rel="preload" as="video" href=../../../resources/test.mp4 type="video/mp4" onload="reportPriority(this.href)" onerror="reportFailure()"></script>
+<link rel="preload" as="video" href=../../../resources/test.mp4 type="video/mp4" onload="reportLoaded()" onerror="reportFailure()"></script>

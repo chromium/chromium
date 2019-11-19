@@ -20,6 +20,7 @@
 #include "base/test/bind_test_util.h"
 #include "base/test/scoped_path_override.h"
 #include "build/build_config.h"
+#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
@@ -29,6 +30,7 @@
 #include "chrome/browser/profile_resetter/profile_reset_report.pb.h"
 #include "chrome/browser/profile_resetter/profile_resetter_test_base.h"
 #include "chrome/browser/profile_resetter/resettable_settings_snapshot.h"
+#include "chrome/browser/search/instant_service.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
@@ -44,12 +46,14 @@
 #include "components/search_engines/template_url_service.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/test_browser_thread.h"
+#include "content/public/test/test_utils.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest_constants.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_status_code.h"
 #include "net/http/http_util.h"
+#include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "services/network/test/test_utils.h"
@@ -200,13 +204,13 @@ class ConfigParserTest : public testing::Test {
 
   MOCK_METHOD0(Callback, void(void));
 
-  content::TestBrowserThreadBundle test_browser_thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
   network::TestURLLoaderFactory test_url_loader_factory_;
+  data_decoder::test::InProcessDataDecoder data_decoder_;
 };
 
 ConfigParserTest::ConfigParserTest()
-    : test_browser_thread_bundle_(
-          content::TestBrowserThreadBundle::IO_MAINLOOP) {}
+    : task_environment_(content::BrowserTaskEnvironment::IO_MAINLOOP) {}
 
 ConfigParserTest::~ConfigParserTest() {}
 
@@ -320,6 +324,14 @@ void ShortcutHandler::Delete() {
 }
 #endif  // defined(OS_WIN)
 
+// MockInstantService
+class MockInstantService : public InstantService {
+ public:
+  explicit MockInstantService(Profile* profile) : InstantService(profile) {}
+  ~MockInstantService() override = default;
+
+  MOCK_METHOD0(ResetToDefault, void());
+};
 
 // helper functions -----------------------------------------------------------
 
@@ -447,8 +459,8 @@ TEST_F(ProfileResetterTest, ResetContentSettings) {
       content_settings::ContentSettingsRegistry::GetInstance();
   for (const content_settings::ContentSettingsInfo* info : *registry) {
     ContentSettingsType content_type = info->website_settings_info()->type();
-    if (content_type == CONTENT_SETTINGS_TYPE_MIXEDSCRIPT ||
-        content_type == CONTENT_SETTINGS_TYPE_PROTOCOL_HANDLERS) {
+    if (content_type == ContentSettingsType::MIXEDSCRIPT ||
+        content_type == ContentSettingsType::PROTOCOL_HANDLERS) {
       // These types are excluded because one can't call
       // GetDefaultContentSetting() for them.
       continue;
@@ -480,8 +492,8 @@ TEST_F(ProfileResetterTest, ResetContentSettings) {
 
   for (const content_settings::ContentSettingsInfo* info : *registry) {
     ContentSettingsType content_type = info->website_settings_info()->type();
-    if (content_type == CONTENT_SETTINGS_TYPE_MIXEDSCRIPT ||
-        content_type == CONTENT_SETTINGS_TYPE_PROTOCOL_HANDLERS)
+    if (content_type == ContentSettingsType::MIXEDSCRIPT ||
+        content_type == ContentSettingsType::PROTOCOL_HANDLERS)
       continue;
     ContentSetting default_setting =
         host_content_settings_map->GetDefaultContentSetting(content_type,
@@ -505,15 +517,17 @@ TEST_F(ProfileResetterTest, ResetExtensionsByDisabling) {
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
 
+  ThemeService* theme_service = ThemeServiceFactory::GetForProfile(profile());
+  content::WindowedNotificationObserver theme_change_observer(
+      chrome::NOTIFICATION_BROWSER_THEME_CHANGED,
+      content::Source<ThemeService>(theme_service));
+
   scoped_refptr<Extension> theme = CreateExtension(
       base::ASCIIToUTF16("example1"), temp_dir.GetPath(), Manifest::UNPACKED,
       extensions::Manifest::TYPE_THEME, false);
   service_->FinishInstallationForTest(theme.get());
-  // Let ThemeService finish creating the theme pack.
-  base::RunLoop().RunUntilIdle();
+  theme_change_observer.Wait();
 
-  ThemeService* theme_service =
-      ThemeServiceFactory::GetForProfile(profile());
   EXPECT_FALSE(theme_service->UsingDefaultTheme());
 
   scoped_refptr<Extension> ext2 = CreateExtension(
@@ -592,15 +606,17 @@ TEST_F(ProfileResetterTest, ResetExtensionsAndDefaultApps) {
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
 
+  ThemeService* theme_service = ThemeServiceFactory::GetForProfile(profile());
+  content::WindowedNotificationObserver theme_change_observer(
+      chrome::NOTIFICATION_BROWSER_THEME_CHANGED,
+      content::Source<ThemeService>(theme_service));
+
   scoped_refptr<Extension> ext1 = CreateExtension(
       base::ASCIIToUTF16("example1"), temp_dir.GetPath(), Manifest::UNPACKED,
       extensions::Manifest::TYPE_THEME, false);
   service_->FinishInstallationForTest(ext1.get());
-  // Let ThemeService finish creating the theme pack.
-  base::RunLoop().RunUntilIdle();
+  theme_change_observer.Wait();
 
-  ThemeService* theme_service =
-      ThemeServiceFactory::GetForProfile(profile());
   EXPECT_FALSE(theme_service->UsingDefaultTheme());
 
   scoped_refptr<Extension> ext2 = CreateExtension(
@@ -740,7 +756,7 @@ TEST_F(ProfileResetterTest, ResetFewFlags) {
 TEST_F(ConfigParserTest, NoConnectivity) {
   const GURL url("http://test");
   test_url_loader_factory().AddResponse(
-      url, network::ResourceResponseHead(), "",
+      url, network::mojom::URLResponseHead::New(), "",
       network::URLLoaderCompletionStatus(net::HTTP_INTERNAL_SERVER_ERROR));
 
   std::unique_ptr<BrandcodeConfigFetcher> fetcher = WaitForRequest(GURL(url));
@@ -755,14 +771,15 @@ TEST_F(ConfigParserTest, ParseConfig) {
   ReplaceString(&xml_config,
                 "placeholder_for_id",
                 "abbaabbaabbaabbaabbaabbaabbaabba");
-  network::ResourceResponseHead head;
+  auto head = network::mojom::URLResponseHead::New();
   std::string headers("HTTP/1.1 200 OK\nContent-type: text/xml\n\n");
-  head.headers = base::MakeRefCounted<net::HttpResponseHeaders>(
-      net::HttpUtil::AssembleRawHeaders(headers.c_str(), headers.size()));
-  head.mime_type = "text/xml";
+  head->headers = base::MakeRefCounted<net::HttpResponseHeaders>(
+      net::HttpUtil::AssembleRawHeaders(headers));
+  head->mime_type = "text/xml";
   network::URLLoaderCompletionStatus status;
   status.decoded_body_length = xml_config.size();
-  test_url_loader_factory().AddResponse(url, head, xml_config, status);
+  test_url_loader_factory().AddResponse(url, std::move(head), xml_config,
+                                        status);
 
   std::unique_ptr<BrandcodeConfigFetcher> fetcher = WaitForRequest(GURL(url));
   std::unique_ptr<BrandcodedDefaultSettings> settings = fetcher->GetSettings();
@@ -1016,6 +1033,14 @@ TEST_F(ProfileResetterTest, DestroySnapshotFast) {
   // Running remaining tasks shouldn't trigger the callback to be called as
   // |deleted_snapshot| was deleted before it could run.
   base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(ProfileResetterTest, ResetNTPCustomizationsTest) {
+  MockInstantService mock_ntp_service(profile());
+  resetter_->ntp_service_ = &mock_ntp_service;
+
+  EXPECT_CALL(mock_ntp_service, ResetToDefault());
+  ResetAndWait(ProfileResetter::NTP_CUSTOMIZATIONS);
 }
 
 }  // namespace

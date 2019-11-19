@@ -16,15 +16,14 @@
 #include "chrome/browser/extensions/api/tabs/windows_util.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
-#include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/window_controller.h"
-#include "chrome/browser/extensions/window_controller_list.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/api/windows.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "content/public/browser/notification_service.h"
 #include "extensions/browser/app_window/app_window.h"
 #include "extensions/browser/event_router.h"
+#include "extensions/browser/extension_util.h"
 #include "extensions/common/constants.h"
 
 using content::BrowserContext;
@@ -60,7 +59,8 @@ bool ControllerVisibleToListener(WindowController* window_controller,
 }
 
 bool WillDispatchWindowEvent(WindowController* window_controller,
-                             BrowserContext* context,
+                             BrowserContext* browser_context,
+                             Feature::Context target_context,
                              const Extension* extension,
                              Event* event,
                              const base::DictionaryValue* listener_filter) {
@@ -88,7 +88,8 @@ bool WillDispatchWindowEvent(WindowController* window_controller,
 
 bool WillDispatchWindowFocusedEvent(
     WindowController* window_controller,
-    BrowserContext* context,
+    BrowserContext* browser_context,
+    Feature::Context target_context,
     const Extension* extension,
     Event* event,
     const base::DictionaryValue* listener_filter) {
@@ -123,9 +124,9 @@ bool WillDispatchWindowFocusedEvent(
   // dispatch WINDOW_ID_NONE to extensions whose profile lost focus that
   // can't see the new focused window across the incognito boundary.
   // See crbug.com/46610.
-  bool cant_cross_incognito = new_active_context &&
-                              new_active_context != context &&
-                              !util::CanCrossIncognito(extension, context);
+  bool cant_cross_incognito =
+      new_active_context && new_active_context != browser_context &&
+      !util::CanCrossIncognito(extension, browser_context);
   // If the window is not visible by the listener, we also need to
   // clear out the window id from the event.
   bool visible_to_listener = ControllerVisibleToListener(
@@ -146,9 +147,7 @@ bool WillDispatchWindowFocusedEvent(
 WindowsEventRouter::WindowsEventRouter(Profile* profile)
     : profile_(profile),
       focused_profile_(nullptr),
-      focused_window_id_(extension_misc::kUnknownWindowId),
-      observed_app_registry_(this),
-      observed_controller_list_(this) {
+      focused_window_id_(extension_misc::kUnknownWindowId) {
   DCHECK(!profile->IsOffTheRecord());
 
   observed_app_registry_.Add(AppWindowRegistry::Get(profile_));
@@ -214,9 +213,13 @@ void WindowsEventRouter::OnWindowControllerAdded(
     return;
 
   std::unique_ptr<base::ListValue> args(new base::ListValue());
+  // Since we don't populate tab info here, the context type doesn't matter.
+  constexpr ExtensionTabUtil::PopulateTabBehavior populate_behavior =
+      ExtensionTabUtil::kDontPopulateTabs;
+  constexpr Feature::Context context_type = Feature::UNSPECIFIED_CONTEXT;
   args->Append(ExtensionTabUtil::CreateWindowValueForExtension(
-      *window_controller->GetBrowser(), nullptr,
-      ExtensionTabUtil::kDontPopulateTabs));
+      *window_controller->GetBrowser(), nullptr, populate_behavior,
+      context_type));
   DispatchEvent(events::WINDOWS_ON_CREATED, windows::OnCreated::kEventName,
                 window_controller, std::move(args));
 }

@@ -12,8 +12,9 @@
       throw error;
     }
 
-    if (message.getName() != mojo.pipeControl.kRunOrClosePipeMessageId) {
-      throw new Error("Control message name is not kRunOrClosePipeMessageId");
+    if (message.getName() != mojo.pipeControl.RUN_OR_CLOSE_PIPE_MESSAGE_ID) {
+      throw new Error(
+        "Control message name is not RUN_OR_CLOSE_PIPE_MESSAGE_ID");
     }
 
     // Validate payload.

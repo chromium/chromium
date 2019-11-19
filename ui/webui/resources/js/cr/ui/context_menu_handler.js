@@ -236,9 +236,11 @@ cr.define('cr.ui', function() {
           elementOrClass.prototype :
           elementOrClass;
 
+      // eslint-disable-next-line no-restricted-properties
       target.__defineGetter__('contextMenu', function() {
         return this.contextMenu_;
       });
+      // eslint-disable-next-line no-restricted-properties
       target.__defineSetter__('contextMenu', function(menu) {
         const oldContextMenu = this.contextMenu;
 

@@ -4,6 +4,7 @@
 
 /**
  * Stats collected about Metadata handling for tests.
+ * @final
  */
 class MetadataStats {
   constructor() {
@@ -29,29 +30,20 @@ class MetadataModel {
    * @param {!MetadataProvider} rawProvider
    */
   constructor(rawProvider) {
-    /**
-     * @private {!MetadataProvider}
-     * @const
-     */
+    /** @private @const {!MetadataProvider} */
     this.rawProvider_ = rawProvider;
 
-    /**
-     * @private {!MetadataProviderCache}
-     * @const
-     */
+    /** @private @const {!MetadataProviderCache} */
     this.cache_ = new MetadataProviderCache();
 
-    /**
-     * @private {!Array<!MetadataProviderCallbackRequest<T>>}
-     * @const
-     */
+    /** @private @const {!Array<!MetadataProviderCallbackRequest<T>>} */
     this.callbackRequests_ = [];
 
-    /** @private {?MetadataStats} record stats about Metadata when in tests. */
-    this.stats_ = null;
-    if (window.IN_TEST) {
-      this.stats_ = new MetadataStats();
-    }
+    /**
+     * @private @const {?MetadataStats} record stats about Metadata when in
+     *     tests.
+     */
+    this.stats_ = window.IN_TEST ? new MetadataStats() : null;
   }
 
   /**
@@ -222,6 +214,7 @@ class MetadataModel {
   }
 }
 
+/** @final */
 class MetadataProviderCallbackRequest {
   /**
    * @param {!Array<!Entry>} entries
@@ -275,6 +268,7 @@ class MetadataProviderCallbackRequest {
 
 /**
  * Helper wrapper for LRUCache.
+ * @final
  */
 class MetadataProviderCache extends MetadataCacheSet {
   constructor() {

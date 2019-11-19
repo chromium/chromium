@@ -11,7 +11,8 @@
 #include <string>
 
 #include "base/time/time.h"
-#include "mojo/public/cpp/bindings/binding_set.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 
 namespace content {
@@ -34,7 +35,9 @@ class MediaStreamTrackMetricsHost
   explicit MediaStreamTrackMetricsHost();
 
   ~MediaStreamTrackMetricsHost() override;
-  void BindRequest(blink::mojom::MediaStreamTrackMetricsHostRequest request);
+  void BindReceiver(
+      mojo::PendingReceiver<blink::mojom::MediaStreamTrackMetricsHost>
+          receiver);
 
  private:
   void AddTrack(uint64_t id, bool is_audio, bool is_remote) override;
@@ -57,7 +60,7 @@ class MediaStreamTrackMetricsHost
   typedef std::map<uint64_t, TrackInfo> TrackMap;
   TrackMap tracks_;
 
-  mojo::BindingSet<blink::mojom::MediaStreamTrackMetricsHost> bindings_;
+  mojo::ReceiverSet<blink::mojom::MediaStreamTrackMetricsHost> receivers_;
 };
 
 }  // namespace content

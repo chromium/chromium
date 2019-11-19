@@ -4,12 +4,13 @@
 
 mojom = "//content/common/render_frame_metadata.mojom"
 public_headers = [ "//cc/trees/render_frame_metadata.h" ]
-traits_headers = [ "//content/common/render_frame_metadata_struct_traits.h" ]
+traits_headers = [ "//content/common/render_frame_metadata_mojom_traits.h" ]
 deps = [
   "//cc",
-  "//ui/gfx/geometry/mojo:struct_traits",
+  "//ui/gfx/geometry/mojom:mojom_traits",
 ]
 sources = [
-  "//content/common/render_frame_metadata_struct_traits.cc",
+  "//content/common/render_frame_metadata_mojom_traits.cc",
 ]
-type_mappings = [ "content.mojom.RenderFrameMetadata=cc::RenderFrameMetadata" ]
+type_mappings =
+    [ "content.mojom.RenderFrameMetadata=::cc::RenderFrameMetadata" ]

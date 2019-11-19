@@ -101,40 +101,6 @@ NotificationTrampoline* NotificationTrampoline::g_notification_trampoline =
 
 #pragma mark Utility functions
 
-// Builds a NSHTTPCookie from a header cookie line ("Set-Cookie: xxx") and a
-// URL.
-NSHTTPCookie* GetNSHTTPCookieFromCookieLine(const std::string& cookie_line,
-                                            const GURL& url,
-                                            base::Time server_time) {
-  NSURL* nsurl = net::NSURLWithGURL(url);
-  NSString* ns_cookie_line = base::SysUTF8ToNSString(cookie_line);
-  if (!ns_cookie_line) {
-    DLOG(ERROR) << "Cookie line is not UTF8: " << cookie_line;
-    return nil;
-  }
-  NSArray* cookies = [NSHTTPCookie cookiesWithResponseHeaderFields:@{
-    @"Set-Cookie" : ns_cookie_line
-  } forURL:nsurl];
-  if ([cookies count] != 1)
-    return nil;
-
-  NSHTTPCookie* cookie = [cookies objectAtIndex:0];
-  if (![cookie expiresDate] || server_time.is_null())
-    return cookie;
-
-  // Perform clock skew correction.
-  base::TimeDelta clock_skew = base::Time::Now() - server_time;
-  NSDate* corrected_expire_date =
-      [[cookie expiresDate] dateByAddingTimeInterval:clock_skew.InSecondsF()];
-  NSMutableDictionary* properties =
-      [NSMutableDictionary dictionaryWithDictionary:[cookie properties]];
-  [properties setObject:corrected_expire_date forKey:NSHTTPCookieExpires];
-  NSHTTPCookie* corrected_cookie =
-      [NSHTTPCookie cookieWithProperties:properties];
-  DCHECK(corrected_cookie);
-  return corrected_cookie;
-}
-
 // Returns an empty closure if |callback| is null callback or binds the
 // callback to |status|.
 base::OnceClosure BindSetCookiesCallback(
@@ -148,20 +114,13 @@ base::OnceClosure BindSetCookiesCallback(
 }
 
 // Adds cookies in |cookies| with name |name| to |filtered|.
-void OnlyCookiesWithName(const net::CookieList& cookies,
+void OnlyCookiesWithName(const net::CookieStatusList& cookies,
                          const std::string& name,
                          net::CookieList* filtered) {
-  for (const auto& cookie : cookies) {
-    if (cookie.Name() == name)
-      filtered->push_back(cookie);
+  for (const auto& cookie_with_status : cookies) {
+    if (cookie_with_status.cookie.Name() == name)
+      filtered->push_back(cookie_with_status.cookie);
   }
-}
-
-// Returns whether the specified cookie line has an explicit Domain attribute or
-// not.
-bool HasExplicitDomain(const std::string& cookie_line) {
-  ParsedCookie cookie(cookie_line);
-  return cookie.HasDomain();
 }
 
 }  // namespace
@@ -268,80 +227,10 @@ void CookieStoreIOS::SetMetricsEnabled() {
 #pragma mark -
 #pragma mark CookieStore methods
 
-void CookieStoreIOS::SetCookieWithOptionsAsync(
-    const GURL& url,
-    const std::string& cookie_line,
-    const net::CookieOptions& options,
-    SetCookiesCallback callback) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-
-  // If cookies are not allowed, a CookieStoreIOS subclass should be used
-  // instead.
-  DCHECK(SystemCookiesAllowed());
-
-  // The exclude_httponly() option would only be used by a javascript
-  // engine.
-  DCHECK(!options.exclude_httponly());
-
-  base::Time server_time =
-      options.has_server_time() ? options.server_time() : base::Time();
-  NSHTTPCookie* cookie =
-      GetNSHTTPCookieFromCookieLine(cookie_line, url, server_time);
-  DLOG_IF(WARNING, !cookie) << "Could not create cookie for line: "
-                            << cookie_line;
-
-  // On iOS, [cookie domain] is not empty when the cookie domain is not
-  // specified: it is inferred from the URL instead. The only case when it
-  // is empty is when the domain attribute is incorrectly formatted.
-  std::string domain_string(base::SysNSStringToUTF8([cookie domain]));
-  std::string dummy;
-  bool has_explicit_domain = HasExplicitDomain(cookie_line);
-  bool has_valid_domain =
-      net::cookie_util::GetCookieDomainWithString(url, domain_string, &dummy);
-  net::CanonicalCookie::CookieInclusionStatus status =
-      net::CanonicalCookie::CookieInclusionStatus::INCLUDE;
-
-  // A cookie can be set if all of the following conditions are met:
-  //   a) The cookie line is well-formed
-  //   b) The Domain attribute, if present, was not malformed
-  //   c) At least one of:
-  //       1) The cookie had no explicit Domain, so the Domain was inferred
-  //          from the URL, or
-  //       2) The cookie had an explicit Domain for which the URL is allowed
-  //          to set cookies.
-
-  // If |cookie| is nil, the cookie line was not well-formed.
-  if (cookie == nil)
-    status =
-        net::CanonicalCookie::CookieInclusionStatus::EXCLUDE_FAILURE_TO_STORE;
-
-  // If |domain_string| is empty, the domain was not well-formed.
-  if (domain_string.empty())
-    status =
-        net::CanonicalCookie::CookieInclusionStatus::EXCLUDE_INVALID_DOMAIN;
-
-  // If the cookie had an explicit domain and it's not a domain it's allowed to
-  // set cookies to.
-  if (has_explicit_domain && !has_valid_domain)
-    status =
-        net::CanonicalCookie::CookieInclusionStatus::EXCLUDE_INVALID_DOMAIN;
-
-  if (status == net::CanonicalCookie::CookieInclusionStatus::INCLUDE) {
-    system_store_->SetCookieAsync(
-        cookie,
-        BindSetCookiesCallback(
-            &callback, net::CanonicalCookie::CookieInclusionStatus::INCLUDE));
-    return;
-  }
-
-  if (!callback.is_null())
-    std::move(callback).Run(status);
-}
-
 void CookieStoreIOS::SetCanonicalCookieAsync(
     std::unique_ptr<net::CanonicalCookie> cookie,
     std::string source_scheme,
-    bool modify_http_only,
+    const net::CookieOptions& options,
     SetCookiesCallback callback) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
@@ -352,15 +241,15 @@ void CookieStoreIOS::SetCanonicalCookieAsync(
   DCHECK(cookie->IsCanonical());
   // The exclude_httponly() option would only be used by a javascript
   // engine.
-  DCHECK(modify_http_only);
+  DCHECK(!options.exclude_httponly());
 
   bool secure_source =
       GURL::SchemeIsCryptographic(base::ToLowerASCII(source_scheme));
 
   if (cookie->IsSecure() && !secure_source) {
     if (!callback.is_null())
-      std::move(callback).Run(
-          net::CanonicalCookie::CookieInclusionStatus::EXCLUDE_SECURE_ONLY);
+      std::move(callback).Run(net::CanonicalCookie::CookieInclusionStatus(
+          net::CanonicalCookie::CookieInclusionStatus::EXCLUDE_SECURE_ONLY));
     return;
   }
 
@@ -369,14 +258,14 @@ void CookieStoreIOS::SetCanonicalCookieAsync(
   if (ns_cookie != nil) {
     system_store_->SetCookieAsync(
         ns_cookie, &cookie->CreationDate(),
-        BindSetCookiesCallback(
-            &callback, net::CanonicalCookie::CookieInclusionStatus::INCLUDE));
+        BindSetCookiesCallback(&callback,
+                               net::CanonicalCookie::CookieInclusionStatus()));
     return;
   }
 
   if (!callback.is_null())
-    std::move(callback).Run(
-        net::CanonicalCookie::CookieInclusionStatus::EXCLUDE_FAILURE_TO_STORE);
+    std::move(callback).Run(net::CanonicalCookie::CookieInclusionStatus(
+        net::CanonicalCookie::CookieInclusionStatus::EXCLUDE_FAILURE_TO_STORE));
 }
 
 void CookieStoreIOS::GetCookieListWithOptionsAsync(
@@ -397,7 +286,7 @@ void CookieStoreIOS::GetCookieListWithOptionsAsync(
                      weak_factory_.GetWeakPtr(), base::Passed(&callback)));
 }
 
-void CookieStoreIOS::GetAllCookiesAsync(GetCookieListCallback callback) {
+void CookieStoreIOS::GetAllCookiesAsync(GetAllCookiesCallback callback) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   // If cookies are not allowed, a CookieStoreIOS subclass should be used
@@ -407,7 +296,7 @@ void CookieStoreIOS::GetAllCookiesAsync(GetCookieListCallback callback) {
   // TODO(crbug.com/459154): If/when iOS supports Same-Site cookies, we'll need
   // to pass options in here as well.
   system_store_->GetAllCookiesAsync(
-      base::BindOnce(&CookieStoreIOS::RunGetCookieListCallbackOnSystemCookies,
+      base::BindOnce(&CookieStoreIOS::RunGetAllCookiesCallbackOnSystemCookies,
                      weak_factory_.GetWeakPtr(), base::Passed(&callback)));
 }
 
@@ -501,7 +390,6 @@ CookieStoreIOS::CookieStoreIOS(
     std::unique_ptr<SystemCookieStore> system_store,
     NetLog* net_log)
     : cookie_monster_(new net::CookieMonster(persistent_store,
-                                             nullptr /* channel_id_service */,
                                              net_log)),
       system_store_(std::move(system_store)),
       metrics_enabled_(false),
@@ -640,8 +528,11 @@ CookieChangeDispatcher& CookieStoreIOS::GetChangeDispatcher() {
   return change_dispatcher_;
 }
 
-bool CookieStoreIOS::IsEphemeral() {
-  return cookie_monster_->IsEphemeral();
+void CookieStoreIOS::SetCookieableSchemes(
+    const std::vector<std::string>& schemes,
+    SetCookieableSchemesCallback callback) {
+  // Not supported on iOS.
+  std::move(callback).Run(false);
 }
 
 std::unique_ptr<CookieChangeSubscription> CookieStoreIOS::AddCallbackForCookie(
@@ -714,13 +605,16 @@ void CookieStoreIOS::RunCallbacksForCookies(
   CookieChangeCallbackList* callbacks = hook_map_[key].get();
   for (const auto& cookie : cookies) {
     DCHECK_EQ(name, cookie.Name());
-    callbacks->Notify(cookie, cause);
+    // TODO(crbug.com/978172): Support CookieAccessSemantics values on iOS and
+    // use it to check IncludeForRequestURL before notifying?
+    callbacks->Notify(net::CookieChangeInfo(
+        cookie, net::CookieAccessSemantics::UNKNOWN, cause));
   }
 }
 
 void CookieStoreIOS::GotCookieListFor(
     const std::pair<GURL, std::string> key,
-    const net::CookieList& cookies,
+    const net::CookieStatusList& cookies,
     const net::CookieStatusList& excluded_cookies) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
@@ -743,7 +637,8 @@ void CookieStoreIOS::UpdateCachesFromCookieMonster() {
     std::pair<GURL, std::string> key = hook_map_entry.first;
     GetCookieListCallback callback = base::BindOnce(
         &CookieStoreIOS::GotCookieListFor, weak_factory_.GetWeakPtr(), key);
-    cookie_monster_->GetAllCookiesForURLAsync(key.first, std::move(callback));
+    cookie_monster_->GetCookieListWithOptionsAsync(
+        key.first, net::CookieOptions::MakeAllInclusive(), std::move(callback));
   }
 }
 
@@ -751,7 +646,7 @@ void CookieStoreIOS::UpdateCachesAfterSet(
     SetCookiesCallback callback,
     net::CanonicalCookie::CookieInclusionStatus status) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  if (status == net::CanonicalCookie::CookieInclusionStatus::INCLUDE)
+  if (status.IsInclude())
     UpdateCachesFromCookieMonster();
   if (!callback.is_null())
     std::move(callback).Run(status);
@@ -783,13 +678,35 @@ CookieStoreIOS::CanonicalCookieListFromSystemCookies(NSArray* cookies) {
   return cookie_list;
 }
 
+net::CookieStatusList
+CookieStoreIOS::CanonicalCookieWithStatusListFromSystemCookies(
+    NSArray* cookies) {
+  net::CookieStatusList cookie_list;
+  cookie_list.reserve([cookies count]);
+  for (NSHTTPCookie* cookie in cookies) {
+    base::Time created = system_store_->GetCookieCreationTime(cookie);
+    cookie_list.push_back({CanonicalCookieFromSystemCookie(cookie, created),
+                           net::CanonicalCookie::CookieInclusionStatus()});
+  }
+  return cookie_list;
+}
+
 void CookieStoreIOS::RunGetCookieListCallbackOnSystemCookies(
     CookieStoreIOS::GetCookieListCallback callback,
     NSArray<NSHTTPCookie*>* cookies) {
   if (!callback.is_null()) {
     net::CookieStatusList excluded_cookies;
-    std::move(callback).Run(CanonicalCookieListFromSystemCookies(cookies),
-                            excluded_cookies);
+    std::move(callback).Run(
+        CanonicalCookieWithStatusListFromSystemCookies(cookies),
+        excluded_cookies);
+  }
+}
+
+void CookieStoreIOS::RunGetAllCookiesCallbackOnSystemCookies(
+    CookieStoreIOS::GetAllCookiesCallback callback,
+    NSArray<NSHTTPCookie*>* cookies) {
+  if (!callback.is_null()) {
+    std::move(callback).Run(CanonicalCookieListFromSystemCookies(cookies));
   }
 }
 

@@ -13,23 +13,22 @@
 #include "components/guest_view/browser/guest_view.h"
 #include "content/public/common/transferrable_url_loader.mojom.h"
 #include "extensions/common/api/mime_handler.mojom.h"
-#include "services/service_manager/public/cpp/binder_registry.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 
 namespace content {
 class WebContents;
 struct ContextMenuParams;
-struct StreamInfo;
 }  // namespace content
 
 namespace extensions {
 class MimeHandlerViewGuestDelegate;
 
-// A container for a StreamHandle and any other information necessary for a
-// MimeHandler to handle a resource stream.
+// A container for a information necessary for a MimeHandler to handle a
+// resource stream.
 class StreamContainer {
  public:
   StreamContainer(
-      std::unique_ptr<content::StreamInfo> stream,
       int tab_id,
       bool embedded,
       const GURL& handler_url,
@@ -37,9 +36,6 @@ class StreamContainer {
       content::mojom::TransferrableURLLoaderPtr transferrable_loader,
       const GURL& original_url);
   ~StreamContainer();
-
-  // Aborts the stream.
-  void Abort(const base::Closure& callback);
 
   base::WeakPtr<StreamContainer> GetWeakPtr();
 
@@ -58,7 +54,6 @@ class StreamContainer {
   }
 
  private:
-  const std::unique_ptr<content::StreamInfo> stream_;
   const bool embedded_;
   const int tab_id_;
   const GURL handler_url_;
@@ -70,7 +65,7 @@ class StreamContainer {
   GURL stream_url_;
   scoped_refptr<net::HttpResponseHeaders> response_headers_;
 
-  base::WeakPtrFactory<StreamContainer> weak_factory_;
+  base::WeakPtrFactory<StreamContainer> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(StreamContainer);
 };
@@ -88,18 +83,36 @@ class MimeHandlerViewGuest
   bool CanBeEmbeddedInsideCrossProcessFrames() override;
   content::RenderWidgetHost* GetOwnerRenderWidgetHost() override;
   content::SiteInstance* GetOwnerSiteInstance() override;
+  content::RenderFrameHost* GetEmbedderFrame() override;
 
   void SetEmbedderFrame(int process_id, int routing_id);
 
   void SetBeforeUnloadController(
-      mime_handler::BeforeUnloadControlPtrInfo pending_before_unload_control);
+      mojo::PendingRemote<mime_handler::BeforeUnloadControl>
+          pending_before_unload_control);
 
   void SetPluginCanSave(bool can_save) { plugin_can_save_ = can_save; }
+
+  void FuseBeforeUnloadControl(
+      mojo::PendingReceiver<mime_handler::BeforeUnloadControl> receiver);
 
   // Asks the plugin to do save.
   bool PluginDoSave();
 
-  content::RenderFrameHost* GetEmbedderFrame() const;
+  void set_original_resource_url(const GURL& url) {
+    original_resource_url_ = url;
+  }
+
+  // Returns true when the MHVG's embedder frame has a plugin element type of
+  // frame owner. In such a case there might be a MHVFC assigned to MHVG in the
+  // parent frame of the embedder frame (for post message).
+  bool maybe_has_frame_container() const { return maybe_has_frame_container_; }
+
+  const std::string& mime_type() const { return mime_type_; }
+
+  base::WeakPtr<MimeHandlerViewGuest> GetWeakPtr();
+
+  base::WeakPtr<StreamContainer> GetStreamWeakPtr();
 
  protected:
   explicit MimeHandlerViewGuest(content::WebContents* owner_web_contents);
@@ -137,18 +150,20 @@ class MimeHandlerViewGuest
   void EnterFullscreenModeForTab(
       content::WebContents* web_contents,
       const GURL& origin,
-      const blink::WebFullscreenOptions& options) override;
+      const blink::mojom::FullscreenOptions& options) override;
   void ExitFullscreenModeForTab(content::WebContents*) override;
   bool IsFullscreenForTabOrPending(
-      const content::WebContents* web_contents) const override;
-  bool ShouldCreateWebContents(
-      content::WebContents* web_contents,
+      const content::WebContents* web_contents) override;
+  bool IsWebContentsCreationOverridden(
+      content::SiteInstance* source_site_instance,
+      content::mojom::WindowContainerType window_container_type,
+      const GURL& opener_url,
+      const std::string& frame_name,
+      const GURL& target_url) override;
+  content::WebContents* CreateCustomWebContents(
       content::RenderFrameHost* opener,
       content::SiteInstance* source_site_instance,
-      int32_t route_id,
-      int32_t main_frame_route_id,
-      int32_t main_frame_widget_route_id,
-      content::mojom::WindowContainerType window_container_type,
+      bool is_new_browsing_instance,
       const GURL& opener_url,
       const std::string& frame_name,
       const GURL& target_url,
@@ -161,15 +176,8 @@ class MimeHandlerViewGuest
 
   // content::WebContentsObserver implementation.
   void DocumentOnLoadCompletedInMainFrame() final;
-  void OnInterfaceRequestFromFrame(
-      content::RenderFrameHost* render_frame_host,
-      const std::string& interface_name,
-      mojo::ScopedMessagePipeHandle* interface_pipe) final;
   void ReadyToCommitNavigation(
       content::NavigationHandle* navigation_handle) final;
-
-  void FuseBeforeUnloadControl(
-      mime_handler::BeforeUnloadControlRequest request);
 
   std::unique_ptr<MimeHandlerViewGuestDelegate> delegate_;
   std::unique_ptr<StreamContainer> stream_;
@@ -178,13 +186,19 @@ class MimeHandlerViewGuest
   int embedder_frame_routing_id_;
   int embedder_widget_routing_id_;
 
-  service_manager::BinderRegistry registry_;
-
   bool is_guest_fullscreen_ = false;
   bool is_embedder_fullscreen_ = false;
   bool plugin_can_save_ = false;
+  GURL original_resource_url_;
+  std::string mime_type_;
 
-  mime_handler::BeforeUnloadControlPtrInfo pending_before_unload_control_;
+  // True when the MimeHandlerViewGeust might have a frame container in its
+  // embedder's parent frame to facilitate postMessage.
+  bool maybe_has_frame_container_ = false;
+  mojo::PendingRemote<mime_handler::BeforeUnloadControl>
+      pending_before_unload_control_;
+
+  base::WeakPtrFactory<MimeHandlerViewGuest> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(MimeHandlerViewGuest);
 };

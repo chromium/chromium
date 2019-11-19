@@ -207,8 +207,10 @@ class TestKioskLoaderVisitor
     : public extensions::ExternalProviderInterface::VisitorInterface {
  public:
   TestKioskLoaderVisitor(content::BrowserContext* browser_context,
+                         extensions::ExtensionRegistry* extension_registry,
                          extensions::ExtensionService* extension_service)
       : browser_context_(browser_context),
+        extension_registry_(extension_registry),
         extension_service_(extension_service) {}
 
   ~TestKioskLoaderVisitor() override = default;
@@ -263,7 +265,8 @@ class TestKioskLoaderVisitor
   bool OnExternalExtensionFileFound(
       const ExternalInstallInfoFile& info) override {
     const extensions::Extension* existing =
-        extension_service_->GetExtensionById(info.extension_id, true);
+        extension_registry_->GetExtensionById(
+            info.extension_id, extensions::ExtensionRegistry::EVERYTHING);
     // Alredy exists, and does not require update.
     if (existing && existing->version().CompareTo(info.version) >= 0)
       return false;
@@ -282,7 +285,8 @@ class TestKioskLoaderVisitor
   bool OnExternalExtensionUpdateUrlFound(
       const ExternalInstallInfoUpdateUrl& info,
       bool is_initial_load) override {
-    if (extension_service_->GetExtensionById(info.extension_id, true))
+    if (extension_registry_->GetExtensionById(
+            info.extension_id, extensions::ExtensionRegistry::EVERYTHING))
       return false;
 
     if (!extension_service_->pending_extension_manager()
@@ -320,6 +324,7 @@ class TestKioskLoaderVisitor
 
  private:
   content::BrowserContext* const browser_context_;
+  extensions::ExtensionRegistry* const extension_registry_;
   extensions::ExtensionService* const extension_service_;
 
   std::set<std::string> pending_crx_files_;
@@ -349,8 +354,8 @@ class StartupAppLauncherTest : public extensions::ExtensionServiceTestBase,
     extensions::ExtensionServiceTestBase::SetUp();
 
     InitializeEmptyExtensionService();
-    external_apps_loader_handler_ =
-        std::make_unique<TestKioskLoaderVisitor>(browser_context(), service());
+    external_apps_loader_handler_ = std::make_unique<TestKioskLoaderVisitor>(
+        browser_context(), registry(), service());
     CreateAndInitializeKioskAppsProviders(external_apps_loader_handler_.get());
 
     extensions::TestEventRouter* event_router =

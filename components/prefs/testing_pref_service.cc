@@ -34,8 +34,9 @@ TestingPrefServiceBase<PrefService, PrefRegistry>::TestingPrefServiceBase(
                                            pref_notifier),
           user_prefs,
           pref_registry,
-          base::Bind(&TestingPrefServiceBase<PrefService,
-                                             PrefRegistry>::HandleReadError),
+          base::BindRepeating(
+              &TestingPrefServiceBase<PrefService,
+                                      PrefRegistry>::HandleReadError),
           false),
       managed_prefs_(managed_prefs),
       extension_prefs_(extension_prefs),

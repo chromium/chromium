@@ -26,18 +26,15 @@ class CC_PAINT_EXPORT ServiceShaderTransferCacheEntry
     : public ServiceTransferCacheEntryBase<TransferCacheEntryType::kShader> {
  public:
   explicit ServiceShaderTransferCacheEntry(sk_sp<PaintShader> shader,
-                                           uint32_t raster_color_space_id,
                                            size_t size);
   ~ServiceShaderTransferCacheEntry() final;
   size_t CachedSize() const final;
   bool Deserialize(GrContext* context, base::span<const uint8_t> data) final;
 
   sk_sp<PaintShader> shader() const { return shader_; }
-  uint32_t raster_color_space_id() const { return raster_color_space_id_; }
 
  private:
   sk_sp<PaintShader> shader_;
-  uint32_t raster_color_space_id_;
   size_t size_ = 0;
 };
 

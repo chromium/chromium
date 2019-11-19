@@ -1,3 +1,3 @@
 [document web]
 ++[paragraph]
-++++[text] name='This test is for body tag'
+++++[static] name='This test is for body tag'

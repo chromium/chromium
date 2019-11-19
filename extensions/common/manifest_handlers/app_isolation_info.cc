@@ -68,7 +68,7 @@ bool AppIsolationHandler::Parse(Extension* extension, base::string16* error) {
   }
 
   bool has_isolated_storage = false;
-  const base::Value::ListStorage& list_storage = isolation_list->GetList();
+  base::span<const base::Value> list_storage = isolation_list->GetList();
   for (size_t i = 0; i < list_storage.size(); ++i) {
     if (!list_storage[i].is_string()) {
       *error = ErrorUtils::FormatErrorMessageUTF16(

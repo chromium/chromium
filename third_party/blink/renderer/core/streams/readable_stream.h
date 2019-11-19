@@ -19,7 +19,6 @@ class UnderlyingSourceBase;
 class MessagePort;
 
 // This is an implementation of the corresponding IDL interface.
-// Use TraceWrapperMember to hold a reference to an instance of this class.
 class CORE_EXPORT ReadableStream : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
@@ -27,15 +26,12 @@ class CORE_EXPORT ReadableStream : public ScriptWrappable {
   // ReadHandle is used to read from a stream. Each call to Read() corresponds
   // to a call to ReadableStreamDefaultReaderRead on the underlying stream.
   //
-  // It has awkward garbage collection semantics: either it must be kept in a
-  // TraceWrapperMember, or the ReadableStream must outlive it.
-  //
   // This is a transitional interface while the streams C++ port is in progress.
   // Eventually callers will just use ReadableStreamDefaultReader objects
   // directly.
   //
   // TODO(ricea): Remove this when the V8 Extras implementation is removed.
-  class ReadHandle : public GarbageCollectedFinalized<ReadHandle> {
+  class ReadHandle : public GarbageCollected<ReadHandle> {
    public:
     ReadHandle() = default;
     virtual ~ReadHandle() = default;

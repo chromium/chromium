@@ -11,7 +11,6 @@
 
 // IMPORTANT NOTE: Work-around for crbug.com/543822
 // s/chrome.bookmarkManagerPrivate.bookmarks.BookmarkTreeNode/BookmarkTreeNode/
-// s/chrome.bookmarkManagerPrivate.bookmarks.CreateDetails/chrome.bookmarks.CreateDetails/
 
 /** @fileoverview Externs generated from namespace: bookmarkManagerPrivate */
 
@@ -39,12 +38,6 @@ chrome.bookmarkManagerPrivate.BookmarkNodeDataElement;
  * }}
  */
 chrome.bookmarkManagerPrivate.BookmarkNodeData;
-
-/**
- * Collection of meta info fields.
- * @typedef {Object}
- */
-chrome.bookmarkManagerPrivate.MetaInfoFields;
 
 /**
  * Copies the given bookmarks into the clipboard.
@@ -88,8 +81,10 @@ chrome.bookmarkManagerPrivate.sortChildren = function(parentId) {};
  * @param {!Array<string>} idList An array of string-valued ids.
  * @param {number} dragNodeIndex The index of the dragged node in |idList|
  * @param {boolean} isFromTouch True if the drag was initiated from touch.
+ * @param {number} offsetX The offset X of the event
+ * @param {number} offsetY The offset Y of the event
  */
-chrome.bookmarkManagerPrivate.startDrag = function(idList, dragNodeIndex, isFromTouch) {};
+chrome.bookmarkManagerPrivate.startDrag = function(idList, dragNodeIndex, isFromTouch, offsetX, offsetY) {};
 
 /**
  * Performs the drop action of the drag and drop session.
@@ -113,59 +108,11 @@ chrome.bookmarkManagerPrivate.drop = function(parentId, index, callback) {};
 chrome.bookmarkManagerPrivate.getSubtree = function(id, foldersOnly, callback) {};
 
 /**
- * Whether bookmarks can be modified.
- * @param {function(boolean):void} callback
- */
-chrome.bookmarkManagerPrivate.canEdit = function(callback) {};
-
-/**
  * Recursively removes list of bookmarks nodes.
  * @param {!Array<string>} idList An array of string-valued ids.
  * @param {function():void=} callback
  */
 chrome.bookmarkManagerPrivate.removeTrees = function(idList, callback) {};
-
-/**
- */
-chrome.bookmarkManagerPrivate.recordLaunch = function() {};
-
-/**
- * Mimics the functionality of bookmarks.create, but will additionally set the
- * given meta info fields.
- * @param {!chrome.bookmarks.CreateDetails} bookmark
- * @param {!chrome.bookmarkManagerPrivate.MetaInfoFields} metaInfo
- * @param {function(!BookmarkTreeNode):void=}
- *     callback
- */
-chrome.bookmarkManagerPrivate.createWithMetaInfo = function(bookmark, metaInfo, callback) {};
-
-/**
- * Gets meta info from a bookmark node.
- * @param {string=} id The id of the bookmark to retrieve meta info from. If
- *     omitted meta info for all nodes is returned.
- * @param {string=} key The key for the meta info to retrieve. If omitted, all
- *     fields are returned.
- * @param {function(((string|Object)|undefined)):void=} callback
- */
-chrome.bookmarkManagerPrivate.getMetaInfo = function(id, key, callback) {};
-
-/**
- * Sets a meta info value for a bookmark node.
- * @param {string} id The id of the bookmark node to set the meta info on.
- * @param {string} key The key of the meta info to set.
- * @param {string} value The meta info to set.
- * @param {function():void=} callback
- */
-chrome.bookmarkManagerPrivate.setMetaInfo = function(id, key, value, callback) {};
-
-/**
- * Updates a set of meta info values for a bookmark node.
- * @param {string} id The id of the bookmark node to update the meta info of.
- * @param {!chrome.bookmarkManagerPrivate.MetaInfoFields} metaInfoChanges A set
- *     of meta info key/value pairs to update.
- * @param {function():void=} callback
- */
-chrome.bookmarkManagerPrivate.updateMetaInfo = function(id, metaInfoChanges, callback) {};
 
 /**
  * Performs an undo of the last change to the bookmark model.
@@ -176,24 +123,6 @@ chrome.bookmarkManagerPrivate.undo = function() {};
  * Performs a redo of last undone change to the bookmark model.
  */
 chrome.bookmarkManagerPrivate.redo = function() {};
-
-/**
- * Gets the information for the undo if available.
- * @param {function({
- *   enabled: boolean,
- *   label: string
- * }):void} callback
- */
-chrome.bookmarkManagerPrivate.getUndoInfo = function(callback) {};
-
-/**
- * Gets the information for the redo if available.
- * @param {function({
- *   enabled: boolean,
- *   label: string
- * }):void} callback
- */
-chrome.bookmarkManagerPrivate.getRedoInfo = function(callback) {};
 
 /**
  * Fired when dragging bookmarks over the document.
@@ -212,9 +141,3 @@ chrome.bookmarkManagerPrivate.onDragLeave;
  * @type {!ChromeEvent}
  */
 chrome.bookmarkManagerPrivate.onDrop;
-
-/**
- * Fired when the meta info of a node changes.
- * @type {!ChromeEvent}
- */
-chrome.bookmarkManagerPrivate.onMetaInfoChanged;

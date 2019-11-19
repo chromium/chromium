@@ -70,11 +70,11 @@ String FontVariantNumeric::ToString() const {
   return String::Format(
       "numeric_figure=%s, numeric_spacing=%s, numeric_fraction=%s, ordinal=%s, "
       "slashed_zero=%s",
-      ToString(NumericFigureValue()).Ascii().data(),
-      ToString(NumericSpacingValue()).Ascii().data(),
-      ToString(NumericFractionValue()).Ascii().data(),
-      ToString(OrdinalValue()).Ascii().data(),
-      ToString(SlashedZeroValue()).Ascii().data());
+      ToString(NumericFigureValue()).Ascii().c_str(),
+      ToString(NumericSpacingValue()).Ascii().c_str(),
+      ToString(NumericFractionValue()).Ascii().c_str(),
+      ToString(OrdinalValue()).Ascii().c_str(),
+      ToString(SlashedZeroValue()).Ascii().c_str());
 }
 
 }  // namespace blink

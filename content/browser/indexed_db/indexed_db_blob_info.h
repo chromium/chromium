@@ -7,11 +7,14 @@
 
 #include <stdint.h>
 
+#include <memory>
 #include <string>
+#include <vector>
 
 #include "base/callback.h"
 #include "base/files/file_path.h"
 #include "base/optional.h"
+#include "base/strings/string16.h"
 #include "base/time/time.h"
 #include "content/common/content_export.h"
 #include "storage/browser/blob/blob_data_handle.h"
@@ -57,7 +60,7 @@ class CONTENT_EXPORT IndexedDBBlobInfo {
   int64_t key() const { return key_; }
   const base::FilePath& file_path() const { return file_path_; }
   const base::Time& last_modified() const { return last_modified_; }
-  const base::Closure& mark_used_callback() const {
+  const base::RepeatingClosure& mark_used_callback() const {
     return mark_used_callback_;
   }
   const ReleaseCallback& release_callback() const { return release_callback_; }
@@ -66,7 +69,7 @@ class CONTENT_EXPORT IndexedDBBlobInfo {
   void set_file_path(const base::FilePath& file_path);
   void set_last_modified(const base::Time& time);
   void set_key(int64_t key);
-  void set_mark_used_callback(const base::Closure& mark_used_callback);
+  void set_mark_used_callback(const base::RepeatingClosure& mark_used_callback);
   void set_release_callback(const ReleaseCallback& release_callback);
 
  private:
@@ -81,7 +84,7 @@ class CONTENT_EXPORT IndexedDBBlobInfo {
 
   // Valid only when this comes out of the database.
   int64_t key_;
-  base::Closure mark_used_callback_;
+  base::RepeatingClosure mark_used_callback_;
   ReleaseCallback release_callback_;
 };
 

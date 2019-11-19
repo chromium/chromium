@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/bind_helpers.h"
 #include "base/task/post_task.h"
+#include "base/unguessable_token.h"
 #include "content/browser/browser_main_loop.h"
 #include "content/browser/renderer_host/media/media_stream_manager.h"
 #include "content/browser/renderer_host/media/video_capture_manager.h"
@@ -19,7 +20,7 @@
 #include "media/capture/mojom/image_capture_types.h"
 #include "media/capture/video/video_capture_device.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
-#include "mojo/public/cpp/bindings/strong_binding.h"
+#include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
 
 namespace content {
@@ -31,11 +32,11 @@ void GetPhotoStateOnIOThread(const std::string& source_id,
                              ImageCaptureImpl::GetPhotoStateCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
-  const int session_id =
+  const base::UnguessableToken session_id =
       media_stream_manager->VideoDeviceIdToSessionId(source_id);
-
-  if (session_id == blink::MediaStreamDevice::kNoId)
+  if (session_id.is_empty())
     return;
+
   media_stream_manager->video_capture_manager()->GetPhotoState(
       session_id, std::move(callback));
 }
@@ -46,10 +47,9 @@ void SetOptionsOnIOThread(const std::string& source_id,
                           ImageCaptureImpl::SetOptionsCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
-  const int session_id =
+  const base::UnguessableToken session_id =
       media_stream_manager->VideoDeviceIdToSessionId(source_id);
-
-  if (session_id == blink::MediaStreamDevice::kNoId)
+  if (session_id.is_empty())
     return;
   media_stream_manager->video_capture_manager()->SetPhotoOptions(
       session_id, std::move(settings), std::move(callback));
@@ -63,11 +63,11 @@ void TakePhotoOnIOThread(const std::string& source_id,
                        "image_capture_impl.cc::TakePhotoOnIOThread",
                        TRACE_EVENT_SCOPE_PROCESS);
 
-  const int session_id =
+  const base::UnguessableToken session_id =
       media_stream_manager->VideoDeviceIdToSessionId(source_id);
-
-  if (session_id == blink::MediaStreamDevice::kNoId)
+  if (session_id.is_empty())
     return;
+
   media_stream_manager->video_capture_manager()->TakePhoto(session_id,
                                                            std::move(callback));
 }
@@ -80,12 +80,9 @@ ImageCaptureImpl::~ImageCaptureImpl() {}
 
 // static
 void ImageCaptureImpl::Create(
-    media::mojom::ImageCaptureRequest request) {
-  if (!base::FeatureList::IsEnabled(features::kImageCaptureAPI))
-    return;
-
-  mojo::MakeStrongBinding(std::make_unique<ImageCaptureImpl>(),
-                          std::move(request));
+    mojo::PendingReceiver<media::mojom::ImageCapture> receiver) {
+  mojo::MakeSelfOwnedReceiver(std::make_unique<ImageCaptureImpl>(),
+                              std::move(receiver));
 }
 
 void ImageCaptureImpl::GetPhotoState(const std::string& source_id,
@@ -99,7 +96,7 @@ void ImageCaptureImpl::GetPhotoState(const std::string& source_id,
       mojo::WrapCallbackWithDefaultInvokeIfNotRun(
           media::BindToCurrentLoop(std::move(callback)),
           mojo::CreateEmptyPhotoState());
-  base::PostTaskWithTraits(
+  base::PostTask(
       FROM_HERE, {BrowserThread::IO},
       base::BindOnce(&GetPhotoStateOnIOThread, source_id,
                      BrowserMainLoop::GetInstance()->media_stream_manager(),
@@ -117,7 +114,7 @@ void ImageCaptureImpl::SetOptions(const std::string& source_id,
   SetOptionsCallback scoped_callback =
       mojo::WrapCallbackWithDefaultInvokeIfNotRun(
           media::BindToCurrentLoop(std::move(callback)), false);
-  base::PostTaskWithTraits(
+  base::PostTask(
       FROM_HERE, {BrowserThread::IO},
       base::BindOnce(&SetOptionsOnIOThread, source_id,
                      BrowserMainLoop::GetInstance()->media_stream_manager(),
@@ -135,7 +132,7 @@ void ImageCaptureImpl::TakePhoto(const std::string& source_id,
       mojo::WrapCallbackWithDefaultInvokeIfNotRun(
           media::BindToCurrentLoop(std::move(callback)),
           media::mojom::Blob::New());
-  base::PostTaskWithTraits(
+  base::PostTask(
       FROM_HERE, {BrowserThread::IO},
       base::BindOnce(&TakePhotoOnIOThread, source_id,
                      BrowserMainLoop::GetInstance()->media_stream_manager(),

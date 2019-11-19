@@ -10,11 +10,14 @@
 #include "chrome/browser/ui/permission_bubble/chooser_bubble_delegate.h"
 #include "chrome/browser/ui/views/bubble_anchor_util_views.h"
 #include "chrome/browser/ui/views/device_chooser_content_view.h"
+#include "chrome/browser/ui/views/front_eliding_title_label.h"
 #include "components/bubble/bubble_controller.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
+#include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/controls/table/table_view_observer.h"
+#include "ui/views/layout/fill_layout.h"
 #include "ui/views/window/dialog_client_view.h"
 
 using bubble_anchor_util::AnchorConfiguration;
@@ -41,22 +44,18 @@ class ChooserBubbleUiViewDelegate : public views::BubbleDialogDelegateView,
       std::unique_ptr<ChooserController> chooser_controller);
   ~ChooserBubbleUiViewDelegate() override;
 
+  // views::View:
+  void AddedToWidget() override;
+
   // views::WidgetDelegate:
   base::string16 GetWindowTitle() const override;
 
   // views::DialogDelegate:
-  base::string16 GetDialogButtonLabel(ui::DialogButton button) const override;
   bool IsDialogButtonEnabled(ui::DialogButton button) const override;
   views::View* GetInitiallyFocusedView() override;
-  views::View* CreateExtraView() override;
   bool Accept() override;
   bool Cancel() override;
   bool Close() override;
-
-  // views::DialogDelegateView:
-  views::View* GetContentsView() override;
-  views::Widget* GetWidget() override;
-  const views::Widget* GetWidget() const override;
 
   // views::TableViewObserver:
   void OnSelectionChanged() override;
@@ -94,36 +93,41 @@ ChooserBubbleUiViewDelegate::ChooserBubbleUiViewDelegate(
   // | Get help                         |
   // ------------------------------------
 
+  DialogDelegate::set_button_label(ui::DIALOG_BUTTON_OK,
+                                   chooser_controller->GetOkButtonLabel());
+  DialogDelegate::set_button_label(ui::DIALOG_BUTTON_CANCEL,
+                                   chooser_controller->GetCancelButtonLabel());
+
+  SetLayoutManager(std::make_unique<views::FillLayout>());
   device_chooser_content_view_ =
       new DeviceChooserContentView(this, std::move(chooser_controller));
+  AddChildView(device_chooser_content_view_);
+
+  DialogDelegate::SetExtraView(device_chooser_content_view_->CreateExtraView());
+
   UpdateAnchor(browser);
   chrome::RecordDialogCreation(chrome::DialogIdentifier::CHOOSER_UI);
 }
 
 ChooserBubbleUiViewDelegate::~ChooserBubbleUiViewDelegate() {}
 
+void ChooserBubbleUiViewDelegate::AddedToWidget() {
+  GetBubbleFrameView()->SetTitleView(
+      CreateFrontElidingTitleLabel(GetWindowTitle()));
+}
+
 base::string16 ChooserBubbleUiViewDelegate::GetWindowTitle() const {
   return device_chooser_content_view_->GetWindowTitle();
 }
 
 views::View* ChooserBubbleUiViewDelegate::GetInitiallyFocusedView() {
-  return GetDialogClientView()->cancel_button();
-}
-
-base::string16 ChooserBubbleUiViewDelegate::GetDialogButtonLabel(
-    ui::DialogButton button) const {
-  return device_chooser_content_view_->GetDialogButtonLabel(button);
+  const views::DialogClientView* dcv = GetDialogClientView();
+  return dcv ? dcv->cancel_button() : nullptr;
 }
 
 bool ChooserBubbleUiViewDelegate::IsDialogButtonEnabled(
     ui::DialogButton button) const {
   return device_chooser_content_view_->IsDialogButtonEnabled(button);
-}
-
-views::View* ChooserBubbleUiViewDelegate::CreateExtraView() {
-  std::unique_ptr<views::View> extra_view =
-      device_chooser_content_view_->CreateExtraView();
-  return extra_view ? extra_view.release() : nullptr;
 }
 
 bool ChooserBubbleUiViewDelegate::Accept() {
@@ -143,18 +147,6 @@ bool ChooserBubbleUiViewDelegate::Cancel() {
 bool ChooserBubbleUiViewDelegate::Close() {
   device_chooser_content_view_->Close();
   return true;
-}
-
-views::View* ChooserBubbleUiViewDelegate::GetContentsView() {
-  return device_chooser_content_view_;
-}
-
-views::Widget* ChooserBubbleUiViewDelegate::GetWidget() {
-  return device_chooser_content_view_->GetWidget();
-}
-
-const views::Widget* ChooserBubbleUiViewDelegate::GetWidget() const {
-  return device_chooser_content_view_->GetWidget();
 }
 
 void ChooserBubbleUiViewDelegate::OnSelectionChanged() {

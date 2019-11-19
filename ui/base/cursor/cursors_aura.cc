@@ -227,15 +227,17 @@ bool SearchTable(const CursorData* table,
                  float scale_factor,
                  int* resource_id,
                  gfx::Point* point) {
+  DCHECK_NE(scale_factor, 0);
+
   bool resource_2x_available =
       ResourceBundle::GetSharedInstance().GetMaxScaleFactor() ==
       SCALE_FACTOR_200P;
   for (size_t i = 0; i < table_length; ++i) {
     if (table[i].id == id) {
       *resource_id = table[i].resource_id;
-      *point = scale_factor == 1.0f || !resource_2x_available ?
-               gfx::Point(table[i].hot_1x.x, table[i].hot_1x.y) :
-               gfx::Point(table[i].hot_2x.x, table[i].hot_2x.y);
+      *point = scale_factor == 1.0f || !resource_2x_available
+                   ? gfx::Point(table[i].hot_1x.x, table[i].hot_1x.y)
+                   : gfx::Point(table[i].hot_2x.x, table[i].hot_2x.y);
       return true;
     }
   }
@@ -245,25 +247,179 @@ bool SearchTable(const CursorData* table,
 
 }  // namespace
 
+const char* CursorCssNameFromId(CursorType id) {
+  switch (id) {
+    case CursorType::kMiddlePanning:
+      return "all-scroll";
+    case CursorType::kMiddlePanningVertical:
+      return "v-scroll";
+    case CursorType::kMiddlePanningHorizontal:
+      return "h-scroll";
+    case CursorType::kEastPanning:
+      return "e-resize";
+    case CursorType::kNorthPanning:
+      return "n-resize";
+    case CursorType::kNorthEastPanning:
+      return "ne-resize";
+    case CursorType::kNorthWestPanning:
+      return "nw-resize";
+    case CursorType::kSouthPanning:
+      return "s-resize";
+    case CursorType::kSouthEastPanning:
+      return "se-resize";
+    case CursorType::kSouthWestPanning:
+      return "sw-resize";
+    case CursorType::kWestPanning:
+      return "w-resize";
+    case CursorType::kNone:
+      return "none";
+    case CursorType::kGrab:
+      return "grab";
+    case CursorType::kGrabbing:
+      return "grabbing";
+
+#if defined(OS_CHROMEOS)
+    case CursorType::kNull:
+    case CursorType::kPointer:
+    case CursorType::kNoDrop:
+    case CursorType::kNotAllowed:
+    case CursorType::kCopy:
+    case CursorType::kMove:
+    case CursorType::kEastResize:
+    case CursorType::kNorthResize:
+    case CursorType::kSouthResize:
+    case CursorType::kWestResize:
+    case CursorType::kNorthEastResize:
+    case CursorType::kNorthWestResize:
+    case CursorType::kSouthWestResize:
+    case CursorType::kSouthEastResize:
+    case CursorType::kIBeam:
+    case CursorType::kAlias:
+    case CursorType::kCell:
+    case CursorType::kContextMenu:
+    case CursorType::kCross:
+    case CursorType::kHelp:
+    case CursorType::kWait:
+    case CursorType::kNorthSouthResize:
+    case CursorType::kEastWestResize:
+    case CursorType::kNorthEastSouthWestResize:
+    case CursorType::kNorthWestSouthEastResize:
+    case CursorType::kProgress:
+    case CursorType::kColumnResize:
+    case CursorType::kRowResize:
+    case CursorType::kVerticalText:
+    case CursorType::kZoomIn:
+    case CursorType::kZoomOut:
+    case CursorType::kHand:
+    case CursorType::kDndNone:
+    case CursorType::kDndMove:
+    case CursorType::kDndCopy:
+    case CursorType::kDndLink:
+      // In some environments, the image assets are not set (e.g. in
+      // content-browsertests, content-shell etc.).
+      return "left_ptr";
+#else   // defined(OS_CHROMEOS)
+    case CursorType::kNull:
+      return "left_ptr";
+    case CursorType::kPointer:
+      return "left_ptr";
+    case CursorType::kMove:
+      // Returning "move" is the correct thing here, but Blink doesn't
+      // make a distinction between move and all-scroll.  Other
+      // platforms use a cursor more consistent with all-scroll, so
+      // use that.
+      return "all-scroll";
+    case CursorType::kCross:
+      return "crosshair";
+    case CursorType::kHand:
+      return "pointer";
+    case CursorType::kIBeam:
+      return "text";
+    case CursorType::kProgress:
+      return "progress";
+    case CursorType::kWait:
+      return "wait";
+    case CursorType::kHelp:
+      return "help";
+    case CursorType::kEastResize:
+      return "e-resize";
+    case CursorType::kNorthResize:
+      return "n-resize";
+    case CursorType::kNorthEastResize:
+      return "ne-resize";
+    case CursorType::kNorthWestResize:
+      return "nw-resize";
+    case CursorType::kSouthResize:
+      return "s-resize";
+    case CursorType::kSouthEastResize:
+      return "se-resize";
+    case CursorType::kSouthWestResize:
+      return "sw-resize";
+    case CursorType::kWestResize:
+      return "w-resize";
+    case CursorType::kNorthSouthResize:
+      return "ns-resize";
+    case CursorType::kEastWestResize:
+      return "ew-resize";
+    case CursorType::kColumnResize:
+      return "col-resize";
+    case CursorType::kRowResize:
+      return "row-resize";
+    case CursorType::kNorthEastSouthWestResize:
+      return "nesw-resize";
+    case CursorType::kNorthWestSouthEastResize:
+      return "nwse-resize";
+    case CursorType::kVerticalText:
+      return "vertical-text";
+    case CursorType::kZoomIn:
+      return "zoom-in";
+    case CursorType::kZoomOut:
+      return "zoom-out";
+    case CursorType::kCell:
+      return "cell";
+    case CursorType::kContextMenu:
+      return "context-menu";
+    case CursorType::kAlias:
+      return "alias";
+    case CursorType::kNoDrop:
+      return "no-drop";
+    case CursorType::kCopy:
+      return "copy";
+    case CursorType::kNotAllowed:
+      return "not-allowed";
+    case CursorType::kDndNone:
+      return "dnd-none";
+    case CursorType::kDndMove:
+      return "dnd-move";
+    case CursorType::kDndCopy:
+      return "dnd-copy";
+    case CursorType::kDndLink:
+      return "dnd-link";
+#endif  // defined(OS_CHROMEOS)
+    case CursorType::kCustom:
+      NOTREACHED();
+      return "left_ptr";
+  }
+  NOTREACHED() << "Case not handled for " << static_cast<int>(id);
+  return "left_ptr";
+}
+
 bool GetCursorDataFor(CursorSize cursor_size,
                       CursorType id,
                       float scale_factor,
                       int* resource_id,
                       gfx::Point* point) {
   const CursorSizeData* cursor_set = GetCursorSizeByType(cursor_size);
-  if (cursor_set &&
-      SearchTable(cursor_set->cursors,
-                  cursor_set->length,
-                  id, scale_factor, resource_id, point)) {
-      return true;
+  if (cursor_set && SearchTable(cursor_set->cursors, cursor_set->length, id,
+                                scale_factor, resource_id, point)) {
+    return true;
   }
 
   // Falls back to the default cursor set.
   cursor_set = GetCursorSizeByType(ui::CursorSize::kNormal);
   DCHECK(cursor_set);
-  return SearchTable(cursor_set->cursors,
-                     cursor_set->length,
-                     id, scale_factor, resource_id, point);
+  return SearchTable(cursor_set->cursors, cursor_set->length, id, scale_factor,
+                     resource_id, point);
 }
 
 bool GetAnimatedCursorDataFor(CursorSize cursor_size,
@@ -273,17 +429,15 @@ bool GetAnimatedCursorDataFor(CursorSize cursor_size,
                               gfx::Point* point) {
   const CursorSizeData* cursor_set = GetCursorSizeByType(cursor_size);
   if (cursor_set &&
-      SearchTable(cursor_set->animated_cursors,
-                  cursor_set->animated_length,
-                  id, scale_factor, resource_id, point)) {
+      SearchTable(cursor_set->animated_cursors, cursor_set->animated_length, id,
+                  scale_factor, resource_id, point)) {
     return true;
   }
 
   // Falls back to the default cursor set.
   cursor_set = GetCursorSizeByType(ui::CursorSize::kNormal);
   DCHECK(cursor_set);
-  return SearchTable(cursor_set->animated_cursors,
-                     cursor_set->animated_length,
+  return SearchTable(cursor_set->animated_cursors, cursor_set->animated_length,
                      id, scale_factor, resource_id, point);
 }
 

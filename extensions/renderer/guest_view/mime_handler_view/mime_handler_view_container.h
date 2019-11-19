@@ -16,6 +16,11 @@
 #include "url/gurl.h"
 #include "v8/include/v8.h"
 
+namespace blink {
+class WebFrame;
+class WebLocalFrame;
+}  // namespace blink
+
 namespace extensions {
 
 // A container for loading up an extension inside a BrowserPlugin to handle a
@@ -54,6 +59,11 @@ class MimeHandlerViewContainer : public guest_view::GuestViewContainer,
 
   // GuestViewContainer overrides.
   void OnRenderFrameDestroyed() override;
+  // PostMessageSupport::Delegate overrides.
+  blink::WebLocalFrame* GetSourceFrame() override;
+  blink::WebFrame* GetTargetFrame() override;
+  bool IsEmbedded() const override;
+  bool IsResourceAccessibleBySource() const override;
 
  protected:
   ~MimeHandlerViewContainer() override;
@@ -61,14 +71,8 @@ class MimeHandlerViewContainer : public guest_view::GuestViewContainer,
  private:
   // MimeHandlerViewContainerBase override.
   void CreateMimeHandlerViewGuestIfNecessary() final;
-  blink::WebRemoteFrame* GetGuestProxyFrame() const final;
   int32_t GetInstanceId() const final;
   gfx::Size GetElementSize() const final;
-
-  // mime_handler::BeforeUnloadControl implementation.
-  void SetShowBeforeUnloadDialog(
-      bool show_dialog,
-      SetShowBeforeUnloadDialogCallback callback) override;
 
   // Message handlers.
   void OnCreateMimeHandlerViewGuestACK(int element_instance_id);
@@ -78,6 +82,12 @@ class MimeHandlerViewContainer : public guest_view::GuestViewContainer,
 
   // The RenderView routing ID of the guest.
   int guest_proxy_routing_id_;
+  // TODO(ekaramad): This is intentionally here instead of
+  // MimeHandlerViewContainerBase because MimeHandlerViewFrameContainer will
+  // soon be refactored, and no longer a subclass of  MHVCB. This means MHVCB
+  // and MimeHandlerViewContainer should soon merge back into a MHVC class.
+  // Determines whether the embedder can access |original_url_|. Used for UMA.
+  bool is_resource_accessible_to_embedder_;
 
   // The size of the element.
   base::Optional<gfx::Size> element_size_;

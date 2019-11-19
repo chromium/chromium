@@ -178,7 +178,7 @@ class CaptivePortalTabReloader {
 
   const OpenLoginTabCallback open_login_tab_callback_;
 
-  base::WeakPtrFactory<CaptivePortalTabReloader> weak_factory_;
+  base::WeakPtrFactory<CaptivePortalTabReloader> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(CaptivePortalTabReloader);
 };

@@ -24,7 +24,7 @@ class KURL;
 // to extend the subresource filter with optimizations only possible using blink
 // types (e.g. a caching layer using StringImpl).
 class CORE_EXPORT SubresourceFilter final
-    : public GarbageCollectedFinalized<SubresourceFilter> {
+    : public GarbageCollected<SubresourceFilter> {
  public:
   static SubresourceFilter* Create(
       ExecutionContext&,

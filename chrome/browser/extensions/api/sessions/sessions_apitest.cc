@@ -22,14 +22,12 @@
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/extensions/extension_function_test_utils.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/sync/device_info_sync_service_factory.h"
 #include "chrome/browser/sync/session_sync_service_factory.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/testing_browser_process.h"
-#include "components/sync/base/hash_util.h"
-#include "components/sync/device_info/device_info_sync_service.h"
+#include "components/sync/base/client_tag_hash.h"
 #include "components/sync/engine/data_type_activation_response.h"
 #include "components/sync/model/data_type_activation_request.h"
 #include "components/sync/model/model_type_controller_delegate.h"
@@ -146,8 +144,9 @@ testing::AssertionResult CheckSessionModels(const base::ListValue& devices,
   return testing::AssertionSuccess();
 }
 
-std::string TagHashFromSpecifics(const sync_pb::SessionSpecifics& specifics) {
-  return syncer::GenerateSyncableHash(
+syncer::ClientTagHash TagHashFromSpecifics(
+    const sync_pb::SessionSpecifics& specifics) {
+  return syncer::ClientTagHash::FromUnhashed(
       syncer::SESSIONS, sync_sessions::SessionStore::GetClientTag(specifics));
 }
 
@@ -182,8 +181,6 @@ void ExtensionSessionsTest::SetUpCommandLine(base::CommandLine* command_line) {
 
 void ExtensionSessionsTest::SetUpOnMainThread() {
   CreateTestExtension();
-  DeviceInfoSyncServiceFactory::GetForProfile(browser()->profile())
-      ->InitLocalCacheGuid(kTestCacheGuid, "machine name");
 }
 
 void ExtensionSessionsTest::CreateTestExtension() {
@@ -197,7 +194,7 @@ void ExtensionSessionsTest::CreateSessionModels() {
   syncer::DataTypeActivationRequest request;
   request.error_handler = base::DoNothing();
   request.cache_guid = kTestCacheGuid;
-  request.authenticated_account_id = "SomeAccountId";
+  request.authenticated_account_id = CoreAccountId("SomeAccountId");
 
   sync_sessions::SessionSyncService* service =
       SessionSyncServiceFactory::GetForProfile(browser()->profile());
@@ -237,19 +234,22 @@ void ExtensionSessionsTest::CreateSessionModels() {
     // sessions (anything older than 14 days), so we cannot use
     // MockModelTypeWorker's convenience functions, which internally use very
     // old timestamps.
-    syncer::EntityData header_entity_data;
-    header_entity_data.client_tag_hash =
+    auto header_entity_data = std::make_unique<syncer::EntityData>();
+    header_entity_data->client_tag_hash =
         TagHashFromSpecifics(header_entity.session());
-    header_entity_data.id = "FakeId:" + header_entity_data.client_tag_hash;
-    header_entity_data.specifics = header_entity;
-    header_entity_data.creation_time =
+    header_entity_data->id =
+        "FakeId:" + header_entity_data->client_tag_hash.value();
+    header_entity_data->specifics = header_entity;
+    header_entity_data->creation_time =
         time_now - base::TimeDelta::FromSeconds(index);
-    header_entity_data.modification_time = header_entity_data.creation_time;
+    header_entity_data->modification_time = header_entity_data->creation_time;
 
-    syncer::UpdateResponseData header_update;
-    header_update.entity = header_entity_data.PassToPtr();
-    header_update.response_version = 1;
-    worker.UpdateFromServer({header_update});
+    auto header_update = std::make_unique<syncer::UpdateResponseData>();
+    header_update->entity = std::move(header_entity_data);
+    header_update->response_version = 1;
+    syncer::UpdateResponseDataList updates;
+    updates.push_back(std::move(header_update));
+    worker.UpdateFromServer(std::move(updates));
 
     for (size_t i = 0; i < tabs.size(); i++) {
       sync_pb::EntitySpecifics tab_entity;

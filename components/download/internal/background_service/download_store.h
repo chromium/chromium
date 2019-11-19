@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/files/file_path.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/download/internal/background_service/store.h"
@@ -27,7 +26,6 @@ namespace download {
 class DownloadStore : public Store {
  public:
   DownloadStore(
-      const base::FilePath& database_dir,
       std::unique_ptr<leveldb_proto::ProtoDatabase<protodb::Entry>> db);
   ~DownloadStore() override;
 
@@ -39,18 +37,19 @@ class DownloadStore : public Store {
   void Remove(const std::string& guid, StoreCallback callback) override;
 
  private:
-  void OnDatabaseInited(InitCallback callback, bool success);
+  void OnDatabaseInited(InitCallback callback,
+                        leveldb_proto::Enums::InitStatus status);
   void OnDatabaseLoaded(InitCallback callback,
                         bool success,
                         std::unique_ptr<std::vector<protodb::Entry>> protos);
   void OnDatabaseDestroyed(StoreCallback callback, bool success);
-  void OnDatabaseInitedAfterDestroy(StoreCallback callback, bool success);
+  void OnDatabaseInitedAfterDestroy(StoreCallback callback,
+                                    leveldb_proto::Enums::InitStatus status);
 
   std::unique_ptr<leveldb_proto::ProtoDatabase<protodb::Entry>> db_;
-  base::FilePath database_dir_;
   bool is_initialized_;
 
-  base::WeakPtrFactory<DownloadStore> weak_factory_;
+  base::WeakPtrFactory<DownloadStore> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(DownloadStore);
 };

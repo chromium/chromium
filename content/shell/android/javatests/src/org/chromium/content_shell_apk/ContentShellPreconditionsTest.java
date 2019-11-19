@@ -28,7 +28,7 @@ public class ContentShellPreconditionsTest {
     @SuppressWarnings("deprecation")
     @MediumTest
     @Feature({"TestInfrastructure"})
-    public void testScreenIsOn() throws Exception {
+    public void testScreenIsOn() {
         PowerManager pm = (PowerManager) InstrumentationRegistry.getContext().getSystemService(
                 Context.POWER_SERVICE);
 

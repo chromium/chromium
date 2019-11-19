@@ -2,9 +2,23 @@
  * Use of this source code is governed by a BSD-style license that can be
  * found in the LICENSE file. */
 
+html {
+  --google-grey-200: rgb(232, 234, 237);
+  --google-grey-900: rgb(32, 33, 36);
+
+  --primary-color: var(--google-grey-900);
+  background: white;
+}
+
+@media (prefers-color-scheme: dark) {
+  html {
+    --primary-color: var(--google-grey-200);
+    background: var(--google-grey-900);
+  }
+}
+
 body {
-  background-color: white;
-  color: black;
+  color: var(--primary-color);
   font-size: 100%;
   margin: 0;
 }

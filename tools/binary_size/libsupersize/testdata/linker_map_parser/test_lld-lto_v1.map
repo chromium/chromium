@@ -254,6 +254,19 @@
  1401789  1401789       a4     1                 $_21::operator()(FamilyData*, char const*, char const**) const
  1401818  1401818        0     1                 $d.79
 
+# Sections prefixed with ".unlikely" or ".hot"
+ 1401820  1401820       10     4         thinlto-cache/Thin-826b9f.tmp.o:(.text.unlikely.UnlikelyFunc)
+ 1401820  1401820        0     1                 $t.78
+ 1401821  1401821       10     1                 UnlikelyFunc
+ 1401831  1401831       10     1                 UnlikelyFunc2
+ 1401841  1401841        0     1                 $d.79
+
+# Sections prefixed with ".startup"
+ 1401850  1401850       10     4         thinlto-cache/Thin-826b9f.tmp.o:(.text.startup)
+ 1401850  1401850        0     1                 $t.78
+ 1401851  1401851       10     1                 StartUpFunc
+ 1401861  1401861        0     1                 $d.79
+
 # Size-only sections.
  2d4a7f0  2d4a7f0     17d0    16 .plt
  2d4a7f0  2d4a7f0     17d0    16         <internal>:(.plt)
@@ -337,6 +350,46 @@
  2f56008  2f56008        4     1                 WebRtcSpl_MaxAbsValueW16
  2f56008  2f56008        4     1                 WebRtcSpl_MaxAbsValueW16
  2f56008  2f56008        4     1                 WebRtcSpl_MaxAbsValueW16
+
+# Partitions should be ignored at this point. Otherwise, their .text, .rodata,
+# etc. sections will overwrite those of the main partition.
+ 34be000  34be000       34     1 vr_partition
+ 34be000  34be000       34     1         <internal>:(vr_partition)
+ 34be034  34be034      140     1 .phdrs
+ 34be034  34be034      140     1         <internal>:(.phdrs)
+ 34be174  34be174       13     1 .interp
+ 34be174  34be174       13     1         <internal>:(.interp)
+ 34be188  34be188       1c     4 .note.crashpad.info
+ 34be188  34be188       1c     4         obj/third_party/crashpad/crashpad/client/libclient.a(client/crashpad_info_note.o):(.note.crashpad.info)
+ 34be1a4  34be1a4       98     4 .note.android.ident
+ 34be1a4  34be1a4       98     4         ../../third_party/android_ndk/platforms/android-16/arch-arm/usr/lib/crtbegin_so.o:(.note.android.ident)
+ 34be23c  34be23c       24     4 .note.gnu.build-id
+ 34be23c  34be23c       24     4         <internal>:(.note.gnu.build-id)
+ 34be260  34be260       20     4 .dynsym
+ 34be260  34be260       20     4         <internal>:(.dynsym)
+ 34be280  34be280        4     2 .gnu.version
+ 34be280  34be280        4     2         <internal>:(.gnu.version)
+ 34be284  34be284       60     4 .gnu.version_r
+ 34be284  34be284       60     4         <internal>:(.gnu.version_r)
+ 34be2e4  34be2e4       1c     4 .gnu.hash
+ 34be2e4  34be2e4       1c     4         <internal>:(.gnu.hash)
+ 34be300  34be300       6c     1 .dynstr
+ 34be300  34be300       6c     1         <internal>:(.dynstr)
+ 34be36c  34be36c      257     4 .rel.dyn
+ 34be36c  34be36c      257     4         <internal>:(.rel.dyn)
+ 34be5c4  34be5c4       10     4 .ARM.exidx
+ 34be5c4  34be5c4       10     4         <internal>:(.ARM.exidx)
+ 34be5d8  34be5d8     2428     8 .rodata
+ 34be5d8  34be5d8       10     1         thinlto-cache/Thin-5e976b.tmp.o:(.rodata._ZN2vrL17kRepositionIconIdE)
+ 34be5d8  34be5d8       10     1                 vr::kRepositionIconId
+ 34c0a00  34c0a00    2c9ec    16 .text
+ 34c0a00  34c0a00       18     4         thinlto-cache/Thin-ec84a4.tmp.o:(.text._ZN6SkFont7setSizeEf)
+ 34c0a00  34c0a00        0     1                 $t.11
+ 34c0a01  34c0a01       18     1                 SkFont::setSize(float)
+ 34c0a14  34c0a14        0     1                 $d.12
+# .part.end is unique, even if multiple lib*.so, .phdrs, etc. exist.
+       0        0     1000     1 .part.end
+       0        0     1000     1         <internal>:(.part.end)
 
 # Various .debug sections can exist, but they're omitted for simplicity.
 

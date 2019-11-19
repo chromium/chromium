@@ -47,7 +47,7 @@ class VIEWS_EXAMPLES_EXPORT BoxLayoutExample : public LayoutExampleBase {
   Textfield* between_child_spacing_ = nullptr;
   Textfield* default_flex_ = nullptr;
   Textfield* min_cross_axis_size_ = nullptr;
-  Textfield* border_insets_[4] = {nullptr, nullptr, nullptr, nullptr};
+  InsetTextfields border_insets_;
   Checkbox* collapse_margins_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(BoxLayoutExample);

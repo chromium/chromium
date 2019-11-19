@@ -3,12 +3,13 @@
 // found in the LICENSE file.
 
 #include "mojo/public/cpp/system/scope_to_message_pipe.h"
+
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/test/bind_test_util.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "mojo/public/cpp/system/simple_watcher.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -34,7 +35,7 @@ class ScopeToMessagePipeTest : public testing::Test {
   ~ScopeToMessagePipeTest() override = default;
 
  private:
-  base::test::ScopedTaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_;
   DISALLOW_COPY_AND_ASSIGN(ScopeToMessagePipeTest);
 };
 

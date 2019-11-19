@@ -20,11 +20,10 @@ def _GetPathsToPrepend(input_api):
   current_dir = input_api.PresubmitLocalPath()
   chromium_src_dir = input_api.os_path.join(current_dir, '..', '..')
   return [
-    input_api.os_path.join(current_dir, 'tools'),
-    input_api.os_path.join(current_dir, 'android', 'test', 'javaperftests'),
+    input_api.os_path.join(chromium_src_dir, 'components'),
     input_api.os_path.join(chromium_src_dir, 'tools', 'perf'),
     input_api.os_path.join(chromium_src_dir, 'build', 'android'),
-    input_api.os_path.join(chromium_src_dir, 'build', 'android', 'gyp', 'util'),
+    input_api.os_path.join(chromium_src_dir, 'build', 'android', 'gyp'),
     input_api.os_path.join(chromium_src_dir,
         'mojo', 'public', 'tools', 'bindings', 'pylib'),
     input_api.os_path.join(chromium_src_dir, 'net', 'tools', 'net_docs'),
@@ -34,6 +33,8 @@ def _GetPathsToPrepend(input_api):
         'third_party', 'catapult', 'telemetry'),
     input_api.os_path.join(chromium_src_dir,
         'third_party', 'catapult', 'devil'),
+    input_api.os_path.join(chromium_src_dir,
+        'third_party', 'catapult', 'common', 'py_utils'),
   ]
 
 

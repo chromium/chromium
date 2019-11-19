@@ -5,11 +5,12 @@
 package org.chromium.chrome.browser.omaha.inline;
 
 import android.app.Activity;
-import android.os.Handler;
-import android.os.Looper;
-import android.support.annotation.Nullable;
 
+import androidx.annotation.Nullable;
+
+import org.chromium.base.task.PostTask;
 import org.chromium.chrome.browser.omaha.UpdateStatusProvider;
+import org.chromium.content_public.browser.UiThreadTaskTraits;
 
 /**
  * An update controller that does nothing. This is used if the inline update experiment has
@@ -18,7 +19,7 @@ import org.chromium.chrome.browser.omaha.UpdateStatusProvider;
 class NoopInlineUpdateController implements InlineUpdateController {
     NoopInlineUpdateController(Runnable callback) {
         // Do a one-off post since the state will never change.
-        new Handler(Looper.getMainLooper()).post(callback);
+        PostTask.postTask(UiThreadTaskTraits.DEFAULT, callback);
     }
 
     @Override

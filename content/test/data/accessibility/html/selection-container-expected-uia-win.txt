@@ -1,0 +1,8 @@
+document
+++group
+++++listbox Name='selection_list' Selection.CanSelectMultiple=false Selection.IsSelectionRequired=false
+++++++group Name='Enabled'
+++++++option Name='One' SelectionItem.IsSelected=false SelectionItem.SelectionContainer='selection_list'
+++++++option Name='Two' SelectionItem.IsSelected=false SelectionItem.SelectionContainer='selection_list'
+++++++option Name='Three' SelectionItem.IsSelected=false SelectionItem.SelectionContainer='selection_list'
+++++++option Name='Four' SelectionItem.IsSelected=false SelectionItem.SelectionContainer='selection_list'

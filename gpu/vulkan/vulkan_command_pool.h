@@ -22,7 +22,8 @@ class VULKAN_EXPORT VulkanCommandPool {
   explicit VulkanCommandPool(VulkanDeviceQueue* device_queue);
   ~VulkanCommandPool();
 
-  bool Initialize();
+  bool Initialize(bool use_protected_memory);
+  // Destroy() should be called when all related GPU tasks have been finished.
   void Destroy();
 
   std::unique_ptr<VulkanCommandBuffer> CreatePrimaryCommandBuffer();
@@ -39,6 +40,7 @@ class VULKAN_EXPORT VulkanCommandPool {
   VulkanDeviceQueue* device_queue_;
   VkCommandPool handle_ = VK_NULL_HANDLE;
   uint32_t command_buffer_count_ = 0;
+  bool use_protected_memory_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(VulkanCommandPool);
 };

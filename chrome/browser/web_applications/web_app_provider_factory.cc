@@ -5,8 +5,8 @@
 #include "chrome/browser/web_applications/web_app_provider_factory.h"
 
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/web_applications/components/web_app_utils.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
-#include "chrome/browser/web_applications/web_app_utils.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "extensions/browser/extension_system_provider.h"
 #include "extensions/browser/extensions_browser_client.h"
@@ -26,21 +26,23 @@ WebAppProviderFactory* WebAppProviderFactory::GetInstance() {
 }
 
 WebAppProviderFactory::WebAppProviderFactory()
-    : BrowserContextKeyedServiceFactory(
+    : WebAppProviderBaseFactory(
           "WebAppProvider",
           BrowserContextDependencyManager::GetInstance()) {
+  WebAppProviderBaseFactory::SetInstance(this);
   DependsOn(
       extensions::ExtensionsBrowserClient::Get()->GetExtensionSystemFactory());
 }
 
-WebAppProviderFactory::~WebAppProviderFactory() = default;
+WebAppProviderFactory::~WebAppProviderFactory() {
+  WebAppProviderBaseFactory::SetInstance(nullptr);
+}
 
 KeyedService* WebAppProviderFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
   WebAppProvider* provider = new WebAppProvider(profile);
-  provider->Init();
-  provider->StartRegistry();
+  provider->Start();
   return provider;
 }
 

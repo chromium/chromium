@@ -314,12 +314,11 @@ MockEGLInterface::Mock_eglGetNextFrameIdANDROID(EGLDisplay dpy,
 }
 
 EGLDisplay GL_BINDING_CALL
-MockEGLInterface::Mock_eglGetPlatformDisplayEXT(EGLenum platform,
-                                                void* native_display,
-                                                const EGLint* attrib_list) {
-  MakeEglMockFunctionUnique("eglGetPlatformDisplayEXT");
-  return interface_->GetPlatformDisplayEXT(platform, native_display,
-                                           attrib_list);
+MockEGLInterface::Mock_eglGetPlatformDisplay(EGLenum platform,
+                                             void* native_display,
+                                             const EGLAttrib* attrib_list) {
+  MakeEglMockFunctionUnique("eglGetPlatformDisplay");
+  return interface_->GetPlatformDisplay(platform, native_display, attrib_list);
 }
 
 __eglMustCastToProperFunctionPointerType GL_BINDING_CALL
@@ -412,6 +411,14 @@ MockEGLInterface::Mock_eglQueryDebugKHR(EGLint attribute, EGLAttrib* value) {
 }
 
 EGLBoolean GL_BINDING_CALL
+MockEGLInterface::Mock_eglQueryDisplayAttribANGLE(EGLDisplay dpy,
+                                                  EGLint attribute,
+                                                  EGLAttrib* value) {
+  MakeEglMockFunctionUnique("eglQueryDisplayAttribANGLE");
+  return interface_->QueryDisplayAttribANGLE(dpy, attribute, value);
+}
+
+EGLBoolean GL_BINDING_CALL
 MockEGLInterface::Mock_eglQueryStreamKHR(EGLDisplay dpy,
                                          EGLStreamKHR stream,
                                          EGLenum attribute,
@@ -433,6 +440,14 @@ const char* GL_BINDING_CALL
 MockEGLInterface::Mock_eglQueryString(EGLDisplay dpy, EGLint name) {
   MakeEglMockFunctionUnique("eglQueryString");
   return interface_->QueryString(dpy, name);
+}
+
+const char* GL_BINDING_CALL
+MockEGLInterface::Mock_eglQueryStringiANGLE(EGLDisplay dpy,
+                                            EGLint name,
+                                            EGLint index) {
+  MakeEglMockFunctionUnique("eglQueryStringiANGLE");
+  return interface_->QueryStringiANGLE(dpy, name, index);
 }
 
 EGLBoolean GL_BINDING_CALL
@@ -673,9 +688,8 @@ MockEGLInterface::GetGLProcAddress(const char* name) {
   if (strcmp(name, "eglGetNextFrameIdANDROID") == 0)
     return reinterpret_cast<GLFunctionPointerType>(
         Mock_eglGetNextFrameIdANDROID);
-  if (strcmp(name, "eglGetPlatformDisplayEXT") == 0)
-    return reinterpret_cast<GLFunctionPointerType>(
-        Mock_eglGetPlatformDisplayEXT);
+  if (strcmp(name, "eglGetPlatformDisplay") == 0)
+    return reinterpret_cast<GLFunctionPointerType>(Mock_eglGetPlatformDisplay);
   if (strcmp(name, "eglGetProcAddress") == 0)
     return reinterpret_cast<GLFunctionPointerType>(Mock_eglGetProcAddress);
   if (strcmp(name, "eglGetSyncAttribKHR") == 0)
@@ -700,12 +714,17 @@ MockEGLInterface::GetGLProcAddress(const char* name) {
     return reinterpret_cast<GLFunctionPointerType>(Mock_eglQueryContext);
   if (strcmp(name, "eglQueryDebugKHR") == 0)
     return reinterpret_cast<GLFunctionPointerType>(Mock_eglQueryDebugKHR);
+  if (strcmp(name, "eglQueryDisplayAttribANGLE") == 0)
+    return reinterpret_cast<GLFunctionPointerType>(
+        Mock_eglQueryDisplayAttribANGLE);
   if (strcmp(name, "eglQueryStreamKHR") == 0)
     return reinterpret_cast<GLFunctionPointerType>(Mock_eglQueryStreamKHR);
   if (strcmp(name, "eglQueryStreamu64KHR") == 0)
     return reinterpret_cast<GLFunctionPointerType>(Mock_eglQueryStreamu64KHR);
   if (strcmp(name, "eglQueryString") == 0)
     return reinterpret_cast<GLFunctionPointerType>(Mock_eglQueryString);
+  if (strcmp(name, "eglQueryStringiANGLE") == 0)
+    return reinterpret_cast<GLFunctionPointerType>(Mock_eglQueryStringiANGLE);
   if (strcmp(name, "eglQuerySurface") == 0)
     return reinterpret_cast<GLFunctionPointerType>(Mock_eglQuerySurface);
   if (strcmp(name, "eglQuerySurfacePointerANGLE") == 0)

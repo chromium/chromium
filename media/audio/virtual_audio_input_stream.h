@@ -34,7 +34,7 @@ class LoopbackAudioConverter;
 class MEDIA_EXPORT VirtualAudioInputStream : public AudioInputStream {
  public:
   // Callback invoked just after VirtualAudioInputStream is closed.
-  typedef base::Callback<void(VirtualAudioInputStream* vais)>
+  typedef base::OnceCallback<void(VirtualAudioInputStream* vais)>
       AfterCloseCallback;
 
   // Construct a target for audio loopback which mixes multiple data streams
@@ -44,7 +44,7 @@ class MEDIA_EXPORT VirtualAudioInputStream : public AudioInputStream {
   VirtualAudioInputStream(
       const AudioParameters& params,
       const scoped_refptr<base::SingleThreadTaskRunner>& worker_task_runner,
-      const AfterCloseCallback& after_close_cb);
+      AfterCloseCallback after_close_cb);
 
   ~VirtualAudioInputStream() override;
 
@@ -80,7 +80,7 @@ class MEDIA_EXPORT VirtualAudioInputStream : public AudioInputStream {
   // Pulls audio data from all attached VirtualAudioOutputStreams, mixes and
   // converts the streams into one, and pushes the result to |callback_|.
   // Invoked on the worker thread.
-  void PumpAudio();
+  void PumpAudio(base::TimeTicks ideal_time, base::TimeTicks now);
 
   const scoped_refptr<base::SingleThreadTaskRunner> worker_task_runner_;
 

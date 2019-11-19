@@ -1,0 +1,4 @@
+FAIL - "color" property for "box" element at 0s expected: rgb(0, 0, 0) but saw: rgb(255, 0, 255)
+FAIL - "color" property for "box" element at 0.5s expected: rgb(0, 0, 0) but saw: rgb(255, 0, 255)
+FAIL - "color" property for "box" element at 1s expected: rgb(0, 0, 0) but saw: rgb(255, 0, 255)
+

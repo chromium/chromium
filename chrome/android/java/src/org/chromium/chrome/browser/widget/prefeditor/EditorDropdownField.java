@@ -6,7 +6,8 @@ package org.chromium.chrome.browser.widget.prefeditor;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.support.annotation.Nullable;
+import android.graphics.drawable.Drawable;
+import android.support.graphics.drawable.VectorDrawableCompat;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -19,6 +20,9 @@ import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import androidx.annotation.Nullable;
+
+import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.preferences.autofill.AutofillProfileBridge.DropdownKeyValue;
 import org.chromium.ui.KeyboardVisibilityDelegate;
@@ -30,10 +34,13 @@ import java.util.List;
  * Helper class for creating a dropdown view with a label.
  */
 class EditorDropdownField implements EditorFieldView {
+    private final Context mContext;
     private final EditorFieldModel mFieldModel;
     private final View mLayout;
     private final TextView mLabel;
     private final Spinner mDropdown;
+    private final View mUnderline;
+    private final TextView mErrorLabel;
     private int mSelectedIndex;
     private ArrayAdapter<CharSequence> mAdapter;
     @Nullable
@@ -51,6 +58,7 @@ class EditorDropdownField implements EditorFieldView {
     public EditorDropdownField(Context context, ViewGroup root, final EditorFieldModel fieldModel,
             final Runnable changedCallback, @Nullable EditorObserverForTest observer) {
         assert fieldModel.getInputTypeHint() == EditorFieldModel.INPUT_TYPE_HINT_DROPDOWN;
+        mContext = context;
         mFieldModel = fieldModel;
         mObserverForTest = observer;
 
@@ -61,6 +69,10 @@ class EditorDropdownField implements EditorFieldView {
         mLabel.setText(mFieldModel.isRequired()
                         ? mFieldModel.getLabel() + EditorDialog.REQUIRED_FIELD_INDICATOR
                         : mFieldModel.getLabel());
+
+        mUnderline = mLayout.findViewById(R.id.spinner_underline);
+
+        mErrorLabel = mLayout.findViewById(R.id.spinner_error);
 
         final List<DropdownKeyValue> dropdownKeyValues = mFieldModel.getDropdownKeyValues();
         final List<CharSequence> dropdownValues = getDropdownValues(dropdownKeyValues);
@@ -117,6 +129,8 @@ class EditorDropdownField implements EditorFieldView {
                     }
                     mSelectedIndex = position;
                     mFieldModel.setDropdownKey(key, changedCallback);
+                    mFieldModel.setCustomErrorMessage(null);
+                    updateDisplayedError(false);
                 }
                 if (mObserverForTest != null) {
                     mObserverForTest.onEditorTextUpdate();
@@ -166,7 +180,23 @@ class EditorDropdownField implements EditorFieldView {
     public void updateDisplayedError(boolean showError) {
         View view = mDropdown.getSelectedView();
         if (view != null && view instanceof TextView) {
-            ((TextView) view).setError(showError ? mFieldModel.getErrorMessage() : null);
+            if (showError) {
+                Drawable drawable = VectorDrawableCompat.create(
+                        mContext.getResources(), R.drawable.ic_error, mContext.getTheme());
+                drawable.setBounds(
+                        0, 0, drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight());
+                ((TextView) view).setError(mFieldModel.getErrorMessage(), drawable);
+                mUnderline.setBackgroundColor(ApiCompatibilityUtils.getColor(
+                        mContext.getResources(), R.color.error_text_color));
+                mErrorLabel.setText(mFieldModel.getErrorMessage());
+                mErrorLabel.setVisibility(View.VISIBLE);
+            } else {
+                ((TextView) view).setError(null);
+                mUnderline.setBackgroundColor(ApiCompatibilityUtils.getColor(
+                        mContext.getResources(), R.color.modern_grey_600));
+                mErrorLabel.setText(null);
+                mErrorLabel.setVisibility(View.GONE);
+            }
         }
     }
 

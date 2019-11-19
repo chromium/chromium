@@ -1,10 +1,12 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="cs">
-<translation id="102360288709523007">Pomozte Chromium zlepšovat – posílejte Googlu statistiky využití a zprávy o selhání.</translation>
+<translation id="102360288709523007">Pomozte Chromium zlepšovat – posílejte Googlu statistiky o využívání a zprávy o selhání.</translation>
 <translation id="1185134272377778587">O prohlížeči Chromium</translation>
 <translation id="1289966288285062467">Upozornění ve věci ochrany soukromí v prohlížeči Chromium</translation>
 <translation id="1472013873724362412">Váš účet v prohlížeči Chromium nefunguje. Kontaktujte administrátora domény nebo se přihlaste pomocí běžného účtu Google.</translation>
+<translation id="1507010443238049608">Pomozte zlepšit funkce a výkon prohlížeče Chromium</translation>
+<translation id="1617663976202781617">Data ze synchronizace prohlížeče Chromium</translation>
 <translation id="1736662517232558588">Data prohlížeče Chromium byla vymazána</translation>
 <translation id="1838412507805038478">Prohlížeč Chromium ověřil, že certifikát tohoto webu byl vydán vydavatelem <ph name="ISSUER" />.</translation>
 <translation id="1843424232666537147">Chromium obsahuje funkce, které pomáhají spravovat přenosy dat z internetu a umožňují zrychlit načítání webových stránek. <ph name="BEGIN_LINK" />Další informace<ph name="END_LINK" /></translation>
@@ -12,24 +14,16 @@
 <translation id="2168108852149185974">Některé doplňky způsobují selhání prohlížeče Chromium. Prosím odinstalujte:</translation>
 <translation id="2178608107313874732">Chromium teď nemůže použít fotoaparát</translation>
 <translation id="2195025571279539885">Chcete, aby prohlížeč Chromium příště pro stránky v jazyce <ph name="LANGUAGE_NAME" /> z tohoto webu nabízel překlad?</translation>
-<translation id="2517624234762908348">Synchronizovat data prohlížeče Chromium</translation>
-<translation id="2647554856022461007">Chromium vám může usnadnit prohlížení pomocí webových služeb. Tyto služby můžete případně zakázat. <ph name="BEGIN_LINK" />Další informace<ph name="END_LINK" /></translation>
+<translation id="2590893390871230428">Synchronizovat data prohlížeče Chromium</translation>
 <translation id="2730884209570016437">Chromium nemůže použít fotoaparát, protože jej právě používá jiná aplikace</translation>
 <translation id="2915596697727466327">Chromium pomocí funkce Face ID ověřuje přístup k heslům.</translation>
 <translation id="3256316712990552818">Zkopírováno do prohlížeče Chromium</translation>
-<translation id="3413120535237193088">Chcete-li záložky synchronizovat do všech zařízení, přihlaste se do prohlížeče Chromium.</translation>
-<translation id="3473048256428424907">Zapněte čtečku QR kódů prohlížeče Chromium</translation>
-<translation id="3605252743693911722">Chcete-li mít své záložky, hesla a další obsah na všech zařízeních, přihlaste se do prohlížeče Chromium.</translation>
 <translation id="3805899903892079518">Chromium nemá přístup k vašim fotkám nebo videím. Povolte přístup v systému iOS v Nastavení &gt; Soukromí &gt; Fotky.</translation>
-<translation id="4024541897090868497">Chcete-li karty synchronizovat do všech svých zařízení, přihlaste se do prohlížeče Chromium.</translation>
-<translation id="4157467675761413638">Tip pro Chromium. Další možnosti karet zobrazíte podržením tlačítka Zobrazit karty, které najdete v dolní nebo horní části obrazovky.</translation>
-<translation id="4241912885070669028">Odhlašujete se z účtu, který je spravován doménou <ph name="SIGNOUT_MANAGED_DOMAIN" />. Touto akcí svá data prohlížeče Chromium smažete z tohoto zařízení, ve vašem účtu Google však zůstanou.</translation>
-<translation id="4272892696084633551">Pomoci s vylepšováním funkcí a výkonu prohlížeče Chromium</translation>
 <translation id="4555020257205549924">Pokud je tato funkce zapnutá, bude Chromium nabízet překlad stránek v jiných jazycích pomocí Překladače Google.<ph name="BEGIN_LINK" />Další informace<ph name="END_LINK" /></translation>
+<translation id="4681781466797808448">Zapněte čtečku prohlížeče Chromium</translation>
 <translation id="4787850887676698916">Zde se objeví karty, které jste otevřeli v prohlížeči Chromium ve svých ostatních zařízeních.</translation>
-<translation id="495292094137889840">Začněte používat čtečku QR kódů prohlížeče Chromium</translation>
 <translation id="4999538639245140991">Protože se odhlašujete z účtu spravovaného doménou <ph name="SIGNOUT_MANAGED_DOMAIN" />, vaše data prohlížeče Chromium z tohoto zařízení budou smazána. V účtu Google vám zůstanou.</translation>
-<translation id="5231355151045086930">Odhlášení z prohlížeče Chromium</translation>
+<translation id="5573014823074921752">Tip pro Chromium. Další možnosti karet zobrazíte přidržením tlačítka Zobrazit karty, které najdete v dolní nebo horní části obrazovky.</translation>
 <translation id="5862307444128926510">Vítejte v prohlížeči Chromium</translation>
 <translation id="5945387852661427312">Přihlašujete se pomocí účtu spravovaného doménou <ph name="DOMAIN" /> a poskytujete jeho správci kontrolu nad svými daty prohlížeče Chromium. Vaše data budou trvale přidružena k tomuto účtu. Odhlášením z prohlížeče Chromium svá data smažete z tohoto zařízení, ve vašem účtu Google však uložena zůstanou.</translation>
 <translation id="6068866989048414399">Smluvní podmínky prohlížeče Chromium</translation>
@@ -46,11 +40,13 @@
 <translation id="7674213385180944843">Otevřete Nastavení &gt; Soukromí &gt; Kamera &gt; Chromium a zapněte fotoaparát.</translation>
 <translation id="7746854981345936341">Tip pro Chromium. Některá tlačítka, například Zpět, Vpřed a Hledat, jsou teď v dolní části obrazovky.</translation>
 <translation id="786327964234957808">Přepínáte účet pro synchronizaci z <ph name="USER_EMAIL1" /> na <ph name="USER_EMAIL2" />. Vaše existující data prohlížeče Chromium jsou spravována doménou <ph name="DOMAIN" />. Touto akcí svá data smažete z tohoto zařízení, v účtu <ph name="USER_EMAIL1" /> však vaše data zůstanou.</translation>
+<translation id="7890287942691234100">Začněte používat skener prohlížeče Chromium</translation>
 <translation id="8073677936375100957">Vymazat z tohoto zařízení data prohlížeče Chromium?</translation>
 <translation id="8175055321229419309">Tip: <ph name="BEGIN_LINK" />Přesuňte si prohlížeč Chromium do doku<ph name="END_LINK" /></translation>
 <translation id="8252885722420466166">Služby Google mohou v prohlížeči Chromium díky údajům o poloze fungovat lépe.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> Autoři prohlížeče Chromium. Všechna práva vyhrazena.</translation>
 <translation id="8809780021347235332">Chcete-li uložit obrázky, klepněte na Nastavení a umožněte prohlížeči Chromium používat vaše fotky.</translation>
 <translation id="9022552996538154597">Přihlásit se do prohlížeče Chromium</translation>
+<translation id="9217078088703304241"><ph name="BEGIN_LINK" />Přečtěte si aktualizované smluvní podmínky prohlížeče Chromium.<ph name="END_LINK" /></translation>
 <translation id="985602178874221306">Autoři prohlížeče Chromium</translation>
 </translationbundle>

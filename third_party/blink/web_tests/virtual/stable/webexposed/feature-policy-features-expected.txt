@@ -2,9 +2,9 @@ This test documents Blink's web-exposed policy-controlled features.
 All changes to this list should go through Blink's feature review process: http://www.chromium.org/blink#new-features
 
 accelerometer
-ambient-light-sensor
 autoplay
 camera
+document-domain
 encrypted-media
 fullscreen
 geolocation
@@ -14,8 +14,7 @@ microphone
 midi
 payment
 picture-in-picture
-speaker
 sync-xhr
 usb
-vr
+xr-spatial-tracking
 

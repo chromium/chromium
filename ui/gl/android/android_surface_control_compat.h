@@ -35,6 +35,14 @@ class GL_EXPORT SurfaceControl {
   // Returns true if overlays with |color_space| are supported by the platform.
   static bool SupportsColorSpace(const gfx::ColorSpace& color_space);
 
+  // Returns the usage flags required for using an AHardwareBuffer with the
+  // SurfaceControl API, if it is supported.
+  static uint64_t RequiredUsage();
+
+  // Enables usage bits requires for getting UBWC on Qualcomm devices. Must be
+  // called early at process startup, before any buffer allocations are made.
+  static void EnableQualcommUBWC();
+
   class GL_EXPORT Surface : public base::RefCounted<Surface> {
    public:
     Surface();
@@ -78,6 +86,7 @@ class GL_EXPORT SurfaceControl {
     // display.
     base::ScopedFD present_fence;
     std::vector<SurfaceStats> surface_stats;
+    base::TimeTicks latch_time;
 
    private:
     DISALLOW_COPY_AND_ASSIGN(TransactionStats);
@@ -87,6 +96,9 @@ class GL_EXPORT SurfaceControl {
    public:
     Transaction();
     ~Transaction();
+
+    Transaction(Transaction&& other);
+    Transaction& operator=(Transaction&& other);
 
     void SetVisibility(const Surface& surface, bool show);
     void SetZOrder(const Surface& surface, int32_t z);
@@ -114,7 +126,10 @@ class GL_EXPORT SurfaceControl {
     void Apply();
 
    private:
+    int id_;
     ASurfaceTransaction* transaction_;
+
+    DISALLOW_COPY_AND_ASSIGN(Transaction);
   };
 };
 }  // namespace gl

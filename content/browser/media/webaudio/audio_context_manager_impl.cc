@@ -4,12 +4,13 @@
 
 #include "content/browser/media/webaudio/audio_context_manager_impl.h"
 
+#include <utility>
+
 #include "base/time/default_tick_clock.h"
 #include "content/browser/frame_host/render_frame_host_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
-#include "mojo/public/cpp/bindings/strong_binding.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 
@@ -30,18 +31,18 @@ int64_t GetBucketedTimeInMilliseconds(const base::TimeDelta& time) {
 
 void AudioContextManagerImpl::Create(
     RenderFrameHost* render_frame_host,
-    blink::mojom::AudioContextManagerRequest request) {
+    mojo::PendingReceiver<blink::mojom::AudioContextManager> receiver) {
   DCHECK(render_frame_host);
 
   // The object is bound to the lifetime of |render_frame_host| and the mojo
   // connection. See FrameServiceBase for details.
-  new AudioContextManagerImpl(render_frame_host, std::move(request));
+  new AudioContextManagerImpl(render_frame_host, std::move(receiver));
 }
 
 AudioContextManagerImpl::AudioContextManagerImpl(
     RenderFrameHost* render_frame_host,
-    blink::mojom::AudioContextManagerRequest request)
-    : FrameServiceBase(render_frame_host, std::move(request)),
+    mojo::PendingReceiver<blink::mojom::AudioContextManager> receiver)
+    : FrameServiceBase(render_frame_host, std::move(receiver)),
       render_frame_host_impl_(
           static_cast<RenderFrameHostImpl*>(render_frame_host)),
       clock_(base::DefaultTickClock::GetInstance()) {

@@ -4,6 +4,8 @@
 
 #include "ui/ozone/public/overlay_plane.h"
 
+#include <memory>
+
 namespace ui {
 
 OverlayPlane::OverlayPlane() {}

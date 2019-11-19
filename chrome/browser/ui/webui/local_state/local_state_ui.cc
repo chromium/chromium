@@ -121,7 +121,6 @@ LocalStateUI::LocalStateUI(content::WebUI* web_ui) : WebUIController(web_ui) {
       content::WebUIDataSource::Create(chrome::kChromeUILocalStateHost);
   html_source->SetDefaultResource(IDR_LOCAL_STATE_HTML);
   html_source->AddResourcePath("local_state.js", IDR_LOCAL_STATE_JS);
-  html_source->UseGzip();
   content::WebUIDataSource::Add(Profile::FromWebUI(web_ui), html_source);
   web_ui->AddMessageHandler(std::make_unique<LocalStateUIHandler>());
 }

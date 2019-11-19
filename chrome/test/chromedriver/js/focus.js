@@ -9,9 +9,7 @@ function focus(element) {
   // because this may cause us to lose the current cursor position in the
   // element.
   // Secondly, we focus the target element.
-  // Thirdly, if the target element is newly focused and is a text input, we
-  // set the cursor position at the end.
-  // Fourthly, we check if the new active element is the target element. If not,
+  // Thirdly, we check if the new active element is the target element. If not,
   // we throw an error.
   // Additional notes:
   //   - |document.activeElement| is the currently focused element, or body if
@@ -28,16 +26,6 @@ function focus(element) {
   if (element != prevActiveElement && prevActiveElement)
     prevActiveElement.blur();
   element.focus();
-  if (element != prevActiveElement && element.value &&
-      element.value.length && element.setSelectionRange) {
-    try {
-      element.setSelectionRange(element.value.length, element.value.length);
-    } catch (error) {
-      if (!(error instanceof TypeError) && !(error instanceof DOMException &&
-          error.code == DOMException.INVALID_STATE_ERR))
-        throw error;
-    }
-  }
 
   var activeElement = doc.activeElement;
   // If the element is in a shadow DOM, then as far as the document is

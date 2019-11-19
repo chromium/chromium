@@ -31,7 +31,8 @@
 // https://webaudio.github.io/web-midi-api/#requestMIDIAccess
 
 [
-  ImplementedAs=NavigatorWebMIDI
+  ImplementedAs=NavigatorWebMIDI,
+  SecureContext
 ] partial interface Navigator {
   [CallWith=ScriptState, MeasureAs=RequestMIDIAccess_ObscuredByFootprinting] Promise<MIDIAccess> requestMIDIAccess(optional MIDIOptions options);
 };

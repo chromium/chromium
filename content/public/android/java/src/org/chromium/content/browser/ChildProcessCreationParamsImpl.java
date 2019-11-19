@@ -15,6 +15,10 @@ import org.chromium.base.library_loader.LibraryProcessType;
 public class ChildProcessCreationParamsImpl {
     private static final String EXTRA_LIBRARY_PROCESS_TYPE =
             "org.chromium.content.common.child_service_params.library_process_type";
+    private static final String PRIVILEGED_SERVICES_NAME =
+            "org.chromium.content.app.PrivilegedProcessService";
+    private static final String SANDBOXED_SERVICES_NAME =
+            "org.chromium.content.app.SandboxedProcessService";
 
     // Members should all be immutable to avoid worrying about thread safety.
     private static String sPackageNameForService;
@@ -24,6 +28,8 @@ public class ChildProcessCreationParamsImpl {
     // Use only the explicit WebContents.setImportance signal, and ignore other implicit
     // signals in content.
     private static boolean sIgnoreVisibilityForImportance;
+    private static String sPrivilegedServicesName;
+    private static String sSandboxedServicesName;
 
     private static boolean sInitialized;
 
@@ -32,13 +38,18 @@ public class ChildProcessCreationParamsImpl {
     /** Set params. This should be called once on start up. */
     public static void set(String packageNameForService, boolean isExternalSandboxedService,
             int libraryProcessType, boolean bindToCallerCheck,
-            boolean ignoreVisibilityForImportance) {
+            boolean ignoreVisibilityForImportance, String privilegedServicesName,
+            String sandboxedServicesName) {
         assert !sInitialized;
         sPackageNameForService = packageNameForService;
         sIsSandboxedServiceExternal = isExternalSandboxedService;
         sLibraryProcessType = libraryProcessType;
         sBindToCallerCheck = bindToCallerCheck;
         sIgnoreVisibilityForImportance = ignoreVisibilityForImportance;
+        sPrivilegedServicesName =
+                privilegedServicesName == null ? PRIVILEGED_SERVICES_NAME : privilegedServicesName;
+        sSandboxedServicesName =
+                sandboxedServicesName == null ? SANDBOXED_SERVICES_NAME : sandboxedServicesName;
         sInitialized = true;
     }
 
@@ -65,5 +76,13 @@ public class ChildProcessCreationParamsImpl {
 
     public static int getLibraryProcessType(Bundle extras) {
         return extras.getInt(EXTRA_LIBRARY_PROCESS_TYPE, LibraryProcessType.PROCESS_CHILD);
+    }
+
+    public static String getPrivilegedServicesName() {
+        return sInitialized ? sPrivilegedServicesName : PRIVILEGED_SERVICES_NAME;
+    }
+
+    public static String getSandboxedServicesName() {
+        return sInitialized ? sSandboxedServicesName : SANDBOXED_SERVICES_NAME;
     }
 }

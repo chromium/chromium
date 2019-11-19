@@ -37,6 +37,7 @@ ALIGNMENT_ORDER = [
     'TransformOperations',
     'Vector<CSSPropertyID>',
     'Vector<GridTrackSize>',
+    'Vector<AtomicString>',
     'GridPosition',
     'GapLength',
     'AtomicString',
@@ -47,6 +48,7 @@ ALIGNMENT_ORDER = [
     'Font',
     'FillLayer',
     'NinePieceImage',
+    'IntrinsicLength',
     # Aligns like float
     'StyleOffsetRotation',
     'TransformOrigin',

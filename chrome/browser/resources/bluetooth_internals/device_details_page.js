@@ -9,15 +9,15 @@
  */
 
 cr.define('device_details_page', function() {
-  /** @const */ var Page = cr.ui.pageManager.Page;
-  /** @const */ var Snackbar = snackbar.Snackbar;
-  /** @const */ var SnackbarType = snackbar.SnackbarType;
+  const Page = cr.ui.pageManager.Page;
+  const Snackbar = snackbar.Snackbar;
+  const SnackbarType = snackbar.SnackbarType;
 
   /**
    * Property names that will be displayed in the ObjectFieldSet which contains
    * the DeviceInfo object.
    */
-  var PROPERTY_NAMES = {
+  const PROPERTY_NAMES = {
     name: 'Name',
     address: 'Address',
     isGattConnected: 'GATT Connected',
@@ -46,8 +46,8 @@ cr.define('device_details_page', function() {
       /** @type {?Array<bluetooth.mojom.ServiceInfo>} */
       this.services = null;
 
-      /** @private {?bluetooth.mojom.DeviceProxy} */
-      this.deviceProxy_ = null;
+      /** @private {?bluetooth.mojom.DeviceRemote} */
+      this.device_ = null;
 
       /** @private {!object_fieldset.ObjectFieldSet} */
       this.deviceFieldSet_ = new object_fieldset.ObjectFieldSet();
@@ -81,7 +81,7 @@ cr.define('device_details_page', function() {
 
       this.connectBtn_ = this.pageDiv.querySelector('.disconnect');
       this.connectBtn_.addEventListener('click', function() {
-        this.deviceProxy_ !== null ? this.disconnect() : this.connect();
+        this.device_ !== null ? this.disconnect() : this.connect();
       }.bind(this));
 
       this.redraw();
@@ -97,14 +97,14 @@ cr.define('device_details_page', function() {
           device_collection.ConnectionStatus.CONNECTING);
 
       device_broker.connectToDevice(this.deviceInfo.address)
-          .then(function(deviceProxy) {
-            this.deviceProxy_ = deviceProxy;
+          .then(function(device) {
+            this.device_ = device;
 
             this.updateConnectionStatus_(
                 device_collection.ConnectionStatus.CONNECTED);
 
             // Fetch services asynchronously.
-            return this.deviceProxy_.getServices();
+            return this.device_.getServices();
           }.bind(this))
           .then(function(response) {
             this.services = response.services;
@@ -114,10 +114,10 @@ cr.define('device_details_page', function() {
           }.bind(this))
           .catch(function(error) {
             // If a connection error occurs while fetching the services, the
-            // DeviceProxy reference must be removed.
-            if (this.deviceProxy_) {
-              this.deviceProxy_.disconnect();
-              this.deviceProxy_ = null;
+            // DeviceRemote reference must be removed.
+            if (this.device_) {
+              this.device_.disconnect();
+              this.device_ = null;
             }
 
             Snackbar.show(
@@ -131,19 +131,19 @@ cr.define('device_details_page', function() {
 
     /** Disconnects the page from the Bluetooth device. */
     disconnect() {
-      if (!this.deviceProxy_) {
+      if (!this.device_) {
         return;
       }
 
-      this.deviceProxy_.disconnect();
-      this.deviceProxy_ = null;
+      this.device_.disconnect();
+      this.device_ = null;
       this.updateConnectionStatus_(
           device_collection.ConnectionStatus.DISCONNECTED);
     }
 
     /** Redraws the contents of the page with the current |deviceInfo|. */
     redraw() {
-      var isConnected = this.deviceInfo.isGattConnected;
+      const isConnected = this.deviceInfo.isGattConnected;
 
       // Update status if connection has changed.
       if (isConnected) {
@@ -152,22 +152,22 @@ cr.define('device_details_page', function() {
         this.disconnect();
       }
 
-      var connectedText = isConnected ? 'Connected' : 'Not Connected';
+      const connectedText = isConnected ? 'Connected' : 'Not Connected';
 
-      var rssi = this.deviceInfo.rssi || {};
-      var services = this.services;
+      const rssi = this.deviceInfo.rssi || {};
+      const services = this.services;
 
-      var rssiValue = 'Unknown';
+      let rssiValue = 'Unknown';
       if (rssi.value != null && rssi.value <= 0) {
         rssiValue = rssi.value;
       }
 
-      var serviceCount = 'Unknown';
+      let serviceCount = 'Unknown';
       if (services != null && services.length >= 0) {
         serviceCount = services.length;
       }
 
-      var deviceViewObj = {
+      const deviceViewObj = {
         name: this.deviceInfo.nameForDisplay,
         address: this.deviceInfo.address,
         isGattConnected: connectedText,

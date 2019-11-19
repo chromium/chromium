@@ -1,14 +1,13 @@
 <link rel="import" href="../../html/polymer.html">
 
+<link rel="import" href="../cr_button/cr_button.html">
 <link rel="import" href="../cr_icon_button/cr_icon_button.html">
 <link rel="import" href="../icons.html">
-<link rel="import" href="../paper_button_style_css.html">
 <link rel="import" href="../shared_vars_css.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/paper-button/paper-button.html">
 
 <dom-module id="cr-toolbar-selection-overlay">
   <template>
-    <style include="paper-button-style">
+    <style>
       :host {
         background-color: white;
         border-bottom: 1px solid var(--google-grey-300);
@@ -27,11 +26,13 @@
         visibility: hidden;
       }
 
-      :host-context([dark]) {
-        background-color: var(--google-grey-900);
-        background-image: linear-gradient(rgba(255, 255, 255, .04),
-                                          rgba(255, 255, 255, .04));
-        border-bottom-color: var(--cr-separator-color);
+      @media (prefers-color-scheme: dark) {
+        :host {
+          background-color: var(--google-grey-900);
+          background-image: linear-gradient(rgba(255, 255, 255, .04),
+                                            rgba(255, 255, 255, .04));
+          border-bottom-color: var(--cr-separator-color);
+        }
       }
 
       :host([show]) {
@@ -49,7 +50,7 @@
         padding: 0 var(--selection-overlay-padding, 24px);
       }
 
-      paper-button {
+      cr-button {
         margin-inline-start: 8px;
       }
 
@@ -70,13 +71,11 @@
         <cr-icon-button title="[[cancelLabel]]" iron-icon="cr:clear"
             on-click="onClearSelectionClick_"></cr-icon-button>
         <div id="number-selected">[[selectionLabel_]]</div>
-        <paper-button on-click="onClearSelectionClick_">
-          [[cancelLabel]]
-        </paper-button>
-        <paper-button id="delete" on-click="onDeleteClick_"
+        <cr-button on-click="onClearSelectionClick_">[[cancelLabel]]</cr-button>
+        <cr-button id="delete" on-click="onDeleteClick_"
             disabled="[[deleteDisabled]]">
           [[deleteLabel]]
-        </paper-button>
+        </cr-button>
       </div>
     </template>
   </template>

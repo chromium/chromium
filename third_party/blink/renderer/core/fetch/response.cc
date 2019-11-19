@@ -8,8 +8,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/optional.h"
-#include "services/network/public/mojom/fetch_api.mojom-blink.h"
-#include "third_party/blink/public/platform/modules/service_worker/web_service_worker_response.h"
+#include "third_party/blink/public/mojom/fetch/fetch_api_response.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/dictionary.h"
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
@@ -25,7 +24,7 @@
 #include "third_party/blink/renderer/core/fetch/form_data_bytes_consumer.h"
 #include "third_party/blink/renderer/core/fetch/response_init.h"
 #include "third_party/blink/renderer/core/fileapi/blob.h"
-#include "third_party/blink/renderer/core/frame/use_counter.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/forms/form_data.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer_view.h"
@@ -33,6 +32,7 @@
 #include "third_party/blink/renderer/platform/bindings/exception_messages.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/loader/cors/cors.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_utils.h"
 #include "third_party/blink/renderer/platform/network/encoded_form_data.h"
@@ -45,7 +45,7 @@ namespace blink {
 namespace {
 
 template <typename CorsHeadersContainer>
-FetchResponseData* FilterResponseData(
+FetchResponseData* FilterResponseDataInternal(
     network::mojom::FetchResponseType response_type,
     FetchResponseData* response,
     CorsHeadersContainer& headers) {
@@ -56,7 +56,7 @@ FetchResponseData* FilterResponseData(
     case network::mojom::FetchResponseType::kCors: {
       WebHTTPHeaderSet header_names;
       for (const auto& header : headers)
-        header_names.insert(header.Ascii().data());
+        header_names.insert(header.Ascii());
       return response->CreateCorsFilteredResponse(header_names);
       break;
     }
@@ -80,22 +80,9 @@ FetchResponseData* FilterResponseData(
 FetchResponseData* CreateFetchResponseDataFromFetchAPIResponse(
     ScriptState* script_state,
     mojom::blink::FetchAPIResponse& fetch_api_response) {
-  FetchResponseData* response = nullptr;
-  if (fetch_api_response.status_code > 0)
-    response = FetchResponseData::Create();
-  else
-    response = FetchResponseData::CreateNetworkErrorResponse();
-
-  response->SetResponseSource(fetch_api_response.response_source);
-  response->SetURLList(fetch_api_response.url_list);
-  response->SetStatus(fetch_api_response.status_code);
-  response->SetStatusMessage(WTF::AtomicString(fetch_api_response.status_text));
-  response->SetResponseTime(fetch_api_response.response_time);
-  response->SetCacheStorageCacheName(
-      fetch_api_response.cache_storage_cache_name);
-
-  for (const auto& header : fetch_api_response.headers)
-    response->HeaderList()->Append(header.key, header.value);
+  FetchResponseData* response =
+      Response::CreateUnfilteredFetchResponseDataWithoutBody(
+          script_state, fetch_api_response);
 
   if (fetch_api_response.blob) {
     response->ReplaceBodyStreamBuffer(MakeGarbageCollected<BodyStreamBuffer>(
@@ -106,8 +93,9 @@ FetchResponseData* CreateFetchResponseDataFromFetchAPIResponse(
   }
 
   // Filter the response according to |fetch_api_response|'s ResponseType.
-  response = FilterResponseData(fetch_api_response.response_type, response,
-                                fetch_api_response.cors_exposed_header_names);
+  response =
+      FilterResponseDataInternal(fetch_api_response.response_type, response,
+                                 fetch_api_response.cors_exposed_header_names);
 
   return response;
 }
@@ -310,7 +298,7 @@ Response* Response::Create(ScriptState* script_state,
 
   // "9. Set |r|'s MIME type to the result of extracting a MIME type
   // from |r|'s response's header list."
-  r->response_->SetMIMEType(r->response_->HeaderList()->ExtractMIMEType());
+  r->response_->SetMimeType(r->response_->HeaderList()->ExtractMIMEType());
 
   // "10. Set |r|'s response’s HTTPS state to current settings object's"
   // HTTPS state."
@@ -364,6 +352,45 @@ Response* Response::redirect(ScriptState* script_state,
   r->response_->HeaderList()->Set("Location", parsed_url);
 
   return r;
+}
+
+FetchResponseData* Response::CreateUnfilteredFetchResponseDataWithoutBody(
+    ScriptState* script_state,
+    mojom::blink::FetchAPIResponse& fetch_api_response) {
+  FetchResponseData* response = nullptr;
+  if (fetch_api_response.status_code > 0)
+    response = FetchResponseData::Create();
+  else
+    response = FetchResponseData::CreateNetworkErrorResponse();
+
+  response->SetResponseSource(fetch_api_response.response_source);
+  response->SetURLList(fetch_api_response.url_list);
+  response->SetStatus(fetch_api_response.status_code);
+  response->SetStatusMessage(WTF::AtomicString(fetch_api_response.status_text));
+  response->SetResponseTime(fetch_api_response.response_time);
+  response->SetCacheStorageCacheName(
+      fetch_api_response.cache_storage_cache_name);
+  response->SetSideDataBlob(fetch_api_response.side_data_blob);
+
+  for (const auto& header : fetch_api_response.headers)
+    response->HeaderList()->Append(header.key, header.value);
+
+  // TODO(wanderview): This sets the mime type of the Response based on the
+  // current headers.  This should be correct for most cases, but technically
+  // the mime type should really be frozen at the initial Response
+  // construction.  We should plumb the value through the cache_storage
+  // persistence layer and include the explicit mime type in FetchAPIResponse
+  // to set here. See: crbug.com/938939
+  response->SetMimeType(response->HeaderList()->ExtractMIMEType());
+
+  return response;
+}
+
+FetchResponseData* Response::FilterResponseData(
+    network::mojom::FetchResponseType response_type,
+    FetchResponseData* response,
+    WTF::Vector<WTF::String>& headers) {
+  return FilterResponseDataInternal(response_type, response, headers);
 }
 
 String Response::type() const {
@@ -456,13 +483,9 @@ bool Response::HasPendingActivity() const {
   return Body::HasPendingActivity();
 }
 
-void Response::PopulateWebServiceWorkerResponse(
-    WebServiceWorkerResponse& response) {
-  response_->PopulateWebServiceWorkerResponse(response);
-}
-
-mojom::blink::FetchAPIResponsePtr Response::PopulateFetchAPIResponse() {
-  return response_->PopulateFetchAPIResponse();
+mojom::blink::FetchAPIResponsePtr Response::PopulateFetchAPIResponse(
+    const KURL& request_url) {
+  return response_->PopulateFetchAPIResponse(request_url);
 }
 
 Response::Response(ExecutionContext* context)
@@ -510,6 +533,10 @@ String Response::InternalMIMEType() const {
 
 const Vector<KURL>& Response::InternalURLList() const {
   return response_->InternalURLList();
+}
+
+FetchHeaderList* Response::InternalHeaderList() const {
+  return response_->InternalHeaderList();
 }
 
 void Response::Trace(blink::Visitor* visitor) {

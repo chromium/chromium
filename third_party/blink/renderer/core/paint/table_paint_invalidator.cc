@@ -44,7 +44,7 @@ void TablePaintInvalidator::InvalidatePaint() {
          child = child->NextSibling()) {
       if (!child->IsTableSection())
         continue;
-      LayoutTableSection* section = ToLayoutTableSection(child);
+      LayoutTableSection* section = To<LayoutTableSection>(child);
       section->EnsureIsReadyForPaintInvalidation();
       ObjectPaintInvalidator(*section)
           .SlowSetPaintingLayerNeedsRepaintAndInvalidateDisplayItemClient(

@@ -4,18 +4,9 @@
 
 #include "chrome/browser/ui/webui/chromeos/login/discover/discover_handler.h"
 
-namespace {
-
-const char kDiscoverJsPrefix[] = "discover.";
-
-}  // namespace
-
 namespace chromeos {
 
-DiscoverHandler::DiscoverHandler(const std::string& screen_name,
-                                 JSCallsContainer* js_calls_container)
-    : BaseWebUIHandler(js_calls_container) {
-  set_call_js_prefix(kDiscoverJsPrefix + screen_name);
-}
+DiscoverHandler::DiscoverHandler(JSCallsContainer* js_calls_container)
+    : BaseWebUIHandler(js_calls_container) {}
 
 }  // namespace chromeos

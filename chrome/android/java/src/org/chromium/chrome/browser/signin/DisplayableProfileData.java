@@ -5,7 +5,8 @@
 package org.chromium.chrome.browser.signin;
 
 import android.graphics.drawable.Drawable;
-import android.support.annotation.Nullable;
+
+import androidx.annotation.Nullable;
 
 /**
  * Immutable holder for displayable profile data.
@@ -62,5 +63,15 @@ public class DisplayableProfileData {
             return mAccountName;
         }
         return mFullName;
+    }
+
+    /**
+     * Returns the given name of the user if it is available or the full name or email otherwise.
+     */
+    public String getGivenNameOrFullNameOrEmail() {
+        if (mGivenName != null) {
+            return mGivenName;
+        }
+        return getFullNameOrEmail();
     }
 }

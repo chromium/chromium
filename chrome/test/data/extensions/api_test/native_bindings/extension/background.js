@@ -127,7 +127,7 @@ var tests = [
       // Snag this opportunity to test bindings properties.
       chrome.test.assertTrue(!!chrome.tabs.TAB_ID_NONE);
       chrome.test.assertTrue(tab.id != chrome.tabs.TAB_ID_NONE);
-      chrome.test.assertEq(new URL(url).host, new URL(tab.url).host);
+      chrome.test.assertEq(new URL(url).host, new URL(tab.pendingUrl).host);
       var code = 'document.title = "new title";';
       chrome.tabs.executeScript(tab.id, {code: code}, function(results) {
         chrome.test.assertTrue(!!results, 'results');

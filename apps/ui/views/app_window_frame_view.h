@@ -96,19 +96,19 @@ class AppWindowFrameView : public views::NonClientFrameView,
   bool draw_frame_;
   SkColor active_frame_color_;
   SkColor inactive_frame_color_;
-  views::ImageButton* close_button_;
-  views::ImageButton* maximize_button_;
-  views::ImageButton* restore_button_;
-  views::ImageButton* minimize_button_;
+  views::ImageButton* close_button_ = nullptr;
+  views::ImageButton* maximize_button_ = nullptr;
+  views::ImageButton* restore_button_ = nullptr;
+  views::ImageButton* minimize_button_ = nullptr;
 
   // Allow resize for clicks this many pixels inside the bounds.
-  int resize_inside_bounds_size_;
+  int resize_inside_bounds_size_ = 5;
 
   // Allow resize for clicks  this many pixels outside the bounds.
-  int resize_outside_bounds_size_;
+  int resize_outside_bounds_size_ = 0;
 
   // Size in pixels of the lower-right corner resize handle.
-  int resize_area_corner_size_;
+  int resize_area_corner_size_ = 16;
 
   DISALLOW_COPY_AND_ASSIGN(AppWindowFrameView);
 };

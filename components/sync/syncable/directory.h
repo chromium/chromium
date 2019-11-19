@@ -26,7 +26,6 @@
 #include "components/sync/syncable/entry_kernel.h"
 #include "components/sync/syncable/metahandle_set.h"
 #include "components/sync/syncable/parent_child_index.h"
-#include "components/sync/syncable/syncable_delete_journal.h"
 
 namespace base {
 namespace trace_event {
@@ -99,30 +98,33 @@ class Directory {
     size_t EstimateMemoryUsage() const;
 
     // Last sync timestamp fetched from the server.
-    sync_pb::DataTypeProgressMarker download_progress[MODEL_TYPE_COUNT];
+    sync_pb::DataTypeProgressMarker download_progress[ModelType::NUM_ENTRIES];
     // Sync-side transaction version per data type. Monotonically incremented
     // when updating native model. A copy is also saved in native model.
     // Later out-of-sync models can be detected and fixed by comparing
     // transaction versions of sync model and native model.
     // TODO(hatiaol): implement detection and fixing of out-of-sync models.
     //                Bug 154858.
-    int64_t transaction_version[MODEL_TYPE_COUNT];
+    int64_t transaction_version[ModelType::NUM_ENTRIES];
     // The store birthday we were given by the server. Contents are opaque to
-    // the client.
-    std::string store_birthday;
+    // the client. As of M76, this is no longer an authoritative value.
+    std::string legacy_store_birthday;
     // The serialized bag of chips we were given by the server. Contents are
     // opaque to the client. This is the serialization of a message of type
-    // ChipBag defined in sync.proto. It can contains null characters.
-    std::string bag_of_chips;
+    // ChipBag defined in sync.proto. It can contains null characters. As of
+    // M76, this is no longer an authoritative value.
+    std::string legacy_bag_of_chips;
     // The per-datatype context.
-    sync_pb::DataTypeContext datatype_context[MODEL_TYPE_COUNT];
+    sync_pb::DataTypeContext datatype_context[ModelType::NUM_ENTRIES];
   };
 
   // What the Directory needs on initialization to create itself and its Kernel.
   // Filled by DirectoryBackingStore::Load.
   struct KernelLoadInfo {
     PersistedKernelInfo kernel_info;
-    std::string cache_guid;  // Created on first initialization, never changes.
+    // Created on first initialization, never changes. As of M76, this is no
+    // longer an authoritative value.
+    std::string legacy_cache_guid;
     int64_t max_metahandle;  // Computed (using sql MAX aggregate) on init.
     KernelLoadInfo() : max_metahandle(0) {}
   };
@@ -141,8 +143,6 @@ class Directory {
     PersistedKernelInfo kernel_info;
     OwnedEntryKernelSet dirty_metas;
     MetahandleSet metahandles_to_purge;
-    OwnedEntryKernelSet delete_journals;
-    MetahandleSet delete_journals_to_purge;
   };
 
   struct Kernel {
@@ -197,7 +197,7 @@ class Directory {
 
     // 3 in-memory indices on bits used extremely frequently by the syncer.
     // |unapplied_update_metahandles| is keyed by the server model type.
-    MetahandleSet unapplied_update_metahandles[MODEL_TYPE_COUNT];
+    MetahandleSet unapplied_update_metahandles[ModelType::NUM_ENTRIES];
     MetahandleSet unsynced_metahandles;
     // Contains metahandles that are most likely dirty (though not
     // necessarily).  Dirtyness is confirmed in TakeSnapshotForSaveChanges().
@@ -217,8 +217,9 @@ class Directory {
     PersistedKernelInfo persisted_info;
 
     // A unique identifier for this account's cache db, used to generate
-    // unique server IDs. No need to lock, only written at init time.
-    const std::string cache_guid;
+    // unique server IDs. No need to lock, only written at init time. As of M76,
+    // this is no longer an authoritative value.
+    std::string legacy_cache_guid;
 
     // It doesn't make sense for two threads to run SaveChanges at the same
     // time; this mutex protects that activity.
@@ -241,8 +242,7 @@ class Directory {
       std::unique_ptr<DirectoryBackingStore> store,
       const WeakHandle<UnrecoverableErrorHandler>& unrecoverable_error_handler,
       const base::Closure& report_unrecoverable_error_function,
-      NigoriHandler* nigori_handler,
-      Cryptographer* cryptographer);
+      NigoriHandler* nigori_handler);
   virtual ~Directory();
 
   // Does not take ownership of |delegate|, which must not be null.
@@ -305,26 +305,32 @@ class Directory {
   // This applies only to types with implicitly created root folders.
   void MarkInitialSyncEndedForType(BaseWriteTransaction* trans, ModelType type);
 
-  // (Account) Store birthday is opaque to the client, so we keep it in the
-  // format it is in the proto buffer in case we switch to a binary birthday
-  // later.
-  std::string store_birthday() const;
-  void set_store_birthday(const std::string& store_birthday);
+  // Legacy store birthday, exposed for UMA purposes and migration from
+  // directory to prefs.
+  std::string legacy_store_birthday() const;
+  void set_legacy_store_birthday(const std::string& store_birthday);
 
   // (Account) Bag of chip is an opaque state used by the server to track the
   // client.
-  std::string bag_of_chips() const;
-  void set_bag_of_chips(const std::string& bag_of_chips);
+  void set_legacy_bag_of_chips(const std::string& bag_of_chips);
 
-  // Unique to each account / client pair.
-  std::string cache_guid() const;
+  // Authoritative cache GUID: unique to each account / client pair.
+  // TODO(crbug.com/923285): Move authoritative cache GUID elsewhere, since its
+  // lifetime here is now complex and can be easily confused with the legacy
+  // cache GUID.
+  const std::string& cache_guid() const;
+  void set_cache_guid(const std::string& cache_guid);
+
+  // Legacy cache GUID (non-authoritative) as historically persisted on disk,
+  // exposed for UMA purposes and migration from directory to prefs.
+  std::string legacy_cache_guid() const;
 
   // Returns a pointer to our Nigori node handler.
   NigoriHandler* GetNigoriHandler();
 
   // Returns a pointer to our cryptographer. Does not transfer ownership.
   // Not thread safe, so should only be accessed while holding a transaction.
-  Cryptographer* GetCryptographer(const BaseTransaction* trans);
+  const Cryptographer* GetCryptographer(const BaseTransaction* trans);
 
   // Called to immediately report an unrecoverable error (but don't
   // propagate it up).
@@ -335,8 +341,6 @@ class Directory {
   void OnUnrecoverableError(const BaseTransaction* trans,
                             const base::Location& location,
                             const std::string& message);
-
-  DeleteJournal* delete_journal();
 
   // Returns the child meta handles (even those for deleted/unlinked
   // nodes) for given parent id.  Clears |result| if there are no
@@ -499,7 +503,6 @@ class Directory {
  private:
   friend class SyncableDirectoryTest;
   friend class syncer::TestUserShare;
-  FRIEND_TEST_ALL_PREFIXES(SyncableDirectoryTest, ManageDeleteJournals);
   FRIEND_TEST_ALL_PREFIXES(SyncableDirectoryTest,
                            TakeSnapshotGetsAllDirtyHandlesTest);
   FRIEND_TEST_ALL_PREFIXES(SyncableDirectoryTest,
@@ -577,10 +580,7 @@ class Directory {
 
   // Helper methods used by PurgeDisabledTypes.
   void UnapplyEntry(EntryKernel* entry);
-  void DeleteEntry(const ScopedKernelLock& lock,
-                   bool save_to_journal,
-                   EntryKernel* entry,
-                   OwnedEntryKernelSet* entries_to_journal);
+  void DeleteEntry(const ScopedKernelLock& lock, EntryKernel* entry);
 
   // A private version of the public GetMetaHandlesOfType for when you already
   // have a ScopedKernelLock.
@@ -603,6 +603,8 @@ class Directory {
   // error on it.
   bool unrecoverable_error_set(const BaseTransaction* trans) const;
 
+  std::string cache_guid_;
+
   std::unique_ptr<Kernel> kernel_;
 
   std::unique_ptr<DirectoryBackingStore> store_;
@@ -613,15 +615,10 @@ class Directory {
 
   // Not owned.
   NigoriHandler* const nigori_handler_;
-  Cryptographer* const cryptographer_;
 
   InvariantCheckLevel invariant_check_level_;
 
-  // Maintain deleted entries not in |kernel_| until it's verified that they
-  // are deleted in native models as well.
-  std::unique_ptr<DeleteJournal> delete_journal_;
-
-  base::WeakPtrFactory<Directory> weak_ptr_factory_;
+  base::WeakPtrFactory<Directory> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(Directory);
 };

@@ -106,7 +106,7 @@ void TabsApiUnitTest::SetUp() {
 
   browser_window_.reset(new TestBrowserWindow());
   Browser::CreateParams params(profile(), true);
-  params.type = Browser::TYPE_TABBED;
+  params.type = Browser::TYPE_NORMAL;
   params.window = browser_window_.get();
   browser_.reset(new Browser(params));
   scoped_screen_override_ =
@@ -255,11 +255,11 @@ TEST_F(TabsApiUnitTest, QueryWithHostPermission) {
 
     int first_tab_id = -1;
     ASSERT_TRUE(first_tab_info->GetInteger("id", &first_tab_id));
-    EXPECT_TRUE(base::ContainsValue(expected_tabs_ids, first_tab_id));
+    EXPECT_TRUE(base::Contains(expected_tabs_ids, first_tab_id));
 
     int third_tab_id = -1;
     ASSERT_TRUE(third_tab_info->GetInteger("id", &third_tab_id));
-    EXPECT_TRUE(base::ContainsValue(expected_tabs_ids, third_tab_id));
+    EXPECT_TRUE(base::Contains(expected_tabs_ids, third_tab_id));
   }
   while (!browser()->tab_strip_model()->empty())
     browser()->tab_strip_model()->DetachWebContentsAt(0);

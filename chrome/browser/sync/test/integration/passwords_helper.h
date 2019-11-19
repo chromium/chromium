@@ -15,6 +15,10 @@
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "components/autofill/core/common/password_form.h"
 
+namespace syncer {
+class KeyDerivationParams;
+}
+
 namespace password_manager {
 class PasswordStore;
 }
@@ -32,9 +36,20 @@ void AddLogin(password_manager::PasswordStore* store,
 void UpdateLogin(password_manager::PasswordStore* store,
                  const autofill::PasswordForm& form);
 
-// Returns all logins from |store| matching a fake signon realm used only by
-// PasswordsSyncPerfTest.
+// Removes |old_form| from password store |store| and immediately adds
+// |new_form|. This method blocks until the operation is complete.
+void UpdateLoginWithPrimaryKey(password_manager::PasswordStore* store,
+                               const autofill::PasswordForm& new_form,
+                               const autofill::PasswordForm& old_form);
+
+// Returns all logins from |store| matching a fake signon realm (see
+// CreateTestPasswordForm()).
+// TODO(treib): Rename this to make clear how specific it is.
 std::vector<std::unique_ptr<autofill::PasswordForm>> GetLogins(
+    password_manager::PasswordStore* store);
+
+// Returns all logins from |store| (including blacklisted ones)
+std::vector<std::unique_ptr<autofill::PasswordForm>> GetAllLogins(
     password_manager::PasswordStore* store);
 
 // Removes the login held in |form| from the password store |store|.  This
@@ -46,10 +61,15 @@ void RemoveLogin(password_manager::PasswordStore* store,
 void RemoveLogins(password_manager::PasswordStore* store);
 
 // Gets the password store of the profile with index |index|.
+// TODO(treib): Rename to GetProfilePasswordStore.
 password_manager::PasswordStore* GetPasswordStore(int index);
 
 // Gets the password store of the verifier profile.
+// TODO(treib): Rename to GetVerifierProfilePasswordStore.
 password_manager::PasswordStore* GetVerifierPasswordStore();
+
+// Gets the account-scoped password store of the profile with index |index|.
+password_manager::PasswordStore* GetAccountPasswordStore(int index);
 
 // Returns true iff the profile with index |index| contains the same password
 // forms as the verifier profile.
@@ -75,20 +95,29 @@ int GetPasswordCount(int index);
 // Returns the number of forms in the password store of the verifier profile.
 int GetVerifierPasswordCount();
 
-// Creates a test password form with a well known fake signon realm used only
-// by PasswordsSyncPerfTest based on |index|.
+// Creates a test password form with a well known fake signon realm based on
+// |index|.
 autofill::PasswordForm CreateTestPasswordForm(int index);
+
+// Injects the password entity based on given |form| and encrypted with key
+// derived from |key_params| into |fake_server|.
+void InjectEncryptedServerPassword(
+    const autofill::PasswordForm& form,
+    const std::string& encryption_passphrase,
+    const syncer::KeyDerivationParams& key_derivation_params,
+    fake_server::FakeServer* fake_server);
 
 }  // namespace passwords_helper
 
+// TODO(crbug.com/1010490): avoid re-entrance protection in checkers below or
+// factor it out to not duplicate in every checker.
 // Checker to block until all profiles contain the same password forms.
 class SamePasswordFormsChecker : public MultiClientStatusChangeChecker {
  public:
   SamePasswordFormsChecker();
 
   // StatusChangeChecker implementation.
-  bool IsExitConditionSatisfied() override;
-  std::string GetDebugMessage() const override;
+  bool IsExitConditionSatisfied(std::ostream* os) override;
 
  private:
   bool in_progress_;
@@ -103,11 +132,30 @@ class SamePasswordFormsAsVerifierChecker
   explicit SamePasswordFormsAsVerifierChecker(int index);
 
   // StatusChangeChecker implementation.
-  bool IsExitConditionSatisfied() override;
-  std::string GetDebugMessage() const override;
+  bool IsExitConditionSatisfied(std::ostream* os) override;
 
  private:
   int index_;
+  bool in_progress_;
+  bool needs_recheck_;
+};
+
+// Checker to block until specified profile contains the given password forms.
+class PasswordFormsChecker : public SingleClientStatusChangeChecker {
+ public:
+  PasswordFormsChecker(
+      int index,
+      const std::vector<autofill::PasswordForm>& expected_forms);
+  ~PasswordFormsChecker() override;
+
+  // StatusChangeChecker implementation.
+  bool IsExitConditionSatisfied(std::ostream* os) override;
+
+ private:
+  bool IsExitConditionSatisfiedImpl(std::ostream* os);
+
+  const int index_;
+  std::vector<std::unique_ptr<autofill::PasswordForm>> expected_forms_;
   bool in_progress_;
   bool needs_recheck_;
 };

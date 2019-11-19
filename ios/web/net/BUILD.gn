@@ -9,33 +9,15 @@ source_set("net") {
     "//base",
     "//ios/net",
     "//ios/web:core",
-    "//ios/web/navigation:core",
-    "//ios/web/navigation:navigation_manager_util",
-    "//ios/web/navigation:wk_navigation_util",
     "//ios/web/public",
-    "//ios/web/web_state:wk_web_view_security_util",
+    "//ios/web/public/security",
+    "//ios/web/security",
     "//net",
   ]
 
   sources = [
-    "cert_host_pair.cc",
-    "cert_host_pair.h",
-    "cert_policy.cc",
-    "certificate_policy_cache.cc",
     "cookie_notification_bridge.h",
     "cookie_notification_bridge.mm",
-    "crw_cert_verification_controller.h",
-    "crw_cert_verification_controller.mm",
-    "crw_ssl_status_updater.h",
-    "crw_ssl_status_updater.mm",
-    "request_group_util.h",
-    "request_group_util.mm",
-    "request_tracker_factory_impl.h",
-    "request_tracker_factory_impl.mm",
-    "request_tracker_impl.h",
-    "request_tracker_impl.mm",
-    "web_http_protocol_handler_delegate.h",
-    "web_http_protocol_handler_delegate.mm",
   ]
 
   configs += [ "//build/config/compiler:enable_arc" ]

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/command_line.h"
+#include "build/build_config.h"
 #include "content/browser/child_process_launcher.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/public/browser/navigation_entry.h"
@@ -11,6 +12,7 @@
 #include "content/public/common/content_switches.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
+#include "content/public/test/no_renderer_crashes_assertion.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/shell/browser/shell.h"
 
@@ -32,6 +34,10 @@ class MockChildProcessLauncherClient
   void OnProcessLaunchFailed(int error_code) override {
     client_->OnProcessLaunchFailed(error_code);
   }
+
+#if defined(OS_ANDROID)
+  bool CanUseWarmUpConnection() override { return true; }
+#endif
 
   content::ChildProcessLauncher::Client* client_;
   bool simulate_failure_;
@@ -56,7 +62,10 @@ IN_PROC_BROWSER_TEST_F(ChildProcessLauncherBrowserTest, ChildSpawnFail) {
                         window->web_contents()->GetMainFrame()->GetProcess())
                         ->child_process_launcher_->ReplaceClientForTest(client);
   client->simulate_failure_ = true;
-  nav_observer1.Wait();
+  {
+    ScopedAllowRendererCrashes allow_renderer_crashes(shell());
+    nav_observer1.Wait();
+  }
   delete client;
   NavigationEntry* last_entry =
       shell()->web_contents()->GetController().GetLastCommittedEntry();

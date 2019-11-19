@@ -115,7 +115,7 @@ class DevToolsHttpHandler {
   ConnectionToClientMap connection_to_client_;
   DevToolsManagerDelegate* delegate_;
   std::unique_ptr<DevToolsSocketFactory> socket_factory_;
-  base::WeakPtrFactory<DevToolsHttpHandler> weak_factory_;
+  base::WeakPtrFactory<DevToolsHttpHandler> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(DevToolsHttpHandler);
 };

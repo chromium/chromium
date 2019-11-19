@@ -1,0 +1,15 @@
+<html>
+  <body>
+    <p id='x'></p>
+  </body>
+  <script>
+    function toggleFullscreen() {
+      if (!document.fullscreenElement) {
+        document.getElementById('x').requestFullscreen();
+      } else {
+        document.exitFullscreen();
+      }
+    }
+    document.addEventListener('touchend', function(e) { toggleFullscreen(); }, false);
+  </script>
+</html>

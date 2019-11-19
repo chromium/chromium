@@ -4,14 +4,11 @@
 
 /** @fileoverview Runs the Polymer Extensions interactive UI tests. */
 
-/** @const {string} Path to source root. */
-const ROOT_PATH = '../../../../../';
-
 // Polymer BrowserTest fixture.
-GEN_INCLUDE(
-    [ROOT_PATH + 'chrome/test/data/webui/polymer_interactive_ui_test.js']);
+GEN_INCLUDE(['//chrome/test/data/webui/polymer_interactive_ui_test.js']);
 GEN('#include "chrome/browser/ui/webui/extensions/' +
     'extension_settings_browsertest.h"');
+GEN('#include "services/network/public/cpp/features.h"');
 
 /**
  * Test fixture for interactive Polymer Extensions elements.
@@ -26,25 +23,25 @@ const CrExtensionsInteractiveUITest = class extends PolymerInteractiveUITest {
 
   /** @override */
   get extraLibraries() {
-    return PolymerTest.getLibraries(ROOT_PATH).concat([
-      '../settings/test_util.js',
-    ]);
+    return [
+      '//third_party/mocha/mocha.js',
+      '//chrome/test/data/webui/mocha_adapter.js',
+    ];
+  }
+
+  /** @override */
+  get featureList() {
+    return {enabled: ['network::features::kOutOfBlinkCors']};
   }
 };
 
 
 /** Test fixture for Sync Page. */
-CrExtensionsOptionsPageTest = class extends CrExtensionsInteractiveUITest {
+// eslint-disable-next-line no-var
+var CrExtensionsOptionsPageTest = class extends CrExtensionsInteractiveUITest {
   /** @override */
   get browsePreload() {
-    return 'chrome://extensions/?id=ibbpngabdmdpednkhonkkobdeccpkiff';
-  }
-
-  /** @override */
-  get extraLibraries() {
-    return super.extraLibraries.concat([
-      'extension_options_dialog_test.js',
-    ]);
+    return 'chrome://extensions/test_loader.html?module=extensions/extension_options_dialog_test.js';
   }
 
   /** @override */
@@ -58,6 +55,7 @@ CrExtensionsOptionsPageTest = class extends CrExtensionsInteractiveUITest {
   }
 };
 
-TEST_F('CrExtensionsOptionsPageTest', 'All', function() {
+// Disabled due to flakiness, see https://crbug.com/945654
+TEST_F('CrExtensionsOptionsPageTest', 'DISABLED_All', function() {
   mocha.run();
 });

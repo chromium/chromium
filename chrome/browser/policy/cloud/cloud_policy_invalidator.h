@@ -107,6 +107,7 @@ class CloudPolicyInvalidator : public syncer::InvalidationHandler,
   void OnIncomingInvalidation(
       const syncer::ObjectIdInvalidationMap& invalidation_map) override;
   std::string GetOwnerName() const override;
+  bool IsPublicTopic(const syncer::Topic& topic) const override;
 
   // CloudPolicyCore::Observer:
   void OnCoreConnected(CloudPolicyCore* core) override;
@@ -154,10 +155,6 @@ class CloudPolicyInvalidator : public syncer::InvalidationHandler,
   // Determine if an invalidation has expired.
   // |version| is the version of the invalidation, or zero for unknown.
   bool IsInvalidationExpired(int64_t version);
-
-  // Get the kMetricPolicyRefresh histogram metric which should be incremented
-  // when a policy is stored.
-  MetricPolicyRefresh GetPolicyRefreshMetric(bool policy_changed);
 
   // Get the kMetricPolicyInvalidations histogram metric which should be
   // incremented when an invalidation is received.
@@ -242,7 +239,7 @@ class CloudPolicyInvalidator : public syncer::InvalidationHandler,
   base::ThreadChecker thread_checker_;
 
   // WeakPtrFactory used to create callbacks to this object.
-  base::WeakPtrFactory<CloudPolicyInvalidator> weak_factory_;
+  base::WeakPtrFactory<CloudPolicyInvalidator> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(CloudPolicyInvalidator);
 };

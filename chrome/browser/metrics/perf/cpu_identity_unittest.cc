@@ -39,11 +39,21 @@ TEST(CpuIdentityTest, DefaultCommandsBasedOnUarch_SandyBridge) {
   EXPECT_EQ("SandyBridge", GetCpuUarch(cpuid));
 }
 
+TEST(CpuIdentityTest, DefaultCommandsBasedOnUarch_GoldmontPlus) {
+  CPUIdentity cpuid;
+  cpuid.arch = "x86_64";
+  cpuid.vendor = "GenuineIntel";
+  cpuid.family = 0x06;
+  cpuid.model = 0x7a;  // Gemini Lake
+  cpuid.model_name = "";
+  EXPECT_EQ("GoldmontPlus", GetCpuUarch(cpuid));
+}
+
 TEST(CpuIdentityTest, DefaultCommandsBasedOnUarch_Excavator) {
   CPUIdentity cpuid;
   cpuid.arch = "x86_64";
   cpuid.vendor = "AuthenticAMD";
-  cpuid.family = 0x0f;
+  cpuid.family = 0x15;
   cpuid.model = 0x70;  // Excavator
   cpuid.model_name = "";
   EXPECT_EQ("Excavator", GetCpuUarch(cpuid));
@@ -65,6 +75,16 @@ TEST(CpuIdentityTest, DefaultCommandsBasedOnArch_Unknown) {
   cpuid.vendor = "NotIntelOrAmd";
   cpuid.family = 0;
   cpuid.model = 0;
+  cpuid.model_name = "";
+  EXPECT_EQ("", GetCpuUarch(cpuid));
+}
+
+TEST(CpuIdentityTest, DefaultCommandsBasedOnArch_UnknownUpperBound) {
+  CPUIdentity cpuid;
+  cpuid.arch = "x86_64";
+  cpuid.vendor = "GenuineIntel";
+  cpuid.family = 0xff;
+  cpuid.model = 0xff;
   cpuid.model_name = "";
   EXPECT_EQ("", GetCpuUarch(cpuid));
 }

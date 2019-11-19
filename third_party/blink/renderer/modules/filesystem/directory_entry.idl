@@ -30,15 +30,26 @@
 
 // https://www.w3.org/TR/2012/WD-file-system-api-20120417/#idl-def-DirectoryEntry
 [
-    NoInterfaceObject
+  NoInterfaceObject
 ] interface DirectoryEntry : Entry {
-    DirectoryReader createReader();
-    // TODO(crbug.com/841185): |successCallback| and |errorCallback| are not
-    // nullable in the spec.
-    void getFile(DOMString? path, optional FileSystemFlags options, optional EntryCallback? successCallback, optional ErrorCallback? errorCallback);
-    // TODO(crbug.com/841185): |successCallback| and |errorCallback| are not
-    // nullable in the spec.
-    void getDirectory(DOMString? path, optional FileSystemFlags options, optional EntryCallback? successCallback, optional ErrorCallback? errorCallback);
-    // TODO(crbug.com/841185): |errorCallback| is not nullable in the spec.
-    void removeRecursively(VoidCallback successCallback, optional ErrorCallback? errorCallback);
+  DirectoryReader createReader();
+
+  // TODO(crbug.com/841185): |successCallback| and |errorCallback| are not
+  // nullable in the spec.
+  void getFile(DOMString? path,
+               optional FileSystemFlags options,
+               optional EntryCallback? successCallback,
+               optional ErrorCallback? errorCallback);
+
+  // TODO(crbug.com/841185): |successCallback| and |errorCallback| are not
+  // nullable in the spec.
+  void getDirectory(DOMString? path,
+                    optional FileSystemFlags options,
+                    optional EntryCallback? successCallback,
+                    optional ErrorCallback? errorCallback);
+
+  // TODO(crbug.com/841185): |errorCallback| is not nullable in the spec.
+  [MeasureAs=DeprecatedFileSystemWrite]
+  void removeRecursively(VoidCallback successCallback,
+                         optional ErrorCallback? errorCallback);
 };

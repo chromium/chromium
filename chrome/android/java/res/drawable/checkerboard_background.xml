@@ -7,25 +7,25 @@
     <item>
         <shape android:shape="rectangle">
             <solid android:color="@android:color/white" />
-            <size android:height="10dp" android:width="10dp"/>
+            <size android:height="4dp" android:width="4dp"/>
         </shape>
     </item>
-    <item android:top="0dp" android:left="10dp">
+    <item android:top="0dp" android:left="4dp">
         <shape android:shape="rectangle">
             <solid android:color="@color/modern_grey_200"/>
-            <size android:height="10dp" android:width="10dp"/>
+            <size android:height="4dp" android:width="4dp"/>
         </shape>
     </item>
-    <item android:top="10dp" android:left="0dp">
+    <item android:top="4dp" android:left="0dp">
         <shape android:shape="rectangle">
             <solid android:color="@color/modern_grey_200"/>
-            <size android:height="10dp" android:width="10dp"/>
+            <size android:height="4dp" android:width="4dp"/>
         </shape>
     </item>
-    <item android:top="10dp" android:left="10dp">
+    <item android:top="4dp" android:left="4dp">
         <shape android:shape="rectangle">
             <solid android:color="@android:color/white" />
-            <size android:height="10dp" android:width="10dp"/>
+            <size android:height="4dp" android:width="4dp"/>
         </shape>
     </item>
 </layer-list>

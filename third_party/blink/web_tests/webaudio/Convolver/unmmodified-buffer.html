@@ -1,0 +1,63 @@
+<!doctype html>
+<html>
+  <head>
+    <title>
+      Test ConverNode Does Not Modify its Buffer
+    </title>
+    <script src="../../resources/testharness.js"></script>
+    <script src="../../resources/testharnessreport.js"></script>
+    <script src="../resources/audit-util.js"></script>
+    <script src="../resources/audit.js"></script>
+  </head>
+
+  <body>
+    <script>
+      // Arbitrary sample rate
+      let sampleRate = 48000;
+
+      // We're not going to render anything from the offline context, so make it
+      // short.
+      let renderFrames = RENDER_QUANTUM_FRAMES;
+
+      let audit = Audit.createTaskRunner();
+
+      audit.define(
+          {label: 'test', description: 'Convolver buffer is unchanged'},
+          (task, should) => {
+            let context = new OfflineAudioContext(
+                {length: renderFrames, sampleRate: sampleRate});
+
+            // Let the impulse response be a sine wave with a frequency of
+            // 1234.5678 Hz.  No particular reason for this frequency except
+            // that we know this will cause the convolver to modify its
+            // response if it hasn't been fixed not to do that.
+            let responseData = new Float32Array(500);
+            let omega = 2 * Math.PI / sampleRate * 1234.5678;
+            for (let k = 0; k < responseData.length; ++k) {
+              responseData[k] = Math.sin(omega * k);
+            }
+
+            let response = new AudioBuffer(
+                {length: responseData.length, sampleRate: context.sampleRate});
+
+            response.copyToChannel(responseData, 0);
+
+            // Create the convolver node with the desired response buffer.
+            // Explicitly enable normalization.
+            let node = new ConvolverNode(
+                context, {buffer: response, disableNormalizations: false});
+
+            let output = response.getChannelData(0);
+
+            // After constructing the ConvolverNode, the response better had
+            // better be unmodified.
+            should(output, 'Convolver response after construction')
+                .beCloseToArray(responseData, {absoluteThreshold: 0});
+
+            task.done();
+          });
+
+      audit.run();
+    </script>
+  </body>
+</html>

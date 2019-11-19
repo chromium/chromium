@@ -39,7 +39,7 @@ TEST_F(TableViewImageItemTest, ItemProperties) {
   EXPECT_FALSE(imageCell.imageView.image);
 
   [item configureCell:cell withStyler:[[ChromeTableViewStyler alloc] init]];
-  EXPECT_NSEQ(text, imageCell.titleLabel.text);
+  EXPECT_NSEQ(text, imageCell.textLabel.text);
   EXPECT_NSEQ(detailText, imageCell.detailTextLabel.text);
   EXPECT_FALSE(imageCell.imageView.isHidden);
 }

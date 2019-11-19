@@ -10,11 +10,29 @@ import("//ui/base/ui_features.gni")
 import("//ui/ozone/ozone.gni")
 
 if (is_android) {
+  import("//build/config/android/config.gni")
   import("//build/config/android/rules.gni")
 }
 
 if (is_ios) {
   import("//ios/build/config.gni")
+}
+
+if (is_android) {
+  if (!defined(keycode_conversion_data_android_path)) {
+    keycode_conversion_data_android_path =
+        "keycodes/dom/keycode_conversion_data_android.inc"
+  }
+  keycode_conversion_data_android_gen_path = "$target_gen_dir/keycodes/dom/keycode_conversion_data_android_generated.inc"
+
+  copy("keycode_conversion_data_android") {
+    sources = [
+      keycode_conversion_data_android_path,
+    ]
+    outputs = [
+      keycode_conversion_data_android_gen_path,
+    ]
+  }
 }
 
 jumbo_static_library("dom_keycode_converter") {
@@ -37,6 +55,12 @@ jumbo_static_library("dom_keycode_converter") {
 
   if (!is_ios) {
     deps += [ "//ipc:param_traits" ]
+  }
+
+  if (is_android) {
+    sources += [ keycode_conversion_data_android_gen_path ]
+
+    deps += [ ":keycode_conversion_data_android" ]
   }
 }
 
@@ -121,6 +145,8 @@ jumbo_component("events_base") {
     "keycodes/keyboard_codes.h",
     "mobile_scroller.cc",
     "mobile_scroller.h",
+    "pointer_details.cc",
+    "pointer_details.h",
   ]
 
   defines = [ "EVENTS_BASE_IMPLEMENTATION" ]
@@ -138,7 +164,7 @@ jumbo_component("events_base") {
     "//ui/gfx/geometry",
   ]
 
-  if (use_x11) {
+  if (use_x11 || ozone_platform_x11) {
     public_deps += [ "//ui/events/keycodes:x11" ]
   }
 
@@ -151,6 +177,12 @@ jumbo_component("events_base") {
       "AppKit.framework",
       "Carbon.framework",
     ]
+  }
+
+  if (is_android) {
+    sources += [ keycode_conversion_data_android_gen_path ]
+
+    deps += [ ":keycode_conversion_data_android" ]
   }
 }
 
@@ -173,12 +205,10 @@ jumbo_component("events") {
     "events_export.h",
     "gestures/gesture_recognizer.h",
     "gestures/gesture_recognizer_impl_mac.h",
-    "gestures/gesture_recognizer_observer.h",
     "gestures/gesture_types.h",
     "keyboard_hook.h",
     "null_event_targeter.h",
     "scoped_target_handler.h",
-    "system_input_injector.h",
     "win/events_win_utils.h",
     "win/system_event_state_lookup.h",
   ]
@@ -200,7 +230,6 @@ jumbo_component("events") {
     "events_stub.cc",
     "gestures/gesture_recognizer.cc",
     "gestures/gesture_recognizer_impl_mac.cc",
-    "gestures/gesture_recognizer_observer.cc",
     "gestures/gesture_types.cc",
     "keyboard_hook_base.cc",
     "keyboard_hook_base.h",
@@ -209,7 +238,6 @@ jumbo_component("events") {
     "mac/keyboard_hook_mac.mm",
     "null_event_targeter.cc",
     "scoped_target_handler.cc",
-    "system_input_injector.cc",
     "win/events_win.cc",
     "win/events_win_utils.cc",
     "win/keyboard_hook_win_base.cc",
@@ -246,6 +274,11 @@ jumbo_component("events") {
       "x/events_x.cc",
       "x/keyboard_hook_x11.cc",
     ]
+  }
+
+  if (use_x11 || ozone_platform_x11) {
+    public += [ "x/x11_event_translation.h" ]
+    sources += [ "x/x11_event_translation.cc" ]
     configs += [ "//build/config/linux:x11" ]
     deps += [
       "//ui/events/devices",
@@ -462,12 +495,9 @@ jumbo_static_library("test_support") {
     deps += [
       "//ui/events/devices/x11",
       "//ui/events/keycodes:x11",
+      "//ui/events/x",
       "//ui/gfx/x",
     ]
-  }
-
-  if (use_x11 || ozone_platform_x11) {
-    deps += [ "//ui/events/x" ]
   }
 }
 
@@ -478,16 +508,22 @@ if (!is_ios) {
       "blink/fling_booster_unittest.cc",
       "blink/input_handler_proxy_unittest.cc",
       "blink/input_scroll_elasticity_controller_unittest.cc",
+      "blink/prediction/empty_filter_unittests.cc",
+      "blink/prediction/filter_factory_unittests.cc",
+      "blink/prediction/input_filter_unittest_helpers.cc",
+      "blink/prediction/input_filter_unittest_helpers.h",
       "blink/prediction/input_predictor_unittest_helpers.cc",
       "blink/prediction/input_predictor_unittest_helpers.h",
       "blink/prediction/kalman_predictor_unittest.cc",
       "blink/prediction/least_squares_predictor_unittest.cc",
+      "blink/prediction/linear_predictor_unittest.cc",
+      "blink/prediction/linear_resampling_unittest.cc",
+      "blink/prediction/one_euro_filter_unittests.cc",
+      "blink/prediction/prediction_metrics_handler_unittest.cc",
       "blink/scroll_predictor_unittest.cc",
       "blink/web_input_event_traits_unittest.cc",
       "blink/web_input_event_unittest.cc",
       "cocoa/events_mac_unittest.mm",
-      "devices/mojo/device_struct_traits_unittest.cc",
-      "devices/mojo/touch_device_transform_struct_traits_unittest.cc",
       "event_dispatcher_unittest.cc",
       "event_processor_unittest.cc",
       "event_rewriter_unittest.cc",
@@ -510,7 +546,7 @@ if (!is_ios) {
       "keycodes/keyboard_code_conversion_unittest.cc",
       "keycodes/platform_key_map_win_unittest.cc",
       "mobile_scroller_unittest.cc",
-      "mojo/struct_traits_unittest.cc",
+      "mojom/mojom_traits_unittest.cc",
       "platform/platform_event_source_unittest.cc",
       "scoped_target_handler_unittest.cc",
       "win/event_utils_win_unittest.cc",
@@ -540,15 +576,18 @@ if (!is_ios) {
       "//ui/display",
       "//ui/events/blink",
       "//ui/events/devices",
-      "//ui/events/devices/mojo:test_interfaces",
       "//ui/events/gestures/blink",
+      "//ui/events/mojom",
       "//ui/events/platform",
-      "//ui/gfx/geometry/mojo:struct_traits",
+      "//ui/gfx/geometry/mojom:mojom_traits",
       "//ui/gfx/ipc/geometry",
     ]
 
+    defines = []
+
     if (is_android) {
       sources += [ "android/motion_event_android_unittest.cc" ]
+      deps += [ "//ui/android:ui_full_java" ]
     } else {
       data_deps = [
         "//third_party/mesa_headers",
@@ -563,6 +602,14 @@ if (!is_ios) {
       configs += [ "//build/config/linux:x11" ]
       deps += [
         "//ui/events/devices/x11",
+        "//ui/events/x",
+        "//ui/gfx/x",
+      ]
+    }
+
+    if (use_x11 || ozone_platform_x11) {
+      sources += [ "x/x11_event_translation_unittest.cc" ]
+      deps += [
         "//ui/events/x",
         "//ui/gfx/x",
       ]
@@ -584,9 +631,14 @@ if (!is_ios) {
         "ozone/evdev/gamepad_event_converter_evdev_unittest.cc",
         "ozone/evdev/input_injector_evdev_unittest.cc",
         "ozone/evdev/tablet_event_converter_evdev_unittest.cc",
+        "ozone/evdev/testing/fake_cursor_delegate_evdev.h",
         "ozone/evdev/touch_event_converter_evdev_unittest.cc",
         "ozone/evdev/touch_filter/false_touch_finder_unittest.cc",
-        "ozone/gamepad/generic_gamepad_mapping_unittest.cc",
+        "ozone/evdev/touch_filter/heuristic_stylus_palm_detection_filter_unittest.cc",
+        "ozone/evdev/touch_filter/neural_stylus_palm_detection_filter_unittest.cc",
+        "ozone/evdev/touch_filter/neural_stylus_palm_detection_filter_util_unittest.cc",
+        "ozone/evdev/touch_filter/open_palm_detection_filter_unittest.cc",
+        "ozone/evdev/touch_filter/palm_detection_filter_factory_unittest.cc",
       ]
 
       if (use_xkbcommon) {
@@ -606,7 +658,6 @@ if (!is_ios) {
     if (use_aura) {
       sources += [
         "gestures/gesture_provider_aura_unittest.cc",
-        "gestures/gesture_recognizer_impl_unittest.cc",
         "gestures/motion_event_aura_unittest.cc",
       ]
     }
@@ -628,12 +679,10 @@ if (!is_ios) {
 
 if (is_android) {
   generate_jar_jni("motionevent_jni_headers") {
-    jni_package = "ui"
     classes = [ "android/view/MotionEvent.class" ]
   }
 
   generate_jar_jni("keyevent_jni_headers") {
-    jni_package = "ui"
     classes = [ "android/view/KeyEvent.class" ]
   }
 }

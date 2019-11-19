@@ -24,15 +24,17 @@ test(() => {
   }
 }, 'setting to non-SpeechSynthesisVoice values');
 
-test(() => {
+async_test((test) => {
   internals.enableMockSpeechSynthesizer(window);
-
-  const u = new SpeechSynthesisUtterance();
-  const voice = speechSynthesis.getVoices()[0];
-  // TODO(foolip): This should test instanceof SpeechSynthesisVoice when that
-  // interface is exposed.
-  assert_equals(typeof voice, "object");
-  u.voice = voice;
-  assert_equals(u.voice, voice);
+  speechSynthesis.onvoiceschanged = function() {
+    const u = new SpeechSynthesisUtterance();
+    const voice = speechSynthesis.getVoices()[0];
+    // TODO(foolip): This should test instanceof SpeechSynthesisVoice when that
+    // interface is exposed.
+    assert_equals(typeof voice, "object");
+    u.voice = voice;
+    assert_equals(u.voice, voice);
+    test.done();
+  };
 }, 'setting to SpeechSynthesisVoice');
 </script>

@@ -21,13 +21,14 @@
 // https://html.spec.whatwg.org/C/#the-img-element
 
 [
+    Exposed=Window,
     ActiveScriptWrappable,
     ConstructorCallWith=Document,
     HTMLConstructor,
     NamedConstructor=Image(optional unsigned long width, optional unsigned long height)
 ] interface HTMLImageElement : HTMLElement {
     [CEReactions, Reflect] attribute DOMString alt;
-    [CEReactions, Reflect, URL, RaisesException=Setter] attribute URLString src;
+    [CEReactions, Reflect, URL] attribute USVString src;
     [CEReactions, Reflect] attribute DOMString srcset;
     [CEReactions, Reflect] attribute DOMString sizes;
     [CEReactions, Reflect, ReflectOnly=("anonymous","use-credentials"), ReflectEmpty="anonymous", ReflectInvalid="anonymous"] attribute DOMString? crossOrigin;
@@ -41,10 +42,8 @@
     readonly attribute DOMString currentSrc;
     [CEReactions, Reflect, ReflectOnly=("","no-referrer","origin","no-referrer-when-downgrade","origin-when-cross-origin","unsafe-url"), ReflectMissing="", ReflectInvalid=""] attribute DOMString referrerPolicy;
     [CEReactions, Reflect, ReflectOnly=("async", "sync", "auto"), ReflectMissing="auto", ReflectInvalid="auto"] attribute DOMString decoding;
-    [CEReactions, MeasureAs=PriorityHints, OriginTrialEnabled=PriorityHints, Reflect, ReflectOnly=("low", "auto", "high"), ReflectMissing="auto", ReflectInvalid="auto"] attribute DOMString importance;
-    // https://github.com/ojanvafai/intrinsicsize-attribute/blob/master/README.md
-    [RuntimeEnabled=ExperimentalProductivityFeatures, CEReactions, Reflect] attribute DOMString intrinsicSize;
-    [RuntimeEnabled=LazyImageLoading, CEReactions, Reflect, ReflectOnly=("on", "off", "auto"), ReflectMissing="auto", ReflectInvalid="auto"] attribute DOMString lazyLoad;
+    [CEReactions, MeasureAs=PriorityHints, RuntimeEnabled=PriorityHints, Reflect, ReflectOnly=("low", "auto", "high"), ReflectMissing="auto", ReflectInvalid="auto"] attribute DOMString importance;
+    [RuntimeEnabled=LazyImageLoading, CEReactions, Reflect, ReflectOnly=("lazy", "eager", "auto"), ReflectMissing="auto", ReflectInvalid="auto"] attribute DOMString loading;
 
     // obsolete members
     // https://html.spec.whatwg.org/C/#HTMLImageElement-partial

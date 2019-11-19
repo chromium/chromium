@@ -1,0 +1,24 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://www.khronos.org/registry/webgl/extensions/WEBGL_draw_instanced_base_vertex_base_instance/
+
+[NoInterfaceObject]
+interface WebGLDrawInstancedBaseVertexBaseInstance {
+  void drawArraysInstancedBaseInstanceWEBGL(
+      GLenum mode,
+      GLint first,
+      GLsizei count,
+      GLsizei instance_count,
+      GLuint baseinstance);
+
+  void drawElementsInstancedBaseVertexBaseInstanceWEBGL(
+      GLenum mode,
+      GLsizei count,
+      GLenum type,
+      GLsizei offset,
+      GLsizei instance_count,
+      GLint basevertex,
+      GLuint baseinstance);
+};

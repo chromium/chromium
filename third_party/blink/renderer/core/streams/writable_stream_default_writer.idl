@@ -7,7 +7,6 @@
 // https://streams.spec.whatwg.org/#default-writer-class-definition
 [
     Exposed=(Window,Worker,Worklet),
-    RuntimeEnabled=StreamsNative,
     RaisesException=Constructor,
     ConstructorCallWith=ScriptState,
     Constructor(WritableStream stream)

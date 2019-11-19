@@ -1,0 +1,50 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chromecast/chromecast.gni")
+import("//components/vector_icons/vector_icons.gni")
+
+cast_source_set("media_control_ui") {
+  sources = [
+    "media_control_ui.cc",
+    "media_control_ui.h",
+  ]
+
+  deps = [
+    ":vector_icons",
+    "//base",
+    "//chromecast/base",
+    "//chromecast/graphics",
+    "//chromecast/ui/mojom",
+    "//ui/aura:aura",
+    "//ui/views",
+  ]
+}
+
+# Rules for generating vector icon source files.
+# Adapted from //components/vector_icons/BUILD.gn
+
+aggregate_vector_icons("media_controls_vector_icons") {
+  icon_directory = "vector_icons"
+
+  icons = [
+    "back30.icon",
+    "forward30.icon",
+    "next.icon",
+    "pause.icon",
+    "play.icon",
+    "previous.icon",
+  ]
+}
+
+static_library("vector_icons") {
+  sources = get_target_outputs(":media_controls_vector_icons")
+
+  deps = [
+    ":media_controls_vector_icons",
+    "//base",
+    "//skia",
+    "//ui/gfx",
+  ]
+}

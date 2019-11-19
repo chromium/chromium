@@ -91,7 +91,7 @@ a:focus {
   flex-direction: column;
   max-width: 40%;
   min-width: 105px;
-  overflow: hidden;
+  overflow: auto;
   position: relative;
   width: 240px;
 }
@@ -109,27 +109,23 @@ a:focus {
   flex-direction: column;
 }
 
-/* A vertical splitter between the roots list and the file list. It is actually
-   a transparent area centered on the roots list right border.*/
-div.splitter {
-  cursor: col-resize;
-  flex: none;
-  margin-left: -3px;
-  margin-right: -3px;
-  position: relative;
-  width: 6px;
-  z-index: 500;  /* Must be below the contextmenu (600). */
-}
-
 #directory-tree {
   bottom: 0;
   flex: none;
   left: 0;
   overflow-x: hidden;
   overflow-y: auto;
-  position: absolute;
+  position: absolute;   /* TODO(adanilo): crbug.com/212268 still needed? */
   right: 0;
   top: 0;
+}
+
+html[class*='col-resize'] #directory-tree {
+  overflow-y: hidden;
+}
+
+#directory-tree .tree-item[section-start] {
+  border-top: 1px solid rgba(0, 0, 0, 0.10);
 }
 
 #directory-tree .tree-row {
@@ -139,11 +135,6 @@ div.splitter {
   display: flex;
   height: 40px;
   padding: 0 3px;
-}
-
-#directory-tree .tree-row > .button {
-  display: flex;
-  min-width: 0;
 }
 
 #directory-tree .tree-row > .expand-icon {
@@ -182,6 +173,10 @@ div.splitter {
   width: 100%;
 }
 
+#directory-tree [renaming] .root-eject {
+  display: none;
+}
+
 #directory-tree [renaming] > .tree-row > .label {
   display: none;
 }
@@ -213,28 +208,57 @@ div.splitter {
   background-color: rgb(216, 223, 240);
 }
 
-#directory-tree .tree-row > .root-eject {
-  background: -webkit-image-set(
-      url(../images/files/ui/eject.png) 1x,
-      url(../images/files/ui/2x/eject.png) 2x) no-repeat center;
+#directory-tree .tree-row > .align-right-icon {
+  --iron-icon-height: 16px;
+  --iron-icon-width: 16px;
   border-style: none;
   cursor: pointer;
   flex: none;
   height: 40px;
   position: relative;
   width: 40px;
-  z-index: 1;  /* Make sure .root-eject is on upper layer than paper-ripple. */
+  z-index: 1;
 }
 
-#directory-tree .tree-row[selected] > .root-eject {
-  background-image: -webkit-image-set(
-      url(../images/files/ui/eject_active.png) 1x,
-      url(../images/files/ui/2x/eject_active.png) 2x);
+#directory-tree .tree-row > .external-link-icon iron-icon {
+  padding: 12px;
+}
+
+#directory-tree .tree-row > .root-eject {
+  --active-bg: none;  /* prevent dark-mode activation color */
+  --text-color: currentColor;
+  box-shadow: none;
+  min-width: 40px;
+  padding: 12px;
+}
+
+html[class*='col-resize'] #directory-tree .tree-row > .root-eject:hover {
+  --hover-bg-color: none;
+}
+
+#directory-tree .tree-row > .root-eject:focus {
+  outline: 1px auto rgb(77, 144, 254);
+}
+
+#directory-tree .tree-row > .root-eject:active {
+  border-radius: 20px;
+  outline-width: 0;
 }
 
 #directory-tree .root-item[disabled] {
   opacity: 0.5;
   pointer-events: none;
+}
+
+/* A vertical splitter between the directory tree and the file list. It is
+   a transparent area centered on the directory tree right border.*/
+div.splitter {
+  cursor: col-resize;
+  flex: none;
+  margin: 0 -3px;
+  position: relative;
+  width: 6px;
+  z-index: 500;  /* Must be below the contextmenu (600). */
 }
 
 /* Breadcrumbs and things under the title but above the list view. */
@@ -267,7 +291,7 @@ body[type='open-multi-file'].check-select .dialog-header {
   flex: auto;
 }
 
-.dialog-header paper-button,
+.dialog-header cr-button,
 .dialog-header button {
   border-radius: 2px;
   height: 32px;
@@ -320,7 +344,7 @@ body.check-select .dialog-header
   width: 16px;
 }
 
-.dialog-header paper-button {
+.dialog-header cr-button {
   line-height: 32px;
   padding: 0 8px;
 }
@@ -422,9 +446,7 @@ body.check-select #view-button.thumbnail {
 }
 
 #sort-button > .icon {
-  background-image: -webkit-image-set(
-      url(../images/files/ui/sorting_white.png) 1x,
-      url(../images/files/ui/2x/sorting_white.png) 2x);
+  background-image: url(../images/files/ui/sorting_white.svg);
 }
 
 body.check-select #sort-button {
@@ -447,6 +469,10 @@ body.check-select #gear-button {
 
 body:not(.check-select) #selection-menu-button {
   display: none;
+}
+
+.cloud-import-combo-button {
+  position: relative;
 }
 
 .cloud-import-combo-button > .buttons {
@@ -564,18 +590,23 @@ html[dir='rtl'] #cloud-import-details {
   width: 0;
 }
 
-#cloud-import-details paper-button {
+#cloud-import-details cr-button {
+  --ink-color: white;
   align-self: flex-end;
+  border: none;
+  box-shadow: none;
   color: white;
   font-weight: 500;
   margin-top: 20px;
+  padding: 0;
+  text-transform: uppercase;
 }
 
-#cloud-import-details paper-button.import {
+#cloud-import-details cr-button.import {
   background-color: rgb(51, 103, 214);
 }
 
-#cloud-import-details paper-button.cancel {
+#cloud-import-details cr-button.cancel {
   background-color: rgb(219, 68, 55);
 }
 
@@ -590,8 +621,16 @@ body.check-select #files-selected-label {
 }
 
 #cancel-selection-button {
+  --ink-color: currentColor;
+  background-color: transparent;
+  border: none;
+  box-shadow: none;
+  color: currentColor;
   display: flex;
-  text-transform: none;
+}
+
+#cancel-selection-button:focus:not([tabindex='-1']):not(:active) {
+  background-color: rgba(153, 153, 153, .2);
 }
 
 #cancel-selection-button > span {
@@ -769,15 +808,15 @@ html[dir='rtl'] #search-box .clear {
               0 2px 4px -1px rgba(0, 0, 0, 0.4);
 }
 
-.dialog-footer paper-button,
+.dialog-footer cr-button,
 .dialog-footer button {
   height: 32px;
   margin: 0 4px;
   min-width: 92px;
 }
 
-.dialog-footer paper-button[disabled],
-.dialog-footer paper-button[disabled]:hover,
+.dialog-footer cr-button[disabled],
+.dialog-footer cr-button[disabled]:hover,
 .dialog-footer button[disabled],
 .dialog-footer button[disabled]:hover {
   background-color: rgb(234, 234, 234);
@@ -826,7 +865,7 @@ html[dir='rtl'] #search-box .clear {
 .dialog-footer .primary:focus:not(:active),
 .dialog-footer .secondary:focus:not(:active),
 .dialog-footer select:focus:not(:active),
-#cloud-import-details paper-button.keyboard-focus {
+html.focus-outline-visible #cloud-import-details cr-button:focus {
   box-shadow: 0 0 0 2px rgba(51, 103, 214, 0.5);
 }
 
@@ -855,7 +894,6 @@ html[dir='rtl'] #search-box .clear {
 .breadcrumbs {
   align-items: center;
   display: flex;
-  flex: auto;
   flex-direction: row;
   overflow: hidden;
 }
@@ -898,12 +936,12 @@ body.check-select .breadcrumbs {
 .breadcrumbs .breadcrumb-path:first-child {
   /* margin-inline-start isn't proper
      because folder names should be ltr even in RTL languages. */
-  margin-left: 8px;
+  margin-inline-start: 8px;
 }
 
 html[dir='rtl'] .breadcrumbs .breadcrumb-path:first-child {
-  margin-left: 0;
-  margin-right: 8px;
+  margin-inline-end: 8px;
+  margin-inline-start: 0;
 }
 
 .breadcrumbs .breadcrumb-path:active {
@@ -937,6 +975,36 @@ html[dir='rtl'] .breadcrumbs .separator {
   transform: scaleX(-1);
 }
 
+/* The toolbar indicator that means the current directory is read only. */
+#read-only-indicator {
+  align-items: center;
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 16px;
+  display: flex;
+  flex: none;
+  height: 32px;
+  margin-inline-start: 4px;
+  padding: 0 16px;
+}
+
+body.check-select #read-only-indicator {
+  display: none;
+}
+
+#read-only-icon {
+  background-image: url(../images/files/ui/visibility_white.svg);
+  flex: none;
+  height: 16px;
+  margin-inline-end: 8px;
+  width: 16px;
+}
+
+#read-only-label {
+  flex: none;
+  font-size: 13px;
+  font-weight: 500;
+}
+
 .filelist-panel {
   display: flex;
   flex: auto;
@@ -957,6 +1025,7 @@ html[dir='rtl'] .breadcrumbs .separator {
   flex: auto;
   flex-direction: column;
   min-height: 0;
+  outline: none;
 }
 
 #detail-table > list,
@@ -978,7 +1047,7 @@ html[dir='rtl'] .breadcrumbs .separator {
       no-repeat;
   height: 16px;
   left: 50%;
-  margin-left: -8px;
+  margin-inline-start: -8px;
   margin-top: -8px;
   opacity: 0.5;
   position: absolute;
@@ -1099,6 +1168,7 @@ html[dir='rtl'] .breadcrumbs .separator {
   background: -webkit-image-set(
       url(../images/files/ui/close_button_white.png) 1x,
       url(../images/files/ui/2x/close_button_white.png) 2x) no-repeat center;
+  border: 0;
   cursor: pointer;
   display: inline-block;
   height: 40px;
@@ -1203,10 +1273,6 @@ body[type='full-page'] .detail-name .detail-icon {
 }
 .thumbnail-grid .thumbnail-item[lead]:not([selected]) .shield {
   background-color: rgba(51, 103, 214, 0.2);
-}
-
-body.check-select .thumbnail-grid:focus .thumbnail-item[lead] {
-  outline: 1px solid rgba(51, 103, 214, 0.5);
 }
 
 .thumbnail-grid .checkmark {
@@ -1369,7 +1435,7 @@ html[dir='rtl'] .badge {
   background-position: 5px center;
   background-repeat: no-repeat;
   background-size: 16px 16px;
-  padding-left: 26px;
+  padding-inline-start: 26px;
 }
 
 #list-container list > li[selected],
@@ -1377,7 +1443,7 @@ html[dir='rtl'] .badge {
 #list-container list > li.accepts,
 #list-container list:focus > li[lead],
 #default-tasks-list > li[selected] {
-  background-color: rgb(232, 232, 232);
+  background-color: rgb(232, 234, 237);
 }
 
 #list-container list:focus > li[selected],
@@ -1387,12 +1453,12 @@ html[dir='rtl'] .badge {
   background-color: rgb(216, 223, 240);
 }
 
-body.check-select #list-container list > li[lead],
+body.check-select #list-container list > li[lead]:not([selected]),
 #list-container list > li[lead]:not([selected]) {
   background-color: rgba(232, 234, 237, 0.5);
 }
 
-body.check-select #list-container list:focus > li[lead],
+body.check-select #list-container list:focus > li[lead]:not([selected]),
 #list-container list > li[lead]:not([selected]):focus {
   background-color: rgb(232, 234, 237);
 }
@@ -1409,8 +1475,8 @@ body.check-select #list-container list:focus > li[lead],
 
 @keyframes acceptsBlink {
   0% {
-    color: rgb(90, 90, 90);
     background-color: transparent;
+    color: rgb(90, 90, 90);
   }
 }
 
@@ -1665,13 +1731,19 @@ body.check-select #list-container list li[selected] .detail-thumbnail
 #share-sub-menu cr-menu-item,
 #tasks-menu cr-menu-item:not(.change-default) {
   background-position: left 10px center;
-  padding-left: 32px;
+  padding-inline-start: 32px;
 }
 
 #share-menu cr-menu-item[command='#share'] {
   background-image: -webkit-image-set(
       url(../images/files/ui/person_add.png) 1x,
       url(../images/files/ui/2x/person_add.png) 2x);
+}
+
+cr-menu-item[command='#install-new-extension'] .icon.start {
+  background-image: -webkit-image-set(
+      url(../images/files/ui/store.png) 1x,
+      url(../images/files/ui/2x/store.png) 2x);
 }
 
 #action-bar {
@@ -1789,7 +1861,7 @@ div.shade[fadein] {
   color: #333;
   display: none;
   left: 0;
-  padding-left: 50px;
+  padding-inline-start: 50px;
   padding-top: 20px;
   position: absolute;
   right: 0;
@@ -2071,7 +2143,7 @@ list.autocomplete-suggestions > [lead] {
 }
 
 #multi-profile-share-dialog .mail-label {
-  padding-right: 16px;
+  padding-inline-end: 16px;
 }
 
 #multi-profile-share-dialog .mail-label::after {
@@ -2094,6 +2166,22 @@ list.autocomplete-suggestions > [lead] {
 
 #conflict-confirm-dialog label {
   flex: 1 0 auto;
+}
+
+/* Feedback panels */
+
+.files-feedback-panels {
+  align-items: flex-end;
+  bottom: 24px;
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  right: 24px;
+  z-index: 502; /* Above splitter, but below quickview. */
+}
+
+.signals-overscroll {
+  min-height: calc(68px + 24px);
 }
 
 /* Progress center */
@@ -2307,10 +2395,7 @@ files-toggle-ripple {
 
 /*
  * Preventing FOUC
- * TODO(dpapad): Remove :unresolved when Polymer 2 migration is complete,
- * (crbug.com/738611).
  */
-cr-input:unresolved,
 cr-input:not(:defined) {
   display: none;
 }

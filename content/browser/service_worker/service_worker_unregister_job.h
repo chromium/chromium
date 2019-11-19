@@ -32,7 +32,7 @@ class ServiceWorkerUnregisterJob : public ServiceWorkerRegisterJobBase {
                                   blink::ServiceWorkerStatusCode status)>
       UnregistrationCallback;
 
-  ServiceWorkerUnregisterJob(base::WeakPtr<ServiceWorkerContextCore> context,
+  ServiceWorkerUnregisterJob(ServiceWorkerContextCore* context,
                              const GURL& scope);
   ~ServiceWorkerUnregisterJob() override;
 
@@ -43,6 +43,7 @@ class ServiceWorkerUnregisterJob : public ServiceWorkerRegisterJobBase {
   // ServiceWorkerRegisterJobBase implementation:
   void Start() override;
   void Abort() override;
+  void WillShutDown() override;
   bool Equals(ServiceWorkerRegisterJobBase* job) const override;
   RegistrationJobType GetType() const override;
 
@@ -56,11 +57,12 @@ class ServiceWorkerUnregisterJob : public ServiceWorkerRegisterJobBase {
   void ResolvePromise(int64_t registration_id,
                       blink::ServiceWorkerStatusCode status);
 
-  base::WeakPtr<ServiceWorkerContextCore> context_;
+  // The ServiceWorkerContextCore object must outlive this.
+  ServiceWorkerContextCore* const context_;
   const GURL scope_;
   std::vector<UnregistrationCallback> callbacks_;
   bool is_promise_resolved_;
-  base::WeakPtrFactory<ServiceWorkerUnregisterJob> weak_factory_;
+  base::WeakPtrFactory<ServiceWorkerUnregisterJob> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ServiceWorkerUnregisterJob);
 };

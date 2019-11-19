@@ -2,13 +2,13 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-# To create CIPD package run the following command.
-# cipd create --pkg-def cipd.yaml -tag version:$(cat version.txt)
+# To create CIPD package run the following commands:
+# For full instructions see: https://chromium.googlesource.com/chromium/src/+/HEAD/docs/cipd.md
+# cd third_party/google-truth
+# cipd auth-login
+# cipd create --pkg-def cipd.yaml
+# cd -
 package: chromium/third_party/google-truth
 description: Google Truth Fluent Assertions Java Library
 data:
-  - file: lib/truth-0.40.jar
-  - file: lib/truth-liteproto-extension-0.40.jar
-  - file: lib/truth-re2j-extension-0.40.jar
-  - file: lib/truth-java8-extension-0.40.jar
-  - file: lib/truth-proto-extension-0.40.jar
+  - file: lib/truth-0.45.jar

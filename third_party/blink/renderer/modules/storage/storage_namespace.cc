@@ -30,11 +30,11 @@
 #include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
+#include "mojo/public/cpp/bindings/pending_associated_remote.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_security_origin.h"
-#include "third_party/blink/public/platform/web_storage_area.h"
-#include "third_party/blink/public/platform/web_storage_namespace.h"
 #include "third_party/blink/public/web/web_view_client.h"
 #include "third_party/blink/renderer/modules/storage/cached_storage_area.h"
 #include "third_party/blink/renderer/modules/storage/inspector_dom_storage_agent.h"
@@ -47,22 +47,10 @@ namespace blink {
 const char StorageNamespace::kSupplementName[] = "SessionStorageNamespace";
 
 StorageNamespace::StorageNamespace(StorageController* controller)
-    : controller_(controller) {
-  CHECK(base::FeatureList::IsEnabled(features::kOnionSoupDOMStorage));
-}
+    : controller_(controller) {}
 StorageNamespace::StorageNamespace(StorageController* controller,
                                    const String& namespace_id)
-    : controller_(controller), namespace_id_(namespace_id) {
-  CHECK(base::FeatureList::IsEnabled(features::kOnionSoupDOMStorage));
-}
-
-StorageNamespace::StorageNamespace(
-    std::unique_ptr<WebStorageNamespace> web_storage_namespace)
-    : controller_(nullptr),
-      namespace_id_(web_storage_namespace->GetNamespaceId()),
-      web_storage_namespace_(std::move(web_storage_namespace)) {
-  CHECK(!base::FeatureList::IsEnabled(features::kOnionSoupDOMStorage));
-}
+    : controller_(controller), namespace_id_(namespace_id) {}
 
 StorageNamespace::~StorageNamespace() = default;
 
@@ -114,24 +102,23 @@ scoped_refptr<CachedStorageArea> StorageNamespace::GetCachedArea(
   controller_->ClearAreasIfNeeded();
   if (IsSessionStorage()) {
     EnsureConnected();
-    mojom::blink::StorageAreaAssociatedPtr area_ptr;
+    mojo::PendingAssociatedRemote<mojom::blink::StorageArea> area_remote;
     namespace_->OpenArea(origin,
-                         MakeRequest(&area_ptr, controller_->IPCTaskRunner()));
+                         area_remote.InitWithNewEndpointAndPassReceiver());
     result = CachedStorageArea::CreateForSessionStorage(
-        origin, std::move(area_ptr), controller_->IPCTaskRunner(), this);
+        origin, std::move(area_remote), controller_->IPCTaskRunner(), this);
   } else {
-    mojom::blink::StorageAreaPtr area_ptr;
+    mojo::PendingRemote<mojom::blink::StorageArea> area_remote;
     controller_->storage_partition_service()->OpenLocalStorage(
-        origin, MakeRequest(&area_ptr, controller_->IPCTaskRunner()));
+        origin, area_remote.InitWithNewPipeAndPassReceiver());
     result = CachedStorageArea::CreateForLocalStorage(
-        origin, std::move(area_ptr), controller_->IPCTaskRunner(), this);
+        origin, std::move(area_remote), controller_->IPCTaskRunner(), this);
   }
   cached_areas_.insert(std::move(origin), result);
   return result;
 }
 
 void StorageNamespace::CloneTo(const String& target) {
-  CHECK(base::FeatureList::IsEnabled(features::kOnionSoupDOMStorage));
   DCHECK(IsSessionStorage()) << "Cannot clone a local storage namespace.";
   EnsureConnected();
   namespace_->Clone(target);
@@ -140,7 +127,7 @@ void StorageNamespace::CloneTo(const String& target) {
 size_t StorageNamespace::TotalCacheSize() const {
   size_t total = 0;
   for (const auto& it : cached_areas_)
-    total += it.value->memory_used();
+    total += it.value->quota_used();
   return total;
 }
 
@@ -179,20 +166,14 @@ void StorageNamespace::DidDispatchStorageEvent(const SecurityOrigin* origin,
         origin);
   }
 }
-std::unique_ptr<WebStorageArea> StorageNamespace::GetWebStorageArea(
-    const SecurityOrigin* origin) {
-  CHECK(!base::FeatureList::IsEnabled(features::kOnionSoupDOMStorage));
-  return base::WrapUnique(
-      web_storage_namespace_->CreateStorageArea(WebSecurityOrigin(origin)));
-}
 
 void StorageNamespace::EnsureConnected() {
   DCHECK(IsSessionStorage());
   if (namespace_)
     return;
-  auto request = MakeRequest(&namespace_, controller_->IPCTaskRunner());
   controller_->storage_partition_service()->OpenSessionStorage(
-      namespace_id_, std::move(request));
+      namespace_id_,
+      namespace_.BindNewPipeAndPassReceiver(controller_->IPCTaskRunner()));
 }
 
 }  // namespace blink

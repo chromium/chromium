@@ -13,6 +13,6 @@ from telemetry import record_wpr
 
 if __name__ == '__main__':
   config = chromium_config.ChromiumConfig(
-      benchmark_dirs=[path_util.GetPerfBenchmarksDir()],
+      benchmark_dirs=[path_util.GetOfficialBenchmarksDir()],
       top_level_dir=path_util.GetPerfDir())
   sys.exit(record_wpr.Main(environment=config))

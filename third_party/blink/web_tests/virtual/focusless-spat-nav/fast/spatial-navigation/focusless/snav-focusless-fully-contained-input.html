@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<script src="../../../../../resources/testharness.js"></script>
+<script src="../../../../../resources/testharnessreport.js"></script>
+<script src="file:///gen/layout_test_data/mojo/public/js/mojo_bindings.js"></script>
+<script src="file:///gen/third_party/blink/public/mojom/page/spatial_navigation.mojom.js"></script>
+<script src="../../../../../fast/spatial-navigation/resources/mock-snav-service.js"></script>
+<script src="../../../../../fast/spatial-navigation/resources/snav-testharness.js"></script>
+
+<style>
+  div {
+    width: 200px;
+    height: 200px;
+    margin: 5px;
+    border: 1px solid black;
+  }
+
+  input {
+    margin: 5px;
+  }
+</style>
+
+<div tabindex="0" id="container">
+  <input id="input" type="text" value="second"></input>
+</div>
+<a href="www" id="outsider">Outsider</a>
+
+<script>
+  const container = document.getElementById("container");
+  const input = document.getElementById("input");
+  const outsider = document.getElementById("outsider");
+
+  // Spatial navigation attempts to determine when one valid focusable fully
+  // contains another. In this case, the contained, "inner" target should be
+  // selected when we start from the container div.
+  //
+  // This test ensures the "is contained"-test works correctly on an <input>.
+  // This requires special attention because the focusable node is in the
+  // the <input>'s Shadow DOM.
+  test(() => {
+    assert_true(!!window.internals);
+    snav.triggerMove('Down');
+    assert_equals(window.internals.interestedElement,
+                  container,
+                  "Expected interest to move to the surrounding div.");
+
+    snav.triggerMove('Down');
+    assert_equals(window.internals.interestedElement,
+                  input,
+                  "Expected interest to move to input box.");
+  }, "Navigation to fully contained input box.");
+</script>

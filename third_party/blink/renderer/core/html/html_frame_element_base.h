@@ -66,6 +66,7 @@ class CORE_EXPORT HTMLFrameElementBase : public HTMLFrameOwnerElement {
 
  private:
   bool SupportsFocus() const final;
+  int DefaultTabIndex() const final;
   void SetFocused(bool, WebFocusType) final;
 
   bool IsURLAttribute(const Attribute&) const final;
@@ -88,7 +89,7 @@ class CORE_EXPORT HTMLFrameElementBase : public HTMLFrameOwnerElement {
 };
 
 inline bool IsHTMLFrameElementBase(const HTMLElement& element) {
-  return IsHTMLFrameElement(element) || IsHTMLIFrameElement(element);
+  return IsA<HTMLFrameElement>(element) || IsA<HTMLIFrameElement>(element);
 }
 
 DEFINE_HTMLELEMENT_TYPE_CASTS_WITH_FUNCTION(HTMLFrameElementBase);

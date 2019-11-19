@@ -60,7 +60,7 @@ TEST(PolicyEngineTest, SimpleStrMatch) {
       pr.AddStringMatch(IF, 0, L"z:\\Directory\\domo.txt", CASE_INSENSITIVE));
 
   PolicyGlobal* policy = MakePolicyMemory();
-  const uint32_t kFakeService = 2;
+  const IpcTag kFakeService = IpcTag::PING2;
 
   LowLevelPolicy policyGen(policy);
   EXPECT_TRUE(policyGen.AddRule(kFakeService, &pr));
@@ -73,7 +73,7 @@ TEST(PolicyEngineTest, SimpleStrMatch) {
   POLPARAMS_END;
 
   PolicyResult result;
-  PolicyProcessor pol_ev(policy->entry[kFakeService]);
+  PolicyProcessor pol_ev(policy->entry[static_cast<size_t>(kFakeService)]);
 
   result = pol_ev.Evaluate(kShortEval, eval_params, _countof(eval_params));
   EXPECT_EQ(POLICY_MATCH, result);
@@ -92,7 +92,7 @@ TEST(PolicyEngineTest, SimpleIfNotStrMatch) {
   EXPECT_TRUE(pr.AddStringMatch(IF_NOT, 0, L"c:\\Microsoft\\", CASE_SENSITIVE));
 
   PolicyGlobal* policy = MakePolicyMemory();
-  const uint32_t kFakeService = 2;
+  const IpcTag kFakeService = IpcTag::PING2;
   LowLevelPolicy policyGen(policy);
 
   EXPECT_TRUE(policyGen.AddRule(kFakeService, &pr));
@@ -104,7 +104,7 @@ TEST(PolicyEngineTest, SimpleIfNotStrMatch) {
   POLPARAMS_END;
 
   PolicyResult result;
-  PolicyProcessor pol_ev(policy->entry[kFakeService]);
+  PolicyProcessor pol_ev(policy->entry[static_cast<size_t>(kFakeService)]);
 
   filename = L"c:\\Microsoft\\";
   result = pol_ev.Evaluate(kShortEval, eval_params, _countof(eval_params));
@@ -130,7 +130,7 @@ TEST(PolicyEngineTest, SimpleIfNotStrMatchWild1) {
       pr.AddStringMatch(IF_NOT, 0, L"c:\\Microsoft\\*", CASE_SENSITIVE));
 
   PolicyGlobal* policy = MakePolicyMemory();
-  const uint32_t kFakeService = 3;
+  const IpcTag kFakeService = IpcTag::NTCREATEFILE;
   LowLevelPolicy policyGen(policy);
 
   EXPECT_TRUE(policyGen.AddRule(kFakeService, &pr));
@@ -142,7 +142,7 @@ TEST(PolicyEngineTest, SimpleIfNotStrMatchWild1) {
   POLPARAMS_END;
 
   PolicyResult result;
-  PolicyProcessor pol_ev(policy->entry[kFakeService]);
+  PolicyProcessor pol_ev(policy->entry[static_cast<size_t>(kFakeService)]);
 
   filename = L"c:\\Microsoft\\domo.txt";
   result = pol_ev.Evaluate(kShortEval, eval_params, _countof(eval_params));
@@ -163,7 +163,7 @@ TEST(PolicyEngineTest, SimpleIfNotStrMatchWild2) {
       pr.AddStringMatch(IF_NOT, 0, L"c:\\Microsoft\\*.txt", CASE_SENSITIVE));
 
   PolicyGlobal* policy = MakePolicyMemory();
-  const uint32_t kFakeService = 3;
+  const IpcTag kFakeService = IpcTag::NTCREATEFILE;
   LowLevelPolicy policyGen(policy);
 
   EXPECT_TRUE(policyGen.AddRule(kFakeService, &pr));
@@ -175,7 +175,7 @@ TEST(PolicyEngineTest, SimpleIfNotStrMatchWild2) {
   POLPARAMS_END;
 
   PolicyResult result;
-  PolicyProcessor pol_ev(policy->entry[kFakeService]);
+  PolicyProcessor pol_ev(policy->entry[static_cast<size_t>(kFakeService)]);
 
   filename = L"c:\\Microsoft\\domo.txt";
   result = pol_ev.Evaluate(kShortEval, eval_params, _countof(eval_params));
@@ -202,7 +202,7 @@ TEST(PolicyEngineTest, IfNotStrMatchTwoRulesWild1) {
   EXPECT_TRUE(pr.AddNumberMatch(IF, 1, 24, EQUAL));
 
   PolicyGlobal* policy = MakePolicyMemory();
-  const uint32_t kFakeService = 3;
+  const IpcTag kFakeService = IpcTag::NTCREATEFILE;
   LowLevelPolicy policyGen(policy);
 
   EXPECT_TRUE(policyGen.AddRule(kFakeService, &pr));
@@ -216,7 +216,7 @@ TEST(PolicyEngineTest, IfNotStrMatchTwoRulesWild1) {
   POLPARAMS_END;
 
   PolicyResult result;
-  PolicyProcessor pol_ev(policy->entry[kFakeService]);
+  PolicyProcessor pol_ev(policy->entry[static_cast<size_t>(kFakeService)]);
 
   filename = L"c:\\Microsoft\\domo.txt";
   access = 24;
@@ -251,7 +251,7 @@ TEST(PolicyEngineTest, IfNotStrMatchTwoRulesWild2) {
   EXPECT_TRUE(pr.AddNumberMatch(IF, 2, 66, EQUAL));
 
   PolicyGlobal* policy = MakePolicyMemory();
-  const uint32_t kFakeService = 3;
+  const IpcTag kFakeService = IpcTag::NTCREATEFILE;
   LowLevelPolicy policyGen(policy);
 
   EXPECT_TRUE(policyGen.AddRule(kFakeService, &pr));
@@ -268,7 +268,7 @@ TEST(PolicyEngineTest, IfNotStrMatchTwoRulesWild2) {
   POLPARAMS_END;
 
   PolicyResult result;
-  PolicyProcessor pol_ev(policy->entry[kFakeService]);
+  PolicyProcessor pol_ev(policy->entry[static_cast<size_t>(kFakeService)]);
 
   filename = L"c:\\GoogleV2\\domo.txt";
   access = 24;
@@ -324,7 +324,7 @@ TEST(PolicyEngineTest, OneRuleTest) {
 
   PolicyGlobal* policy = MakePolicyMemory();
 
-  const uint32_t kNtFakeCreateFile = 7;
+  const IpcTag kNtFakeCreateFile = IpcTag::NTCREATEFILE;
 
   LowLevelPolicy policyGen(policy);
   EXPECT_TRUE(policyGen.AddRule(kNtFakeCreateFile, &pr));
@@ -343,7 +343,7 @@ TEST(PolicyEngineTest, OneRuleTest) {
   POLPARAMS_END;
 
   PolicyResult result;
-  PolicyProcessor pol_ev(policy->entry[kNtFakeCreateFile]);
+  PolicyProcessor pol_ev(policy->entry[static_cast<size_t>(kNtFakeCreateFile)]);
 
   result = pol_ev.Evaluate(kShortEval, eval_params, _countof(eval_params));
   EXPECT_EQ(POLICY_MATCH, result);
@@ -430,9 +430,10 @@ TEST(PolicyEngineTest, ThreeRulesTest) {
 
   PolicyGlobal* policy = MakePolicyMemory();
 
-  const uint32_t kNtFakeNone = 4;
-  const uint32_t kNtFakeCreateFile = 5;
-  const uint32_t kNtFakeOpenFile = 6;
+  // These do not match the real tag values.
+  const IpcTag kNtFakeNone = static_cast<IpcTag>(4);
+  const IpcTag kNtFakeCreateFile = static_cast<IpcTag>(5);
+  const IpcTag kNtFakeOpenFile = static_cast<IpcTag>(6);
 
   LowLevelPolicy policyGen(policy);
   EXPECT_TRUE(policyGen.AddRule(kNtFakeCreateFile, &pr_pipe));
@@ -464,9 +465,11 @@ TEST(PolicyEngineTest, ThreeRulesTest) {
   ++opc4;
   ++opc5;
 
-  size_t tc1 = policy->entry[kNtFakeNone]->opcode_count;
-  size_t tc2 = policy->entry[kNtFakeCreateFile]->opcode_count;
-  size_t tc3 = policy->entry[kNtFakeOpenFile]->opcode_count;
+  size_t tc1 = policy->entry[static_cast<size_t>(kNtFakeNone)]->opcode_count;
+  size_t tc2 =
+      policy->entry[static_cast<size_t>(kNtFakeCreateFile)]->opcode_count;
+  size_t tc3 =
+      policy->entry[static_cast<size_t>(kNtFakeOpenFile)]->opcode_count;
 
   EXPECT_EQ(opc5, tc1);
   EXPECT_EQ((opc1 + opc2 + opc3), tc2);
@@ -474,17 +477,25 @@ TEST(PolicyEngineTest, ThreeRulesTest) {
 
   // Check the type of the first and last opcode of each service.
 
-  EXPECT_EQ(OP_NUMBER_AND_MATCH,
-            policy->entry[kNtFakeNone]->opcodes[0].GetID());
-  EXPECT_EQ(OP_ACTION, policy->entry[kNtFakeNone]->opcodes[tc1 - 1].GetID());
+  EXPECT_EQ(
+      OP_NUMBER_AND_MATCH,
+      policy->entry[static_cast<size_t>(kNtFakeNone)]->opcodes[0].GetID());
+  EXPECT_EQ(OP_ACTION, policy->entry[static_cast<size_t>(kNtFakeNone)]
+                           ->opcodes[tc1 - 1]
+                           .GetID());
   EXPECT_EQ(OP_WSTRING_MATCH,
-            policy->entry[kNtFakeCreateFile]->opcodes[0].GetID());
-  EXPECT_EQ(OP_ACTION,
-            policy->entry[kNtFakeCreateFile]->opcodes[tc2 - 1].GetID());
-  EXPECT_EQ(OP_WSTRING_MATCH,
-            policy->entry[kNtFakeOpenFile]->opcodes[0].GetID());
-  EXPECT_EQ(OP_ACTION,
-            policy->entry[kNtFakeOpenFile]->opcodes[tc3 - 1].GetID());
+            policy->entry[static_cast<size_t>(kNtFakeCreateFile)]
+                ->opcodes[0]
+                .GetID());
+  EXPECT_EQ(OP_ACTION, policy->entry[static_cast<size_t>(kNtFakeCreateFile)]
+                           ->opcodes[tc2 - 1]
+                           .GetID());
+  EXPECT_EQ(
+      OP_WSTRING_MATCH,
+      policy->entry[static_cast<size_t>(kNtFakeOpenFile)]->opcodes[0].GetID());
+  EXPECT_EQ(OP_ACTION, policy->entry[static_cast<size_t>(kNtFakeOpenFile)]
+                           ->opcodes[tc3 - 1]
+                           .GetID());
 
   // Test the policy evaluation.
 
@@ -501,9 +512,11 @@ TEST(PolicyEngineTest, ThreeRulesTest) {
   POLPARAMS_END;
 
   PolicyResult result;
-  PolicyProcessor eval_CreateFile(policy->entry[kNtFakeCreateFile]);
-  PolicyProcessor eval_OpenFile(policy->entry[kNtFakeOpenFile]);
-  PolicyProcessor eval_None(policy->entry[kNtFakeNone]);
+  PolicyProcessor eval_CreateFile(
+      policy->entry[static_cast<size_t>(kNtFakeCreateFile)]);
+  PolicyProcessor eval_OpenFile(
+      policy->entry[static_cast<size_t>(kNtFakeOpenFile)]);
+  PolicyProcessor eval_None(policy->entry[static_cast<size_t>(kNtFakeNone)]);
 
   result = eval_CreateFile.Evaluate(kShortEval, params, _countof(params));
   EXPECT_EQ(NO_POLICY_MATCH, result);
@@ -588,8 +601,8 @@ TEST(PolicyEngineTest, PolicyRuleCopyConstructorTwoStrings) {
 
   PolicyGlobal* policy = MakePolicyMemory();
   LowLevelPolicy policyGen(policy);
-  EXPECT_TRUE(policyGen.AddRule(1, &pr_orig));
-  EXPECT_TRUE(policyGen.AddRule(2, &pr_copy));
+  EXPECT_TRUE(policyGen.AddRule(IpcTag::PING1, &pr_orig));
+  EXPECT_TRUE(policyGen.AddRule(IpcTag::PING2, &pr_copy));
   EXPECT_TRUE(policyGen.Done());
 
   const wchar_t* name = nullptr;
@@ -618,4 +631,54 @@ TEST(PolicyEngineTest, PolicyRuleCopyConstructorTwoStrings) {
   EXPECT_EQ(POLICY_MATCH, result);
   EXPECT_EQ(ASK_BROKER, pol_ev_copy.GetAction());
 }
+
+TEST(PolicyEngineTest, PolicyGenDoneCalledTwice) {
+  SetupNtdllImports();
+  // The specific rules here are not important.
+  PolicyRule pr_orig(ASK_BROKER);
+  EXPECT_TRUE(pr_orig.AddStringMatch(IF, 0, L"hello.*", CASE_SENSITIVE));
+
+  PolicyRule pr_copy(pr_orig);
+  EXPECT_TRUE(pr_orig.AddStringMatch(IF_NOT, 0, L"*.txt", CASE_SENSITIVE));
+  EXPECT_TRUE(pr_copy.AddStringMatch(IF_NOT, 0, L"*.txt", CASE_SENSITIVE));
+
+  PolicyGlobal* policy = MakePolicyMemory();
+  LowLevelPolicy policyGen(policy);
+  const IpcTag tag1 = IpcTag::PING1;
+  const IpcTag tag2 = IpcTag::PING2;
+  EXPECT_TRUE(policyGen.AddRule(tag1, &pr_orig));
+  EXPECT_TRUE(policyGen.AddRule(tag2, &pr_copy));
+  EXPECT_TRUE(policyGen.Done());
+
+  // Obtain opcode counts.
+  size_t tc1 = policy->entry[static_cast<size_t>(IpcTag::PING1)]->opcode_count;
+  size_t tc2 = policy->entry[static_cast<size_t>(IpcTag::PING2)]->opcode_count;
+
+  // Call Done() again.
+  EXPECT_TRUE(policyGen.Done());
+
+  // Expect same opcode counts.
+  EXPECT_EQ(tc1,
+            policy->entry[static_cast<size_t>(IpcTag::PING1)]->opcode_count);
+  EXPECT_EQ(tc2,
+            policy->entry[static_cast<size_t>(IpcTag::PING2)]->opcode_count);
+
+  // Confirm the rules work as before.
+  const wchar_t* name = nullptr;
+  POLPARAMS_BEGIN(eval_params)
+    POLPARAM(name)
+  POLPARAMS_END;
+
+  PolicyResult result;
+  PolicyProcessor pol_ev_orig(policy->entry[1]);
+  name = L"domo.txt";
+  result = pol_ev_orig.Evaluate(kShortEval, eval_params, _countof(eval_params));
+  EXPECT_EQ(NO_POLICY_MATCH, result);
+
+  name = L"hello.bmp";
+  result = pol_ev_orig.Evaluate(kShortEval, eval_params, _countof(eval_params));
+  EXPECT_EQ(POLICY_MATCH, result);
+  EXPECT_EQ(ASK_BROKER, pol_ev_orig.GetAction());
+}
+
 }  // namespace sandbox

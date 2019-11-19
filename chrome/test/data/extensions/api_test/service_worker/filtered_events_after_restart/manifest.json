@@ -1,8 +1,0 @@
-{
-  "name": "Extension service worker - persistent filtered events",
-  "version": "1.0",
-  "manifest_version": 2,
-  "description": "Extension service worker - filtered events test with webNavigation, that survives across browser restart",
-  "background": {"scripts": ["background.js"]},
-  "permissions": ["webNavigation", "tabs"]
-}

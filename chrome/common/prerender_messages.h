@@ -15,6 +15,7 @@
 #include "ui/gfx/geometry/size.h"
 #include "url/gurl.h"
 #include "url/ipc/url_param_traits.h"
+#include "url/origin.h"
 
 #define IPC_MESSAGE_START PrerenderMsgStart
 
@@ -32,12 +33,13 @@ IPC_STRUCT_END()
 
 // Notifies of the insertion of a <link rel=prerender> element in the
 // document.
-IPC_MESSAGE_CONTROL5(PrerenderHostMsg_AddLinkRelPrerender,
-                     int /* prerender_id, assigned by WebPrerendererClient */,
-                     PrerenderAttributes,
-                     content::Referrer,
-                     gfx::Size,
-                     int /* render_view_route_id of launcher */)
+IPC_MESSAGE_CONTROL(PrerenderHostMsg_AddLinkRelPrerender,
+                    int /* prerender_id, assigned by WebPrerendererClient */,
+                    PrerenderAttributes,
+                    content::Referrer,
+                    url::Origin /* initiator_origin */,
+                    gfx::Size,
+                    int /* render_view_route_id of launcher */)
 
 // Notifies on removal of a <link rel=prerender> element from the document.
 IPC_MESSAGE_CONTROL1(PrerenderHostMsg_CancelLinkRelPrerender,

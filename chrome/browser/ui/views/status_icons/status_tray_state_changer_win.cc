@@ -85,30 +85,8 @@ void StatusTrayStateChangerWin::EnsureTrayIconVisible() {
   SendNotifyItemUpdate(std::move(notify_item));
 }
 
-STDMETHODIMP_(ULONG) StatusTrayStateChangerWin::AddRef() {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  return base::win::IUnknownImpl::AddRef();
-}
-
-STDMETHODIMP_(ULONG) StatusTrayStateChangerWin::Release() {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  return base::win::IUnknownImpl::Release();
-}
-
-STDMETHODIMP StatusTrayStateChangerWin::QueryInterface(REFIID riid,
-                                                       PVOID* ptr_void) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  if (riid == __uuidof(INotificationCB)) {
-    *ptr_void = static_cast<INotificationCB*>(this);
-    AddRef();
-    return S_OK;
-  }
-
-  return base::win::IUnknownImpl::QueryInterface(riid, ptr_void);
-}
-
-STDMETHODIMP StatusTrayStateChangerWin::Notify(ULONG event,
-                                               NOTIFYITEM* notify_item) {
+HRESULT StatusTrayStateChangerWin::Notify(ULONG event,
+                                          NOTIFYITEM* notify_item) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(notify_item);
   if (notify_item->hwnd != window_ || notify_item->id != icon_id_ ||
@@ -116,7 +94,7 @@ STDMETHODIMP StatusTrayStateChangerWin::Notify(ULONG event,
     return S_OK;
   }
 
-  notify_item_.reset(new NOTIFYITEM(*notify_item));
+  notify_item_ = std::make_unique<NOTIFYITEM>(*notify_item);
   return S_OK;
 }
 

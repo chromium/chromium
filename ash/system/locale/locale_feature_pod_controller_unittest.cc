@@ -7,6 +7,7 @@
 #include <memory>
 #include <vector>
 
+#include "ash/public/cpp/locale_update_controller.h"
 #include "ash/shell.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/unified/feature_pod_button.h"
@@ -27,7 +28,7 @@ class LocaleFeaturePodControllerTest : public NoSessionAshTestBase {
   void SetUp() override {
     NoSessionAshTestBase::SetUp();
 
-    tray_model_ = std::make_unique<UnifiedSystemTrayModel>();
+    tray_model_ = std::make_unique<UnifiedSystemTrayModel>(nullptr);
     tray_controller_ =
         std::make_unique<UnifiedSystemTrayController>(tray_model_.get());
     controller_ =
@@ -56,23 +57,21 @@ TEST_F(LocaleFeaturePodControllerTest, ButtonVisibility) {
   // The button is invisible if the locale list is unset.
   std::unique_ptr<FeaturePodButton> button;
   button.reset(controller_->CreateButton());
-  EXPECT_FALSE(button->visible());
+  EXPECT_FALSE(button->GetVisible());
 
   // The button is invisible if the locale list is empty.
-  Shell::Get()->system_tray_model()->SetLocaleList(
-      std::vector<mojom::LocaleInfoPtr>(), kDefaultLocaleIsoCode);
+  Shell::Get()->system_tray_model()->SetLocaleList({}, kDefaultLocaleIsoCode);
   button.reset(controller_->CreateButton());
-  EXPECT_FALSE(button->visible());
+  EXPECT_FALSE(button->GetVisible());
 
   // The button is visible if the locale list is non-empty.
-  std::vector<mojom::LocaleInfoPtr> locale_list;
-  mojom::LocaleInfoPtr locale = mojom::LocaleInfo::New(
-      kDefaultLocaleIsoCode, base::UTF8ToUTF16("English (United States)"));
-  locale_list.push_back(std::move(locale));
+  std::vector<LocaleInfo> locale_list;
+  locale_list.emplace_back(kDefaultLocaleIsoCode,
+                           base::UTF8ToUTF16("English (United States)"));
   Shell::Get()->system_tray_model()->SetLocaleList(std::move(locale_list),
                                                    kDefaultLocaleIsoCode);
   button.reset(controller_->CreateButton());
-  EXPECT_TRUE(button->visible());
+  EXPECT_TRUE(button->GetVisible());
 }
 
 }  // namespace

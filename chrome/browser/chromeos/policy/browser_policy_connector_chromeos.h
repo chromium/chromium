@@ -8,6 +8,7 @@
 #include <memory>
 #include <set>
 #include <string>
+#include <vector>
 
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
@@ -42,15 +43,18 @@ class AffiliatedRemoteCommandsInvalidator;
 class BluetoothPolicyHandler;
 class DeviceActiveDirectoryPolicyManager;
 class DeviceCloudPolicyInitializer;
+class DeviceDockMacAddressHandler;
 class DeviceLocalAccountPolicyService;
 class DeviceNetworkConfigurationUpdater;
+class DeviceWiFiAllowedHandler;
 struct EnrollmentConfig;
 class HostnameHandler;
 class MinimumVersionPolicyHandler;
-class DeviceNativePrintersHandler;
-class DeviceWallpaperImageHandler;
 class ProxyPolicyProvider;
 class ServerBackedStateKeysBroker;
+class TPMAutoUpdateModePolicyHandler;
+class DeviceScheduledUpdateChecker;
+class DeviceCloudExternalDataPolicyHandler;
 
 // Extends ChromeBrowserPolicyConnector with the setup specific to Chrome OS.
 class BrowserPolicyConnectorChromeOS
@@ -109,6 +113,9 @@ class BrowserPolicyConnectorChromeOS
   // Returns the cloud directory API ID or an empty string if it is not set.
   std::string GetDirectoryApiID() const;
 
+  // Returns the organization logo URL or an empty string if it is not set.
+  std::string GetCustomerLogoURL() const;
+
   // Returns the device mode. For Chrome OS this function will return the mode
   // stored in the lockbox, or DEVICE_MODE_CONSUMER if the lockbox has been
   // locked empty, or DEVICE_MODE_UNKNOWN if the device has not been owned yet.
@@ -158,19 +165,30 @@ class BrowserPolicyConnectorChromeOS
     return device_network_configuration_updater_.get();
   }
 
+  TPMAutoUpdateModePolicyHandler* GetTPMAutoUpdateModePolicyHandler() const {
+    return tpm_auto_update_mode_policy_handler_.get();
+  }
+
   // Returns device's market segment.
   MarketSegment GetEnterpriseMarketSegment() const;
 
-  // The browser-global PolicyService is created before Profiles are ready, to
-  // provide managed values for the local state PrefService. It includes a
-  // policy provider that forwards policies from a delegate policy provider.
-  // This call can be used to set the user policy provider as that delegate
-  // once the Profile is ready, so that user policies can also affect local
-  // state preferences.
-  // Only one user policy provider can be set as a delegate at a time, and any
-  // previously set delegate is removed. Passing NULL removes the current
-  // delegate, if there is one.
-  void SetUserPolicyDelegate(ConfigurationPolicyProvider* user_policy_provider);
+  // Returns a ProxyPolicyProvider that will be used to forward user policies
+  // from the primary Profile to the device-wide PolicyService[1].
+  // This means that user policies from the primary Profile will also affect
+  // local state[2] Preferences.
+  //
+  // Note that the device-wide PolicyService[1] is created before Profiles are
+  // ready / before a user has signed-in. As PolicyProviders can only be
+  // configured during PolicyService creation, a ProxyPolicyProvider (which does
+  // not have a delegate yet) is included in the device-wide PolicyService at
+  // the time of its creation. This returns an unowned pointer to that
+  // ProxyPolicyProvider so the caller can invoke SetDelegate on it. The
+  // returned pointer is guaranteed to be valid as long as this instance is
+  // valid.
+  //
+  // [1] i.e. g_browser_process->policy_service()
+  // [2] i.e. g_browser_process->local_state()
+  ProxyPolicyProvider* GetGlobalUserCloudPolicyProvider();
 
   // Sets the device cloud policy initializer for testing.
   void SetDeviceCloudPolicyInitializerForTesting(
@@ -226,8 +244,15 @@ class BrowserPolicyConnectorChromeOS
   std::unique_ptr<BluetoothPolicyHandler> bluetooth_policy_handler_;
   std::unique_ptr<HostnameHandler> hostname_handler_;
   std::unique_ptr<MinimumVersionPolicyHandler> minimum_version_policy_handler_;
-  std::unique_ptr<DeviceNativePrintersHandler> device_native_printers_handler_;
-  std::unique_ptr<DeviceWallpaperImageHandler> device_wallpaper_image_handler_;
+  std::unique_ptr<DeviceDockMacAddressHandler>
+      device_dock_mac_address_source_handler_;
+  std::unique_ptr<DeviceWiFiAllowedHandler> device_wifi_allowed_handler_;
+  std::unique_ptr<TPMAutoUpdateModePolicyHandler>
+      tpm_auto_update_mode_policy_handler_;
+  std::unique_ptr<DeviceScheduledUpdateChecker>
+      device_scheduled_update_checker_;
+  std::vector<std::unique_ptr<policy::DeviceCloudExternalDataPolicyHandler>>
+      device_cloud_external_data_policy_handlers_;
 
   // This policy provider is used on Chrome OS to feed user policy into the
   // global PolicyService instance. This works by installing the cloud policy
@@ -244,7 +269,7 @@ class BrowserPolicyConnectorChromeOS
   // added here, and then pushed to the super class in BuildPolicyProviders().
   std::vector<std::unique_ptr<ConfigurationPolicyProvider>> providers_for_init_;
 
-  base::WeakPtrFactory<BrowserPolicyConnectorChromeOS> weak_ptr_factory_;
+  base::WeakPtrFactory<BrowserPolicyConnectorChromeOS> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(BrowserPolicyConnectorChromeOS);
 };

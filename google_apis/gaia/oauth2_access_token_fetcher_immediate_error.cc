@@ -20,12 +20,12 @@ OAuth2AccessTokenFetcherImmediateError::FailCaller::~FailCaller() {
 void OAuth2AccessTokenFetcherImmediateError::FailCaller::run() {
   if (fetcher_) {
     fetcher_->Fail();
-    fetcher_ = NULL;
+    fetcher_ = nullptr;
   }
 }
 
 void OAuth2AccessTokenFetcherImmediateError::FailCaller::detach() {
-  fetcher_ = NULL;
+  fetcher_ = nullptr;
 }
 
 
@@ -45,7 +45,7 @@ OAuth2AccessTokenFetcherImmediateError::
 void OAuth2AccessTokenFetcherImmediateError::CancelRequest() {
   if (failer_) {
     failer_->detach();
-    failer_ = NULL;
+    failer_ = nullptr;
   }
 }
 

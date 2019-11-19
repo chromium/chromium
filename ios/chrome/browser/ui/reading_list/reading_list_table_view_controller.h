@@ -15,7 +15,8 @@
 
 // View controller that displays reading list items in a table view.
 @interface ReadingListTableViewController
-    : ChromeTableViewController<ReadingListListItemAccessibilityDelegate>
+    : ChromeTableViewController <ReadingListListItemAccessibilityDelegate,
+                                 UIAdaptivePresentationControllerDelegate>
 
 // The delegate.
 @property(nonatomic, weak) id<ReadingListListViewControllerDelegate> delegate;

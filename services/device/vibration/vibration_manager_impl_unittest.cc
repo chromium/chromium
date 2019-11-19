@@ -3,13 +3,14 @@
 // found in the LICENSE file.
 
 #include "base/run_loop.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "services/device/device_service_test_base.h"
 #include "services/device/public/mojom/constants.mojom.h"
 #include "services/device/public/mojom/vibration_manager.mojom.h"
 
 #if defined(OS_ANDROID)
 #include "base/android/jni_android.h"
-#include "jni/VibrationManagerImpl_jni.h"
+#include "services/device/vibration/android/vibration_jni_headers/VibrationManagerImpl_jni.h"
 #else
 #include "services/device/vibration/vibration_manager_impl.h"
 #endif
@@ -27,7 +28,8 @@ class VibrationManagerImplTest : public DeviceServiceTestBase {
   void SetUp() override {
     DeviceServiceTestBase::SetUp();
 
-    connector()->BindInterface(mojom::kServiceName, &vibration_manager_);
+    connector()->Connect(mojom::kServiceName,
+                         vibration_manager_.BindNewPipeAndPassReceiver());
   }
 
   void Vibrate(int64_t milliseconds) {
@@ -61,7 +63,7 @@ class VibrationManagerImplTest : public DeviceServiceTestBase {
   }
 
  private:
-  mojom::VibrationManagerPtr vibration_manager_;
+  mojo::Remote<mojom::VibrationManager> vibration_manager_;
 
   DISALLOW_COPY_AND_ASSIGN(VibrationManagerImplTest);
 };

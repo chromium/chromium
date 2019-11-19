@@ -10,48 +10,59 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/observer_list.h"
 #include "components/password_manager/core/browser/form_fetcher.h"
 #include "components/password_manager/core/browser/http_password_store_migrator.h"
 #include "components/password_manager/core/browser/password_store.h"
 #include "components/password_manager/core/browser/password_store_consumer.h"
-#include "components/password_manager/core/browser/suppressed_form_fetcher.h"
 
 namespace password_manager {
 
 class PasswordManagerClient;
 
-// Production implementation of FormFetcher. Fetches credentials associated
-// with a particular origin.
+// Production implementation of FormFetcher. Fetches credentials associated with
+// a particular origin. When adding new member fields to this class, please,
+// update the Clone() method accordingly.
 class FormFetcherImpl : public FormFetcher,
                         public PasswordStoreConsumer,
-                        public HttpPasswordStoreMigrator::Consumer,
-                        public SuppressedFormFetcher::Consumer {
+                        public HttpPasswordStoreMigrator::Consumer {
  public:
   // |form_digest| describes what credentials need to be retrieved and
   // |client| serves the PasswordStore, the logging information etc.
   FormFetcherImpl(PasswordStore::FormDigest form_digest,
                   const PasswordManagerClient* client,
-                  bool should_migrate_http_passwords,
-                  bool should_query_suppressed_forms);
+                  bool should_migrate_http_passwords);
 
   ~FormFetcherImpl() override;
+
+  // Returns a MultiStoreFormFetcher if  the password account storage feature is
+  // enabled. Returns a FormFetcherImpl otherwise.
+  static std::unique_ptr<FormFetcherImpl> CreateFormFetcherImpl(
+      PasswordStore::FormDigest form_digest,
+      const PasswordManagerClient* client,
+      bool should_migrate_http_passwords);
 
   // FormFetcher:
   void AddConsumer(FormFetcher::Consumer* consumer) override;
   void RemoveConsumer(FormFetcher::Consumer* consumer) override;
   State GetState() const override;
   const std::vector<InteractionsStats>& GetInteractionsStats() const override;
-  const std::vector<const autofill::PasswordForm*>& GetNonFederatedMatches()
+
+  std::vector<const autofill::PasswordForm*> GetNonFederatedMatches()
       const override;
-  const std::vector<const autofill::PasswordForm*>& GetFederatedMatches()
+  std::vector<const autofill::PasswordForm*> GetFederatedMatches()
       const override;
-  const std::vector<const autofill::PasswordForm*>& GetSuppressedHTTPSForms()
+
+  bool IsBlacklisted() const override;
+
+  const std::vector<const autofill::PasswordForm*>& GetAllRelevantMatches()
       const override;
-  const std::vector<const autofill::PasswordForm*>&
-  GetSuppressedPSLMatchingForms() const override;
-  const std::vector<const autofill::PasswordForm*>&
-  GetSuppressedSameOrganizationNameForms() const override;
-  bool DidCompleteQueryingSuppressedForms() const override;
+
+  const std::vector<const autofill::PasswordForm*>& GetBestMatches()
+      const override;
+
+  const autofill::PasswordForm* GetPreferredMatch() const override;
+
   void Fetch() override;
   std::unique_ptr<FormFetcher> Clone() override;
 
@@ -64,17 +75,31 @@ class FormFetcherImpl : public FormFetcher,
   void ProcessMigratedForms(
       std::vector<std::unique_ptr<autofill::PasswordForm>> forms) override;
 
-  // SuppressedFormFetcher::Consumer:
-  void ProcessSuppressedForms(
-      std::vector<std::unique_ptr<autofill::PasswordForm>> forms) override;
+ protected:
+  // PasswordStore results will be fetched for this description.
+  const PasswordStore::FormDigest form_digest_;
 
- private:
+  // Client used to obtain a CredentialFilter.
+  const PasswordManagerClient* const client_;
+
+  // State of the fetcher.
+  State state_ = State::NOT_WAITING;
+
+  // False unless FetchDataFromPasswordStore has been called again without the
+  // password store returning results in the meantime.
+  bool need_to_refetch_ = false;
+
+  // If false, matches are sorted using the "preferred" field.
+  bool sort_matches_by_date_last_used_ = false;
+
   // Processes password form results and forwards them to the |consumers_|.
   void ProcessPasswordStoreResults(
       std::vector<std::unique_ptr<autofill::PasswordForm>> results);
 
-  // PasswordStore results will be fetched for this description.
-  const PasswordStore::FormDigest form_digest_;
+ private:
+  // Splits |results| into |federated_|, |non_federated_| and |blacklisted_|.
+  void SplitResults(
+      std::vector<std::unique_ptr<autofill::PasswordForm>> results);
 
   // Results obtained from PasswordStore:
   std::vector<std::unique_ptr<autofill::PasswordForm>> non_federated_;
@@ -84,62 +109,35 @@ class FormFetcherImpl : public FormFetcher,
   // non-federated matches.
   std::vector<std::unique_ptr<autofill::PasswordForm>> federated_;
 
+  // Non-federated credentials of the same scheme as the observed form.
+  std::vector<const autofill::PasswordForm*> non_federated_same_scheme_;
+
+  // Set of nonblacklisted PasswordForms from the password store that best match
+  // the form being managed by |this|.
+  std::vector<const autofill::PasswordForm*> best_matches_;
+
+  // Convenience pointer to entry in |best_matches_| that is marked as
+  // preferred. This is only allowed to be null if there are no best matches at
+  // all, since there will always be one preferred login when there are multiple
+  // matches (when first saved, a login is marked preferred).
+  const autofill::PasswordForm* preferred_match_ = nullptr;
+
+  // Whether there were any blacklisted credentials obtained from the password
+  // store.
+  bool is_blacklisted_ = false;
+
   // Statistics for the current domain.
   std::vector<InteractionsStats> interactions_stats_;
 
-  std::vector<std::unique_ptr<autofill::PasswordForm>>
-      suppressed_same_origin_https_forms_;
-  std::vector<std::unique_ptr<autofill::PasswordForm>>
-      suppressed_psl_matching_forms_;
-  std::vector<std::unique_ptr<autofill::PasswordForm>>
-      suppressed_same_organization_name_forms_;
-
-  // Whether querying |suppressed_https_forms_| was attempted and did complete
-  // at least once during the lifetime of this instance, regardless of whether
-  // there have been any results.
-  bool did_complete_querying_suppressed_forms_ = false;
-
-  // Non-owning copies of the vectors above.
-  std::vector<const autofill::PasswordForm*> weak_non_federated_;
-  std::vector<const autofill::PasswordForm*> weak_federated_;
-  std::vector<const autofill::PasswordForm*>
-      weak_suppressed_same_origin_https_forms_;
-  std::vector<const autofill::PasswordForm*>
-      weak_suppressed_psl_matching_forms_;
-  std::vector<const autofill::PasswordForm*>
-      weak_suppressed_same_organization_name_forms_;
-
-  // Consumers of the fetcher, all are assumed to outlive |this|.
-  std::set<FormFetcher::Consumer*> consumers_;
-
-  // Client used to obtain a CredentialFilter.
-  const PasswordManagerClient* const client_;
-
-  // The number of non-federated forms which were filtered out by
-  // CredentialsFilter and not included in |non_federated_|.
-  size_t filtered_count_ = 0;
-
-  // State of the fetcher.
-  State state_ = State::NOT_WAITING;
-
-  // False unless FetchDataFromPasswordStore has been called again without the
-  // password store returning results in the meantime.
-  bool need_to_refetch_ = false;
+  // Consumers of the fetcher, all are assumed to either outlive |this| or
+  // remove themselves from the list during their destruction.
+  base::ObserverList<FormFetcher::Consumer> consumers_;
 
   // Indicates whether HTTP passwords should be migrated to HTTPS.
   const bool should_migrate_http_passwords_;
 
-  // Indicates whether to query suppressed forms.
-  const bool should_query_suppressed_forms_;
-
   // Does the actual migration.
   std::unique_ptr<HttpPasswordStoreMigrator> http_migrator_;
-
-  // Responsible for looking up `suppressed` credentials. These are stored
-  // credentials that were not filled, even though they might be related to the
-  // origin that this instance was created for. Look-up happens asynchronously,
-  // without blocking Consumer::ProcessMatches.
-  std::unique_ptr<SuppressedFormFetcher> suppressed_form_fetcher_;
 
   DISALLOW_COPY_AND_ASSIGN(FormFetcherImpl);
 };

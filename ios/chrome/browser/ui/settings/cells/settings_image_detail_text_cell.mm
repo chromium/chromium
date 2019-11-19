@@ -7,6 +7,7 @@
 #include "base/logging.h"
 #include "ios/chrome/browser/ui/table_view/cells/table_view_cells_constants.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
+#import "ios/chrome/common/colors/UIColor+cr_semantic_colors.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -46,21 +47,21 @@
 
   _imageView = [[UIImageView alloc] init];
   _imageView.translatesAutoresizingMaskIntoConstraints = NO;
+  _imageView.tintColor = UIColor.cr_labelColor;
   [contentView addSubview:_imageView];
 
   _textLabel = [[UILabel alloc] init];
   _textLabel.numberOfLines = 0;
   _textLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
   _textLabel.adjustsFontForContentSizeCategory = YES;
-  _textLabel.textColor = UIColor.blackColor;
+  _textLabel.textColor = UIColor.cr_labelColor;
 
   _detailTextLabel = [[UILabel alloc] init];
   _detailTextLabel.numberOfLines = 0;
   _detailTextLabel.font =
-      [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
+      [UIFont preferredFontForTextStyle:kTableViewSublabelFontStyle];
   _detailTextLabel.adjustsFontForContentSizeCategory = YES;
-  _detailTextLabel.textColor =
-      UIColorFromRGB(kTableViewSecondaryLabelLightGrayTextColor);
+  _detailTextLabel.textColor = UIColor.cr_secondaryLabelColor;
 }
 
 // Sets constraints on subviews.

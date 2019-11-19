@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include "base/macros.h"
 #include "base/sequenced_task_runner.h"
 #include "cc/raster/raster_buffer_provider.h"
 #include "cc/raster/staging_buffer_pool.h"
@@ -39,7 +38,11 @@ class CC_EXPORT OneCopyRasterBufferProvider : public RasterBufferProvider {
       bool use_gpu_memory_buffer_resources,
       int max_staging_buffer_usage_in_bytes,
       viz::ResourceFormat tile_format);
+  OneCopyRasterBufferProvider(const OneCopyRasterBufferProvider&) = delete;
   ~OneCopyRasterBufferProvider() override;
+
+  OneCopyRasterBufferProvider& operator=(const OneCopyRasterBufferProvider&) =
+      delete;
 
   // Overridden from RasterBufferProvider:
   std::unique_ptr<RasterBuffer> AcquireBufferForRaster(
@@ -48,7 +51,6 @@ class CC_EXPORT OneCopyRasterBufferProvider : public RasterBufferProvider {
       uint64_t previous_content_id) override;
   void Flush() override;
   viz::ResourceFormat GetResourceFormat() const override;
-  bool IsResourceSwizzleRequired() const override;
   bool IsResourcePremultiplied() const override;
   bool CanPartialRasterIntoProvidedResource() const override;
   bool IsResourceReadyToDraw(
@@ -87,7 +89,10 @@ class CC_EXPORT OneCopyRasterBufferProvider : public RasterBufferProvider {
                      const ResourcePool::InUsePoolResource& in_use_resource,
                      OneCopyGpuBacking* backing,
                      uint64_t previous_content_id);
+    RasterBufferImpl(const RasterBufferImpl&) = delete;
     ~RasterBufferImpl() override;
+
+    RasterBufferImpl& operator=(const RasterBufferImpl&) = delete;
 
     // Overridden from RasterBuffer:
     void Playback(const RasterSource* raster_source,
@@ -115,8 +120,6 @@ class CC_EXPORT OneCopyRasterBufferProvider : public RasterBufferProvider {
     // A SyncToken to be returned from the worker thread, and waited on before
     // using the rastered resource.
     gpu::SyncToken after_raster_sync_token_;
-
-    DISALLOW_COPY_AND_ASSIGN(RasterBufferImpl);
   };
 
   void PlaybackToStagingBuffer(
@@ -140,7 +143,6 @@ class CC_EXPORT OneCopyRasterBufferProvider : public RasterBufferProvider {
                                     bool mailbox_texture_is_overlay_candidate,
                                     const gpu::SyncToken& sync_token,
                                     const gfx::ColorSpace& color_space);
-  gfx::BufferUsage StagingBufferUsage() const;
 
   viz::ContextProvider* const compositor_context_provider_;
   viz::RasterContextProvider* const worker_context_provider_;
@@ -154,8 +156,6 @@ class CC_EXPORT OneCopyRasterBufferProvider : public RasterBufferProvider {
 
   const viz::ResourceFormat tile_format_;
   StagingBufferPool staging_pool_;
-
-  DISALLOW_COPY_AND_ASSIGN(OneCopyRasterBufferProvider);
 };
 
 }  // namespace cc

@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/optional.h"
 #include "media/base/video_facing.h"
 #include "media/capture/capture_export.h"
 
@@ -93,21 +92,6 @@ struct CAPTURE_EXPORT VideoCaptureDeviceDescriptor {
 
   VideoCaptureApi capture_api;
   VideoCaptureTransportType transport_type;
-
-  // Contains camera calibration parameters.
-  // These parameters apply to both RGB and depth video devices.  See also
-  // https://w3c.github.io/mediacapture-depth/#mediatracksettings-dictionary
-  // TODO(aleksandar.stojiljkovic): Add principal point and camera distortion
-  // model and coefficients.  See also https://crbug.com/616098
-  struct CameraCalibration {
-    double focal_length_x = 0.0;
-    double focal_length_y = 0.0;
-    // depth near and far are used only for depth cameras.
-    double depth_near = 0.0;
-    double depth_far = 0.0;
-  };
-
-  base::Optional<CameraCalibration> camera_calibration;
 
  private:
   std::string display_name_;  // Name that is intended for display in the UI

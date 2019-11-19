@@ -8,28 +8,24 @@
 
 #include "base/values.h"
 #include "chrome/browser/chromeos/login/demo_mode/demo_setup_controller.h"
-#include "chrome/browser/chromeos/login/screens/core_oobe_view.h"
 #include "chrome/browser/chromeos/login/screens/network_screen.h"
 #include "chrome/browser/chromeos/login/startup_utils.h"
+#include "chrome/browser/ui/webui/chromeos/login/core_oobe_handler.h"
 #include "chrome/browser/ui/webui/chromeos/network_element_localized_strings_provider.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/network/network_handler.h"
 #include "chromeos/network/network_state_handler.h"
 #include "components/login/localized_values_builder.h"
 
-namespace {
-
-const char kJsScreenPath[] = "login.NetworkScreen";
-
-}  // namespace
-
 namespace chromeos {
+
+constexpr StaticOobeScreenId NetworkScreenView::kScreenId;
 
 NetworkScreenHandler::NetworkScreenHandler(JSCallsContainer* js_calls_container,
                                            CoreOobeView* core_oobe_view)
     : BaseScreenHandler(kScreenId, js_calls_container),
       core_oobe_view_(core_oobe_view) {
-  set_call_js_prefix(kJsScreenPath);
+  set_user_acted_method_path("login.NetworkScreen.userActed");
   DCHECK(core_oobe_view_);
 }
 

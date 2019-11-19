@@ -11,7 +11,7 @@
 #include "chrome/browser/task_manager/providers/task.h"
 #include "chrome/browser/task_manager/sampling/task_manager_impl.h"
 #include "chrome/browser/task_manager/task_manager_observer.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace task_manager {
@@ -92,7 +92,7 @@ class TaskManagerImplTest : public testing::Test, public TaskManagerObserver {
   }
 
  private:
-  content::TestBrowserThreadBundle thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
   std::vector<std::unique_ptr<FakeTask>> tasks_;
   DISALLOW_COPY_AND_ASSIGN(TaskManagerImplTest);
 };

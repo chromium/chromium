@@ -19,29 +19,20 @@
 #include "media/base/media_switches.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 
-#if defined(OS_WIN)
-#define NumberToStringType base::NumberToString16
-#else
-#define NumberToStringType base::NumberToString
-#endif
-
 namespace {
 
-const int kExpectedConsumerId = 1;
-
-const int kWaveHeaderSizeBytes = 44;
-
-const base::FilePath::CharType kBaseFilename[] =
-    FILE_PATH_LITERAL("audio_debug");
+constexpr int kExpectedConsumerId = 1;
+constexpr int kWaveHeaderSizeBytes = 44;
+constexpr char kBaseFilename[] = "audio_debug";
 
 // Get the expected AEC dump file name. The name will be
 // <temporary path>.<render process id>.aec_dump.<consumer id>, for example
 // "/tmp/.com.google.Chrome.Z6UC3P.12345.aec_dump.1".
 base::FilePath GetExpectedAecDumpFileName(const base::FilePath& base_file_path,
-                                          int render_process_id) {
-  return base_file_path.AddExtension(NumberToStringType(render_process_id))
-      .AddExtension(FILE_PATH_LITERAL("aec_dump"))
-      .AddExtension(NumberToStringType(kExpectedConsumerId));
+                                          int renderer_pid) {
+  return base_file_path.AddExtensionASCII(base::NumberToString(renderer_pid))
+      .AddExtensionASCII("aec_dump")
+      .AddExtensionASCII(base::NumberToString(kExpectedConsumerId));
 }
 
 // Get the file names of the recordings. The name will be
@@ -128,13 +119,13 @@ IN_PROC_BROWSER_TEST_F(WebRtcAudioDebugRecordingsBrowserTest,
   ASSERT_TRUE(embedded_test_server()->Start());
 
   // We must navigate somewhere first so that the render process is created.
-  NavigateToURL(shell(), GURL(""));
+  EXPECT_TRUE(NavigateToURL(shell(), GURL(url::kAboutBlankURL)));
 
   // Create a temp directory and setup base file path.
   base::FilePath temp_dir_path;
   ASSERT_TRUE(
       CreateNewTempDirectory(base::FilePath::StringType(), &temp_dir_path));
-  base::FilePath base_file_path = temp_dir_path.Append(kBaseFilename);
+  base::FilePath base_file_path = temp_dir_path.AppendASCII(kBaseFilename);
 
   // This fakes the behavior of another open tab with webrtc-internals, and
   // enabling audio debug recordings in that tab.
@@ -142,7 +133,7 @@ IN_PROC_BROWSER_TEST_F(WebRtcAudioDebugRecordingsBrowserTest,
 
   // Make a call.
   GURL url(embedded_test_server()->GetURL("/media/peerconnection-call.html"));
-  NavigateToURL(shell(), url);
+  EXPECT_TRUE(NavigateToURL(shell(), url));
   ExecuteJavascriptAndWaitForOk("call({video: true, audio: true});");
   ExecuteJavascriptAndWaitForOk("hangup();");
 
@@ -214,13 +205,13 @@ IN_PROC_BROWSER_TEST_F(WebRtcAudioDebugRecordingsBrowserTest,
   ASSERT_TRUE(embedded_test_server()->Start());
 
   // We must navigate somewhere first so that the render process is created.
-  NavigateToURL(shell(), GURL(""));
+  EXPECT_TRUE(NavigateToURL(shell(), GURL(url::kAboutBlankURL)));
 
   // Create a temp directory and setup base file path.
   base::FilePath temp_dir_path;
   ASSERT_TRUE(
       CreateNewTempDirectory(base::FilePath::StringType(), &temp_dir_path));
-  base::FilePath base_file_path = temp_dir_path.Append(kBaseFilename);
+  base::FilePath base_file_path = temp_dir_path.AppendASCII(kBaseFilename);
 
   // This fakes the behavior of another open tab with webrtc-internals, and
   // enabling audio debug recordings in that tab, then disabling it.
@@ -229,7 +220,7 @@ IN_PROC_BROWSER_TEST_F(WebRtcAudioDebugRecordingsBrowserTest,
 
   // Make a call.
   GURL url(embedded_test_server()->GetURL("/media/peerconnection-call.html"));
-  NavigateToURL(shell(), url);
+  EXPECT_TRUE(NavigateToURL(shell(), url));
   ExecuteJavascriptAndWaitForOk("call({video: true, audio: true});");
   ExecuteJavascriptAndWaitForOk("hangup();");
 
@@ -263,17 +254,17 @@ IN_PROC_BROWSER_TEST_F(WebRtcAudioDebugRecordingsBrowserTest,
   ASSERT_TRUE(embedded_test_server()->Start());
 
   // We must navigate somewhere first so that the render process is created.
-  NavigateToURL(shell(), GURL(""));
+  EXPECT_TRUE(NavigateToURL(shell(), GURL("")));
 
   // Create a second window.
   Shell* shell2 = CreateBrowser();
-  NavigateToURL(shell2, GURL(""));
+  EXPECT_TRUE(NavigateToURL(shell2, GURL("")));
 
   // Create a temp directory and setup base file path.
   base::FilePath temp_dir_path;
   ASSERT_TRUE(
       CreateNewTempDirectory(base::FilePath::StringType(), &temp_dir_path));
-  base::FilePath base_file_path = temp_dir_path.Append(kBaseFilename);
+  base::FilePath base_file_path = temp_dir_path.AppendASCII(kBaseFilename);
 
   // This fakes the behavior of another open tab with webrtc-internals, and
   // enabling audio debug recordings in that tab.
@@ -281,8 +272,8 @@ IN_PROC_BROWSER_TEST_F(WebRtcAudioDebugRecordingsBrowserTest,
 
   // Make the calls.
   GURL url(embedded_test_server()->GetURL("/media/peerconnection-call.html"));
-  NavigateToURL(shell(), url);
-  NavigateToURL(shell2, url);
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+  EXPECT_TRUE(NavigateToURL(shell2, url));
   ExecuteJavascriptAndWaitForOk("call({video: true, audio: true});");
   std::string result;
   EXPECT_TRUE(ExecuteScriptAndExtractString(

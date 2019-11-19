@@ -37,8 +37,6 @@ namespace blink {
 
 class TimeInputType final : public BaseTemporalInputType {
  public:
-  static InputType* Create(HTMLInputElement&);
-
   explicit TimeInputType(HTMLInputElement&);
 
  private:

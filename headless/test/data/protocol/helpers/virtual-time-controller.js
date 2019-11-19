@@ -93,6 +93,33 @@
     }
   }
 
+  /**
+   * Capture screenshot of the entire screen and return a 2d graphics context
+   * that has the resulting screenshot painted.
+   */
+  async captureScreenshot() {
+    const frameTimeTicks = this.currentFrameTime();
+    const screenshotData =
+        (await this.dp_.HeadlessExperimental.beginFrame(
+            {frameTimeTicks, screenshot: {format: 'png'}}))
+        .result.screenshotData;
+    // Advance virtual time a bit so that next frame timestamp is greater.
+    this.virtualTimeBase_ += 0.01;
+    const image = new Image();
+    await new Promise(fulfill => {
+      image.onload = fulfill;
+      image.src = `data:image/png;base64,${screenshotData}`;
+    });
+    this.testRunner_.log(
+        `Screenshot size: ${image.naturalWidth} x ${image.naturalHeight}`);
+    const canvas = document.createElement('canvas');
+    canvas.width = image.naturalWidth;
+    canvas.height = image.naturalHeight;
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(image, 0, 0);
+    return ctx;
+  }
+
   async issueAnimationFrameAndScheduleNextChunk_() {
     if (this.totalElapsedTime_ > 0 && this.remainingBudget_ > 0) {
       const remainder = this.totalElapsedTime_ % this.animationFrameInterval_;

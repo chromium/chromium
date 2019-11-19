@@ -24,8 +24,11 @@
 #include "base/memory/ref_counted.h"
 #include "base/supports_user_data.h"
 #include "chrome/browser/download/download_commands.h"
+#include "chrome/browser/safe_browsing/download_protection/binary_upload_service.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_util.h"
+#include "chrome/browser/safe_browsing/download_protection/download_reporter.h"
 #include "chrome/browser/safe_browsing/safe_browsing_navigation_observer_manager.h"
+#include "chrome/browser/safe_browsing/services_delegate.h"
 #include "chrome/browser/safe_browsing/ui_manager.h"
 #include "components/safe_browsing/db/database_manager.h"
 #include "components/sessions/core/session_id.h"
@@ -33,6 +36,7 @@
 
 namespace content {
 class PageNavigator;
+struct NativeFileSystemWriteItem;
 }  // namespace content
 
 namespace download {
@@ -50,6 +54,8 @@ class BinaryFeatureExtractor;
 class ClientDownloadRequest;
 class DownloadFeedbackService;
 class CheckClientDownloadRequest;
+class CheckClientDownloadRequestBase;
+class CheckNativeFileSystemWriteRequest;
 class PPAPIDownloadRequest;
 
 // This class provides an asynchronous API to check whether a particular
@@ -75,7 +81,7 @@ class DownloadProtectionService {
   // invoked on the UI thread.  This method must be called once the download
   // is finished and written to disk.
   virtual void CheckClientDownload(download::DownloadItem* item,
-                                   const CheckDownloadCallback& callback);
+                                   CheckDownloadRepeatingCallback callback);
 
   // Checks whether any of the URLs in the redirect chain of the
   // download match the SafeBrowsing bad binary URL list.  The result is
@@ -83,7 +89,7 @@ class DownloadProtectionService {
   // called on the UI thread, and the callback will also be invoked on the UI
   // thread.  Pre-condition: !info.download_url_chain.empty().
   virtual void CheckDownloadUrl(download::DownloadItem* item,
-                                const CheckDownloadCallback& callback);
+                                CheckDownloadCallback callback);
 
   // Returns true iff the download specified by |info| should be scanned by
   // CheckClientDownload() for malicious content.
@@ -97,12 +103,21 @@ class DownloadProtectionService {
       const base::FilePath& default_file_path,
       const std::vector<base::FilePath::StringType>& alternate_extensions,
       Profile* profile,
-      const CheckDownloadCallback& callback);
+      CheckDownloadCallback callback);
+
+  // Checks whether the given Native File System write operation is likely to be
+  // malicious or not. The result is delivered asynchronously via the given
+  // callback.  This method must be called on the UI thread, and the callback
+  // will also be invoked on the UI thread.  This method must be called once the
+  // write is finished and data has been written to disk.
+  virtual void CheckNativeFileSystemWrite(
+      std::unique_ptr<content::NativeFileSystemWriteItem> item,
+      CheckDownloadCallback callback);
 
   // Display more information to the user regarding the download specified by
   // |info|. This method is invoked when the user requests more information
   // about a download that was marked as malicious.
-  void ShowDetailsForDownload(const download::DownloadItem& item,
+  void ShowDetailsForDownload(const download::DownloadItem* item,
                               content::PageNavigator* navigator);
 
   // Enables or disables the service.  This is usually called by the
@@ -130,6 +145,12 @@ class DownloadProtectionService {
   ClientDownloadRequestSubscription RegisterClientDownloadRequestCallback(
       const ClientDownloadRequestCallback& callback);
 
+  // Registers a callback that will be run when a NativeFileSystemWriteRequest
+  // has been formed.
+  NativeFileSystemWriteRequestSubscription
+  RegisterNativeFileSystemWriteRequestCallback(
+      const NativeFileSystemWriteRequestCallback& callback);
+
   // Registers a callback that will be run when a PPAPI ClientDownloadRequest
   // has been formed.
   PPAPIDownloadRequestSubscription RegisterPPAPIDownloadRequestCallback(
@@ -156,12 +177,22 @@ class DownloadProtectionService {
       const download::DownloadItem* item,
       bool show_download_in_folder);
 
+  // Uploads |request| to Safe Browsing for deep scanning, using the upload
+  // service attached to the given |profile|. This is non-blocking, and the
+  // result we be provided through the callback in |request|. This must be
+  // called on the UI thread.
+  void UploadForDeepScanning(
+      Profile* profile,
+      std::unique_ptr<BinaryUploadService::Request> request);
+
  private:
   friend class PPAPIDownloadRequest;
   friend class DownloadUrlSBClient;
   friend class DownloadProtectionServiceTest;
   friend class DownloadDangerPromptTest;
+  friend class CheckClientDownloadRequestBase;
   friend class CheckClientDownloadRequest;
+  friend class CheckNativeFileSystemWriteRequest;
 
   FRIEND_TEST_ALL_PREFIXES(DownloadProtectionServiceTest,
                            TestDownloadRequestTimeout);
@@ -196,7 +227,7 @@ class DownloadProtectionService {
 
   // Called by a CheckClientDownloadRequest instance when it finishes, to
   // remove it from |download_requests_|.
-  void RequestFinished(CheckClientDownloadRequest* request);
+  void RequestFinished(CheckClientDownloadRequestBase* request);
 
   void PPAPIDownloadCheckRequestFinished(PPAPIDownloadRequest* request);
 
@@ -204,6 +235,11 @@ class DownloadProtectionService {
   // stats of download attribution result.
   std::unique_ptr<ReferrerChainData> IdentifyReferrerChain(
       const download::DownloadItem& item);
+
+  // Identify referrer chain info of a native file system write. This function
+  // also records UMA stats of download attribution result.
+  std::unique_ptr<ReferrerChainData> IdentifyReferrerChain(
+      const content::NativeFileSystemWriteItem& item);
 
   // Identify referrer chain of the PPAPI download based on the frame URL where
   // the download is initiated. Then add referrer chain info to
@@ -230,8 +266,8 @@ class DownloadProtectionService {
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 
   // Set of pending server requests for DownloadManager mediated downloads.
-  std::unordered_map<CheckClientDownloadRequest*,
-                     std::unique_ptr<CheckClientDownloadRequest>>
+  std::unordered_map<CheckClientDownloadRequestBase*,
+                     std::unique_ptr<CheckClientDownloadRequestBase>>
       download_requests_;
 
   // Set of pending server requests for PPAPI mediated downloads. Using a map
@@ -255,6 +291,11 @@ class DownloadProtectionService {
   ClientDownloadRequestCallbackList client_download_request_callbacks_;
 
   // A list of callbacks to be run on the main thread when a
+  // NativeFileSystemWriteRequest has been formed.
+  NativeFileSystemWriteRequestCallbackList
+      native_file_system_write_request_callbacks_;
+
+  // A list of callbacks to be run on the main thread when a
   // PPAPIDownloadRequest has been formed.
   PPAPIDownloadRequestCallbackList ppapi_download_request_callbacks_;
 
@@ -264,6 +305,9 @@ class DownloadProtectionService {
 
   // Rate of whitelisted downloads we sample to send out download ping.
   double whitelist_sample_rate_;
+
+  // DownloadReporter to send real time reports for dangerous download events.
+  DownloadReporter download_reporter_;
 
   DISALLOW_COPY_AND_ASSIGN(DownloadProtectionService);
 };

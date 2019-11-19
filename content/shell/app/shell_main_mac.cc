@@ -52,9 +52,9 @@ int main(int argc, char* argv[]) {
     }
   }
 
-  const char rel_path[] =
-      "../../../" SHELL_PRODUCT_NAME " Framework.framework/" SHELL_PRODUCT_NAME
-      " Framework";
+  // The Helper app is in the versioned framework directory, so just go up to
+  // the version folder to locate the dylib.
+  const char rel_path[] = "../../../../" SHELL_PRODUCT_NAME " Framework";
 #else
   const char rel_path[] =
       "../Frameworks/" SHELL_PRODUCT_NAME

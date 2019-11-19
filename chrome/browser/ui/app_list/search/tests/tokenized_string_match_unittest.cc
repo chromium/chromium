@@ -18,11 +18,12 @@ namespace test {
 // Returns a string of |text| marked the hits in |match| using block bracket.
 // e.g. text= "Text", match.hits = [{0,1}], returns "[T]ext".
 std::string MatchHit(const base::string16& text,
-                     const TokenizedStringMatch& match) {
+                     const ash::TokenizedStringMatch& match) {
   base::string16 marked = text;
 
-  const TokenizedStringMatch::Hits& hits = match.hits();
-  for (TokenizedStringMatch::Hits::const_reverse_iterator it = hits.rbegin();
+  const ash::TokenizedStringMatch::Hits& hits = match.hits();
+  for (ash::TokenizedStringMatch::Hits::const_reverse_iterator it =
+           hits.rbegin();
        it != hits.rend(); ++it) {
     const gfx::Range& hit = *it;
     marked.insert(hit.end(), 1, ']');
@@ -42,7 +43,7 @@ TEST(TokenizedStringMatchTest, NotMatch) {
       {"abd", "abcd"}, {"cd", "abcd"},
   };
 
-  TokenizedStringMatch match;
+  ash::TokenizedStringMatch match;
   for (size_t i = 0; i < base::size(kTestCases); ++i) {
     const base::string16 text(base::UTF8ToUTF16(kTestCases[i].text));
     EXPECT_FALSE(match.Calculate(base::UTF8ToUTF16(kTestCases[i].query), text))
@@ -70,7 +71,7 @@ TEST(TokenizedStringMatchTest, Match) {
       {"Netflix", "flix", "Net[flix]"},
   };
 
-  TokenizedStringMatch match;
+  ash::TokenizedStringMatch match;
   for (size_t i = 0; i < base::size(kTestCases); ++i) {
     const base::string16 text(base::UTF8ToUTF16(kTestCases[i].text));
     EXPECT_TRUE(match.Calculate(base::UTF8ToUTF16(kTestCases[i].query), text));
@@ -101,8 +102,8 @@ TEST(TokenizedStringMatchTest, Relevance) {
       {"Google Chrome", "oo", "ch"},
   };
 
-  TokenizedStringMatch match_low;
-  TokenizedStringMatch match_high;
+  ash::TokenizedStringMatch match_low;
+  ash::TokenizedStringMatch match_high;
   for (size_t i = 0; i < base::size(kTestCases); ++i) {
     const base::string16 text(base::UTF8ToUTF16(kTestCases[i].text));
     EXPECT_TRUE(
@@ -136,7 +137,7 @@ TEST(TokenizedStringMatchTest, AbsoluteRelevance) {
       {"Google Chrome", "goog", 0.94},
   };
 
-  TokenizedStringMatch match;
+  ash::TokenizedStringMatch match;
   for (size_t i = 0; i < base::size(kTestCases); ++i) {
     const base::string16 text(base::UTF8ToUTF16(kTestCases[i].text));
     EXPECT_TRUE(match.Calculate(base::UTF8ToUTF16(kTestCases[i].query), text));

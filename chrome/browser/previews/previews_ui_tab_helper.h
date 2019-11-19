@@ -5,9 +5,11 @@
 #ifndef CHROME_BROWSER_PREVIEWS_PREVIEWS_UI_TAB_HELPER_H_
 #define CHROME_BROWSER_PREVIEWS_PREVIEWS_UI_TAB_HELPER_H_
 
-#include <map>
-
 #include <stdint.h>
+
+#include <map>
+#include <memory>
+#include <utility>
 
 #include "base/callback.h"
 #include "base/macros.h"
@@ -55,7 +57,6 @@ class PreviewsUITabHelper
 
   // Trigger the Previews UI to be shown to the user.
   void ShowUIElement(previews::PreviewsType previews_type,
-                     bool is_data_saver_user,
                      OnDismissPreviewsUICallback on_dismiss_callback);
 
   // Reloads the content of the page without previews.
@@ -130,6 +131,14 @@ class PreviewsUITabHelper
   void DidStartNavigation(
       content::NavigationHandle* navigation_handle) override;
 
+  // Records the time of the navigation if the current navigation is a reload
+  // and a preview was shown.
+  void MaybeRecordPreviewReload(content::NavigationHandle* navigation_handle);
+
+  // Show the user the Infobar if they need to be to notified that Lite mode
+  // now optimizes HTTPS pages.
+  void MaybeShowInfoBar(content::NavigationHandle* navigation_handle);
+
   // True if the UI for a preview has been shown for the page.
   bool displayed_preview_ui_ = false;
 
@@ -160,7 +169,7 @@ class PreviewsUITabHelper
   // finished.
   std::unique_ptr<previews::PreviewsUserData> previews_user_data_;
 
-  base::WeakPtrFactory<PreviewsUITabHelper> weak_factory_;
+  base::WeakPtrFactory<PreviewsUITabHelper> weak_factory_{this};
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 

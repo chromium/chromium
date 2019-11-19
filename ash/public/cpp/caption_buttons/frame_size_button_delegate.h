@@ -6,7 +6,6 @@
 #define ASH_PUBLIC_CPP_CAPTION_BUTTONS_FRAME_SIZE_BUTTON_DELEGATE_H_
 
 #include "ash/public/cpp/ash_public_export.h"
-#include "ash/public/cpp/caption_buttons/frame_caption_delegate.h"
 #include "ui/views/window/caption_button_types.h"
 
 namespace gfx {
@@ -18,6 +17,8 @@ class FrameCaptionButton;
 }
 
 namespace ash {
+
+enum class SnapDirection;
 
 // Delegate interface for FrameSizeButton.
 class ASH_PUBLIC_EXPORT FrameSizeButtonDelegate {
@@ -50,8 +51,8 @@ class ASH_PUBLIC_EXPORT FrameSizeButtonDelegate {
 
   // Thunks to methods of the same name in FrameCaptionDelegate.
   virtual bool CanSnap() = 0;
-  virtual void ShowSnapPreview(mojom::SnapDirection snap) = 0;
-  virtual void CommitSnap(mojom::SnapDirection snap) = 0;
+  virtual void ShowSnapPreview(SnapDirection snap) = 0;
+  virtual void CommitSnap(SnapDirection snap) = 0;
 
  protected:
   virtual ~FrameSizeButtonDelegate() {}

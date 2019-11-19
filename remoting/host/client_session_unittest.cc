@@ -13,10 +13,10 @@
 
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
-#include "base/message_loop/message_loop.h"
 #include "base/run_loop.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
+#include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "remoting/base/auto_thread_task_runner.h"
 #include "remoting/base/constants.h"
@@ -37,6 +37,26 @@
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
+#include "ui/events/event.h"
+
+// TODO(crbug.com/961064): Fix memory leaks in tests and re-enable on LSAN.
+#ifdef LEAK_SANITIZER
+#define MAYBE_LocalInputTest DISABLED_LocalInputTest
+#define MAYBE_ClampMouseEvents DISABLED_ClampMouseEvents
+#define MAYBE_DisableInputs DISABLED_DisableInputs
+#define MAYBE_MultiMonMouseMove_SameSize DISABLED_MultiMonMouseMove_SameSize
+#define MAYBE_RestoreEventState DISABLED_RestoreEventState
+#define MAYBE_MultiMonMouseMove DISABLED_MultiMonMouseMove
+#define MAYBE_DisconnectOnLocalInputTest DISABLED_DisconnectOnLocalInputTest
+#else
+#define MAYBE_LocalInputTest LocalInputTest
+#define MAYBE_ClampMouseEvents ClampMouseEvents
+#define MAYBE_DisableInputs DisableInputs
+#define MAYBE_MultiMonMouseMove_SameSize MultiMonMouseMove_SameSize
+#define MAYBE_RestoreEventState RestoreEventState
+#define MAYBE_MultiMonMouseMove MultiMonMouseMove
+#define MAYBE_DisconnectOnLocalInputTest DisconnectOnLocalInputTest
+#endif
 
 namespace remoting {
 
@@ -116,6 +136,7 @@ class ClientSessionTest : public testing::Test {
   static const int kDisplay2Width = 1024;
   static const int kDisplay2Height = 768;
   static const int kDisplay2YOffset = 35;
+  static const int kInvalidDisplayIndex = -2;
 
   // Creates the client session from a FakeSession instance.
   void CreateClientSession(std::unique_ptr<protocol::FakeSession> session);
@@ -129,7 +150,9 @@ class ClientSessionTest : public testing::Test {
   void ConnectClientSession();
 
   // Fakes video size notification from the VideoStream.
-  void NotifyVideoSize(int width, int height, int dpi_x, int dpi_y);
+  void SendOnVideoSizeChanged(int width, int height, int dpi_x, int dpi_y);
+  void NotifyVideoSize(int id);
+  void NotifyVideoSizeAll();
 
   // Add a fake display to the layout list. Used in conjunction with
   // NotifyDesktopDisplaySize.
@@ -149,17 +172,23 @@ class ClientSessionTest : public testing::Test {
   void NotifySelectDesktopDisplay(std::string id);
 
   // Convenience methods to setup a single- or double-monitor setup.
+  void ResetDisplayInfo();
   void SetupSingleDisplay();
   void SetupMultiDisplay();
+  void SetupMultiDisplay_SameSize();
 
-  // When using a multi-mon setup, this fakes the user selecting which displays
+  // When using a multi-mon setup, this fakes the user selecting which display
   // to show.
   void MultiMon_SelectFirstDisplay();
   void MultiMon_SelectSecondDisplay();
   void MultiMon_SelectAllDisplays();
 
+  // Geometry info for displays being tested.
+  DesktopDisplayInfo displays_;
+  int curr_display_;
+
   // Message loop that will process all ClientSession tasks.
-  base::MessageLoop message_loop_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
 
   // AutoThreadTaskRunner on which |client_session_| will be run.
   scoped_refptr<AutoThreadTaskRunner> task_runner_;
@@ -185,20 +214,24 @@ class ClientSessionTest : public testing::Test {
   protocol::FakeConnectionToClient* connection_;
 
   std::unique_ptr<FakeDesktopEnvironmentFactory> desktop_environment_factory_;
+
+  DesktopEnvironmentOptions desktop_environment_options_;
 };
 
 void ClientSessionTest::SetUp() {
-  // Arrange to run |message_loop_| until no components depend on it.
+  // Arrange to run |task_environment_| until no components depend on it.
   task_runner_ = new AutoThreadTaskRunner(
-      message_loop_.task_runner(), run_loop_.QuitClosure());
+      task_environment_.GetMainThreadTaskRunner(), run_loop_.QuitClosure());
 
-  desktop_environment_factory_.reset(
-      new FakeDesktopEnvironmentFactory(message_loop_.task_runner()));
+  desktop_environment_factory_.reset(new FakeDesktopEnvironmentFactory(
+      task_environment_.GetMainThreadTaskRunner()));
+  desktop_environment_options_ = DesktopEnvironmentOptions::CreateDefault();
 }
 
 void ClientSessionTest::TearDown() {
   if (client_session_) {
-    client_session_->DisconnectSession(protocol::OK);
+    if (connection_->is_connected())
+      client_session_->DisconnectSession(protocol::OK);
     client_session_.reset();
     desktop_environment_factory_.reset();
   }
@@ -222,9 +255,8 @@ void ClientSessionTest::CreateClientSession(
 
   client_session_.reset(new ClientSession(
       &session_event_handler_, std::move(connection),
-      desktop_environment_factory_.get(),
-      DesktopEnvironmentOptions::CreateDefault(), base::TimeDelta(), nullptr,
-      extensions_));
+      desktop_environment_factory_.get(), desktop_environment_options_,
+      base::TimeDelta(), nullptr, extensions_));
 }
 
 void ClientSessionTest::CreateClientSession() {
@@ -248,13 +280,62 @@ void ClientSessionTest::ConnectClientSession() {
   client_session_->OnConnectionChannelsConnected();
 }
 
-void ClientSessionTest::NotifyVideoSize(int width,
-                                        int height,
-                                        int dpi_x,
-                                        int dpi_y) {
+void ClientSessionTest::SendOnVideoSizeChanged(int width,
+                                               int height,
+                                               int dpi_x,
+                                               int dpi_y) {
   connection_->last_video_stream()->observer()->OnVideoSizeChanged(
       connection_->last_video_stream().get(),
       webrtc::DesktopSize(width, height), webrtc::DesktopVector(dpi_x, dpi_y));
+}
+
+void ClientSessionTest::NotifyVideoSize(int display_index) {
+  const DisplayGeometry* oldDisp = displays_.GetDisplayInfo(curr_display_);
+  const DisplayGeometry* disp = displays_.GetDisplayInfo(display_index);
+
+  curr_display_ = display_index;
+
+  // The OnVideoSizeChanged message is sent only if the size has actually
+  // changed.
+  if (oldDisp == nullptr || disp == nullptr || oldDisp->width != disp->width ||
+      oldDisp->height != disp->height) {
+    SendOnVideoSizeChanged(disp->width, disp->height, disp->dpi, disp->dpi);
+  } else {
+    client_session_->UpdateMouseClampingFilterOffset();
+  }
+}
+
+void ClientSessionTest::NotifyVideoSizeAll() {
+  if (curr_display_ == webrtc::kFullDesktopScreenId) {
+    return;
+  }
+  curr_display_ = webrtc::kFullDesktopScreenId;
+
+  int x_min, x_max, y_min, y_max;
+  bool initialized = false;
+  for (DisplayGeometry disp : displays_.displays()) {
+    int disp_x_max = disp.x + disp.width;
+    int disp_y_max = disp.y + disp.height;
+    if (!initialized) {
+      x_min = disp.x;
+      x_max = disp_x_max;
+      y_min = disp.y;
+      y_max = disp_y_max;
+      initialized = true;
+    } else {
+      if (disp.x < x_min)
+        x_min = disp.x;
+      if (disp_x_max > x_max)
+        x_max = disp_x_max;
+      if (disp.y < y_min)
+        y_min = disp.y;
+      if (disp_y_max > y_max)
+        y_max = disp_y_max;
+    }
+  }
+  int width = x_max - x_min;
+  int height = y_max - y_min;
+  SendOnVideoSizeChanged(width, height, kDefaultDpi, kDefaultDpi);
 }
 
 void ClientSessionTest::AddDisplayToLayout(protocol::VideoLayout* displays,
@@ -271,6 +352,7 @@ void ClientSessionTest::AddDisplayToLayout(protocol::VideoLayout* displays,
   video_track->set_height(height);
   video_track->set_x_dpi(dpi_x);
   video_track->set_y_dpi(dpi_y);
+  displays_.AddDisplayFrom(*video_track);
 }
 
 void ClientSessionTest::NotifyDesktopDisplaySize(
@@ -284,13 +366,19 @@ void ClientSessionTest::NotifySelectDesktopDisplay(std::string id) {
   client_session_->SelectDesktopDisplay(req);
 }
 
+void ClientSessionTest::ResetDisplayInfo() {
+  displays_.Reset();
+  curr_display_ = kInvalidDisplayIndex;
+}
+
 // Set up a single display (default size).
 void ClientSessionTest::SetupSingleDisplay() {
-  NotifyVideoSize(kDisplay1Width, kDisplay1Height, kDefaultDpi, kDefaultDpi);
+  ResetDisplayInfo();
   auto displays = std::make_unique<protocol::VideoLayout>();
   AddDisplayToLayout(displays.get(), 0, 0, kDisplay1Width, kDisplay1Height,
                      kDefaultDpi, kDefaultDpi);
   NotifyDesktopDisplaySize(std::move(displays));
+  NotifyVideoSizeAll();
 }
 
 // Set up multiple displays:
@@ -301,33 +389,49 @@ void ClientSessionTest::SetupSingleDisplay() {
 //             |               |
 //             +---------------+
 void ClientSessionTest::SetupMultiDisplay() {
-  NotifyVideoSize(kDisplay1Width + kDisplay2Width, kDisplay2Height, kDefaultDpi,
-                  kDefaultDpi);
+  ResetDisplayInfo();
   auto displays = std::make_unique<protocol::VideoLayout>();
   AddDisplayToLayout(displays.get(), 0, 0, kDisplay1Width, kDisplay1Height,
                      kDefaultDpi, kDefaultDpi);
   AddDisplayToLayout(displays.get(), kDisplay1Width, kDisplay2YOffset,
                      kDisplay2Width, kDisplay2Height, kDefaultDpi, kDefaultDpi);
   NotifyDesktopDisplaySize(std::move(displays));
+  NotifyVideoSizeAll();
+}
+
+// Set up multiple displays that are the same size:
+// +-----------+
+// |  800x600  |-----------+
+// |     0     |  800x600  |
+// +-----------+     1     |
+//             +-----------+
+void ClientSessionTest::SetupMultiDisplay_SameSize() {
+  ResetDisplayInfo();
+  auto displays = std::make_unique<protocol::VideoLayout>();
+  AddDisplayToLayout(displays.get(), 0, 0, kDisplay1Width, kDisplay1Height,
+                     kDefaultDpi, kDefaultDpi);
+  AddDisplayToLayout(displays.get(), kDisplay1Width, kDisplay2YOffset,
+                     kDisplay1Width, kDisplay1Height, kDefaultDpi, kDefaultDpi);
+  NotifyDesktopDisplaySize(std::move(displays));
+  NotifyVideoSizeAll();
 }
 
 void ClientSessionTest::MultiMon_SelectFirstDisplay() {
   NotifySelectDesktopDisplay("0");
-  NotifyVideoSize(kDisplay1Width, kDisplay1Height, kDefaultDpi, kDefaultDpi);
+  NotifyVideoSize(0);
 }
 
 void ClientSessionTest::MultiMon_SelectSecondDisplay() {
   NotifySelectDesktopDisplay("1");
-  NotifyVideoSize(kDisplay2Width, kDisplay2Height, kDefaultDpi, kDefaultDpi);
+  NotifyVideoSize(1);
 }
 
 void ClientSessionTest::MultiMon_SelectAllDisplays() {
   NotifySelectDesktopDisplay("all");
-  NotifyVideoSize(kDisplay1Width + kDisplay2Width, kDisplay2Height, kDefaultDpi,
-                  kDefaultDpi);
+  NotifyVideoSizeAll();
 }
 
-TEST_F(ClientSessionTest, MultiMonMouseMove) {
+TEST_F(ClientSessionTest, MAYBE_MultiMonMouseMove) {
   CreateClientSession();
   ConnectClientSession();
   SetupMultiDisplay();
@@ -358,29 +462,89 @@ TEST_F(ClientSessionTest, MultiMonMouseMove) {
 
   // Select entire desktop again: origin: 0,0 ; size: 1824x768
   MultiMon_SelectAllDisplays();
-  // Events should clamp to the entire desktop (800+1024, 768).
+  // Events should clamp to the entire desktop (800+1024, 35+768).
   connection_->input_stub()->InjectMouseEvent(MakeMouseMoveEvent(2000, 1000));
 
   client_session_->DisconnectSession(protocol::OK);
   client_session_.reset();
 
   EXPECT_EQ(7U, mouse_events.size());
+  // Full desktop.
   EXPECT_THAT(mouse_events[0], EqualsMouseMoveEvent(70, 50));
   EXPECT_THAT(mouse_events[1], EqualsMouseMoveEvent(1000, 650));
+  // Second display.
   EXPECT_THAT(mouse_events[2], EqualsMouseMoveEvent(1005 + kDisplay1Width,
                                                     625 + kDisplay2YOffset));
   EXPECT_THAT(mouse_events[3],
               EqualsMouseMoveEvent(kDisplay1Width + kDisplay2Width - 1,
                                    700 + kDisplay2YOffset));
+  // First display.
   EXPECT_THAT(mouse_events[4], EqualsMouseMoveEvent(80, 60));
   EXPECT_THAT(mouse_events[5],
               EqualsMouseMoveEvent(kDisplay1Width - 1, kDisplay1Height - 1));
+  // Full desktop.
   EXPECT_THAT(mouse_events[6],
               EqualsMouseMoveEvent(kDisplay1Width + kDisplay2Width - 1,
-                                   kDisplay2Height - 1));
+                                   kDisplay2Height + kDisplay2YOffset - 1));
 }
 
-TEST_F(ClientSessionTest, DisableInputs) {
+TEST_F(ClientSessionTest, MAYBE_MultiMonMouseMove_SameSize) {
+  CreateClientSession();
+  ConnectClientSession();
+  SetupMultiDisplay_SameSize();
+
+  FakeInputInjector* input_injector =
+      desktop_environment_factory_->last_desktop_environment()
+          ->last_input_injector()
+          .get();
+  std::vector<protocol::MouseEvent> mouse_events;
+  input_injector->set_mouse_events(&mouse_events);
+
+  // These mouse events are in global (full desktop) coordinates.
+  connection_->input_stub()->InjectMouseEvent(MakeMouseMoveEvent(70, 50));
+  connection_->input_stub()->InjectMouseEvent(MakeMouseMoveEvent(1000, 550));
+
+  // Select second display: origin: 800,35 ; size: 800x600
+  MultiMon_SelectSecondDisplay();
+  // This mouse event is injected relative to the second display.
+  connection_->input_stub()->InjectMouseEvent(MakeMouseMoveEvent(705, 525));
+  // Events should clamp to the selected display.
+  connection_->input_stub()->InjectMouseEvent(MakeMouseMoveEvent(2000, 500));
+
+  // Select first display: origin: 0,0 ; size: 800x600
+  MultiMon_SelectFirstDisplay();
+  connection_->input_stub()->InjectMouseEvent(MakeMouseMoveEvent(80, 60));
+  // Events should clamp to the selected display (800,600).
+  connection_->input_stub()->InjectMouseEvent(MakeMouseMoveEvent(1000, 640));
+
+  // Select entire desktop again: origin: 0,0 ; size: 1600x635
+  MultiMon_SelectAllDisplays();
+  // Events should clamp to the entire desktop (800+800, 35+600).
+  connection_->input_stub()->InjectMouseEvent(MakeMouseMoveEvent(2000, 1000));
+
+  client_session_->DisconnectSession(protocol::OK);
+  client_session_.reset();
+
+  EXPECT_EQ(7U, mouse_events.size());
+  // Full desktop.
+  EXPECT_THAT(mouse_events[0], EqualsMouseMoveEvent(70, 50));
+  EXPECT_THAT(mouse_events[1], EqualsMouseMoveEvent(1000, 550));
+  // Second display.
+  EXPECT_THAT(mouse_events[2], EqualsMouseMoveEvent(705 + kDisplay1Width,
+                                                    525 + kDisplay2YOffset));
+  EXPECT_THAT(mouse_events[3], EqualsMouseMoveEvent(2 * kDisplay1Width - 1,
+                                                    500 + kDisplay2YOffset));
+  // First display.
+  EXPECT_THAT(mouse_events[4], EqualsMouseMoveEvent(80, 60));
+  EXPECT_THAT(mouse_events[5],
+              EqualsMouseMoveEvent(kDisplay1Width - 1, kDisplay1Height - 1));
+  // Full desktop.
+  EXPECT_THAT(mouse_events[6],
+              EqualsMouseMoveEvent(2 * kDisplay1Width - 1,
+                                   kDisplay1Height + kDisplay2YOffset - 1));
+}
+
+TEST_F(ClientSessionTest, MAYBE_DisableInputs) {
   CreateClientSession();
   ConnectClientSession();
   SetupSingleDisplay();
@@ -436,7 +600,7 @@ TEST_F(ClientSessionTest, DisableInputs) {
               EqualsClipboardEvent(kMimeTypeTextUtf8, "c"));
 }
 
-TEST_F(ClientSessionTest, LocalInputTest) {
+TEST_F(ClientSessionTest, MAYBE_LocalInputTest) {
   CreateClientSession();
   ConnectClientSession();
   SetupSingleDisplay();
@@ -450,14 +614,16 @@ TEST_F(ClientSessionTest, LocalInputTest) {
 
 #if !defined(OS_WIN)
   // The OS echoes the injected event back.
-  client_session_->OnLocalMouseMoved(webrtc::DesktopVector(100, 101));
+  client_session_->OnLocalPointerMoved(webrtc::DesktopVector(100, 101),
+                                       ui::ET_MOUSE_MOVED);
 #endif  // !defined(OS_WIN)
 
   // This one should get throught as well.
   connection_->input_stub()->InjectMouseEvent(MakeMouseMoveEvent(200, 201));
 
   // Now this is a genuine local event.
-  client_session_->OnLocalMouseMoved(webrtc::DesktopVector(100, 101));
+  client_session_->OnLocalPointerMoved(webrtc::DesktopVector(100, 101),
+                                       ui::ET_MOUSE_MOVED);
 
   // This one should be blocked because of the previous local input event.
   connection_->input_stub()->InjectMouseEvent(MakeMouseMoveEvent(300, 301));
@@ -467,11 +633,25 @@ TEST_F(ClientSessionTest, LocalInputTest) {
   EXPECT_THAT(mouse_events[0], EqualsMouseMoveEvent(100, 101));
   EXPECT_THAT(mouse_events[1], EqualsMouseMoveEvent(200, 201));
 
+  // Verify that we're still connected.
+  EXPECT_TRUE(connection_->is_connected());
+
   // TODO(jamiewalch): Verify that remote inputs are re-enabled
   // eventually (via dependency injection, not sleep!)
 }
 
-TEST_F(ClientSessionTest, RestoreEventState) {
+TEST_F(ClientSessionTest, MAYBE_DisconnectOnLocalInputTest) {
+  desktop_environment_options_.set_terminate_upon_input(true);
+  CreateClientSession();
+  ConnectClientSession();
+  SetupSingleDisplay();
+
+  client_session_->OnLocalPointerMoved(webrtc::DesktopVector(100, 101),
+                                       ui::ET_MOUSE_MOVED);
+  EXPECT_FALSE(connection_->is_connected());
+}
+
+TEST_F(ClientSessionTest, MAYBE_RestoreEventState) {
   CreateClientSession();
   ConnectClientSession();
   SetupSingleDisplay();
@@ -509,7 +689,7 @@ TEST_F(ClientSessionTest, RestoreEventState) {
   EXPECT_THAT(key_events[3], EqualsKeyEvent(2, false));
 }
 
-TEST_F(ClientSessionTest, ClampMouseEvents) {
+TEST_F(ClientSessionTest, MAYBE_ClampMouseEvents) {
   CreateClientSession();
   ConnectClientSession();
   SetupSingleDisplay();

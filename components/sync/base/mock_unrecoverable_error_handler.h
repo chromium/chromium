@@ -30,7 +30,7 @@ class MockUnrecoverableErrorHandler : public UnrecoverableErrorHandler {
  private:
   int invocation_count_;
 
-  base::WeakPtrFactory<MockUnrecoverableErrorHandler> weak_ptr_factory_;
+  base::WeakPtrFactory<MockUnrecoverableErrorHandler> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(MockUnrecoverableErrorHandler);
 };

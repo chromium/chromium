@@ -8,7 +8,7 @@
 
 #include "base/metrics/field_trial.h"
 #include "base/strings/stringprintf.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "components/variations/active_field_trials.h"
 #include "components/variations/hashing.h"
 #include "components/variations/synthetic_trials_active_group_id_provider.h"
@@ -21,7 +21,7 @@ namespace {
 
 class SyntheticTrialRegistryTest : public ::testing::Test {
  public:
-  SyntheticTrialRegistryTest() : field_trial_list_(nullptr) { InitCrashKeys(); }
+  SyntheticTrialRegistryTest() { InitCrashKeys(); }
   ~SyntheticTrialRegistryTest() override { ClearCrashKeysInstanceForTesting(); }
 
   // Returns true if there is a synthetic trial in the given vector that matches
@@ -47,9 +47,7 @@ class SyntheticTrialRegistryTest : public ::testing::Test {
   }
 
  private:
-  base::test::ScopedTaskEnvironment task_environment_;
-
-  base::FieldTrialList field_trial_list_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
 
   DISALLOW_COPY_AND_ASSIGN(SyntheticTrialRegistryTest);
 };
@@ -175,11 +173,11 @@ TEST_F(SyntheticTrialRegistryTest, GetSyntheticFieldTrialActiveGroups) {
 
   std::string trial1_hash =
       base::StringPrintf("%x-%x", trial1.id.name, trial1.id.group);
-  EXPECT_TRUE(base::ContainsValue(output, trial1_hash));
+  EXPECT_TRUE(base::Contains(output, trial1_hash));
 
   std::string trial2_hash =
       base::StringPrintf("%x-%x", trial2.id.name, trial2.id.group);
-  EXPECT_TRUE(base::ContainsValue(output, trial2_hash));
+  EXPECT_TRUE(base::Contains(output, trial2_hash));
 }
 
 }  // namespace variations

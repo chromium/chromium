@@ -9,9 +9,10 @@
 #include "base/bind.h"
 #include "base/macros.h"
 #include "base/run_loop.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "ipc/ipc_param_traits.h"
-#include "mojo/public/cpp/bindings/binding.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/tests/bindings_test_base.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "mojo/public/cpp/system/wait.h"
@@ -23,10 +24,10 @@ namespace mojo {
 class NativeStructTest : public BindingsTestBase,
                          public test::NativeTypeTester {
  public:
-  NativeStructTest() : binding_(this, mojo::MakeRequest(&proxy_)) {}
+  NativeStructTest() : receiver_(this, remote_.BindNewPipeAndPassReceiver()) {}
   ~NativeStructTest() override = default;
 
-  test::NativeTypeTester* proxy() { return proxy_.get(); }
+  test::NativeTypeTester* remote() { return remote_.get(); }
 
  private:
   // test::NativeTypeTester:
@@ -41,8 +42,8 @@ class NativeStructTest : public BindingsTestBase,
     std::move(callback).Run(std::move(s));
   }
 
-  test::NativeTypeTesterPtr proxy_;
-  Binding<test::NativeTypeTester> binding_;
+  Remote<test::NativeTypeTester> remote_;
+  Receiver<test::NativeTypeTester> receiver_;
 
   DISALLOW_COPY_AND_ASSIGN(NativeStructTest);
 };
@@ -50,8 +51,8 @@ class NativeStructTest : public BindingsTestBase,
 TEST_P(NativeStructTest, NativeStruct) {
   test::TestNativeStruct s("hello world", 5, 42);
   base::RunLoop loop;
-  proxy()->PassNativeStruct(
-      s, base::Bind(
+  remote()->PassNativeStruct(
+      s, base::BindOnce(
              [](test::TestNativeStruct* expected_struct, base::RunLoop* loop,
                 const test::TestNativeStruct& passed) {
                EXPECT_EQ(expected_struct->message(), passed.message());
@@ -69,9 +70,9 @@ TEST_P(NativeStructTest, NativeStructWithAttachments) {
   test::TestNativeStructWithAttachments s(kTestMessage,
                                           std::move(pipe.handle0));
   base::RunLoop loop;
-  proxy()->PassNativeStructWithAttachments(
+  remote()->PassNativeStructWithAttachments(
       std::move(s),
-      base::Bind(
+      base::BindOnce(
           [](const std::string& expected_message,
              mojo::ScopedMessagePipeHandle peer_pipe, base::RunLoop* loop,
              test::TestNativeStructWithAttachments passed) {
@@ -89,7 +90,7 @@ TEST_P(NativeStructTest, NativeStructWithAttachments) {
             EXPECT_EQ("ping", std::string(bytes.begin(), bytes.end()));
             loop->Quit();
           },
-          kTestMessage, base::Passed(&pipe.handle1), &loop));
+          kTestMessage, std::move(pipe.handle1), &loop));
   loop.Run();
 }
 

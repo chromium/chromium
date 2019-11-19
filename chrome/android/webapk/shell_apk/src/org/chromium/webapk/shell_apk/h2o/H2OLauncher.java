@@ -10,7 +10,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -21,20 +20,7 @@ import org.chromium.webapk.shell_apk.WebApkSharedPreferences;
 
 /** Contains methods for launching host browser where ShellAPK shows the splash screen. */
 public class H2OLauncher {
-    // Lowest version of Chromium which supports ShellAPK showing the splash screen.
-    static final int MINIMUM_REQUIRED_CHROMIUM_VERSION_NEW_SPLASH = Integer.MAX_VALUE;
-
     private static final String TAG = "cr_H2OLauncher";
-
-    /**
-     * Returns whether intents (android.intent.action.MAIN, android.intent.action.SEND ...) should
-     * launch {@link SplashActivity} for the given host browser params.
-     */
-    public static boolean shouldIntentLaunchSplashActivity(HostBrowserLauncherParams params) {
-        return params.getHostBrowserMajorChromiumVersion()
-                >= MINIMUM_REQUIRED_CHROMIUM_VERSION_NEW_SPLASH
-                && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M;
-    }
 
     /** Returns whether the WebAPK requested a relaunch within the last {@link deltaMs}. */
     public static boolean didRequestRelaunchFromHostBrowserWithinLastMs(
@@ -42,7 +28,7 @@ public class H2OLauncher {
         SharedPreferences sharedPrefs = WebApkSharedPreferences.getPrefs(context);
         long now = System.currentTimeMillis();
         long lastRequestTimestamp = sharedPrefs.getLong(
-                WebApkSharedPreferences.SHARED_PREF_REQUEST_HOST_BROWSER_RELAUNCH_TIMESTAMP, -1);
+                WebApkSharedPreferences.PREF_REQUEST_HOST_BROWSER_RELAUNCH_TIMESTAMP, -1);
         return (now - lastRequestTimestamp) <= deltaMs;
     }
 
@@ -72,13 +58,22 @@ public class H2OLauncher {
 
         Bundle extraExtras = new Bundle();
         extraExtras.putBoolean(WebApkConstants.EXTRA_SPLASH_PROVIDED_BY_WEBAPK, true);
-        HostBrowserLauncher.launchBrowserInWebApkMode(
-                splashActivity, params, extraExtras, Intent.FLAG_ACTIVITY_NO_ANIMATION);
+        HostBrowserLauncher.launchBrowserInWebApkMode(splashActivity, params, extraExtras,
+                Intent.FLAG_ACTIVITY_NO_ANIMATION, true /* expectResult */);
     }
 
-    /** Launches the given component, passing extras from the given intent. */
+    /**
+     * Launches the given component, passing extras from the given intent.
+     *
+     * @param context
+     * @param intentToCopy Intent whose extras should be copied.
+     * @param selectedShareTargetActivity Class name of the share activity that the user selected.
+     * @param launchTimeMs Timestamp of when WebAPK's initial activity was launched. -1 if the time
+     *                     is unknown.
+     * @param launchComponent Component to launch.
+     */
     public static void copyIntentExtrasAndLaunch(Context context, Intent intentToCopy,
-            String selectedShareTargetActivity, ComponentName launchComponent) {
+            String selectedShareTargetActivity, long launchTimeMs, ComponentName launchComponent) {
         Intent intent = new Intent(Intent.ACTION_VIEW, intentToCopy.getData());
         intent.setComponent(launchComponent);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -94,21 +89,25 @@ public class H2OLauncher {
                     selectedShareTargetActivity);
         }
 
+        if (launchTimeMs != -1) {
+            intent.putExtra(WebApkConstants.EXTRA_WEBAPK_LAUNCH_TIME, launchTimeMs);
+        }
+
         context.startActivity(intent);
     }
 
     /** Sends intent to host browser to request that the host browser relaunch the WebAPK. */
     public static void requestRelaunchFromHostBrowser(
-            Context context, HostBrowserLauncherParams params) {
+            Activity activity, HostBrowserLauncherParams params) {
         long timestamp = System.currentTimeMillis();
-        SharedPreferences.Editor editor = WebApkSharedPreferences.getPrefs(context).edit();
-        editor.putLong(WebApkSharedPreferences.SHARED_PREF_REQUEST_HOST_BROWSER_RELAUNCH_TIMESTAMP,
-                timestamp);
+        SharedPreferences.Editor editor = WebApkSharedPreferences.getPrefs(activity).edit();
+        editor.putLong(
+                WebApkSharedPreferences.PREF_REQUEST_HOST_BROWSER_RELAUNCH_TIMESTAMP, timestamp);
         editor.apply();
 
         Bundle extraExtras = new Bundle();
         extraExtras.putBoolean(WebApkConstants.EXTRA_RELAUNCH, true);
-        HostBrowserLauncher.launchBrowserInWebApkMode(
-                context, params, extraExtras, Intent.FLAG_ACTIVITY_NEW_TASK);
+        HostBrowserLauncher.launchBrowserInWebApkMode(activity, params, extraExtras,
+                Intent.FLAG_ACTIVITY_NEW_TASK, false /* expectResult */);
     }
 }

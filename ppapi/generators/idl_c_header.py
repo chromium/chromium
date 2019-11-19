@@ -5,6 +5,8 @@
 
 """ Generator for C style prototypes and definitions """
 
+from __future__ import print_function
+
 import glob
 import os
 import re
@@ -96,7 +98,7 @@ def GenerateHeader(out, filenode, releases):
   for node in filenode.GetListOf(*top_types):
     # Skip if this node is not in this release
     if not node.InReleases(releases):
-      print "Skiping %s" % node
+      print("Skiping %s" % node)
       continue
 
     # End/Start group marker
@@ -199,7 +201,7 @@ class HGen(GeneratorByFile):
     my_min, my_max = filenode.GetMinMax(releases)
     if my_min > releases[-1] or my_max < releases[0]:
       if os.path.isfile(savename):
-        print "Removing stale %s for this range." % filenode.GetName()
+        print("Removing stale %s for this range." % filenode.GetName())
         os.remove(os.path.realpath(savename))
       return False
 
@@ -350,10 +352,10 @@ def main(args):
   filenames = glob.glob(idldir)
   ast = ParseFiles(filenames)
   if hgen.GenerateRelease(ast, 'M14', {}):
-    print "Golden file for M14 failed."
+    print("Golden file for M14 failed.")
     failed = 1
   else:
-    print "Golden file for M14 passed."
+    print("Golden file for M14 passed.")
 
 
   idldir = os.path.split(sys.argv[0])[0]
@@ -362,10 +364,10 @@ def main(args):
 
   ast = ParseFiles(filenames)
   if hgen.GenerateRange(ast, ['M13', 'M14', 'M15', 'M16', 'M17'], {}):
-    print "Golden file for M13-M17 failed."
+    print("Golden file for M13-M17 failed.")
     failed =1
   else:
-    print "Golden file for M13-M17 passed."
+    print("Golden file for M13-M17 passed.")
 
   return failed
 

@@ -47,11 +47,12 @@ bool DateTimeNumericFieldElement::Range::IsInRange(int value) const {
 DateTimeNumericFieldElement::DateTimeNumericFieldElement(
     Document& document,
     FieldOwner& field_owner,
+    DateTimeField type,
     const Range& range,
     const Range& hard_limits,
     const String& placeholder,
     const DateTimeNumericFieldElement::Step& step)
-    : DateTimeFieldElement(document, field_owner),
+    : DateTimeFieldElement(document, field_owner, type),
       placeholder_(placeholder),
       range_(range),
       hard_limits_(hard_limits),
@@ -70,8 +71,9 @@ DateTimeNumericFieldElement::DateTimeNumericFieldElement(
     if (dir == WTF::unicode::kLeftToRight ||
         dir == WTF::unicode::kEuropeanNumber ||
         dir == WTF::unicode::kArabicNumber) {
-      SetInlineStyleProperty(CSSPropertyUnicodeBidi, CSSValueBidiOverride);
-      SetInlineStyleProperty(CSSPropertyDirection, CSSValueLtr);
+      SetInlineStyleProperty(CSSPropertyID::kUnicodeBidi,
+                             CSSValueID::kBidiOverride);
+      SetInlineStyleProperty(CSSPropertyID::kDirection, CSSValueID::kLtr);
     }
   }
 }

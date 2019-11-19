@@ -24,25 +24,28 @@
  *
  */
 
+#include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/heap_test_utilities.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
+#include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/lifecycle_notifier.h"
 #include "third_party/blink/renderer/platform/lifecycle_observer.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
 namespace blink {
 
 class TestingObserver;
 
 class DummyContext final
-    : public GarbageCollectedFinalized<DummyContext>,
+    : public GarbageCollected<DummyContext>,
       public LifecycleNotifier<DummyContext, TestingObserver> {
   USING_GARBAGE_COLLECTED_MIXIN(DummyContext);
 
  public:
-  static DummyContext* Create() { return MakeGarbageCollected<DummyContext>(); }
-
   void Trace(blink::Visitor* visitor) override {
     LifecycleNotifier<DummyContext, TestingObserver>::Trace(visitor);
   }
@@ -57,10 +60,6 @@ class TestingObserver final
   USING_GARBAGE_COLLECTED_MIXIN(TestingObserver);
 
  public:
-  static TestingObserver* Create(DummyContext* context) {
-    return MakeGarbageCollected<TestingObserver>(context);
-  }
-
   explicit TestingObserver(DummyContext* context)
       : LifecycleObserver(context), context_destroyed_called_(false) {}
 
@@ -96,33 +95,36 @@ class TestingObserver final
 };
 
 TEST(LifecycleContextTest, ShouldObserveContextDestroyed) {
-  DummyContext* context = DummyContext::Create();
-  Persistent<TestingObserver> observer = TestingObserver::Create(context);
+  auto* context = MakeGarbageCollected<DummyContext>();
+  Persistent<TestingObserver> observer =
+      MakeGarbageCollected<TestingObserver>(context);
 
   EXPECT_EQ(observer->LifecycleContext(), context);
   EXPECT_FALSE(observer->ContextDestroyedCalled());
   context->NotifyContextDestroyed();
   context = nullptr;
-  ThreadState::Current()->CollectAllGarbage();
+  ThreadState::Current()->CollectAllGarbageForTesting();
   EXPECT_EQ(observer->LifecycleContext(), static_cast<DummyContext*>(nullptr));
   EXPECT_TRUE(observer->ContextDestroyedCalled());
 }
 
 TEST(LifecycleContextTest, ShouldNotObserveContextDestroyedIfUnobserve) {
-  DummyContext* context = DummyContext::Create();
-  Persistent<TestingObserver> observer = TestingObserver::Create(context);
+  auto* context = MakeGarbageCollected<DummyContext>();
+  Persistent<TestingObserver> observer =
+      MakeGarbageCollected<TestingObserver>(context);
   observer->Unobserve();
   context->NotifyContextDestroyed();
   context = nullptr;
-  ThreadState::Current()->CollectAllGarbage();
+  ThreadState::Current()->CollectAllGarbageForTesting();
   EXPECT_EQ(observer->LifecycleContext(), static_cast<DummyContext*>(nullptr));
   EXPECT_FALSE(observer->ContextDestroyedCalled());
 }
 
 TEST(LifecycleContextTest, ObserverRemovedDuringNotifyDestroyed) {
-  DummyContext* context = DummyContext::Create();
-  Persistent<TestingObserver> observer = TestingObserver::Create(context);
-  TestingObserver* inner_observer = TestingObserver::Create(context);
+  auto* context = MakeGarbageCollected<DummyContext>();
+  Persistent<TestingObserver> observer =
+      MakeGarbageCollected<TestingObserver>(context);
+  auto* inner_observer = MakeGarbageCollected<TestingObserver>(context);
   // Attach the observer to the other. When 'observer' is notified
   // of destruction, it will remove & destroy 'innerObserver'.
   observer->SetObserverToRemoveAndDestroy(inner_observer);
@@ -135,39 +137,41 @@ TEST(LifecycleContextTest, ObserverRemovedDuringNotifyDestroyed) {
   context->NotifyContextDestroyed();
   EXPECT_EQ(observer->InnerObserver(), nullptr);
   context = nullptr;
-  ThreadState::Current()->CollectAllGarbage();
+  ThreadState::Current()->CollectAllGarbageForTesting();
   EXPECT_EQ(observer->LifecycleContext(), static_cast<DummyContext*>(nullptr));
   EXPECT_TRUE(observer->ContextDestroyedCalled());
 }
 
 // This is a regression test for http://crbug.com/854639.
 TEST(LifecycleContextTest, ShouldNotHitCFICheckOnIncrementalMarking) {
-  bool was_enabled = RuntimeEnabledFeatures::HeapIncrementalMarkingEnabled();
-  RuntimeEnabledFeatures::SetHeapIncrementalMarkingEnabled(true);
-  ThreadState* thread_state = ThreadState::Current();
-  thread_state->IncrementalMarkingStart(BlinkGC::GCReason::kTesting);
+  base::test::ScopedFeatureList scoped_feature_list;
+  // Disable concurrent marking and concurrent sweeping as worker_pool task
+  // environment is not set.
+  scoped_feature_list.InitWithFeatures(
+      {blink::features::kBlinkHeapIncrementalMarking},
+      {blink::features::kBlinkHeapConcurrentMarking,
+       blink::features::kBlinkHeapConcurrentSweeping});
+  IncrementalMarkingTestDriver driver(ThreadState::Current());
+  driver.Start();
 
-  DummyContext* context = DummyContext::Create();
+  auto* context = MakeGarbageCollected<DummyContext>();
 
   // This should not cause a CFI check failure.
-  Persistent<TestingObserver> observer = TestingObserver::Create(context);
+  Persistent<TestingObserver> observer =
+      MakeGarbageCollected<TestingObserver>(context);
 
   EXPECT_FALSE(observer->ContextDestroyedCalled());
   context->NotifyContextDestroyed();
   EXPECT_TRUE(observer->ContextDestroyedCalled());
   context = nullptr;
 
-  while (thread_state->GetGCState() ==
-         ThreadState::kIncrementalMarkingStepScheduled)
-    thread_state->IncrementalMarkingStep(BlinkGC::kNoHeapPointersOnStack);
-  thread_state->IncrementalMarkingFinalize();
-
-  RuntimeEnabledFeatures::SetHeapIncrementalMarkingEnabled(was_enabled);
+  driver.FinishGC();
 }
 
 TEST(LifecycleContextTest, ForEachObserver) {
-  Persistent<DummyContext> context = DummyContext::Create();
-  Persistent<TestingObserver> observer = TestingObserver::Create(context);
+  Persistent<DummyContext> context = MakeGarbageCollected<DummyContext>();
+  Persistent<TestingObserver> observer =
+      MakeGarbageCollected<TestingObserver>(context);
 
   HeapVector<Member<TestingObserver>> seen_observers;
   context->ForEachObserver(
@@ -178,7 +182,7 @@ TEST(LifecycleContextTest, ForEachObserver) {
 
   seen_observers.clear();
   observer.Clear();
-  ThreadState::Current()->CollectAllGarbage();
+  ThreadState::Current()->CollectAllGarbageForTesting();
 
   context->ForEachObserver(
       [&](TestingObserver* observer) { seen_observers.push_back(observer); });

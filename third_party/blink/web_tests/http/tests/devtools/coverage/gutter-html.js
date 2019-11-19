@@ -7,7 +7,7 @@
   await TestRunner.loadModule('coverage_test_runner');
   await TestRunner.navigatePromise(TestRunner.url('resources/document.html'));
 
-  CoverageTestRunner.startCoverage();
+  await CoverageTestRunner.startCoverage();
   await TestRunner.evaluateInPagePromise('performActions()');
   await CoverageTestRunner.stopCoverage();
   await CoverageTestRunner.dumpDecorations('document.html');

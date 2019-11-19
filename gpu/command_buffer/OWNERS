@@ -1,7 +1,7 @@
-piman@chromium.org
 bajones@chromium.org
-zmo@chromium.org
+geofflang@chromium.org
 vmiura@chromium.org
+zmo@chromium.org
 
 # GPU memory buffer tests.
 per-file *gpu_memory_buffer*=reveman@chromium.org

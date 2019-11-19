@@ -1,0 +1,5 @@
+{
+  "bound_webapk": {
+    "runtime_host": "org.chromium.chrome.tests"
+  }
+}

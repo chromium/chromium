@@ -4,9 +4,9 @@
 
 #include "chrome/browser/android/chrome_backup_watcher.h"
 #include "base/bind.h"
+#include "chrome/android/chrome_jni_headers/ChromeBackupWatcher_jni.h"
 #include "chrome/browser/android/chrome_backup_agent.h"
 #include "chrome/browser/profiles/profile.h"
-#include "jni/ChromeBackupWatcher_jni.h"
 
 namespace android {
 

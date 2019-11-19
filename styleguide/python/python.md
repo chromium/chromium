@@ -15,6 +15,8 @@ can request review for a change to this file. If there's no consensus,
 [`//styleguide/python/OWNERS`](https://chromium.googlesource.com/chromium/src/+/master/styleguide/python/OWNERS)
 get to decide.
 
+Blink code in `third_party/blink` uses [Blink style](blink-python.md).
+
 [TOC]
 
 ## Differences from PEP-8

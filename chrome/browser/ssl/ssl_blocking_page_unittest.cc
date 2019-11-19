@@ -20,12 +20,6 @@ namespace OnSecurityInterstitialShown =
 namespace OnSecurityInterstitialProceeded =
     extensions::api::safe_browsing_private::OnSecurityInterstitialProceeded;
 
-namespace {
-
-void EmptyCallback(content::CertificateRequestResultType unused_type) {}
-
-}  // namespace
-
 class SSLBlockingPageTest : public ChromeRenderViewHostTestHarness {
  public:
   SSLBlockingPageTest() {}
@@ -57,8 +51,6 @@ TEST_F(SSLBlockingPageTest, VerifySecurityInterstitialExtensionEvents) {
   net::SSLInfo ssl_info;
   ssl_info.cert =
       net::ImportCertFromFile(net::GetTestCertsDirectory(), "ok_cert.pem");
-  base::RepeatingCallback<void(content::CertificateRequestResultType)>
-      callback = base::BindRepeating(&EmptyCallback);
   ssl_info.cert_status = net::CERT_STATUS_DATE_INVALID;
 
   // Simulates the showing of a SSL blocking page.
@@ -66,7 +58,7 @@ TEST_F(SSLBlockingPageTest, VerifySecurityInterstitialExtensionEvents) {
       web_contents(), net::ERR_CERT_DATE_INVALID, ssl_info, request_url,
       /*options_mask=*/0, base::Time::NowFromSystemTime(),
       /*support_url=*/GURL(),
-      /*ssl_cert_reporter=*/nullptr, callback);
+      /*ssl_cert_reporter=*/nullptr);
   blocking_page->DontCreateViewForTesting();
   blocking_page->Show();
 

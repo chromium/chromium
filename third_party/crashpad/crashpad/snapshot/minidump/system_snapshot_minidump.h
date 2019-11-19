@@ -38,11 +38,14 @@ class SystemSnapshotMinidump : public SystemSnapshot {
   //!     The file reader must support seeking.
   //! \param[in] minidump_system_info_rva The file offset in \a file_reader at
   //!     which the thread’s MINIDUMP_SYSTEM_INFO structure is located.
+  //! \param[in] version The OS version taken from the build string in
+  //!     MINIDUMP_MISC_INFO_4.
   //!
   //! \return `true` if the snapshot could be created, `false` otherwise with
   //!     an appropriate message logged.
   bool Initialize(FileReaderInterface* file_reader,
-                  RVA minidump_system_info_rva);
+                  RVA minidump_system_info_rva,
+                  const std::string& version);
 
   CPUArchitecture GetCPUArchitecture() const override;
   uint32_t CPURevision() const override;
@@ -68,9 +71,11 @@ class SystemSnapshotMinidump : public SystemSnapshot {
                 int* daylight_offset_seconds,
                 std::string* standard_name,
                 std::string* daylight_name) const override;
+
  private:
   MINIDUMP_SYSTEM_INFO minidump_system_info_;
   std::string minidump_build_name_;
+  std::string full_version_;
   InitializationStateDcheck initialized_;
 
   DISALLOW_COPY_AND_ASSIGN(SystemSnapshotMinidump);

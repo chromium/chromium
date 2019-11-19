@@ -1,0 +1,11 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+mojom = "//services/network/public/mojom/origin_policy_manager.mojom"
+public_headers = [ "//services/network/public/cpp/origin_policy.h" ]
+traits_headers = [ "//services/network/public/cpp/network_ipc_param_traits.h" ]
+deps = [
+  "//url/mojom:url_mojom_gurl",
+]
+type_mappings = [ "network.mojom.OriginPolicy=::network::OriginPolicy" ]

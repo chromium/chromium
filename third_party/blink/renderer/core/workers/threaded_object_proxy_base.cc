@@ -9,8 +9,8 @@
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/workers/parent_execution_context_task_runners.h"
 #include "third_party/blink/renderer/core/workers/threaded_messaging_proxy_base.h"
-#include "third_party/blink/renderer/platform/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
@@ -19,37 +19,37 @@ void ThreadedObjectProxyBase::CountFeature(WebFeature feature) {
   PostCrossThreadTask(
       *GetParentExecutionContextTaskRunners()->Get(TaskType::kInternalDefault),
       FROM_HERE,
-      CrossThreadBind(&ThreadedMessagingProxyBase::CountFeature,
-                      MessagingProxyWeakPtr(), feature));
+      CrossThreadBindOnce(&ThreadedMessagingProxyBase::CountFeature,
+                          MessagingProxyWeakPtr(), feature));
 }
 
 void ThreadedObjectProxyBase::CountDeprecation(WebFeature feature) {
   PostCrossThreadTask(
       *GetParentExecutionContextTaskRunners()->Get(TaskType::kInternalDefault),
       FROM_HERE,
-      CrossThreadBind(&ThreadedMessagingProxyBase::CountDeprecation,
-                      MessagingProxyWeakPtr(), feature));
+      CrossThreadBindOnce(&ThreadedMessagingProxyBase::CountDeprecation,
+                          MessagingProxyWeakPtr(), feature));
 }
 
 void ThreadedObjectProxyBase::ReportConsoleMessage(
-    MessageSource source,
+    mojom::ConsoleMessageSource source,
     mojom::ConsoleMessageLevel level,
     const String& message,
     SourceLocation* location) {
   PostCrossThreadTask(
       *GetParentExecutionContextTaskRunners()->Get(TaskType::kInternalDefault),
       FROM_HERE,
-      CrossThreadBind(&ThreadedMessagingProxyBase::ReportConsoleMessage,
-                      MessagingProxyWeakPtr(), source, level, message,
-                      WTF::Passed(location->Clone())));
+      CrossThreadBindOnce(&ThreadedMessagingProxyBase::ReportConsoleMessage,
+                          MessagingProxyWeakPtr(), source, level, message,
+                          WTF::Passed(location->Clone())));
 }
 
 void ThreadedObjectProxyBase::DidCloseWorkerGlobalScope() {
   PostCrossThreadTask(
       *GetParentExecutionContextTaskRunners()->Get(TaskType::kInternalDefault),
       FROM_HERE,
-      CrossThreadBind(&ThreadedMessagingProxyBase::TerminateGlobalScope,
-                      MessagingProxyWeakPtr()));
+      CrossThreadBindOnce(&ThreadedMessagingProxyBase::TerminateGlobalScope,
+                          MessagingProxyWeakPtr()));
 }
 
 void ThreadedObjectProxyBase::DidTerminateWorkerThread() {
@@ -57,8 +57,8 @@ void ThreadedObjectProxyBase::DidTerminateWorkerThread() {
   PostCrossThreadTask(
       *GetParentExecutionContextTaskRunners()->Get(TaskType::kInternalDefault),
       FROM_HERE,
-      CrossThreadBind(&ThreadedMessagingProxyBase::WorkerThreadTerminated,
-                      MessagingProxyWeakPtr()));
+      CrossThreadBindOnce(&ThreadedMessagingProxyBase::WorkerThreadTerminated,
+                          MessagingProxyWeakPtr()));
 }
 
 ParentExecutionContextTaskRunners*

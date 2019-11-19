@@ -1,0 +1,16 @@
+{
+  "name": "Bypass page's Content Security Policy trusted-types restrictions",
+  "version": "0.1",
+  "manifest_version": 2,
+  "description": "Check that injected content scripts can inject resources, regardless of a page's trusted-types CSP directive.",
+  "background": {
+    "scripts": ["background.js"]
+  },
+  "permissions": ["http://*/*", "tabs"],
+  "content_scripts": [
+    {
+      "matches": ["http://*/*extensions/test_file_with_trusted_types.html"],
+      "js": ["a.js"]
+    }
+  ]
+}

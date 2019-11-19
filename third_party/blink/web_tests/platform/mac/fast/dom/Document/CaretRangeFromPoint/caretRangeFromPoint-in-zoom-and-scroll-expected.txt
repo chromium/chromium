@@ -1,7 +1,0 @@
-A long text to test document caretRangeFromPoint. Test scroll, zoom, zoomAndScroll .................................... The End
-PASS successfullyParsed is true
-
-TEST COMPLETE
-
-FAIL check zoom offset actual: 0; expected: 29
-FAIL check zoom and scroll offset actual: 0; expected: 29

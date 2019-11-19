@@ -23,7 +23,8 @@ class MockOfflineContentProvider : public OfflineContentProvider {
     // OfflineContentProvider::Observer implementation.
     MOCK_METHOD1(OnItemsAdded, void(const OfflineItemList&));
     MOCK_METHOD1(OnItemRemoved, void(const ContentId&));
-    MOCK_METHOD1(OnItemUpdated, void(const OfflineItem&));
+    MOCK_METHOD2(OnItemUpdated,
+                 void(const OfflineItem&, const base::Optional<UpdateDelta>&));
   };
 
   MockOfflineContentProvider();
@@ -36,7 +37,8 @@ class MockOfflineContentProvider : public OfflineContentProvider {
   void SetVisuals(std::map<ContentId, OfflineItemVisuals> visuals);
   void NotifyOnItemsAdded(const OfflineItemList& items);
   void NotifyOnItemRemoved(const ContentId& id);
-  void NotifyOnItemUpdated(const OfflineItem& item);
+  void NotifyOnItemUpdated(const OfflineItem& item,
+                           const base::Optional<UpdateDelta>& update_delta);
 
   // OfflineContentProvider implementation.
   MOCK_METHOD2(OpenItem, void(LaunchLocation, const ContentId&));
@@ -44,15 +46,20 @@ class MockOfflineContentProvider : public OfflineContentProvider {
   MOCK_METHOD1(CancelDownload, void(const ContentId&));
   MOCK_METHOD1(PauseDownload, void(const ContentId&));
   MOCK_METHOD2(ResumeDownload, void(const ContentId&, bool));
-  MOCK_METHOD2(GetVisualsForItem_,
-               void(const ContentId&, const VisualsCallback&));
+  MOCK_METHOD3(GetVisualsForItem_,
+               void(const ContentId&,
+                    GetVisualsOptions,
+                    const VisualsCallback&));
   void GetVisualsForItem(const ContentId& id,
+                         GetVisualsOptions options,
                          VisualsCallback callback) override;
   MOCK_METHOD2(GetShareInfoForItem, void(const ContentId&, ShareCallback));
   void GetAllItems(MultipleItemCallback callback) override;
   void GetItemById(const ContentId& id, SingleItemCallback callback) override;
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
+  MOCK_METHOD3(RenameItem,
+               void(const ContentId&, const std::string&, RenameCallback));
 
  private:
   base::ObserverList<Observer>::Unchecked observers_;

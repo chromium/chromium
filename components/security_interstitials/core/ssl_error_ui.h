@@ -21,24 +21,6 @@ class ControllerClient;
 // determine what type of error should be displayed when.
 class SSLErrorUI {
  public:
-  enum SSLErrorOptionsMask {
-    // Indicates that the error UI should support dismissing the error and
-    // loading the page. By default, the errors cannot be overridden via the UI.
-    SOFT_OVERRIDE_ENABLED = 1 << 0,
-    // Indicates that the user should NOT be allowed to use a "secret code" to
-    // dismiss the error and load the page, even if the UI does not support it.
-    // By default, an error can be overridden via the "secret code."
-    HARD_OVERRIDE_DISABLED = 1 << 1,
-    // Indicates that the site the user is trying to connect to has requested
-    // strict enforcement of certificate validation (e.g. with HTTP
-    // Strict-Transport-Security). By default, the error assumes strict
-    // enforcement was not requested.
-    STRICT_ENFORCEMENT = 1 << 2,
-    // Indicates that a user decision had been previously made but the
-    // decision has expired.
-    EXPIRED_BUT_PREVIOUSLY_ALLOWED = 1 << 3,
-  };
-
   SSLErrorUI(const GURL& request_url,
              int cert_error,
              const net::SSLInfo& ssl_info,

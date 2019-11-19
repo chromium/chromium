@@ -5,7 +5,11 @@
 #include "chromeos/services/device_sync/cryptauth_gcm_manager_impl.h"
 
 #include "base/macros.h"
+#include "base/strings/string_number_conversions.h"
+#include "chromeos/services/device_sync/cryptauth_feature_type.h"
+#include "chromeos/services/device_sync/cryptauth_key_bundle.h"
 #include "chromeos/services/device_sync/pref_names.h"
+#include "chromeos/services/device_sync/proto/cryptauth_common.pb.h"
 #include "components/gcm_driver/fake_gcm_driver.h"
 #include "components/gcm_driver/gcm_client.h"
 #include "components/prefs/testing_pref_service.h"
@@ -27,6 +31,12 @@ const char kExistingGCMRegistrationId[] = "cirrus";
 const char kNewGCMRegistrationId[] = "stratus";
 const char kCryptAuthMessageCollapseKey[] =
     "collapse_cryptauth_sync_DEVICES_SYNC";
+const char kSessionId1[] = "session_id_1";
+const char kSessionId2[] = "session_id_2";
+const CryptAuthFeatureType kFeatureType1 =
+    CryptAuthFeatureType::kBetterTogetherHostEnabled;
+const CryptAuthFeatureType kFeatureType2 =
+    CryptAuthFeatureType::kEasyUnlockHostEnabled;
 
 // Mock GCMDriver implementation for testing.
 class MockGCMDriver : public gcm::FakeGCMDriver {
@@ -86,13 +96,25 @@ class DeviceSyncCryptAuthGCMManagerImplTest
     OnGCMRegistrationResultProxy(success);
   }
 
-  void OnReenrollMessage() override { OnReenrollMessageProxy(); }
+  void OnReenrollMessage(
+      const base::Optional<std::string>& session_id,
+      const base::Optional<CryptAuthFeatureType>& feature_type) override {
+    OnReenrollMessageProxy(session_id, feature_type);
+  }
 
-  void OnResyncMessage() override { OnResyncMessageProxy(); }
+  void OnResyncMessage(
+      const base::Optional<std::string>& session_id,
+      const base::Optional<CryptAuthFeatureType>& feature_type) override {
+    OnResyncMessageProxy(session_id, feature_type);
+  }
 
   MOCK_METHOD1(OnGCMRegistrationResultProxy, void(bool));
-  MOCK_METHOD0(OnReenrollMessageProxy, void());
-  MOCK_METHOD0(OnResyncMessageProxy, void());
+  MOCK_METHOD2(OnReenrollMessageProxy,
+               void(base::Optional<std::string> session_id,
+                    base::Optional<CryptAuthFeatureType> feature_type));
+  MOCK_METHOD2(OnResyncMessageProxy,
+               void(base::Optional<std::string> session_id,
+                    base::Optional<CryptAuthFeatureType> feature_type));
 
   testing::StrictMock<MockGCMDriver> gcm_driver_;
 
@@ -167,8 +189,13 @@ TEST_F(DeviceSyncCryptAuthGCMManagerImplTest, ConcurrentRegistrations) {
   EXPECT_EQ(kNewGCMRegistrationId, gcm_manager_.GetRegistrationId());
 }
 
-TEST_F(DeviceSyncCryptAuthGCMManagerImplTest, ReenrollmentMessagesReceived) {
-  EXPECT_CALL(*this, OnReenrollMessageProxy()).Times(2);
+TEST_F(DeviceSyncCryptAuthGCMManagerImplTest,
+       ReenrollmentMessagesReceived_RegistrationTickleType) {
+  EXPECT_CALL(*this,
+              OnReenrollMessageProxy(
+                  base::Optional<std::string>() /* session_id */,
+                  base::Optional<CryptAuthFeatureType>() /* feature_type */))
+      .Times(2);
 
   gcm::IncomingMessage message;
   message.data["registrationTickleType"] = "1";  // FORCE_ENROLLMENT
@@ -182,8 +209,48 @@ TEST_F(DeviceSyncCryptAuthGCMManagerImplTest, ReenrollmentMessagesReceived) {
   gcm_app_handler->OnMessage(kCryptAuthGCMAppId, message);
 }
 
-TEST_F(DeviceSyncCryptAuthGCMManagerImplTest, ResyncMessagesReceived) {
-  EXPECT_CALL(*this, OnResyncMessageProxy()).Times(2);
+TEST_F(DeviceSyncCryptAuthGCMManagerImplTest,
+       ReenrollmentMessagesReceived_TargetService) {
+  {
+    ::testing::InSequence dummy;
+
+    EXPECT_CALL(*this,
+                OnReenrollMessageProxy(
+                    base::Optional<std::string>(kSessionId1),
+                    base::Optional<CryptAuthFeatureType>(kFeatureType1)));
+    EXPECT_CALL(*this,
+                OnReenrollMessageProxy(
+                    base::Optional<std::string>(kSessionId2),
+                    base::Optional<CryptAuthFeatureType>(kFeatureType2)));
+  }
+
+  gcm::IncomingMessage message;
+  message.data["S"] =
+      base::NumberToString(cryptauthv2::TargetService::ENROLLMENT);
+  message.data["I"] = kSessionId1;
+  message.data["F"] = CryptAuthFeatureTypeToGcmHash(kFeatureType1);
+  message.data["K"] = CryptAuthKeyBundle::KeyBundleNameEnumToString(
+      CryptAuthKeyBundle::Name::kDeviceSyncBetterTogether);
+  message.collapse_key = kCryptAuthMessageCollapseKey;
+  message.sender_id = kCryptAuthGCMSenderId;
+
+  gcm::GCMAppHandler* gcm_app_handler =
+      static_cast<gcm::GCMAppHandler*>(&gcm_manager_);
+  gcm_app_handler->OnMessage(kCryptAuthGCMAppId, message);
+
+  message.data["I"] = kSessionId2;
+  message.data["F"] = CryptAuthFeatureTypeToGcmHash(kFeatureType2);
+
+  gcm_app_handler->OnMessage(kCryptAuthGCMAppId, message);
+}
+
+TEST_F(DeviceSyncCryptAuthGCMManagerImplTest,
+       ResyncMessagesReceived_RegistrationTickleType) {
+  EXPECT_CALL(*this,
+              OnResyncMessageProxy(
+                  base::Optional<std::string>() /* session_id */,
+                  base::Optional<CryptAuthFeatureType>() /* feature_type */))
+      .Times(2);
 
   gcm::IncomingMessage message;
   message.data["registrationTickleType"] = "3";  // DEVICES_SYNC
@@ -193,6 +260,205 @@ TEST_F(DeviceSyncCryptAuthGCMManagerImplTest, ResyncMessagesReceived) {
   gcm::GCMAppHandler* gcm_app_handler =
       static_cast<gcm::GCMAppHandler*>(&gcm_manager_);
   gcm_app_handler->OnMessage(kCryptAuthGCMAppId, message);
+  gcm_app_handler->OnMessage(kCryptAuthGCMAppId, message);
+}
+
+TEST_F(DeviceSyncCryptAuthGCMManagerImplTest,
+       ResyncMessagesReceived_TargetService) {
+  {
+    ::testing::InSequence dummy;
+
+    EXPECT_CALL(*this,
+                OnResyncMessageProxy(
+                    base::Optional<std::string>(kSessionId1),
+                    base::Optional<CryptAuthFeatureType>(kFeatureType1)));
+    EXPECT_CALL(*this,
+                OnResyncMessageProxy(
+                    base::Optional<std::string>(kSessionId2),
+                    base::Optional<CryptAuthFeatureType>(kFeatureType2)));
+  }
+
+  gcm::IncomingMessage message;
+  message.data["S"] =
+      base::NumberToString(cryptauthv2::TargetService::DEVICE_SYNC);
+  message.data["I"] = kSessionId1;
+  message.data["F"] = CryptAuthFeatureTypeToGcmHash(kFeatureType1);
+  message.data["K"] = CryptAuthKeyBundle::KeyBundleNameEnumToString(
+      CryptAuthKeyBundle::Name::kDeviceSyncBetterTogether);
+  message.collapse_key = kCryptAuthMessageCollapseKey;
+  message.sender_id = kCryptAuthGCMSenderId;
+
+  gcm::GCMAppHandler* gcm_app_handler =
+      static_cast<gcm::GCMAppHandler*>(&gcm_manager_);
+  gcm_app_handler->OnMessage(kCryptAuthGCMAppId, message);
+
+  message.data["I"] = kSessionId2;
+  message.data["F"] = CryptAuthFeatureTypeToGcmHash(kFeatureType2);
+
+  gcm_app_handler->OnMessage(kCryptAuthGCMAppId, message);
+}
+
+TEST_F(DeviceSyncCryptAuthGCMManagerImplTest, InvalidRegistrationTickleType) {
+  EXPECT_CALL(*this, OnReenrollMessageProxy(_, _)).Times(0);
+  EXPECT_CALL(*this, OnResyncMessageProxy(_, _)).Times(0);
+
+  gcm::IncomingMessage message;
+  message.data["registrationTickleType"] = "invalid";
+  message.collapse_key = kCryptAuthMessageCollapseKey;
+  message.sender_id = kCryptAuthGCMSenderId;
+
+  gcm::GCMAppHandler* gcm_app_handler =
+      static_cast<gcm::GCMAppHandler*>(&gcm_manager_);
+  gcm_app_handler->OnMessage(kCryptAuthGCMAppId, message);
+}
+
+TEST_F(DeviceSyncCryptAuthGCMManagerImplTest, InvalidTargetService) {
+  EXPECT_CALL(*this, OnReenrollMessageProxy(_, _)).Times(0);
+  EXPECT_CALL(*this, OnResyncMessageProxy(_, _)).Times(0);
+
+  gcm::IncomingMessage message;
+  message.data["S"] = "invalid";
+  message.data["I"] = kSessionId1;
+  message.data["F"] = CryptAuthFeatureTypeToGcmHash(kFeatureType1);
+  message.data["K"] = CryptAuthKeyBundle::KeyBundleNameEnumToString(
+      CryptAuthKeyBundle::Name::kDeviceSyncBetterTogether);
+  message.collapse_key = kCryptAuthMessageCollapseKey;
+  message.sender_id = kCryptAuthGCMSenderId;
+
+  gcm::GCMAppHandler* gcm_app_handler =
+      static_cast<gcm::GCMAppHandler*>(&gcm_manager_);
+  gcm_app_handler->OnMessage(kCryptAuthGCMAppId, message);
+}
+
+TEST_F(DeviceSyncCryptAuthGCMManagerImplTest,
+       InvalidRegistrationTickleTypeAndTargetService) {
+  EXPECT_CALL(*this, OnReenrollMessageProxy(_, _)).Times(0);
+  EXPECT_CALL(*this, OnResyncMessageProxy(_, _)).Times(0);
+
+  gcm::IncomingMessage message;
+  message.data["registrationTickleType"] = "invalid";
+  message.data["S"] = "invalid";
+  message.data["I"] = kSessionId1;
+  message.data["F"] = CryptAuthFeatureTypeToGcmHash(kFeatureType1);
+  message.data["K"] = CryptAuthKeyBundle::KeyBundleNameEnumToString(
+      CryptAuthKeyBundle::Name::kDeviceSyncBetterTogether);
+  message.collapse_key = kCryptAuthMessageCollapseKey;
+  message.sender_id = kCryptAuthGCMSenderId;
+
+  gcm::GCMAppHandler* gcm_app_handler =
+      static_cast<gcm::GCMAppHandler*>(&gcm_manager_);
+  gcm_app_handler->OnMessage(kCryptAuthGCMAppId, message);
+}
+
+TEST_F(DeviceSyncCryptAuthGCMManagerImplTest, InvalidDeviceSyncGroupName) {
+  EXPECT_CALL(*this, OnReenrollMessageProxy(_, _)).Times(0);
+  EXPECT_CALL(*this, OnResyncMessageProxy(_, _)).Times(0);
+
+  gcm::IncomingMessage message;
+  message.data["S"] =
+      base::NumberToString(cryptauthv2::TargetService::DEVICE_SYNC);
+  message.data["I"] = kSessionId1;
+  message.data["F"] = CryptAuthFeatureTypeToGcmHash(kFeatureType1);
+  message.data["K"] = "invalid";
+  message.collapse_key = kCryptAuthMessageCollapseKey;
+  message.sender_id = kCryptAuthGCMSenderId;
+
+  gcm::GCMAppHandler* gcm_app_handler =
+      static_cast<gcm::GCMAppHandler*>(&gcm_manager_);
+  gcm_app_handler->OnMessage(kCryptAuthGCMAppId, message);
+}
+
+TEST_F(DeviceSyncCryptAuthGCMManagerImplTest,
+       RegistrationTickleTypeAndTargetServiceSpecified_PreferTargetService) {
+  // In practice, "registrationTickleType" and "S" keys should never be
+  // contained in the same GCM message. If they are, a valid "S" value is
+  // arbitrarily preferred.
+  EXPECT_CALL(*this, OnReenrollMessageProxy(
+                         base::Optional<std::string>(kSessionId1),
+                         base::Optional<CryptAuthFeatureType>(kFeatureType1)));
+  EXPECT_CALL(*this, OnResyncMessageProxy(_, _)).Times(0);
+
+  gcm::IncomingMessage message;
+  message.data["registrationTickleType"] = "3";  // DEVICE_SYNC
+  message.data["S"] =
+      base::NumberToString(cryptauthv2::TargetService::ENROLLMENT);
+  message.data["I"] = kSessionId1;
+  message.data["F"] = CryptAuthFeatureTypeToGcmHash(kFeatureType1);
+  message.data["K"] = CryptAuthKeyBundle::KeyBundleNameEnumToString(
+      CryptAuthKeyBundle::Name::kDeviceSyncBetterTogether);
+  message.collapse_key = kCryptAuthMessageCollapseKey;
+  message.sender_id = kCryptAuthGCMSenderId;
+
+  gcm::GCMAppHandler* gcm_app_handler =
+      static_cast<gcm::GCMAppHandler*>(&gcm_manager_);
+  gcm_app_handler->OnMessage(kCryptAuthGCMAppId, message);
+}
+
+TEST_F(DeviceSyncCryptAuthGCMManagerImplTest,
+       RegistrationTickleTypeAndTargetServiceSpecified_InvalidTargetService) {
+  // In practice, "registrationTickleType" and "S" keys should never be
+  // contained in the same GCM message. If they are and the "S" value is
+  // invalid,, try the "registrationTickleType" value.
+  EXPECT_CALL(*this, OnReenrollMessageProxy(_, _)).Times(0);
+  EXPECT_CALL(*this, OnResyncMessageProxy(
+                         base::Optional<std::string>(kSessionId1),
+                         base::Optional<CryptAuthFeatureType>(kFeatureType1)));
+
+  gcm::IncomingMessage message;
+  message.data["registrationTickleType"] = "3";  // DEVICE_SYNC
+  message.data["S"] = "invalid";
+  message.data["I"] = kSessionId1;
+  message.data["F"] = CryptAuthFeatureTypeToGcmHash(kFeatureType1);
+  message.data["K"] = CryptAuthKeyBundle::KeyBundleNameEnumToString(
+      CryptAuthKeyBundle::Name::kDeviceSyncBetterTogether);
+  message.collapse_key = kCryptAuthMessageCollapseKey;
+  message.sender_id = kCryptAuthGCMSenderId;
+
+  gcm::GCMAppHandler* gcm_app_handler =
+      static_cast<gcm::GCMAppHandler*>(&gcm_manager_);
+  gcm_app_handler->OnMessage(kCryptAuthGCMAppId, message);
+}
+
+TEST_F(DeviceSyncCryptAuthGCMManagerImplTest, MissingFeatureType) {
+  EXPECT_CALL(*this, OnReenrollMessageProxy(_, _)).Times(0);
+  EXPECT_CALL(*this,
+              OnResyncMessageProxy(base::Optional<std::string>(kSessionId1),
+                                   base::Optional<CryptAuthFeatureType>()));
+
+  // Do not include feature type key "F" in the message.
+  gcm::IncomingMessage message;
+  message.data["S"] =
+      base::NumberToString(cryptauthv2::TargetService::DEVICE_SYNC);
+  message.data["I"] = kSessionId1;
+  message.data["K"] = CryptAuthKeyBundle::KeyBundleNameEnumToString(
+      CryptAuthKeyBundle::Name::kDeviceSyncBetterTogether);
+  message.collapse_key = kCryptAuthMessageCollapseKey;
+  message.sender_id = kCryptAuthGCMSenderId;
+
+  gcm::GCMAppHandler* gcm_app_handler =
+      static_cast<gcm::GCMAppHandler*>(&gcm_manager_);
+  gcm_app_handler->OnMessage(kCryptAuthGCMAppId, message);
+}
+
+TEST_F(DeviceSyncCryptAuthGCMManagerImplTest, InvalidFeatureType) {
+  EXPECT_CALL(*this, OnReenrollMessageProxy(_, _)).Times(0);
+  EXPECT_CALL(*this,
+              OnResyncMessageProxy(base::Optional<std::string>(kSessionId1),
+                                   base::Optional<CryptAuthFeatureType>()));
+
+  // Do not include feature type key "F" in the message.
+  gcm::IncomingMessage message;
+  message.data["S"] =
+      base::NumberToString(cryptauthv2::TargetService::DEVICE_SYNC);
+  message.data["I"] = kSessionId1;
+  message.data["F"] = "invalid";
+  message.data["K"] = CryptAuthKeyBundle::KeyBundleNameEnumToString(
+      CryptAuthKeyBundle::Name::kDeviceSyncBetterTogether);
+  message.collapse_key = kCryptAuthMessageCollapseKey;
+  message.sender_id = kCryptAuthGCMSenderId;
+
+  gcm::GCMAppHandler* gcm_app_handler =
+      static_cast<gcm::GCMAppHandler*>(&gcm_manager_);
   gcm_app_handler->OnMessage(kCryptAuthGCMAppId, message);
 }
 

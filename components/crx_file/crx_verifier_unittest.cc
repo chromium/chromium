@@ -32,24 +32,22 @@ constexpr char kOjjKey[] =
     "mCsHBHFWbqtGhSN4YCAw3DYQzwdTcIVaIA8f2Uo4AZ4INKkrEPRL8o9mZDYtO2YHIQg8pMSRMa"
     "6AawBNYi9tZScnmgl5L1qE6z5oIwIDAQAB";
 
+constexpr char kJlnHash[] = "jlnmailbicnpnbggmhfebbomaddckncf";
+constexpr char kJlnKey[] =
+    "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAtYd4M8wBjlPsc/wxS1/uXKMD6GtI7/"
+    "0GLxRe6UXTYtDk91u/"
+    "FdJRK9jHws+"
+    "FO6Yi3XcJGtMvuojiB1j4bdiYBfvRgfTD4b7krWtWM2udKPBtHI9ikAT5aom5Bda8rCPNyaqXC"
+    "6Ax+KTgQpeeJglYu7TTd/"
+    "AePyvlRHtCKNkcvRQLY0b6hccALqoTzyTueDX12c8Htg76syEPbz7hSIPPfq6KEGvuVSxWAejy"
+    "/y6EhwAdXRLpegul9KmL94OY1G6dpycUKwyKeXOcB6Qj5iKNcOqJAaSLxoOZby4G3cI1BcQpp/"
+    "3vYccJ4qouDMfaanLe8CvFlLp4VOn833aJ8PYpLQIDAQAB";
+
 }  // namespace
 
 namespace crx_file {
 
 using CrxVerifierTest = testing::Test;
-
-TEST_F(CrxVerifierTest, ValidFullCrx2) {
-  const std::vector<std::vector<uint8_t>> keys;
-  const std::vector<uint8_t> hash;
-  std::string public_key;
-  std::string crx_id;
-
-  EXPECT_EQ(VerifierResult::OK_FULL,
-            Verify(TestFile("valid.crx2"), VerifierFormat::CRX2_OR_CRX3, keys,
-                   hash, &public_key, &crx_id));
-  EXPECT_EQ(std::string(kOjjHash), crx_id);
-  EXPECT_EQ(std::string(kOjjKey), public_key);
-}
 
 TEST_F(CrxVerifierTest, ValidFullCrx3) {
   const std::vector<std::vector<uint8_t>> keys;
@@ -57,9 +55,9 @@ TEST_F(CrxVerifierTest, ValidFullCrx3) {
   std::string public_key = "UNSET";
   std::string crx_id = "UNSET";
 
-  EXPECT_EQ(VerifierResult::OK_FULL, Verify(TestFile("valid_no_publisher.crx3"),
-                                            VerifierFormat::CRX2_OR_CRX3, keys,
-                                            hash, &public_key, &crx_id));
+  EXPECT_EQ(VerifierResult::OK_FULL,
+            Verify(TestFile("valid_no_publisher.crx3"), VerifierFormat::CRX3,
+                   keys, hash, &public_key, &crx_id));
   EXPECT_EQ(std::string(kOjjHash), crx_id);
   EXPECT_EQ(std::string(kOjjKey), public_key);
 
@@ -94,9 +92,9 @@ TEST_F(CrxVerifierTest, VerifiesFileHash) {
   std::string public_key = "UNSET";
   std::string crx_id = "UNSET";
 
-  EXPECT_EQ(VerifierResult::OK_FULL, Verify(TestFile("valid_no_publisher.crx3"),
-                                            VerifierFormat::CRX2_OR_CRX3, keys,
-                                            hash, &public_key, &crx_id));
+  EXPECT_EQ(VerifierResult::OK_FULL,
+            Verify(TestFile("valid_no_publisher.crx3"), VerifierFormat::CRX3,
+                   keys, hash, &public_key, &crx_id));
   EXPECT_EQ(std::string(kOjjHash), crx_id);
   EXPECT_EQ(std::string(kOjjKey), public_key);
 
@@ -131,10 +129,9 @@ TEST_F(CrxVerifierTest, ChecksRequiredKeyHashes) {
   const std::vector<std::vector<uint8_t>> good_keys = {good_key};
   std::string public_key = "UNSET";
   std::string crx_id = "UNSET";
-  EXPECT_EQ(
-      VerifierResult::OK_FULL,
-      Verify(TestFile("valid_no_publisher.crx3"), VerifierFormat::CRX2_OR_CRX3,
-             good_keys, hash, &public_key, &crx_id));
+  EXPECT_EQ(VerifierResult::OK_FULL,
+            Verify(TestFile("valid_no_publisher.crx3"), VerifierFormat::CRX3,
+                   good_keys, hash, &public_key, &crx_id));
   EXPECT_EQ(std::string(kOjjHash), crx_id);
   EXPECT_EQ(std::string(kOjjKey), public_key);
 
@@ -165,8 +162,48 @@ TEST_F(CrxVerifierTest, ChecksPinnedKey) {
   public_key = "UNSET";
   crx_id = "UNSET";
   EXPECT_EQ(VerifierResult::ERROR_REQUIRED_PROOF_MISSING,
+            Verify(TestFile("valid_test_publisher.crx3"),
+                   VerifierFormat::CRX3_WITH_PUBLISHER_PROOF, keys, hash,
+                   &public_key, &crx_id));
+  EXPECT_EQ("UNSET", crx_id);
+  EXPECT_EQ("UNSET", public_key);
+
+  public_key = "UNSET";
+  crx_id = "UNSET";
+  EXPECT_EQ(VerifierResult::ERROR_REQUIRED_PROOF_MISSING,
             Verify(TestFile("valid_no_publisher.crx3"),
                    VerifierFormat::CRX3_WITH_PUBLISHER_PROOF, keys, hash,
+                   &public_key, &crx_id));
+  EXPECT_EQ("UNSET", crx_id);
+  EXPECT_EQ("UNSET", public_key);
+}
+
+TEST_F(CrxVerifierTest, ChecksPinnedKeyAcceptsTest) {
+  const std::vector<uint8_t> hash;
+  const std::vector<std::vector<uint8_t>> keys;
+  std::string public_key = "UNSET";
+  std::string crx_id = "UNSET";
+  EXPECT_EQ(VerifierResult::OK_FULL,
+            Verify(TestFile("valid_publisher.crx3"),
+                   VerifierFormat::CRX3_WITH_TEST_PUBLISHER_PROOF, keys, hash,
+                   &public_key, &crx_id));
+  EXPECT_EQ(std::string(kOjjHash), crx_id);
+  EXPECT_EQ(std::string(kOjjKey), public_key);
+
+  public_key = "UNSET";
+  crx_id = "UNSET";
+  EXPECT_EQ(VerifierResult::OK_FULL,
+            Verify(TestFile("valid_test_publisher.crx3"),
+                   VerifierFormat::CRX3_WITH_TEST_PUBLISHER_PROOF, keys, hash,
+                   &public_key, &crx_id));
+  EXPECT_EQ(std::string(kJlnHash), crx_id);
+  EXPECT_EQ(std::string(kJlnKey), public_key);
+
+  public_key = "UNSET";
+  crx_id = "UNSET";
+  EXPECT_EQ(VerifierResult::ERROR_REQUIRED_PROOF_MISSING,
+            Verify(TestFile("valid_no_publisher.crx3"),
+                   VerifierFormat::CRX3_WITH_TEST_PUBLISHER_PROOF, keys, hash,
                    &public_key, &crx_id));
   EXPECT_EQ("UNSET", crx_id);
   EXPECT_EQ("UNSET", public_key);
@@ -187,8 +224,8 @@ TEST_F(CrxVerifierTest, RequiresDeveloperKey) {
   std::string public_key = "UNSET";
   std::string crx_id = "UNSET";
   EXPECT_EQ(VerifierResult::ERROR_REQUIRED_PROOF_MISSING,
-            Verify(TestFile("unsigned.crx3"), VerifierFormat::CRX2_OR_CRX3,
-                   keys, hash, &public_key, &crx_id));
+            Verify(TestFile("unsigned.crx3"), VerifierFormat::CRX3, keys, hash,
+                   &public_key, &crx_id));
   EXPECT_EQ("UNSET", crx_id);
   EXPECT_EQ("UNSET", public_key);
 }

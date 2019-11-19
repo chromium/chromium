@@ -5,8 +5,8 @@
 #include <algorithm>
 #include <vector>
 
+#include "ash/public/cpp/shelf_config.h"
 #include "ash/shelf/shelf.h"
-#include "ash/shelf/shelf_constants.h"
 #include "ash/shelf/shelf_widget.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
@@ -33,13 +33,13 @@ TEST_F(DIPTest, WorkArea) {
   aura::Window* root = Shell::GetPrimaryRootWindow();
   const display::Display display =
       display::Screen::GetScreen()->GetDisplayNearestWindow(root);
-  const int shelf_inset = 900 - ShelfConstants::shelf_size();
+  const int shelf_inset = 900 - ShelfConfig::Get()->shelf_size();
 
   EXPECT_EQ("0,0 1000x900", display.bounds().ToString());
   gfx::Rect work_area = display.work_area();
   EXPECT_EQ(gfx::Rect(0, 0, 1000, shelf_inset).ToString(),
             work_area.ToString());
-  EXPECT_EQ(gfx::Insets(0, 0, ShelfConstants::shelf_size(), 0).ToString(),
+  EXPECT_EQ(gfx::Insets(0, 0, ShelfConfig::Get()->shelf_size(), 0).ToString(),
             display.bounds().InsetsFrom(work_area).ToString());
 
   UpdateDisplay("2000x1800*2.0f");
@@ -57,7 +57,7 @@ TEST_F(DIPTest, WorkArea) {
   work_area = display_2x.work_area();
   EXPECT_EQ(gfx::Rect(0, 0, 1000, shelf_inset).ToString(),
             work_area.ToString());
-  EXPECT_EQ(gfx::Insets(0, 0, ShelfConstants::shelf_size(), 0).ToString(),
+  EXPECT_EQ(gfx::Insets(0, 0, ShelfConfig::Get()->shelf_size(), 0).ToString(),
             display_2x.bounds().InsetsFrom(work_area).ToString());
 
   // Sanity check if the workarea's inset hight is same as

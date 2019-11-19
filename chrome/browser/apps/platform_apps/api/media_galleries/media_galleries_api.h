@@ -84,7 +84,7 @@ class MediaGalleriesEventRouter : public extensions::BrowserContextKeyedAPI,
   // Current profile.
   Profile* profile_;
 
-  base::WeakPtrFactory<MediaGalleriesEventRouter> weak_ptr_factory_;
+  base::WeakPtrFactory<MediaGalleriesEventRouter> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(MediaGalleriesEventRouter);
 };

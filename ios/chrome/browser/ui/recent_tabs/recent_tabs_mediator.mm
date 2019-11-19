@@ -17,6 +17,8 @@
 #include "ios/chrome/browser/sync/sync_setup_service_factory.h"
 #import "ios/chrome/browser/ui/recent_tabs/recent_tabs_consumer.h"
 #import "ios/chrome/browser/ui/recent_tabs/sessions_sync_user_state.h"
+#import "ios/chrome/browser/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/web_state_list/web_state_list_observer_bridge.h"
 #include "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -30,7 +32,8 @@ const CGFloat kFaviconWidthHeight = 24;
 const CGFloat kFaviconMinWidthHeight = 16;
 }  // namespace
 
-@interface RecentTabsMediator ()<SyncedSessionsObserver> {
+@interface RecentTabsMediator () <SyncedSessionsObserver,
+                                  WebStateListObserving> {
   std::unique_ptr<synced_sessions::SyncedSessionsObserverBridge>
       _syncedSessionsObserver;
   std::unique_ptr<recent_tabs::ClosedTabsObserverBridge> _closedTabsObserver;
@@ -47,12 +50,25 @@ const CGFloat kFaviconMinWidthHeight = 16;
 - (BOOL)isSyncCompleted;
 // Reload the panel.
 - (void)refreshSessionsView;
+// YES if Tabs are being updated in batch. (e.g. Closing All, or Undoing a Close
+// All).
+@property(nonatomic, assign) BOOL processingBatchOperation;
 
 @end
 
-@implementation RecentTabsMediator
+@implementation RecentTabsMediator {
+  std::unique_ptr<WebStateListObserverBridge> _webStateListObserver;
+}
 @synthesize browserState = _browserState;
 @synthesize consumer = _consumer;
+
+- (instancetype)init {
+  self = [super init];
+  if (self) {
+    _webStateListObserver = std::make_unique<WebStateListObserverBridge>(self);
+  }
+  return self;
+}
 
 #pragma mark - Public Interface
 
@@ -75,6 +91,12 @@ const CGFloat kFaviconMinWidthHeight = 16;
 
 - (void)disconnect {
   _syncedSessionsObserver.reset();
+
+  if (_webStateList) {
+    _webStateList->RemoveObserver(_webStateListObserver.get());
+    _webStateListObserver.reset();
+    _webStateList = nullptr;
+  }
 
   if (_closedTabsObserver) {
     sessions::TabRestoreService* restoreService =
@@ -106,27 +128,61 @@ const CGFloat kFaviconMinWidthHeight = 16;
   sessions::TabRestoreService* restoreService =
       IOSChromeTabRestoreServiceFactory::GetForBrowserState(_browserState);
   restoreService->LoadTabsFromLastSession();
-  [self.consumer refreshRecentlyClosedTabs];
+  // A WebStateList batch operation can result in batch changes to the
+  // TabRestoreService (e.g., closing or restoring all tabs). To properly batch
+  // process TabRestoreService changes, those changes must be executed inside
+  // the WebStateList batch operation callback. This allows RecentTabs to ignore
+  // individual tabRestoreServiceChanged calls that correspond to the
+  // WebStateList batch operation. The consumer is updated once after the batch
+  // operation is completed.
+  if (!self.processingBatchOperation)
+    [self.consumer refreshRecentlyClosedTabs];
 }
 
 - (void)tabRestoreServiceDestroyed:(sessions::TabRestoreService*)service {
   [self.consumer setTabRestoreService:nullptr];
 }
 
+#pragma mark - WebStateListObserving
+
+- (void)webStateListWillBeginBatchOperation:(WebStateList*)webStateList {
+  self.processingBatchOperation = YES;
+}
+
+- (void)webStateListBatchOperationEnded:(WebStateList*)webStateList {
+  self.processingBatchOperation = NO;
+  // A WebStateList batch operation can result in batch changes to the
+  // TabRestoreService (e.g., closing or restoring all tabs). Individual
+  // TabRestoreService updates are ignored between
+  // |-webStateListWillBeginBatchOperation:| and
+  // |-webStateListBatchOperationEnded:|. The consumer is updated once after the
+  // batch operation is complete.
+  [self.consumer refreshRecentlyClosedTabs];
+}
+
 #pragma mark - TableViewFaviconDataSource
 
-- (FaviconAttributes*)faviconForURL:(const GURL&)URL
-                         completion:(void (^)(FaviconAttributes*))completion {
+- (void)faviconForURL:(const GURL&)URL
+           completion:(void (^)(FaviconAttributes*))completion {
   FaviconLoader* faviconLoader =
       IOSChromeFaviconLoaderFactory::GetForBrowserState(self.browserState);
-  FaviconAttributes* cachedAttributes = faviconLoader->FaviconForUrl(
+  faviconLoader->FaviconForPageUrl(
       URL, kFaviconWidthHeight, kFaviconMinWidthHeight,
       /*fallback_to_google_server=*/false, ^(FaviconAttributes* attributes) {
         completion(attributes);
       });
-  DCHECK(cachedAttributes);
+}
 
-  return cachedAttributes;
+#pragma mark - Setters/Getters
+
+- (void)setWebStateList:(WebStateList*)webStateList {
+  if (_webStateList)
+    _webStateList->RemoveObserver(_webStateListObserver.get());
+
+  _webStateList = webStateList;
+
+  if (_webStateList)
+    _webStateList->AddObserver(_webStateListObserver.get());
 }
 
 #pragma mark - Private

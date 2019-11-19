@@ -158,7 +158,6 @@ UIImage* ImageForSegment(NSString* segment, BOOL selected) {
 // the negative-x direction from |sliderOrigin|, and otherwise it will move in
 // the positive-x direction.
 @property(nonatomic) CGFloat sliderRange;
-@property(nonatomic, strong) NSArray* accessibilityElements;
 // State properties to track the point and position (in the 0.0-1.0 range) of
 // drags.
 @property(nonatomic) CGPoint dragStart;
@@ -204,7 +203,7 @@ UIImage* ImageForSegment(NSString* segment, BOOL selected) {
     _remoteAccessibilityElement.accessibilityIdentifier =
         kTabGridRemoteTabsPageButtonIdentifier;
 
-    _accessibilityElements = @[
+    self.accessibilityElements = @[
       _incognitoAccessibilityElement, _regularAccessibilityElement,
       _remoteAccessibilityElement
     ];
@@ -375,22 +374,10 @@ UIImage* ImageForSegment(NSString* segment, BOOL selected) {
   self.sliderPosition = _sliderPosition;
 }
 
-#pragma mark - UIAccessibilityContainer
+#pragma mark - UIAccessibility (informal protocol)
 
 - (BOOL)isAccessibilityElement {
   return NO;
-}
-
-- (NSInteger)accessibilityElementCount {
-  return (NSInteger)self.accessibilityElements.count;
-}
-
-- (id)accessibilityElementAtIndex:(NSInteger)index {
-  return [self.accessibilityElements objectAtIndex:index];
-}
-
-- (NSInteger)indexOfAccessibilityElement:(id)element {
-  return [self.accessibilityElements indexOfObject:element];
 }
 
 #pragma mark - UIAccessibilityContainer Helpers

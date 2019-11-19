@@ -7,7 +7,8 @@
 #include <cstdint>
 
 #include "base/optional.h"
-#include "third_party/blink/renderer/platform/scheduler/common/throttling/task_queue_throttler.h"
+#include "third_party/blink/renderer/platform/scheduler/common/throttling/budget_pool_controller.h"
+#include "third_party/blink/renderer/platform/scheduler/common/tracing_helper.h"
 
 namespace blink {
 namespace scheduler {

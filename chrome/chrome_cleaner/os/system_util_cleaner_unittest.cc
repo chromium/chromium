@@ -54,15 +54,7 @@ class ServiceUtilCleanerTest : public testing::Test {
   void SetUp() override {
     // Cleanup previous run. This may happen when previous execution of unittest
     // crashed, leaving background processes/services.
-    if (IsProcessRunning(kTestServiceExecutableName)) {
-      StopService(kServiceName);
-      WaitForProcessesStopped(kTestServiceExecutableName);
-    }
-    DeleteService(kServiceName);
-    ASSERT_TRUE(WaitForServiceDeleted(kServiceName));
-
-    ASSERT_FALSE(IsProcessRunning(kTestServiceExecutableName));
-    ASSERT_FALSE(DoesServiceExist(kServiceName));
+    ASSERT_TRUE(EnsureNoTestServicesRunning());
   }
 };
 
@@ -93,7 +85,7 @@ TEST_F(ServiceUtilCleanerTest, DeleteService) {
   EXPECT_FALSE(DoesServiceExist(service_handle.service_name()));
 }
 
-// Flaky. https://crbug.com/871784
+// Disabled: https://crbug.com/956016
 TEST_F(ServiceUtilCleanerTest, DISABLED_StopAndDeleteRunningService) {
   // Install and launch the service.
   TestScopedServiceHandle service_handle;
@@ -117,7 +109,7 @@ TEST_F(ServiceUtilCleanerTest, DISABLED_StopAndDeleteRunningService) {
   EXPECT_FALSE(IsProcessRunning(kTestServiceExecutableName));
 }
 
-// Flaky. https://crbug.com/871784
+// Disabled: https://crbug.com/956016
 TEST_F(ServiceUtilCleanerTest, DISABLED_DeleteRunningService) {
   // Install and launch the service.
   TestScopedServiceHandle service_handle;

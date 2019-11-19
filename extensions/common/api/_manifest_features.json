@@ -45,18 +45,18 @@
     "channel": "stable",
     "extension_types": [
       // Platform apps specify their background page via app.background.
-      "extension", "legacy_packaged_app", "hosted_app"
+      "extension", "legacy_packaged_app", "hosted_app", "login_screen_extension"
     ]
   },
   "background.persistent": {
     "channel": "stable",
     "extension_types": [
-      "extension", "legacy_packaged_app"
+      "extension", "legacy_packaged_app", "login_screen_extension"
     ],
     "min_manifest_version": 2
   },
-  "background.service_worker_script": {
-    "channel": "trunk",
+  "background.service_worker": {
+    "channel": "canary",
     "extension_types": ["extension"],
     "min_manifest_version": 2
   },
@@ -130,6 +130,10 @@
     "channel": "stable",
     "extension_types": "all"
   },
+  "differential_fingerprint": {
+    "channel": "stable",
+    "extension_types": "all"
+  },
   "externally_connectable": {
     "channel": "stable",
     "extension_types": [
@@ -139,7 +143,10 @@
   "file_handlers": [
     {
       "channel": "stable",
-      "extension_types": ["platform_app"]
+      "extension_types": [
+        "platform_app",
+        "hosted_app"  // This should be removed when bookmark apps have migrated off hosted apps.
+      ]
     }, {
       "channel": "stable",
       "extension_types": [ "extension"],
@@ -150,6 +157,11 @@
       ]
     }
   ],
+  "host_permissions": {
+    "channel": "dev",
+    "extension_types": ["extension"],
+    "min_manifest_version": 3
+  },
   "icons": {
     "channel": "stable",
     "extension_types": "all"
@@ -280,8 +292,22 @@
   "permissions": {
     "channel": "stable",
     "extension_types": [
-      "extension", "legacy_packaged_app", "hosted_app", "platform_app"
+      "extension",
+      "legacy_packaged_app",
+      "hosted_app",
+      "platform_app",
+      "login_screen_extension"
     ]
+  },
+  "replacement_android_app": {
+    "channel": "trunk",
+    "extension_types": ["platform_app"],
+    "min_manifest_version": 2
+  },
+  "replacement_web_app": {
+    "channel": "stable",
+    "extension_types": ["extension", "platform_app"],
+    "min_manifest_version": 2
   },
   "sandbox": {
     "channel": "stable",

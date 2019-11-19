@@ -2,30 +2,31 @@
 <html>
 <body>
 <canvas style="position:absolute; top:40px; left:40px" width="200" height="200"></canvas>
-<script src="../resources/js-test.js"></script>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
 <script>
-testRunner.waitUntilDone();
-testRunner.dumpAsText();
-requestAnimationFrame(() => {
-  var canvas = document.querySelector("canvas");
-  var context = canvas.getContext("2d");
-  context.fillStyle = "red";
+var test = async_test("Test to copy image");
+requestAnimationFrame(test.step_func(() => {
+  const canvas = document.querySelector('canvas');
+  const context = canvas.getContext('2d');
+  context.fillStyle = 'red';
   context.fillRect(0, 0, 200, 200);
-  requestAnimationFrame(() => {
-    testRunner.copyImageAtAndCapturePixelsAsyncThen(50, 50, (width, height, snapshot) => {
+  requestAnimationFrame(test.step_func(() => {
+    testRunner.copyImageAtAndCapturePixelsAsyncThen(50, 50, test.step_func_done((width, height, snapshot) => {
       try {
-        if (width !== 200 || height !== 200)
-          testFailed("The copied image must be 200x200.");
-        var topleft = new Uint8Array(snapshot).subarray(0, 4);
-        if (topleft[0] !== 255 || topleft[1] !== 0 || topleft[2] !== 0 || topleft[3] !== 255)
-          testFailed("The copied image's top left must be red. " + JSON.stringify(topleft));
+        assert_equals(width, 200, "The copied image must be 200x200");
+        assert_equals(height, 200, "The copied image must be 200x200");
+        const topleft = new Uint8Array(snapshot).subarray(0, 4);
+        assert_equals(topleft[0], 255, "The copied image's top left must be red. " + JSON.stringify(topleft));
+        assert_equals(topleft[1], 0, "The copied image's top left must be red. " + JSON.stringify(topleft));
+        assert_equals(topleft[2], 0, "The copied image's top left must be red. " + JSON.stringify(topleft));
+        assert_equals(topleft[3], 255, "The copied image's top left must be red. " + JSON.stringify(topleft));
       } catch (e) {
-        testFailed("" + e);
+        assert_unreached('' + e);
       }
-      testRunner.notifyDone();
-    });
-  });
-});
+    }));
+  }));
+}));
 </script>
 </body>
 </html>

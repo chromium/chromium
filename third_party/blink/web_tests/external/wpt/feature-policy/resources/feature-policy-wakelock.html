@@ -3,7 +3,8 @@
 
 Promise.resolve().then(async () => {
   try {
-    const wakeLock = await navigator.getWakeLock("screen");
+    const wakeLock = await navigator.wakeLock.request("screen");
+    await wakeLock.release();
     window.parent.postMessage({ enabled: true }, "*");
   } catch (e) {
     window.parent.postMessage({ enabled: false }, "*");

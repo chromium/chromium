@@ -1,0 +1,106 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("language") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "language_settings_mediator.h",
+    "language_settings_mediator.mm",
+  ]
+  deps = [
+    ":language_ui",
+    "//components/language/core/browser",
+    "//components/language/core/common",
+    "//components/prefs",
+    "//components/prefs/ios",
+    "//components/translate/core/browser",
+    "//ios/chrome/app/strings:ios_strings",
+    "//ios/chrome/browser",
+    "//ios/chrome/browser/browser_state",
+    "//ios/chrome/browser/language",
+    "//ios/chrome/browser/translate",
+    "//ios/chrome/browser/ui/settings/language/cells",
+    "//ios/chrome/browser/ui/settings/utils",
+    "//ui/base",
+  ]
+}
+
+source_set("language_ui") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "add_language_table_view_controller.h",
+    "add_language_table_view_controller.mm",
+    "language_details_table_view_controller.h",
+    "language_details_table_view_controller.mm",
+    "language_settings_commands.h",
+    "language_settings_consumer.h",
+    "language_settings_data_source.h",
+    "language_settings_histograms.h",
+    "language_settings_histograms.mm",
+    "language_settings_table_view_controller.h",
+    "language_settings_table_view_controller.mm",
+    "language_settings_ui_constants.h",
+    "language_settings_ui_constants.mm",
+  ]
+  deps = [
+    "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/browser/ui:feature_flags",
+    "//ios/chrome/browser/ui/list_model",
+    "//ios/chrome/browser/ui/settings:settings_root",
+    "//ios/chrome/browser/ui/settings/cells",
+    "//ios/chrome/browser/ui/settings/cells:public",
+    "//ios/chrome/browser/ui/settings/language/cells",
+    "//ios/chrome/browser/ui/table_view",
+    "//ios/chrome/browser/ui/table_view/cells",
+    "//ios/chrome/browser/ui/util",
+    "//ios/chrome/common/colors",
+    "//ios/chrome/common/ui_util",
+    "//ui/base",
+  ]
+}
+
+source_set("unit_tests") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  testonly = true
+  sources = [
+    "language_settings_mediator_unittest.mm",
+  ]
+  deps = [
+    ":language_ui",
+    "//base/test:test_support",
+    "//components/language/core/browser",
+    "//components/pref_registry",
+    "//components/prefs",
+    "//components/sync_preferences",
+    "//components/sync_preferences:test_support",
+    "//components/translate/core/browser",
+    "//ios/chrome/browser/browser_state:test_support",
+    "//ios/chrome/browser/prefs:browser_prefs",
+    "//ios/chrome/browser/translate",
+    "//ios/chrome/browser/ui/settings/language",
+    "//ios/chrome/browser/ui/settings/language/cells",
+    "//testing/gtest",
+  ]
+}
+
+source_set("eg_tests") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  testonly = true
+  sources = [
+    "language_settings_egtest.mm",
+  ]
+  deps = [
+    ":language_ui",
+    "//components/language/core/browser",
+    "//components/translate/core/browser",
+    "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/browser/browser_state",
+    "//ios/chrome/browser/translate",
+    "//ios/chrome/browser/ui:feature_flags",
+    "//ios/chrome/test/app:test_support",
+    "//ios/chrome/test/earl_grey:test_support",
+    "//net:test_support",
+    "//ui/strings:ui_strings_grit",
+  ]
+}

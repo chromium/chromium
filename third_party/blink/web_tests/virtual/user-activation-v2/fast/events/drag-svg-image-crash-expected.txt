@@ -1,3 +1,0 @@
-Tests dragging an SVG image. Test passes if the test does not crash.
-
-Success - drag entered

@@ -4,10 +4,11 @@
 
 package org.chromium.components.crash;
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.annotations.CalledByNative;
+import org.chromium.base.annotations.NativeMethods;
 
 import java.util.concurrent.atomic.AtomicReferenceArray;
 
@@ -22,8 +23,9 @@ import java.util.concurrent.atomic.AtomicReferenceArray;
  * The crash keys will only be included in browser process crash reports.
  */
 public class CrashKeys {
-    private static final String[] KEYS = new String[] {"loaded_dynamic_module",
-            "active_dynamic_module", "application_status", "installed_modules", "emulated_modules"};
+    private static final String[] KEYS =
+            new String[] {"loaded_dynamic_module", "active_dynamic_module", "application_status",
+                    "installed_modules", "emulated_modules", "dynamic_module_dex_name"};
 
     private final AtomicReferenceArray<String> mValues = new AtomicReferenceArray<>(KEYS.length);
 
@@ -33,7 +35,7 @@ public class CrashKeys {
     private static class Holder { static final CrashKeys INSTANCE = new CrashKeys(); }
 
     private CrashKeys() {
-        assert CrashKeyIndex.NUM_KEYS == KEYS.length;
+        assert CrashKeyIndex.NUM_ENTRIES == KEYS.length;
     }
 
     /**
@@ -73,7 +75,7 @@ public class CrashKeys {
     public void set(@CrashKeyIndex int keyIndex, @Nullable String value) {
         ThreadUtils.assertOnUiThread();
         if (mFlushed) {
-            nativeSet(keyIndex, value);
+            CrashKeysJni.get().set(CrashKeys.this, keyIndex, value);
             return;
         }
         mValues.set(keyIndex, value);
@@ -89,10 +91,13 @@ public class CrashKeys {
 
         assert !mFlushed;
         for (@CrashKeyIndex int i = 0; i < mValues.length(); i++) {
-            nativeSet(i, mValues.getAndSet(i, null));
+            CrashKeysJni.get().set(CrashKeys.this, i, mValues.getAndSet(i, null));
         }
         mFlushed = true;
     }
 
-    private native void nativeSet(int key, String value);
+    @NativeMethods
+    interface Natives {
+        void set(CrashKeys caller, int key, String value);
+    }
 }

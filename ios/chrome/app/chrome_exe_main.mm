@@ -43,6 +43,18 @@ void SetTextDirectionIfPseudoRTLEnabled() {
   }
 }
 
+void SetUILanguageIfLanguageIsSelected() {
+  @autoreleasepool {
+    NSUserDefaults* standard_defaults = [NSUserDefaults standardUserDefaults];
+    NSString* language = [standard_defaults valueForKey:@"UILanguageOverride"];
+    if (!language || [language length] == 0) {
+      [standard_defaults removeObjectForKey:@"AppleLanguages"];
+    } else {
+      [standard_defaults setObject:@[ language ] forKey:@"AppleLanguages"];
+    }
+  }
+}
+
 int RunUIApplicationMain(int argc, char* argv[]) {
   @autoreleasepool {
     // Fetch the name of the UIApplication delegate stored in the application
@@ -63,6 +75,9 @@ int main(int argc, char* argv[]) {
 
   // Set NSUserDefaults keys to force pseudo-RTL if needed.
   SetTextDirectionIfPseudoRTLEnabled();
+
+  // Set NSUserDefaults keys to force the UI language if needed.
+  SetUILanguageIfLanguageIsSelected();
 
   // Create this here since it's needed to start the crash handler.
   base::AtExitManager at_exit;

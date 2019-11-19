@@ -1,0 +1,10 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Success</title>
+<script>
+// The test checks that this is set in order to see if the page loaded
+// successfully. The onload/onerror events on iframe are insufficient
+// because onload fires even if the frame is blocked due to CSP,
+// see https://crbug.com/365457.
+window.scriptExecuted = true;
+</script>

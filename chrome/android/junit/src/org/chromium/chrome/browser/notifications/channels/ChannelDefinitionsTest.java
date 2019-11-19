@@ -26,7 +26,7 @@ public class ChannelDefinitionsTest {
     public TestRule processor = new Features.JUnitProcessor();
 
     @Test
-    public void testNoOverlapBetweenStartupAndLegacyChannelIds() throws Exception {
+    public void testNoOverlapBetweenStartupAndLegacyChannelIds() {
         assertThat(ChannelDefinitions.getStartupChannelIds(),
                 everyItem(not(isIn(ChannelDefinitions.getLegacyChannelIds()))));
     }

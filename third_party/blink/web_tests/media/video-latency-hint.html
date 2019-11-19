@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<title>Test video.latencyHint object and content attributes</title>
+<script src='../resources/testharness.js'></script>
+<script src='../resources/testharnessreport.js'></script>
+<script>
+test(function(t) {
+  let video = document.createElement('video');
+  assert_equals(video.latencyHint, NaN);
+  assert_equals(video.getAttribute('latencyhint'), null);
+}, 'Test initial unset values');
+
+test(function(t) {
+  let video = document.createElement('video');
+
+  // First set the IDL attributes. Verify reflection.
+
+  video.latencyHint = 0;
+  assert_equals(video.latencyHint, 0);
+  assert_equals(video.getAttribute('latencyhint'), '0');
+
+  video.latencyHint = 0.5;
+  assert_equals(video.latencyHint, 0.5);
+  assert_equals(video.getAttribute('latencyhint'), '0.5');
+
+  video.latencyHint = 1;
+  assert_equals(video.latencyHint, 1);
+  assert_equals(video.getAttribute('latencyhint'), '1');
+
+  // Now set the content attribute. Verify reflection.
+
+  video.setAttribute('latencyhint', '0');
+  assert_equals(video.latencyHint, 0);
+  assert_equals(video.getAttribute('latencyhint'), '0');
+
+  video.setAttribute('latencyhint', '0.5');
+  assert_equals(video.latencyHint, 0.5);
+  assert_equals(video.getAttribute('latencyhint'), '0.5');
+
+  video.setAttribute('latencyhint', '1');
+  assert_equals(video.latencyHint, 1);
+  assert_equals(video.getAttribute('latencyhint'), '1');
+
+}, 'Test setting valid values');
+
+test(function(t) {
+  let video = document.createElement('video');
+
+  // Start with a valid value.
+  video.latencyHint = 0;
+  assert_equals(video.latencyHint, 0);
+  assert_equals(video.getAttribute('latencyhint'), '0');
+
+  // Values less than zero are invalid. Verify invalid values still update
+  // the content attribute, but the IDL attribute reflects that the default
+  // value (NaN) was applied.
+  video.latencyHint = -1;
+  assert_equals(video.getAttribute('latencyhint'), '-1');
+  assert_equals(video.latencyHint, NaN);
+
+  // Again, start with a valid value.
+  video.latencyHint = 0;
+  assert_equals(video.latencyHint, 0);
+  assert_equals(video.getAttribute('latencyhint'), '0');
+
+  // Non-finite values are caught earlier by IDL definition. They will have
+  // no effect on either attribute type.
+  assert_throws(new TypeError(), () => {
+    video.latencyHint = Infinity;
+  }, 'latencyHint should throw for non-finite values');
+  assert_equals(video.latencyHint, 0);
+  assert_equals(video.getAttribute('latencyhint'), '0');
+
+  assert_throws(new TypeError(), () => {
+    video.latencyHint = NaN;
+  }, 'latencyHint should throw for non-finite values');
+  assert_equals(video.latencyHint, 0);
+  assert_equals(video.getAttribute('latencyhint'), '0');
+}, 'Test setting invalid values from IDL attribute');
+
+test(function(t) {
+  let video = document.createElement('video');
+
+  // Start with a valid value.
+  video.latencyHint = 0;
+  assert_equals(video.latencyHint, 0);
+  assert_equals(video.getAttribute('latencyhint'), '0');
+
+  // Values less than zero are invalid. Verify invalid values still update
+  // the content attribute, but the IDL attribute reflects that the default
+  // value (NaN) was applied.
+  video.setAttribute('latencyhint', '-1');
+  assert_equals(video.getAttribute('latencyhint'), '-1');
+  assert_equals(video.latencyHint, NaN);
+
+  // Again, start with a valid value.
+  video.setAttribute('latencyhint', '0');
+  assert_equals(video.latencyHint, 0);
+  assert_equals(video.getAttribute('latencyhint'), '0');
+
+  // Non-finite values are disallowed by web IDL, but that auto-validation
+  // isn't feasible when setting by attribute (unlike the previous test).
+  // We should instead see IDL attribute value changes to the default, NaN.
+  video.setAttribute('latencyhint', 'Infinity');
+  assert_equals(video.getAttribute('latencyhint'), 'Infinity');
+  assert_equals(video.latencyHint, NaN);
+
+  video.setAttribute('latencyhint', 'NaN');
+  assert_equals(video.getAttribute('latencyhint'), 'NaN');
+  assert_equals(video.latencyHint, NaN);
+
+  // Completely bogus values should have the same behavior as above.
+  video.setAttribute('latencyhint', 'foo');
+  assert_equals(video.getAttribute('latencyhint'), 'foo');
+  assert_equals(video.latencyHint, NaN);
+}, 'Test setting invalid values from content attribute');
+
+</script>

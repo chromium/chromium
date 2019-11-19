@@ -73,6 +73,10 @@ class EVENTS_OZONE_EVDEV_EXPORT GestureInterpreterLibevdevCros
   void OnGestureSwipe(const Gesture* gesture, const GestureSwipe* swipe);
   void OnGestureSwipeLift(const Gesture* gesture,
                           const GestureSwipeLift* swipelift);
+  void OnGestureFourFingerSwipe(const Gesture* gesture,
+                                const GestureFourFingerSwipe* swipe);
+  void OnGestureFourFingerSwipeLift(const Gesture* gesture,
+                                    const GestureFourFingerSwipeLift* swipe);
   void OnGesturePinch(const Gesture* gesture, const GesturePinch* pinch);
   void OnGestureMetrics(const Gesture* gesture, const GestureMetrics* metrics);
 

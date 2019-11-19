@@ -17,8 +17,6 @@ source_set("web") {
     "image_fetch_tab_helper.mm",
     "load_timing_tab_helper.h",
     "load_timing_tab_helper.mm",
-    "network_activity_indicator_tab_helper.h",
-    "network_activity_indicator_tab_helper.mm",
     "page_placeholder_tab_helper.h",
     "page_placeholder_tab_helper.mm",
     "repost_form_tab_helper.h",
@@ -27,6 +25,8 @@ source_set("web") {
     "sad_tab_tab_helper.mm",
     "web_navigation_util.h",
     "web_navigation_util.mm",
+    "web_state_delegate_tab_helper.h",
+    "web_state_delegate_tab_helper.mm",
   ]
   deps = [
     ":feature_flags",
@@ -41,13 +41,18 @@ source_set("web") {
     "//ios/chrome/browser",
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/ntp",
+    "//ios/chrome/browser/overlays",
+    "//ios/chrome/browser/overlays/public/web_content_area",
     "//ios/chrome/browser/snapshots",
-    "//ios/chrome/browser/ui",
-    "//ios/chrome/browser/ui/commands:commands",
+    "//ios/chrome/browser/ui/commands",
+    "//ios/chrome/browser/ui/dialogs:dialogs_internal",
+    "//ios/chrome/browser/ui/elements",
     "//ios/chrome/browser/ui/fullscreen",
-    "//ios/chrome/browser/ui/util:util",
+    "//ios/chrome/browser/ui/util",
+    "//ios/chrome/common/ui_util",
     "//ios/net",
     "//ios/web",
+    "//ios/web/common",
     "//ui/base",
     "//url",
   ]
@@ -64,6 +69,7 @@ source_set("tab_id_tab_helper") {
   deps = [
     "//base",
     "//ios/web/public",
+    "//ios/web/public/session",
   ]
   configs += [ "//build/config/compiler:enable_arc" ]
 }
@@ -86,13 +92,12 @@ source_set("unit_tests") {
     "image_fetch_js_unittest.mm",
     "image_fetch_tab_helper_unittest.mm",
     "load_timing_tab_helper_unittest.mm",
-    "network_activity_indicator_tab_helper_unittest.mm",
     "page_placeholder_tab_helper_unittest.mm",
     "repost_form_tab_helper_unittest.mm",
     "sad_tab_tab_helper_unittest.mm",
-    "services_unittest.mm",
     "tab_id_tab_helper_unittest.mm",
     "web_navigation_util_unittest.mm",
+    "web_state_delegate_tab_helper_unittest.mm",
   ]
   deps = [
     ":accessibility",
@@ -101,15 +106,17 @@ source_set("unit_tests") {
     ":test_support",
     ":web",
     ":web_internal",
-    "//base:base",
+    "//base",
     "//base/test:test_support",
     "//components/search_engines",
-    "//components/services/unzip/public/interfaces",
     "//components/strings:components_strings_grit",
     "//ios/chrome/browser",
     "//ios/chrome/browser/browser_state:test_support",
     "//ios/chrome/browser/ntp",
+    "//ios/chrome/browser/overlays",
+    "//ios/chrome/browser/overlays/public/web_content_area",
     "//ios/chrome/browser/snapshots",
+    "//ios/chrome/browser/ui/util",
     "//ios/chrome/test:test_support",
     "//ios/net:test_support",
     "//ios/web",
@@ -118,11 +125,10 @@ source_set("unit_tests") {
     "//ios/web/public/test/http_server",
     "//net:test_support",
     "//services/network:test_support",
-    "//services/service_manager/public/cpp",
     "//testing/gmock",
     "//testing/gtest",
     "//third_party/ocmock",
-    "//ui/base:base",
+    "//ui/base",
     "//url:url",
   ]
 }
@@ -192,6 +198,7 @@ source_set("java_script_console") {
   deps = [
     "//base",
     "//ios/web/public",
+    "//ios/web/public/js_messaging",
   ]
   libs = [ "Foundation.framework" ]
 }
@@ -201,8 +208,6 @@ source_set("web_internal") {
   sources = [
     "blocked_popup_tab_helper.h",
     "blocked_popup_tab_helper.mm",
-    "chrome_overlay_manifests.cc",
-    "chrome_overlay_manifests.h",
     "chrome_web_client.h",
     "chrome_web_client.mm",
     "print_tab_helper.h",
@@ -220,9 +225,6 @@ source_set("web_internal") {
     "//components/payments/core",
     "//components/prefs",
     "//components/resources",
-    "//components/services/unzip:lib",
-    "//components/services/unzip/public/cpp:manifest",
-    "//components/services/unzip/public/interfaces",
     "//components/strings",
     "//components/version_info",
     "//ios/chrome/app/resources:ios_resources",
@@ -232,17 +234,19 @@ source_set("web_internal") {
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/content_settings",
     "//ios/chrome/browser/infobars",
+    "//ios/chrome/browser/infobars:public",
     "//ios/chrome/browser/passwords",
     "//ios/chrome/browser/reading_list",
     "//ios/chrome/browser/ssl",
+    "//ios/chrome/browser/ui/elements",
     "//ios/chrome/browser/ui/util",
     "//ios/public/provider/chrome/browser",
     "//ios/public/provider/chrome/browser/voice",
     "//ios/web",
+    "//ios/web/common:user_agent",
     "//ios/web/public",
+    "//ios/web/public/js_messaging",
     "//net",
-    "//services/identity/public/cpp:manifest",
-    "//services/identity/public/mojom",
     "//ui/base",
     "//ui/gfx",
     "//url",
@@ -267,7 +271,6 @@ source_set("test_support") {
     "//components/password_manager/core/browser:test_support",
     "//ios/chrome/browser/browser_state:test_support",
     "//ios/chrome/browser/passwords",
-    "//ios/chrome/browser/ui:ui_internal",
     "//ios/chrome/browser/web",
     "//ios/web",
     "//ios/web/public/test",
@@ -295,14 +298,15 @@ source_set("unit_tests_internal") {
     "//ios/chrome/browser/content_settings:content_settings",
     "//ios/chrome/browser/find_in_page",
     "//ios/chrome/browser/infobars",
+    "//ios/chrome/browser/infobars:public",
     "//ios/chrome/browser/passwords",
-    "//ios/chrome/browser/ui",
     "//ios/chrome/browser/web",
     "//ios/chrome/test/fakes",
-    "//ios/web",
+    "//ios/web/common:web_view_creation_util",
     "//ios/web/public/test",
     "//ios/web/public/test/fakes",
     "//net",
+    "//net:test_support",
     "//testing/gtest",
     "//third_party/ocmock",
     "//url",
@@ -311,6 +315,7 @@ source_set("unit_tests_internal") {
 
 source_set("eg_tests") {
   configs += [ "//build/config/compiler:enable_arc" ]
+  defines = [ "CHROME_EARL_GREY_1" ]
   testonly = true
   sources = [
     "browsing_egtest.mm",
@@ -324,6 +329,7 @@ source_set("eg_tests") {
     "navigation_egtest.mm",
     "progress_indicator_egtest.mm",
     "push_and_replace_state_navigation_egtest.mm",
+    "restore_egtest.mm",
     "stop_loading_egtest.mm",
     "tab_order_egtest.mm",
     "visible_url_egtest.mm",
@@ -334,13 +340,15 @@ source_set("eg_tests") {
     "//base/test:test_support",
     "//components/content_settings/core/common",
     "//components/strings",
+    "//components/url_formatter",
     "//components/version_info:version_info",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser",
     "//ios/chrome/browser/browser_state",
-    "//ios/chrome/browser/ui",
     "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/popup_menu:constants",
+    "//ios/chrome/browser/ui/util",
+    "//ios/chrome/test:eg_test_support",
     "//ios/chrome/test:test_support",
     "//ios/chrome/test/app:test_support",
     "//ios/chrome/test/earl_grey:test_support",
@@ -349,9 +357,10 @@ source_set("eg_tests") {
     "//ios/testing/earl_grey:earl_grey_support",
     "//ios/third_party/earl_grey:earl_grey+link",
     "//ios/third_party/material_components_ios",
-    "//ios/web",
     "//ios/web:earl_grey_test_support",
+    "//ios/web/common",
     "//ios/web/public/test",
+    "//ios/web/public/test:element_selector",
     "//ios/web/public/test/http_server",
     "//net",
     "//net:test_support",
@@ -362,6 +371,52 @@ source_set("eg_tests") {
     "UIKit.framework",
     "XCTest.framework",
   ]
+}
+
+source_set("eg2_tests") {
+  defines = [ "CHROME_EARL_GREY_2" ]
+  configs += [
+    "//build/config/compiler:enable_arc",
+    "//build/config/ios:xctest_config",
+  ]
+  testonly = true
+
+  sources = [
+    "browsing_egtest.mm",
+    "cache_egtest.mm",
+    "child_window_open_by_dom_egtest.mm",
+    "error_page_egtest.mm",
+    "forms_egtest.mm",
+    "http_auth_egtest.mm",
+    "js_print_egtest.mm",
+    "navigation_egtest.mm",
+    "restore_egtest.mm",
+    "tab_order_egtest.mm",
+    "visible_url_egtest.mm",
+  ]
+
+  deps = [
+    "//components/content_settings/core/common",
+    "//components/strings",
+    "//components/url_formatter",
+    "//components/version_info:version_info",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser:chrome_url_constants",
+    "//ios/chrome/browser/ui/popup_menu:constants",
+    "//ios/chrome/test:eg_test_support+eg2",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/net:test_support",
+    "//ios/testing:embedded_test_server_support",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//ios/third_party/earl_grey2:test_lib",
+    "//ios/web/public/test:element_selector",
+    "//ios/web/public/test/http_server",
+    "//net:test_support",
+    "//ui/base",
+    "//url",
+  ]
+
+  libs = [ "UIKit.framework" ]
 }
 
 source_set("perf_tests") {
@@ -375,10 +430,10 @@ source_set("perf_tests") {
     "//base/test:test_support",
     "//ios/chrome/browser/browser_state:test_support",
     "//ios/chrome/test/base:perf_test_support",
-    "//ios/web",
+    "//ios/third_party/webkit",
+    "//ios/web/common:web_view_creation_util",
     "//ios/web/public/test",
   ]
-  libs = [ "WebKit.framework" ]
 }
 
 source_set("feature_flags") {

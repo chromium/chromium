@@ -10,20 +10,21 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.SystemClock;
-import android.preference.Preference;
-import android.preference.PreferenceFragment;
-import android.support.annotation.DrawableRes;
-import android.support.annotation.IntDef;
-import android.support.annotation.Nullable;
 import android.support.v4.util.ArraySet;
+import android.support.v7.preference.Preference;
+import android.support.v7.preference.PreferenceFragmentCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ListView;
+import android.widget.LinearLayout;
+
+import androidx.annotation.DrawableRes;
+import androidx.annotation.IntDef;
+import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.CollectionUtil;
-import org.chromium.base.VisibleForTesting;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeFeatureList;
@@ -39,6 +40,7 @@ import org.chromium.chrome.browser.preferences.PrefServiceBridge;
 import org.chromium.chrome.browser.preferences.PreferenceUtils;
 import org.chromium.chrome.browser.preferences.SpinnerPreference;
 import org.chromium.chrome.browser.preferences.privacy.BrowsingDataCounterBridge.BrowsingDataCounterCallback;
+import org.chromium.ui.widget.ButtonCompat;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -51,7 +53,7 @@ import java.util.Set;
  * The user can choose which types of data to clear (history, cookies, etc), and the time range
  * from which to clear data.
  */
-public abstract class ClearBrowsingDataPreferences extends PreferenceFragment
+public abstract class ClearBrowsingDataPreferences extends PreferenceFragmentCompat
         implements BrowsingDataBridge.OnClearBrowsingDataListener,
                    Preference.OnPreferenceClickListener, Preference.OnPreferenceChangeListener {
     /**
@@ -104,7 +106,7 @@ public abstract class ClearBrowsingDataPreferences extends PreferenceFragment
 
             mParent.updateButtonState();
             mShouldAnnounceCounterResult = true;
-            PrefServiceBridge.getInstance().setBrowsingDataDeletionPreference(
+            BrowsingDataBridge.getInstance().setBrowsingDataDeletionPreference(
                     ClearBrowsingDataPreferences.getDataType(mOption), mParent.getPreferenceType(),
                     mCheckbox.isChecked());
             return true;
@@ -132,24 +134,23 @@ public abstract class ClearBrowsingDataPreferences extends PreferenceFragment
      * An option to be shown in the time period spiner.
      */
     protected static class TimePeriodSpinnerOption {
-        private int mTimePeriod;
+        private @TimePeriod int mTimePeriod;
         private String mTitle;
 
         /**
          * Constructs this time period spinner option.
-         * @param timePeriod The time period represented as an int from the shared enum
-         *     {@link TimePeriod}.
+         * @param timePeriod The time period.
          * @param title The text that will be used to represent this item in the spinner.
          */
-        public TimePeriodSpinnerOption(int timePeriod, String title) {
+        public TimePeriodSpinnerOption(@TimePeriod int timePeriod, String title) {
             mTimePeriod = timePeriod;
             mTitle = title;
         }
 
         /**
-         * @return The time period represented as an int from the shared enum {@link TimePeriod}
+         * @return The time period.
          */
-        public int getTimePeriod() {
+        public @TimePeriod int getTimePeriod() {
             return mTimePeriod;
         }
 
@@ -223,7 +224,7 @@ public abstract class ClearBrowsingDataPreferences extends PreferenceFragment
     /**
      * @return All available {@link DialogOption} entries.
      */
-    protected final static Set<Integer> getAllOptions() {
+    protected static final Set<Integer> getAllOptions() {
         assert DialogOption.CLEAR_HISTORY == 0;
 
         Set<Integer> all = new ArraySet<>();
@@ -351,6 +352,7 @@ public abstract class ClearBrowsingDataPreferences extends PreferenceFragment
 
         Object spinnerSelection =
                 ((SpinnerPreference) findPreference(PREF_TIME_RANGE)).getSelectedOption();
+        @TimePeriod
         int timePeriod = ((TimePeriodSpinnerOption) spinnerSelection).getTimePeriod();
         // TODO(bsazonov): Change integerListToIntArray to handle Collection<Integer>.
         int[] dataTypesArray = CollectionUtil.integerListToIntArray(new ArrayList<>(dataTypes));
@@ -376,13 +378,13 @@ public abstract class ClearBrowsingDataPreferences extends PreferenceFragment
     /**
      * Returns the list of supported {@link DialogOption}.
      */
-    abstract protected List<Integer> getDialogOptions();
+    protected abstract List<Integer> getDialogOptions();
 
     /**
      * Returns whether this preference page is a basic or advanced tab in order to use separate
      * preferences.
      */
-    abstract protected int getPreferenceType();
+    protected abstract int getPreferenceType();
 
     /**
      * Returns the Array of time periods. Options are displayed in the same order as they appear
@@ -417,7 +419,7 @@ public abstract class ClearBrowsingDataPreferences extends PreferenceFragment
      * @return boolean Whether the given option should be preselected.
      */
     private boolean isOptionSelectedByDefault(@DialogOption int option) {
-        return PrefServiceBridge.getInstance().getBrowsingDataDeletionPreference(
+        return BrowsingDataBridge.getInstance().getBrowsingDataDeletionPreference(
                 getDataType(option), getPreferenceType());
     }
 
@@ -504,7 +506,7 @@ public abstract class ClearBrowsingDataPreferences extends PreferenceFragment
                 item.setShouldAnnounceCounterResult(false);
             }
 
-            PrefServiceBridge.getInstance().setBrowsingDataDeletionTimePeriod(
+            BrowsingDataBridge.getInstance().setBrowsingDataDeletionTimePeriod(
                     getPreferenceType(), ((TimePeriodSpinnerOption) value).getTimePeriod());
             return true;
         }
@@ -520,22 +522,14 @@ public abstract class ClearBrowsingDataPreferences extends PreferenceFragment
         clearButton.setEnabled(isEnabled);
     }
 
-    /**
-     * @return The id of the preference xml that should be displayed.
-     */
-    private int getPreferenceXmlId() {
-        return R.xml.clear_browsing_data_preferences_tab;
-    }
-
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
         if (savedInstanceState != null) {
             mFetcher = savedInstanceState.getParcelable(CLEAR_BROWSING_DATA_FETCHER);
         }
         mDialogOpened = SystemClock.elapsedRealtime();
         getActivity().setTitle(R.string.clear_browsing_data_title);
-        PreferenceUtils.addPreferencesFromResource(this, getPreferenceXmlId());
+        PreferenceUtils.addPreferencesFromResource(this, R.xml.clear_browsing_data_preferences_tab);
         List<Integer> options = getDialogOptions();
         mItems = new Item[options.size()];
         for (int i = 0; i < options.size(); i++) {
@@ -547,9 +541,9 @@ public abstract class ClearBrowsingDataPreferences extends PreferenceFragment
                     && !PrefServiceBridge.getInstance().getBoolean(
                                Pref.ALLOW_DELETING_BROWSER_HISTORY)) {
                 enabled = false;
-                PrefServiceBridge.getInstance().setBrowsingDataDeletionPreference(
+                BrowsingDataBridge.getInstance().setBrowsingDataDeletionPreference(
                         getDataType(DialogOption.CLEAR_HISTORY), ClearBrowsingDataTab.BASIC, false);
-                PrefServiceBridge.getInstance().setBrowsingDataDeletionPreference(
+                BrowsingDataBridge.getInstance().setBrowsingDataDeletionPreference(
                         getDataType(DialogOption.CLEAR_HISTORY), ClearBrowsingDataTab.ADVANCED,
                         false);
             }
@@ -570,7 +564,8 @@ public abstract class ClearBrowsingDataPreferences extends PreferenceFragment
         // The time range selection spinner.
         SpinnerPreference spinner = (SpinnerPreference) findPreference(PREF_TIME_RANGE);
         TimePeriodSpinnerOption[] spinnerOptions = getTimePeriodSpinnerOptions();
-        int selectedTimePeriod = PrefServiceBridge.getInstance().getBrowsingDataDeletionTimePeriod(
+        @TimePeriod
+        int selectedTimePeriod = BrowsingDataBridge.getInstance().getBrowsingDataDeletionTimePeriod(
                 getPreferenceType());
         int spinnerOptionIndex = -1;
         for (int i = 0; i < spinnerOptions.length; ++i) {
@@ -595,11 +590,17 @@ public abstract class ClearBrowsingDataPreferences extends PreferenceFragment
     @Override
     public View onCreateView(
             LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        // Replace default preferences view with custom XML that contains a footer.
-        View view = inflater.inflate(R.layout.clear_browsing_data_tab_content, container, false);
+        LinearLayout view =
+                (LinearLayout) super.onCreateView(inflater, container, savedInstanceState);
 
-        Button clearButton = (Button) view.findViewById(R.id.clear_button);
+        // Add button to bottom of the preferences view.
+        ButtonCompat clearButton =
+                (ButtonCompat) inflater.inflate(R.xml.clear_browsing_data_button, view, false);
         clearButton.setOnClickListener((View v) -> onClearButtonClicked());
+        view.addView(clearButton);
+
+        // Disable animations of preference changes.
+        getListView().setItemAnimator(null);
 
         return view;
     }
@@ -610,11 +611,8 @@ public abstract class ClearBrowsingDataPreferences extends PreferenceFragment
         // Now that the dialog's view has been created, update the button state.
         updateButtonState();
 
-        // Remove the dividers between checkboxes, and make sure the individual widgets can be
-        // focused.
-        ListView view = (ListView) getView().findViewById(android.R.id.list);
-        view.setDivider(null);
-        view.setItemsCanFocus(true);
+        // Remove the dividers between checkboxes.
+        setDivider(null);
     }
 
     @Override

@@ -1,2 +1,0 @@
-ALERT: XSS
-This test fails because the XSSAuditor allows requests that do not contain illegal URI characters. Thus, the XSSAuditor does not detect the injection of an inline event handler within a tag. A future update may reinstate this functionality.

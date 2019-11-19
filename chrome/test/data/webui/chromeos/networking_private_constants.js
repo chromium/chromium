@@ -73,7 +73,6 @@ chrome.networkingPrivate.NetworkType = {
   VPN: 'VPN',
   WIRELESS: 'Wireless',
   WI_FI: 'WiFi',
-  WI_MAX: 'WiMAX',
 };
 
 /**

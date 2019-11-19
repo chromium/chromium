@@ -100,7 +100,7 @@ class IconCacherImpl : public IconCacher {
   std::unique_ptr<image_fetcher::ImageFetcher> const image_fetcher_;
   std::map<GURL, std::vector<base::Closure>> in_flight_requests_;
 
-  base::WeakPtrFactory<IconCacherImpl> weak_ptr_factory_;
+  base::WeakPtrFactory<IconCacherImpl> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(IconCacherImpl);
 };

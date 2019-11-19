@@ -4,6 +4,7 @@ tommi@chromium.org
 
 # For Cast-related changes.
 per-file cast_*=miu@chromium.org
+per-file cast_*=mfoltz@chromium.org
 
 # FlashEmbedRewrite
 per-file flash_embed_rewrite*=mlamouri@chromium.org

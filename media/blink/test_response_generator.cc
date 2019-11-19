@@ -29,7 +29,7 @@ WebURLResponse TestResponseGenerator::Generate200() {
   WebURLResponse response(gurl_);
   response.SetHttpStatusCode(200);
 
-  response.SetHTTPHeaderField(
+  response.SetHttpHeaderField(
       WebString::FromUTF8("Content-Length"),
       WebString::FromUTF8(base::NumberToString(content_length_)));
   response.SetExpectedContentLength(content_length_);
@@ -61,7 +61,7 @@ WebURLResponse TestResponseGenerator::GeneratePartial206(
   response.SetHttpStatusCode(206);
 
   if ((flags & kNoAcceptRanges) == 0) {
-    response.SetHTTPHeaderField(WebString::FromUTF8("Accept-Ranges"),
+    response.SetHttpHeaderField(WebString::FromUTF8("Accept-Ranges"),
                                 WebString::FromUTF8("bytes"));
   }
 
@@ -73,12 +73,12 @@ WebURLResponse TestResponseGenerator::GeneratePartial206(
       content_range += "*";
     else
       content_range += base::StringPrintf("%" PRId64, content_length_);
-    response.SetHTTPHeaderField(WebString::FromUTF8("Content-Range"),
+    response.SetHttpHeaderField(WebString::FromUTF8("Content-Range"),
                                 WebString::FromUTF8(content_range));
   }
 
   if ((flags & kNoContentLength) == 0) {
-    response.SetHTTPHeaderField(
+    response.SetHttpHeaderField(
         WebString::FromUTF8("Content-Length"),
         WebString::FromUTF8(base::NumberToString(range_content_length)));
     response.SetExpectedContentLength(range_content_length);

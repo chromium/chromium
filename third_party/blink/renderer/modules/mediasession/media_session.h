@@ -6,12 +6,12 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIASESSION_MEDIA_SESSION_H_
 
 #include <memory>
-#include "mojo/public/cpp/bindings/binding.h"
-#include "third_party/blink/public/platform/modules/mediasession/media_session.mojom-blink.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/blink/public/mojom/mediasession/media_session.mojom-blink.h"
 #include "third_party/blink/renderer/core/execution_context/context_lifecycle_observer.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
-#include "third_party/blink/renderer/platform/bindings/trace_wrapper_member.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -20,6 +20,7 @@ namespace blink {
 class ExecutionContext;
 class ExceptionState;
 class MediaMetadata;
+class MediaPositionState;
 class V8MediaSessionActionHandler;
 
 class MODULES_EXPORT MediaSession final
@@ -31,8 +32,6 @@ class MODULES_EXPORT MediaSession final
   USING_PRE_FINALIZER(MediaSession, Dispose);
 
  public:
-  static MediaSession* Create(ExecutionContext*);
-
   explicit MediaSession(ExecutionContext*);
 
   void Dispose();
@@ -46,6 +45,8 @@ class MODULES_EXPORT MediaSession final
   void setActionHandler(const String& action,
                         V8MediaSessionActionHandler*,
                         ExceptionState&);
+
+  void setPositionState(MediaPositionState*, ExceptionState&);
 
   // Called by the MediaMetadata owned by |this| when it has updates. Also used
   // internally when a new MediaMetadata object is set.
@@ -64,19 +65,23 @@ class MODULES_EXPORT MediaSession final
 
   void NotifyActionChange(const String& action, ActionChangeType);
 
+  void RecalculatePositionState(bool notify);
+
   // blink::mojom::blink::MediaSessionClient implementation.
-  void DidReceiveAction(
-      media_session::mojom::blink::MediaSessionAction) override;
+  void DidReceiveAction(media_session::mojom::blink::MediaSessionAction,
+                        mojom::blink::MediaSessionActionDetailsPtr) override;
 
   // Returns null when the ExecutionContext is not document.
   mojom::blink::MediaSessionService* GetService();
 
   mojom::blink::MediaSessionPlaybackState playback_state_;
+  media_session::mojom::blink::MediaPositionPtr position_state_;
+  double declared_playback_rate_ = 0.0;
   Member<MediaMetadata> metadata_;
-  HeapHashMap<String, TraceWrapperMember<V8MediaSessionActionHandler>>
-      action_handlers_;
-  mojom::blink::MediaSessionServicePtr service_;
-  mojo::Binding<blink::mojom::blink::MediaSessionClient> client_binding_;
+  HeapHashMap<String, Member<V8MediaSessionActionHandler>> action_handlers_;
+  mojo::Remote<mojom::blink::MediaSessionService> service_;
+  mojo::Receiver<blink::mojom::blink::MediaSessionClient> client_receiver_{
+      this};
 };
 
 }  // namespace blink

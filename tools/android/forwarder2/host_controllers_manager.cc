@@ -14,7 +14,7 @@
 namespace forwarder2 {
 
 HostControllersManager::HostControllersManager(
-    base::Callback<int()> exit_notifier_fd_callback)
+    base::RepeatingCallback<int()> exit_notifier_fd_callback)
     : controllers_(new HostControllerMap()),
       exit_notifier_fd_callback_(exit_notifier_fd_callback),
       has_failed_(false),
@@ -103,8 +103,8 @@ void HostControllersManager::Map(const std::string& adb_path,
   std::unique_ptr<HostController> host_controller(HostController::Create(
       device_serial, device_port, host_port, adb_port,
       exit_notifier_fd_callback_.Run(),
-      base::Bind(&HostControllersManager::DeleteHostController,
-                 weak_ptr_factory_.GetWeakPtr())));
+      base::BindOnce(&HostControllersManager::DeleteHostController,
+                     weak_ptr_factory_.GetWeakPtr())));
   if (!host_controller.get()) {
     has_failed_ = true;
     SendMessage("ERROR: Connection to device failed.\n", client_socket);

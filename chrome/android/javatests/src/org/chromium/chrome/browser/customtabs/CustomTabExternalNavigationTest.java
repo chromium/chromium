@@ -16,6 +16,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.RetryOnFailure;
 import org.chromium.chrome.browser.ChromeSwitches;
@@ -25,6 +26,7 @@ import org.chromium.chrome.browser.externalnav.ExternalNavigationHandler.Overrid
 import org.chromium.chrome.browser.externalnav.ExternalNavigationParams;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabDelegateFactory;
+import org.chromium.chrome.browser.tab.TabTestUtils;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.net.test.EmbeddedTestServer;
 
@@ -72,11 +74,12 @@ public class CustomTabExternalNavigationTest {
                 CustomTabsTestUtils.createMinimalCustomTabIntent(
                         InstrumentationRegistry.getTargetContext(), mTestServer.getURL(TEST_PATH)));
         Tab tab = mCustomTabActivityTestRule.getActivity().getActivityTab();
-        TabDelegateFactory delegateFactory = tab.getDelegateFactory();
+        TabDelegateFactory delegateFactory = TabTestUtils.getDelegateFactory(tab);
         Assert.assertTrue(delegateFactory instanceof CustomTabDelegateFactory);
         CustomTabDelegateFactory customTabDelegateFactory =
                 ((CustomTabDelegateFactory) delegateFactory);
-        mUrlHandler = customTabDelegateFactory.getExternalNavigationHandler();
+        mUrlHandler = ThreadUtils.runOnUiThreadBlocking(
+                () -> customTabDelegateFactory.createExternalNavigationHandler(tab));
         Assert.assertTrue(customTabDelegateFactory.getExternalNavigationDelegate()
                                   instanceof CustomTabNavigationDelegate);
         mNavigationDelegate = (CustomTabNavigationDelegate)
@@ -84,7 +87,7 @@ public class CustomTabExternalNavigationTest {
     }
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
         mTestServer.stopAndDestroyServer();
     }
 

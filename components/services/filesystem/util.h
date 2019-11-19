@@ -10,7 +10,7 @@
 #include <string>
 
 #include "base/files/file.h"
-#include "components/services/filesystem/public/interfaces/types.mojom.h"
+#include "components/services/filesystem/public/mojom/types.mojom.h"
 
 namespace filesystem {
 

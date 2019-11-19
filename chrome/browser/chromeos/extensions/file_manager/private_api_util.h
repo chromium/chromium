@@ -94,11 +94,6 @@ void GetSelectedFileInfo(content::RenderFrameHost* render_frame_host,
                          GetSelectedFileInfoLocalPathOption local_path_option,
                          GetSelectedFileInfoCallback callback);
 
-// Grants permission to access per-profile folder (Downloads, Drive) of
-// |profile| for the process |render_view_process_id|.
-void SetupProfileFileAccessPermissions(int render_view_process_id,
-                                       Profile* profile);
-
 // Get event logger to chrome://drive-internals page for the |profile|.
 drive::EventLogger* GetLogger(Profile* profile);
 

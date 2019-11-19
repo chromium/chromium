@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL Salvagability of document.opened document assert_unreached: Reached unreachable code
-Harness: the test ran to completion.
-

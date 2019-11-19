@@ -101,7 +101,7 @@ void WifiAccessPointInfoProviderChromeos::ParseInfo(
 
   properties.GetStringWithoutPathExpansion(
       shill::kWifiBSsid, &wifi_access_point_info_.bssid);
-  const base::DictionaryValue* vendor_dict = NULL;
+  const base::DictionaryValue* vendor_dict = nullptr;
   if (!properties.GetDictionaryWithoutPathExpansion(
           shill::kWifiVendorInformationProperty,
           &vendor_dict))

@@ -3,49 +3,30 @@
 <head>
   <script src="../../../resources/testharness.js"></script>
   <script src="../../../resources/testharnessreport.js"></script>
+  <script src="../resources/multiple-fields-ax-value-changed-notification-helper.js"></script>
 </head>
 <body>
 <input id="test" type="datetime-local" value="2012-10-09T12:34:56">
 <script>
 async_test((t) => {
     var testInput = document.getElementById('test');
-    var expected = [
-        [ "Focus", "Month", "10" ],
-        [ "Focus", "Day", "09" ],
-        [ "Focus", "Year", "2012" ],
-        [ "Focus", "Hours", "12" ],
-        [ "Focus", "Minutes", "34" ],
-        [ "ValueChanged", "Day", "04" ],
-        [ "ValueChanged", "Day", "04" ],
-        [ "ValueChanged", "Year", "2013" ],
-        [ "ValueChanged", "Year", "2013" ],
-        [ "ValueChanged", "Hours", "02" ],
-        [ "ValueChanged", "Hours", "02" ],
-        [ "ValueChanged", "Minutes", "33" ],
-        [ "ValueChanged", "Minutes", "33" ],
-    ];
 
-    accessibilityController.addNotificationListener(
-        t.step_func((element, notification) => {
-            if (notification == 'Focus' || notification == 'ValueChanged') {
-                var next_expectation = expected.shift();
-                console.log('next_expectation: ' + JSON.stringify(next_expectation));
-                console.log('actual: [' + notification + ', ' + element.name.trim() + ', ' + element.valueDescription.substr(20) + ']');
-                assert_equals(notification, next_expectation[0]);
-                assert_equals(element.name.trim(), next_expectation[1]);
-                assert_equals(element.valueDescription.substr(20), next_expectation[2]);
-            }
-            if (expected.length === 0)
-                t.done();
-        }));
+    var listener = new TestAccessibilityControllerNotificationListener(t);
+    listener.queueExpectedNotification("Focus", "Month", "10", "\t");
+    listener.queueExpectedNotification("Focus", "Day", "09", "4");
+    listener.queueExpectedNotification("Focus", "Year", "2012", "ArrowUp");
+    listener.queueExpectedNotification("Focus", "Hours", "12", "2");
+    listener.queueExpectedNotification("Focus", "Minutes", "34", "ArrowDown");
+    listener.queueExpectedNotification("ValueChanged", "Day", "04");
+    listener.queueExpectedNotification("ValueChanged", "Day", "04");
+    listener.queueExpectedNotification("ValueChanged", "Year", "2013");
+    listener.queueExpectedNotification("ValueChanged", "Year", "2013", "\t");
+    listener.queueExpectedNotification("ValueChanged", "Hours", "02");
+    listener.queueExpectedNotification("ValueChanged", "Hours", "02");
+    listener.queueExpectedNotification("ValueChanged", "Minutes", "33");
+    listener.queueExpectedNotification("ValueChanged", "Minutes", "33");
 
     testInput.focus();
-    eventSender.keyDown('\t');
-    eventSender.keyDown('4');
-    eventSender.keyDown('ArrowUp');
-    eventSender.keyDown('\t');
-    eventSender.keyDown('2');
-    eventSender.keyDown('ArrowDown');
 
     window.setTimeout(function() {
         assert_unreached("Did not receive all accessibility notifications");

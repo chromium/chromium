@@ -1,0 +1,455 @@
+# Copyright 2018 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build_overrides/build.gni")
+import("//third_party/abseil-cpp/abseil_clients.gni")
+
+# Usage of Abseil in Chromium is guarded by an explicit opt-in list, before
+# adding projects to this list please reach out to cxx@chromium.org and CC:
+# - https://cs.chromium.org/chromium/src/third_party/abseil-cpp/OWNERS
+#
+# More information can be found at:
+# https://docs.google.com/document/d/1DgS1-A3rzboTLjpf4m1sqkJgWjnY_Ru2dokk1X1vBDU
+if (build_with_chromium) {
+  visibility = absl_visibility
+  visibility += [ "//third_party/openscreen/*" ]
+} else {
+  visibility = [ "*" ]
+}
+
+source_set("traits") {
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [
+    "//build/config/compiler:no_chromium_code",
+    "//third_party/abseil-cpp:absl_default_cflags_cc",
+  ]
+  public_configs = [ "//third_party/abseil-cpp:absl_include_config" ]
+  public = [
+    "traits.h",
+  ]
+  visibility = []
+  visibility += [ "../../random/*" ]
+  deps = [
+    "../../base:config",
+  ]
+}
+
+source_set("distribution_caller") {
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [
+    "//build/config/compiler:no_chromium_code",
+    "//third_party/abseil-cpp:absl_default_cflags_cc",
+  ]
+  public_configs = [ "//third_party/abseil-cpp:absl_include_config" ]
+  public = [
+    "distribution_caller.h",
+  ]
+  visibility = []
+  visibility += [ "../../random/*" ]
+}
+
+source_set("distributions") {
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [
+    "//build/config/compiler:no_chromium_code",
+    "//third_party/abseil-cpp:absl_default_cflags_cc",
+  ]
+  public_configs = [ "//third_party/abseil-cpp:absl_include_config" ]
+  public = [
+    "distributions.h",
+  ]
+  deps = [
+    ":distribution_caller",
+    ":fast_uniform_bits",
+    ":fastmath",
+    ":traits",
+    ":uniform_helper",
+    "../../meta:type_traits",
+    "../../strings",
+    "../../types:span",
+  ]
+}
+
+source_set("fast_uniform_bits") {
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [
+    "//build/config/compiler:no_chromium_code",
+    "//third_party/abseil-cpp:absl_default_cflags_cc",
+  ]
+  public_configs = [ "//third_party/abseil-cpp:absl_include_config" ]
+  public = [
+    "fast_uniform_bits.h",
+  ]
+  visibility = []
+  visibility += [ "../../random/*" ]
+}
+
+source_set("seed_material") {
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [
+    "//build/config/compiler:no_chromium_code",
+    "//third_party/abseil-cpp:absl_default_cflags_cc",
+  ]
+  public_configs = [ "//third_party/abseil-cpp:absl_include_config" ]
+  public = [
+    "seed_material.h",
+  ]
+  sources = [
+    "seed_material.cc",
+  ]
+  deps = [
+    ":fast_uniform_bits",
+    "../../base",
+    "../../base:core_headers",
+    "../../strings",
+    "../../types:optional",
+    "../../types:span",
+  ]
+}
+
+source_set("pool_urbg") {
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [
+    "//build/config/compiler:no_chromium_code",
+    "//third_party/abseil-cpp:absl_default_cflags_cc",
+  ]
+  public_configs = [ "//third_party/abseil-cpp:absl_include_config" ]
+  public = [
+    "pool_urbg.h",
+  ]
+  sources = [
+    "pool_urbg.cc",
+  ]
+  deps = [
+    ":randen",
+    ":seed_material",
+    ":traits",
+    "../../base",
+    "../../base:config",
+    "../../base:core_headers",
+    "../../base:endian",
+    "../../random:seed_gen_exception",
+    "../../types:span",
+  ]
+}
+
+source_set("explicit_seed_seq") {
+  testonly = true
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [
+    "//build/config/compiler:no_chromium_code",
+    "//third_party/abseil-cpp:absl_default_cflags_cc",
+  ]
+  public_configs = [ "//third_party/abseil-cpp:absl_include_config" ]
+  public = [
+    "explicit_seed_seq.h",
+  ]
+}
+
+source_set("sequence_urbg") {
+  testonly = true
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [
+    "//build/config/compiler:no_chromium_code",
+    "//third_party/abseil-cpp:absl_default_cflags_cc",
+  ]
+  public_configs = [ "//third_party/abseil-cpp:absl_include_config" ]
+  public = [
+    "sequence_urbg.h",
+  ]
+}
+
+source_set("salted_seed_seq") {
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [
+    "//build/config/compiler:no_chromium_code",
+    "//third_party/abseil-cpp:absl_default_cflags_cc",
+  ]
+  public_configs = [ "//third_party/abseil-cpp:absl_include_config" ]
+  public = [
+    "salted_seed_seq.h",
+  ]
+  deps = [
+    ":seed_material",
+    "../../container:inlined_vector",
+    "../../meta:type_traits",
+    "../../types:optional",
+    "../../types:span",
+  ]
+}
+
+source_set("iostream_state_saver") {
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [
+    "//build/config/compiler:no_chromium_code",
+    "//third_party/abseil-cpp:absl_default_cflags_cc",
+  ]
+  public_configs = [ "//third_party/abseil-cpp:absl_include_config" ]
+  public = [
+    "iostream_state_saver.h",
+  ]
+  deps = [
+    "../../meta:type_traits",
+    "../../numeric:int128",
+  ]
+}
+
+source_set("distribution_impl") {
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [
+    "//build/config/compiler:no_chromium_code",
+    "//third_party/abseil-cpp:absl_default_cflags_cc",
+  ]
+  public_configs = [ "//third_party/abseil-cpp:absl_include_config" ]
+  public = [
+    "distribution_impl.h",
+  ]
+  deps = [
+    ":fastmath",
+    ":traits",
+    "../../base:bits",
+    "../../base:config",
+    "../../numeric:int128",
+  ]
+}
+
+source_set("fastmath") {
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [
+    "//build/config/compiler:no_chromium_code",
+    "//third_party/abseil-cpp:absl_default_cflags_cc",
+  ]
+  public_configs = [ "//third_party/abseil-cpp:absl_include_config" ]
+  public = [
+    "fastmath.h",
+  ]
+  deps = [
+    "../../base:bits",
+  ]
+}
+
+source_set("nonsecure_base") {
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [
+    "//build/config/compiler:no_chromium_code",
+    "//third_party/abseil-cpp:absl_default_cflags_cc",
+  ]
+  public_configs = [ "//third_party/abseil-cpp:absl_include_config" ]
+  public = [
+    "nonsecure_base.h",
+  ]
+  deps = [
+    ":pool_urbg",
+    ":salted_seed_seq",
+    ":seed_material",
+    "../../base:core_headers",
+    "../../meta:type_traits",
+    "../../strings",
+    "../../types:optional",
+    "../../types:span",
+  ]
+}
+
+source_set("pcg_engine") {
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [
+    "//build/config/compiler:no_chromium_code",
+    "//third_party/abseil-cpp:absl_default_cflags_cc",
+  ]
+  public_configs = [ "//third_party/abseil-cpp:absl_include_config" ]
+  public = [
+    "pcg_engine.h",
+  ]
+  deps = [
+    ":fastmath",
+    ":iostream_state_saver",
+    "../../base:config",
+    "../../meta:type_traits",
+    "../../numeric:int128",
+  ]
+}
+
+source_set("randen_engine") {
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [
+    "//build/config/compiler:no_chromium_code",
+    "//third_party/abseil-cpp:absl_default_cflags_cc",
+  ]
+  public_configs = [ "//third_party/abseil-cpp:absl_include_config" ]
+  public = [
+    "randen_engine.h",
+  ]
+  deps = [
+    ":iostream_state_saver",
+    ":randen",
+    "../../meta:type_traits",
+  ]
+}
+
+source_set("platform") {
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [
+    "//build/config/compiler:no_chromium_code",
+    "//third_party/abseil-cpp:absl_default_cflags_cc",
+  ]
+  public_configs = [ "//third_party/abseil-cpp:absl_include_config" ]
+  public = [
+    "platform.h",
+    "randen-keys.inc",
+    "randen_traits.h",
+  ]
+}
+
+source_set("randen") {
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [
+    "//build/config/compiler:no_chromium_code",
+    "//third_party/abseil-cpp:absl_default_cflags_cc",
+  ]
+  public_configs = [ "//third_party/abseil-cpp:absl_include_config" ]
+  public = [
+    "randen.h",
+  ]
+  sources = [
+    "randen.cc",
+  ]
+  deps = [
+    ":platform",
+    ":randen_hwaes",
+    ":randen_slow",
+    "../../base",
+  ]
+}
+
+source_set("randen_slow") {
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [
+    "//build/config/compiler:no_chromium_code",
+    "//third_party/abseil-cpp:absl_default_cflags_cc",
+  ]
+  public_configs = [ "//third_party/abseil-cpp:absl_include_config" ]
+  public = [
+    "randen_slow.h",
+  ]
+  sources = [
+    "randen_slow.cc",
+  ]
+  deps = [
+    ":platform",
+  ]
+}
+
+source_set("randen_hwaes") {
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [
+    "//build/config/compiler:no_chromium_code",
+    "//third_party/abseil-cpp:absl_default_cflags_cc",
+  ]
+  public_configs = [ "//third_party/abseil-cpp:absl_include_config" ]
+  public = [
+    "randen_detect.h",
+    "randen_hwaes.h",
+  ]
+  sources = [
+    "randen_detect.cc",
+  ]
+  deps = [
+    ":platform",
+    ":randen_hwaes_impl",
+  ]
+}
+
+source_set("randen_hwaes_impl") {
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [
+    "//build/config/compiler:no_chromium_code",
+    "//third_party/abseil-cpp:absl_default_cflags_cc",
+  ]
+  public_configs = [ "//third_party/abseil-cpp:absl_include_config" ]
+  sources = [
+    "randen_hwaes.cc",
+    "randen_hwaes.h",
+  ]
+  deps = [
+    ":platform",
+  ]
+}
+
+executable("gaussian_distribution_gentables") {
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [
+    "//build/config/compiler:no_chromium_code",
+    "//third_party/abseil-cpp:absl_default_cflags_cc",
+  ]
+  public_configs = [ "//third_party/abseil-cpp:absl_include_config" ]
+  sources = [
+    "gaussian_distribution_gentables.cc",
+  ]
+  deps = [
+    "../../base:core_headers",
+    "../../random:distributions",
+  ]
+}
+
+source_set("distribution_test_util") {
+  testonly = true
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [
+    "//build/config/compiler:no_chromium_code",
+    "//third_party/abseil-cpp:absl_default_cflags_cc",
+  ]
+  public_configs = [ "//third_party/abseil-cpp:absl_include_config" ]
+  public = [
+    "chi_square.h",
+    "distribution_test_util.h",
+  ]
+  sources = [
+    "chi_square.cc",
+    "distribution_test_util.cc",
+  ]
+  deps = [
+    "../../base",
+    "../../base:core_headers",
+    "../../strings",
+    "../../strings:str_format",
+    "../../types:span",
+  ]
+}
+
+source_set("nanobenchmark") {
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [
+    "//build/config/compiler:no_chromium_code",
+    "//third_party/abseil-cpp:absl_default_cflags_cc",
+  ]
+  public_configs = [ "//third_party/abseil-cpp:absl_include_config" ]
+  sources = [
+    "nanobenchmark.cc",
+  ]
+  deps = [
+    ":platform",
+    ":randen_engine",
+    "../../base",
+  ]
+}
+
+source_set("uniform_helper") {
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [
+    "//build/config/compiler:no_chromium_code",
+    "//third_party/abseil-cpp:absl_default_cflags_cc",
+  ]
+  public_configs = [ "//third_party/abseil-cpp:absl_include_config" ]
+  public = [
+    "uniform_helper.h",
+  ]
+  deps = [
+    ":distribution_impl",
+    ":fast_uniform_bits",
+    ":iostream_state_saver",
+    ":traits",
+    "../../base:core_headers",
+    "../../meta:type_traits",
+  ]
+}

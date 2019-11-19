@@ -91,8 +91,12 @@ class ServiceWorkerInstalledScriptReader {
   mojo::ScopedDataPipeProducerHandle body_handle_;
   scoped_refptr<network::NetToMojoPendingBuffer> body_pending_write_;
   mojo::SimpleWatcher body_watcher_;
+  // Initialized to max uint64_t to default to reading until EOF, but updated
+  // to an expected body size in OnReadInfoCompete().
+  uint64_t body_size_ = std::numeric_limits<uint64_t>::max();
+  uint64_t body_bytes_sent_ = 0;
 
-  base::WeakPtrFactory<ServiceWorkerInstalledScriptReader> weak_factory_;
+  base::WeakPtrFactory<ServiceWorkerInstalledScriptReader> weak_factory_{this};
 };
 
 }  // namespace content

@@ -1,5 +1,0 @@
-specific_include_rules = {
-  'compact_enc_det_fuzzer\.cc': [
-    '+base/test/fuzzed_data_provider.h',
-  ],
-}

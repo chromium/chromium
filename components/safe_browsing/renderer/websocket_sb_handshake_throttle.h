@@ -14,8 +14,9 @@
 #include "base/macros.h"
 #include "base/time/time.h"
 #include "components/safe_browsing/common/safe_browsing.mojom.h"
-#include "mojo/public/cpp/bindings/binding.h"
-#include "third_party/blink/public/platform/web_callbacks.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/platform/websocket_handshake_throttle.h"
 #include "url/gurl.h"
 
@@ -28,9 +29,9 @@ class WebSocketSBHandshakeThrottle : public blink::WebSocketHandshakeThrottle,
                                int render_frame_id);
   ~WebSocketSBHandshakeThrottle() override;
 
-  void ThrottleHandshake(
-      const blink::WebURL& url,
-      blink::WebCallbacks<void, const blink::WebString&>* callbacks) override;
+  void ThrottleHandshake(const blink::WebURL& url,
+                         blink::WebSocketHandshakeThrottle::OnCompletion
+                             completion_callback) override;
 
  private:
   // These values are logged to UMA so do not renumber or reuse.
@@ -46,21 +47,22 @@ class WebSocketSBHandshakeThrottle : public blink::WebSocketHandshakeThrottle,
   // mojom::UrlCheckNotifier implementation.
   void OnCompleteCheck(bool proceed, bool showed_interstitial) override;
 
-  void OnCheckResult(mojom::UrlCheckNotifierRequest slow_check_notifier,
-                     bool proceed,
-                     bool showed_interstitial);
-  void OnConnectionError();
+  void OnCheckResult(
+      mojo::PendingReceiver<mojom::UrlCheckNotifier> slow_check_notifier,
+      bool proceed,
+      bool showed_interstitial);
+  void OnMojoDisconnect();
 
   const int render_frame_id_;
   GURL url_;
-  blink::WebCallbacks<void, const blink::WebString&>* callbacks_;
-  mojom::SafeBrowsingUrlCheckerPtr url_checker_;
+  blink::WebSocketHandshakeThrottle::OnCompletion completion_callback_;
+  mojo::Remote<mojom::SafeBrowsingUrlChecker> url_checker_;
   mojom::SafeBrowsing* safe_browsing_;
-  std::unique_ptr<mojo::Binding<mojom::UrlCheckNotifier>> notifier_binding_;
+  std::unique_ptr<mojo::Receiver<mojom::UrlCheckNotifier>> notifier_receiver_;
   base::TimeTicks start_time_;
   Result result_;
 
-  base::WeakPtrFactory<WebSocketSBHandshakeThrottle> weak_factory_;
+  base::WeakPtrFactory<WebSocketSBHandshakeThrottle> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(WebSocketSBHandshakeThrottle);
 };

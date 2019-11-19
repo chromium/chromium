@@ -19,28 +19,21 @@
 
 #include "third_party/blink/renderer/core/svg/svg_string.h"
 
-#include "third_party/blink/renderer/core/svg/svg_animate_element.h"
-
 namespace blink {
 
 void SVGString::Add(SVGPropertyBase*, SVGElement*) {
   NOTREACHED();
 }
 
-void SVGString::CalculateAnimatedValue(SVGAnimationElement* animation_element,
-                                       float percentage,
-                                       unsigned repeat_count,
-                                       SVGPropertyBase* from,
-                                       SVGPropertyBase* to,
-                                       SVGPropertyBase*,
-                                       SVGElement*) {
-  DCHECK(animation_element);
-
-  String from_string = ToSVGString(from)->value_;
-  String to_string = ToSVGString(to)->value_;
-
-  animation_element->AnimateDiscreteType<String>(percentage, from_string,
-                                                 to_string, value_);
+void SVGString::CalculateAnimatedValue(
+    const SVGAnimateElement& animation_element,
+    float percentage,
+    unsigned repeat_count,
+    SVGPropertyBase* from,
+    SVGPropertyBase* to,
+    SVGPropertyBase*,
+    SVGElement*) {
+  NOTREACHED();
 }
 
 float SVGString::CalculateDistance(SVGPropertyBase*, SVGElement*) {

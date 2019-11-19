@@ -38,7 +38,7 @@ namespace device_sync {
 //   the CryptAuth server. Specifically,
 //
 //   |derived_key| =
-//       Hkdf(|secret|, salt="CryptAuth Enrollment", info=|derived_key_handle|).
+//       Hkdf(|secret|, salt="CryptAuth Enrollment", info=|key_bundle_name|).
 //
 //   The CryptAuth server's Diffie-Hellman key is passed into CreateKeys(),
 //   CreateKeys() generates the client side of the Diffie-Hellman handshake, and
@@ -49,12 +49,27 @@ class CryptAuthKeyCreator {
     CreateKeyData(CryptAuthKey::Status status,
                   cryptauthv2::KeyType type,
                   base::Optional<std::string> handle = base::nullopt);
+
+    // Special constructor needed to handle existing user key pair. The input
+    // strings cannot be empty.
+    CreateKeyData(CryptAuthKey::Status status,
+                  cryptauthv2::KeyType type,
+                  const std::string& handle,
+                  const std::string& public_key,
+                  const std::string& private_key);
+
     ~CreateKeyData();
     CreateKeyData(const CreateKeyData&);
 
     CryptAuthKey::Status status;
     cryptauthv2::KeyType type;
     base::Optional<std::string> handle;
+    // Special data needed to handle existing user key pair. If these are both
+    // non-empty strings and the key type is asymmetric, then the key creator
+    // will bypass the standard key creation and simply return
+    // CryptAuthKey(|public_key|, |private_key|, |status|, |type|, |handle|).
+    base::Optional<std::string> public_key;
+    base::Optional<std::string> private_key;
   };
 
   CryptAuthKeyCreator();

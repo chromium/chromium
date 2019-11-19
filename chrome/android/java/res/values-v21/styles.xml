@@ -8,21 +8,45 @@
         <item name="android:popupElevation">0dp</item>
     </style>
 
-    <!-- Preferences -->
-    <style name="Theme.Chromium.Preferences" parent="Base.Theme.Chromium.Preferences">
-        <item name="android:divider">@null</item>
-        <!-- Overriding alertDialogTheme pre-v21 with our custom AlertDialog theme causes bad visual
-             states on ListPreference because we don't use the support library ListPreference. -->
+    <style name="Base.V21.Theme.Chromium" parent="Base.V17.Theme.Chromium">
+        <!-- Set android alert dialog attributes because the context menu dialog is
+             OS-dependent. Not setting alertDialogTheme pre-v21 because the window background
+             causes bad visual states with alert dialog list. -->
         <item name="android:alertDialogTheme">@style/Theme.Chromium.AlertDialog</item>
     </style>
-    <style name="PreferenceCategoryWithButtonStyle">
+    <style name="Base.Theme.Chromium" parent="Base.V21.Theme.Chromium" />
+
+    <!-- Preferences -->
+    <style name="Base.V21.Theme.Chromium.Preferences" parent="Base.Theme.Chromium.Preferences">
+        <item name="alertDialogTheme">@style/Theme.Chromium.AlertDialog</item>
+    </style>
+
+    <style name="Theme.Chromium.Preferences" parent="Base.V21.Theme.Chromium.Preferences" />
+
+    <style name="Theme.Chromium.PreferenceFragment">
+        <item name="android:divider">?android:attr/listDivider</item>
+    </style>
+
+    <style name="Theme.Chromium.PreferenceFragmentList">
+        <item name="android:paddingStart">0dp</item>
+        <item name="android:paddingEnd">0dp</item>
+    </style>
+
+    <style name="Theme.Chromium.PreferenceLayoutCompat">
         <item name="android:paddingStart">?android:attr/listPreferredItemPaddingStart</item>
-        <item name="android:paddingEnd">4dp</item>
+        <item name="android:paddingEnd">?android:attr/listPreferredItemPaddingEnd</item>
+        <item name="android:minHeight">?android:attr/listPreferredItemHeightSmall</item>
     </style>
-    <style name="TextAppearance.PreferenceCategoryText" parent="TextAppearance.RobotoMediumStyle">
-        <item name="android:textColor">@color/pref_accent_color</item>
-        <item name="android:textSize">12sp</item>
+
+    <style name="Theme.Chromium.PreferenceDescriptionCompat">
+        <item name="android:paddingTop">16dp</item>
+        <item name="android:paddingBottom">16dp</item>
     </style>
+
+    <style name="Theme.Chromium.PreferenceWidgetCompat">
+        <item name="android:paddingStart">16dp</item>
+    </style>
+
     <style name="PreferenceTitle">
         <item name="android:ellipsize">end</item>
         <item name="android:singleLine">true</item>
@@ -84,10 +108,6 @@
         <item name="android:padding">3dp</item>
     </style>
 
-    <style name="Theme.Chromium.Incognito" parent="Theme.Chromium.WithWindowAnimation">
-        <item name="android:colorPrimary">@color/incognito_modern_primary_color</item>
-    </style>
-
     <!-- Theme variation for low-end devices.
 
         Since ChromeActivities are not HW accelerated, they don't get fancy
@@ -117,4 +137,11 @@
              half is way brighter than the bottom), so we use our own. -->
         <item name="android:textCursorDrawable">@drawable/text_cursor_lowend</item>
     </style>
-</resources>
+
+    <!-- This overrides the v17 style in order to use button_borderless_compat foreground -->
+    <!-- Card for General Use -->
+    <style name="Card">
+        <item name="android:background">@drawable/hairline_border_card_background</item>
+        <item name="android:foreground">@drawable/button_borderless_compat</item>
+    </style>
+  </resources>

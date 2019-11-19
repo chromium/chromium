@@ -32,6 +32,7 @@
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser.h"
+#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/html/canvas/html_canvas_element.h"
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_gradient.h"
@@ -50,13 +51,14 @@ enum ColorParseResult {
 };
 
 static ColorParseResult ParseColor(Color& parsed_color,
-                                   const String& color_string) {
+                                   const String& color_string,
+                                   WebColorScheme color_scheme) {
   if (DeprecatedEqualIgnoringCase(color_string, "currentcolor"))
     return kParsedCurrentColor;
   const bool kUseStrictParsing = true;
   if (CSSParser::ParseColor(parsed_color, color_string, kUseStrictParsing))
     return kParsedRGBA;
-  if (CSSParser::ParseSystemColor(parsed_color, color_string))
+  if (CSSParser::ParseSystemColor(parsed_color, color_string, color_scheme))
     return kParsedSystemColor;
   return kParseFailed;
 }
@@ -66,15 +68,24 @@ static Color CurrentColor(HTMLCanvasElement* canvas) {
     return Color::kBlack;
   Color color = Color::kBlack;
   CSSParser::ParseColor(
-      color, canvas->InlineStyle()->GetPropertyValue(CSSPropertyColor));
+      color, canvas->InlineStyle()->GetPropertyValue(CSSPropertyID::kColor));
   return color;
+}
+
+static WebColorScheme ColorScheme(HTMLCanvasElement* canvas) {
+  if (canvas && canvas->isConnected()) {
+    if (auto* style = canvas->GetComputedStyle())
+      return style->UsedColorScheme();
+  }
+  return ComputedStyle::InitialStyle().UsedColorScheme();
 }
 
 bool ParseColorOrCurrentColor(Color& parsed_color,
                               const String& color_string,
                               HTMLCanvasElement* canvas) {
-  ColorParseResult parse_result = ParseColor(
-      parsed_color, color_string.StripWhiteSpace(IsHTMLSpace<UChar>));
+  ColorParseResult parse_result =
+      ParseColor(parsed_color, color_string.StripWhiteSpace(IsHTMLSpace<UChar>),
+                 ColorScheme(canvas));
   switch (parse_result) {
     case kParsedRGBA:
     case kParsedSystemColor:

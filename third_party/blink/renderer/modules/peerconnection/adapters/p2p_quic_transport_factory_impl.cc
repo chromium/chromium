@@ -3,9 +3,10 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/modules/peerconnection/adapters/p2p_quic_transport_factory_impl.h"
-#include "net/third_party/quic/core/quic_connection_id.h"
-#include "net/third_party/quic/core/quic_packet_writer.h"
+#include "net/third_party/quiche/src/quic/core/quic_connection_id.h"
+#include "net/third_party/quiche/src/quic/core/quic_packet_writer.h"
 #include "third_party/blink/renderer/modules/peerconnection/adapters/p2p_quic_crypto_config_factory_impl.h"
+#include "third_party/blink/renderer/modules/peerconnection/adapters/p2p_quic_crypto_stream_factory_impl.h"
 #include "third_party/blink/renderer/modules/peerconnection/adapters/p2p_quic_packet_transport.h"
 #include "third_party/blink/renderer/modules/peerconnection/adapters/p2p_quic_transport_impl.h"
 #include "third_party/webrtc/rtc_base/rtc_certificate.h"
@@ -34,6 +35,7 @@ P2PQuicTransportFactoryImpl::CreateQuicTransport(
   return P2PQuicTransportImpl::Create(
       clock_, alarm_factory_.get(), quic_random, delegate, packet_transport,
       std::move(config),
-      std::make_unique<P2PQuicCryptoConfigFactoryImpl>(quic_random));
+      std::make_unique<P2PQuicCryptoConfigFactoryImpl>(quic_random),
+      std::make_unique<P2PQuicCryptoStreamFactoryImpl>());
 }
 }  // namespace blink

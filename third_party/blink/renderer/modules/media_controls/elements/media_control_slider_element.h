@@ -33,10 +33,15 @@ class MODULES_EXPORT MediaControlSliderElement
   // simplicity; deliberately ignores pinch zoom's pageScaleFactor).
   int TrackWidth();
 
+  void OnControlsShown();
+  void OnControlsHidden();
+
  protected:
+  friend class MediaControlsImplTest;
+
   class MediaControlSliderElementResizeObserverDelegate;
 
-  MediaControlSliderElement(MediaControlsImpl&, MediaControlElementType);
+  MediaControlSliderElement(MediaControlsImpl&);
 
   void SetupBarSegments();
   void SetBeforeSegmentPosition(Position);

@@ -67,9 +67,11 @@ TEST(ExtensionProxyApiHelpers, CreatePACScriptFromDataURL) {
   EXPECT_EQ(kSamplePacScript, out);
 
   // Check that we don't require a mime-type.
+  out.clear();
   ASSERT_TRUE(CreatePACScriptFromDataURL(kSamplePacScriptAsDataUrl2, &out));
   EXPECT_EQ(kSamplePacScript, out);
 
+  out.clear();
   EXPECT_FALSE(CreatePACScriptFromDataURL("http://www.google.com", &out));
 }
 

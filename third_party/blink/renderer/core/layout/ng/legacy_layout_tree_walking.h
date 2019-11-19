@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef LegacyLayoutTreeWalking_h
-#define LegacyLayoutTreeWalking_h
+#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_LEGACY_LAYOUT_TREE_WALKING_H_
+#define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_LEGACY_LAYOUT_TREE_WALKING_H_
 
 #include "third_party/blink/renderer/core/layout/layout_block_flow.h"
 
@@ -24,7 +24,7 @@ inline LayoutObject* GetLayoutObjectForFirstChildNode(LayoutBlock* parent) {
   if (!child)
     return nullptr;
   if (UNLIKELY(child->IsLayoutFlowThread()))
-    return ToLayoutBlockFlow(child)->FirstChild();
+    return To<LayoutBlockFlow>(child)->FirstChild();
   // The rendered legend is a child of the anonymous wrapper inside the fieldset
   // container. If we find it, skip it. As far as NG is concerned, the rendered
   // legend is a child of the fieldset container.
@@ -90,14 +90,13 @@ inline bool AreNGBlockFlowChildrenInline(const LayoutBlock* block) {
 inline bool IsLayoutNGContainingBlock(const LayoutBlock* containing_block) {
   if (UNLIKELY(containing_block->IsLayoutFlowThread()))
     containing_block = containing_block->ContainingBlock();
-  return containing_block && (containing_block->IsLayoutNGMixin() ||
-                              containing_block->IsLayoutNGFlexibleBox());
+  return containing_block && containing_block->IsLayoutNGMixin();
 }
 
 // Return true if the layout object is a LayoutNG object that is managed by the
 // LayoutNG engine (i.e. its containing block is a LayoutNG object as well).
 inline bool IsManagedByLayoutNG(const LayoutObject& object) {
-  if (!object.IsLayoutNGMixin() && !object.IsLayoutNGFlexibleBox())
+  if (!object.IsLayoutNGMixin())
     return false;
   const auto* containing_block = object.ContainingBlock();
   if (UNLIKELY(!containing_block))
@@ -107,4 +106,4 @@ inline bool IsManagedByLayoutNG(const LayoutObject& object) {
 
 }  // namespace blink
 
-#endif  // LegacyLayoutTreeWalking_h
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_LEGACY_LAYOUT_TREE_WALKING_H_

@@ -362,7 +362,7 @@ void NinePatchGenerator::AppendQuads(LayerImpl* layer_impl,
                    image_rect.bottom_right(), SK_ColorTRANSPARENT,
                    vertex_opacity, flipped, nearest_neighbor_,
                    /*secure_output_only=*/false,
-                   ui::ProtectedVideoType::kClear);
+                   gfx::ProtectedVideoType::kClear);
       layer_impl->ValidateQuadResources(quad);
     }
   }

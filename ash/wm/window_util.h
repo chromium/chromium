@@ -10,6 +10,7 @@
 
 #include "ash/ash_export.h"
 #include "ui/base/ui_base_types.h"
+#include "ui/wm/core/window_util.h"
 
 namespace aura {
 class Window;
@@ -17,31 +18,17 @@ class Window;
 
 namespace gfx {
 class Point;
-}
-
-namespace ui {
-class Event;
+class Rect;
 }
 
 namespace ash {
 
-namespace wm {
+namespace window_util {
 
-// Utility functions for window activation.
-// DEPRECATED: Prefer the functions in ui/wm/core/window_util.h.
-ASH_EXPORT void ActivateWindow(aura::Window* window);
-ASH_EXPORT void DeactivateWindow(aura::Window* window);
-ASH_EXPORT bool IsActiveWindow(aura::Window* window);
+// See ui/wm/core/window_util.h for ActivateWindow(), DeactivateWindow(),
+// IsActiveWindow() and CanActivateWindow().
 ASH_EXPORT aura::Window* GetActiveWindow();
-ASH_EXPORT bool CanActivateWindow(aura::Window* window);
 ASH_EXPORT aura::Window* GetFocusedWindow();
-
-// Retrieves the activatable window for |window|. If |window| is activatable,
-// this will just return it, otherwise it will climb the parent/transient parent
-// chain looking for a window that is activatable, per the ActivationController.
-// If you're looking for a function to get the activatable "top level" window,
-// this is probably what you're looking for.
-ASH_EXPORT aura::Window* GetActivatableWindow(aura::Window* window);
 
 // Returns the window with capture, null if no window currently has capture.
 ASH_EXPORT aura::Window* GetCaptureWindow();
@@ -72,16 +59,6 @@ ASH_EXPORT void SetAutoHideShelf(aura::Window* window, bool autohide);
 // already in the same root window. Returns true if |window| was moved.
 ASH_EXPORT bool MoveWindowToDisplay(aura::Window* window, int64_t display_id);
 
-// Moves |window| to the root window where the |event| occurred, if it is not
-// already in the same root window. Returns true if |window| was moved.
-ASH_EXPORT bool MoveWindowToEventRoot(aura::Window* window,
-                                      const ui::Event& event);
-
-// Mark the container window so that InstallSnapLayoutManagerToContainers
-// installs the SnapToPixelLayoutManager.
-ASH_EXPORT void SetSnapsChildrenToPhysicalPixelBoundary(
-    aura::Window* container);
-
 // Convenience for window->delegate()->GetNonClientComponent(location) that
 // returns HTNOWHERE if window->delegate() is null.
 ASH_EXPORT int GetNonClientComponent(aura::Window* window,
@@ -100,17 +77,11 @@ ASH_EXPORT void CloseWidgetForWindow(aura::Window* window);
 ASH_EXPORT void InstallResizeHandleWindowTargeterForWindow(
     aura::Window* window);
 
-// Sets up the given window to be draggable via gesture sequences in certain
-// circumstances. See aura::client::kGestureDragFromClientAreaTopMovesWindow.
-ASH_EXPORT void MakeGestureDraggableInImmersiveMode(aura::Window* frame_window);
-
 // Returns true if |window| is currently in tab-dragging process.
 ASH_EXPORT bool IsDraggingTabs(const aura::Window* window);
 
 // Returns true if |window| should be excluded from the cycle list and/or
 // overview.
-ASH_EXPORT bool ShouldExcludeForBothCycleListAndOverview(
-    const aura::Window* window);
 ASH_EXPORT bool ShouldExcludeForCycleList(const aura::Window* window);
 ASH_EXPORT bool ShouldExcludeForOverview(const aura::Window* window);
 
@@ -127,7 +98,21 @@ ASH_EXPORT void HideAndMaybeMinimizeWithoutAnimation(
     std::vector<aura::Window*> windows,
     bool minimize);
 
-}  // namespace wm
+// Returns the RootWindow at |point_in_screen| in virtual screen coordinates.
+// Returns nullptr if the root window does not exist at the given point.
+ASH_EXPORT aura::Window* GetRootWindowAt(const gfx::Point& point_in_screen);
+
+// Returns the RootWindow that shares the most area with |rect_in_screen| in
+// virtual screen coordinates.
+ASH_EXPORT aura::Window* GetRootWindowMatching(const gfx::Rect& rect_in_screen);
+
+// Returns true if |window| is an ARC app window.
+ASH_EXPORT bool IsArcWindow(const aura::Window* window);
+
+// Returns true if |window| is an ARC PIP window.
+ASH_EXPORT bool IsArcPipWindow(const aura::Window* window);
+
+}  // namespace window_util
 }  // namespace ash
 
 #endif  // ASH_WM_WINDOW_UTIL_H_

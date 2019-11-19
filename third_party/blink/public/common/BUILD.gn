@@ -7,6 +7,7 @@ import("//build/config/compiler/compiler.gni")
 import("//build/config/features.gni")
 import("//testing/test.gni")
 import("//third_party/protobuf/proto_library.gni")
+import("//third_party/webrtc/webrtc.gni")
 
 # Public common API headers, mojom and libraries that can be linked and
 # referenced both by browser-side and renderer-side components.
@@ -16,10 +17,17 @@ component("common") {
   public_deps = [
     "//third_party/blink/public/common:headers",
     "//third_party/blink/public/mojom:mojom_modules",
+    "//third_party/blink/public/mojom:web_bluetooth_mojo_bindings",
   ]
   deps = [
+    "//cc/ipc",
     "//third_party/blink/common",
   ]
+}
+
+buildflag_header("buildflags") {
+  header = "buildflags.h"
+  flags = [ "RTC_USE_H264=$rtc_use_h264" ]
 }
 
 source_set("headers") {
@@ -28,6 +36,7 @@ source_set("headers") {
     "//content/*",
     "//third_party/blink/*",
     "//components/*",
+    "//services/*",
     "//storage/*",
     ":*",
   ]
@@ -36,18 +45,28 @@ source_set("headers") {
     "associated_interfaces/associated_interface_provider.h",
     "associated_interfaces/associated_interface_registry.h",
     "blob/blob_utils.h",
+    "bluetooth/web_bluetooth_device_id.h",
+    "bluetooth/web_bluetooth_device_id_mojom_traits.h",
     "cache_storage/cache_storage_utils.h",
     "client_hints/client_hints.h",
     "common_export.h",
+    "context_menu_data/edit_flags.h",
+    "context_menu_data/input_field_type.h",
+    "context_menu_data/media_type.h",
+    "css/forced_colors.h",
+    "css/navigation_controls.h",
+    "css/preferred_color_scheme.h",
     "device_memory/approximated_device_memory.h",
     "dom_storage/session_storage_namespace_id.h",
-    "download/download_stats.h",
     "experiments/memory_ablation_experiment.h",
+    "feature_policy/document_policy.h",
     "feature_policy/feature_policy.h",
     "feature_policy/policy_value.h",
     "features.h",
     "fetch/fetch_api_request_headers_map.h",
     "fetch/fetch_api_request_headers_mojom_traits.h",
+    "forcedark/forcedark_switches.h",
+    "frame/blocked_navigation_types.h",
     "frame/frame_owner_element_type.h",
     "frame/frame_policy.h",
     "frame/from_ad_state.h",
@@ -55,17 +74,25 @@ source_set("headers") {
     "frame/user_activation_state.h",
     "frame/user_activation_update_source.h",
     "frame/user_activation_update_type.h",
+    "http/structured_header.h",
     "indexeddb/indexed_db_default_mojom_traits.h",
     "indexeddb/indexeddb_key.h",
     "indexeddb/indexeddb_key_path.h",
     "indexeddb/indexeddb_key_range.h",
     "indexeddb/indexeddb_metadata.h",
     "indexeddb/web_idb_types.h",
+    "loader/loading_behavior_flag.h",
+    "loader/mime_sniffing_throttle.h",
+    "loader/mime_sniffing_url_loader.h",
+    "loader/request_destination.h",
     "loader/url_loader_factory_bundle.h",
     "loader/url_loader_factory_bundle_mojom_traits.h",
+    "loader/url_loader_throttle.h",
+    "logging/logging_utils.h",
     "manifest/manifest.h",
     "manifest/manifest_icon_selector.h",
-    "manifest/web_display_mode.h",
+    "manifest/manifest_util.h",
+    "media/media_player_action.h",
     "media/video_capture.h",
     "mediastream/media_devices.h",
     "mediastream/media_devices_mojom_traits.h",
@@ -73,14 +100,18 @@ source_set("headers") {
     "mediastream/media_stream_mojom_traits.h",
     "mediastream/media_stream_request.h",
     "messaging/cloneable_message.h",
-    "messaging/cloneable_message_struct_traits.h",
+    "messaging/cloneable_message_mojom_traits.h",
     "messaging/message_port_channel.h",
+    "messaging/message_port_descriptor.h",
+    "messaging/message_port_descriptor_mojom_traits.h",
     "messaging/string_message_codec.h",
     "messaging/transferable_message.h",
-    "messaging/transferable_message_struct_traits.h",
+    "messaging/transferable_message_mojom_traits.h",
     "mime_util/mime_util.h",
+    "navigation/triggering_event_info.h",
+    "notifications/notification_constants.h",
+    "notifications/notification_mojom_traits.h",
     "notifications/notification_resources.h",
-    "notifications/notification_struct_traits.h",
     "notifications/platform_notification_data.h",
     "oom_intervention/oom_intervention_types.h",
     "origin_policy/origin_policy.h",
@@ -88,22 +119,38 @@ source_set("headers") {
     "origin_trials/trial_token.h",
     "origin_trials/trial_token_validator.h",
     "page/launching_process_state.h",
-    "privacy_preferences.h",
+    "page/page_visibility_state.h",
+    "page/page_zoom.h",
+    "peerconnection/webrtc_ip_handling_policy.h",
+    "plugin/plugin_action.h",
+    "prerender/prerender_rel_type.h",
+    "presentation/presentation_receiver_flags.h",
+    "scheduler/web_scheduler_tracked_feature.h",
     "screen_orientation/web_screen_orientation_lock_type.h",
     "screen_orientation/web_screen_orientation_type.h",
+    "security/security_style.h",
     "service_worker/service_worker_status_code.h",
     "service_worker/service_worker_type_converters.h",
+    "service_worker/service_worker_types.h",
     "service_worker/service_worker_utils.h",
+    "sms/sms_receiver_outcome.h",
+    "sudden_termination_disabler_type.h",
     "user_agent/user_agent_metadata.h",
+    "web_cache/web_cache_resource_type_stats.h",
+    "web_package/signed_exchange_consts.h",
+    "web_package/signed_exchange_request_matcher.h",
   ]
 
   public_deps = [
     "//services/network/public/cpp:cpp",
     "//skia",
+    "//skia/public/mojom:shared_typemap_traits",
     "//third_party/blink/public/mojom:mojom_modules_headers",
+    "//third_party/blink/public/mojom:web_bluetooth_mojo_bindings_headers",
   ]
 
   deps = [
+    ":buildflags",
     "//base",
     "//mojo/public/cpp/bindings",
     "//mojo/public/cpp/system",
@@ -118,11 +165,13 @@ source_set("headers") {
       "//media/capture:capture_base",
       "//media/capture:capture_lib",
     ]
+    public_deps += [ "//media/mojo/mojom" ]
   }
 
   if (is_android || is_win) {
     sources += [
       "font_unique_name_lookup/font_table_matcher.h",
+      "font_unique_name_lookup/font_table_persistence.h",
       "font_unique_name_lookup/icu_fold_case_util.h",
     ]
     deps += [ ":font_unique_name_table_proto" ]

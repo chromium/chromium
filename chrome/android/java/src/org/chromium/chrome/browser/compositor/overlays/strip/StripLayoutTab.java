@@ -9,9 +9,10 @@ import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
 import android.graphics.RectF;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ObserverList;
-import org.chromium.base.VisibleForTesting;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.compositor.animation.CompositorAnimator;
 import org.chromium.chrome.browser.compositor.animation.FloatProperty;
@@ -19,6 +20,7 @@ import org.chromium.chrome.browser.compositor.layouts.LayoutRenderHost;
 import org.chromium.chrome.browser.compositor.layouts.LayoutUpdateHost;
 import org.chromium.chrome.browser.compositor.layouts.components.CompositorButton;
 import org.chromium.chrome.browser.compositor.layouts.components.CompositorButton.CompositorOnClickHandler;
+import org.chromium.chrome.browser.compositor.layouts.components.TintedCompositorButton;
 import org.chromium.chrome.browser.compositor.layouts.components.VirtualView;
 import org.chromium.chrome.browser.compositor.overlays.strip.TabLoadTracker.TabLoadTrackerCallback;
 import org.chromium.chrome.browser.tab.Tab;
@@ -112,10 +114,12 @@ public class StripLayoutTab implements VirtualView {
 
     private int mId = Tab.INVALID_TAB_ID;
 
+    private final Context mContext;
     private final StripLayoutTabDelegate mDelegate;
     private final TabLoadTracker mLoadTracker;
     private final LayoutRenderHost mRenderHost;
     private final LayoutUpdateHost mUpdateHost;
+    private final TintedCompositorButton mCloseButton;
 
     private boolean mVisible = true;
     private boolean mIsDying;
@@ -138,8 +142,6 @@ public class StripLayoutTab implements VirtualView {
     private final RectF mTouchTarget = new RectF();
 
     private boolean mShowingCloseButton = true;
-
-    private final CompositorButton mCloseButton;
 
     // Content Animations
     private CompositorAnimator mButtonOpacityAnimation;
@@ -167,6 +169,7 @@ public class StripLayoutTab implements VirtualView {
             TabLoadTrackerCallback loadTrackerCallback, LayoutRenderHost renderHost,
             LayoutUpdateHost updateHost, boolean incognito) {
         mId = id;
+        mContext = context;
         mDelegate = delegate;
         mLoadTracker = new TabLoadTracker(id, loadTrackerCallback);
         mRenderHost = renderHost;
@@ -178,9 +181,10 @@ public class StripLayoutTab implements VirtualView {
                 mDelegate.handleCloseButtonClick(StripLayoutTab.this, time);
             }
         };
-        mCloseButton = new CompositorButton(context, 0, 0, closeClickAction);
-        mCloseButton.setResources(R.drawable.btn_tab_close_normal, R.drawable.btn_tab_close_pressed,
-                R.drawable.btn_tab_close_white_normal, R.drawable.btn_tab_close_white_pressed);
+        mCloseButton = new TintedCompositorButton(
+                context, 0, 0, closeClickAction, R.drawable.btn_tab_close_normal);
+        mCloseButton.setTintResources(R.color.default_icon_color, R.color.default_icon_color_blue,
+                R.color.default_icon_color_white, R.color.modern_blue_300);
         mCloseButton.setIncognito(mIncognito);
         mCloseButton.setBounds(getCloseRect());
         mCloseButton.setClickSlop(0.f);
@@ -250,15 +254,47 @@ public class StripLayoutTab implements VirtualView {
     }
 
     /**
-     * @param foreground Whether or not this tab is a foreground tab.
      * @return The Android resource that represents the tab background.
      */
-    public int getResourceId(boolean foreground) {
+    public int getResourceId() {
+        return R.drawable.bg_tabstrip_tab;
+    }
+
+    /**
+     * @return The Android resource that represents the tab outline.
+     */
+    public int getOutlineResourceId() {
+        return R.drawable.bg_tabstrip_background_tab_outline;
+    }
+
+    /**
+     * @param foreground Whether or not this tab is a foreground tab.
+     * @return The tint color resource that represents the tab background.
+     */
+    public int getTint(boolean foreground) {
+        int tint = mIncognito ? R.color.compositor_background_tab_bg_incognito
+                              : R.color.compositor_background_tab_bg;
         if (foreground) {
-            return mIncognito ? R.drawable.bg_tabstrip_incognito_tab : R.drawable.bg_tabstrip_tab;
+            tint = mIncognito ? R.color.default_bg_color_dark_elev_3
+                              : R.color.default_bg_color_elev_3;
         }
-        return mIncognito ? R.drawable.bg_tabstrip_incognito_background_tab
-                          : R.drawable.bg_tabstrip_background_tab;
+
+        return mContext.getResources().getColor(tint);
+    }
+
+    /**
+     * @param foreground Whether or not this tab is a foreground tab.
+     * @return The tint color resource that represents the tab outline.
+     */
+    public int getOutlineTint(boolean foreground) {
+        int tint = mIncognito ? R.color.compositor_background_tab_outline_incognito
+                              : R.color.compositor_background_tab_outline;
+        if (foreground) {
+            tint = mIncognito ? R.color.default_bg_color_dark_elev_3
+                              : R.color.default_bg_color_elev_3;
+        }
+
+        return mContext.getResources().getColor(tint);
     }
 
     /**
@@ -468,7 +504,7 @@ public class StripLayoutTab implements VirtualView {
     /**
      * @return The close button for this tab.
      */
-    public CompositorButton getCloseButton() {
+    public TintedCompositorButton getCloseButton() {
         return mCloseButton;
     }
 
@@ -571,7 +607,7 @@ public class StripLayoutTab implements VirtualView {
         ResourceManager manager = mRenderHost.getResourceManager();
         if (manager != null) {
             LayoutResource resource =
-                    manager.getResource(AndroidResourceType.STATIC, getResourceId(false));
+                    manager.getResource(AndroidResourceType.STATIC, getResourceId());
             if (resource != null) {
                 xOffset = LocalizationUtils.isLayoutRtl()
                         ? resource.getPadding().left

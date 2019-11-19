@@ -72,11 +72,11 @@ void ShellNativeAppWindow::FlashFrame(bool flash) {
   NOTIMPLEMENTED();
 }
 
-bool ShellNativeAppWindow::IsAlwaysOnTop() const {
-  return false;
+ui::ZOrderLevel ShellNativeAppWindow::GetZOrderLevel() const {
+  return ui::ZOrderLevel::kNormal;
 }
 
-void ShellNativeAppWindow::SetAlwaysOnTop(bool always_on_top) {
+void ShellNativeAppWindow::SetZOrderLevel(ui::ZOrderLevel level) {
   NOTIMPLEMENTED();
 }
 
@@ -161,14 +161,6 @@ SkColor ShellNativeAppWindow::InactiveFrameColor() const {
 
 gfx::Insets ShellNativeAppWindow::GetFrameInsets() const {
   return gfx::Insets();
-}
-
-void ShellNativeAppWindow::ShowWithApp() {
-  NOTIMPLEMENTED();
-}
-
-void ShellNativeAppWindow::HideWithApp() {
-  NOTIMPLEMENTED();
 }
 
 void ShellNativeAppWindow::SetContentSizeConstraints(

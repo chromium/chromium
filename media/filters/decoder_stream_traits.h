@@ -1,9 +1,12 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef MEDIA_FILTERS_DECODER_STREAM_TRAITS_H_
 #define MEDIA_FILTERS_DECODER_STREAM_TRAITS_H_
+
+#include <memory>
+#include <string>
 
 #include "base/containers/flat_map.h"
 #include "base/time/time.h"
@@ -46,17 +49,20 @@ class MEDIA_EXPORT DecoderStreamTraits<DemuxerStream::AUDIO> {
   DecoderStreamTraits(MediaLog* media_log, ChannelLayout initial_hw_layout);
 
   void ReportStatistics(const StatisticsCB& statistics_cb, int bytes_decoded);
+  void SetIsPlatformDecoder(bool is_platform_decoder);
+  void SetIsDecryptingDemuxerStream(bool is_dds);
   void InitializeDecoder(DecoderType* decoder,
                          const DecoderConfigType& config,
                          bool low_delay,
                          CdmContext* cdm_context,
-                         const InitCB& init_cb,
+                         InitCB init_cb,
                          const OutputCB& output_cb,
                          const WaitingCB& waiting_cb);
   DecoderConfigType GetDecoderConfig(DemuxerStream* stream);
   void OnDecode(const DecoderBuffer& buffer);
-  PostDecodeAction OnDecodeDone(const scoped_refptr<OutputType>& buffer);
+  PostDecodeAction OnDecodeDone(OutputType* buffer);
   void OnStreamReset(DemuxerStream* stream);
+  void OnOutputReady(OutputType* output);
 
  private:
   void OnConfigChanged(const AudioDecoderConfig& config);
@@ -90,16 +96,19 @@ class MEDIA_EXPORT DecoderStreamTraits<DemuxerStream::VIDEO> {
 
   DecoderConfigType GetDecoderConfig(DemuxerStream* stream);
   void ReportStatistics(const StatisticsCB& statistics_cb, int bytes_decoded);
+  void SetIsPlatformDecoder(bool is_platform_decoder);
+  void SetIsDecryptingDemuxerStream(bool is_dds);
   void InitializeDecoder(DecoderType* decoder,
                          const DecoderConfigType& config,
                          bool low_delay,
                          CdmContext* cdm_context,
-                         const InitCB& init_cb,
+                         InitCB init_cb,
                          const OutputCB& output_cb,
                          const WaitingCB& waiting_cb);
   void OnDecode(const DecoderBuffer& buffer);
-  PostDecodeAction OnDecodeDone(const scoped_refptr<OutputType>& buffer);
+  PostDecodeAction OnDecodeDone(OutputType* buffer);
   void OnStreamReset(DemuxerStream* stream);
+  void OnOutputReady(OutputType* output);
 
  private:
   base::TimeDelta last_keyframe_timestamp_;
@@ -109,6 +118,7 @@ class MEDIA_EXPORT DecoderStreamTraits<DemuxerStream::VIDEO> {
   struct FrameMetadata {
     bool should_drop = false;
     base::TimeDelta duration = kNoTimestamp;
+    base::TimeTicks decode_begin_time;
   };
   base::flat_map<base::TimeDelta, FrameMetadata> frame_metadata_;
 

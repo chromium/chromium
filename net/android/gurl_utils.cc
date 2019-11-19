@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/android/jni_string.h"
-#include "jni/GURLUtils_jni.h"
+#include "net/net_jni_headers/GURLUtils_jni.h"
 #include "url/gurl.h"
 
 using base::android::JavaParamRef;

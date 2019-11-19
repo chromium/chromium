@@ -7,24 +7,23 @@
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/root_window_controller.h"
-#include "ash/session/session_controller.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/wm/always_on_top_controller.h"
-#include "ash/wm/root_window_finder.h"
 #include "ash/wm/window_state.h"
+#include "ash/wm/window_util.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/wm/core/window_util.h"
 
 namespace ash {
-namespace wm {
 namespace {
 
 aura::Window* FindContainerRoot(const gfx::Rect& bounds_in_screen) {
   if (bounds_in_screen == gfx::Rect())
     return Shell::GetRootWindowForNewWindows();
-  return GetRootWindowMatching(bounds_in_screen);
+  return window_util::GetRootWindowMatching(bounds_in_screen);
 }
 
 bool HasTransientParentWindow(const aura::Window* window) {
@@ -81,8 +80,8 @@ aura::Window* GetContainerForWindow(aura::Window* window) {
   return parent;
 }
 
-aura::Window* GetDefaultParent(aura::Window* window,
-                               const gfx::Rect& bounds_in_screen) {
+aura::Window* GetDefaultParentForWindow(aura::Window* window,
+                                        const gfx::Rect& bounds_in_screen) {
   aura::Window* target_root = nullptr;
   aura::Window* transient_parent = ::wm::GetTransientParent(window);
   if (transient_parent) {
@@ -116,7 +115,7 @@ aura::Window* GetDefaultParent(aura::Window* window,
   return nullptr;
 }
 
-aura::Window::Windows GetContainersFromAllRootWindows(
+aura::Window::Windows GetContainersForAllRootWindows(
     int container_id,
     aura::Window* priority_root) {
   aura::Window::Windows containers;
@@ -133,5 +132,4 @@ aura::Window::Windows GetContainersFromAllRootWindows(
   return containers;
 }
 
-}  // namespace wm
 }  // namespace ash

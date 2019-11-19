@@ -40,12 +40,6 @@ class SVGRectTearOff : public SVGPropertyTearOff<SVGRect> {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static SVGRectTearOff* Create(SVGRect* target,
-                                SVGAnimatedPropertyBase* binding,
-                                PropertyIsAnimValType property_is_anim_val) {
-    return MakeGarbageCollected<SVGRectTearOff>(target, binding,
-                                                property_is_anim_val);
-  }
   static SVGRectTearOff* CreateDetached(const FloatRect&);
 
   SVGRectTearOff(SVGRect*,

@@ -5,7 +5,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 #include "base/compiler_specific.h"
-#include "base/message_loop/message_loop.h"
+#include "base/test/task_environment.h"
 #include "ppapi/shared_impl/proxy_lock.h"
 #include "ppapi/shared_impl/resource.h"
 #include "ppapi/shared_impl/resource_tracker.h"
@@ -49,7 +49,8 @@ class ResourceTrackerTest : public testing::Test {
   ResourceTracker& resource_tracker() { return *globals_.GetResourceTracker(); }
 
  private:
-  base::MessageLoop message_loop_;  // Required to receive callbacks.
+  base::test::SingleThreadTaskEnvironment
+      task_environment_;  // Required to receive callbacks.
   TestGlobals globals_;
 };
 
@@ -71,7 +72,7 @@ TEST_F(ResourceTrackerTest, LastPluginRef) {
   EXPECT_EQ(1, mock_resource_alive_count);
 
   resource_tracker().DidDeleteInstance(instance);
-  resource = NULL;
+  resource.reset();
   EXPECT_FALSE(resource_tracker().GetResource(pp_resource));
 }
 
@@ -116,7 +117,7 @@ TEST_F(ResourceTrackerTest, InstanceDeletedWithBothRefed) {
   EXPECT_EQ(1, instance_was_deleted_count);
   EXPECT_EQ(0, resource->pp_instance());
 
-  resource = NULL;
+  resource.reset();
   EXPECT_EQ(0, mock_resource_alive_count);
 }
 

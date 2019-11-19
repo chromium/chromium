@@ -19,7 +19,8 @@ using blink::WebFullscreenVideoStatus;
 
 namespace {
 
-constexpr TimeDelta kCheckFullscreenInterval = TimeDelta::FromSeconds(1);
+constexpr base::TimeDelta kCheckFullscreenInterval =
+    base::TimeDelta::FromSeconds(1);
 constexpr float kMostlyFillViewportThresholdOfOccupationProportion = 0.85f;
 constexpr float kMostlyFillViewportThresholdOfVisibleProportion = 0.75f;
 
@@ -50,6 +51,7 @@ void MediaCustomControlsFullscreenDetector::Attach() {
       WTF::BindRepeating(
           &MediaCustomControlsFullscreenDetector::OnIntersectionChanged,
           WrapWeakPersistent(this)),
+      IntersectionObserver::kDeliverDuringPostLifecycleSteps,
       IntersectionObserver::kFractionOfTarget, 0, false, true);
 }
 
@@ -151,11 +153,11 @@ void MediaCustomControlsFullscreenDetector::OnIntersectionChanged(
 
   // Target and intersection rects must be converted from CSS to device pixels.
   float zoom = VideoElement().GetLayoutObject()->StyleRef().EffectiveZoom();
-  LayoutSize target_size = geometry.TargetRect().Size();
+  PhysicalSize target_size = geometry.TargetRect().size;
   target_size.Scale(zoom);
-  LayoutSize intersection_size = geometry.IntersectionRect().Size();
+  PhysicalSize intersection_size = geometry.IntersectionRect().size;
   intersection_size.Scale(zoom);
-  LayoutSize root_size = geometry.RootRect().Size();
+  PhysicalSize root_size = geometry.RootRect().size;
 
   bool is_dominant = ComputeIsDominantVideoForTests(
       RoundedIntSize(target_size), RoundedIntSize(root_size),

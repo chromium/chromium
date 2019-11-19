@@ -1,0 +1,67 @@
+# Copyright 2016 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+mojom = "//media/mojo/mojom/media_types.mojom"
+
+public_headers = [
+  "//media/base/audio_codecs.h",
+  "//media/base/buffering_state.h",
+  "//media/base/channel_layout.h",
+  "//media/base/container_names.h",
+  "//media/base/decode_status.h",
+  "//media/base/decrypt_config.h",
+  "//media/base/encryption_pattern.h",
+  "//media/base/encryption_scheme.h",
+  "//media/base/hdr_metadata.h",
+  "//media/base/media_log_event.h",
+  "//media/base/media_status.h",
+  "//media/base/output_device_info.h",
+  "//media/base/pipeline_status.h",
+  "//media/base/sample_format.h",
+  "//media/base/subsample_entry.h",
+  "//media/base/video_codecs.h",
+  "//media/base/video_transformation.h",
+  "//media/base/video_types.h",
+  "//media/base/waiting.h",
+  "//media/base/watch_time_keys.h",
+]
+
+traits_headers = [
+  "//media/base/ipc/media_param_traits_macros.h",
+  "//media/mojo/mojom/video_transformation_mojom_traits.h",
+]
+
+public_deps = [
+  "//media",
+  "//media/base/ipc",
+]
+
+sources = [
+  "//media/mojo/mojom/video_transformation_mojom_traits.cc",
+  "//media/mojo/mojom/video_transformation_mojom_traits.h",
+]
+
+type_mappings = [
+  "media.mojom.AudioCodec=::media::AudioCodec",
+  "media.mojom.BufferingState=::media::BufferingState",
+  "media.mojom.BufferingStateChangeReason=::media::BufferingStateChangeReason",
+  "media.mojom.ChannelLayout=::media::ChannelLayout",
+  "media.mojom.ColorSpace=::media::ColorSpace",
+  "media.mojom.DecodeStatus=::media::DecodeStatus",
+  "media.mojom.EncryptionScheme=::media::EncryptionScheme",
+  "media.mojom.MediaContainerName=::media::container_names::MediaContainerName",
+  "media.mojom.MediaLogEvent=::media::MediaLogEvent",
+  "media.mojom.OutputDeviceStatus=::media::OutputDeviceStatus",
+  "media.mojom.PipelineStatus=::media::PipelineStatus",
+  "media.mojom.SampleFormat=::media::SampleFormat",
+  "media.mojom.SubsampleEntry=::media::SubsampleEntry",
+  "media.mojom.VideoCodec=::media::VideoCodec",
+  "media.mojom.VideoCodecProfile=::media::VideoCodecProfile",
+  "media.mojom.VideoPixelFormat=::media::VideoPixelFormat",
+  "media.mojom.VideoRotation=::media::VideoRotation",
+  "media.mojom.VideoTransformation=::media::VideoTransformation",
+  "media.mojom.WaitingReason=::media::WaitingReason",
+  "media.mojom.WatchTimeKey=::media::WatchTimeKey",
+  "media.mojom.MediaStatusState=::media::MediaStatus::State",
+]

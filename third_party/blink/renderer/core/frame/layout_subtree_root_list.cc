@@ -23,10 +23,17 @@ void LayoutSubtreeRootList::CountObjectsNeedingLayoutInRoot(
     const LayoutObject* object,
     unsigned& needs_layout_objects,
     unsigned& total_objects) {
-  for (const LayoutObject* o = object; o; o = o->NextInPreOrder(object)) {
+  for (const LayoutObject* o = object; o;) {
     ++total_objects;
-    if (o->NeedsLayout())
+    bool display_locked =
+        o->LayoutBlockedByDisplayLock(DisplayLockLifecycleTarget::kChildren);
+    if (o->SelfNeedsLayout() || (!display_locked && o->NeedsLayout()))
       ++needs_layout_objects;
+
+    if (display_locked)
+      o = o->NextInPreOrderAfterChildren(object);
+    else
+      o = o->NextInPreOrder(object);
   }
 }
 

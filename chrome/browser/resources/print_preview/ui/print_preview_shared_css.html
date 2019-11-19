@@ -1,0 +1,78 @@
+<template>
+  <style include="cr-shared-style">
+    /* Default state ********************************************************/
+    select.md-select {
+      margin-bottom: 2px;
+      margin-top: 2px;
+      min-height: 32px;
+      padding-bottom: 1px;
+    <if expr="is_win or is_macosx">
+      /* The following platform-specific rule is necessary to get adjacent
+       * buttons, text inputs, and so forth to align on their borders while
+       * also aligning on the text's baselines. */
+      padding-bottom: 2px;
+    </if>
+      padding-inline-end: 32px;
+      padding-top: 1px;
+      user-select: none;
+      --md-select-width: calc(100% - 2 * var(--print-preview-sidebar-margin));
+    }
+
+    .checkbox cr-checkbox {
+      min-height: var(--print-preview-row-height);
+      --cr-checkbox-ripple-size: var(--print-preview-row-height);
+    }
+
+    .checkbox cr-checkbox::part(label-container) {
+      overflow: hidden;
+      padding-inline-start: 16px;
+    }
+
+    cr-input {
+      line-height: 20px;
+    }
+
+    cr-input::part(row-container) {
+      min-height: var(--print-preview-row-height);
+    }
+
+    a[href],
+    a[is='action-link'] {
+      color: var(--google-blue-600);  /* Same in light and dark mode. */
+      text-decoration: none;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :-webkit-any(a[href], a[is='action-link']) {
+        color: var(--cr-link-color);
+      }
+    }
+
+    print-preview-settings-section [slot=controls] > * {
+      margin: 0 var(--print-preview-sidebar-margin);
+    }
+
+    /* Default print preview dialog styles. */
+    cr-dialog::part(wrapper) {
+      max-height: calc(100vh - 68px);
+      max-width: 100%;
+      width:  calc(100vw - 68px);
+    }
+
+    cr-dialog [slot=body] {
+      box-sizing: border-box;
+    }
+
+    #dialog div[slot='title'] {
+      padding-bottom: 0;
+    }
+
+    #dialog div[slot='button-container'] {
+      align-items: center;
+      box-shadow: 0 -1px 1px 0 rgba(var(--cr-card-shadow-color-rgb), 0.3);
+      min-height: 64px;
+      padding-bottom: 0;
+      padding-top: 0;
+    }
+  </style>
+</template>

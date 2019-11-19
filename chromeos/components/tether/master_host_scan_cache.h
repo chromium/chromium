@@ -78,7 +78,7 @@ class MasterHostScanCache : public HostScanCache {
   // host).
   std::unordered_map<std::string, std::unique_ptr<base::OneShotTimer>>
       tether_guid_to_timer_map_;
-  base::WeakPtrFactory<MasterHostScanCache> weak_ptr_factory_;
+  base::WeakPtrFactory<MasterHostScanCache> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(MasterHostScanCache);
 };

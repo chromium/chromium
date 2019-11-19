@@ -1,0 +1,223 @@
+// Copyright (c) 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+package disk_cache_fuzzer;
+
+enum RequestPriority {
+  THROTTLED = 0;
+  IDLE = 1;
+  LOWEST = 2;
+  LOW = 3;
+  MEDIUM = 4;
+  HIGHEST = 5;
+}
+
+message FuzzCommands {
+  enum CacheBackend {
+    SIMPLE = 0;
+    IN_MEMORY = 1;
+    BLOCK = 2;
+  }
+  required CacheBackend cache_backend = 5;
+
+  enum CacheType {
+    APP_CACHE = 1;
+    REMOVED_MEDIA_CACHE = 2;
+    SHADER_CACHE = 3;
+    PNACL_CACHE = 4;
+    GENERATED_BYTE_CODE_CACHE = 5;
+    DISK_CACHE = 6;
+    GENERATED_NATIVE_CODE_CACHE = 7;
+  }
+  required CacheType cache_type = 4;
+
+  optional bool set_mask = 2;
+  optional SetMaxSize set_max_size = 3;
+  repeated FuzzCommand fuzz_commands = 1;
+  required bool simple_cache_wait_for_index = 6;
+}
+
+message FuzzCommand {
+  oneof fuzz_command_oneof {
+    SetMaxSize set_max_size = 87;
+    CreateEntry create_entry = 1;
+    OpenEntry open_entry = 2;
+    OpenOrCreateEntry open_or_create_entry = 345;
+    CloseEntry close_entry = 3;
+    DoomEntry doom_entry = 4;
+    WriteData write_data = 5;
+    WriteSparseData write_sparse_data = 6;
+    DoomAllEntries doom_all_entries = 7;
+    FlushQueueForTest flush_queue_for_test = 8;
+    CreateIterator create_iterator = 10;
+    IteratorOpenNextEntry iterator_open_next_entry = 63;
+    FastForwardBy fast_forward_by = 11;
+
+    ReadData read_data = 12;
+    ReadSparseData read_sparse_data = 456;
+
+    DoomEntriesSince doom_entries_since = 13;
+    DoomEntriesBetween doom_entries_between = 14;
+
+    OnExternalCacheHit on_external_cache_hit = 16;
+
+    TrimForTest trim_for_test = 17;
+    TrimDeletedListForTest trim_deleted_list_for_test = 18;
+    GetAvailableRange get_available_range = 19;
+    CancelSparseIO cancel_sparse_io = 20;
+    DoomKey doom_key = 21;
+    DestructBackend destruct_backend = 22;
+
+    AddRealDelay add_real_delay = 23;
+
+    // Not included: GetStats, CalculateSizesOf, GetEntryInMemoryData,
+    // SetEntryInMemoryData, CouldBeSparse, ReadyForSparseIO
+
+    // TODO(mpdenton) enable kPrioritizedSimpleCacheTasks?
+    // TODO(mpdenton) FlushWorkerPoolForTesting
+  }
+}
+
+message SetMaxSize {
+  required uint32 size = 1;
+}
+
+message CreateEntry {
+  required uint64 key_id = 1;
+  required uint64 entry_id = 2;
+  required RequestPriority pri = 3;
+  required bool async = 4;
+  required bool is_sparse = 5;
+}
+
+message OpenEntry {
+  required uint64 key_id = 1;
+  required uint64 entry_id = 2;
+  required RequestPriority pri = 3;
+  required bool async = 4;
+}
+
+message OpenOrCreateEntry {
+  required uint64 key_id = 1;
+  required uint64 entry_id = 2;
+  required bool create_new = 3;
+  required RequestPriority pri = 4;
+  required bool async = 5;
+  required bool is_sparse = 6;
+}
+
+message CloseEntry {
+  required uint64 entry_id = 1;
+}
+
+message DoomEntry {
+  required uint64 entry_id = 1;
+}
+
+message WriteData {
+  required uint64 entry_id = 1;
+  required uint32 size = 2;
+  required uint32 index = 3;
+  required uint32 offset = 4;
+  required bool truncate = 5;
+  required bool async = 6;
+}
+
+message WriteSparseData {
+  required uint64 entry_id = 1;
+  required uint32 size = 2;
+  required uint64 offset = 4;
+  required bool async = 5;
+  required bool cap_offset = 6;
+}
+
+message ReadSparseData {
+  required uint64 entry_id = 1;
+  required uint32 size = 2;
+  required uint64 offset = 4;
+  required bool async = 5;
+  required bool cap_offset = 6;
+}
+
+message ReadData {
+  required uint64 entry_id = 1;
+  required uint32 size = 2;
+  required uint32 index = 3;
+  required uint32 offset = 4;
+  required bool async = 5;
+}
+
+message DoomAllEntries {
+  required bool async = 1;
+}
+
+message FlushQueueForTest {}
+
+message CreateIterator {
+  required uint64 it_id = 1;
+}
+
+message IteratorOpenNextEntry {
+  required uint64 it_id = 1;
+  required uint64 entry_id = 2;
+  required bool async = 3;
+}
+
+message FastForwardBy {
+  required uint32 capped_num_millis = 1;
+  required uint64 time_id = 2;
+}
+
+message DoomEntriesBetween {
+  required uint64 time_id1 = 1;
+  required uint64 time_id2 = 2;
+  required bool async = 3;
+}
+
+message DoomEntriesSince {
+  required uint64 time_id = 1;
+  required bool async = 2;
+}
+
+message OnExternalCacheHit {
+  required uint64 key_id = 1;
+}
+
+message TrimForTest {
+  required bool empty = 1;
+}
+
+message TrimDeletedListForTest {
+  required bool empty = 1;
+}
+
+message GetAvailableRange {
+  required uint64 entry_id = 1;
+  required uint32 offset = 2;
+  required uint32 len = 3;
+  required bool async = 4;
+}
+
+message CancelSparseIO {
+  required uint64 entry_id = 1;
+}
+
+message DoomKey {
+  required uint64 key_id = 1;
+  required RequestPriority pri = 2;
+  required bool async = 3;
+}
+
+message DestructBackend {
+  // I want this to be uncommon, so if either of these booleans are false, we
+  // won't actually destruct the backend.
+  required bool actually_destruct1 = 1;
+  required bool actually_destruct2 = 2;
+}
+
+message AddRealDelay {
+  required bool actually_delay = 1;
+}

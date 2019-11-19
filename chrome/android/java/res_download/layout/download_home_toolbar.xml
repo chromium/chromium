@@ -7,22 +7,21 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
+    <!-- This view provides a background for the toolbar when the page's background
+         is visible through the lateral margins of the search view -->
+    <View
+        android:id="@+id/action_bar_bg"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/toolbar_height_no_shadow"
+        android:background="@color/toolbar_background_primary" />
+
     <org.chromium.chrome.browser.download.home.toolbar.DownloadHomeToolbar
         android:id="@+id/download_toolbar"
         android:layout_width="match_parent"
         android:layout_height="@dimen/toolbar_height_no_shadow"
-        style="@style/ModernToolbar">
+        style="@style/ModernToolbar"/>
 
-        <TextView
-            android:id="@+id/title_bar"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            style="@style/TextAppearance.BlackHeadline"
-            android:text="@string/menu_downloads"/>
-
-    </org.chromium.chrome.browser.download.home.toolbar.DownloadHomeToolbar>
-
-    <org.chromium.chrome.browser.widget.FadingShadowView
+    <org.chromium.chrome.browser.ui.widget.FadingShadowView
         android:id="@+id/shadow"
         android:layout_width="match_parent"
         android:layout_height="@dimen/action_bar_shadow_height"

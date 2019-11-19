@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<script src='../../resources/testharness.js'></script>
+<script src='../../resources/testharnessreport.js'></script>
+<script src='../../resources/gesture-util.js'></script>
+
+<style>
+  body, html {
+    margin: 0;
+  }
+
+  #sticky {
+    position: sticky;
+    width: 80%;
+    height: 400px;
+    top: 5px;
+    left: 10%;
+    padding: 20px;
+    box-sizing: border-box;
+    background-color: PaleTurquoise;
+  }
+
+  #instructions {
+    width: 100%;
+    text-align: center;
+  }
+
+  #scroller {
+    position: absolute;
+    border: 5px solid salmon;
+    clip: rect(0px, 1000px, 500px, 0px);
+    width: 90%;
+    height: 150px;
+    overflow-y: scroll;
+  }
+
+  .spacer {
+   height: 400%;
+   background:repeating-linear-gradient(#FFF 0%, #FFF 10%, #000 10%, #000 20%);
+
+  }
+</style>
+
+<div style="height:300px"></div>
+<div id="sticky">
+  <div id="instructions">
+    <p>
+      This turquoise box is a position: sticky box. The black-and-white scroller
+      beelow has a clip region so should be non-composited. The document has
+      scrolling of its own.
+    </p>
+    <p>
+      Scroll the document down so the turquoise box is not quite aligned with
+      the viewport top but enough that the scroller below no longer overlaps
+      its original position. Now attempt to scroll over the black-and-white
+      scroller with wheel or touch. If box must scroll; the document must not
+      scroll.
+    </p>
+    <p>
+      Continue to scroll the document down so the turquoise box becomes fixed
+      to the viewport top. Now attempt to scroll over the black-and-white
+      scroller with wheel or touch. It should scroll as before, the document
+      must not scroll.
+    </p>
+  </div>
+  <div id="scroller">
+    <div class="spacer"></div>
+  </div>
+</div>
+<div style="height:1000px"></div>
+
+<script>
+  window.onload = async () => {
+    await waitForCompositorCommit();
+
+    const scroller = document.getElementById('scroller');
+
+    promise_test(async () => {
+      assert_equals(scroller.scrollTop, 0, "Scroller starts off unscrolled.");
+      assert_equals(window.scrollY, 0, "Window starts off unscrolled.");
+
+      // Scroll over the document so that the page gets scrolled down. Scroll
+      // far enough that the scroller no longer overlaps its original position,
+      // but not so far that the sticky box has become fixed.
+      {
+        const delta = scroller.clientHeight * 1.5;
+        const location = { x: 5, y: 5 };
+        await smoothScroll(delta,
+                           location.x,
+                           location.y,
+                           GestureSourceType.TOUCH_INPUT,
+                           'down',
+                           SPEED_INSTANT);
+
+        // Ensure we've scrolled more than the scroller height to ensure a
+        // NonFastScrollableRect bug related to scroll would be reproducible
+        // over the entire scroller.
+        assert_greater_than(window.scrollY, scroller.clientHeight,
+                            "Document should have been scrolled.");
+      }
+
+      // Now perform a scroll over the scroller rect. Ensure we targetted the
+      // correct scroller.
+      {
+        const delta = 100;
+        const location = elementCenter(scroller);
+        await smoothScroll(delta,
+                           location.x,
+                           location.y,
+                           GestureSourceType.TOUCH_INPUT,
+                           'down',
+                           SPEED_INSTANT);
+
+        assert_greater_than(scroller.scrollTop, 0,
+                            "Scroller should be scrolled while sticky box is " +
+                            "unfixed.");
+      }
+
+      // Scroll the document down now until the sticky box becomes fixed.
+      {
+        const delta = scroller.clientHeight * 2;
+        const location = { x: 5, y: 5 };
+        await smoothScroll(delta,
+                           location.x,
+                           location.y,
+                           GestureSourceType.TOUCH_INPUT,
+                           'down',
+                           SPEED_INSTANT);
+
+        // Ensure we've scrolled more than the scroller height to ensure a
+        // NonFastScrollableRect bug related to scroll would be reproducible
+        // over the entire scroller.
+        assert_greater_than(window.scrollY, 300,
+                            "Document should have been scrolled until sticky " +
+                            "box is fixed.");
+      }
+
+      // Again perform a scroll over the scroller rect. Ensure we targetted the
+      // correct scroller.
+      {
+        const delta = 1000;
+        const location = elementCenter(scroller);
+        await smoothScroll(delta,
+                           location.x,
+                           location.y,
+                           GestureSourceType.TOUCH_INPUT,
+                           'up',
+                           SPEED_INSTANT);
+
+        assert_equals(scroller.scrollTop, 0,
+                     "Scroller should be scrolled when sticky box is fixed.");
+      }
+
+    }, 'Scrolling over an uncomposited scroller inside a composited position' +
+       ': sticky element.');
+  }
+
+</script>

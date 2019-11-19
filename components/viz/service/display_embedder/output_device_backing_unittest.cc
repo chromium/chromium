@@ -27,7 +27,7 @@ class TestBackingClient : public OutputDeviceBacking::Client {
       : backing_(backing), viewport_size_(viewport_size) {
     backing_->RegisterClient(this);
     backing_->ClientResized();
-    backing_->GetSharedMemory(viewport_size_);
+    backing_->GetSharedMemoryRegion(viewport_size_);
   }
   ~TestBackingClient() override { backing_->UnregisterClient(this); }
 
@@ -96,17 +96,17 @@ TEST(OutputDeviceBackingTest, ViewportSizeBiggerThanMax) {
   OutputDeviceBacking backing;
 
   // The viewport is bigger than |kMaxBitmapSizeBytes| and OutputDeviceBacking
-  // won't try to create SharedMemory for it.
+  // won't try to create a shared memory region for it.
   TestBackingClient client_a(&backing, gfx::Size(16385, 8193));
-  EXPECT_EQ(nullptr, backing.GetSharedMemory(client_a.viewport_size()));
+  EXPECT_EQ(nullptr, backing.GetSharedMemoryRegion(client_a.viewport_size()));
 
-  // This should cause SharedMemory to get allocated.
+  // This should cause a region to get allocated.
   TestBackingClient client_b(&backing, gfx::Size(1024, 768));
-  EXPECT_NE(nullptr, backing.GetSharedMemory(client_b.viewport_size()));
+  EXPECT_NE(nullptr, backing.GetSharedMemoryRegion(client_b.viewport_size()));
 
   // Even though SharedMemory was allocated to fit |client_b|, it will be too
-  // small for |client_a| and GetSharedMemory() should still return null.
-  EXPECT_EQ(nullptr, backing.GetSharedMemory(client_a.viewport_size()));
+  // small for |client_a| and GetSharedMemoryRegion() should still return null.
+  EXPECT_EQ(nullptr, backing.GetSharedMemoryRegion(client_a.viewport_size()));
 }
 
 }  // namespace viz

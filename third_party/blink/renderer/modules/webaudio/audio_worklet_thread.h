@@ -39,8 +39,8 @@ class MODULES_EXPORT AudioWorkletThread final : public WorkerThread {
 
   bool IsOwningBackingThread() const override { return false; }
 
-  WebThreadType GetThreadType() const override {
-    return WebThreadType::kAudioWorkletThread;
+  ThreadType GetThreadType() const override {
+    return ThreadType::kAudioWorkletThread;
   }
 
   // This is only accessed by the main thread. Incremented by the constructor,

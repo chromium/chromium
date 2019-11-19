@@ -33,9 +33,9 @@
 #include "third_party/blink/renderer/platform/graphics/paint/paint_image.h"
 #include "third_party/blink/renderer/platform/image-decoders/image_decoder.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
-#include "third_party/blink/renderer/platform/wtf/time.h"
+
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "third_party/skia/include/core/SkRWBuffer.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
@@ -43,7 +43,6 @@
 namespace blink {
 
 class ImageFrameGenerator;
-class SharedBuffer;
 struct DeferredFrameData;
 
 class PLATFORM_EXPORT DeferredImageDecoder final {
@@ -77,9 +76,17 @@ class PLATFORM_EXPORT DeferredImageDecoder final {
   int RepetitionCount() const;
   bool FrameHasAlphaAtIndex(size_t index) const;
   bool FrameIsReceivedAtIndex(size_t index) const;
-  TimeDelta FrameDurationAtIndex(size_t index) const;
+  base::TimeDelta FrameDurationAtIndex(size_t index) const;
   ImageOrientation OrientationAtIndex(size_t index) const;
   bool HotSpot(IntPoint&) const;
+
+  // A less expensive method for getting the number of bytes thus far received
+  // for the image. Checking Data()->size() involves copying bytes to a
+  // SharedBuffer.
+  //
+  // Returns 0 if the read-write buffer has not been initialized or received
+  // data.
+  size_t ByteSize() const;
 
  private:
   explicit DeferredImageDecoder(std::unique_ptr<ImageDecoder> metadata_decoder);
@@ -104,12 +111,18 @@ class PLATFORM_EXPORT DeferredImageDecoder final {
   int repetition_count_;
   bool has_embedded_color_profile_ = false;
   bool all_data_received_;
+  bool first_decoding_generator_created_;
   bool can_yuv_decode_;
   bool has_hot_spot_;
   bool image_is_high_bit_depth_;
   sk_sp<SkColorSpace> color_space_for_sk_images_;
   IntPoint hot_spot_;
   const PaintImage::ContentId complete_frame_content_id_;
+  base::Optional<bool> incremental_decode_needed_;
+
+  // Caches an image's metadata so it can outlive |metadata_decoder_| after all
+  // data is received in cases where multiple generators are created.
+  base::Optional<cc::ImageHeaderMetadata> image_metadata_;
 
   // Caches frame state information.
   Vector<DeferredFrameData> frame_data_;

@@ -82,10 +82,9 @@ void AwSpeechRecognitionManagerDelegate::CheckRecognitionIsAllowed(
 
   // Check that the render frame type is appropriate, and whether or not we
   // need to request permission from the user.
-  base::PostTaskWithTraits(
-      FROM_HERE, {BrowserThread::UI},
-      base::BindOnce(&CheckRenderFrameType, std::move(callback),
-                     render_process_id, render_frame_id));
+  base::PostTask(FROM_HERE, {BrowserThread::UI},
+                 base::BindOnce(&CheckRenderFrameType, std::move(callback),
+                                render_process_id, render_frame_id));
 }
 
 content::SpeechRecognitionEventListener*
@@ -108,7 +107,7 @@ void AwSpeechRecognitionManagerDelegate::CheckRenderFrameType(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   // Regular tab contents.
-  base::PostTaskWithTraits(
+  base::PostTask(
       FROM_HERE, {BrowserThread::IO},
       base::BindOnce(std::move(callback), true /* check_permission */,
                      true /* allowed */));

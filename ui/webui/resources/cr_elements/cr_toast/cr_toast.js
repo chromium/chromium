@@ -20,6 +20,10 @@ Polymer({
     },
   },
 
+  hostAttributes: {
+    'role': 'alert',
+  },
+
   observers: ['resetAutoHide_(duration, open)'],
 
   /** @private {number|null} */

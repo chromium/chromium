@@ -1,25 +1,27 @@
 layer at (0,0) size 800x600
   LayoutView at (0,0) size 800x600
 layer at (0,0) size 800x600
-  LayoutBlockFlow {HTML} at (0,0) size 800x600
-    LayoutBlockFlow {BODY} at (8,8) size 784x576
-      LayoutBlockFlow {P} at (0,0) size 784x18
+  LayoutNGBlockFlow {HTML} at (0,0) size 800x600
+    LayoutNGBlockFlow {BODY} at (8,8) size 784x576
+      LayoutNGBlockFlow {P} at (0,0) size 784x18
         LayoutText {#text} at (0,0) size 342x18
           text run at (0,0) width 342: "This tests Range.selectNode() of a text node and a br."
-      LayoutBlockFlow {DIV} at (0,34) size 784x18
+      LayoutNGBlockFlow {DIV} at (0,34) size 784x18
         LayoutText {#text} at (0,0) size 24x18
           text run at (0,0) width 24: "one"
-      LayoutBlockFlow {DIV} at (0,52) size 784x36
+      LayoutNGBlockFlow {DIV} at (0,52) size 784x36
         LayoutText {#text} at (0,0) size 24x18
           text run at (0,0) width 24: "two"
-        LayoutBR {BR} at (24,14) size 0x0
+        LayoutBR {BR} at (24,0) size 0x18
         LayoutText {#text} at (0,18) size 32x18
           text run at (0,18) width 32: "three"
-      LayoutBlockFlow {DIV} at (0,88) size 784x18
+      LayoutNGBlockFlow {DIV} at (0,88) size 784x18
         LayoutText {#text} at (0,0) size 27x18
           text run at (0,0) width 27: "four"
-      LayoutBlockFlow {UL} at (0,122) size 784x18
-        LayoutListItem {LI} at (40,0) size 744x18
-          LayoutListMarker (anonymous) at (-17,0) size 7x18: bullet
+      LayoutNGBlockFlow {UL} at (0,122) size 784x18
+        LayoutNGListItem {LI} at (40,0) size 744x18
+          LayoutNGListMarker (anonymous) at (-17,0) size 7x18
+            LayoutText (anonymous) at (0,0) size 7x18
+              text run at (0,0) width 7: "\x{2022} "
           LayoutText {#text} at (0,0) size 55x18
             text run at (0,0) width 55: "Success."

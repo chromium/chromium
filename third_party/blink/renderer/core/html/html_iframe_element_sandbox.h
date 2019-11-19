@@ -14,10 +14,6 @@ class HTMLIFrameElement;
 
 class HTMLIFrameElementSandbox final : public DOMTokenList {
  public:
-  static HTMLIFrameElementSandbox* Create(HTMLIFrameElement* element) {
-    return MakeGarbageCollected<HTMLIFrameElementSandbox>(element);
-  }
-
   explicit HTMLIFrameElementSandbox(HTMLIFrameElement*);
 
  private:

@@ -11,7 +11,7 @@
 #include <memory>
 
 #include "base/run_loop.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/simple_thread.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -39,7 +39,7 @@ class NaClIPCAdapterTest : public testing::Test {
   }
   void TearDown() override {
     sink_ = NULL;  // This pointer is actually owned by the IPCAdapter.
-    adapter_ = NULL;
+    adapter_.reset();
     // The adapter destructor has to post a task to destroy the Channel on the
     // IO thread. For the purposes of the test, we just need to make sure that
     // task gets run, or it will appear as a leak.
@@ -59,7 +59,7 @@ class NaClIPCAdapterTest : public testing::Test {
     return adapter_->Send(&msg);
   }
 
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
 
   scoped_refptr<NaClIPCAdapter> adapter_;
 

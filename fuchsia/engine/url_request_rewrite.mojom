@@ -1,0 +1,83 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module mojom;
+
+import "mojo/public/mojom/base/time.mojom";
+import "services/network/public/mojom/http_request_headers.mojom";
+import "url/mojom/url.mojom";
+
+// Used by the browser to push URL rewrite rules to renderers. There will be
+// one receiver per web frame.
+// TODO(https://crbug.com/976975): Support URL rewriting for service workers.
+interface UrlRequestRulesReceiver {
+  // Receives a set of rules to apply to URL requests.
+  OnRulesUpdated(array<UrlRequestRewriteRule> rules);
+};
+
+// A URL request rewrite rule.
+struct UrlRequestRewriteRule {
+  // Set of hosts to apply the rewrites to. If empty, the rule will apply to
+  // every request, independent of host.
+  array<string>? hosts_filter;
+
+  // Set of schemes to apply the rewrites to. If empty, the rule will apply to
+  // every request, independent of scheme.
+  array<string>? schemes_filter;
+
+  // URL request rewrites to apply.
+  array<UrlRequestRewrite> rewrites;
+};
+
+union UrlRequestRewrite {
+  // Adds a set of headers to a URL request.
+  UrlRequestRewriteAddHeaders add_headers;
+
+  // Removes a header based on the presence of a pattern in the URL query.
+  UrlRequestRewriteRemoveHeader remove_header;
+
+  // Substitutes a pattern in the URL query.
+  UrlRequestRewriteSubstituteQueryPattern substitute_query_pattern;
+
+  // Replaces a URL if the original URL ends with a pattern.
+  UrlRequestRewriteReplaceUrl replace_url;
+};
+
+// Adds |headers| to the URL request. If a header is already present in the
+// original URL request, it will be overwritten.
+struct UrlRequestRewriteAddHeaders {
+  // The headers to add.
+  network.mojom.HttpRequestHeaders headers;
+};
+
+// If |query_pattern| in the URL query, removes |header_name| from the list of
+// headers. If |query_pattern| is empty, removes |header_name| from the list
+// of headers unconditionally
+struct UrlRequestRewriteRemoveHeader {
+  // The pattern to look for in the URL request.
+  string? query_pattern;
+
+  // The header to remove.
+  string header_name;
+};
+
+// If |pattern| is found in the URL request query, replaces it with
+// |substitution|.
+struct UrlRequestRewriteSubstituteQueryPattern {
+  // The pattern to look for in the URL request.
+  string pattern;
+
+  // The string to repalce |pattern| with.
+  string substitution;
+};
+
+// If the URL in the URL request ends with |url_ends_with|, rewrites the URL to
+// |new_url|.
+struct UrlRequestRewriteReplaceUrl {
+  // The pattern to look for in the URL.
+  string url_ends_with;
+
+  // The replacement URL.
+  url.mojom.Url new_url;
+};

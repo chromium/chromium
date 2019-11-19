@@ -63,7 +63,7 @@ class DialMediaSinkService {
   std::unique_ptr<DialMediaSinkServiceImpl, base::OnTaskRunnerDeleter> impl_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-  base::WeakPtrFactory<DialMediaSinkService> weak_ptr_factory_;
+  base::WeakPtrFactory<DialMediaSinkService> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(DialMediaSinkService);
 };

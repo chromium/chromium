@@ -56,9 +56,6 @@ extern "C" {
  * This macro is used to flag unused function parameters to GCC
  */
 #ifdef __GNUC__
-#ifdef HAVE_ANSIDECL_H
-#include <ansidecl.h>
-#endif
 #ifndef ATTRIBUTE_UNUSED
 #define ATTRIBUTE_UNUSED __attribute__((unused))
 #endif

@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<script src="../../../../resources/run-after-layout-and-paint.js"></script>
+<script src="../../../../fast/forms/resources/common.js"></script>
+<body>
+<style>
+  #vertical {
+    -webkit-appearance: slider-vertical;
+  }
+
+  #no-appearance {
+    -webkit-appearance: none;
+  }
+  #no-appearance::-webkit-slider-thumb {
+    -webkit-appearance: none;
+  }
+</style>
+
+<!-- no style for reference -->
+<ul>
+  <li>Range: <input type="range" /><input value=0 type="range" /><input value=100 type="range" /></li>
+</ul>
+
+<ul>
+  <li>Range value=30: <input type="range" value="30"/></li>
+</ul>
+
+<ul>
+    <li>Range webkit-appearance:none: <input type="range" id="no-appearance"/></li>
+</ul>
+
+<ul>
+  <li>Range vertical: <input type="range" value="30" id="vertical" /></li>
+</ul>
+
+<!-- disabled -->
+<ul>
+  <li>Range disabled: <input type="range" disabled/></li>
+</ul>
+
+<!-- hover -->
+<ul>
+  <li>Range hover: <input type="range" id="hoverTarget"/></li>
+</ul>
+
+<!-- datalist -->
+<ul>
+  <li>Range datalist: <input type="range" min="0" max="100" list="number" /></li>
+  <li>Range datalist disabled: <input type="range" min="0" max="100" list="number" disabled /></li>
+  <datalist id="number">
+    <option>10</option>
+    <option>30</option>
+    <option>50</option>
+    <option>70</option>
+    <option>90</option>
+  </datalist>
+</ul>
+
+<!-- zoom -->
+<ul>
+  <li>Range zoom: 3: <input type="range" style="zoom: 3;"/></li>
+  <li><input type="range" value=0 style="zoom: 3;" /></li>
+</ul>
+
+<script>
+
+runAfterLayoutAndPaint(function() {
+  var target = document.getElementById('hoverTarget');
+  hoverOverElement(target);
+}, true);
+
+</script>
+
+</body>

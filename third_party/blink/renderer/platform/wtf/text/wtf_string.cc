@@ -22,15 +22,17 @@
 
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
+#include <locale.h>
 #include <stdarg.h>
 #include <algorithm>
 #include "base/strings/string_util.h"
-#include "third_party/blink/renderer/platform/wtf/ascii_ctype.h"
+#include "build/build_config.h"
 #include "third_party/blink/renderer/platform/wtf/dtoa.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
+#include "third_party/blink/renderer/platform/wtf/text/ascii_ctype.h"
+#include "third_party/blink/renderer/platform/wtf/text/case_map.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
-#include "third_party/blink/renderer/platform/wtf/text/cstring.h"
-#include "third_party/blink/renderer/platform/wtf/text/integer_to_string_conversion.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/unicode.h"
 #include "third_party/blink/renderer/platform/wtf/text/utf8.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -63,153 +65,13 @@ String::String(const char* characters, size_t length)
     : String(characters, SafeCast<unsigned>(length)) {}
 #endif  // defined(ARCH_CPU_64_BITS)
 
-void String::append(const StringView& string) {
-  if (string.IsEmpty())
-    return;
-  if (!impl_) {
-    impl_ = string.ToString().ReleaseImpl();
-    return;
-  }
-
-  // FIXME: This is extremely inefficient. So much so that we might want to
-  // take this out of String's API. We can make it better by optimizing the
-  // case where exactly one String is pointing at this StringImpl, but even
-  // then it's going to require a call into the allocator every single time.
-
-  if (impl_->Is8Bit() && string.Is8Bit()) {
-    LChar* data;
-    CHECK_LE(string.length(),
-             std::numeric_limits<unsigned>::max() - impl_->length());
-    scoped_refptr<StringImpl> new_impl = StringImpl::CreateUninitialized(
-        impl_->length() + string.length(), data);
-    memcpy(data, impl_->Characters8(), impl_->length() * sizeof(LChar));
-    memcpy(data + impl_->length(), string.Characters8(),
-           string.length() * sizeof(LChar));
-    impl_ = std::move(new_impl);
-    return;
-  }
-
-  UChar* data;
-  CHECK_LE(string.length(),
-           std::numeric_limits<unsigned>::max() - impl_->length());
-  scoped_refptr<StringImpl> new_impl =
-      StringImpl::CreateUninitialized(impl_->length() + string.length(), data);
-
-  if (impl_->Is8Bit())
-    StringImpl::CopyChars(data, impl_->Characters8(), impl_->length());
-  else
-    StringImpl::CopyChars(data, impl_->Characters16(), impl_->length());
-
-  if (string.Is8Bit())
-    StringImpl::CopyChars(data + impl_->length(), string.Characters8(),
-                          string.length());
-  else
-    StringImpl::CopyChars(data + impl_->length(), string.Characters16(),
-                          string.length());
-
-  impl_ = std::move(new_impl);
+int CodeUnitCompare(const String& a, const String& b) {
+  return CodeUnitCompare(a.Impl(), b.Impl());
 }
 
-template <typename CharacterType>
-inline void String::AppendInternal(CharacterType c) {
-  // FIXME: This is extremely inefficient. So much so that we might want to
-  // take this out of String's API. We can make it better by optimizing the
-  // case where exactly one String is pointing at this StringImpl, but even
-  // then it's going to require a call into the allocator every single time.
-  if (!impl_) {
-    impl_ = StringImpl::Create(&c, 1);
-    return;
-  }
-
-  // FIXME: We should be able to create an 8 bit string via this code path.
-  UChar* data;
-  CHECK_LT(impl_->length(), std::numeric_limits<unsigned>::max());
-  scoped_refptr<StringImpl> new_impl =
-      StringImpl::CreateUninitialized(impl_->length() + 1, data);
-  if (impl_->Is8Bit())
-    StringImpl::CopyChars(data, impl_->Characters8(), impl_->length());
-  else
-    StringImpl::CopyChars(data, impl_->Characters16(), impl_->length());
-  data[impl_->length()] = c;
-  impl_ = std::move(new_impl);
-}
-
-void String::append(LChar c) {
-  AppendInternal(c);
-}
-
-void String::append(UChar c) {
-  AppendInternal(c);
-}
-
-int CodePointCompare(const String& a, const String& b) {
-  return CodePointCompare(a.Impl(), b.Impl());
-}
-
-int CodePointCompareIgnoringASCIICase(const String& a, const char* b) {
-  return CodePointCompareIgnoringASCIICase(a.Impl(),
-                                           reinterpret_cast<const LChar*>(b));
-}
-
-template <typename CharType>
-scoped_refptr<StringImpl> InsertInternal(scoped_refptr<StringImpl> impl,
-                                         const CharType* characters_to_insert,
-                                         unsigned length_to_insert,
-                                         unsigned position) {
-  if (!length_to_insert)
-    return impl;
-
-  DCHECK(characters_to_insert);
-  UChar* data;  // FIXME: We should be able to create an 8 bit string here.
-  CHECK_LE(length_to_insert,
-           std::numeric_limits<unsigned>::max() - impl->length());
-  scoped_refptr<StringImpl> new_impl =
-      StringImpl::CreateUninitialized(impl->length() + length_to_insert, data);
-
-  if (impl->Is8Bit())
-    StringImpl::CopyChars(data, impl->Characters8(), position);
-  else
-    StringImpl::CopyChars(data, impl->Characters16(), position);
-
-  StringImpl::CopyChars(data + position, characters_to_insert,
-                        length_to_insert);
-
-  if (impl->Is8Bit())
-    StringImpl::CopyChars(data + position + length_to_insert,
-                          impl->Characters8() + position,
-                          impl->length() - position);
-  else
-    StringImpl::CopyChars(data + position + length_to_insert,
-                          impl->Characters16() + position,
-                          impl->length() - position);
-
-  return new_impl;
-}
-
-void String::insert(const StringView& string, unsigned position) {
-  if (string.IsEmpty()) {
-    if (string.IsNull())
-      return;
-    if (IsNull())
-      impl_ = string.ToString().ReleaseImpl();
-    return;
-  }
-
-  if (position >= length()) {
-    if (string.Is8Bit())
-      append(string);
-    else
-      append(string);
-    return;
-  }
-
-  DCHECK(impl_);
-  if (string.Is8Bit())
-    impl_ = InsertInternal(std::move(impl_), string.Characters8(),
-                           string.length(), position);
-  else
-    impl_ = InsertInternal(std::move(impl_), string.Characters16(),
-                           string.length(), position);
+int CodeUnitCompareIgnoringASCIICase(const String& a, const char* b) {
+  return CodeUnitCompareIgnoringASCIICase(a.Impl(),
+                                          reinterpret_cast<const LChar*>(b));
 }
 
 UChar32 String::CharacterStartingAt(unsigned i) const {
@@ -248,19 +110,7 @@ String String::Substring(unsigned pos, unsigned len) const {
 String String::DeprecatedLower() const {
   if (!impl_)
     return String();
-  return impl_->LowerUnicode();
-}
-
-String String::LowerUnicode(const AtomicString& locale_identifier) const {
-  if (!impl_)
-    return String();
-  return impl_->LowerUnicode(locale_identifier);
-}
-
-String String::UpperUnicode(const AtomicString& locale_identifier) const {
-  if (!impl_)
-    return String();
-  return impl_->UpperUnicode(locale_identifier);
+  return CaseMap::FastToLowerInvariant(impl_.get());
 }
 
 String String::LowerASCII() const {
@@ -313,6 +163,16 @@ String String::FoldCase() const {
 }
 
 String String::Format(const char* format, ...) {
+  // vsnprintf is locale sensitive when converting floats to strings
+  // and we need it to always use a decimal point. Double check that
+  // the locale is compatible, and also that it is the default "C"
+  // locale so that we aren't just lucky. Android's locales work
+  // differently so can't check the same way there.
+  DCHECK_EQ(strcmp(localeconv()->decimal_point, "."), 0);
+#if !defined(OS_ANDROID)
+  DCHECK_EQ(strcmp(setlocale(LC_NUMERIC, NULL), "C"), 0);
+#endif  // !OS_ANDROID
+
   va_list args;
 
   // TODO(esprehn): base uses 1024, maybe we should use a bigger size too.
@@ -353,76 +213,43 @@ String String::EncodeForDebugging() const {
   if (IsNull())
     return "<null>";
 
-  String str;
-  str.append('"');
+  StringBuilder builder;
+  builder.Append('"');
   for (unsigned index = 0; index < length(); ++index) {
     // Print shorthands for select cases.
     UChar character = (*impl_)[index];
     switch (character) {
       case '\t':
-        str.append("\\t");
+        builder.Append("\\t");
         break;
       case '\n':
-        str.append("\\n");
+        builder.Append("\\n");
         break;
       case '\r':
-        str.append("\\r");
+        builder.Append("\\r");
         break;
       case '"':
-        str.append("\\\"");
+        builder.Append("\\\"");
         break;
       case '\\':
-        str.append("\\\\");
+        builder.Append("\\\\");
         break;
       default:
         if (IsASCIIPrintable(character)) {
-          str.append(static_cast<char>(character));
+          builder.Append(static_cast<char>(character));
         } else {
           // Print "\uXXXX" for control or non-ASCII characters.
-          str.append("\\u");
-          std::stringstream out;
-          out.width(4);
-          out.fill('0');
-          out.setf(std::ios_base::hex, std::ios_base::basefield);
-          out.setf(std::ios::uppercase);
-          out << character;
-          str.append(out.str().c_str());
+          builder.AppendFormat("\\u%04X", character);
         }
         break;
     }
   }
-  str.append('"');
-  return str;
+  builder.Append('"');
+  return builder.ToString();
 }
 
-template <typename IntegerType>
-static String IntegerToString(IntegerType input) {
-  IntegerToStringConverter<IntegerType> converter(input);
-  return StringImpl::Create(converter.Characters8(), converter.length());
-}
-
-String String::Number(int number) {
-  return IntegerToString(number);
-}
-
-String String::Number(unsigned number) {
-  return IntegerToString(number);
-}
-
-String String::Number(long number) {
-  return IntegerToString(number);
-}
-
-String String::Number(unsigned long number) {
-  return IntegerToString(number);
-}
-
-String String::Number(long long number) {
-  return IntegerToString(number);
-}
-
-String String::Number(unsigned long long number) {
-  return IntegerToString(number);
+String String::Number(float number) {
+  return Number(static_cast<double>(number));
 }
 
 String String::Number(double number, unsigned precision) {
@@ -564,67 +391,55 @@ void String::Split(UChar separator,
     result.push_back(Substring(start_pos));
 }
 
-CString String::Ascii() const {
+std::string String::Ascii() const {
   // Printable ASCII characters 32..127 and the null character are
   // preserved, characters outside of this range are converted to '?'.
 
   unsigned length = this->length();
-  if (!length) {
-    char* character_buffer;
-    return CString::CreateUninitialized(length, character_buffer);
-  }
+  if (!length)
+    return std::string();
 
+  std::string ascii(length, '\0');
   if (this->Is8Bit()) {
     const LChar* characters = this->Characters8();
 
-    char* character_buffer;
-    CString result = CString::CreateUninitialized(length, character_buffer);
-
     for (unsigned i = 0; i < length; ++i) {
       LChar ch = characters[i];
-      character_buffer[i] = ch && (ch < 0x20 || ch > 0x7f) ? '?' : ch;
+      ascii[i] = ch && (ch < 0x20 || ch > 0x7f) ? '?' : ch;
     }
-
-    return result;
+    return ascii;
   }
 
   const UChar* characters = this->Characters16();
-
-  char* character_buffer;
-  CString result = CString::CreateUninitialized(length, character_buffer);
-
   for (unsigned i = 0; i < length; ++i) {
     UChar ch = characters[i];
-    character_buffer[i] =
-        ch && (ch < 0x20 || ch > 0x7f) ? '?' : static_cast<char>(ch);
+    ascii[i] = ch && (ch < 0x20 || ch > 0x7f) ? '?' : static_cast<char>(ch);
   }
 
-  return result;
+  return ascii;
 }
 
-CString String::Latin1() const {
+std::string String::Latin1() const {
   // Basic Latin1 (ISO) encoding - Unicode characters 0..255 are
   // preserved, characters outside of this range are converted to '?'.
-
   unsigned length = this->length();
 
   if (!length)
-    return CString("", 0);
+    return std::string();
 
-  if (Is8Bit())
-    return CString(reinterpret_cast<const char*>(this->Characters8()), length);
-
-  const UChar* characters = this->Characters16();
-
-  char* character_buffer;
-  CString result = CString::CreateUninitialized(length, character_buffer);
-
-  for (unsigned i = 0; i < length; ++i) {
-    UChar ch = characters[i];
-    character_buffer[i] = ch > 0xff ? '?' : static_cast<char>(ch);
+  if (Is8Bit()) {
+    return std::string(reinterpret_cast<const char*>(this->Characters8()),
+                       length);
   }
 
-  return result;
+  const UChar* characters = this->Characters16();
+  std::string latin1(length, '\0');
+  for (unsigned i = 0; i < length; ++i) {
+    UChar ch = characters[i];
+    latin1[i] = ch > 0xff ? '?' : static_cast<char>(ch);
+  }
+
+  return latin1;
 }
 
 // Helper to write a three-byte UTF-8 code point to the buffer, caller must
@@ -636,24 +451,24 @@ static inline void PutUTF8Triple(char*& buffer, UChar ch) {
   *buffer++ = static_cast<char>((ch & 0x3F) | 0x80);
 }
 
-CString String::Utf8(UTF8ConversionMode mode) const {
+std::string String::Utf8(UTF8ConversionMode mode) const {
   unsigned length = this->length();
 
   if (!length)
-    return CString("", 0);
+    return std::string();
 
   // Allocate a buffer big enough to hold all the characters
   // (an individual UTF-16 UChar can only expand to 3 UTF-8 bytes).
   // Optimization ideas, if we find this function is hot:
-  //  * We could speculatively create a CStringImpl to contain 'length'
+  //  * We could speculatively create a std::string to contain 'length'
   //    characters, and resize if necessary (i.e. if the buffer contains
   //    non-ascii characters). (Alternatively, scan the buffer first for
   //    ascii characters, so we know this will be sufficient).
-  //  * We could allocate a CStringImpl with an appropriate size to
+  //  * We could allocate a std::string with an appropriate size to
   //    have a good chance of being able to write the string into the
   //    buffer without reallocing (say, 1.5 x length).
   if (length > std::numeric_limits<unsigned>::max() / 3)
-    return CString();
+    return std::string();
   Vector<char, 1024> buffer_vector(length * 3);
 
   char* buffer = buffer_vector.data();
@@ -701,13 +516,13 @@ CString String::Utf8(UTF8ConversionMode mode) const {
       // Only produced from strict conversion.
       if (result == unicode::kSourceIllegal) {
         DCHECK(strict);
-        return CString();
+        return std::string();
       }
 
       // Check for an unconverted high surrogate.
       if (result == unicode::kSourceExhausted) {
         if (strict)
-          return CString();
+          return std::string();
         // This should be one unpaired high surrogate. Treat it the same
         // was as an unpaired high surrogate would have been handled in
         // the middle of a string with non-strict conversion - which is
@@ -723,7 +538,7 @@ CString String::Utf8(UTF8ConversionMode mode) const {
     }
   }
 
-  return CString(buffer_vector.data(), buffer - buffer_vector.data());
+  return std::string(buffer_vector.data(), buffer - buffer_vector.data());
 }
 
 String String::Make8BitFrom16BitSource(const UChar* source, wtf_size_t length) {
@@ -785,8 +600,8 @@ String String::FromUTF8(const LChar* string) {
   return FromUTF8(string, strlen(reinterpret_cast<const char*>(string)));
 }
 
-String String::FromUTF8(const CString& s) {
-  return FromUTF8(s.data());
+String String::FromUTF8(base::StringPiece s) {
+  return FromUTF8(reinterpret_cast<const LChar*>(s.data()), s.size());
 }
 
 String String::FromUTF8WithLatin1Fallback(const LChar* string, size_t size) {
@@ -797,7 +612,7 @@ String String::FromUTF8WithLatin1Fallback(const LChar* string, size_t size) {
 }
 
 std::ostream& operator<<(std::ostream& out, const String& string) {
-  return out << string.EncodeForDebugging().Utf8().data();
+  return out << string.EncodeForDebugging().Utf8();
 }
 
 #ifndef NDEBUG

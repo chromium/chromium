@@ -4,45 +4,43 @@
 
 #include "third_party/blink/renderer/core/streams/readable_stream.h"
 
-#include "third_party/blink/renderer/core/streams/readable_stream_wrapper.h"
+#include "third_party/blink/renderer/core/streams/readable_stream_native.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
 ReadableStream* ReadableStream::Create(ScriptState* script_state,
                                        ExceptionState& exception_state) {
-  return Create(
-      script_state,
-      ScriptValue(script_state, v8::Undefined(script_state->GetIsolate())),
-      ScriptValue(script_state, v8::Undefined(script_state->GetIsolate())),
-      exception_state);
+  return Create(script_state,
+                ScriptValue(script_state->GetIsolate(),
+                            v8::Undefined(script_state->GetIsolate())),
+                ScriptValue(script_state->GetIsolate(),
+                            v8::Undefined(script_state->GetIsolate())),
+                exception_state);
 }
 
 ReadableStream* ReadableStream::Create(ScriptState* script_state,
                                        ScriptValue underlying_source,
                                        ExceptionState& exception_state) {
-  return Create(
-      script_state, underlying_source,
-      ScriptValue(script_state, v8::Undefined(script_state->GetIsolate())),
-      exception_state);
+  return Create(script_state, underlying_source,
+                ScriptValue(script_state->GetIsolate(),
+                            v8::Undefined(script_state->GetIsolate())),
+                exception_state);
 }
 
 ReadableStream* ReadableStream::Create(ScriptState* script_state,
                                        ScriptValue underlying_source,
                                        ScriptValue strategy,
                                        ExceptionState& exception_state) {
-  // TODO(ricea): Select implementation based on StreamsNative feature here.
-  return ReadableStreamWrapper::Create(script_state, underlying_source,
-                                       strategy, exception_state);
+  return ReadableStreamNative::Create(script_state, underlying_source, strategy,
+                                      exception_state);
 }
 
 ReadableStream* ReadableStream::CreateWithCountQueueingStrategy(
     ScriptState* script_state,
     UnderlyingSourceBase* underlying_source,
     size_t high_water_mark) {
-  // TODO(ricea): Select implementation based on StreamsNative feature here.
-  return ReadableStreamWrapper::CreateWithCountQueueingStrategy(
+  return ReadableStreamNative::CreateWithCountQueueingStrategy(
       script_state, underlying_source, high_water_mark);
 }
 
@@ -50,15 +48,7 @@ ReadableStream* ReadableStream::CreateWithCountQueueingStrategy(
 ReadableStream* ReadableStream::Deserialize(ScriptState* script_state,
                                             MessagePort* port,
                                             ExceptionState& exception_state) {
-  // TODO(ricea): Implementation serialization for the native implementation.
-  if (RuntimeEnabledFeatures::StreamsNativeEnabled()) {
-    exception_state.ThrowTypeError(
-        "serialization disabled because StreamsNative feature is enabled");
-    return nullptr;
-  }
-
-  return ReadableStreamWrapper::Deserialize(script_state, port,
-                                            exception_state);
+  return ReadableStreamNative::Deserialize(script_state, port, exception_state);
 }
 
 }  // namespace blink

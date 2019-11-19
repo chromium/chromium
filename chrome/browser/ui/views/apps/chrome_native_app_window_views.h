@@ -39,7 +39,7 @@ class ChromeNativeAppWindowViews
   // ui::BaseWindow implementation.
   gfx::Rect GetRestoredBounds() const override;
   ui::WindowShowState GetRestoredState() const override;
-  bool IsAlwaysOnTop() const override;
+  ui::ZOrderLevel GetZOrderLevel() const override;
 
   // WidgetDelegate implementation.
   gfx::ImageSkia GetWindowAppIcon() override;

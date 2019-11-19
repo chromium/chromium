@@ -11,15 +11,13 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "chromecast/browser/jni_headers/CastContentWindowAndroid_jni.h"
 #include "content/public/browser/web_contents.h"
-#include "jni/CastContentWindowAndroid_jni.h"
 #include "ui/events/keycodes/keyboard_code_conversion_android.h"
 
 namespace chromecast {
 
 using base::android::ConvertUTF8ToJavaString;
-
-namespace shell {
 
 namespace {
 
@@ -39,23 +37,16 @@ base::android::ScopedJavaLocalRef<jobject> CreateJavaWindow(
 
 }  // namespace
 
-// static
-std::unique_ptr<CastContentWindow> CastContentWindow::Create(
-    const CastContentWindow::CreateParams& params) {
-  return base::WrapUnique(new CastContentWindowAndroid(params));
-}
-
 CastContentWindowAndroid::CastContentWindowAndroid(
     const CastContentWindow::CreateParams& params)
-    : delegate_(params.delegate),
+    : CastContentWindow(params),
+      activity_id_(delegate_->GetId()),
       java_window_(CreateJavaWindow(reinterpret_cast<jlong>(this),
                                     params.is_headless,
                                     params.enable_touch_input,
                                     params.is_remote_control_mode,
                                     params.turn_on_screen,
-                                    params.session_id)) {
-  DCHECK(delegate_);
-}
+                                    params.session_id)) {}
 
 CastContentWindowAndroid::~CastContentWindowAndroid() {
   JNIEnv* env = base::android::AttachCurrentThread();
@@ -63,14 +54,13 @@ CastContentWindowAndroid::~CastContentWindowAndroid() {
 }
 
 void CastContentWindowAndroid::CreateWindowForWebContents(
-    content::WebContents* web_contents,
-    CastWindowManager* /* window_manager */,
-    CastWindowManager::WindowId /* z_order */,
+    CastWebContents* cast_web_contents,
+    mojom::ZOrder /* z_order */,
     VisibilityPriority visibility_priority) {
-  DCHECK(web_contents);
+  DCHECK(cast_web_contents);
   JNIEnv* env = base::android::AttachCurrentThread();
   base::android::ScopedJavaLocalRef<jobject> java_web_contents =
-      web_contents->GetJavaWebContents();
+      cast_web_contents->web_contents()->GetJavaWebContents();
 
   Java_CastContentWindowAndroid_createWindowForWebContents(
       env, java_window_, java_web_contents,
@@ -94,17 +84,9 @@ void CastContentWindowAndroid::EnableTouchInput(bool enabled) {
 void CastContentWindowAndroid::OnActivityStopped(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& jcaller) {
-  delegate_->OnWindowDestroyed();
-}
-
-void CastContentWindowAndroid::OnKeyDown(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& jcaller,
-    int keycode) {
-  ui::KeyEvent key_event(ui::ET_KEY_PRESSED,
-                         ui::KeyboardCodeFromAndroidKeyCode(keycode),
-                         ui::EF_NONE);
-  delegate_->OnKeyEvent(key_event);
+  if (delegate_) {
+    delegate_->OnWindowDestroyed();
+  }
 }
 
 void CastContentWindowAndroid::RequestVisibility(
@@ -121,7 +103,9 @@ void CastContentWindowAndroid::SetHostContext(base::Value host_context) {}
 
 void CastContentWindowAndroid::NotifyVisibilityChange(
     VisibilityType visibility_type) {
-  delegate_->OnVisibilityChange(visibility_type);
+  if (delegate_) {
+    delegate_->OnVisibilityChange(visibility_type);
+  }
   for (auto& observer : observer_list_) {
     observer.OnVisibilityChange(visibility_type);
   }
@@ -136,7 +120,10 @@ bool CastContentWindowAndroid::ConsumeGesture(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& jcaller,
     int gesture_type) {
-  return delegate_->ConsumeGesture(static_cast<GestureType>(gesture_type));
+  if (delegate_) {
+    return delegate_->ConsumeGesture(static_cast<GestureType>(gesture_type));
+  }
+  return false;
 }
 
 void CastContentWindowAndroid::OnVisibilityChange(
@@ -149,7 +136,7 @@ void CastContentWindowAndroid::OnVisibilityChange(
 base::android::ScopedJavaLocalRef<jstring> CastContentWindowAndroid::GetId(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& jcaller) {
-  return ConvertUTF8ToJavaString(env, delegate_->GetId());
+  return ConvertUTF8ToJavaString(env, activity_id_);
 }
-}  // namespace shell
+
 }  // namespace chromecast

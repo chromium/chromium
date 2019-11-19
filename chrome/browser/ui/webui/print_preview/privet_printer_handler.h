@@ -40,7 +40,7 @@ class PrivetPrinterHandler
 
   // PrinterHandler implementation:
   void Reset() override;
-  void StartGetPrinters(const AddedPrintersCallback& added_printers_callback,
+  void StartGetPrinters(AddedPrintersCallback added_printers_callback,
                         GetPrintersDoneCallback done_callback) override;
   void StartGetCapability(const std::string& destination_id,
                           GetCapabilityCallback calback) override;
@@ -66,8 +66,7 @@ class PrivetPrinterHandler
 
  private:
   void StartLister(
-      const scoped_refptr<local_discovery::ServiceDiscoverySharedClient>&
-          client);
+      scoped_refptr<local_discovery::ServiceDiscoverySharedClient> client);
   void StopLister();
   void CapabilitiesUpdateClient(
       std::unique_ptr<cloud_print::PrivetHTTPClient> http_client);
@@ -107,7 +106,7 @@ class PrivetPrinterHandler
   PrintCallback print_callback_;
   GetCapabilityCallback capabilities_callback_;
 
-  base::WeakPtrFactory<PrivetPrinterHandler> weak_ptr_factory_;
+  base::WeakPtrFactory<PrivetPrinterHandler> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(PrivetPrinterHandler);
 };

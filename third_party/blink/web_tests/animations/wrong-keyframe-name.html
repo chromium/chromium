@@ -31,26 +31,16 @@
     }
 }
 </style>
-Tests that an animation does not run when it specifies an incorrect name.
-<div id="result">FAIL - nothing happened</div>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
 <div id="test1"></div>
 <div id="test2"></div>
 <div id="test3"></div>
 <script>
-if (window.testRunner) {
-    testRunner.dumpAsText();
-    testRunner.waitUntilDone();
-}
-var pass = true;
-test1.addEventListener('animationstart', function() {
+var test = async_test("Tests that an animation does not run when it specifies an incorrect name");
+test1.addEventListener('animationstart', test.step_func(() => {
     test2.style.animationName = 'green';
-});
-test2.addEventListener('animationstart', function() {
-    result.innerText = pass ? 'PASS' : 'FAIL';
-    if (window.testRunner)
-        testRunner.notifyDone();
-});
-test3.addEventListener('animationstart', function() {
-    pass = false;
-});
+}));
+test2.addEventListener('animationstart', test.step_func_done(() => {}));
+test3.addEventListener('animationstart', test.unreached_func("Should not run when it specifies an incorrect name"));
 </script>

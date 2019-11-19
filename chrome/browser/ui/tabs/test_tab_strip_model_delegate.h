@@ -7,6 +7,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/optional.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
 
 // Mock TabStripModelDelegate.
@@ -16,7 +17,10 @@ class TestTabStripModelDelegate : public TabStripModelDelegate {
   ~TestTabStripModelDelegate() override;
 
   // Overridden from TabStripModelDelegate:
-  void AddTabAt(const GURL& url, int index, bool foregroud) override;
+  void AddTabAt(const GURL& url,
+                int index,
+                bool foregroud,
+                base::Optional<TabGroupId> group) override;
   Browser* CreateNewStripWithContents(std::vector<NewStripContents> contentses,
                                       const gfx::Rect& window_bounds,
                                       bool maximize) override;
@@ -28,10 +32,6 @@ class TestTabStripModelDelegate : public TabStripModelDelegate {
   bool ShouldRunUnloadListenerBeforeClosing(
       content::WebContents* contents) override;
   bool RunUnloadListenerBeforeClosing(content::WebContents* contents) override;
-  RestoreTabType GetRestoreTabType() override;
-  void RestoreTab() override;
-  bool CanBookmarkAllTabs() const override;
-  void BookmarkAllTabs() override;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(TestTabStripModelDelegate);

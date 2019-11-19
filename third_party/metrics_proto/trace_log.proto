@@ -1,0 +1,26 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+
+option java_outer_classname = "TraceLogProtos";
+option java_package = "org.chromium.components.metrics";
+
+package metrics;
+
+// The trace data is collected by Chrome tracing infrastructure to obtain a
+// timeline model of events occurring in all Chrome processes and threads.
+// Chrome uploads data as a serialized perfetto trace message. The proto format
+// is defined in perfetto tracing library in
+// //src/third_party/perfetto/protos/perfetto/trace/trace.proto
+
+// Wrapper for the uploaded trace data, and parsed trace as stored in the logs.
+message TraceLog {
+  // Client uploads the trace data as a byte buffer.
+  optional bytes raw_data = 1;
+
+  reserved 3;
+}

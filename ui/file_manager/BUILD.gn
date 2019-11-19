@@ -56,15 +56,16 @@ group("closure_compile") {
 group("unit_test_data") {
   testonly = true
   deps = [
-    "base/js:unit_tests",
-    "file_manager/background/js:unit_tests",
-    "file_manager/common/js:unit_tests",
-    "file_manager/foreground/js:unit_tests",
-    "file_manager/foreground/js/metadata:unit_tests",
-    "file_manager/foreground/js/ui:unit_tests",
-    "gallery/js:unit_tests",
-    "gallery/js/image_editor:unit_tests",
-    "image_loader:unit_tests",
-    "video_player/js:unit_tests",
+    "base/js:js_test_gen_html",
+    "file_manager/background/js:js_test_gen_html",
+    "file_manager/common/js:js_test_gen_html",
+    "file_manager/foreground/elements:js_test_gen_html",
+    "file_manager/foreground/js:js_test_gen_html",
+    "file_manager/foreground/js/metadata:js_test_gen_html",
+    "file_manager/foreground/js/ui:js_test_gen_html",
+    "gallery/js:js_test_gen_html",
+    "gallery/js/image_editor:js_test_gen_html",
+    "image_loader:js_test_gen_html",
+    "video_player/js:js_test_gen_html",
   ]
 }

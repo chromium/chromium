@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.compositor.scene_layer;
 
 import org.chromium.base.annotations.JNINamespace;
+import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.compositor.LayerTitleCache;
 import org.chromium.chrome.browser.compositor.layouts.components.LayoutTab;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
@@ -41,16 +42,16 @@ public class StaticTabSceneLayer extends SceneLayer {
         float x = layoutTab.getRenderX() * dpToPx;
         float y = contentOffset + layoutTab.getRenderY() * dpToPx;
 
-        nativeUpdateTabLayer(mNativePtr, tabContentManager, layoutTab.getId(),
-                layoutTab.canUseLiveTexture(), layoutTab.getBackgroundColor(), x, y,
-                layoutTab.getStaticToViewBlend(), layoutTab.getSaturation(),
-                layoutTab.getBrightness());
+        StaticTabSceneLayerJni.get().updateTabLayer(mNativePtr, StaticTabSceneLayer.this,
+                tabContentManager, layoutTab.getId(), layoutTab.canUseLiveTexture(),
+                layoutTab.getBackgroundColor(), x, y, layoutTab.getStaticToViewBlend(),
+                layoutTab.getSaturation(), layoutTab.getBrightness());
     }
 
     @Override
     protected void initializeNative() {
         if (mNativePtr == 0) {
-            mNativePtr = nativeInit();
+            mNativePtr = StaticTabSceneLayerJni.get().init(StaticTabSceneLayer.this);
         }
         assert mNativePtr != 0;
     }
@@ -61,9 +62,12 @@ public class StaticTabSceneLayer extends SceneLayer {
         mNativePtr = 0;
     }
 
-    private native long nativeInit();
-    private native void nativeUpdateTabLayer(long nativeStaticTabSceneLayer,
-            TabContentManager tabContentManager, int id, boolean canUseLiveLayer,
-            int backgroundColor, float x, float y, float staticToViewBlend, float saturation,
-            float brightness);
+    @NativeMethods
+    interface Natives {
+        long init(StaticTabSceneLayer caller);
+        void updateTabLayer(long nativeStaticTabSceneLayer, StaticTabSceneLayer caller,
+                TabContentManager tabContentManager, int id, boolean canUseLiveLayer,
+                int backgroundColor, float x, float y, float staticToViewBlend, float saturation,
+                float brightness);
+    }
 }

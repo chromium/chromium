@@ -23,7 +23,6 @@ struct ASH_EXPORT AshWindowTreeHostInitParams {
   bool mirroring_unified = false;
   int64_t display_id = 0;
   float device_scale_factor = 0.0f;
-  float ui_scale_factor = 0.0f;
 };
 
 }  // namespace ash

@@ -36,7 +36,7 @@ base::FilePath DoodleDirectory() {
 
 GoogleLogoService::GoogleLogoService(
     TemplateURLService* template_url_service,
-    identity::IdentityManager* identity_manager,
+    signin::IdentityManager* identity_manager,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
     : LogoServiceImpl(
           DoodleDirectory(),

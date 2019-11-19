@@ -7,7 +7,6 @@
 #include "base/bind.h"
 #include "remoting/protocol/channel_authenticator.h"
 #include "remoting/protocol/channel_multiplexer.h"
-#include "remoting/protocol/native_ip_synthesizer.h"
 #include "remoting/protocol/pseudotcp_channel_factory.h"
 #include "remoting/protocol/secure_channel_factory.h"
 #include "remoting/protocol/stream_channel_factory.h"
@@ -27,10 +26,7 @@ static const char kMuxChannelName[] = "mux";
 
 IceTransport::IceTransport(scoped_refptr<TransportContext> transport_context,
                            EventHandler* event_handler)
-    : transport_context_(transport_context),
-      event_handler_(event_handler),
-      weak_factory_(this) {
-  transport_context_->set_relay_mode(TransportContext::RelayMode::GTURN);
+    : transport_context_(transport_context), event_handler_(event_handler) {
   transport_context->Prepare();
 }
 
@@ -73,8 +69,6 @@ bool IceTransport::ProcessTransportInfo(jingle_xmpp::XmlElement* transport_info_
   for (auto it = transport_info.candidates.begin();
        it != transport_info.candidates.end(); ++it) {
     auto channel = channels_.find(it->name);
-    rtc::SocketAddress address = ToNativeSocket(it->candidate.address());
-    it->candidate.set_address(address);
     if (channel != channels_.end()) {
       channel->second->AddRemoteCandidate(it->candidate);
     } else {

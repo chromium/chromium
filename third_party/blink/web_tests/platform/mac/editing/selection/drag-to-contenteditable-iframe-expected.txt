@@ -4,16 +4,18 @@ EDITING DELEGATE: webViewDidChange:WebViewDidChangeNotification
 layer at (0,0) size 800x600
   LayoutView at (0,0) size 800x600
 layer at (0,0) size 800x600
-  LayoutBlockFlow {HTML} at (0,0) size 800x600
-    LayoutBlockFlow {BODY} at (0,0) size 800x584
-      LayoutBlockFlow (anonymous) at (0,0) size 800x212
+  LayoutNGBlockFlow {HTML} at (0,0) size 800x600
+    LayoutNGBlockFlow {BODY} at (0,0) size 800x584
+      LayoutNGBlockFlow (anonymous) at (0,0) size 800x212
         LayoutText {#text} at (208,194) size 4x18
           text run at (208,194) width 4: " "
         LayoutImage {IMG} at (212,105) size 76x103
         LayoutText {#text} at (0,0) size 0x0
-      LayoutBlockFlow {UL} at (0,228) size 800x18
-        LayoutListItem {LI} at (40,0) size 760x18
-          LayoutListMarker (anonymous) at (-17,0) size 7x18: bullet
+      LayoutNGBlockFlow {UL} at (0,228) size 800x18
+        LayoutNGListItem {LI} at (40,0) size 760x18
+          LayoutNGListMarker (anonymous) at (-17,0) size 7x18
+            LayoutText (anonymous) at (0,0) size 7x18
+              text run at (0,0) width 7: "\x{2022} "
           LayoutText {#text} at (0,0) size 294x18
             text run at (0,0) width 294: "Abe should be outside the frame and inside it."
 layer at (0,0) size 208x208

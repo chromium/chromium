@@ -45,7 +45,7 @@ class ViewsTextServicesContextMenuMac
     text_services_menu_.AppendEditableItems(menu);
   }
 
-  ~ViewsTextServicesContextMenuMac() override {}
+  ~ViewsTextServicesContextMenuMac() override = default;
 
   // ViewsTextServicesContextMenu:
   bool SupportsCommand(int command_id) const override {

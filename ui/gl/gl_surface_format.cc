@@ -15,21 +15,6 @@ GLSurfaceFormat::GLSurfaceFormat(const GLSurfaceFormat& other) = default;
 GLSurfaceFormat::~GLSurfaceFormat() {
 }
 
-GLSurfaceFormat::GLSurfaceFormat(SurfacePixelLayout layout) {
-  pixel_layout_ = layout;
-}
-
-GLSurfaceFormat::SurfacePixelLayout GLSurfaceFormat::GetPixelLayout() const {
-  return pixel_layout_;
-}
-
-void GLSurfaceFormat::SetDefaultPixelLayout(SurfacePixelLayout layout) {
-  if (pixel_layout_ == PIXEL_LAYOUT_DONT_CARE &&
-      layout != PIXEL_LAYOUT_DONT_CARE) {
-    pixel_layout_ = layout;
-  }
-}
-
 void GLSurfaceFormat::SetRGB565() {
   red_bits_ = blue_bits_ = 5;
   green_bits_ = 6;
@@ -51,8 +36,7 @@ bool GLSurfaceFormat::IsCompatible(GLSurfaceFormat other) const {
       GetBitSize(alpha_bits_) == GetBitSize(other.alpha_bits_) &&
       GetValue(stencil_bits_, 8) == GetValue(other.stencil_bits_, 8) &&
       GetValue(depth_bits_, 24) == GetValue(other.depth_bits_, 24) &&
-      GetValue(samples_, 0) == GetValue(other.samples_, 0) &&
-      pixel_layout_ == other.pixel_layout_) {
+      GetValue(samples_, 0) == GetValue(other.samples_, 0)) {
     return true;
   }
   return false;

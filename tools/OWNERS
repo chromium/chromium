@@ -30,7 +30,7 @@ per-file check_grd_for_unused_strings.py=estade@chromium.org
 
 per-file gyp-explain.py=thakis@chromium.org
 
-per-file gypv8shy.py=jochen@chromium.org
+per-file gypv8sh.py=jochen@chromium.org
 
 per-file include_tracer.py=thakis@chromium.org
 
@@ -43,10 +43,6 @@ per-file nocompile_driver.py=wychen@chromium.org
 
 per-file remove_stale_pyc_files.py=dtu@chromium.org
 
-per-file roll_angle.py=kbr@chromium.org
-per-file roll_angle.py=geofflang@chromium.org
-per-file roll_swiftshader.py=capn@chromium.org
-per-file roll_swiftshader.py=sugoi@chromium.org
 per-file roll_webgl_conformance.py=bajones@chromium.org
 per-file roll_webgl_conformance.py=kbr@chromium.org
 per-file roll_webgl_conformance.py=geofflang@chromium.org
@@ -58,3 +54,6 @@ per-file safely-roll-deps.py=borenet@chromium.org
 per-file sort-headers.py=satorux@chromium.org
 per-file sort-sources.py=satorux@chromium.org
 per-file yes_no.py=satorux@chromium.org
+
+per-file download_cros_provided_profile.py=gbiv@chromium.org
+per-file download_cros_provided_profile.py=tcwang@chromium.org

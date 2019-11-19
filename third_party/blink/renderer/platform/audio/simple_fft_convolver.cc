@@ -33,8 +33,6 @@ void SimpleFFTConvolver::Process(const float* source_p,
   DCHECK(source_p);
   DCHECK(dest_p);
   DCHECK_EQ(frames_to_process, half_size);
-  if (!(source_p && dest_p && frames_to_process == half_size))
-    return;
 
   // Do padded FFT (get frequency-domain version) by copying samples to the 1st
   // half of the input buffer (the second half is always zero), multiply in

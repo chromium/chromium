@@ -30,6 +30,7 @@ MessageCenterScrollBar::MessageCenterScrollBar(
     MessageCenterScrollBar::Observer* observer)
     : views::OverlayScrollBar(false), observer_(observer) {
   GetThumb()->layer()->SetVisible(features::IsNotificationScrollBarEnabled());
+  GetThumb()->layer()->CompleteAllAnimations();
 }
 
 bool MessageCenterScrollBar::OnKeyPressed(const ui::KeyEvent& event) {
@@ -53,6 +54,10 @@ bool MessageCenterScrollBar::OnMouseWheel(const ui::MouseWheelEvent& event) {
     observer_->OnMessageCenterScrolled();
 
   return result;
+}
+
+const char* MessageCenterScrollBar::GetClassName() const {
+  return "MessageCenterScrollBar";
 }
 
 void MessageCenterScrollBar::OnGestureEvent(ui::GestureEvent* event) {

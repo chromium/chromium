@@ -49,30 +49,30 @@ testSolidShadow =
     ];
 
 // alphaApprox = 5
-testSolidAlphaShadow = 
+testSolidAlphaShadow =
     [
         ['testSolidAlphaShadow 1', ctx.getImageData(250, 200, 1, 1).data, [255, 0, 0, 76]],
         ['testSolidAlphaShadow 2', ctx.getImageData(250, 299, 1, 1).data, [255, 0, 0, 76]],
         ['testSolidAlphaShadow 3', ctx.getImageData(349, 200, 1, 1).data, [255, 0, 0, 76]],
         ['testSolidAlphaShadow 4', ctx.getImageData(349, 299, 1, 1).data, [255, 0, 0, 76]],
     ];
-   
+
 // alpha < 25
-testBlurryShadow = 
+testBlurryShadow =
     [
-        ['testBlurryShadow 1', ctx.getImageData(248, 348, 1, 1).data, [255, 0, 0, 0]],
-        ['testBlurryShadow 2', ctx.getImageData(248, 451, 1, 1).data, [255, 0, 0, 0]],
-        ['testBlurryShadow 3', ctx.getImageData(351, 348, 1, 1).data, [255, 0, 0, 0]],
-        ['testBlurryShadow 4', ctx.getImageData(351, 451, 1, 1).data, [255, 0, 0, 0]],
+        ['testBlurryShadow 1', ctx.getImageData(248, 347, 1, 1).data, [255, 0, 0, 0]],
+        ['testBlurryShadow 2', ctx.getImageData(248, 452, 1, 1).data, [255, 0, 0, 0]],
+        ['testBlurryShadow 3', ctx.getImageData(351, 347, 1, 1).data, [255, 0, 0, 0]],
+        ['testBlurryShadow 4', ctx.getImageData(351, 452, 1, 1).data, [255, 0, 0, 0]],
     ];
 
 // alpha < 10
-testBlurryAlphaShadow = 
+testBlurryAlphaShadow =
     [
-        ['testBlurryShadow 5', ctx.getImageData(248, 498, 1, 1).data, [255, 0, 0, 0]],
-        ['testBlurryShadow 6', ctx.getImageData(248, 601, 1, 1).data, [255, 0, 0, 0]],
-        ['testBlurryShadow 7', ctx.getImageData(351, 498, 1, 1).data, [255, 0, 0, 0]],
-        ['testBlurryShadow 8', ctx.getImageData(351, 601, 1, 1).data, [255, 0, 0, 0]],
+        ['testBlurryAlphaShadow 1', ctx.getImageData(248, 497, 1, 1).data, [255, 0, 0, 0]],
+        ['testBlurryAlphaShadow 2', ctx.getImageData(248, 602, 1, 1).data, [255, 0, 0, 0]],
+        ['testBlurryAlphaShadow 3', ctx.getImageData(351, 497, 1, 1).data, [255, 0, 0, 0]],
+        ['testBlurryAlphaShadow 4', ctx.getImageData(351, 602, 1, 1).data, [255, 0, 0, 0]],
     ];
 
 generate_tests(testPixelShadow, testSolidShadow);

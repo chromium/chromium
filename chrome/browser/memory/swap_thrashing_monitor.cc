@@ -94,8 +94,7 @@ SwapThrashingMonitor::SwapThrashingMonitor()
     : delegate_(GetPlatformSpecificDelegate().release(),
                 base::OnTaskRunnerDeleter(blocking_task_runner_)),
       current_swap_thrashing_level_(
-          SwapThrashingLevel::SWAP_THRASHING_LEVEL_NONE),
-      weak_factory_(this) {
+          SwapThrashingLevel::SWAP_THRASHING_LEVEL_NONE) {
   DCHECK(base::FeatureList::IsEnabled(features::kSwapThrashingMonitor));
   StartObserving();
 }

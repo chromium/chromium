@@ -36,7 +36,7 @@ class ProcessReaderWin;
 
 namespace internal {
 
-class MemorySnapshotWin;
+class MemorySnapshotGeneric;
 
 union CPUContextUnion {
 #if defined(ARCH_CPU_X86_FAMILY)
@@ -96,7 +96,7 @@ class ExceptionSnapshotWin final : public ExceptionSnapshot {
   CPUContextUnion context_union_;
   CPUContext context_;
   std::vector<uint64_t> codes_;
-  std::vector<std::unique_ptr<internal::MemorySnapshotWin>> extra_memory_;
+  std::vector<std::unique_ptr<internal::MemorySnapshotGeneric>> extra_memory_;
   uint64_t thread_id_;
   uint64_t exception_address_;
   uint32_t exception_flags_;

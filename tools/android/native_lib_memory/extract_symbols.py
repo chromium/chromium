@@ -224,8 +224,8 @@ def CreateArgumentParser():
                       'by tools/cygprofile/process_profiles.py',
                       required=False)
   parser.add_argument('--residency', type=str,
-                      help='Path to a JSON file with residency data, as written'
-                      ' by process_resdency.py', required=False)
+                      help='Path to JSON file with residency pages, as written'
+                      ' by extract_resident_pages.py', required=False)
   parser.add_argument('--build-directory', type=str, help='Build directory',
                       required=True)
   parser.add_argument('--output-directory', type=str, help='Output directory',
@@ -254,9 +254,12 @@ def main():
 
   offset = 0
   if args.residency:
-    with open(args.residency) as f:
-      residency = json.load(f)
-      offset = residency['offset']
+    if not os.path.exists(args.residency):
+      logging.error('Residency file not found')
+      return 1
+    residency_path = os.path.join(args.output_directory, 'residency.json')
+    if residency_path  != args.residency:
+      shutil.copy(args.residency, residency_path)
 
   logging.info('Extracting symbols from %s', native_lib_filename)
   native_lib_symbols = symbol_extractor.SymbolInfosFromBinary(
@@ -283,9 +286,6 @@ def main():
   directory = os.path.dirname(__file__)
 
   for filename in ['visualize.html', 'visualize.js', 'visualize.css']:
-    if args.residency:
-      shutil.copy(args.residency,
-                  os.path.join(args.output_directory, 'residency.json'))
     shutil.copy(os.path.join(directory, filename),
                 os.path.join(args.output_directory, filename))
 

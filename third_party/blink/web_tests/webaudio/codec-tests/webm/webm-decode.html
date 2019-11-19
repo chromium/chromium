@@ -21,13 +21,20 @@
           {label: 'test', description: 'Test webm decoding'},
           function(task, should) {
 
-            let context = new AudioContext();
+            // Set the sample rate to match to encoded rate in the reference
+            // files, which is 48 kHz, to eliminate any resampling from
+            // decodeAudioData.
+            let context = new AudioContext({sampleRate: 48000});
 
             let bufferLoader = new BufferLoader(
                 context, ['resources/webm-decode-expected.wav', 'test-webm.webm'],
                 function(bufferList) {
                   expectedAudio = bufferList[0];
                   decodedAudio = bufferList[1];
+
+                  // Just for information
+                  should(context.sampleRate, 'context.sampleRate')
+                    .beEqualTo(context.sampleRate);
 
                   // Verify that we have the right number of channels and
                   // frames.
@@ -44,7 +51,7 @@
                             decodedAudio.getChannelData(c),
                             expectedAudio.getChannelData(c)));
                     should(snrdB, 'SNR between actual expected channel ' + c)
-                        .beGreaterThanOrEqualTo(109.56);
+                        .beGreaterThanOrEqualTo(110.97);
                     should(
                         decodedAudio.getChannelData(c), 'Decoded channel ' + c)
                         .beCloseToArray(

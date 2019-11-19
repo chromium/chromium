@@ -68,6 +68,11 @@ typedef LONG_PTR SSIZE_T, *PSSIZE_T;
 typedef DWORD ACCESS_MASK;
 typedef ACCESS_MASK REGSAM;
 
+// As defined in guiddef.h.
+#ifndef _REFGUID_DEFINED
+#define _REFGUID_DEFINED
+#define REFGUID const GUID&
+#endif
 
 // Forward declare Windows compatible handles.
 
@@ -239,6 +244,8 @@ WINBASEAPI VOID WINAPI SetLastError(_In_ DWORD dwErrCode);
 #define DeleteFile DeleteFileW
 #define DispatchMessage DispatchMessageW
 #define DrawText DrawTextW
+#define FindFirstFile FindFirstFileW
+#define FindNextFile FindNextFileW
 #define GetComputerName GetComputerNameW
 #define GetCurrentDirectory GetCurrentDirectoryW
 #define GetCurrentTime() GetTickCount()
@@ -248,6 +255,7 @@ WINBASEAPI VOID WINAPI SetLastError(_In_ DWORD dwErrCode);
 #define LoadIcon LoadIconW
 #define LoadImage LoadImageW
 #define PostMessage PostMessageW
+#define RemoveDirectory RemoveDirectoryW
 #define ReplaceFile ReplaceFileW
 #define ReportEvent ReportEventW
 #define SendMessage SendMessageW

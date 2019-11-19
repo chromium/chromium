@@ -8,7 +8,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/extensions/api/permissions/permissions_api.h"
 #include "chrome/browser/extensions/extension_apitest.h"
-#include "chrome/browser/net/url_request_mock_util.h"
 #include "chrome/browser/sessions/session_tab_helper.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
@@ -24,7 +23,6 @@
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_host.h"
 #include "extensions/browser/process_manager.h"
-#include "extensions/common/extension_features.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/result_catcher.h"
 #include "extensions/test/test_extension_dir.h"
@@ -57,53 +55,10 @@ void MouseUpInWebContents(content::WebContents* web_contents) {
       mouse_event);
 }
 
-enum BindingsFeatureType {
-  kNativeBindings,
-  kJavaScriptBindings,
-};
-
-enum UserActivationType {
-  kUserActivationV1,
-  kUserActivationV2,
-};
-
-struct BindingsApiTestConfig {
-  BindingsFeatureType bindings_type;
-  base::Optional<UserActivationType> user_activation_type;
-};
-
-class ExtensionBindingsApiTest
-    : public ExtensionApiTest,
-      public ::testing::WithParamInterface<BindingsApiTestConfig> {
+class ExtensionBindingsApiTest : public ExtensionApiTest {
  public:
   ExtensionBindingsApiTest() {}
   ~ExtensionBindingsApiTest() override {}
-
-  void SetUp() override {
-    BindingsApiTestConfig config = GetParam();
-    std::vector<base::Feature> enable_features;
-    std::vector<base::Feature> disable_features;
-
-    if (config.bindings_type == kNativeBindings) {
-      enable_features.push_back(extensions_features::kNativeCrxBindings);
-    } else {
-      DCHECK_EQ(kJavaScriptBindings, config.bindings_type);
-      disable_features.push_back(extensions_features::kNativeCrxBindings);
-    }
-
-    if (config.user_activation_type.has_value()) {
-      if (*config.user_activation_type == kUserActivationV2) {
-        enable_features.push_back(features::kUserActivationV2);
-      } else {
-        DCHECK_EQ(kUserActivationV1, *config.user_activation_type);
-        disable_features.push_back(features::kUserActivationV2);
-      }
-    }
-
-    scoped_feature_list_.InitWithFeatures(enable_features, disable_features);
-
-    ExtensionApiTest::SetUp();
-  }
 
   void SetUpOnMainThread() override {
     ExtensionApiTest::SetUpOnMainThread();
@@ -112,12 +67,10 @@ class ExtensionBindingsApiTest
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-
   DISALLOW_COPY_AND_ASSIGN(ExtensionBindingsApiTest);
 };
 
-IN_PROC_BROWSER_TEST_P(ExtensionBindingsApiTest,
+IN_PROC_BROWSER_TEST_F(ExtensionBindingsApiTest,
                        UnavailableBindingsNeverRegistered) {
   // Test will request the 'storage' permission.
   PermissionsRequestFunction::SetIgnoreUserGestureForTests(true);
@@ -125,7 +78,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionBindingsApiTest,
       "bindings/unavailable_bindings_never_registered")) << message_;
 }
 
-IN_PROC_BROWSER_TEST_P(ExtensionBindingsApiTest,
+IN_PROC_BROWSER_TEST_F(ExtensionBindingsApiTest,
                        ExceptionInHandlerShouldNotCrash) {
   ASSERT_TRUE(RunExtensionSubtest(
       "bindings/exception_in_handler_should_not_crash",
@@ -134,7 +87,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionBindingsApiTest,
 
 // Tests that an error raised during an async function still fires
 // the callback, but sets chrome.runtime.lastError.
-IN_PROC_BROWSER_TEST_P(ExtensionBindingsApiTest, LastError) {
+IN_PROC_BROWSER_TEST_F(ExtensionBindingsApiTest, LastError) {
   ASSERT_TRUE(LoadExtension(
       test_data_dir_.AppendASCII("bindings").AppendASCII("last_error")));
 
@@ -151,7 +104,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionBindingsApiTest, LastError) {
 
 // Regression test that we don't delete our own bindings with about:blank
 // iframes.
-IN_PROC_BROWSER_TEST_P(ExtensionBindingsApiTest, AboutBlankIframe) {
+IN_PROC_BROWSER_TEST_F(ExtensionBindingsApiTest, AboutBlankIframe) {
   ResultCatcher catcher;
   ExtensionTestMessageListener listener("load", true);
 
@@ -169,7 +122,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionBindingsApiTest, AboutBlankIframe) {
   ASSERT_TRUE(catcher.GetNextResult()) << message_;
 }
 
-IN_PROC_BROWSER_TEST_P(ExtensionBindingsApiTest,
+IN_PROC_BROWSER_TEST_F(ExtensionBindingsApiTest,
                        InternalAPIsNotOnChromeObject) {
   ASSERT_TRUE(RunExtensionSubtest(
       "bindings/internal_apis_not_on_chrome_object",
@@ -185,7 +138,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionBindingsApiTest,
 #else
 #define MAYBE_EventOverriding EventOverriding
 #endif
-IN_PROC_BROWSER_TEST_P(ExtensionBindingsApiTest, MAYBE_EventOverriding) {
+IN_PROC_BROWSER_TEST_F(ExtensionBindingsApiTest, MAYBE_EventOverriding) {
   ASSERT_TRUE(RunExtensionTest("bindings/event_overriding")) << message_;
   // The extension test removes a window and, during window removal, sends the
   // success message. Make sure we flush all pending tasks.
@@ -194,22 +147,22 @@ IN_PROC_BROWSER_TEST_P(ExtensionBindingsApiTest, MAYBE_EventOverriding) {
 
 // Tests the effectiveness of the 'nocompile' feature file property.
 // Regression test for http://crbug.com/356133.
-IN_PROC_BROWSER_TEST_P(ExtensionBindingsApiTest, Nocompile) {
+IN_PROC_BROWSER_TEST_F(ExtensionBindingsApiTest, Nocompile) {
   ASSERT_TRUE(RunExtensionSubtest("bindings/nocompile", "page.html"))
       << message_;
 }
 
-IN_PROC_BROWSER_TEST_P(ExtensionBindingsApiTest, ApiEnums) {
+IN_PROC_BROWSER_TEST_F(ExtensionBindingsApiTest, ApiEnums) {
   ASSERT_TRUE(RunExtensionTest("bindings/api_enums")) << message_;
 }
 
 // Regression test for http://crbug.com/504011 - proper access checks on
 // getModuleSystem().
-IN_PROC_BROWSER_TEST_P(ExtensionBindingsApiTest, ModuleSystem) {
+IN_PROC_BROWSER_TEST_F(ExtensionBindingsApiTest, ModuleSystem) {
   ASSERT_TRUE(RunExtensionTest("bindings/module_system")) << message_;
 }
 
-IN_PROC_BROWSER_TEST_P(ExtensionBindingsApiTest, NoExportOverriding) {
+IN_PROC_BROWSER_TEST_F(ExtensionBindingsApiTest, NoExportOverriding) {
   // We need to create runtime bindings in the web page. An extension that's
   // externally connectable will do that for us.
   ASSERT_TRUE(LoadExtension(
@@ -231,7 +184,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionBindingsApiTest, NoExportOverriding) {
   EXPECT_EQ("success", result);
 }
 
-IN_PROC_BROWSER_TEST_P(ExtensionBindingsApiTest, NoGinDefineOverriding) {
+IN_PROC_BROWSER_TEST_F(ExtensionBindingsApiTest, NoGinDefineOverriding) {
   // We need to create runtime bindings in the web page. An extension that's
   // externally connectable will do that for us.
   ASSERT_TRUE(LoadExtension(
@@ -255,7 +208,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionBindingsApiTest, NoGinDefineOverriding) {
   EXPECT_EQ("success", result);
 }
 
-IN_PROC_BROWSER_TEST_P(ExtensionBindingsApiTest, HandlerFunctionTypeChecking) {
+IN_PROC_BROWSER_TEST_F(ExtensionBindingsApiTest, HandlerFunctionTypeChecking) {
   ui_test_utils::NavigateToURL(
       browser(),
       embedded_test_server()->GetURL(
@@ -273,7 +226,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionBindingsApiTest, HandlerFunctionTypeChecking) {
   EXPECT_EQ("success", result);
 }
 
-IN_PROC_BROWSER_TEST_P(ExtensionBindingsApiTest,
+IN_PROC_BROWSER_TEST_F(ExtensionBindingsApiTest,
                        MoreNativeFunctionInterceptionTests) {
   // We need to create runtime bindings in the web page. An extension that's
   // externally connectable will do that for us.
@@ -313,7 +266,7 @@ class FramesExtensionBindingsApiTest : public ExtensionBindingsApiTest {
 // messages ("receiver") and one which we'll try first faking messages from in
 // the web page's iframe, as well as actually send a message from later
 // ("sender").
-IN_PROC_BROWSER_TEST_P(FramesExtensionBindingsApiTest, FramesBeforeNavigation) {
+IN_PROC_BROWSER_TEST_F(FramesExtensionBindingsApiTest, FramesBeforeNavigation) {
   // Load the sender and receiver extensions, and make sure they are ready.
   ExtensionTestMessageListener sender_ready("sender_ready", true);
   const Extension* sender = LoadExtension(
@@ -355,7 +308,7 @@ IN_PROC_BROWSER_TEST_P(FramesExtensionBindingsApiTest, FramesBeforeNavigation) {
   EXPECT_EQ(1, message_count);
 }
 
-IN_PROC_BROWSER_TEST_P(ExtensionBindingsApiTest, TestFreezingChrome) {
+IN_PROC_BROWSER_TEST_F(ExtensionBindingsApiTest, TestFreezingChrome) {
   ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL(
                      "/extensions/api_test/bindings/freeze.html"));
@@ -365,7 +318,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionBindingsApiTest, TestFreezingChrome) {
 }
 
 // Tests interaction with event filter parsing.
-IN_PROC_BROWSER_TEST_P(ExtensionBindingsApiTest, TestEventFilterParsing) {
+IN_PROC_BROWSER_TEST_F(ExtensionBindingsApiTest, TestEventFilterParsing) {
   ExtensionTestMessageListener listener("ready", false);
   ASSERT_TRUE(
       LoadExtension(test_data_dir_.AppendASCII("bindings/event_filter")));
@@ -378,7 +331,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionBindingsApiTest, TestEventFilterParsing) {
 }
 
 // crbug.com/733337
-IN_PROC_BROWSER_TEST_P(ExtensionBindingsApiTest, ValidationInterception) {
+IN_PROC_BROWSER_TEST_F(ExtensionBindingsApiTest, ValidationInterception) {
   // We need to create runtime bindings in the web page. An extension that's
   // externally connectable will do that for us.
   ASSERT_TRUE(
@@ -399,7 +352,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionBindingsApiTest, ValidationInterception) {
   EXPECT_TRUE(caught);
 }
 
-IN_PROC_BROWSER_TEST_P(ExtensionBindingsApiTest, UncaughtExceptionLogging) {
+IN_PROC_BROWSER_TEST_F(ExtensionBindingsApiTest, UncaughtExceptionLogging) {
   ASSERT_TRUE(RunExtensionTest("bindings/uncaught_exception_logging"))
       << message_;
 }
@@ -407,7 +360,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionBindingsApiTest, UncaughtExceptionLogging) {
 // Verify that when a web frame embeds an extension subframe, and that subframe
 // is the only active portion of the extension, the subframe gets proper JS
 // bindings. See https://crbug.com/760341.
-IN_PROC_BROWSER_TEST_P(ExtensionBindingsApiTest,
+IN_PROC_BROWSER_TEST_F(ExtensionBindingsApiTest,
                        ExtensionSubframeGetsBindings) {
   // Load an extension that does not have a background page or popup, so it
   // won't be activated just yet.
@@ -430,7 +383,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionBindingsApiTest,
   ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
 }
 
-IN_PROC_BROWSER_TEST_P(ExtensionBindingsApiTest,
+IN_PROC_BROWSER_TEST_F(ExtensionBindingsApiTest,
                        ExtensionListenersRemoveContext) {
   const Extension* extension = LoadExtension(
       test_data_dir_.AppendASCII("bindings/listeners_destroy_context"));
@@ -482,20 +435,74 @@ IN_PROC_BROWSER_TEST_P(ExtensionBindingsApiTest,
   EXPECT_FALSE(failure_listener.was_satisfied());
 }
 
-IN_PROC_BROWSER_TEST_P(ExtensionBindingsApiTest, UseAPIsAfterContextRemoval) {
+IN_PROC_BROWSER_TEST_F(ExtensionBindingsApiTest, UseAPIsAfterContextRemoval) {
   EXPECT_TRUE(RunExtensionTest("bindings/invalidate_context")) << message_;
+}
+
+// Tests that we don't crash if the extension invalidates the context in a
+// callback with a runtime.lastError present. Regression test for
+// https://crbug.com/944014.
+IN_PROC_BROWSER_TEST_F(ExtensionBindingsApiTest,
+                       InvalidateContextInCallbackWithLastError) {
+  TestExtensionDir dir;
+  dir.WriteManifest(
+      R"({
+           "name": "Invalidate Context in onDisconnect",
+           "version": "0.1",
+           "manifest_version": 2,
+           "background": {"scripts": ["background.js"]}
+         })");
+
+  constexpr char kFrameHtml[] =
+      R"(<html>
+           <body></body>
+           <script src="frame.js"></script>
+         </html>)";
+  constexpr char kFrameJs[] =
+      R"(chrome.tabs.executeScript({code: ''}, () => {
+           // We expect a last error to be present, since we don't have access
+           // to the tab.
+           chrome.test.assertTrue(!!chrome.runtime.lastError);
+           // Remove the frame from the DOM. This causes blink to remove the
+           // associated script contexts.
+           parent.document.body.removeChild(
+               parent.document.body.querySelector('iframe'));
+         });)";
+  constexpr char kBackgroundJs[] =
+      R"(let frame = document.createElement('iframe');
+         frame.src = 'frame.html';
+         let observer = new MutationObserver((mutationList) => {
+           for (let mutation of mutationList) {
+             if (mutation.removedNodes.length == 0)
+               continue;
+             chrome.test.assertEq(1, mutation.removedNodes.length);
+             chrome.test.assertEq('IFRAME', mutation.removedNodes[0].tagName);
+             chrome.test.notifyPass();
+             break;
+           }
+         });
+         observer.observe(document.body, {childList: true});
+         document.body.appendChild(frame);)";
+  dir.WriteFile(FILE_PATH_LITERAL("frame.html"), kFrameHtml);
+  dir.WriteFile(FILE_PATH_LITERAL("frame.js"), kFrameJs);
+  dir.WriteFile(FILE_PATH_LITERAL("background.js"), kBackgroundJs);
+
+  ResultCatcher catcher;
+  const Extension* extension = LoadExtension(dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+  EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
 }
 
 // TODO(devlin): Can this be combined with
 // ExtensionBindingsApiTest.UseAPIsAfterContextRemoval?
-IN_PROC_BROWSER_TEST_P(ExtensionBindingsApiTest, UseAppAPIAfterFrameRemoval) {
+IN_PROC_BROWSER_TEST_F(ExtensionBindingsApiTest, UseAppAPIAfterFrameRemoval) {
   ASSERT_TRUE(RunExtensionTest("crazy_extension"));
 }
 
 // Tests attaching two listeners from the same extension but different pages,
 // then removing one, and ensuring the second is still notified.
 // Regression test for https://crbug.com/868763.
-IN_PROC_BROWSER_TEST_P(
+IN_PROC_BROWSER_TEST_F(
     ExtensionBindingsApiTest,
     MultipleEventListenersFromDifferentContextsAndTheSameExtension) {
   // A script that listens for tab creation and populates the result in a
@@ -577,11 +584,8 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_EQ(SessionTabHelper::IdForTab(new_tab).id(), result_tab_id);
 }
 
-// Alias purely for test instantiation purposes.
-using ExtensionBindingsUserGestureTest = ExtensionBindingsApiTest;
-
 // Verifies that user gestures are carried through extension messages.
-IN_PROC_BROWSER_TEST_P(ExtensionBindingsUserGestureTest,
+IN_PROC_BROWSER_TEST_F(ExtensionBindingsApiTest,
                        UserGestureFromExtensionMessageTest) {
   TestExtensionDir test_dir;
   test_dir.WriteManifest(
@@ -646,7 +650,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionBindingsUserGestureTest,
 
 // Verifies that user gestures from API calls are active when the callback is
 // triggered.
-IN_PROC_BROWSER_TEST_P(ExtensionBindingsUserGestureTest,
+IN_PROC_BROWSER_TEST_F(ExtensionBindingsApiTest,
                        UserGestureInExtensionAPICallback) {
   TestExtensionDir test_dir;
   test_dir.WriteManifest(
@@ -696,7 +700,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionBindingsUserGestureTest,
 // Tests that a web page can consume a user gesture after an extension sends and
 // receives a reply during the same user gesture.
 // Regression test for https://crbug.com/921141.
-IN_PROC_BROWSER_TEST_P(ExtensionBindingsUserGestureTest,
+IN_PROC_BROWSER_TEST_F(ExtensionBindingsApiTest,
                        WebUserGestureAfterMessagingCallback) {
   TestExtensionDir test_dir;
   test_dir.WriteManifest(
@@ -760,7 +764,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionBindingsUserGestureTest,
 // Tests that a web page can consume a user gesture after an extension calls a
 // method and receives the response in the callback.
 // Regression test for https://crbug.com/921141.
-IN_PROC_BROWSER_TEST_P(ExtensionBindingsUserGestureTest,
+IN_PROC_BROWSER_TEST_F(ExtensionBindingsApiTest,
                        WebUserGestureAfterApiCallback) {
   TestExtensionDir test_dir;
   test_dir.WriteManifest(
@@ -811,7 +815,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionBindingsUserGestureTest,
 // Tests that bindings are properly instantiated for a window navigated to an
 // extension URL after being opened with an undefined URL.
 // Regression test for https://crbug.com/925118.
-IN_PROC_BROWSER_TEST_P(ExtensionBindingsApiTest,
+IN_PROC_BROWSER_TEST_F(ExtensionBindingsApiTest,
                        TestBindingsAvailableWithNavigatedBlankWindow) {
   constexpr char kManifest[] =
       R"({
@@ -880,32 +884,56 @@ IN_PROC_BROWSER_TEST_P(ExtensionBindingsApiTest,
   EXPECT_EQ("success", result);
 }
 
-// Run core bindings API tests with both native and JS-based bindings. This
-// ensures we have some minimum level of coverage while in the experimental
-// phase, when native bindings may be enabled on trunk but not at 100% stable.
-constexpr BindingsApiTestConfig kBindingsConfigs[] = {
-    {kNativeBindings, base::nullopt},
-    {kJavaScriptBindings, base::nullopt},
-};
+// Tests the aliasing of chrome.extension methods to their chrome.runtime
+// equivalents.
+IN_PROC_BROWSER_TEST_F(ExtensionBindingsApiTest,
+                       ChromeExtensionIsAliasedToChromeRuntime) {
+  constexpr char kManifest[] =
+      R"({
+           "name": "Test",
+           "version": "0.1",
+           "manifest_version": 2,
+           "background": { "scripts": ["background.js"] }
+         })";
+  constexpr char kBackground[] =
+      R"(chrome.test.runTests([
+           function chromeExtensionIsAliased() {
+             // Sanity check: chrome.extension is directly aliased to
+             // chrome.runtime.
+             chrome.test.assertTrue(!!chrome.runtime);
+             chrome.test.assertTrue(!!chrome.runtime.sendMessage);
+             chrome.test.assertEq(chrome.runtime.sendMessage,
+                                  chrome.extension.sendMessage);
+             chrome.test.succeed();
+           },
+           function testOverridingFailsGracefully() {
+             let intercepted = false;
+             // Modify the chrome.runtime object, which is the source for the
+             // chrome.extension API, to throw an error when sendMessage is
+             // accessed. Nothing should blow up.
+             // Regression test for https://crbug.com/949170.
+             Object.defineProperty(
+                 chrome.runtime,
+                 'sendMessage',
+                 {
+                   get() {
+                     intercepted = true;
+                     throw new Error('Mwahaha');
+                   }
+                 });
+             chrome.extension.sendMessage;
+             chrome.test.assertTrue(intercepted);
+             chrome.test.succeed();
+           }
+         ]);)";
 
-// Run user-gesture related tests with combinations of native and JS-based
-// bindings as well as UAv1 and UAv2.
-constexpr BindingsApiTestConfig kBindingsAndUserGestureConfigs[] = {
-    {kNativeBindings, kUserActivationV1},
-    {kNativeBindings, kUserActivationV2},
-    {kJavaScriptBindings, kUserActivationV1},
-    {kJavaScriptBindings, kUserActivationV2},
-};
-
-INSTANTIATE_TEST_SUITE_P(,
-                         ExtensionBindingsApiTest,
-                         ::testing::ValuesIn(kBindingsConfigs));
-INSTANTIATE_TEST_SUITE_P(,
-                         FramesExtensionBindingsApiTest,
-                         ::testing::ValuesIn(kBindingsConfigs));
-INSTANTIATE_TEST_SUITE_P(,
-                         ExtensionBindingsUserGestureTest,
-                         ::testing::ValuesIn(kBindingsAndUserGestureConfigs));
+  TestExtensionDir extension_dir;
+  extension_dir.WriteManifest(kManifest);
+  extension_dir.WriteFile(FILE_PATH_LITERAL("background.js"), kBackground);
+  ResultCatcher catcher;
+  ASSERT_TRUE(LoadExtension(extension_dir.UnpackedPath()));
+  EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
+}
 
 }  // namespace
 }  // namespace extensions

@@ -1,4 +1,4 @@
-namespace third_party_unrar {
+static bool IsAnsiEscComment(const wchar *Data,size_t Size);
 
 bool Archive::GetComment(Array<wchar> *CmtData)
 {
@@ -34,7 +34,7 @@ bool Archive::GetComment(Array<wchar> *CmtData)
 #ifndef SFX_MODULE
     // Old style (RAR 2.9) comment header embedded into the main 
     // archive header.
-    if (BrokenHeader)
+    if (BrokenHeader || CommHead.HeadSize<SIZEOF_COMMHEAD)
     {
       uiMsg(UIERROR_CMTBROKEN,FileName);
       return false;
@@ -43,7 +43,7 @@ bool Archive::GetComment(Array<wchar> *CmtData)
 #endif
   }
 #ifndef SFX_MODULE
-  if ((Format==RARFMT14 && MainHead.PackComment) || (Format!=RARFMT14 && CommHead.Method!=0x30))
+  if (Format==RARFMT14 && MainHead.PackComment || Format!=RARFMT14 && CommHead.Method!=0x30)
   {
     if (Format!=RARFMT14 && (CommHead.UnpVer < 15 || CommHead.UnpVer > VER_UNPACK || CommHead.Method > 0x35))
       return false;
@@ -57,6 +57,8 @@ bool Archive::GetComment(Array<wchar> *CmtData)
 #else
       UnpCmtLength=GetByte();
       UnpCmtLength+=(GetByte()<<8);
+      if (CmtLength<2)
+        return false;
       CmtLength-=2;
       DataIO.SetCmt13Encryption();
       CommHead.UnpVer=15;
@@ -85,15 +87,18 @@ bool Archive::GetComment(Array<wchar> *CmtData)
       byte *UnpData;
       size_t UnpDataSize;
       DataIO.GetUnpackedData(&UnpData,&UnpDataSize);
+      if (UnpDataSize>0)
+      {
 #ifdef _WIN_ALL
-      // If we ever decide to extend it to Android, we'll need to alloc
-      // 4x memory for OEM to UTF-8 output here.
-      OemToCharBuffA((char *)UnpData,(char *)UnpData,(DWORD)UnpDataSize);
+        // If we ever decide to extend it to Android, we'll need to alloc
+        // 4x memory for OEM to UTF-8 output here.
+        OemToCharBuffA((char *)UnpData,(char *)UnpData,(DWORD)UnpDataSize);
 #endif
-      CmtData->Alloc(UnpDataSize+1);
-      memset(CmtData->Addr(0),0,CmtData->Size()*sizeof(wchar));
-      CharToWide((char *)UnpData,CmtData->Addr(0),CmtData->Size());
-      CmtData->Alloc(wcslen(CmtData->Addr(0)));
+        CmtData->Alloc(UnpDataSize+1);
+        memset(CmtData->Addr(0),0,CmtData->Size()*sizeof(wchar));
+        CharToWide((char *)UnpData,CmtData->Addr(0),CmtData->Size());
+        CmtData->Alloc(wcslen(CmtData->Addr(0)));
+      }
     }
   }
   else
@@ -170,4 +175,4 @@ void Archive::ViewComment()
   }
 }
 
-}  // namespace third_party_unrar
+

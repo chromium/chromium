@@ -10,8 +10,7 @@
 
 namespace content {
 
-SimpleURLLoaderTestHelper::SimpleURLLoaderTestHelper()
-    : weak_ptr_factory_(this) {}
+SimpleURLLoaderTestHelper::SimpleURLLoaderTestHelper() {}
 
 SimpleURLLoaderTestHelper::~SimpleURLLoaderTestHelper() {}
 

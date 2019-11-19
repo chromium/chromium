@@ -1,0 +1,14 @@
+This is a testharness.js-based test.
+PASS Parameterless SLD() in 'stable' goes to 'have-local-offer'
+PASS Parameterless SLD() in 'stable' sets pendingLocalDescription
+FAIL Parameterless SLD() in 'stable' assigns transceiver.mid promise_test: Unhandled rejection with value: object "InvalidStateError: Failed to execute 'addTransceiver' on 'RTCPeerConnection': This operation is only supported in 'unified-plan'."
+PASS Parameterless SLD() in 'have-remote-offer' goes to 'stable'
+PASS Parameterless SLD() in 'have-remote-offer' sets currentLocalDescription
+FAIL Parameterless SLD() in 'have-remote-offer' sets transceiver.currentDirection promise_test: Unhandled rejection with value: object "InvalidStateError: Failed to execute 'addTransceiver' on 'RTCPeerConnection': This operation is only supported in 'unified-plan'."
+FAIL Parameterless SLD() uses [[LastCreatedOffer]] if it is still valid assert_true: offerer.pendingLocalDescription.sdp == offer.sdp expected true got false
+FAIL Parameterless SLD() uses [[LastCreatedAnswer]] if it is still valid assert_true: answerer.currentLocalDescription.sdp == answer.sdp expected true got false
+PASS Parameterless SLD() never resolves if already closed
+PASS Parameterless SLD() never resolves if closed while pending
+PASS Parameterless SLD() in a full O/A exchange succeeds
+Harness: the test ran to completion.
+

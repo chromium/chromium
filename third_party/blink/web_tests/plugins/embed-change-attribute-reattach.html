@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+<script>
+  var misery = async_test("no crash");
+  var loaded = false;
+  function stab(victim) {
+      if (loaded)
+          return;
+      loaded = true;
+      victim.src = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
+      victim.style.display = "block";
+      misery.done();
+  }
+</script>
+<embed src="not-found" onload="stab(this)"></embed>

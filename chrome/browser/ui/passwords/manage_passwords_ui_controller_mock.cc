@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/passwords/manage_passwords_ui_controller_mock.h"
 
 #include "base/memory/ptr_util.h"
-#include "components/password_manager/core/browser/password_form_manager.h"
 #include "components/password_manager/core/common/credential_manager_types.h"
 #include "content/public/browser/web_contents.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -20,4 +19,4 @@ ManagePasswordsUIControllerMock::ManagePasswordsUIControllerMock(
   contents->SetUserData(UserDataKey(), base::WrapUnique(this));
 }
 
-ManagePasswordsUIControllerMock::~ManagePasswordsUIControllerMock() {}
+ManagePasswordsUIControllerMock::~ManagePasswordsUIControllerMock() = default;

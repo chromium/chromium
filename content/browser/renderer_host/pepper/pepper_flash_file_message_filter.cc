@@ -81,10 +81,9 @@ PepperFlashFileMessageFilter::OverrideTaskRunnerForMessage(
   // the plugin has multiple threads, it cannot make assumptions about
   // ordering of IPC message sends, so it cannot make assumptions
   // about ordering of operations caused by those IPC messages.
-  return scoped_refptr<base::TaskRunner>(
-      base::CreateSequencedTaskRunnerWithTraits(
-          {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
-           base::TaskShutdownBehavior::BLOCK_SHUTDOWN}));
+  return scoped_refptr<base::TaskRunner>(base::CreateSequencedTaskRunner(
+      {base::ThreadPool(), base::MayBlock(), base::TaskPriority::USER_VISIBLE,
+       base::TaskShutdownBehavior::BLOCK_SHUTDOWN}));
 }
 
 int32_t PepperFlashFileMessageFilter::OnResourceMessageReceived(

@@ -52,6 +52,8 @@ static_library("protocol") {
     "data_channel_manager.cc",
     "data_channel_manager.h",
     "datagram_channel_factory.h",
+    "display_size.cc",
+    "display_size.h",
     "errors.cc",
     "errors.h",
     "file_transfer_helpers.cc",
@@ -68,8 +70,6 @@ static_library("protocol") {
     "host_video_dispatcher.h",
     "host_video_stats_dispatcher.cc",
     "host_video_stats_dispatcher.h",
-    "http_ice_config_request.cc",
-    "http_ice_config_request.h",
     "ice_config.cc",
     "ice_config.h",
     "ice_config_request.h",
@@ -88,8 +88,6 @@ static_library("protocol") {
     "input_stub.h",
     "it2me_host_authenticator_factory.cc",
     "it2me_host_authenticator_factory.h",
-    "jingle_info_request.cc",
-    "jingle_info_request.h",
     "jingle_messages.cc",
     "jingle_messages.h",
     "jingle_session.cc",
@@ -111,8 +109,6 @@ static_library("protocol") {
     "mouse_input_filter.h",
     "named_message_pipe_handler.cc",
     "named_message_pipe_handler.h",
-    "native_ip_synthesizer.cc",
-    "native_ip_synthesizer.h",
     "negotiating_authenticator_base.cc",
     "negotiating_authenticator_base.h",
     "negotiating_client_authenticator.cc",
@@ -144,8 +140,6 @@ static_library("protocol") {
     "pseudotcp_channel_factory.h",
     "rejecting_authenticator.cc",
     "rejecting_authenticator.h",
-    "rfc7050_ip_synthesizer.cc",
-    "rfc7050_ip_synthesizer.h",
     "sdp_message.cc",
     "sdp_message.h",
     "secure_channel_factory.cc",
@@ -195,7 +189,7 @@ static_library("protocol") {
 
   public_deps = [
     "//remoting/proto",
-    "//third_party/webrtc_overrides",
+    "//third_party/webrtc_overrides:webrtc_component",
   ]
   deps = [
     "//base",
@@ -204,9 +198,11 @@ static_library("protocol") {
     "//net",
     "//remoting/base",
     "//remoting/codec:decoder",
+    "//remoting/proto/remoting/v1:network_traversal_proto",
     "//remoting/signaling",
     "//third_party/boringssl",
     "//third_party/libyuv",
+    "//ui/events:dom_keycode_converter",
   ]
 
   defines = []
@@ -226,8 +222,8 @@ static_library("protocol") {
       "chromium_port_allocator_factory.h",
       "chromium_socket_factory.cc",
       "chromium_socket_factory.h",
-      "rfc7050_prefix_refresher.cc",
-      "rfc7050_prefix_refresher.h",
+      "remoting_ice_config_request.cc",
+      "remoting_ice_config_request.h",
       "webrtc_audio_module.cc",
       "webrtc_audio_module.h",
       "webrtc_audio_sink_adapter.cc",
@@ -261,12 +257,8 @@ static_library("protocol") {
     }
 
     deps += [
-      "//third_party/webrtc/api:create_peerconnection_factory",
-      "//third_party/webrtc/api/audio_codecs:audio_codecs_api",
-      "//third_party/webrtc/api/audio_codecs/opus:audio_decoder_opus",
-      "//third_party/webrtc/api/audio_codecs/opus:audio_encoder_opus",
-      "//third_party/webrtc/api/video_codecs:builtin_video_decoder_factory",
-      "//third_party/webrtc_overrides:init_webrtc",
+      "//remoting/proto/remoting/v1:network_traversal_grpc_library",
+      "//third_party/webrtc_overrides:webrtc_component",
     ]
   }
 
@@ -346,7 +338,6 @@ source_set("unit_tests") {
     "content_description_unittest.cc",
     "data_channel_manager_unittest.cc",
     "frame_stats_unittest.cc",
-    "http_ice_config_request_unittest.cc",
     "ice_config_unittest.cc",
     "ice_transport_unittest.cc",
     "input_event_tracker_unittest.cc",
@@ -362,7 +353,7 @@ source_set("unit_tests") {
     "port_range_unittest.cc",
     "ppapi_module_stub.cc",
     "pseudotcp_adapter_unittest.cc",
-    "rfc7050_ip_synthesizer_unittest.cc",
+    "remoting_ice_config_request_unittest.cc",
     "sdp_message_unittest.cc",
     "session_config_unittest.cc",
     "spake2_authenticator_unittest.cc",
@@ -387,6 +378,7 @@ source_set("unit_tests") {
   deps = [
     ":test_support",
     "//net:test_support",
+    "//remoting/proto/remoting/v1:network_traversal_grpc_library",
     "//testing/gmock",
     "//testing/gtest",
   ]

@@ -222,6 +222,8 @@ function testShrinkWindowSizesSubMenu() {
   const subMenuPosition = subMenu.getBoundingClientRect();
   // Reduce window innerHeight so sub-menu won't fit.
   window.innerHeight = subMenuPosition.bottom - 10;
+  // Navigate from sub-menu to the parent menu.
+  sendKeyDown('#test-menu-button', 'ArrowLeft');
   // Call the internal hide method, then re-show it
   // to force the resizing behavior.
   menubutton.hideSubMenu_();
@@ -242,6 +244,8 @@ function testGrowWindowSizesSubMenu() {
   testShrinkWindowSizesSubMenu();
   // Make the window taller than the sub-menu plus padding.
   window.innerHeight = subMenuPosition.bottom + 20;
+  // Navigate from sub-menu to the parent menu.
+  sendKeyDown('#test-menu-button', 'ArrowLeft');
   // Call the internal hide method, then re-show it
   // to force the resizing behavior.
   menubutton.hideSubMenu_();
@@ -273,12 +277,8 @@ function prepareForKeyboardNavigation() {
  */
 function testNavigateFromMenuToSubMenu() {
   prepareForKeyboardNavigation();
-  // Check that the hosting menu-item is selected.
+  // Check that the hosting menu-item is not selected.
   const hostItem = document.querySelector('#host-sub-menu');
-  assertTrue(hostItem.hasAttribute('selected'));
-  // Navigate across to the sub-menu using the keyboard.
-  sendKeyDown('#test-menu-button', 'ArrowRight');
-  // Check that the host menu-item loses selection.
   assertFalse(hostItem.hasAttribute('selected'));
   // Check that the sub-menu has taken selection.
   const subItem = document.querySelector('#first');
@@ -312,4 +312,39 @@ function testNavigateFromSubMenuToParentMenu() {
   // Check selection has moved back to the parent menu.
   assertTrue(hostItem.hasAttribute('selected'));
   assertFalse(firstItem.hasAttribute('selected'));
+}
+
+/**
+ * Tests that arrow up on the top level menu hides the
+ * sub menu when the sub-menu is visible.
+ */
+function testTopMenuArrowUpDismissesSubMenu() {
+  prepareForKeyboardNavigation();
+  // Check that the hosting menu-item is not selected.
+  const hostItem = document.querySelector('#host-sub-menu');
+  assertFalse(hostItem.hasAttribute('selected'));
+  // Navigate from sub-menu to the parent menu.
+  sendKeyDown('#test-menu-button', 'ArrowLeft');
+  // Check that the hosting menu-item is not selected.
+  assertTrue(hostItem.hasAttribute('selected'));
+  // Navigate up the main menu.
+  sendKeyDown('#test-menu-button', 'ArrowUp');
+  // Check that the sub-menu has been hidden.
+  assertTrue(subMenu.hasAttribute('hidden'));
+}
+
+/**
+ * Tests that the top level menu is resized when the parent
+ * window is too small to fit in without clipping.
+ */
+function testShrinkWindowSizesTopMenu() {
+  menubutton.showMenu(true);
+  const menuPosition = topMenu.getBoundingClientRect();
+  // Reduce window innerHeight so the menu won't fit.
+  window.innerHeight = menuPosition.bottom - 10;
+  // Call showMenu() which will first hide it, then re-open
+  // it to force the resizing behavior.
+  menubutton.showMenu(true);
+  const shrunkPosition = topMenu.getBoundingClientRect();
+  assertTrue(shrunkPosition.bottom < window.innerHeight);
 }

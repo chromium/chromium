@@ -1,0 +1,41 @@
+\bfederal\s+republic\s+of\s+germany\b	de
+\bbundesrepublik\s+deutschland\b	de
+\bfreie\s+hansestadt\s+bremen\b	hb
+\bmecklenburg\s+vorpommern\b	mv
+\bnorth\s+rhine\s+westphalia\b	nw
+\brhineland\s+palatinate\b	rp
+\bnordrhein\s+westfalen\b	nw
+\bschleswig\s+holstein\b	sh
+\bbaden\s+wurttemberg\b	bw
+\bregionalverband\b	
+\brheinland\s+pfalz\b	rp
+\bsachsen\s+anhalt\b	st
+\bniedersachsen\b	ni
+\bsaxony\s+anhalt\b	st
+\blower\s+saxony\b	ni
+\bstadtverband\b	
+\bbrandenburg\b	bb
+\bdeutschland\b	de
+\blandkreis\b	
+\bthuringen\b	th
+\bthuringia\b	th
+\bsaarland\b	sl
+\bbavaria\b	by
+\bcologne\b	koln
+\bgermany\b	de
+\bhamburg\b	hh
+\bsachsen\b	sn
+\bstrasse\b	str
+\bbayern\b	by
+\bberlin\b	be
+\bbremen\b	hb
+\bhessen\b	he
+\bsaxony\b	sn
+\bsudost\b	se
+\bhesse\b	he
+\bsankt\b	st
+\bstadt\b	
+\bnord\b	n
+\bwest\b	w
+\bost\b	o
+\bsud\b	s

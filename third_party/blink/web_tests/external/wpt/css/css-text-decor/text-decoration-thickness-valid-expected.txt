@@ -1,0 +1,11 @@
+This is a testharness.js-based test.
+FAIL e.style['text-decoration-thickness'] = "auto" should set the property value assert_not_equals: property should be set got disallowed value ""
+FAIL e.style['text-decoration-thickness'] = "from-font" should set the property value assert_not_equals: property should be set got disallowed value ""
+FAIL e.style['text-decoration-thickness'] = "-10px" should set the property value assert_not_equals: property should be set got disallowed value ""
+FAIL e.style['text-decoration-thickness'] = "2001em" should set the property value assert_not_equals: property should be set got disallowed value ""
+FAIL e.style['text-decoration-thickness'] = "-49em" should set the property value assert_not_equals: property should be set got disallowed value ""
+FAIL e.style['text-decoration-thickness'] = "53px" should set the property value assert_not_equals: property should be set got disallowed value ""
+FAIL e.style['text-decoration-thickness'] = "calc(40em - 10px)" should set the property value assert_not_equals: property should be set got disallowed value ""
+FAIL e.style['text-decoration-thickness'] = "calc(-50em + 13px)" should set the property value assert_not_equals: property should be set got disallowed value ""
+Harness: the test ran to completion.
+

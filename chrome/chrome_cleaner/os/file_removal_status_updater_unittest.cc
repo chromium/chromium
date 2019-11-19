@@ -69,7 +69,7 @@ TEST_F(FileRemovalStatusUpdaterTest, UpdateRemovalStatus) {
     // Status cannot be set to REMOVAL_STATUS_UNSPECIFIED - this is guarded by
     // an assert.
     RemovalStatus status = static_cast<RemovalStatus>(i);
-    if (status != REMOVAL_STATUS_UNSPECIFIED)
+    if (status != REMOVAL_STATUS_UNSPECIFIED && RemovalStatus_IsValid(i))
       all_removal_status.push_back(status);
   }
 

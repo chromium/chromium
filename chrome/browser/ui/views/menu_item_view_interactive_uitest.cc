@@ -24,10 +24,10 @@ class MenuItemViewTestBasic : public MenuTestBase {
 
   // MenuTestBase implementation
   void BuildMenu(views::MenuItemView* menu) override {
-    menu->AppendMenuItemWithLabel(1, ASCIIToUTF16("item 1"));
-    menu->AppendMenuItemWithLabel(2, ASCIIToUTF16("item 2"));
+    menu->AppendMenuItem(1, ASCIIToUTF16("item 1"));
+    menu->AppendMenuItem(2, ASCIIToUTF16("item 2"));
     menu->AppendSeparator();
-    menu->AppendMenuItemWithLabel(3, ASCIIToUTF16("item 3"));
+    menu->AppendMenuItem(3, ASCIIToUTF16("item 3"));
   }
 
   // Click on item INDEX.
@@ -35,7 +35,7 @@ class MenuItemViewTestBasic : public MenuTestBase {
     views::SubmenuView* submenu = menu()->GetSubmenu();
     ASSERT_TRUE(submenu);
     ASSERT_TRUE(submenu->IsShowing());
-    ASSERT_EQ(3, submenu->GetMenuItemCount());
+    ASSERT_EQ(3u, submenu->GetMenuItems().size());
 
     // click an item and pass control to the next step
     views::MenuItemView* item = submenu->GetMenuItemAt(INDEX);
@@ -77,8 +77,8 @@ class MenuItemViewTestInsert : public MenuTestBase {
 
   // MenuTestBase implementation
   void BuildMenu(views::MenuItemView* menu) override {
-    menu->AppendMenuItemWithLabel(1, ASCIIToUTF16("item 1"));
-    menu->AppendMenuItemWithLabel(2, ASCIIToUTF16("item 2"));
+    menu->AppendMenuItem(1, ASCIIToUTF16("item 1"));
+    menu->AppendMenuItem(2, ASCIIToUTF16("item 2"));
   }
 
   // Insert item at INSERT_INDEX and click item at SELECT_INDEX.
@@ -87,12 +87,12 @@ class MenuItemViewTestInsert : public MenuTestBase {
     views::SubmenuView* submenu = menu()->GetSubmenu();
     ASSERT_TRUE(submenu);
     ASSERT_TRUE(submenu->IsShowing());
-    ASSERT_EQ(2, submenu->GetMenuItemCount());
+    ASSERT_EQ(2u, submenu->GetMenuItems().size());
 
     inserted_item_ = menu()->AddMenuItemAt(
         INSERT_INDEX, 1000, ASCIIToUTF16("inserted item"), base::string16(),
-        base::string16(), nullptr, gfx::ImageSkia(),
-        views::MenuItemView::NORMAL, ui::NORMAL_SEPARATOR);
+        nullptr, gfx::ImageSkia(), nullptr, views::MenuItemView::NORMAL,
+        ui::NORMAL_SEPARATOR);
     ASSERT_TRUE(inserted_item_);
     menu()->ChildrenChanged();
 
@@ -108,7 +108,7 @@ class MenuItemViewTestInsert : public MenuTestBase {
     views::SubmenuView* submenu = menu()->GetSubmenu();
     ASSERT_TRUE(submenu);
     ASSERT_FALSE(submenu->IsShowing());
-    ASSERT_EQ(3, submenu->GetMenuItemCount());
+    ASSERT_EQ(3u, submenu->GetMenuItems().size());
 
     if (SELECT_INDEX == INSERT_INDEX)
       ASSERT_EQ(1000, last_command());
@@ -171,9 +171,9 @@ class MenuItemViewTestInsertWithSubmenu : public MenuTestBase {
   // MenuTestBase implementation
   void BuildMenu(views::MenuItemView* menu) override {
     submenu_ = menu->AppendSubMenu(1, ASCIIToUTF16("My Submenu"));
-    submenu_->AppendMenuItemWithLabel(101, ASCIIToUTF16("submenu item 1"));
-    submenu_->AppendMenuItemWithLabel(101, ASCIIToUTF16("submenu item 2"));
-    menu->AppendMenuItemWithLabel(2, ASCIIToUTF16("item 2"));
+    submenu_->AppendMenuItem(101, ASCIIToUTF16("submenu item 1"));
+    submenu_->AppendMenuItem(101, ASCIIToUTF16("submenu item 2"));
+    menu->AppendMenuItem(2, ASCIIToUTF16("item 2"));
   }
 
   // Post submenu.
@@ -186,8 +186,8 @@ class MenuItemViewTestInsertWithSubmenu : public MenuTestBase {
   void Step2() {
     inserted_item_ = menu()->AddMenuItemAt(
         INSERT_INDEX, 1000, ASCIIToUTF16("inserted item"), base::string16(),
-        base::string16(), nullptr, gfx::ImageSkia(),
-        views::MenuItemView::NORMAL, ui::NORMAL_SEPARATOR);
+        nullptr, gfx::ImageSkia(), nullptr, views::MenuItemView::NORMAL,
+        ui::NORMAL_SEPARATOR);
     ASSERT_TRUE(inserted_item_);
     menu()->ChildrenChanged();
 
@@ -230,9 +230,9 @@ class MenuItemViewTestRemove : public MenuTestBase {
 
   // MenuTestBase implementation
   void BuildMenu(views::MenuItemView* menu) override {
-    menu->AppendMenuItemWithLabel(1, ASCIIToUTF16("item 1"));
-    menu->AppendMenuItemWithLabel(2, ASCIIToUTF16("item 2"));
-    menu->AppendMenuItemWithLabel(3, ASCIIToUTF16("item 3"));
+    menu->AppendMenuItem(1, ASCIIToUTF16("item 1"));
+    menu->AppendMenuItem(2, ASCIIToUTF16("item 2"));
+    menu->AppendMenuItem(3, ASCIIToUTF16("item 3"));
   }
 
   // Remove item at REMOVE_INDEX and click item at SELECT_INDEX.
@@ -240,10 +240,10 @@ class MenuItemViewTestRemove : public MenuTestBase {
     views::SubmenuView* submenu = menu()->GetSubmenu();
     ASSERT_TRUE(submenu);
     ASSERT_TRUE(submenu->IsShowing());
-    ASSERT_EQ(3, submenu->GetMenuItemCount());
+    ASSERT_EQ(3u, submenu->GetMenuItems().size());
 
     // remove
-    menu()->RemoveMenuItemAt(REMOVE_INDEX);
+    menu()->RemoveMenuItem(submenu->GetMenuItemAt(REMOVE_INDEX));
     menu()->ChildrenChanged();
 
     // click
@@ -257,7 +257,7 @@ class MenuItemViewTestRemove : public MenuTestBase {
     views::SubmenuView* submenu = menu()->GetSubmenu();
     ASSERT_TRUE(submenu);
     ASSERT_FALSE(submenu->IsShowing());
-    ASSERT_EQ(2, submenu->GetMenuItemCount());
+    ASSERT_EQ(2u, submenu->GetMenuItems().size());
 
     if (SELECT_INDEX < REMOVE_INDEX)
       ASSERT_EQ(SELECT_INDEX + 1, last_command());
@@ -307,10 +307,10 @@ class MenuItemViewTestRemoveWithSubmenu : public MenuTestBase {
 
   // MenuTestBase implementation
   void BuildMenu(views::MenuItemView* menu) override {
-    menu->AppendMenuItemWithLabel(1, ASCIIToUTF16("item 1"));
+    menu->AppendMenuItem(1, ASCIIToUTF16("item 1"));
     submenu_ = menu->AppendSubMenu(2, ASCIIToUTF16("My Submenu"));
-    submenu_->AppendMenuItemWithLabel(101, ASCIIToUTF16("submenu item 1"));
-    submenu_->AppendMenuItemWithLabel(102, ASCIIToUTF16("submenu item 2"));
+    submenu_->AppendMenuItem(101, ASCIIToUTF16("submenu item 1"));
+    submenu_->AppendMenuItem(102, ASCIIToUTF16("submenu item 2"));
   }
 
   // Post submenu.
@@ -328,10 +328,10 @@ class MenuItemViewTestRemoveWithSubmenu : public MenuTestBase {
     views::SubmenuView* submenu = menu()->GetSubmenu();
     ASSERT_TRUE(submenu);
     ASSERT_TRUE(submenu->IsShowing());
-    ASSERT_EQ(2, submenu->GetMenuItemCount());
+    ASSERT_EQ(2u, submenu->GetMenuItems().size());
 
     // remove
-    menu()->RemoveMenuItemAt(REMOVE_INDEX);
+    menu()->RemoveMenuItem(submenu->GetMenuItemAt(REMOVE_INDEX));
     menu()->ChildrenChanged();
 
     // click
@@ -343,7 +343,7 @@ class MenuItemViewTestRemoveWithSubmenu : public MenuTestBase {
     views::SubmenuView* submenu = menu()->GetSubmenu();
     ASSERT_TRUE(submenu);
     ASSERT_FALSE(submenu->IsShowing());
-    ASSERT_EQ(1, submenu->GetMenuItemCount());
+    ASSERT_EQ(1u, submenu->GetMenuItems().size());
 
     Done();
   }

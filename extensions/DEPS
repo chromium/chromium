@@ -4,6 +4,7 @@ include_rules = [
   "+components/crx_file",
   "+components/guest_view",
   "+components/prefs",
+  "+components/services/app_service/public",
   "+components/url_matcher",
   "+components/version_info",
   "-content",
@@ -18,6 +19,7 @@ include_rules = [
   "+mojo/public",
   "+services/service_manager/public",
   "+testing",
+  "+third_party/blink/public/common/loader/url_loader_throttle.h",
   "+third_party/skia/include",
 
   # Minimal UI dependencies. There are two good rules for UI dependencies here:
@@ -37,5 +39,12 @@ include_rules = [
 specific_include_rules = {
   ".*(test|test_util)\.(cc|h)$": [
     "+content/public/test",
+  ],
+  "mime_handler_view_browsertest.cc": [
+    "+components/printing/common",
+  ],
+  "mime_handler_view_interactive_uitest.cc": [
+    "+chrome/browser/ui/exclusive_access/fullscreen_controller_test.h",
+    "+chrome/test/base/interactive_test_utils.h",
   ],
 }

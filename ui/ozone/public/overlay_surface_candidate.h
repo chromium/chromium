@@ -7,12 +7,12 @@
 
 #include <vector>
 
+#include "base/component_export.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/overlay_transform.h"
-#include "ui/ozone/ozone_base_export.h"
 
 namespace ui {
 
@@ -23,14 +23,14 @@ enum OverlayStatus {
   OVERLAY_STATUS_LAST = OVERLAY_STATUS_NOT
 };
 
-class OZONE_BASE_EXPORT OverlaySurfaceCandidate {
+class COMPONENT_EXPORT(OZONE_BASE) OverlaySurfaceCandidate {
  public:
   OverlaySurfaceCandidate();
   OverlaySurfaceCandidate(const OverlaySurfaceCandidate& other);
   ~OverlaySurfaceCandidate();
   OverlaySurfaceCandidate& operator=(const OverlaySurfaceCandidate& other);
 
-  // Note that |crop_rect|, |clip_rect|, |is_clipped| and |overlay_handled| are
+  // Note that |clip_rect|, |is_clipped| and |overlay_handled| are
   // *not* used as part of the comparison.
   bool operator<(const OverlaySurfaceCandidate& other) const;
 
@@ -53,7 +53,8 @@ class OZONE_BASE_EXPORT OverlaySurfaceCandidate {
   gfx::Rect clip_rect;
   // If the quad is clipped after composition.
   bool is_clipped = false;
-
+  // If the quad doesn't require blending.
+  bool is_opaque = false;
   // To be modified by the implementer if this candidate can go into
   // an overlay.
   bool overlay_handled = false;

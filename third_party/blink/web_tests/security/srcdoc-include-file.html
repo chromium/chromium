@@ -1,0 +1,35 @@
+<!--
+  iframe using the srcdoc URL must be able to load files subresources if the
+  iframe was created from a file. This should continue to be true after history
+  navigations. See https://crbug.com/949510.
+-->
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+
+<iframe name="theiframe" srcdoc="
+  <script src='./resources/script.js'
+          onload='parent.window.onScriptLoaded();'>
+  </script>
+"></iframe>
+
+<a target="theiframe" href="../resources/back.html"></a>
+
+<script>
+  let button = document.querySelector("a");
+  let iframe = document.querySelector("iframe");
+
+  let scriptLoaded = function() {
+    return new Promise(resolved => window.onScriptLoaded = resolved);
+  };
+
+  async_test(async function(t) {
+    // 1. Check file subresource can be loaded from the initial about:srcdoc
+    //    document.
+    await scriptLoaded();
+    button.click();
+    // 2. Check file subresource can be loaded again after a new navigation to
+    //    about:srcdoc.
+    await scriptLoaded();
+    t.done();
+  });
+</script>

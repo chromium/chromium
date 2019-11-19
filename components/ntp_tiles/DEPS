@@ -1,5 +1,4 @@
 include_rules = [
-  "+components/data_use_measurement/core",
   "+components/favicon",
   "+components/favicon_base",
   "+components/google/core",
@@ -11,15 +10,16 @@ include_rules = [
   "+components/prefs",
   "+components/rappor",
   "+components/search_engines",
+  "+components/strings/grit/components_strings.h",
   "+components/suggestions",
   "+components/sync_preferences",
   "+components/url_formatter",
   "+components/variations",
   "+jni",
   "+net",
+  "+services/data_decoder/public",
   "+services/network/public/cpp",
   "+services/network/test",
   "+ui/gfx",
   "+ui/base",
 ]
-

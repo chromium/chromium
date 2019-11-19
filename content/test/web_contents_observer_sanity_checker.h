@@ -13,6 +13,7 @@
 #include "base/macros.h"
 #include "base/supports_user_data.h"
 #include "content/public/browser/global_routing_id.h"
+#include "content/public/browser/media_player_id.h"
 #include "content/public/browser/web_contents_observer.h"
 
 namespace content {
@@ -52,7 +53,7 @@ class WebContentsObserverSanityChecker : public WebContentsObserver,
   void DidFinishNavigation(NavigationHandle* navigation_handle) override;
   void DocumentAvailableInMainFrame() override;
   void DocumentOnLoadCompletedInMainFrame() override;
-  void DocumentLoadedInFrame(RenderFrameHost* render_frame_host) override;
+  void DOMContentLoaded(RenderFrameHost* render_frame_host) override;
   void DidFinishLoad(RenderFrameHost* render_frame_host,
                      const GURL& validated_url) override;
   void DidFailLoad(RenderFrameHost* render_frame_host,

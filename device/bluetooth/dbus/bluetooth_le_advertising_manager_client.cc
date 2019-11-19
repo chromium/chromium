@@ -24,8 +24,7 @@ class BluetoothAdvertisementManagerClientImpl
     : public BluetoothLEAdvertisingManagerClient,
       public dbus::ObjectManager::Interface {
  public:
-  BluetoothAdvertisementManagerClientImpl()
-      : object_manager_(NULL), weak_ptr_factory_(this) {}
+  BluetoothAdvertisementManagerClientImpl() : object_manager_(nullptr) {}
 
   ~BluetoothAdvertisementManagerClientImpl() override {
     if (object_manager_) {
@@ -60,8 +59,8 @@ class BluetoothAdvertisementManagerClientImpl
   // BluetoothAdvertisementManagerClient override.
   void RegisterAdvertisement(const dbus::ObjectPath& manager_object_path,
                              const dbus::ObjectPath& advertisement_object_path,
-                             const base::Closure& callback,
-                             const ErrorCallback& error_callback) override {
+                             base::OnceClosure callback,
+                             ErrorCallback error_callback) override {
     dbus::MethodCall method_call(
         bluetooth_advertising_manager::kBluetoothAdvertisingManagerInterface,
         bluetooth_advertising_manager::kRegisterAdvertisement);
@@ -74,16 +73,16 @@ class BluetoothAdvertisementManagerClientImpl
     writer.OpenArray("{sv}", &array_writer);
     writer.CloseContainer(&array_writer);
 
-    CallObjectProxyMethod(manager_object_path, &method_call, callback,
-                          error_callback);
+    CallObjectProxyMethod(manager_object_path, &method_call,
+                          std::move(callback), std::move(error_callback));
   }
 
   // BluetoothAdvertisementManagerClient override.
   void UnregisterAdvertisement(
       const dbus::ObjectPath& manager_object_path,
       const dbus::ObjectPath& advertisement_object_path,
-      const base::Closure& callback,
-      const ErrorCallback& error_callback) override {
+      base::OnceClosure callback,
+      ErrorCallback error_callback) override {
     dbus::MethodCall method_call(
         bluetooth_advertising_manager::kBluetoothAdvertisingManagerInterface,
         bluetooth_advertising_manager::kUnregisterAdvertisement);
@@ -91,15 +90,15 @@ class BluetoothAdvertisementManagerClientImpl
     dbus::MessageWriter writer(&method_call);
     writer.AppendObjectPath(advertisement_object_path);
 
-    CallObjectProxyMethod(manager_object_path, &method_call, callback,
-                          error_callback);
+    CallObjectProxyMethod(manager_object_path, &method_call,
+                          std::move(callback), std::move(error_callback));
   }
 
   void SetAdvertisingInterval(const dbus::ObjectPath& manager_object_path,
                               uint16_t min_interval_ms,
                               uint16_t max_interval_ms,
-                              const base::Closure& callback,
-                              const ErrorCallback& error_callback) override {
+                              base::OnceClosure callback,
+                              ErrorCallback error_callback) override {
     dbus::MethodCall method_call(
         bluetooth_advertising_manager::kBluetoothAdvertisingManagerInterface,
         bluetooth_advertising_manager::kSetAdvertisingIntervals);
@@ -108,19 +107,19 @@ class BluetoothAdvertisementManagerClientImpl
     writer.AppendUint16(min_interval_ms);
     writer.AppendUint16(max_interval_ms);
 
-    CallObjectProxyMethod(manager_object_path, &method_call, callback,
-                          error_callback);
+    CallObjectProxyMethod(manager_object_path, &method_call,
+                          std::move(callback), std::move(error_callback));
   }
 
   void ResetAdvertising(const dbus::ObjectPath& manager_object_path,
-                        const base::Closure& callback,
-                        const ErrorCallback& error_callback) override {
+                        base::OnceClosure callback,
+                        ErrorCallback error_callback) override {
     dbus::MethodCall method_call(
         bluetooth_advertising_manager::kBluetoothAdvertisingManagerInterface,
         bluetooth_advertising_manager::kResetAdvertising);
 
-    CallObjectProxyMethod(manager_object_path, &method_call, callback,
-                          error_callback);
+    CallObjectProxyMethod(manager_object_path, &method_call,
+                          std::move(callback), std::move(error_callback));
   }
 
  protected:
@@ -141,23 +140,25 @@ class BluetoothAdvertisementManagerClientImpl
   // if the bluetooth adapter exists and run error callback if it doesn't.
   void CallObjectProxyMethod(const dbus::ObjectPath& manager_object_path,
                              dbus::MethodCall* method_call,
-                             const base::Closure& callback,
-                             const ErrorCallback& error_callback) {
+                             base::OnceClosure callback,
+                             ErrorCallback error_callback) {
     DCHECK(object_manager_);
     dbus::ObjectProxy* object_proxy =
         object_manager_->GetObjectProxy(manager_object_path);
     if (!object_proxy) {
-      error_callback.Run(bluetooth_advertising_manager::kErrorFailed,
-                         "Adapter does not exist.");
+      std::move(error_callback)
+          .Run(bluetooth_advertising_manager::kErrorFailed,
+               "Adapter does not exist.");
       return;
     }
 
     object_proxy->CallMethodWithErrorCallback(
         method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
         base::BindOnce(&BluetoothAdvertisementManagerClientImpl::OnSuccess,
-                       weak_ptr_factory_.GetWeakPtr(), callback),
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
         base::BindOnce(&BluetoothAdvertisementManagerClientImpl::OnError,
-                       weak_ptr_factory_.GetWeakPtr(), error_callback));
+                       weak_ptr_factory_.GetWeakPtr(),
+                       std::move(error_callback)));
   }
 
   // Called by dbus::ObjectManager when an object with the advertising manager
@@ -177,14 +178,13 @@ class BluetoothAdvertisementManagerClientImpl
   }
 
   // Called when a response for successful method call is received.
-  void OnSuccess(const base::Closure& callback, dbus::Response* response) {
+  void OnSuccess(base::OnceClosure callback, dbus::Response* response) {
     DCHECK(response);
-    callback.Run();
+    std::move(callback).Run();
   }
 
   // Called when a response for a failed method call is received.
-  void OnError(const ErrorCallback& error_callback,
-               dbus::ErrorResponse* response) {
+  void OnError(ErrorCallback error_callback, dbus::ErrorResponse* response) {
     // Error response has optional error message argument.
     std::string error_name;
     std::string error_message;
@@ -196,7 +196,7 @@ class BluetoothAdvertisementManagerClientImpl
       error_name = kNoResponseError;
       error_message = "";
     }
-    error_callback.Run(error_name, error_message);
+    std::move(error_callback).Run(error_name, error_message);
   }
 
   dbus::ObjectManager* object_manager_;
@@ -210,7 +210,7 @@ class BluetoothAdvertisementManagerClientImpl
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.
   base::WeakPtrFactory<BluetoothAdvertisementManagerClientImpl>
-      weak_ptr_factory_;
+      weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(BluetoothAdvertisementManagerClientImpl);
 };

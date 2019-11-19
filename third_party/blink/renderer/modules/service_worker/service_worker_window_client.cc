@@ -4,19 +4,19 @@
 
 #include "third_party/blink/renderer/modules/service_worker/service_worker_window_client.h"
 
-#include <memory>
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/renderer/bindings/core/v8/callback_promise_adapter.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/messaging/message_port.h"
 #include "third_party/blink/renderer/core/page/page_hidden_state.h"
-#include "third_party/blink/renderer/core/workers/worker_global_scope.h"
 #include "third_party/blink/renderer/core/workers/worker_location.h"
 #include "third_party/blink/renderer/modules/service_worker/service_worker_error.h"
-#include "third_party/blink/renderer/modules/service_worker/service_worker_global_scope_client.h"
+#include "third_party/blink/renderer/modules/service_worker/service_worker_global_scope.h"
 #include "third_party/blink/renderer/platform/bindings/v8_throw_exception.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
 
 namespace blink {
 
@@ -38,13 +38,34 @@ void DidFocus(ScriptPromiseResolver* resolver,
   resolver->Resolve(ServiceWorkerWindowClient::Create(*client));
 }
 
-}  // namespace
+void DidNavigateOrOpenWindow(ScriptPromiseResolver* resolver,
+                             bool success,
+                             mojom::blink::ServiceWorkerClientInfoPtr info,
+                             const String& error_msg) {
+  if (!resolver->GetExecutionContext() ||
+      resolver->GetExecutionContext()->IsContextDestroyed()) {
+    return;
+  }
 
-ServiceWorkerWindowClient* ServiceWorkerWindowClient::Create(
-    const WebServiceWorkerClientInfo& info) {
-  DCHECK_EQ(mojom::blink::ServiceWorkerClientType::kWindow, info.client_type);
-  return MakeGarbageCollected<ServiceWorkerWindowClient>(info);
+  if (!success) {
+    DCHECK(!info);
+    DCHECK(!error_msg.IsNull());
+    ScriptState::Scope scope(resolver->GetScriptState());
+    resolver->Reject(V8ThrowException::CreateTypeError(
+        resolver->GetScriptState()->GetIsolate(), error_msg));
+    return;
+  }
+  ServiceWorkerWindowClient* window_client = nullptr;
+  // Even if the open/navigation succeeded, |info| may be null if information of
+  // the opened/navigated window could not be obtained (this can happen for a
+  // cross-origin window, or if the browser process could not get the
+  // information in time before the window was closed).
+  if (info)
+    window_client = MakeGarbageCollected<ServiceWorkerWindowClient>(*info);
+  resolver->Resolve(window_client);
 }
+
+}  // namespace
 
 ServiceWorkerWindowClient* ServiceWorkerWindowClient::Create(
     const mojom::blink::ServiceWorkerClientInfo& info) {
@@ -52,11 +73,12 @@ ServiceWorkerWindowClient* ServiceWorkerWindowClient::Create(
   return MakeGarbageCollected<ServiceWorkerWindowClient>(info);
 }
 
-ServiceWorkerWindowClient::ServiceWorkerWindowClient(
-    const WebServiceWorkerClientInfo& info)
-    : ServiceWorkerClient(info),
-      page_hidden_(info.page_hidden),
-      is_focused_(info.is_focused) {}
+// static
+ServiceWorkerWindowClient::ResolveWindowClientCallback
+ServiceWorkerWindowClient::CreateResolveWindowClientCallback(
+    ScriptPromiseResolver* resolver) {
+  return WTF::Bind(&DidNavigateOrOpenWindow, WrapPersistent(resolver));
+}
 
 ServiceWorkerWindowClient::ServiceWorkerWindowClient(
     const mojom::blink::ServiceWorkerClientInfo& info)
@@ -71,43 +93,46 @@ String ServiceWorkerWindowClient::visibilityState() const {
 }
 
 ScriptPromise ServiceWorkerWindowClient::focus(ScriptState* script_state) {
-  ScriptPromiseResolver* resolver = ScriptPromiseResolver::Create(script_state);
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
+  ServiceWorkerGlobalScope* global_scope =
+      To<ServiceWorkerGlobalScope>(ExecutionContext::From(script_state));
 
-  if (!ExecutionContext::From(script_state)->IsWindowInteractionAllowed()) {
-    resolver->Reject(DOMException::Create(DOMExceptionCode::kInvalidAccessError,
-                                          "Not allowed to focus a window."));
+  if (!global_scope->IsWindowInteractionAllowed()) {
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kInvalidAccessError,
+        "Not allowed to focus a window."));
     return promise;
   }
-  ExecutionContext::From(script_state)->ConsumeWindowInteraction();
+  global_scope->ConsumeWindowInteraction();
 
-  ServiceWorkerGlobalScopeClient::From(ExecutionContext::From(script_state))
-      ->Focus(Uuid(), WTF::Bind(&DidFocus, WrapPersistent(resolver)));
+  global_scope->GetServiceWorkerHost()->FocusClient(
+      Uuid(), WTF::Bind(&DidFocus, WrapPersistent(resolver)));
   return promise;
 }
 
 ScriptPromise ServiceWorkerWindowClient::navigate(ScriptState* script_state,
                                                   const String& url) {
-  ScriptPromiseResolver* resolver = ScriptPromiseResolver::Create(script_state);
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
-  ExecutionContext* context = ExecutionContext::From(script_state);
+  ServiceWorkerGlobalScope* global_scope =
+      To<ServiceWorkerGlobalScope>(ExecutionContext::From(script_state));
 
-  KURL parsed_url =
-      KURL(To<WorkerGlobalScope>(context)->location()->Url(), url);
+  KURL parsed_url = KURL(global_scope->location()->Url(), url);
   if (!parsed_url.IsValid() || parsed_url.ProtocolIsAbout()) {
     resolver->Reject(V8ThrowException::CreateTypeError(
         script_state->GetIsolate(), "'" + url + "' is not a valid URL."));
     return promise;
   }
-  if (!context->GetSecurityOrigin()->CanDisplay(parsed_url)) {
+  if (!global_scope->GetSecurityOrigin()->CanDisplay(parsed_url)) {
     resolver->Reject(V8ThrowException::CreateTypeError(
         script_state->GetIsolate(),
         "'" + parsed_url.ElidedString() + "' cannot navigate."));
     return promise;
   }
 
-  ServiceWorkerGlobalScopeClient::From(context)->Navigate(Uuid(), parsed_url,
-                                                          resolver);
+  global_scope->GetServiceWorkerHost()->NavigateClient(
+      Uuid(), parsed_url, CreateResolveWindowClientCallback(resolver));
   return promise;
 }
 

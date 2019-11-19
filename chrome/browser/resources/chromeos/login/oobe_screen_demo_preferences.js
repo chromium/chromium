@@ -7,24 +7,22 @@
  */
 
 login.createScreen('DemoPreferencesScreen', 'demo-preferences', function() {
-  var CONTEXT_KEY_LOCALE = 'locale';
-  var CONTEXT_KEY_INPUT_METHOD = 'input-method';
-  var CONTEXT_KEY_COUNTRY = 'demo-mode-country';
-
   var demoPreferencesModule = null;
 
   return {
+    EXTERNAL_API: ['setInputMethodIdFromBackend'],
 
     /** @override */
     decorate: function() {
       demoPreferencesModule = $('demo-preferences-content');
       demoPreferencesModule.screen = this;
 
-      this.context.addObserver(
-          CONTEXT_KEY_INPUT_METHOD, function(inputMethodId) {
-            $('demo-preferences-content').setSelectedKeyboard(inputMethodId);
-          });
       this.updateLocalizedContent();
+    },
+
+    /** Update the current input method. Called from C++. */
+    setInputMethodIdFromBackend: function(inputMethodId) {
+      $('demo-preferences-content').setSelectedKeyboard(inputMethodId);
     },
 
     /** Returns a control which should receive an initial focus. */
@@ -42,8 +40,7 @@ login.createScreen('DemoPreferencesScreen', 'demo-preferences', function() {
      * @param {string} languageId Id of the selected language.
      */
     onLanguageSelected_: function(languageId) {
-      this.context.set(CONTEXT_KEY_LOCALE, languageId);
-      this.commitContextChanges();
+      chrome.send('DemoPreferencesScreen.setLocaleId', [languageId]);
     },
 
     /**
@@ -51,8 +48,7 @@ login.createScreen('DemoPreferencesScreen', 'demo-preferences', function() {
      * @param {string} inputMethodId Id of the selected input method.
      */
     onKeyboardSelected_: function(inputMethodId) {
-      this.context.set(CONTEXT_KEY_INPUT_METHOD, inputMethodId);
-      this.commitContextChanges();
+      chrome.send('DemoPreferencesScreen.setInputMethodId', [inputMethodId]);
     },
 
     /**
@@ -60,8 +56,7 @@ login.createScreen('DemoPreferencesScreen', 'demo-preferences', function() {
      * @param {string} countryId Id of the selected country.
      */
     onCountrySelected_: function(countryId) {
-      this.context.set(CONTEXT_KEY_COUNTRY, countryId);
-      this.commitContextChanges();
+      chrome.send('DemoPreferencesScreen.setDemoModeCountry', [countryId]);
     },
   };
 });

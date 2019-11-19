@@ -5,9 +5,9 @@
 #include <memory>
 
 #include "android_webview/browser/input_stream.h"
+#include "android_webview/test/android_webview_unittests_jni/InputStreamUnittest_jni.h"
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
-#include "jni/InputStreamUnittest_jni.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_byte_range.h"

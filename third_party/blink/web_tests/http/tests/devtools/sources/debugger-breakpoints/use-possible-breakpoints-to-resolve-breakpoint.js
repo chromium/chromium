@@ -54,7 +54,8 @@
     SourcesTestRunner.debuggerPlugin(sourceFrame)._handleGutterClick({
       data: {
         lineNumber: lineNumberClicked,
-        event: {button: 0, shiftKey: shiftKey, consume: () => true}
+        event: {button: 0, shiftKey: shiftKey, consume: () => true},
+        gutterType: SourceFrame.SourcesTextEditor.lineNumbersGutterType
       }
     });
     return promise;

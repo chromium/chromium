@@ -37,7 +37,7 @@ class CoreAppLauncherHandler : public content::WebUIMessageHandler {
   // Records an app launch in the corresponding |bucket| of the app launch
   // histogram if the |escaped_url| corresponds to an installed app.
   void RecordAppLaunchByUrl(Profile* profile,
-                            std::string escaped_url,
+                            std::string url,
                             extension_misc::AppLaunchBucket bucket);
 
   // WebUIMessageHandler implementation.

@@ -6,9 +6,10 @@
 
 #include "base/i18n/rtl.h"
 #include "base/logging.h"
-#include "components/autofill/core/browser/popup_item_ids.h"
+#include "components/autofill/core/browser/ui/popup_item_ids.h"
 #import "components/autofill/ios/browser/form_suggestion.h"
 #import "ios/chrome/browser/autofill/form_suggestion_client.h"
+#import "ios/chrome/browser/autofill/form_suggestion_constants.h"
 #import "ios/chrome/browser/autofill/form_suggestion_label.h"
 #include "ios/chrome/browser/ui/util/rtl_geometry.h"
 #include "ios/chrome/common/ui_util/constraints_ui_util.h"
@@ -65,9 +66,9 @@ const CGFloat kSuggestionHorizontalMargin = 6;
   }
 }
 
-- (void)resetContentInsetAndDelegate {
+- (void)resetContentInsetAndDelegateAnimated:(BOOL)animated {
   self.delegate = nil;
-  [UIView animateWithDuration:0.2
+  [UIView animateWithDuration:animated ? 0.2 : 0.0
                    animations:^{
                      self.contentInset = UIEdgeInsetsZero;
                    }];
@@ -131,38 +132,18 @@ const CGFloat kSuggestionHorizontalMargin = 6;
   }
   self.stackView = stackView;
   [self createAndInsertArrangedSubviews];
+
+  self.accessibilityIdentifier = kFormSuggestionsViewAccessibilityIdentifier;
 }
 
 - (void)createAndInsertArrangedSubviews {
   auto setupBlock = ^(FormSuggestion* suggestion, NSUInteger idx, BOOL* stop) {
-    // Disable user interaction with suggestion if it is Google Pay logo.
-    BOOL userInteractionEnabled =
-        suggestion.identifier != autofill::POPUP_ITEM_ID_GOOGLE_PAY_BRANDING;
-
     UIView* label =
         [[FormSuggestionLabel alloc] initWithSuggestion:suggestion
                                                   index:idx
-                                 userInteractionEnabled:userInteractionEnabled
                                          numSuggestions:[self.suggestions count]
                                                  client:self.client];
     [self.stackView addArrangedSubview:label];
-
-    // If first suggestion is Google Pay logo animate it below the fold.
-    if (idx == 0U &&
-        suggestion.identifier == autofill::POPUP_ITEM_ID_GOOGLE_PAY_BRANDING) {
-      const CGFloat firstLabelWidth =
-          [label systemLayoutSizeFittingSize:UILayoutFittingCompressedSize]
-              .width +
-          kSuggestionHorizontalMargin;
-      dispatch_time_t popTime =
-          dispatch_time(DISPATCH_TIME_NOW, 0.5 * NSEC_PER_SEC);
-      __weak FormSuggestionView* weakSelf = self;
-      dispatch_after(popTime, dispatch_get_main_queue(), ^{
-        [weakSelf setContentOffset:CGPointMake(firstLabelWidth,
-                                               weakSelf.contentOffset.y)
-                          animated:YES];
-      });
-    }
   };
   [self.suggestions enumerateObjectsUsingBlock:setupBlock];
   if (self.trailingView) {

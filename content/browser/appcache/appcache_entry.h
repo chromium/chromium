@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include "content/common/appcache_interfaces.h"
 #include "third_party/blink/public/mojom/appcache/appcache_info.mojom.h"
 
 namespace content {
@@ -32,23 +31,47 @@ class AppCacheEntry {
   AppCacheEntry()
       : types_(0),
         response_id_(blink::mojom::kAppCacheNoResponseId),
-        response_size_(0) {}
+        response_size_(0),
+        padding_size_(0) {}
 
   explicit AppCacheEntry(int type)
       : types_(type),
         response_id_(blink::mojom::kAppCacheNoResponseId),
-        response_size_(0) {}
+        response_size_(0),
+        padding_size_(0) {}
 
   AppCacheEntry(int type, int64_t response_id)
-      : types_(type), response_id_(response_id), response_size_(0) {}
-
-  AppCacheEntry(int type, int64_t response_id, int64_t response_size)
       : types_(type),
         response_id_(response_id),
-        response_size_(response_size) {}
+        response_size_(0),
+        padding_size_(0) {}
+
+  AppCacheEntry(int type,
+                int64_t response_id,
+                int64_t response_size,
+                int64_t padding_size)
+      : types_(type),
+        response_id_(response_id),
+        response_size_(response_size),
+        padding_size_(padding_size) {
+    DCHECK_GE(response_size, 0);
+    DCHECK_GE(padding_size, 0);
+
+    // The manifest determines the origin of the cache, so it should always be a
+    // same-origin entry, which should have 0 padding.
+    DCHECK((type & MANIFEST) == 0 || padding_size_ == 0);
+
+    // Documents aren't allowed to reference cross-origin manifests, so master
+    // entries should always be same-origin, with 0 padding.
+    DCHECK((type & MASTER) == 0 || padding_size_ == 0);
+  }
 
   int types() const { return types_; }
-  void add_types(int added_types) { types_ |= added_types; }
+  void add_types(int added_types) {
+    DCHECK((added_types & MANIFEST) == 0 || padding_size_ == 0);
+    DCHECK((added_types & MASTER) == 0 || padding_size_ == 0);
+    types_ |= added_types;
+  }
   bool IsMaster() const { return (types_ & MASTER) != 0; }
   bool IsManifest() const { return (types_ & MANIFEST) != 0; }
   bool IsExplicit() const { return (types_ & EXPLICIT) != 0; }
@@ -62,13 +85,31 @@ class AppCacheEntry {
     return response_id_ != blink::mojom::kAppCacheNoResponseId;
   }
 
+  // The actual size of the response data written to disk.
   int64_t response_size() const { return response_size_; }
-  void set_response_size(int64_t size) { response_size_ = size; }
+
+  // The amount of space added to the actual size when calculating quota usage.
+  //
+  // To avoid leaking cross-origin resource sizes, the quota system pretends
+  // that cross-origin resources are larger than they actually are. The padding
+  // is only used for quota accounting, and does not consume any space on the
+  // user's disk.
+  int64_t padding_size() const { return padding_size_; }
+
+  void SetResponseAndPaddingSizes(int64_t response_size, int64_t padding_size) {
+    DCHECK_GE(response_size, 0);
+    DCHECK_GE(padding_size, 0);
+    DCHECK((types_ & MANIFEST) == 0 || padding_size == 0);
+    DCHECK((types_ & MASTER) == 0 || padding_size == 0);
+    response_size_ = response_size;
+    padding_size_ = padding_size;
+  }
 
  private:
   int types_;
   int64_t response_id_;
   int64_t response_size_;
+  int64_t padding_size_;
 };
 
 }  // namespace content

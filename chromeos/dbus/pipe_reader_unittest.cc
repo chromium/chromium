@@ -18,7 +18,7 @@
 #include "base/run_loop.h"
 #include "base/task/post_task.h"
 #include "base/task_runner.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace chromeos {
@@ -42,7 +42,7 @@ class PipeReaderTest : public testing::Test {
  public:
   PipeReaderTest() = default;
   ~PipeReaderTest() override {
-    // Flush the ScopedTaskEnvironment to prevent leaks of PostTaskAndReply
+    // Flush the TaskEnvironment to prevent leaks of PostTaskAndReply
     // callbacks.
     task_environment_.RunUntilIdle();
   }
@@ -52,7 +52,7 @@ class PipeReaderTest : public testing::Test {
   }
 
  private:
-  base::test::ScopedTaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_;
 };
 
 TEST_F(PipeReaderTest, Empty) {

@@ -14,8 +14,7 @@ namespace blink {
 
 class ContentSecurityPolicy;
 
-class CORE_EXPORT CSPDirective
-    : public GarbageCollectedFinalized<CSPDirective> {
+class CORE_EXPORT CSPDirective : public GarbageCollected<CSPDirective> {
  public:
   CSPDirective(const String& name,
                const String& value,

@@ -24,7 +24,7 @@
 
 namespace blink {
 
-class DragMockChromeClient : public EmptyChromeClient {
+class DragMockChromeClient : public RenderingTestChromeClient {
  public:
   DragMockChromeClient() = default;
 
@@ -44,7 +44,7 @@ class DragMockChromeClient : public EmptyChromeClient {
 class DragControllerTest : public RenderingTest {
  protected:
   DragControllerTest()
-      : RenderingTest(SingleChildLocalFrameClient::Create()),
+      : RenderingTest(MakeGarbageCollected<SingleChildLocalFrameClient>()),
 
         chrome_client_(MakeGarbageCollected<DragMockChromeClient>()) {}
   LocalFrame& GetFrame() const { return *GetDocument().GetFrame(); }

@@ -22,8 +22,7 @@ class AwaitMatchStatusChangeChecker : public MultiClientStatusChangeChecker {
                                 const std::string& debug_message);
   ~AwaitMatchStatusChangeChecker() override;
 
-  bool IsExitConditionSatisfied() override;
-  std::string GetDebugMessage() const override;
+  bool IsExitConditionSatisfied(std::ostream* os) override;
 
  private:
   ExitConditionCallback condition_;

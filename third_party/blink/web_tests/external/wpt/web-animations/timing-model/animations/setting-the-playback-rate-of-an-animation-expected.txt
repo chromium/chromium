@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-PASS The playback rate affects the rate of progress of the current time
-PASS Setting the playback rate while play-pending preserves the current time
-PASS Setting the playback rate while playing preserves the current time
-FAIL Setting the playback rate should clear any pending playback rate promise_test: Unhandled rejection with value: object "TypeError: animation.updatePlaybackRate is not a function"
-Harness: the test ran to completion.
-

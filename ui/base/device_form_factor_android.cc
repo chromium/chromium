@@ -5,7 +5,7 @@
 #include "ui/base/device_form_factor.h"
 
 #include "base/android/jni_android.h"
-#include "jni/DeviceFormFactor_jni.h"
+#include "ui/base/ui_base_jni_headers/DeviceFormFactor_jni.h"
 
 namespace ui {
 

@@ -98,58 +98,59 @@ void OnProbeFinished(const AndroidUsbDevicesCallback& callback,
 }
 
 void OnDeviceClosed(const std::string& guid,
-                    device::mojom::UsbDevicePtr device_ptr) {
+                    mojo::Remote<device::mojom::UsbDevice> device) {
   base::Erase(g_open_devices.Get(), guid);
 }
 
 void OnDeviceClosedWithBarrier(const std::string& guid,
-                               device::mojom::UsbDevicePtr device_ptr,
+                               mojo::Remote<device::mojom::UsbDevice> device,
                                const base::RepeatingClosure& barrier) {
   base::Erase(g_open_devices.Get(), guid);
   barrier.Run();
 }
 
-void CreateDeviceOnInterfaceClaimed(AndroidUsbDevices* devices,
-                                    crypto::RSAPrivateKey* rsa_key,
-                                    AndroidDeviceInfo android_device_info,
-                                    device::mojom::UsbDevicePtr device_ptr,
-                                    const base::RepeatingClosure& barrier,
-                                    bool success) {
+void CreateDeviceOnInterfaceClaimed(
+    AndroidUsbDevices* devices,
+    crypto::RSAPrivateKey* rsa_key,
+    AndroidDeviceInfo android_device_info,
+    mojo::Remote<device::mojom::UsbDevice> device,
+    const base::RepeatingClosure& barrier,
+    bool success) {
   if (success) {
-    devices->push_back(new AndroidUsbDevice(rsa_key, android_device_info,
-                                            std::move(device_ptr)));
+    devices->push_back(
+        new AndroidUsbDevice(rsa_key, android_device_info, std::move(device)));
     barrier.Run();
   } else {
-    auto* device = device_ptr.get();
-    device->Close(base::BindOnce(&OnDeviceClosedWithBarrier,
-                                 android_device_info.guid,
-                                 std::move(device_ptr), barrier));
+    auto* device_raw = device.get();
+    device_raw->Close(base::BindOnce(&OnDeviceClosedWithBarrier,
+                                     android_device_info.guid,
+                                     std::move(device), barrier));
   }
 }
 
-void OnInterfaceReleased(device::mojom::UsbDevicePtr device_ptr,
+void OnInterfaceReleased(mojo::Remote<device::mojom::UsbDevice> device,
                          const std::string& guid,
                          bool release_successful) {
-  auto* device = device_ptr.get();
-  device->Close(base::BindOnce(&OnDeviceClosed, guid, std::move(device_ptr)));
+  auto* device_raw = device.get();
+  device_raw->Close(base::BindOnce(&OnDeviceClosed, guid, std::move(device)));
 }
 
 void OnDeviceOpened(AndroidUsbDevices* devices,
                     crypto::RSAPrivateKey* rsa_key,
                     AndroidDeviceInfo android_device_info,
-                    device::mojom::UsbDevicePtr device_ptr,
+                    mojo::Remote<device::mojom::UsbDevice> device,
                     const base::RepeatingClosure& barrier,
                     device::mojom::UsbOpenDeviceError error) {
   // For UsbOpenDeviceError::OK and UsbOpenDeviceError::ALREADY_OPEN we all try
   // to claim the interface because the device may be opened by other modules or
   // extensions for different interface.
   if (error != device::mojom::UsbOpenDeviceError::ACCESS_DENIED) {
-    DCHECK(device_ptr);
-    auto* device = device_ptr.get();
-    device->ClaimInterface(
+    DCHECK(device);
+    auto* device_raw = device.get();
+    device_raw->ClaimInterface(
         android_device_info.interface_id,
         base::BindOnce(&CreateDeviceOnInterfaceClaimed, devices, rsa_key,
-                       android_device_info, std::move(device_ptr), barrier));
+                       android_device_info, std::move(device), barrier));
   } else {
     base::Erase(g_open_devices.Get(), android_device_info.guid);
     barrier.Run();
@@ -166,7 +167,7 @@ void OpenAndroidDevices(crypto::RSAPrivateKey* rsa_key,
                            base::BindOnce(&OnProbeFinished, callback, devices));
 
   for (const auto& device_info : device_info_list) {
-    if (base::ContainsValue(g_open_devices.Get(), device_info.guid)) {
+    if (base::Contains(g_open_devices.Get(), device_info.guid)) {
       // This device is already open, do not make parallel attempts to connect
       // to it.
       barrier.Run();
@@ -174,12 +175,12 @@ void OpenAndroidDevices(crypto::RSAPrivateKey* rsa_key,
     }
     g_open_devices.Get().push_back(device_info.guid);
 
-    device::mojom::UsbDevicePtr device_ptr;
+    mojo::Remote<device::mojom::UsbDevice> device;
     UsbDeviceManagerHelper::GetInstance()->GetDevice(
-        device_info.guid, mojo::MakeRequest(&device_ptr));
-    auto* device = device_ptr.get();
-    device->Open(base::BindOnce(&OnDeviceOpened, devices, rsa_key, device_info,
-                                std::move(device_ptr), barrier));
+        device_info.guid, device.BindNewPipeAndPassReceiver());
+    auto* device_raw = device.get();
+    device_raw->Open(base::BindOnce(&OnDeviceOpened, devices, rsa_key,
+                                    device_info, std::move(device), barrier));
   }
 }
 
@@ -200,18 +201,18 @@ void AndroidUsbDevice::Enumerate(crypto::RSAPrivateKey* rsa_key,
       base::BindOnce(&OpenAndroidDevices, rsa_key, callback));
 }
 
-AndroidUsbDevice::AndroidUsbDevice(crypto::RSAPrivateKey* rsa_key,
-                                   const AndroidDeviceInfo& android_device_info,
-                                   device::mojom::UsbDevicePtr device_ptr)
+AndroidUsbDevice::AndroidUsbDevice(
+    crypto::RSAPrivateKey* rsa_key,
+    const AndroidDeviceInfo& android_device_info,
+    mojo::Remote<device::mojom::UsbDevice> device)
     : rsa_key_(rsa_key->Copy()),
-      device_ptr_(std::move(device_ptr)),
+      device_(std::move(device)),
       android_device_info_(android_device_info),
       is_connected_(false),
       signature_sent_(false),
-      last_socket_id_(256),
-      weak_factory_(this) {
-  DCHECK(device_ptr_);
-  device_ptr_.set_connection_error_handler(
+      last_socket_id_(256) {
+  DCHECK(device_);
+  device_.set_disconnect_handler(
       base::BindOnce(&AndroidUsbDevice::Terminate, weak_factory_.GetWeakPtr()));
 }
 
@@ -225,8 +226,8 @@ void AndroidUsbDevice::InitOnCallerThread() {
 }
 
 net::StreamSocket* AndroidUsbDevice::CreateSocket(const std::string& command) {
-  if (!device_ptr_)
-    return NULL;
+  if (!device_)
+    return nullptr;
 
   uint32_t socket_id = ++last_socket_id_;
   sockets_[socket_id] = new AndroidUsbSocket(
@@ -299,17 +300,17 @@ void AndroidUsbDevice::Queue(std::unique_ptr<AdbMessage> message) {
 void AndroidUsbDevice::ProcessOutgoing() {
   DCHECK(task_runner_->BelongsToCurrentThread());
 
-  if (outgoing_queue_.empty() || !device_ptr_)
+  if (outgoing_queue_.empty() || !device_)
     return;
 
   BulkMessage message = outgoing_queue_.front();
   outgoing_queue_.pop();
   DumpMessage(true, message->front(), message->size());
 
-  device_ptr_->GenericTransferOut(
-      android_device_info_.outbound_address, message->data(), kUsbTimeout,
-      base::Bind(&AndroidUsbDevice::OutgoingMessageSent,
-                 weak_factory_.GetWeakPtr()));
+  device_->GenericTransferOut(android_device_info_.outbound_address,
+                              message->data(), kUsbTimeout,
+                              base::Bind(&AndroidUsbDevice::OutgoingMessageSent,
+                                         weak_factory_.GetWeakPtr()));
 }
 
 void AndroidUsbDevice::OutgoingMessageSent(UsbTransferStatus status) {
@@ -322,10 +323,10 @@ void AndroidUsbDevice::OutgoingMessageSent(UsbTransferStatus status) {
 
 void AndroidUsbDevice::ReadHeader() {
   DCHECK(task_runner_->BelongsToCurrentThread());
-  if (!device_ptr_)
+  if (!device_)
     return;
 
-  device_ptr_->GenericTransferIn(
+  device_->GenericTransferIn(
       android_device_info_.inbound_address, kHeaderSize, kUsbTimeout,
       base::Bind(&AndroidUsbDevice::ParseHeader, weak_factory_.GetWeakPtr()));
 }
@@ -373,11 +374,11 @@ void AndroidUsbDevice::ReadBody(std::unique_ptr<AdbMessage> message,
                                 uint32_t data_check) {
   DCHECK(task_runner_->BelongsToCurrentThread());
 
-  if (!device_ptr_.get()) {
+  if (!device_.get()) {
     return;
   }
 
-  device_ptr_->GenericTransferIn(
+  device_->GenericTransferIn(
       android_device_info_.inbound_address, data_length, kUsbTimeout,
       base::Bind(&AndroidUsbDevice::ParseBody, weak_factory_.GetWeakPtr(),
                  base::Passed(&message), data_length, data_check));
@@ -480,16 +481,16 @@ void AndroidUsbDevice::Terminate() {
 
   // For connection error, remove the guid from recored opening/opened list.
   // For transfer errors, we'll do this after releasing the interface.
-  if (!device_ptr_) {
+  if (!device_) {
     base::Erase(g_open_devices.Get(), android_device_info_.guid);
     return;
   }
 
   // For Transfer error case.
-  // Make sure we zero-out |device_ptr_| so that closing connections did not
+  // Make sure we zero-out |device_| so that closing connections did not
   // open new socket connections.
-  device::mojom::UsbDevicePtr device_ptr = std::move(device_ptr_);
-  device_ptr_.reset();
+  mojo::Remote<device::mojom::UsbDevice> device = std::move(device_);
+  device_.reset();
 
   // Iterate over copy.
   AndroidUsbSockets sockets(sockets_);
@@ -498,10 +499,10 @@ void AndroidUsbDevice::Terminate() {
   }
   DCHECK(sockets_.empty());
 
-  auto* device = device_ptr.get();
-  device->ReleaseInterface(
+  auto* device_raw = device.get();
+  device_raw->ReleaseInterface(
       android_device_info_.interface_id,
-      base::BindOnce(&OnInterfaceReleased, std::move(device_ptr),
+      base::BindOnce(&OnInterfaceReleased, std::move(device),
                      android_device_info_.guid));
 }
 

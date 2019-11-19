@@ -6,8 +6,8 @@
 #include "base/android/jni_string.h"
 #include "base/strings/string16.h"
 #include "base/strings/string_piece.h"
-#include "jni/NetStringUtil_jni.h"
 #include "net/base/net_string_util.h"
+#include "net/net_jni_headers/NetStringUtil_jni.h"
 
 using base::android::ScopedJavaLocalRef;
 
@@ -17,7 +17,7 @@ namespace {
 
 // Attempts to convert |text| encoded in |charset| to a jstring (Java unicode
 // string).  Returns the result jstring, or NULL on failure.
-ScopedJavaLocalRef<jstring> ConvertToJstring(const std::string& text,
+ScopedJavaLocalRef<jstring> ConvertToJstring(base::StringPiece text,
                                              const char* charset) {
   JNIEnv* env = base::android::AttachCurrentThread();
   ScopedJavaLocalRef<jobject> java_byte_buffer(
@@ -34,8 +34,8 @@ ScopedJavaLocalRef<jstring> ConvertToJstring(const std::string& text,
 // Attempts to convert |text| encoded in |charset| to a jstring (Java unicode
 // string) and then normalizes the string.  Returns the result jstring, or NULL
 // on failure.
-ScopedJavaLocalRef<jstring> ConvertToNormalizedJstring(
-    const std::string& text, const char* charset) {
+ScopedJavaLocalRef<jstring> ConvertToNormalizedJstring(base::StringPiece text,
+                                                       const char* charset) {
   JNIEnv* env = base::android::AttachCurrentThread();
   ScopedJavaLocalRef<jobject> java_byte_buffer(
       env,
@@ -51,7 +51,8 @@ ScopedJavaLocalRef<jstring> ConvertToNormalizedJstring(
 // Converts |text| encoded in |charset| to a jstring (Java unicode string).
 // Any characters that can not be converted are replaced with U+FFFD.
 ScopedJavaLocalRef<jstring> ConvertToJstringWithSubstitutions(
-    const std::string& text, const char* charset) {
+    base::StringPiece text,
+    const char* charset) {
   JNIEnv* env = base::android::AttachCurrentThread();
   ScopedJavaLocalRef<jobject> java_byte_buffer(
       env,
@@ -70,7 +71,8 @@ ScopedJavaLocalRef<jstring> ConvertToJstringWithSubstitutions(
 // by base::kCodepageLatin1 (which is const char[]) in net_string_util_icu.cc.
 const char* const kCharsetLatin1 = "ISO-8859-1";
 
-bool ConvertToUtf8(const std::string& text, const char* charset,
+bool ConvertToUtf8(base::StringPiece text,
+                   const char* charset,
                    std::string* output) {
   output->clear();
   ScopedJavaLocalRef<jstring> java_result = ConvertToJstring(text, charset);
@@ -80,7 +82,8 @@ bool ConvertToUtf8(const std::string& text, const char* charset,
   return true;
 }
 
-bool ConvertToUtf8AndNormalize(const std::string& text, const char* charset,
+bool ConvertToUtf8AndNormalize(base::StringPiece text,
+                               const char* charset,
                                std::string* output) {
   output->clear();
   ScopedJavaLocalRef<jstring> java_result = ConvertToNormalizedJstring(
@@ -91,7 +94,8 @@ bool ConvertToUtf8AndNormalize(const std::string& text, const char* charset,
   return true;
 }
 
-bool ConvertToUTF16(const std::string& text, const char* charset,
+bool ConvertToUTF16(base::StringPiece text,
+                    const char* charset,
                     base::string16* output) {
   output->clear();
   ScopedJavaLocalRef<jstring> java_result = ConvertToJstring(text, charset);
@@ -101,19 +105,19 @@ bool ConvertToUTF16(const std::string& text, const char* charset,
   return true;
 }
 
-bool ConvertToUTF16WithSubstitutions(const std::string& text,
+bool ConvertToUTF16WithSubstitutions(base::StringPiece text,
                                      const char* charset,
                                      base::string16* output) {
   output->clear();
   ScopedJavaLocalRef<jstring> java_result =
-     ConvertToJstringWithSubstitutions(text, charset);
+      ConvertToJstringWithSubstitutions(text, charset);
   if (java_result.is_null())
     return false;
   *output = base::android::ConvertJavaStringToUTF16(java_result);
   return true;
 }
 
-bool ToUpper(const base::string16& str, base::string16* output) {
+bool ToUpper(base::StringPiece16 str, base::string16* output) {
   output->clear();
   JNIEnv* env = base::android::AttachCurrentThread();
   ScopedJavaLocalRef<jstring> java_new_str(

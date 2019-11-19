@@ -114,8 +114,7 @@ class UserImageRequest : public ImageDecoder::ImageRequest {
         image_data_(new base::RefCountedBytes(
             reinterpret_cast<const unsigned char*>(image_data.data()),
             image_data.size())),
-        background_task_runner_(background_task_runner),
-        weak_ptr_factory_(this) {}
+        background_task_runner_(background_task_runner) {}
   ~UserImageRequest() override {}
 
   // ImageDecoder::ImageRequest implementation.
@@ -140,7 +139,7 @@ class UserImageRequest : public ImageDecoder::ImageRequest {
   scoped_refptr<base::SequencedTaskRunner> background_task_runner_;
 
   // This should be the last member.
-  base::WeakPtrFactory<UserImageRequest> weak_ptr_factory_;
+  base::WeakPtrFactory<UserImageRequest> weak_ptr_factory_{this};
 };
 
 void UserImageRequest::OnImageDecoded(const SkBitmap& decoded_image) {

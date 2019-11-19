@@ -18,6 +18,11 @@ namespace {
 const CGFloat kAccountProfilePhotoDimension = 40.0f;
 }  // namespace
 
+@interface ResizedAvatarCache ()
+// Size of resized avatar.
+@property(nonatomic, assign) CGSize expectedSize;
+@end
+
 @implementation ResizedAvatarCache {
   // Retains resized images. Key is Chrome Identity.
   NSCache<ChromeIdentity*, UIImage*>* _resizedImages;
@@ -28,8 +33,14 @@ const CGFloat kAccountProfilePhotoDimension = 40.0f;
 }
 
 - (instancetype)init {
+  return [self initWithSize:CGSizeMake(kAccountProfilePhotoDimension,
+                                       kAccountProfilePhotoDimension)];
+}
+
+- (instancetype)initWithSize:(CGSize)size {
   self = [super init];
   if (self) {
+    _expectedSize = size;
     _resizedImages = [[NSCache alloc] init];
     _originalImages = [NSMapTable strongToWeakObjectsMapTable];
   }
@@ -47,8 +58,7 @@ const CGFloat kAccountProfilePhotoDimension = 40.0f;
     // No cached image, trigger a fetch, which will notify all observers.
     ios::GetChromeBrowserProvider()
         ->GetChromeIdentityService()
-        ->GetAvatarForIdentity(identity, ^(UIImage*){
-                               });
+        ->GetAvatarForIdentity(identity, nil);
   }
 
   // If the currently used image has already been resized, use it.
@@ -58,11 +68,9 @@ const CGFloat kAccountProfilePhotoDimension = 40.0f;
 
   [_originalImages setObject:image forKey:identity];
 
-  // Resize the profile image.
-  CGFloat dimension = kAccountProfilePhotoDimension;
-  if (image.size.width != dimension || image.size.height != dimension) {
-    image = ResizeImage(image, CGSizeMake(dimension, dimension),
-                        ProjectionMode::kAspectFit);
+  // Resize the profile image if it is not of the expected size.
+  if (!CGSizeEqualToSize(image.size, self.expectedSize)) {
+    image = ResizeImage(image, self.expectedSize, ProjectionMode::kAspectFit);
   }
   [_resizedImages setObject:image forKey:identity];
   return image;

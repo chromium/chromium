@@ -14,13 +14,12 @@ namespace autofill_assistant {
 // An action to stop Autofill Assistant.
 class StopAction : public Action {
  public:
-  explicit StopAction(const ActionProto& proto);
+  explicit StopAction(ActionDelegate* delegate, const ActionProto& proto);
   ~StopAction() override;
 
  private:
   // Overrides Action:
-  void InternalProcessAction(ActionDelegate* delegate,
-                             ProcessActionCallback callback) override;
+  void InternalProcessAction(ProcessActionCallback callback) override;
 
   DISALLOW_COPY_AND_ASSIGN(StopAction);
 };

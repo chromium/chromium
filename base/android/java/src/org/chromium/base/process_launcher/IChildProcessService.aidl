@@ -23,4 +23,7 @@ interface IChildProcessService {
 
   // Notifies about memory pressure. The argument is MemoryPressureLevel enum.
   oneway void onMemoryPressure(int pressure);
+
+  // Dumps the stack for the child process without crashing it.
+  oneway void dumpProcessStack();
 }

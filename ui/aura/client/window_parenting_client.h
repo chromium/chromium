@@ -33,7 +33,8 @@ class AURA_EXPORT WindowParentingClient {
 AURA_EXPORT void SetWindowParentingClient(
     Window* window,
     WindowParentingClient* window_tree_client);
-WindowParentingClient* GetWindowParentingClient(Window* window);
+
+AURA_EXPORT WindowParentingClient* GetWindowParentingClient(Window* window);
 
 // Adds |window| to an appropriate parent by consulting an implementation of
 // WindowParentingClient attached at the root Window containing |context|. The

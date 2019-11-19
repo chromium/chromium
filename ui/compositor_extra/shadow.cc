@@ -19,15 +19,15 @@ constexpr int kShadowAnimationDurationMs = 100;
 
 }  // namespace
 
-Shadow::Shadow() {}
+Shadow::Shadow() : shadow_layer_owner_(this) {}
 
-Shadow::~Shadow() {}
+Shadow::~Shadow() = default;
 
 void Shadow::Init(int elevation) {
   DCHECK_GE(elevation, 0);
   desired_elevation_ = elevation;
-  layer_.reset(new ui::Layer(ui::LAYER_NOT_DRAWN));
-  layer_->set_name("Shadow Parent Container");
+  SetLayer(std::make_unique<ui::Layer>(ui::LAYER_NOT_DRAWN));
+  layer()->set_name("Shadow Parent Container");
   RecreateShadowLayer();
 }
 
@@ -52,26 +52,26 @@ void Shadow::SetElevation(int elevation) {
   StopObservingImplicitAnimations();
 
   // The old shadow layer is the new fading out layer.
-  DCHECK(shadow_layer_);
-  fading_layer_ = std::move(shadow_layer_);
+  DCHECK(shadow_layer());
+  fading_layer_owner_.Reset(shadow_layer_owner_.ReleaseLayer());
   RecreateShadowLayer();
-  shadow_layer_->SetOpacity(0.f);
+  shadow_layer()->SetOpacity(0.f);
 
   {
     // Observe the fade out animation so we can clean up the layer when done.
-    ui::ScopedLayerAnimationSettings settings(fading_layer_->GetAnimator());
+    ui::ScopedLayerAnimationSettings settings(fading_layer()->GetAnimator());
     settings.AddObserver(this);
     settings.SetTransitionDuration(
         base::TimeDelta::FromMilliseconds(kShadowAnimationDurationMs));
-    fading_layer_->SetOpacity(0.f);
+    fading_layer()->SetOpacity(0.f);
   }
 
   {
     // We don't care to observe this one.
-    ui::ScopedLayerAnimationSettings settings(shadow_layer_->GetAnimator());
+    ui::ScopedLayerAnimationSettings settings(shadow_layer()->GetAnimator());
     settings.SetTransitionDuration(
         base::TimeDelta::FromMilliseconds(kShadowAnimationDurationMs));
-    shadow_layer_->SetOpacity(1.f);
+    shadow_layer()->SetOpacity(1.f);
   }
 }
 
@@ -85,18 +85,39 @@ void Shadow::SetRoundedCornerRadius(int rounded_corner_radius) {
 }
 
 void Shadow::OnImplicitAnimationsCompleted() {
-  fading_layer_.reset();
-  // The size needed for layer() may be smaller now that |fading_layer_| is
+  std::unique_ptr<ui::Layer> to_be_deleted = fading_layer_owner_.ReleaseLayer();
+  // The size needed for layer() may be smaller now that |fading_layer()| is
   // removed.
   UpdateLayerBounds();
 }
 
+// -----------------------------------------------------------------------------
+// Shadow::ShadowLayerOwner:
+
+Shadow::ShadowLayerOwner::ShadowLayerOwner(Shadow* owner,
+                                           std::unique_ptr<Layer> layer)
+    : LayerOwner(std::move(layer)), owner_shadow_(owner) {}
+
+Shadow::ShadowLayerOwner::~ShadowLayerOwner() = default;
+
+std::unique_ptr<Layer> Shadow::ShadowLayerOwner::RecreateLayer() {
+  auto result = ui::LayerOwner::RecreateLayer();
+  // Now update the newly recreated shadow layer with the correct nine patch
+  // image details.
+  owner_shadow_->details_ = nullptr;
+  owner_shadow_->UpdateLayerBounds();
+  return result;
+}
+
+// -----------------------------------------------------------------------------
+// Shadow:
+
 void Shadow::RecreateShadowLayer() {
-  shadow_layer_.reset(new ui::Layer(ui::LAYER_NINE_PATCH));
-  shadow_layer_->set_name("Shadow");
-  shadow_layer_->SetVisible(true);
-  shadow_layer_->SetFillsBoundsOpaquely(false);
-  layer()->Add(shadow_layer_.get());
+  shadow_layer_owner_.Reset(std::make_unique<ui::Layer>(ui::LAYER_NINE_PATCH));
+  shadow_layer()->set_name("Shadow");
+  shadow_layer()->SetVisible(true);
+  shadow_layer()->SetFillsBoundsOpaquely(false);
+  layer()->Add(shadow_layer());
 
   UpdateLayerBounds();
 }
@@ -117,17 +138,17 @@ void Shadow::UpdateLayerBounds() {
       gfx::ShadowDetails::Get(size_adjusted_elevation, rounded_corner_radius_);
   gfx::Insets blur_region = gfx::ShadowValue::GetBlurRegion(details.values) +
                             gfx::Insets(rounded_corner_radius_);
-  // Update |shadow_layer_| if details changed and it has been updated in
+  // Update |shadow_layer()| if details changed and it has been updated in
   // the past (|details_| is set), or elevation is non-zero.
   if ((&details != details_) && (details_ || size_adjusted_elevation)) {
-    shadow_layer_->UpdateNinePatchLayerImage(details.ninebox_image);
+    shadow_layer()->UpdateNinePatchLayerImage(details.ninebox_image);
     // The ninebox grid is defined in terms of the image size. The shadow blurs
     // in both inward and outward directions from the edge of the contents, so
     // the aperture goes further inside the image than the shadow margins (which
     // represent exterior blur).
     gfx::Rect aperture(details.ninebox_image.size());
     aperture.Inset(blur_region);
-    shadow_layer_->UpdateNinePatchLayerAperture(aperture);
+    shadow_layer()->UpdateNinePatchLayerAperture(aperture);
     details_ = &details;
   }
 
@@ -140,7 +161,7 @@ void Shadow::UpdateLayerBounds() {
 
   // When there's an old shadow fading out, the bounds of layer() have to be
   // big enough to encompass both shadows.
-  if (fading_layer_) {
+  if (fading_layer()) {
     const gfx::Rect old_layer_bounds = layer()->bounds();
     gfx::Rect combined_layer_bounds = old_layer_bounds;
     combined_layer_bounds.Union(new_layer_bounds);
@@ -149,10 +170,10 @@ void Shadow::UpdateLayerBounds() {
     // If this is reached via SetContentBounds, we might hypothetically need
     // to change the size of the fading layer, but the fade is so fast it's
     // not really an issue.
-    gfx::Rect fading_layer_bounds(fading_layer_->bounds());
+    gfx::Rect fading_layer_bounds(fading_layer()->bounds());
     fading_layer_bounds.Offset(old_layer_bounds.origin() -
                                combined_layer_bounds.origin());
-    fading_layer_->SetBounds(fading_layer_bounds);
+    fading_layer()->SetBounds(fading_layer_bounds);
 
     shadow_layer_bounds.Offset(new_layer_bounds.origin() -
                                combined_layer_bounds.origin());
@@ -160,16 +181,16 @@ void Shadow::UpdateLayerBounds() {
     layer()->SetBounds(new_layer_bounds);
   }
 
-  shadow_layer_->SetBounds(shadow_layer_bounds);
+  shadow_layer()->SetBounds(shadow_layer_bounds);
 
   // Occlude the region inside the bounding box. Occlusion uses shadow layer
   // space. See nine_patch_layer.h for more context on what's going on here.
   gfx::Rect occlusion_bounds(shadow_layer_bounds.size());
   occlusion_bounds.Inset(-margins + gfx::Insets(rounded_corner_radius_));
-  shadow_layer_->UpdateNinePatchOcclusion(occlusion_bounds);
+  shadow_layer()->UpdateNinePatchOcclusion(occlusion_bounds);
 
   // The border is the same inset as the aperture.
-  shadow_layer_->UpdateNinePatchLayerBorder(
+  shadow_layer()->UpdateNinePatchLayerBorder(
       gfx::Rect(blur_region.left(), blur_region.top(), blur_region.width(),
                 blur_region.height()));
 }

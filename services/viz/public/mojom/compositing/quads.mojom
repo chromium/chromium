@@ -1,0 +1,147 @@
+// Copyright 2014 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module viz.mojom;
+
+import "mojo/public/mojom/base/unguessable_token.mojom";
+import "services/viz/public/mojom/compositing/shared_quad_state.mojom";
+import "services/viz/public/mojom/compositing/surface_range.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
+import "ui/gfx/mojom/color_space.mojom";
+import "ui/gfx/mojom/transform.mojom";
+
+enum ProtectedVideoState {
+  kClear,
+  kSoftwareProtected,
+  kHardwareProtected,
+};
+
+struct DebugBorderQuadState {
+  // Debug border color.
+  uint32 color;
+
+  // Debug border width.
+  int32 width;
+};
+
+struct RenderPassQuadState {
+  uint64 render_pass_id;
+
+  // If nonzero, resource id of mask to use when drawing this pass.
+  uint32 mask_resource_id;
+  // Render surface's normalized mask texture rect.
+  gfx.mojom.RectF mask_uv_rect;
+  gfx.mojom.Size mask_texture_size;
+
+  // The scale from layer space of the root layer of the render pass to
+  // the render pass physical pixels. This scale is applied to the filter
+  // parameters for pixel-moving filters. This scale should include
+  // content-to-target-space scale, and device pixel ratio.
+  gfx.mojom.Vector2dF filters_scale;
+
+  // The offset from the bounds of the root layer to the origin of the
+  // original primitive. This used to correctly position crop rects, lights,
+  // etc.
+  gfx.mojom.PointF filters_origin;
+  // Render surface's non-normalized texture rect.
+  gfx.mojom.RectF tex_coord_rect;
+
+  bool force_anti_aliasing_off;
+  float backdrop_filter_quality;
+};
+
+struct SolidColorQuadState {
+  uint32 color;
+  bool force_anti_aliasing_off;
+};
+
+struct StreamVideoQuadState {
+  uint32 resource_id;
+  gfx.mojom.Size resource_size_in_pixels;
+  gfx.mojom.PointF uv_top_left;
+  gfx.mojom.PointF uv_bottom_right;
+};
+
+struct SurfaceQuadState {
+  SurfaceRange surface_range;
+  uint32 default_background_color;
+  bool stretch_content_to_fill_bounds;
+  bool is_reflection;
+  bool allow_merge;
+};
+
+struct TextureQuadState {
+  uint32 resource_id;
+  gfx.mojom.Size resource_size_in_pixels;
+  bool premultiplied_alpha;
+  gfx.mojom.PointF uv_top_left;
+  gfx.mojom.PointF uv_bottom_right;
+  uint32 background_color;
+  array<float, 4> vertex_opacity;
+  bool y_flipped;
+  bool nearest_neighbor;
+  bool secure_output_only;
+  ProtectedVideoState protected_video_type;
+};
+
+struct TileQuadState {
+  gfx.mojom.RectF tex_coord_rect;
+  gfx.mojom.Size texture_size;
+  bool is_premultiplied;
+  uint32 resource_id;
+  bool nearest_neighbor;
+  bool force_anti_aliasing_off;
+};
+
+struct YUVVideoQuadState {
+  gfx.mojom.RectF ya_tex_coord_rect;
+  gfx.mojom.RectF uv_tex_coord_rect;
+  gfx.mojom.Size ya_tex_size;
+  gfx.mojom.Size uv_tex_size;
+  uint32 y_plane_resource_id;
+  uint32 u_plane_resource_id;
+  uint32 v_plane_resource_id;
+  uint32 a_plane_resource_id;
+  float resource_offset;
+  float resource_multiplier;
+  uint32 bits_per_channel;
+  gfx.mojom.ColorSpace video_color_space;
+  ProtectedVideoState protected_video_type;
+};
+
+struct VideoHoleQuadState {
+  mojo_base.mojom.UnguessableToken overlay_plane_id;
+};
+
+union DrawQuadState {
+  DebugBorderQuadState debug_border_quad_state;
+  RenderPassQuadState render_pass_quad_state;
+  SolidColorQuadState solid_color_quad_state;
+  StreamVideoQuadState stream_video_quad_state;
+  SurfaceQuadState surface_quad_state;
+  TextureQuadState texture_quad_state;
+  TileQuadState tile_quad_state;
+  YUVVideoQuadState yuv_video_quad_state;
+  VideoHoleQuadState video_hole_quad_state;
+};
+
+struct DrawQuad {
+  // This rect, after applying the quad_transform(), gives the geometry that
+  // this quad should draw to. This rect lives in content space.
+  gfx.mojom.Rect rect;
+
+  // Allows changing the rect that gets drawn to make it smaller. This value
+  // should be clipped to |rect|. This rect lives in content space.
+  gfx.mojom.Rect visible_rect;
+
+  // Allows changing the rect that gets drawn to make it smaller. This value
+  // should be clipped to |rect|. This rect lives in content space.
+  bool needs_blending;
+
+  // Optionally holds a SharedQuadState (transforms etc) shared by multiple
+  // quads.
+  SharedQuadState? sqs;
+
+  DrawQuadState draw_quad_state;
+};

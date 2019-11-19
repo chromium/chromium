@@ -9,7 +9,8 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/shared_memory.h"
+#include "base/memory/shared_memory_mapping.h"
+#include "base/memory/unsafe_shared_memory_region.h"
 #include "ppapi/c/pp_instance.h"
 #include "ppapi/c/pp_stdint.h"
 #include "ppapi/shared_impl/var.h"
@@ -22,25 +23,24 @@ class PluginArrayBufferVar : public ArrayBufferVar {
  public:
   explicit PluginArrayBufferVar(uint32_t size_in_bytes);
   PluginArrayBufferVar(uint32_t size_in_bytes,
-                       base::SharedMemoryHandle plugin_handle);
+                       base::UnsafeSharedMemoryRegion plugin_handle);
   ~PluginArrayBufferVar() override;
 
   // ArrayBufferVar implementation.
   void* Map() override;
   void Unmap() override;
   uint32_t ByteLength() override;
-  bool CopyToNewShmem(
-      PP_Instance instance,
-      int* host_handle,
-      base::SharedMemoryHandle* plugin_handle) override;
+  bool CopyToNewShmem(PP_Instance instance,
+                      int* host_handle,
+                      base::UnsafeSharedMemoryRegion* plugin_handle) override;
 
  private:
   // Non-shared memory
   std::vector<uint8_t> buffer_;
 
   // Shared memory
-  base::SharedMemoryHandle plugin_handle_;
-  std::unique_ptr<base::SharedMemory> shmem_;
+  base::UnsafeSharedMemoryRegion plugin_handle_;
+  base::WritableSharedMemoryMapping shmem_;
   uint32_t size_in_bytes_;
 
   DISALLOW_COPY_AND_ASSIGN(PluginArrayBufferVar);

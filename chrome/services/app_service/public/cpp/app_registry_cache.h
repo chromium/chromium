@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/sequence_checker.h"
 #include "chrome/services/app_service/public/cpp/app_update.h"
@@ -37,20 +38,27 @@ class AppRegistryCache {
     // returns.
     virtual void OnAppUpdate(const AppUpdate& update) = 0;
 
+    // Called when the AppRegistryCache object (the thing that this observer
+    // observes) will be destroyed. In response, the observer, |this|, should
+    // call "cache->RemoveObserver(this)", whether directly or indirectly (e.g.
+    // via ScopedObserver::Remove or via Observe(nullptr)).
+    virtual void OnAppRegistryCacheWillBeDestroyed(AppRegistryCache* cache) = 0;
+
    protected:
-    // Use this constructor when the object is tied to a single
-    // AppRegistryCache for its entire lifetime.
+    // Use this constructor when the observer |this| is tied to a single
+    // AppRegistryCache for its entire lifetime, or until the observee (the
+    // AppRegistryCache) is destroyed, whichever comes first.
     explicit Observer(AppRegistryCache* cache);
 
-    // Use this constructor when the object wants to observe a AppRegistryCache
-    // for part of its lifetime. It can then call Observe() to start and stop
-    // observing.
+    // Use this constructor when the observer |this| wants to observe a
+    // AppRegistryCache for part of its lifetime. It can then call Observe() to
+    // start and stop observing.
     Observer();
 
     ~Observer() override;
 
-    // Start observing a different AppRegistryCache; used with the default
-    // constructor.
+    // Start observing a different AppRegistryCache. |cache| may be nullptr,
+    // meaning to stop observing.
     void Observe(AppRegistryCache* cache);
 
    private:

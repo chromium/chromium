@@ -21,12 +21,11 @@
 #include "components/offline_pages/core/background/offliner_client.h"
 #include "components/offline_pages/core/background/offliner_policy.h"
 #include "components/offline_pages/core/background/save_page_request.h"
-#include "components/offline_pages/core/client_policy_controller.h"
 #include "components/offline_pages/core/offline_clock.h"
+#include "components/offline_pages/core/offline_page_client_policy.h"
 #include "components/offline_pages/core/offline_page_feature.h"
 #include "components/offline_pages/core/offline_page_item.h"
 #include "components/offline_pages/core/offline_page_model.h"
-#include "components/offline_pages/core/offline_pages_ukm_reporter.h"
 #include "components/offline_pages/core/offline_store_utils.h"
 #include "services/network/public/cpp/network_quality_tracker.h"
 
@@ -229,6 +228,9 @@ base::Optional<RequestNotifier::BackgroundSavePageResult> SingleAttemptResult(
       // Other failure status values.
     case Offliner::RequestStatus::LOADING_FAILED_NO_RETRY:
     case Offliner::RequestStatus::LOADING_FAILED_DOWNLOAD:
+    case Offliner::RequestStatus::LOADED_PAGE_HAS_CERTIFICATE_ERROR:
+    case Offliner::RequestStatus::LOADED_PAGE_IS_BLOCKED:
+    case Offliner::RequestStatus::LOADED_PAGE_IS_CHROME_INTERNAL:
       return RequestNotifier::BackgroundSavePageResult::LOADING_FAILURE;
     case Offliner::RequestStatus::DOWNLOAD_THROTTLED:
       return RequestNotifier::BackgroundSavePageResult::DOWNLOAD_THROTTLED;
@@ -269,7 +271,6 @@ RequestCoordinator::RequestCoordinator(
     std::unique_ptr<RequestQueue> queue,
     std::unique_ptr<Scheduler> scheduler,
     network::NetworkQualityTracker* network_quality_tracker,
-    std::unique_ptr<OfflinePagesUkmReporter> ukm_reporter,
     std::unique_ptr<ActiveTabInfo> active_tab_info)
     : is_low_end_device_(base::SysInfo::IsLowEndDevice()),
       state_(RequestCoordinatorState::IDLE),
@@ -278,16 +279,13 @@ RequestCoordinator::RequestCoordinator(
       policy_(std::move(policy)),
       queue_(std::move(queue)),
       scheduler_(std::move(scheduler)),
-      policy_controller_(new ClientPolicyController()),
       network_quality_tracker_(network_quality_tracker),
-      ukm_reporter_(std::move(ukm_reporter)),
       network_quality_at_request_start_(net::EFFECTIVE_CONNECTION_TYPE_UNKNOWN),
       last_offlining_status_(Offliner::RequestStatus::UNKNOWN),
       scheduler_callback_(base::DoNothing()),
       internal_start_processing_callback_(base::DoNothing()),
       pending_state_updater_(this),
-      active_tab_info_(std::move(active_tab_info)),
-      weak_ptr_factory_(this) {
+      active_tab_info_(std::move(active_tab_info)) {
   DCHECK(policy_ != nullptr);
   DCHECK(network_quality_tracker_);
   offliner_client_ = std::make_unique<OfflinerClient>(
@@ -349,18 +347,9 @@ int64_t RequestCoordinator::SavePageLater(
                      save_page_later_params.availability));
 
   // Record the network quality when this request is made.
-
   RecordSavePageLaterNetworkQuality(
       save_page_later_params.client_id,
       network_quality_tracker_->GetEffectiveConnectionType());
-
-  // Record UKM for this page offlining attempt.
-  if (ukm_reporter_) {
-    ukm_reporter_->ReportUrlOfflineRequest(
-        save_page_later_params.url,
-        save_page_later_params.availability ==
-            RequestAvailability::DISABLED_FOR_OFFLINER);
-  }
 
   return id;
 }
@@ -556,22 +545,26 @@ void RequestCoordinator::AddRequestResultCallback(
     RequestAvailability availability,
     AddRequestResult result,
     const SavePageRequest& request) {
-  NotifyAdded(request);
-  // Inform the scheduler that we have an outstanding task.
-  scheduler_->Schedule(GetTriggerConditions(kUserRequest));
+  if (result == AddRequestResult::SUCCESS) {
+    NotifyAdded(request);
+    // Inform the scheduler that we have an outstanding task.
+    scheduler_->Schedule(GetTriggerConditions(kUserRequest));
 
-  if (availability == RequestAvailability::DISABLED_FOR_OFFLINER) {
-    // Mark attempt started (presuming it is disabled for background offliner
-    // because foreground offlining is happening).
-    queue_->MarkAttemptStarted(
-        request.request_id(),
-        base::BindOnce(&RequestCoordinator::MarkAttemptDone,
-                       weak_ptr_factory_.GetWeakPtr(), request.request_id(),
-                       request.client_id().name_space));
-  } else if (request.user_requested()) {
-    StartImmediatelyIfConnected();
+    if (availability == RequestAvailability::DISABLED_FOR_OFFLINER) {
+      // Mark attempt started (presuming it is disabled for background offliner
+      // because foreground offlining is happening).
+      queue_->MarkAttemptStarted(
+          request.request_id(),
+          base::BindOnce(&RequestCoordinator::MarkAttemptDone,
+                         weak_ptr_factory_.GetWeakPtr(), request.request_id(),
+                         request.client_id().name_space));
+    } else if (request.user_requested()) {
+      StartImmediatelyIfConnected();
+    }
+  } else {
+    event_logger_.RecordAddRequestFailed(request.client_id().name_space,
+                                         result);
   }
-
   std::move(save_page_later_callback).Run(result);
 }
 
@@ -700,8 +693,7 @@ RequestCoordinator::TryImmediateStart(
     return OfflinerImmediateStartStatus::BUSY;
 
   // Make sure we are not on svelte device to start immediately.
-  if (is_low_end_device_ &&
-      !offline_pages::IsOfflinePagesSvelteConcurrentLoadingEnabled()) {
+  if (is_low_end_device_) {
     DVLOG(2) << "low end device, returning";
     // Let the scheduler know we are done processing and failed due to svelte.
     callback.Run(false);
@@ -812,7 +804,7 @@ void RequestCoordinator::TryNextRequest(bool is_start_of_processing) {
   // Ask request queue to make a new PickRequestTask object, then put it on
   // the task queue.
   queue_->PickNextRequest(
-      policy_.get(), policy_controller_.get(),
+      policy_.get(),
       base::BindOnce(&RequestCoordinator::RequestPicked,
                      weak_ptr_factory_.GetWeakPtr()),
       base::BindOnce(&RequestCoordinator::RequestNotPicked,
@@ -932,7 +924,7 @@ void RequestCoordinator::SendRequestToOffliner(const SavePageRequest& request) {
     RecordStartTimeUMA(request);
   }
   const OfflinePageClientPolicy& policy =
-      policy_controller_->GetPolicy(request.client_id().name_space);
+      GetPolicy(request.client_id().name_space);
   if (policy.defer_background_fetch_while_page_is_active &&
       active_tab_info_->DoesActiveTabMatch(request.url())) {
     queue_->MarkAttemptDeferred(
@@ -1030,6 +1022,7 @@ void RequestCoordinator::UpdateRequestForAttempt(
     RecordNetworkQualityAtRequestStartForFailedRequest(
         request.client_id(), network_quality_at_request_start_);
   }
+
   if (IsCanceledOrInternalFailure(status)) {
     UpdateRequestForAbortedAttempt(request);
   } else if (attempt_result) {
@@ -1084,6 +1077,9 @@ bool RequestCoordinator::ShouldTryNextRequest(
     case Offliner::RequestStatus::LOADING_FAILED_NO_RETRY:
     case Offliner::RequestStatus::LOADING_FAILED_DOWNLOAD:
     case Offliner::RequestStatus::DOWNLOAD_THROTTLED:
+    case Offliner::RequestStatus::LOADED_PAGE_HAS_CERTIFICATE_ERROR:
+    case Offliner::RequestStatus::LOADED_PAGE_IS_BLOCKED:
+    case Offliner::RequestStatus::LOADED_PAGE_IS_CHROME_INTERNAL:
       return true;
     case Offliner::RequestStatus::FOREGROUND_CANCELED:
     case Offliner::RequestStatus::LOADING_CANCELED:
@@ -1186,10 +1182,6 @@ void RequestCoordinator::NotifyNetworkProgress(const SavePageRequest& request,
                                                int64_t received_bytes) {
   for (Observer& observer : observers_)
     observer.OnNetworkProgress(request, received_bytes);
-}
-
-ClientPolicyController* RequestCoordinator::GetPolicyController() {
-  return policy_controller_.get();
 }
 
 void RequestCoordinator::RecordOfflinerResult(const SavePageRequest& request,

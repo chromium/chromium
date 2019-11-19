@@ -30,7 +30,7 @@
 #include "components/history/core/browser/url_database.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_result.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -249,7 +249,7 @@ class AutocompleteActionPredictorTest : public testing::Test {
     for (size_t i = 0; i < base::size(test_url_db); ++i) {
       DBCacheKey key = {test_url_db[i].user_text, test_url_db[i].url};
 
-      bool deleted = !base::ContainsValue(expected, i);
+      bool deleted = !base::Contains(expected, i);
       EXPECT_EQ(deleted, db_cache()->find(key) == db_cache()->end());
       EXPECT_EQ(deleted, db_id_cache()->find(key) == db_id_cache()->end());
     }
@@ -306,7 +306,7 @@ class AutocompleteActionPredictorTest : public testing::Test {
   }
 
  private:
-  content::TestBrowserThreadBundle test_browser_thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<AutocompleteActionPredictor> predictor_;
 };
@@ -406,7 +406,7 @@ TEST_F(AutocompleteActionPredictorTest, DeleteRowsFromCaches) {
     bool deleted = (i < 2);
     EXPECT_EQ(deleted, db_cache()->find(key) == db_cache()->end());
     EXPECT_EQ(deleted, db_id_cache()->find(key) == db_id_cache()->end());
-    EXPECT_EQ(deleted, base::ContainsValue(id_list, all_ids[i]));
+    EXPECT_EQ(deleted, base::Contains(id_list, all_ids[i]));
   }
 }
 
@@ -436,8 +436,8 @@ TEST_F(AutocompleteActionPredictorTest, DeleteOldIdsFromCaches) {
   EXPECT_EQ(all_ids.size() - expected.size(), db_id_cache()->size());
 
   for (auto it = all_ids.begin(); it != all_ids.end(); ++it) {
-    bool in_expected = base::ContainsValue(expected, *it);
-    bool in_list = base::ContainsValue(id_list, *it);
+    bool in_expected = base::Contains(expected, *it);
+    bool in_list = base::Contains(id_list, *it);
     EXPECT_EQ(in_expected, in_list);
   }
 }
@@ -458,8 +458,8 @@ TEST_F(AutocompleteActionPredictorTest,
 
     DBCacheKey deleted_key = {test_url_confidence_db[i].user_text,
                               test_url_confidence_db[i].url};
-    EXPECT_FALSE(base::ContainsKey(*db_cache(), deleted_key));
-    EXPECT_FALSE(base::ContainsKey(*db_id_cache(), deleted_key));
+    EXPECT_FALSE(base::Contains(*db_cache(), deleted_key));
+    EXPECT_FALSE(base::Contains(*db_id_cache(), deleted_key));
   }
 }
 
@@ -484,8 +484,8 @@ TEST_F(AutocompleteActionPredictorTest,
   for (size_t i = 0; i < count_to_remove; ++i) {
     DBCacheKey deleted_key = {test_url_confidence_db[i].user_text,
                               test_url_confidence_db[i].url};
-    EXPECT_FALSE(base::ContainsKey(*db_cache(), deleted_key));
-    EXPECT_FALSE(base::ContainsKey(*db_id_cache(), deleted_key));
+    EXPECT_FALSE(base::Contains(*db_cache(), deleted_key));
+    EXPECT_FALSE(base::Contains(*db_id_cache(), deleted_key));
   }
 }
 
@@ -541,7 +541,7 @@ TEST_F(AutocompleteActionPredictorTest,
   auto test = [this](const base::string16& user_text,
                      bool should_be_registered) {
     predictor()->RegisterTransitionalMatches(user_text, AutocompleteResult());
-    bool registered = base::ContainsValue(*transitional_matches(), user_text);
+    bool registered = base::Contains(*transitional_matches(), user_text);
     EXPECT_EQ(registered, should_be_registered);
   };
 

@@ -8,29 +8,33 @@
 #include <map>
 #include <memory>
 
-#include "ash/public/interfaces/session_controller.mojom.h"
 #include "base/macros.h"
+#include "base/observer_list.h"
 #include "components/account_id/account_id.h"
-#include "mojo/public/cpp/bindings/interface_ptr_set.h"
 
 namespace ash {
+
+class SessionActivationObserver;
 
 class SessionActivationObserverHolder {
  public:
   SessionActivationObserverHolder();
   ~SessionActivationObserverHolder();
 
-  void AddSessionActivationObserverForAccountId(
-      const AccountId& account_id,
-      mojom::SessionActivationObserverPtr observer);
+  void AddForAccountId(const AccountId& account_id,
+                       SessionActivationObserver* observer);
+  void RemoveForAccountId(const AccountId& account_id,
+                          SessionActivationObserver* observer);
 
   void NotifyActiveSessionChanged(const AccountId& from, const AccountId& to);
 
   void NotifyLockStateChanged(bool locked);
 
  private:
-  using ObserverSet = mojo::InterfacePtrSet<mojom::SessionActivationObserver>;
-  std::map<AccountId, std::unique_ptr<ObserverSet>> observer_map_;
+  void PruneObserverMap();
+
+  using Observers = base::ObserverList<SessionActivationObserver>;
+  std::map<AccountId, std::unique_ptr<Observers>> observer_map_;
 
   DISALLOW_COPY_AND_ASSIGN(SessionActivationObserverHolder);
 };

@@ -31,13 +31,13 @@ void PassphraseTextfield::OnFocus() {
 
 void PassphraseTextfield::OnBlur() {
   // If password is not changed, then show the fake password when blurred.
-  if (show_fake_ && text().empty())
+  if (show_fake_ && GetText().empty())
     SetFakePassphrase();
   Textfield::OnBlur();
 }
 
 std::string PassphraseTextfield::GetPassphrase() {
-  return changed_ ? base::UTF16ToUTF8(text()) : std::string();
+  return changed_ ? base::UTF16ToUTF8(GetText()) : std::string();
 }
 
 void PassphraseTextfield::SetFakePassphrase() {

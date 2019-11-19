@@ -15,7 +15,10 @@ namespace autofill {
 // Stores information about a field in a form.
 struct FormFieldDataPredictions {
   FormFieldDataPredictions();
-  FormFieldDataPredictions(const FormFieldDataPredictions& other);
+  FormFieldDataPredictions(const FormFieldDataPredictions&);
+  FormFieldDataPredictions& operator=(const FormFieldDataPredictions&);
+  FormFieldDataPredictions(FormFieldDataPredictions&&);
+  FormFieldDataPredictions& operator=(FormFieldDataPredictions&&);
   ~FormFieldDataPredictions();
 
   FormFieldData field;

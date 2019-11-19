@@ -5,18 +5,17 @@
 [JavaPackage="org.chromium.mojo.native_types"]
 module mojo.native;
 
+enum SerializedHandleType {
+  MOJO_HANDLE,
+  PLATFORM_FILE,
+  WIN_HANDLE,
+  MACH_PORT,
+  FUCHSIA_HANDLE,
+};
+
 struct SerializedHandle {
   handle the_handle;
-
-  enum Type {
-    MOJO_HANDLE,
-    PLATFORM_FILE,
-    WIN_HANDLE,
-    MACH_PORT,
-    FUCHSIA_HANDLE,
-  };
-
-  Type type;
+  SerializedHandleType type;
 };
 
 [CustomSerializer]

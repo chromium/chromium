@@ -1,0 +1,4 @@
+Verifies that snippets still map when local overrides is on.
+
+snippet:///my_snippet_name <=> snippet:///my_snippet_name
+

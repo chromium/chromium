@@ -26,7 +26,7 @@ class ASH_EXPORT DragWindowResizer : public WindowResizer {
   // Creates DragWindowResizer that adds the ability of dragging windows across
   // displays to |next_window_resizer|.
   DragWindowResizer(std::unique_ptr<WindowResizer> next_window_resizer,
-                    wm::WindowState* window_state);
+                    WindowState* window_state);
   ~DragWindowResizer() override;
 
   // WindowResizer:
@@ -45,8 +45,7 @@ class ASH_EXPORT DragWindowResizer : public WindowResizer {
                            DragWindowControllerAcrossThreeDisplays);
 
   // Updates the bounds of the drag window for window dragging.
-  void UpdateDragWindow(const gfx::Rect& bounds_in_parent,
-                        const gfx::Point& drag_location_in_screen);
+  void UpdateDragWindow();
 
   // Returns true if we should allow the mouse pointer to warp.
   bool ShouldAllowMouseWarp();
@@ -65,7 +64,7 @@ class ASH_EXPORT DragWindowResizer : public WindowResizer {
   // Current instance for use by the DragWindowResizerTest.
   static DragWindowResizer* instance_;
 
-  base::WeakPtrFactory<DragWindowResizer> weak_ptr_factory_;
+  base::WeakPtrFactory<DragWindowResizer> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(DragWindowResizer);
 };

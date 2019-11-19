@@ -287,9 +287,8 @@ bool DoResolveRelativePath(const char* base_url,
   // Canonical URLs always have a path, so we can use that offset. Reserve
   // enough room for the base URL, the new path, and some extra bytes for
   // possible escaped characters.
-  output->ReserveSizeIfNeeded(
-      base_parsed.path.begin +
-      std::max(path.end(), std::max(query.end(), ref.end())));
+  output->ReserveSizeIfNeeded(base_parsed.path.begin +
+                              std::max({path.end(), query.end(), ref.end()}));
   output->Append(base_url, base_parsed.path.begin);
 
   if (path.len > 0) {

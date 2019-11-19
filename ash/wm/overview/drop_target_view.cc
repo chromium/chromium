@@ -4,11 +4,14 @@
 
 #include "ash/wm/overview/drop_target_view.h"
 
+#include <algorithm>
+
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/wm/overview/overview_constants.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/image_view.h"
+#include "ui/views/layout/layout_provider.h"
 
 namespace ash {
 namespace {
@@ -36,8 +39,8 @@ class DropTargetView::PlusIconView : public views::ImageView {
     SetPaintToLayer();
     layer()->SetFillsBoundsOpaquely(false);
     set_can_process_events_within_subtree(false);
-    SetVerticalAlignment(views::ImageView::CENTER);
-    SetHorizontalAlignment(views::ImageView::CENTER);
+    SetVerticalAlignment(views::ImageView::Alignment::kCenter);
+    SetHorizontalAlignment(views::ImageView::Alignment::kCenter);
   }
   ~PlusIconView() override = default;
 
@@ -50,6 +53,11 @@ DropTargetView::DropTargetView(bool has_plus_icon) {
   background_view_->SetPaintToLayer(ui::LAYER_SOLID_COLOR);
   background_view_->layer()->SetColor(kDropTargetBackgroundColor);
   background_view_->layer()->SetOpacity(kDropTargetBackgroundOpacity);
+  const int corner_radius =
+      views::LayoutProvider::Get()->GetCornerRadiusMetric(views::EMPHASIS_LOW);
+  background_view_->layer()->SetRoundedCornerRadius(
+      gfx::RoundedCornersF(corner_radius));
+  background_view_->layer()->SetIsFastRoundedCorner(true);
   AddChildView(background_view_);
 
   if (has_plus_icon) {
@@ -57,13 +65,12 @@ DropTargetView::DropTargetView(bool has_plus_icon) {
     AddChildView(plus_icon_);
   }
 
-  SetBorder(views::CreateRoundedRectBorder(kDropTargetBorderThickness,
-                                           kOverviewWindowRoundingDp,
-                                           kDropTargetBorderColor));
+  SetBorder(views::CreateRoundedRectBorder(
+      kDropTargetBorderThickness, corner_radius, kDropTargetBorderColor));
 }
 
 void DropTargetView::UpdateBackgroundVisibility(bool visible) {
-  if (background_view_->visible() == visible)
+  if (background_view_->GetVisible() == visible)
     return;
   background_view_->SetVisible(visible);
 }

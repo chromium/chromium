@@ -10,10 +10,10 @@ PASS inner.Window.isInner is true
 PASS inner.Window.constructor.isInner is true
 PASS inner.Window.constructor.prototype.isInner is true
 PASS inner.Window.__proto__.isInner is true
-FAIL inner.close.isInner should be true. Was false.
-FAIL inner.close.constructor.isInner should be true. Was false.
-FAIL inner.close.constructor.prototype.isInner should be true. Was false.
-FAIL inner.close.__proto__.isInner should be true. Was false.
+PASS inner.close.isInner is true
+PASS inner.close.constructor.isInner is true
+PASS inner.close.constructor.prototype.isInner is true
+PASS inner.close.__proto__.isInner is true
 PASS inner.console.isInner is true
 PASS inner.console.constructor.isInner is true
 PASS inner.console.constructor.prototype.isInner is true
@@ -34,10 +34,10 @@ PASS inner.navigator.isInner is true
 PASS inner.navigator.constructor.isInner is true
 PASS inner.navigator.constructor.prototype.isInner is true
 PASS inner.navigator.__proto__.isInner is true
-FAIL inner.postMessage.isInner should be true. Was false.
-FAIL inner.postMessage.constructor.isInner should be true. Was false.
-FAIL inner.postMessage.constructor.prototype.isInner should be true. Was false.
-FAIL inner.postMessage.__proto__.isInner should be true. Was false.
+PASS inner.postMessage.isInner is true
+PASS inner.postMessage.constructor.isInner is true
+PASS inner.postMessage.constructor.prototype.isInner is true
+PASS inner.postMessage.__proto__.isInner is true
 PASS inner.window.isInner is true
 PASS inner.window.constructor.isInner is true
 PASS inner.window.constructor.prototype.isInner is true

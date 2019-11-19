@@ -69,22 +69,22 @@ std::string FFmpegAudioDecoder::GetDisplayName() const {
 
 void FFmpegAudioDecoder::Initialize(const AudioDecoderConfig& config,
                                     CdmContext* /* cdm_context */,
-                                    const InitCB& init_cb,
+                                    InitCB init_cb,
                                     const OutputCB& output_cb,
                                     const WaitingCB& /* waiting_cb */) {
   DCHECK(task_runner_->BelongsToCurrentThread());
   DCHECK(config.IsValidConfig());
 
-  InitCB bound_init_cb = BindToCurrentLoop(init_cb);
+  InitCB bound_init_cb = BindToCurrentLoop(std::move(init_cb));
 
   if (config.is_encrypted()) {
-    bound_init_cb.Run(false);
+    std::move(bound_init_cb).Run(false);
     return;
   }
 
   if (!ConfigureDecoder(config)) {
     av_sample_format_ = 0;
-    bound_init_cb.Run(false);
+    std::move(bound_init_cb).Run(false);
     return;
   }
 
@@ -92,7 +92,7 @@ void FFmpegAudioDecoder::Initialize(const AudioDecoderConfig& config,
   config_ = config;
   output_cb_ = BindToCurrentLoop(output_cb);
   state_ = kNormal;
-  bound_init_cb.Run(true);
+  std::move(bound_init_cb).Run(true);
 }
 
 void FFmpegAudioDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
@@ -116,13 +116,13 @@ void FFmpegAudioDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
   DecodeBuffer(*buffer, decode_cb_bound);
 }
 
-void FFmpegAudioDecoder::Reset(const base::Closure& closure) {
+void FFmpegAudioDecoder::Reset(base::OnceClosure closure) {
   DCHECK(task_runner_->BelongsToCurrentThread());
 
   avcodec_flush_buffers(codec_context_.get());
   state_ = kNormal;
   ResetTimestampState(config_);
-  task_runner_->PostTask(FROM_HERE, closure);
+  task_runner_->PostTask(FROM_HERE, std::move(closure));
 }
 
 void FFmpegAudioDecoder::DecodeBuffer(const DecoderBuffer& buffer,
@@ -267,7 +267,7 @@ bool FFmpegAudioDecoder::OnNewFrame(const DecoderBuffer& buffer,
     output->TrimEnd(unread_frames);
 
   *decoded_frame_this_loop = true;
-  if (discard_helper_->ProcessBuffers(buffer, output)) {
+  if (discard_helper_->ProcessBuffers(buffer, output.get())) {
     if (is_config_change &&
         output->sample_rate() != config_.samples_per_second()) {
       // At the boundary of the config change, FFmpeg's AAC decoder gives the

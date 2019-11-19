@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "ash/public/cpp/app_list/app_list_metrics.h"
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "chrome/browser/profiles/profile.h"
@@ -31,7 +32,10 @@ class LauncherSearchResult : public ChromeSearchResult,
           error_reporter);
   ~LauncherSearchResult() override;
   std::unique_ptr<LauncherSearchResult> Duplicate() const;
+
+  // ChromeSearchResult overrides:
   void Open(int event_flags) override;
+  ash::SearchResultType GetSearchResultType() const override;
 
   void OnIconImageChanged(LauncherSearchIconImageLoader* image_loader) override;
   void OnBadgeIconImageChanged(

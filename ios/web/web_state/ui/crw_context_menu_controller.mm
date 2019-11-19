@@ -7,22 +7,23 @@
 #import <objc/runtime.h>
 #include <stddef.h>
 
-#include "base/feature_list.h"
 #include "base/ios/ios_util.h"
 #include "base/logging.h"
 #include "base/mac/foundation_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/unguessable_token.h"
-#include "ios/web/public/features.h"
-#import "ios/web/public/web_state/context_menu_params.h"
-#import "ios/web/public/web_state/js/crw_js_injection_evaluator.h"
-#import "ios/web/public/web_state/ui/crw_context_menu_delegate.h"
+#import "ios/web/js_messaging/crw_wk_script_message_router.h"
+#import "ios/web/public/deprecated/crw_context_menu_delegate.h"
+#import "ios/web/public/navigation/navigation_context.h"
+#import "ios/web/public/ui/context_menu_params.h"
+#import "ios/web/public/web_state.h"
+#import "ios/web/public/web_state_observer_bridge.h"
 #import "ios/web/web_state/context_menu_constants.h"
 #import "ios/web/web_state/context_menu_params_utils.h"
-#import "ios/web/web_state/ui/crw_wk_script_message_router.h"
 #import "ios/web/web_state/ui/html_element_fetch_request.h"
 #import "ios/web/web_state/ui/wk_web_view_configuration_provider.h"
+#include "ui/base/device_form_factor.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -34,6 +35,9 @@ namespace {
 // If our detection duration is shorter, our gesture recognizer will fire
 // first in order to cancel the system context menu gesture recognizer.
 const NSTimeInterval kLongPressDurationSeconds = 0.55 - 0.1;
+// Since iOS 13, our gesture recognizer needs to allow enough time for drag and
+// drop to trigger first.
+const NSTimeInterval kLongPressDurationSecondsIOS13 = 0.75;
 
 // If there is a movement bigger than |kLongPressMoveDeltaPixels|, the context
 // menu will not be triggered.
@@ -62,7 +66,7 @@ enum class ContextMenuElementFrame {
 
 // Name of the histogram for recording when the gesture recognizer recognizes a
 // long press before the DOM element details are available.
-const std::string kContextMenuDelayedElementDetailsHistogram =
+const char kContextMenuDelayedElementDetailsHistogram[] =
     "ContextMenu.DelayedElementDetails";
 
 // Enum used to record resulting action when the gesture recognizer recognizes a
@@ -90,23 +94,88 @@ struct ContextMenuInfo {
   NSDictionary* dom_element;
 };
 
+// Returns an array of gesture recognizers with |fragment| in it's description
+// and attached to a subview of |webView|.
+NSArray<UIGestureRecognizer*>* GestureRecognizersWithDescriptionFragment(
+    NSString* fragment,
+    WKWebView* webView) {
+  NSMutableArray* matches = [[NSMutableArray alloc] init];
+  for (UIView* view in [[webView scrollView] subviews]) {
+    for (UIGestureRecognizer* recognizer in [view gestureRecognizers]) {
+      NSString* recognizerDescription = recognizer.description;
+      NSRange mustFailRange =
+          [recognizerDescription rangeOfString:@"must-fail"];
+      if (mustFailRange.length) {
+        // Strip off description of other recognizers to ensure |fragment| only
+        // matches properties of |recognizer|.
+        recognizerDescription =
+            [recognizerDescription substringToIndex:mustFailRange.location];
+      }
+      if ([recognizerDescription rangeOfString:fragment
+                                       options:NSCaseInsensitiveSearch]
+              .length) {
+        [matches addObject:recognizer];
+      }
+    }
+  }
+  return matches;
+}
+
+// WKWebView's default gesture recognizers interfere with the detection of a
+// long press by |_contextMenuRecognizer|. Calling this method ensures that
+// WKWebView's gesture recognizers for context menu and text selection should
+// fail if |_contextMenuRecognizer| detects a long press.
+void OverrideGestureRecognizers(UIGestureRecognizer* contextMenuRecognizer,
+                                WKWebView* webView) {
+  NSMutableArray<UIGestureRecognizer*>* recognizers =
+      [[NSMutableArray alloc] init];
+  if (@available(iOS 13, *)) {
+    [recognizers
+        addObjectsFromArray:GestureRecognizersWithDescriptionFragment(
+                                @"com.apple.UIKit.clickPresentationFailure",
+                                webView)];
+    [recognizers addObjectsFromArray:GestureRecognizersWithDescriptionFragment(
+                                         @"Text", webView)];
+
+  } else {
+    [recognizers
+        addObjectsFromArray:GestureRecognizersWithDescriptionFragment(
+                                @"action=_longPressRecognized:", webView)];
+  }
+
+  for (UIGestureRecognizer* systemRecognizer in recognizers) {
+    [systemRecognizer requireGestureRecognizerToFail:contextMenuRecognizer];
+    // requireGestureRecognizerToFail: doesn't retain the recognizer, so it is
+    // possible for |systemContextMenuRecognizer| to outlive
+    // |contextMenuRecognizer| and end up with a dangling pointer. Add a
+    // retaining associative reference to ensure that the lifetimes work out.
+    // Note that normally using the value as the key wouldn't make any sense,
+    // but here it's fine since nothing needs to look up the value.
+    void* associatedObjectKey = (__bridge void*)systemRecognizer;
+    objc_setAssociatedObject(systemRecognizer.view, associatedObjectKey,
+                             contextMenuRecognizer,
+                             OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+
+    if (!base::ios::IsRunningOnIOS13OrLater()) {
+      // Retain behavior implemented for iOS 12 by only requiring the first
+      // matching gesture recognizer to fail.
+      break;
+    }
+  }
+}
+
 }  // namespace
 
-@interface CRWContextMenuController ()<UIGestureRecognizerDelegate>
+@interface CRWContextMenuController () <CRWWebStateObserver,
+                                        UIGestureRecognizerDelegate>
 
 // The |webView|.
 @property(nonatomic, readonly, weak) WKWebView* webView;
-// The delegate that allow execute javascript.
-@property(nonatomic, readonly, weak) id<CRWJSInjectionEvaluator>
-    injectionEvaluator;
 // The scroll view of |webView|.
 @property(nonatomic, readonly, weak) id<CRWContextMenuDelegate> delegate;
 // Returns the x, y offset the content has been scrolled.
 @property(nonatomic, readonly) CGPoint scrollPosition;
 
-// Returns a gesture recognizers with |fragment| in it's description.
-- (UIGestureRecognizer*)gestureRecognizerWithDescriptionFragment:
-    (NSString*)fragment;
 // Called when the |_contextMenuRecognizer| finishes recognizing a long press.
 - (void)longPressDetectedByGestureRecognizer:
     (UIGestureRecognizer*)gestureRecognizer;
@@ -130,19 +199,17 @@ struct ContextMenuInfo {
 - (void)setDOMElementForLastTouch:(NSDictionary*)element;
 // Called to process a message received from JavaScript.
 - (void)didReceiveScriptMessage:(WKScriptMessage*)message;
-// Logs the time taken to fetch DOM element details.
-- (void)logElementFetchDurationWithStartTime:
-    (base::TimeTicks)elementFetchStartTime;
 // Cancels the display of the context menu and clears associated element fetch
 // request state.
 - (void)cancelContextMenuDisplay;
 // Forwards the execution of |script| to |javaScriptDelegate| and if it is nil,
 // to |webView|.
 - (void)executeJavaScript:(NSString*)script
-        completionHandler:(web::JavaScriptResultBlock)completionHandler;
+        completionHandler:(void (^)(id, NSError*))completionHandler;
 @end
 
 @implementation CRWContextMenuController {
+  std::unique_ptr<web::WebStateObserverBridge> _observer;
   // Long press recognizer that allows showing context menus.
   UILongPressGestureRecognizer* _contextMenuRecognizer;
   // DOM element information for the point where the user made the last touch.
@@ -164,19 +231,16 @@ struct ContextMenuInfo {
 }
 
 @synthesize delegate = _delegate;
-@synthesize injectionEvaluator = _injectionEvaluator;
 @synthesize webView = _webView;
 
 - (instancetype)initWithWebView:(WKWebView*)webView
                    browserState:(web::BrowserState*)browserState
-             injectionEvaluator:(id<CRWJSInjectionEvaluator>)injectionEvaluator
                        delegate:(id<CRWContextMenuDelegate>)delegate {
   DCHECK(webView);
   self = [super init];
   if (self) {
     _webView = webView;
     _delegate = delegate;
-    _injectionEvaluator = injectionEvaluator;
     _pendingElementFetchRequests = [[NSMutableDictionary alloc] init];
 
     // The system context menu triggers after 0.55 second. Add a gesture
@@ -186,34 +250,18 @@ struct ContextMenuInfo {
         initWithTarget:self
                 action:@selector(longPressDetectedByGestureRecognizer:)];
 
-    [_contextMenuRecognizer setMinimumPressDuration:kLongPressDurationSeconds];
+    if (@available(iOS 13, *)) {
+      [_contextMenuRecognizer
+          setMinimumPressDuration:kLongPressDurationSecondsIOS13];
+    } else {
+      [_contextMenuRecognizer
+          setMinimumPressDuration:kLongPressDurationSeconds];
+    }
     [_contextMenuRecognizer setAllowableMovement:kLongPressMoveDeltaPixels];
     [_contextMenuRecognizer setDelegate:self];
     [_webView addGestureRecognizer:_contextMenuRecognizer];
 
-    if (base::ios::IsRunningOnIOS11OrLater()) {
-      // WKWebView's default context menu gesture recognizer interferes with
-      // the detection of a long press by |_contextMenuRecognizer|. WKWebView's
-      // context menu gesture recognizer should fail if |_contextMenuRecognizer|
-      // detects a long press.
-      NSString* fragment = @"action=_longPressRecognized:";
-      UIGestureRecognizer* systemContextMenuRecognizer =
-          [self gestureRecognizerWithDescriptionFragment:fragment];
-      if (systemContextMenuRecognizer) {
-        [systemContextMenuRecognizer
-            requireGestureRecognizerToFail:_contextMenuRecognizer];
-        // requireGestureRecognizerToFail: doesn't retain the recognizer, so it
-        // is possible for |iRecognizer| to outlive |recognizer| and end up with
-        // a dangling pointer. Add a retaining associative reference to ensure
-        // that the lifetimes work out.
-        // Note that normally using the value as the key wouldn't make any
-        // sense, but here it's fine since nothing needs to look up the value.
-        void* associated_object_key = (__bridge void*)_contextMenuRecognizer;
-        objc_setAssociatedObject(systemContextMenuRecognizer.view,
-                                 associated_object_key, _contextMenuRecognizer,
-                                 OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-      }
-    }
+    OverrideGestureRecognizers(_contextMenuRecognizer, _webView);
 
     // Listen for fetched element response.
     web::WKWebViewConfigurationProvider& configurationProvider =
@@ -230,23 +278,29 @@ struct ContextMenuInfo {
   return self;
 }
 
+- (void)dealloc {
+  if (_webState)
+    _webState->RemoveObserver(_observer.get());
+}
+
+- (void)setWebState:(web::WebState*)webState {
+  if (_webState)
+    _webState->RemoveObserver(_observer.get());
+
+  _webState = webState;
+  _observer.reset();
+
+  if (webState) {
+    _observer = std::make_unique<web::WebStateObserverBridge>(self);
+    webState->AddObserver(_observer.get());
+  }
+}
+
 - (void)allowSystemUIForCurrentGesture {
   // Reset the state of the recognizer so that it doesn't recognize the on-going
   // touch.
   _contextMenuRecognizer.enabled = NO;
   _contextMenuRecognizer.enabled = YES;
-}
-
-- (UIGestureRecognizer*)gestureRecognizerWithDescriptionFragment:
-    (NSString*)fragment {
-  for (UIView* view in [[_webView scrollView] subviews]) {
-    for (UIGestureRecognizer* recognizer in [view gestureRecognizers]) {
-      if ([recognizer.description rangeOfString:fragment].length) {
-        return recognizer;
-      }
-    }
-  }
-  return nil;
 }
 
 - (UIScrollView*)webScrollView {
@@ -258,10 +312,12 @@ struct ContextMenuInfo {
 }
 
 - (void)executeJavaScript:(NSString*)script
-        completionHandler:(web::JavaScriptResultBlock)completionHandler {
-  if (self.injectionEvaluator) {
-    [self.injectionEvaluator executeJavaScript:script
-                             completionHandler:completionHandler];
+        completionHandler:(void (^)(id, NSError*))completionHandler {
+  if ([_delegate respondsToSelector:@selector
+                 (webView:executeJavaScript:completionHandler:)]) {
+    [_delegate webView:self.webView
+        executeJavaScript:script
+        completionHandler:completionHandler];
   } else {
     [self.webView evaluateJavaScript:script
                    completionHandler:completionHandler];
@@ -323,6 +379,7 @@ struct ContextMenuInfo {
   if (!canShowContextMenu) {
     // There is no link or image under user's gesture. Do not cancel all touches
     // to allow system text selection UI.
+    [self allowSystemUIForCurrentGesture];
     return;
   }
 
@@ -389,23 +446,8 @@ struct ContextMenuInfo {
   // this CRWContextMenuController instance.
   if (fetchRequest) {
     [_pendingElementFetchRequests removeObjectForKey:requestID];
-
-    // Only log performance metric if the response is from the main frame in
-    // order to keep metric comparible.
-    if (message.frameInfo.mainFrame) {
-      [self logElementFetchDurationWithStartTime:fetchRequest.creationTime];
-    }
     [fetchRequest runHandlerWithResponse:response];
-  } else {
-    UMA_HISTOGRAM_BOOLEAN(
-        "ContextMenu.UnexpectedFindElementResultHandlerMessage", true);
   }
-}
-
-- (void)logElementFetchDurationWithStartTime:
-    (base::TimeTicks)elementFetchStartTime {
-  UMA_HISTOGRAM_TIMES("ContextMenu.DOMElementFetchDuration",
-                      base::TimeTicks::Now() - elementFetchStartTime);
 }
 
 - (void)cancelContextMenuDisplay {
@@ -493,6 +535,20 @@ struct ContextMenuInfo {
                                  point.y + scrollOffset.y, webViewContentWidth,
                                  webViewContentHeight];
   [self executeJavaScript:getElementScript completionHandler:nil];
+}
+
+#pragma mark - CRWWebStateObserver
+
+- (void)webStateDestroyed:(web::WebState*)webState {
+  self.webState = nullptr;
+}
+
+- (void)webState:(web::WebState*)webState
+    didFinishNavigation:(web::NavigationContext*)navigation {
+  if (@available(iOS 13, *)) {
+    if (!navigation->IsSameDocument() && navigation->HasCommitted())
+      OverrideGestureRecognizers(_contextMenuRecognizer, _webView);
+  }
 }
 
 @end

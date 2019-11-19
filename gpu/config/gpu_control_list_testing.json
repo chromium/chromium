@@ -79,20 +79,6 @@
     },
     {
       "id": 6,
-      "description": "GpuControlListEntryTest.DateOnWindowsEntry",
-      "os": {
-        "type": "win"
-      },
-      "driver_date": {
-        "op": "<",
-        "value": "2010.5.8"
-      },
-      "features": [
-        "test_feature_0"
-      ]
-    },
-    {
-      "id": 7,
       "description": "GpuControlListEntryTest.MultipleDevicesEntry",
       "vendor_id": "0x10de",
       "device_id": ["0x1023", "0x0640"],
@@ -101,7 +87,7 @@
       ]
     },
     {
-      "id": 8,
+      "id": 7,
       "description": "GpuControlListEntryTest.ChromeOSEntry",
       "os": {
         "type": "chromeos"
@@ -111,7 +97,7 @@
       ]
     },
     {
-      "id": 9,
+      "id": 8,
       "description": "GpuControlListEntryTest.GlVersionGLESEntry",
       "gl_type": "gles",
       "gl_version": {
@@ -123,7 +109,7 @@
       ]
     },
     {
-      "id": 10,
+      "id": 9,
       "description": "GpuControlListEntryTest.GlVersionANGLEEntry",
       "gl_type": "angle",
       "gl_version": {
@@ -135,7 +121,7 @@
       ]
     },
     {
-      "id": 11,
+      "id": 10,
       "description": "GpuControlListEntryTest.GlVersionGLEntry",
       "gl_type": "gl",
       "gl_version": {
@@ -147,7 +133,7 @@
       ]
     },
     {
-      "id": 12,
+      "id": 11,
       "description": "GpuControlListEntryTest.GlVendorEqual",
       "gl_vendor": "NVIDIA",
       "features": [
@@ -155,7 +141,7 @@
       ]
     },
     {
-      "id": 13,
+      "id": 12,
       "description": "GpuControlListEntryTest.GlVendorWithDot",
       "gl_vendor": "X\\.Org.*",
       "features": [
@@ -163,7 +149,7 @@
       ]
     },
     {
-      "id": 14,
+      "id": 13,
       "description": "GpuControlListEntryTest.GlRendererContains",
       "gl_renderer": ".*GeForce.*",
       "features": [
@@ -171,7 +157,7 @@
       ]
     },
     {
-      "id": 15,
+      "id": 14,
       "description": "GpuControlListEntryTest.GlRendererCaseInsensitive",
       "gl_renderer": "(?i).*software.*",
       "features": [
@@ -179,7 +165,7 @@
       ]
     },
     {
-      "id": 16,
+      "id": 15,
       "description": "GpuControlListEntryTest.GlExtensionsEndWith",
       "gl_extensions": ".*GL_SUN_slice_accum",
       "features": [
@@ -187,7 +173,7 @@
       ]
     },
     {
-      "id": 17,
+      "id": 16,
       "description": "GpuControlListEntryTest.OptimusEntry",
       "os": {
         "type": "linux"
@@ -198,7 +184,7 @@
       ]
     },
     {
-      "id": 18,
+      "id": 17,
       "description": "GpuControlListEntryTest.AMDSwitchableEntry",
       "os": {
         "type": "macosx"
@@ -209,7 +195,7 @@
       ]
     },
     {
-      "id": 19,
+      "id": 18,
       "description": "GpuControlListEntryTest.DriverVendorBeginWith",
       "driver_vendor": "NVIDIA.*",
       "features": [
@@ -217,7 +203,7 @@
       ]
     },
     {
-      "id": 20,
+      "id": 19,
       "description": "GpuControlListEntryTest.LexicalDriverVersionEntry",
       "os": {
         "type": "linux"
@@ -233,7 +219,7 @@
       ]
     },
     {
-      "id": 21,
+      "id": 20,
       "description": "GpuControlListEntryTest.NeedsMoreInfoEntry",
       "vendor_id": "0x8086",
       "driver_version": {
@@ -245,7 +231,7 @@
       ]
     },
     {
-      "id": 22,
+      "id": 21,
       "description": "GpuControlListEntryTest.NeedsMoreInfoForExceptionsEntry",
       "vendor_id": "0x8086",
       "exceptions": [
@@ -258,7 +244,7 @@
       ]
     },
     {
-      "id" : 23,
+      "id" : 22,
       "description": "GpuControlListEntryTest.NeedsMoreInfoForGlVersionEntry",
       "gl_type": "gl",
       "gl_version": {
@@ -270,26 +256,26 @@
       ]
     },
     {
-      "id": 24,
+      "id": 23,
       "description": "GpuControlListEntryTest.FeatureTypeAllEntry",
       "features": [
         "all"
       ]
     },
     {
-      "id": 25,
+      "id": 24,
       "description": "GpuControlListEntryTest.FeatureTypeAllEntryWithExceptions",
       "features": [
         "all",
         {
-	  "exceptions" : [
+          "exceptions" : [
             "test_feature_0"
           ]
         }
       ]
     },
     {
-      "id": 26,
+      "id": 25,
       "description": "GpuControlListEntryTest.SingleActiveGPU",
       "os": {
         "type": "macosx"
@@ -302,7 +288,7 @@
       ]
     },
     {
-      "id": 27,
+      "id": 26,
       "description": "GpuControlListEntryTest.MachineModelName",
       "os": {
         "type": "android"
@@ -315,7 +301,7 @@
       ]
     },
     {
-      "id": 28,
+      "id": 27,
       "description": "GpuControlListEntryTest.MachineModelNameException",
       "exceptions": [
         {
@@ -330,7 +316,7 @@
       ]
     },
     {
-      "id": 29,
+      "id": 28,
       "description": "GpuControlListEntryTest.MachineModelVersion",
       "os": {
         "type": "macosx"
@@ -345,7 +331,7 @@
       ]
     },
     {
-      "id": 30,
+      "id": 29,
       "description": "GpuControlListEntryTest.MachineModelVersionException",
       "os": {
         "type": "macosx"
@@ -364,7 +350,7 @@
       ]
     },
     {
-      "id": 31,
+      "id": 30,
       "description": "GpuControlListEntryDualGPUTest.CategoryAny.Intel",
       "os": {
         "type": "macosx"
@@ -377,7 +363,7 @@
       ]
     },
     {
-      "id": 32,
+      "id": 31,
       "description": "GpuControlListEntryDualGPUTest.CategoryAny.NVidia",
       "os": {
         "type": "macosx"
@@ -390,7 +376,7 @@
       ]
     },
     {
-      "id": 33,
+      "id": 32,
       "description": "GpuControlListEntryDualGPUTest.CategorySecondary",
       "os": {
         "type": "macosx"
@@ -403,7 +389,7 @@
       ]
     },
     {
-      "id": 34,
+      "id": 33,
       "description": "GpuControlListEntryDualGPUTest.CategoryPrimary",
       "os": {
         "type": "macosx"
@@ -416,7 +402,7 @@
       ]
     },
     {
-      "id": 35,
+      "id": 34,
       "description": "GpuControlListEntryDualGPUTest.CategoryDefault",
       "os": {
         "type": "macosx"
@@ -428,7 +414,7 @@
       ]
     },
     {
-      "id": 36,
+      "id": 35,
       "description": "GpuControlListEntryDualGPUTest.ActiveSecondaryGPU",
       "os": {
         "type": "macosx"
@@ -441,7 +427,7 @@
       ]
     },
     {
-      "id": 37,
+      "id": 36,
       "description": "GpuControlListEntryDualGPUTest.VendorOnlyActiveSecondaryGPU",
       "os": {
         "type": "macosx"
@@ -453,7 +439,7 @@
       ]
     },
     {
-      "id": 38,
+      "id": 37,
       "description": "GpuControlListEntryDualGPUTest.ActivePrimaryGPU",
       "os": {
         "type": "macosx"
@@ -466,7 +452,7 @@
       ]
     },
     {
-      "id": 39,
+      "id": 38,
       "description": "GpuControlListEntryDualGPUTest.VendorOnlyActivePrimaryGPU",
       "os": {
         "type": "macosx"
@@ -478,7 +464,7 @@
       ]
     },
     {
-      "id": 40,
+      "id": 39,
       "description": "GpuControlListEntryTest.PixelShaderVersion",
       "pixel_shader_version": {
         "op": "<",
@@ -489,7 +475,7 @@
       ]
     },
     {
-      "id": 41,
+      "id": 40,
       "description": "GpuControlListEntryTest.OsVersionZeroLT",
       "os": {
         "type": "android",
@@ -503,7 +489,7 @@
       ]
     },
     {
-      "id": 42,
+      "id": 41,
       "description": "GpuControlListEntryTest.OsVersionZeroAny",
       "os": {
         "type": "android"
@@ -513,14 +499,14 @@
       ]
     },
     {
-      "id": 43,
+      "id": 42,
       "description": "GpuControlListEntryTest.OsComparisonAny",
       "features": [
         "test_feature_0"
       ]
     },
     {
-      "id": 44,
+      "id": 43,
       "description": "GpuControlListEntryTest.OsComparisonGE",
       "os": {
         "type": "win",
@@ -534,7 +520,7 @@
       ]
     },
     {
-      "id": 45,
+      "id": 44,
       "description": "GpuControlListEntryTest.ExceptionWithoutVendorId",
       "os": {
         "type": "linux"
@@ -561,7 +547,7 @@
       ]
     },
     {
-      "id": 46,
+      "id": 45,
       "description": "GpuControlListEntryTest.MultiGpuStyleAMDSwitchableDiscrete",
       "multi_gpu_style": "amd_switchable_discrete",
       "features": [
@@ -569,7 +555,7 @@
       ]
     },
     {
-      "id": 47,
+      "id": 46,
       "description": "GpuControlListEntryTest.MultiGpuStyleAMDSwitchableIntegrated",
       "multi_gpu_style": "amd_switchable_integrated",
       "features": [
@@ -577,7 +563,7 @@
       ]
     },
     {
-      "id": 48,
+      "id": 47,
       "description": "GpuControlListEntryTest.InProcessGPU",
       "os": {
         "type": "win"
@@ -588,7 +574,7 @@
       ]
     },
     {
-      "id": 49,
+      "id": 48,
       "description": "GpuControlListEntryTest.SameGPUTwiceTest",
       "os": {
         "type": "win"
@@ -599,7 +585,7 @@
       ]
     },
     {
-      "id": 50,
+      "id": 49,
       "description": "GpuControlListEntryTest.NVidiaNumberingScheme",
       "os": {
         "type": "win"
@@ -614,7 +600,7 @@
       ]
     },
     {
-      "id": 51,
+      "id": 50,
       "description": "GpuControlListTest.NeedsMoreInfo",
       "os": {
         "type": "win"
@@ -629,7 +615,7 @@
       ]
     },
     {
-      "id": 52,
+      "id": 51,
       "description": "GpuControlListTest.NeedsMoreInfoForExceptions",
       "os": {
         "type": "linux"
@@ -645,7 +631,7 @@
       ]
     },
     {
-      "id": 53,
+      "id": 52,
       "description": "GpuControlListTest.IgnorableEntries.0",
       "os": {
         "type": "linux"
@@ -656,7 +642,7 @@
       ]
     },
     {
-      "id": 54,
+      "id": 53,
       "description": "GpuControlListTest.IgnorableEntries.1",
       "os": {
         "type": "linux"
@@ -671,7 +657,7 @@
       ]
     },
     {
-      "id": 55,
+      "id": 54,
       "description": "GpuControlListTest.DisabledExtensionTest.0",
       "os": {
         "type": "win"
@@ -682,7 +668,7 @@
       ]
     },
     {
-      "id": 56,
+      "id": 55,
       "description": "GpuControlListTest.DisabledExtensionTest.1",
       "os": {
         "type": "win"
@@ -693,18 +679,21 @@
       ]
     },
     {
-      "id": 57,
+      "id": 56,
       "description": "GpuControlListEntryTest.DirectRendering",
       "os": {
         "type": "linux"
       },
-      "direct_rendering": false,
+      "direct_rendering_version": {
+        "op" : ">=",
+        "value": "2"
+      },
       "features": [
         "test_feature_1"
       ]
     },
     {
-      "id": 58,
+      "id": 57,
       "description": "GpuControlListTest.LinuxKernelVersion",
       "os": {
         "type": "linux",
@@ -719,7 +708,7 @@
       ]
     },
     {
-      "id": 59,
+      "id": 58,
       "description": "GpuControlListTest.TestGroup.0",
       "test_group": 1,
       "features": [
@@ -727,7 +716,7 @@
       ]
     },
     {
-      "id": 60,
+      "id": 59,
       "description": "GpuControlListTest.TestGroup.1",
       "test_group": 2,
       "features": [
@@ -735,7 +724,7 @@
       ]
     },
     {
-      "id": 61,
+      "id": 60,
       "description": "GpuControlListEntryTest.GpuSeries",
       "gpu_series": [
         "intel_skylake",
@@ -746,7 +735,7 @@
       ]
     },
     {
-      "id": 62,
+      "id": 61,
       "description": "GpuControlListEntryTest.GpuSeriesActive",
       "gpu_series": [
         "intel_kabylake"
@@ -757,7 +746,7 @@
       ]
     },
     {
-      "id": 63,
+      "id": 62,
       "description": "GpuControlListEntryTest.GpuSeriesAny",
       "gpu_series": [
         "intel_kabylake"
@@ -768,7 +757,7 @@
       ]
     },
     {
-      "id": 64,
+      "id": 63,
       "description": "GpuControlListEntryTest.GpuSeriesPrimary",
       "gpu_series": [
         "intel_kabylake"
@@ -779,7 +768,7 @@
       ]
     },
     {
-      "id": 65,
+      "id": 64,
       "description": "GpuControlListEntryTest.GpuSeriesSecondary",
       "gpu_series": [
         "intel_kabylake"
@@ -790,7 +779,7 @@
       ]
     },
     {
-      "id": 66,
+      "id": 65,
       "description": "GpuControlListEntryTest.GpuSeriesInException",
       "exceptions": [
         {
@@ -804,7 +793,7 @@
       ]
     },
     {
-      "id": 67,
+      "id": 66,
       "description": "GpuControlListEntryTest.MultipleDrivers",
       "vendor_id": "0x8086",
       "driver_version": {
@@ -816,10 +805,97 @@
       ]
     },
     {
-      "id": 68,
+      "id": 67,
       "description": "GpuControlListEntryTest.HardwareOverlay",
       "vendor_id": "0x8086",
       "hardware_overlay": "unsupported",
+      "features": [
+        "test_feature_0"
+      ]
+    },
+    {
+      "id": 68,
+      "description": "GpuControlListEntryTest.GpuGeneration",
+      "intel_gpu_generation": {
+        "op": "<",
+        "value": "9"
+      },
+      "features": [
+        "test_feature_0"
+      ]
+    },
+    {
+      "id": 69,
+      "description": "GpuControlListEntryTest.GpuGenerationActive",
+      "intel_gpu_generation": {
+        "op": "<",
+        "value": "9"
+      },
+      "multi_gpu_category": "active",
+      "features": [
+        "test_feature_0"
+      ]
+    },
+    {
+      "id": 70,
+      "description": "GpuControlListEntryTest.GpuGenerationAny",
+      "intel_gpu_generation": {
+        "op": "<",
+        "value": "9"
+      },
+      "multi_gpu_category": "any",
+      "features": [
+        "test_feature_0"
+      ]
+    },
+    {
+      "id": 71,
+      "description": "GpuControlListEntryTest.GpuGenerationPrimary",
+      "intel_gpu_generation": {
+        "op": "<",
+        "value": "9"
+      },
+      "multi_gpu_category": "primary",
+      "features": [
+        "test_feature_0"
+      ]
+    },
+    {
+      "id": 72,
+      "description": "GpuControlListEntryTest.GpuGenerationSecondary",
+      "intel_gpu_generation": {
+        "op": "<",
+        "value": "9"
+      },
+      "multi_gpu_category": "secondary",
+      "features": [
+        "test_feature_0"
+      ]
+    },
+    {
+      "id": 73,
+      "description": "GpuControlListEntryTest.SubpixelFontRendering",
+      "os": {
+        "type": "chromeos"
+      },
+      "features": [
+        "test_feature_0"
+      ],
+      "exceptions": [
+        { "gl_renderer": "Mali.*",
+          "subpixel_font_rendering": "unsupported"},
+        { "gl_renderer": "DontCare" },
+        { "gl_renderer": "Supported",
+          "subpixel_font_rendering": "supported"}
+      ]
+    },
+    {
+      "id": 74,
+      "description": "GpuControlListEntryTest.SubpixelFontRenderingDontCare",
+      "os": {
+        "type": "chromeos"
+      },
+      "gl_renderer": "Mali.*",
       "features": [
         "test_feature_0"
       ]

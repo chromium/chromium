@@ -15,7 +15,13 @@ android_aidl("dex_optimizer_service_aidl") {
 android_apk("dex_optimizer_apk") {
   # Used as an additional_apk in test scripts.
   never_incremental = true
+
+  # Multidex requires a custom Application class to initialize it. Simpler to
+  # just disable it.
+  enable_multidex = false
+
   android_manifest = "AndroidManifest.xml"
+  min_sdk_version = 16
   apk_name = "DexOptimizer"
   chromium_code = false
   java_files = [ "src/org/chromium/webapk/shell_apk/test/dex_optimizer/DexOptimizerServiceImpl.java" ]

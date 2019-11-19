@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script>
+function base64urlToBase64(base64url) {
+  let base64 = base64url.replace(/-/g, "+").replace(/_/g, "/");
+  // Add padding to make the length of the base64 string divisible by 4.
+  if (base64.length % 4 != 0)
+    base64 += "=".repeat(4 - base64.length % 4);
+  return base64;
+}
+
+function base64ToArrayBuffer(base64) {
+  return Uint8Array.from(atob(base64), c => c.charCodeAt(0)).buffer;
+}
+
+function arrayBufferToBase64(buffer) {
+  let binary = "";
+  let bytes = new Uint8Array(buffer);
+  for (let i = 0; i < bytes.byteLength; ++i)
+    binary += String.fromCharCode(bytes[i]);
+  return window.btoa(binary);
+};
+
+async function generateBase64Key() {
+  let ecKey = await window.crypto.subtle.generateKey(
+      { name: "ECDSA", namedCurve: "P-256" }, true /* extractable */, ["sign", "verify"]);
+  let privateKeyPkcs8 = await window.crypto.subtle.exportKey("pkcs8", ecKey.privateKey);
+  return arrayBufferToBase64(privateKeyPkcs8);
+};
+
+async function generateRpIdHash(rpId = "devtools.test") {
+  let hash = await window.crypto.subtle.digest(
+      { name: "SHA-256" }, new TextEncoder("utf-8").encode(rpId));
+  return arrayBufferToBase64(hash);
+}
+
+async function registerCredential(options = {}) {
+  options = Object.assign({
+    authenticatorSelection: {
+      requireResidentKey: false,
+      userVerification: "discouraged",
+    },
+    rp: {
+      id: "devtools.test",
+      name: "DevTools Test",
+    },
+    challenge: Uint8Array.from("challenge"),
+    pubKeyCredParams: [
+      {type: "public-key", alg: -7},
+    ],
+    user: {
+      name: "name",
+      displayName: "displayName",
+      id: Uint8Array.from([1]),
+    },
+  }, options);
+
+  try {
+    const credential = await navigator.credentials.create({publicKey: options});
+    return {
+      status: "OK",
+      credential: {
+        id: credential.id,
+        rawId: Array.from(new Uint8Array(credential.rawId)),
+        transports: credential.response.getTransports(),
+      }
+    };
+  } catch (error) {
+    return {status: error.toString()};
+  }
+}
+
+async function getCredential(credential, options = {}) {
+  options = Object.assign({
+    challenge: Uint8Array.from("Winter is Coming"),
+    rpId: "devtools.test",
+    allowCredentials: [credential],
+    userVerification: "preferred",
+  }, options);
+
+  try {
+    const attestation = await navigator.credentials.get({publicKey: options});
+    return {
+      status: "OK",
+      attestation,
+    };
+  } catch (error) {
+    return {status: error.toString()};
+  }
+}
+  </script>
+</head>
+<body>
+</body>
+</html>

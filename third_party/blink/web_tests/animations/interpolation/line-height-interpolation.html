@@ -22,118 +22,7 @@
 </template>
 <script src="resources/interpolation-test.js"></script>
 <script>
-assertInterpolation({
-  property: 'line-height',
-  from: neutralKeyframe,
-  to: '20px',
-}, [
-  {at: -1, is: '0px'},
-  {at: -0.3, is: '7px'},
-  {at: 0, is: '10px'},
-  {at: 0.3, is: '13px'},
-  {at: 0.6, is: '16px'},
-  {at: 1, is: '20px'},
-  {at: 1.5, is: '25px'},
-]);
-assertNoInterpolation({
-  property: 'line-height',
-  from: 'initial',
-  to: '20px',
-});
-assertInterpolation({
-  property: 'line-height',
-  from: 'inherit',
-  to: '20px',
-}, [
-  {at: -1, is: '40px'},
-  {at: -0.3, is: '33px'},
-  {at: 0, is: '30px'},
-  {at: 0.3, is: '27px'},
-  {at: 0.6, is: '24px'},
-  {at: 1, is: '20px'},
-  {at: 1.5, is: '15px'},
-]);
-assertInterpolation({
-  property: 'line-height',
-  from: 'unset',
-  to: '20px',
-}, [
-  {at: -1, is: '40px'},
-  {at: -0.3, is: '33px'},
-  {at: 0, is: '30px'},
-  {at: 0.3, is: '27px'},
-  {at: 0.6, is: '24px'},
-  {at: 1, is: '20px'},
-  {at: 1.5, is: '15px'},
-]);
-assertInterpolation({
-  property: 'line-height',
-  from: '4',
-  to: '14',
-}, [
-  {at: -1, is: '0'},
-  {at: -0.3, is: '1'},
-  {at: 0, is: '4'},
-  {at: 0.3, is: '7'},
-  {at: 0.6, is: '10'},
-  {at: 1, is: '14'},
-  {at: 1.5, is: '19'},
-]);
-assertInterpolation({
-  property: 'line-height',
-  from: '4px',
-  to: '14px',
-}, [
-  {at: -1, is: '0px'},
-  {at: -0.3, is: '1px'},
-  {at: 0, is: '4px'},
-  {at: 0.3, is: '7px'},
-  {at: 0.6, is: '10px'},
-  {at: 1, is: '14px'},
-  {at: 1.5, is: '19px'},
-]);
-assertInterpolation({
-  property: 'line-height',
-  from: 'normal',
-  to: 'normal',
-}, [
-  {at: -0.3, is: 'normal'},
-  {at: 0, is: 'normal'},
-  {at: 0.3, is: 'normal'},
-  {at: 0.6, is: 'normal'},
-  {at: 1, is: 'normal'},
-  {at: 1.5, is: 'normal'},
-]);
-assertNoInterpolation({
-  property: 'line-height',
-  from: '4',
-  to: '14px',
-});
-assertNoInterpolation({
-  property: 'line-height',
-  from: '14px',
-  to: 'normal',
-});
-assertNoInterpolation({
-  property: 'line-height',
-  from: 'normal',
-  to: '4',
-});
-assertNoInterpolation({
-  property: 'line-height',
-  from: '4',
-  to: 'normal',
-});
-assertNoInterpolation({
-  property: 'line-height',
-  from: 'normal',
-  to: '14px',
-});
-assertNoInterpolation({
-  property: 'line-height',
-  from: '14px',
-  to: '4',
-});
+// content_shell --run-web-tests uses a viewport of 800x600.
 assertInterpolation({
   property: 'line-height',
   from: '4vw',
@@ -147,7 +36,6 @@ assertInterpolation({
   {at: 1, is: '14vw'},
   {at: 1.5, is: '19vw'},
 ]);
-// content_shell --run-web-tests uses a viewport of 800x600.
 assertInterpolation({
   property: 'line-height',
   from: '50vmin',
@@ -184,34 +72,6 @@ assertInterpolation({
   {at: 1, is: '150px'},
   {at: 1.5, is: '0px'}, // line-height must not be less than 0.
 ]);
-assertNoInterpolation({
-  property: 'line-height',
-  from: '4',
-  to: '14q',
-});
-assertInterpolation({
-  property: 'line-height',
-  from: '4q',
-  to: '14q',
-}, [
-  {at: -1, is: '0q'},
-  {at: -0.3, is: '1q'},
-  {at: 0, is: '4q'},
-  {at: 0.3, is: '7q'},
-  {at: 0.6, is: '10q'},
-  {at: 1, is: '14q'},
-  {at: 1.5, is: '19q'},
-]);
-assertNoInterpolation({
-  property: 'line-height',
-  from: '14q',
-  to: 'normal',
-});
 </script>
 </body>
-
-
-
-
-
 

@@ -1,0 +1,32 @@
+<!doctype html>
+<title>Scheduling API: scheduler.currentTaskQueue</title>
+<link rel="author" title="Scott Haseley" href="mailto:shaseley@chromium.org">
+<link rel="help" href="https://github.com/WICG/main-thread-scheduling">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<script>
+'use strict';
+
+async_test(t => {
+  // Initially, the default TaskQueue should be set to the global default task queue.
+  let defaultTaskQueue = scheduler.getTaskQueue('default');
+  assert_equals(scheduler.currentTaskQueue, defaultTaskQueue);
+
+  [ "immediate", "high", "default", "low", "idle" ].forEach((priority) => {
+    scheduler.postTask(t.step_func(() => {
+      assert_equals(scheduler.currentTaskQueue, scheduler.getTaskQueue(priority));
+    }), { priority });
+  });
+
+  // Test that the current task queue is the default global tq for non-scheduled tasks.
+  // Schedule this at idle so it comes after the previous tests.
+  scheduler.postTask(t.step_func(() => {
+    setTimeout(t.step_func_done(() => {
+      assert_equals(scheduler.currentTaskQueue, defaultTaskQueue);
+    }), 0);
+  }), { priority: 'idle' });
+
+}, 'Tests that scheduler.currentTaskQueue is correctly set');
+
+</script>

@@ -9,7 +9,7 @@ PASS Property break-before value 'recto' computes to 'recto'
 PASS Property break-before value 'verso' computes to 'verso'
 PASS Property break-before value 'avoid-column' computes to 'avoid-column'
 PASS Property break-before value 'column' computes to 'column'
-FAIL Property break-before value 'avoid-region' computes to 'avoid-region' assert_equals: expected "avoid-region" but got "auto"
-FAIL Property break-before value 'region' computes to 'region' assert_equals: expected "region" but got "auto"
+FAIL Property break-before value 'avoid-region' computes to 'avoid-region' assert_true: 'avoid-region' is a supported value for break-before. expected true got false
+FAIL Property break-before value 'region' computes to 'region' assert_true: 'region' is a supported value for break-before. expected true got false
 Harness: the test ran to completion.
 

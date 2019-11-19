@@ -10,8 +10,8 @@
 <body>
 <script>
 async_test(function(test) {
-    var workerUrl = 'resources/empty_worker.js';
-    var workerScope = 'resources/scope/' + location.pathname;
+    var workerUrl = '/resources/empty-worker.js';
+    var workerScope = '/resources/scope/' + location.pathname;
     var swRegistration;
     PermissionsHelper.setPermission('background-sync', 'granted')
         .then(function() {

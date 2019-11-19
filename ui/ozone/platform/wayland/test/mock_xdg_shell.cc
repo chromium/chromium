@@ -72,9 +72,13 @@ void GetXdgPopup(struct wl_client* client,
     return;
   }
 
-  CreateResourceWithImpl<MockXdgPopup>(client, &xdg_popup_interface,
-                                       wl_resource_get_version(resource),
-                                       &kXdgPopupImpl, id);
+  wl_resource* xdg_popup_resource = wl_resource_create(
+      client, &xdg_popup_interface, wl_resource_get_version(resource), id);
+
+  auto mock_xdg_popup =
+      std::make_unique<MockXdgPopup>(xdg_popup_resource, &kXdgPopupImpl);
+
+  mock_surface->set_xdg_popup(std::move(mock_xdg_popup));
 }
 
 void Pong(wl_client* client, wl_resource* resource, uint32_t serial) {

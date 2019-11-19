@@ -1,0 +1,9 @@
+Should not crash if iframe's document element's focusout event handler removes the iframe in the parent document and the selection is moved.
+
+On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
+
+PASS Did not crash.
+PASS successfullyParsed is true
+
+TEST COMPLETE
+

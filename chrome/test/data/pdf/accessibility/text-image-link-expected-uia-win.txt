@@ -1,0 +1,20 @@
+group
+++document
+++++region Name='Page 1'
+++++++heading
+++++++heading
+++++++++link Name='Link with destination to second page<newline>'
+++++++group
+++++++++link Name='PDF Reference, Version 1.7,'
+++++++++description Name=' Section 8.4.5 defines Annotations<newline>3. Hello World<newline>'
+++++++++link Name='https://pdfium.googlesource.com/pdfium'
+++++++++description Name=' is link in plain text, not link annotation. These are referred to<newline>as '
+++++++++link Name='WebLinks in PDFium'
+++++++++description Name='.'
+++++++++link
+++++++++img Name='Image 1'
+++++++++img Name='Unlabeled graphic'
+++++++++img Name='Unlabeled graphic'
+++++region Name='Page 2'
+++++++group
+++++++++description Name='Second Page'

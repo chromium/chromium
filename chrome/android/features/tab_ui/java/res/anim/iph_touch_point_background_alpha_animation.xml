@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<set xmlns:android="http://schemas.android.com/apk/res/android"
+    android:ordering="sequentially">
+    <objectAnimator
+        android:propertyName="fillAlpha"
+        android:duration="900"
+        android:valueFrom="0"
+        android:valueTo="0"/>
+    <objectAnimator
+        android:propertyName="fillAlpha"
+        android:duration="400"
+        android:valueFrom="0"
+        android:valueTo="0.5"/>
+    <!--Dummy animation to work as start offset.-->
+    <objectAnimator
+        android:propertyName="fillAlpha"
+        android:duration="2350"
+        android:valueFrom="0.5"
+        android:valueTo="0.5"/>
+    <objectAnimator
+        android:propertyName="fillAlpha"
+        android:duration="300"
+        android:valueFrom="0.5"
+        android:valueTo="0"/>
+</set>

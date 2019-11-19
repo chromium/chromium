@@ -5,6 +5,8 @@
 #ifndef UI_EVENTS_TEST_TEST_EVENT_REWRITER_H_
 #define UI_EVENTS_TEST_TEST_EVENT_REWRITER_H_
 
+#include <memory>
+
 #include "base/macros.h"
 #include "ui/events/event_rewriter.h"
 
@@ -19,6 +21,8 @@ class TestEventRewriter : public ui::EventRewriter {
 
   void clear_events_seen() { events_seen_ = 0; }
   int events_seen() const { return events_seen_; }
+  const ui::Event* last_event() const { return last_event_.get(); }
+  void ResetLastEvent() { last_event_.reset(); }
 
   // ui::EventRewriter:
   ui::EventDispatchDetails RewriteEvent(
@@ -27,6 +31,7 @@ class TestEventRewriter : public ui::EventRewriter {
 
  private:
   int events_seen_ = 0;
+  std::unique_ptr<ui::Event> last_event_;
 
   DISALLOW_COPY_AND_ASSIGN(TestEventRewriter);
 };

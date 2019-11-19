@@ -1,0 +1,241 @@
+<link rel="import" href="chrome://resources/html/polymer.html">
+
+<link rel="import" href="../../about_page/about_page_browser_proxy.html">
+<link rel="import" href="../../about_page/detailed_build_info.html">
+<link rel="import" href="../../about_page/update_warning_dialog.html">
+<link rel="import" href="../../i18n_setup.html">
+<!-- TODO(crbug.com/986596): Don't use browser icons here. Fork them. -->
+<link rel="import" href="../../icons.html">
+<link rel="import" href="../../lifetime_browser_proxy.html">
+<link rel="import" href="../../prefs/prefs.html">
+<link rel="import" href="../../route.html">
+<link rel="import" href="../../settings_page/main_page_behavior.html">
+<link rel="import" href="../../settings_page/settings_animated_pages.html">
+<link rel="import" href="../../settings_page/settings_section.html">
+<link rel="import" href="../../settings_page/settings_subpage.html">
+<link rel="import" href="../../settings_page_css.html">
+<link rel="import" href="../../settings_shared_css.html">
+<link rel="import" href="../os_icons.html">
+<link rel="import" href="../os_reset_page/os_powerwash_dialog.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_button/cr_button.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_icon_button/cr_icon_button.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_link_row/cr_link_row.html">
+<link rel="import" href="chrome://resources/cr_elements/icons.html">
+<link rel="import" href="chrome://resources/html/assert.html">
+<link rel="import" href="chrome://resources/html/i18n_behavior.html">
+<link rel="import" href="chrome://resources/html/web_ui_listener_behavior.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
+
+<dom-module id="os-settings-about-page">
+  <template>
+    <style include="settings-shared settings-page-styles">
+      :host {
+        --about-page-image-space: 10px;
+      }
+
+      .info-section {
+        margin-bottom: 12px;
+      }
+
+      .padded {
+        padding-bottom: 10px;
+        padding-top: 10px;
+      }
+
+      .product-title {
+        font-size: 153.85%;  /* 20px / 13px */
+        font-weight: 400;
+        margin-bottom: auto;
+        margin-top: auto;
+      }
+
+      img {
+        margin-inline-end: var(--about-page-image-space);
+      }
+
+      .icon-container {
+        margin-inline-end: var(--about-page-image-space);
+        min-width: 32px;  /* The width of the product-logo img. */
+        text-align: center;
+      }
+
+      iron-icon[icon='settings:check-circle'] {
+        fill: var(--cros-default-button-color);
+      }
+
+      iron-icon[icon='cr:error'] {
+        fill: var(--cros-error-color);
+      }
+
+      .settings-box .start {
+        overflow-x: auto;
+      }
+
+      cr-button {
+        white-space: nowrap;
+      }
+
+      #regulatoryInfo img {
+        width: 330px;
+      }
+    </style>
+    <settings-section page-title="$i18n{aboutOsPageTitle}" section="about">
+      <settings-animated-pages id="pages" section="about"
+          focus-config="[[focusConfig_]]">
+        <div route-path="default">
+          <div class="settings-box two-line first">
+            <img id="product-logo" on-click="onProductLogoClick_"
+                srcset="chrome://theme/current-channel-logo@1x 1x,
+                        chrome://theme/current-channel-logo@2x 2x"
+                alt="$i18n{aboutProductLogoAlt}"
+                role="presentation">
+            <h1 class="product-title">$i18n{aboutOsProductTitle}</h1>
+          </div>
+          <div class="settings-box two-line">
+            <!-- TODO(dpapad): Investigate why vulcanize does not handle well
+              a new line after "getThrobberSrcIfUpdating_(", causes incorrect
+              src URL -->
+            <!-- Set the icon from the iconset (when it's obsolete/EOL and
+              when update is done) or set the src (when it's updating). -->
+            <div class="icon-container"
+                hidden="[[!shouldShowIcons_(showUpdateStatus_)]]">
+              <iron-icon
+                  icon$="[[getUpdateStatusIcon_(
+                      hasEndOfLife_, currentUpdateStatusEvent_)]]"
+                  src="[[getThrobberSrcIfUpdating_(hasEndOfLife_, currentUpdateStatusEvent_)]]">
+              </iron-icon>
+            </div>
+            <div class="start padded">
+              <div id="updateStatusMessage" hidden="[[!showUpdateStatus_]]">
+                <div
+                    inner-h-t-m-l="[[getUpdateStatusMessage_(
+                        currentUpdateStatusEvent_, targetChannel_)]]"></div>
+                <a hidden$="[[!shouldShowLearnMoreLink_(
+                    currentUpdateStatusEvent_)]]" target="_blank"
+                    href="https://support.google.com/chrome?p=update_error">
+                  $i18n{learnMore}
+                </a>
+              </div>
+             <div id="endOfLifeMessageContainer" hidden="[[!hasEndOfLife_]]">
+               $i18n{endOfLifeMessage}
+               <a href="$i18n{endOfLifeLearnMoreURL}" target="_blank">
+                 $i18n{learnMore}
+               </a>
+             </div>
+              <div class="secondary">$i18n{aboutBrowserVersion}</div>
+            </div>
+            <div class="separator" hidden="[[!showButtonContainer_]]"></div>
+            <span id="buttonContainer" hidden="[[!showButtonContainer_]]">
+              <cr-button id="relaunch" hidden="[[!showRelaunch_]]"
+                  on-click="onRelaunchClick_">
+                $i18n{aboutRelaunch}
+              </cr-button>
+              <cr-button id="relaunchAndPowerwash"
+                  hidden="[[!showRelaunchAndPowerwash_]]"
+                  on-click="onRelaunchAndPowerwashClick_">
+                $i18n{aboutRelaunchAndPowerwash}
+              </cr-button>
+              <cr-button id="checkForUpdates" hidden="[[!showCheckUpdates_]]"
+                  on-click="onCheckUpdatesClick_">
+                $i18n{aboutCheckForUpdates}
+              </cr-button>
+            </span>
+          </div>
+          <cr-link-row
+              id="aboutTPMFirmwareUpdate"
+              class="hr"
+              hidden$="[[!showTPMFirmwareUpdateLineItem_]]"
+              label="$i18n{aboutTPMFirmwareUpdateTitle}"
+              on-click="onTPMFirmwareUpdateClick_">
+            <div slot="sub-label">
+              $i18n{aboutTPMFirmwareUpdateDescription}
+              <a href="$i18n{aboutTPMFirmwareUpdateLearnMoreURL}"
+                  target="_blank" on-click="onLearnMoreClick_">
+                $i18n{learnMore}
+              </a>
+            </div>
+          </cr-link-row>
+          <template is="dom-if" if="[[hasReleaseNotes_]]">
+            <cr-link-row class="hr" id="releaseNotesOnline"
+                hidden="[[!hasInternetConnection_]]"
+                on-click="onReleaseNotesTap_"
+                label="$i18n{aboutShowReleaseNotes}" external></cr-link-row>
+            <cr-link-row class="hr" id="releaseNotesOffline"
+                hidden="[[hasInternetConnection_]]"
+                on-click="onReleaseNotesTap_"
+                label="$i18n{aboutShowReleaseNotes}"
+                title="$i18n{aboutReleaseNotesOffline}" external></cr-link-row>
+          </template>
+          <cr-link-row class="hr" id="help" on-click="onHelpClick_"
+              label="$i18n{aboutGetHelpUsingChromeOs}" external></cr-link-row>
+<if expr="_google_chrome">
+          <cr-link-row class="hr" id="reportIssue"
+              on-click="onReportIssueClick_"
+              hidden="[[!prefs.feedback_allowed.value]]"
+              label="$i18n{aboutReportAnIssue}" external></cr-link-row>
+</if>
+          <cr-link-row class="hr" id="detailed-build-info-trigger"
+              on-click="onDetailedBuildInfoClick_"
+              label="$i18n{aboutDetailedBuildInfo}"
+              role-description="$i18n{subpageArrowRoleDescription}">
+          </cr-link-row>
+          <cr-link-row class="hr" on-click="onManagementPageClick_"
+              start-icon="cr:domain" label="$i18n{managementPage}"
+              hidden$="[[!isManaged_]]" external></cr-link-row>
+        </div>
+        <template is="dom-if" route-path="/help/details">
+          <settings-subpage page-title="$i18n{aboutDetailedBuildInfo}">
+            <settings-detailed-build-info
+                eol-message-with-month-and-year=
+                    "[[eolMessageWithMonthAndYear_]]">
+            </settings-detailed-build-info>
+          </settings-subpage>
+        </template>
+      </settings-animated-pages>
+    </settings-section>
+
+    <settings-section>
+      <div class="settings-box padded block first">
+        <div class="info-section">
+          <div class="secondary">$i18n{aboutOsProductTitle}</div>
+          <div class="secondary">$i18n{aboutProductCopyright}</div>
+        </div>
+
+        <div class="info-section">
+          <div class="secondary">$i18nRaw{aboutProductLicense}</div>
+          <div class="secondary"
+              inner-h-t-m-l="[[getAboutProductOsLicense_(
+                  showCrostiniLicense_)]]">
+          </div>
+        </div>
+<if expr="_google_chrome">
+        <div class="secondary">$i18nRaw{aboutProductTos}</div>
+</if>
+      </div>
+      <div class="settings-box padded block" id="regulatoryInfo"
+          hidden$="[[!shouldShowRegulatoryOrSafetyInfo_(regulatoryInfo_)]]">
+<if expr="_google_chrome">
+        <div class="secondary" hidden$="[[!shouldShowSafetyInfo_()]]">
+          <a target="_blank" href="$i18n{aboutProductSafetyURL}">
+            $i18nRaw{aboutProductSafety}
+          </a>
+        </div>
+</if>
+        <img src="[[regulatoryInfo_.url]]" alt="[[regulatoryInfo_.text]]"
+            hidden$="[[!shouldShowRegulatoryInfo_(regulatoryInfo_)]]">
+      </div>
+    </settings-section>
+    <template is="dom-if" if="[[showUpdateWarningDialog_]]" restamp>
+      <settings-update-warning-dialog update-info="[[updateInfo_]]"
+          on-close="onUpdateWarningDialogClose_">
+      </settings-update-warning-dialog>
+    </template>
+    <template is="dom-if" if="[[showTPMFirmwareUpdateDialog_]]"
+        restamp>
+      <os-settings-powerwash-dialog request-tpm-firmware-update
+          on-close="onPowerwashDialogClose_">
+      </os-settings-powerwash-dialog>
+    </template>
+  </template>
+  <script src="os_about_page.js"></script>
+</dom-module>

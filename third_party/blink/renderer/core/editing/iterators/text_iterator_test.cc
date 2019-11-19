@@ -32,11 +32,13 @@
 
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/editing/ephemeral_range.h"
+#include "third_party/blink/renderer/core/editing/position.h"
 #include "third_party/blink/renderer/core/editing/selection_template.h"
 #include "third_party/blink/renderer/core/editing/testing/editing_test_base.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/html/forms/text_control_element.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
 namespace text_iterator_test {
@@ -73,6 +75,10 @@ TextIteratorBehavior EmitsCharactersBetweenAllVisiblePositionsBehavior() {
   return TextIteratorBehavior::Builder()
       .SetEmitsCharactersBetweenAllVisiblePositions(true)
       .Build();
+}
+
+TextIteratorBehavior EmitsSpaceForNbspBehavior() {
+  return TextIteratorBehavior::Builder().SetEmitsSpaceForNbsp(true).Build();
 }
 
 struct DOMTree : NodeTraversal {
@@ -137,13 +143,13 @@ std::string TextIteratorTest::IteratePartial(
 template <typename Tree>
 std::string TextIteratorTest::IterateWithIterator(
     typename Tree::TextIteratorType& iterator) {
-  String text_chunks;
+  StringBuilder text_chunks;
   for (; !iterator.AtEnd(); iterator.Advance()) {
-    text_chunks.append('[');
-    text_chunks.append(iterator.GetText().GetTextForTesting());
-    text_chunks.append(']');
+    text_chunks.Append('[');
+    text_chunks.Append(iterator.GetText().GetTextForTesting());
+    text_chunks.Append(']');
   }
-  return std::string(text_chunks.Utf8().data());
+  return text_chunks.ToString().Utf8();
 }
 
 Range* TextIteratorTest::GetBodyRange() const {
@@ -548,76 +554,6 @@ TEST_P(TextIteratorTest, WhitespaceCollapseForReplacedElements) {
             Iterate<FlatTree>(CollapseTrailingSpaceBehavior()));
 }
 
-TEST_P(TextIteratorTest, copyTextTo) {
-  const char* body_content =
-      "<a id=host><b id=one>one</b> not appeared <b id=two>two</b></a>";
-  const char* shadow_content =
-      "three <content select=#two></content> <content select=#one></content> "
-      "zero";
-  SetBodyContent(body_content);
-  SetShadowContent(shadow_content, "host");
-
-  Element* host = GetDocument().getElementById("host");
-  const char* message = "|iter%d| should have emitted '%s'.";
-
-  EphemeralRangeTemplate<EditingStrategy> range1(
-      EphemeralRangeTemplate<EditingStrategy>::RangeOfContents(*host));
-  TextIteratorAlgorithm<EditingStrategy> iter1(range1.StartPosition(),
-                                               range1.EndPosition());
-  ForwardsTextBuffer output1;
-  iter1.CopyTextTo(&output1, 0, 2);
-  EXPECT_EQ("on", String(output1.Data(), output1.Size()))
-      << String::Format(message, 1, "on").Utf8().data();
-  iter1.CopyTextTo(&output1, 2, 1);
-  EXPECT_EQ("one", String(output1.Data(), output1.Size()))
-      << String::Format(message, 1, "one").Utf8().data();
-  iter1.Advance();
-  iter1.CopyTextTo(&output1, 0, 1);
-  EXPECT_EQ("onet", String(output1.Data(), output1.Size()))
-      << String::Format(message, 1, "onet").Utf8().data();
-  iter1.CopyTextTo(&output1, 1, 2);
-  EXPECT_EQ("onetwo", String(output1.Data(), output1.Size()))
-      << String::Format(message, 1, "onetwo").Utf8().data();
-
-  EphemeralRangeTemplate<EditingInFlatTreeStrategy> range2(
-      EphemeralRangeTemplate<EditingInFlatTreeStrategy>::RangeOfContents(
-          *host));
-  TextIteratorAlgorithm<EditingInFlatTreeStrategy> iter2(range2.StartPosition(),
-                                                         range2.EndPosition());
-  ForwardsTextBuffer output2;
-  iter2.CopyTextTo(&output2, 0, 3);
-  EXPECT_EQ("thr", String(output2.Data(), output2.Size()))
-      << String::Format(message, 2, "thr").Utf8().data();
-  iter2.CopyTextTo(&output2, 3, 3);
-  EXPECT_EQ("three ", String(output2.Data(), output2.Size()))
-      << String::Format(message, 2, "three ").Utf8().data();
-  iter2.Advance();
-  iter2.CopyTextTo(&output2, 0, 2);
-  EXPECT_EQ("three tw", String(output2.Data(), output2.Size()))
-      << String::Format(message, 2, "three tw").Utf8().data();
-  iter2.CopyTextTo(&output2, 2, 1);
-  EXPECT_EQ("three two", String(output2.Data(), output2.Size()))
-      << String::Format(message, 2, "three two").Utf8().data();
-  iter2.Advance();
-  iter2.CopyTextTo(&output2, 0, 1);
-  EXPECT_EQ("three two ", String(output2.Data(), output2.Size()))
-      << String::Format(message, 2, "three two ").Utf8().data();
-  iter2.Advance();
-  iter2.CopyTextTo(&output2, 0, 1);
-  EXPECT_EQ("three two o", String(output2.Data(), output2.Size()))
-      << String::Format(message, 2, "three two o").Utf8().data();
-  iter2.CopyTextTo(&output2, 1, 2);
-  EXPECT_EQ("three two one", String(output2.Data(), output2.Size()))
-      << String::Format(message, 2, "three two one").Utf8().data();
-  iter2.Advance();
-  iter2.CopyTextTo(&output2, 0, 2);
-  EXPECT_EQ("three two one z", String(output2.Data(), output2.Size()))
-      << String::Format(message, 2, "three two one z").Utf8().data();
-  iter2.CopyTextTo(&output2, 2, 3);
-  EXPECT_EQ("three two one zero", String(output2.Data(), output2.Size()))
-      << String::Format(message, 2, "three two one zero").Utf8().data();
-}
-
 TEST_P(TextIteratorTest, characterAt) {
   const char* body_content =
       "<a id=host><b id=one>one</b> not appeared <b id=two>two</b></a>";
@@ -671,30 +607,6 @@ TEST_P(TextIteratorTest, characterAt) {
   EXPECT_EQ('e', iter2.CharacterAt(2)) << message2;
   EXPECT_EQ('r', iter2.CharacterAt(3)) << message2;
   EXPECT_EQ('o', iter2.CharacterAt(4)) << message2;
-}
-
-TEST_P(TextIteratorTest, CopyWholeCodePoints) {
-  const char* body_content = "&#x13000;&#x13001;&#x13002; &#x13140;&#x13141;.";
-  SetBodyContent(body_content);
-
-  const UChar kExpected[] = {0xD80C, 0xDC00, 0xD80C, 0xDC01, 0xD80C, 0xDC02,
-                             ' ',    0xD80C, 0xDD40, 0xD80C, 0xDD41, '.'};
-
-  EphemeralRange range(EphemeralRange::RangeOfContents(GetDocument()));
-  TextIterator iter(range.StartPosition(), range.EndPosition());
-  ForwardsTextBuffer buffer;
-  EXPECT_EQ(2, iter.CopyTextTo(&buffer, 0, 1))
-      << "Should emit 2 UChars for 'U+13000'.";
-  EXPECT_EQ(4, iter.CopyTextTo(&buffer, 2, 3))
-      << "Should emit 4 UChars for 'U+13001U+13002'.";
-  EXPECT_EQ(3, iter.CopyTextTo(&buffer, 6, 2))
-      << "Should emit 3 UChars for ' U+13140'.";
-  EXPECT_EQ(2, iter.CopyTextTo(&buffer, 9, 2))
-      << "Should emit 2 UChars for 'U+13141'.";
-  EXPECT_EQ(1, iter.CopyTextTo(&buffer, 11, 1))
-      << "Should emit 1 UChar for '.'.";
-  for (int i = 0; i < 12; i++)
-    EXPECT_EQ(kExpected[i], buffer[i]);
 }
 
 // Regression test for crbug.com/630921
@@ -764,27 +676,22 @@ TEST_P(TextIteratorTest, StartAtFirstLetter) {
   Position start(text, 0);
   Position end(text, 4);
   TextIterator iter(start, end);
-  ForwardsTextBuffer buffer;
 
   EXPECT_FALSE(iter.AtEnd());
-  EXPECT_EQ(1, iter.length());
-  EXPECT_EQ(1, iter.CopyTextTo(&buffer, 0)) << "Should emit 'A'.";
+  EXPECT_EQ("A", iter.GetText().GetTextForTesting());
   EXPECT_EQ(text, iter.CurrentContainer());
   EXPECT_EQ(Position(text, 0), iter.StartPositionInCurrentContainer());
   EXPECT_EQ(Position(text, 1), iter.EndPositionInCurrentContainer());
 
   iter.Advance();
   EXPECT_FALSE(iter.AtEnd());
-  EXPECT_EQ(3, iter.length());
-  EXPECT_EQ(3, iter.CopyTextTo(&buffer, 0)) << "Should emit 'xyz'.";
+  EXPECT_EQ("xyz", iter.GetText().GetTextForTesting());
   EXPECT_EQ(text, iter.CurrentContainer());
   EXPECT_EQ(Position(text, 1), iter.StartPositionInCurrentContainer());
   EXPECT_EQ(Position(text, 4), iter.EndPositionInCurrentContainer());
 
   iter.Advance();
   EXPECT_TRUE(iter.AtEnd());
-
-  EXPECT_EQ("Axyz", String(buffer.Data()));
 }
 
 TEST_P(TextIteratorTest, StartInMultiCharFirstLetterWithCollapsedSpace) {
@@ -796,35 +703,29 @@ TEST_P(TextIteratorTest, StartInMultiCharFirstLetterWithCollapsedSpace) {
   Position start(text, 3);
   Position end(text, 10);
   TextIterator iter(start, end);
-  ForwardsTextBuffer buffer;
 
   EXPECT_FALSE(iter.AtEnd());
-  EXPECT_EQ(2, iter.length());
-  EXPECT_EQ(2, iter.CopyTextTo(&buffer, 0)) << "Should emit 'A)'.";
+  EXPECT_EQ("A)", iter.GetText().GetTextForTesting());
   EXPECT_EQ(text, iter.CurrentContainer());
   EXPECT_EQ(Position(text, 3), iter.StartPositionInCurrentContainer());
   EXPECT_EQ(Position(text, 5), iter.EndPositionInCurrentContainer());
 
   iter.Advance();
   EXPECT_FALSE(iter.AtEnd());
-  EXPECT_EQ(1, iter.length());
-  EXPECT_EQ(1, iter.CopyTextTo(&buffer, 0)) << "Should emit ' '.";
+  EXPECT_EQ(" ", iter.GetText().GetTextForTesting());
   EXPECT_EQ(text, iter.CurrentContainer());
   EXPECT_EQ(Position(text, 5), iter.StartPositionInCurrentContainer());
   EXPECT_EQ(Position(text, 6), iter.EndPositionInCurrentContainer());
 
   iter.Advance();
   EXPECT_FALSE(iter.AtEnd());
-  EXPECT_EQ(3, iter.length());
-  EXPECT_EQ(3, iter.CopyTextTo(&buffer, 0)) << "Should emit 'xyz'.";
+  EXPECT_EQ("xyz", iter.GetText().GetTextForTesting());
   EXPECT_EQ(text, iter.CurrentContainer());
   EXPECT_EQ(Position(text, 7), iter.StartPositionInCurrentContainer());
   EXPECT_EQ(Position(text, 10), iter.EndPositionInCurrentContainer());
 
   iter.Advance();
   EXPECT_TRUE(iter.AtEnd());
-
-  EXPECT_EQ("A) xyz", String(buffer.Data()));
 }
 
 TEST_P(TextIteratorTest, StartAndEndInMultiCharFirstLetterWithCollapsedSpace) {
@@ -836,19 +737,15 @@ TEST_P(TextIteratorTest, StartAndEndInMultiCharFirstLetterWithCollapsedSpace) {
   Position start(text, 3);
   Position end(text, 4);
   TextIterator iter(start, end);
-  ForwardsTextBuffer buffer;
 
   EXPECT_FALSE(iter.AtEnd());
-  EXPECT_EQ(1, iter.length());
-  EXPECT_EQ(1, iter.CopyTextTo(&buffer, 0)) << "Should emit 'A'.";
+  EXPECT_EQ("A", iter.GetText().GetTextForTesting());
   EXPECT_EQ(text, iter.CurrentContainer());
   EXPECT_EQ(Position(text, 3), iter.StartPositionInCurrentContainer());
   EXPECT_EQ(Position(text, 4), iter.EndPositionInCurrentContainer());
 
   iter.Advance();
   EXPECT_TRUE(iter.AtEnd());
-
-  EXPECT_EQ("A", String(buffer.Data()));
 }
 
 TEST_P(TextIteratorTest, StartAtRemainingText) {
@@ -859,19 +756,15 @@ TEST_P(TextIteratorTest, StartAtRemainingText) {
   Position start(text, 1);
   Position end(text, 4);
   TextIterator iter(start, end);
-  ForwardsTextBuffer buffer;
 
   EXPECT_FALSE(iter.AtEnd());
-  EXPECT_EQ(3, iter.length());
-  EXPECT_EQ(3, iter.CopyTextTo(&buffer, 0)) << "Should emit 'xyz'.";
+  EXPECT_EQ("xyz", iter.GetText().GetTextForTesting());
   EXPECT_EQ(text, iter.CurrentContainer());
   EXPECT_EQ(Position(text, 1), iter.StartPositionInCurrentContainer());
   EXPECT_EQ(Position(text, 4), iter.EndPositionInCurrentContainer());
 
   iter.Advance();
   EXPECT_TRUE(iter.AtEnd());
-
-  EXPECT_EQ("xyz", String(buffer.Data()));
 }
 
 TEST_P(TextIteratorTest, StartAtFirstLetterInPre) {
@@ -882,27 +775,22 @@ TEST_P(TextIteratorTest, StartAtFirstLetterInPre) {
   Position start(text, 0);
   Position end(text, 4);
   TextIterator iter(start, end);
-  ForwardsTextBuffer buffer;
 
   EXPECT_FALSE(iter.AtEnd());
-  EXPECT_EQ(1, iter.length());
-  EXPECT_EQ(1, iter.CopyTextTo(&buffer, 0)) << "Should emit 'A'.";
+  EXPECT_EQ("A", iter.GetText().GetTextForTesting());
   EXPECT_EQ(text, iter.CurrentContainer());
   EXPECT_EQ(Position(text, 0), iter.StartPositionInCurrentContainer());
   EXPECT_EQ(Position(text, 1), iter.EndPositionInCurrentContainer());
 
   iter.Advance();
   EXPECT_FALSE(iter.AtEnd());
-  EXPECT_EQ(3, iter.length());
-  EXPECT_EQ(3, iter.CopyTextTo(&buffer, 0)) << "Should emit 'xyz'.";
+  EXPECT_EQ("xyz", iter.GetText().GetTextForTesting());
   EXPECT_EQ(text, iter.CurrentContainer());
   EXPECT_EQ(Position(text, 1), iter.StartPositionInCurrentContainer());
   EXPECT_EQ(Position(text, 4), iter.EndPositionInCurrentContainer());
 
   iter.Advance();
   EXPECT_TRUE(iter.AtEnd());
-
-  EXPECT_EQ("Axyz", String(buffer.Data()));
 }
 
 TEST_P(TextIteratorTest, StartInMultiCharFirstLetterInPre) {
@@ -914,27 +802,22 @@ TEST_P(TextIteratorTest, StartInMultiCharFirstLetterInPre) {
   Position start(text, 1);
   Position end(text, 6);
   TextIterator iter(start, end);
-  ForwardsTextBuffer buffer;
 
   EXPECT_FALSE(iter.AtEnd());
-  EXPECT_EQ(2, iter.length());
-  EXPECT_EQ(2, iter.CopyTextTo(&buffer, 0)) << "Should emit 'A)'.";
+  EXPECT_EQ("A)", iter.GetText().GetTextForTesting());
   EXPECT_EQ(text, iter.CurrentContainer());
   EXPECT_EQ(Position(text, 1), iter.StartPositionInCurrentContainer());
   EXPECT_EQ(Position(text, 3), iter.EndPositionInCurrentContainer());
 
   iter.Advance();
   EXPECT_FALSE(iter.AtEnd());
-  EXPECT_EQ(3, iter.length());
-  EXPECT_EQ(3, iter.CopyTextTo(&buffer, 0)) << "Should emit 'xyz'.";
+  EXPECT_EQ("xyz", iter.GetText().GetTextForTesting());
   EXPECT_EQ(text, iter.CurrentContainer());
   EXPECT_EQ(Position(text, 3), iter.StartPositionInCurrentContainer());
   EXPECT_EQ(Position(text, 6), iter.EndPositionInCurrentContainer());
 
   iter.Advance();
   EXPECT_TRUE(iter.AtEnd());
-
-  EXPECT_EQ("A)xyz", String(buffer.Data()));
 }
 
 TEST_P(TextIteratorTest, StartAndEndInMultiCharFirstLetterInPre) {
@@ -946,19 +829,15 @@ TEST_P(TextIteratorTest, StartAndEndInMultiCharFirstLetterInPre) {
   Position start(text, 1);
   Position end(text, 2);
   TextIterator iter(start, end);
-  ForwardsTextBuffer buffer;
 
   EXPECT_FALSE(iter.AtEnd());
-  EXPECT_EQ(1, iter.length());
-  EXPECT_EQ(1, iter.CopyTextTo(&buffer, 0)) << "Should emit 'A'.";
+  EXPECT_EQ("A", iter.GetText().GetTextForTesting());
   EXPECT_EQ(text, iter.CurrentContainer());
   EXPECT_EQ(Position(text, 1), iter.StartPositionInCurrentContainer());
   EXPECT_EQ(Position(text, 2), iter.EndPositionInCurrentContainer());
 
   iter.Advance();
   EXPECT_TRUE(iter.AtEnd());
-
-  EXPECT_EQ("A", String(buffer.Data()));
 }
 
 TEST_P(TextIteratorTest, StartAtRemainingTextInPre) {
@@ -969,19 +848,15 @@ TEST_P(TextIteratorTest, StartAtRemainingTextInPre) {
   Position start(text, 1);
   Position end(text, 4);
   TextIterator iter(start, end);
-  ForwardsTextBuffer buffer;
 
   EXPECT_FALSE(iter.AtEnd());
-  EXPECT_EQ(3, iter.length());
-  EXPECT_EQ(3, iter.CopyTextTo(&buffer, 0)) << "Should emit 'xyz'.";
+  EXPECT_EQ("xyz", iter.GetText().GetTextForTesting());
   EXPECT_EQ(text, iter.CurrentContainer());
   EXPECT_EQ(Position(text, 1), iter.StartPositionInCurrentContainer());
   EXPECT_EQ(Position(text, 4), iter.EndPositionInCurrentContainer());
 
   iter.Advance();
   EXPECT_TRUE(iter.AtEnd());
-
-  EXPECT_EQ("xyz", String(buffer.Data()));
 }
 
 TEST_P(TextIteratorTest, VisitsDisplayContentsChildren) {
@@ -1149,6 +1024,22 @@ TEST_P(TextIteratorTest, TextOffsetMappingAndFlatTree) {
   EXPECT_EQ(
       "[foo ][,][ bar]",
       Iterate<FlatTree>(EmitsCharactersBetweenAllVisiblePositionsBehavior()));
+}
+
+TEST_P(TextIteratorTest, EmitsSpaceForNbsp) {
+  SetBodyContent("foo &nbsp;bar");
+  EXPECT_EQ("[foo  bar]", Iterate<DOMTree>(EmitsSpaceForNbspBehavior()));
+}
+
+TEST_P(TextIteratorTest, IterateWithLockedSubtree) {
+  SetBodyContent("<div id='parent'>foo<div id='locked'>text</div>bar</div>");
+  auto* locked = GetDocument().getElementById("locked");
+  locked->setAttribute("rendersubtree", "invisible activatable");
+  GetDocument().UpdateStyleAndLayout();
+  auto* parent = GetDocument().getElementById("parent");
+  const Position start_position = Position::FirstPositionInNode(*parent);
+  const Position end_position = Position::LastPositionInNode(*parent);
+  EXPECT_EQ(6, TextIterator::RangeLength(start_position, end_position));
 }
 
 }  // namespace text_iterator_test

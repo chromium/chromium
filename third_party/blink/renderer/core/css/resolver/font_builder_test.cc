@@ -17,7 +17,8 @@ namespace blink {
 
 class FontBuilderTest {
  public:
-  FontBuilderTest() : dummy_(DummyPageHolder::Create(IntSize(800, 600))) {
+  FontBuilderTest()
+      : dummy_(std::make_unique<DummyPageHolder>(IntSize(800, 600))) {
     GetSettings().SetDefaultFontSize(16.0f);
   }
 
@@ -166,6 +167,13 @@ static void FontKerningValue(FontBuilder& b) {
   b.SetKerning(FontDescription::kNoneKerning);
 }
 
+static void FontOpticalSizingBase(FontDescription& d) {
+  d.SetFontOpticalSizing(kAutoOpticalSizing);
+}
+static void FontOpticalSizingValue(FontBuilder& b) {
+  b.SetFontOpticalSizing(kNoneOpticalSizing);
+}
+
 static void FontFontSmoothingBase(FontDescription& d) {
   d.SetFontSmoothing(kAntialiased);
 }
@@ -206,6 +214,7 @@ INSTANTIATE_TEST_SUITE_P(
         FunctionPair(FontKerningBase, FontKerningValue),
         FunctionPair(FontFontSmoothingBase, FontFontSmoothingValue),
         FunctionPair(FontSizeBase, FontSizeValue),
-        FunctionPair(FontScriptBase, FontScriptValue)));
+        FunctionPair(FontScriptBase, FontScriptValue),
+        FunctionPair(FontOpticalSizingBase, FontOpticalSizingValue)));
 
 }  // namespace blink

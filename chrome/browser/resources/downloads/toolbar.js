@@ -2,16 +2,32 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-cr.define('downloads', function() {
-  const Toolbar = Polymer({
+import {Polymer, html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {SearchService} from './search_service.js';
+import {BrowserProxy} from './browser_proxy.js';
+import 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.m.js';
+import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
+import {getInstance} from 'chrome://resources/cr_elements/cr_toast/cr_toast_manager.m.js';
+import 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar.m.js';
+import 'chrome://resources/cr_elements/hidden_style_css.m.js';
+import 'chrome://resources/cr_elements/icons.m.js';
+import 'chrome://resources/cr_elements/shared_vars_css.m.js';
+import {assert} from 'chrome://resources/js/assert.m.js';
+import 'chrome://resources/js/util.m.js';
+import 'chrome://resources/polymer/v3_0/paper-styles/color.js';
+import './strings.m.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+
+  Polymer({
     is: 'downloads-toolbar',
 
+    _template: html`{__html_template__}`,
+
     properties: {
-      downloadsShowing: {
-        reflectToAttribute: true,
+      hasClearableDownloads: {
         type: Boolean,
         value: false,
-        observer: 'downloadsShowingChanged_',
+        observer: 'updateClearAll_',
       },
 
       spinnerActive: {
@@ -25,35 +41,33 @@ cr.define('downloads', function() {
 
     /** @override */
     ready: function() {
-      this.mojoHandler_ = downloads.BrowserProxy.getInstance().handler;
+      this.mojoHandler_ = BrowserProxy.getInstance().handler;
     },
 
     /** @return {boolean} Whether removal can be undone. */
     canUndo: function() {
-      return !this.$.toolbar.getSearchField().isSearchFocused();
+      return !this.isSearchFocused();
     },
 
     /** @return {boolean} Whether "Clear all" should be allowed. */
     canClearAll: function() {
-      return this.getSearchText().length == 0 && this.downloadsShowing;
+      return this.getSearchText().length == 0 && this.hasClearableDownloads;
     },
 
     /** @return {string} The full text being searched. */
     getSearchText: function() {
-      return this.$.toolbar.getSearchField().getValue();
+      return /** @type {!CrToolbarElement} */ (
+          this.$.toolbar).getSearchField().getValue();
     },
 
     focusOnSearchInput: function() {
-      this.$.toolbar.getSearchField().showAndFocus();
+      return /** @type {!CrToolbarElement} */ (
+          this.$.toolbar).getSearchField().showAndFocus();
     },
 
     isSearchFocused: function() {
-      return this.$.toolbar.getSearchField().isSearchFocused();
-    },
-
-    /** @private */
-    downloadsShowingChanged_: function() {
-      this.updateClearAll_();
+      return /** @type {!CrToolbarElement} */ (
+          this.$.toolbar).getSearchField().isSearchFocused();
     },
 
     /** @private */
@@ -61,6 +75,7 @@ cr.define('downloads', function() {
       assert(this.canClearAll());
       this.mojoHandler_.clearAll();
       this.$.moreActionsMenu.close();
+      getInstance().show(loadTimeData.getString('toastClearedAll'), true);
     },
 
     /** @private */
@@ -73,7 +88,7 @@ cr.define('downloads', function() {
      * @private
      */
     onSearchChanged_: function(event) {
-      const searchService = downloads.SearchService.getInstance();
+      const searchService = SearchService.getInstance();
       if (searchService.search(event.detail)) {
         this.spinnerActive = searchService.isSearching();
       }
@@ -91,6 +106,3 @@ cr.define('downloads', function() {
       this.$$('.clear-all').hidden = !this.canClearAll();
     },
   });
-
-  return {Toolbar: Toolbar};
-});

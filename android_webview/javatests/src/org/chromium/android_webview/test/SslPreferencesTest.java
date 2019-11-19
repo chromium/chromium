@@ -38,7 +38,7 @@ public class SslPreferencesTest {
     private static final String HELLO_WORLD_TITLE = "Hello, World!";
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         mContentsClient = new TestAwContentsClient();
         mTestContainerView = mActivityTestRule.createAwTestContainerViewOnMainSync(mContentsClient);
         mAwContents = mTestContainerView.getAwContents();

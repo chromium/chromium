@@ -44,6 +44,7 @@ struct PortStatus {
   bool peer_remote;
   size_t queued_message_count;
   size_t queued_num_bytes;
+  size_t unacknowledged_message_count;
 };
 
 class MessageFilter;
@@ -140,6 +141,16 @@ class COMPONENT_EXPORT(MOJO_CORE_PORTS) Node {
   int SendUserMessage(const PortRef& port_ref,
                       std::unique_ptr<UserMessageEvent> message);
 
+  // Makes the port send acknowledge requests to its conjugate to acknowledge
+  // at least every |sequence_number_acknowledge_interval| messages as they're
+  // read from the conjugate. The number of unacknowledged messages is exposed
+  // in the |unacknowledged_message_count| field of PortStatus. This allows
+  // bounding the number of unread and/or in-transit messages from this port
+  // to its conjugate between zero and |unacknowledged_message_count|.
+  int SetAcknowledgeRequestInterval(
+      const PortRef& port_ref,
+      uint64_t sequence_number_acknowledge_interval);
+
   // Corresponding to NodeDelegate::ForwardEvent.
   int AcceptEvent(ScopedEvent event);
 
@@ -200,6 +211,9 @@ class COMPONENT_EXPORT(MOJO_CORE_PORTS) Node {
   int OnObserveProxyAck(std::unique_ptr<ObserveProxyAckEvent> event);
   int OnObserveClosure(std::unique_ptr<ObserveClosureEvent> event);
   int OnMergePort(std::unique_ptr<MergePortEvent> event);
+  int OnUserMessageReadAckRequest(
+      std::unique_ptr<UserMessageReadAckRequestEvent> event);
+  int OnUserMessageReadAck(std::unique_ptr<UserMessageReadAckEvent> event);
 
   int AddPortWithName(const PortName& port_name, scoped_refptr<Port> port);
   void ErasePort(const PortName& port_name);
@@ -248,6 +262,21 @@ class COMPONENT_EXPORT(MOJO_CORE_PORTS) Node {
                      Port* port0,
                      const PortName& port1_name,
                      Port* port1);
+
+  // Sends an acknowledge request to the peer if the port has a non-zero
+  // |sequence_num_acknowledge_interval|. This needs to be done when the port's
+  // peer changes, as the previous peer proxy may not have forwarded any prior
+  // acknowledge request before deleting itself.
+  void MaybeResendAckRequest(const PortRef& port_ref);
+
+  // Forwards a stored acknowledge request to the peer if the proxy has a
+  // non-zero |sequence_num_acknowledge_interval|.
+  void MaybeForwardAckRequest(const PortRef& port_ref);
+
+  // Sends an acknowledge of the most recently read sequence number to the peer
+  // if any messages have been read, and the port has a non-zero
+  // |sequence_num_to_acknowledge|.
+  void MaybeResendAck(const PortRef& port_ref);
 
   const NodeName name_;
   const DelegateHolder delegate_;

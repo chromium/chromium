@@ -1,0 +1,73 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//mojo/public/tools/bindings/mojom.gni")
+
+config("app_shim_warnings") {
+  if (is_mac) {
+    # TODO(thakis): Remove this once http://crbug.com/383820 is figured out
+    cflags = [ "-Wno-nonnull" ]
+  }
+}
+
+# This component is for code that is to run in the app shim process.
+component("app_shim") {
+  assert(is_mac)
+
+  configs += [ ":app_shim_warnings" ]
+  sources = [
+    "alert.h",
+    "alert.mm",
+    "application_bridge.h",
+    "application_bridge.mm",
+    "bridged_content_view.h",
+    "bridged_content_view.mm",
+    "bridged_content_view_touch_bar.mm",
+    "browser_native_widget_window_mac.h",
+    "browser_native_widget_window_mac.mm",
+    "color_panel_bridge.h",
+    "color_panel_bridge.mm",
+    "drag_drop_client.h",
+    "mouse_capture.h",
+    "mouse_capture.mm",
+    "mouse_capture_delegate.h",
+    "native_widget_mac_frameless_nswindow.h",
+    "native_widget_mac_frameless_nswindow.mm",
+    "native_widget_mac_nswindow.h",
+    "native_widget_mac_nswindow.mm",
+    "native_widget_ns_window_bridge.h",
+    "native_widget_ns_window_bridge.mm",
+    "native_widget_ns_window_host_helper.h",
+    "ns_view_ids.h",
+    "ns_view_ids.mm",
+    "remote_cocoa_app_shim_export.h",
+    "select_file_dialog_bridge.h",
+    "select_file_dialog_bridge.mm",
+    "views_nswindow_delegate.h",
+    "views_nswindow_delegate.mm",
+    "views_scrollbar_bridge.h",
+    "views_scrollbar_bridge.mm",
+    "window_move_loop.h",
+    "window_move_loop.mm",
+    "window_touch_bar_delegate.h",
+  ]
+  defines = [ "REMOTE_COCOA_APP_SHIM_IMPLEMENTATION" ]
+  deps = [
+    "//base",
+    "//base:i18n",
+    "//components/crash/core/common",
+    "//components/remote_cocoa/common:mojo",
+    "//mojo/public/cpp/bindings",
+    "//ui/accelerated_widget_mac",
+    "//ui/base",
+    "//ui/base/ime:ime",
+    "//ui/events",
+    "//ui/gfx",
+    "//ui/strings:ui_strings_grit",
+  ]
+  libs = [
+    "Cocoa.framework",
+    "QuartzCore.framework",
+  ]
+}

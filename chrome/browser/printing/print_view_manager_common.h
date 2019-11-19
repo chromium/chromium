@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_PRINTING_PRINT_VIEW_MANAGER_COMMON_H_
 #define CHROME_BROWSER_PRINTING_PRINT_VIEW_MANAGER_COMMON_H_
 
+#include "components/printing/common/print.mojom.h"
 #include "printing/buildflags/buildflags.h"
 
 namespace content {
@@ -15,7 +16,10 @@ class WebContents;
 namespace printing {
 
 // Start printing using the appropriate PrintViewManagerBase subclass.
+// Optionally provide a printing::mojom::PrintRenderer to render print
+// documents.
 void StartPrint(content::WebContents* web_contents,
+                mojom::PrintRendererAssociatedPtrInfo print_renderer,
                 bool print_preview_disabled,
                 bool has_selection);
 
@@ -25,6 +29,10 @@ void StartBasicPrint(content::WebContents* contents);
 // If the user has selected text in the currently focused frame, print only that
 // frame (this makes print selection work for multiple frames).
 content::RenderFrameHost* GetFrameToPrint(content::WebContents* contents);
+
+// If we have a single full-page embedded mime handler view guest, print the
+// guest's WebContents instead.
+content::WebContents* GetWebContentsToUse(content::WebContents* contents);
 
 }  // namespace printing
 

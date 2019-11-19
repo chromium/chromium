@@ -14,4 +14,4 @@ Technical Documentation:
 
 * [Bindings System](/extensions/renderer/bindings.md)
 
-* [Extension events](/extensions/common/events.md)
+* [Extension events](/extensions/docs/events.md)

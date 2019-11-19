@@ -43,4 +43,9 @@ void StatusAreaWidgetTestApi::TapSelectToSpeakTray(
   std::move(callback).Run();
 }
 
+void StatusAreaWidgetTestApi::SetCollapseState(
+    StatusAreaWidget::CollapseState collapse_state) {
+  widget_->collapse_state_ = collapse_state;
+}
+
 }  // namespace ash

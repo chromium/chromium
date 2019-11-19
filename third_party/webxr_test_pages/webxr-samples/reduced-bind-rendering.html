@@ -36,6 +36,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
     <!--The polyfill is not needed for browser that have native API support,
         but is linked by these samples for wider compatibility.-->
     <!--script src='https://cdn.jsdelivr.net/npm/webxr-polyfill@latest/build/webxr-polyfill.js'></script-->
+    <script src='js/xrray-polyfill.js' type='module'></script>
     <script src='js/webxr-polyfill.js'></script>
 
     <script src='js/webxr-button.js'></script>
@@ -48,7 +49,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
           This sample demonstrates a simple technique to reduce the number of
           state changes an application needs to make while rendering, potentially
           enabling better performance.
-          <a class="back" href="./">Back</a>
+          <a class="back" href="./index.html">Back</a>
         </p>
       </details>
     </header>
@@ -78,16 +79,13 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
       function initXR() {
         xrButton = new XRDeviceButton({
           onRequestSession: onRequestSession,
-          onEndSession: onEndSession
+          onEndSession: onEndSession,
+          supportedSessionTypes: ['immersive-vr']
         });
         document.querySelector('header').appendChild(xrButton.domElement);
 
         if (navigator.xr) {
-          navigator.xr.supportsSessionMode('immersive-vr').then(() => {
-            xrButton.enabled = true;
-          });
-
-          navigator.xr.requestSession().then(onSessionStarted);
+          requestInlineSession();
         } else {
           initFallback();
         }
@@ -100,7 +98,6 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
       // finger drag.
       function initFallback() {
         initGL();
-        document.body.appendChild(gl.canvas);
         let fallbackHelper = new FallbackHelper(scene, gl);
       }
 
@@ -111,6 +108,15 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
         gl = createWebGLContext({
           xrCompatible: true
         });
+        document.body.appendChild(gl.canvas);
+
+        function onResize () {
+          gl.canvas.width = (gl.canvas.offsetWidth * window.devicePixelRatio);
+          gl.canvas.height = (gl.canvas.offsetHeight * window.devicePixelRatio);
+        }
+        window.addEventListener('resize', onResize);
+        onResize();
+
         // Set up a non-black clear color so that we can see if something renders wrong.
         gl.clearColor(0.1, 0.2, 0.3, 1.0);
 
@@ -120,10 +126,19 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
       }
 
       function onRequestSession() {
-        navigator.xr.requestSession({ mode: 'immersive-vr' }).then((session) => {
+        navigator.xr.requestSession('immersive-vr', {requiredFeatures: ['local']}).then((session) => {
+          session.mode = 'immersive-vr';
           xrButton.setSession(session);
           onSessionStarted(session);
         });
+      }
+
+      function requestInlineSession(options) {
+        return navigator.xr.requestSession('inline', options)
+          .then((session) => {
+            session.mode = 'inline';
+            return onSessionStarted(session);
+          });
       }
 
       function onSessionStarted(session) {
@@ -131,15 +146,21 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
         initGL();
 
-        let outputCanvas = makeCanvas();
-        document.body.appendChild(outputCanvas);
-
         session.updateRenderState({
-            baseLayer: new XRWebGLLayer(session, gl),
-            outputContext: outputCanvas.getContext('xrpresent')
+            baseLayer: new XRWebGLLayer(session, gl)
         });
 
-        session.requestReferenceSpace({ type: 'stationary', subtype: 'eye-level' }).then((refSpace) => {
+        session.requestReferenceSpace('local').then((refSpace) => {
+          return refSpace;
+        }, (e) => {
+          if (!session.mode.startsWith('immersive')) {
+            // If we're in inline mode, our underlying platform may not support
+            // the stationary reference space, but an identity space is guaranteed.
+            return session.requestReferenceSpace('viewer');
+          } else {
+            throw e;
+          }
+        }).then((refSpace) => {
           if (session.mode.startsWith('immersive')) {
             xrImmersiveRefSpace = refSpace;
           } else {
@@ -147,6 +168,8 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
           }
           session.requestAnimationFrame(onXRFrame);
         });
+
+        return session;
       }
 
       function onEndSession(session) {
@@ -156,10 +179,6 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
       function onSessionEnded(event) {
         if (event.session.mode.startsWith('immersive')) {
           xrButton.setSession(null);
-        }
-
-        if (event.session.renderState.outputContext) {
-          document.body.removeChild(event.session.renderState.outputContext.canvas);
         }
       }
 
@@ -210,7 +229,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
           // Draw(views):
           //   for each object in scene:
-          //     bindProgram();  
+          //     bindProgram();
           //     bindUniforms();
           //     bindBuffers();
           //     bindTextures();
@@ -234,7 +253,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
             // scene.drawXRViews() function, which handles gathering these
             // values internally.
             renderView.projectionMatrix = view.projectionMatrix;
-            renderView.viewMatrix = view.viewMatrix;
+            renderView.viewMatrix = view.transform.inverse.matrix;
             renderView.viewport = session.renderState.baseLayer.getViewport(view);
             views.push(renderView);
           }

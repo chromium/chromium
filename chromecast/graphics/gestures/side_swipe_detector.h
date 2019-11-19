@@ -5,6 +5,8 @@
 #ifndef CHROMECAST_GRAPHICS_GESTURES_SIDE_SWIPE_DETECTOR_H_
 #define CHROMECAST_GRAPHICS_GESTURES_SIDE_SWIPE_DETECTOR_H_
 
+#include <deque>
+
 #include "base/timer/elapsed_timer.h"
 #include "chromecast/graphics/gestures/cast_gesture_handler.h"
 #include "ui/events/event_rewriter.h"
@@ -32,12 +34,9 @@ class SideSwipeDetector : public ui::EventRewriter {
                                       const gfx::Rect& screen_bounds) const;
 
   // Overridden from ui::EventRewriter
-  ui::EventRewriteStatus RewriteEvent(
+  ui::EventDispatchDetails RewriteEvent(
       const ui::Event& event,
-      std::unique_ptr<ui::Event>* rewritten_event) override;
-  ui::EventRewriteStatus NextDispatchEvent(
-      const ui::Event& last_event,
-      std::unique_ptr<ui::Event>* new_event) override;
+      const Continuation continuation) override;
 
  private:
   void StashEvent(const ui::TouchEvent& event);

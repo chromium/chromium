@@ -8,13 +8,12 @@
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/optional.h"
-#include "third_party/blink/renderer/core/animation/animatable/animatable_value.h"
 #include "third_party/blink/renderer/core/animation/animation_effect.h"
 #include "third_party/blink/renderer/core/animation/effect_model.h"
 #include "third_party/blink/renderer/core/animation/property_handle.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 
 namespace blink {
@@ -23,6 +22,7 @@ using PropertyHandleSet = HashSet<PropertyHandle>;
 
 class Element;
 class ComputedStyle;
+class CompositorKeyframeValue;
 class V8ObjectBuilder;
 
 // A base class representing an animation keyframe.
@@ -60,7 +60,7 @@ class V8ObjectBuilder;
 // from the keyframe effect. See KeyframeEffectModelBase::EnsureKeyframeGroups.
 //
 // FIXME: Make Keyframe immutable
-class CORE_EXPORT Keyframe : public GarbageCollectedFinalized<Keyframe> {
+class CORE_EXPORT Keyframe : public GarbageCollected<Keyframe> {
  public:
   virtual ~Keyframe() = default;
 
@@ -118,7 +118,7 @@ class CORE_EXPORT Keyframe : public GarbageCollectedFinalized<Keyframe> {
   // Represents a property-specific keyframe as defined in the spec. Refer to
   // the Keyframe class-level documentation for more details.
   class CORE_EXPORT PropertySpecificKeyframe
-      : public GarbageCollectedFinalized<PropertySpecificKeyframe> {
+      : public GarbageCollected<PropertySpecificKeyframe> {
    public:
     PropertySpecificKeyframe(double offset,
                              scoped_refptr<TimingFunction> easing,
@@ -134,8 +134,8 @@ class CORE_EXPORT Keyframe : public GarbageCollectedFinalized<Keyframe> {
     virtual PropertySpecificKeyframe* CloneWithOffset(double offset) const = 0;
 
     // FIXME: Remove this once CompositorAnimations no longer depends on
-    // AnimatableValues
-    virtual bool PopulateAnimatableValue(
+    // CompositorKeyframeValues
+    virtual bool PopulateCompositorKeyframeValue(
         const PropertyHandle&,
         Element&,
         const ComputedStyle& base_style,
@@ -143,11 +143,9 @@ class CORE_EXPORT Keyframe : public GarbageCollectedFinalized<Keyframe> {
       return false;
     }
 
-    virtual const AnimatableValue* GetAnimatableValue() const = 0;
+    virtual const CompositorKeyframeValue* GetCompositorKeyframeValue()
+        const = 0;
 
-    virtual bool IsAnimatableValuePropertySpecificKeyframe() const {
-      return false;
-    }
     virtual bool IsCSSPropertySpecificKeyframe() const { return false; }
     virtual bool IsSVGPropertySpecificKeyframe() const { return false; }
     virtual bool IsTransitionPropertySpecificKeyframe() const { return false; }

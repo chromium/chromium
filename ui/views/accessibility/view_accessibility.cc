@@ -9,6 +9,7 @@
 
 #include "base/memory/ptr_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/platform/ax_platform_node.h"
 #include "ui/base/buildflags.h"
 #include "ui/views/view.h"
@@ -58,25 +59,14 @@ void ViewAccessibility::AddVirtualChildView(
   DCHECK(virtual_view);
   if (virtual_view->parent_view() == this)
     return;
-  AddVirtualChildViewAt(std::move(virtual_view), virtual_child_count());
-}
-
-void ViewAccessibility::AddVirtualChildViewAt(
-    std::unique_ptr<AXVirtualView> virtual_view,
-    int index) {
-  DCHECK(virtual_view);
   DCHECK(!virtual_view->parent_view()) << "This |view| already has a View "
                                           "parent. Call RemoveVirtualChildView "
                                           "first.";
   DCHECK(!virtual_view->virtual_parent_view()) << "This |view| already has an "
                                                   "AXVirtualView parent. Call "
                                                   "RemoveChildView first.";
-  DCHECK_GE(index, 0);
-  DCHECK_LE(index, virtual_child_count());
-
   virtual_view->set_parent_view(this);
-  virtual_children_.insert(virtual_children_.begin() + index,
-                           std::move(virtual_view));
+  virtual_children_.push_back(std::move(virtual_view));
 }
 
 std::unique_ptr<AXVirtualView> ViewAccessibility::RemoveVirtualChildView(
@@ -129,6 +119,8 @@ const ui::AXUniqueId& ViewAccessibility::GetUniqueId() const {
 }
 
 void ViewAccessibility::GetAccessibleNodeData(ui::AXNodeData* data) const {
+  data->id = GetUniqueId().Get();
+
   // Views may misbehave if their widget is closed; return an unknown role
   // rather than possibly crashing.
   const views::Widget* widget = view_->GetWidget();
@@ -141,6 +133,15 @@ void ViewAccessibility::GetAccessibleNodeData(ui::AXNodeData* data) const {
   view_->GetAccessibleNodeData(data);
   if (custom_data_.role != ax::mojom::Role::kUnknown)
     data->role = custom_data_.role;
+  if (data->role == ax::mojom::Role::kAlertDialog) {
+    // When an alert dialog is used, indicate this with xml-roles. This helps
+    // JAWS understand that it's a dialog and not just an ordinary alert, even
+    // though xml-roles is normally used to expose ARIA roles in web content.
+    // Specifically, this enables the JAWS Insert+T read window title command.
+    // Note: if an alert has focusable descendants such as buttons, it should
+    // use kAlertDialog, not kAlert.
+    data->AddStringAttribute(ax::mojom::StringAttribute::kRole, "alertdialog");
+  }
 
   if (custom_data_.HasStringAttribute(ax::mojom::StringAttribute::kName)) {
     data->SetName(
@@ -153,19 +154,29 @@ void ViewAccessibility::GetAccessibleNodeData(ui::AXNodeData* data) const {
         ax::mojom::StringAttribute::kDescription));
   }
 
+  if (custom_data_.GetHasPopup() != ax::mojom::HasPopup::kFalse)
+    data->SetHasPopup(custom_data_.GetHasPopup());
+
   static const ax::mojom::IntAttribute kOverridableIntAttributes[]{
       ax::mojom::IntAttribute::kPosInSet,
       ax::mojom::IntAttribute::kSetSize,
   };
-
   for (auto attribute : kOverridableIntAttributes) {
     if (custom_data_.HasIntAttribute(attribute))
       data->AddIntAttribute(attribute, custom_data_.GetIntAttribute(attribute));
   }
 
+  static const ax::mojom::IntListAttribute kOverridableIntListAttributes[]{
+      ax::mojom::IntListAttribute::kDescribedbyIds,
+  };
+  for (auto attribute : kOverridableIntListAttributes) {
+    if (custom_data_.HasIntListAttribute(attribute))
+      data->AddIntListAttribute(attribute,
+                                custom_data_.GetIntListAttribute(attribute));
+  }
+
   if (!data->HasStringAttribute(ax::mojom::StringAttribute::kDescription)) {
-    base::string16 tooltip;
-    view_->GetTooltipText(gfx::Point(), &tooltip);
+    base::string16 tooltip = view_->GetTooltipText(gfx::Point());
     // Some screen readers announce the accessible description right after the
     // accessible name. Only use the tooltip as the accessible description if
     // it's different from the name, otherwise users might be puzzled as to why
@@ -184,13 +195,21 @@ void ViewAccessibility::GetAccessibleNodeData(ui::AXNodeData* data) const {
   data->AddStringAttribute(ax::mojom::StringAttribute::kClassName,
                            view_->GetClassName());
 
+  if (IsIgnored()) {
+    // Prevent screen readers from navigating to or speaking ignored nodes.
+    data->AddState(ax::mojom::State::kInvisible);
+    data->AddState(ax::mojom::State::kIgnored);
+    data->role = ax::mojom::Role::kIgnored;
+    return;
+  }
+
   if (view_->IsAccessibilityFocusable())
     data->AddState(ax::mojom::State::kFocusable);
 
-  if (!view_->enabled())
+  if (!view_->GetEnabled())
     data->SetRestriction(ax::mojom::Restriction::kDisabled);
 
-  if (!view_->visible() && data->role != ax::mojom::Role::kAlert)
+  if (!view_->GetVisible() && data->role != ax::mojom::Role::kAlert)
     data->AddState(ax::mojom::State::kInvisible);
 
   if (view_->context_menu_controller())
@@ -236,9 +255,36 @@ void ViewAccessibility::OverrideBounds(const gfx::RectF& bounds) {
   custom_data_.relative_bounds.bounds = bounds;
 }
 
+void ViewAccessibility::OverrideDescribedBy(View* described_by_view) {
+  int described_by_id =
+      described_by_view->GetViewAccessibility().GetUniqueId().Get();
+  custom_data_.AddIntListAttribute(ax::mojom::IntListAttribute::kDescribedbyIds,
+                                   {described_by_id});
+}
+
+void ViewAccessibility::OverrideHasPopup(const ax::mojom::HasPopup has_popup) {
+  custom_data_.SetHasPopup(has_popup);
+}
+
 void ViewAccessibility::OverridePosInSet(int pos_in_set, int set_size) {
   custom_data_.AddIntAttribute(ax::mojom::IntAttribute::kPosInSet, pos_in_set);
   custom_data_.AddIntAttribute(ax::mojom::IntAttribute::kSetSize, set_size);
+}
+
+void ViewAccessibility::OverrideNextFocus(Widget* widget) {
+  next_focus_ = widget;
+}
+
+void ViewAccessibility::OverridePreviousFocus(Widget* widget) {
+  previous_focus_ = widget;
+}
+
+Widget* ViewAccessibility::GetNextFocus() {
+  return next_focus_;
+}
+
+Widget* ViewAccessibility::GetPreviousFocus() {
+  return previous_focus_;
 }
 
 gfx::NativeViewAccessible ViewAccessibility::GetNativeObject() {

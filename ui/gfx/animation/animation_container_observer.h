@@ -17,11 +17,13 @@ class ANIMATION_EXPORT AnimationContainerObserver {
  public:
   // Invoked on every tick of the timer managed by the container and after
   // all the animations have updated.
-  virtual void AnimationContainerProgressed(
-      AnimationContainer* container) = 0;
+  virtual void AnimationContainerProgressed(AnimationContainer* container) {}
 
   // Invoked when no more animations are being managed by this container.
-  virtual void AnimationContainerEmpty(AnimationContainer* container) = 0;
+  virtual void AnimationContainerEmpty(AnimationContainer* container) {}
+
+  // Invoked from AnimationContainer's destructor.
+  virtual void AnimationContainerShuttingDown(AnimationContainer* container) {}
 
  protected:
   virtual ~AnimationContainerObserver() {}

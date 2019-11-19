@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 
+#include "base/ios/ios_util.h"
 #include "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/ui/util/ui_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -32,19 +33,34 @@ void ExpectInterpolatedColor(UIColor* firstColor,
 
 using UIKitUIUtilTest = PlatformTest;
 
-// Verify the assumption about UIViewController that on iPad all orientations
-// are supported, and all orientations but Portrait Upside-Down on iPhone and
-// iPod Touch.
+// Verify the assumption about UIViewController that on iPad and iOS 13 all
+// orientations are supported, and all orientations but Portrait Upside-Down on
+// iOS 12 iPhone and iPod Touch.
 TEST_F(UIKitUIUtilTest, UIViewControllerSupportedOrientationsTest) {
   UIViewController* viewController =
       [[UIViewController alloc] initWithNibName:nil bundle:nil];
+
   if (IsIPadIdiom()) {
     EXPECT_EQ(UIInterfaceOrientationMaskAll,
               [viewController supportedInterfaceOrientations]);
-  } else {
+    return;
+  }
+
+  // Running on iPhone iOS 12 or earlier.
+  if (!base::ios::IsRunningOnIOS13OrLater()) {
     EXPECT_EQ(UIInterfaceOrientationMaskAllButUpsideDown,
               [viewController supportedInterfaceOrientations]);
+    return;
   }
+
+  // Running on iOS 13 iPhone.
+
+  // Starting with iOS 13, the default [UIViewController
+  // supportedInterfaceOrientations] returns UIInterfaceOrientationMaskAll.
+  // However, this is only true if the application was built with the Xcode 11
+  // SDK (in order to preserve old behavior).
+  UIInterfaceOrientationMask expectedMask = UIInterfaceOrientationMaskAll;
+  EXPECT_EQ(expectedMask, [viewController supportedInterfaceOrientations]);
 }
 
 TEST_F(UIKitUIUtilTest, TestGetUiFont) {

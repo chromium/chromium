@@ -10,25 +10,25 @@ namespace blink {
 
 CSSPropertyRef::CSSPropertyRef(const String& name, const Document& document)
     : property_id_(unresolvedCSSPropertyID(name)) {
-  if (property_id_ == CSSPropertyVariable)
+  if (property_id_ == CSSPropertyID::kVariable)
     custom_property_ = CustomProperty(AtomicString(name), document);
 }
 
 CSSPropertyRef::CSSPropertyRef(const CSSPropertyName& name,
                                const Document& document)
     : property_id_(name.Id()) {
-  DCHECK_NE(name.Id(), CSSPropertyInvalid);
-  if (property_id_ == CSSPropertyVariable)
+  DCHECK_NE(name.Id(), CSSPropertyID::kInvalid);
+  if (property_id_ == CSSPropertyID::kVariable)
     custom_property_ = CustomProperty(name.ToAtomicString(), document);
 }
 
 CSSPropertyRef::CSSPropertyRef(const CSSProperty& property)
     : property_id_(property.PropertyID()) {
-  if (property.PropertyID() == CSSPropertyVariable) {
+  if (property.PropertyID() == CSSPropertyID::kVariable) {
     if (!Variable::IsStaticInstance(property))
       custom_property_ = static_cast<const CustomProperty&>(property);
     else
-      property_id_ = CSSPropertyInvalid;
+      property_id_ = CSSPropertyID::kInvalid;
   }
 }
 

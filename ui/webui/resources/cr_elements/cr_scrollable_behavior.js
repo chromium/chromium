@@ -79,30 +79,46 @@ const CrScrollableBehavior = {
 
     this.requestUpdateScroll();
 
-    let nodeList = this.root.querySelectorAll('[scrollable] iron-list');
+    const nodeList = this.root.querySelectorAll('[scrollable] iron-list');
     if (!nodeList.length) {
       return;
     }
 
+    let nodesToResize = Array.from(nodeList).map(node => ({
+                                                   node: node,
+                                                   lastScrollHeight: 0,
+                                                 }));
     // Use setInterval to avoid initial render / sizing issues.
-    this.intervalId_ = window.setInterval(function() {
-      const unreadyNodes = [];
-      for (let i = 0; i < nodeList.length; i++) {
-        const node = nodeList[i];
-        if (node.parentNode.scrollHeight == 0) {
-          unreadyNodes.push(node);
-          continue;
+    this.intervalId_ = window.setInterval(() => {
+      const checkAgain = [];
+      nodesToResize.forEach(({node, lastScrollHeight}) => {
+        const scrollHeight = node.parentNode.scrollHeight;
+        // A hidden scroll-container has a height of 0. When not hidden, it has
+        // a min-height of 1px and the iron-list needs a resize to show the
+        // initial items and update the |scrollHeight|. The initial item count
+        // is determined by the |scrollHeight|. A scrollHeight of 1px will
+        // result in the minimum default item count (currently 3). After the
+        // |scrollHeight| is updated to be greater than 1px, another resize is
+        // needed to correctly calculate the number of physical iron-list items
+        // to render.
+        if (scrollHeight != lastScrollHeight) {
+          const ironList = /** @type {!IronListElement} */ (node);
+          ironList.notifyResize();
         }
-        const ironList = /** @type {!IronListElement} */ (node);
-        ironList.notifyResize();
-      }
-      if (unreadyNodes.length == 0) {
+        if (scrollHeight <= 1) {
+          checkAgain.push({
+            node: node,
+            lastScrollHeight: scrollHeight,
+          });
+        }
+      });
+      if (checkAgain.length == 0) {
         window.clearInterval(this.intervalId_);
         this.intervalId_ = null;
       } else {
-        nodeList = unreadyNodes;
+        nodesToResize = checkAgain;
       }
-    }.bind(this), 10);
+    }, 10);
   },
 
   /**

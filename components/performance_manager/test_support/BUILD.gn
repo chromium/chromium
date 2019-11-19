@@ -1,0 +1,26 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Expose the graph implementation, test fixtures and test support through
+# this test only target.
+source_set("test_support") {
+  testonly = true
+
+  sources = [
+    "frame_priority.cc",
+    "frame_priority.h",
+    "graph_impl.h",
+    "graph_test_harness.cc",
+    "graph_test_harness.h",
+    "mock_graphs.cc",
+    "mock_graphs.h",
+  ]
+  deps = [
+    "//base/test:test_support",
+    "//components/performance_manager",
+    "//content/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

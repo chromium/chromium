@@ -7,12 +7,23 @@
 #include <map>
 
 #import "ios/web/webui/url_fetcher_block_adapter.h"
+#include "ios/web/webui/web_ui_ios_controller_factory_registry.h"
 #import "net/base/mac/url_conversions.h"
 #include "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
+
+namespace {
+// Returns the error code associated with |URL|.
+NSInteger GetErrorCodeForUrl(const GURL& URL) {
+  web::WebUIIOSControllerFactory* factory =
+      web::WebUIIOSControllerFactoryRegistry::GetInstance();
+  return factory ? factory->GetErrorCodeForWebUIURL(URL)
+                 : NSURLErrorUnsupportedURL;
+}
+}  // namespace
 
 @implementation CRWWebUISchemeHandler {
   scoped_refptr<network::SharedURLLoaderFactory> _URLLoaderFactory;
@@ -36,6 +47,23 @@
     startURLSchemeTask:(id<WKURLSchemeTask>)urlSchemeTask
     API_AVAILABLE(ios(11.0)) {
   GURL URL = net::GURLWithNSURL(urlSchemeTask.request.URL);
+  // Check the mainDocumentURL as the URL might be one of the subresource, so
+  // not a WebUI URL itself.
+  NSInteger errorCode = GetErrorCodeForUrl(
+      net::GURLWithNSURL(urlSchemeTask.request.mainDocumentURL));
+  if (errorCode != 0) {
+    NSError* error =
+        [NSError errorWithDomain:NSURLErrorDomain
+                            code:errorCode
+                        userInfo:@{
+                          NSURLErrorKey : urlSchemeTask.request.URL,
+                          NSURLErrorFailingURLStringErrorKey :
+                              urlSchemeTask.request.URL.absoluteString
+                        }];
+    [urlSchemeTask didFailWithError:error];
+    return;
+  }
+
   __weak CRWWebUISchemeHandler* weakSelf = self;
   std::unique_ptr<web::URLFetcherBlockAdapter> adapter =
       std::make_unique<web::URLFetcherBlockAdapter>(

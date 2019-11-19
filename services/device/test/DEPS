@@ -1,0 +1,6 @@
+include_rules = [
+  "+net/base",
+  "+net/proxy_resolution",
+  "+net/traffic_annotation",
+  "+net/url_request",
+]

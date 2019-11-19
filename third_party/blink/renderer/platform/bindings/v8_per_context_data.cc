@@ -41,7 +41,7 @@
 #include "third_party/blink/renderer/platform/bindings/v8_binding.h"
 #include "third_party/blink/renderer/platform/bindings/v8_object_constructor.h"
 #include "third_party/blink/renderer/platform/bindings/wrapper_type_info.h"
-#include "third_party/blink/renderer/platform/instance_counters.h"
+#include "third_party/blink/renderer/platform/instrumentation/instance_counters.h"
 
 namespace blink {
 
@@ -76,11 +76,6 @@ V8PerContextData::~V8PerContextData() {
     InstanceCounters::DecrementCounter(
         InstanceCounters::kV8PerContextDataCounter);
   }
-}
-
-std::unique_ptr<V8PerContextData> V8PerContextData::Create(
-    v8::Local<v8::Context> context) {
-  return base::WrapUnique(new V8PerContextData(context));
 }
 
 V8PerContextData* V8PerContextData::From(v8::Local<v8::Context> context) {

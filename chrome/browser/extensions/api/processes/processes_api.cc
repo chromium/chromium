@@ -33,7 +33,6 @@
 #include "content/public/common/child_process_host.h"
 #include "content/public/common/result_codes.h"
 #include "extensions/common/error_utils.h"
-#include "third_party/blink/public/platform/web_cache.h"
 
 namespace extensions {
 
@@ -65,7 +64,7 @@ int64_t GetRefreshTypesForProcessOptionalData() {
 }
 
 std::unique_ptr<api::processes::Cache> CreateCacheData(
-    const blink::WebCache::ResourceTypeStat& stat) {
+    const blink::WebCacheResourceTypeStat& stat) {
   std::unique_ptr<api::processes::Cache> cache(new api::processes::Cache());
   cache->size = static_cast<double>(stat.size);
   cache->live_size = static_cast<double>(stat.size);
@@ -94,6 +93,9 @@ api::processes::ProcessType GetProcessType(
     case task_manager::Task::NACL:
       return api::processes::PROCESS_TYPE_NACL;
 
+    case task_manager::Task::SERVICE_WORKER:
+      return api::processes::PROCESS_TYPE_SERVICE_WORKER;
+
     case task_manager::Task::UTILITY:
       return api::processes::PROCESS_TYPE_UTILITY;
 
@@ -103,6 +105,7 @@ api::processes::ProcessType GetProcessType(
     case task_manager::Task::UNKNOWN:
     case task_manager::Task::ARC:
     case task_manager::Task::CROSTINI:
+    case task_manager::Task::PLUGIN_VM:
     case task_manager::Task::SANDBOX_HELPER:
     case task_manager::Task::ZYGOTE:
       return api::processes::PROCESS_TYPE_OTHER;
@@ -165,7 +168,7 @@ void FillProcessData(
         sqlite_bytes)));
   }
 
-  blink::WebCache::ResourceTypeStats cache_stats;
+  blink::WebCacheResourceTypeStats cache_stats;
   if (task_manager->GetWebCacheStats(id, &cache_stats)) {
     out_process->image_cache = CreateCacheData(cache_stats.images);
     out_process->script_cache = CreateCacheData(cache_stats.scripts);
@@ -506,7 +509,7 @@ ExtensionFunction::ResponseAction ProcessesTerminateFunction::Run() {
   // This could be a non-renderer child process like a plugin or a nacl
   // process. Try to get its handle from the BrowserChildProcessHost on the
   // IO thread.
-  base::PostTaskWithTraitsAndReplyWithResult(
+  base::PostTaskAndReplyWithResult(
       FROM_HERE, {content::BrowserThread::IO},
       base::Bind(&ProcessesTerminateFunction::GetProcessHandleOnIO, this,
                  child_process_host_id_),
@@ -681,7 +684,7 @@ void ProcessesGetProcessInfoFunction::GatherDataAndRespond(
   // Report the invalid host ids sent in the arguments.
   for (const auto& host_id : process_host_ids_) {
     WriteToConsole(
-        content::CONSOLE_MESSAGE_LEVEL_ERROR,
+        blink::mojom::ConsoleMessageLevel::kError,
         ErrorUtils::FormatErrorMessage(errors::kProcessNotFound,
                                        base::NumberToString(host_id)));
   }

@@ -11,9 +11,9 @@
 #include "base/macros.h"
 #include "base/optional.h"
 #include "base/timer/timer.h"
-#include "chromeos/dbus/power_manager_client.h"
-#include "components/arc/common/power.mojom.h"
-#include "components/arc/connection_observer.h"
+#include "chromeos/dbus/power/power_manager_client.h"
+#include "components/arc/mojom/power.mojom.h"
+#include "components/arc/session/connection_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "services/device/public/mojom/wake_lock.mojom.h"
 #include "ui/display/manager/display_configurator.h"
@@ -67,6 +67,7 @@ class ArcPowerBridge : public KeyedService,
   void SuspendDone(const base::TimeDelta& sleep_duration) override;
   void ScreenBrightnessChanged(
       const power_manager::BacklightBrightnessChange& change) override;
+  void PowerChanged(const power_manager::PowerSupplyProperties& proto) override;
 
   // DisplayConfigurator::Observer overrides.
   void OnPowerStateChanged(chromeos::DisplayPowerState power_state) override;
@@ -104,7 +105,7 @@ class ArcPowerBridge : public KeyedService,
   // about brightness changes.
   base::OneShotTimer notify_brightness_timer_;
 
-  base::WeakPtrFactory<ArcPowerBridge> weak_ptr_factory_;
+  base::WeakPtrFactory<ArcPowerBridge> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ArcPowerBridge);
 };

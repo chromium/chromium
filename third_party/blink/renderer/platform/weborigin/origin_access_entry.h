@@ -33,40 +33,41 @@
 
 #include "services/network/public/cpp/cors/origin_access_entry.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
 
+class KURL;
 class SecurityOrigin;
 
 // A class to wrap network::cors::OriginAccessEntry to use with Blink types.
+// Comments below explains only blink::OriginAccessEntry specific behaviors.
+// See also network::cors::OriginAccessEntry for detailed explanation.
 class PLATFORM_EXPORT OriginAccessEntry {
   USING_FAST_MALLOC(OriginAccessEntry);
 
  public:
-  // If host is empty string and MatchMode is not DisallowSubdomains, the entry
-  // will match all domains in the specified protocol.
-  // IPv6 addresses must include brackets (e.g.
-  // '[2001:db8:85a3::8a2e:370:7334]', not '2001:db8:85a3::8a2e:370:7334').
-  // An entry with a higher priority will win in case there are two conflicting
-  // entries.
   OriginAccessEntry(
-      const String& protocol,
-      const String& host,
-      network::mojom::CorsOriginAccessMatchMode,
+      const SecurityOrigin& origin,
+      network::mojom::CorsDomainMatchMode,
+      network::mojom::CorsOriginAccessMatchPriority priority =
+          network::mojom::CorsOriginAccessMatchPriority::kDefaultPriority);
+  OriginAccessEntry(
+      const KURL& url,
+      network::mojom::CorsDomainMatchMode,
       network::mojom::CorsOriginAccessMatchPriority priority =
           network::mojom::CorsOriginAccessMatchPriority::kDefaultPriority);
   OriginAccessEntry(OriginAccessEntry&& from);
 
-  // 'matchesOrigin' requires a protocol match (e.g. 'http' != 'https').
-  // 'matchesDomain' relaxes this constraint.
   network::cors::OriginAccessEntry::MatchResult MatchesOrigin(
       const SecurityOrigin&) const;
   network::cors::OriginAccessEntry::MatchResult MatchesDomain(
       const SecurityOrigin&) const;
 
   bool HostIsIPAddress() const;
+
+  String registrable_domain() const;
 
  private:
   network::cors::OriginAccessEntry private_;

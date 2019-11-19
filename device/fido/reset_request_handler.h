@@ -13,6 +13,7 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
+#include "device/fido/fido_discovery_factory.h"
 #include "device/fido/fido_request_handler_base.h"
 #include "device/fido/fido_transport_protocol.h"
 
@@ -48,7 +49,9 @@ class COMPONENT_EXPORT(DEVICE_FIDO) ResetRequestHandler
       service_manager::Connector* connector,
       const base::flat_set<FidoTransportProtocol>& supported_transports,
       ResetSentCallback reset_sent_callback,
-      FinishedCallback finished_callback);
+      FinishedCallback finished_callback,
+      std::unique_ptr<FidoDiscoveryFactory> fido_discovery_factory =
+          std::make_unique<FidoDiscoveryFactory>());
   ~ResetRequestHandler() override;
 
  private:
@@ -62,8 +65,9 @@ class COMPONENT_EXPORT(DEVICE_FIDO) ResetRequestHandler
   ResetSentCallback reset_sent_callback_;
   FinishedCallback finished_callback_;
   bool processed_touch_ = false;
+  std::unique_ptr<FidoDiscoveryFactory> fido_discovery_factory_;
   SEQUENCE_CHECKER(my_sequence_checker_);
-  base::WeakPtrFactory<ResetRequestHandler> weak_factory_;
+  base::WeakPtrFactory<ResetRequestHandler> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ResetRequestHandler);
 };

@@ -50,6 +50,11 @@ class MockMediaSessionPlayerObserver : public MediaSessionPlayerObserver {
   void OnSetVolumeMultiplier(int player_id, double volume_multiplier) override {
   }
 
+  base::Optional<media_session::MediaPosition> GetPosition(
+      int player_id) const override {
+    return base::nullopt;
+  }
+
   RenderFrameHost* render_frame_host() const override {
     return render_frame_host_;
   }
@@ -63,7 +68,7 @@ void NavigateToURLAndWaitForFinish(Shell* window, const GURL& url) {
   MockWebContentsObserver observer(window->web_contents(),
                                    run_loop.QuitClosure());
 
-  NavigateToURL(window, url);
+  EXPECT_TRUE(NavigateToURL(window, url));
   run_loop.Run();
 }
 
@@ -135,9 +140,10 @@ class MediaSessionServiceImplBrowserTest : public ContentBrowserTest {
 // Two windows from the same BrowserContext.
 IN_PROC_BROWSER_TEST_F(MediaSessionServiceImplBrowserTest,
                        MAYBE_CrashMessageOnUnload) {
-  NavigateToURL(shell(), GetTestUrl("media/session", "embedder.html"));
+  EXPECT_TRUE(
+      NavigateToURL(shell(), GetTestUrl("media/session", "embedder.html")));
   // Navigate to a chrome:// URL to avoid render process re-use.
-  NavigateToURL(shell(), GURL("chrome://flags"));
+  EXPECT_TRUE(NavigateToURL(shell(), GURL("chrome://gpu")));
   // Should not crash.
 }
 
@@ -160,7 +166,7 @@ IN_PROC_BROWSER_TEST_F(MediaSessionServiceImplBrowserTest,
 #endif
 IN_PROC_BROWSER_TEST_F(MediaSessionServiceImplBrowserTest,
                        MAYBE_ResetServiceWhenNavigatingAway) {
-  NavigateToURL(shell(), GetTestUrl(".", "title1.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), GetTestUrl(".", "title1.html")));
   EnsurePlayer();
 
   EXPECT_TRUE(ExecuteScriptToSetUpMediaSessionSync());
@@ -191,7 +197,7 @@ IN_PROC_BROWSER_TEST_F(MediaSessionServiceImplBrowserTest,
 #endif
 IN_PROC_BROWSER_TEST_F(MediaSessionServiceImplBrowserTest,
                        MAYBE_DontResetServiceForSameDocumentNavigation) {
-  NavigateToURL(shell(), GetTestUrl(".", "title1.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), GetTestUrl(".", "title1.html")));
   EnsurePlayer();
 
   EXPECT_TRUE(ExecuteScriptToSetUpMediaSessionSync());

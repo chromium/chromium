@@ -49,10 +49,13 @@ class CC_EXPORT SharedBitmapIdRegistrar {
 class CC_EXPORT SharedBitmapIdRegistration {
  public:
   SharedBitmapIdRegistration();
+  SharedBitmapIdRegistration(const SharedBitmapIdRegistration&) = delete;
+  SharedBitmapIdRegistration(SharedBitmapIdRegistration&&) noexcept;
   ~SharedBitmapIdRegistration();
 
-  SharedBitmapIdRegistration(SharedBitmapIdRegistration&&);
-  SharedBitmapIdRegistration& operator=(SharedBitmapIdRegistration&&);
+  SharedBitmapIdRegistration& operator=(const SharedBitmapIdRegistration&) =
+      delete;
+  SharedBitmapIdRegistration& operator=(SharedBitmapIdRegistration&&) noexcept;
 
  private:
   // Constructed by TextureLayer only, then held by the client as long
@@ -63,8 +66,6 @@ class CC_EXPORT SharedBitmapIdRegistration {
 
   base::WeakPtr<TextureLayer> layer_ptr_;
   viz::SharedBitmapId id_;
-
-  DISALLOW_COPY_AND_ASSIGN(SharedBitmapIdRegistration);
 };
 
 }  // namespace cc

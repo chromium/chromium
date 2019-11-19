@@ -22,9 +22,9 @@ class InputHandlerProxyClient {
       WebScopedInputEvent event,
       const ui::LatencyInfo& latency_info) = 0;
 
-  // |HandleInputEvent/WithLatencyInfo| will respond to overscroll by calling
-  // the passed in callback.
-  // Otherwise |DidOverscroll| will be fired.
+  // |HandleInputEventWithLatencyInfo/RouteToTypeSpecificHandler| will respond
+  // to overscroll by calling the passed in callback. Otherwise |DidOverscroll|
+  // will be fired.
   virtual void DidOverscroll(
       const gfx::Vector2dF& accumulated_overscroll,
       const gfx::Vector2dF& latest_overscroll_delta,

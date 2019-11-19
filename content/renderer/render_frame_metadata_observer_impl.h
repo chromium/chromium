@@ -5,11 +5,15 @@
 #ifndef CONTENT_RENDERER_RENDER_FRAME_METADATA_OBSERVER_IMPL_H_
 #define CONTENT_RENDERER_RENDER_FRAME_METADATA_OBSERVER_IMPL_H_
 
+#include "build/build_config.h"
 #include "cc/trees/render_frame_metadata.h"
 #include "cc/trees/render_frame_metadata_observer.h"
 #include "content/common/content_export.h"
 #include "content/common/render_frame_metadata.mojom.h"
-#include "mojo/public/cpp/bindings/binding.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 namespace content {
 
@@ -27,8 +31,9 @@ class CONTENT_EXPORT RenderFrameMetadataObserverImpl
       public mojom::RenderFrameMetadataObserver {
  public:
   RenderFrameMetadataObserverImpl(
-      mojom::RenderFrameMetadataObserverRequest request,
-      mojom::RenderFrameMetadataObserverClientPtrInfo client_info);
+      mojo::PendingReceiver<mojom::RenderFrameMetadataObserver> receiver,
+      mojo::PendingRemote<mojom::RenderFrameMetadataObserverClient>
+          client_remote);
   ~RenderFrameMetadataObserverImpl() override;
 
   // cc::RenderFrameMetadataObserver:
@@ -39,6 +44,9 @@ class CONTENT_EXPORT RenderFrameMetadataObserverImpl
       bool force_send) override;
 
   // mojom::RenderFrameMetadataObserver:
+#if defined(OS_ANDROID)
+  void ReportAllRootScrollsForAccessibility(bool enabled) override;
+#endif
   void ReportAllFrameSubmissionsForTesting(bool enabled) override;
 
  private:
@@ -50,12 +58,19 @@ class CONTENT_EXPORT RenderFrameMetadataObserverImpl
   // |needs_activation_notification| indicates whether the browser process
   // expects notification of activation of the assoicated CompositorFrame from
   // Viz.
-  static bool ShouldSendRenderFrameMetadata(
-      const cc::RenderFrameMetadata& rfm1,
-      const cc::RenderFrameMetadata& rfm2,
-      bool* needs_activation_notification);
+  bool ShouldSendRenderFrameMetadata(const cc::RenderFrameMetadata& rfm1,
+                                     const cc::RenderFrameMetadata& rfm2,
+                                     bool* needs_activation_notification) const;
 
-  // When true this will notifiy |render_frame_metadata_observer_client_| of all
+  void SendLastRenderFrameMetadata();
+
+#if defined(OS_ANDROID)
+  // When true this will notify |render_frame_metadata_observer_client_| of all
+  // frame submissions that involve a root scroll offset change.
+  bool report_all_root_scrolls_for_accessibility_enabled_ = false;
+#endif
+
+  // When true this will notify |render_frame_metadata_observer_client_| of all
   // frame submissions.
   bool report_all_frame_submissions_for_testing_enabled_ = false;
 
@@ -63,12 +78,12 @@ class CONTENT_EXPORT RenderFrameMetadataObserverImpl
   base::Optional<cc::RenderFrameMetadata> last_render_frame_metadata_;
 
   // These are destroyed when BindToCurrentThread() is called.
-  mojom::RenderFrameMetadataObserverRequest request_;
-  mojom::RenderFrameMetadataObserverClientPtrInfo client_info_;
+  mojo::PendingReceiver<mojom::RenderFrameMetadataObserver> receiver_;
+  mojo::PendingRemote<mojom::RenderFrameMetadataObserverClient> client_remote_;
 
-  mojo::Binding<mojom::RenderFrameMetadataObserver>
-      render_frame_metadata_observer_binding_;
-  mojom::RenderFrameMetadataObserverClientPtr
+  mojo::Receiver<mojom::RenderFrameMetadataObserver>
+      render_frame_metadata_observer_receiver_{this};
+  mojo::Remote<mojom::RenderFrameMetadataObserverClient>
       render_frame_metadata_observer_client_;
 
   DISALLOW_COPY_AND_ASSIGN(RenderFrameMetadataObserverImpl);

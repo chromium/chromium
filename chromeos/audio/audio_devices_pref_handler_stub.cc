@@ -15,9 +15,8 @@ AudioDevicesPrefHandlerStub::~AudioDevicesPrefHandlerStub() = default;
 
 double AudioDevicesPrefHandlerStub::GetOutputVolumeValue(
     const AudioDevice* device) {
-  if (!device ||
-      !base::ContainsKey(audio_device_volume_gain_map_,
-                         device->stable_device_id)) {
+  if (!device || !base::Contains(audio_device_volume_gain_map_,
+                                 device->stable_device_id)) {
     return kDefaultOutputVolumePercent;
   }
   return audio_device_volume_gain_map_[device->stable_device_id];
@@ -26,9 +25,8 @@ double AudioDevicesPrefHandlerStub::GetOutputVolumeValue(
 double AudioDevicesPrefHandlerStub::GetInputGainValue(
     const AudioDevice* device) {
   // TODO(rkc): The default value for gain is wrong. http://crbug.com/442489
-  if (!device ||
-      !base::ContainsKey(audio_device_volume_gain_map_,
-                         device->stable_device_id)) {
+  if (!device || !base::Contains(audio_device_volume_gain_map_,
+                                 device->stable_device_id)) {
     return 75.0;
   }
   return audio_device_volume_gain_map_[device->stable_device_id];

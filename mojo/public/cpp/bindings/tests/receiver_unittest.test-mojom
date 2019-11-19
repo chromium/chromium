@@ -1,0 +1,16 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module mojo.test.receiver_unittest.mojom;
+
+import "mojo/public/mojom/base/generic_pending_receiver.mojom";
+
+interface TestGenericBinder {
+  BindOptionalReceiver(mojo_base.mojom.GenericPendingReceiver? receiver);
+  BindReceiver(mojo_base.mojom.GenericPendingReceiver receiver);
+};
+
+interface TestInterface1 {};
+interface TestInterface2 {};
+

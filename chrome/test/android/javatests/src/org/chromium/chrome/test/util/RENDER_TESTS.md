@@ -41,6 +41,11 @@ to the results_details/Render Results pages that you grabbed the new goldens
 from. This will help reviewers confirm that the changes to the goldens are
 acceptable.
 
+If you add a new device/SDK combination that you expect golden images for, be
+sure to add it to `ALLOWED_DEVICE_SDK_COMBINATIONS` in
+`//chrome/test/data/android/manage_render_test_goldens.py`, otherwise the
+goldens for it will not be uploaded.
+
 ### Failing locally
 
 Follow the steps in [*Running the tests locally*](#running-the-tests-locally)
@@ -75,6 +80,29 @@ but if there appear to be goldens missing that should be there, try running
 `//chrome/test/data/android/manage_render_test_goldens.py download` to ensure
 that the downloaded goldens are current for the git revision.
 
+### Generating golden images locally
+
+New golden images may be downloaded from the trybots or retrieved locally. This
+section elaborates how to do the latter.
+
+You should always create your reference images on the same device type as the
+one running the tests. This is because each device/API version may produce a
+slightly different image, eg. due to different screen dimensions, DPI setting,
+or styling used across OS versions. This is also why each golden image name
+includes the device name and API version.
+
+When running a test with no goldens on the correct device, your tests should
+fail with an exception:
+
+```
+RenderTest Goldens missing for: <reference>. See RENDER_TESTS.md for how to fix this failure.
+```
+
+You will be able to find the images the device captured on the device's SD card.
+
+```
+adb -d shell ls /sdcard/chromium_tests_root/chrome/test/data/android/render_tests/failures
+```
 
 ## Implementation Details
 

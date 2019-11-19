@@ -10,6 +10,7 @@
 
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
+#include "base/unguessable_token.h"
 #include "media/audio/audio_output_ipc.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/output_device_info.h"
@@ -128,7 +129,7 @@ class PepperPlatformAudioOutputDev
   bool play_on_start_;
 
   // The media session ID used to identify which output device to be started.
-  int session_id_;
+  base::UnguessableToken session_id_;
 
   // ID of hardware output device to be used (provided session_id_ is zero)
   const std::string device_id_;

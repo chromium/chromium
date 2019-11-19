@@ -31,14 +31,12 @@ It2MeDesktopEnvironment::It2MeDesktopEnvironment(
     scoped_refptr<base::SingleThreadTaskRunner> video_capture_task_runner,
     scoped_refptr<base::SingleThreadTaskRunner> input_task_runner,
     scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner,
-    ui::SystemInputInjectorFactory* system_input_injector_factory,
     base::WeakPtr<ClientSessionControl> client_session_control,
     const DesktopEnvironmentOptions& options)
     : BasicDesktopEnvironment(caller_task_runner,
                               video_capture_task_runner,
                               input_task_runner,
                               ui_task_runner,
-                              system_input_injector_factory,
                               client_session_control,
                               options) {
   DCHECK(caller_task_runner->BelongsToCurrentThread());
@@ -79,13 +77,11 @@ It2MeDesktopEnvironmentFactory::It2MeDesktopEnvironmentFactory(
     scoped_refptr<base::SingleThreadTaskRunner> caller_task_runner,
     scoped_refptr<base::SingleThreadTaskRunner> video_capture_task_runner,
     scoped_refptr<base::SingleThreadTaskRunner> input_task_runner,
-    scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner,
-    ui::SystemInputInjectorFactory* system_input_injector_factory)
+    scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner)
     : BasicDesktopEnvironmentFactory(caller_task_runner,
                                      video_capture_task_runner,
                                      input_task_runner,
-                                     ui_task_runner,
-                                     system_input_injector_factory) {}
+                                     ui_task_runner) {}
 
 It2MeDesktopEnvironmentFactory::~It2MeDesktopEnvironmentFactory() = default;
 
@@ -96,8 +92,7 @@ std::unique_ptr<DesktopEnvironment> It2MeDesktopEnvironmentFactory::Create(
 
   return base::WrapUnique(new It2MeDesktopEnvironment(
       caller_task_runner(), video_capture_task_runner(), input_task_runner(),
-      ui_task_runner(), system_input_injector_factory(), client_session_control,
-      options));
+      ui_task_runner(), client_session_control, options));
 }
 
 }  // namespace remoting

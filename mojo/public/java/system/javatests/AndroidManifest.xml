@@ -8,8 +8,6 @@
       xmlns:tools="http://schemas.android.com/tools"
       package="org.chromium.mojo.tests">
 
-    <uses-sdk android:minSdkVersion="19" android:targetSdkVersion="21" />
-
     <uses-permission android:name="android.permission.INJECT_EVENTS"
         tools:ignore="ProtectedPermissions"/>
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
@@ -22,7 +20,7 @@
         <uses-library android:name="android.test.runner" />
     </application>
 
-    <instrumentation android:name="android.support.test.runner.AndroidJUnitRunner"
+    <instrumentation android:name="org.chromium.base.test.BaseChromiumAndroidJUnitRunner"
         android:targetPackage="org.chromium.mojo.tests"
         android:label="Tests for org.chromium.mojo"/>
 

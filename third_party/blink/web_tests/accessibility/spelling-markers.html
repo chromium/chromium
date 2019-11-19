@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <script src="../resources/testharness.js"></script>
 <script src="../resources/testharnessreport.js"></script>
-<script src="../resources/run-after-layout-and-paint.js"></script>
 
 <div id="editable" contentEditable="true" spellcheck="true">Test spelling markers</div>
 
@@ -12,7 +11,7 @@
 <textarea id="textarea" spellcheck="true">Test spelling markers</textarea>
 
 <script>
-test_after_layout_and_paint(() => {
+test(() => {
   if (!window.internals)
     return;
 
@@ -35,7 +34,7 @@ test_after_layout_and_paint(() => {
   assert_equals(axStaticText.misspellingAtIndex(1), 'markers');
 }, 'Spelling markers should be reported in content editables.');
 
-test_after_layout_and_paint(() => {
+test(() => {
   if (!window.internals)
     return;
 
@@ -61,7 +60,7 @@ test_after_layout_and_paint(() => {
   document.designMode = 'off';
 }, 'Spelling markers should be reported in static text when design mode is on.');
 
-test_after_layout_and_paint(() => {
+test(() => {
   if (!window.internals)
     return;
 
@@ -86,7 +85,7 @@ test_after_layout_and_paint(() => {
   assert_equals(axStaticText.misspellingAtIndex(0), 'spelling');
 }, 'Spelling markers should be reported in input text fields.');
 
-test_after_layout_and_paint(() => {
+test(() => {
   if (!window.internals)
     return;
 

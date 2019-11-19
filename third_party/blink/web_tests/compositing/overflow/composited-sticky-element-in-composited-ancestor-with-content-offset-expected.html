@@ -17,10 +17,14 @@
   height: 200px;
   top: 0;
 }
+
+.composited {
+  backface-visibility: hidden;
+}
 </style>
 
 <div class="container">
-  <div class="scroller">
+  <div class="composited scroller">
     <div class="sticky"></div>
   </div>
 </div>

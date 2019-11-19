@@ -1,0 +1,18 @@
+This is a testharness.js-based test.
+FAIL setProperty - CSS property name assert_equals: expected (string) "none" but got (undefined) undefined
+FAIL setProperty - camel-cased property name (ignored) assert_equals: expected (string) "" but got (undefined) undefined
+FAIL setProperty - webkit-cased property name (ignored) assert_equals: expected (string) "" but got (undefined) undefined
+FAIL removeProperty - CSS property name assert_equals: expected (string) "" but got (undefined) undefined
+FAIL removeProperty - camel-cased property name (ignored) assert_equals: expected (string) "none" but got (undefined) undefined
+FAIL removeProperty - webkit-cased property name (ignored) assert_equals: expected (string) "none" but got (undefined) undefined
+FAIL property assignment - CSS property name assert_equals: expected (string) "none" but got (undefined) undefined
+FAIL property assignment - camel-cased property name assert_equals: expected (string) "none" but got (undefined) undefined
+FAIL property assignment - webkit-cased property name assert_equals: expected (string) "none" but got (undefined) undefined
+FAIL getPropertyValue - CSS property name assert_equals: expected "none" but got ""
+PASS getPropertyValue - camel-cased property name (ignored)
+PASS getPropertyValue - webkit-cased property name (ignored)
+FAIL property access - CSS property name assert_equals: expected "none" but got ""
+FAIL property access - camel-cased property name assert_equals: expected "none" but got ""
+FAIL property access - webkit-cased property name assert_equals: expected "none" but got ""
+Harness: the test ran to completion.
+

@@ -29,6 +29,20 @@ GOLDEN_DIRECTORIES = [
   os.path.join(
       CHROMIUM_SRC, 'components', 'test', 'data', 'vr_browser_ui',
       'render_tests'),
+  os.path.join(
+      CHROMIUM_SRC, 'components', 'test', 'data', 'vr_browser_video',
+      'render_tests'),
+]
+
+# This is to prevent accidentally uploading random, non-golden images that
+# might be in the directory.
+ALLOWED_DEVICE_SDK_COMBINATIONS = [
+  # From RenderTestRule.java
+  'Nexus_5-19',
+  'Nexus_5X-23',
+  # For VR tests.
+  'Pixel_XL-25',
+  'Pixel_XL-26',
 ]
 
 
@@ -60,22 +74,34 @@ def download(directory):
 
 
 def upload(directory):
+  def is_file_of_interest(f):
+    if not f.endswith('.png'):
+      return False
+    for combo in ALLOWED_DEVICE_SDK_COMBINATIONS:
+      if combo in f:
+        return True
+    return False
+
   files_to_upload = []
   for f in os.listdir(directory):
-    if f.endswith('.png'):
-      png_path = os.path.join(directory, f)
-      # upload_to_google_storage will upload a file even if it already exists
-      # in the bucket. As an optimization, hash locally and only pass files to
-      # the upload script if they don't have a matching .sha1 file already.
-      sha_path = png_path + '.sha1'
-      if os.path.isfile(sha_path):
-        with open(sha_path) as sha_file:
-          with open(png_path, 'rb') as png_file:
-            h = hashlib.sha1()
-            h.update(png_file.read())
-            if sha_file.read() == h.hexdigest():
-              continue
-      files_to_upload.append(png_path)
+    # Skip any files that we don't care about.
+    if not is_file_of_interest(f):
+      continue
+
+    png_path = os.path.join(directory, f)
+    # upload_to_google_storage will upload a file even if it already exists
+    # in the bucket. As an optimization, hash locally and only pass files to
+    # the upload script if they don't have a matching .sha1 file already.
+    sha_path = png_path + '.sha1'
+    if os.path.isfile(sha_path):
+      with open(sha_path) as sha_file:
+        with open(png_path, 'rb') as png_file:
+          h = hashlib.sha1()
+          h.update(png_file.read())
+          if sha_file.read() == h.hexdigest():
+            continue
+    files_to_upload.append(png_path)
+
   if len(files_to_upload):
     subprocess.check_call([
         'upload_to_google_storage.py',

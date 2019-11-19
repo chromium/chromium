@@ -1,0 +1,13 @@
+Name: PCollections
+Short Name: pcollections
+URL: http://pcollections.org
+Version: 2.1.2
+License: The MIT License
+License File: NOT_SHIPPED
+Security Critical: no
+
+Description:
+A Persistent Java Collections Library
+
+Local Modifications:
+No modifications.

@@ -4,6 +4,8 @@
 
 """Module containing utility functions for reporting results."""
 
+from __future__ import print_function
+
 import logging
 import os
 import re
@@ -22,16 +24,19 @@ def _LogToFile(results, test_type, suite_name):
       log_file_path, re.sub(r'\W', '_', test_type).lower() + '.log')
   if not os.path.exists(full_file_name):
     with open(full_file_name, 'w') as log_file:
-      print >> log_file, '\n%s results for %s build %s:' % (
-          test_type, os.environ.get('BUILDBOT_BUILDERNAME'),
-          os.environ.get('BUILDBOT_BUILDNUMBER'))
+      print(
+          '\n%s results for %s build %s:' %
+          (test_type, os.environ.get('BUILDBOT_BUILDERNAME'),
+           os.environ.get('BUILDBOT_BUILDNUMBER')),
+          file=log_file)
     logging.info('Writing results to %s.', full_file_name)
 
   logging.info('Writing results to %s.', full_file_name)
   with open(full_file_name, 'a') as log_file:
     shortened_suite_name = suite_name[:25] + (suite_name[25:] and '...')
-    print >> log_file, '%s%s' % (shortened_suite_name.ljust(30),
-                                 results.GetShortForm())
+    print(
+        '%s%s' % (shortened_suite_name.ljust(30), results.GetShortForm()),
+        file=log_file)
 
 
 def _LogToFlakinessDashboard(results, test_type, test_package,

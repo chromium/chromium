@@ -32,7 +32,7 @@ class LocationIconView : public IconLabelBubbleView {
     virtual content::WebContents* GetWebContents() = 0;
 
     // Determines whether the omnibox (if any) is editing or empty.
-    virtual bool IsEditingOrEmpty() = 0;
+    virtual bool IsEditingOrEmpty() const = 0;
 
     // Called when the location icon is pressed, with the event.
     virtual void OnLocationIconPressed(const ui::MouseEvent& event) {}
@@ -95,9 +95,10 @@ class LocationIconView : public IconLabelBubbleView {
   base::string16 GetText() const;
 
   // Determines whether or not text should be shown (e.g Insecure/Secure).
+  // Always returns false if the text is empty or currently being edited.
   // Returns true if any of the following is true:
   // - the current page is explicitly secure or insecure.
-  // - the current page URL is a chrome-extension:// URL.
+  // - the current page has a special scheme (chrome://, extension, file://).
   bool ShouldShowText() const;
 
   const views::InkDrop* get_ink_drop_for_testing();
@@ -105,7 +106,6 @@ class LocationIconView : public IconLabelBubbleView {
  protected:
   // IconLabelBubbleView:
   bool IsTriggerableEvent(const ui::Event& event) override;
-  double WidthMultiplier() const override;
 
  private:
   // The security level when the location icon was last updated. Used to decide
@@ -119,8 +119,6 @@ class LocationIconView : public IconLabelBubbleView {
 
   // Returns what the minimum size would be if the preferred size were |size|.
   gfx::Size GetMinimumSizeForPreferredSize(gfx::Size size) const;
-
-  int GetSlideDurationTime() const override;
 
   Delegate* delegate_;
 

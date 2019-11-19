@@ -10,7 +10,7 @@
 #include "base/callback_forward.h"
 #include "base/memory/ref_counted.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "device/usb/public/mojom/device.mojom.h"
+#include "services/device/public/mojom/usb_device.mojom.h"
 
 namespace base {
 class DictionaryValue;

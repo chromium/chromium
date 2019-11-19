@@ -12,6 +12,8 @@
 namespace web {
 class TestBrowserState : public BrowserState {
  public:
+  static const char kCorsExemptTestHeaderName[];
+
   TestBrowserState();
   ~TestBrowserState() override;
 
@@ -19,6 +21,8 @@ class TestBrowserState : public BrowserState {
   bool IsOffTheRecord() const override;
   base::FilePath GetStatePath() const override;
   net::URLRequestContextGetter* GetRequestContext() override;
+  void UpdateCorsExemptHeader(
+      network::mojom::NetworkContextParams* params) override;
   scoped_refptr<network::SharedURLLoaderFactory> GetSharedURLLoaderFactory()
       override;
 

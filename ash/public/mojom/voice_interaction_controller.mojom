@@ -1,0 +1,23 @@
+// Copyright 2017 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module ash.mojom;
+
+// There is another copy of the VoiceInteractionState definition in
+// //components/arc/mojom/voice_interaction_framework.mojom
+// Please also update the other one if you change it.
+// The duplicate definition is because we do not use extensible widely
+// (crbug.com/731893).
+
+// The initial state is NOT_READY, then it will either becomes STOPPED or
+// RUNNING. If the mojo connection is lost, the state will be set back to
+// NOT_READY.
+enum VoiceInteractionState {
+  // Voice interaction service is not ready yet, request sent will be waiting.
+  NOT_READY = 0,
+  // Voice interaction session is stopped.
+  STOPPED,
+  // Voice interaction session is currently running.
+  RUNNING
+};

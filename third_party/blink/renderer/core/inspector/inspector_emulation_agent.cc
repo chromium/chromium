@@ -22,7 +22,6 @@
 #include "third_party/blink/renderer/platform/network/network_utils.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_cpu_throttler.h"
-#include "third_party/blink/renderer/platform/wtf/time.h"
 
 namespace blink {
 using protocol::Maybe;
@@ -32,13 +31,14 @@ InspectorEmulationAgent::InspectorEmulationAgent(
     WebLocalFrameImpl* web_local_frame_impl)
     : web_local_frame_(web_local_frame_impl),
       default_background_color_override_rgba_(&agent_state_,
-                                              /*default_value=*/WTF::String()),
+                                              /*default_value=*/{}),
       script_execution_disabled_(&agent_state_, /*default_value=*/false),
       scrollbars_hidden_(&agent_state_, /*default_value=*/false),
       document_cookie_disabled_(&agent_state_, /*default_value=*/false),
       touch_event_emulation_enabled_(&agent_state_, /*default_value=*/false),
       max_touch_points_(&agent_state_, /*default_value=*/1),
       emulated_media_(&agent_state_, /*default_value=*/WTF::String()),
+      emulated_media_features_(&agent_state_, /*default_value=*/WTF::String()),
       navigator_platform_override_(&agent_state_,
                                    /*default_value=*/WTF::String()),
       user_agent_override_(&agent_state_, /*default_value=*/WTF::String()),
@@ -51,13 +51,28 @@ InspectorEmulationAgent::InspectorEmulationAgent(
       virtual_time_policy_(&agent_state_, /*default_value=*/WTF::String()),
       virtual_time_task_starvation_count_(&agent_state_, /*default_value=*/0),
       wait_for_navigation_(&agent_state_, /*default_value=*/false),
-      emulate_focus_(&agent_state_, /*default_value=*/false) {}
+      emulate_focus_(&agent_state_, /*default_value=*/false),
+      timezone_id_override_(&agent_state_, /*default_value=*/WTF::String()) {}
 
 InspectorEmulationAgent::~InspectorEmulationAgent() = default;
 
 WebViewImpl* InspectorEmulationAgent::GetWebViewImpl() {
   return web_local_frame_ ? web_local_frame_->ViewImpl() : nullptr;
 }
+
+namespace {
+std::unique_ptr<protocol::DOM::RGBA> ParseRGBA(
+    const std::vector<uint8_t>& cbor) {
+  auto parsed = protocol::Value::parseBinary(cbor.data(), cbor.size());
+  if (!parsed)
+    return nullptr;
+  blink::protocol::ErrorSupport errors;
+  auto rgba = protocol::DOM::RGBA::fromValue(parsed.get(), &errors);
+  if (errors.hasErrors())
+    return nullptr;
+  return rgba;
+}
+}  // namespace
 
 void InspectorEmulationAgent::Restore() {
   setUserAgentOverride(user_agent_override_.Get(),
@@ -75,20 +90,23 @@ void InspectorEmulationAgent::Restore() {
     GetWebViewImpl()->GetDevToolsEmulator()->SetDocumentCookieDisabled(true);
   setTouchEmulationEnabled(touch_event_emulation_enabled_.Get(),
                            max_touch_points_.Get());
-  setEmulatedMedia(emulated_media_.Get());
-  if (!default_background_color_override_rgba_.Get().IsNull()) {
-    std::unique_ptr<protocol::Value> parsed = protocol::StringUtil::parseJSON(
-        default_background_color_override_rgba_.Get());
-    if (parsed) {
-      blink::protocol::ErrorSupport errors;
-      auto rgba = protocol::DOM::RGBA::fromValue(parsed.get(), &errors);
-      if (!errors.hasErrors()) {
-        setDefaultBackgroundColorOverride(
-            Maybe<protocol::DOM::RGBA>(std::move(rgba)));
-      }
-    }
+  auto features =
+      std::make_unique<protocol::Array<protocol::Emulation::MediaFeature>>();
+  for (auto const& name : emulated_media_features_.Keys()) {
+    auto const& value = emulated_media_features_.Get(name);
+    features->push_back(protocol::Emulation::MediaFeature::create()
+                            .setName(name)
+                            .setValue(value)
+                            .build());
   }
+  setEmulatedMedia(emulated_media_.Get(), std::move(features));
+  auto rgba = ParseRGBA(default_background_color_override_rgba_.Get());
+  if (rgba)
+    setDefaultBackgroundColorOverride(std::move(rgba));
   setFocusEmulationEnabled(emulate_focus_.Get());
+
+  if (!timezone_id_override_.Get().IsNull())
+    setTimezoneOverride(timezone_id_override_.Get());
 
   if (virtual_time_policy_.Get().IsNull())
     return;
@@ -128,7 +146,7 @@ void InspectorEmulationAgent::Restore() {
 
 Response InspectorEmulationAgent::disable() {
   if (enabled_)
-    instrumenting_agents_->removeInspectorEmulationAgent(this);
+    instrumenting_agents_->RemoveInspectorEmulationAgent(this);
   setUserAgentOverride(String(), protocol::Maybe<String>(),
                        protocol::Maybe<String>());
   if (!web_local_frame_)
@@ -137,7 +155,12 @@ Response InspectorEmulationAgent::disable() {
   setScrollbarsHidden(false);
   setDocumentCookieDisabled(false);
   setTouchEmulationEnabled(false, Maybe<int>());
-  setEmulatedMedia(String());
+  // Clear emulated media features. Note that the current approach
+  // doesn't work well in cases where two clients have the same set of
+  // features overridden to the same value by two different clients
+  // (e.g. if we allowed two different front-ends with the same
+  // settings to attach to the same page). TODO: support this use case.
+  setEmulatedMedia(String(), {});
   setCPUThrottlingRate(1);
   setFocusEmulationEnabled(false);
   setDefaultBackgroundColorOverride(Maybe<protocol::DOM::RGBA>());
@@ -201,9 +224,9 @@ Response InspectorEmulationAgent::setTouchEmulationEnabled(
     return response;
   int max_points = max_touch_points.fromMaybe(1);
   if (max_points < 1 || max_points > WebTouchEvent::kTouchesLengthCap) {
-    return Response::InvalidParams(
-        "Touch points must be between 1 and " +
-        String::Number(WebTouchEvent::kTouchesLengthCap));
+    return Response::InvalidParams("Touch points must be between 1 and " +
+                                   String::Number(static_cast<uint16_t>(
+                                       WebTouchEvent::kTouchesLengthCap)));
   }
   touch_event_emulation_enabled_.Set(enabled);
   max_touch_points_.Set(max_points);
@@ -212,12 +235,35 @@ Response InspectorEmulationAgent::setTouchEmulationEnabled(
   return response;
 }
 
-Response InspectorEmulationAgent::setEmulatedMedia(const String& media) {
+Response InspectorEmulationAgent::setEmulatedMedia(
+    Maybe<String> media,
+    Maybe<protocol::Array<protocol::Emulation::MediaFeature>> features) {
   Response response = AssertPage();
   if (!response.isSuccess())
     return response;
-  emulated_media_.Set(media);
-  GetWebViewImpl()->GetPage()->GetSettings().SetMediaTypeOverride(media);
+  if (media.isJust()) {
+    auto mediaValue = media.takeJust();
+    emulated_media_.Set(mediaValue);
+    GetWebViewImpl()->GetPage()->GetSettings().SetMediaTypeOverride(mediaValue);
+  } else {
+    emulated_media_.Set("");
+    GetWebViewImpl()->GetPage()->GetSettings().SetMediaTypeOverride("");
+  }
+  for (const WTF::String& feature : emulated_media_features_.Keys()) {
+    GetWebViewImpl()->GetPage()->SetMediaFeatureOverride(AtomicString(feature),
+                                                         "");
+  }
+  emulated_media_features_.Clear();
+  if (features.isJust()) {
+    auto featuresValue = features.takeJust();
+    for (auto const& mediaFeature : *featuresValue.get()) {
+      auto const& name = mediaFeature->getName();
+      auto const& value = mediaFeature->getValue();
+      emulated_media_features_.Set(name, value);
+      GetWebViewImpl()->GetPage()->SetMediaFeatureOverride(AtomicString(name),
+                                                           value);
+    }
+  }
   return response;
 }
 
@@ -313,7 +359,7 @@ Response InspectorEmulationAgent::setVirtualTimePolicy(
     *virtual_time_ticks_base_ms = 0;
   } else {
     *virtual_time_ticks_base_ms =
-        (virtual_time_base_ticks_ - WTF::TimeTicks()).InMillisecondsF();
+        (virtual_time_base_ticks_ - base::TimeTicks()).InMillisecondsF();
   }
 
   return response;
@@ -329,8 +375,8 @@ void InspectorEmulationAgent::ApplyVirtualTimePolicy(
   if (new_policy.virtual_time_budget_ms) {
     TRACE_EVENT_ASYNC_BEGIN1("renderer.scheduler", "VirtualTimeBudget", this,
                              "budget", *new_policy.virtual_time_budget_ms);
-    WTF::TimeDelta budget_amount =
-        WTF::TimeDelta::FromMillisecondsD(*new_policy.virtual_time_budget_ms);
+    base::TimeDelta budget_amount =
+        base::TimeDelta::FromMillisecondsD(*new_policy.virtual_time_budget_ms);
     web_local_frame_->View()->Scheduler()->GrantVirtualTimeBudget(
         budget_amount,
         WTF::Bind(&InspectorEmulationAgent::VirtualTimeBudgetExpired,
@@ -357,7 +403,7 @@ void InspectorEmulationAgent::PrepareRequest(
     ResourceType resource_type) {
   if (!accept_language_override_.Get().IsEmpty() &&
       request.HttpHeaderField("Accept-Language").IsEmpty()) {
-    request.SetHTTPHeaderField(
+    request.SetHttpHeaderField(
         "Accept-Language",
         AtomicString(network_utils::GenerateAcceptLanguageHeader(
             accept_language_override_.Get())));
@@ -400,7 +446,8 @@ Response InspectorEmulationAgent::setDefaultBackgroundColorOverride(
   }
 
   blink::protocol::DOM::RGBA* rgba = color.fromJust();
-  default_background_color_override_rgba_.Set(rgba->toJSON());
+  default_background_color_override_rgba_.Set(
+      std::move(*rgba).TakeSerialized());
   // Clamping of values is done by Color() constructor.
   int alpha = static_cast<int>(lroundf(255.0f * rgba->getA(1.0f)));
   GetWebViewImpl()->SetBaseBackgroundColorOverride(
@@ -450,6 +497,23 @@ Response InspectorEmulationAgent::setUserAgentOverride(
   return Response::OK();
 }
 
+Response InspectorEmulationAgent::setTimezoneOverride(
+    const String& timezone_id) {
+  timezone_override_.reset();
+  if (!timezone_id.IsEmpty()) {
+    timezone_override_ = TimeZoneController::SetTimeZoneOverride(timezone_id);
+    if (!timezone_override_) {
+      return TimeZoneController::HasTimeZoneOverride()
+                 ? Response::Error("Timezone override is already in effect")
+                 : Response::InvalidParams("Invalid timezone id");
+    }
+  }
+
+  timezone_id_override_.Set(timezone_id);
+
+  return Response::OK();
+}
+
 void InspectorEmulationAgent::ApplyAcceptLanguageOverride(String* accept_lang) {
   if (!accept_language_override_.Get().IsEmpty())
     *accept_lang = accept_language_override_.Get();
@@ -464,7 +528,7 @@ void InspectorEmulationAgent::InnerEnable() {
   if (enabled_)
     return;
   enabled_ = true;
-  instrumenting_agents_->addInspectorEmulationAgent(this);
+  instrumenting_agents_->AddInspectorEmulationAgent(this);
 }
 
 Response InspectorEmulationAgent::AssertPage() {

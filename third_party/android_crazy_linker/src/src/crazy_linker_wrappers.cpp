@@ -15,6 +15,10 @@
 #include "crazy_linker_thread_data.h"
 #include "crazy_linker_util.h"
 
+#ifdef __ANDROID__
+#include <android/dlext.h>
+#endif
+
 #ifdef __arm__
 // On ARM, this function is exported by the dynamic linker but never
 // declared in any official header. It is used at runtime to
@@ -89,17 +93,26 @@ char* WrapDlerror() {
 
 void* WrapDlopen(const char* path, int mode) {
   ScopedLockedGlobals globals;
+  LibraryList* libs = globals->libraries();
 
   // NOTE: If |path| is NULL, the wrapper should return a handle
   // corresponding to the current executable. This can't be a crazy
   // library, so don't try to handle it with the crazy linker.
   if (path) {
-    Error error;
-    LibraryView* wrap = globals->libraries()->LoadLibrary(
-        path, 0U /* load_address */, globals->search_path_list(), &error);
-    if (wrap) {
-      globals->valid_handles()->Add(wrap);
-      return wrap;
+    LibraryView* view = libs->FindKnownLibrary(path);
+    if (!view) {
+      Error error;
+      LoadParams params;
+      if (libs->LocateLibraryFile(path, *globals->search_path_list(), &params,
+                                  &error)) {
+        view = libs->LoadLibraryInternal(params, &error);
+        if (!view) {
+          SetLinkerError("%s: %s", "dlopen", error.c_str());
+          return nullptr;
+        }
+        globals->valid_handles()->Add(view);
+        return view;
+      }
     }
   }
 
@@ -110,11 +123,69 @@ void* WrapDlopen(const char* path, int mode) {
     return nullptr;
   }
 
-  auto* wrap_lib = new LibraryView(system_lib, path ? path : "<executable>");
-  globals->libraries()->AddLibrary(wrap_lib);
-  globals->valid_handles()->Add(wrap_lib);
-  return wrap_lib;
+  auto* view = new LibraryView(system_lib, path ? path : "<executable>");
+  libs->AddLibrary(view);
+  globals->valid_handles()->Add(view);
+  return view;
 }
+
+#ifdef __ANDROID__
+// Prepare LoadParams according to |path| and |info|.
+static LoadParams PrepareLoadParamsFrom(const char* path,
+                                        const android_dlextinfo* info) {
+  LoadParams params;
+  if (info->flags & ANDROID_DLEXT_USE_LIBRARY_FD) {
+    params.library_fd = info->library_fd;
+    if (info->flags & ANDROID_DLEXT_USE_LIBRARY_FD_OFFSET)
+      params.library_offset = info->library_fd_offset;
+  } else {
+    params.library_path = path;
+  }
+  if (info->flags & ANDROID_DLEXT_RESERVED_ADDRESS) {
+    params.wanted_address = reinterpret_cast<uintptr_t>(info->reserved_addr);
+    params.reserved_size = info->reserved_size;
+  }
+  if (info->flags & ANDROID_DLEXT_RESERVED_ADDRESS_HINT)
+    params.reserved_load_fallback = true;
+
+  return params;
+}
+
+void* WrapAndroidDlopenExt(const char* path,
+                           int mode,
+                           const android_dlextinfo* info) {
+  if (!info)
+    return WrapDlopen(path, mode);
+
+  ScopedLockedGlobals globals;
+
+  const uint64_t kSupportedFlags =
+      ANDROID_DLEXT_USE_LIBRARY_FD | ANDROID_DLEXT_USE_LIBRARY_FD_OFFSET |
+      ANDROID_DLEXT_RESERVED_ADDRESS | ANDROID_DLEXT_RESERVED_ADDRESS_HINT;
+  const uint64_t unsupported_flags = (info->flags & ~kSupportedFlags);
+  if (unsupported_flags) {
+    SetLinkerError("%s", "unsupported android_dlextinfo flags %08llx",
+                   "android_dlopen_ext",
+                   static_cast<unsigned long long>(unsupported_flags));
+    return nullptr;
+  }
+
+  if (!path && !(info->flags & ANDROID_DLEXT_USE_LIBRARY_FD)) {
+    SetLinkerError("%s: missing path or file descriptor.",
+                   "android_dlopen_ext");
+    return nullptr;
+  }
+  Error error;
+  LibraryView* view = globals->libraries()->LoadLibraryInternal(
+      PrepareLoadParamsFrom(path, info), &error);
+  if (!view) {
+    SetLinkerError("%s: %s", "android_dlopen_ext", error.c_str());
+    return nullptr;
+  }
+  globals->valid_handles()->Add(view);
+  return view;
+}
+#endif  // __ANDROID__
 
 void* WrapDlsym(void* lib_handle, const char* symbol_name) {
   if (!symbol_name) {
@@ -187,11 +258,12 @@ int WrapDladdr(void* address, Dl_info* info) {
   // First, perform search in crazy libraries.
   {
     ScopedLockedGlobals globals;
-    LibraryView* wrap = globals->libraries()->FindLibraryForAddress(address);
+    const LibraryView* wrap =
+        globals->libraries()->FindLibraryForAddress(address);
     if (wrap && wrap->IsCrazy()) {
       size_t sym_size = 0;
 
-      SharedLibrary* lib = wrap->GetCrazy();
+      const SharedLibrary* lib = wrap->GetCrazy();
       ::memset(info, 0, sizeof(*info));
       info->dli_fname = lib->base_name();
       info->dli_fbase = reinterpret_cast<void*>(lib->load_address());
@@ -303,6 +375,10 @@ void* WrapLinkerSymbol(const char* name) {
 #ifdef __arm__
     if (name[0] == '_' && !strcmp("__aeabi_atexit", name))
       return reinterpret_cast<void*>(&__aeabi_atexit);
+#endif
+#ifdef __ANDROID__
+    if (name[0] == 'a' && !strcmp("android_dlopen_ext", name))
+      return reinterpret_cast<void*>(&WrapAndroidDlopenExt);
 #endif
     return NULL;
   }

@@ -60,7 +60,7 @@ bool BlacklistSiteTaskSync(std::string url, sql::Database* db) {
 }
 
 BlacklistSiteTask::BlacklistSiteTask(ExploreSitesStore* store, std::string url)
-    : store_(store), url_(url), weak_ptr_factory_(this) {}
+    : store_(store), url_(url) {}
 
 BlacklistSiteTask::~BlacklistSiteTask() = default;
 

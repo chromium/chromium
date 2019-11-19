@@ -145,8 +145,7 @@ TetherService::TetherService(
           chromeos::tether::TetherHostFetcherImpl::Factory::NewInstance(
               device_sync_client_,
               multidevice_setup_client_)),
-      timer_(std::make_unique<base::OneShotTimer>()),
-      weak_ptr_factory_(this) {
+      timer_(std::make_unique<base::OneShotTimer>()) {
   tether_host_fetcher_->AddObserver(this);
   power_manager_client_->AddObserver(this);
   network_state_handler_->AddObserver(this, FROM_HERE);

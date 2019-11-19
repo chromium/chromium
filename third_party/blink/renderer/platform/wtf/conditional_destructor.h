@@ -5,6 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_CONDITIONAL_DESTRUCTOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_CONDITIONAL_DESTRUCTOR_H_
 
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+
 namespace WTF {
 
 // ConditionalDestructor defines the destructor of the derived object.
@@ -16,6 +18,8 @@ namespace WTF {
 // method.
 template <typename Derived, bool noDestructor>
 class ConditionalDestructor {
+  USING_FAST_MALLOC(ConditionalDestructor);
+
  public:
   ~ConditionalDestructor() { static_cast<Derived*>(this)->Finalize(); }
 };

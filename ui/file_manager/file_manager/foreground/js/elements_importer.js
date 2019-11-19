@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 /**
- * @type {Promise} A promise which is fulfilled when HTML imports for custom
- *   elements for file manager UI are loaded.
+ * @type {!Promise<void>} A promise which is fulfilled when HTML imports for
+ *   custom elements for file manager UI are loaded.
  */
 window.importElementsPromise = new Promise((resolve, reject) => {
   const startTime = Date.now();

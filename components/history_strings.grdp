@@ -5,6 +5,9 @@
   <message name="IDS_HISTORY_ACTION_MENU_DESCRIPTION" desc="Text used to identify the history entry drop-down menu for screen readers">
     Actions
   </message>
+  <message name="IDS_HISTORY_ARIA_ROLE_DESCRIPTION" desc="Text used for accessibility to describe the list of history entries.">
+    List of history entries
+  </message>
   <message name="IDS_HISTORY_CANCEL_EDITING_BUTTON" desc="Text for the button to exit editing mode [Length: 7em].">
     Cancel
   </message>

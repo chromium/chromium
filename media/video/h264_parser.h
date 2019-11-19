@@ -466,6 +466,9 @@ class MEDIA_EXPORT H264Parser {
   Result ParseSPS(int* sps_id);
   Result ParsePPS(int* pps_id);
 
+  // Parses the SPS ID from the SPSExt, but otherwise does nothing.
+  Result ParseSPSExt(int* sps_id);
+
   // Return a pointer to SPS/PPS with given |sps_id|/|pps_id| or NULL if not
   // present.
   const H264SPS* GetSPS(int sps_id) const;

@@ -14,5 +14,5 @@ struct SerializedBlob {
   string uuid;
   string content_type;
   uint64 size;
-  Blob blob;
+  pending_remote<Blob> blob;
 };

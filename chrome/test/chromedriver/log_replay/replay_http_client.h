@@ -27,7 +27,7 @@ class URLLoaderFactory;
 class ReplayHttpClient : public DevToolsHttpClient {
  public:
   // Initializes a DevToolsLogReader with the given log file.
-  ReplayHttpClient(const NetAddress& address,
+  ReplayHttpClient(const DevToolsEndpoint& endpoint,
                    network::mojom::URLLoaderFactory* factory,
                    const SyncWebSocketFactory& socket_factory,
                    std::unique_ptr<DeviceMetrics> device_metrics,

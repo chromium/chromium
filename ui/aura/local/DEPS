@@ -1,8 +1,0 @@
-include_rules = [
-  "+cc/mojo_embedder",
-  "+cc/output",
-  "+cc/scheduler",
-  "+components/viz/service/frame_sinks",
-  "+services/viz/public/interfaces",
-]
-

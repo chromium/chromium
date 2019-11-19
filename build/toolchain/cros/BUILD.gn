@@ -125,7 +125,7 @@ gcc_toolchain("host") {
     is_clang = cros_host_is_clang
     current_cpu = host_cpu
     current_os = "linux"
-    use_sysroot = false
+    use_sysroot = use_sysroot
   }
 }
 
@@ -168,6 +168,6 @@ gcc_toolchain("v8_snapshot") {
     }
     v8_current_cpu = v8_target_cpu
     current_os = "linux"
-    use_sysroot = false
+    use_sysroot = use_sysroot
   }
 }

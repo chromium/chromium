@@ -183,6 +183,7 @@ jumbo_source_set("sender") {
 
     libs += [
       "AudioToolbox.framework",
+      "CoreFoundation.framework",
       "CoreMedia.framework",
       "CoreVideo.framework",
       "VideoToolbox.framework",

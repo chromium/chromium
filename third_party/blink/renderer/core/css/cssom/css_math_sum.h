@@ -30,7 +30,7 @@ class CORE_EXPORT CSSMathSum final : public CSSMathVariadic {
   // From CSSStyleValue.
   StyleValueType GetType() const final { return CSSStyleValue::kSumType; }
 
-  CSSCalcExpressionNode* ToCalcExpressionNode() const final;
+  CSSMathExpressionNode* ToCalcExpressionNode() const final;
 
  private:
   void BuildCSSText(Nested, ParenLess, StringBuilder&) const final;

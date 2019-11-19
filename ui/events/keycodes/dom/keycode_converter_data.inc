@@ -85,6 +85,12 @@ USB_KEYMAP_DECLARATION {
   //            USB     evdev    XKB     Win     Mac   Code
   USB_KEYMAP(0x000000, 0x0000, 0x0000, 0x0000, 0xffff, NULL, NONE), // Invalid
 
+#if defined(OS_ANDROID)
+#define USB_KEYMAP_ANDROID
+#include "ui/events/keycodes/dom/keycode_conversion_data_android_generated.inc"
+#undef USB_KEYMAP_ANDROID
+#endif
+
   // =========================================
   // Non-USB codes
   // =========================================
@@ -97,9 +103,6 @@ USB_KEYMAP_DECLARATION {
   USB_KEYMAP(0x000014, 0x0000, 0x0000, 0x0000, 0xffff, "Suspend", SUSPEND),
   USB_KEYMAP(0x000015, 0x0000, 0x0000, 0x0000, 0xffff, "Resume", RESUME),
   USB_KEYMAP(0x000016, 0x0000, 0x0000, 0x0000, 0xffff, "Turbo", TURBO),
-  // AL Context-aware desktop assistant, not in HID specification (yet?)
-  USB_KEYMAP(0x000017, 0x0247, 0x024f, 0x0000, 0xffff, "LaunchAssistant",
-             LAUNCH_ASSISTANT),
 
   // =========================================
   // USB Usage Page 0x01: Generic Desktop Page
@@ -110,6 +113,9 @@ USB_KEYMAP_DECLARATION {
   //            USB     evdev    XKB     Win     Mac
   USB_KEYMAP(0x010082, 0x008e, 0x0096, 0xe05f, 0xffff, "Sleep", SLEEP), // SystemSleep
   USB_KEYMAP(0x010083, 0x008f, 0x0097, 0xe063, 0xffff, "WakeUp", WAKE_UP),
+  USB_KEYMAP(0x0100b5, 0x00e3, 0x00eb, 0x0000, 0xffff, "DisplayToggleIntExt",
+             DISPLAY_TOGGLE_INT_EXT),  // System Display Toggle Int/Ext
+
 
   // =========================================
   // USB Usage Page 0x07: Keyboard/Keypad Page
@@ -533,7 +539,9 @@ USB_KEYMAP_DECLARATION {
   USB_KEYMAP(0x0c01ae, 0x0176, 0x017e, 0x0000, 0xffff, NULL, LAUNCH_KEYBOARD_LAYOUT),
   USB_KEYMAP(0x0c01b1, 0x0245, 0x024d, 0x0000, 0xffff, "LaunchScreenSaver",
              LAUNCH_SCREEN_SAVER),  // AL Screen Saver
-  // USB#0c01b4: Home Directory (AL_FileBrowser) (Explorer)
+  USB_KEYMAP(0x0c01cb, 0x0247, 0x024f, 0x0000, 0xffff, "LaunchAssistant",
+             LAUNCH_ASSISTANT),  // AL Context-aware desktop assistant
+   // USB#0c01b4: Home Directory (AL_FileBrowser) (Explorer)
   //USB_KEYMAP(0x0c01b4, 0x0000, 0x0000, 0x0000, 0xffff, NULL, LAUNCH_FILE_BROWSER),
   // USB#0x0c01b7: AL Audio Browser
   USB_KEYMAP(0x0c01b7, 0x0188, 0x0190, 0x0000, 0xffff, NULL, LAUNCH_AUDIO_BROWSER),
@@ -568,8 +576,8 @@ USB_KEYMAP_DECLARATION {
   //USB_KEYMAP(0x0c0230, 0x0000, 0x0000, 0x0000, 0xffff, NULL, ZOOM_FULL),
   // USB#0x0c0231:  AC Normal View
   //USB_KEYMAP(0x0c0231, 0x0000, 0x0000, 0x0000, 0xffff, NULL, ZOOM_NORMAL),
-  // USB#0x0c0232:  AC View Toggle
-  USB_KEYMAP(0x0c0232, 0x0000, 0x0000, 0x0000, 0xffff, "ZoomToggle", ZOOM_TOGGLE),
+  USB_KEYMAP(0x0c0232, 0x0174, 0x017c, 0x0000, 0xffff, "ZoomToggle",
+             ZOOM_TOGGLE),  // AC View Toggle
   // USB#0x0c0279:  AC Redo/Repeat
   USB_KEYMAP(0x0c0279, 0x00b6, 0x00be, 0x0000, 0xffff, NULL, REDO),
   // USB#0x0c0289:  AC_Reply
@@ -578,4 +586,9 @@ USB_KEYMAP_DECLARATION {
   USB_KEYMAP(0x0c028b, 0x00e9, 0x00f1, 0x0000, 0xffff, "MailForward", MAIL_FORWARD),
   // USB#0x0c028c:  AC_Send
   USB_KEYMAP(0x0c028c, 0x00e7, 0x00ef, 0x0000, 0xffff, "MailSend", MAIL_SEND),
+  // USB#0x0c029d:  AC Next Keyboard Layout Select
+  USB_KEYMAP(0x0c029d, 0x0248, 0x0250, 0x0000, 0xffff, "KeyboardLayoutSelect",
+             KEYBOARD_LAYOUT_SELECT),
+  USB_KEYMAP(0x0c029f, 0x0078, 0x0080, 0x0000, 0xffff, "ShowAllWindows",
+             SHOW_ALL_WINDOWS),  // AC Desktop Show All Windows
 };

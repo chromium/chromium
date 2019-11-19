@@ -8,16 +8,14 @@
 
 #include "base/bind.h"
 #include "base/compiler_specific.h"
-#include "components/browser_sync/profile_sync_service_mock.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/sync/driver/test_sync_service.h"
 #include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
-#include "ios/chrome/browser/sync/ios_chrome_profile_sync_test_util.h"
 #include "ios/chrome/browser/sync/profile_sync_service_factory.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_item.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_controller_test.h"
 #include "ios/chrome/grit/ios_strings.h"
-#include "ios/web/public/test/test_web_thread_bundle.h"
-#include "testing/gmock/include/gmock/gmock.h"
+#include "ios/web/public/test/web_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -28,16 +26,9 @@
 
 namespace {
 
-using testing::NiceMock;
-using testing::Return;
-
-std::unique_ptr<KeyedService> CreateNiceProfileSyncServiceMock(
+std::unique_ptr<KeyedService> CreateTestSyncService(
     web::BrowserState* context) {
-  browser_sync::ProfileSyncService::InitParams init_params =
-      CreateProfileSyncServiceParamsForTest(
-          ios::ChromeBrowserState::FromBrowserState(context));
-  return std::make_unique<NiceMock<browser_sync::ProfileSyncServiceMock>>(
-      std::move(init_params));
+  return std::make_unique<syncer::TestSyncService>();
 }
 
 class SyncEncryptionTableViewControllerTest
@@ -47,19 +38,15 @@ class SyncEncryptionTableViewControllerTest
     TestChromeBrowserState::Builder test_cbs_builder;
     test_cbs_builder.AddTestingFactory(
         ProfileSyncServiceFactory::GetInstance(),
-        base::BindRepeating(&CreateNiceProfileSyncServiceMock));
+        base::BindRepeating(&CreateTestSyncService));
     chrome_browser_state_ = test_cbs_builder.Build();
     ChromeTableViewControllerTest::SetUp();
 
-    mock_profile_sync_service_ =
-        static_cast<browser_sync::ProfileSyncServiceMock*>(
+    syncer::TestSyncService* test_sync_service =
+        static_cast<syncer::TestSyncService*>(
             ProfileSyncServiceFactory::GetForBrowserState(
                 chrome_browser_state_.get()));
-    ON_CALL(*mock_profile_sync_service_, GetTransportState())
-        .WillByDefault(Return(syncer::SyncService::TransportState::ACTIVE));
-    ON_CALL(*mock_profile_sync_service_->GetUserSettingsMock(),
-            IsUsingSecondaryPassphrase())
-        .WillByDefault(Return(true));
+    test_sync_service->SetIsUsingSecondaryPassphrase(true);
 
     CreateController();
   }
@@ -69,10 +56,8 @@ class SyncEncryptionTableViewControllerTest
         initWithBrowserState:chrome_browser_state_.get()];
   }
 
-  web::TestWebThreadBundle thread_bundle_;
+  web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
-  // Weak, owned by |chrome_browser_state_|.
-  browser_sync::ProfileSyncServiceMock* mock_profile_sync_service_;
 };
 
 TEST_F(SyncEncryptionTableViewControllerTest, TestModel) {

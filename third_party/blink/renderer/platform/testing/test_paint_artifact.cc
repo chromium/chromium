@@ -21,11 +21,11 @@ namespace blink {
 
 class TestPaintArtifact::DummyRectClient : public FakeDisplayItemClient {
  public:
-  LayoutRect VisualRect() const final { return EnclosingLayoutRect(rect_); }
-  void SetVisualRect(const FloatRect& rect) { rect_ = rect; }
+  IntRect VisualRect() const final { return rect_; }
+  void SetVisualRect(const IntRect& rect) { rect_ = rect; }
 
   sk_sp<PaintRecord> MakeRecord(const FloatRect& rect, Color color) {
-    rect_ = rect;
+    rect_ = EnclosingIntRect(rect);
     PaintRecorder recorder;
     cc::PaintCanvas* canvas = recorder.beginRecording(rect);
     PaintFlags flags;
@@ -35,7 +35,7 @@ class TestPaintArtifact::DummyRectClient : public FakeDisplayItemClient {
   }
 
  private:
-  FloatRect rect_;
+  IntRect rect_;
 };
 
 TestPaintArtifact::TestPaintArtifact() : display_item_list_(0) {}
@@ -51,7 +51,7 @@ TestPaintArtifact& TestPaintArtifact::Chunk(int id) {
   // invalidation rects of chunks. The actual values don't matter. If the chunk
   // has display items, we will recalculate the bounds from the display items
   // when constructing the PaintArtifact.
-  Bounds(FloatRect(id * 110, id * 220, id * 220 + 200, id * 110 + 200));
+  Bounds(IntRect(id * 110, id * 220, id * 220 + 200, id * 110 + 200));
   return *this;
 }
 
@@ -79,8 +79,9 @@ TestPaintArtifact& TestPaintArtifact::RectDrawing(const FloatRect& bounds,
 }
 
 TestPaintArtifact& TestPaintArtifact::ScrollHitTest(
-    const TransformPaintPropertyNode& scroll_offset) {
-  return ScrollHitTest(NewClient(), scroll_offset);
+    const TransformPaintPropertyNode* scroll_offset,
+    const IntRect& scroll_container_bounds) {
+  return ScrollHitTest(NewClient(), scroll_offset, scroll_container_bounds);
 }
 
 TestPaintArtifact& TestPaintArtifact::RectDrawing(FakeDisplayItemClient& client,
@@ -93,17 +94,27 @@ TestPaintArtifact& TestPaintArtifact::RectDrawing(FakeDisplayItemClient& client,
 }
 
 TestPaintArtifact& TestPaintArtifact::ForeignLayer(
-    scoped_refptr<cc::Layer> layer) {
+    scoped_refptr<cc::Layer> layer,
+    const FloatPoint& offset) {
+  DEFINE_STATIC_LOCAL(LiteralDebugNameClient, client, ("ForeignLayer"));
   display_item_list_.AllocateAndConstruct<ForeignLayerDisplayItem>(
-      DisplayItem::kForeignLayerFirst, std::move(layer));
+      client, DisplayItem::kForeignLayerFirst, std::move(layer), offset,
+      nullptr);
   return *this;
 }
 
 TestPaintArtifact& TestPaintArtifact::ScrollHitTest(
     FakeDisplayItemClient& client,
-    const TransformPaintPropertyNode& scroll_offset) {
+    const TransformPaintPropertyNode* scroll_offset,
+    const IntRect& scroll_container_bounds) {
   display_item_list_.AllocateAndConstruct<ScrollHitTestDisplayItem>(
-      client, scroll_offset);
+      client, DisplayItem::kScrollHitTest, scroll_offset,
+      scroll_container_bounds);
+  return *this;
+}
+
+TestPaintArtifact& TestPaintArtifact::OutsetForRasterEffects(float outset) {
+  paint_chunks_.back().outset_for_raster_effects = outset;
   return *this;
 }
 
@@ -112,7 +123,7 @@ TestPaintArtifact& TestPaintArtifact::KnownToBeOpaque() {
   return *this;
 }
 
-TestPaintArtifact& TestPaintArtifact::Bounds(const FloatRect& bounds) {
+TestPaintArtifact& TestPaintArtifact::Bounds(const IntRect& bounds) {
   paint_chunks_.back().bounds = bounds;
   return *this;
 }

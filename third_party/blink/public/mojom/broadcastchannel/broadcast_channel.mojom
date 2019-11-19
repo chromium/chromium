@@ -1,0 +1,36 @@
+// Copyright 2016 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+import "third_party/blink/public/mojom/messaging/cloneable_message.mojom";
+import "url/mojom/origin.mojom";
+
+// A pair of BroadcastChannelClient interfaces is used to represent a connection
+// to a particular channel. One client is implemented in the browser, for
+// messages sent from the renderer to the browser, and one client is implemented
+// in the renderer for messages from the browser to the renderer.
+interface BroadcastChannelClient {
+  // Messages are passed as CloneableMessage, which contains a
+  // SerializedScriptValue.
+  OnMessage(blink.mojom.CloneableMessage message);
+};
+
+// This interface is used to set up connections to broadcast channels. All
+// connections to channels made from the same event loop should be made
+// through the same BroadcastChannelProvider connection to ensure correct
+// ordering of messages.
+// Typically the browser will have one instance of a BroadcastChannelProvider
+// per storage partition, to which all connections from renderers in that
+// partition are bound. This instance will then forward messages received on a
+// particular connection to all other connections in the same storage partition
+// with the same origin and name.
+interface BroadcastChannelProvider {
+  // Connect to the channel identified by the |origin| and |name|. Messages can
+  // be sent to the channel using |sender|, and messages to the channel will be
+  // received by |receiver|.
+  ConnectToChannel(url.mojom.Origin origin, string name,
+                   pending_associated_remote<BroadcastChannelClient> receiver,
+                   pending_associated_receiver<BroadcastChannelClient> sender);
+};

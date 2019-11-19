@@ -1,0 +1,16 @@
+CONSOLE MESSAGE: line 38: Testing main world. Request should be blocked by main world CSP.
+CONSOLE ERROR: line 2: Refused to connect to 'ws://127.0.0.1:8880/echo' because it violates the following Content Security Policy directive: "connect-src 'none'".
+
+CONSOLE MESSAGE: line 18: PASS: Request blocked by CSP as expected.
+CONSOLE MESSAGE: line 43: Testing isolated world with no csp. Request should be blocked by main world CSP.
+CONSOLE ERROR: Refused to connect to 'ws://127.0.0.1:8880/echo' because it violates the following Content Security Policy directive: "connect-src 'none'".
+
+CONSOLE MESSAGE: PASS: Request blocked by CSP as expected.
+CONSOLE MESSAGE: line 50: Testing isolated world with permissive csp.
+CONSOLE MESSAGE: PASS: Request succeeded as expected.
+CONSOLE MESSAGE: line 56: Testing isolated world with strict csp.
+CONSOLE MESSAGE: line 57: internals.runtimeFlags.isolatedWorldCSPEnabled is true
+CONSOLE ERROR: Refused to connect to 'ws://127.0.0.1:8880/echo' because it violates the following Content Security Policy directive: "connect-src 'none'".
+
+CONSOLE MESSAGE: PASS: Request blocked by CSP as expected.
+This tests the interaction of websockets used in the isolated world with the isolated world CSP.

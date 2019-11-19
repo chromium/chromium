@@ -25,6 +25,7 @@
 
 // See https://webaudio.github.io/web-audio-api/#DelayNode
 [
+    Exposed=Window,
     Constructor(BaseAudioContext context, optional DelayOptions options),
     RaisesException=Constructor,
     Measure

@@ -30,7 +30,7 @@ function editingTest()
     var elem = document.getElementById("test2");
     var selection = window.getSelection();
     selection.collapse(elem, 0);
-    for (var i = 0; i < 4; ++i)
+    for (var i = 0; i < 5; ++i) // One additional extend needed to account for punctuation
         execExtendSelectionForwardByWordCommand();
     execCopyCommand();
 

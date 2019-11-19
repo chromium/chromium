@@ -21,6 +21,7 @@ Tests scroll behavior when a subpixel scrollbar thumb is dragged by mouse.
 </div>
 <script src="../../resources/js-test.js"></script>
 <script>
+window.jsTestIsAsync = true;
 if (window.eventSender) {
   onload = function() {
     var container = document.getElementById('container');
@@ -29,7 +30,10 @@ if (window.eventSender) {
     eventSender.mouseMoveTo(340, 250);
     eventSender.mouseUp();
 
-    shouldBeCloseTo("container.scrollTop", "0.57", 0.02);
+    requestAnimationFrame(() => {
+        shouldBeCloseTo("container.scrollTop", "0.57", 0.02);
+        finishJSTest();
+    });
   };
 }
 </script>

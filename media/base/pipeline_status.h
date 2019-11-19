@@ -6,6 +6,7 @@
 #define MEDIA_BASE_PIPELINE_STATUS_H_
 
 #include <stdint.h>
+#include <iosfwd>
 #include <string>
 
 #include "base/callback.h"
@@ -58,7 +59,30 @@ enum PipelineStatus {
   PIPELINE_STATUS_MAX = DEMUXER_ERROR_DETECTED_HLS,
 };
 
-typedef base::Callback<void(PipelineStatus)> PipelineStatusCB;
+// Returns a string version of the status, unique to each PipelineStatus, and
+// not including any ':'. This makes it suitable for usage in
+// MediaError.message as the UA-specific-error-code.
+MEDIA_EXPORT std::string PipelineStatusToString(PipelineStatus status);
+
+MEDIA_EXPORT std::ostream& operator<<(std::ostream& out, PipelineStatus status);
+
+// TODO(crbug.com/1007799): Delete PipelineStatusCB once all callbacks are
+//                          converted to PipelineStatusCallback.
+typedef base::RepeatingCallback<void(PipelineStatus)> PipelineStatusCB;
+typedef base::OnceCallback<void(PipelineStatus)> PipelineStatusCallback;
+
+struct PipelineDecoderInfo {
+  bool is_platform_decoder = false;
+  bool has_decrypting_demuxer_stream = false;
+  std::string decoder_name;
+};
+
+MEDIA_EXPORT bool operator==(const PipelineDecoderInfo& first,
+                             const PipelineDecoderInfo& second);
+MEDIA_EXPORT bool operator!=(const PipelineDecoderInfo& first,
+                             const PipelineDecoderInfo& second);
+MEDIA_EXPORT std::ostream& operator<<(std::ostream& out,
+                                      const PipelineDecoderInfo& info);
 
 struct MEDIA_EXPORT PipelineStatistics {
   PipelineStatistics();
@@ -79,11 +103,10 @@ struct MEDIA_EXPORT PipelineStatistics {
   // NOTE: frame duration should reflect changes to playback rate.
   base::TimeDelta video_frame_duration_average = kNoTimestamp;
 
-  // Name of the audio or video decoder (if present). Note: Keep these fields at
-  // the end of the structure, if you move them you need to also update the test
-  // ProtoUtilsTest::PipelineStatisticsConversion.
-  std::string video_decoder_name;
-  std::string audio_decoder_name;
+  // Note: Keep these fields at the end of the structure, if you move them you
+  // need to also update the test ProtoUtilsTest::PipelineStatisticsConversion.
+  PipelineDecoderInfo audio_decoder_info;
+  PipelineDecoderInfo video_decoder_info;
 
   // NOTE: always update operator== implementation in pipeline_status.cc when
   // adding a field to this struct. Leave this comment at the end.

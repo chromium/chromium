@@ -66,7 +66,8 @@ DelayNode::DelayNode(BaseAudioContext& context, double max_delay_time)
     : AudioNode(context),
       delay_time_(
           AudioParam::Create(context,
-                             kParamTypeDelayDelayTime,
+                             Uuid(),
+                             AudioParamHandler::kParamTypeDelayDelayTime,
                              0.0,
                              AudioParamHandler::AutomationRate::kAudio,
                              AudioParamHandler::AutomationRateMode::kVariable,
@@ -125,6 +126,16 @@ AudioParam* DelayNode::delayTime() {
 void DelayNode::Trace(blink::Visitor* visitor) {
   visitor->Trace(delay_time_);
   AudioNode::Trace(visitor);
+}
+
+void DelayNode::ReportDidCreate() {
+  GraphTracer().DidCreateAudioNode(this);
+  GraphTracer().DidCreateAudioParam(delay_time_);
+}
+
+void DelayNode::ReportWillBeDestroyed() {
+  GraphTracer().WillDestroyAudioParam(delay_time_);
+  GraphTracer().WillDestroyAudioNode(this);
 }
 
 }  // namespace blink

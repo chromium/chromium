@@ -9,7 +9,6 @@
 #include "chrome/browser/extensions/api/image_writer_private/error_messages.h"
 #include "chrome/browser/extensions/api/image_writer_private/test_utils.h"
 #include "chrome/test/base/testing_profile.h"
-#include "services/service_manager/public/cpp/connector.h"
 
 namespace extensions {
 namespace image_writer {
@@ -42,8 +41,7 @@ class ImageWriterFromFileTest : public ImageWriterUnitTestBase {
 
 TEST_F(ImageWriterFromFileTest, InvalidFile) {
   scoped_refptr<WriteFromFileOperation> op = new WriteFromFileOperation(
-      manager_.AsWeakPtr(),
-      /*connector=*/nullptr, kDummyExtensionId, test_utils_.GetImagePath(),
+      manager_.AsWeakPtr(), kDummyExtensionId, test_utils_.GetImagePath(),
       test_utils_.GetDevicePath().AsUTF8Unsafe(),
       base::FilePath(FILE_PATH_LITERAL("/var/tmp")));
 
@@ -70,8 +68,7 @@ TEST_F(ImageWriterFromFileTest, WriteFromFileEndToEnd) {
 #endif
 
   scoped_refptr<WriteFromFileOperation> op = new WriteFromFileOperation(
-      manager_.AsWeakPtr(),
-      /*connector=*/nullptr, kDummyExtensionId, test_utils_.GetImagePath(),
+      manager_.AsWeakPtr(), kDummyExtensionId, test_utils_.GetImagePath(),
       test_utils_.GetDevicePath().AsUTF8Unsafe(),
       base::FilePath(FILE_PATH_LITERAL("/var/tmp")));
   EXPECT_CALL(manager_,

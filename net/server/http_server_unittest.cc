@@ -42,13 +42,8 @@
 #include "net/socket/tcp_client_socket.h"
 #include "net/socket/tcp_server_socket.h"
 #include "net/test/gtest_util.h"
-#include "net/test/test_with_scoped_task_environment.h"
+#include "net/test/test_with_task_environment.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
-#include "net/url_request/url_fetcher.h"
-#include "net/url_request/url_fetcher_delegate.h"
-#include "net/url_request/url_request_context.h"
-#include "net/url_request/url_request_context_getter.h"
-#include "net/url_request/url_request_test_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -67,7 +62,7 @@ class TestHttpClient {
   int ConnectAndWait(const IPEndPoint& address) {
     AddressList addresses(address);
     NetLogSource source;
-    socket_.reset(new TCPClientSocket(addresses, NULL, NULL, source));
+    socket_.reset(new TCPClientSocket(addresses, nullptr, nullptr, source));
 
     TestCompletionCallback callback;
     int rv = socket_->Connect(callback.callback());
@@ -125,7 +120,7 @@ class TestHttpClient {
   void Write() {
     int result = socket_->Write(
         write_buffer_.get(), write_buffer_->BytesRemaining(),
-        base::Bind(&TestHttpClient::OnWrite, base::Unretained(this)),
+        base::BindOnce(&TestHttpClient::OnWrite, base::Unretained(this)),
         TRAFFIC_ANNOTATION_FOR_TESTS);
     if (result != ERR_IO_PENDING)
       OnWrite(result);
@@ -157,8 +152,9 @@ class TestHttpClient {
     // Return true if response has data equal to or more than content length.
     int64_t body_size = static_cast<int64_t>(response.size()) - end_of_headers;
     DCHECK_LE(0, body_size);
-    scoped_refptr<HttpResponseHeaders> headers(new HttpResponseHeaders(
-        HttpUtil::AssembleRawHeaders(response.data(), end_of_headers)));
+    auto headers =
+        base::MakeRefCounted<HttpResponseHeaders>(HttpUtil::AssembleRawHeaders(
+            base::StringPiece(response.data(), end_of_headers)));
     return body_size >= headers->GetContentLength();
   }
 
@@ -169,7 +165,7 @@ class TestHttpClient {
 
 }  // namespace
 
-class HttpServerTest : public TestWithScopedTaskEnvironment,
+class HttpServerTest : public TestWithTaskEnvironment,
                        public HttpServer::Delegate {
  public:
   HttpServerTest()
@@ -177,7 +173,7 @@ class HttpServerTest : public TestWithScopedTaskEnvironment,
 
   void SetUp() override {
     std::unique_ptr<ServerSocket> server_socket(
-        new TCPServerSocket(NULL, NetLogSource()));
+        new TCPServerSocket(nullptr, NetLogSource()));
     server_socket->ListenWithAddressAndPort("127.0.0.1", 0, 1);
     server_.reset(new HttpServer(std::move(server_socket), this));
     ASSERT_THAT(server_->GetLocalAddress(&server_address_), IsOk());
@@ -206,7 +202,7 @@ class HttpServerTest : public TestWithScopedTaskEnvironment,
     NOTREACHED();
   }
 
-  void OnWebSocketMessage(int connection_id, const std::string& data) override {
+  void OnWebSocketMessage(int connection_id, std::string data) override {
     NOTREACHED();
   }
 
@@ -285,8 +281,7 @@ class WebSocketTest : public HttpServerTest {
     HttpServerTest::OnHttpRequest(connection_id, info);
   }
 
-  void OnWebSocketMessage(int connection_id, const std::string& data) override {
-  }
+  void OnWebSocketMessage(int connection_id, std::string data) override {}
 };
 
 TEST_F(HttpServerTest, Request) {
@@ -451,37 +446,19 @@ TEST_F(WebSocketTest, RequestWebSocketTrailingJunk) {
 }
 
 TEST_F(HttpServerTest, RequestWithTooLargeBody) {
-  class TestURLFetcherDelegate : public URLFetcherDelegate {
-   public:
-    TestURLFetcherDelegate(const base::Closure& quit_loop_func)
-        : quit_loop_func_(quit_loop_func) {}
-    ~TestURLFetcherDelegate() override = default;
-
-    void OnURLFetchComplete(const URLFetcher* source) override {
-      EXPECT_EQ(HTTP_INTERNAL_SERVER_ERROR, source->GetResponseCode());
-      quit_loop_func_.Run();
-    }
-
-   private:
-    base::Closure quit_loop_func_;
-  };
-
-  base::RunLoop run_loop;
-  TestURLFetcherDelegate delegate(run_loop.QuitClosure());
-
-  scoped_refptr<URLRequestContextGetter> request_context_getter(
-      new TestURLRequestContextGetter(base::ThreadTaskRunnerHandle::Get()));
-  std::unique_ptr<URLFetcher> fetcher = URLFetcher::Create(
-      GURL(base::StringPrintf("http://127.0.0.1:%d/test",
-                              server_address_.port())),
-      URLFetcher::GET, &delegate, TRAFFIC_ANNOTATION_FOR_TESTS);
-  fetcher->SetRequestContext(request_context_getter.get());
-  fetcher->AddExtraRequestHeader(
-      base::StringPrintf("content-length:%d", 1 << 30));
-  fetcher->Start();
-
-  run_loop.Run();
-  ASSERT_EQ(0u, requests_.size());
+  TestHttpClient client;
+  ASSERT_THAT(client.ConnectAndWait(server_address_), IsOk());
+  client.Send(
+      "GET /test HTTP/1.1\r\n"
+      "Content-Length: 1073741824\r\n\r\n");
+  std::string response;
+  ASSERT_TRUE(client.ReadResponse(&response));
+  EXPECT_EQ(
+      "HTTP/1.1 500 Internal Server Error\r\n"
+      "Content-Length:42\r\n"
+      "Content-Type:text/html\r\n\r\n"
+      "request content-length too big or unknown.",
+      response);
 }
 
 TEST_F(HttpServerTest, Send200) {
@@ -544,10 +521,7 @@ TEST_F(HttpServerTest, WrongProtocolRequest) {
 
 class MockStreamSocket : public StreamSocket {
  public:
-  MockStreamSocket()
-      : connected_(true),
-        read_buf_(NULL),
-        read_buf_len_(0) {}
+  MockStreamSocket() : connected_(true), read_buf_(nullptr), read_buf_len_(0) {}
 
   // StreamSocket
   int Connect(CompletionOnceCallback callback) override {
@@ -556,7 +530,7 @@ class MockStreamSocket : public StreamSocket {
   void Disconnect() override {
     connected_ = false;
     if (!read_callback_.is_null()) {
-      read_buf_ = NULL;
+      read_buf_ = nullptr;
       read_buf_len_ = 0;
       std::move(read_callback_).Run(ERR_CONNECTION_CLOSED);
     }
@@ -625,7 +599,7 @@ class MockStreamSocket : public StreamSocket {
     int read_len = std::min(data_len, read_buf_len_);
     memcpy(read_buf_->data(), data, read_len);
     pending_read_data_.assign(data + read_len, data_len - read_len);
-    read_buf_ = NULL;
+    read_buf_ = nullptr;
     read_buf_len_ = 0;
     std::move(read_callback_).Run(read_len);
   }

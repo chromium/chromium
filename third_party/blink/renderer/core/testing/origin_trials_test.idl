@@ -3,11 +3,11 @@
 // found in the LICENSE file.
 
 interface OriginTrialsTest {
-    [OriginTrialEnabled=OriginTrialsSampleAPI] readonly attribute boolean normalAttribute;
-    [OriginTrialEnabled=OriginTrialsSampleAPI] static readonly attribute boolean staticAttribute;
-    [OriginTrialEnabled=OriginTrialsSampleAPI] boolean normalMethod();
-    [OriginTrialEnabled=OriginTrialsSampleAPI] static boolean staticMethod();
-    [OriginTrialEnabled=OriginTrialsSampleAPI] const unsigned short CONSTANT = 1;
+    [RuntimeEnabled=OriginTrialsSampleAPI] readonly attribute boolean normalAttribute;
+    [RuntimeEnabled=OriginTrialsSampleAPI] static readonly attribute boolean staticAttribute;
+    [RuntimeEnabled=OriginTrialsSampleAPI] boolean normalMethod();
+    [RuntimeEnabled=OriginTrialsSampleAPI] static boolean staticMethod();
+    [RuntimeEnabled=OriginTrialsSampleAPI] const unsigned short CONSTANT = 1;
 
     // This attribute uses native code to test whether the trial is enabled,
     // and throws an exception in JavaScript if it is not.
@@ -33,19 +33,25 @@ interface OriginTrialsTest {
     // secure context
     [SecureContext] readonly attribute boolean secureUnconditionalAttribute;
     // TODO(chasej): Add [SecureContext] when that attribute is fixed to work on
-    //   static attributes. That problem is not related to [OriginTrialEnabled].
+    //   static attributes. That problem is not related to [RuntimeEnabled].
     static readonly attribute boolean secureStaticUnconditionalAttribute;
     [SecureContext] boolean secureUnconditionalMethod();
     [SecureContext] static boolean secureStaticUnconditionalMethod();
 
     // These are only available if the trial is enabled, as well as in secure
     // context.
-    [SecureContext, OriginTrialEnabled=OriginTrialsSampleAPI] readonly attribute boolean secureAttribute;
-    [SecureContext, OriginTrialEnabled=OriginTrialsSampleAPI] static readonly attribute boolean secureStaticAttribute;
-    [SecureContext, OriginTrialEnabled=OriginTrialsSampleAPI] boolean secureMethod();
-    [SecureContext, OriginTrialEnabled=OriginTrialsSampleAPI] static boolean secureStaticMethod();
+    [SecureContext, RuntimeEnabled=OriginTrialsSampleAPI] readonly attribute boolean secureAttribute;
+    [SecureContext, RuntimeEnabled=OriginTrialsSampleAPI] static readonly attribute boolean secureStaticAttribute;
+    [SecureContext, RuntimeEnabled=OriginTrialsSampleAPI] boolean secureMethod();
+    [SecureContext, RuntimeEnabled=OriginTrialsSampleAPI] static boolean secureStaticMethod();
 
     // These are available if the specified trial is available, and also if the
     // implied by trial is enabled
-    [OriginTrialEnabled=OriginTrialsSampleAPIImplied] readonly attribute boolean impliedAttribute;
+    [RuntimeEnabled=OriginTrialsSampleAPIImplied] readonly attribute boolean impliedAttribute;
+
+    // These are not available even with the token present.
+    [RuntimeEnabled=OriginTrialsSampleAPIInvalidOS] readonly attribute boolean invalidOSAttribute;
+
+    // These are available if the associated navigation trial is available.
+    [RuntimeEnabled=OriginTrialsSampleAPINavigation] boolean navigationMethod();
 };

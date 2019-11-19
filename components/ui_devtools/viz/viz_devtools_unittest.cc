@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/containers/flat_map.h"
+#include "base/strings/stringprintf.h"
+#include "base/unguessable_token.h"
 #include "components/ui_devtools/css_agent.h"
 #include "components/ui_devtools/ui_devtools_unittest_utils.h"
 #include "components/ui_devtools/ui_element.h"
@@ -20,8 +23,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
 
-using namespace ui_devtools::protocol;
-
 namespace ui_devtools {
 namespace {
 
@@ -31,40 +32,42 @@ constexpr viz::FrameSinkId kFrameSink3(3, 0);
 
 bool HasAttributeWithValue(const std::string& attribute,
                            const std::string& value,
-                           DOM::Node* node) {
+                           protocol::DOM::Node* node) {
   if (!node->hasAttributes())
     return false;
-  Array<std::string>* attributes = node->getAttributes(nullptr);
-  for (size_t i = 0; i < attributes->length() - 1; i += 2) {
-    if (attributes->get(i) == attribute) {
-      return attributes->get(i + 1) == value;
+  protocol::Array<std::string>* attributes = node->getAttributes(nullptr);
+  for (size_t i = 0; i < attributes->size() - 1; i += 2) {
+    if ((*attributes)[i] == attribute) {
+      return (*attributes)[i + 1] == value;
     }
   }
   return false;
 }
 
 // Recursively search for a node with an attribute and a matching value.
-DOM::Node* FindNodeByAttribute(const std::string& attribute,
-                               const std::string& value,
-                               DOM::Node* root) {
+protocol::DOM::Node* FindNodeByAttribute(const std::string& attribute,
+                                         const std::string& value,
+                                         protocol::DOM::Node* root) {
   if (HasAttributeWithValue(attribute, value, root))
     return root;
 
-  Array<DOM::Node>* children = root->getChildren(nullptr);
-  for (size_t i = 0; i < children->length(); ++i) {
-    DOM::Node* node = FindNodeByAttribute(attribute, value, children->get(i));
+  protocol::Array<protocol::DOM::Node>* children = root->getChildren(nullptr);
+  for (size_t i = 0; i < children->size(); ++i) {
+    protocol::DOM::Node* node =
+        FindNodeByAttribute(attribute, value, (*children)[i].get());
     if (node)
       return node;
   }
   return nullptr;
 }
 
-DOM::Node* FindFrameSinkNode(const viz::FrameSinkId& frame_sink_id,
-                             DOM::Node* root) {
+protocol::DOM::Node* FindFrameSinkNode(const viz::FrameSinkId& frame_sink_id,
+                                       protocol::DOM::Node* root) {
   return FindNodeByAttribute("FrameSinkId", frame_sink_id.ToString(), root);
 }
 
-DOM::Node* FindSurfaceNode(const viz::SurfaceId& surface_id, DOM::Node* root) {
+protocol::DOM::Node* FindSurfaceNode(const viz::SurfaceId& surface_id,
+                                     protocol::DOM::Node* root) {
   return FindNodeByAttribute("SurfaceId", surface_id.ToString(), root);
 }
 
@@ -78,7 +81,7 @@ class VizDevToolsTest : public PlatformTest {
   void SetUp() override {
     frontend_channel_ = std::make_unique<FakeFrontendChannel>();
     uber_dispatcher_ =
-        std::make_unique<UberDispatcher>(frontend_channel_.get());
+        std::make_unique<protocol::UberDispatcher>(frontend_channel_.get());
     manager_ =
         std::make_unique<viz::FrameSinkManagerImpl>(&shared_bitmap_manager_);
     dom_agent_ = std::make_unique<DOMAgentViz>(frame_sink_manager());
@@ -192,18 +195,18 @@ class VizDevToolsTest : public PlatformTest {
   FakeFrontendChannel* frontend_channel() { return frontend_channel_.get(); }
   viz::FrameSinkManagerImpl* frame_sink_manager() { return manager_.get(); }
   viz::SurfaceManager* surface_manager() { return manager_->surface_manager(); }
-  DOM::Node* root() { return root_.get(); }
+  protocol::DOM::Node* root() { return root_.get(); }
 
  private:
   viz::TestSharedBitmapManager shared_bitmap_manager_;
   std::unique_ptr<FakeFrontendChannel> frontend_channel_;
-  std::unique_ptr<UberDispatcher> uber_dispatcher_;
+  std::unique_ptr<protocol::UberDispatcher> uber_dispatcher_;
   std::unique_ptr<viz::FrameSinkManagerImpl> manager_;
   std::unique_ptr<DOMAgentViz> dom_agent_;
   std::unique_ptr<CSSAgent> css_agent_;
   std::unique_ptr<OverlayAgentViz> overlay_agent_;
 
-  std::unique_ptr<DOM::Node> root_;
+  std::unique_ptr<protocol::DOM::Node> root_;
   base::flat_map<viz::FrameSinkId,
                  std::unique_ptr<viz::CompositorFrameSinkSupport>>
       supports_;
@@ -228,7 +231,7 @@ TEST_F(VizDevToolsTest, FrameSinkInvalidated) {
 
   InvalidateFrameSinkId(kFrameSink1);
 
-  DOM::Node* frame_sink_node = FindFrameSinkNode(kFrameSink1, root());
+  protocol::DOM::Node* frame_sink_node = FindFrameSinkNode(kFrameSink1, root());
   ExpectChildNodeRemoved(dom_agent()->element_root()->node_id(),
                          frame_sink_node->getNodeId());
 }
@@ -242,8 +245,8 @@ TEST_F(VizDevToolsTest, FrameSinkHierarchyRegistered) {
 
   frame_sink_manager()->RegisterFrameSinkHierarchy(kFrameSink1, kFrameSink2);
 
-  DOM::Node* parent_node = FindFrameSinkNode(kFrameSink1, root());
-  DOM::Node* child_node = FindFrameSinkNode(kFrameSink2, root());
+  protocol::DOM::Node* parent_node = FindFrameSinkNode(kFrameSink1, root());
+  protocol::DOM::Node* child_node = FindFrameSinkNode(kFrameSink2, root());
   ExpectChildNodeRemoved(dom_agent()->element_root()->node_id(),
                          child_node->getNodeId());
   ExpectChildNodeInserted(parent_node->getNodeId(), 0);
@@ -260,8 +263,8 @@ TEST_F(VizDevToolsTest, FrameSinkHierarchyUnregistered) {
 
   frame_sink_manager()->UnregisterFrameSinkHierarchy(kFrameSink1, kFrameSink2);
 
-  DOM::Node* parent_node = FindFrameSinkNode(kFrameSink1, root());
-  DOM::Node* child_node = FindFrameSinkNode(kFrameSink2, parent_node);
+  protocol::DOM::Node* parent_node = FindFrameSinkNode(kFrameSink1, root());
+  protocol::DOM::Node* child_node = FindFrameSinkNode(kFrameSink2, parent_node);
   ExpectChildNodeRemoved(parent_node->getNodeId(), child_node->getNodeId());
   ExpectChildNodeInserted(dom_agent()->element_root()->node_id(),
                           parent_node->getNodeId());
@@ -277,14 +280,14 @@ TEST_F(VizDevToolsTest, InitialFrameSinkHierarchy) {
 
   BuildDocument();
 
-  DOM::Node* node1 = FindFrameSinkNode(kFrameSink1, root());
-  DOM::Node* node2 = FindFrameSinkNode(kFrameSink2, node1);
-  DOM::Node* node3 = FindFrameSinkNode(kFrameSink3, root());
+  protocol::DOM::Node* node1 = FindFrameSinkNode(kFrameSink1, root());
+  protocol::DOM::Node* node2 = FindFrameSinkNode(kFrameSink2, node1);
+  protocol::DOM::Node* node3 = FindFrameSinkNode(kFrameSink3, root());
 
   // The first and third frame sinks are children of the root element.
-  EXPECT_EQ(node1, root()->getChildren(nullptr)->get(0));
-  EXPECT_EQ(node2, node1->getChildren(nullptr)->get(0));
-  EXPECT_EQ(node3, root()->getChildren(nullptr)->get(1));
+  EXPECT_EQ(node1, (*(root()->getChildren(nullptr)))[0].get());
+  EXPECT_EQ(node2, (*(node1->getChildren(nullptr)))[0].get());
+  EXPECT_EQ(node3, (*(root()->getChildren(nullptr)))[1].get());
 }
 
 // Verify that FrameSinkElements are inserted into the tree according to the
@@ -294,7 +297,7 @@ TEST_F(VizDevToolsTest, FrameSinkElementOrdering) {
 
   BuildDocument();
 
-  DOM::Node* frame_sink_node = FindFrameSinkNode(kFrameSink2, root());
+  protocol::DOM::Node* frame_sink_node = FindFrameSinkNode(kFrameSink2, root());
 
   // Create a frame sink element before the existing frame sink.
   RegisterFrameSinkId(kFrameSink1);
@@ -327,7 +330,7 @@ TEST_F(VizDevToolsTest, SurfaceDestroyed) {
   RemoveSurfaceReference(surface_manager()->GetRootSurfaceId(), id1);
   DestroySurface(id1);
 
-  DOM::Node* surface_node = FindSurfaceNode(id1, root());
+  protocol::DOM::Node* surface_node = FindSurfaceNode(id1, root());
   ExpectChildNodeRemoved(dom_agent()->GetRootSurfaceElement()->node_id(),
                          surface_node->getNodeId());
 }
@@ -345,8 +348,8 @@ TEST_F(VizDevToolsTest, SurfaceReferenceAdded) {
   RemoveSurfaceReference(surface_manager()->GetRootSurfaceId(), id2);
   AddSurfaceReference(id1, id2);
 
-  DOM::Node* parent_node = FindSurfaceNode(id1, root());
-  DOM::Node* child_node = FindSurfaceNode(id2, root());
+  protocol::DOM::Node* parent_node = FindSurfaceNode(id1, root());
+  protocol::DOM::Node* child_node = FindSurfaceNode(id2, root());
   ExpectChildNodeRemoved(dom_agent()->GetRootSurfaceElement()->node_id(),
                          child_node->getNodeId());
   ExpectChildNodeInserted(parent_node->getNodeId(), 0);
@@ -364,8 +367,8 @@ TEST_F(VizDevToolsTest, SurfaceReferenceRemoved) {
 
   RemoveSurfaceReference(id1, id2);
 
-  DOM::Node* parent_node = FindSurfaceNode(id1, root());
-  DOM::Node* child_node = FindSurfaceNode(id2, parent_node);
+  protocol::DOM::Node* parent_node = FindSurfaceNode(id1, root());
+  protocol::DOM::Node* child_node = FindSurfaceNode(id2, parent_node);
   ExpectChildNodeRemoved(parent_node->getNodeId(), child_node->getNodeId());
   ExpectChildNodeInserted(dom_agent()->GetRootSurfaceElement()->node_id(),
                           parent_node->getNodeId());
@@ -396,11 +399,11 @@ TEST_F(VizDevToolsTest, SurfaceHierarchyCleanup) {
 
   // It is safe to access |parent_node| after the surface was just destroyed
   // because updates to the frontend are not applied to |root_|.
-  DOM::Node* parent_node = FindSurfaceNode(parent_surface_id, root());
+  protocol::DOM::Node* parent_node = FindSurfaceNode(parent_surface_id, root());
   for (auto& surface_id : child_surface_ids) {
     // Each child surface should have been moved to the root surface when the
     // parent surface was removed, but it shouldn't be discarded yet.
-    DOM::Node* child_node = FindSurfaceNode(surface_id, parent_node);
+    protocol::DOM::Node* child_node = FindSurfaceNode(surface_id, parent_node);
     ExpectChildNodeRemoved(parent_node->getNodeId(), child_node->getNodeId());
     ExpectChildNodeRemoved(dom_agent()->GetRootSurfaceElement()->node_id(),
                            child_node->getNodeId(), /*count=*/0);
@@ -427,9 +430,9 @@ TEST_F(VizDevToolsTest, MultipleSurfaceReferences) {
 
   BuildDocument();
 
-  DOM::Node* parent_node_1 = FindSurfaceNode(parent_id_1, root());
-  DOM::Node* parent_node_2 = FindSurfaceNode(parent_id_2, root());
-  DOM::Node* child_node = FindSurfaceNode(child_id, root());
+  protocol::DOM::Node* parent_node_1 = FindSurfaceNode(parent_id_1, root());
+  protocol::DOM::Node* parent_node_2 = FindSurfaceNode(parent_id_2, root());
+  protocol::DOM::Node* child_node = FindSurfaceNode(child_id, root());
 
   // Attach to the first parent, while still being referenced by the root
   // surface. This should move the child node.
@@ -483,7 +486,7 @@ TEST_F(VizDevToolsTest, SurfaceReferenceAddedBeforeChildActivation) {
 
   AddSurfaceReference(parent_id, child_id);
 
-  DOM::Node* parent_node = FindSurfaceNode(parent_id, root());
+  protocol::DOM::Node* parent_node = FindSurfaceNode(parent_id, root());
   ExpectChildNodeInserted(parent_node->getNodeId(), 0);
 }
 
@@ -495,7 +498,7 @@ TEST_F(VizDevToolsTest, SurfaceElementOrdering) {
 
   BuildDocument();
 
-  DOM::Node* surface_node = FindSurfaceNode(id2, root());
+  protocol::DOM::Node* surface_node = FindSurfaceNode(id2, root());
 
   // Create a surface element before the existing surface.
   viz::SurfaceId id1 = CreateFrameSinkAndSurface(kFrameSink1, 1);
@@ -515,13 +518,13 @@ TEST_F(VizDevToolsTest, FrameSinkAndSurfaceElementOrdering) {
 
   BuildDocument();
 
-  DOM::Node* frame_sink_node = FindFrameSinkNode(kFrameSink1, root());
-  DOM::Node* root_surface_node =
+  protocol::DOM::Node* frame_sink_node = FindFrameSinkNode(kFrameSink1, root());
+  protocol::DOM::Node* root_surface_node =
       FindSurfaceNode(surface_manager()->GetRootSurfaceId(), root());
 
   // The frame sink should be before the root surface node.
-  EXPECT_EQ(frame_sink_node, root()->getChildren(nullptr)->get(0));
-  EXPECT_EQ(root_surface_node, root()->getChildren(nullptr)->get(1));
+  EXPECT_EQ(frame_sink_node, (*(root()->getChildren(nullptr)))[0].get());
+  EXPECT_EQ(root_surface_node, (*(root()->getChildren(nullptr)))[1].get());
 
   // Create a frame sink element with a large id, it should still be inserted
   // before the root surface element.

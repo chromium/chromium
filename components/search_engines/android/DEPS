@@ -1,0 +1,6 @@
+include_rules = [
+  "+components/search_provider_logos",
+  # Remove content dependencies: https://crbug.com/968156
+  "-content/public/android/java",
+  "+content/public/android/java/src/org/chromium/content_public",
+]

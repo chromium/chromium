@@ -29,6 +29,7 @@
 #include "third_party/blink/renderer/platform/graphics/filters/filter.h"
 #include "third_party/blink/renderer/platform/graphics/filters/paint_filter_builder.h"
 #include "third_party/blink/renderer/platform/graphics/filters/source_graphic.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
 
 using testing::Test;
 
@@ -38,21 +39,21 @@ class ImageFilterBuilderTest : public Test {
  protected:
   void InterpolationSpaceTest() {
     // Build filter tree
-    Filter* reference_filter = Filter::Create(1.0f);
+    auto* reference_filter = MakeGarbageCollected<Filter>(1.0f);
 
     // Add a dummy source graphic input
     FilterEffect* source_effect = reference_filter->GetSourceGraphic();
     source_effect->SetOperatingInterpolationSpace(kInterpolationSpaceSRGB);
 
     // Add a blur effect (with input : source)
-    FilterEffect* blur_effect =
-        FEGaussianBlur::Create(reference_filter, 3.0f, 3.0f);
+    auto* blur_effect =
+        MakeGarbageCollected<FEGaussianBlur>(reference_filter, 3.0f, 3.0f);
     blur_effect->SetOperatingInterpolationSpace(kInterpolationSpaceLinear);
     blur_effect->InputEffects().push_back(source_effect);
 
     // Add a blend effect (with inputs : blur, source)
-    FilterEffect* blend_effect =
-        FEBlend::Create(reference_filter, BlendMode::kNormal);
+    auto* blend_effect =
+        MakeGarbageCollected<FEBlend>(reference_filter, BlendMode::kNormal);
     blend_effect->SetOperatingInterpolationSpace(kInterpolationSpaceSRGB);
     FilterEffectVector& blend_inputs = blend_effect->InputEffects();
     blend_inputs.ReserveCapacity(2);
@@ -60,7 +61,7 @@ class ImageFilterBuilderTest : public Test {
     blend_inputs.push_back(blur_effect);
 
     // Add a merge effect (with inputs : blur, blend)
-    FilterEffect* merge_effect = FEMerge::Create(reference_filter);
+    auto* merge_effect = MakeGarbageCollected<FEMerge>(reference_filter);
     merge_effect->SetOperatingInterpolationSpace(kInterpolationSpaceLinear);
     FilterEffectVector& merge_inputs = merge_effect->InputEffects();
     merge_inputs.ReserveCapacity(2);

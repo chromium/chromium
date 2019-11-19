@@ -48,13 +48,11 @@ struct SimpleMessage {
   }
 
   static bool GetValueString(const base::Value* value, std::string* result) {
-    const base::DictionaryValue* dict = nullptr;
-    if (!value->GetAsDictionary(&dict))
+    const std::string* str = value->FindStringKey("val");
+    if (!str)
       return false;
-
-    if (!dict->GetString("val", result))
-      return false;
-
+    if (result)
+      *result = *str;
     return true;
   }
 

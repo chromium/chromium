@@ -2,6 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {TestStore} from 'chrome://test/bookmarks/test_store.js';
+import {selectItem} from 'chrome://bookmarks/bookmarks.js';
+import {createFolder, createItem, getAllFoldersOpenState, replaceBody, testTree} from 'chrome://test/bookmarks/test_util.js';
+
 suite('<bookmarks-item>', function() {
   let item;
   let store;
@@ -12,7 +16,7 @@ suite('<bookmarks-item>', function() {
       createItem('2', {url: 'http://example.com/'}),
       createItem('3'),
     ]));
-    store = new bookmarks.TestStore({
+    store = new TestStore({
       nodes: nodes,
       folderOpenState: getAllFoldersOpenState(nodes),
     });
@@ -43,7 +47,7 @@ suite('<bookmarks-item>', function() {
   test('pressing the menu button selects the item', function() {
     item.$.menuButton.click();
     assertDeepEquals(
-        bookmarks.actions.selectItem('2', store.data, {
+        selectItem('2', store.data, {
           clear: true,
           range: false,
           toggle: false,
@@ -59,7 +63,7 @@ suite('<bookmarks-item>', function() {
     item.isSelectedItem_ = false;
     item.dispatchEvent(new MouseEvent(eventname));
     assertDeepEquals(
-        bookmarks.actions.selectItem('2', store.data, {
+        selectItem('2', store.data, {
           clear: true,
           range: false,
           toggle: false,

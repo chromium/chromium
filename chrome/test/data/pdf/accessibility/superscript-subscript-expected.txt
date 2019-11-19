@@ -1,0 +1,8 @@
+This is some textabc with a
+simulated superscript.
+¶
+This is some textabc with a
+simulated subscript.
+¶
+This is some textabcdef with both
+superscript and subscript.

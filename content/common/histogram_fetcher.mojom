@@ -10,7 +10,7 @@ interface ChildHistogramFetcherFactory {
   // Creates a ChildHistogram interface that uses shared memory buffer to
   // store histograms that are to be reported by the browser process to UMA.
   CreateFetcher(mojo_base.mojom.WritableSharedMemoryRegion? shared_memory,
-                       ChildHistogramFetcher& child_histogram_fetcher);
+                pending_receiver<ChildHistogramFetcher> child_histogram_fetcher);
 };
 
 interface ChildHistogramFetcher{

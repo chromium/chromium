@@ -15,6 +15,7 @@ include_rules = [
   "+services/metrics/public/cpp",
   "+sql",
   "+third_party/blink/public/common",
+  "+third_party/blink/public/mojom/devtools/console_message.mojom.h",
   "+third_party/blink/public/mojom/payments",
   "+third_party/blink/public/platform/modules/payments",
   "+third_party/skia/include/core/SkBitmap.h",

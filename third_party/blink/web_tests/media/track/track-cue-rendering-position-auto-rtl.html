@@ -18,21 +18,21 @@ video::cue {
   background-color: green;
 }
 </style>
-<video>
+<video preload="auto">
   <script>
   var video = document.currentScript.parentNode;
   addTrackWithRtlCueData(video, { align: 'start', size: 50, line: 0 });
   video.src = mediaFile;
   </script>
 </video>
-<video>
+<video preload="auto">
   <script>
   var video = document.currentScript.parentNode;
   addTrackWithRtlCueData(video, { align: 'center', size: 50, line: 0 });
   video.src = mediaFile;
   </script>
 </video>
-<video>
+<video preload="auto">
   <script>
   var video = document.currentScript.parentNode;
   addTrackWithRtlCueData(video, { align: 'end', size: 50, line: 0 });

@@ -9,15 +9,13 @@
 
 #include "base/macros.h"
 #include "services/data_decoder/public/mojom/image_decoder.mojom.h"
-#include "services/service_manager/public/cpp/service_context_ref.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace data_decoder {
 
 class ImageDecoderImpl : public mojom::ImageDecoder {
  public:
-  explicit ImageDecoderImpl(
-      std::unique_ptr<service_manager::ServiceContextRef> service_ref);
+  ImageDecoderImpl();
   ~ImageDecoderImpl() override;
 
   // Overridden from mojom::ImageDecoder:
@@ -33,8 +31,6 @@ class ImageDecoderImpl : public mojom::ImageDecoder {
                        DecodeAnimationCallback callback) override;
 
  private:
-  const std::unique_ptr<service_manager::ServiceContextRef> service_ref_;
-
   DISALLOW_COPY_AND_ASSIGN(ImageDecoderImpl);
 };
 

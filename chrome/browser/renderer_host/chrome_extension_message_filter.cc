@@ -15,16 +15,15 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/extensions/activity_log/activity_action_constants.h"
 #include "chrome/browser/extensions/activity_log/activity_actions.h"
 #include "chrome/browser/extensions/activity_log/activity_log.h"
 #include "chrome/browser/extensions/api/activity_log_private/activity_log_private_api.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/common/extensions/chrome_extension_messages.h"
-#include "content/public/browser/notification_service.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/render_process_host.h"
+#include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/common/extension_messages.h"
 #include "extensions/common/extension_set.h"
@@ -38,7 +37,7 @@ using content::BrowserThread;
 namespace {
 
 const uint32_t kExtensionFilteredMessageClasses[] = {
-    ChromeExtensionMsgStart, ExtensionMsgStart,
+    ExtensionMsgStart,
 };
 
 // Logs an action to the extension activity log for the specified profile.
@@ -67,9 +66,7 @@ ChromeExtensionMessageFilter::ChromeExtensionMessageFilter(
       extension_info_map_(
           extensions::ExtensionSystem::Get(profile)->info_map()) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  notification_registrar_.Add(this,
-                              chrome::NOTIFICATION_PROFILE_DESTROYED,
-                              content::Source<Profile>(profile));
+  observed_profiles_.Add(profile);
 }
 
 ChromeExtensionMessageFilter::~ChromeExtensionMessageFilter() {
@@ -97,6 +94,7 @@ bool ChromeExtensionMessageFilter::OnMessageReceived(
 void ChromeExtensionMessageFilter::OverrideThreadForMessage(
     const IPC::Message& message, BrowserThread::ID* thread) {
   switch (message.type()) {
+    case ExtensionHostMsg_GetMessageBundle::ID:
     case ExtensionHostMsg_AddAPIActionToActivityLog::ID:
     case ExtensionHostMsg_AddDOMActionToActivityLog::ID:
     case ExtensionHostMsg_AddEventToActivityLog::ID:
@@ -111,16 +109,16 @@ void ChromeExtensionMessageFilter::OnDestruct() const {
   if (BrowserThread::CurrentlyOn(BrowserThread::UI)) {
     delete this;
   } else {
-    BrowserThread::DeleteSoon(BrowserThread::UI, FROM_HERE, this);
+    base::DeleteSoon(FROM_HERE, {BrowserThread::UI}, this);
   }
 }
 
 void ChromeExtensionMessageFilter::OnGetExtMessageBundle(
     const std::string& extension_id, IPC::Message* reply_msg) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   const extensions::ExtensionSet& extension_set =
-      extension_info_map_->extensions();
+      extensions::ExtensionRegistry::Get(profile_)->enabled_extensions();
   const extensions::Extension* extension = extension_set.GetByID(extension_id);
 
   if (!extension) {  // The extension has gone.
@@ -161,8 +159,8 @@ void ChromeExtensionMessageFilter::OnGetExtMessageBundle(
   }
 
   // This blocks tab loading. Priority is inherited from the calling context.
-  base::PostTaskWithTraits(
-      FROM_HERE, {base::MayBlock()},
+  base::PostTask(
+      FROM_HERE, {base::ThreadPool(), base::MayBlock()},
       base::BindOnce(&ChromeExtensionMessageFilter::OnGetExtMessageBundleAsync,
                      this, paths_to_load, extension_id, default_locale,
                      reply_msg));
@@ -233,12 +231,10 @@ void ChromeExtensionMessageFilter::OnAddEventToExtensionActivityLog(
   AddActionToExtensionActivityLog(profile_, activity_log_, action);
 }
 
-void ChromeExtensionMessageFilter::Observe(
-    int type,
-    const content::NotificationSource& source,
-    const content::NotificationDetails& details) {
-  DCHECK_EQ(chrome::NOTIFICATION_PROFILE_DESTROYED, type);
-  profile_ = NULL;
+void ChromeExtensionMessageFilter::OnProfileWillBeDestroyed(Profile* profile) {
+  DCHECK_EQ(profile_, profile);
+  observed_profiles_.Remove(profile_);
+  profile_ = nullptr;
   activity_log_ = nullptr;
 }
 

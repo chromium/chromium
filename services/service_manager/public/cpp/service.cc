@@ -28,9 +28,22 @@ void Service::RunAsyncUntilTermination(std::unique_ptr<Service> service,
 
 void Service::OnStart() {}
 
+void Service::OnConnect(const ConnectSourceInfo& source,
+                        const std::string& interface_name,
+                        mojo::ScopedMessagePipeHandle receiver_pipe) {
+  OnBindInterface(source, interface_name, std::move(receiver_pipe));
+}
+
 void Service::OnBindInterface(const BindSourceInfo& source,
                               const std::string& interface_name,
                               mojo::ScopedMessagePipeHandle interface_pipe) {}
+
+void Service::CreatePackagedServiceInstance(
+    const std::string& service_name,
+    mojo::PendingReceiver<mojom::Service> service_receiver,
+    CreatePackagedServiceInstanceCallback callback) {
+  std::move(callback).Run(base::nullopt);
+}
 
 void Service::OnDisconnected() {
   Terminate();

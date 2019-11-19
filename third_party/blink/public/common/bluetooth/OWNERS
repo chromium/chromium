@@ -1,0 +1,12 @@
+file://content/browser/bluetooth/OWNERS
+
+# Changes to IPC serialization require a security review to avoid introducing
+# new sandbox escapes.
+per-file *_mojom_traits*.*=set noparent
+per-file *_mojom_traits*.*=file://ipc/SECURITY_OWNERS
+
+per-file *.typemap=set noparent
+per-file *.typemap=file://ipc/SECURITY_OWNERS
+
+# TEAM: web-bluetooth@chromium.org
+# COMPONENT: Blink>Bluetooth

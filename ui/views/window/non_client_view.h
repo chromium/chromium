@@ -6,6 +6,7 @@
 #define UI_VIEWS_WINDOW_NON_CLIENT_VIEW_H_
 
 #include "base/macros.h"
+#include "build/build_config.h"
 #include "ui/views/view.h"
 #include "ui/views/view_targeter_delegate.h"
 
@@ -23,8 +24,7 @@ class ClientView;
 class VIEWS_EXPORT NonClientFrameView : public View,
                                         public ViewTargeterDelegate {
  public:
-  // Internal class name.
-  static const char kViewClassName[];
+  METADATA_HEADER(NonClientFrameView);
 
   enum {
     // Various edges of the frame border have a 1 px shadow along their edges;
@@ -66,6 +66,12 @@ class VIEWS_EXPORT NonClientFrameView : public View,
   // used.
   virtual bool GetClientMask(const gfx::Size& size, SkPath* mask) const;
 
+#if defined(OS_WIN)
+  // Returns the point in screen physical coordinates at which the system menu
+  // should be opened.
+  virtual gfx::Point GetSystemMenuScreenPixelLocation() const;
+#endif
+
   // This function must ask the ClientView to do a hittest.  We don't do this in
   // the parent NonClientView because that makes it more difficult to calculate
   // hittests for regions that are partially obscured by the ClientView, e.g.
@@ -84,13 +90,12 @@ class VIEWS_EXPORT NonClientFrameView : public View,
   // Whether the widget can be resized or maximized has changed.
   virtual void SizeConstraintsChanged() = 0;
 
-  // The widget's activation state has changed to |active|.
-  virtual void ActivationChanged(bool active);
+  // Called when whether the non-client view should paint as active has changed.
+  virtual void PaintAsActiveChanged(bool active);
 
   // View:
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
-  const char* GetClassName() const override;
-  void OnNativeThemeChanged(const ui::NativeTheme* theme) override;
+  void OnThemeChanged() override;
 
  protected:
   NonClientFrameView();
@@ -99,15 +104,13 @@ class VIEWS_EXPORT NonClientFrameView : public View,
   bool DoesIntersectRect(const View* target,
                          const gfx::Rect& rect) const override;
 
-  void set_active_state_override(bool* active_state_override) {
-    active_state_override_ = active_state_override;
-  }
-
  private:
-  // Used to force ShouldPaintAsActive() to treat the active state a particular
-  // way.  This is normally null; when non-null, its value will override the
-  // normal "active" value computed by the function.
-  bool* active_state_override_;
+#if defined(OS_WIN)
+  // Returns the y coordinate, in local coordinates, at which the system menu
+  // should be opened.  Since this is in DIP, it does not include the 1 px
+  // offset into the caption area; the caller will take care of this.
+  virtual int GetSystemMenuY() const;
+#endif
 
   DISALLOW_COPY_AND_ASSIGN(NonClientFrameView);
 };
@@ -150,8 +153,7 @@ class VIEWS_EXPORT NonClientFrameView : public View,
 //
 class VIEWS_EXPORT NonClientView : public View, public ViewTargeterDelegate {
  public:
-  // Internal class name.
-  static const char kViewClassName[];
+  METADATA_HEADER(NonClientView);
 
   NonClientView();
   ~NonClientView() override;
@@ -212,11 +214,6 @@ class VIEWS_EXPORT NonClientView : public View, public ViewTargeterDelegate {
     client_view_ = client_view;
   }
 
-  // Layout just the frame view. This is necessary on Windows when non-client
-  // metrics such as the position of the window controls changes independently
-  // of a window resize message.
-  void LayoutFrameView();
-
   // Set the accessible name of this view.
   void SetAccessibleName(const base::string16& name);
 
@@ -226,8 +223,6 @@ class VIEWS_EXPORT NonClientView : public View, public ViewTargeterDelegate {
   gfx::Size GetMaximumSize() const override;
   void Layout() override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
-  const char* GetClassName() const override;
-
   views::View* GetTooltipHandlerForPoint(const gfx::Point& point) override;
 
  protected:
@@ -242,7 +237,7 @@ class VIEWS_EXPORT NonClientView : public View, public ViewTargeterDelegate {
   // A ClientView object or subclass, responsible for sizing the contents view
   // of the window, hit testing and perhaps other tasks depending on the
   // implementation.
-  ClientView* client_view_;
+  ClientView* client_view_ = nullptr;
 
   // The NonClientFrameView that renders the non-client portions of the window.
   // This object is not owned by the view hierarchy because it can be replaced
@@ -251,7 +246,7 @@ class VIEWS_EXPORT NonClientView : public View, public ViewTargeterDelegate {
 
   // The overlay view, when non-NULL and visible, takes up the entire widget and
   // is placed on top of the ClientView and NonClientFrameView.
-  View* overlay_view_;
+  View* overlay_view_ = nullptr;
 
   // The accessible name of this view.
   base::string16 accessible_name_;

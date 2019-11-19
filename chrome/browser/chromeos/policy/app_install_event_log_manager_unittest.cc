@@ -10,6 +10,7 @@
 
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/json/json_string_value_serializer.h"
 #include "base/sequenced_task_runner.h"
 #include "base/stl_util.h"
 #include "base/test/scoped_mock_time_message_loop_task_runner.h"
@@ -20,13 +21,17 @@
 #include "base/values.h"
 #include "chrome/browser/chromeos/policy/app_install_event_log.h"
 #include "chrome/browser/chromeos/policy/app_install_event_log_uploader.h"
+#include "chrome/browser/chromeos/policy/app_install_event_log_util.h"
+#include "chrome/browser/profiles/reporting_util.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/system/fake_statistics_provider.h"
 #include "components/arc/arc_prefs.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
+#include "components/policy/core/common/cloud/realtime_reporting_job_configuration.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/prefs/pref_service.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "extensions/browser/quota_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -94,8 +99,36 @@ bool ContainsSameEvents(const Events& expected,
   return true;
 }
 
+base::Value ConvertEventsToValue(const Events& events, Profile* profile) {
+  base::Value event_list(base::Value::Type::LIST);
+
+  for (auto it = events.begin(); it != events.end(); ++it) {
+    const std::string& package = (*it).first;
+    for (const em::AppInstallReportLogEvent& app_install_report_log_event :
+         (*it).second) {
+      base::Value wrapper;
+      wrapper =
+          ConvertEventToValue(package, app_install_report_log_event, profile);
+      event_list.Append(std::move(wrapper));
+    }
+  }
+
+  return event_list;
+}
+
 MATCHER_P(MatchEvents, expected, "contains events") {
-  return ContainsSameEvents(expected, arg);
+  std::string arg_serialized_string;
+  JSONStringValueSerializer arg_serializer(&arg_serialized_string);
+  if (!arg_serializer.Serialize(arg))
+    return false;
+
+  DCHECK(expected);
+  std::string expected_serialized_string;
+  JSONStringValueSerializer expected_serializer(&expected_serialized_string);
+  if (!expected_serializer.Serialize(*expected))
+    return false;
+
+  return arg_serialized_string == expected_serialized_string;
 }
 
 class TestLogTaskRunnerWrapper
@@ -124,10 +157,14 @@ class TestLogTaskRunnerWrapper
 class AppInstallEventLogManagerTest : public testing::Test {
  protected:
   AppInstallEventLogManagerTest()
-      : uploader_(&cloud_policy_client_),
+      : uploader_(&cloud_policy_client_, /*profile=*/nullptr),
         log_task_runner_(log_task_runner_wrapper_.test_task_runner()),
         log_file_path_(profile_.GetPath().Append(kLogFileName)),
-        packages_{std::begin(kPackageNames), std::end(kPackageNames)} {}
+        packages_{std::begin(kPackageNames), std::end(kPackageNames)},
+        events_value_(base::Value::Type::DICTIONARY),
+        scoped_fake_statistics_provider_(
+            std::make_unique<
+                chromeos::system::ScopedFakeStatisticsProvider>()) {}
 
   // testing::Test:
   void SetUp() override {
@@ -180,10 +217,30 @@ class AppInstallEventLogManagerTest : public testing::Test {
 
   void AddLogEntryForAllApps() { AddLogEntryForsetOfApps(packages_); }
 
+  void ClearEventsDict() {
+    base::DictionaryValue* mutable_dict;
+    if (events_value_.GetAsDictionary(&mutable_dict))
+      mutable_dict->Clear();
+    else
+      NOTREACHED();
+  }
+
+  void BuildReport() {
+    base::Value event_list = ConvertEventsToValue(events_, /*profile=*/nullptr);
+    base::Value context = reporting::GetContext(/*profile=*/nullptr);
+
+    AppendEventId(&event_list, context);
+    events_value_ = RealtimeReportingJobConfiguration::BuildReport(
+        std::move(event_list), std::move(context));
+  }
+
   void ExpectUploadAndCaptureCallback(
       CloudPolicyClient::StatusCallback* callback) {
+    ClearEventsDict();
+    BuildReport();
+
     EXPECT_CALL(cloud_policy_client_,
-                UploadAppInstallReport(Pointee(MatchEvents(events_)), _))
+                UploadRealtimeReport(MatchEvents(&events_value_), _))
         .WillOnce(SaveArg<1>(callback));
   }
 
@@ -193,12 +250,15 @@ class AppInstallEventLogManagerTest : public testing::Test {
   }
 
   void ExpectAndCompleteUpload() {
+    ClearEventsDict();
+    BuildReport();
+
     EXPECT_CALL(cloud_policy_client_,
-                UploadAppInstallReport(Pointee(MatchEvents(events_)), _))
-        .WillOnce(Invoke([](const em::AppInstallReportRequest*,
-                            const CloudPolicyClient::StatusCallback& callback) {
-          callback.Run(true /* success */);
-        }));
+                UploadRealtimeReport(MatchEvents(&events_value_), _))
+        .WillOnce(Invoke(
+            [](base::Value, const CloudPolicyClient::StatusCallback& callback) {
+              callback.Run(true /* success */);
+            }));
   }
 
   void FlushNonDelayedTasks() {
@@ -237,7 +297,7 @@ class AppInstallEventLogManagerTest : public testing::Test {
   }
 
   TestLogTaskRunnerWrapper log_task_runner_wrapper_;
-  content::TestBrowserThreadBundle browser_thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
   extensions::QuotaService::ScopedDisablePurgeForTesting
       disable_purge_for_testing_;
   TestingProfile profile_;
@@ -251,6 +311,9 @@ class AppInstallEventLogManagerTest : public testing::Test {
 
   const base::FilePath log_file_path_;
   const std::set<std::string> packages_;
+  base::Value events_value_;
+  std::unique_ptr<chromeos::system::ScopedFakeStatisticsProvider>
+      scoped_fake_statistics_provider_;
 
   em::AppInstallReportLogEvent event_;
   Events events_;

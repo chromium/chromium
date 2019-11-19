@@ -12,6 +12,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
@@ -29,6 +30,10 @@ class InfoBarManager;
 
 namespace translate {
 
+// Feature flag used to control the auto-always and auto-never snackbar
+// parameters (i.e. threshold and maximum-number-of).
+extern const base::Feature kTranslateAutoSnackbars;
+
 // Feature flag for "Translate Compact Infobar UI" project.
 extern const base::Feature kTranslateCompactUI;
 
@@ -45,12 +50,22 @@ class TranslateInfoBarDelegate : public infobars::InfoBarDelegate {
                                         TranslateErrors::Type error_type) = 0;
     // Return whether user declined translate service.
     virtual bool IsDeclinedByUser() = 0;
+    // Called when the TranslateInfoBarDelegate instance is destroyed.
+    virtual void OnTranslateInfoBarDelegateDestroyed(
+        TranslateInfoBarDelegate* delegate) = 0;
 
    protected:
     virtual ~Observer() {}
   };
 
   static const size_t kNoIndex;
+
+  // Get the threshold and maximum number of occurences that parameterize
+  // automatic always- and never-translate.
+  static int GetAutoAlwaysThreshold();
+  static int GetAutoNeverThreshold();
+  static int GetMaximumNumberOfAutoAlways();
+  static int GetMaximumNumberOfAutoNever();
 
   ~TranslateInfoBarDelegate() override;
 

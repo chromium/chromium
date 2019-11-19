@@ -1,25 +1,25 @@
 This is a testharness.js-based test.
-Found 562 tests; 549 PASS, 13 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 560 tests; 549 PASS, 11 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS background-color color(rgba) / values
 PASS background-color color(rgba) / events
 PASS background-position length(pt) / values
-FAIL background-position length(pt) / events assert_equals: Expected TransitionEnd events triggered on .transition expected "background-position:0.5s" but got "background-position-x:0.5s"
+FAIL background-position length(pt) / events assert_equals: Expected TransitionEnd events triggered on .transition expected "background-position:2s" but got "background-position-x:2s"
 PASS background-position length(pc) / values
-FAIL background-position length(pc) / events assert_equals: Expected TransitionEnd events triggered on .transition expected "background-position:0.5s" but got "background-position-x:0.5s"
+FAIL background-position length(pc) / events assert_equals: Expected TransitionEnd events triggered on .transition expected "background-position:2s" but got "background-position-x:2s"
 PASS background-position length(px) / values
-FAIL background-position length(px) / events assert_equals: Expected TransitionEnd events triggered on .transition expected "background-position:0.5s" but got "background-position-x:0.5s"
+FAIL background-position length(px) / events assert_equals: Expected TransitionEnd events triggered on .transition expected "background-position:2s" but got "background-position-x:2s"
 PASS background-position length(em) / values
-FAIL background-position length(em) / events assert_equals: Expected TransitionEnd events triggered on .transition expected "background-position:0.5s" but got "background-position-x:0.5s"
+FAIL background-position length(em) / events assert_equals: Expected TransitionEnd events triggered on .transition expected "background-position:2s" but got "background-position-x:2s"
 PASS background-position length(ex) / values
-FAIL background-position length(ex) / events assert_equals: Expected TransitionEnd events triggered on .transition expected "background-position:0.5s" but got "background-position-x:0.5s"
+FAIL background-position length(ex) / events assert_equals: Expected TransitionEnd events triggered on .transition expected "background-position:2s" but got "background-position-x:2s"
 PASS background-position length(mm) / values
-FAIL background-position length(mm) / events assert_equals: Expected TransitionEnd events triggered on .transition expected "background-position:0.5s" but got "background-position-x:0.5s"
+FAIL background-position length(mm) / events assert_equals: Expected TransitionEnd events triggered on .transition expected "background-position:2s" but got "background-position-x:2s"
 PASS background-position length(cm) / values
-FAIL background-position length(cm) / events assert_equals: Expected TransitionEnd events triggered on .transition expected "background-position:0.5s" but got "background-position-x:0.5s"
+FAIL background-position length(cm) / events assert_equals: Expected TransitionEnd events triggered on .transition expected "background-position:2s" but got "background-position-x:2s"
 PASS background-position length(in) / values
-FAIL background-position length(in) / events assert_equals: Expected TransitionEnd events triggered on .transition expected "background-position:0.5s" but got "background-position-x:0.5s"
+FAIL background-position length(in) / events assert_equals: Expected TransitionEnd events triggered on .transition expected "background-position:2s" but got "background-position-x:2s"
 PASS background-position percentage(%) / values
-FAIL background-position percentage(%) / events assert_equals: Expected TransitionEnd events triggered on .transition expected "background-position:0.5s" but got "background-position-x:0.5s"
+FAIL background-position percentage(%) / events assert_equals: Expected TransitionEnd events triggered on .transition expected "background-position:2s" but got "background-position-x:2s"
 PASS border-top-width length(pt) / values
 PASS border-top-width length(pt) / events
 PASS border-top-width length(pc) / values
@@ -479,7 +479,7 @@ PASS word-spacing length(cm) / events
 PASS word-spacing length(in) / values
 PASS word-spacing length(in) / events
 FAIL word-spacing percentage(%) / values assert_not_equals: initial and target values may not match got disallowed value "0px"
-FAIL word-spacing percentage(%) / events assert_equals: Expected TransitionEnd events triggered on .transition expected "word-spacing:0.5s" but got ""
+FAIL word-spacing percentage(%) / events assert_equals: Expected TransitionEnd events triggered on .transition expected "word-spacing:2s" but got ""
 PASS text-indent length(pt) / values
 PASS text-indent length(pt) / events
 PASS text-indent length(pc) / values
@@ -536,8 +536,6 @@ PASS outline-width length(in) / values
 PASS outline-width length(in) / events
 PASS clip rectangle(rectangle) / values
 PASS clip rectangle(rectangle) / events
-FAIL crop rectangle(rectangle) / values assert_not_equals: initial and target values may not match got disallowed value ""
-FAIL crop rectangle(rectangle) / events assert_equals: Expected TransitionEnd events triggered on .transition expected "crop:0.5s" but got ""
 PASS vertical-align length(pt) / values
 PASS vertical-align length(pt) / events
 PASS vertical-align length(pc) / values

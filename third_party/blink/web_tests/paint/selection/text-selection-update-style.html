@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <script src="../../resources/ahem.js"></script>
+<script src="../../resources/run-after-layout-and-paint.js"></script>
 <!-- Updating display property should let selection show the element. -->
 <style>
   div { font-family: Ahem}
@@ -8,11 +9,8 @@
 <div id="r2" style="display: none">bar</div>
 <div id="r3">baz</div>
 <script>
-  testRunner.dumpAsTextWithPixelResults();
-  testRunner.waitUntilDone();
   getSelection().setBaseAndExtent(r1, 0, r3, 1);
-  setTimeout(function() {
+  runAfterLayoutAndPaint(function() {
     r2.style.display = 'block';
-     testRunner.notifyDone();
-  });
+  }, true);
 </script>

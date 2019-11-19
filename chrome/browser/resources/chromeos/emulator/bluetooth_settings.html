@@ -1,22 +1,5 @@
-<link rel="import" href="chrome://resources/html/polymer.html">
-
-<link rel="import" href="chrome://resources/cr_elements/cr_checkbox/cr_checkbox.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_dialog/cr_dialog.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_input/cr_input.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_radio_button/cr_radio_button.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_radio_group/cr_radio_group.html">
-<link rel="import" href="chrome://resources/cr_elements/shared_style_css.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/iron-flex-layout/iron-flex-layout-classes.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/paper-button/paper-button.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/paper-icon-button/paper-icon-button.html">
-<link rel="import" href="icons.html">
-<link rel="import" href="shared_styles.html">
-
-<dom-module id="bluetooth-settings">
-  <template>
-    <!-- TODO(michaelpg): Wrap the line below to fit within the 80-char limit.
-         See https://github.com/Polymer/polymer/pull/3668. -->
-    <style include="device-emulator-shared-styles cr-shared-style iron-flex iron-flex-alignment iron-positioning">
+    <style include="device-emulator-shared-styles cr-shared-style iron-flex
+        iron-flex-alignment iron-positioning">
     </style>
     <cr-dialog id="editDialog">
       <div slot="title">[[currentEditableObject.alias]]</div>
@@ -95,15 +78,15 @@
         </form>
       </div>
       <div slot="button-container">
-        <paper-button class="action-button" on-tap="onCloseTap_">
+        <cr-button class="action-button" on-click="onCloseClick_">
           Close
-        </paper-button>
+        </cr-button>
       </div>
     </cr-dialog>
 
     <div class="layout vertical">
       <div class="element-label">
-        <paper-icon-button icon="device-emulator:bluetooth"></paper-icon-button>
+        <cr-icon-button iron-icon="device-emulator:bluetooth"></cr-icon-button>
         Bluetooth
       </div>
       <table class="devices-table">
@@ -117,13 +100,13 @@
             <tr>
               <td class="alias-cell">[[item.alias]]</td>
               <td class="icon-cell">
-                <paper-icon-button icon="device-emulator:content-copy"
+                <cr-icon-button iron-icon="device-emulator:content-copy"
                     on-click="copyDevice" data-predefined="true">
-                </paper-icon-button>
-                <paper-icon-button disabled icon="device-emulator:settings">
-                </paper-icon-button>
-                <paper-icon-button disabled icon="device-emulator:delete">
-                </paper-icon-button>
+                </cr-icon-button>
+                <cr-icon-button disabled iron-icon="device-emulator:settings">
+                </cr-icon-button>
+                <cr-icon-button disabled iron-icon="device-emulator:delete">
+                </cr-icon-button>
               </td>
               <td class="control-cell">
                 <cr-checkbox checked="{{item.discoverable}}"
@@ -145,15 +128,13 @@
             <tr>
               <td class="alias-cell">[[item.alias]]</td>
               <td class="icon-cell">
-                <paper-icon-button icon="device-emulator:content-copy"
+                <cr-icon-button iron-icon="device-emulator:content-copy"
                     data-predefined="false" on-click="copyDevice">
-                </paper-icon-button>
-                <paper-icon-button icon="device-emulator:settings"
-                    on-click="showEditDialog">
-                </paper-icon-button>
-                <paper-icon-button icon="device-emulator:delete"
-                    on-click="deleteDevice">
-                </paper-icon-button>
+                </cr-icon-button>
+                <cr-icon-button iron-icon="device-emulator:settings"
+                    on-click="showEditDialog"></cr-icon-button>
+                <cr-icon-button iron-icon="device-emulator:delete"
+                    on-click="deleteDevice"></cr-icon-button>
               </td>
               <td class="control-cell">
                 <cr-checkbox checked="{{item.discoverable}}"
@@ -170,11 +151,8 @@
         </tbody>
       </table>
       <div class="add-device-container">
-        <paper-button on-click="appendNewDevice">
+        <cr-button on-click="appendNewDevice">
           Add Device
-        </paper-button>
+        </cr-button>
       </div>
     </div>
-  </template>
-  <script src="bluetooth_settings.js"></script>
-</dom-module>

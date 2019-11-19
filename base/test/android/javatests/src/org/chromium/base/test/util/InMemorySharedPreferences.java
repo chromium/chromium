@@ -6,9 +6,12 @@ package org.chromium.base.test.util;
 
 import android.content.SharedPreferences;
 
-import java.util.Collections;
+import org.chromium.base.ObserverList;
+
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -20,6 +23,8 @@ public class InMemorySharedPreferences implements SharedPreferences {
 
     // Guarded on its own monitor.
     private final Map<String, Object> mData;
+    private final ObserverList<OnSharedPreferenceChangeListener> mObservers =
+            new ObserverList<OnSharedPreferenceChangeListener>();
 
     public InMemorySharedPreferences() {
         mData = new HashMap<String, Object>();
@@ -32,69 +37,57 @@ public class InMemorySharedPreferences implements SharedPreferences {
     @Override
     public Map<String, ?> getAll() {
         synchronized (mData) {
-            return Collections.unmodifiableMap(mData);
+            return new HashMap<>(mData);
         }
     }
 
     @Override
     public String getString(String key, String defValue) {
         synchronized (mData) {
-            if (mData.containsKey(key)) {
-                return (String) mData.get(key);
-            }
+            String ret = (String) mData.get(key);
+            return ret != null ? ret : defValue;
         }
-        return defValue;
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public Set<String> getStringSet(String key, Set<String> defValues) {
         synchronized (mData) {
-            if (mData.containsKey(key)) {
-                return Collections.unmodifiableSet((Set<String>) mData.get(key));
-            }
+            Set<String> ret = (Set<String>) mData.get(key);
+            return ret != null ? ret : defValues;
         }
-        return defValues;
     }
 
     @Override
     public int getInt(String key, int defValue) {
         synchronized (mData) {
-            if (mData.containsKey(key)) {
-                return (Integer) mData.get(key);
-            }
+            Integer ret = (Integer) mData.get(key);
+            return ret != null ? ret : defValue;
         }
-        return defValue;
     }
 
     @Override
     public long getLong(String key, long defValue) {
         synchronized (mData) {
-            if (mData.containsKey(key)) {
-                return (Long) mData.get(key);
-            }
+            Long ret = (Long) mData.get(key);
+            return ret != null ? ret : defValue;
         }
-        return defValue;
     }
 
     @Override
     public float getFloat(String key, float defValue) {
         synchronized (mData) {
-            if (mData.containsKey(key)) {
-                return (Float) mData.get(key);
-            }
+            Float ret = (Float) mData.get(key);
+            return ret != null ? ret : defValue;
         }
-        return defValue;
     }
 
     @Override
     public boolean getBoolean(String key, boolean defValue) {
         synchronized (mData) {
-            if (mData.containsKey(key)) {
-                return (Boolean) mData.get(key);
-            }
+            Boolean ret = (Boolean) mData.get(key);
+            return ret != null ? ret : defValue;
         }
-        return defValue;
     }
 
     @Override
@@ -113,26 +106,28 @@ public class InMemorySharedPreferences implements SharedPreferences {
     public void registerOnSharedPreferenceChangeListener(
             SharedPreferences.OnSharedPreferenceChangeListener
                     listener) {
-        throw new UnsupportedOperationException();
+        synchronized (mObservers) {
+            mObservers.addObserver(listener);
+        }
     }
 
     @Override
     public void unregisterOnSharedPreferenceChangeListener(
             SharedPreferences.OnSharedPreferenceChangeListener listener) {
-        throw new UnsupportedOperationException();
+        synchronized (mObservers) {
+            mObservers.removeObserver(listener);
+        }
     }
 
     private class InMemoryEditor implements SharedPreferences.Editor {
 
         // All guarded by |mChanges|
         private boolean mClearCalled;
-        private volatile boolean mApplyCalled;
         private final Map<String, Object> mChanges = new HashMap<String, Object>();
 
         @Override
         public SharedPreferences.Editor putString(String key, String value) {
             synchronized (mChanges) {
-                if (mApplyCalled) throw new IllegalStateException();
                 mChanges.put(key, value);
                 return this;
             }
@@ -141,7 +136,6 @@ public class InMemorySharedPreferences implements SharedPreferences {
         @Override
         public SharedPreferences.Editor putStringSet(String key, Set<String> values) {
             synchronized (mChanges) {
-                if (mApplyCalled) throw new IllegalStateException();
                 mChanges.put(key, values);
                 return this;
             }
@@ -150,7 +144,6 @@ public class InMemorySharedPreferences implements SharedPreferences {
         @Override
         public SharedPreferences.Editor putInt(String key, int value) {
             synchronized (mChanges) {
-                if (mApplyCalled) throw new IllegalStateException();
                 mChanges.put(key, value);
                 return this;
             }
@@ -159,7 +152,6 @@ public class InMemorySharedPreferences implements SharedPreferences {
         @Override
         public SharedPreferences.Editor putLong(String key, long value) {
             synchronized (mChanges) {
-                if (mApplyCalled) throw new IllegalStateException();
                 mChanges.put(key, value);
                 return this;
             }
@@ -168,7 +160,6 @@ public class InMemorySharedPreferences implements SharedPreferences {
         @Override
         public SharedPreferences.Editor putFloat(String key, float value) {
             synchronized (mChanges) {
-                if (mApplyCalled) throw new IllegalStateException();
                 mChanges.put(key, value);
                 return this;
             }
@@ -177,7 +168,6 @@ public class InMemorySharedPreferences implements SharedPreferences {
         @Override
         public SharedPreferences.Editor putBoolean(String key, boolean value) {
             synchronized (mChanges) {
-                if (mApplyCalled) throw new IllegalStateException();
                 mChanges.put(key, value);
                 return this;
             }
@@ -186,7 +176,6 @@ public class InMemorySharedPreferences implements SharedPreferences {
         @Override
         public SharedPreferences.Editor remove(String key) {
             synchronized (mChanges) {
-                if (mApplyCalled) throw new IllegalStateException();
                 // Magic value for removes
                 mChanges.put(key, this);
                 return this;
@@ -196,8 +185,8 @@ public class InMemorySharedPreferences implements SharedPreferences {
         @Override
         public SharedPreferences.Editor clear() {
             synchronized (mChanges) {
-                if (mApplyCalled) throw new IllegalStateException();
                 mClearCalled = true;
+                mChanges.clear();
                 return this;
             }
         }
@@ -210,26 +199,41 @@ public class InMemorySharedPreferences implements SharedPreferences {
 
         @Override
         public void apply() {
+            Set<String> changedKeys = new HashSet<>();
             synchronized (mData) {
                 synchronized (mChanges) {
-                    if (mApplyCalled) throw new IllegalStateException();
                     if (mClearCalled) {
+                        changedKeys.addAll(mData.keySet());
                         mData.clear();
+                        mClearCalled = false;
                     }
                     for (Map.Entry<String, Object> entry : mChanges.entrySet()) {
                         String key = entry.getKey();
                         Object value = entry.getValue();
                         if (value == this) {
+                            if (mData.containsKey(key)) {
+                                changedKeys.add(key);
+                            }
                             // Special value for removal
                             mData.remove(key);
+
                         } else {
+                            Object oldValue = mData.get(key);
+                            if (!Objects.equals(oldValue, value)) {
+                                changedKeys.add(key);
+                            }
+
                             mData.put(key, value);
                         }
                     }
-                    // The real shared prefs clears out the temporaries allowing the caller to
-                    // reuse the Editor instance, however this is undocumented behavior and subtle
-                    // to read, so instead we just ban any future use of this instance.
-                    mApplyCalled = true;
+                    mChanges.clear();
+                }
+            }
+            synchronized (mObservers) {
+                for (OnSharedPreferenceChangeListener observer : mObservers) {
+                    for (String key : changedKeys) {
+                        observer.onSharedPreferenceChanged(InMemorySharedPreferences.this, key);
+                    }
                 }
             }
         }

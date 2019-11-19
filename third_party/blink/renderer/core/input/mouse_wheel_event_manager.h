@@ -19,7 +19,7 @@ class Node;
 class WebMouseWheelEvent;
 
 class MouseWheelEventManager final
-    : public GarbageCollectedFinalized<MouseWheelEventManager> {
+    : public GarbageCollected<MouseWheelEventManager> {
  public:
   explicit MouseWheelEventManager(LocalFrame&);
   void Trace(blink::Visitor*);

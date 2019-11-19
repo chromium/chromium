@@ -38,6 +38,8 @@ enum AutoEnrollmentState {
   AUTO_ENROLLMENT_STATE_NO_ENROLLMENT = 5,
   // Check completed successfully, zero-touch enrollment should be triggered.
   AUTO_ENROLLMENT_STATE_TRIGGER_ZERO_TOUCH = 6,
+  // Check completed successfully, device is disabled.
+  AUTO_ENROLLMENT_STATE_DISABLED = 7,
 };
 
 // Interacts with the device management service and determines whether this

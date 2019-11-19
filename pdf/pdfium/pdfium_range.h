@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/strings/string16.h"
+#include "pdf/page_orientation.h"
 #include "pdf/pdfium/pdfium_page.h"
 #include "ppapi/cpp/rect.h"
 
@@ -38,9 +39,10 @@ class PDFiumRange {
   int char_count() const { return char_count_; }
 
   // Gets bounding rectangles of range in screen coordinates.
-  const std::vector<pp::Rect>& GetScreenRects(const pp::Point& offset,
-                                              double zoom,
-                                              int rotation);
+  const std::vector<pp::Rect>& GetScreenRects(
+      const pp::Point& offset,
+      double zoom,
+      PageOrientation orientation) const;
 
   // Gets the string of characters in this range.
   base::string16 GetText() const;
@@ -53,9 +55,9 @@ class PDFiumRange {
   int char_count_;
 
   // Cache of ScreenRect, and the associated variables used when caching it.
-  std::vector<pp::Rect> cached_screen_rects_;
-  pp::Point cached_screen_rects_offset_;
-  double cached_screen_rects_zoom_ = 0;
+  mutable std::vector<pp::Rect> cached_screen_rects_;
+  mutable pp::Point cached_screen_rects_offset_;
+  mutable double cached_screen_rects_zoom_ = 0;
 };
 
 }  // namespace chrome_pdf

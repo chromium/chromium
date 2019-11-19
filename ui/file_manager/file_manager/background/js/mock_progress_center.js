@@ -5,47 +5,46 @@
 
 /**
  * Mock implementation of {ProgressCenter} for tests.
- *
- * @constructor
- * @struct
  * @implements {ProgressCenter}
+ * @final
  */
-function MockProgressCenter() {
+class MockProgressCenter {
+  constructor() {
+    /**
+     * Items stored in the progress center.
+     * @const {!Object<ProgressCenterItem>}
+     */
+    this.items = {};
+  }
+
   /**
-   * Items stored in the progress center.
-   * @type {Object<ProgressCenterItem>}
+   * Stores an item to the progress center.
+   * @param {ProgressCenterItem} item Progress center item to be stored.
    */
-  this.items = {};
+  updateItem(item) {
+    this.items[item.id] = item;
+  }
+
+  /**
+   * Obtains an item stored in the progress center.
+   * @param {string} id ID spcifying the progress item.
+   */
+  getItemById(id) {
+    return this.items[id];
+  }
+
+  requestCancel() {}
+  addPanel() {}
+  removePanel() {}
+  neverNotifyCompleted() {}
+
+  /**
+   * Returns the number of unique keys in |this.items|.
+   * @return {number}
+   */
+  getItemCount() {
+    const array = Object.keys(
+        /** @type {!Object} */ (this.items));
+    return array.length;
+  }
 }
-
-/**
- * Stores an item to the progress center.
- * @param {ProgressCenterItem} item Progress center item to be stored.
- */
-MockProgressCenter.prototype.updateItem = function(item) {
-  this.items[item.id] = item;
-};
-
-/**
- * Obtains an item stored in the progress center.
- * @param {string} id ID spcifying the progress item.
- */
-MockProgressCenter.prototype.getItemById = function(id) {
-  return this.items[id];
-};
-
-MockProgressCenter.prototype.requestCancel = () => {};
-
-MockProgressCenter.prototype.addPanel = () => {};
-
-MockProgressCenter.prototype.removePanel = () => {};
-
-/**
- * Returns the number of unique keys in |this.items|.
- * @return {number}
- */
-MockProgressCenter.prototype.getItemCount = function() {
-  const array = Object.keys(
-      /** @type {!Object} */ (this.items));
-  return array.length;
-};

@@ -31,9 +31,7 @@ ExternalProcessImporterHost::ExternalProcessImporterHost()
       is_source_readable_(true),
       client_(NULL),
       items_(0),
-      cancelled_(false),
-      weak_ptr_factory_(this) {
-}
+      cancelled_(false) {}
 
 void ExternalProcessImporterHost::Cancel() {
   cancelled_ = true;

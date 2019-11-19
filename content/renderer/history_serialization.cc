@@ -110,7 +110,7 @@ void RecursivelyGenerateHistoryItem(const ExplodedFrameState& state,
   item.SetHTTPContentType(
       WebString::FromUTF16(state.http_body.http_content_type));
   if (state.http_body.request_body != nullptr) {
-    item.SetHTTPBody(
+    item.SetHttpBody(
         GetWebHTTPBodyForRequestBody(*state.http_body.request_body));
   }
 

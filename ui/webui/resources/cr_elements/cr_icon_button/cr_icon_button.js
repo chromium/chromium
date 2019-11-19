@@ -22,9 +22,28 @@
  *   </template>
  * </dom-module>
  *
+ * In general when an icon is specified using a class, the expectation is the
+ * class will set an image to the --cr-icon-image variable.
+ *
  * Example of using an iron-icon:
  * <link rel="import" href="chrome://resources/cr_elements/icons.html">
  * <cr-icon-button iron-icon="cr:icon-key"></cr-icon-button>
+ *
+ * The color of the icon can be overridden using CSS variables. When using
+ * iron-icon both the fill and stroke can be overridden the variables:
+ * --cr-icon-button-fill-color
+ * --cr-icon-button-fill-color-focus
+ * --cr-icon-button-stroke-color
+ * --cr-icon-button-stroke-color-focus
+ *
+ * When not using iron-icon (ie. specifying --cr-icon-image), the icons support
+ * one color and the 'stroke' variables are ignored.
+ *
+ * The '-focus' variables are used for opaque ripple support. This is enabled
+ * when the 'a11y-enhanced' attribute on <html> is present.
+ *
+ * When using iron-icon's, more than one icon can be specified by setting
+ * the |ironIcon| property to a comma-delimited list of keys.
  */
 Polymer({
   is: 'cr-icon-button',
@@ -44,6 +63,14 @@ Polymer({
     ironIcon: {
       type: String,
       observer: 'onIronIconChanged_',
+      reflectToAttribute: true,
+    },
+
+    /** @private */
+    rippleShowing_: {
+      type: Boolean,
+      value: false,
+      reflectToAttribute: true,
     },
   },
 
@@ -54,23 +81,29 @@ Polymer({
   },
 
   listeners: {
-    blur: 'hideRipple',
+    blur: 'hideRipple_',
     click: 'onClick_',
-    down: 'onDown_',
+    down: 'showRipple_',
     focus: 'showRipple_',
     keydown: 'onKeyDown_',
     keyup: 'onKeyUp_',
-    up: 'hideRipple',
+    pointerdown: 'ensureRipple',
+    up: 'hideRipple_',
   },
 
-  hideRipple: function() {
-    this.getRipple().holdDown = false;
+  /** @private */
+  hideRipple_: function() {
+    if (this.hasRipple()) {
+      this.getRipple().clear();
+      this.rippleShowing_ = false;
+    }
   },
 
   /** @private */
   showRipple_: function() {
     if (!this.noink && !this.disabled) {
-      this.getRipple().holdDown = true;
+      this.getRipple().showAndHoldDown();
+      this.rippleShowing_ = true;
     }
   },
 
@@ -100,38 +133,25 @@ Polymer({
     }
   },
 
-  /**
-   * @param {!Event} e
-   * @private
-   */
-  onDown_: function(e) {
-    e.stopPropagation();
-  },
-
   /** @private */
   onIronIconChanged_: function() {
-    let ironIconElement = this.$$('iron-icon');
-    if (this.ironIcon) {
-      if (!ironIconElement) {
-        ironIconElement = document.createElement('iron-icon');
-        this.$.icon.appendChild(ironIconElement);
-      }
-      ironIconElement.icon = this.ironIcon;
+    this.shadowRoot.querySelectorAll('iron-icon').forEach(el => el.remove());
+    if (!this.ironIcon) {
       return;
     }
-
-    if (ironIconElement) {
-      ironIconElement.remove();
+    const icons = (this.ironIcon || '').split(',');
+    icons.forEach(icon => {
+      const element = document.createElement('iron-icon');
+      element.icon = icon;
+      this.$.icon.appendChild(element);
+    });
+    if (!this.hasRipple()) {
+      return;
     }
-  },
-
-  /**
-   * @param {!KeyboardEvent} e
-   * @private
-   */
-  onIconKeydown_: function(e) {
-    if (e.shiftKey && e.key === 'Tab') {
-      this.focus();
+    if (icons.length > 1) {
+      this.getRipple().classList.remove('circle');
+    } else {
+      this.getRipple().classList.add('circle');
     }
   },
 
@@ -176,7 +196,9 @@ Polymer({
     const ripple = Polymer.PaperRippleBehavior._createRipple();
     ripple.id = 'ink';
     ripple.setAttribute('recenters', '');
-    ripple.classList.add('circle');
+    if (!(this.ironIcon || '').includes(',')) {
+      ripple.classList.add('circle');
+    }
     return ripple;
   },
 });

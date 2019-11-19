@@ -30,11 +30,11 @@
   ApplicationTestRunner.waitForServiceWorker(step1);
   ApplicationTestRunner.registerServiceWorker(scriptURL, scope);
 
-  function step1(target) {
+  async function step1(target) {
     TestRunner.addResult('Suspending targets.');
-    SDK.targetManager.suspendAllTargets();
+    await SDK.targetManager.suspendAllTargets();
     TestRunner.addResult('Resuming targets.');
-    SDK.targetManager.resumeAllTargets();
+    await SDK.targetManager.resumeAllTargets();
     TestRunner.completeTest();
   }
 

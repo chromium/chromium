@@ -16,7 +16,7 @@
 #include "ios/chrome/browser/sessions/tab_restore_service_delegate_impl_ios_factory.h"
 #import "ios/chrome/browser/web/load_timing_tab_helper.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
-#import "ios/web/public/web_state/web_state.h"
+#import "ios/web/public/web_state.h"
 #include "net/base/url_util.h"
 #include "url/gurl.h"
 

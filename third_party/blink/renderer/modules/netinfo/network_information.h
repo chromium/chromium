@@ -12,7 +12,6 @@
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/core/execution_context/context_lifecycle_observer.h"
 #include "third_party/blink/renderer/platform/network/network_state_notifier.h"
-#include "third_party/blink/renderer/platform/wtf/time.h"
 
 namespace blink {
 
@@ -27,15 +26,13 @@ class NetworkInformation final
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static NetworkInformation* Create(ExecutionContext*);
-
   explicit NetworkInformation(ExecutionContext*);
   ~NetworkInformation() override;
 
   String type() const;
   double downlinkMax() const;
   String effectiveType();
-  unsigned long rtt();
+  uint32_t rtt();
   double downlink();
   bool saveData() const;
 
@@ -43,8 +40,8 @@ class NetworkInformation final
   void ConnectionChange(WebConnectionType,
                         double downlink_max_mbps,
                         WebEffectiveConnectionType effective_type,
-                        const base::Optional<TimeDelta>& http_rtt,
-                        const base::Optional<TimeDelta>& transport_rtt,
+                        const base::Optional<base::TimeDelta>& http_rtt,
+                        const base::Optional<base::TimeDelta>& transport_rtt,
                         const base::Optional<double>& downlink_mbps,
                         bool save_data) override;
 
@@ -95,7 +92,7 @@ class NetworkInformation final
 
   // HTTP RTT estimate. Rounded off to the nearest 25 msec. Touched only on
   // context thread.
-  unsigned long http_rtt_msec_;
+  uint32_t http_rtt_msec_;
 
   // Downlink throughput estimate. Rounded off to the nearest 25 kbps. Touched
   // only on context thread.

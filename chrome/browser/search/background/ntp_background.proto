@@ -82,3 +82,26 @@ message GetImagesInCollectionResponse {
   // and region.
   repeated Image images = 1;
 }
+
+message GetImageFromCollectionRequest {
+  // Deprecated or unused tag numbers
+  reserved 4;
+
+  // The ids of the collections being requested.
+  repeated string collection_ids = 1;
+
+  // An opaque token that is used to prevent duplicate images being returned.
+  optional string resume_token = 2;
+
+  // The language that should be used for content. e.g. "en-US"
+  optional string language = 3;
+}
+
+message GetImageFromCollectionResponse {
+  // The next image selected from the given collection.
+  optional Image image = 1;
+
+  // An opaque token that should be passed in subsequent calls and is used to
+  // prevent duplicate images from being returned.
+  optional string resume_token = 2;
+}

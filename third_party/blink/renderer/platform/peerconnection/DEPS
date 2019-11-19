@@ -3,10 +3,36 @@ include_rules = [
     "-third_party/blink/renderer/platform",
 
     # Module.
+    "+third_party/blink/renderer/platform/p2p",
     "+third_party/blink/renderer/platform/peerconnection",
+    "+third_party/blink/renderer/platform/media_capabilities",
+    "+third_party/blink/renderer/platform/mediastream",
+    "+third_party/blink/renderer/platform/webrtc",
 
     # Dependencies.
+    "+base/strings/string_number_conversions.h",
+    "+base/strings/string_split.h",
+    "+base/threading/thread_restrictions.h",
+    "+media/base",
+    "+media/media_buildflags.h",
+    "+media/video/gpu_video_accelerator_factories.h",
+    "+media/video/video_decode_accelerator.h",
+    "+media/video/h264_parser.h",
+    "+media/video/video_encode_accelerator.h",
     "+third_party/blink/renderer/platform/bindings/script_wrappable.h",
     "+third_party/blink/renderer/platform/heap",
+    "+third_party/blink/renderer/platform/platform_export.h",
+    "+third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h",
     "+third_party/blink/renderer/platform/wtf",
 ]
+
+specific_include_rules = {
+    ".*_test\.cc": [
+        "+base/task/task_traits.h",
+        "+base/threading/thread.h",
+        "+gpu/command_buffer/common/mailbox.h",
+        "+media/video/mock_gpu_video_accelerator_factories.h",
+        "+media/video/mock_video_encode_accelerator.h",
+        "+third_party/blink/renderer/platform/testing/video_frame_utils.h",
+    ],
+}

@@ -32,10 +32,6 @@ class AutofillPopupBaseView : public views::WidgetDelegateView,
   // doesn't look too close to the element.
   static const int kElementBorderPadding = 1;
 
-  // Horizontal spacing between value and description in the row.
-  // TODO(crbug.com/876364): Replace this with a global constant.
-  static const int kValueLabelPadding = 24;
-
   static int GetCornerRadius();
 
   // Get colors used throughout various popup UIs, based on the current native
@@ -78,7 +74,6 @@ class AutofillPopupBaseView : public views::WidgetDelegateView,
   void OnMouseReleased(const ui::MouseEvent& event) override;
   void OnGestureEvent(ui::GestureEvent* event) override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
-  void VisibilityChanged(View* starting_from, bool is_visible) override;
 
   // views::WidgetFocusChangeListener implementation.
   void OnNativeFocusChanged(gfx::NativeView focused_now) override;
@@ -114,7 +109,7 @@ class AutofillPopupBaseView : public views::WidgetDelegateView,
   // The time when the popup was shown.
   base::Time show_time_;
 
-  base::WeakPtrFactory<AutofillPopupBaseView> weak_ptr_factory_;
+  base::WeakPtrFactory<AutofillPopupBaseView> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(AutofillPopupBaseView);
 };

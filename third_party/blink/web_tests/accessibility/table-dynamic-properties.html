@@ -1,7 +1,6 @@
 <!DOCTYPE HTML>
 <script src="../resources/testharness.js"></script>
 <script src="../resources/testharnessreport.js"></script>
-<script src="../resources/run-after-layout-and-paint.js"></script>
 
 <table id="table1">
 </table>
@@ -11,7 +10,7 @@ function axElementById(id) {
     return accessibilityController.accessibleElementById(id);
 }
 
-test_after_layout_and_paint(function(t) {
+test(function(t) {
     // Check beginning row and column count.
     var axTable = axElementById("table1");
     assert_equals(axTable.rowCount, 0);

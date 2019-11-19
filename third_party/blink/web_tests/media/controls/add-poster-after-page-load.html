@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<title>Test that adding a poster after page load shows the poster.</title>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../media-controls.js"></script>
+<video controls width=400 preload=none src="../content/60_sec_video.webm"></video>
+<script>
+async_test(t => {
+  const video = document.querySelector('video');
+
+  window.onload = t.step_func(() => {
+    assert_true(showsDefaultPoster());
+    video.setAttribute('poster', '../content/greenbox.png');
+    setTimeout(t.step_func_done(() => {
+      assert_false(showsDefaultPoster());
+    }));
+  });
+
+  function showsDefaultPoster() {
+    return mediaControls(video).classList.contains('use-default-poster');
+  }
+});
+</script>
+</html>

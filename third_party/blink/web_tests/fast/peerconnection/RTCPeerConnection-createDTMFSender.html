@@ -7,8 +7,9 @@
 </head>
 <body>
 <script>
-promise_test(async function() {
+promise_test(async t => {
   let pc1 = new RTCPeerConnection();
+  t.add_cleanup(() => pc1.close());
   let streams = await createStreams({audio:true, video:false}, 1);
   let stream = streams[0];
   let track = stream.getAudioTracks()[0];
@@ -16,6 +17,7 @@ promise_test(async function() {
   let dtmf = pc1.createDTMFSender(track);
   assert_false(dtmf.canInsertDTMF);
   let pc2 = new RTCPeerConnection();
+  t.add_cleanup(() => pc2.close());
   exchangeIceCandidates(pc1, pc2);
   let offer = await pc1.createOffer();
   await pc1.setLocalDescription(offer);

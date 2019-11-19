@@ -24,7 +24,8 @@ SubresourceFilterSafeBrowsingClient::CheckResult::ToTracedValue() const {
   value->SetInteger("request_id", request_id);
   value->SetInteger("threat_type", threat_type);
   value->SetValue("threat_metadata", threat_metadata.ToTracedValue().get());
-  value->SetInteger("check_time (us)", check_time.InMicroseconds());
+  value->SetInteger("duration (us)",
+                    (base::TimeTicks::Now() - start_time).InMicroseconds());
   value->SetBoolean("finished", finished);
   return value;
 }
@@ -43,13 +44,15 @@ SubresourceFilterSafeBrowsingClient::SubresourceFilterSafeBrowsingClient(
 
 SubresourceFilterSafeBrowsingClient::~SubresourceFilterSafeBrowsingClient() {}
 
-void SubresourceFilterSafeBrowsingClient::CheckUrlOnIO(const GURL& url,
-                                                       size_t request_id) {
+void SubresourceFilterSafeBrowsingClient::CheckUrlOnIO(
+    const GURL& url,
+    size_t request_id,
+    base::TimeTicks start_time) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
   DCHECK(!url.is_empty());
 
   auto request = std::make_unique<SubresourceFilterSafeBrowsingClientRequest>(
-      request_id, database_manager_, io_task_runner_, this);
+      request_id, start_time, database_manager_, io_task_runner_, this);
   auto* raw_request = request.get();
   DCHECK(requests_.find(raw_request) == requests_.end());
   requests_[raw_request] = std::move(request);

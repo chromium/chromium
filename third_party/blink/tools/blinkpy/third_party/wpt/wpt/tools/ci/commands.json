@@ -1,0 +1,28 @@
+{
+  "test-jobs": {
+    "path": "jobs.py",
+    "script": "run",
+    "parser": "create_parser",
+    "help": "List test jobs that should run for a set of commits",
+    "virtualenv": false
+  },
+  "make-hosts-file": {
+    "path": "make_hosts_file.py",
+    "script": "run",
+    "parser": "create_parser",
+    "help": "Output a hosts file to stdout",
+    "virtualenv": false
+  },
+  "tc-download": {
+    "path": "tcdownload.py",
+    "script": "run",
+    "parser": "get_parser",
+    "parse_known": true,
+    "help": "Download logs from taskcluster",
+    "virtualenv": true,
+    "install": [
+      "requests",
+      "pygithub"
+    ]
+  }
+}

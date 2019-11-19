@@ -32,11 +32,9 @@
 // https://groups.google.com/a/chromium.org/d/msg/blink-dev/g5YRCGpC9vs/b4OJz71NmPwJ
 
 [
-    NoInterfaceObject
+    Exposed=Window, NoInterfaceObject
 ] interface MemoryInfo {
     [Measure] readonly attribute unsigned long long totalJSHeapSize;
     [Measure] readonly attribute unsigned long long usedJSHeapSize;
     [Measure] readonly attribute unsigned long long jsHeapSizeLimit;
-    [OriginTrialEnabled=LegacyPerformanceMemoryCounters] readonly attribute unsigned long long usedJSHeapSizeWithoutExternalMemory;
-    [OriginTrialEnabled=LegacyPerformanceMemoryCounters] readonly attribute unsigned long long totalJSHeapSizeWithoutExternalMemory;
 };

@@ -21,7 +21,7 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/grit/theme_resources.h"
 #include "chrome/test/base/testing_profile.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/image_util.h"
 #include "skia/ext/image_operations.h"
@@ -152,14 +152,15 @@ class ExtensionActionIconFactoryTest
         IDR_EXTENSIONS_FAVICON);
   }
 
-  ExtensionAction* GetBrowserAction(const Extension& extension) {
-    return ExtensionActionManager::Get(profile())->GetBrowserAction(extension);
+  ExtensionAction* GetExtensionAction(const Extension& extension) {
+    return ExtensionActionManager::Get(profile())->GetExtensionAction(
+        extension);
   }
 
   TestingProfile* profile() { return profile_.get(); }
 
  private:
-  content::TestBrowserThreadBundle test_browser_thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
   bool quit_in_icon_updated_;
   std::unique_ptr<TestingProfile> profile_;
   ExtensionService* extension_service_;
@@ -180,19 +181,18 @@ TEST_F(ExtensionActionIconFactoryTest, NoIcons) {
   scoped_refptr<Extension> extension(
       CreateExtension("browser_action/no_icon", Manifest::UNPACKED));
   ASSERT_TRUE(extension.get() != nullptr);
-  ExtensionAction* browser_action = GetBrowserAction(*extension);
-  ASSERT_TRUE(browser_action);
-  ASSERT_FALSE(browser_action->default_icon());
-  ASSERT_TRUE(browser_action->GetExplicitlySetIcon(0 /*tab id*/).IsEmpty());
+  ExtensionAction* action = GetExtensionAction(*extension);
+  ASSERT_TRUE(action);
+  ASSERT_FALSE(action->default_icon());
+  ASSERT_TRUE(action->GetExplicitlySetIcon(0 /*tab id*/).IsEmpty());
 
-  ExtensionActionIconFactory icon_factory(
-      profile(), extension.get(), browser_action, this);
+  ExtensionActionIconFactory icon_factory(profile(), extension.get(), action,
+                                          this);
 
   gfx::Image icon = icon_factory.GetIcon(0);
 
   EXPECT_TRUE(ImageRepsAreEqual(
-      browser_action->GetDefaultIconImage().ToImageSkia()->GetRepresentation(
-          1.0f),
+      action->GetDefaultIconImage().ToImageSkia()->GetRepresentation(1.0f),
       icon.ToImageSkia()->GetRepresentation(1.0f)));
 }
 
@@ -206,10 +206,10 @@ TEST_F(ExtensionActionIconFactoryTest, InvisibleIcon) {
 
   // Check that the default icon is not sufficiently visible.
   ASSERT_TRUE(extension);
-  ExtensionAction* browser_action = GetBrowserAction(*extension);
-  ASSERT_TRUE(browser_action);
-  EXPECT_TRUE(browser_action->default_icon());
-  gfx::Image default_icon = browser_action->GetDefaultIconImage();
+  ExtensionAction* action = GetExtensionAction(*extension);
+  ASSERT_TRUE(action);
+  EXPECT_TRUE(action->default_icon());
+  gfx::Image default_icon = action->GetDefaultIconImage();
   EXPECT_FALSE(default_icon.IsEmpty());
   const SkBitmap* const bitmap = default_icon.ToSkBitmap();
   ASSERT_TRUE(bitmap);
@@ -218,17 +218,16 @@ TEST_F(ExtensionActionIconFactoryTest, InvisibleIcon) {
   // Set the flag for testing.
   ExtensionActionIconFactory::SetAllowInvisibleIconsForTest(false);
 
-  ExtensionActionIconFactory icon_factory(profile(), extension.get(),
-                                          browser_action, this);
+  ExtensionActionIconFactory icon_factory(profile(), extension.get(), action,
+                                          this);
 
   base::HistogramTester histogram_tester;
   gfx::Image icon = icon_factory.GetIcon(0);
   // The default icon should not be returned, since it's invisible.
   // The placeholder icon should be returned instead.
-  EXPECT_TRUE(ImageRepsAreEqual(browser_action->GetPlaceholderIconImage()
-                                    .ToImageSkia()
-                                    ->GetRepresentation(1.0f),
-                                icon.ToImageSkia()->GetRepresentation(1.0f)));
+  EXPECT_TRUE(ImageRepsAreEqual(
+      action->GetPlaceholderIconImage().ToImageSkia()->GetRepresentation(1.0f),
+      icon.ToImageSkia()->GetRepresentation(1.0f)));
   EXPECT_THAT(histogram_tester.GetAllSamples(
                   "Extensions.ManifestIconSetIconWasVisibleForPacked"),
               testing::ElementsAre(base::Bucket(0, 1)));
@@ -249,20 +248,20 @@ TEST_F(ExtensionActionIconFactoryTest, AfterSetIcon) {
   scoped_refptr<Extension> extension(
       CreateExtension("browser_action/no_icon", Manifest::UNPACKED));
   ASSERT_TRUE(extension.get() != nullptr);
-  ExtensionAction* browser_action = GetBrowserAction(*extension);
-  ASSERT_TRUE(browser_action);
-  ASSERT_FALSE(browser_action->default_icon());
-  ASSERT_TRUE(browser_action->GetExplicitlySetIcon(0 /*tab id*/).IsEmpty());
+  ExtensionAction* action = GetExtensionAction(*extension);
+  ASSERT_TRUE(action);
+  ASSERT_FALSE(action->default_icon());
+  ASSERT_TRUE(action->GetExplicitlySetIcon(0 /*tab id*/).IsEmpty());
 
   gfx::Image set_icon = LoadIcon("browser_action/no_icon/icon.png");
   ASSERT_FALSE(set_icon.IsEmpty());
 
-  browser_action->SetIcon(0, set_icon);
+  action->SetIcon(0, set_icon);
 
-  ASSERT_FALSE(browser_action->GetExplicitlySetIcon(0 /*tab id*/).IsEmpty());
+  ASSERT_FALSE(action->GetExplicitlySetIcon(0 /*tab id*/).IsEmpty());
 
-  ExtensionActionIconFactory icon_factory(
-      profile(), extension.get(), browser_action, this);
+  ExtensionActionIconFactory icon_factory(profile(), extension.get(), action,
+                                          this);
 
   gfx::Image icon = icon_factory.GetIcon(0);
 
@@ -274,8 +273,7 @@ TEST_F(ExtensionActionIconFactoryTest, AfterSetIcon) {
   icon = icon_factory.GetIcon(1);
 
   EXPECT_TRUE(ImageRepsAreEqual(
-      browser_action->GetDefaultIconImage().ToImageSkia()->GetRepresentation(
-          1.0f),
+      action->GetDefaultIconImage().ToImageSkia()->GetRepresentation(1.0f),
       icon.ToImageSkia()->GetRepresentation(1.0f)));
 }
 
@@ -288,10 +286,10 @@ TEST_F(ExtensionActionIconFactoryTest, DefaultIcon) {
   scoped_refptr<Extension> extension(
       CreateExtension("browser_action/no_icon", Manifest::UNPACKED));
   ASSERT_TRUE(extension.get() != nullptr);
-  ExtensionAction* browser_action = GetBrowserAction(*extension);
-  ASSERT_TRUE(browser_action);
-  ASSERT_FALSE(browser_action->default_icon());
-  ASSERT_TRUE(browser_action->GetExplicitlySetIcon(0 /*tab id*/).IsEmpty());
+  ExtensionAction* action = GetExtensionAction(*extension);
+  ASSERT_TRUE(action);
+  ASSERT_FALSE(action->default_icon());
+  ASSERT_TRUE(action->GetExplicitlySetIcon(0 /*tab id*/).IsEmpty());
 
   scoped_refptr<const Extension> extension_with_icon =
       CreateExtension("browser_action_with_icon", Manifest::UNPACKED);
@@ -302,11 +300,11 @@ TEST_F(ExtensionActionIconFactoryTest, DefaultIcon) {
       EnsureImageSize(LoadIcon("browser_action_with_icon/icon.png"), icon_size);
   ASSERT_FALSE(default_icon.IsEmpty());
 
-  browser_action = GetBrowserAction(*extension_with_icon);
-  ASSERT_TRUE(browser_action->default_icon());
+  action = GetExtensionAction(*extension_with_icon);
+  ASSERT_TRUE(action->default_icon());
 
-  ExtensionActionIconFactory icon_factory(
-      profile(), extension_with_icon.get(), browser_action, this);
+  ExtensionActionIconFactory icon_factory(profile(), extension_with_icon.get(),
+                                          action, this);
 
   gfx::Image icon = icon_factory.GetIcon(0);
 

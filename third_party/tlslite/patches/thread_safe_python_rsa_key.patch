@@ -1,0 +1,68 @@
+diff --git a/third_party/tlslite/tlslite/utils/python_rsakey.py b/third_party/tlslite/tlslite/utils/python_rsakey.py
+index 1281f1dc899c..a62fc68b4701 100644
+--- a/third_party/tlslite/tlslite/utils/python_rsakey.py
++++ b/third_party/tlslite/tlslite/utils/python_rsakey.py
+@@ -2,7 +2,7 @@
+ # See the LICENSE file for legal information regarding use of this file.
+ 
+ """Pure-Python RSA implementation."""
+-
++import threading
+ from .cryptomath import *
+ from .asn1parser import ASN1Parser
+ from .rsakey import *
+@@ -22,33 +22,36 @@ class Python_RSAKey(RSAKey):
+         self.qInv = qInv
+         self.blinder = 0
+         self.unblinder = 0
++        self._lock = threading.Lock()
+ 
+     def hasPrivateKey(self):
+         return self.d != 0
+ 
+-    def _rawPrivateKeyOp(self, m):
+-        #Create blinding values, on the first pass:
+-        if not self.blinder:
+-            self.unblinder = getRandomNumber(2, self.n)
+-            self.blinder = powMod(invMod(self.unblinder, self.n), self.e,
+-                                  self.n)
+-
+-        #Blind the input
+-        m = (m * self.blinder) % self.n
++    def _rawPrivateKeyOp(self, message):
++        with self._lock:
++            # Create blinding values, on the first pass:
++            if not self.blinder:
++                self.unblinder = getRandomNumber(2, self.n)
++                self.blinder = powMod(invMod(self.unblinder, self.n), self.e,
++                                      self.n)
++            unblinder = self.unblinder
++            blinder = self.blinder
+ 
+-        #Perform the RSA operation
+-        c = self._rawPrivateKeyOpHelper(m)
++            # Update blinding values
++            self.blinder = (self.blinder * self.blinder) % self.n
++            self.unblinder = (self.unblinder * self.unblinder) % self.n
+ 
+-        #Unblind the output
+-        c = (c * self.unblinder) % self.n
++        # Blind the input
++        message = (message * blinder) % self.n
+ 
+-        #Update blinding values
+-        self.blinder = (self.blinder * self.blinder) % self.n
+-        self.unblinder = (self.unblinder * self.unblinder) % self.n
++        # Perform the RSA operation
++        cipher = self._rawPrivateKeyOpHelper(message)
+ 
+-        #Return the output
+-        return c
++        # Unblind the output
++        cipher = (cipher * unblinder) % self.n
+ 
++        # Return the output
++        return cipher
+ 
+     def _rawPrivateKeyOpHelper(self, m):
+         #Non-CRT version

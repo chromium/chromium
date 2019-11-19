@@ -12,4 +12,8 @@ chrome.test.runTests([
     }
     chrome.test.succeed();
   },
+  function testPromiseNotCreated() {
+    chrome.test.assertEq(null, viewer.loaded);
+    chrome.test.succeed();
+  },
 ]);

@@ -24,6 +24,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace explore_sites {
+using InitializationStatus = ExploreSitesStore::InitializationStatus;
 
 class ExploreSitesStoreTest : public testing::Test {
  public:
@@ -88,7 +89,8 @@ TEST_F(ExploreSitesStoreTest, LoadEmptyStore) {
       base::BindLambdaForTesting([&](sql::Database* db) { return true; });
   bool result = ExecuteSync<bool>(store.get(), run_callback, false);
   EXPECT_TRUE(result);
-  EXPECT_EQ(InitializationStatus::SUCCESS, store->initialization_status());
+  EXPECT_EQ(InitializationStatus::kSuccess,
+            store->initialization_status_for_testing());
 }
 
 TEST_F(ExploreSitesStoreTest, StoreCloses) {
@@ -103,13 +105,14 @@ TEST_F(ExploreSitesStoreTest, StoreCloses) {
 
   FastForwardBy(ExploreSitesStore::kClosingDelay);
   PumpLoop();
-  EXPECT_EQ(InitializationStatus::NOT_INITIALIZED,
-            store->initialization_status());
+  EXPECT_EQ(InitializationStatus::kNotInitialized,
+            store->initialization_status_for_testing());
 
   // Executing something causes initialization.
   ExecuteSync<bool>(store.get(), run_callback, false);
 
-  EXPECT_EQ(InitializationStatus::SUCCESS, store->initialization_status());
+  EXPECT_EQ(InitializationStatus::kSuccess,
+            store->initialization_status_for_testing());
 }
 
 }  // namespace explore_sites

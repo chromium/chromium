@@ -42,8 +42,9 @@ size_t GetPageActionCount(content::WebContents* web_contents,
   for (const ToolbarActionsModel::ActionId& action_id : toolbar_action_ids) {
     const Extension* extension = enabled_extensions.GetByID(action_id);
     ExtensionAction* extension_action =
-        action_manager->GetPageAction(*extension);
+        action_manager->GetExtensionAction(*extension);
     if (extension_action &&
+        extension_action->action_type() == ActionInfo::TYPE_PAGE &&
         (!only_count_visible || extension_action->GetIsVisible(tab_id.id()))) {
       ++count;
     }

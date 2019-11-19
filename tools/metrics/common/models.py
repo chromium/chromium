@@ -13,6 +13,7 @@ those files, or convert content back into a canonicalized version of the file.
 """
 
 import abc
+import re
 from xml.dom import minidom
 
 import pretty_print_xml
@@ -222,9 +223,10 @@ class ObjectNodeType(NodeType):
 
   Args:
     tag: The name of XML tag for this type of node.
-    attributes: A list of (name, type) pairs, e.g. [('foo', unicode)].  The
-        order of the attributes determines the ordering of attributes, when
-        serializing objects to XML.
+    attributes: A list of (name, type, regex) tubles, e.g. [('foo', unicode,
+        r'^\w+$')].  The order of the attributes determines the ordering of
+        attributes, when serializing objects to XML. The "regex" can be None
+        to do no validation, otherwise the attribute must match that pattern.
     text_attribute: An attribute stored in the text content of the node.
     children: A list of ChildTypes describing the objects children.
 
@@ -241,7 +243,7 @@ class ObjectNodeType(NodeType):
     self.attributes = attributes or []
     self.children = children or []
     self.text_attribute = text_attribute
-    if len(self.attributes) != len(dict(self.attributes)):
+    if len(self.attributes) != len(set(a for a, _, _ in self.attributes)):
       raise ValueError('Duplicate attribute definition.')
 
   def __str__(self):
@@ -263,9 +265,14 @@ class ObjectNodeType(NodeType):
 
     obj[COMMENT_KEY] = GetCommentsForNode(node)
 
-    for attr, attr_type in self.attributes:
+    for attr, attr_type, attr_re in self.attributes:
       if node.hasAttribute(attr):
         obj[attr] = attr_type(node.getAttribute(attr))
+      if attr_re is not None:
+        attr_val = obj.get(attr, '')
+        if not re.match(attr_re, attr_val):
+          raise ValueError('%s "%s" does not match regex "%s"' %
+                           (attr, attr_val, attr_re))
 
     if self.text_attribute and node.firstChild:
       obj[self.text_attribute] = node.firstChild.nodeValue
@@ -290,7 +297,7 @@ class ObjectNodeType(NodeType):
       An XML node encoding the object.
     """
     node = doc.createElement(self.tag)
-    for attr, _ in self.attributes:
+    for attr, _, _ in self.attributes:
       if attr in obj:
         node.setAttribute(attr, str(obj[attr]))
 
@@ -322,7 +329,7 @@ class ObjectNodeType(NodeType):
     Returns:
       A list of names of XML attributes, sorted by the order they should appear.
     """
-    return [attr for attr, _ in self.attributes]
+    return [attr for attr, _, _ in self.attributes]
 
   def GetNodeTypes(self):
     """Get a map of tags to node types for all dependent types.

@@ -1,0 +1,15 @@
+{
+"key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEArRdLT8rOFOhqED9zNVlmywZ5CCYCkVozs0u1+R8taTdSvUiiwavqt6Nqkk6N98Dj7uzBz43pdoqPbFoisu78ggPL+oRLGbQrejzc9dqf5VKvx3cnDlKX+AekZqWAj6QCFWN7kP+rgqqvelDHbhEEUYTVcNwjuSDqVDcgQmJuH2OmfUjdV9EmmRKOqUAPmxsx9u77IT/2cbGyA4oGaKnMSP5lFukmxmKTUyxROuL1ePIhprAr510MDdR6CIONwpF+g32UpXJswcEJ+SG4HuHMKwu0nVRcz4v0Av8dKv7PyShBifspyr1zJXKhTYnI87c7U/7zCeoICWDFq+WGSMrbQwIDAQAB",   
+  "name": "NTP background snowflake theme",
+  "manifest_version": 2,
+   "theme": {
+      "colors": {
+         "frame": [ 158, 210, 242 ],
+         "toolbar": [ 187, 221, 247 ]
+      },
+      "images": {
+         "theme_ntp_background": "images/theme_ntp_background.png"
+      }
+   },
+   "version": "1.4"
+}

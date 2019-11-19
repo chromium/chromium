@@ -4,5 +4,5 @@ satorux@chromium.org
 stevenjb@chromium.org
 xiyuan@chromium.org
 
-per-file network*=stevenjb@chromium.org
+per-file network*=file://chromeos/network/OWNERS
 per-file drive_internals_ui.*=file://ui/file_manager/OWNERS

@@ -10,12 +10,13 @@ import android.content.res.Configuration;
 import android.os.Build;
 import android.os.SystemClock;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.ContextUtils;
 import org.chromium.base.MemoryPressureLevel;
 import org.chromium.base.MemoryPressureListener;
 import org.chromium.base.Supplier;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.VisibleForTesting;
 import org.chromium.base.annotations.MainDex;
 import org.chromium.base.metrics.CachedMetrics;
 

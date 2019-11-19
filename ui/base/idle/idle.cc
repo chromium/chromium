@@ -4,9 +4,14 @@
 
 #include "ui/base/idle/idle.h"
 
+#include "ui/base/idle/idle_internal.h"
+
 namespace ui {
 
 IdleState CalculateIdleState(int idle_threshold) {
+  if (IdleStateForTesting().has_value())
+    return IdleStateForTesting().value();
+
   if (CheckIdleStateIsLocked())
     return IDLE_STATE_LOCKED;
 

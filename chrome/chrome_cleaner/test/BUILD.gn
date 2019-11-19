@@ -2,6 +2,11 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+# Nothing outside //chrome/chrome_cleaner can depend on these targets.
+visibility = [ "//chrome/chrome_cleaner/*" ]
+
+# Targets used by tests.
+
 shared_library("empty_dll") {
   sources = [
     "empty_dll.cc",
@@ -21,7 +26,7 @@ source_set("scoped_file") {
   ]
 
   deps = [
-    "//base:base",
+    "//base",
   ]
 }
 
@@ -65,7 +70,7 @@ source_set("test_executables") {
   deps = [
     ":test_strings",
     ":test_util",
-    "//base:base",
+    "//base",
     "//chrome/chrome_cleaner/constants:common_strings",
     "//chrome/chrome_cleaner/os:common_os",
   ]
@@ -78,7 +83,7 @@ source_set("test_extensions") {
   ]
 
   deps = [
-    "//base:base",
+    "//base",
     "//chrome/chrome_cleaner/os:common_os",
   ]
 }
@@ -89,18 +94,27 @@ source_set("test_pup_data") {
   sources = [
     "test_pup_data.cc",
     "test_pup_data.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chrome/chrome_cleaner/proto:shared_pup_enums_proto",
+    "//chrome/chrome_cleaner/pup_data:pup_data_base",
+  ]
+}
+
+source_set("test_uws_catalog") {
+  # This is not testonly because it is used by the test engine, which can be
+  # used in the full executables to detect test UwS.
+  sources = [
     "test_uws_catalog.cc",
     "test_uws_catalog.h",
   ]
 
   deps = [
-    "//base:base",
-    "//chrome/chrome_cleaner/logging/proto:shared_data_proto",
-    "//chrome/chrome_cleaner/proto:shared_pup_enums_proto",
     "//chrome/chrome_cleaner/pup_data:dynamic_pup",
     "//chrome/chrome_cleaner/pup_data:pup_data_base",
     "//chrome/chrome_cleaner/pup_data:test_uws",
-    "//testing/gtest",
   ]
 }
 
@@ -114,10 +128,10 @@ source_set("test_scoped_service_handle") {
 
   deps = [
     ":test_executables",
-    ":test_strings",
     "//base",
     "//chrome/chrome_cleaner/os:cleaner_os",
     "//chrome/chrome_cleaner/os:common_os",
+    "//testing/gtest",
   ]
 }
 
@@ -138,10 +152,14 @@ source_set("test_util") {
     "file_remover_test_util.h",
     "reboot_deletion_helper.cc",
     "reboot_deletion_helper.h",
+    "scoped_process_protector.cc",
+    "scoped_process_protector.h",
     "test_file_util.cc",
     "test_file_util.h",
     "test_layered_service_provider.cc",
     "test_layered_service_provider.h",
+    "test_native_reg_util.cc",
+    "test_native_reg_util.h",
     "test_registry_util.cc",
     "test_registry_util.h",
     "test_settings_util.cc",
@@ -156,15 +174,17 @@ source_set("test_util") {
   deps = [
     ":test_pup_data",
     ":test_strings",
-    "//base:base",
+    ":test_uws_catalog",
+    "//base",
     "//base/test:test_support",
     "//chrome/chrome_cleaner/constants:common_strings",
     "//chrome/chrome_cleaner/os:cleaner_os",
     "//chrome/chrome_cleaner/os:common_os",
+    "//chrome/chrome_cleaner/os:file_remover_api",
     "//chrome/chrome_cleaner/pup_data:pup_data_base",
     "//chrome/chrome_cleaner/scanner:matcher_util",
     "//chrome/chrome_cleaner/scanner:signature_matcher_api",
-    "//chrome/chrome_cleaner/settings:settings",
+    "//chrome/chrome_cleaner/settings",
     "//chrome/chrome_cleaner/strings",
     "//components/chrome_cleaner/public/constants:constants",
     "//sandbox/win:sandbox",
@@ -180,6 +200,47 @@ source_set("test_util") {
     "//chrome/chrome_cleaner/proto:shared_pup_enums_proto",
     "//testing/gmock",
     "//testing/gtest",
+  ]
+}
+
+# Targets that contain tests.
+
+# These tests run the executables and test their behaviour. They're run as part
+# of chrome_cleaner_unittests so that we don't need a separate test binary for
+# the integration tests.
+source_set("integration_test_sources") {
+  testonly = true
+
+  sources = [
+    "cleaner_test.cc",
+    "generate_test_uws_test.cc",
+    "secure_dll_loading_test.cc",
+  ]
+
+  deps = [
+    ":test_util",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/chrome_cleaner:buildflags",
+    "//chrome/chrome_cleaner/constants:common_strings",
+    "//chrome/chrome_cleaner/logging/proto:chrome_cleaner_report_proto",
+    "//chrome/chrome_cleaner/logging/proto:reporter_logs_proto",
+    "//chrome/chrome_cleaner/logging/proto:shared_data_proto",
+    "//chrome/chrome_cleaner/os:common_os",
+    "//chrome/chrome_cleaner/pup_data:pup_data_base",
+    "//chrome/chrome_cleaner/pup_data:test_uws",
+    "//chrome/chrome_cleaner/zip_archiver:common",
+    "//components/chrome_cleaner/public/constants",
+    "//components/chrome_cleaner/test:test_name_helper",
+    "//testing/gtest",
+  ]
+
+  data_deps = [
+    # Binaries that will be loaded by the tests.
+    ":empty_dll",
+    "//chrome/chrome_cleaner/executables:chrome_cleanup_tool",
+    "//chrome/chrome_cleaner/executables:software_reporter_tool",
+    "//chrome/chrome_cleaner/tools:generate_test_uws",
   ]
 }
 
@@ -201,6 +262,8 @@ source_set("unittest_sources") {
   ]
 }
 
+# Executable targets.
+
 executable("test_process") {
   testonly = true
 
@@ -211,14 +274,12 @@ executable("test_process") {
   deps = [
     ":test_strings",
     ":test_util",
-    "//base:base",
+    "//base",
     "//base/test:test_support",
     "//build/win:default_exe_manifest",
     "//chrome/chrome_cleaner:other_executable_definitions",
-    "//chrome/chrome_cleaner/engines:dummy_resources",
-    "//chrome/chrome_cleaner/engines:resources",
     "//chrome/chrome_cleaner/os:common_os",
-    "//chrome/chrome_cleaner/pup_data:dummy_signatures",
+    "//chrome/chrome_cleaner/settings:dummy_engine_settings",
   ]
 }
 
@@ -231,7 +292,7 @@ executable("test_service") {
 
   deps = [
     ":test_strings",
-    "//base:base",
+    "//base",
     "//base/test:test_support",
     "//build/win:default_exe_manifest",
   ]

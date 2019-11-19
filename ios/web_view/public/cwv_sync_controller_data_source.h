@@ -9,22 +9,27 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class CWVSyncController;
+@class CWVIdentity;
 
 // Data source of CWVSyncController.
 @protocol CWVSyncControllerDataSource<NSObject>
 
 // Called when access tokens are requested.
+// |identity| The user whose access tokens are requested.
 // |scopes| OAuth scopes requested.
 // |completionHandler| Use to pass back token information.
-// If successful, only |accessToken| and |expirationDate| should be non-nil.
-// If unsuccessful, only |error| should be non-nil.
-- (void)syncController:(CWVSyncController*)syncController
-    getAccessTokenForScopes:(NSArray<NSString*>*)scopes
-          completionHandler:
-              (void (^)(NSString* _Nullable accessToken,
-                        NSDate* _Nullable expirationDate,
-                        NSError* _Nullable error))completionHandler;
+// If successful, only |accessToken| and |expirationDate| will be non-nil.
+// If unsuccessful, only |error| will be non-nil.
+- (void)fetchAccessTokenForIdentity:(CWVIdentity*)identity
+                             scopes:(NSArray<NSString*>*)scopes
+                  completionHandler:
+                      (void (^)(NSString* _Nullable accessToken,
+                                NSDate* _Nullable expirationDate,
+                                NSError* _Nullable error))completionHandler;
+
+// Return all available identities. This is used internally to track if accounts
+// become stale and need to be removed.
+- (NSArray<CWVIdentity*>*)allKnownIdentities;
 
 @end
 

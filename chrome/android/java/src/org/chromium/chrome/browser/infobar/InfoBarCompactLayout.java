@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.infobar;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
-import android.support.annotation.StringRes;
 import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
@@ -18,6 +17,9 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import androidx.annotation.ColorRes;
+import androidx.annotation.StringRes;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Callback;
@@ -35,8 +37,16 @@ public class InfoBarCompactLayout extends LinearLayout implements View.OnClickLi
     private final int mIconWidth;
     private final View mCloseButton;
 
-    InfoBarCompactLayout(
-            Context context, InfoBarView infoBarView, int iconResourceId, Bitmap iconBitmap) {
+    /**
+     * Constructs a compat layout for the specified infobar.
+     * @param context The context used to render.
+     * @param infoBarView {@link InfoBarView} that listens to events.
+     * @param iconResourceId Resource ID of the icon to use for the infobar.
+     * @param iconTintId The {@link ColorRes} used as tint for {@code iconResourceId}.
+     * @param iconBitmap Bitmap for the icon to use, if {@code iconResourceId} is not set.
+     */
+    InfoBarCompactLayout(Context context, InfoBarView infoBarView, int iconResourceId,
+            @ColorRes int iconTintId, Bitmap iconBitmap) {
         super(context);
         mInfoBarView = infoBarView;
         mCompactInfoBarSize =
@@ -46,7 +56,7 @@ public class InfoBarCompactLayout extends LinearLayout implements View.OnClickLi
         setOrientation(LinearLayout.HORIZONTAL);
         setGravity(Gravity.CENTER_VERTICAL);
 
-        prepareIcon(iconResourceId, iconBitmap);
+        prepareIcon(iconResourceId, iconTintId, iconBitmap);
         mCloseButton = prepareCloseButton();
     }
 
@@ -79,10 +89,12 @@ public class InfoBarCompactLayout extends LinearLayout implements View.OnClickLi
     /**
      * Adds an icon to the start of the infobar, if the infobar requires one.
      * @param iconResourceId Resource ID of the icon to use.
-     * @param iconBitmap     Raw {@link Bitmap} to use instead of a resource.
+     * @param iconTintId The {@link ColorRes} used as tint for {@code iconResourceId}.
+     * @param iconBitmap Raw {@link Bitmap} to use instead of a resource.
      */
-    private void prepareIcon(int iconResourceId, Bitmap iconBitmap) {
-        ImageView iconView = InfoBarLayout.createIconView(getContext(), iconResourceId, iconBitmap);
+    private void prepareIcon(int iconResourceId, @ColorRes int iconTintId, Bitmap iconBitmap) {
+        ImageView iconView =
+                InfoBarLayout.createIconView(getContext(), iconResourceId, iconTintId, iconBitmap);
         if (iconView != null) {
             LinearLayout.LayoutParams iconParams =
                     new LinearLayout.LayoutParams(mIconWidth, mCompactInfoBarSize);
@@ -128,18 +140,27 @@ public class InfoBarCompactLayout extends LinearLayout implements View.OnClickLi
             return this;
         }
 
-        /** The link will be appended after the main message. */
-        public MessageBuilder withLink(@StringRes int textResId, Callback<View> onTapCallback) {
+        /** Appends a link after the main message, its displayed text being the specified string. */
+        public MessageBuilder withLink(CharSequence label, Callback<View> onTapCallback) {
             assert mLink == null;
 
             final Resources resources = mLayout.getResources();
-            String label = resources.getString(textResId);
             SpannableString link = new SpannableString(label);
             link.setSpan(new NoUnderlineClickableSpan(resources, onTapCallback), 0, label.length(),
                     Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
             mLink = link;
 
             return this;
+        }
+
+        /**
+         * Appends a link after the main message, its displayed text being constructed from the
+         * given resource ID.
+         */
+        public MessageBuilder withLink(@StringRes int textResId, Callback<View> onTapCallback) {
+            final Resources resources = mLayout.getResources();
+            String label = resources.getString(textResId);
+            return withLink(label, onTapCallback);
         }
 
         /** Finalizes the message view as set up in the builder and inserts it into the layout. */

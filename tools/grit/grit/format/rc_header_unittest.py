@@ -8,6 +8,8 @@
 # GRD samples exceed the 80 character limit.
 # pylint: disable-msg=C6310
 
+from __future__ import print_function
+
 import os
 import sys
 import unittest
@@ -15,8 +17,6 @@ import unittest
 if __name__ == '__main__':
   sys.path.append(os.path.join(os.path.dirname(__file__), '../..'))
 
-from grit import exception
-from grit import grd_reader
 from grit import util
 from grit.format import rc_header
 

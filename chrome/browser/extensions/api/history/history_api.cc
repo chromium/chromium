@@ -132,7 +132,7 @@ VisitItem GetVisitItem(const history::VisitRow& row) {
 
 HistoryEventRouter::HistoryEventRouter(Profile* profile,
                                        history::HistoryService* history_service)
-    : profile_(profile), history_service_observer_(this) {
+    : profile_(profile) {
   DCHECK(profile);
   history_service_observer_.Add(history_service);
 }
@@ -277,13 +277,10 @@ ExtensionFunction::ResponseAction HistoryGetVisitsFunction::Run() {
   return RespondLater();  // QueryComplete() will be called asynchronously.
 }
 
-void HistoryGetVisitsFunction::QueryComplete(
-    bool success,
-    const history::URLRow& url_row,
-    const history::VisitVector& visits) {
+void HistoryGetVisitsFunction::QueryComplete(history::QueryURLResult result) {
   VisitItemList visit_item_vec;
-  if (success && !visits.empty()) {
-    for (const history::VisitRow& visit : visits)
+  if (result.success && !result.visits.empty()) {
+    for (const history::VisitRow& visit : result.visits)
       visit_item_vec.push_back(GetVisitItem(visit));
   }
 
@@ -310,20 +307,19 @@ ExtensionFunction::ResponseAction HistorySearchFunction::Run() {
 
   history::HistoryService* hs = HistoryServiceFactory::GetForProfile(
       GetProfile(), ServiceAccessType::EXPLICIT_ACCESS);
-  hs->QueryHistory(search_text,
-                   options,
-                   base::Bind(&HistorySearchFunction::SearchComplete,
-                              base::Unretained(this)),
+  hs->QueryHistory(search_text, options,
+                   base::BindOnce(&HistorySearchFunction::SearchComplete,
+                                  base::Unretained(this)),
                    &task_tracker_);
 
   AddRef();               // Balanced in SearchComplete().
   return RespondLater();  // SearchComplete() will be called asynchronously.
 }
 
-void HistorySearchFunction::SearchComplete(history::QueryResults* results) {
+void HistorySearchFunction::SearchComplete(history::QueryResults results) {
   HistoryItemList history_item_vec;
-  if (results && !results->empty()) {
-    for (const auto& item : *results)
+  if (!results.empty()) {
+    for (const auto& item : results)
       history_item_vec.push_back(GetHistoryItem(item));
   }
   Respond(ArgumentList(Search::Results::Create(history_item_vec)));

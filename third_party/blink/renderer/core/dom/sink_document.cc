@@ -26,16 +26,12 @@
 #include "third_party/blink/renderer/core/dom/sink_document.h"
 
 #include "third_party/blink/renderer/core/dom/raw_data_document_parser.h"
-#include "third_party/blink/renderer/core/frame/use_counter.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 
 namespace blink {
 
 class SinkDocumentParser : public RawDataDocumentParser {
  public:
-  static SinkDocumentParser* Create(SinkDocument* document) {
-    return MakeGarbageCollected<SinkDocumentParser>(document);
-  }
-
   explicit SinkDocumentParser(SinkDocument* document)
       : RawDataDocumentParser(document) {}
 
@@ -51,7 +47,7 @@ SinkDocument::SinkDocument(const DocumentInit& initializer)
 }
 
 DocumentParser* SinkDocument::CreateParser() {
-  return SinkDocumentParser::Create(this);
+  return MakeGarbageCollected<SinkDocumentParser>(this);
 }
 
 }  // namespace blink

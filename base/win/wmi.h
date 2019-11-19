@@ -24,7 +24,6 @@
 #include <wrl/client.h>
 
 #include "base/base_export.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_piece.h"
 
 namespace base {
@@ -47,8 +46,8 @@ BASE_EXPORT bool CreateLocalWmiConnection(
 // WMI method that you can fill with parameter values using SetParameter.
 BASE_EXPORT bool CreateWmiClassMethodObject(
     IWbemServices* wmi_services,
-    StringPiece16 class_name,
-    StringPiece16 method_name,
+    WStringPiece class_name,
+    WStringPiece method_name,
     Microsoft::WRL::ComPtr<IWbemClassObject>* class_instance);
 
 // Creates a new process from |command_line|. The advantage over CreateProcess
@@ -61,7 +60,7 @@ BASE_EXPORT bool CreateWmiClassMethodObject(
 // Processes created this way are children of wmiprvse.exe and run with the
 // caller credentials.
 // More info: http://msdn2.microsoft.com/en-us/library/aa394372(VS.85).aspx
-BASE_EXPORT bool WmiLaunchProcess(const string16& command_line,
+BASE_EXPORT bool WmiLaunchProcess(const std::wstring& command_line,
                                   int* process_id);
 
 // An encapsulation of information retrieved from the 'Win32_ComputerSystem' and
@@ -72,9 +71,9 @@ class BASE_EXPORT WmiComputerSystemInfo {
  public:
   static WmiComputerSystemInfo Get();
 
-  const string16& manufacturer() const { return manufacturer_; }
-  const string16& model() const { return model_; }
-  const string16& serial_number() const { return serial_number_; }
+  const std::wstring& manufacturer() const { return manufacturer_; }
+  const std::wstring& model() const { return model_; }
+  const std::wstring& serial_number() const { return serial_number_; }
 
  private:
   void PopulateModelAndManufacturer(
@@ -82,9 +81,9 @@ class BASE_EXPORT WmiComputerSystemInfo {
   void PopulateSerialNumber(
       const Microsoft::WRL::ComPtr<IWbemServices>& services);
 
-  string16 manufacturer_;
-  string16 model_;
-  string16 serial_number_;
+  std::wstring manufacturer_;
+  std::wstring model_;
+  std::wstring serial_number_;
 };
 
 }  // namespace win

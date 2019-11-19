@@ -43,7 +43,8 @@ class ConditionalCacheDeletionHelper {
       base::OnceClosure completion_callback,
       std::unique_ptr<disk_cache::Backend::Iterator> iterator);
 
-  void IterateOverEntries(int error);
+  void IterateOverEntries(disk_cache::EntryResult result);
+
   void NotifyCompletion();
 
   const base::RepeatingCallback<bool(const disk_cache::Entry*)> condition_;
@@ -51,10 +52,9 @@ class ConditionalCacheDeletionHelper {
   base::OnceClosure completion_callback_;
 
   std::unique_ptr<disk_cache::Backend::Iterator> iterator_;
-  disk_cache::Entry* current_entry_ = nullptr;
   disk_cache::Entry* previous_entry_ = nullptr;
 
-  base::WeakPtrFactory<ConditionalCacheDeletionHelper> weak_factory_;
+  base::WeakPtrFactory<ConditionalCacheDeletionHelper> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ConditionalCacheDeletionHelper);
 };

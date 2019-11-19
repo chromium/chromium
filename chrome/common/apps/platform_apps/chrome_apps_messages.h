@@ -8,8 +8,6 @@
 #include "chrome/common/apps/platform_apps/media_galleries_permission_data.h"
 #include "ipc/ipc_message_macros.h"
 
-#define IPC_MESSAGE_START ChromeAppsMsgStart
-
 IPC_STRUCT_TRAITS_BEGIN(chrome_apps::MediaGalleriesPermissionData)
   IPC_STRUCT_TRAITS_MEMBER(permission())
 IPC_STRUCT_TRAITS_END()

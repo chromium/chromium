@@ -7,7 +7,6 @@ import sys
 import time
 
 from gpu_tests import gpu_integration_test
-from gpu_tests import gpu_test_expectations
 from gpu_tests import path_util
 
 data_path = os.path.join(
@@ -31,10 +30,6 @@ class NoopSleepIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     if not tab.browser.supports_tab_control:
       self.fail('Browser must support tab control')
     getattr(self, test_name)(test_path)
-
-  @classmethod
-  def _CreateExpectations(cls):
-    return gpu_test_expectations.GpuTestExpectations()
 
   @classmethod
   def SetUpProcess(cls):

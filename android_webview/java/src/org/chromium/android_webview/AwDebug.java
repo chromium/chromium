@@ -5,6 +5,7 @@
 package org.chromium.android_webview;
 
 import org.chromium.base.annotations.JNINamespace;
+import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.annotations.UsedByReflection;
 
 import java.io.File;
@@ -39,23 +40,31 @@ public class AwDebug {
         } catch (IOException e) {
             return false;
         }
-        return nativeDumpWithoutCrashing(dumpPath);
+        return AwDebugJni.get().dumpWithoutCrashing(dumpPath);
     }
 
     public static void initCrashKeysForTesting() {
-        nativeInitCrashKeysForWebViewTesting();
+        AwDebugJni.get().initCrashKeysForWebViewTesting();
     }
 
     public static void setWhiteListedKeyForTesting() {
-        nativeSetWhiteListedKeyForTesting();
+        AwDebugJni.get().setWhiteListedKeyForTesting();
     }
 
     public static void setNonWhiteListedKeyForTesting() {
-        nativeSetNonWhiteListedKeyForTesting();
+        AwDebugJni.get().setNonWhiteListedKeyForTesting();
     }
 
-    private static native boolean nativeDumpWithoutCrashing(String dumpPath);
-    private static native void nativeInitCrashKeysForWebViewTesting();
-    private static native void nativeSetWhiteListedKeyForTesting();
-    private static native void nativeSetNonWhiteListedKeyForTesting();
+    public static void setSupportLibraryWebkitVersionCrashKey(String version) {
+        AwDebugJni.get().setSupportLibraryWebkitVersionCrashKey(version);
+    }
+
+    @NativeMethods
+    interface Natives {
+        boolean dumpWithoutCrashing(String dumpPath);
+        void initCrashKeysForWebViewTesting();
+        void setWhiteListedKeyForTesting();
+        void setNonWhiteListedKeyForTesting();
+        void setSupportLibraryWebkitVersionCrashKey(String version);
+    }
 }

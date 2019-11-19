@@ -85,7 +85,7 @@ class BASE_EXPORT TraceBuffer {
 // to JSON output.
 class BASE_EXPORT TraceResultBuffer {
  public:
-  typedef base::Callback<void(const std::string&)> OutputCallback;
+  using OutputCallback = base::RepeatingCallback<void(const std::string&)>;
 
   // If you don't need to stream JSON chunks out efficiently, and just want to
   // get a complete JSON string after calling Finish, use this struct to collect
@@ -106,7 +106,7 @@ class BASE_EXPORT TraceResultBuffer {
   // JSON output and during AddFragment and Finish with following JSON output
   // chunks. The callback target must live past the last calls to
   // TraceResultBuffer::Start/AddFragment/Finish.
-  void SetOutputCallback(const OutputCallback& json_chunk_callback);
+  void SetOutputCallback(OutputCallback json_chunk_callback);
 
   // Start JSON output. This resets all internal state, so you can reuse
   // the TraceResultBuffer by calling Start.

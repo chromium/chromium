@@ -91,4 +91,26 @@ std::unique_ptr<Buffer> SharedMemory::CreateBuffer(const gfx::Size& size,
       false /* is_overlay_candidate */, false /* y_invert */);
 }
 
+size_t SharedMemory::GetSize() const {
+  return shared_memory_region_.GetSize();
+}
+
+bool SharedMemory::Resize(const size_t new_size) {
+  // The following code is to replace |shared_memory_region_| with an identical
+  // UnsafeSharedMemoryRegion with a new size.
+  base::subtle::PlatformSharedMemoryRegion platform_region =
+      base::UnsafeSharedMemoryRegion::TakeHandleForSerialization(
+          std::move(shared_memory_region_));
+  base::UnguessableToken guid = platform_region.GetGUID();
+  base::subtle::PlatformSharedMemoryRegion updated_platform_region =
+      base::subtle::PlatformSharedMemoryRegion::Take(
+          platform_region.PassPlatformHandle(),
+          base::subtle::PlatformSharedMemoryRegion::Mode::kUnsafe, new_size,
+          guid);
+  shared_memory_region_ = base::UnsafeSharedMemoryRegion::Deserialize(
+      std::move(updated_platform_region));
+
+  return shared_memory_region_.IsValid();
+}
+
 }  // namespace exo

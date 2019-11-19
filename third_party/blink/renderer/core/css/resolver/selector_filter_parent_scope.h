@@ -21,14 +21,19 @@ class CORE_EXPORT SelectorFilterParentScope {
 
  public:
   explicit SelectorFilterParentScope(Element& parent)
-      : SelectorFilterParentScope(parent, ScopeType::kParent) {}
+      : SelectorFilterParentScope(&parent, ScopeType::kParent) {
+    DCHECK(previous_);
+    DCHECK(previous_->scope_type_ == ScopeType::kRoot ||
+           (previous_->parent_ &&
+            &previous_->parent_->GetDocument() == &parent.GetDocument()));
+  }
   ~SelectorFilterParentScope();
 
   static void EnsureParentStackIsPushed();
 
  protected:
-  enum class ScopeType { kParent, kAncestors };
-  SelectorFilterParentScope(Element& parent, ScopeType scope);
+  enum class ScopeType { kParent, kRoot };
+  SelectorFilterParentScope(Element* parent, ScopeType scope);
 
  private:
   void PushParentIfNeeded();
@@ -44,26 +49,35 @@ class CORE_EXPORT SelectorFilterParentScope {
   static SelectorFilterParentScope* current_scope_;
 };
 
-// When starting the style recalc from an element which is not the root, we push
-// an object of this class onto the stack to push all ancestors instead of
-// having to push a SelectorFilterParentScope for each of the ancestors.
-class CORE_EXPORT SelectorFilterAncestorScope final
+// When starting the style recalc, we push an object of this class onto the
+// stack to establish a root scope for the SelectorFilter for a document to
+// make the style recalc re-entrant. If we do a style recalc for a document
+// inside a style recalc for another document (which can happen when
+// synchronously loading an svg generated content image), the previous_ pointer
+// for the root scope of the inner recalc will point to the current scope of the
+// outer one, but the root scope will isolate the inner from trying to push any
+// parent stacks in the outer document.
+class CORE_EXPORT SelectorFilterRootScope final
     : private SelectorFilterParentScope {
   STACK_ALLOCATED();
 
  public:
-  explicit SelectorFilterAncestorScope(Element& parent)
-      : SelectorFilterParentScope(parent, ScopeType::kAncestors) {}
+  // |parent| is nullptr when the documentElement() is the style recalc root.
+  explicit SelectorFilterRootScope(Element* parent)
+      : SelectorFilterParentScope(parent, ScopeType::kRoot) {}
 };
 
 inline SelectorFilterParentScope::SelectorFilterParentScope(
-    Element& parent,
+    Element* parent,
     ScopeType scope_type)
-    : parent_(parent),
-      scope_type_(scope_type),
-      previous_(current_scope_),
-      resolver_(parent.GetDocument().GetStyleResolver()) {
-  DCHECK(parent.GetDocument().InStyleRecalc());
+    : parent_(parent), scope_type_(scope_type), previous_(current_scope_) {
+  DCHECK(scope_type != ScopeType::kRoot || !parent || !previous_ ||
+         !previous_->parent_ ||
+         &parent_->GetDocument() != &previous_->parent_->GetDocument());
+  if (parent) {
+    DCHECK(parent->GetDocument().InStyleRecalc());
+    resolver_ = parent->GetDocument().GetStyleResolver();
+  }
   current_scope_ = this;
 }
 
@@ -71,8 +85,10 @@ inline SelectorFilterParentScope::~SelectorFilterParentScope() {
   current_scope_ = previous_;
   if (!pushed_)
     return;
+  DCHECK(resolver_);
+  DCHECK(parent_);
   resolver_->GetSelectorFilter().PopParent(*parent_);
-  if (scope_type_ == ScopeType::kAncestors)
+  if (scope_type_ == ScopeType::kRoot)
     PopAncestors(*parent_);
 }
 
@@ -84,11 +100,16 @@ inline void SelectorFilterParentScope::EnsureParentStackIsPushed() {
 inline void SelectorFilterParentScope::PushParentIfNeeded() {
   if (pushed_)
     return;
-  DCHECK(!previous_ || scope_type_ == ScopeType::kParent);
-  if (previous_)
-    previous_->PushParentIfNeeded();
-  if (scope_type_ == ScopeType::kAncestors)
+  if (!parent_) {
+    DCHECK(scope_type_ == ScopeType::kRoot);
+    return;
+  }
+  if (scope_type_ == ScopeType::kRoot) {
     PushAncestors(*parent_);
+  } else {
+    DCHECK(previous_);
+    previous_->PushParentIfNeeded();
+  }
   resolver_->GetSelectorFilter().PushParent(*parent_);
   pushed_ = true;
 }

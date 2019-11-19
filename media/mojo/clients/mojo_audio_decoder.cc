@@ -21,12 +21,11 @@ namespace media {
 
 MojoAudioDecoder::MojoAudioDecoder(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner,
-    mojom::AudioDecoderPtr remote_decoder)
+    mojo::PendingRemote<mojom::AudioDecoder> remote_decoder)
     : task_runner_(task_runner),
-      remote_decoder_info_(remote_decoder.PassInterface()),
+      pending_remote_decoder_(std::move(remote_decoder)),
       writer_capacity_(
-          GetDefaultDecoderBufferConverterCapacity(DemuxerStream::AUDIO)),
-      client_binding_(this) {
+          GetDefaultDecoderBufferConverterCapacity(DemuxerStream::AUDIO)) {
   DVLOG(1) << __func__;
 }
 
@@ -44,7 +43,7 @@ bool MojoAudioDecoder::IsPlatformDecoder() const {
 
 void MojoAudioDecoder::Initialize(const AudioDecoderConfig& config,
                                   CdmContext* cdm_context,
-                                  const InitCB& init_cb,
+                                  InitCB init_cb,
                                   const OutputCB& output_cb,
                                   const WaitingCB& waiting_cb) {
   DVLOG(1) << __func__;
@@ -54,9 +53,10 @@ void MojoAudioDecoder::Initialize(const AudioDecoderConfig& config,
     BindRemoteDecoder();
 
   // This could happen during reinitialization.
-  if (remote_decoder_.encountered_error()) {
+  if (!remote_decoder_.is_connected()) {
     DVLOG(1) << __func__ << ": Connection error happened.";
-    task_runner_->PostTask(FROM_HERE, base::BindOnce(init_cb, false));
+    task_runner_->PostTask(FROM_HERE,
+                           base::BindOnce(std::move(init_cb), false));
     return;
   }
 
@@ -67,11 +67,12 @@ void MojoAudioDecoder::Initialize(const AudioDecoderConfig& config,
 
   if (config.is_encrypted() && CdmContext::kInvalidCdmId == cdm_id) {
     DVLOG(1) << __func__ << ": Invalid CdmContext.";
-    task_runner_->PostTask(FROM_HERE, base::BindOnce(init_cb, false));
+    task_runner_->PostTask(FROM_HERE,
+                           base::BindOnce(std::move(init_cb), false));
     return;
   }
 
-  init_cb_ = init_cb;
+  init_cb_ = std::move(init_cb);
   output_cb_ = output_cb;
   waiting_cb_ = waiting_cb;
 
@@ -87,7 +88,7 @@ void MojoAudioDecoder::Decode(scoped_refptr<DecoderBuffer> media_buffer,
   DVLOG(3) << __func__;
   DCHECK(task_runner_->BelongsToCurrentThread());
 
-  if (remote_decoder_.encountered_error()) {
+  if (!remote_decoder_.is_connected()) {
     task_runner_->PostTask(
         FROM_HERE, base::BindOnce(decode_cb, DecodeStatus::DECODE_ERROR));
     return;
@@ -109,23 +110,23 @@ void MojoAudioDecoder::Decode(scoped_refptr<DecoderBuffer> media_buffer,
       base::Bind(&MojoAudioDecoder::OnDecodeStatus, base::Unretained(this)));
 }
 
-void MojoAudioDecoder::Reset(const base::Closure& closure) {
+void MojoAudioDecoder::Reset(base::OnceClosure closure) {
   DVLOG(2) << __func__;
   DCHECK(task_runner_->BelongsToCurrentThread());
 
-  if (remote_decoder_.encountered_error()) {
+  if (!remote_decoder_.is_connected()) {
     if (decode_cb_) {
       task_runner_->PostTask(
           FROM_HERE,
           base::BindOnce(std::move(decode_cb_), DecodeStatus::DECODE_ERROR));
     }
 
-    task_runner_->PostTask(FROM_HERE, closure);
+    task_runner_->PostTask(FROM_HERE, std::move(closure));
     return;
   }
 
   DCHECK(!reset_cb_);
-  reset_cb_ = closure;
+  reset_cb_ = std::move(closure);
   remote_decoder_->Reset(
       base::Bind(&MojoAudioDecoder::OnResetDone, base::Unretained(this)));
 }
@@ -141,17 +142,14 @@ void MojoAudioDecoder::BindRemoteDecoder() {
   DVLOG(1) << __func__;
   DCHECK(task_runner_->BelongsToCurrentThread());
 
-  remote_decoder_.Bind(std::move(remote_decoder_info_));
+  remote_decoder_.Bind(std::move(pending_remote_decoder_));
 
   // Using base::Unretained(this) is safe because |this| owns |remote_decoder_|,
   // and the error handler can't be invoked once |remote_decoder_| is destroyed.
-  remote_decoder_.set_connection_error_handler(
+  remote_decoder_.set_disconnect_handler(
       base::Bind(&MojoAudioDecoder::OnConnectionError, base::Unretained(this)));
 
-  mojom::AudioDecoderClientAssociatedPtrInfo client_ptr_info;
-  client_binding_.Bind(mojo::MakeRequest(&client_ptr_info));
-
-  remote_decoder_->Construct(std::move(client_ptr_info));
+  remote_decoder_->Construct(client_receiver_.BindNewEndpointAndPassRemote());
 }
 
 void MojoAudioDecoder::OnBufferDecoded(mojom::AudioBufferPtr buffer) {
@@ -171,7 +169,7 @@ void MojoAudioDecoder::OnWaiting(WaitingReason reason) {
 void MojoAudioDecoder::OnConnectionError() {
   DVLOG(1) << __func__;
   DCHECK(task_runner_->BelongsToCurrentThread());
-  DCHECK(remote_decoder_.encountered_error());
+  DCHECK(!remote_decoder_.is_connected());
 
   if (init_cb_) {
     std::move(init_cb_).Run(false);

@@ -134,7 +134,7 @@ $ gn gen --args='target_os="android" is_chromecast=true' out/Default
   The default will be a debug component build matching the current host
   operating system and CPU.
 * For more info on GN, run `gn help` on the command line or read the
-  [quick start guide](../tools/gn/docs/quick_start.md).
+  [quick start guide](https://gn.googlesource.com/gn/+/master/docs/quick_start.md).
 
 Also be aware that some scripts (e.g. `tombstones.py`, `adb_gdb.py`)
 require you to set `CHROMIUM_OUTPUT_DIR=out/Default`.
@@ -170,7 +170,7 @@ plugged in.
 You can check if the device is connected by running:
 
 ```shell
-third_party/android_tools/sdk/platform-tools/adb devices
+third_party/android_sdk/public/platform-tools/adb devices
 ```
 
 Which prints a list of connected devices. If not connected, try
@@ -194,4 +194,5 @@ The app will appear on the device as "Chromium".
 
 ### Testing
 
-For information on running tests, see [Android Test Instructions](android_test_instructions.md).
+For information on running tests, see
+[Android Test Instructions](testing/android_test_instructions.md).

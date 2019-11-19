@@ -75,7 +75,7 @@
     testAndDumpLocation(scssUISourceCode, 4, 17, 4, 20);
     scssUISourceCode.requestContent().then(didRequestContent);
 
-    function didRequestContent(content, contentEncoded, mimeType) {
+    function didRequestContent({ content, error, isEncoded }) {
       TestRunner.assertEquals(0, content.indexOf('/* Comment */'));
       contentReceived = true;
       join();

@@ -12,6 +12,7 @@
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
+#include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -24,6 +25,7 @@
 #include "content/public/test/test_utils.h"
 #include "net/dns/mock_host_resolver.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/url_constants.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/extensions/unpacked_installer.h"
@@ -132,6 +134,25 @@ IN_PROC_BROWSER_TEST_F(NoBestEffortTasksTest, LoadAndPaintFromNetwork) {
   run_until_loaded_and_painted.Run();
 }
 
+// Verify that it is possible to load and paint a file:// URL without running
+// BEST_EFFORT tasks. Regression test for https://crbug.com/973244.
+IN_PROC_BROWSER_TEST_F(NoBestEffortTasksTest, LoadAndPaintFileScheme) {
+  constexpr base::FilePath::CharType kFile[] = FILE_PATH_LITERAL("links.html");
+  GURL file_url(ui_test_utils::GetTestUrl(
+      base::FilePath(base::FilePath::kCurrentDirectory),
+      base::FilePath(kFile)));
+  ASSERT_TRUE(file_url.SchemeIs(url::kFileScheme));
+
+  content::OpenURLParams open(file_url, content::Referrer(),
+                              WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                              ui::PAGE_TRANSITION_TYPED, false);
+  content::WebContents* const web_contents = browser()->OpenURL(open);
+  EXPECT_TRUE(web_contents->IsLoading());
+
+  RunLoopUntilLoadedAndPainted run_until_loaded_and_painted(web_contents);
+  run_until_loaded_and_painted.Run();
+}
+
 // Verify that an extension can be loaded and perform basic messaging without
 // running BEST_EFFORT tasks. Regression test for http://crbug.com/177163#c112.
 //
@@ -205,3 +226,75 @@ IN_PROC_BROWSER_TEST_F(NoBestEffortTasksTest, LoadExtensionAndSendMessages) {
   }
 }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
+// Verify that Blob XMLHttpRequest finishes without running BEST_EFFORT tasks.
+// Regression test for https://crbug.com/989868.
+IN_PROC_BROWSER_TEST_F(NoBestEffortTasksTest, BlobXMLHttpRequest) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  ui_test_utils::NavigateToURL(browser(),
+                               embedded_test_server()->GetURL("/empty.html"));
+  const char kScript[] = R"(
+      new Promise(function (resolve, reject) {
+        const xhr = new XMLHttpRequest();
+        xhr.open("GET", "./empty.html?", true);
+        xhr.responseType = "blob";
+        xhr.onload = () => {
+          resolve('DONE');
+        };
+        xhr.send();
+      })
+  )";
+  EXPECT_EQ("DONE",
+            content::EvalJs(
+                browser()->tab_strip_model()->GetActiveWebContents(), kScript));
+}
+
+// A test specialization for verifying quota storage related operations do not
+// use BEST_EFFORT tasks.
+class NoBestEffortTasksTestWithQuota : public NoBestEffortTasksTest {
+ protected:
+  std::unique_ptr<storage::QuotaSettings> CreateQuotaSettings() override {
+    // Return nullptr to use the real quota subsystem.
+    return nullptr;
+  }
+};
+
+// Verify that cache_storage finishes without running BEST_EFFORT tasks.
+// Regression test for https://crbug.com/1006546.
+IN_PROC_BROWSER_TEST_F(NoBestEffortTasksTestWithQuota, CacheStorage) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  ui_test_utils::NavigateToURL(browser(),
+                               embedded_test_server()->GetURL("/empty.html"));
+  const char kScript[] = R"(
+      (async function() {
+        const name = 'foo';
+        const url = '/';
+        const body = 'hello world';
+        let c = await caches.open(name);
+        await c.put(url, new Response(body));
+        let r = await c.match(url);
+        await r.text();
+        return 'DONE';
+      })();
+  )";
+  EXPECT_EQ("DONE",
+            content::EvalJs(
+                browser()->tab_strip_model()->GetActiveWebContents(), kScript));
+}
+
+// Verify that quota estimate() finishes without running BEST_EFFORT tasks.
+// Regression test for https://crbug.com/1006546.
+IN_PROC_BROWSER_TEST_F(NoBestEffortTasksTestWithQuota, QuotaEstimate) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  ui_test_utils::NavigateToURL(browser(),
+                               embedded_test_server()->GetURL("/empty.html"));
+  const char kScript[] = R"(
+      (async function() {
+        await navigator.storage.estimate();
+        return 'DONE';
+      })();
+  )";
+  EXPECT_EQ("DONE",
+            content::EvalJs(
+                browser()->tab_strip_model()->GetActiveWebContents(), kScript));
+}

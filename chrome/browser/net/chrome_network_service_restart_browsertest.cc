@@ -24,8 +24,6 @@ namespace content {
 class ChromeNetworkServiceRestartBrowserTest : public InProcessBrowserTest {
  public:
   ChromeNetworkServiceRestartBrowserTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        network::features::kNetworkService);
     EXPECT_TRUE(embedded_test_server()->Start());
   }
 
@@ -36,8 +34,6 @@ class ChromeNetworkServiceRestartBrowserTest : public InProcessBrowserTest {
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-
   DISALLOW_COPY_AND_ASSIGN(ChromeNetworkServiceRestartBrowserTest);
 };
 
@@ -84,9 +80,9 @@ IN_PROC_BROWSER_TEST_F(ChromeNetworkServiceRestartBrowserTest,
   SystemNetworkContextManager* system_network_context_manager =
       g_browser_process->system_network_context_manager();
 
-  network::mojom::NetworkContext* old_network_context =
-      system_network_context_manager->GetContext();
-  EXPECT_EQ(net::OK, LoadBasicRequest(old_network_context, GetTestURL()));
+  EXPECT_EQ(net::OK,
+            LoadBasicRequest(system_network_context_manager->GetContext(),
+                             GetTestURL()));
 
   // Crash the NetworkService process. Existing interfaces should receive error
   // notifications at some point.
@@ -94,9 +90,9 @@ IN_PROC_BROWSER_TEST_F(ChromeNetworkServiceRestartBrowserTest,
   // Flush the interface to make sure the error notification was received.
   system_network_context_manager->FlushNetworkInterfaceForTesting();
 
-  // |system_network_context_manager->GetContext()| should return a valid new
-  // pointer after crash.
-  EXPECT_NE(old_network_context, system_network_context_manager->GetContext());
+  // |system_network_context_manager->GetContext()| should return a valid
+  // pointer after crash, since the NetworkContext is bound again.
+  ASSERT_NE(system_network_context_manager->GetContext(), nullptr);
   EXPECT_EQ(net::OK,
             LoadBasicRequest(system_network_context_manager->GetContext(),
                              GetTestURL()));

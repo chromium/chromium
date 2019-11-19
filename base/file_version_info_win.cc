@@ -7,6 +7,8 @@
 #include <windows.h>
 #include <stddef.h>
 
+#include <utility>
+
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
@@ -15,8 +17,6 @@
 #include "base/threading/scoped_blocking_call.h"
 #include "base/win/resource_util.h"
 
-using base::FilePath;
-
 namespace {
 
 struct LanguageAndCodePage {
@@ -24,26 +24,23 @@ struct LanguageAndCodePage {
   WORD code_page;
 };
 
-// Returns the \\VarFileInfo\\Translation value extracted from the
+// Returns the \VarFileInfo\Translation value extracted from the
 // VS_VERSION_INFO resource in |data|.
 LanguageAndCodePage* GetTranslate(const void* data) {
-  LanguageAndCodePage* translate = nullptr;
-  UINT length;
-  if (::VerQueryValue(data, L"\\VarFileInfo\\Translation",
-                      reinterpret_cast<void**>(&translate), &length)) {
-    return translate;
-  }
+  static constexpr wchar_t kTranslation[] = L"\\VarFileInfo\\Translation";
+  LPVOID translate = nullptr;
+  UINT dummy_size;
+  if (::VerQueryValue(data, kTranslation, &translate, &dummy_size))
+    return static_cast<LanguageAndCodePage*>(translate);
   return nullptr;
 }
 
-VS_FIXEDFILEINFO* GetVsFixedFileInfo(const void* data) {
-  VS_FIXEDFILEINFO* fixed_file_info = nullptr;
-  UINT length;
-  if (::VerQueryValue(data, L"\\", reinterpret_cast<void**>(&fixed_file_info),
-                      &length)) {
-    return fixed_file_info;
-  }
-  return nullptr;
+const VS_FIXEDFILEINFO& GetVsFixedFileInfo(const void* data) {
+  static constexpr wchar_t kRoot[] = L"\\";
+  LPVOID fixed_file_info = nullptr;
+  UINT dummy_size;
+  CHECK(::VerQueryValue(data, kRoot, &fixed_file_info, &dummy_size));
+  return *static_cast<VS_FIXEDFILEINFO*>(fixed_file_info);
 }
 
 }  // namespace
@@ -70,13 +67,13 @@ FileVersionInfo::CreateFileVersionInfoForModule(HMODULE module) {
 
 // static
 std::unique_ptr<FileVersionInfo> FileVersionInfo::CreateFileVersionInfo(
-    const FilePath& file_path) {
+    const base::FilePath& file_path) {
   return FileVersionInfoWin::CreateFileVersionInfoWin(file_path);
 }
 
 // static
 std::unique_ptr<FileVersionInfoWin>
-FileVersionInfoWin::CreateFileVersionInfoWin(const FilePath& file_path) {
+FileVersionInfoWin::CreateFileVersionInfoWin(const base::FilePath& file_path) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
 
@@ -119,28 +116,12 @@ base::string16 FileVersionInfoWin::product_short_name() {
   return GetStringValue(STRING16_LITERAL("ProductShortName"));
 }
 
-base::string16 FileVersionInfoWin::comments() {
-  return GetStringValue(STRING16_LITERAL("Comments"));
-}
-
-base::string16 FileVersionInfoWin::legal_copyright() {
-  return GetStringValue(STRING16_LITERAL("LegalCopyright"));
-}
-
 base::string16 FileVersionInfoWin::product_version() {
   return GetStringValue(STRING16_LITERAL("ProductVersion"));
 }
 
 base::string16 FileVersionInfoWin::file_description() {
   return GetStringValue(STRING16_LITERAL("FileDescription"));
-}
-
-base::string16 FileVersionInfoWin::legal_trademarks() {
-  return GetStringValue(STRING16_LITERAL("LegalTrademarks"));
-}
-
-base::string16 FileVersionInfoWin::private_build() {
-  return GetStringValue(STRING16_LITERAL("PrivateBuild"));
 }
 
 base::string16 FileVersionInfoWin::file_version() {
@@ -155,57 +136,47 @@ base::string16 FileVersionInfoWin::special_build() {
   return GetStringValue(STRING16_LITERAL("SpecialBuild"));
 }
 
-base::string16 FileVersionInfoWin::last_change() {
-  return GetStringValue(STRING16_LITERAL("LastChange"));
-}
-
-bool FileVersionInfoWin::is_official_build() {
-  return GetStringValue(STRING16_LITERAL("Official Build")) ==
-         STRING16_LITERAL("1");
-}
-
 bool FileVersionInfoWin::GetValue(const base::char16* name,
-                                  base::string16* value_str) {
-  WORD lang_codepage[8];
-  size_t i = 0;
-  // Use the language and codepage from the DLL.
-  lang_codepage[i++] = language_;
-  lang_codepage[i++] = code_page_;
-  // Use the default language and codepage from the DLL.
-  lang_codepage[i++] = ::GetUserDefaultLangID();
-  lang_codepage[i++] = code_page_;
-  // Use the language from the DLL and Latin codepage (most common).
-  lang_codepage[i++] = language_;
-  lang_codepage[i++] = 1252;
-  // Use the default language and Latin codepage (most common).
-  lang_codepage[i++] = ::GetUserDefaultLangID();
-  lang_codepage[i++] = 1252;
+                                  base::string16* value) const {
+  const struct LanguageAndCodePage lang_codepages[] = {
+      // Use the language and codepage from the DLL.
+      {language_, code_page_},
+      // Use the default language and codepage from the DLL.
+      {::GetUserDefaultLangID(), code_page_},
+      // Use the language from the DLL and Latin codepage (most common).
+      {language_, 1252},
+      // Use the default language and Latin codepage (most common).
+      {::GetUserDefaultLangID(), 1252},
+  };
 
-  i = 0;
-  while (i < base::size(lang_codepage)) {
+  for (const auto& lang_codepage : lang_codepages) {
     wchar_t sub_block[MAX_PATH];
-    WORD language = lang_codepage[i++];
-    WORD code_page = lang_codepage[i++];
     _snwprintf_s(sub_block, MAX_PATH, MAX_PATH,
-                 L"\\StringFileInfo\\%04x%04x\\%ls", language, code_page,
-                 base::as_wcstr(name));
-    LPVOID value = NULL;
+                 L"\\StringFileInfo\\%04x%04x\\%ls", lang_codepage.language,
+                 lang_codepage.code_page, base::as_wcstr(name));
+    LPVOID value_ptr = nullptr;
     uint32_t size;
-    BOOL r = ::VerQueryValue(data_, sub_block, &value, &size);
-    if (r && value) {
-      value_str->assign(static_cast<base::char16*>(value));
+    BOOL r = ::VerQueryValue(data_, sub_block, &value_ptr, &size);
+    if (r && value_ptr && size) {
+      value->assign(static_cast<base::char16*>(value_ptr), size - 1);
       return true;
     }
   }
   return false;
 }
 
-base::string16 FileVersionInfoWin::GetStringValue(const base::char16* name) {
+base::string16 FileVersionInfoWin::GetStringValue(
+    const base::char16* name) const {
   base::string16 str;
-  if (GetValue(name, &str))
-    return str;
-  else
-    return base::string16();
+  GetValue(name, &str);
+  return str;
+}
+
+base::Version FileVersionInfoWin::GetFileVersion() const {
+  return base::Version({HIWORD(fixed_file_info_.dwFileVersionMS),
+                        LOWORD(fixed_file_info_.dwFileVersionMS),
+                        HIWORD(fixed_file_info_.dwFileVersionLS),
+                        LOWORD(fixed_file_info_.dwFileVersionLS)});
 }
 
 FileVersionInfoWin::FileVersionInfoWin(std::vector<uint8_t>&& data,

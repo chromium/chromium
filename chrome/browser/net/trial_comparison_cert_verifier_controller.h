@@ -15,8 +15,10 @@
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "components/prefs/pref_change_registrar.h"
-#include "mojo/public/cpp/bindings/binding_set.h"
-#include "mojo/public/cpp/bindings/interface_ptr_set.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
+#include "mojo/public/cpp/bindings/remote_set.h"
 #include "net/base/net_export.h"
 #include "net/cert/cert_verifier.h"
 #include "services/network/public/mojom/trial_comparison_cert_verifier.mojom.h"
@@ -36,11 +38,13 @@ class TrialComparisonCertVerifierController
   static bool MaybeAllowedForProfile(Profile* profile);
 
   // Adds a client to the controller, sending trial configuration updates to
-  // |config_client|, and receiving trial reports from |report_client_request|.
-  void AddClient(
-      network::mojom::TrialComparisonCertVerifierConfigClientPtr config_client,
-      network::mojom::TrialComparisonCertVerifierReportClientRequest
-          report_client_request);
+  // |config_client|, and receiving trial reports from |report_client_receiver|.
+  void AddClient(mojo::PendingRemote<
+                     network::mojom::TrialComparisonCertVerifierConfigClient>
+                     config_client,
+                 mojo::PendingReceiver<
+                     network::mojom::TrialComparisonCertVerifierReportClient>
+                     report_client_receiver);
 
   // Returns true if the trial is enabled and SBER flag is set for this
   // profile.
@@ -55,7 +59,8 @@ class TrialComparisonCertVerifierController
       bool enable_sha1_local_anchors,
       bool disable_symantec_enforcement,
       const net::CertVerifyResult& primary_result,
-      const net::CertVerifyResult& trial_result) override;
+      const net::CertVerifyResult& trial_result,
+      network::mojom::CertVerifierDebugInfoPtr debug_info) override;
 
   static void SetFakeOfficialBuildForTesting(bool fake_official_build);
 
@@ -65,10 +70,10 @@ class TrialComparisonCertVerifierController
   Profile* profile_;
   PrefChangeRegistrar pref_change_registrar_;
 
-  mojo::BindingSet<network::mojom::TrialComparisonCertVerifierReportClient>
-      binding_set_;
+  mojo::ReceiverSet<network::mojom::TrialComparisonCertVerifierReportClient>
+      receiver_set_;
 
-  mojo::InterfacePtrSet<network::mojom::TrialComparisonCertVerifierConfigClient>
+  mojo::RemoteSet<network::mojom::TrialComparisonCertVerifierConfigClient>
       config_client_set_;
 
   DISALLOW_COPY_AND_ASSIGN(TrialComparisonCertVerifierController);

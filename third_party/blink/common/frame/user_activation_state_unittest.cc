@@ -65,12 +65,12 @@ TEST_F(UserActivationStateTest, ExpirationTest) {
   user_activation_state.Activate();
 
   // Right before activation expiry, both bits remain set.
-  AdvanceClock(base::TimeDelta::FromMilliseconds(4999));
+  AdvanceClock(base::TimeDelta::FromMilliseconds(4995));
   EXPECT_TRUE(user_activation_state.HasBeenActive());
   EXPECT_TRUE(user_activation_state.IsActive());
 
   // Right after activation expiry, only the transient bit gets reset.
-  AdvanceClock(base::TimeDelta::FromMilliseconds(1));
+  AdvanceClock(base::TimeDelta::FromMilliseconds(10));
   EXPECT_TRUE(user_activation_state.HasBeenActive());
   EXPECT_FALSE(user_activation_state.IsActive());
 }
@@ -115,6 +115,110 @@ TEST_F(UserActivationStateTest, ConsumptionPlusExpirationTest) {
   AdvanceClock(base::TimeDelta::FromSeconds(900));
   user_activation_state.Activate();
   EXPECT_TRUE(user_activation_state.ConsumeIfActive());
+}
+
+TEST_F(UserActivationStateTest, TransferBooleanTest) {
+  UserActivationState source;
+  UserActivationState target;
+
+  // Transfer from inactive source to inactive target.
+  source.Clear();
+  target.Clear();
+  target.TransferFrom(source);
+
+  EXPECT_FALSE(source.HasBeenActive());
+  EXPECT_FALSE(source.IsActive());
+  EXPECT_FALSE(target.HasBeenActive());
+  EXPECT_FALSE(target.IsActive());
+
+  // Transfer from inactive source to active target.
+  source.Clear();
+  target.Activate();
+  target.TransferFrom(source);
+
+  EXPECT_FALSE(source.HasBeenActive());
+  EXPECT_FALSE(source.IsActive());
+  EXPECT_TRUE(target.HasBeenActive());
+  EXPECT_TRUE(target.IsActive());
+
+  // Transfer from active source to inactive target.
+  source.Activate();
+  target.Clear();
+  target.TransferFrom(source);
+
+  EXPECT_FALSE(source.HasBeenActive());
+  EXPECT_FALSE(source.IsActive());
+  EXPECT_TRUE(target.HasBeenActive());
+  EXPECT_TRUE(target.IsActive());
+
+  // Transfer from active source to active target.
+  source.Activate();
+  target.Activate();
+  target.TransferFrom(source);
+
+  EXPECT_FALSE(source.HasBeenActive());
+  EXPECT_FALSE(source.IsActive());
+  EXPECT_TRUE(target.HasBeenActive());
+  EXPECT_TRUE(target.IsActive());
+}
+
+TEST_F(UserActivationStateTest, TransferExpirationTest) {
+  UserActivationState source;
+  UserActivationState target;
+
+  // Source activated before target.
+  source.Activate();
+  AdvanceClock(base::TimeDelta::FromSeconds(1));
+  target.Activate();
+  target.TransferFrom(source);
+
+  AdvanceClock(base::TimeDelta::FromMilliseconds(4995));
+  EXPECT_TRUE(target.IsActive());
+  AdvanceClock(base::TimeDelta::FromMilliseconds(10));
+  EXPECT_FALSE(target.IsActive());
+
+  // Source activated after target.
+  target.Activate();
+  AdvanceClock(base::TimeDelta::FromSeconds(1));
+  source.Activate();
+  target.TransferFrom(source);
+
+  AdvanceClock(base::TimeDelta::FromMilliseconds(4995));
+  EXPECT_TRUE(target.IsActive());
+  AdvanceClock(base::TimeDelta::FromMilliseconds(10));
+  EXPECT_FALSE(target.IsActive());
+
+  // Source and target activated at the same time.
+  source.Activate();
+  target.Activate();
+  target.TransferFrom(source);
+
+  AdvanceClock(base::TimeDelta::FromMilliseconds(4995));
+  EXPECT_TRUE(target.IsActive());
+  AdvanceClock(base::TimeDelta::FromMilliseconds(10));
+  EXPECT_FALSE(target.IsActive());
+
+  // Inactive target received transfer from active source after a delay.
+  source.Activate();
+  target.Clear();
+  AdvanceClock(base::TimeDelta::FromSeconds(1));
+  target.TransferFrom(source);
+
+  AdvanceClock(base::TimeDelta::FromMilliseconds(3995));
+  EXPECT_TRUE(target.IsActive());
+  AdvanceClock(base::TimeDelta::FromMilliseconds(10));
+  EXPECT_FALSE(target.IsActive());
+
+  // Active target received transfer from inactive source after a delay.
+  source.Clear();
+  target.Activate();
+  AdvanceClock(base::TimeDelta::FromSeconds(1));
+  target.TransferFrom(source);
+
+  AdvanceClock(base::TimeDelta::FromMilliseconds(3995));
+  EXPECT_TRUE(target.IsActive());
+  AdvanceClock(base::TimeDelta::FromMilliseconds(10));
+  EXPECT_FALSE(target.IsActive());
 }
 
 }  // namespace blink

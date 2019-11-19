@@ -1,0 +1,8 @@
+{
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAuCAA3/rQ/X5xUBc2DhjXGB7U0Fn6memyWN5u3XYc1QzNdKodI5hmqVRi6yVePzmQuSdsA2M7wG0enGkg7qfQKNydcHPM7z/J0GEmSqzadrtz5QzWN2JemkIB3ilB7gO1RcyEluuHDhepCbVCwIr3VbguaaoatW4zYndqgC9mNOF5M73G44s6GkCunNcHtUaleaRiwt12y+WZsKIfRW90ijyESlSOEmGVhWwMld9SnAJv/P7apNr2HfQR4Bemriu02ypAPuJQ6zpvK+DRFdXu1bb7gOuN10+zPCjrt8SLs79rZ974bA56gAqUjDf3kLtJiHXMavCPUf3Fs1mvpzKTJwIDAQAB",
+  "name": "Help",
+  "version": "4.0",
+  "description" : "Test Chrome OS Help",
+  "manifest_version": 2,
+  "incognito" : "split"
+}

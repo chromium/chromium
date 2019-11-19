@@ -15,7 +15,7 @@
 
 namespace chromeos {
 
-KioskInfoService::KioskInfoService() : weak_ptr_factory_(this) {}
+KioskInfoService::KioskInfoService() {}
 
 KioskInfoService::~KioskInfoService() = default;
 

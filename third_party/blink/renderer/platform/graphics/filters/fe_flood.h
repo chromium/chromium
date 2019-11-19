@@ -30,8 +30,6 @@ namespace blink {
 
 class PLATFORM_EXPORT FEFlood final : public FilterEffect {
  public:
-  static FEFlood* Create(Filter*, const Color&, float);
-
   FEFlood(Filter*, const Color&, float);
 
   Color FloodColor() const;

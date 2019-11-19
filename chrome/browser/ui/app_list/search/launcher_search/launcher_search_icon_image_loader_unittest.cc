@@ -32,7 +32,7 @@ const char kTestCustomIconURL[] = "chrome-extension://foo/bar";
 class FillColorImageSource : public gfx::CanvasImageSource {
  public:
   FillColorImageSource(const gfx::Size& image_size, const SkColor fill_color)
-      : CanvasImageSource(image_size, false), fill_color_(fill_color) {}
+      : CanvasImageSource(image_size), fill_color_(fill_color) {}
 
   void Draw(gfx::Canvas* canvas) override {
     canvas->FillRect(gfx::Rect(size()), fill_color_);

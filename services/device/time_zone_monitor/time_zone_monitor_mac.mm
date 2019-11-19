@@ -4,8 +4,11 @@
 
 #import <Foundation/Foundation.h>
 
+#include <memory>
+
 #include "base/macros.h"
 #include "services/device/time_zone_monitor/time_zone_monitor.h"
+#include "third_party/icu/source/i18n/unicode/timezone.h"
 
 namespace device {
 
@@ -18,7 +21,7 @@ class TimeZoneMonitorMac : public TimeZoneMonitor {
                         object:nil
                          queue:nil
                     usingBlock:^(NSNotification* notification) {
-                      NotifyClients();
+                      UpdateIcuAndNotifyClients(DetectHostTimeZoneFromIcu());
                     }];
   }
 

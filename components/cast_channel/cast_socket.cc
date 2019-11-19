@@ -34,6 +34,8 @@
 #include "components/cast_channel/proto/cast_channel.pb.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/address_list.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/net_errors.h"
@@ -66,7 +68,7 @@ void OnConnected(
     mojo::ScopedDataPipeConsumerHandle receive_stream,
     mojo::ScopedDataPipeProducerHandle send_stream) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  base::PostTaskWithTraits(
+  base::PostTask(
       FROM_HERE, {content::BrowserThread::IO},
       base::BindOnce(std::move(callback), result, local_addr, peer_addr,
                      std::move(receive_stream), std::move(send_stream)));
@@ -75,14 +77,14 @@ void OnConnected(
 void ConnectOnUIThread(
     CastSocketImpl::NetworkContextGetter network_context_getter,
     const net::AddressList& remote_address_list,
-    network::mojom::TCPConnectedSocketRequest request,
+    mojo::PendingReceiver<network::mojom::TCPConnectedSocket> receiver,
     network::mojom::NetworkContext::CreateTCPConnectedSocketCallback callback) {
   network_context_getter.Run()->CreateTCPConnectedSocket(
       base::nullopt /* local_addr */, remote_address_list,
       nullptr /* tcp_connected_socket_options */,
       net::MutableNetworkTrafficAnnotationTag(
           CastSocketImpl::GetNetworkTrafficAnnotationTag()),
-      std::move(request), nullptr /* observer */,
+      std::move(receiver), mojo::NullRemote() /* observer */,
       base::BindOnce(OnConnected, std::move(callback)));
 }
 
@@ -113,8 +115,7 @@ CastSocketImpl::CastSocketImpl(NetworkContextGetter network_context_getter,
       connect_state_(ConnectionState::START_CONNECT),
       error_state_(ChannelError::NONE),
       ready_state_(ReadyState::NONE),
-      auth_delegate_(nullptr),
-      weak_factory_(this) {
+      auth_delegate_(nullptr) {
   DCHECK(open_params.ip_endpoint.address().IsValid());
 }
 
@@ -379,13 +380,12 @@ int CastSocketImpl::DoTcpConnect() {
   VLOG_WITH_CONNECTION(1) << "DoTcpConnect";
   SetConnectState(ConnectionState::TCP_CONNECT_COMPLETE);
 
-  base::PostTaskWithTraits(
-      FROM_HERE, {content::BrowserThread::UI},
-      base::BindOnce(ConnectOnUIThread, network_context_getter_,
-                     net::AddressList(open_params_.ip_endpoint),
-                     mojo::MakeRequest(&tcp_socket_),
-                     base::BindOnce(&CastSocketImpl::OnConnect,
-                                    weak_factory_.GetWeakPtr())));
+  base::PostTask(FROM_HERE, {content::BrowserThread::UI},
+                 base::BindOnce(ConnectOnUIThread, network_context_getter_,
+                                net::AddressList(open_params_.ip_endpoint),
+                                tcp_socket_.BindNewPipeAndPassReceiver(),
+                                base::BindOnce(&CastSocketImpl::OnConnect,
+                                               weak_factory_.GetWeakPtr())));
 
   return net::ERR_IO_PENDING;
 }
@@ -421,7 +421,7 @@ int CastSocketImpl::DoSslConnect() {
   tcp_socket_->UpgradeToTLS(
       host_port_pair, std::move(options),
       net::MutableNetworkTrafficAnnotationTag(GetNetworkTrafficAnnotationTag()),
-      mojo::MakeRequest(&socket_), nullptr /* observer */,
+      socket_.BindNewPipeAndPassReceiver(), mojo::NullRemote() /* observer */,
       base::BindOnce(&CastSocketImpl::OnUpgradeToTLS,
                      weak_factory_.GetWeakPtr()));
 
@@ -467,8 +467,7 @@ int CastSocketImpl::DoAuthChallengeSend() {
 
   CastMessage challenge_message;
   CreateAuthChallengeMessage(&challenge_message, auth_context_);
-  VLOG_WITH_CONNECTION(1) << "Sending challenge: "
-                          << CastMessageToString(challenge_message);
+  VLOG_WITH_CONNECTION(1) << "Sending challenge: " << challenge_message;
 
   ResetConnectLoopCallback();
 
@@ -599,11 +598,11 @@ void CastSocketImpl::DoConnectCallback() {
   connect_callbacks_.clear();
 }
 
-void CastSocketImpl::Close(const net::CompletionCallback& callback) {
+void CastSocketImpl::Close(net::CompletionOnceCallback callback) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   CloseInternal();
   // Run this callback last.  It may delete the socket.
-  callback.Run(net::OK);
+  std::move(callback).Run(net::OK);
 }
 
 void CastSocketImpl::CloseInternal() {

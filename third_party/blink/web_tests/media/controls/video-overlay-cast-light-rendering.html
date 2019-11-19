@@ -16,9 +16,6 @@
     <video style="position: absolute; width: 320px;"></video>
   </div>
   <script>
-    if (window.internals)
-        internals.settings.setMockScrollbarsEnabled(true);
-
     var videos = document.getElementsByTagName('video');
     waitForMultipleEvents("canplaythrough", videos.length, function() {
         for (var i = 0; i < videos.length; ++i) {

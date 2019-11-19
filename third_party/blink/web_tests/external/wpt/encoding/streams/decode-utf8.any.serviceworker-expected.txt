@@ -1,0 +1,13 @@
+This is a testharness.js-based test.
+PASS decoding one UTF-8 chunk should give one output string - ArrayBuffer
+PASS decoding an empty chunk should give no output chunks - ArrayBuffer
+PASS an initial empty chunk should be ignored - ArrayBuffer
+PASS a trailing empty chunk should be ignored- ArrayBuffer
+FAIL decoding one UTF-8 chunk should give one output string - SharedArrayBuffer promise_test: Unhandled rejection with value: object "TypeError: The provided ArrayBufferView value must not be shared."
+FAIL decoding an empty chunk should give no output chunks - SharedArrayBuffer promise_test: Unhandled rejection with value: object "TypeError: The provided ArrayBufferView value must not be shared."
+FAIL an initial empty chunk should be ignored - SharedArrayBuffer promise_test: Unhandled rejection with value: object "TypeError: The provided ArrayBufferView value must not be shared."
+FAIL a trailing empty chunk should be ignored- SharedArrayBuffer promise_test: Unhandled rejection with value: object "TypeError: The provided ArrayBufferView value must not be shared."
+PASS decoding a transferred Uint8Array chunk should give no output
+PASS decoding a transferred ArrayBuffer chunk should give no output
+Harness: the test ran to completion.
+

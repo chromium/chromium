@@ -9,6 +9,9 @@
 
 syntax = "proto2";
 
+option java_multiple_files = true;
+option java_package = "org.chromium.components.sync.protocol";
+
 option optimize_for = LITE_RUNTIME;
 
 package sync_pb;
@@ -16,8 +19,10 @@ package sync_pb;
 import "encryption.proto";
 
 message NigoriKey {
-  optional string name = 1;
-  optional bytes user_key = 2 [deprecated = true];
+  // Note that M78 and before rely on the name being populated, at least for
+  // the main encrypted keybag within NigoriSpecifics.
+  optional string deprecated_name = 1 [deprecated = true];
+  optional bytes deprecated_user_key = 2 [deprecated = true];
   optional bytes encryption_key = 3;
   optional bytes mac_key = 4;
 }
@@ -49,9 +54,9 @@ message NigoriSpecifics {
   // optional bool deprecated_encrypt_search_engines = 12;
 
   // Booleans corresponding to whether a datatype should be encrypted.
-  // Passwords are always encrypted, so we don't need a field here.
-  // History delete directives need to be consumable by the server, and
-  // thus can't be encrypted.
+  // Passwords and Wi-Fi configurations are always encrypted, so we don't need
+  // a field here.  History delete directives need to be consumable by the
+  // server, and thus can't be encrypted.
   optional bool encrypt_bookmarks = 13;
   optional bool encrypt_preferences = 14;
   optional bool encrypt_autofill_profile = 15;
@@ -70,7 +75,9 @@ message NigoriSpecifics {
   optional bool encrypt_everything = 24;
 
   optional bool encrypt_extension_settings = 25;
+
   optional bool encrypt_app_notifications = 26 [deprecated = true];
+
   optional bool encrypt_app_settings = 27;
 
   // User device information. Contains information about each device that has a
@@ -95,8 +102,15 @@ message NigoriSpecifics {
     FROZEN_IMPLICIT_PASSPHRASE = 3;
     // User provided custom passphrase.
     CUSTOM_PASSPHRASE = 4;
+    // Encryption key provided by a trusted vault.
+    TRUSTED_VAULT_PASSPHRASE = 5;
   }
-  optional PassphraseType passphrase_type = 30 [default = IMPLICIT_PASSPHRASE];
+
+  // An |int| field is used instead of enum PassphraseType so we can better
+  // handle unknown values coming from later versions. Prior to M77, this was an
+  // enum so old clients will assume IMPLICIT_PASSPHRASE for values greater than
+  // 4.
+  optional int32 passphrase_type = 30 [default = 1];
 
   // The keystore decryptor token blob. Encrypted with the keystore key, and
   // contains the encryption key used to decrypt |encryption_keybag|.
@@ -120,8 +134,8 @@ message NigoriSpecifics {
   optional bool encrypt_favicon_images = 35;
   optional bool encrypt_favicon_tracking = 36;
 
-  // Boolean corresponding to whether articles should be encrypted.
-  optional bool encrypt_articles = 37;
+  reserved 37;
+  reserved "encrypt_articles";
 
   // Boolean corresponding to whether app list items should be encrypted.
   optional bool encrypt_app_list = 38;
@@ -145,8 +159,8 @@ message NigoriSpecifics {
   // Boolean corresponding to whether reading list items should be encrypted.
   optional bool encrypt_reading_list = 43;
 
-  // Boolean corresponding to whether mountain shares should be encrypted.
-  optional bool encrypt_mountain_shares = 44;
+  reserved 44;
+  reserved "encrypt_mountain_shares";
 
   enum KeyDerivationMethod {
     // This comes from a <= M69 client, who does not know about the field
@@ -175,4 +189,10 @@ message NigoriSpecifics {
 
   // Boolean corresponding to whether send tab should be encrypted.
   optional bool encrypt_send_tab_to_self = 47;
+
+  // Boolean corresponding to whether Web Apps data should be encrypted.
+  optional bool encrypt_web_apps = 48;
+
+  // Boolean corresponding to whether OS preferences should be encrypted.
+  optional bool encrypt_os_preferences = 49;
 }

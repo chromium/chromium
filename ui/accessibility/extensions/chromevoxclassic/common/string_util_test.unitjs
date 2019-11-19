@@ -1,0 +1,61 @@
+// Copyright 2015 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Include test fixture.
+GEN_INCLUDE(['//ui/accessibility/extensions/chromevoxclassic/testing/chromevox_unittest_base.js']);
+
+/**
+ * Test fixture.
+ * @constructor
+ * @extends {ChromeVoxUnitTestBase}
+ */
+function StringUtilUnitTest() {
+  ChromeVoxUnitTestBase.call(this);
+}
+
+StringUtilUnitTest.prototype = {
+  __proto__: ChromeVoxUnitTestBase.prototype,
+
+  /** @override */
+  closureModuleDeps: [
+    'StringUtil',
+  ],
+};
+
+TEST_F('StringUtilUnitTest', 'longestCommonPrefixLength', function() {
+  var lcpl = StringUtil.longestCommonPrefixLength;
+  assertEquals(0, lcpl('', ''));
+  assertEquals(0, lcpl('', 'hello'));
+  assertEquals(0, lcpl('hello', ''));
+  assertEquals(1, lcpl('hi', 'hello'));
+});
+
+var EMOJI = String.fromCodePoint(0X1F30C);  // Milky way
+var INVALID_SURROGATE_PAIR = 'a' + EMOJI[0];
+
+TEST_F('StringUtilUnitTest', 'previousCodePointOffset', function() {
+  var prev = StringUtil.previousCodePointOffset;
+  assertEquals(-1, prev('', 0));
+  assertEquals(-1, prev('', -1));
+  assertEquals(-1, prev('test', 0));
+  assertEquals(0, prev('test', 1));
+  assertEquals('test'.length - 1, prev('test', 'test'.length));
+  assertEquals(0, prev('a' + EMOJI, 1));
+  assertEquals(1, prev('a' + EMOJI + 'b', 3));
+  assertEquals(1, prev(INVALID_SURROGATE_PAIR, INVALID_SURROGATE_PAIR.length));
+  assertEquals(0, prev('a' + INVALID_SURROGATE_PAIR, 1));
+});
+
+TEST_F('StringUtilUnitTest', 'nextCodePointOffset', function() {
+  var next = StringUtil.nextCodePointOffset;
+  assertEquals(0, next('', 0));
+  assertEquals(0, next('', 1));
+  assertEquals(1, next('test', 0));
+  assertEquals('test'.length, next('test', 'test'.length - 1));
+  assertEquals(1, next('a' + EMOJI, 0));
+  assertEquals(EMOJI.length, next(EMOJI, 0));
+  assertEquals(3, next('a' + EMOJI + 'b', 1));
+  assertEquals(1, next(INVALID_SURROGATE_PAIR, 0));
+  assertEquals(1, next('a' + INVALID_SURROGATE_PAIR, 0));
+});

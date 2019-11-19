@@ -13,7 +13,7 @@
 #include "ash/accessibility/accessibility_layer.h"
 #include "ash/accessibility/layer_animation_info.h"
 #include "ash/ash_export.h"
-#include "ash/public/interfaces/accessibility_focus_ring_controller.mojom.h"
+#include "ash/public/cpp/accessibility_focus_ring_info.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -28,22 +28,13 @@ class ASH_EXPORT AccessibilityFocusRingGroup {
   AccessibilityFocusRingGroup();
   virtual ~AccessibilityFocusRingGroup();
 
-  void SetColor(SkColor color, AccessibilityLayerDelegate* delegate);
-  void ResetColor(AccessibilityLayerDelegate* delegate);
-
-  void EnableDoubleFocusRing(SkColor secondary_color,
-                             AccessibilityLayerDelegate* delegate);
-  void DisableDoubleFocusRing(AccessibilityLayerDelegate* delegate);
-
-  void UpdateFocusRingsFromFocusRects(AccessibilityLayerDelegate* delegate);
+  void UpdateFocusRingsFromInfo(AccessibilityLayerDelegate* delegate);
   bool CanAnimate() const;
   void AnimateFocusRings(base::TimeTicks timestamp);
 
-  // Returns true if the rects and behavior are changed, false if there was no
-  // change.
-  bool SetFocusRectsAndBehavior(const std::vector<gfx::Rect>& rects,
-                                mojom::FocusRingBehavior focus_ring_behavior,
-                                AccessibilityLayerDelegate* delegate);
+  // Returns true if the focus ring has changed, false if there were no changes.
+  bool UpdateFocusRing(std::unique_ptr<AccessibilityFocusRingInfo> focus_ring,
+                       AccessibilityLayerDelegate* delegate);
 
   void ClearFocusRects(AccessibilityLayerDelegate* delegate);
 
@@ -79,15 +70,11 @@ class ASH_EXPORT AccessibilityFocusRingGroup {
                                gfx::Rect* bottom) const;
   bool Intersects(const gfx::Rect& r1, const gfx::Rect& r2) const;
 
-  std::vector<gfx::Rect> focus_rects_;
-  base::Optional<SkColor> focus_ring_color_;
-  base::Optional<SkColor> focus_ring_secondary_color_;
+  std::unique_ptr<AccessibilityFocusRingInfo> focus_ring_info_;
   std::vector<AccessibilityFocusRing> previous_focus_rings_;
   std::vector<std::unique_ptr<AccessibilityFocusRingLayer>> focus_layers_;
   std::vector<AccessibilityFocusRing> focus_rings_;
   LayerAnimationInfo focus_animation_info_;
-  mojom::FocusRingBehavior focus_ring_behavior_ =
-      mojom::FocusRingBehavior::FADE_OUT_FOCUS_RING;
   bool no_fade_for_testing_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(AccessibilityFocusRingGroup);

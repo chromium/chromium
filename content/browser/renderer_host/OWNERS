@@ -4,9 +4,6 @@ kenrb@chromium.org
 # for *aura*
 per-file *aura*=sadrul@chromium.org
 
-# for *mac*
-asvitkine@chromium.org
-
 # for GPU-related stuff in *mac*
 kbr@chromium.org
 ccameron@chromium.org
@@ -18,7 +15,6 @@ per-file *android*=khushalsagar@chromium.org
 # For touch/gesture specific changes
 rjkroege@chromium.org
 sadrul@chromium.org
-tdresser@chromium.org
 
 # For surface ID propagation and synchronization
 fsamuel@chromium.org
@@ -35,7 +31,6 @@ per-file web_database_*=pwnall@chromium.org
 
 # Embedded Frame Sinks (eg. Offscreen Canvas)
 per-file embedded_frame_sink*.*=xlai@chromium.org
-per-file embedded_frame_sink*.*=xidachen@chromium.org
 per-file embedded_frame_sink*.*=junov@chromium.org
 per-file embedded_frame_sink*.*=kylechar@chromium.org
 

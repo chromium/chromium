@@ -1,0 +1,22 @@
+// Copyright 2017 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module gfx.mojom;
+
+import "ui/gfx/geometry/mojom/geometry.mojom";
+
+union CALayerContent {
+  uint32 ca_context_id;
+  handle io_surface_mach_port;
+};
+
+// gfx::CALayerParams
+struct CALayerParams {
+  // TODO(676224): Use preprocessor to restrict platform-specific members to
+  // desired platform.
+  bool is_empty;
+  CALayerContent content;
+  gfx.mojom.Size pixel_size;
+  float scale_factor;
+};

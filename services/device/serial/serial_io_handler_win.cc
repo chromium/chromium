@@ -360,8 +360,7 @@ SerialIoHandlerWin::SerialIoHandlerWin(
     : SerialIoHandler(port, std::move(ui_thread_task_runner)),
       event_mask_(0),
       is_comm_pending_(false),
-      helper_(nullptr),
-      weak_factory_(this) {}
+      helper_(nullptr) {}
 
 SerialIoHandlerWin::~SerialIoHandlerWin() {
   ui_thread_task_runner()->DeleteSoon(FROM_HERE, helper_);
@@ -472,20 +471,23 @@ mojom::SerialPortControlSignalsPtr SerialIoHandlerWin::GetControlSignals()
 
 bool SerialIoHandlerWin::SetControlSignals(
     const mojom::SerialHostControlSignals& signals) {
-  if (signals.has_dtr) {
-    if (!EscapeCommFunction(file().GetPlatformFile(),
-                            signals.dtr ? SETDTR : CLRDTR)) {
-      VPLOG(1) << "Failed to configure DTR signal";
-      return false;
-    }
+  if (signals.has_dtr && !EscapeCommFunction(file().GetPlatformFile(),
+                                             signals.dtr ? SETDTR : CLRDTR)) {
+    VPLOG(1) << "Failed to configure DTR signal";
+    return false;
   }
-  if (signals.has_rts) {
-    if (!EscapeCommFunction(file().GetPlatformFile(),
-                            signals.rts ? SETRTS : CLRRTS)) {
-      VPLOG(1) << "Failed to configure RTS signal";
-      return false;
-    }
+  if (signals.has_rts && !EscapeCommFunction(file().GetPlatformFile(),
+                                             signals.rts ? SETRTS : CLRRTS)) {
+    VPLOG(1) << "Failed to configure RTS signal";
+    return false;
   }
+  if (signals.has_brk &&
+      !EscapeCommFunction(file().GetPlatformFile(),
+                          signals.brk ? SETBREAK : CLRBREAK)) {
+    VPLOG(1) << "Failed to configure break signal";
+    return false;
+  }
+
   return true;
 }
 
@@ -503,22 +505,6 @@ mojom::SerialConnectionInfoPtr SerialIoHandlerWin::GetPortInfo() const {
   info->stop_bits = StopBitsConstantToEnum(config.StopBits);
   info->cts_flow_control = config.fOutxCtsFlow != 0;
   return info;
-}
-
-bool SerialIoHandlerWin::SetBreak() {
-  if (!SetCommBreak(file().GetPlatformFile())) {
-    VPLOG(1) << "Failed to set break";
-    return false;
-  }
-  return true;
-}
-
-bool SerialIoHandlerWin::ClearBreak() {
-  if (!ClearCommBreak(file().GetPlatformFile())) {
-    VPLOG(1) << "Failed to clear break";
-    return false;
-  }
-  return true;
 }
 
 }  // namespace device

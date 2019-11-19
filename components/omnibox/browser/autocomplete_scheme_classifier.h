@@ -21,7 +21,7 @@ class AutocompleteSchemeClassifier {
   virtual ~AutocompleteSchemeClassifier() {}
 
   // Checks |scheme| and returns the type of the input if the scheme is known
-  // and not blocked. Returns metrics::OmniboxInputType::INVALID if it's unknown
+  // and not blocked. Returns metrics::OmniboxInputType::EMPTY if it's unknown
   // or the classifier implementation cannot handle.
   virtual metrics::OmniboxInputType GetInputTypeForScheme(
       const std::string& scheme) const = 0;

@@ -8,6 +8,7 @@
 #include "base/process/launch.h"
 #include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/test_reg_util_win.h"
 #include "base/values.h"
 #include "base/win/scoped_handle.h"
@@ -429,35 +430,120 @@ TEST_F(GcpProcHelperTest, GetCommandLineForEntrypoint) {
 TEST(Enroll, EnrollToGoogleMdmIfNeeded_NotEnabled) {
   // Make sure MDM is not enforced.
   registry_util::RegistryOverrideManager registry_override;
-  ASSERT_NO_FATAL_FAILURE(
-      registry_override.OverrideRegistry(HKEY_LOCAL_MACHINE));
-  ASSERT_EQ(S_OK, SetGlobalFlagForTesting(kRegMdmUrl, L""));
+  InitializeRegistryOverrideForTesting(&registry_override);
 
   // EnrollToGoogleMdmIfNeeded() should be a noop.
-  base::DictionaryValue properties;
-  properties.SetString(kKeyEmail, "foo@gmail.com");
-  properties.SetString(kKeyMdmIdToken, "token");
+  base::Value properties(base::Value::Type::DICTIONARY);
   ASSERT_EQ(S_OK, EnrollToGoogleMdmIfNeeded(properties));
 }
 
-TEST(Enroll, EnrollToGoogleMdmIfNeeded_MissingArgs) {
-  // Does not matter whether MDM is enforced or not.
+// Tests all possible data combinations sent to EnrollToGoogleMdmIfNeeded to
+// ensure correct error reporting is performed.
+// Parameters are:
+// 1. Email.
+// 2. Id token.
+// 3. Access token.
+// 4. User SID.
+// 5. Username.
+// 6. Domain.
+// 7. Serial Number.
+// 8. Machine Guid.
+// 9. Is ADJoined User.
+class GcpEnrollmentArgsTest
+    : public ::testing::TestWithParam<std::tuple<const char*,
+                                                 const char*,
+                                                 const char*,
+                                                 const char*,
+                                                 const char*,
+                                                 const char*,
+                                                 const char*,
+                                                 const char*,
+                                                 const char*>> {};
+
+TEST_P(GcpEnrollmentArgsTest, EnrollToGoogleMdmIfNeeded_MissingArgs) {
+  // Enforce successful MDM enrollment. We just want to verify that correct
+  // verification of the dictionary is being performed in the function.
   registry_util::RegistryOverrideManager registry_override;
-  ASSERT_NO_FATAL_FAILURE(
-      registry_override.OverrideRegistry(HKEY_LOCAL_MACHINE));
-  ASSERT_EQ(S_OK, SetGlobalFlagForTesting(kRegMdmUrl, L""));
+  InitializeRegistryOverrideForTesting(&registry_override);
+  ASSERT_EQ(S_OK, SetGlobalFlagForTesting(kRegMdmUrl, L"https://mdm.com"));
+  GoogleMdmEnrollmentStatusForTesting forced_enrollment_status(true);
+  GoogleMdmEnrolledStatusForTesting forced_enrolled_status(false);
 
-  // EnrollToGoogleMdmIfNeeded() should fail if email and/or id token are
-  // not provided.
-  base::DictionaryValue properties;
-  ASSERT_NE(S_OK, EnrollToGoogleMdmIfNeeded(properties));
+  const char* email = std::get<0>(GetParam());
+  const char* id_token = std::get<1>(GetParam());
+  const char* access_token = std::get<2>(GetParam());
+  const char* sid = std::get<3>(GetParam());
+  const char* username = std::get<4>(GetParam());
+  const char* domain = std::get<5>(GetParam());
+  const char* serial_number = std::get<6>(GetParam());
+  base::string16 serial_number16 =
+      base::UTF8ToUTF16(base::StringPrintf("%s", serial_number));
+  const char* machine_guid = std::get<7>(GetParam());
+  base::string16 machine_guid16 =
+      base::UTF8ToUTF16(base::StringPrintf("%s", machine_guid));
+  const char* is_user_ad_joined = std::get<8>(GetParam());
+  FakeOSUserManager fake_os_user_manager;
 
-  properties.SetString(kKeyEmail, "foo@gmail.com");
-  ASSERT_NE(S_OK, EnrollToGoogleMdmIfNeeded(properties));
+  bool should_succeed = (email && email[0]) && (id_token && id_token[0]) &&
+                        (access_token && access_token[0]) && (sid && sid[0]) &&
+                        (username && username[0]) && (domain && domain[0]) &&
+                        (machine_guid && machine_guid[0]) &&
+                        (serial_number && serial_number[0]) &&
+                        (is_user_ad_joined && is_user_ad_joined[0]);
 
-  properties.Remove(kKeyEmail, nullptr);
-  properties.SetString(kKeyMdmIdToken, "token");
-  ASSERT_NE(S_OK, EnrollToGoogleMdmIfNeeded(properties));
+  base::Value properties(base::Value::Type::DICTIONARY);
+  if (email)
+    properties.SetStringKey(kKeyEmail, email);
+  if (id_token)
+    properties.SetStringKey(kKeyMdmIdToken, id_token);
+  if (access_token)
+    properties.SetStringKey(kKeyAccessToken, access_token);
+  if (sid)
+    properties.SetStringKey(kKeySID, sid);
+  if (username)
+    properties.SetStringKey(kKeyUsername, username);
+  if (domain)
+    properties.SetStringKey(kKeyDomain, domain);
+  if (sid)
+    properties.SetStringKey(kKeySID, sid);
+  if (is_user_ad_joined)
+    properties.SetStringKey(kKeyIsAdJoinedUser, is_user_ad_joined);
+
+  SetMachineGuidForTesting(machine_guid16);
+  GoogleRegistrationDataForTesting g_registration_data(serial_number16);
+
+  // EnrollToGoogleMdmIfNeeded() should fail if any field is missing.
+  if (should_succeed) {
+    ASSERT_EQ(S_OK, EnrollToGoogleMdmIfNeeded(properties));
+  } else {
+    ASSERT_NE(S_OK, EnrollToGoogleMdmIfNeeded(properties));
+  }
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    GcpRegistrationData,
+    GcpEnrollmentArgsTest,
+    ::testing::Combine(::testing::Values("foo@gmail.com", "", nullptr),
+                       ::testing::Values("id_token", "", nullptr),
+                       ::testing::Values("access_token", "", nullptr),
+                       ::testing::Values("sid", "", nullptr),
+                       ::testing::Values("username", "", nullptr),
+                       ::testing::Values("domain", "", nullptr),
+                       ::testing::Values("serial_number"),
+                       ::testing::Values("machine_guid"),
+                       ::testing::Values("true", "false")));
+
+INSTANTIATE_TEST_SUITE_P(
+    GcpRegistrationHardwareIds,
+    GcpEnrollmentArgsTest,
+    ::testing::Combine(::testing::Values("foo@gmail.com"),
+                       ::testing::Values("id_token"),
+                       ::testing::Values("access_token"),
+                       ::testing::Values("sid"),
+                       ::testing::Values("username"),
+                       ::testing::Values("domain"),
+                       ::testing::Values("serial_number", ""),
+                       ::testing::Values("machine_guid", ""),
+                       ::testing::Values("true")));
 
 }  // namespace credential_provider

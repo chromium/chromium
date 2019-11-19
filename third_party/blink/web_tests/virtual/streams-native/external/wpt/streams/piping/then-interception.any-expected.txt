@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-FAIL piping should not be observable promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'pipeTo' on 'ReadableStream': pipeTo disabled because StreamsNative feature is enabled"
-FAIL tee should not be observable promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'pipeTo' on 'ReadableStream': pipeTo disabled because StreamsNative feature is enabled"
-Harness: the test ran to completion.
-

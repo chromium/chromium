@@ -5,6 +5,8 @@
 '''Exception types for GRIT.
 '''
 
+from __future__ import print_function
+
 class Base(Exception):
   '''A base exception that uses the class's docstring in addition to any
   user-provided message as the body of the Base.
@@ -68,8 +70,7 @@ class TooManyExamples(Parsing):
 
 
 class FileNotFound(Parsing):
-  '''The resource file was not found.
-  '''
+  '''The resource file was not found.'''
   pass
 
 
@@ -89,8 +90,8 @@ class NoSuchTranslation(Base):
 
 
 class NotReady(Base):
-  '''Attempt to use an object before it is ready, or attempt to translate
-  an empty document.'''
+  '''Attempt to use an object before it is ready, or attempt to translate \
+an empty document.'''
   pass
 
 
@@ -110,11 +111,11 @@ class BlockTagInTranslateableChunk(Base):
 
 
 class SectionNotFound(Base):
-  '''The section you requested was not found in the RC file. Make
-sure the section ID is correct (matches the section's ID in the RC file).
-Also note that you may need to specify the RC file's encoding (using the
-encoding="" attribute) if it is not in the default Windows-1252 encoding.
-  '''
+  '''The section you requested was not found in the RC file. Make \
+sure the section ID is correct (matches the section's ID in the RC file). \
+Also note that you may need to specify the RC file's encoding (using the \
+encoding="" attribute) if it is not in the default Windows-1252 encoding. \
+'''
   pass
 
 

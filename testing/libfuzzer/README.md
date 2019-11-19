@@ -1,77 +1,78 @@
-# libFuzzer in Chromium
+# Fuzz testing in Chromium
 
-[go/libfuzzer-chromium](https://goto.google.com/libfuzzer-chromium) (Googler only)
+[go/chrome-fuzzing](https://goto.google.com/chrome-fuzzing)
 
-*** aside
-[Getting Started](getting_started.md)
-| [Buildbot]
-| [ClusterFuzz Stats]
-| [Cover Bug]
-***
+[Fuzzing] is a testing technique that feeds auto-generated inputs to a piece
+of target code in an attempt to crash the code. It's one of the most effective
+methods we have for finding security and stability issues (see
+[go/fuzzing-success](http://go/fuzzing-success)). You can learn more about the
+benefits of fuzzing at [go/why-fuzz](http://go/why-fuzz).
 
-This directory contains integration between [libFuzzer] and Chromium.
-LibFuzzer is an in-process coverage-driven evolutionary fuzzing engine. It helps
-engineers to uncover potential security & stability problems.
+This documentation covers the in-process guided fuzzing approach employed by
+different fuzzing engines, such as [libFuzzer] or [AFL]. To learn more about
+out-of-process fuzzers, please refer to the [Blackbox fuzzing] page in the
+ClusterFuzz documentation.
 
-*** note
-**Requirements:** libFuzzer in Chromium is supported with Linux, Chrome OS, Mac,
-and Windows.
-***
+[TOC]
 
-## Integration Status
+## Getting Started
 
-Fuzzer tests are well-integrated with Chromium build system and distributed
-ClusterFuzz fuzzing system. Cover bug: [crbug.com/539572].
+In Chromium, you can easily create and submit fuzz targets. The targets are
+automatically discovered by buildbots, built with different fuzzing engines,
+then uploaded to the distributed [ClusterFuzz] fuzzing system to run at scale.
 
-## Documentation
+Create your first fuzz target and submit it by stepping through our [Getting
+Started Guide].
 
-* [Getting Started Guide] walks you through all the steps necessary to create
-your fuzz target and submit it to ClusterFuzz.
-* [Efficient Fuzzer Guide] explains how to measure fuzz target effectiveness and
-ways to improve it.
-* [Guide to libprotobuf-mutator] walks through the steps necessary to create a
-fuzz target that expects a protobuf as input (instead of a byte stream). In
-addition to fuzzing code that accepts protobufs, it can be used to fuzz
-code that requires multiple mutated inputs, or to generate inputs defined by a
-grammar.
-* [ClusterFuzz Integration] describes integration between ClusterFuzz and
-libFuzzer.
-* [Reproducing Bugs] describes how to reproduce bugs found by libFuzzer/AFL
-  and reported by ClusterFuzz.
-* [Fuzzing on Chrome OS] describes how to write fuzzers for the non-browser
-  parts of Chrome OS.
-* [AFL Integration] describes AFL's integration with Chromium and ClusterFuzz.
-* [Reference] contains detailed references for different integration parts.
+## Advanced Topics
+
+* [Improving fuzz target efficiency].
+* [Creating a fuzz target that expects a protobuf] instead of a byte stream as
+  input.
+
+  *** note
+  **Note:** You can also fuzz code that needs multiple mutated
+  inputs, or to generate inputs defined by a grammar.
+  ***
+
+* [Reproducing bugs] found by libFuzzer/AFL and reported by ClusterFuzz.
+
+## Further Reading
+
+* [LibFuzzer integration] with Chromium and ClusterFuzz.
+* [AFL integration] with Chromium and ClusterFuzz.
+* [Detailed references] for other integration parts.
+* Writing fuzzers for the [non-browser parts of Chrome OS].
 
 ## Trophies
-* [ClusterFuzz Bugs] - issues found and automatically filed by ClusterFuzz.
-* [Manual Bugs] - issues that were filed manually after running fuzz targets.
-* [Pdfium Bugs] - bugs found in pdfium by manual fuzzing.
-* [OSS Trophies] - bugs found with libFuzzer in open-source projects.
+* [Issues automatically filed] by ClusterFuzz.
+* [Issues filed manually] after running fuzz targets.
+* [Bugs found in PDFium] by manual fuzzing.
+* [Bugs found in open-source projects] with libFuzzer.
 
+## Other Links
+* [Guided in-process fuzzing of Chrome components] blog post.
+* [ClusterFuzz Stats] for fuzz targets built with AddressSanitizer and
+  libFuzzer.
 
-## Blog Posts
-* [Guided in-process fuzzing of Chrome components].
-
-## Project Links
-* [libFuzzer Infrastructure Bugs]
-
-[Buildbot]: https://ci.chromium.org/p/chromium/g/chromium.fuzz/builders
-[Cover Bug]: https://bugs.chromium.org/p/chromium/issues/detail?id=539572
-[Getting Started Guide]: getting_started.md
-[Efficient Fuzzer Guide]: efficient_fuzzer.md
-[Guide to libprotobuf-mutator]: libprotobuf-mutator.md
-[ClusterFuzz Integration]: clusterfuzz.md
-[Reproducing Bugs]: reproducing.md
-[Reference]: reference.md
-[AFL Integration]: AFL.md
-[ClusterFuzz Bugs]: https://bugs.chromium.org/p/chromium/issues/list?can=1&q=label:Stability-LibFuzzer%20label:ClusterFuzz&sort=-modified&colspec=ID%20Pri%20M%20Stars%20ReleaseBlock%20Component%20Status%20Owner%20Summary%20OS%20Modified
+[AFL]: http://lcamtuf.coredump.cx/afl/
+[AFL integration]: AFL_integration.md
+[Blackbox fuzzing]: https://google.github.io/clusterfuzz/setting-up-fuzzing/blackbox-fuzzing/
+[Bugs found in open-source projects]: http://llvm.org/docs/LibFuzzer.html#trophies
+[Bugs found in PDFium]: https://bugs.chromium.org/p/pdfium/issues/list?can=1&q=libfuzzer&colspec=ID+Type+Status+Priority+Milestone+Owner+Summary&cells=tiles
+[ClusterFuzz]: https://clusterfuzz.com/
 [ClusterFuzz Stats]: https://clusterfuzz.com/fuzzer-stats/by-fuzzer/fuzzer/libFuzzer/job/libfuzzer_chrome_asan
-[Pdfium Bugs]: https://bugs.chromium.org/p/pdfium/issues/list?can=1&q=libfuzzer&colspec=ID+Type+Status+Priority+Milestone+Owner+Summary&cells=tiles
-[Manual Bugs]: https://bugs.chromium.org/p/chromium/issues/list?can=1&q=label%3AStability-LibFuzzer+-label%3AClusterFuzz&sort=-modified&colspec=ID+Pri+M+Stars+ReleaseBlock+Component+Status+Owner+Summary+OS+Modified&x=m&y=releaseblock&cells=ids
-[OSS Trophies]: http://llvm.org/docs/LibFuzzer.html#trophies
+[Creating a fuzz target that expects a protobuf]: libprotobuf-mutator.md
+[Detailed references]: reference.md
+[Fuzzing]: https://en.wikipedia.org/wiki/Fuzzing
+[Getting Started Guide]: getting_started.md
 [Guided in-process fuzzing of Chrome components]: https://security.googleblog.com/2016/08/guided-in-process-fuzzing-of-chrome.html
+[Improving fuzz target efficiency]: efficient_fuzzing.md
+[Issues automatically filed]: https://bugs.chromium.org/p/chromium/issues/list?sort=-modified&colspec=ID%20Pri%20M%20Stars%20ReleaseBlock%20Component%20Status%20Owner%20Summary%20OS%20Modified&q=label%3AStability-LibFuzzer%2CStability-AFL%20label%3AClusterFuzz%20-status%3AWontFix%2CDuplicate&can=1
+[Issues filed manually]: https://bugs.chromium.org/p/chromium/issues/list?can=1&q=label%3AStability-LibFuzzer+-label%3AClusterFuzz&sort=-modified&colspec=ID+Pri+M+Stars+ReleaseBlock+Component+Status+Owner+Summary+OS+Modified&x=m&y=releaseblock&cells=ids
+[non-browser parts of Chrome OS]: https://chromium.googlesource.com/chromiumos/docs/+/master/fuzzing.md
+[Reproducing bugs]: reproducing.md
 [crbug.com/539572]: https://bugs.chromium.org/p/chromium/issues/detail?id=539572
+[go/fuzzing-success]: https://goto.google.com/fuzzing-success
 [libFuzzer]: http://llvm.org/docs/LibFuzzer.html
-[libFuzzer Infrastructure Bugs]: https://bugs.chromium.org/p/chromium/issues/list?q=label:LibFuzzer-Infra
-[Fuzzing on Chrome OS]: https://chromium.googlesource.com/chromiumos/docs/+/master/fuzzing.md
+[libFuzzer integration]: libFuzzer_integration.md

@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.payments;
 
 import org.chromium.base.annotations.JNINamespace;
+import org.chromium.base.annotations.NativeMethods;
 import org.chromium.content_public.browser.WebContents;
 
 /**
@@ -23,13 +24,14 @@ public class JourneyLogger {
     public JourneyLogger(boolean isIncognito, WebContents webContents) {
         // Note that this pointer could leak the native object. The called must call destroy() to
         // ensure that the native object is destroyed.
-        mJourneyLoggerAndroid = nativeInitJourneyLoggerAndroid(isIncognito, webContents);
+        mJourneyLoggerAndroid = JourneyLoggerJni.get().initJourneyLoggerAndroid(
+                JourneyLogger.this, isIncognito, webContents);
     }
 
     /** Will destroy the native object. This class shouldn't be used afterwards. */
     public void destroy() {
         if (mJourneyLoggerAndroid != 0) {
-            nativeDestroy(mJourneyLoggerAndroid);
+            JourneyLoggerJni.get().destroy(mJourneyLoggerAndroid, JourneyLogger.this);
             mJourneyLoggerAndroid = 0;
         }
     }
@@ -45,8 +47,8 @@ public class JourneyLogger {
     public void setNumberOfSuggestionsShown(
             int section, int number, boolean hasCompleteSuggestion) {
         assert section < Section.MAX;
-        nativeSetNumberOfSuggestionsShown(
-                mJourneyLoggerAndroid, section, number, hasCompleteSuggestion);
+        JourneyLoggerJni.get().setNumberOfSuggestionsShown(
+                mJourneyLoggerAndroid, JourneyLogger.this, section, number, hasCompleteSuggestion);
     }
 
     /**
@@ -56,7 +58,8 @@ public class JourneyLogger {
      */
     public void incrementSelectionChanges(int section) {
         assert section < Section.MAX;
-        nativeIncrementSelectionChanges(mJourneyLoggerAndroid, section);
+        JourneyLoggerJni.get().incrementSelectionChanges(
+                mJourneyLoggerAndroid, JourneyLogger.this, section);
     }
 
     /**
@@ -66,7 +69,8 @@ public class JourneyLogger {
      */
     public void incrementSelectionEdits(int section) {
         assert section < Section.MAX;
-        nativeIncrementSelectionEdits(mJourneyLoggerAndroid, section);
+        JourneyLoggerJni.get().incrementSelectionEdits(
+                mJourneyLoggerAndroid, JourneyLogger.this, section);
     }
 
     /**
@@ -76,7 +80,8 @@ public class JourneyLogger {
      */
     public void incrementSelectionAdds(int section) {
         assert section < Section.MAX;
-        nativeIncrementSelectionAdds(mJourneyLoggerAndroid, section);
+        JourneyLoggerJni.get().incrementSelectionAdds(
+                mJourneyLoggerAndroid, JourneyLogger.this, section);
     }
 
     /**
@@ -85,7 +90,8 @@ public class JourneyLogger {
      * @param value The return value of the CanMakePayment call.
      */
     public void setCanMakePaymentValue(boolean value) {
-        nativeSetCanMakePaymentValue(mJourneyLoggerAndroid, value);
+        JourneyLoggerJni.get().setCanMakePaymentValue(
+                mJourneyLoggerAndroid, JourneyLogger.this, value);
     }
 
     /**
@@ -94,7 +100,8 @@ public class JourneyLogger {
      * @param value The return value of the HasEnrolledInstrument call.
      */
     public void setHasEnrolledInstrumentValue(boolean value) {
-        nativeSetHasEnrolledInstrumentValue(mJourneyLoggerAndroid, value);
+        JourneyLoggerJni.get().setHasEnrolledInstrumentValue(
+                mJourneyLoggerAndroid, JourneyLogger.this, value);
     }
 
     /**
@@ -108,7 +115,7 @@ public class JourneyLogger {
 
         if (event == Event.SHOWN || event == Event.SKIPPED_SHOW) mWasPaymentRequestTriggered = true;
 
-        nativeSetEventOccurred(mJourneyLoggerAndroid, event);
+        JourneyLoggerJni.get().setEventOccurred(mJourneyLoggerAndroid, JourneyLogger.this, event);
     }
 
     /*
@@ -121,8 +128,8 @@ public class JourneyLogger {
      */
     public void setRequestedInformation(boolean requestShipping, boolean requestEmail,
             boolean requestPhone, boolean requestName) {
-        nativeSetRequestedInformation(
-                mJourneyLoggerAndroid, requestShipping, requestEmail, requestPhone, requestName);
+        JourneyLoggerJni.get().setRequestedInformation(mJourneyLoggerAndroid, JourneyLogger.this,
+                requestShipping, requestEmail, requestPhone, requestName);
     }
 
     /*
@@ -135,8 +142,9 @@ public class JourneyLogger {
      */
     public void setRequestedPaymentMethodTypes(boolean requestedBasicCard,
             boolean requestedMethodGoogle, boolean requestedMethodOther) {
-        nativeSetRequestedPaymentMethodTypes(mJourneyLoggerAndroid, requestedBasicCard,
-                requestedMethodGoogle, requestedMethodOther);
+        JourneyLoggerJni.get().setRequestedPaymentMethodTypes(mJourneyLoggerAndroid,
+                JourneyLogger.this, requestedBasicCard, requestedMethodGoogle,
+                requestedMethodOther);
     }
 
     /**
@@ -145,11 +153,10 @@ public class JourneyLogger {
      */
     public void setCompleted() {
         assert !mHasRecorded;
-        assert mWasPaymentRequestTriggered;
 
-        if (!mHasRecorded && mWasPaymentRequestTriggered) {
+        if (!mHasRecorded) {
             mHasRecorded = true;
-            nativeSetCompleted(mJourneyLoggerAndroid);
+            JourneyLoggerJni.get().setCompleted(mJourneyLoggerAndroid, JourneyLogger.this);
         }
     }
 
@@ -164,9 +171,9 @@ public class JourneyLogger {
 
         // The abort reasons on Android cascade into each other, so only the first one should be
         // recorded.
-        if (!mHasRecorded && mWasPaymentRequestTriggered) {
+        if (!mHasRecorded) {
             mHasRecorded = true;
-            nativeSetAborted(mJourneyLoggerAndroid, reason);
+            JourneyLoggerJni.get().setAborted(mJourneyLoggerAndroid, JourneyLogger.this, reason);
         }
     }
 
@@ -177,36 +184,62 @@ public class JourneyLogger {
      */
     public void setNotShown(int reason) {
         assert reason < NotShownReason.MAX;
-        assert !mWasPaymentRequestTriggered;
         assert !mHasRecorded;
 
         if (!mHasRecorded) {
             mHasRecorded = true;
-            nativeSetNotShown(mJourneyLoggerAndroid, reason);
+            JourneyLoggerJni.get().setNotShown(mJourneyLoggerAndroid, JourneyLogger.this, reason);
         }
     }
 
-    private native long nativeInitJourneyLoggerAndroid(
-            boolean isIncognito, WebContents webContents);
-    private native void nativeDestroy(long nativeJourneyLoggerAndroid);
-    private native void nativeSetNumberOfSuggestionsShown(long nativeJourneyLoggerAndroid,
-            int section, int number, boolean hasCompleteSuggestion);
-    private native void nativeIncrementSelectionChanges(
-            long nativeJourneyLoggerAndroid, int section);
-    private native void nativeIncrementSelectionEdits(long nativeJourneyLoggerAndroid, int section);
-    private native void nativeIncrementSelectionAdds(long nativeJourneyLoggerAndroid, int section);
-    private native void nativeSetCanMakePaymentValue(
-            long nativeJourneyLoggerAndroid, boolean value);
-    private native void nativeSetHasEnrolledInstrumentValue(
-            long nativeJourneyLoggerAndroid, boolean value);
-    private native void nativeSetEventOccurred(long nativeJourneyLoggerAndroid, int event);
-    private native void nativeSetRequestedInformation(long nativeJourneyLoggerAndroid,
-            boolean requestShipping, boolean requestEmail, boolean requestPhone,
-            boolean requestName);
-    private native void nativeSetRequestedPaymentMethodTypes(long nativeJourneyLoggerAndroid,
-            boolean requestedBasicCard, boolean requestedMethodGoogle,
-            boolean requestedMethodOther);
-    private native void nativeSetCompleted(long nativeJourneyLoggerAndroid);
-    private native void nativeSetAborted(long nativeJourneyLoggerAndroid, int reason);
-    private native void nativeSetNotShown(long nativeJourneyLoggerAndroid, int reason);
+    /**
+     * Records amount of completed/triggered transactions separated by currency.
+     *
+     * @param curreny A string indicating the curreny of the transaction.
+     * @param value A string indicating the value of the transaction.
+     * @param completed A boolean indicating whether the transaction has completed or not.
+     */
+    public void recordTransactionAmount(String currency, String value, boolean completed) {
+        JourneyLoggerJni.get().recordTransactionAmount(
+                mJourneyLoggerAndroid, JourneyLogger.this, currency, value, completed);
+    }
+
+    /**
+     * Records the time when request.show() is called.
+     */
+    public void setTriggerTime() {
+        JourneyLoggerJni.get().setTriggerTime(mJourneyLoggerAndroid, JourneyLogger.this);
+    }
+
+    @NativeMethods
+    interface Natives {
+        long initJourneyLoggerAndroid(
+                JourneyLogger caller, boolean isIncognito, WebContents webContents);
+        void destroy(long nativeJourneyLoggerAndroid, JourneyLogger caller);
+        void setNumberOfSuggestionsShown(long nativeJourneyLoggerAndroid, JourneyLogger caller,
+                int section, int number, boolean hasCompleteSuggestion);
+        void incrementSelectionChanges(
+                long nativeJourneyLoggerAndroid, JourneyLogger caller, int section);
+        void incrementSelectionEdits(
+                long nativeJourneyLoggerAndroid, JourneyLogger caller, int section);
+        void incrementSelectionAdds(
+                long nativeJourneyLoggerAndroid, JourneyLogger caller, int section);
+        void setCanMakePaymentValue(
+                long nativeJourneyLoggerAndroid, JourneyLogger caller, boolean value);
+        void setHasEnrolledInstrumentValue(
+                long nativeJourneyLoggerAndroid, JourneyLogger caller, boolean value);
+        void setEventOccurred(long nativeJourneyLoggerAndroid, JourneyLogger caller, int event);
+        void setRequestedInformation(long nativeJourneyLoggerAndroid, JourneyLogger caller,
+                boolean requestShipping, boolean requestEmail, boolean requestPhone,
+                boolean requestName);
+        void setRequestedPaymentMethodTypes(long nativeJourneyLoggerAndroid, JourneyLogger caller,
+                boolean requestedBasicCard, boolean requestedMethodGoogle,
+                boolean requestedMethodOther);
+        void setCompleted(long nativeJourneyLoggerAndroid, JourneyLogger caller);
+        void setAborted(long nativeJourneyLoggerAndroid, JourneyLogger caller, int reason);
+        void setNotShown(long nativeJourneyLoggerAndroid, JourneyLogger caller, int reason);
+        void recordTransactionAmount(long nativeJourneyLoggerAndroid, JourneyLogger caller,
+                String currency, String value, boolean completed);
+        void setTriggerTime(long nativeJourneyLoggerAndroid, JourneyLogger caller);
+    }
 }

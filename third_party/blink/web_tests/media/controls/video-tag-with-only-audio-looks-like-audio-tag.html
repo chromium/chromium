@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<title>Test video tag with only audio looks like audio tag</title>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../media-controls.js"></script>
+<video id="with-video" controls preload=metadata>
+  <source src="../content/60_sec_video.webm" />
+</video>
+<video id="with-audio" controls preload=metadata>
+  <source src="../content/test.oga" />
+</video>
+<script>
+async_test(t => {
+  let videoWithVideo = document.getElementById('with-video');
+  let videoWithAudio = document.getElementById('with-audio');
+  const videoURL = '../content/60_sec_video.webm';
+  const audioURL = '../content/test.oga';
+  let completedTests = 0;
+
+  videoWithVideo.onloadedmetadata = t.step_func(() => {
+    // Video with video src should look like video controls.
+    expectLooksLikeVideo(videoWithVideo);
+
+    // Changing to an audio src should look like audio controls.
+    videoWithVideo.onloadedmetadata = t.step_func(() => {
+      expectLooksLikeAudio(videoWithVideo);
+      completeTest();
+    });
+    loadTrack(videoWithVideo, audioURL);
+  });
+
+  videoWithAudio.onloadedmetadata = t.step_func(() => {
+    // Video with audio src should look like audio controls.
+    expectLooksLikeAudio(videoWithAudio);
+
+    // Changing to a video src should look like video controls.
+    videoWithAudio.onloadedmetadata = t.step_func(() => {
+      expectLooksLikeVideo(videoWithAudio);
+      completeTest();
+    });
+    loadTrack(videoWithAudio, videoURL);
+  });
+
+  // Wait until both video tags have been tested.
+  function completeTest() {
+    if (++completedTests == 2) {
+      t.done();
+    }
+  }
+
+  // Change the src type.
+  function loadTrack(video, track) {
+    let source = video.firstElementChild;
+    source.setAttribute('src', track);
+    video.load();
+  }
+
+  function expectLooksLikeVideo(video) {
+    // The media controls should not have the "audio" class set.
+    assert_false(mediaControls(video).classList.contains('audio-only'));
+
+    // The buttons should be children of the media button panel.
+    assert_equals(muteButton(video).parentElement.parentElement.getAttribute('pseudo'), '-internal-media-controls-button-panel');
+  }
+
+  function expectLooksLikeAudio(video) {
+    // The media controls should have the "audio" class set.
+    assert_true(mediaControls(video).classList.contains('audio-only'));
+
+    // The buttons should be children of the main panel.
+    assert_equals(muteButton(video).parentElement.parentElement.getAttribute('pseudo'), '-webkit-media-controls-panel');
+  }
+});
+</script>
+</html>

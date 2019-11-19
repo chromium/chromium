@@ -32,7 +32,7 @@ IconLoader::IconGroup IconLoader::GroupForFilepath(
 scoped_refptr<base::TaskRunner> IconLoader::GetReadIconTaskRunner() {
   // Technically speaking, only a thread with COM is needed, not one that has
   // a COM STA. However, this is what is available for now.
-  return base::CreateCOMSTATaskRunnerWithTraits(traits());
+  return base::CreateCOMSTATaskRunner(traits());
 }
 
 void IconLoader::ReadIcon() {
@@ -51,7 +51,7 @@ void IconLoader::ReadIcon() {
       NOTREACHED();
   }
 
-  std::unique_ptr<gfx::Image> image;
+  gfx::Image image;
 
   SHFILEINFO file_info = { 0 };
   if (SHGetFileInfo(group_.c_str(), FILE_ATTRIBUTE_NORMAL, &file_info,
@@ -62,7 +62,7 @@ void IconLoader::ReadIcon() {
       gfx::ImageSkia image_skia(
           gfx::ImageSkiaRep(bitmap, display::win::GetDPIScale()));
       image_skia.MakeThreadSafe();
-      image = std::make_unique<gfx::Image>(image_skia);
+      image = gfx::Image(image_skia);
       DestroyIcon(file_info.hIcon);
     }
   }

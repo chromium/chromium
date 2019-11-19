@@ -105,6 +105,7 @@ body {
 .week-number-cell.disabled,
 .day-cell.disabled {
     background-color: #f5f5f5;
+    pointer-events: none;
 }
 
 .day-cell.current-month {
@@ -260,6 +261,7 @@ body {
 
 .month-button[aria-disabled="true"] {
     color: GrayText;
+    pointer-events: none;
 }
 
 .scrubby-scroll-bar {

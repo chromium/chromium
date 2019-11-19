@@ -5,6 +5,9 @@
 #ifndef CHROMECAST_GRAPHICS_ACCESSIBILITY_FULLSCREEN_MAGNIFICATION_CONTROLLER_H_
 #define CHROMECAST_GRAPHICS_ACCESSIBILITY_FULLSCREEN_MAGNIFICATION_CONTROLLER_H_
 
+#include <map>
+#include <memory>
+
 #include "chromecast/graphics/accessibility/magnification_controller.h"
 #include "ui/compositor/layer_delegate.h"
 #include "ui/events/event_handler.h"
@@ -57,12 +60,9 @@ class FullscreenMagnificationController : public MagnificationController,
   bool RedrawDIP(const gfx::PointF& position_in_dip, float scale);
 
   // Overridden from ui::EventRewriter
-  ui::EventRewriteStatus RewriteEvent(
+  ui::EventDispatchDetails RewriteEvent(
       const ui::Event& event,
-      std::unique_ptr<ui::Event>* rewritten_event) override;
-  ui::EventRewriteStatus NextDispatchEvent(
-      const ui::Event& last_event,
-      std::unique_ptr<ui::Event>* new_event) override;
+      const Continuation continuation) override;
 
   // Adds the layer for the highlight-ring which provides a visual indicator
   // that magnification is enabled.

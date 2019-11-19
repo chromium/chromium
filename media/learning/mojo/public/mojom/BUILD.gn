@@ -6,8 +6,9 @@ import("//media/media_options.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 
 mojom("mojom") {
+  generate_java = true
   sources = [
-    "learning_session.mojom",
+    "learning_task_controller.mojom",
     "learning_types.mojom",
   ]
 

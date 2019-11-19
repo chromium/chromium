@@ -6,38 +6,23 @@
   TestRunner.addResult(`Tests XSL stylsheet content. http://crbug.com/603806\n`);
   await TestRunner.loadModule('network_test_runner');
   await TestRunner.showPanel('network');
-  await TestRunner.evaluateInPagePromise(`
-      function loadIframe()
-      {
-          var iframe = document.createElement("iframe");
-          document.body.appendChild(iframe);
-          iframe.src = "resources/xml-with-stylesheet.xml";
-      }
+  NetworkTestRunner.recordNetwork();
+  await TestRunner.evaluateInPageAsync(`
+    var iframe = document.createElement("iframe");
+    document.body.appendChild(iframe);
+    iframe.src = "resources/xml-with-stylesheet.xml";
+    new Promise(f => iframe.addEventListener('load', f))
   `);
 
-  var expectedResourceCount = 2;
-  var foundResources = 0;
   var resultsOutput = [];
-  NetworkTestRunner.recordNetwork();
-  TestRunner.evaluateInPage('loadIframe()');
-  TestRunner.addSniffer(SDK.NetworkDispatcher.prototype, 'loadingFinished', loadingFinished, true);
-
-  function loadingFinished(requestId) {
-    var request = SDK.networkLog.requestByManagerAndId(TestRunner.networkManager, requestId);
-    request.requestContent().then(contentReceived.bind(this, request));
-  }
-  function contentReceived(request, content) {
+  for (const request of SDK.networkLog.requests()) {
+    const content = await TestRunner.NetworkAgent.getResponseBody(request.requestId());
     var output = [];
     output.push(request.url());
     output.push('resource.type: ' + request.resourceType());
     output.push('resource.content: ' + content);
-
     resultsOutput.push(output.join('\n'));
-    if (++foundResources >= expectedResourceCount)
-      finish();
   }
-  function finish() {
-    TestRunner.addResult(resultsOutput.sort().join('\n'));
-    TestRunner.completeTest();
-  }
+  TestRunner.addResult(resultsOutput.sort().join('\n'));
+  TestRunner.completeTest();
 })();

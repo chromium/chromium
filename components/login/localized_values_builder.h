@@ -51,6 +51,15 @@ class LOGIN_EXPORT LocalizedValuesBuilder {
 
   // Method to declare localized value. |key| is the i18n key used in html.
   // |message_id| is a resource id of message. Message is expected to have
+  // two format parameters subsituted by |a|, |b| and |c| respectively.
+  void AddF(const std::string& key,
+            int message_id,
+            const base::string16& a,
+            const base::string16& b,
+            const base::string16& c);
+
+  // Method to declare localized value. |key| is the i18n key used in html.
+  // |message_id| is a resource id of message. Message is expected to have
   // one format parameter subsituted by resource identified by |message_id_a|.
   void AddF(const std::string& key, int message_id, int message_id_a);
 
@@ -62,6 +71,16 @@ class LOGIN_EXPORT LocalizedValuesBuilder {
             int message_id,
             int message_id_a,
             int message_id_b);
+
+  // Method to declare localized value. |key| is the i18n key used in html.
+  // |message_id| is a resource id of message. Message is expected to have
+  // three format parameters subsituted by resource identified by
+  // |message_id_a|, |message_id_b| and |message_id_c| respectively.
+  void AddF(const std::string& key,
+            int message_id,
+            int message_id_a,
+            int message_id_b,
+            int message_id_c);
 
  private:
   std::string prefix_;

@@ -1,0 +1,14 @@
+import("//third_party/closure_compiler/compile_js.gni")
+
+js_type_check("closure_compile") {
+  deps = [
+    ":cr_lottie",
+  ]
+}
+
+js_library("cr_lottie") {
+  deps = [
+    "//ui/webui/resources/js:cr",
+  ]
+  externs_list = [ "$externs_path/pending.js" ]
+}

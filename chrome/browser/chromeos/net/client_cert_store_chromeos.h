@@ -11,6 +11,7 @@
 
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
+#include "chrome/browser/chromeos/net/client_cert_filter_chromeos.h"
 #include "net/ssl/client_cert_store_nss.h"
 
 namespace chromeos {
@@ -22,38 +23,25 @@ class ClientCertStoreChromeOS : public net::ClientCertStore {
   using PasswordDelegateFactory =
       net::ClientCertStoreNSS::PasswordDelegateFactory;
 
-  class CertFilter {
-   public:
-    virtual ~CertFilter() {}
-
-    // Initializes this filter. Returns true if it finished initialization,
-    // otherwise returns false and calls |callback| once the initialization is
-    // completed.
-    // Must be called at most once.
-    virtual bool Init(const base::Closure& callback) = 0;
-
-    // Returns true if |cert| is allowed to be used as a client certificate
-    // (e.g. for a certain browser context or user).
-    // This is only called once initialization is finished, see Init().
-    virtual bool IsCertAllowed(CERTCertificate* cert) const = 0;
-  };
-
-  // This ClientCertStore will return client certs from NSS certificate
-  // databases that pass the filter |cert_filter| and additionally return
-  // certificates provided by |cert_provider|.
+  // This ClientCertStore will return client certs from the public
+  // and private slot of the user with |username_hash| and with the system slot
+  // if |use_system_slot| is true. If |username_hash| is empty, no public and no
+  // private slot will be used. It will additionally return certificates
+  // provided by |cert_provider|.
   ClientCertStoreChromeOS(
       std::unique_ptr<CertificateProvider> cert_provider,
-      std::unique_ptr<CertFilter> cert_filter,
+      bool use_system_slot,
+      const std::string& username_hash,
       const PasswordDelegateFactory& password_delegate_factory);
   ~ClientCertStoreChromeOS() override;
 
   // net::ClientCertStore:
   void GetClientCerts(const net::SSLCertRequestInfo& cert_request_info,
-                      const ClientCertListCallback& callback) override;
+                      ClientCertListCallback callback) override;
 
  private:
   void GotAdditionalCerts(const net::SSLCertRequestInfo* request,
-                          const ClientCertListCallback& callback,
+                          ClientCertListCallback callback,
                           net::ClientCertIdentityList additional_certs);
 
   net::ClientCertIdentityList GetAndFilterCertsOnWorkerThread(
@@ -63,7 +51,7 @@ class ClientCertStoreChromeOS : public net::ClientCertStore {
       net::ClientCertIdentityList additional_certs);
 
   std::unique_ptr<CertificateProvider> cert_provider_;
-  std::unique_ptr<CertFilter> cert_filter_;
+  ClientCertFilterChromeOS cert_filter_;
 
   // The factory for creating the delegate for requesting a password to a
   // PKCS#11 token. May be null.

@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-FAIL NFCReader.start should fail if NFC HW is disabled. promise_test: Unhandled rejection with value: object "ReferenceError: NFCReader is not defined"
-FAIL NFCWriter.push should fail when NFC HW is disabled. NFCWriter is not defined
-Harness: the test ran to completion.
-

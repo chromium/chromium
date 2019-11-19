@@ -16,8 +16,7 @@ namespace views {
 
 class NativeViewHostTest : public test::NativeViewHostTestBase {
  public:
-  NativeViewHostTest() {
-  }
+  NativeViewHostTest() = default;
 
   void SetUp() override {
     ViewsTestBase::SetUp();
@@ -34,8 +33,7 @@ namespace {
 // times NativeViewHierarchyChanged() is invoked.
 class NativeViewHierarchyChangedTestView : public View {
  public:
-  NativeViewHierarchyChangedTestView() : notification_count_(0) {
-  }
+  NativeViewHierarchyChangedTestView() = default;
 
   void ResetCount() {
     notification_count_ = 0;
@@ -50,7 +48,7 @@ class NativeViewHierarchyChangedTestView : public View {
   }
 
  private:
-  int notification_count_;
+  int notification_count_ = 0;
 
   DISALLOW_COPY_AND_ASSIGN(NativeViewHierarchyChangedTestView);
 };
@@ -61,9 +59,7 @@ aura::Window* GetNativeParent(aura::Window* window) {
 
 class ViewHierarchyChangedTestHost : public NativeViewHost {
  public:
-  ViewHierarchyChangedTestHost()
-      : num_parent_changes_(0) {
-  }
+  ViewHierarchyChangedTestHost() = default;
 
   void ResetParentChanges() {
     num_parent_changes_ = 0;
@@ -76,17 +72,17 @@ class ViewHierarchyChangedTestHost : public NativeViewHost {
   // Overriden from NativeViewHost:
   void ViewHierarchyChanged(
       const ViewHierarchyChangedDetails& details) override {
-    gfx::NativeView parent_before = native_view() ?
-        GetNativeParent(native_view()) : NULL;
+    gfx::NativeView parent_before =
+        native_view() ? GetNativeParent(native_view()) : nullptr;
     NativeViewHost::ViewHierarchyChanged(details);
-    gfx::NativeView parent_after = native_view() ?
-        GetNativeParent(native_view()) : NULL;
+    gfx::NativeView parent_after =
+        native_view() ? GetNativeParent(native_view()) : nullptr;
     if (parent_before != parent_after)
       ++num_parent_changes_;
   }
 
  private:
-  int num_parent_changes_;
+  int num_parent_changes_ = 0;
 
   DISALLOW_COPY_AND_ASSIGN(ViewHierarchyChangedTestHost);
 };

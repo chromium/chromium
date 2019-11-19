@@ -1,0 +1,38 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# This target cannot depend on anything else from //components/signin.
+static_library("webdata") {
+  sources = [
+    "token_service_table.cc",
+    "token_service_table.h",
+    "token_web_data.cc",
+    "token_web_data.h",
+  ]
+
+  deps = [
+    "//components/os_crypt",
+    "//sql",
+  ]
+
+  public_deps = [
+    "//base",
+    "//components/webdata/common",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "token_service_table_unittest.cc",
+  ]
+
+  deps = [
+    ":webdata",
+    "//base/test:test_support",
+    "//components/os_crypt:test_support",
+    "//components/webdata/common",
+    "//testing/gtest",
+  ]
+}

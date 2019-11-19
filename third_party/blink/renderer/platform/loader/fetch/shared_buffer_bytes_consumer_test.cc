@@ -6,20 +6,19 @@
 
 #include <string>
 #include <utility>
-#include <vector>
 
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/loader/testing/bytes_consumer_test_reader.h"
 #include "third_party/blink/renderer/platform/scheduler/test/fake_task_runner.h"
-#include "third_party/blink/renderer/platform/shared_buffer.h"
+#include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 
 namespace blink {
 
 using PublicState = BytesConsumer::PublicState;
 
 TEST(SharedBufferBytesConsumerTest, Read) {
-  const std::vector<std::string> kData{"This is a expected data!",
-                                       "This is another data!"};
+  const Vector<std::string> kData{"This is a expected data!",
+                                  "This is another data!"};
   std::string flatten_expected_data;
   auto shared_buffer = SharedBuffer::Create();
   for (const auto& chunk : kData) {
@@ -44,8 +43,8 @@ TEST(SharedBufferBytesConsumerTest, Read) {
 }
 
 TEST(SharedBufferBytesConsumerTest, Cancel) {
-  const std::vector<std::string> kData{"This is a expected data!",
-                                       "This is another data!"};
+  const Vector<std::string> kData{"This is a expected data!",
+                                  "This is another data!"};
   auto shared_buffer = SharedBuffer::Create();
   for (const auto& chunk : kData) {
     shared_buffer->Append(chunk.data(), chunk.size());

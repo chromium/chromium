@@ -3,14 +3,12 @@
 # found in the LICENSE file.
 
 typemaps = [
-  "//components/account_id/interfaces/account_id.typemap",
-  "//components/autofill/content/common/autofill_types.typemap",
-  "//components/chrome_cleaner/public/typemaps/chrome_prompt.typemap",
+  "//components/account_id/mojom/account_id.typemap",
+  "//components/autofill/core/common/mojom/autofill_types.typemap",
   "//components/content_capture/common/content_capture.typemap",
   "//components/content_settings/core/common/content_settings.typemap",
   "//components/nacl/common/nacl.typemap",
   "//components/password_manager/content/common/credential_manager.typemap",
-  "//components/services/leveldb/leveldb.typemap",
   "//components/spellcheck/common/spellcheck.typemap",
   "//components/translate/content/common/translate.typemap",
 ]

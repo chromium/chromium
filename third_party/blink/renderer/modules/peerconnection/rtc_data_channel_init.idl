@@ -6,10 +6,6 @@
 
 dictionary RTCDataChannelInit {
     boolean ordered = true;
-    // TODO(crbug.com/696681): Deprecate maxRetransmitTime in favor of
-    // maxPacketLifeTime (they're the same thing, maxRetransmitTime is just the
-    // older name)
-    unsigned short maxRetransmitTime;
     unsigned short maxPacketLifeTime;
     unsigned short maxRetransmits;
     USVString protocol = "";

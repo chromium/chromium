@@ -5,6 +5,8 @@
 <translation id="1185134272377778587">Tietoja Chromiumista</translation>
 <translation id="1289966288285062467">Chromiumin tietosuojailmoitus</translation>
 <translation id="1472013873724362412">Tilisi ei toimi Chromiumilla. Ota yhteyttä verkkotunnuksesi järjestelmänvalvojaan tai kirjaudu sisään tavallisella Google-tilillä.</translation>
+<translation id="1507010443238049608">Auta parantamaan Chromiumin ominaisuuksia ja suorituskykyä</translation>
+<translation id="1617663976202781617">Chromiumin synkronointidata</translation>
 <translation id="1736662517232558588">Chromium-tiedot tyhjennettiin</translation>
 <translation id="1838412507805038478">Chromium vahvisti, että <ph name="ISSUER" /> on myöntänyt tämän sivuston varmenteen.</translation>
 <translation id="1843424232666537147">Chromium sisältää ominaisuuksia, joiden avulla voit hallita datankäyttöäsi ja verkkosivujen latausnopeutta.
@@ -13,24 +15,16 @@
 <translation id="2168108852149185974">Jokin laajennus kaataa Chromiumin. Poista seuraavat:</translation>
 <translation id="2178608107313874732">Chromium ei voi käyttää kameraa tällä hetkellä.</translation>
 <translation id="2195025571279539885">Haluatko Chromiumin ehdottavan sivuston kielellä <ph name="LANGUAGE_NAME" /> kirjoitettujen sivujen kääntämistä seuraavalla kerralla?</translation>
-<translation id="2517624234762908348">Synkronoi Chromium-data</translation>
-<translation id="2647554856022461007">Chromium voi käyttää verkkopalveluita selauskokemuksesi parantamiseen. Voit halutessasi poistaa nämä palvelut käytöstä. <ph name="BEGIN_LINK" />Lisätietoja<ph name="END_LINK" /></translation>
+<translation id="2590893390871230428">Synkronoi Chromium-datasi</translation>
 <translation id="2730884209570016437">Chromium ei voi käyttää kameraa, koska se on toisen sovelluksen käytössä.</translation>
 <translation id="2915596697727466327">Chromium varmistaa Face ID:llä, että sinulla on lupa käyttää salasanoja.</translation>
 <translation id="3256316712990552818">Kopioitiin Chromiumiin.</translation>
-<translation id="3413120535237193088">Kirjaudu sisään Chromiumiin, niin voit käyttää kirjanmerkkejäsi kaikilla laitteilla.</translation>
-<translation id="3473048256428424907">Ota käyttöön Chromiumin QR-lukija</translation>
-<translation id="3605252743693911722">Kirjaudu sisään Chromiumiin, jotta voit käyttää kirjanmerkkejäsi, salasanojasi ja muita asetuksiasi kaikilla laitteillasi.</translation>
 <translation id="3805899903892079518">Chromium ei voi käyttää kuviasi tai videoitasi. Anna käyttöoikeus kohdassa iOS-asetukset &gt; Tietosuoja &gt; Kuvat.</translation>
-<translation id="4024541897090868497">Kirjaudu sisään Chromiumiin, niin voit käyttää välilehtiäsi kaikilla laitteilla.</translation>
-<translation id="4157467675761413638">Chromium-vinkki: Voit avata välilehtien lisäasetukset painamalla ylä- tai alapalkissa olevaa Näytä välilehdet ‑painiketta pitkään.</translation>
-<translation id="4241912885070669028">Olet kirjautumassa ulos verkkotunnuksen <ph name="SIGNOUT_MANAGED_DOMAIN" /> hallitsemalta tililtä. Chromium-tietosi poistetaan tältä laitteelta, mutta tietosi säilyvät Google-tililläsi.</translation>
-<translation id="4272892696084633551">Chromiumin ominaisuuksien ja suorituskyvyn parantaminen</translation>
 <translation id="4555020257205549924">Kun tämä ominaisuus on käytössä, Chromium tarjoaa vierailla kielillä kirjoitettujen sivujen käännöksiä Google Kääntäjän kautta. <ph name="BEGIN_LINK" />Lisätietoja<ph name="END_LINK" /></translation>
+<translation id="4681781466797808448">Ota käyttöön Chromium-lukija</translation>
 <translation id="4787850887676698916">Muilla laitteilla Chromiumissa avaamasi välilehdet näytetään täällä.</translation>
-<translation id="495292094137889840">Aloita Chromiumin QR-lukijan käyttö</translation>
 <translation id="4999538639245140991">Koska kirjaudut ulos verkkotunnuksen <ph name="SIGNOUT_MANAGED_DOMAIN" /> ylläpitämältä tililtä, Chromium-datasi poistetaan tältä laitteelta. Se säilyy edelleen Google-tililläsi.</translation>
-<translation id="5231355151045086930">Kirjaudu ulos Chromiumista</translation>
+<translation id="5573014823074921752">Chromium-vinkki: Voit avata välilehtien lisäasetukset painamalla pitkään ylä- tai alapalkissa olevaa Näytä välilehdet ‑painiketta.</translation>
 <translation id="5862307444128926510">Tervetuloa Chromiumiin</translation>
 <translation id="5945387852661427312">Olet kirjautumassa sisään verkkotunnuksen <ph name="DOMAIN" /> hallitsemalla tilillä ja antamassa sen järjestelmänvalvojalle oikeuden hallita Chromium-tietojasi. Tietosi liitetään pysyvästi tähän tiliin. Chromiumista uloskirjautuminen poistaa tietosi tältä laitteelta, mutta ne säilyvät Google-tililläsi.</translation>
 <translation id="6068866989048414399">Chromiumin käyttöehdot</translation>
@@ -47,11 +41,13 @@
 <translation id="7674213385180944843">Avaa Asetukset &gt; Tietosuoja &gt; Kamera &gt; Chromium ja ota kamera käyttöön.</translation>
 <translation id="7746854981345936341">Chromium-vinkki: Takaisin, Seuraava, Haku ja jotkin muut painikkeet löytyvät nyt näytön alareunasta.</translation>
 <translation id="786327964234957808">Muutoksen jälkeen synkronointi käyttää tilin <ph name="USER_EMAIL1" /> sijaan tiliä <ph name="USER_EMAIL2" />. <ph name="DOMAIN" /> hallitsee olemassa olevia Chromium-tietojasi. Tiedot poistetaan tältä laitteelta, mutta ne säilyvät tilillä <ph name="USER_EMAIL1" />.</translation>
+<translation id="7890287942691234100">Aloita Chromium-lukijan käyttö</translation>
 <translation id="8073677936375100957">Poistetaanko Chromium-data tältä laitteelta?</translation>
 <translation id="8175055321229419309">Vinkki: <ph name="BEGIN_LINK" />Siirrä Chromium Dockiin<ph name="END_LINK" /></translation>
 <translation id="8252885722420466166">Saat sijaintitietojen avulla paremman Googlen käyttökokemuksen Chromiumissa.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> The Chromium Authors. Kaikki oikeudet pidätetään.</translation>
 <translation id="8809780021347235332">Anna Chromiumille lupa käyttää kuviasi valitsemalla Asetukset, niin voit tallentaa kuvia.</translation>
 <translation id="9022552996538154597">Kirjaudu sisään Chromiumiin</translation>
+<translation id="9217078088703304241"><ph name="BEGIN_LINK" />Lue Chromiumin päivitetyt käyttöehdot.<ph name="END_LINK" /></translation>
 <translation id="985602178874221306">The Chromium Authors</translation>
 </translationbundle>

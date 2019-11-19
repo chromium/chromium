@@ -31,6 +31,7 @@
 #include "third_party/blink/renderer/core/html/track/vtt/vtt_region.h"
 
 #include "third_party/blink/public/platform/platform.h"
+#include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/dom/dom_token_list.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/geometry/dom_rect.h"
@@ -39,6 +40,7 @@
 #include "third_party/blink/renderer/core/html/track/vtt/vtt_scanner.h"
 #include "third_party/blink/renderer/platform/bindings/exception_messages.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 
@@ -68,7 +70,7 @@ constexpr bool kDefaultScroll = false;
 constexpr float kLineHeight = 5.33;
 
 // Default scrolling animation time period (s).
-constexpr TimeDelta kScrollTime = TimeDelta::FromMilliseconds(433);
+constexpr base::TimeDelta kScrollTime = base::TimeDelta::FromMilliseconds(433);
 
 bool IsNonPercentage(double value,
                      const char* method,
@@ -272,7 +274,7 @@ const AtomicString& VTTRegion::TextTrackCueContainerScrollingClass() {
 
 HTMLDivElement* VTTRegion::GetDisplayTree(Document& document) {
   if (!region_display_tree_) {
-    region_display_tree_ = HTMLDivElement::Create(document);
+    region_display_tree_ = MakeGarbageCollected<HTMLDivElement>(document);
     PrepareRegionDisplayTree();
   }
 
@@ -288,7 +290,7 @@ void VTTRegion::WillRemoveVTTCueBox(VTTCueBox* box) {
   cue_container_->classList().Remove(TextTrackCueContainerScrollingClass());
 
   current_top_ += box_height;
-  cue_container_->SetInlineStyleProperty(CSSPropertyTop, current_top_,
+  cue_container_->SetInlineStyleProperty(CSSPropertyID::kTop, current_top_,
                                          CSSPrimitiveValue::UnitType::kPixels);
 }
 
@@ -331,7 +333,8 @@ void VTTRegion::DisplayLastVTTCueBox() {
     current_top_ -=
         std::min(client_rect->height(), child_bottom - region_bottom);
     cue_container_->SetInlineStyleProperty(
-        CSSPropertyTop, current_top_, CSSPrimitiveValue::UnitType::kPixels);
+        CSSPropertyID::kTop, current_top_,
+        CSSPrimitiveValue::UnitType::kPixels);
 
     StartTimer();
     break;
@@ -349,14 +352,15 @@ void VTTRegion::PrepareRegionDisplayTree() {
   // Let regionWidth be the text track region width.
   // Let width be 'regionWidth vw' ('vw' is a CSS unit)
   region_display_tree_->SetInlineStyleProperty(
-      CSSPropertyWidth, width_, CSSPrimitiveValue::UnitType::kPercentage);
+      CSSPropertyID::kWidth, width_, CSSPrimitiveValue::UnitType::kPercentage);
 
   // Let lineHeight be '0.0533vh' ('vh' is a CSS unit) and regionHeight be
   // the text track region height. Let height be 'lineHeight' multiplied
   // by regionHeight.
   double height = kLineHeight * lines_;
   region_display_tree_->SetInlineStyleProperty(
-      CSSPropertyHeight, height, CSSPrimitiveValue::UnitType::kViewportHeight);
+      CSSPropertyID::kHeight, height,
+      CSSPrimitiveValue::UnitType::kViewportHeight);
 
   // Let viewportAnchorX be the x dimension of the text track region viewport
   // anchor and regionAnchorX be the x dimension of the text track region
@@ -364,7 +368,7 @@ void VTTRegion::PrepareRegionDisplayTree() {
   // 100.0. Let left be leftOffset subtracted from 'viewportAnchorX vw'.
   double left_offset = region_anchor_.X() * width_ / 100;
   region_display_tree_->SetInlineStyleProperty(
-      CSSPropertyLeft, viewport_anchor_.X() - left_offset,
+      CSSPropertyID::kLeft, viewport_anchor_.X() - left_offset,
       CSSPrimitiveValue::UnitType::kPercentage);
 
   // Let viewportAnchorY be the y dimension of the text track region viewport
@@ -373,13 +377,14 @@ void VTTRegion::PrepareRegionDisplayTree() {
   // 100.0. Let top be topOffset subtracted from 'viewportAnchorY vh'.
   double top_offset = region_anchor_.Y() * height / 100;
   region_display_tree_->SetInlineStyleProperty(
-      CSSPropertyTop, viewport_anchor_.Y() - top_offset,
+      CSSPropertyID::kTop, viewport_anchor_.Y() - top_offset,
       CSSPrimitiveValue::UnitType::kPercentage);
 
   // The cue container is used to wrap the cues and it is the object which is
   // gradually scrolled out as multiple cues are appended to the region.
-  cue_container_ = HTMLDivElement::Create(region_display_tree_->GetDocument());
-  cue_container_->SetInlineStyleProperty(CSSPropertyTop, 0.0,
+  cue_container_ =
+      MakeGarbageCollected<HTMLDivElement>(region_display_tree_->GetDocument());
+  cue_container_->SetInlineStyleProperty(CSSPropertyID::kTop, 0.0,
                                          CSSPrimitiveValue::UnitType::kPixels);
 
   cue_container_->SetShadowPseudoId(
@@ -397,7 +402,8 @@ void VTTRegion::StartTimer() {
   if (scroll_timer_.IsActive())
     return;
 
-  TimeDelta duration = IsScrollingRegion() ? kScrollTime : TimeDelta();
+  base::TimeDelta duration =
+      IsScrollingRegion() ? kScrollTime : base::TimeDelta();
   scroll_timer_.StartOneShot(duration, FROM_HERE);
 }
 

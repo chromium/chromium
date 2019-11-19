@@ -14,6 +14,7 @@
 #include "chrome/browser/accessibility/accessibility_permission_context.h"
 #include "chrome/browser/background_fetch/background_fetch_permission_context.h"
 #include "chrome/browser/background_sync/background_sync_permission_context.h"
+#include "chrome/browser/background_sync/periodic_background_sync_permission_context.h"
 #include "chrome/browser/clipboard/clipboard_read_permission_context.h"
 #include "chrome/browser/clipboard/clipboard_write_permission_context.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
@@ -22,6 +23,7 @@
 #include "chrome/browser/media/midi_permission_context.h"
 #include "chrome/browser/media/midi_sysex_permission_context.h"
 #include "chrome/browser/media/webrtc/media_stream_device_permission_context.h"
+#include "chrome/browser/nfc/nfc_permission_context.h"
 #include "chrome/browser/notifications/notification_permission_context.h"
 #include "chrome/browser/payments/payment_handler_permission_context.h"
 #include "chrome/browser/permissions/permission_context_base.h"
@@ -33,6 +35,7 @@
 #include "chrome/browser/search_engines/ui_thread_search_terms_data.h"
 #include "chrome/browser/storage/durable_storage_permission_context.h"
 #include "chrome/browser/tab_contents/tab_util.h"
+#include "chrome/browser/wake_lock/wake_lock_permission_context.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/url_constants.h"
@@ -66,7 +69,7 @@ using content::PermissionType;
 
 namespace {
 
-// Helper method to convert ContentSetting to PermissionStatus.
+// Helper methods to convert ContentSetting to PermissionStatus and vice versa.
 PermissionStatus ContentSettingToPermissionStatus(ContentSetting setting) {
   switch (setting) {
     case CONTENT_SETTING_ALLOW:
@@ -86,86 +89,122 @@ PermissionStatus ContentSettingToPermissionStatus(ContentSetting setting) {
   return PermissionStatus::DENIED;
 }
 
+ContentSetting PermissionStatusToContentSetting(PermissionStatus status) {
+  switch (status) {
+    case PermissionStatus::GRANTED:
+      return CONTENT_SETTING_ALLOW;
+    case PermissionStatus::ASK:
+      return CONTENT_SETTING_ASK;
+    case PermissionStatus::DENIED:
+    default:
+      return CONTENT_SETTING_BLOCK;
+  }
+
+  NOTREACHED();
+  return CONTENT_SETTING_DEFAULT;
+}
+
 // Helper method to convert PermissionType to ContentSettingType.
-ContentSettingsType PermissionTypeToContentSetting(PermissionType permission) {
+// If PermissionType is not supported or found, returns
+// ContentSettingsType::DEFAULT.
+ContentSettingsType PermissionTypeToContentSettingSafe(
+    PermissionType permission) {
   switch (permission) {
     case PermissionType::MIDI:
-      return CONTENT_SETTINGS_TYPE_MIDI;
+      return ContentSettingsType::MIDI;
     case PermissionType::MIDI_SYSEX:
-      return CONTENT_SETTINGS_TYPE_MIDI_SYSEX;
+      return ContentSettingsType::MIDI_SYSEX;
     case PermissionType::NOTIFICATIONS:
-      return CONTENT_SETTINGS_TYPE_NOTIFICATIONS;
+      return ContentSettingsType::NOTIFICATIONS;
     case PermissionType::GEOLOCATION:
-      return CONTENT_SETTINGS_TYPE_GEOLOCATION;
+      return ContentSettingsType::GEOLOCATION;
     case PermissionType::PROTECTED_MEDIA_IDENTIFIER:
 #if defined(OS_ANDROID) || defined(OS_CHROMEOS)
-      return CONTENT_SETTINGS_TYPE_PROTECTED_MEDIA_IDENTIFIER;
+      return ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER;
 #else
-      NOTIMPLEMENTED();
       break;
 #endif
     case PermissionType::DURABLE_STORAGE:
-      return CONTENT_SETTINGS_TYPE_DURABLE_STORAGE;
+      return ContentSettingsType::DURABLE_STORAGE;
     case PermissionType::AUDIO_CAPTURE:
-      return CONTENT_SETTINGS_TYPE_MEDIASTREAM_MIC;
+      return ContentSettingsType::MEDIASTREAM_MIC;
     case PermissionType::VIDEO_CAPTURE:
-      return CONTENT_SETTINGS_TYPE_MEDIASTREAM_CAMERA;
+      return ContentSettingsType::MEDIASTREAM_CAMERA;
     case PermissionType::BACKGROUND_SYNC:
-      return CONTENT_SETTINGS_TYPE_BACKGROUND_SYNC;
+      return ContentSettingsType::BACKGROUND_SYNC;
     case PermissionType::FLASH:
-      return CONTENT_SETTINGS_TYPE_PLUGINS;
+      return ContentSettingsType::PLUGINS;
     case PermissionType::SENSORS:
-      return CONTENT_SETTINGS_TYPE_SENSORS;
+      return ContentSettingsType::SENSORS;
     case PermissionType::ACCESSIBILITY_EVENTS:
-      return CONTENT_SETTINGS_TYPE_ACCESSIBILITY_EVENTS;
+      return ContentSettingsType::ACCESSIBILITY_EVENTS;
     case PermissionType::CLIPBOARD_READ:
-      return CONTENT_SETTINGS_TYPE_CLIPBOARD_READ;
+      return ContentSettingsType::CLIPBOARD_READ;
     case PermissionType::CLIPBOARD_WRITE:
-      return CONTENT_SETTINGS_TYPE_CLIPBOARD_WRITE;
+      return ContentSettingsType::CLIPBOARD_WRITE;
     case PermissionType::PAYMENT_HANDLER:
-      return CONTENT_SETTINGS_TYPE_PAYMENT_HANDLER;
+      return ContentSettingsType::PAYMENT_HANDLER;
     case PermissionType::BACKGROUND_FETCH:
-      return CONTENT_SETTINGS_TYPE_BACKGROUND_FETCH;
+      return ContentSettingsType::BACKGROUND_FETCH;
     case PermissionType::IDLE_DETECTION:
-      return CONTENT_SETTINGS_TYPE_IDLE_DETECTION;
+      return ContentSettingsType::IDLE_DETECTION;
+    case PermissionType::PERIODIC_BACKGROUND_SYNC:
+      return ContentSettingsType::PERIODIC_BACKGROUND_SYNC;
+    case PermissionType::WAKE_LOCK_SCREEN:
+      return ContentSettingsType::WAKE_LOCK_SCREEN;
+    case PermissionType::WAKE_LOCK_SYSTEM:
+      return ContentSettingsType::WAKE_LOCK_SYSTEM;
+    case PermissionType::NFC:
+#if defined(OS_ANDROID)
+      return ContentSettingsType::NFC;
+#else
+      break;
+#endif
     case PermissionType::NUM:
-      // This will hit the NOTREACHED below.
       break;
   }
 
-  NOTREACHED() << "Unknown content setting for permission "
-               << static_cast<int>(permission);
-  return CONTENT_SETTINGS_TYPE_DEFAULT;
+  return ContentSettingsType::DEFAULT;
+}
+
+// Helper method to convert PermissionType to ContentSettingType.
+ContentSettingsType PermissionTypeToContentSetting(PermissionType permission) {
+  ContentSettingsType content_setting =
+      PermissionTypeToContentSettingSafe(permission);
+  DCHECK_NE(content_setting, ContentSettingsType::DEFAULT)
+      << "Unknown content setting for permission "
+      << static_cast<int>(permission);
+  return content_setting;
 }
 
 void SubscriptionCallbackWrapper(
-    const base::Callback<void(PermissionStatus)>& callback,
+    base::OnceCallback<void(PermissionStatus)> callback,
     ContentSetting content_setting) {
-  callback.Run(ContentSettingToPermissionStatus(content_setting));
+  std::move(callback).Run(ContentSettingToPermissionStatus(content_setting));
 }
 
 void PermissionStatusCallbackWrapper(
-    const base::Callback<void(PermissionStatus)>& callback,
+    base::OnceCallback<void(PermissionStatus)> callback,
     const std::vector<ContentSetting>& vector) {
   DCHECK_EQ(1ul, vector.size());
-  callback.Run(ContentSettingToPermissionStatus(vector[0]));
+  std::move(callback).Run(ContentSettingToPermissionStatus(vector.at(0)));
 }
 
 void PermissionStatusVectorCallbackWrapper(
-    const base::Callback<void(const std::vector<PermissionStatus>&)>& callback,
+    base::OnceCallback<void(const std::vector<PermissionStatus>&)> callback,
     const std::vector<ContentSetting>& content_settings) {
   std::vector<PermissionStatus> permission_statuses;
   std::transform(content_settings.begin(), content_settings.end(),
                  back_inserter(permission_statuses),
                  ContentSettingToPermissionStatus);
-  callback.Run(permission_statuses);
+  std::move(callback).Run(permission_statuses);
 }
 
-void ContentSettingCallbackWraper(
-    const base::Callback<void(ContentSetting)>& callback,
+void ContentSettingCallbackWrapper(
+    base::OnceCallback<void(ContentSetting)> callback,
     const std::vector<ContentSetting>& vector) {
   DCHECK_EQ(1ul, vector.size());
-  callback.Run(vector[0]);
+  std::move(callback).Run(vector.at(0));
 }
 
 }  // anonymous namespace
@@ -175,10 +214,10 @@ class PermissionManager::PendingRequest {
   PendingRequest(
       content::RenderFrameHost* render_frame_host,
       const std::vector<ContentSettingsType>& permissions,
-      const base::Callback<void(const std::vector<ContentSetting>&)>& callback)
+      base::OnceCallback<void(const std::vector<ContentSetting>&)> callback)
       : render_process_id_(render_frame_host->GetProcess()->GetID()),
         render_frame_id_(render_frame_host->GetRoutingID()),
-        callback_(callback),
+        callback_(std::move(callback)),
         permissions_(permissions),
         results_(permissions.size(), CONTENT_SETTING_BLOCK),
         remaining_results_(permissions.size()) {}
@@ -197,9 +236,8 @@ class PermissionManager::PendingRequest {
   int render_process_id() const { return render_process_id_; }
   int render_frame_id() const { return render_frame_id_; }
 
-  const base::Callback<void(const std::vector<ContentSetting>&)> callback()
-      const {
-    return callback_;
+  base::OnceCallback<void(const std::vector<ContentSetting>&)> TakeCallback() {
+    return std::move(callback_);
   }
 
   std::vector<ContentSettingsType> permissions() const {
@@ -211,7 +249,7 @@ class PermissionManager::PendingRequest {
  private:
   int render_process_id_;
   int render_frame_id_;
-  const base::Callback<void(const std::vector<ContentSetting>&)> callback_;
+  base::OnceCallback<void(const std::vector<ContentSetting>&)> callback_;
   std::vector<ContentSettingsType> permissions_;
   std::vector<ContentSetting> results_;
   size_t remaining_results_;
@@ -261,7 +299,7 @@ struct PermissionManager::Subscription {
   GURL requesting_origin;
   int render_frame_id = -1;
   int render_process_id = -1;
-  base::Callback<void(ContentSetting)> callback;
+  base::RepeatingCallback<void(ContentSetting)> callback;
   ContentSetting current_value;
 };
 
@@ -271,51 +309,63 @@ PermissionManager* PermissionManager::Get(Profile* profile) {
 }
 
 PermissionManager::PermissionManager(Profile* profile) : profile_(profile) {
-  permission_contexts_[CONTENT_SETTINGS_TYPE_MIDI_SYSEX] =
+  permission_contexts_[ContentSettingsType::MIDI_SYSEX] =
       std::make_unique<MidiSysexPermissionContext>(profile);
-  permission_contexts_[CONTENT_SETTINGS_TYPE_MIDI] =
+  permission_contexts_[ContentSettingsType::MIDI] =
       std::make_unique<MidiPermissionContext>(profile);
-  permission_contexts_[CONTENT_SETTINGS_TYPE_NOTIFICATIONS] =
+  permission_contexts_[ContentSettingsType::NOTIFICATIONS] =
       std::make_unique<NotificationPermissionContext>(profile);
 #if !defined(OS_ANDROID)
-  permission_contexts_[CONTENT_SETTINGS_TYPE_GEOLOCATION] =
+  permission_contexts_[ContentSettingsType::GEOLOCATION] =
       std::make_unique<GeolocationPermissionContext>(profile);
 #else
-  permission_contexts_[CONTENT_SETTINGS_TYPE_GEOLOCATION] =
+  permission_contexts_[ContentSettingsType::GEOLOCATION] =
       std::make_unique<GeolocationPermissionContextAndroid>(profile);
 #endif
 #if defined(OS_CHROMEOS) || defined(OS_ANDROID)
-  permission_contexts_[CONTENT_SETTINGS_TYPE_PROTECTED_MEDIA_IDENTIFIER] =
+  permission_contexts_[ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER] =
       std::make_unique<ProtectedMediaIdentifierPermissionContext>(profile);
 #endif
-  permission_contexts_[CONTENT_SETTINGS_TYPE_DURABLE_STORAGE] =
+  permission_contexts_[ContentSettingsType::DURABLE_STORAGE] =
       std::make_unique<DurableStoragePermissionContext>(profile);
-  permission_contexts_[CONTENT_SETTINGS_TYPE_MEDIASTREAM_MIC] =
+  permission_contexts_[ContentSettingsType::MEDIASTREAM_MIC] =
       std::make_unique<MediaStreamDevicePermissionContext>(
-          profile, CONTENT_SETTINGS_TYPE_MEDIASTREAM_MIC);
-  permission_contexts_[CONTENT_SETTINGS_TYPE_MEDIASTREAM_CAMERA] =
+          profile, ContentSettingsType::MEDIASTREAM_MIC);
+  permission_contexts_[ContentSettingsType::MEDIASTREAM_CAMERA] =
       std::make_unique<MediaStreamDevicePermissionContext>(
-          profile, CONTENT_SETTINGS_TYPE_MEDIASTREAM_CAMERA);
-  permission_contexts_[CONTENT_SETTINGS_TYPE_BACKGROUND_SYNC] =
+          profile, ContentSettingsType::MEDIASTREAM_CAMERA);
+  permission_contexts_[ContentSettingsType::BACKGROUND_SYNC] =
       std::make_unique<BackgroundSyncPermissionContext>(profile);
 #if BUILDFLAG(ENABLE_PLUGINS)
-  permission_contexts_[CONTENT_SETTINGS_TYPE_PLUGINS] =
+  permission_contexts_[ContentSettingsType::PLUGINS] =
       std::make_unique<FlashPermissionContext>(profile);
 #endif
-  permission_contexts_[CONTENT_SETTINGS_TYPE_SENSORS] =
+  permission_contexts_[ContentSettingsType::SENSORS] =
       std::make_unique<SensorPermissionContext>(profile);
-  permission_contexts_[CONTENT_SETTINGS_TYPE_ACCESSIBILITY_EVENTS] =
+  permission_contexts_[ContentSettingsType::ACCESSIBILITY_EVENTS] =
       std::make_unique<AccessibilityPermissionContext>(profile);
-  permission_contexts_[CONTENT_SETTINGS_TYPE_CLIPBOARD_READ] =
+  permission_contexts_[ContentSettingsType::CLIPBOARD_READ] =
       std::make_unique<ClipboardReadPermissionContext>(profile);
-  permission_contexts_[CONTENT_SETTINGS_TYPE_CLIPBOARD_WRITE] =
+  permission_contexts_[ContentSettingsType::CLIPBOARD_WRITE] =
       std::make_unique<ClipboardWritePermissionContext>(profile);
-  permission_contexts_[CONTENT_SETTINGS_TYPE_PAYMENT_HANDLER] =
+  permission_contexts_[ContentSettingsType::PAYMENT_HANDLER] =
       std::make_unique<payments::PaymentHandlerPermissionContext>(profile);
-  permission_contexts_[CONTENT_SETTINGS_TYPE_BACKGROUND_FETCH] =
+  permission_contexts_[ContentSettingsType::BACKGROUND_FETCH] =
       std::make_unique<BackgroundFetchPermissionContext>(profile);
-  permission_contexts_[CONTENT_SETTINGS_TYPE_IDLE_DETECTION] =
+  permission_contexts_[ContentSettingsType::IDLE_DETECTION] =
       std::make_unique<IdleDetectionPermissionContext>(profile);
+  permission_contexts_[ContentSettingsType::PERIODIC_BACKGROUND_SYNC] =
+      std::make_unique<PeriodicBackgroundSyncPermissionContext>(profile);
+  permission_contexts_[ContentSettingsType::WAKE_LOCK_SCREEN] =
+      std::make_unique<WakeLockPermissionContext>(
+          profile, ContentSettingsType::WAKE_LOCK_SCREEN);
+  permission_contexts_[ContentSettingsType::WAKE_LOCK_SYSTEM] =
+      std::make_unique<WakeLockPermissionContext>(
+          profile, ContentSettingsType::WAKE_LOCK_SYSTEM);
+#if defined(OS_ANDROID)
+  permission_contexts_[ContentSettingsType::NFC] =
+      std::make_unique<NfcPermissionContext>(profile);
+#endif
 }
 
 PermissionManager::~PermissionManager() {
@@ -324,6 +374,8 @@ PermissionManager::~PermissionManager() {
 }
 
 void PermissionManager::Shutdown() {
+  is_shutting_down_ = true;
+
   if (!subscriptions_.IsEmpty()) {
     HostContentSettingsMapFactory::GetForProfile(profile_)
         ->RemoveObserver(this);
@@ -331,18 +383,24 @@ void PermissionManager::Shutdown() {
   }
 }
 
-GURL PermissionManager::GetCanonicalOrigin(const GURL& requesting_origin,
+GURL PermissionManager::GetCanonicalOrigin(ContentSettingsType permission,
+                                           const GURL& requesting_origin,
                                            const GURL& embedding_origin) const {
   if (embedding_origin.GetOrigin() ==
       GURL(chrome::kChromeUINewTabURL).GetOrigin()) {
     if (requesting_origin.GetOrigin() ==
         GURL(chrome::kChromeSearchLocalNtpUrl).GetOrigin()) {
-      return GURL(UIThreadSearchTermsData(profile_).GoogleBaseURLValue())
-          .GetOrigin();
+      return GURL(UIThreadSearchTermsData().GoogleBaseURLValue()).GetOrigin();
     } else {
       return requesting_origin;
     }
   }
+
+  // TODO(crbug.com/987654): Generalize this to other "background permissions",
+  // that is, permissions that can be used by a service worker. This includes
+  // durable storage, background sync, etc.
+  if (permission == ContentSettingsType::NOTIFICATIONS)
+    return requesting_origin;
 
   if (base::FeatureList::IsEnabled(features::kPermissionDelegation)) {
     // Once permission delegation is enabled by default, it may be possible to
@@ -368,11 +426,11 @@ int PermissionManager::RequestPermission(
     content::RenderFrameHost* render_frame_host,
     const GURL& requesting_origin,
     bool user_gesture,
-    const base::Callback<void(ContentSetting)>& callback) {
+    base::OnceCallback<void(ContentSetting)> callback) {
   return RequestPermissions(
       std::vector<ContentSettingsType>(1, content_settings_type),
       render_frame_host, requesting_origin, user_gesture,
-      base::Bind(&ContentSettingCallbackWraper, callback));
+      base::BindOnce(&ContentSettingCallbackWrapper, std::move(callback)));
 }
 
 int PermissionManager::RequestPermissions(
@@ -380,34 +438,34 @@ int PermissionManager::RequestPermissions(
     content::RenderFrameHost* render_frame_host,
     const GURL& requesting_origin,
     bool user_gesture,
-    const base::Callback<void(const std::vector<ContentSetting>&)>& callback) {
+    base::OnceCallback<void(const std::vector<ContentSetting>&)> callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (permissions.empty()) {
-    callback.Run(std::vector<ContentSetting>());
+    std::move(callback).Run(std::vector<ContentSetting>());
     return content::PermissionController::kNoPendingOperation;
   }
 
   content::WebContents* web_contents =
       content::WebContents::FromRenderFrameHost(render_frame_host);
 
-  GURL embedding_origin = web_contents->GetLastCommittedURL().GetOrigin();
-  GURL canonical_requesting_origin =
-      GetCanonicalOrigin(requesting_origin, embedding_origin);
-
   int request_id = pending_requests_.Add(std::make_unique<PendingRequest>(
-      render_frame_host, permissions, callback));
+      render_frame_host, permissions, std::move(callback)));
 
   const PermissionRequestID request(render_frame_host, request_id);
+  const GURL embedding_origin = web_contents->GetLastCommittedURL().GetOrigin();
 
   for (size_t i = 0; i < permissions.size(); ++i) {
     const ContentSettingsType permission = permissions[i];
+    const GURL canonical_requesting_origin =
+        GetCanonicalOrigin(permission, requesting_origin, embedding_origin);
 
-    auto callback =
+    auto response_callback =
         std::make_unique<PermissionResponseCallback>(this, request_id, i);
-    auto status = GetPermissionOverrideForDevTools(canonical_requesting_origin,
-                                                   permission);
+    auto status = GetPermissionOverrideForDevTools(
+        url::Origin::Create(canonical_requesting_origin), permission);
     if (status != CONTENT_SETTING_DEFAULT) {
-      callback->OnPermissionsRequestResponseStatus(CONTENT_SETTING_ALLOW);
+      response_callback->OnPermissionsRequestResponseStatus(
+          CONTENT_SETTING_ALLOW);
       continue;
     }
 
@@ -416,9 +474,9 @@ int PermissionManager::RequestPermissions(
 
     context->RequestPermission(
         web_contents, request, canonical_requesting_origin, user_gesture,
-        base::Bind(
+        base::BindOnce(
             &PermissionResponseCallback::OnPermissionsRequestResponseStatus,
-            base::Passed(&callback)));
+            std::move(response_callback)));
   }
 
   // The request might have been resolved already.
@@ -459,13 +517,13 @@ int PermissionManager::RequestPermission(
     content::RenderFrameHost* render_frame_host,
     const GURL& requesting_origin,
     bool user_gesture,
-    const base::Callback<void(PermissionStatus)>& callback) {
+    base::OnceCallback<void(PermissionStatus)> callback) {
   ContentSettingsType content_settings_type =
       PermissionTypeToContentSetting(permission);
   return RequestPermissions(
       std::vector<ContentSettingsType>(1, content_settings_type),
       render_frame_host, requesting_origin, user_gesture,
-      base::Bind(&PermissionStatusCallbackWrapper, callback));
+      base::BindOnce(&PermissionStatusCallbackWrapper, std::move(callback)));
 }
 
 int PermissionManager::RequestPermissions(
@@ -473,8 +531,7 @@ int PermissionManager::RequestPermissions(
     content::RenderFrameHost* render_frame_host,
     const GURL& requesting_origin,
     bool user_gesture,
-    const base::Callback<void(const std::vector<PermissionStatus>&)>&
-        callback) {
+    base::OnceCallback<void(const std::vector<PermissionStatus>&)> callback) {
   std::vector<ContentSettingsType> content_settings_types;
   std::transform(permissions.begin(), permissions.end(),
                  back_inserter(content_settings_types),
@@ -482,7 +539,8 @@ int PermissionManager::RequestPermissions(
   return RequestPermissions(
       content_settings_types, render_frame_host, requesting_origin,
       user_gesture,
-      base::Bind(&PermissionStatusVectorCallbackWrapper, callback));
+      base::BindOnce(&PermissionStatusVectorCallbackWrapper,
+                     std::move(callback)));
 }
 
 PermissionContextBase* PermissionManager::GetPermissionContext(
@@ -504,7 +562,7 @@ void PermissionManager::OnPermissionsRequestResponseStatus(
   if (!pending_request->IsComplete())
     return;
 
-  pending_request->callback().Run(pending_request->results());
+  pending_request->TakeCallback().Run(pending_request->results());
   pending_requests_.Remove(request_id);
 }
 
@@ -517,7 +575,7 @@ void PermissionManager::ResetPermission(PermissionType permission,
   if (!context)
     return;
   context->ResetPermission(
-      GetCanonicalOrigin(requesting_origin, embedding_origin),
+      GetCanonicalOrigin(type, requesting_origin, embedding_origin),
       embedding_origin.GetOrigin());
 }
 
@@ -535,7 +593,7 @@ PermissionStatus PermissionManager::GetPermissionStatus(
   PermissionContextBase* context = GetPermissionContext(type);
   if (context) {
     result = context->UpdatePermissionStatusWithDeviceStatus(
-        result, GetCanonicalOrigin(requesting_origin, embedding_origin),
+        result, GetCanonicalOrigin(type, requesting_origin, embedding_origin),
         embedding_origin);
   }
 
@@ -547,9 +605,9 @@ PermissionStatus PermissionManager::GetPermissionStatusForFrame(
     content::RenderFrameHost* render_frame_host,
     const GURL& requesting_origin) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  ContentSettingsType type = PermissionTypeToContentSetting(permission);
   PermissionResult result =
-      GetPermissionStatusForFrame(PermissionTypeToContentSetting(permission),
-                                  render_frame_host, requesting_origin);
+      GetPermissionStatusForFrame(type, render_frame_host, requesting_origin);
 
   // TODO(benwells): split this into two functions, GetPermissionStatus and
   // GetPermissionStatusForPermissionsAPI.
@@ -560,19 +618,33 @@ PermissionStatus PermissionManager::GetPermissionStatusForFrame(
         content::WebContents::FromRenderFrameHost(render_frame_host);
     GURL embedding_origin = web_contents->GetLastCommittedURL().GetOrigin();
     result = context->UpdatePermissionStatusWithDeviceStatus(
-        result, GetCanonicalOrigin(requesting_origin, embedding_origin),
+        result, GetCanonicalOrigin(type, requesting_origin, embedding_origin),
         embedding_origin);
   }
 
   return ContentSettingToPermissionStatus(result.content_setting);
 }
 
+bool PermissionManager::IsPermissionOverridableByDevTools(
+    content::PermissionType permission,
+    const url::Origin& origin) {
+  ContentSettingsType type = PermissionTypeToContentSettingSafe(permission);
+  PermissionContextBase* context = GetPermissionContext(type);
+
+  return context && !context->IsPermissionKillSwitchOn() &&
+         context->IsPermissionAvailableToOrigins(origin.GetURL(),
+                                                 origin.GetURL());
+}
+
 int PermissionManager::SubscribePermissionStatusChange(
     PermissionType permission,
     content::RenderFrameHost* render_frame_host,
     const GURL& requesting_origin,
-    const base::Callback<void(PermissionStatus)>& callback) {
+    base::RepeatingCallback<void(PermissionStatus)> callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  if (is_shutting_down_)
+    return 0;
+
   if (subscriptions_.IsEmpty())
     HostContentSettingsMapFactory::GetForProfile(profile_)->AddObserver(this);
 
@@ -602,14 +674,18 @@ int PermissionManager::SubscribePermissionStatusChange(
 
   subscription->permission = content_type;
   subscription->requesting_origin =
-      GetCanonicalOrigin(requesting_origin, embedding_origin);
-  subscription->callback = base::Bind(&SubscriptionCallbackWrapper, callback);
+      GetCanonicalOrigin(content_type, requesting_origin, embedding_origin);
+  subscription->callback =
+      base::BindRepeating(&SubscriptionCallbackWrapper, std::move(callback));
 
   return subscriptions_.Add(std::move(subscription));
 }
 
 void PermissionManager::UnsubscribePermissionStatusChange(int subscription_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  if (is_shutting_down_)
+    return;
+
   // Whether |subscription_id| is known will be checked by the Remove() call.
   subscriptions_.Remove(subscription_id);
 
@@ -630,7 +706,8 @@ void PermissionManager::OnContentSettingChanged(
     ContentSettingsType content_type,
     const std::string& resource_identifier) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  std::list<base::Closure> callbacks;
+  std::vector<base::OnceClosure> callbacks;
+  callbacks.reserve(subscriptions_.size());
 
   for (SubscriptionsMap::iterator iter(&subscriptions_);
        !iter.IsAtEnd(); iter.Advance()) {
@@ -676,11 +753,11 @@ void PermissionManager::OnContentSettingChanged(
 
     // Add the callback to |callbacks| which will be run after the loop to
     // prevent re-entrance issues.
-    callbacks.push_back(base::Bind(subscription->callback, new_value));
+    callbacks.push_back(base::BindOnce(subscription->callback, new_value));
   }
 
-  for (const auto& callback : callbacks)
-    callback.Run();
+  for (auto& callback : callbacks)
+    std::move(callback).Run();
 }
 
 PermissionResult PermissionManager::GetPermissionStatusHelper(
@@ -689,9 +766,9 @@ PermissionResult PermissionManager::GetPermissionStatusHelper(
     const GURL& requesting_origin,
     const GURL& embedding_origin) {
   GURL canonical_requesting_origin =
-      GetCanonicalOrigin(requesting_origin, embedding_origin);
-  auto status =
-      GetPermissionOverrideForDevTools(canonical_requesting_origin, permission);
+      GetCanonicalOrigin(permission, requesting_origin, embedding_origin);
+  auto status = GetPermissionOverrideForDevTools(
+      url::Origin::Create(canonical_requesting_origin), permission);
   if (status != CONTENT_SETTING_DEFAULT)
     return PermissionResult(status, PermissionStatusSource::UNSPECIFIED);
   PermissionContextBase* context = GetPermissionContext(permission);
@@ -705,11 +782,15 @@ PermissionResult PermissionManager::GetPermissionStatusHelper(
 }
 
 void PermissionManager::SetPermissionOverridesForDevTools(
-    const GURL& origin,
+    const url::Origin& origin,
     const PermissionOverrides& overrides) {
   ContentSettingsTypeOverrides result;
-  for (const auto& item : overrides)
-    result.insert(PermissionTypeToContentSetting(item));
+  for (const auto& item : overrides) {
+    ContentSettingsType content_setting =
+        PermissionTypeToContentSettingSafe(item.first);
+    if (content_setting != ContentSettingsType::DEFAULT)
+      result[content_setting] = PermissionStatusToContentSetting(item.second);
+  }
   devtools_permission_overrides_[origin] = std::move(result);
 }
 
@@ -718,11 +799,15 @@ void PermissionManager::ResetPermissionOverridesForDevTools() {
 }
 
 ContentSetting PermissionManager::GetPermissionOverrideForDevTools(
-    const GURL& origin,
+    const url::Origin& origin,
     ContentSettingsType permission) {
   auto it = devtools_permission_overrides_.find(origin);
   if (it == devtools_permission_overrides_.end())
     return CONTENT_SETTING_DEFAULT;
-  return it->second.count(permission) ? CONTENT_SETTING_ALLOW
-                                      : CONTENT_SETTING_BLOCK;
+
+  auto setting_it = it->second.find(permission);
+  if (setting_it == it->second.end())
+    return CONTENT_SETTING_DEFAULT;
+
+  return setting_it->second;
 }

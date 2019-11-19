@@ -4,23 +4,24 @@
 
 #include "content/browser/webauth/virtual_discovery.h"
 
+#include <utility>
+
 #include "base/bind.h"
 #include "base/bind_helpers.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "content/browser/webauth/scoped_virtual_authenticator_environment.h"
+#include "content/browser/webauth/authenticator_environment_impl.h"
 #include "device/fido/fido_device.h"
 
 namespace content {
 
 VirtualFidoDiscovery::VirtualFidoDiscovery(
-    ScopedVirtualAuthenticatorEnvironment* environment,
     ::device::FidoTransportProtocol transport)
-    : FidoDeviceDiscovery(transport), environment_(environment) {}
+    : FidoDeviceDiscovery(transport) {}
 
 VirtualFidoDiscovery::~VirtualFidoDiscovery() {
-  environment_->OnDiscoveryDestroyed(this);
+  AuthenticatorEnvironmentImpl::GetInstance()->OnDiscoveryDestroyed(this);
 }
 
 void VirtualFidoDiscovery::AddVirtualDevice(
@@ -46,7 +47,7 @@ void VirtualFidoDiscovery::StartInternal() {
 
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(&VirtualFidoDiscovery::NotifyDiscoveryStarted,
-                                base::Unretained(this), true /* success */));
+                                AsWeakPtr(), true /* success */));
 }
 
 }  // namespace content

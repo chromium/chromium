@@ -13,12 +13,12 @@
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/trace_event/trace_event.h"
+#include "chrome/android/chrome_jni_headers/FeedNetworkBridge_jni.h"
 #include "chrome/browser/android/feed/feed_host_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_android.h"
 #include "components/feed/content/feed_host_service.h"
 #include "components/feed/core/feed_networking_host.h"
-#include "jni/FeedNetworkBridge_jni.h"
 
 using base::android::ConvertJavaStringToUTF8;
 using base::android::JavaParamRef;
@@ -27,8 +27,7 @@ using base::android::ScopedJavaGlobalRef;
 
 namespace feed {
 
-FeedNetworkBridge::FeedNetworkBridge(const JavaParamRef<jobject>& j_profile)
-    : weak_factory_(this) {
+FeedNetworkBridge::FeedNetworkBridge(const JavaParamRef<jobject>& j_profile) {
   Profile* profile = ProfileAndroid::FromProfileAndroid(j_profile);
   FeedHostService* host_service =
       FeedHostServiceFactory::GetForBrowserContext(profile);

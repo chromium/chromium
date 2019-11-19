@@ -11,23 +11,21 @@ namespace password_manager {
 
 void NotifyDidNavigateMainFrame(bool is_renderer_initiated,
                                 ui::PageTransition transition,
-                                bool has_user_gesture,
+                                bool was_initiated_by_link_click,
                                 FormSubmissionObserver* observer) {
   DCHECK(observer);
 
   // Password manager is interested in
   // - form submission navigations,
-  // - any JavaScript initiated navigations (i.e. renderer initiated navigations
-  // without user gesture), because many form submissions are done with
-  // JavaScript.
-  // Password manager is not interested in
+  // - any JavaScript initiated navigations, because many form submissions are
+  // done with JavaScript. Password manager is not interested in
   // - browser initiated navigations (e.g. reload, bookmark click),
-  // - hyperlink navigations (which are renderer navigations with user gesture).
+  // - hyperlink navigations.
   bool form_may_be_submitted =
       is_renderer_initiated &&
       (ui::PageTransitionCoreTypeIs(transition,
                                     ui::PAGE_TRANSITION_FORM_SUBMIT) ||
-       !has_user_gesture);
+       !was_initiated_by_link_click);
 
   observer->DidNavigateMainFrame(form_may_be_submitted);
 }

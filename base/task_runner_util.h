@@ -11,6 +11,7 @@
 #include "base/bind.h"
 #include "base/bind_helpers.h"
 #include "base/callback.h"
+#include "base/callback_helpers.h"
 #include "base/logging.h"
 #include "base/post_task_and_reply_with_result_internal.h"
 #include "base/task_runner.h"
@@ -31,11 +32,20 @@ namespace base {
 //     FROM_HERE,
 //     BindOnce(&DoWorkAndReturn),
 //     BindOnce(&Callback));
-template <typename TaskReturnType, typename ReplyArgType>
+//
+// Though RepeatingCallback is convertible to OnceCallback, we need a
+// CallbackType template since we can not use template deduction and object
+// conversion at once on the overload resolution.
+// TODO(crbug.com/714018): Update all callers of the RepeatingCallback version
+// to use OnceCallback and remove the CallbackType template.
+template <template <typename> class CallbackType,
+          typename TaskReturnType,
+          typename ReplyArgType,
+          typename = EnableIfIsBaseCallback<CallbackType>>
 bool PostTaskAndReplyWithResult(TaskRunner* task_runner,
                                 const Location& from_here,
-                                OnceCallback<TaskReturnType()> task,
-                                OnceCallback<void(ReplyArgType)> reply) {
+                                CallbackType<TaskReturnType()> task,
+                                CallbackType<void(ReplyArgType)> reply) {
   DCHECK(task);
   DCHECK(reply);
   // std::unique_ptr used to avoid the need of a default constructor.
@@ -46,22 +56,6 @@ bool PostTaskAndReplyWithResult(TaskRunner* task_runner,
                result),
       BindOnce(&internal::ReplyAdapter<TaskReturnType, ReplyArgType>,
                std::move(reply), Owned(result)));
-}
-
-// Callback version of PostTaskAndReplyWithResult above.
-// Though RepeatingCallback is convertible to OnceCallback, we need this since
-// we cannot use template deduction and object conversion at once on the
-// overload resolution.
-// TODO(crbug.com/714018): Update all callers of the Callback version to use
-// OnceCallback.
-template <typename TaskReturnType, typename ReplyArgType>
-bool PostTaskAndReplyWithResult(TaskRunner* task_runner,
-                                const Location& from_here,
-                                Callback<TaskReturnType()> task,
-                                Callback<void(ReplyArgType)> reply) {
-  return PostTaskAndReplyWithResult(
-      task_runner, from_here, OnceCallback<TaskReturnType()>(std::move(task)),
-      OnceCallback<void(ReplyArgType)>(std::move(reply)));
 }
 
 }  // namespace base

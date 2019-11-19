@@ -4,41 +4,42 @@ class MockBadgeService {
   constructor() {
     this.bindingSet_ = new mojo.BindingSet(blink.mojom.BadgeService);
     this.interceptor_ = new MojoInterfaceInterceptor(
-        blink.mojom.BadgeService.name);
+        blink.mojom.BadgeService.name, "context", true);
     this.interceptor_.oninterfacerequest =
         e => this.bindingSet_.addBinding(this, e.handle);
     this.interceptor_.start();
   }
 
-  init_(expectCalled) {
-    this.expectCalled_ = expectCalled;
+  init_(expectedAction) {
+    this.expectedAction = expectedAction;
     return new Promise((resolve, reject) => {
       this.reject_ = reject;
       this.resolve_ = resolve;
     });
   }
 
-  setInteger(contents) {
+  setBadge(value) {
+    // Accessing number when the union is a flag will throw, so read the
+    // value in a try catch.
+    let number;
     try {
-      assert_equals(this.expectCalled_, 'setInteger');
+      number = value.number;
+    } catch (error) {
+      number = undefined;
+    }
+
+    try {
+      const action = number === undefined ? 'flag' : 'number:' + number;
+      assert_equals(action, this.expectedAction);
       this.resolve_();
     } catch (error) {
       this.reject_(error);
     }
   }
 
-  setFlag() {
-    try {
-      assert_equals(this.expectCalled_, 'setFlag');
-      this.resolve_();
-    } catch (error) {
-      this.reject(error);
-    }
-  }
-
   clearBadge() {
     try {
-      assert_equals(this.expectCalled_, 'clearBadge');
+      assert_equals('clear', this.expectedAction);
       this.resolve_();
     } catch (error) {
       this.reject_(error);
@@ -48,24 +49,16 @@ class MockBadgeService {
 
 let mockBadgeService = new MockBadgeService();
 
-function callAndObserveErrors(func, expectedErrorName) {
-  return new Promise((resolve, reject) => {
-    try {
-      func();
-    } catch (error) {
-      try {
-        assert_equals(error.name, expectedErrorName);
-        resolve();
-      } catch (reason) {
-        reject(reason);
-      }
-    }
-  });
-}
+function badge_test(func, expectedAction, expectedError) {
+  promise_test(async () => {
+    let mockPromise = mockBadgeService.init_(expectedAction);
 
-function badge_test(func, expectCalled, expectError) {
-  promise_test(() => {
-    let mockPromise = mockBadgeService.init_(expectCalled);
-    return Promise.race([callAndObserveErrors(func, expectError), mockPromise]);
+    try {
+      await func();
+    } catch (error) {
+      return assert_equals(error.name, expectedError);
+    }
+
+    await mockPromise;
   });
 }

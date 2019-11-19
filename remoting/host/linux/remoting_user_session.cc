@@ -218,6 +218,10 @@ class PamHandle {
     return last_return_code_ = pam_close_session(pam_handle_, flags);
   }
 
+  int SetItem(int item_type, const char* value) {
+    return last_return_code_ = pam_set_item(pam_handle_, item_type, value);
+  }
+
   // Returns the current username according to PAM. It is possible for PAM
   // modules to change this from the initial value passed to the constructor.
   base::Optional<std::string> GetUser() {
@@ -227,6 +231,16 @@ class PamHandle {
     if (last_return_code_ != PAM_SUCCESS || user == nullptr)
       return base::nullopt;
     return std::string(user);
+  }
+
+  // Sets a PAM environment variable.
+  int PutEnv(base::StringPiece name, base::StringPiece value) {
+    std::string name_value;
+    name_value.reserve(name.size() + value.size() + 1);
+    name.AppendToString(&name_value);
+    name_value.push_back('=');
+    value.AppendToString(&name_value);
+    return last_return_code_ = pam_putenv(pam_handle_, name_value.c_str());
   }
 
   // Obtains the list of environment variables provided by PAM modules.
@@ -319,13 +333,6 @@ void ExecMe2MeScript(base::EnvironmentMap environment,
     environment["PATH"] = "/bin:/usr/bin";
   }
 
-  for (const char* variable : kPassthroughVariables) {
-    char* value = std::getenv(variable);
-    if (value != nullptr) {
-      environment[variable] = value;
-    }
-  }
-
   std::vector<std::string> env_strings;
   for (const auto& env_var : environment) {
     env_strings.emplace_back(env_var.first + "=" + env_var.second);
@@ -382,6 +389,41 @@ void ExecuteSession(std::string user,
                     const std::vector<std::string>& script_args) {
   PamHandle pam_handle(kPamName, user.c_str(), &kPamConversation);
   CHECK(pam_handle.IsInitialized()) << "Failed to initialize PAM";
+
+  // Since we're running setuid root, we don't want to risk any user-set
+  // environment variables changing the behavior of PAM modules, so copy any
+  // variables we explicitly want to preserve into the PAM session and then
+  // clear the environment.
+  for (const char* variable : kPassthroughVariables) {
+    char* value = std::getenv(variable);
+    if (value != nullptr) {
+      pam_handle.CheckReturnCode(pam_handle.PutEnv(variable, value),
+                                 "Environment passthrough");
+    }
+  }
+  clearenv();
+
+  // Set various session attributes.
+  pam_handle.CheckReturnCode(pam_handle.PutEnv("XDG_SESSION_CLASS", "user"),
+                             "Set session class");
+  pam_handle.CheckReturnCode(pam_handle.PutEnv("XDG_SESSION_TYPE", "x11"),
+                             "Set session type");
+  // Ideally, the TTY should be set to the X display for x11 sessions, but we
+  // don't yet know what display we'll be using. Apparently some PAM modules
+  // (the pam_systemd documentation explicitly calls out pam_time and
+  // pam_access) require PAM_TTY to be set, so we set it to a dummy value. There
+  // is some precedence for this, as SSH and cron set PAM_TTY to "ssh" and
+  // "cron" (respectively) for similar reasons.
+  // TODO(rkjnsn): This will prevent any PAM modules from, e.g., setting
+  // session-related X properties. It would be more correct to implement a two-
+  // phase session setup: first creating a "background/unspecified" session to
+  // run the me2me script and the X server, and then launching a "user/x11"
+  // session with PAM_TTY and PAM_XDISPLAY properly set to run the session
+  // chooser or the user's session script. This would also allow the inner
+  // session to be completely cleaned-up when the user selects "Logout" from
+  // within their chromoting session.
+  pam_handle.CheckReturnCode(
+      pam_handle.SetItem(PAM_TTY, "chrome-remote-desktop"), "Set PAM_TTY");
 
   // Make sure the account is valid and enabled.
   pam_handle.CheckReturnCode(pam_handle.AccountManagement(0), "Account check");

@@ -41,7 +41,8 @@ void TrustStoreInMemory::SyncGetIssuersOf(const ParsedCertificate* cert,
 }
 
 void TrustStoreInMemory::GetTrust(const scoped_refptr<ParsedCertificate>& cert,
-                                  CertificateTrust* trust) const {
+                                  CertificateTrust* trust,
+                                  base::SupportsUserData* debug_data) const {
   auto range = entries_.equal_range(cert->normalized_subject().AsStringPiece());
   for (auto it = range.first; it != range.second; ++it) {
     if (cert.get() == it->second.cert.get() ||

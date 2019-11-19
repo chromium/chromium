@@ -6,13 +6,14 @@ package org.chromium.chrome.browser.firstrun;
 
 import android.content.Context;
 import android.content.res.Resources;
-import android.support.annotation.AnyRes;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+
+import androidx.annotation.AnyRes;
 
 import org.chromium.chrome.R;
 

@@ -148,7 +148,7 @@ bool OverscanTracker::RemoveObserverImpl(content::WebContents* web_contents) {
   return observers_.empty();
 }
 
-bool HasAutotestPrivate(const UIThreadExtensionFunction& function) {
+bool HasAutotestPrivate(const ExtensionFunction& function) {
   return function.extension() &&
          function.extension()->permissions_data()->HasAPIPermission(
              APIPermission::kAutoTestPrivate);
@@ -156,7 +156,7 @@ bool HasAutotestPrivate(const UIThreadExtensionFunction& function) {
 
 #if defined(OS_CHROMEOS)
 // |edid| is available only to Chrome OS kiosk mode applications.
-bool ShouldRestrictEdidInformation(const UIThreadExtensionFunction& function) {
+bool ShouldRestrictEdidInformation(const ExtensionFunction& function) {
   if (function.extension()) {
     return !(HasAutotestPrivate(function) ||
              KioskModeInfo::IsKioskEnabled(function.extension()));
@@ -169,7 +169,7 @@ bool ShouldRestrictEdidInformation(const UIThreadExtensionFunction& function) {
 }  // namespace
 
 bool SystemDisplayCrOSRestrictedFunction::PreRunValidation(std::string* error) {
-  if (!UIThreadExtensionFunction::PreRunValidation(error))
+  if (!ExtensionFunction::PreRunValidation(error))
     return false;
 
 #if !defined(OS_CHROMEOS)

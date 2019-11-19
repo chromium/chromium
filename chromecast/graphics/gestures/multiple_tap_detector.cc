@@ -4,6 +4,8 @@
 
 #include "chromecast/graphics/gestures/multiple_tap_detector.h"
 
+#include <memory>
+
 #include "base/auto_reset.h"
 #include "base/logging.h"
 #include "ui/aura/window.h"
@@ -14,24 +16,6 @@
 #include "ui/events/event_utils.h"
 
 namespace chromecast {
-
-namespace {
-
-std::unique_ptr<ui::TouchEvent> MakeCancelEvent(
-    const base::TimeTicks& time_stamp,
-    const ui::TouchEvent& stashed_press) {
-  std::unique_ptr<ui::TouchEvent> rewritten_touch_event =
-      std::make_unique<ui::TouchEvent>(ui::ET_TOUCH_CANCELLED, gfx::Point(),
-                                       time_stamp,
-                                       stashed_press.pointer_details());
-  rewritten_touch_event->set_location_f(stashed_press.location_f());
-  rewritten_touch_event->set_root_location_f(stashed_press.root_location_f());
-  rewritten_touch_event->set_flags(stashed_press.flags());
-
-  return rewritten_touch_event;
-}
-
-}  // namespace
 
 MultipleTapDetector::MultipleTapDetector(aura::Window* root_window,
                                          MultipleTapDetectorDelegate* delegate)
@@ -47,11 +31,11 @@ MultipleTapDetector::~MultipleTapDetector() {
   root_window_->GetHost()->GetEventSource()->RemoveEventRewriter(this);
 }
 
-ui::EventRewriteStatus MultipleTapDetector::RewriteEvent(
+ui::EventDispatchDetails MultipleTapDetector::RewriteEvent(
     const ui::Event& event,
-    std::unique_ptr<ui::Event>* rewritten_event) {
+    const Continuation continuation) {
   if (!enabled_ || !delegate_ || !event.IsTouchEvent()) {
-    return ui::EVENT_REWRITE_CONTINUE;
+    return SendEvent(continuation, &event);
   }
 
   const ui::TouchEvent& touch_event = static_cast<const ui::TouchEvent&>(event);
@@ -59,11 +43,11 @@ ui::EventRewriteStatus MultipleTapDetector::RewriteEvent(
     // If a press happened again before the minimum inter-tap interval, cancel
     // the detection.
     if (tap_state_ == MultiTapState::INTERVAL_WAIT &&
-        (event.time_stamp() - stashed_events_.back().time_stamp()) <
+        (event.time_stamp() - stashed_events_.back().event.time_stamp()) <
             gesture_detector_config_.double_tap_min_time) {
       stashed_events_.clear();
       TapDetectorStateReset();
-      return ui::EVENT_REWRITE_CONTINUE;
+      return SendEvent(continuation, &event);
     }
 
     // If the user moved too far from the last tap position, it's not a multi
@@ -73,7 +57,7 @@ ui::EventRewriteStatus MultipleTapDetector::RewriteEvent(
       if (distance > gesture_detector_config_.double_tap_slop) {
         TapDetectorStateReset();
         stashed_events_.clear();
-        return ui::EVENT_REWRITE_CONTINUE;
+        return SendEvent(continuation, &event);
       }
     }
 
@@ -90,14 +74,14 @@ ui::EventRewriteStatus MultipleTapDetector::RewriteEvent(
     // If we've already gotten one tap, discard this event, only the original
     // tap needs to get through.
     if (tap_count_) {
-      return ui::EVENT_REWRITE_DISCARD;
+      return DiscardEvent(continuation);
     }
 
     // Copy the event so we can issue a cancel for it later if this turns out to
     // be a multi-tap.
-    stashed_events_.push_back(touch_event);
+    stashed_events_.emplace_back(touch_event, continuation);
 
-    return ui::EVENT_REWRITE_CONTINUE;
+    return SendEvent(continuation, &event);
   }
 
   // Finger was released while we were waiting for one, count it as a tap.
@@ -113,35 +97,25 @@ ui::EventRewriteStatus MultipleTapDetector::RewriteEvent(
       TapDetectorStateReset();
       delegate_->OnTripleTap(touch_event.location());
 
-      // Start issuing cancel events for old presses.
-      DCHECK(!stashed_events_.empty());
-      *rewritten_event =
-          MakeCancelEvent(touch_event.time_stamp(), stashed_events_.front());
-      stashed_events_.pop_front();
-
-      if (!stashed_events_.empty())
-        return ui::EVENT_REWRITE_DISPATCH_ANOTHER;
-      else
-        return ui::EVENT_REWRITE_REWRITTEN;
+      // Issue cancel events for old presses.
+      ui::EventDispatchDetails details;
+      for (const auto& it : stashed_events_) {
+        ui::TouchEvent cancel_event(
+            ui::ET_TOUCH_CANCELLED, it.event.location_f(),
+            it.event.root_location_f(), it.event.time_stamp(),
+            it.event.pointer_details(), it.event.flags());
+        details = SendEvent(it.continuation, &cancel_event);
+        if (details.dispatcher_destroyed)
+          break;
+      }
+      stashed_events_.clear();
+      return details;
     } else if (tap_count_ > 1) {
-      return ui::EVENT_REWRITE_DISCARD;
+      return DiscardEvent(continuation);
     }
   }
 
-  return ui::EVENT_REWRITE_CONTINUE;
-}
-
-ui::EventRewriteStatus MultipleTapDetector::NextDispatchEvent(
-    const ui::Event& last_event,
-    std::unique_ptr<ui::Event>* new_event) {
-  *new_event =
-      MakeCancelEvent(last_event.time_stamp(), stashed_events_.front());
-  stashed_events_.pop_front();
-
-  if (!stashed_events_.empty())
-    return ui::EVENT_REWRITE_DISPATCH_ANOTHER;
-  else
-    return ui::EVENT_REWRITE_DISCARD;
+  return SendEvent(continuation, &event);
 }
 
 void MultipleTapDetector::OnTapIntervalTimerFired() {
@@ -149,14 +123,14 @@ void MultipleTapDetector::OnTapIntervalTimerFired() {
   // So call out the double-tap.
   if (tap_count_ == 2) {
     delegate_->OnDoubleTap(last_tap_location_);
-
-    // Unfortunately we cannot NextDispatchEvent to issue a cancel on the second
-    // tap, so we have to manually DispatchEvent to the EventSource.
-    // Subsequent EventRewriters in the chain will not see the event.
     if (!stashed_events_.empty()) {
-      std::unique_ptr<ui::TouchEvent> cancel_event =
-          MakeCancelEvent(base::TimeTicks::Now(), stashed_events_.front());
-      DispatchEvent(cancel_event.get());
+      Stash& stash = stashed_events_.front();
+      ui::TouchEvent cancel_event(
+          ui::ET_TOUCH_CANCELLED, stash.event.location_f(),
+          stash.event.root_location_f(), base::TimeTicks::Now(),
+          stash.event.pointer_details(), stash.event.flags());
+      DCHECK(
+          !SendEvent(stash.continuation, &cancel_event).dispatcher_destroyed);
     }
   }
   TapDetectorStateReset();
@@ -174,13 +148,9 @@ void MultipleTapDetector::TapDetectorStateReset() {
   triple_tap_timer_.Stop();
 }
 
-void MultipleTapDetector::DispatchEvent(ui::TouchEvent* event) {
-  // Turn off triple-tap before re-dispatching to avoid infinite recursion into
-  // this detector.
-  base::AutoReset<bool> toggle_enable(&enabled_, false);
-  DCHECK(!root_window_->GetHost()
-              ->dispatcher()
-              ->OnEventFromSource(event)
-              .dispatcher_destroyed);
-}
+MultipleTapDetector::Stash::Stash(const ui::TouchEvent& e, const Continuation c)
+    : event(e), continuation(c) {}
+
+MultipleTapDetector::Stash::~Stash() {}
+
 }  // namespace chromecast

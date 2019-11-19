@@ -34,7 +34,7 @@
         android:paddingStart="24dp"
         android:textAppearance="@style/TextAppearance.BlackBodyDefault" />
 
-    <org.chromium.chrome.browser.widget.DualControlLayout
+    <org.chromium.chrome.browser.ui.widget.DualControlLayout
         android:id="@+id/lightweight_fre_buttons"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

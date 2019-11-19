@@ -12,7 +12,6 @@ class OneClickSigninLinksDelegate {
  public:
   virtual ~OneClickSigninLinksDelegate() {}
   virtual void OnLearnMoreLinkClicked(bool is_dialog) = 0;
-  virtual void OnAdvancedLinkClicked() = 0;
 
  protected:
   OneClickSigninLinksDelegate() {}

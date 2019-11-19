@@ -12,15 +12,14 @@ from core import results_dashboard
 class ResultsDashboardTest(unittest.TestCase):
 
   def setUp(self):
-    self.fake_service = '/foo/bar/kingsman-service-account'
     self.dummy_token_generator = lambda service_file, timeout: 'Arthur-Merlin'
     self.perf_data = {'foo': 1, 'bar': 2}
     self.dashboard_url = 'https://chromeperf.appspot.com'
 
   def testRetryForSendResultRetryException(self):
     def raise_retry_exception(
-        url, histogramset_json, service_account_file, token_generator_callback):
-      del url, histogramset_json, service_account_file  # unused
+        url, histogramset_json, token_generator_callback):
+      del url, histogramset_json  # unused
       del token_generator_callback  # unused
       raise results_dashboard.SendResultsRetryException('Should retry')
 
@@ -30,7 +29,6 @@ class ResultsDashboardTest(unittest.TestCase):
         upload_result = results_dashboard.SendResults(
             self.perf_data, 'dummy_benchmark',
             self.dashboard_url, send_as_histograms=True,
-            service_account_file=self.fake_service,
             token_generator_callback=self.dummy_token_generator, num_retries=5)
         self.assertFalse(upload_result)
         self.assertEqual(m.call_count, 5)
@@ -41,8 +39,8 @@ class ResultsDashboardTest(unittest.TestCase):
   def testNoRetryForSendResultFatalException(self):
 
     def raise_retry_exception(
-        url, histogramset_json, service_account_file, token_generator_callback):
-      del url, histogramset_json, service_account_file  # unused
+        url, histogramset_json, token_generator_callback):
+      del url, histogramset_json  # unused
       del token_generator_callback  # unused
       raise results_dashboard.SendResultsFatalException('Do not retry')
 
@@ -52,7 +50,6 @@ class ResultsDashboardTest(unittest.TestCase):
         upload_result =  results_dashboard.SendResults(
             self.perf_data, 'dummy_benchmark',
             self.dashboard_url, send_as_histograms=True,
-            service_account_file=self.fake_service,
             token_generator_callback=self.dummy_token_generator,
             num_retries=5)
         self.assertFalse(upload_result)
@@ -65,7 +62,6 @@ class ResultsDashboardTest(unittest.TestCase):
         upload_result = results_dashboard.SendResults(
             self.perf_data, 'dummy_benchmark',
             self.dashboard_url, send_as_histograms=True,
-            service_account_file=self.fake_service,
             token_generator_callback=self.dummy_token_generator,
             num_retries=5)
         self.assertTrue(upload_result)
@@ -75,8 +71,8 @@ class ResultsDashboardTest(unittest.TestCase):
   def testNoRetryAfterSucessfulSendResult(self):
     counter = [0]
     def raise_retry_exception_first_two_times(
-        url, histogramset_json, service_account_file, token_generator_callback):
-      del url, histogramset_json, service_account_file  # unused
+        url, histogramset_json, token_generator_callback):
+      del url, histogramset_json  # unused
       del token_generator_callback  # unused
       counter[0] += 1
       if counter[0] <= 2:
@@ -88,7 +84,6 @@ class ResultsDashboardTest(unittest.TestCase):
         upload_result = results_dashboard.SendResults(
             self.perf_data, 'dummy_benchmark',
             self.dashboard_url, send_as_histograms=True,
-            service_account_file=self.fake_service,
             token_generator_callback=self.dummy_token_generator,
             num_retries=5)
         self.assertTrue(upload_result)

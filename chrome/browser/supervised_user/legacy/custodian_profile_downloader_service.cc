@@ -8,8 +8,9 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
+#include "content/public/browser/storage_partition.h"
 #include "google_apis/gaia/gaia_auth_util.h"
-#include "services/identity/public/cpp/identity_manager.h"
 
 CustodianProfileDownloaderService::CustodianProfileDownloaderService(
     Profile* custodian_profile)
@@ -58,9 +59,18 @@ std::string CustodianProfileDownloaderService::GetCachedPictureURL() const {
   return std::string();
 }
 
-Profile* CustodianProfileDownloaderService::GetBrowserProfile() {
+signin::IdentityManager*
+CustodianProfileDownloaderService::GetIdentityManager() {
   DCHECK(custodian_profile_);
-  return custodian_profile_;
+  return IdentityManagerFactory::GetForProfile(custodian_profile_);
+}
+
+network::mojom::URLLoaderFactory*
+CustodianProfileDownloaderService::GetURLLoaderFactory() {
+  DCHECK(custodian_profile_);
+  return content::BrowserContext::GetDefaultStoragePartition(custodian_profile_)
+      ->GetURLLoaderFactoryForBrowserProcess()
+      .get();
 }
 
 bool CustodianProfileDownloaderService::IsPreSignin() const {

@@ -13,7 +13,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/observer_list.h"
 #include "base/threading/sequenced_task_runner_handle.h"
-#include "components/sync/base/cryptographer.h"
 #include "components/sync/engine/commit_queue.h"
 #include "components/sync/engine/data_type_activation_response.h"
 #include "components/sync/engine/model_type_processor.h"
@@ -22,6 +21,8 @@
 #include "components/sync/engine_impl/directory_commit_contributor.h"
 #include "components/sync/engine_impl/directory_update_handler.h"
 #include "components/sync/engine_impl/model_type_worker.h"
+#include "components/sync/nigori/cryptographer.h"
+#include "components/sync/nigori/keystore_keys_handler.h"
 #include "components/sync/syncable/read_transaction.h"
 #include "components/sync/syncable/syncable_base_transaction.h"
 
@@ -61,12 +62,13 @@ ModelTypeRegistry::ModelTypeRegistry(
     UserShare* user_share,
     NudgeHandler* nudge_handler,
     const UssMigrator& uss_migrator,
-    CancelationSignal* cancelation_signal)
+    CancelationSignal* cancelation_signal,
+    KeystoreKeysHandler* keystore_keys_handler)
     : user_share_(user_share),
       nudge_handler_(nudge_handler),
       uss_migrator_(uss_migrator),
       cancelation_signal_(cancelation_signal),
-      weak_ptr_factory_(this) {
+      keystore_keys_handler_(keystore_keys_handler) {
   for (size_t i = 0u; i < workers.size(); ++i) {
     workers_map_.insert(
         std::make_pair(workers[i]->GetModelSafeGroup(), workers[i]));
@@ -85,9 +87,12 @@ void ModelTypeRegistry::ConnectNonBlockingType(
   bool initial_sync_done =
       activation_response->model_type_state.initial_sync_done();
   // Attempt migration if the USS initial sync hasn't been done, there is a
-  // migrator function, and directory has data for this type.
+  // migrator function, and directory has data for this |type|, and |type| is
+  // not NIGORI. Nigori is exceptional, because it has a small amount of data,
+  // which is just downloaded from the server again.
   bool do_migration = !initial_sync_done && !uss_migrator_.is_null() &&
-                      directory()->InitialSyncEndedForType(type);
+                      directory()->InitialSyncEndedForType(type) &&
+                      type != NIGORI;
   bool trigger_initial_sync = !initial_sync_done && !do_migration;
 
   // Save a raw pointer to the processor for connecting later.
@@ -96,7 +101,7 @@ void ModelTypeRegistry::ConnectNonBlockingType(
 
   std::unique_ptr<Cryptographer> cryptographer_copy;
   if (encrypted_types_.Has(type))
-    cryptographer_copy = std::make_unique<Cryptographer>(*cryptographer_);
+    cryptographer_copy = cryptographer_->Clone();
 
   DataTypeDebugInfoEmitter* emitter = GetEmitter(type);
   if (emitter == nullptr) {
@@ -130,19 +135,15 @@ void ModelTypeRegistry::ConnectNonBlockingType(
     int migrated_entity_count = 0;
     if (uss_migrator_.Run(type, user_share_, worker_ptr,
                           &migrated_entity_count)) {
-      // TODO(wychen): enum uma should be strongly typed. crbug.com/661401
       UMA_HISTOGRAM_ENUMERATION("Sync.USSMigrationSuccess",
-                                ModelTypeToHistogramInt(type),
-                                static_cast<int>(MODEL_TYPE_COUNT));
+                                ModelTypeHistogramValue(type));
       // If we succesfully migrated, purge the directory of data for the type.
       // Purging removes the directory's local copy of the data only.
       directory()->PurgeEntriesWithTypeIn(ModelTypeSet(type), ModelTypeSet(),
                                           ModelTypeSet());
     } else {
-      // TODO(wychen): enum uma should be strongly typed. crbug.com/661401
       UMA_HISTOGRAM_ENUMERATION("Sync.USSMigrationFailure",
-                                ModelTypeToHistogramInt(type),
-                                static_cast<int>(MODEL_TYPE_COUNT));
+                                ModelTypeHistogramValue(type));
     }
 
     // Note that a partial failure may still contribute to the counts histogram.
@@ -240,29 +241,19 @@ ModelTypeSet ModelTypeRegistry::GetEnabledTypes() const {
 }
 
 ModelTypeSet ModelTypeRegistry::GetInitialSyncEndedTypes() const {
-  // TODO(pavely): GetInitialSyncEndedTypes is queried at the end of sync
-  // manager initialization when update handlers aren't set up yet. Returning
-  // correct set of types is important because otherwise data for al types will
-  // be redownloaded during configuration. For now let's return union of types
-  // reported by directory and types reported by update handlers. We need to
-  // refactor initialization and configuratrion flow to be able to only query
-  // this set from update handlers.
+  // To prevent initial sync of USS types before we reach UssMigrator, we
+  // collect initial sync state from Directory.
+  // TODO(crbug.com/981480): consider cleaning configuration flow in a way,
+  // that this logic is not needed.
   ModelTypeSet result = directory()->InitialSyncEndedTypes();
+  // We don't apply UssMigrator for Nigori, so we need to check only update
+  // handler state.
+  result.Remove(NIGORI);
   for (const auto& kv : update_handler_map_) {
     if (kv.second->IsInitialSyncEnded())
       result.Put(kv.first);
   }
   return result;
-}
-
-ModelTypeSet ModelTypeRegistry::GetInitialSyncDoneNonBlockingTypes() const {
-  ModelTypeSet types;
-  for (const auto& worker : model_type_workers_) {
-    if (worker->IsInitialSyncEnded()) {
-      types.Put(worker->GetModelType());
-    }
-  }
-  return types;
 }
 
 const UpdateHandler* ModelTypeRegistry::GetUpdateHandler(ModelType type) const {
@@ -276,6 +267,10 @@ UpdateHandlerMap* ModelTypeRegistry::update_handler_map() {
 
 CommitContributorMap* ModelTypeRegistry::commit_contributor_map() {
   return &commit_contributor_map_;
+}
+
+KeystoreKeysHandler* ModelTypeRegistry::keystore_keys_handler() {
+  return keystore_keys_handler_;
 }
 
 void ModelTypeRegistry::RegisterDirectoryTypeDebugInfoObserver(
@@ -334,6 +329,16 @@ void ModelTypeRegistry::OnPassphraseAccepted() {
   }
 }
 
+void ModelTypeRegistry::OnTrustedVaultKeyRequired() {}
+
+void ModelTypeRegistry::OnTrustedVaultKeyAccepted() {
+  for (const auto& worker : model_type_workers_) {
+    if (encrypted_types_.Has(worker->GetModelType())) {
+      worker->EncryptionAcceptedMaybeApplyUpdates();
+    }
+  }
+}
+
 void ModelTypeRegistry::OnBootstrapTokenUpdated(
     const std::string& bootstrap_token,
     BootstrapTokenType type) {}
@@ -352,8 +357,9 @@ void ModelTypeRegistry::OnEncryptedTypesChanged(ModelTypeSet encrypted_types,
 void ModelTypeRegistry::OnEncryptionComplete() {}
 
 void ModelTypeRegistry::OnCryptographerStateChanged(
-    Cryptographer* cryptographer) {
-  cryptographer_ = std::make_unique<Cryptographer>(*cryptographer);
+    Cryptographer* cryptographer,
+    bool has_pending_keys) {
+  cryptographer_ = cryptographer->Clone();
   OnEncryptionStateChanged();
 }
 
@@ -370,8 +376,7 @@ void ModelTypeRegistry::OnPassphraseTypeChanged(PassphraseType type,
 void ModelTypeRegistry::OnEncryptionStateChanged() {
   for (const auto& worker : model_type_workers_) {
     if (encrypted_types_.Has(worker->GetModelType())) {
-      worker->UpdateCryptographer(
-          std::make_unique<Cryptographer>(*cryptographer_));
+      worker->UpdateCryptographer(cryptographer_->Clone());
     }
   }
 }

@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.rappor;
 
 import org.chromium.base.annotations.JNINamespace;
+import org.chromium.base.annotations.NativeMethods;
 
 /**
  * JNI bridge to the native Rappor service from Java.
@@ -16,13 +17,16 @@ public final class RapporServiceBridge {
     }
 
     public static void sampleString(String metric, String sampleValue) {
-        nativeSampleString(metric, sampleValue);
+        RapporServiceBridgeJni.get().sampleString(metric, sampleValue);
     }
 
     public static void sampleDomainAndRegistryFromURL(String metric, String url) {
-        nativeSampleDomainAndRegistryFromURL(metric, url);
+        RapporServiceBridgeJni.get().sampleDomainAndRegistryFromURL(metric, url);
     }
 
-    private static native void nativeSampleDomainAndRegistryFromURL(String metric, String url);
-    private static native void nativeSampleString(String metric, String sampleValue);
+    @NativeMethods
+    interface Natives {
+        void sampleDomainAndRegistryFromURL(String metric, String url);
+        void sampleString(String metric, String sampleValue);
+    }
 }

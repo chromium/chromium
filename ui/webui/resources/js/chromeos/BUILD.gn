@@ -1,0 +1,27 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/closure_compiler/compile_js.gni")
+
+assert(is_chromeos, "Non-ChromeOS builds cannot depend on //chromeos")
+
+group("closure_compile") {
+  deps = [
+    ":js_resources",
+  ]
+}
+
+js_type_check("js_resources") {
+  deps = [
+    ":onc_mojo",
+  ]
+}
+
+js_library("onc_mojo") {
+  deps = [
+    "//chromeos/services/network_config/public/mojom:mojom_js_library_for_compile",
+    "//ui/webui/resources/cr_elements/chromeos/network:cr_onc_strings",
+    "//ui/webui/resources/js:assert",
+  ]
+}

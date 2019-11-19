@@ -32,6 +32,7 @@
 
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/wtf/assertions.h"
 
 namespace blink {
@@ -270,14 +271,14 @@ void ThrowDOMException(ExceptionState& exception_state,
 
 DOMException* CreateDOMException(FileErrorCode code) {
   DCHECK_NE(code, FileErrorCode::kOK);
-  return DOMException::Create(ErrorCodeToExceptionCode(code),
-                              ErrorCodeToMessage(code));
+  return MakeGarbageCollected<DOMException>(ErrorCodeToExceptionCode(code),
+                                            ErrorCodeToMessage(code));
 }
 
 DOMException* CreateDOMException(base::File::Error code) {
   DCHECK_NE(code, base::File::FILE_OK);
-  return DOMException::Create(FileErrorToExceptionCode(code),
-                              FileErrorToMessage(code));
+  return MakeGarbageCollected<DOMException>(FileErrorToExceptionCode(code),
+                                            FileErrorToMessage(code));
 }
 
 }  // namespace file_error

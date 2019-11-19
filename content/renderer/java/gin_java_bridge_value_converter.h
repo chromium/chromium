@@ -28,8 +28,7 @@ class GinJavaBridgeValueConverter : public content::V8ValueConverter::Strategy {
   // content::V8ValueConverter::Strategy
   bool FromV8Object(v8::Local<v8::Object> value,
                     std::unique_ptr<base::Value>* out,
-                    v8::Isolate* isolate,
-                    const FromV8ValueCallback& callback) override;
+                    v8::Isolate* isolate) override;
   bool FromV8ArrayBuffer(v8::Local<v8::Object> value,
                          std::unique_ptr<base::Value>* out,
                          v8::Isolate* isolate) override;

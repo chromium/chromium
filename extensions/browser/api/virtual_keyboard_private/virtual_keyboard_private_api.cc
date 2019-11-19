@@ -27,6 +27,8 @@ const char kVirtualKeyboardNotEnabled[] =
     "The virtual keyboard is not enabled.";
 const char kSetDraggableAreaFailed[] =
     "Setting draggable area of virtual keyboard failed.";
+const char kSetAreaToRemainOnScreenFailed[] =
+    "Setting area to remain on screen of virtual keyboard failed.";
 const char kUnknownError[] = "Unknown error.";
 
 namespace keyboard = api::virtual_keyboard_private;
@@ -38,7 +40,7 @@ gfx::Rect KeyboardBoundsToRect(const keyboard::Bounds& bounds) {
 }  // namespace
 
 bool VirtualKeyboardPrivateFunction::PreRunValidation(std::string* error) {
-  if (!UIThreadExtensionFunction::PreRunValidation(error))
+  if (!ExtensionFunction::PreRunValidation(error))
     return false;
 
   VirtualKeyboardAPI* api =
@@ -203,6 +205,18 @@ VirtualKeyboardPrivateSetHitTestBoundsFunction::Run() {
 
   if (!delegate()->SetHitTestBounds(hit_test_bounds))
     return RespondNow(Error(kVirtualKeyboardNotEnabled));
+  return RespondNow(NoArguments());
+}
+
+ExtensionFunction::ResponseAction
+VirtualKeyboardPrivateSetAreaToRemainOnScreenFunction::Run() {
+  std::unique_ptr<keyboard::SetAreaToRemainOnScreen::Params> params =
+      keyboard::SetAreaToRemainOnScreen::Params::Create(*args_);
+  EXTENSION_FUNCTION_VALIDATE(params);
+
+  const gfx::Rect bounds = KeyboardBoundsToRect(params->bounds);
+  if (!delegate()->SetAreaToRemainOnScreen(bounds))
+    return RespondNow(Error(kSetAreaToRemainOnScreenFailed));
   return RespondNow(NoArguments());
 }
 

@@ -5,10 +5,20 @@
 #ifndef UI_ACCESSIBILITY_AX_MODE_H_
 #define UI_ACCESSIBILITY_AX_MODE_H_
 
+#include <stdint.h>
+
+#include <ostream>
+#include <string>
+
+#include "base/logging.h"
+#include "ui/accessibility/ax_export.h"
+
 namespace ui {
 
-class AXMode {
+class AX_EXPORT AXMode {
  public:
+  static constexpr uint32_t kFirstModeFlag = 1 << 0;
+
   // Native accessibility APIs, specific to each platform, are enabled.
   // When this mode is set that indicates the presence of a third-party
   // client accessing Chrome via accessibility APIs. However, unless one
@@ -50,6 +60,11 @@ class AXMode {
   // The accessibility tree will contain automatic image annotations.
   static constexpr uint32_t kLabelImages = 1 << 5;
 
+  // Update this to include the last supported mode flag. If you add
+  // another, be sure to update the stream insertion operator for
+  // logging and debugging.
+  static constexpr uint32_t kLastModeFlag = 1 << 5;
+
   constexpr AXMode() : flags_(0) {}
   constexpr AXMode(uint32_t flags) : flags_(flags) {}
 
@@ -72,6 +87,8 @@ class AXMode {
     return *this;
   }
 
+  std::string ToString() const;
+
  private:
   uint32_t flags_;
 };
@@ -85,6 +102,9 @@ static constexpr AXMode kAXModeComplete(AXMode::kNativeAPIs |
                                         AXMode::kWebContents |
                                         AXMode::kInlineTextBoxes |
                                         AXMode::kScreenReader | AXMode::kHTML);
+
+// For debugging, test assertions, etc.
+AX_EXPORT std::ostream& operator<<(std::ostream& stream, const AXMode& mode);
 
 }  // namespace ui
 

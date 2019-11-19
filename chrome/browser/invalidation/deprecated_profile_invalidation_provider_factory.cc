@@ -11,6 +11,7 @@
 #include "base/task/post_task.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/gcm/gcm_profile_service_factory.h"
 #include "chrome/browser/gcm/instance_id/instance_id_profile_service_factory.h"
@@ -24,8 +25,6 @@
 #include "components/invalidation/impl/profile_identity_provider.h"
 #include "components/invalidation/impl/profile_invalidation_provider.h"
 #include "components/invalidation/impl/ticl_invalidation_service.h"
-#include "components/invalidation/impl/ticl_profile_settings_provider.h"
-#include "components/invalidation/impl/ticl_settings_provider.h"
 #include "components/invalidation/public/invalidation_service.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/pref_registry/pref_registry_syncable.h"
@@ -35,11 +34,12 @@
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/service_manager_connection.h"
-#include "services/data_decoder/public/cpp/safe_json_parser.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "services/network/public/mojom/network_context.mojom.h"
 
 #if defined(OS_ANDROID)
 #include "components/invalidation/impl/invalidation_service_android.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #else
 #include "chrome/browser/signin/identity_manager_factory.h"
 #endif  // defined(OS_ANDROID)
@@ -61,24 +61,26 @@ namespace {
 void RequestProxyResolvingSocketFactoryOnUIThread(
     Profile* profile,
     base::WeakPtr<TiclInvalidationService> service,
-    network::mojom::ProxyResolvingSocketFactoryRequest request) {
+    mojo::PendingReceiver<network::mojom::ProxyResolvingSocketFactory>
+        receiver) {
   if (!service)
     return;
   network::mojom::NetworkContext* network_context =
       content::BrowserContext::GetDefaultStoragePartition(profile)
           ->GetNetworkContext();
-  network_context->CreateProxyResolvingSocketFactory(std::move(request));
+  network_context->CreateProxyResolvingSocketFactory(std::move(receiver));
 }
 
-// A thread-safe wrapper to request a ProxyResolvingSocketFactoryPtr.
+// A thread-safe wrapper to request a ProxyResolvingSocketFactory.
 void RequestProxyResolvingSocketFactory(
     Profile* profile,
     base::WeakPtr<TiclInvalidationService> service,
-    network::mojom::ProxyResolvingSocketFactoryRequest request) {
-  base::PostTaskWithTraits(
+    mojo::PendingReceiver<network::mojom::ProxyResolvingSocketFactory>
+        receiver) {
+  base::PostTask(
       FROM_HERE, {content::BrowserThread::UI},
       base::BindOnce(&RequestProxyResolvingSocketFactoryOnUIThread, profile,
-                     std::move(service), std::move(request)));
+                     std::move(service), std::move(receiver)));
 }
 
 #endif
@@ -165,11 +167,9 @@ DeprecatedProfileInvalidationProviderFactory::BuildServiceInstanceFor(
   std::unique_ptr<TiclInvalidationService> service =
       std::make_unique<TiclInvalidationService>(
           GetUserAgent(), identity_provider.get(),
-          std::make_unique<TiclProfileSettingsProvider>(profile->GetPrefs()),
           gcm::GCMProfileServiceFactory::GetForProfile(profile)->driver(),
           base::BindRepeating(&RequestProxyResolvingSocketFactory, profile),
-          base::CreateSingleThreadTaskRunnerWithTraits(
-              {content::BrowserThread::IO}),
+          base::CreateSingleThreadTaskRunner({content::BrowserThread::IO}),
           content::BrowserContext::GetDefaultStoragePartition(profile)
               ->GetURLLoaderFactoryForBrowserProcess(),
           content::GetNetworkConnectionTracker());
@@ -177,7 +177,7 @@ DeprecatedProfileInvalidationProviderFactory::BuildServiceInstanceFor(
       new InvalidatorStorage(profile->GetPrefs())));
 
   return new ProfileInvalidationProvider(std::move(service),
-                                         std::move(identity_provider));
+                                         std::move(identity_provider), {});
 #endif
 }
 

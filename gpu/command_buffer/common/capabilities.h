@@ -156,6 +156,7 @@ struct GPU_EXPORT Capabilities {
   bool image_ycbcr_420v_disabled_for_video_frames = false;
   bool image_xr30 = false;
   bool image_xb30 = false;
+  bool image_ycbcr_p010 = false;
   bool render_buffer_format_bgra8888 = false;
   bool occlusion_query = false;
   bool occlusion_query_boolean = false;
@@ -171,6 +172,8 @@ struct GPU_EXPORT Capabilities {
   bool dc_layers = false;
   bool use_dc_overlays_for_video = false;
   bool protected_video_swap_chain = false;
+  bool gpu_vsync = false;
+  bool shared_image_swap_chain = false;
 
   // When this parameter is true, a CHROMIUM image created with RGB format will
   // actually have RGBA format. The client is responsible for handling most of

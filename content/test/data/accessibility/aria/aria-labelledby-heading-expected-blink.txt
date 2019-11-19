@@ -1,6 +1,7 @@
 rootWebArea
-++textField name='h2'
-++++genericContainer
-++heading name='h2' hierarchicalLevel=2
-++++staticText name='h2'
-++++++inlineTextBox name='h2'
+++genericContainer ignored
+++++textField name='h2'
+++++++genericContainer
+++++heading name='h2' hierarchicalLevel=2
+++++++staticText name='h2'
+++++++++inlineTextBox name='h2'

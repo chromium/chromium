@@ -1,4 +1,0 @@
-This tests that drawing a SVG image to a canvas taints the canvas
-
-PASS: getImageData failed. Canvas tainted.
-  

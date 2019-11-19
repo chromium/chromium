@@ -1,4 +1,0 @@
-This tests that drawing a remote SVG image onto a canvas from a data URL taints the canvas
-
-PASS: getImageData failed. Canvas tainted.
-  

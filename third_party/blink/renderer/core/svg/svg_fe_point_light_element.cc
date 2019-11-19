@@ -25,10 +25,8 @@
 
 namespace blink {
 
-inline SVGFEPointLightElement::SVGFEPointLightElement(Document& document)
+SVGFEPointLightElement::SVGFEPointLightElement(Document& document)
     : SVGFELightElement(svg_names::kFEPointLightTag, document) {}
-
-DEFINE_NODE_FACTORY(SVGFEPointLightElement)
 
 scoped_refptr<LightSource> SVGFEPointLightElement::GetLightSource(
     Filter* filter) const {

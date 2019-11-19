@@ -34,15 +34,14 @@
 #include "third_party/blink/renderer/core/xml/xpath_predicate.h"
 #include "third_party/blink/renderer/core/xml/xpath_step.h"
 #include "third_party/blink/renderer/core/xml/xpath_variable_reference.h"
-#include "third_party/blink/renderer/platform/wtf/allocator/partitions.h"
 
-void* YyFastMalloc(size_t size)
-{
-  return WTF::Partitions::FastMalloc(size, nullptr);
-}
-
-#define YYMALLOC YyFastMalloc
-#define YYFREE WTF::Partitions::FastFree
+// The union below must be located on the stack because it contains raw
+// pointers to Oilpan objects. crbug.com/961413
+#define YYSTACK_USE_ALLOCA 1
+// Bison's bug? YYSTACK_ALLOC is not defined if _MSC_VER.
+#if defined(_MSC_VER)
+#define YYSTACK_ALLOC _alloca
+#endif
 
 #define YYENABLE_NLS 0
 #define YYLTYPE_IS_TRIVIAL 1

@@ -1,6 +1,8 @@
 #include "absl/strings/internal/str_format/parser.h"
 
 #include <string.h>
+
+#include "gmock/gmock.h"
 #include "gtest/gtest.h"
 #include "absl/base/macros.h"
 
@@ -8,6 +10,8 @@ namespace absl {
 namespace str_format_internal {
 
 namespace {
+
+using testing::Pair;
 
 TEST(LengthModTest, Names) {
   struct Expectation {
@@ -63,20 +67,21 @@ TEST(ConversionCharTest, Names) {
 
 class ConsumeUnboundConversionTest : public ::testing::Test {
  public:
-  typedef UnboundConversion Props;
-  string_view Consume(string_view* src) {
+  std::pair<string_view, string_view> Consume(string_view src) {
     int next = 0;
-    const char* prev_begin = src->data();
     o = UnboundConversion();  // refresh
-    ConsumeUnboundConversion(src, &o, &next);
-    return {prev_begin, static_cast<size_t>(src->data() - prev_begin)};
+    const char* p = ConsumeUnboundConversion(
+        src.data(), src.data() + src.size(), &o, &next);
+    if (!p) return {{}, src};
+    return {string_view(src.data(), p - src.data()),
+            string_view(p, src.data() + src.size() - p)};
   }
 
   bool Run(const char *fmt, bool force_positional = false) {
-    string_view src = fmt;
     int next = force_positional ? -1 : 0;
     o = UnboundConversion();  // refresh
-    return ConsumeUnboundConversion(&src, &o, &next) && src.empty();
+    return ConsumeUnboundConversion(fmt, fmt + strlen(fmt), &o, &next) ==
+           fmt + strlen(fmt);
   }
   UnboundConversion o;
 };
@@ -104,11 +109,7 @@ TEST_F(ConsumeUnboundConversionTest, ConsumeSpecification) {
   };
   for (const auto& e : kExpect) {
     SCOPED_TRACE(e.line);
-    string_view src = e.src;
-    EXPECT_EQ(e.src, src);
-    string_view out = Consume(&src);
-    EXPECT_EQ(e.out, out);
-    EXPECT_EQ(e.src_post, src);
+    EXPECT_THAT(Consume(e.src), Pair(e.out, e.src_post));
   }
 }
 

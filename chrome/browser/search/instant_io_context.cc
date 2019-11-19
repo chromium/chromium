@@ -82,7 +82,7 @@ bool InstantIOContext::ShouldServiceRequest(
   if (!instant_io_context)
     return false;
 
-  // For PlzNavigate, the process_id for the navigation request will be -1. If
+  // The process_id for the navigation request will be -1. If
   // so, allow this request since it's not going to another renderer.
   return render_process_id == -1 ||
          instant_io_context->IsInstantProcess(render_process_id);

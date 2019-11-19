@@ -103,7 +103,7 @@ class CONTENT_EXPORT PepperAudioEncoderHost
   // The encoder actually doing the work.
   std::unique_ptr<AudioEncoderImpl> encoder_;
 
-  base::WeakPtrFactory<PepperAudioEncoderHost> weak_ptr_factory_;
+  base::WeakPtrFactory<PepperAudioEncoderHost> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(PepperAudioEncoderHost);
 };

@@ -41,7 +41,7 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest_constants.h"
-#include "storage/browser/fileapi/file_system_context.h"
+#include "storage/browser/file_system/file_system_context.h"
 #include "url/gurl.h"
 
 using content::BrowserThread;
@@ -150,12 +150,11 @@ LocalChangeProcessor* GetLocalChangeProcessorAdapter(
 class LocalSyncRunner : public SyncProcessRunner,
                         public LocalFileSyncService::Observer {
  public:
-  LocalSyncRunner(const std::string& name,
-                  SyncFileSystemService* sync_service)
-      : SyncProcessRunner(name, sync_service,
-                          nullptr,  /* timer_helper */
-                          1  /* max_parallel_task */),
-        factory_(this) {}
+  LocalSyncRunner(const std::string& name, SyncFileSystemService* sync_service)
+      : SyncProcessRunner(name,
+                          sync_service,
+                          nullptr, /* timer_helper */
+                          1 /* max_parallel_task */) {}
 
   void StartSync(const SyncStatusCallback& callback) override {
     GetSyncService()->local_service_->ProcessLocalChange(
@@ -185,7 +184,7 @@ class LocalSyncRunner : public SyncProcessRunner,
     callback.Run(status);
   }
 
-  base::WeakPtrFactory<LocalSyncRunner> factory_;
+  base::WeakPtrFactory<LocalSyncRunner> factory_{this};
   DISALLOW_COPY_AND_ASSIGN(LocalSyncRunner);
 };
 
@@ -196,12 +195,12 @@ class RemoteSyncRunner : public SyncProcessRunner,
   RemoteSyncRunner(const std::string& name,
                    SyncFileSystemService* sync_service,
                    RemoteFileSyncService* remote_service)
-      : SyncProcessRunner(name, sync_service,
-                          nullptr,  /* timer_helper */
-                          1  /* max_parallel_task */),
+      : SyncProcessRunner(name,
+                          sync_service,
+                          nullptr, /* timer_helper */
+                          1 /* max_parallel_task */),
         remote_service_(remote_service),
-        last_state_(REMOTE_SERVICE_OK),
-        factory_(this) {}
+        last_state_(REMOTE_SERVICE_OK) {}
 
   void StartSync(const SyncStatusCallback& callback) override {
     remote_service_->ProcessRemoteChange(
@@ -250,7 +249,7 @@ class RemoteSyncRunner : public SyncProcessRunner,
 
   RemoteFileSyncService* remote_service_;
   RemoteServiceState last_state_;
-  base::WeakPtrFactory<RemoteSyncRunner> factory_;
+  base::WeakPtrFactory<RemoteSyncRunner> factory_{this};
   DISALLOW_COPY_AND_ASSIGN(RemoteSyncRunner);
 };
 

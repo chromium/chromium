@@ -17,7 +17,8 @@ class DEVICE_GAMEPAD_EXPORT GamepadHapticsManager
   GamepadHapticsManager();
   ~GamepadHapticsManager() override;
 
-  static void Create(mojom::GamepadHapticsManagerRequest request);
+  static void Create(
+      mojo::PendingReceiver<mojom::GamepadHapticsManager> receiver);
 
   // mojom::GamepadHapticsManager implementation.
   void PlayVibrationEffectOnce(uint32_t pad_index,

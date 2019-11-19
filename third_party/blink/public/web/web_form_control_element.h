@@ -135,6 +135,10 @@ class BLINK_EXPORT WebFormControlElement : public WebElement {
   // overflow.
   unsigned UniqueRendererFormControlId() const;
 
+  // Returns the ax node id of the form control element in the accessibility
+  // tree. The ax node id is consistent across renderer and browser processes.
+  int32_t GetAxId() const;
+
 #if INSIDE_BLINK
   WebFormControlElement(HTMLFormControlElement*);
   WebFormControlElement& operator=(HTMLFormControlElement*);

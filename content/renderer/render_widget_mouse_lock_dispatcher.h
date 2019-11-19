@@ -27,7 +27,8 @@ class RenderWidgetMouseLockDispatcher : public MouseLockDispatcher {
 
  private:
   // MouseLockDispatcher implementation.
-  void SendLockMouseRequest() override;
+  void SendLockMouseRequest(blink::WebLocalFrame* requester_frame,
+                            bool request_unadjusted_movement) override;
   void SendUnlockMouseRequest() override;
 
   void OnLockMouseACK(bool succeeded);

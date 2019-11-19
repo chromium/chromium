@@ -1,0 +1,13 @@
+Tests the node model.
+
+Original lengths
+Number of ports: 2
+
+Testing node size
+width greater than 0: true
+height greater than 0: true
+
+Test adding param port
+Number of ports: 3
+height increases: true
+

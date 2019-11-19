@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "content/public/common/console_message_level.h"
+#include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
 #include "v8/include/v8.h"
 
 namespace extensions {
@@ -19,7 +19,7 @@ namespace console {
 // Adds |message| to the console of of the |script_context|. If |script_context|
 // is null, LOG()s the message instead.
 void AddMessage(ScriptContext* script_context,
-                content::ConsoleMessageLevel level,
+                blink::mojom::ConsoleMessageLevel level,
                 const std::string& message);
 
 // Logs an Error then crashes the current process.

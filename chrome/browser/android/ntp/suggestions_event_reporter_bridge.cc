@@ -9,6 +9,7 @@
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/time/time.h"
+#include "chrome/android/chrome_jni_headers/SuggestionsEventReporterBridge_jni.h"
 #include "chrome/browser/android/ntp/get_remote_suggestions_scheduler.h"
 #include "chrome/browser/ntp_snippets/content_suggestions_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -17,7 +18,6 @@
 #include "components/ntp_snippets/content_suggestions_service.h"
 #include "components/ntp_snippets/remote/remote_suggestions_scheduler.h"
 #include "components/ntp_snippets/user_classifier.h"
-#include "jni/SuggestionsEventReporterBridge_jni.h"
 #include "net/base/network_change_notifier.h"
 #include "ui/base/window_open_disposition.h"
 

@@ -12,6 +12,7 @@
 
 #include "base/callback_forward.h"
 #include "base/macros.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/views/payments/editor_view_controller.h"
 #include "chrome/browser/ui/views/payments/validation_delegate.h"
 #include "ui/base/models/simple_combobox_model.h"
@@ -151,6 +152,8 @@ class CreditCardEditorViewController : public EditorViewController,
 
   // The list of supported basic card networks.
   std::set<std::string> supported_card_networks_;
+
+  base::WeakPtrFactory<CreditCardEditorViewController> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(CreditCardEditorViewController);
 };

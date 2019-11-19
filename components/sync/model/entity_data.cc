@@ -10,7 +10,6 @@
 
 #include "base/json/json_writer.h"
 #include "base/logging.h"
-#include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/trace_event/memory_usage_estimator.h"
@@ -38,7 +37,7 @@ EntityData::EntityData(EntityData&& other)
       originator_cache_guid(std::move(other.originator_cache_guid)),
       originator_client_item_id(std::move(other.originator_client_item_id)),
       server_defined_unique_tag(std::move(other.server_defined_unique_tag)),
-      non_unique_name(std::move(other.non_unique_name)),
+      name(std::move(other.name)),
       creation_time(other.creation_time),
       modification_time(other.modification_time),
       parent_id(std::move(other.parent_id)),
@@ -46,8 +45,6 @@ EntityData::EntityData(EntityData&& other)
   specifics.Swap(&other.specifics);
   unique_position.Swap(&other.unique_position);
 }
-
-EntityData::EntityData(const EntityData& src) = default;
 
 EntityData::~EntityData() = default;
 
@@ -57,7 +54,7 @@ EntityData& EntityData::operator=(EntityData&& other) {
   originator_cache_guid = std::move(other.originator_cache_guid);
   originator_client_item_id = std::move(other.originator_client_item_id);
   server_defined_unique_tag = std::move(other.server_defined_unique_tag);
-  non_unique_name = std::move(other.non_unique_name);
+  name = std::move(other.name);
   creation_time = other.creation_time;
   modification_time = other.modification_time;
   parent_id = other.parent_id;
@@ -65,41 +62,6 @@ EntityData& EntityData::operator=(EntityData&& other) {
   specifics.Swap(&other.specifics);
   unique_position.Swap(&other.unique_position);
   return *this;
-}
-
-EntityDataPtr EntityData::PassToPtr() {
-  // Check the entity is valid before passing it out.
-  DCHECK(base::IsStringUTF8(non_unique_name));
-
-  EntityDataPtr target;
-  target.swap_value(this);
-  return target;
-}
-
-EntityDataPtr EntityData::UpdateId(const std::string& new_id) const {
-  EntityData entity_data(*this);
-  entity_data.id = new_id;
-  EntityDataPtr target;
-  target.swap_value(&entity_data);
-  return target;
-}
-
-EntityDataPtr EntityData::UpdateClientTagHash(
-    const std::string& new_client_tag_hash) const {
-  EntityData entity_data(*this);
-  entity_data.client_tag_hash = new_client_tag_hash;
-  EntityDataPtr target;
-  target.swap_value(&entity_data);
-  return target;
-}
-
-EntityDataPtr EntityData::UpdateSpecifics(
-    const sync_pb::EntitySpecifics& new_specifics) const {
-  EntityData entity_data(*this);
-  entity_data.specifics = new_specifics;
-  EntityDataPtr target;
-  target.swap_value(&entity_data);
-  return target;
 }
 
 #define ADD_TO_DICT(dict, value) \
@@ -118,11 +80,14 @@ std::unique_ptr<base::DictionaryValue> EntityData::ToDictionaryValue() {
       std::make_unique<base::DictionaryValue>();
   dict->Set("SPECIFICS", EntitySpecificsToValue(specifics));
   ADD_TO_DICT(dict, id);
-  ADD_TO_DICT(dict, client_tag_hash);
+  ADD_TO_DICT(dict, client_tag_hash.value());
   ADD_TO_DICT(dict, originator_cache_guid);
   ADD_TO_DICT(dict, originator_client_item_id);
   ADD_TO_DICT(dict, server_defined_unique_tag);
-  ADD_TO_DICT(dict, non_unique_name);
+  // The string "NON_UNIQUE_NAME" is used in sync-internals to identify the node
+  // title.
+  dict->SetString("NON_UNIQUE_NAME", name);
+  ADD_TO_DICT(dict, name);
   ADD_TO_DICT(dict, parent_id);
   ADD_TO_DICT_WITH_TRANSFORM(dict, ctime, GetTimeDebugString);
   ADD_TO_DICT_WITH_TRANSFORM(dict, mtime, GetTimeDebugString);
@@ -142,24 +107,11 @@ size_t EntityData::EstimateMemoryUsage() const {
   memory_usage += EstimateMemoryUsage(originator_cache_guid);
   memory_usage += EstimateMemoryUsage(originator_client_item_id);
   memory_usage += EstimateMemoryUsage(server_defined_unique_tag);
-  memory_usage += EstimateMemoryUsage(non_unique_name);
+  memory_usage += EstimateMemoryUsage(name);
   memory_usage += EstimateMemoryUsage(specifics);
   memory_usage += EstimateMemoryUsage(parent_id);
   memory_usage += EstimateMemoryUsage(unique_position);
   return memory_usage;
-}
-
-void EntityDataTraits::SwapValue(EntityData* dest, EntityData* src) {
-  std::swap(*dest, *src);
-}
-
-bool EntityDataTraits::HasValue(const EntityData& value) {
-  return !value.client_tag_hash.empty() || !value.id.empty();
-}
-
-const EntityData& EntityDataTraits::DefaultValue() {
-  static base::NoDestructor<EntityData> default_instance;
-  return *default_instance;
 }
 
 void PrintTo(const EntityData& entity_data, std::ostream* os) {

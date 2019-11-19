@@ -18,8 +18,7 @@ HttpConnection::HttpConnection(std::unique_ptr<StreamSocket> socket,
                                const HandleRequestCallback& callback)
     : socket_(std::move(socket)),
       callback_(callback),
-      read_buf_(base::MakeRefCounted<IOBufferWithSize>(4096)),
-      weak_factory_(this) {}
+      read_buf_(base::MakeRefCounted<IOBufferWithSize>(4096)) {}
 
 HttpConnection::~HttpConnection() {
   weak_factory_.InvalidateWeakPtrs();
@@ -55,10 +54,11 @@ bool HttpConnection::ConsumeData(int size) {
 void HttpConnection::SendInternal(const base::Closure& callback,
                                   scoped_refptr<DrainableIOBuffer> buf) {
   while (buf->BytesRemaining() > 0) {
-    int rv = socket_->Write(buf.get(), buf->BytesRemaining(),
-                            base::Bind(&HttpConnection::OnSendInternalDone,
-                                       base::Unretained(this), callback, buf),
-                            TRAFFIC_ANNOTATION_FOR_TESTS);
+    int rv =
+        socket_->Write(buf.get(), buf->BytesRemaining(),
+                       base::BindOnce(&HttpConnection::OnSendInternalDone,
+                                      base::Unretained(this), callback, buf),
+                       TRAFFIC_ANNOTATION_FOR_TESTS);
     if (rv == ERR_IO_PENDING)
       return;
 

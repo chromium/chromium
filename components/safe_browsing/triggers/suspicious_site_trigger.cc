@@ -66,9 +66,8 @@ SuspiciousSiteTrigger::SuspiciousSiteTrigger(
       prefs_(prefs),
       url_loader_factory_(url_loader_factory),
       history_service_(history_service),
-      task_runner_(base::CreateSingleThreadTaskRunnerWithTraits(
-          {content::BrowserThread::UI})),
-      weak_ptr_factory_(this) {}
+      task_runner_(
+          base::CreateSingleThreadTaskRunner({content::BrowserThread::UI})) {}
 
 SuspiciousSiteTrigger::~SuspiciousSiteTrigger() {}
 
@@ -94,7 +93,7 @@ bool SuspiciousSiteTrigger::MaybeStartReport() {
 
   security_interstitials::UnsafeResource resource;
   resource.threat_type = SB_THREAT_TYPE_SUSPICIOUS_SITE;
-  resource.url = web_contents()->GetURL();
+  resource.url = web_contents()->GetLastCommittedURL();
   resource.web_contents_getter = resource.GetWebContentsGetter(
       web_contents()->GetMainFrame()->GetProcess()->GetID(),
       web_contents()->GetMainFrame()->GetRoutingID());

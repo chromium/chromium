@@ -11,7 +11,8 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/services/secure_channel/public/mojom/secure_channel.mojom.h"
-#include "mojo/public/cpp/bindings/binding.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 
 namespace chromeos {
 
@@ -37,8 +38,9 @@ class ChannelImpl : public mojom::Channel {
   explicit ChannelImpl(Delegate* delegate);
   ~ChannelImpl() override;
 
-  // Generates a ChannelPtr for this instance; can only be called once.
-  mojom::ChannelPtr GenerateInterfacePtr();
+  // Generates a mojo::PendingRemote<Channel> for this instance; can only be
+  // called once.
+  mojo::PendingRemote<mojom::Channel> GenerateRemote();
 
   // Should be called when the underlying connection to the remote device has
   // been disconnected (e.g., because the other device closed the connection or
@@ -58,9 +60,9 @@ class ChannelImpl : public mojom::Channel {
   void OnBindingDisconnected();
 
   Delegate* delegate_;
-  mojo::Binding<mojom::Channel> binding_;
+  mojo::Receiver<mojom::Channel> receiver_{this};
 
-  base::WeakPtrFactory<ChannelImpl> weak_ptr_factory_;
+  base::WeakPtrFactory<ChannelImpl> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ChannelImpl);
 };

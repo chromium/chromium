@@ -15,12 +15,20 @@ CastWindowManagerDefault::~CastWindowManagerDefault() {}
 
 void CastWindowManagerDefault::TearDown() {}
 void CastWindowManagerDefault::AddWindow(gfx::NativeView window) {}
-void CastWindowManagerDefault::SetWindowId(gfx::NativeView window,
-                                           WindowId window_id) {}
-void CastWindowManagerDefault::InjectEvent(ui::Event* event) {}
+
 gfx::NativeView CastWindowManagerDefault::GetRootWindow() {
   return nullptr;
 }
+std::vector<CastWindowManager::WindowId>
+CastWindowManagerDefault::GetWindowOrder() {
+  return std::vector<CastWindowManager::WindowId>();
+}
+
+void CastWindowManagerDefault::InjectEvent(ui::Event* event) {}
+void CastWindowManagerDefault::SetZOrder(gfx::NativeView window,
+                                         mojom::ZOrder z_order) {}
+void CastWindowManagerDefault::AddObserver(Observer* observer) {}
+void CastWindowManagerDefault::RemoveObserver(Observer* observer) {}
 
 // Register a new handler for system gesture events.
 void CastWindowManagerDefault::AddGestureHandler(CastGestureHandler* handler) {}
@@ -34,5 +42,8 @@ void CastWindowManagerDefault::AddTouchActivityObserver(
     CastTouchActivityObserver* observer) {}
 void CastWindowManagerDefault::RemoveTouchActivityObserver(
     CastTouchActivityObserver* observer) {}
+
+void CastWindowManagerDefault::SetEnableRoundedCorners(bool enable) {}
+void CastWindowManagerDefault::NotifyColorInversionEnabled(bool enabled) {}
 
 }  // namespace chromecast

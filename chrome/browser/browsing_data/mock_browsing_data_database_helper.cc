@@ -24,7 +24,7 @@ void MockBrowsingDataDatabaseHelper::StartFetching(FetchCallback callback) {
 
 void MockBrowsingDataDatabaseHelper::DeleteDatabase(const url::Origin& origin) {
   const std::string identifier = storage::GetIdentifierFromOrigin(origin);
-  ASSERT_TRUE(base::ContainsKey(databases_, identifier));
+  ASSERT_TRUE(base::Contains(databases_, identifier));
   last_deleted_origin_ = identifier;
   databases_[identifier] = false;
 }

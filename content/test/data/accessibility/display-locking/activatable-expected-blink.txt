@@ -1,0 +1,13 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer
+++++++++staticText name='<newline>    '
+++++++++genericContainer
+++++++++++staticText name='child'
+++++++++staticText name='<newline>    '
+++++++++genericContainer
+++++++++++staticText name='nested locked element!'
+++++++++staticText name='<newline>    '
+++++++++genericContainer
+++++++++staticText name='<newline>  '

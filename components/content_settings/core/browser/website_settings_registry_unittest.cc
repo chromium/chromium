@@ -26,11 +26,11 @@ class WebsiteSettingsRegistryTest : public testing::Test {
 };
 
 TEST_F(WebsiteSettingsRegistryTest, Get) {
-  // CONTENT_SETTINGS_TYPE_AUTO_SELECT_CERTIFICATE should be registered.
+  // ContentSettingsType::AUTO_SELECT_CERTIFICATE should be registered.
   const WebsiteSettingsInfo* info =
-      registry()->Get(CONTENT_SETTINGS_TYPE_AUTO_SELECT_CERTIFICATE);
+      registry()->Get(ContentSettingsType::AUTO_SELECT_CERTIFICATE);
   ASSERT_TRUE(info);
-  EXPECT_EQ(CONTENT_SETTINGS_TYPE_AUTO_SELECT_CERTIFICATE, info->type());
+  EXPECT_EQ(ContentSettingsType::AUTO_SELECT_CERTIFICATE, info->type());
   EXPECT_EQ("auto-select-certificate", info->name());
 }
 
@@ -42,9 +42,9 @@ TEST_F(WebsiteSettingsRegistryTest, GetByName) {
   const WebsiteSettingsInfo* info =
       registry()->GetByName("auto-select-certificate");
   ASSERT_TRUE(info);
-  EXPECT_EQ(CONTENT_SETTINGS_TYPE_AUTO_SELECT_CERTIFICATE, info->type());
+  EXPECT_EQ(ContentSettingsType::AUTO_SELECT_CERTIFICATE, info->type());
   EXPECT_EQ("auto-select-certificate", info->name());
-  EXPECT_EQ(registry()->Get(CONTENT_SETTINGS_TYPE_AUTO_SELECT_CERTIFICATE),
+  EXPECT_EQ(registry()->Get(ContentSettingsType::AUTO_SELECT_CERTIFICATE),
             info);
 
   // Register a new setting.
@@ -56,7 +56,7 @@ TEST_F(WebsiteSettingsRegistryTest, GetByName) {
                        WebsiteSettingsInfo::INHERIT_IN_INCOGNITO);
   info = registry()->GetByName("test");
   ASSERT_TRUE(info);
-  EXPECT_EQ(10, info->type());
+  EXPECT_EQ(static_cast<ContentSettingsType>(10), info->type());
   EXPECT_EQ("test", info->name());
   EXPECT_EQ(registry()->Get(static_cast<ContentSettingsType>(10)), info);
 }
@@ -64,20 +64,20 @@ TEST_F(WebsiteSettingsRegistryTest, GetByName) {
 TEST_F(WebsiteSettingsRegistryTest, GetPlatformDependent) {
 #if defined(OS_IOS)
   // App banner shouldn't be registered on iOS.
-  EXPECT_FALSE(registry()->Get(CONTENT_SETTINGS_TYPE_APP_BANNER));
+  EXPECT_FALSE(registry()->Get(ContentSettingsType::APP_BANNER));
 #else
   // App banner should be registered on other platforms.
-  EXPECT_TRUE(registry()->Get(CONTENT_SETTINGS_TYPE_APP_BANNER));
+  EXPECT_TRUE(registry()->Get(ContentSettingsType::APP_BANNER));
 #endif
 
   // Auto select certificate is registered on all platforms.
-  EXPECT_TRUE(registry()->Get(CONTENT_SETTINGS_TYPE_AUTO_SELECT_CERTIFICATE));
+  EXPECT_TRUE(registry()->Get(ContentSettingsType::AUTO_SELECT_CERTIFICATE));
 }
 
 TEST_F(WebsiteSettingsRegistryTest, Properties) {
   // "auto-select-certificate" should be registered.
   const WebsiteSettingsInfo* info =
-      registry()->Get(CONTENT_SETTINGS_TYPE_AUTO_SELECT_CERTIFICATE);
+      registry()->Get(ContentSettingsType::AUTO_SELECT_CERTIFICATE);
   ASSERT_TRUE(info);
   EXPECT_EQ("profile.content_settings.exceptions.auto_select_certificate",
             info->pref_name());
@@ -126,7 +126,7 @@ TEST_F(WebsiteSettingsRegistryTest, Iteration) {
   bool found = false;
   for (const WebsiteSettingsInfo* info : *registry()) {
     EXPECT_EQ(registry()->Get(info->type()), info);
-    if (info->type() == 10) {
+    if (info->type() == static_cast<ContentSettingsType>(10)) {
       EXPECT_FALSE(found);
       found = true;
     }

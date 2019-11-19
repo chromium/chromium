@@ -27,7 +27,7 @@
 <label for="tl_myAccount_username" class="sm_label">Secure account sign in</label>
 <input value="Email Address" maxlength="60" type="text" class="in_field js_defaultAsLabel" name="logonUsername" id="tl_myAccount_username">
 <input value=" " type="hidden" name="_D:logonUsername">
-<input value="password" autocomplete="off" maxlength="15" type="password" class="in_field js_defaultAsLabel" name="logonPassword" id="tl_myAccount_password">
+<input value="password" maxlength="15" type="password" class="in_field js_defaultAsLabel" name="logonPassword" id="tl_myAccount_password">
 <input value=" " type="hidden" name="_D:logonPassword">
 <a href="https://www.ae.com/web/myaccount/password_assistance.jsp" id="tl_myAccount_forgot">Forgot Password?</a>
 <input value="Sign In" type="submit" class="sm_bttn" name="/atg/userprofiling/ProfileFormHandler.login" id="tl_myAccount_submit">
@@ -39,8 +39,8 @@
 
 
 
-    
-    
+
+
 <form action="http://www.ae.com/web/storelocator/storeResult.jsp?_DARGS=/web/global/nav/f_nav_findstore.jsp.storelocatorFid" name="storelocator" method="post" id="storelocator">
 <input value="UTF-8" type="hidden" name="_dyncharset">
 </input>
@@ -64,8 +64,8 @@
 
 
 
-    
-    
+
+
 <form action="https://www.ae.com/web/wishlist/nav/f_wishlist_access.jsp?_DARGS=/web/global/nav/f_nav_wishlist.jsp.form_wlloginFid" name="TNwishlistloginform" method="post" id="form_wllogin">
 <input value="UTF-8" type="hidden" name="_dyncharset">
 </input>
@@ -80,7 +80,7 @@
 <label for="tl_wishlist_email" class="sm_label">Access your wish list</label>
 <input value="Email" maxlength="60" type="text" class="in_field js_defaultAsLabel" name="username" id="tl_wishlist_email">
 <input value=" " type="hidden" name="_D:username">
-<input value="Password" autocomplete="off" type="password" class="in_field js_defaultAsLabel" name="password" id="tl_wishlist_password">
+<input value="Password" type="password" class="in_field js_defaultAsLabel" name="password" id="tl_wishlist_password">
 <input value=" " type="hidden" name="_D:password">
 <a href="https://www.ae.com/web/myaccount/password_assistance.jsp" id="tl_wishlist_forgot">Forgot Password?</a>
 <input value="Sign In" type="submit" class="sm_bttn" name="/atg/userprofiling/ProfileFormHandler.login" id="tl_wishlist_submit">
@@ -90,7 +90,7 @@
 </form>
 
 
-  
+
 <form action="http://www.ae.com/web/wishlist/search_wishlist.jsp?_DARGS=/web/global/nav/f_nav_wishlist.jsp.form_glsearchFid" name="TNwishlistsearchform" method="post" id="form_glsearch">
 <input value="UTF-8" type="hidden" name="_dyncharset">
 </input>
@@ -497,13 +497,13 @@
 </span>
 </label>
 <div class="checkoutInputLeft">
-<input type="text" name="giftNumEntry" id="giftNumEntry" class="checkoutInput giftNumEntryField" value="" maxlength="19" autocomplete="off" />
+<input type="text" name="giftNumEntry" id="giftNumEntry" class="checkoutInput giftNumEntryField" value="" maxlength="19" />
 </div>
 </div>
 <div class="inputLabelHolder">
 <label for="pinNumEntry">PIN:</label>
 <div class="checkoutInputLeft">
-<input type="text" autocomplete="off" name="pinNumEntry" id="pinNumEntry" class="checkoutInput pinNumEntryField" value="" maxlength="4" autocomplete="off" />
+<input type="text" name="pinNumEntry" id="pinNumEntry" class="checkoutInput pinNumEntryField" value="" maxlength="4" />
 </div>
 </div>
 <input value="Add Card" width="79" type="image" class="addGCbtn" src="#" name="/aeo/commerce/order/checkout/AeoGiftCardPaymentHandler.applyGiftCard" id="applyGiftCardBtn">
@@ -586,7 +586,7 @@
 <div id="ccNumberHolderCCField" class="inputLabelHolder">
 <label for="ccNumberCCField">Card Number:</label>
 <div class="checkoutInputLeft">
-<input type="text" name="ccNumber" id="ccNumberCCField" size="30" maxlength="16" value="" class="checkoutInput" autocomplete="off"/>
+<input type="text" name="ccNumber" id="ccNumberCCField" size="30" maxlength="16" value="" class="checkoutInput"/>
 </div>
 </div>
 <div id="expDateCCField" class="inputLabelHolder">
@@ -648,7 +648,7 @@
 </span>
 </label>
 <div class="checkoutInputLeft">
-<input type="text" name="ccSecCode" id="ccSecCodeCCField" size="4" maxlength="4" value="" class="checkoutInput" autocomplete="off"/>
+<input type="text" name="ccSecCode" id="ccSecCodeCCField" size="4" maxlength="4" value="" class="checkoutInput"/>
 </div>
 </div>
 </div>
@@ -838,7 +838,7 @@
 </span>
 </label>
 <div class="checkoutInputLeft">
-<input type="text" name="SSN" size="4" maxlength="4" value="" id="SSNBMLField" class="checkoutInput" autocomplete="off" />
+<input type="text" name="SSN" size="4" maxlength="4" value="" id="SSNBMLField" class="checkoutInput" />
 </div>
 </div>
 <div style="clear:both;">
@@ -1790,7 +1790,7 @@ Qty: 1 &nbsp;
 </span>
 </label>
 <div style="float: left;" class="checkoutInputLeft">
-<input value="" autocomplete="off" maxlength="25" type="text" class="checkoutInput" size="25" name="CouponCode" id="discountCodeField">
+<input value="" maxlength="25" type="text" class="checkoutInput" size="25" name="CouponCode" id="discountCodeField">
 <input value=" " type="hidden" name="_D:CouponCode">
 </div>
 <div style="float: left;">

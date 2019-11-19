@@ -13,7 +13,8 @@ enum class ImeSwitchType {
   // added at the end (otherwise it will cause problems interpreting logs)
   kTray = 0,
   kAccelerator = 1,
-  kCount = 2,
+  kModeChangeKey = 2,
+  kMaxValue = kModeChangeKey,
 };
 
 }  // namespace ash

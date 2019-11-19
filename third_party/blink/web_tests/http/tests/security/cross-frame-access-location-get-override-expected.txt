@@ -3,5 +3,5 @@
 PASS: canGet('targetWindow.location.assign') should be 'false' and is.
 PASS: canGet('targetWindow.location.reload') should be 'false' and is.
 PASS: canGet('targetWindow.location.replace') should be 'true' and is.
-PASS: toString('targetWindow.location.replace') should be 'function () { [native code] }' and is.
+PASS: targetWindow.location.replace.name should be '' and is.
 

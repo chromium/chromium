@@ -6,8 +6,8 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
+#include "components/crash/android/jni_headers/CrashKeys_jni.h"
 #include "components/crash/core/common/crash_key.h"
-#include "jni/CrashKeys_jni.h"
 
 namespace {
 
@@ -21,9 +21,10 @@ JavaCrashKey& GetCrashKey(int index) {
       {"application_status", JavaCrashKey::Tag::kArray},
       {"installed_modules", JavaCrashKey::Tag::kArray},
       {"emulated_modules", JavaCrashKey::Tag::kArray},
+      {"dynamic_module_dex_name", JavaCrashKey::Tag::kArray},
   };
   static_assert(
-      base::size(crash_keys) == static_cast<size_t>(CrashKeyIndex::NUM_KEYS),
+      base::size(crash_keys) == static_cast<size_t>(CrashKeyIndex::NUM_ENTRIES),
       "crash_keys out of sync with index enum");
 
   return crash_keys[index];

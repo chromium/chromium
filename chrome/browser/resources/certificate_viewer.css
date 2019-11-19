@@ -10,7 +10,7 @@ body {
 }
 
 body {
-  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
   margin: 0;
 }
 
@@ -56,7 +56,7 @@ h3 {
 
 #usages,
 .groups > div > div {
-  color: #787878;
+  color: #616161;
   line-height: 18px;
   padding-inline-start: 20px;
 }
@@ -77,34 +77,37 @@ tabpanel {
 }
 
 .vertical-box {
-  -webkit-box-align: stretch;
-  -webkit-box-orient: vertical;
-  -webkit-box-pack: start;
-  display: -webkit-box;
+  display: flex;
+  flex-direction: column;
   height: 100%;
-  position: absolute;
+  position: relative;
   width: 100%;
 }
 
+/* The minimum heights defined for the three sections are calculated based on
+ * the percentage of rendered height at 100% scaling. The dialog height is
+ * defined in CertificateViewerDialog::GetDialogSize. */
 #hierarchy-section {
   height: 20%;
+  min-height: 117px;
   top: 0;
 }
 
 #cert-fields-section {
   height: 50%;
-  top: 20%;
+  min-height: 294px;
 }
 
 #cert-field-value-section {
   bottom: 0;
   height: 30%;
+  min-height: 126px;
 }
 
 .section-contents {
-  -webkit-box-flex: 1;
   background: #fff;
   border: 1px solid #c8c8c8;
+  flex: 1 1 auto;
   /* Scrolling should be enabled on all tree views and value field. */
   overflow: auto;
 }

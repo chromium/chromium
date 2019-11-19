@@ -176,8 +176,8 @@ void GetMacAddress(const IsValidMacAddressCallback& is_valid_mac_address,
     LOG(ERROR) << "Could not find appropriate MAC address.";
   }
 
-  base::PostTaskWithTraits(FROM_HERE, {content::BrowserThread::UI},
-                           base::BindOnce(callback, mac_address));
+  base::PostTask(FROM_HERE, {content::BrowserThread::UI},
+                 base::BindOnce(callback, mac_address));
 }
 
 std::string GetRlzMachineId() {
@@ -209,7 +209,7 @@ void GetMacAddressCallback(const DeviceId::IdCallback& callback,
 void DeviceId::GetRawDeviceId(const IdCallback& callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  base::PostTaskWithTraits(
+  base::PostTask(
       FROM_HERE, traits(),
       base::Bind(&GetMacAddress, base::Bind(&DeviceId::IsValidMacAddress),
                  base::Bind(&GetMacAddressCallback, callback)));

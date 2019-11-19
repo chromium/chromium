@@ -1,0 +1,3 @@
+AXInvalidStatusChanged on AXTextField AXDescription="field1"
+AXInvalidStatusChanged on AXTextField AXDescription="field2"
+AXInvalidStatusChanged on AXTextField AXDescription="field3"

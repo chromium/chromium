@@ -24,11 +24,13 @@
 #include "chrome/browser/ui/task_manager/task_manager_columns.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/notification_source.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/base/cocoa/controls/button_utils.h"
 #include "ui/base/l10n/l10n_util_mac.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_util_mac.h"
@@ -46,6 +48,7 @@ bool ShouldUseViewsTaskManager() {
 }  // namespace
 
 @interface TaskManagerWindowController (Private)
+- (base::scoped_nsobject<NSWindow>)createAndLayOutWindow;
 - (NSTableColumn*)addColumnWithData:
     (const task_manager::TableColumnData&)columnData;
 - (void)setUpTableColumns;
@@ -62,12 +65,15 @@ bool ShouldUseViewsTaskManager() {
 
 - (id)initWithTaskManagerMac:(task_manager::TaskManagerMac*)taskManagerMac
                   tableModel:(task_manager::TaskManagerTableModel*)tableModel {
-  NSString* nibpath = [base::mac::FrameworkBundle()
-                        pathForResource:@"TaskManager"
-                                 ofType:@"nib"];
-  if ((self = [super initWithWindowNibPath:nibpath owner:self])) {
+  base::scoped_nsobject<NSWindow> window = [self createAndLayOutWindow];
+  if ((self = [super initWithWindow:window])) {
     taskManagerMac_ = taskManagerMac;
     tableModel_ = tableModel;
+
+    [window setDelegate:self];
+
+    [tableView_ setDelegate:self];
+    [tableView_ setDataSource:self];
 
     if (g_browser_process && g_browser_process->local_state()) {
       size_saver_.reset([[WindowSizeAutosaver alloc]
@@ -76,6 +82,11 @@ bool ShouldUseViewsTaskManager() {
                     path:prefs::kTaskManagerWindowPlacement]);
     }
     [[self window] setExcludedFromWindowsMenu:YES];
+
+    [self setUpTableColumns];
+    [self setUpTableHeaderContextMenu];
+    [self adjustSelectionAndEndProcessButton];
+    [tableView_ sizeToFit];
 
     [self reloadData];
     [self showWindow:self];
@@ -216,22 +227,83 @@ bool ShouldUseViewsTaskManager() {
   tableModel_->ActivateTask(viewToModelMap_[row]);
 }
 
-- (void)awakeFromNib {
-  [self setUpTableColumns];
-  [self setUpTableHeaderContextMenu];
-  [self adjustSelectionAndEndProcessButton];
-
-  [tableView_ setDoubleAction:@selector(tableWasDoubleClicked:)];
-  [tableView_ setIntercellSpacing:NSMakeSize(0.0, 0.0)];
-  [tableView_ sizeToFit];
-}
-
 - (void)dealloc {
   // Paranoia. These should have been nilled out in -windowWillClose: but let's
   // make sure we have no dangling references.
   [tableView_ setDelegate:nil];
   [tableView_ setDataSource:nil];
   [super dealloc];
+}
+
+// Creates a NSWindow for the task manager and lays out the views inside the
+// content view.
+- (base::scoped_nsobject<NSWindow>)createAndLayOutWindow {
+  static constexpr CGFloat kWindowWidth = 480;
+  static constexpr CGFloat kMargin = 20;
+
+  base::scoped_nsobject<NSWindow> window([[NSWindow alloc]
+      initWithContentRect:NSMakeRect(195, 240, kWindowWidth, 270)
+                styleMask:NSWindowStyleMaskTitled | NSWindowStyleMaskClosable |
+                          NSWindowStyleMaskMiniaturizable |
+                          NSWindowStyleMaskResizable
+                  backing:NSBackingStoreBuffered
+                    defer:YES]);
+  [window setMinSize:NSMakeSize(300, 200)];
+  [window setTitle:l10n_util::GetNSString(IDS_TASK_MANAGER_TITLE)];
+
+  NSView* contentView = [window contentView];
+
+  // Create the button that terminates the selected process in the table.
+  endProcessButton_ =
+      [ButtonUtils buttonWithTitle:l10n_util::GetNSString(IDS_TASK_MANAGER_KILL)
+                            action:@selector(killSelectedProcesses:)
+                            target:self];
+  [endProcessButton_ setAutoresizingMask:NSViewMinXMargin | NSViewMaxYMargin];
+  [endProcessButton_ sizeToFit];
+  NSRect buttonFrame = [endProcessButton_ frame];
+  buttonFrame.size.width += kMargin;
+  // Adjust the button's origin so that it is flush with the right-hand side of
+  // the table.
+  buttonFrame.origin.x =
+      NSWidth([contentView frame]) - NSWidth(buttonFrame) - kMargin + 6;
+  // Use only half the margin, since the full margin is too much whitespace.
+  buttonFrame.origin.y = kMargin / 2;
+  [endProcessButton_ setFrame:buttonFrame];
+  [contentView addSubview:endProcessButton_];
+
+  // Create a scroll view to house the table view.
+  CGFloat scrollViewY = NSMaxY(buttonFrame) + kMargin / 2;
+  NSRect scrollViewFrame =
+      NSMakeRect(kMargin, scrollViewY, kWindowWidth - 2 * kMargin,
+                 NSHeight([window frame]) - 2 * kMargin - scrollViewY);
+  base::scoped_nsobject<NSScrollView> scrollView(
+      [[NSScrollView alloc] initWithFrame:scrollViewFrame]);
+  [scrollView setAutoresizesSubviews:YES];
+  [scrollView setAutoresizingMask:NSViewWidthSizable | NSViewHeightSizable];
+  [scrollView setBorderType:NSBezelBorder];
+  [scrollView setFocusRingType:NSFocusRingTypeNone];
+  [scrollView setHasVerticalScroller:YES];
+  [[scrollView verticalScroller] setControlSize:NSControlSizeSmall];
+  [contentView addSubview:scrollView];
+
+  // Create the table view. The data source and delegate are connected in
+  // the designated initializer.
+  base::scoped_nsobject<NSTableView> tableView(
+      [[NSTableView alloc] initWithFrame:NSMakeRect(0, 0, 400, 200)]);
+  [tableView setAllowsColumnReordering:NO];
+  [tableView setAllowsMultipleSelection:YES];
+  [tableView setAutosaveTableColumns:NO];
+  [tableView
+      setColumnAutoresizingStyle:NSTableViewUniformColumnAutoresizingStyle];
+  [tableView setDoubleAction:@selector(tableWasDoubleClicked:)];
+  [tableView setFocusRingType:NSFocusRingTypeNone];
+  [tableView setIntercellSpacing:NSMakeSize(0, 0)];
+  [tableView setUsesAlternatingRowBackgroundColors:YES];
+  tableView_ = tableView.get();
+
+  [scrollView setDocumentView:tableView];
+
+  return window;
 }
 
 // Adds a column which has the given string id as title. |isVisible| specifies
@@ -481,13 +553,24 @@ bool ShouldUseViewsTaskManager() {
   if ([[tableColumn identifier] intValue] == IDS_TASK_MANAGER_TASK_COLUMN) {
     DCHECK([cell isKindOfClass:[NSButtonCell class]]);
     NSButtonCell* buttonCell = static_cast<NSButtonCell*>(cell);
+
     NSString* title = [self modelTextForRow:rowIndex
                                     column:[[tableColumn identifier] intValue]];
-    [buttonCell setTitle:title];
-    [buttonCell
-        setImage:taskManagerMac_->GetImageForRow(viewToModelMap_[rowIndex])];
-    [buttonCell setRefusesFirstResponder:YES];  // Don't push in like a button.
-    [buttonCell setHighlightsBy:NSNoCellMask];
+    NSColor* textColor = [tableView isRowSelected:rowIndex]
+                             ? [NSColor alternateSelectedControlTextColor]
+                             : [NSColor labelColor];
+    NSAttributedString* attributedTitle = [[[NSAttributedString alloc]
+        initWithString:title
+            attributes:@{
+              NSForegroundColorAttributeName : textColor,
+              NSFontAttributeName : cell.font
+            }] autorelease];
+    buttonCell.attributedTitle = attributedTitle;
+
+    buttonCell.image =
+        taskManagerMac_->GetImageForRow(viewToModelMap_[rowIndex]);
+    buttonCell.refusesFirstResponder = YES;  // Don't push in like a button.
+    buttonCell.highlightsBy = NSNoCellMask;
   }
 
   return cell;

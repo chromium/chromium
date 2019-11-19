@@ -92,6 +92,19 @@ DefaultWebClientState GetDefaultBrowser();
 // user. This method is very fast so it can be invoked in the UI thread.
 bool IsFirefoxDefaultBrowser();
 
+#if defined(OS_WIN)
+// Returns true if IE is likely to be the default browser for the current
+// user. This method is very fast so it can be invoked in the UI thread.
+bool IsIEDefaultBrowser();
+
+// Returns the install id of the installation set as default browser. If no
+// installation of Firefox is set as the default browser, returns an empty
+// string.
+// TODO(crbug/1011830): This should return the install id of the stable
+// version if no version of Firefox is set as default browser.
+std::string GetFirefoxProgIdSuffix();
+#endif
+
 // Attempt to determine if this instance of Chrome is the default client
 // application for the given protocol and return the appropriate state.
 DefaultWebClientState IsDefaultProtocolClient(const std::string& protocol);

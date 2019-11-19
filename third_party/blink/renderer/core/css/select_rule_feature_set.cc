@@ -30,9 +30,10 @@
 
 #include "third_party/blink/renderer/core/css/select_rule_feature_set.h"
 
+#include <bitset>
 #include "third_party/blink/renderer/core/css/css_selector.h"
 #include "third_party/blink/renderer/core/css/css_selector_list.h"
-#include "third_party/blink/renderer/platform/wtf/bit_vector.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
 
@@ -71,8 +72,7 @@ bool SelectRuleFeatureSet::CheckSelectorsForClassChange(
 
   // Class vectors tend to be very short. This is faster than using a hash
   // table.
-  BitVector remaining_class_bits;
-  remaining_class_bits.EnsureSize(old_classes.size());
+  WTF::Vector<bool> remaining_class_bits(old_classes.size());
 
   for (unsigned i = 0; i < new_classes.size(); ++i) {
     bool found = false;
@@ -81,7 +81,7 @@ bool SelectRuleFeatureSet::CheckSelectorsForClassChange(
         // Mark each class that is still in the newClasses so we can skip doing
         // an n^2 search below when looking for removals. We can't break from
         // this loop early since a class can appear more than once.
-        remaining_class_bits.QuickSet(j);
+        remaining_class_bits[j] = true;
         found = true;
       }
     }
@@ -93,7 +93,7 @@ bool SelectRuleFeatureSet::CheckSelectorsForClassChange(
   }
 
   for (unsigned i = 0; i < old_classes.size(); ++i) {
-    if (remaining_class_bits.QuickGet(i))
+    if (remaining_class_bits[i])
       continue;
 
     // Class was removed.

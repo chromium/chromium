@@ -1,0 +1,7 @@
+ROLE_SYSTEM_GROUPING FOCUSABLE
+++ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE
+++++IA2_ROLE_LANDMARK name='Page 1' READONLY
+++++++IA2_ROLE_PARAGRAPH READONLY
+++++++++ROLE_SYSTEM_STATICTEXT name='Hello,<newline> world!<newline><newline>Goodbye,<newline> world!<newline>' READONLY
+++++++IA2_ROLE_PARAGRAPH READONLY
+++++++++ROLE_SYSTEM_STATICTEXT name='This is some text abc<newline>def' READONLY

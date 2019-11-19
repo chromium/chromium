@@ -55,7 +55,7 @@ goog.forwardDeclare('jspb.BinaryMessage');
 goog.forwardDeclare('jspb.BinaryReader');
 goog.forwardDeclare('jspb.BinaryWriter');
 goog.forwardDeclare('jspb.Message');
-goog.forwardDeclare('jsproto.BinaryExtension');
+goog.forwardDeclare('jsprotolib.BinaryExtension');
 
 
 
@@ -122,7 +122,7 @@ jspb.RepeatedFieldType;
              !Uint8Array|
              !jspb.ConstBinaryMessage|
              !jspb.BinaryMessage|
-             !jsproto.BinaryExtension}
+             !jsprotolib.BinaryExtension}
  */
 jspb.AnyFieldType;
 
@@ -174,7 +174,7 @@ jspb.PrunerFunction;
 
 /**
  * A comparer function returns true if two protos are equal.
- * @typedef {!function(?jspb.ConstBinaryMessage,
+ * @typedef {function(?jspb.ConstBinaryMessage,
  *                     ?jspb.ConstBinaryMessage):boolean}
  */
 jspb.ComparerFunction;

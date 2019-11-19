@@ -13,7 +13,7 @@
 namespace digital_asset_links {
 enum class RelationshipCheckResult;
 class DigitalAssetLinksHandler;
-}
+}  // namespace digital_asset_links
 
 namespace customtabs {
 
@@ -22,6 +22,7 @@ class OriginVerifier {
  public:
   OriginVerifier(JNIEnv* env,
                  const base::android::JavaRef<jobject>& obj,
+                 const base::android::JavaRef<jobject>& jweb_contents,
                  const base::android::JavaRef<jobject>& jprofile);
   ~OriginVerifier();
 

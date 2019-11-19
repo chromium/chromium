@@ -7,7 +7,7 @@
 
 #include <windows.h>
 
-#include "base/strings/string16.h"
+#include <string>
 
 namespace sandbox {
 
@@ -60,7 +60,7 @@ class Sid {
   bool IsValid() const;
 
   // Converts the SID to a SDDL format string.
-  bool ToSddlString(base::string16* sddl_string) const;
+  bool ToSddlString(std::wstring* sddl_string) const;
 
  private:
   Sid();

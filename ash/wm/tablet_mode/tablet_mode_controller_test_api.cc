@@ -4,15 +4,25 @@
 
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 
+#include "ash/public/cpp/ash_switches.h"
 #include "ash/shell.h"
-#include "ash/wm/tablet_mode/tablet_mode_window_manager.h"
-#include "ash/wm/tablet_mode/tablet_mode_window_state.h"
+#include "base/command_line.h"
+#include "base/numerics/math_constants.h"
 #include "base/run_loop.h"
 #include "base/time/default_tick_clock.h"
-#include "services/ws/public/cpp/input_devices/input_device_client_test_api.h"
+#include "ui/events/devices/device_data_manager_test_api.h"
 #include "ui/events/devices/input_device.h"
 
 namespace ash {
+
+namespace {
+
+bool IsTabletModeControllerInitialized() {
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(
+      switches::kAshEnableTabletMode);
+}
+
+}  // namespace
 
 TabletModeControllerTestApi::TabletModeControllerTestApi()
     : tablet_mode_controller_(Shell::Get()->tablet_mode_controller()) {}
@@ -20,24 +30,43 @@ TabletModeControllerTestApi::TabletModeControllerTestApi()
 TabletModeControllerTestApi::~TabletModeControllerTestApi() = default;
 
 void TabletModeControllerTestApi::EnterTabletMode() {
-  tablet_mode_controller_->AttemptEnterTabletMode();
+  tablet_mode_controller_->SetEnabledForTest(true);
 }
 
 void TabletModeControllerTestApi::LeaveTabletMode() {
-  tablet_mode_controller_->AttemptLeaveTabletMode();
+  tablet_mode_controller_->SetEnabledForTest(false);
 }
 
 void TabletModeControllerTestApi::AttachExternalMouse() {
-  ws::InputDeviceClientTestApi().SetMouseDevices(
-      {ui::InputDevice(3, ui::InputDeviceType::INPUT_DEVICE_USB, "mouse")});
+  // Calling RunUntilIdle() here is necessary before setting the mouse devices
+  // to prevent the callback from evdev thread to overwrite whatever we set
+  // here below. See `InputDeviceFactoryEvdevProxy::OnStartupScanComplete()`.
   base::RunLoop().RunUntilIdle();
-  tablet_mode_controller_->OnInputDeviceConfigurationChanged(
-      ui::InputDeviceEventObserver::kMouse);
+  ui::DeviceDataManagerTestApi().SetMouseDevices(
+      {ui::InputDevice(3, ui::InputDeviceType::INPUT_DEVICE_USB, "mouse")});
+  if (!IsTabletModeControllerInitialized()) {
+    // The controller is not observing the DeviceDataManager, hence we need to
+    // notify it ourselves.
+    tablet_mode_controller_->OnInputDeviceConfigurationChanged(
+        ui::InputDeviceEventObserver::kMouse);
+  }
+}
+
+void TabletModeControllerTestApi::DettachAllMouseDevices() {
+  // See comment in AttachExternalMouse() for why we need RunUntilIdle().
+  base::RunLoop().RunUntilIdle();
+  ui::DeviceDataManagerTestApi().SetMouseDevices({});
+  if (!IsTabletModeControllerInitialized()) {
+    // The controller is not observing the DeviceDataManager, hence we need to
+    // notify it ourselves.
+    tablet_mode_controller_->OnInputDeviceConfigurationChanged(
+        ui::InputDeviceEventObserver::kMouse);
+  }
 }
 
 void TabletModeControllerTestApi::TriggerLidUpdate(const gfx::Vector3dF& lid) {
   scoped_refptr<AccelerometerUpdate> update(new AccelerometerUpdate());
-  update->Set(ACCELEROMETER_SOURCE_SCREEN, lid.x(), lid.y(), lid.z());
+  update->Set(ACCELEROMETER_SOURCE_SCREEN, false, lid.x(), lid.y(), lid.z());
   tablet_mode_controller_->OnAccelerometerUpdated(update);
 }
 
@@ -45,9 +74,9 @@ void TabletModeControllerTestApi::TriggerBaseAndLidUpdate(
     const gfx::Vector3dF& base,
     const gfx::Vector3dF& lid) {
   scoped_refptr<AccelerometerUpdate> update(new AccelerometerUpdate());
-  update->Set(ACCELEROMETER_SOURCE_ATTACHED_KEYBOARD, base.x(), base.y(),
-              base.z());
-  update->Set(ACCELEROMETER_SOURCE_SCREEN, lid.x(), lid.y(), lid.z());
+  update->Set(ACCELEROMETER_SOURCE_ATTACHED_KEYBOARD, false,
+              base.x(), base.y(), base.z());
+  update->Set(ACCELEROMETER_SOURCE_SCREEN, false, lid.x(), lid.y(), lid.z());
   tablet_mode_controller_->OnAccelerometerUpdated(update);
 }
 
@@ -56,9 +85,9 @@ void TabletModeControllerTestApi::OpenLidToAngle(float degrees) {
   DCHECK(degrees <= 360.0f);
 
   float radians = degrees * kDegreesToRadians;
-  gfx::Vector3dF base_vector(0.0f, -kMeanGravity, 0.0f);
-  gfx::Vector3dF lid_vector(0.0f, kMeanGravity * cos(radians),
-                            kMeanGravity * sin(radians));
+  gfx::Vector3dF base_vector(0.0f, -base::kMeanGravityFloat, 0.0f);
+  gfx::Vector3dF lid_vector(0.0f, base::kMeanGravityFloat * cos(radians),
+                            base::kMeanGravityFloat * sin(radians));
   TriggerBaseAndLidUpdate(base_vector, lid_vector);
 }
 
@@ -85,14 +114,13 @@ void TabletModeControllerTestApi::SetTabletMode(bool on) {
       tick_clock()->NowTicks());
 }
 
-bool TabletModeControllerTestApi::GetDeferBoundsUpdates(aura::Window* window) {
-  TabletModeWindowManager* window_manager = tablet_mode_window_manager();
-  if (window_manager == nullptr)
-    return false;
-  TabletModeWindowManager::WindowToState window_state_map =
-      window_manager->window_state_map_;
-  auto iter = window_state_map.find(window);
-  return iter != window_state_map.end() && iter->second->defer_bounds_updates_;
+void TabletModeControllerTestApi::SuspendImminent() {
+  tablet_mode_controller_->SuspendImminent(
+      power_manager::SuspendImminent::Reason::SuspendImminent_Reason_IDLE);
+}
+
+void TabletModeControllerTestApi::SuspendDone(base::TimeDelta sleep_duration) {
+  tablet_mode_controller_->SuspendDone(sleep_duration);
 }
 
 }  // namespace ash

@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_IMAGE_CAPTURE_IMAGE_CAPTURE_IMPL_H_
 
 #include "media/capture/mojom/image_capture.mojom.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 
 namespace content {
 
@@ -14,7 +15,8 @@ class ImageCaptureImpl : public media::mojom::ImageCapture {
   ImageCaptureImpl();
   ~ImageCaptureImpl() override;
 
-  static void Create(media::mojom::ImageCaptureRequest request);
+  static void Create(
+      mojo::PendingReceiver<media::mojom::ImageCapture> receiver);
 
   void GetPhotoState(const std::string& source_id,
                      GetPhotoStateCallback callback) override;

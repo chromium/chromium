@@ -3,11 +3,13 @@ include_rules = [
   "+components/content_settings/core/test",
   "+components/keyed_service/core",
   "+components/pref_registry",
+  "+components/policy",
   "+components/sync_preferences",
   "+components/url_formatter",
   "+extensions/buildflags",
   "+media/base/android",
   "+net/base",
   "+net/cookies",
+  "+ppapi/buildflags",
   "+services/preferences/public",
 ]

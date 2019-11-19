@@ -6,11 +6,12 @@
 #define COMPONENTS_CONTEXTUAL_SEARCH_CONTENT_RENDERER_CONTEXTUAL_SEARCH_WRAPPER_H_
 
 #include "base/macros.h"
-#include "components/contextual_search/content/common/contextual_search_js_api_service.mojom.h"
+#include "components/contextual_search/content/common/mojom/contextual_search_js_api_service.mojom.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_frame_observer.h"
 #include "gin/handle.h"
 #include "gin/wrappable.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 namespace blink {
 class WebFrame;
@@ -56,7 +57,8 @@ class ContextualSearchWrapper : public gin::Wrappable<ContextualSearchWrapper>,
   bool EnsureServiceConnected();
 
   // The service to notify when API calls are made.
-  mojom::ContextualSearchJsApiServicePtr contextual_search_js_api_service_;
+  mojo::Remote<mojom::ContextualSearchJsApiService>
+      contextual_search_js_api_service_;
 
   DISALLOW_COPY_AND_ASSIGN(ContextualSearchWrapper);
 };

@@ -4,113 +4,81 @@
 
 #include "content/browser/appcache/chrome_appcache_service.h"
 
+#include <utility>
+
 #include "base/files/file_path.h"
+#include "base/task/post_task.h"
 #include "content/browser/appcache/appcache_storage_impl.h"
+#include "content/browser/loader/navigation_url_loader_impl.h"
+#include "content/public/browser/browser_context.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
-#include "content/public/browser/resource_context.h"
+#include "content/public/common/content_client.h"
 #include "net/base/net_errors.h"
-#include "net/url_request/url_request_context_getter.h"
 #include "storage/browser/quota/quota_manager.h"
 #include "third_party/blink/public/mojom/appcache/appcache.mojom.h"
 
 namespace content {
 
 ChromeAppCacheService::ChromeAppCacheService(
-    storage::QuotaManagerProxy* quota_manager_proxy)
-    : AppCacheServiceImpl(quota_manager_proxy), resource_context_(nullptr) {}
+    storage::QuotaManagerProxy* quota_manager_proxy,
+    base::WeakPtr<StoragePartitionImpl> partition)
+    : AppCacheServiceImpl(quota_manager_proxy, std::move(partition)) {}
 
-void ChromeAppCacheService::InitializeOnIOThread(
+void ChromeAppCacheService::Initialize(
     const base::FilePath& cache_path,
-    ResourceContext* resource_context,
-    scoped_refptr<net::URLRequestContextGetter> request_context_getter,
+    BrowserContext* browser_context,
     scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   cache_path_ = cache_path;
-  resource_context_ = resource_context;
-
-  // The |request_context_getter| can be NULL in some unit tests.
-  //
-  // TODO(ajwong): TestProfile is difficult to work with. The
-  // SafeBrowsing tests require that GetRequestContext return NULL
-  // so we can't depend on having a non-NULL value here. See crbug/149783.
-  if (request_context_getter)
-    set_request_context(request_context_getter->GetURLRequestContext());
+  DCHECK(browser_context);
+  browser_context_ = browser_context;
 
   // Init our base class.
-  Initialize(cache_path_);
+  AppCacheServiceImpl::Initialize(cache_path_);
   set_appcache_policy(this);
   set_special_storage_policy(special_storage_policy.get());
 }
 
 void ChromeAppCacheService::CreateBackend(
     int process_id,
-    blink::mojom::AppCacheBackendRequest request) {
-  // The process_id is the id of the RenderProcessHost, which can be reused for
-  // a new renderer process if the previous renderer process was shutdown.
-  // It can take some time after shutdown for the pipe error to propagate
-  // and unregister the previous backend. Since the AppCacheService assumes
-  // that there is one backend per process_id, we need to ensure that the
-  // previous backend is unregistered by eagerly unbinding the pipe.
-  Unbind(process_id);
-
-  Bind(std::make_unique<AppCacheBackendImpl>(this, process_id),
-       std::move(request), process_id);
-}
-
-void ChromeAppCacheService::Bind(
-    std::unique_ptr<blink::mojom::AppCacheBackend> backend,
-    blink::mojom::AppCacheBackendRequest request,
-    int process_id) {
-  DCHECK(process_bindings_.find(process_id) == process_bindings_.end());
-  process_bindings_[process_id] =
-      bindings_.AddBinding(std::move(backend), std::move(request));
-}
-
-void ChromeAppCacheService::Unbind(int process_id) {
-  auto it = process_bindings_.find(process_id);
-  if (it != process_bindings_.end()) {
-    bindings_.RemoveBinding(it->second);
-    DCHECK(process_bindings_.find(process_id) == process_bindings_.end());
-  }
-}
-
-void ChromeAppCacheService::UnregisterBackend(
-    AppCacheBackendImpl* backend_impl) {
-  int process_id = backend_impl->process_id();
-  process_bindings_.erase(process_bindings_.find(process_id));
-  AppCacheServiceImpl::UnregisterBackend(backend_impl);
+    int routing_id,
+    mojo::PendingReceiver<blink::mojom::AppCacheBackend> receiver) {
+  receivers_.Add(
+      std::make_unique<AppCacheBackendImpl>(this, process_id, routing_id),
+      std::move(receiver));
 }
 
 void ChromeAppCacheService::Shutdown() {
-  bindings_.CloseAllBindings();
+  receivers_.Clear();
+  partition_ = nullptr;
 }
 
 bool ChromeAppCacheService::CanLoadAppCache(const GURL& manifest_url,
                                             const GURL& first_party) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  // We don't prompt for read access.
-  return GetContentClient()->browser()->AllowAppCache(
-      manifest_url, first_party, resource_context_);
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  return GetContentClient()->browser()->AllowAppCache(manifest_url, first_party,
+                                                      browser_context_);
 }
 
 bool ChromeAppCacheService::CanCreateAppCache(
     const GURL& manifest_url, const GURL& first_party) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  return GetContentClient()->browser()->AllowAppCache(
-      manifest_url, first_party, resource_context_);
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  return GetContentClient()->browser()->AllowAppCache(manifest_url, first_party,
+                                                      browser_context_);
 }
 
 ChromeAppCacheService::~ChromeAppCacheService() {}
 
 void ChromeAppCacheService::DeleteOnCorrectThread() const {
-  if (BrowserThread::CurrentlyOn(BrowserThread::IO)) {
+  if (BrowserThread::CurrentlyOn(BrowserThread::UI)) {
     delete this;
     return;
   }
-  if (BrowserThread::IsThreadInitialized(BrowserThread::IO)) {
-    BrowserThread::DeleteSoon(BrowserThread::IO, FROM_HERE, this);
+  if (BrowserThread::IsThreadInitialized(BrowserThread::UI)) {
+    base::DeleteSoon(FROM_HERE, {BrowserThread::UI}, this);
     return;
   }
   // Better to leak than crash on shutdown.

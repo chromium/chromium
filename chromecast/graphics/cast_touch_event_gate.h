@@ -32,13 +32,9 @@ class CastTouchEventGate : public ui::EventRewriter {
   void RemoveObserver(CastTouchActivityObserver* observer);
 
   // ui::EventRewriter implementation.
-  ui::EventRewriteStatus RewriteEvent(
+  ui::EventDispatchDetails RewriteEvent(
       const ui::Event& event,
-      std::unique_ptr<ui::Event>* rewritten_event) override;
-
-  ui::EventRewriteStatus NextDispatchEvent(
-      const ui::Event& last_event,
-      std::unique_ptr<ui::Event>* new_event) override;
+      const Continuation continuation) override;
 
  private:
   bool enabled_ = false;

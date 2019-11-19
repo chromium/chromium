@@ -30,6 +30,7 @@ source_set("value_store") {
 
   deps = [
     "//base",
+    "//extensions/common",
     "//third_party/leveldatabase",
   ]
 }

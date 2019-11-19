@@ -6,7 +6,6 @@ package org.chromium.android_webview.test;
 
 import static org.junit.Assert.assertEquals;
 
-import android.os.Build;
 import android.support.test.filters.SmallTest;
 import android.view.KeyEvent;
 
@@ -16,10 +15,10 @@ import org.junit.Rule;
 import org.junit.Test;
 
 import org.chromium.android_webview.AwContents;
-import org.chromium.base.ThreadUtils;
-import org.chromium.base.test.util.DisableIf;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.MetricsUtils;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.util.TestWebServer;
 
 import java.util.concurrent.Callable;
@@ -27,7 +26,7 @@ import java.util.concurrent.Callable;
 /**
  * AwAutocompleteTest only runs below Android O.
  */
-@DisableIf.Build(sdk_is_greater_than = Build.VERSION_CODES.N)
+@DisabledTest
 public class AwAutocompleteTest {
     public static final String FILE = "/login.html";
     public static final String TITLE = "DONE";
@@ -53,28 +52,22 @@ public class AwAutocompleteTest {
                 new MetricsUtils.HistogramDelta("Autofill.AutocompleteEnabled", 0 /*false*/);
     }
 
-    private void verifyUmaAutocompleteEnabled(final boolean enabled) throws Throwable {
-        ThreadUtils.runOnUiThreadBlocking(new Runnable() {
-            @Override
-            public void run() {
-                if (enabled) {
-                    assertEquals(1, mAutocompleteEnabled.getDelta());
-                    assertEquals(0, mAutocompleteDisabled.getDelta());
-                } else {
-                    assertEquals(0, mAutocompleteEnabled.getDelta());
-                    assertEquals(1, mAutocompleteDisabled.getDelta());
-                }
+    private void verifyUmaAutocompleteEnabled(final boolean enabled) {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            if (enabled) {
+                assertEquals(1, mAutocompleteEnabled.getDelta());
+                assertEquals(0, mAutocompleteDisabled.getDelta());
+            } else {
+                assertEquals(0, mAutocompleteEnabled.getDelta());
+                assertEquals(1, mAutocompleteDisabled.getDelta());
             }
         });
     }
 
-    private void verifyUmaNotRecorded() throws Throwable {
-        ThreadUtils.runOnUiThreadBlocking(new Runnable() {
-            @Override
-            public void run() {
-                assertEquals(0, mAutocompleteEnabled.getDelta());
-                assertEquals(0, mAutocompleteDisabled.getDelta());
-            }
+    private void verifyUmaNotRecorded() {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            assertEquals(0, mAutocompleteEnabled.getDelta());
+            assertEquals(0, mAutocompleteDisabled.getDelta());
         });
     }
 
@@ -89,7 +82,7 @@ public class AwAutocompleteTest {
     }
 
     private boolean dispatchKeyEvent(final KeyEvent event) throws Throwable {
-        return ThreadUtils.runOnUiThreadBlocking(new Callable<Boolean>() {
+        return TestThreadUtils.runOnUiThreadBlocking(new Callable<Boolean>() {
             @Override
             public Boolean call() {
                 return mTestContainerView.dispatchKeyEvent(event);
@@ -120,13 +113,9 @@ public class AwAutocompleteTest {
         dispatchDownAndUpKeyEvents(KeyEvent.KEYCODE_A);
     }
 
-    private void disableAwAutocomplete() throws Throwable {
-        ThreadUtils.runOnUiThreadBlocking(new Runnable() {
-            @Override
-            public void run() {
-                mAwContents.getSettings().setSaveFormData(false);
-            }
-        });
+    private void disableAwAutocomplete() {
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> mAwContents.getSettings().setSaveFormData(false));
     }
 
     @Before
@@ -140,7 +129,7 @@ public class AwAutocompleteTest {
     }
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
         mWebServer.shutdown();
     }
 

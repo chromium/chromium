@@ -1,0 +1,11 @@
+{
+  "name": "Port connect and disconnect from tab to SW based extension",
+  "version": "0.1",
+  "manifest_version": 2,
+  "description": "Tests long lived connection between tab and SW extension",
+  "content_scripts": [{
+    "matches": ["*://127.0.0.1:*/*"],
+    "js": ["content_script.js"]
+  }],
+  "background": {"service_worker": "service_worker_background.js"}
+}

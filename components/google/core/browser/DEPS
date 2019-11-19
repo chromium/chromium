@@ -1,8 +1,0 @@
-include_rules = [
-  "+components/data_use_measurement/core",
-  "+components/keyed_service/core",
-  "+components/prefs",
-  "+components/pref_registry",
-  "+services/network/public",
-  "+services/network/test",
-]

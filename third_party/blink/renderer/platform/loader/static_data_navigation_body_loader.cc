@@ -4,12 +4,9 @@
 
 #include "third_party/blink/renderer/platform/loader/static_data_navigation_body_loader.h"
 
-#include "third_party/blink/renderer/platform/wtf/time.h"
-
 namespace blink {
 
-StaticDataNavigationBodyLoader::StaticDataNavigationBodyLoader()
-    : weak_factory_(this) {}
+StaticDataNavigationBodyLoader::StaticDataNavigationBodyLoader() {}
 
 StaticDataNavigationBodyLoader::~StaticDataNavigationBodyLoader() = default;
 
@@ -88,10 +85,10 @@ void StaticDataNavigationBodyLoader::Continue() {
     // Clear |client_| to avoid any extra notifications from reentrancy.
     WebNavigationBodyLoader::Client* client = client_;
     client_ = nullptr;
-    client->BodyLoadingFinished(CurrentTimeTicks(), total_encoded_data_length_,
-                                total_encoded_data_length_,
-                                total_encoded_data_length_, false,
-                                base::nullopt);
+    client->BodyLoadingFinished(
+        base::TimeTicks::Now(), total_encoded_data_length_,
+        total_encoded_data_length_, total_encoded_data_length_, false,
+        base::nullopt);
     // |this| can be destroyed from BodyLoadingFinished.
     if (!weak_self)
       return;

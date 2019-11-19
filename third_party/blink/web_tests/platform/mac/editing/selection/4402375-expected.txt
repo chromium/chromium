@@ -2,27 +2,26 @@ EDITING DELEGATE: webViewDidChangeSelection:WebViewDidChangeSelectionNotificatio
 layer at (0,0) size 800x600
   LayoutView at (0,0) size 800x600
 layer at (0,0) size 800x600
-  LayoutBlockFlow {HTML} at (0,0) size 800x600
-    LayoutBlockFlow {BODY} at (8,8) size 784x584
-      LayoutBlockFlow {P} at (0,0) size 784x36
+  LayoutNGBlockFlow {HTML} at (0,0) size 800x600
+    LayoutNGBlockFlow {BODY} at (8,8) size 784x584
+      LayoutNGBlockFlow {P} at (0,0) size 784x36
         LayoutText {#text} at (0,0) size 135x18
           text run at (0,0) width 135: "This is a testcase for "
-        LayoutInline {A} at (0,0) size 154x18 [color=#0000EE]
+        LayoutInline {A} at (134,0) size 154x18 [color=#0000EE]
           LayoutText {#text} at (134,0) size 154x18
             text run at (134,0) width 154: "rdar://problem/4402375"
-        LayoutText {#text} at (287,0) size 774x36
+        LayoutText {#text} at (0,0) size 774x36
           text run at (287,0) width 487: " \"REGRESSION (417.8-TOT): finding text sometimes also selects previous"
           text run at (0,18) width 139: "image (5127) (6451)\""
-      LayoutBlockFlow {P} at (0,70) size 784x36
+      LayoutNGBlockFlow {P} at (0,70) size 784x36
         LayoutText {#text} at (0,0) size 759x36
-          text run at (0,0) width 424: "This test uses a right aligned image next to some left aligned text. "
-          text run at (423,0) width 336: "The image should not be selected, and should not be"
+          text run at (0,0) width 759: "This test uses a right aligned image next to some left aligned text. The image should not be selected, and should not be"
           text run at (0,18) width 612: "included in the selection rect (you won't see the selection rect when you run this test manually)."
-      LayoutBlockFlow {DIV} at (0,122) size 784x18
+      LayoutNGBlockFlow {DIV} at (0,122) size 784x18
         LayoutImage (floating) {IMG} at (708,0) size 76x103
         LayoutText {#text} at (0,0) size 182x18
           text run at (0,0) width 182: "This text should be selected."
 layer at (8,60) size 784x2 clip at (0,0) size 0x0
-  LayoutBlockFlow {HR} at (0,52) size 784x2 [border: (1px inset #EEEEEE)]
+  LayoutNGBlockFlow {HR} at (0,52) size 784x2 [border: (1px inset #EEEEEE)]
 selection start: position 0 of child 1 {#text} of child 6 {DIV} of body
 selection end:   position 29 of child 1 {#text} of child 6 {DIV} of body

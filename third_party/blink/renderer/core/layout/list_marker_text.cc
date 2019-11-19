@@ -515,6 +515,9 @@ static EListStyleType EffectiveListMarkerType(EListStyleType type, int count) {
     case EListStyleType::kUpperAlpha:
     case EListStyleType::kUpperLatin:
       return (count < 1) ? EListStyleType::kDecimal : type;
+    case EListStyleType::kString:
+      NOTREACHED();
+      break;
   }
 
   NOTREACHED();
@@ -590,6 +593,9 @@ UChar Suffix(EListStyleType type, int count) {
     case EListStyleType::kKoreanHanjaFormal:
     case EListStyleType::kKoreanHanjaInformal:
       return 0x3001;
+    case EListStyleType::kString:
+      NOTREACHED();
+      break;
   }
 
   NOTREACHED();
@@ -924,6 +930,10 @@ String GetText(EListStyleType type, int count) {
       return ToGeorgian(count);
     case EListStyleType::kHebrew:
       return ToHebrew(count);
+
+    case EListStyleType::kString:
+      NOTREACHED();
+      break;
   }
 
   NOTREACHED();

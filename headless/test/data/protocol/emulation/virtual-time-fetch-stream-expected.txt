@@ -1,1 +1,3 @@
 Tests that fetching a stream with back pressure does not stall with virtual time enabled.
+Request to http://test.com/index.html, type: Document
+Request to http://test.com/fetch, type: XHR

@@ -8,16 +8,20 @@
 #include <utility>
 #include <vector>
 
+#include "ash/public/cpp/login_screen.h"
+#include "ash/public/cpp/login_screen_model.h"
+#include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/shell_window_ids.h"
-#include "chrome/browser/chromeos/login/screens/gaia_view.h"
 #include "chrome/browser/chromeos/login/ui/login_display_host_mojo.h"
+#include "chrome/browser/chromeos/login/ui/oobe_dialog_size_utils.h"
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/extensions/chrome_extension_web_contents_observer.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/ui/ash/ash_util.h"
 #include "chrome/browser/ui/ash/login_screen_client.h"
-#include "chrome/browser/ui/ash/tablet_mode_client.h"
 #include "chrome/browser/ui/webui/chrome_web_contents_handler.h"
+#include "chrome/browser/ui/webui/chromeos/login/core_oobe_handler.h"
+#include "chrome/browser/ui/webui/chromeos/login/gaia_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/oobe_ui.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/browser/web_contents.h"
@@ -29,6 +33,7 @@
 #include "ui/views/controls/webview/unhandled_keyboard_event_handler.h"
 #include "ui/views/controls/webview/web_dialog_view.h"
 #include "ui/views/focus/focus_manager.h"
+#include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 
 namespace chromeos {
@@ -36,10 +41,21 @@ namespace chromeos {
 namespace {
 
 constexpr char kGaiaURL[] = "chrome://oobe/gaia-signin";
-constexpr int kGaiaDialogHeight = 640;
-constexpr int kGaiaDialogWidth = 768;
 constexpr char kAppLaunchBailout[] = "app_launch_bailout";
+constexpr char kAppLaunchNetworkConfig[] = "app_launch_network_config";
 constexpr char kCancel[] = "cancel";
+
+CoreOobeView::DialogPaddingMode ConvertDialogPaddingMode(
+    OobeDialogPaddingMode padding) {
+  switch (padding) {
+    case OobeDialogPaddingMode::PADDING_AUTO:
+      return CoreOobeView::DialogPaddingMode::MODE_AUTO;
+    case OobeDialogPaddingMode::PADDING_WIDE:
+      return CoreOobeView::DialogPaddingMode::MODE_WIDE;
+    case OobeDialogPaddingMode::PADDING_NARROW:
+      return CoreOobeView::DialogPaddingMode::MODE_NARROW;
+  }
+}
 
 }  // namespace
 
@@ -62,13 +78,13 @@ class OobeWebDialogView : public views::WebDialogView {
 
   bool CheckMediaAccessPermission(content::RenderFrameHost* render_frame_host,
                                   const GURL& security_origin,
-                                  blink::MediaStreamType type) override {
+                                  blink::mojom::MediaStreamType type) override {
     return MediaCaptureDevicesDispatcher::GetInstance()
         ->CheckMediaAccessPermission(render_frame_host, security_origin, type);
   }
 
   bool TakeFocus(content::WebContents* source, bool reverse) override {
-    LoginScreenClient::Get()->login_screen()->FocusLoginShelf(reverse);
+    ash::LoginScreen::Get()->FocusLoginShelf(reverse);
     return true;
   }
 
@@ -83,6 +99,88 @@ class OobeWebDialogView : public views::WebDialogView {
   views::UnhandledKeyboardEventHandler unhandled_keyboard_event_handler_;
 
   DISALLOW_COPY_AND_ASSIGN(OobeWebDialogView);
+};
+
+// View that controls size of OobeUIDialog.
+// Dialog can be shown as a full-screen (in this case it will fit whole screen)
+// except for Virtual Keyboard or as a window.
+// For both dimensions we try to center dialog so that it has size no more than
+// kGaiaDialogMaxSize with margins no less than kGaiaDialogMinMargin on each
+// side.
+// If available height is too small (usually due to virtual keyboard),
+// and calculations above would give total dialog height lesser than
+// kGaiaDialogMinHeight, then margins will be reduced to accommodate minimum
+// height.
+// When no virtual keyboard is displayed, ash shelf height should be excluded
+// from space available for calculations.
+// Host size accounts for virtual keyboard presence, but not for shelf.
+// It is assumed that host view is always a full-screen view on a primary
+// display.
+class LayoutWidgetDelegateView : public views::WidgetDelegateView {
+ public:
+  LayoutWidgetDelegateView(OobeUIDialogDelegate* dialog_delegate,
+                           OobeWebDialogView* oobe_view)
+      : dialog_delegate_(dialog_delegate), oobe_view_(oobe_view) {
+    AddChildView(oobe_view_);
+  }
+
+  ~LayoutWidgetDelegateView() override { delete dialog_delegate_; }
+
+  void SetFullscreen(bool value) {
+    if (fullscreen_ == value)
+      return;
+    fullscreen_ = value;
+    Layout();
+  }
+
+  void SetHasShelf(bool value) {
+    has_shelf_ = value;
+    Layout();
+  }
+
+  OobeDialogPaddingMode padding() { return padding_; }
+
+  // views::WidgetDelegateView:
+  ui::ModalType GetModalType() const override { return ui::MODAL_TYPE_WINDOW; }
+
+  bool ShouldAdvanceFocusToTopLevelWidget() const override { return true; }
+
+  void Layout() override {
+    if (fullscreen_) {
+      for (views::View* child : children()) {
+        child->SetBoundsRect(GetContentsBounds());
+      }
+      padding_ = OobeDialogPaddingMode::PADDING_AUTO;
+      return;
+    }
+
+    gfx::Rect bounds;
+    const int shelf_height =
+        has_shelf_ ? ash::ShelfConfig::Get()->shelf_size() : 0;
+    CalculateOobeDialogBounds(GetContentsBounds(), shelf_height, &bounds,
+                              &padding_);
+
+    for (views::View* child : children()) {
+      child->SetBoundsRect(bounds);
+    }
+  }
+
+  View* GetInitiallyFocusedView() override { return oobe_view_; }
+
+ private:
+  OobeUIDialogDelegate* dialog_delegate_ = nullptr;  // Owned by us.
+  OobeWebDialogView* oobe_view_ = nullptr;  // Owned by views hierarchy.
+
+  // Indicates whether Oobe web view should fully occupy the hosting widget.
+  bool fullscreen_ = false;
+  // Indicates if ash shelf is displayed (and should be excluded from available
+  // space).
+  bool has_shelf_ = true;
+
+  // Tracks dialog margins after last size calculations.
+  OobeDialogPaddingMode padding_ = OobeDialogPaddingMode::PADDING_AUTO;
+
+  DISALLOW_COPY_AND_ASSIGN(LayoutWidgetDelegateView);
 };
 
 class CaptivePortalDialogDelegate
@@ -106,7 +204,7 @@ class CaptivePortalDialogDelegate
         &params, ash::kShellWindowId_LockSystemModalContainer);
 
     widget_ = new views::Widget;
-    widget_->Init(params);
+    widget_->Init(std::move(params));
     widget_->SetBounds(display::Screen::GetScreen()
                            ->GetDisplayNearestWindow(widget_->GetNativeWindow())
                            .work_area());
@@ -204,17 +302,17 @@ class CaptivePortalDialogDelegate
 
 OobeUIDialogDelegate::OobeUIDialogDelegate(
     base::WeakPtr<LoginDisplayHostMojo> controller)
-    : controller_(controller),
-      size_(gfx::Size(kGaiaDialogWidth, kGaiaDialogHeight)) {
-  display_observer_.Add(display::Screen::GetScreen());
-  tablet_mode_observer_.Add(TabletModeClient::Get());
+    : controller_(controller) {
   keyboard_observer_.Add(ChromeKeyboardControllerClient::Get());
 
   accel_map_[ui::Accelerator(
       ui::VKEY_S, ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN)] = kAppLaunchBailout;
+  accel_map_[ui::Accelerator(ui::VKEY_N,
+                             ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN)] =
+      kAppLaunchNetworkConfig;
   accel_map_[ui::Accelerator(ui::VKEY_ESCAPE, 0)] = kCancel;
 
-  DCHECK(!dialog_view_ && !dialog_widget_);
+  DCHECK(!dialog_view_ && !widget_);
   // Life cycle of |dialog_view_| is managed by the widget:
   // Widget owns a root view which has |dialog_view_| as its child view.
   // Before the widget is destroyed, it will clean up the view hierarchy
@@ -222,14 +320,23 @@ OobeUIDialogDelegate::OobeUIDialogDelegate(
   dialog_view_ =
       new OobeWebDialogView(ProfileHelper::GetSigninProfile(), this,
                             std::make_unique<ChromeWebContentsHandler>());
+
   views::Widget::InitParams params(
       views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
-  params.delegate = dialog_view_;
   ash_util::SetupWidgetInitParamsForContainer(
-      &params, ash::kShellWindowId_LockSystemModalContainer);
+      &params, ash::kShellWindowId_LockScreenContainer);
+  layout_view_ = new LayoutWidgetDelegateView(this, dialog_view_);
+  params.delegate = layout_view_;
+  params.opacity = views::Widget::InitParams::TRANSLUCENT_WINDOW;
+  params.show_state = ui::SHOW_STATE_FULLSCREEN;
 
-  dialog_widget_ = new views::Widget;
-  dialog_widget_->Init(params);
+  widget_ = new views::Widget();
+  widget_->Init(std::move(params));
+
+  layout_view_->SetHasShelf(
+      !ChromeKeyboardControllerClient::Get()->is_keyboard_visible());
+
+  dialog_view_->AddObserver(this);
 
   extensions::ChromeExtensionWebContentsObserver::CreateForWebContents(
       dialog_view_->web_contents());
@@ -244,12 +351,9 @@ OobeUIDialogDelegate::OobeUIDialogDelegate(
 }
 
 OobeUIDialogDelegate::~OobeUIDialogDelegate() {
-  // At shutdown, all widgets are closed. The order of destruction maybe
-  // different; i.e. the captive portal dialog might have been destroyed
-  // already. So we check the WeakPtr first.
+  dialog_view_->RemoveObserver(this);
   if (captive_portal_delegate_)
     captive_portal_delegate_->Close();
-
   if (controller_)
     controller_->OnDialogDestroyed(this);
 }
@@ -259,7 +363,7 @@ content::WebContents* OobeUIDialogDelegate::GetWebContents() {
 }
 
 bool OobeUIDialogDelegate::IsVisible() {
-  return dialog_widget_->IsVisible();
+  return widget_->IsVisible();
 }
 
 void OobeUIDialogDelegate::SetShouldDisplayCaptivePortal(bool should_display) {
@@ -267,77 +371,45 @@ void OobeUIDialogDelegate::SetShouldDisplayCaptivePortal(bool should_display) {
 }
 
 void OobeUIDialogDelegate::Show() {
-  dialog_widget_->Show();
-  SetState(ash::mojom::OobeDialogState::GAIA_SIGNIN);
+  widget_->Show();
+  SetState(ash::OobeDialogState::GAIA_SIGNIN);
 
   if (should_display_captive_portal_)
     GetOobeUI()->GetErrorScreen()->FixCaptivePortal();
 }
 
 void OobeUIDialogDelegate::ShowFullScreen() {
-  const gfx::Size& size =
-      display::Screen::GetScreen()
-          ->GetDisplayNearestWindow(dialog_widget_->GetNativeWindow())
-          .size();
-  UpdateSizeAndPosition(size.width(), size.height());
+  layout_view_->SetFullscreen(true);
   Show();
-  showing_fullscreen_ = true;
 }
 
 void OobeUIDialogDelegate::Hide() {
-  if (!dialog_widget_)
+  if (!widget_)
     return;
-  dialog_widget_->Hide();
-  SetState(ash::mojom::OobeDialogState::HIDDEN);
+  widget_->Hide();
+  SetState(ash::OobeDialogState::HIDDEN);
 }
 
 void OobeUIDialogDelegate::Close() {
-  if (!dialog_widget_)
+  if (!widget_)
     return;
   // We do not call LoginScreen::NotifyOobeDialogVisibility here, because this
   // would cause the LoginShelfView to update its button visibility even though
   // the login screen is about to be destroyed. See http://crbug/836172
-  dialog_widget_->Close();
+  widget_->Close();
 }
 
-void OobeUIDialogDelegate::SetState(ash::mojom::OobeDialogState state) {
-  if (!dialog_widget_ || state_ == state)
+void OobeUIDialogDelegate::SetState(ash::OobeDialogState state) {
+  if (!widget_ || state_ == state)
     return;
 
-  // Gaia WebUI is preloaded, so it's possible that WebUI send certain state
+  // Gaia WebUI is preloaded, so it's possible for WebUI to send state updates
   // while the widget is not visible. Defer the state update until Show().
-  if (!dialog_widget_->IsVisible() &&
-      state != ash::mojom::OobeDialogState::HIDDEN) {
+  if (!widget_->IsVisible() && state != ash::OobeDialogState::HIDDEN)
     return;
-  }
 
   state_ = state;
-  LoginScreenClient::Get()->login_screen()->NotifyOobeDialogState(state_);
-}
-
-void OobeUIDialogDelegate::UpdateSizeAndPosition(int width, int height) {
-  size_.SetSize(width, height);
-  if (!dialog_widget_)
-    return;
-
-  // display_manager.js sends the width and height of the content in
-  // updateScreenSize() when we show the app launch splash. Without this if
-  // statement, the dialog would be resized to just fit the content rather than
-  // show fullscreen as expected.
-  if (showing_fullscreen_)
-    return;
-
-  gfx::Rect display_rect =
-      display::Screen::GetScreen()
-          ->GetDisplayNearestWindow(dialog_widget_->GetNativeWindow())
-          .work_area();
-
-  // Place the dialog in the center of the screen.
-  const gfx::Rect bounds(
-      display_rect.x() + (display_rect.width() - size_.width()) / 2,
-      display_rect.y() + (display_rect.height() - size_.height()) / 2,
-      size_.width(), size_.height());
-  dialog_widget_->SetBounds(bounds);
+  ash::LoginScreen::Get()->GetModel()->NotifyOobeDialogState(state_);
 }
 
 OobeUI* OobeUIDialogDelegate::GetOobeUI() const {
@@ -350,31 +422,11 @@ OobeUI* OobeUIDialogDelegate::GetOobeUI() const {
 }
 
 gfx::NativeWindow OobeUIDialogDelegate::GetNativeWindow() const {
-  return dialog_widget_ ? dialog_widget_->GetNativeWindow() : nullptr;
-}
-
-void OobeUIDialogDelegate::OnDisplayMetricsChanged(
-    const display::Display& display,
-    uint32_t changed_metrics) {
-  if (!dialog_widget_)
-    return;
-
-  const display::Display this_display =
-      display::Screen::GetScreen()->GetDisplayNearestWindow(
-          dialog_widget_->GetNativeWindow());
-  if (this_display.id() == display.id())
-    UpdateSizeAndPosition(size_.width(), size_.height());
-}
-
-void OobeUIDialogDelegate::OnTabletModeToggled(bool enabled) {
-  if (!dialog_widget_)
-    return;
-
-  UpdateSizeAndPosition(size_.width(), size_.height());
+  return widget_ ? widget_->GetNativeWindow() : nullptr;
 }
 
 ui::ModalType OobeUIDialogDelegate::GetDialogModalType() const {
-  return ui::MODAL_TYPE_SYSTEM;
+  return ui::MODAL_TYPE_WINDOW;
 }
 
 base::string16 OobeUIDialogDelegate::GetDialogTitle() const {
@@ -389,7 +441,7 @@ void OobeUIDialogDelegate::GetWebUIMessageHandlers(
     std::vector<content::WebUIMessageHandler*>* handlers) const {}
 
 void OobeUIDialogDelegate::GetDialogSize(gfx::Size* size) const {
-  *size = size_;
+  // Dialog will be resized externally by LayoutWidgetDelegateView.
 }
 
 bool OobeUIDialogDelegate::CanResizeDialog() const {
@@ -401,7 +453,7 @@ std::string OobeUIDialogDelegate::GetDialogArgs() const {
 }
 
 void OobeUIDialogDelegate::OnDialogClosed(const std::string& json_retval) {
-  delete this;
+  widget_->Close();
 }
 
 void OobeUIDialogDelegate::OnCloseContents(content::WebContents* source,
@@ -439,11 +491,17 @@ bool OobeUIDialogDelegate::AcceleratorPressed(
   return true;
 }
 
-void OobeUIDialogDelegate::OnKeyboardVisibilityChanged(bool visible) {
-  if (!dialog_widget_)
+void OobeUIDialogDelegate::OnViewBoundsChanged(views::View* observed_view) {
+  if (!widget_)
     return;
+  GetOobeUI()->GetCoreOobeView()->SetDialogPaddingMode(
+      ConvertDialogPaddingMode(layout_view_->padding()));
+}
 
-  UpdateSizeAndPosition(size_.width(), size_.height());
+void OobeUIDialogDelegate::OnKeyboardVisibilityChanged(bool visible) {
+  if (!widget_)
+    return;
+  layout_view_->SetHasShelf(!visible);
 }
 
 void OobeUIDialogDelegate::OnBeforeCaptivePortalShown() {

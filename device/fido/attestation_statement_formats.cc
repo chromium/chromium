@@ -119,7 +119,7 @@ FidoAttestationStatement::FidoAttestationStatement(
 
 FidoAttestationStatement::~FidoAttestationStatement() = default;
 
-cbor::Value::MapValue FidoAttestationStatement::GetAsCBORMap() const {
+cbor::Value FidoAttestationStatement::AsCBOR() const {
   cbor::Value::MapValue attestation_statement_map;
   attestation_statement_map[cbor::Value(kSignatureKey)] =
       cbor::Value(signature_);
@@ -132,7 +132,7 @@ cbor::Value::MapValue FidoAttestationStatement::GetAsCBORMap() const {
   attestation_statement_map[cbor::Value(kX509CertKey)] =
       cbor::Value(std::move(certificate_array));
 
-  return attestation_statement_map;
+  return cbor::Value(std::move(attestation_statement_map));
 }
 
 bool FidoAttestationStatement::IsSelfAttestation() {
@@ -174,7 +174,7 @@ PackedAttestationStatement::PackedAttestationStatement(
 
 PackedAttestationStatement::~PackedAttestationStatement() = default;
 
-cbor::Value::MapValue PackedAttestationStatement::GetAsCBORMap() const {
+cbor::Value PackedAttestationStatement::AsCBOR() const {
   cbor::Value::MapValue attestation_statement_map;
   // alg
   attestation_statement_map[cbor::Value(kAlgorithmKey)] =
@@ -191,7 +191,7 @@ cbor::Value::MapValue PackedAttestationStatement::GetAsCBORMap() const {
     attestation_statement_map[cbor::Value(kX509CertKey)] =
         cbor::Value(std::move(certificate_array));
   }
-  return attestation_statement_map;
+  return cbor::Value(std::move(attestation_statement_map));
 }
 
 bool PackedAttestationStatement::IsSelfAttestation() {

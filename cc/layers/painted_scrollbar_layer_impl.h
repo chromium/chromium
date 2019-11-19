@@ -5,7 +5,6 @@
 #ifndef CC_LAYERS_PAINTED_SCROLLBAR_LAYER_IMPL_H_
 #define CC_LAYERS_PAINTED_SCROLLBAR_LAYER_IMPL_H_
 
-#include "base/macros.h"
 #include "cc/cc_export.h"
 #include "cc/input/scrollbar.h"
 #include "cc/layers/scrollbar_layer_impl_base.h"
@@ -23,7 +22,11 @@ class CC_EXPORT PaintedScrollbarLayerImpl : public ScrollbarLayerImplBase {
       ScrollbarOrientation orientation,
       bool is_left_side_vertical_scrollbar,
       bool is_overlay);
+  PaintedScrollbarLayerImpl(const PaintedScrollbarLayerImpl&) = delete;
   ~PaintedScrollbarLayerImpl() override;
+
+  PaintedScrollbarLayerImpl& operator=(const PaintedScrollbarLayerImpl&) =
+      delete;
 
   // LayerImpl implementation.
   std::unique_ptr<LayerImpl> CreateLayerImpl(LayerTreeImpl* tree_impl) override;
@@ -35,10 +38,12 @@ class CC_EXPORT PaintedScrollbarLayerImpl : public ScrollbarLayerImplBase {
                    AppendQuadsData* append_quads_data) override;
   gfx::Rect GetEnclosingRectInTargetSpace() const override;
 
+  void SetSupportsDragSnapBack(bool supports_drag_snap_back);
+  void SetBackButtonRect(gfx::Rect back_button_rect);
+  void SetForwardButtonRect(gfx::Rect forward_button_rect);
   void SetThumbThickness(int thumb_thickness);
   void SetThumbLength(int thumb_length);
-  void SetTrackStart(int track_start);
-  void SetTrackLength(int track_length);
+  void SetTrackRect(gfx::Rect track_rect);
 
   void set_track_ui_resource_id(UIResourceId uid) {
     track_ui_resource_id_ = uid;
@@ -55,6 +60,11 @@ class CC_EXPORT PaintedScrollbarLayerImpl : public ScrollbarLayerImplBase {
     internal_content_bounds_ = content_bounds;
   }
 
+  bool SupportsDragSnapBack() const override;
+  gfx::Rect BackButtonRect() const override;
+  gfx::Rect ForwardButtonRect() const override;
+  gfx::Rect BackTrackRect() const override;
+  gfx::Rect ForwardTrackRect() const override;
   int ThumbThickness() const override;
 
   LayerTreeSettings::ScrollbarAnimator GetScrollbarAnimator() const override;
@@ -83,12 +93,12 @@ class CC_EXPORT PaintedScrollbarLayerImpl : public ScrollbarLayerImplBase {
   float internal_contents_scale_;
   gfx::Size internal_content_bounds_;
 
+  bool supports_drag_snap_back_;
   int thumb_thickness_;
   int thumb_length_;
-  int track_start_;
-  int track_length_;
-
-  DISALLOW_COPY_AND_ASSIGN(PaintedScrollbarLayerImpl);
+  gfx::Rect back_button_rect_;
+  gfx::Rect forward_button_rect_;
+  gfx::Rect track_rect_;
 };
 
 }  // namespace cc

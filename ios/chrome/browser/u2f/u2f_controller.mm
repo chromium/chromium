@@ -13,8 +13,8 @@
 #include "crypto/random.h"
 #import "ios/chrome/browser/chrome_url_util.h"
 #include "ios/chrome/common/x_callback_url.h"
-#include "ios/web/public/web_state/url_verification_constants.h"
-#import "ios/web/public/web_state/web_state.h"
+#include "ios/web/public/deprecated/url_verification_constants.h"
+#import "ios/web/public/web_state.h"
 #include "net/base/url_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

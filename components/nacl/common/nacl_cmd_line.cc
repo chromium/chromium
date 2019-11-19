@@ -30,6 +30,9 @@ void CopyNaClCommandLineArguments(base::CommandLine* cmd_line) {
 #if defined(OS_MACOSX)
     service_manager::switches::kEnableSandboxLogging,
 #endif
+#if defined(OS_WIN)
+    switches::kDisableHighResTimer,
+#endif
   };
   cmd_line->CopySwitchesFrom(browser_command_line, kSwitchNames,
                              base::size(kSwitchNames));

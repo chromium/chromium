@@ -22,6 +22,7 @@ chrome.fileManagerPrivate.VolumeType = {
   ANDROID_FILES: 'android_files',
   DOCUMENTS_PROVIDER: 'documents_provider',
   TESTING: 'testing',
+  SMB: 'smb',
 };
 
 /** @enum {string} */
@@ -72,6 +73,13 @@ chrome.fileManagerPrivate.MountCompletedStatus = {
   ERROR_INVALID_ARCHIVE: 'error_invalid_archive',
   ERROR_AUTHENTICATION: 'error_authentication',
   ERROR_PATH_UNMOUNTED: 'error_path_unmounted',
+};
+
+/** @enum {string} */
+chrome.fileManagerPrivate.FormatFileSystemType = {
+  VFAT: 'vfat',
+  EXFAT: 'exfat',
+  NTFS: 'ntfs',
 };
 
 /** @enum {string} */
@@ -395,7 +403,9 @@ chrome.fileManagerPrivate.FileWatchEvent;
  *   cellularDisabled: boolean,
  *   searchSuggestEnabled: boolean,
  *   use24hourClock: boolean,
- *   timezone: string
+ *   timezone: string,
+ *   arcEnabled: boolean,
+ *   arcRemovableMediaAccessEnabled: boolean
  * }}
  */
 chrome.fileManagerPrivate.Preferences;
@@ -403,6 +413,8 @@ chrome.fileManagerPrivate.Preferences;
 /**
  * @typedef {{
  *   cellularDisabled: (boolean|undefined),
+ *   arcEnabled: (boolean|undefined),
+ *   arcRemovableMediaAccessEnabled: (boolean|undefined)
  * }}
  */
 chrome.fileManagerPrivate.PreferencesChange;
@@ -418,7 +430,7 @@ chrome.fileManagerPrivate.SearchParams;
 /**
  * @typedef {{
  *   query: string,
- *   types: string,
+ *   types: !chrome.fileManagerPrivate.SearchType,
  *   maxResults: number
  * }}
  */
@@ -431,7 +443,7 @@ chrome.fileManagerPrivate.SearchMetadataParams;
  *   availableOffline: (boolean|undefined)
  * }}
  */
-chrome.fileManagerPrivate.SearchResult;
+chrome.fileManagerPrivate.DriveMetadataSearchResult;
 
 /**
  * @typedef {{
@@ -476,10 +488,21 @@ chrome.fileManagerPrivate.LinuxPackageInfo;
 /**
  * @typedef {{
  * eventType: chrome.fileManagerPrivate.CrostiniEventType,
+ * vmName: string,
  * entries: !Array<!Entry>,
  * }}
  */
 chrome.fileManagerPrivate.CrostiniEvent;
+
+/**
+ * @typedef {{
+ *   name: string,
+ *   packageName: string,
+ *   activityName: string,
+ *   iconSet: !chrome.fileManagerPrivate.IconSet
+ * }}
+ */
+chrome.fileManagerPrivate.AndroidApp;
 
 /**
  * Logout the current user for navigating to the re-authentication screen for
@@ -619,20 +642,6 @@ chrome.fileManagerPrivate.getEntryProperties = function(entries, names,
 chrome.fileManagerPrivate.pinDriveFile = function(entry, pin, callback) {};
 
 /**
- * If |entry| is a Drive file, ensures the file is downloaded to the cache.
- * Otherwise, finishes immediately in success. For example, when the file is
- * under Downloads, MTP, removeable media, or provided by extensions for
- * other cloud storage services than Google Drive, this does nothing.
- * This is a workaround to avoid intermittent and duplicated downloading of
- * a Drive file by current implementation of Drive integration when an
- * extension reads a file sequentially but intermittently.
- * @param {!Entry} entry A regular file entry to be read.
- * @param {function()} callback Callback called after having the file in cache.
- *     runtime.lastError will be set if there was an error.
- */
-chrome.fileManagerPrivate.ensureFileDownloaded = function(entry, callback) {};
-
-/**
  * Resolves file entries in the isolated file system and returns corresponding
  * entries in the external file system mounted to Chrome OS file manager
  * backend. If resolving entry fails, the entry will be just ignored and the
@@ -660,33 +669,12 @@ chrome.fileManagerPrivate.addMount = function(source, callback) {};
 chrome.fileManagerPrivate.removeMount = function(volumeId) {};
 
 /**
- * Marks a cache file of Drive as mounted or unmounted.
- * Does nothing if the file is not under Drive directory.
- * @param {string} sourcePath Mounted source file. Relative file path within
- *     external file system.
- * @param {boolean} isMounted Mark as mounted if true. Mark as unmounted
- *     otherwise.
- * @param {function()} callback Completion callback. runtime.lastError will be
- *     set if there was an error.
- */
-chrome.fileManagerPrivate.markCacheAsMounted = function(
-    sourcePath, isMounted, callback) {};
-
-/**
  * Get the list of mounted volumes. |callback|
  * @param {function((!Array<!chrome.fileManagerPrivate.VolumeMetadata>|undefined))}
  *     callback Callback with the list of
  *     chrome.fileManagerPrivate.VolumeMetadata representing mounted volumes.
  */
 chrome.fileManagerPrivate.getVolumeMetadataList = function(callback) {};
-
-/**
- * Cancels ongoing file transfers for selected files. |entries| Array of files
- * for which ongoing transfer should be canceled.
- * @param {!Array<!FileEntry>} entries
- * @param {function()} callback
- */
-chrome.fileManagerPrivate.cancelFileTransfers = function(entries, callback) {};
 
 /**
  * Starts to copy an entry. If the source is a directory, the copy is done
@@ -723,8 +711,11 @@ chrome.fileManagerPrivate.getSizeStats = function(volumeId, callback) {};
 /**
  * Formats a mounted volume. |volumeId| ID of the volume to be formatted.
  * @param {string} volumeId
+ * @param {chrome.fileManagerPrivate.FormatFileSystemType} filesystem
+ * @param {string} volumeLabel
  */
-chrome.fileManagerPrivate.formatVolume = function(volumeId) {};
+chrome.fileManagerPrivate.formatVolume = function(volumeId, filesystem,
+    volumeLabel) {};
 
 /**
  * Renames a mounted volume. |volumeId| ID of the volume to be renamed to
@@ -758,12 +749,11 @@ chrome.fileManagerPrivate.searchDrive = function(searchParams, callback) {};
 
 /**
  * Performs drive metadata search. |searchParams| |callback|
- * @param {chrome.fileManagerPrivate.SearchMetadataParams} searchParams
- * @param {function((!Array<!chrome.fileManagerPrivate.SearchResult>|undefined))}
+ * @param {!chrome.fileManagerPrivate.SearchMetadataParams} searchParams
+ * @param {function(!Array<!chrome.fileManagerPrivate.DriveMetadataSearchResult>):void}
  *     callback
  */
-chrome.fileManagerPrivate.searchDriveMetadata = function(searchParams,
-    callback) {};
+chrome.fileManagerPrivate.searchDriveMetadata = function(searchParams, callback) {};
 
 /**
  * Search for files in the given volume, whose content hash matches the list of
@@ -774,6 +764,13 @@ chrome.fileManagerPrivate.searchDriveMetadata = function(searchParams,
  */
 chrome.fileManagerPrivate.searchFilesByHashes = function(volumeId, hashes,
     callback) {};
+
+/**
+ * Search files in My Files.
+ * @param {!chrome.fileManagerPrivate.SearchMetadataParams} searchParams
+ * @param {function(!Array<Object>):void} callback
+ */
+chrome.fileManagerPrivate.searchFiles = function(searchParams, callback) {};
 
 /**
  * Create a zip file for the selected files. |parentEntry| Entry of the
@@ -815,15 +812,6 @@ chrome.fileManagerPrivate.validatePathNameLength = function(
 chrome.fileManagerPrivate.zoom = function(operation) {};
 
 /**
- * Requests a Drive API OAuth2 access token. |refresh| Whether the token should
- * be refetched instead of using the cached one. |callback|
- * @param {boolean} refresh
- * @param {function((string|undefined))} callback |accessToken| OAuth2 access
- *     token, or an empty string if failed to fetch.
- */
-chrome.fileManagerPrivate.requestAccessToken = function(refresh, callback) {};
-
-/**
  * Requests a Webstore API OAuth2 access token. |callback|
  * @param {function((string|undefined))} callback |accessToken| OAuth2 access
  *     token, or an empty string if failed to fetch.
@@ -836,15 +824,6 @@ chrome.fileManagerPrivate.requestWebStoreAccessToken = function(callback) {};
  * @param {function((string|undefined))} callback Callback with the result url.
  */
 chrome.fileManagerPrivate.getDownloadUrl = function(entry, callback) {};
-
-/**
- * Requests to share drive files.
- * @param {!Entry} entry
- * @param {string} shareType
- * @param {function()} callback Callback that does not take arguments.
- */
-chrome.fileManagerPrivate.requestDriveShare = function(entry, shareType,
-    callback) {};
 
 /**
  * Obtains a list of profiles that are logged-in.
@@ -875,23 +854,6 @@ chrome.fileManagerPrivate.openSettingsSubpage = function(sub_page) {};
  * @param {function((string|undefined))} callback
  */
 chrome.fileManagerPrivate.computeChecksum = function(entry, callback) {};
-
-/**
- * Gets a flag indicating whether user metrics reporting is enabled.
- * @param {function((boolean|undefined))} callback
- */
-chrome.fileManagerPrivate.isUMAEnabled = function(callback) {};
-
-/**
- * Sets a tag on a file or a directory. Only Drive files are supported.
- * @param {!Entry} entry
- * @param {string} visibility 'private' or 'public'
- * @param {string} key
- * @param {string} value
- * @param {function()} callback
- */
-chrome.fileManagerPrivate.setEntryTag = function(entry, visibility, key,
-    value, callback) {};
 
 /**
  * Gets a flag indicating whether PiexLoader is enabled.
@@ -967,22 +929,25 @@ chrome.fileManagerPrivate.mountCrostini = function(callback) {};
 
 /**
  * Shares paths with crostini container.
- * @param {!Array<!Entry>} entries Entries of the files and directories to share.
+ * @param {string} vmName VM to share path with.
+ * @param {!Array<!Entry>} entries Entries of the files and directories to
+ *     share.
  * @param {boolean} persist If true, share will persist across restarts.
  * @param {function()} callback Callback called after the paths are shared.
  *     chrome.runtime.lastError will be set if there was an error.
  */
 chrome.fileManagerPrivate.sharePathsWithCrostini = function(
-    entries, persist, callback) {};
+    vmName, entries, persist, callback) {};
 
 /**
  * Unshares path with crostini container.
+ * @param {string} vmName VM to unshare path from.
  * @param {!Entry} entry Entry of the file or directory to unshare.
  * @param {function()} callback Callback called after the path is unshared.
  *     chrome.runtime.lastError will be set if there was an error.
  */
 chrome.fileManagerPrivate.unsharePathWithCrostini = function(
-    entry, callback) {};
+    vmName, entry, callback) {};
 
 /**
  * Returns list of paths shared with the crostini container, and whether this is
@@ -990,10 +955,11 @@ chrome.fileManagerPrivate.unsharePathWithCrostini = function(
  * @param {boolean} observeFirstForSession If true, callback provides whether
  *     this is the first time this function has been called with
  *     observeFirstForSession true.
+ * @param {string} vmName VM to get shared paths of.
  * @param {function(!Array<!Entry>, boolean)} callback
  */
 chrome.fileManagerPrivate.getCrostiniSharedPaths = function(
-    observeFirstForSession, callback) {};
+    observeFirstForSession, vmName, callback) {};
 
 /**
  * Requests information about a Linux package.
@@ -1013,6 +979,13 @@ chrome.fileManagerPrivate.getLinuxPackageInfo = function(entry, callback) {};
  *    Called when the installation is either started or fails to start.
  */
 chrome.fileManagerPrivate.installLinuxPackage = function(entry, callback) {};
+
+/**
+ * Imports a Crostini Image File (.tini). This overrides the existing Linux apps
+ * and files.
+ * @param {!Entry} entry
+ */
+chrome.fileManagerPrivate.importCrostiniImage = function(entry) {};
 
 /**
  * Detect character encoding.
@@ -1037,6 +1010,19 @@ chrome.fileManagerPrivate.detectCharacterEncoding = function(bytes, callback) {
  *     available.
  */
 chrome.fileManagerPrivate.getThumbnail = function(entry, cropToSquare, callback) {};
+
+/**
+ * @param {!Array<string>} extensions
+ * @param {function(!Array<chrome.fileManagerPrivate.AndroidApp>):void} callback
+ *     Completion callback.
+ */
+chrome.fileManagerPrivate.getAndroidPickerApps = function(extensions, callback) {};
+
+/**
+ * @param {chrome.fileManagerPrivate.AndroidApp} androidApp
+ * @param {function()} callback Completion callback.
+ */
+chrome.fileManagerPrivate.selectAndroidPickerApp = function(androidApp, callback) {};
 
 /** @type {!ChromeEvent} */
 chrome.fileManagerPrivate.onMountCompleted;

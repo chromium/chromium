@@ -40,10 +40,6 @@ class SignedExchangeEnvelope;
 // DevTools via the UI thread to show signed exchange related information.
 class CONTENT_EXPORT SignedExchangeDevToolsProxy {
  public:
-  // |frame_tree_node_id_getter| callback will be called on the UI thread to get
-  // the frame tree node ID. Note: We are using callback beause when Network
-  // Service is not enabled the ID is not available while handling prefetch
-  // requests on the IO thread.
   // When the signed exchange request is a navigation request,
   // |devtools_navigation_token| can be used to find the matching request in
   // DevTools. But when the signed exchange request is a prefetch request, the
@@ -52,8 +48,8 @@ class CONTENT_EXPORT SignedExchangeDevToolsProxy {
   // matching request.
   SignedExchangeDevToolsProxy(
       const GURL& outer_request_url,
-      const network::ResourceResponseHead& outer_response,
-      base::RepeatingCallback<int(void)> frame_tree_node_id_getter,
+      const network::ResourceResponseHead& outer_response_head,
+      int frame_tree_node_id,
       base::Optional<const base::UnguessableToken> devtools_navigation_token,
       bool report_raw_headers);
   ~SignedExchangeDevToolsProxy();
@@ -79,7 +75,7 @@ class CONTENT_EXPORT SignedExchangeDevToolsProxy {
  private:
   const GURL outer_request_url_;
   const network::ResourceResponseHead outer_response_;
-  const base::RepeatingCallback<int(void)> frame_tree_node_id_getter_;
+  const int frame_tree_node_id_;
   const base::Optional<const base::UnguessableToken> devtools_navigation_token_;
   const bool devtools_enabled_;
   std::vector<SignedExchangeError> errors_;

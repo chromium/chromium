@@ -18,16 +18,15 @@ namespace content {
 class WebContents;
 }  // namespace content
 
-// Alert state for a tab.  In reality, more than one of these may apply.  See
-// comments for GetTabAlertStateForContents() below.
+// Alert states for a tab. Any number of these (or none) may apply at once.
 enum class TabAlertState {
-  NONE,
   MEDIA_RECORDING,      // Audio/Video being recorded, consumed by tab.
   TAB_CAPTURING,        // Tab contents being captured.
   AUDIO_PLAYING,        // Audible audio is playing from the tab.
   AUDIO_MUTING,         // Tab audio is being muted.
   BLUETOOTH_CONNECTED,  // Tab is connected to a BT Device.
   USB_CONNECTED,        // Tab is connected to a USB device.
+  SERIAL_CONNECTED,     // Tab is connected to a serial device.
   PIP_PLAYING,          // Tab contains a video in Picture-in-Picture mode.
   DESKTOP_CAPTURING,    // Desktop contents being recorded, consumed by tab.
   VR_PRESENTING_IN_HEADSET,  // VR content is being presented in a headset.
@@ -55,14 +54,16 @@ struct LastMuteMetadata
 
 namespace chrome {
 
-// Returns the alert state to be shown by the tab's alert indicator.  When
-// multiple states apply (e.g., tab capture with audio playback), the one most
-// relevant to user privacy concerns is selected.
-TabAlertState GetTabAlertStateForContents(content::WebContents* contents);
+// Returns the alert states to be shown by the tab's alert indicator.
+// The returned list is in descending order of importance to user
+// privacy, i.e. if only one is to be shown, it should be the first.
+// TabAlertState::NONE will never be present in the list; an empty list
+// is returned instead.
+std::vector<TabAlertState> GetTabAlertStatesForContents(
+    content::WebContents* contents);
 
-// Returns true if audio mute can be activated/deactivated for the given
-// |contents|.
-bool CanToggleAudioMute(content::WebContents* contents);
+// Returns a localized string describing the |alert_state|.
+base::string16 GetTabAlertStateText(const TabAlertState alert_state);
 
 // Sets whether all audio output from |contents| is muted, along with the
 // |reason| it is to be muted/unmuted (via UI or extension API).  When |reason|
@@ -75,10 +76,6 @@ bool SetTabAudioMuted(content::WebContents* contents,
 
 // Returns the last reason a tab's mute state was changed.
 TabMutedReason GetTabAudioMutedReason(content::WebContents* contents);
-
-// Returns true if the tabs at the |indices| in |tab_strip| are all muted.
-bool AreAllTabsMuted(const TabStripModel& tab_strip,
-                     const std::vector<int>& indices);
 
 // Returns true if the site at |index| in |tab_strip| is muted.
 bool IsSiteMuted(const TabStripModel& tab_strip, const int index);

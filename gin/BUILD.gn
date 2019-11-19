@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/buildflag_header.gni")
 import("//build/config/allocator.gni")
 import("//testing/test.gni")
 import("//tools/v8_context_snapshot/v8_context_snapshot.gni")
@@ -64,6 +63,8 @@ component("gin") {
     "v8_isolate_memory_dump_provider.cc",
     "v8_isolate_memory_dump_provider.h",
     "v8_platform.cc",
+    "v8_shared_memory_dump_provider.cc",
+    "v8_shared_memory_dump_provider.h",
     "wrappable.cc",
     "wrappable.h",
     "wrapper_info.cc",
@@ -71,7 +72,6 @@ component("gin") {
 
   if (v8_use_external_startup_data) {
     data = [
-      "$root_out_dir/natives_blob.bin",
       "$root_out_dir/snapshot_blob.bin",
     ]
   }
@@ -140,6 +140,7 @@ test("gin_unittests") {
     "test/run_all_unittests.cc",
     "v8_isolate_memory_dump_provider_unittest.cc",
     "v8_platform_unittest.cc",
+    "v8_shared_memory_dump_provider_unittest.cc",
     "wrappable_unittest.cc",
   ]
 

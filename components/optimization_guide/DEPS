@@ -1,0 +1,10 @@
+include_rules = [
+  "+components/leveldb_proto",
+  "+components/prefs",
+  "+content/public/browser",
+  "+google_apis",
+  "+net",
+  "+services/network",
+  "+third_party/re2",
+  "+third_party/smhasher",
+]

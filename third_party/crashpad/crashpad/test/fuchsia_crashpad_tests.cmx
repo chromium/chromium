@@ -1,0 +1,24 @@
+{
+    "facets": {
+        "fuchsia.test": {
+            "system-services": [
+                "fuchsia.net.NameLookup",
+                "fuchsia.posix.socket.Provider"
+            ]
+        }
+    },
+    "program": {
+        "binary": "test/crashpad_tests"
+    },
+    "sandbox": {
+        "features": [
+            "system-temp",
+            "deprecated-ambient-replace-as-executable"
+        ],
+        "services": [
+            "fuchsia.net.NameLookup",
+            "fuchsia.posix.socket.Provider",
+            "fuchsia.process.Launcher"
+        ]
+    }
+}

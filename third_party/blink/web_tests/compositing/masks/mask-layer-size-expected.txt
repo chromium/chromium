@@ -1,32 +1,20 @@
 {
   "layers": [
     {
-      "name": "LayoutView #document",
-      "bounds": [800, 600],
-      "drawsContent": false,
-      "backgroundColor": "#FFFFFF"
-    },
-    {
-      "name": "Scrolling Layer",
-      "bounds": [800, 600],
-      "drawsContent": false
-    },
-    {
       "name": "Scrolling Contents Layer",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutBlockFlow DIV id='masked'",
+      "name": "LayoutNGBlockFlow DIV id='masked'",
       "bounds": [400, 200],
       "backgroundColor": "#000000",
-      "maskLayer": [
-        {
-          "name": "Mask Layer",
-          "bounds": [400, 200]
-        }
-      ],
+      "transform": 1
+    },
+    {
+      "name": "Mask Layer",
+      "bounds": [400, 200],
       "transform": 1
     }
   ],

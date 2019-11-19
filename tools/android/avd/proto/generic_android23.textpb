@@ -1,0 +1,25 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Configuration for a generic x86 android-23 AVD.
+
+emulator_package {
+  package_name: "chromium/third_party/android_sdk/public/emulator"
+  version: "xhyuoquVvBTcJelgRjMKZeoBVSQRjB7pLVJPt5C9saIC"
+  dest_path: ".emulator_sdk"
+}
+
+system_image_package {
+  package_name: "chromium/third_party/android_sdk/public/system-images/android-23/google_apis/x86"
+  version: "npuCAATVbhmywZwGhI3tMoECTrBBzzyJLpjAPXqtmYYC"
+  dest_path: ".emulator_sdk"
+}
+system_image_name: "system-images;android-23;google_apis;x86"
+
+avd_package {
+  package_name: "chromium/third_party/android_sdk/public/avds/android-23/google_apis/x86"
+  version: "1pPLFfxM1_EUbHzIa0eB4LBgN6Kb46JyAon7V4cCew4C"
+  dest_path: ".android"
+}
+avd_name: "android_23_google_apis_x86"

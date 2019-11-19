@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+PASS should be focus()-able by default
+FAIL should have no tabindex by default assert_false: expected false got true
+PASS should not be focusable with invalid tabindex
+PASS should not be focusable if disabled
+Harness: the test ran to completion.
+

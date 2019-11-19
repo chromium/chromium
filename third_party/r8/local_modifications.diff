@@ -1,0 +1,33 @@
+diff --git a/src/main/java/com/android/tools/r8/utils/InternalOptions.java b/src/main/java/com/android/tools/r8/utils/InternalOptions.java
+index 89aeb2da4..145f13c05 100644
+--- a/src/main/java/com/android/tools/r8/utils/InternalOptions.java
++++ b/src/main/java/com/android/tools/r8/utils/InternalOptions.java
+@@ -189,8 +189,8 @@ public class InternalOptions {
+   public boolean enableDynamicTypeOptimization = true;
+   public boolean enableFieldBitAccessAnalysis =
+       System.getProperty("com.android.tools.r8.fieldBitAccessAnalysis") != null;
+-  public boolean enableHorizontalClassMerging = true;
+-  public boolean enableVerticalClassMerging = true;
++  public boolean enableHorizontalClassMerging = false;
++  public boolean enableVerticalClassMerging = false;
+   public boolean enableArgumentRemoval = true;
+   public boolean enableUnusedArgumentRemoval = true;
+   public boolean enableUnusedInterfaceRemoval = true;
+@@ -217,7 +217,7 @@ public class InternalOptions {
+   // exceeds the threshold, we treat it as if we have found a cycle. This ensures that we won't run
+   // into stack overflows when the call graph contains large call chains. This should have a
+   // negligible impact on code size as long as the threshold is large enough.
+-  public int callGraphCycleEliminatorMaxDepthThreshold = 256;
++  public int callGraphCycleEliminatorMaxDepthThreshold = Integer.MAX_VALUE;
+   public int callGraphLikelySpuriousCallEdgeThreshold = 50;
+
+   public int classInliningInstructionLimit = 50;
+@@ -910,7 +910,7 @@ public class InternalOptions {
+     public static final String CLASS_NAME = "com.android.tools.r8.GeneratedOutlineSupport";
+     public static final String METHOD_PREFIX = "outline";
+
+-    public boolean enabled = true;
++    public boolean enabled = System.getProperty("com.android.tools.r8.disableOutlining") == null;
+     public int minSize = 3;
+     public int maxSize = 99;
+     public int threshold = 20;

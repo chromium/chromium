@@ -42,7 +42,7 @@ NetworkInformation* NavigatorNetworkInformation::connection(
 NetworkInformation* NavigatorNetworkInformation::connection() {
   if (!connection_ && GetFrame()) {
     DCHECK(GetFrame()->DomWindow());
-    connection_ = NetworkInformation::Create(
+    connection_ = MakeGarbageCollected<NetworkInformation>(
         GetFrame()->DomWindow()->GetExecutionContext());
   }
   return connection_.Get();

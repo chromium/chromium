@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Tests rendersubtree attribute values</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="../resources/utils.js"></script>
+
+<script>
+test(() => {
+  const element = document.createElement("div");
+
+  element.setAttribute("rendersubtree", INVISIBLE_ACTIVATABLE);
+  assert_equals(element.getAttribute("rendersubtree"), INVISIBLE_ACTIVATABLE);
+  assert_equals(element.renderSubtree, INVISIBLE_ACTIVATABLE);
+
+  element.setAttribute("rendersubtree", INVISIBLE_NOT_ACTIVATABLE);
+  assert_equals(element.getAttribute("rendersubtree"), INVISIBLE_NOT_ACTIVATABLE);
+  assert_equals(element.renderSubtree, INVISIBLE_NOT_ACTIVATABLE);
+
+  element.setAttribute("rendersubtree", "not-visible");
+  assert_equals(element.getAttribute("rendersubtree"), "not-visible");
+  assert_equals(element.renderSubtree, "not-visible");
+
+  element.setAttribute("rendersubtree", "");
+  assert_equals(element.getAttribute("rendersubtree"), "");
+  assert_equals(element.renderSubtree, "");
+
+  element.setAttribute("rendersubtree", "foo  bar");
+  assert_equals(element.getAttribute("rendersubtree"), "foo  bar");
+  assert_equals(element.renderSubtree, "foo  bar");
+
+  element.setAttribute("rendersubtree", "visible");
+  assert_equals(element.getAttribute("rendersubtree"), "visible");
+  assert_equals(element.renderSubtree, "visible");
+}, "Values on the attribute are saved and reflected as is");
+</script>

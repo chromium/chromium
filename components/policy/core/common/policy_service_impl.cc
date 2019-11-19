@@ -10,13 +10,17 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/containers/flat_set.h"
+#include "base/feature_list.h"
 #include "base/location.h"
 #include "base/single_thread_task_runner.h"
 #include "base/stl_util.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
+#include "components/policy/core/common/features.h"
 #include "components/policy/core/common/policy_bundle.h"
 #include "components/policy/core/common/policy_map.h"
+#include "components/policy/core/common/policy_merger.h"
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/policy_constants.h"
 
@@ -70,11 +74,47 @@ void RemapProxyPolicies(PolicyMap* policies) {
   }
 }
 
+// Returns the string values of |policy|. Returns an empty set if the values are
+// not strings.
+base::flat_set<std::string> GetStringListPolicyItems(
+    const PolicyBundle& bundle,
+    const PolicyNamespace& space,
+    const std::string& policy) {
+  const PolicyMap& chrome_policies = bundle.Get(space);
+  const base::Value* items_ptr = chrome_policies.GetValue(policy);
+
+  if (!items_ptr)
+    return base::flat_set<std::string>();
+
+  // Count the items to allocate the right-sized vector for them.
+  const auto& item_list = items_ptr->GetList();
+  const auto item_count =
+      std::count_if(item_list.begin(), item_list.end(),
+                    [](const auto& item) { return item.is_string(); });
+
+  // Allocate the storage.
+  std::vector<std::string> item_vector;
+  item_vector.reserve(item_count);
+
+  // Populate it.
+  for (const auto& item : item_list) {
+    if (item.is_string())
+      item_vector.emplace_back(item.GetString());
+  }
+
+  return base::flat_set<std::string>(std::move(item_vector));
+}
+
 }  // namespace
 
 PolicyServiceImpl::PolicyServiceImpl(Providers providers)
-    : update_task_ptr_factory_(this) {
-  providers_ = std::move(providers);
+    : PolicyServiceImpl(std::move(providers),
+                        /*initialization_throttled=*/false) {}
+
+PolicyServiceImpl::PolicyServiceImpl(Providers providers,
+                                     bool initialization_throttled)
+    : providers_(std::move(providers)),
+      initialization_throttled_(initialization_throttled) {
   for (int domain = 0; domain < POLICY_DOMAIN_SIZE; ++domain)
     initialization_complete_[domain] = true;
   for (auto* provider : providers_) {
@@ -87,6 +127,13 @@ PolicyServiceImpl::PolicyServiceImpl(Providers providers)
   // There are no observers yet, but calls to GetPolicies() should already get
   // the processed policy values.
   MergeAndTriggerUpdates();
+}
+
+// static
+std::unique_ptr<PolicyServiceImpl>
+PolicyServiceImpl::CreateWithThrottledInitialization(Providers providers) {
+  return base::WrapUnique(new PolicyServiceImpl(
+      std::move(providers), /*initialization_throttled=*/true));
 }
 
 PolicyServiceImpl::~PolicyServiceImpl() {
@@ -108,14 +155,30 @@ void PolicyServiceImpl::RemoveObserver(PolicyDomain domain,
                                        PolicyService::Observer* observer) {
   DCHECK(thread_checker_.CalledOnValidThread());
   auto it = observers_.find(domain);
-  if (it == observers_.end()) {
-    NOTREACHED();
+  if (it == observers_.end())
     return;
-  }
   it->second->RemoveObserver(observer);
   if (!it->second->might_have_observers()) {
     observers_.erase(it);
   }
+}
+
+void PolicyServiceImpl::AddProviderUpdateObserver(
+    ProviderUpdateObserver* observer) {
+  DCHECK(thread_checker_.CalledOnValidThread());
+  provider_update_observers_.AddObserver(observer);
+}
+
+void PolicyServiceImpl::RemoveProviderUpdateObserver(
+    ProviderUpdateObserver* observer) {
+  DCHECK(thread_checker_.CalledOnValidThread());
+  provider_update_observers_.RemoveObserver(observer);
+}
+
+bool PolicyServiceImpl::HasProvider(
+    ConfigurationPolicyProvider* provider) const {
+  DCHECK(thread_checker_.CalledOnValidThread());
+  return base::Contains(providers_, provider);
 }
 
 const PolicyMap& PolicyServiceImpl::GetPolicies(
@@ -127,6 +190,8 @@ const PolicyMap& PolicyServiceImpl::GetPolicies(
 bool PolicyServiceImpl::IsInitializationComplete(PolicyDomain domain) const {
   DCHECK(thread_checker_.CalledOnValidThread());
   DCHECK(domain >= 0 && domain < POLICY_DOMAIN_SIZE);
+  if (initialization_throttled_)
+    return false;
   return initialization_complete_[domain];
 }
 
@@ -153,9 +218,20 @@ void PolicyServiceImpl::RefreshPolicies(const base::Closure& callback) {
   }
 }
 
+void PolicyServiceImpl::UnthrottleInitialization() {
+  DCHECK(thread_checker_.CalledOnValidThread());
+  if (!initialization_throttled_)
+    return;
+
+  initialization_throttled_ = false;
+  for (int domain = 0; domain < POLICY_DOMAIN_SIZE; ++domain)
+    MaybeNotifyInitializationComplete(static_cast<PolicyDomain>(domain));
+}
+
 void PolicyServiceImpl::OnUpdatePolicy(ConfigurationPolicyProvider* provider) {
   DCHECK_EQ(1, std::count(providers_.begin(), providers_.end(), provider));
   refresh_pending_.erase(provider);
+  provider_update_pending_.insert(provider);
 
   // Note: a policy change may trigger further policy changes in some providers.
   // For example, disabling SigninAllowed would cause the CloudPolicyManager to
@@ -183,6 +259,18 @@ void PolicyServiceImpl::NotifyNamespaceUpdated(
   }
 }
 
+void PolicyServiceImpl::NotifyProviderUpdatesPropagated() {
+  if (provider_update_pending_.empty())
+    return;
+
+  for (auto& provider_update_observer : provider_update_observers_) {
+    for (ConfigurationPolicyProvider* provider : provider_update_pending_) {
+      provider_update_observer.OnProviderUpdatePropagated(provider);
+    }
+  }
+  provider_update_pending_.clear();
+}
+
 void PolicyServiceImpl::MergeAndTriggerUpdates() {
   // Merge from each provider in their order of priority.
   const PolicyNamespace chrome_namespace(POLICY_DOMAIN_CHROME, std::string());
@@ -193,6 +281,51 @@ void PolicyServiceImpl::MergeAndTriggerUpdates() {
     RemapProxyPolicies(&provided_bundle.Get(chrome_namespace));
     bundle.MergeFrom(provided_bundle);
   }
+
+  // Merges all the mergeable policies
+  base::flat_set<std::string> policy_lists_to_merge = GetStringListPolicyItems(
+      bundle, chrome_namespace, key::kPolicyListMultipleSourceMergeList);
+  base::flat_set<std::string> policy_dictionaries_to_merge =
+      GetStringListPolicyItems(bundle, chrome_namespace,
+                               key::kPolicyDictionaryMultipleSourceMergeList);
+
+  auto& chrome_policies = bundle.Get(chrome_namespace);
+
+  // This has to be done after setting enterprise default values since it is
+  // enabled by default for enterprise users.
+  auto* atomic_policy_group_enabled_policy_value =
+      chrome_policies.Get(key::kPolicyAtomicGroupsEnabled);
+
+  // This policy has to be ignored if it comes from a user signed-in profile.
+  bool atomic_policy_group_enabled =
+      atomic_policy_group_enabled_policy_value &&
+      atomic_policy_group_enabled_policy_value->value->GetBool() &&
+      !((atomic_policy_group_enabled_policy_value->source ==
+             POLICY_SOURCE_CLOUD ||
+         atomic_policy_group_enabled_policy_value->source ==
+             POLICY_SOURCE_PRIORITY_CLOUD) &&
+        atomic_policy_group_enabled_policy_value->scope == POLICY_SCOPE_USER);
+  auto* value =
+      chrome_policies.GetValue(key::kExtensionInstallListsMergeEnabled);
+  if (value && value->GetBool()) {
+    policy_lists_to_merge.insert(key::kExtensionInstallForcelist);
+    policy_lists_to_merge.insert(key::kExtensionInstallBlacklist);
+    policy_lists_to_merge.insert(key::kExtensionInstallWhitelist);
+  }
+
+  PolicyListMerger policy_list_merger(std::move(policy_lists_to_merge));
+  PolicyDictionaryMerger policy_dictionary_merger(
+      std::move(policy_dictionaries_to_merge));
+
+  std::vector<PolicyMerger*> mergers{&policy_list_merger,
+                                     &policy_dictionary_merger};
+
+  PolicyGroupMerger policy_group_merger;
+  if (atomic_policy_group_enabled)
+    mergers.push_back(&policy_group_merger);
+
+  for (auto it = bundle.begin(); it != bundle.end(); ++it)
+    it->second->MergeValues(mergers);
 
   // Swap first, so that observers that call GetPolicies() see the current
   // values.
@@ -233,6 +366,7 @@ void PolicyServiceImpl::MergeAndTriggerUpdates() {
 
   CheckInitializationComplete();
   CheckRefreshComplete();
+  NotifyProviderUpdatesPropagated();
 }
 
 void PolicyServiceImpl::CheckInitializationComplete() {
@@ -255,12 +389,21 @@ void PolicyServiceImpl::CheckInitializationComplete() {
     }
     if (all_complete) {
       initialization_complete_[domain] = true;
-      auto iter = observers_.find(policy_domain);
-      if (iter != observers_.end()) {
-        for (auto& observer : *iter->second)
-          observer.OnPolicyServiceInitialized(policy_domain);
-      }
+      MaybeNotifyInitializationComplete(policy_domain);
     }
+  }
+}
+
+void PolicyServiceImpl::MaybeNotifyInitializationComplete(
+    PolicyDomain policy_domain) {
+  if (initialization_throttled_)
+    return;
+  if (!initialization_complete_[policy_domain])
+    return;
+  auto iter = observers_.find(policy_domain);
+  if (iter != observers_.end()) {
+    for (auto& observer : *iter->second)
+      observer.OnPolicyServiceInitialized(policy_domain);
   }
 }
 

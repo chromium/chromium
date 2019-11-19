@@ -1,0 +1,11 @@
+This is a testharness.js-based test.
+PASS :focus applies to host with delegatesFocus=true when the shadow root's descendant has focus
+PASS :focus does not apply to host with delegatesFocus=true when slotted element has focus
+PASS :focus applies to host with delegatesFocus=true when an element in a nested shadow tree with delegatesFocus=true is focused
+FAIL :focus applies to host with delegatesFocus=true when an element in a nested shadow tree with delegatesFocus=false is focused assert_true: host of nested shadow tree matches focus expected true got false
+FAIL :focus applies to host with delegatesFocus=false when the shadow root's descendant has focus assert_true: host matches :focus expected true got false
+PASS :focus does not apply to host with delegatesFocus=false when slotted element has focus
+FAIL :focus applies to host with delegatesFocus=false when an element in a nested shadow tree with delegatesFocus=true is focused assert_true: topmost host matches focus expected true got false
+FAIL :focus applies to host with delegatesFocus=false when an element in a nested shadow tree with delegatesFocus=false is focused assert_true: host of nested shadow tree matches focus expected true got false
+Harness: the test ran to completion.
+

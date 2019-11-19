@@ -11,7 +11,7 @@
 
 namespace extensions {
 
-class InstanceIDApiFunction : public UIThreadExtensionFunction {
+class InstanceIDApiFunction : public ExtensionFunction {
  public:
   InstanceIDApiFunction();
 

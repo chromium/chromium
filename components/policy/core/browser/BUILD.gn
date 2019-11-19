@@ -55,8 +55,7 @@ jumbo_source_set("internal") {
   ]
   deps = [
     "//base/third_party/dynamic_annotations",
-    "//components/bookmarks/managed",
-    "//components/google/core/browser",
+    "//components/google/core/common",
     "//components/keyed_service/core",
     "//components/pref_registry",
     "//components/prefs",

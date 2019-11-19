@@ -17,8 +17,8 @@
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
+#include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
-#include "content/public/test/test_browser_thread_bundle.h"
 #include "crypto/symmetric_key.h"
 #include "extensions/browser/api/lock_screen_data/data_item.h"
 #include "extensions/browser/api/lock_screen_data/operation_result.h"
@@ -360,7 +360,7 @@ class LockScreenValueStoreMigratorImplTest : public testing::Test {
     extension_waiters_[extension_id].Quit();
   }
 
-  content::TestBrowserThreadBundle thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
   std::unique_ptr<content::TestBrowserContext> context_;

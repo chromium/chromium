@@ -57,8 +57,9 @@ void BrowserPolicyConnectorBase::Shutdown() {
     g_testing_provider->Shutdown();
   for (const auto& provider : policy_providers_)
     provider->Shutdown();
-  // Drop g_testing_provider so that tests executed with --single_process can
-  // call SetPolicyProviderForTesting() again. It is still owned by the test.
+  // Drop g_testing_provider so that tests executed with --single-process-tests
+  // can call SetPolicyProviderForTesting() again. It is still owned by the
+  // test.
   g_testing_provider = nullptr;
   g_created_policy_service = false;
 }
@@ -112,7 +113,6 @@ void BrowserPolicyConnectorBase::SetPolicyProviderForTesting(
   // If this function is used by a test then it must be called before the
   // browser is created, and GetPolicyService() gets called.
   CHECK(!g_created_policy_service);
-  DCHECK(!g_testing_provider);
   g_testing_provider = provider;
 }
 

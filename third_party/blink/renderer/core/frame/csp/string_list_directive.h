@@ -19,7 +19,7 @@ class CORE_EXPORT StringListDirective final : public CSPDirective {
                       const String& value,
                       ContentSecurityPolicy*);
   void Trace(blink::Visitor*) override;
-  bool Allows(const String& string_piece);
+  bool Allows(const String& string_piece, bool is_duplicate);
 
  private:
   // Determine whether a given string in the string list is valid.

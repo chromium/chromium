@@ -56,6 +56,7 @@ void GLOzoneEGL::ShutdownGL() {
 }
 
 bool GLOzoneEGL::GetGLWindowSystemBindingInfo(
+    const gl::GLVersionInfo& gl_info,
     gl::GLWindowSystemBindingInfo* info) {
   return gl::GetGLWindowSystemBindingInfoEGL(info);
 }

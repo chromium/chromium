@@ -83,7 +83,7 @@ void FullscreenModel::SetCollapsedToolbarHeight(CGFloat height) {
     return;
   DCHECK_GE(height, 0.0);
   collapsed_toolbar_height_ = height;
-  ResetForNavigation();
+  base_offset_ = NAN;
   ScopedIncrementer toolbar_height_incrementer(&observer_callback_count_);
   for (auto& observer : observers_) {
     observer.FullscreenModelToolbarHeightsUpdated(this);
@@ -99,7 +99,7 @@ void FullscreenModel::SetExpandedToolbarHeight(CGFloat height) {
     return;
   DCHECK_GE(height, 0.0);
   expanded_toolbar_height_ = height;
-  ResetForNavigation();
+  base_offset_ = NAN;
   ScopedIncrementer toolbar_height_incrementer(&observer_callback_count_);
   for (auto& observer : observers_) {
     observer.FullscreenModelToolbarHeightsUpdated(this);
@@ -115,7 +115,7 @@ void FullscreenModel::SetBottomToolbarHeight(CGFloat height) {
     return;
   DCHECK_GE(height, 0.0);
   bottom_toolbar_height_ = height;
-  ResetForNavigation();
+  base_offset_ = NAN;
   ScopedIncrementer toolbar_height_incrementer(&observer_callback_count_);
   for (auto& observer : observers_) {
     observer.FullscreenModelToolbarHeightsUpdated(this);
@@ -212,7 +212,13 @@ void FullscreenModel::SetScrollViewIsDragging(bool dragging) {
     for (auto& observer : observers_) {
       observer.FullscreenModelScrollEventStarted(this);
     }
+    // Update the base offset for each new scroll event.
     UpdateBaseOffset();
+    // Re-rendering events are ignored during scrolls since disabling the model
+    // mid-scroll leads to choppy animations.  If the content was re-rendered
+    // to be too short to collapse the toolbars, the model should be disabled
+    // to prevent the subsequent scroll.
+    UpdateDisabledCounterForContentHeight();
   }
 }
 
@@ -257,13 +263,19 @@ FullscreenModel::ScrollAction FullscreenModel::ActionForScrollFromOffset(
   // Ignore if:
   // - explicitly requested via IgnoreRemainderOfCurrentScroll(),
   // - the scroll is a bounce-up animation at the top,
-  // - the scroll is attempting to scroll content up when it already fits.
+  // - the scroll is attempting to scroll content up when it already fits,
+  // - the scroll is attempting to scroll past the bottom of the content when
+  //   the scroll view is being resized (the rebound scroll animation
+  //   interferes with the frame resizing).
   bool scrolling_content_down = y_content_offset_ - from_offset < 0.0;
   bool scrolling_past_top = y_content_offset_ <= -top_inset_;
   bool content_fits = content_height_ <= scroll_view_height_ - top_inset_;
+  bool scrolling_past_bottom =
+      y_content_offset_ + scroll_view_height_ + top_inset_ >= content_height_;
   if (ignoring_current_scroll_ ||
       (scrolling_past_top && !scrolling_content_down) ||
-      (content_fits && !scrolling_content_down)) {
+      (content_fits && !scrolling_content_down) ||
+      (resizes_scroll_view_ && scrolling_past_bottom)) {
     return ScrollAction::kIgnore;
   }
 
@@ -283,6 +295,12 @@ void FullscreenModel::UpdateProgress() {
 }
 
 void FullscreenModel::UpdateDisabledCounterForContentHeight() {
+  // Sometimes the content size and scroll view sizes are updated mid-scroll
+  // such that the scroll view height is updated before the content is re-
+  // rendered, causing the model to be disabled.  These changes should be
+  // ignored while the content is scrolling.
+  if (scrolling_)
+    return;
   // The model should be disabled when the content fits.
   CGFloat disabling_threshold = scroll_view_height_;
   if (resizes_scroll_view_) {

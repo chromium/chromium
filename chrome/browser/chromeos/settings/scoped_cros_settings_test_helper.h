@@ -10,9 +10,9 @@
 
 #include "base/macros.h"
 #include "chrome/browser/chromeos/settings/stub_cros_settings_provider.h"
-#include "chrome/browser/chromeos/settings/stub_install_attributes.h"
-#include "chromeos/dbus/fake_session_manager_client.h"
+#include "chromeos/dbus/session_manager/fake_session_manager_client.h"
 #include "chromeos/settings/cros_settings_provider.h"
+#include "chromeos/tpm/stub_install_attributes.h"
 
 class Profile;
 
@@ -80,17 +80,11 @@ class ScopedCrosSettingsTestHelper {
   // device settings service.
   void StoreCachedDeviceSetting(const std::string& path);
 
-  // Sets the underlying DeviceSettingsService session manager to a
-  // FakeSessionManagerClient.
-  void SetFakeSessionManager();
-
   // Get the scoped install attributes to change them as needed for the
   // current test.
   StubInstallAttributes* InstallAttributes();
 
  private:
-  // Helpers used to mock out cros settings.
-  FakeSessionManagerClient fake_session_manager_client_;
   std::unique_ptr<ScopedStubInstallAttributes> test_install_attributes_;
   std::unique_ptr<ScopedTestDeviceSettingsService>
       test_device_settings_service_;

@@ -37,6 +37,9 @@ window.reportDragAndDropEvent = function(ev) {
       page_position: safe(function() {
         return "(" + ev.pageX + ", " + ev.pageY + ")";
       }),
+      screen_position: safe(function() {
+        return "(" + ev.screenX + ", " + ev.screenY + ")";
+      }),
       window_name: window.name
     });
   }

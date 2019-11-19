@@ -28,3 +28,28 @@ diff -rupN ./nss/lib/freebl/Makefile ../nss-3.17.1-patched/nss/lib/freebl/Makefi
  endif
  ifeq ($(CPU_ARCH),x86)
      ASFILES  = mpi_x86.s
+es
+--- ./nss/lib/sysinit/nsssysinit.c	2019-10-23 01:27:12.205366237 +0000
++++ ../nss-3.17.1-patched/nss/lib/sysinit/nsssysinit.c	2019-10-23 01:26:49.045359974 +0000
+@@ -42,7 +42,9 @@ testdir(char *dir)
+ static char *
+ getUserDB(void)
+ {
+-    char *userdir = PR_GetEnvSecure("HOME");
++    # Prevent nss from trying to pull in PR_GetEnvSecure from libnspr4, which
++    # the latter library doesn't seem to export.
++    char *userdir = secure_getenv("HOME");
+     char *nssdir = NULL;
+ 
+     if (userdir == NULL) {
+@@ -134,7 +134,7 @@ userCanModifySystemDB()
+ static PRBool
+ getFIPSEnv(void)
+ {
+-    char *fipsEnv = PR_GetEnvSecure("NSS_FIPS");
++    # Prevent nss from trying to pull in PR_GetEnvSecure from libnspr4, which
++    # the latter library doesn't seem to export.
++    char *fipsEnv = secure_getenv("NSS_FIPS");
+     if (!fipsEnv) {
+         return PR_FALSE;
+     }

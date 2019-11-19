@@ -9,12 +9,9 @@
 #include <stdint.h>
 #include <string.h>
 
-#include "base/debug/alias.h"
-#include "base/debug/dump_without_crashing.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/format_macros.h"
-#include "base/json/json_file_value_serializer.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
@@ -169,14 +166,6 @@ bool Database::IsExpectedSqliteError(int error) {
   return current_expecter_cb_->Run(error);
 }
 
-void Database::ReportDiagnosticInfo(int extended_error, Statement* stmt) {
-  std::string debug_info = GetDiagnosticInfo(extended_error, stmt);
-  if (!debug_info.empty() && RegisterIntentToUpload()) {
-    DEBUG_ALIAS_FOR_CSTR(debug_buf, debug_info.c_str(), 2000);
-    base::debug::DumpWithoutCrashing();
-  }
-}
-
 // static
 void Database::SetErrorExpecter(Database::ErrorExpecterCallback* cb) {
   CHECK(!current_expecter_cb_);
@@ -278,20 +267,6 @@ void Database::RecordEvent(Events event, size_t count) {
 }
 
 bool Database::Open(const base::FilePath& path) {
-  if (!histogram_tag_.empty()) {
-    int64_t size_64 = 0;
-    if (base::GetFileSize(path, &size_64)) {
-      int sample = base::saturated_cast<int>(size_64 / 1024);
-      std::string full_histogram_name = "Sqlite.SizeKB." + histogram_tag_;
-      base::HistogramBase* histogram = base::Histogram::FactoryGet(
-          full_histogram_name, 1, 1000000, 50,
-          base::HistogramBase::kUmaTargetedHistogramFlag);
-      if (histogram)
-        histogram->Add(sample);
-      UMA_HISTOGRAM_COUNTS_1M("Sqlite.SizeKB", sample);
-    }
-  }
-
   return OpenInternal(AsUTF8ForSQL(path), RETRY_ON_POISON);
 }
 
@@ -369,42 +344,31 @@ void Database::Close() {
 }
 
 void Database::Preload() {
-  base::Optional<base::ScopedBlockingCall> scoped_blocking_call;
-  InitScopedBlockingCall(&scoped_blocking_call);
+  if (base::FeatureList::IsEnabled(features::kSqlSkipPreload))
+    return;
 
   if (!db_) {
     DCHECK(poisoned_) << "Cannot preload null db";
     return;
   }
 
-  // The constructor and set_page_size() ensure that page_size_ is never zero.
-  const int page_size = page_size_;
-  DCHECK(page_size);
+  base::Optional<base::ScopedBlockingCall> scoped_blocking_call;
+  InitScopedBlockingCall(&scoped_blocking_call);
 
-  // Use local settings if provided, otherwise use documented defaults.  The
-  // actual results could be fetching via PRAGMA calls.
-  sqlite3_int64 preload_size = page_size * (cache_size_ ? cache_size_ : 2000);
-  if (preload_size < 1)
-    return;
-
-  sqlite3_file* file = nullptr;
-  sqlite3_int64 file_size = 0;
-  int rc = GetSqlite3FileAndSize(db_, &file, &file_size);
-  if (rc != SQLITE_OK)
-    return;
-
-  // Don't preload more than the file contains.
-  if (preload_size > file_size)
-    preload_size = file_size;
-
-  std::unique_ptr<char[]> buf(new char[page_size]);
-  for (sqlite3_int64 pos = 0; pos < preload_size; pos += page_size) {
-    rc = file->pMethods->xRead(file, buf.get(), page_size, pos);
-
-    // TODO(shess): Consider calling OnSqliteError().
-    if (rc != SQLITE_OK)
-      return;
-  }
+  // Maximum number of bytes that will be prefetched from the database.
+  //
+  // This limit is very aggressive. Here are the trade-offs involved.
+  // 1) Accessing bytes that weren't preread is very expensive on
+  //    performance-critical databases, so the limit must exceed the expected
+  //    sizes of feature databases.
+  // 2) On some platforms (Windows 7 and, currently, macOS), base::PreReadFile()
+  //    falls back to a synchronous read, and blocks until the entire file is
+  //    read into memory. So, there's a tangible cost to reading data that would
+  //    get evicted before base::PreReadFile() completes. This cost needs to be
+  //    balanced with the benefit reading the entire database at once, and
+  //    avoiding seeks on spinning disks.
+  constexpr int kPreReadSize = 128 * 1024 * 1024;  // 128 MB
+  base::PreReadFile(DbPath(), /*is_executable=*/false, kPreReadSize);
 }
 
 // SQLite keeps unused pages associated with a database in a cache.  It asks
@@ -493,109 +457,6 @@ base::FilePath Database::DbPath() const {
 #endif
 }
 
-// Data is persisted in a file shared between databases in the same directory.
-// The "sqlite-diag" file contains a dictionary with the version number, and an
-// array of histogram tags for databases which have been dumped.
-bool Database::RegisterIntentToUpload() const {
-  static const char* kVersionKey = "version";
-  static const char* kDiagnosticDumpsKey = "DiagnosticDumps";
-  static int kVersion = 1;
-
-  if (histogram_tag_.empty())
-    return false;
-
-  if (!is_open())
-    return false;
-
-  if (in_memory_)
-    return false;
-
-  const base::FilePath db_path = DbPath();
-  if (db_path.empty())
-    return false;
-
-  // Put the collection of diagnostic data next to the databases.  In most
-  // cases, this is the profile directory, but safe-browsing stores a Cookies
-  // file in the directory above the profile directory.
-  base::FilePath breadcrumb_path = db_path.DirName().AppendASCII("sqlite-diag");
-
-  // Lock against multiple updates to the diagnostics file.  This code should
-  // seldom be called in the first place, and when called it should seldom be
-  // called for multiple databases, and when called for multiple databases there
-  // is _probably_ something systemic wrong with the user's system.  So the lock
-  // should never be contended, but when it is the database experience is
-  // already bad.
-  static base::NoDestructor<base::Lock> lock;
-  base::AutoLock auto_lock(*lock);
-
-  std::unique_ptr<base::Value> root;
-  if (!base::PathExists(breadcrumb_path)) {
-    std::unique_ptr<base::DictionaryValue> root_dict(
-        new base::DictionaryValue());
-    root_dict->SetInteger(kVersionKey, kVersion);
-
-    std::unique_ptr<base::ListValue> dumps(new base::ListValue);
-    dumps->AppendString(histogram_tag_);
-    root_dict->Set(kDiagnosticDumpsKey, std::move(dumps));
-
-    root = std::move(root_dict);
-  } else {
-    // Failure to read a valid dictionary implies that something is going wrong
-    // on the system.
-    JSONFileValueDeserializer deserializer(breadcrumb_path);
-    std::unique_ptr<base::Value> read_root(
-        deserializer.Deserialize(nullptr, nullptr));
-    if (!read_root.get())
-      return false;
-    std::unique_ptr<base::DictionaryValue> root_dict =
-        base::DictionaryValue::From(std::move(read_root));
-    if (!root_dict)
-      return false;
-
-    // Don't upload if the version is missing or newer.
-    int version = 0;
-    if (!root_dict->GetInteger(kVersionKey, &version) || version > kVersion)
-      return false;
-
-    base::ListValue* dumps = nullptr;
-    if (!root_dict->GetList(kDiagnosticDumpsKey, &dumps))
-      return false;
-
-    const size_t size = dumps->GetSize();
-    for (size_t i = 0; i < size; ++i) {
-      std::string s;
-
-      // Don't upload if the value isn't a string, or indicates a prior upload.
-      if (!dumps->GetString(i, &s) || s == histogram_tag_)
-        return false;
-    }
-
-    // Record intention to proceed with upload.
-    dumps->AppendString(histogram_tag_);
-    root = std::move(root_dict);
-  }
-
-  const base::FilePath breadcrumb_new =
-      breadcrumb_path.AddExtension(FILE_PATH_LITERAL("new"));
-  base::DeleteFile(breadcrumb_new, false);
-
-  // No upload if the breadcrumb file cannot be updated.
-  // TODO(shess): Consider ImportantFileWriter::WriteFileAtomically() to land
-  // the data on disk.  For now, losing the data is not a big problem, so the
-  // sync overhead would probably not be worth it.
-  JSONFileValueSerializer serializer(breadcrumb_new);
-  if (!serializer.Serialize(*root))
-    return false;
-  if (!base::PathExists(breadcrumb_new))
-    return false;
-  if (!base::ReplaceFile(breadcrumb_new, breadcrumb_path, nullptr)) {
-    base::DeleteFile(breadcrumb_new, false);
-    return false;
-  }
-
-  return true;
-}
-
 std::string Database::CollectErrorInfo(int error, Statement* stmt) const {
   // Buffer for accumulating debugging info about the error.  Place
   // more-relevant information earlier, in case things overflow the
@@ -632,20 +493,25 @@ std::string Database::CollectErrorInfo(int error, Statement* stmt) const {
   // SQLITE_ERROR often indicates some sort of mismatch between the statement
   // and the schema, possibly due to a failed schema migration.
   if (error == SQLITE_ERROR) {
-    const char* kVersionSql = "SELECT value FROM meta WHERE key = 'version'";
-    sqlite3_stmt* s;
-    int rc = sqlite3_prepare_v2(db_, kVersionSql, -1, &s, nullptr);
+    static const char kVersionSql[] =
+        "SELECT value FROM meta WHERE key='version'";
+    sqlite3_stmt* sqlite_statement;
+    // When the number of bytes passed to sqlite3_prepare_v3() includes the null
+    // terminator, SQLite avoids a buffer copy.
+    int rc = sqlite3_prepare_v3(db_, kVersionSql, sizeof(kVersionSql),
+                                SQLITE_PREPARE_NO_VTAB, &sqlite_statement,
+                                /* pzTail= */ nullptr);
     if (rc == SQLITE_OK) {
-      rc = sqlite3_step(s);
+      rc = sqlite3_step(sqlite_statement);
       if (rc == SQLITE_ROW) {
         base::StringAppendF(&debug_info, "version: %d\n",
-                            sqlite3_column_int(s, 0));
+                            sqlite3_column_int(sqlite_statement, 0));
       } else if (rc == SQLITE_DONE) {
         debug_info += "version: none\n";
       } else {
         base::StringAppendF(&debug_info, "version: error %d\n", rc);
       }
-      sqlite3_finalize(s);
+      sqlite3_finalize(sqlite_statement);
     } else {
       base::StringAppendF(&debug_info, "version: prepare error %d\n", rc);
     }
@@ -662,15 +528,19 @@ std::string Database::CollectErrorInfo(int error, Statement* stmt) const {
     // |rootpage| is not interesting for debugging, without the contents of the
     // database.  The COALESCE is because certain automatic elements will have a
     // |name| but no |sql|,
-    const char* kSchemaSql = "SELECT COALESCE(sql, name) FROM sqlite_master";
-    rc = sqlite3_prepare_v2(db_, kSchemaSql, -1, &s, nullptr);
+    static const char kSchemaSql[] =
+        "SELECT COALESCE(sql,name) FROM sqlite_master";
+    rc = sqlite3_prepare_v3(db_, kSchemaSql, sizeof(kSchemaSql),
+                            SQLITE_PREPARE_NO_VTAB, &sqlite_statement,
+                            /* pzTail= */ nullptr);
     if (rc == SQLITE_OK) {
-      while ((rc = sqlite3_step(s)) == SQLITE_ROW) {
-        base::StringAppendF(&debug_info, "%s\n", sqlite3_column_text(s, 0));
+      while ((rc = sqlite3_step(sqlite_statement)) == SQLITE_ROW) {
+        base::StringAppendF(&debug_info, "%s\n",
+                            sqlite3_column_text(sqlite_statement, 0));
       }
       if (rc != SQLITE_DONE)
         base::StringAppendF(&debug_info, "error %d\n", rc);
-      sqlite3_finalize(s);
+      sqlite3_finalize(sqlite_statement);
     } else {
       base::StringAppendF(&debug_info, "prepare error %d\n", rc);
     }
@@ -1213,24 +1083,24 @@ int Database::ExecuteAndReturnErrorCode(const char* sql) {
 
   int rc = SQLITE_OK;
   while ((rc == SQLITE_OK) && *sql) {
-    sqlite3_stmt* stmt = nullptr;
+    sqlite3_stmt* sqlite_statement;
     const char* leftover_sql;
-
-    rc = sqlite3_prepare_v2(db_, sql, -1, &stmt, &leftover_sql);
-    sql = leftover_sql;
-
+    rc = sqlite3_prepare_v3(db_, sql, /* nByte= */ -1, /* prepFlags= */ 0,
+                            &sqlite_statement, &leftover_sql);
     // Stop if an error is encountered.
     if (rc != SQLITE_OK)
       break;
+
+    sql = leftover_sql;
 
     // This happens if |sql| originally only contained comments or whitespace.
     // TODO(shess): Audit to see if this can become a DCHECK().  Having
     // extraneous comments and whitespace in the SQL statements increases
     // runtime cost and can easily be shifted out to the C++ layer.
-    if (!stmt)
+    if (!sqlite_statement)
       continue;
 
-    while ((rc = sqlite3_step(stmt)) == SQLITE_ROW) {
+    while ((rc = sqlite3_step(sqlite_statement)) == SQLITE_ROW) {
       // TODO(shess): Audit to see if this can become a DCHECK.  I think PRAGMA
       // is the only legitimate case for this. Previously recorded histograms
       // show significant use of this code path.
@@ -1238,7 +1108,7 @@ int Database::ExecuteAndReturnErrorCode(const char* sql) {
 
     // sqlite3_finalize() returns SQLITE_OK if the most recent sqlite3_step()
     // returned SQLITE_DONE or SQLITE_ROW, otherwise the error code.
-    rc = sqlite3_finalize(stmt);
+    rc = sqlite3_finalize(sqlite_statement);
 
     // sqlite3_exec() does this, presumably to avoid spinning the parser for
     // trailing whitespace.
@@ -1330,8 +1200,11 @@ scoped_refptr<Database::StatementRef> Database::GetStatementImpl(
   base::Optional<base::ScopedBlockingCall> scoped_blocking_call;
   InitScopedBlockingCall(&scoped_blocking_call);
 
-  sqlite3_stmt* stmt = nullptr;
-  int rc = sqlite3_prepare_v2(db_, sql, -1, &stmt, nullptr);
+  // TODO(pwnall): Cached statements (but not unique statements) should be
+  //               prepared with prepFlags set to SQLITE_PREPARE_PERSISTENT.
+  sqlite3_stmt* sqlite_statement;
+  int rc = sqlite3_prepare_v3(db_, sql, /* nByte= */ -1, /* prepFlags= */ 0,
+                              &sqlite_statement, /* pzTail= */ nullptr);
   if (rc != SQLITE_OK) {
     // This is evidence of a syntax error in the incoming SQL.
     DCHECK_NE(rc, SQLITE_ERROR) << "SQL compile error " << GetErrorMessage();
@@ -1340,7 +1213,8 @@ scoped_refptr<Database::StatementRef> Database::GetStatementImpl(
     OnSqliteError(rc, nullptr, sql);
     return base::MakeRefCounted<StatementRef>(nullptr, nullptr, false);
   }
-  return base::MakeRefCounted<StatementRef>(tracking_db, stmt, true);
+  return base::MakeRefCounted<StatementRef>(tracking_db, sqlite_statement,
+                                            true);
 }
 
 scoped_refptr<Database::StatementRef> Database::GetUntrackedStatement(
@@ -1379,11 +1253,14 @@ bool Database::IsSQLValid(const char* sql) {
     return false;
   }
 
-  sqlite3_stmt* stmt = nullptr;
-  if (sqlite3_prepare_v2(db_, sql, -1, &stmt, nullptr) != SQLITE_OK)
+  sqlite3_stmt* sqlite_statement = nullptr;
+  if (sqlite3_prepare_v3(db_, sql, /* nByte= */ -1, /* prepFlags= */ 0,
+                         &sqlite_statement,
+                         /* pzTail= */ nullptr) != SQLITE_OK) {
     return false;
+  }
 
-  sqlite3_finalize(stmt);
+  sqlite3_finalize(sqlite_statement);
   return true;
 }
 
@@ -1400,14 +1277,14 @@ bool Database::DoesViewExist(const char* view_name) const {
 }
 
 bool Database::DoesSchemaItemExist(const char* name, const char* type) const {
-  const char* kSql =
-      "SELECT name FROM sqlite_master WHERE type=? AND name=? COLLATE NOCASE";
+  static const char kSql[] =
+      "SELECT 1 FROM sqlite_master WHERE type=? AND name=?";
   Statement statement(GetUntrackedStatement(kSql));
 
-  // This can happen if the database is corrupt and the error is a test
-  // expectation.
-  if (!statement.is_valid())
+  if (!statement.is_valid()) {
+    // The database is corrupt.
     return false;
+  }
 
   statement.BindString(0, type);
   statement.BindString(1, name);
@@ -1571,12 +1448,6 @@ bool Database::OpenInternal(const std::string& file_name,
     // requests exclusive locking but doesn't get it is almost certain
     // to be ill-tested.
     ignore_result(Execute("PRAGMA locking_mode=EXCLUSIVE"));
-  }
-
-  if (base::FeatureList::IsEnabled(features::kSqlTempStoreMemory)) {
-    err = ExecuteAndReturnErrorCode("PRAGMA temp_store=MEMORY");
-    // This operates on in-memory configuration, so it should not fail.
-    DCHECK_EQ(err, SQLITE_OK) << "Failed switching to in-RAM temporary storage";
   }
 
   // http://www.sqlite.org/pragma.html#pragma_journal_mode

@@ -53,25 +53,28 @@ public class FlushingReTrace {
             + "(?:.*L%C;.*)|"
             // E.g.: END SomeTestClass#someMethod
             + "(?:.*?%c#%m.*?)|"
-            // E.g.: The member "Foo.bar"
-            // E.g.: The class "Foobar"
-            + "(?:.*?\"%c\\.%m\".*)|"
-            + "(?:.*?\"%c\".*)|"
             // Special-case for a common junit logcat message:
             // E.g.: java.lang.NoClassDefFoundError: SomeFrameworkClass in isTestClass for Foo
             + "(?:.* isTestClass for %c)|"
             // E.g.: Caused by: java.lang.RuntimeException: Intentional Java Crash
             + "(?:Caused by: %c:.*)|"
-            // E.g.: java.lang.RuntimeException: Intentional Java Crash
-            + "(?:%c:.*)|"
-            // All lines that end with a class / class+method:
+            // Quoted values and lines that end with a class / class+method:
             // E.g.: The class: Foo
             // E.g.: INSTRUMENTATION_STATUS: class=Foo
             // E.g.: NoClassDefFoundError: SomeFrameworkClass in isTestClass for Foo
             // E.g.: Could not find class 'SomeFrameworkClass', referenced from method Foo.bar
             // E.g.: Could not find method SomeFrameworkMethod, referenced from method Foo.bar
-            + "(?:.*(?:=|:\\s*|\\b)%c\\.%m)|"
-            + "(?:.*(?:=|:\\s*|\\b)%c)"
+            // E.g.: The member "Foo.bar"
+            // E.g.: The class "Foobar"
+            // Be careful about matching %c without %m since language tags look like class names.
+            + "(?:.*?%c\\.%m)|"
+            + "(?:.*?\"%c\\.%m\".*)|"
+            + "(?:.*\\b(?:[Cc]lass|[Tt]ype)\\b.*?\"%c\".*)|"
+            + "(?:.*\\b(?:[Cc]lass|[Tt]ype)\\b.*?%c)|"
+            // E.g.: java.lang.RuntimeException: Intentional Java Crash
+            + "(?:%c:.*)|"
+            // See if entire line matches a class name (e.g. for manual deobfuscation)
+            + "(?:%c)"
             + ")";
 
     private static void usage() {

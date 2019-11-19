@@ -8,9 +8,4 @@ namespace subresource_filter {
 
 const base::Feature kAdTagging{"AdTagging", base::FEATURE_ENABLED_BY_DEFAULT};
 
-const base::Feature kDelayUnsafeAds{"DelayUnsafeAds",
-                                    base::FEATURE_DISABLED_BY_DEFAULT};
-const char kInsecureDelayParam[] = "insecure_delay";
-const char kNonIsolatedDelayParam[] = "non_isolated_delay";
-
 }  // namespace subresource_filter

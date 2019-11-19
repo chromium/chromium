@@ -9,10 +9,6 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
-import android.support.annotation.ColorRes;
-import android.support.annotation.DrawableRes;
-import android.support.annotation.IntDef;
-import android.support.annotation.VisibleForTesting;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.content.res.AppCompatResources;
 import android.view.KeyEvent;
@@ -20,14 +16,18 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
+
+import androidx.annotation.ColorRes;
+import androidx.annotation.DimenRes;
+import androidx.annotation.IntDef;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.util.ColorUtils;
+import org.chromium.chrome.browser.ui.styles.ChromeColors;
+import org.chromium.chrome.browser.ui.widget.TintedDrawable;
 import org.chromium.chrome.browser.util.KeyNavigationUtil;
-import org.chromium.chrome.browser.widget.TintedDrawable;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -39,20 +39,16 @@ import java.lang.annotation.RetentionPolicy;
 @VisibleForTesting
 public class SuggestionView extends ViewGroup implements OnClickListener {
     private static final float ANSWER_IMAGE_SCALING_FACTOR = 1.15f;
-
-    @IntDef({SuggestionLayoutType.TEXT_SUGGESTION, SuggestionLayoutType.ANSWER,
-            SuggestionLayoutType.MULTI_LINE_ANSWER})
+    @IntDef({SuggestionIconType.FALLBACK, SuggestionIconType.FAVICON})
     @Retention(RetentionPolicy.SOURCE)
-    public @interface SuggestionLayoutType {
-        int TEXT_SUGGESTION = 0;
-        int ANSWER = 1;
-        int MULTI_LINE_ANSWER = 2;
+    @interface SuggestionIconType {
+        int FALLBACK = 0;
+        int FAVICON = 1;
     }
 
     private final int mSuggestionHeight;
     private final int mSuggestionAnswerHeight;
-    @SuggestionLayoutType
-    private int mSuggestionLayoutType;
+    private final int mSuggestionMaxHeight;
     private SuggestionViewDelegate mSuggestionDelegate;
 
     private int mRefineViewOffsetPx;
@@ -63,9 +59,14 @@ public class SuggestionView extends ViewGroup implements OnClickListener {
     private final View mRefineView;
     private TintedDrawable mRefineIcon;
 
+    private boolean mUseDarkIconTint;
+
     // Pre-computed offsets in px.
-    private final int mSuggestionStartOffsetPx;
-    private final int mSuggestionIconWidthPx;
+    private int mSuggestionIconAreaSizePx;
+    private int mSuggestionFaviconSizePx;
+    // Current suggestion icon dimensions.
+    private int mSuggestionIconWidthPx;
+    private int mSuggestionIconHeightPx;
 
     /**
      * Constructs a new omnibox suggestion view.
@@ -81,6 +82,8 @@ public class SuggestionView extends ViewGroup implements OnClickListener {
                 context.getResources().getDimensionPixelOffset(R.dimen.omnibox_suggestion_height);
         mSuggestionAnswerHeight = context.getResources().getDimensionPixelOffset(
                 R.dimen.omnibox_suggestion_answer_height);
+        mSuggestionMaxHeight = context.getResources().getDimensionPixelOffset(
+                R.dimen.omnibox_suggestion_max_height);
 
         TypedArray a =
                 getContext().obtainStyledAttributes(new int[] {R.attr.selectableItemBackground});
@@ -140,14 +143,11 @@ public class SuggestionView extends ViewGroup implements OnClickListener {
 
         mRefineWidth =
                 getResources().getDimensionPixelSize(R.dimen.omnibox_suggestion_refine_width);
-
         mRefineViewOffsetPx = getResources().getDimensionPixelSize(
                 R.dimen.omnibox_suggestion_refine_view_modern_end_padding);
-
-        mSuggestionStartOffsetPx =
-                getResources().getDimensionPixelOffset(R.dimen.omnibox_suggestion_start_offset);
-        mSuggestionIconWidthPx =
-                getResources().getDimensionPixelSize(R.dimen.location_bar_icon_width);
+        mSuggestionFaviconSizePx =
+                getResources().getDimensionPixelSize(R.dimen.omnibox_suggestion_favicon_size);
+        setSuggestionIconAreaWidthRes(R.dimen.omnibox_suggestion_start_offset_without_icon);
     }
 
     @Override
@@ -155,7 +155,7 @@ public class SuggestionView extends ViewGroup implements OnClickListener {
         if (getMeasuredWidth() == 0) return;
 
         boolean refineVisible = mRefineView.getVisibility() == VISIBLE;
-        boolean isRtl = ApiCompatibilityUtils.isLayoutRtl(this);
+        boolean isRtl = getLayoutDirection() == LAYOUT_DIRECTION_RTL;
         int contentsViewOffsetX = isRtl && refineVisible ? mRefineWidth : 0;
         mContentsView.layout(contentsViewOffsetX, 0,
                 contentsViewOffsetX + mContentsView.getMeasuredWidth(),
@@ -173,25 +173,15 @@ public class SuggestionView extends ViewGroup implements OnClickListener {
         int height = mSuggestionHeight;
         boolean refineVisible = mRefineView.getVisibility() == VISIBLE;
         int refineWidth = refineVisible ? mRefineWidth : 0;
-        if (mSuggestionLayoutType == SuggestionLayoutType.MULTI_LINE_ANSWER) {
-            mContentsView.measure(
-                    MeasureSpec.makeMeasureSpec(width - refineWidth, MeasureSpec.EXACTLY),
-                    MeasureSpec.makeMeasureSpec(mSuggestionAnswerHeight * 2, MeasureSpec.AT_MOST));
-            height = mContentsView.getMeasuredHeight();
-        } else if (mSuggestionLayoutType == SuggestionLayoutType.ANSWER) {
-            height = mSuggestionAnswerHeight;
-        }
         setMeasuredDimension(width, height);
 
         // The width will be specified as 0 when determining the height of the popup, so exit early
         // after setting the height.
         if (width == 0) return;
 
-        if (mSuggestionLayoutType != SuggestionLayoutType.MULTI_LINE_ANSWER) {
-            mContentsView.measure(
-                    MeasureSpec.makeMeasureSpec(width - refineWidth, MeasureSpec.EXACTLY),
-                    MeasureSpec.makeMeasureSpec(height, MeasureSpec.EXACTLY));
-        }
+        mContentsView.measure(MeasureSpec.makeMeasureSpec(width - refineWidth, MeasureSpec.EXACTLY),
+                MeasureSpec.makeMeasureSpec(height, MeasureSpec.EXACTLY));
+
         mContentsView.getLayoutParams().width = mContentsView.getMeasuredWidth();
         mContentsView.getLayoutParams().height = mContentsView.getMeasuredHeight();
 
@@ -237,11 +227,6 @@ public class SuggestionView extends ViewGroup implements OnClickListener {
         mSuggestionDelegate = delegate;
     }
 
-    /** Set the type of layout this view is rendering. */
-    void setSuggestionLayoutType(@SuggestionLayoutType int type) {
-        mSuggestionLayoutType = type;
-    }
-
     /** Get the View containing the first line of text. */
     TextView getTextLine1() {
         return mContentsView.mTextLine1;
@@ -252,9 +237,13 @@ public class SuggestionView extends ViewGroup implements OnClickListener {
         return mContentsView.mTextLine2;
     }
 
-    /** Get the View containing the answer image to be shown. */
-    ImageView getAnswerImageView() {
-        return mContentsView.mAnswerImage;
+    /**
+     * Specify area width for the suggestion icon.
+     * This call generally controls suggestion icon visibility.
+     * @param areaWidthRes Dimen resource specifying area width.
+     */
+    void setSuggestionIconAreaWidthRes(@DimenRes int areaWidthRes) {
+        mSuggestionIconAreaSizePx = getResources().getDimensionPixelOffset(areaWidthRes);
     }
 
     void setRefinable(boolean refinable) {
@@ -281,7 +270,7 @@ public class SuggestionView extends ViewGroup implements OnClickListener {
     void initRefineIcon(boolean useDarkColors) {
         if (mRefineIcon != null) return;
         @ColorRes
-        int tintId = ColorUtils.getIconTintRes(!useDarkColors);
+        int tintId = ChromeColors.getIconTintRes(!useDarkColors);
         mRefineIcon = TintedDrawable.constructTintedDrawable(
                 getContext(), R.drawable.btn_suggestion_refine, tintId);
         mRefineIcon.setBounds(
@@ -296,27 +285,33 @@ public class SuggestionView extends ViewGroup implements OnClickListener {
     void updateRefineIconTint(boolean useDarkColors) {
         if (mRefineIcon == null) return;
         @ColorRes
-        int tintId = ColorUtils.getIconTintRes(!useDarkColors);
+        int tintId = ChromeColors.getIconTintRes(!useDarkColors);
         mRefineIcon.setTint(AppCompatResources.getColorStateList(getContext(), tintId));
         mRefineView.postInvalidateOnAnimation();
     }
 
     /**
      * Updates the suggestion icon to the specified drawable with the specified tint.
-     * @param resId resource id (may be bitmap or vector) of icon to display
-     * @param useDarkTint specifies whether to apply dark or light tint to an icon
+     * @param icon Drawable instance.
+     * @param type Type / function of the supplied icon.
      * @param allowTint specifies whether icon should receive a tint or displayed as is.
+     * @param useDarkTint specifies whether to apply dark or light tint to an icon
      */
-    void setSuggestionIconDrawable(@DrawableRes int resId, boolean useDarkTint, boolean allowTint) {
-        mContentsView.mSuggestionIcon = AppCompatResources.getDrawable(getContext(), resId);
+    void setSuggestionIconDrawable(
+            Drawable icon, @SuggestionIconType int type, boolean allowTint, boolean useDarkTint) {
+        if (type == SuggestionIconType.FALLBACK) {
+            mSuggestionIconWidthPx = icon.getIntrinsicWidth();
+            mSuggestionIconHeightPx = icon.getIntrinsicHeight();
+        } else {
+            mSuggestionIconWidthPx = mSuggestionFaviconSizePx;
+            mSuggestionIconHeightPx = mSuggestionFaviconSizePx;
+        }
+
+        mContentsView.mSuggestionIcon = icon;
         mContentsView.mAllowTint = allowTint;
-        mContentsView.mSuggestionIcon.setBounds(0, 0,
-                mContentsView.mSuggestionIcon.getIntrinsicWidth(),
-                mContentsView.mSuggestionIcon.getIntrinsicHeight());
+        mUseDarkIconTint = useDarkTint;
+        icon.setBounds(0, 0, mSuggestionIconWidthPx, mSuggestionIconHeightPx);
         updateSuggestionIconTint(useDarkTint);
-        // Note: invalidate() does not immediately invoke onDraw(), but schedules it to be called at
-        // some point in the future.
-        // https://developer.android.com/reference/android/view/View.html#invalidate()
         mContentsView.invalidate();
     }
 
@@ -327,7 +322,8 @@ public class SuggestionView extends ViewGroup implements OnClickListener {
         if (!mContentsView.mAllowTint || mContentsView.mSuggestionIcon == null) return;
         DrawableCompat.setTint(mContentsView.mSuggestionIcon,
                 ApiCompatibilityUtils.getColor(getContext().getResources(),
-                        useDarkTint ? R.color.standard_mode_tint : R.color.white_mode_tint));
+                        useDarkTint ? R.color.default_icon_color_secondary_list
+                                    : R.color.white_mode_tint));
         mContentsView.invalidate();
     }
 
@@ -369,7 +365,6 @@ public class SuggestionView extends ViewGroup implements OnClickListener {
 
         private final TextView mTextLine1;
         private final TextView mTextLine2;
-        private final ImageView mAnswerImage;
 
         private boolean mForceIsFocused;
 
@@ -378,7 +373,7 @@ public class SuggestionView extends ViewGroup implements OnClickListener {
         SuggestionContentsContainer(Context context, Drawable backgroundDrawable) {
             super(context);
 
-            ApiCompatibilityUtils.setLayoutDirection(this, View.LAYOUT_DIRECTION_INHERIT);
+            setLayoutDirection(View.LAYOUT_DIRECTION_INHERIT);
 
             setBackground(backgroundDrawable);
             setClickable(true);
@@ -405,7 +400,7 @@ public class SuggestionView extends ViewGroup implements OnClickListener {
             mTextLine1.setLayoutParams(
                     new LayoutParams(LayoutParams.WRAP_CONTENT, mSuggestionHeight));
             mTextLine1.setSingleLine();
-            ApiCompatibilityUtils.setTextAlignment(mTextLine1, TEXT_ALIGNMENT_VIEW_START);
+            mTextLine1.setTextAlignment(TEXT_ALIGNMENT_VIEW_START);
             addView(mTextLine1);
 
             mTextLine2 = new TextView(context);
@@ -413,13 +408,8 @@ public class SuggestionView extends ViewGroup implements OnClickListener {
                     new LayoutParams(LayoutParams.WRAP_CONTENT, mSuggestionHeight));
             mTextLine2.setSingleLine();
             mTextLine2.setVisibility(INVISIBLE);
-            ApiCompatibilityUtils.setTextAlignment(mTextLine2, TEXT_ALIGNMENT_VIEW_START);
+            mTextLine2.setTextAlignment(TEXT_ALIGNMENT_VIEW_START);
             addView(mTextLine2);
-
-            mAnswerImage = new ImageView(context);
-            mAnswerImage.setVisibility(GONE);
-            mAnswerImage.setScaleType(ImageView.ScaleType.FIT_CENTER);
-            addView(mAnswerImage);
         }
 
         @Override
@@ -429,12 +419,11 @@ public class SuggestionView extends ViewGroup implements OnClickListener {
             if (mSuggestionIcon != null) {
                 canvas.save();
                 float suggestionIconLeft =
-                        (mSuggestionIconWidthPx - mSuggestionIcon.getIntrinsicWidth()) / 2f;
-                if (ApiCompatibilityUtils.isLayoutRtl(this)) {
-                    suggestionIconLeft += getMeasuredWidth() - mSuggestionIconWidthPx;
+                        (mSuggestionIconAreaSizePx - mSuggestionIconWidthPx) / 2f;
+                if (getLayoutDirection() == LAYOUT_DIRECTION_RTL) {
+                    suggestionIconLeft += getMeasuredWidth() - mSuggestionIconAreaSizePx;
                 }
-                float suggestionIconTop =
-                        (getMeasuredHeight() - mSuggestionIcon.getIntrinsicHeight()) / 2f;
+                float suggestionIconTop = (getMeasuredHeight() - mSuggestionIconHeightPx) / 2f;
                 canvas.translate(suggestionIconLeft, suggestionIconTop);
                 mSuggestionIcon.draw(canvas);
                 canvas.restore();
@@ -443,16 +432,6 @@ public class SuggestionView extends ViewGroup implements OnClickListener {
 
         @Override
         protected void onLayout(boolean changed, int l, int t, int r, int b) {
-            int imageWidth = 0;
-            int imageSpacing = 0;
-            if (mAnswerImage.getVisibility() == VISIBLE) {
-                imageWidth = mAnswerImage.getMeasuredWidth();
-                if (imageWidth > 0) {
-                    imageSpacing = getResources().getDimensionPixelOffset(
-                            R.dimen.omnibox_suggestion_answer_image_horizontal_spacing);
-                }
-            }
-
             final int height = getMeasuredHeight();
             final int line1Height = mTextLine1.getMeasuredHeight();
             final int line2Height =
@@ -469,16 +448,6 @@ public class SuggestionView extends ViewGroup implements OnClickListener {
 
             int line2VerticalOffset = line1VerticalOffset + line1Height;
             int answerVerticalOffset = line2VerticalOffset;
-            if (mAnswerImage.getVisibility() == VISIBLE) {
-                // The image is positioned vertically aligned with the second text line but
-                // requires a small additional offset to align with the ascent of the text
-                // instead of the top of the text which includes some whitespace.
-                answerVerticalOffset += getResources().getDimensionPixelOffset(
-                        R.dimen.omnibox_suggestion_answer_image_vertical_spacing);
-
-                line2VerticalOffset += getResources().getDimensionPixelOffset(
-                        R.dimen.omnibox_suggestion_answer_line2_vertical_spacing);
-            }
 
             // The text lines total height is larger than this view, snap them to the top and
             // bottom of the view.
@@ -494,27 +463,19 @@ public class SuggestionView extends ViewGroup implements OnClickListener {
             final int line1Bottom = line1Top + line1Height;
             final int line2Top = t + line2VerticalOffset;
             final int line2Bottom = line2Top + line2Height;
-            final int answerImageTop = t + answerVerticalOffset;
-            final int answerImageBottom = answerImageTop + mAnswerImage.getMeasuredHeight();
             final int line1AdditionalStartPadding =
                     mSuggestionDelegate.getAdditionalTextLine1StartPadding(
-                            mTextLine1, r - l - mSuggestionStartOffsetPx);
+                            mTextLine1, r - l - mSuggestionIconAreaSizePx);
 
-            if (ApiCompatibilityUtils.isLayoutRtl(this)) {
-                int rightStartPos = r - l - mSuggestionStartOffsetPx;
+            if (getLayoutDirection() == LAYOUT_DIRECTION_RTL) {
+                int rightStartPos = r - l - mSuggestionIconAreaSizePx;
                 mTextLine1.layout(
                         0, line1Top, rightStartPos - line1AdditionalStartPadding, line1Bottom);
-                mAnswerImage.layout(rightStartPos - imageWidth, answerImageTop, rightStartPos,
-                        answerImageBottom);
-                mTextLine2.layout(
-                        0, line2Top, rightStartPos - (imageWidth + imageSpacing), line2Bottom);
+                mTextLine2.layout(0, line2Top, rightStartPos, line2Bottom);
             } else {
-                mTextLine1.layout(mSuggestionStartOffsetPx + line1AdditionalStartPadding, line1Top,
+                mTextLine1.layout(mSuggestionIconAreaSizePx + line1AdditionalStartPadding, line1Top,
                         r - l, line1Bottom);
-                mAnswerImage.layout(mSuggestionStartOffsetPx, answerImageTop,
-                        mSuggestionStartOffsetPx + imageWidth, answerImageBottom);
-                mTextLine2.layout(mSuggestionStartOffsetPx + imageWidth + imageSpacing, line2Top,
-                        r - l, line2Bottom);
+                mTextLine2.layout(mSuggestionIconAreaSizePx, line2Top, r - l, line2Bottom);
             }
         }
 
@@ -524,27 +485,16 @@ public class SuggestionView extends ViewGroup implements OnClickListener {
             //                style spans) measured and if that remains the same along with the
             //                height/width of this view, then we should be able to skip measure
             //                properly.
-            int maxWidth = MeasureSpec.getSize(widthMeasureSpec) - mSuggestionStartOffsetPx;
+            int maxWidth = MeasureSpec.getSize(widthMeasureSpec) - mSuggestionIconAreaSizePx;
             mTextLine1.measure(MeasureSpec.makeMeasureSpec(maxWidth, MeasureSpec.AT_MOST),
                     MeasureSpec.makeMeasureSpec(mSuggestionHeight, MeasureSpec.AT_MOST));
             mTextLine2.measure(MeasureSpec.makeMeasureSpec(maxWidth, MeasureSpec.AT_MOST),
                     MeasureSpec.makeMeasureSpec(mSuggestionHeight, MeasureSpec.AT_MOST));
 
-            if (mAnswerImage.getVisibility() == VISIBLE) {
-                float textSize = mContentsView.mTextLine2.getTextSize();
-                int imageSize = (int) (textSize * ANSWER_IMAGE_SCALING_FACTOR);
-                mAnswerImage.measure(MeasureSpec.makeMeasureSpec(imageSize, MeasureSpec.EXACTLY),
-                        MeasureSpec.makeMeasureSpec(imageSize, MeasureSpec.EXACTLY));
-            }
-
             if (MeasureSpec.getMode(heightMeasureSpec) == MeasureSpec.AT_MOST) {
                 int desiredHeight = mTextLine1.getMeasuredHeight() + mTextLine2.getMeasuredHeight();
                 int additionalPadding = (int) getResources().getDimension(
                         R.dimen.omnibox_suggestion_text_vertical_padding);
-                if (mSuggestionLayoutType != SuggestionLayoutType.TEXT_SUGGESTION) {
-                    additionalPadding += (int) getResources().getDimension(
-                            R.dimen.omnibox_suggestion_multiline_text_vertical_padding);
-                }
                 desiredHeight += additionalPadding;
                 desiredHeight = Math.min(MeasureSpec.getSize(heightMeasureSpec), desiredHeight);
                 super.onMeasure(widthMeasureSpec,

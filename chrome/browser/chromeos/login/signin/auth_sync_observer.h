@@ -45,7 +45,10 @@ class AuthSyncObserver : public KeyedService,
   // SigninErrorController::Observer implementation.
   void OnErrorChanged() override;
 
-  // Handles an auth error.
+  // Handles an auth error for the Primary / Sync account. |auth_error| can be
+  // |GoogleServiceAuthError::AuthErrorNone()|, in which case, it resets and
+  // marks the account as valid. Note: |auth_error| must correspond to an error
+  // in the Primary / Sync account and not a Secondary Account.
   void HandleAuthError(const GoogleServiceAuthError& auth_error);
 
   // Called on attempt to restore supervised user token.

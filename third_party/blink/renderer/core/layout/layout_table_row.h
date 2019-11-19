@@ -28,6 +28,7 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/layout_table_section.h"
+#include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_row_interface.h"
 
 namespace blink {
 
@@ -64,7 +65,8 @@ static const unsigned kMaxRowIndex = 0x7FFFFFFE;  // 2,147,483,646
 // LayoutTableRow is also positioned with respect to the enclosing
 // LayoutTableSection. See LayoutTableSection::layoutRows() for the placement
 // logic.
-class CORE_EXPORT LayoutTableRow final : public LayoutTableBoxComponent {
+class CORE_EXPORT LayoutTableRow final : public LayoutTableBoxComponent,
+                                         public LayoutNGTableRowInterface {
  public:
   explicit LayoutTableRow(Element*);
 
@@ -74,8 +76,12 @@ class CORE_EXPORT LayoutTableRow final : public LayoutTableBoxComponent {
   LayoutTableRow* PreviousRow() const;
   LayoutTableRow* NextRow() const;
 
-  LayoutTableSection* Section() const { return ToLayoutTableSection(Parent()); }
-  LayoutTable* Table() const final { return ToLayoutTable(Parent()->Parent()); }
+  LayoutTableSection* Section() const {
+    return To<LayoutTableSection>(Parent());
+  }
+  LayoutTable* Table() const final {
+    return To<LayoutTable>(Parent()->Parent());
+  }
 
   static LayoutTableRow* CreateAnonymous(Document*);
   static LayoutTableRow* CreateAnonymousWithParent(const LayoutObject*);
@@ -90,7 +96,7 @@ class CORE_EXPORT LayoutTableRow final : public LayoutTableBoxComponent {
   }
 
   bool RowIndexWasSet() const { return row_index_ != kUnsetRowIndex; }
-  unsigned RowIndex() const {
+  unsigned RowIndex() const final {
     DCHECK(RowIndexWasSet());
     DCHECK(
         !Section() ||
@@ -100,8 +106,8 @@ class CORE_EXPORT LayoutTableRow final : public LayoutTableBoxComponent {
   }
 
   bool NodeAtPoint(HitTestResult&,
-                   const HitTestLocation& location_in_container,
-                   const LayoutPoint& accumulated_offset,
+                   const HitTestLocation&,
+                   const PhysicalOffset& accumulated_offset,
                    HitTestAction) override;
 
   PaginationBreakability GetPaginationBreakability() const final;
@@ -115,14 +121,36 @@ class CORE_EXPORT LayoutTableRow final : public LayoutTableBoxComponent {
   // Whether a row has opaque background depends on many factors, e.g. border
   // spacing, border collapsing, missing cells, etc.
   // For simplicity, just conservatively assume all table rows are not opaque.
-  bool ForegroundIsKnownToBeOpaqueInRect(const LayoutRect&,
+  bool ForegroundIsKnownToBeOpaqueInRect(const PhysicalRect&,
                                          unsigned) const override {
     return false;
   }
-  bool BackgroundIsKnownToBeOpaqueInRect(const LayoutRect&) const override {
+  bool BackgroundIsKnownToBeOpaqueInRect(const PhysicalRect&) const override {
     return false;
   }
   bool PaintedOutputOfObjectHasNoEffectRegardlessOfSize() const override;
+
+  // LayoutNGTableRowInterface methods start.
+
+  const LayoutNGTableRowInterface* ToLayoutNGTableRowInterface() const final {
+    return this;
+  }
+  const LayoutObject* ToLayoutObject() const final { return this; }
+  const LayoutTableRow* ToLayoutTableRow() const final { return this; }
+  LayoutNGTableInterface* TableInterface() const final { return Table(); }
+  LayoutNGTableSectionInterface* SectionInterface() const final {
+    return Section();
+  }
+  LayoutNGTableRowInterface* NextRowInterface() const final {
+    return NextRow();
+  }
+  LayoutNGTableRowInterface* PreviousRowInterface() const final {
+    return PreviousRow();
+  }
+  LayoutNGTableCellInterface* FirstCellInterface() const final;
+  LayoutNGTableCellInterface* LastCellInterface() const final;
+
+  // LayoutNGTableRowInterface methods end.
 
  private:
   void ComputeVisualOverflow();
@@ -165,22 +193,27 @@ class CORE_EXPORT LayoutTableRow final : public LayoutTableBoxComponent {
   unsigned row_index_ : 31;
 };
 
-DEFINE_LAYOUT_OBJECT_TYPE_CASTS(LayoutTableRow, IsTableRow());
+template <>
+struct DowncastTraits<LayoutTableRow> {
+  static bool AllowFrom(const LayoutObject& object) {
+    return object.IsTableRow();
+  }
+};
 
 inline LayoutTableRow* LayoutTableRow::PreviousRow() const {
-  return ToLayoutTableRow(LayoutObject::PreviousSibling());
+  return To<LayoutTableRow>(LayoutObject::PreviousSibling());
 }
 
 inline LayoutTableRow* LayoutTableRow::NextRow() const {
-  return ToLayoutTableRow(LayoutObject::NextSibling());
+  return To<LayoutTableRow>(LayoutObject::NextSibling());
 }
 
 inline LayoutTableRow* LayoutTableSection::FirstRow() const {
-  return ToLayoutTableRow(FirstChild());
+  return To<LayoutTableRow>(FirstChild());
 }
 
 inline LayoutTableRow* LayoutTableSection::LastRow() const {
-  return ToLayoutTableRow(LastChild());
+  return To<LayoutTableRow>(LastChild());
 }
 
 }  // namespace blink

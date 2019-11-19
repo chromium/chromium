@@ -14,8 +14,7 @@
 namespace extensions {
 namespace api {
 
-class SystemNetworkGetNetworkInterfacesFunction
-    : public UIThreadExtensionFunction {
+class SystemNetworkGetNetworkInterfacesFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("system.network.getNetworkInterfaces",
                              SYSTEM_NETWORK_GETNETWORKINTERFACES)

@@ -14,7 +14,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
@@ -34,6 +33,7 @@ import org.chromium.chrome.test.util.TabStripUtils;
 import org.chromium.content_public.browser.test.util.Criteria;
 import org.chromium.content_public.browser.test.util.CriteriaHelper;
 import org.chromium.content_public.browser.test.util.DOMUtils;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.test.util.UiRestriction;
 
@@ -312,7 +312,7 @@ public class TabStripTest {
     @LargeTest
     @Restriction(UiRestriction.RESTRICTION_TYPE_TABLET)
     @Feature({"TabStrip"})
-    public void testCloseAllTabsFromTabMenuClosesAllTabs() throws Exception {
+    public void testCloseAllTabsFromTabMenuClosesAllTabs() {
         // 1. Create a second tab
         ChromeTabUtils.newTabFromMenu(
                 InstrumentationRegistry.getInstrumentation(), mActivityTestRule.getActivity());
@@ -335,12 +335,9 @@ public class TabStripTest {
                 mActivityTestRule.getActivity().getActivityTab().getId());
 
         // 3. Invoke "close all tabs" menu action; block until action is completed
-        ThreadUtils.runOnUiThreadBlocking(new Runnable() {
-            @Override
-            public void run() {
-                TabStripUtils.getActiveStripLayoutHelper(mActivityTestRule.getActivity())
-                        .clickTabMenuItem(StripLayoutHelper.ID_CLOSE_ALL_TABS);
-            }
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            TabStripUtils.getActiveStripLayoutHelper(mActivityTestRule.getActivity())
+                    .clickTabMenuItem(StripLayoutHelper.ID_CLOSE_ALL_TABS);
         });
 
         // 4. Ensure all tabs were closed
@@ -356,7 +353,7 @@ public class TabStripTest {
     @LargeTest
     @Restriction(UiRestriction.RESTRICTION_TYPE_TABLET)
     @Feature({"TabStrip"})
-    public void testTabMenuDismissedOnOrientationChange() throws Exception {
+    public void testTabMenuDismissedOnOrientationChange() {
         // 1. Set orientation to portrait
         mActivityTestRule.getActivity().setRequestedOrientation(
                 ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
@@ -420,7 +417,7 @@ public class TabStripTest {
     @LargeTest
     @Feature({"TabStrip"})
     @Restriction(UiRestriction.RESTRICTION_TYPE_TABLET)
-    public void testCloseLastIncognitoTab() throws Exception {
+    public void testCloseLastIncognitoTab() {
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
         Assert.assertFalse("Expected normal strip to be selected",
                 mActivityTestRule.getActivity().getTabModelSelector().isIncognitoSelected());
@@ -449,7 +446,7 @@ public class TabStripTest {
     @LargeTest
     @Feature({"TabStrip"})
     @Restriction(UiRestriction.RESTRICTION_TYPE_TABLET)
-    public void testCloseAllIncognitoTabsFromTabMenu() throws Exception {
+    public void testCloseAllIncognitoTabsFromTabMenu() {
         //1. Create two incognito tabs
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
         Assert.assertFalse("Expected normal strip to be selected",
@@ -474,12 +471,9 @@ public class TabStripTest {
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
 
         // 3. Invoke menu action; block until action is completed
-        ThreadUtils.runOnUiThreadBlocking(new Runnable() {
-            @Override
-            public void run() {
-                TabStripUtils.getActiveStripLayoutHelper(mActivityTestRule.getActivity())
-                        .clickTabMenuItem(StripLayoutHelper.ID_CLOSE_ALL_TABS);
-            }
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            TabStripUtils.getActiveStripLayoutHelper(mActivityTestRule.getActivity())
+                    .clickTabMenuItem(StripLayoutHelper.ID_CLOSE_ALL_TABS);
         });
 
         // 4. Ensure all incognito tabs were closed and TabStrip is switched to normal
@@ -499,7 +493,7 @@ public class TabStripTest {
     @LargeTest
     @Restriction(UiRestriction.RESTRICTION_TYPE_TABLET)
     @Feature({"TabStrip"})
-    public void testTabSelectionViewDoesNotBreakModelSwitch() throws Exception {
+    public void testTabSelectionViewDoesNotBreakModelSwitch() {
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
         Assert.assertFalse("Expected normal strip to be selected",
                 mActivityTestRule.getActivity().getTabModelSelector().isIncognitoSelected());
@@ -862,7 +856,7 @@ public class TabStripTest {
     /**
      * Simulates a click to the incognito toggle button.
      */
-    protected void clickIncognitoToggleButton() throws InterruptedException {
+    protected void clickIncognitoToggleButton() {
         final CallbackHelper tabModelSelectedCallback = new CallbackHelper();
         TabModelSelectorObserver observer = new EmptyTabModelSelectorObserver() {
             @Override
@@ -888,7 +882,7 @@ public class TabStripTest {
      * @param incognito Whether or not this tab is in the incognito or normal stack.
      * @param id The id of the tab to click.
      */
-    protected void selectTab(final boolean incognito, final int id) throws InterruptedException {
+    protected void selectTab(final boolean incognito, final int id) {
         ChromeTabUtils.selectTabWithAction(InstrumentationRegistry.getInstrumentation(),
                 mActivityTestRule.getActivity(), new Runnable() {
                     @Override
@@ -907,7 +901,7 @@ public class TabStripTest {
      * @param incognito Whether or not this tab is in the incognito or normal stack.
      * @param id The id of the tab to click.
      */
-    protected void closeTab(final boolean incognito, final int id) throws InterruptedException {
+    protected void closeTab(final boolean incognito, final int id) {
         ChromeTabUtils.closeTabWithAction(InstrumentationRegistry.getInstrumentation(),
                 mActivityTestRule.getActivity(), new Runnable() {
                     @Override
@@ -927,8 +921,7 @@ public class TabStripTest {
      * @param incognito Whether or not this tab is in the incognito or normal stack.
      * @param id The id of the tab to click.
      */
-    protected void longPressCloseTab(final boolean incognito, final int id)
-            throws InterruptedException {
+    protected void longPressCloseTab(final boolean incognito, final int id) {
         ChromeTabUtils.selectTabWithAction(InstrumentationRegistry.getInstrumentation(),
                 mActivityTestRule.getActivity(), new Runnable() {
                     @Override
@@ -1052,14 +1045,11 @@ public class TabStripTest {
         TabModel model = mActivityTestRule.getActivity().getCurrentTabModel();
         int selectedTabIndex = model.index();
 
-        ThreadUtils.runOnUiThreadBlocking(new Runnable() {
-            @Override
-            public void run() {
-                TabStripUtils.getStripLayoutHelper(mActivityTestRule.getActivity(), true)
-                        .setShouldCascadeTabs(shouldCascadeTabs);
-                TabStripUtils.getStripLayoutHelper(mActivityTestRule.getActivity(), false)
-                        .setShouldCascadeTabs(shouldCascadeTabs);
-            }
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            TabStripUtils.getStripLayoutHelper(mActivityTestRule.getActivity(), true)
+                    .setShouldCascadeTabs(shouldCascadeTabs);
+            TabStripUtils.getStripLayoutHelper(mActivityTestRule.getActivity(), false)
+                    .setShouldCascadeTabs(shouldCascadeTabs);
         });
 
         // Assert that the correct StripStacker is being used.
@@ -1092,12 +1082,8 @@ public class TabStripTest {
     private void assertSetTabStripScrollOffset(final int scrollOffset) throws ExecutionException {
         final StripLayoutHelper strip =
                 TabStripUtils.getActiveStripLayoutHelper(mActivityTestRule.getActivity());
-        ThreadUtils.runOnUiThreadBlocking(new Runnable() {
-            @Override
-            public void run() {
-                strip.setScrollOffsetForTesting(scrollOffset);
-            }
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { strip.setScrollOffsetForTesting(scrollOffset); });
 
         Assert.assertEquals("Tab strip scroll incorrect.", scrollOffset, strip.getScrollOffset());
         compareAllTabStripsWithModel();
@@ -1170,9 +1156,9 @@ public class TabStripTest {
                 tabView.getVisiblePercentage(), 1.0f, 0);
 
         // Only tabs that can currently be seen on the screen should be visible.
-        Boolean shouldBeVisible = ThreadUtils.runOnUiThreadBlocking(new Callable<Boolean>() {
+        Boolean shouldBeVisible = TestThreadUtils.runOnUiThreadBlocking(new Callable<Boolean>() {
             @Override
-            public Boolean call() throws Exception {
+            public Boolean call() {
                 return (tabView.getDrawX() + tabView.getWidth()) >= 0
                         && tabView.getDrawX() <= tabStrip.getWidth();
             }
@@ -1187,9 +1173,9 @@ public class TabStripTest {
      */
     private void assertTabVisibility(final Boolean shouldBeVisible, final StripLayoutTab tabView)
             throws ExecutionException {
-        Boolean isVisible = ThreadUtils.runOnUiThreadBlocking(new Callable<Boolean>() {
+        Boolean isVisible = TestThreadUtils.runOnUiThreadBlocking(new Callable<Boolean>() {
             @Override
-            public Boolean call() throws Exception {
+            public Boolean call() {
                 return tabView.isVisible();
             }
         });
@@ -1207,9 +1193,9 @@ public class TabStripTest {
      */
     private void assertTabDrawX(float expectedDrawX, final StripLayoutTab tabView, int index)
             throws ExecutionException {
-        Float tabDrawX = ThreadUtils.runOnUiThreadBlocking(new Callable<Float>() {
+        Float tabDrawX = TestThreadUtils.runOnUiThreadBlocking(new Callable<Float>() {
             @Override
-            public Float call() throws Exception {
+            public Float call() {
                 return tabView.getDrawX();
             }
         });

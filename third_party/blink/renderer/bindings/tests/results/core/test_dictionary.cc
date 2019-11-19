@@ -35,7 +35,7 @@ TestDictionary::TestDictionary() {
 
 TestDictionary::~TestDictionary() = default;
 
-void TestDictionary::setAnyInRecordMember(const Vector<std::pair<String, ScriptValue>>& value) {
+void TestDictionary::setAnyInRecordMember(const HeapVector<std::pair<String, ScriptValue>>& value) {
   any_in_record_member_ = value;
   has_any_in_record_member_ = true;
 }
@@ -203,6 +203,8 @@ void TestDictionary::setUnionWithTypedefs(const FloatOrBoolean& value) {
 }
 
 void TestDictionary::Trace(blink::Visitor* visitor) {
+  visitor->Trace(any_in_record_member_);
+  visitor->Trace(any_member_);
   visitor->Trace(callback_function_member_);
   visitor->Trace(double_or_null_or_double_or_null_sequence_member_);
   visitor->Trace(double_or_string_member_);
@@ -213,6 +215,8 @@ void TestDictionary::Trace(blink::Visitor* visitor) {
   visitor->Trace(event_target_member_);
   visitor->Trace(garbage_collected_record_member_);
   visitor->Trace(internal_dictionary_sequence_member_);
+  visitor->Trace(object_member_);
+  visitor->Trace(object_or_null_member_);
   visitor->Trace(other_double_or_string_member_);
   visitor->Trace(required_callback_function_member_);
   visitor->Trace(test_enum_or_null_or_test_enum_sequence_member_);

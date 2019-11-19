@@ -17,6 +17,7 @@
 #include "base/observer_list.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/offline_pages/core/model/clear_storage_task.h"
+#include "components/offline_pages/core/offline_page_archive_publisher.h"
 #include "components/offline_pages/core/offline_page_archiver.h"
 #include "components/offline_pages/core/offline_page_model.h"
 #include "components/offline_pages/core/offline_page_model_event_logger.h"
@@ -38,10 +39,9 @@ struct ClientId;
 struct OfflinePageItem;
 
 class ArchiveManager;
-class ClientPolicyController;
+class OfflinePageArchivePublisher;
 class OfflinePageArchiver;
 class OfflinePageMetadataStore;
-class SystemDownloadManager;
 
 // Implementaion of OfflinePageModel, which is a service for saving pages
 // offline. It's an entry point to get information about Offline Pages and the
@@ -52,10 +52,6 @@ class SystemDownloadManager;
 class OfflinePageModelTaskified : public OfflinePageModel,
                                   public TaskQueue::Delegate {
  public:
-  // Initial delay after which a list of items for upgrade will be generated.
-  static constexpr base::TimeDelta kInitialUpgradeSelectionDelay =
-      base::TimeDelta::FromSeconds(45);
-
   // Delay between the scheduling and actual running of maintenance tasks. To
   // not cause the re-opening of the metadata store this delay should be kept
   // smaller than OfflinePageMetadataStore::kClosingDelay.
@@ -69,7 +65,7 @@ class OfflinePageModelTaskified : public OfflinePageModel,
   OfflinePageModelTaskified(
       std::unique_ptr<OfflinePageMetadataStore> store,
       std::unique_ptr<ArchiveManager> archive_manager,
-      std::unique_ptr<SystemDownloadManager> download_manager,
+      std::unique_ptr<OfflinePageArchivePublisher> archive_publisher,
       const scoped_refptr<base::SequencedTaskRunner>& task_runner);
   ~OfflinePageModelTaskified() override;
 
@@ -85,56 +81,33 @@ class OfflinePageModelTaskified : public OfflinePageModel,
                 SavePageCallback callback) override;
   void AddPage(const OfflinePageItem& page, AddPageCallback callback) override;
   void MarkPageAccessed(int64_t offline_id) override;
-
-  void DeletePagesByOfflineId(const std::vector<int64_t>& offline_ids,
-                              DeletePageCallback callback) override;
-  void DeletePagesByClientIds(const std::vector<ClientId>& client_ids,
-                              DeletePageCallback callback) override;
-  void DeletePagesByClientIdsAndOrigin(const std::vector<ClientId>& client_ids,
-                                       const std::string& origin,
-                                       DeletePageCallback callback) override;
+  void DeletePagesWithCriteria(const PageCriteria& criteria,
+                               DeletePageCallback callback) override;
   void DeleteCachedPagesByURLPredicate(const UrlPredicate& predicate,
                                        DeletePageCallback callback) override;
 
   void GetAllPages(MultipleOfflinePageItemCallback callback) override;
   void GetPageByOfflineId(int64_t offline_id,
                           SingleOfflinePageItemCallback callback) override;
-  void GetPageByGuid(const std::string& guid,
-                     SingleOfflinePageItemCallback callback) override;
-  void GetPagesByClientIds(const std::vector<ClientId>& client_ids,
-                           MultipleOfflinePageItemCallback callback) override;
-  void GetPagesByURL(const GURL& url,
-                     MultipleOfflinePageItemCallback callback) override;
-  void GetPagesByNamespace(const std::string& name_space,
-                           MultipleOfflinePageItemCallback callback) override;
-  void GetPagesRemovedOnCacheReset(
-      MultipleOfflinePageItemCallback callback) override;
-  void GetPagesSupportedByDownloads(
-      MultipleOfflinePageItemCallback callback) override;
-  void GetPagesByRequestOrigin(
-      const std::string& request_origin,
-      MultipleOfflinePageItemCallback callback) override;
-  void GetPageBySizeAndDigest(int64_t file_size,
-                              const std::string& digest,
-                              SingleOfflinePageItemCallback callback) override;
+  void GetPagesWithCriteria(const PageCriteria& criteria,
+                            MultipleOfflinePageItemCallback callback) override;
   void GetOfflineIdsForClientId(const ClientId& client_id,
                                 MultipleOfflineIdCallback callback) override;
-  void StoreThumbnail(const OfflinePageThumbnail& thumb) override;
-  void GetThumbnailByOfflineId(
+  void StoreThumbnail(int64_t offline_id, std::string thumbnail) override;
+  void StoreFavicon(int64_t offline_id, std::string favicon) override;
+  void GetVisualsByOfflineId(
       int64_t offline_id,
-      base::OnceCallback<void(std::unique_ptr<OfflinePageThumbnail>)> callback)
+      base::OnceCallback<void(std::unique_ptr<OfflinePageVisuals>)> callback)
       override;
-  void HasThumbnailForOfflineId(
+  void GetVisualsAvailability(
       int64_t offline_id,
-      base::OnceCallback<void(bool)> callback) override;
-  const base::FilePath& GetInternalArchiveDirectory(
+      base::OnceCallback<void(VisualsAvailability)> callback) override;
+  const base::FilePath& GetArchiveDirectory(
       const std::string& name_space) const override;
   bool IsArchiveInInternalDir(const base::FilePath& file_path) const override;
-  ClientPolicyController* GetPolicyController() override;
   OfflineEventLogger* GetLogger() override;
   void PublishInternalArchive(
       const OfflinePageItem& offline_page,
-      std::unique_ptr<OfflinePageArchiver> archiver,
       PublishPageCallback publish_done_callback) override;
 
   // Methods for testing only:
@@ -147,7 +120,6 @@ class OfflinePageModelTaskified : public OfflinePageModel,
   }
 
  private:
-  // TODO(romax): https://crbug.com/791115, remove the friend class usage.
   friend class OfflinePageModelTaskifiedTest;
 
   // Callbacks for saving pages.
@@ -178,13 +150,16 @@ class OfflinePageModelTaskified : public OfflinePageModel,
                      AddPageResult result);
 
   // Callbacks for deleting pages.
-  void OnDeleteDone(
-      DeletePageCallback callback,
-      DeletePageResult result,
-      const std::vector<OfflinePageModel::DeletedPageInfo>& infos);
+  void OnDeleteDone(DeletePageCallback callback,
+                    DeletePageResult result,
+                    const std::vector<OfflinePageItem>& deleted_items);
 
-  void OnStoreThumbnailDone(const OfflinePageThumbnail& thumbnail,
-                            bool success);
+  void OnStoreThumbnailDone(int64_t offline_id,
+                            bool success,
+                            std::string thumbnail);
+  void OnStoreFaviconDone(int64_t offline_id,
+                          bool success,
+                          std::string favicon);
 
   // Methods for clearing temporary pages and performing consistency checks. The
   // latter are executed only once per Chrome session.
@@ -194,31 +169,22 @@ class OfflinePageModelTaskified : public OfflinePageModel,
                               ClearStorageTask::ClearStorageResult result);
   void OnPersistentPageConsistencyCheckDone(
       bool success,
-      const std::vector<int64_t>& pages_deleted);
-
-  // Method for upgrade to public storage.
-  void PostSelectItemsMarkedForUpgrade();
-  void SelectItemsMarkedForUpgrade();
-  void OnSelectItemsMarkedForUpgradeDone(
-      const MultipleOfflinePageItemResult& pages_for_upgrade);
+      const std::vector<PublishedArchiveId>& ids_of_deleted_pages);
 
   // Callback for when PublishArchive has completd.
-  void PublishArchiveDone(std::unique_ptr<OfflinePageArchiver> archiver,
-                          SavePageCallback save_page_callback,
+  void PublishArchiveDone(SavePageCallback save_page_callback,
                           base::Time publish_start_time,
                           const OfflinePageItem& offline_page,
                           PublishArchiveResult publish_results);
 
   // Callback for when publishing an internal archive has completed.
-  void PublishInternalArchiveDone(std::unique_ptr<OfflinePageArchiver> archiver,
-                                  PublishPageCallback publish_done_callback,
+  void PublishInternalArchiveDone(PublishPageCallback publish_done_callback,
                                   const OfflinePageItem& offline_page,
                                   PublishArchiveResult publish_results);
 
-  // Method for unpublishing the page from the system download manager.
-  static void RemoveFromDownloadManager(
-      SystemDownloadManager* download_manager,
-      const std::vector<int64_t>& system_download_ids);
+  // Method for unpublishing the page from downloads.
+  static void Unpublish(OfflinePageArchivePublisher* publisher,
+                        const std::vector<PublishedArchiveId>& publish_ids);
 
   // Other utility methods.
   void RemovePagesMatchingUrlAndNamespace(const OfflinePageItem& page);
@@ -230,11 +196,8 @@ class OfflinePageModelTaskified : public OfflinePageModel,
   // Manager for the offline archive files and directory.
   std::unique_ptr<ArchiveManager> archive_manager_;
 
-  // Manages interaction with the OS download manager, if present.
-  std::unique_ptr<SystemDownloadManager> download_manager_;
-
-  // Controller of the client policies.
-  std::unique_ptr<ClientPolicyController> policy_controller_;
+  // Used for moving archives into public storage.
+  std::unique_ptr<OfflinePageArchivePublisher> archive_publisher_;
 
   // The observers.
   base::ObserverList<Observer>::Unchecked observers_;
@@ -261,7 +224,7 @@ class OfflinePageModelTaskified : public OfflinePageModel,
 
   const scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
-  base::WeakPtrFactory<OfflinePageModelTaskified> weak_ptr_factory_;
+  base::WeakPtrFactory<OfflinePageModelTaskified> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(OfflinePageModelTaskified);
 };

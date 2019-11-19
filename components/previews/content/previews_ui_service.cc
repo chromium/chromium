@@ -20,8 +20,7 @@ PreviewsUIService::PreviewsUIService(
     network::NetworkQualityTracker* network_quality_tracker)
     : previews_decider_impl_(std::move(previews_decider_impl)),
       logger_(std::move(logger)),
-      network_quality_tracker_(network_quality_tracker),
-      weak_factory_(this) {
+      network_quality_tracker_(network_quality_tracker) {
   DCHECK(logger_);
   DCHECK(previews_decider_impl_);
   DCHECK(network_quality_tracker_);

@@ -6,7 +6,7 @@
     overflow:auto;
     width:200px;
     height:200px;
-    transform:translateZ(0);
+    will-change:transform;
   }
 </style>
 <script type='text/javascript'>
@@ -25,10 +25,8 @@
   }
   window.addEventListener('load', doTest, false);
 
-  if (window.testRunner) {
+  if (window.testRunner)
     testRunner.waitUntilDone();
-    testRunner.dumpAsTextWithPixelResults();
-  }
 </script>
 </head>
 <body>

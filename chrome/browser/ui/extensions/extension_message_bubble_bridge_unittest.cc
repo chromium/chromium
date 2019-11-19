@@ -65,11 +65,11 @@ class ExtensionMessageBubbleBridgeUnitTest
     ExtensionServiceTestWithInstall::SetUp();
     InitializeEmptyExtensionService();
 
-    browser_window_.reset(new TestBrowserWindow());
+    browser_window_ = std::make_unique<TestBrowserWindow>();
     Browser::CreateParams params(profile(), true);
-    params.type = Browser::TYPE_TABBED;
+    params.type = Browser::TYPE_NORMAL;
     params.window = browser_window_.get();
-    browser_.reset(new Browser(params));
+    browser_ = std::make_unique<Browser>(params);
 
     extensions::ExtensionWebUIOverrideRegistrar::GetFactoryInstance()
         ->SetTestingFactory(browser()->profile(),

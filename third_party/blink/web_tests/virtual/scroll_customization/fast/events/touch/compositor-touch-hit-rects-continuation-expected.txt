@@ -1,0 +1,5 @@
+This tests verifies the hit test regions given to the compositor specifically for continuation case. It can only be run in DumpRenderTree.
+
+continuation: layer(800x600) has hit test rect (13,90 290x12)
+
+

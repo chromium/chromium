@@ -28,14 +28,18 @@ void OmniboxTextField::SetAutocompletion(const Autocompletion& autocompletion) {
     return;
 
   TextInputInfo current = edited_text().current;
-  base::string16 current_base = current.text.substr(0, current.selection_start);
+  base::string16 current_base = current.text.substr(0, current.selection_end);
   if (current_base != autocompletion.input)
     return;
 
   TextInputInfo info;
   info.text = current_base + autocompletion.suffix;
-  info.selection_start = current_base.size();
-  info.selection_end = info.text.size();
+
+  // Select the autocompletion suffix, with the selection end at the previous
+  // cursor position (inverted selection) so that
+  // what the user typed remains in view.
+  info.selection_end = current_base.size();
+  info.selection_start = info.text.size();
 
   EditedText new_state(edited_text());
   new_state.Update(info);
@@ -60,8 +64,10 @@ void OmniboxTextField::OnUpdateInput(const EditedText& info) {
     request.prevent_inline_autocomplete = true;
 
   size_t previous_base_size = info.previous.text.size();
-  if (info.previous.selection_end > info.previous.selection_start)
-    previous_base_size = info.previous.selection_start;
+  if (info.previous.selection_end != info.previous.selection_start) {
+    previous_base_size =
+        std::min(info.previous.selection_start, info.previous.selection_end);
+  }
 
   // If the new text is not larger than the previous base text, disable
   // autocomplete, as the user backspaced or removed a selection.

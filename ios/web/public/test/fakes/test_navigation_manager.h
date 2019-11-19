@@ -6,9 +6,9 @@
 #define IOS_WEB_PUBLIC_TEST_FAKES_TEST_NAVIGATION_MANAGER_H_
 
 #include "base/callback.h"
-#import "ios/web/public/navigation_item.h"
-#include "ios/web/public/navigation_item_list.h"
-#import "ios/web/public/navigation_manager.h"
+#include "ios/web/public/deprecated/navigation_item_list.h"
+#import "ios/web/public/navigation/navigation_item.h"
+#import "ios/web/public/navigation/navigation_manager.h"
 #include "ui/base/page_transition_types.h"
 
 namespace web {
@@ -61,6 +61,9 @@ class TestNavigationManager : public NavigationManager {
   // Sets a value for pending item that will be returned by GetPendingItem().
   void SetPendingItem(NavigationItem* item);
 
+  // Sets a value for the index that will be returned by GetPendingItemIndex().
+  void SetPendingItemIndex(int index);
+
   // Sets a value for visible item that will be returned by GetVisibleItem().
   void SetVisibleItem(NavigationItem* item);
 
@@ -87,6 +90,7 @@ class TestNavigationManager : public NavigationManager {
   int items_index_;
   // Individual backing instance variables for Set* test set up methods.
   NavigationItem* pending_item_;
+  int pending_item_index_;
   NavigationItem* last_committed_item_;
   NavigationItem* visible_item_;
   web::BrowserState* browser_state_;

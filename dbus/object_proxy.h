@@ -267,6 +267,9 @@ class CHROME_DBUS_EXPORT ObjectProxy
   // Connects to NameOwnerChanged signal.
   bool ConnectToNameOwnerChangedSignal();
 
+  // Tries to connect to NameOwnerChanged signal, ignores any error.
+  void TryConnectToNameOwnerChangedSignal();
+
   // Helper function for ConnectToSignal().
   bool ConnectToSignalInternal(const std::string& interface_name,
                                const std::string& signal_name,

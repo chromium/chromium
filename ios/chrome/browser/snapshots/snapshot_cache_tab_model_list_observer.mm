@@ -12,8 +12,6 @@
 #import "ios/chrome/browser/tabs/tab_model.h"
 #import "ios/chrome/browser/tabs/tab_model_list.h"
 #import "ios/chrome/browser/tabs/tab_model_list_observer.h"
-#include "ios/chrome/browser/web_state_list/web_state_list.h"
-#include "ios/chrome/browser/web_state_list/web_state_list_observer.h"
 
 SnapshotCacheTabModelListObserver::SnapshotCacheTabModelListObserver(
     ios::ChromeBrowserState* browser_state,

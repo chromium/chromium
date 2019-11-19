@@ -19,7 +19,7 @@ void PresentationReceiverWindowFrame::InitReceiverFrame(
   params.bounds = bounds;
   params.delegate = delegate.release();
 
-  Init(params);
+  Init(std::move(params));
 }
 
 const ui::ThemeProvider* PresentationReceiverWindowFrame::GetThemeProvider()

@@ -1,0 +1,18 @@
+<html>
+<title>Overlapping cross site iframe</title>
+
+This is the main body content.
+<iframe id="iframe" style="width:300px; height:300px; position:absolute; left:100px; top:100px"></iframe>
+<div id="target" style="background-color: yellow; position: absolute; top: 120px; left: 120px; width: 100px; height: 100px"></div>
+
+<script>
+
+  var url = window.location.protocol + '//b.com';
+  if (window.location.port)
+    url += ':' + window.location.port;
+  url += "/cross_site_iframe_factory.html?b()";
+
+  document.getElementById('iframe').src = url;
+</script>
+
+</html>

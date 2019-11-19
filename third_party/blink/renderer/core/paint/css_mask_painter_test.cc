@@ -26,7 +26,7 @@ TEST_F(CSSMaskPainterTest, MaskBoundingBoxSVG) {
   )HTML");
   auto& masked = *GetLayoutObjectByElementId("masked");
   base::Optional<IntRect> mask_bounding_box =
-      CSSMaskPainter::MaskBoundingBox(masked, LayoutPoint());
+      CSSMaskPainter::MaskBoundingBox(masked, PhysicalOffset());
   ASSERT_TRUE(mask_bounding_box.has_value());
   EXPECT_EQ(IntRect(75, 75, 100, 100), *mask_bounding_box);
 }
@@ -38,7 +38,7 @@ TEST_F(CSSMaskPainterTest, MaskBoundingBoxCSSBlock) {
   )HTML");
   auto& masked = *GetLayoutObjectByElementId("masked");
   base::Optional<IntRect> mask_bounding_box =
-      CSSMaskPainter::MaskBoundingBox(masked, LayoutPoint(8, 8));
+      CSSMaskPainter::MaskBoundingBox(masked, PhysicalOffset(8, 8));
   ASSERT_TRUE(mask_bounding_box.has_value());
   EXPECT_EQ(IntRect(8, 8, 300, 200), *mask_bounding_box);
 }
@@ -51,7 +51,7 @@ TEST_F(CSSMaskPainterTest, MaskBoundingBoxCSSMaskBoxImageOutset) {
   )HTML");
   auto& masked = *GetLayoutObjectByElementId("masked");
   base::Optional<IntRect> mask_bounding_box =
-      CSSMaskPainter::MaskBoundingBox(masked, LayoutPoint(8, 8));
+      CSSMaskPainter::MaskBoundingBox(masked, PhysicalOffset(8, 8));
   ASSERT_TRUE(mask_bounding_box.has_value());
   EXPECT_EQ(IntRect(-2, -2, 320, 220), *mask_bounding_box);
 }
@@ -69,7 +69,7 @@ TEST_F(CSSMaskPainterTest, MaskBoundingBoxCSSInline) {
   )HTML");
   auto& masked = *GetLayoutObjectByElementId("masked");
   base::Optional<IntRect> mask_bounding_box =
-      CSSMaskPainter::MaskBoundingBox(masked, LayoutPoint(8, 8));
+      CSSMaskPainter::MaskBoundingBox(masked, PhysicalOffset(8, 8));
   ASSERT_TRUE(mask_bounding_box.has_value());
   EXPECT_EQ(IntRect(8, 8, 260, 20), *mask_bounding_box);
 }

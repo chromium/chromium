@@ -4,17 +4,23 @@
 
 #include "components/sync/syncable/invalid_directory_backing_store.h"
 
+#include <string>
+
+#include "base/bind.h"
+
 namespace syncer {
 namespace syncable {
 
 InvalidDirectoryBackingStore::InvalidDirectoryBackingStore()
-    : DirectoryBackingStore("some_fake_user") {}
+    : DirectoryBackingStore("some_fake_user",
+                            base::BindRepeating([]() -> std::string {
+                              return "some_fake_cache_guid";
+                            })) {}
 
 InvalidDirectoryBackingStore::~InvalidDirectoryBackingStore() {}
 
 DirOpenResult InvalidDirectoryBackingStore::Load(
     Directory::MetahandlesMap* handles_map,
-    JournalIndex* delete_journals,
     MetahandleSet* metahandles_to_purge,
     Directory::KernelLoadInfo* kernel_load_info) {
   return FAILED_OPEN_DATABASE;

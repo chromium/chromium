@@ -15,16 +15,14 @@
 
 namespace ash {
 
-namespace wm {
 class WindowState;
-}  // namespace wm
 
 // Controls resizing for windows with the PIP window state type. This
 // includes things like snapping the PIP window to the edges of the work area
 // and handling swipe-to-dismiss.
 class ASH_EXPORT PipWindowResizer : public WindowResizer {
  public:
-  explicit PipWindowResizer(wm::WindowState* window_state);
+  explicit PipWindowResizer(WindowState* window_state);
   ~PipWindowResizer() override;
 
   // WindowResizer:
@@ -34,7 +32,7 @@ class ASH_EXPORT PipWindowResizer : public WindowResizer {
   void FlingOrSwipe(ui::GestureEvent* event) override;
 
  private:
-  wm::WindowState* window_state() { return window_state_; }
+  WindowState* window_state() { return window_state_; }
   gfx::Rect ComputeFlungPosition();
 
   gfx::Point last_location_in_screen_;

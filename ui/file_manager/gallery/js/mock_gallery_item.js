@@ -32,7 +32,7 @@ function MockGalleryItem(
  */
 MockGalleryItem.makeWithPath = function(path, fileSystem, isReadOnly) {
   return new MockGalleryItem(
-      new MockFileEntry(fileSystem, path),
+      MockFileEntry.create(fileSystem, path),
       /** @type {EntryLocation} */ ({isReadOnly: isReadOnly}), {size: 100},
       null, true /* original */);
 };

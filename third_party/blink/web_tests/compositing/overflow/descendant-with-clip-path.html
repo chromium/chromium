@@ -1,5 +1,5 @@
 <!DOCTYPE HTML>
-<script src="resources/composited-scroll.js"></script>
+<script src="../../resources/run-after-layout-and-paint.js"></script>
 <style>
 #scroller {
     overflow: scroll;
@@ -32,35 +32,9 @@
 if (window.internals)
     internals.settings.setPreferCompositingToLCDTextEnabled(true);
 
-if (window.testRunner) {
-    testRunner.dumpAsText();
-    testRunner.waitUntilDone();
-}
-
-var result = "";
-
 onload = function() {
-    if (window.internals) {
-        result += "No clip path descendant (should be using composited scrolling): ";
-        if (elementSubtreeHasCompositedScrollLayers(document.getElementById('scroller')))
-            result += "Pass.\n";
-        else
-            result += "Fail.\n"
-    }
-    document.getElementById("inner").style.webkitClipPath = "polygon(40px 550px,432px 302px,409px 237px,46px 156px)";
-    requestAnimationFrame(function() {
-        if (window.internals) {
-            result += "Has clip path descendant (should not be using composited scrolling): ";
-            if (!elementSubtreeHasCompositedScrollLayers(document.getElementById('scroller')))
-                result += "Pass.\n";
-            else
-                result += "Fail.\n"
-        }
-
-        if (window.testRunner) {
-            testRunner.setCustomTextOutput(result);
-            testRunner.notifyDone();
-        }
-    });
+    runAfterLayoutAndPaint(function() {
+        inner.style.clipPath = "polygon(40px 550px,432px 302px,409px 237px,46px 156px)";
+    }, true);
 };
 </script>

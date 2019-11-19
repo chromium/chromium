@@ -1,0 +1,138 @@
+{
+  "layers": [
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF",
+      "paintInvalidations": [
+        {
+          "object": "LayoutTableRow TR id='r2'",
+          "rect": [8, 224, 108, 22],
+          "reason": "geometry"
+        },
+        {
+          "object": "LayoutTableRow TR",
+          "rect": [8, 338, 99, 30],
+          "reason": "geometry"
+        },
+        {
+          "object": "LayoutTableRow TR",
+          "rect": [8, 286, 99, 30],
+          "reason": "geometry"
+        },
+        {
+          "object": "LayoutTableRow TR",
+          "rect": [8, 154, 99, 30],
+          "reason": "geometry"
+        },
+        {
+          "object": "LayoutTableRow TR",
+          "rect": [8, 102, 99, 30],
+          "reason": "geometry"
+        },
+        {
+          "object": "LayoutTableRow TR",
+          "rect": [8, 316, 99, 22],
+          "reason": "geometry"
+        },
+        {
+          "object": "LayoutTableRow TR id='r'",
+          "rect": [8, 132, 99, 22],
+          "reason": "geometry"
+        },
+        {
+          "object": "LayoutTableRow TR",
+          "rect": [8, 62, 95, 30],
+          "reason": "style change"
+        },
+        {
+          "object": "LayoutTableRow TR",
+          "rect": [8, 10, 95, 30],
+          "reason": "style change"
+        },
+        {
+          "object": "LayoutTableRow TR",
+          "rect": [8, 40, 95, 22],
+          "reason": "style change"
+        },
+        {
+          "object": "InlineTextBox 'ipsum dolor'",
+          "rect": [23, 317, 76, 19],
+          "reason": "appeared"
+        },
+        {
+          "object": "InlineTextBox 'ipsum dolor'",
+          "rect": [23, 133, 76, 19],
+          "reason": "disappeared"
+        },
+        {
+          "object": "InlineTextBox 'sit amet'",
+          "rect": [23, 339, 49, 19],
+          "reason": "appeared"
+        },
+        {
+          "object": "InlineTextBox 'sit amet'",
+          "rect": [23, 339, 49, 19],
+          "reason": "disappeared"
+        },
+        {
+          "object": "InlineTextBox 'sit amet'",
+          "rect": [23, 155, 49, 19],
+          "reason": "appeared"
+        },
+        {
+          "object": "InlineTextBox 'sit amet'",
+          "rect": [23, 155, 49, 19],
+          "reason": "disappeared"
+        },
+        {
+          "object": "InlineTextBox 'Lorem'",
+          "rect": [23, 295, 43, 19],
+          "reason": "appeared"
+        },
+        {
+          "object": "InlineTextBox 'Lorem'",
+          "rect": [23, 295, 43, 19],
+          "reason": "disappeared"
+        },
+        {
+          "object": "InlineTextBox 'Lorem'",
+          "rect": [23, 111, 43, 19],
+          "reason": "appeared"
+        },
+        {
+          "object": "InlineTextBox 'Lorem'",
+          "rect": [23, 111, 43, 19],
+          "reason": "disappeared"
+        },
+        {
+          "object": "InlineTextBox 'dolor'",
+          "rect": [23, 225, 34, 19],
+          "reason": "disappeared"
+        },
+        {
+          "object": "InlineTextBox '\u00A0'",
+          "rect": [17, 225, 4, 19],
+          "reason": "appeared"
+        },
+        {
+          "object": "InlineTextBox '\u00A0'",
+          "rect": [17, 225, 4, 19],
+          "reason": "disappeared"
+        },
+        {
+          "object": "InlineTextBox '\u00A0'",
+          "rect": [17, 133, 4, 19],
+          "reason": "appeared"
+        },
+        {
+          "object": "InlineTextBox '\u00A0'",
+          "rect": [17, 133, 4, 19],
+          "reason": "disappeared"
+        }
+      ]
+    }
+  ]
+}
+

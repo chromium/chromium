@@ -1,0 +1,36 @@
+<link rel="import" href="chrome://resources/html/polymer.html">
+
+<link rel="import" href="shared_style.html">
+<link rel="import" href="toggle_row.html">
+
+<dom-module id="app-management-permission-item">
+  <template>
+    <style include="app-management-shared-css">
+      :host {
+        align-items: center;
+        display: flex;
+        justify-content: space-between;
+      }
+
+      :host(:not([disabled_])) {
+        cursor: pointer;
+      }
+
+      :host(:not([available_])) {
+        display: none;
+      }
+    </style>
+    <!-- `permission-item` does not include any icon-set, so containing
+     elements should import the icon-set needed for the specified |icon|. -->
+    <template is="dom-if" if="[[available_]]">
+      <app-management-toggle-row
+        id="toggle-row"
+        icon="[[icon]]"
+        label="[[permissionLabel]]"
+        managed="[[isManaged_(app_, permissionType)]]"
+        value="[[getValue_(app_, permissionType)]]">
+      </app-management-toggle-row>
+    </template>
+  </template>
+  <script src="permission_item.js"></script>
+</dom-module>

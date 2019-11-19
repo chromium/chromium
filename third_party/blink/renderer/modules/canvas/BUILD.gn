@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//testing/libfuzzer/fuzzer_test.gni")
 import("//third_party/blink/renderer/modules/modules.gni")
 
 blink_modules_sources("canvas") {
@@ -37,5 +38,16 @@ blink_modules_sources("canvas") {
     "offscreencanvas/offscreen_canvas_module.h",
     "offscreencanvas2d/offscreen_canvas_rendering_context_2d.cc",
     "offscreencanvas2d/offscreen_canvas_rendering_context_2d.h",
+  ]
+}
+
+fuzzer_test("canvas_fuzzer") {
+  sources = [
+    "canvas_fuzzer.cc",
+  ]
+  seed_corpuses = [ "//third_party/blink/web_tests/fast/canvas" ]
+  deps = [
+    "../../platform:blink_fuzzer_test_support",
+    "//third_party/blink/renderer/core",
   ]
 }

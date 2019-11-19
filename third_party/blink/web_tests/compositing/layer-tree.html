@@ -12,11 +12,7 @@ html { overflow: scroll; width: 1200px; height: 900px; }
 
 testRunner.dumpAsText();
 testRunner.setCustomTextOutput(
-  "Layer tree:\n" +
-  internals.layerTreeAsText(document,
-    internals.OUTPUT_AS_LAYER_TREE |
-    internals.LAYER_TREE_INCLUDES_ROOT_LAYER) +
-  "\nLayer list\n" +
+  "Layer list\n" +
   internals.layerTreeAsText(document,
     internals.LAYER_TREE_INCLUDES_ROOT_LAYER));
 </script>

@@ -1,0 +1,51 @@
+<!doctype html>
+<head>
+  <script src="post_message_api.js"></script>
+  <script src="add_supervision_api_client.js"></script>
+  <script>
+    /** @type {AddSupervisionAPIClient} */
+    let api = new AddSupervisionAPIClient();
+    api.initialize();
+
+    //
+    // UI implementation:
+    //
+    document.addEventListener('DOMContentLoaded', () => {
+      const logoutBtn = document.querySelector('#logout');
+
+      logoutBtn.addEventListener('click', () => {
+        api.logOut().then(() => {
+          // This won't get reached.
+        }, (error) => {
+          console.error(error.message);
+        });
+      });
+
+      const getArcAppsBtn = document.querySelector('#get_arc_apps');
+
+      getArcAppsBtn.addEventListener('click', () => {
+        api.getInstalledArcApps()
+          .then(result => {
+            console.error("Installed apps: " + result);
+            const arc_apps_text = document.querySelector('#arc_apps');
+            arc_apps_text.value = result.apps;
+          },  err => {
+            console.error(err);
+          })
+       });
+  </script>
+</head>
+<body>
+  <h2>Add Supervision Webview</h2>
+
+  <div>
+  <button id="logout">Logout</button>
+  </div>
+  <div>
+  <button id="get_arc_apps">Get ARC Apps</button>
+  </div>
+  <div>
+  <input type="text" id="arc_apps"
+         minlength="0" maxlength="128" size="128">
+  </div>
+</body>

@@ -39,9 +39,8 @@ WebURLLoaderMockFactoryImpl::WebURLLoaderMockFactoryImpl(
 
 WebURLLoaderMockFactoryImpl::~WebURLLoaderMockFactoryImpl() = default;
 
-std::unique_ptr<WebURLLoader> WebURLLoaderMockFactoryImpl::CreateURLLoader(
-    std::unique_ptr<WebURLLoader> default_loader) {
-  return std::make_unique<WebURLLoaderMock>(this, std::move(default_loader));
+std::unique_ptr<WebURLLoader> WebURLLoaderMockFactoryImpl::CreateURLLoader() {
+  return std::make_unique<WebURLLoaderMock>(this);
 }
 
 void WebURLLoaderMockFactoryImpl::RegisterURL(const WebURL& url,
@@ -152,8 +151,7 @@ void WebURLLoaderMockFactoryImpl::FillNavigationParamsResponse(
     scoped_refptr<SharedBuffer> buffer;
     int result;
     std::tie(result, response, buffer) =
-        network_utils::ParseDataURLAndPopulateResponse(
-            kurl, true /* verify_mime_type */);
+        network_utils::ParseDataURL(kurl, params->http_method);
     DCHECK(buffer);
     DCHECK_EQ(net::OK, result);
     params->response = WrappedResourceResponse(response);
@@ -265,7 +263,7 @@ bool WebURLLoaderMockFactoryImpl::LookupURL(const WebURL& url,
 
   for (const auto& key_value_pair : protocol_to_response_info_) {
     String protocol = key_value_pair.key;
-    if (url.ProtocolIs(protocol.Ascii().data())) {
+    if (url.ProtocolIs(protocol.Ascii().c_str())) {
       *response_info = key_value_pair.value;
       return true;
     }

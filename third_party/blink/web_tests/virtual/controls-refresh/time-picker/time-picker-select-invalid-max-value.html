@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<script src="../../../fast/forms/resources/common.js"></script>
+<script src="../../../fast/forms/resources/picker-common.js"></script>
+<script src="../../../fast/forms/calendar-picker/resources/calendar-picker-common.js"></script>
+</head>
+<body>
+<input type="time" id="time" value="14:15" max="17:12">
+<script>
+
+let t = async_test('Test select invalid max value in time popup');
+
+function selectValue() {
+  let timeElement = document.getElementById("time");
+  timeElement.addEventListener("change", t.step_func_done(() => {
+    assert_equals(timeElement.value, "18:17");
+    assert_true(timeElement.validity.rangeOverflow);
+    assert_false(timeElement.validity.valid);
+  }));
+  clickTimeCellAt(0, 4);
+  clickTimeCellAt(1, 2);
+  clickSubmitTimeButton();
+}
+
+t.step(() => {
+  openPicker(document.getElementById('time'), t.step_func(selectValue),  t.step_func_done(() => {
+    assert_false(internals.runtimeFlags.formControlsRefreshEnabled, "Popup did not open.");
+  }));
+});
+</script>
+</body>
+</html>

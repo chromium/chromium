@@ -79,7 +79,7 @@ class SimpleAlarmTimer : public base::RetainingOneShotTimer {
   std::unique_ptr<base::PendingTask> pending_task_;
 
   // Used to invalidate pending callbacks.
-  base::WeakPtrFactory<SimpleAlarmTimer> weak_factory_;
+  base::WeakPtrFactory<SimpleAlarmTimer> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(SimpleAlarmTimer);
 };

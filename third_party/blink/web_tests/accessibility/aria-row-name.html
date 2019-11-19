@@ -1,7 +1,6 @@
 <!DOCTYPE HTML>
 <script src="../resources/testharness.js"></script>
 <script src="../resources/testharnessreport.js"></script>
-<script src="../resources/run-after-layout-and-paint.js"></script>
 <body id="body">
 <div role="treegrid">
   <div role="row" id="treegrid1-row1" tabindex="-1">
@@ -28,17 +27,17 @@ function axElementById(id) {
     return accessibilityController.accessibleElementById(id);
 }
 
-test_after_layout_and_paint(function(t) {
+test(function(t) {
     var axRow = axElementById("treegrid1-row1");
     assert_equals(axRow.name, 'row head data');
 }, "The row's name must concatenate the children if the row is focusable");
 
-test_after_layout_and_paint(function(t) {
+test(function(t) {
     var axRow = axElementById("treegrid2-row1");
     assert_equals(axRow.name, 'row head data');
 }, "The row's name must concatenate the children if the parent has aria-activedescendant");
 
-test_after_layout_and_paint(function(t) {
+test(function(t) {
     var axRow = axElementById("treegrid3-row1");
     assert_equals(axRow.name, '');
 }, "The row's name must empty when the parent is not focusable and there is no other labelling markup (for performance reasons)");

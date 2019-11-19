@@ -1,0 +1,23 @@
+<!doctype html>
+<style>
+  #more-aligned {background: green; padding: 100px;}
+  #less-aligned {background: red; padding: 99px;}
+</style>
+
+<span id="less-aligned" class="more" tabindex="0">x</span><span id="more-aligned" class="more" tabindex="0">x</span>
+
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="resources/snav-testharness.js"></script>
+<script>
+  snav.assertFocusMoves([["Down", "more-aligned"]]);
+</script>
+
+<p><em>Manual test instruction: Ensure SpatNav goes to the, projection wise,
+"more aligned" element first, even though it comes second in DOM order.</em></p>
+
+<p>When two rects are on the same distance from current focus F, SpatNav
+should prioritize the rect that can absorb most of F's projection.</p>
+
+<p>When looking for the closest "insider" (here, focusables inside the
+document), SpatNav projects the document's edge onto each candidate.</p>

@@ -11,17 +11,17 @@
 #include "third_party/blink/renderer/core/css/parser/css.pb.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser.h"
 #include "third_party/blink/renderer/core/css/style_sheet_contents.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/testing/blink_fuzzer_test_support.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 protobuf_mutator::protobuf::LogSilencer log_silencer;
 
-using namespace css_proto_converter;
+using css_proto_converter::Input;
 
 DEFINE_BINARY_PROTO_FUZZER(const Input& input) {
-  static Converter converter = Converter();
-  static blink::BlinkFuzzerTestSupport test_support =
-      blink::BlinkFuzzerTestSupport();
+  static css_proto_converter::Converter converter;
+  static blink::BlinkFuzzerTestSupport test_support;
 
   static std::unordered_map<Input::CSSParserMode, blink::CSSParserMode>
       parser_mode_map = {
@@ -40,25 +40,19 @@ DEFINE_BINARY_PROTO_FUZZER(const Input& input) {
   blink::CSSParserMode mode = parser_mode_map[input.css_parser_mode()];
   blink::SecureContextMode secure_context_mode =
       secure_context_mode_map[input.secure_context_mode()];
-  blink::CSSParserContext::SelectorProfile selector_profile;
-  if (input.is_live_profile())
-    selector_profile = blink::CSSParserContext::kLiveProfile;
-  else
-    selector_profile = blink::CSSParserContext::kSnapshotProfile;
-  blink::CSSDeferPropertyParsing defer_property_parsing;
-  if (input.defer_property_parsing())
-    defer_property_parsing = blink::CSSDeferPropertyParsing::kYes;
-  else
-    defer_property_parsing = blink::CSSDeferPropertyParsing::kNo;
-  blink::CSSParserContext* context = blink::CSSParserContext::Create(
+  const blink::CSSParserContext::SelectorProfile selector_profile =
+      input.is_live_profile() ? blink::CSSParserContext::kLiveProfile
+                              : blink::CSSParserContext::kSnapshotProfile;
+  auto* context = blink::MakeGarbageCollected<blink::CSSParserContext>(
       mode, secure_context_mode, selector_profile);
 
-  blink::StyleSheetContents* style_sheet =
-      blink::StyleSheetContents::Create(context);
-
+  auto* style_sheet =
+      blink::MakeGarbageCollected<blink::StyleSheetContents>(context);
   WTF::String style_sheet_string(
       converter.Convert(input.style_sheet()).c_str());
-
+  const blink::CSSDeferPropertyParsing defer_property_parsing =
+      input.defer_property_parsing() ? blink::CSSDeferPropertyParsing::kYes
+                                     : blink::CSSDeferPropertyParsing::kNo;
   blink::CSSParser::ParseSheet(context, style_sheet, style_sheet_string,
                                defer_property_parsing);
 }

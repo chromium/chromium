@@ -101,9 +101,8 @@ class MODULES_EXPORT DeferredTaskHandler final
   void MarkAudioNodeOutputDirty(AudioNodeOutput*);
   void RemoveMarkedAudioNodeOutput(AudioNodeOutput*);
 
-  // In AudioNode::breakConnection() and deref(), a tryLock() is used for
-  // calling actual processing, but if it fails keep track here.
-  void AddDeferredBreakConnection(AudioHandler&);
+  // Break connections between nodes.  This is done on the audio thread with the
+  // graph lock.
   void BreakConnections();
 
   void AddRenderingOrphanHandler(scoped_refptr<AudioHandler>);
@@ -228,9 +227,6 @@ class MODULES_EXPORT DeferredTaskHandler final
   // These raw pointers are safe because their destructors unregister them.
   HashSet<AudioSummingJunction*> dirty_summing_junctions_;
   HashSet<AudioNodeOutput*> dirty_audio_node_outputs_;
-
-  // Only accessed in the audio thread.
-  Vector<AudioHandler*> deferred_break_connection_list_;
 
   Vector<scoped_refptr<AudioHandler>> rendering_orphan_handlers_;
   Vector<scoped_refptr<AudioHandler>> deletable_orphan_handlers_;

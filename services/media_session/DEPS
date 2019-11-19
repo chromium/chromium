@@ -1,5 +1,4 @@
 include_rules = [
-  "+jni",
   "+ui/gfx",
   "+third_party/skia/include",
 ]

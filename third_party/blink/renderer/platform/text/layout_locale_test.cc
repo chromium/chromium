@@ -16,9 +16,9 @@ TEST(LayoutLocaleTest, Get) {
   EXPECT_EQ(g_empty_atom, LayoutLocale::Get(g_empty_atom)->LocaleString());
 
   EXPECT_STRCASEEQ("en-us",
-                   LayoutLocale::Get("en-us")->LocaleString().Ascii().data());
+                   LayoutLocale::Get("en-us")->LocaleString().Ascii().c_str());
   EXPECT_STRCASEEQ("ja-jp",
-                   LayoutLocale::Get("ja-jp")->LocaleString().Ascii().data());
+                   LayoutLocale::Get("ja-jp")->LocaleString().Ascii().c_str());
 
   LayoutLocale::ClearForTesting();
 }

@@ -1,0 +1,22 @@
+{
+  "comments": [
+    "Builder for Xcode 11 iOS 13 SDK",
+    "Build is performed with gn+ninja."
+  ],
+  "xcode build version": "11b53",
+  "gn_args": [
+    "goma_dir=\"$(goma_dir)\"",
+    "ios_enable_code_signing=false",
+    "is_component_build=false",
+    "is_debug=false",
+    "target_cpu=\"arm64\"",
+    "target_os=\"ios\"",
+    "use_goma=true"
+  ],
+  "additional_compile_targets": [
+    "all"
+  ],
+  "configuration": "Release",
+  "tests": [
+  ]
+}

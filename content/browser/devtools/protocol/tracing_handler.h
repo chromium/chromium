@@ -37,7 +37,7 @@ class DevToolsAgentHostImpl;
 class DevToolsVideoConsumer;
 class DevToolsIOContext;
 class FrameTreeNode;
-class NavigationHandleImpl;
+class NavigationRequest;
 class RenderFrameHost;
 class RenderProcessHost;
 
@@ -46,8 +46,7 @@ namespace protocol {
 class TracingHandler : public DevToolsDomainHandler, public Tracing::Backend {
  public:
   CONTENT_EXPORT TracingHandler(FrameTreeNode* frame_tree_node,
-                                DevToolsIOContext* io_context,
-                                bool use_binary_protocol);
+                                DevToolsIOContext* io_context);
   CONTENT_EXPORT ~TracingHandler() override;
 
   static std::vector<TracingHandler*> ForAgentHost(DevToolsAgentHostImpl* host);
@@ -67,21 +66,27 @@ class TracingHandler : public DevToolsDomainHandler, public Tracing::Backend {
              Maybe<std::string> options,
              Maybe<double> buffer_usage_reporting_interval,
              Maybe<std::string> transfer_mode,
+             Maybe<std::string> transfer_format,
              Maybe<std::string> transfer_compression,
              Maybe<Tracing::TraceConfig> config,
              std::unique_ptr<StartCallback> callback) override;
   Response End() override;
   void GetCategories(std::unique_ptr<GetCategoriesCallback> callback) override;
   void RequestMemoryDump(
+      Maybe<bool> deterministic,
       std::unique_ptr<RequestMemoryDumpCallback> callback) override;
   Response RecordClockSyncMarker(const std::string& sync_id) override;
 
   bool did_initiate_recording() { return did_initiate_recording_; }
-  void ReadyToCommitNavigation(NavigationHandleImpl* navigation_handle);
+  void ReadyToCommitNavigation(NavigationRequest* navigation_request);
   void FrameDeleted(RenderFrameHostImpl* frame_host);
 
  private:
   friend class TracingHandlerTest;
+
+  class TracingSession;
+  class LegacyTracingSession;
+  class PerfettoTracingSession;
 
   struct TraceDataBufferState {
    public:
@@ -108,6 +113,7 @@ class TracingHandler : public DevToolsDomainHandler, public Tracing::Backend {
       const std::string& trace_fragment);
 
   void SetupTimer(double usage_reporting_interval);
+  void UpdateBufferUsage();
   void StopTracing(
       const scoped_refptr<TracingController::TraceDataEndpoint>& endpoint,
       const std::string& agent_label);
@@ -124,7 +130,6 @@ class TracingHandler : public DevToolsDomainHandler, public Tracing::Backend {
                        std::unordered_set<base::ProcessId>* process_set);
   void OnProcessReady(RenderProcessHost*);
 
-  const bool use_binary_protocol_;
   std::unique_ptr<base::RepeatingTimer> buffer_usage_poll_timer_;
 
   std::unique_ptr<Tracing::Frontend> frontend_;
@@ -133,12 +138,14 @@ class TracingHandler : public DevToolsDomainHandler, public Tracing::Backend {
   bool did_initiate_recording_;
   bool return_as_stream_;
   bool gzip_compression_;
+  bool proto_format_;
   double buffer_usage_reporting_interval_;
   TraceDataBufferState trace_data_buffer_state_;
   std::unique_ptr<DevToolsVideoConsumer> video_consumer_;
   int number_of_screenshots_from_video_consumer_ = 0;
   base::trace_event::TraceConfig trace_config_;
-  base::WeakPtrFactory<TracingHandler> weak_factory_;
+  std::unique_ptr<TracingSession> session_;
+  base::WeakPtrFactory<TracingHandler> weak_factory_{this};
 
   FRIEND_TEST_ALL_PREFIXES(TracingHandlerTest,
                            GetTraceConfigFromDevToolsConfig);

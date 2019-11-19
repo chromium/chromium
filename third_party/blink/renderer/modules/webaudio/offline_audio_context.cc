@@ -38,8 +38,9 @@
 #include "third_party/blink/renderer/platform/bindings/exception_messages.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
-#include "third_party/blink/renderer/platform/cross_thread_functional.h"
-#include "third_party/blink/renderer/platform/histogram.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/instrumentation/histogram.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 
 namespace blink {
 
@@ -54,6 +55,13 @@ OfflineAudioContext* OfflineAudioContext::Create(
   if (!document) {
     exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
                                       "Workers are not supported.");
+    return nullptr;
+  }
+
+  if (document->IsDetached()) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kNotSupportedError,
+        "Cannot create OfflineAudioContext on a detached document.");
     return nullptr;
   }
 
@@ -168,10 +176,10 @@ ScriptPromise OfflineAudioContext::startOfflineRendering(
   // See: crbug.com/435867
   if (IsContextClosed()) {
     return ScriptPromise::RejectWithDOMException(
-        script_state,
-        DOMException::Create(DOMExceptionCode::kInvalidStateError,
-                             "cannot call startRendering on an "
-                             "OfflineAudioContext in a stopped state."));
+        script_state, MakeGarbageCollected<DOMException>(
+                          DOMExceptionCode::kInvalidStateError,
+                          "cannot call startRendering on an "
+                          "OfflineAudioContext in a stopped state."));
   }
 
   // If the context is not in the suspended state (i.e. running), reject the
@@ -179,7 +187,7 @@ ScriptPromise OfflineAudioContext::startOfflineRendering(
   if (ContextState() != AudioContextState::kSuspended) {
     return ScriptPromise::RejectWithDOMException(
         script_state,
-        DOMException::Create(
+        MakeGarbageCollected<DOMException>(
             DOMExceptionCode::kInvalidStateError,
             "cannot startRendering when an OfflineAudioContext is " + state()));
   }
@@ -187,14 +195,15 @@ ScriptPromise OfflineAudioContext::startOfflineRendering(
   // Can't call startRendering more than once.  Return a rejected promise now.
   if (is_rendering_started_) {
     return ScriptPromise::RejectWithDOMException(
-        script_state,
-        DOMException::Create(DOMExceptionCode::kInvalidStateError,
-                             "cannot call startRendering more than once"));
+        script_state, MakeGarbageCollected<DOMException>(
+                          DOMExceptionCode::kInvalidStateError,
+                          "cannot call startRendering more than once"));
   }
 
   DCHECK(!is_rendering_started_);
 
-  complete_resolver_ = ScriptPromiseResolver::Create(script_state);
+  complete_resolver_ =
+      MakeGarbageCollected<ScriptPromiseResolver>(script_state);
 
   // Allocate the AudioBuffer to hold the rendered result.
   float sample_rate = DestinationHandler().SampleRate();
@@ -205,12 +214,12 @@ ScriptPromise OfflineAudioContext::startOfflineRendering(
 
   if (!render_target) {
     return ScriptPromise::RejectWithDOMException(
-        script_state,
-        DOMException::Create(DOMExceptionCode::kNotSupportedError,
-                             "startRendering failed to create AudioBuffer(" +
-                                 String::Number(number_of_channels) + ", " +
-                                 String::Number(total_render_frames_) + ", " +
-                                 String::Number(sample_rate) + ")"));
+        script_state, MakeGarbageCollected<DOMException>(
+                          DOMExceptionCode::kNotSupportedError,
+                          "startRendering failed to create AudioBuffer(" +
+                              String::Number(number_of_channels) + ", " +
+                              String::Number(total_render_frames_) + ", " +
+                              String::Number(sample_rate) + ")"));
   }
 
   // Start rendering and return the promise.
@@ -228,19 +237,20 @@ ScriptPromise OfflineAudioContext::suspendContext(ScriptState* script_state,
                                                   double when) {
   DCHECK(IsMainThread());
 
-  ScriptPromiseResolver* resolver = ScriptPromiseResolver::Create(script_state);
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
 
   // If the rendering is finished, reject the promise.
   if (ContextState() == AudioContextState::kClosed) {
-    resolver->Reject(DOMException::Create(DOMExceptionCode::kInvalidStateError,
-                                          "the rendering is already finished"));
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kInvalidStateError,
+        "the rendering is already finished"));
     return promise;
   }
 
   // The specified suspend time is negative; reject the promise.
   if (when < 0) {
-    resolver->Reject(DOMException::Create(
+    resolver->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kInvalidStateError,
         "negative suspend time (" + String::Number(when) + ") is not allowed"));
     return promise;
@@ -251,7 +261,7 @@ ScriptPromise OfflineAudioContext::suspendContext(ScriptState* script_state,
   // will be rejected.
   double total_render_duration = total_render_frames_ / sampleRate();
   if (total_render_duration <= when) {
-    resolver->Reject(DOMException::Create(
+    resolver->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kInvalidStateError,
         "cannot schedule a suspend at " +
             String::NumberToStringECMAScript(when) +
@@ -277,7 +287,7 @@ ScriptPromise OfflineAudioContext::suspendContext(ScriptState* script_state,
         std::min(CurrentSampleFrame(), static_cast<size_t>(length()));
     double current_time_clamped =
         std::min(currentTime(), length() / static_cast<double>(sampleRate()));
-    resolver->Reject(DOMException::Create(
+    resolver->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kInvalidStateError,
         "suspend(" + String::Number(when) + ") failed to suspend at frame " +
             String::Number(frame) + " because it is earlier than the current " +
@@ -293,7 +303,7 @@ ScriptPromise OfflineAudioContext::suspendContext(ScriptState* script_state,
   // If there is a duplicate suspension at the same quantized frame,
   // reject the promise.
   if (scheduled_suspends_.Contains(frame)) {
-    resolver->Reject(DOMException::Create(
+    resolver->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kInvalidStateError,
         "cannot schedule more than one suspend at frame " +
             String::Number(frame) + " (" + String::Number(when) + " seconds)"));
@@ -308,12 +318,12 @@ ScriptPromise OfflineAudioContext::suspendContext(ScriptState* script_state,
 ScriptPromise OfflineAudioContext::resumeContext(ScriptState* script_state) {
   DCHECK(IsMainThread());
 
-  ScriptPromiseResolver* resolver = ScriptPromiseResolver::Create(script_state);
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
 
   // If the rendering has not started, reject the promise.
   if (!is_rendering_started_) {
-    resolver->Reject(DOMException::Create(
+    resolver->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kInvalidStateError,
         "cannot resume an offline context that has not started"));
     return promise;
@@ -321,9 +331,9 @@ ScriptPromise OfflineAudioContext::resumeContext(ScriptState* script_state) {
 
   // If the context is in a closed state, reject the promise.
   if (ContextState() == AudioContextState::kClosed) {
-    resolver->Reject(
-        DOMException::Create(DOMExceptionCode::kInvalidStateError,
-                             "cannot resume a closed offline context"));
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kInvalidStateError,
+        "cannot resume a closed offline context"));
     return promise;
   }
 
@@ -374,9 +384,9 @@ void OfflineAudioContext::FireCompletionEvent() {
     complete_resolver_->Resolve(rendered_buffer);
   } else {
     // The resolver should be rejected when the execution context is gone.
-    complete_resolver_->Reject(
-        DOMException::Create(DOMExceptionCode::kInvalidStateError,
-                             "the execution context does not exist"));
+    complete_resolver_->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kInvalidStateError,
+        "the execution context does not exist"));
   }
 
   is_rendering_started_ = false;
@@ -386,10 +396,13 @@ void OfflineAudioContext::FireCompletionEvent() {
 
 bool OfflineAudioContext::HandlePreRenderTasks(
     const AudioIOPosition* output_position,
-    const AudioIOCallbackMetric* metric) {
-  DCHECK(IsAudioThread());
+    const AudioCallbackMetric* metric) {
+  // TODO(hongchan, rtoy): passing |nullptr| as an argument is not a good
+  // pattern. Consider rewriting this method/interface.
   DCHECK_EQ(output_position, nullptr);
   DCHECK_EQ(metric, nullptr);
+
+  DCHECK(IsAudioThread());
 
   // OfflineGraphAutoLocker here locks the audio graph for this scope. Note
   // that this locker does not use tryLock() inside because the timing of
@@ -456,7 +469,7 @@ void OfflineAudioContext::RejectPendingResolvers() {
   // pending.
 
   for (auto& pending_suspend_resolver : scheduled_suspends_) {
-    pending_suspend_resolver.value->Reject(DOMException::Create(
+    pending_suspend_resolver.value->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kInvalidStateError, "Audio context is going away"));
   }
 
@@ -464,6 +477,15 @@ void OfflineAudioContext::RejectPendingResolvers() {
   DCHECK_EQ(resume_resolvers_.size(), 0u);
 
   RejectPendingDecodeAudioDataResolvers();
+}
+
+bool OfflineAudioContext::IsPullingAudioGraph() const {
+  DCHECK(IsMainThread());
+
+  // For an offline context, we're rendering only while the context is running.
+  // Unlike an AudioContext, there's no audio device that keeps pulling on graph
+  // after the context has finished rendering.
+  return ContextState() == BaseAudioContext::kRunning;
 }
 
 bool OfflineAudioContext::ShouldSuspend() {

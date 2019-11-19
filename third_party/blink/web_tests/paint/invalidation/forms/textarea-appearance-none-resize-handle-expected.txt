@@ -1,22 +1,16 @@
 {
   "layers": [
     {
-      "name": "LayoutView #document",
-      "bounds": [800, 600],
-      "drawsContent": false,
-      "backgroundColor": "#FFFFFF"
-    },
-    {
-      "name": "Scrolling Layer",
-      "bounds": [800, 600],
-      "drawsContent": false
-    },
-    {
       "name": "Scrolling Contents Layer",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
       "paintInvalidations": [
+        {
+          "object": "LayoutTextControl (positioned) TEXTAREA id='textarea'",
+          "rect": [0, 50, 106, 206],
+          "reason": "geometry"
+        },
         {
           "object": "LayoutTextControl (positioned) TEXTAREA id='textarea'",
           "rect": [0, 50, 106, 206],

@@ -5,7 +5,7 @@
 #ifndef UI_OZONE_PUBLIC_PLATFORM_WINDOW_SURFACE_H_
 #define UI_OZONE_PUBLIC_PLATFORM_WINDOW_SURFACE_H_
 
-#include "ui/ozone/ozone_base_export.h"
+#include "base/component_export.h"
 
 namespace ui {
 
@@ -24,7 +24,7 @@ namespace ui {
 // TODO(spang): If we go this way, we should be consistent. You should have to
 // have a PlatformWindowSurface before building a GLSurface or software surface
 // as well.
-class OZONE_BASE_EXPORT PlatformWindowSurface {
+class COMPONENT_EXPORT(OZONE_BASE) PlatformWindowSurface {
  public:
   virtual ~PlatformWindowSurface() {}
 

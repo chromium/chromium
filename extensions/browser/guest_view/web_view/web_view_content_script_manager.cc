@@ -223,7 +223,9 @@ void WebViewContentScriptManager::SignalOnScriptsLoaded(
   pending_scripts_loading_callbacks_.push_back(std::move(callback));
 }
 
-void WebViewContentScriptManager::OnScriptsLoaded(UserScriptLoader* loader) {
+void WebViewContentScriptManager::OnScriptsLoaded(
+    UserScriptLoader* loader,
+    content::BrowserContext* browser_context) {
   user_script_loader_observer_.Remove(loader);
   RunCallbacksIfReady();
 }

@@ -1,0 +1,173 @@
+/* Copyright 2013 The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+body {
+  color: #333;
+}
+
+h2 {
+  font-size: 110%;
+}
+
+table {
+  border-collapse: collapse;
+  table-layout: fixed;
+  width: 100%;
+}
+
+th,
+td {
+  border-color: #666;
+  border-style: solid;
+  border-width: 1px;
+  padding: 1px 4px;
+}
+
+tabpanel {
+  padding-bottom: 10px;
+}
+
+tabpanel > div {
+  display: flex;
+}
+
+tabpanel > div > div {
+  flex: 1;
+}
+
+.dump {
+  font-family: monospace;
+  white-space: pre-wrap;
+}
+
+#tabpanel-prefs ul {
+  list-style-type: none;
+  padding-left: 0;
+}
+
+#tabpanel-prefs ul li {
+  width: 100%;
+}
+
+#tabpanel-prefs button.dismissing {
+  background-color: transparent;
+  border-style: solid;
+  border-width: 1px;
+  color: #666;
+  cursor: pointer;
+  font-size: 110%;
+  margin-left: 1em;
+}
+
+.detection-logs-time {
+  width: 10%;
+}
+
+.detection-logs-url {
+  width: 20%;
+}
+
+td.detection-logs-url {
+  word-wrap: break-word;
+}
+
+.detection-logs-content-language {
+  width: 10%;
+}
+
+.detection-logs-cld-language {
+  width: 10%;
+}
+
+.detection-logs-is-cld-reliable {
+  width: 5%;
+}
+
+.detection-logs-has-notranslate {
+  width: 5%;
+}
+
+.detection-logs-html-root-language {
+  width: 10%;
+}
+
+.detection-logs-adopted-language {
+  width: 10%;
+}
+
+.detection-logs-content {
+  width: 20%;
+}
+
+td.detection-logs-content div {
+  font-family: monospace;
+  max-height: 250px;
+  overflow: auto;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+.error-logs-time {
+  width: 20%;
+}
+
+.error-logs-url {
+  width: 40%;
+}
+
+.error-logs-error {
+  width: 40%;
+}
+
+.event-logs-time {
+  width: 15%;
+}
+
+.event-logs-place {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  width: 35%;
+}
+
+.event-logs-message {
+  width: 50%;
+}
+
+.prefs-setting-disabled {
+  display: none;
+}
+
+#country-override input {
+ margin-bottom: 1px;
+}
+
+.init-logs-time {
+  width: 10%;
+}
+
+.init-logs-url {
+  width: 20%;
+}
+
+.init-logs-page-language-code,
+.init-logs-target-lang,
+.init-logs-auto-translate-target,
+.init-logs-href-translate-target,
+.init-logs-predefined-translate-target {
+  width: 5%;
+}
+
+.init-logs-can-auto-translate,
+.init-logs-can-show-ui,
+.init-logs-can-auto-href-translate,
+.init-logs-can-show-href-translate-ui,
+.init-logs-can-show-predefined-language-translate-ui,
+.init-logs-should-suppress-from-ranker,
+.init-logs-is-triggering-possible,
+.init-logs-should-auto-translate,
+.init-logs-should-show-ui,
+.init-logs-ui-shown {
+  width: 5%;
+}

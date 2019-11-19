@@ -92,6 +92,7 @@ class WorkerThread {
   Delegate* delegate_;  // weak
   std::unique_ptr<internal::WorkerThreadImpl> impl_;
   bool running_;
+  bool do_work_now_;
 
   DISALLOW_COPY_AND_ASSIGN(WorkerThread);
 };

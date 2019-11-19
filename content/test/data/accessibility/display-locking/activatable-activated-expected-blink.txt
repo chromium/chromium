@@ -1,0 +1,10 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer
+++++++++genericContainer
+++++++++++staticText name='child'
+++++++++++++inlineTextBox name='child'
+++++++++genericContainer
+++++++++++staticText name='nested locked element!'
+++++++++genericContainer

@@ -9,13 +9,6 @@ namespace net {
 
 namespace test {
 
-TEST(HexUtilsTest, HexDecode) {
-  EXPECT_EQ("", HexDecode(""));
-  EXPECT_EQ("a", HexDecode("61"));
-  // Mixed case input.
-  EXPECT_EQ("Hello world!", HexDecode("48656c6C6F20776f726C6421"));
-}
-
 TEST(HexUtilsTest, HexDump) {
   EXPECT_EQ("", HexDump(""));
   EXPECT_EQ("0x0000:  4865 6c6c 6f20 776f 726c 6421            Hello.world!\n",
@@ -26,11 +19,11 @@ TEST(HexUtilsTest, HexDump) {
       HexDump("PRI * HTTP/2.0\r\n\r\nSM\r\n\r\n"));
   // Verify that 0x21 and 0x7e are printable, 0x20 and 0x7f are not.
   EXPECT_EQ("0x0000:  2021 7e7f                                .!~.\n",
-            HexDump(HexDecode("20217e7f")));
+            HexDump("\x20\x21\x7e\x7f"));
   // Verify that values above numeric_limits<unsigned char>::max() are cast
   // properly on platforms where char is unsigned.
   EXPECT_EQ("0x0000:  90aa ff                                  ...\n",
-            HexDump(HexDecode("90aaff")));
+            HexDump("\x90\xaa\xff"));
 }
 
 }  // namespace test

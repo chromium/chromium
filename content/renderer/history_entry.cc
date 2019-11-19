@@ -84,7 +84,7 @@ void HistoryEntry::HistoryNode::RemoveChildren() {
   children_.clear();
 }
 
-HistoryEntry::HistoryEntry() : weak_ptr_factory_(this) {
+HistoryEntry::HistoryEntry() {
   root_.reset(
       new HistoryNode(weak_ptr_factory_.GetWeakPtr(), WebHistoryItem()));
 }
@@ -92,8 +92,7 @@ HistoryEntry::HistoryEntry() : weak_ptr_factory_(this) {
 HistoryEntry::~HistoryEntry() {
 }
 
-HistoryEntry::HistoryEntry(const WebHistoryItem& root)
-    : weak_ptr_factory_(this) {
+HistoryEntry::HistoryEntry(const WebHistoryItem& root) {
   root_.reset(new HistoryNode(weak_ptr_factory_.GetWeakPtr(), root));
 }
 

@@ -17,14 +17,15 @@ component("drivefs") {
     "drivefs_search.h",
     "drivefs_session.cc",
     "drivefs_session.h",
+    "drivefs_util.h",
     "fake_drivefs_launcher_client.cc",
     "fake_drivefs_launcher_client.h",
-    "pending_connection_manager.cc",
-    "pending_connection_manager.h",
   ]
   deps = [
     "//base",
     "//chromeos/components/drivefs/mojom",
+    "//chromeos/components/mojo_bootstrap",
+    "//chromeos/constants",
     "//chromeos/dbus",
     "//chromeos/disks",
     "//components/account_id",
@@ -64,7 +65,6 @@ source_set("unit_tests") {
     "drivefs_host_unittest.cc",
     "drivefs_search_unittest.cc",
     "drivefs_session_unittest.cc",
-    "pending_connection_manager_unittest.cc",
   ]
 
   deps = [
@@ -73,7 +73,9 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//chromeos/components/drivefs/mojom",
+    "//chromeos/components/mojo_bootstrap",
     "//chromeos/disks:test_support",
+    "//components/account_id",
     "//components/drive",
     "//components/invalidation/impl:test_support",
     "//mojo/public/cpp/bindings",

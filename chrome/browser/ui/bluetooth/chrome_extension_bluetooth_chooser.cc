@@ -17,8 +17,8 @@ ChromeExtensionBluetoothChooser::ChromeExtensionBluetoothChooser(
   // view object which owns |bluetooth_chooser_controller_| when the chooser
   // bubble/dialog closes, it is safe to store and use the raw pointer here.
   bluetooth_chooser_controller_ = bluetooth_chooser_controller.get();
-  chooser_dialog_.reset(new ChromeExtensionChooserDialog(
-      content::WebContents::FromRenderFrameHost(frame)));
+  chooser_dialog_ = std::make_unique<ChromeExtensionChooserDialog>(
+      content::WebContents::FromRenderFrameHost(frame));
   chooser_dialog_->ShowDialog(std::move(bluetooth_chooser_controller));
 }
 

@@ -28,7 +28,8 @@ RemoteCommandJob::~RemoteCommandJob() {
 
 bool RemoteCommandJob::Init(
     base::TimeTicks now,
-    const enterprise_management::RemoteCommand& command) {
+    const enterprise_management::RemoteCommand& command,
+    const enterprise_management::SignedData* signed_command) {
   DCHECK(thread_checker_.CalledOnValidThread());
   DCHECK_EQ(NOT_INITIALIZED, status_);
 
@@ -39,6 +40,8 @@ bool RemoteCommandJob::Init(
   DCHECK_EQ(command.type(), GetType());
 
   unique_id_ = command.command_id();
+  if (signed_command)
+    signed_command_ = *signed_command;
 
   if (command.has_age_of_command()) {
     // Use age of command provided by server to estimate the command issued time
@@ -69,7 +72,8 @@ bool RemoteCommandJob::Init(
   return true;
 }
 
-bool RemoteCommandJob::Run(base::TimeTicks now,
+bool RemoteCommandJob::Run(base::Time now,
+                           base::TimeTicks now_ticks,
                            FinishedCallback finished_callback) {
   DCHECK(thread_checker_.CalledOnValidThread());
 
@@ -80,9 +84,9 @@ bool RemoteCommandJob::Run(base::TimeTicks now,
 
   DCHECK_EQ(NOT_STARTED, status_);
 
-  if (IsExpired(now)) {
+  if (IsExpired(now_ticks)) {
     SYSLOG(ERROR) << "Remote command " << unique_id_
-                  << " expired (it was issued " << now - issued_time_
+                  << " expired (it was issued " << now_ticks - issued_time_
                   << " ago).";
     status_ = EXPIRED;
     return false;
@@ -139,9 +143,7 @@ std::unique_ptr<std::string> RemoteCommandJob::GetResultPayload() const {
   return result_payload_->Serialize();
 }
 
-RemoteCommandJob::RemoteCommandJob()
-    : status_(NOT_INITIALIZED), weak_factory_(this) {
-}
+RemoteCommandJob::RemoteCommandJob() : status_(NOT_INITIALIZED) {}
 
 bool RemoteCommandJob::ParseCommandPayload(const std::string& command_payload) {
   return true;

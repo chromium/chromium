@@ -11,8 +11,8 @@
 #include "base/run_loop.h"
 #include "base/test/bind_test_util.h"
 #include "base/test/mock_callback.h"
-#include "base/test/scoped_task_environment.h"
-#include "components/sync/base/hash_util.h"
+#include "base/test/task_environment.h"
+#include "components/sync/base/client_tag_hash.h"
 #include "components/sync/model/mock_model_type_change_processor.h"
 #include "components/sync/model/model_error.h"
 #include "components/sync/model/model_type_store_test_util.h"
@@ -30,14 +30,13 @@
 namespace syncer {
 namespace {
 
-using testing::DoAll;
+using testing::_;
 using testing::ElementsAre;
+using testing::Invoke;
 using testing::IsEmpty;
 using testing::NotNull;
 using testing::Pair;
 using testing::Return;
-using testing::SaveArg;
-using testing::_;
 
 const ModelType kModelType = PREFERENCES;
 
@@ -65,6 +64,7 @@ MATCHER_P(HasName, name, "") {
 
 class MockSyncableService : public SyncableService {
  public:
+  MOCK_METHOD1(WaitUntilReadyToSync, void(base::OnceClosure done));
   MOCK_METHOD4(
       MergeDataAndStartSyncing,
       SyncMergeResult(ModelType type,
@@ -82,6 +82,9 @@ class SyncableServiceBasedBridgeTest : public ::testing::Test {
  protected:
   SyncableServiceBasedBridgeTest()
       : store_(ModelTypeStoreTestUtil::CreateInMemoryStoreForTest()) {
+    ON_CALL(syncable_service_, WaitUntilReadyToSync(_))
+        .WillByDefault(
+            Invoke([](base::OnceClosure done) { std::move(done).Run(); }));
     ON_CALL(syncable_service_, MergeDataAndStartSyncing(_, _, _, _))
         .WillByDefault(
             [&](ModelType type, const SyncDataList& initial_sync_data,
@@ -113,15 +116,18 @@ class SyncableServiceBasedBridgeTest : public ::testing::Test {
     real_processor_.reset();
   }
 
-  void StartSyncing() {
+  syncer::DataTypeActivationRequest GetTestActivationRequest() {
     syncer::DataTypeActivationRequest request;
     request.error_handler = mock_error_handler_.Get();
     request.cache_guid = "TestCacheGuid";
-    request.authenticated_account_id = "SomeAccountId";
+    request.authenticated_account_id = CoreAccountId("SomeAccountId");
+    return request;
+  }
 
+  void StartSyncing() {
     base::RunLoop loop;
     real_processor_->OnSyncStarting(
-        request,
+        GetTestActivationRequest(),
         base::BindLambdaForTesting(
             [&](std::unique_ptr<syncer::DataTypeActivationResponse> response) {
               worker_ = std::make_unique<MockModelTypeWorker>(
@@ -150,10 +156,10 @@ class SyncableServiceBasedBridgeTest : public ::testing::Test {
   }
 
   const std::string kClientTag = "clienttag";
-  const std::string kClientTagHash =
-      GenerateSyncableHash(kModelType, kClientTag);
+  const ClientTagHash kClientTagHash =
+      ClientTagHash::FromUnhashed(kModelType, kClientTag);
 
-  base::test::ScopedTaskEnvironment task_environment_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
   testing::NiceMock<MockSyncableService> syncable_service_;
   testing::NiceMock<MockModelTypeChangeProcessor> mock_processor_;
   base::MockCallback<ModelErrorHandler> mock_error_handler_;
@@ -201,7 +207,38 @@ TEST_F(SyncableServiceBasedBridgeTest,
                   kModelType, ElementsAre(SyncDataRemoteMatches("name1")),
                   NotNull(), NotNull()));
   worker_->UpdateFromServer(kClientTagHash, GetTestSpecifics("name1"));
-  EXPECT_THAT(GetAllData(), ElementsAre(Pair(kClientTagHash, _)));
+  EXPECT_THAT(GetAllData(), ElementsAre(Pair(kClientTagHash.value(), _)));
+}
+
+TEST_F(SyncableServiceBasedBridgeTest, ShouldWaitUntilModelReadyToSync) {
+  base::OnceClosure syncable_service_ready_cb;
+  ON_CALL(syncable_service_, WaitUntilReadyToSync(_))
+      .WillByDefault(Invoke([&](base::OnceClosure done) {
+        syncable_service_ready_cb = std::move(done);
+      }));
+
+  EXPECT_CALL(mock_processor_, ModelReadyToSync(_)).Times(0);
+  EXPECT_CALL(syncable_service_, WaitUntilReadyToSync(_)).Times(0);
+  EXPECT_CALL(syncable_service_, MergeDataAndStartSyncing(_, _, _, _)).Times(0);
+
+  // Bridge initialization alone, without sync itself starting, should not
+  // issue calls to the syncable service.
+  InitializeBridge();
+
+  EXPECT_CALL(syncable_service_, WaitUntilReadyToSync(_));
+  // Required to initialize the store.
+  base::RunLoop().RunUntilIdle();
+  ASSERT_TRUE(syncable_service_ready_cb);
+
+  // Sync itself starting should wait until the syncable service becomes ready,
+  // before issuing any other call (e.g. MergeDataAndStartSyncing()).
+  real_processor_->OnSyncStarting(GetTestActivationRequest(),
+                                  base::DoNothing());
+
+  // When the SyncableService gets ready, the bridge should propagate this
+  // information to the processor.
+  EXPECT_CALL(mock_processor_, ModelReadyToSync(_));
+  std::move(syncable_service_ready_cb).Run();
 }
 
 TEST_F(SyncableServiceBasedBridgeTest,
@@ -211,7 +248,7 @@ TEST_F(SyncableServiceBasedBridgeTest,
   worker_->UpdateFromServer();
 
   EXPECT_CALL(syncable_service_, StopSyncing(kModelType));
-  real_processor_->OnSyncStopping(KEEP_METADATA);
+  real_processor_->OnSyncStopping(CLEAR_METADATA);
 
   EXPECT_CALL(syncable_service_, StopSyncing(_)).Times(0);
   ShutdownBridge();
@@ -263,18 +300,26 @@ TEST_F(SyncableServiceBasedBridgeTest, ShouldPropagateErrorDuringStart) {
 }
 
 TEST_F(SyncableServiceBasedBridgeTest,
-       ShouldStartSyncingWithPreviousDirectoryDataWithoutRestart) {
+       ShouldKeepSyncingWhenSyncStoppedTemporarily) {
   InitializeBridge();
   StartSyncing();
   worker_->UpdateFromServer(kClientTagHash, GetTestSpecifics("name1"));
-  real_processor_->OnSyncStopping(KEEP_METADATA);
-  EXPECT_THAT(GetAllData(), ElementsAre(Pair(kClientTagHash, _)));
 
-  EXPECT_CALL(syncable_service_,
-              MergeDataAndStartSyncing(
-                  kModelType, ElementsAre(SyncDataRemoteMatches("name1")),
-                  NotNull(), NotNull()));
+  // Stopping Sync temporarily (KEEP_METADATA) should *not* result in the
+  // SyncableService being stopped.
+  EXPECT_CALL(syncable_service_, StopSyncing(_)).Times(0);
+  real_processor_->OnSyncStopping(KEEP_METADATA);
+  EXPECT_THAT(GetAllData(), ElementsAre(Pair(kClientTagHash.value(), _)));
+
+  // Since the SyncableService wasn't stopped, it shouldn't get restarted either
+  // when Sync starts up again.
+  EXPECT_CALL(syncable_service_, MergeDataAndStartSyncing(_, _, _, _)).Times(0);
   StartSyncing();
+
+  // Finally, shutting down the bridge (during browser shutdown) should also
+  // stop the SyncableService.
+  EXPECT_CALL(syncable_service_, StopSyncing(kModelType));
+  ShutdownBridge();
 }
 
 TEST_F(SyncableServiceBasedBridgeTest,
@@ -330,9 +375,10 @@ TEST_F(SyncableServiceBasedBridgeTest,
   InitializeBridge();
   StartSyncing();
 
-  EXPECT_CALL(mock_processor_, Put(kClientTagHash, NotNull(), NotNull()));
+  EXPECT_CALL(mock_processor_,
+              Put(kClientTagHash.value(), NotNull(), NotNull()));
   worker_->UpdateFromServer();
-  EXPECT_THAT(GetAllData(), ElementsAre(Pair(kClientTagHash, _)));
+  EXPECT_THAT(GetAllData(), ElementsAre(Pair(kClientTagHash.value(), _)));
 }
 
 TEST_F(SyncableServiceBasedBridgeTest, ShouldPropagateLocalCreation) {
@@ -342,7 +388,8 @@ TEST_F(SyncableServiceBasedBridgeTest, ShouldPropagateLocalCreation) {
   ASSERT_THAT(start_syncing_sync_processor_, NotNull());
   ASSERT_THAT(GetAllData(), IsEmpty());
 
-  EXPECT_CALL(mock_processor_, Put(kClientTagHash, NotNull(), NotNull()));
+  EXPECT_CALL(mock_processor_,
+              Put(kClientTagHash.value(), NotNull(), NotNull()));
 
   SyncChangeList change_list;
   change_list.emplace_back(
@@ -351,7 +398,7 @@ TEST_F(SyncableServiceBasedBridgeTest, ShouldPropagateLocalCreation) {
   const SyncError error =
       start_syncing_sync_processor_->ProcessSyncChanges(FROM_HERE, change_list);
   EXPECT_FALSE(error.IsSet());
-  EXPECT_THAT(GetAllData(), ElementsAre(Pair(kClientTagHash, _)));
+  EXPECT_THAT(GetAllData(), ElementsAre(Pair(kClientTagHash.value(), _)));
 }
 
 TEST_F(SyncableServiceBasedBridgeTest, ShouldPropagateLocalUpdate) {
@@ -360,10 +407,10 @@ TEST_F(SyncableServiceBasedBridgeTest, ShouldPropagateLocalUpdate) {
   worker_->UpdateFromServer(kClientTagHash, GetTestSpecifics("name1"));
   ASSERT_THAT(start_syncing_sync_processor_, NotNull());
   ASSERT_THAT(GetAllData(),
-              ElementsAre(Pair(kClientTagHash, HasName("name1"))));
+              ElementsAre(Pair(kClientTagHash.value(), HasName("name1"))));
 
-  EXPECT_CALL(mock_processor_, Put(GenerateSyncableHash(kModelType, kClientTag),
-                                   NotNull(), NotNull()));
+  EXPECT_CALL(mock_processor_,
+              Put(kClientTagHash.value(), NotNull(), NotNull()));
 
   SyncChangeList change_list;
   change_list.emplace_back(FROM_HERE, SyncChange::ACTION_UPDATE,
@@ -373,7 +420,7 @@ TEST_F(SyncableServiceBasedBridgeTest, ShouldPropagateLocalUpdate) {
       start_syncing_sync_processor_->ProcessSyncChanges(FROM_HERE, change_list);
   EXPECT_FALSE(error.IsSet());
   EXPECT_THAT(GetAllData(),
-              ElementsAre(Pair(kClientTagHash, HasName("name2"))));
+              ElementsAre(Pair(kClientTagHash.value(), HasName("name2"))));
 }
 
 TEST_F(SyncableServiceBasedBridgeTest, ShouldPropagateLocalDeletion) {
@@ -382,10 +429,9 @@ TEST_F(SyncableServiceBasedBridgeTest, ShouldPropagateLocalDeletion) {
   worker_->UpdateFromServer(kClientTagHash, GetTestSpecifics("name1"));
   ASSERT_THAT(start_syncing_sync_processor_, NotNull());
   ASSERT_THAT(GetAllData(),
-              ElementsAre(Pair(kClientTagHash, HasName("name1"))));
+              ElementsAre(Pair(kClientTagHash.value(), HasName("name1"))));
 
-  EXPECT_CALL(mock_processor_,
-              Delete(GenerateSyncableHash(kModelType, kClientTag), NotNull()));
+  EXPECT_CALL(mock_processor_, Delete(kClientTagHash.value(), NotNull()));
 
   SyncChangeList change_list;
   change_list.emplace_back(FROM_HERE, SyncChange::ACTION_DELETE,
@@ -435,7 +481,7 @@ TEST_F(SyncableServiceBasedBridgeTest, ShouldPropagateRemoteCreation) {
                                         SyncChange::ACTION_ADD, "name1"))));
   worker_->UpdateFromServer(kClientTagHash, GetTestSpecifics("name1"));
   EXPECT_THAT(GetAllData(),
-              ElementsAre(Pair(kClientTagHash, HasName("name1"))));
+              ElementsAre(Pair(kClientTagHash.value(), HasName("name1"))));
 }
 
 TEST_F(SyncableServiceBasedBridgeTest, ShouldPropagateRemoteUpdates) {
@@ -444,14 +490,14 @@ TEST_F(SyncableServiceBasedBridgeTest, ShouldPropagateRemoteUpdates) {
   worker_->UpdateFromServer(kClientTagHash, GetTestSpecifics("name1"));
   ASSERT_THAT(start_syncing_sync_processor_, NotNull());
   ASSERT_THAT(GetAllData(),
-              ElementsAre(Pair(kClientTagHash, HasName("name1"))));
+              ElementsAre(Pair(kClientTagHash.value(), HasName("name1"))));
 
   EXPECT_CALL(syncable_service_,
               ProcessSyncChanges(_, ElementsAre(SyncChangeMatches(
                                         SyncChange::ACTION_UPDATE, "name2"))));
   worker_->UpdateFromServer(kClientTagHash, GetTestSpecifics("name2"));
   EXPECT_THAT(GetAllData(),
-              ElementsAre(Pair(kClientTagHash, HasName("name2"))));
+              ElementsAre(Pair(kClientTagHash.value(), HasName("name2"))));
 
   // A second update for the same entity.
   EXPECT_CALL(syncable_service_,
@@ -459,7 +505,7 @@ TEST_F(SyncableServiceBasedBridgeTest, ShouldPropagateRemoteUpdates) {
                                         SyncChange::ACTION_UPDATE, "name3"))));
   worker_->UpdateFromServer(kClientTagHash, GetTestSpecifics("name3"));
   EXPECT_THAT(GetAllData(),
-              ElementsAre(Pair(kClientTagHash, HasName("name3"))));
+              ElementsAre(Pair(kClientTagHash.value(), HasName("name3"))));
 }
 
 TEST_F(SyncableServiceBasedBridgeTest, ShouldPropagateRemoteDeletion) {
@@ -468,7 +514,7 @@ TEST_F(SyncableServiceBasedBridgeTest, ShouldPropagateRemoteDeletion) {
   worker_->UpdateFromServer(kClientTagHash, GetTestSpecifics("name1"));
   ASSERT_THAT(start_syncing_sync_processor_, NotNull());
   ASSERT_THAT(GetAllData(),
-              ElementsAre(Pair(kClientTagHash, HasName("name1"))));
+              ElementsAre(Pair(kClientTagHash.value(), HasName("name1"))));
 
   EXPECT_CALL(syncable_service_,
               ProcessSyncChanges(_, ElementsAre(SyncChangeMatches(
@@ -481,7 +527,7 @@ TEST(SyncableServiceBasedBridgeLocalChangeProcessorTest,
      ShouldDropIfCommitted) {
   const std::string kClientTagHash = "clienttaghash1";
 
-  base::test::ScopedTaskEnvironment task_environment;
+  base::test::SingleThreadTaskEnvironment task_environment;
   std::unique_ptr<ModelTypeStore> store =
       ModelTypeStoreTestUtil::CreateInMemoryStoreForTest();
   SyncableServiceBasedBridge::InMemoryStore in_memory_store;
@@ -516,7 +562,7 @@ TEST(SyncableServiceBasedBridgeLocalChangeProcessorTest,
      ShouldNotDropIfUnsynced) {
   const std::string kClientTagHash = "clienttaghash1";
 
-  base::test::ScopedTaskEnvironment task_environment;
+  base::test::SingleThreadTaskEnvironment task_environment;
   std::unique_ptr<ModelTypeStore> store =
       ModelTypeStoreTestUtil::CreateInMemoryStoreForTest();
   SyncableServiceBasedBridge::InMemoryStore in_memory_store;

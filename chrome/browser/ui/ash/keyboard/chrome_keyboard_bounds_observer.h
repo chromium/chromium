@@ -27,12 +27,12 @@ class ChromeKeyboardBoundsObserver
 
   // keyboard::ChromeKeyboardControllerClient::Observer:
   void OnKeyboardVisibilityChanged(bool visible) override {}
-  void OnKeyboardOccludedBoundsChanged(const gfx::Rect& bounds) override;
+  void OnKeyboardOccludedBoundsChanged(const gfx::Rect& screen_bounds) override;
 
  private:
   // Provides the bounds occluded by the keyboard any time they change.
   // (i.e. by the KeyboardController through KeyboardUI::InitInsets).
-  void UpdateOccludedBounds(const gfx::Rect& occluded_bounds);
+  void UpdateOccludedBounds(const gfx::Rect& screen_bounds);
 
   void AddObservedWindow(aura::Window* window);
   void RemoveAllObservedWindows();
@@ -48,7 +48,7 @@ class ChromeKeyboardBoundsObserver
 
   aura::Window* const keyboard_window_;
   std::set<views::Widget*> observed_widgets_;
-  gfx::Rect occluded_bounds_;
+  gfx::Rect occluded_bounds_in_screen_;
 
   DISALLOW_COPY_AND_ASSIGN(ChromeKeyboardBoundsObserver);
 };

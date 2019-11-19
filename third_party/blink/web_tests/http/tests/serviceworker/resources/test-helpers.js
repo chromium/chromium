@@ -1,11 +1,10 @@
 // Adapter for testharness.js-style tests with Service Workers
 
-function service_worker_unregister_and_register(
-    test, url, scope, updateViaCache = 'imports') {
+function service_worker_unregister_and_register(test, url, scope, options = {}) {
   if (!scope || scope.length == 0)
     return Promise.reject(new Error('tests must define a scope'));
 
-  var options = { scope: scope, updateViaCache: updateViaCache };
+  options.scope = scope;
   return service_worker_unregister(test, scope)
     .then(function() {
         return navigator.serviceWorker.register(url, options);
@@ -183,7 +182,7 @@ function base_path() {
   return location.pathname.replace(/\/[^\/]*$/, '/');
 }
 
-function test_login(test, origin, username, password, cookie) {
+function test_login(test, origin, username, password, cookie, cookie_cross_site) {
   return new Promise(function(resolve, reject) {
       with_iframe(
         origin +
@@ -195,7 +194,7 @@ function test_login(test, origin, username, password, cookie) {
                 resolve();
               });
             frame.contentWindow.postMessage(
-              {username: username, password: password, cookie: cookie},
+              {username: username, password: password, cookie: cookie, cookieCrossSite: cookie_cross_site},
               origin, [channel.port2]);
           }));
     });
@@ -204,10 +203,10 @@ function test_login(test, origin, username, password, cookie) {
 function login(test, local, remote) {
   var suffix = (local.indexOf("https") != -1) ? "s": "";
   return test_login(test, local, 'username1' + suffix, 'password1' + suffix,
-                    'cookie1')
+                    'cookie1', false /* cookie_cross_site */)
     .then(function() {
         return test_login(test, remote, 'username2' + suffix,
-                          'password2' + suffix, 'cookie2');
+                          'password2' + suffix, 'cookie2', true /* cookie_cross_site */);
       });
 }
 

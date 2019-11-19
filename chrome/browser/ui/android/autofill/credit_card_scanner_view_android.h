@@ -10,7 +10,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/ui/autofill/credit_card_scanner_view.h"
+#include "chrome/browser/ui/autofill/payments/credit_card_scanner_view.h"
 
 namespace content {
 class WebContents;

@@ -4,12 +4,12 @@
 
 package org.chromium.chrome.browser.tabmodel;
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import org.chromium.base.TraceEvent;
-import org.chromium.chrome.browser.UrlConstants;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabState;
+import org.chromium.chrome.browser.util.UrlConstants;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
 
@@ -65,26 +65,23 @@ public interface TabCreatorManager {
          * Creates a Tab to host the given WebContents.
          * @param parent      The parent tab, if present.
          * @param webContents The web contents to create a tab around.
-         * @param parentId    The id of the parent tab.
          * @param type        The TabLaunchType describing how this tab was created.
          * @param url         URL to show in the Tab. (Needed only for asynchronous tab creation.)
          * @return            Whether a Tab was created successfully.
          */
-        public abstract boolean createTabWithWebContents(Tab parent, WebContents webContents,
-                int parentId, @TabLaunchType int type, String url);
+        public abstract boolean createTabWithWebContents(
+                @Nullable Tab parent, WebContents webContents, @TabLaunchType int type, String url);
 
         /**
          * Creates a tab around the native web contents pointer.
          * @param parent      The parent tab, if present.
          * @param webContents The web contents to create a tab around.
-         * @param parentId    The id of the parent tab.
          * @param type        The TabLaunchType describing how this tab was created.
          * @return            Whether a Tab was created successfully.
          */
         public final boolean createTabWithWebContents(
-                Tab parent, WebContents webContents, int parentId, @TabLaunchType int type) {
-            return createTabWithWebContents(
-                    parent, webContents, parentId, type, webContents.getVisibleUrl());
+                Tab parent, WebContents webContents, @TabLaunchType int type) {
+            return createTabWithWebContents(parent, webContents, type, webContents.getVisibleUrl());
         }
 
         /**

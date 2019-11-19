@@ -127,18 +127,10 @@ Polymer({
   ready: function() {
     this.addWebUIListener(
         'onStorageListFetched', this.onStorageListFetched.bind(this));
-    this.addEventListener(
-        'site-entry-selected',
-        (/** @type {!CustomEvent<!{item: !SiteGroup, index: number}>} */ e) => {
-          this.selectedItem_ = e.detail;
-        });
-    this.addEventListener('site-entry-storage-updated', () => {
-      this.debounce('site-entry-storage-updated', () => {
-        if (this.sortMethods_ &&
-            this.$.sortMethod.value == settings.SortMethod.STORAGE) {
-          this.onSortMethodChanged_();
-        }
-      }, 500);
+    this.addEventListener('site-entry-selected', e => {
+      const event =
+          /** @type {!CustomEvent<!{item: !SiteGroup, index: number}>} */ (e);
+      this.selectedItem_ = event.detail;
     });
     this.sortMethod_ = this.$.sortMethod.value;
   },

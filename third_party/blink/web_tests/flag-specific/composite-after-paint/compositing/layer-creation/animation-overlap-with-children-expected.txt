@@ -1,0 +1,64 @@
+Should be composited
+Should not be composited
+Should be composited
+{
+  "layers": [
+    {
+      "name": "Scrolling background of LayoutView #document",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF"
+    },
+    {
+      "name": "LayoutNGBlockFlow DIV id='to-animate' class='container animating'",
+      "bounds": [262, 212],
+      "transform": 2
+    },
+    {
+      "name": "LayoutNGBlockFlow DIV class='composited banner'",
+      "bounds": [250, 50],
+      "contentsOpaque": true,
+      "backgroundColor": "#C0C0C0",
+      "transform": 3
+    },
+    {
+      "name": "LayoutNGBlockFlow (positioned) DIV class='test1 box'",
+      "position": [11, 21],
+      "bounds": [220, 150],
+      "backgroundColor": "#FFA500",
+      "transform": 2
+    }
+  ],
+  "transforms": [
+    {
+      "id": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [8, 8, 0, 1]
+      ]
+    },
+    {
+      "id": 2,
+      "parent": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [0, 0, 0, 1]
+      ]
+    },
+    {
+      "id": 3,
+      "parent": 2,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [6, 6, 0, 1]
+      ]
+    }
+  ]
+}
+

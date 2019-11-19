@@ -21,14 +21,12 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ApplicationStatus;
-import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.base.test.util.RetryOnFailure;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.ChromeFeatureList;
 import org.chromium.chrome.browser.ChromeSwitches;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.ShortcutHelper;
@@ -36,6 +34,7 @@ import org.chromium.chrome.browser.notifications.NotificationConstants;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.content_public.browser.test.util.Criteria;
 import org.chromium.content_public.browser.test.util.CriteriaHelper;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 /**
  * Tests for a standalone Web App notification governed by {@link WebappActionsNotificationManager}.
@@ -50,7 +49,7 @@ public class WebappActionsNotificationTest {
     public final WebappActivityTestRule mActivityTestRule = new WebappActivityTestRule();
 
     @Before
-    public void startWebapp() throws Exception {
+    public void startWebapp() {
         mActivityTestRule.startWebappActivity(mActivityTestRule.createIntent().putExtra(
                 ShortcutHelper.EXTRA_URL, mActivityTestRule.getTestServer().getURL(WEB_APP_PATH)));
         mActivityTestRule.waitUntilSplashscreenHides();
@@ -61,7 +60,6 @@ public class WebappActionsNotificationTest {
     @Feature({"Webapps"})
     @RetryOnFailure
     @MinAndroidSdkLevel(Build.VERSION_CODES.M) // NotificationManager.getActiveNotifications
-    @CommandLineFlags.Add({"enable-features=" + ChromeFeatureList.PWA_PERSISTENT_NOTIFICATION})
     public void testNotification_openInChrome() throws Exception {
         Notification notification = getWebappNotification();
 
@@ -92,7 +90,6 @@ public class WebappActionsNotificationTest {
       @Feature({"Webapps"})
       @RetryOnFailure
       @MinAndroidSdkLevel(Build.VERSION_CODES.M) // NotificationManager.getActiveNotifications
-      @CommandLineFlags.Add({"enable-features=" + ChromeFeatureList.PWA_PERSISTENT_NOTIFICATION})
     */
     @DisabledTest(message = "crbug.com/774491")
     public void testNotification_copyUrl() throws Exception {
@@ -101,26 +98,13 @@ public class WebappActionsNotificationTest {
 
         notification.contentIntent.send();
 
-        ThreadUtils.runOnUiThreadBlocking(() -> {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
             ClipboardManager clipboard =
                     (ClipboardManager) mActivityTestRule.getActivity().getSystemService(
                             Context.CLIPBOARD_SERVICE);
             Assert.assertEquals(mActivityTestRule.getTestServer().getURL(WEB_APP_PATH),
                     clipboard.getPrimaryClip().getItemAt(0).getText().toString());
         });
-    }
-
-    @Test
-    /*
-      @SmallTest
-      @Feature({"Webapps"})
-      @MinAndroidSdkLevel(Build.VERSION_CODES.M) // NotificationManager.getActiveNotifications
-      @CommandLineFlags.Add({"disable-features=" + ChromeFeatureList.PWA_PERSISTENT_NOTIFICATION})
-    */
-    @DisabledTest(message = "crbug.com/768557")
-    public void testNotificationNotEnabled() throws Exception {
-        // Note ChromeFeatureList.PWA_PERSISTENT_NOTIFICATION is not enabled.
-        Assert.assertNull(getWebappNotification());
     }
 
     @Nullable

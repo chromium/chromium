@@ -5,7 +5,7 @@
 #ifndef IOS_WEB_PUBLIC_TEST_FAKES_CRW_FAKE_WEB_STATE_POLICY_DECIDER_H_
 #define IOS_WEB_PUBLIC_TEST_FAKES_CRW_FAKE_WEB_STATE_POLICY_DECIDER_H_
 
-#import "ios/web/public/web_state/web_state_policy_decider_bridge.h"
+#import "ios/web/public/navigation/web_state_policy_decider_bridge.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

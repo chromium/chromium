@@ -23,14 +23,14 @@ BLINK_COMMON_EXPORT extern const char
 
 struct BLINK_COMMON_EXPORT TrackControls {
   TrackControls();
-  explicit TrackControls(bool request, MediaStreamType type);
+  explicit TrackControls(bool request, mojom::MediaStreamType type);
   explicit TrackControls(const TrackControls& other);
   ~TrackControls();
 
   bool requested = false;
 
   // Represents the requested  stream type.
-  MediaStreamType stream_type = MEDIA_NO_SERVICE;
+  mojom::MediaStreamType stream_type = mojom::MediaStreamType::NO_SERVICE;
 
   // An empty string represents the default device.
   // A nonempty string represents a specific device.

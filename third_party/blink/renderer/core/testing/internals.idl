@@ -34,10 +34,15 @@
     boolean isPreloadedBy(DOMString url, Document document);
     boolean isLoading(DOMString url);
     boolean isLoadingFromMemoryCache(DOMString url);
-    unsigned long getResourcePriority (DOMString url, Document document);
-    DOMString getResourceHeader (DOMString url, DOMString header, Document document);
 
-    bool doesWindowHaveUrlFragment(Window window);
+    // Call this function with the URL of a resource that has not yet been
+    // fetched. It returns a promise that resolves with the priority of the
+    // request, once it has been made.
+    [CallWith=ScriptState] Promise<unsigned long> getResourcePriority(DOMString url, Document document);
+
+    DOMString getResourceHeader(DOMString url, DOMString header, Document document);
+
+    boolean doesWindowHaveUrlFragment(Window window);
 
     CSSStyleDeclaration computedStyleIncludingVisitedInfo(Node node);
 
@@ -46,7 +51,7 @@
     ShadowRoot shadowRoot(Element host);
 
     void setBrowserControlsState(float top_height, float bottom_height, boolean shrinksLayout);
-    void setBrowserControlsShownRatio(float ratio);
+    void setBrowserControlsShownRatio(float top_ratio, float bottom_ratio);
 
     Node effectiveRootScroller(Document document);
 
@@ -186,18 +191,15 @@
     readonly attribute unsigned long workerThreadCount;
 
     // Flags for layerTreeAsText.
-    // The values of these constants must be kept in sync with the values of LayerTreeFlags in GraphicsLayerClient.h.
+    // The values of these constants must be kept in sync with the values of LayerTreeFlags in layers_as_json.h.
     const unsigned short LAYER_TREE_INCLUDES_DEBUG_INFO = 1;
     const unsigned short LAYER_TREE_INCLUDES_PAINT_INVALIDATIONS = 2;
     const unsigned short LAYER_TREE_INCLUDES_PAINTING_PHASES = 4;
     const unsigned short LAYER_TREE_INCLUDES_ROOT_LAYER = 8;
-    const unsigned short LAYER_TREE_INCLUDES_CLIP_AND_SCROLL_PARENTS = 16;
     const unsigned short LAYER_TREE_INCLUDES_COMPOSITING_REASONS = 32;
     const unsigned short LAYER_TREE_INCLUDES_PAINT_RECORDS = 64;
-    const unsigned short OUTPUT_AS_LAYER_TREE = 0x4000;
 
     [RaisesException] DOMString layerTreeAsText(Document document, optional unsigned short flags);
-    [RaisesException] DOMString elementLayerTreeAsText(Element element, optional unsigned short flags);
 
     [RaisesException] boolean scrollsWithRespectTo(Element element1, Element element2);
 
@@ -250,7 +252,7 @@
     // |node| should be Document, HTMLIFrameElement, or unspecified.
     // If |node| is an HTMLIFrameElement, it assumes node.contentDocument is
     // specified without security checks. Unspecified means this document.
-    [RaisesException] void updateLayoutIgnorePendingStylesheetsAndRunPostLayoutTasks(optional Node? node = null);
+    [RaisesException] void updateLayoutAndRunPostLayoutTasks(optional Node? node = null);
 
     [RaisesException] void forceFullRepaint(Document document);
 
@@ -284,6 +286,7 @@
     long selectPopupItemStyleFontHeight(Node select, long itemIndex);
     void resetTypeAheadSession(HTMLSelectElement select);
 
+    StaticSelection getDragCaret();
     [RaisesException] StaticSelection getSelectionInFlatTree(Window window);
     // TODO(editing-dev): We should change |visibleSelection*| to
     // |StaticSelection|.
@@ -297,8 +300,6 @@
     boolean loseSharedGraphicsContext3D();
 
     [RaisesException] void forceCompositingUpdate(Document document);
-
-    void setZoomFactor(float factor);
 
     [RaisesException] void setShouldRevealPassword(Element element, boolean reveal);
 
@@ -317,8 +318,6 @@
     void setFocused(boolean focused);
     void setInitialFocus(boolean reverse);
 
-    boolean ignoreLayoutWithPendingStylesheets(Document document);
-
     // When the FocuslessSpatialNavigation feature is enabled, spatial
     // navigation moves "interest" around a page, rather than focus. This
     // attribute returns the currently interested element on the page.
@@ -336,14 +335,12 @@
     UnionTypesTest unionTypesTest();
     CallbackFunctionTest callbackFunctionTest();
     [RaisesException] void setScrollChain(ScrollState scrollState, sequence<Element> elements);
-    void forceBlinkGCWithoutV8GC();
+    void scheduleBlinkGC();
 
     DOMString selectedHTMLForClipboard();
     DOMString selectedTextForClipboard();
 
     void setVisualViewportOffset(long x, long y);
-
-    boolean magnifyScaleAroundAnchor(float offset, float x, float y);
 
     boolean isUseCounted(Document document, unsigned long feature);
     boolean isCSSPropertyUseCounted(Document document, DOMString propertyName);
@@ -367,6 +364,9 @@
     [Unscopable] DOMString unscopableMethod();
 
     void setCapsLockState(boolean enabled);
+
+    // pseudo: One of ":focus", ":focus-within", ":active", and ":hover".
+    [RaisesException] void setPseudoClassState(Element element, DOMString pseudo, boolean enabled);
 
     // Returns whether the scrollbar was able to be shown or hidden; not all platforms
     // support overlay scrollbars.
@@ -397,11 +397,6 @@
     // be reported as raster under-invalidations.
     void simulateRasterUnderInvalidations(boolean enable);
 
-    // Bypass the threshold of 'script-compile' of long-task attribution in
-    // PerformanceMonitor for testing. "PerformanceObserver should be observing
-    // 'longtask' while calling BypassLongCompileThresholdOnce.
-    [RaisesException] void BypassLongCompileThresholdOnce();
-
     // The number of calls to update the blink lifecycle (see:
     // LocalFrameView::UpdateLifecyclePhasesInternal).
     unsigned long LifecycleUpdateCount();
@@ -412,6 +407,14 @@
     // to be generated.
     void DisableIntersectionObserverThrottleDelay();
 
+    // Reports whether an iframe's browsing context runs in a separate process
+    boolean isSiteIsolated(HTMLIFrameElement iframe);
+
+    // Reports whether a parent document is propagating occlusion information
+    // down to a child frame, for the purpose of servicing IntersectionObserver
+    // instances that track visibility.
+    boolean isTrackingOcclusionForIFrame(HTMLIFrameElement iframe);
+
     // Declare that the given |name| is in use by the embedder via the custom
     // element mechanism.
     [RaisesException] void addEmbedderCustomElementName(DOMString name);
@@ -420,4 +423,22 @@
     // Throws TypeError on error.
     // Used for testing Import Maps https://github.com/domenic/import-maps
     [RaisesException] DOMString resolveModuleSpecifier(DOMString specifier, DOMString base_url, Document document);
+
+    // Returns the current serialized import map of the Document.
+    // TODO(crbug.com/927181): Currently this returns the "imports" value,
+    // because Blink doesn't support scopes yet. Update this once scopes are
+    // implemented.
+    [RaisesException] DOMString getParsedImportMap(Document document);
+
+    // Sets the scale for devtools device emulation.
+    [RaisesException] void setDeviceEmulationScale(float scale);
+
+    // Return a string that identifies |document|'s WindowAgent. You can use it
+    // to distinguish different Agent instances (perhaps in a remote process).
+    // The returned string is composed of the process ID and the memory address
+    // of the Agent object.
+    DOMString getDocumentAgentId(Document document);
+
+    void useMockOverlayScrollbars();
+    readonly attribute boolean overlayScrollbarsEnabled;
 };

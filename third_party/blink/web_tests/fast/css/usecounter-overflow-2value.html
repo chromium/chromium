@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script>
+'use strict';
+
+test(() => {
+    let TwoValuedOverflow = 2900; // From web_feature.mojom
+
+    let isCounted = () => internals.isUseCounted(document, TwoValuedOverflow);
+    var div = document.createElement('div');
+
+    // Test that other position-using properties do not
+    // increment the counter.
+
+    div.style = 'inset-block: auto auto;';
+    assert_false(isCounted(),
+                 'other properties should not be counted');
+
+    div.style = 'overflow: visible;';
+    assert_false(isCounted(),
+                 'single value should not be counted');
+
+    div.style = 'overflow: visible visible;';
+    assert_true(isCounted(),
+                 'two value overflow be counted');
+}, 'Two valued overflow syntax is use counted');
+</script>

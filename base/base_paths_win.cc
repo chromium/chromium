@@ -54,8 +54,7 @@ bool PathProviderWin(int key, FilePath* result) {
       cur = FilePath(system_buffer);
       break;
     case base::DIR_PROGRAM_FILESX86:
-      if (base::win::OSInfo::GetInstance()->architecture() !=
-          base::win::OSInfo::X86_ARCHITECTURE) {
+      if (win::OSInfo::GetArchitecture() != win::OSInfo::X86_ARCHITECTURE) {
         if (FAILED(SHGetFolderPath(NULL, CSIDL_PROGRAM_FILESX86, NULL,
                                    SHGFP_TYPE_CURRENT, wsystem_buffer)))
           return false;
@@ -136,7 +135,7 @@ bool PathProviderWin(int key, FilePath* result) {
       break;
     }
     case base::DIR_APP_SHORTCUTS: {
-      if (win::GetVersion() < win::VERSION_WIN8)
+      if (win::GetVersion() < win::Version::WIN8)
         return false;
 
       base::win::ScopedCoMem<wchar_t> path_buf;

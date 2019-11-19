@@ -8,8 +8,8 @@
 
 #include "base/logging.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
-#include "chrome/browser/ui/views/material_refresh_layout_provider.h"
 #include "ui/base/material_design/material_design_controller.h"
+#include "ui/gfx/shadow_value.h"
 
 namespace {
 
@@ -17,6 +17,7 @@ namespace {
 // respected (there's 3 * unit / 4 in use to express 12).
 // The Harmony layout unit. All distances are in terms of this unit.
 constexpr int kHarmonyLayoutUnit = 16;
+constexpr int kExtraSmallBubbleSize = 240;
 constexpr int kSmallSnapPoint = 320;
 constexpr int kMediumSnapPoint = 448;
 constexpr int kLargeSnapPoint = 512;
@@ -45,7 +46,7 @@ ChromeLayoutProvider* ChromeLayoutProvider::Get() {
 // static
 std::unique_ptr<views::LayoutProvider>
 ChromeLayoutProvider::CreateLayoutProvider() {
-  return std::make_unique<MaterialRefreshLayoutProvider>();
+  return std::make_unique<ChromeLayoutProvider>();
 }
 
 gfx::Insets ChromeLayoutProvider::GetInsetsMetric(int metric) const {
@@ -68,13 +69,14 @@ gfx::Insets ChromeLayoutProvider::GetInsetsMetric(int metric) const {
                  ? gfx::Insets(kHarmonyLayoutUnit / 2, kHarmonyLayoutUnit / 2)
                  : LayoutProvider::GetInsetsMetric(metric);
     case INSETS_BOOKMARKS_BAR_BUTTON:
-      return touch_ui ? gfx::Insets(8, 12) : gfx::Insets(6);
+      return touch_ui ? gfx::Insets(8, 10) : gfx::Insets(6);
     case INSETS_TOAST:
       return gfx::Insets(0, kHarmonyLayoutUnit);
     default:
       return LayoutProvider::GetInsetsMetric(metric);
   }
 }
+
 int ChromeLayoutProvider::GetDistanceMetric(int metric) const {
   DCHECK_GE(metric, views::VIEWS_INSETS_MAX);
   switch (metric) {
@@ -91,7 +93,7 @@ int ChromeLayoutProvider::GetDistanceMetric(int metric) const {
       return kVisibleMargin - kHarmonyLayoutUnit / 4;
     }
     case views::DISTANCE_CONTROL_VERTICAL_TEXT_PADDING:
-      return kHarmonyLayoutUnit / 4;
+      return 6;
     case views::DISTANCE_DIALOG_CONTENT_MARGIN_BOTTOM_CONTROL:
       return kHarmonyLayoutUnit * 3 / 2;
     case views::DISTANCE_DIALOG_CONTENT_MARGIN_BOTTOM_TEXT: {
@@ -155,12 +157,17 @@ int ChromeLayoutProvider::GetDistanceMetric(int metric) const {
       return kHarmonyLayoutUnit;
     case DISTANCE_UNRELATED_CONTROL_VERTICAL_LARGE:
       return kHarmonyLayoutUnit;
+    case DISTANCE_BUBBLE_TABSTRIP_PREFERRED_WIDTH:
+      return kExtraSmallBubbleSize;
     case DISTANCE_BUBBLE_PREFERRED_WIDTH:
       return kSmallSnapPoint;
     case DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH:
+    case DISTANCE_STANDALONE_BUBBLE_PREFERRED_WIDTH:
       return kMediumSnapPoint;
     case DISTANCE_LARGE_MODAL_DIALOG_PREFERRED_WIDTH:
       return kLargeSnapPoint;
+    case DISTANCE_BETWEEN_PRIMARY_AND_SECONDARY_LABELS_HORIZONTAL:
+      return 24;
     default:
       return LayoutProvider::GetDistanceMetric(metric);
   }
@@ -188,4 +195,9 @@ ChromeLayoutProvider::GetControlLabelGridAlignment() const {
 
 bool ChromeLayoutProvider::ShouldShowWindowIcon() const {
   return false;
+}
+
+gfx::ShadowValues ChromeLayoutProvider::MakeShadowValues(int elevation,
+                                                         SkColor color) const {
+  return gfx::ShadowValue::MakeRefreshShadowValues(elevation, color);
 }

@@ -188,12 +188,24 @@
 
       <!-- About Flags UI -->
       <if expr="not chromeos">
-        <message name="IDS_FLAGS_UI_RELAUNCH_NOTICE" desc="Notifies the user that they need to relaunch Chromium. Shown next to a button that says 'Relaunch Now'.">
+        <message name="IDS_FLAGS_UI_RELAUNCH_NOTICE" translateable="false" desc="Notifies the user that they need to relaunch Chromium. Shown next to a button that says 'Relaunch Now'.">
           Your changes will take effect the next time you relaunch Chromium.
         </message>
       </if>
       <if expr="chromeos">
-        <message name="IDS_FLAGS_UI_RELAUNCH_NOTICE" desc="Notifies the user that they need to restart Chromium OS. Shown next to a button that says 'Restart Now'.">
+        <message name="IDS_FLAGS_UI_RELAUNCH_NOTICE" translateable="false" desc="Notifies the user that they need to restart Chromium OS. Shown next to a button that says 'Restart Now'.">
+          Your changes will take effect the next time you restart your device.
+        </message>
+      </if>
+
+      <!-- about:flags/deprecated strings -->
+      <if expr="not chromeos">
+        <message name="IDS_DEPRECATED_FEATURES_RELAUNCH_NOTICE" desc="Notifies the user that they need to relaunch Chromium. Shown next to a button that says 'Relaunch Now'.">
+          Your changes will take effect the next time you relaunch Chromium.
+        </message>
+      </if>
+      <if expr="chromeos">
+        <message name="IDS_DEPRECATED_FEATURES_RELAUNCH_NOTICE" desc="Notifies the user that they need to restart Chromium OS. Shown next to a button that says 'Restart Now'.">
           Your changes will take effect the next time you restart your device.
         </message>
       </if>
@@ -212,9 +224,13 @@
       <message name="IDS_PAGE_INFO_INTERNAL_PAGE" desc="Message to display in the page info bubble when the page you are on is a chrome:// page or about:something.">
         You're viewing a secure Chromium page
       </message>
-      <message name="IDS_PAGE_INFO_SECURITY_TAB_SECURE_IDENTITY_VERIFIED" desc="The text of the identity section when the page is secure and uses a valid certificate">
+
+      <if expr="is_android">
+      <!-- Only used in the dialog shown after tapping "Details" in page info -->
+      <message name="IDS_PAGE_INFO_SECURE_IDENTITY_VERIFIED" desc="The text of the identity section when the page is secure and uses a valid certificate">
         Chromium verified that <ph name="ISSUER">$1<ex>VeriSign</ex></ph> issued this website's certificate.
       </message>
+      </if>
 
       <!-- Session Crash -->
       <message name="IDS_SESSION_CRASHED_VIEW_MESSAGE" desc="Message shown when the last session didn't exit cleanly.">

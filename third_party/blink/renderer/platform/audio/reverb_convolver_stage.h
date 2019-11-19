@@ -34,7 +34,7 @@
 #include "base/macros.h"
 #include "third_party/blink/renderer/platform/audio/audio_array.h"
 #include "third_party/blink/renderer/platform/audio/fft_frame.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
 
@@ -63,6 +63,7 @@ class PLATFORM_EXPORT ReverbConvolverStage {
                        size_t render_phase,
                        size_t render_slice_size,
                        ReverbAccumulationBuffer*,
+                       float scale,
                        bool direct_mode = false);
 
   // WARNING: framesToProcess must be such that it evenly divides the delay

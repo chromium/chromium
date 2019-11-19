@@ -17,8 +17,7 @@ D3D11VideoDecoderImpl::D3D11VideoDecoderImpl(
     std::unique_ptr<MediaLog> media_log,
     base::RepeatingCallback<scoped_refptr<CommandBufferHelper>()> get_helper_cb)
     : media_log_(std::move(media_log)),
-      get_helper_cb_(std::move(get_helper_cb)),
-      weak_factory_(this) {
+      get_helper_cb_(std::move(get_helper_cb)) {
   // May be called from any thread.
 }
 

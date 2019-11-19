@@ -34,7 +34,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.MemoryPressureListener;
-import org.chromium.base.ThreadUtils;
 import org.chromium.base.memory.MemoryPressureCallback;
 import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterProvider;
@@ -50,7 +49,6 @@ import org.chromium.base.test.util.UrlUtils;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeFeatureList;
 import org.chromium.chrome.browser.ChromeSwitches;
-import org.chromium.chrome.browser.UrlConstants;
 import org.chromium.chrome.browser.feed.FeedNewTabPage;
 import org.chromium.chrome.browser.feed.FeedProcessScopeFactory;
 import org.chromium.chrome.browser.feed.TestNetworkClient;
@@ -68,6 +66,7 @@ import org.chromium.chrome.browser.preferences.PrefServiceBridge;
 import org.chromium.chrome.browser.suggestions.SiteSuggestion;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.util.UrlConstants;
 import org.chromium.chrome.browser.widget.ScrimView;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -77,12 +76,13 @@ import org.chromium.chrome.test.util.OmniboxTestUtils;
 import org.chromium.chrome.test.util.RenderTestRule;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.RecyclerViewTestUtils;
-import org.chromium.chrome.test.util.browser.suggestions.FakeMostVisitedSites;
 import org.chromium.chrome.test.util.browser.suggestions.SuggestionsDependenciesRule;
+import org.chromium.chrome.test.util.browser.suggestions.mostvisited.FakeMostVisitedSites;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.test.util.Criteria;
 import org.chromium.content_public.browser.test.util.CriteriaHelper;
 import org.chromium.content_public.browser.test.util.KeyUtils;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TestTouchUtils;
 import org.chromium.content_public.browser.test.util.TouchCommon;
 import org.chromium.net.test.EmbeddedTestServer;
@@ -189,7 +189,7 @@ public class NewTabPageTest {
     }
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
         mTestServer.stopAndDestroyServer();
         if (mInterestFeedEnabled) {
             FeedProcessScopeFactory.setTestNetworkClient(null);
@@ -237,6 +237,7 @@ public class NewTabPageTest {
         mRenderTestRule.render(mNtp.getSignInPromoViewForTesting(), "sign_in_promo");
     }
 
+    @DisabledTest(message = "https://crbug.com/945293")
     @Test
     @SmallTest
     @Feature({"NewTabPage", "FeedNewTabPage", "RenderTest"})
@@ -329,9 +330,10 @@ public class NewTabPageTest {
     @Test
     @SmallTest
     @Feature({"NewTabPage", "FeedNewTabPage"})
-    @DisableIf.Build(sdk_is_greater_than = 22, message = "crbug.com/593007")
-    @ParameterAnnotations.UseMethodParameter(InterestFeedParams.class)
-    public void testSearchFromFakebox(boolean interestFeedEnabled) throws InterruptedException {
+    @DisableIf
+            .Build(sdk_is_greater_than = 22, message = "crbug.com/593007")
+            @ParameterAnnotations.UseMethodParameter(InterestFeedParams.class)
+            public void testSearchFromFakebox(boolean interestFeedEnabled) {
         TouchCommon.singleClickView(mFakebox);
         waitForFakeboxFocusAnimationComplete(mNtp);
         final UrlBar urlBar = (UrlBar) mActivityTestRule.getActivity().findViewById(R.id.url_bar);
@@ -358,7 +360,7 @@ public class NewTabPageTest {
     @SmallTest
     @Feature({"NewTabPage", "FeedNewTabPage"})
     @ParameterAnnotations.UseMethodParameter(InterestFeedParams.class)
-    public void testClickMostVisitedItem(boolean interestFeedEnabled) throws InterruptedException {
+    public void testClickMostVisitedItem(boolean interestFeedEnabled) {
         ChromeTabUtils.waitForTabPageLoaded(mTab, mSiteSuggestions.get(0).url, new Runnable() {
             @Override
             public void run() {
@@ -378,7 +380,7 @@ public class NewTabPageTest {
     @Feature({"NewTabPage", "FeedNewTabPage"})
     @ParameterAnnotations.UseMethodParameter(InterestFeedParams.class)
     public void testOpenMostVisitedItemInNewTab(boolean interestFeedEnabled)
-            throws InterruptedException, ExecutionException {
+            throws ExecutionException {
         ChromeTabUtils.invokeContextMenuAndOpenInANewTab(mActivityTestRule,
                 mTileGridLayout.getChildAt(0), ContextMenuManager.ContextMenuItemId.OPEN_IN_NEW_TAB,
                 false, mSiteSuggestions.get(0).url);
@@ -392,7 +394,7 @@ public class NewTabPageTest {
     @Feature({"NewTabPage", "FeedNewTabPage"})
     @ParameterAnnotations.UseMethodParameter(InterestFeedParams.class)
     public void testOpenMostVisitedItemInIncognitoTab(boolean interestFeedEnabled)
-            throws InterruptedException, ExecutionException {
+            throws ExecutionException {
         ChromeTabUtils.invokeContextMenuAndOpenInANewTab(mActivityTestRule,
                 mTileGridLayout.getChildAt(0),
                 ContextMenuManager.ContextMenuItemId.OPEN_IN_INCOGNITO_TAB, true,
@@ -425,22 +427,16 @@ public class NewTabPageTest {
     @MediumTest
     @Feature({"NewTabPage", "FeedNewTabPage"})
     @ParameterAnnotations.UseMethodParameter(InterestFeedParams.class)
-    public void testUrlFocusAnimationsDisabledOnLoad(boolean interestFeedEnabled)
-            throws InterruptedException {
+    public void testUrlFocusAnimationsDisabledOnLoad(boolean interestFeedEnabled) {
         Assert.assertFalse(getUrlFocusAnimationsDisabled());
         ChromeTabUtils.waitForTabPageLoaded(mTab, mTestServer.getURL(TEST_PAGE), new Runnable() {
             @Override
             public void run() {
-                ThreadUtils.runOnUiThreadBlocking(new Runnable() {
-                    @Override
-                    public void run() {
-                        int pageTransition =
-                                PageTransition.TYPED | PageTransition.FROM_ADDRESS_BAR;
-                        mTab.loadUrl(new LoadUrlParams(mTestServer.getURL(TEST_PAGE),
-                                pageTransition));
-                        // It should be disabled as soon as a load URL is triggered.
-                        Assert.assertTrue(getUrlFocusAnimationsDisabled());
-                    }
+                TestThreadUtils.runOnUiThreadBlocking(() -> {
+                    int pageTransition = PageTransition.TYPED | PageTransition.FROM_ADDRESS_BAR;
+                    mTab.loadUrl(new LoadUrlParams(mTestServer.getURL(TEST_PAGE), pageTransition));
+                    // It should be disabled as soon as a load URL is triggered.
+                    Assert.assertTrue(getUrlFocusAnimationsDisabled());
                 });
             }
         });
@@ -499,12 +495,7 @@ public class NewTabPageTest {
             waitForUrlFocusAnimationsDisabledState(true);
             waitForTabLoading();
 
-            ThreadUtils.runOnUiThreadBlocking(new Runnable() {
-                @Override
-                public void run() {
-                    mTab.stopLoading();
-                }
-            });
+            TestThreadUtils.runOnUiThreadBlocking(() -> { mTab.stopLoading(); });
             waitForUrlFocusAnimationsDisabledState(false);
             delaySemaphore.release();
             loadedCallback.waitForCallback(0);
@@ -558,17 +549,14 @@ public class NewTabPageTest {
 
         // When the search provider has no logo and there are no tile suggestions, the placeholder
         // is shown.
-        ThreadUtils.runOnUiThreadBlocking(new Runnable() {
-            @Override
-            public void run() {
-                ntpLayout.setSearchProviderInfo(/* hasLogo = */ false, /* isGoogle */ true);
-                Assert.assertEquals(View.GONE, logoView.getVisibility());
-                Assert.assertEquals(View.GONE, searchBoxView.getVisibility());
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            ntpLayout.setSearchProviderInfo(/* hasLogo = */ false, /* isGoogle */ true);
+            Assert.assertEquals(View.GONE, logoView.getVisibility());
+            Assert.assertEquals(View.GONE, searchBoxView.getVisibility());
 
-                mMostVisitedSites.setTileSuggestions(new String[] {});
+            mMostVisitedSites.setTileSuggestions(new String[] {});
 
-                ntpLayout.getTileGroup().onSwitchToForeground(false); // Force tile refresh.
-            }
+            ntpLayout.getTileGroup().onSwitchToForeground(false); // Force tile refresh.
         });
         CriteriaHelper.pollUiThread(new Criteria("The tile grid was not updated.") {
             @Override
@@ -581,14 +569,11 @@ public class NewTabPageTest {
 
         // Once the search provider has a logo again, the logo and search box are shown again and
         // the placeholder is hidden.
-        ThreadUtils.runOnUiThreadBlocking(new Runnable() {
-            @Override
-            public void run() {
-                ntpLayout.setSearchProviderInfo(/* hasLogo = */ true, /* isGoogle */ true);
-                Assert.assertEquals(View.VISIBLE, logoView.getVisibility());
-                Assert.assertEquals(View.VISIBLE, searchBoxView.getVisibility());
-                Assert.assertEquals(View.GONE, ntpLayout.getPlaceholder().getVisibility());
-            }
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            ntpLayout.setSearchProviderInfo(/* hasLogo = */ true, /* isGoogle */ true);
+            Assert.assertEquals(View.VISIBLE, logoView.getVisibility());
+            Assert.assertEquals(View.VISIBLE, searchBoxView.getVisibility());
+            Assert.assertEquals(View.GONE, ntpLayout.getPlaceholder().getVisibility());
         });
     }
 
@@ -678,14 +663,14 @@ public class NewTabPageTest {
         // performed.
         CallbackHelper callback = new CallbackHelper();
         MemoryPressureCallback pressureCallback = pressure -> callback.notifyCalled();
-        ThreadUtils.runOnUiThreadBlocking(() -> {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
             MemoryPressureListener.addCallback(pressureCallback);
             mActivityTestRule.getActivity().getApplication().onTrimMemory(
                     ComponentCallbacks2.TRIM_MEMORY_MODERATE);
         });
 
         callback.waitForCallback(0);
-        ThreadUtils.runOnUiThreadBlocking(
+        TestThreadUtils.runOnUiThreadBlocking(
                 () -> MemoryPressureListener.removeCallback(pressureCallback));
     }
 
@@ -701,9 +686,9 @@ public class NewTabPageTest {
     }
 
     private boolean getUrlFocusAnimationsDisabled() {
-        return ThreadUtils.runOnUiThreadBlockingNoException(new Callable<Boolean>() {
+        return TestThreadUtils.runOnUiThreadBlockingNoException(new Callable<Boolean>() {
             @Override
-            public Boolean call() throws Exception {
+            public Boolean call() {
                 return mNtp.getNewTabPageLayout().urlFocusAnimationsDisabled();
             }
         });
@@ -749,7 +734,7 @@ public class NewTabPageTest {
      * @return The position of the top of the fakebox relative to the window.
      */
     private int getFakeboxTop(final NewTabPage ntp) {
-        return ThreadUtils.runOnUiThreadBlockingNoException(new Callable<Integer>() {
+        return TestThreadUtils.runOnUiThreadBlockingNoException(new Callable<Integer>() {
             @Override
             public Integer call() {
                 final View fakebox = ntp.getView().findViewById(R.id.search_box);
@@ -772,7 +757,7 @@ public class NewTabPageTest {
         }));
     }
 
-    private SuggestionsSection getArticleSectionOnNewTab() throws Exception {
+    private SuggestionsSection getArticleSectionOnNewTab() {
         Tab tab = mActivityTestRule.loadUrlInNewTab(UrlConstants.NTP_URL);
         NewTabPage ntp = (NewTabPage) tab.getNativePage();
         NewTabPageAdapter adapter =
@@ -781,7 +766,7 @@ public class NewTabPageTest {
     }
 
     private boolean getPreferenceForExpandableHeader() throws Exception {
-        return ThreadUtils.runOnUiThreadBlocking(
+        return TestThreadUtils.runOnUiThreadBlocking(
                 () -> PrefServiceBridge.getInstance().getBoolean(Pref.NTP_ARTICLES_LIST_VISIBLE));
     }
 }

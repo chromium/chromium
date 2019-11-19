@@ -226,6 +226,10 @@ class Writer(object):
     def __init__(self, json5_files, output_dir):
         self._input_files = copy.copy(json5_files)
         self._outputs = {}  # file_name -> generator
+        # A set of filenames that were formerly generated, but aren't anymore.
+        # Files present in this set will be deleted to prevent erroneous
+        # inclusion of stale generated headers for incremental builds.
+        self._cleanup = set()
         self.gperf_path = None
         if json5_files:
             self.json5_file = Json5File.load_from_files(json5_files,
@@ -258,6 +262,14 @@ class Writer(object):
         for file_name, generator in self._outputs.items():
             self._write_file_if_changed(output_dir, generator(), file_name)
 
+    def cleanup_files(self, output_dir):
+        for file_name in self._cleanup:
+            path = os.path.join(output_dir, file_name)
+            try:
+                os.remove(path)
+            except OSError:
+                pass
+
     def set_gperf_path(self, gperf_path):
         self.gperf_path = gperf_path
 
@@ -278,13 +290,10 @@ class Maker(object):
         parser.add_argument("files", nargs="+")
 
         parser.add_argument("--gperf", default="gperf")
-        parser.add_argument("--developer_dir", help="Path to Xcode.")
         parser.add_argument("--output_dir", default=os.getcwd())
         args = parser.parse_args()
-
-        if args.developer_dir:
-            os.environ["DEVELOPER_DIR"] = args.developer_dir
 
         writer = self._writer_class(args.files, args.output_dir)
         writer.set_gperf_path(args.gperf)
         writer.write_files(args.output_dir)
+        writer.cleanup_files(args.output_dir)

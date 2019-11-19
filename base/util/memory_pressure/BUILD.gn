@@ -1,0 +1,86 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Reset sources_assignment_filter for the BUILD.gn file to prevent
+# regression during the migration of Chromium away from the feature.
+# See build/no_sources_assignment_filter.md for more information.
+# TODO(crbug.com/1018739): remove this when migration is done.
+set_sources_assignment_filter([])
+
+source_set("memory_pressure") {
+  sources = [
+    "memory_pressure_voter.cc",
+    "memory_pressure_voter.h",
+    "multi_source_memory_pressure_monitor.cc",
+    "multi_source_memory_pressure_monitor.h",
+    "system_memory_pressure_evaluator.cc",
+    "system_memory_pressure_evaluator.h",
+  ]
+
+  if (is_win) {
+    sources += [
+      "system_memory_pressure_evaluator_win.cc",
+      "system_memory_pressure_evaluator_win.h",
+    ]
+  }
+
+  if (is_mac) {
+    sources += [
+      "system_memory_pressure_evaluator_mac.cc",
+      "system_memory_pressure_evaluator_mac.h",
+    ]
+  }
+
+  if (is_chromeos) {
+    sources += [
+      "system_memory_pressure_evaluator_chromeos.cc",
+      "system_memory_pressure_evaluator_chromeos.h",
+    ]
+  }
+
+  deps = [
+    "//base",
+  ]
+}
+
+source_set("unittests") {
+  testonly = true
+  sources = [
+    "memory_pressure_voter_unittest.cc",
+    "multi_source_memory_pressure_monitor_unittest.cc",
+  ]
+
+  if (is_win) {
+    sources += [ "system_memory_pressure_evaluator_win_unittest.cc" ]
+  }
+
+  if (is_mac) {
+    sources += [ "system_memory_pressure_evaluator_mac_unittest.cc" ]
+  }
+
+  if (is_chromeos) {
+    sources += [ "system_memory_pressure_evaluator_chromeos_unittest.cc" ]
+  }
+
+  deps = [
+    ":memory_pressure",
+    "//base",
+    "//base/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}
+
+static_library("test_support") {
+  testonly = true
+  sources = [
+    "fake_memory_pressure_monitor.cc",
+    "fake_memory_pressure_monitor.h",
+  ]
+
+  public_deps = [
+    ":memory_pressure",
+    "//base",
+  ]
+}

@@ -7,8 +7,9 @@
 
 #include "components/password_manager/core/browser/credential_manager_impl.h"
 #include "components/password_manager/core/common/credential_manager_types.h"
-#include "mojo/public/cpp/bindings/binding.h"
-#include "third_party/blink/public/platform/modules/credentialmanager/credential_manager.mojom.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "third_party/blink/public/mojom/credentialmanager/credential_manager.mojom.h"
 
 class GURL;
 
@@ -25,7 +26,8 @@ class ContentCredentialManager : public blink::mojom::CredentialManager {
   explicit ContentCredentialManager(PasswordManagerClient* client);
   ~ContentCredentialManager() override;
 
-  void BindRequest(blink::mojom::CredentialManagerRequest request);
+  void BindRequest(
+      mojo::PendingReceiver<blink::mojom::CredentialManager> receiver);
   bool HasBinding() const;
   void DisconnectBinding();
 
@@ -40,7 +42,7 @@ class ContentCredentialManager : public blink::mojom::CredentialManager {
  private:
   CredentialManagerImpl impl_;
 
-  mojo::Binding<blink::mojom::CredentialManager> binding_;
+  mojo::Receiver<blink::mojom::CredentialManager> receiver_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ContentCredentialManager);
 };

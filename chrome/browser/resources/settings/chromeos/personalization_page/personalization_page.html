@@ -1,0 +1,45 @@
+<link rel="import" href="chrome://resources/html/polymer.html">
+
+<link rel="import" href="chrome://resources/cr_elements/cr_link_row/cr_link_row.html">
+<link rel="import" href="../../appearance_page/wallpaper_browser_proxy.html">
+<link rel="import" href="../../people_page/change_picture.html">
+<link rel="import" href="../../route.html">
+<link rel="import" href="../../settings_page/settings_animated_pages.html">
+<link rel="import" href="../../settings_page/settings_subpage.html">
+<link rel="import" href="../../settings_shared_css.html">
+
+<dom-module id="settings-personalization-page">
+  <template>
+    <style include="settings-shared"></style>
+    <settings-animated-pages id="pages" section="personalization"
+        focus-config="[[focusConfig_]]">
+      <div route-path="default">
+        <cr-link-row id="changePictureRow"
+            label="$i18n{changePictureTitle}"
+            on-click="navigateToChangePicture_"
+            role-description="$i18n{subpageArrowRoleDescription}">
+        </cr-link-row>
+        <cr-link-row class="hr" id="wallpaperButton"
+            hidden="[[!showWallpaperRow_]]"
+            on-click="openWallpaperManager_" label="$i18n{setWallpaper}"
+            sub-label="$i18n{openWallpaperApp}"
+            disabled="[[isWallpaperPolicyControlled_]]" external>
+          <template is="dom-if" if="[[isWallpaperPolicyControlled_]]">
+            <cr-policy-indicator id="wallpaperPolicyIndicator"
+                indicator-type="devicePolicy">
+            </cr-policy-indicator>
+          </template>
+        </cr-link-row>
+      </div>
+
+      <template is="dom-if" route-path="/changePicture">
+        <settings-subpage
+          associated-control="[[$$('#changePictureRow')]]"
+          page-title="$i18n{changePictureTitle}">
+          <settings-change-picture></settings-change-picture>
+        </settings-subpage>
+      </template>
+    </settings-animated-pages>
+  </template>
+  <script src="personalization_page.js"></script>
+</dom-module>

@@ -29,7 +29,7 @@ class MyControl extends HTMLElement {
     for (let p of nameValues) {
       formData.append(p[0], p[1]);
     }
-    this.internals_.setFormValue(this.value_, formData);
+    this.internals_.setFormValue(formData);
   }
 }
 customElements.define('my-control', MyControl);

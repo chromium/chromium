@@ -1,9 +1,0 @@
-CONSOLE ERROR: line 4: The XSS Auditor blocked access to 'http://127.0.0.1:8000/security/xssAuditor/resources/echo-intertag.pl?enable-full-block=1&q=%3Cscript%20src=%27http://localhost:8000/security/xssAuditor/resources/xss.js%27%3E%3C/script%3E' because the source code of a script was found within the request. The server sent an 'X-XSS-Protection' header requesting this behavior.
-CONSOLE MESSAGE: line 31: PASS: "frame" is cross-origin.
-The loading of iframe below should be blocked:
-
---------
-Frame: 'frame'
---------
-Could not load the requested resource.
-Error code: -28 (net::ERR_BLOCKED_BY_XSS_AUDITOR)

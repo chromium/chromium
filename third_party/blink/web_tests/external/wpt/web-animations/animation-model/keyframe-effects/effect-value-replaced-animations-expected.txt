@@ -1,0 +1,8 @@
+This is a testharness.js-based test.
+FAIL Removed animations do not contribute to animated style assert_equals: expected (string) "removed" but got (undefined) undefined
+FAIL Removed animations do not contribute to the effect stack assert_equals: expected (string) "removed" but got (undefined) undefined
+FAIL Persisted animations contribute to animated style promise_test: Unhandled rejection with value: object "TypeError: animA.persist is not a function"
+FAIL Persisted animations contribute to the effect stack assert_approx_equals: Opacity value should NOT include the contribution of the removed animation expected 0.4 +/- 0.0001 but got 0.5
+FAIL Animations persisted before they would be removed contribute to the effect stack promise_test: Unhandled rejection with value: object "TypeError: animA.persist is not a function"
+Harness: the test ran to completion.
+

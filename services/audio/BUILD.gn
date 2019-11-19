@@ -188,6 +188,13 @@ source_set("tests") {
     sources += [ "test/standalone_service_test.cc" ]
   }
 
+  if (is_chromeos || is_chromecast) {
+    sources += [
+      "public/cpp/sounds/audio_stream_handler_unittest.cc",
+      "public/cpp/sounds/sounds_manager_unittest.cc",
+    ]
+  }
+
   data_deps = [
     ":audio",
   ]

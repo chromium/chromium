@@ -28,10 +28,9 @@ class End2EndTestRenderer final : public Renderer {
   // Renderer implementation.
   void Initialize(MediaResource* media_resource,
                   RendererClient* client,
-                  const PipelineStatusCB& init_cb) override;
-  void SetCdm(CdmContext* cdm_context,
-              const CdmAttachedCB& cdm_attached_cb) override;
-  void Flush(const base::Closure& flush_cb) override;
+                  PipelineStatusCallback init_cb) override;
+  void SetCdm(CdmContext* cdm_context, CdmAttachedCB cdm_attached_cb) override;
+  void Flush(base::OnceClosure flush_cb) override;
   void StartPlayingFrom(base::TimeDelta time) override;
   void SetPlaybackRate(double playback_rate) override;
   void SetVolume(float volume) override;
@@ -65,7 +64,7 @@ class End2EndTestRenderer final : public Renderer {
   // A receiver that renders media streams.
   std::unique_ptr<Receiver> receiver_;
 
-  base::WeakPtrFactory<End2EndTestRenderer> weak_factory_;
+  base::WeakPtrFactory<End2EndTestRenderer> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(End2EndTestRenderer);
 };

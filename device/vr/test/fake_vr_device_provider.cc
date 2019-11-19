@@ -19,7 +19,7 @@ void FakeVRDeviceProvider::AddDevice(std::unique_ptr<VRDeviceBase> device) {
   if (initialized_)
     add_device_callback_.Run(device_base->GetId(),
                              device_base->GetVRDisplayInfo(),
-                             device_base->BindXRRuntimePtr());
+                             device_base->BindXRRuntime());
 }
 
 void FakeVRDeviceProvider::RemoveDevice(mojom::XRDeviceId device_id) {
@@ -36,7 +36,8 @@ void FakeVRDeviceProvider::RemoveDevice(mojom::XRDeviceId device_id) {
 void FakeVRDeviceProvider::Initialize(
     base::RepeatingCallback<void(mojom::XRDeviceId,
                                  mojom::VRDisplayInfoPtr,
-                                 mojom::XRRuntimePtr)> add_device_callback,
+                                 mojo::PendingRemote<mojom::XRRuntime>)>
+        add_device_callback,
     base::RepeatingCallback<void(mojom::XRDeviceId)> remove_device_callback,
     base::OnceClosure initialization_complete) {
   add_device_callback_ = std::move(add_device_callback);
@@ -46,7 +47,7 @@ void FakeVRDeviceProvider::Initialize(
     auto* device_base = static_cast<VRDeviceBase*>(device.get());
     add_device_callback_.Run(device_base->GetId(),
                              device_base->GetVRDisplayInfo(),
-                             device_base->BindXRRuntimePtr());
+                             device_base->BindXRRuntime());
   }
   initialized_ = true;
   std::move(initialization_complete).Run();

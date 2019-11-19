@@ -31,6 +31,7 @@
 #include "third_party/blink/renderer/core/timing/performance_entry.h"
 
 #include "base/atomic_sequence_num.h"
+#include "third_party/blink/public/mojom/timing/performance_mark_or_measure.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_object_builder.h"
 #include "third_party/blink/renderer/core/performance_entry_names.h"
@@ -59,6 +60,22 @@ DOMHighResTimeStamp PerformanceEntry::duration() const {
   return duration_;
 }
 
+mojom::blink::PerformanceMarkOrMeasurePtr
+PerformanceEntry::ToMojoPerformanceMarkOrMeasure() {
+  DCHECK(EntryTypeEnum() == kMark || EntryTypeEnum() == kMeasure);
+  auto mojo_performance_mark_or_measure =
+      mojom::blink::PerformanceMarkOrMeasure::New();
+  mojo_performance_mark_or_measure->name = name_;
+  mojo_performance_mark_or_measure->entry_type =
+      EntryTypeEnum() == kMark
+          ? mojom::blink::PerformanceMarkOrMeasure::EntryType::kMark
+          : mojom::blink::PerformanceMarkOrMeasure::EntryType::kMeasure;
+  mojo_performance_mark_or_measure->start_time = start_time_;
+  mojo_performance_mark_or_measure->duration = duration_;
+  // PerformanceMark/Measure overrides will add the detail field.
+  return mojo_performance_mark_or_measure;
+}
+
 PerformanceEntry::EntryType PerformanceEntry::ToEntryTypeEnum(
     const AtomicString& entry_type) {
   if (entry_type == performance_entry_names::kLongtask)
@@ -81,8 +98,10 @@ PerformanceEntry::EntryType PerformanceEntry::ToEntryTypeEnum(
     return kFirstInput;
   if (entry_type == performance_entry_names::kElement)
     return kElement;
-  if (entry_type == performance_entry_names::kLayoutJank)
-    return kLayoutJank;
+  if (entry_type == performance_entry_names::kLayoutShift)
+    return kLayoutShift;
+  if (entry_type == performance_entry_names::kLargestContentfulPaint)
+    return kLargestContentfulPaint;
   return kInvalid;
 }
 

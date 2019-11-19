@@ -30,6 +30,24 @@ async_test(function(test) {
       assert_equals(reports[0].body.statusCode, 200);
       assert_equals(reports[0].body.lineNumber, null);
       assert_equals(reports[0].body.columnNumber, null);
+      // Ensure the toJSON call is successful.
+      const reportJSON = reports[0].toJSON();
+      assert_equals(reportJSON.type, reports[0].type);
+      assert_equals(reportJSON.url, reports[0].url);
+      assert_equals(typeof reportJSON.body, "object");
+      assert_equals(reportJSON.body.documentURL, reports[0].body.documentURL);
+      assert_equals(reportJSON.body.referrer, reports[0].body.referrer);
+      assert_equals(reportJSON.body.blockedURL, reports[0].body.blockedURL);
+      assert_equals(reportJSON.body.effectiveDirective, reports[0].body.effectiveDirective);
+      assert_equals(reportJSON.body.originalPolicy, reports[0].body.originalPolicy);
+      assert_equals(reportJSON.body.sourceFile, reports[0].body.sourceFile);
+      assert_equals(reportJSON.body.sample, reports[0].body.sample);
+      assert_equals(reportJSON.body.disposition, reports[0].body.disposition);
+      assert_equals(reportJSON.body.statusCode, reports[0].body.statusCode);
+      assert_equals(reportJSON.body.lineNumber, reports[0].body.lineNumber);
+      assert_equals(reportJSON.body.columnNumber, reports[0].body.columnNumber);
+      // Ensure that report can be successfully JSON serialized.
+      assert_equals(JSON.stringify(reports[0]), JSON.stringify(reportJSON));
     });
 
     test.done();

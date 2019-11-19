@@ -4,6 +4,8 @@
 
 #include "device/gamepad/xinput_haptic_gamepad_win.h"
 
+#include "base/trace_event/trace_event.h"
+
 namespace {
 const long kRumbleMagnitudeMax = 0xffff;
 }  // namespace
@@ -30,6 +32,10 @@ void XInputHapticGamepadWin::SetVibration(double strong_magnitude,
   TRACE_EVENT_BEGIN1("GAMEPAD", "XInputSetState", "id", pad_id_);
   xinput_set_state_(pad_id_, &vibration);
   TRACE_EVENT_END1("GAMEPAD", "XInputSetState", "id", pad_id_);
+}
+
+base::WeakPtr<AbstractHapticGamepad> XInputHapticGamepadWin::GetWeakPtr() {
+  return weak_factory_.GetWeakPtr();
 }
 
 }  // namespace device

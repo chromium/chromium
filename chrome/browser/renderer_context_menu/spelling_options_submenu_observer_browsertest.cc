@@ -41,10 +41,14 @@ class SpellingOptionsSubMenuObserverTest : public InProcessBrowserTest {
   }
 
   void InitMenu(bool enable_spellcheck,
+                bool use_spellchecking_service,
                 const std::string& accept_languages,
                 const std::vector<std::string>& dictionaries) {
     menu()->GetPrefs()->SetBoolean(spellcheck::prefs::kSpellCheckEnable,
                                    enable_spellcheck);
+    menu()->GetPrefs()->SetBoolean(
+        spellcheck::prefs::kSpellCheckUseSpellingService,
+        use_spellchecking_service);
     menu()->GetPrefs()->SetString(language::prefs::kAcceptLanguages,
                                   accept_languages);
     base::ListValue dictionaries_value;
@@ -74,29 +78,53 @@ class SpellingOptionsSubMenuObserverTest : public InProcessBrowserTest {
   DISALLOW_COPY_AND_ASSIGN(SpellingOptionsSubMenuObserverTest);
 };
 
-// Tests that selecting the "Check Spelling While Typing" item toggles the value
+// Tests that selecting the "Use basic spell check" item toggles the value
 // of the "browser.enable_spellchecking" profile.
 IN_PROC_BROWSER_TEST_F(SpellingOptionsSubMenuObserverTest, ToggleSpelling) {
-  InitMenu(true, "en-US", std::vector<std::string>(1, "en-US"));
+  InitMenu(true, false, "en-US", std::vector<std::string>(1, "en-US"));
 
-  // Verify this menu has the "Check Spelling While Typing" item and this item
+  // Verify this menu has the "Use basic spell check" item and this item
   // is checked.
   EXPECT_TRUE(menu()->IsCommandIdEnabled(IDC_CHECK_SPELLING_WHILE_TYPING));
   EXPECT_TRUE(menu()->IsCommandIdChecked(IDC_CHECK_SPELLING_WHILE_TYPING));
+  EXPECT_FALSE(menu()->GetPrefs()->GetBoolean(
+      spellcheck::prefs::kSpellCheckUseSpellingService));
 
-  // Select this item and verify that the "Check Spelling While Typing" item is
+  // Select this item and verify that the "Use basic spell check" item is
   // not checked. Also, verify that the value of "browser.enable_spellchecking"
   // is now false.
   menu()->ExecuteCommand(IDC_CHECK_SPELLING_WHILE_TYPING, 0);
   ExpectPreferences(false, std::vector<std::string>(1, "en-US"));
   EXPECT_FALSE(menu()->IsCommandIdChecked(IDC_CHECK_SPELLING_WHILE_TYPING));
+
+  menu()->ExecuteCommand(IDC_CHECK_SPELLING_WHILE_TYPING, 1);
+  ExpectPreferences(true, std::vector<std::string>(1, "en-US"));
+  EXPECT_TRUE(menu()->IsCommandIdChecked(IDC_CHECK_SPELLING_WHILE_TYPING));
+}
+
+IN_PROC_BROWSER_TEST_F(SpellingOptionsSubMenuObserverTest,
+                       ToggleSpellingWithEnhancedSpellCheck) {
+  InitMenu(true, true, "en-US,es", std::vector<std::string>(1, "en-US"));
+
+  // Verify that because 'Use Enhanced spell check' is checked, the
+  // 'Use basic spell check' is shown as unchecked
+  EXPECT_TRUE(menu()->IsCommandIdEnabled(IDC_CHECK_SPELLING_WHILE_TYPING));
+  EXPECT_FALSE(menu()->IsCommandIdChecked(IDC_CHECK_SPELLING_WHILE_TYPING));
+
+  // Select this item and verify that "Use basic spell check" item is now
+  // checked and that 'spellcheck.use_spelling_service' is now disabled.
+  menu()->ExecuteCommand(IDC_CHECK_SPELLING_WHILE_TYPING, 1);
+  ExpectPreferences(true, std::vector<std::string>(1, "en-US"));
+  EXPECT_TRUE(menu()->IsCommandIdChecked(IDC_CHECK_SPELLING_WHILE_TYPING));
+  EXPECT_FALSE(menu()->GetPrefs()->GetBoolean(
+      spellcheck::prefs::kSpellCheckUseSpellingService));
 }
 
 // Single accept language is selected based on the dictionaries preference.
 // Consequently selecting multilingual spellcheck should copy all accept
 // languages into spellcheck dictionaries preference.
 IN_PROC_BROWSER_TEST_F(SpellingOptionsSubMenuObserverTest, SelectMultilingual) {
-  InitMenu(true, "en-US,es", std::vector<std::string>(1, "en-US"));
+  InitMenu(true, false, "en-US,es", std::vector<std::string>(1, "en-US"));
   EXPECT_FALSE(menu()->IsCommandIdChecked(IDC_SPELLCHECK_MULTI_LINGUAL));
   EXPECT_TRUE(menu()->IsCommandIdChecked(IDC_SPELLCHECK_LANGUAGES_FIRST));
   EXPECT_FALSE(menu()->IsCommandIdChecked(IDC_SPELLCHECK_LANGUAGES_FIRST + 1));
@@ -116,7 +144,7 @@ IN_PROC_BROWSER_TEST_F(SpellingOptionsSubMenuObserverTest,
   std::vector<std::string> dictionaries;
   dictionaries.push_back("en-US");
   dictionaries.push_back("es");
-  InitMenu(true, "en-US,es", dictionaries);
+  InitMenu(true, false, "en-US,es", dictionaries);
   EXPECT_TRUE(menu()->IsCommandIdChecked(IDC_SPELLCHECK_MULTI_LINGUAL));
   EXPECT_FALSE(menu()->IsCommandIdChecked(IDC_SPELLCHECK_LANGUAGES_FIRST));
   EXPECT_FALSE(menu()->IsCommandIdChecked(IDC_SPELLCHECK_LANGUAGES_FIRST + 1));
@@ -128,7 +156,7 @@ IN_PROC_BROWSER_TEST_F(SpellingOptionsSubMenuObserverTest,
 // Single dictionary should be selected based on preferences.
 IN_PROC_BROWSER_TEST_F(SpellingOptionsSubMenuObserverTest,
                        SingleLanguageSelected) {
-  InitMenu(true, "en-US", std::vector<std::string>(1, "en-US"));
+  InitMenu(true, false, "en-US", std::vector<std::string>(1, "en-US"));
   EXPECT_TRUE(menu()->IsCommandIdChecked(IDC_SPELLCHECK_LANGUAGES_FIRST));
 }
 
@@ -136,7 +164,7 @@ IN_PROC_BROWSER_TEST_F(SpellingOptionsSubMenuObserverTest,
 // dictionary should update the preference.
 IN_PROC_BROWSER_TEST_F(SpellingOptionsSubMenuObserverTest,
                        SelectTheOnlyLanguage) {
-  InitMenu(true, "en-US", std::vector<std::string>());
+  InitMenu(true, false, "en-US", std::vector<std::string>());
   EXPECT_FALSE(menu()->IsCommandIdChecked(IDC_SPELLCHECK_LANGUAGES_FIRST));
 
   menu()->ExecuteCommand(IDC_SPELLCHECK_LANGUAGES_FIRST, 0);

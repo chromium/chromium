@@ -23,15 +23,12 @@ Widget* ViewAccessibilityUtils::GetFocusedChildWidgetForAccessibility(
   std::set<Widget*> child_widgets;
   Widget::GetAllOwnedWidgets(view->GetWidget()->GetNativeView(),
                              &child_widgets);
-  for (auto iter = child_widgets.begin(); iter != child_widgets.end(); ++iter) {
-    Widget* child_widget = *iter;
-    DCHECK_NE(view->GetWidget(), child_widget);
-
-    if (IsFocusedChildWidget(child_widget, focused_view))
-      return child_widget;
-  }
-
-  return nullptr;
+  const auto i =
+      std::find_if(child_widgets.cbegin(), child_widgets.cend(),
+                   [focused_view](auto* child_widget) {
+                     return IsFocusedChildWidget(child_widget, focused_view);
+                   });
+  return (i == child_widgets.cend()) ? nullptr : *i;
 }
 
 // static

@@ -1,0 +1,26 @@
+<style>
+  :host {
+    display: block;
+  }
+
+  :host([dragging_=dragging-vertical]) {
+    cursor: ns-resize;
+  }
+
+  :host([dragging_=dragging-horizontal]) {
+    cursor: ew-resize;
+  }
+</style>
+<template is="dom-repeat" items="[[marginSides_]]">
+  <print-preview-margin-control side="[[item]]" invisible="[[invisible_]]"
+      disabled="[[controlsDisabled_(state, invisible_)]]"
+      translate-transform="[[translateTransform_]]"
+      clip-size="[[clipSize_]]"
+      measurement-system="[[measurementSystem]]"
+      scale-transform="[[scaleTransform_]]"
+      page-size="[[pageSize]]"
+      on-pointerdown="onPointerDown_"
+      on-text-change="onTextChange_" on-text-blur="onTextBlur_"
+      on-text-focus="onTextFocus_" on-transition-end="onTransitionEnd_">
+  </print-preview-margin-control>
+</template>

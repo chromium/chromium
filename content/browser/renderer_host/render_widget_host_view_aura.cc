@@ -23,7 +23,6 @@
 #include "components/viz/common/frame_sinks/copy_output_request.h"
 #include "components/viz/common/frame_sinks/copy_output_result.h"
 #include "components/viz/common/surfaces/local_surface_id_allocation.h"
-#include "components/viz/host/host_frame_sink_manager.h"
 #include "content/browser/accessibility/browser_accessibility_manager.h"
 #include "content/browser/accessibility/browser_accessibility_state_impl.h"
 #include "content/browser/bad_message.h"
@@ -47,7 +46,6 @@
 #include "content/browser/renderer_host/render_widget_host_view_event_handler.h"
 #include "content/browser/renderer_host/ui_events_helper.h"
 #include "content/common/input_messages.h"
-#include "content/common/render_widget_window_tree_client_factory.mojom.h"
 #include "content/common/text_input_state.h"
 #include "content/common/view_messages.h"
 #include "content/public/browser/content_browser_client.h"
@@ -56,12 +54,11 @@
 #include "content/public/common/use_zoom_for_dsf_policy.h"
 #include "gpu/ipc/common/gpu_messages.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
-#include "services/ws/common/switches.h"
-#include "services/ws/public/mojom/window_tree_constants.mojom.h"
 #include "third_party/blink/public/platform/web_input_event.h"
 #include "third_party/blink/public/web/web_ime_text_span.h"
 #include "ui/accessibility/accessibility_switches.h"
 #include "ui/accessibility/platform/aura_window_properties.h"
+#include "ui/accessibility/platform/ax_platform_node.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/cursor_client.h"
 #include "ui/aura/client/cursor_client_observer.h"
@@ -70,7 +67,6 @@
 #include "ui/aura/client/transient_window_client.h"
 #include "ui/aura/client/window_parenting_client.h"
 #include "ui/aura/env.h"
-#include "ui/aura/mus/window_port_mus.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_event_dispatcher.h"
 #include "ui/aura/window_observer.h"
@@ -78,11 +74,9 @@
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/hit_test.h"
 #include "ui/base/ime/input_method.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/base/ui_base_switches.h"
 #include "ui/base/ui_base_switches_util.h"
 #include "ui/base/ui_base_types.h"
-#include "ui/compositor/compositor_vsync_manager.h"
 #include "ui/compositor/dip_util.h"
 #include "ui/display/screen.h"
 #include "ui/events/blink/blink_event_util.h"
@@ -101,7 +95,6 @@
 #include "ui/gfx/skia_util.h"
 #include "ui/touch_selection/touch_selection_controller.h"
 #include "ui/wm/core/coordinate_conversion.h"
-#include "ui/wm/core/window_util.h"
 #include "ui/wm/public/activation_client.h"
 #include "ui/wm/public/scoped_tooltip_disabler.h"
 #include "ui/wm/public/tooltip_client.h"
@@ -147,10 +140,16 @@ namespace content {
 
 namespace {
 
-// Callback from embedding the renderer.
-void EmbedCallback(bool result) {
-  if (!result)
-    DVLOG(1) << "embed failed";
+mojom::FrameInputHandler* GetFrameInputHandlerForFocusedFrame(
+    RenderWidgetHostImpl* host) {
+  if (!host || !host->delegate()) {
+    return nullptr;
+  }
+  RenderFrameHostImpl* render_frame_host =
+      host->delegate()->GetFocusedFrameFromFocusedDelegate();
+  if (!render_frame_host)
+    return nullptr;
+  return render_frame_host->GetFrameInputHandler();
 }
 
 }  // namespace
@@ -165,7 +164,7 @@ void EmbedCallback(bool result) {
 class WinScreenKeyboardObserver
     : public ui::InputMethodKeyboardControllerObserver {
  public:
-  WinScreenKeyboardObserver(RenderWidgetHostViewAura* host_view)
+  explicit WinScreenKeyboardObserver(RenderWidgetHostViewAura* host_view)
       : host_view_(host_view) {
     host_view_->SetInsets(gfx::Insets());
     if (auto* input_method = host_view_->GetInputMethod())
@@ -346,10 +345,8 @@ class RenderWidgetHostViewAura::WindowAncestorObserver
 
 RenderWidgetHostViewAura::RenderWidgetHostViewAura(
     RenderWidgetHost* widget_host,
-    bool is_guest_view_hack,
-    bool is_mus_browser_plugin_guest)
+    bool is_guest_view_hack)
     : RenderWidgetHostViewBase(widget_host),
-      is_mus_browser_plugin_guest_(is_mus_browser_plugin_guest),
       window_(nullptr),
       in_shutdown_(false),
       in_bounds_changed_(false),
@@ -363,20 +360,13 @@ RenderWidgetHostViewAura::RenderWidgetHostViewAura(
 #if defined(OS_WIN)
       legacy_render_widget_host_HWND_(nullptr),
       legacy_window_destroyed_(false),
-      virtual_keyboard_requested_(false),
 #endif
-      has_snapped_to_boundary_(false),
       is_guest_view_hack_(is_guest_view_hack),
       device_scale_factor_(0.0f),
       event_handler_(new RenderWidgetHostViewEventHandler(host(), this, this)),
-      frame_sink_id_(features::IsMultiProcessMash()
-                         ? viz::FrameSinkId()
-                         : is_guest_view_hack_
-                               ? AllocateFrameSinkIdForGuestViewHack()
-                               : host()->GetFrameSinkId()),
-      weak_ptr_factory_(this) {
-  if (!is_mus_browser_plugin_guest_)
-    CreateDelegatedFrameHostClient();
+      frame_sink_id_(is_guest_view_hack_ ? AllocateFrameSinkIdForGuestViewHack()
+                                         : host()->GetFrameSinkId()) {
+  CreateDelegatedFrameHostClient();
 
   if (!is_guest_view_hack_)
     host()->SetView(this);
@@ -410,8 +400,6 @@ RenderWidgetHostViewAura::RenderWidgetHostViewAura(
 
 void RenderWidgetHostViewAura::InitAsChild(gfx::NativeView parent_view) {
   DCHECK_EQ(widget_type_, WidgetType::kFrame);
-  if (is_mus_browser_plugin_guest_)
-    return;
   CreateAuraWindow(aura::client::WINDOW_TYPE_CONTROL);
 
   if (parent_view)
@@ -424,8 +412,8 @@ void RenderWidgetHostViewAura::InitAsPopup(
     RenderWidgetHostView* parent_host_view,
     const gfx::Rect& bounds_in_screen) {
   DCHECK_EQ(widget_type_, WidgetType::kPopup);
-  // Popups never have |is_mus_browser_plugin_guest_| set to true.
-  DCHECK(!is_mus_browser_plugin_guest_);
+  DCHECK(!static_cast<RenderWidgetHostViewBase*>(parent_host_view)
+              ->IsRenderWidgetHostViewChildFrame());
 
   popup_parent_host_view_ =
       static_cast<RenderWidgetHostViewAura*>(parent_host_view);
@@ -475,9 +463,6 @@ void RenderWidgetHostViewAura::InitAsPopup(
 void RenderWidgetHostViewAura::InitAsFullscreen(
     RenderWidgetHostView* reference_host_view) {
   DCHECK_EQ(widget_type_, WidgetType::kFrame);
-  // Webview Fullscreen doesn't go through InitAsFullscreen(), so
-  // |is_mus_browser_plugin_guest_| is always false.
-  DCHECK(!is_mus_browser_plugin_guest_);
   is_fullscreen_ = true;
   CreateAuraWindow(aura::client::WINDOW_TYPE_NORMAL);
   window_->SetProperty(aura::client::kShowStateKey, ui::SHOW_STATE_FULLSCREEN);
@@ -501,9 +486,6 @@ void RenderWidgetHostViewAura::InitAsFullscreen(
 }
 
 void RenderWidgetHostViewAura::Show() {
-  if (is_mus_browser_plugin_guest_)
-    return;
-
   // If the viz::LocalSurfaceIdAllocation is invalid, we may have been evicted,
   // and no other visual properties have since been changed. Allocate a new id
   // and start synchronizing.
@@ -518,15 +500,11 @@ void RenderWidgetHostViewAura::Show() {
 }
 
 void RenderWidgetHostViewAura::Hide() {
-  if (is_mus_browser_plugin_guest_)
-    return;
-
   window_->Hide();
   WasOccluded();
 }
 
 void RenderWidgetHostViewAura::SetSize(const gfx::Size& size) {
-  DCHECK(!is_mus_browser_plugin_guest_);
   // For a SetSize operation, we don't care what coordinate system the origin
   // of the window is in, it's only important to make sure that the origin
   // remains constant after the operation.
@@ -534,7 +512,6 @@ void RenderWidgetHostViewAura::SetSize(const gfx::Size& size) {
 }
 
 void RenderWidgetHostViewAura::SetBounds(const gfx::Rect& rect) {
-  DCHECK(!is_mus_browser_plugin_guest_);
   gfx::Point relative_origin(rect.origin());
 
   // RenderWidgetHostViewAura::SetBounds() takes screen coordinates, but
@@ -552,8 +529,7 @@ void RenderWidgetHostViewAura::SetBounds(const gfx::Rect& rect) {
   InternalSetBounds(gfx::Rect(relative_origin, rect.size()));
 }
 
-gfx::NativeView RenderWidgetHostViewAura::GetNativeView() const {
-  DCHECK(!is_mus_browser_plugin_guest_);
+gfx::NativeView RenderWidgetHostViewAura::GetNativeView() {
   return window_;
 }
 
@@ -569,10 +545,12 @@ gfx::NativeViewAccessible RenderWidgetHostViewAura::GetNativeViewAccessible() {
   aura::WindowTreeHost* window_host = window_->GetHost();
   if (!window_host)
     return static_cast<gfx::NativeViewAccessible>(NULL);
+
   BrowserAccessibilityManager* manager =
       host()->GetOrCreateRootBrowserAccessibilityManager();
   if (manager)
     return ToBrowserAccessibilityWin(manager->GetRoot())->GetCOM();
+
 #elif defined(USE_X11)
   BrowserAccessibilityManager* manager =
       host()->GetOrCreateRootBrowserAccessibilityManager();
@@ -615,7 +593,6 @@ RenderFrameHostImpl* RenderWidgetHostViewAura::GetFocusedFrame() const {
 }
 
 void RenderWidgetHostViewAura::HandleParentBoundsChanged() {
-  SnapToPhysicalPixelBoundary();
 #if defined(OS_WIN)
   if (legacy_render_widget_host_HWND_) {
     legacy_render_widget_host_HWND_->SetBounds(
@@ -647,11 +624,11 @@ void RenderWidgetHostViewAura::Focus() {
     window_->Focus();
 }
 
-bool RenderWidgetHostViewAura::HasFocus() const {
+bool RenderWidgetHostViewAura::HasFocus() {
   return window_->HasFocus();
 }
 
-bool RenderWidgetHostViewAura::IsSurfaceAvailableForCopy() const {
+bool RenderWidgetHostViewAura::IsSurfaceAvailableForCopy() {
   if (!delegated_frame_host_)
     return false;
   return delegated_frame_host_->CanCopyFromCompositingSurface();
@@ -671,11 +648,11 @@ void RenderWidgetHostViewAura::WasUnOccluded() {
   if (!host_->is_hidden())
     return;
 
+  auto tab_switch_start_state = TakeRecordTabSwitchTimeRequest();
   bool has_saved_frame =
       delegated_frame_host_ ? delegated_frame_host_->HasSavedFrame() : false;
 
-  const bool renderer_should_record_presentation_time = !has_saved_frame;
-  host()->WasShown(renderer_should_record_presentation_time);
+  host()->WasShown(has_saved_frame ? base::nullopt : tab_switch_start_state);
 
   aura::Window* root = window_->GetRootWindow();
   if (root) {
@@ -688,10 +665,10 @@ void RenderWidgetHostViewAura::WasUnOccluded() {
   if (delegated_frame_host_) {
     // If the frame for the renderer is already available, then the
     // tab-switching time is the presentation time for the browser-compositor.
-    const bool record_presentation_time = has_saved_frame;
     delegated_frame_host_->WasShown(
         GetLocalSurfaceIdAllocation().local_surface_id(),
-        window_->bounds().size(), record_presentation_time);
+        window_->bounds().size(),
+        has_saved_frame ? tab_switch_start_state : base::nullopt);
   }
 
 #if defined(OS_WIN)
@@ -702,11 +679,26 @@ void RenderWidgetHostViewAura::WasUnOccluded() {
 void RenderWidgetHostViewAura::WasOccluded() {
   if (!host()->is_hidden()) {
     host()->WasHidden();
-    if (delegated_frame_host_)
-      delegated_frame_host_->WasHidden();
-
-#if defined(OS_WIN)
     aura::WindowTreeHost* host = window_->GetHost();
+    if (delegated_frame_host_) {
+      aura::Window* parent = window_->parent();
+      aura::Window::OcclusionState parent_occl_state =
+          parent ? parent->occlusion_state()
+                 : aura::Window::OcclusionState::UNKNOWN;
+      aura::Window::OcclusionState native_win_occlusion_state =
+          host ? host->GetNativeWindowOcclusionState()
+               : aura::Window::OcclusionState::UNKNOWN;
+      DelegatedFrameHost::HiddenCause cause;
+      if (parent_occl_state == aura::Window::OcclusionState::OCCLUDED &&
+          native_win_occlusion_state ==
+              aura::Window::OcclusionState::OCCLUDED) {
+        cause = DelegatedFrameHost::HiddenCause::kOccluded;
+      } else {
+        cause = DelegatedFrameHost::HiddenCause::kOther;
+      }
+      delegated_frame_host_->WasHidden(cause);
+    }
+#if defined(OS_WIN)
     if (host) {
       // We reparent the legacy Chrome_RenderWidgetHostHWND window to the global
       // hidden window on the same lines as Windowed plugin windows.
@@ -726,7 +718,7 @@ bool RenderWidgetHostViewAura::ShouldShowStaleContentOnEviction() {
   return host() && host()->ShouldShowStaleContentOnEviction();
 }
 
-gfx::Rect RenderWidgetHostViewAura::GetViewBounds() const {
+gfx::Rect RenderWidgetHostViewAura::GetViewBounds() {
   return window_->GetBoundsInScreen();
 }
 
@@ -750,7 +742,7 @@ bool RenderWidgetHostViewAura::IsMouseLocked() {
   return event_handler_->mouse_locked();
 }
 
-gfx::Size RenderWidgetHostViewAura::GetVisibleViewportSize() const {
+gfx::Size RenderWidgetHostViewAura::GetVisibleViewportSize() {
   gfx::Rect requested_rect(GetRequestedRendererSize());
   requested_rect.Inset(insets_);
   return requested_rect.size();
@@ -759,30 +751,15 @@ gfx::Size RenderWidgetHostViewAura::GetVisibleViewportSize() const {
 void RenderWidgetHostViewAura::SetInsets(const gfx::Insets& insets) {
   if (insets != insets_) {
     insets_ = insets;
-    host()->SynchronizeVisualProperties(!insets_.IsEmpty());
-  }
-}
-
-void RenderWidgetHostViewAura::FocusedNodeTouched(bool editable) {
-#if defined(OS_WIN)
-  auto* input_method = GetInputMethod();
-  if (!input_method || !input_method->GetInputMethodKeyboardController())
-    return;
-  auto* controller = input_method->GetInputMethodKeyboardController();
-  if (editable && host()->GetView() && host()->delegate()) {
-    if (last_pointer_type_ == ui::EventPointerType::POINTER_TYPE_TOUCH) {
-      keyboard_observer_.reset(new WinScreenKeyboardObserver(this));
-      if (!controller->DisplayVirtualKeyboard())
-        keyboard_observer_.reset(nullptr);
+    window_->AllocateLocalSurfaceId();
+    if (!insets.IsEmpty()) {
+      inset_surface_id_allocation_ = window_->GetLocalSurfaceIdAllocation();
     } else {
-      keyboard_observer_.reset(nullptr);
+      inset_surface_id_allocation_ = viz::LocalSurfaceIdAllocation();
     }
-    virtual_keyboard_requested_ = keyboard_observer_.get();
-  } else {
-    virtual_keyboard_requested_ = false;
-    controller->DismissVirtualKeyboard();
+    SynchronizeVisualProperties(cc::DeadlinePolicy::UseDefaultDeadline(),
+                                window_->GetLocalSurfaceIdAllocation());
   }
-#endif
 }
 
 void RenderWidgetHostViewAura::UpdateCursor(const WebCursor& cursor) {
@@ -806,8 +783,7 @@ void RenderWidgetHostViewAura::SetIsLoading(bool is_loading) {
   UpdateCursorIfOverSelf();
 }
 
-void RenderWidgetHostViewAura::RenderProcessGone(base::TerminationStatus status,
-                                                 int error_code) {
+void RenderWidgetHostViewAura::RenderProcessGone() {
   UpdateCursorIfOverSelf();
   Destroy();
 }
@@ -880,6 +856,23 @@ void RenderWidgetHostViewAura::OnLegacyWindowDestroyed() {
   legacy_render_widget_host_HWND_ = nullptr;
   legacy_window_destroyed_ = true;
 }
+
+gfx::NativeViewAccessible
+RenderWidgetHostViewAura::GetParentNativeViewAccessible() {
+  // If a popup_parent_host_view_ exists, that means we are in a popup (such as
+  // datetime) and our accessible parent window is popup_parent_host_view_
+  if (popup_parent_host_view_) {
+    DCHECK_EQ(widget_type_, WidgetType::kPopup);
+    return popup_parent_host_view_->GetParentNativeViewAccessible();
+  }
+
+  if (window_->parent()) {
+    return window_->parent()->GetProperty(
+        aura::client::kParentNativeViewAccessibleKey);
+  }
+
+  return nullptr;
+}
 #endif
 
 void RenderWidgetHostViewAura::DidCreateNewRendererCompositorFrameSink(
@@ -908,12 +901,6 @@ void RenderWidgetHostViewAura::OnDidNotProduceFrame(
     delegated_frame_host_->DidNotProduceFrame(ack);
 }
 
-void RenderWidgetHostViewAura::ClearCompositorFrame() {
-  // This method is only used for content rendering timeout when surface sync is
-  // off. However, surface sync is always on on Aura platforms.
-  NOTREACHED();
-}
-
 void RenderWidgetHostViewAura::ResetFallbackToFirstNavigationSurface() {
   if (delegated_frame_host_)
     delegated_frame_host_->ResetFallbackToFirstNavigationSurface();
@@ -932,20 +919,6 @@ void RenderWidgetHostViewAura::TransformPointToRootSurface(gfx::PointF* point) {
   aura::Window* root = window_->GetRootWindow();
   aura::Window::ConvertPointToTarget(window_, root, point);
   root->GetRootWindow()->transform().TransformPoint(point);
-
-// On ChromeOS, the root surface is the whole desktop. When using the
-// window-service converting to screen coordinates gives us that.
-#if defined(OS_CHROMEOS)
-  if (features::IsUsingWindowService()) {
-    aura::client::ScreenPositionClient* screen_client =
-        aura::client::GetScreenPositionClient(root);
-    if (screen_client) {
-      gfx::Point rounded_point(point->x(), point->y());
-      screen_client->ConvertPointToScreen(root, &rounded_point);
-      *point = gfx::PointF(rounded_point);
-    }
-  }
-#endif
 }
 
 gfx::Rect RenderWidgetHostViewAura::GetBoundsInRootWindow() {
@@ -1029,7 +1002,7 @@ void RenderWidgetHostViewAura::GestureEventAck(
     // https://crbug.com/797855
     if (event_type == blink::WebInputEvent::kGestureScrollUpdate &&
         event.data.scroll_update.inertial_phase ==
-            blink::WebGestureEvent::kMomentumPhase &&
+            blink::WebGestureEvent::InertialPhaseState::kMomentum &&
         overscroll_controller_->overscroll_mode() != OVERSCROLL_NONE) {
       StopFling();
     }
@@ -1116,7 +1089,7 @@ InputEventAckState RenderWidgetHostViewAura::FilterInputEvent(
         static_cast<const WebGestureEvent&>(input_event);
     // Zero-velocity touchpad flings are an Aura-specific signal that the
     // touchpad scroll has ended, and should not be forwarded to the renderer.
-    if (gesture_event.SourceDevice() == blink::kWebGestureDeviceTouchpad &&
+    if (gesture_event.SourceDevice() == blink::WebGestureDevice::kTouchpad &&
         !gesture_event.data.fling_start.velocity_x &&
         !gesture_event.data.fling_start.velocity_y) {
       consumed = true;
@@ -1156,7 +1129,8 @@ InputEventAckState RenderWidgetHostViewAura::FilterChildGestureEvent(
 
 BrowserAccessibilityManager*
 RenderWidgetHostViewAura::CreateBrowserAccessibilityManager(
-    BrowserAccessibilityDelegate* delegate, bool for_root_frame) {
+    BrowserAccessibilityDelegate* delegate,
+    bool for_root_frame) {
   BrowserAccessibilityManager* manager = nullptr;
 #if defined(OS_WIN)
   manager = new BrowserAccessibilityManagerWin(
@@ -1181,15 +1155,7 @@ gfx::NativeViewAccessible
 RenderWidgetHostViewAura::AccessibilityGetNativeViewAccessible() {
 #if defined(OS_WIN)
   if (legacy_render_widget_host_HWND_) {
-    if (switches::IsExperimentalAccessibilityPlatformUIAEnabled()) {
-      ui::AXFragmentRootWin* fragment_root =
-          ui::AXFragmentRootWin::GetForAcceleratedWidget(
-              legacy_render_widget_host_HWND_->hwnd());
-      if (fragment_root)
-        return fragment_root->GetNativeViewAccessible();
-    } else {
-      return legacy_render_widget_host_HWND_->window_accessible();
-    }
+    return legacy_render_widget_host_HWND_->window_accessible();
   }
 #endif
 
@@ -1202,15 +1168,19 @@ RenderWidgetHostViewAura::AccessibilityGetNativeViewAccessible() {
 }
 
 void RenderWidgetHostViewAura::SetMainFrameAXTreeID(ui::AXTreeID id) {
-  window_->SetProperty(ui::kChildAXTreeID, new std::string(id.ToString()));
+  window_->SetProperty(ui::kChildAXTreeID, id.ToString());
 }
 
-bool RenderWidgetHostViewAura::LockMouse() {
-  return event_handler_->LockMouse();
+bool RenderWidgetHostViewAura::LockMouse(bool request_unadjusted_movement) {
+  return event_handler_->LockMouse(request_unadjusted_movement);
 }
 
 void RenderWidgetHostViewAura::UnlockMouse() {
   event_handler_->UnlockMouse();
+}
+
+bool RenderWidgetHostViewAura::GetIsMouseLockedUnadjustedMovementForTesting() {
+  return event_handler_->mouse_locked_unadjusted_movement();
 }
 
 bool RenderWidgetHostViewAura::LockKeyboard(
@@ -1250,10 +1220,11 @@ void RenderWidgetHostViewAura::SetCompositionText(
   has_composition_text_ = !composition.text.empty();
 }
 
-void RenderWidgetHostViewAura::ConfirmCompositionText() {
+void RenderWidgetHostViewAura::ConfirmCompositionText(bool keep_selection) {
   if (text_input_manager_ && text_input_manager_->GetActiveWidget() &&
       has_composition_text_) {
-    text_input_manager_->GetActiveWidget()->ImeFinishComposingText(false);
+    text_input_manager_->GetActiveWidget()->ImeFinishComposingText(
+        keep_selection);
   }
   has_composition_text_ = false;
 }
@@ -1290,7 +1261,7 @@ void RenderWidgetHostViewAura::InsertChar(const ui::KeyEvent& event) {
     // Send a blink::WebInputEvent::Char event to |host_|.
     ForwardKeyboardEventWithLatencyInfo(
         NativeWebKeyboardEvent(event, event.GetCharacter()), *event.latency(),
-        nullptr, nullptr);
+        nullptr);
   }
 }
 
@@ -1385,7 +1356,7 @@ bool RenderWidgetHostViewAura::HasCompositionText() const {
 
 ui::TextInputClient::FocusReason RenderWidgetHostViewAura::GetFocusReason()
     const {
-  if (!HasFocus())
+  if (!window_->HasFocus())
     return ui::TextInputClient::FOCUS_REASON_NONE;
 
   switch (last_pointer_type_before_focus_) {
@@ -1448,8 +1419,10 @@ bool RenderWidgetHostViewAura::SetEditableSelectionRange(
   RenderFrameHostImpl* rfh = GetFocusedFrame();
   if (!rfh)
     return false;
-  rfh->GetFrameInputHandler()->SetEditableSelectionOffsets(range.start(),
-                                                           range.end());
+  auto* input_handler = rfh->GetFrameInputHandler();
+  if (!input_handler)
+    return false;
+  input_handler->SetEditableSelectionOffsets(range.start(), range.end());
   return true;
 }
 
@@ -1505,9 +1478,10 @@ bool RenderWidgetHostViewAura::ChangeTextDirectionAndLayoutAlignment(
 
 void RenderWidgetHostViewAura::ExtendSelectionAndDelete(
     size_t before, size_t after) {
-  RenderFrameHostImpl* rfh = GetFocusedFrame();
-  if (rfh)
-    rfh->GetFrameInputHandler()->ExtendSelectionAndDelete(before, after);
+  auto* input_handler = GetFrameInputHandlerForFocusedFrame(host());
+  if (!input_handler)
+    return;
+  input_handler->ExtendSelectionAndDelete(before, after);
 }
 
 void RenderWidgetHostViewAura::EnsureCaretNotInRect(
@@ -1552,17 +1526,40 @@ bool RenderWidgetHostViewAura::ShouldDoLearning() {
   return GetTextInputManager() && GetTextInputManager()->should_do_learning();
 }
 
-#if defined(OS_WIN)
-void RenderWidgetHostViewAura::SetCompositionFromExistingText(
+#if defined(OS_WIN) || defined(OS_CHROMEOS)
+bool RenderWidgetHostViewAura::SetCompositionFromExistingText(
     const gfx::Range& range,
     const std::vector<ui::ImeTextSpan>& ui_ime_text_spans) {
-  RenderFrameHostImpl* frame = GetFocusedFrame();
-  if (frame) {
-    frame->GetFrameInputHandler()->SetCompositionFromExistingText(
-        range.start(), range.end(), ui_ime_text_spans);
-    has_composition_text_ = true;
+  auto* input_handler = GetFrameInputHandlerForFocusedFrame(host());
+  if (!input_handler)
+    return false;
+  input_handler->SetCompositionFromExistingText(range.start(), range.end(),
+                                                ui_ime_text_spans);
+  has_composition_text_ = true;
+  return true;
+}
+
+#endif
+
+#if defined(OS_WIN)
+void RenderWidgetHostViewAura::SetActiveCompositionForAccessibility(
+    const gfx::Range& range,
+    const base::string16& active_composition_text,
+    bool is_composition_committed) {
+  BrowserAccessibilityManager* manager =
+      host()->GetRootBrowserAccessibilityManager();
+  if (manager) {
+    ui::AXPlatformNodeWin* focus_node = static_cast<ui::AXPlatformNodeWin*>(
+        ui::AXPlatformNode::FromNativeViewAccessible(
+            manager->GetFocus()->GetNativeViewAccessible()));
+    if (focus_node) {
+      // Notify accessibility object about this composition
+      focus_node->OnActiveComposition(range, active_composition_text,
+                                      is_composition_committed);
+    }
   }
 }
+
 #endif
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -1571,13 +1568,20 @@ void RenderWidgetHostViewAura::SetCompositionFromExistingText(
 void RenderWidgetHostViewAura::OnDisplayMetricsChanged(
     const display::Display& display,
     uint32_t metrics) {
-  // The screen info should be updated regardless of the metric change.
   display::Screen* screen = display::Screen::GetScreen();
-  if (display.id() == screen->GetDisplayNearestWindow(window_).id()) {
-    UpdateScreenInfo(window_);
-    current_cursor_.SetDisplayInfo(display);
-    UpdateCursorIfOverSelf();
+  if (display.id() != screen->GetDisplayNearestWindow(window_).id())
+    return;
+
+  if (window_->GetHost() && window_->GetHost()->device_scale_factor() !=
+                                display.device_scale_factor()) {
+    // The DisplayMetrics changed, but the Compositor hasn't been updated yet.
+    // Delay updating until the Compositor is updated as well, otherwise we
+    // are likely to hit surface invariants (LocalSurfaceId generated with a
+    // size/scale-factor that differs from scale-factor used by Compositor).
+    needs_to_update_display_metrics_ = true;
+    return;
   }
+  ProcessDisplayMetricsChanged();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -1640,6 +1644,9 @@ void RenderWidgetHostViewAura::OnDeviceScaleFactorChanged(
   if (!window_->GetRootWindow())
     return;
 
+  if (needs_to_update_display_metrics_)
+    ProcessDisplayMetricsChanged();
+
   SynchronizeVisualProperties(cc::DeadlinePolicy::UseDefaultDeadline(),
                               window_->GetLocalSurfaceIdAllocation());
 
@@ -1648,7 +1655,6 @@ void RenderWidgetHostViewAura::OnDeviceScaleFactorChanged(
       display::Screen::GetScreen()->GetDisplayNearestWindow(window_);
   DCHECK_EQ(new_device_scale_factor, display.device_scale_factor());
   current_cursor_.SetDisplayInfo(display);
-  SnapToPhysicalPixelBoundary();
 }
 
 void RenderWidgetHostViewAura::OnWindowDestroying(aura::Window* window) {
@@ -1712,7 +1718,8 @@ void RenderWidgetHostViewAura::OnKeyEvent(ui::KeyEvent* event) {
 void RenderWidgetHostViewAura::OnMouseEvent(ui::MouseEvent* event) {
 #if defined(OS_WIN)
   if (event->type() == ui::ET_MOUSE_MOVED) {
-    if (event->location() == last_mouse_move_location_) {
+    if (event->location() == last_mouse_move_location_ &&
+        event->movement().IsZero()) {
       event->SetHandled();
       return;
     }
@@ -1721,25 +1728,6 @@ void RenderWidgetHostViewAura::OnMouseEvent(ui::MouseEvent* event) {
 #endif
   last_pointer_type_ = ui::EventPointerType::POINTER_TYPE_MOUSE;
   event_handler_->OnMouseEvent(event);
-}
-
-bool RenderWidgetHostViewAura::TransformPointToLocalCoordSpaceLegacy(
-    const gfx::PointF& point,
-    const viz::SurfaceId& original_surface,
-    gfx::PointF* transformed_point) {
-  // Transformations use physical pixels rather than DIP, so conversion
-  // is necessary.
-  gfx::PointF point_in_pixels =
-      gfx::ConvertPointToPixel(device_scale_factor_, point);
-  // TODO: this shouldn't be used with aura-mus, so that the null check so
-  // go away and become a DCHECK.
-  if (delegated_frame_host_ &&
-      !delegated_frame_host_->TransformPointToLocalCoordSpaceLegacy(
-          point_in_pixels, original_surface, transformed_point))
-    return false;
-  *transformed_point =
-      gfx::ConvertPointToDIP(device_scale_factor_, *transformed_point);
-  return true;
 }
 
 bool RenderWidgetHostViewAura::HasFallbackSurface() const {
@@ -1766,14 +1754,6 @@ viz::FrameSinkId RenderWidgetHostViewAura::GetRootFrameSinkId() {
   if (!window_ || !window_->GetHost() || !window_->GetHost()->compositor())
     return viz::FrameSinkId();
 
-  // In single-process mash the root is provided by Ash. Have
-  // HostFrameSinkManager walk the tree to find the right root.
-  if (features::IsSingleProcessMash()) {
-    base::Optional<viz::FrameSinkId> root =
-        GetHostFrameSinkManager()->FindRootFrameSinkId(frame_sink_id_);
-    return root ? *root : viz::FrameSinkId();
-  }
-
   return window_->GetHost()->compositor()->frame_sink_id();
 }
 
@@ -1796,16 +1776,7 @@ void RenderWidgetHostViewAura::FocusedNodeChanged(
     input_method->CancelComposition(this);
   has_composition_text_ = false;
 
-#if defined(OS_WIN)
-  if (!editable && virtual_keyboard_requested_ && window_) {
-    virtual_keyboard_requested_ = false;
-
-    if (input_method && input_method->GetInputMethodKeyboardController()) {
-      input_method->GetInputMethodKeyboardController()
-          ->DismissVirtualKeyboard();
-    }
-  }
-#elif defined(OS_FUCHSIA)
+#if defined(OS_FUCHSIA)
   if (!editable && window_) {
     if (input_method) {
       input_method->GetInputMethodKeyboardController()
@@ -1813,14 +1784,6 @@ void RenderWidgetHostViewAura::FocusedNodeChanged(
     }
   }
 #endif
-}
-
-void RenderWidgetHostViewAura::ScheduleEmbed(
-    ws::mojom::WindowTreeClientPtr client,
-    base::OnceCallback<void(const base::UnguessableToken&)> callback) {
-  DCHECK(features::IsMultiProcessMash());
-  aura::Env::GetInstance()->ScheduleEmbed(std::move(client),
-                                          std::move(callback));
 }
 
 void RenderWidgetHostViewAura::OnScrollEvent(ui::ScrollEvent* event) {
@@ -1862,7 +1825,6 @@ void RenderWidgetHostViewAura::OnCursorVisibilityChanged(bool is_visible) {
 
 void RenderWidgetHostViewAura::OnWindowFocused(aura::Window* gained_focus,
                                                aura::Window* lost_focus) {
-  DCHECK(window_ == gained_focus || window_ == lost_focus);
   if (window_ == gained_focus) {
     // We need to honor input bypass if the associated tab is does not want
     // input. This gives the current focused window a chance to be the text
@@ -1884,56 +1846,63 @@ void RenderWidgetHostViewAura::OnWindowFocused(aura::Window* gained_focus,
         host()->GetRootBrowserAccessibilityManager();
     if (manager)
       manager->OnWindowFocused();
-  } else if (window_ == lost_focus) {
-    host()->SetActive(false);
-    host()->LostFocus();
-
-    DetachFromInputMethod();
-
-    // TODO(wjmaclean): Do we need to let TouchSelectionControllerClientAura
-    // handle this, just in case it stomps on a new highlight in another view
-    // that has just become focused? So far it doesn't appear to be a problem,
-    // but we should keep an eye on it.
-    selection_controller_->HideAndDisallowShowingAutomatically();
-
-    if (overscroll_controller_)
-      overscroll_controller_->Cancel();
-
-    BrowserAccessibilityManager* manager =
-        host()->GetRootBrowserAccessibilityManager();
-    if (manager)
-      manager->OnWindowBlurred();
-
-    // If we lose the focus while fullscreen, close the window; Pepper Flash
-    // won't do it for us (unlike NPAPI Flash). However, we do not close the
-    // window if we lose the focus to a window on another display.
-    display::Screen* screen = display::Screen::GetScreen();
-    bool focusing_other_display =
-        gained_focus && screen->GetNumDisplays() > 1 &&
-        (screen->GetDisplayNearestWindow(window_).id() !=
-         screen->GetDisplayNearestWindow(gained_focus).id());
-    if (is_fullscreen_ && !in_shutdown_ && !focusing_other_display) {
-#if defined(OS_WIN)
-      // On Windows, if we are switching to a non Aura Window on a different
-      // screen we should not close the fullscreen window.
-      if (!gained_focus) {
-        POINT point = {0};
-        ::GetCursorPos(&point);
-        if (screen->GetDisplayNearestWindow(window_).id() !=
-            screen->GetDisplayNearestPoint(gfx::Point(point)).id())
-          return;
-      }
-#endif
-      Shutdown();
-      return;
-    }
-
-    // Close the child popup window if we lose focus (e.g. due to a JS alert or
-    // system modal dialog). This is particularly important if
-    // |popup_child_host_view_| has mouse capture.
-    if (popup_child_host_view_)
-      popup_child_host_view_->Shutdown();
+    return;
   }
+
+  if (window_ != lost_focus) {
+    NOTREACHED();
+    return;
+  }
+
+  host()->SetActive(false);
+  host()->LostFocus();
+
+  DetachFromInputMethod();
+
+  // TODO(wjmaclean): Do we need to let TouchSelectionControllerClientAura
+  // handle this, just in case it stomps on a new highlight in another view
+  // that has just become focused? So far it doesn't appear to be a problem,
+  // but we should keep an eye on it.
+  selection_controller_->HideAndDisallowShowingAutomatically();
+
+  if (overscroll_controller_)
+    overscroll_controller_->Cancel();
+
+  BrowserAccessibilityManager* manager =
+      host()->GetRootBrowserAccessibilityManager();
+  if (manager)
+    manager->OnWindowBlurred();
+
+  // If we lose the focus while fullscreen, close the window; Pepper Flash
+  // won't do it for us (unlike NPAPI Flash). However, we do not close the
+  // window if we lose the focus to a window on another display.
+  display::Screen* screen = display::Screen::GetScreen();
+  bool focusing_other_display =
+      gained_focus && screen->GetNumDisplays() > 1 &&
+      (screen->GetDisplayNearestWindow(window_).id() !=
+       screen->GetDisplayNearestWindow(gained_focus).id());
+  if (is_fullscreen_ && !in_shutdown_ && !focusing_other_display) {
+#if defined(OS_WIN)
+    // On Windows, if we are switching to a non Aura Window on a different
+    // screen we should not close the fullscreen window.
+    if (!gained_focus) {
+      POINT point = {0};
+      ::GetCursorPos(&point);
+      if (screen->GetDisplayNearestWindow(window_).id() !=
+          screen->GetDisplayNearestPoint(gfx::Point(point)).id()) {
+        return;
+      }
+    }
+#endif
+    Shutdown();
+    return;
+  }
+
+  // Close the child popup window if we lose focus (e.g. due to a JS alert or
+  // system modal dialog). This is particularly important if
+  // |popup_child_host_view_| has mouse capture.
+  if (popup_child_host_view_)
+    popup_child_host_view_->Shutdown();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -1956,6 +1925,15 @@ void RenderWidgetHostViewAura::OnRenderFrameMetadataChangedAfterActivation() {
   const cc::RenderFrameMetadata& metadata =
       host()->render_frame_metadata_provider()->LastRenderFrameMetadata();
   SetContentBackgroundColor(metadata.root_background_color);
+  if (inset_surface_id_allocation_.IsValid() &&
+      metadata.local_surface_id_allocation &&
+      metadata.local_surface_id_allocation.value().IsValid() &&
+      metadata.local_surface_id_allocation.value()
+          .local_surface_id()
+          .IsSameOrNewerThan(inset_surface_id_allocation_.local_surface_id())) {
+    inset_surface_id_allocation_ = viz::LocalSurfaceIdAllocation();
+    ScrollFocusedEditableNodeIntoRect(gfx::Rect());
+  }
 
   if (metadata.selection.start != selection_start_ ||
       metadata.selection.end != selection_end_) {
@@ -2018,7 +1996,6 @@ RenderWidgetHostViewAura::~RenderWidgetHostViewAura() {
 
 void RenderWidgetHostViewAura::CreateAuraWindow(aura::client::WindowType type) {
   DCHECK(!window_);
-  DCHECK(!is_mus_browser_plugin_guest_);
   window_ = new aura::Window(this);
   window_->SetName("RenderWidgetHostViewAura");
   event_handler_->set_window(window_);
@@ -2037,18 +2014,6 @@ void RenderWidgetHostViewAura::CreateAuraWindow(aura::client::WindowType type) {
   // Init(), because it needs to have the layer.
   if (frame_sink_id_.is_valid())
     window_->SetEmbedFrameSinkId(frame_sink_id_);
-
-  if (!features::IsMultiProcessMash())
-    return;
-
-  // Embed the renderer into the Window.
-  // Use kEmbedFlagEmbedderControlsVisibility so that the renderer can't change
-  // the visibility of |window_|.
-  aura::WindowPortMus::Get(window_)->Embed(
-      GetWindowTreeClientFromRenderer(),
-      ws::mojom::kEmbedFlagEmbedderInterceptsEvents |
-          ws::mojom::kEmbedFlagEmbedderControlsVisibility,
-      base::BindOnce(&EmbedCallback));
 }
 
 void RenderWidgetHostViewAura::CreateDelegatedFrameHostClient() {
@@ -2070,9 +2035,6 @@ void RenderWidgetHostViewAura::CreateDelegatedFrameHostClient() {
 }
 
 void RenderWidgetHostViewAura::UpdateCursorIfOverSelf() {
-  if (is_mus_browser_plugin_guest_)
-    return;
-
   if (host()->GetProcess()->FastShutdownStarted())
     return;
 
@@ -2164,8 +2126,17 @@ void RenderWidgetHostViewAura::OnDidUpdateVisualPropertiesComplete(
         host(), metadata.top_controls_shown_ratio);
   }
 
-  SynchronizeVisualProperties(cc::DeadlinePolicy::UseDefaultDeadline(),
-                              metadata.local_surface_id_allocation);
+  if (host()->is_hidden()) {
+    // When an embedded child responds, we want to accept its changes to the
+    // viz::LocalSurfaceId. However we do not want to embed surfaces while
+    // hidden. Nor do we want to embed invalid ids when we are evicted. Becoming
+    // visible will generate a new id, if necessary, and begin embedding.
+    window_->UpdateLocalSurfaceIdFromEmbeddedClient(
+        metadata.local_surface_id_allocation);
+  } else {
+    SynchronizeVisualProperties(cc::DeadlinePolicy::UseDefaultDeadline(),
+                                metadata.local_surface_id_allocation);
+  }
 }
 
 ui::InputMethod* RenderWidgetHostViewAura::GetInputMethod() const {
@@ -2241,7 +2212,7 @@ void RenderWidgetHostViewAura::NotifyRendererOfCursorVisibilityState(
     return;
 
   cursor_visibility_state_in_renderer_ = is_visible ? VISIBLE : NOT_VISIBLE;
-  host()->SendCursorVisibilityState(is_visible);
+  host()->OnCursorVisibilityStateChanged(is_visible);
 }
 
 void RenderWidgetHostViewAura::SetOverscrollControllerEnabled(bool enabled) {
@@ -2256,17 +2227,6 @@ void RenderWidgetHostViewAura::SetOverscrollControllerForTesting(
   overscroll_controller_ = std::move(controller);
 }
 
-void RenderWidgetHostViewAura::SnapToPhysicalPixelBoundary() {
-  // The top left corner of our view in window coordinates might not land on a
-  // device pixel boundary if we have a non-integer device scale. In that case,
-  // to avoid the web contents area looking blurry we translate the web contents
-  // in the +x, +y direction to land on the nearest pixel boundary. This may
-  // cause the bottom and right edges to be clipped slightly, but that's ok.
-  // We want to snap it to the nearest ancestor.
-  wm::SnapWindowToPixelBoundary(window_);
-  has_snapped_to_boundary_ = true;
-}
-
 void RenderWidgetHostViewAura::SetSelectionControllerClientForTest(
     std::unique_ptr<TouchSelectionControllerClientAura> client) {
   selection_controller_client_.swap(client);
@@ -2274,7 +2234,6 @@ void RenderWidgetHostViewAura::SetSelectionControllerClientForTest(
 }
 
 void RenderWidgetHostViewAura::InternalSetBounds(const gfx::Rect& rect) {
-  SnapToPhysicalPixelBoundary();
   // Don't recursively call SetBounds if this bounds update is the result of
   // a Window::SetBoundsInternal call.
   if (!in_bounds_changed_)
@@ -2318,18 +2277,6 @@ void RenderWidgetHostViewAura::UpdateLegacyWin() {
   }
 }
 #endif
-
-void RenderWidgetHostViewAura::SchedulePaintIfNotInClip(
-    const gfx::Rect& rect,
-    const gfx::Rect& clip) {
-  if (!clip.IsEmpty()) {
-    gfx::Rect to_paint = gfx::SubtractRects(rect, clip);
-    if (!to_paint.IsEmpty())
-      window_->SchedulePaintInRect(to_paint);
-  } else {
-    window_->SchedulePaintInRect(rect);
-  }
-}
 
 void RenderWidgetHostViewAura::AddedToRootWindow() {
   window_->GetHost()->AddObserver(this);
@@ -2393,7 +2340,6 @@ void RenderWidgetHostViewAura::DetachFromInputMethod() {
 void RenderWidgetHostViewAura::ForwardKeyboardEventWithLatencyInfo(
     const NativeWebKeyboardEvent& event,
     const ui::LatencyInfo& latency,
-    ui::KeyEvent* original_key_event,
     bool* update_event) {
   RenderWidgetHostImpl* target_host = host();
 
@@ -2420,14 +2366,14 @@ void RenderWidgetHostViewAura::ForwardKeyboardEventWithLatencyInfo(
                                           it->argument()));
     }
 
-    target_host->ForwardKeyboardEventWithCommands(
-        event, latency, &edit_commands, original_key_event, update_event);
+    target_host->ForwardKeyboardEventWithCommands(event, latency,
+                                                  &edit_commands, update_event);
     return;
   }
 #endif
 
-  target_host->ForwardKeyboardEventWithCommands(
-      event, latency, nullptr, original_key_event, update_event);
+  target_host->ForwardKeyboardEventWithCommands(event, latency, nullptr,
+                                                update_event);
 }
 
 void RenderWidgetHostViewAura::CreateSelectionController() {
@@ -2442,7 +2388,7 @@ void RenderWidgetHostViewAura::CreateSelectionController() {
 }
 
 void RenderWidgetHostViewAura::OnDidNavigateMainFrameToNewPage() {
-  window_->env()->gesture_recognizer()->CancelActiveTouches(window_);
+  CancelActiveTouches();
 }
 
 const viz::FrameSinkId& RenderWidgetHostViewAura::GetFrameSinkId() const {
@@ -2482,6 +2428,22 @@ void RenderWidgetHostViewAura::OnUpdateTextInputStateCalled(
     // Ensure that accessibility events are fired when the selection location
     // moves from UI back to content.
     text_input_manager->NotifySelectionBoundsChanged(updated_view);
+    // Register for input pane visibility change.
+#if defined(OS_WIN)
+    auto* controller = GetInputMethod()->GetInputMethodKeyboardController();
+    if (controller && state->show_ime_if_needed && host()->GetView() &&
+        host()->delegate()) {
+      if (show_virtual_keyboard) {
+        keyboard_observer_.reset(new WinScreenKeyboardObserver(this));
+        if (!controller->DisplayVirtualKeyboard())
+          keyboard_observer_.reset(nullptr);
+      } else {
+        keyboard_observer_.reset(nullptr);
+      }
+    } else {
+      keyboard_observer_.reset(nullptr);
+    }
+#endif
   }
 
   if (auto* render_widget_host = updated_view->host()) {
@@ -2543,15 +2505,15 @@ void RenderWidgetHostViewAura::OnTextSelectionChanged(
   if (GetInputMethod())
     GetInputMethod()->OnCaretBoundsChanged(this);
 
-#if defined(USE_X11)
+#if defined(USE_X11) || (defined(USE_OZONE) && !defined(OS_CHROMEOS))
   const TextInputManager::TextSelection* selection =
       GetTextInputManager()->GetTextSelection(focused_view);
   if (selection->selected_text().length()) {
-    // Set the CLIPBOARD_TYPE_SELECTION to the ui::Clipboard.
-    ui::ScopedClipboardWriter clipboard_writer(ui::CLIPBOARD_TYPE_SELECTION);
+    // Set the ClipboardBuffer::kSelection to the ui::Clipboard.
+    ui::ScopedClipboardWriter clipboard_writer(ui::ClipboardBuffer::kSelection);
     clipboard_writer.WriteText(selection->selected_text());
   }
-#endif  // defined(USE_X11)
+#endif  // defined(USE_X11) || (defined(USE_OZONE) && !defined(OS_CHROMEOS))
 }
 
 void RenderWidgetHostViewAura::SetPopupChild(
@@ -2571,9 +2533,13 @@ void RenderWidgetHostViewAura::UpdateNeedsBeginFramesInternal() {
 void RenderWidgetHostViewAura::ScrollFocusedEditableNodeIntoRect(
     const gfx::Rect& node_rect) {
   RenderFrameHostImpl* rfh = GetFocusedFrame();
-  if (rfh) {
-    rfh->GetFrameInputHandler()->ScrollFocusedEditableNodeIntoRect(node_rect);
-  }
+  if (!rfh)
+    return;
+
+  auto* input_handler = rfh->GetFrameInputHandler();
+  if (!input_handler)
+    return;
+  input_handler->ScrollFocusedEditableNodeIntoRect(node_rect);
 }
 
 void RenderWidgetHostViewAura::OnSynchronizedDisplayPropertiesChanged() {
@@ -2643,8 +2609,40 @@ void RenderWidgetHostViewAura::TakeFallbackContentFrom(
   host()->GetContentRenderingTimeoutFrom(view_aura->host());
 }
 
+bool RenderWidgetHostViewAura::CanSynchronizeVisualProperties() {
+  return !needs_to_update_display_metrics_;
+}
+
+std::vector<std::unique_ptr<ui::TouchEvent>>
+RenderWidgetHostViewAura::ExtractAndCancelActiveTouches() {
+  aura::Env* env = aura::Env::GetInstance();
+  std::vector<std::unique_ptr<ui::TouchEvent>> touches =
+      env->gesture_recognizer()->ExtractTouches(window());
+  CancelActiveTouches();
+  return touches;
+}
+
+void RenderWidgetHostViewAura::TransferTouches(
+    const std::vector<std::unique_ptr<ui::TouchEvent>>& touches) {
+  aura::Env* env = aura::Env::GetInstance();
+  env->gesture_recognizer()->TransferTouches(window(), touches);
+}
+
 void RenderWidgetHostViewAura::InvalidateLocalSurfaceIdOnEviction() {
   window_->InvalidateLocalSurfaceId();
+}
+
+void RenderWidgetHostViewAura::ProcessDisplayMetricsChanged() {
+  needs_to_update_display_metrics_ = false;
+  UpdateScreenInfo(window_);
+  current_cursor_.SetDisplayInfo(
+      display::Screen::GetScreen()->GetDisplayNearestWindow(window_));
+  UpdateCursorIfOverSelf();
+}
+
+void RenderWidgetHostViewAura::CancelActiveTouches() {
+  aura::Env* env = aura::Env::GetInstance();
+  env->gesture_recognizer()->CancelActiveTouches(window());
 }
 
 }  // namespace content

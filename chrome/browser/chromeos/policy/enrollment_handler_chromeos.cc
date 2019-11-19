@@ -9,6 +9,7 @@
 #include "base/base64.h"
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/files/file_util.h"
 #include "base/guid.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -28,10 +29,10 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/attestation/attestation_flow.h"
 #include "chromeos/constants/chromeos_switches.h"
-#include "chromeos/dbus/auth_policy_client.h"
+#include "chromeos/dbus/auth_policy/auth_policy_client.h"
 #include "chromeos/dbus/cryptohome/rpc.pb.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/dbus/upstart_client.h"
+#include "chromeos/dbus/upstart/upstart_client.h"
 #include "components/policy/core/common/cloud/dm_auth.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "google_apis/gaia/gaia_auth_util.h"
@@ -185,11 +186,9 @@ EnrollmentHandlerChromeOS::EnrollmentHandlerChromeOS(
       ad_join_delegate_(ad_join_delegate),
       enrollment_config_(enrollment_config),
       client_id_(client_id),
-      requisition_(requisition),
       sub_organization_(sub_organization),
       completion_callback_(completion_callback),
-      enrollment_step_(STEP_PENDING),
-      weak_ptr_factory_(this) {
+      enrollment_step_(STEP_PENDING) {
   dm_auth_ = std::move(dm_auth);
   CHECK(!client_->is_registered());
   CHECK_EQ(DM_STATUS_SUCCESS, client_->status());
@@ -205,6 +204,14 @@ EnrollmentHandlerChromeOS::EnrollmentHandlerChromeOS(
   CHECK(enrollment_config_.auth_mechanism !=
             EnrollmentConfig::AUTH_MECHANISM_ATTESTATION ||
         attestation_flow_);
+  if (enrollment_config.mode != EnrollmentConfig::MODE_OFFLINE_DEMO) {
+    register_params_ =
+        std::make_unique<CloudPolicyClient::RegistrationParameters>(
+            em::DeviceRegisterRequest::DEVICE,
+            EnrollmentModeToRegistrationFlavor(enrollment_config.mode));
+    register_params_->requisition = requisition;
+  }
+
   store_->AddObserver(this);
   client_->AddObserver(this);
   client_->AddPolicyTypeToFetch(dm_protocol::kChromeDevicePolicyType,
@@ -256,13 +263,13 @@ void EnrollmentHandlerChromeOS::StartEnrollmentWithLicense(
   CHECK_NE(license_type, ::policy::LicenseType::UNKNOWN);
   switch (license_type) {
     case LicenseType::PERPETUAL:
-      license_type_ = ::em::LicenseType::CDM_PERPETUAL;
+      register_params_->license_type = ::em::LicenseType::CDM_PERPETUAL;
       break;
     case LicenseType::ANNUAL:
-      license_type_ = ::em::LicenseType::CDM_ANNUAL;
+      register_params_->license_type = ::em::LicenseType::CDM_ANNUAL;
       break;
     case LicenseType::KIOSK:
-      license_type_ = ::em::LicenseType::KIOSK;
+      register_params_->license_type = ::em::LicenseType::KIOSK;
       break;
     case LicenseType::UNKNOWN:
       NOTREACHED();
@@ -351,9 +358,7 @@ void EnrollmentHandlerChromeOS::OnRegistrationStateChanged(
         // Do nothing.
         break;
       case DEVICE_MODE_ENTERPRISE_AD:
-        chromeos::DBusThreadManager::Get()
-            ->GetUpstartClient()
-            ->StartAuthPolicyService();
+        chromeos::UpstartClient::Get()->StartAuthPolicyService();
         break;
       default:
         LOG(ERROR) << "Supplied device mode is not supported:" << device_mode_;
@@ -414,8 +419,9 @@ void EnrollmentHandlerChromeOS::HandleStateKeysResult(
   // Make sure state keys are available if forced re-enrollment is on.
   if (chromeos::AutoEnrollmentController::IsFREEnabled()) {
     client_->SetStateKeysToUpload(state_keys);
-    current_state_key_ = state_keys_broker_->current_state_key();
-    if (state_keys.empty() || current_state_key_.empty()) {
+    register_params_->current_state_key =
+        state_keys_broker_->current_state_key();
+    if (state_keys.empty() || register_params_->current_state_key.empty()) {
       ReportResult(
           EnrollmentStatus::ForStatus(EnrollmentStatus::NO_STATE_KEYS));
       return;
@@ -439,11 +445,7 @@ void EnrollmentHandlerChromeOS::StartRegistration() {
   } else if (enrollment_config_.mode == EnrollmentConfig::MODE_OFFLINE_DEMO) {
     StartOfflineDemoEnrollmentFlow();
   } else {
-    client_->Register(
-        em::DeviceRegisterRequest::DEVICE,
-        EnrollmentModeToRegistrationFlavor(enrollment_config_.mode),
-        em::DeviceRegisterRequest::LIFETIME_INDEFINITE, license_type_,
-        dm_auth_->oauth_token(), client_id_, requisition_, current_state_key_);
+    client_->Register(*register_params_, client_id_, dm_auth_->oauth_token());
   }
 }
 
@@ -454,7 +456,8 @@ void EnrollmentHandlerChromeOS::StartAttestationBasedEnrollmentFlow() {
           weak_ptr_factory_.GetWeakPtr());
   attestation_flow_->GetCertificate(
       chromeos::attestation::PROFILE_ENTERPRISE_ENROLLMENT_CERTIFICATE,
-      EmptyAccountId(), "" /* request_origin */, false /* force_new_key */,
+      EmptyAccountId(), std::string() /* request_origin */,
+      false /* force_new_key */, std::string(), /* key_name */
       callback);
 }
 
@@ -462,12 +465,9 @@ void EnrollmentHandlerChromeOS::HandleRegistrationCertificateResult(
     chromeos::attestation::AttestationStatus status,
     const std::string& pem_certificate_chain) {
   if (status == chromeos::attestation::ATTESTATION_SUCCESS) {
-    client_->RegisterWithCertificate(
-        em::DeviceRegisterRequest::DEVICE,
-        EnrollmentModeToRegistrationFlavor(enrollment_config_.mode),
-        em::DeviceRegisterRequest::LIFETIME_INDEFINITE, license_type_,
-        dm_auth_->Clone(), pem_certificate_chain, client_id_, requisition_,
-        current_state_key_, sub_organization_);
+    client_->RegisterWithCertificate(*register_params_, client_id_,
+                                     dm_auth_->Clone(), pem_certificate_chain,
+                                     sub_organization_);
   } else {
     ReportResult(EnrollmentStatus::ForStatus(
         EnrollmentStatus::REGISTRATION_CERT_FETCH_FAILED));
@@ -482,9 +482,10 @@ void EnrollmentHandlerChromeOS::StartOfflineDemoEnrollmentFlow() {
   skip_robot_auth_ = true;
   SetStep(STEP_POLICY_FETCH);
 
-  base::PostTaskWithTraitsAndReplyWithResult(
+  base::PostTaskAndReplyWithResult(
       FROM_HERE,
-      {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
+      {base::ThreadPool(), base::MayBlock(),
+       base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
       base::BindOnce(&ReadFileToOptionalString,
                      enrollment_config_.offline_policy_path),
       base::BindOnce(&EnrollmentHandlerChromeOS::OnOfflinePolicyBlobLoaded,
@@ -750,11 +751,9 @@ void EnrollmentHandlerChromeOS::OnDeviceAccountTokenStored() {
     // policy is accepted.
     chromeos::DeviceSettingsService::Get()->SetDeviceMode(
         install_attributes_->GetMode());
-    chromeos::DBusThreadManager::Get()
-        ->GetAuthPolicyClient()
-        ->RefreshDevicePolicy(base::BindOnce(
-            &EnrollmentHandlerChromeOS::HandleActiveDirectoryPolicyRefreshed,
-            weak_ptr_factory_.GetWeakPtr()));
+    chromeos::AuthPolicyClient::Get()->RefreshDevicePolicy(base::BindOnce(
+        &EnrollmentHandlerChromeOS::HandleActiveDirectoryPolicyRefreshed,
+        weak_ptr_factory_.GetWeakPtr()));
   } else {
     store_->InstallInitialPolicy(*policy_);
   }

@@ -13,8 +13,8 @@
 #include "base/memory/singleton.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_registrar.h"
+#include "content/public/browser/render_process_host_creation_observer.h"
+#include "content/public/browser/render_process_host_observer.h"
 #include "extensions/common/extension_id.h"
 
 namespace content {
@@ -35,16 +35,22 @@ class Extension;
 // TODO(devlin): "StartupHelper" is no longer sufficient to describe the entire
 // behavior of this class.
 class RendererStartupHelper : public KeyedService,
-                              public content::NotificationObserver {
+                              public content::RenderProcessHostCreationObserver,
+                              public content::RenderProcessHostObserver {
  public:
   // This class sends messages to all renderers started for |browser_context|.
   explicit RendererStartupHelper(content::BrowserContext* browser_context);
   ~RendererStartupHelper() override;
 
-  // content::NotificationObserver overrides:
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override;
+  // content::RenderProcessHostCreationObserver:
+  void OnRenderProcessHostCreated(
+      content::RenderProcessHost* process_host) override;
+
+  // content::RenderProcessHostObserver:
+  void RenderProcessExited(
+      content::RenderProcessHost* host,
+      const content::ChildProcessTerminationInfo& info) override;
+  void RenderProcessHostDestroyed(content::RenderProcessHost* host) override;
 
   // Sends a message to the specified |process| activating the given extension
   // once the process is initialized. OnExtensionLoaded should have already been
@@ -86,8 +92,6 @@ class RendererStartupHelper : public KeyedService,
   // initialized.
   std::map<content::RenderProcessHost*, std::set<ExtensionId>>
       pending_active_extensions_;
-
-  content::NotificationRegistrar registrar_;
 
   DISALLOW_COPY_AND_ASSIGN(RendererStartupHelper);
 };

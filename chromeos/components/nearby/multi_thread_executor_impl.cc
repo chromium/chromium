@@ -10,7 +10,7 @@ namespace nearby {
 
 MultiThreadExecutorImpl::MultiThreadExecutorImpl()
     : SubmittableExecutorBase(
-          base::CreateTaskRunnerWithTraits(base::MayBlock())) {}
+          base::CreateTaskRunner({base::ThreadPool(), base::MayBlock()})) {}
 
 MultiThreadExecutorImpl::~MultiThreadExecutorImpl() = default;
 

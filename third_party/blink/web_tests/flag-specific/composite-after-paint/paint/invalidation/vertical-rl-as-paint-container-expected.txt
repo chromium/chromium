@@ -1,0 +1,39 @@
+{
+  "layers": [
+    {
+      "name": "Scrolling background of LayoutView #document",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF"
+    },
+    {
+      "name": "LayoutNGBlockFlow DIV id='target'",
+      "position": [528, 8],
+      "bounds": [80, 340],
+      "backfaceVisibility": "hidden",
+      "paintInvalidations": [
+        {
+          "object": "NGPhysicalTextFragment 'Lorem ipsum dolor'",
+          "rect": [0, 0, 80, 340],
+          "reason": "style change"
+        },
+        {
+          "object": "NGPhysicalTextFragment 'adipiscing elit.'",
+          "rect": [0, 0, 80, 340],
+          "reason": "style change"
+        },
+        {
+          "object": "NGPhysicalTextFragment 'consectetur'",
+          "rect": [0, 0, 80, 340],
+          "reason": "style change"
+        },
+        {
+          "object": "NGPhysicalTextFragment 'sit amet,'",
+          "rect": [0, 0, 80, 340],
+          "reason": "style change"
+        }
+      ]
+    }
+  ]
+}
+

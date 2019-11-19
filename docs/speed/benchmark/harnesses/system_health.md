@@ -41,19 +41,29 @@ enough. We also partner with
 team to track key user metrics on our user stories.
 
 
+## How do I debug System Health regressions?
+
+System health benchmarks run test cases against Chrome's key performance metrics.
+There is more documentation about the metrics and debugging information for
+regressions in the documentation in the docs for these benchmarks:
+* [Memory](../../../memory-infra/memory_benchmarks.md) - memory:* metrics
+* [Loading](loading.md) - timeToFirstContentfulPaint, timeToFirstMeaningfulPaint
+* [Power](power_perf.md) - cpu_time_percentage_avg
+
+
 ## Where are the System Health stories?
 
 All the System Health stories are located in
-[tools/perf/page_sets/system_health/](../../../tools/perf/page_sets/system_health/).
+[tools/perf/page_sets/system_health/](../../../../tools/perf/page_sets/system_health/).
 
 There are few groups of stories:
-1. [Accessibility stories](../../../tools/perf/page_sets/system_health/accessibility_stories.py)
-2. [Background stories](../../../tools/perf/page_sets/system_health/background_stories.py)
-3. [Browsing stories](../../../tools/perf/page_sets/system_health/browsing_stories.py)
-4. [Chrome stories](../../../tools/perf/page_sets/system_health/chrome_stories.py)
-5. [Loading stories](../../../tools/perf/page_sets/system_health/loading_stories.py)
-6. [Multi-tab stories](../../../tools/perf/page_sets/system_health/multi_tab_stories.py)
-7. [Media stories](../../../tools/perf/page_sets/system_health/media_stories.py)
+1. [Accessibility stories](../../../../tools/perf/page_sets/system_health/accessibility_stories.py)
+2. [Background stories](../../../../tools/perf/page_sets/system_health/background_stories.py)
+3. [Browsing stories](../../../../tools/perf/page_sets/system_health/browsing_stories.py)
+4. [Chrome stories](../../../../tools/perf/page_sets/system_health/chrome_stories.py)
+5. [Loading stories](../../../../tools/perf/page_sets/system_health/loading_stories.py)
+6. [Multi-tab stories](../../../../tools/perf/page_sets/system_health/multi_tab_stories.py)
+7. [Media stories](../../../../tools/perf/page_sets/system_health/media_stories.py)
 
 ## What is the structure of a System Health story?
 A System Health story is a subclass of
@@ -94,7 +104,7 @@ The name must have the following structure:
 
 In addition, each story also has accompanied tags that define its important
 characteristics.
-[Tags](../../../tools/perf/page_sets/system_health/story_tags.py) are used as
+[Tags](../../../../tools/perf/page_sets/system_health/story_tags.py) are used as
 the way to track coverage of System Health stories, so they should be as
 detailed as needed to distinguish each System Health story from the others.
 
@@ -131,7 +141,7 @@ likely revert your patch and assign a bug to you. It is then up to you to figure
 out why the story fails, fix it and re-land the patch.
 
 Add new SystemHealthStory subclass(es) to either one of the existing files or a
-new file in [tools/perf/page_sets/system_health/](../../tools/perf/page_sets/system_health).
+new file in [tools/perf/page_sets/system_health/](../../../../tools/perf/page_sets/system_health).
 The new class(es) will automatically be picked up and added to the story set.
 To run the story through the memory benchmark against live sites, use the
 following commands:
@@ -174,7 +184,7 @@ $ tools/perf/run_benchmark system_health.memory_mobile \
 
 The recordings are stored in `system_health_desktop_MMM.wprgo` and
 `system_health_mobile_NNN.wprgo` files in the
-[tools/perf/page_sets/data](../../../tools/perf/page_sets/data) directory.
+[tools/perf/page_sets/data](../../../../tools/perf/page_sets/data) directory.
 You can find the MMM and NNN values by inspecting the changes to
 `system_health_desktop.json` and `system_health_mobile.json`:
 

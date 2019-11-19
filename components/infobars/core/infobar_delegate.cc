@@ -72,6 +72,14 @@ bool InfoBarDelegate::ShouldExpire(const NavigationDetails& details) const {
 void InfoBarDelegate::InfoBarDismissed() {
 }
 
+bool InfoBarDelegate::IsCloseable() const {
+  return true;
+}
+
+bool InfoBarDelegate::ShouldAnimate() const {
+  return true;
+}
+
 ConfirmInfoBarDelegate* InfoBarDelegate::AsConfirmInfoBarDelegate() {
   return nullptr;
 }
@@ -80,35 +88,12 @@ HungRendererInfoBarDelegate* InfoBarDelegate::AsHungRendererInfoBarDelegate() {
   return nullptr;
 }
 
-InsecureContentInfoBarDelegate*
-    InfoBarDelegate::AsInsecureContentInfoBarDelegate() {
-  return nullptr;
-}
-
-NativeAppInfoBarDelegate* InfoBarDelegate::AsNativeAppInfoBarDelegate() {
-  return nullptr;
-}
-
 PopupBlockedInfoBarDelegate* InfoBarDelegate::AsPopupBlockedInfoBarDelegate() {
-  return nullptr;
-}
-
-RegisterProtocolHandlerInfoBarDelegate*
-    InfoBarDelegate::AsRegisterProtocolHandlerInfoBarDelegate() {
-  return nullptr;
-}
-
-ScreenCaptureInfoBarDelegate*
-    InfoBarDelegate::AsScreenCaptureInfoBarDelegate() {
   return nullptr;
 }
 
 ThemeInstalledInfoBarDelegate*
     InfoBarDelegate::AsThemePreviewInfobarDelegate() {
-  return nullptr;
-}
-
-ThreeDAPIInfoBarDelegate* InfoBarDelegate::AsThreeDAPIInfoBarDelegate() {
   return nullptr;
 }
 

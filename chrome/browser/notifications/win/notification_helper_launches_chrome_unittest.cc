@@ -249,7 +249,7 @@ class NotificationHelperLaunchesChrome : public testing::Test {
 TEST_F(NotificationHelperLaunchesChrome, ChromeLaunchTest) {
   // This test requires WinRT core functions, which are not available in
   // older versions of Windows.
-  if (base::win::GetVersion() < base::win::VERSION_WIN8)
+  if (base::win::GetVersion() < base::win::Version::WIN8)
     return;
 
   // There isn't a way to directly correlate the notification_helper.exe server

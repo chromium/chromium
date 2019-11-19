@@ -36,8 +36,10 @@ void DomAutomationController::Install(RenderFrame* render_frame,
     return;
 
   v8::Local<v8::Object> global = context->Global();
-  global->Set(gin::StringToV8(isolate, "domAutomationController"),
-              controller.ToV8());
+  global
+      ->Set(context, gin::StringToV8(isolate, "domAutomationController"),
+            controller.ToV8())
+      .Check();
 }
 
 DomAutomationController::DomAutomationController(RenderFrame* render_frame)
@@ -56,7 +58,7 @@ void DomAutomationController::OnDestruct() {}
 
 void DomAutomationController::DidCreateScriptContext(
     v8::Local<v8::Context> context,
-    int world_id) {
+    int32_t world_id) {
   // Add the domAutomationController to isolated worlds as well.
   v8::Isolate* isolate = blink::MainThreadIsolate();
   v8::HandleScope handle_scope(isolate);
@@ -72,8 +74,10 @@ void DomAutomationController::DidCreateScriptContext(
     return;
 
   v8::Local<v8::Object> global = context->Global();
-  global->Set(gin::StringToV8(isolate, "domAutomationController"),
-              controller.ToV8());
+  global
+      ->Set(context, gin::StringToV8(isolate, "domAutomationController"),
+            controller.ToV8())
+      .Check();
 }
 
 bool DomAutomationController::SendMsg(const gin::Arguments& args) {

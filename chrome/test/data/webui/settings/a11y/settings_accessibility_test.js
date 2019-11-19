@@ -4,13 +4,10 @@
 
 /** @fileoverview Runs the Polymer Accessibility Settings tests. */
 
-/** @const {string} Path to root from chrome/test/data/webui/settings/a11y. */
-const ROOT_PATH = '../../../../../../';
-
 // Polymer BrowserTest fixture and aXe-core accessibility audit.
 GEN_INCLUDE([
-  ROOT_PATH + 'chrome/test/data/webui/a11y/accessibility_test.js',
-  ROOT_PATH + 'chrome/test/data/webui/polymer_browser_test_base.js',
+  '//chrome/test/data/webui/a11y/accessibility_test.js',
+  '//chrome/test/data/webui/polymer_browser_test_base.js',
 ]);
 
 /**
@@ -31,11 +28,32 @@ SettingsAccessibilityTest.axeOptions = {
   }
 };
 
+// TODO(crbug.com/1002627): This block prevents generation of a
+// link-in-text-block browser-test. This can be removed once the bug is
+// addressed, and usage should be replaced with
+// SettingsAccessibilityTest.axeOptions
+SettingsAccessibilityTest.axeOptionsExcludeLinkInTextBlock =
+    Object.assign({}, SettingsAccessibilityTest.axeOptions, {
+      'rules': Object.assign({}, SettingsAccessibilityTest.axeOptions.rules, {
+        'link-in-text-block': {enabled: false},
+      })
+    });
+
 // Default accessibility audit options. Specify in test definition to use.
 SettingsAccessibilityTest.violationFilter = {
-  // Polymer components use aria-active-attribute.
   'aria-valid-attr': function(nodeResult) {
-    return nodeResult.element.hasAttribute('aria-active-attribute');
+    const attributeWhitelist = [
+      'aria-active-attribute',  // Polymer components use aria-active-attribute.
+      'aria-roledescription',   // This attribute is now widely supported.
+    ];
+
+    return attributeWhitelist.some(a => nodeResult.element.hasAttribute(a));
+  },
+  'aria-allowed-attr': function(nodeResult) {
+    const attributeWhitelist = [
+      'aria-roledescription',  // This attribute is now widely supported.
+    ];
+    return attributeWhitelist.some(a => nodeResult.element.hasAttribute(a));
   },
   'button-name': function(nodeResult) {
     if (nodeResult.element.classList.contains('icon-expand-more')) {
@@ -58,9 +76,10 @@ SettingsAccessibilityTest.prototype = {
   browsePreload: 'chrome://settings/',
 
   // Include files that define the mocha tests.
-  extraLibraries: PolymerTest.getLibraries(ROOT_PATH).concat([
+  extraLibraries: [
+    ...PolymerTest.prototype.extraLibraries,
     '../ensure_lazy_loaded.js',
-  ]),
+  ],
 
   // TODO(hcarmona): Remove once ADT is not longer in the testing infrastructure
   runAccessibilityChecks: false,

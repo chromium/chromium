@@ -23,7 +23,10 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+// https://w3c.github.io/encrypted-media/#mediakeysession-interface
+
 [
+    Exposed=Window,
     ActiveScriptWrappable,
     SecureContext
 ] interface MediaKeySession : EventTarget {

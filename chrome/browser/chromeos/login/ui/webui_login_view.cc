@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "ash/public/cpp/ash_features.h"
+#include "ash/public/cpp/login_screen.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/i18n/rtl.h"
@@ -31,10 +32,8 @@
 #include "chrome/browser/ui/ash/login_screen_client.h"
 #include "chrome/browser/ui/ash/system_tray_client.h"
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
-#include "chrome/browser/ui/webui/chromeos/internet_detail_dialog.h"
 #include "chrome/browser/ui/webui/chromeos/login/oobe_ui.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/dbus/session_manager_client.h"
+#include "chromeos/dbus/session_manager/session_manager_client.h"
 #include "chromeos/network/network_state.h"
 #include "chromeos/network/network_state_handler.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
@@ -400,7 +399,6 @@ void WebUILoginView::OnKeyboardVisibilityChanged(bool visible) {
   if (!GetOobeUI())
     return;
   CoreOobeView* view = GetOobeUI()->GetCoreOobeView();
-  view->ShowControlBar(!visible);
   view->SetVirtualKeyboardShown(visible);
 }
 
@@ -475,7 +473,7 @@ void WebUILoginView::RequestMediaAccessPermission(
 bool WebUILoginView::CheckMediaAccessPermission(
     content::RenderFrameHost* render_frame_host,
     const GURL& security_origin,
-    blink::MediaStreamType type) {
+    blink::mojom::MediaStreamType type) {
   return MediaCaptureDevicesDispatcher::GetInstance()
       ->CheckMediaAccessPermission(render_frame_host, security_origin, type);
 }
@@ -492,7 +490,7 @@ void WebUILoginView::OnFocusLeavingSystemTray(bool reverse) {
 }
 
 bool WebUILoginView::MoveFocusToSystemTray(bool reverse) {
-  LoginScreenClient::Get()->login_screen()->FocusLoginShelf(reverse);
+  ash::LoginScreen::Get()->FocusLoginShelf(reverse);
   return true;
 }
 
@@ -509,9 +507,7 @@ void WebUILoginView::OnLoginPromptVisible() {
   TRACE_EVENT0("chromeos", "WebUILoginView::OnLoginPromptVisible");
   if (should_emit_login_prompt_visible_) {
     VLOG(1) << "Login WebUI >> login-prompt-visible";
-    chromeos::DBusThreadManager::Get()
-        ->GetSessionManagerClient()
-        ->EmitLoginPromptVisible();
+    SessionManagerClient::Get()->EmitLoginPromptVisible();
   }
 
   webui_visible_ = true;

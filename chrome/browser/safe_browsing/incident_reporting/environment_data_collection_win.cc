@@ -25,7 +25,6 @@
 #include "chrome/browser/safe_browsing/download_protection/path_sanitizer.h"
 #include "chrome/browser/safe_browsing/incident_reporting/module_integrity_verifier_win.h"
 #include "chrome/common/safe_browsing/binary_feature_extractor.h"
-#include "chrome_elf/chrome_elf_constants.h"
 #include "components/safe_browsing/proto/csd.pb.h"
 #include "components/variations/variations_associated_data.h"
 

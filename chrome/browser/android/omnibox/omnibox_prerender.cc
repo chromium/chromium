@@ -6,15 +6,17 @@
 
 #include "base/android/jni_string.h"
 #include "base/logging.h"
+#include "chrome/android/chrome_jni_headers/OmniboxPrerender_jni.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/predictors/autocomplete_action_predictor.h"
 #include "chrome/browser/predictors/autocomplete_action_predictor_factory.h"
+#include "chrome/browser/predictors/loading_predictor.h"
+#include "chrome/browser/predictors/loading_predictor_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_android.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_result.h"
 #include "content/public/browser/web_contents.h"
-#include "jni/OmniboxPrerender_jni.h"
 #include "url/gurl.h"
 
 using base::android::JavaParamRef;
@@ -98,19 +100,17 @@ void OmniboxPrerender::PrerenderMaybe(
       action_predictor->RecommendAction(url_string, *default_match);
 
   GURL current_url = GURL(current_url_string);
+  // Ask for prerendering if the destination URL is different than the
+  // current URL.
+  if (default_match->destination_url == current_url)
+    return;
+
   switch (recommended_action) {
     case AutocompleteActionPredictor::ACTION_PRERENDER:
-      // Ask for prerendering if the destination URL is different than the
-      // current URL.
-      if (default_match->destination_url != current_url) {
-        DoPrerender(
-            *default_match,
-            profile,
-            web_contents);
-      }
+      DoPrerender(*default_match, profile, web_contents);
       break;
     case AutocompleteActionPredictor::ACTION_PRECONNECT:
-      // TODO (apiccion) add preconnect logic
+      DoPreconnect(*default_match, profile);
       break;
     case AutocompleteActionPredictor::ACTION_NONE:
       break;
@@ -135,4 +135,15 @@ void OmniboxPrerender::DoPrerender(const AutocompleteMatch& match,
           match.destination_url,
           web_contents->GetController().GetDefaultSessionStorageNamespace(),
           container_bounds.size());
+}
+
+void OmniboxPrerender::DoPreconnect(const AutocompleteMatch& match,
+                                    Profile* profile) {
+  auto* loading_predictor =
+      predictors::LoadingPredictorFactory::GetForProfile(profile);
+  if (loading_predictor) {
+    loading_predictor->PrepareForPageLoad(
+        match.destination_url, predictors::HintOrigin::OMNIBOX,
+        predictors::AutocompleteActionPredictor::IsPreconnectable(match));
+  }
 }

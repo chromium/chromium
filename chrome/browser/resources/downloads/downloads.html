@@ -1,8 +1,9 @@
 <!doctype html>
 <html dir="$i18n{textdirection}" lang="$i18n{language}" class="loading"
-    $i18n{dark}>
+    $i18n{a11yenhanced}>
 <head>
   <meta charset="utf-8">
+  <base href="chrome://downloads">
   <title>$i18n{title}</title>
   <link rel="stylesheet" href="chrome://resources/css/md_colors.css">
   <style>
@@ -12,8 +13,13 @@
       touch-action: manipulation;
     }
 
-    html.loading {
-      border-top: 56px solid var(--md-toolbar-color);
+    html.loading::before {
+      background-color: var(--md-toolbar-color);
+      border-bottom: var(--md-toolbar-border);
+      box-sizing: border-box;
+      content: '';
+      display: block;
+      height: var(--md-toolbar-height);
     }
 
     html:not(.loading),
@@ -29,20 +35,7 @@
 </head>
 <body>
   <downloads-manager></downloads-manager>
-<if expr="is_macosx">
-  <command id="clear-all-command" shortcut="Alt|c Alt|ç">
-  <command id="undo-command" shortcut="Meta|z">
-</if>
-<if expr="not is_macosx">
-  <command id="clear-all-command" shortcut="Alt|c">
-  <command id="undo-command" shortcut="Ctrl|z">
-</if>
   <link rel="stylesheet" href="chrome://resources/css/text_defaults_md.css">
-  <link rel="import" href="chrome://resources/html/cr.html">
-  <link rel="import" href="chrome://resources/html/polymer.html">
-  <link rel="import" href="chrome://downloads/i18n_setup.html">
-  <link rel="import" href="chrome://downloads/manager.html">
-  <script src="chrome://downloads/downloads.js"></script>
-  <link rel="import" href="chrome://resources/html/dark_mode.html">
+  <script type="module" src="downloads.js"></script>
 </body>
 </html>

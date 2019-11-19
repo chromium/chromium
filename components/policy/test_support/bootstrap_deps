@@ -1,0 +1,18 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+deps = {
+    "src/components/policy/test_support":
+        "https://src.chromium.org/chrome/trunk/src/components/policy/test_support",
+    "src/net/tools/testserver":
+        "https://src.chromium.org/chrome/trunk/src/net/tools/testserver",
+    "src/third_party/tlslite/tlslite":
+        "https://src.chromium.org/chrome/trunk/src/third_party/tlslite/tlslite",
+    "src/third_party/protobuf/python/google":
+        "https://src.chromium.org/chrome/trunk/src/third_party/protobuf/python/google",
+    "src/tools/telemetry":
+        "https://src.chromium.org/chrome/trunk/src/tools/telemetry",
+    "src/third_party/catapult":
+        "https://src.chromium.org/chrome/trunk/src/third_party/catapult",
+}

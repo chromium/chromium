@@ -17,8 +17,8 @@
 #include "base/process/process_iterator.h"
 #include "base/sequenced_task_runner.h"
 #include "chrome/browser/chromeos/arc/process/arc_process.h"
-#include "components/arc/common/process.mojom.h"
-#include "components/arc/connection_observer.h"
+#include "components/arc/mojom/process.mojom.h"
+#include "components/arc/session/connection_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "services/resource_coordinator/public/cpp/memory_instrumentation/global_memory_dump.h"
 #include "services/resource_coordinator/public/mojom/memory_instrumentation/memory_instrumentation.mojom.h"
@@ -72,8 +72,8 @@ class ArcProcessService : public KeyedService,
   using OptionalArcProcessList = base::Optional<std::vector<ArcProcess>>;
   using RequestProcessListCallback =
       base::OnceCallback<void(OptionalArcProcessList)>;
-  using RequestMemoryInfoCallback = base::OnceCallback<void(
-      std::unique_ptr<memory_instrumentation::GlobalMemoryDump>)>;
+  using RequestMemoryInfoCallback =
+      base::OnceCallback<void(std::vector<mojom::ArcMemoryDumpPtr>)>;
 
   ArcProcessService(content::BrowserContext* context,
                     ArcBridgeService* bridge_service);
@@ -124,9 +124,8 @@ class ArcProcessService : public KeyedService,
   void OnReceiveProcessList(
       RequestProcessListCallback callback,
       std::vector<mojom::RunningAppProcessInfoPtr> processes);
-  void OnReceiveMemoryInfo(
-      RequestMemoryInfoCallback callback,
-      memory_instrumentation::mojom::GlobalMemoryDumpPtr dump);
+  void OnReceiveMemoryInfo(RequestMemoryInfoCallback callback,
+                           std::vector<mojom::ArcMemoryDumpPtr> process_dumps);
   void OnGetSystemProcessList(RequestMemoryInfoCallback callback,
                               std::vector<ArcProcess> processes);
   // ConnectionObserver<mojom::ProcessInstance> overrides.
@@ -149,7 +148,7 @@ class ArcProcessService : public KeyedService,
 
   // Always keep this the last member of this class to make sure it's the
   // first thing to be destructed.
-  base::WeakPtrFactory<ArcProcessService> weak_ptr_factory_;
+  base::WeakPtrFactory<ArcProcessService> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ArcProcessService);
 };

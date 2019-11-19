@@ -23,17 +23,11 @@ namespace {
 const char kOOPHeapProfilingFeatureStackMode[] = "stack-mode";
 const char kOOPHeapProfilingFeatureSampling[] = "sampling";
 const char kOOPHeapProfilingFeatureSamplingRate[] = "sampling-rate";
-const char kOOPHeapProfilingFeatureInProcess[] = "in-process";
 
 const uint32_t kDefaultSamplingRate = 100000;
 const bool kDefaultShouldSample = true;
-const bool kDefaultInProcessMode = false;
 
 bool RecordAllAllocationsForStartup() {
-  const base::CommandLine* cmdline = base::CommandLine::ForCurrentProcess();
-  if (cmdline->HasSwitch(kMemlogSampling))
-    return false;
-
   return !base::GetFieldTrialParamByFeatureAsBool(
       kOOPHeapProfilingFeature, kOOPHeapProfilingFeatureSampling,
       kDefaultShouldSample);
@@ -51,12 +45,12 @@ Mode GetModeForStartup() {
     return Mode::kNone;
   }
 
-  if (cmdline->HasSwitch(kMemlog) ||
+  if (cmdline->HasSwitch(kMemlogMode) ||
       base::FeatureList::IsEnabled(kOOPHeapProfilingFeature)) {
     std::string mode;
     // Respect the commandline switch above the field trial.
-    if (cmdline->HasSwitch(kMemlog)) {
-      mode = cmdline->GetSwitchValueASCII(kMemlog);
+    if (cmdline->HasSwitch(kMemlogMode)) {
+      mode = cmdline->GetSwitchValueASCII(kMemlogMode);
     } else {
       mode = base::GetFieldTrialParamValueByFeature(
           kOOPHeapProfilingFeature, kOOPHeapProfilingFeatureMode);
@@ -66,8 +60,8 @@ Mode GetModeForStartup() {
   }
   return Mode::kNone;
 #else
-  LOG_IF(ERROR, cmdline->HasSwitch(kMemlog))
-      << "--" << kMemlog
+  LOG_IF(ERROR, cmdline->HasSwitch(kMemlogMode))
+      << "--" << kMemlogMode
       << " specified but it will have no effect because the use_allocator_shim "
       << "is not available in this build.";
   return Mode::kNone;
@@ -94,7 +88,7 @@ Mode ConvertStringToMode(const std::string& mode) {
   if (mode == kMemlogModeUtilityAndBrowser)
     return Mode::kUtilityAndBrowser;
   DLOG(ERROR) << "Unsupported value: \"" << mode << "\" passed to --"
-              << kMemlog;
+              << kMemlogMode;
   return Mode::kNone;
 }
 
@@ -108,6 +102,8 @@ mojom::StackMode GetStackModeForStartup() {
   } else {
     stack_mode = base::GetFieldTrialParamValueByFeature(
         kOOPHeapProfilingFeature, kOOPHeapProfilingFeatureStackMode);
+    if (stack_mode.empty())
+      stack_mode = kMemlogStackModeNative;
   }
 
   return ConvertStringToStackMode(stack_mode);
@@ -151,20 +147,8 @@ uint32_t GetSamplingRateForStartup() {
       kDefaultSamplingRate);
 }
 
-bool IsInProcessModeEnabled() {
-  return base::CommandLine::ForCurrentProcess()->HasSwitch(kMemlogInProcess) ||
-         base::GetFieldTrialParamByFeatureAsBool(
-             kOOPHeapProfilingFeature, kOOPHeapProfilingFeatureInProcess,
-             kDefaultInProcessMode);
-}
-
 bool IsBackgroundHeapProfilingEnabled() {
   return base::FeatureList::IsEnabled(kOOPHeapProfilingFeature);
-}
-
-bool ShouldKeepSmallAllocations() {
-  return base::CommandLine::ForCurrentProcess()->HasSwitch(
-      kMemlogKeepSmallAllocations);
 }
 
 }  // namespace heap_profiling

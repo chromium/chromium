@@ -13,6 +13,7 @@ jumbo_static_library("content") {
   ]
 
   public_deps = [
+    "//components/security_interstitials/core",
     "//components/security_state/core",
   ]
 

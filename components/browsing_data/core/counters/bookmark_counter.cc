@@ -18,8 +18,8 @@ int CountBookmarksFromNode(const bookmarks::BookmarkNode* node,
     if (node->date_added() >= period_start)
       ++count;
   } else {
-    for (int i = 0; i < node->child_count(); ++i)
-      count += CountBookmarksFromNode(node->GetChild(i), period_start);
+    for (const auto& child : node->children())
+      count += CountBookmarksFromNode(child.get(), period_start);
   }
   return count;
 }
@@ -67,7 +67,7 @@ const char BookmarkCounter::kPrefName[] =
     "browser.clear_data.fake.pref.bookmarks";
 
 BookmarkCounter::BookmarkCounter(bookmarks::BookmarkModel* bookmark_model)
-    : bookmark_model_(bookmark_model), weak_ptr_factory_(this) {
+    : bookmark_model_(bookmark_model) {
   DCHECK(bookmark_model);
 }
 

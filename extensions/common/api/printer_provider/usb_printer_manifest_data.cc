@@ -4,16 +4,13 @@
 
 #include "extensions/common/api/printer_provider/usb_printer_manifest_data.h"
 
-#include <memory>
 #include <utility>
 
 #include "base/strings/utf_string_conversions.h"
-#include "device/usb/public/cpp/usb_utils.h"
-#include "device/usb/public/mojom/device_enumeration_options.mojom.h"
-#include "device/usb/public/mojom/device_manager.mojom.h"
-#include "device/usb/usb_device.h"
 #include "extensions/common/api/extensions_manifest_types.h"
 #include "extensions/common/manifest_constants.h"
+#include "services/device/public/cpp/usb/usb_utils.h"
+#include "services/device/public/mojom/usb_enumeration_options.mojom.h"
 
 namespace extensions {
 
@@ -76,9 +73,9 @@ std::unique_ptr<UsbPrinterManifestData> UsbPrinterManifestData::FromValue(
 }
 
 bool UsbPrinterManifestData::SupportsDevice(
-    const device::UsbDevice& device) const {
+    const device::mojom::UsbDeviceInfo& device) const {
   for (const auto& filter : filters_) {
-    if (UsbDeviceFilterMatches(*filter, device))
+    if (device::UsbDeviceFilterMatches(*filter, device))
       return true;
   }
 

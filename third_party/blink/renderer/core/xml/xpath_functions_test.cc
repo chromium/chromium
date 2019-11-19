@@ -10,7 +10,8 @@
 #include "third_party/blink/renderer/core/xml/xpath_predicate.h"  // Number, StringExpression
 #include "third_party/blink/renderer/core/xml/xpath_value.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"  // HeapVector, Member, etc.
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 #include <cmath>
 #include <limits>
@@ -23,7 +24,8 @@ class XPathContext {
   STACK_ALLOCATED();
 
  public:
-  XPathContext() : document_(Document::CreateForTest()), context_(*document_) {}
+  XPathContext()
+      : document_(MakeGarbageCollected<Document>()), context_(*document_) {}
 
   xpath::EvaluationContext& Context() { return context_; }
   Document& GetDocument() { return *document_; }
@@ -102,14 +104,15 @@ TEST(XPathFunctionsTest, substring_negativePosition) {
   EXPECT_EQ("hello", Substring("hello, world!", -4.0, 10.0))
       << "negative start positions should impinge on the result length";
   // Try to underflow the length adjustment for negative positions.
-  EXPECT_EQ("", Substring("hello", std::numeric_limits<long>::min() + 1, 1.0));
+  EXPECT_EQ("",
+            Substring("hello", std::numeric_limits<int32_t>::min() + 1, 1.0));
 }
 
 TEST(XPathFunctionsTest, substring_negativeLength) {
   EXPECT_EQ("", Substring("hello, world!", 1.0, -3.0))
       << "negative lengths should result in an empty string";
 
-  EXPECT_EQ("", Substring("foo", std::numeric_limits<long>::min(), 1.0))
+  EXPECT_EQ("", Substring("foo", std::numeric_limits<int32_t>::min(), 1.0))
       << "large (but long representable) negative position should result in "
       << "an empty string";
 }

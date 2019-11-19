@@ -1,0 +1,23 @@
+// Copyright 2015 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Original SVG image: https://material.io/tools/icons/?icon=call
+
+CANVAS_DIMENSIONS, 24,
+MOVE_TO, 20.01f, 15.38f,
+R_CUBIC_TO, -1.23f, 0, -2.42f, -0.2f, -3.53f, -0.56f,
+R_CUBIC_TO, -0.35f, -0.12f, -0.74f, -0.03f, -1.01f, 0.24f,
+R_LINE_TO, -1.57f, 1.97f,
+R_CUBIC_TO, -2.83f, -1.35f, -5.48f, -3.9f, -6.89f, -6.83f,
+R_LINE_TO, 1.95f, -1.66f,
+R_CUBIC_TO, 0.27f, -0.28f, 0.35f, -0.67f, 0.24f, -1.02f,
+R_CUBIC_TO, -0.37f, -1.11f, -0.56f, -2.3f, -0.56f, -3.53f,
+R_CUBIC_TO, 0, -0.54f, -0.45f, -0.99f, -0.99f, -0.99f,
+H_LINE_TO, 4.19f,
+CUBIC_TO, 3.65f, 3, 3, 3.24f, 3, 3.99f,
+CUBIC_TO, 3, 13.28f, 10.73f, 21, 20.01f, 21,
+R_CUBIC_TO, 0.71f, 0, 0.99f, -0.63f, 0.99f, -1.18f,
+R_V_LINE_TO, -3.45f,
+R_CUBIC_TO, 0, -0.54f, -0.45f, -0.99f, -0.99f, -0.99f,
+CLOSE

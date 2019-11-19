@@ -29,7 +29,6 @@ void GPUMetricsProvider::ProvideSystemProfileMetrics(
   gpu->set_vendor_id(active_gpu.vendor_id);
   gpu->set_device_id(active_gpu.device_id);
   gpu->set_driver_version(active_gpu.driver_version);
-  gpu->set_driver_date(active_gpu.driver_date);
   gpu->set_gl_vendor(gpu_info.gl_vendor);
   gpu->set_gl_renderer(gpu_info.gl_renderer);
 }

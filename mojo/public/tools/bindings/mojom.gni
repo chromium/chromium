@@ -18,7 +18,6 @@ import("//build/config/nacl/config.gni")
 import("//components/nacl/features.gni")
 import("//third_party/jinja2/jinja2.gni")
 import("//tools/ipc_fuzzer/ipc_fuzzer.gni")
-
 declare_args() {
   # Indicates whether typemapping should be supported in this build
   # configuration. This may be disabled when building external projects which
@@ -40,6 +39,13 @@ declare_args() {
   # where compilation is supported, any mojom target "foo" will also have a
   # corresponding "foo_js_library_for_compile" target generated.
   enable_mojom_closure_compile = closure_compile && optimize_webui
+
+  # Enable adding annotations to generated C++ headers that are used for
+  # cross-references in CodeSearch.
+  enable_kythe_annotations = false
+
+  # Enables generating Typescript bindings and compiling them to JS bindings.
+  enable_typescript_bindings = false
 }
 
 # NOTE: We would like to avoid scrambling message IDs where it doesn't add
@@ -61,6 +67,7 @@ enable_scrambled_message_ids =
      ((enable_nacl || is_nacl || is_nacl_nonsfi) && target_os != "chromeos"))
 
 mojom_generator_root = "//mojo/public/tools/bindings"
+compile_typescript_script = "$mojom_generator_root/compile_typescript.py"
 mojom_generator_script = "$mojom_generator_root/mojom_bindings_generator.py"
 mojom_generator_sources = [
   "$mojom_generator_root/generators/mojom_cpp_generator.py",
@@ -212,6 +219,11 @@ if (enable_mojom_typemapping) {
 #       will still be generated even when |cpp_only| is set to |true|, unless
 #       you also set |enable_fuzzing| to |false| in your mojom target.
 #
+#   generate_java (optional)
+#       If set to true, Java bindings are generated for Android builds. If
+#       |cpp_only| is set to true, it overrides this to prevent generation of
+#       Java bindings.
+#
 #   enable_fuzzing (optional)
 #       Enables generation of fuzzing sources for the target if the global build
 #       arg |enable_ipc_fuzzer| is also set to |true|. Defaults to |true|. If
@@ -279,12 +291,19 @@ if (enable_mojom_typemapping) {
 #       correct dependency order. Note that this only has an effect if
 #       the |enable_mojom_closure_compile| global arg is set to |true| as well.
 #
+#   use_typescript_sources (optional)
+#       Uses the Typescript generator to generate JavaScript bindings.
+#
+#   js_generate_struct_deserializers (optiona)
+#       Generates JS deerialize methods for structs.
+#
 # The following parameters are used to support the component build. They are
 # needed so that bindings which are linked with a component can use the same
 # export settings for classes. The first three are for the chromium variant, and
-# the last three are for the blink variant. These parameters are mutually
-# exclusive to |component_macro_prefix|, but |component_output_prefix| may still
-# be used to uniqueify the generated invariant (i.e. shared) output component.
+# the last three are for the blink variant. These parameters can also override
+# |component_macro_prefix| for a specific variant, allowing e.g. one variant
+# to be linked into a larger non-mojom component target, while all other
+# variants get their own unique component target.
 #   export_class_attribute (optional)
 #       The attribute to add to the class declaration. e.g. "CONTENT_EXPORT"
 #   export_define (optional)
@@ -326,7 +345,6 @@ template("mojom") {
     assert(defined(invoker.export_class_attribute))
     assert(defined(invoker.export_define))
     assert(defined(invoker.export_header))
-    assert(!defined(invoker.component_macro_prefix))
   }
   if (defined(invoker.export_class_attribute_blink) ||
       defined(invoker.export_define_blink) ||
@@ -334,7 +352,15 @@ template("mojom") {
     assert(defined(invoker.export_class_attribute_blink))
     assert(defined(invoker.export_define_blink))
     assert(defined(invoker.export_header_blink))
-    assert(!defined(invoker.component_macro_prefix))
+
+    # Not all platforms use the Blink variant, so make sure GN doesn't complain
+    # about these values being inconsequential.
+    not_needed(invoker,
+               [
+                 "export_class_attribute_blink",
+                 "export_define_blink",
+                 "export_header_blink",
+               ])
   }
   if (defined(invoker.overridden_deps) || defined(invoker.component_deps)) {
     assert(defined(invoker.overridden_deps))
@@ -679,6 +705,10 @@ template("mojom") {
           "base/component_export.h",
         ]
       }
+
+      if (enable_kythe_annotations) {
+        args += [ "--enable_kythe_annotations" ]
+      }
     }
   } else {
     group(generator_cpp_message_ids_target_name) {
@@ -754,6 +784,68 @@ template("mojom") {
       variant = bindings_configuration.variant
       variant_suffix = "_${variant}"
       cpp_only = true
+    }
+
+    export_defines = []
+    export_defines_overridden = false
+    force_source_set = false
+    if (defined(bindings_configuration.for_blink) &&
+        bindings_configuration.for_blink) {
+      if (defined(invoker.export_define_blink)) {
+        export_defines_overridden = true
+        export_defines = [ invoker.export_define_blink ]
+        force_source_set = true
+      }
+    } else if (defined(invoker.export_define)) {
+      export_defines_overridden = true
+      export_defines = [ invoker.export_define ]
+      force_source_set = true
+    }
+
+    if (!export_defines_overridden && defined(invoker.component_macro_prefix)) {
+      output_name_override =
+          "${invoker.component_output_prefix}${variant_suffix}"
+      export_defines =
+          [ "IS_${invoker.component_macro_prefix}" +
+            "${bindings_configuration.component_macro_suffix}_IMPL" ]
+    }
+
+    export_args = []
+    export_args_overridden = false
+    if (defined(bindings_configuration.for_blink) &&
+        bindings_configuration.for_blink) {
+      if (defined(invoker.export_class_attribute_blink)) {
+        export_args_overridden = true
+        export_args += [
+          "--export_attribute",
+          invoker.export_class_attribute_blink,
+          "--export_header",
+          invoker.export_header_blink,
+        ]
+      }
+    } else if (defined(invoker.export_class_attribute)) {
+      export_args_overridden = true
+      export_args += [
+        "--export_attribute",
+        invoker.export_class_attribute,
+        "--export_header",
+        invoker.export_header,
+      ]
+    }
+
+    if (!export_args_overridden && defined(invoker.component_macro_prefix)) {
+      export_args += [
+        "--export_attribute",
+        "COMPONENT_EXPORT(${invoker.component_macro_prefix}" +
+            "${bindings_configuration.component_macro_suffix})",
+        "--export_header",
+        "base/component_export.h",
+      ]
+    }
+
+    generate_java = false
+    if (!cpp_only && defined(invoker.generate_java)) {
+      generate_java = invoker.generate_java
     }
     type_mappings_target_name = "${target_name}${variant_suffix}__type_mappings"
     type_mappings_path =
@@ -840,7 +932,7 @@ template("mojom") {
                  "//mojo/public/tools/bindings:precompile_templates",
                ] + verify_deps_target_names
         outputs = []
-        args = common_generator_args
+        args = common_generator_args + export_args
         filelist = []
         foreach(source, invoker.sources) {
           filelist += [ rebase_path("$source", root_build_dir) ]
@@ -874,41 +966,24 @@ template("mojom") {
           rebase_path(type_mappings_path, root_build_dir),
         ]
 
-        if (defined(invoker.component_macro_prefix)) {
-          args += [
-            "--export_attribute",
-            "COMPONENT_EXPORT(${invoker.component_macro_prefix}" +
-                "${bindings_configuration.component_macro_suffix})",
-            "--export_header",
-            "base/component_export.h",
-          ]
-        }
-
         if (defined(bindings_configuration.for_blink) &&
             bindings_configuration.for_blink) {
           args += [ "--for_blink" ]
-          if (defined(invoker.export_class_attribute_blink)) {
-            args += [
-              "--export_attribute",
-              invoker.export_class_attribute_blink,
-              "--export_header",
-              invoker.export_header_blink,
-            ]
-          }
-        } else {
-          if (defined(invoker.export_class_attribute)) {
-            args += [
-              "--export_attribute",
-              invoker.export_class_attribute,
-              "--export_header",
-              invoker.export_header,
-            ]
-          }
         }
 
         if (defined(invoker.support_lazy_serialization) &&
             invoker.support_lazy_serialization) {
           args += [ "--support_lazy_serialization" ]
+        }
+
+        if (enable_kythe_annotations) {
+          args += [ "--enable_kythe_annotations" ]
+        }
+
+        if (!defined(invoker.scramble_message_ids) ||
+            invoker.scramble_message_ids) {
+          inputs += message_scrambling_inputs
+          args += message_scrambling_args
         }
       }
     }
@@ -991,7 +1066,7 @@ template("mojom") {
       }
     }
 
-    if (defined(invoker.component_macro_prefix)) {
+    if (!force_source_set && defined(invoker.component_macro_prefix)) {
       output_target_type = "component"
     } else {
       output_target_type = "source_set"
@@ -1001,6 +1076,9 @@ template("mojom") {
     not_needed([ "js_data_deps_target_name" ])
 
     target("jumbo_" + output_target_type, "${target_name}${variant_suffix}") {
+      if (defined(output_name_override)) {
+        output_name = output_name_override
+      }
       if (defined(bindings_configuration.for_blink) &&
           bindings_configuration.for_blink &&
           defined(invoker.visibility_blink)) {
@@ -1011,17 +1089,7 @@ template("mojom") {
       if (defined(invoker.testonly)) {
         testonly = invoker.testonly
       }
-      defines = []
-      if (defined(bindings_configuration.for_blink) &&
-          bindings_configuration.for_blink) {
-        if (defined(invoker.export_define_blink)) {
-          defines += [ invoker.export_define_blink ]
-        }
-      } else {
-        if (defined(invoker.export_define)) {
-          defines += [ invoker.export_define ]
-        }
-      }
+      defines = export_defines
       if (enabled_sources != []) {
         sources = process_file_template(enabled_sources, generator_cpp_outputs)
       }
@@ -1042,11 +1110,6 @@ template("mojom") {
 
       if (enabled_sources != []) {
         public_deps += [ ":$generator_target_name" ]
-      }
-      if (defined(invoker.component_macro_prefix)) {
-        output_name = "${invoker.component_output_prefix}${variant_suffix}"
-        defines += [ "IS_${invoker.component_macro_prefix}" +
-                     "${bindings_configuration.component_macro_suffix}_IMPL" ]
       }
       foreach(d, all_deps) {
         # Resolve the name, so that a target //mojo/something becomes
@@ -1113,7 +1176,7 @@ template("mojom") {
       }
     }
 
-    if (!cpp_only && is_android) {
+    if (generate_java && is_android) {
       import("//build/config/android/rules.gni")
 
       java_generator_target_name = target_name + "_java__generator"
@@ -1206,7 +1269,16 @@ template("mojom") {
     }
   }
 
-  if (generate_fuzzing || !defined(invoker.cpp_only) || !invoker.cpp_only) {
+  use_typescript_for_target =
+      enable_typescript_bindings && defined(invoker.use_typescript_sources) &&
+      invoker.use_typescript_sources
+
+  if (!use_typescript_for_target && defined(invoker.use_typescript_sources)) {
+    not_needed(invoker, [ "use_typescript_sources" ])
+  }
+
+  if ((generate_fuzzing || !defined(invoker.cpp_only) || !invoker.cpp_only) &&
+      !use_typescript_for_target) {
     if (defined(invoker.sources)) {
       generator_js_target_name = "${target_name}_js__generator"
       generator_js_lite_outputs =
@@ -1233,6 +1305,7 @@ template("mojom") {
             "$target_gen_dir/$source.js",
             "$target_gen_dir/$source.externs.js",
             "$target_gen_dir/$source-lite.js",
+            "$target_gen_dir/$source.html",
             "$target_gen_dir/$source-lite-for-compile.js",
           ]
         }
@@ -1245,6 +1318,11 @@ template("mojom") {
           "javascript",
           "--js_bindings_mode=new",
         ]
+
+        if (defined(invoker.js_generate_struct_deserializers) &&
+            invoker.js_generate_struct_deserializers) {
+          args += [ "--js_generate_struct_deserializers" ]
+        }
 
         if (!defined(invoker.scramble_message_ids) ||
             invoker.scramble_message_ids) {
@@ -1331,6 +1409,91 @@ template("mojom") {
       }
     } else {
       group(js_library_for_compile_target_name) {
+      }
+    }
+  }
+  if ((generate_fuzzing || !defined(invoker.cpp_only) || !invoker.cpp_only) &&
+      use_typescript_for_target) {
+    generator_ts_target_name = "${target_name}_ts__generator"
+
+    source_filelist = []
+    ts_filelist = []
+    ts_outputs = []
+    js_outputs = []
+    foreach(source, invoker.sources) {
+      source_filelist += [ rebase_path("$source", root_build_dir) ]
+      ts_outputs += [
+        "$target_gen_dir/$source-lite.ts",
+        "$target_gen_dir/$source-lite.m.ts",
+      ]
+      ts_filelist += [
+        rebase_path("$target_gen_dir/$source-lite.ts", root_build_dir),
+        rebase_path("$target_gen_dir/$source-lite.m.ts", root_build_dir),
+      ]
+
+      js_outputs += [
+        "$target_gen_dir/$source-lite.js",
+        "$target_gen_dir/$source-lite.m.js",
+      ]
+    }
+
+    generator_ts_target_name = "${target_name}_ts__generator"
+    action(generator_ts_target_name) {
+      script = mojom_generator_script
+      inputs = mojom_generator_sources + jinja2_sources
+      sources = invoker.sources
+      deps = [
+               ":$parsed_target_name",
+               "//mojo/public/tools/bindings:precompile_templates",
+             ] + verify_deps_target_names
+      outputs = ts_outputs
+      args = common_generator_args
+      response_file_contents = source_filelist
+
+      args += [
+        "--filelist={{response_file_name}}",
+        "-g",
+        "typescript",
+      ]
+
+      # TODO(crbug.com/1007587): Support scramble_message_ids.
+      # TODO(crbug.com/1007591): Support generate_fuzzing.
+    }
+
+    generator_js_target_name = "${target_name}_js__generator"
+    action(generator_js_target_name) {
+      script = compile_typescript_script
+      sources = ts_outputs
+      outputs = js_outputs
+      public_deps = [
+        ":$generator_ts_target_name",
+      ]
+      response_file_contents = ts_filelist
+      args = [ "--filelist={{response_file_name}}" ]
+    }
+
+    js_target_name = target_name + "_js"
+    group(js_target_name) {
+      public_deps = []
+      if (defined(invoker.sources)) {
+        public_deps += [ ":$generator_js_target_name" ]
+      }
+
+      foreach(d, all_deps) {
+        full_name = get_label_info(d, "label_no_toolchain")
+        public_deps += [ "${full_name}_js" ]
+      }
+    }
+
+    group(js_data_deps_target_name) {
+      data = process_file_template(invoker.sources, js_outputs)
+      deps = [
+        ":$generator_js_target_name",
+      ]
+      data_deps = []
+      foreach(d, all_deps) {
+        full_name = get_label_info(d, "label_no_toolchain")
+        data_deps += [ "${full_name}_js_data_deps" ]
       }
     }
   }

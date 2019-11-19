@@ -74,8 +74,9 @@ class COMPOSITOR_EXPORT CompositorLockManager {
   // The set of locks that are held externally.
   std::vector<CompositorLock*> active_locks_;
 
-  base::WeakPtrFactory<CompositorLockManager> weak_ptr_factory_;
-  base::WeakPtrFactory<CompositorLockManager> lock_timeout_weak_ptr_factory_;
+  base::WeakPtrFactory<CompositorLockManager> weak_ptr_factory_{this};
+  base::WeakPtrFactory<CompositorLockManager> lock_timeout_weak_ptr_factory_{
+      this};
 };
 
 // This class represents a lock on the compositor, that can be used to prevent

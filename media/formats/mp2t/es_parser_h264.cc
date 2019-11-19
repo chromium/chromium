@@ -418,13 +418,11 @@ bool EsParserH264::EmitFrame(int64_t access_unit_pos,
     const H264SPS* sps = h264_parser_->GetSPS(pps->seq_parameter_set_id);
     if (!sps)
       return false;
-    EncryptionScheme scheme = Unencrypted();
+    EncryptionScheme scheme = EncryptionScheme::kUnencrypted;
 #if BUILDFLAG(ENABLE_HLS_SAMPLE_AES)
     if (use_hls_sample_aes_) {
       // Note that for SampleAES the (encrypt,skip) pattern is constant.
-      scheme = EncryptionScheme(
-          EncryptionScheme::CIPHER_MODE_AES_CBC,
-          EncryptionPattern(kSampleAESEncryptBlocks, kSampleAESSkipBlocks));
+      scheme = EncryptionScheme::kCbcs;
     }
 #endif
     RCHECK(UpdateVideoDecoderConfig(sps, scheme));
@@ -465,19 +463,19 @@ bool EsParserH264::EmitFrame(int64_t access_unit_pos,
   stream_parser_buffer->set_timestamp(current_timing_desc.pts);
 #if BUILDFLAG(ENABLE_HLS_SAMPLE_AES)
   if (use_hls_sample_aes_ && base_decrypt_config) {
-    switch (base_decrypt_config->encryption_mode()) {
-      case EncryptionMode::kUnencrypted:
+    switch (base_decrypt_config->encryption_scheme()) {
+      case EncryptionScheme::kUnencrypted:
         // As |base_decrypt_config| is specified, the stream is encrypted,
         // so this shouldn't happen.
         NOTREACHED();
         break;
-      case EncryptionMode::kCenc:
+      case EncryptionScheme::kCenc:
         stream_parser_buffer->set_decrypt_config(
             DecryptConfig::CreateCencConfig(base_decrypt_config->key_id(),
                                             base_decrypt_config->iv(),
                                             subsamples));
         break;
-      case EncryptionMode::kCbcs:
+      case EncryptionScheme::kCbcs:
         // Note that for SampleAES the (encrypt,skip) pattern is constant.
         // If not specified in |base_decrypt_config|, use default values.
         stream_parser_buffer->set_decrypt_config(
@@ -494,7 +492,7 @@ bool EsParserH264::EmitFrame(int64_t access_unit_pos,
 }
 
 bool EsParserH264::UpdateVideoDecoderConfig(const H264SPS* sps,
-                                            const EncryptionScheme& scheme) {
+                                            EncryptionScheme scheme) {
   // Set the SAR to 1 when not specified in the H264 stream.
   int sar_width = (sps->sar_width == 0) ? 1 : sps->sar_width;
   int sar_height = (sps->sar_height == 0) ? 1 : sps->sar_height;
@@ -526,9 +524,9 @@ bool EsParserH264::UpdateVideoDecoderConfig(const H264SPS* sps,
   }
 
   VideoDecoderConfig video_decoder_config(
-      kCodecH264, profile, PIXEL_FORMAT_I420, VideoColorSpace::REC709(),
-      VIDEO_ROTATION_0, coded_size.value(), visible_rect.value(), natural_size,
-      EmptyExtraData(), scheme);
+      kCodecH264, profile, VideoDecoderConfig::AlphaMode::kIsOpaque,
+      VideoColorSpace::REC709(), kNoTransformation, coded_size.value(),
+      visible_rect.value(), natural_size, EmptyExtraData(), scheme);
 
   if (!video_decoder_config.IsValidConfig()) {
     DVLOG(1) << "Invalid video config: "

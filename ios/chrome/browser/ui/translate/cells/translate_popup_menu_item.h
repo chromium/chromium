@@ -26,6 +26,9 @@
 
 - (void)setTitle:(NSString*)title;
 
+// Whether the cell will display a trailing checkmark or not.
+- (void)setCheckmark:(BOOL)checkmark;
+
 // After this is called, the cell is listening for the
 // UIContentSizeCategoryDidChangeNotification notification and updates its font
 // size to the new category.

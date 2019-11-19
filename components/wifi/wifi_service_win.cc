@@ -28,9 +28,11 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "base/win/registry.h"
+#include "base/win/win_util.h"
 #include "components/onc/onc_constants.h"
 #include "components/wifi/network_properties.h"
-#include "third_party/libxml/chromium/libxml_utils.h"
+#include "third_party/libxml/chromium/xml_reader.h"
+#include "third_party/libxml/chromium/xml_writer.h"
 
 namespace {
 const wchar_t kNwCategoryWizardRegKey[] =
@@ -1137,10 +1139,7 @@ DWORD WiFiServiceImpl::ResetDHCP() {
 DWORD WiFiServiceImpl::FindAdapterIndexMapByGUID(
     const GUID& interface_guid,
     IP_ADAPTER_INDEX_MAP* adapter_index_map) {
-  base::string16 guid_string;
-  const int kGUIDSize = 39;
-  ::StringFromGUID2(
-      interface_guid, base::WriteInto(&guid_string, kGUIDSize), kGUIDSize);
+  const auto guid_string = base::win::String16FromGUID(interface_guid);
 
   ULONG buffer_length = 0;
   DWORD error = ::GetInterfaceInfo(nullptr, &buffer_length);

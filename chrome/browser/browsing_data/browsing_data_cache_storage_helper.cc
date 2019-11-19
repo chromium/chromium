@@ -25,7 +25,7 @@ namespace {
 void GetAllOriginsInfoForCacheStorageCallback(
     BrowsingDataCacheStorageHelper::FetchCallback callback,
     const std::vector<StorageUsageInfo>& origins) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(!callback.is_null());
 
   std::list<content::StorageUsageInfo> result;
@@ -35,8 +35,7 @@ void GetAllOriginsInfoForCacheStorageCallback(
     result.push_back(origin);
   }
 
-  base::PostTaskWithTraits(FROM_HERE, {BrowserThread::UI},
-                           base::BindOnce(std::move(callback), result));
+  std::move(callback).Run(result);
 }
 
 }  // namespace
@@ -52,33 +51,12 @@ BrowsingDataCacheStorageHelper::~BrowsingDataCacheStorageHelper() {}
 void BrowsingDataCacheStorageHelper::StartFetching(FetchCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(!callback.is_null());
-  base::PostTaskWithTraits(
-      FROM_HERE, {BrowserThread::IO},
-      base::BindOnce(
-          &BrowsingDataCacheStorageHelper::FetchCacheStorageUsageInfoOnIOThread,
-          this, std::move(callback)));
-}
-
-void BrowsingDataCacheStorageHelper::DeleteCacheStorage(const GURL& origin) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  base::PostTaskWithTraits(
-      FROM_HERE, {BrowserThread::IO},
-      base::BindOnce(
-          &BrowsingDataCacheStorageHelper::DeleteCacheStorageOnIOThread, this,
-          origin));
-}
-
-void BrowsingDataCacheStorageHelper::FetchCacheStorageUsageInfoOnIOThread(
-    FetchCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  DCHECK(!callback.is_null());
   cache_storage_context_->GetAllOriginsInfo(base::BindOnce(
       &GetAllOriginsInfoForCacheStorageCallback, std::move(callback)));
 }
 
-void BrowsingDataCacheStorageHelper::DeleteCacheStorageOnIOThread(
-    const GURL& origin) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+void BrowsingDataCacheStorageHelper::DeleteCacheStorage(const GURL& origin) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   cache_storage_context_->DeleteForOrigin(origin);
 }
 
@@ -121,8 +99,8 @@ void CannedBrowsingDataCacheStorageHelper::StartFetching(
   for (const auto& origin : pending_origins_)
     result.emplace_back(origin, 0, base::Time());
 
-  base::PostTaskWithTraits(FROM_HERE, {BrowserThread::UI},
-                           base::BindOnce(std::move(callback), result));
+  base::PostTask(FROM_HERE, {BrowserThread::UI},
+                 base::BindOnce(std::move(callback), result));
 }
 
 void CannedBrowsingDataCacheStorageHelper::DeleteCacheStorage(

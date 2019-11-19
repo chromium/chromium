@@ -99,8 +99,7 @@ CertificateReportingService::Reporter::Reporter(
       clock_(clock),
       report_ttl_(report_ttl),
       retries_enabled_(retries_enabled),
-      current_report_id_(0),
-      weak_factory_(this) {}
+      current_report_id_(0) {}
 
 CertificateReportingService::Reporter::~Reporter() {}
 

@@ -124,7 +124,7 @@ class RASTER_EXPORT RasterImplementation : public RasterInterface,
   void BeginRasterCHROMIUM(GLuint sk_color,
                            GLuint msaa_sample_count,
                            GLboolean can_use_lcd_text,
-                           const cc::RasterColorSpace& raster_color_space,
+                           const gfx::ColorSpace& color_space,
                            const GLbyte* mailbox) override;
   void RasterCHROMIUM(const cc::DisplayItemList* list,
                       cc::ImageProvider* provider,
@@ -133,15 +133,14 @@ class RASTER_EXPORT RasterImplementation : public RasterInterface,
                       const gfx::Rect& playback_rect,
                       const gfx::Vector2dF& post_translate,
                       GLfloat post_scale,
-                      bool requires_clear) override;
-  bool CanDecodeWithHardwareAcceleration(
-      base::span<const uint8_t> encoded_data) override;
+                      bool requires_clear,
+                      size_t* max_op_size_hint) override;
   SyncToken ScheduleImageDecode(base::span<const uint8_t> encoded_data,
                                 const gfx::Size& output_size,
                                 uint32_t transfer_cache_entry_id,
                                 const gfx::ColorSpace& target_color_space,
                                 bool needs_mips) override;
-  GLuint CreateAndConsumeForGpuRaster(const GLbyte* mailbox) override;
+  GLuint CreateAndConsumeForGpuRaster(const gpu::Mailbox& mailbox) override;
   void DeleteGpuRasterTexture(GLuint texture) override;
   void BeginGpuRaster() override;
   void EndGpuRaster() override;
@@ -184,6 +183,16 @@ class RASTER_EXPORT RasterImplementation : public RasterInterface,
       const std::vector<std::pair<uint32_t, uint32_t>>& entries) override;
   void DeleteTransferCacheEntry(uint32_t type, uint32_t id) override;
   unsigned int GetTransferBufferFreeSize() const override;
+  bool IsJpegDecodeAccelerationSupported() const override;
+  bool IsWebPDecodeAccelerationSupported() const override;
+  bool CanDecodeWithHardwareAcceleration(
+      const cc::ImageHeaderMetadata* image_metadata) const override;
+
+  // InterfaceBase implementation.
+  void GenSyncTokenCHROMIUM(GLbyte* sync_token) override;
+  void GenUnverifiedSyncTokenCHROMIUM(GLbyte* sync_token) override;
+  void VerifySyncTokensCHROMIUM(GLbyte** sync_tokens, GLsizei count) override;
+  void WaitSyncTokenCHROMIUM(const GLbyte* sync_token) override;
 
   bool GetQueryObjectValueHelper(const char* function_name,
                                  GLuint id,

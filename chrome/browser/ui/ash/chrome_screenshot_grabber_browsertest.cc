@@ -20,6 +20,8 @@
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/clipboard_monitor.h"
 #include "ui/base/clipboard/clipboard_observer.h"
+#include "ui/message_center/public/cpp/notification_types.h"
+#include "ui/message_center/public/cpp/notifier_id.h"
 
 class ChromeScreenshotGrabberBrowserTest
     : public InProcessBrowserTest,
@@ -69,7 +71,7 @@ class ChromeScreenshotGrabberBrowserTest
   bool IsImageClipboardAvailable() {
     return ui::Clipboard::GetForCurrentThread()->IsFormatAvailable(
         ui::ClipboardFormatType::GetBitmapType(),
-        ui::CLIPBOARD_TYPE_COPY_PASTE);
+        ui::ClipboardBuffer::kCopyPaste);
   }
 
   scoped_refptr<content::MessageLoopRunner> message_loop_runner_;
@@ -100,7 +102,13 @@ IN_PROC_BROWSER_TEST_F(ChromeScreenshotGrabberBrowserTest, TakeScreenshot) {
   SetTestObserver(chrome_screenshot_grabber, nullptr);
 
   EXPECT_TRUE(notification_added_);
-  EXPECT_TRUE(display_service_->GetNotification(std::string("screenshot")));
+  auto notification =
+      display_service_->GetNotification(std::string("screenshot"));
+  ASSERT_TRUE(notification.has_value());
+  EXPECT_EQ(message_center::NotifierType::SYSTEM_COMPONENT,
+            notification->notifier_id().type);
+  EXPECT_EQ("ash.screenshot", notification->notifier_id().id);
+  EXPECT_EQ(GURL("chrome://screenshot"), notification->origin_url());
 
   EXPECT_EQ(ui::ScreenshotResult::SUCCESS, screenshot_result_);
   {

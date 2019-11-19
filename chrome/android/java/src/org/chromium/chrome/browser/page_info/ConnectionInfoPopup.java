@@ -8,7 +8,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.provider.Browser;
 import android.text.TextUtils;
-import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -22,6 +21,7 @@ import android.widget.TextView;
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Log;
 import org.chromium.base.annotations.CalledByNative;
+import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ResourceId;
 import org.chromium.chrome.browser.tab.Tab;
@@ -33,6 +33,7 @@ import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.widget.ButtonCompat;
 
 /**
  * Java side of Android implementation of the page info UI.
@@ -41,7 +42,7 @@ public class ConnectionInfoPopup implements OnClickListener, ModalDialogProperti
     private static final String TAG = "ConnectionInfoPopup";
 
     private static final String HELP_URL =
-            "https://support.google.com/chrome/answer/95617";
+            "https://support.google.com/chrome?p=android_connection_info";
 
     private final Context mContext;
     private final ModalDialogManager mModalDialogManager;
@@ -50,7 +51,6 @@ public class ConnectionInfoPopup implements OnClickListener, ModalDialogProperti
     private final WebContents mWebContents;
     private final WebContentsObserver mWebContentsObserver;
     private final int mPaddingWide, mPaddingThin;
-    private final float mDescriptionTextSizePx;
     private final long mNativeConnectionInfoPopup;
     private final CertificateViewer mCertificateViewer;
     private TextView mCertificateViewerTextView, mMoreInfoLink;
@@ -71,12 +71,11 @@ public class ConnectionInfoPopup implements OnClickListener, ModalDialogProperti
                 R.dimen.connection_info_padding_wide);
         mPaddingThin = (int) context.getResources().getDimension(
                 R.dimen.connection_info_padding_thin);
-        mDescriptionTextSizePx = context.getResources().getDimension(R.dimen.text_size_small);
         mContainer.setPadding(mPaddingWide, mPaddingWide, mPaddingWide,
                 mPaddingWide - mPaddingThin);
 
         // This needs to come after other member initialization.
-        mNativeConnectionInfoPopup = nativeInit(this, mWebContents);
+        mNativeConnectionInfoPopup = ConnectionInfoPopupJni.get().init(this, mWebContents);
         mWebContentsObserver = new WebContentsObserver(mWebContents) {
             @Override
             public void navigationEntryCommitted() {
@@ -116,23 +115,22 @@ public class ConnectionInfoPopup implements OnClickListener, ModalDialogProperti
     private void addDescriptionSection(int enumeratedIconId, String headline, String description) {
         View section = addSection(enumeratedIconId, headline, description);
         assert mDescriptionLayout == null;
-        mDescriptionLayout = (ViewGroup) section.findViewById(R.id.connection_info_text_layout);
+        mDescriptionLayout = section.findViewById(R.id.connection_info_text_layout);
     }
 
     private View addSection(int enumeratedIconId, String headline, String description) {
         View section = LayoutInflater.from(mContext).inflate(R.layout.connection_info,
                 null);
-        ImageView i = (ImageView) section.findViewById(R.id.connection_info_icon);
+        ImageView i = section.findViewById(R.id.connection_info_icon);
         int drawableId = ResourceId.mapToDrawableId(enumeratedIconId);
         i.setImageResource(drawableId);
 
-        TextView h = (TextView) section.findViewById(R.id.connection_info_headline);
+        TextView h = section.findViewById(R.id.connection_info_headline);
         h.setText(headline);
         if (TextUtils.isEmpty(headline)) h.setVisibility(View.GONE);
 
-        TextView d = (TextView) section.findViewById(R.id.connection_info_description);
+        TextView d = section.findViewById(R.id.connection_info_description);
         d.setText(description);
-        d.setTextSize(TypedValue.COMPLEX_UNIT_PX, mDescriptionTextSizePx);
         if (TextUtils.isEmpty(description)) d.setVisibility(View.GONE);
 
         mContainer.addView(section);
@@ -158,14 +156,8 @@ public class ConnectionInfoPopup implements OnClickListener, ModalDialogProperti
     private void addResetCertDecisionsButton(String label) {
         assert mResetCertDecisionsButton == null;
 
-        mResetCertDecisionsButton = new Button(mContext);
+        mResetCertDecisionsButton = new ButtonCompat(mContext, R.style.FilledButtonThemeOverlay);
         mResetCertDecisionsButton.setText(label);
-        mResetCertDecisionsButton.setBackgroundResource(
-                R.drawable.connection_info_reset_cert_decisions);
-        mResetCertDecisionsButton.setTextColor(ApiCompatibilityUtils.getColor(
-                mContext.getResources(),
-                R.color.connection_info_popup_reset_cert_decisions_button));
-        mResetCertDecisionsButton.setTextSize(TypedValue.COMPLEX_UNIT_PX, mDescriptionTextSizePx);
         mResetCertDecisionsButton.setOnClickListener(this);
 
         LinearLayout container = new LinearLayout(mContext);
@@ -204,7 +196,8 @@ public class ConnectionInfoPopup implements OnClickListener, ModalDialogProperti
     @Override
     public void onClick(View v) {
         if (mResetCertDecisionsButton == v) {
-            nativeResetCertDecisions(mNativeConnectionInfoPopup, mWebContents);
+            ConnectionInfoPopupJni.get().resetCertDecisions(
+                    mNativeConnectionInfoPopup, ConnectionInfoPopup.this, mWebContents);
             dismissDialog(DialogDismissalCause.ACTION_ON_CONTENT);
         } else if (mCertificateViewerTextView == v) {
             byte[][] certChain = CertificateChainHelper.getCertificateChain(mWebContents);
@@ -238,7 +231,7 @@ public class ConnectionInfoPopup implements OnClickListener, ModalDialogProperti
     public void onDismiss(PropertyModel model, int dismissalCause) {
         assert mNativeConnectionInfoPopup != 0;
         mWebContentsObserver.destroy();
-        nativeDestroy(mNativeConnectionInfoPopup);
+        ConnectionInfoPopupJni.get().destroy(mNativeConnectionInfoPopup, ConnectionInfoPopup.this);
         mDialogModel = null;
     }
 
@@ -269,9 +262,11 @@ public class ConnectionInfoPopup implements OnClickListener, ModalDialogProperti
         new ConnectionInfoPopup(context, tab);
     }
 
-    private static native long nativeInit(ConnectionInfoPopup popup,
-            WebContents webContents);
-    private native void nativeDestroy(long nativeConnectionInfoPopupAndroid);
-    private native void nativeResetCertDecisions(
-            long nativeConnectionInfoPopupAndroid, WebContents webContents);
+    @NativeMethods
+    interface Natives {
+        long init(ConnectionInfoPopup popup, WebContents webContents);
+        void destroy(long nativeConnectionInfoPopupAndroid, ConnectionInfoPopup caller);
+        void resetCertDecisions(long nativeConnectionInfoPopupAndroid, ConnectionInfoPopup caller,
+                WebContents webContents);
+    }
 }

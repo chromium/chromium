@@ -6,7 +6,9 @@
 
 #import <Cronet/Cronet.h>
 
-@implementation CronetConsumerViewController {
+@implementation CronetConsumerViewController
+#if !defined(__IPHONE_12_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_12_0
+{
   UIWebView* _webView;
 }
 
@@ -42,5 +44,5 @@
                       requestWithURL:
                           [NSURL URLWithString:@"https://www.chromium.org"]]];
 }
-
+#endif
 @end

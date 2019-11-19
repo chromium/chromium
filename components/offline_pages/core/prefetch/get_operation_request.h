@@ -34,6 +34,10 @@ class GetOperationRequest {
       PrefetchRequestFinishedCallback callback);
   ~GetOperationRequest();
 
+  // Returns the stored callback. Note that this moves the internal value
+  // making it null.
+  PrefetchRequestFinishedCallback GetCallbackForTesting();
+
  private:
   void OnCompleted(const std::string& operation_name,
                    PrefetchRequestStatus status,

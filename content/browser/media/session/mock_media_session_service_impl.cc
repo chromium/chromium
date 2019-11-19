@@ -10,17 +10,15 @@ MockMediaSessionClient::MockMediaSessionClient() = default;
 
 MockMediaSessionClient::~MockMediaSessionClient() = default;
 
-blink::mojom::MediaSessionClientPtr
-MockMediaSessionClient::CreateInterfacePtrAndBind() {
-  blink::mojom::MediaSessionClientPtr client;
-  binding_.Bind(mojo::MakeRequest(&client));
-  return client;
+mojo::PendingRemote<blink::mojom::MediaSessionClient>
+MockMediaSessionClient::CreateInterfaceRemoteAndBind() {
+  return receiver_.BindNewPipeAndPassRemote();
 }
 
 MockMediaSessionServiceImpl::MockMediaSessionServiceImpl(
     content::RenderFrameHost* rfh)
     : MediaSessionServiceImpl(rfh) {
-  SetClient(mock_client_.CreateInterfacePtrAndBind());
+  SetClient(mock_client_.CreateInterfaceRemoteAndBind());
 }
 
 MockMediaSessionServiceImpl::~MockMediaSessionServiceImpl() = default;

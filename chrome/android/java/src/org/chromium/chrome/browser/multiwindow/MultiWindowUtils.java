@@ -15,15 +15,16 @@ import android.hardware.display.DisplayManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Browser;
-import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.view.Display;
+
+import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ApplicationStatus.ActivityStateListener;
-import org.chromium.base.VisibleForTesting;
 import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.ChromeTabbedActivity2;
@@ -155,7 +156,7 @@ public class MultiWindowUtils implements ActivityStateListener {
 
     /**
      * Generate the activity options used when handling "open in other window" or "move to other
-     * window" on a multi-display capable device.
+     * window" on a multi-instance capable device.
      *
      * This should be used in combination with
      * {@link #setOpenInOtherWindowIntentExtras(Intent, Activity, Class)}.
@@ -165,7 +166,6 @@ public class MultiWindowUtils implements ActivityStateListener {
      * @see Context#startActivity(Intent, Bundle)
      */
     public static Bundle getOpenInOtherWindowActivityOptions(Activity activity) {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1) return null;
         if (!getInstance().isInMultiDisplayMode(activity)) return null;
         Display defaultDisplay = DisplayAndroidManager.getDefaultDisplayForContext(activity);
         DisplayManager displayManager =
@@ -270,14 +270,6 @@ public class MultiWindowUtils implements ActivityStateListener {
 
         // 6. Default to regular ChromeTabbedActivity.
         return ChromeTabbedActivity.class;
-    }
-
-    /**
-     * Should be called when multi-instance mode is started. This method is responsible for
-     * notifying classes that are multi-instance aware.
-     */
-    public static void onMultiInstanceModeStarted() {
-        ChromeTabbedActivity.onMultiInstanceModeStarted();
     }
 
     /**

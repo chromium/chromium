@@ -5,7 +5,7 @@
 #include "ui/ozone/public/ozone_gpu_test_helper.h"
 
 #include "base/bind.h"
-#include "base/message_loop/message_loop.h"
+#include "base/message_loop/message_pump_type.h"
 #include "base/run_loop.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -88,7 +88,7 @@ class FakeGpuProcessHost {
     ui::OzonePlatform::GetInstance()
         ->GetGpuPlatformSupportHost()
         ->OnGpuProcessLaunched(kGpuProcessHostId, ui_task_runner_,
-                               gpu_io_task_runner_, sender);
+                               gpu_io_task_runner_, std::move(sender));
   }
 
  private:
@@ -104,18 +104,18 @@ OzoneGpuTestHelper::~OzoneGpuTestHelper() {
 
 bool OzoneGpuTestHelper::Initialize(
     const scoped_refptr<base::SingleThreadTaskRunner>& ui_task_runner) {
-  io_helper_thread_.reset(new base::Thread("IOHelperThread"));
+  io_helper_thread_ = std::make_unique<base::Thread>("IOHelperThread");
   if (!io_helper_thread_->StartWithOptions(
-          base::Thread::Options(base::MessageLoop::TYPE_IO, 0)))
+          base::Thread::Options(base::MessagePumpType::IO, 0)))
     return false;
 
-  fake_gpu_process_.reset(new FakeGpuProcess(ui_task_runner));
+  fake_gpu_process_ = std::make_unique<FakeGpuProcess>(ui_task_runner);
   io_helper_thread_->task_runner()->PostTask(
       FROM_HERE, base::BindOnce(&FakeGpuProcess::InitOnIO,
                                 base::Unretained(fake_gpu_process_.get())));
 
-  fake_gpu_process_host_.reset(new FakeGpuProcessHost(
-      ui_task_runner, io_helper_thread_->task_runner()));
+  fake_gpu_process_host_ = std::make_unique<FakeGpuProcessHost>(
+      ui_task_runner, io_helper_thread_->task_runner());
   io_helper_thread_->task_runner()->PostTask(
       FROM_HERE,
       base::BindOnce(&FakeGpuProcessHost::InitOnIO,

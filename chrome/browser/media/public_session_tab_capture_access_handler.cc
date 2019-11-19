@@ -23,7 +23,7 @@ PublicSessionTabCaptureAccessHandler::~PublicSessionTabCaptureAccessHandler() {}
 
 bool PublicSessionTabCaptureAccessHandler::SupportsStreamType(
     content::WebContents* web_contents,
-    const blink::MediaStreamType type,
+    const blink::mojom::MediaStreamType type,
     const extensions::Extension* extension) {
   return tab_capture_access_handler_.SupportsStreamType(web_contents, type,
                                                         extension);
@@ -32,7 +32,7 @@ bool PublicSessionTabCaptureAccessHandler::SupportsStreamType(
 bool PublicSessionTabCaptureAccessHandler::CheckMediaAccessPermission(
     content::RenderFrameHost* render_frame_host,
     const GURL& security_origin,
-    blink::MediaStreamType type,
+    blink::mojom::MediaStreamType type,
     const extensions::Extension* extension) {
   return tab_capture_access_handler_.CheckMediaAccessPermission(
       render_frame_host, security_origin, type, extension);
@@ -46,8 +46,10 @@ void PublicSessionTabCaptureAccessHandler::HandleRequest(
   // This class handles requests for Public Sessions only, outside of them just
   // pass the request through to the original class.
   if (!profiles::ArePublicSessionRestrictionsEnabled() || !extension ||
-      (request.audio_type != blink::MEDIA_GUM_TAB_AUDIO_CAPTURE &&
-       request.video_type != blink::MEDIA_GUM_TAB_VIDEO_CAPTURE)) {
+      (request.audio_type !=
+           blink::mojom::MediaStreamType::GUM_TAB_AUDIO_CAPTURE &&
+       request.video_type !=
+           blink::mojom::MediaStreamType::GUM_TAB_VIDEO_CAPTURE)) {
     return tab_capture_access_handler_.HandleRequest(
         web_contents, request, std::move(callback), extension);
   }
@@ -75,8 +77,8 @@ void PublicSessionTabCaptureAccessHandler::ChainHandleRequest(
   // If the user denied tab capture, here the request gets filtered out before
   // being passed on to the actual implementation.
   if (!allowed_permissions.ContainsID(extensions::APIPermission::kTabCapture)) {
-    request_copy.audio_type = blink::MEDIA_NO_SERVICE;
-    request_copy.video_type = blink::MEDIA_NO_SERVICE;
+    request_copy.audio_type = blink::mojom::MediaStreamType::NO_SERVICE;
+    request_copy.video_type = blink::mojom::MediaStreamType::NO_SERVICE;
   }
 
   // Pass the request through to the original class.

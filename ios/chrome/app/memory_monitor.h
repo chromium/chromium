@@ -6,7 +6,7 @@
 #define IOS_CHROME_APP_MEMORY_MONITOR_H_
 
 // Starts the memory monitor that periodically updates the amount of free
-// memory and free disk space with breakpad in the background.
+// memory and free disk space in the background.
 void StartFreeMemoryMonitor();
 
 #endif  // IOS_CHROME_APP_MEMORY_MONITOR_H_

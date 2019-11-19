@@ -32,11 +32,9 @@ class HTMLModElement final : public HTMLElement {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  DECLARE_ELEMENT_FACTORY_WITH_TAGNAME(HTMLModElement);
-
- private:
   HTMLModElement(const QualifiedName&, Document&);
 
+ private:
   bool IsURLAttribute(const Attribute&) const override;
   bool HasLegalLinkAttribute(const QualifiedName&) const override;
   const QualifiedName& SubResourceAttributeName() const override;

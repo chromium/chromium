@@ -63,6 +63,9 @@
 #define PRINTER_LOG(level)                         \
   DEVICE_LOG(::device_event_log::LOG_TYPE_PRINTER, \
              ::device_event_log::LOG_LEVEL_##level)
+#define FIDO_LOG(level)                         \
+  DEVICE_LOG(::device_event_log::LOG_TYPE_FIDO, \
+             ::device_event_log::LOG_LEVEL_##level)
 
 // Generally prefer the above macros unless |type| or |level| is not constant.
 
@@ -106,8 +109,10 @@ enum LogType {
   LOG_TYPE_MEMORY = 6,
   // Printer related events.
   LOG_TYPE_PRINTER = 7,
+  // Security key events.
+  LOG_TYPE_FIDO = 8,
   // Used internally, must be the last type (may be changed).
-  LOG_TYPE_UNKNOWN = 8
+  LOG_TYPE_UNKNOWN = 9
 };
 
 // Used to specify the detail level for logging. In GetAsString, used to
@@ -168,6 +173,9 @@ std::string DEVICE_EVENT_LOG_EXPORT GetAsString(StringOrder order,
                                                 const std::string& types,
                                                 LogLevel max_level,
                                                 size_t max_events);
+
+// Clear all entries from the device event log.
+void DEVICE_EVENT_LOG_EXPORT ClearAll();
 
 // Clear entries from the device event log between the given times.
 void DEVICE_EVENT_LOG_EXPORT Clear(const base::Time& begin,

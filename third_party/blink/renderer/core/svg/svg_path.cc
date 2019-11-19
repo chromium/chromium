@@ -24,13 +24,16 @@
 #include "third_party/blink/renderer/core/svg/svg_path.h"
 
 #include <memory>
-#include "third_party/blink/renderer/core/svg/svg_animation_element.h"
+#include <utility>
+
+#include "third_party/blink/renderer/core/svg/svg_animate_element.h"
 #include "third_party/blink/renderer/core/svg/svg_path_blender.h"
 #include "third_party/blink/renderer/core/svg/svg_path_byte_stream.h"
 #include "third_party/blink/renderer/core/svg/svg_path_byte_stream_builder.h"
 #include "third_party/blink/renderer/core/svg/svg_path_byte_stream_source.h"
 #include "third_party/blink/renderer/core/svg/svg_path_utilities.h"
 #include "third_party/blink/renderer/platform/graphics/path.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
 
 namespace blink {
 
@@ -43,7 +46,7 @@ std::unique_ptr<SVGPathByteStream> BlendPathByteStreams(
     const SVGPathByteStream& to_stream,
     float progress) {
   std::unique_ptr<SVGPathByteStream> result_stream =
-      SVGPathByteStream::Create();
+      std::make_unique<SVGPathByteStream>();
   SVGPathByteStreamBuilder builder(*result_stream);
   SVGPathByteStreamSource from_source(from_stream);
   SVGPathByteStreamSource to_source(to_stream);
@@ -57,7 +60,7 @@ std::unique_ptr<SVGPathByteStream> AddPathByteStreams(
     const SVGPathByteStream& by_stream,
     unsigned repeat_count = 1) {
   std::unique_ptr<SVGPathByteStream> result_stream =
-      SVGPathByteStream::Create();
+      std::make_unique<SVGPathByteStream>();
   SVGPathByteStreamBuilder builder(*result_stream);
   SVGPathByteStreamSource from_source(from_stream);
   SVGPathByteStreamSource by_source(by_stream);
@@ -90,21 +93,24 @@ String SVGPath::ValueAsString() const {
 }
 
 SVGPath* SVGPath::Clone() const {
-  return SVGPath::Create(path_value_);
+  return MakeGarbageCollected<SVGPath>(path_value_);
 }
 
 SVGParsingError SVGPath::SetValueAsString(const String& string) {
-  std::unique_ptr<SVGPathByteStream> byte_stream = SVGPathByteStream::Create();
+  std::unique_ptr<SVGPathByteStream> byte_stream =
+      std::make_unique<SVGPathByteStream>();
   SVGParsingError parse_status =
       BuildByteStreamFromString(string, *byte_stream);
-  path_value_ = CSSPathValue::Create(std::move(byte_stream));
+  path_value_ = MakeGarbageCollected<CSSPathValue>(std::move(byte_stream));
   return parse_status;
 }
 
 SVGPropertyBase* SVGPath::CloneForAnimation(const String& value) const {
-  std::unique_ptr<SVGPathByteStream> byte_stream = SVGPathByteStream::Create();
+  std::unique_ptr<SVGPathByteStream> byte_stream =
+      std::make_unique<SVGPathByteStream>();
   BuildByteStreamFromString(value, *byte_stream);
-  return SVGPath::Create(CSSPathValue::Create(std::move(byte_stream)));
+  return MakeGarbageCollected<SVGPath>(
+      MakeGarbageCollected<CSSPathValue>(std::move(byte_stream)));
 }
 
 void SVGPath::Add(SVGPropertyBase* other, SVGElement*) {
@@ -114,20 +120,19 @@ void SVGPath::Add(SVGPropertyBase* other, SVGElement*) {
       ByteStream().IsEmpty() || other_path_byte_stream.IsEmpty())
     return;
 
-  path_value_ = CSSPathValue::Create(
+  path_value_ = MakeGarbageCollected<CSSPathValue>(
       AddPathByteStreams(ByteStream(), other_path_byte_stream));
 }
 
 void SVGPath::CalculateAnimatedValue(
-    SVGAnimationElement* animation_element,
+    const SVGAnimateElement& animation_element,
     float percentage,
     unsigned repeat_count,
     SVGPropertyBase* from_value,
     SVGPropertyBase* to_value,
     SVGPropertyBase* to_at_end_of_duration_value,
     SVGElement*) {
-  DCHECK(animation_element);
-  bool is_to_animation = animation_element->GetAnimationMode() == kToAnimation;
+  bool is_to_animation = animation_element.GetAnimationMode() == kToAnimation;
 
   const SVGPath& to = ToSVGPath(*to_value);
   const SVGPathByteStream& to_stream = to.ByteStream();
@@ -162,18 +167,21 @@ void SVGPath::CalculateAnimatedValue(
   std::unique_ptr<SVGPathByteStream> new_stream =
       BlendPathByteStreams(*from_stream, to_stream, percentage);
 
-  // Handle additive='sum'.
-  if (animation_element->IsAdditive() && !is_to_animation)
-    new_stream =
-        ConditionallyAddPathByteStreams(std::move(new_stream), ByteStream());
+  if (!is_to_animation) {
+    // Handle additive='sum'.
+    if (animation_element.IsAdditive()) {
+      new_stream =
+          ConditionallyAddPathByteStreams(std::move(new_stream), ByteStream());
+    }
 
-  // Handle accumulate='sum'.
-  if (animation_element->IsAccumulated() && repeat_count)
-    new_stream = ConditionallyAddPathByteStreams(
-        std::move(new_stream),
-        ToSVGPath(to_at_end_of_duration_value)->ByteStream(), repeat_count);
-
-  path_value_ = CSSPathValue::Create(std::move(new_stream));
+    // Handle accumulate='sum'.
+    if (repeat_count && animation_element.IsAccumulated()) {
+      new_stream = ConditionallyAddPathByteStreams(
+          std::move(new_stream),
+          ToSVGPath(to_at_end_of_duration_value)->ByteStream(), repeat_count);
+    }
+  }
+  path_value_ = MakeGarbageCollected<CSSPathValue>(std::move(new_stream));
 }
 
 float SVGPath::CalculateDistance(SVGPropertyBase* to, SVGElement*) {

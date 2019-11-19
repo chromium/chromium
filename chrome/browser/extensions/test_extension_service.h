@@ -28,11 +28,6 @@ class TestExtensionService : public extensions::ExtensionServiceInterface {
   bool UpdateExtension(const extensions::CRXFileInfo& file,
                        bool file_ownership_passed,
                        extensions::CrxInstaller** out_crx_installer) override;
-  const extensions::Extension* GetExtensionById(
-      const std::string& id,
-      bool include_disabled) const override;
-  const extensions::Extension* GetInstalledExtension(
-      const std::string& id) const override;
   const extensions::Extension* GetPendingExtensionUpdate(
       const std::string& extension_id) const override;
   bool FinishDelayedInstallationIfReady(const std::string& extension_id,

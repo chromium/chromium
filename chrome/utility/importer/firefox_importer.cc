@@ -118,9 +118,6 @@ FirefoxImporter::~FirefoxImporter() {
 void FirefoxImporter::StartImport(const importer::SourceProfile& source_profile,
                                   uint16_t items,
                                   ImporterBridge* bridge) {
-  UMA_HISTOGRAM_BOOLEAN("Import.IncludesPasswords.Firefox",
-                        !!(items & importer::PASSWORDS));
-
   bridge_ = bridge;
   source_path_ = source_profile.source_path;
   app_path_ = source_profile.app_path;
@@ -131,6 +128,10 @@ void FirefoxImporter::StartImport(const importer::SourceProfile& source_profile,
 
   // The order here is important!
   bridge_->NotifyStarted();
+  if (!source_path_copy_.CreateUniqueTempDir()) {
+    bridge->NotifyEnded();
+    return;
+  }
   if ((items & importer::HOME_PAGE) && !cancelled()) {
     bridge_->NotifyItemStarted(importer::HOME_PAGE);
     ImportHomepage();  // Doesn't have a UI item.
@@ -170,7 +171,7 @@ void FirefoxImporter::StartImport(const importer::SourceProfile& source_profile,
 }
 
 void FirefoxImporter::ImportHistory() {
-  base::FilePath file = source_path_.AppendASCII("places.sqlite");
+  base::FilePath file = GetCopiedSourcePath("places.sqlite");
   if (!base::PathExists(file))
     return;
 
@@ -215,7 +216,7 @@ void FirefoxImporter::ImportHistory() {
 }
 
 void FirefoxImporter::ImportBookmarks() {
-  base::FilePath file = source_path_.AppendASCII("places.sqlite");
+  base::FilePath file = GetCopiedSourcePath("places.sqlite");
   if (!base::PathExists(file))
     return;
 
@@ -434,7 +435,7 @@ void FirefoxImporter::ImportHomepage() {
 }
 
 void FirefoxImporter::ImportAutofillFormData() {
-  base::FilePath file = source_path_.AppendASCII("formhistory.sqlite");
+  base::FilePath file = GetCopiedSourcePath("formhistory.sqlite");
   if (!base::PathExists(file))
     return;
 
@@ -470,7 +471,7 @@ void FirefoxImporter::ImportAutofillFormData() {
 
 void FirefoxImporter::GetSearchEnginesXMLData(
     std::vector<std::string>* search_engine_data) {
-  base::FilePath file = source_path_.AppendASCII("search.sqlite");
+  base::FilePath file = GetCopiedSourcePath("search.sqlite");
   if (!base::PathExists(file)) {
     // Since Firefox 3.5, search engines are no longer stored in search.sqlite.
     // Instead, search.json is used for storing search engines.
@@ -817,7 +818,7 @@ void FirefoxImporter::LoadFavicons(
 void FirefoxImporter::LoadFavicons(
     const std::vector<ImportedBookmarkEntry>& bookmarks,
     favicon_base::FaviconUsageDataList* favicons) {
-  base::FilePath file = source_path_.AppendASCII("favicons.sqlite");
+  base::FilePath file = GetCopiedSourcePath("favicons.sqlite");
   if (!base::PathExists(file))
     return;
 
@@ -866,4 +867,18 @@ void FirefoxImporter::LoadFavicons(
       icon_cache[icon_id] = favicons->size() - 1;
     }
   }
+}
+
+base::FilePath FirefoxImporter::GetCopiedSourcePath(
+    base::StringPiece base_file_name) {
+  const base::FilePath file = source_path_.AppendASCII(base_file_name);
+  if (!base::PathExists(file))
+    return {};
+  // Temporary directory must be initialized.
+  DCHECK(source_path_copy_.IsValid());
+  const base::FilePath destination =
+      source_path_copy_.GetPath().AppendASCII(base_file_name);
+  if (!base::CopyFile(file, destination))
+    return {};
+  return destination;
 }

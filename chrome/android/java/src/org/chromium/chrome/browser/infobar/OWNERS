@@ -1,6 +1,7 @@
 mdjones@chromium.org
 
 per-file AppBannerInfoBar*=dominickn@chromium.org
+per-file DataReductionPromoInfoBar*=file://components/data_reduction_proxy/OWNERS
 per-file GeneratedPasswordSavedInfoBar*=rouslan@chromium.org
 per-file InstallableAmbientBadgeInfoBar*=dominickn@chromium.org
 

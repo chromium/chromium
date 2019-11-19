@@ -29,9 +29,8 @@ AccessibilityDelegate* ShellDelegateImpl::CreateAccessibilityDelegate() {
   return new DefaultAccessibilityDelegate;
 }
 
-ws::InputDeviceControllerClient*
-ShellDelegateImpl::GetInputDeviceControllerClient() {
-  return nullptr;
+bool ShellDelegateImpl::CanGoBack(gfx::NativeWindow window) const {
+  return true;
 }
 
 }  // namespace shell

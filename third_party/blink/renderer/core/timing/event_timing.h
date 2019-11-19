@@ -9,7 +9,7 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/timing/window_performance.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
 
@@ -28,18 +28,21 @@ class CORE_EXPORT EventTiming final {
   // Returns an object only if the event is relevant for the EventTiming API.
   static std::unique_ptr<EventTiming> Create(LocalDOMWindow*, const Event&);
 
-  explicit EventTiming(TimeTicks processing_start,
-                       TimeTicks event_timestamp,
+  explicit EventTiming(base::TimeTicks processing_start,
+                       base::TimeTicks event_timestamp,
                        WindowPerformance* performance);
 
   // Notifies the Performance object that the event has been dispatched.
   void DidDispatchEvent(const Event&);
 
+  // The caller owns the |clock| which must outlive the EventTiming.
+  static void SetTickClockForTesting(const base::TickClock* clock);
+
  private:
   // The time the first event handler or default action started to execute.
-  TimeTicks processing_start_;
+  base::TimeTicks processing_start_;
   // The event timestamp to be used in EventTiming and in histograms.
-  TimeTicks event_timestamp_;
+  base::TimeTicks event_timestamp_;
 
   Persistent<WindowPerformance> performance_;
   DISALLOW_COPY_AND_ASSIGN(EventTiming);

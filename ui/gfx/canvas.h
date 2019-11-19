@@ -190,9 +190,6 @@ class GFX_EXPORT Canvas {
   // should be antialiased.
   void ClipPath(const SkPath& path, bool do_anti_alias);
 
-  // Returns true if the current clip is empty.
-  bool IsClipEmpty() const;
-
   // Returns the bounds of the current clip (in local coordinates) in the
   // |bounds| parameter, and returns true if it is non empty.
   bool GetClipBounds(Rect* bounds);
@@ -417,8 +414,8 @@ class GFX_EXPORT Canvas {
                     int w,
                     int h,
                     float tile_scale = 1.0f,
-                    SkShader::TileMode tile_mode_x = SkShader::kRepeat_TileMode,
-                    SkShader::TileMode tile_mode_y = SkShader::kRepeat_TileMode,
+                    SkTileMode tile_mode_x = SkTileMode::kRepeat,
+                    SkTileMode tile_mode_y = SkTileMode::kRepeat,
                     cc::PaintFlags* flags = nullptr);
 
   // Helper for TileImageInt().  Initializes |flags| for tiling |image| with the
@@ -431,19 +428,12 @@ class GFX_EXPORT Canvas {
                                float tile_scale_y,
                                int dest_x,
                                int dest_y,
-                               SkShader::TileMode tile_mode_x,
-                               SkShader::TileMode tile_mode_y,
+                               SkTileMode tile_mode_x,
+                               SkTileMode tile_mode_y,
                                cc::PaintFlags* flags);
 
   // Apply transformation on the canvas.
   void Transform(const Transform& transform);
-
-  // Draws the given string with a fade gradient at the end.
-  void DrawFadedString(const base::string16& text,
-                       const FontList& font_list,
-                       SkColor color,
-                       const Rect& display_rect,
-                       int flags);
 
   // Note that writing to this bitmap will modify pixels stored in this canvas.
   SkBitmap GetBitmap() const;

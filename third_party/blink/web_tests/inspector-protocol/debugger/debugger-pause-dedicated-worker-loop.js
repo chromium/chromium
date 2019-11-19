@@ -1,6 +1,10 @@
 (async function(testRunner) {
-  var {page, session, dp} = await testRunner.startBlank('Tests that worker can be interrupted with Debugger.pause.');
+  var {page, session, dp} = await testRunner.startBlank(
+      'Tests that worker can be interrupted with Debugger.pause.');
 
+  await dp.Target.setAutoAttach({autoAttach: true,
+                                 waitForDebuggerOnStart: false,
+                                 flatten: true});
   await session.evaluate(`
     window.worker = new Worker('${testRunner.url('resources/dedicated-worker-loop.js')}');
     var resolve;
@@ -12,48 +16,34 @@
   `);
   testRunner.log('Started worker');
 
-  var workerId;
-  var workerRequestId = 1;
-  function sendCommandToWorker(method, params) {
-    var message = {method, params, id: workerRequestId};
-    dp.Target.sendMessageToTarget({targetId: workerId, message: JSON.stringify(message)});
-    return workerRequestId++;
-  }
-
-  dp.Target.setAutoAttach({autoAttach: true, waitForDebuggerOnStart: false});
-
-  var debuggerEnableRequestId = -1;
-  var evaluateRequestId = -1;
-  var pauseRequestId = -1;
-
-  dp.Target.onReceivedMessageFromTarget(async messageObject => {
-    var message = JSON.parse(messageObject.params.message);
-    if (message.id === debuggerEnableRequestId) {
-      testRunner.log('Did enable debugger');
-      // Start tight loop in the worker.
-      await dp.Runtime.evaluate({expression: 'worker.postMessage(1)' });
-      testRunner.log('Did post message to worker');
-    }
-    if (message.id === pauseRequestId) {
-      testRunner.log('Paused in worker');
-      evaluateRequestId = sendCommandToWorker('Runtime.evaluate', { 'expression': 'message_id > 1'});
-    }
-    if (message.id === evaluateRequestId) {
-      var value = message.result.result.value;
-      if (value === true)
-        testRunner.log('SUCCESS: evaluated, result: ' + value);
-      else
-        testRunner.log('FAIL: evaluated, result: ' + value);
-      testRunner.completeTest();
-    }
-  });
-
-  workerId = (await dp.Target.onceAttachedToTarget()).params.targetInfo.targetId;
+  const sessionId = (await dp.Target.onceAttachedToTarget()).params.sessionId;
   testRunner.log('Worker created');
   testRunner.log('didConnectToWorker');
-  // Enable debugger so that V8 can interrupt and handle inspector commands while there is a script running in a tight loop.
-  debuggerEnableRequestId = sendCommandToWorker('Debugger.enable', {});
+
+  const childSession = session.createChild(sessionId);
+
+  // Enable debugger so that V8 can interrupt and handle inspector
+  // commands while there is a script running in a tight loop.
+
+  await childSession.protocol.Debugger.enable();
+  testRunner.log('Did enable debugger');
+
+  // Start tight loop in the worker.
+  await session.evaluate('worker.postMessage(1);');
+  testRunner.log('Did post message to worker');
 
   await session.evaluateAsync('workerMessageReceivedPromise');
-  pauseRequestId = sendCommandToWorker('Debugger.pause', {});
+
+  await childSession.protocol.Debugger.pause();
+  await childSession.protocol.Debugger.oncePaused();
+  testRunner.log('Paused in worker');
+
+  const messageId = await childSession.evaluate('message_id');
+  if (messageId > 1) {
+    testRunner.log('SUCCESS: messageId > 1');
+  } else {
+    testRunner.log('FAIL: evaluated, messageId: ' + message_id);
+  }
+
+  testRunner.completeTest();
 })

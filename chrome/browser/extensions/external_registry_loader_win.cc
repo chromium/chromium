@@ -207,7 +207,7 @@ void ExternalRegistryLoader::LoadOnBlockingThread() {
   std::unique_ptr<base::DictionaryValue> prefs = LoadPrefsOnBlockingThread();
   LOCAL_HISTOGRAM_TIMES("Extensions.ExternalRegistryLoaderWin",
                         base::TimeTicks::Now() - start_time);
-  base::PostTaskWithTraits(
+  base::PostTask(
       FROM_HERE, {BrowserThread::UI},
       base::BindOnce(
           &ExternalRegistryLoader::CompleteLoadAndStartWatchingRegistry, this,
@@ -264,8 +264,8 @@ void ExternalRegistryLoader::OnRegistryKeyChanged(base::win::RegKey* key) {
 scoped_refptr<base::SequencedTaskRunner>
 ExternalRegistryLoader::GetOrCreateTaskRunner() {
   if (!task_runner_.get()) {
-    task_runner_ = base::CreateSequencedTaskRunnerWithTraits(
-        {// Requires I/O for registry.
+    task_runner_ = base::CreateSequencedTaskRunner(
+        {base::ThreadPool(),  // Requires I/O for registry.
          base::MayBlock(),
 
          // Inherit priority.
@@ -282,9 +282,9 @@ void ExternalRegistryLoader::UpatePrefsOnBlockingThread() {
   std::unique_ptr<base::DictionaryValue> prefs = LoadPrefsOnBlockingThread();
   LOCAL_HISTOGRAM_TIMES("Extensions.ExternalRegistryLoaderWinUpdate",
                         base::TimeTicks::Now() - start_time);
-  base::PostTaskWithTraits(FROM_HERE, {BrowserThread::UI},
-                           base::BindOnce(&ExternalRegistryLoader::OnUpdated,
-                                          this, base::Passed(&prefs)));
+  base::PostTask(FROM_HERE, {BrowserThread::UI},
+                 base::BindOnce(&ExternalRegistryLoader::OnUpdated, this,
+                                base::Passed(&prefs)));
 }
 
 }  // namespace extensions

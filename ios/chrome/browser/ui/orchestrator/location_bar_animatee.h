@@ -25,6 +25,11 @@
 // See comment for -resetEditViewOffsetAndOffsetSteadyViewToMatch.
 - (void)resetSteadyViewOffsetAndOffsetEditViewToMatch;
 
+// Hides badge view for steady view.
+- (void)hideSteadyViewBadgeView;
+// Displays the badge view of the steady view.
+- (void)showSteadyViewBadgeView;
+
 - (void)setSteadyViewFaded:(BOOL)hidden;
 - (void)setEditViewFaded:(BOOL)hidden;
 - (void)setEditViewHidden:(BOOL)hidden;

@@ -11,6 +11,7 @@
 #include "base/macros.h"
 #include "chrome/services/media_gallery_util/public/cpp/safe_media_metadata_parser.h"
 #include "chrome/services/media_gallery_util/public/mojom/media_parser.mojom.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 
 namespace content {
 class BrowserContext;
@@ -31,7 +32,7 @@ class BlobDataSourceFactory
  private:
   // SafeMediaMetadataParser::MediaDataSourceFactory implementation.
   std::unique_ptr<chrome::mojom::MediaDataSource> CreateMediaDataSource(
-      chrome::mojom::MediaDataSourcePtr* request,
+      mojo::PendingReceiver<chrome::mojom::MediaDataSource> receiver,
       MediaDataCallback media_data_callback) override;
 
   content::BrowserContext* browser_context_;

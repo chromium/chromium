@@ -7,7 +7,7 @@
 #include <memory>
 
 #include "base/bind.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #include <windows.h>
@@ -23,10 +23,10 @@ class ModuleWatcherTest : public testing::Test {
   void OnModuleEvent(const ModuleWatcher::ModuleEvent& event) {
     ++module_event_count_;
     switch (event.event_type) {
-      case mojom::ModuleEventType::MODULE_ALREADY_LOADED:
+      case ModuleWatcher::ModuleEventType::kModuleAlreadyLoaded:
         ++module_already_loaded_event_count_;
         break;
-      case mojom::ModuleEventType::MODULE_LOADED:
+      case ModuleWatcher::ModuleEventType::kModuleLoaded:
         ++module_loaded_event_count_;
         break;
     }
@@ -55,14 +55,14 @@ class ModuleWatcherTest : public testing::Test {
     module_ = nullptr;
   }
 
-  void RunUntilIdle() { scoped_task_environment_.RunUntilIdle(); }
+  void RunUntilIdle() { task_environment_.RunUntilIdle(); }
 
   std::unique_ptr<ModuleWatcher> Create() {
     return ModuleWatcher::Create(
         base::Bind(&ModuleWatcherTest::OnModuleEvent, base::Unretained(this)));
   }
 
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_;
 
   // Holds a handle to a loaded module.
   HMODULE module_;

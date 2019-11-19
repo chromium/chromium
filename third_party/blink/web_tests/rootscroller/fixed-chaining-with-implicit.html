@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+<script src="../resources/gesture-util.js"></script>
+<style>
+  body, html {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+  }
+
+  #rootscroller::-webkit-scrollbar {
+    width: 0px;
+    height: 0px;
+  }
+
+  #rootscroller {
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    position: absolute;
+    left: 0;
+    top: 0;
+    background-color: red;
+  }
+
+  .spacer {
+    width: 100%;
+    height: 100%;
+  }
+
+  #fixed {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 80%;
+    background-color: grey;
+  }
+</style>
+
+<div id="rootscroller">
+  <div class="spacer" style="background-color: PaleGreen"></div>
+  <div class="spacer" style="background-color: Maroon"></div>
+</div>
+
+<div id="fixed">
+  <p>
+    To test, try scrolling over the grey region. The root scroller shouldn't be
+    scrolled (you shouldn't see red appear).
+  </p>
+  <p>
+    Try again while zoomed in, you should still be able to pan around
+    (scrolling the visual viewport), but you should still not be able to scroll
+    the red region into view.
+  </p>
+</div>
+
+<script>
+  if (window.internals) {
+    internals.settings.setScrollAnimatorEnabled(false);
+    internals.runtimeFlags.implicitRootScrollerEnabled = true;
+  }
+
+  async function runTest() {
+    internals.setVisualViewportOffset(0, 0);
+    rootscroller.scrollTop = 0;
+
+    await waitForCompositorCommit();
+
+    assert_equals(window.internals.effectiveRootScroller(document),
+                  rootscroller,
+                  "#rootscroller must be the effective root scroller");
+
+    const delta = 3000;
+    const location = { x: 5, y: 5 };
+    await smoothScroll(delta,
+                       location.x,
+                       location.y,
+                       GestureSourceType.TOUCH_INPUT,
+                       'down',
+                       SPEED_INSTANT);
+
+    assert_equals(rootscroller.scrollTop,
+                  0,
+                  "RootScroller must not be scrolled");
+  }
+
+  window.onload = async () => {
+    if (!window.internals)
+      return;
+
+    var rootscroller = document.querySelector('#rootscroller');
+
+    promise_test( async t => {
+      internals.setPageScaleFactor(1);
+      await runTest();
+    }, "Scrolling from fixed element while unzoomed.");
+
+    promise_test( async t => {
+      internals.setPageScaleFactor(2);
+      await runTest();
+      assert_greater_than(visualViewport.offsetTop,
+                          0,
+                          "Visual viewport must be scrolled");
+    }, "Scrolling from fixed element while zoomed");
+  }
+</script>

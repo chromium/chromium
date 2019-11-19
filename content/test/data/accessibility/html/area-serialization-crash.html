@@ -1,0 +1,23 @@
+<!--
+@WAIT-FOR:done
+
+This is a regression test for a bug that crashes during blink serialization
+when determining if an area element is a descendant of an anchor.
+-->
+<!DOCTYPE html>
+<html>
+<script>
+  window.onload = () => {
+    var canvas = document.createElement('canvas');
+    canvas.id = 'canvas';
+    canvas.hidden = true;
+
+    var area = document.createElement('area');
+    area.appendChild(canvas);
+    document.body.appendChild(area);
+    document.body.appendChild(document.createTextNode('done'));
+  };
+</script>
+<body>
+</body>
+</html>

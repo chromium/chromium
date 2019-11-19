@@ -345,7 +345,7 @@ class GuestViewBase : public content::BrowserPluginGuestDelegate,
       const content::WebContents::CreateParams& create_params) final;
   void DidAttach(int guest_proxy_routing_id) final;
   void DidDetach() final;
-  content::WebContents* GetOwnerWebContents() const final;
+  content::WebContents* GetOwnerWebContents() final;
   void SetGuestHost(content::GuestHost* guest_host) final;
   void WillAttach(content::WebContents* embedder_web_contents,
                   int browser_plugin_instance_id,
@@ -500,7 +500,7 @@ class GuestViewBase : public content::BrowserPluginGuestDelegate,
 
   // This is used to ensure pending tasks will not fire after this object is
   // destroyed.
-  base::WeakPtrFactory<GuestViewBase> weak_ptr_factory_;
+  base::WeakPtrFactory<GuestViewBase> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(GuestViewBase);
 };

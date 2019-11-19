@@ -17,6 +17,7 @@ import os
 import shutil
 import subprocess
 import sys
+import tempfile
 import time
 import traceback
 import unittest
@@ -107,7 +108,7 @@ class Config(object):
 class InstallerTest(unittest.TestCase):
   """Tests a test case in the config file."""
 
-  def __init__(self, name, test, config, variable_expander):
+  def __init__(self, name, test, config, variable_expander, output_dir):
     """Constructor.
 
     Args:
@@ -116,14 +117,18 @@ class InstallerTest(unittest.TestCase):
           ending with state names.
       config: The Config object.
       variable_expander: A VariableExpander object.
+      output_dir: An optional directory into which diagnostics may be written
+          in case of failure.
     """
     super(InstallerTest, self).__init__()
     self._name = name
     self._test = test
     self._config = config
     self._variable_expander = variable_expander
+    self._output_dir = output_dir
     self._verifier_runner = verifier_runner.VerifierRunner()
     self._clean_on_teardown = True
+    self._log_path = None
 
   def __str__(self):
     """Returns a string representing the test case.
@@ -140,6 +145,14 @@ class InstallerTest(unittest.TestCase):
     # test case from the config file in place of the name of this class's test
     # function.
     return unittest.TestCase.id(self).replace(self._testMethodName, self._name)
+
+  def setUp(self):
+    # Create a temp file to contain the installer log(s) for this test.
+    log_file, self._log_path = tempfile.mkstemp()
+    os.close(log_file)
+    self.addCleanup(os.remove, self._log_path)
+    self._variable_expander.SetLogFile(self._log_path)
+    self.addCleanup(self._variable_expander.SetLogFile, None)
 
   def runTest(self):
     """Run the test case."""
@@ -170,6 +183,15 @@ class InstallerTest(unittest.TestCase):
     """Cleans up the machine if the test case fails."""
     if self._clean_on_teardown:
       RunCleanCommand(True, self._variable_expander)
+      # Either copy the log to isolated outdir or dump it to console.
+      if self._output_dir:
+        target = os.path.join(self._output_dir,
+                              os.path.basename(self._log_path))
+        shutil.copyfile(self._log_path, target)
+        logging.error('Saved installer log to %s', target)
+      else:
+        with open(self._log_path) as fh:
+          logging.error(fh.read())
 
   def shortDescription(self):
     """Overridden from unittest.TestCase.
@@ -559,7 +581,7 @@ def DoMain():
                               test['name'])
     if not tests_to_run or test_name in tests_to_run:
       suite.addTest(InstallerTest(test['name'], test['traversal'], config,
-                                  variable_expander))
+                                  variable_expander, args.output_dir))
 
   verbosity = 2 if not args.quiet else 1
   result = unittest.TextTestRunner(verbosity=verbosity).run(suite)

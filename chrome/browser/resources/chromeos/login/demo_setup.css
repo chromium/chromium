@@ -2,10 +2,6 @@
  * Use of this source code is governed by a BSD-style license that can be
  * found in the LICENSE file. */
 
-[slot='bottom-buttons'] {
-  padding: 0 6px;
-}
-
 /* Spinner shown on progress dialog. */
 paper-spinner-lite {
   height: 164px;

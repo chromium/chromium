@@ -8,7 +8,6 @@
 #include "third_party/blink/public/mojom/background_fetch/background_fetch.mojom.h"
 
 namespace content {
-
 namespace background_fetch {
 
 std::string ActiveRegistrationUniqueIdKey(const std::string& developer_id) {
@@ -95,32 +94,31 @@ DatabaseStatus ToDatabaseStatus(blink::ServiceWorkerStatusCode status) {
 
 bool ToBackgroundFetchRegistration(
     const proto::BackgroundFetchMetadata& metadata_proto,
-    blink::mojom::BackgroundFetchRegistration* registration) {
-  DCHECK(registration);
+    blink::mojom::BackgroundFetchRegistrationData* registration_data) {
+  DCHECK(registration_data);
   const auto& registration_proto = metadata_proto.registration();
 
-  registration->developer_id = registration_proto.developer_id();
-  registration->unique_id = registration_proto.unique_id();
-  registration->upload_total = registration_proto.upload_total();
-  registration->uploaded = registration_proto.uploaded();
-  registration->download_total = registration_proto.download_total();
-  registration->downloaded = registration_proto.downloaded();
+  registration_data->developer_id = registration_proto.developer_id();
+  registration_data->upload_total = registration_proto.upload_total();
+  registration_data->uploaded = registration_proto.uploaded();
+  registration_data->download_total = registration_proto.download_total();
+  registration_data->downloaded = registration_proto.downloaded();
   switch (registration_proto.result()) {
     case proto::BackgroundFetchRegistration_BackgroundFetchResult_UNSET:
-      registration->result = blink::mojom::BackgroundFetchResult::UNSET;
+      registration_data->result = blink::mojom::BackgroundFetchResult::UNSET;
       break;
     case proto::BackgroundFetchRegistration_BackgroundFetchResult_FAILURE:
-      registration->result = blink::mojom::BackgroundFetchResult::FAILURE;
+      registration_data->result = blink::mojom::BackgroundFetchResult::FAILURE;
       break;
     case proto::BackgroundFetchRegistration_BackgroundFetchResult_SUCCESS:
-      registration->result = blink::mojom::BackgroundFetchResult::SUCCESS;
+      registration_data->result = blink::mojom::BackgroundFetchResult::SUCCESS;
       break;
     default:
       NOTREACHED();
   }
 
   bool did_convert = MojoFailureReasonFromRegistrationProto(
-      registration_proto.failure_reason(), &registration->failure_reason);
+      registration_proto.failure_reason(), &registration_data->failure_reason);
   return did_convert;
 }
 
@@ -194,5 +192,4 @@ GURL RemoveUniqueParamFromCacheURL(const GURL& url,
 }
 
 }  // namespace background_fetch
-
 }  // namespace content

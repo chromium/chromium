@@ -18,6 +18,6 @@ public_deps = [
 ]
 
 type_mappings = [
-  "printing.mojom.PdfRenderSettings=printing::PdfRenderSettings",
-  "printing.mojom.PdfRenderSettings::Mode=printing::PdfRenderSettings::Mode",
+  "printing.mojom.PdfRenderSettings=::printing::PdfRenderSettings",
+  "printing.mojom.PdfRenderSettings::Mode=::printing::PdfRenderSettings::Mode",
 ]

@@ -33,7 +33,8 @@
 #include "third_party/blink/public/platform/web_insecure_request_policy.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
-#include "third_party/blink/renderer/core/frame/use_counter.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/forms/form_data.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_control_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_element.h"
@@ -42,22 +43,20 @@
 #include "third_party/blink/renderer/core/loader/frame_load_request.h"
 #include "third_party/blink/renderer/core/loader/frame_loader.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/network/encoded_form_data.h"
 #include "third_party/blink/renderer/platform/network/form_data_encoder.h"
 #include "third_party/blink/renderer/platform/network/http_names.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_encoding.h"
-#include "third_party/blink/renderer/platform/wtf/time.h"
 
 namespace blink {
-
-using namespace html_names;
 
 static int64_t GenerateFormDataIdentifier() {
   // Initialize to the current time to reduce the likelihood of generating
   // identifiers that overlap with those from past/future browser sessions.
   static int64_t next_identifier =
-      static_cast<int64_t>(CurrentTime() * 1000000.0);
+      static_cast<int64_t>(base::Time::Now().ToDoubleT() * 1000000.0);
   return ++next_identifier;
 }
 
@@ -159,12 +158,12 @@ inline FormSubmission::FormSubmission(SubmitMethod method,
       boundary_(boundary) {
   if (event) {
     triggering_event_info_ = event->isTrusted()
-                                 ? WebTriggeringEventInfo::kFromTrustedEvent
-                                 : WebTriggeringEventInfo::kFromUntrustedEvent;
+                                 ? TriggeringEventInfo::kFromTrustedEvent
+                                 : TriggeringEventInfo::kFromUntrustedEvent;
     if (event->UnderlyingEvent())
       event = event->UnderlyingEvent();
   } else {
-    triggering_event_info_ = WebTriggeringEventInfo::kNotFromEvent;
+    triggering_event_info_ = TriggeringEventInfo::kNotFromEvent;
   }
   navigation_policy_ = NavigationPolicyFromEvent(event);
 }
@@ -182,16 +181,20 @@ FormSubmission* FormSubmission::Create(HTMLFormElement* form,
   copied_attributes.CopyFrom(attributes);
   if (submit_button) {
     AtomicString attribute_value;
-    if (!(attribute_value = submit_button->FastGetAttribute(kFormactionAttr))
+    if (!(attribute_value =
+              submit_button->FastGetAttribute(html_names::kFormactionAttr))
              .IsNull())
       copied_attributes.ParseAction(attribute_value);
-    if (!(attribute_value = submit_button->FastGetAttribute(kFormenctypeAttr))
+    if (!(attribute_value =
+              submit_button->FastGetAttribute(html_names::kFormenctypeAttr))
              .IsNull())
       copied_attributes.UpdateEncodingType(attribute_value);
-    if (!(attribute_value = submit_button->FastGetAttribute(kFormmethodAttr))
+    if (!(attribute_value =
+              submit_button->FastGetAttribute(html_names::kFormmethodAttr))
              .IsNull())
       copied_attributes.UpdateMethodType(attribute_value);
-    if (!(attribute_value = submit_button->FastGetAttribute(kFormtargetAttr))
+    if (!(attribute_value =
+              submit_button->FastGetAttribute(html_names::kFormtargetAttr))
              .IsNull())
       copied_attributes.SetTarget(attribute_value);
   }
@@ -213,7 +216,7 @@ FormSubmission* FormSubmission::Create(HTMLFormElement* form,
       action_url.ProtocolIs("http") &&
       !SecurityOrigin::Create(action_url)->IsPotentiallyTrustworthy()) {
     UseCounter::Count(document,
-                      WebFeature::kUpgradeInsecureRequestsUpgradedRequest);
+                      WebFeature::kUpgradeInsecureRequestsUpgradedRequestForm);
     action_url.SetProtocol("https");
     if (action_url.Port() == 80)
       action_url.SetPort(443);
@@ -272,41 +275,49 @@ void FormSubmission::Trace(blink::Visitor* visitor) {
 }
 
 KURL FormSubmission::RequestURL() const {
-  if (method_ == FormSubmission::kPostMethod)
+  if (method_ == FormSubmission::kPostMethod ||
+      action_.ProtocolIsJavaScript()) {
     return action_;
+  }
 
   KURL request_url(action_);
   request_url.SetQuery(form_data_->FlattenToString());
   return request_url;
 }
 
-FrameLoadRequest FormSubmission::CreateFrameLoadRequest(
-    Document* origin_document) {
-  FrameLoadRequest frame_request(origin_document);
-
-  if (!target_.IsEmpty())
-    frame_request.SetFrameName(target_);
-
+void FormSubmission::Navigate() {
+  ResourceRequest resource_request(RequestURL());
+  ClientNavigationReason reason = ClientNavigationReason::kFormSubmissionGet;
   if (method_ == FormSubmission::kPostMethod) {
-    frame_request.GetResourceRequest().SetHTTPMethod(http_names::kPOST);
-    frame_request.GetResourceRequest().SetHTTPBody(form_data_);
+    reason = ClientNavigationReason::kFormSubmissionPost;
+    resource_request.SetHttpMethod(http_names::kPOST);
+    resource_request.SetHttpBody(form_data_);
 
     // construct some user headers if necessary
     if (boundary_.IsEmpty()) {
-      frame_request.GetResourceRequest().SetHTTPContentType(content_type_);
+      resource_request.SetHTTPContentType(content_type_);
     } else {
-      frame_request.GetResourceRequest().SetHTTPContentType(
-          content_type_ + "; boundary=" + boundary_);
+      resource_request.SetHTTPContentType(content_type_ +
+                                          "; boundary=" + boundary_);
     }
   }
+  resource_request.SetHasUserGesture(
+      LocalFrame::HasTransientUserActivation(form_->GetDocument().GetFrame()));
 
-  frame_request.GetResourceRequest().SetURL(RequestURL());
-
+  FrameLoadRequest frame_request(&form_->GetDocument(), resource_request);
+  frame_request.SetNavigationPolicy(navigation_policy_);
+  frame_request.SetClientRedirectReason(reason);
   frame_request.SetForm(form_);
-
   frame_request.SetTriggeringEventInfo(triggering_event_info_);
 
-  return frame_request;
+  Frame* target_frame =
+      form_->GetDocument()
+          .GetFrame()
+          ->Tree()
+          .FindOrCreateFrameForNavigation(frame_request, target_)
+          .frame;
+  if (target_frame)
+    target_frame->Navigate(frame_request, WebFrameLoadType::kStandard);
 }
 
 }  // namespace blink

@@ -42,7 +42,6 @@ class CONTENT_EXPORT BackgroundFetchRegistrationId {
   bool operator!=(const BackgroundFetchRegistrationId& other) const;
 
   // Enables this type to be used in an std::map and std::set.
-  // TODO(peter): Delete this when we switch away from using maps.
   bool operator<(const BackgroundFetchRegistrationId& other) const;
 
   // Returns whether this registration id refers to valid data.

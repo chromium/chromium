@@ -8,13 +8,13 @@
 #include "base/callback.h"
 #include "base/scoped_observer.h"
 #include "base/sequence_checker.h"
+#include "components/reading_list/core/reading_list_model.h"
 #include "components/reading_list/core/reading_list_model_observer.h"
 
 namespace ios {
 class ChromeBrowserState;
 }
 
-class ReadingListModel;
 class ReadingListDownloadService;
 
 namespace reading_list {
@@ -44,7 +44,8 @@ class ReadingListRemoverHelper : public ReadingListModelObserver {
   Callback completion_;
   ReadingListModel* reading_list_model_ = nullptr;
   ReadingListDownloadService* reading_list_download_service_ = nullptr;
-  ScopedObserver<ReadingListModel, ReadingListModelObserver> scoped_observer_;
+  ScopedObserver<ReadingListModel, ReadingListModelObserver> scoped_observer_{
+      this};
 
   SEQUENCE_CHECKER(sequence_checker_);
 

@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "cc/cc_export.h"
 #include "cc/input/scrollbar.h"
@@ -31,7 +30,12 @@ class CC_EXPORT SingleScrollbarAnimationControllerThinning {
       ScrollbarAnimationControllerClient* client,
       base::TimeDelta thinning_duration);
 
-  ~SingleScrollbarAnimationControllerThinning() {}
+  SingleScrollbarAnimationControllerThinning(
+      const SingleScrollbarAnimationControllerThinning&) = delete;
+  ~SingleScrollbarAnimationControllerThinning() = default;
+
+  SingleScrollbarAnimationControllerThinning& operator=(
+      const SingleScrollbarAnimationControllerThinning&) = delete;
 
   bool mouse_is_over_scrollbar_thumb() const {
     return mouse_is_over_scrollbar_thumb_;
@@ -96,8 +100,6 @@ class CC_EXPORT SingleScrollbarAnimationControllerThinning {
   AnimationChange thickness_change_;
 
   base::TimeDelta thinning_duration_;
-
-  DISALLOW_COPY_AND_ASSIGN(SingleScrollbarAnimationControllerThinning);
 };
 
 }  // namespace cc

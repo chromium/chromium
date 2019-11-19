@@ -19,7 +19,6 @@
 #include "components/feed/core/pref_names.h"
 #include "components/feed/core/time_serialization.h"
 #include "components/feed/feed_feature_list.h"
-#include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/web_resource/web_resource_pref_names.h"
 #include "net/base/network_change_notifier.h"
@@ -257,13 +256,6 @@ FeedSchedulerHost::FeedSchedulerHost(PrefService* profile_prefs,
 
 FeedSchedulerHost::~FeedSchedulerHost() = default;
 
-// static
-void FeedSchedulerHost::RegisterProfilePrefs(PrefRegistrySimple* registry) {
-  registry->RegisterTimePref(prefs::kLastFetchAttemptTime, base::Time());
-  registry->RegisterTimeDeltaPref(prefs::kBackgroundRefreshPeriod,
-                                  base::TimeDelta());
-}
-
 void FeedSchedulerHost::Initialize(
     base::RepeatingClosure refresh_callback,
     ScheduleBackgroundTaskCallback schedule_background_task_callback,
@@ -399,7 +391,9 @@ void FeedSchedulerHost::OnReceiveNewContent(
 }
 
 void FeedSchedulerHost::OnRequestError(int network_response_code) {
-  profile_prefs_->SetTime(prefs::kLastFetchAttemptTime, clock_->Now());
+  if (!kOnlySetLastRefreshAttemptOnSuccess.Get())
+    profile_prefs_->SetTime(prefs::kLastFetchAttemptTime, clock_->Now());
+
   last_fetch_status_ = network_response_code;
   TryRun(std::move(fixed_timer_completion_));
   outstanding_request_until_ = base::Time();
@@ -507,6 +501,10 @@ int FeedSchedulerHost::GetLastFetchStatusForDebugging() const {
   return last_fetch_status_;
 }
 
+TriggerType* FeedSchedulerHost::GetLastFetchTriggerTypeForDebugging() const {
+  return last_fetch_trigger_type_.get();
+}
+
 void FeedSchedulerHost::OnEulaAccepted() {
   OnForegrounded();
 }
@@ -519,7 +517,7 @@ FeedSchedulerHost::ShouldRefreshResult FeedSchedulerHost::ShouldRefresh(
     return kDontRefreshOutstandingRequest;
   }
 
-  if (base::ContainsKey(disabled_triggers_, trigger)) {
+  if (base::Contains(disabled_triggers_, trigger)) {
     DVLOG(2) << "Disabled trigger stopped refresh from trigger "
              << static_cast<int>(trigger);
     return kDontRefreshTriggerDisabled;
@@ -565,18 +563,22 @@ FeedSchedulerHost::ShouldRefreshResult FeedSchedulerHost::ShouldRefresh(
     return kDontRefreshRefreshSuppressed;
   }
 
-  if (attempt_age < GetTriggerThreshold(trigger)) {
-    DVLOG(2) << "Last attempt age of " << attempt_age
-             << " stopped refresh from trigger " << static_cast<int>(trigger);
-    return kDontRefreshNotStale;
-  }
+  // https://crbug.com/988165: When kThrottleBackgroundFetches == false, skip
+  // checks for quota and staleness for background fetching.
+  if (kThrottleBackgroundFetches.Get() || trigger != TriggerType::kFixedTimer) {
+    if (attempt_age < GetTriggerThreshold(trigger)) {
+      DVLOG(2) << "Last attempt age of " << attempt_age
+               << " stopped refresh from trigger " << static_cast<int>(trigger);
+      return kDontRefreshNotStale;
+    }
 
-  auto throttlerIter = throttlers_.find(user_class);
-  if (throttlerIter == throttlers_.end() ||
-      !throttlerIter->second->RequestQuota()) {
-    DVLOG(2) << "Throttler stopped refresh from trigger "
-             << static_cast<int>(trigger);
-    return kDontRefreshRefreshThrottled;
+    auto throttlerIter = throttlers_.find(user_class);
+    if (throttlerIter == throttlers_.end() ||
+        !throttlerIter->second->RequestQuota()) {
+      DVLOG(2) << "Throttler stopped refresh from trigger "
+               << static_cast<int>(trigger);
+      return kDontRefreshRefreshThrottled;
+    }
   }
 
   switch (trigger) {
@@ -597,6 +599,8 @@ FeedSchedulerHost::ShouldRefreshResult FeedSchedulerHost::ShouldRefresh(
   outstanding_request_until_ =
       clock_->Now() +
       base::TimeDelta::FromSeconds(kTimeoutDurationSeconds.Get());
+
+  last_fetch_trigger_type_ = std::make_unique<TriggerType>(trigger);
 
   return kShouldRefresh;
 }

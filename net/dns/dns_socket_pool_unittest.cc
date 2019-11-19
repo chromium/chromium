@@ -16,14 +16,14 @@ namespace {
 
 class DummyObject {
  public:
-  DummyObject() : weak_factory_(this) {}
+  DummyObject() {}
 
   base::WeakPtr<DummyObject> GetWeakPtr() { return weak_factory_.GetWeakPtr(); }
 
   bool HasWeakPtrs() const { return weak_factory_.HasWeakPtrs(); }
 
  private:
-  base::WeakPtrFactory<DummyObject> weak_factory_;
+  base::WeakPtrFactory<DummyObject> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(DummyObject);
 };

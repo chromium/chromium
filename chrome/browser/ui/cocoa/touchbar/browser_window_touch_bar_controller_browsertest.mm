@@ -14,6 +14,7 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/prefs/pref_service.h"
+#include "components/remote_cocoa/app_shim/window_touch_bar_delegate.h"
 #include "components/search_engines/default_search_manager.h"
 #include "components/search_engines/search_engines_test_util.h"
 #include "components/search_engines/template_url_data.h"
@@ -21,7 +22,6 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_utils.h"
 #include "testing/gtest_mac.h"
-#include "ui/views_bridge_mac/window_touch_bar_delegate.h"
 
 // TODO(spqchan): Write tests that will check for page load and bookmark
 // updates.

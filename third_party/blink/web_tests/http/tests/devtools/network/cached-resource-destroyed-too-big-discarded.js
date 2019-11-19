@@ -45,7 +45,7 @@
     imageRequest.requestContent().then(step3);
   }
 
-  function step3(content) {
+  function step3({ content, error, isEncoded }) {
     TestRunner.addResult(imageRequest.url());
     TestRunner.addResult('request.type: ' + imageRequest.resourceType());
     TestRunner.addResult('request.content.length after requesting content: ' + content.length);
@@ -69,7 +69,7 @@
     imageRequest.requestContent().then(step7);
   }
 
-  function step7(content) {
+  function step7({ content, error, isEncoded }) {
     TestRunner.addResult('request.content after requesting content: ' + content);
     TestRunner.assertTrue(!content, 'Content available after CachedResource was destroyed.');
     TestRunner.completeTest();

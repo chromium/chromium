@@ -63,8 +63,8 @@ void BrowsingDataIndexedDBHelper::FetchIndexedDBInfoInIndexedDBThread(
       continue;  // Non-websafe state is not considered browsing data.
     result.push_back(origin);
   }
-  base::PostTaskWithTraits(FROM_HERE, {BrowserThread::UI},
-                           base::BindOnce(std::move(callback), result));
+  base::PostTask(FROM_HERE, {BrowserThread::UI},
+                 base::BindOnce(std::move(callback), result));
 }
 
 void BrowsingDataIndexedDBHelper::DeleteIndexedDBInIndexedDBThread(
@@ -112,8 +112,8 @@ void CannedBrowsingDataIndexedDBHelper::StartFetching(FetchCallback callback) {
   for (const auto& origin : pending_origins_)
     result.emplace_back(origin, 0, base::Time());
 
-  base::PostTaskWithTraits(FROM_HERE, {BrowserThread::UI},
-                           base::BindOnce(std::move(callback), result));
+  base::PostTask(FROM_HERE, {BrowserThread::UI},
+                 base::BindOnce(std::move(callback), result));
 }
 
 void CannedBrowsingDataIndexedDBHelper::DeleteIndexedDB(

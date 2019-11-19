@@ -32,8 +32,8 @@
 #include "net/http/http_byte_range.h"
 #include "net/http/http_log_util.h"
 #include "net/http/http_util.h"
-#include "net/log/net_log.h"
 #include "net/log/net_log_capture_mode.h"
+#include "net/log/net_log_values.h"
 
 using base::StringPiece;
 using base::Time;
@@ -71,15 +71,11 @@ const char* const kCookieResponseHeaders[] = {
   "clear-site-data",
 };
 
-// By default, do not cache Strict-Transport-Security or Public-Key-Pins.
-// This avoids erroneously re-processing them on page loads from cache ---
-// they are defined to be valid only on live and error-free HTTPS
-// connections.
-// TODO(https://crbug.com/893055): remove Public-Key-Pins from non-cachable
-// headers?
+// By default, do not cache Strict-Transport-Security.
+// This avoids erroneously re-processing it on page loads from cache ---
+// it is defined to be valid only on live and error-free HTTPS connections.
 const char* const kSecurityStateHeaders[] = {
   "strict-transport-security",
-  "public-key-pins"
 };
 
 // These response headers are not copied from a 304/206 response to the cached
@@ -198,7 +194,7 @@ scoped_refptr<HttpResponseHeaders> HttpResponseHeaders::TryToCreate(
   }
 
   return base::MakeRefCounted<HttpResponseHeaders>(
-      HttpUtil::AssembleRawHeaders(headers.data(), headers.size()));
+      HttpUtil::AssembleRawHeaders(headers));
 }
 
 void HttpResponseHeaders::Persist(base::Pickle* pickle,
@@ -778,7 +774,8 @@ void HttpResponseHeaders::AddHeader(std::string::const_iterator name_begin,
                                     std::string::const_iterator values_end) {
   // If the header can be coalesced, then we should split it up.
   if (values_begin == values_end ||
-      HttpUtil::IsNonCoalescingHeader(name_begin, name_end)) {
+      HttpUtil::IsNonCoalescingHeader(
+          base::StringPiece(name_begin, name_end))) {
     AddToParsed(name_begin, name_end, values_begin, values_end);
   } else {
     HttpUtil::ValuesIterator it(values_begin, values_end, ',',
@@ -889,7 +886,8 @@ void HttpResponseHeaders::GetMimeTypeAndCharset(std::string* mime_type,
 
   size_t iter = 0;
   while (EnumerateHeader(&iter, name, &value))
-    HttpUtil::ParseContentType(value, mime_type, charset, &had_charset, NULL);
+    HttpUtil::ParseContentType(value, mime_type, charset, &had_charset,
+                               nullptr);
 }
 
 bool HttpResponseHeaders::GetMimeType(std::string* mime_type) const {
@@ -924,9 +922,12 @@ bool HttpResponseHeaders::IsRedirect(std::string* location) const {
                                         parsed_[i].value_end);
     // Escape any non-ASCII characters to preserve them.  The server should
     // only be returning ASCII here, but for compat we need to do this.
-    *location = base::IsStringASCII(location_strpiece)
-                    ? location_strpiece.as_string()
-                    : EscapeNonASCIIAndPercent(location_strpiece);
+    //
+    // The URL parser escapes things internally, but it expect the bytes to be
+    // valid UTF-8, so encoding errors turn into replacement characters before
+    // escaping. Escaping here preserves the bytes as-is. See
+    // https://crbug.com/942073#c14.
+    *location = EscapeNonASCII(location_strpiece);
   }
 
   return true;
@@ -1279,9 +1280,9 @@ bool HttpResponseHeaders::HasStrongValidators() const {
 
 bool HttpResponseHeaders::HasValidators() const {
   std::string etag_header;
-  EnumerateHeader(NULL, "etag", &etag_header);
+  EnumerateHeader(nullptr, "etag", &etag_header);
   std::string last_modified_header;
-  EnumerateHeader(NULL, "Last-Modified", &last_modified_header);
+  EnumerateHeader(nullptr, "Last-Modified", &last_modified_header);
   return HttpUtil::HasValidators(GetHttpVersion(), etag_header,
                                  last_modified_header);
 }
@@ -1329,21 +1330,20 @@ bool HttpResponseHeaders::GetContentRangeFor206(
       instance_length);
 }
 
-std::unique_ptr<base::Value> HttpResponseHeaders::NetLogCallback(
+base::Value HttpResponseHeaders::NetLogParams(
     NetLogCaptureMode capture_mode) const {
-  auto dict = std::make_unique<base::DictionaryValue>();
-  auto headers = std::make_unique<base::ListValue>();
-  headers->GetList().push_back(NetLogStringValue(GetStatusLine()));
+  base::DictionaryValue dict;
+  base::ListValue headers;
+  headers.Append(NetLogStringValue(GetStatusLine()));
   size_t iterator = 0;
   std::string name;
   std::string value;
   while (EnumerateHeaderLines(&iterator, &name, &value)) {
     std::string log_value =
         ElideHeaderValueForNetLog(capture_mode, name, value);
-    headers->GetList().push_back(
-        NetLogStringValue(base::StrCat({name, ": ", log_value})));
+    headers.Append(NetLogStringValue(base::StrCat({name, ": ", log_value})));
   }
-  dict->Set("headers", std::move(headers));
+  dict.SetKey("headers", std::move(headers));
   return std::move(dict);
 }
 

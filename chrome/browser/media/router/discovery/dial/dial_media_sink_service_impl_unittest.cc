@@ -3,17 +3,15 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/media/router/discovery/dial/dial_media_sink_service_impl.h"
+
 #include "base/bind.h"
 #include "base/test/mock_callback.h"
 #include "base/timer/mock_timer.h"
 #include "chrome/browser/media/router/discovery/dial/dial_device_data.h"
 #include "chrome/browser/media/router/discovery/dial/dial_registry.h"
 #include "chrome/browser/media/router/test/test_helper.h"
-#include "content/public/test/test_browser_thread_bundle.h"
-#include "services/data_decoder/data_decoder_service.h"
-#include "services/data_decoder/public/mojom/constants.mojom.h"
-#include "services/service_manager/public/cpp/connector.h"
-#include "services/service_manager/public/cpp/test/test_connector_factory.h"
+#include "content/public/test/browser_task_environment.h"
+#include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -39,7 +37,7 @@ class MockDeviceDescriptionService : public DeviceDescriptionService {
  public:
   MockDeviceDescriptionService(DeviceDescriptionParseSuccessCallback success_cb,
                                DeviceDescriptionParseErrorCallback error_cb)
-      : DeviceDescriptionService(/*connector=*/nullptr, success_cb, error_cb) {}
+      : DeviceDescriptionService(success_cb, error_cb) {}
   ~MockDeviceDescriptionService() override {}
 
   MOCK_METHOD1(GetDeviceDescriptions,
@@ -49,11 +47,8 @@ class MockDeviceDescriptionService : public DeviceDescriptionService {
 class DialMediaSinkServiceImplTest : public ::testing::Test {
  public:
   DialMediaSinkServiceImplTest()
-      : thread_bundle_(content::TestBrowserThreadBundle::IO_MAINLOOP),
-        data_decoder_service_(connector_factory_.RegisterInstance(
-            data_decoder::mojom::kServiceName)),
+      : task_environment_(content::BrowserTaskEnvironment::IO_MAINLOOP),
         media_sink_service_(new DialMediaSinkServiceImpl(
-            connector_factory_.GetDefaultConnector(),
             mock_sink_discovered_cb_.Get(),
             base::SequencedTaskRunnerHandle::Get())) {}
 
@@ -102,9 +97,8 @@ class DialMediaSinkServiceImplTest : public ::testing::Test {
   }
 
  protected:
-  const content::TestBrowserThreadBundle thread_bundle_;
-  service_manager::TestConnectorFactory connector_factory_;
-  data_decoder::DataDecoderService data_decoder_service_;
+  const content::BrowserTaskEnvironment task_environment_;
+  data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
 
   base::MockCallback<OnSinksDiscoveredCallback> mock_sink_discovered_cb_;
   base::MockCallback<

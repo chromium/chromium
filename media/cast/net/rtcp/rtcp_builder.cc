@@ -156,7 +156,7 @@ PacketRef RtcpBuilder::Finish() {
   packet_->data.resize(kMaxIpPacketSize - writer_.remaining());
   writer_ = base::BigEndianWriter(NULL, 0);
   PacketRef ret = packet_;
-  packet_ = NULL;
+  packet_.reset();
   return ret;
 }
 

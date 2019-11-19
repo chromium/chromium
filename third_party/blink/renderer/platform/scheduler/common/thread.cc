@@ -4,16 +4,18 @@
 
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 
+#include "base/feature_list.h"
 #include "base/single_thread_task_runner.h"
 #include "base/synchronization/waitable_event.h"
 #include "build/build_config.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/platform.h"
-#include "third_party/blink/renderer/platform/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/scheduler/worker/compositor_thread.h"
 #include "third_party/blink/renderer/platform/scheduler/worker/compositor_thread_scheduler.h"
 #include "third_party/blink/renderer/platform/scheduler/worker/worker_thread.h"
 #include "third_party/blink/renderer/platform/wtf/assertions.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/thread_specific.h"
 
@@ -34,25 +36,6 @@ Thread*& ThreadTLSSlot() {
   return *thread_tls_slot;
 }
 
-// Update the threads TLS on the newly created thread.
-void UpdateThreadTLS(Thread* thread, base::WaitableEvent* event) {
-  ThreadTLSSlot() = thread;
-  event->Signal();
-}
-
-// Post a task to register |thread| to the TLS, and wait until it gets actually
-// registered. This is called on a thread that created |thread| (not on
-// |thread|.)
-void UpdateThreadTLSAndWait(Thread* thread) {
-  base::WaitableEvent event(base::WaitableEvent::ResetPolicy::AUTOMATIC,
-                            base::WaitableEvent::InitialState::NOT_SIGNALED);
-  PostCrossThreadTask(
-      *thread->GetTaskRunner(), FROM_HERE,
-      CrossThreadBind(&UpdateThreadTLS, WTF::CrossThreadUnretained(thread),
-                      WTF::CrossThreadUnretained(&event)));
-  event.Wait();
-}
-
 std::unique_ptr<Thread>& GetMainThread() {
   DEFINE_STATIC_LOCAL(std::unique_ptr<Thread>, main_thread, ());
   return main_thread;
@@ -65,10 +48,16 @@ std::unique_ptr<Thread>& GetCompositorThread() {
 
 }  // namespace
 
-ThreadCreationParams::ThreadCreationParams(WebThreadType thread_type)
+// static
+void Thread::UpdateThreadTLS(Thread* thread) {
+  ThreadTLSSlot() = thread;
+}
+
+ThreadCreationParams::ThreadCreationParams(ThreadType thread_type)
     : thread_type(thread_type),
       name(GetNameForThreadType(thread_type)),
-      frame_or_worker_scheduler(nullptr) {}
+      frame_or_worker_scheduler(nullptr),
+      supports_gc(false) {}
 
 ThreadCreationParams& ThreadCreationParams::SetThreadNameForTest(
     const char* thread_name) {
@@ -82,37 +71,39 @@ ThreadCreationParams& ThreadCreationParams::SetFrameOrWorkerScheduler(
   return *this;
 }
 
+ThreadCreationParams& ThreadCreationParams::SetSupportsGC(bool gc_enabled) {
+  supports_gc = gc_enabled;
+  return *this;
+}
+
 std::unique_ptr<Thread> Thread::CreateThread(
     const ThreadCreationParams& params) {
   auto thread = std::make_unique<scheduler::WorkerThread>(params);
   thread->Init();
-  UpdateThreadTLSAndWait(thread.get());
   return std::move(thread);
-}
-
-std::unique_ptr<Thread> Thread::CreateWebAudioThread() {
-  ThreadCreationParams params(WebThreadType::kWebAudioThread);
-  // WebAudio uses a thread with |DISPLAY| priority to avoid glitch when the
-  // system is under the high pressure. Note that the main browser thread also
-  // runs with same priority. (see: crbug.com/734539)
-  params.thread_options.priority = base::ThreadPriority::DISPLAY;
-  return CreateThread(params);
 }
 
 void Thread::CreateAndSetCompositorThread() {
   DCHECK(!GetCompositorThread());
 
-  ThreadCreationParams params(WebThreadType::kCompositorThread);
-#if defined(OS_ANDROID) || defined(OS_CHROMEOS) || defined(USE_OZONE)
-  params.thread_options.priority = base::ThreadPriority::DISPLAY;
-#endif
+  ThreadCreationParams params(ThreadType::kCompositorThread);
+  if (base::FeatureList::IsEnabled(
+          features::kBlinkCompositorUseDisplayThreadPriority))
+    params.thread_priority = base::ThreadPriority::DISPLAY;
+
   auto compositor_thread =
       std::make_unique<scheduler::CompositorThread>(params);
   compositor_thread->Init();
-  UpdateThreadTLSAndWait(compositor_thread.get());
   GetCompositorThread() = std::move(compositor_thread);
-  Platform::Current()->SetDisplayThreadPriority(
-      GetCompositorThread()->ThreadId());
+
+  if (base::FeatureList::IsEnabled(
+          features::kBlinkCompositorUseDisplayThreadPriority)) {
+    // Chrome OS moves tasks between control groups on thread priority changes.
+    // This is not possible inside the sandbox, so ask the browser to do it.
+    // TODO(spang): Check if we can remove this on non-Chrome OS builds.
+    Platform::Current()->SetDisplayThreadPriority(
+        GetCompositorThread()->ThreadId());
+  }
 }
 
 Thread* Thread::Current() {

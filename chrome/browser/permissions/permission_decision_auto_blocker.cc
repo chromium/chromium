@@ -48,7 +48,7 @@ std::unique_ptr<base::DictionaryValue> GetOriginAutoBlockerData(
     const GURL& origin_url) {
   std::unique_ptr<base::DictionaryValue> dict =
       base::DictionaryValue::From(settings->GetWebsiteSetting(
-          origin_url, GURL(), CONTENT_SETTINGS_TYPE_PERMISSION_AUTOBLOCKER_DATA,
+          origin_url, GURL(), ContentSettingsType::PERMISSION_AUTOBLOCKER_DATA,
           std::string(), nullptr));
   if (!dict)
     return std::make_unique<base::DictionaryValue>();
@@ -84,7 +84,7 @@ int RecordActionInWebsiteSettings(const GURL& url,
   permission_dict->SetKey(key, base::Value(++current_count));
 
   map->SetWebsiteSettingDefaultScope(
-      url, GURL(), CONTENT_SETTINGS_TYPE_PERMISSION_AUTOBLOCKER_DATA,
+      url, GURL(), ContentSettingsType::PERMISSION_AUTOBLOCKER_DATA,
       std::string(), std::move(dict));
 
   return current_count;
@@ -286,7 +286,7 @@ bool PermissionDecisionAutoBlocker::RecordDismissAndEmbargo(
   // For now, only plugins are explicitly opted out. We should think about how
   // to make this nicer once PermissionQueueController is removed.
   if (base::FeatureList::IsEnabled(features::kBlockPromptsIfDismissedOften) &&
-      permission != CONTENT_SETTINGS_TYPE_PLUGINS &&
+      permission != ContentSettingsType::PLUGINS &&
       current_dismissal_count >= g_dismissals_before_block) {
     PlaceUnderEmbargo(url, permission, kPermissionDismissalEmbargoKey);
     return true;
@@ -301,7 +301,7 @@ bool PermissionDecisionAutoBlocker::RecordIgnoreAndEmbargo(
       url, permission, kPromptIgnoreCountKey, profile_);
 
   if (base::FeatureList::IsEnabled(features::kBlockPromptsIfIgnoredOften) &&
-      permission != CONTENT_SETTINGS_TYPE_PLUGINS &&
+      permission != ContentSettingsType::PLUGINS &&
       current_ignore_count >= g_ignores_before_block) {
     PlaceUnderEmbargo(url, permission, kPermissionIgnoreEmbargoKey);
     return true;
@@ -332,7 +332,7 @@ void PermissionDecisionAutoBlocker::RemoveEmbargoByUrl(
   DCHECK(dismissal_key_deleted);
 
   map->SetWebsiteSettingDefaultScope(
-      url, GURL(), CONTENT_SETTINGS_TYPE_PERMISSION_AUTOBLOCKER_DATA,
+      url, GURL(), ContentSettingsType::PERMISSION_AUTOBLOCKER_DATA,
       std::string(), std::move(dict));
 }
 
@@ -343,7 +343,7 @@ void PermissionDecisionAutoBlocker::RemoveCountsByUrl(
 
   std::unique_ptr<ContentSettingsForOneType> settings(
       new ContentSettingsForOneType);
-  map->GetSettingsForOneType(CONTENT_SETTINGS_TYPE_PERMISSION_AUTOBLOCKER_DATA,
+  map->GetSettingsForOneType(ContentSettingsType::PERMISSION_AUTOBLOCKER_DATA,
                              std::string(), settings.get());
 
   for (const auto& site : *settings) {
@@ -351,7 +351,7 @@ void PermissionDecisionAutoBlocker::RemoveCountsByUrl(
 
     if (origin.is_valid() && filter.Run(origin)) {
       map->SetWebsiteSettingDefaultScope(
-          origin, GURL(), CONTENT_SETTINGS_TYPE_PERMISSION_AUTOBLOCKER_DATA,
+          origin, GURL(), ContentSettingsType::PERMISSION_AUTOBLOCKER_DATA,
           std::string(), nullptr);
     }
   }
@@ -375,7 +375,7 @@ void PermissionDecisionAutoBlocker::PlaceUnderEmbargo(
   permission_dict->SetKey(
       key, base::Value(static_cast<double>(clock_->Now().ToInternalValue())));
   map->SetWebsiteSettingDefaultScope(
-      request_origin, GURL(), CONTENT_SETTINGS_TYPE_PERMISSION_AUTOBLOCKER_DATA,
+      request_origin, GURL(), ContentSettingsType::PERMISSION_AUTOBLOCKER_DATA,
       std::string(), std::move(dict));
 }
 

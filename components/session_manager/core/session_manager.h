@@ -62,6 +62,9 @@ class SESSION_EXPORT SessionManager {
   void AddObserver(SessionManagerObserver* observer);
   void RemoveObserver(SessionManagerObserver* observer);
 
+  // Various helpers to notify observers.
+  void NotifyUserProfileLoaded(const AccountId& account_id);
+
   SessionState session_state() const { return session_state_; }
   const std::vector<Session>& sessions() const { return sessions_; }
 
@@ -102,7 +105,7 @@ class SESSION_EXPORT SessionManager {
   // Keeps track of user sessions.
   std::vector<Session> sessions_;
 
-  base::ObserverList<SessionManagerObserver>::Unchecked observers_;
+  base::ObserverList<SessionManagerObserver> observers_;
 
   DISALLOW_COPY_AND_ASSIGN(SessionManager);
 };

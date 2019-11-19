@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/svg/svg_path_byte_stream.h"
 #include "third_party/blink/renderer/core/svg/svg_path_utilities.h"
 #include "third_party/blink/renderer/platform/graphics/path.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
 
 namespace blink {
 
@@ -28,9 +29,9 @@ scoped_refptr<StylePath> StylePath::Create(
   return base::AdoptRef(new StylePath(std::move(path_byte_stream)));
 }
 
-StylePath* StylePath::EmptyPath() {
+const StylePath* StylePath::EmptyPath() {
   DEFINE_STATIC_REF(StylePath, empty_path,
-                    StylePath::Create(SVGPathByteStream::Create()));
+                    StylePath::Create(std::make_unique<SVGPathByteStream>()));
   return empty_path;
 }
 
@@ -53,14 +54,14 @@ bool StylePath::IsClosed() const {
 }
 
 CSSValue* StylePath::ComputedCSSValue() const {
-  return cssvalue::CSSPathValue::Create(const_cast<StylePath*>(this),
-                                        kTransformToAbsolute);
+  return MakeGarbageCollected<cssvalue::CSSPathValue>(
+      const_cast<StylePath*>(this), kTransformToAbsolute);
 }
 
 bool StylePath::operator==(const BasicShape& o) const {
   if (!IsSameType(o))
     return false;
-  const StylePath& other = ToStylePath(o);
+  const StylePath& other = To<StylePath>(o);
   return *byte_stream_ == *other.byte_stream_;
 }
 

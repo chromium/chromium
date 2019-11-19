@@ -39,7 +39,7 @@ class BASE_EXPORT CheckedObserver {
   friend class internal::CheckedObserverAdapter;
 
   // Must be mutable to allow ObserverList<const Foo>.
-  mutable WeakPtrFactory<CheckedObserver> factory_;
+  mutable WeakPtrFactory<CheckedObserver> factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(CheckedObserver);
 };

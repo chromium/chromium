@@ -248,8 +248,9 @@ initWithCollectionController:
   // Find how much the collection view should be scrolled up in the next frame.
   CGFloat yOffset =
       (1.0 - percentComplete) * [self.headerController pinnedOffsetY] +
-      percentComplete * ([self.headerController pinnedOffsetY] -
-                         self.collectionShiftingOffset);
+      percentComplete * MAX([self.headerController pinnedOffsetY] -
+                                self.collectionShiftingOffset,
+                            0);
   self.collectionView.contentOffset = CGPointMake(0, yOffset);
 
   if (percentComplete == 1.0) {

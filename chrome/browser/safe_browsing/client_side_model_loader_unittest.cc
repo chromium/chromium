@@ -15,11 +15,12 @@
 #include "base/metrics/field_trial.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "chrome/common/safe_browsing/client_model.pb.h"
 #include "components/safe_browsing/proto/csd.pb.h"
 #include "components/variations/variations_associated_data.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "net/url_request/url_request_status.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -59,8 +60,9 @@ class ModelLoaderTest : public testing::Test {
   ModelLoaderTest()
       : test_shared_loader_factory_(
             base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-                &test_url_loader_factory_)),
-        field_trials_(new base::FieldTrialList(nullptr)) {}
+                &test_url_loader_factory_)) {
+    scoped_feature_list_.Init();
+  }
 
   void SetUp() override {
     variations::testing::ClearAllVariationIDs();
@@ -70,10 +72,8 @@ class ModelLoaderTest : public testing::Test {
   // Set up the finch experiment to control the model number
   // used in the model URL. This clears all existing state.
   void SetFinchModelNumber(int model_number) {
-    // Destroy the existing FieldTrialList before creating a new one to avoid
-    // a DCHECK.
-    field_trials_.reset();
-    field_trials_.reset(new base::FieldTrialList(nullptr));
+    scoped_feature_list_.Reset();
+    scoped_feature_list_.Init();
     variations::testing::ClearAllVariationIDs();
     variations::testing::ClearAllVariationParams();
 
@@ -97,7 +97,7 @@ class ModelLoaderTest : public testing::Test {
     if (net_error != net::OK) {
       network::URLLoaderCompletionStatus status;
       test_url_loader_factory_.AddResponse(
-          model_url_, network::ResourceResponseHead(), std::string(),
+          model_url_, network::mojom::URLResponseHead::New(), std::string(),
           network::URLLoaderCompletionStatus(net_error));
       return;
     }
@@ -109,10 +109,10 @@ class ModelLoaderTest : public testing::Test {
   }
 
  private:
-  content::TestBrowserThreadBundle thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
   network::TestURLLoaderFactory test_url_loader_factory_;
+  base::test::ScopedFeatureList scoped_feature_list_;
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_;
-  std::unique_ptr<base::FieldTrialList> field_trials_;
   GURL model_url_;
 };
 
@@ -296,7 +296,7 @@ TEST_F(ModelLoaderTest, ModelNamesTest) {
 
   // No Finch setup. Should default to 0.
   std::unique_ptr<ModelLoader> loader;
-  loader.reset(new ModelLoader(base::Closure(), NULL,
+  loader.reset(new ModelLoader(base::Closure(), nullptr,
                                false /* is_extended_reporting */));
   EXPECT_EQ(loader->name(), "client_model_v5_variation_0.pb");
   EXPECT_EQ(loader->url_.spec(),
@@ -305,12 +305,12 @@ TEST_F(ModelLoaderTest, ModelNamesTest) {
 
   // Model 1, no extended reporting.
   SetFinchModelNumber(1);
-  loader.reset(new ModelLoader(base::Closure(), NULL, false));
+  loader.reset(new ModelLoader(base::Closure(), nullptr, false));
   EXPECT_EQ(loader->name(), "client_model_v5_variation_1.pb");
 
   // Model 2, with extended reporting.
   SetFinchModelNumber(2);
-  loader.reset(new ModelLoader(base::Closure(), NULL, true));
+  loader.reset(new ModelLoader(base::Closure(), nullptr, true));
   EXPECT_EQ(loader->name(), "client_model_v5_ext_variation_2.pb");
 }
 

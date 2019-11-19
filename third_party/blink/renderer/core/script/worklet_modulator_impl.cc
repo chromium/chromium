@@ -9,10 +9,6 @@
 
 namespace blink {
 
-ModulatorImplBase* WorkletModulatorImpl::Create(ScriptState* script_state) {
-  return MakeGarbageCollected<WorkletModulatorImpl>(script_state);
-}
-
 WorkletModulatorImpl::WorkletModulatorImpl(ScriptState* script_state)
     : ModulatorImplBase(script_state) {}
 

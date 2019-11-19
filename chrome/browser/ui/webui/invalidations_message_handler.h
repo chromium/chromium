@@ -57,7 +57,7 @@ class InvalidationsMessageHandler
   // register ourselves as Observers for any notifications.
   invalidation::InvalidationLogger* logger_;
 
-  base::WeakPtrFactory<InvalidationsMessageHandler> weak_ptr_factory_;
+  base::WeakPtrFactory<InvalidationsMessageHandler> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(InvalidationsMessageHandler);
 };

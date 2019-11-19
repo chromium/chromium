@@ -24,8 +24,6 @@ class MODULES_EXPORT AudioWorklet final : public Worklet {
   USING_GARBAGE_COLLECTED_MIXIN(AudioWorklet);
 
  public:
-  static AudioWorklet* Create(BaseAudioContext*);
-
   explicit AudioWorklet(BaseAudioContext*);
   ~AudioWorklet() override = default;
 

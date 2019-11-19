@@ -20,6 +20,8 @@
 # by the time the app target is done, the info.plist is correct.
 #
 
+from __future__ import print_function
+
 import optparse
 import os
 import plistlib
@@ -123,7 +125,7 @@ def _AddVersionKeys(
   # True if the string is composed only of digits (and thus match \d+ regexp).
   groups = version.split('.')
   if len(groups) != 4 or not all(element.isdigit() for element in groups):
-    print >>sys.stderr, 'Invalid version string specified: "%s"' % version
+    print('Invalid version string specified: "%s"' % version, file=sys.stderr)
     return False
   values = dict(zip(('MAJOR', 'MINOR', 'BUILD', 'PATCH'), groups))
 
@@ -153,7 +155,7 @@ def _DoSCMKeys(plist, add_keys):
   if scm_revision != None:
     plist['SCMRevision'] = scm_revision
   elif add_keys:
-    print >>sys.stderr, 'Could not determine SCM revision.  This may be OK.'
+    print('Could not determine SCM revision.  This may be OK.', file=sys.stderr)
 
   return True
 
@@ -265,11 +267,11 @@ def Main(argv):
   (options, args) = parser.parse_args(argv)
 
   if len(args) > 0:
-    print >>sys.stderr, parser.get_usage()
+    print(parser.get_usage(), file=sys.stderr)
     return 1
 
   if not options.plist_path:
-    print >>sys.stderr, 'No --plist specified.'
+    print('No --plist specified.', file=sys.stderr)
     return 1
 
   # Read the plist into its parsed format. Convert the file to 'xml1' as
@@ -285,12 +287,12 @@ def Main(argv):
   if options.version_overrides:
     for pair in options.version_overrides:
       if not '=' in pair:
-        print >>sys.stderr, 'Invalid value for --version-overrides:', pair
+        print('Invalid value for --version-overrides:', pair, file=sys.stderr)
         return 1
       key, value = pair.split('=', 1)
       overrides[key] = value
       if key not in ('MAJOR', 'MINOR', 'BUILD', 'PATCH'):
-        print >>sys.stderr, 'Unsupported key for --version-overrides:', key
+        print('Unsupported key for --version-overrides:', key, file=sys.stderr)
         return 1
 
   if options.platform == 'mac':
@@ -326,7 +328,7 @@ def Main(argv):
   # Add Breakpad if configured to do so.
   if options.use_breakpad:
     if options.branding is None:
-      print >>sys.stderr, 'Use of Breakpad requires branding.'
+      print('Use of Breakpad requires branding.', file=sys.stderr)
       return 1
     # Map "target_os" passed from gn via the --platform parameter
     # to the platform as known by breakpad.
@@ -339,7 +341,7 @@ def Main(argv):
   # Add Keystone if configured to do so.
   if options.use_keystone:
     if options.bundle_identifier is None:
-      print >>sys.stderr, 'Use of Keystone requires the bundle id.'
+      print('Use of Keystone requires the bundle id.', file=sys.stderr)
       return 1
     _AddKeystoneKeys(plist, options.bundle_identifier)
   else:

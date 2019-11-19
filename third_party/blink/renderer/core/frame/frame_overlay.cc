@@ -36,22 +36,15 @@
 #include "cc/layers/picture_layer.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
-#include "third_party/blink/renderer/core/frame/web_frame_widget_base.h"
-#include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
+#include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/page/scrolling/scrolling_coordinator.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_layer.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_layer_client.h"
-#include "third_party/blink/renderer/platform/graphics/paint/paint_record_builder.h"
+#include "third_party/blink/renderer/platform/graphics/paint/scoped_paint_chunk_properties.h"
 
 namespace blink {
-
-std::unique_ptr<FrameOverlay> FrameOverlay::Create(
-    LocalFrame* local_frame,
-    std::unique_ptr<FrameOverlay::Delegate> delegate) {
-  return base::WrapUnique(new FrameOverlay(local_frame, std::move(delegate)));
-}
 
 FrameOverlay::FrameOverlay(LocalFrame* local_frame,
                            std::unique_ptr<FrameOverlay::Delegate> delegate)
@@ -59,53 +52,34 @@ FrameOverlay::FrameOverlay(LocalFrame* local_frame,
   DCHECK(frame_);
 }
 
-FrameOverlay::~FrameOverlay() {
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
-    return;
-  if (!layer_)
-    return;
-  layer_->RemoveFromParent();
-  layer_ = nullptr;
-}
-
-void FrameOverlay::Update() {
+void FrameOverlay::UpdatePrePaint() {
   if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
     delegate_->Invalidate();
     return;
   }
 
-  auto* local_root_frame_widget =
-      WebLocalFrameImpl::FromFrame(frame_)->LocalRootFrameWidget();
-  if (!local_root_frame_widget->IsAcceleratedCompositingActive())
+  auto* parent_layer = frame_->LocalFrameRoot()
+                           .View()
+                           ->GetLayoutView()
+                           ->Compositor()
+                           ->PaintRootGraphicsLayer();
+  if (!parent_layer) {
+    layer_ = nullptr;
     return;
-
-  GraphicsLayer* parent_layer =
-      frame_->IsMainFrame()
-          ? frame_->GetPage()->GetVisualViewport().ContainerLayer()
-          : local_root_frame_widget->RootGraphicsLayer();
-  if (!layer_) {
-    if (!parent_layer)
-      return;
-    layer_ = GraphicsLayer::Create(*this);
-    layer_->SetDrawsContent(true);
-
-    if (!RuntimeEnabledFeatures::BlinkGenPropertyTreesEnabled()) {
-      // This is required for contents of overlay to stay in sync with the page
-      // while scrolling. When BlinkGenPropertyTrees is enabled, scrolling is
-      // prevented by using the root scroll node in the root property tree
-      // state.
-      cc::Layer* cc_layer = layer_->CcLayer();
-      cc_layer->AddMainThreadScrollingReasons(
-          cc::MainThreadScrollingReason::kFrameOverlay);
-    }
-
-    layer_->SetLayerState(PropertyTreeState::Root(), IntPoint());
   }
 
+  if (!layer_) {
+    layer_ = std::make_unique<GraphicsLayer>(*this);
+    layer_->SetDrawsContent(true);
+    layer_->SetHitTestable(false);
+  }
+
+  DCHECK(parent_layer);
+  if (layer_->Parent() != parent_layer)
+    parent_layer->AddChild(layer_.get());
+  layer_->SetLayerState(DefaultPropertyTreeState(), IntPoint());
   layer_->SetSize(gfx::Size(Size()));
   layer_->SetNeedsDisplay();
-  if (parent_layer)
-    parent_layer->SetPaintArtifactCompositorNeedsUpdate();
 }
 
 IntSize FrameOverlay::Size() const {
@@ -115,8 +89,8 @@ IntSize FrameOverlay::Size() const {
       frame_->View()->Size());
 }
 
-LayoutRect FrameOverlay::VisualRect() const {
-  return LayoutRect(IntPoint(), Size());
+IntRect FrameOverlay::VisualRect() const {
+  return IntRect(IntPoint(), Size());
 }
 
 IntRect FrameOverlay::ComputeInterestRect(const GraphicsLayer* graphics_layer,
@@ -125,27 +99,23 @@ IntRect FrameOverlay::ComputeInterestRect(const GraphicsLayer* graphics_layer,
   return IntRect(IntPoint(), Size());
 }
 
-void FrameOverlay::EnsureOverlayAttached() const {
-  DCHECK(layer_);
-  auto* local_root_frame_widget =
-      WebLocalFrameImpl::FromFrame(frame_)->LocalRootFrameWidget();
-  GraphicsLayer* parent_layer =
-      frame_->GetPage()->MainFrame()->IsLocalFrame()
-          ? frame_->GetPage()->GetVisualViewport().ContainerLayer()
-          : local_root_frame_widget->RootGraphicsLayer();
-  DCHECK(parent_layer);
-  if (layer_->Parent() != parent_layer)
-    parent_layer->AddChild(layer_.get());
-}
-
 void FrameOverlay::PaintContents(const GraphicsLayer* graphics_layer,
-                                 GraphicsContext& gc,
+                                 GraphicsContext& context,
                                  GraphicsLayerPaintingPhase phase,
                                  const IntRect& interest_rect) const {
   DCHECK(!RuntimeEnabledFeatures::CompositeAfterPaintEnabled());
-  DCHECK(layer_);
-  EnsureOverlayAttached();
-  delegate_->PaintFrameOverlay(*this, gc, Size());
+  DCHECK_EQ(graphics_layer, layer_.get());
+  DCHECK_EQ(DefaultPropertyTreeState(), layer_->GetPropertyTreeState());
+  Paint(context);
+}
+
+void FrameOverlay::GraphicsLayersDidChange() {
+  frame_->View()->SetForeignLayerListNeedsUpdate();
+}
+
+void FrameOverlay::ServiceScriptedAnimations(
+    base::TimeTicks monotonic_frame_begin_time) {
+  delegate_->ServiceScriptedAnimations(monotonic_frame_begin_time);
 }
 
 String FrameOverlay::DebugName(const GraphicsLayer*) const {
@@ -153,9 +123,22 @@ String FrameOverlay::DebugName(const GraphicsLayer*) const {
   return "Frame Overlay Content Layer";
 }
 
-void FrameOverlay::Paint(GraphicsContext& context) {
-  DCHECK(RuntimeEnabledFeatures::CompositeAfterPaintEnabled());
+void FrameOverlay::Paint(GraphicsContext& context) const {
+  ScopedPaintChunkProperties properties(context.GetPaintController(),
+                                        DefaultPropertyTreeState(), *this,
+                                        DisplayItem::kFrameOverlay);
   delegate_->PaintFrameOverlay(*this, context, Size());
+}
+
+PropertyTreeState FrameOverlay::DefaultPropertyTreeState() const {
+  auto state = PropertyTreeState::Root();
+  if (frame_->IsMainFrame()) {
+    if (const auto* device_emulation = frame_->GetPage()
+                                           ->GetVisualViewport()
+                                           .GetDeviceEmulationTransformNode())
+      state.SetTransform(*device_emulation);
+  }
+  return state;
 }
 
 }  // namespace blink

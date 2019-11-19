@@ -11,7 +11,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/macros.h"
 #include "base/strings/string16.h"
-#include "components/autofill/core/browser/ui/card_unmask_prompt_view.h"
+#include "components/autofill/core/browser/ui/payments/card_unmask_prompt_view.h"
 
 namespace content {
 class WebContents;
@@ -35,7 +35,8 @@ class CardUnmaskPromptViewAndroid : public CardUnmaskPromptView {
                    const base::android::JavaParamRef<jstring>& cvc,
                    const base::android::JavaParamRef<jstring>& month,
                    const base::android::JavaParamRef<jstring>& year,
-                   jboolean should_store_locally);
+                   jboolean should_store_locally,
+                   jboolean enable_fido_auth);
   void OnNewCardLinkClicked(JNIEnv* env,
                             const base::android::JavaParamRef<jobject>& obj);
   int GetExpectedCvcLength(JNIEnv* env,

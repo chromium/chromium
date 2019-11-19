@@ -34,7 +34,6 @@
 #include "third_party/blink/renderer/modules/encoding/encoding.h"
 #include "third_party/blink/renderer/modules/encoding/text_encoder_encode_into_result.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "third_party/blink/renderer/platform/wtf/text/cstring.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_encoding_registry.h"
 
 namespace blink {
@@ -60,7 +59,7 @@ String TextEncoder::encoding() const {
 }
 
 NotShared<DOMUint8Array> TextEncoder::encode(const String& input) {
-  CString result;
+  std::string result;
   // Note that the UnencodableHandling here is never used since the
   // only possible encoding is UTF-8, which will use
   // U+FFFD-replacement rather than ASCII fallback substitution when
@@ -74,12 +73,12 @@ NotShared<DOMUint8Array> TextEncoder::encode(const String& input) {
                             WTF::kNoUnencodables);
   }
 
-  const char* buffer = result.data();
+  const char* buffer = result.c_str();
   const unsigned char* unsigned_buffer =
       reinterpret_cast<const unsigned char*>(buffer);
 
-  return NotShared<DOMUint8Array>(
-      DOMUint8Array::Create(unsigned_buffer, result.length()));
+  return NotShared<DOMUint8Array>(DOMUint8Array::Create(
+      unsigned_buffer, static_cast<unsigned>(result.length())));
 }
 
 TextEncoderEncodeIntoResult* TextEncoder::encodeInto(

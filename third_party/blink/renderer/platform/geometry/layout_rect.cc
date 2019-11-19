@@ -40,9 +40,6 @@
 
 namespace blink {
 
-LayoutRect::LayoutRect(const FloatRect& r)
-    : location_(LayoutPoint(r.Location())), size_(LayoutSize(r.Size())) {}
-
 LayoutRect::LayoutRect(const DoubleRect& r)
     : location_(LayoutPoint(r.Location())), size_(LayoutSize(r.Size())) {}
 
@@ -164,8 +161,8 @@ std::ostream& operator<<(std::ostream& ostream, const LayoutRect& rect) {
 }
 
 String LayoutRect::ToString() const {
-  return String::Format("%s %s", Location().ToString().Ascii().data(),
-                        Size().ToString().Ascii().data());
+  return String::Format("%s %s", Location().ToString().Ascii().c_str(),
+                        Size().ToString().Ascii().c_str());
 }
 
 WTF::TextStream& operator<<(WTF::TextStream& ts, const LayoutRect& rect) {

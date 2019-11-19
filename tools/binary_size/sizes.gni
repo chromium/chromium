@@ -1,0 +1,49 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/util/generate_wrapper.gni")
+if (is_mac) {
+  import("//build/config/mac/mac_sdk.gni")
+}
+
+template("sizes_test") {
+  generate_wrapper(target_name) {
+    forward_variables_from(invoker, [ "data" ])
+    testonly = true
+    executable = "//tools/binary_size/sizes.py"
+    wrapper_script = "$root_out_dir/bin/run_${target_name}"
+
+    data_deps = [
+      "//tools/binary_size:sizes_py",
+    ]
+    if (defined(invoker.data_deps)) {
+      data_deps += invoker.data_deps
+    }
+
+    executable_args = [
+      "--output-directory",
+      "@WrappedPath(.)",
+    ]
+    if (defined(invoker.executable_args)) {
+      executable_args += invoker.executable_args
+    }
+    if (is_mac) {
+      executable_args += [
+        "--size-path",
+        mac_bin_path + "size",
+      ]
+
+      if (!defined(data)) {
+        data = []
+      }
+
+      # 'size' is a symlink to 'llvm-size', so throw both in there, but don't
+      # add the entire bin path since it's large.
+      data += [
+        mac_bin_path + "llvm-size",
+        mac_bin_path + "size",
+      ]
+    }
+  }
+}

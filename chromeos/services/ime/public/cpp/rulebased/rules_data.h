@@ -6,8 +6,9 @@
 #define CHROMEOS_SERVICES_IME_PUBLIC_CPP_RULEBASED_RULES_DATA_H_
 
 #include <map>
+#include <memory>
 #include <string>
-#include <vector>
+#include <utility>
 
 #include "base/macros.h"
 
@@ -66,7 +67,8 @@ class RulesData {
 
  private:
   // The KeyMap instances under all the modifier states.
-  KeyMap key_maps_[8];
+  static constexpr size_t kKeyMapCount = 8;
+  KeyMap key_maps_[kKeyMapCount];
 
   // The map from the sub group match index (of the merged regexp) to the
   // transform rule (which is a pair of matching regexp, and replace string).

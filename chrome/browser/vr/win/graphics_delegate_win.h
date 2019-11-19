@@ -17,7 +17,7 @@
 #include "gpu/command_buffer/common/context_creation_attribs.h"
 #include "gpu/ipc/client/gpu_channel_host.h"
 #include "mojo/public/cpp/system/handle.h"
-#include "services/ws/public/cpp/gpu/context_provider_command_buffer.h"
+#include "services/viz/public/cpp/gpu/context_provider_command_buffer.h"
 #include "ui/gfx/geometry/rect_f.h"
 
 namespace gpu {
@@ -85,7 +85,7 @@ class GraphicsDelegateWin : public GraphicsDelegate {
 
   device::mojom::VRDisplayInfoPtr info_;
 
-  scoped_refptr<ws::ContextProviderCommandBuffer> context_provider_;
+  scoped_refptr<viz::ContextProviderCommandBuffer> context_provider_;
   gpu::gles2::GLES2Interface* gl_ = nullptr;
   int last_width_ = 0;
   int last_height_ = 0;

@@ -27,6 +27,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/pod_arena_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -101,7 +102,7 @@ TEST_F(PODFreeListArenaTest, RunsConstructorsOnNewObjects) {
 
 // Make sure the arena runs constructors of the objects allocated within.
 TEST_F(PODFreeListArenaTest, RunsConstructorsOnReusedObjects) {
-  std::set<TestClass1*> objects;
+  HashSet<TestClass1*> objects;
   scoped_refptr<PODFreeListArena<TestClass1>> arena =
       PODFreeListArena<TestClass1>::Create();
   for (int i = 0; i < 100; i++) {
@@ -113,8 +114,8 @@ TEST_F(PODFreeListArenaTest, RunsConstructorsOnReusedObjects) {
 
     objects.insert(tc1);
   }
-  for (std::set<TestClass1*>::iterator it = objects.begin();
-       it != objects.end(); ++it) {
+  for (HashSet<TestClass1*>::iterator it = objects.begin(); it != objects.end();
+       ++it) {
     arena->FreeObject(*it);
   }
   for (int i = 0; i < 100; i++) {
@@ -145,14 +146,14 @@ TEST_F(PODFreeListArenaTest, AddsFreedObjectsToFreedList) {
 
 // Make sure allocations use previously freed memory.
 TEST_F(PODFreeListArenaTest, ReusesPreviouslyFreedObjects) {
-  std::set<TestClass2*> objects;
+  HashSet<TestClass2*> objects;
   scoped_refptr<PODFreeListArena<TestClass2>> arena =
       PODFreeListArena<TestClass2>::Create();
   for (int i = 0; i < 100; i++) {
     objects.insert(arena->AllocateObject());
   }
-  for (std::set<TestClass2*>::iterator it = objects.begin();
-       it != objects.end(); ++it) {
+  for (HashSet<TestClass2*>::iterator it = objects.begin(); it != objects.end();
+       ++it) {
     arena->FreeObject(*it);
   }
   for (int i = 0; i < 100; i++) {

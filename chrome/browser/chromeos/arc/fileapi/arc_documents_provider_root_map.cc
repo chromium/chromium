@@ -20,13 +20,17 @@ namespace {
 struct DocumentsProviderSpec {
   const char* authority;
   const char* root_document_id;
+  const char* root_id;
+  bool read_only;
 };
 
 // List of documents providers for media views.
 constexpr DocumentsProviderSpec kDocumentsProviderWhitelist[] = {
-    {"com.android.providers.media.documents", "images_root"},
-    {"com.android.providers.media.documents", "videos_root"},
-    {"com.android.providers.media.documents", "audio_root"},
+    {"com.android.providers.media.documents", "images_root", "images_root",
+     true},
+    {"com.android.providers.media.documents", "videos_root", "videos_root",
+     true},
+    {"com.android.providers.media.documents", "audio_root", "audio_root", true},
 };
 
 }  // namespace
@@ -50,8 +54,10 @@ ArcDocumentsProviderRootMap::ArcDocumentsProviderRootMap(Profile* profile)
   // in ArcDocumentsProviderRootMapFactory.
   DCHECK(runner_);
 
-  for (const auto& spec : kDocumentsProviderWhitelist)
-    RegisterRoot(spec.authority, spec.root_document_id);
+  for (const auto& spec : kDocumentsProviderWhitelist) {
+    RegisterRoot(spec.authority, spec.root_document_id, spec.root_id,
+                 spec.read_only, {});
+  }
 }
 
 ArcDocumentsProviderRootMap::~ArcDocumentsProviderRootMap() {
@@ -91,7 +97,10 @@ ArcDocumentsProviderRoot* ArcDocumentsProviderRootMap::Lookup(
 
 void ArcDocumentsProviderRootMap::RegisterRoot(
     const std::string& authority,
-    const std::string& root_document_id) {
+    const std::string& root_document_id,
+    const std::string& root_id,
+    bool read_only,
+    const std::vector<std::string>& mime_types) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   Key key(authority, root_document_id);
@@ -101,7 +110,8 @@ void ArcDocumentsProviderRootMap::RegisterRoot(
     return;
   }
   map_.emplace(key, std::make_unique<ArcDocumentsProviderRoot>(
-                        runner_, authority, root_document_id));
+                        runner_, authority, root_document_id, root_id,
+                        read_only, mime_types));
 }
 
 void ArcDocumentsProviderRootMap::UnregisterRoot(

@@ -1,4 +1,12 @@
 include_rules = [
     "+mojo/public/cpp/bindings/binding.h",
     "+services/device/public/mojom/nfc.mojom-blink.h",
+    "+services/device/public/mojom/nfc.mojom-blink-forward.h",
 ]
+
+specific_include_rules = {
+  "nfc_proxy_test\.cc": [
+    "+base/run_loop.h",
+    "+base/test/bind_test_util.h",
+  ],
+}

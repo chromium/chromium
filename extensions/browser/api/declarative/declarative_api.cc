@@ -21,8 +21,6 @@
 #include "base/values.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/render_frame_host.h"
-#include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/api/declarative/rules_registry_service.h"
 #include "extensions/browser/api/extensions_api_client.h"
@@ -159,7 +157,6 @@ ExtensionFunction::ResponseAction RulesFunction::Run() {
     return RespondNow(Error("Missing webview permission"));
   }
 
-  int embedder_process_id = render_frame_host()->GetProcess()->GetID();
   RecordUMA(event_name);
 
   bool from_web_view = web_view_instance_id != 0;
@@ -175,7 +172,7 @@ ExtensionFunction::ResponseAction RulesFunction::Run() {
     event_name = event_name.substr(found);
 
     rules_registry_id = WebViewGuest::GetOrGenerateRulesRegistryID(
-        embedder_process_id, web_view_instance_id);
+        source_process_id(), web_view_instance_id);
   }
 
   // The following call will return a NULL pointer for apps_shell, but should
@@ -191,8 +188,7 @@ ExtensionFunction::ResponseAction RulesFunction::Run() {
     return RespondNow(RunAsyncOnCorrectThread());
 
   scoped_refptr<base::SingleThreadTaskRunner> thread_task_runner =
-      base::CreateSingleThreadTaskRunnerWithTraits(
-          {rules_registry_->owner_thread()});
+      base::CreateSingleThreadTaskRunner({rules_registry_->owner_thread()});
   base::PostTaskAndReplyWithResult(
       thread_task_runner.get(), FROM_HERE,
       base::BindOnce(&RulesFunction::RunAsyncOnCorrectThread, this),

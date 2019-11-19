@@ -11,10 +11,10 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "chrome/browser/chrome_notification_types.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/extensions/api/gcm.h"
-#include "content/public/browser/notification_service.h"
 #include "extensions/browser/extension_host.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/common/extension.h"
@@ -61,29 +61,19 @@ struct ExtensionEventObserver::KeepaliveSources {
   std::set<uint64_t> pending_network_requests;
 };
 
-ExtensionEventObserver::ExtensionEventObserver()
-    : should_delay_suspend_(true),
-      suspend_is_pending_(false),
-      suspend_keepalive_count_(0),
-      weak_factory_(this) {
-  registrar_.Add(this, chrome::NOTIFICATION_PROFILE_ADDED,
-                 content::NotificationService::AllBrowserContextsAndSources());
-  registrar_.Add(this, chrome::NOTIFICATION_PROFILE_DESTROYED,
-                 content::NotificationService::AllBrowserContextsAndSources());
-
+ExtensionEventObserver::ExtensionEventObserver() {
   PowerManagerClient::Get()->AddObserver(this);
+  g_browser_process->profile_manager()->AddObserver(this);
 }
 
 ExtensionEventObserver::~ExtensionEventObserver() {
-  for (Profile* profile : active_profiles_)
-    extensions::ProcessManager::Get(profile)->RemoveObserver(this);
-
   for (const auto& pair : keepalive_sources_) {
     extensions::ExtensionHost* host =
         const_cast<extensions::ExtensionHost*>(pair.first);
     host->RemoveObserver(this);
   }
 
+  g_browser_process->profile_manager()->RemoveObserver(this);
   PowerManagerClient::Get()->RemoveObserver(this);
 }
 
@@ -95,32 +85,20 @@ ExtensionEventObserver::CreateTestApi() {
 
 void ExtensionEventObserver::SetShouldDelaySuspend(bool should_delay) {
   should_delay_suspend_ = should_delay;
-  if (!should_delay_suspend_ && suspend_is_pending_) {
+  if (!should_delay_suspend_ && block_suspend_token_) {
     // There is a suspend attempt pending but this class should no longer be
     // delaying it.  Immediately report readiness.
-    suspend_is_pending_ = false;
-    power_manager_callback_.Run();
-    power_manager_callback_.Reset();
+    PowerManagerClient::Get()->UnblockSuspend(block_suspend_token_);
+    block_suspend_token_ = {};
     suspend_readiness_callback_.Cancel();
   }
 }
 
-void ExtensionEventObserver::Observe(
-    int type,
-    const content::NotificationSource& source,
-    const content::NotificationDetails& details) {
-  switch (type) {
-    case chrome::NOTIFICATION_PROFILE_ADDED: {
-      OnProfileAdded(content::Source<Profile>(source).ptr());
-      break;
-    }
-    case chrome::NOTIFICATION_PROFILE_DESTROYED: {
-      OnProfileDestroyed(content::Source<Profile>(source).ptr());
-      break;
-    }
-    default:
-      NOTREACHED();
-  }
+void ExtensionEventObserver::OnProfileAdded(Profile* profile) {
+  // Add the observer when |profile| is added and ProcessManager is available as
+  // a keyed service. It will be removed when the ProcessManager instance is
+  // shut down (OnProcessManagerShutdown).
+  process_manager_observers_.Add(extensions::ProcessManager::Get(profile));
 }
 
 void ExtensionEventObserver::OnBackgroundHostCreated(
@@ -137,6 +115,11 @@ void ExtensionEventObserver::OnBackgroundHostCreated(
 
   if (result.second)
     host->AddObserver(this);
+}
+
+void ExtensionEventObserver::OnProcessManagerShutdown(
+    extensions::ProcessManager* manager) {
+  process_manager_observers_.Remove(manager);
 }
 
 void ExtensionEventObserver::OnExtensionHostDestroyed(
@@ -217,34 +200,18 @@ void ExtensionEventObserver::DarkSuspendImminent() {
 }
 
 void ExtensionEventObserver::SuspendDone(const base::TimeDelta& duration) {
-  suspend_is_pending_ = false;
-  power_manager_callback_.Reset();
+  block_suspend_token_ = {};
   suspend_readiness_callback_.Cancel();
 }
 
-void ExtensionEventObserver::OnProfileAdded(Profile* profile) {
-  auto result = active_profiles_.insert(profile);
-
-  if (result.second)
-    extensions::ProcessManager::Get(profile)->AddObserver(this);
-}
-
-void ExtensionEventObserver::OnProfileDestroyed(Profile* profile) {
-  if (active_profiles_.erase(profile) == 0)
-    return;
-
-  extensions::ProcessManager::Get(profile)->RemoveObserver(this);
-}
-
 void ExtensionEventObserver::OnSuspendImminent(bool dark_suspend) {
-  if (suspend_is_pending_) {
-    LOG(WARNING) << "OnSuspendImminent called while previous suspend attempt "
-                 << "is still pending.";
-  }
+  DCHECK(block_suspend_token_.is_empty())
+      << "OnSuspendImminent called while previous suspend attempt "
+      << "is still pending.";
 
-  suspend_is_pending_ = true;
-  power_manager_callback_ =
-      PowerManagerClient::Get()->GetSuspendReadinessCallback(FROM_HERE);
+  block_suspend_token_ = base::UnguessableToken::Create();
+  PowerManagerClient::Get()->BlockSuspend(block_suspend_token_,
+                                          "ExtensionEventObserver");
 
   suspend_readiness_callback_.Reset(
       base::Bind(&ExtensionEventObserver::MaybeReportSuspendReadiness,
@@ -264,13 +231,11 @@ void ExtensionEventObserver::OnSuspendImminent(bool dark_suspend) {
 }
 
 void ExtensionEventObserver::MaybeReportSuspendReadiness() {
-  if (!suspend_is_pending_ || suspend_keepalive_count_ > 0 ||
-      power_manager_callback_.is_null())
+  if (suspend_keepalive_count_ > 0 || block_suspend_token_.is_empty())
     return;
 
-  suspend_is_pending_ = false;
-  power_manager_callback_.Run();
-  power_manager_callback_.Reset();
+  PowerManagerClient::Get()->UnblockSuspend(block_suspend_token_);
+  block_suspend_token_ = {};
 }
 
 }  // namespace chromeos

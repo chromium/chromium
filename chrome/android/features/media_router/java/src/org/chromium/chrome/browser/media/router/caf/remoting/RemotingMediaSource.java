@@ -7,9 +7,10 @@ import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v7.media.MediaRouteSelector;
 import android.util.Base64;
+
+import androidx.annotation.Nullable;
 
 import com.google.android.gms.cast.CastMediaControlIntent;
 

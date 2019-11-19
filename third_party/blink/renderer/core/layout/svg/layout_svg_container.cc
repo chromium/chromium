@@ -28,6 +28,7 @@
 #include "third_party/blink/renderer/core/layout/svg/svg_layout_support.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_resources.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_resources_cache.h"
+#include "third_party/blink/renderer/core/layout/svg/transform_helper.h"
 #include "third_party/blink/renderer/core/layout/svg/transformed_hit_test_location.h"
 #include "third_party/blink/renderer/core/paint/svg_container_painter.h"
 
@@ -174,20 +175,21 @@ void LayoutSVGContainer::UpdateCachedBoundaries() {
   GetElement()->SetNeedsResizeObserverUpdate();
 }
 
-bool LayoutSVGContainer::NodeAtPoint(
-    HitTestResult& result,
-    const HitTestLocation& location_in_container,
-    const LayoutPoint& accumulated_offset,
-    HitTestAction hit_test_action) {
-  DCHECK_EQ(accumulated_offset, LayoutPoint());
-  TransformedHitTestLocation local_location(location_in_container,
+bool LayoutSVGContainer::NodeAtPoint(HitTestResult& result,
+                                     const HitTestLocation& hit_test_location,
+                                     const PhysicalOffset& accumulated_offset,
+                                     HitTestAction hit_test_action) {
+  DCHECK_EQ(accumulated_offset, PhysicalOffset());
+  TransformedHitTestLocation local_location(hit_test_location,
                                             LocalToSVGParentTransform());
   if (!local_location)
     return false;
-  if (!SVGLayoutSupport::IntersectsClipPath(*this, *local_location))
+  if (!SVGLayoutSupport::IntersectsClipPath(*this, object_bounding_box_,
+                                            *local_location))
     return false;
 
-  if (SVGLayoutSupport::HitTestChildren(LastChild(), result, *local_location,
+  if (!PaintBlockedByDisplayLock(DisplayLockLifecycleTarget::kChildren) &&
+      SVGLayoutSupport::HitTestChildren(LastChild(), result, *local_location,
                                         accumulated_offset, hit_test_action))
     return true;
 
@@ -198,9 +200,8 @@ bool LayoutSVGContainer::NodeAtPoint(
     // containers.
     if (IsObjectBoundingBoxValid() &&
         local_location->Intersects(ObjectBoundingBox())) {
-      const LayoutPoint& local_layout_point =
-          LayoutPoint(local_location->TransformedPoint());
-      UpdateHitTestResult(result, local_layout_point);
+      UpdateHitTestResult(result, PhysicalOffset::FromFloatPointRound(
+                                      local_location->TransformedPoint()));
       if (result.AddNodeToListBasedTestResult(GetElement(), *local_location) ==
           kStopHitTesting)
         return true;

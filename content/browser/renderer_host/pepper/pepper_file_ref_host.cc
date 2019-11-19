@@ -17,7 +17,7 @@
 #include "ppapi/host/ppapi_host.h"
 #include "ppapi/proxy/ppapi_messages.h"
 #include "ppapi/shared_impl/file_ref_util.h"
-#include "storage/browser/fileapi/file_permission_policy.h"
+#include "storage/browser/file_system/file_permission_policy.h"
 
 using ppapi::host::ResourceHost;
 

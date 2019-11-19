@@ -1,6 +1,0 @@
-This is a testharness.js-based test.
-PASS Same-Origin -> Same-Origin redirect
-FAIL Same-Origin -> Same-Site redirect assert_equals: site expected "same-site" but got "same-origin"
-FAIL Same-Origin -> Cross-Site redirect assert_equals: site expected "cross-site" but got "same-origin"
-Harness: the test ran to completion.
-

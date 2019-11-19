@@ -1,14 +1,13 @@
 <!DOCTYPE HTML>
 <script src="../resources/testharness.js"></script>
 <script src="../resources/testharnessreport.js"></script>
-<script src="../resources/run-after-layout-and-paint.js"></script>
 
 <div class="container">
     <div id="div">Div Contents</div>
 </div>
 
 <script>
-test_after_layout_and_paint(function(t){
+test(function(t){
     var axDiv = accessibilityController.accessibleElementById("div");
     assert_equals(axDiv.description, "");
 }, "A simple div should not have an accessible description.");
@@ -19,7 +18,7 @@ test_after_layout_and_paint(function(t){
 </div>
 
 <script>
-test_after_layout_and_paint(function(t){
+test(function(t){
     var axSelf = accessibilityController.accessibleElementById("self");
     assert_equals(axSelf.name, "Contents of button");
     assert_equals(axSelf.nameFrom, "contents");
@@ -34,7 +33,7 @@ test_after_layout_and_paint(function(t){
 </div>
 
 <script>
-test_after_layout_and_paint(function(t){
+test(function(t){
     var axDescribedby = accessibilityController.accessibleElementById("describedby");
     assert_equals(axDescribedby.name, "Contents");
     assert_equals(axDescribedby.nameFrom, "contents");
@@ -50,7 +49,7 @@ test_after_layout_and_paint(function(t){
 </div>
 
 <script>
-test_after_layout_and_paint(function(t){
+test(function(t){
     var axDescribedby2 = accessibilityController.accessibleElementById("describedby2");
     assert_equals(axDescribedby2.name, "Contents");
     assert_equals(axDescribedby2.nameFrom, "contents");
@@ -67,7 +66,7 @@ test_after_layout_and_paint(function(t){
 </div>
 
 <script>
-test_after_layout_and_paint(function(t){
+test(function(t){
     var axDescribedby3 = accessibilityController.accessibleElementById("describedby3");
     assert_equals(axDescribedby3.name, "Contents");
     assert_equals(axDescribedby3.nameFrom, "contents");
@@ -84,7 +83,7 @@ test_after_layout_and_paint(function(t){
 </div>
 
 <script>
-test_after_layout_and_paint(function(t){
+test(function(t){
     var axDescribedby4 = accessibilityController.accessibleElementById("describedby4");
     assert_equals(axDescribedby4.name, "Contents");
     assert_equals(axDescribedby4.nameFrom, "contents");
@@ -100,7 +99,7 @@ test_after_layout_and_paint(function(t){
 </div>
 
 <script>
-test_after_layout_and_paint(function(t){
+test(function(t){
     var axDescribedby5 = accessibilityController.accessibleElementById("describedby5");
     assert_equals(axDescribedby5.name, "Contents");
     assert_equals(axDescribedby5.nameFrom, "contents");
@@ -117,8 +116,8 @@ test_after_layout_and_paint(function(t){
 </div>
 
 <script>
-test_after_layout_and_paint(function(t){
-    assert_equals(accessibilityController.accessibleElementById("description6"), undefined);
+test(function(t){
+    assert_true(accessibilityController.accessibleElementById("description6").isIgnored);
     var axDescribedby6 = accessibilityController.accessibleElementById("describedby6");
     assert_equals(axDescribedby6.name, "Contents");
     assert_equals(axDescribedby6.nameFrom, "contents");
@@ -135,8 +134,8 @@ test_after_layout_and_paint(function(t){
 </div>
 
 <script>
-test_after_layout_and_paint(function(t){
-    assert_equals(accessibilityController.accessibleElementById("description7"), undefined);
+test(function(t){
+    assert_true(accessibilityController.accessibleElementById("description7").isIgnored);
 var axDescribedby7 = accessibilityController.accessibleElementById("describedby7");
     assert_equals(axDescribedby7.name, "Contents");
     assert_equals(axDescribedby7.nameFrom, "contents");

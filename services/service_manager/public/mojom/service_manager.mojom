@@ -81,5 +81,5 @@ interface ServiceManagerListener {
 
 interface ServiceManager {
   // The listener is removed when the |listener| pipe is closed.
-  AddListener(ServiceManagerListener listener);
+  AddListener(pending_remote<ServiceManagerListener> listener);
 };

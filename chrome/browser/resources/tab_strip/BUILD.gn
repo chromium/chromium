@@ -1,0 +1,92 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/polymer/polymer.gni")
+
+js_type_check("closure_compile") {
+  deps = [
+    ":alert_indicator",
+    ":alert_indicators",
+    ":custom_element",
+    ":tab",
+    ":tab_list",
+    ":tab_strip_embedder_proxy",
+    ":tab_strip_options",
+    ":tab_swiper",
+    ":tabs_api_proxy",
+  ]
+}
+
+js_library("alert_indicator") {
+}
+
+js_library("alert_indicators") {
+}
+
+js_library("custom_element") {
+}
+
+js_library("tabs_api_proxy") {
+  deps = [
+    "//ui/webui/resources/js:cr.m",
+  ]
+  externs_list = [ "$externs_path/chrome_extensions.js" ]
+}
+
+js_library("tab") {
+  deps = [
+    "//ui/webui/resources/js:icon.m",
+    "//ui/webui/resources/js:load_time_data.m",
+    "//ui/webui/resources/js:util.m",
+  ]
+}
+
+js_library("tab_list") {
+}
+
+js_library("tab_strip_embedder_proxy") {
+  deps = [
+    "//ui/webui/resources/js:cr.m",
+  ]
+}
+
+js_library("tab_strip_options") {
+}
+
+js_library("tab_swiper") {
+}
+
+group("tab_strip_modules") {
+  deps = [
+    ":alert_indicator_module",
+    ":alert_indicators_module",
+    ":tab_list_module",
+    ":tab_module",
+  ]
+}
+
+polymer_modulizer("alert_indicator") {
+  js_file = "alert_indicator.js"
+  html_file = "alert_indicator.html"
+  html_type = "v3-ready"
+}
+
+polymer_modulizer("alert_indicators") {
+  js_file = "alert_indicators.js"
+  html_file = "alert_indicators.html"
+  html_type = "v3-ready"
+}
+
+polymer_modulizer("tab") {
+  js_file = "tab.js"
+  html_file = "tab.html"
+  html_type = "v3-ready"
+}
+
+polymer_modulizer("tab_list") {
+  js_file = "tab_list.js"
+  html_file = "tab_list.html"
+  html_type = "v3-ready"
+}

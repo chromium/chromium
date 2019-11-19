@@ -8,7 +8,7 @@
 #include "base/logging.h"
 #include "third_party/icu/source/common/unicode/utf16.h"
 
-namespace app_list {
+namespace ash {
 
 TokenizedStringCharIterator::State::State() : token_index(0u), char_index(0) {}
 
@@ -86,4 +86,4 @@ void TokenizedStringCharIterator::CreateTokenCharIterator() {
       new base::i18n::UTF16CharIterator(&tokens_[current_token_]));
 }
 
-}  // namespace app_list
+}  // namespace ash

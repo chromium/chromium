@@ -48,8 +48,8 @@ class ServiceWorkerDevToolsAgentHost : public DevToolsAgentHostImpl {
 
   void WorkerRestarted(int worker_process_id, int worker_route_id);
   void WorkerReadyForInspection(
-      blink::mojom::DevToolsAgentHostAssociatedRequest host_request,
-      blink::mojom::DevToolsAgentAssociatedPtrInfo devtools_agent_ptr_info);
+      mojo::PendingRemote<blink::mojom::DevToolsAgent> agent_remote,
+      mojo::PendingReceiver<blink::mojom::DevToolsAgentHost> host_receiver);
   void WorkerDestroyed();
   void WorkerVersionInstalled();
   void WorkerVersionDoomed();
@@ -78,6 +78,8 @@ class ServiceWorkerDevToolsAgentHost : public DevToolsAgentHostImpl {
   // DevToolsAgentHostImpl overrides.
   bool AttachSession(DevToolsSession* session) override;
   void DetachSession(DevToolsSession* session) override;
+
+  void UpdateLoaderFactories(base::OnceClosure callback);
 
   enum WorkerState {
     WORKER_NOT_READY,

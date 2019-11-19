@@ -104,6 +104,10 @@ if (zlib_source == "external") {
       ]
     }
 
+    configs -= [
+      "//third_party/mini_chromium/mini_chromium/build:Wimplicit_fallthrough",
+    ]
+
     if (current_cpu == "x86" || current_cpu == "x64") {
       sources += [
         "zlib/crc_folding.c",

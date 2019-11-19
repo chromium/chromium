@@ -14,10 +14,13 @@
 #include "third_party/blink/public/platform/web_graphics_context_3d_provider.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/graphics_context_3d_utils.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
 
 class PLATFORM_EXPORT WebGraphicsContext3DProviderWrapper {
+  USING_FAST_MALLOC(WebGraphicsContext3DProviderWrapper);
+
  public:
   class DestructionObserver {
    public:
@@ -27,7 +30,7 @@ class PLATFORM_EXPORT WebGraphicsContext3DProviderWrapper {
 
   WebGraphicsContext3DProviderWrapper(
       std::unique_ptr<WebGraphicsContext3DProvider> provider)
-      : context_provider_(std::move(provider)), weak_ptr_factory_(this) {
+      : context_provider_(std::move(provider)) {
     DCHECK(context_provider_);
     utils_ = base::WrapUnique(new GraphicsContext3DUtils(GetWeakPtr()));
   }
@@ -49,7 +52,8 @@ class PLATFORM_EXPORT WebGraphicsContext3DProviderWrapper {
   std::unique_ptr<GraphicsContext3DUtils> utils_;
   std::unique_ptr<WebGraphicsContext3DProvider> context_provider_;
   base::ObserverList<DestructionObserver>::Unchecked observers_;
-  base::WeakPtrFactory<WebGraphicsContext3DProviderWrapper> weak_ptr_factory_;
+  base::WeakPtrFactory<WebGraphicsContext3DProviderWrapper> weak_ptr_factory_{
+      this};
 };
 
 }  // namespace blink

@@ -22,7 +22,7 @@ WebContentsMainFrameObserver::~WebContentsMainFrameObserver() {
   CleanUp();
 }
 
-void WebContentsMainFrameObserver::DocumentLoadedInFrame(
+void WebContentsMainFrameObserver::DOMContentLoaded(
     content::RenderFrameHost* render_frame_host) {
   if (!render_frame_host->GetParent()) {
     is_document_loaded_in_main_frame_ = true;

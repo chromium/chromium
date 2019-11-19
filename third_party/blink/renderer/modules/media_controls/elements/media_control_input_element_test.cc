@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/media_controls/elements/media_control_input_element.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/strings/grit/blink_strings.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/html/media/html_media_element.h"
 #include "third_party/blink/renderer/core/html/media/html_video_element.h"
@@ -12,6 +13,7 @@
 #include "third_party/blink/renderer/core/input_type_names.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/modules/media_controls/media_controls_impl.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/testing/histogram_tester.h"
 
 namespace blink {
@@ -28,8 +30,7 @@ const char* kControlInputElementOverflowHistogramName =
 class MediaControlInputElementImpl final : public MediaControlInputElement {
  public:
   MediaControlInputElementImpl(MediaControlsImpl& media_controls)
-      // Using arbitrary MediaControlElementType. It should have no impact.
-      : MediaControlInputElement(media_controls, kMediaIgnore) {
+      : MediaControlInputElement(media_controls) {
     setType(input_type_names::kButton);
     SetIsWanted(false);
   }
@@ -44,8 +45,8 @@ class MediaControlInputElementImpl final : public MediaControlInputElement {
                                : "MediaControlInputElementImpl";
   }
 
-  WebLocalizedString::Name GetOverflowStringName() const final {
-    return WebLocalizedString::kOverflowMenuDownload;
+  int GetOverflowStringId() const final {
+    return IDS_MEDIA_OVERFLOW_MENU_DOWNLOAD;
   }
 };
 
@@ -56,7 +57,7 @@ class MediaControlInputElementTest : public PageTestBase {
   void SetUp() final {
     // Create page and add a video element with controls.
     PageTestBase::SetUp();
-    media_element_ = HTMLVideoElement::Create(GetDocument());
+    media_element_ = MakeGarbageCollected<HTMLVideoElement>(GetDocument());
     media_element_->SetBooleanAttribute(html_names::kControlsAttr, true);
     GetDocument().body()->AppendChild(media_element_);
 

@@ -12,7 +12,6 @@ include_rules = [
   "+services/identity/public",
   "+services/media_session/public",
   "+services/network/public",
-  "+services/service_manager/public",
   "+ui/accessibility/ax_assistant_structure.h",
   "+ui/accessibility/mojom",
   "+ui/base",

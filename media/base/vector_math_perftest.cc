@@ -11,10 +11,22 @@
 #include "media/base/vector_math.h"
 #include "media/base/vector_math_testing.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "testing/perf/perf_test.h"
+#include "testing/perf/perf_result_reporter.h"
 
 using base::TimeTicks;
 using std::fill;
+
+namespace {
+
+perf_test::PerfResultReporter SetUpReporter(const std::string& story_name) {
+  perf_test::PerfResultReporter reporter("vector_math", story_name);
+  reporter.RegisterImportantMetric("_fmac", "runs/s");
+  reporter.RegisterImportantMetric("_fmul", "runs/s");
+  reporter.RegisterImportantMetric("_ewma_and_max_power", "runs/s");
+  return reporter;
+}
+
+}  // namespace
 
 namespace media {
 
@@ -37,7 +49,7 @@ class VectorMathPerfTest : public testing::Test {
 
   void RunBenchmark(void (*fn)(const float[], float, int, float[]),
                     bool aligned,
-                    const std::string& test_name,
+                    const std::string& metric_suffix,
                     const std::string& trace_name) {
     TimeTicks start = TimeTicks::Now();
     for (int i = 0; i < kBenchmarkIterations; ++i) {
@@ -46,33 +58,25 @@ class VectorMathPerfTest : public testing::Test {
          kVectorSize - (aligned ? 0 : 1),
          output_vector_.get());
     }
-    double total_time_milliseconds =
-        (TimeTicks::Now() - start).InMillisecondsF();
-    perf_test::PrintResult(test_name,
-                           "",
-                           trace_name,
-                           kBenchmarkIterations / total_time_milliseconds,
-                           "runs/ms",
-                           true);
+    double total_time_seconds = (TimeTicks::Now() - start).InSecondsF();
+    perf_test::PerfResultReporter reporter = SetUpReporter(trace_name);
+    reporter.AddResult(metric_suffix,
+                       kBenchmarkIterations / total_time_seconds);
   }
 
   void RunBenchmark(
       std::pair<float, float> (*fn)(float, const float[], int, float),
       int len,
-      const std::string& test_name,
+      const std::string& metric_suffix,
       const std::string& trace_name) {
     TimeTicks start = TimeTicks::Now();
     for (int i = 0; i < kEWMABenchmarkIterations; ++i) {
       fn(0.5f, input_vector_.get(), len, 0.1f);
     }
-    double total_time_milliseconds =
-        (TimeTicks::Now() - start).InMillisecondsF();
-    perf_test::PrintResult(test_name,
-                           "",
-                           trace_name,
-                           kEWMABenchmarkIterations / total_time_milliseconds,
-                           "runs/ms",
-                           true);
+    double total_time_seconds = (TimeTicks::Now() - start).InSecondsF();
+    perf_test::PerfResultReporter reporter = SetUpReporter(trace_name);
+    reporter.AddResult(metric_suffix,
+                       kEWMABenchmarkIterations / total_time_seconds);
   }
 
  protected:
@@ -96,8 +100,7 @@ class VectorMathPerfTest : public testing::Test {
 // Benchmarks for each optimized vector_math::FMAC() method.
 // Benchmark FMAC_C().
 TEST_F(VectorMathPerfTest, FMAC_unoptimized) {
-  RunBenchmark(
-      vector_math::FMAC_C, true, "vector_math_fmac", "unoptimized");
+  RunBenchmark(vector_math::FMAC_C, true, "_fmac", "unoptimized");
 }
 
 #if defined(FMAC_FUNC)
@@ -105,24 +108,21 @@ TEST_F(VectorMathPerfTest, FMAC_unoptimized) {
 TEST_F(VectorMathPerfTest, FMAC_optimized_unaligned) {
   ASSERT_NE((kVectorSize - 1) % (vector_math::kRequiredAlignment /
                                  sizeof(float)), 0U);
-  RunBenchmark(
-      vector_math::FMAC_FUNC, false, "vector_math_fmac", "optimized_unaligned");
+  RunBenchmark(vector_math::FMAC_FUNC, false, "_fmac", "optimized_unaligned");
 }
 
 // Benchmark FMAC_FUNC() with aligned size.
 TEST_F(VectorMathPerfTest, FMAC_optimized_aligned) {
   ASSERT_EQ(kVectorSize % (vector_math::kRequiredAlignment / sizeof(float)),
             0U);
-  RunBenchmark(
-      vector_math::FMAC_FUNC, true, "vector_math_fmac", "optimized_aligned");
+  RunBenchmark(vector_math::FMAC_FUNC, true, "_fmac", "optimized_aligned");
 }
 #endif
 
 // Benchmarks for each optimized vector_math::FMUL() method.
 // Benchmark FMUL_C().
 TEST_F(VectorMathPerfTest, FMUL_unoptimized) {
-  RunBenchmark(
-      vector_math::FMUL_C, true, "vector_math_fmul", "unoptimized");
+  RunBenchmark(vector_math::FMUL_C, true, "_fmul", "unoptimized");
 }
 
 #if defined(FMUL_FUNC)
@@ -130,26 +130,22 @@ TEST_F(VectorMathPerfTest, FMUL_unoptimized) {
 TEST_F(VectorMathPerfTest, FMUL_optimized_unaligned) {
   ASSERT_NE((kVectorSize - 1) % (vector_math::kRequiredAlignment /
                                  sizeof(float)), 0U);
-  RunBenchmark(
-      vector_math::FMUL_FUNC, false, "vector_math_fmul", "optimized_unaligned");
+  RunBenchmark(vector_math::FMUL_FUNC, false, "_fmul", "optimized_unaligned");
 }
 
 // Benchmark FMUL_FUNC() with aligned size.
 TEST_F(VectorMathPerfTest, FMUL_optimized_aligned) {
   ASSERT_EQ(kVectorSize % (vector_math::kRequiredAlignment / sizeof(float)),
             0U);
-  RunBenchmark(
-      vector_math::FMUL_FUNC, true, "vector_math_fmul", "optimized_aligned");
+  RunBenchmark(vector_math::FMUL_FUNC, true, "_fmul", "optimized_aligned");
 }
 #endif
 
 // Benchmarks for each optimized vector_math::EWMAAndMaxPower() method.
 // Benchmark EWMAAndMaxPower_C().
 TEST_F(VectorMathPerfTest, EWMAAndMaxPower_unoptimized) {
-  RunBenchmark(vector_math::EWMAAndMaxPower_C,
-               kVectorSize,
-               "vector_math_ewma_and_max_power",
-               "unoptimized");
+  RunBenchmark(vector_math::EWMAAndMaxPower_C, kVectorSize,
+               "_ewma_and_max_power", "unoptimized");
 }
 
 #if defined(EWMAAndMaxPower_FUNC)
@@ -157,20 +153,16 @@ TEST_F(VectorMathPerfTest, EWMAAndMaxPower_unoptimized) {
 TEST_F(VectorMathPerfTest, EWMAAndMaxPower_optimized_unaligned) {
   ASSERT_NE((kVectorSize - 1) % (vector_math::kRequiredAlignment /
                                  sizeof(float)), 0U);
-  RunBenchmark(vector_math::EWMAAndMaxPower_FUNC,
-               kVectorSize - 1,
-               "vector_math_ewma_and_max_power",
-               "optimized_unaligned");
+  RunBenchmark(vector_math::EWMAAndMaxPower_FUNC, kVectorSize - 1,
+               "_ewma_and_max_power", "optimized_unaligned");
 }
 
 // Benchmark EWMAAndMaxPower_FUNC() with aligned size.
 TEST_F(VectorMathPerfTest, EWMAAndMaxPower_optimized_aligned) {
   ASSERT_EQ(kVectorSize % (vector_math::kRequiredAlignment / sizeof(float)),
             0U);
-  RunBenchmark(vector_math::EWMAAndMaxPower_FUNC,
-               kVectorSize,
-               "vector_math_ewma_and_max_power",
-               "optimized_aligned");
+  RunBenchmark(vector_math::EWMAAndMaxPower_FUNC, kVectorSize,
+               "_ewma_and_max_power", "optimized_aligned");
 }
 #endif
 

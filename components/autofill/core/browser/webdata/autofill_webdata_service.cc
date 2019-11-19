@@ -9,9 +9,9 @@
 #include "base/logging.h"
 #include "base/single_thread_task_runner.h"
 #include "base/stl_util.h"
-#include "components/autofill/core/browser/autofill_country.h"
-#include "components/autofill/core/browser/autofill_profile.h"
-#include "components/autofill/core/browser/credit_card.h"
+#include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/geo/autofill_country.h"
 #include "components/autofill/core/browser/webdata/autofill_change.h"
 #include "components/autofill/core/browser/webdata/autofill_entry.h"
 #include "components/autofill/core/browser/webdata/autofill_table.h"
@@ -34,17 +34,21 @@ AutofillWebDataService::AutofillWebDataService(
     : WebDataServiceBase(wdbs, callback, ui_task_runner),
       ui_task_runner_(ui_task_runner),
       db_task_runner_(db_task_runner),
-      autofill_backend_(nullptr),
-      weak_ptr_factory_(this) {
+      autofill_backend_(nullptr) {
   base::Closure on_changed_callback =
       Bind(&AutofillWebDataService::NotifyAutofillMultipleChangedOnUISequence,
+           weak_ptr_factory_.GetWeakPtr());
+  base::Closure on_address_conversion_completed_callback =
+      Bind(&AutofillWebDataService::
+               NotifyAutofillAddressConversionCompletedOnUISequence,
            weak_ptr_factory_.GetWeakPtr());
   base::Callback<void(syncer::ModelType)> on_sync_started_callback =
       Bind(&AutofillWebDataService::NotifySyncStartedOnUISequence,
            weak_ptr_factory_.GetWeakPtr());
   autofill_backend_ = new AutofillWebDataBackendImpl(
       wdbs_->GetBackend(), ui_task_runner_, db_task_runner_,
-      on_changed_callback, on_sync_started_callback);
+      on_changed_callback, on_address_conversion_completed_callback,
+      on_sync_started_callback);
 }
 
 AutofillWebDataService::AutofillWebDataService(
@@ -60,8 +64,8 @@ AutofillWebDataService::AutofillWebDataService(
           ui_task_runner_,
           db_task_runner_,
           base::Closure(),
-          base::Callback<void(syncer::ModelType)>())),
-      weak_ptr_factory_(this) {}
+          base::Closure(),
+          base::Callback<void(syncer::ModelType)>())) {}
 
 void AutofillWebDataService::ShutdownOnUISequence() {
   weak_ptr_factory_.InvalidateWeakPtrs();
@@ -141,6 +145,15 @@ WebDataServiceBase::Handle AutofillWebDataService::GetServerProfiles(
       consumer);
 }
 
+void AutofillWebDataService::ConvertWalletAddressesAndUpdateWalletCards(
+    const std::string& app_locale,
+    const std::string& primary_account_email) {
+  wdbs_->ScheduleDBTask(
+      FROM_HERE, Bind(&AutofillWebDataBackendImpl::
+                          ConvertWalletAddressesAndUpdateWalletCards,
+                      autofill_backend_, app_locale, primary_account_email));
+}
+
 WebDataServiceBase::Handle
     AutofillWebDataService::GetCountOfValuesContainedBetween(
         const Time& begin, const Time& end, WebDataServiceConsumer* consumer) {
@@ -216,6 +229,11 @@ void AutofillWebDataService::MaskServerCreditCard(const std::string& id) {
       FROM_HERE,
       Bind(&AutofillWebDataBackendImpl::MaskServerCreditCard,
            autofill_backend_, id));
+}
+
+void AutofillWebDataService::AddVPA(const std::string& vpa_id) {
+  wdbs_->ScheduleDBTask(FROM_HERE, Bind(&AutofillWebDataBackendImpl::AddVPA,
+                                        autofill_backend_, vpa_id));
 }
 
 WebDataServiceBase::Handle AutofillWebDataService::GetPaymentsCustomerData(
@@ -336,7 +354,14 @@ AutofillWebDataService::~AutofillWebDataService() {
 void AutofillWebDataService::NotifyAutofillMultipleChangedOnUISequence() {
   DCHECK(ui_task_runner_->RunsTasksInCurrentSequence());
   for (auto& ui_observer : ui_observer_list_)
-    ui_observer.AutofillMultipleChanged();
+    ui_observer.AutofillMultipleChangedBySync();
+}
+
+void AutofillWebDataService::
+    NotifyAutofillAddressConversionCompletedOnUISequence() {
+  DCHECK(ui_task_runner_->RunsTasksInCurrentSequence());
+  for (auto& ui_observer : ui_observer_list_)
+    ui_observer.AutofillAddressConversionCompleted();
 }
 
 void AutofillWebDataService::NotifySyncStartedOnUISequence(

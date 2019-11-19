@@ -6,14 +6,16 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_LINE_BOX_LIST_PAINTER_H_
 
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
 
-class LayoutPoint;
-struct PaintInfo;
 class LayoutBoxModelObject;
 class LineBoxList;
+struct PaintInfo;
+struct PhysicalOffset;
+struct PhysicalRect;
 
 class LineBoxListPainter {
   STACK_ALLOCATED();
@@ -24,10 +26,21 @@ class LineBoxListPainter {
 
   void Paint(const LayoutBoxModelObject&,
              const PaintInfo&,
-             const LayoutPoint& paint_offset) const;
+             const PhysicalOffset& paint_offset) const;
+  void PaintBackplate(const LayoutBoxModelObject& layout_object,
+                      const PaintInfo&,
+                      const PhysicalOffset& paint_offset) const;
 
  private:
   const LineBoxList& line_box_list_;
+
+  bool ShouldPaint(const LayoutBoxModelObject& layout_object,
+                   const PaintInfo& paint_info,
+                   const PhysicalOffset& paint_offset) const;
+
+  // Returns a vector of backplates that surround the paragraphs of text within
+  // line_box_list_.
+  Vector<PhysicalRect> GetBackplates(const PhysicalOffset& paint_offset) const;
 };
 
 }  // namespace blink

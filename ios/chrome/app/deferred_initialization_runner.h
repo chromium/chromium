@@ -9,6 +9,9 @@
 
 #include "base/ios/block_types.h"
 
+// Constants for deferred initialization of preferences observer.
+extern NSString* const kPrefObserverInit;
+
 // A singleton object to run initialization code asynchronously. Blocks are
 // scheduled to be run after a delay. The block is named when added to the
 // singleton so that other code can force a deferred block to be run

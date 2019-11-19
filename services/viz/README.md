@@ -119,9 +119,6 @@ appropriate destinations in `//services/viz/public/<language>/...`.
 `//services/viz/...`. `//components/viz/host` will move to
 `//services/viz/privileged/<language>/{compositing, gl, hit_test, media}`.
 
-Once the content module is gone, and `//services/ws` is the only privileged
-client, then perhaps the privileged client library may move to `//services/ws`.
-
 ## Acceptable Dependencies
 Note: `=>` means can depend on
 

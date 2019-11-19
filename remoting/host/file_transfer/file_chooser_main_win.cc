@@ -15,7 +15,7 @@
 #include "base/no_destructor.h"
 #include "base/pickle.h"
 #include "base/run_loop.h"
-#include "base/task/task_scheduler/task_scheduler.h"
+#include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/timer/timer.h"
 #include "base/win/scoped_co_mem.h"
 #include "base/win/scoped_com_initializer.h"
@@ -133,7 +133,7 @@ FileChooser::Result ShowFileChooser() {
 }  // namespace
 
 int FileChooserMain() {
-  base::TaskScheduler::CreateAndStartWithDefaultParams("FileChooser");
+  base::ThreadPoolInstance::CreateAndStartWithDefaultParams("FileChooser");
 
   base::win::ScopedCOMInitializer com;
 

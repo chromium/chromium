@@ -24,8 +24,7 @@ namespace {
 std::string ExtractUlrSpecFromQuery(
     const net::test_server::HttpRequest& request) {
   GURL request_url = request.GetURL();
-  std::string spec;
-  net::UnescapeBinaryURLComponent(request_url.query(), &spec);
+  std::string spec = net::UnescapeBinaryURLComponent(request_url.query_piece());
 
   // Escape the URL spec.
   GURL url(spec);

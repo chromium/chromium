@@ -2,13 +2,13 @@ import("//build/config/android/config.gni")
 import("//build/config/android/rules.gni")
 
 generate_jni("test_support_content_jni_headers") {
-  jni_package = "content/public/test"
+  testonly = true
   sources = [
     "javatests/src/org/chromium/content_public/browser/test/NestedSystemMessageHandler.java",
   ]
 }
 
-android_library("web_test_java_support") {
+android_library("android_test_message_pump_support_java") {
   testonly = true
   deps = [
     "//base:base_java",
@@ -19,7 +19,7 @@ android_library("web_test_java_support") {
 android_library("content_java_test_support") {
   testonly = true
   deps = [
-    ":web_test_java_support",
+    ":android_test_message_pump_support_java",
     "//base:base_java",
     "//base:base_java_test_support",
     "//content/public/android:content_java",
@@ -35,8 +35,10 @@ android_library("content_java_test_support") {
     "javatests/src/org/chromium/content_public/browser/test/InterstitialPageDelegateAndroid.java",
     "javatests/src/org/chromium/content_public/browser/test/NativeLibraryTestRule.java",
     "javatests/src/org/chromium/content_public/browser/test/RenderFrameHostTestExt.java",
+    "javatests/src/org/chromium/content_public/browser/test/mock/MockNavigationController.java",
     "javatests/src/org/chromium/content_public/browser/test/mock/MockRenderFrameHost.java",
     "javatests/src/org/chromium/content_public/browser/test/mock/MockWebContents.java",
+    "javatests/src/org/chromium/content_public/browser/test/util/BackgroundSyncNetworkUtils.java",
     "javatests/src/org/chromium/content_public/browser/test/util/ClickUtils.java",
     "javatests/src/org/chromium/content_public/browser/test/util/Coordinates.java",
     "javatests/src/org/chromium/content_public/browser/test/util/Criteria.java",
@@ -51,9 +53,11 @@ android_library("content_java_test_support") {
     "javatests/src/org/chromium/content_public/browser/test/util/TestCallbackHelperContainer.java",
     "javatests/src/org/chromium/content_public/browser/test/util/TestInputMethodManagerWrapper.java",
     "javatests/src/org/chromium/content_public/browser/test/util/TestSelectionPopupController.java",
+    "javatests/src/org/chromium/content_public/browser/test/util/TestThreadUtils.java",
     "javatests/src/org/chromium/content_public/browser/test/util/TestTouchUtils.java",
     "javatests/src/org/chromium/content_public/browser/test/util/TestWebContentsObserver.java",
     "javatests/src/org/chromium/content_public/browser/test/util/TouchCommon.java",
+    "javatests/src/org/chromium/content_public/browser/test/util/UiThreadSchedulerTestUtils.java",
     "javatests/src/org/chromium/content_public/browser/test/util/UiUtils.java",
     "javatests/src/org/chromium/content_public/browser/test/util/WebContentsUtils.java",
   ]
@@ -61,11 +65,11 @@ android_library("content_java_test_support") {
 
 generate_jni("content_test_jni") {
   testonly = true
-  jni_package = "content/public/test"
   sources = [
     "javatests/src/org/chromium/content_public/browser/test/InterstitialPageDelegateAndroid.java",
     "javatests/src/org/chromium/content_public/browser/test/RenderFrameHostTestExt.java",
     "javatests/src/org/chromium/content_public/browser/test/util/DOMUtils.java",
+    "javatests/src/org/chromium/content_public/browser/test/util/UiThreadSchedulerTestUtils.java",
     "javatests/src/org/chromium/content_public/browser/test/util/WebContentsUtils.java",
   ]
 }
@@ -85,6 +89,7 @@ static_library("content_native_test_support") {
     "interstitial_page_delegate_android.h",
     "render_frame_host_test_ext.cc",
     "render_frame_host_test_ext.h",
+    "ui_thread_scheduler_test_utils.cc",
     "web_contents_utils.cc",
   ]
   deps = [

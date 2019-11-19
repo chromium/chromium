@@ -15,11 +15,11 @@
         android:id="@+id/control_icon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="@dimen/infobar_control_margin_between_items"
+        android:layout_marginEnd="@dimen/dual_control_margin_between_items"
         android:scaleType="centerInside"
         tools:ignore="ContentDescription" />
 
-    <org.chromium.chrome.browser.widget.DualControlLayout
+    <org.chromium.chrome.browser.ui.widget.DualControlLayout
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1" >
@@ -36,6 +36,6 @@
             android:layout_height="wrap_content"
             android:textAppearance="@style/TextAppearance.BlackHint1" />
 
-    </org.chromium.chrome.browser.widget.DualControlLayout>
+    </org.chromium.chrome.browser.ui.widget.DualControlLayout>
 
 </LinearLayout>

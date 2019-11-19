@@ -23,11 +23,13 @@ const char kChromeUISuggestionsURL[] = "chrome://suggestions/";
 const char kChromeUITermsURL[] = "chrome://terms/";
 const char kChromeUIVersionURL[] = "chrome://version/";
 
+const char kChromeUIAutofillInternalsHost[] = "autofill-internals";
 const char kChromeUIBrowserCrashHost[] = "inducebrowsercrashforrealz";
 const char kChromeUICrashHost[] = "crash";
 const char kChromeUIChromeURLsHost[] = "chrome-urls";
 const char kChromeUICrashesHost[] = "crashes";
 const char kChromeUICreditsHost[] = "credits";
+const char kChromeUIDinoHost[] = "dino";
 const char kChromeUIExternalFileHost[] = "external-file";
 const char kChromeUIFlagsHost[] = "flags";
 const char kChromeUIGCMInternalsHost[] = "gcm-internals";
@@ -42,10 +44,12 @@ const char kChromeUIOmahaHost[] = "omaha";
 const char kChromeUIPasswordManagerInternalsHost[] =
     "password-manager-internals";
 const char kChromeUIPolicyHost[] = "policy";
+const char kChromeUIPrefsInternalsHost[] = "prefs-internals";
 const char kChromeUISignInInternalsHost[] = "signin-internals";
 const char kChromeUISuggestionsHost[] = "suggestions";
 const char kChromeUISyncInternalsHost[] = "sync-internals";
 const char kChromeUITermsHost[] = "terms";
+const char kChromeUITranslateInternalsHost[] = "translate-internals";
 const char kChromeUIURLKeyedMetricsHost[] = "ukm";
 const char kChromeUIUserActionsHost[] = "user-actions";
 const char kChromeUIVersionHost[] = "version";
@@ -74,6 +78,8 @@ const size_t kNumberOfChromeHostURLs = base::size(kChromeHostURLs);
 
 const char kSyncGoogleDashboardURL[] =
     "https://www.google.com/settings/chrome/sync/";
+
+const char kManageYourGoogleAccountURL[] = "https://myaccount.google.com/";
 
 const char kPageInfoHelpCenterURL[] =
     "https://support.google.com/chrome?p=ui_security_indicator&ios=1";

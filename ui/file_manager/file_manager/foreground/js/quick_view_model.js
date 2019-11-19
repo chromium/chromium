@@ -4,34 +4,34 @@
 
 /**
  * Quick view model that doesn't fit into properties of quick view element.
- *
- * @constructor
- * @struct
- * @extends {cr.EventTarget}
  */
-function QuickViewModel() {
+class QuickViewModel extends cr.EventTarget {
+  constructor() {
+    super();
+
+    /**
+     * Current selected file entry.
+     * @type {FileEntry}
+     * @private
+     */
+    this.selectedEntry_ = null;
+  }
+
   /**
-   * Current selected file entry.
-   * @type {FileEntry}
-   * @private
+   * Returns the selected file entry.
+   * @return {FileEntry}
    */
-  this.selectedEntry_ = null;
+  getSelectedEntry() {
+    return this.selectedEntry_;
+  }
+
+  /**
+   * Sets the selected file entry. Emits a synchronous selected-entry-changed
+   * event to immediately call MetadataBoxController.updateView_().
+   * @param {!FileEntry} entry
+   */
+  setSelectedEntry(entry) {
+    this.selectedEntry_ = entry;
+    cr.dispatchSimpleEvent(this, 'selected-entry-changed');
+  }
 }
-
-/**
- * QuickViewModel extends cr.EventTarget.
- */
-QuickViewModel.prototype.__proto__ = cr.EventTarget.prototype;
-
-/** @return {FileEntry} */
-QuickViewModel.prototype.getSelectedEntry = function() {
-  return this.selectedEntry_;
-};
-
-/**
- * @param {!FileEntry} entry
- */
-QuickViewModel.prototype.setSelectedEntry = function(entry) {
-  this.selectedEntry_ = entry;
-  cr.dispatchSimpleEvent(this, 'selected-entry-changed');
-};

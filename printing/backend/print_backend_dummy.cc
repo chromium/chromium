@@ -16,16 +16,11 @@ namespace printing {
 
 class DummyPrintBackend : public PrintBackend {
  public:
-  DummyPrintBackend() {
-  }
+  DummyPrintBackend() {}
 
-  bool EnumeratePrinters(PrinterList* printer_list) override {
-    return false;
-  }
+  bool EnumeratePrinters(PrinterList* printer_list) override { return false; }
 
-  std::string GetDefaultPrinterName() override {
-    return std::string();
-  }
+  std::string GetDefaultPrinterName() override { return std::string(); }
 
   bool GetPrinterBasicInfo(const std::string& printer_name,
                            PrinterBasicInfo* printer_info) override {
@@ -44,8 +39,7 @@ class DummyPrintBackend : public PrintBackend {
     return false;
   }
 
-  std::string GetPrinterDriverInfo(
-      const std::string& printer_name) override {
+  std::string GetPrinterDriverInfo(const std::string& printer_name) override {
     return std::string();
   }
 

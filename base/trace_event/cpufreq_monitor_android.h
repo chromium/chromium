@@ -44,7 +44,7 @@ class BASE_EXPORT CPUFreqMonitorDelegate {
   virtual std::string GetRelatedCPUsPathString(unsigned int cpu_id) const;
 
   // Allows us to delay creating a task runner, necessary because many tests
-  // don't like us creating one outside of a ScopedTaskEnvironment.
+  // don't like us creating one outside of a TaskEnvironment.
   virtual scoped_refptr<SingleThreadTaskRunner> CreateTaskRunner();
 
  private:
@@ -87,7 +87,7 @@ class BASE_EXPORT CPUFreqMonitor : public TraceLog::EnabledStateObserver {
   base::subtle::Atomic32 is_enabled_ = 0;
   scoped_refptr<SingleThreadTaskRunner> task_runner_;
   std::unique_ptr<CPUFreqMonitorDelegate> delegate_;
-  base::WeakPtrFactory<CPUFreqMonitor> weak_ptr_factory_;
+  base::WeakPtrFactory<CPUFreqMonitor> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(CPUFreqMonitor);
 };

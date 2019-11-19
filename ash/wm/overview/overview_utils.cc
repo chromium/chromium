@@ -6,21 +6,26 @@
 
 #include <utility>
 
-#include "ash/app_list/app_list_controller_impl.h"
-#include "ash/app_list/home_launcher_gesture_handler.h"
+#include "ash/home_screen/home_launcher_gesture_handler.h"
+#include "ash/home_screen/home_screen_controller.h"
 #include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/shell_window_ids.h"
+#include "ash/public/cpp/window_properties.h"
+#include "ash/scoped_animation_disabler.h"
+#include "ash/screen_util.h"
 #include "ash/shell.h"
 #include "ash/wm/overview/cleanup_animation_observer.h"
+#include "ash/wm/overview/delayed_animation_observer_impl.h"
 #include "ash/wm/overview/overview_controller.h"
+#include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/scoped_overview_animation_settings.h"
-#include "ash/wm/overview/start_animation_observer.h"
 #include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/splitview/split_view_utils.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_transient_descendant_iterator.h"
+#include "ash/wm/wm_event.h"
 #include "base/no_destructor.h"
-#include "third_party/skia/include/pathops/SkPathOps.h"
+#include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/scoped_canvas.h"
@@ -42,82 +47,18 @@ const gfx::Transform& GetShiftTransform() {
   return *matrix;
 }
 
-// BackgroundWith1PxBorder renders a solid background color, with a one pixel
-// border with rounded corners. This accounts for the scaling of the canvas, so
-// that the border is 1 pixel thick regardless of display scaling.
-class BackgroundWith1PxBorder : public views::Background {
- public:
-  BackgroundWith1PxBorder(SkColor background,
-                          SkColor border_color,
-                          int border_thickness,
-                          int corner_radius)
-      : border_color_(border_color),
-        border_thickness_(border_thickness),
-        corner_radius_(corner_radius) {
-    SetNativeControlColor(background);
-  }
-
-  // views::Background:
-  void Paint(gfx::Canvas* canvas, views::View* view) const override {
-    gfx::RectF border_rect_f(view->GetContentsBounds());
-
-    gfx::ScopedCanvas scoped_canvas(canvas);
-    const float scale = canvas->UndoDeviceScaleFactor();
-    border_rect_f.Inset(border_thickness_, border_thickness_);
-    border_rect_f = gfx::ScaleRect(border_rect_f, scale);
-
-    SkPath path;
-    const SkScalar scaled_corner_radius =
-        SkIntToScalar(gfx::ToCeiledInt(corner_radius_ * scale));
-    path.addRoundRect(gfx::RectFToSkRect(border_rect_f), scaled_corner_radius,
-                      scaled_corner_radius);
-
-    cc::PaintFlags flags;
-    flags.setStyle(cc::PaintFlags::kStroke_Style);
-    flags.setStrokeWidth(1);
-    flags.setAntiAlias(true);
-
-    SkPath stroke_path;
-    flags.getFillPath(path, &stroke_path);
-
-    SkPath fill_path;
-    Op(path, stroke_path, kDifference_SkPathOp, &fill_path);
-    flags.setStyle(cc::PaintFlags::kFill_Style);
-    flags.setColor(get_color());
-    canvas->sk_canvas()->drawPath(fill_path, flags);
-
-    if (border_thickness_ > 0) {
-      flags.setColor(border_color_);
-      canvas->sk_canvas()->drawPath(stroke_path, flags);
-    }
-  }
-
- private:
-  // Color for the one pixel border.
-  const SkColor border_color_;
-
-  // Thickness of border inset.
-  const int border_thickness_;
-
-  // Corner radius of the inside edge of the roundrect border stroke.
-  const int corner_radius_;
-
-  DISALLOW_COPY_AND_ASSIGN(BackgroundWith1PxBorder);
-};
-
 }  // namespace
 
 bool CanCoverAvailableWorkspace(aura::Window* window) {
-  SplitViewController* split_view_controller =
-      Shell::Get()->split_view_controller();
-  if (split_view_controller->IsSplitViewModeActive())
+  if (SplitViewController::Get(window)->InSplitViewMode())
     return CanSnapInSplitview(window);
-  return wm::GetWindowState(window)->IsMaximizedOrFullscreenOrPinned();
+  return WindowState::Get(window)->IsMaximizedOrFullscreenOrPinned();
 }
 
 void FadeInWidgetAndMaybeSlideOnEnter(views::Widget* widget,
                                       OverviewAnimationType animation_type,
-                                      bool slide) {
+                                      bool slide,
+                                      bool observe) {
   aura::Window* window = widget->GetNativeWindow();
   if (window->layer()->GetTargetOpacity() == 1.f && !slide)
     return;
@@ -137,18 +78,20 @@ void FadeInWidgetAndMaybeSlideOnEnter(views::Widget* widget,
   ScopedOverviewAnimationSettings scoped_overview_animation_settings(
       animation_type, window);
   window->layer()->SetOpacity(1.0f);
-  if (slide) {
+  if (slide)
     window->SetTransform(original_transform);
 
-    auto start_observer = std::make_unique<StartAnimationObserver>();
-    scoped_overview_animation_settings.AddObserver(start_observer.get());
-    Shell::Get()->overview_controller()->AddStartAnimationObserver(
-        std::move(start_observer));
+  if (observe) {
+    auto enter_observer = std::make_unique<EnterAnimationObserver>();
+    scoped_overview_animation_settings.AddObserver(enter_observer.get());
+    Shell::Get()->overview_controller()->AddEnterAnimationObserver(
+        std::move(enter_observer));
   }
 }
 
 void FadeOutWidgetAndMaybeSlideOnExit(std::unique_ptr<views::Widget> widget,
-                                      OverviewAnimationType animation_type) {
+                                      OverviewAnimationType animation_type,
+                                      bool slide) {
   // The overview controller may be nullptr on shutdown.
   OverviewController* controller = Shell::Get()->overview_controller();
   if (!controller) {
@@ -168,71 +111,35 @@ void FadeOutWidgetAndMaybeSlideOnExit(std::unique_ptr<views::Widget> widget,
   views::Widget* widget_ptr = widget.get();
   auto observer = std::make_unique<CleanupAnimationObserver>(std::move(widget));
   animation_settings.AddObserver(observer.get());
-  controller->AddDelayedAnimationObserver(std::move(observer));
+  controller->AddExitAnimationObserver(std::move(observer));
   widget_ptr->SetOpacity(0.f);
 
-  // Slide |widget| towards to top of screen if exit overview to home launcher.
-  if (animation_type == OVERVIEW_ANIMATION_EXIT_TO_HOME_LAUNCHER) {
+  if (slide) {
     gfx::Transform new_transform = widget_ptr->GetNativeWindow()->transform();
     new_transform.ConcatTransform(GetShiftTransform());
     widget_ptr->GetNativeWindow()->SetTransform(new_transform);
   }
 }
 
-std::unique_ptr<views::Widget> CreateBackgroundWidget(aura::Window* root_window,
-                                                      ui::LayerType layer_type,
-                                                      SkColor background_color,
-                                                      int border_thickness,
-                                                      int border_radius,
-                                                      SkColor border_color,
-                                                      float initial_opacity,
-                                                      aura::Window* parent,
-                                                      bool stack_on_top,
-                                                      bool accept_events) {
-  std::unique_ptr<views::Widget> widget = std::make_unique<views::Widget>();
-  views::Widget::InitParams params;
-  params.type = views::Widget::InitParams::TYPE_POPUP;
-  params.keep_on_top = false;
-  params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
-  params.opacity = views::Widget::InitParams::TRANSLUCENT_WINDOW;
-  params.layer_type = layer_type;
-  params.accept_events = accept_events;
-  widget->set_focus_on_creation(false);
-  // Parenting in kShellWindowId_WallpaperContainer allows proper layering of
-  // the shield and selection widgets. Since that container is created with
-  // USE_LOCAL_COORDINATES BoundsInScreenBehavior local bounds in |root_window_|
-  // need to be provided.
-  params.parent =
-      parent ? parent
-             : root_window->GetChildById(kShellWindowId_WallpaperContainer);
-  widget->Init(params);
-  aura::Window* widget_window = widget->GetNativeWindow();
-  // Disable the "bounce in" animation when showing the window.
-  ::wm::SetWindowVisibilityAnimationTransition(widget_window,
-                                               ::wm::ANIMATE_NONE);
-  if (params.layer_type == ui::LAYER_SOLID_COLOR) {
-    widget_window->layer()->SetColor(background_color);
-  } else if (params.layer_type == ui::LAYER_TEXTURED) {
-    views::View* content_view = new views::View();
-    content_view->SetBackground(std::make_unique<BackgroundWith1PxBorder>(
-        background_color, border_color, border_thickness, border_radius));
-    widget->SetContentsView(content_view);
-  }
+void ImmediatelyCloseWidgetOnExit(std::unique_ptr<views::Widget> widget) {
+  widget->GetNativeWindow()->SetProperty(aura::client::kAnimationsDisabledKey,
+                                         true);
+  widget->Close();
+  widget.reset();
+}
 
-  if (stack_on_top)
-    widget_window->parent()->StackChildAtTop(widget_window);
-  else
-    widget_window->parent()->StackChildAtBottom(widget_window);
-
-  widget->Show();
-  widget_window->layer()->SetOpacity(initial_opacity);
-  return widget;
+WindowTransientDescendantIteratorRange GetVisibleTransientTreeIterator(
+    aura::Window* window) {
+  auto hide_predicate = [](aura::Window* window) {
+    return window->GetProperty(kHideInOverviewKey);
+  };
+  return GetTransientTreeIterator(window, base::BindRepeating(hide_predicate));
 }
 
 gfx::RectF GetTransformedBounds(aura::Window* transformed_window,
                                 int top_inset) {
   gfx::RectF bounds;
-  for (auto* window : wm::GetTransientTreeIterator(transformed_window)) {
+  for (auto* window : GetVisibleTransientTreeIterator(transformed_window)) {
     // Ignore other window types when computing bounding box of overview target
     // item.
     if (window != transformed_window &&
@@ -262,7 +169,7 @@ gfx::RectF GetTransformedBounds(aura::Window* transformed_window,
 
 gfx::RectF GetTargetBoundsInScreen(aura::Window* window) {
   gfx::RectF bounds;
-  for (auto* window_iter : wm::GetTransientTreeIterator(window)) {
+  for (auto* window_iter : GetVisibleTransientTreeIterator(window)) {
     // Ignore other window types when computing bounding box of overview target
     // item.
     if (window_iter != window &&
@@ -278,7 +185,7 @@ gfx::RectF GetTargetBoundsInScreen(aura::Window* window) {
 
 void SetTransform(aura::Window* window, const gfx::Transform& transform) {
   gfx::PointF target_origin(GetTargetBoundsInScreen(window).origin());
-  for (auto* window_iter : wm::GetTransientTreeIterator(window)) {
+  for (auto* window_iter : GetVisibleTransientTreeIterator(window)) {
     aura::Window* parent_window = window_iter->parent();
     gfx::RectF original_bounds(window_iter->GetTargetBounds());
     ::wm::TranslateRectToScreen(parent_window, &original_bounds);
@@ -291,17 +198,94 @@ void SetTransform(aura::Window* window, const gfx::Transform& transform) {
 }
 
 bool IsSlidingOutOverviewFromShelf() {
-  if (!Shell::Get()->overview_controller()->IsSelecting())
+  if (!Shell::Get()->overview_controller()->InOverviewSession())
     return false;
 
   if (Shell::Get()
-          ->app_list_controller()
+          ->home_screen_controller()
           ->home_launcher_gesture_handler()
           ->mode() == HomeLauncherGestureHandler::Mode::kSlideUpToShow) {
     return true;
   }
 
   return false;
+}
+
+void MaximizeIfSnapped(aura::Window* window) {
+  auto* window_state = WindowState::Get(window);
+  if (window_state && window_state->IsSnapped()) {
+    ScopedAnimationDisabler disabler(window);
+    WMEvent event(WM_EVENT_MAXIMIZE);
+    window_state->OnWMEvent(&event);
+  }
+}
+
+// Get the grid bounds if a window is snapped in splitview, or what they will be
+// when snapped based on |target_root| and |indicator_state|.
+gfx::Rect GetGridBoundsInScreenForSplitview(
+    aura::Window* target_root,
+    base::Optional<SplitViewDragIndicators::WindowDraggingState>
+        window_dragging_state) {
+  auto* split_view_controller = SplitViewController::Get(target_root);
+  auto state = split_view_controller->state();
+
+  // If we are in splitview mode already just use the given state, otherwise
+  // convert |window_dragging_state| to a split view state.
+  if (!split_view_controller->InSplitViewMode() && window_dragging_state) {
+    switch (*window_dragging_state) {
+      case SplitViewDragIndicators::WindowDraggingState::kToSnapLeft:
+        state = SplitViewController::State::kLeftSnapped;
+        break;
+      case SplitViewDragIndicators::WindowDraggingState::kToSnapRight:
+        state = SplitViewController::State::kRightSnapped;
+        break;
+      default:
+        break;
+    }
+  }
+
+  switch (state) {
+    case SplitViewController::State::kLeftSnapped:
+      return split_view_controller->GetSnappedWindowBoundsInScreen(
+          SplitViewController::RIGHT, /*window_for_minimum_size=*/nullptr);
+    case SplitViewController::State::kRightSnapped:
+      return split_view_controller->GetSnappedWindowBoundsInScreen(
+          SplitViewController::LEFT, /*window_for_minimum_size=*/nullptr);
+    default:
+      return screen_util::
+          GetDisplayWorkAreaBoundsInScreenForActiveDeskContainer(target_root);
+  }
+}
+
+base::Optional<gfx::RectF> GetSplitviewBoundsMaintainingAspectRatio(
+    aura::Window* window) {
+  if (!ShouldAllowSplitView())
+    return base::nullopt;
+  auto* overview_session =
+      Shell::Get()->overview_controller()->overview_session();
+  DCHECK(overview_session);
+  aura::Window* root_window = Shell::GetPrimaryRootWindow();
+  DCHECK(overview_session->GetGridWithRootWindow(root_window)
+             ->split_view_drag_indicators());
+  // TODO(sammiequon): This does not work for drag from top as they have
+  // different drag indicators object as regular overview.
+  auto window_dragging_state =
+      overview_session->GetGridWithRootWindow(root_window)
+          ->split_view_drag_indicators()
+          ->current_window_dragging_state();
+  if (!SplitViewController::Get(root_window)->InSplitViewMode() &&
+      SplitViewDragIndicators::GetSnapPosition(window_dragging_state) ==
+          SplitViewController::NONE) {
+    return base::nullopt;
+  }
+
+  return base::make_optional(gfx::RectF(GetGridBoundsInScreenForSplitview(
+      root_window, base::make_optional(window_dragging_state))));
+}
+
+bool ShouldUseTabletModeGridLayout() {
+  return base::FeatureList::IsEnabled(features::kNewOverviewLayout) &&
+         Shell::Get()->tablet_mode_controller()->InTabletMode();
 }
 
 }  // namespace ash

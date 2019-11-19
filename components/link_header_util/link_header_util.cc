@@ -178,13 +178,11 @@ bool ParseLinkHeaderValue(
       net::HttpUtil::NameValuePairsIterator::Values::NOT_REQUIRED,
       net::HttpUtil::NameValuePairsIterator::Quotes::STRICT_QUOTES);
   while (params_iterator.GetNext()) {
-    if (!net::HttpUtil::IsParmName(params_iterator.name_begin(),
-                                   params_iterator.name_end()))
+    if (!net::HttpUtil::IsParmName(params_iterator.name_piece()))
       return false;
-    std::string name = base::ToLowerASCII(base::StringPiece(
-        params_iterator.name_begin(), params_iterator.name_end()));
+    std::string name = base::ToLowerASCII(params_iterator.name_piece());
     if (!params_iterator.value_is_quoted() &&
-        params_iterator.value_begin() == params_iterator.value_end())
+        params_iterator.value_piece().empty())
       params->insert(std::make_pair(name, base::nullopt));
     else
       params->insert(std::make_pair(name, params_iterator.value()));

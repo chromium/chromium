@@ -6,7 +6,7 @@
 
 namespace media {
 
-AndroidOverlay::AndroidOverlay() : weak_factory_(this) {}
+AndroidOverlay::AndroidOverlay() {}
 AndroidOverlay::~AndroidOverlay() {
   // Don't permit any other callbacks once we start sending deletion cbs.
   weak_factory_.InvalidateWeakPtrs();

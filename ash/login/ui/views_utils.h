@@ -19,7 +19,8 @@ namespace login_views_utils {
 
 // Wraps view in another view so the original view is sized to it's preferred
 // size, regardless of the view's parent's layout manager.
-ASH_EXPORT views::View* WrapViewForPreferredSize(views::View* view);
+ASH_EXPORT std::unique_ptr<views::View> WrapViewForPreferredSize(
+    std::unique_ptr<views::View> view);
 
 // Returns true if landscape constants should be used for UI shown in |widget|.
 ASH_EXPORT bool ShouldShowLandscape(const views::Widget* widget);
@@ -30,8 +31,18 @@ ASH_EXPORT bool HasFocusInAnyChildView(views::View* view);
 // Creates a standard text label for use in the login bubbles.
 views::Label* CreateBubbleLabel(const base::string16& message, SkColor color);
 
-// Get the topmost level parent view for |view|.
-views::View* GetTopLevelParentView(views::View* view);
+// Get the bubble container for |view| to place a LoginBaseBubbleView.
+views::View* GetBubbleContainer(views::View* view);
+
+ASH_EXPORT gfx::Point CalculateBubblePositionLeftRightStrategy(
+    gfx::Rect anchor,
+    gfx::Size bubble,
+    gfx::Rect bounds);
+
+ASH_EXPORT gfx::Point CalculateBubblePositionRigthLeftStrategy(
+    gfx::Rect anchor,
+    gfx::Size bubble,
+    gfx::Rect bounds);
 
 }  // namespace login_views_utils
 

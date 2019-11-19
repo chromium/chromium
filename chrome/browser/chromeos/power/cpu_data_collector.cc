@@ -433,8 +433,7 @@ bool CpuDataCollector::ReadCpuFreqAllTimeInState(
 
 // Set |cpu_count_| to -1 and let SampleCpuStateAsync discover the
 // correct number of CPUs.
-CpuDataCollector::CpuDataCollector() : cpu_count_(-1), weak_ptr_factory_(this) {
-}
+CpuDataCollector::CpuDataCollector() : cpu_count_(-1) {}
 
 CpuDataCollector::~CpuDataCollector() {
 }
@@ -457,8 +456,9 @@ void CpuDataCollector::PostSampleCpuState() {
   std::vector<StateOccupancySample>* freq_samples =
       new std::vector<StateOccupancySample>;
 
-  base::PostTaskWithTraitsAndReply(
-      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+  base::PostTaskAndReply(
+      FROM_HERE,
+      {base::ThreadPool(), base::MayBlock(), base::TaskPriority::BEST_EFFORT},
       base::Bind(&SampleCpuStateAsync, base::Unretained(cpu_count),
                  base::Unretained(cpu_idle_state_names),
                  base::Unretained(idle_samples),

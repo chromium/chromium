@@ -7,8 +7,10 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <exception>
 #include <vector>
 
+#include "base/bind.h"
 #include "skia/ext/platform_canvas.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -321,6 +323,40 @@ TEST_F(ColorAnalysisTest, CalculateKMeanColorOfBitmap) {
   EXPECT_TRUE(ChannelApproximatelyEqual(200, SkColorGetB(color)));
 }
 
+// Regression test for heap-buffer-underflow. https://crbug.com/970343
+TEST_F(ColorAnalysisTest, CalculateKMeanColorOfSmallImage) {
+  SkBitmap bitmap;
+
+  // Create a 1x41 bitmap, so it is not wide enough to have 1 pixel of padding
+  // on both sides.
+  bitmap.allocN32Pixels(1, 41);
+  bitmap.eraseARGB(255, 100, 150, 200);
+
+  SkColor color = CalculateKMeanColorOfBitmap(bitmap);
+  EXPECT_EQ(255u, SkColorGetA(color));
+  EXPECT_TRUE(ChannelApproximatelyEqual(100, SkColorGetR(color)));
+  EXPECT_TRUE(ChannelApproximatelyEqual(150, SkColorGetG(color)));
+  EXPECT_TRUE(ChannelApproximatelyEqual(200, SkColorGetB(color)));
+
+  // Test a wide but narrow bitmap.
+  bitmap.allocN32Pixels(41, 1);
+  bitmap.eraseARGB(255, 100, 150, 200);
+  color = CalculateKMeanColorOfBitmap(bitmap);
+  EXPECT_EQ(255u, SkColorGetA(color));
+  EXPECT_TRUE(ChannelApproximatelyEqual(100, SkColorGetR(color)));
+  EXPECT_TRUE(ChannelApproximatelyEqual(150, SkColorGetG(color)));
+  EXPECT_TRUE(ChannelApproximatelyEqual(200, SkColorGetB(color)));
+
+  // Test a tiny bitmap.
+  bitmap.allocN32Pixels(1, 1);
+  bitmap.eraseARGB(255, 100, 150, 200);
+  color = CalculateKMeanColorOfBitmap(bitmap);
+  EXPECT_EQ(255u, SkColorGetA(color));
+  EXPECT_TRUE(ChannelApproximatelyEqual(100, SkColorGetR(color)));
+  EXPECT_TRUE(ChannelApproximatelyEqual(150, SkColorGetG(color)));
+  EXPECT_TRUE(ChannelApproximatelyEqual(200, SkColorGetB(color)));
+}
+
 TEST_F(ColorAnalysisTest, ComputeColorCovarianceTrivial) {
   SkBitmap bitmap;
   bitmap.setInfo(SkImageInfo::MakeN32Premul(100, 200));
@@ -514,26 +550,29 @@ TEST_F(ColorAnalysisTest, ComputeProminentColors) {
   SkBitmap bitmap = canvas.GetBitmap();
 
   // All expectations start at SK_ColorTRANSPARENT (i.e. 0).
-  std::vector<SkColor> expectations(color_profiles.size(), 0);
-  std::vector<SkColor> computations =
-      CalculateProminentColorsOfBitmap(bitmap, color_profiles);
+  std::vector<Swatch> expectations(color_profiles.size(),
+                                   Swatch(SK_ColorTRANSPARENT, 0));
+  std::vector<Swatch> computations = CalculateProminentColorsOfBitmap(
+      bitmap, color_profiles, nullptr /* region */, ColorSwatchFilter());
   EXPECT_EQ(expectations, computations);
 
   // Add a green that could hit a couple values.
   const SkColor kVibrantGreen = SkColorSetRGB(25, 200, 25);
   canvas.FillRect(gfx::Rect(0, 1, 300, 1), kVibrantGreen);
   bitmap = canvas.GetBitmap();
-  expectations[0] = kVibrantGreen;
-  expectations[1] = kVibrantGreen;
-  computations = CalculateProminentColorsOfBitmap(bitmap, color_profiles);
+  expectations[0] = Swatch(kVibrantGreen, 60);
+  expectations[1] = Swatch(kVibrantGreen, 60);
+  computations = CalculateProminentColorsOfBitmap(
+      bitmap, color_profiles, nullptr /* region */, ColorSwatchFilter());
   EXPECT_EQ(expectations, computations);
 
   // Add a stripe of a dark, muted green (saturation .33, luma .29).
   const SkColor kDarkGreen = SkColorSetRGB(50, 100, 50);
   canvas.FillRect(gfx::Rect(0, 2, 300, 1), kDarkGreen);
   bitmap = canvas.GetBitmap();
-  expectations[3] = kDarkGreen;
-  computations = CalculateProminentColorsOfBitmap(bitmap, color_profiles);
+  expectations[3] = Swatch(kDarkGreen, 60);
+  computations = CalculateProminentColorsOfBitmap(
+      bitmap, color_profiles, nullptr /* region */, ColorSwatchFilter());
   EXPECT_EQ(expectations, computations);
 
   // Now draw a little bit of pure green. That should be closer to the goal for
@@ -541,9 +580,77 @@ TEST_F(ColorAnalysisTest, ComputeProminentColors) {
   const SkColor kPureGreen = SkColorSetRGB(0, 255, 0);
   canvas.FillRect(gfx::Rect(0, 3, 300, 1), kPureGreen);
   bitmap = canvas.GetBitmap();
-  expectations[1] = kPureGreen;
-  computations = CalculateProminentColorsOfBitmap(bitmap, color_profiles);
+  expectations[1] = Swatch(kPureGreen, 60);
+  computations = CalculateProminentColorsOfBitmap(
+      bitmap, color_profiles, nullptr /* region */, ColorSwatchFilter());
   EXPECT_EQ(expectations, computations);
+}
+
+TEST_F(ColorAnalysisTest, ComputeColorSwatches) {
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(100, 100);
+  bitmap.eraseColor(SK_ColorMAGENTA);
+  bitmap.erase(SK_ColorGREEN, {10, 10, 90, 90});
+  bitmap.erase(SK_ColorYELLOW, {40, 40, 60, 60});
+
+  const Swatch kYellowSwatch = Swatch(SK_ColorYELLOW, (20u * 20u));
+  const Swatch kGreenSwatch =
+      Swatch(SK_ColorGREEN, (80u * 80u) - kYellowSwatch.population);
+  const Swatch kMagentaSwatch =
+      Swatch(SK_ColorMAGENTA, (100u * 100u) - kGreenSwatch.population -
+                                  kYellowSwatch.population);
+
+  {
+    std::vector<Swatch> colors =
+        CalculateColorSwatches(bitmap, 10, gfx::Rect(100, 100), base::nullopt);
+    EXPECT_EQ(3u, colors.size());
+    EXPECT_EQ(kGreenSwatch, colors[0]);
+    EXPECT_EQ(kMagentaSwatch, colors[1]);
+    EXPECT_EQ(kYellowSwatch, colors[2]);
+  }
+
+  {
+    std::vector<Swatch> colors = CalculateColorSwatches(
+        bitmap, 10, gfx::Rect(10, 10, 80, 80), base::nullopt);
+    EXPECT_EQ(2u, colors.size());
+    EXPECT_EQ(kGreenSwatch, colors[0]);
+    EXPECT_EQ(kYellowSwatch, colors[1]);
+  }
+}
+
+TEST_F(ColorAnalysisTest, ComputeColorSwatches_Filter) {
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(100, 100);
+  bitmap.eraseColor(SK_ColorMAGENTA);
+  bitmap.erase(SK_ColorBLACK, {10, 10, 90, 90});
+  bitmap.erase(SK_ColorWHITE, {40, 40, 60, 60});
+
+  const Swatch kWhiteSwatch = Swatch(SK_ColorWHITE, (20u * 20u));
+  const Swatch kBlackSwatch =
+      Swatch(SK_ColorBLACK, (80u * 80u) - kWhiteSwatch.population);
+  const Swatch kMagentaSwatch =
+      Swatch(SK_ColorMAGENTA,
+             (100u * 100u) - kBlackSwatch.population - kWhiteSwatch.population);
+
+  {
+    std::vector<Swatch> colors = CalculateColorSwatches(
+        bitmap, 10, gfx::Rect(100, 100),
+        base::BindRepeating([](const SkColor& candidate) {
+          return candidate != SK_ColorBLACK;
+        }));
+    EXPECT_EQ(2u, colors.size());
+    EXPECT_EQ(kMagentaSwatch, colors[0]);
+    EXPECT_EQ(kWhiteSwatch, colors[1]);
+  }
+
+  {
+    std::vector<Swatch> colors =
+        CalculateColorSwatches(bitmap, 10, gfx::Rect(100, 100), base::nullopt);
+    EXPECT_EQ(3u, colors.size());
+    EXPECT_EQ(kBlackSwatch, colors[0]);
+    EXPECT_EQ(kMagentaSwatch, colors[1]);
+    EXPECT_EQ(kWhiteSwatch, colors[2]);
+  }
 }
 
 }  // namespace color_utils

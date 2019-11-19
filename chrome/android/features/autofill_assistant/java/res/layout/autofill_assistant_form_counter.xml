@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2019 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:minHeight="40dp"
+    android:orientation="horizontal"
+    android:gravity="center_vertical">
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical">
+        <TextView
+            android:id="@+id/label"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/TextAppearance.BlackTitle2"/>
+        <TextView
+            android:id="@+id/subtext"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/TextAppearance.BlackCaption"
+            android:visibility="gone"/>
+    </LinearLayout>
+    <ImageView
+        android:id="@+id/decrease_button"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:padding="4dp"
+        android:tint="@color/filled_button_bg"
+        android:contentDescription="@string/autofill_assistant_decrease_value"
+        app:srcCompat="@drawable/ic_remove_outline_white_24dp"/>
+    <TextView
+        android:id="@+id/value"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:minWidth="20dp"
+        android:gravity="center"
+        android:textAppearance="@style/TextAppearance.BlackTitle2"/>
+    <ImageView
+        android:id="@+id/increase_button"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:padding="4dp"
+        android:tint="@color/filled_button_bg"
+        android:contentDescription="@string/autofill_assistant_increase_value"
+        app:srcCompat="@drawable/ic_add_outline_white_24dp"/>
+</LinearLayout>

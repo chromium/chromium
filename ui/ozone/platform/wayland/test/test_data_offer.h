@@ -15,6 +15,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread.h"
 #include "ui/ozone/platform/wayland/test/server_object.h"
+#include "ui/ozone/public/platform_clipboard.h"
 
 struct wl_resource;
 
@@ -32,10 +33,13 @@ class TestDataOffer : public ServerObject {
   ~TestDataOffer() override;
 
   void Receive(const std::string& mime_type, base::ScopedFD fd);
-  void OnOffer(const std::string& mime_type);
+  void OnOffer(const std::string& mime_type,
+               const ui::PlatformClipboard::Data& data);
 
  private:
   const scoped_refptr<base::SequencedTaskRunner> task_runner_;
+  ui::PlatformClipboard::DataMap data_to_offer_;
+
   base::WeakPtrFactory<TestDataOffer> write_data_weak_ptr_factory_;
 
   DISALLOW_COPY_AND_ASSIGN(TestDataOffer);

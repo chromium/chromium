@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+<body>
+<div id="container"></div>
+<script src="file:///gen/layout_test_data/mojo/public/js/mojo_bindings.js"></script>
+<script src="file:///gen/third_party/blink/public/mojom/web_feature/web_feature.mojom.js"></script>
+<script>
+test(() => {
+  internals.clearUseCounter(document, blink.mojom.WebFeature.kARIAHelpAttribute);
+  assert_false(internals.isUseCounted(document, blink.mojom.WebFeature.kARIAHelpAttribute));
+  let shadow = container.attachShadow({mode: 'open'});
+  var paragraph = document.createElement('p');
+  shadow.appendChild(paragraph);
+  paragraph.setAttribute("aria-help", "helpful string");
+
+  // Feature is deprecated, but is still use counted.
+  assert_true(internals.isUseCounted(document, blink.mojom.WebFeature.kARIAHelpAttribute));
+}, "AriaHelpAttribute should be counted in non-user agent shadow DOM.");
+</script>
+</body>

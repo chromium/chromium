@@ -13,6 +13,10 @@
 #include "chromeos/components/proximity_auth/screenlock_state.h"
 #include "components/account_id/account_id.h"
 
+namespace proximity_auth {
+class ProximityAuthPrefManager;
+}  // namespace proximity_auth
+
 namespace chromeos {
 
 // Profile specific class responsible for updating screenlock UI for the user
@@ -39,10 +43,13 @@ class EasyUnlockScreenlockStateHandler
   // |initial_hardlock_state|: The initial hardlock state.
   // |screenlock_bridge|: The screenlock bridge used to update the screen lock
   //     state.
+  // |pref_manager|: Used primarily to track if the "Signin with Smart Lock is
+  //     disabled" message has been shown before.
   EasyUnlockScreenlockStateHandler(
       const AccountId& account_id,
       HardlockState initial_hardlock_state,
-      proximity_auth::ScreenlockBridge* screenlock_bridge);
+      proximity_auth::ScreenlockBridge* screenlock_bridge,
+      proximity_auth::ProximityAuthPrefManager* pref_manager);
   ~EasyUnlockScreenlockStateHandler() override;
 
   // Returns true if handler is not in INACTIVE state.
@@ -92,7 +99,8 @@ class EasyUnlockScreenlockStateHandler
 
   proximity_auth::ScreenlockState state_;
   const AccountId account_id_;
-  proximity_auth::ScreenlockBridge* screenlock_bridge_;
+  proximity_auth::ScreenlockBridge* screenlock_bridge_ = nullptr;
+  proximity_auth::ProximityAuthPrefManager* pref_manager_ = nullptr;
 
   // State of hardlock.
   HardlockState hardlock_state_;

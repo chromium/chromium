@@ -8,10 +8,10 @@
 #include <string>
 #include <utility>
 
-#include "ash/accelerators/accelerator_controller.h"
+#include "ash/accelerators/accelerator_controller_impl.h"
 #include "ash/public/cpp/ash_switches.h"
 #include "ash/public/cpp/shell_window_ids.h"
-#include "ash/session/session_controller.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/shutdown_reason.h"
 #include "ash/system/power/power_button_display_controller.h"
@@ -28,7 +28,6 @@
 #include "base/command_line.h"
 #include "base/json/json_reader.h"
 #include "base/time/default_tick_clock.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/power_manager/backlight.pb.h"
 #include "ui/display/types/display_snapshot.h"
 #include "ui/views/widget/widget.h"
@@ -65,14 +64,14 @@ std::unique_ptr<views::Widget> CreateMenuWidget() {
   views::Widget::InitParams params(
       views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
   params.opacity = views::Widget::InitParams::TRANSLUCENT_WINDOW;
-  params.keep_on_top = true;
+  params.z_order = ui::ZOrderLevel::kFloatingWindow;
   params.accept_events = true;
   params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   params.name = "PowerButtonMenuWindow";
   params.layer_type = ui::LAYER_SOLID_COLOR;
   params.parent = Shell::GetPrimaryRootWindow()->GetChildById(
       kShellWindowId_PowerMenuContainer);
-  menu_widget->Init(params);
+  menu_widget->Init(std::move(params));
 
   gfx::Rect widget_bounds =
       display::Screen::GetScreen()->GetPrimaryDisplay().bounds();
@@ -100,60 +99,12 @@ constexpr const char* PowerButtonController::kRightEdge;
 constexpr const char* PowerButtonController::kTopEdge;
 constexpr const char* PowerButtonController::kBottomEdge;
 
-// Maintain active state of the given |widget|. Sets |widget| to always render
-// as active if it's not already initially configured that way. Resets the
-// setting if |widget| still exists when this class is destroyed.
-class PowerButtonController::ActiveWindowWidgetController
-    : public views::WidgetObserver {
- public:
-  static std::unique_ptr<ActiveWindowWidgetController> Create(
-      views::Widget* widget) {
-    if (!widget || widget->IsAlwaysRenderAsActive())
-      return nullptr;
-
-    widget->SetAlwaysRenderAsActive(true);
-    return std::unique_ptr<ActiveWindowWidgetController>(
-        base::WrapUnique(new ActiveWindowWidgetController(widget)));
-  }
-
-  ~ActiveWindowWidgetController() override {
-    if (!widget_)
-      return;
-    widget_->SetAlwaysRenderAsActive(false);
-    widget_->RemoveObserver(this);
-  }
-
-  // views::WidgetObserver:
-  void OnWidgetClosing(views::Widget* widget) override {
-    DCHECK_EQ(widget_, widget);
-    widget_ = nullptr;
-    widget->RemoveObserver(this);
-  }
-
-  // views::WidgetObserver:
-  void OnWidgetDestroying(views::Widget* widget) override {
-    OnWidgetClosing(widget);
-  }
-
- private:
-  explicit ActiveWindowWidgetController(views::Widget* widget)
-      : widget_(widget) {
-    if (widget)
-      widget->AddObserver(this);
-  }
-
-  views::Widget* widget_ = nullptr;  // Not owned.
-
-  DISALLOW_COPY_AND_ASSIGN(ActiveWindowWidgetController);
-};
-
 PowerButtonController::PowerButtonController(
     BacklightsForcedOffSetter* backlights_forced_off_setter)
     : backlights_forced_off_setter_(backlights_forced_off_setter),
       lock_state_controller_(Shell::Get()->lock_state_controller()),
       tick_clock_(base::DefaultTickClock::GetInstance()),
-      backlights_forced_off_observer_(this),
-      weak_factory_(this) {
+      backlights_forced_off_observer_(this) {
   ProcessCommandLine();
   display_controller_ = std::make_unique<PowerButtonDisplayController>(
       backlights_forced_off_setter_, tick_clock_);
@@ -195,18 +146,19 @@ void PowerButtonController::OnLegacyPowerButtonEvent(bool down) {
 
   if (!down)
     return;
+
+  // Ignore the power button down event if the menu is partially opened.
+  if (IsMenuOpened() && !show_menu_animation_done_)
+    return;
+
   // If power button releases won't get reported correctly because we're not
-  // running on official hardware, just lock the screen or shut down
-  // immediately.
-  const SessionController* const session_controller =
-      Shell::Get()->session_controller();
-  if (session_controller->CanLockScreen() &&
-      !session_controller->IsUserSessionBlocked() &&
-      !lock_state_controller_->LockRequested()) {
-    lock_state_controller_->StartLockAnimationAndLockImmediately();
-  } else {
+  // running on official hardware, show menu animation on the first power
+  // button press. On a further press while the menu is open, simply shut down
+  // (http://crbug.com/945005).
+  if (!show_menu_animation_done_)
+    StartPowerMenuAnimation();
+  else
     lock_state_controller_->RequestShutdown(ShutdownReason::POWER_BUTTON);
-  }
 }
 
 void PowerButtonController::OnPowerButtonEvent(
@@ -320,7 +272,7 @@ void PowerButtonController::OnLockButtonEvent(
   if (power_button_down_)
     return;
 
-  const SessionController* const session_controller =
+  const SessionControllerImpl* const session_controller =
       Shell::Get()->session_controller();
   if (!session_controller->CanLockScreen() ||
       session_controller->IsScreenLocked() ||
@@ -349,7 +301,7 @@ void PowerButtonController::DismissMenu() {
     menu_widget_->Hide();
 
   show_menu_animation_done_ = false;
-  active_window_widget_controller_.reset();
+  active_window_paint_as_active_lock_.reset();
 }
 
 void PowerButtonController::StopForcingBacklightsOff() {
@@ -422,6 +374,15 @@ void PowerButtonController::OnGetSwitchStates(
 
 void PowerButtonController::OnAccelerometerUpdated(
     scoped_refptr<const AccelerometerUpdate> update) {
+  // When ChromeOS EC lid angle driver is present, there's always tablet mode
+  // switch in device, so PowerButtonController doesn't need to listens to
+  // accelerometer events.
+  if (update->HasLidAngleDriver(ACCELEROMETER_SOURCE_SCREEN) ||
+      update->HasLidAngleDriver(ACCELEROMETER_SOURCE_ATTACHED_KEYBOARD)) {
+    AccelerometerReader::GetInstance()->RemoveObserver(this);
+    return;
+  }
+
   if (!has_tablet_mode_switch_ && observe_accelerometer_events_)
     InitTabletPowerButtonMembers();
 }
@@ -470,9 +431,11 @@ void PowerButtonController::StartPowerMenuAnimation() {
   // Avoid a distracting deactivation animation on the formerly-active
   // window when the menu is activated.
   views::Widget* active_toplevel_widget =
-      views::Widget::GetTopLevelWidgetForNativeView(wm::GetActiveWindow());
-  active_window_widget_controller_ =
-      ActiveWindowWidgetController::Create(active_toplevel_widget);
+      views::Widget::GetTopLevelWidgetForNativeView(
+          window_util::GetActiveWindow());
+  active_window_paint_as_active_lock_ =
+      active_toplevel_widget ? active_toplevel_widget->LockPaintAsActive()
+                             : nullptr;
 
   if (!menu_widget_)
     menu_widget_ = CreateMenuWidget();
@@ -510,7 +473,7 @@ void PowerButtonController::InitTabletPowerButtonMembers() {
 }
 
 void PowerButtonController::LockScreenIfRequired() {
-  const SessionController* session_controller =
+  const SessionControllerImpl* session_controller =
       Shell::Get()->session_controller();
   if (session_controller->ShouldLockScreenAutomatically() &&
       session_controller->CanLockScreen() &&
@@ -522,8 +485,10 @@ void PowerButtonController::LockScreenIfRequired() {
 
 void PowerButtonController::SetShowMenuAnimationDone() {
   show_menu_animation_done_ = true;
-  pre_shutdown_timer_.Start(FROM_HERE, kStartShutdownAnimationTimeout, this,
-                            &PowerButtonController::OnPreShutdownTimeout);
+  if (button_type_ != ButtonType::LEGACY) {
+    pre_shutdown_timer_.Start(FROM_HERE, kStartShutdownAnimationTimeout, this,
+                              &PowerButtonController::OnPreShutdownTimeout);
+  }
 }
 
 void PowerButtonController::ParsePowerButtonPositionSwitch() {

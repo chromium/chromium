@@ -14,7 +14,8 @@ import org.junit.runner.RunWith;
 import org.chromium.base.BaseSwitches;
 import org.chromium.base.test.ReachedCodeProfiler;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.chrome.browser.preferences.ChromePreferenceManager;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
@@ -33,6 +34,8 @@ public final class ReachedCodeProfilerTest {
     // Shared preferences key for the reached code profiler.
     private static final String REACHED_CODE_PROFILER_ENABLED_KEY = "reached_code_profiler_enabled";
 
+    private static final String FAKE_GROUP_NAME = "FakeGroup";
+
     /**
      * Tests that passing a command line switch enables the reached code profiler no matter what.
      */
@@ -40,7 +43,7 @@ public final class ReachedCodeProfilerTest {
     @SmallTest
     @DisableFeatures(ChromeFeatureList.REACHED_CODE_PROFILER)
     @CommandLineFlags.Add(BaseSwitches.ENABLE_REACHED_CODE_PROFILER)
-    public void testExplicitlyEnableViaCommandLineSwitch() throws Exception {
+    public void testExplicitlyEnableViaCommandLineSwitch() {
         mActivityTestRule.startMainActivityFromLauncher();
         assertReachedCodeProfilerIsEnabled();
     }
@@ -52,7 +55,7 @@ public final class ReachedCodeProfilerTest {
     @Test
     @SmallTest
     @EnableFeatures(ChromeFeatureList.REACHED_CODE_PROFILER)
-    public void testEnabledViaCachedSharedPreference() throws Exception {
+    public void testEnabledViaCachedSharedPreference() {
         setReachedCodeProfilerSharedPreference(true);
         mActivityTestRule.startMainActivityFromLauncher();
         assertReachedCodeProfilerIsEnabled();
@@ -65,7 +68,7 @@ public final class ReachedCodeProfilerTest {
     @Test
     @SmallTest
     @EnableFeatures(ChromeFeatureList.REACHED_CODE_PROFILER)
-    public void testSharedPreferenceIsCached_Enable() throws Exception {
+    public void testSharedPreferenceIsCached_Enable() {
         mActivityTestRule.startMainActivityFromLauncher();
 
         Assert.assertTrue(getReachedCodeProfilerSharedPreference());
@@ -81,13 +84,28 @@ public final class ReachedCodeProfilerTest {
     @Test
     @SmallTest
     @DisableFeatures(ChromeFeatureList.REACHED_CODE_PROFILER)
-    public void testSharedPreferenceIsCached_Disable() throws Exception {
+    public void testSharedPreferenceIsCached_Disable() {
         setReachedCodeProfilerSharedPreference(true);
         mActivityTestRule.startMainActivityFromLauncher();
 
         Assert.assertFalse(getReachedCodeProfilerSharedPreference());
         // Disabling takes effect only on the second startup.
         assertReachedCodeProfilerIsEnabled();
+    }
+
+    /**
+     * Tests that the reached code profiler field trial group is saved in shared preferences for
+     * being used on the next startup.
+     */
+    @Test
+    @SmallTest
+    @CommandLineFlags.
+    Add("force-fieldtrials=" + ChromeFeatureList.REACHED_CODE_PROFILER + "/" + FAKE_GROUP_NAME)
+    public void testSharedPreferenceTrialGroupIsCached() {
+        mActivityTestRule.startMainActivityFromLauncher();
+        Assert.assertEquals(FAKE_GROUP_NAME,
+                SharedPreferencesManager.getInstance().readString(
+                        ChromePreferenceKeys.REACHED_CODE_PROFILER_GROUP_KEY, null));
     }
 
     /**
@@ -104,12 +122,12 @@ public final class ReachedCodeProfilerTest {
     }
 
     private boolean getReachedCodeProfilerSharedPreference() {
-        return ChromePreferenceManager.getInstance().readBoolean(
+        return SharedPreferencesManager.getInstance().readBoolean(
                 REACHED_CODE_PROFILER_ENABLED_KEY, false);
     }
 
     private void setReachedCodeProfilerSharedPreference(boolean value) {
-        ChromePreferenceManager.getInstance().writeBoolean(
+        SharedPreferencesManager.getInstance().writeBoolean(
                 REACHED_CODE_PROFILER_ENABLED_KEY, value);
     }
 }

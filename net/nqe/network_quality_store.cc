@@ -15,7 +15,7 @@ namespace nqe {
 
 namespace internal {
 
-NetworkQualityStore::NetworkQualityStore() : weak_ptr_factory_(this) {
+NetworkQualityStore::NetworkQualityStore() {
   static_assert(kMaximumNetworkQualityCacheSize > 0,
                 "Size of the network quality cache must be > 0");
   // This limit should not be increased unless the logic for removing the

@@ -16,7 +16,6 @@
 #import "ios/chrome/browser/metrics/new_tab_page_uma.h"
 #include "ios/chrome/browser/sync/sync_setup_service.h"
 #include "ios/chrome/browser/sync/sync_setup_service_factory.h"
-#import "ios/chrome/browser/ui/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/ui/context_menu/context_menu_coordinator.h"
 #include "ios/chrome/browser/ui/history/history_entries_status_item.h"
 #import "ios/chrome/browser/ui/history/history_entries_status_item_delegate.h"
@@ -33,15 +32,17 @@
 #import "ios/chrome/browser/ui/table_view/cells/table_view_url_item.h"
 #import "ios/chrome/browser/ui/table_view/table_view_favicon_data_source.h"
 #import "ios/chrome/browser/ui/table_view/table_view_navigation_controller_constants.h"
-#import "ios/chrome/browser/ui/url_loader.h"
 #import "ios/chrome/browser/ui/util/pasteboard_util.h"
-#import "ios/chrome/browser/ui/util/top_view_controller.h"
+#import "ios/chrome/browser/url_loading/url_loading_params.h"
+#import "ios/chrome/browser/url_loading/url_loading_service.h"
+#import "ios/chrome/browser/url_loading/url_loading_service_factory.h"
+#import "ios/chrome/common/colors/UIColor+cr_semantic_colors.h"
+#import "ios/chrome/common/colors/semantic_color_names.h"
 #import "ios/chrome/common/favicon/favicon_view.h"
 #import "ios/chrome/common/ui_util/constraints_ui_util.h"
 #include "ios/chrome/grit/ios_strings.h"
-#import "ios/web/public/navigation_manager.h"
-#import "ios/web/public/referrer.h"
-#import "ios/web/public/web_state/context_menu_params.h"
+#import "ios/web/public/navigation/navigation_manager.h"
+#import "ios/web/public/navigation/referrer.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/l10n/l10n_util_mac.h"
 
@@ -117,30 +118,6 @@ const CGFloat kButtonHorizontalPadding = 30.0;
 @end
 
 @implementation HistoryTableViewController
-@synthesize browserState = _browserState;
-@synthesize cancelButton = _cancelButton;
-@synthesize clearBrowsingDataButton = _clearBrowsingDataButton;
-@synthesize contextMenuCoordinator = _contextMenuCoordinator;
-@synthesize currentQuery = _currentQuery;
-@synthesize currentStatusMessage = _currentStatusMessage;
-@synthesize deleteButton = _deleteButton;
-@synthesize editButton = _editButton;
-@synthesize scrimView = _scrimView;
-@synthesize empty = _empty;
-@synthesize entryInserter = _entryInserter;
-@synthesize filteredOutEntriesIndexPaths = _filteredOutEntriesIndexPaths;
-@synthesize filterQueryResult = _filterQueryResult;
-@synthesize finishedLoading = _finishedLoading;
-@synthesize historyService = _historyService;
-@synthesize imageDataSource = _imageDataSource;
-@synthesize loader = _loader;
-@synthesize loading = _loading;
-@synthesize localDispatcher = _localDispatcher;
-@synthesize searchController = _searchController;
-@synthesize searchInProgress = _searchInProgress;
-@synthesize shouldShowNoticeAboutOtherFormsOfBrowsingHistory =
-    _shouldShowNoticeAboutOtherFormsOfBrowsingHistory;
-@synthesize presentationDelegate = _presentationDelegate;
 
 #pragma mark - ViewController Lifecycle.
 
@@ -189,6 +166,7 @@ const CGFloat kButtonHorizontalPadding = 30.0;
   // Add a tableFooterView in order to disable separators at the bottom of the
   // tableView.
   self.tableView.tableFooterView = [[UIView alloc] init];
+  self.tableView.accessibilityIdentifier = kHistoryTableViewIdentifier;
 
   // ContextMenu gesture recognizer.
   UILongPressGestureRecognizer* longPressRecognizer = [
@@ -215,10 +193,10 @@ const CGFloat kButtonHorizontalPadding = 30.0;
   // TableView.
   self.searchController =
       [[UISearchController alloc] initWithSearchResultsController:nil];
-  self.searchController.dimsBackgroundDuringPresentation = NO;
+  self.searchController.obscuresBackgroundDuringPresentation = NO;
   self.searchController.searchBar.delegate = self;
   self.searchController.searchResultsUpdater = self;
-  self.searchController.searchBar.backgroundColor = [UIColor clearColor];
+  self.searchController.searchBar.backgroundColor = UIColor.clearColor;
   self.searchController.searchBar.accessibilityIdentifier =
       kHistorySearchControllerSearchBarIdentifier;
   // UIKit needs to know which controller will be presenting the
@@ -228,9 +206,7 @@ const CGFloat kButtonHorizontalPadding = 30.0;
 
   self.scrimView = [[UIControl alloc] init];
   self.scrimView.alpha = 0.0f;
-  self.scrimView.backgroundColor =
-      [UIColor colorWithWhite:0
-                        alpha:kTableViewNavigationWhiteAlphaForSearchScrim];
+  self.scrimView.backgroundColor = [UIColor colorNamed:kScrimBackgroundColor];
   self.scrimView.translatesAutoresizingMaskIntoConstraints = NO;
   self.scrimView.accessibilityIdentifier = kHistorySearchScrimIdentifier;
   [self.scrimView addTarget:self
@@ -295,9 +271,11 @@ const CGFloat kButtonHorizontalPadding = 30.0;
   // If there are no results and no URLs have been loaded, report that no
   // history entries were found.
   if (results.empty() && self.empty && !self.searchInProgress) {
+    UIImage* emptyImage = [[UIImage imageNamed:@"empty_history"]
+        imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
     [self addEmptyTableViewWithMessage:l10n_util::GetNSString(
                                            IDS_HISTORY_NO_RESULTS)
-                                 image:[UIImage imageNamed:@"empty_history"]];
+                                 image:emptyImage];
     [self updateToolbarButtons];
     return;
   }
@@ -497,6 +475,24 @@ const CGFloat kButtonHorizontalPadding = 30.0;
   [self updateEntriesStatusMessage];
 }
 
+#pragma mark UIAdaptivePresentationControllerDelegate
+
+- (void)presentationControllerWillDismiss:
+    (UIPresentationController*)presentationController {
+  if (self.searchInProgress) {
+    // Dismiss the keyboard if trying to dismiss the VC so the keyboard doesn't
+    // linger until the VC dismissal has completed.
+    [self.searchController.searchBar endEditing:YES];
+  }
+}
+
+- (void)presentationControllerDidDismiss:
+    (UIPresentationController*)presentationController {
+  // Call the localDispatcher dismissHistoryWithCompletion to clean up state and
+  // stop the Coordinator.
+  [self.localDispatcher dismissHistoryWithCompletion:nil];
+}
+
 #pragma mark - History Data Updates
 
 // Search history for text |query| and display the results. |query| may be nil.
@@ -609,7 +605,7 @@ const CGFloat kButtonHorizontalPadding = 30.0;
         base::mac::ObjCCastStrict<HistoryEntryItem>(item);
     TableViewURLCell* URLCell =
         base::mac::ObjCCastStrict<TableViewURLCell>(cellToReturn);
-    FaviconAttributes* cachedAttributes = [self.imageDataSource
+    [self.imageDataSource
         faviconForURL:URLItem.URL
            completion:^(FaviconAttributes* attributes) {
              // Only set favicon if the cell hasn't been reused.
@@ -619,8 +615,6 @@ const CGFloat kButtonHorizontalPadding = 30.0;
                [URLCell.faviconView configureWithAttributes:attributes];
              }
            }];
-    DCHECK(cachedAttributes);
-    [URLCell.faviconView configureWithAttributes:cachedAttributes];
   }
   if (item.type == ItemTypeEntriesStatusWithLink) {
     TableViewTextLinkCell* tableViewTextLinkCell =
@@ -702,9 +696,11 @@ const CGFloat kButtonHorizontalPadding = 30.0;
   if ([self.tableViewModel numberOfSections] == 1) {
     self.empty = YES;
     if (!self.searchInProgress) {
+      UIImage* emptyImage = [[UIImage imageNamed:@"empty_history"]
+          imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
       [self addEmptyTableViewWithMessage:l10n_util::GetNSString(
                                              IDS_HISTORY_NO_RESULTS)
-                                   image:[UIImage imageNamed:@"empty_history"]];
+                                   image:emptyImage];
     }
   }
   [self updateEntriesStatusMessage];
@@ -815,7 +811,7 @@ const CGFloat kButtonHorizontalPadding = 30.0;
     TableViewTextItem* entriesStatusItem =
         [[TableViewTextItem alloc] initWithType:ItemTypeEntriesStatus];
     entriesStatusItem.text = statusMessage;
-    entriesStatusItem.textColor = [UIColor blackColor];
+    entriesStatusItem.textColor = UIColor.cr_labelColor;
     statusMessageItem = entriesStatusItem;
   }
   return statusMessageItem;
@@ -894,6 +890,7 @@ const CGFloat kButtonHorizontalPadding = 30.0;
     // a scrollView and it seems that we get an empty frame when attaching to
     // it.
     AddSameConstraints(self.scrimView, self.view.superview);
+    self.tableView.accessibilityElementsHidden = YES;
     self.tableView.scrollEnabled = NO;
     [UIView animateWithDuration:kTableViewNavigationScrimFadeDuration
                      animations:^{
@@ -913,6 +910,7 @@ const CGFloat kButtonHorizontalPadding = 30.0;
         }
         completion:^(BOOL finished) {
           [self.scrimView removeFromSuperview];
+          self.tableView.accessibilityElementsHidden = NO;
           self.tableView.scrollEnabled = YES;
         }];
   }
@@ -1001,16 +999,13 @@ const CGFloat kButtonHorizontalPadding = 30.0;
       [self.tableViewModel itemAtIndexPath:touchedItemIndexPath]);
 
   __weak HistoryTableViewController* weakSelf = self;
-  web::ContextMenuParams params;
-  params.location = touchLocation;
-  params.view = self.tableView;
   NSString* menuTitle =
       base::SysUTF16ToNSString(url_formatter::FormatUrl(entry.URL));
-  params.menu_title = [menuTitle copy];
-
   self.contextMenuCoordinator = [[ContextMenuCoordinator alloc]
       initWithBaseViewController:self.navigationController
-                          params:params];
+                           title:menuTitle
+                          inView:self.tableView
+                      atLocation:touchLocation];
 
   // Add "Open in New Tab" option.
   NSString* openInNewTabTitle =
@@ -1043,29 +1038,23 @@ const CGFloat kButtonHorizontalPadding = 30.0;
 
 // Opens URL in a new non-incognito tab and dismisses the history view.
 - (void)openURLInNewTab:(const GURL&)URL {
-  OpenNewTabCommand* command =
-      [[OpenNewTabCommand alloc] initWithURL:URL
-                                    referrer:web::Referrer()
-                                 inIncognito:NO
-                                inBackground:NO
-                                    appendTo:kLastTab];
-
+  base::RecordAction(
+      base::UserMetricsAction("MobileHistoryPage_EntryLinkOpenNewTab"));
+  UrlLoadParams params = UrlLoadParams::InNewTab(URL);
   [self.localDispatcher dismissHistoryWithCompletion:^{
-    [self.loader webPageOrderedOpen:command];
+    UrlLoadingServiceFactory::GetForBrowserState(_browserState)->Load(params);
     [self.presentationDelegate showActiveRegularTabFromHistory];
   }];
 }
 
 // Opens URL in a new incognito tab and dismisses the history view.
 - (void)openURLInNewIncognitoTab:(const GURL&)URL {
-  OpenNewTabCommand* command =
-      [[OpenNewTabCommand alloc] initWithURL:URL
-                                    referrer:web::Referrer()
-                                 inIncognito:YES
-                                inBackground:NO
-                                    appendTo:kLastTab];
+  base::RecordAction(base::UserMetricsAction(
+      "MobileHistoryPage_EntryLinkOpenNewIncognitoTab"));
+  UrlLoadParams params = UrlLoadParams::InNewTab(URL);
+  params.in_incognito = YES;
   [self.localDispatcher dismissHistoryWithCompletion:^{
-    [self.loader webPageOrderedOpen:command];
+    UrlLoadingServiceFactory::GetForBrowserState(_browserState)->Load(params);
     [self.presentationDelegate showActiveIncognitoTabFromHistory];
   }];
 }
@@ -1076,11 +1065,11 @@ const CGFloat kButtonHorizontalPadding = 30.0;
 - (void)openURL:(const GURL&)URL {
   new_tab_page_uma::RecordAction(_browserState,
                                  new_tab_page_uma::ACTION_OPENED_HISTORY_ENTRY);
-  web::NavigationManager::WebLoadParams params(URL);
-  params.transition_type = ui::PAGE_TRANSITION_AUTO_BOOKMARK;
-  ChromeLoadParams chromeParams(params);
+  UrlLoadParams params = UrlLoadParams::InCurrentTab(URL);
+  params.web_params.transition_type = ui::PAGE_TRANSITION_AUTO_BOOKMARK;
+  params.load_strategy = self.loadStrategy;
   [self.localDispatcher dismissHistoryWithCompletion:^{
-    [self.loader loadURLWithParams:chromeParams];
+    UrlLoadingServiceFactory::GetForBrowserState(_browserState)->Load(params);
     [self.presentationDelegate showActiveRegularTabFromHistory];
   }];
 }
@@ -1133,7 +1122,7 @@ const CGFloat kButtonHorizontalPadding = 30.0;
                                         action:@selector(openPrivacySettings)];
     _clearBrowsingDataButton.accessibilityIdentifier =
         kHistoryToolbarClearBrowsingButtonIdentifier;
-    _clearBrowsingDataButton.tintColor = [UIColor redColor];
+    _clearBrowsingDataButton.tintColor = [UIColor colorNamed:kRedColor];
   }
   return _clearBrowsingDataButton;
 }
@@ -1149,7 +1138,7 @@ const CGFloat kButtonHorizontalPadding = 30.0;
                action:@selector(deleteSelectedItemsFromHistory)];
     _deleteButton.accessibilityIdentifier =
         kHistoryToolbarDeleteButtonIdentifier;
-    _deleteButton.tintColor = [UIColor redColor];
+    _deleteButton.tintColor = [UIColor colorNamed:kRedColor];
   }
   return _deleteButton;
 }

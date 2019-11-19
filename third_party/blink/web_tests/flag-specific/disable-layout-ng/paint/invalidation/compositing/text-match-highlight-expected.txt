@@ -1,0 +1,53 @@
+{
+  "layers": [
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF",
+      "paintInvalidations": [
+        {
+          "object": "InlineTextBox 'Can you findme in this boring text?'",
+          "rect": [10, 135, 223, 19],
+          "reason": "DocumentMarker change"
+        },
+        {
+          "object": "InlineTextBox 'Findme on a path! Did you findme?'",
+          "rect": [20, 224, 182, 72],
+          "reason": "DocumentMarker change"
+        },
+        {
+          "object": "InlineTextBox 'Findme in a typewriter!'",
+          "rect": [10, 191, 138, 12],
+          "reason": "DocumentMarker change"
+        },
+        {
+          "object": "InlineTextBox 'findme'",
+          "rect": [278, 40, 44, 19],
+          "reason": "DocumentMarker change"
+        },
+        {
+          "object": "InlineTextBox 'findme'",
+          "rect": [264, 60, 44, 19],
+          "reason": "DocumentMarker change"
+        },
+        {
+          "object": "InlineTextBox 'findme'",
+          "rect": [220, 60, 44, 19],
+          "reason": "DocumentMarker change"
+        },
+        {
+          "object": "InlineTextBox 'findme'",
+          "rect": [89, 60, 44, 19],
+          "reason": "DocumentMarker change"
+        },
+        {
+          "object": "InlineTextBox 'findme'",
+          "rect": [51, 80, 44, 19],
+          "reason": "DocumentMarker change"
+        }
+      ]
+    }
+  ]
+}
+

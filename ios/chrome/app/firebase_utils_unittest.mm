@@ -21,7 +21,7 @@
 #include "ios/chrome/test/ios_chrome_scoped_testing_chrome_browser_provider.h"
 #include "ios/public/provider/chrome/browser/distribution/test_app_distribution_provider.h"
 #include "ios/public/provider/chrome/browser/test_chrome_browser_provider.h"
-#include "ios/web/public/test/test_web_thread_bundle.h"
+#include "ios/web/public/test/web_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
@@ -85,7 +85,7 @@ class FirebaseUtilsTest : public PlatformTest {
 
  protected:
   IOSChromeScopedTestingChromeBrowserStateManager scoped_browser_state_manager_;
-  web::TestWebThreadBundle thread_bundle_;
+  web::WebTaskEnvironment task_environment_;
   id firapp_;
   base::HistogramTester histogram_tester_;
 };

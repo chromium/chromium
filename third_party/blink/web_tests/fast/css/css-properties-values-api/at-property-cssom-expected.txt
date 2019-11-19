@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+FAIL Rule is applied assert_equals: expected "rgb(0, 128, 0)" but got " green"
+FAIL Can read "syntax" from declaration assert_equals: expected (string) "\"<color> | none\"" but got (undefined) undefined
+FAIL Can read "inherits" from declaration assert_equals: expected (string) "false" but got (undefined) undefined
+FAIL Can read "initial-value" from declaration assert_equals: expected (string) " red" but got (undefined) undefined
+Harness: the test ran to completion.
+

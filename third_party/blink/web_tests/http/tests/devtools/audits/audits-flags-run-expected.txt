@@ -1,0 +1,18 @@
+Tests that audits panel passes flags.
+
+
+========== Audits Start Audit State ==========
+[x] Performance
+[x] Progressive Web App
+[x] Best practices
+[x] Accessibility
+[x] SEO
+[x] Clear storage
+Run audits: enabled visible
+
+=============== Lighthouse Results ===============
+emulatedFormFactor: desktop
+disableStorageReset: false
+throttlingMethod: provided
+TestedAsMobileDevice: false
+

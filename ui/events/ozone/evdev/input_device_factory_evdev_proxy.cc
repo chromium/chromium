@@ -4,6 +4,8 @@
 
 #include "ui/events/ozone/evdev/input_device_factory_evdev_proxy.h"
 
+#include <utility>
+
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -96,6 +98,14 @@ void InputDeviceFactoryEvdevProxy::GetTouchEventLog(
                      base::BindOnce(&ForwardGetTouchEventLogReply,
                                     base::ThreadTaskRunnerHandle::Get(),
                                     std::move(reply))));
+}
+
+void InputDeviceFactoryEvdevProxy::GetGesturePropertiesService(
+    mojo::PendingReceiver<ozone::mojom::GesturePropertiesService> receiver) {
+  task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&InputDeviceFactoryEvdev::GetGesturePropertiesService,
+                     input_device_factory_, std::move(receiver)));
 }
 
 }  // namespace ui

@@ -1,16 +1,10 @@
 stevenjb@chromium.org
 hashimoto@chromium.org
-derat@chromium.org
 
-per-file *audio*=jennyz@chromium.org
-per-file *audio*=hychao@chromium.org
-per-file *auth_policy*=rsorokin@chromium.org
-per-file *auth_policy*=tnagel@chromium.org
-per-file *cryptohome*=dkrahn@chromium.org
-per-file *diagnosticsd*=emaxx@chromium.org
-per-file *diagnosticsd*=pmarko@chromium.org
-per-file *power*=derat@chromium.org
 per-file *smb_provider*=amistry@chromium.org
 per-file *smb_provider*=baileyberro@chromium.org
 per-file *smb_provider*=slangley@chromium.org
 per-file *smb_provider*=zentaro@chromium.org
+per-file *wilco_dtc_supportd*=emaxx@chromium.org
+per-file *wilco_dtc_supportd*=pmarko@chromium.org
+# COMPONENT: OS>Systems

@@ -72,8 +72,7 @@ std::unique_ptr<EdgeEffectBase> CreateGlowEdgeEffect(
       new EdgeEffect(resource_manager, dpi_scale));
 }
 
-std::unique_ptr<OverscrollGlow> CreateGlowEffect(OverscrollGlowClient* client,
-                                                 float dpi_scale) {
+std::unique_ptr<OverscrollGlow> CreateGlowEffect(OverscrollGlowClient* client) {
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kDisableOverscrollEdgeEffect)) {
     return nullptr;
@@ -83,13 +82,15 @@ std::unique_ptr<OverscrollGlow> CreateGlowEffect(OverscrollGlowClient* client,
 }
 
 std::unique_ptr<OverscrollRefresh> CreateRefreshEffect(
-    ui::OverscrollRefreshHandler* overscroll_refresh_handler) {
+    ui::OverscrollRefreshHandler* overscroll_refresh_handler,
+    float dpi_scale) {
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kDisablePullToRefreshEffect)) {
     return nullptr;
   }
 
-  return std::make_unique<OverscrollRefresh>(overscroll_refresh_handler);
+  return std::make_unique<OverscrollRefresh>(overscroll_refresh_handler,
+                                             dpi_scale);
 }
 
 }  // namespace
@@ -125,8 +126,9 @@ OverscrollControllerAndroid::OverscrollControllerAndroid(
     : compositor_(compositor),
       dpi_scale_(dpi_scale),
       enabled_(true),
-      glow_effect_(CreateGlowEffect(this, dpi_scale_)),
-      refresh_effect_(CreateRefreshEffect(overscroll_refresh_handler)) {
+      glow_effect_(CreateGlowEffect(this)),
+      refresh_effect_(
+          CreateRefreshEffect(overscroll_refresh_handler, dpi_scale_)) {
   DCHECK(compositor_);
 }
 
@@ -150,7 +152,8 @@ bool OverscrollControllerAndroid::WillHandleGestureEvent(
   bool handled = false;
   switch (event.GetType()) {
     case blink::WebInputEvent::kGestureScrollBegin:
-      refresh_effect_->OnScrollBegin();
+      refresh_effect_->OnScrollBegin(
+          gfx::ScalePoint(event.PositionInWidget(), dpi_scale_));
       break;
 
     case blink::WebInputEvent::kGestureScrollUpdate: {
@@ -210,11 +213,9 @@ void OverscrollControllerAndroid::OnGestureEventAck(
 
   if (event.GetType() == blink::WebInputEvent::kGestureScrollUpdate &&
       refresh_effect_) {
-    // The effect should only be allowed if both the causal touch events go
-    // unconsumed and the generated scroll events go unconsumed.
+    // The effect should only be allowed if the scroll events go unconsumed.
     if (refresh_effect_->IsAwaitingScrollUpdateAck() &&
-        (ack_result == INPUT_EVENT_ACK_STATE_CONSUMED ||
-         event.data.scroll_update.previous_update_in_sequence_prevented)) {
+        ack_result == INPUT_EVENT_ACK_STATE_CONSUMED) {
       refresh_effect_->Reset();
     }
   }
@@ -304,7 +305,7 @@ void OverscrollControllerAndroid::OnFrameMetadataUpdated(
       gfx::ScaleVector2d(root_scroll_offset, scale_factor);
 
   if (refresh_effect_) {
-    refresh_effect_->OnFrameUpdated(content_scroll_offset,
+    refresh_effect_->OnFrameUpdated(viewport_size, content_scroll_offset,
                                     root_overflow_y_hidden);
   }
 

@@ -26,7 +26,7 @@ class VIEWS_EXPORT WidgetRemovalsObserver {
   virtual void OnWillRemoveView(Widget* widget, View* view) {}
 
  protected:
-  virtual ~WidgetRemovalsObserver() {}
+  virtual ~WidgetRemovalsObserver() = default;
 };
 
 }  // namespace views

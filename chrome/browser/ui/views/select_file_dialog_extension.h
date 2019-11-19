@@ -34,10 +34,10 @@ class SelectFileDialogExtension
       public ExtensionDialogObserver {
  public:
   // Opaque ID type for identifying the tab spawned each dialog, unique for
-  // every WebContents.
-  typedef const void* RoutingID;
-  static RoutingID GetRoutingIDFromWebContents(
-      const content::WebContents* web_contents);
+  // every WebContents or every Android task ID.
+  typedef std::string RoutingID;
+
+  static const int kAndroidTaskIdNone = -1;
 
   static SelectFileDialogExtension* Create(
       ui::SelectFileDialog::Listener* listener,
@@ -63,6 +63,23 @@ class SelectFileDialogExtension
 
   // For testing, so we can inject JavaScript into the contained view.
   content::RenderViewHost* GetRenderViewHost();
+
+  // Call SelectFile with params specific to Chrome OS file manager.
+  // |owner_android_task_id| is the Android task ID of the owner window if the
+  //     owner is Android, or kAndroidTaskIdNone if the owner is browser.
+  // |show_android_picker_apps| determines whether to show Android picker apps
+  //     in the select file dialog.
+  void SelectFileWithFileManagerParams(
+      Type type,
+      const base::string16& title,
+      const base::FilePath& default_path,
+      const FileTypeInfo* file_types,
+      int file_type_index,
+      const base::FilePath::StringType& default_extension,
+      gfx::NativeWindow owning_window,
+      void* params,
+      int owner_android_task_id,
+      bool show_android_picker_apps);
 
  protected:
   // SelectFileDialog implementation.

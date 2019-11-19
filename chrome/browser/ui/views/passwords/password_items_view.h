@@ -16,7 +16,7 @@
 #include "ui/views/view.h"
 
 namespace views {
-class Textfield;
+class EditableCombobox;
 class Label;
 }  // namespace views
 
@@ -27,8 +27,8 @@ std::unique_ptr<views::Label> CreatePasswordLabel(
     const autofill::PasswordForm& form,
     int federation_message_id,
     bool is_password_visible);
-std::unique_ptr<views::Textfield> CreateUsernameEditable(
-    const base::string16& initial_username);
+std::unique_ptr<views::EditableCombobox> CreateUsernameEditableCombobox(
+    const autofill::PasswordForm& form);
 
 // A dialog for managing stored password and federated login information for a
 // specific site. A user can remove managed credentials for the site via this
@@ -38,7 +38,6 @@ class PasswordItemsView : public PasswordBubbleViewBase,
  public:
   PasswordItemsView(content::WebContents* web_contents,
                     views::View* anchor_view,
-                    const gfx::Point& anchor_point,
                     DisplayReason reason);
   ~PasswordItemsView() override;
 
@@ -51,8 +50,6 @@ class PasswordItemsView : public PasswordBubbleViewBase,
   void RecreateLayout();
 
   // LocationBarBubbleDelegateView:
-  View* CreateExtraView() override;
-  int GetDialogButtons() const override;
   bool ShouldShowCloseButton() const override;
   gfx::Size CalculatePreferredSize() const override;
 

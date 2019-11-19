@@ -26,6 +26,7 @@ class GpuFeatureChecker;
 namespace extensions {
 
 class Extension;
+class ScopedActiveInstall;
 
 class WebstorePrivateApi {
  public:
@@ -42,7 +43,7 @@ class WebstorePrivateApi {
 };
 
 class WebstorePrivateBeginInstallWithManifest3Function
-    : public UIThreadExtensionFunction,
+    : public ExtensionFunction,
       public WebstoreInstallHelper::Delegate {
  public:
   DECLARE_EXTENSION_FUNCTION("webstorePrivate.beginInstallWithManifest3",
@@ -97,7 +98,7 @@ class WebstorePrivateBeginInstallWithManifest3Function
 };
 
 class WebstorePrivateCompleteInstallFunction
-    : public UIThreadExtensionFunction,
+    : public ExtensionFunction,
       public WebstoreInstaller::Delegate {
  public:
   DECLARE_EXTENSION_FUNCTION("webstorePrivate.completeInstall",
@@ -126,8 +127,7 @@ class WebstorePrivateCompleteInstallFunction
   std::unique_ptr<ScopedActiveInstall> scoped_active_install_;
 };
 
-class WebstorePrivateEnableAppLauncherFunction
-    : public UIThreadExtensionFunction {
+class WebstorePrivateEnableAppLauncherFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("webstorePrivate.enableAppLauncher",
                              WEBSTOREPRIVATE_ENABLEAPPLAUNCHER)
@@ -143,8 +143,7 @@ class WebstorePrivateEnableAppLauncherFunction
   ChromeExtensionFunctionDetails chrome_details_;
 };
 
-class WebstorePrivateGetBrowserLoginFunction
-    : public UIThreadExtensionFunction {
+class WebstorePrivateGetBrowserLoginFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("webstorePrivate.getBrowserLogin",
                              WEBSTOREPRIVATE_GETBROWSERLOGIN)
@@ -160,8 +159,7 @@ class WebstorePrivateGetBrowserLoginFunction
   ChromeExtensionFunctionDetails chrome_details_;
 };
 
-class WebstorePrivateGetStoreLoginFunction
-    : public UIThreadExtensionFunction {
+class WebstorePrivateGetStoreLoginFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("webstorePrivate.getStoreLogin",
                              WEBSTOREPRIVATE_GETSTORELOGIN)
@@ -177,8 +175,7 @@ class WebstorePrivateGetStoreLoginFunction
   ChromeExtensionFunctionDetails chrome_details_;
 };
 
-class WebstorePrivateSetStoreLoginFunction
-    : public UIThreadExtensionFunction {
+class WebstorePrivateSetStoreLoginFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("webstorePrivate.setStoreLogin",
                              WEBSTOREPRIVATE_SETSTORELOGIN)
@@ -194,8 +191,7 @@ class WebstorePrivateSetStoreLoginFunction
   ChromeExtensionFunctionDetails chrome_details_;
 };
 
-class WebstorePrivateGetWebGLStatusFunction
-    : public UIThreadExtensionFunction {
+class WebstorePrivateGetWebGLStatusFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("webstorePrivate.getWebGLStatus",
                              WEBSTOREPRIVATE_GETWEBGLSTATUS)
@@ -213,8 +209,7 @@ class WebstorePrivateGetWebGLStatusFunction
   scoped_refptr<content::GpuFeatureChecker> feature_checker_;
 };
 
-class WebstorePrivateGetIsLauncherEnabledFunction
-    : public UIThreadExtensionFunction {
+class WebstorePrivateGetIsLauncherEnabledFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("webstorePrivate.getIsLauncherEnabled",
                              WEBSTOREPRIVATE_GETISLAUNCHERENABLED)
@@ -230,8 +225,7 @@ class WebstorePrivateGetIsLauncherEnabledFunction
   void OnIsLauncherCheckCompleted(bool is_enabled);
 };
 
-class WebstorePrivateIsInIncognitoModeFunction
-    : public UIThreadExtensionFunction {
+class WebstorePrivateIsInIncognitoModeFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("webstorePrivate.isInIncognitoMode",
                              WEBSTOREPRIVATE_ISININCOGNITOMODEFUNCTION)
@@ -247,8 +241,7 @@ class WebstorePrivateIsInIncognitoModeFunction
   ChromeExtensionFunctionDetails chrome_details_;
 };
 
-class WebstorePrivateLaunchEphemeralAppFunction
-    : public UIThreadExtensionFunction {
+class WebstorePrivateLaunchEphemeralAppFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("webstorePrivate.launchEphemeralApp",
                              WEBSTOREPRIVATE_LAUNCHEPHEMERALAPP)
@@ -272,7 +265,7 @@ class WebstorePrivateLaunchEphemeralAppFunction
 };
 
 class WebstorePrivateGetEphemeralAppsEnabledFunction
-    : public UIThreadExtensionFunction {
+    : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("webstorePrivate.getEphemeralAppsEnabled",
                              WEBSTOREPRIVATE_GETEPHEMERALAPPSENABLED)
@@ -287,7 +280,7 @@ class WebstorePrivateGetEphemeralAppsEnabledFunction
 };
 
 class WebstorePrivateIsPendingCustodianApprovalFunction
-    : public UIThreadExtensionFunction {
+    : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("webstorePrivate.isPendingCustodianApproval",
                              WEBSTOREPRIVATE_ISPENDINGCUSTODIANAPPROVAL)
@@ -305,8 +298,7 @@ class WebstorePrivateIsPendingCustodianApprovalFunction
   ChromeExtensionFunctionDetails chrome_details_;
 };
 
-class WebstorePrivateGetReferrerChainFunction
-    : public UIThreadExtensionFunction {
+class WebstorePrivateGetReferrerChainFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("webstorePrivate.getReferrerChain",
                              WEBSTOREPRIVATE_GETREFERRERCHAIN)
@@ -322,6 +314,24 @@ class WebstorePrivateGetReferrerChainFunction
   ChromeExtensionFunctionDetails chrome_details_;
 
   DISALLOW_COPY_AND_ASSIGN(WebstorePrivateGetReferrerChainFunction);
+};
+
+class WebstorePrivateGetExtensionStatusFunction : public ExtensionFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("webstorePrivate.getExtensionStatus",
+                             WEBSTOREPRIVATE_GETEXTENSIONSTATUS)
+
+  WebstorePrivateGetExtensionStatusFunction();
+
+ private:
+  ~WebstorePrivateGetExtensionStatusFunction() override;
+
+  // ExtensionFunction:
+  ExtensionFunction::ResponseAction Run() override;
+
+  ChromeExtensionFunctionDetails chrome_details_;
+
+  DISALLOW_COPY_AND_ASSIGN(WebstorePrivateGetExtensionStatusFunction);
 };
 
 }  // namespace extensions

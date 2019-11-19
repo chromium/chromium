@@ -12,7 +12,6 @@
 #include "chrome/browser/media/router/media_router_factory.h"
 #include "chrome/browser/media/router/test/mock_media_router.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
-#include "chrome/browser/ui/extensions/browser_action_test_util.h"
 #include "chrome/browser/ui/media_router/media_router_ui_service.h"
 #include "chrome/browser/ui/media_router/media_router_ui_service_factory.h"
 #include "chrome/browser/ui/toolbar/media_router_action_controller.h"
@@ -22,7 +21,7 @@
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
-#include "services/identity/public/cpp/identity_manager.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -70,8 +69,6 @@ class MediaRouterContextualMenuUnitTest : public BrowserWithTestWindowTest {
     identity_test_env_adaptor_ =
         std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile());
 
-    browser_action_test_util_ = BrowserActionTestUtil::Create(browser(), false);
-
     // Pin the Cast icon to the toolbar.
     MediaRouterActionController::SetAlwaysShowActionPref(profile(), true);
 
@@ -84,7 +81,6 @@ class MediaRouterContextualMenuUnitTest : public BrowserWithTestWindowTest {
     // |identity_test_env_adaptor_| must be destroyed before the TestingProfile,
     // which occurs in BrowserWithTestWindowTest::TearDown().
     identity_test_env_adaptor_.reset();
-    browser_action_test_util_.reset();
     BrowserWithTestWindowTest::TearDown();
   }
 
@@ -102,12 +98,11 @@ class MediaRouterContextualMenuUnitTest : public BrowserWithTestWindowTest {
   }
 
  protected:
-  identity::IdentityTestEnvironment* identity_test_env() {
+  signin::IdentityTestEnvironment* identity_test_env() {
     DCHECK(identity_test_env_adaptor_);
     return identity_test_env_adaptor_->identity_test_env();
   }
 
-  std::unique_ptr<BrowserActionTestUtil> browser_action_test_util_;
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
       identity_test_env_adaptor_;
 
@@ -167,7 +162,7 @@ TEST_F(MediaRouterContextualMenuUnitTest, EnableAndDisableReportIssue) {
 
   std::unique_ptr<BrowserWindow> window(CreateBrowserWindow());
   std::unique_ptr<Browser> incognito_browser(
-      CreateBrowser(profile()->GetOffTheRecordProfile(), Browser::TYPE_TABBED,
+      CreateBrowser(profile()->GetOffTheRecordProfile(), Browser::TYPE_NORMAL,
                     false, window.get()));
 
   MediaRouterContextualMenu incognito_menu(incognito_browser.get(),

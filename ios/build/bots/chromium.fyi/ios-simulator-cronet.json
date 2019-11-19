@@ -1,9 +1,9 @@
 {
   "comments": [
-    "Cronet tests for 32- and 64-bit iOS 9.0 simulators.",
-    "Tests run on iPhone 5s (64-bit) and iPad Retina (32-bit)."
+    "Cronet tests 64-bit iOS 12 and 13 simulators.",
+    "Tests run on iPhone X."
   ],
-  "xcode build version": "10b61",
+  "xcode build version": "11a1027",
   "gn_args": [
     "additional_target_cpus=[\"x86\"]",
     "disable_brotli_filter=false",
@@ -24,53 +24,18 @@
   ],
   "tests": [
     {
-      "app": "cronet_unittests_ios",
-      "device type": "iPhone 5s",
-      "os": "9.3",
-      "host os": "Mac-10.13.6",
-      "pool": "Chrome"
-    },
-    {
       "app": "cronet_test",
-      "device type": "iPhone 5s",
-      "os": "9.3",
-      "host os": "Mac-10.13.6",
-      "pool": "Chrome"
-    },
-    {
-      "app": "cronet_test",
-      "device type": "iPad Retina",
-      "os": "9.3",
-      "host os": "Mac-10.13.6",
-      "pool": "Chrome"
-    },
-    {
-      "app": "cronet_test",
-      "device type": "iPhone 5s",
-      "os": "11.4",
-      "host os": "Mac-10.13.6",
-      "pool": "Chrome"
-    },
-    {
-      "app": "cronet_test",
-      "device type": "iPad Air 2",
-      "os": "11.4",
-      "host os": "Mac-10.13.6",
-      "pool": "Chrome"
+      "device type": "iPhone X",
+      "os": "12.2",
+      "host os": "Mac-10.14.6",
+      "pool":"chromium.tests"
     },
     {
       "app": "cronet_test",
       "device type": "iPhone X",
-      "os": "11.4",
-      "host os": "Mac-10.13.6",
-      "pool": "Chrome"
-    },
-    {
-      "app": "cronet_test",
-      "device type": "iPhone X",
-      "os": "12.1",
-      "host os": "Mac-10.13.6",
-      "pool": "Chrome"
+      "os": "13.1",
+      "host os": "Mac-10.14.6",
+      "pool":"chromium.tests"
     }
   ]
 }

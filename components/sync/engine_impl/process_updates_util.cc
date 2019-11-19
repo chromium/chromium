@@ -10,12 +10,12 @@
 
 #include "base/location.h"
 #include "base/metrics/histogram_macros.h"
-#include "components/sync/base/cryptographer.h"
 #include "components/sync/base/data_type_histogram.h"
 #include "components/sync/engine/cycle/update_counters.h"
 #include "components/sync/engine_impl/syncer_proto_util.h"
 #include "components/sync/engine_impl/syncer_types.h"
 #include "components/sync/engine_impl/syncer_util.h"
+#include "components/sync/nigori/cryptographer.h"
 #include "components/sync/syncable/directory.h"
 #include "components/sync/syncable/model_neutral_mutable_entry.h"
 #include "components/sync/syncable/syncable_model_neutral_write_transaction.h"
@@ -273,24 +273,6 @@ void ProcessUpdate(const sync_pb::SyncEntity& update,
   return;
 }
 
-bool CompareTimes(const base::Time& left, const base::Time& right) {
-  return left > right;
-}
-
-// This function use quick select algorithm (std::nth_element) to find the |n|th
-// bigest number in the vector |times|.
-base::Time FindTheNthBigestTime(std::vector<base::Time> times, size_t n) {
-  DCHECK(n);
-
-  if (n > times.size())
-    return base::Time::UnixEpoch();
-
-  std::nth_element(times.begin(), times.begin() + n - 1, times.end(),
-                   &CompareTimes);
-
-  return times[n - 1];
-}
-
 }  // namespace
 
 void ProcessDownloadedUpdates(syncable::Directory* dir,
@@ -359,44 +341,6 @@ void ExpireEntriesByAge(syncable::Directory* dir,
         entry.GetIsUnappliedUpdate() || entry.GetIsUnsynced() ||
         entry.GetIsDel() || entry.GetServerIsDel() ||
         entry.GetMtime() > to_be_expired) {
-      continue;
-    }
-
-    // Mark entry as unapplied update first to ensure journaling the deletion.
-    entry.PutIsUnappliedUpdate(true);
-    // Mark entry as deleted by server.
-    entry.PutServerIsDel(true);
-  }
-}
-
-void ExpireEntriesByItemLimit(syncable::Directory* dir,
-                              syncable::ModelNeutralWriteTransaction* trans,
-                              ModelType type,
-                              int64_t max_number_of_items) {
-  syncable::Directory::Metahandles handles;
-  dir->GetMetaHandlesOfType(trans, type, &handles);
-
-  size_t limited_number = max_number_of_items;
-  if (limited_number >= handles.size())
-    return;
-
-  std::vector<base::Time> all_times;
-  for (size_t i = 0; i < handles.size(); ++i) {
-    syncable::ModelNeutralMutableEntry entry(trans, syncable::GET_BY_HANDLE,
-                                             handles[i]);
-    all_times.push_back(entry.GetMtime());
-  }
-  base::Time expired_time =
-      FindTheNthBigestTime(std::move(all_times), limited_number);
-
-  for (size_t i = 0; i < handles.size(); ++i) {
-    syncable::ModelNeutralMutableEntry entry(trans, syncable::GET_BY_HANDLE,
-                                             handles[i]);
-    if (!entry.good() || !entry.GetId().ServerKnows() ||
-        entry.GetUniqueServerTag() == ModelTypeToRootTag(type) ||
-        entry.GetIsUnappliedUpdate() || entry.GetIsUnsynced() ||
-        entry.GetIsDel() || entry.GetServerIsDel() ||
-        entry.GetMtime() >= expired_time) {
       continue;
     }
 

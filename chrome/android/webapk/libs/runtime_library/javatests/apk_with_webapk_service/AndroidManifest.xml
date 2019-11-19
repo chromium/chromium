@@ -7,8 +7,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="org.chromium.webapk.lib.runtime_library.test.apk_with_webapk_service">
 
-    <uses-sdk android:minSdkVersion="16" android:targetSdkVersion="23" />
-
     <application>
         <service android:name="org.chromium.webapk.lib.runtime_library.test.TestWebApkServiceImplWrapper"
             android:exported="true">

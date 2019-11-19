@@ -32,14 +32,14 @@ ViewsTextServicesContextMenuBase::ViewsTextServicesContextMenuBase(
   DCHECK(client);
   DCHECK(menu);
   // Not inserted on read-only fields or if the OS/version doesn't support it.
-  if (!client_->read_only() && ui::IsEmojiPanelSupported()) {
+  if (!client_->GetReadOnly() && ui::IsEmojiPanelSupported()) {
     menu->InsertSeparatorAt(0, ui::NORMAL_SEPARATOR);
     menu->InsertItemWithStringIdAt(0, IDS_CONTENT_CONTEXT_EMOJI,
                                    IDS_CONTENT_CONTEXT_EMOJI);
   }
 }
 
-ViewsTextServicesContextMenuBase::~ViewsTextServicesContextMenuBase() {}
+ViewsTextServicesContextMenuBase::~ViewsTextServicesContextMenuBase() = default;
 
 bool ViewsTextServicesContextMenuBase::SupportsCommand(int command_id) const {
   return command_id == IDS_CONTENT_CONTEXT_EMOJI;

@@ -1,0 +1,71 @@
+// Copyright 2016 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+import "mojo/public/mojom/base/time.mojom";
+import "mojo/public/mojom/base/string16.mojom";
+import "services/media_session/public/mojom/media_session.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
+import "url/mojom/url.mojom";
+
+enum MediaSessionPlaybackState {
+     NONE,
+     PAUSED,
+     PLAYING,
+};
+
+interface MediaSessionClient {
+  // Notifies the Blink side that a MediaSessionAction has been fired from the
+  // UI or the platform. |details| may contain extra information that will be
+  // exposed to the site.
+  DidReceiveAction(media_session.mojom.MediaSessionAction action,
+                   MediaSessionActionDetails? details);
+};
+
+// MediaSessionSeekToDetails
+// Spec: https://wicg.github.io/mediasession/
+struct MediaSessionSeekToDetails {
+  mojo_base.mojom.TimeDelta seek_time;
+  bool fast_seek;
+};
+
+union MediaSessionActionDetails {
+  MediaSessionSeekToDetails seek_to;
+};
+
+// MediaMetadata
+// Spec: https://wicg.github.io/mediasession/
+struct SpecMediaMetadata {
+  mojo_base.mojom.String16 title;
+  mojo_base.mojom.String16 artist;
+  mojo_base.mojom.String16 album;
+  array<media_session.mojom.MediaImage> artwork;
+};
+
+interface MediaSessionService {
+  // MediaSessionClient interface is used to notify Blink MediaSession of
+  // media control actions.
+  SetClient(pending_remote<MediaSessionClient> client);
+
+  // Notifies the browser that the page specified its current playback state.
+  SetPlaybackState(MediaSessionPlaybackState state);
+
+  // Notifies the browser that the page specified its current position state.
+  SetPositionState(media_session.mojom.MediaPosition? position);
+
+  // Notifies the browser that the metadata is set, |metadata| will be displayed
+  // on the UI.
+  SetMetadata(SpecMediaMetadata? metadata);
+
+  // Notifies the browser that the event handler for |action| has been set,
+  // browser needs to show a media button in the UI or register listeners to the
+  // platform.
+  EnableAction(media_session.mojom.MediaSessionAction action);
+
+  // Notifies the browser that the event handler for |action| has been set,
+  // browser needs to hide the media button in the UI and unregister listeners
+  // from the platform.
+  DisableAction(media_session.mojom.MediaSessionAction action);
+};

@@ -6,6 +6,7 @@
 
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/certificate_viewer_webui.h"
+#include "chrome/browser/ui/webui/localized_string.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/browser_resources.h"
 #include "chrome/grit/generated_resources.h"
@@ -22,35 +23,30 @@ content::WebUIDataSource* GetWebUIDataSource(const std::string& host) {
   content::WebUIDataSource* html_source =
       content::WebUIDataSource::Create(host);
 
-  // Localized strings.
-  html_source->AddLocalizedString("general", IDS_CERT_INFO_GENERAL_TAB_LABEL);
-  html_source->AddLocalizedString("details", IDS_CERT_INFO_DETAILS_TAB_LABEL);
-  html_source->AddLocalizedString("close", IDS_CLOSE);
-  html_source->AddLocalizedString("export",
-      IDS_CERT_DETAILS_EXPORT_CERTIFICATE);
-  html_source->AddLocalizedString("usages",
-      IDS_CERT_INFO_VERIFIED_USAGES_GROUP);
-  html_source->AddLocalizedString("issuedTo", IDS_CERT_INFO_SUBJECT_GROUP);
-  html_source->AddLocalizedString("issuedBy", IDS_CERT_INFO_ISSUER_GROUP);
-  html_source->AddLocalizedString("cn", IDS_CERT_INFO_COMMON_NAME_LABEL);
-  html_source->AddLocalizedString("o", IDS_CERT_INFO_ORGANIZATION_LABEL);
-  html_source->AddLocalizedString("ou",
-      IDS_CERT_INFO_ORGANIZATIONAL_UNIT_LABEL);
-  html_source->AddLocalizedString("validity", IDS_CERT_INFO_VALIDITY_GROUP);
-  html_source->AddLocalizedString("issuedOn", IDS_CERT_INFO_ISSUED_ON_LABEL);
-  html_source->AddLocalizedString("expiresOn", IDS_CERT_INFO_EXPIRES_ON_LABEL);
-  html_source->AddLocalizedString("fingerprints",
-      IDS_CERT_INFO_FINGERPRINTS_GROUP);
-  html_source->AddLocalizedString("sha256",
-      IDS_CERT_INFO_SHA256_FINGERPRINT_LABEL);
-  html_source->AddLocalizedString("sha1", IDS_CERT_INFO_SHA1_FINGERPRINT_LABEL);
-  html_source->AddLocalizedString("hierarchy",
-      IDS_CERT_DETAILS_CERTIFICATE_HIERARCHY_LABEL);
-  html_source->AddLocalizedString("certFields",
-      IDS_CERT_DETAILS_CERTIFICATE_FIELDS_LABEL);
-  html_source->AddLocalizedString("certFieldVal",
-      IDS_CERT_DETAILS_CERTIFICATE_FIELD_VALUE_LABEL);
-  html_source->SetJsonPath("strings.js");
+  static constexpr LocalizedString kStrings[] = {
+      {"general", IDS_CERT_INFO_GENERAL_TAB_LABEL},
+      {"details", IDS_CERT_INFO_DETAILS_TAB_LABEL},
+      {"close", IDS_CLOSE},
+      {"export", IDS_CERT_DETAILS_EXPORT_CERTIFICATE},
+      {"usages", IDS_CERT_INFO_VERIFIED_USAGES_GROUP},
+      {"issuedTo", IDS_CERT_INFO_SUBJECT_GROUP},
+      {"issuedBy", IDS_CERT_INFO_ISSUER_GROUP},
+      {"cn", IDS_CERT_INFO_COMMON_NAME_LABEL},
+      {"o", IDS_CERT_INFO_ORGANIZATION_LABEL},
+      {"ou", IDS_CERT_INFO_ORGANIZATIONAL_UNIT_LABEL},
+      {"validity", IDS_CERT_INFO_VALIDITY_GROUP},
+      {"issuedOn", IDS_CERT_INFO_ISSUED_ON_LABEL},
+      {"expiresOn", IDS_CERT_INFO_EXPIRES_ON_LABEL},
+      {"fingerprints", IDS_CERT_INFO_FINGERPRINTS_GROUP},
+      {"sha256", IDS_CERT_INFO_SHA256_FINGERPRINT_LABEL},
+      {"sha1", IDS_CERT_INFO_SHA1_FINGERPRINT_LABEL},
+      {"hierarchy", IDS_CERT_DETAILS_CERTIFICATE_HIERARCHY_LABEL},
+      {"certFields", IDS_CERT_DETAILS_CERTIFICATE_FIELDS_LABEL},
+      {"certFieldVal", IDS_CERT_DETAILS_CERTIFICATE_FIELD_VALUE_LABEL},
+  };
+  AddLocalizedStringsBulk(html_source, kStrings, base::size(kStrings));
+
+  html_source->UseStringsJs();
 
   // Add required resources.
   html_source->AddResourcePath("certificate_viewer.js",

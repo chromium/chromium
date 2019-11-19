@@ -54,6 +54,7 @@ TEST(InvalidationSetTest, Backing_Add) {
   ASSERT_FALSE(backing.IsHashSet(flags));
   backing.Add(flags, AtomicString("test2"));
   ASSERT_TRUE(backing.IsHashSet(flags));
+  backing.Clear(flags);
 }
 
 TEST(InvalidationSetTest, Backing_AddSame) {
@@ -66,6 +67,7 @@ TEST(InvalidationSetTest, Backing_AddSame) {
   backing.Add(flags, AtomicString("test1"));
   // No need to upgrade to HashSet if we're adding the item we already have.
   ASSERT_FALSE(backing.IsHashSet(flags));
+  backing.Clear(flags);
 }
 
 TEST(InvalidationSetTest, Backing_Independence) {
@@ -131,6 +133,7 @@ TEST(InvalidationSetTest, Backing_Independence) {
   ASSERT_TRUE(tag_names.IsHashSet(flags));
   ASSERT_TRUE(HasAll(tag_names, flags, {"test3", "test6"}));
   ASSERT_FALSE(HasAny(tag_names, flags, {"test1", "test2", "test4", "test5"}));
+  tag_names.Clear(flags);
 }
 
 TEST(InvalidationSetTest, Backing_ClearContains) {
@@ -214,6 +217,7 @@ TEST(InvalidationSetTest, Backing_Iterator) {
       strings.push_back(str);
     ASSERT_EQ(1u, strings.size());
     ASSERT_TRUE(strings.Contains("test1"));
+    backing.Clear(flags);
   }
 
   // Iterate over set with multiple items.
@@ -231,6 +235,7 @@ TEST(InvalidationSetTest, Backing_Iterator) {
     ASSERT_TRUE(strings.Contains("test1"));
     ASSERT_TRUE(strings.Contains("test2"));
     ASSERT_TRUE(strings.Contains("test3"));
+    backing.Clear(flags);
   }
 }
 
@@ -242,6 +247,7 @@ TEST(InvalidationSetTest, Backing_GetStringImpl) {
   EXPECT_EQ("a", AtomicString(backing.GetStringImpl(flags)));
   backing.Add(flags, "b");
   EXPECT_FALSE(backing.GetStringImpl(flags));
+  backing.Clear(flags);
 }
 
 TEST(InvalidationSetTest, Backing_GetHashSet) {
@@ -252,10 +258,11 @@ TEST(InvalidationSetTest, Backing_GetHashSet) {
   EXPECT_FALSE(backing.GetHashSet(flags));
   backing.Add(flags, "b");
   EXPECT_TRUE(backing.GetHashSet(flags));
+  backing.Clear(flags);
 }
 
 TEST(InvalidationSetTest, ClassInvalidatesElement) {
-  auto dummy_page_holder = DummyPageHolder::Create(IntSize(800, 600));
+  auto dummy_page_holder = std::make_unique<DummyPageHolder>(IntSize(800, 600));
   auto& document = dummy_page_holder->GetDocument();
   document.body()->SetInnerHTMLFromString("<div id=test class='a b'>");
   document.View()->UpdateAllLifecyclePhases(
@@ -281,7 +288,7 @@ TEST(InvalidationSetTest, ClassInvalidatesElement) {
 }
 
 TEST(InvalidationSetTest, AttributeInvalidatesElement) {
-  auto dummy_page_holder = DummyPageHolder::Create(IntSize(800, 600));
+  auto dummy_page_holder = std::make_unique<DummyPageHolder>(IntSize(800, 600));
   auto& document = dummy_page_holder->GetDocument();
   document.body()->SetInnerHTMLFromString("<div id=test a b>");
   document.View()->UpdateAllLifecyclePhases(

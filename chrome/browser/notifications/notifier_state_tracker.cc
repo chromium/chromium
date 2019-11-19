@@ -77,7 +77,7 @@ bool NotifierStateTracker::IsNotifierEnabled(
           disabled_extension_ids_.end();
     case message_center::NotifierType::WEB_PAGE:
       return PermissionManager::Get(profile_)
-                 ->GetPermissionStatus(CONTENT_SETTINGS_TYPE_NOTIFICATIONS,
+                 ->GetPermissionStatus(ContentSettingsType::NOTIFICATIONS,
                                        notifier_id.url, notifier_id.url)
                  .content_setting == CONTENT_SETTING_ALLOW;
     case message_center::NotifierType::SYSTEM_COMPONENT:
@@ -192,9 +192,8 @@ void NotifierStateTracker::FirePermissionLevelChangedEvent(
   // has changed.
   extensions::InfoMap* extension_info_map =
       extensions::ExtensionSystem::Get(profile_)->info_map();
-  base::PostTaskWithTraits(
-      FROM_HERE, {content::BrowserThread::IO},
-      base::BindOnce(&extensions::InfoMap::SetNotificationsDisabled,
-                     extension_info_map, notifier_id.id, !enabled));
+  base::PostTask(FROM_HERE, {content::BrowserThread::IO},
+                 base::BindOnce(&extensions::InfoMap::SetNotificationsDisabled,
+                                extension_info_map, notifier_id.id, !enabled));
 }
 #endif

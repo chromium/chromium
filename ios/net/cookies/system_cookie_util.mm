@@ -33,6 +33,11 @@ enum CookieLossType {
 // Undocumented property of NSHTTPCookie.
 NSString* const kNSHTTPCookieHttpOnly = @"HttpOnly";
 
+// Possible value for SameSite policy. WebKit doesn't use the value "none" or
+// any other value, it uses the empty value to represent none, and any value
+// that is not "strict" or "lax" will be considered as none.
+NSString* const kNSHTTPCookieSameSiteNone = @"none";
+
 // Key in NSUserDefaults telling wether a low cookie count must be reported as
 // an error.
 NSString* const kCheckCookieLossKey = @"CookieUtilIOSCheckCookieLoss";
@@ -70,16 +75,30 @@ void ReportUMACookieLoss(CookieLossType loss, CookieEvent event) {
 net::CanonicalCookie CanonicalCookieFromSystemCookie(
     NSHTTPCookie* cookie,
     const base::Time& ceation_time) {
+  net::CookieSameSite same_site = net::CookieSameSite::NO_RESTRICTION;
+  if (@available(iOS 13, *)) {
+    same_site = net::CookieSameSite::UNSPECIFIED;
+    if ([cookie.sameSitePolicy isEqual:NSHTTPCookieSameSiteLax])
+      same_site = net::CookieSameSite::LAX_MODE;
+
+    if ([cookie.sameSitePolicy isEqual:NSHTTPCookieSameSiteStrict])
+      same_site = net::CookieSameSite::STRICT_MODE;
+
+    if ([[cookie.sameSitePolicy lowercaseString]
+            isEqual:kNSHTTPCookieSameSiteNone])
+      same_site = net::CookieSameSite::NO_RESTRICTION;
+  }
+
   return net::CanonicalCookie(
       base::SysNSStringToUTF8([cookie name]),
       base::SysNSStringToUTF8([cookie value]),
       base::SysNSStringToUTF8([cookie domain]),
       base::SysNSStringToUTF8([cookie path]), ceation_time,
       base::Time::FromDoubleT([[cookie expiresDate] timeIntervalSince1970]),
-      base::Time(), [cookie isSecure], [cookie isHTTPOnly],
-      // TODO(mkwst): When iOS begins to support 'SameSite' and 'Priority'
-      // attributes, pass them through here.
-      net::CookieSameSite::DEFAULT_MODE, net::COOKIE_PRIORITY_DEFAULT);
+      base::Time(), [cookie isSecure], [cookie isHTTPOnly], same_site,
+      // When iOS begins to support 'Priority' attribute, pass it
+      // through here.
+      net::COOKIE_PRIORITY_DEFAULT);
 }
 
 void ReportGetCookiesForURLResult(SystemCookieStoreType store_type,
@@ -140,6 +159,28 @@ NSHTTPCookie* SystemCookieFromCanonicalCookie(
         [NSDate dateWithTimeIntervalSince1970:cookie.ExpiryDate().ToDoubleT()];
     [properties setObject:expiry forKey:NSHTTPCookieExpires];
   }
+
+  if (@available(iOS 13, *)) {
+    // In iOS 13 sameSite property in NSHTTPCookie is used to specify the
+    // samesite policy.
+    NSString* same_site = @"";
+    switch (cookie.SameSite()) {
+      case net::CookieSameSite::LAX_MODE:
+        same_site = NSHTTPCookieSameSiteLax;
+        break;
+      case net::CookieSameSite::STRICT_MODE:
+        same_site = NSHTTPCookieSameSiteStrict;
+        break;
+      case net::CookieSameSite::NO_RESTRICTION:
+        same_site = kNSHTTPCookieSameSiteNone;
+        break;
+      case net::CookieSameSite::UNSPECIFIED:
+        // All other values of same site policy will be treated as no value .
+        break;
+    }
+    properties[NSHTTPCookieSameSitePolicy] = same_site;
+  }
+
   if (cookie.IsSecure())
     [properties setObject:@"Y" forKey:NSHTTPCookieSecure];
   if (cookie.IsHttpOnly())
@@ -147,6 +188,15 @@ NSHTTPCookie* SystemCookieFromCanonicalCookie(
   NSHTTPCookie* system_cookie = [NSHTTPCookie cookieWithProperties:properties];
   DCHECK(system_cookie);
   return system_cookie;
+}
+
+NSArray<NSHTTPCookie*>* SystemCookiesFromCanonicalCookieList(
+    const net::CookieList& cookie_list) {
+  NSMutableArray<NSHTTPCookie*>* cookies = [[NSMutableArray alloc] init];
+  for (const net::CanonicalCookie& cookie : cookie_list) {
+    [cookies addObject:net::SystemCookieFromCanonicalCookie(cookie)];
+  }
+  return [cookies copy];
 }
 
 void CheckForCookieLoss(size_t cookie_count, CookieEvent event) {

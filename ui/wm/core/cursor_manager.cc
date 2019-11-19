@@ -92,10 +92,16 @@ void CursorManager::ResetCursorVisibilityStateForTest() {
 }
 
 void CursorManager::SetCursor(gfx::NativeCursor cursor) {
+  bool previously_visible = GetCursor().native_type() != ui::CursorType::kNone;
   state_on_unlock_->set_cursor(cursor);
   if (cursor_lock_count_ == 0 &&
       GetCursor() != state_on_unlock_->cursor()) {
     delegate_->SetCursor(state_on_unlock_->cursor(), this);
+    bool is_visible = cursor.native_type() != ui::CursorType::kNone;
+    if (is_visible != previously_visible) {
+      for (auto& observer : observers_)
+        observer.OnCursorVisibilityChanged(is_visible);
+    }
   }
 }
 
@@ -109,8 +115,11 @@ void CursorManager::ShowCursor() {
   if (cursor_lock_count_ == 0 &&
       IsCursorVisible() != state_on_unlock_->visible()) {
     delegate_->SetVisibility(state_on_unlock_->visible(), this);
-    for (auto& observer : observers_)
-      observer.OnCursorVisibilityChanged(true);
+    if (GetCursor().native_type() != ui::CursorType::kNone) {
+      // If the cursor is a visible type, notify the observers.
+      for (auto& observer : observers_)
+        observer.OnCursorVisibilityChanged(true);
+    }
   }
 }
 
@@ -225,8 +234,10 @@ void CursorManager::CommitCursor(gfx::NativeCursor cursor) {
 void CursorManager::CommitVisibility(bool visible) {
   // TODO(tdanderson): Find a better place for this so we don't
   // notify the observers more than is necessary.
-  for (auto& observer : observers_)
-    observer.OnCursorVisibilityChanged(visible);
+  for (auto& observer : observers_) {
+    observer.OnCursorVisibilityChanged(
+        GetCursor().native_type() == ui::CursorType::kNone ? false : visible);
+  }
   current_state_->SetVisible(visible);
 }
 

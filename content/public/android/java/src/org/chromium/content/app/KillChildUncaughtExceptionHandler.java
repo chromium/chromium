@@ -35,12 +35,13 @@ class KillChildUncaughtExceptionHandler implements Thread.UncaughtExceptionHandl
     }
 
     @Override
+    @SuppressWarnings("checkstyle:SystemExitCheck") // Allowed since the goal is to mimic Android.
     public void uncaughtException(Thread t, Throwable e) {
         // Never re-enter.
         if (mCrashing) return;
         mCrashing = true;
 
-        // Copyed from Android KillApplicationHandler in RuntimeInit.java. This is how the default
+        // Copied from Android KillApplicationHandler in RuntimeInit.java. This is how the default
         // Android handler kills this process.
         Process.killProcess(Process.myPid());
         System.exit(10);

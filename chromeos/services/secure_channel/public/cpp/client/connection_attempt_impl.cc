@@ -38,15 +38,13 @@ ConnectionAttemptImpl::Factory::BuildInstance() {
   return base::WrapUnique(new ConnectionAttemptImpl());
 }
 
-ConnectionAttemptImpl::ConnectionAttemptImpl()
-    : binding_(this), weak_ptr_factory_(this) {}
+ConnectionAttemptImpl::ConnectionAttemptImpl() = default;
 
 ConnectionAttemptImpl::~ConnectionAttemptImpl() = default;
 
-mojom::ConnectionDelegatePtr ConnectionAttemptImpl::GenerateInterfacePtr() {
-  mojom::ConnectionDelegatePtr interface_ptr;
-  binding_.Bind(mojo::MakeRequest(&interface_ptr));
-  return interface_ptr;
+mojo::PendingRemote<mojom::ConnectionDelegate>
+ConnectionAttemptImpl::GenerateRemote() {
+  return receiver_.BindNewPipeAndPassRemote();
 }
 
 void ConnectionAttemptImpl::OnConnectionAttemptFailure(
@@ -55,10 +53,10 @@ void ConnectionAttemptImpl::OnConnectionAttemptFailure(
 }
 
 void ConnectionAttemptImpl::OnConnection(
-    mojom::ChannelPtr channel,
-    mojom::MessageReceiverRequest message_receiver_request) {
+    mojo::PendingRemote<mojom::Channel> channel,
+    mojo::PendingReceiver<mojom::MessageReceiver> message_receiver_receiver) {
   NotifyConnection(ClientChannelImpl::Factory::Get()->BuildInstance(
-      std::move(channel), std::move(message_receiver_request)));
+      std::move(channel), std::move(message_receiver_receiver)));
 }
 
 }  // namespace secure_channel

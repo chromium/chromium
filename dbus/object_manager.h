@@ -317,6 +317,11 @@ class CHROME_DBUS_EXPORT ObjectManager final
   void NameOwnerChanged(const std::string& old_owner,
                         const std::string& new_owner);
 
+  // Write |new_owner| to |service_name_owner_|. This method makes sure write
+  // happens on the DBus thread, which is the sole writer to
+  // |service_name_owner_|.
+  void UpdateServiceNameOwner(const std::string& new_owner);
+
   Bus* bus_;
   std::string service_name_;
   std::string service_name_owner_;
@@ -354,7 +359,7 @@ class CHROME_DBUS_EXPORT ObjectManager final
   // than we do.
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.
-  base::WeakPtrFactory<ObjectManager> weak_ptr_factory_;
+  base::WeakPtrFactory<ObjectManager> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ObjectManager);
 };

@@ -12,7 +12,7 @@
 namespace chromeos {
 
 // Shows the Chrome OS out-of-box / login UI.
-void ShowLoginWizard(OobeScreen start_screen);
+void ShowLoginWizard(OobeScreenId start_screen);
 
 }  // namespace chromeos
 

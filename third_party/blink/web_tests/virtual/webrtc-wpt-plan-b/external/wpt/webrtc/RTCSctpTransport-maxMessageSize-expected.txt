@@ -1,0 +1,8 @@
+This is a testharness.js-based test.
+FAIL Determine the local side send limitation (canSendSize) by offering a max-message-size of 0 assert_not_equals: RTCSctpTransport must be available got disallowed value null
+FAIL Remote offer SDP missing max-message-size attribute assert_not_equals: canSendSize needs to be determined got disallowed value null
+FAIL max-message-size with a (non-zero) value provided by the remote peer assert_not_equals: canSendSize needs to be determined got disallowed value null
+FAIL Renegotiate max-message-size with various values provided by the remote peer assert_not_equals: canSendSize needs to be determined got disallowed value null
+FAIL max-message-size with a (non-zero) value larger than canSendSize provided by the remote peer assert_not_equals: canSendSize needs to be determined got disallowed value null
+Harness: the test ran to completion.
+

@@ -11,8 +11,8 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_task_environment.h"
 #include "base/test/simple_test_clock.h"
+#include "base/test/task_environment.h"
 #include "base/test/test_simple_task_runner.h"
 #include "chromeos/components/multidevice/remote_device_test_util.h"
 #include "chromeos/components/tether/fake_connection_preserver.h"
@@ -136,7 +136,7 @@ class HostScannerOperationTest : public testing::Test {
       mock_tether_host_response_recorder_;
   FakeConnectionPreserver fake_connection_preserver_;
 
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_;
   base::SimpleTestClock test_clock_;
   scoped_refptr<base::TestSimpleTaskRunner> test_task_runner_;
   MockOperationObserver mock_observer_;

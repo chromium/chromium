@@ -5,10 +5,10 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <memory>
 #include <vector>
 
 #include "base/logging.h"
-#include "base/memory/ptr_util.h"
 #include "base/stl_util.h"
 #include "components/webcrypto/algorithms/aes.h"
 #include "components/webcrypto/algorithms/util.h"
@@ -83,7 +83,7 @@ class AesGcmImplementation : public AesAlgorithm {
 }  // namespace
 
 std::unique_ptr<AlgorithmImplementation> CreateAesGcmImplementation() {
-  return base::WrapUnique(new AesGcmImplementation);
+  return std::make_unique<AesGcmImplementation>();
 }
 
 }  // namespace webcrypto

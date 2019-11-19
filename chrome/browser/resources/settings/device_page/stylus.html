@@ -1,8 +1,9 @@
 <link rel="import" href="chrome://resources/html/polymer.html">
 
+<link rel="import" href="chrome://resources/cr_elements/cr_link_row/cr_link_row.html">
 <link rel="import" href="chrome://resources/cr_elements/cr_toggle/cr_toggle.html">
+<link rel="import" href="chrome://resources/cr_elements/shared_vars_css.html">
 <link rel="import" href="chrome://resources/html/action_link.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/paper-icon-button/paper-icon-button-light.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/paper-spinner/paper-spinner-lite.html">
 <link rel="import" href="../controls/settings_toggle_button.html">
 <link rel="import" href="../settings_shared_css.html">
@@ -18,7 +19,7 @@
       }
 
       paper-spinner-lite {
-        margin-left: 12px;
+        margin-inline-start: 12px;
         @apply --cr-icon-height-width;
       }
 
@@ -27,7 +28,7 @@
       }
 
       #note-taking-app-lock-screen-settings {
-        padding: 0 var(--settings-box-row-padding);
+        padding: 0 var(--cr-section-padding);
       }
     </style>
 
@@ -73,21 +74,10 @@
       </select>
     </div>
 
-    <!-- TODO(scottchen): Make a proper a[href].settings-box with
-         icon-external (see: https://crbug.com/684005)-->
-    <div class="settings-box two-line" on-click="onFindAppsTap_" actionable
-        hidden$="[[!prefs.arc.enabled.value]]">
-      <div class="start">
-        $i18n{stylusFindMoreAppsPrimary}
-        <div class="secondary" id="stylusFindMoreAppsSecondary">
-          $i18n{stylusFindMoreAppsSecondary}
-        </div>
-      </div>
-      <paper-icon-button-light class="icon-external">
-        <button aria-label="$i18n{stylusFindMoreAppsPrimary}"
-            aria-describedby="stylusFindMoreAppsSecondary"></button>
-      </paper-icon-button-light>
-    </div>
+    <cr-link-row class="hr" on-click="onFindAppsTap_"
+        hidden$="[[!prefs.arc.enabled.value]]"
+        label="$i18n{stylusFindMoreAppsPrimary}"
+        sub-label="$i18n{stylusFindMoreAppsSecondary}" external></cr-link-row>
 
     <template is="dom-if" if="[[supportsLockScreen_(selectedApp_)]]">
       <div id="note-taking-app-lock-screen-settings">

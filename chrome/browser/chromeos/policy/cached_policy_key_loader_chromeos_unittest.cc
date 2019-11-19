@@ -13,9 +13,9 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/single_thread_task_runner.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "chromeos/cryptohome/cryptohome_parameters.h"
-#include "chromeos/dbus/fake_cryptohome_client.h"
+#include "chromeos/dbus/cryptohome/fake_cryptohome_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace policy {
@@ -34,7 +34,7 @@ class CachedPolicyKeyLoaderTest : public testing::Test {
     ASSERT_TRUE(tmp_dir_.CreateUniqueTempDir());
 
     cached_policy_key_loader_ = std::make_unique<CachedPolicyKeyLoaderChromeOS>(
-        &cryptohome_client_, scoped_task_environment_.GetMainThreadTaskRunner(),
+        &cryptohome_client_, task_environment_.GetMainThreadTaskRunner(),
         account_id_, user_policy_keys_dir());
   }
 
@@ -69,8 +69,8 @@ class CachedPolicyKeyLoaderTest : public testing::Test {
         &CachedPolicyKeyLoaderTest::OnPolicyKeyLoaded, base::Unretained(this)));
   }
 
-  base::test::ScopedTaskEnvironment scoped_task_environment_ = {
-      base::test::ScopedTaskEnvironment::MainThreadType::UI};
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::MainThreadType::UI};
   chromeos::FakeCryptohomeClient cryptohome_client_;
   const AccountId account_id_ = AccountId::FromUserEmail(kTestUserName);
   const cryptohome::AccountIdentifier cryptohome_id_ =
@@ -93,7 +93,7 @@ TEST_F(CachedPolicyKeyLoaderTest, Basic) {
 
   CallEnsurePolicyKeyLoaded();
 
-  scoped_task_environment_.RunUntilIdle();
+  task_environment_.RunUntilIdle();
 
   EXPECT_EQ(1, policy_key_loaded_callback_invocations_);
   EXPECT_EQ(kDummyKey1, cached_policy_key_loader_->cached_policy_key());
@@ -103,7 +103,7 @@ TEST_F(CachedPolicyKeyLoaderTest, Basic) {
 TEST_F(CachedPolicyKeyLoaderTest, KeyFileMissing) {
   CallEnsurePolicyKeyLoaded();
 
-  scoped_task_environment_.RunUntilIdle();
+  task_environment_.RunUntilIdle();
 
   EXPECT_EQ(1, policy_key_loaded_callback_invocations_);
   EXPECT_EQ(std::string(), cached_policy_key_loader_->cached_policy_key());
@@ -119,7 +119,7 @@ TEST_F(CachedPolicyKeyLoaderTest, EnsureCalledTwice) {
 
   EXPECT_EQ(0, policy_key_loaded_callback_invocations_);
 
-  scoped_task_environment_.RunUntilIdle();
+  task_environment_.RunUntilIdle();
 
   // We expect that the callback was called for each EnsurePolicyKeyLoaded
   // invocation.
@@ -135,7 +135,7 @@ TEST_F(CachedPolicyKeyLoaderTest, EnsureAfterSuccessfulLoad) {
   CallEnsurePolicyKeyLoaded();
   EXPECT_EQ(0, policy_key_loaded_callback_invocations_);
 
-  scoped_task_environment_.RunUntilIdle();
+  task_environment_.RunUntilIdle();
 
   EXPECT_EQ(1, policy_key_loaded_callback_invocations_);
   EXPECT_EQ(kDummyKey1, cached_policy_key_loader_->cached_policy_key());
@@ -145,7 +145,7 @@ TEST_F(CachedPolicyKeyLoaderTest, EnsureAfterSuccessfulLoad) {
 
   CallEnsurePolicyKeyLoaded();
 
-  scoped_task_environment_.RunUntilIdle();
+  task_environment_.RunUntilIdle();
 
   // We expect that the callback was invoked, but that the cached policy key is
   // still the old one. EnsurePolicyKeyLoaded is not supposed to reload the key.
@@ -161,7 +161,7 @@ TEST_F(CachedPolicyKeyLoaderTest, ReloadAfterEnsure) {
   CallEnsurePolicyKeyLoaded();
   EXPECT_EQ(0, policy_key_loaded_callback_invocations_);
 
-  scoped_task_environment_.RunUntilIdle();
+  task_environment_.RunUntilIdle();
 
   EXPECT_EQ(1, policy_key_loaded_callback_invocations_);
   EXPECT_EQ(kDummyKey1, cached_policy_key_loader_->cached_policy_key());
@@ -171,7 +171,7 @@ TEST_F(CachedPolicyKeyLoaderTest, ReloadAfterEnsure) {
 
   CallReloadPolicyKey();
 
-  scoped_task_environment_.RunUntilIdle();
+  task_environment_.RunUntilIdle();
 
   // We expect that the callback was invoked, and that the policy key file has
   // been reloded, so the cached policy key is now the new policy key.
@@ -187,7 +187,7 @@ TEST_F(CachedPolicyKeyLoaderTest, ReloadWhileLoading) {
   CallReloadPolicyKey();
   EXPECT_EQ(0, policy_key_loaded_callback_invocations_);
 
-  scoped_task_environment_.RunUntilIdle();
+  task_environment_.RunUntilIdle();
 
   // We expect that the callback was called for both the EnsurePolicyKeyLoaded
   // and ReloadPolicyKey invocation.

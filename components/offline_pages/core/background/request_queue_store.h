@@ -151,7 +151,7 @@ class RequestQueueStore {
   // State of the store.
   StoreState state_;
 
-  base::WeakPtrFactory<RequestQueueStore> weak_ptr_factory_;
+  base::WeakPtrFactory<RequestQueueStore> weak_ptr_factory_{this};
 };
 
 }  // namespace offline_pages

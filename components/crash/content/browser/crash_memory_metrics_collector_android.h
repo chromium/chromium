@@ -5,11 +5,11 @@
 #ifndef COMPONENTS_CRASH_CONTENT_BROWSER_CRASH_MEMORY_METRICS_COLLECTOR_ANDROID_H_
 #define COMPONENTS_CRASH_CONTENT_BROWSER_CRASH_MEMORY_METRICS_COLLECTOR_ANDROID_H_
 
+#include "base/memory/shared_memory_mapping.h"
+#include "base/supports_user_data.h"
 #include "components/crash/content/browser/child_exit_observer_android.h"
 #include "content/public/browser/content_browser_client.h"
-#include "mojo/public/cpp/bindings/binding.h"
 #include "third_party/blink/public/common/oom_intervention/oom_intervention_types.h"
-#include "third_party/blink/public/mojom/crash/crash_memory_metrics_reporter.mojom.h"
 
 // This class manages a shared memory that is shared with
 // CrashMemoryMetricsReporter on the renderer side. The shared memory contains
@@ -32,7 +32,6 @@ class CrashMemoryMetricsCollector : public base::SupportsUserData::Data {
   const blink::OomInterventionMetrics* MemoryMetrics();
 
  private:
-  blink::mojom::CrashMemoryMetricsReporterPtr crash_memory_metrics_reporter_;
   base::WritableSharedMemoryMapping metrics_mapping_;
 
   DISALLOW_COPY_AND_ASSIGN(CrashMemoryMetricsCollector);

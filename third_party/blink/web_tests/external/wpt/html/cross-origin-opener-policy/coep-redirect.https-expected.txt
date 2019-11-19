@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+PASS Redirect from coop/coep to coop/coep
+FAIL Redirect from coop/coep to no coop/coep assert_equals: expected "" but got "Redirect-from-coop/coep-to-no-coop/coep"
+FAIL Redirect from no coop/no coep to coop/coep assert_equals: expected "" but got "Redirect-from-no-coop/no-coep-to-coop/coep"
+FAIL Redirect from coop/no coep to coop/coep assert_equals: expected "" but got "Redirect-from-coop/no-coep-to-coop/coep"
+PASS Redirect from coop unsafe-inherit/coep to coop/coep
+PASS Redirect from coop unsafe-inherit/coep to coop unsafe-inherit/coep
+Harness: the test ran to completion.
+

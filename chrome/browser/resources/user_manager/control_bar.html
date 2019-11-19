@@ -1,0 +1,41 @@
+<link rel="import" href="chrome://resources/html/polymer.html">
+
+<link rel="import" href="/profile_browser_proxy.html">
+<link rel="import" href="/shared_styles.html">
+<link rel="import" href="/strings.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_button/cr_button.html">
+<link rel="import" href="chrome://resources/html/i18n_behavior.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/iron-flex-layout/iron-flex-layout-classes.html">
+
+<dom-module id="control-bar">
+  <template>
+    <style include="shared-styles iron-flex iron-flex-alignment
+        iron-positioning">
+      #container {
+        align-items: center;
+        min-height: 32px;
+        padding-bottom: 12px;
+        padding-inline-end: 8px;
+        padding-inline-start: 24px;
+        padding-top: 12px;
+      }
+
+      #logo {
+        margin-inline-end: auto;
+        user-select: none;
+      }
+
+      cr-button + cr-button {
+        margin-inline-start: 8px;
+      }
+    </style>
+    <div id="container" class="layout horizontal end-justified">
+      <div id="logo" class="product-logo" alt=""></div>
+      <cr-button id="launchGuest" on-click="onLaunchGuestTap_"
+          hidden="[[!showGuest]]">$i18n{browseAsGuest}</cr-button>
+      <cr-button id="addUser" on-click="onAddUserTap_"
+          hidden="[[!showAddPerson]]">$i18n{addUser}</cr-button>
+    </div>
+  </template>
+  <script src="control_bar.js"></script>
+</dom-module>

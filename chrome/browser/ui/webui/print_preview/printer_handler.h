@@ -88,9 +88,8 @@ class PrinterHandler {
   // are found. May be called multiple times, or never if there are no printers
   // to add.
   // |done_callback| must be called exactly once when the search is complete.
-  virtual void StartGetPrinters(
-      const AddedPrintersCallback& added_printers_callback,
-      GetPrintersDoneCallback done_callback) = 0;
+  virtual void StartGetPrinters(AddedPrintersCallback added_printers_callback,
+                                GetPrintersDoneCallback done_callback) = 0;
 
   // Starts getting printing capability of the printer with the provided
   // destination ID.

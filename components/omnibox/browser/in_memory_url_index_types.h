@@ -16,6 +16,16 @@
 #include "components/history/core/browser/history_types.h"
 #include "url/gurl.h"
 
+// Convenience Types -----------------------------------------------------------
+
+typedef std::vector<base::string16> String16Vector;
+typedef base::flat_set<base::string16> String16Set;
+typedef base::flat_set<base::char16> Char16Set;
+typedef std::vector<base::char16> Char16Vector;
+
+// A vector that contains the offsets at which each word starts within a string.
+typedef std::vector<size_t> WordStarts;
+
 // Matches within URL and Title Strings ----------------------------------------
 
 // Specifies where an omnibox term occurs within a string. Used for specifying
@@ -33,6 +43,10 @@ struct TermMatch {
   size_t length;  // The length of the substring match.
 };
 typedef std::vector<TermMatch> TermMatches;
+
+// Returns the joined TermMatches of each term. See MatchTermInString.
+TermMatches MatchTermsInString(const String16Vector& terms,
+                               const base::string16& cleaned_string);
 
 // Returns a TermMatches which has an entry for each occurrence of the
 // string |term| found in the string |cleaned_string|. Use
@@ -65,16 +79,6 @@ std::vector<size_t> OffsetsFromTermMatches(const TermMatches& matches);
 // the updated list of matches.
 TermMatches ReplaceOffsetsInTermMatches(const TermMatches& matches,
                                         const std::vector<size_t>& offsets);
-
-// Convenience Types -----------------------------------------------------------
-
-typedef std::vector<base::string16> String16Vector;
-typedef base::flat_set<base::string16> String16Set;
-typedef base::flat_set<base::char16> Char16Set;
-typedef std::vector<base::char16> Char16Vector;
-
-// A vector that contains the offsets at which each word starts within a string.
-typedef std::vector<size_t> WordStarts;
 
 // Utility Functions -----------------------------------------------------------
 

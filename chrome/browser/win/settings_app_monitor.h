@@ -72,7 +72,7 @@ class SettingsAppMonitor {
 
   // Weak pointers are passed to the AutomationControllerDelegate so that it can
   // safely call back the monitor from any thread.
-  base::WeakPtrFactory<SettingsAppMonitor> weak_ptr_factory_;
+  base::WeakPtrFactory<SettingsAppMonitor> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(SettingsAppMonitor);
 };

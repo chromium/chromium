@@ -6,8 +6,8 @@
 
 #include "base/logging.h"
 #include "base/values.h"
-#include "storage/browser/fileapi/file_system_url.h"
-#include "storage/common/fileapi/file_system_util.h"
+#include "storage/browser/file_system/file_system_url.h"
+#include "storage/common/file_system/file_system_util.h"
 
 namespace chrome_apps {
 namespace api {

@@ -47,9 +47,9 @@ void LayoutThemeFontProvider::SystemFont(CSSValueID system_font_id,
   font_family = DefaultGUIFont();
 
   switch (system_font_id) {
-    case CSSValueWebkitMiniControl:
-    case CSSValueWebkitSmallControl:
-    case CSSValueWebkitControl:
+    case CSSValueID::kWebkitMiniControl:
+    case CSSValueID::kWebkitSmallControl:
+    case CSSValueID::kWebkitControl:
       // Why 2 points smaller? Because that's what Gecko does. Note that we
       // are assuming a 96dpi screen, which is the default that we use on
       // Windows.

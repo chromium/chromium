@@ -8,6 +8,8 @@ Usage example:
   features_compiler.py --destdir gen --root /home/Work/src _permissions.json
 """
 
+from __future__ import print_function
+
 import optparse
 import os
 
@@ -31,7 +33,7 @@ def _GenerateSchema(filename, root, destdir, namespace):
 
   # Generate a list of the features defined and a list of their models.
   feature_list = []
-  for feature_def, feature in feature_defs.iteritems():
+  for feature_def, feature in feature_defs.items():
     feature_list.append(CreateFeature(feature_def, feature))
 
   source_file_dir, _ = os.path.split(schema)
@@ -75,4 +77,4 @@ if __name__ == '__main__':
   result = _GenerateSchema(filenames[0], opts.root, opts.destdir,
                            opts.namespace)
   if not opts.destdir:
-    print result
+    print(result)

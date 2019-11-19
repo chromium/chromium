@@ -22,7 +22,7 @@ Note that we have to support the full range from JellyBean to the latest
 dessert.
 */
 
-#if defined(OS_LINUX)
+#if defined(OS_LINUX) || defined(OS_FUCHSIA)
 const char kTestFontName[] = "Arimo";
 #elif defined(OS_ANDROID)
 const char kTestFontName[] = "sans-serif";
@@ -30,7 +30,7 @@ const char kTestFontName[] = "sans-serif";
 const char kTestFontName[] = "Arial";
 #endif
 
-#if defined(OS_LINUX)
+#if defined(OS_LINUX) || defined(OS_FUCHSIA)
 const char kSymbolFontName[] = "DejaVu Sans";
 #elif defined(OS_ANDROID)
 const char kSymbolFontName[] = "monospace";
@@ -40,7 +40,7 @@ const char kSymbolFontName[] = "Segoe UI Symbol";
 const char kSymbolFontName[] = "Symbol";
 #endif
 
-#if defined(OS_LINUX)
+#if defined(OS_LINUX) || defined(OS_FUCHSIA)
 const char kCJKFontName[] = "Noto Sans CJK JP";
 #elif defined(OS_ANDROID)
 const char kCJKFontName[] = "serif";

@@ -3,22 +3,22 @@
 // found in the LICENSE file.
 
 // Namespace
-var importer;
+var importer = importer || {};
 
 /**
  * Interface providing access to information about active import processes.
  *
  * @interface
  */
-importer.ImportRunner = function() {};
-
-/**
- * Imports all media identified by a scanResult.
- *
- * @param {!importer.ScanResult} scanResult
- * @param {!importer.Destination} destination
- * @param {!Promise<!DirectoryEntry>} directoryPromise
- *
- * @return {!importer.MediaImportHandler.ImportTask} The media import task.
- */
-importer.ImportRunner.prototype.importFromScanResult;
+importer.ImportRunner = class {
+  /**
+   * Imports all media identified by a scanResult.
+   *
+   * @param {!importer.ScanResult} scanResult
+   * @param {!importer.Destination} destination
+   * @param {!Promise<!DirectoryEntry>} directoryPromise
+   *
+   * @return {!importer.MediaImportHandler.ImportTask} The media import task.
+   */
+  importFromScanResult(scanResult, destination, directoryPromise) {}
+};

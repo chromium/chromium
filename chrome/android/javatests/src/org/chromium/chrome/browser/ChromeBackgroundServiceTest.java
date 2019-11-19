@@ -4,6 +4,11 @@
 
 package org.chromium.chrome.browser;
 
+import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.verify;
+
 import android.content.Context;
 import android.support.test.filters.SmallTest;
 
@@ -14,14 +19,23 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.Mockito;
 
 import org.chromium.base.ContextUtils;
-import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.task.PostTask;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.RetryOnFailure;
+import org.chromium.chrome.browser.background_sync.BackgroundSyncBackgroundTask;
+import org.chromium.chrome.browser.background_sync.BackgroundSyncBackgroundTaskScheduler;
 import org.chromium.chrome.browser.ntp.snippets.SnippetsLauncher;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.components.background_task_scheduler.BackgroundTask;
+import org.chromium.components.background_task_scheduler.BackgroundTaskScheduler;
+import org.chromium.components.background_task_scheduler.BackgroundTaskSchedulerFactory;
+import org.chromium.components.background_task_scheduler.TaskInfo;
+import org.chromium.content_public.browser.UiThreadTaskTraits;
 
 /**
  * Tests {@link ChromeBackgroundService}.
@@ -29,14 +43,16 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @RetryOnFailure
 public class ChromeBackgroundServiceTest {
-    private BackgroundSyncLauncher mSyncLauncher;
     private SnippetsLauncher mSnippetsLauncher;
     private MockTaskService mTaskService;
 
-    static class MockTaskService extends ChromeBackgroundService {
+    class MockTaskService extends ChromeBackgroundService {
         private boolean mDidLaunchBrowser;
         private boolean mDidCallOnPersistentSchedulerWakeUp;
         private boolean mDidCallOnBrowserUpgraded;
+
+        @Mock
+        private BackgroundTaskScheduler mTaskScheduler;
 
         @Override
         protected void launchBrowser(Context context, String tag) {
@@ -56,16 +72,13 @@ public class ChromeBackgroundServiceTest {
         @Override
         protected void rescheduleBackgroundSyncTasksOnUpgrade() {}
 
-        @Override
-        protected void rescheduleOfflinePages() {}
-
         // Posts an assertion task to the UI thread. Since this is only called after the call
         // to onRunTask, it will be enqueued after any possible call to launchBrowser, and we
         // can reliably check whether launchBrowser was called.
         protected void checkExpectations(final boolean expectedLaunchBrowser,
                 final boolean expectedDidCallOnPersistentSchedulerWakeUp,
                 final boolean expectedDidCallOnBrowserUpgraded) {
-            ThreadUtils.runOnUiThread(() -> {
+            PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () -> {
                 Assert.assertEquals("StartedService", expectedLaunchBrowser, mDidLaunchBrowser);
                 Assert.assertEquals("OnPersistentSchedulerWakeUp",
                         expectedDidCallOnPersistentSchedulerWakeUp,
@@ -74,25 +87,36 @@ public class ChromeBackgroundServiceTest {
                         mDidCallOnBrowserUpgraded);
             });
         }
+
+        protected void setUpMocks() {
+            mTaskScheduler = Mockito.mock(BackgroundTaskScheduler.class);
+            BackgroundTaskSchedulerFactory.setSchedulerForTesting(mTaskScheduler);
+            doReturn(true).when(mTaskScheduler).schedule(any(Context.class), any(TaskInfo.class));
+        }
+
+        protected void checkBackgroundTaskSchedulerInvocation(
+                Class<? extends BackgroundTask> backgroundTaskClass) {
+            PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () -> {
+                verify(mTaskScheduler)
+                        .schedule(any(Context.class),
+                                argThat(taskInfo
+                                        -> taskInfo.getBackgroundTaskClass()
+                                                == backgroundTaskClass));
+            });
+        }
     }
 
     @Before
-    public void setUp() throws Exception {
-        BackgroundSyncLauncher.setGCMEnabled(false);
+    public void setUp() {
         RecordHistogram.setDisabledForTests(true);
-        mSyncLauncher = BackgroundSyncLauncher.create();
         mSnippetsLauncher = SnippetsLauncher.create();
         mTaskService = new MockTaskService();
+        mTaskService.setUpMocks();
     }
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
         RecordHistogram.setDisabledForTests(false);
-    }
-
-    private void deleteSyncLauncherInstance() {
-        mSyncLauncher.destroy();
-        mSyncLauncher = null;
     }
 
     private void deleteSnippetsLauncherInstance() {
@@ -109,16 +133,9 @@ public class ChromeBackgroundServiceTest {
     @Test
     @SmallTest
     @Feature({"BackgroundSync"})
-    public void testBackgroundSyncNoLaunchBrowserWhenInstanceExists() {
-        startOnRunTaskAndVerify(BackgroundSyncLauncher.TASK_TAG, false, false);
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"BackgroundSync"})
-    public void testBackgroundSyncLaunchBrowserWhenInstanceDoesNotExist() {
-        deleteSyncLauncherInstance();
-        startOnRunTaskAndVerify(BackgroundSyncLauncher.TASK_TAG, true, false);
+    public void testBackgroundSyncRescheduleWhenTaskRuns() {
+        mTaskService.onRunTask(new TaskParams(BackgroundSyncBackgroundTaskScheduler.TASK_TAG));
+        mTaskService.checkBackgroundTaskSchedulerInvocation(BackgroundSyncBackgroundTask.class);
     }
 
     @Test

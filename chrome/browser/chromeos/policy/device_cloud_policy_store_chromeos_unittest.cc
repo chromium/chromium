@@ -16,9 +16,9 @@
 #include "chrome/browser/chromeos/settings/device_settings_test_helper.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
+#include "chromeos/dbus/cryptohome/fake_cryptohome_client.h"
+#include "chromeos/dbus/cryptohome/tpm_util.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/dbus/fake_cryptohome_client.h"
-#include "chromeos/dbus/util/tpm_util.h"
 #include "chromeos/network/onc/onc_test_utils.h"
 #include "chromeos/tpm/install_attributes.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
@@ -56,16 +56,12 @@ class DeviceCloudPolicyStoreChromeOSTest
   void SetUp() override {
     DeviceSettingsTestBase::SetUp();
 
-    fake_cryptohome_client_ = new chromeos::FakeCryptohomeClient();
-    install_attributes_ =
-        std::make_unique<chromeos::InstallAttributes>(fake_cryptohome_client_);
+    install_attributes_ = std::make_unique<chromeos::InstallAttributes>(
+        chromeos::FakeCryptohomeClient::Get());
     store_ = std::make_unique<DeviceCloudPolicyStoreChromeOS>(
         device_settings_service_.get(), install_attributes_.get(),
         base::ThreadTaskRunnerHandle::Get());
     store_->AddObserver(&observer_);
-
-    dbus_setter_->SetCryptohomeClient(
-        std::unique_ptr<chromeos::CryptohomeClient>(fake_cryptohome_client_));
 
     base::RunLoop loop;
     chromeos::InstallAttributes::LockResult result;
@@ -127,7 +123,7 @@ class DeviceCloudPolicyStoreChromeOSTest
     store_.reset();
     chromeos::tpm_util::InstallAttributesSet("enterprise.owned", std::string());
     install_attributes_.reset(
-        new chromeos::InstallAttributes(fake_cryptohome_client_));
+        new chromeos::InstallAttributes(chromeos::FakeCryptohomeClient::Get()));
     store_.reset(new DeviceCloudPolicyStoreChromeOS(
         device_settings_service_.get(), install_attributes_.get(),
         base::ThreadTaskRunnerHandle::Get()));
@@ -135,7 +131,6 @@ class DeviceCloudPolicyStoreChromeOSTest
   }
 
   ScopedTestingLocalState local_state_;
-  chromeos::FakeCryptohomeClient* fake_cryptohome_client_;
   std::unique_ptr<chromeos::InstallAttributes> install_attributes_;
 
   std::unique_ptr<DeviceCloudPolicyStoreChromeOS> store_;

@@ -23,11 +23,11 @@ suite('extension controlled indicator', function() {
 
   test('disable button tracks extensionCanBeDisabled', function() {
     assertTrue(indicator.extensionCanBeDisabled);
-    assertTrue(!!indicator.$$('paper-button'));
+    assertTrue(!!indicator.$$('cr-button'));
 
     indicator.extensionCanBeDisabled = false;
     Polymer.dom.flush();
-    assertFalse(!!indicator.$$('paper-button'));
+    assertFalse(!!indicator.$$('cr-button'));
   });
 
   test('label text and href', function() {
@@ -58,7 +58,7 @@ suite('extension controlled indicator', function() {
   });
 
   test('tapping disable button invokes browser proxy', function() {
-    const disableButton = indicator.$$('paper-button');
+    const disableButton = indicator.$$('cr-button');
     assertTrue(!!disableButton);
     disableButton.click();
     return browserProxy.whenCalled('disableExtension')

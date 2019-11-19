@@ -6,18 +6,18 @@ import("//third_party/blink/renderer/modules/modules.gni")
 
 blink_modules_sources("geolocation") {
   sources = [
-    "coordinates.cc",
-    "coordinates.h",
     "geo_notifier.cc",
     "geo_notifier.h",
     "geolocation.cc",
     "geolocation.h",
+    "geolocation_coordinates.cc",
+    "geolocation_coordinates.h",
     "geolocation_error.h",
+    "geolocation_position_error.h",
     "geolocation_watchers.cc",
     "geolocation_watchers.h",
     "geoposition.h",
     "navigator_geolocation.cc",
     "navigator_geolocation.h",
-    "position_error.h",
   ]
 }

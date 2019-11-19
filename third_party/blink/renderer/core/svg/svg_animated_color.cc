@@ -66,7 +66,7 @@ void SVGColorProperty::Add(SVGPropertyBase* other,
 }
 
 void SVGColorProperty::CalculateAnimatedValue(
-    SVGAnimationElement* animation_element,
+    const SVGAnimateElement& animation_element,
     float percentage,
     unsigned repeat_count,
     SVGPropertyBase* from_value,
@@ -87,24 +87,23 @@ void SVGColorProperty::CalculateAnimatedValue(
       to_at_end_of_duration_style_color.Resolve(fallback_color);
   Color animated_color = style_color_.Resolve(fallback_color);
 
-  DCHECK(animation_element);
   float animated_red = animated_color.Red();
-  animation_element->AnimateAdditiveNumber(
+  animation_element.AnimateAdditiveNumber(
       percentage, repeat_count, from_color.Red(), to_color.Red(),
       to_at_end_of_duration_color.Red(), animated_red);
 
   float animated_green = animated_color.Green();
-  animation_element->AnimateAdditiveNumber(
+  animation_element.AnimateAdditiveNumber(
       percentage, repeat_count, from_color.Green(), to_color.Green(),
       to_at_end_of_duration_color.Green(), animated_green);
 
   float animated_blue = animated_color.Blue();
-  animation_element->AnimateAdditiveNumber(
+  animation_element.AnimateAdditiveNumber(
       percentage, repeat_count, from_color.Blue(), to_color.Blue(),
       to_at_end_of_duration_color.Blue(), animated_blue);
 
   float animated_alpha = animated_color.Alpha();
-  animation_element->AnimateAdditiveNumber(
+  animation_element.AnimateAdditiveNumber(
       percentage, repeat_count, from_color.Alpha(), to_color.Alpha(),
       to_at_end_of_duration_color.Alpha(), animated_alpha);
 

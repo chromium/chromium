@@ -12,7 +12,6 @@
 <translation id="2159915644201199628">Isingeweza kusimbua picha: '<ph name="IMAGE_NAME" />'</translation>
 <translation id="2350172092385603347">Usanidi wa eneo umetumiwa, lakini eneo_chaguo-msingi halikubainishwa katika ratiba</translation>
 <translation id="2576842806987913196">Tayari kuna faili ya CRX iliyo na jina hili.</translation>
-<translation id="2753617847762399167">Njia haramu (kabisa au kiasi na '..'): '<ph name="IMAGE_PATH" />'</translation>
 <translation id="2785530881066938471">Isingweza kupakia faili '<ph name="RELATIVE_PATH" />' ya hati ya maudhui. Haijasimbwa kwa UTF-8.</translation>
 <translation id="2903070246402204397"><ph name="EXTENSION_NAME" /> (kitambulisho cha kiendelezi cha "<ph name="EXTENSION_ID" />") kimezuiwa na msimamizi. <ph name="ADMIN_INFO" /></translation>
 <translation id="2988488679308982380">Isingeweza kusakinisha furushi: '<ph name="ERROR_CODE" />'</translation>
@@ -38,8 +37,6 @@
 <translation id="5436430103864390185">Madirisha yaliyo na umbo hayatumiki.</translation>
 <translation id="5456409301717116725">Kiendelezi hiki kinajumuisha faili muhimu '<ph name="KEY_PATH" />'. Huenda hutaki kufanya hivyo.</translation>
 <translation id="5486326529110362464">Thamani ya uingizaji ya ufunguo binafsi sharti iwepo.</translation>
-<translation id="5627523580512561598">kiendelezi <ph name="EXTENSION_NAME" /></translation>
-<translation id="5960890139610307736">ExtensionView: <ph name="EXTENSIONVIEW_TAG_NAME" /></translation>
 <translation id="5972529113578162692">Msimamizi wa mashine hii anahitaji <ph name="EXTENSION_NAME" /> kusakinishwa. Hakiwezi kuondolewa.</translation>
 <translation id="6027032947578871493">Bidhaa isiyojulikana <ph name="PRODUCT_ID" /> kutoka kwa <ph name="VENDOR_NAME" /> (nambari tambulishi <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="6068932090455285721"><ph name="PRODUCT_NAME" /> kutoa kwa mchuuzi <ph name="VENDOR_ID" /></translation>
@@ -51,7 +48,6 @@
 <translation id="6542618148162044354">"<ph name="APP_NAME" />" inaomba idhini ya kufikia kifaa chako kimoja au vingi:</translation>
 <translation id="657064425229075395">Haikuweza kupakia hati ya mandharinyuma '<ph name="BACKGROUND_SCRIPT" />'.</translation>
 <translation id="6580950983454333167"><ph name="PRODUCT_NAME" /> kutoka kwa <ph name="VENDOR_NAME" /> (nambari ya ufuatiliaji <ph name="SERIAL_NUMBER" />)</translation>
-<translation id="6731255991101203740">Isingeweza kuunda saraka ya kufungua: '<ph name="DIRECTORY_PATH" />'</translation>
 <translation id="677806580227005219">Kishikilio cha Mime: <ph name="MIMEHANDLERVIEW_TAG_NAME" /></translation>
 <translation id="6840444547062817500">Kiendelezi hiki kilijipakia chenyewe upya kila mara.</translation>
 <translation id="7003844668372540529">Bidhaa isiyojulikana <ph name="PRODUCT_ID" /> kutoka kwa <ph name="VENDOR_NAME" /></translation>

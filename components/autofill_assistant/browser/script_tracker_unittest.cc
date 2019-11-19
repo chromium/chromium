@@ -6,18 +6,18 @@
 
 #include <utility>
 
+#include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
 #include "components/autofill_assistant/browser/fake_script_executor_delegate.h"
-#include "components/autofill_assistant/browser/mock_run_once_callback.h"
 #include "components/autofill_assistant/browser/mock_service.h"
-#include "components/autofill_assistant/browser/mock_ui_controller.h"
-#include "components/autofill_assistant/browser/mock_web_controller.h"
 #include "components/autofill_assistant/browser/protocol_utils.h"
 #include "components/autofill_assistant/browser/script_executor_delegate.h"
 #include "components/autofill_assistant/browser/service.h"
+#include "components/autofill_assistant/browser/web/mock_web_controller.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace autofill_assistant {
+using ::base::test::RunOnceCallback;
 using ::testing::_;
 using ::testing::ElementsAre;
 using ::testing::Eq;
@@ -35,13 +35,11 @@ class ScriptTrackerTest : public testing::Test, public ScriptTracker::Listener {
   void SetUp() override {
     delegate_.SetCurrentURL(GURL("http://www.example.com/"));
 
+    ON_CALL(mock_web_controller_, OnElementCheck(Eq(Selector({"exists"})), _))
+        .WillByDefault(RunOnceCallback<1>(OkClientStatus()));
     ON_CALL(mock_web_controller_,
-            OnElementCheck(kExistenceCheck, Eq(Selector({"exists"})), _))
-        .WillByDefault(RunOnceCallback<2>(true));
-    ON_CALL(
-        mock_web_controller_,
-        OnElementCheck(kExistenceCheck, Eq(Selector({"does_not_exist"})), _))
-        .WillByDefault(RunOnceCallback<2>(false));
+            OnElementCheck(Eq(Selector({"does_not_exist"})), _))
+        .WillByDefault(RunOnceCallback<1>(ClientStatus()));
 
     // Scripts run, but have no actions.
     ON_CALL(mock_service_, OnGetActions(_, _, _, _, _, _))
@@ -54,7 +52,6 @@ class ScriptTrackerTest : public testing::Test, public ScriptTracker::Listener {
         runnable_scripts_changed_(0),
         tracker_(&delegate_, /* listener=*/this) {
     delegate_.SetService(&mock_service_);
-    delegate_.SetUiController(&mock_ui_controller_);
     delegate_.SetWebController(&mock_web_controller_);
   }
 
@@ -65,7 +62,7 @@ class ScriptTrackerTest : public testing::Test, public ScriptTracker::Listener {
     runnable_scripts_ = runnable_scripts;
   }
 
-  void OnNoRunnableScripts() override { no_runnable_scripts_anymore_++; }
+  void OnNoRunnableScriptsForPage() override { no_runnable_scripts_anymore_++; }
 
   void SetAndCheckScripts() {
     std::vector<std::unique_ptr<Script>> scripts;
@@ -73,7 +70,7 @@ class ScriptTrackerTest : public testing::Test, public ScriptTracker::Listener {
       ProtocolUtils::AddScript(*script_proto, &scripts);
     }
     tracker_.SetScripts(std::move(scripts));
-    tracker_.CheckScripts(base::TimeDelta::FromSeconds(0));
+    tracker_.CheckScripts();
   }
 
   SupportedScriptProto* AddScript() {
@@ -86,7 +83,7 @@ class ScriptTrackerTest : public testing::Test, public ScriptTracker::Listener {
                                   const std::string& selector) {
     SupportedScriptProto* script = AddScript();
     script->set_path(path);
-    script->mutable_presentation()->set_name(name);
+    script->mutable_presentation()->mutable_chip()->set_text(name);
     if (!selector.empty()) {
       script->mutable_presentation()
           ->mutable_precondition()
@@ -124,7 +121,6 @@ class ScriptTrackerTest : public testing::Test, public ScriptTracker::Listener {
   GURL url_;
   NiceMock<MockService> mock_service_;
   NiceMock<MockWebController> mock_web_controller_;
-  NiceMock<MockUiController> mock_ui_controller_;
 
   // Number of times NoRunnableScriptsAnymore was called.
   int no_runnable_scripts_anymore_;
@@ -138,9 +134,9 @@ class ScriptTrackerTest : public testing::Test, public ScriptTracker::Listener {
 
 TEST_F(ScriptTrackerTest, NoScripts) {
   tracker_.SetScripts({});
-  tracker_.CheckScripts(base::TimeDelta::FromSeconds(0));
+  tracker_.CheckScripts();
   EXPECT_THAT(runnable_scripts(), IsEmpty());
-  EXPECT_EQ(0, runnable_scripts_changed_);
+  EXPECT_EQ(1, runnable_scripts_changed_);
   EXPECT_EQ(0, no_runnable_scripts_anymore_);
 }
 
@@ -151,13 +147,12 @@ TEST_F(ScriptTrackerTest, SomeRunnableScripts) {
 
   EXPECT_EQ(1, runnable_scripts_changed_);
   ASSERT_THAT(runnable_scripts(), SizeIs(1));
-  EXPECT_EQ("runnable name", runnable_scripts()[0].name);
+  EXPECT_EQ("runnable name", runnable_scripts()[0].chip.text);
   EXPECT_EQ("runnable path", runnable_scripts()[0].path);
   EXPECT_EQ(0, no_runnable_scripts_anymore_);
 }
 
 TEST_F(ScriptTrackerTest, DoNotCheckInterruptWithNoName) {
-
   // The interrupt's preconditions would all be met, but it won't be reported
   // since it doesn't have a name.
   auto* no_name = AddScript("", "path1", "exists");
@@ -172,36 +167,23 @@ TEST_F(ScriptTrackerTest, DoNotCheckInterruptWithNoName) {
 
   EXPECT_EQ(1, runnable_scripts_changed_);
   ASSERT_THAT(runnable_scripts(), SizeIs(1));
-  EXPECT_EQ("with name", runnable_scripts()[0].name);
-}
-
-TEST_F(ScriptTrackerTest, ReportInterruptToAutostart) {
-
-  // The interrupt's preconditions are met and it will be reported as runnable
-  // for autostart.
-  auto* autostart = AddScript("", "path2", "exists");
-  autostart->mutable_presentation()->set_interrupt(true);
-  autostart->mutable_presentation()->set_autostart(true);
-  SetAndCheckScripts();
-
-  EXPECT_EQ(1, runnable_scripts_changed_);
-  ASSERT_THAT(runnable_scripts(), SizeIs(1));
+  EXPECT_EQ("with name", runnable_scripts()[0].chip.text);
 }
 
 TEST_F(ScriptTrackerTest, OrderScriptsByPriority) {
   SupportedScriptProto* a = AddScript();
   a->set_path("a");
-  a->mutable_presentation()->set_name("a");
+  a->mutable_presentation()->mutable_chip()->set_text("a");
   a->mutable_presentation()->set_priority(2);
 
   SupportedScriptProto* b = AddScript();
   b->set_path("b");
-  b->mutable_presentation()->set_name("b");
+  b->mutable_presentation()->mutable_chip()->set_text("b");
   b->mutable_presentation()->set_priority(3);
 
   SupportedScriptProto* c = AddScript();
   c->set_path("c");
-  c->mutable_presentation()->set_name("c");
+  c->mutable_presentation()->mutable_chip()->set_text("c");
   c->mutable_presentation()->set_priority(1);
 
   SetAndCheckScripts();
@@ -268,8 +250,9 @@ TEST_F(ScriptTrackerTest, CheckScriptsAgainAfterScriptEnd) {
   EXPECT_CALL(execute_callback,
               Run(Field(&ScriptExecutor::Result::success, true)));
 
-  tracker_.ExecuteScript("script1", execute_callback.Get());
-  tracker_.CheckScripts(base::TimeDelta::FromSeconds(0));
+  tracker_.ExecuteScript("script1", TriggerContext::CreateEmpty(),
+                         execute_callback.Get());
+  tracker_.CheckScripts();
 
   // The 2nd time the scripts are checked, automatically after the script runs,
   // 'script1' isn't runnable anymore, because it's already been run.
@@ -278,10 +261,9 @@ TEST_F(ScriptTrackerTest, CheckScriptsAgainAfterScriptEnd) {
 }
 
 TEST_F(ScriptTrackerTest, CheckScriptsAfterDOMChange) {
-  EXPECT_CALL(
-      mock_web_controller_,
-      OnElementCheck(kExistenceCheck, Eq(Selector({"maybe_exists"})), _))
-      .WillOnce(RunOnceCallback<2>(false));
+  EXPECT_CALL(mock_web_controller_,
+              OnElementCheck(Eq(Selector({"maybe_exists"})), _))
+      .WillOnce(RunOnceCallback<1>(ClientStatus()));
 
   AddScript("script name", "script path", "maybe_exists");
   SetAndCheckScripts();
@@ -289,12 +271,11 @@ TEST_F(ScriptTrackerTest, CheckScriptsAfterDOMChange) {
   // No scripts are runnable.
   EXPECT_THAT(runnable_scripts(), IsEmpty());
 
-  // DOM has changed; OnElementExists now returns true.
-  EXPECT_CALL(
-      mock_web_controller_,
-      OnElementCheck(kExistenceCheck, Eq(Selector({"maybe_exists"})), _))
-      .WillOnce(RunOnceCallback<2>(true));
-  tracker_.CheckScripts(base::TimeDelta::FromSeconds(0));
+  // DOM has changed; OnElementExists now returns truthy.
+  EXPECT_CALL(mock_web_controller_,
+              OnElementCheck(Eq(Selector({"maybe_exists"})), _))
+      .WillOnce(RunOnceCallback<1>(OkClientStatus()));
+  tracker_.CheckScripts();
 
   // The script can now run
   ASSERT_THAT(runnable_script_paths(), ElementsAre("script path"));
@@ -307,7 +288,7 @@ TEST_F(ScriptTrackerTest, UpdateScriptList) {
 
   EXPECT_EQ(1, runnable_scripts_changed_);
   ASSERT_THAT(runnable_scripts(), SizeIs(1));
-  EXPECT_EQ("runnable name", runnable_scripts()[0].name);
+  EXPECT_EQ("runnable name", runnable_scripts()[0].chip.text);
   EXPECT_EQ("runnable path", runnable_scripts()[0].path);
 
   // 2. Run the action and trigger a script list update.
@@ -322,21 +303,22 @@ TEST_F(ScriptTrackerTest, UpdateScriptList) {
   EXPECT_CALL(mock_service_,
               OnGetActions(StrEq("runnable name"), _, _, _, _, _))
       .WillOnce(RunOnceCallback<5>(true, Serialize(actions_response)));
-  EXPECT_CALL(mock_service_, OnGetNextActions(_, _, _, _))
-      .WillOnce(RunOnceCallback<3>(true, ""));
+  EXPECT_CALL(mock_service_, OnGetNextActions(_, _, _, _, _))
+      .WillOnce(RunOnceCallback<4>(true, ""));
 
   base::MockCallback<ScriptExecutor::RunScriptCallback> execute_callback;
   EXPECT_CALL(execute_callback,
               Run(Field(&ScriptExecutor::Result::success, true)));
-  tracker_.ExecuteScript("runnable name", execute_callback.Get());
-  tracker_.CheckScripts(base::TimeDelta::FromSeconds(0));
+  tracker_.ExecuteScript("runnable name", TriggerContext::CreateEmpty(),
+                         execute_callback.Get());
+  tracker_.CheckScripts();
 
   // 3. Verify that the runnable scripts have changed to the updated list.
   EXPECT_EQ(2, runnable_scripts_changed_);
   ASSERT_THAT(runnable_scripts(), SizeIs(2));
-  EXPECT_EQ("update name", runnable_scripts()[0].name);
+  EXPECT_EQ("update name", runnable_scripts()[0].chip.text);
   EXPECT_EQ("update path", runnable_scripts()[0].path);
-  EXPECT_EQ("update name 2", runnable_scripts()[1].name);
+  EXPECT_EQ("update name 2", runnable_scripts()[1].chip.text);
   EXPECT_EQ("update path 2", runnable_scripts()[1].path);
 }
 
@@ -348,7 +330,7 @@ TEST_F(ScriptTrackerTest, UpdateScriptListFromInterrupt) {
 
   EXPECT_EQ(1, runnable_scripts_changed_);
   ASSERT_THAT(runnable_scripts(), SizeIs(1));
-  EXPECT_EQ("runnable name", runnable_scripts()[0].name);
+  EXPECT_EQ("runnable name", runnable_scripts()[0].chip.text);
   EXPECT_EQ("runnable path", runnable_scripts()[0].path);
 
   // 2. Run the interrupt action and trigger a script list update from an
@@ -364,21 +346,22 @@ TEST_F(ScriptTrackerTest, UpdateScriptListFromInterrupt) {
   EXPECT_CALL(mock_service_,
               OnGetActions(StrEq("runnable name"), _, _, _, _, _))
       .WillOnce(RunOnceCallback<5>(true, Serialize(actions_response)));
-  EXPECT_CALL(mock_service_, OnGetNextActions(_, _, _, _))
-      .WillOnce(RunOnceCallback<3>(true, ""));
+  EXPECT_CALL(mock_service_, OnGetNextActions(_, _, _, _, _))
+      .WillOnce(RunOnceCallback<4>(true, ""));
 
   base::MockCallback<ScriptExecutor::RunScriptCallback> execute_callback;
   EXPECT_CALL(execute_callback,
               Run(Field(&ScriptExecutor::Result::success, true)));
-  tracker_.ExecuteScript("runnable name", execute_callback.Get());
-  tracker_.CheckScripts(base::TimeDelta::FromSeconds(0));
+  tracker_.ExecuteScript("runnable name", TriggerContext::CreateEmpty(),
+                         execute_callback.Get());
+  tracker_.CheckScripts();
 
   // 3. Verify that the runnable scripts have changed to the updated list.
   EXPECT_EQ(2, runnable_scripts_changed_);
   ASSERT_THAT(runnable_scripts(), SizeIs(2));
-  EXPECT_EQ("update name", runnable_scripts()[0].name);
+  EXPECT_EQ("update name", runnable_scripts()[0].chip.text);
   EXPECT_EQ("update path", runnable_scripts()[0].path);
-  EXPECT_EQ("update name 2", runnable_scripts()[1].name);
+  EXPECT_EQ("update name 2", runnable_scripts()[1].chip.text);
   EXPECT_EQ("update path 2", runnable_scripts()[1].path);
 }
 

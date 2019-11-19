@@ -1,0 +1,21 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module mojo_base.mojom;
+
+// Mirror of base::MessagePumpType.
+enum MessagePumpType {
+  kDefault,
+  kUi,
+  kCustom,
+  kIo,
+  [EnableIf=is_android]
+  kJava,
+  [EnableIf=is_mac]
+  kNsRunloop,
+  [EnableIf=is_ios]
+  kNsRunloop,
+  [EnableIf=is_win]
+  kUiWithWmQuitSupport,
+};

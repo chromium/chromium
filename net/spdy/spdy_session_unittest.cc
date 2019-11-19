@@ -11,15 +11,18 @@
 #include "base/base64.h"
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/stl_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
+#include "net/base/features.h"
 #include "net/base/hex_utils.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/io_buffer.h"
 #include "net/base/ip_endpoint.h"
+#include "net/base/privacy_mode.h"
 #include "net/base/proxy_delegate.h"
 #include "net/base/proxy_server.h"
 #include "net/base/request_priority.h"
@@ -30,9 +33,9 @@
 #include "net/log/net_log_event_type.h"
 #include "net/log/net_log_source.h"
 #include "net/log/test_net_log.h"
-#include "net/log/test_net_log_entry.h"
 #include "net/log/test_net_log_util.h"
 #include "net/nqe/network_quality_estimator_test_util.h"
+#include "net/socket/client_socket_pool.h"
 #include "net/socket/client_socket_pool_manager.h"
 #include "net/socket/socket_tag.h"
 #include "net/socket/socket_test_util.h"
@@ -46,7 +49,7 @@
 #include "net/test/cert_test_util.h"
 #include "net/test/gtest_util.h"
 #include "net/test/test_data_directory.h"
-#include "net/test/test_with_scoped_task_environment.h"
+#include "net/test/test_with_task_environment.h"
 #include "net/third_party/quiche/src/spdy/core/spdy_test_utils.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -94,9 +97,25 @@ class MockRequireCTDelegate : public TransportSecurityState::RequireCTDelegate {
                                   const HashValueVector& hashes));
 };
 
+// SpdySessionRequest::Delegate implementation that does nothing. The test it's
+// used in need to create a session request to trigger the creation of a session
+// alias, but doesn't care about when or if OnSpdySessionAvailable() is invoked.
+class SpdySessionRequestDelegate
+    : public SpdySessionPool::SpdySessionRequest::Delegate {
+ public:
+  SpdySessionRequestDelegate() = default;
+  ~SpdySessionRequestDelegate() override = default;
+
+  void OnSpdySessionAvailable(
+      base::WeakPtr<SpdySession> spdy_session) override {}
+
+ private:
+  DISALLOW_COPY_AND_ASSIGN(SpdySessionRequestDelegate);
+};
+
 }  // namespace
 
-class SpdySessionTest : public PlatformTest, public WithScopedTaskEnvironment {
+class SpdySessionTest : public PlatformTest, public WithTaskEnvironment {
  public:
   // Functions used with RunResumeAfterUnstallTest().
 
@@ -133,13 +152,9 @@ class SpdySessionTest : public PlatformTest, public WithScopedTaskEnvironment {
   }
 
  protected:
-  SpdySessionTest()
-      : SpdySessionTest(base::test::ScopedTaskEnvironment::MainThreadType::IO) {
-  }
-
-  explicit SpdySessionTest(
-      base::test::ScopedTaskEnvironment::MainThreadType type)
-      : WithScopedTaskEnvironment(type),
+  explicit SpdySessionTest(base::test::TaskEnvironment::TimeSource time_source =
+                               base::test::TaskEnvironment::TimeSource::DEFAULT)
+      : WithTaskEnvironment(time_source),
         old_max_group_sockets_(ClientSocketPoolManager::max_sockets_per_group(
             HttpNetworkSession::NORMAL_SOCKET_POOL)),
         old_max_pool_sockets_(ClientSocketPoolManager::max_sockets_per_pool(
@@ -152,7 +167,9 @@ class SpdySessionTest : public PlatformTest, public WithScopedTaskEnvironment {
              ProxyServer::Direct(),
              PRIVACY_MODE_DISABLED,
              SpdySessionKey::IsProxySession::kFalse,
-             SocketTag()),
+             SocketTag(),
+             NetworkIsolationKey(),
+             false /* disable_secure_dns */),
         ssl_(SYNCHRONOUS, OK) {}
 
   ~SpdySessionTest() override {
@@ -346,6 +363,8 @@ class SpdySessionTest : public PlatformTest, public WithScopedTaskEnvironment {
                url, session_.get()) != kNoPushedStreamFound;
   }
 
+  BoundTestNetLog log_;
+
   // Original socket limits.  Some tests set these.  Safest to always restore
   // them once each test has been run.
   int old_max_group_sockets_;
@@ -361,14 +380,12 @@ class SpdySessionTest : public PlatformTest, public WithScopedTaskEnvironment {
   const url::SchemeHostPort test_server_;
   SpdySessionKey key_;
   SSLSocketDataProvider ssl_;
-  BoundTestNetLog log_;
 };
 
 class SpdySessionTestWithMockTime : public SpdySessionTest {
  protected:
   SpdySessionTestWithMockTime()
-      : SpdySessionTest(
-            base::test::ScopedTaskEnvironment::MainThreadType::MOCK_TIME) {}
+      : SpdySessionTest(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
 };
 
 // Try to create a SPDY session that will fail during
@@ -443,7 +460,7 @@ TEST_F(SpdySessionTest, PendingStreamCancellingAnother) {
   StreamRequestDestroyingCallback callback1;
   ASSERT_EQ(ERR_IO_PENDING,
             request1.StartRequest(SPDY_BIDIRECTIONAL_STREAM, session_,
-                                  test_url_, MEDIUM, SocketTag(),
+                                  test_url_, false, MEDIUM, SocketTag(),
                                   NetLogWithSource(), callback1.MakeCallback(),
                                   TRAFFIC_ANNOTATION_FOR_TESTS));
 
@@ -451,7 +468,7 @@ TEST_F(SpdySessionTest, PendingStreamCancellingAnother) {
   TestCompletionCallback callback2;
   ASSERT_EQ(ERR_IO_PENDING,
             request2->StartRequest(SPDY_BIDIRECTIONAL_STREAM, session_,
-                                   test_url_, MEDIUM, SocketTag(),
+                                   test_url_, false, MEDIUM, SocketTag(),
                                    NetLogWithSource(), callback2.callback(),
                                    TRAFFIC_ANNOTATION_FOR_TESTS));
 
@@ -878,8 +895,8 @@ TEST_F(SpdySessionTest, CreateStreamAfterGoAway) {
 
   SpdyStreamRequest stream_request;
   int rv = stream_request.StartRequest(
-      SPDY_REQUEST_RESPONSE_STREAM, session_, test_url_, MEDIUM, SocketTag(),
-      NetLogWithSource(), CompletionOnceCallback(),
+      SPDY_REQUEST_RESPONSE_STREAM, session_, test_url_, false, MEDIUM,
+      SocketTag(), NetLogWithSource(), CompletionOnceCallback(),
       TRAFFIC_ANNOTATION_FOR_TESTS);
   EXPECT_THAT(rv, IsError(ERR_FAILED));
 
@@ -1304,7 +1321,7 @@ TEST_F(SpdySessionTest, StreamIdSpaceExhausted) {
   TestCompletionCallback callback4;
   EXPECT_EQ(ERR_IO_PENDING,
             request4.StartRequest(SPDY_REQUEST_RESPONSE_STREAM, session_,
-                                  test_url_, MEDIUM, SocketTag(),
+                                  test_url_, false, MEDIUM, SocketTag(),
                                   NetLogWithSource(), callback4.callback(),
                                   TRAFFIC_ANNOTATION_FOR_TESTS));
 
@@ -1334,8 +1351,8 @@ TEST_F(SpdySessionTest, StreamIdSpaceExhausted) {
 
   // Session is going away. Created and stalled streams were aborted.
   EXPECT_TRUE(session_->IsGoingAway());
-  EXPECT_THAT(delegate3.WaitForClose(), IsError(ERR_ABORTED));
-  EXPECT_THAT(callback4.WaitForResult(), IsError(ERR_ABORTED));
+  EXPECT_THAT(delegate3.WaitForClose(), IsError(ERR_HTTP2_PROTOCOL_ERROR));
+  EXPECT_THAT(callback4.WaitForResult(), IsError(ERR_HTTP2_PROTOCOL_ERROR));
   EXPECT_EQ(0u, num_created_streams());
   EXPECT_EQ(0u, pending_create_stream_queue_size(MEDIUM));
 
@@ -1410,9 +1427,10 @@ TEST_F(SpdySessionTest, MaxConcurrentStreamsZero) {
   // Start request.
   SpdyStreamRequest request;
   TestCompletionCallback callback;
-  int rv = request.StartRequest(
-      SPDY_REQUEST_RESPONSE_STREAM, session_, test_url_, MEDIUM, SocketTag(),
-      NetLogWithSource(), callback.callback(), TRAFFIC_ANNOTATION_FOR_TESTS);
+  int rv =
+      request.StartRequest(SPDY_REQUEST_RESPONSE_STREAM, session_, test_url_,
+                           false, MEDIUM, SocketTag(), NetLogWithSource(),
+                           callback.callback(), TRAFFIC_ANNOTATION_FOR_TESTS);
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
 
   // Stream is stalled.
@@ -1478,7 +1496,7 @@ TEST_F(SpdySessionTest, UnstallRacesWithStreamCreation) {
   TestCompletionCallback callback2;
   EXPECT_EQ(ERR_IO_PENDING,
             request2.StartRequest(SPDY_REQUEST_RESPONSE_STREAM, session_,
-                                  test_url_, MEDIUM, SocketTag(),
+                                  test_url_, false, MEDIUM, SocketTag(),
                                   NetLogWithSource(), callback2.callback(),
                                   TRAFFIC_ANNOTATION_FOR_TESTS));
 
@@ -1999,12 +2017,11 @@ TEST_F(SpdySessionTest, OnSettings) {
   SpdyStreamRequest request;
   ASSERT_EQ(ERR_IO_PENDING,
             request.StartRequest(SPDY_BIDIRECTIONAL_STREAM, session_, test_url_,
-                                 MEDIUM, SocketTag(), NetLogWithSource(),
+                                 false, MEDIUM, SocketTag(), NetLogWithSource(),
                                  stream_releaser.MakeCallback(&request),
                                  TRAFFIC_ANNOTATION_FOR_TESTS));
 
   base::RunLoop().RunUntilIdle();
-
   EXPECT_THAT(stream_releaser.WaitForResult(), IsOk());
 
   data.Resume();
@@ -2055,7 +2072,7 @@ TEST_F(SpdySessionTest, CancelPendingCreateStream) {
   SpdyStreamRequest request;
   ASSERT_THAT(
       request.StartRequest(SPDY_BIDIRECTIONAL_STREAM, session_, test_url_,
-                           MEDIUM, SocketTag(), NetLogWithSource(),
+                           false, MEDIUM, SocketTag(), NetLogWithSource(),
                            callback->callback(), TRAFFIC_ANNOTATION_FOR_TESTS),
       IsError(ERR_IO_PENDING));
 
@@ -2088,14 +2105,14 @@ TEST_F(SpdySessionTest, ChangeStreamRequestPriority) {
   TestCompletionCallback callback1;
   SpdyStreamRequest request1;
   ASSERT_EQ(OK, request1.StartRequest(SPDY_REQUEST_RESPONSE_STREAM, session_,
-                                      test_url_, LOWEST, SocketTag(),
+                                      test_url_, false, LOWEST, SocketTag(),
                                       NetLogWithSource(), callback1.callback(),
                                       TRAFFIC_ANNOTATION_FOR_TESTS));
   TestCompletionCallback callback2;
   SpdyStreamRequest request2;
   ASSERT_EQ(ERR_IO_PENDING,
             request2.StartRequest(SPDY_REQUEST_RESPONSE_STREAM, session_,
-                                  test_url_, LOWEST, SocketTag(),
+                                  test_url_, false, LOWEST, SocketTag(),
                                   NetLogWithSource(), callback2.callback(),
                                   TRAFFIC_ANNOTATION_FOR_TESTS));
 
@@ -2129,8 +2146,7 @@ TEST_F(SpdySessionTest, Initialize) {
   // Flush the read completion task.
   base::RunLoop().RunUntilIdle();
 
-  TestNetLogEntry::List entries;
-  log_.GetEntries(&entries);
+  auto entries = log_.GetEntries();
   EXPECT_LT(0u, entries.size());
 
   // Check that we logged HTTP2_SESSION_INITIALIZED correctly.
@@ -2139,10 +2155,9 @@ TEST_F(SpdySessionTest, Initialize) {
       NetLogEventPhase::NONE);
   EXPECT_LT(0, pos);
 
-  TestNetLogEntry entry = entries[pos];
   NetLogSource socket_source;
   EXPECT_TRUE(
-      NetLogSource::FromEventParameters(entry.params.get(), &socket_source));
+      NetLogSource::FromEventParameters(&entries[pos].params, &socket_source));
   EXPECT_TRUE(socket_source.IsValid());
   EXPECT_NE(log_.bound().source().id, socket_source.id);
 }
@@ -2170,38 +2185,24 @@ TEST_F(SpdySessionTest, NetLogOnSessionGoaway) {
   EXPECT_FALSE(session_);
 
   // Check that the NetLog was filled reasonably.
-  TestNetLogEntry::List entries;
-  log_.GetEntries(&entries);
+  auto entries = log_.GetEntries();
   EXPECT_LT(0u, entries.size());
 
   int pos = ExpectLogContainsSomewhere(
       entries, 0, NetLogEventType::HTTP2_SESSION_RECV_GOAWAY,
       NetLogEventPhase::NONE);
-  TestNetLogEntry entry = entries[pos];
-  int last_accepted_stream_id;
-  ASSERT_TRUE(entry.GetIntegerValue("last_accepted_stream_id",
-                                    &last_accepted_stream_id));
-  EXPECT_EQ(42, last_accepted_stream_id);
-  int active_streams;
-  ASSERT_TRUE(entry.GetIntegerValue("active_streams", &active_streams));
-  EXPECT_EQ(0, active_streams);
-  int unclaimed_streams;
-  ASSERT_TRUE(entry.GetIntegerValue("unclaimed_streams", &unclaimed_streams));
-  EXPECT_EQ(0, unclaimed_streams);
-  std::string error_code;
-  ASSERT_TRUE(entry.GetStringValue("error_code", &error_code));
-  EXPECT_EQ("11 (ENHANCE_YOUR_CALM)", error_code);
-  std::string debug_data;
-  ASSERT_TRUE(entry.GetStringValue("debug_data", &debug_data));
-  EXPECT_EQ("foo", debug_data);
+  ASSERT_EQ(42,
+            GetIntegerValueFromParams(entries[pos], "last_accepted_stream_id"));
+  ASSERT_EQ(0, GetIntegerValueFromParams(entries[pos], "active_streams"));
+  ASSERT_EQ(0, GetIntegerValueFromParams(entries[pos], "unclaimed_streams"));
+  ASSERT_EQ("11 (ENHANCE_YOUR_CALM)",
+            GetStringValueFromParams(entries[pos], "error_code"));
+  ASSERT_EQ("foo", GetStringValueFromParams(entries[pos], "debug_data"));
 
   // Check that we logged SPDY_SESSION_CLOSE correctly.
   pos = ExpectLogContainsSomewhere(
       entries, 0, NetLogEventType::HTTP2_SESSION_CLOSE, NetLogEventPhase::NONE);
-  entry = entries[pos];
-  int net_error_code = 0;
-  ASSERT_TRUE(entry.GetNetErrorCode(&net_error_code));
-  EXPECT_THAT(net_error_code, IsOk());
+  EXPECT_THAT(GetNetErrorCodeFromParams(entries[pos]), IsOk());
 }
 
 TEST_F(SpdySessionTest, NetLogOnSessionEOF) {
@@ -2225,8 +2226,7 @@ TEST_F(SpdySessionTest, NetLogOnSessionEOF) {
   EXPECT_FALSE(session_);
 
   // Check that the NetLog was filled reasonably.
-  TestNetLogEntry::List entries;
-  log_.GetEntries(&entries);
+  auto entries = log_.GetEntries();
   EXPECT_LT(0u, entries.size());
 
   // Check that we logged SPDY_SESSION_CLOSE correctly.
@@ -2234,10 +2234,8 @@ TEST_F(SpdySessionTest, NetLogOnSessionEOF) {
       entries, 0, NetLogEventType::HTTP2_SESSION_CLOSE, NetLogEventPhase::NONE);
 
   if (pos < static_cast<int>(entries.size())) {
-    TestNetLogEntry entry = entries[pos];
-    int error_code = 0;
-    ASSERT_TRUE(entry.GetNetErrorCode(&error_code));
-    EXPECT_THAT(error_code, IsError(ERR_CONNECTION_CLOSED));
+    ASSERT_THAT(GetNetErrorCodeFromParams(entries[pos]),
+                IsError(ERR_CONNECTION_CLOSED));
   } else {
     ADD_FAILURE();
   }
@@ -2699,7 +2697,7 @@ class SessionClosingDelegate : public test::StreamDelegateDoNothing {
   ~SessionClosingDelegate() override = default;
 
   void OnClose(int status) override {
-    session_to_close_->CloseSessionOnError(ERR_SPDY_PROTOCOL_ERROR, "Error");
+    session_to_close_->CloseSessionOnError(ERR_HTTP2_PROTOCOL_ERROR, "Error");
   }
 
  private:
@@ -2780,22 +2778,6 @@ TEST_F(SpdySessionTest, VerifyDomainAuthentication) {
   EXPECT_FALSE(session_->VerifyDomainAuthentication("mail.google.com"));
 }
 
-TEST_F(SpdySessionTest, ConnectionPooledWithTlsChannelId) {
-  SequencedSocketData data;
-  session_deps_.socket_factory->AddSocketDataProvider(&data);
-
-  ssl_.ssl_info.channel_id_sent = true;
-  AddSSLSocketData();
-
-  CreateNetworkSession();
-  CreateSpdySession();
-
-  EXPECT_TRUE(session_->VerifyDomainAuthentication("www.example.org"));
-  EXPECT_TRUE(session_->VerifyDomainAuthentication("mail.example.org"));
-  EXPECT_FALSE(session_->VerifyDomainAuthentication("mail.example.com"));
-  EXPECT_FALSE(session_->VerifyDomainAuthentication("mail.google.com"));
-}
-
 TEST_F(SpdySessionTest, CloseTwoStalledCreateStream) {
   // TODO(rtenneti): Define a helper class/methods and move the common code in
   // this file.
@@ -2871,7 +2853,7 @@ TEST_F(SpdySessionTest, CloseTwoStalledCreateStream) {
   SpdyStreamRequest request2;
   ASSERT_EQ(ERR_IO_PENDING,
             request2.StartRequest(SPDY_REQUEST_RESPONSE_STREAM, session_,
-                                  test_url_, LOWEST, SocketTag(),
+                                  test_url_, false, LOWEST, SocketTag(),
                                   NetLogWithSource(), callback2.callback(),
                                   TRAFFIC_ANNOTATION_FOR_TESTS));
 
@@ -2879,7 +2861,7 @@ TEST_F(SpdySessionTest, CloseTwoStalledCreateStream) {
   SpdyStreamRequest request3;
   ASSERT_EQ(ERR_IO_PENDING,
             request3.StartRequest(SPDY_REQUEST_RESPONSE_STREAM, session_,
-                                  test_url_, LOWEST, SocketTag(),
+                                  test_url_, false, LOWEST, SocketTag(),
                                   NetLogWithSource(), callback3.callback(),
                                   TRAFFIC_ANNOTATION_FOR_TESTS));
 
@@ -2984,7 +2966,7 @@ TEST_F(SpdySessionTest, CancelTwoStalledCreateStream) {
   SpdyStreamRequest request2;
   ASSERT_EQ(ERR_IO_PENDING,
             request2.StartRequest(SPDY_BIDIRECTIONAL_STREAM, session_,
-                                  test_url_, LOWEST, SocketTag(),
+                                  test_url_, false, LOWEST, SocketTag(),
                                   NetLogWithSource(), callback2.callback(),
                                   TRAFFIC_ANNOTATION_FOR_TESTS));
 
@@ -2992,7 +2974,7 @@ TEST_F(SpdySessionTest, CancelTwoStalledCreateStream) {
   SpdyStreamRequest request3;
   ASSERT_EQ(ERR_IO_PENDING,
             request3.StartRequest(SPDY_BIDIRECTIONAL_STREAM, session_,
-                                  test_url_, LOWEST, SocketTag(),
+                                  test_url_, false, LOWEST, SocketTag(),
                                   NetLogWithSource(), callback3.callback(),
                                   TRAFFIC_ANNOTATION_FOR_TESTS));
 
@@ -3535,7 +3517,7 @@ TEST_F(SpdySessionTest, CloseOneIdleConnection) {
 
   CreateNetworkSession();
 
-  TransportClientSocketPool* pool = http_session_->GetSocketPool(
+  ClientSocketPool* pool = http_session_->GetSocketPool(
       HttpNetworkSession::NORMAL_SOCKET_POOL, ProxyServer::Direct());
 
   // Create an idle SPDY session.
@@ -3546,18 +3528,18 @@ TEST_F(SpdySessionTest, CloseOneIdleConnection) {
   // post a task asynchronously to try and close the session.
   TestCompletionCallback callback2;
   HostPortPair host_port2("2.com", 80);
-  scoped_refptr<TransportSocketParams> params2(
-      new TransportSocketParams(host_port2, false, OnHostResolutionCallback()));
   auto connection2 = std::make_unique<ClientSocketHandle>();
   EXPECT_EQ(ERR_IO_PENDING,
-            connection2->Init(host_port2.ToString(),
-                              TransportClientSocketPool::SocketParams::
-                                  CreateFromTransportSocketParams(params2),
-                              DEFAULT_PRIORITY, SocketTag(),
-                              ClientSocketPool::RespectLimits::ENABLED,
-                              callback2.callback(),
-                              ClientSocketPool::ProxyAuthCallback(), pool,
-                              NetLogWithSource()));
+            connection2->Init(
+                ClientSocketPool::GroupId(
+                    host_port2, ClientSocketPool::SocketType::kHttp,
+                    PrivacyMode::PRIVACY_MODE_DISABLED, NetworkIsolationKey(),
+                    false /* disable_secure_dns */),
+                ClientSocketPool::SocketParams::CreateForHttpForTesting(),
+                base::nullopt /* proxy_annotation_tag */, DEFAULT_PRIORITY,
+                SocketTag(), ClientSocketPool::RespectLimits::ENABLED,
+                callback2.callback(), ClientSocketPool::ProxyAuthCallback(),
+                pool, NetLogWithSource()));
   EXPECT_TRUE(pool->IsStalled());
 
   // The socket pool should close the connection asynchronously and establish a
@@ -3585,24 +3567,19 @@ TEST_F(SpdySessionTest, CloseOneIdleConnectionWithAlias) {
 
   AddSSLSocketData();
 
-  session_deps_.host_resolver->set_synchronous_mode(true);
   session_deps_.host_resolver->rules()->AddIPLiteralRule(
       "www.example.org", "192.168.0.2", std::string());
-  session_deps_.host_resolver->rules()->AddIPLiteralRule(
-      "mail.example.org", "192.168.0.2", std::string());
-  // Not strictly needed.
-  session_deps_.host_resolver->rules()->AddIPLiteralRule("3.com", "192.168.0.3",
-                                                         std::string());
 
   CreateNetworkSession();
 
-  TransportClientSocketPool* pool = http_session_->GetSocketPool(
+  ClientSocketPool* pool = http_session_->GetSocketPool(
       HttpNetworkSession::NORMAL_SOCKET_POOL, ProxyServer::Direct());
 
   // Create an idle SPDY session.
   SpdySessionKey key1(HostPortPair("www.example.org", 80),
                       ProxyServer::Direct(), PRIVACY_MODE_DISABLED,
-                      SpdySessionKey::IsProxySession::kFalse, SocketTag());
+                      SpdySessionKey::IsProxySession::kFalse, SocketTag(),
+                      NetworkIsolationKey(), false /* disable_secure_dns */);
   base::WeakPtr<SpdySession> session1 =
       ::net::CreateSpdySession(http_session_.get(), key1, NetLogWithSource());
   EXPECT_FALSE(pool->IsStalled());
@@ -3610,18 +3587,30 @@ TEST_F(SpdySessionTest, CloseOneIdleConnectionWithAlias) {
   // Set up an alias for the idle SPDY session, increasing its ref count to 2.
   SpdySessionKey key2(HostPortPair("mail.example.org", 80),
                       ProxyServer::Direct(), PRIVACY_MODE_DISABLED,
-                      SpdySessionKey::IsProxySession::kFalse, SocketTag());
-  // Pre-populate the DNS cache, since a cached entry is required in order to
-  // create the alias.
-  int rv = session_deps_.host_resolver->LoadIntoCache(key2.host_port_pair(),
-                                                      base::nullopt);
-  EXPECT_THAT(rv, IsOk());
+                      SpdySessionKey::IsProxySession::kFalse, SocketTag(),
+                      NetworkIsolationKey(), false /* disable_secure_dns */);
+  std::unique_ptr<SpdySessionPool::SpdySessionRequest> request;
+  bool is_blocking_request_for_session = false;
+  SpdySessionRequestDelegate request_delegate;
+  EXPECT_FALSE(spdy_session_pool_->RequestSession(
+      key2, /* enable_ip_based_pooling = */ true,
+      /* is_websocket = */ false, NetLogWithSource(),
+      /* on_blocking_request_destroyed_callback = */ base::RepeatingClosure(),
+      &request_delegate, &request, &is_blocking_request_for_session));
+  EXPECT_TRUE(request);
+
+  // Simulate DNS resolution completing, which should set up an alias.
+  EXPECT_EQ(OnHostResolutionCallbackResult::kMayBeDeletedAsync,
+            spdy_session_pool_->OnHostResolutionComplete(
+                key2, /* is_websocket = */ false,
+                AddressList(IPEndPoint(IPAddress(192, 168, 0, 2), 80))));
 
   // Get a session for |key2|, which should return the session created earlier.
   base::WeakPtr<SpdySession> session2 =
       spdy_session_pool_->FindAvailableSession(
           key2, /* enable_ip_based_pooling = */ true,
           /* is_websocket = */ false, NetLogWithSource());
+  EXPECT_TRUE(session2);
   ASSERT_EQ(session1.get(), session2.get());
   EXPECT_FALSE(pool->IsStalled());
 
@@ -3629,18 +3618,18 @@ TEST_F(SpdySessionTest, CloseOneIdleConnectionWithAlias) {
   // post a task asynchronously to try and close the session.
   TestCompletionCallback callback3;
   HostPortPair host_port3("3.com", 80);
-  scoped_refptr<TransportSocketParams> params3(
-      new TransportSocketParams(host_port3, false, OnHostResolutionCallback()));
   auto connection3 = std::make_unique<ClientSocketHandle>();
   EXPECT_EQ(ERR_IO_PENDING,
-            connection3->Init(host_port3.ToString(),
-                              TransportClientSocketPool::SocketParams::
-                                  CreateFromTransportSocketParams(params3),
-                              DEFAULT_PRIORITY, SocketTag(),
-                              ClientSocketPool::RespectLimits::ENABLED,
-                              callback3.callback(),
-                              ClientSocketPool::ProxyAuthCallback(), pool,
-                              NetLogWithSource()));
+            connection3->Init(
+                ClientSocketPool::GroupId(
+                    host_port3, ClientSocketPool::SocketType::kHttp,
+                    PrivacyMode::PRIVACY_MODE_DISABLED, NetworkIsolationKey(),
+                    false /* disable_secure_dns */),
+                ClientSocketPool::SocketParams::CreateForHttpForTesting(),
+                base::nullopt /* proxy_annotation_tag */, DEFAULT_PRIORITY,
+                SocketTag(), ClientSocketPool::RespectLimits::ENABLED,
+                callback3.callback(), ClientSocketPool::ProxyAuthCallback(),
+                pool, NetLogWithSource()));
   EXPECT_TRUE(pool->IsStalled());
 
   // The socket pool should close the connection asynchronously and establish a
@@ -3682,7 +3671,7 @@ TEST_F(SpdySessionTest, CloseSessionOnIdleWhenPoolStalled) {
 
   CreateNetworkSession();
 
-  TransportClientSocketPool* pool = http_session_->GetSocketPool(
+  ClientSocketPool* pool = http_session_->GetSocketPool(
       HttpNetworkSession::NORMAL_SOCKET_POOL, ProxyServer::Direct());
 
   // Create a SPDY session.
@@ -3710,18 +3699,18 @@ TEST_F(SpdySessionTest, CloseSessionOnIdleWhenPoolStalled) {
   // post a task asynchronously to try and close the session.
   TestCompletionCallback callback2;
   HostPortPair host_port2("2.com", 80);
-  scoped_refptr<TransportSocketParams> params2(
-      new TransportSocketParams(host_port2, false, OnHostResolutionCallback()));
   auto connection2 = std::make_unique<ClientSocketHandle>();
   EXPECT_EQ(ERR_IO_PENDING,
-            connection2->Init(host_port2.ToString(),
-                              TransportClientSocketPool::SocketParams::
-                                  CreateFromTransportSocketParams(params2),
-                              DEFAULT_PRIORITY, SocketTag(),
-                              ClientSocketPool::RespectLimits::ENABLED,
-                              callback2.callback(),
-                              ClientSocketPool::ProxyAuthCallback(), pool,
-                              NetLogWithSource()));
+            connection2->Init(
+                ClientSocketPool::GroupId(
+                    host_port2, ClientSocketPool::SocketType::kHttp,
+                    PrivacyMode::PRIVACY_MODE_DISABLED, NetworkIsolationKey(),
+                    false /* disable_secure_dns */),
+                ClientSocketPool::SocketParams::CreateForHttpForTesting(),
+                base::nullopt /* proxy_annotation_tag */, DEFAULT_PRIORITY,
+                SocketTag(), ClientSocketPool::RespectLimits::ENABLED,
+                callback2.callback(), ClientSocketPool::ProxyAuthCallback(),
+                pool, NetLogWithSource()));
   EXPECT_TRUE(pool->IsStalled());
 
   // Running the message loop should cause the socket pool to ask the SPDY
@@ -3748,10 +3737,12 @@ TEST_F(SpdySessionTest, SpdySessionKeyPrivacyMode) {
   HostPortPair host_port_pair("www.example.org", 443);
   SpdySessionKey key_privacy_enabled(
       host_port_pair, ProxyServer::Direct(), PRIVACY_MODE_ENABLED,
-      SpdySessionKey::IsProxySession::kFalse, SocketTag());
+      SpdySessionKey::IsProxySession::kFalse, SocketTag(),
+      NetworkIsolationKey(), false /* disable_secure_dns */);
   SpdySessionKey key_privacy_disabled(
       host_port_pair, ProxyServer::Direct(), PRIVACY_MODE_DISABLED,
-      SpdySessionKey::IsProxySession::kFalse, SocketTag());
+      SpdySessionKey::IsProxySession::kFalse, SocketTag(),
+      NetworkIsolationKey(), false /* disable_secure_dns */);
 
   EXPECT_FALSE(HasSpdySession(spdy_session_pool_, key_privacy_enabled));
   EXPECT_FALSE(HasSpdySession(spdy_session_pool_, key_privacy_disabled));
@@ -5182,7 +5173,7 @@ TEST_F(SpdySessionTest, GoAwayOnSessionFlowControlError) {
   data.Resume();
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_THAT(delegate.WaitForClose(), IsError(ERR_SPDY_FLOW_CONTROL_ERROR));
+  EXPECT_THAT(delegate.WaitForClose(), IsError(ERR_HTTP2_FLOW_CONTROL_ERROR));
   EXPECT_FALSE(session_);
 }
 
@@ -5809,7 +5800,7 @@ TEST_F(SpdySessionTest, GetPushedStream) {
   SpdyStream* pushed_stream;
   int rv = session_->GetPushedStream(pushed_url, 2 /* pushed_stream_id */, IDLE,
                                      &pushed_stream);
-  EXPECT_THAT(rv, IsError(ERR_SPDY_PUSHED_STREAM_NOT_AVAILABLE));
+  EXPECT_THAT(rv, IsError(ERR_HTTP2_PUSHED_STREAM_NOT_AVAILABLE));
 
   // Read PUSH_PROMISE.
   data.Resume();
@@ -5840,7 +5831,7 @@ TEST_F(SpdySessionTest, GetPushedStream) {
   // stream with ID |pushed_stream_id|.
   rv = session_->GetPushedStream(pushed_url, 4 /* pushed_stream_id */, IDLE,
                                  &pushed_stream);
-  EXPECT_THAT(rv, IsError(ERR_SPDY_PUSHED_STREAM_NOT_AVAILABLE));
+  EXPECT_THAT(rv, IsError(ERR_HTTP2_PUSHED_STREAM_NOT_AVAILABLE));
 
   // GetPushedStream() should return OK and return the pushed stream in
   // |pushed_stream| outparam if |pushed_stream_id| matches.
@@ -6013,7 +6004,7 @@ TEST_F(SpdySessionTest, EnableWebSocketThenDisableIsProtocolError) {
   EXPECT_FALSE(session_);
 }
 
-TEST_F(SpdySessionTest, GreaseFrameType) {
+TEST_F(SpdySessionTest, GreaseFrameTypeAfterSettings) {
   const uint8_t type = 0x0b;
   const uint8_t flags = 0xcc;
   const std::string payload("foo");
@@ -6032,6 +6023,8 @@ TEST_F(SpdySessionTest, GreaseFrameType) {
   expected_settings[spdy::SETTINGS_HEADER_TABLE_SIZE] = kSpdyMaxHeaderTableSize;
   expected_settings[spdy::SETTINGS_MAX_CONCURRENT_STREAMS] =
       kSpdyMaxConcurrentPushedStreams;
+  expected_settings[spdy::SETTINGS_MAX_HEADER_LIST_SIZE] =
+      kSpdyMaxHeaderListSize;
   spdy::SpdySerializedFrame settings_frame(
       spdy_util_.ConstructSpdySettings(expected_settings));
 
@@ -6039,64 +6032,31 @@ TEST_F(SpdySessionTest, GreaseFrameType) {
       CombineFrames({&preface, &settings_frame});
 
   // Greased frame sent on stream 0 after initial SETTINGS frame.
-  const char kRawFrameData0[] = {
+  const char kRawFrameData[] = {
       0x00, 0x00, 0x03,        // length
       0x0b,                    // type
       0xcc,                    // flags
       0x00, 0x00, 0x00, 0x00,  // stream ID
       'f',  'o',  'o'          // payload
   };
-  spdy::SpdySerializedFrame grease0(const_cast<char*>(kRawFrameData0),
-                                    base::size(kRawFrameData0),
-                                    /* owns_buffer = */ false);
-  spdy::SpdySerializedFrame req(
-      spdy_util_.ConstructSpdyGet(nullptr, 0, 1, DEFAULT_PRIORITY));
-
-  // Greased frame sent on stream 1 after request.
-  const char kRawFrameData1[] = {
-      0x00, 0x00, 0x03,        // length
-      0x0b,                    // type
-      0xcc,                    // flags
-      0x00, 0x00, 0x00, 0x01,  // stream ID
-      'f',  'o',  'o'          // payload
-  };
-  spdy::SpdySerializedFrame grease1(const_cast<char*>(kRawFrameData1),
-                                    base::size(kRawFrameData1),
-                                    /* owns_buffer = */ false);
+  spdy::SpdySerializedFrame grease(const_cast<char*>(kRawFrameData),
+                                   base::size(kRawFrameData),
+                                   /* owns_buffer = */ false);
 
   MockWrite writes[] = {CreateMockWrite(combined_frame, 0),
-                        CreateMockWrite(grease0, 1), CreateMockWrite(req, 2),
-                        CreateMockWrite(grease1, 3)};
+                        CreateMockWrite(grease, 1)};
 
-  spdy::SpdySerializedFrame resp(
-      spdy_util_.ConstructSpdyGetReply(nullptr, 0, 1));
-  spdy::SpdySerializedFrame body(spdy_util_.ConstructSpdyDataFrame(1, true));
-
-  MockRead reads[] = {CreateMockRead(resp, 4), CreateMockRead(body, 5),
-                      MockRead(ASYNC, 0, 6)};
+  MockRead reads[] = {MockRead(ASYNC, 0, 2)};
 
   SequencedSocketData data(reads, writes);
   session_deps_.socket_factory->AddSocketDataProvider(&data);
   AddSSLSocketData();
-
   CreateNetworkSession();
 
   SpdySessionPoolPeer pool_peer(spdy_session_pool_);
   pool_peer.SetEnableSendingInitialData(true);
 
   CreateSpdySession();
-
-  base::WeakPtr<SpdyStream> stream = CreateStreamSynchronously(
-      SPDY_REQUEST_RESPONSE_STREAM, session_, test_url_, DEFAULT_PRIORITY,
-      NetLogWithSource());
-  test::StreamDelegateDoNothing delegate(stream);
-  stream->SetDelegate(&delegate);
-
-  stream->SendRequestHeaders(spdy_util_.ConstructGetHeaderBlock(kDefaultUrl),
-                             NO_MORE_DATA_TO_SEND);
-
-  EXPECT_THAT(delegate.WaitForClose(), IsOk());
-
   base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(data.AllWriteDataConsumed());
@@ -6104,12 +6064,10 @@ TEST_F(SpdySessionTest, GreaseFrameType) {
 }
 
 enum ReadIfReadySupport {
-  // ReadIfReady() field trial is enabled, and ReadIfReady() is implemented.
-  READ_IF_READY_ENABLED_SUPPORTED,
-  // ReadIfReady() field trial is enabled, but ReadIfReady() is unimplemented.
-  READ_IF_READY_ENABLED_NOT_SUPPORTED,
-  // ReadIfReady() field trial is disabled.
-  READ_IF_READY_DISABLED,
+  // ReadIfReady() is implemented by the underlying transport.
+  READ_IF_READY_SUPPORTED,
+  // ReadIfReady() is unimplemented by the underlying transport.
+  READ_IF_READY_NOT_SUPPORTED,
 };
 
 class SpdySessionReadIfReadyTest
@@ -6117,24 +6075,17 @@ class SpdySessionReadIfReadyTest
       public testing::WithParamInterface<ReadIfReadySupport> {
  public:
   void SetUp() override {
-    if (GetParam() == READ_IF_READY_DISABLED) {
-      scoped_feature_list_.InitAndDisableFeature(
-          Socket::kReadIfReadyExperiment);
-    } else if (GetParam() == READ_IF_READY_ENABLED_SUPPORTED) {
+    if (GetParam() == READ_IF_READY_SUPPORTED) {
       session_deps_.socket_factory->set_enable_read_if_ready(true);
     }
     SpdySessionTest::SetUp();
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 INSTANTIATE_TEST_SUITE_P(/* no prefix */,
                          SpdySessionReadIfReadyTest,
-                         testing::Values(READ_IF_READY_ENABLED_SUPPORTED,
-                                         READ_IF_READY_ENABLED_NOT_SUPPORTED,
-                                         READ_IF_READY_DISABLED));
+                         testing::Values(READ_IF_READY_SUPPORTED,
+                                         READ_IF_READY_NOT_SUPPORTED));
 
 // Tests basic functionality of ReadIfReady() when it is enabled or disabled.
 TEST_P(SpdySessionReadIfReadyTest, ReadIfReady) {
@@ -6219,6 +6170,8 @@ TEST_F(SendInitialSettingsOnNewSpdySessionTest, Empty) {
   expected_settings[spdy::SETTINGS_HEADER_TABLE_SIZE] = kSpdyMaxHeaderTableSize;
   expected_settings[spdy::SETTINGS_MAX_CONCURRENT_STREAMS] =
       kSpdyMaxConcurrentPushedStreams;
+  expected_settings[spdy::SETTINGS_MAX_HEADER_LIST_SIZE] =
+      kSpdyMaxHeaderListSize;
   RunInitialSettingsTest(expected_settings);
 }
 
@@ -6234,6 +6187,8 @@ TEST_F(SendInitialSettingsOnNewSpdySessionTest, ProtocolDefault) {
   spdy::SettingsMap expected_settings;
   expected_settings[spdy::SETTINGS_MAX_CONCURRENT_STREAMS] =
       kSpdyMaxConcurrentPushedStreams;
+  expected_settings[spdy::SETTINGS_MAX_HEADER_LIST_SIZE] =
+      kSpdyMaxHeaderListSize;
   RunInitialSettingsTest(expected_settings);
 }
 
@@ -6265,6 +6220,8 @@ TEST_F(SendInitialSettingsOnNewSpdySessionTest, UnknownSettings) {
   expected_settings[spdy::SETTINGS_HEADER_TABLE_SIZE] = kSpdyMaxHeaderTableSize;
   expected_settings[spdy::SETTINGS_MAX_CONCURRENT_STREAMS] =
       kSpdyMaxConcurrentPushedStreams;
+  expected_settings[spdy::SETTINGS_MAX_HEADER_LIST_SIZE] =
+      kSpdyMaxHeaderListSize;
   expected_settings[7] = 1234;
   expected_settings[25] = 5678;
   RunInitialSettingsTest(expected_settings);
@@ -6303,6 +6260,8 @@ class AltSvcFrameTest : public SpdySessionTest {
 };
 
 TEST_F(AltSvcFrameTest, ProcessAltSvcFrame) {
+  session_deps_.enable_quic = true;
+
   const char origin[] = "https://mail.example.org";
   spdy::SpdyAltSvcIR altsvc_ir(/* stream_id = */ 0);
   altsvc_ir.add_altsvc(alternative_service_);
@@ -6319,12 +6278,12 @@ TEST_F(AltSvcFrameTest, ProcessAltSvcFrame) {
                                            test_url_.EffectiveIntPort());
   AlternativeServiceInfoVector altsvc_info_vector =
       spdy_session_pool_->http_server_properties()->GetAlternativeServiceInfos(
-          session_origin);
+          session_origin, NetworkIsolationKey());
   ASSERT_TRUE(altsvc_info_vector.empty());
 
   altsvc_info_vector =
       spdy_session_pool_->http_server_properties()->GetAlternativeServiceInfos(
-          url::SchemeHostPort(GURL(origin)));
+          url::SchemeHostPort(GURL(origin)), NetworkIsolationKey());
   ASSERT_EQ(1u, altsvc_info_vector.size());
   AlternativeService alternative_service(kProtoQUIC, "alternative.example.org",
                                          443u);
@@ -6357,12 +6316,12 @@ TEST_F(AltSvcFrameTest, IgnoreQuicAltSvcWithUnsupportedVersion) {
                                            test_url_.EffectiveIntPort());
   AlternativeServiceInfoVector altsvc_info_vector =
       spdy_session_pool_->http_server_properties()->GetAlternativeServiceInfos(
-          session_origin);
+          session_origin, NetworkIsolationKey());
   ASSERT_TRUE(altsvc_info_vector.empty());
 
   altsvc_info_vector =
       spdy_session_pool_->http_server_properties()->GetAlternativeServiceInfos(
-          url::SchemeHostPort(GURL(origin)));
+          url::SchemeHostPort(GURL(origin)), NetworkIsolationKey());
   ASSERT_EQ(0u, altsvc_info_vector.size());
 }
 
@@ -6381,14 +6340,15 @@ TEST_F(AltSvcFrameTest, DoNotProcessAltSvcFrameForOriginNotCoveredByCert) {
 
   const url::SchemeHostPort session_origin("https", test_url_.host(),
                                            test_url_.EffectiveIntPort());
-  ASSERT_TRUE(spdy_session_pool_->http_server_properties()
-                  ->GetAlternativeServiceInfos(session_origin)
-                  .empty());
-
   ASSERT_TRUE(
       spdy_session_pool_->http_server_properties()
-          ->GetAlternativeServiceInfos(url::SchemeHostPort(GURL(origin)))
+          ->GetAlternativeServiceInfos(session_origin, NetworkIsolationKey())
           .empty());
+
+  ASSERT_TRUE(spdy_session_pool_->http_server_properties()
+                  ->GetAlternativeServiceInfos(
+                      url::SchemeHostPort(GURL(origin)), NetworkIsolationKey())
+                  .empty());
 }
 
 // An ALTSVC frame on stream 0 with empty origin MUST be ignored.
@@ -6406,9 +6366,10 @@ TEST_F(AltSvcFrameTest, DoNotProcessAltSvcFrameWithEmptyOriginOnStreamZero) {
 
   const url::SchemeHostPort session_origin("https", test_url_.host(),
                                            test_url_.EffectiveIntPort());
-  ASSERT_TRUE(spdy_session_pool_->http_server_properties()
-                  ->GetAlternativeServiceInfos(session_origin)
-                  .empty());
+  ASSERT_TRUE(
+      spdy_session_pool_->http_server_properties()
+          ->GetAlternativeServiceInfos(session_origin, NetworkIsolationKey())
+          .empty());
 }
 
 // An ALTSVC frame on a stream other than stream 0 with non-empty origin MUST be
@@ -6428,12 +6389,15 @@ TEST_F(AltSvcFrameTest,
 
   const url::SchemeHostPort session_origin("https", test_url_.host(),
                                            test_url_.EffectiveIntPort());
-  ASSERT_TRUE(spdy_session_pool_->http_server_properties()
-                  ->GetAlternativeServiceInfos(session_origin)
-                  .empty());
+  ASSERT_TRUE(
+      spdy_session_pool_->http_server_properties()
+          ->GetAlternativeServiceInfos(session_origin, NetworkIsolationKey())
+          .empty());
 }
 
 TEST_F(AltSvcFrameTest, ProcessAltSvcFrameOnActiveStream) {
+  session_deps_.enable_quic = true;
+
   spdy::SpdyAltSvcIR altsvc_ir(/* stream_id = */ 1);
   altsvc_ir.add_altsvc(alternative_service_);
 
@@ -6474,18 +6438,114 @@ TEST_F(AltSvcFrameTest, ProcessAltSvcFrameOnActiveStream) {
 
   const url::SchemeHostPort session_origin("https", test_url_.host(),
                                            test_url_.EffectiveIntPort());
-  ASSERT_TRUE(spdy_session_pool_->http_server_properties()
-                  ->GetAlternativeServiceInfos(session_origin)
-                  .empty());
+  ASSERT_TRUE(
+      spdy_session_pool_->http_server_properties()
+          ->GetAlternativeServiceInfos(session_origin, NetworkIsolationKey())
+          .empty());
 
   AlternativeServiceInfoVector altsvc_info_vector =
       spdy_session_pool_->http_server_properties()->GetAlternativeServiceInfos(
-          url::SchemeHostPort(GURL(request_origin)));
+          url::SchemeHostPort(GURL(request_origin)), NetworkIsolationKey());
   ASSERT_EQ(1u, altsvc_info_vector.size());
   EXPECT_EQ(kProtoQUIC, altsvc_info_vector[0].alternative_service().protocol);
   EXPECT_EQ("alternative.example.org",
             altsvc_info_vector[0].alternative_service().host);
   EXPECT_EQ(443u, altsvc_info_vector[0].alternative_service().port);
+}
+
+TEST_F(AltSvcFrameTest,
+       ProcessAltSvcFrameOnActiveStreamWithNetworkIsolationKey) {
+  session_deps_.enable_quic = true;
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      // enabled_features
+      {features::kPartitionHttpServerPropertiesByNetworkIsolationKey,
+       // Need to partition connections by NetworkIsolationKey for
+       // SpdySessionKeys to include NetworkIsolationKeys.
+       features::kPartitionConnectionsByNetworkIsolationKey},
+      // disabled_features
+      {});
+  // Since HttpServerProperties caches the feature value, have to create a new
+  // one.
+  session_deps_.http_server_properties =
+      std::make_unique<HttpServerProperties>();
+
+  const url::Origin kOrigin1 = url::Origin::Create(GURL("https://foo.test/"));
+  const net::NetworkIsolationKey kNetworkIsolationKey1(kOrigin1, kOrigin1);
+  const url::Origin kOrigin2 = url::Origin::Create(GURL("https://bar.test/"));
+  const net::NetworkIsolationKey kNetworkIsolationKey2(kOrigin2, kOrigin2);
+  key_ = SpdySessionKey(HostPortPair::FromURL(test_url_), ProxyServer::Direct(),
+                        PRIVACY_MODE_DISABLED,
+                        SpdySessionKey::IsProxySession::kFalse, SocketTag(),
+                        kNetworkIsolationKey1, false /* disable_secure_dns */);
+
+  spdy::SpdyAltSvcIR altsvc_ir(/* stream_id = */ 1);
+  altsvc_ir.add_altsvc(alternative_service_);
+
+  spdy::SpdySerializedFrame altsvc_frame(spdy_util_.SerializeFrame(altsvc_ir));
+  spdy::SpdySerializedFrame rst(
+      spdy_util_.ConstructSpdyRstStream(1, spdy::ERROR_CODE_REFUSED_STREAM));
+  MockRead reads[] = {
+      CreateMockRead(altsvc_frame, 1), CreateMockRead(rst, 2),
+      MockRead(ASYNC, 0, 3)  // EOF
+  };
+
+  const char request_origin[] = "https://mail.example.org";
+  spdy::SpdySerializedFrame req(
+      spdy_util_.ConstructSpdyGet(request_origin, 1, MEDIUM));
+  MockWrite writes[] = {
+      CreateMockWrite(req, 0),
+  };
+  SequencedSocketData data(reads, writes);
+  session_deps_.socket_factory->AddSocketDataProvider(&data);
+
+  AddSSLSocketData();
+
+  CreateNetworkSession();
+  CreateSpdySession();
+
+  base::WeakPtr<SpdyStream> spdy_stream1 = CreateStreamSynchronously(
+      SPDY_REQUEST_RESPONSE_STREAM, session_, GURL(request_origin), MEDIUM,
+      NetLogWithSource());
+  test::StreamDelegateDoNothing delegate1(spdy_stream1);
+  spdy_stream1->SetDelegate(&delegate1);
+
+  spdy::SpdyHeaderBlock headers(
+      spdy_util_.ConstructGetHeaderBlock(request_origin));
+
+  spdy_stream1->SendRequestHeaders(std::move(headers), NO_MORE_DATA_TO_SEND);
+
+  base::RunLoop().RunUntilIdle();
+
+  const url::SchemeHostPort session_origin("https", test_url_.host(),
+                                           test_url_.EffectiveIntPort());
+  ASSERT_TRUE(
+      spdy_session_pool_->http_server_properties()
+          ->GetAlternativeServiceInfos(session_origin, NetworkIsolationKey())
+          .empty());
+
+  AlternativeServiceInfoVector altsvc_info_vector =
+      spdy_session_pool_->http_server_properties()->GetAlternativeServiceInfos(
+          url::SchemeHostPort(GURL(request_origin)), kNetworkIsolationKey1);
+  ASSERT_EQ(1u, altsvc_info_vector.size());
+  EXPECT_EQ(kProtoQUIC, altsvc_info_vector[0].alternative_service().protocol);
+  EXPECT_EQ("alternative.example.org",
+            altsvc_info_vector[0].alternative_service().host);
+  EXPECT_EQ(443u, altsvc_info_vector[0].alternative_service().port);
+
+  // Make sure the alternative service information is only associated with
+  // kNetworkIsolationKey1.
+  EXPECT_TRUE(
+      spdy_session_pool_->http_server_properties()
+          ->GetAlternativeServiceInfos(
+              url::SchemeHostPort(GURL(request_origin)), kNetworkIsolationKey2)
+          .empty());
+  EXPECT_TRUE(
+      spdy_session_pool_->http_server_properties()
+          ->GetAlternativeServiceInfos(
+              url::SchemeHostPort(GURL(request_origin)), NetworkIsolationKey())
+          .empty());
 }
 
 TEST_F(AltSvcFrameTest, DoNotProcessAltSvcFrameOnStreamWithInsecureOrigin) {
@@ -6529,14 +6589,16 @@ TEST_F(AltSvcFrameTest, DoNotProcessAltSvcFrameOnStreamWithInsecureOrigin) {
 
   const url::SchemeHostPort session_origin("https", test_url_.host(),
                                            test_url_.EffectiveIntPort());
-  ASSERT_TRUE(spdy_session_pool_->http_server_properties()
-                  ->GetAlternativeServiceInfos(session_origin)
-                  .empty());
+  ASSERT_TRUE(
+      spdy_session_pool_->http_server_properties()
+          ->GetAlternativeServiceInfos(session_origin, NetworkIsolationKey())
+          .empty());
 
-  ASSERT_TRUE(spdy_session_pool_->http_server_properties()
-                  ->GetAlternativeServiceInfos(
-                      url::SchemeHostPort(GURL(request_origin)))
-                  .empty());
+  ASSERT_TRUE(
+      spdy_session_pool_->http_server_properties()
+          ->GetAlternativeServiceInfos(
+              url::SchemeHostPort(GURL(request_origin)), NetworkIsolationKey())
+          .empty());
 }
 
 TEST_F(AltSvcFrameTest, DoNotProcessAltSvcFrameOnNonExistentStream) {
@@ -6552,9 +6614,10 @@ TEST_F(AltSvcFrameTest, DoNotProcessAltSvcFrameOnNonExistentStream) {
 
   const url::SchemeHostPort session_origin("https", test_url_.host(),
                                            test_url_.EffectiveIntPort());
-  ASSERT_TRUE(spdy_session_pool_->http_server_properties()
-                  ->GetAlternativeServiceInfos(session_origin)
-                  .empty());
+  ASSERT_TRUE(
+      spdy_session_pool_->http_server_properties()
+          ->GetAlternativeServiceInfos(session_origin, NetworkIsolationKey())
+          .empty());
 }
 
 // Regression test for https://crbug.com/810404.
@@ -6581,7 +6644,7 @@ TEST_F(AltSvcFrameTest, InvalidOrigin) {
                                            test_url_.EffectiveIntPort());
   AlternativeServiceInfoVector altsvc_info_vector =
       spdy_session_pool_->http_server_properties()->GetAlternativeServiceInfos(
-          session_origin);
+          session_origin, NetworkIsolationKey());
   EXPECT_TRUE(altsvc_info_vector.empty());
 }
 
@@ -6601,19 +6664,19 @@ TEST(MapFramerErrorToProtocolError, MapsValues) {
 }
 
 TEST(MapFramerErrorToNetError, MapsValue) {
-  CHECK_EQ(ERR_SPDY_PROTOCOL_ERROR,
+  CHECK_EQ(ERR_HTTP2_PROTOCOL_ERROR,
            MapFramerErrorToNetError(
                http2::Http2DecoderAdapter::SPDY_INVALID_CONTROL_FRAME));
-  CHECK_EQ(ERR_SPDY_COMPRESSION_ERROR,
+  CHECK_EQ(ERR_HTTP2_COMPRESSION_ERROR,
            MapFramerErrorToNetError(
                http2::Http2DecoderAdapter::SPDY_COMPRESS_FAILURE));
-  CHECK_EQ(ERR_SPDY_COMPRESSION_ERROR,
+  CHECK_EQ(ERR_HTTP2_COMPRESSION_ERROR,
            MapFramerErrorToNetError(
                http2::Http2DecoderAdapter::SPDY_DECOMPRESS_FAILURE));
-  CHECK_EQ(ERR_SPDY_FRAME_SIZE_ERROR,
+  CHECK_EQ(ERR_HTTP2_FRAME_SIZE_ERROR,
            MapFramerErrorToNetError(
                http2::Http2DecoderAdapter::SPDY_CONTROL_PAYLOAD_TOO_LARGE));
-  CHECK_EQ(ERR_SPDY_FRAME_SIZE_ERROR,
+  CHECK_EQ(ERR_HTTP2_FRAME_SIZE_ERROR,
            MapFramerErrorToNetError(
                http2::Http2DecoderAdapter::SPDY_OVERSIZED_PAYLOAD));
 }
@@ -6637,15 +6700,15 @@ TEST(MapRstStreamStatusToProtocolError, MapsValues) {
 
 TEST(MapNetErrorToGoAwayStatus, MapsValue) {
   CHECK_EQ(spdy::ERROR_CODE_INADEQUATE_SECURITY,
-           MapNetErrorToGoAwayStatus(ERR_SPDY_INADEQUATE_TRANSPORT_SECURITY));
+           MapNetErrorToGoAwayStatus(ERR_HTTP2_INADEQUATE_TRANSPORT_SECURITY));
   CHECK_EQ(spdy::ERROR_CODE_FLOW_CONTROL_ERROR,
-           MapNetErrorToGoAwayStatus(ERR_SPDY_FLOW_CONTROL_ERROR));
+           MapNetErrorToGoAwayStatus(ERR_HTTP2_FLOW_CONTROL_ERROR));
   CHECK_EQ(spdy::ERROR_CODE_PROTOCOL_ERROR,
-           MapNetErrorToGoAwayStatus(ERR_SPDY_PROTOCOL_ERROR));
+           MapNetErrorToGoAwayStatus(ERR_HTTP2_PROTOCOL_ERROR));
   CHECK_EQ(spdy::ERROR_CODE_COMPRESSION_ERROR,
-           MapNetErrorToGoAwayStatus(ERR_SPDY_COMPRESSION_ERROR));
+           MapNetErrorToGoAwayStatus(ERR_HTTP2_COMPRESSION_ERROR));
   CHECK_EQ(spdy::ERROR_CODE_FRAME_SIZE_ERROR,
-           MapNetErrorToGoAwayStatus(ERR_SPDY_FRAME_SIZE_ERROR));
+           MapNetErrorToGoAwayStatus(ERR_HTTP2_FRAME_SIZE_ERROR));
   CHECK_EQ(spdy::ERROR_CODE_PROTOCOL_ERROR,
            MapNetErrorToGoAwayStatus(ERR_UNEXPECTED));
 }
@@ -6657,7 +6720,7 @@ class TestSSLConfigService : public SSLConfigService {
   TestSSLConfigService() {}
   ~TestSSLConfigService() override = default;
 
-  void GetSSLConfig(SSLConfig* config) override { *config = config_; }
+  SSLContextConfig GetSSLContextConfig() override { return config_; }
 
   // Returns true if |hostname| is in domains_for_pooling_. This is a simpler
   // implementation than the production implementation in SSLConfigServiceMojo.
@@ -6676,7 +6739,7 @@ class TestSSLConfigService : public SSLConfigService {
   }
 
  private:
-  SSLConfig config_;
+  SSLContextConfig config_;
   std::vector<std::string> domains_for_pooling_;
 };
 
@@ -6780,25 +6843,6 @@ TEST(CanPoolTest, CanNotPoolWithClientCerts) {
 
   EXPECT_FALSE(SpdySession::CanPool(&tss, ssl_info, ssl_config_service,
                                     "www.example.org", "mail.example.org"));
-}
-
-TEST(CanPoolTest, CanNotPoolAcrossETLDsWithChannelID) {
-  // Load a cert that is valid for:
-  //   www.example.org
-  //   mail.example.org
-  //   mail.example.com
-
-  TransportSecurityState tss;
-  TestSSLConfigService ssl_config_service;
-  SSLInfo ssl_info;
-  ssl_info.cert = ImportCertFromFile(GetTestCertsDirectory(),
-                                     "spdy_pooling.pem");
-  ssl_info.channel_id_sent = true;
-
-  EXPECT_TRUE(SpdySession::CanPool(&tss, ssl_info, ssl_config_service,
-                                   "www.example.org", "mail.example.org"));
-  EXPECT_FALSE(SpdySession::CanPool(&tss, ssl_info, ssl_config_service,
-                                    "www.example.org", "www.example.com"));
 }
 
 TEST(CanPoolTest, CanNotPoolWithBadPins) {

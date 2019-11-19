@@ -15,7 +15,7 @@
 namespace device {
 
 BleAdapterManager::BleAdapterManager(FidoRequestHandlerBase* request_handler)
-    : request_handler_(request_handler), weak_factory_(this) {
+    : request_handler_(request_handler) {
   BluetoothAdapterFactory::Get().GetAdapter(
       base::BindOnce(&BleAdapterManager::Start, weak_factory_.GetWeakPtr()));
 }
@@ -38,7 +38,7 @@ void BleAdapterManager::SetAdapterPower(bool set_power_on) {
 }
 
 void BleAdapterManager::InitiatePairing(std::string authenticator_id,
-                                        std::string pin_code,
+                                        base::Optional<std::string> pin_code,
                                         base::OnceClosure success_callback,
                                         base::OnceClosure error_callback) {
   DCHECK(adapter_);
@@ -46,7 +46,7 @@ void BleAdapterManager::InitiatePairing(std::string authenticator_id,
   auto device_it = std::find_if(
       device_list.begin(), device_list.end(),
       [&authenticator_id](const auto& bluetooth_device) {
-        return FidoBleDevice::GetId(bluetooth_device->GetAddress()) ==
+        return FidoBleDevice::GetIdForAddress(bluetooth_device->GetAddress()) ==
                authenticator_id;
       });
 
@@ -56,8 +56,12 @@ void BleAdapterManager::InitiatePairing(std::string authenticator_id,
     return;
   }
 
+  // Devices that pair using the 'Just Works' method may expect a passkey set
+  // to zero.
+  const std::string pin = pin_code ? std::move(*pin_code) : "0";
+
   pairing_delegate_.StoreBlePinCodeForDevice(std::move(authenticator_id),
-                                             std::move(pin_code));
+                                             std::move(pin));
 
   auto failure_callback = base::BindOnce(
       [](base::OnceClosure callback,
@@ -81,8 +85,8 @@ void BleAdapterManager::DeviceAddressChanged(BluetoothAdapter* adapter,
                                              BluetoothDevice* device,
                                              const std::string& old_address) {
   pairing_delegate_.ChangeStoredDeviceAddress(
-      FidoBleDevice::GetId(old_address),
-      FidoBleDevice::GetId(device->GetAddress()));
+      FidoBleDevice::GetIdForAddress(old_address),
+      FidoBleDevice::GetIdForAddress(device->GetAddress()));
 }
 
 void BleAdapterManager::Start(scoped_refptr<BluetoothAdapter> adapter) {

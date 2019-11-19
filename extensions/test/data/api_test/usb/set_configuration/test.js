@@ -14,6 +14,7 @@ var tests = [
           chrome.test.assertNoLastError();
           usb.getConfiguration(device, function (result) {
             chrome.test.assertNoLastError();
+            usb.closeDevice(device);
             chrome.test.succeed();
           });
         });

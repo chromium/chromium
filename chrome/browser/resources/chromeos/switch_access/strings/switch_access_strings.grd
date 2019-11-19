@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<grit base_dir="." current_release="1" latest_public_release="0"
+      output_all_resource_defines="false" enc_check="möl" source_lang_id="en">
+  <outputs>
+    <output filename="_locales/am/messages.json" type="chrome_messages_json" lang="am"/>
+    <output filename="_locales/ar/messages.json" type="chrome_messages_json" lang="ar"/>
+    <output filename="_locales/bg/messages.json" type="chrome_messages_json" lang="bg"/>
+    <output filename="_locales/bn/messages.json" type="chrome_messages_json" lang="bn"/>
+    <output filename="_locales/ca/messages.json" type="chrome_messages_json" lang="ca"/>
+    <output filename="_locales/cs/messages.json" type="chrome_messages_json" lang="cs"/>
+    <output filename="_locales/da/messages.json" type="chrome_messages_json" lang="da"/>
+    <output filename="_locales/de/messages.json" type="chrome_messages_json" lang="de"/>
+    <output filename="_locales/el/messages.json" type="chrome_messages_json" lang="el"/>
+    <output filename="_locales/en_GB/messages.json" type="chrome_messages_json" lang="en-GB"/>
+    <output filename="_locales/en/messages.json" type="chrome_messages_json" lang="en"/>
+    <output filename="_locales/es/messages.json" type="chrome_messages_json" lang="es"/>
+    <output filename="_locales/es_419/messages.json" type="chrome_messages_json" lang="es-419"/>
+    <output filename="_locales/et/messages.json" type="chrome_messages_json" lang="et"/>
+    <output filename="_locales/fa/messages.json" type="chrome_messages_json" lang="fa"/>
+    <output filename="_locales/fi/messages.json" type="chrome_messages_json" lang="fi"/>
+    <output filename="_locales/fil/messages.json" type="chrome_messages_json" lang="fil"/>
+    <output filename="_locales/fr/messages.json" type="chrome_messages_json" lang="fr"/>
+    <output filename="_locales/gu/messages.json" type="chrome_messages_json" lang="gu"/>
+    <output filename="_locales/he/messages.json" type="chrome_messages_json" lang="he"/>
+    <output filename="_locales/hi/messages.json" type="chrome_messages_json" lang="hi"/>
+    <output filename="_locales/hr/messages.json" type="chrome_messages_json" lang="hr"/>
+    <output filename="_locales/hu/messages.json" type="chrome_messages_json" lang="hu"/>
+    <output filename="_locales/id/messages.json" type="chrome_messages_json" lang="id"/>
+    <output filename="_locales/it/messages.json" type="chrome_messages_json" lang="it"/>
+    <output filename="_locales/ja/messages.json" type="chrome_messages_json" lang="ja"/>
+    <output filename="_locales/kn/messages.json" type="chrome_messages_json" lang="kn"/>
+    <output filename="_locales/ko/messages.json" type="chrome_messages_json" lang="ko"/>
+    <output filename="_locales/lt/messages.json" type="chrome_messages_json" lang="lt"/>
+    <output filename="_locales/lv/messages.json" type="chrome_messages_json" lang="lv"/>
+    <output filename="_locales/ml/messages.json" type="chrome_messages_json" lang="ml"/>
+    <output filename="_locales/mr/messages.json" type="chrome_messages_json" lang="mr"/>
+    <output filename="_locales/ms/messages.json" type="chrome_messages_json" lang="ms"/>
+    <output filename="_locales/nl/messages.json" type="chrome_messages_json" lang="nl"/>
+    <output filename="_locales/nb/messages.json" type="chrome_messages_json" lang="no"/>
+    <output filename="_locales/pl/messages.json" type="chrome_messages_json" lang="pl"/>
+    <output filename="_locales/pt_BR/messages.json" type="chrome_messages_json" lang="pt-BR"/>
+    <output filename="_locales/pt_PT/messages.json" type="chrome_messages_json" lang="pt-PT"/>
+    <output filename="_locales/ro/messages.json" type="chrome_messages_json" lang="ro"/>
+    <output filename="_locales/ru/messages.json" type="chrome_messages_json" lang="ru"/>
+    <output filename="_locales/sk/messages.json" type="chrome_messages_json" lang="sk"/>
+    <output filename="_locales/sl/messages.json" type="chrome_messages_json" lang="sl"/>
+    <output filename="_locales/sr/messages.json" type="chrome_messages_json" lang="sr"/>
+    <output filename="_locales/sv/messages.json" type="chrome_messages_json" lang="sv"/>
+    <output filename="_locales/sw/messages.json" type="chrome_messages_json" lang="sw"/>
+    <output filename="_locales/ta/messages.json" type="chrome_messages_json" lang="ta"/>
+    <output filename="_locales/te/messages.json" type="chrome_messages_json" lang="te"/>
+    <output filename="_locales/th/messages.json" type="chrome_messages_json" lang="th"/>
+    <output filename="_locales/tr/messages.json" type="chrome_messages_json" lang="tr"/>
+    <output filename="_locales/uk/messages.json" type="chrome_messages_json" lang="uk"/>
+    <output filename="_locales/vi/messages.json" type="chrome_messages_json" lang="vi"/>
+    <output filename="_locales/zh_CN/messages.json" type="chrome_messages_json" lang="zh-CN"/>
+    <output filename="_locales/zh_TW/messages.json" type="chrome_messages_json" lang="zh-TW"/>
+  </outputs>
+  <translations>
+  <file path="switch_access_strings_am.xtb" lang="am" />
+    <file path="switch_access_strings_ar.xtb" lang="ar" />
+    <file path="switch_access_strings_bg.xtb" lang="bg" />
+    <file path="switch_access_strings_bn.xtb" lang="bn" />
+    <file path="switch_access_strings_ca.xtb" lang="ca" />
+    <file path="switch_access_strings_cs.xtb" lang="cs" />
+    <file path="switch_access_strings_da.xtb" lang="da" />
+    <file path="switch_access_strings_de.xtb" lang="de" />
+    <file path="switch_access_strings_el.xtb" lang="el" />
+    <file path="switch_access_strings_en-GB.xtb" lang="en-GB" />
+    <file path="switch_access_strings_es.xtb" lang="es" />
+    <file path="switch_access_strings_es-419.xtb" lang="es-419" />
+    <file path="switch_access_strings_et.xtb" lang="et" />
+    <file path="switch_access_strings_fa.xtb" lang="fa" />
+    <file path="switch_access_strings_fi.xtb" lang="fi" />
+    <file path="switch_access_strings_fil.xtb" lang="fil" />
+    <file path="switch_access_strings_fr.xtb" lang="fr" />
+    <file path="switch_access_strings_gu.xtb" lang="gu" />
+    <file path="switch_access_strings_hi.xtb" lang="hi" />
+    <file path="switch_access_strings_hr.xtb" lang="hr" />
+    <file path="switch_access_strings_hu.xtb" lang="hu" />
+    <file path="switch_access_strings_id.xtb" lang="id" />
+    <file path="switch_access_strings_it.xtb" lang="it" />
+    <!-- The translation console uses 'iw' for Hebrew, but we use 'he'. -->
+    <file path="switch_access_strings_iw.xtb" lang="he" />
+    <file path="switch_access_strings_ja.xtb" lang="ja" />
+    <file path="switch_access_strings_kn.xtb" lang="kn" />
+    <file path="switch_access_strings_ko.xtb" lang="ko" />
+    <file path="switch_access_strings_lt.xtb" lang="lt" />
+    <file path="switch_access_strings_lv.xtb" lang="lv" />
+    <file path="switch_access_strings_ml.xtb" lang="ml" />
+    <file path="switch_access_strings_mr.xtb" lang="mr" />
+    <file path="switch_access_strings_ms.xtb" lang="ms" />
+    <file path="switch_access_strings_nl.xtb" lang="nl" />
+    <file path="switch_access_strings_no.xtb" lang="no" />
+    <file path="switch_access_strings_pl.xtb" lang="pl" />
+    <file path="switch_access_strings_pt-BR.xtb" lang="pt-BR" />
+    <file path="switch_access_strings_pt-PT.xtb" lang="pt-PT" />
+    <file path="switch_access_strings_ro.xtb" lang="ro" />
+    <file path="switch_access_strings_ru.xtb" lang="ru" />
+    <file path="switch_access_strings_sk.xtb" lang="sk" />
+    <file path="switch_access_strings_sl.xtb" lang="sl" />
+    <file path="switch_access_strings_sr.xtb" lang="sr" />
+    <file path="switch_access_strings_sv.xtb" lang="sv" />
+    <file path="switch_access_strings_sw.xtb" lang="sw" />
+    <file path="switch_access_strings_ta.xtb" lang="ta" />
+    <file path="switch_access_strings_te.xtb" lang="te" />
+    <file path="switch_access_strings_th.xtb" lang="th" />
+    <file path="switch_access_strings_tr.xtb" lang="tr" />
+    <file path="switch_access_strings_uk.xtb" lang="uk" />
+    <file path="switch_access_strings_vi.xtb" lang="vi" />
+    <file path="switch_access_strings_zh-CN.xtb" lang="zh-CN" />
+    <file path="switch_access_strings_zh-TW.xtb" lang="zh-TW" />
+  </translations>
+  <release allow_pseudo="false" seq="1">
+    <messages fallback_to_english="true">
+      <message desc="The product name for Switch Access." name="IDS_SWITCH_ACCESS_NAME">
+        Switch Access
+      </message>
+      <message desc="The description for Switch Access." name="IDS_SWITCH_ACCESS_DESCRIPTION">
+        Control the device with just 1 or 2 switches.
+      </message>
+      <message desc="The title of the Switch Access menu to select which action to perform on an element." name="IDS_SWITCH_ACCESS_MENU_TITLE">
+        Switch Access Menu
+      </message>
+      <message desc="The Switch Access action to perform the default action on the current element, similar to a click or tap. Should be short." name="IDS_SWITCH_ACCESS_SELECT">
+        Select
+      </message>
+      <message desc="The Switch Access action to open the onscreen keyboard and begin entering text in the selected text input element. Should be short." name="IDS_SWITCH_ACCESS_OPEN_KEYBOARD">
+        Keyboard
+      </message>
+      <message desc="The Switch Access action to increment the selected input element. Should be short." name="IDS_SWITCH_ACCESS_INCREMENT">
+        Increment
+      </message>
+      <message desc="The Switch Access action to decrement the selected input element. Should be short." name="IDS_SWITCH_ACCESS_DECREMENT">
+        Decrement
+      </message>
+      <message desc="The Switch Access action to scroll the selected element down. Should be short." name="IDS_SWITCH_ACCESS_SCROLL_DOWN">
+        Scroll down
+      </message>
+      <message desc="The Switch Access action to scroll the selected element up. Should be short." name="IDS_SWITCH_ACCESS_SCROLL_UP">
+        Scroll up
+      </message>
+      <message desc="The Switch Access action to scroll the selected element right. Should be short." name="IDS_SWITCH_ACCESS_SCROLL_RIGHT">
+        Scroll right
+      </message>
+      <message desc="The Switch Access action to scroll the selected element left. Should be short." name="IDS_SWITCH_ACCESS_SCROLL_LEFT">
+        Scroll left
+      </message>
+      <message desc="The Switch Access action to scroll the selected element logically forward (generally either down or right, depending on the context). Should be short." name="IDS_SWITCH_ACCESS_SCROLL_FORWARD">
+        Scroll forward
+      </message>
+      <message desc="The Switch Access action to scroll the selected element logically backward (generally either up or left, depending on the context). Should be short." name="IDS_SWITCH_ACCESS_SCROLL_BACKWARD">
+        Scroll backward
+      </message>
+      <message desc="The Switch Access action to speak to type in the selected text input element. Ideally the same as the name of the standalone Dictation feature (IDS_ASH_STATUS_TRAY_ACCESSIBILITY_DICTATION). Should be short." name="IDS_SWITCH_ACCESS_DICTATION">
+        Dictation
+      </message>
+      <message desc="The Switch Access action to show the system context menu, as when a user right-clicks on the focused element. Should be short." name="IDS_SWITCH_ACCESS_SHOW_CONTEXT_MENU">
+        Context menu
+      </message>
+      <message desc="The Switch Access action to open the Switch Access settings page. Should be short." name="IDS_SWITCH_ACCESS_SETTINGS_ACTION">
+        Settings
+      </message>
+      <message desc="The Switch Access action to show the text navigation menu for moving the text caret within a text element." name="IDS_SWITCH_ACCESS_MOVE_CURSOR">
+        Move cursor
+      </message>
+      <message desc="The Switch Access action for moving the text caret to the beginning of the text element." name="IDS_SWITCH_ACCESS_JUMP_TO_BEGINNING_OF_TEXT">
+        Jump to beginning
+      </message>
+      <message desc="The Switch Access action for moving the text caret to the end of the text element." name="IDS_SWITCH_ACCESS_JUMP_TO_END_OF_TEXT">
+        Jump to end
+      </message>
+      <message desc="The Switch Access action for moving the text caret backward one character." name="IDS_SWITCH_ACCESS_MOVE_BACKWARD_ONE_CHAR_OF_TEXT">
+        Move backward one char
+      </message>
+      <message desc="The Switch Access action for moving the text caret backward one word." name="IDS_SWITCH_ACCESS_MOVE_BACKWARD_ONE_WORD_OF_TEXT">
+        Move backward one word
+      </message>
+      <message desc="The Switch Access action for moving the text caret forward one character." name="IDS_SWITCH_ACCESS_MOVE_FORWARD_ONE_CHAR_OF_TEXT">
+        Move forward one char
+      </message>
+      <message desc="The Switch Access action for moving the text caret forward one word." name="IDS_SWITCH_ACCESS_MOVE_FORWARD_ONE_WORD_OF_TEXT">
+        Move forward one word
+      </message>
+      <message desc="The Switch Access action for moving the text caret down one line." name="IDS_SWITCH_ACCESS_MOVE_DOWN_ONE_LINE_OF_TEXT">
+        Move down one line
+      </message>
+      <message desc="The Switch Access action for moving the text caret up one line." name="IDS_SWITCH_ACCESS_MOVE_UP_ONE_LINE_OF_TEXT">
+        Move up one line
+      </message>
+      <message desc="The Switch Access action to set the beginning of a text selection area." name="IDS_SWITCH_ACCESS_SELECTION_START">
+        Selection start
+      </message>
+      <message desc="The Switch Access action to set the end of a text selection area." name="IDS_SWITCH_ACCESS_SELECTION_END">
+        Selection end
+      </message>
+      <message desc="The Switch Access action to cut text." name="IDS_SWITCH_ACCESS_CUT">
+        Cut
+      </message>
+      <message desc="The Switch Access action to copy text." name="IDS_SWITCH_ACCESS_COPY">
+        Copy
+      </message>
+      <message desc="The Switch Access action to paste text." name="IDS_SWITCH_ACCESS_PASTE">
+        Paste
+      </message>
+    </messages>
+  </release>
+</grit>

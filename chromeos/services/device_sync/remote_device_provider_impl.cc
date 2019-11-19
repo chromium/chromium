@@ -53,8 +53,7 @@ RemoteDeviceProviderImpl::RemoteDeviceProviderImpl(
     const std::string& user_private_key)
     : device_manager_(device_manager),
       user_id_(user_id),
-      user_private_key_(user_private_key),
-      weak_ptr_factory_(this) {
+      user_private_key_(user_private_key) {
   device_manager_->AddObserver(this);
   remote_device_loader_ = RemoteDeviceLoader::Factory::NewInstance(
       device_manager->GetSyncedDevices(), user_id, user_private_key,

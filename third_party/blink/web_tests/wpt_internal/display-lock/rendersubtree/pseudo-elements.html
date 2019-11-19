@@ -1,0 +1,41 @@
+<!doctype HTML>
+<html class="reftest-wait">
+<meta charset="utf8">
+<title>Display Locking: pseudo elements</title>
+<link rel="author" title="Rakina Zata Amni" href="mailto:rakina@chromium.org">
+<link rel="help" href="https://github.com/WICG/display-locking">
+<link rel="match" href="pass-ref.html">
+<script src="/common/reftest-wait.js"></script>
+<script src="resources/utils.js"></script>
+
+<style>
+  #container::before {
+    content: "a";
+    color: blue;
+  }
+  .hasAfter::after {
+    content: "b";
+    color: green;
+  }
+</style>
+<div id="log"></div>
+<div id="container" style="display:none;"></div>
+
+<script>
+
+function finishTest(status_string) {
+  if (document.getElementById("log").innerHTML === "")
+    document.getElementById("log").innerHTML = status_string;
+  takeScreenshot();
+}
+
+async function runTest() {
+  // Trigger reattachment in #container and the ::after pseudo element.
+  container.classList.add("hasAfter");
+  container.style = "";
+  setInvisible(container).then(() => { finishTest("PASS");} );
+}
+
+window.onload = runTest;
+</script>
+</html>

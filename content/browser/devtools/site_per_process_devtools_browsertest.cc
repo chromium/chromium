@@ -69,7 +69,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessDevToolsBrowserTest,
                        MAYBE_CrossSiteIframeAgentHost) {
   DevToolsAgentHost::List list;
   GURL main_url(embedded_test_server()->GetURL("/site_per_process_main.html"));
-  NavigateToURL(shell(), main_url);
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
 
   // It is safe to obtain the root frame tree node here, as it doesn't change.
   FrameTreeNode* root =
@@ -140,7 +140,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessDevToolsBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(SitePerProcessDevToolsBrowserTest, AgentHostForFrames) {
   GURL main_url(embedded_test_server()->GetURL("/site_per_process_main.html"));
-  NavigateToURL(shell(), main_url);
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
 
   scoped_refptr<DevToolsAgentHost> page_agent =
       DevToolsAgentHost::GetOrCreateFor(shell()->web_contents());
@@ -179,7 +179,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessDevToolsBrowserTest, AgentHostForFrames) {
 IN_PROC_BROWSER_TEST_F(SitePerProcessDevToolsBrowserTest,
     AgentHostForPageEqualsOneForMainFrame) {
   GURL main_url(embedded_test_server()->GetURL("/site_per_process_main.html"));
-  NavigateToURL(shell(), main_url);
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
 
   // It is safe to obtain the root frame tree node here, as it doesn't change.
   FrameTreeNode* root =

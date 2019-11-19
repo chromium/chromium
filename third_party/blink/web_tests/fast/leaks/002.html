@@ -3,7 +3,7 @@ test for BidiRun leaks as reported in rdar://problem/4987649. Its layout has no
 particular meaning.
 </p>
 <div><input type='file' id='input'></input></div>
-<iframe id='iframe' src="data:text/html,<input type='file' id='input'></input>"></iframe>
+<iframe id='iframe' srcdoc="<input type='file' id='input'></input>"></iframe>
 
 <script>
 window.onload = function main() 

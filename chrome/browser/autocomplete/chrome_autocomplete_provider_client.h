@@ -13,6 +13,7 @@ class Profile;
 
 namespace content {
 class StoragePartition;
+class WebContents;
 }
 
 namespace unified_consent {
@@ -36,7 +37,7 @@ class ChromeAutocompleteProviderClient : public AutocompleteProviderClient {
   InMemoryURLIndex* GetInMemoryURLIndex() override;
   TemplateURLService* GetTemplateURLService() override;
   const TemplateURLService* GetTemplateURLService() const override;
-  ContextualSuggestionsService* GetContextualSuggestionsService(
+  RemoteSuggestionsService* GetRemoteSuggestionsService(
       bool create_if_necessary) const override;
   DocumentSuggestionsService* GetDocumentSuggestionsService(
       bool create_if_necessary) const override;
@@ -49,14 +50,15 @@ class ChromeAutocompleteProviderClient : public AutocompleteProviderClient {
   std::string GetEmbedderRepresentationOfAboutScheme() const override;
   std::vector<base::string16> GetBuiltinURLs() override;
   std::vector<base::string16> GetBuiltinsToProvideAsUserTypes() override;
-  // GetCurrentVisitTimestamp is only implemented for desktop users. For mobile
-  // users, the function returns base::Time().
-  base::Time GetCurrentVisitTimestamp() const override;
+  component_updater::ComponentUpdateService* GetComponentUpdateService()
+      override;
+
   bool IsOffTheRecord() const override;
   bool SearchSuggestEnabled() const override;
   bool IsPersonalizedUrlDataCollectionActive() const override;
   bool IsAuthenticated() const override;
   bool IsSyncActive() const override;
+  std::string ProfileUserName() const override;
   void Classify(
       const base::string16& text,
       bool prefer_keyword,
@@ -69,8 +71,6 @@ class ChromeAutocompleteProviderClient : public AutocompleteProviderClient {
       const base::string16& term) override;
   void PrefetchImage(const GURL& url) override;
   void StartServiceWorker(const GURL& destination_url) override;
-  void OnAutocompleteControllerResultReady(
-      AutocompleteController* controller) override;
   bool IsTabOpenWithURL(const GURL& url,
                         const AutocompleteInput* input) override;
   bool IsBrowserUpdateAvailable() const override;
@@ -83,6 +83,12 @@ class ChromeAutocompleteProviderClient : public AutocompleteProviderClient {
   bool StrippedURLsAreEqual(const GURL& url1,
                             const GURL& url2,
                             const AutocompleteInput* input) const;
+
+  // Performs a comparison of |stripped_url| to the stripped last committed
+  // URL of |web_contents|, using the internal cache to avoid repeatedly
+  // re-stripping the URL.
+  bool IsStrippedURLEqualToWebContentsURL(const GURL& stripped_url,
+                                          content::WebContents* web_contents);
 
  private:
   Profile* profile_;

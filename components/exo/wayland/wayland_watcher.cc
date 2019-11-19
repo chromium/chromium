@@ -15,7 +15,7 @@ WaylandWatcher::WaylandWatcher(wayland::Server* server)
   base::MessageLoopCurrentForUI::Get()->WatchFileDescriptor(
       server_->GetFileDescriptor(),
       true,  // persistent
-      base::MessagePumpLibevent::WATCH_READ, &controller_, this);
+      base::MessagePumpForUI::WATCH_READ, &controller_, this);
 }
 
 WaylandWatcher::~WaylandWatcher() {}

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<body>
+<script type="module">
+import 'std:elements/switch';
+
+document.body.insertAdjacentHTML('beforeend', `
+<h2>Attribute on the element</h2>
+<std-switch theme="platform-agnostic"></std-switch>
+<std-switch theme="match-platform"></std-switch>`);
+
+document.body.insertAdjacentHTML('beforeend', `
+<h2>Attribute on an ancestor</h2>
+<span theme="platform-agnostic"><std-switch></std-switch></span>
+<i theme="match-platform"><b><std-switch></std-switch></b></i>`);
+
+document.body.insertAdjacentHTML('beforeend', `
+<h2>Nested attributes</h2>
+<s theme="match-platform"><span theme="platform-agnostic"><code theme="foo"
+><std-switch></std-switch></code></span></s>
+<kbd theme="platform-agnostic"><i theme="match-platform"><b><std-switch></std-switch></b></i></kbd>`);
+
+document.body.insertAdjacentHTML('beforeend', `
+<h2>Attribute over shadow-boundary</h2>
+<span theme="platform-agnostic"><span id="host1"></span></span>
+<i theme="match-platform"><b><span id="host2"></span></b></i>`);
+let root1 = document.querySelector('#host1').attachShadow({mode:'open'});
+root1.innerHTML = '<std-switch></std-switch>';
+let root2 = document.querySelector('#host2').attachShadow({mode:'closed'});
+root2.innerHTML = '<std-switch></std-switch>';
+
+document.body.insertAdjacentHTML('beforeend', `
+<h2>NO support for updating attribute values for now</h2>
+<std-switch id="update1" theme="match-platform"></std-switch>
+<std-switch id="update2" theme="platform-agnostic"></std-switch>`);
+document.querySelector('#update1').setAttribute('theme', 'platform-agnostic');
+document.querySelector('#update2').setAttribute('theme', 'match-platform');
+</script>
+</body>

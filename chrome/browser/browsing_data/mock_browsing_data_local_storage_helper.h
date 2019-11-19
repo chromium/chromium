@@ -29,7 +29,7 @@ class MockBrowsingDataLocalStorageHelper
   void AddLocalStorageSamples();
 
   // Add a LocalStorageInfo entry for a single origin.
-  void AddLocalStorageForOrigin(const url::Origin& origin, size_t size);
+  void AddLocalStorageForOrigin(const url::Origin& origin, int64_t size);
 
   // Notifies the callback.
   void Notify();

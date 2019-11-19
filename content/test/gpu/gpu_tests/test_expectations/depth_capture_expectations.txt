@@ -1,0 +1,9 @@
+# tags: [ android linux ]
+# tags: [ nvidia-0x104a qualcomm-adreno-(tm)-330 ]
+# results: [ Failure RetryOnFailure Skip ]
+
+crbug.com/737410 [ linux nvidia-0x104a ] DepthCapture_depthStreamToR32FloatTexture [ RetryOnFailure ]
+crbug.com/765913 [ android qualcomm-adreno-(tm)-330 ] DepthCapture_depthStreamToR32FloatTexture [ Failure ]
+crbug.com/737410 [ linux nvidia-0x104a ] DepthCapture_depthStreamToRGBAFloatTexture [ RetryOnFailure ]
+crbug.com/737410 [ linux nvidia-0x104a ] DepthCapture_depthStreamToRGBAUint8Texture [ RetryOnFailure ]
+

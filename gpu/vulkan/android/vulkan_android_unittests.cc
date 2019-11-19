@@ -6,10 +6,10 @@
 
 #include "base/android/android_hardware_buffer_compat.h"
 #include "base/android/scoped_hardware_buffer_handle.h"
-#include "base/files/scoped_file.h"
 #include "components/viz/common/gpu/vulkan_in_process_context_provider.h"
 #include "gpu/vulkan/android/vulkan_implementation_android.h"
 #include "gpu/vulkan/vulkan_function_pointers.h"
+#include "gpu/vulkan/vulkan_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace gpu {
@@ -23,7 +23,7 @@ class VulkanImplementationAndroidTest : public testing::Test {
 
     // This call checks for all instance extensions. Let the test pass if this
     // call fails since many bots would not have this extension present.
-    if (!vk_implementation_->InitializeVulkanInstance())
+    if (!vk_implementation_->InitializeVulkanInstance(true /* using_surface */))
       return;
 
     // Create vulkan context provider. This call checks for all device
@@ -51,7 +51,7 @@ class VulkanImplementationAndroidTest : public testing::Test {
   }
 
  protected:
-  std::unique_ptr<VulkanImplementationAndroid> vk_implementation_;
+  std::unique_ptr<VulkanImplementation> vk_implementation_;
   scoped_refptr<viz::VulkanInProcessContextProvider> vk_context_provider_;
   VkDevice vk_device_;
   VkPhysicalDevice vk_phy_device_;
@@ -82,19 +82,18 @@ TEST_F(VulkanImplementationAndroidTest, ExportImportSyncFd) {
   // signal operation pending execution before the export.
   // Semaphores can be signaled by including them in a batch as part of a queue
   // submission command, defining a queue operation to signal that semaphore.
-  EXPECT_TRUE(vk_implementation_->SubmitSignalSemaphore(
+  EXPECT_TRUE(SubmitSignalVkSemaphore(
       vk_context_provider_->GetDeviceQueue()->GetVulkanQueue(), semaphore1));
 
-  // Export a sync fd from the semaphore.
-  base::ScopedFD sync_fd;
-  EXPECT_TRUE(
-      vk_implementation_->GetSemaphoreFdKHR(vk_device_, semaphore1, &sync_fd));
-  EXPECT_GT(sync_fd.get(), -1);
+  // Export a handle from the semaphore.
+  SemaphoreHandle handle =
+      vk_implementation_->GetSemaphoreHandle(vk_device_, semaphore1);
+  EXPECT_TRUE(handle.is_valid());
 
-  // Import the above sync fd into a new semaphore.
-  VkSemaphore semaphore2;
-  EXPECT_TRUE(vk_implementation_->ImportSemaphoreFdKHR(
-      vk_device_, std::move(sync_fd), &semaphore2));
+  // Import the above semaphore handle into a new semaphore.
+  VkSemaphore semaphore2 =
+      vk_implementation_->ImportSemaphoreHandle(vk_device_, std::move(handle));
+  EXPECT_NE(semaphore2, static_cast<VkSemaphore>(VK_NULL_HANDLE));
 
   // Wait for the device to be idle.
   result = vkDeviceWaitIdle(vk_device_);

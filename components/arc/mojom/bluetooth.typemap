@@ -1,0 +1,21 @@
+mojom = "//components/arc/mojom/bluetooth.mojom"
+public_headers = [
+  "//device/bluetooth/bluetooth_advertisement.h",
+  "//device/bluetooth/bluetooth_common.h",
+  "//device/bluetooth/public/cpp/bluetooth_uuid.h",
+  "//device/bluetooth/bluez/bluetooth_service_attribute_value_bluez.h",
+]
+traits_headers = [ "//components/arc/bluetooth/bluetooth_mojom_traits.h" ]
+sources = [
+  "//components/arc/bluetooth/bluetooth_mojom_traits.cc",
+]
+deps = [
+  "//device/bluetooth",
+  "//device/bluetooth/public/cpp",
+]
+type_mappings = [
+  "arc.mojom.BluetoothDeviceType=::device::BluetoothTransport",
+  "arc.mojom.BluetoothSdpAttributeType=::bluez::BluetoothServiceAttributeValueBlueZ::Type",
+  "arc.mojom.BluetoothUUID=::device::BluetoothUUID",
+  "arc.mojom.BluetoothAdvertisement=::std::unique_ptr<::device::BluetoothAdvertisement::Data>[move_only]",
+]

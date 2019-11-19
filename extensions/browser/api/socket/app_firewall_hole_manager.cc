@@ -80,8 +80,7 @@ AppFirewallHole::AppFirewallHole(
     : type_(type),
       port_(port),
       extension_id_(extension_id),
-      manager_(manager),
-      weak_factory_(this) {}
+      manager_(manager) {}
 
 void AppFirewallHole::SetVisible(bool app_visible) {
   app_visible_ = app_visible;
@@ -105,7 +104,7 @@ void AppFirewallHole::OnFirewallHoleOpened(
 }
 
 AppFirewallHoleManager::AppFirewallHoleManager(BrowserContext* context)
-    : context_(context), observer_(this), weak_factory_(this) {
+    : context_(context), observer_(this) {
   observer_.Add(AppWindowRegistry::Get(context));
 }
 

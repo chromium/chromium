@@ -43,7 +43,7 @@ TEST(InMemoryUrlProtocolTest, SetPosition) {
 
   uint8_t out;
   EXPECT_TRUE(protocol.SetPosition(sizeof(kData)));
-  EXPECT_EQ(0, protocol.Read(1, &out));
+  EXPECT_EQ(AVERROR_EOF, protocol.Read(1, &out));
 
   int i = sizeof(kData) / 2;
   EXPECT_TRUE(protocol.SetPosition(i));

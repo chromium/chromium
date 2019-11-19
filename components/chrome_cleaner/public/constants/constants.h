@@ -23,12 +23,14 @@ extern const char kChromeChannelSwitch[];
 // The path to Chrome's executable.
 extern const char kChromeExePathSwitch[];
 
-// The Mojo pipe token for IPC communication between the Software Reporter and
-// Chrome.
-extern const char kChromeMojoPipeTokenSwitch[];
-
 // Indicates that a cleaner run was started by Chrome.
 extern const char kChromePromptSwitch[];
+
+// Handle to the read end of a pipe for communicating with Chrome.
+extern const char kChromeReadHandleSwitch[];
+
+// Handle to the write end of a pipe for communicating with Chrome.
+extern const char kChromeWriteHandleSwitch[];
 
 // Indicates that the current Chrome installation was a system-level
 // installation.
@@ -67,14 +69,8 @@ extern const char kSessionIdSwitch[];
 // Indicates the group name for the SRTPrompt field trial.
 extern const char kSRTPromptFieldTrialGroupNameSwitch[];
 
-// Indicates the method Chrome will use to prompt the user to reboot if needed.
-extern const char kRebootPromptMethodSwitch[];
-
 // Indicates that metrics reporting is enabled for the current user.
 extern const char kUmaUserSwitch[];
-
-// Indicates that quarantine feature is enabled.
-extern const char kQuarantineSwitch[];
 
 // Registry paths where the reporter and the cleaner will write metrics data
 // to be reported by Chrome.

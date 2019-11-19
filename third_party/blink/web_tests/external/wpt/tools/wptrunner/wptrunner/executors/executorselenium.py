@@ -46,8 +46,8 @@ class SeleniumBaseProtocolPart(BaseProtocolPart):
     def setup(self):
         self.webdriver = self.parent.webdriver
 
-    def execute_script(self, script, async=False):
-        method = self.webdriver.execute_async_script if async else self.webdriver.execute_script
+    def execute_script(self, script, asynchronous=False):
+        method = self.webdriver.execute_async_script if asynchronous else self.webdriver.execute_script
         return method(script)
 
     def set_timeout(self, timeout):
@@ -128,7 +128,7 @@ class SeleniumTestharnessProtocolPart(TestharnessProtocolPart):
             if test_window is None:
                 after = self.webdriver.window_handles
                 if len(after) == 2:
-                    test_window = next(iter(set(after) - set([parent])))
+                    test_window = next(iter(set(after) - {parent}))
                 elif after[0] == parent and len(after) > 2:
                     # Hope the first one here is the test window
                     test_window = after[1]
@@ -148,6 +148,9 @@ class SeleniumSelectorProtocolPart(SelectorProtocolPart):
 
     def elements_by_selector(self, selector):
         return self.webdriver.find_elements_by_css_selector(selector)
+
+    def elements_by_selector_and_frame(self, element_selector, frame):
+        return self.webdriver.find_elements_by_css_selector(element_selector)
 
 
 class SeleniumClickProtocolPart(ClickProtocolPart):
@@ -247,7 +250,7 @@ class SeleniumRun(object):
         timeout = self.timeout
 
         try:
-            self.protocol.base.set_timeout((timeout + extra_timeout))
+            self.protocol.base.set_timeout(timeout + extra_timeout)
         except exceptions.ErrorInResponseException:
             self.logger.error("Lost WebDriver connection")
             return Stop
@@ -332,7 +335,7 @@ class SeleniumTestharnessExecutor(TestharnessExecutor):
         handler = CallbackHandler(self.logger, protocol, test_window)
         while True:
             result = protocol.base.execute_script(
-                self.script_resume % format_map, async=True)
+                self.script_resume % format_map, asynchronous=True)
             done, rv = handler(result)
             if done:
                 break
@@ -380,7 +383,7 @@ class SeleniumRefTestExecutor(RefTestExecutor):
         return self.convert_result(test, result)
 
     def screenshot(self, test, viewport_size, dpi):
-        # https://github.com/w3c/wptrunner/issues/166
+        # https://github.com/web-platform-tests/wpt/issues/7135
         assert viewport_size is None
         assert dpi is None
 

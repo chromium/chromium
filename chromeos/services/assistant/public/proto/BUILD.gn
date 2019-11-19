@@ -12,6 +12,7 @@ proto_library("proto") {
     "assistant_device_settings_ui.proto",
     "consent_flow_ui.proto",
     "email_opt_in_ui.proto",
+    "gaia_user_context_ui.proto",
     "get_settings_ui.proto",
     "settings_ui.proto",
   ]

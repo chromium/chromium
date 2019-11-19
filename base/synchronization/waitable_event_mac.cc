@@ -18,6 +18,8 @@
 #include "base/posix/eintr_wrapper.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/threading/thread_restrictions.h"
+#include "base/time/time.h"
+#include "base/time/time_override.h"
 #include "build/build_config.h"
 
 namespace base {
@@ -103,15 +105,14 @@ bool WaitableEvent::IsSignaled() {
 }
 
 void WaitableEvent::Wait() {
-  bool result = TimedWaitUntil(TimeTicks::Max());
+  bool result = TimedWait(TimeDelta::Max());
   DCHECK(result) << "TimedWait() should never fail with infinite timeout";
 }
 
 bool WaitableEvent::TimedWait(const TimeDelta& wait_delta) {
-  return TimedWaitUntil(TimeTicks::Now() + wait_delta);
-}
+  if (wait_delta <= TimeDelta())
+    return IsSignaled();
 
-bool WaitableEvent::TimedWaitUntil(const TimeTicks& end_time) {
   // Record the event that this thread is blocking upon (for hang diagnosis) and
   // consider blocked for scheduling purposes. Ignore this for non-blocking
   // WaitableEvents.
@@ -128,7 +129,7 @@ bool WaitableEvent::TimedWaitUntil(const TimeTicks& end_time) {
 
   mach_msg_option_t options = MACH_RCV_MSG;
 
-  if (!end_time.is_max())
+  if (!wait_delta.is_max())
     options |= MACH_RCV_TIMEOUT | MACH_RCV_INTERRUPT;
 
   mach_msg_size_t rcv_size = sizeof(msg);
@@ -139,21 +140,33 @@ bool WaitableEvent::TimedWaitUntil(const TimeTicks& end_time) {
     rcv_size = 0;
   }
 
-  kern_return_t kr;
-  mach_msg_timeout_t timeout = MACH_MSG_TIMEOUT_NONE;
-  do {
-    if (!end_time.is_max()) {
-      timeout = std::max<int64_t>(
-          0, (end_time - TimeTicks::Now()).InMillisecondsRoundedUp());
-    }
+  // TimeTicks takes care of overflow but we special case is_max() nonetheless
+  // to avoid invoking TimeTicksNowIgnoringOverride() unnecessarily (same for
+  // the increment step of the for loop if the condition variable returns
+  // early). Ref: https://crbug.com/910524#c7
+  const TimeTicks end_time =
+      wait_delta.is_max() ? TimeTicks::Max()
+                          : subtle::TimeTicksNowIgnoringOverride() + wait_delta;
+  // Fake |kr| value to boostrap the for loop.
+  kern_return_t kr = MACH_RCV_INTERRUPTED;
+  for (mach_msg_timeout_t timeout = wait_delta.is_max()
+                                        ? MACH_MSG_TIMEOUT_NONE
+                                        : wait_delta.InMillisecondsRoundedUp();
+       // If the thread is interrupted during mach_msg(), the system call will
+       // be restarted. However, the libsyscall wrapper does not adjust the
+       // timeout by the amount of time already waited. Using MACH_RCV_INTERRUPT
+       // will instead return from mach_msg(), so that the call can be retried
+       // with an adjusted timeout.
+       kr == MACH_RCV_INTERRUPTED;
+       timeout =
+           end_time.is_max()
+               ? MACH_MSG_TIMEOUT_NONE
+               : std::max<int64_t>(
+                     0, (end_time - subtle::TimeTicksNowIgnoringOverride())
+                            .InMillisecondsRoundedUp())) {
     kr = mach_msg(&msg.header, options, 0, rcv_size, receive_right_->Name(),
                   timeout, MACH_PORT_NULL);
-    // If the thread is interrupted during mach_msg(), the system call
-    // will be restarted. However, the libsyscall wrapper does not adjust
-    // the timeout by the amount of time already waited.
-    // Using MACH_RCV_INTERRUPT will instead return from mach_msg(),
-    // so that the call can be retried with an adjusted timeout.
-  } while (kr == MACH_RCV_INTERRUPTED);
+  }
 
   if (kr == KERN_SUCCESS) {
     return true;

@@ -10,7 +10,7 @@
 // and
 // out/Debug/gen/components/policy/proto/chrome_settings.proto
 // For more information on policies, please refer to:
-// http://dev.chromium.org/administrators/policy-list-3
+// https://cloud.google.com/docs/chrome-enterprise/policies
 
 // A template for one level traffic annotation.
 void network_traffic_annotation_template() {
@@ -74,7 +74,7 @@ void network_traffic_annotation_sample() {
 
 // Example for Nx1 partial annotations where the partial annotations are defined
 // in PrefetchImage1 and PrefetchImage2, and the completing annotation is
-// defined in GetBitmap. Patial annotations are missing cookies fields and are
+// defined in GetBitmap. Partial annotations are missing cookies fields and are
 // completed in GetBitmap function.
 void PrefetchImage1(const GURL& url) {
   net::PartialNetworkTrafficAnnotationTag partial_traffic_annotation =
@@ -116,7 +116,7 @@ void PrefetchImage1(const GURL& url) {
 
 void PrefetchImage2(const GURL& url) {
   net::PartialNetworkTrafficAnnotationTag partial_traffic_annotation =
-      net::DefinePartialNetworkTrafficAnnotation("credenential_avatar",
+      net::DefinePartialNetworkTrafficAnnotation("credential_avatar",
                                                  "bitmap_fetcher",
                                                  R"(
         semantics {

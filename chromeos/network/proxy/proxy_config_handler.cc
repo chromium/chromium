@@ -11,8 +11,7 @@
 #include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/values.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/dbus/shill_service_client.h"
+#include "chromeos/dbus/shill/shill_service_client.h"
 #include "chromeos/network/network_handler_callbacks.h"
 #include "chromeos/network/network_profile.h"
 #include "chromeos/network/network_profile_handler.h"
@@ -96,16 +95,13 @@ std::unique_ptr<ProxyConfigDictionary> GetProxyConfigForNetwork(
 
 void SetProxyConfigForNetwork(const ProxyConfigDictionary& proxy_config,
                               const NetworkState& network) {
-  chromeos::ShillServiceClient* shill_service_client =
-      DBusThreadManager::Get()->GetShillServiceClient();
-
   // The user's proxy setting is not stored in the Chrome preference yet. We
   // still rely on Shill storing it.
   ProxyPrefs::ProxyMode mode;
   if (!proxy_config.GetMode(&mode) || mode == ProxyPrefs::MODE_DIRECT) {
     // Return empty string for direct mode for portal check to work correctly.
     // TODO(pneubeck): Consider removing this legacy code.
-    shill_service_client->ClearProperty(
+    ShillServiceClient::Get()->ClearProperty(
         dbus::ObjectPath(network.path()), shill::kProxyConfigProperty,
         base::Bind(&NotifyNetworkStateHandler, network.path()),
         base::Bind(&network_handler::ShillErrorCallbackFunction,
@@ -114,7 +110,7 @@ void SetProxyConfigForNetwork(const ProxyConfigDictionary& proxy_config,
   } else {
     std::string proxy_config_str;
     base::JSONWriter::Write(proxy_config.GetDictionary(), &proxy_config_str);
-    shill_service_client->SetProperty(
+    ShillServiceClient::Get()->SetProperty(
         dbus::ObjectPath(network.path()), shill::kProxyConfigProperty,
         base::Value(proxy_config_str),
         base::Bind(&NotifyNetworkStateHandler, network.path()),

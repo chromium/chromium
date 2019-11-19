@@ -19,5 +19,7 @@
 
 // https://dom.spec.whatwg.org/#interface-cdatasection
 
-interface CDATASection : Text {
+[
+    Exposed=Window
+] interface CDATASection : Text {
 };

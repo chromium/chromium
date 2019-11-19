@@ -5,14 +5,20 @@
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/platform.h"
-#include "third_party/blink/renderer/platform/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/heap/heap_test_utilities.h"
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 
 namespace blink {
+
+class HeapThreadTest : public TestSupportingGC {};
+class HeapThreadDeathTest : public TestSupportingGC {};
+
 namespace heap_thread_test {
 
 static Mutex& ActiveThreadMutex() {
@@ -63,23 +69,24 @@ static void ParkWorkerThread() {
 class Object : public GarbageCollected<Object> {
  public:
   Object() {}
-  ~Object() {}
   void Trace(blink::Visitor* visitor) {}
 };
 
 class AlternatingThreadTester {
+  STACK_ALLOCATED();
+
  public:
   void Test() {
     MutexLocker locker(ActiveThreadMutex());
     ActiveThread() = kMainThreadActive;
 
     std::unique_ptr<Thread> worker_thread = Platform::Current()->CreateThread(
-        ThreadCreationParams(WebThreadType::kTestThread)
+        ThreadCreationParams(ThreadType::kTestThread)
             .SetThreadNameForTest("Test Worker Thread"));
     PostCrossThreadTask(
         *worker_thread->GetTaskRunner(), FROM_HERE,
-        CrossThreadBind(&AlternatingThreadTester::StartWorkerThread,
-                        CrossThreadUnretained(this)));
+        CrossThreadBindOnce(&AlternatingThreadTester::StartWorkerThread,
+                            CrossThreadUnretained(this)));
 
     MainThreadMain();
   }
@@ -132,7 +139,7 @@ class MemberSameThreadCheckTester : public AlternatingThreadTester {
 // TODO(keishi) This test is flaky on mac-rel bot.
 // crbug.com/709069
 #if !defined(OS_MACOSX)
-TEST(HeapDeathTest, MemberSameThreadCheck) {
+TEST_F(HeapThreadDeathTest, MemberSameThreadCheck) {
   EXPECT_DEATH(MemberSameThreadCheckTester().Test(), "");
 }
 #endif
@@ -155,7 +162,7 @@ class PersistentSameThreadCheckTester : public AlternatingThreadTester {
 // TODO(keishi) This test is flaky on mac-rel bot.
 // crbug.com/709069
 #if !defined(OS_MACOSX)
-TEST(HeapDeathTest, PersistentSameThreadCheck) {
+TEST_F(HeapThreadDeathTest, PersistentSameThreadCheck) {
   EXPECT_DEATH(PersistentSameThreadCheckTester().Test(), "");
 }
 #endif
@@ -163,7 +170,7 @@ TEST(HeapDeathTest, PersistentSameThreadCheck) {
 
 class MarkingSameThreadCheckTester : public AlternatingThreadTester {
  private:
-  class MainThreadObject : public GarbageCollectedFinalized<MainThreadObject> {
+  class MainThreadObject final : public GarbageCollected<MainThreadObject> {
    public:
     void Trace(blink::Visitor* visitor) { visitor->Trace(set_); }
     void AddToSet(Object* object) { set_.insert(42, object); }
@@ -179,7 +186,7 @@ class MarkingSameThreadCheckTester : public AlternatingThreadTester {
 
     // This will try to mark MainThreadObject when it tries to mark Object
     // it should crash.
-    PreciselyCollectGarbage();
+    TestSupportingGC::PreciselyCollectGarbage();
   }
 
   void WorkerThreadMain() override {
@@ -192,24 +199,18 @@ class MarkingSameThreadCheckTester : public AlternatingThreadTester {
 };
 
 #if DCHECK_IS_ON()
-// TODO(keishi) This test is flaky on mac-rel bot.
-// crbug.com/709069
-#if !defined(OS_MACOSX)
-TEST(HeapDeathTest, MarkingSameThreadCheck) {
+// TODO(keishi) This test is flaky on mac-rel bot. https://crbug.com/709069, and
+// times out on other bots. https://crbug.com/993148.
+TEST_F(HeapThreadDeathTest, DISABLED_MarkingSameThreadCheck) {
   // This will crash during marking, at the DCHECK in Visitor::markHeader() or
   // earlier.
   EXPECT_DEATH(MarkingSameThreadCheckTester().Test(), "");
 }
 #endif
-#endif
 
 class DestructorLockingObject
-    : public GarbageCollectedFinalized<DestructorLockingObject> {
+    : public GarbageCollected<DestructorLockingObject> {
  public:
-  static DestructorLockingObject* Create() {
-    return MakeGarbageCollected<DestructorLockingObject>();
-  }
-
   DestructorLockingObject() = default;
   virtual ~DestructorLockingObject() { ++destructor_calls_; }
 
@@ -248,20 +249,20 @@ class CrossThreadWeakPersistentTester : public AlternatingThreadTester {
 
   void WorkerThreadMain() override {
     // Step 2: Create an object and store the pointer.
-    object_ = DestructorLockingObject::Create();
+    object_ = MakeGarbageCollected<DestructorLockingObject>();
     SwitchToMainThread();
 
     // Step 4: Run a GC.
     ThreadState::Current()->CollectGarbage(
         BlinkGC::kNoHeapPointersOnStack, BlinkGC::kAtomicMarking,
-        BlinkGC::kEagerSweeping, BlinkGC::GCReason::kForcedGC);
+        BlinkGC::kEagerSweeping, BlinkGC::GCReason::kForcedGCForTesting);
     SwitchToMainThread();
   }
 
   CrossThreadWeakPersistent<DestructorLockingObject> object_;
 };
 
-TEST(HeapThreadTest, CrossThreadWeakPersistent) {
+TEST_F(HeapThreadTest, CrossThreadWeakPersistent) {
   CrossThreadWeakPersistentTester().Test();
 }
 

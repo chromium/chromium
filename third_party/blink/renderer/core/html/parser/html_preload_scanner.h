@@ -32,8 +32,10 @@
 
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
+#include "base/optional.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/media_values_cached.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/html/parser/compact_html_token.h"
 #include "third_party/blink/renderer/core/html/parser/css_preload_scanner.h"
 #include "third_party/blink/renderer/core/html/parser/html_token.h"
@@ -50,23 +52,12 @@ class HTMLParserOptions;
 class HTMLTokenizer;
 class SegmentedString;
 
-struct ViewportDescriptionWrapper {
-  ViewportDescription description;
-  bool set;
-  ViewportDescriptionWrapper() : set(false) {}
-};
-
 struct CORE_EXPORT CachedDocumentParameters {
   USING_FAST_MALLOC(CachedDocumentParameters);
 
  public:
-  static std::unique_ptr<CachedDocumentParameters> Create(Document* document) {
-    return base::WrapUnique(new CachedDocumentParameters(document));
-  }
-
-  static std::unique_ptr<CachedDocumentParameters> Create() {
-    return base::WrapUnique(new CachedDocumentParameters);
-  }
+  explicit CachedDocumentParameters(Document*);
+  CachedDocumentParameters() = default;
 
   bool do_html_preload_scanning;
   Length default_viewport_min_width;
@@ -75,10 +66,7 @@ struct CORE_EXPORT CachedDocumentParameters {
   network::mojom::ReferrerPolicy referrer_policy;
   SubresourceIntegrity::IntegrityFeatures integrity_features;
   bool lazyload_policy_enforced;
-
- private:
-  explicit CachedDocumentParameters(Document*);
-  CachedDocumentParameters() = default;
+  LocalFrame::LazyLoadImageSetting lazy_load_image_setting;
 };
 
 class TokenPreloadScanner {
@@ -97,12 +85,12 @@ class TokenPreloadScanner {
   void Scan(const HTMLToken&,
             const SegmentedString&,
             PreloadRequestStream& requests,
-            ViewportDescriptionWrapper*,
+            base::Optional<ViewportDescription>*,
             bool* is_csp_meta_tag);
   void Scan(const CompactHTMLToken&,
             const SegmentedString&,
             PreloadRequestStream& requests,
-            ViewportDescriptionWrapper*,
+            base::Optional<ViewportDescription>*,
             bool* is_csp_meta_tag);
 
   void SetPredictedBaseElementURL(const KURL& url) {
@@ -121,7 +109,7 @@ class TokenPreloadScanner {
   inline void ScanCommon(const Token&,
                          const SegmentedString&,
                          PreloadRequestStream& requests,
-                         ViewportDescriptionWrapper*,
+                         base::Optional<ViewportDescription>*,
                          bool* is_csp_meta_tag);
 
   template <typename Token>
@@ -181,31 +169,19 @@ class CORE_EXPORT HTMLPreloadScanner {
   USING_FAST_MALLOC(HTMLPreloadScanner);
 
  public:
-  static std::unique_ptr<HTMLPreloadScanner> Create(
-      const HTMLParserOptions& options,
-      const KURL& document_url,
-      std::unique_ptr<CachedDocumentParameters> document_parameters,
-      const MediaValuesCached::MediaValuesCachedData& media_values_cached_data,
-      const TokenPreloadScanner::ScannerType scanner_type) {
-    return base::WrapUnique(new HTMLPreloadScanner(
-        options, document_url, std::move(document_parameters),
-        media_values_cached_data, scanner_type));
-  }
-
-  ~HTMLPreloadScanner();
-
-  void AppendToEnd(const SegmentedString&);
-  PreloadRequestStream Scan(const KURL& document_base_element_url,
-                            ViewportDescriptionWrapper*,
-                            bool& has_csp_meta_tag);
-
- private:
   HTMLPreloadScanner(const HTMLParserOptions&,
                      const KURL& document_url,
                      std::unique_ptr<CachedDocumentParameters>,
                      const MediaValuesCached::MediaValuesCachedData&,
                      const TokenPreloadScanner::ScannerType);
+  ~HTMLPreloadScanner();
 
+  void AppendToEnd(const SegmentedString&);
+  PreloadRequestStream Scan(const KURL& document_base_element_url,
+                            base::Optional<ViewportDescription>*,
+                            bool& has_csp_meta_tag);
+
+ private:
   TokenPreloadScanner scanner_;
   SegmentedString source_;
   HTMLToken token_;

@@ -71,9 +71,14 @@ UI_BASE_EXPORT void SetRelaunchDetailsForWindow(
 // Clears the Window Property Store on an HWND.
 UI_BASE_EXPORT void ClearWindowPropertyStore(HWND hwnd);
 
-// Returns true if composition is available and turned on on the current
+// Returns true if dwm composition is available and turned on on the current
 // platform.
+// This method supports a command-line override for testing.
 UI_BASE_EXPORT bool IsAeroGlassEnabled();
+
+// Returns true if dwm composition is available and turned on on the current
+// platform.
+UI_BASE_EXPORT bool IsDwmCompositionEnabled();
 
 }  // namespace win
 }  // namespace ui

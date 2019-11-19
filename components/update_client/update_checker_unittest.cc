@@ -22,9 +22,10 @@
 #include "base/strings/stringprintf.h"
 #include "base/task/post_task.h"
 #include "base/test/bind_test_util.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/version.h"
+#include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/update_client/activity_data_service.h"
@@ -109,10 +110,7 @@ void ActivityDataServiceTest::SetDaysSinceLastRollCall(const std::string& id,
 
 }  // namespace
 
-using UpdateCheckTestParams =
-    std::tuple<bool /*is_foreground*/, bool /*use_JSON*/>;
-
-class UpdateCheckerTest : public testing::TestWithParam<UpdateCheckTestParams> {
+class UpdateCheckerTest : public testing::TestWithParam<bool> {
  public:
   UpdateCheckerTest();
   ~UpdateCheckerTest() override;
@@ -149,35 +147,30 @@ class UpdateCheckerTest : public testing::TestWithParam<UpdateCheckTestParams> {
 
   scoped_refptr<UpdateContext> update_context_;
 
-  bool use_JSON_ = false;
   bool is_foreground_ = false;
 
  private:
   scoped_refptr<UpdateContext> MakeMockUpdateContext() const;
 
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_;
   base::OnceClosure quit_closure_;
 
   DISALLOW_COPY_AND_ASSIGN(UpdateCheckerTest);
 };
 
-// This test is parameterized for |is_foreground and |use_JSON|.
-INSTANTIATE_TEST_SUITE_P(Parameterized,
-                         UpdateCheckerTest,
-                         testing::Combine(testing::Bool(), testing::Bool()));
+// This test is parameterized for |is_foreground|.
+INSTANTIATE_TEST_SUITE_P(Parameterized, UpdateCheckerTest, testing::Bool());
 
 UpdateCheckerTest::UpdateCheckerTest()
-    : scoped_task_environment_(
-          base::test::ScopedTaskEnvironment::MainThreadType::IO) {}
+    : task_environment_(base::test::TaskEnvironment::MainThreadType::IO) {}
 
 UpdateCheckerTest::~UpdateCheckerTest() {
 }
 
 void UpdateCheckerTest::SetUp() {
-  std::tie(is_foreground_, use_JSON_) = GetParam();
+  is_foreground_ = GetParam();
 
   config_ = base::MakeRefCounted<TestConfigurator>();
-  config_->SetUseJSON(use_JSON_);
 
   pref_ = std::make_unique<TestingPrefServiceSimple>();
   activity_data_service_ = std::make_unique<ActivityDataServiceTest>();
@@ -206,7 +199,7 @@ void UpdateCheckerTest::TearDown() {
 
   // The PostInterceptor requires the message loop to run to destruct correctly.
   // TODO(sorin): This is fragile and should be fixed.
-  scoped_task_environment_.RunUntilIdle();
+  task_environment_.RunUntilIdle();
 }
 
 void UpdateCheckerTest::RunThreads() {
@@ -241,6 +234,7 @@ scoped_refptr<UpdateContext> UpdateCheckerTest::MakeMockUpdateContext() const {
 
 std::unique_ptr<Component> UpdateCheckerTest::MakeComponent() const {
   CrxComponent crx_component;
+  crx_component.app_id = "jebgalgnebhfojomionfpkfelancnnkf";
   crx_component.name = "test_jebg";
   crx_component.pk_hash.assign(jebg_hash, jebg_hash + base::size(jebg_hash));
   crx_component.installer = nullptr;
@@ -258,8 +252,7 @@ std::unique_ptr<Component> UpdateCheckerTest::MakeComponent() const {
 TEST_P(UpdateCheckerTest, UpdateCheckSuccess) {
   EXPECT_TRUE(post_interceptor_->ExpectRequest(
       std::make_unique<PartialMatch>("updatecheck"),
-      test_file(use_JSON_ ? "updatecheck_reply_1.json"
-                          : "updatecheck_reply_1.xml")));
+      test_file("updatecheck_reply_1.json")));
 
   update_checker_ = UpdateChecker::Create(config_, metadata_.get());
 
@@ -282,101 +275,66 @@ TEST_P(UpdateCheckerTest, UpdateCheckSuccess) {
       << post_interceptor_->GetRequestsAsString();
 
   // Sanity check the request.
-  const auto& request = post_interceptor_->GetRequestBody(0);
-  if (use_JSON_) {
-    const auto root = base::JSONReader::Read(request);
-    ASSERT_TRUE(root);
-    const auto* request = root->FindKey("request");
-    ASSERT_TRUE(request);
-    EXPECT_TRUE(request->FindKey("@os"));
-    EXPECT_EQ("fake_prodid", request->FindKey("@updater")->GetString());
-    EXPECT_EQ("crx2,crx3", request->FindKey("acceptformat")->GetString());
-    EXPECT_TRUE(request->FindKey("arch"));
-    EXPECT_EQ("cr", request->FindKey("dedup")->GetString());
-    EXPECT_EQ("params", request->FindKey("extra")->GetString());
-    EXPECT_LT(0, request->FindPath({"hw", "physmemory"})->GetInt());
-    EXPECT_EQ("fake_lang", request->FindKey("lang")->GetString());
-    EXPECT_TRUE(request->FindKey("nacl_arch"));
-    EXPECT_EQ("fake_channel_string",
-              request->FindKey("prodchannel")->GetString());
-    EXPECT_EQ("30.0", request->FindKey("prodversion")->GetString());
-    EXPECT_EQ("3.1", request->FindKey("protocol")->GetString());
-    EXPECT_TRUE(request->FindKey("requestid"));
-    EXPECT_TRUE(request->FindKey("sessionid"));
-    EXPECT_EQ("1", request->FindKey("testrequest")->GetString());
-    EXPECT_EQ("fake_channel_string",
-              request->FindKey("updaterchannel")->GetString());
-    EXPECT_EQ("30.0", request->FindKey("updaterversion")->GetString());
+  const auto root =
+      base::JSONReader::Read(post_interceptor_->GetRequestBody(0));
+  ASSERT_TRUE(root);
+  const auto* request = root->FindKey("request");
+  ASSERT_TRUE(request);
+  EXPECT_TRUE(request->FindKey("@os"));
+  EXPECT_EQ("fake_prodid", request->FindKey("@updater")->GetString());
+  EXPECT_EQ("crx2,crx3", request->FindKey("acceptformat")->GetString());
+  EXPECT_TRUE(request->FindKey("arch"));
+  EXPECT_EQ("cr", request->FindKey("dedup")->GetString());
+  EXPECT_EQ("params", request->FindKey("extra")->GetString());
+  EXPECT_LT(0, request->FindPath({"hw", "physmemory"})->GetInt());
+  EXPECT_EQ("fake_lang", request->FindKey("lang")->GetString());
+  EXPECT_TRUE(request->FindKey("nacl_arch"));
+  EXPECT_EQ("fake_channel_string",
+            request->FindKey("prodchannel")->GetString());
+  EXPECT_EQ("30.0", request->FindKey("prodversion")->GetString());
+  EXPECT_EQ("3.1", request->FindKey("protocol")->GetString());
+  EXPECT_TRUE(request->FindKey("requestid"));
+  EXPECT_TRUE(request->FindKey("sessionid"));
+  EXPECT_EQ("1", request->FindKey("testrequest")->GetString());
+  EXPECT_EQ("fake_channel_string",
+            request->FindKey("updaterchannel")->GetString());
+  EXPECT_EQ("30.0", request->FindKey("updaterversion")->GetString());
 
-    // No "dlpref" is sent by default.
-    EXPECT_FALSE(request->FindKey("dlpref"));
+  // No "dlpref" is sent by default.
+  EXPECT_FALSE(request->FindKey("dlpref"));
 
-    EXPECT_TRUE(request->FindPath({"os", "arch"})->is_string());
-    EXPECT_EQ("Fake Operating System",
-              request->FindPath({"os", "platform"})->GetString());
-    EXPECT_TRUE(request->FindPath({"os", "version"})->is_string());
+  EXPECT_TRUE(request->FindPath({"os", "arch"})->is_string());
+  EXPECT_EQ("Fake Operating System",
+            request->FindPath({"os", "platform"})->GetString());
+  EXPECT_TRUE(request->FindPath({"os", "version"})->is_string());
 
-    const auto& app = request->FindKey("app")->GetList()[0];
-    EXPECT_EQ(kUpdateItemId, app.FindKey("appid")->GetString());
-    EXPECT_EQ("0.9", app.FindKey("version")->GetString());
-    EXPECT_EQ("TEST", app.FindKey("brand")->GetString());
-    if (is_foreground_)
-      EXPECT_EQ("ondemand", app.FindKey("installsource")->GetString());
-    EXPECT_EQ("some_ap", app.FindKey("ap")->GetString());
-    EXPECT_EQ(true, app.FindKey("enabled")->GetBool());
-    EXPECT_TRUE(app.FindKey("updatecheck"));
-    EXPECT_TRUE(app.FindKey("ping"));
-    EXPECT_EQ(-2, app.FindPath({"ping", "r"})->GetInt());
-    EXPECT_EQ("fp1", app.FindPath({"packages", "package"})
-                         ->GetList()[0]
-                         .FindKey("fp")
-                         ->GetString());
+  const auto& app = request->FindKey("app")->GetList()[0];
+  EXPECT_EQ(kUpdateItemId, app.FindKey("appid")->GetString());
+  EXPECT_EQ("0.9", app.FindKey("version")->GetString());
+  EXPECT_EQ("TEST", app.FindKey("brand")->GetString());
+  if (is_foreground_)
+    EXPECT_EQ("ondemand", app.FindKey("installsource")->GetString());
+  EXPECT_EQ("some_ap", app.FindKey("ap")->GetString());
+  EXPECT_EQ(true, app.FindKey("enabled")->GetBool());
+  EXPECT_TRUE(app.FindKey("updatecheck"));
+  EXPECT_TRUE(app.FindKey("ping"));
+  EXPECT_EQ(-2, app.FindPath({"ping", "r"})->GetInt());
+  EXPECT_EQ("fp1", app.FindPath({"packages", "package"})
+                       ->GetList()[0]
+                       .FindKey("fp")
+                       ->GetString());
 
-#if (OS_WIN)
-    EXPECT_TRUE(request->FindKey("domainjoined"));
-#if defined(GOOGLE_CHROME_BUILD)
-    const auto* updater = request->FindKey("updater");
-    EXPECT_TRUE(updater);
-    EXPECT_EQ("Omaha", updater->FindKey("name")->GetString());
-    EXPECT_TRUE(updater->FindKey("autoupdatecheckenabled")->is_bool());
-    EXPECT_TRUE(updater->FindKey("ismachine")->is_bool());
-    EXPECT_TRUE(updater->FindKey("updatepolicy")->is_int());
-#endif  // GOOGLE_CHROME_BUILD
-#endif  // OS_WINDOWS
-  } else {
-    EXPECT_THAT(request, testing::HasSubstr(
-                             R"(request protocol="3.1" dedup="cr" )"
-                             R"(acceptformat="crx2,crx3" extra="params" )"
-                             R"(testrequest="1")"));
-    // The request must not contain any "dlpref" in the default case.
-    EXPECT_THAT(request, testing::Not(testing::HasSubstr(R"( dlpref=")")));
-    EXPECT_THAT(
-        request,
-        testing::HasSubstr(
-            std::string(R"(<app appid=")") + kUpdateItemId +
-            R"(" version="0.9" brand="TEST")" +
-            (is_foreground_ ? R"( installsource="ondemand")" : "") +
-            R"( ap="some_ap" enabled="1"><updatecheck/><ping r="-2"/>)"));
-    EXPECT_THAT(request,
-                testing::HasSubstr(
-                    R"(<packages><package fp="fp1"/></packages></app>)"));
-    EXPECT_THAT(request, testing::HasSubstr("<hw physmemory="));
-
-    // Tests that the product id is injected correctly from the configurator.
-    EXPECT_THAT(request, testing::HasSubstr(
-                             R"( updater="fake_prodid" updaterversion="30.0")"
-                             R"( prodversion="30.0" )"));
-    // Tests that there is a sessionid attribute.
-    EXPECT_THAT(request, testing::HasSubstr(" sessionid="));
-#if (OS_WIN)
-    EXPECT_THAT(request, testing::HasSubstr(" domainjoined="));
-#if defined(GOOGLE_CHROME_BUILD)
-    // Check the Omaha updater state data in the request.
-    EXPECT_THAT(request, testing::HasSubstr("<updater "));
-    EXPECT_THAT(request, testing::HasSubstr(R"( name="Omaha" )"));
-#endif  // GOOGLE_CHROME_BUILD
-#endif  // OS_WINDOWS
-  }
+#if defined(OS_WIN)
+  EXPECT_TRUE(request->FindKey("domainjoined"));
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  const auto* updater = request->FindKey("updater");
+  EXPECT_TRUE(updater);
+  EXPECT_EQ("Omaha", updater->FindKey("name")->GetString());
+  EXPECT_TRUE(updater->FindKey("autoupdatecheckenabled")->is_bool());
+  EXPECT_TRUE(updater->FindKey("ismachine")->is_bool());
+  EXPECT_TRUE(updater->FindKey("updatepolicy")->is_int());
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#endif  // OS_WIN
 
   // Sanity check the arguments of the callback after parsing.
   EXPECT_EQ(ErrorCategory::kNone, error_category_);
@@ -411,8 +369,7 @@ TEST_P(UpdateCheckerTest, UpdateCheckSuccess) {
 TEST_P(UpdateCheckerTest, UpdateCheckInvalidAp) {
   EXPECT_TRUE(post_interceptor_->ExpectRequest(
       std::make_unique<PartialMatch>("updatecheck"),
-      test_file(use_JSON_ ? "updatecheck_reply_1.json"
-                          : "updatecheck_reply_1.xml")));
+      test_file("updatecheck_reply_1.json")));
 
   update_checker_ = UpdateChecker::Create(config_, metadata_.get());
 
@@ -431,7 +388,6 @@ TEST_P(UpdateCheckerTest, UpdateCheckInvalidAp) {
   RunThreads();
 
   const auto request = post_interceptor_->GetRequestBody(0);
-  if (use_JSON_) {
     const auto root = base::JSONReader::Read(request);
     ASSERT_TRUE(root);
     const auto& app = root->FindKey("request")->FindKey("app")->GetList()[0];
@@ -449,30 +405,12 @@ TEST_P(UpdateCheckerTest, UpdateCheckInvalidAp) {
                          ->GetList()[0]
                          .FindKey("fp")
                          ->GetString());
-  } else {
-    if (is_foreground_) {
-      EXPECT_THAT(request, testing::HasSubstr(
-                               std::string(R"(app appid=")") + kUpdateItemId +
-                               R"(" version="0.9" brand="TEST" )"
-                               R"(installsource="ondemand" enabled="1">)"
-                               R"(<updatecheck/><ping r="-2"/>)"));
-    } else {
-      EXPECT_THAT(request, testing::HasSubstr(
-                               std::string(R"(app appid=")") + kUpdateItemId +
-                               R"(" version="0.9" brand="TEST" enabled="1">)"
-                               R"(<updatecheck/><ping r="-2"/>)"));
-    }
-    EXPECT_THAT(request,
-                testing::HasSubstr(
-                    R"(<packages><package fp="fp1"/></packages></app>)"));
-  }
 }
 
 TEST_P(UpdateCheckerTest, UpdateCheckSuccessNoBrand) {
   EXPECT_TRUE(post_interceptor_->ExpectRequest(
       std::make_unique<PartialMatch>("updatecheck"),
-      test_file(use_JSON_ ? "updatecheck_reply_1.json"
-                          : "updatecheck_reply_1.xml")));
+      test_file("updatecheck_reply_1.json")));
 
   config_->SetBrand("TOOLONG");   // Sets an invalid brand code.
   update_checker_ = UpdateChecker::Create(config_, metadata_.get());
@@ -489,7 +427,6 @@ TEST_P(UpdateCheckerTest, UpdateCheckSuccessNoBrand) {
 
   const auto request = post_interceptor_->GetRequestBody(0);
 
-  if (use_JSON_) {
     const auto root = base::JSONReader::Read(request);
     ASSERT_TRUE(root);
     const auto& app = root->FindKey("request")->FindKey("app")->GetList()[0];
@@ -506,22 +443,6 @@ TEST_P(UpdateCheckerTest, UpdateCheckSuccessNoBrand) {
                          ->GetList()[0]
                          .FindKey("fp")
                          ->GetString());
-  } else {
-    if (is_foreground_) {
-      EXPECT_THAT(request, testing::HasSubstr(
-                               std::string(R"(app appid=")") + kUpdateItemId +
-                               R"(" version="0.9" installsource="ondemand" )"
-                               R"(enabled="1"><updatecheck/><ping r="-2"/>)"));
-    } else {
-      EXPECT_THAT(request, testing::HasSubstr(
-                               std::string(R"(app appid=")") + kUpdateItemId +
-                               R"(" version="0.9" enabled="1">)" +
-                               R"(<updatecheck/><ping r="-2"/>)"));
-    }
-    EXPECT_THAT(request,
-                testing::HasSubstr(
-                    R"(<packages><package fp="fp1"/></packages></app>)"));
-  }
 }
 
 // Simulates a 403 server response error.
@@ -553,8 +474,7 @@ TEST_P(UpdateCheckerTest, UpdateCheckError) {
 TEST_P(UpdateCheckerTest, UpdateCheckDownloadPreference) {
   EXPECT_TRUE(post_interceptor_->ExpectRequest(
       std::make_unique<PartialMatch>("updatecheck"),
-      test_file(use_JSON_ ? "updatecheck_reply_1.json"
-                          : "updatecheck_reply_1.xml")));
+      test_file("updatecheck_reply_1.json")));
 
   config_->SetDownloadPreference(string("cacheable"));
 
@@ -572,14 +492,10 @@ TEST_P(UpdateCheckerTest, UpdateCheckDownloadPreference) {
 
   // The request must contain dlpref="cacheable".
   const auto request = post_interceptor_->GetRequestBody(0);
-  if (use_JSON_) {
     const auto root = base::JSONReader().Read(request);
     ASSERT_TRUE(root);
     EXPECT_EQ("cacheable",
               root->FindKey("request")->FindKey("dlpref")->GetString());
-  } else {
-    EXPECT_THAT(request, testing::HasSubstr(R"( dlpref="cacheable")"));
-  }
 }
 
 // This test is checking that an update check signed with CUP fails, since there
@@ -588,8 +504,7 @@ TEST_P(UpdateCheckerTest, UpdateCheckDownloadPreference) {
 TEST_P(UpdateCheckerTest, UpdateCheckCupError) {
   EXPECT_TRUE(post_interceptor_->ExpectRequest(
       std::make_unique<PartialMatch>("updatecheck"),
-      test_file(use_JSON_ ? "updatecheck_reply_1.json"
-                          : "updatecheck_reply_1.xml")));
+      test_file("updatecheck_reply_1.json")));
 
   config_->SetEnabledCupSigning(true);
   update_checker_ = UpdateChecker::Create(config_, metadata_.get());
@@ -611,7 +526,6 @@ TEST_P(UpdateCheckerTest, UpdateCheckCupError) {
 
   // Sanity check the request.
   const auto& request = post_interceptor_->GetRequestBody(0);
-  if (use_JSON_) {
     const auto root = base::JSONReader::Read(request);
     ASSERT_TRUE(root);
     const auto& app = root->FindKey("request")->FindKey("app")->GetList()[0];
@@ -628,24 +542,6 @@ TEST_P(UpdateCheckerTest, UpdateCheckCupError) {
                          ->GetList()[0]
                          .FindKey("fp")
                          ->GetString());
-
-  } else {
-    if (is_foreground_) {
-      EXPECT_THAT(request, testing::HasSubstr(
-                               std::string(R"(<app appid=")") + kUpdateItemId +
-                               R"(" version="0.9" brand="TEST" )"
-                               R"(installsource="ondemand" enabled="1">)"
-                               R"(<updatecheck/><ping r="-2"/>)"));
-    } else {
-      EXPECT_THAT(request, testing::HasSubstr(
-                               std::string(R"(<app appid=")") + kUpdateItemId +
-                               R"(" version="0.9" brand="TEST" enabled="1">)"
-                               R"(<updatecheck/><ping r="-2"/>)"));
-    }
-    EXPECT_THAT(request,
-                testing::HasSubstr(
-                    R"(<packages><package fp="fp1"/></packages></app>)"));
-  }
 
   // Expect an error since the response is not trusted.
   EXPECT_EQ(ErrorCategory::kUpdateCheck, error_category_);
@@ -680,8 +576,7 @@ TEST_P(UpdateCheckerTest, UpdateCheckRequiresEncryptionError) {
 // Tests that the PersistedData will get correctly update and reserialize
 // the elapsed_days value.
 TEST_P(UpdateCheckerTest, UpdateCheckLastRollCall) {
-  const char* filename =
-      use_JSON_ ? "updatecheck_reply_4.json" : "updatecheck_reply_4.xml";
+  const char* filename = "updatecheck_reply_4.json";
   EXPECT_TRUE(post_interceptor_->ExpectRequest(
       std::make_unique<PartialMatch>("updatecheck"), test_file(filename)));
   EXPECT_TRUE(post_interceptor_->ExpectRequest(
@@ -714,7 +609,6 @@ TEST_P(UpdateCheckerTest, UpdateCheckLastRollCall) {
   ASSERT_EQ(2, post_interceptor_->GetCount())
       << post_interceptor_->GetRequestsAsString();
 
-  if (use_JSON_) {
     const auto root1 =
         base::JSONReader::Read(post_interceptor_->GetRequestBody(0));
     ASSERT_TRUE(root1);
@@ -726,17 +620,10 @@ TEST_P(UpdateCheckerTest, UpdateCheckLastRollCall) {
     const auto& app2 = root2->FindKey("request")->FindKey("app")->GetList()[0];
     EXPECT_EQ(3383, app2.FindPath({"ping", "rd"})->GetInt());
     EXPECT_TRUE(app2.FindPath({"ping", "ping_freshness"})->is_string());
-  } else {
-    EXPECT_THAT(post_interceptor_->GetRequestBody(0),
-                testing::HasSubstr(R"(<ping r="5")"));
-    EXPECT_THAT(post_interceptor_->GetRequestBody(1),
-                testing::HasSubstr(R"(<ping rd="3383" ping_freshness=)"));
-  }
 }
 
 TEST_P(UpdateCheckerTest, UpdateCheckLastActive) {
-  const char* filename =
-      use_JSON_ ? "updatecheck_reply_4.json" : "updatecheck_reply_4.xml";
+  const char* filename = "updatecheck_reply_4.json";
   EXPECT_TRUE(post_interceptor_->ExpectRequest(
       std::make_unique<PartialMatch>("updatecheck"), test_file(filename)));
   EXPECT_TRUE(post_interceptor_->ExpectRequest(
@@ -788,7 +675,6 @@ TEST_P(UpdateCheckerTest, UpdateCheckLastActive) {
   ASSERT_EQ(3, post_interceptor_->GetCount())
       << post_interceptor_->GetRequestsAsString();
 
-  if (use_JSON_) {
     {
       const auto root =
           base::JSONReader::Read(post_interceptor_->GetRequestBody(0));
@@ -814,15 +700,6 @@ TEST_P(UpdateCheckerTest, UpdateCheckLastActive) {
       EXPECT_EQ(3383, app.FindPath({"ping", "rd"})->GetInt());
       EXPECT_TRUE(app.FindPath({"ping", "ping_freshness"})->is_string());
     }
-  } else {
-    EXPECT_THAT(post_interceptor_->GetRequestBody(0),
-                testing::HasSubstr(R"(<ping a="10" r="-2"/>)"));
-    EXPECT_THAT(
-        post_interceptor_->GetRequestBody(1),
-        testing::HasSubstr(R"(<ping ad="3383" rd="3383" ping_freshness=)"));
-    EXPECT_THAT(post_interceptor_->GetRequestBody(2),
-                testing::HasSubstr(R"(<ping rd="3383" ping_freshness=)"));
-  }
 }
 
 TEST_P(UpdateCheckerTest, UpdateCheckInstallSource) {
@@ -840,34 +717,26 @@ TEST_P(UpdateCheckerTest, UpdateCheckInstallSource) {
           config_->test_url_loader_factory());
       EXPECT_TRUE(post_interceptor->ExpectRequest(
           std::make_unique<PartialMatch>("updatecheck"),
-          test_file(use_JSON_ ? "updatecheck_reply_1.json"
-                              : "updatecheck_reply_1.xml")));
+          test_file("updatecheck_reply_1.json")));
       update_checker_->CheckForUpdates(
           update_context_->session_id, {kUpdateItemId}, components, {}, false,
           base::BindOnce(&UpdateCheckerTest::UpdateCheckComplete,
                          base::Unretained(this)));
       RunThreads();
       const auto& request = post_interceptor->GetRequestBody(0);
-      if (use_JSON_) {
         const auto root = base::JSONReader::Read(request);
         ASSERT_TRUE(root);
         const auto& app =
             root->FindKey("request")->FindKey("app")->GetList()[0];
         EXPECT_EQ("ondemand", app.FindKey("installsource")->GetString());
         EXPECT_FALSE(app.FindKey("installedby"));
-      } else {
-        EXPECT_THAT(request, testing::HasSubstr(R"(installsource="ondemand")"));
-        EXPECT_THAT(request,
-                    testing::Not(testing::HasSubstr(R"(installedby=)")));
-      }
     }
     {
       auto post_interceptor = std::make_unique<URLLoaderPostInterceptor>(
           config_->test_url_loader_factory());
       EXPECT_TRUE(post_interceptor->ExpectRequest(
           std::make_unique<PartialMatch>("updatecheck"),
-          test_file(use_JSON_ ? "updatecheck_reply_1.json"
-                              : "updatecheck_reply_1.xml")));
+          test_file("updatecheck_reply_1.json")));
       crx_component->install_source = "sideload";
       crx_component->install_location = "policy";
       component->set_crx_component(*crx_component);
@@ -877,17 +746,12 @@ TEST_P(UpdateCheckerTest, UpdateCheckInstallSource) {
                          base::Unretained(this)));
       RunThreads();
       const auto& request = post_interceptor->GetRequestBody(0);
-      if (use_JSON_) {
         const auto root = base::JSONReader::Read(request);
         ASSERT_TRUE(root);
         const auto& app =
             root->FindKey("request")->FindKey("app")->GetList()[0];
         EXPECT_EQ("sideload", app.FindKey("installsource")->GetString());
         EXPECT_EQ("policy", app.FindKey("installedby")->GetString());
-      } else {
-        EXPECT_THAT(request, testing::HasSubstr(R"(installsource="sideload")"));
-        EXPECT_THAT(request, testing::HasSubstr(R"(installedby="policy")"));
-      }
     }
     return;
   }
@@ -898,30 +762,24 @@ TEST_P(UpdateCheckerTest, UpdateCheckInstallSource) {
         config_->test_url_loader_factory());
     EXPECT_TRUE(post_interceptor->ExpectRequest(
         std::make_unique<PartialMatch>("updatecheck"),
-        test_file(use_JSON_ ? "updatecheck_reply_1.json"
-                            : "updatecheck_reply_1.xml")));
+        test_file("updatecheck_reply_1.json")));
     update_checker_->CheckForUpdates(
         update_context_->session_id, {kUpdateItemId}, components, {}, false,
         base::BindOnce(&UpdateCheckerTest::UpdateCheckComplete,
                        base::Unretained(this)));
     RunThreads();
     const auto& request = post_interceptor->GetRequestBody(0);
-    if (use_JSON_) {
       const auto root = base::JSONReader::Read(request);
       ASSERT_TRUE(root);
       const auto& app = root->FindKey("request")->FindKey("app")->GetList()[0];
       EXPECT_FALSE(app.FindKey("installsource"));
-    } else {
-      EXPECT_THAT(request, testing::Not(testing::HasSubstr("installsource=")));
-    }
   }
   {
     auto post_interceptor = std::make_unique<URLLoaderPostInterceptor>(
         config_->test_url_loader_factory());
     EXPECT_TRUE(post_interceptor->ExpectRequest(
         std::make_unique<PartialMatch>("updatecheck"),
-        test_file(use_JSON_ ? "updatecheck_reply_1.json"
-                            : "updatecheck_reply_1.xml")));
+        test_file("updatecheck_reply_1.json")));
     crx_component->install_source = "webstore";
     crx_component->install_location = "external";
     component->set_crx_component(*crx_component);
@@ -931,16 +789,11 @@ TEST_P(UpdateCheckerTest, UpdateCheckInstallSource) {
                        base::Unretained(this)));
     RunThreads();
     const auto& request = post_interceptor->GetRequestBody(0);
-    if (use_JSON_) {
       const auto root = base::JSONReader::Read(request);
       ASSERT_TRUE(root);
       const auto& app = root->FindKey("request")->FindKey("app")->GetList()[0];
       EXPECT_EQ("webstore", app.FindKey("installsource")->GetString());
       EXPECT_EQ("external", app.FindKey("installedby")->GetString());
-    } else {
-      EXPECT_THAT(request, testing::HasSubstr(R"(installsource="webstore")"));
-      EXPECT_THAT(request, testing::HasSubstr(R"(installedby="external")"));
-    }
   }
 }
 
@@ -958,24 +811,18 @@ TEST_P(UpdateCheckerTest, ComponentDisabled) {
         config_->test_url_loader_factory());
     EXPECT_TRUE(post_interceptor->ExpectRequest(
         std::make_unique<PartialMatch>("updatecheck"),
-        test_file(use_JSON_ ? "updatecheck_reply_1.json"
-                            : "updatecheck_reply_1.xml")));
+        test_file("updatecheck_reply_1.json")));
     update_checker_->CheckForUpdates(
         update_context_->session_id, {kUpdateItemId}, components, {}, false,
         base::BindOnce(&UpdateCheckerTest::UpdateCheckComplete,
                        base::Unretained(this)));
     RunThreads();
     const auto& request = post_interceptor->GetRequestBody(0);
-    if (use_JSON_) {
       const auto root = base::JSONReader::Read(request);
       ASSERT_TRUE(root);
       const auto& app = root->FindKey("request")->FindKey("app")->GetList()[0];
       EXPECT_EQ(true, app.FindKey("enabled")->GetBool());
       EXPECT_FALSE(app.FindKey("disabled"));
-    } else {
-      EXPECT_THAT(request, testing::HasSubstr(R"(enabled="1")"));
-      EXPECT_THAT(request, testing::Not(testing::HasSubstr("<disabled")));
-    }
   }
 
   {
@@ -985,24 +832,18 @@ TEST_P(UpdateCheckerTest, ComponentDisabled) {
         config_->test_url_loader_factory());
     EXPECT_TRUE(post_interceptor->ExpectRequest(
         std::make_unique<PartialMatch>("updatecheck"),
-        test_file(use_JSON_ ? "updatecheck_reply_1.json"
-                            : "updatecheck_reply_1.xml")));
+        test_file("updatecheck_reply_1.json")));
     update_checker_->CheckForUpdates(
         update_context_->session_id, {kUpdateItemId}, components, {}, false,
         base::BindOnce(&UpdateCheckerTest::UpdateCheckComplete,
                        base::Unretained(this)));
     RunThreads();
     const auto& request = post_interceptor->GetRequestBody(0);
-    if (use_JSON_) {
       const auto root = base::JSONReader::Read(request);
       ASSERT_TRUE(root);
       const auto& app = root->FindKey("request")->FindKey("app")->GetList()[0];
       EXPECT_EQ(true, app.FindKey("enabled")->GetBool());
       EXPECT_FALSE(app.FindKey("disabled"));
-    } else {
-      EXPECT_THAT(request, testing::HasSubstr(R"(enabled="1")"));
-      EXPECT_THAT(request, testing::Not(testing::HasSubstr("<disabled")));
-    }
   }
 
   {
@@ -1012,15 +853,13 @@ TEST_P(UpdateCheckerTest, ComponentDisabled) {
         config_->test_url_loader_factory());
     EXPECT_TRUE(post_interceptor->ExpectRequest(
         std::make_unique<PartialMatch>("updatecheck"),
-        test_file(use_JSON_ ? "updatecheck_reply_1.json"
-                            : "updatecheck_reply_1.xml")));
+        test_file("updatecheck_reply_1.json")));
     update_checker_->CheckForUpdates(
         update_context_->session_id, {kUpdateItemId}, components, {}, false,
         base::BindOnce(&UpdateCheckerTest::UpdateCheckComplete,
                        base::Unretained(this)));
     RunThreads();
     const auto& request = post_interceptor->GetRequestBody(0);
-    if (use_JSON_) {
       const auto root = base::JSONReader::Read(request);
       ASSERT_TRUE(root);
       const auto& app = root->FindKey("request")->FindKey("app")->GetList()[0];
@@ -1028,10 +867,6 @@ TEST_P(UpdateCheckerTest, ComponentDisabled) {
       const auto& disabled = app.FindKey("disabled")->GetList();
       EXPECT_EQ(1u, disabled.size());
       EXPECT_EQ(0, disabled[0].FindKey("reason")->GetInt());
-    } else {
-      EXPECT_THAT(request, testing::HasSubstr(R"(enabled="0")"));
-      EXPECT_THAT(request, testing::HasSubstr(R"(<disabled reason="0")"));
-    }
   }
   {
     crx_component->disabled_reasons = {1};
@@ -1040,15 +875,13 @@ TEST_P(UpdateCheckerTest, ComponentDisabled) {
         config_->test_url_loader_factory());
     EXPECT_TRUE(post_interceptor->ExpectRequest(
         std::make_unique<PartialMatch>("updatecheck"),
-        test_file(use_JSON_ ? "updatecheck_reply_1.json"
-                            : "updatecheck_reply_1.xml")));
+        test_file("updatecheck_reply_1.json")));
     update_checker_->CheckForUpdates(
         update_context_->session_id, {kUpdateItemId}, components, {}, false,
         base::BindOnce(&UpdateCheckerTest::UpdateCheckComplete,
                        base::Unretained(this)));
     RunThreads();
     const auto& request = post_interceptor->GetRequestBody(0);
-    if (use_JSON_) {
       const auto root = base::JSONReader::Read(request);
       ASSERT_TRUE(root);
       const auto& app = root->FindKey("request")->FindKey("app")->GetList()[0];
@@ -1056,10 +889,6 @@ TEST_P(UpdateCheckerTest, ComponentDisabled) {
       const auto& disabled = app.FindKey("disabled")->GetList();
       EXPECT_EQ(1u, disabled.size());
       EXPECT_EQ(1, disabled[0].FindKey("reason")->GetInt());
-    } else {
-      EXPECT_THAT(request, testing::HasSubstr(R"(enabled="0")"));
-      EXPECT_THAT(request, testing::HasSubstr(R"(<disabled reason="1")"));
-    }
   }
 
   {
@@ -1069,15 +898,13 @@ TEST_P(UpdateCheckerTest, ComponentDisabled) {
         config_->test_url_loader_factory());
     EXPECT_TRUE(post_interceptor->ExpectRequest(
         std::make_unique<PartialMatch>("updatecheck"),
-        test_file(use_JSON_ ? "updatecheck_reply_1.json"
-                            : "updatecheck_reply_1.xml")));
+        test_file("updatecheck_reply_1.json")));
     update_checker_->CheckForUpdates(
         update_context_->session_id, {kUpdateItemId}, components, {}, false,
         base::BindOnce(&UpdateCheckerTest::UpdateCheckComplete,
                        base::Unretained(this)));
     RunThreads();
     const auto& request = post_interceptor->GetRequestBody(0);
-    if (use_JSON_) {
       const auto root = base::JSONReader::Read(request);
       ASSERT_TRUE(root);
       const auto& app = root->FindKey("request")->FindKey("app")->GetList()[0];
@@ -1087,12 +914,6 @@ TEST_P(UpdateCheckerTest, ComponentDisabled) {
       EXPECT_EQ(4, disabled[0].FindKey("reason")->GetInt());
       EXPECT_EQ(8, disabled[1].FindKey("reason")->GetInt());
       EXPECT_EQ(16, disabled[2].FindKey("reason")->GetInt());
-    } else {
-      EXPECT_THAT(request, testing::HasSubstr(R"(enabled="0")"));
-      EXPECT_THAT(request, testing::HasSubstr(R"(<disabled reason="4")"));
-      EXPECT_THAT(request, testing::HasSubstr(R"(<disabled reason="8")"));
-      EXPECT_THAT(request, testing::HasSubstr(R"(<disabled reason="16")"));
-    }
   }
 
   {
@@ -1102,15 +923,13 @@ TEST_P(UpdateCheckerTest, ComponentDisabled) {
         config_->test_url_loader_factory());
     EXPECT_TRUE(post_interceptor->ExpectRequest(
         std::make_unique<PartialMatch>("updatecheck"),
-        test_file(use_JSON_ ? "updatecheck_reply_1.json"
-                            : "updatecheck_reply_1.xml")));
+        test_file("updatecheck_reply_1.json")));
     update_checker_->CheckForUpdates(
         update_context_->session_id, {kUpdateItemId}, components, {}, false,
         base::BindOnce(&UpdateCheckerTest::UpdateCheckComplete,
                        base::Unretained(this)));
     RunThreads();
     const auto& request = post_interceptor->GetRequestBody(0);
-    if (use_JSON_) {
       const auto root = base::JSONReader::Read(request);
       ASSERT_TRUE(root);
       const auto& app = root->FindKey("request")->FindKey("app")->GetList()[0];
@@ -1121,13 +940,6 @@ TEST_P(UpdateCheckerTest, ComponentDisabled) {
       EXPECT_EQ(4, disabled[1].FindKey("reason")->GetInt());
       EXPECT_EQ(8, disabled[2].FindKey("reason")->GetInt());
       EXPECT_EQ(16, disabled[3].FindKey("reason")->GetInt());
-    } else {
-      EXPECT_THAT(request, testing::HasSubstr(R"(enabled="0")"));
-      EXPECT_THAT(request, testing::HasSubstr(R"(<disabled reason="0")"));
-      EXPECT_THAT(request, testing::HasSubstr(R"(<disabled reason="4")"));
-      EXPECT_THAT(request, testing::HasSubstr(R"(<disabled reason="8")"));
-      EXPECT_THAT(request, testing::HasSubstr(R"(<disabled reason="16")"));
-    }
   }
 }
 
@@ -1154,15 +966,13 @@ TEST_P(UpdateCheckerTest, UpdateCheckUpdateDisabled) {
         config_->test_url_loader_factory());
     EXPECT_TRUE(post_interceptor->ExpectRequest(
         std::make_unique<PartialMatch>("updatecheck"),
-        test_file(use_JSON_ ? "updatecheck_reply_1.json"
-                            : "updatecheck_reply_1.xml")));
+        test_file("updatecheck_reply_1.json")));
     update_checker_->CheckForUpdates(
         update_context_->session_id, {kUpdateItemId}, components, {}, false,
         base::BindOnce(&UpdateCheckerTest::UpdateCheckComplete,
                        base::Unretained(this)));
     RunThreads();
     const auto& request = post_interceptor->GetRequestBody(0);
-    if (use_JSON_) {
       const auto root = base::JSONReader::Read(request);
       ASSERT_TRUE(root);
       const auto& app = root->FindKey("request")->FindKey("app")->GetList()[0];
@@ -1170,12 +980,6 @@ TEST_P(UpdateCheckerTest, UpdateCheckUpdateDisabled) {
       EXPECT_EQ("0.9", app.FindKey("version")->GetString());
       EXPECT_EQ(true, app.FindKey("enabled")->GetBool());
       EXPECT_TRUE(app.FindKey("updatecheck")->DictEmpty());
-    } else {
-      EXPECT_THAT(
-          request,
-          testing::HasSubstr(std::string(R"(<app appid=")") + kUpdateItemId +
-                             R"(" version="0.9" enabled="1"><updatecheck/>)"));
-    }
   }
   {
     // Tests the scenario where:
@@ -1188,15 +992,13 @@ TEST_P(UpdateCheckerTest, UpdateCheckUpdateDisabled) {
         config_->test_url_loader_factory());
     EXPECT_TRUE(post_interceptor->ExpectRequest(
         std::make_unique<PartialMatch>("updatecheck"),
-        test_file(use_JSON_ ? "updatecheck_reply_1.json"
-                            : "updatecheck_reply_1.xml")));
+        test_file("updatecheck_reply_1.json")));
     update_checker_->CheckForUpdates(
         update_context_->session_id, {kUpdateItemId}, components, {}, false,
         base::BindOnce(&UpdateCheckerTest::UpdateCheckComplete,
                        base::Unretained(this)));
     RunThreads();
     const auto& request = post_interceptor->GetRequestBody(0);
-    if (use_JSON_) {
       const auto root = base::JSONReader::Read(request);
       ASSERT_TRUE(root);
       const auto& app = root->FindKey("request")->FindKey("app")->GetList()[0];
@@ -1204,12 +1006,6 @@ TEST_P(UpdateCheckerTest, UpdateCheckUpdateDisabled) {
       EXPECT_EQ("0.9", app.FindKey("version")->GetString());
       EXPECT_EQ(true, app.FindKey("enabled")->GetBool());
       EXPECT_TRUE(app.FindPath({"updatecheck", "updatedisabled"})->GetBool());
-    } else {
-      EXPECT_THAT(request, testing::HasSubstr(
-                               std::string(R"(<app appid=")") + kUpdateItemId +
-                               R"(" version="0.9" enabled="1">)" +
-                               R"(<updatecheck updatedisabled="true"/>)"));
-    }
   }
   {
     // Tests the scenario where:
@@ -1222,15 +1018,13 @@ TEST_P(UpdateCheckerTest, UpdateCheckUpdateDisabled) {
         config_->test_url_loader_factory());
     EXPECT_TRUE(post_interceptor->ExpectRequest(
         std::make_unique<PartialMatch>("updatecheck"),
-        test_file(use_JSON_ ? "updatecheck_reply_1.json"
-                            : "updatecheck_reply_1.xml")));
+        test_file("updatecheck_reply_1.json")));
     update_checker_->CheckForUpdates(
         update_context_->session_id, {kUpdateItemId}, components, {}, true,
         base::BindOnce(&UpdateCheckerTest::UpdateCheckComplete,
                        base::Unretained(this)));
     RunThreads();
     const auto& request = post_interceptor->GetRequestBody(0);
-    if (use_JSON_) {
       const auto root = base::JSONReader::Read(request);
       ASSERT_TRUE(root);
       const auto& app = root->FindKey("request")->FindKey("app")->GetList()[0];
@@ -1238,12 +1032,6 @@ TEST_P(UpdateCheckerTest, UpdateCheckUpdateDisabled) {
       EXPECT_EQ("0.9", app.FindKey("version")->GetString());
       EXPECT_EQ(true, app.FindKey("enabled")->GetBool());
       EXPECT_TRUE(app.FindKey("updatecheck")->DictEmpty());
-    } else {
-      EXPECT_THAT(
-          request,
-          testing::HasSubstr(std::string(R"(<app appid=")") + kUpdateItemId +
-                             R"(" version="0.9" enabled="1"><updatecheck/>)"));
-    }
   }
   {
     // Tests the scenario where:
@@ -1256,15 +1044,13 @@ TEST_P(UpdateCheckerTest, UpdateCheckUpdateDisabled) {
         config_->test_url_loader_factory());
     EXPECT_TRUE(post_interceptor->ExpectRequest(
         std::make_unique<PartialMatch>("updatecheck"),
-        test_file(use_JSON_ ? "updatecheck_reply_1.json"
-                            : "updatecheck_reply_1.xml")));
+        test_file("updatecheck_reply_1.json")));
     update_checker_->CheckForUpdates(
         update_context_->session_id, {kUpdateItemId}, components, {}, true,
         base::BindOnce(&UpdateCheckerTest::UpdateCheckComplete,
                        base::Unretained(this)));
     RunThreads();
     const auto& request = post_interceptor->GetRequestBody(0);
-    if (use_JSON_) {
       const auto root = base::JSONReader::Read(request);
       ASSERT_TRUE(root);
       const auto& app = root->FindKey("request")->FindKey("app")->GetList()[0];
@@ -1272,20 +1058,13 @@ TEST_P(UpdateCheckerTest, UpdateCheckUpdateDisabled) {
       EXPECT_EQ("0.9", app.FindKey("version")->GetString());
       EXPECT_EQ(true, app.FindKey("enabled")->GetBool());
       EXPECT_TRUE(app.FindKey("updatecheck")->DictEmpty());
-    } else {
-      EXPECT_THAT(
-          request,
-          testing::HasSubstr(std::string(R"(<app appid=")") + kUpdateItemId +
-                             R"(" version="0.9" enabled="1"><updatecheck/>)"));
-    }
   }
 }
 
 TEST_P(UpdateCheckerTest, NoUpdateActionRun) {
   EXPECT_TRUE(post_interceptor_->ExpectRequest(
       std::make_unique<PartialMatch>("updatecheck"),
-      test_file(use_JSON_ ? "updatecheck_reply_noupdate.json"
-                          : "updatecheck_reply_noupdate.xml")));
+      test_file("updatecheck_reply_noupdate.json")));
   update_checker_ = UpdateChecker::Create(config_, metadata_.get());
 
   IdToComponentPtrMap components;
@@ -1316,8 +1095,7 @@ TEST_P(UpdateCheckerTest, NoUpdateActionRun) {
 TEST_P(UpdateCheckerTest, UpdatePauseResume) {
   EXPECT_TRUE(post_interceptor_->ExpectRequest(
       std::make_unique<PartialMatch>("updatecheck"),
-      test_file(use_JSON_ ? "updatecheck_reply_noupdate.json"
-                          : "updatecheck_reply_noupdate.xml")));
+      test_file("updatecheck_reply_noupdate.json")));
   post_interceptor_->url_job_request_ready_callback(base::BindOnce(
       [](URLLoaderPostInterceptor* post_interceptor) {
         post_interceptor->Resume();
@@ -1340,7 +1118,6 @@ TEST_P(UpdateCheckerTest, UpdatePauseResume) {
   RunThreads();
 
   const auto& request = post_interceptor_->GetRequestBody(0);
-  if (use_JSON_) {
     const auto root = base::JSONReader::Read(request);
     ASSERT_TRUE(root);
     const auto& app = root->FindKey("request")->FindKey("app")->GetList()[0];
@@ -1355,15 +1132,6 @@ TEST_P(UpdateCheckerTest, UpdatePauseResume) {
                          ->GetList()[0]
                          .FindKey("fp")
                          ->GetString());
-  } else {
-    EXPECT_THAT(request, testing::HasSubstr(
-                             std::string(R"(<app appid=")") + kUpdateItemId +
-                             R"(" version="0.9" brand="TEST" enabled="1">)" +
-                             R"(<updatecheck/><ping r="-2"/>)"));
-    EXPECT_THAT(request,
-                testing::HasSubstr(
-                    R"(<packages><package fp="fp1"/></packages></app>)"));
-  }
 }
 
 // Tests that an update checker object and its underlying SimpleURLLoader can
@@ -1374,7 +1142,7 @@ TEST_P(UpdateCheckerTest, UpdateResetUpdateChecker) {
 
   EXPECT_TRUE(post_interceptor_->ExpectRequest(
       std::make_unique<PartialMatch>("updatecheck"),
-      test_file("updatecheck_reply_1.xml")));
+      test_file("updatecheck_reply_1.json")));
   post_interceptor_->url_job_request_ready_callback(base::BindOnce(
       [](base::OnceClosure quit_closure) { std::move(quit_closure).Run(); },
       std::move(quit_closure)));
@@ -1396,8 +1164,7 @@ TEST_P(UpdateCheckerTest, UpdateResetUpdateChecker) {
 TEST_P(UpdateCheckerTest, ParseErrorProtocolVersionMismatch) {
   EXPECT_TRUE(post_interceptor_->ExpectRequest(
       std::make_unique<PartialMatch>("updatecheck"),
-      test_file(use_JSON_ ? "updatecheck_reply_parse_error.json"
-                          : "updatecheck_reply_parse_error.xml")));
+      test_file("updatecheck_reply_parse_error.json")));
 
   update_checker_ = UpdateChecker::Create(config_, metadata_.get());
 
@@ -1426,8 +1193,7 @@ TEST_P(UpdateCheckerTest, ParseErrorProtocolVersionMismatch) {
 TEST_P(UpdateCheckerTest, ParseErrorAppStatusErrorUnknownApplication) {
   EXPECT_TRUE(post_interceptor_->ExpectRequest(
       std::make_unique<PartialMatch>("updatecheck"),
-      test_file(use_JSON_ ? "updatecheck_reply_unknownapp.json"
-                          : "updatecheck_reply_unknownapp.xml")));
+      test_file("updatecheck_reply_unknownapp.json")));
 
   update_checker_ = UpdateChecker::Create(config_, metadata_.get());
 

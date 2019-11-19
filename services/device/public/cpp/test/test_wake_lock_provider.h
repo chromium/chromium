@@ -12,8 +12,9 @@
 
 #include "base/callback_forward.h"
 #include "base/macros.h"
-#include "mojo/public/cpp/bindings/binding_set.h"
-#include "mojo/public/cpp/bindings/interface_ptr_set.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
 #include "services/device/public/mojom/wake_lock.mojom.h"
 #include "services/device/public/mojom/wake_lock_provider.mojom.h"
 #include "services/service_manager/public/cpp/service.h"
@@ -26,23 +27,27 @@ namespace device {
 class TestWakeLockProvider : public mojom::WakeLockProvider,
                              public service_manager::Service {
  public:
+  TestWakeLockProvider();
   explicit TestWakeLockProvider(service_manager::mojom::ServiceRequest request);
   ~TestWakeLockProvider() override;
 
   // For internal use only.
   class TestWakeLock;
 
+  void BindReceiver(mojo::PendingReceiver<mojom::WakeLockProvider> receiver);
+
   // mojom::WakeLockProvider:
   void GetWakeLockContextForID(
       int context_id,
-      mojo::InterfaceRequest<mojom::WakeLockContext> request) override;
-  void GetWakeLockWithoutContext(mojom::WakeLockType type,
-                                 mojom::WakeLockReason reason,
-                                 const std::string& description,
-                                 mojom::WakeLockRequest request) override;
+      mojo::PendingReceiver<mojom::WakeLockContext> receiver) override;
+  void GetWakeLockWithoutContext(
+      mojom::WakeLockType type,
+      mojom::WakeLockReason reason,
+      const std::string& description,
+      mojo::PendingReceiver<mojom::WakeLock> receiver) override;
   void NotifyOnWakeLockDeactivation(
       mojom::WakeLockType type,
-      mojom::WakeLockObserverPtr observer) override;
+      mojo::PendingRemote<mojom::WakeLockObserver> pending_observer) override;
   void GetActiveWakeLocksForTests(
       mojom::WakeLockType type,
       GetActiveWakeLocksForTestsCallback callback) override;
@@ -66,9 +71,9 @@ class TestWakeLockProvider : public mojom::WakeLockProvider,
   // Called by a wake lock when the lock is canceled for the last time.
   void OnWakeLockDeactivated(mojom::WakeLockType type);
 
-  service_manager::ServiceBinding service_binding_;
+  service_manager::ServiceBinding service_binding_{this};
 
-  mojo::BindingSet<mojom::WakeLockProvider> bindings_;
+  mojo::ReceiverSet<mojom::WakeLockProvider> receivers_;
 
   // Stores wake lock count and observers associated with each wake lock type.
   std::map<mojom::WakeLockType, std::unique_ptr<WakeLockDataPerType>>

@@ -24,22 +24,23 @@ class MiceAccountReconcilorDelegate : public AccountReconcilorDelegate {
   bool IsReconcileEnabled() const override;
   bool IsAccountConsistencyEnforced() const override;
   gaia::GaiaSource GetGaiaApiSource() const override;
-  std::string GetFirstGaiaAccountForReconcile(
-      const std::vector<std::string>& chrome_accounts,
+  CoreAccountId GetFirstGaiaAccountForReconcile(
+      const std::vector<CoreAccountId>& chrome_accounts,
       const std::vector<gaia::ListedAccount>& gaia_accounts,
-      const std::string& primary_account,
+      const CoreAccountId& primary_account,
       bool first_execution,
       bool will_logout) const override;
-  std::vector<std::string> GetChromeAccountsForReconcile(
-      const std::vector<std::string>& chrome_accounts,
-      const std::string& primary_account,
+  std::vector<CoreAccountId> GetChromeAccountsForReconcile(
+      const std::vector<CoreAccountId>& chrome_accounts,
+      const CoreAccountId& primary_account,
       const std::vector<gaia::ListedAccount>& gaia_accounts,
       const gaia::MultiloginMode mode) const override;
   gaia::MultiloginMode CalculateModeForReconcile(
       const std::vector<gaia::ListedAccount>& gaia_accounts,
-      const std::string primary_account,
+      const CoreAccountId& primary_account,
       bool first_execution,
       bool primary_has_error) const override;
+  bool IsUnknownInvalidAccountInCookieAllowed() const override;
 
   DISALLOW_COPY_AND_ASSIGN(MiceAccountReconcilorDelegate);
 };

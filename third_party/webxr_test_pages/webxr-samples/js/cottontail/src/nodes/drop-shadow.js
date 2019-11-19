@@ -25,16 +25,19 @@ import {PrimitiveStream} from '../geometry/primitive-stream.js';
 const GL = WebGLRenderingContext; // For enums
 
 const SHADOW_SEGMENTS = 32;
-const SHADOW_GROUND_OFFSET = 0.01;
-const SHADOW_CENTER_ALPHA = 0.7;
-const SHADOW_INNER_ALPHA = 0.3;
-const SHADOW_OUTER_ALPHA = 0.0;
-const SHADOW_INNER_RADIUS = 0.6;
-const SHADOW_OUTER_RADIUS = 1.0;
+
+const DEFAULT_SHADOW_GROUND_OFFSET = 0.01;
+const DEFAULT_SHADOW_INNER_ALPHA = 0.3;
+const DEFAULT_SHADOW_CENTER_ALPHA = 0.7;
+const DEFAULT_SHADOW_OUTER_ALPHA = 0.0;
+const DEFAULT_SHADOW_INNER_RADIUS = 0.6;
+const DEFAULT_SHADOW_OUTER_RADIUS = 1.0;
 
 class DropShadowMaterial extends Material {
-  constructor() {
+  constructor(options = {}) {
     super();
+
+    this.baseColor = this.defineUniform('baseColor', options.baseColor);
 
     this.state.blend = true;
     this.state.blendFuncSrc = GL.ONE;
@@ -64,15 +67,29 @@ class DropShadowMaterial extends Material {
     return `
     varying float vShadow;
 
+    uniform vec3 baseColor;
+
     vec4 fragment_main() {
-      return vec4(0.0, 0.0, 0.0, vShadow);
+      return vec4(baseColor, vShadow);
     }`;
   }
 }
 
 export class DropShadowNode extends Node {
-  constructor(iconTexture, callback) {
+  constructor(options = {}) {
     super();
+
+    if(!options.baseColor)
+      options.baseColor = [0,0,0];
+
+    this.material = new DropShadowMaterial(options);
+
+    this.SHADOW_INNER_RADIUS = options.shadow_inner_radius || DEFAULT_SHADOW_INNER_RADIUS;
+    this.SHADOW_OUTER_RADIUS = options.shadow_outer_radius || DEFAULT_SHADOW_OUTER_RADIUS;
+    this.SHADOW_GROUND_OFFSET = options.shadow_ground_offset || DEFAULT_SHADOW_GROUND_OFFSET;
+    this.SHADOW_INNER_ALPHA = options.shadow_inner_alpha || DEFAULT_SHADOW_INNER_ALPHA;
+    this.SHADOW_CENTER_ALPHA = options.shadow_center_alpha || DEFAULT_SHADOW_CENTER_ALPHA;
+    this.SHADOW_OUTER_ALPHA = options.shadow_outer_alpha || DEFAULT_SHADOW_OUTER_ALPHA;
   }
 
   onRendererChanged(renderer) {
@@ -81,7 +98,7 @@ export class DropShadowNode extends Node {
     stream.startGeometry();
 
     // Shadow center
-    stream.pushVertex(0, SHADOW_GROUND_OFFSET, 0, SHADOW_CENTER_ALPHA);
+    stream.pushVertex(0, this.SHADOW_GROUND_OFFSET, 0, this.SHADOW_CENTER_ALPHA);
 
     let segRad = ((Math.PI * 2.0) / SHADOW_SEGMENTS);
 
@@ -92,8 +109,18 @@ export class DropShadowNode extends Node {
       let rad = i * segRad;
       let x = Math.cos(rad);
       let y = Math.sin(rad);
-      stream.pushVertex(x * SHADOW_INNER_RADIUS, SHADOW_GROUND_OFFSET, y * SHADOW_INNER_RADIUS, SHADOW_INNER_ALPHA);
-      stream.pushVertex(x * SHADOW_OUTER_RADIUS, SHADOW_GROUND_OFFSET, y * SHADOW_OUTER_RADIUS, SHADOW_OUTER_ALPHA);
+
+      stream.pushVertex(
+        x * this.SHADOW_INNER_RADIUS,
+        this.SHADOW_GROUND_OFFSET,
+        y * this.SHADOW_INNER_RADIUS,
+        this.SHADOW_INNER_ALPHA);
+
+      stream.pushVertex(
+        x * this.SHADOW_OUTER_RADIUS,
+        this.SHADOW_GROUND_OFFSET,
+        y * this.SHADOW_OUTER_RADIUS,
+        this.SHADOW_OUTER_ALPHA);
 
       if (i > 0) {
         // Inner circle
@@ -113,7 +140,7 @@ export class DropShadowNode extends Node {
     stream.endGeometry();
 
     let shadowPrimitive = stream.finishPrimitive(renderer);
-    this._shadowRenderPrimitive = renderer.createRenderPrimitive(shadowPrimitive, new DropShadowMaterial());
+    this._shadowRenderPrimitive = renderer.createRenderPrimitive(shadowPrimitive, this.material);
     this.addRenderPrimitive(this._shadowRenderPrimitive);
   }
 }

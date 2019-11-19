@@ -41,10 +41,15 @@ void OverflowBubble::Show(OverflowButton* overflow_button,
       shelf_view->shelf_widget()->GetShelfBackgroundColor());
   overflow_button_ = overflow_button;
 
-  TrayBackgroundView::InitializeBubbleAnimations(bubble_->GetWidget());
-  bubble_->GetWidget()->AddObserver(this);
-  bubble_->GetWidget()->Show();
-  Shell::Get()->focus_cycler()->AddWidget(bubble_->GetWidget());
+  views::Widget* widget = bubble_->GetWidget();
+  TrayBackgroundView::InitializeBubbleAnimations(widget);
+  widget->AddObserver(this);
+  // Show the bubble without activating it so that if the keyboard focus is on
+  // the overflow button, it remains there and allows toggling with the
+  // keyboard.
+  widget->ShowInactive();
+  widget->GetFocusManager()->set_arrow_key_traversal_enabled_for_widget(true);
+  Shell::Get()->focus_cycler()->AddWidget(widget);
 }
 
 void OverflowBubble::Hide() {

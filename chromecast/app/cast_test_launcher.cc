@@ -7,7 +7,9 @@
 #include "base/system/sys_info.h"
 #include "base/test/launcher/test_launcher.h"
 #include "base/test/test_suite.h"
+#include "build/build_config.h"
 #include "chromecast/app/cast_main_delegate.h"
+#include "content/public/common/network_service_util.h"
 #include "content/public/test/test_launcher.h"
 #include "ipc/ipc_channel.h"
 #include "mojo/core/embedder/embedder.h"
@@ -22,8 +24,10 @@ class CastTestLauncherDelegate : public content::TestLauncherDelegate {
 
   int RunTestSuite(int argc, char** argv) override {
     base::TestSuite test_suite(argc, argv);
-    // Browser tests are expected not to tear-down various globals.
+    // Browser tests are expected not to tear-down various globals and may
+    // complete with the thread priority being above NORMAL.
     test_suite.DisableCheckForLeakedGlobals();
+    test_suite.DisableCheckForThreadPriorityAtTestEnd();
     return test_suite.Run();
   }
 
@@ -34,9 +38,11 @@ class CastTestLauncherDelegate : public content::TestLauncherDelegate {
   }
 
  protected:
+#if !defined(OS_ANDROID)
   content::ContentMainDelegate* CreateContentMainDelegate() override {
     return new CastMainDelegate();
   }
+#endif  // defined(OS_ANDROID)
 
  private:
   DISALLOW_COPY_AND_ASSIGN(CastTestLauncherDelegate);
@@ -53,5 +59,6 @@ int main(int argc, char** argv) {
   }
   chromecast::shell::CastTestLauncherDelegate launcher_delegate;
   mojo::core::Init();
+  content::ForceInProcessNetworkService(true);
   return content::LaunchTests(&launcher_delegate, parallel_jobs, argc, argv);
 }

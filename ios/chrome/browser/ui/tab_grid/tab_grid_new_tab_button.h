@@ -9,19 +9,18 @@
 
 #import "ios/chrome/browser/ui/tab_grid/tab_grid_paging.h"
 
-// The size class determines the intrinsic size of the button.
-typedef NS_ENUM(NSUInteger, TabGridNewTabButtonSizeClass) {
-  TabGridNewTabButtonSizeClassSmall = 1,
-  TabGridNewTabButtonSizeClassLarge,
-};
+@interface TabGridNewTabButton : UIButton
 
-// The "new tab" button is a button that the user taps when they want to create
-// a new tab. Every combination of |sizeClass| and |page| results in a
-// differently configured button.
-@interface TabGridNewTabButton : UIBarButtonItem
-@property(nonatomic, strong, readonly) UIButton* button;
 @property(nonatomic, assign) TabGridPage page;
-@property(nonatomic, assign) TabGridNewTabButtonSizeClass sizeClass;
+
+// Init with image for regular/incognito page.
+- (instancetype)initWithRegularImage:(UIImage*)regularImage
+                      incognitoImage:(UIImage*)incognitoImage
+    NS_DESIGNATED_INITIALIZER;
+- (instancetype)init NS_UNAVAILABLE;
+- (instancetype)initWithFrame:(CGRect)frame NS_UNAVAILABLE;
+- (instancetype)initWithCoder:(NSCoder*)coder NS_UNAVAILABLE;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_TAB_GRID_TAB_GRID_NEW_TAB_BUTTON_H_

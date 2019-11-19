@@ -5,10 +5,12 @@
 #include "chromecast/media/cma/backend/fuchsia/mixer_output_stream_fuchsia.h"
 
 #include <fuchsia/media/cpp/fidl.h>
+#include <lib/sys/cpp/component_context.h>
 #include <zircon/syscalls.h>
 
 #include "base/command_line.h"
-#include "base/fuchsia/service_directory_client.h"
+#include "base/fuchsia/default_context.h"
+#include "base/memory/writable_shared_memory_region.h"
 #include "base/time/time.h"
 #include "chromecast/base/chromecast_switches.h"
 #include "media/base/audio_sample_types.h"
@@ -52,8 +54,9 @@ bool MixerOutputStreamFuchsia::Start(int requested_sample_rate, int channels) {
 
   // Connect |audio_renderer_|.
   fuchsia::media::AudioPtr audio_server =
-      base::fuchsia::ServiceDirectoryClient::ForCurrentProcess()
-          ->ConnectToService<fuchsia::media::Audio>();
+      base::fuchsia::ComponentContextForCurrentProcess()
+          ->svc()
+          ->Connect<fuchsia::media::Audio>();
   audio_server->CreateAudioRenderer(audio_renderer_.NewRequest());
   audio_renderer_.set_error_handler(
       [this](zx_status_t status) { this->OnRendererError(status); });
@@ -73,6 +76,10 @@ bool MixerOutputStreamFuchsia::Start(int requested_sample_rate, int channels) {
       fit::bind_member(this, &MixerOutputStreamFuchsia::OnMinLeadTimeChanged);
 
   return true;
+}
+
+int MixerOutputStreamFuchsia::GetNumChannels() {
+  return channels_;
 }
 
 int MixerOutputStreamFuchsia::GetSampleRate() {
@@ -104,7 +111,7 @@ bool MixerOutputStreamFuchsia::Write(const float* data,
   DCHECK_EQ(data_size % channels_, 0);
 
   // Allocate payload buffer if necessary.
-  if (!payload_buffer_.mapped_size() && !InitializePayloadBuffer())
+  if (!payload_buffer_.IsValid() && !InitializePayloadBuffer())
     return false;
 
   // If Write() was called for the current playback position then assume that
@@ -120,11 +127,11 @@ bool MixerOutputStreamFuchsia::Write(const float* data,
     reference_time_ = base::TimeTicks();
 
   size_t packet_size = data_size * sizeof(float);
-  if (payload_buffer_pos_ + packet_size > payload_buffer_.mapped_size()) {
+  if (payload_buffer_pos_ + packet_size > payload_buffer_.size()) {
     payload_buffer_pos_ = 0;
   }
 
-  DCHECK_LE(payload_buffer_pos_ + data_size, payload_buffer_.mapped_size());
+  DCHECK_LE(payload_buffer_pos_ + data_size, payload_buffer_.size());
   memcpy(reinterpret_cast<uint8_t*>(payload_buffer_.memory()) +
              payload_buffer_pos_,
          data, packet_size);
@@ -184,14 +191,18 @@ size_t MixerOutputStreamFuchsia::GetMinBufferSize() {
 
 bool MixerOutputStreamFuchsia::InitializePayloadBuffer() {
   size_t buffer_size = GetMinBufferSize();
-  if (!payload_buffer_.CreateAndMapAnonymous(buffer_size)) {
+  auto region = base::WritableSharedMemoryRegion::Create(buffer_size);
+  payload_buffer_ = region.Map();
+  if (!payload_buffer_.IsValid()) {
     LOG(WARNING) << "Failed to allocate VMO of size " << buffer_size;
     return false;
   }
 
   payload_buffer_pos_ = 0;
   audio_renderer_->AddPayloadBuffer(
-      kBufferId, zx::vmo(payload_buffer_.handle().Duplicate().GetHandle()));
+      kBufferId, base::WritableSharedMemoryRegion::TakeHandleForSerialization(
+                     std::move(region))
+                     .PassPlatformHandle());
 
   return true;
 }
@@ -215,9 +226,9 @@ void MixerOutputStreamFuchsia::OnMinLeadTimeChanged(int64_t min_lead_time) {
   // lated in PumpSamples(). This is necessary because VMO allocation may fail
   // and it's not possible to report that error here - OnMinLeadTimeChanged()
   // may be invoked before Start().
-  if (payload_buffer_.mapped_size() > 0 &&
-      GetMinBufferSize() > payload_buffer_.mapped_size()) {
-    payload_buffer_.Unmap();
+  if (payload_buffer_.IsValid() &&
+      GetMinBufferSize() > payload_buffer_.size()) {
+    payload_buffer_ = {};
   }
 }
 

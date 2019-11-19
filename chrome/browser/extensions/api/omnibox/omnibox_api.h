@@ -18,6 +18,7 @@
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/search_engines/template_url_service.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
+#include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
 #include "ui/base/window_open_disposition.h"
 
@@ -35,7 +36,6 @@ class Image;
 }
 
 namespace extensions {
-class ExtensionRegistry;
 
 // Event router class for events related to the omnibox API.
 class ExtensionOmniboxEventRouter {
@@ -74,7 +74,7 @@ class ExtensionOmniboxEventRouter {
   DISALLOW_COPY_AND_ASSIGN(ExtensionOmniboxEventRouter);
 };
 
-class OmniboxSendSuggestionsFunction : public UIThreadExtensionFunction {
+class OmniboxSendSuggestionsFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("omnibox.sendSuggestions", OMNIBOX_SENDSUGGESTIONS)
 
@@ -134,7 +134,7 @@ class OmniboxAPI : public BrowserContextKeyedAPI,
 
   // Listen to extension load, unloaded notifications.
   ScopedObserver<ExtensionRegistry, ExtensionRegistryObserver>
-      extension_registry_observer_;
+      extension_registry_observer_{this};
 
   // Keeps track of favicon-sized omnibox icons for extensions.
   ExtensionIconManager omnibox_icon_manager_;
@@ -147,7 +147,7 @@ class OmniboxAPI : public BrowserContextKeyedAPI,
 template <>
 void BrowserContextKeyedAPIFactory<OmniboxAPI>::DeclareFactoryDependencies();
 
-class OmniboxSetDefaultSuggestionFunction : public UIThreadExtensionFunction {
+class OmniboxSetDefaultSuggestionFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("omnibox.setDefaultSuggestion",
                              OMNIBOX_SETDEFAULTSUGGESTION)

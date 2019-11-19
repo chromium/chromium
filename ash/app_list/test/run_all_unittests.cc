@@ -15,7 +15,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/env.h"
 #include "ui/base/resource/resource_bundle.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/base/ui_base_paths.h"
 #include "ui/gl/test/gl_surface_test_support.h"
 
@@ -44,9 +43,7 @@ class AppListTestSuite : public base::TestSuite {
 
     base::DiscardableMemoryAllocator::SetInstance(
         &discardable_memory_allocator_);
-    env_ = aura::Env::CreateInstance(features::IsSingleProcessMash()
-                                         ? aura::Env::Mode::MUS
-                                         : aura::Env::Mode::LOCAL);
+    env_ = aura::Env::CreateInstance();
   }
 
   void Shutdown() override {

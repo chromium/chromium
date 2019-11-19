@@ -5,13 +5,15 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_ANIMATIONWORKLET_ANIMATOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_ANIMATIONWORKLET_ANIMATOR_H_
 
-#include "third_party/blink/renderer/modules/animationworklet/worklet_group_effect_proxy.h"
+#include "third_party/blink/renderer/core/animation/timing.h"
+#include "third_party/blink/renderer/modules/animationworklet/worklet_animation_effect_timings.h"
+#include "third_party/blink/renderer/modules/animationworklet/worklet_animation_options.h"
+#include "third_party/blink/renderer/modules/animationworklet/worklet_group_effect.h"
 #include "third_party/blink/renderer/platform/bindings/name_client.h"
-#include "third_party/blink/renderer/platform/bindings/trace_wrapper_member.h"
 #include "third_party/blink/renderer/platform/bindings/trace_wrapper_v8_reference.h"
 #include "third_party/blink/renderer/platform/graphics/animation_worklet_mutators_state.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
-#include "third_party/blink/renderer/platform/wtf/time.h"
+
 #include "v8/include/v8.h"
 
 namespace blink {
@@ -21,13 +23,15 @@ class AnimatorDefinition;
 // Represents an animator instance. It owns the underlying |v8::Object| for the
 // instance and knows how to invoke the |animate| function on it.
 // See also |AnimationWorkletGlobalScope::CreateInstance|.
-class Animator final : public GarbageCollectedFinalized<Animator>,
-                       public NameClient {
+class Animator final : public GarbageCollected<Animator>, public NameClient {
  public:
   Animator(v8::Isolate*,
            AnimatorDefinition*,
            v8::Local<v8::Value> instance,
-           int num_effects);
+           const String& name,
+           WorkletAnimationOptions options,
+           const Vector<base::Optional<base::TimeDelta>>& local_times,
+           const Vector<Timing>& timings);
   ~Animator();
   void Trace(blink::Visitor*);
   const char* NameInHeapSnapshot() const override { return "Animator"; }
@@ -38,16 +42,40 @@ class Animator final : public GarbageCollectedFinalized<Animator>,
   bool Animate(v8::Isolate* isolate,
                double current_time,
                AnimationWorkletDispatcherOutput::AnimationState* output);
-  std::vector<base::Optional<TimeDelta>> GetLocalTimes() const;
+  v8::Local<v8::Value> State(v8::Isolate*, ExceptionState&);
+
+  template <typename T>
+  void GetLocalTimes(T& local_times) const {
+    local_times.clear();
+
+    const auto& children = group_effect_->getChildren();
+    local_times.resize(children.size());
+
+    for (wtf_size_t i = 0; i < children.size(); i++) {
+      local_times[i] = children[i]->local_time();
+    }
+  }
+
+  Vector<Timing> GetTimings() const;
   bool IsStateful() const;
+
+  const String& name() const { return name_; }
+  WorkletAnimationOptions options() { return options_; }
 
  private:
   // This object keeps the definition object, and animator instance alive.
   // It participates in wrapper tracing as it holds onto V8 wrappers.
-  TraceWrapperMember<AnimatorDefinition> definition_;
+  Member<AnimatorDefinition> definition_;
   TraceWrapperV8Reference<v8::Value> instance_;
 
-  Member<WorkletGroupEffectProxy> group_effect_;
+  // The 'name' and 'options' of the animator need to be stored to be
+  // migrated to the new animator upon switching global scopes. For other
+  // properties, 'animation id' and 'number of effects' can be, and 'state'
+  // should be queried on the fly.
+  String name_;
+  WorkletAnimationOptions options_;
+
+  Member<WorkletGroupEffect> group_effect_;
 };
 
 }  // namespace blink

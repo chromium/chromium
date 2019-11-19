@@ -2,6 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// clang-format off
+// #import 'chrome://resources/cr_elements/cr_drawer/cr_drawer.m.js';
+//
+// #import {eventToPromise} from '../test_util.m.js';
+// #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+// clang-format on
+
 suite('cr-drawer', function() {
   setup(function() {
     PolymerTest.clearBody();
@@ -29,7 +36,7 @@ suite('cr-drawer', function() {
           assertTrue(drawer.open);
 
           // Clicking the content does not close the drawer.
-          MockInteractions.tap(document.querySelector('.drawer-content'));
+          document.querySelector('.drawer-content').click();
 
           const whenClosed = test_util.eventToPromise('close', drawer);
           drawer.$.dialog.dispatchEvent(new MouseEvent('click', {
@@ -50,6 +57,24 @@ suite('cr-drawer', function() {
           drawer.close();
           return test_util.eventToPromise('close', drawer);
         });
+  });
+
+  test('clicking icon closes drawer', async () => {
+    // Create a drawer with an icon and open it.
+    document.body.innerHTML = `
+      <cr-drawer id="drawer" align="ltr" icon-name="menu" icon-title="close">
+      </cr-drawer>
+    `;
+    Polymer.dom.flush();
+    const drawer = document.getElementById('drawer');
+    drawer.openDrawer();
+    await test_util.eventToPromise('cr-drawer-opened', drawer);
+
+    // Clicking the icon closes the drawer.
+    drawer.$.iconButton.click();
+    await test_util.eventToPromise('close', drawer);
+    assertFalse(drawer.open);
+    assertTrue(drawer.wasCanceled());
   });
 
   test('align=ltr', function() {

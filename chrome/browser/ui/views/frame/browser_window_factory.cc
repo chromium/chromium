@@ -33,6 +33,5 @@ BrowserWindow* BrowserWindow::CreateBrowserWindow(
   view->GetWidget()->GetNativeWindow()->SetProperty(
       aura::client::kCreatedByUserGesture, user_gesture);
 #endif
-  safe_browsing::LogContentsSize(view->GetContentsSize());
   return view;
 }

@@ -11,7 +11,7 @@
 #include "content/browser/frame_host/render_frame_host_android.h"
 #include "content/browser/frame_host/render_frame_host_impl.h"
 #include "content/public/browser/web_contents.h"
-#include "jni/RenderFrameHostTestExt_jni.h"
+#include "content/public/test/android/content_test_jni/RenderFrameHostTestExt_jni.h"
 
 using base::android::JavaParamRef;
 
@@ -22,10 +22,10 @@ namespace {
 const void* const kRenderFrameHostTestExtKey = &kRenderFrameHostTestExtKey;
 
 void OnExecuteJavaScriptResult(const base::android::JavaRef<jobject>& jcallback,
-                               const base::Value* value) {
+                               base::Value value) {
   std::string result;
   JSONStringValueSerializer serializer(&result);
-  bool value_serialized = serializer.SerializeAndOmitBinaryValues(*value);
+  bool value_serialized = serializer.SerializeAndOmitBinaryValues(value);
   DCHECK(value_serialized);
   base::android::RunStringCallbackAndroid(jcallback, result);
 }
@@ -54,10 +54,10 @@ void RenderFrameHostTestExt::ExecuteJavaScript(
     const JavaParamRef<jstring>& jscript,
     const JavaParamRef<jobject>& jcallback) {
   base::string16 script(ConvertJavaStringToUTF16(env, jscript));
-  auto callback = base::BindRepeating(
+  auto callback = base::BindOnce(
       &OnExecuteJavaScriptResult,
       base::android::ScopedJavaGlobalRef<jobject>(env, jcallback));
-  render_frame_host_->ExecuteJavaScriptForTests(script, callback);
+  render_frame_host_->ExecuteJavaScriptForTests(script, std::move(callback));
 }
 
 }  // namespace content

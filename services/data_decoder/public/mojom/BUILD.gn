@@ -6,6 +6,8 @@ import("//mojo/public/tools/bindings/mojom.gni")
 
 mojom("mojom") {
   sources = [
+    "bundled_exchanges_parser.mojom",
+    "data_decoder_service.mojom",
     "image_decoder.mojom",
     "json_parser.mojom",
     "xml_parser.mojom",
@@ -14,9 +16,15 @@ mojom("mojom") {
   public_deps = [
     ":constants",
     "//mojo/public/mojom/base",
-    "//skia/public/interfaces",
-    "//ui/gfx/geometry/mojo",
+    "//skia/public/mojom",
+    "//ui/gfx/geometry/mojom",
+    "//url/mojom:url_mojom_gurl",
   ]
+
+  if (is_chromeos) {
+    sources += [ "ble_scan_parser.mojom" ]
+    public_deps += [ "//device/bluetooth/public/mojom" ]
+  }
 }
 
 mojom("constants") {

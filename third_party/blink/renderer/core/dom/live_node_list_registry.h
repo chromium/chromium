@@ -11,7 +11,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/heap/heap_allocator.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
@@ -57,7 +57,7 @@ class CORE_EXPORT LiveNodeListRegistry {
 
   // Removes any entries corresponding to node lists which have been collected
   // by the GC, and updates the mask accordingly.
-  void ClearWeakMembers(Visitor*);
+  void ProcessCustomWeakness(const WeakCallbackInfo&);
 
   Vector<Entry> data_;
   unsigned mask_ = 0;

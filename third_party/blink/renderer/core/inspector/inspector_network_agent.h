@@ -31,6 +31,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_INSPECTOR_NETWORK_AGENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_INSPECTOR_NETWORK_AGENT_H_
 
+#include "base/containers/span.h"
 #include "base/optional.h"
 #include "base/unguessable_token.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -38,6 +39,7 @@
 #include "third_party/blink/renderer/core/inspector/inspector_base_agent.h"
 #include "third_party/blink/renderer/core/inspector/inspector_page_agent.h"
 #include "third_party/blink/renderer/core/inspector/protocol/Network.h"
+#include "third_party/blink/renderer/platform/blob/blob_data.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_load_priority.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -53,7 +55,6 @@ class WebSocketHandshakeRequest;
 
 namespace blink {
 
-class BlobDataHandle;
 class Document;
 class DocumentLoader;
 class ExecutionContext;
@@ -92,55 +93,55 @@ class CORE_EXPORT InspectorNetworkAgent final
                        ResourceRequestBlockedReason,
                        ResourceType);
   void DidChangeResourcePriority(DocumentLoader*,
-                                 unsigned long identifier,
+                                 uint64_t identifier,
                                  ResourceLoadPriority);
   void PrepareRequest(DocumentLoader*,
                       ResourceRequest&,
                       const FetchInitiatorInfo&,
                       ResourceType);
-  void WillSendRequest(unsigned long identifier,
+  void WillSendRequest(uint64_t identifier,
                        DocumentLoader*,
                        const KURL& fetch_context_url,
                        const ResourceRequest&,
                        const ResourceResponse& redirect_response,
                        const FetchInitiatorInfo&,
                        ResourceType);
-  void WillSendNavigationRequest(unsigned long identifier,
+  void WillSendNavigationRequest(uint64_t identifier,
                                  DocumentLoader*,
                                  const KURL&,
                                  const AtomicString& http_method,
                                  EncodedFormData* http_body);
-  void MarkResourceAsCached(DocumentLoader*, unsigned long identifier);
-  void DidReceiveResourceResponse(unsigned long identifier,
+  void MarkResourceAsCached(DocumentLoader*, uint64_t identifier);
+  void DidReceiveResourceResponse(uint64_t identifier,
                                   DocumentLoader*,
                                   const ResourceResponse&,
-                                  Resource*);
-  void DidReceiveData(unsigned long identifier,
+                                  const Resource*);
+  void DidReceiveData(uint64_t identifier,
                       DocumentLoader*,
                       const char* data,
                       uint64_t data_length);
-  void DidReceiveBlob(unsigned long identifier,
+  void DidReceiveBlob(uint64_t identifier,
                       DocumentLoader*,
                       scoped_refptr<BlobDataHandle>);
   void DidReceiveEncodedDataLength(DocumentLoader*,
-                                   unsigned long identifier,
+                                   uint64_t identifier,
                                    size_t encoded_data_length);
-  void DidFinishLoading(unsigned long identifier,
+  void DidFinishLoading(uint64_t identifier,
                         DocumentLoader*,
-                        TimeTicks monotonic_finish_time,
+                        base::TimeTicks monotonic_finish_time,
                         int64_t encoded_data_length,
                         int64_t decoded_body_length,
                         bool should_report_corb_blocking);
-  void DidReceiveCorsRedirectResponse(unsigned long identifier,
+  void DidReceiveCorsRedirectResponse(uint64_t identifier,
                                       DocumentLoader*,
                                       const ResourceResponse&,
                                       Resource*);
-  void DidFailLoading(unsigned long identifier,
+  void DidFailLoading(uint64_t identifier,
                       DocumentLoader*,
                       const ResourceError&);
   void DidCommitLoad(LocalFrame*, DocumentLoader*);
-  void ScriptImported(unsigned long identifier, const String& source_string);
-  void DidReceiveScriptResponse(unsigned long identifier);
+  void ScriptImported(uint64_t identifier, const String& source_string);
+  void DidReceiveScriptResponse(uint64_t identifier);
   void ShouldForceCorsPreflight(bool* result);
   void ShouldBlockRequest(const KURL&, bool* result);
   void ShouldBypassServiceWorker(bool* result);
@@ -155,7 +156,7 @@ class CORE_EXPORT InspectorNetworkAgent final
   void DidFinishXHR(XMLHttpRequest*);
 
   void WillSendEventSourceRequest();
-  void WillDispatchEventSourceEvent(unsigned long identifier,
+  void WillDispatchEventSourceEvent(uint64_t identifier,
                                     const AtomicString& event_name,
                                     const AtomicString& event_id,
                                     const String& data);
@@ -164,35 +165,34 @@ class CORE_EXPORT InspectorNetworkAgent final
 
   void FrameScheduledNavigation(LocalFrame*,
                                 const KURL&,
-                                double delay,
+                                base::TimeDelta delay,
                                 ClientNavigationReason);
   void FrameClearedScheduledNavigation(LocalFrame*);
 
   void DidCreateWebSocket(ExecutionContext*,
-                          unsigned long identifier,
+                          uint64_t identifier,
                           const KURL& request_url,
                           const String&);
   void WillSendWebSocketHandshakeRequest(
       ExecutionContext*,
-      unsigned long identifier,
+      uint64_t identifier,
       network::mojom::blink::WebSocketHandshakeRequest*);
   void DidReceiveWebSocketHandshakeResponse(
       ExecutionContext*,
-      unsigned long identifier,
+      uint64_t identifier,
       network::mojom::blink::WebSocketHandshakeRequest*,
       network::mojom::blink::WebSocketHandshakeResponse*);
-  void DidCloseWebSocket(ExecutionContext*, unsigned long identifier);
-  void DidReceiveWebSocketMessage(unsigned long identifier,
+  void DidCloseWebSocket(ExecutionContext*, uint64_t identifier);
+  void DidReceiveWebSocketMessage(uint64_t identifier,
                                   int op_code,
                                   bool masked,
-                                  const char* payload,
-                                  size_t payload_length);
-  void DidSendWebSocketMessage(unsigned long identifier,
+                                  const Vector<base::span<const char>>& data);
+  void DidSendWebSocketMessage(uint64_t identifier,
                                int op_code,
                                bool masked,
                                const char* payload,
                                size_t payload_length);
-  void DidReceiveWebSocketMessageError(unsigned long identifier, const String&);
+  void DidReceiveWebSocketMessageError(uint64_t identifier, const String&);
 
   // Called from frontend
   protocol::Response enable(Maybe<int> total_buffer_size,
@@ -246,7 +246,7 @@ class CORE_EXPORT InspectorNetworkAgent final
 
  private:
   void Enable();
-  void WillSendRequestInternal(unsigned long identifier,
+  void WillSendRequestInternal(uint64_t identifier,
                                DocumentLoader*,
                                const KURL& fetch_context_url,
                                const ResourceRequest&,
@@ -260,8 +260,9 @@ class CORE_EXPORT InspectorNetworkAgent final
 
   static std::unique_ptr<protocol::Network::Initiator> BuildInitiatorObject(
       Document*,
-      const FetchInitiatorInfo&);
-  static bool IsNavigation(DocumentLoader*, unsigned long identifier);
+      const FetchInitiatorInfo&,
+      int max_async_depth);
+  static bool IsNavigation(DocumentLoader*, uint64_t identifier);
 
   // This is null while inspecting workers.
   Member<InspectedFrames> inspected_frames_;
@@ -277,6 +278,7 @@ class CORE_EXPORT InspectorNetworkAgent final
   base::Optional<InspectorPageAgent::ResourceType> pending_request_type_;
 
   Member<XHRReplayData> pending_xhr_replay_data_;
+  bool is_handling_sync_xhr_ = false;
 
   HashMap<String, std::unique_ptr<protocol::Network::Initiator>>
       frame_navigation_initiator_map_;

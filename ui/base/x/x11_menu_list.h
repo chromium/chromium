@@ -7,8 +7,8 @@
 
 #include <vector>
 
+#include "base/component_export.h"
 #include "base/macros.h"
-#include "ui/base/x/ui_base_x_export.h"
 #include "ui/gfx/x/x11_types.h"
 
 // A process wide singleton cache for X menus.
@@ -19,7 +19,7 @@ template <typename T> struct DefaultSingletonTraits;
 namespace ui {
 
 // Keeps track of created and destroyed top level menu windows.
-class UI_BASE_X_EXPORT XMenuList {
+class COMPONENT_EXPORT(UI_BASE_X) XMenuList {
  public:
   static XMenuList* GetInstance();
 

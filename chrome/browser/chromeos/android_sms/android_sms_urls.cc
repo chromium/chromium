@@ -56,12 +56,22 @@ PwaDomain GetPreferredPwaDomain() {
 }
 
 GURL GetAndroidMessagesURL(bool use_install_url, PwaDomain pwa_domain) {
-  // If a custom URL was passed via a command line argument, use it.
-  std::string url_from_command_line_arg =
-      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-          switches::kAlternateAndroidMessagesUrl);
-  if (!url_from_command_line_arg.empty())
-    return GURL(url_from_command_line_arg);
+  // If present, use commandline override for the preferred domain.
+  if (pwa_domain == GetPreferredPwaDomain()) {
+    std::string url_from_command_line_arg;
+    if (use_install_url) {
+      url_from_command_line_arg =
+          base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+              switches::kAlternateAndroidMessagesInstallUrl);
+    } else {
+      url_from_command_line_arg =
+          base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+              switches::kAlternateAndroidMessagesUrl);
+    }
+
+    if (!url_from_command_line_arg.empty())
+      return GURL(url_from_command_line_arg);
+  }
 
   switch (pwa_domain) {
     case PwaDomain::kProdAndroid:

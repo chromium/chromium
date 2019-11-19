@@ -9,12 +9,10 @@
 #include "base/bind.h"
 #include "base/containers/flat_map.h"
 #include "base/strings/string_util.h"
-#include "content/public/browser/stream_handle.h"
-#include "content/public/browser/stream_info.h"
 #include "content/public/common/content_constants.h"
 #include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_guest.h"
 #include "extensions/common/constants.h"
-#include "mojo/public/cpp/bindings/strong_binding.h"
+#include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "net/http/http_response_headers.h"
 
 namespace extensions {
@@ -51,17 +49,17 @@ base::flat_map<std::string, std::string> CreateResponseHeadersMap(
 
 MimeHandlerServiceImpl::MimeHandlerServiceImpl(
     base::WeakPtr<StreamContainer> stream_container)
-    : stream_(stream_container), weak_factory_(this) {}
+    : stream_(stream_container) {}
 
 MimeHandlerServiceImpl::~MimeHandlerServiceImpl() {}
 
 // static
 void MimeHandlerServiceImpl::Create(
     base::WeakPtr<StreamContainer> stream_container,
-    mime_handler::MimeHandlerServiceRequest request) {
-  mojo::MakeStrongBinding(
+    mojo::PendingReceiver<mime_handler::MimeHandlerService> receiver) {
+  mojo::MakeSelfOwnedReceiver(
       std::make_unique<MimeHandlerServiceImpl>(stream_container),
-      std::move(request));
+      std::move(receiver));
 }
 
 void MimeHandlerServiceImpl::GetStreamInfo(GetStreamInfoCallback callback) {
@@ -71,20 +69,6 @@ void MimeHandlerServiceImpl::GetStreamInfo(GetStreamInfoCallback callback) {
   }
   std::move(callback).Run(
       mojo::ConvertTo<mime_handler::StreamInfoPtr>(*stream_));
-}
-
-void MimeHandlerServiceImpl::AbortStream(AbortStreamCallback callback) {
-  if (!stream_) {
-    std::move(callback).Run();
-    return;
-  }
-  stream_->Abort(base::Bind(&MimeHandlerServiceImpl::OnStreamClosed,
-                            weak_factory_.GetWeakPtr(),
-                            base::Passed(&callback)));
-}
-
-void MimeHandlerServiceImpl::OnStreamClosed(AbortStreamCallback callback) {
-  std::move(callback).Run();
 }
 
 }  // namespace extensions

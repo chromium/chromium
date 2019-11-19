@@ -11,7 +11,6 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.UserManager;
-import android.support.customtabs.CustomTabsIntent;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -43,6 +42,8 @@ import org.chromium.webapk.lib.common.WebApkConstants;
 import org.chromium.webapk.lib.common.WebApkMetaDataKeys;
 import org.chromium.webapk.test.WebApkTestHelper;
 
+import androidx.browser.customtabs.CustomTabsIntent;
+
 /** JUnit tests for first run triggering code. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE,
@@ -65,7 +66,7 @@ public final class FirstRunIntegrationUnitTest {
     private ShadowApplication mShadowApplication;
 
     @Before
-    public void setUp() throws InterruptedException {
+    public void setUp() {
         mContext = RuntimeEnvironment.application;
         mShadowApplication = ShadowApplication.getInstance();
 

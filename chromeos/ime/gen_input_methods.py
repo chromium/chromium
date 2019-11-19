@@ -92,10 +92,10 @@ def CreateEngineHeader(engines):
   output = []
   output.append(OUTPUT_HEADER)
   for engine in engines:
-    if engine.has_key('if'):
+    if 'if' in engine:
       output.append(CPP_FORMAT % engine['if'])
     output.append(ENGINE_FORMAT % engine)
-    if engine.has_key('if'):
+    if 'if' in engine:
       output.append('#endif\n')
   output.append(OUTPUT_FOOTER)
 

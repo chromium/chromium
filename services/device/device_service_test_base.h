@@ -6,7 +6,8 @@
 #define SERVICES_DEVICE_DEVICE_SERVICE_TEST_BASE_H_
 
 #include "base/macros.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
+#include "services/network/test/test_network_connection_tracker.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "services/service_manager/public/cpp/test/test_connector_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -30,8 +31,14 @@ class DeviceServiceTestBase : public testing::Test {
 
  protected:
   service_manager::Connector* connector() { return connector_.get(); }
+  DeviceService* device_service() { return service_.get(); }
 
-  base::test::ScopedTaskEnvironment task_environment_;
+  // Can optionally be called to destroy the service before a child test fixture
+  // shuts down, in case the DeviceService has dependencies on objects created
+  // by the child test fixture.
+  void DestroyDeviceService();
+
+  base::test::TaskEnvironment task_environment_;
 
   // Both of these task runners should be deprecated in favor of individual
   // components of the device service creating their own.
@@ -42,6 +49,8 @@ class DeviceServiceTestBase : public testing::Test {
 
  private:
   service_manager::TestConnectorFactory test_connector_factory_;
+  std::unique_ptr<network::TestNetworkConnectionTracker>
+      network_connection_tracker_;
   std::unique_ptr<service_manager::Connector> connector_;
   std::unique_ptr<DeviceService> service_;
 

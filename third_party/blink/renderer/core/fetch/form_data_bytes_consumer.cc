@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/data_pipe_bytes_consumer.h"
 #include "third_party/blink/renderer/platform/network/encoded_form_data.h"
 #include "third_party/blink/renderer/platform/network/form_data_encoder.h"
+#include "third_party/blink/renderer/platform/network/wrapped_data_pipe_getter.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_codec.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_encoding.h"
@@ -92,7 +93,7 @@ class SimpleFormDataBytesConsumer : public BytesConsumer {
     Vector<char> data;
     form_data_->Flatten(data);
     form_data_ = nullptr;
-    std::unique_ptr<BlobData> blob_data = BlobData::Create();
+    auto blob_data = std::make_unique<BlobData>();
     blob_data->AppendBytes(data.data(), data.size());
     auto length = blob_data->length();
     state_ = PublicState::kClosed;
@@ -184,8 +185,8 @@ class DataPipeAndDataBytesConsumer final : public BytesConsumer {
     if (iter_->type_ == FormDataElement::kDataPipe) {
       // Create the data pipe consumer if there isn't one yet.
       if (!data_pipe_consumer_) {
-        network::mojom::blink::DataPipeGetterPtr* data_pipe_getter =
-            iter_->data_pipe_getter_->GetPtr();
+        network::mojom::blink::DataPipeGetter* data_pipe_getter =
+            iter_->data_pipe_getter_->GetDataPipeGetter();
 
         mojo::ScopedDataPipeProducerHandle pipe_producer_handle;
         mojo::ScopedDataPipeConsumerHandle pipe_consumer_handle;
@@ -195,11 +196,10 @@ class DataPipeAndDataBytesConsumer final : public BytesConsumer {
           return Result::kError;
         }
 
-        (*data_pipe_getter)
-            ->Read(
-                std::move(pipe_producer_handle),
-                WTF::Bind(&DataPipeAndDataBytesConsumer::DataPipeGetterCallback,
-                          WrapWeakPersistent(this)));
+        data_pipe_getter->Read(
+            std::move(pipe_producer_handle),
+            WTF::Bind(&DataPipeAndDataBytesConsumer::DataPipeGetterCallback,
+                      WrapWeakPersistent(this)));
         DataPipeBytesConsumer::CompletionNotifier* completion_notifier =
             nullptr;
         data_pipe_consumer_ = MakeGarbageCollected<DataPipeBytesConsumer>(
@@ -399,7 +399,7 @@ class ComplexFormDataBytesConsumer final : public BytesConsumer {
       return;
     }
 
-    std::unique_ptr<BlobData> blob_data = BlobData::Create();
+    auto blob_data = std::make_unique<BlobData>();
     for (const auto& element : form_data_->Elements()) {
       switch (element.type_) {
         case FormDataElement::kData:
@@ -486,7 +486,7 @@ class ComplexFormDataBytesConsumer final : public BytesConsumer {
 
  private:
   scoped_refptr<EncodedFormData> form_data_;
-  TraceWrapperMember<BytesConsumer> blob_bytes_consumer_;
+  Member<BytesConsumer> blob_bytes_consumer_;
 };
 
 }  // namespace
@@ -497,7 +497,8 @@ FormDataBytesConsumer::FormDataBytesConsumer(const String& string)
               UTF8Encoding().Encode(string, WTF::kNoUnencodables)))) {}
 
 FormDataBytesConsumer::FormDataBytesConsumer(DOMArrayBuffer* buffer)
-    : FormDataBytesConsumer(buffer->Data(), buffer->ByteLength()) {}
+    : FormDataBytesConsumer(buffer->Data(),
+                            buffer->DeprecatedByteLengthAsUnsigned()) {}
 
 FormDataBytesConsumer::FormDataBytesConsumer(DOMArrayBufferView* view)
     : FormDataBytesConsumer(view->BaseAddress(), view->byteLength()) {}

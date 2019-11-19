@@ -6,6 +6,7 @@
 
 #include "build/build_config.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/download/public/common/download_danger_type.h"
 #include "content/public/common/content_features.h"
 #include "extensions/common/extension.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -16,7 +17,7 @@
 
 bool DownloadShelfContextMenu::WantsContextMenu(
     DownloadUIModel* download_model) {
-  return !download_model->IsDangerous() || !download_model->MightBeMalicious();
+  return !download_model->IsDangerous() || download_model->MightBeMalicious();
 }
 
 DownloadShelfContextMenu::~DownloadShelfContextMenu() {
@@ -39,18 +40,27 @@ ui::SimpleMenuModel* DownloadShelfContextMenu::GetMenuModel() {
 
   bool is_download = download_->download() != nullptr;
 
-  if (download_->IsMalicious())
-    model = GetMaliciousMenuModel(is_download);
-  else if (download_->MightBeMalicious())
-    model = GetMaybeMaliciousMenuModel(is_download);
-  else if (download_->GetState() == download::DownloadItem::COMPLETE)
-    model = GetFinishedMenuModel(is_download);
-  else if (download_->GetState() == download::DownloadItem::INTERRUPTED)
+  if (download_->GetDangerType() ==
+          download::DOWNLOAD_DANGER_TYPE_BLOCKED_PASSWORD_PROTECTED ||
+      download_->GetDangerType() ==
+          download::DOWNLOAD_DANGER_TYPE_BLOCKED_TOO_LARGE ||
+      download_->GetDangerType() ==
+          download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_BLOCK) {
     model = GetInterruptedMenuModel(is_download);
-  else if (download_->IsPaused())
+  } else if (download_->IsMalicious()) {
+    model = GetMaliciousMenuModel(is_download);
+  } else if (download_->MightBeMalicious()) {
+    model = GetMaybeMaliciousMenuModel(is_download);
+  } else if (download_->GetState() == download::DownloadItem::COMPLETE) {
+    model = GetFinishedMenuModel(is_download);
+  } else if (download_->GetState() == download::DownloadItem::INTERRUPTED) {
+    model = GetInterruptedMenuModel(is_download);
+  } else if (download_->IsPaused()) {
     model = GetInProgressPausedMenuModel(is_download);
-  else
+  } else {
     model = GetInProgressMenuModel(is_download);
+  }
+
   return model;
 }
 
@@ -249,14 +259,17 @@ ui::SimpleMenuModel* DownloadShelfContextMenu::GetFinishedMenuModel(
     finished_download_menu_model_->AddItem(
         DownloadCommands::OPEN_WHEN_COMPLETE,
         GetLabelForCommandId(DownloadCommands::OPEN_WHEN_COMPLETE));
-    finished_download_menu_model_->AddCheckItem(
-        DownloadCommands::ALWAYS_OPEN_TYPE,
-        GetLabelForCommandId(DownloadCommands::ALWAYS_OPEN_TYPE));
   }
 
   finished_download_menu_model_->AddItem(
       DownloadCommands::PLATFORM_OPEN,
       GetLabelForCommandId(DownloadCommands::PLATFORM_OPEN));
+
+  if (is_download) {
+    finished_download_menu_model_->AddCheckItem(
+        DownloadCommands::ALWAYS_OPEN_TYPE,
+        GetLabelForCommandId(DownloadCommands::ALWAYS_OPEN_TYPE));
+  }
   finished_download_menu_model_->AddSeparator(ui::NORMAL_SEPARATOR);
 
   if (is_download) {

@@ -8,7 +8,6 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "base/memory/shared_memory.h"
 #include "base/observer_list.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/string16.h"
@@ -17,8 +16,9 @@
 #include "content/public/renderer/render_thread.h"
 #include "ipc/ipc_test_sink.h"
 #include "ipc/message_filter.h"
-#include "services/service_manager/public/mojom/connector.mojom.h"
-#include "third_party/blink/public/mojom/frame/document_interface_broker.mojom.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "services/service_manager/public/mojom/interface_provider.mojom.h"
+#include "third_party/blink/public/mojom/browser_interface_broker.mojom.h"
 
 struct FrameHostMsg_CreateChildFrame_Params;
 struct FrameHostMsg_CreateChildFrame_Params_Reply;
@@ -59,6 +59,7 @@ class MockRenderThread : public RenderThread {
   std::string GetLocale() override;
   IPC::SyncMessageFilter* GetSyncMessageFilter() override;
   scoped_refptr<base::SingleThreadTaskRunner> GetIOTaskRunner() override;
+  void BindHostReceiver(mojo::GenericPendingReceiver receiver) override;
   void AddRoute(int32_t routing_id, IPC::Listener* listener) override;
   void RemoveRoute(int32_t routing_id) override;
   int GenerateRoutingID() override;
@@ -70,8 +71,6 @@ class MockRenderThread : public RenderThread {
       ResourceDispatcherDelegate* delegate) override;
   void RecordAction(const base::UserMetricsAction& action) override;
   void RecordComputedAction(const std::string& action) override;
-  std::unique_ptr<base::SharedMemory> HostAllocateSharedMemoryBuffer(
-      size_t buffer_size) override;
   void RegisterExtension(std::unique_ptr<v8::Extension> extension) override;
   int PostTaskToAllWebWorkers(const base::Closure& closure) override;
   bool ResolveProxy(const GURL& url, std::string* proxy_list) override;
@@ -86,8 +85,6 @@ class MockRenderThread : public RenderThread {
   void PreCacheFont(const LOGFONT& log_font) override;
   void ReleaseCachedFonts() override;
 #endif
-  ServiceManagerConnection* GetServiceManagerConnection() override;
-  service_manager::Connector* GetConnector() override;
   void SetFieldTrialGroup(const std::string& trial_name,
                           const std::string& group_name) override;
 
@@ -118,12 +115,12 @@ class MockRenderThread : public RenderThread {
   service_manager::mojom::InterfaceProviderRequest
   TakeInitialInterfaceProviderRequestForFrame(int32_t routing_id);
 
-  // Returns the request end of the DocumentInterfaceBroker interface whose
+  // Returns the receiver end of the BrowserInterfaceBroker interface whose
   // client end was passed in to construct RenderFrame with |routing_id|; if
   // any. The client end will be used by the RenderFrame to service interface
   // requests originating from the initial empty document.
-  blink::mojom::DocumentInterfaceBrokerRequest
-  TakeInitialDocumentInterfaceBrokerRequestForFrame(int32_t routing_id);
+  mojo::PendingReceiver<blink::mojom::BrowserInterfaceBroker>
+  TakeInitialBrowserInterfaceBrokerReceiverForFrame(int32_t routing_id);
 
   // Called from the RenderViewTest harness to supply the request end of the
   // InterfaceProvider interface connection that the harness used to service the
@@ -143,11 +140,6 @@ class MockRenderThread : public RenderThread {
       const FrameHostMsg_CreateChildFrame_Params& params,
       FrameHostMsg_CreateChildFrame_Params_Reply* params_reply);
 
-#if defined(OS_WIN)
-  void OnDuplicateSection(base::SharedMemoryHandle renderer_handle,
-                          base::SharedMemoryHandle* browser_handle);
-#endif
-
   IPC::TestSink sink_;
 
   // Routing ID what will be assigned to the next view, widget, or frame.
@@ -156,8 +148,8 @@ class MockRenderThread : public RenderThread {
   std::map<int32_t, service_manager::mojom::InterfaceProviderRequest>
       frame_routing_id_to_initial_interface_provider_requests_;
 
-  std::map<int32_t, blink::mojom::DocumentInterfaceBrokerRequest>
-      frame_routing_id_to_initial_document_broker_requests_;
+  std::map<int32_t, mojo::PendingReceiver<blink::mojom::BrowserInterfaceBroker>>
+      frame_routing_id_to_initial_browser_broker_receivers_;
 
   // The last known good deserializer for sync messages.
   std::unique_ptr<IPC::MessageReplyDeserializer> reply_deserializer_;
@@ -167,9 +159,6 @@ class MockRenderThread : public RenderThread {
 
   // Observers to notify.
   base::ObserverList<RenderThreadObserver>::Unchecked observers_;
-
-  std::unique_ptr<service_manager::Connector> connector_;
-  service_manager::mojom::ConnectorRequest pending_connector_request_;
 
   std::unique_ptr<mojom::RenderMessageFilter> mock_render_message_filter_;
 };

@@ -11,10 +11,10 @@ spellcheck_test(
       const target = document.getElementById('target');
       target.spellcheck = true;
       target.focus();
-      document.execCommand('insertText', false, 'Hello,');
-      document.execCommand('insertText', false, 'zz.');
+      document.execCommand('insertText', false, 'Hello, ');
+      document.execCommand('insertText', false, 'zz. ');
     },
-    '<span contenteditable id="target" spellcheck="true">Hello,#zz#.</span>',
+    '<span contenteditable id="target" spellcheck="true">Hello, #zz#.\u00A0</span>',
     'Change "spellcheck" of <span> from undefined to true');
 
 spellcheck_test(
@@ -23,10 +23,10 @@ spellcheck_test(
       const target = document.getElementById('target');
       target.spellcheck = false;
       target.focus();
-      document.execCommand('insertText', false, 'Hello,');
-      document.execCommand('insertText', false, 'zz.');
+      document.execCommand('insertText', false, 'Hello, ');
+      document.execCommand('insertText', false, 'zz. ');
     },
-    '<span contenteditable id="target" spellcheck="false">Hello,zz.</span>',
+    '<span contenteditable id="target" spellcheck="false">Hello, zz.\u00A0</span>',
     'Change "spellcheck" of <span> from undefined to false');
 
 spellcheck_test(
@@ -35,10 +35,10 @@ spellcheck_test(
       const target = document.getElementById('target');
       target.spellcheck = true;
       target.focus();
-      document.execCommand('insertText', false, 'Hello,');
-      document.execCommand('insertText', false, 'zz.');
+      document.execCommand('insertText', false, 'Hello, ');
+      document.execCommand('insertText', false, 'zz. ');
     },
-    '<span contenteditable id="target" spellcheck="true">Hello,#zz#.</span>',
+    '<span contenteditable id="target" spellcheck="true">Hello, #zz#.\u00A0</span>',
     'Change "spellcheck" of <span> from true to true');
 
 spellcheck_test(
@@ -47,10 +47,10 @@ spellcheck_test(
       const target = document.getElementById('target');
       target.spellcheck = false;
       target.focus();
-      document.execCommand('insertText', false, 'Hello,');
-      document.execCommand('insertText', false, 'zz.');
+      document.execCommand('insertText', false, 'Hello, ');
+      document.execCommand('insertText', false, 'zz. ');
     },
-    '<span contenteditable id="target" spellcheck="false">Hello,zz.</span>',
+    '<span contenteditable id="target" spellcheck="false">Hello, zz.\u00A0</span>',
     'Change "spellcheck" of <span> from true to false');
 
 spellcheck_test(
@@ -59,10 +59,10 @@ spellcheck_test(
       const target = document.getElementById('target');
       target.spellcheck = true;
       target.focus();
-      document.execCommand('insertText', false, 'Hello,');
-      document.execCommand('insertText', false, 'zz.');
+      document.execCommand('insertText', false, 'Hello, ');
+      document.execCommand('insertText', false, 'zz. ');
     },
-    '<span contenteditable id="target" spellcheck="true">Hello,#zz#.</span>',
+    '<span contenteditable id="target" spellcheck="true">Hello, #zz#.\u00A0</span>',
     'Change "spellcheck" of <span> from false to true');
 
 spellcheck_test(
@@ -71,10 +71,10 @@ spellcheck_test(
       const target = document.getElementById('target');
       target.spellcheck = false;
       target.focus();
-      document.execCommand('insertText', false, 'Hello,');
-      document.execCommand('insertText', false, 'zz.');
+      document.execCommand('insertText', false, 'Hello, ');
+      document.execCommand('insertText', false, 'zz. ');
     },
-    '<span contenteditable id="target" spellcheck="false">Hello,zz.</span>',
+    '<span contenteditable id="target" spellcheck="false">Hello, zz.\u00A0</span>',
     'Change "spellcheck" of <span> from false to false');
 
 spellcheck_test(
@@ -83,10 +83,10 @@ spellcheck_test(
       const target = document.getElementById('target');
       target.spellcheck = true;
       target.focus();
-      document.execCommand('insertText', false, 'Hello,');
-      document.execCommand('insertText', false, 'zz.');
+      document.execCommand('insertText', false, 'Hello, ');
+      document.execCommand('insertText', false, 'zz. ');
     },
-    '<input id="target" spellcheck="true" value="Hello,#zz#.">',
+    '<input id="target" spellcheck="true" value="Hello, #zz#. ">',
     'Change "spellcheck" of <input> from undefined to true');
 
 spellcheck_test(
@@ -95,10 +95,10 @@ spellcheck_test(
       const target = document.getElementById('target');
       target.spellcheck = false;
       target.focus();
-      document.execCommand('insertText', false, 'Hello,');
-      document.execCommand('insertText', false, 'zz.');
+      document.execCommand('insertText', false, 'Hello, ');
+      document.execCommand('insertText', false, 'zz. ');
     },
-    '<input id="target" spellcheck="false" value="Hello,zz.">',
+    '<input id="target" spellcheck="false" value="Hello, zz. ">',
     'Change "spellcheck" of <input> from undefined to false');
 
 spellcheck_test(
@@ -107,10 +107,10 @@ spellcheck_test(
       const target = document.getElementById('target');
       target.spellcheck = true;
       target.focus();
-      document.execCommand('insertText', false, 'Hello,');
-      document.execCommand('insertText', false, 'zz.');
+      document.execCommand('insertText', false, 'Hello, ');
+      document.execCommand('insertText', false, 'zz. ');
     },
-    '<input id="target" spellcheck="true" value="Hello,#zz#.">',
+    '<input id="target" spellcheck="true" value="Hello, #zz#. ">',
     'Change "spellcheck" of <input> from true to true');
 
 spellcheck_test(
@@ -119,10 +119,10 @@ spellcheck_test(
       const target = document.getElementById('target');
       target.spellcheck = false;
       target.focus();
-      document.execCommand('insertText', false, 'Hello,');
-      document.execCommand('insertText', false, 'zz.');
+      document.execCommand('insertText', false, 'Hello, ');
+      document.execCommand('insertText', false, 'zz. ');
     },
-    '<input id="target" spellcheck="false" value="Hello,zz.">',
+    '<input id="target" spellcheck="false" value="Hello, zz. ">',
     'Change "spellcheck" of <input> from true to false');
 
 spellcheck_test(
@@ -131,10 +131,10 @@ spellcheck_test(
       const target = document.getElementById('target');
       target.spellcheck = true;
       target.focus();
-      document.execCommand('insertText', false, 'Hello,');
-      document.execCommand('insertText', false, 'zz.');
+      document.execCommand('insertText', false, 'Hello, ');
+      document.execCommand('insertText', false, 'zz. ');
     },
-    '<input id="target" spellcheck="true" value="Hello,#zz#.">',
+    '<input id="target" spellcheck="true" value="Hello, #zz#. ">',
     'Change "spellcheck" of <input> from false to true');
 
 spellcheck_test(
@@ -143,10 +143,10 @@ spellcheck_test(
       const target = document.getElementById('target');
       target.spellcheck = false;
       target.focus();
-      document.execCommand('insertText', false, 'Hello,');
-      document.execCommand('insertText', false, 'zz.');
+      document.execCommand('insertText', false, 'Hello, ');
+      document.execCommand('insertText', false, 'zz. ');
     },
-    '<input id="target" spellcheck="false" value="Hello,zz.">',
+    '<input id="target" spellcheck="false" value="Hello, zz. ">',
     'Change "spellcheck" of <input> from false to false');
 
 spellcheck_test(
@@ -155,10 +155,10 @@ spellcheck_test(
       const target = document.getElementById('target');
       target.spellcheck = true;
       target.focus();
-      document.execCommand('insertText', false, 'Hello,');
-      document.execCommand('insertText', false, 'zz.');
+      document.execCommand('insertText', false, 'Hello, ');
+      document.execCommand('insertText', false, 'zz. ');
     },
-    '<textarea id="target" spellcheck="true">Hello,#zz#.</textarea>',
+    '<textarea id="target" spellcheck="true">Hello, #zz#. </textarea>',
     'Change "spellcheck" of <textarea> from undefined to true');
 
 spellcheck_test(
@@ -167,10 +167,10 @@ spellcheck_test(
       const target = document.getElementById('target');
       target.spellcheck = false;
       target.focus();
-      document.execCommand('insertText', false, 'Hello,');
-      document.execCommand('insertText', false, 'zz.');
+      document.execCommand('insertText', false, 'Hello, ');
+      document.execCommand('insertText', false, 'zz. ');
     },
-    '<textarea id="target" spellcheck="false">Hello,zz.</textarea>',
+    '<textarea id="target" spellcheck="false">Hello, zz. </textarea>',
     'Change "spellcheck" of <textarea> from undefined to false');
 
 spellcheck_test(
@@ -179,10 +179,10 @@ spellcheck_test(
       const target = document.getElementById('target');
       target.spellcheck = true;
       target.focus();
-      document.execCommand('insertText', false, 'Hello,');
-      document.execCommand('insertText', false, 'zz.');
+      document.execCommand('insertText', false, 'Hello, ');
+      document.execCommand('insertText', false, 'zz. ');
     },
-    '<textarea id="target" spellcheck="true">Hello,#zz#.</textarea>',
+    '<textarea id="target" spellcheck="true">Hello, #zz#. </textarea>',
     'Change "spellcheck" of <textarea> from true to true');
 
 spellcheck_test(
@@ -191,10 +191,10 @@ spellcheck_test(
       const target = document.getElementById('target');
       target.spellcheck = false;
       target.focus();
-      document.execCommand('insertText', false, 'Hello,');
-      document.execCommand('insertText', false, 'zz.');
+      document.execCommand('insertText', false, 'Hello, ');
+      document.execCommand('insertText', false, 'zz. ');
     },
-    '<textarea id="target" spellcheck="false">Hello,zz.</textarea>',
+    '<textarea id="target" spellcheck="false">Hello, zz. </textarea>',
     'Change "spellcheck" of <textarea> from true to false');
 
 spellcheck_test(
@@ -203,10 +203,10 @@ spellcheck_test(
       const target = document.getElementById('target');
       target.spellcheck = true;
       target.focus();
-      document.execCommand('insertText', false, 'Hello,');
-      document.execCommand('insertText', false, 'zz.');
+      document.execCommand('insertText', false, 'Hello, ');
+      document.execCommand('insertText', false, 'zz. ');
     },
-    '<textarea id="target" spellcheck="true">Hello,#zz#.</textarea>',
+    '<textarea id="target" spellcheck="true">Hello, #zz#. </textarea>',
     'Change "spellcheck" of <textarea> from false to true');
 
 spellcheck_test(
@@ -215,9 +215,9 @@ spellcheck_test(
       const target = document.getElementById('target');
       target.spellcheck = false;
       target.focus();
-      document.execCommand('insertText', false, 'Hello,');
-      document.execCommand('insertText', false, 'zz.');
+      document.execCommand('insertText', false, 'Hello, ');
+      document.execCommand('insertText', false, 'zz. ');
     },
-    '<textarea id="target" spellcheck="false">Hello,zz.</textarea>',
+    '<textarea id="target" spellcheck="false">Hello, zz. </textarea>',
     'Change "spellcheck" of <textarea> from false to false');
 </script>

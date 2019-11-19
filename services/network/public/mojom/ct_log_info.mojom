@@ -4,6 +4,8 @@
 
 module network.mojom;
 
+import "mojo/public/mojom/base/time.mojom";
+
 // A single Certificate Transparency Log configuration.
 struct CTLogInfo {
   // The DER-encoded SubjectPublicKeyInfo of the log.
@@ -15,8 +17,12 @@ struct CTLogInfo {
   // translated.
   string name;
 
-  // The DNS API endpoint for the log.
-  // This will be used as the parent domain for all queries about the log.
-  // See https://github.com/google/certificate-transparency-rfcs/blob/master/dns/draft-ct-over-dns.md
-  string dns_api_endpoint;
+  // Whether or not the log should should be considered a Google Log for the
+  // purposes of enforcing the "Certificate Transparency in Chrome" policy.
+  bool operated_by_google = false;
+
+  // If set, the time since the Unix Epoch when the log was disqualified. This
+  // is used to determine the "once or currently qualified" status of the log.
+  // If the log is currently qualified, this will not be set.
+  mojo_base.mojom.TimeDelta? disqualified_at;
 };

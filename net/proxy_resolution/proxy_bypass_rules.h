@@ -134,71 +134,9 @@ class NET_EXPORT ProxyBypassRules {
   // Adds a rule given by the string |raw|. The format of |raw| can be any of
   // the following:
   //
-  // (1) [ URL_SCHEME "://" ] HOSTNAME_PATTERN [ ":" <port> ]
-  //
-  //   Match all hostnames that match the pattern HOSTNAME_PATTERN.
-  //
-  //   Examples:
-  //     "foobar.com", "*foobar.com", "*.foobar.com", "*foobar.com:99",
-  //     "https://x.*.y.com:99"
-  //
-  // (2) "." HOSTNAME_SUFFIX_PATTERN [ ":" PORT ]
-  //
-  //   Match a particular domain suffix.
-  //
-  //   Examples:
-  //     ".google.com", ".com", "http://.google.com"
-  //
-  // (3) [ SCHEME "://" ] IP_LITERAL [ ":" PORT ]
-  //
-  //   Match URLs which are IP address literals.
-  //
-  //   Conceptually this is the similar to (1), but with special cases
-  //   to handle IP literal canonicalization. For example matching
-  //   on "[0:0:0::1]" would be the same as matching on "[::1]" since
-  //   the IPv6 canonicalization is done internally.
-  //
-  //   Examples:
-  //     "127.0.1", "[0:0::1]", "[::1]", "http://[::1]:99"
-  //
-  // (4)  IPV4_LITERAL "/" PREFIX_LENGTH_IN_BITS
-  //
-  //   Match any URL that is an IPv4 literal that falls between the
-  //   given range.
-  //
-  //   Examples:
-  //     "192.168.1.1/16"
-  //
-  // (5)  IPV6_LITERAL "/" PREFIX_LENGTH_IN_BITS
-  //
-  //   Match any URL that is an IPv6 literal that falls between the given
-  //   range.
-  //
-  //   Note that IPV6_LITERAL must *not* be bracketed. "[fefe::/40]" for
-  //   instance is not valid, but "fefe::/40" is. This notation comes from
-  //   macOS's proxy bypass rules which supports IPv6 (Windows bypass rules do
-  //   not).
-  //
-  //   Examples:
-  //     "fefe:13::abc/33".
-  //
-  // (6)  "<local>"
-  //
-  //   Matches hostnames without a period in them (and are not IP
-  //   literals).
-  //
-  //   This is equivalent to the same named bypass rule on Windows.
-  //
-  // (7) "<-loopback>"
-  //
-  //   Subtracts the implicit proxy bypass rules (localhost and link local
-  //   addresses), so they are no longer bypassed.
-  //
-  //   This is equivalent to the same named bypass rule on Windows.
-  //
-  // See the unit-tests for more examples.
-  //
   // Returns true if the rule was successfully added.
+  //
+  // For the supported format of bypass rules see //net/docs/proxy.md.
   bool AddRuleFromString(const std::string& raw,
                          ParseFormat format = ParseFormat::kDefault);
 
@@ -225,6 +163,10 @@ class NET_EXPORT ProxyBypassRules {
   // Returns true if |url| matches one of the implicit proxy bypass rules
   // (localhost or link local).
   static bool MatchesImplicitRules(const GURL& url);
+
+  // The delimiter used by |ToString()| for the string representation of the
+  // proxy bypass rules.
+  constexpr static char kBypassListDelimeter[] = ";";
 
  private:
   RuleList rules_;

@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/bind.h"
+#include "base/memory/unsafe_shared_memory_region.h"
 #include "ppapi/c/pp_errors.h"
 #include "ppapi/proxy/dispatch_reply_message.h"
 #include "ppapi/proxy/ppapi_messages.h"
@@ -197,21 +198,32 @@ void VpnProviderResource::OnPluginMsgBindReply(
     return;
 
   if (params.result() == PP_OK) {
-    std::vector<base::SharedMemoryHandle> shm_handles;
-    params.TakeAllSharedMemoryHandles(&shm_handles);
-    std::unique_ptr<base::SharedMemory> send_shm(
-        new base::SharedMemory(shm_handles[0], false));
-    std::unique_ptr<base::SharedMemory> receive_shm(
-        new base::SharedMemory(shm_handles[1], false));
+    base::UnsafeSharedMemoryRegion send_shm;
+    base::UnsafeSharedMemoryRegion recv_shm;
+    params.TakeUnsafeSharedMemoryRegionAtIndex(0, &send_shm);
+    params.TakeUnsafeSharedMemoryRegionAtIndex(1, &recv_shm);
+    if (!send_shm.IsValid() || !recv_shm.IsValid()) {
+      NOTREACHED();
+      return;
+    }
+    base::WritableSharedMemoryMapping send_mapping = send_shm.Map();
+    base::WritableSharedMemoryMapping recv_mapping = recv_shm.Map();
+    if (!send_mapping.IsValid() || !recv_mapping.IsValid()) {
+      NOTREACHED();
+      return;
+    }
+
     size_t buffer_size = queue_size * max_packet_size;
-    if (!send_shm->Map(buffer_size) || !receive_shm->Map(buffer_size)) {
+    if (send_shm.GetSize() < buffer_size || recv_shm.GetSize() < buffer_size) {
       NOTREACHED();
       return;
     }
     send_packet_buffer_ = std::make_unique<ppapi::VpnProviderSharedBuffer>(
-        queue_size, max_packet_size, std::move(send_shm));
+        queue_size, max_packet_size, std::move(send_shm),
+        std::move(send_mapping));
     recv_packet_buffer_ = std::make_unique<ppapi::VpnProviderSharedBuffer>(
-        queue_size, max_packet_size, std::move(receive_shm));
+        queue_size, max_packet_size, std::move(recv_shm),
+        std::move(recv_mapping));
 
     bound_ = (result == PP_OK);
   }

@@ -9,7 +9,7 @@ import static org.junit.Assert.assertTrue;
 
 import android.support.test.filters.SmallTest;
 
-import com.google.android.libraries.feed.api.knowncontent.ContentRemoval;
+import com.google.android.libraries.feed.api.client.knowncontent.ContentRemoval;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;

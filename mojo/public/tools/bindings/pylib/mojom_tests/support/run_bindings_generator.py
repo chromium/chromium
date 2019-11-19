@@ -36,7 +36,7 @@ def RunBindingsGenerator(out_dir, root_dir, mojom_file, extra_flags=None):
 
 def main(argv):
   if len(argv) < 4:
-    print "usage: %s out_dir root_dir mojom_file [extra_flags]" % argv[0]
+    print("usage: %s out_dir root_dir mojom_file [extra_flags]" % argv[0])
     return 1
 
   RunBindingsGenerator(argv[1], argv[2], argv[3], extra_flags=argv[4:])

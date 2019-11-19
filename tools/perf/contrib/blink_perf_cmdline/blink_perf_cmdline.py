@@ -1,6 +1,9 @@
 # Copyright 2017 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
+
+from __future__ import print_function
+
 import os
 
 from benchmarks import blink_perf
@@ -27,6 +30,6 @@ class BlinkPerfAll(blink_perf._BlinkPerfBenchmark):
       path = os.path.abspath(options.test_path)
     else:
       path = os.path.join(blink_perf.BLINK_PERF_BASE_DIR, options.test_path)
-    print
-    print 'Running all tests in %s' % path
+    print()
+    print('Running all tests in %s' % path)
     return blink_perf.CreateStorySetFromPath(path, blink_perf.SKIPPED_FILE)

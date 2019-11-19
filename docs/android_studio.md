@@ -18,7 +18,7 @@ To import the project:
 * Use "Import Project", and select the directory containing the generated
   project, e.g. `out/Debug/gradle`.
 
-See [android_test_instructions.md](android_test_instructions.md#Using-Emulators)
+See [android_test_instructions.md](testing/android_test_instructions.md#Using-Emulators)
 for more information about building and running emulators.
 
 If you're asked to use Studio's Android SDK: No.

@@ -99,7 +99,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ProxyConfigServiceImpl
   // Not owned.
   PrefService* local_state_prefs_;
 
-  base::WeakPtrFactory<ProxyConfigServiceImpl> pointer_factory_;
+  base::WeakPtrFactory<ProxyConfigServiceImpl> pointer_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ProxyConfigServiceImpl);
 };

@@ -19,13 +19,13 @@ MockWebContentsTaskManager::~MockWebContentsTaskManager() {}
 
 void MockWebContentsTaskManager::TaskAdded(Task* task) {
   DCHECK(task);
-  DCHECK(!base::ContainsValue(tasks_, task));
+  DCHECK(!base::Contains(tasks_, task));
   tasks_.push_back(task);
 }
 
 void MockWebContentsTaskManager::TaskRemoved(Task* task) {
   DCHECK(task);
-  DCHECK(base::ContainsValue(tasks_, task));
+  DCHECK(base::Contains(tasks_, task));
   tasks_.erase(std::find(tasks_.begin(), tasks_.end(), task));
 }
 

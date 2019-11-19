@@ -1,0 +1,12 @@
+[document web]
+++[table] cols=2 headers=(NONE); rows=2 headers=(NONE); caption=false; spans=(all: 1x1)
+++++[table row] selectable
+++++++[table cell] name='cell A3' selectable colindex:1 coltext:A rowindex:3 rowtext:3 (row=0, col=0, row_span=1, col_span=1, n_row_headers=0, n_col_headers=0)
+++++++++[static] name='cell A3'
+++++++[table cell] name='cell B3' selectable colindex:2 coltext:B rowindex:3 rowtext:3 (row=0, col=1, row_span=1, col_span=1, n_row_headers=0, n_col_headers=0)
+++++++++[static] name='cell B3'
+++++[table row] selectable
+++++++[table cell] name='cell A4' selectable colindex:1 coltext:A rowindex:4 rowtext:4 (row=1, col=0, row_span=1, col_span=1, n_row_headers=0, n_col_headers=0)
+++++++++[static] name='cell A4'
+++++++[table cell] name='cell B4' selectable colindex:2 coltext:B rowindex:4 rowtext:4 (row=1, col=1, row_span=1, col_span=1, n_row_headers=0, n_col_headers=0)
+++++++++[static] name='cell B4'

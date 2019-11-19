@@ -30,6 +30,18 @@ class ClipboardAndroid : public Clipboard {
   void OnPrimaryClipChanged(JNIEnv* env,
                             const base::android::JavaParamRef<jobject>& obj);
 
+  // Called by Java when the Java Clipboard is notified that the window focus
+  // has changed. Since Chrome will not receive OnPrimaryClipChanged call from
+  // Android if Chrome is in background,Clipboard handler needs to check the
+  // content of clipboard didn't change, when Chrome is back in foreground.
+  void OnPrimaryClipTimestampInvalidated(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& obj,
+      const jlong j_timestamp_ms);
+
+  // Called by Java side.
+  int64_t GetLastModifiedTimeToJavaTime(JNIEnv* env);
+
   // Sets the callback called whenever the clipboard is modified.
   COMPONENT_EXPORT(BASE_CLIPBOARD)
   void SetModifiedCallback(ModifiedCallback cb);
@@ -46,23 +58,24 @@ class ClipboardAndroid : public Clipboard {
 
   // Clipboard overrides:
   void OnPreShutdown() override;
-  uint64_t GetSequenceNumber(ClipboardType type) const override;
+  uint64_t GetSequenceNumber(ClipboardBuffer buffer) const override;
   bool IsFormatAvailable(const ClipboardFormatType& format,
-                         ClipboardType type) const override;
-  void Clear(ClipboardType type) override;
-  void ReadAvailableTypes(ClipboardType type,
+                         ClipboardBuffer buffer) const override;
+  void Clear(ClipboardBuffer buffer) override;
+  void ReadAvailableTypes(ClipboardBuffer buffer,
                           std::vector<base::string16>* types,
                           bool* contains_filenames) const override;
-  void ReadText(ClipboardType type, base::string16* result) const override;
-  void ReadAsciiText(ClipboardType type, std::string* result) const override;
-  void ReadHTML(ClipboardType type,
+  void ReadText(ClipboardBuffer buffer, base::string16* result) const override;
+  void ReadAsciiText(ClipboardBuffer buffer,
+                     std::string* result) const override;
+  void ReadHTML(ClipboardBuffer buffer,
                 base::string16* markup,
                 std::string* src_url,
                 uint32_t* fragment_start,
                 uint32_t* fragment_end) const override;
-  void ReadRTF(ClipboardType type, std::string* result) const override;
-  SkBitmap ReadImage(ClipboardType type) const override;
-  void ReadCustomData(ClipboardType clipboard_type,
+  void ReadRTF(ClipboardBuffer buffer, std::string* result) const override;
+  SkBitmap ReadImage(ClipboardBuffer buffer) const override;
+  void ReadCustomData(ClipboardBuffer buffer,
                       const base::string16& type,
                       base::string16* result) const override;
   void ReadBookmark(base::string16* title, std::string* url) const override;
@@ -70,7 +83,12 @@ class ClipboardAndroid : public Clipboard {
                 std::string* result) const override;
   base::Time GetLastModifiedTime() const override;
   void ClearLastModifiedTime() override;
-  void WriteObjects(ClipboardType type, const ObjectMap& objects) override;
+  void WritePortableRepresentations(ClipboardBuffer buffer,
+                                    const ObjectMap& objects) override;
+  void WritePlatformRepresentations(
+      ClipboardBuffer buffer,
+      std::vector<Clipboard::PlatformRepresentation> platform_representations)
+      override;
   void WriteText(const char* text_data, size_t text_len) override;
   void WriteHTML(const char* markup_data,
                  size_t markup_len,

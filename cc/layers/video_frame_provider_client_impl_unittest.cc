@@ -3,10 +3,9 @@
 // found in the LICENSE file.
 
 #include "cc/layers/video_frame_provider_client_impl.h"
-#include "base/macros.h"
 #include "cc/layers/video_layer_impl.h"
 #include "cc/test/fake_video_frame_provider.h"
-#include "cc/test/layer_test_common.h"
+#include "cc/test/layer_tree_impl_test_base.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "media/base/video_frame.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -40,6 +39,8 @@ class VideoFrameProviderClientImplTest : public testing::Test,
                                                    base::TimeDelta())) {
     DebugSetImplThreadAndMainThreadBlocked(impl_.task_runner_provider());
   }
+  VideoFrameProviderClientImplTest(const VideoFrameProviderClientImplTest&) =
+      delete;
 
   ~VideoFrameProviderClientImplTest() override {
     if (!client_impl_->Stopped()) {
@@ -50,6 +51,9 @@ class VideoFrameProviderClientImplTest : public testing::Test,
 
     provider_.SetVideoFrameProviderClient(nullptr);
   }
+
+  VideoFrameProviderClientImplTest& operator=(
+      const VideoFrameProviderClientImplTest&) = delete;
 
   void StartRendering() {
     EXPECT_CALL(*this, AddVideoFrameController(_));
@@ -75,8 +79,8 @@ class VideoFrameProviderClientImplTest : public testing::Test,
 
   void CreateActiveVideoLayer() {
     gfx::Size layer_size(100, 100);
-    video_layer_impl_ = impl_.AddChildToRoot<VideoLayerImpl>(
-        &provider_, media::VIDEO_ROTATION_0);
+    video_layer_impl_ =
+        impl_.AddLayer<VideoLayerImpl>(&provider_, media::VIDEO_ROTATION_0);
     video_layer_impl_->SetBounds(layer_size);
     video_layer_impl_->SetDrawsContent(true);
     client_impl_->SetActiveVideoLayer(video_layer_impl_);
@@ -88,13 +92,10 @@ class VideoFrameProviderClientImplTest : public testing::Test,
 
  protected:
   FakeVideoFrameProvider provider_;
-  LayerTestCommon::LayerImplTest impl_;
+  LayerTreeImplTestBase impl_;
   scoped_refptr<VideoFrameProviderClientImpl> client_impl_;
   VideoLayerImpl* video_layer_impl_;
   scoped_refptr<media::VideoFrame> test_frame_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(VideoFrameProviderClientImplTest);
 };
 
 TEST_F(VideoFrameProviderClientImplTest, StartStopRendering) {

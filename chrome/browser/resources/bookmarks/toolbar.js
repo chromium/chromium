@@ -2,11 +2,28 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {Polymer, html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
+import 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar.m.js';
+import 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar_search_field.m.js';
+import 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar_selection_overlay.m.js';
+import 'chrome://resources/cr_elements/icons.m.js';
+import {assert} from 'chrome://resources/js/assert.m.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import './shared_style.js';
+import './strings.m.js';
+import {Command, MenuSource} from './constants.js';
+import {CommandManager} from './command_manager.js';
+import {StoreClient} from './store_client.js';
+import {deselectItems, setSearchTerm} from './actions.js';
+
 Polymer({
   is: 'bookmarks-toolbar',
 
+  _template: html`{__html_template__}`,
+
   behaviors: [
-    bookmarks.StoreClient,
+    StoreClient,
   ],
 
   properties: {
@@ -73,14 +90,14 @@ Polymer({
   /** @private */
   onDeleteSelectionTap_: function() {
     const selection = this.selectedItems_;
-    const commandManager = bookmarks.CommandManager.getInstance();
+    const commandManager = CommandManager.getInstance();
     assert(commandManager.canExecute(Command.DELETE, selection));
     commandManager.handle(Command.DELETE, selection);
   },
 
   /** @private */
   onClearSelectionTap_: function() {
-    this.dispatch(bookmarks.actions.deselectItems());
+    this.dispatch(deselectItems());
   },
 
   /**
@@ -89,7 +106,7 @@ Polymer({
    */
   onSearchChanged_: function(e) {
     if (e.detail != this.searchTerm_) {
-      this.dispatch(bookmarks.actions.setSearchTerm(e.detail));
+      this.dispatch(setSearchTerm(e.detail));
     }
   },
 
@@ -117,7 +134,7 @@ Polymer({
    */
   canDeleteSelection_: function() {
     return this.showSelectionOverlay &&
-        bookmarks.CommandManager.getInstance().canExecute(
+        CommandManager.getInstance().canExecute(
             Command.DELETE, this.selectedItems_);
   },
 

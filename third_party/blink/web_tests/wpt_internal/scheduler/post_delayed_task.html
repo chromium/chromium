@@ -1,0 +1,19 @@
+<!doctype html>
+<title>Scheduling API: Post Delayed Tasks</title>
+<link rel="author" title="Scott Haseley" href="mailto:shaseley@chromium.org">
+<link rel="help" href="https://github.com/WICG/main-thread-scheduling">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<script>
+'use strict';
+
+async_test(t => {
+  let now = performance.now();
+    scheduler.postTask(t.step_func_done(() => {
+      let elapsed = performance.now() - now;
+      assert_greater_than_equal(elapsed, 10);
+    }), { priority: 'immediate', delay: 10 });
+}, 'Tests basic scheduler.postTask with a delay');
+
+</script>

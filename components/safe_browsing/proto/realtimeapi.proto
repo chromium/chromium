@@ -1,0 +1,73 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+//
+// This proto file includes the protocol buffers for communicating with the Safe
+// Browsing Real Time API.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+
+package safe_browsing;
+
+import "csd.proto";
+
+message RTLookupRequest {
+  // If applicable, URL submitted from Chrome.
+  optional string url = 1;
+  // Type of Lookup submitted by Chrome.
+  enum LookupType {
+    // Lookup type is not specified in request.
+    LOOKUP_TYPE_UNSPECIFIED = 0;
+    // Lookup type is navigation.
+    NAVIGATION = 1;
+    // Lookup type is download.
+    DOWNLOAD = 2;
+  }
+  optional LookupType lookup_type = 2;
+  // Mechanism to have different detection methods for different user
+  // population later.
+  optional ChromeUserPopulation population = 3;
+}
+
+message RTLookupResponse {
+  // Contains threat information including threat type, verdict type, cache
+  // duration and cache expression on a matching url.
+  message ThreatInfo {
+    // Type of threat detected.
+    enum ThreatType {
+      // Unknown.
+      THREAT_TYPE_UNSPECIFIED = 0;
+      // URL leads to unintentional download of malware i.e. drive-by downloads.
+      WEB_MALWARE = 1;
+      // Social engineering threat type for internal use.
+      SOCIAL_ENGINEERING = 3;
+      // Unwanted software threat type.
+      UNWANTED_SOFTWARE = 4;
+      // Unclear Billing threat type
+      UNCLEAR_BILLING = 5;
+
+      reserved 2;
+    }
+    optional ThreatType threat_type = 1;
+    // TTL of the verdict in seconds.
+    optional int64 cache_duration_sec = 2;
+    // A host-suffix/path-prefix expression for caching the verdict
+    optional string cache_expression = 3;
+    // Type of verdicts issued by the server. Different levels of verdicts from
+    // 1 to 100 can be added in future based on the confidence of the verdict.
+    // 1 being confidently safe to 100 being confidently dangerous.
+    enum VerdictType {
+      VERDICT_TYPE_UNSPECIFIED = 0;
+      SAFE = 1;
+      DANGEROUS = 100;
+    }
+    optional VerdictType verdict_type = 4;
+  }
+  // Each matching url can have multiple threats detected, if the response
+  // contains multiple threat_info messages, then they are in decreasing order
+  // of severity so that the client could choose first applicable threat_info
+  // as the most severe one.
+  repeated ThreatInfo threat_info = 1;
+}

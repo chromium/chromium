@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 package org.chromium.chrome.browser;
+import org.chromium.base.annotations.NativeMethods;
 
 /**
  * JNI call glue for AfterStartupTaskUtils in C++.
@@ -16,8 +17,11 @@ public final class AfterStartupTaskUtils {
      * to run and newly posted tasks will no longer be deferred.
      */
     public static void setStartupComplete() {
-        nativeSetStartupComplete();
+        AfterStartupTaskUtilsJni.get().setStartupComplete();
     }
 
-    private static native void nativeSetStartupComplete();
+    @NativeMethods
+    interface Natives {
+        void setStartupComplete();
+    }
 }

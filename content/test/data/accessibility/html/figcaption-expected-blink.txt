@@ -1,6 +1,7 @@
 rootWebArea
-++figure name='Fig.1 - A green Box'
-++++image name='This is a green box.'
-++++figcaption
-++++++staticText name='Fig.1 - A green Box'
-++++++++inlineTextBox name='Fig.1 - A green Box'
+++genericContainer ignored
+++++figure name='Fig.1 - A green Box'
+++++++image name='This is a green box.'
+++++++figcaption
+++++++++staticText name='Fig.1 - A green Box'
+++++++++++inlineTextBox name='Fig.1 - A green Box'

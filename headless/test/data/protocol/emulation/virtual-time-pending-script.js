@@ -2,9 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-const htmlWithScript =
-    `<script src="/large.js"></script>`;
-
 // We want to pad |kLargeDotJS| out with some dummy code which is parsed
 // asynchronously to make sure the virtual_time_pauser in PendingScript
 // actually does something. We construct a large number of long unused
@@ -20,22 +17,24 @@ ${dummy.join('\n')}
 setTitle('Test PASS');
 })();`;
 
-const server = new Map([
-  ['http://test.com/index.html', htmlWithScript],
-  ['http://test.com/large.js', largeDotJS]]);
-
 (async function(testRunner) {
-  var {page, session, dp} = await testRunner.startBlank(
+  const {page, session, dp} = await testRunner.startBlank(
       `Tests that pending script does not break virtual time.`);
-  await dp.Network.enable();
-  await dp.Network.setRequestInterception({ patterns: [{ urlPattern: '*' }] });
-  dp.Network.onRequestIntercepted(event => {
-    let body = server.get(event.params.request.url);
-    dp.Network.continueInterceptedRequest({
-      interceptionId: event.params.interceptionId,
-      rawResponse: btoa(body)
-    });
-  });
+
+  const FetchHelper = await testRunner.loadScriptAbsolute(
+      '../fetch/resources/fetch-test.js');
+  const helper = new FetchHelper(testRunner, dp);
+  await helper.enable();
+
+  helper.onceRequest('http://test.com/index.html').fulfill(
+      FetchHelper.makeContentResponse(`
+          <script src="/large.js"></script>`)
+  );
+
+  helper.onceRequest('http://test.com/large.js').fulfill(
+      FetchHelper.makeContentResponse(largeDotJS,
+          'application/javascript')
+  );
 
   dp.Emulation.onVirtualTimeBudgetExpired(async data => {
     testRunner.log(await session.evaluate('document.title'));

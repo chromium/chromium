@@ -42,8 +42,8 @@ the Abseil code, running tests, and getting a simple binary working.
 <a name="build"></a>
 ## Building Abseil
 
-[Bazel](http://bazel.build) is the official build system for Abseil,
-which is supported on most major platforms (Linux, Windows, MacOS, for example)
+[Bazel](https://bazel.build) is the official build system for Abseil,
+which is supported on most major platforms (Linux, Windows, macOS, for example)
 and compilers. See the [quickstart](https://abseil.io/docs/cpp/quickstart) for
 more information on building Abseil using the Bazel build system.
 
@@ -106,9 +106,9 @@ license. See [LICENSE](LICENSE) for more information.
 
 For more information about Abseil:
 
-* Consult our [Abseil Introduction](http://abseil.io/about/intro)
-* Read [Why Adopt Abseil](http://abseil.io/about/philosophy) to understand our
+* Consult our [Abseil Introduction](https://abseil.io/about/intro)
+* Read [Why Adopt Abseil](https://abseil.io/about/philosophy) to understand our
   design philosophy.
 * Peruse our
-  [Abseil Compatibility Guarantees](http://abseil.io/about/compatibility) to
+  [Abseil Compatibility Guarantees](https://abseil.io/about/compatibility) to
   understand both what we promise to you, and what we expect of you in return.

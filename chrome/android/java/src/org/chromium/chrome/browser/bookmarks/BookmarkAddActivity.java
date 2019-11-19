@@ -4,67 +4,25 @@
 
 package org.chromium.chrome.browser.bookmarks;
 
-import org.chromium.base.metrics.RecordUserAction;
-import org.chromium.chrome.browser.init.AsyncInitializationActivity;
-import org.chromium.components.bookmarks.BookmarkId;
+import android.os.Bundle;
+import android.support.annotation.Nullable;
+import android.support.v7.app.AppCompatActivity;
+
+import org.chromium.base.Log;
+import org.chromium.chrome.R;
+import org.chromium.ui.widget.Toast;
 
 /**
- * This invisible activity adds a bookmark with the supplied title and url, then launches an
- * activity to show the new bookmark.
- *
- * This activity is used only on pre-M devices with Chrome pre-installed. When a third-party app
- * calls the now-obsolete method Browser.saveBookmark(), the call is forwarded through
- * AddBookmarkProxyActivity and launches this activity. See http://crbug.com/581961 for details.
- *
- * TODO(newt): remove this once Android L is no longer supported.
+ * This feature is no longer supported. TODO(twellington): remove this entirely Android L is no
+ * longer supported.
  */
-public class BookmarkAddActivity extends AsyncInitializationActivity {
-
-    private static final String EXTRA_TITLE = "title";
-    private static final String EXTRA_URL = "url";
-
-    private BookmarkModel mModel;
-
+public class BookmarkAddActivity extends AppCompatActivity {
+    private static final String TAG = "BookmarkAddActivity";
     @Override
-    protected void triggerLayoutInflation() {
-        onInitialLayoutInflationComplete();
-    }
-
-    @Override
-    public void finishNativeInitialization() {
-        super.finishNativeInitialization();
-        RecordUserAction.record("MobileAddBookmarkViaIntent");
-
-        final String title = getIntent().getStringExtra(EXTRA_TITLE);
-        final String url = getIntent().getStringExtra(EXTRA_URL);
-
-        // Store mModel as a member variable so it can't be garbage collected. Otherwise the
-        // Runnable might never be run.
-        mModel = new BookmarkModel();
-        mModel.finishLoadingBookmarkModel(new Runnable() {
-            @Override
-            public void run() {
-                BookmarkId bookmarkId = BookmarkUtils.addBookmarkSilently(
-                        BookmarkAddActivity.this, mModel, title, url);
-                if (bookmarkId != null) {
-                    BookmarkUtils.startEditActivity(BookmarkAddActivity.this, bookmarkId);
-                }
-                finish();
-            }
-        });
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        if (mModel != null) {
-            mModel.destroy();
-            mModel = null;
-        }
-    }
-
-    @Override
-    public boolean shouldStartGpuProcess() {
-        return false;
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        Log.i(TAG, "This feature is no longer supported");
+        Toast.makeText(this, R.string.unsupported, Toast.LENGTH_SHORT).show();
+        finish();
     }
 }

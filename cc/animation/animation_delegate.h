@@ -35,6 +35,8 @@ class CC_ANIMATION_EXPORT AnimationDelegate {
       int target_property,
       base::TimeTicks animation_start_time,
       std::unique_ptr<AnimationCurve> curve) = 0;
+  virtual void NotifyLocalTimeUpdated(
+      base::Optional<base::TimeDelta> local_time) = 0;
 
  protected:
   virtual ~AnimationDelegate() {}

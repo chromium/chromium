@@ -10,8 +10,8 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/message_loop/message_loop.h"
 #include "base/run_loop.h"
+#include "base/test/task_environment.h"
 #include "base/test/test_simple_task_runner.h"
 #include "base/time/time.h"
 #include "storage/browser/blob/blob_data_builder.h"
@@ -73,7 +73,8 @@ class BlobFlattenerTest : public testing::Test {
   }
 
   scoped_refptr<BlobDataItem> CreateDataItem(const char* memory, size_t size) {
-    return BlobDataItem::CreateBytes(base::make_span(memory, size));
+    return BlobDataItem::CreateBytes(
+        base::as_bytes(base::make_span(memory, size)));
   }
 
   scoped_refptr<BlobDataItem> CreateFileItem(size_t offset, size_t size) {
@@ -87,7 +88,7 @@ class BlobFlattenerTest : public testing::Test {
 
   std::unique_ptr<BlobDataHandle> SetupBasicBlob(const std::string& id) {
     auto builder = std::make_unique<BlobDataBuilder>(id);
-    builder->AppendData("1", 1);
+    builder->AppendData(std::string("1"));
     builder->set_content_type("text/plain");
     return context_->AddFinishedBlob(std::move(builder));
   }
@@ -117,7 +118,7 @@ class BlobFlattenerTest : public testing::Test {
   base::ScopedTempDir temp_dir_;
   scoped_refptr<TestSimpleTaskRunner> file_runner_ = new TestSimpleTaskRunner();
 
-  base::MessageLoop fake_io_message_loop;
+  base::test::SingleThreadTaskEnvironment task_environment;
   std::unique_ptr<BlobStorageContext> context_;
 };
 
@@ -125,7 +126,7 @@ TEST_F(BlobFlattenerTest, NoBlobItems) {
   const std::string kBlobUUID = "kId";
 
   BlobDataBuilder builder(kBlobUUID);
-  builder.AppendData("hi", 2u);
+  builder.AppendData(std::string("hi"));
   builder.AppendFile(fake_file_path_, 0u, 10u, base::Time::Max());
 
   EXPECT_EQ(0u, builder.dependent_blobs().size());
@@ -185,7 +186,7 @@ TEST_F(BlobFlattenerTest, BlobWithSlices) {
   std::unique_ptr<BlobDataHandle> data_blob;
   {
     auto builder = std::make_unique<BlobDataBuilder>(kDataBlob);
-    builder->AppendData("12345", 5);
+    builder->AppendData(std::string("12345"));
     builder->set_content_type("text/plain");
     data_blob = context_->AddFinishedBlob(std::move(builder));
   }
@@ -210,7 +211,7 @@ TEST_F(BlobFlattenerTest, BlobWithSlices) {
   }
 
   BlobDataBuilder builder(kBlobUUID);
-  builder.AppendData("hi", 2u);
+  builder.AppendData(std::string("hi"));
   builder.AppendBlob(kDataBlob, 1u, 2u, registry());
   builder.AppendFile(fake_file_path_, 3u, 5u, base::Time::Max());
   builder.AppendBlob(kDataBlob, registry());

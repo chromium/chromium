@@ -74,7 +74,7 @@ function navigateAndWait(url, callback) {
       done();
     }
   });
-  chrome.tabs.update(tabId, {url: url});
+  chrome.test.sendMessage(JSON.stringify({navigate: {tabId: tabId, url: url}}));
 }
 
 // data: array of extected events, each one is a dictionary:

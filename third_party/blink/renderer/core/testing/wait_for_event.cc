@@ -8,11 +8,6 @@
 
 namespace blink {
 
-// static
-WaitForEvent* WaitForEvent::Create(Element* element, const AtomicString& name) {
-  return MakeGarbageCollected<WaitForEvent>(element, name);
-}
-
 WaitForEvent::WaitForEvent(Element* element, const AtomicString& name)
     : element_(element), event_name_(name) {
   element_->addEventListener(event_name_, this);

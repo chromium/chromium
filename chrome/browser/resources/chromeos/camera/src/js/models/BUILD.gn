@@ -1,0 +1,44 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/closure_compiler/compile_js.gni")
+
+js_type_check("closure_compile") {
+  deps = [
+    ":filenamer",
+    ":filesystem",
+    ":gallery",
+    ":result_saver",
+    ":video_saver",
+  ]
+}
+
+js_library("filenamer") {
+}
+
+js_library("filesystem") {
+  deps = [
+    "..:util",
+  ]
+}
+
+js_library("gallery") {
+  deps = [
+    ":filesystem",
+  ]
+}
+
+js_library("result_saver") {
+}
+
+js_library("video_saver") {
+  sources = [
+    "file_video_saver.js",
+    "intent_video_saver.js",
+    "video_saver_interface.js",
+  ]
+  deps = [
+    "..:intent",
+  ]
+}

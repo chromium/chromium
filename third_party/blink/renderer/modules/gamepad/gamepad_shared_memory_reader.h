@@ -8,16 +8,24 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "device/base/synchronization/shared_memory_seqlock_buffer.h"
-#include "device/gamepad/public/cpp/gamepads.h"
 #include "device/gamepad/public/mojom/gamepad.mojom-blink.h"
 #include "device/gamepad/public/mojom/gamepad_hardware_buffer.h"
-#include "mojo/public/cpp/bindings/binding.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/buffer.h"
-#include "third_party/blink/public/platform/web_gamepad_listener.h"
+
+namespace base {
+class ReadOnlySharedMemoryRegion;
+}
+
+namespace device {
+class Gamepad;
+class Gamepads;
+}  // namespace device
 
 namespace blink {
 
+class GamepadListener;
 class LocalFrame;
 
 class GamepadSharedMemoryReader : public device::mojom::blink::GamepadObserver {
@@ -26,7 +34,7 @@ class GamepadSharedMemoryReader : public device::mojom::blink::GamepadObserver {
   ~GamepadSharedMemoryReader() override;
 
   void SampleGamepads(device::Gamepads& gamepads);
-  void Start(blink::WebGamepadListener* listener);
+  void Start(blink::GamepadListener* listener);
   void Stop();
 
  protected:
@@ -48,9 +56,9 @@ class GamepadSharedMemoryReader : public device::mojom::blink::GamepadObserver {
 
   bool ever_interacted_with_ = false;
 
-  mojo::Binding<device::mojom::blink::GamepadObserver> binding_;
-  device::mojom::blink::GamepadMonitorPtr gamepad_monitor_;
-  blink::WebGamepadListener* listener_ = nullptr;
+  mojo::Receiver<device::mojom::blink::GamepadObserver> receiver_{this};
+  mojo::Remote<device::mojom::blink::GamepadMonitor> gamepad_monitor_remote_;
+  blink::GamepadListener* listener_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(GamepadSharedMemoryReader);
 };

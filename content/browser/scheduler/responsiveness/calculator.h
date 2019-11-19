@@ -121,9 +121,6 @@ class CONTENT_EXPORT Calculator {
   // executed, so a very long execution time should be treated similarly.
   base::TimeTicks most_recent_activity_time_;
 
-  // The number of times the responsiveness metric has been emitted.
-  int emission_count_ = 0;
-
   DISALLOW_COPY_AND_ASSIGN(Calculator);
 };
 

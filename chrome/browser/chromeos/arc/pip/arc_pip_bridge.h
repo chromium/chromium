@@ -7,12 +7,9 @@
 
 #include <memory>
 
-#include "components/arc/common/pip.mojom.h"
-#include "components/arc/connection_observer.h"
+#include "components/arc/mojom/pip.mojom.h"
+#include "components/arc/session/connection_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/prefs/pref_change_registrar.h"
-
-class Profile;
 
 namespace content {
 
@@ -47,17 +44,11 @@ class ArcPipBridge : public KeyedService,
   // PipInstance methods:
   void ClosePip();
 
-  void OnSpokenFeedbackChanged();
-
  private:
-  bool ShouldSuppressPip() const;
-
   ArcBridgeService* const arc_bridge_service_;
-  Profile* const profile_;
 
   std::unique_ptr<ArcPictureInPictureWindowControllerImpl>
       pip_window_controller_;
-  PrefChangeRegistrar pref_change_registrar_;
 
   bool prevent_closing_pip_ = false;
 

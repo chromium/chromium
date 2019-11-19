@@ -51,7 +51,7 @@ class AddUniqueUrlsTask : public Task {
   std::string name_space_;
   std::vector<PrefetchURL> prefetch_urls_;
 
-  base::WeakPtrFactory<AddUniqueUrlsTask> weak_ptr_factory_;
+  base::WeakPtrFactory<AddUniqueUrlsTask> weak_ptr_factory_{this};
   DISALLOW_COPY_AND_ASSIGN(AddUniqueUrlsTask);
 };
 

@@ -8,11 +8,11 @@
 #include "chrome/browser/extensions/api/image_writer_private/error_messages.h"
 #include "chrome/browser/extensions/api/image_writer_private/operation_manager.h"
 #include "content/public/browser/browser_thread.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "net/url_request/url_fetcher.h"
-#include "services/network/public/cpp/resource_response.h"
 #include "services/network/public/cpp/simple_url_loader.h"
-#include "services/service_manager/public/cpp/connector.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 
 namespace extensions {
 namespace image_writer {
@@ -21,19 +21,14 @@ using content::BrowserThread;
 
 WriteFromUrlOperation::WriteFromUrlOperation(
     base::WeakPtr<OperationManager> manager,
-    std::unique_ptr<service_manager::Connector> connector,
     const ExtensionId& extension_id,
-    network::mojom::URLLoaderFactoryPtrInfo factory_info,
+    mojo::PendingRemote<network::mojom::URLLoaderFactory> factory_remote,
     GURL url,
     const std::string& hash,
     const std::string& device_path,
     const base::FilePath& download_folder)
-    : Operation(manager,
-                std::move(connector),
-                extension_id,
-                device_path,
-                download_folder),
-      url_loader_factory_ptr_info_(std::move(factory_info)),
+    : Operation(manager, extension_id, device_path, download_folder),
+      url_loader_factory_remote_(std::move(factory_remote)),
       url_(url),
       hash_(hash),
       download_continuation_() {}
@@ -126,11 +121,11 @@ void WriteFromUrlOperation::Download(base::OnceClosure continuation) {
   AddCleanUpFunction(
       base::BindOnce(&WriteFromUrlOperation::DestroySimpleURLLoader, this));
 
-  network::mojom::URLLoaderFactoryPtr url_loader_factory_ptr;
-  url_loader_factory_ptr.Bind(std::move(url_loader_factory_ptr_info_));
+  mojo::Remote<network::mojom::URLLoaderFactory> url_loader_factory_remote(
+      std::move(url_loader_factory_remote_));
 
   simple_url_loader_->DownloadToFile(
-      url_loader_factory_ptr.get(),
+      url_loader_factory_remote.get(),
       base::BindOnce(&WriteFromUrlOperation::OnSimpleLoaderComplete,
                      base::Unretained(this)),
       image_path_);
@@ -142,7 +137,7 @@ void WriteFromUrlOperation::DestroySimpleURLLoader() {
 
 void WriteFromUrlOperation::OnResponseStarted(
     const GURL& final_url,
-    const network::ResourceResponseHead& response_head) {
+    const network::mojom::URLResponseHead& response_head) {
   total_response_bytes_ = response_head.content_length;
 }
 

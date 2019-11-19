@@ -10,19 +10,22 @@
 
 #include "base/macros.h"
 #include "base/run_loop.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/chromeos/policy/device_policy_builder.h"
 #include "chrome/browser/chromeos/policy/fake_affiliated_invalidation_service_provider.h"
 #include "chrome/browser/policy/cloud/cloud_policy_invalidator.h"
+#include "chrome/common/chrome_features.h"
 #include "components/invalidation/impl/fake_invalidation_service.h"
 #include "components/invalidation/public/invalidation.h"
+#include "components/invalidation/public/invalidation_util.h"
 #include "components/invalidation/public/object_id_invalidation_map.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/cloud_policy_core.h"
 #include "components/policy/core/common/cloud/cloud_policy_store.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "google/cacheinvalidation/include/types.h"
 #include "services/network/test/test_network_connection_tracker.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -40,6 +43,7 @@ namespace {
 
 const int kInvalidationSource = 123;
 const char kInvalidationName[] = "invalidation";
+const char kPolicyInvalidationTopic[] = "policy_invalidation_topic";
 
 class FakeCloudPolicyStore : public CloudPolicyStore {
  public:
@@ -68,12 +72,29 @@ void FakeCloudPolicyStore::Load() {
 
 }  // namespace
 
+// Accepts boolean param is_fcm_enabled.
+// true if FCM (Firebase Cloud Messaging) is enabled,
+// and false otherwise.
+class AffiliatedCloudPolicyInvalidatorTest
+    : public testing::TestWithParam<bool> {
+ public:
+  AffiliatedCloudPolicyInvalidatorTest();
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+AffiliatedCloudPolicyInvalidatorTest::AffiliatedCloudPolicyInvalidatorTest() {
+  feature_list_.InitWithFeatureState(features::kPolicyFcmInvalidations,
+                                     GetParam() /* is_fcm_enabled */);
+}
+
 // Verifies that an invalidator is created/destroyed as an invalidation service
 // becomes available/unavailable. Also verifies that invalidations are handled
 // correctly and the highest handled invalidation version is preserved when
 // switching invalidation services.
-TEST(AffiliatedCloudPolicyInvalidatorTest, CreateUseDestroy) {
-  content::TestBrowserThreadBundle thread_bundle;
+TEST_P(AffiliatedCloudPolicyInvalidatorTest, CreateUseDestroy) {
+  content::BrowserTaskEnvironment task_environment;
 
   // Set up a CloudPolicyCore backed by a simple CloudPolicyStore that does no
   // signature verification and stores policy in memory.
@@ -98,16 +119,26 @@ TEST(AffiliatedCloudPolicyInvalidatorTest, CreateUseDestroy) {
   core.StartRefreshScheduler();
 
   DevicePolicyBuilder policy;
-  policy.policy_data().set_invalidation_source(kInvalidationSource);
-  policy.policy_data().set_invalidation_name(kInvalidationName);
+
+  const bool is_fcm_enabled = GetParam();
+  if (is_fcm_enabled) {
+    // Pass deprecated source if FCM (Firebase Cloud Messaging) is enabled,
+    // because server does not support source field with FCM and
+    // InvalidationService fills the source field with kDeprecatedSourceForFCM.
+    policy.policy_data().set_invalidation_source(
+        syncer::kDeprecatedSourceForFCM);
+    policy.policy_data().set_policy_invalidation_topic(
+        kPolicyInvalidationTopic);
+  } else {
+    policy.policy_data().set_invalidation_source(kInvalidationSource);
+    policy.policy_data().set_invalidation_name(kInvalidationName);
+  }
   policy.Build();
   store.Store(policy.policy());
 
   FakeAffiliatedInvalidationServiceProvider provider;
   AffiliatedCloudPolicyInvalidator affiliated_invalidator(
-      em::DeviceRegisterRequest::DEVICE,
-      &core,
-      &provider);
+      em::DeviceRegisterRequest::DEVICE, &core, &provider);
 
   // Verify that no invalidator exists initially.
   EXPECT_FALSE(affiliated_invalidator.GetInvalidatorForTest());
@@ -130,10 +161,15 @@ TEST(AffiliatedCloudPolicyInvalidatorTest, CreateUseDestroy) {
   // timestamp in microseconds. The policy blob contains a timestamp in
   // milliseconds. Convert from one to the other by multiplying by 1000.
   const int64_t invalidation_version = policy.policy_data().timestamp() * 1000;
-  syncer::Invalidation invalidation = syncer::Invalidation::Init(
-      invalidation::ObjectId(kInvalidationSource, kInvalidationName),
-      invalidation_version,
-      "dummy payload");
+  syncer::Invalidation invalidation =
+      is_fcm_enabled
+          ? syncer::Invalidation::Init(
+                invalidation::ObjectId(syncer::kDeprecatedSourceForFCM,
+                                       kPolicyInvalidationTopic),
+                invalidation_version, "dummy payload")
+          : syncer::Invalidation::Init(
+                invalidation::ObjectId(kInvalidationSource, kInvalidationName),
+                invalidation_version, "dummy payload");
   syncer::ObjectIdInvalidationMap invalidation_map;
   invalidation_map.Insert(invalidation);
   invalidator->OnIncomingInvalidation(invalidation_map);
@@ -196,5 +232,9 @@ TEST(AffiliatedCloudPolicyInvalidatorTest, CreateUseDestroy) {
   provider.Shutdown();
   affiliated_invalidator.OnInvalidationServiceSet(nullptr);
 }
+
+INSTANTIATE_TEST_SUITE_P(FCMEnabledAndFCMDisabled,
+                         AffiliatedCloudPolicyInvalidatorTest,
+                         testing::Bool() /* is_fcm_enabled */);
 
 }  // namespace policy

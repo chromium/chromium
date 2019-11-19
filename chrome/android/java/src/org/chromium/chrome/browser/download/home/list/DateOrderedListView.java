@@ -8,7 +8,6 @@ import android.content.Context;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Rect;
-import android.support.annotation.Nullable;
 import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
@@ -18,12 +17,14 @@ import android.support.v7.widget.RecyclerView.Recycler;
 import android.support.v7.widget.RecyclerView.State;
 import android.view.View;
 
+import androidx.annotation.Nullable;
+
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.download.home.DownloadManagerUiConfig;
 import org.chromium.chrome.browser.download.home.list.DateOrderedListCoordinator.DateOrderedListObserver;
 import org.chromium.chrome.browser.download.home.list.holder.ListItemViewHolder;
-import org.chromium.chrome.browser.widget.displaystyle.HorizontalDisplayStyle;
-import org.chromium.chrome.browser.widget.displaystyle.UiConfig;
+import org.chromium.chrome.browser.ui.widget.displaystyle.HorizontalDisplayStyle;
+import org.chromium.chrome.browser.ui.widget.displaystyle.UiConfig;
 import org.chromium.ui.modelutil.ForwardingListObservable;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.modelutil.RecyclerViewAdapter;
@@ -37,12 +38,13 @@ class DateOrderedListView {
     private final DecoratedListItemModel mModel;
 
     private final int mIdealImageWidthPx;
-    private final int mImagePaddingPx;
+    private final int mInterImagePaddingPx;
     private final int mPrefetchVerticalPaddingPx;
-    private final int mPrefetchHorizontalPaddingPx;
+    private final int mHorizontalPaddingPx;
     private final int mMaxWidthImageItemPx;
 
     private final RecyclerView mView;
+    private final GridLayoutManager mGridLayoutManager;
     private final UiConfig mUiConfig;
 
     /** Creates an instance of a {@link DateOrderedListView} representing {@code model}. */
@@ -53,10 +55,10 @@ class DateOrderedListView {
 
         mIdealImageWidthPx = context.getResources().getDimensionPixelSize(
                 R.dimen.download_manager_ideal_image_width);
-        mImagePaddingPx = context.getResources().getDimensionPixelOffset(
+        mInterImagePaddingPx = context.getResources().getDimensionPixelOffset(
                 R.dimen.download_manager_image_padding);
-        mPrefetchHorizontalPaddingPx = context.getResources().getDimensionPixelSize(
-                R.dimen.download_manager_prefetch_horizontal_margin);
+        mHorizontalPaddingPx = context.getResources().getDimensionPixelSize(
+                R.dimen.download_manager_horizontal_margin);
         mPrefetchVerticalPaddingPx = context.getResources().getDimensionPixelSize(
                 R.dimen.download_manager_prefetch_vertical_margin);
         mMaxWidthImageItemPx = context.getResources().getDimensionPixelSize(
@@ -78,8 +80,11 @@ class DateOrderedListView {
         mView.setHasFixedSize(true);
         ((DefaultItemAnimator) mView.getItemAnimator()).setSupportsChangeAnimations(false);
         mView.getItemAnimator().setMoveDuration(0);
-        mView.setLayoutManager(new GridLayoutManagerImpl(context));
+
+        mGridLayoutManager = new GridLayoutManagerImpl(context);
+        mView.setLayoutManager(mGridLayoutManager);
         mView.addItemDecoration(new ItemDecorationImpl());
+        mView.setClipToPadding(false);
 
         PropertyModelChangeProcessor.create(
                 mModel.getProperties(), mView, new ListPropertyViewBinder());
@@ -145,8 +150,8 @@ class DateOrderedListView {
         public void onLayoutChildren(Recycler recycler, State state) {
             assert getOrientation() == VERTICAL;
 
-            int availableWidth = getAvailableViewWidth() - mImagePaddingPx;
-            int columnWidth = mIdealImageWidthPx - mImagePaddingPx;
+            int availableWidth = getAvailableViewWidth() - 2 * mHorizontalPaddingPx;
+            int columnWidth = mIdealImageWidthPx - mInterImagePaddingPx;
 
             int easyFitSpan = availableWidth / columnWidth;
             double remaining =
@@ -184,23 +189,28 @@ class DateOrderedListView {
                 case ListUtils.ViewType.IMAGE:
                 case ListUtils.ViewType.IMAGE_FULL_WIDTH:
                 case ListUtils.ViewType.IN_PROGRESS_IMAGE:
-                    outRect.left = mImagePaddingPx;
-                    outRect.right = mImagePaddingPx;
-                    outRect.top = mImagePaddingPx;
-                    outRect.bottom = mImagePaddingPx;
                     isFullWidthMedia = ((ListItem.OfflineItemListItem) item).spanFullWidth;
+                    if (isFullWidthMedia || mGridLayoutManager.getSpanCount() == 1) {
+                        outRect.left = mHorizontalPaddingPx;
+                        outRect.right = mHorizontalPaddingPx;
+                    } else {
+                        computeItemDecoration(position, outRect);
+                    }
+
+                    outRect.top = mInterImagePaddingPx / 2;
+                    outRect.bottom = mInterImagePaddingPx / 2;
                     break;
                 case ListUtils.ViewType.VIDEO: // Intentional fallthrough.
                 case ListUtils.ViewType.IN_PROGRESS_VIDEO:
-                    outRect.left = mPrefetchHorizontalPaddingPx;
-                    outRect.right = mPrefetchHorizontalPaddingPx;
+                    outRect.left = mHorizontalPaddingPx;
+                    outRect.right = mHorizontalPaddingPx;
                     outRect.top = mPrefetchVerticalPaddingPx / 2;
                     outRect.bottom = mPrefetchVerticalPaddingPx / 2;
                     isFullWidthMedia = true;
                     break;
                 case ListUtils.ViewType.PREFETCH:
-                    outRect.left = mPrefetchHorizontalPaddingPx;
-                    outRect.right = mPrefetchHorizontalPaddingPx;
+                    outRect.left = mHorizontalPaddingPx;
+                    outRect.right = mHorizontalPaddingPx;
                     outRect.top = mPrefetchVerticalPaddingPx / 2;
                     outRect.bottom = mPrefetchVerticalPaddingPx / 2;
                     break;
@@ -212,6 +222,46 @@ class DateOrderedListView {
                 outRect.right += Math.max(getAvailableViewWidth() - mMaxWidthImageItemPx, 0);
             }
         }
+
+        private void computeItemDecoration(int position, Rect outRect) {
+            GridLayoutManager.SpanSizeLookup spanLookup = mGridLayoutManager.getSpanSizeLookup();
+            int spanCount = mGridLayoutManager.getSpanCount();
+            int columnIndex = spanLookup.getSpanIndex(position, spanCount);
+
+            horizontallyRepositionGridItem(columnIndex, spanCount, mHorizontalPaddingPx,
+                    mHorizontalPaddingPx, mInterImagePaddingPx, outRect);
+        }
+    }
+
+    /**
+     * Given the column index for an image in a grid view, computes the left and right edge
+     * offsets.
+     * @param columnIndex Column index for the item
+     * @param spanCount Span count of the grid
+     * @param leftMargin Leftmost margin in the row
+     * @param rightMargin Rightmost margin in the row
+     * @param padding Spacing between two items
+     * @param outRect The output rect that contains the computed offsets
+     */
+    private static void horizontallyRepositionGridItem(int columnIndex, int spanCount,
+            int leftMargin, int rightMargin, int padding, Rect outRect) {
+        assert spanCount > 1;
+
+        // Margin here refers to the leftmost or rightmost margin in the row, and padding here
+        // refers to the inter-image spacing.
+
+        // Calculate how much each image should be shrunk compared to the ideal image size if no
+        // margin or padding were present.
+        int shrink = (leftMargin + rightMargin + (spanCount - 1) * padding) / spanCount;
+
+        // Starting from left, calculate how much the image is shifted from ideal position
+        // due to the leftmost margin and padding between previous images. Subtract the
+        // total shrink for the previous images from this value.
+        outRect.left = leftMargin + columnIndex * padding - columnIndex * shrink;
+
+        // For right edge, the calculation is exactly same as left, except we have one extra
+        // shrink. Negate the final value.
+        outRect.right = -(leftMargin + columnIndex * padding - (columnIndex + 1) * shrink);
     }
 
     private class ModelChangeProcessor extends ForwardingListObservable<Void>

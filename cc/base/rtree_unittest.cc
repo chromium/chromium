@@ -9,6 +9,24 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace cc {
+namespace {
+// Helper function to use in place of rtree. Search that ensures that every
+// call to Search / SearchRefs produces the same results.
+template <typename T>
+void SearchAndVerifyRefs(const RTree<T>& rtree,
+                         const gfx::Rect& query,
+                         std::vector<T>* results) {
+  rtree.Search(query, results);
+
+  // Perform the same query with SearchRefs and make sure it matches Search.
+  std::vector<const T*> ref_results;
+  rtree.SearchRefs(query, &ref_results);
+  ASSERT_EQ(ref_results.size(), results->size());
+  for (size_t i = 0; i < results->size(); ++i) {
+    EXPECT_EQ(*ref_results[i], (*results)[i]);
+  }
+}
+}  // namespace
 
 TEST(RTreeTest, ReserveNodesDoesntDcheck) {
   // Make sure that anywhere between 0 and 1000 rects, our reserve math in rtree
@@ -36,20 +54,20 @@ TEST(RTreeTest, NoOverlap) {
   rtree.Build(rects);
 
   std::vector<size_t> results;
-  rtree.Search(gfx::Rect(0, 0, 50, 50), &results);
+  SearchAndVerifyRefs(rtree, gfx::Rect(0, 0, 50, 50), &results);
   ASSERT_EQ(2500u, results.size());
   // Note that the results have to be sorted.
   for (size_t i = 0; i < 2500; ++i) {
     ASSERT_EQ(results[i], i);
   }
 
-  rtree.Search(gfx::Rect(0, 0, 50, 49), &results);
+  SearchAndVerifyRefs(rtree, gfx::Rect(0, 0, 50, 49), &results);
   ASSERT_EQ(2450u, results.size());
   for (size_t i = 0; i < 2450; ++i) {
     ASSERT_EQ(results[i], i);
   }
 
-  rtree.Search(gfx::Rect(5, 6, 1, 1), &results);
+  SearchAndVerifyRefs(rtree, gfx::Rect(5, 6, 1, 1), &results);
   ASSERT_EQ(1u, results.size());
   EXPECT_EQ(6u * 50 + 5u, results[0]);
 }
@@ -66,14 +84,14 @@ TEST(RTreeTest, Overlap) {
   rtree.Build(rects);
 
   std::vector<size_t> results;
-  rtree.Search(gfx::Rect(0, 0, 1, 1), &results);
+  SearchAndVerifyRefs(rtree, gfx::Rect(0, 0, 1, 1), &results);
   ASSERT_EQ(2500u, results.size());
   // Both the checks for the elements assume elements are sorted.
   for (size_t i = 0; i < 2500; ++i) {
     ASSERT_EQ(results[i], i);
   }
 
-  rtree.Search(gfx::Rect(0, 49, 1, 1), &results);
+  SearchAndVerifyRefs(rtree, gfx::Rect(0, 49, 1, 1), &results);
   ASSERT_EQ(50u, results.size());
   for (size_t i = 0; i < 50; ++i) {
     EXPECT_EQ(results[i], 2450u + i);
@@ -103,11 +121,11 @@ TEST(RTreeTest, SortedResults) {
   for (int y = 0; y < 50; ++y) {
     for (int x = 0; x < 50; ++x) {
       std::vector<size_t> results;
-      rtree.Search(gfx::Rect(x, y, 1, 1), &results);
+      SearchAndVerifyRefs(rtree, gfx::Rect(x, y, 1, 1), &results);
       VerifySorted(results);
-      rtree.Search(gfx::Rect(x, y, 50, 1), &results);
+      SearchAndVerifyRefs(rtree, gfx::Rect(x, y, 50, 1), &results);
       VerifySorted(results);
-      rtree.Search(gfx::Rect(x, y, 1, 50), &results);
+      SearchAndVerifyRefs(rtree, gfx::Rect(x, y, 1, 50), &results);
       VerifySorted(results);
     }
   }
@@ -115,7 +133,7 @@ TEST(RTreeTest, SortedResults) {
 
 TEST(RTreeTest, GetBoundsEmpty) {
   RTree<size_t> rtree;
-  EXPECT_EQ(gfx::Rect(), rtree.GetBounds());
+  EXPECT_EQ(gfx::Rect(), rtree.GetBoundsOrDie());
   EXPECT_TRUE(rtree.GetAllBoundsForTracing().empty());
 }
 
@@ -127,8 +145,10 @@ TEST(RTreeTest, GetBoundsNonOverlapping) {
   RTree<size_t> rtree;
   rtree.Build(rects);
 
-  EXPECT_EQ(gfx::Rect(5, 6, 19, 20), rtree.GetBounds());
-  EXPECT_EQ(rects, rtree.GetAllBoundsForTracing());
+  EXPECT_EQ(gfx::Rect(5, 6, 19, 20), rtree.GetBoundsOrDie());
+  std::map<size_t, gfx::Rect> expected_all_bounds = {{0, rects[0]},
+                                                     {1, rects[1]}};
+  EXPECT_EQ(expected_all_bounds, rtree.GetAllBoundsForTracing());
 }
 
 TEST(RTreeTest, GetBoundsOverlapping) {
@@ -139,8 +159,23 @@ TEST(RTreeTest, GetBoundsOverlapping) {
   RTree<size_t> rtree;
   rtree.Build(rects);
 
-  EXPECT_EQ(gfx::Rect(0, 0, 10, 10), rtree.GetBounds());
-  EXPECT_EQ(rects, rtree.GetAllBoundsForTracing());
+  EXPECT_EQ(gfx::Rect(0, 0, 10, 10), rtree.GetBoundsOrDie());
+  std::map<size_t, gfx::Rect> expected_all_bounds = {{0, rects[0]},
+                                                     {1, rects[1]}};
+  EXPECT_EQ(expected_all_bounds, rtree.GetAllBoundsForTracing());
+}
+
+TEST(RTreeTest, GetBoundsWithEmptyRect) {
+  std::vector<gfx::Rect> rects;
+  rects.push_back(gfx::Rect());
+  rects.push_back(gfx::Rect(5, 5, 5, 5));
+
+  RTree<size_t> rtree;
+  rtree.Build(rects);
+
+  EXPECT_EQ(gfx::Rect(5, 5, 5, 5), rtree.GetBoundsOrDie());
+  std::map<size_t, gfx::Rect> expected_all_bounds = {{1, rects[1]}};
+  EXPECT_EQ(expected_all_bounds, rtree.GetAllBoundsForTracing());
 }
 
 TEST(RTreeTest, BuildAfterReset) {
@@ -155,13 +190,15 @@ TEST(RTreeTest, BuildAfterReset) {
 
   // Resetting should give the same as an empty rtree.
   rtree.Reset();
-  EXPECT_EQ(gfx::Rect(), rtree.GetBounds());
+  EXPECT_EQ(gfx::Rect(), rtree.GetBoundsOrDie());
   EXPECT_TRUE(rtree.GetAllBoundsForTracing().empty());
 
   // Should be able to rebuild from a reset rtree.
   rtree.Build(rects);
-  EXPECT_EQ(gfx::Rect(0, 0, 10, 10), rtree.GetBounds());
-  EXPECT_EQ(rects, rtree.GetAllBoundsForTracing());
+  EXPECT_EQ(gfx::Rect(0, 0, 10, 10), rtree.GetBoundsOrDie());
+  std::map<size_t, gfx::Rect> expected_all_bounds = {
+      {0, rects[0]}, {1, rects[1]}, {2, rects[2]}, {3, rects[3]}};
+  EXPECT_EQ(expected_all_bounds, rtree.GetAllBoundsForTracing());
 }
 
 TEST(RTreeTest, Payload) {
@@ -179,17 +216,91 @@ TEST(RTreeTest, Payload) {
       [](const Container& items, size_t index) { return items[index].second; });
 
   std::vector<float> results;
-  rtree.Search(gfx::Rect(0, 0, 1, 1), &results);
+  SearchAndVerifyRefs(rtree, gfx::Rect(0, 0, 1, 1), &results);
   ASSERT_EQ(1u, results.size());
   EXPECT_FLOAT_EQ(10.f, results[0]);
 
-  rtree.Search(gfx::Rect(5, 5, 10, 10), &results);
+  SearchAndVerifyRefs(rtree, gfx::Rect(5, 5, 10, 10), &results);
   ASSERT_EQ(4u, results.size());
   // Items returned should be in the order they were inserted.
   EXPECT_FLOAT_EQ(40.f, results[0]);
   EXPECT_FLOAT_EQ(10.f, results[1]);
   EXPECT_FLOAT_EQ(30.f, results[2]);
   EXPECT_FLOAT_EQ(20.f, results[3]);
+}
+
+TEST(RTreeTest, InvalidBounds) {
+  std::vector<gfx::Rect> rects;
+  rects.push_back(gfx::Rect(-INT_MAX, -INT_MAX, INT_MAX, INT_MAX));
+  rects.push_back(gfx::Rect(100, 100, 10, 10));
+
+  RTree<size_t> rtree;
+  rtree.Build(rects);
+
+  EXPECT_FALSE(rtree.has_valid_bounds());
+}
+
+TEST(RTreeTest, InvalidBoundsReset) {
+  std::vector<gfx::Rect> rects;
+  rects.push_back(gfx::Rect(-INT_MAX, -INT_MAX, INT_MAX, INT_MAX));
+  rects.push_back(gfx::Rect(100, 100, 10, 10));
+
+  RTree<size_t> rtree;
+  rtree.Build(rects);
+
+  EXPECT_FALSE(rtree.has_valid_bounds());
+
+  // Reset() should restore us to an empty (but valid) state.
+  rtree.Reset();
+  ASSERT_TRUE(rtree.has_valid_bounds());
+  EXPECT_EQ(rtree.GetBoundsOrDie(), gfx::Rect());
+}
+
+TEST(RTreeTest, InvalidBoundsSearch) {
+  std::vector<gfx::Rect> rects;
+  rects.push_back(gfx::Rect(-INT_MAX, -INT_MAX, INT_MAX, INT_MAX));
+  rects.push_back(gfx::Rect(100, 100, 10, 10));
+  rects.push_back(gfx::Rect(105, 105, 10, 10));
+  rects.push_back(gfx::Rect(-50, -50, 10, 10));
+  rects.push_back(gfx::Rect(INT_MAX - 100, INT_MAX - 100, 10, 10));
+
+  RTree<size_t> rtree;
+  rtree.Build(rects);
+
+  EXPECT_FALSE(rtree.has_valid_bounds());
+
+  // Searching should still work.
+  std::vector<size_t> found;
+  SearchAndVerifyRefs(rtree, gfx::Rect(0, 0, INT_MAX, INT_MAX), &found);
+  EXPECT_EQ(found, std::vector<size_t>({1, 2, 4}));
+  SearchAndVerifyRefs(rtree, gfx::Rect(-INT_MAX, -INT_MAX, INT_MAX, INT_MAX),
+                      &found);
+  EXPECT_EQ(found, std::vector<size_t>({0, 3}));
+  SearchAndVerifyRefs(rtree, gfx::Rect(-50, -50, INT_MAX, INT_MAX), &found);
+  EXPECT_EQ(found, std::vector<size_t>({0, 1, 2, 3, 4}));
+}
+
+TEST(RTreeTest, InvalidBoundsGetAllBounds) {
+  std::vector<gfx::Rect> rects;
+  rects.push_back(gfx::Rect(-INT_MAX, -INT_MAX, INT_MAX, INT_MAX));
+  rects.push_back(gfx::Rect(100, 100, 10, 10));
+  rects.push_back(gfx::Rect(105, 105, 10, 10));
+  rects.push_back(gfx::Rect(-50, -50, 10, 10));
+  rects.push_back(gfx::Rect(INT_MAX - 100, INT_MAX - 100, 10, 10));
+
+  RTree<size_t> rtree;
+  rtree.Build(rects);
+
+  EXPECT_FALSE(rtree.has_valid_bounds());
+
+  // Getting all bounds should still work.
+  std::map<size_t, gfx::Rect> all_bounds = rtree.GetAllBoundsForTracing();
+  std::map<size_t, gfx::Rect> expected_all_bounds = {{0, rects[0]},
+                                                     {1, rects[1]},
+                                                     {2, rects[2]},
+                                                     {3, rects[3]},
+                                                     {4, rects[4]}};
+  EXPECT_EQ(all_bounds, expected_all_bounds);
 }
 
 }  // namespace cc

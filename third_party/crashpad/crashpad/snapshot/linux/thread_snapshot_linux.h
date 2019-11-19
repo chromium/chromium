@@ -73,7 +73,7 @@ class ThreadSnapshotLinux final : public ThreadSnapshot {
 #endif  // ARCH_CPU_X86_FAMILY
   } context_union_;
   CPUContext context_;
-  MemorySnapshotGeneric<ProcessReaderLinux> stack_;
+  MemorySnapshotGeneric stack_;
   LinuxVMAddress thread_specific_data_address_;
   pid_t thread_id_;
   int priority_;

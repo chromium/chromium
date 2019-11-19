@@ -1,0 +1,8 @@
+document
+++group
+++++description Name='before selection'
+++group
+++++description Name='this text is not ignored'
+++group
+++++description Name='after selection'
+++description Name='Done'

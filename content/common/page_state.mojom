@@ -4,32 +4,41 @@
 
 module content.history.mojom;
 
+// WARNING: Please read the comments below, before including other Mojo types.
 import "mojo/public/mojom/base/string16.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "services/network/public/mojom/referrer_policy.mojom";
 import "url/mojom/url.mojom";
-import "ui/gfx/geometry/mojo/geometry.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
 
 // This file contains the mojo IDL definitions for PageState and its constituent
 // parts. The resultant generated code is used to serialize and deserialize
 // PageState for the purpose of history restore.
-// When adding fields, assign your new field an explicity ordinal(@n) and
-// prefer to add fields to the end of the struct to simplify finding the
-// latest ordinal.
-// For backwards compatibility purposes, new fields must be tagged with a
-// [MinVersion=x] attribute; x is specified at the bottom of this comment
-// block.
-// You'll also need to read/write the new field's value when decoding and
-// encoding PageState, update PageStateSerializationTest to check that
-// your new field is preserved across serialization, and add a BackwardsCompat
-// test with associated serialized_vxx.dat file. Look for
-// DumpExpectedPageStateForBackwardsCompat in page_state_serialization_unittest
-// for how to do this.
+//
+// When adding fields:
+// - Assign your new field an explicit ordinal(@n) and prefer to add fields to
+//   the end of the struct to simplify finding the latest ordinal.
+// - For backwards compatibility purposes:
+//     - New fields must be tagged with a [MinVersion=x] attribute; x is
+//       specified at the bottom of this comment block.
+//     - Only types with frozen/unchanging Mojo serialization may be used;
+//       for example, |string| is okay, but |url.mojom.Origin| is not.
+//       (note that if serialization of any of the types used in PageState
+//       changes in a backwards-incompatible way then it should be caught by
+//       one of PageStateSerializationTest, BackwardsCompat_vXX tests).
+// - You'll also need to read/write the new field's value when decoding and
+//   encoding PageState, update PageStateSerializationTest to check that your
+//   new field is preserved across serialization, and add a BackwardsCompat
+//   test with associated serialized_vxx.dat file. Look for
+//   DumpExpectedPageStateForBackwardsCompat in
+//   page_state_serialization_unittest for how to do this.
+//
 // Don't remove, or change the type of fields; this will break
 // compatibility. If re-ordering fields, make sure to retain the original
 // ordinal value.
+//
 // Update the below value if your change introduces fields using it.
-// Next MinVersion: 2
+// Next MinVersion: 3
 
 // Next Ordinal: 4
 // FileSystemFile is no longer supported.
@@ -90,6 +99,7 @@ struct ViewState {
   [MinVersion=1] uint64 scroll_anchor_simhash@5 = 0;
 };
 
+// Next Ordinal: 13
 struct FrameState {
   mojo_base.mojom.String16? url_string@0;
   mojo_base.mojom.String16? referrer@1;
@@ -103,6 +113,7 @@ struct FrameState {
   network.mojom.ReferrerPolicy referrer_policy@9;
   HttpBody http_body@10;
   array<FrameState> children@11;
+  [MinVersion=2] string? initiator_origin@12;
 };
 
 // Next Ordinal: 2

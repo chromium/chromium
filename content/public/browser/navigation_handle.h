@@ -14,8 +14,10 @@
 #include "content/public/browser/restore_type.h"
 #include "content/public/common/referrer.h"
 #include "content/public/common/transferrable_url_loader.mojom.h"
+#include "net/base/auth.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_errors.h"
+#include "net/base/network_isolation_key.h"
 #include "net/http/http_response_info.h"
 #include "services/network/public/cpp/resource_request_body.h"
 #include "ui/base/page_transition_types.h"
@@ -25,11 +27,12 @@ class GURL;
 namespace net {
 class HttpRequestHeaders;
 class HttpResponseHeaders;
+class ProxyServer;
 }  // namespace net
 
 namespace content {
+struct GlobalFrameRoutingId;
 struct GlobalRequestID;
-class NavigationData;
 class NavigationThrottle;
 class NavigationUIData;
 class RenderFrameHost;
@@ -52,7 +55,7 @@ class CONTENT_EXPORT NavigationHandle {
   // some may change during navigation (e.g. due to server redirects).
 
   // Get a unique ID for this navigation.
-  virtual int64_t GetNavigationId() const = 0;
+  virtual int64_t GetNavigationId() = 0;
 
   // The URL the frame is navigating to. This may change during the navigation
   // when encountering a server redirect.
@@ -60,12 +63,19 @@ class CONTENT_EXPORT NavigationHandle {
   // WebContents::GetVisibleURL and WebContents::GetLastCommittedURL. For
   // example, viewing a page's source navigates to the URL of the page, but the
   // virtual URL is prefixed with "view-source:".
+  // Note: The URL of a NavigationHandle can change over its lifetime.
+  // e.g. URLs might be rewritten by the renderer before being committed.
   virtual const GURL& GetURL() = 0;
 
-  // Returns the SiteInstance that started the request.
-  // If a frame in SiteInstance A navigates a frame in SiteInstance B to a URL
-  // in SiteInstance C, then this returns B.
+  // Returns the SiteInstance where the frame being navigated was at the start
+  // of the navigation.  If a frame in SiteInstance A navigates a frame in
+  // SiteInstance B to a URL in SiteInstance C, then this returns B.
   virtual SiteInstance* GetStartingSiteInstance() = 0;
+
+  // Returns the SiteInstance of the initiator of the navigation.  If a frame in
+  // SiteInstance A navigates a frame in SiteInstance B to a URL in SiteInstance
+  // C, then this returns A.
+  virtual SiteInstance* GetSourceSiteInstance() = 0;
 
   // Whether the navigation is taking place in the main frame or in a subframe.
   // This remains constant over the navigation lifetime.
@@ -113,7 +123,7 @@ class CONTENT_EXPORT NavigationHandle {
   virtual base::TimeTicks NavigationInputStart() = 0;
 
   // Whether or not the navigation was started within a context menu.
-  virtual bool WasStartedFromContextMenu() const = 0;
+  virtual bool WasStartedFromContextMenu() = 0;
 
   // Returns the URL and encoding of an INPUT field that corresponds to a
   // searchable form request.
@@ -141,30 +151,26 @@ class CONTENT_EXPORT NavigationHandle {
   // |bool IsPost()| as opposed to |const std::string& GetMethod()| method.
   virtual bool IsPost() = 0;
 
-  // Returns the POST body associated with this navigation. This will be null
-  // for GET and/or other non-POST requests (or if a response to a POST request
-  // was a redirect that changed the method to GET - for example 302).
-  virtual const scoped_refptr<network::ResourceRequestBody>&
-  GetResourceRequestBody() = 0;
-
   // Returns a sanitized version of the referrer for this request.
-  virtual const Referrer& GetReferrer() = 0;
+  virtual const blink::mojom::Referrer& GetReferrer() = 0;
 
   // Whether the navigation was initiated by a user gesture. Note that this
   // will return false for browser-initiated navigations.
-  // TODO(clamy): when PlzNavigate launches, this should return true for
-  // browser-initiated navigations.
+  // TODO(clamy): This should return true for browser-initiated navigations.
   virtual bool HasUserGesture() = 0;
 
   // Returns the page transition type.
   virtual ui::PageTransition GetPageTransition() = 0;
 
   // Returns the NavigationUIData associated with the navigation.
-  virtual const NavigationUIData* GetNavigationUIData() = 0;
+  virtual NavigationUIData* GetNavigationUIData() = 0;
 
   // Whether the target URL cannot be handled by the browser's internal protocol
   // handlers.
   virtual bool IsExternalProtocol() = 0;
+
+  // Whether the navigation is restoring a page from back-forward cache.
+  virtual bool IsServedFromBackForwardCache() = 0;
 
   // Navigation control flow --------------------------------------------------
 
@@ -179,6 +185,14 @@ class CONTENT_EXPORT NavigationHandle {
   // response has been delivered for processing, or after the navigation fails
   // with an error page.
   virtual RenderFrameHost* GetRenderFrameHost() = 0;
+
+  // Returns the id of the RenderFrameHost this navigation is committing from.
+  // In case a navigation happens within the same RenderFrameHost,
+  // GetRenderFrameHost() and GetPreviousRenderFrameHostId() will refer to the
+  // same RenderFrameHost.
+  // Note: This is not guaranteed to refer to a RenderFrameHost that still
+  // exists.
+  virtual GlobalFrameRoutingId GetPreviousRenderFrameHostId() = 0;
 
   // Whether the navigation happened without changing document. Examples of
   // same document navigations are:
@@ -264,7 +278,18 @@ class CONTENT_EXPORT NavigationHandle {
   // Returns the SSLInfo for a request that succeeded or failed due to a
   // certificate error. In the case of other request failures or of a non-secure
   // scheme, returns an empty object.
-  virtual const base::Optional<net::SSLInfo> GetSSLInfo() = 0;
+  virtual const base::Optional<net::SSLInfo>& GetSSLInfo() = 0;
+
+  // Returns the AuthChallengeInfo for the request, if the response contained an
+  // authentication challenge.
+  virtual const base::Optional<net::AuthChallengeInfo>&
+  GetAuthChallengeInfo() = 0;
+
+  // Gets the NetworkIsolationKey associated with the navigation. Updated as
+  // redirects are followed. When one of the origins used to construct the
+  // NetworkIsolationKey is opaque, the returned NetworkIsolationKey will not be
+  // consistent between calls.
+  virtual net::NetworkIsolationKey GetNetworkIsolationKey() = 0;
 
   // Returns the ID of the URLRequest associated with this navigation. Can only
   // be called from NavigationThrottle::WillProcessResponse and
@@ -283,8 +308,15 @@ class CONTENT_EXPORT NavigationHandle {
   // Returns true if this navigation was initiated by a form submission.
   virtual bool IsFormSubmission() = 0;
 
+  // Returns true if this navigation was initiated by a link click.
+  virtual bool WasInitiatedByLinkClick() = 0;
+
   // Returns true if the target is an inner response of a signed exchange.
   virtual bool IsSignedExchangeInnerResponse() = 0;
+
+  // Returns true if prefetched alternative subresource signed exchange was sent
+  // to the renderer process.
+  virtual bool HasPrefetchedAlternativeSubresourceSignedExchange() = 0;
 
   // Returns true if the navigation response was cached.
   virtual bool WasResponseCached() = 0;
@@ -299,6 +331,27 @@ class CONTENT_EXPORT NavigationHandle {
   // Returns, if available, the origin of the document that has initiated the
   // navigation for this NavigationHandle.
   virtual const base::Optional<url::Origin>& GetInitiatorOrigin() = 0;
+
+  // Whether the new document will be hosted in the same process as the current
+  // document or not. Set only when the navigation commits.
+  virtual bool IsSameProcess() = 0;
+
+  // Returns the offset between the indices of the previous last committed and
+  // the newly committed navigation entries.
+  // (e.g. -1 for back navigations, 0 for reloads, 1 for forward navigations).
+  //
+  // Note that this value is computed when we create the navigation request
+  // and doesn't fully cover all corner cases.
+  // We try to approximate them with params.should_replace_entry, but in
+  // some cases it's inaccurate:
+  // - Main frame client redirects,
+  // - History navigation to the page with subframes. The subframe
+  //   navigations will return 1 here although they don't create a new
+  //   navigation entry.
+  virtual int GetNavigationEntryOffset() = 0;
+
+  virtual void RegisterSubresourceOverride(
+      mojom::TransferrableURLLoaderPtr transferrable_loader) = 0;
 
   // Testing methods ----------------------------------------------------------
   //
@@ -317,13 +370,9 @@ class CONTENT_EXPORT NavigationHandle {
   // Returns whether this navigation is currently deferred.
   virtual bool IsDeferredForTesting() = 0;
 
-  // The NavigationData that the embedder returned from
-  // ResourceDispatcherHostDelegate::GetNavigationData during commit. This will
-  // be a clone of the NavigationData.
-  virtual NavigationData* GetNavigationData() = 0;
-
-  virtual void RegisterSubresourceOverride(
-      mojom::TransferrableURLLoaderPtr transferrable_loader) = 0;
+  // Whether this navigation was triggered by a x-origin redirect following a
+  // prior (most likely <a download>) download attempt.
+  virtual bool FromDownloadCrossOriginRedirect() = 0;
 };
 
 }  // namespace content

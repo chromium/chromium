@@ -21,8 +21,6 @@ namespace content {
 
 CONTENT_EXPORT viz::FrameSinkId AllocateFrameSinkId();
 
-CONTENT_EXPORT viz::FrameSinkManagerImpl* GetFrameSinkManager();
-
 CONTENT_EXPORT viz::HostFrameSinkManager* GetHostFrameSinkManager();
 
 namespace surface_utils {

@@ -1,4 +1,0 @@
-‮ملايين‬
-‭ملايين‬
-PASSED: rtl
-PASSED: ltr

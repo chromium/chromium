@@ -265,25 +265,25 @@ std::vector<float> HourAppLaunchPredictor::BinWeightsFromFlagOrDefault() {
   // And the sum weights[1] + ..., + weights[4] also needs to be in [0.0, 1.0]
   // so that the weight[0] is set to be 1.0 - (weights[1] + ..., + weights[4]).
   weights[1] = static_cast<float>(base::GetFieldTrialParamByFeatureAsDouble(
-      app_list_features::kEnableAppSearchResultRanker,
-      "weight_1_hour_later_bin", -1.0));
+      app_list_features::kEnableZeroStateAppsRanker, "weight_1_hour_later_bin",
+      -1.0));
   if (weights[1] < 0.0 || weights[1] > 1.0)
     return default_weights;
 
   weights[2] = static_cast<float>(base::GetFieldTrialParamByFeatureAsDouble(
-      app_list_features::kEnableAppSearchResultRanker,
-      "weight_2_hour_later_bin", -1.0));
+      app_list_features::kEnableZeroStateAppsRanker, "weight_2_hour_later_bin",
+      -1.0));
   if (weights[2] < 0.0 || weights[2] > 1.0)
     return default_weights;
 
   weights[3] = static_cast<float>(base::GetFieldTrialParamByFeatureAsDouble(
-      app_list_features::kEnableAppSearchResultRanker,
+      app_list_features::kEnableZeroStateAppsRanker,
       "weight_2_hour_earlier_bin", -1.0));
   if (weights[3] < 0.0 || weights[3] > 1.0)
     return default_weights;
 
   weights[4] = static_cast<float>(base::GetFieldTrialParamByFeatureAsDouble(
-      app_list_features::kEnableAppSearchResultRanker,
+      app_list_features::kEnableZeroStateAppsRanker,
       "weight_1_hour_earlier_bin", -1.0));
   if (weights[4] < 0.0 || weights[4] > 1.0)
     return default_weights;

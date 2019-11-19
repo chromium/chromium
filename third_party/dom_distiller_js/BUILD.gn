@@ -33,6 +33,9 @@ proto_library("dom_distiller_proto") {
   sources = [
     "dist/proto/dom_distiller.proto",
   ]
+  deps = [
+    "//base",
+  ]
   proto_out_dir = "third_party/dom_distiller_js"
 
   generator_plugin_script = json_converter_plugin_script
@@ -47,6 +50,9 @@ proto_library("json_values_converter_test_proto") {
   visibility = [ ":*" ]
   sources = [
     "test_sample.proto",
+  ]
+  deps = [
+    "//base",
   ]
   proto_out_dir = "third_party/dom_distiller_js"
 

@@ -101,8 +101,8 @@ class BASE_EXPORT TraceConfig {
     void Clear();
     void Merge(const ProcessFilterConfig&);
 
-    void InitializeFromConfigDict(const base::DictionaryValue&);
-    void ToDict(DictionaryValue*) const;
+    void InitializeFromConfigDict(const Value&);
+    void ToDict(Value*) const;
 
     bool IsEnabled(base::ProcessId) const;
     const std::unordered_set<base::ProcessId>& included_process_ids() const {
@@ -126,18 +126,18 @@ class BASE_EXPORT TraceConfig {
 
     EventFilterConfig& operator=(const EventFilterConfig& rhs);
 
-    void InitializeFromConfigDict(const base::DictionaryValue* event_filter);
+    void InitializeFromConfigDict(const Value& event_filter);
 
     void SetCategoryFilter(const TraceConfigCategoryFilter& category_filter);
 
-    void ToDict(DictionaryValue* filter_dict) const;
+    void ToDict(Value* filter_dict) const;
 
     bool GetArgAsSet(const char* key, std::unordered_set<std::string>*) const;
 
     bool IsCategoryGroupEnabled(const StringPiece& category_group_name) const;
 
     const std::string& predicate_name() const { return predicate_name_; }
-    base::DictionaryValue* filter_args() const { return args_.get(); }
+    const Value& filter_args() const { return args_; }
     const TraceConfigCategoryFilter& category_filter() const {
       return category_filter_;
     }
@@ -145,7 +145,7 @@ class BASE_EXPORT TraceConfig {
    private:
     std::string predicate_name_;
     TraceConfigCategoryFilter category_filter_;
-    std::unique_ptr<base::DictionaryValue> args_;
+    Value args_;
   };
   typedef std::vector<EventFilterConfig> EventFilters;
 
@@ -220,7 +220,7 @@ class BASE_EXPORT TraceConfig {
 
   // Functionally identical to the above, but takes a parsed dictionary as input
   // instead of its JSON serialization.
-  explicit TraceConfig(const DictionaryValue& config);
+  explicit TraceConfig(const Value& config);
 
   TraceConfig(const TraceConfig& tc);
 
@@ -242,6 +242,7 @@ class BASE_EXPORT TraceConfig {
   }
   void SetTraceBufferSizeInKb(size_t size) { trace_buffer_size_in_kb_ = size; }
   void EnableSystrace() { enable_systrace_ = true; }
+  void EnableSystraceEvent(const std::string& systrace_event);
   void EnableArgumentFilter() { enable_argument_filter_ = true; }
   void EnableHistogram(const std::string& histogram_name);
 
@@ -254,6 +255,11 @@ class BASE_EXPORT TraceConfig {
 
   // Write the string representation of the CategoryFilter part.
   std::string ToCategoryFilterString() const;
+
+  // Write the string representation of the trace options part (record mode,
+  // systrace, argument filtering). Does not include category filters, event
+  // filters, or memory dump configs.
+  std::string ToTraceOptionsString() const;
 
   // Returns true if at least one category in the list is enabled by this
   // trace config. This is used to determine if the category filters are
@@ -286,6 +292,10 @@ class BASE_EXPORT TraceConfig {
     event_filters_ = filter_configs;
   }
 
+  const std::unordered_set<std::string>& systrace_events() const {
+    return systrace_events_;
+  }
+
   const std::unordered_set<std::string>& histogram_names() const {
     return histogram_names_;
   }
@@ -294,6 +304,7 @@ class BASE_EXPORT TraceConfig {
   FRIEND_TEST_ALL_PREFIXES(TraceConfigTest, TraceConfigFromValidLegacyFormat);
   FRIEND_TEST_ALL_PREFIXES(TraceConfigTest,
                            TraceConfigFromInvalidLegacyStrings);
+  FRIEND_TEST_ALL_PREFIXES(TraceConfigTest, SystraceEventsSerialization);
 
   // The default trace config, used when none is provided.
   // Allows all non-disabled-by-default categories through, except if they end
@@ -301,7 +312,7 @@ class BASE_EXPORT TraceConfig {
   void InitializeDefault();
 
   // Initialize from a config dictionary.
-  void InitializeFromConfigDict(const DictionaryValue& dict);
+  void InitializeFromConfigDict(const Value& dict);
 
   // Initialize from a config string.
   void InitializeFromConfigString(StringPiece config_string);
@@ -310,15 +321,12 @@ class BASE_EXPORT TraceConfig {
   void InitializeFromStrings(StringPiece category_filter_string,
                              StringPiece trace_options_string);
 
-  void SetMemoryDumpConfigFromConfigDict(
-      const DictionaryValue& memory_dump_config);
+  void SetMemoryDumpConfigFromConfigDict(const Value& memory_dump_config);
   void SetDefaultMemoryDumpConfig();
 
-  void SetHistogramNamesFromConfigList(const base::ListValue& histogram_names);
-  void SetEventFiltersFromConfigList(const base::ListValue& event_filters);
-  std::unique_ptr<DictionaryValue> ToDict() const;
-
-  std::string ToTraceOptionsString() const;
+  void SetHistogramNamesFromConfigList(const Value& histogram_names);
+  void SetEventFiltersFromConfigList(const Value& event_filters);
+  Value ToValue() const;
 
   TraceRecordMode record_mode_;
   size_t trace_buffer_size_in_events_ = 0;  // 0 specifies default size
@@ -333,6 +341,7 @@ class BASE_EXPORT TraceConfig {
 
   EventFilters event_filters_;
   std::unordered_set<std::string> histogram_names_;
+  std::unordered_set<std::string> systrace_events_;
 };
 
 }  // namespace trace_event

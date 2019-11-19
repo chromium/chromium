@@ -8,7 +8,7 @@
 #include <string>
 
 #include "base/macros.h"
-#include "components/arc/common/crash_collector.mojom.h"
+#include "components/arc/mojom/crash_collector.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 namespace content {

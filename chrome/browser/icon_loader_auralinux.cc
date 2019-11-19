@@ -21,8 +21,7 @@ IconLoader::IconGroup IconLoader::GroupForFilepath(
 scoped_refptr<base::TaskRunner> IconLoader::GetReadIconTaskRunner() {
   // ReadIcon() calls into views::LinuxUI and GTK code, so it must be on the UI
   // thread.
-  return base::CreateSingleThreadTaskRunnerWithTraits(
-      {content::BrowserThread::UI});
+  return base::CreateSingleThreadTaskRunner({content::BrowserThread::UI});
 }
 
 void IconLoader::ReadIcon() {
@@ -41,13 +40,10 @@ void IconLoader::ReadIcon() {
       NOTREACHED();
   }
 
-  std::unique_ptr<gfx::Image> image;
+  gfx::Image image;
   views::LinuxUI* ui = views::LinuxUI::instance();
   if (ui) {
-    image = std::make_unique<gfx::Image>(
-        ui->GetIconForContentType(group_, size_pixels));
-    if (image->IsEmpty())
-      image = nullptr;
+    image = gfx::Image(ui->GetIconForContentType(group_, size_pixels));
   }
 
   target_task_runner_->PostTask(

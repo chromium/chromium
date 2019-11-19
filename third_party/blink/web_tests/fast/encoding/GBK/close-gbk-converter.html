@@ -8,11 +8,11 @@ if (window.testRunner)
 function test() {
     var req = new XMLHttpRequest;
     req.open("GET", "?§Ø", false);
-    req.send();
+    try { req.send(); } catch (e) {}
 
     req = new XMLHttpRequest;
     req.open("GET", "/§Ø", false);
-    req.send();
+    try { req.send(); } catch (e) {}
 }
 </script>
 </head>

@@ -82,7 +82,7 @@ TEST(CRLSetTest, Parse) {
                       sizeof(kGIACRLSet));
   scoped_refptr<CRLSet> set;
   EXPECT_TRUE(CRLSet::Parse(s, &set));
-  ASSERT_TRUE(set.get() != NULL);
+  ASSERT_TRUE(set.get() != nullptr);
 
   const CRLSet::CRLList& crls = set->CrlsForTesting();
   ASSERT_EQ(1u, crls.size());
@@ -113,7 +113,7 @@ TEST(CRLSetTest, BlockedSPKIs) {
                       sizeof(kBlockedSPKICRLSet));
   scoped_refptr<CRLSet> set;
   EXPECT_TRUE(CRLSet::Parse(s, &set));
-  ASSERT_TRUE(set.get() != NULL);
+  ASSERT_TRUE(set.get() != nullptr);
 
   const uint8_t spki_hash[] = {
     227, 176, 196, 66, 152, 252, 28, 20, 154, 251, 244, 200, 153, 111, 185, 36,
@@ -126,9 +126,9 @@ TEST(CRLSetTest, BlockedSPKIs) {
             set->CheckSPKI(reinterpret_cast<const char*>(spki_hash)));
 }
 
-TEST(CertVerifyProcTest, CRLSetIncorporatesStaticBlacklist) {
+TEST(CertVerifyProcTest, CRLSetIncorporatesStaticBlocklist) {
   // Test both the builtin CRLSet and a parsed CRLSet to be sure that both
-  // include the blacklist.
+  // include the block list.
   scoped_refptr<CRLSet> set1 = CRLSet::BuiltinCRLSet();
   ASSERT_TRUE(set1);
   base::StringPiece s(reinterpret_cast<const char*>(kGIACRLSet),
@@ -140,7 +140,7 @@ TEST(CertVerifyProcTest, CRLSetIncorporatesStaticBlacklist) {
   static const char* const kDigiNotarFilenames[] = {
       "diginotar_root_ca.pem",          "diginotar_cyber_ca.pem",
       "diginotar_services_1024_ca.pem", "diginotar_pkioverheid.pem",
-      "diginotar_pkioverheid_g2.pem",   NULL,
+      "diginotar_pkioverheid_g2.pem",   nullptr,
   };
 
   base::FilePath certs_dir = GetTestCertsDirectory();
@@ -170,7 +170,7 @@ TEST(CRLSetTest, BlockedSubjects) {
       &crl_set_bytes));
   scoped_refptr<CRLSet> set;
   EXPECT_TRUE(CRLSet::Parse(crl_set_bytes, &set));
-  ASSERT_TRUE(set.get() != NULL);
+  ASSERT_TRUE(set.get() != nullptr);
 
   scoped_refptr<X509Certificate> root = CreateCertificateChainFromFile(
       GetTestCertsDirectory(), "root_ca_cert.pem",
@@ -212,7 +212,7 @@ TEST(CRLSetTest, Expired) {
                       sizeof(kExpiredCRLSet));
   scoped_refptr<CRLSet> set;
   EXPECT_TRUE(CRLSet::Parse(s, &set));
-  ASSERT_TRUE(set.get() != NULL);
+  ASSERT_TRUE(set.get() != nullptr);
 
   EXPECT_TRUE(set->IsExpired());
 }

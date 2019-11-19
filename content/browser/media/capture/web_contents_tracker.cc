@@ -15,9 +15,7 @@
 
 namespace content {
 
-WebContentsTracker::WebContentsTracker(bool track_fullscreen_rwhv)
-    : track_fullscreen_rwhv_(track_fullscreen_rwhv),
-      last_target_view_(nullptr) {}
+WebContentsTracker::WebContentsTracker() : last_target_view_(nullptr) {}
 
 WebContentsTracker::~WebContentsTracker() {
   // Likely unintentional BUG if Stop() was not called before this point.
@@ -35,7 +33,7 @@ void WebContentsTracker::Start(int render_process_id, int main_render_frame_id,
   if (BrowserThread::CurrentlyOn(BrowserThread::UI)) {
     StartObservingWebContents(render_process_id, main_render_frame_id);
   } else {
-    base::PostTaskWithTraits(
+    base::PostTask(
         FROM_HERE, {BrowserThread::UI},
         base::BindOnce(&WebContentsTracker::StartObservingWebContents, this,
                        render_process_id, main_render_frame_id));
@@ -51,10 +49,9 @@ void WebContentsTracker::Stop() {
   if (BrowserThread::CurrentlyOn(BrowserThread::UI)) {
     WebContentsObserver::Observe(nullptr);
   } else {
-    base::PostTaskWithTraits(
-        FROM_HERE, {BrowserThread::UI},
-        base::BindOnce(&WebContentsTracker::Observe, this,
-                       static_cast<WebContents*>(nullptr)));
+    base::PostTask(FROM_HERE, {BrowserThread::UI},
+                   base::BindOnce(&WebContentsTracker::Observe, this,
+                                  static_cast<WebContents*>(nullptr)));
   }
 }
 
@@ -64,11 +61,6 @@ RenderWidgetHostView* WebContentsTracker::GetTargetView() const {
   WebContents* const wc = web_contents();
   if (!wc)
     return nullptr;
-
-  if (track_fullscreen_rwhv_) {
-    if (auto* view = wc->GetFullscreenRenderWidgetHostView())
-      return view;
-  }
 
   if (auto* view = wc->GetRenderWidgetHostView()) {
     // Make sure the RWHV is still associated with a RWH before considering the

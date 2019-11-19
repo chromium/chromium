@@ -7,7 +7,6 @@
 
 #include "base/macros.h"
 #include "build/build_config.h"
-#include "chrome/browser/resource_coordinator/performance_measurement_manager.h"
 #include "chrome/browser/resource_coordinator/tab_load_tracker.h"
 #include "chrome/browser/resource_coordinator/tab_memory_metrics_reporter.h"
 
@@ -17,8 +16,6 @@
 #endif
 
 namespace resource_coordinator {
-
-class PageSignalReceiver;
 
 #if defined(OS_ANDROID)
 class TabManager;
@@ -32,10 +29,6 @@ class ResourceCoordinatorParts {
  public:
   ResourceCoordinatorParts();
   ~ResourceCoordinatorParts();
-
-  PageSignalReceiver* page_signal_receiver() const {
-    return page_signal_receiver_.get();
-  }
 
   TabMemoryMetricsReporter* tab_memory_metrics_reporter() {
     if (!tab_memory_metrics_reporter_.get())
@@ -62,8 +55,6 @@ class ResourceCoordinatorParts {
   }
 
  private:
-  const std::unique_ptr<PageSignalReceiver> page_signal_receiver_;
-
   // This should be declared before |tab_memory_metrics_reporter_| and
   // |tab_manager_| as they both depend on this at shutdown.
   TabLoadTracker tab_load_tracker_;

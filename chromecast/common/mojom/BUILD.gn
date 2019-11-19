@@ -9,10 +9,13 @@ mojom("mojom") {
     "application_media_capabilities.mojom",
     "constants.mojom",
     "feature_manager.mojom",
+    "js_channel.mojom",
     "media_caps.mojom",
     "media_playback_options.mojom",
     "memory_pressure.mojom",
     "multiroom.mojom",
+    "on_load_script_injector.mojom",
+    "queryable_data_store.mojom",
   ]
 
   public_deps = [

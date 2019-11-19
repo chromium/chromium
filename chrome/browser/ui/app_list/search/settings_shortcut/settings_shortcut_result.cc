@@ -8,8 +8,9 @@
 
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/search/settings_shortcut/settings_shortcut_metadata.h"
-#include "chrome/browser/ui/chrome_pages.h"
+#include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/models/simple_menu_model.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/paint_vector_icon.h"
 
@@ -41,12 +42,17 @@ SettingsShortcutResult::SettingsShortcutResult(
 }
 
 void SettingsShortcutResult::Open(int event_flags) {
-  chrome::ShowSettingsSubPageForProfile(profile_, settings_shortcut_.subpage);
+  chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
+      profile_, settings_shortcut_.subpage);
 }
 
 void SettingsShortcutResult::GetContextMenuModel(
     GetMenuModelCallback callback) {
   std::move(callback).Run(nullptr);
+}
+
+ash::SearchResultType SettingsShortcutResult::GetSearchResultType() const {
+  return ash::SETTINGS_SHORTCUT;
 }
 
 }  // namespace app_list

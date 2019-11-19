@@ -4,14 +4,15 @@
 
 import("//build/config/ui.gni")
 import("//chrome/common/features.gni")
-import("//chromeos/assistant/assistant.gni")
 import("//components/gwp_asan/buildflags/buildflags.gni")
 import("//components/nacl/features.gni")
-import("//device/vr/buildflags/buildflags.gni")
 import("//ppapi/buildflags/buildflags.gni")
-import("//printing/buildflags/buildflags.gni")
 import("//tools/grit/grit_rule.gni")
 import("//tools/ipc_fuzzer/ipc_fuzzer.gni")
+
+if (is_android) {
+  import("//build/config/android/rules.gni")
+}
 
 # This target is for dependency tracking for the command ID header.
 source_set("command_ids") {
@@ -47,14 +48,15 @@ source_set("chrome_dll_resources") {
   ]
 
   if (is_win) {
-    sources += [ "chrome_dll.rc" ]
-    if (enable_basic_printing) {
-      # The resource compiler can only handle macro functions up to 31 chars
-      # which the buildflag system produces for this. Make a define so we can
-      # toggle off of the enable-basic-printing flag in the .rc file.
-      defines = [ "ENABLE_PRINTING_FOR_RC" ]
-    }
-    deps += [ "//printing/buildflags" ]
+    sources += [
+      "chrome_dll.rc",
+      "etw_events/chrome_events_win.rc",
+    ]
+
+    deps += [
+      "//build:branding_buildflags",
+      "//printing/buildflags",
+    ]
   }
 }
 
@@ -343,7 +345,6 @@ static_library("test_support") {
     "//components/gwp_asan/buildflags",
     "//components/nacl/common:buildflags",
     "//components/startup_metric_utils/browser:lib",
-    "//components/tracing",
     "//content/public/app:both",
     "//content/public/common",
     "//content/public/common:service_names",
@@ -351,6 +352,7 @@ static_library("test_support") {
     "//ppapi/buildflags",
     "//printing/buildflags",
     "//services/service_manager/embedder",
+    "//services/tracing/public/cpp",
     "//ui/base",
     "//v8:v8_headers",
   ]
@@ -372,14 +374,17 @@ static_library("test_support") {
   if (is_win) {
     deps += [
       "//chrome:chrome_initial",
+      "//chrome/chrome_elf:test_stubs",
       "//chrome/install_static:install_static_util",
-      "//chrome_elf:test_stubs",
       "//sandbox/win:sandbox",
     ]
   }
 
   if (is_chromeos) {
-    deps += [ "//chrome/browser/chromeos" ]
+    deps += [
+      "//chrome/browser/chromeos",
+      "//chromeos",
+    ]
   }
 
   if (enable_plugins && enable_nacl) {
@@ -387,10 +392,6 @@ static_library("test_support") {
       "//components/nacl/browser",
       "//components/nacl/renderer/plugin:nacl_trusted_plugin",
     ]
-  }
-
-  if (enable_mus) {
-    deps += [ "//services/ws/public/mojom:constants" ]
   }
 
   if (enable_gwp_asan) {
@@ -412,6 +413,7 @@ source_set("chrome_content_browser_overlay_manifest") {
     "//chrome/browser/ui/webui/downloads:mojo_bindings",
     "//chrome/browser/ui/webui/feed_internals:mojo_bindings",
     "//chrome/browser/ui/webui/interventions_internals:mojo_bindings",
+    "//chrome/browser/ui/webui/new_tab_page:mojo_bindings",
     "//chrome/browser/ui/webui/omnibox:mojo_bindings",
     "//chrome/browser/ui/webui/reset_password:mojo_bindings",
     "//chrome/browser/ui/webui/snippets_internals:mojo_bindings",
@@ -419,65 +421,50 @@ source_set("chrome_content_browser_overlay_manifest") {
     "//chrome/common:available_offline_content_mojom",
     "//chrome/common:mojo_bindings",
     "//chrome/common:offline_page_auto_fetcher_mojom",
-    "//chrome/common:page_load_metrics_mojom",
-    "//chrome/common/media_router/mojo:media_router",
-    "//chrome/test/data:web_ui_test_bindings",
-    "//components/autofill/content/common:mojo_interfaces",
-    "//components/contextual_search/content:mojo_bindings",
+    "//chrome/common/media_router/mojom:media_router",
+    "//components/autofill/content/common/mojom",
+    "//components/contextual_search/content/common/mojom",
     "//components/data_reduction_proxy/core/common:interfaces",
-    "//components/dom_distiller/content/common:mojo_bindings",
-    "//components/metrics/public/interfaces:call_stack_mojo_bindings",
-    "//components/rappor/public/interfaces",
+    "//components/metrics/public/mojom:call_stack_mojo_bindings",
+    "//components/page_load_metrics/common:page_load_metrics_mojom",
+    "//components/rappor/public/mojom",
     "//components/safe_browsing/common:interfaces",
     "//components/services/heap_profiling/public/mojom",
     "//components/translate/content/common",
     "//extensions/buildflags",
-    "//services/identity/public/cpp:manifest",
-    "//services/image_annotation/public/cpp:manifest",
     "//services/preferences/public/cpp:manifest",
     "//services/service_manager/public/cpp",
-    "//services/ws/common",
     "//third_party/blink/public/common",
   ]
 
   if (enable_extensions) {
     deps += [
-      "//extensions/common:mojo",
+      "//extensions/common:mojom",
       "//extensions/common/api:mojom",
     ]
   }
 
   if (is_chromeos) {
     deps += [
-      "//ash/components/shortcut_viewer/public/cpp:manifest",
-      "//ash/components/shortcut_viewer/public/mojom",
-      "//ash/components/tap_visualizer/public/cpp:manifest",
-      "//ash/components/tap_visualizer/public/mojom",
-      "//chromeos/assistant:buildflags",
-      "//chromeos/services/device_sync/public/cpp:manifest",
+      "//chrome/browser/ui/webui/chromeos/add_supervision:mojo_bindings",
+      "//chrome/browser/ui/webui/chromeos/crostini_installer:mojo_bindings",
+      "//chrome/browser/ui/webui/chromeos/machine_learning:mojo_bindings",
+      "//chromeos/services/cellular_setup/public/mojom",
       "//chromeos/services/ime/public/mojom",
       "//chromeos/services/media_perception/public/mojom",
       "//chromeos/services/multidevice_setup/public/cpp:manifest",
       "//chromeos/services/multidevice_setup/public/mojom",
-      "//media/capture/video/chromeos/mojo:cros_camera",
-      "//ui/accessibility/mojom",
+      "//chromeos/services/network_config/public/mojom",
+      "//components/chromeos_camera/common:camera_app_helper",
+      "//media/capture/video/chromeos/mojom:cros_camera",
     ]
-
-    if (enable_cros_assistant) {
-      deps += [ "//chromeos/services/assistant/public/cpp:manifest" ]
-    }
   }
 
   if (is_android) {
-    deps += [
-      "//chrome/browser/ui/webui/eoc_internals:mojo_bindings",
-      "//chrome/browser/ui/webui/explore_sites_internals:mojo_bindings",
-    ]
+    deps +=
+        [ "//chrome/browser/ui/webui/explore_sites_internals:mojo_bindings" ]
   } else {
-    deps += [
-      "//chrome/browser/ui/webui/app_management:mojo_bindings",
-      "//chrome/services/app_service/public/cpp:manifest",
-    ]
+    deps += [ "//chrome/browser/ui/webui/app_management:mojo_bindings" ]
   }
 
   if (is_win || is_mac || is_desktop_linux || is_chromeos) {
@@ -486,22 +473,9 @@ source_set("chrome_content_browser_overlay_manifest") {
       "//services/resource_coordinator/public/mojom",
     ]
   }
-}
 
-source_set("chrome_content_gpu_overlay_manifest") {
-  sources = [
-    "chrome_content_gpu_overlay_manifest.cc",
-    "chrome_content_gpu_overlay_manifest.h",
-  ]
-
-  deps = [
-    "//base",
-    "//components/services/heap_profiling/public/mojom",
-    "//services/service_manager/public/cpp",
-  ]
-
-  if (is_chromeos) {
-    deps += [ "//components/arc/common:media" ]
+  if (is_android && notouch_build) {
+    configs += [ "//chrome/browser:notouch_config" ]
   }
 }
 
@@ -513,12 +487,14 @@ source_set("chrome_content_renderer_overlay_manifest") {
 
   deps = [
     "//base",
+    "//base/allocator:buildflags",
     "//chrome/common:mojo_bindings",
     "//chrome/common:search_mojom",
-    "//components/autofill/content/common:mojo_interfaces",
-    "//components/dom_distiller/content/common:mojo_bindings",
-    "//components/metrics/public/interfaces:call_stack_mojo_bindings",
-    "//components/rappor/public/interfaces",
+    "//components/autofill/content/common/mojom",
+    "//components/dom_distiller/content/common/mojom",
+    "//components/metrics/public/mojom:call_stack_mojo_bindings",
+    "//components/rappor/public/mojom",
+    "//components/safe_browsing:buildflags",
     "//components/safe_browsing/common:interfaces",
     "//components/services/heap_profiling/public/mojom",
     "//components/subresource_filter/content/mojom",
@@ -527,128 +503,49 @@ source_set("chrome_content_renderer_overlay_manifest") {
     "//third_party/blink/public/common",
   ]
 
+  if (is_linux) {
+    deps += [ "//chrome/common/performance_manager/mojom" ]
+  }
+
+  if (is_chromeos) {
+    deps += [ "//chromeos/services/network_config/public/mojom" ]
+  }
+
   if (is_mac) {
     deps += [ "//components/spellcheck/common:interfaces" ]
   }
 
   if (enable_extensions) {
-    deps += [ "//extensions/common:mojo" ]
+    deps += [ "//extensions/common:mojom" ]
   }
 }
 
-source_set("chrome_content_utility_overlay_manifest") {
+source_set("builtin_service_manifests") {
   sources = [
-    "chrome_content_utility_overlay_manifest.cc",
-    "chrome_content_utility_overlay_manifest.h",
-  ]
-
-  deps = [
-    "//base",
-    "//components/services/heap_profiling/public/mojom",
-    "//services/service_manager/public/cpp",
-  ]
-}
-
-source_set("chrome_packaged_service_manifests") {
-  sources = [
-    "chrome_packaged_service_manifests.cc",
-    "chrome_packaged_service_manifests.h",
+    "builtin_service_manifests.cc",
+    "builtin_service_manifests.h",
   ]
 
   deps = [
     "//base",
     "//chrome/common:buildflags",
     "//chrome/common:mojo_bindings",
-    "//chrome/services/file_util/public/cpp:manifest",
-    "//chrome/services/noop/public/cpp:manifest",
-    "//components/services/patch/public/cpp:manifest",
-    "//components/services/unzip/public/cpp:manifest",
-    "//components/spellcheck/common:interfaces",
     "//components/startup_metric_utils/common:interfaces",
     "//device/vr/buildflags",
     "//extensions/buildflags",
     "//printing/buildflags",
-    "//services/preferences/public/cpp:local_state_manifest",
-    "//services/proxy_resolver/public/cpp:manifest",
     "//services/service_manager/public/cpp",
   ]
-
-  if (enable_extensions) {
-    deps += [ "//chrome/services/removable_storage_writer/public/cpp:manifest" ]
-  }
-
-  if (enable_extensions || is_android) {
-    deps += [ "//chrome/services/media_gallery_util/public/cpp:manifest" ]
-  }
-
-  if (enable_basic_printing) {
-    deps += [ "//components/services/pdf_compositor/public/cpp:manifest" ]
-  }
-
-  if (enable_print_preview) {
-    deps += [ "//chrome/services/printing/public/cpp:manifest" ]
-  }
-
-  if (enable_isolated_xr_service) {
-    deps += [ "//chrome/services/isolated_xr_device:manifest" ]
-  }
-
-  if (enable_simple_browser_service_in_process ||
-      enable_simple_browser_service_out_of_process) {
-    deps += [ "//services/content/simple_browser/public/cpp:manifest" ]
-  }
-
-  if (is_win) {
-    deps += [
-      "//chrome/services/util_win/public/cpp:manifest",
-      "//chrome/services/wifi_util_win/public/cpp:manifest",
-    ]
-  }
 
   if (is_chromeos) {
-    deps += [
-      "//ash/components/shortcut_viewer/public/cpp:manifest",
-      "//ash/components/tap_visualizer/public/cpp:manifest",
-      "//ash/public/cpp:manifest",
-      "//chrome/browser/chromeos:ash_pref_connector_manifest",
-      "//chrome/services/cups_ipp_parser/public/cpp:manifest",
-      "//chromeos/services/ime/public/cpp:manifest",
-      "//chromeos/services/secure_channel/public/cpp:manifest",
-      "//services/ws/public/mojom/input_devices",
-      "//ui/accessibility:ax_host_manifest",
-    ]
+    deps += [ "//ash/public/cpp:manifest" ]
   }
-
-  if (!is_android) {
-    deps += [
-      "//chrome/utility:profile_import_manifest",
-      "//components/mirroring/service:manifest",
-    ]
-  }
-}
-
-source_set("chrome_renderer_manifest") {
-  sources = [
-    "chrome_renderer_manifest.cc",
-    "chrome_renderer_manifest.h",
-  ]
-
-  deps = [
-    "//base",
-    "//chrome/common:mojo_bindings",
-    "//components/safe_browsing/common:interfaces",
-    "//components/spellcheck/common:interfaces",
-    "//services/service_manager/public/cpp",
-  ]
 }
 
 source_set("chrome_service_manifests") {
   public_deps = [
+    ":builtin_service_manifests",
     ":chrome_content_browser_overlay_manifest",
-    ":chrome_content_gpu_overlay_manifest",
     ":chrome_content_renderer_overlay_manifest",
-    ":chrome_content_utility_overlay_manifest",
-    ":chrome_packaged_service_manifests",
-    ":chrome_renderer_manifest",
   ]
 }

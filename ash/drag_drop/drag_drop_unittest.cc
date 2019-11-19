@@ -77,7 +77,7 @@ views::Widget* CreateWidget(views::View* contents_view,
   params.accept_events = true;
   params.bounds = bounds;
   params.context = context;
-  widget->Init(params);
+  widget->Init(std::move(params));
 
   widget->SetContentsView(contents_view);
   widget->Show();

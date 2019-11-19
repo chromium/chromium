@@ -1,0 +1,18 @@
+This is a testharness.js-based test.
+PASS input.valueLow should not be supported
+PASS input.valueHigh should not be supported
+PASS form.requestAutocomplete should not be supported
+PASS form.onautocomplete should not be supported
+PASS form.onautocompleteerror should not be supported
+PASS <input type=datetime> should not be supported
+PASS progress.form should not be supported
+PASS meter.form should not be supported
+PASS form.item should not be supported
+PASS form.namedItem should not be supported
+FAIL window.onsearch should not be supported assert_false: expected false got true
+FAIL document.onsearch should not be supported assert_false: expected false got true
+FAIL input.onsearch should not be supported assert_false: expected false got true
+FAIL input.incremental should not be supported assert_false: expected false got true
+PASS <input name=isindex> should not be supported
+Harness: the test ran to completion.
+

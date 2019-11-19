@@ -18,17 +18,24 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/at_exit.h"
 #include "base/base_switches.h"
+#include "base/clang_coverage_buildflags.h"
 #include "base/command_line.h"
+#include "base/debug/debugger.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/test_support_android.h"
+#include "base/threading/thread_restrictions.h"
 #include "gtest/gtest.h"
-#include "jni/NativeTest_jni.h"
 #include "testing/android/native_test/main_runner.h"
+#include "testing/android/native_test/native_test_jni_headers/NativeTest_jni.h"
 #include "testing/android/native_test/native_test_util.h"
+
+#if BUILDFLAG(CLANG_COVERAGE)
+#include "base/test/clang_coverage.h"
+#endif
 
 using base::android::JavaParamRef;
 
@@ -76,6 +83,8 @@ static void JNI_NativeTest_RunTests(
     const JavaParamRef<jstring>& jstdout_file_path,
     const JavaParamRef<jobject>& app_context,
     const JavaParamRef<jstring>& jtest_data_dir) {
+  base::ScopedAllowBlockingForTesting allow;
+
   // Command line initialized basically, will be fully initialized later.
   static const char* const kInitialArgv[] = { "ChromeTestActivity" };
   base::CommandLine::Init(base::size(kInitialArgv), kInitialArgv);
@@ -130,6 +139,11 @@ static void JNI_NativeTest_RunTests(
 
   ScopedMainEntryLogger scoped_main_entry_logger;
   main(argc, &argv[0]);
+
+// Explicitly write coverage data to LLVM profile file.
+#if BUILDFLAG(CLANG_COVERAGE)
+  base::WriteClangCoverageProfile();
+#endif
 }
 
 // TODO(nileshagrawal): now that we're using FIFO, test scripts can detect EOF.

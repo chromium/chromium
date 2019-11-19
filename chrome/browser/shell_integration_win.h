@@ -12,10 +12,6 @@
 #include "base/files/file_path.h"
 #include "base/strings/string16.h"
 
-namespace service_manager {
-class Connector;
-}
-
 namespace shell_integration {
 namespace win {
 
@@ -67,17 +63,19 @@ base::string16 GetChromiumModelIdForProfile(const base::FilePath& profile_path);
 // is true if Chrome is pinned to the taskbar.
 // The ConnectionErrorCallback is called instead if something wrong happened
 // with the connection to the remote process.
-// |connector| should be a fresh connector unbound to any thread.
 using ConnectionErrorCallback = base::Closure;
 using IsPinnedToTaskbarCallback = base::Callback<void(bool, bool)>;
 void GetIsPinnedToTaskbarState(
-    std::unique_ptr<service_manager::Connector> connector,
     const ConnectionErrorCallback& on_error_callback,
     const IsPinnedToTaskbarCallback& result_callback);
 
 // Migrates existing chrome taskbar pins by tagging them with correct app id.
-// see http://crbug.com/28104
+// see http://crbug.com/28104. Migrates taskbar pins via a task.
 void MigrateTaskbarPins();
+
+// Callback for MigrateTaskbarPins(). Exposed for testing.
+void MigrateTaskbarPinsCallback(const base::FilePath& pins_path,
+                                const base::FilePath& implicit_apps_path);
 
 // Migrates all shortcuts in |path| which point to |chrome_exe| such that they
 // have the appropriate AppUserModelId. Also clears the legacy dual_mode

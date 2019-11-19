@@ -33,13 +33,15 @@
 #include <cfloat>
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
-#include "third_party/blink/renderer/platform/wtf/text/cstring.h"
 
 namespace blink {
 
 // Simulate core/html/forms/StepRange
 class DecimalStepRange {
+  STACK_ALLOCATED();
+
  public:
   Decimal maximum;
   Decimal minimum;
@@ -109,9 +111,6 @@ class DecimalTest : public testing::Test {
   EXPECT_EQ((expectedCoefficient), (decimal).Value().Coefficient());          \
   EXPECT_EQ((expectedExponent), (decimal).Value().Exponent());                \
   EXPECT_EQ(Decimal::expectedSign, (decimal).Value().GetSign());
-
-#define EXPECT_DECIMAL_STREQ(expected, decimal) \
-  EXPECT_STREQ((expected), (decimal).ToString().Ascii().data())
 
 TEST_F(DecimalTest, Abs) {
   EXPECT_EQ(Encode(0, 0, kPositive), Encode(0, 0, kPositive).Abs());
@@ -669,6 +668,8 @@ TEST_F(DecimalTest, FromString) {
   EXPECT_EQ(Encode(3, 0, kPositive), FromString("+3"));
   EXPECT_EQ(Encode(0, 3, kPositive), FromString("0E3"));
   EXPECT_EQ(Encode(5, -1, kPositive), FromString(".5"));
+  EXPECT_EQ(Encode(5, -1, kPositive), FromString("+.5"));
+  EXPECT_EQ(Encode(5, -1, kNegative), FromString("-.5"));
   EXPECT_EQ(Encode(100, 0, kPositive), FromString("100"));
   EXPECT_EQ(Encode(100, 0, kNegative), FromString("-100"));
   EXPECT_EQ(Encode(123, -2, kPositive), FromString("1.23"));
@@ -901,30 +902,32 @@ TEST_F(DecimalTest, PredicatesSpecialValues) {
 
 // web_tests/fast/forms/number/number-stepup-stepdown-from-renderer
 TEST_F(DecimalTest, RealWorldExampleNumberStepUpStepDownFromRenderer) {
-  EXPECT_DECIMAL_STREQ("10", StepDown("0", "100", "10", "19", 1));
-  EXPECT_DECIMAL_STREQ("90", StepUp("0", "99", "10", "89", 1));
-  EXPECT_DECIMAL_STREQ(
-      "1", StepUp("0", "1", "0.33333333333333333", "0", 3));  // step=1/3
-  EXPECT_DECIMAL_STREQ("0.01", StepUp("0", "0.01", "0.0033333333333333333", "0",
-                                      3));  // step=1/300
-  EXPECT_DECIMAL_STREQ(
-      "1", StepUp("0", "1", "0.003921568627450980", "0", 255));  // step=1/255
-  EXPECT_DECIMAL_STREQ("1", StepUp("0", "1", "0.1", "0", 10));
+  EXPECT_EQ("10", StepDown("0", "100", "10", "19", 1).ToString());
+  EXPECT_EQ("90", StepUp("0", "99", "10", "89", 1).ToString());
+  EXPECT_EQ(
+      "1",
+      StepUp("0", "1", "0.33333333333333333", "0", 3).ToString());  // step=1/3
+  EXPECT_EQ("0.01", StepUp("0", "0.01", "0.0033333333333333333", "0",
+                           3)
+                        .ToString());  // step=1/300
+  EXPECT_EQ("1", StepUp("0", "1", "0.003921568627450980", "0", 255)
+                     .ToString());  // step=1/255
+  EXPECT_EQ("1", StepUp("0", "1", "0.1", "0", 10).ToString());
 }
 
 TEST_F(DecimalTest, RealWorldExampleNumberStepUpStepDownFromRendererRounding) {
-  EXPECT_DECIMAL_STREQ("5.015", StepUp("0", "100", "0.005", "5.005", 2));
-  EXPECT_DECIMAL_STREQ("5.06", StepUp("0", "100", "0.005", "5.005", 11));
-  EXPECT_DECIMAL_STREQ("5.065", StepUp("0", "100", "0.005", "5.005", 12));
+  EXPECT_EQ("5.015", StepUp("0", "100", "0.005", "5.005", 2).ToString());
+  EXPECT_EQ("5.06", StepUp("0", "100", "0.005", "5.005", 11).ToString());
+  EXPECT_EQ("5.065", StepUp("0", "100", "0.005", "5.005", 12).ToString());
 
-  EXPECT_DECIMAL_STREQ("5.015", StepUp("4", "9", "0.005", "5.005", 2));
-  EXPECT_DECIMAL_STREQ("5.06", StepUp("4", "9", "0.005", "5.005", 11));
-  EXPECT_DECIMAL_STREQ("5.065", StepUp("4", "9", "0.005", "5.005", 12));
+  EXPECT_EQ("5.015", StepUp("4", "9", "0.005", "5.005", 2).ToString());
+  EXPECT_EQ("5.06", StepUp("4", "9", "0.005", "5.005", 11).ToString());
+  EXPECT_EQ("5.065", StepUp("4", "9", "0.005", "5.005", 12).ToString());
 }
 
 TEST_F(DecimalTest, RealWorldExampleRangeStepUpStepDown) {
-  EXPECT_DECIMAL_STREQ("1e+38", StepUp("0", "1E38", "1", "1E38", 9));
-  EXPECT_DECIMAL_STREQ("1e+38", StepDown("0", "1E38", "1", "1E38", 9));
+  EXPECT_EQ("1e+38", StepUp("0", "1E38", "1", "1E38", 9).ToString());
+  EXPECT_EQ("1e+38", StepDown("0", "1E38", "1", "1E38", 9).ToString());
 }
 
 TEST_F(DecimalTest, Remainder) {
@@ -1110,53 +1113,53 @@ TEST_F(DecimalTest, ToDoubleSpecialValues) {
 }
 
 TEST_F(DecimalTest, ToString) {
-  EXPECT_DECIMAL_STREQ("0", Decimal::Zero(kPositive));
-  EXPECT_DECIMAL_STREQ("-0", Decimal::Zero(kNegative));
-  EXPECT_DECIMAL_STREQ("1", Decimal(1));
-  EXPECT_DECIMAL_STREQ("-1", Decimal(-1));
-  EXPECT_DECIMAL_STREQ("1234567", Decimal(1234567));
-  EXPECT_DECIMAL_STREQ("-1234567", Decimal(-1234567));
-  EXPECT_DECIMAL_STREQ("0.5", Encode(5, -1, kPositive));
-  EXPECT_DECIMAL_STREQ("-0.5", Encode(5, -1, kNegative));
-  EXPECT_DECIMAL_STREQ("12.345", Encode(12345, -3, kPositive));
-  EXPECT_DECIMAL_STREQ("-12.345", Encode(12345, -3, kNegative));
-  EXPECT_DECIMAL_STREQ("0.12345", Encode(12345, -5, kPositive));
-  EXPECT_DECIMAL_STREQ("-0.12345", Encode(12345, -5, kNegative));
-  EXPECT_DECIMAL_STREQ("50", Encode(50, 0, kPositive));
-  EXPECT_DECIMAL_STREQ("-50", Encode(50, 0, kNegative));
-  EXPECT_DECIMAL_STREQ("5e+1", Encode(5, 1, kPositive));
-  EXPECT_DECIMAL_STREQ("-5e+1", Encode(5, 1, kNegative));
-  EXPECT_DECIMAL_STREQ("5.678e+103", Encode(5678, 100, kPositive));
-  EXPECT_DECIMAL_STREQ("-5.678e+103", Encode(5678, 100, kNegative));
-  EXPECT_DECIMAL_STREQ("5.678e-97", Encode(5678, -100, kPositive));
-  EXPECT_DECIMAL_STREQ("-5.678e-97", Encode(5678, -100, kNegative));
-  EXPECT_DECIMAL_STREQ("8639999913600001",
-                       Encode(UINT64_C(8639999913600001), 0, kPositive));
-  EXPECT_DECIMAL_STREQ(
-      "9007199254740991",
-      Encode((static_cast<uint64_t>(1) << DBL_MANT_DIG) - 1, 0, kPositive));
-  EXPECT_DECIMAL_STREQ("99999999999999999",
-                       Encode(UINT64_C(99999999999999999), 0, kPositive));
-  EXPECT_DECIMAL_STREQ("9.9999999999999999e+17",
-                       Encode(UINT64_C(99999999999999999), 1, kPositive));
-  EXPECT_DECIMAL_STREQ("9.9999999999999999e+18",
-                       Encode(UINT64_C(99999999999999999), 2, kPositive));
-  EXPECT_DECIMAL_STREQ("1e+16",
-                       Encode(UINT64_C(99999999999999999), -1, kPositive));
-  EXPECT_DECIMAL_STREQ("1000000000000000",
-                       Encode(UINT64_C(99999999999999999), -2, kPositive));
-  EXPECT_DECIMAL_STREQ("1",
-                       Encode(UINT64_C(99999999999999999), -17, kPositive));
-  EXPECT_DECIMAL_STREQ("0.001",
-                       Encode(UINT64_C(99999999999999999), -20, kPositive));
-  EXPECT_DECIMAL_STREQ("1e-83",
-                       Encode(UINT64_C(99999999999999999), -100, kPositive));
+  EXPECT_EQ("0", Decimal::Zero(kPositive).ToString());
+  EXPECT_EQ("-0", Decimal::Zero(kNegative).ToString());
+  EXPECT_EQ("1", Decimal(1).ToString());
+  EXPECT_EQ("-1", Decimal(-1).ToString());
+  EXPECT_EQ("1234567", Decimal(1234567).ToString());
+  EXPECT_EQ("-1234567", Decimal(-1234567).ToString());
+  EXPECT_EQ("0.5", Encode(5, -1, kPositive).ToString());
+  EXPECT_EQ("-0.5", Encode(5, -1, kNegative).ToString());
+  EXPECT_EQ("12.345", Encode(12345, -3, kPositive).ToString());
+  EXPECT_EQ("-12.345", Encode(12345, -3, kNegative).ToString());
+  EXPECT_EQ("0.12345", Encode(12345, -5, kPositive).ToString());
+  EXPECT_EQ("-0.12345", Encode(12345, -5, kNegative).ToString());
+  EXPECT_EQ("50", Encode(50, 0, kPositive).ToString());
+  EXPECT_EQ("-50", Encode(50, 0, kNegative).ToString());
+  EXPECT_EQ("5e+1", Encode(5, 1, kPositive).ToString());
+  EXPECT_EQ("-5e+1", Encode(5, 1, kNegative).ToString());
+  EXPECT_EQ("5.678e+103", Encode(5678, 100, kPositive).ToString());
+  EXPECT_EQ("-5.678e+103", Encode(5678, 100, kNegative).ToString());
+  EXPECT_EQ("5.678e-97", Encode(5678, -100, kPositive).ToString());
+  EXPECT_EQ("-5.678e-97", Encode(5678, -100, kNegative).ToString());
+  EXPECT_EQ("8639999913600001",
+            Encode(UINT64_C(8639999913600001), 0, kPositive).ToString());
+  EXPECT_EQ("9007199254740991",
+            Encode((static_cast<uint64_t>(1) << DBL_MANT_DIG) - 1, 0, kPositive)
+                .ToString());
+  EXPECT_EQ("99999999999999999",
+            Encode(UINT64_C(99999999999999999), 0, kPositive).ToString());
+  EXPECT_EQ("9.9999999999999999e+17",
+            Encode(UINT64_C(99999999999999999), 1, kPositive).ToString());
+  EXPECT_EQ("9.9999999999999999e+18",
+            Encode(UINT64_C(99999999999999999), 2, kPositive).ToString());
+  EXPECT_EQ("1e+16",
+            Encode(UINT64_C(99999999999999999), -1, kPositive).ToString());
+  EXPECT_EQ("1000000000000000",
+            Encode(UINT64_C(99999999999999999), -2, kPositive).ToString());
+  EXPECT_EQ("1",
+            Encode(UINT64_C(99999999999999999), -17, kPositive).ToString());
+  EXPECT_EQ("0.001",
+            Encode(UINT64_C(99999999999999999), -20, kPositive).ToString());
+  EXPECT_EQ("1e-83",
+            Encode(UINT64_C(99999999999999999), -100, kPositive).ToString());
 }
 
 TEST_F(DecimalTest, ToStringSpecialValues) {
-  EXPECT_DECIMAL_STREQ("Infinity", Decimal::Infinity(kPositive));
-  EXPECT_DECIMAL_STREQ("-Infinity", Decimal::Infinity(kNegative));
-  EXPECT_DECIMAL_STREQ("NaN", Decimal::Nan());
+  EXPECT_EQ("Infinity", Decimal::Infinity(kPositive).ToString());
+  EXPECT_EQ("-Infinity", Decimal::Infinity(kNegative).ToString());
+  EXPECT_EQ("NaN", Decimal::Nan().ToString());
 }
 
 }  // namespace blink

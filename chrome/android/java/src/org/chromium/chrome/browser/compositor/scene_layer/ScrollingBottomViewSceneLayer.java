@@ -8,11 +8,12 @@ import android.graphics.RectF;
 import android.view.View;
 
 import org.chromium.base.annotations.JNINamespace;
+import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.compositor.LayerTitleCache;
 import org.chromium.chrome.browser.compositor.layouts.components.VirtualView;
 import org.chromium.chrome.browser.compositor.layouts.eventfilter.EventFilter;
 import org.chromium.chrome.browser.compositor.overlays.SceneOverlay;
-import org.chromium.chrome.browser.widget.ViewResourceFrameLayout;
+import org.chromium.chrome.browser.ui.widget.ViewResourceFrameLayout;
 import org.chromium.ui.resources.ResourceManager;
 
 import java.util.List;
@@ -93,14 +94,16 @@ public class ScrollingBottomViewSceneLayer extends SceneOverlayLayer implements 
     @Override
     protected void initializeNative() {
         if (mNativePtr == 0) {
-            mNativePtr = nativeInit();
+            mNativePtr =
+                    ScrollingBottomViewSceneLayerJni.get().init(ScrollingBottomViewSceneLayer.this);
         }
         assert mNativePtr != 0;
     }
 
     @Override
     public void setContentTree(SceneLayer contentTree) {
-        nativeSetContentTree(mNativePtr, contentTree);
+        ScrollingBottomViewSceneLayerJni.get().setContentTree(
+                mNativePtr, ScrollingBottomViewSceneLayer.this, contentTree);
     }
 
     @Override
@@ -109,7 +112,8 @@ public class ScrollingBottomViewSceneLayer extends SceneOverlayLayer implements 
         // The composited shadow should be visible if the Android toolbar's isn't.
         boolean isShadowVisible = mBottomView.getVisibility() != View.VISIBLE;
 
-        nativeUpdateScrollingBottomViewLayer(mNativePtr, resourceManager, mResourceId,
+        ScrollingBottomViewSceneLayerJni.get().updateScrollingBottomViewLayer(mNativePtr,
+                ScrollingBottomViewSceneLayer.this, resourceManager, mResourceId,
                 mTopShadowHeightPx, mCurrentXOffsetPx, viewport.height() + mCurrentYOffsetPx,
                 isShadowVisible);
 
@@ -169,11 +173,14 @@ public class ScrollingBottomViewSceneLayer extends SceneOverlayLayer implements 
     @Override
     public void tabCreated(long time, boolean incognito, int id, int prevId, boolean selected) {}
 
-    private native long nativeInit();
-    private native void nativeSetContentTree(
-            long nativeScrollingBottomViewSceneLayer, SceneLayer contentTree);
-    private native void nativeUpdateScrollingBottomViewLayer(
-            long nativeScrollingBottomViewSceneLayer, ResourceManager resourceManager,
-            int viewResourceId, int shadowHeightPx, float xOffset, float yOffset,
-            boolean showShadow);
+    @NativeMethods
+    interface Natives {
+        long init(ScrollingBottomViewSceneLayer caller);
+        void setContentTree(long nativeScrollingBottomViewSceneLayer,
+                ScrollingBottomViewSceneLayer caller, SceneLayer contentTree);
+        void updateScrollingBottomViewLayer(long nativeScrollingBottomViewSceneLayer,
+                ScrollingBottomViewSceneLayer caller, ResourceManager resourceManager,
+                int viewResourceId, int shadowHeightPx, float xOffset, float yOffset,
+                boolean showShadow);
+    }
 }

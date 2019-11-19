@@ -25,7 +25,7 @@ import java.util.List;
  */
 @TargetApi(Build.VERSION_CODES.KITKAT)
 public class PrintManagerDelegateImpl implements PrintManagerDelegate {
-    private static final String TAG = "cr.printing";
+    private static final String TAG = "printing";
     private final PrintManager mPrintManager;
 
     public PrintManagerDelegateImpl(Activity activity) {

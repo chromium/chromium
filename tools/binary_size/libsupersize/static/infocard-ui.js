@@ -91,10 +91,7 @@ const displayInfocard = (() => {
       } else {
         const path = node.idPath.slice(0, node.shortNameIndex);
         const boldShortName = dom.textElement(
-          'span',
-          shortName(node),
-          'symbol-name-info'
-        );
+            'span', node.fullName || shortName(node), 'symbol-name-info');
         pathFragment = dom.createFragment([
           document.createTextNode(path),
           boldShortName,
@@ -323,7 +320,6 @@ const displayInfocard = (() => {
         (a, b) => b[1].size - a[1].size
       );
       const diffMode = state.has('diff_mode');
-      const highlightMode = state.has('highlight');
       let totalSize = 0;
       for (const [, stats] of statsEntries) {
         totalSize += Math.abs(stats.size);
@@ -343,13 +339,6 @@ const displayInfocard = (() => {
           const angleEnd = angleStart + arcLength;
 
           this._drawSlice(angleStart, angleEnd, color);
-          if (highlightMode) {
-            const highlightPercent = stats.highlight / totalSize;
-            const highlightArcLength = Math.abs(highlightPercent) * 2 * Math.PI;
-            const highlightEnd = (angleStart + highlightArcLength);
-
-            this._drawBorder(angleStart, highlightEnd, '#feefc3', 32);
-          }
           if (diffMode) {
             const strokeColor = stats.size > 0 ? '#ea4335' : '#34a853';
             this._drawBorder(angleStart, angleEnd, strokeColor, 16);

@@ -1,0 +1,20 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module chrome_cleaner.mojom;
+
+struct FilePath {
+  array<uint16> value;
+};
+
+struct RegistryKey {
+  // A string formatted for display to the user.
+  // Example: HKCU:32\software\unwanted_software
+  array<uint16> value;
+};
+
+struct ExtensionId {
+  // A 32-character extension ID.
+  array<uint16> value;
+};

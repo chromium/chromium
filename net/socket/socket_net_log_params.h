@@ -6,32 +6,33 @@
 #define NET_SOCKET_SOCKET_NET_LOG_PARAMS_H_
 
 #include "net/base/sys_addrinfo.h"
-#include "net/log/net_log_parameters_callback.h"
+#include "net/log/net_log_event_type.h"
+
+namespace base {
+class Value;
+}
 
 namespace net {
 
+class NetLogWithSource;
 class HostPortPair;
 class IPEndPoint;
 
-// Creates a NetLog callback for socket error events.
-NetLogParametersCallback CreateNetLogSocketErrorCallback(int net_error,
-                                                         int os_error);
+// Emits an event to NetLog with socket error parameters.
+void NetLogSocketError(const NetLogWithSource& net_log,
+                       NetLogEventType type,
+                       int net_error,
+                       int os_error);
 
-// Creates a NetLog callback for a HostPortPair.
-// |host_and_port| must remain valid for the lifetime of the returned callback.
-NetLogParametersCallback CreateNetLogHostPortPairCallback(
-    const HostPortPair* host_and_port);
+// Creates a NetLog parameters for a HostPortPair.
+base::Value CreateNetLogHostPortPairParams(const HostPortPair* host_and_port);
 
-// Creates a NetLog callback for an IPEndPoint.
-// |address| must remain valid for the lifetime of the returned callback.
-NetLogParametersCallback CreateNetLogIPEndPointCallback(
-    const IPEndPoint* address);
+// Creates a NetLog parameters for an IPEndPoint.
+base::Value CreateNetLogIPEndPointParams(const IPEndPoint* address);
 
-// Creates a NetLog callback for the source sockaddr on connect events.
-// |net_address| must remain valid for the lifetime of the returned callback.
-NetLogParametersCallback CreateNetLogSourceAddressCallback(
-    const struct sockaddr* net_address,
-    socklen_t address_len);
+// Creates a NetLog parameters for the source sockaddr on connect events.
+base::Value CreateNetLogSourceAddressParams(const struct sockaddr* net_address,
+                                            socklen_t address_len);
 
 }  // namespace net
 

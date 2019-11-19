@@ -5,15 +5,18 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_PRESENTATION_MOCK_PRESENTATION_SERVICE_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_PRESENTATION_MOCK_PRESENTATION_SERVICE_H_
 
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "third_party/blink/public/mojom/presentation/presentation.mojom-blink.h"
+#include "third_party/blink/public/mojom/presentation/presentation.mojom-blink-forward.h"
 
 namespace blink {
 
 class MockPresentationService : public mojom::blink::PresentationService {
  public:
-  void SetController(mojom::blink::PresentationControllerPtr) override {}
-  void SetReceiver(mojom::blink::PresentationReceiverPtr) override {}
+  void SetController(
+      mojo::PendingRemote<mojom::blink::PresentationController>) override {}
+  void SetReceiver(
+      mojo::PendingRemote<mojom::blink::PresentationReceiver>) override {}
   MOCK_METHOD1(SetDefaultPresentationUrls, void(const Vector<KURL>&));
   MOCK_METHOD1(ListenForScreenAvailability, void(const KURL&));
   MOCK_METHOD1(StopListeningForScreenAvailability, void(const KURL&));

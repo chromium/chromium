@@ -4,13 +4,14 @@
 
 #include "third_party/blink/renderer/core/mojo/mojo_watcher.h"
 
+#include "base/single_thread_task_runner.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_mojo_watch_callback.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/mojo/mojo_handle_signals.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
-#include "third_party/blink/renderer/platform/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 
 namespace blink {
 
@@ -25,17 +26,15 @@ MojoWatcher* MojoWatcher::Create(mojo::Handle handle,
   // Current clients expect to recieve the initial error returned by MojoWatch
   // via watch callback.
   //
-  // Note that the usage of wrapPersistent is intentional so that the intial
+  // Note that the usage of WrapPersistent is intentional so that the initial
   // error is guaranteed to be reported to the client in case where the given
   // handle is invalid and garbage collection happens before the callback
   // is scheduled.
   if (result != MOJO_RESULT_OK) {
     watcher->task_runner_->PostTask(
         FROM_HERE,
-        WTF::Bind(&V8PersistentCallbackFunction<
-                      V8MojoWatchCallback>::InvokeAndReportException,
-                  WrapPersistent(ToV8PersistentCallbackFunction(callback)),
-                  WrapPersistent(watcher), result));
+        WTF::Bind(&V8MojoWatchCallback::InvokeAndReportException,
+                  WrapPersistent(callback), WrapPersistent(watcher), result));
   }
   return watcher;
 }
@@ -67,7 +66,7 @@ void MojoWatcher::ContextDestroyed(ExecutionContext*) {
 MojoWatcher::MojoWatcher(ExecutionContext* context,
                          V8MojoWatchCallback* callback)
     : ContextLifecycleObserver(context),
-      task_runner_(context->GetTaskRunner(TaskType::kInternalIPC)),
+      task_runner_(context->GetTaskRunner(TaskType::kInternalDefault)),
       callback_(callback) {}
 
 MojoResult MojoWatcher::Watch(mojo::Handle handle,
@@ -145,8 +144,9 @@ void MojoWatcher::OnHandleReady(const MojoTrapEvent* event) {
   MojoWatcher* watcher = reinterpret_cast<MojoWatcher*>(event->trigger_context);
   PostCrossThreadTask(
       *watcher->task_runner_, FROM_HERE,
-      CrossThreadBind(&MojoWatcher::RunReadyCallback,
-                      WrapCrossThreadWeakPersistent(watcher), event->result));
+      CrossThreadBindOnce(&MojoWatcher::RunReadyCallback,
+                          WrapCrossThreadWeakPersistent(watcher),
+                          event->result));
 }
 
 void MojoWatcher::RunReadyCallback(MojoResult result) {

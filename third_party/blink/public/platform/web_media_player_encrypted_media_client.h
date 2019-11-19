@@ -31,14 +31,14 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_MEDIA_PLAYER_ENCRYPTED_MEDIA_CLIENT_H_
 #define THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_MEDIA_PLAYER_ENCRYPTED_MEDIA_CLIENT_H_
 
+#include "media/base/eme_constants.h"
 #include "third_party/blink/public/platform/web_common.h"
-#include "third_party/blink/public/platform/web_encrypted_media_types.h"
 
 namespace blink {
 
 class BLINK_PLATFORM_EXPORT WebMediaPlayerEncryptedMediaClient {
  public:
-  virtual void Encrypted(WebEncryptedMediaInitDataType,
+  virtual void Encrypted(media::EmeInitDataType init_data_type,
                          const unsigned char* init_data,
                          unsigned init_data_length) = 0;
   virtual void DidBlockPlaybackWaitingForKey() = 0;

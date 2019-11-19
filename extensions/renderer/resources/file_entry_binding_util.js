@@ -9,15 +9,6 @@ var GetModuleSystem = requireNative('v8_context').GetModuleSystem;
 var GetExtensionViews = requireNative('runtime').GetExtensionViews;
 var safeCallbackApply = require('uncaught_exception_handler').safeCallbackApply;
 
-var jsLastError = bindingUtil ? undefined : require('lastError');
-function runCallbackWithLastError(name, message, stack, callback) {
-  if (bindingUtil)
-    bindingUtil.runCallbackWithLastError(message, callback);
-  else
-    jsLastError.run(name, message, stack, callback);
-}
-
-
 var WINDOW = {};
 try {
   WINDOW = window;
@@ -62,10 +53,8 @@ function getFileBindingsForApi(apiName) {
           var getEntryError = function(fileError) {
             if (!hasError) {
               hasError = true;
-              runCallbackWithLastError(
-                  apiName + '.' + functionName,
+              bindingUtil.runCallbackWithLastError(
                   'Error getting fileEntry, code: ' + fileError.code,
-                  request.stack,
                   callback);
             }
           }
@@ -114,9 +103,8 @@ function getFileBindingsForApi(apiName) {
             } catch (e) {
               if (!hasError) {
                 hasError = true;
-                runCallbackWithLastError(apiName + '.' + functionName,
-                                         'Error getting fileEntry: ' + e.stack,
-                                         request.stack, callback);
+                bindingUtil.runCallbackWithLastError(
+                    'Error getting fileEntry: ' + e.stack, callback);
               }
             }
           });
@@ -163,15 +151,11 @@ function getBindDirectoryEntryCallback() {
 
         try {
           fs.root.getDirectory(baseName, {}, callback, function(fileError) {
-            runCallbackWithLastError(
-                'runtime.' + functionName,
-                'Error getting Entry, code: ' + fileError.code,
-                request.stack, callback);
+            bindingUtil.runCallbackWithLastError(
+                'Error getting Entry, code: ' + fileError.code, callback);
           });
         } catch (e) {
-          runCallbackWithLastError('runtime.' + functionName,
-                                   'Error: ' + e.stack,
-                                   request.stack, callback);
+          bindingUtil.runCallbackWithLastError('Error: ' + e.stack, callback);
         }
       }
     }

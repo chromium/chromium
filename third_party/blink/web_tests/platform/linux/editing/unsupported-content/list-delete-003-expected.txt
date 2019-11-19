@@ -24,7 +24,7 @@ layer at (0,0) size 800x600
           LayoutText {#text} at (0,27) size 663x20
             text run at (0,27) width 663: "Our ability to \"edit around\" content the HTML editing code does not yet handle very well. "
           LayoutBR {BR} at (663,43) size 0x0
-          LayoutInline {I} at (0,0) size 99x20
+          LayoutInline {I} at (0,48) size 99x20
             LayoutText {#text} at (0,48) size 99x20
               text run at (0,48) width 99: "For this test: "
           LayoutText {#text} at (99,48) size 392x20
@@ -39,10 +39,10 @@ layer at (0,0) size 800x600
             text run at (0,27) width 709: "The content in the red box must exactly match the content in the green box (except for the border"
             text run at (0,48) width 53: "color). "
           LayoutBR {BR} at (53,64) size 0x0
-          LayoutInline {I} at (0,0) size 99x20
+          LayoutInline {I} at (0,69) size 99x20
             LayoutText {#text} at (0,69) size 99x20
               text run at (0,69) width 99: "For this test: "
-          LayoutText {#text} at (99,69) size 744x41
+          LayoutText {#text} at (0,69) size 744x41
             text run at (99,69) width 304: "Only selected content should get deleted. "
             text run at (403,69) width 341: "Surrounding content that is not selected should"
             text run at (0,90) width 201: "(obviously) not be affected."

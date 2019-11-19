@@ -15,7 +15,7 @@ CastSysInfoDummy::CastSysInfoDummy()
       manufacturer_("google"),
       system_build_number_(__DATE__ " - " __TIME__),
       factory_country_("US"),
-      factory_locale_("en-US") {
+      factory_locale_list_({"en-US"}) {
 }
 
 CastSysInfoDummy::~CastSysInfoDummy() {
@@ -61,8 +61,8 @@ std::string CastSysInfoDummy::GetFactoryCountry() {
   return factory_country_;
 }
 
-std::string CastSysInfoDummy::GetFactoryLocale(std::string* second_locale) {
-  return factory_locale_;
+std::vector<std::string> CastSysInfoDummy::GetFactoryLocaleList() {
+  return factory_locale_list_;
 }
 
 std::string CastSysInfoDummy::GetWifiInterface() {
@@ -122,9 +122,9 @@ void CastSysInfoDummy::SetFactoryCountryForTesting(
   factory_country_ = factory_country;
 }
 
-void CastSysInfoDummy::SetFactoryLocaleForTesting(
-    const std::string& factory_locale) {
-  factory_locale_ = factory_locale;
+void CastSysInfoDummy::SetFactoryLocaleListForTesting(
+    const std::vector<std::string>& factory_locale_list) {
+  factory_locale_list_ = factory_locale_list;
 }
 
 void CastSysInfoDummy::SetWifiInterfaceForTesting(

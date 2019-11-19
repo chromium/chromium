@@ -9,10 +9,11 @@
 #include "ash/wm/window_state.h"
 #include "base/macros.h"
 #include "base/time/time.h"
+#include "ui/display/display.h"
+#include "ui/display/display_observer.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace ash {
-namespace wm {
 
 // WMEventType defines a set of operations that can change the
 // window's state type and bounds.
@@ -106,6 +107,9 @@ enum WMEventType {
   WM_EVENT_SYSTEM_UI_AREA_CHANGED,
 };
 
+class SetBoundsWMEvent;
+class DisplayMetricsChangedWMEvent;
+
 class ASH_EXPORT WMEvent {
  public:
   explicit WMEvent(WMEventType type);
@@ -135,20 +139,23 @@ class ASH_EXPORT WMEvent {
   // e.g. WM_EVENT_MAXIMIZED.
   bool IsTransitionEvent() const;
 
+  // Utility methods to downcast to specific WMEvent types.
+  const DisplayMetricsChangedWMEvent* AsDisplayMetricsChangedWMEvent() const;
+
  private:
   WMEventType type_;
   DISALLOW_COPY_AND_ASSIGN(WMEvent);
 };
 
 // An WMEvent to request new bounds for the window.
-class ASH_EXPORT SetBoundsEvent : public WMEvent {
+class ASH_EXPORT SetBoundsWMEvent : public WMEvent {
  public:
-  SetBoundsEvent(
-      WMEventType type,
+  SetBoundsWMEvent(
       const gfx::Rect& requested_bounds,
       bool animate = false,
       base::TimeDelta duration = WindowState::kBoundsChangeSlideDuration);
-  ~SetBoundsEvent() override;
+  SetBoundsWMEvent(const gfx::Rect& requested_bounds, int64_t display_id);
+  ~SetBoundsWMEvent() override;
 
   const gfx::Rect& requested_bounds() const { return requested_bounds_; }
 
@@ -156,15 +163,36 @@ class ASH_EXPORT SetBoundsEvent : public WMEvent {
 
   base::TimeDelta duration() const { return duration_; }
 
- private:
-  gfx::Rect requested_bounds_;
-  bool animate_;
-  base::TimeDelta duration_;
+  int64_t display_id() const { return display_id_; }
 
-  DISALLOW_COPY_AND_ASSIGN(SetBoundsEvent);
+ private:
+  const gfx::Rect requested_bounds_;
+  const int64_t display_id_ = display::kInvalidDisplayId;
+  const bool animate_;
+  const base::TimeDelta duration_;
+
+  DISALLOW_COPY_AND_ASSIGN(SetBoundsWMEvent);
 };
 
-}  // namespace wm
+// A WMEvent sent when display metrics have changed.
+// TODO(oshima): Consolidate with WM_EVENT_WORKAREA_BOUNDS_CHANGED.
+class ASH_EXPORT DisplayMetricsChangedWMEvent : public WMEvent {
+ public:
+  explicit DisplayMetricsChangedWMEvent(int display_metrics);
+  ~DisplayMetricsChangedWMEvent() override;
+
+  bool primary_changed() const {
+    return changed_metrics_ & display::DisplayObserver::DISPLAY_METRIC_PRIMARY;
+  }
+
+  uint32_t changed_metrics() const { return changed_metrics_; }
+
+ private:
+  const uint32_t changed_metrics_;
+
+  DISALLOW_COPY_AND_ASSIGN(DisplayMetricsChangedWMEvent);
+};
+
 }  // namespace ash
 
 #endif  // ASH_WM_WM_EVENT_H_

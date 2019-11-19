@@ -17,6 +17,9 @@ const float kMinAxisResetValue = 0.1f;
 
 }  // namespace
 
+PadState::PadState() = default;
+PadState::~PadState() = default;
+
 GamepadPadStateProvider::GamepadPadStateProvider() {
   pad_states_.reset(new PadState[Gamepads::kItemsLengthCap]);
 
@@ -27,9 +30,11 @@ GamepadPadStateProvider::GamepadPadStateProvider() {
 GamepadPadStateProvider::~GamepadPadStateProvider() = default;
 
 PadState* GamepadPadStateProvider::GetPadState(GamepadSource source,
-                                               int source_id) {
+                                               int source_id,
+                                               bool new_gamepad_recognized) {
   // Check to see if the device already has a reserved slot
   PadState* empty_slot = nullptr;
+  PadState* unrecognized_slot = nullptr;
   for (size_t i = 0; i < Gamepads::kItemsLengthCap; ++i) {
     PadState& state = pad_states_.get()[i];
     if (state.source == source && state.source_id == source_id) {
@@ -39,6 +44,14 @@ PadState* GamepadPadStateProvider::GetPadState(GamepadSource source,
     }
     if (!empty_slot && state.source == GAMEPAD_SOURCE_NONE)
       empty_slot = &state;
+    if (!state.is_recognized)
+      unrecognized_slot = &state;
+  }
+
+  if (!empty_slot && unrecognized_slot && new_gamepad_recognized) {
+    DisconnectUnrecognizedGamepad(unrecognized_slot->source,
+                                  unrecognized_slot->source_id);
+    empty_slot = unrecognized_slot;
   }
   if (empty_slot) {
     empty_slot->source = source;
@@ -46,6 +59,7 @@ PadState* GamepadPadStateProvider::GetPadState(GamepadSource source,
     empty_slot->is_active = true;
     empty_slot->is_newly_active = true;
     empty_slot->is_initialized = false;
+    empty_slot->is_recognized = new_gamepad_recognized;
   }
   return empty_slot;
 }
@@ -66,8 +80,9 @@ void GamepadPadStateProvider::ClearPadState(PadState& state) {
 }
 
 void GamepadPadStateProvider::InitializeDataFetcher(
-    GamepadDataFetcher* fetcher) {
-  fetcher->InitializeProvider(this);
+    GamepadDataFetcher* fetcher,
+    service_manager::Connector* service_manager_connector) {
+  fetcher->InitializeProvider(this, service_manager_connector);
 }
 
 void GamepadPadStateProvider::MapAndSanitizeGamepadData(PadState* pad_state,

@@ -6,16 +6,9 @@
 <translation id="1050693411695664090">แย่</translation>
 <translation id="1152528166145813711">เลือก…</translation>
 <translation id="1199593201721843963">ปิดใช้งานการเชื่อมต่อระยะไกล</translation>
+<translation id="1201402288615127009">ถัดไป</translation>
 <translation id="1291443878853470558">คุณต้องเปิดใช้งานการเชื่อมต่อระยะไกลหากคุณต้องการใช้ Chromoting ในการเข้าถึงคอมพิวเตอร์เครื่องนี้</translation>
 <translation id="1297009705180977556">เกิดข้อผิดพลาดในการเชื่อมต่อกับ <ph name="HOSTNAME" /></translation>
-<translation id="1300633907480909701">เข้าถึงคอมพิวเตอร์ของคุณจากอุปกรณ์ Android ได้อย่างปลอดภัย
-
-• บนคอมพิวเตอร์แต่ละเครื่อง ให้ตั้งค่าการเข้าถึงระยะไกลโดยใช้แอป Chrome Remote Desktop จาก Chrome เว็บสโตร์ที่ https://chrome.google.com/remotedesktop
-• บนอุปกรณ์ Android ให้เปิดแอปและแตะคอมพิวเตอร์เครื่องที่ออนไลน์อยู่เพื่อเชื่อมต่อ
-
-สำหรับคอมพิวเตอร์ระยะไกลที่มีแป้นพิมพ์ที่ไม่ใช่แบบอังกฤษ-อเมริกา ข้อความที่ได้รับอาจไม่ถูกต้อง สำหรับการจัดวางแป้นพิมพ์แบบอื่นๆ จะมีการสนับสนุนในเร็วๆ นี้!
-
-สำหรับข้อมูลเกี่ยวกับความเป็นส่วนตัว โปรดดูนโยบายความเป็นส่วนตัวของ Google (http://goo.gl/SyrVzj) และนโยบายความเป็นส่วนตัวของ Chrome (http://goo.gl/0uXE5d)</translation>
 <translation id="1324095856329524885">(ฟีเจอร์นี้ยังไม่มีให้ใช้งานในคอมพิวเตอร์ของคุณ)</translation>
 <translation id="1342297293546459414">ดูและควบคุมคอมพิวเตอร์ที่ใช้งานร่วมกัน</translation>
 <translation id="1389790901665088353">ดาวน์โหลด Chrome Remote Desktop Host Installer</translation>
@@ -27,8 +20,8 @@
 <translation id="1624185583382384493">Chrome Remote Desktop ใช้งานในเว็บได้แล้ว ลองใช้<ph name="LINK_BEGIN" />เว็บแอป<ph name="LINK_END" />ของเราเลย เว็บแอปนี้ทำงานได้รวดเร็วและไม่มีค่าใช้จ่าย มาพร้อมฟีเจอร์ที่เพิ่มมากขึ้น รวมถึงการรองรับจอภาพหลายจอที่ดียิ่งขึ้น</translation>
 <translation id="1643640058022401035">การออกจากหน้าเว็บนี้จะเป็นการสิ้นสุดเซสชัน Chromoting ของคุณ</translation>
 <translation id="1654128982815600832">กำลังเปิดใช้งานการเชื่อมต่อระยะไกลสำหรับคอมพิวเตอร์เครื่องนี้…</translation>
+<translation id="1697532407822776718">คุณพร้อมแล้ว!</translation>
 <translation id="170207782578677537">ไม่สามารถลงทะเบียนคอมพิวเตอร์เครื่องนี้</translation>
-<translation id="1727412735341161734">Chrome Remote Desktop</translation>
 <translation id="174018511426417793">คุณไม่มีคอมพิวเตอร์ที่ได้ลงทะเบียนไว้ หากต้องการเปิดใช้งานการเชื่อมต่อระยะไกลกับคอมพิวเตอร์ ให้ติดตั้ง Chrome Remote Desktop ที่คอมพิวเตอร์ที่ต้องการใช้งานและคลิก "<ph name="BUTTON_NAME" />"</translation>
 <translation id="1742469581923031760">กำลังเชื่อมต่อ…</translation>
 <translation id="1770394049404108959">ฉันไม่สามารถเปิดแอปพลิเคชันนี้</translation>
@@ -46,13 +39,11 @@
 <translation id="2078880767960296260">Host Process</translation>
 <translation id="20876857123010370">โหมดแทร็กแพด</translation>
 <translation id="2089514346391228378">การเชื่อมต่อระยะไกลสำหรับคอมพิวเตอร์เครื่องนี้ถูกเปิดใช้งานแล้ว</translation>
-<translation id="2118549242412205620">เข้าถึงคอมพิวเตอร์ของคุณจากอุปกรณ์ Android ได้อย่างปลอดภัย
+<translation id="2198363917176605566">หากต้องการใช้ <ph name="PRODUCT_NAME" /> คุณต้องให้สิทธิ์ "การบันทึกหน้าจอ" เพื่อให้ระบบส่งเนื้อหาบนหน้าจอของ Mac เครื่องนี้ไปยังเครื่องระยะไกลได้
 
-• บนคอมพิวเตอร์แต่ละเครื่อง ให้ตั้งค่าการเข้าถึงระยะไกลโดยใช้แอป Chrome Remote Desktop จาก Chrome เว็บสโตร์ที่ https://chrome.google.com/remotedesktop
-• บนอุปกรณ์ Android ให้เปิดแอปและแตะคอมพิวเตอร์เครื่องที่ออนไลน์อยู่เพื่อเชื่อมต่อ
+หากต้องการให้สิทธิ์ ให้คลิกปุ่ม "<ph name="BUTTON_NAME" />" ด้านล่างเพื่อเปิดแผงค่ากำหนด "การบันทึกหน้าจอ" จากนั้นเลือกช่องข้าง "<ph name="SERVICE_SCRIPT_NAME" />"
 
-สำหรับข้อมูลเกี่ยวกับความเป็นส่วนตัว โปรดดูนโยบายความเป็นส่วนตัวของ Google (http://goo.gl/SyrVzj) และนโยบายความเป็นส่วนตัวของ Chrome (http://goo.gl/0uXE5d)</translation>
-<translation id="2124408767156847088">เข้าถึงคอมพิวเตอร์ของคุณจากอุปกรณ์ Android ได้อย่างปลอดภัย</translation>
+หากมีการเลือก "<ph name="SERVICE_SCRIPT_NAME" />" ไว้แล้ว ให้ยกเลิกการเลือกแล้วเลือกอีกครั้ง</translation>
 <translation id="2208514473086078157">การตั้งค่านโยบายไม่อนุญาตให้แชร์คอมพิวเตอร์นี้เป็นโฮสต์ Chrome Remote Desktop โปรดติดต่อขอรับความช่วยเหลือจากผู้ดูแลระบบของคุณ</translation>
 <translation id="2220529011494928058">รายงานปัญหา</translation>
 <translation id="2221097377466213233">ใช้ Ctrl ขวาสำหรับแป้น Win (⌘ สำหรับ Mac)</translation>
@@ -64,13 +55,13 @@
 <translation id="2314101195544969792">เซสชัน <ph name="APPLICATION_NAME" /> ไม่มีการใช้งานมาระยะหนึ่งแล้ว และระบบจะยกเลิกการเชื่อมต่อเร็วๆ นี้</translation>
 <translation id="2317666076142640974">ลองใช้<ph name="LINK_BEGIN" />เว็บแอป Chrome Remote Desktop<ph name="LINK_END" /> ใหม่ก่อนใคร เราอยากฟังความคิดเห็นของคุณ</translation>
 <translation id="2320166752086256636">ซ่อนแป้นพิมพ์</translation>
-<translation id="2332192922827071008">เปิดค่ากำหนด</translation>
 <translation id="2353140552984634198">คุณสามารถเข้าถึงคอมพิวเตอร์เครื่องนี้ได้อย่างปลอดภัยโดยใช้ Chromoting</translation>
 <translation id="2359808026110333948">ต่อไป</translation>
 <translation id="2366718077645204424">ไม่สามารถเข้าถึงโฮสต์ อาจเป็นเพราะการกำหนดค่าของเครือข่ายที่คุณกำลังใช้อยู่</translation>
 <translation id="2370754117186920852"><ph name="OPTIONAL_OFFLINE_REASON" />  ออนไลน์ล่าสุด<ph name="RELATIVE_TIMESTAMP" /></translation>
 <translation id="2405928220797050937">แอปนี้ใช้งานไม่ได้อีกต่อไป โปรดใช้<ph name="LINK_BEGIN" />เว็บแอป Chrome Remote Desktop<ph name="LINK_END" /> เพื่อให้คุณได้รับฟีเจอร์และการอัปเดตความปลอดภัยล่าสุดอยู่เสมอ</translation>
 <translation id="2499160551253595098">ช่วยเราปรับปรุง Chrome Remote Desktop ให้ดีขึ้นด้วยการอนุญาตให้เรารวบรวมสถิติการใช้งานและรายงานข้อขัดข้อง</translation>
+<translation id="2504109125669302160">ให้สิทธิ์ "การเข้าถึง" กับ <ph name="PRODUCT_NAME" /></translation>
 <translation id="2509394361235492552">เชื่อมต่อกับ <ph name="HOSTNAME" /> แล้ว</translation>
 <translation id="2512228156274966424">หมายเหตุ: เพื่อให้มั่นใจว่าทุกแป้นพิมพ์ลัดพร้อมใช้งาน คุณสามารถกำหนดค่า Chrome Remote Desktop เป็น "เปิดเป็นหน้าต่าง"</translation>
 <translation id="2540992418118313681">คุณต้องการจะแชร์คอมพิวเตอร์เครื่องนี้เพื่อให้ผู้ใช้อื่นเห็นและควบคุมไหม</translation>
@@ -86,11 +77,6 @@
 <translation id="2851754573186462851">Chromium App Streaming</translation>
 <translation id="2888969873284818612">เกิดข้อผิดพลาดในเครือข่าย เราจะรีสตาร์ทแอปเมื่ออุปกรณ์ของคุณออนไลน์อีกครั้ง</translation>
 <translation id="2891243864890517178">สำหรับ Mac (OS X Yosemite 10.10 ขึ้นไป)</translation>
-<translation id="289405675947420287">เข้าถึงคอมพิวเตอร์จากอุปกรณ์ iOS อย่างปลอดภัย รวดเร็ว ง่ายดาย และฟรี
-
-• ดาวน์โหลดแอป Chrome Remote Desktop จาก Chrome เว็บสโตร์ลงในคอมพิวเตอร์ที่คุณต้องการเข้าถึงจากระยะไกล
-• ติดตั้งซอฟต์แวร์ Chrome Remote Desktop แล้วทำตามวิธีการตั้งค่าให้เสร็จสมบูรณ์
-• ในอุปกรณ์ iOS ให้เปิดแอปแล้วแตะคอมพิวเตอร์ที่ออนไลน์อยู่เพื่อเชื่อมต่อได้เลย</translation>
 <translation id="2894654864775534701">มีการแชร์คอมพิวเตอร์เครื่องนี้ภายใต้บัญชีที่ต่างกันอยู่ในขณะนี้</translation>
 <translation id="2919669478609886916">ขณะนี้คุณกำลังแชร์คอมพิวเตอร์เครื่องนี้กับผู้ใช้อื่น คุณต้องการแชร์ต่อไปหรือไม่</translation>
 <translation id="2921543551052660690">ก่อนหน้านี้คุณได้ลงชื่อเข้าใช้เป็น <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) หากต้องการเข้าถึงคอมพิวเตอร์ในบัญชีนั้น ให้<ph name="LINK_BEGIN" />ลงชื่อเข้าใช้ Chromium<ph name="LINK_END" /> ด้วยบัญชีนั้นและติดตั้ง Chromoting อีกครั้ง</translation>
@@ -104,7 +90,6 @@
 <translation id="310979712355504754">ลบทั้งหมด</translation>
 <translation id="3150823315463303127">โฮสต์ไม่สามารถอ่านนโยบายได้</translation>
 <translation id="3171922709365450819">ไคลเอ็นต์นี้ไม่รองรับอุปกรณ์นี้เพราะต้องมีการตรวจสอบสิทธิ์จากบุคคลที่สาม</translation>
-<translation id="3194245623920924351">Chrome Remote Desktop</translation>
 <translation id="3197730452537982411">Remote Desktop</translation>
 <translation id="324272851072175193">ส่งอีเมลวิธีการเหล่านี้</translation>
 <translation id="3258789396564295715">คุณสามารถเข้าถึงคอมพิวเตอร์เครื่องนี้ได้อย่างปลอดภัยโดยใช้ Chrome Remote Desktop</translation>
@@ -126,8 +111,6 @@
 <translation id="3695446226812920698">เรียนรู้วิธี</translation>
 <translation id="3718805989288361841">การตั้งค่านโยบายของ Chrome Remote Desktop มีข้อผิดพลาด โปรดติดต่อขอรับความช่วยเหลือจากผู้ดูแลระบบของคุณ</translation>
 <translation id="3776024066357219166">เซสชัน Chrome Remote Desktop ของคุณสิ้นสุดแล้ว</translation>
-<translation id="3846148461359626420">• ประสบการณ์ในการเลื่อนและซูมใน iPhone X ดีขึ้น
-• การปรับปรุงความเสถียรและการแก้ไขข้อบกพร่อง</translation>
 <translation id="3870154837782082782">Google Inc.</translation>
 <translation id="3884839335308961732">โปรดยืนยันบัญชีและ PIN ของคุณด้านล่างเพื่ออนุญาตให้ Chrome Remote Desktop สามารถเข้าถึง</translation>
 <translation id="3897092660631435901">เมนู</translation>
@@ -153,11 +136,14 @@
 <translation id="4240294130679914010">Chromoting Host Uninstaller</translation>
 <translation id="4277463233460010382">คอมพิวเตอร์เครื่องนี้ได้รับการกำหนดค่าให้อนุญาตไคลเอ็นต์หนึ่งหรือมากกว่าสามารถเชื่อมต่อโดยไม่ต้องป้อน PIN</translation>
 <translation id="4277736576214464567">รหัสการเข้าถึงไม่ถูกต้อง โปรดลองอีกครั้ง</translation>
+<translation id="4281844954008187215">ข้อกำหนดในการให้บริการ</translation>
 <translation id="4361728918881830843">ในการเปิดใช้งานการเชื่อมต่อระยะไกลกับคอมพิวเตอร์เครื่องอื่น ให้ติดตั้ง Chrome Remote Desktop ที่คอมพิวเตอร์ที่ต้องการใช้งานและคลิก "<ph name="BUTTON_NAME" />"</translation>
 <translation id="4394049700291259645">ปิดการใช้งาน</translation>
 <translation id="4405930547258349619">Core Library</translation>
 <translation id="4430435636878359009">ปิดใช้งานการเชื่อมต่อระยะไกลกับคอมพิวเตอร์เครื่องนี้</translation>
 <translation id="4430915108080446161">กำลังสร้างรหัสการเข้าถึง...</translation>
+<translation id="443560535555262820">เปิดค่ากำหนดการเข้าถึง</translation>
+<translation id="4450893287417543264">ไม่ต้องแสดงอีก</translation>
 <translation id="4472575034687746823">เริ่มต้น</translation>
 <translation id="4481276415609939789">คุณไม่มีคอมพิวเตอร์ที่ได้ลงทะเบียนไว้ หากต้องการเปิดใช้งานการเชื่อมต่อระยะไกลกับคอมพิวเตอร์ ให้ติดตั้ง Chromoting ที่คอมพิวเตอร์ที่ต้องการใช้งานและคลิก "<ph name="BUTTON_NAME" />"</translation>
 <translation id="4513946894732546136">ข้อเสนอแนะ</translation>
@@ -170,13 +156,6 @@
 <translation id="4660011489602794167">แสดงแป้นพิมพ์</translation>
 <translation id="4703302905453407178">คอมโพเนนต์ที่ต้องใช้หยุดทำงาน โปรดรายงานปัญหานี้ไปยังนักพัฒนาซอฟต์แวร์</translation>
 <translation id="4703799847237267011">เซสชัน Chromoting ของคุณได้สิ้นสุดลงแล้ว</translation>
-<translation id="4706355010316049867">Chrome
-ระยะไกล
-เดสก์ท็อป
-การเข้าถึง
-การสนับสนุน
-คอมพิวเตอร์
-พีซี</translation>
 <translation id="4736223761657662401">ประวัติการเชื่อมต่อ</translation>
 <translation id="4741792197137897469">การตรวจสอบสิทธิ์ล้มเหลว โปรดลงชื่อเข้าใช้ Chrome อีกครั้ง</translation>
 <translation id="477305884757156764">แอปพลิเคชันทำงานช้าเกินไป</translation>
@@ -193,9 +172,6 @@
 <translation id="4973800994433240357">การดาวน์โหลด Chromoting Host Installer หมายถึงคุณยอมรับ<ph name="LINK_BEGIN" />ข้อกำหนดในการให้บริการ<ph name="LINK_END" />ของ Google</translation>
 <translation id="4974476491460646149">ปิดการเชื่อมต่อของ <ph name="HOSTNAME" /> แล้ว</translation>
 <translation id="4985296110227979402">คุณต้องตั้งค่าคอมพิวเตอร์สำหรับการเข้าถึงระยะไกลก่อน</translation>
-<translation id="5059773780693835145">คุณต้องทำขั้นตอนการกำหนดค่าเพิ่มเติมก่อนที่จะควบคุมคอมพิวเตอร์เครื่องนี้จากระยะไกลได้โดยใช้ <ph name="PRODUCT_NAME" />
-
-หากต้องการเปิดใช้ฟังก์ชันการทำงานนี้ ให้เลือก "<ph name="BUTTON_NAME" />" เพื่อแสดงแผงค่ากำหนดความปลอดภัยและความเป็นส่วนตัว จากนั้นเลือกช่องถัดจาก "<ph name="SERVICE_SCRIPT_NAME" />"</translation>
 <translation id="5064360042339518108"><ph name="HOSTNAME" /> (ออฟไลน์)</translation>
 <translation id="5070121137485264635">โฮสต์ระยะไกลกำหนดให้คุณตรวจสอบสิทธิ์กับเว็บไซต์ของบุคคลที่สาม หากต้องการดำเนินการต่อ คุณต้องให้สิทธิ์อนุญาตเพิ่มเติมแก่ Chrome Remote Desktop เพื่อเข้าถึงที่อยู่นี้:</translation>
 <translation id="507204348399810022">คุณแน่ใจไหมว่าต้องการปิดใช้การเชื่อมต่อระยะไกลกับ <ph name="HOSTNAME" /></translation>
@@ -205,8 +181,10 @@
 <translation id="518094545883702183">ข้อมูลนี้จะใช้เพื่อวินิจฉัยปัญหาที่คุณรายงานเท่านั้น โดยจะมีเพียงผู้ตรวจสอบรายงานเท่านั้นที่ใช้งานได้ และจะมีการเก็บรักษาไว้ไม่เกิน 30 วัน</translation>
 <translation id="5204575267916639804">คำถามที่พบบ่อย</translation>
 <translation id="5222676887888702881">ออกจากระบบ</translation>
+<translation id="5234764350956374838">ปิด</translation>
 <translation id="5254120496627797685">การออกจากหน้านี้จะสิ้นสุดเซสชัน Chrome Remote Desktop ของคุณ</translation>
 <translation id="5308380583665731573">เชื่อมต่อ</translation>
+<translation id="5327248766486351172">ชื่อ</translation>
 <translation id="533625276787323658">ไม่มีปลายทางให้เชื่อมต่อ</translation>
 <translation id="5363265567587775042">ขอให้ผู้ใช้ที่เป็นเจ้าของคอมพิวเตอร์ที่คุณต้องการใช้งานคลิก “<ph name="SHARE" />” และให้รหัสการเข้าถึงแก่คุณ</translation>
 <translation id="5379087427956679853">Chrome Remote Desktop อนุญาตให้คุณแชร์คอมพิวเตอร์ของคุณผ่านเว็บอย่างปลอดภัย ผู้ใช้ทั้งสองฝ่ายจะต้องเรียกใช้แอปพลิเคชัน Chrome Remote Desktop ซึ่งสามารถรับได้ที่ <ph name="URL" /></translation>
@@ -244,14 +222,19 @@
 <translation id="6198252989419008588">เปลี่ยน PIN</translation>
 <translation id="6204583485351780592"><ph name="HOSTNAME" /> (ล้าสมัย)</translation>
 <translation id="6221358653751391898">คุณยังไม่ได้ลงชื่อเข้าใช้ Chrome โปรดลงชื่อเข้าใช้และลองอีกครั้ง</translation>
+<translation id="6223301979382383752">เปิดค่ากำหนดการบันทึกหน้าจอ</translation>
 <translation id="6227369581881558336">Chrome Remote Desktop ใช้งานในเว็บได้แล้ว พร้อมด้วยฟีเจอร์ใหม่ๆ รวมถึงการโอนไฟล์! ลองใช้<ph name="LINK_BEGIN" />เว็บแอป<ph name="LINK_END" />ของเราเลย</translation>
 <translation id="6284412385303060032">โฮสต์ที่ทำงานที่หน้าจอตรรกะของคอนโซลได้ปิดตัวลงเพื่อสนับสนุนโหมด Curtain โดยการเปลี่ยนไปเป็นโฮสต์ที่ทำงานในเซสชันเฉพาะผู้ใช้</translation>
 <translation id="629730747756840877">บัญชี</translation>
 <translation id="6304318647555713317">ไคลเอ็นต์</translation>
 <translation id="6381670701864002291">มีปัญหาอื่น</translation>
 <translation id="6398765197997659313">ออกจากการแสดงแบบเต็มหน้าจอ</translation>
+<translation id="6411861157501911556">หากต้องการใช้ <ph name="PRODUCT_NAME" /> คุณต้องให้สิทธิ์ "การเข้าถึง" เพื่อให้ข้อมูลอินพุตจากเครื่องระยะไกลส่งถึง Mac เครื่องนี้ได้
+
+หากต้องการให้สิทธิ์ ให้คลิกปุ่ม "<ph name="BUTTON_NAME" />" ด้านล่างเพื่อเปิดแผงค่ากำหนด "การเข้าถึง" จากนั้นเลือกช่องข้าง "<ph name="SERVICE_SCRIPT_NAME" />"
+
+หากมีการเลือก "<ph name="SERVICE_SCRIPT_NAME" />" ไว้แล้ว ให้ยกเลิกการเลือกแล้วเลือกอีกครั้ง</translation>
 <translation id="6441316101718669559">การรวมระบบเดสก์ท็อปไม่ได้รับการสนับสนุนบนแพลตฟอร์มนี้ คุณยังคงสามารถใช้แอปพลิเคชันนี้ได้ แต่ประสบการณ์ของผู้ใช้จะมีคุณภาพลดลง</translation>
-<translation id="6502629188777329097">เข้าถึงคอมพิวเตอร์อย่างปลอดภัย</translation>
 <translation id="652218476070540101">กำลังอัปเดต PIN สำหรับคอมพิวเตอร์เครื่องนี้…</translation>
 <translation id="6527303717912515753">แชร์</translation>
 <translation id="6541219117979389420">บันทึกแอปพลิเชันอาจรวมข้อมูลส่วนตัว รวมถึงข้อมูลประจำตัวของคุณ (ที่อยู่อีเมล) ตลอดจนชื่อและคุณสมบัติของไฟล์และโฟลเดอร์ใน Google ไดรฟ์</translation>
@@ -311,6 +294,7 @@
 <translation id="7948001860594368197">ตัวเลือกหน้าจอ</translation>
 <translation id="7970576581263377361">การตรวจสอบสิทธิ์ล้มเหลว โปรดลงชื่อเข้าใช้ Chromium อีกครั้ง</translation>
 <translation id="7981525049612125370">เซสชันระยะไกลหมดอายุลงแล้ว</translation>
+<translation id="8038111231936746805">(ค่าเริ่มต้น)</translation>
 <translation id="8041089156583427627">ส่งความคิดเห็น</translation>
 <translation id="8041721485428375115">การดาวน์โหลด Chrome Remote Desktop Host Installer หมายถึงคุณยอมรับ<ph name="LINK_BEGIN" />ข้อกำหนดในการให้บริการ<ph name="LINK_END" />ของ Google</translation>
 <translation id="8060029310790625334">ศูนย์ช่วยเหลือ</translation>
@@ -320,7 +304,6 @@
 <translation id="809687642899217504">คอมพิวเตอร์ของฉัน</translation>
 <translation id="811307782653349804">เข้าถึงคอมพิวเตอร์ของคุณเองจากที่ใดก็ได้</translation>
 <translation id="8116630183974937060">เกิดข้อผิดพลาดในเครือข่าย โปรดตรวจสอบว่าอุปกรณ์ของคุณออนไลน์อยู่และลองอีกครั้ง</translation>
-<translation id="8123581458650016326">อนุญาตให้ผู้ใช้ระยะไกลควบคุมคอมพิวเตอร์เครื่องนี้</translation>
 <translation id="8178433417677596899">การแชร์หน้าจอระหว่างผู้ใช้กับผู้ใช้ เหมาะสำหรับการสนับสนุนทางเทคนิคจากระยะไกล</translation>
 <translation id="8187079423890319756">ลิขสิทธิ์ 2013 The Chromium Authors สงวนลิขสิทธิ์</translation>
 <translation id="8196755618196986400">หากต้องการอนุญาตให้เราติดต่อคุณสำหรับข้อมูลเพิ่มเติม จะมีการใส่ที่อยู่อีเมลของคุณในความคิดเห็นทั้งหมดที่คุณส่งมา</translation>
@@ -331,20 +314,22 @@
 <translation id="837021510621780684">จากคอมพิวเตอร์เครื่องนี้</translation>
 <translation id="8383794970363966105">ในการใช้ Chromoting คุณจะต้องเพิ่มบัญชี Google ลงในอุปกรณ์ของคุณ</translation>
 <translation id="8386846956409881180">โฮสต์ได้รับการกำหนดค่าด้วยข้อมูลรับรอง OAuth ที่ไม่ถูกต้อง</translation>
+<translation id="8397385476380433240">ให้สิทธิ์แก่ <ph name="PRODUCT_NAME" /></translation>
+<translation id="8406498562923498210">เลือกเซสชันที่จะเปิดภายในสภาพแวดล้อม Chrome Remote Desktop (โปรดทราบว่าเซสชันบางประเภทอาจไม่รองรับการทำงานภายใน Chrome Remote Desktop และในคอนโซลในเครื่องพร้อมกัน)</translation>
 <translation id="8428213095426709021">การตั้งค่า</translation>
 <translation id="8445362773033888690">ดูใน Google Play Store</translation>
 <translation id="8509907436388546015">Desktop Integration Process</translation>
 <translation id="8513093439376855948">โฮสต์การรับส่งข้อความดั้งเดิมสำหรับการจัดการโฮสต์ระยะไกล</translation>
 <translation id="8525306231823319788">เต็มหน้าจอ</translation>
 <translation id="8548209692293300397">ก่อนหน้านี้คุณได้ลงชื่อเข้าใช้เป็น <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)  หากต้องการเข้าถึงคอมพิวเตอร์ในบัญชีนั้น ให้<ph name="LINK_BEGIN" />ลงชื่อเข้าใช้ Google Chrome<ph name="LINK_END" /> ด้วยบัญชีนั้นและติดตั้ง Chrome Remote Desktop อีกครั้ง</translation>
+<translation id="858006550102277544">ความคิดเห็น</translation>
 <translation id="8642984861538780905">พอใช้</translation>
-<translation id="8705151241155781642">• เพิ่มการรองรับ Android 9.0 Pie
-• รองรับการปรับขนาดความละเอียดของเดสก์ท็อปที่อยู่ระยะไกลให้พอดีกับหน้าจออุปกรณ์ Android ของคุณ</translation>
 <translation id="8712909229180978490">ฉันไม่เห็นไฟล์ที่บันทึกไว้แบบออนไลน์ใน Google ไดรฟ์</translation>
 <translation id="8743328882720071828">คุณต้องการให้ <ph name="CLIENT_USERNAME" /> มองเห็นและควบคุมคอมพิวเตอร์ของคุณไหม</translation>
 <translation id="8747048596626351634">เซสชันขัดข้องหรือเริ่มต้นไม่สำเร็จ หากมี ~/.chrome-remote-desktop-session ในคอมพิวเตอร์ระยะไกล ให้ตรวจดูว่าได้เริ่มกระบวนการพื้นหน้าแบบระยะยาว เช่น สภาพแวดล้อมเดสก์ท็อปหรือตัวจัดการหน้าต่างแล้ว</translation>
 <translation id="8759753423332885148">ดูข้อมูลเพิ่มเติม</translation>
 <translation id="8791202241915690908">ดาวน์โหลด Chromoting Host Installer</translation>
+<translation id="8804164990146287819">นโยบายความเป็นส่วนตัว</translation>
 <translation id="894763922177556086">ดี</translation>
 <translation id="895780780740011433">สำหรับ Windows 7 ขึ้นไป</translation>
 <translation id="897805526397249209">ในการเปิดใช้งานการเชื่อมต่อระยะไกลกับคอมพิวเตอร์เครื่องอื่น ให้ติดตั้ง Chromoting ที่คอมพิวเตอร์ที่ต้องการใช้งานและคลิก "<ph name="BUTTON_NAME" />"</translation>
@@ -355,6 +340,8 @@
 <translation id="9126115402994542723">อย่าขอ PIN อีกเมื่อเชื่อมต่อไปยังโฮสต์นี้จากอุปกรณ์เครื่องนี้</translation>
 <translation id="9149580767411232853">แสดงเดสก์ท็อประยะไกลทั้งหมด</translation>
 <translation id="9149992051684092333">หากต้องการเริ่มการแชร์เดสก์ท็อปของคุณ โปรดให้รหัสการเข้าถึงที่ด้านล่างนี้แก่บุคคลที่จะให้ความช่วยเหลือคุณ</translation>
+<translation id="916856682307586697">เปิด XSession เริ่มต้น</translation>
+<translation id="9187628920394877737">ให้สิทธิ์ "การบันทึกหน้าจอ" กับ <ph name="PRODUCT_NAME" /></translation>
 <translation id="9188433529406846933">ให้สิทธิ์</translation>
 <translation id="9213184081240281106">การกำหนดค่าโฮสต์ไม่ถูกต้อง</translation>
 <translation id="951991426597076286">ปฏิเสธ</translation>

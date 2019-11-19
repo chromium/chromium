@@ -1,0 +1,3 @@
+AriaProperties changed on role=group
+LiveRegionChanged on role=group
+LiveSetting changed on role=group

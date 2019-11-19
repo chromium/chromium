@@ -30,6 +30,12 @@ public class ShadowRecordHistogram {
     }
 
     @Implementation
+    public static void recordBooleanHistogram(String name, boolean sample) {
+        Pair<String, Integer> key = Pair.create(name, sample ? 1 : 0);
+        incrementSampleCount(key);
+    }
+
+    @Implementation
     public static void recordCountHistogram(String name, int sample) {
         Pair<String, Integer> key = Pair.create(name, sample);
         incrementSampleCount(key);

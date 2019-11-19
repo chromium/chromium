@@ -1,37 +1,23 @@
 {
   "layers": [
     {
-      "name": "LayoutView #document",
-      "bounds": [800, 600],
-      "drawsContent": false,
-      "backgroundColor": "#402B3C"
-    },
-    {
-      "name": "Scrolling Layer",
-      "bounds": [800, 600],
-      "drawsContent": false
-    },
-    {
       "name": "Scrolling Contents Layer",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#402B3C"
     },
     {
-      "name": "Squashing Containment Layer",
-      "drawsContent": false
-    },
-    {
-      "name": "LayoutBlockFlow (positioned) DIV class='composited'",
+      "name": "LayoutNGBlockFlow (positioned) DIV class='composited'",
       "bounds": [150, 150],
       "contentsOpaque": true,
       "backgroundColor": "#D9CCA7",
       "transform": 1
     },
     {
-      "name": "Squashing Layer (first squashed layer: LayoutBlockFlow (positioned) DIV id='layer-A')",
-      "position": [20, 20],
-      "bounds": [226, 180]
+      "name": "Squashing Layer (first squashed layer: LayoutNGBlockFlow (positioned) DIV id='layer-A')",
+      "position": [12, 7],
+      "bounds": [226, 180],
+      "transform": 1
     }
   ],
   "transforms": [
@@ -42,8 +28,7 @@
         [0, 1, 0, 0],
         [0, 0, 1, 0],
         [8, 13, 0, 1]
-      ],
-      "flattenInheritedTransform": false
+      ]
     }
   ]
 }

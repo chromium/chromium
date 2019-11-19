@@ -23,12 +23,16 @@ void AddLocalizedStrings(content::WebUIDataSource* html_source) {
       // Device connecting and pairing.
       // These ids are generated in JS using 'bluetooth_' + a value from
       // bluetoothPrivate.PairingEventType (see bluetooth_private.idl).
-      // 'keysEntered', and 'requestAuthorization' have no associated message.
+      // 'requestAuthorization' has no associated message.
       {"bluetooth_requestPincode", IDS_SETTINGS_BLUETOOTH_REQUEST_PINCODE},
       {"bluetooth_displayPincode", IDS_SETTINGS_BLUETOOTH_DISPLAY_PINCODE},
       {"bluetooth_requestPasskey", IDS_SETTINGS_BLUETOOTH_REQUEST_PASSKEY},
       {"bluetooth_displayPasskey", IDS_SETTINGS_BLUETOOTH_DISPLAY_PASSKEY},
       {"bluetooth_confirmPasskey", IDS_SETTINGS_BLUETOOTH_CONFIRM_PASSKEY},
+      // Also display the IDS_SETTINGS_BLUETOOTH_DISPLAY_PASSKEY for the
+      // 'keysEntered' event: continue prompting the user to enter the passkey
+      // as they continue to enter its keys.
+      {"bluetooth_keysEntered", IDS_SETTINGS_BLUETOOTH_DISPLAY_PASSKEY},
       // These ids are generated in JS using 'bluetooth_connect_' + a value from
       // bluetoothPrivate.ConnectResultType (see bluetooth_private.idl).
       {"bluetooth_connect_attributeLengthInvalid",

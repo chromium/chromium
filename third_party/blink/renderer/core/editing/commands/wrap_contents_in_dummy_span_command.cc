@@ -29,6 +29,7 @@
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/html/html_span_element.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
 
 namespace blink {
 
@@ -48,7 +49,7 @@ void WrapContentsInDummySpanCommand::ExecuteApply() {
 }
 
 void WrapContentsInDummySpanCommand::DoApply(EditingState*) {
-  dummy_span_ = HTMLSpanElement::Create(GetDocument());
+  dummy_span_ = MakeGarbageCollected<HTMLSpanElement>(GetDocument());
 
   ExecuteApply();
 }

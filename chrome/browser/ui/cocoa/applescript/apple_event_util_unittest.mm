@@ -96,7 +96,7 @@ std::string AEDescToString(const AEDesc* aedesc) {
     case typeUnicodeText: {
       size_t byte_length = AEGetDescDataSize(aedesc);
       std::vector<base::char16> data_vector(byte_length / sizeof(base::char16));
-      OSErr err = AEGetDescData(aedesc, &data_vector[0], byte_length);
+      OSErr err = AEGetDescData(aedesc, data_vector.data(), byte_length);
       if (err != noErr) {
         NOTREACHED();
         return std::string();

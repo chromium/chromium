@@ -39,7 +39,7 @@
 namespace blink {
 
 class MockContextLifecycleStateObserver final
-    : public GarbageCollectedFinalized<MockContextLifecycleStateObserver>,
+    : public GarbageCollected<MockContextLifecycleStateObserver>,
       public ContextLifecycleStateObserver {
   USING_GARBAGE_COLLECTED_MIXIN(MockContextLifecycleStateObserver);
 
@@ -70,8 +70,8 @@ class ContextLifecycleStateObserverTest : public testing::Test {
 };
 
 ContextLifecycleStateObserverTest::ContextLifecycleStateObserverTest()
-    : src_page_holder_(DummyPageHolder::Create(IntSize(800, 600))),
-      dest_page_holder_(DummyPageHolder::Create(IntSize(800, 600))),
+    : src_page_holder_(std::make_unique<DummyPageHolder>(IntSize(800, 600))),
+      dest_page_holder_(std::make_unique<DummyPageHolder>(IntSize(800, 600))),
       observer_(MakeGarbageCollected<MockContextLifecycleStateObserver>(
           &src_page_holder_->GetDocument())) {
   observer_->UpdateStateIfNeeded();

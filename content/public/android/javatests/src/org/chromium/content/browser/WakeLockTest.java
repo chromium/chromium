@@ -35,7 +35,7 @@ public class WakeLockTest {
     private static final String TEST_PATH = "content/test/data/android/title1.html";
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         try {
             mActivityTestRule.launchContentShellWithUrlSync(TEST_PATH);
         } catch (Throwable t) {
@@ -43,17 +43,13 @@ public class WakeLockTest {
         }
     }
 
-    private void getWakeLock(String type) throws InterruptedException, TimeoutException {
-        StringBuilder sb = new StringBuilder();
-        sb.append("navigator.getWakeLock('" + type + "').then(wake => {");
-        sb.append("  var request" + type + " = wake.createRequest();");
-        sb.append("});");
-        JavaScriptUtils.executeJavaScriptAndWaitForResult(
-                mActivityTestRule.getWebContents(), sb.toString());
+    private void getWakeLock(String type) throws TimeoutException {
+        final String code = "navigator.wakeLock.request('" + type + "');";
+        JavaScriptUtils.executeJavaScriptAndWaitForResult(mActivityTestRule.getWebContents(), code);
     }
 
     @After
-    public void tearDown() throws Exception {}
+    public void tearDown() {}
 
     @Test
     @SmallTest

@@ -29,7 +29,8 @@ class Clock;
 
 namespace previews {
 
-// Must remain synchronized with PreviewsEligibilityReason in enums.xml.
+// Must remain synchronized with |PreviewsEligibilityReason| in
+// //tools/metrics/histograms/enums.xml.
 enum class PreviewsEligibilityReason {
   // The preview navigation was allowed.
   ALLOWED = 0,
@@ -51,12 +52,16 @@ enum class PreviewsEligibilityReason {
   NETWORK_NOT_SLOW = 7,
   // If the page was reloaded, the user should not be shown a stale preview.
   RELOAD_DISALLOWED = 8,
-  // The host is explicitly blacklisted by the server, so the user was not shown
+  // DEPRECATED: The host is explicitly blacklisted by the server, so the user
+  // was not shown
   // a preview.
-  HOST_BLACKLISTED_BY_SERVER = 9,
-  // The host is not whitelisted by the server for a preview decision that uses
+  // Replaced by NOT_ALLOWED_BY_OPTIMIZATION_GUIDE.
+  DEPRECATED_HOST_BLACKLISTED_BY_SERVER = 9,
+  // DEPRECATED: The host is not whitelisted by the server for a preview
+  // decision that uses
   // server optimization hints.
-  HOST_NOT_WHITELISTED_BY_SERVER = 10,
+  // Replaced by NOT_ALLOWED_BY_OPTIMIZATION_GUIDE.
+  DEPRECATED_HOST_NOT_WHITELISTED_BY_SERVER = 10,
   // The preview is allowed but without an expected check of server optimization
   // hints because they are not enabled (features::kOptimizationHints).
   ALLOWED_WITHOUT_OPTIMIZATION_HINTS = 11,
@@ -71,6 +76,21 @@ enum class PreviewsEligibilityReason {
   DEVICE_OFFLINE = 15,
   // URL contained Basic Authentication, i.e.: a username or password.
   URL_HAS_BASIC_AUTH = 16,
+  // Optimization hints needed to be checked for this preview type, but were not
+  // available. Common on first navigations.
+  OPTIMIZATION_HINTS_NOT_AVAILABLE = 17,
+  // The navigation URL has a media suffix which is excluded from previews.
+  EXCLUDED_BY_MEDIA_SUFFIX = 18,
+  // The Optimization Guide was checked for this preview type and the
+  // optimization guide did not allow this preview type in the current browser
+  // conditions.
+  NOT_ALLOWED_BY_OPTIMIZATION_GUIDE = 19,
+  // The preview was not performed due to a coinflip experiment holdback.
+  COINFLIP_HOLDBACK = 20,
+  // A redirect loop was detected.
+  REDIRECT_LOOP_DETECTED = 21,
+  // URL matched the deny list.
+  DENY_LIST_MATCHED = 22,
   LAST,
 };
 

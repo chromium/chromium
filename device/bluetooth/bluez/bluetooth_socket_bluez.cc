@@ -352,7 +352,7 @@ void BluetoothSocketBlueZ::NewConnection(
     const dbus::ObjectPath& device_path,
     base::ScopedFD fd,
     const bluez::BluetoothProfileServiceProvider::Delegate::Options& options,
-    const ConfirmationCallback& callback) {
+    ConfirmationCallback callback) {
   DCHECK(ui_task_runner()->RunsTasksInCurrentSequence());
 
   VLOG(1) << uuid_.canonical_value()
@@ -362,15 +362,15 @@ void BluetoothSocketBlueZ::NewConnection(
     DCHECK(device_path_ == device_path);
 
     socket_thread()->task_runner()->PostTask(
-        FROM_HERE,
-        base::BindOnce(&BluetoothSocketBlueZ::DoNewConnection, this,
-                       device_path_, std::move(fd), options, callback));
+        FROM_HERE, base::BindOnce(&BluetoothSocketBlueZ::DoNewConnection, this,
+                                  device_path_, std::move(fd), options,
+                                  std::move(callback)));
   } else {
     auto request = std::make_unique<ConnectionRequest>();
     request->device_path = device_path;
     request->fd = std::move(fd);
     request->options = options;
-    request->callback = callback;
+    request->callback = std::move(callback);
 
     connection_request_queue_.push(std::move(request));
     VLOG(1) << uuid_.canonical_value() << ": Connection is now pending.";
@@ -382,12 +382,12 @@ void BluetoothSocketBlueZ::NewConnection(
 
 void BluetoothSocketBlueZ::RequestDisconnection(
     const dbus::ObjectPath& device_path,
-    const ConfirmationCallback& callback) {
+    ConfirmationCallback callback) {
   DCHECK(ui_task_runner()->RunsTasksInCurrentSequence());
   DCHECK(profile_);
 
   VLOG(1) << profile_->object_path().value() << ": Request disconnection";
-  callback.Run(SUCCESS);
+  std::move(callback).Run(SUCCESS);
 }
 
 void BluetoothSocketBlueZ::Cancel() {
@@ -439,15 +439,15 @@ void BluetoothSocketBlueZ::AcceptConnectionRequest() {
       base::BindOnce(
           &BluetoothSocketBlueZ::DoNewConnection, client_socket,
           request->device_path, std::move(request->fd), request->options,
-          base::BindRepeating(&BluetoothSocketBlueZ::OnNewConnection, this,
-                              client_socket, request->callback)));
+          base::BindOnce(&BluetoothSocketBlueZ::OnNewConnection, this,
+                         client_socket, std::move(request->callback))));
 }
 
 void BluetoothSocketBlueZ::DoNewConnection(
     const dbus::ObjectPath& device_path,
     base::ScopedFD fd,
     const bluez::BluetoothProfileServiceProvider::Delegate::Options& options,
-    const ConfirmationCallback& callback) {
+    ConfirmationCallback callback) {
   DCHECK(socket_thread()->task_runner()->RunsTasksInCurrentSequence());
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
@@ -455,13 +455,15 @@ void BluetoothSocketBlueZ::DoNewConnection(
   if (!fd.is_valid()) {
     LOG(WARNING) << uuid_.canonical_value() << " :" << fd.get()
                  << ": Invalid file descriptor received from Bluetooth Daemon.";
-    ui_task_runner()->PostTask(FROM_HERE, base::BindOnce(callback, REJECTED));
+    ui_task_runner()->PostTask(FROM_HERE,
+                               base::BindOnce(std::move(callback), REJECTED));
     return;
   }
 
   if (tcp_socket()) {
     LOG(WARNING) << uuid_.canonical_value() << ": Already connected";
-    ui_task_runner()->PostTask(FROM_HERE, base::BindOnce(callback, REJECTED));
+    ui_task_runner()->PostTask(FROM_HERE,
+                               base::BindOnce(std::move(callback), REJECTED));
     return;
   }
 
@@ -474,15 +476,17 @@ void BluetoothSocketBlueZ::DoNewConnection(
   if (net_result != net::OK) {
     LOG(WARNING) << uuid_.canonical_value() << ": Error adopting socket: "
                  << std::string(net::ErrorToString(net_result));
-    ui_task_runner()->PostTask(FROM_HERE, base::BindOnce(callback, REJECTED));
+    ui_task_runner()->PostTask(FROM_HERE,
+                               base::BindOnce(std::move(callback), REJECTED));
     return;
   }
-  ui_task_runner()->PostTask(FROM_HERE, base::BindOnce(callback, SUCCESS));
+  ui_task_runner()->PostTask(FROM_HERE,
+                             base::BindOnce(std::move(callback), SUCCESS));
 }
 
 void BluetoothSocketBlueZ::OnNewConnection(
     scoped_refptr<BluetoothSocket> socket,
-    const ConfirmationCallback& callback,
+    ConfirmationCallback callback,
     Status status) {
   DCHECK(ui_task_runner()->RunsTasksInCurrentSequence());
   DCHECK(accept_request_.get());
@@ -504,7 +508,7 @@ void BluetoothSocketBlueZ::OnNewConnection(
   accept_request_.reset(nullptr);
   connection_request_queue_.pop();
 
-  callback.Run(status);
+  std::move(callback).Run(status);
 }
 
 void BluetoothSocketBlueZ::DoCloseListening() {
@@ -517,7 +521,7 @@ void BluetoothSocketBlueZ::DoCloseListening() {
   }
 
   while (connection_request_queue_.size() > 0) {
-    connection_request_queue_.front()->callback.Run(REJECTED);
+    std::move(connection_request_queue_.front()->callback).Run(REJECTED);
     connection_request_queue_.pop();
   }
 }

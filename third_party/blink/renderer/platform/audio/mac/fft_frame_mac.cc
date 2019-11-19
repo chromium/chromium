@@ -33,25 +33,75 @@
 #if defined(OS_MACOSX)
 
 #include "third_party/blink/renderer/platform/audio/fft_frame.h"
+#include "third_party/blink/renderer/platform/audio/hrtf_panner.h"
 #include "third_party/blink/renderer/platform/audio/vector_math.h"
+#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 
 namespace blink {
 
 const int kMaxFFTPow2Size = 24;
+const int kMinFFTPow2Size = 2;
 
-FFTSetup* FFTFrame::fft_setups_ = nullptr;
+FFTFrame::FFTSetupDatum::FFTSetupDatum(unsigned log2fft_size) {
+  // We only need power-of-two sized FFTS, so FFT_RADIX2.
+  setup_ = vDSP_create_fftsetup(log2fft_size, FFT_RADIX2);
+  DCHECK(setup_);
+}
+
+FFTFrame::FFTSetupDatum::~FFTSetupDatum() {
+  DCHECK(setup_);
+
+  vDSP_destroy_fftsetup(setup_);
+}
+
+Vector<std::unique_ptr<FFTFrame::FFTSetupDatum>>& FFTFrame::FFTSetups() {
+  // TODO(rtoy): Let this bake for a bit and then remove the assertions after
+  // we're confident the first call is from the main thread.
+  static bool first_call = true;
+
+  if (first_call) {
+    // Make sure we construct the fft_setups vector below on the main thread.
+    // Once constructed, we can access it from any thread.
+    DCHECK(IsMainThread());
+    first_call = false;
+  }
+
+  // A vector to hold all of the possible FFT setups we need.  The setups are
+  // initialized lazily.
+  DEFINE_STATIC_LOCAL(Vector<std::unique_ptr<FFTSetupDatum>>, fft_setups,
+                      (kMaxFFTPow2Size));
+
+  return fft_setups;
+}
+
+void FFTFrame::InitializeFFTSetupForSize(wtf_size_t log2fft_size) {
+  auto& setup = FFTSetups();
+
+  if (!setup[log2fft_size]) {
+    // Make sure allocation of a new setup only occurs on the main thread so we
+    // don't have a race condition with multiple threads trying to write to the
+    // same element of the vector.
+    DCHECK(IsMainThread());
+
+    setup[log2fft_size] = std::make_unique<FFTSetupDatum>(log2fft_size);
+  }
+}
 
 // Normal constructor: allocates for a given fftSize
 FFTFrame::FFTFrame(unsigned fft_size)
-    : real_data_(fft_size), imag_data_(fft_size) {
-  fft_size_ = fft_size;
-  log2fft_size_ = static_cast<unsigned>(log2(fft_size));
-
+    : fft_size_(fft_size),
+      log2fft_size_(static_cast<unsigned>(log2(fft_size))),
+      real_data_(fft_size),
+      imag_data_(fft_size) {
   // We only allow power of two
   DCHECK_EQ(1UL << log2fft_size_, fft_size_);
 
-  // Lazily create and share fftSetup with other frames
-  fft_setup_ = FftSetupForSize(fft_size);
+  // Initialize the PFFFT_Setup object here so that it will be ready when we
+  // compute FFTs.
+  InitializeFFTSetupForSize(log2fft_size_);
+
+  // Get a copy of the setup from the table.
+  fft_setup_ = FftSetupForSize(log2fft_size_);
 
   // Setup frame data
   frame_.realp = real_data_.Data();
@@ -88,15 +138,18 @@ FFTFrame::FFTFrame(const FFTFrame& frame)
 FFTFrame::~FFTFrame() {}
 
 void FFTFrame::DoFFT(const float* data) {
-  AudioFloatArray scaled_data(fft_size_);
-  // veclib fft returns a result that is twice as large as would be expected.
-  // Compensate for that by scaling the input by half so the FFT has the
-  // correct scaling.
-  float scale = 0.5f;
-  vector_math::Vsmul(data, 1, &scale, scaled_data.Data(), 1, fft_size_);
-
-  vDSP_ctoz((DSPComplex*)scaled_data.Data(), 2, &frame_, 1, fft_size_ / 2);
+  vDSP_ctoz((DSPComplex*)data, 2, &frame_, 1, fft_size_ / 2);
   vDSP_fft_zrip(fft_setup_, &frame_, 1, log2fft_size_, FFT_FORWARD);
+
+  // vDSP_FFT_zrip returns a result that is twice as large as would be
+  // expected.  (See
+  // https://developer.apple.com/documentation/accelerate/1450150-vdsp_fft_zrip)
+  // Compensate for that by scaling the input by half so the FFT has
+  // the correct scaling.
+  float scale = 0.5f;
+
+  vector_math::Vsmul(frame_.realp, 1, &scale, frame_.realp, 1, fft_size_ / 2);
+  vector_math::Vsmul(frame_.imagp, 1, &scale, frame_.imagp, 1, fft_size_ / 2);
 }
 
 void FFTFrame::DoInverseFFT(float* data) {
@@ -108,33 +161,42 @@ void FFTFrame::DoInverseFFT(float* data) {
   vector_math::Vsmul(data, 1, &scale, data, 1, fft_size_);
 }
 
-FFTSetup FFTFrame::FftSetupForSize(unsigned fft_size) {
-  if (!fft_setups_) {
-    fft_setups_ = (FFTSetup*)malloc(sizeof(FFTSetup) * kMaxFFTPow2Size);
-    memset(fft_setups_, 0, sizeof(FFTSetup) * kMaxFFTPow2Size);
-  }
-
-  int pow2size = static_cast<int>(log2(fft_size));
-  DCHECK_LT(pow2size, kMaxFFTPow2Size);
-  if (!fft_setups_[pow2size])
-    fft_setups_[pow2size] = vDSP_create_fftsetup(pow2size, FFT_RADIX2);
-
-  return fft_setups_[pow2size];
+FFTSetup FFTFrame::FftSetupForSize(unsigned log2fft_size) {
+  auto& setup = FFTSetups();
+  return setup[log2fft_size]->GetSetup();
 }
 
-void FFTFrame::Initialize() {}
+int FFTFrame::MinFFTSize() {
+  return 1 << kMinFFTPow2Size;
+}
+
+int FFTFrame::MaxFFTSize() {
+  return 1 << kMaxFFTPow2Size;
+}
+
+void FFTFrame::Initialize(float sample_rate) {
+  // Initialize the vector now so it's ready for use when we construct
+  // FFTFrames.
+  FFTSetups();
+
+  // Determine the order of the convolvers used by the HRTF kernel.  Allocate
+  // FFT setups for that size and for half that size.  The HRTF kernel uses half
+  // size for analysis FFTs.
+  //
+  // TODO(rtoy): Try to come up with some way so that |Initialize()| doesn't
+  // need to know about how the HRTF panner uses FFTs.
+  unsigned hrtf_order = static_cast<unsigned>(
+      log2(HRTFPanner::FftSizeForSampleRate(sample_rate)));
+  InitializeFFTSetupForSize(hrtf_order);
+  InitializeFFTSetupForSize(hrtf_order - 1);
+}
 
 void FFTFrame::Cleanup() {
-  if (!fft_setups_)
-    return;
+  auto& setups = FFTSetups();
 
-  for (int i = 0; i < kMaxFFTPow2Size; ++i) {
-    if (fft_setups_[i])
-      vDSP_destroy_fftsetup(fft_setups_[i]);
+  for (wtf_size_t k = 0; k < setups.size(); ++k) {
+    setups[k].reset();
   }
-
-  free(fft_setups_);
-  fft_setups_ = nullptr;
 }
 
 }  // namespace blink

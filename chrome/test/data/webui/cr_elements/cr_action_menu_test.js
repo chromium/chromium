@@ -2,6 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// clang-format off
+// #import {AnchorAlignment} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.m.js';
+// #import 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.m.js';
+//
+// #import {eventToPromise, flushTasks} from '../test_util.m.js';
+// #import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
+// #import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
+// #import {isMac, isWindows} from 'chrome://resources/js/cr.m.js';
+// #import {Polymer, html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+// clang-format on
+
 /**
  * @fileoverview Tests for cr-action-menu element. Runs as an interactive UI
  * test, since many of these tests check focus behavior.
@@ -22,6 +33,16 @@ suite('CrActionMenu', function() {
   /** @type {HTMLElement} */
   let container = null;
 
+  /** @type {Element} */
+  let checkboxFocusableElement = null;
+
+  /** @override */
+  suiteSetup(() => {
+    /* #ignore */ return PolymerTest.importHtml(
+        /* #ignore */ 'chrome://resources/cr_elements/cr_checkbox/' +
+        /* #ignore */ 'cr_checkbox.html');
+  });
+
   setup(function() {
     PolymerTest.clearBody();
 
@@ -31,13 +52,14 @@ suite('CrActionMenu', function() {
         <button class="dropdown-item">Un</button>
         <hr>
         <button class="dropdown-item">Dos</button>
-        <button class="dropdown-item">Tres</button>
+        <cr-checkbox class="dropdown-item">Tres</cr-checkbox>
       </cr-action-menu>
     `;
 
     menu = document.querySelector('cr-action-menu');
     dialog = menu.getDialog();
     items = menu.querySelectorAll('.dropdown-item');
+    checkboxFocusableElement = items[2].getFocusableElement();
     dots = document.querySelector('#dots');
     assertEquals(3, items.length);
   });
@@ -72,19 +94,19 @@ suite('CrActionMenu', function() {
   test('hidden or disabled items', function() {
     menu.showAt(dots);
     down();
-    assertEquals(getDeepActiveElement(), items[0]);
+    assertEquals(items[0], getDeepActiveElement());
 
     menu.close();
     items[0].hidden = true;
     menu.showAt(dots);
     down();
-    assertEquals(getDeepActiveElement(), items[1]);
+    assertEquals(items[1], getDeepActiveElement());
 
     menu.close();
     items[1].disabled = true;
     menu.showAt(dots);
     down();
-    assertEquals(getDeepActiveElement(), items[2]);
+    assertEquals(checkboxFocusableElement, getDeepActiveElement());
   });
 
   test('focus after down/up arrow', function() {
@@ -94,28 +116,58 @@ suite('CrActionMenu', function() {
     assertEquals(menu, document.activeElement);
     assertNotEquals(items[0], getDeepActiveElement());
     assertNotEquals(items[1], getDeepActiveElement());
-    assertNotEquals(items[2], getDeepActiveElement());
+    assertNotEquals(checkboxFocusableElement, getDeepActiveElement());
 
     down();
     assertEquals(items[0], getDeepActiveElement());
     down();
     assertEquals(items[1], getDeepActiveElement());
     down();
-    assertEquals(items[2], getDeepActiveElement());
+    assertEquals(checkboxFocusableElement, getDeepActiveElement());
     down();
     assertEquals(items[0], getDeepActiveElement());
     up();
-    assertEquals(items[2], getDeepActiveElement());
+    assertEquals(checkboxFocusableElement, getDeepActiveElement());
     up();
     assertEquals(items[1], getDeepActiveElement());
     up();
     assertEquals(items[0], getDeepActiveElement());
     up();
-    assertEquals(items[2], getDeepActiveElement());
+    assertEquals(checkboxFocusableElement, getDeepActiveElement());
 
     items[1].disabled = true;
     up();
     assertEquals(items[0], getDeepActiveElement());
+  });
+
+  test('focus skips cr-checkbox when disabled or hidden', () => {
+    menu.showAt(dots);
+    const crCheckbox = document.querySelector('cr-checkbox');
+    assertEquals(items[2], crCheckbox);
+
+    // Check checkbox is focusable when not disabled or hidden.
+    down();
+    assertEquals(items[0], getDeepActiveElement());
+    down();
+    assertEquals(items[1], getDeepActiveElement());
+    down();
+    assertEquals(checkboxFocusableElement, getDeepActiveElement());
+
+    // Check checkbox is not focusable when either disabled or hidden.
+    [[false, true],
+     [true, false],
+     [true, true],
+    ].forEach(([disabled, hidden]) => {
+      crCheckbox.disabled = disabled;
+      crCheckbox.hidden = hidden;
+      getDeepActiveElement().blur();
+      down();
+      assertEquals(items[0], getDeepActiveElement());
+      down();
+      assertEquals(items[1], getDeepActiveElement());
+      down();
+      assertEquals(items[0], getDeepActiveElement());
+    });
   });
 
   test('pressing up arrow when no focus will focus last item', function() {
@@ -123,7 +175,7 @@ suite('CrActionMenu', function() {
     assertEquals(menu, document.activeElement);
 
     up();
-    assertEquals(items[items.length - 1], getDeepActiveElement());
+    assertEquals(checkboxFocusableElement, getDeepActiveElement());
   });
 
   test('pressing enter when no focus', function() {
@@ -151,7 +203,7 @@ suite('CrActionMenu', function() {
     item.classList.add('dropdown-item');
     menu.insertBefore(item, items[0]);
     menu.showAt(dots);
-    await PolymerTest.flushTasks();
+    await test_util.flushTasks();
 
     down();
     assertEquals(item, getDeepActiveElement());
@@ -163,7 +215,7 @@ suite('CrActionMenu', function() {
 
     up();
     // Focus should have wrapped around to final item.
-    assertEquals(items[2], getDeepActiveElement());
+    assertEquals(checkboxFocusableElement, getDeepActiveElement());
   });
 
   test('close on click away', function() {
@@ -202,42 +254,43 @@ suite('CrActionMenu', function() {
     });
   }
 
-  test('close on Tab', function() {
-    return testFocusAfterClosing('Tab');
-  });
-  test('close on Escape', function() {
-    return testFocusAfterClosing('Escape');
-  });
+  test('close on Tab', () => testFocusAfterClosing('Tab'));
 
-  test('mouse movement focus options', function() {
-    function makeMouseoverEvent(node) {
-      const e = new MouseEvent('mouseover', {bubbles: true});
-      node.dispatchEvent(e);
-    }
+  test('close on Escape', () => testFocusAfterClosing('Escape'));
 
+  /** @param {!EventTarget} eventTarget */
+  function dispatchMouseoverEvent(eventTarget) {
+    eventTarget.dispatchEvent(new MouseEvent('mouseover', {bubbles: true}));
+  }
+
+  test('moving mouse on option 1 should focus it', () => {
     menu.showAt(dots);
-
-    // Moving mouse on option 1 should focus it.
     assertNotEquals(items[0], getDeepActiveElement());
-    makeMouseoverEvent(items[0]);
+    dispatchMouseoverEvent(items[0]);
     assertEquals(items[0], getDeepActiveElement());
+  });
 
-    // Moving mouse on the menu (not on option) should focus the menu.
-    makeMouseoverEvent(menu);
-    assertNotEquals(items[0], getDeepActiveElement());
-    assertEquals(menu, document.activeElement);
+  test('moving mouse on the menu (not on option) should focus the menu', () => {
+    menu.showAt(dots);
+    items[0].focus();
+    dispatchMouseoverEvent(menu);
+    assertEquals(dialog.querySelector('[role="menu"]'), getDeepActiveElement());
+  });
 
-    // Moving mouse on a disabled item should focus the menu.
-    items[2].setAttribute('disabled', '');
-    makeMouseoverEvent(items[2]);
-    assertNotEquals(items[2], getDeepActiveElement());
-    assertEquals(menu, document.activeElement);
+  test('moving mouse on a disabled item should focus the menu', () => {
+    menu.showAt(dots);
+    items[2].toggleAttribute('disabled', true);
+    items[0].focus();
+    dispatchMouseoverEvent(items[2]);
+    assertEquals(dialog.querySelector('[role="menu"]'), getDeepActiveElement());
+  });
 
-    // Mouse movements should override keyboard focus.
-    down();
+  test('mouse movements should override keyboard focus', () => {
+    menu.showAt(dots);
+    items[0].focus();
     down();
     assertEquals(items[1], getDeepActiveElement());
-    makeMouseoverEvent(items[0]);
+    dispatchMouseoverEvent(items[0]);
     assertEquals(items[0], getDeepActiveElement());
   });
 
@@ -248,12 +301,12 @@ suite('CrActionMenu', function() {
     items[1].setAttribute('role', 'checkbox');
     menu.showAt(dots);
 
-    await PolymerTest.flushTasks();
+    await test_util.flushTasks();
     assertEquals('menuitem', items[0].getAttribute('role'));
     assertEquals('checkbox', items[1].getAttribute('role'));
 
     menu.insertBefore(newItem, items[0]);
-    await PolymerTest.flushTasks();
+    await test_util.flushTasks();
     assertEquals('menuitem', newItem.getAttribute('role'));
   });
 
@@ -347,7 +400,7 @@ suite('CrActionMenu', function() {
     menu.close();
   });
 
-  // TODO(scottchen): fix flakiness and re-enable this test.
+  // TODO(dpapad): fix flakiness and re-enable this test.
   test.skip(
       '[auto-reposition] enables repositioning if content changes',
       function(done) {
@@ -355,7 +408,7 @@ suite('CrActionMenu', function() {
 
         dots.style.marginLeft = '800px';
 
-        let dotsRect = dots.getBoundingClientRect();
+        const dotsRect = dots.getBoundingClientRect();
 
         // Anchored at right-top by default.
         menu.showAt(dots);
@@ -395,8 +448,6 @@ suite('CrActionMenu', function() {
     const containerTop = 10000;
     const containerWidth = 500;
     const containerHeight = 500;
-    const menuWidth = 150;
-    const menuHeight = 200;
 
     suiteSetup(function() {
       document.body.innerHTML = `
@@ -416,14 +467,6 @@ suite('CrActionMenu', function() {
               #inner-container {
                 height: 1000px;
                 width: 1000px;
-              }
-
-              cr-action-menu {
-                --cr-action-menu-dialog: {
-                  height: ${menuHeight}px;
-                  width: ${menuWidth}px;
-                  padding: 0;
-                };
               }
             </style>
             <div id="container">
@@ -458,7 +501,7 @@ suite('CrActionMenu', function() {
         </style>
         <test-element></test-element>`;
 
-      testElement = document.querySelector('test-element');
+      const testElement = document.querySelector('test-element');
       menu = testElement.root.querySelector('cr-action-menu');
       dialog = menu.getDialog();
       dots = testElement.root.querySelector('#dots');
@@ -498,6 +541,8 @@ suite('CrActionMenu', function() {
       menu.showAt(dots, {anchorAlignmentX: AnchorAlignment.AFTER_START});
       const buttonWidth = dots.offsetWidth;
       const buttonHeight = dots.offsetHeight;
+      const menuWidth = dialog.offsetWidth;
+      const menuHeight = dialog.offsetHeight;
       assertEquals(containerLeft - menuWidth + buttonWidth, dialog.offsetLeft);
       assertEquals(containerTop - menuHeight + buttonHeight, dialog.offsetTop);
       menu.close();
@@ -516,6 +561,7 @@ suite('CrActionMenu', function() {
       // Anchor to an item in RTL.
       document.body.style.direction = 'rtl';
       menu.showAt(dots, {anchorAlignmentX: AnchorAlignment.AFTER_START});
+      const menuWidth = dialog.offsetWidth;
       assertEquals(
           container.offsetLeft + containerWidth - menuWidth, dialog.offsetLeft);
       assertEquals(containerTop, dialog.offsetTop);

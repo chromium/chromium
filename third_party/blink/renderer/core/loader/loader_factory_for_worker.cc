@@ -4,6 +4,9 @@
 
 #include "third_party/blink/renderer/core/loader/loader_factory_for_worker.h"
 
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
+#include "services/network/public/mojom/url_loader_factory.mojom-blink.h"
 #include "third_party/blink/public/common/blob/blob_utils.h"
 #include "third_party/blink/public/platform/web_url_loader.h"
 #include "third_party/blink/public/platform/web_worker_fetch_context.h"
@@ -26,9 +29,13 @@ std::unique_ptr<WebURLLoader> LoaderFactoryForWorker::CreateURLLoader(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
   WrappedResourceRequest wrapped(request);
 
-  network::mojom::blink::URLLoaderFactoryPtr url_loader_factory;
+  mojo::PendingRemote<network::mojom::blink::URLLoaderFactory>
+      url_loader_factory;
   if (options.url_loader_factory) {
-    options.url_loader_factory->data->Clone(MakeRequest(&url_loader_factory));
+    mojo::Remote<network::mojom::blink::URLLoaderFactory>
+        url_loader_factory_remote(std::move(options.url_loader_factory->data));
+    url_loader_factory_remote->Clone(
+        url_loader_factory.InitWithNewPipeAndPassReceiver());
   }
   // Resolve any blob: URLs that haven't been resolved yet. The XHR and
   // fetch() API implementations resolve blob URLs earlier because there can
@@ -36,29 +43,37 @@ std::unique_ptr<WebURLLoader> LoaderFactoryForWorker::CreateURLLoader(
   // actually creating the URL loader here. Other subresource loading will
   // immediately create the URL loader so resolving those blob URLs here is
   // simplest.
-  if (request.Url().ProtocolIs("blob") && BlobUtils::MojoBlobURLsEnabled() &&
-      !url_loader_factory) {
+  if (request.Url().ProtocolIs("blob") && !url_loader_factory) {
     global_scope_->GetPublicURLManager().Resolve(
-        request.Url(), MakeRequest(&url_loader_factory));
+        request.Url(), url_loader_factory.InitWithNewPipeAndPassReceiver());
   }
 
   if (url_loader_factory) {
-    return web_context_
-        ->WrapURLLoaderFactory(url_loader_factory.PassInterface().PassHandle())
+    return web_context_->WrapURLLoaderFactory(url_loader_factory.PassPipe())
         ->CreateURLLoader(wrapped, CreateTaskRunnerHandle(task_runner));
   }
 
-  // Use |script_loader_factory_| to load types SCRIPT (classic imported
-  // scripts) and SERVICE_WORKER (module main scripts and module imported
-  // scripts). Note that classic main scripts are also SERVICE_WORKER but
-  // loaded by the shadow page on the main thread, not here.
-  if (request.GetRequestContext() == mojom::RequestContextType::SCRIPT ||
-      request.GetRequestContext() ==
-          mojom::RequestContextType::SERVICE_WORKER) {
-    if (web_context_->GetScriptLoaderFactory()) {
-      return web_context_->GetScriptLoaderFactory()->CreateURLLoader(
-          wrapped, CreateTaskRunnerHandle(task_runner));
+  // If |global_scope_| is a service worker, use |script_loader_factory_| for
+  // the following request contexts.
+  // - SERVICE_WORKER for a classic main script, a module main script, or a
+  //   module imported script.
+  // - SCRIPT for a classic imported script.
+  //
+  // Other workers (dedicated workers, shared workers, and worklets) don't have
+  // a loader specific to script loading.
+  if (global_scope_->IsServiceWorkerGlobalScope()) {
+    if (request.GetRequestContext() ==
+            mojom::RequestContextType::SERVICE_WORKER ||
+        request.GetRequestContext() == mojom::RequestContextType::SCRIPT) {
+      // GetScriptLoaderFactory() may return nullptr in tests even for service
+      // workers.
+      if (web_context_->GetScriptLoaderFactory()) {
+        return web_context_->GetScriptLoaderFactory()->CreateURLLoader(
+            wrapped, CreateTaskRunnerHandle(task_runner));
+      }
     }
+  } else {
+    DCHECK(!web_context_->GetScriptLoaderFactory());
   }
 
   return web_context_->GetURLLoaderFactory()->CreateURLLoader(

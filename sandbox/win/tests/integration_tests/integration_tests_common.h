@@ -7,6 +7,8 @@
 
 #include <windows.h>
 
+#include "testing/gtest/include/gtest/gtest.h"
+
 namespace sandbox {
 
 //------------------------------------------------------------------------------
@@ -31,6 +33,28 @@ enum TestPolicy {
 
 // Timeout for ::WaitForSingleObject synchronization.
 DWORD SboxTestEventTimeout();
+
+// Ensures that a given set of tests specified by |name| never run at the same
+// time, as they deal with machine-global data.
+class ScopedTestMutex {
+public:
+  explicit ScopedTestMutex(const wchar_t* name)
+    : mutex_(::CreateMutexW(nullptr, false, name)) {
+    EXPECT_TRUE(mutex_);
+    EXPECT_EQ(WAIT_OBJECT_0,
+      ::WaitForSingleObject(mutex_, SboxTestEventTimeout()));
+  }
+
+  ~ScopedTestMutex() {
+    EXPECT_TRUE(::ReleaseMutex(mutex_));
+    EXPECT_TRUE(::CloseHandle(mutex_));
+  }
+
+private:
+  HANDLE mutex_;
+
+  DISALLOW_COPY_AND_ASSIGN(ScopedTestMutex);
+};
 
 }  // namespace sandbox
 

@@ -19,9 +19,6 @@ namespace content {
 CONTENT_EXPORT void UpdateFontRendererPreferencesFromSystemSettings(
     blink::mojom::RendererPreferences* prefs);
 
-CONTENT_EXPORT void UpdateFocusRingPreferencesFromSystemSettings(
-    blink::mojom::RendererPreferences* prefs);
-
 }  // namespace content
 
 #endif  // CONTENT_PUBLIC_BROWSER_RENDERER_PREFERENCES_UTIL_H_

@@ -46,7 +46,5 @@ enum MojoScope {
     static MojoCreateDataPipeResult createDataPipe(MojoCreateDataPipeOptions options);
     static MojoCreateSharedBufferResult createSharedBuffer(unsigned long numBytes);
 
-    [CallWith=ScriptState] static void bindInterface(DOMString interfaceName, MojoHandle request_handle, optional MojoScope scope = "context");
-    [CallWith=ScriptState] static MojoHandle getDocumentInterfaceBrokerHandle();
-    [CallWith=ScriptState] static MojoHandle replaceDocumentInterfaceBrokerForTesting(MojoHandle test_broker_handle);
+    [CallWith=ScriptState] static void bindInterface(DOMString interfaceName, MojoHandle request_handle, optional MojoScope scope = "context", optional boolean useBrowserInterfaceBroker = false);
 };

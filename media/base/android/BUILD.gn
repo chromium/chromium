@@ -131,7 +131,6 @@ if (is_android) {
   generate_jni("media_jni_headers") {
     sources = [
       "java/src/org/chromium/media/AudioManagerAndroid.java",
-      "java/src/org/chromium/media/AudioRecordInput.java",
       "java/src/org/chromium/media/AudioTrackOutputStream.java",
       "java/src/org/chromium/media/CodecProfileLevelList.java",
       "java/src/org/chromium/media/HdrMetadata.java",
@@ -144,7 +143,6 @@ if (is_android) {
       "java/src/org/chromium/media/MediaPlayerListener.java",
       "java/src/org/chromium/media/MediaServerCrashListener.java",
     ]
-    jni_package = "media"
   }
 
   java_cpp_enum("java_enums") {
@@ -152,6 +150,13 @@ if (is_android) {
       "media_codec_bridge.h",
       "media_codec_direction.h",
     ]
+  }
+
+  java_cpp_strings("java_switches") {
+    sources = [
+      "//media/base/media_switches.cc",
+    ]
+    template = "//media/base/android/java_templates/MediaSwitches.java.tmpl"
   }
 
   android_resources("media_java_resources") {
@@ -163,15 +168,17 @@ if (is_android) {
     deps = [
       ":media_java_resources",
       "//base:base_java",
-      "//third_party/android_deps:android_support_annotations_java",
+      "//base:jni_java",
+      "//third_party/android_deps:androidx_annotation_annotation_java",
     ]
+    annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
     srcjar_deps = [
       ":java_enums",
+      ":java_switches",
       "//media/base:java_enums",
     ]
     java_files = [
       "java/src/org/chromium/media/AudioManagerAndroid.java",
-      "java/src/org/chromium/media/AudioRecordInput.java",
       "java/src/org/chromium/media/AudioTrackOutputStream.java",
       "java/src/org/chromium/media/BitrateAdjuster.java",
       "java/src/org/chromium/media/CodecProfileLevelList.java",
@@ -187,7 +194,6 @@ if (is_android) {
       "java/src/org/chromium/media/MediaPlayerBridge.java",
       "java/src/org/chromium/media/MediaPlayerListener.java",
       "java/src/org/chromium/media/MediaServerCrashListener.java",
-      "java/src/org/chromium/media/MediaSwitches.java",
     ]
   }
 

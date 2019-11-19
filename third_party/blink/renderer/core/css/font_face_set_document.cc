@@ -32,6 +32,7 @@
 #include "third_party/blink/renderer/core/css/font_face_cache.h"
 #include "third_party/blink/renderer/core/css/font_face_set_load_event.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser.h"
+#include "third_party/blink/renderer/core/css/resolver/font_style_resolver.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -39,7 +40,8 @@
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
-#include "third_party/blink/renderer/platform/histogram.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 
 namespace blink {
 
@@ -73,7 +75,6 @@ void FontFaceSetDocument::DidLayout() {
 }
 
 void FontFaceSetDocument::BeginFontLoading(FontFace* font_face) {
-  histogram_.IncrementCount();
   AddToLoadingFonts(font_face);
 }
 
@@ -140,16 +141,25 @@ bool FontFaceSetDocument::ResolveFontStyle(const String& font_string,
 
   // Interpret fontString in the same way as the 'font' attribute of
   // CanvasRenderingContext2D.
-  MutableCSSPropertyValueSet* parsed_style =
-      MutableCSSPropertyValueSet::Create(kHTMLStandardMode);
-  CSSParser::ParseValue(parsed_style, CSSPropertyFont, font_string, true,
+  auto* parsed_style =
+      MakeGarbageCollected<MutableCSSPropertyValueSet>(kHTMLStandardMode);
+  CSSParser::ParseValue(parsed_style, CSSPropertyID::kFont, font_string, true,
                         GetDocument()->GetSecureContextMode());
   if (parsed_style->IsEmpty())
     return false;
 
-  String font_value = parsed_style->GetPropertyValue(CSSPropertyFont);
+  String font_value = parsed_style->GetPropertyValue(CSSPropertyID::kFont);
   if (font_value == "inherit" || font_value == "initial")
     return false;
+
+  if (!GetDocument()->documentElement()) {
+    auto* font_selector = GetDocument()->GetStyleEngine().GetFontSelector();
+    FontDescription description =
+        FontStyleResolver::ComputeFont(*parsed_style, font_selector);
+    font = Font(description);
+    font.Update(font_selector);
+    return true;
+  }
 
   scoped_refptr<ComputedStyle> style = ComputedStyle::Create();
 
@@ -166,7 +176,8 @@ bool FontFaceSetDocument::ResolveFontStyle(const String& font_string,
   style->GetFont().Update(style->GetFont().GetFontSelector());
 
   GetDocument()->UpdateActiveStyle();
-  GetDocument()->EnsureStyleResolver().ComputeFont(style.get(), *parsed_style);
+  GetDocument()->EnsureStyleResolver().ComputeFont(
+      *GetDocument()->documentElement(), style.get(), *parsed_style);
 
   font = style->GetFont();
   font.Update(GetFontSelector());
@@ -177,7 +188,7 @@ FontFaceSetDocument* FontFaceSetDocument::From(Document& document) {
   FontFaceSetDocument* fonts =
       Supplement<Document>::From<FontFaceSetDocument>(document);
   if (!fonts) {
-    fonts = FontFaceSetDocument::Create(document);
+    fonts = MakeGarbageCollected<FontFaceSetDocument>(document);
     Supplement<Document>::ProvideTo(document, fonts);
   }
 
@@ -212,12 +223,6 @@ void FontFaceSetDocument::FontLoadHistogram::UpdateStatus(FontFace* font_face) {
 }
 
 void FontFaceSetDocument::FontLoadHistogram::Record() {
-  if (!recorded_) {
-    recorded_ = true;
-    DEFINE_STATIC_LOCAL(CustomCountHistogram, web_fonts_in_page_histogram,
-                        ("WebFont.WebFontsInPage", 1, 100, 50));
-    web_fonts_in_page_histogram.Count(count_);
-  }
   if (status_ == kHadBlankText || status_ == kDidNotHaveBlankText) {
     DEFINE_STATIC_LOCAL(EnumerationHistogram, had_blank_text_histogram,
                         ("WebFont.HadBlankText", 2));

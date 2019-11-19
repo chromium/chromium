@@ -14,7 +14,6 @@
 #include "chrome/browser/chromeos/arc/arc_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
-#include "ui/events/devices/input_device_manager.h"
 
 namespace chromeos {
 namespace settings {
@@ -29,8 +28,7 @@ constexpr char kAppLockScreenSupportKey[] = "lockScreenSupport";
 
 }  // namespace
 
-StylusHandler::StylusHandler() : note_observer_(this), input_observer_(this) {}
-
+StylusHandler::StylusHandler() = default;
 StylusHandler::~StylusHandler() = default;
 
 void StylusHandler::RegisterMessages() {
@@ -63,7 +61,7 @@ void StylusHandler::RegisterMessages() {
 
 void StylusHandler::OnJavascriptAllowed() {
   note_observer_.Add(NoteTakingHelper::Get());
-  input_observer_.Add(ui::InputDeviceManager::GetInstance());
+  input_observer_.Add(ui::DeviceDataManager::GetInstance());
 }
 
 void StylusHandler::OnJavascriptDisallowed() {
@@ -146,12 +144,12 @@ void StylusHandler::HandleSetPreferredNoteTakingAppEnabledOnLockScreen(
 
 void StylusHandler::HandleInitialize(const base::ListValue* args) {
   AllowJavascript();
-  if (ui::InputDeviceManager::GetInstance()->AreDeviceListsComplete())
+  if (ui::DeviceDataManager::GetInstance()->AreDeviceListsComplete())
     SendHasStylus();
 }
 
 void StylusHandler::SendHasStylus() {
-  DCHECK(ui::InputDeviceManager::GetInstance()->AreDeviceListsComplete());
+  DCHECK(ui::DeviceDataManager::GetInstance()->AreDeviceListsComplete());
   FireWebUIListener("has-stylus-changed",
                     base::Value(ash::stylus_utils::HasStylusInput()));
 }

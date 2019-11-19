@@ -15,7 +15,10 @@ source_set("test") {
     "//base",
     "//base/test:test_support",
     "//ios/web:web",
+    "//ios/web/js_messaging",
+    "//ios/web/navigation",
     "//ios/web/navigation:wk_navigation_util",
+    "//ios/web/public/deprecated",
     "//ios/web/test:test_support",
     "//testing/gtest",
     "//ui/base",
@@ -28,11 +31,9 @@ source_set("test") {
     "scoped_testing_web_client.mm",
     "test_redirect_observer.h",
     "test_redirect_observer.mm",
-    "test_service_manager_context.h",
-    "test_service_manager_context.mm",
     "test_web_thread.h",
-    "test_web_thread_bundle.h",
     "web_js_test.h",
+    "web_task_environment.h",
     "web_test.h",
     "web_test.mm",
     "web_test_suite.h",
@@ -41,24 +42,44 @@ source_set("test") {
   ]
 }
 
+source_set("element_selector") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  testonly = true
+
+  sources = [
+    "element_selector.h",
+    "element_selector.mm",
+  ]
+
+  deps = [
+    "//base",
+  ]
+}
+
 source_set("util") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
 
   deps = [
+    ":element_selector",
     "//base",
     "//base/test:test_support",
+    "//ios/web/js_messaging",
     "//ios/web/public:public",
-    "//ios/web/web_state:error_translation_util",
+    "//ios/web/public/deprecated",
     "//ios/web/web_state:web_state_impl_header",
-    "//ios/web/web_state/js:script_util",
     "//ios/web/web_state/ui:ui",
+    "//ios/web/web_view:util",
     "//testing/gtest",
   ]
 
+  # TODO(crbug.com/922813): Remove this once internal targets depend directly
+  # on ":element_selector".
+  public_deps = [
+    "//ios/web/public/test:element_selector",
+  ]
+
   sources = [
-    "element_selector.h",
-    "element_selector.mm",
     "error_test_util.h",
     "error_test_util.mm",
     "js_test_util.h",

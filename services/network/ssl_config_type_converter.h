@@ -5,21 +5,23 @@
 #ifndef SERVICES_NETWORK_SSL_CONFIG_TYPE_CONVERTER_H_
 #define SERVICES_NETWORK_SSL_CONFIG_TYPE_CONVERTER_H_
 
-#include "mojo/public/cpp/bindings/type_converter.h"
-#include "net/ssl/ssl_config.h"
+#include "net/cert/cert_verifier.h"
+#include "net/ssl/ssl_config_service.h"
 #include "services/network/public/mojom/ssl_config.mojom.h"
 
 namespace mojo {
 
 int MojoSSLVersionToNetSSLVersion(network::mojom::SSLVersion mojo_version);
 
-// Converts a net::SSLConfig to network::mojom::SSLConfigPtr. Tested in
+// Converts a net::SSLContextConfig to network::mojom::SSLConfigPtr. Tested in
 // SSLConfigServiceMojo's unittests.
-template <>
-struct TypeConverter<net::SSLConfig, network::mojom::SSLConfigPtr> {
-  static net::SSLConfig Convert(
-      const network::mojom::SSLConfigPtr& mojo_config);
-};
+net::SSLContextConfig MojoSSLConfigToSSLContextConfig(
+    const network::mojom::SSLConfigPtr& mojo_config);
+
+// Converts a network::mojom::SSLConfigPtr to a net::CertVerifier::Config.
+// Tested in SSLConfigServiceMojo's unittests.
+net::CertVerifier::Config MojoSSLConfigToCertVerifierConfig(
+    const network::mojom::SSLConfigPtr& mojo_config);
 
 }  // namespace mojo
 

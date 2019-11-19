@@ -1,0 +1,15 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+mojom = "//mojo/public/mojom/base/generic_pending_receiver.mojom"
+public_headers = [ "//mojo/public/cpp/bindings/generic_pending_receiver.h" ]
+traits_headers =
+    [ "//mojo/public/cpp/base/generic_pending_receiver_mojom_traits.h" ]
+public_deps = [
+  "//mojo/public/cpp/bindings",
+]
+deps = [
+  "//mojo/public/cpp/base:shared_typemap_traits",
+]
+type_mappings = [ "mojo_base.mojom.GenericPendingReceiver=::mojo::GenericPendingReceiver[move_only,nullable_is_same_type]" ]

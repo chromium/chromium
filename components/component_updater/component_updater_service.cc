@@ -114,30 +114,30 @@ void CrxUpdateService::Stop() {
 // it will be replaced.
 bool CrxUpdateService::RegisterComponent(const CrxComponent& component) {
   DCHECK(thread_checker_.CalledOnValidThread());
-  if (component.pk_hash.empty() || !component.version.IsValid() ||
+  if (component.app_id.empty() || !component.version.IsValid() ||
       !component.installer) {
     return false;
   }
 
   // Update the registration data if the component has been registered before.
-  const std::string id(GetCrxComponentID(component));
-  auto it = components_.find(id);
+  auto it = components_.find(component.app_id);
   if (it != components_.end()) {
     it->second = component;
     return true;
   }
 
-  components_.insert(std::make_pair(id, component));
-  components_order_.push_back(id);
+  components_.insert(std::make_pair(component.app_id, component));
+  components_order_.push_back(component.app_id);
   for (const auto& mime_type : component.handled_mime_types)
-    component_ids_by_mime_type_[mime_type] = id;
+    component_ids_by_mime_type_[mime_type] = component.app_id;
 
   // Create an initial state for this component. The state is mutated in
   // response to events from the UpdateClient instance.
   CrxUpdateItem item;
-  item.id = id;
+  item.id = component.app_id;
   item.component = component;
-  const auto inserted = component_states_.insert(std::make_pair(id, item));
+  const auto inserted =
+      component_states_.insert(std::make_pair(component.app_id, item));
   DCHECK(inserted.second);
 
   // Start the timer if this is the first component registered. The first timer

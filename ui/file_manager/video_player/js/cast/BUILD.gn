@@ -20,23 +20,23 @@ js_library("closure_compile_externs") {
     "$externs_path/chrome_extensions.js",
     "$externs_path/media_player_private.js",
     "$externs_path/mediasession.js",
-    "../../../externs/background/volume_manager_factory.js",
-    "../../../externs/chrome_cast.js",
-    "../../../externs/platform.js",
+    "//ui/file_manager/externs/background/volume_manager_factory.js",
+    "//ui/file_manager/externs/chrome_cast.js",
+    "//ui/file_manager/externs/platform.js",
   ]
 }
 
 js_library("cast_extension_discoverer") {
   deps = [
-    "..:error_util",
+    "//ui/file_manager/video_player/js:error_util",
   ]
 }
 
 js_library("cast_video_element") {
   deps = [
     ":media_manager",
-    "..:error_util",
-    "..:video_player_metrics",
+    "//ui/file_manager/video_player/js:error_util",
+    "//ui/file_manager/video_player/js:video_player_metrics",
     "//ui/webui/resources/js/cr:event_target",
   ]
 }
@@ -44,7 +44,7 @@ js_library("cast_video_element") {
 js_library("caster") {
   deps = [
     ":cast_extension_discoverer",
-    "..:video_player",
+    "//ui/file_manager/video_player/js:video_player",
   ]
 }
 

@@ -9,7 +9,7 @@
 goog.provide('BrailleKeyEventRewriter');
 
 goog.require('Output');
-goog.require('cvox.BrailleKeyEvent');
+goog.require('BrailleKeyEvent');
 
 /**
  * A class that transforms a sequence of braille key events into a standard key
@@ -24,7 +24,7 @@ BrailleKeyEventRewriter = function() {
 BrailleKeyEventRewriter.prototype = {
   /**
    * Accumulates and optionally modifies in-coming braille key events.
-   * @param {cvox.BrailleKeyEvent} evt
+   * @param {BrailleKeyEvent} evt
    * @return {boolean} False to continue event propagation.
    */
   onBrailleKeyEvent: function(evt) {
@@ -35,9 +35,9 @@ BrailleKeyEventRewriter.prototype = {
       return false;
     }
 
-    if (evt.command == cvox.BrailleKeyCommand.CHORD) {
-      Output.forceModeForNextSpeechUtterance(cvox.QueueMode.CATEGORY_FLUSH);
-      var modifiers = cvox.BrailleKeyEvent.brailleDotsToModifiers[dots];
+    if (evt.command == BrailleKeyCommand.CHORD) {
+      Output.forceModeForNextSpeechUtterance(QueueMode.CATEGORY_FLUSH);
+      var modifiers = BrailleKeyEvent.brailleDotsToModifiers[dots];
 
       // Check for a modifier mapping.
       if (modifiers) {
@@ -50,19 +50,18 @@ BrailleKeyEventRewriter.prototype = {
       }
 
       // Check for a chord to standard key mapping.
-      standardKeyCode =
-          cvox.BrailleKeyEvent.brailleChordsToStandardKeyCode[dots];
+      standardKeyCode = BrailleKeyEvent.brailleChordsToStandardKeyCode[dots];
     }
 
     // Check for a 'dots' command, which is typed on the keyboard with a
     // previous incremental key press.
-    if (evt.command == cvox.BrailleKeyCommand.DOTS && this.incrementalKey_) {
+    if (evt.command == BrailleKeyCommand.DOTS && this.incrementalKey_) {
       // Check if this braille pattern has a standard key mapping.
-      standardKeyCode = cvox.BrailleKeyEvent.brailleDotsToStandardKeyCode[dots];
+      standardKeyCode = BrailleKeyEvent.brailleDotsToStandardKeyCode[dots];
     }
 
     if (standardKeyCode) {
-      evt.command = cvox.BrailleKeyCommand.STANDARD_KEY;
+      evt.command = BrailleKeyCommand.STANDARD_KEY;
       evt.standardKeyCode = standardKeyCode;
       if (this.incrementalKey_) {
         // Apply all modifiers seen so far to the outgoing event as a standard

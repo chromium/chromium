@@ -15,6 +15,7 @@
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "components/sync/base/weak_handle.h"
 #include "components/sync/engine/engine_components_factory.h"
+#include "components/sync/engine/fake_model_type_connector.h"
 #include "components/sync/engine/net/http_post_provider_factory.h"
 #include "components/sync/syncable/directory.h"
 
@@ -24,8 +25,10 @@ namespace syncer {
 
 FakeSyncManager::FakeSyncManager(ModelTypeSet initial_sync_ended_types,
                                  ModelTypeSet progress_marker_types,
-                                 ModelTypeSet configure_fail_types)
-    : initial_sync_ended_types_(initial_sync_ended_types),
+                                 ModelTypeSet configure_fail_types,
+                                 bool should_fail_on_init)
+    : should_fail_on_init_(should_fail_on_init),
+      initial_sync_ended_types_(initial_sync_ended_types),
       progress_marker_types_(progress_marker_types),
       configure_fail_types_(configure_fail_types),
       last_configure_reason_(CONFIGURE_REASON_UNKNOWN),
@@ -84,7 +87,7 @@ void FakeSyncManager::Init(InitArgs* args) {
   for (auto& observer : observers_) {
     observer.OnInitializationComplete(WeakHandle<JsBackend>(),
                                       WeakHandle<DataTypeDebugInfoListener>(),
-                                      true, initial_sync_ended_types_);
+                                      !should_fail_on_init_);
   }
 }
 
@@ -206,12 +209,18 @@ FakeSyncManager::GetModelTypeConnectorProxy() {
   return std::make_unique<FakeModelTypeConnector>();
 }
 
-const std::string FakeSyncManager::cache_guid() {
+std::string FakeSyncManager::cache_guid() {
   return test_user_share_.user_share()->directory->cache_guid();
 }
 
-bool FakeSyncManager::ReceivedExperiment(Experiments* experiments) {
-  return false;
+std::string FakeSyncManager::birthday() {
+  NOTIMPLEMENTED();
+  return std::string();
+}
+
+std::string FakeSyncManager::bag_of_chips() {
+  NOTIMPLEMENTED();
+  return std::string();
 }
 
 bool FakeSyncManager::HasUnsyncedItemsForTest() {

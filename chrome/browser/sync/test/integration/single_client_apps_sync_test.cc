@@ -4,11 +4,9 @@
 
 #include "base/macros.h"
 #include "chrome/browser/sync/test/integration/apps_helper.h"
-#include "chrome/browser/sync/test/integration/feature_toggler.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/browser/sync/test/integration/updated_progress_marker_checker.h"
-#include "components/browser_sync/profile_sync_service.h"
-#include "components/sync/driver/sync_driver_switches.h"
+#include "components/sync/driver/profile_sync_service.h"
 
 namespace {
 
@@ -16,10 +14,9 @@ using apps_helper::AllProfilesHaveSameApps;
 using apps_helper::InstallApp;
 using apps_helper::InstallPlatformApp;
 
-class SingleClientAppsSyncTest : public FeatureToggler, public SyncTest {
+class SingleClientAppsSyncTest : public SyncTest {
  public:
-  SingleClientAppsSyncTest()
-      : FeatureToggler(switches::kSyncPseudoUSSApps), SyncTest(SINGLE_CLIENT) {}
+  SingleClientAppsSyncTest() : SyncTest(SINGLE_CLIENT) {}
 
   ~SingleClientAppsSyncTest() override {}
 
@@ -27,12 +24,21 @@ class SingleClientAppsSyncTest : public FeatureToggler, public SyncTest {
   DISALLOW_COPY_AND_ASSIGN(SingleClientAppsSyncTest);
 };
 
-IN_PROC_BROWSER_TEST_P(SingleClientAppsSyncTest, StartWithNoApps) {
+// crbug.com/1001437
+#if defined(ADDRESS_SANITIZER)
+#define MAYBE_InstallSomePlatformApps DISABLED_InstallSomePlatformApps
+#define MAYBE_InstallSomeApps DISABLED_InstallSomeApps
+#else
+#define MAYBE_InstallSomePlatformApps InstallSomePlatformApps
+#define MAYBE_InstallSomeApps InstallSomeApps
+#endif
+
+IN_PROC_BROWSER_TEST_F(SingleClientAppsSyncTest, StartWithNoApps) {
   ASSERT_TRUE(SetupSync());
   ASSERT_TRUE(AllProfilesHaveSameApps());
 }
 
-IN_PROC_BROWSER_TEST_P(SingleClientAppsSyncTest, StartWithSomeLegacyApps) {
+IN_PROC_BROWSER_TEST_F(SingleClientAppsSyncTest, StartWithSomeLegacyApps) {
   ASSERT_TRUE(SetupClients());
 
   const int kNumApps = 5;
@@ -45,7 +51,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientAppsSyncTest, StartWithSomeLegacyApps) {
   ASSERT_TRUE(AllProfilesHaveSameApps());
 }
 
-IN_PROC_BROWSER_TEST_P(SingleClientAppsSyncTest, StartWithSomePlatformApps) {
+IN_PROC_BROWSER_TEST_F(SingleClientAppsSyncTest, StartWithSomePlatformApps) {
   ASSERT_TRUE(SetupClients());
 
   const int kNumApps = 5;
@@ -58,7 +64,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientAppsSyncTest, StartWithSomePlatformApps) {
   ASSERT_TRUE(AllProfilesHaveSameApps());
 }
 
-IN_PROC_BROWSER_TEST_P(SingleClientAppsSyncTest, InstallSomeLegacyApps) {
+IN_PROC_BROWSER_TEST_F(SingleClientAppsSyncTest, InstallSomeLegacyApps) {
   ASSERT_TRUE(SetupSync());
 
   const int kNumApps = 5;
@@ -71,7 +77,8 @@ IN_PROC_BROWSER_TEST_P(SingleClientAppsSyncTest, InstallSomeLegacyApps) {
   ASSERT_TRUE(AllProfilesHaveSameApps());
 }
 
-IN_PROC_BROWSER_TEST_P(SingleClientAppsSyncTest, InstallSomePlatformApps) {
+IN_PROC_BROWSER_TEST_F(SingleClientAppsSyncTest,
+                       MAYBE_InstallSomePlatformApps) {
   ASSERT_TRUE(SetupSync());
 
   const int kNumApps = 5;
@@ -84,7 +91,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientAppsSyncTest, InstallSomePlatformApps) {
   ASSERT_TRUE(AllProfilesHaveSameApps());
 }
 
-IN_PROC_BROWSER_TEST_P(SingleClientAppsSyncTest, InstallSomeApps) {
+IN_PROC_BROWSER_TEST_F(SingleClientAppsSyncTest, MAYBE_InstallSomeApps) {
   ASSERT_TRUE(SetupSync());
 
   int i = 0;
@@ -104,9 +111,5 @@ IN_PROC_BROWSER_TEST_P(SingleClientAppsSyncTest, InstallSomeApps) {
   ASSERT_TRUE(UpdatedProgressMarkerChecker(GetSyncService(0)).Wait());
   ASSERT_TRUE(AllProfilesHaveSameApps());
 }
-
-INSTANTIATE_TEST_SUITE_P(USS,
-                         SingleClientAppsSyncTest,
-                         ::testing::Values(false, true));
 
 }  // namespace

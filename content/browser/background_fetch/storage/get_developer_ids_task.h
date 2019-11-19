@@ -16,7 +16,6 @@
 #include "url/origin.h"
 
 namespace content {
-
 namespace background_fetch {
 
 // Gets the developer ids for all active registrations - registrations that have
@@ -49,13 +48,13 @@ class GetDeveloperIdsTask : public DatabaseTask {
 
   std::vector<std::string> developer_ids_;
 
-  base::WeakPtrFactory<GetDeveloperIdsTask> weak_factory_;  // Keep as last.
+  base::WeakPtrFactory<GetDeveloperIdsTask> weak_factory_{
+      this};  // Keep as last.
 
   DISALLOW_COPY_AND_ASSIGN(GetDeveloperIdsTask);
 };
 
 }  // namespace background_fetch
-
 }  // namespace content
 
 #endif  // CONTENT_BROWSER_BACKGROUND_FETCH_STORAGE_GET_DEVELOPER_IDS_TASK_H_

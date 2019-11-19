@@ -63,11 +63,7 @@ class PLATFORM_EXPORT PaintController {
     kTransient,
   };
 
-  static std::unique_ptr<PaintController> Create(
-      Usage usage = kMultiplePaints) {
-    return base::WrapUnique(new PaintController(usage));
-  }
-
+  explicit PaintController(Usage = kMultiplePaints);
   ~PaintController();
 
   // For pre-PaintAfterPaint only.
@@ -171,10 +167,10 @@ class PLATFORM_EXPORT PaintController {
   void FinishCycle();
 
   // |FinishCycle| clears the property tree changed state but only does this for
-  // non-transient controllers. The root paint controller is transient with
-  // BlinkGenPropertyTrees and this function provides a hook for clearing
+  // non-transient controllers. Until CompositeAfterPaint, the root paint
+  // controller is transient with and this function provides a hook for clearing
   // the property tree changed state after paint.
-  // TODO(pdr): Remove this when BlinkGenPropertyTrees ships.
+  // TODO(pdr): Remove this when CompositeAfterPaint ships.
   void ClearPropertyTreeChangedStateTo(const PropertyTreeState&);
 
   // Returns the approximate memory usage, excluding memory likely to be
@@ -231,8 +227,9 @@ class PLATFORM_EXPORT PaintController {
                                      const PropertyTreeState&);
 
 #if DCHECK_IS_ON()
+  void ShowCompactDebugData() const;
   void ShowDebugData() const;
-  void ShowDebugDataWithRecords() const;
+  void ShowDebugDataWithPaintRecords() const;
 #endif
 
   void BeginFrame(const void* frame);
@@ -254,8 +251,6 @@ class PLATFORM_EXPORT PaintController {
  private:
   friend class PaintControllerTestBase;
   friend class PaintControllerPaintTestBase;
-
-  PaintController(Usage);
 
   // True if all display items associated with the client are validly cached.
   // However, the current algorithm allows the following situations even if
@@ -392,8 +387,8 @@ class PLATFORM_EXPORT PaintController {
   // requests.
   size_t next_item_to_index_ = 0;
 
-  size_t num_indexed_items_ = 0;
 #if DCHECK_IS_ON()
+  size_t num_indexed_items_ = 0;
   size_t num_sequential_matches_ = 0;
   size_t num_out_of_order_matches_ = 0;
 
@@ -425,12 +420,10 @@ class PLATFORM_EXPORT PaintController {
   // Accumulated counts for UMA metrics. Updated by UpdateUMACounts() and
   // UpdateUMACountsOnFullyCached(), and reported as UMA metrics and reset by
   // ReportUMACounts(). The accumulation is mainly for pre-CompositeAfterPaint
-  // to weigh big and small GraphicsLayers properly when calculating the
-  // percentage UMA data. Also avoid reporting too frequently, to make the
-  // metrics more meaningful.
+  // to sum up the data from multiple PaintControllers during a paint in
+  // document life cycle update.
   static size_t sum_num_items_;
   static size_t sum_num_cached_items_;
-  static size_t sum_num_indexed_items_;
   static size_t sum_num_subsequences_;
   static size_t sum_num_cached_subsequences_;
 

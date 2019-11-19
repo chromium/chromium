@@ -27,8 +27,7 @@ base::DictionaryValue Serialize(
   auto child_it = children.find(root);
   if (child_it != children.end()) {
     for (base::DictionaryValue* child : child_it->second) {
-      children_list->base::Value::GetList().push_back(
-          Serialize(child_key, child, children));
+      children_list->base::Value::Append(Serialize(child_key, child, children));
     }
   }
 
@@ -98,8 +97,7 @@ base::ListValue SerializeHostDescriptions(
 
   base::ListValue list_value;
   for (auto* root : roots) {
-    list_value.base::Value::GetList().push_back(
-        Serialize(child_key, root, children));
+    list_value.base::Value::Append(Serialize(child_key, root, children));
   }
   return list_value;
 }

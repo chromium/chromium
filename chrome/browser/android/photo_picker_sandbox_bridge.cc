@@ -6,7 +6,7 @@
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/metrics/histogram_macros.h"
-#include "jni/DecoderService_jni.h"
+#include "chrome/android/chrome_jni_headers/DecoderService_jni.h"
 #include "sandbox/linux/seccomp-bpf-helpers/seccomp_starter_android.h"
 #include "sandbox/sandbox_buildflags.h"
 

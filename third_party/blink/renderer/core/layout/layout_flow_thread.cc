@@ -136,7 +136,8 @@ void LayoutFlowThread::AbsoluteQuadsForDescendant(const LayoutBox& descendant,
   LayoutPoint offset_from_flow_thread;
   for (const LayoutObject* object = &descendant; object != this;) {
     const LayoutObject* container = object->Container();
-    offset_from_flow_thread += object->OffsetFromContainer(container);
+    offset_from_flow_thread +=
+        object->OffsetFromContainer(container).ToLayoutSize();
     object = container;
   }
   LayoutRect bounding_rect_in_flow_thread(offset_from_flow_thread,
@@ -152,15 +153,16 @@ void LayoutFlowThread::AbsoluteQuadsForDescendant(const LayoutBox& descendant,
     LayoutRect clip_rect = iterator.ClipRectInFlowThread();
     fragment.InclusiveIntersect(clip_rect);
     fragment.MoveBy(-offset_from_flow_thread);
-    quads.push_back(descendant.LocalToAbsoluteQuad(FloatRect(fragment), mode));
+    quads.push_back(descendant.LocalRectToAbsoluteQuad(
+        PhysicalRectToBeNoop(fragment), mode));
   }
 }
 
 void LayoutFlowThread::AddOutlineRects(
-    Vector<LayoutRect>& rects,
-    const LayoutPoint& additional_offset,
+    Vector<PhysicalRect>& rects,
+    const PhysicalOffset& additional_offset,
     NGOutlineType include_block_overflows) const {
-  Vector<LayoutRect> rects_in_flowthread;
+  Vector<PhysicalRect> rects_in_flowthread;
   LayoutBlockFlow::AddOutlineRects(rects_in_flowthread, additional_offset,
                                    include_block_overflows);
   // Convert the rectangles from the flow thread coordinate space to the visual
@@ -172,19 +174,17 @@ void LayoutFlowThread::AddOutlineRects(
   // block direction anyway. As far as the inline direction (the column
   // progression direction) is concerned, we'll just include the full height of
   // each column involved. Should be good enough.
-  LayoutRect union_rect;
-  for (const auto& rect : rects_in_flowthread)
-    union_rect.Unite(rect);
-  rects.push_back(FragmentsBoundingBox(union_rect));
+  rects.push_back(PhysicalRectToBeNoop(
+      FragmentsBoundingBox(UnionRect(rects_in_flowthread).ToLayoutRect())));
 }
 
 bool LayoutFlowThread::NodeAtPoint(HitTestResult& result,
-                                   const HitTestLocation& location_in_container,
-                                   const LayoutPoint& accumulated_offset,
+                                   const HitTestLocation& hit_test_location,
+                                   const PhysicalOffset& accumulated_offset,
                                    HitTestAction hit_test_action) {
   if (hit_test_action == kHitTestBlockBackground)
     return false;
-  return LayoutBlockFlow::NodeAtPoint(result, location_in_container,
+  return LayoutBlockFlow::NodeAtPoint(result, hit_test_location,
                                       accumulated_offset, hit_test_action);
 }
 
@@ -254,12 +254,12 @@ void LayoutFlowThread::FlowThreadToContainingCoordinateSpace(
   // expects and returns.
   if (!IsHorizontalWritingMode())
     position = position.TransposedPoint();
-  position = FlipForWritingMode(position);
+  position = DeprecatedFlipForWritingMode(position);
 
   position.Move(ColumnOffset(position));
 
   // Make |position| logical again, and read out the values.
-  position = FlipForWritingMode(position);
+  position = DeprecatedFlipForWritingMode(position);
   if (!IsHorizontalWritingMode())
     position = position.TransposedPoint();
   block_position = position.Y();

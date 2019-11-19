@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "base/memory/weak_ptr.h"
 #include "chromecast/browser/cast_web_view.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_base.h"
@@ -18,7 +19,7 @@ class WebContents;
 
 namespace chromecast {
 
-class CastWebContentsManager;
+class CastWebService;
 class CastWebViewFactory;
 
 namespace shell {
@@ -28,7 +29,8 @@ namespace shell {
 // case, then shuts down the entire shell.
 // Note that this process takes 7-10 seconds per test case on Chromecast, so
 // fewer test cases with more assertions are preferable.
-class CastBrowserTest : public content::BrowserTestBase, CastWebView::Delegate {
+class CastBrowserTest : public content::BrowserTestBase,
+                        public CastWebView::Delegate {
  protected:
   CastBrowserTest();
   ~CastBrowserTest() override;
@@ -44,24 +46,17 @@ class CastBrowserTest : public content::BrowserTestBase, CastWebView::Delegate {
 
  private:
   // CastWebView::Delegate implementation:
-  void OnPageStateChanged(CastWebContents* cast_web_contents) override;
-  void OnPageStopped(CastWebContents* cast_web_contents,
-                     int error_code) override;
   void OnWindowDestroyed() override;
-  void OnKeyEvent(const ui::KeyEvent& key_event) override;
-  bool OnAddMessageToConsoleReceived(int32_t level,
-                                     const base::string16& message,
-                                     int32_t line_no,
-                                     const base::string16& source_id) override;
   void OnVisibilityChange(VisibilityType visibility_type) override;
   bool CanHandleGesture(GestureType gesture_type) override;
   bool ConsumeGesture(GestureType gesture_type) override;
   std::string GetId() override;
 
   std::unique_ptr<CastWebViewFactory> web_view_factory_;
-  std::unique_ptr<CastWebContentsManager> web_contents_manager_;
-  std::unique_ptr<CastWebView> cast_web_view_;
+  std::unique_ptr<CastWebService> web_service_;
+  CastWebView::Scoped cast_web_view_;
 
+  base::WeakPtrFactory<CastBrowserTest> weak_factory_{this};
   DISALLOW_COPY_AND_ASSIGN(CastBrowserTest);
 };
 

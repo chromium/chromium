@@ -8,7 +8,6 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "content/public/test/browser_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/events/test/event_generator.h"
 
 #if defined(USE_AURA)
@@ -42,9 +41,6 @@ void TestTextInputViaKeyEvent(content::WebContents* contents) {
 #if defined(USE_AURA)
   event_window = event_window->GetRootWindow();
 #endif
-  if (features::IsUsingWindowService())
-    event_window = nullptr;
-
   ui::test::EventGenerator generator(event_window);
   generator.PressKey(ui::VKEY_A, ui::EF_NONE);
 

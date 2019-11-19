@@ -9,7 +9,7 @@
 
 #include <algorithm>
 
-#include "base/macros.h"
+#include "base/memory/shared_memory_mapping.h"
 #include "base/strings/stringprintf.h"
 #include "base/trace_event/process_memory_dump.h"
 #include "base/trace_event/trace_event.h"
@@ -33,12 +33,12 @@ class BitmapSoftwareBacking : public ResourcePool::SoftwareBacking {
       const base::trace_event::MemoryAllocatorDumpGuid& buffer_dump_guid,
       uint64_t tracing_process_id,
       int importance) const override {
-    pmd->CreateSharedMemoryOwnershipEdge(
-        buffer_dump_guid, shared_memory->mapped_id(), importance);
+    pmd->CreateSharedMemoryOwnershipEdge(buffer_dump_guid, mapping.guid(),
+                                         importance);
   }
 
   LayerTreeFrameSink* frame_sink;
-  std::unique_ptr<base::SharedMemory> shared_memory;
+  base::WritableSharedMemoryMapping mapping;
 };
 
 class BitmapRasterBufferImpl : public RasterBuffer {
@@ -54,6 +54,8 @@ class BitmapRasterBufferImpl : public RasterBuffer {
         resource_has_previous_content_(
             resource_content_id && resource_content_id == previous_content_id) {
   }
+  BitmapRasterBufferImpl(const BitmapRasterBufferImpl&) = delete;
+  BitmapRasterBufferImpl& operator=(const BitmapRasterBufferImpl&) = delete;
 
   // Overridden from RasterBuffer:
   void Playback(const RasterSource* raster_source,
@@ -83,8 +85,6 @@ class BitmapRasterBufferImpl : public RasterBuffer {
   const gfx::ColorSpace color_space_;
   void* const pixels_;
   bool resource_has_previous_content_;
-
-  DISALLOW_COPY_AND_ASSIGN(BitmapRasterBufferImpl);
 };
 
 }  // namespace
@@ -108,13 +108,10 @@ BitmapRasterBufferProvider::AcquireBufferForRaster(
     auto backing = std::make_unique<BitmapSoftwareBacking>();
     backing->frame_sink = frame_sink_;
     backing->shared_bitmap_id = viz::SharedBitmap::GenerateId();
-    backing->shared_memory =
-        viz::bitmap_allocation::AllocateMappedBitmap(size, viz::RGBA_8888);
-
-    mojo::ScopedSharedBufferHandle handle =
-        viz::bitmap_allocation::DuplicateAndCloseMappedBitmap(
-            backing->shared_memory.get(), size, viz::RGBA_8888);
-    frame_sink_->DidAllocateSharedBitmap(std::move(handle),
+    base::MappedReadOnlyRegion shm =
+        viz::bitmap_allocation::AllocateSharedBitmap(size, viz::RGBA_8888);
+    backing->mapping = std::move(shm.mapping);
+    frame_sink_->DidAllocateSharedBitmap(std::move(shm.region),
                                          backing->shared_bitmap_id);
 
     resource.set_software_backing(std::move(backing));
@@ -123,7 +120,7 @@ BitmapRasterBufferProvider::AcquireBufferForRaster(
       static_cast<BitmapSoftwareBacking*>(resource.software_backing());
 
   return std::make_unique<BitmapRasterBufferImpl>(
-      size, color_space, backing->shared_memory->memory(), resource_content_id,
+      size, color_space, backing->mapping.memory(), resource_content_id,
       previous_content_id);
 }
 
@@ -131,13 +128,6 @@ void BitmapRasterBufferProvider::Flush() {}
 
 viz::ResourceFormat BitmapRasterBufferProvider::GetResourceFormat() const {
   return viz::RGBA_8888;
-}
-
-bool BitmapRasterBufferProvider::IsResourceSwizzleRequired() const {
-  // This value only used by gpu compositing. Software compositing resources
-  // are all in the native skia byte ordering, and the display compositor will
-  // do its drawing in the same order.
-  return false;
 }
 
 bool BitmapRasterBufferProvider::IsResourcePremultiplied() const {

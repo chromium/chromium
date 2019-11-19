@@ -29,7 +29,6 @@
 #include <ostream>  // NOLINT
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/editing/text_affinity.h"
-#include "third_party/blink/renderer/platform/wtf/text/cstring.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
@@ -131,11 +130,9 @@ PositionTemplate<Strategy>::PositionTemplate(const Node* anchor_node,
     DCHECK_EQ(offset, 0);
     return;
   }
-  if (anchor_node_->IsCharacterDataNode()) {
+  if (auto* data = DynamicTo<CharacterData>(anchor_node_.Get())) {
     DCHECK_GE(offset, 0);
-    DCHECK_LE(static_cast<unsigned>(offset),
-              ToCharacterData(anchor_node_)->length())
-        << anchor_node_;
+    DCHECK_LE(static_cast<unsigned>(offset), data->length()) << anchor_node_;
     return;
   }
   DCHECK_GE(offset, 0);
@@ -201,8 +198,8 @@ Node* PositionTemplate<Strategy>::ComputeContainerNode() const {
 
 template <typename Strategy>
 static int MinOffsetForNode(Node* anchor_node, int offset) {
-  if (anchor_node->IsCharacterDataNode())
-    return std::min(offset, static_cast<int>(ToCharacterData(anchor_node)->length()));
+  if (auto* data = DynamicTo<CharacterData>(anchor_node))
+    return std::min(offset, static_cast<int>(data->length()));
 
   int new_offset = 0;
   for (Node* node = Strategy::FirstChild(*anchor_node);
@@ -543,9 +540,10 @@ PositionTemplate<Strategy> PositionTemplate<Strategy>::AfterNode(
 // static
 template <typename Strategy>
 int PositionTemplate<Strategy>::LastOffsetInNode(const Node& node) {
-  return node.IsCharacterDataNode()
-             ? static_cast<int>(ToCharacterData(node).length())
-             : static_cast<int>(Strategy::CountChildren(node));
+  if (auto* data = DynamicTo<CharacterData>(node))
+    return static_cast<int>(data->length());
+
+  return static_cast<int>(Strategy::CountChildren(node));
 }
 
 // static
@@ -702,7 +700,7 @@ String PositionTemplate<Strategy>::ToAnchorTypeAndOffsetString() const {
   return g_empty_string;
 }
 
-#ifndef NDEBUG
+#if DCHECK_IS_ON()
 
 template <typename Strategy>
 void PositionTemplate<Strategy>::ShowTreeForThis() const {
@@ -711,8 +709,8 @@ void PositionTemplate<Strategy>::ShowTreeForThis() const {
     return;
   }
   LOG(INFO) << "\n"
-            << AnchorNode()->ToTreeStringForThis().Utf8().data()
-            << ToAnchorTypeAndOffsetString().Utf8().data();
+            << AnchorNode()->ToTreeStringForThis().Utf8()
+            << ToAnchorTypeAndOffsetString().Utf8();
 }
 
 template <typename Strategy>
@@ -722,11 +720,11 @@ void PositionTemplate<Strategy>::ShowTreeForThisInFlatTree() const {
     return;
   }
   LOG(INFO) << "\n"
-            << AnchorNode()->ToFlatTreeStringForThis().Utf8().data()
-            << ToAnchorTypeAndOffsetString().Utf8().data();
+            << AnchorNode()->ToFlatTreeStringForThis().Utf8()
+            << ToAnchorTypeAndOffsetString().Utf8();
 }
 
-#endif
+#endif  // DCHECK_IS_ON()
 
 template <typename PositionType>
 static std::ostream& PrintPosition(std::ostream& ostream,
@@ -734,7 +732,7 @@ static std::ostream& PrintPosition(std::ostream& ostream,
   if (position.IsNull())
     return ostream << "null";
   return ostream << position.AnchorNode() << "@"
-                 << position.ToAnchorTypeAndOffsetString().Utf8().data();
+                 << position.ToAnchorTypeAndOffsetString().Utf8();
 }
 
 std::ostream& operator<<(std::ostream& ostream,
@@ -769,7 +767,7 @@ template class CORE_TEMPLATE_EXPORT PositionTemplate<EditingInFlatTreeStrategy>;
 
 }  // namespace blink
 
-#ifndef NDEBUG
+#if DCHECK_IS_ON()
 
 void showTree(const blink::Position& pos) {
   pos.ShowTreeForThis();

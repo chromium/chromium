@@ -10,7 +10,7 @@
 #include "base/files/file.h"
 #include "base/macros.h"
 #include "chrome/browser/chromeos/file_system_provider/operations/operation.h"
-#include "storage/browser/fileapi/async_file_util.h"
+#include "storage/browser/file_system/async_file_util.h"
 
 namespace extensions {
 class EventRouter;

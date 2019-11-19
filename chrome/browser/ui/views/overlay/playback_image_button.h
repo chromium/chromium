@@ -14,7 +14,7 @@ namespace views {
 class PlaybackImageButton : public views::ImageButton {
  public:
   explicit PlaybackImageButton(ButtonListener*);
-  ~PlaybackImageButton() override;
+  ~PlaybackImageButton() override = default;
 
   // Show appropriate images based on playback state.
   void SetPlaybackState(const OverlayWindowViews::PlaybackState playback_state);

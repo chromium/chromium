@@ -13,6 +13,7 @@ import static org.chromium.chrome.browser.download.DownloadNotificationService.A
 import static org.chromium.chrome.browser.download.DownloadNotificationService.EXTRA_DOWNLOAD_CONTENTID_ID;
 import static org.chromium.chrome.browser.download.DownloadNotificationService.EXTRA_DOWNLOAD_CONTENTID_NAMESPACE;
 import static org.chromium.chrome.browser.download.DownloadNotificationService.EXTRA_DOWNLOAD_STATE_AT_CANCEL;
+import static org.chromium.chrome.browser.download.DownloadNotificationService.EXTRA_IS_AUTO_RESUMPTION;
 import static org.chromium.chrome.browser.download.DownloadNotificationService.EXTRA_IS_OFF_THE_RECORD;
 import static org.chromium.chrome.browser.download.DownloadNotificationService.clearResumptionAttemptLeft;
 
@@ -23,18 +24,19 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Handler;
 import android.os.IBinder;
-import android.support.annotation.Nullable;
+
+import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import com.google.ipc.invalidation.util.Preconditions;
 
+import org.chromium.base.ContentUriUtils;
 import org.chromium.base.ContextUtils;
-import org.chromium.base.Log;
-import org.chromium.base.VisibleForTesting;
 import org.chromium.base.library_loader.LibraryProcessType;
-import org.chromium.base.library_loader.ProcessInitException;
-import org.chromium.chrome.browser.ChromeApplication;
+import org.chromium.chrome.browser.ChromeFeatureList;
 import org.chromium.chrome.browser.download.DownloadNotificationUmaHelper.UmaDownloadResumption;
 import org.chromium.chrome.browser.download.items.OfflineContentAggregatorNotificationBridgeUiFactory;
+import org.chromium.chrome.browser.flags.FeatureUtilities;
 import org.chromium.chrome.browser.init.BrowserParts;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.init.EmptyBrowserParts;
@@ -172,7 +174,7 @@ public class DownloadBroadcastManager extends Service {
     void loadNativeAndPropagateInteraction(final Intent intent) {
         final boolean browserStarted =
                 BrowserStartupController.get(LibraryProcessType.PROCESS_BROWSER)
-                        .isStartupSuccessfullyCompleted();
+                        .isFullBrowserStarted();
         final ContentId id = getContentIdFromIntent(intent);
         final BrowserParts parts = new EmptyBrowserParts() {
             @Override
@@ -190,24 +192,24 @@ public class DownloadBroadcastManager extends Service {
                                 .onBackgroundDownloadStarted(id.id);
                     }
                 }
+
+                DownloadStartupUtils.ensureDownloadSystemInitialized(
+                        BrowserStartupController.get(LibraryProcessType.PROCESS_BROWSER)
+                                .isFullBrowserStarted(),
+                        IntentUtils.safeGetBooleanExtra(intent, EXTRA_IS_OFF_THE_RECORD, false));
                 propagateInteraction(intent);
             }
 
             @Override
             public boolean startServiceManagerOnly() {
                 if (!LegacyHelpers.isLegacyDownload(id)) return false;
-                return DownloadUtils.shouldStartServiceManagerOnly()
+                return FeatureUtilities.isServiceManagerForDownloadResumptionEnabled()
                         && !ACTION_DOWNLOAD_OPEN.equals(intent.getAction());
             }
         };
 
-        try {
-            ChromeBrowserInitializer.getInstance().handlePreNativeStartup(parts);
-            ChromeBrowserInitializer.getInstance().handlePostNativeStartup(true, parts);
-        } catch (ProcessInitException e) {
-            Log.e(TAG, "Unable to load native library.", e);
-            ChromeApplication.reportStartupErrorAndExit(e);
-        }
+        ChromeBrowserInitializer.getInstance().handlePreNativeStartup(parts);
+        ChromeBrowserInitializer.getInstance().handlePostNativeStartup(true, parts);
     }
 
     @VisibleForTesting
@@ -255,11 +257,12 @@ public class DownloadBroadcastManager extends Service {
                 DownloadItem item = (entry != null)
                         ? entry.buildDownloadItem()
                         : new DownloadItem(false,
-                                  new DownloadInfo.Builder()
-                                          .setDownloadGuid(id.id)
-                                          .setIsOffTheRecord(isOffTheRecord)
-                                          .build());
-                downloadServiceDelegate.resumeDownload(id, item, true /* hasUserGesture */);
+                                new DownloadInfo.Builder()
+                                        .setDownloadGuid(id.id)
+                                        .setIsOffTheRecord(isOffTheRecord)
+                                        .build());
+                downloadServiceDelegate.resumeDownload(id, item,
+                        !IntentUtils.safeGetBooleanExtra(intent, EXTRA_IS_AUTO_RESUMPTION, false));
                 break;
 
             default:
@@ -294,7 +297,7 @@ public class DownloadBroadcastManager extends Service {
      * @return A {@link ContentId} built by pulling extras from {@code intent}.  This will be
      *         {@code null} if {@code intent} is missing any required extras.
      */
-    private static ContentId getContentIdFromIntent(Intent intent) {
+    static ContentId getContentIdFromIntent(Intent intent) {
         if (!intent.hasExtra(EXTRA_DOWNLOAD_CONTENTID_ID)
                 || !intent.hasExtra(EXTRA_DOWNLOAD_CONTENTID_NAMESPACE)) {
             return null;
@@ -312,45 +315,67 @@ public class DownloadBroadcastManager extends Service {
      * @return delegate for interactions with the entry
      */
     static DownloadServiceDelegate getServiceDelegate(ContentId id) {
-        if (LegacyHelpers.isLegacyDownload(id)) {
+        if (LegacyHelpers.isLegacyDownload(id)
+                && !ChromeFeatureList.isEnabled(
+                        ChromeFeatureList.DOWNLOAD_OFFLINE_CONTENT_PROVIDER)) {
             return DownloadManagerService.getDownloadManagerService();
         }
         return OfflineContentAggregatorNotificationBridgeUiFactory.instance();
     }
 
     /**
-     * Called to open a particular download item.  Falls back to opening Download Home.
+     * Called to open a particular download item. Falls back to opening Download Home if
+     * the download cannot be found by android DownloadManager.
      * @param context Context of the receiver.
-     * @param intent Intent from the android DownloadManager.
+     * @param intent Intent from the notification.
+     * @param contentId Content ID of the download.
      */
     private void openDownload(Context context, Intent intent, ContentId contentId) {
-        long ids[] =
-                intent.getLongArrayExtra(DownloadManager.EXTRA_NOTIFICATION_CLICK_DOWNLOAD_IDS);
-        if (ids == null || ids.length == 0) {
-            DownloadManagerService.openDownloadsPage(context);
-            return;
-        }
-
-        long id = ids[0];
-        DownloadManagerBridge.queryDownloadResult(id, result -> {
-            if (result.contentUri == null) {
-                DownloadManagerService.openDownloadsPage(context);
+        String downloadFilePath = IntentUtils.safeGetStringExtra(
+                intent, DownloadNotificationService.EXTRA_DOWNLOAD_FILE_PATH);
+        if (ContentUriUtils.isContentUri(downloadFilePath)) {
+            // On Q+, content URI is being used and there is no download ID.
+            openDownloadWithId(context, intent, DownloadConstants.INVALID_DOWNLOAD_ID, contentId);
+        } else {
+            long[] ids =
+                    intent.getLongArrayExtra(DownloadManager.EXTRA_NOTIFICATION_CLICK_DOWNLOAD_IDS);
+            if (ids == null || ids.length == 0) {
+                DownloadManagerService.openDownloadsPage(context, DownloadOpenSource.NOTIFICATION);
                 return;
             }
 
-            String downloadFilename = IntentUtils.safeGetStringExtra(
-                    intent, DownloadNotificationService.EXTRA_DOWNLOAD_FILE_PATH);
-            boolean isSupportedMimeType = IntentUtils.safeGetBooleanExtra(
-                    intent, DownloadNotificationService.EXTRA_IS_SUPPORTED_MIME_TYPE, false);
-            boolean isOffTheRecord = IntentUtils.safeGetBooleanExtra(
-                    intent, DownloadNotificationService.EXTRA_IS_OFF_THE_RECORD, false);
-            String originalUrl =
-                    IntentUtils.safeGetStringExtra(intent, Intent.EXTRA_ORIGINATING_URI);
-            String referrer = IntentUtils.safeGetStringExtra(intent, Intent.EXTRA_REFERRER);
-            DownloadManagerService.openDownloadedContent(context, downloadFilename,
-                    isSupportedMimeType, isOffTheRecord, contentId.id, id, originalUrl, referrer,
-                    DownloadMetrics.DownloadOpenSource.NOTIFICATION);
-        });
+            long id = ids[0];
+            DownloadManagerBridge.queryDownloadResult(id, result -> {
+                if (result.contentUri == null) {
+                    DownloadManagerService.openDownloadsPage(
+                            context, DownloadOpenSource.NOTIFICATION);
+                    return;
+                }
+                openDownloadWithId(context, intent, id, contentId);
+            });
+        }
+    }
+
+    /**
+     * Called to open a particular download item with the given ID.
+     * @param context Context of the receiver.
+     * @param intent Intent from the notification.
+     * @param id ID from the Android DownloadManager, or DownloadConstants.INVALID_DOWNLOAD_ID on
+     *         Q+.
+     * @param contentId Content ID of the download.
+     */
+    private void openDownloadWithId(Context context, Intent intent, long id, ContentId contentId) {
+        String downloadFilePath = IntentUtils.safeGetStringExtra(
+                intent, DownloadNotificationService.EXTRA_DOWNLOAD_FILE_PATH);
+        boolean isSupportedMimeType = IntentUtils.safeGetBooleanExtra(
+                intent, DownloadNotificationService.EXTRA_IS_SUPPORTED_MIME_TYPE, false);
+        boolean isOffTheRecord = IntentUtils.safeGetBooleanExtra(
+                intent, DownloadNotificationService.EXTRA_IS_OFF_THE_RECORD, false);
+        String originalUrl = IntentUtils.safeGetStringExtra(intent, Intent.EXTRA_ORIGINATING_URI);
+        String referrer = IntentUtils.safeGetStringExtra(intent, Intent.EXTRA_REFERRER);
+        DownloadManagerService.openDownloadedContent(context, downloadFilePath, isSupportedMimeType,
+                isOffTheRecord, contentId.id, id, originalUrl, referrer,
+                DownloadOpenSource.NOTIFICATION, null);
     }
 
     @Nullable

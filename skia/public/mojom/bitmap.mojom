@@ -1,0 +1,23 @@
+// Copyright 2015 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// This file contains structures used to represent SkBitmaps in Mojo.
+module skia.mojom;
+
+import "mojo/public/mojom/base/big_buffer.mojom";
+import "skia/public/mojom/image_info.mojom";
+
+struct Bitmap {
+  ImageInfo image_info;
+  uint64 row_bytes;
+  mojo_base.mojom.BigBuffer pixel_data;
+};
+
+// NOTE: This should only be used when an SkBitmap MUST be serialized as raw
+// bytes (i.e. it's not OK for shared memory to be used, as above).
+struct InlineBitmap {
+  ImageInfo image_info;
+  uint64 row_bytes;
+  array<uint8> pixel_data;
+};

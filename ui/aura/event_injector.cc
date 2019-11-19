@@ -6,11 +6,6 @@
 
 #include <utility>
 
-#include "base/bind.h"
-#include "services/service_manager/public/cpp/connector.h"
-#include "services/ws/public/mojom/constants.mojom.h"
-#include "ui/aura/env.h"
-#include "ui/aura/mus/window_tree_client.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/events/event.h"
@@ -18,59 +13,25 @@
 
 namespace aura {
 
-namespace {
+EventInjector::EventInjector() = default;
 
-void RunCallback(base::OnceClosure callback, bool processed) {
-  if (!callback)
-    return;
-
-  std::move(callback).Run();
-}
-
-}  // namespace
-
-EventInjector::EventInjector() {}
-
-EventInjector::~EventInjector() {
-  // |event_injector_| should not be waiting for responses. Otherwise, the
-  // pending callback would not happen because the mojo channel is closed.
-  DCHECK(!has_pending_callback_ || !event_injector_.IsExpectingResponse());
-}
+EventInjector::~EventInjector() = default;
 
 ui::EventDispatchDetails EventInjector::Inject(WindowTreeHost* host,
-                                               ui::Event* event,
-                                               base::OnceClosure callback) {
+                                               ui::Event* event) {
   DCHECK(host);
-  Env* env = host->window()->env();
-  DCHECK(env);
   DCHECK(event);
 
-  if (env->mode() == Env::Mode::LOCAL) {
-    ui::EventDispatchDetails details =
-        host->event_sink()->OnEventFromSource(event);
-    RunCallback(std::move(callback), /*processed=*/true);
-    return details;
-  }
-
-  has_pending_callback_ |= !callback.is_null();
-
   if (event->IsLocatedEvent()) {
-    // The ui-service expects events coming in to have a location matching the
-    // root location. The non-ui-service code does this by way of
-    // OnEventFromSource() ending up in LocatedEvent::UpdateForRootTransform(),
-    // which reset the root_location to match the location.
-    event->AsLocatedEvent()->set_root_location_f(
-        event->AsLocatedEvent()->location_f());
+    ui::LocatedEvent* located_event = event->AsLocatedEvent();
+    // Transforming the coordinate to the root will apply the screen scale
+    // factor to the event's location and also the screen rotation degree.
+    located_event->UpdateForRootTransform(
+        host->GetRootTransform(),
+        host->GetRootTransformForLocalEventCoordinates());
   }
 
-  if (!event_injector_) {
-    env->window_tree_client_->connector()->BindInterface(
-        ws::mojom::kServiceName, &event_injector_);
-  }
-  event_injector_->InjectEvent(
-      host->GetDisplayId(), ui::Event::Clone(*event),
-      base::BindOnce(&RunCallback, std::move(callback)));
-  return ui::EventDispatchDetails();
+  return host->event_sink()->OnEventFromSource(event);
 }
 
 }  // namespace aura

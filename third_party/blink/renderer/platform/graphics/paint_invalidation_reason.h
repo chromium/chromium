@@ -23,6 +23,7 @@ enum class PaintInvalidationReason : uint8_t {
   kFull,
   kStyle,
   // Layout or visual geometry change.
+  kBackplate,
   kGeometry,
   kCompositing,
   kAppeared,

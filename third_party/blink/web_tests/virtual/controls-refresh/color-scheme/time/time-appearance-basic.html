@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<script src="../../../../resources/run-after-layout-and-paint.js"></script>
+<script src="../../../../fast/forms/resources/common.js"></script>
+<body>
+
+<!-- no style for reference -->
+<ul>
+  <li>Time: <input type="time" /></li>
+</ul>
+
+<!-- disabled, readonly -->
+<ul>
+  <li>Time disabled: <input type="time" disabled/></li>
+  <li>Time readonly: <input type="time" readonly/></li>
+</ul>
+
+<!-- RTL -->
+<ul>
+  <li>Time RTL: <input type="time" value="13:00" dir="rtl"/></li>
+</ul>
+
+<!-- font-size, font-weight -->
+<ul>
+  <li>Time font-size, font-weight: <input type="time" value="13:00" style="font-size: 36px; font-weight: bold;"/> </li>
+</ul>
+
+<!-- hover -->
+<ul>
+  <li>Time hover: <input type="time" id="hoverTarget" value="13:00"/></li>
+</ul>
+
+<!-- small width -->
+<ul>
+  <li>Time width: 10px: <input type="time" style="width: 10px;"/> </li>
+</ul>
+
+<!-- zoom -->
+<ul>
+  <li>Time zoom: 1.5: <input type="time" style="zoom: 1.5;"/></li>
+  <li>Time zoom: 3: <input type="time" style="zoom: 3;"/></li>
+</ul>
+
+<script>
+
+runAfterLayoutAndPaint(function() {
+  var target = document.getElementById('hoverTarget');
+  hoverOverElement(target);
+}, true);
+
+</script>
+
+</body>

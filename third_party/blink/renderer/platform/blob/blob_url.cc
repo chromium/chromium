@@ -30,10 +30,10 @@
 
 #include "third_party/blink/renderer/platform/blob/blob_url.h"
 
-#include "third_party/blink/renderer/platform/uuid.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "third_party/blink/renderer/platform/wtf/uuid.h"
 
 namespace blink {
 
@@ -55,7 +55,7 @@ String BlobURL::GetOrigin(const KURL& url) {
 KURL BlobURL::CreateBlobURL(const String& origin_string) {
   DCHECK(!origin_string.IsEmpty());
   String url_string =
-      "blob:" + origin_string + '/' + CreateCanonicalUUIDString();
+      "blob:" + origin_string + '/' + WTF::CreateCanonicalUUIDString();
   return KURL::CreateIsolated(url_string);
 }
 

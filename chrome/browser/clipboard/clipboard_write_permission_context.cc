@@ -12,7 +12,7 @@
 ClipboardWritePermissionContext::ClipboardWritePermissionContext(
     Profile* profile)
     : PermissionContextBase(profile,
-                            CONTENT_SETTINGS_TYPE_CLIPBOARD_WRITE,
+                            ContentSettingsType::CLIPBOARD_WRITE,
                             blink::mojom::FeaturePolicyFeature::kNotFound) {}
 
 ClipboardWritePermissionContext::~ClipboardWritePermissionContext() {}

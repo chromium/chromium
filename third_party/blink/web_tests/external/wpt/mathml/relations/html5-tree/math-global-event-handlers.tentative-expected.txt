@@ -1,0 +1,314 @@
+This is a testharness.js-based test.
+Found 310 tests; 295 PASS, 15 FAIL, 0 TIMEOUT, 0 NOTRUN.
+PASS onabort: must be on the appropriate locations for GlobalEventHandlers
+PASS onabort: the default value must be null
+PASS onabort: the content attribute must be compiled into a function as the corresponding property
+PASS onabort: dynamic changes on the attribute
+PASS onabort: dispatching an Event at a <math> element must trigger element.onabort
+PASS onauxclick: must be on the appropriate locations for GlobalEventHandlers
+PASS onauxclick: the default value must be null
+PASS onauxclick: the content attribute must be compiled into a function as the corresponding property
+PASS onauxclick: dynamic changes on the attribute
+PASS onauxclick: dispatching an Event at a <math> element must trigger element.onauxclick
+PASS onblur: must be on the appropriate locations for GlobalEventHandlers
+PASS onblur: the default value must be null
+PASS onblur: the content attribute must be compiled into a function as the corresponding property
+PASS onblur: dynamic changes on the attribute
+PASS onblur: dispatching an Event at a <math> element must trigger element.onblur
+PASS oncancel: must be on the appropriate locations for GlobalEventHandlers
+PASS oncancel: the default value must be null
+PASS oncancel: the content attribute must be compiled into a function as the corresponding property
+PASS oncancel: dynamic changes on the attribute
+PASS oncancel: dispatching an Event at a <math> element must trigger element.oncancel
+PASS oncanplay: must be on the appropriate locations for GlobalEventHandlers
+PASS oncanplay: the default value must be null
+PASS oncanplay: the content attribute must be compiled into a function as the corresponding property
+PASS oncanplay: dynamic changes on the attribute
+PASS oncanplay: dispatching an Event at a <math> element must trigger element.oncanplay
+PASS oncanplaythrough: must be on the appropriate locations for GlobalEventHandlers
+PASS oncanplaythrough: the default value must be null
+PASS oncanplaythrough: the content attribute must be compiled into a function as the corresponding property
+PASS oncanplaythrough: dynamic changes on the attribute
+PASS oncanplaythrough: dispatching an Event at a <math> element must trigger element.oncanplaythrough
+PASS onchange: must be on the appropriate locations for GlobalEventHandlers
+PASS onchange: the default value must be null
+PASS onchange: the content attribute must be compiled into a function as the corresponding property
+PASS onchange: dynamic changes on the attribute
+PASS onchange: dispatching an Event at a <math> element must trigger element.onchange
+PASS onclick: must be on the appropriate locations for GlobalEventHandlers
+PASS onclick: the default value must be null
+PASS onclick: the content attribute must be compiled into a function as the corresponding property
+PASS onclick: dynamic changes on the attribute
+PASS onclick: dispatching an Event at a <math> element must trigger element.onclick
+PASS onclose: must be on the appropriate locations for GlobalEventHandlers
+PASS onclose: the default value must be null
+PASS onclose: the content attribute must be compiled into a function as the corresponding property
+PASS onclose: dynamic changes on the attribute
+PASS onclose: dispatching an Event at a <math> element must trigger element.onclose
+PASS oncontextmenu: must be on the appropriate locations for GlobalEventHandlers
+PASS oncontextmenu: the default value must be null
+PASS oncontextmenu: the content attribute must be compiled into a function as the corresponding property
+PASS oncontextmenu: dynamic changes on the attribute
+PASS oncontextmenu: dispatching an Event at a <math> element must trigger element.oncontextmenu
+PASS oncuechange: must be on the appropriate locations for GlobalEventHandlers
+PASS oncuechange: the default value must be null
+PASS oncuechange: the content attribute must be compiled into a function as the corresponding property
+PASS oncuechange: dynamic changes on the attribute
+PASS oncuechange: dispatching an Event at a <math> element must trigger element.oncuechange
+PASS ondblclick: must be on the appropriate locations for GlobalEventHandlers
+PASS ondblclick: the default value must be null
+PASS ondblclick: the content attribute must be compiled into a function as the corresponding property
+PASS ondblclick: dynamic changes on the attribute
+PASS ondblclick: dispatching an Event at a <math> element must trigger element.ondblclick
+PASS ondrag: must be on the appropriate locations for GlobalEventHandlers
+PASS ondrag: the default value must be null
+PASS ondrag: the content attribute must be compiled into a function as the corresponding property
+PASS ondrag: dynamic changes on the attribute
+PASS ondrag: dispatching an Event at a <math> element must trigger element.ondrag
+PASS ondragend: must be on the appropriate locations for GlobalEventHandlers
+PASS ondragend: the default value must be null
+PASS ondragend: the content attribute must be compiled into a function as the corresponding property
+PASS ondragend: dynamic changes on the attribute
+PASS ondragend: dispatching an Event at a <math> element must trigger element.ondragend
+PASS ondragenter: must be on the appropriate locations for GlobalEventHandlers
+PASS ondragenter: the default value must be null
+PASS ondragenter: the content attribute must be compiled into a function as the corresponding property
+PASS ondragenter: dynamic changes on the attribute
+PASS ondragenter: dispatching an Event at a <math> element must trigger element.ondragenter
+FAIL ondragexit: must be on the appropriate locations for GlobalEventHandlers assert_true: MathMLElement has an own property named "ondragexit" expected true got false
+FAIL ondragexit: the default value must be null assert_equals: The default value of the property is null for a MathMLElement instance expected (object) null but got (undefined) undefined
+FAIL ondragexit: the content attribute must be compiled into a function as the corresponding property assert_equals: The ondragexit property must be a function expected "function" but got "undefined"
+FAIL ondragexit: dynamic changes on the attribute assert_equals: The ondragexit property must be null (no attribute) expected (object) null but got (undefined) undefined
+FAIL ondragexit: dispatching an Event at a <math> element must trigger element.ondragexit assert_equals: The event must be fired at the <math> element expected (object) Element node <math></math> but got (undefined) undefined
+PASS ondragleave: must be on the appropriate locations for GlobalEventHandlers
+PASS ondragleave: the default value must be null
+PASS ondragleave: the content attribute must be compiled into a function as the corresponding property
+PASS ondragleave: dynamic changes on the attribute
+PASS ondragleave: dispatching an Event at a <math> element must trigger element.ondragleave
+PASS ondragover: must be on the appropriate locations for GlobalEventHandlers
+PASS ondragover: the default value must be null
+PASS ondragover: the content attribute must be compiled into a function as the corresponding property
+PASS ondragover: dynamic changes on the attribute
+PASS ondragover: dispatching an Event at a <math> element must trigger element.ondragover
+PASS ondragstart: must be on the appropriate locations for GlobalEventHandlers
+PASS ondragstart: the default value must be null
+PASS ondragstart: the content attribute must be compiled into a function as the corresponding property
+PASS ondragstart: dynamic changes on the attribute
+PASS ondragstart: dispatching an Event at a <math> element must trigger element.ondragstart
+PASS ondrop: must be on the appropriate locations for GlobalEventHandlers
+PASS ondrop: the default value must be null
+PASS ondrop: the content attribute must be compiled into a function as the corresponding property
+PASS ondrop: dynamic changes on the attribute
+PASS ondrop: dispatching an Event at a <math> element must trigger element.ondrop
+PASS ondurationchange: must be on the appropriate locations for GlobalEventHandlers
+PASS ondurationchange: the default value must be null
+PASS ondurationchange: the content attribute must be compiled into a function as the corresponding property
+PASS ondurationchange: dynamic changes on the attribute
+PASS ondurationchange: dispatching an Event at a <math> element must trigger element.ondurationchange
+PASS onemptied: must be on the appropriate locations for GlobalEventHandlers
+PASS onemptied: the default value must be null
+PASS onemptied: the content attribute must be compiled into a function as the corresponding property
+PASS onemptied: dynamic changes on the attribute
+PASS onemptied: dispatching an Event at a <math> element must trigger element.onemptied
+PASS onended: must be on the appropriate locations for GlobalEventHandlers
+PASS onended: the default value must be null
+PASS onended: the content attribute must be compiled into a function as the corresponding property
+PASS onended: dynamic changes on the attribute
+PASS onended: dispatching an Event at a <math> element must trigger element.onended
+PASS onfocus: must be on the appropriate locations for GlobalEventHandlers
+PASS onfocus: the default value must be null
+PASS onfocus: the content attribute must be compiled into a function as the corresponding property
+PASS onfocus: dynamic changes on the attribute
+PASS onfocus: dispatching an Event at a <math> element must trigger element.onfocus
+PASS onformdata: must be on the appropriate locations for GlobalEventHandlers
+PASS onformdata: the default value must be null
+PASS onformdata: the content attribute must be compiled into a function as the corresponding property
+PASS onformdata: dynamic changes on the attribute
+PASS onformdata: dispatching an Event at a <math> element must trigger element.onformdata
+PASS oninput: must be on the appropriate locations for GlobalEventHandlers
+PASS oninput: the default value must be null
+PASS oninput: the content attribute must be compiled into a function as the corresponding property
+PASS oninput: dynamic changes on the attribute
+PASS oninput: dispatching an Event at a <math> element must trigger element.oninput
+PASS oninvalid: must be on the appropriate locations for GlobalEventHandlers
+PASS oninvalid: the default value must be null
+PASS oninvalid: the content attribute must be compiled into a function as the corresponding property
+PASS oninvalid: dynamic changes on the attribute
+PASS oninvalid: dispatching an Event at a <math> element must trigger element.oninvalid
+PASS onkeydown: must be on the appropriate locations for GlobalEventHandlers
+PASS onkeydown: the default value must be null
+PASS onkeydown: the content attribute must be compiled into a function as the corresponding property
+PASS onkeydown: dynamic changes on the attribute
+PASS onkeydown: dispatching an Event at a <math> element must trigger element.onkeydown
+PASS onkeypress: must be on the appropriate locations for GlobalEventHandlers
+PASS onkeypress: the default value must be null
+PASS onkeypress: the content attribute must be compiled into a function as the corresponding property
+PASS onkeypress: dynamic changes on the attribute
+PASS onkeypress: dispatching an Event at a <math> element must trigger element.onkeypress
+PASS onkeyup: must be on the appropriate locations for GlobalEventHandlers
+PASS onkeyup: the default value must be null
+PASS onkeyup: the content attribute must be compiled into a function as the corresponding property
+PASS onkeyup: dynamic changes on the attribute
+PASS onkeyup: dispatching an Event at a <math> element must trigger element.onkeyup
+PASS onload: must be on the appropriate locations for GlobalEventHandlers
+PASS onload: the default value must be null
+PASS onload: the content attribute must be compiled into a function as the corresponding property
+PASS onload: dynamic changes on the attribute
+PASS onload: dispatching an Event at a <math> element must trigger element.onload
+PASS onloadeddata: must be on the appropriate locations for GlobalEventHandlers
+PASS onloadeddata: the default value must be null
+PASS onloadeddata: the content attribute must be compiled into a function as the corresponding property
+PASS onloadeddata: dynamic changes on the attribute
+PASS onloadeddata: dispatching an Event at a <math> element must trigger element.onloadeddata
+PASS onloadedmetadata: must be on the appropriate locations for GlobalEventHandlers
+PASS onloadedmetadata: the default value must be null
+PASS onloadedmetadata: the content attribute must be compiled into a function as the corresponding property
+PASS onloadedmetadata: dynamic changes on the attribute
+PASS onloadedmetadata: dispatching an Event at a <math> element must trigger element.onloadedmetadata
+PASS onloadstart: must be on the appropriate locations for GlobalEventHandlers
+PASS onloadstart: the default value must be null
+PASS onloadstart: the content attribute must be compiled into a function as the corresponding property
+PASS onloadstart: dynamic changes on the attribute
+PASS onloadstart: dispatching an Event at a <math> element must trigger element.onloadstart
+PASS onmousedown: must be on the appropriate locations for GlobalEventHandlers
+PASS onmousedown: the default value must be null
+PASS onmousedown: the content attribute must be compiled into a function as the corresponding property
+PASS onmousedown: dynamic changes on the attribute
+PASS onmousedown: dispatching an Event at a <math> element must trigger element.onmousedown
+PASS onmouseenter: must be on the appropriate locations for GlobalEventHandlers
+PASS onmouseenter: the default value must be null
+PASS onmouseenter: the content attribute must be compiled into a function as the corresponding property
+PASS onmouseenter: dynamic changes on the attribute
+PASS onmouseenter: dispatching an Event at a <math> element must trigger element.onmouseenter
+PASS onmouseleave: must be on the appropriate locations for GlobalEventHandlers
+PASS onmouseleave: the default value must be null
+PASS onmouseleave: the content attribute must be compiled into a function as the corresponding property
+PASS onmouseleave: dynamic changes on the attribute
+PASS onmouseleave: dispatching an Event at a <math> element must trigger element.onmouseleave
+PASS onmousemove: must be on the appropriate locations for GlobalEventHandlers
+PASS onmousemove: the default value must be null
+PASS onmousemove: the content attribute must be compiled into a function as the corresponding property
+PASS onmousemove: dynamic changes on the attribute
+PASS onmousemove: dispatching an Event at a <math> element must trigger element.onmousemove
+PASS onmouseout: must be on the appropriate locations for GlobalEventHandlers
+PASS onmouseout: the default value must be null
+PASS onmouseout: the content attribute must be compiled into a function as the corresponding property
+PASS onmouseout: dynamic changes on the attribute
+PASS onmouseout: dispatching an Event at a <math> element must trigger element.onmouseout
+PASS onmouseover: must be on the appropriate locations for GlobalEventHandlers
+PASS onmouseover: the default value must be null
+PASS onmouseover: the content attribute must be compiled into a function as the corresponding property
+PASS onmouseover: dynamic changes on the attribute
+PASS onmouseover: dispatching an Event at a <math> element must trigger element.onmouseover
+PASS onmouseup: must be on the appropriate locations for GlobalEventHandlers
+PASS onmouseup: the default value must be null
+PASS onmouseup: the content attribute must be compiled into a function as the corresponding property
+PASS onmouseup: dynamic changes on the attribute
+PASS onmouseup: dispatching an Event at a <math> element must trigger element.onmouseup
+PASS onwheel: must be on the appropriate locations for GlobalEventHandlers
+PASS onwheel: the default value must be null
+PASS onwheel: the content attribute must be compiled into a function as the corresponding property
+PASS onwheel: dynamic changes on the attribute
+PASS onwheel: dispatching an Event at a <math> element must trigger element.onwheel
+PASS onpause: must be on the appropriate locations for GlobalEventHandlers
+PASS onpause: the default value must be null
+PASS onpause: the content attribute must be compiled into a function as the corresponding property
+PASS onpause: dynamic changes on the attribute
+PASS onpause: dispatching an Event at a <math> element must trigger element.onpause
+PASS onplay: must be on the appropriate locations for GlobalEventHandlers
+PASS onplay: the default value must be null
+PASS onplay: the content attribute must be compiled into a function as the corresponding property
+PASS onplay: dynamic changes on the attribute
+PASS onplay: dispatching an Event at a <math> element must trigger element.onplay
+PASS onplaying: must be on the appropriate locations for GlobalEventHandlers
+PASS onplaying: the default value must be null
+PASS onplaying: the content attribute must be compiled into a function as the corresponding property
+PASS onplaying: dynamic changes on the attribute
+PASS onplaying: dispatching an Event at a <math> element must trigger element.onplaying
+PASS onprogress: must be on the appropriate locations for GlobalEventHandlers
+PASS onprogress: the default value must be null
+PASS onprogress: the content attribute must be compiled into a function as the corresponding property
+PASS onprogress: dynamic changes on the attribute
+PASS onprogress: dispatching an Event at a <math> element must trigger element.onprogress
+PASS onratechange: must be on the appropriate locations for GlobalEventHandlers
+PASS onratechange: the default value must be null
+PASS onratechange: the content attribute must be compiled into a function as the corresponding property
+PASS onratechange: dynamic changes on the attribute
+PASS onratechange: dispatching an Event at a <math> element must trigger element.onratechange
+PASS onreset: must be on the appropriate locations for GlobalEventHandlers
+PASS onreset: the default value must be null
+PASS onreset: the content attribute must be compiled into a function as the corresponding property
+PASS onreset: dynamic changes on the attribute
+PASS onreset: dispatching an Event at a <math> element must trigger element.onreset
+PASS onresize: must be on the appropriate locations for GlobalEventHandlers
+PASS onresize: the default value must be null
+PASS onresize: the content attribute must be compiled into a function as the corresponding property
+PASS onresize: dynamic changes on the attribute
+PASS onresize: dispatching an Event at a <math> element must trigger element.onresize
+PASS onscroll: must be on the appropriate locations for GlobalEventHandlers
+PASS onscroll: the default value must be null
+PASS onscroll: the content attribute must be compiled into a function as the corresponding property
+PASS onscroll: dynamic changes on the attribute
+PASS onscroll: dispatching an Event at a <math> element must trigger element.onscroll
+FAIL onsecuritypolicyviolation: must be on the appropriate locations for GlobalEventHandlers assert_true: MathMLElement has an own property named "onsecuritypolicyviolation" expected true got false
+FAIL onsecuritypolicyviolation: the default value must be null assert_equals: The default value of the property is null for a MathMLElement instance expected (object) null but got (undefined) undefined
+FAIL onsecuritypolicyviolation: the content attribute must be compiled into a function as the corresponding property assert_equals: The onsecuritypolicyviolation property must be a function expected "function" but got "undefined"
+FAIL onsecuritypolicyviolation: dynamic changes on the attribute assert_equals: The onsecuritypolicyviolation property must be null (no attribute) expected (object) null but got (undefined) undefined
+FAIL onsecuritypolicyviolation: dispatching an Event at a <math> element must trigger element.onsecuritypolicyviolation assert_equals: The event must be fired at the <math> element expected (object) Element node <math></math> but got (undefined) undefined
+PASS onseeked: must be on the appropriate locations for GlobalEventHandlers
+PASS onseeked: the default value must be null
+PASS onseeked: the content attribute must be compiled into a function as the corresponding property
+PASS onseeked: dynamic changes on the attribute
+PASS onseeked: dispatching an Event at a <math> element must trigger element.onseeked
+PASS onseeking: must be on the appropriate locations for GlobalEventHandlers
+PASS onseeking: the default value must be null
+PASS onseeking: the content attribute must be compiled into a function as the corresponding property
+PASS onseeking: dynamic changes on the attribute
+PASS onseeking: dispatching an Event at a <math> element must trigger element.onseeking
+PASS onselect: must be on the appropriate locations for GlobalEventHandlers
+PASS onselect: the default value must be null
+PASS onselect: the content attribute must be compiled into a function as the corresponding property
+PASS onselect: dynamic changes on the attribute
+PASS onselect: dispatching an Event at a <math> element must trigger element.onselect
+FAIL onslotchange: must be on the appropriate locations for GlobalEventHandlers assert_true: MathMLElement has an own property named "onslotchange" expected true got false
+FAIL onslotchange: the default value must be null assert_equals: The default value of the property is null for a MathMLElement instance expected (object) null but got (undefined) undefined
+FAIL onslotchange: the content attribute must be compiled into a function as the corresponding property assert_equals: The onslotchange property must be a function expected "function" but got "undefined"
+FAIL onslotchange: dynamic changes on the attribute assert_equals: The onslotchange property must be null (no attribute) expected (object) null but got (undefined) undefined
+FAIL onslotchange: dispatching an Event at a <math> element must trigger element.onslotchange assert_equals: The event must be fired at the <math> element expected (object) Element node <math></math> but got (undefined) undefined
+PASS onstalled: must be on the appropriate locations for GlobalEventHandlers
+PASS onstalled: the default value must be null
+PASS onstalled: the content attribute must be compiled into a function as the corresponding property
+PASS onstalled: dynamic changes on the attribute
+PASS onstalled: dispatching an Event at a <math> element must trigger element.onstalled
+PASS onsubmit: must be on the appropriate locations for GlobalEventHandlers
+PASS onsubmit: the default value must be null
+PASS onsubmit: the content attribute must be compiled into a function as the corresponding property
+PASS onsubmit: dynamic changes on the attribute
+PASS onsubmit: dispatching an Event at a <math> element must trigger element.onsubmit
+PASS onsuspend: must be on the appropriate locations for GlobalEventHandlers
+PASS onsuspend: the default value must be null
+PASS onsuspend: the content attribute must be compiled into a function as the corresponding property
+PASS onsuspend: dynamic changes on the attribute
+PASS onsuspend: dispatching an Event at a <math> element must trigger element.onsuspend
+PASS ontimeupdate: must be on the appropriate locations for GlobalEventHandlers
+PASS ontimeupdate: the default value must be null
+PASS ontimeupdate: the content attribute must be compiled into a function as the corresponding property
+PASS ontimeupdate: dynamic changes on the attribute
+PASS ontimeupdate: dispatching an Event at a <math> element must trigger element.ontimeupdate
+PASS ontoggle: must be on the appropriate locations for GlobalEventHandlers
+PASS ontoggle: the default value must be null
+PASS ontoggle: the content attribute must be compiled into a function as the corresponding property
+PASS ontoggle: dynamic changes on the attribute
+PASS ontoggle: dispatching an Event at a <math> element must trigger element.ontoggle
+PASS onvolumechange: must be on the appropriate locations for GlobalEventHandlers
+PASS onvolumechange: the default value must be null
+PASS onvolumechange: the content attribute must be compiled into a function as the corresponding property
+PASS onvolumechange: dynamic changes on the attribute
+PASS onvolumechange: dispatching an Event at a <math> element must trigger element.onvolumechange
+PASS onwaiting: must be on the appropriate locations for GlobalEventHandlers
+PASS onwaiting: the default value must be null
+PASS onwaiting: the content attribute must be compiled into a function as the corresponding property
+PASS onwaiting: dynamic changes on the attribute
+PASS onwaiting: dispatching an Event at a <math> element must trigger element.onwaiting
+Harness: the test ran to completion.
+

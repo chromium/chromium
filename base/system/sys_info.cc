@@ -11,10 +11,10 @@
 #include "base/callback.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
-#include "base/lazy_instance.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/no_destructor.h"
 #include "base/system/sys_info_internal.h"
 #include "base/task/post_task.h"
 #include "base/task/task_traits.h"
@@ -89,12 +89,12 @@ bool DetectLowEndDevice() {
   return (ram_size_mb > 0 && ram_size_mb <= GetLowMemoryDeviceThresholdMB());
 }
 
-static LazyInstance<internal::LazySysInfoValue<bool, DetectLowEndDevice>>::Leaky
-    g_lazy_low_end_device = LAZY_INSTANCE_INITIALIZER;
-
 // static
 bool SysInfo::IsLowEndDeviceImpl() {
-  return g_lazy_low_end_device.Get().value();
+  static base::NoDestructor<
+      internal::LazySysInfoValue<bool, DetectLowEndDevice>>
+      instance;
+  return instance->value();
 }
 #endif
 
@@ -107,15 +107,15 @@ std::string SysInfo::HardwareModelName() {
 void SysInfo::GetHardwareInfo(base::OnceCallback<void(HardwareInfo)> callback) {
 #if defined(OS_WIN)
   base::PostTaskAndReplyWithResult(
-      base::CreateCOMSTATaskRunnerWithTraits({}).get(), FROM_HERE,
+      base::CreateCOMSTATaskRunner({ThreadPool()}).get(), FROM_HERE,
       base::BindOnce(&GetHardwareInfoSync), std::move(callback));
 #elif defined(OS_ANDROID) || defined(OS_MACOSX)
   base::PostTaskAndReplyWithResult(
       FROM_HERE, base::BindOnce(&GetHardwareInfoSync), std::move(callback));
 #elif defined(OS_LINUX)
-  base::PostTaskWithTraitsAndReplyWithResult(
-      FROM_HERE, {base::MayBlock()}, base::BindOnce(&GetHardwareInfoSync),
-      std::move(callback));
+  base::PostTaskAndReplyWithResult(FROM_HERE, {ThreadPool(), base::MayBlock()},
+                                   base::BindOnce(&GetHardwareInfoSync),
+                                   std::move(callback));
 #else
   NOTIMPLEMENTED();
   base::PostTask(FROM_HERE,

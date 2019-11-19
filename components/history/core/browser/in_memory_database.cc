@@ -30,9 +30,6 @@ bool InMemoryDatabase::InitDB() {
   // No reason to leave data behind in memory when rows are removed.
   ignore_result(db_.Execute("PRAGMA auto_vacuum=1"));
 
-  // Ensure this is really an in-memory-only cache.
-  ignore_result(db_.Execute("PRAGMA temp_store=MEMORY"));
-
   // Create the URL table, but leave it empty for now.
   if (!CreateURLTable(false)) {
     NOTREACHED() << "Unable to create table";
@@ -57,7 +54,6 @@ bool InMemoryDatabase::InitFromScratch() {
   // InitDB doesn't create the index so in the disk-loading case, it can be
   // added afterwards.
   CreateMainURLIndex();
-  CreateKeywordSearchTermsIndices();
   return true;
 }
 
@@ -104,17 +100,6 @@ bool InMemoryDatabase::InitFromDisk(const base::FilePath& history_name) {
   UMA_HISTOGRAM_COUNTS_1M("History.InMemoryDBItemCount",
                           db_.GetLastChangeCount());
 
-  {
-    // This calculation should be fast (since it's on an in-memory DB with
-    // an average of only 35 rows).
-    sql::Statement visit_count(db_.GetUniqueStatement(
-        "SELECT sum(visit_count) FROM urls"));
-    if (visit_count.Step()) {
-      UMA_HISTOGRAM_COUNTS_1M("History.InMemoryTypedUrlVisitCount",
-                              visit_count.ColumnInt(0));
-    }
-  }
-
   // Insert keyword search related URLs.
   begin_load = base::TimeTicks::Now();
   if (!db_.Execute("INSERT OR IGNORE INTO urls SELECT u.id, u.url, u.title, "
@@ -153,7 +138,6 @@ bool InMemoryDatabase::InitFromDisk(const base::FilePath& history_name) {
   // Index the table, this is faster than creating the index first and then
   // inserting into it.
   CreateMainURLIndex();
-  CreateKeywordSearchTermsIndices();
 
   return true;
 }

@@ -1,15 +1,23 @@
 This is a testharness.js-based test.
-FAIL GeolocationSensor: Test that 'onreading' is called and sensor reading is valid assert_true: expected true got false
-FAIL GeolocationSensor: sensor reading is correct assert_true: expected true got false
-FAIL GeolocationSensor: sensor timestamp is updated when time passes assert_true: expected true got false
+FAIL GeolocationSensor: Test that onerror is sent when sensor is not supported. assert_true: expected true got false
+FAIL GeolocationSensor: Test that onerror is sent when permissions are not granted. assert_true: expected true got false
+FAIL GeolocationSensor: Test that onerror is send when start() call has failed. assert_true: expected true got false
+FAIL GeolocationSensor: Test that frequency is capped to allowed maximum. assert_true: expected true got false
+FAIL GeolocationSensor: Test that frequency is capped to the maximum supported frequency. assert_true: expected true got false
+FAIL GeolocationSensor: Test that frequency is limited to the minimum supported frequency. assert_true: expected true got false
+FAIL GeolocationSensor: Test that sensor cannot be constructed within iframe disallowed to use feature policy. assert_true: expected true got false
+FAIL GeolocationSensor: Test that sensor can be constructed within an iframe allowed to use feature policy. assert_true: expected true got false
+FAIL GeolocationSensor: Test that 'onreading' is called and sensor reading is valid. assert_true: expected true got false
+FAIL GeolocationSensor: sensor reading is correct. assert_true: expected true got false
+FAIL GeolocationSensor: sensor timestamp is updated when time passes. assert_true: expected true got false
 FAIL GeolocationSensor: Test that sensor can be successfully created and its states are correct. assert_true: expected true got false
-FAIL GeolocationSensor: sensor.start() returns undefined assert_true: expected true got false
-FAIL GeolocationSensor: no exception is thrown when calling start() on already started sensor assert_true: expected true got false
-FAIL GeolocationSensor: sensor.stop() returns undefined assert_true: expected true got false
-FAIL GeolocationSensor: no exception is thrown when calling stop() on already stopped sensor assert_true: expected true got false
-FAIL GeolocationSensor: Test that fresh reading is fetched on start() assert_true: expected true got false
-FAIL GeolocationSensor: frequency hint works assert_true: expected true got false
-FAIL GeolocationSensor: sensor receives suspend / resume notifications when  cross-origin subframe is focused assert_true: expected true got false
-FAIL GeolocationSensor: throw 'TypeError' if frequency is invalid assert_true: expected true got false
+FAIL GeolocationSensor: sensor.start() returns undefined. assert_true: expected true got false
+FAIL GeolocationSensor: no exception is thrown when calling start() on already started sensor. assert_true: expected true got false
+FAIL GeolocationSensor: sensor.stop() returns undefined. assert_true: expected true got false
+FAIL GeolocationSensor: no exception is thrown when calling stop() on already stopped sensor. assert_true: expected true got false
+FAIL GeolocationSensor: Test that fresh reading is fetched on start(). assert_true: expected true got false
+FAIL GeolocationSensor: frequency hint works. assert_true: expected true got false
+FAIL GeolocationSensor: sensor receives suspend / resume notifications when cross-origin subframe is focused. assert_true: expected true got false
+FAIL GeolocationSensor: throw 'TypeError' if frequency is invalid. assert_true: expected true got false
 Harness: the test ran to completion.
 

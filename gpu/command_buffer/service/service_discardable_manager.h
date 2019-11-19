@@ -24,10 +24,15 @@ GPU_GLES2_EXPORT size_t DiscardableCacheSizeLimitForPressure(
     size_t base_cache_limit,
     base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level);
 
-class GPU_GLES2_EXPORT ServiceDiscardableManager {
+class GPU_GLES2_EXPORT ServiceDiscardableManager
+    : public base::trace_event::MemoryDumpProvider {
  public:
   ServiceDiscardableManager();
-  ~ServiceDiscardableManager();
+  ~ServiceDiscardableManager() override;
+
+  // base::trace_event::MemoryDumpProvider implementation.
+  bool OnMemoryDump(const base::trace_event::MemoryDumpArgs& args,
+                    base::trace_event::ProcessMemoryDump* pmd) override;
 
   void InsertLockedTexture(uint32_t texture_id,
                            size_t texture_size,

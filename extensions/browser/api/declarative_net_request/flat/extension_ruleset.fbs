@@ -10,6 +10,43 @@ include "components/url_pattern_index/flat/url_pattern_index.fbs";
 
 namespace extensions.declarative_net_request.flat;
 
+table QueryKeyValue {
+  key : string (required);
+  value : string (required);
+}
+
+table UrlTransform {
+   scheme : string;
+   host : string;
+
+   clear_port : bool = false;
+   port : string;
+
+   clear_path : bool = false;
+   path : string;
+
+   clear_query : bool = false;
+
+   /// If valid, doesn't include the '?' separator.
+   query : string;
+
+   /// Query params to be removed. These are already sorted and escaped using
+   /// net::EscapeQueryParamValue.
+   remove_query_params : [string];
+
+   /// Query params to be added/replaced. These are already escaped using
+   /// net::EscapeQueryParamValue.
+   add_or_replace_query_params : [QueryKeyValue];
+
+   clear_fragment : bool = false;
+
+   /// If valid, doesn't include the '#' separator.
+   fragment : string;
+
+   username : string;
+   password : string;
+}
+
 /// Additional extension related metadata for a url_pattern_index UrlRule.
 table UrlRuleMetadata {
   /// ID of the UrlRule for which this metadata is stored.
@@ -17,19 +54,68 @@ table UrlRuleMetadata {
 
   /// Redirect url for this rule. Should represent a valid GURL.
   redirect_url : string;
+
+  /// UrlTransform for this rule. Exactly one of |redirect_url| or |transform|
+  /// should be specified for redirect rules.
+  transform : UrlTransform;
+}
+
+/// This provides a mapping from an action to its index within the |index_list|
+/// vector.
+/// TODO(crbug.com/1017868): This should be unified with ActionType once generic
+/// priorities are implemented.
+enum ActionIndex : ubyte {
+  block = 0,
+  allow,
+  redirect,
+  upgrade_scheme,
+  remove_cookie_header,
+  remove_referer_header,
+  remove_set_cookie_header,
+  /// Number of actions. Must be the last entry.
+  count
+}
+
+/// The type of an action. Corresponds to
+/// extensions::api::declarative_net_request::RuleActionType.
+enum ActionType : ubyte {
+  block,
+  allow,
+  redirect,
+  upgrade_scheme,
+  remove_headers
+}
+
+/// The type of header to remove. Corresponds to
+/// extensions::api::declarative_net_request::RemoveHeaderType.
+enum RemoveHeaderType : ubyte (bit_flags) {
+  cookie,
+  referer,
+  set_cookie
+}
+
+/// Completely represents a rule with a regex filter.
+table RegexRule {
+  /// The underlying UrlRule.
+  url_rule: url_pattern_index.flat.UrlRule;
+
+  /// The action to take.
+  action_type: ActionType;
+
+  /// The headers to be removed. Mask of RemoveHeaderType.
+  remove_headers_mask: ubyte;
 }
 
 /// The top-level data structure used to store extensions URL rules for the
 /// Declarative Net Request API.
 table ExtensionIndexedRuleset {
-  /// The index of all blocking URL rules.
-  blocking_index : url_pattern_index.flat.UrlPatternIndex;
+  /// Vector of UrlPatternIndex for different action types. This will consist
+  /// of ActionIndex_count indices.
+  index_list : [url_pattern_index.flat.UrlPatternIndex];
 
-  /// The index of all allowing URL rules.
-  allowing_index : url_pattern_index.flat.UrlPatternIndex;
-
-  /// The index of all redirect URL rules.
-  redirect_index : url_pattern_index.flat.UrlPatternIndex;
+  // Regex rules are not matched by UrlPatternIndex and so we don't build an
+  // index for them.
+  regex_rules: [RegexRule];
 
   /// Extension related metadata. Sorted by id, to support fast lookup.
   /// Currently this is only used for redirect rules.

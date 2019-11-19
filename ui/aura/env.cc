@@ -9,22 +9,13 @@
 #include "base/memory/ptr_util.h"
 #include "base/observer_list_types.h"
 #include "components/viz/common/features.h"
-#include "services/ws/public/mojom/window_tree.mojom.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/env_input_state_controller.h"
 #include "ui/aura/env_observer.h"
 #include "ui/aura/input_state_lookup.h"
-#include "ui/aura/local/window_port_local.h"
-#include "ui/aura/mouse_location_manager.h"
-#include "ui/aura/mus/mus_types.h"
-#include "ui/aura/mus/os_exchange_data_provider_mus.h"
-#include "ui/aura/mus/system_input_injector_mus.h"
-#include "ui/aura/mus/window_port_mus.h"
-#include "ui/aura/mus/window_tree_client.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_event_dispatcher_observer.h"
 #include "ui/aura/window_occlusion_tracker.h"
-#include "ui/aura/window_port_for_shutdown.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/events/event_observer.h"
 #include "ui/events/event_target_iterator.h"
@@ -90,11 +81,6 @@ class EventObserverAdapter : public ui::EventHandler,
 // Env, public:
 
 Env::~Env() {
-  if (is_os_exchange_data_provider_factory_)
-    ui::OSExchangeDataProviderFactory::SetFactory(nullptr);
-  if (is_override_input_injector_factory_)
-    ui::SetSystemInputInjectorFactory(nullptr);
-
   for (EnvObserver& observer : observers_)
     observer.OnWillDestroyEnv();
 
@@ -103,40 +89,14 @@ Env::~Env() {
 }
 
 // static
-std::unique_ptr<Env> Env::CreateInstance(Mode mode) {
+std::unique_ptr<Env> Env::CreateInstance() {
   DCHECK(!g_primary_instance);
   // No make_unique as constructor is private.
-  std::unique_ptr<Env> env(new Env(mode));
+  std::unique_ptr<Env> env(new Env());
   g_primary_instance = env.get();
-  env->Init(nullptr);
+  env->Init();
   return env;
 }
-
-// static
-std::unique_ptr<Env> Env::CreateLocalInstanceForInProcess() {
-  // It is expected this constructor is called *after* an instance has been
-  // created of type MUS. The order, and DCHECKs, aren't strictly necessary but
-  // help reinforce when this should be used.
-  DCHECK(g_primary_instance);
-  DCHECK(g_primary_instance->mode() == Mode::MUS);
-  // No make_unique as constructor is private.
-  std::unique_ptr<Env> env(new Env(Mode::LOCAL));
-  env->Init(nullptr);
-  return env;
-}
-
-#if defined(USE_OZONE)
-// static
-std::unique_ptr<Env> Env::CreateInstanceToHostViz(
-    service_manager::Connector* connector) {
-  DCHECK(!g_primary_instance);
-  // No make_unique as constructor is private.
-  std::unique_ptr<Env> env(new Env(Mode::LOCAL));
-  g_primary_instance = env.get();
-  env->Init(connector);
-  return env;
-}
-#endif
 
 // static
 Env* Env::GetInstance() {
@@ -149,18 +109,6 @@ Env* Env::GetInstance() {
 // static
 bool Env::HasInstance() {
   return !!g_primary_instance;
-}
-
-std::unique_ptr<WindowPort> Env::CreateWindowPort(Window* window) {
-  if (mode_ == Mode::LOCAL)
-    return std::make_unique<WindowPortLocal>(window);
-
-  if (in_mus_shutdown_)
-    return std::make_unique<WindowPortForShutdown>();
-
-  DCHECK(window_tree_client_);
-  return std::make_unique<WindowPortMus>(window_tree_client_,
-                                         WindowMusType::LOCAL);
 }
 
 void Env::AddObserver(EnvObserver* observer) {
@@ -186,34 +134,8 @@ bool Env::IsMouseButtonDown() const {
       mouse_button_flags_ != 0;
 }
 
-const gfx::Point& Env::last_mouse_location() const {
-  if (mode_ == Mode::LOCAL || always_use_last_mouse_location_ ||
-      !get_last_mouse_location_from_mus_) {
-    return last_mouse_location_;
-  }
-
-  // Some tests may not install a WindowTreeClient, and we allow multiple
-  // WindowTreeClients for the case of multiple connections, and this may be
-  // called during shutdown, when there is no WindowTreeClient.
-  if (window_tree_client_)
-    last_mouse_location_ = window_tree_client_->GetCursorScreenPoint();
-  return last_mouse_location_;
-}
-
 void Env::SetLastMouseLocation(const gfx::Point& last_mouse_location) {
   last_mouse_location_ = last_mouse_location;
-  if (mouse_location_manager_)
-    mouse_location_manager_->SetMouseLocation(last_mouse_location);
-}
-
-void Env::CreateMouseLocationManager() {
-  if (!mouse_location_manager_)
-    mouse_location_manager_ = std::make_unique<MouseLocationManager>();
-}
-
-mojo::ScopedSharedBufferHandle Env::GetLastMouseLocationMemory() {
-  DCHECK(mouse_location_manager_);
-  return mouse_location_manager_->GetMouseLocationMemory();
 }
 
 void Env::SetGestureRecognizer(
@@ -221,23 +143,7 @@ void Env::SetGestureRecognizer(
   gesture_recognizer_ = std::move(gesture_recognizer);
 }
 
-void Env::SetWindowTreeClient(WindowTreeClient* window_tree_client) {
-  // The WindowTreeClient should only be set once. Test code may need to change
-  // the value after the fact, to do that use EnvTestHelper.
-  DCHECK(!window_tree_client_);
-  window_tree_client_ = window_tree_client;
-}
-
-void Env::ScheduleEmbed(
-    ws::mojom::WindowTreeClientPtr client,
-    base::OnceCallback<void(const base::UnguessableToken&)> callback) {
-  DCHECK_EQ(Mode::MUS, mode_);
-  DCHECK(window_tree_client_);
-  window_tree_client_->ScheduleEmbed(std::move(client), std::move(callback));
-}
-
 WindowOcclusionTracker* Env::GetWindowOcclusionTracker() {
-  DCHECK_EQ(Mode::LOCAL, mode_);
   if (!window_occlusion_tracker_) {
     // Use base::WrapUnique + new because of the constructor is private.
     window_occlusion_tracker_ = base::WrapUnique(new WindowOcclusionTracker());
@@ -247,30 +153,19 @@ WindowOcclusionTracker* Env::GetWindowOcclusionTracker() {
 }
 
 void Env::PauseWindowOcclusionTracking() {
-  switch (mode_) {
-    case Mode::LOCAL:
-      GetWindowOcclusionTracker()->Pause();
-      break;
-    case Mode::MUS:
-      // |window_tree_client_| could be null in tests.
-      // e.g. WindowTreeClientDestructionTest.*
-      if (window_tree_client_)
-        window_tree_client_->PauseWindowOcclusionTracking();
-      break;
+  const bool was_paused = GetWindowOcclusionTracker();
+  GetWindowOcclusionTracker()->Pause();
+  if (!was_paused) {
+    for (EnvObserver& observer : observers_)
+      observer.OnWindowOcclusionTrackingPaused();
   }
 }
 
 void Env::UnpauseWindowOcclusionTracking() {
-  switch (mode_) {
-    case Mode::LOCAL:
-      GetWindowOcclusionTracker()->Unpause();
-      break;
-    case Mode::MUS:
-      // |window_tree_client_| could be null in tests.
-      // e.g. WindowTreeClientDestructionTest.*
-      if (window_tree_client_)
-        window_tree_client_->UnpauseWindowOcclusionTracking();
-      break;
+  GetWindowOcclusionTracker()->Unpause();
+  if (!GetWindowOcclusionTracker()->IsPaused()) {
+    for (EnvObserver& observer : observers_)
+      observer.OnWindowOcclusionTrackingResumed();
   }
 }
 
@@ -281,15 +176,11 @@ void Env::AddEventObserver(ui::EventObserver* observer,
   auto adapter(std::make_unique<EventObserverAdapter>(observer, target, types));
   event_observer_adapter_list_.AddObserver(adapter.get());
   event_observer_adapters_.insert(std::move(adapter));
-  if (window_tree_client_ && target == this)
-    window_tree_client_->OnEventObserverAdded(observer, types);
 }
 
 void Env::RemoveEventObserver(ui::EventObserver* observer) {
   for (auto& adapter : event_observer_adapters_) {
     if (adapter->observer() == observer) {
-      if (window_tree_client_ && adapter->target() == this)
-        window_tree_client_->OnEventObserverRemoved(observer, adapter->types());
       event_observer_adapter_list_.RemoveObserver(adapter.get());
       event_observer_adapters_.erase(adapter);
       return;
@@ -312,26 +203,12 @@ void Env::NotifyEventObservers(const ui::Event& event) {
 // static
 bool Env::initial_throttle_input_on_resize_ = true;
 
-Env::Env(Mode mode)
-    : mode_(mode),
-      env_controller_(std::make_unique<EnvInputStateController>(this)),
-      mouse_button_flags_(0),
-      get_last_mouse_location_from_mus_(mode_ == Mode::MUS),
+Env::Env()
+    : env_controller_(std::make_unique<EnvInputStateController>(this)),
       gesture_recognizer_(std::make_unique<ui::GestureRecognizerImpl>()),
-      input_state_lookup_(InputStateLookup::Create()),
-      context_factory_(nullptr),
-      context_factory_private_(nullptr) {}
+      input_state_lookup_(InputStateLookup::Create()) {}
 
-void Env::Init(service_manager::Connector* connector) {
-  if (mode_ == Mode::MUS) {
-    EnableMusOSExchangeDataProvider();
-    EnableMusOverrideInputInjector();
-    // Remote clients should not throttle, only the window-service should
-    // throttle (which corresponds to Mode::LOCAL).
-    throttle_input_on_resize_ = false;
-    return;
-  }
-
+void Env::Init() {
 #if defined(USE_OZONE)
   // The ozone platform can provide its own event source. So initialize the
   // platform before creating the default event source. If running inside mus
@@ -345,32 +222,10 @@ void Env::Init(service_manager::Connector* connector) {
   params.using_mojo = features::IsOzoneDrmMojo();
   params.viz_display_compositor = features::IsVizDisplayCompositorEnabled();
 
-  if (connector) {
-    // Supplying a connector implies this process is hosting Viz.
-    params.connector = connector;
-    if (!features::IsMashOopVizEnabled())
-      params.single_process = true;
-    params.using_mojo = true;
-  }
-
   ui::OzonePlatform::InitializeForUI(params);
 #endif
   if (!ui::PlatformEventSource::GetInstance())
     event_source_ = ui::PlatformEventSource::CreateDefault();
-}
-
-void Env::EnableMusOSExchangeDataProvider() {
-  if (!is_os_exchange_data_provider_factory_) {
-    ui::OSExchangeDataProviderFactory::SetFactory(this);
-    is_os_exchange_data_provider_factory_ = true;
-  }
-}
-
-void Env::EnableMusOverrideInputInjector() {
-  if (!is_override_input_injector_factory_) {
-    ui::SetSystemInputInjectorFactory(this);
-    is_override_input_injector_factory_ = true;
-  }
 }
 
 void Env::NotifyWindowInitialized(Window* window) {
@@ -381,16 +236,6 @@ void Env::NotifyWindowInitialized(Window* window) {
 void Env::NotifyHostInitialized(WindowTreeHost* host) {
   for (EnvObserver& observer : observers_)
     observer.OnHostInitialized(host);
-}
-
-void Env::WindowTreeClientDestroyed(aura::WindowTreeClient* client) {
-  DCHECK_EQ(Mode::MUS, mode_);
-
-  if (client != window_tree_client_)
-    return;
-
-  in_mus_shutdown_ = true;
-  window_tree_client_ = nullptr;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -411,15 +256,6 @@ std::unique_ptr<ui::EventTargetIterator> Env::GetChildIterator() const {
 ui::EventTargeter* Env::GetEventTargeter() {
   NOTREACHED();
   return nullptr;
-}
-
-std::unique_ptr<ui::OSExchangeData::Provider> Env::BuildProvider() {
-  return std::make_unique<aura::OSExchangeDataProviderMus>();
-}
-
-std::unique_ptr<ui::SystemInputInjector> Env::CreateSystemInputInjector() {
-  return std::make_unique<SystemInputInjectorMus>(
-      window_tree_client_ ? window_tree_client_->connector() : nullptr);
 }
 
 }  // namespace aura

@@ -15,6 +15,9 @@ bool ZipString(const base::FilePath& filename,
                const std::string& data,
                std::string* compressed_data);
 
+// Returns true for google.com email addresses.
+bool IsGoogleEmail(const std::string& email);
+
 }  // namespace feedback_util
 
 #endif  // COMPONENTS_FEEDBACK_FEEDBACK_UTIL_H_

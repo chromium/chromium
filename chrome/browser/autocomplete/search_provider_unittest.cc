@@ -40,6 +40,7 @@
 #include "components/omnibox/browser/history_url_provider.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/suggestion_answer.h"
+#include "components/omnibox/common/omnibox_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/search_engine_type.h"
 #include "components/search_engines/search_engines_switches.h"
@@ -48,7 +49,7 @@
 #include "components/search_engines/template_url_service.h"
 #include "components/variations/entropy_provider.h"
 #include "components/variations/variations_associated_data.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "net/base/escape.h"
 #include "net/http/http_util.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
@@ -132,6 +133,54 @@ class TestAutocompleteProviderClient : public ChromeAutocompleteProviderClient {
 
 }  // namespace
 
+// SearchProviderFeatureTestComponent -----------------------------------------
+// Handles field trial, feature flag, and command line state for SearchProvider
+// tests. This is done as a base class, so that it runs before
+// BrowserTaskEnvironment is initialized.
+
+class SearchProviderFeatureTestComponent {
+ public:
+  SearchProviderFeatureTestComponent(
+      const base::Optional<bool> warm_up_on_focus,
+      const bool command_line_overrides);
+
+ private:
+  void ResetFieldTrialList();
+
+  std::unique_ptr<base::FieldTrialList> field_trial_list_;
+  base::test::ScopedFeatureList feature_list_;
+};
+
+SearchProviderFeatureTestComponent::SearchProviderFeatureTestComponent(
+    const base::Optional<bool> warm_up_on_focus,
+    const bool command_line_overrides) {
+  ResetFieldTrialList();
+
+  if (warm_up_on_focus.has_value()) {
+    if (warm_up_on_focus.value())
+      feature_list_.InitAndEnableFeature(omnibox::kSearchProviderWarmUpOnFocus);
+    else
+      feature_list_.InitAndDisableFeature(
+          omnibox::kSearchProviderWarmUpOnFocus);
+  }
+
+  if (command_line_overrides) {
+    base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+        switches::kGoogleBaseURL, "http://www.bar.com/");
+    base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+        switches::kExtraSearchQueryParams, "a=b");
+  }
+}
+
+void SearchProviderFeatureTestComponent::ResetFieldTrialList() {
+  // Destroy the existing FieldTrialList before creating a new one to avoid
+  // a DCHECK.
+  field_trial_list_.reset();
+  field_trial_list_.reset(new base::FieldTrialList(
+      std::make_unique<variations::SHA1EntropyProvider>("foo")));
+  variations::testing::ClearAllVariationParams();
+}
+
 // BaseSearchProviderTest -----------------------------------------------------
 
 // Base class that configures following environment:
@@ -180,23 +229,21 @@ class BaseSearchProviderTest : public testing::Test,
     bool allowed_to_be_default_match;
   };
 
-  BaseSearchProviderTest()
+  BaseSearchProviderTest(
+      const base::Optional<bool> warm_up_on_focus = base::nullopt,
+      const bool command_line_overrides = false)
       : default_t_url_(nullptr),
         term1_(ASCIIToUTF16("term1")),
         keyword_t_url_(nullptr),
         keyword_term_(ASCIIToUTF16("keyword")),
-        run_loop_(nullptr) {
-    ResetFieldTrialList();
-  }
+        feature_test_component_(warm_up_on_focus, command_line_overrides),
+        run_loop_(nullptr) {}
 
   void TearDown() override;
 
   void RunTest(TestData* cases, int num_cases, bool prefer_keyword);
 
  protected:
-  // Needed for AutocompleteFieldTrial::ActivateStaticTrials();
-  std::unique_ptr<base::FieldTrialList> field_trial_list_;
-
   // Default values used for testing.
   static const char kNotApplicable[];
   static const ExpectedMatch kEmptyExpectedMatch;
@@ -262,8 +309,6 @@ class BaseSearchProviderTest : public testing::Test,
                     const ExpectedMatch expected_matches[],
                     const ACMatches& matches);
 
-  void ResetFieldTrialList();
-
   // Enable or disable the specified Omnibox field trial rule.
   base::FieldTrial* CreateFieldTrial(const char* field_trial_rule,
                                      bool enabled);
@@ -278,7 +323,10 @@ class BaseSearchProviderTest : public testing::Test,
   const base::string16 keyword_term_;
   GURL keyword_url_;
 
-  content::TestBrowserThreadBundle thread_bundle_;
+  // SearchProviderFeatureTestComponent must come before BrowserTaskEnvironment,
+  // to avoid a possible race.
+  SearchProviderFeatureTestComponent feature_test_component_;
+  content::BrowserTaskEnvironment task_environment_;
 
   network::TestURLLoaderFactory test_url_loader_factory_;
   TestingProfile profile_;
@@ -296,6 +344,11 @@ class BaseSearchProviderTest : public testing::Test,
 // Test environment with valid suggest and search URL.
 class SearchProviderTest : public BaseSearchProviderTest {
  public:
+  SearchProviderTest(
+      const base::Optional<bool> warm_up_on_focus = base::nullopt,
+      const bool command_line_overrides = false)
+      : BaseSearchProviderTest(warm_up_on_focus, command_line_overrides) {}
+
   void SetUp() override {
     CustomizableSetUp(
         /* search_url */ "http://defaultturl/{searchTerms}",
@@ -576,15 +629,6 @@ void BaseSearchProviderTest::CheckMatches(
     SCOPED_TRACE(" Case # " + base::NumberToString(i));
     EXPECT_EQ(kNotApplicable, expected_matches[i].contents);
   }
-}
-
-void BaseSearchProviderTest::ResetFieldTrialList() {
-  // Destroy the existing FieldTrialList before creating a new one to avoid
-  // a DCHECK.
-  field_trial_list_.reset();
-  field_trial_list_.reset(new base::FieldTrialList(
-      std::make_unique<variations::SHA1EntropyProvider>("foo")));
-  variations::testing::ClearAllVariationParams();
 }
 
 base::FieldTrial* BaseSearchProviderTest::CreateFieldTrial(
@@ -1015,7 +1059,7 @@ TEST_F(SearchProviderTest, DontCrowdOutSingleWords) {
   AutocompleteMatch wyt_match;
   ASSERT_NO_FATAL_FAILURE(QueryForInputAndSetWYTMatch(ASCIIToUTF16("fi"),
                                                       &wyt_match));
-  ASSERT_EQ(AutocompleteProvider::kMaxMatches + 1, provider_->matches().size());
+  ASSERT_EQ(provider_->provider_max_matches() + 1, provider_->matches().size());
   AutocompleteMatch term_match;
   EXPECT_TRUE(FindMatchWithDestination(term_url, &term_match));
   EXPECT_GT(term_match.relevance, wyt_match.relevance);
@@ -1205,39 +1249,6 @@ TEST_F(SearchProviderTest, KeywordVerbatim) {
   RunTest(cases, base::size(cases), true);
 }
 
-// Ensures command-line flags are reflected in the URLs the search provider
-// generates.
-TEST_F(SearchProviderTest, CommandLineOverrides) {
-  TemplateURLService* turl_model =
-      TemplateURLServiceFactory::GetForProfile(&profile_);
-
-  TemplateURLData data;
-  data.SetShortName(ASCIIToUTF16("default"));
-  data.SetKeyword(data.short_name());
-  data.SetURL("{google:baseURL}{searchTerms}");
-  default_t_url_ = turl_model->Add(std::make_unique<TemplateURL>(data));
-  turl_model->SetUserSelectedDefaultSearchProvider(default_t_url_);
-
-  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-      switches::kGoogleBaseURL, "http://www.bar.com/");
-  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-      switches::kExtraSearchQueryParams, "a=b");
-
-  TestData cases[] = {
-    { ASCIIToUTF16("k a"), 2,
-      { ResultInfo(GURL("http://keyword/a"),
-                   AutocompleteMatchType::SEARCH_OTHER_ENGINE,
-                   true,
-                   ASCIIToUTF16("k a")),
-        ResultInfo(GURL("http://www.bar.com/k%20a?a=b"),
-                   AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED,
-                   false,
-                   ASCIIToUTF16("k a")) } },
-  };
-
-  RunTest(cases, base::size(cases), false);
-}
-
 // Verifies Navsuggest results don't set a TemplateURL, which Instant relies on.
 // Also verifies that just the *first* navigational result is listed as a match
 // if suggested relevance scores were not sent.
@@ -1338,6 +1349,14 @@ TEST_F(SearchProviderTest, DefaultProviderNoSuggestRelevanceInKeywordMode) {
 // case to this test, please consider adding it to the tests in
 // KeywordFetcherSuggestRelevance below.
 TEST_F(SearchProviderTest, DefaultFetcherSuggestRelevance) {
+  // This test was written assuming a different default.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      {
+          {omnibox::kUIExperimentMaxAutocompleteMatches,
+           {{OmniboxFieldTrial::kUIMaxAutocompleteMatchesParam, "6"}}},
+      },
+      {/* nothing disabled */});
   struct {
     const std::string json;
     const ExpectedMatch matches[6];
@@ -1576,6 +1595,14 @@ TEST_F(SearchProviderTest, DefaultFetcherSuggestRelevance) {
 // test is added to this TEST_F, please consider if it would be
 // appropriate to add to DefaultFetcherSuggestRelevance as well.
 TEST_F(SearchProviderTest, KeywordFetcherSuggestRelevance) {
+  // This test was written assuming a different default.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      {
+          {omnibox::kUIExperimentMaxAutocompleteMatches,
+           {{OmniboxFieldTrial::kUIMaxAutocompleteMatchesParam, "6"}}},
+      },
+      {/* nothing disabled */});
   struct KeywordFetcherMatch {
     std::string contents;
     bool from_keyword;
@@ -2314,6 +2341,14 @@ TEST_F(SearchProviderTest, DontCacheCalculatorSuggestions) {
 }
 
 TEST_F(SearchProviderTest, LocalAndRemoteRelevances) {
+  // This test was written assuming a different default.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      {
+          {omnibox::kUIExperimentMaxAutocompleteMatches,
+           {{OmniboxFieldTrial::kUIMaxAutocompleteMatchesParam, "6"}}},
+      },
+      {/* nothing disabled */});
   // We hardcode the string "term1" below, so ensure that the search term that
   // got added to history already is that string.
   ASSERT_EQ(ASCIIToUTF16("term1"), term1_);
@@ -2804,7 +2839,7 @@ TEST_F(SearchProviderTest, NavigationInline) {
 
 // Verifies that "http://" is not trimmed for input that is a leading substring.
 TEST_F(SearchProviderTest, NavigationInlineSchemeSubstring) {
-  const base::string16 input(ASCIIToUTF16("ht"));
+  const base::string16 input(ASCIIToUTF16("http:"));
   const base::string16 url(ASCIIToUTF16("http://a.com"));
   SearchSuggestionParser::NavigationResult result(
       ChromeAutocompleteSchemeClassifier(&profile_), GURL(url),
@@ -2816,7 +2851,7 @@ TEST_F(SearchProviderTest, NavigationInlineSchemeSubstring) {
   QueryForInput(input, false, false);
   AutocompleteMatch match_inline(provider_->NavigationToMatch(result));
   EXPECT_EQ(url, match_inline.fill_into_edit);
-  EXPECT_EQ(url.substr(2), match_inline.inline_autocompletion);
+  EXPECT_EQ(url.substr(5), match_inline.inline_autocompletion);
   EXPECT_TRUE(match_inline.allowed_to_be_default_match);
   EXPECT_EQ(url, match_inline.contents);
 
@@ -2828,21 +2863,21 @@ TEST_F(SearchProviderTest, NavigationInlineSchemeSubstring) {
   EXPECT_EQ(url, match_prevent.contents);
 }
 
-// Verifies that input "w" marks a more significant domain label than "www.".
+// Verifies that input "h" matches navsuggest "http://www.[h]ttp.com/http" and
+// "http://www." is trimmed.
 TEST_F(SearchProviderTest, NavigationInlineDomainClassify) {
-  QueryForInput(ASCIIToUTF16("w"), false, false);
+  QueryForInput(ASCIIToUTF16("h"), false, false);
   SearchSuggestionParser::NavigationResult result(
-      ChromeAutocompleteSchemeClassifier(&profile_), GURL("http://www.wow.com"),
-      AutocompleteMatchType::NAVSUGGEST, 0, base::string16(), std::string(),
-      false, 0, false, ASCIIToUTF16("w"));
+      ChromeAutocompleteSchemeClassifier(&profile_),
+      GURL("http://www.http.com/http"), AutocompleteMatchType::NAVSUGGEST, 0,
+      base::string16(), std::string(), false, 0, false, ASCIIToUTF16("h"));
   result.set_received_after_last_keystroke(false);
   AutocompleteMatch match(provider_->NavigationToMatch(result));
-  EXPECT_EQ(ASCIIToUTF16("ow.com"), match.inline_autocompletion);
+  EXPECT_EQ(ASCIIToUTF16("ttp.com/http"), match.inline_autocompletion);
   EXPECT_TRUE(match.allowed_to_be_default_match);
-  EXPECT_EQ(ASCIIToUTF16("www.wow.com"), match.fill_into_edit);
-  EXPECT_EQ(ASCIIToUTF16("wow.com"), match.contents);
+  EXPECT_EQ(ASCIIToUTF16("www.http.com/http"), match.fill_into_edit);
+  EXPECT_EQ(ASCIIToUTF16("http.com/http"), match.contents);
 
-  // Ensure that the match for input "w" is marked on "wow" and not "www".
   ASSERT_EQ(2U, match.contents_class.size());
   EXPECT_EQ(0U, match.contents_class[0].offset);
   EXPECT_EQ(AutocompleteMatch::ACMatchClassification::URL |
@@ -2850,6 +2885,67 @@ TEST_F(SearchProviderTest, NavigationInlineDomainClassify) {
             match.contents_class[0].style);
   EXPECT_EQ(1U, match.contents_class[1].offset);
   EXPECT_EQ(AutocompleteMatch::ACMatchClassification::URL,
+            match.contents_class[1].style);
+}
+
+// Verifies navsuggests prefer prefix matching even when a URL prefix prevents
+// the input from being a perfect prefix of the suggest text; e.g., the input
+// 'moon.com', matches 'http://[moon.com]/moon' and the 2nd 'moon' is unmatched.
+TEST_F(SearchProviderTest, NavigationPrefixClassify) {
+  QueryForInput(ASCIIToUTF16("moon"), false, false);
+  SearchSuggestionParser::NavigationResult result(
+      ChromeAutocompleteSchemeClassifier(&profile_),
+      GURL("http://moon.com/moon"), AutocompleteMatchType::NAVSUGGEST, 0,
+      base::string16(), std::string(), false, 0, false, ASCIIToUTF16("moon"));
+  result.set_received_after_last_keystroke(false);
+  AutocompleteMatch match(provider_->NavigationToMatch(result));
+  EXPECT_EQ(ASCIIToUTF16("moon.com/moon"), match.contents);
+  ASSERT_EQ(2U, match.contents_class.size());
+  EXPECT_EQ(0U, match.contents_class[0].offset);
+  EXPECT_EQ(AutocompleteMatch::ACMatchClassification::MATCH |
+                AutocompleteMatch::ACMatchClassification::URL,
+            match.contents_class[0].style);
+  EXPECT_EQ(4U, match.contents_class[1].offset);
+  EXPECT_EQ(AutocompleteMatch::ACMatchClassification::URL,
+            match.contents_class[1].style);
+}
+
+// Verifies navsuggests prohibit mid-word matches; e.g., 'f[acebook].com'.
+TEST_F(SearchProviderTest, NavigationMidWordClassify) {
+  QueryForInput(ASCIIToUTF16("acebook"), false, false);
+  SearchSuggestionParser::NavigationResult result(
+      ChromeAutocompleteSchemeClassifier(&profile_),
+      GURL("http://www.facebook.com"), AutocompleteMatchType::NAVSUGGEST, 0,
+      base::string16(), std::string(), false, 0, false,
+      ASCIIToUTF16("acebook"));
+  result.set_received_after_last_keystroke(false);
+  AutocompleteMatch match(provider_->NavigationToMatch(result));
+  EXPECT_EQ(ASCIIToUTF16("facebook.com"), match.contents);
+  ASSERT_EQ(1U, match.contents_class.size());
+  EXPECT_EQ(0U, match.contents_class[0].offset);
+  EXPECT_EQ(AutocompleteMatch::ACMatchClassification::URL,
+            match.contents_class[0].style);
+}
+
+// Verifies navsuggests break user and suggest texts on words;
+// e.g., the input 'duck', matches 'yellow-animals.com/[duck]'
+TEST_F(SearchProviderTest, NavigationWordBreakClassify) {
+  QueryForInput(ASCIIToUTF16("duck"), false, false);
+  SearchSuggestionParser::NavigationResult result(
+      ChromeAutocompleteSchemeClassifier(&profile_),
+      GURL("http://www.yellow-animals.com/duck"),
+      AutocompleteMatchType::NAVSUGGEST, 0, base::string16(), std::string(),
+      false, 0, false, ASCIIToUTF16("duck"));
+  result.set_received_after_last_keystroke(false);
+  AutocompleteMatch match(provider_->NavigationToMatch(result));
+  EXPECT_EQ(ASCIIToUTF16("yellow-animals.com/duck"), match.contents);
+  ASSERT_EQ(2U, match.contents_class.size());
+  EXPECT_EQ(0U, match.contents_class[0].offset);
+  EXPECT_EQ(AutocompleteMatch::ACMatchClassification::URL,
+            match.contents_class[0].style);
+  EXPECT_EQ(19U, match.contents_class[1].offset);
+  EXPECT_EQ(AutocompleteMatch::ACMatchClassification::MATCH |
+                AutocompleteMatch::ACMatchClassification::URL,
             match.contents_class[1].style);
 }
 
@@ -3322,71 +3418,77 @@ TEST_F(SearchProviderTest, CanSendURL) {
   EXPECT_TRUE(SearchProvider::CanSendURL(
       GURL("http://www.google.com/search"),
       GURL("https://www.google.com/complete/search"), &google_template_url,
-      metrics::OmniboxEventProto::OTHER, SearchTermsData(), client_.get()));
+      metrics::OmniboxEventProto::OTHER, SearchTermsData(), client_.get(),
+      true));
 
   // Invalid page URL.
   EXPECT_FALSE(SearchProvider::CanSendURL(
       GURL("badpageurl"), GURL("https://www.google.com/complete/search"),
       &google_template_url, metrics::OmniboxEventProto::OTHER,
-      SearchTermsData(), client_.get()));
+      SearchTermsData(), client_.get(), true));
 
   // Invalid page classification.
   EXPECT_FALSE(SearchProvider::CanSendURL(
       GURL("http://www.google.com/search"),
       GURL("https://www.google.com/complete/search"), &google_template_url,
       metrics::OmniboxEventProto::INSTANT_NTP_WITH_FAKEBOX_AS_STARTING_FOCUS,
-      SearchTermsData(), client_.get()));
+      SearchTermsData(), client_.get(), true));
 
   // Invalid page classification.
   EXPECT_FALSE(SearchProvider::CanSendURL(
       GURL("http://www.google.com/search"),
       GURL("https://www.google.com/complete/search"), &google_template_url,
       metrics::OmniboxEventProto::INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS,
-      SearchTermsData(), client_.get()));
+      SearchTermsData(), client_.get(), true));
 
   // Invalid page classification.
   EXPECT_FALSE(SearchProvider::CanSendURL(
       GURL("http://www.google.com/search"),
       GURL("https://www.google.com/complete/search"), &google_template_url,
-      metrics::OmniboxEventProto::NTP, SearchTermsData(), client_.get()));
+      metrics::OmniboxEventProto::NTP, SearchTermsData(), client_.get(), true));
 
   // Invalid page classification.
   EXPECT_FALSE(SearchProvider::CanSendURL(
       GURL("http://www.google.com/search"),
       GURL("https://www.google.com/complete/search"), &google_template_url,
       metrics::OmniboxEventProto::OBSOLETE_INSTANT_NTP, SearchTermsData(),
-      client_.get()));
+      client_.get(), true));
 
   // HTTPS page URL on same domain as provider.
   EXPECT_TRUE(SearchProvider::CanSendURL(
       GURL("https://www.google.com/search"),
       GURL("https://www.google.com/complete/search"), &google_template_url,
-      metrics::OmniboxEventProto::OTHER, SearchTermsData(), client_.get()));
+      metrics::OmniboxEventProto::OTHER, SearchTermsData(), client_.get(),
+      true));
 
   // Non-HTTP[S] page URL on same domain as provider.
   EXPECT_FALSE(SearchProvider::CanSendURL(
       GURL("ftp://www.google.com/search"),
       GURL("https://www.google.com/complete/search"), &google_template_url,
-      metrics::OmniboxEventProto::OTHER, SearchTermsData(), client_.get()));
+      metrics::OmniboxEventProto::OTHER, SearchTermsData(), client_.get(),
+      true));
 
   // Non-HTTP page URL on different domain.
   EXPECT_TRUE(SearchProvider::CanSendURL(
       GURL("https://www.notgoogle.com/search"),
       GURL("https://www.google.com/complete/search"), &google_template_url,
-      metrics::OmniboxEventProto::OTHER, SearchTermsData(), client_.get()));
+      metrics::OmniboxEventProto::OTHER, SearchTermsData(), client_.get(),
+      true));
 
   // Non-HTTPS provider.
   EXPECT_FALSE(SearchProvider::CanSendURL(
       GURL("http://www.google.com/search"),
       GURL("http://www.google.com/complete/search"), &google_template_url,
-      metrics::OmniboxEventProto::OTHER, SearchTermsData(), client_.get()));
+      metrics::OmniboxEventProto::OTHER, SearchTermsData(), client_.get(),
+      true));
 
   // Suggest disabled.
   profile_.GetPrefs()->SetBoolean(prefs::kSearchSuggestEnabled, false);
   EXPECT_FALSE(SearchProvider::CanSendURL(
       GURL("http://www.google.com/search"),
       GURL("https://www.google.com/complete/search"), &google_template_url,
-      metrics::OmniboxEventProto::OTHER, SearchTermsData(), client_.get()));
+      metrics::OmniboxEventProto::OTHER, SearchTermsData(), client_.get(),
+      true));
   profile_.GetPrefs()->SetBoolean(prefs::kSearchSuggestEnabled, true);
 
   // Incognito.
@@ -3395,22 +3497,45 @@ TEST_F(SearchProviderTest, CanSendURL) {
   EXPECT_FALSE(SearchProvider::CanSendURL(
       GURL("http://www.google.com/search"),
       GURL("https://www.google.com/complete/search"), &google_template_url,
-      metrics::OmniboxEventProto::OTHER, SearchTermsData(),
-      &client_incognito));
+      metrics::OmniboxEventProto::OTHER, SearchTermsData(), &client_incognito,
+      true));
 
-  // Personalized URL data collection not active.
+  // Personalized URL data collection not active. Test that we cannot send the
+  // URL unless same-origin as suggest server, and search terms are
+  // empty.
   client_->set_is_personalized_url_data_collection_active(false);
+  // Different origin, with search terms.
   EXPECT_FALSE(SearchProvider::CanSendURL(
-      GURL("http://www.google.com/search"),
+      GURL("https://www.different-origin.com"),
       GURL("https://www.google.com/complete/search"), &google_template_url,
-      metrics::OmniboxEventProto::OTHER, SearchTermsData(), client_.get()));
+      metrics::OmniboxEventProto::OTHER, SearchTermsData(), client_.get(),
+      true));
+  // Same origin, with search terms.
+  EXPECT_FALSE(SearchProvider::CanSendURL(
+      GURL("https://www.google.com/search"),
+      GURL("https://www.google.com/complete/search"), &google_template_url,
+      metrics::OmniboxEventProto::OTHER, SearchTermsData(), client_.get(),
+      true));
+  // Different origin, empty search terms.
+  EXPECT_FALSE(SearchProvider::CanSendURL(
+      GURL("https://www.different-origin.com"),
+      GURL("https://www.google.com/complete/search"), &google_template_url,
+      metrics::OmniboxEventProto::OTHER, SearchTermsData(), client_.get(),
+      false));
+  // Same origin, empty search terms.
+  EXPECT_TRUE(SearchProvider::CanSendURL(
+      GURL("https://www.google.com/search"),
+      GURL("https://www.google.com/complete/search"), &google_template_url,
+      metrics::OmniboxEventProto::OTHER, SearchTermsData(), client_.get(),
+      false));
   client_->set_is_personalized_url_data_collection_active(true);
 
   // Check that there were no side effects from previous tests.
   EXPECT_TRUE(SearchProvider::CanSendURL(
       GURL("http://www.google.com/search"),
       GURL("https://www.google.com/complete/search"), &google_template_url,
-      metrics::OmniboxEventProto::OTHER, SearchTermsData(), client_.get()));
+      metrics::OmniboxEventProto::OTHER, SearchTermsData(), client_.get(),
+      true));
 }
 
 TEST_F(SearchProviderTest, TestDeleteMatch) {
@@ -3440,12 +3565,12 @@ TEST_F(SearchProviderTest, TestDeleteMatch) {
   EXPECT_FALSE(provider_->deletion_handlers_.empty());
   ASSERT_TRUE(test_url_loader_factory_.IsPending(kDeleteUrl));
 
-  network::ResourceResponseHead head;
+  auto head = network::mojom::URLResponseHead::New();
   std::string headers("HTTP/1.1 500 Owiee\nContent-type: application/json\n\n");
-  head.headers = new net::HttpResponseHeaders(
-      net::HttpUtil::AssembleRawHeaders(headers.c_str(), headers.size()));
-  head.mime_type = "application/json";
-  test_url_loader_factory_.AddResponse(GURL(kDeleteUrl), head, "",
+  head->headers = base::MakeRefCounted<net::HttpResponseHeaders>(
+      net::HttpUtil::AssembleRawHeaders(headers));
+  head->mime_type = "application/json";
+  test_url_loader_factory_.AddResponse(GURL(kDeleteUrl), std::move(head), "",
                                        network::URLLoaderCompletionStatus());
 
   profile_.BlockUntilHistoryProcessesPendingRequests();
@@ -3647,37 +3772,44 @@ TEST_F(SearchProviderTest, DoesNotProvideOnFocus) {
   EXPECT_TRUE(provider_->matches().empty());
 }
 
-#if defined(THREAD_SANITIZER)
-// SearchProviderTest.SendsWarmUpRequestOnFocus is flaky on Linux TSan Tests
-// crbug.com/891959.
-#define MAYBE_SendsWarmUpRequestOnFocus DISABLED_SendsWarmUpRequestOnFocus
-#else
-#define MAYBE_SendsWarmUpRequestOnFocus SendsWarmUpRequestOnFocus
-#endif  // defined(THREAD_SANITIZER)
-TEST_F(SearchProviderTest, MAYBE_SendsWarmUpRequestOnFocus) {
+TEST_F(InvalidSearchProviderTest, DoesNotSendSuggestRequests) {
+  base::string16 query = ASCIIToUTF16("query");
+  QueryForInput(query, false, false);
+
+  // Make sure the default provider's suggest service was not queried.
+  EXPECT_FALSE(test_url_loader_factory_.IsPending(prefix + "query"));
+}
+
+// SearchProviderWarmUpTest --------------------------------------------------
+//
+// Like SearchProviderTest.  The only addition is that it's a
+// TestWithParam<bool>, where the boolean parameter represents whether the
+// omnibox::kSearchProviderWarmUpOnFocus feature flag should be enabled.
+class SearchProviderWarmUpTest : public SearchProviderTest,
+                                 public testing::WithParamInterface<bool> {
+ public:
+  SearchProviderWarmUpTest() : SearchProviderTest(GetParam(), false) {}
+
+  SearchProviderWarmUpTest(SearchProviderWarmUpTest const&) = delete;
+  SearchProviderWarmUpTest& operator=(SearchProviderWarmUpTest const&) = delete;
+};
+
+TEST_P(SearchProviderWarmUpTest, SendsWarmUpRequestOnFocus) {
   AutocompleteInput input(base::ASCIIToUTF16("f"),
                           metrics::OmniboxEventProto::OTHER,
                           ChromeAutocompleteSchemeClassifier(&profile_));
   input.set_prefer_keyword(true);
   input.set_from_omnibox_focus(true);
 
-  {
-    // First, verify that without the warm-up feature enabled, the provider
-    // immediately terminates with no matches.
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndDisableFeature(omnibox::kSearchProviderWarmUpOnFocus);
+  if (!GetParam()) {  // The warm-up feature ought to be disabled.
+    // The provider immediately terminates with no matches.
     provider_->Start(input, false);
     // RunUntilIdle so that SearchProvider has a chance to create the
     // URLFetchers (if it wants to, which it shouldn't in this case).
     base::RunLoop().RunUntilIdle();
     EXPECT_TRUE(provider_->done());
     EXPECT_TRUE(provider_->matches().empty());
-  }
-
-  {
-    // Then, check the behavior with the warm-up feature enabled.
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndEnableFeature(omnibox::kSearchProviderWarmUpOnFocus);
+  } else {  // The warm-up feature ought to be enabled.
     provider_->Start(input, false);
     // RunUntilIdle so that SearchProvider create the URLFetcher.
     base::RunLoop().RunUntilIdle();
@@ -3696,10 +3828,46 @@ TEST_F(SearchProviderTest, MAYBE_SendsWarmUpRequestOnFocus) {
   }
 }
 
-TEST_F(InvalidSearchProviderTest, DoesNotSendSuggestRequests) {
-  base::string16 query = ASCIIToUTF16("query");
-  QueryForInput(query, false, false);
+INSTANTIATE_TEST_CASE_P(SearchProviderTest,
+                        SearchProviderWarmUpTest,
+                        testing::Values(false, true));
 
-  // Make sure the default provider's suggest service was not queried.
-  EXPECT_FALSE(test_url_loader_factory_.IsPending(prefix + "query"));
+// SearchProviderCommandLineOverrideTest -------------------------------------
+//
+// Like SearchProviderTest.  The only addition is that it sets additional
+// command line flags in SearchProviderFeatureTestComponent.
+class SearchProviderCommandLineOverrideTest : public SearchProviderTest {
+ public:
+  SearchProviderCommandLineOverrideTest()
+      : SearchProviderTest(base::nullopt, true) {}
+
+  SearchProviderCommandLineOverrideTest(
+      SearchProviderCommandLineOverrideTest const&) = delete;
+  SearchProviderCommandLineOverrideTest& operator=(
+      SearchProviderCommandLineOverrideTest const&) = delete;
+};
+
+TEST_F(SearchProviderCommandLineOverrideTest, CommandLineOverrides) {
+  TemplateURLService* turl_model =
+      TemplateURLServiceFactory::GetForProfile(&profile_);
+
+  TemplateURLData data;
+  data.SetShortName(ASCIIToUTF16("default"));
+  data.SetKeyword(data.short_name());
+  data.SetURL("{google:baseURL}{searchTerms}");
+  default_t_url_ = turl_model->Add(std::make_unique<TemplateURL>(data));
+  turl_model->SetUserSelectedDefaultSearchProvider(default_t_url_);
+
+  TestData cases[] = {
+      {ASCIIToUTF16("k a"),
+       2,
+       {ResultInfo(GURL("http://keyword/a"),
+                   AutocompleteMatchType::SEARCH_OTHER_ENGINE, true,
+                   ASCIIToUTF16("k a")),
+        ResultInfo(GURL("http://www.bar.com/k%20a?a=b"),
+                   AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED, false,
+                   ASCIIToUTF16("k a"))}},
+  };
+
+  RunTest(cases, base::size(cases), false);
 }

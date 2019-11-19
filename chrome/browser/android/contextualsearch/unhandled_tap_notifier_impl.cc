@@ -7,7 +7,7 @@
 #include <utility>
 
 #include "content/public/common/use_zoom_for_dsf_policy.h"
-#include "mojo/public/cpp/bindings/strong_binding.h"
+#include "mojo/public/cpp/bindings/self_owned_receiver.h"
 
 namespace contextual_search {
 
@@ -42,10 +42,10 @@ void UnhandledTapNotifierImpl::ShowUnhandledTapUIIfNeeded(
 void CreateUnhandledTapNotifierImpl(
     float device_scale_factor,
     UnhandledTapCallback callback,
-    blink::mojom::UnhandledTapNotifierRequest request) {
-  mojo::MakeStrongBinding(std::make_unique<UnhandledTapNotifierImpl>(
-                              device_scale_factor, std::move(callback)),
-                          std::move(request));
+    mojo::PendingReceiver<blink::mojom::UnhandledTapNotifier> receiver) {
+  mojo::MakeSelfOwnedReceiver(std::make_unique<UnhandledTapNotifierImpl>(
+                                  device_scale_factor, std::move(callback)),
+                              std::move(receiver));
 }
 
 }  // namespace contextual_search

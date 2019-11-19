@@ -34,7 +34,7 @@
 #include <memory>
 
 #include "base/memory/scoped_refptr.h"
-#include "third_party/blink/public/mojom/service_worker/service_worker_object.mojom-shared.h"
+#include "third_party/blink/public/mojom/service_worker/controller_service_worker_mode.mojom-shared.h"
 #include "third_party/blink/public/platform/scheduler/web_resource_loading_task_runner_handle.h"
 #include "third_party/blink/public/platform/web_url_loader.h"
 
@@ -48,11 +48,8 @@ class WebURLRequest;
 //
 // It is owned by DocumentLoader and only used on the main thread.
 //
-// Currently the Blink embedder has implementations for service worker clients
-// (frames and shared workers), and service workers themselves. Note that for
-// workers, the interface is only used for requests from the shadow page
-// (WorkerShadowPage). For hooking into off-the-main-thread loading from
-// workers, the embedder can implement WebWorkerFetchContext.
+// Currently the Blink embedder has implementations for frames. For hooking
+// into loading from workers, the embedder can implement WebWorkerFetchContext.
 class WebServiceWorkerNetworkProvider {
  public:
   virtual ~WebServiceWorkerNetworkProvider() = default;
@@ -62,7 +59,6 @@ class WebServiceWorkerNetworkProvider {
   // request made.
   virtual void WillSendRequest(WebURLRequest&) = 0;
 
-  // S13nServiceWorker:
   // Returns a URLLoader for loading |request|. May return nullptr to fall back
   // to the default loading behavior.
   virtual std::unique_ptr<WebURLLoader> CreateURLLoader(
@@ -71,7 +67,7 @@ class WebServiceWorkerNetworkProvider {
 
   // For service worker clients.
   virtual blink::mojom::ControllerServiceWorkerMode
-  IsControlledByServiceWorker() = 0;
+  GetControllerServiceWorkerMode() = 0;
 
   // For service worker clients. Returns an identifier of the controller service
   // worker associated with the loading context.

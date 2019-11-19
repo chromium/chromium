@@ -36,11 +36,6 @@ CdmHostProxy* MockLibraryCdm::GetCdmHostProxy() {
 }
 
 void MockLibraryCdm::Initialize(bool allow_distinctive_identifier,
-                                bool allow_persistent_state) {
-  cdm_host_proxy_->OnInitialized(true);
-}
-
-void MockLibraryCdm::Initialize(bool allow_distinctive_identifier,
                                 bool allow_persistent_state,
                                 bool use_hw_secure_codecs) {
   cdm_host_proxy_->OnInitialized(true);
@@ -56,21 +51,9 @@ void* CreateMockLibraryCdm(int cdm_interface_version,
 
   std::string key_system_string(key_system, key_system_size);
 
-  // We support CDM_9, CDM_10 and CDM_11.
-  using CDM_9 = cdm::ContentDecryptionModule_9;
+  // We support CDM_10 and CDM_11.
   using CDM_10 = cdm::ContentDecryptionModule_10;
   using CDM_11 = cdm::ContentDecryptionModule_11;
-
-  if (cdm_interface_version == CDM_9::kVersion) {
-    CDM_9::Host* host = static_cast<CDM_9::Host*>(
-        get_cdm_host_func(CDM_9::Host::kVersion, user_data));
-    if (!host)
-      return nullptr;
-
-    DVLOG(1) << __func__ << ": Create ClearKeyCdm with CDM_9::Host.";
-    g_mock_library_cdm = new MockLibraryCdm(host, key_system_string);
-    return static_cast<CDM_9*>(g_mock_library_cdm);
-  }
 
   if (cdm_interface_version == CDM_10::kVersion) {
     CDM_10::Host* host = static_cast<CDM_10::Host*>(

@@ -50,7 +50,10 @@ BrowserSwitcherServiceFactory::~BrowserSwitcherServiceFactory() {}
 
 KeyedService* BrowserSwitcherServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
-  return new BrowserSwitcherServiceImpl(Profile::FromBrowserContext(context));
+  auto* instance =
+      new BrowserSwitcherServiceImpl(Profile::FromBrowserContext(context));
+  instance->Init();
+  return instance;
 }
 
 content::BrowserContext* BrowserSwitcherServiceFactory::GetBrowserContextToUse(

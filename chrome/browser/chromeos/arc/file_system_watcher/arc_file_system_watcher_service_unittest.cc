@@ -50,4 +50,45 @@ TEST(ArcFileSystemWatcherServiceTest, HasAndroidSupportedMediaExtension) {
       base::FilePath(FILE_PATH_LITERAL("/tmp/kitten"))));
 }
 
+TEST(ArcFileSystemWatcherServiceTest, AppendRelativePathForRemovableMedia) {
+  base::FilePath android_path(FILE_PATH_LITERAL("/storage"));
+  EXPECT_TRUE(AppendRelativePathForRemovableMedia(
+      base::FilePath(FILE_PATH_LITERAL("/media/removable/UNTITLED/foo.jpg")),
+      &android_path));
+  EXPECT_EQ("/storage/removable_UNTITLED/foo.jpg", android_path.value());
+
+  android_path = base::FilePath(FILE_PATH_LITERAL("/storage"));
+  EXPECT_TRUE(AppendRelativePathForRemovableMedia(
+      base::FilePath(
+          FILE_PATH_LITERAL("/media/removable/UNTITLED/foo/bar/baz.mp4")),
+      &android_path));
+  EXPECT_EQ("/storage/removable_UNTITLED/foo/bar/baz.mp4",
+            android_path.value());
+
+  android_path = base::FilePath(FILE_PATH_LITERAL("/"));
+  EXPECT_TRUE(AppendRelativePathForRemovableMedia(
+      base::FilePath(FILE_PATH_LITERAL("/media/removable/UNTITLED/foo.jpg")),
+      &android_path));
+  EXPECT_EQ("/removable_UNTITLED/foo.jpg", android_path.value());
+
+  // Error: |cros_path| is not under /media/removable.
+  android_path = base::FilePath(FILE_PATH_LITERAL("/storage"));
+  EXPECT_FALSE(AppendRelativePathForRemovableMedia(
+      base::FilePath(FILE_PATH_LITERAL("/foo/bar/UNTITLED/foo.jpg")),
+      &android_path));
+  EXPECT_EQ("/storage", android_path.value());
+
+  // Error: |cros_path| is a parent of /media/removable.
+  android_path = base::FilePath(FILE_PATH_LITERAL("/storage"));
+  EXPECT_FALSE(AppendRelativePathForRemovableMedia(
+      base::FilePath(FILE_PATH_LITERAL("/media")), &android_path));
+  EXPECT_EQ("/storage", android_path.value());
+
+  // Error: |cros_path| does not contain a component for device label.
+  android_path = base::FilePath(FILE_PATH_LITERAL("/storage"));
+  EXPECT_FALSE(AppendRelativePathForRemovableMedia(
+      base::FilePath(FILE_PATH_LITERAL("/media/removable")), &android_path));
+  EXPECT_EQ("/storage", android_path.value());
+}
+
 }  // namespace arc

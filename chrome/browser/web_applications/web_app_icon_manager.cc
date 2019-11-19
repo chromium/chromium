@@ -13,9 +13,11 @@
 #include "base/strings/stringprintf.h"
 #include "base/task/post_task.h"
 #include "base/task/task_traits.h"
+#include "chrome/browser/web_applications/components/web_app_utils.h"
 #include "chrome/browser/web_applications/file_utils_wrapper.h"
 #include "chrome/browser/web_applications/web_app.h"
-#include "chrome/browser/web_applications/web_app_utils.h"
+#include "chrome/browser/web_applications/web_app_registrar.h"
+#include "chrome/common/web_application_info.h"
 #include "content/public/browser/browser_thread.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/codec/png_codec.h"
@@ -29,6 +31,11 @@ constexpr base::FilePath::CharType kTempDirectoryName[] =
 
 constexpr base::FilePath::CharType kIconsDirectoryName[] =
     FILE_PATH_LITERAL("Icons");
+
+base::FilePath GetAppDirectory(const base::FilePath& web_apps_directory,
+                               const AppId& app_id) {
+  return web_apps_directory.AppendASCII(app_id);
+}
 
 base::FilePath GetTempDir(FileUtilsWrapper* utils,
                           const base::FilePath& web_apps_dir) {
@@ -59,7 +66,7 @@ base::FilePath GetTempDir(FileUtilsWrapper* utils,
 
 bool WriteIcon(FileUtilsWrapper* utils,
                const base::FilePath& icons_dir,
-               const WebApplicationInfo::IconInfo& icon_info) {
+               const WebApplicationIconInfo& icon_info) {
   base::FilePath icon_file =
       icons_dir.AppendASCII(base::StringPrintf("%i.png", icon_info.width));
 
@@ -83,14 +90,14 @@ bool WriteIcon(FileUtilsWrapper* utils,
 
 bool WriteIcons(FileUtilsWrapper* utils,
                 const base::FilePath& app_dir,
-                const WebApplicationInfo& web_app_info) {
+                const std::vector<WebApplicationIconInfo>& icon_infos) {
   const base::FilePath icons_dir = app_dir.Append(kIconsDirectoryName);
   if (!utils->CreateDirectory(icons_dir)) {
     LOG(ERROR) << "Could not create icons directory.";
     return false;
   }
 
-  for (const WebApplicationInfo::IconInfo& icon_info : web_app_info.icons) {
+  for (const WebApplicationIconInfo& icon_info : icon_infos) {
     // Skip unfetched bitmaps.
     if (icon_info.data.colorType() == kUnknown_SkColorType)
       continue;
@@ -103,11 +110,11 @@ bool WriteIcons(FileUtilsWrapper* utils,
 }
 
 // Performs blocking I/O. May be called on another thread.
-// Returns true if no errors occured.
+// Returns true if no errors occurred.
 bool WriteDataBlocking(std::unique_ptr<FileUtilsWrapper> utils,
                        base::FilePath web_apps_directory,
                        AppId app_id,
-                       std::unique_ptr<WebApplicationInfo> web_app_info) {
+                       std::vector<WebApplicationIconInfo> icon_infos) {
   const base::FilePath temp_dir = GetTempDir(utils.get(), web_apps_directory);
   if (temp_dir.empty()) {
     LOG(ERROR)
@@ -121,12 +128,12 @@ bool WriteDataBlocking(std::unique_ptr<FileUtilsWrapper> utils,
     return false;
   }
 
-  if (!WriteIcons(utils.get(), app_temp_dir.GetPath(), *web_app_info))
+  if (!WriteIcons(utils.get(), app_temp_dir.GetPath(), icon_infos))
     return false;
 
   // Commit: move whole app data dir to final destination in one mv operation.
-  const base::FilePath app_id_dir = web_apps_directory.AppendASCII(app_id);
-  if (!utils->Move(app_temp_dir.GetPath(), app_id_dir)) {
+  const base::FilePath app_dir = GetAppDirectory(web_apps_directory, app_id);
+  if (!utils->Move(app_temp_dir.GetPath(), app_dir)) {
     LOG(ERROR) << "Could not move temp WebApp directory to final destination.";
     return false;
   }
@@ -136,12 +143,21 @@ bool WriteDataBlocking(std::unique_ptr<FileUtilsWrapper> utils,
 }
 
 // Performs blocking I/O. May be called on another thread.
-// Returns empty SkBitmap if any errors occured.
+// Returns true if no errors occurred.
+bool DeleteDataBlocking(std::unique_ptr<FileUtilsWrapper> utils,
+                        base::FilePath web_apps_directory,
+                        AppId app_id) {
+  const base::FilePath app_dir = GetAppDirectory(web_apps_directory, app_id);
+  return utils->DeleteFileRecursively(app_dir);
+}
+
+// Performs blocking I/O. May be called on another thread.
+// Returns empty SkBitmap if any errors occurred.
 SkBitmap ReadIconBlocking(std::unique_ptr<FileUtilsWrapper> utils,
                           base::FilePath web_apps_directory,
                           AppId app_id,
                           int icon_size_px) {
-  const base::FilePath app_dir = web_apps_directory.AppendASCII(app_id);
+  const base::FilePath app_dir = GetAppDirectory(web_apps_directory, app_id);
   const base::FilePath icons_dir = app_dir.Append(kIconsDirectoryName);
 
   base::FilePath icon_file =
@@ -165,14 +181,15 @@ SkBitmap ReadIconBlocking(std::unique_ptr<FileUtilsWrapper> utils,
 }
 
 constexpr base::TaskTraits kTaskTraits = {
-    base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+    base::ThreadPool(), base::MayBlock(), base::TaskPriority::BEST_EFFORT,
     base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN};
 
 }  // namespace
 
 WebAppIconManager::WebAppIconManager(Profile* profile,
+                                     WebAppRegistrar& registrar,
                                      std::unique_ptr<FileUtilsWrapper> utils)
-    : utils_(std::move(utils)) {
+    : registrar_(registrar), utils_(std::move(utils)) {
   web_apps_directory_ = GetWebAppsDirectory(profile);
 }
 
@@ -180,35 +197,78 @@ WebAppIconManager::~WebAppIconManager() = default;
 
 void WebAppIconManager::WriteData(
     AppId app_id,
-    std::unique_ptr<WebApplicationInfo> web_app_info,
+    std::vector<WebApplicationIconInfo> icon_infos,
     WriteDataCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  base::PostTaskWithTraitsAndReplyWithResult(
+  base::PostTaskAndReplyWithResult(
       FROM_HERE, kTaskTraits,
       base::BindOnce(WriteDataBlocking, utils_->Clone(), web_apps_directory_,
-                     std::move(app_id), std::move(web_app_info)),
+                     std::move(app_id), std::move(icon_infos)),
       std::move(callback));
 }
 
-bool WebAppIconManager::ReadIcon(const WebApp& web_app,
+void WebAppIconManager::DeleteData(AppId app_id, WriteDataCallback callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  base::PostTaskAndReplyWithResult(
+      FROM_HERE, kTaskTraits,
+      base::BindOnce(DeleteDataBlocking, utils_->Clone(), web_apps_directory_,
+                     std::move(app_id)),
+      std::move(callback));
+}
+
+bool WebAppIconManager::ReadIcon(const AppId& app_id,
                                  int icon_size_in_px,
                                  ReadIconCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  for (const WebApp::IconInfo& icon_info : web_app.icons()) {
-    if (icon_info.size_in_px == icon_size_in_px) {
-      base::PostTaskWithTraitsAndReplyWithResult(
-          FROM_HERE, kTaskTraits,
-          base::BindOnce(ReadIconBlocking, utils_->Clone(), web_apps_directory_,
-                         web_app.app_id(), icon_size_in_px),
-          std::move(callback));
+  const WebApp* web_app = registrar_.GetAppById(app_id);
+  if (!web_app)
+    return false;
 
+  for (const WebApp::IconInfo& icon_info : web_app->icons()) {
+    if (icon_info.size_in_px == icon_size_in_px) {
+      ReadIconInternal(app_id, icon_size_in_px, std::move(callback));
       return true;
     }
   }
 
   return false;
+}
+
+bool WebAppIconManager::ReadSmallestIcon(const AppId& app_id,
+                                         int icon_size_in_px,
+                                         ReadIconCallback callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  const WebApp* web_app = registrar_.GetAppById(app_id);
+  if (!web_app)
+    return false;
+
+  int best_size_in_px = std::numeric_limits<int>::max();
+  for (const WebApp::IconInfo& icon_info : web_app->icons()) {
+    if (icon_info.size_in_px >= icon_size_in_px &&
+        icon_info.size_in_px < best_size_in_px) {
+      best_size_in_px = icon_info.size_in_px;
+    }
+  }
+
+  if (best_size_in_px == std::numeric_limits<int>::max())
+    return false;
+
+  ReadIconInternal(app_id, best_size_in_px, std::move(callback));
+  return true;
+}
+
+void WebAppIconManager::ReadIconInternal(const AppId& app_id,
+                                         int icon_size_in_px,
+                                         ReadIconCallback callback) {
+  base::PostTaskAndReplyWithResult(
+      FROM_HERE, kTaskTraits,
+      base::BindOnce(ReadIconBlocking, utils_->Clone(), web_apps_directory_,
+                     app_id, icon_size_in_px),
+      std::move(callback));
 }
 
 }  // namespace web_app

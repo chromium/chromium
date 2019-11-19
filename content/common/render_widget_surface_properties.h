@@ -35,7 +35,6 @@ struct CONTENT_EXPORT RenderWidgetSurfaceProperties {
 #ifdef OS_ANDROID
   float bottom_controls_height = 0;
   float bottom_controls_shown_ratio = 0;
-  viz::Selection<gfx::SelectionBound> selection;
   bool has_transparent_background = false;
 #endif
 };

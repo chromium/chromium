@@ -11,15 +11,13 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/logging.h"
-#include "ui/events/devices/input_device_manager.h"
 #include "ui/events/devices/stylus_state.h"
 
 namespace ash {
 
 TrayAction::TrayAction(BacklightsForcedOffSetter* backlights_forced_off_setter)
-    : backlights_forced_off_setter_(backlights_forced_off_setter),
-      stylus_observer_(this) {
-  stylus_observer_.Add(ui::InputDeviceManager::GetInstance());
+    : backlights_forced_off_setter_(backlights_forced_off_setter) {
+  stylus_observer_.Add(ui::DeviceDataManager::GetInstance());
 }
 
 TrayAction::~TrayAction() = default;
@@ -32,8 +30,9 @@ void TrayAction::RemoveObserver(TrayActionObserver* observer) {
   observers_.RemoveObserver(observer);
 }
 
-void TrayAction::BindRequest(mojom::TrayActionRequest request) {
-  bindings_.AddBinding(this, std::move(request));
+void TrayAction::BindReceiver(
+    mojo::PendingReceiver<mojom::TrayAction> receiver) {
+  receivers_.Add(this, std::move(receiver));
 }
 
 mojom::TrayActionState TrayAction::GetLockScreenNoteState() const {
@@ -46,23 +45,25 @@ bool TrayAction::IsLockScreenNoteActive() const {
   return GetLockScreenNoteState() == mojom::TrayActionState::kActive;
 }
 
-void TrayAction::SetClient(mojom::TrayActionClientPtr tray_action_client,
-                           mojom::TrayActionState lock_screen_note_state) {
+void TrayAction::SetClient(
+    mojo::PendingRemote<mojom::TrayActionClient> tray_action_client,
+    mojom::TrayActionState lock_screen_note_state) {
   mojom::TrayActionState old_lock_screen_note_state = GetLockScreenNoteState();
 
-  tray_action_client_ = std::move(tray_action_client);
+  if (tray_action_client) {
+    tray_action_client_.Bind(std::move(tray_action_client));
 
-  if (tray_action_client_) {
     // Makes sure the state is updated in case the connection is lost.
-    tray_action_client_.set_connection_error_handler(
-        base::Bind(&TrayAction::SetClient, base::Unretained(this), nullptr,
-                   mojom::TrayActionState::kNotAvailable));
+    tray_action_client_.set_disconnect_handler(
+        base::Bind(&TrayAction::SetClient, base::Unretained(this),
+                   mojo::NullRemote(), mojom::TrayActionState::kNotAvailable));
     lock_screen_note_state_ = lock_screen_note_state;
 
     lock_screen_note_display_state_handler_ =
         std::make_unique<LockScreenNoteDisplayStateHandler>(
             backlights_forced_off_setter_);
   } else {
+    tray_action_client_.reset();
     lock_screen_note_display_state_handler_.reset();
   }
 

@@ -4,7 +4,7 @@
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//      http://www.apache.org/licenses/LICENSE-2.0
+//      https://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -191,7 +191,8 @@ void CheckUInt64(uint64_t x) {
   EXPECT_EQ(expected, std::string(&buffer[1], actual)) << " Input " << x;
 
   char* generic_actual = absl::numbers_internal::FastIntToBuffer(x, &buffer[1]);
-  EXPECT_EQ(expected, std::string(&buffer[1], generic_actual)) << " Input " << x;
+  EXPECT_EQ(expected, std::string(&buffer[1], generic_actual))
+      << " Input " << x;
 
   char* my_actual =
       absl::numbers_internal::FastIntToBuffer(MyUInt64(x), &buffer[1]);
@@ -712,7 +713,7 @@ TEST(stringtest, safe_strtou64_base_length_delimited) {
   }
 }
 
-// feenableexcept() and fedisableexcept() are missing on Mac OS X, MSVC,
+// feenableexcept() and fedisableexcept() are missing on macOS, MSVC,
 // and WebAssembly.
 #if defined(_MSC_VER) || defined(__APPLE__) || defined(__EMSCRIPTEN__)
 #define ABSL_MISSING_FEENABLEEXCEPT 1
@@ -784,7 +785,7 @@ void ExhaustiveFloat(uint32_t cases, R&& runnable) {
   if (iters_per_float == 0) iters_per_float = 1;
   for (float f : floats) {
     if (f == last) continue;
-    float testf = nextafter(last, std::numeric_limits<float>::max());
+    float testf = std::nextafter(last, std::numeric_limits<float>::max());
     runnable(testf);
     runnable(-testf);
     last = testf;
@@ -798,7 +799,7 @@ void ExhaustiveFloat(uint32_t cases, R&& runnable) {
         last = testf;
       }
     }
-    testf = nextafter(f, 0.0f);
+    testf = std::nextafter(f, 0.0f);
     if (testf > last) {
       runnable(testf);
       runnable(-testf);
@@ -879,8 +880,8 @@ TEST_F(SimpleDtoaTest, ExhaustiveDoubleToSixDigits) {
         char buf[kSixDigitsToBufferSize];
         ABSL_RAW_LOG(
             INFO, "%s",
-            absl::StrCat("Exp ", exponent, " powten=", powten, "(",
-                         powten, ") (",
+            absl::StrCat("Exp ", exponent, " powten=", powten, "(", powten,
+                         ") (",
                          std::string(buf, SixDigitsToBuffer(powten, buf)), ")")
                 .c_str());
       }

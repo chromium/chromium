@@ -185,14 +185,21 @@ TEST_F(URLDatabaseTest, KeywordSearchTermVisit) {
 
   // Add a keyword visit.
   KeywordID keyword_id = 100;
-  base::string16 keyword = base::UTF8ToUTF16("visit");
+  base::string16 keyword = base::UTF8ToUTF16(" VISIT ");
+  base::string16 normalized_keyword = base::UTF8ToUTF16("visit");
   ASSERT_TRUE(SetKeywordSearchTermsForURL(url_id, keyword_id, keyword));
 
   // Make sure we get it back.
   std::vector<KeywordSearchTermVisit> matches;
-  GetMostRecentKeywordSearchTerms(keyword_id, keyword, 10, &matches);
+  GetMostRecentKeywordSearchTerms(keyword_id, base::UTF8ToUTF16("vi"), 10,
+                                  &matches);
   ASSERT_EQ(1U, matches.size());
   ASSERT_EQ(keyword, matches[0].term);
+
+  auto zero_prefix_matches = GetMostRecentKeywordSearchTerms(keyword_id, 10);
+  ASSERT_EQ(1U, zero_prefix_matches.size());
+  ASSERT_EQ(keyword, zero_prefix_matches[0].term);
+  ASSERT_EQ(normalized_keyword, zero_prefix_matches[0].normalized_term);
 
   KeywordSearchTermRow keyword_search_term_row;
   ASSERT_TRUE(GetKeywordSearchTermRow(url_id, &keyword_search_term_row));

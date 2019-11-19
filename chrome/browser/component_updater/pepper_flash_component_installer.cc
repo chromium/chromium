@@ -26,6 +26,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
 #include "base/version.h"
+#include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/browser/component_updater/component_installer_errors.h"
 #include "chrome/browser/plugins/plugin_prefs.h"
@@ -66,7 +67,7 @@ namespace component_updater {
 
 namespace {
 
-#if defined(GOOGLE_CHROME_BUILD)
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #if defined(OS_CHROMEOS)
 // CRX hash for Chrome OS. The extension id is:
 // ckjlcfmdbdglblbjglepgnoekdnkoklc.
@@ -152,9 +153,9 @@ bool SkipFlashRegistration(ComponentUpdateService* cus) {
   return false;
 }
 #endif  // defined(OS_CHROMEOS)
-#endif  // defined(GOOGLE_CHROME_BUILD)
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
-#if !defined(OS_LINUX) && defined(GOOGLE_CHROME_BUILD)
+#if !defined(OS_LINUX) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
 bool MakePepperFlashPluginInfo(const base::FilePath& flash_path,
                                const base::Version& flash_version,
                                bool out_of_process,
@@ -239,9 +240,9 @@ void RegisterPepperFlashWithChrome(const base::FilePath& path,
 void UpdatePathService(const base::FilePath& path) {
   base::PathService::Override(chrome::DIR_PEPPER_FLASH_PLUGIN, path);
 }
-#endif  // !defined(OS_LINUX) && defined(GOOGLE_CHROME_BUILD)
+#endif  // !defined(OS_LINUX) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
-#if defined(GOOGLE_CHROME_BUILD)
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 class FlashComponentInstallerPolicy : public ComponentInstallerPolicy {
  public:
   FlashComponentInstallerPolicy();
@@ -291,7 +292,7 @@ FlashComponentInstallerPolicy::OnCustomInstall(
   }
 
 #if defined(OS_CHROMEOS)
-  base::CreateSingleThreadTaskRunnerWithTraits({content::BrowserThread::UI})
+  base::CreateSingleThreadTaskRunner({content::BrowserThread::UI})
       ->PostTask(FROM_HERE, base::BindOnce(&ImageLoaderRegistration, version,
                                            install_dir));
 #elif defined(OS_LINUX)
@@ -319,9 +320,10 @@ void FlashComponentInstallerPolicy::ComponentReady(
   // Flash version, so we do not do this.
   RegisterPepperFlashWithChrome(path.Append(chrome::kPepperFlashPluginFilename),
                                 version);
-  base::PostTaskWithTraits(FROM_HERE,
-                           {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
-                           base::BindOnce(&UpdatePathService, path));
+  base::PostTask(
+      FROM_HERE,
+      {base::ThreadPool(), base::TaskPriority::BEST_EFFORT, base::MayBlock()},
+      base::BindOnce(&UpdatePathService, path));
 #endif  // !defined(OS_LINUX)
 }
 
@@ -366,12 +368,12 @@ std::vector<std::string> FlashComponentInstallerPolicy::GetMimeTypes() const {
   mime_types.push_back("application/futuresplash");
   return mime_types;
 }
-#endif  // defined(GOOGLE_CHROME_BUILD)
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 }  // namespace
 
 void RegisterPepperFlashComponent(ComponentUpdateService* cus) {
-#if defined(GOOGLE_CHROME_BUILD)
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   // Component updated flash supersedes bundled flash therefore if that one
   // is disabled then this one should never install.
   base::CommandLine* cmd_line = base::CommandLine::ForCurrentProcess();
@@ -386,7 +388,7 @@ void RegisterPepperFlashComponent(ComponentUpdateService* cus) {
   auto installer = base::MakeRefCounted<ComponentInstaller>(
       std::make_unique<FlashComponentInstallerPolicy>());
   installer->Register(cus, base::OnceClosure());
-#endif  // defined(GOOGLE_CHROME_BUILD)
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 }
 
 }  // namespace component_updater

@@ -78,6 +78,14 @@ class GLTestHelper {
                           const uint8_t* color,
                           const uint8_t* mask);
 
+  static bool CheckPixels(GLint x,
+                          GLint y,
+                          GLsizei width,
+                          GLsizei height,
+                          GLint tolerance,
+                          const std::vector<uint8_t>& expected,
+                          const uint8_t* mask);
+
   // Uses ReadPixels to save an area of the current FBO/Backbuffer.
   static bool SaveBackbufferAsBMP(const char* filename, int width, int height);
 

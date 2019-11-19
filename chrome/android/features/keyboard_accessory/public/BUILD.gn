@@ -1,0 +1,30 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+
+android_library("public_java") {
+  deps = [
+    "//base:base_java",
+    "//chrome/android:chrome_public_java",
+    "//components/autofill/android:autofill_java",
+    "//third_party/android_deps:androidx_annotation_annotation_java",
+  ]
+  java_files = [
+    "java/src/org/chromium/chrome/browser/keyboard_accessory/ManualFillingComponent.java",
+    "java/src/org/chromium/chrome/browser/keyboard_accessory/data/KeyboardAccessoryData.java",
+    "java/src/org/chromium/chrome/browser/keyboard_accessory/data/Provider.java",
+    "java/src/org/chromium/chrome/browser/keyboard_accessory/data/PropertyProvider.java",
+    "java/src/org/chromium/chrome/browser/keyboard_accessory/data/UserInfoField.java",
+  ]
+  srcjar_deps = [ ":java_enums_srcjar" ]
+}
+
+java_cpp_enum("java_enums_srcjar") {
+  sources = [
+    "//chrome/browser/autofill/manual_filling_view_interface.h",
+    "//chrome/browser/password_manager/password_accessory_metrics_util.h",
+  ]
+  visibility = [ ":*" ]
+}

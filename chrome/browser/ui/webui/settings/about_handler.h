@@ -25,7 +25,6 @@
 #endif  // defined(OS_CHROMEOS)
 
 namespace base {
-class DictionaryValue;
 class FilePath;
 class ListValue;
 }
@@ -85,14 +84,20 @@ class AboutHandler : public settings::SettingsPageUIHandler,
   void HandleOpenHelpPage(const base::ListValue* args);
 
 #if defined(OS_CHROMEOS)
+  // Checks if ReleaseNotes is enabled.
+  void HandleGetEnabledReleaseNotes(const base::ListValue* args);
+
+  // Checks if system is connected to internet.
+  void HandleCheckInternetConnection(const base::ListValue* args);
+
+  // Opens the release notes app. |args| must be empty.
+  void HandleLaunchReleaseNotes(const base::ListValue* args);
+
+  // Opens the help page. |args| must be empty.
+  void HandleOpenOsHelpPage(const base::ListValue* args);
+
   // Sets the release track version.
   void HandleSetChannel(const base::ListValue* args);
-
-  // Retrieves OS, ARC and firmware versions.
-  void HandleGetVersionInfo(const base::ListValue* args);
-  void OnGetVersionInfoReady(
-      std::string callback_id,
-      std::unique_ptr<base::DictionaryValue> version_info);
 
   // Retrieves combined channel info.
   void HandleGetChannelInfo(const base::ListValue* args);
@@ -150,15 +155,15 @@ class AboutHandler : public settings::SettingsPageUIHandler,
                                  const base::FilePath& label_dir_path,
                                  const std::string& text);
 
-  // Retrieves device end of life status.
-  // Will asynchronously resolve the provided callback with a boolean
-  // indicating whether the device has reached end-of-life status (will no
-  // longer receive updates).
-  void HandleGetHasEndOfLife(const base::ListValue* args);
+  // Retrieves device End of Life information which contains the End of Life
+  // date. Will asynchronously resolve the provided callback with an object
+  // containing a boolean indicating whether the device has reached/passed End
+  // of Life, and an End Of Life description formatted with the month and year.
+  void HandleGetEndOfLifeInfo(const base::ListValue* args);
 
-  // Callbacks for version_updater_->GetEolStatus calls.
-  void OnGetEndOfLifeStatus(std::string callback_id,
-                            update_engine::EndOfLifeStatus status);
+  // Callbacks for version_updater_->GetEolInfo calls.
+  void OnGetEndOfLifeInfo(std::string callback_id,
+                          chromeos::UpdateEngineClient::EolInfo eol_info);
 #endif
 
   // Specialized instance of the VersionUpdater used to update the browser.
@@ -171,7 +176,7 @@ class AboutHandler : public settings::SettingsPageUIHandler,
   bool apply_changes_from_upgrade_observer_;
 
   // Used for callbacks.
-  base::WeakPtrFactory<AboutHandler> weak_factory_;
+  base::WeakPtrFactory<AboutHandler> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(AboutHandler);
 };

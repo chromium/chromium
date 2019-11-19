@@ -6,10 +6,11 @@
 
 #include <string>
 
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/strcat.h"
 #include "content/browser/indexed_db/indexed_db_leveldb_coding.h"
-#include "content/browser/indexed_db/leveldb/leveldb_env.h"
+#include "content/browser/indexed_db/indexed_db_leveldb_env.h"
 #include "url/origin.h"
 
 namespace content {
@@ -63,8 +64,8 @@ void ParseAndReportCorruptionDetails(const std::string& histogram_name,
 
 void ReportOpenStatus(IndexedDBBackingStoreOpenResult result,
                       const url::Origin& origin) {
-  UMA_HISTOGRAM_ENUMERATION("WebCore.IndexedDB.BackingStore.OpenStatus", result,
-                            INDEXED_DB_BACKING_STORE_OPEN_MAX);
+  base::UmaHistogramEnumeration("WebCore.IndexedDB.BackingStore.OpenStatus",
+                                result, INDEXED_DB_BACKING_STORE_OPEN_MAX);
   const std::string suffix = OriginToCustomHistogramSuffix(origin);
   // Data from the WebCore.IndexedDB.BackingStore.OpenStatus histogram is used
   // to generate a graph. So as not to alter the meaning of that graph,
@@ -104,7 +105,8 @@ void ReportSchemaVersion(int version, const url::Origin& origin) {
 }
 
 void ReportV2Schema(bool has_broken_blobs, const url::Origin& origin) {
-  UMA_HISTOGRAM_BOOLEAN("WebCore.IndexedDB.SchemaV2HasBlobs", has_broken_blobs);
+  base::UmaHistogramBoolean("WebCore.IndexedDB.SchemaV2HasBlobs",
+                            has_broken_blobs);
   const std::string suffix = OriginToCustomHistogramSuffix(origin);
   if (!suffix.empty()) {
     base::BooleanHistogram::FactoryGet(

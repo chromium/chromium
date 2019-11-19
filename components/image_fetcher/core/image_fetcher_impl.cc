@@ -51,8 +51,8 @@ void ImageFetcherImpl::FetchImageAndData(
     image_data_fetcher_->FetchImageData(
         image_url,
         base::BindOnce(&ImageFetcherImpl::OnImageURLFetched,
-                       base::Unretained(this), image_url, std::move(params)),
-        params.traffic_annotation());
+                       base::Unretained(this), image_url, params),
+        params);
   } else {
     ImageRequest* request = &it->second;
     // Request in progress. Register as an interested callback.
@@ -67,7 +67,9 @@ void ImageFetcherImpl::FetchImageAndData(
       if (!request->image_data.empty()) {
         base::ThreadTaskRunnerHandle::Get()->PostTask(
             FROM_HERE,
-            base::BindOnce(std::move(image_data_callback), request->image_data,
+            base::BindOnce(&ImageFetcherImpl::RunImageDataCallback,
+                           weak_ptr_factory_.GetWeakPtr(),
+                           std::move(image_data_callback), request->image_data,
                            request->request_metadata));
       } else {
         request->image_data_callbacks.push_back(std::move(image_data_callback));
@@ -102,8 +104,8 @@ void ImageFetcherImpl::OnImageURLFetched(const GURL& image_url,
   request->request_metadata = metadata;
   image_decoder_->DecodeImage(
       image_data, params.frame_size(),
-      base::BindRepeating(&ImageFetcherImpl::OnImageDecoded,
-                          base::Unretained(this), image_url, metadata));
+      base::BindOnce(&ImageFetcherImpl::OnImageDecoded,
+                     weak_ptr_factory_.GetWeakPtr(), image_url, metadata));
 }
 
 void ImageFetcherImpl::OnImageDecoded(const GURL& image_url,
@@ -122,6 +124,14 @@ void ImageFetcherImpl::OnImageDecoded(const GURL& image_url,
   // Erase the completed ImageRequest.
   DCHECK(request->image_data_callbacks.empty());
   pending_net_requests_.erase(image_iter);
+}
+
+void ImageFetcherImpl::RunImageDataCallback(
+    ImageDataFetcherCallback image_data_callback,
+    std::string image_data,
+    RequestMetadata request_metadata) {
+  std::move(image_data_callback)
+      .Run(std::move(image_data), std::move(request_metadata));
 }
 
 ImageDecoder* ImageFetcherImpl::GetImageDecoder() {

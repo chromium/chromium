@@ -41,7 +41,6 @@ static_library("assist_ranker") {
   deps = [
     "//base",
     "//components/assist_ranker/proto",
-    "//components/data_use_measurement/core",
     "//components/keyed_service/core",
     "//net",
     "//services/metrics/public/cpp:metrics_cpp",

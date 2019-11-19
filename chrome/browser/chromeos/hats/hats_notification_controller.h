@@ -12,6 +12,10 @@
 #include "ui/gfx/image/image_skia.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
 
+namespace message_center {
+class Notification;
+}
+
 class Profile;
 class NetworkState;
 
@@ -42,6 +46,9 @@ class HatsNotificationController : public message_center::NotificationDelegate,
                            InternetConnected_ShowNotification);
   FRIEND_TEST_ALL_PREFIXES(HatsNotificationControllerTest,
                            DismissNotification_ShouldUpdatePref);
+  FRIEND_TEST_ALL_PREFIXES(
+      HatsNotificationControllerTest,
+      Disconnected_RemoveNotification_Connected_AddNotification);
 
   ~HatsNotificationController() override;
 
@@ -59,7 +66,8 @@ class HatsNotificationController : public message_center::NotificationDelegate,
   void UpdateLastInteractionTime();
 
   Profile* const profile_;
-  base::WeakPtrFactory<HatsNotificationController> weak_pointer_factory_;
+  std::unique_ptr<message_center::Notification> notification_;
+  base::WeakPtrFactory<HatsNotificationController> weak_pointer_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(HatsNotificationController);
 };

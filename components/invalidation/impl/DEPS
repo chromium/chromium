@@ -1,15 +1,14 @@
 include_rules = [
   "+components/invalidation/public",
 
-  "+components/data_use_measurement/core",
   "+components/gcm_driver",
   "+components/keyed_service",
   "+components/pref_registry",
+  "+components/signin/public",
   "+components/sync_preferences",
 
   "+google_apis/gaia",
   "+google_apis/gcm",
-  "+jni",
   "+jingle/glue/network_service_config_test_util.h",
   "+jingle/notifier",
   "+net/base/backoff_entry.h",
@@ -21,7 +20,7 @@ include_rules = [
   "+net/url_request",
   "+net/base/load_flags.h",
 
-  "+services/identity/public",
+  "+services/data_decoder/public",
   "+services/network/public",
   "+services/network/test",
 ]

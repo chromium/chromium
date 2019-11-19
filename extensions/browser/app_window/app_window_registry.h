@@ -80,9 +80,6 @@ class AppWindowRegistry : public KeyedService,
   AppWindowList GetAppWindowsForApp(const std::string& app_id) const;
   const AppWindowList& app_windows() const { return app_windows_; }
 
-  // Close all app windows associated with an app.
-  void CloseAllAppWindowsForApp(const std::string& app_id);
-
   // Helper functions to find app windows with particular attributes.
   AppWindow* GetAppWindowForWebContents(
       const content::WebContents* web_contents) const;

@@ -8,7 +8,6 @@
 #include "base/files/file_util.h"
 #include "chrome/browser/extensions/api/image_writer_private/error_messages.h"
 #include "content/public/browser/browser_thread.h"
-#include "services/service_manager/public/cpp/connector.h"
 
 namespace extensions {
 namespace image_writer {
@@ -17,16 +16,11 @@ using content::BrowserThread;
 
 WriteFromFileOperation::WriteFromFileOperation(
     base::WeakPtr<OperationManager> manager,
-    std::unique_ptr<service_manager::Connector> connector,
     const ExtensionId& extension_id,
     const base::FilePath& user_file_path,
     const std::string& device_path,
     const base::FilePath& download_folder)
-    : Operation(manager,
-                std::move(connector),
-                extension_id,
-                device_path,
-                download_folder) {
+    : Operation(manager, extension_id, device_path, download_folder) {
   image_path_ = user_file_path;
 }
 

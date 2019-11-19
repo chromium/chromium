@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<title>Fallback content should be shown when image loading is disabled</title>
+<script>
+  if (window.internals)
+    internals.settings.setLoadsImagesAutomatically(false);
+</script>
+<body></body>
+<script>
+  let image = new Image();
+  image.src = "resources/mu.png?" + Math.random();
+  image.alt = "Chair spinning";
+  document.body.appendChild(image);
+</script>

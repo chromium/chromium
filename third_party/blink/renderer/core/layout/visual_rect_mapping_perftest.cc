@@ -18,14 +18,14 @@ class VisualRectPerfTest : public RenderingTest {
   void RunPerfTest(unsigned iteration_count,
                    const LayoutBoxModelObject& target,
                    const LayoutBoxModelObject& ancestor,
-                   const LayoutRect& rect);
+                   const PhysicalRect& rect);
 };
 
 void VisualRectPerfTest::RunPerfTest(unsigned iteration_count,
                                      const LayoutBoxModelObject& object,
                                      const LayoutBoxModelObject& ancestor,
-                                     const LayoutRect& rect) {
-  LayoutRect test_rect(rect);
+                                     const PhysicalRect& rect) {
+  PhysicalRect test_rect(rect);
   base::TimeTicks start = base::TimeTicks::Now();
   for (unsigned count = 0; count < iteration_count; count++) {
     object.MapToVisualRectInAncestorSpace(&ancestor, test_rect);
@@ -140,7 +140,7 @@ TEST_F(VisualRectPerfTest, GeometryMapper) {
     </div>
   )HTML");
   LayoutView* view = GetDocument().View()->GetLayoutView();
-  LayoutRect rect(0, 0, 100, 100);
+  PhysicalRect rect(0, 0, 100, 100);
 
   unsigned kIterationCount = 1000000;
   LOG(ERROR) << "Test with single div:";

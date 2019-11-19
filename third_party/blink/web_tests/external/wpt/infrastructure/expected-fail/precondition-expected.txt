@@ -1,0 +1,8 @@
+This is a testharness.js-based test.
+NOTRUN test precondition 1
+NOTRUN async_test immediate precondition 2
+NOTRUN async_test after timeout precondition 3
+NOTRUN promise_test immediate precondition 4
+NOTRUN promise_test after await precondition 5
+Harness: the test ran to completion.
+

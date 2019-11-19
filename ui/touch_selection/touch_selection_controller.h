@@ -115,9 +115,13 @@ class UI_TOUCH_SELECTION_EXPORT TouchSelectionController
   bool Animate(base::TimeTicks animate_time);
 
   // Returns the rect between the two active selection bounds. If just one of
-  // the bounds is visible, the rect is simply the (one-dimensional) rect of
-  // that bound. If no selection is active, an empty rect will be returned.
+  // the bounds is visible, or both bounds are visible and on the same line,
+  // the rect is simply a one-dimensional rect of that bound. If no selection
+  // is active, an empty rect will be returned.
   gfx::RectF GetRectBetweenBounds() const;
+  // Returns the rect between the selection bounds (as above) but clipped by
+  // occluding layers.
+  gfx::RectF GetVisibleRectBetweenBounds() const;
 
   // Returns the visible rect of specified touch handle. For an active insertion
   // these values will be identical.
@@ -198,6 +202,9 @@ class UI_TOUCH_SELECTION_EXPORT TouchSelectionController
 
   InputEventType response_pending_input_event_;
 
+  // The bounds at the begin and end of the selection, which might be vertical
+  // or horizontal line and represents the position of the touch handles or
+  // caret.
   gfx::SelectionBound start_;
   gfx::SelectionBound end_;
   TouchHandleOrientation start_orientation_;

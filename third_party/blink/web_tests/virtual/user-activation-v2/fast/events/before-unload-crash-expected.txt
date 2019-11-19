@@ -1,9 +1,0 @@
-Detaching a frame in beforeunload event handler should not crash.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS if no crash
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

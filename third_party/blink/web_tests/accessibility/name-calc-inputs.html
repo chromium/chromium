@@ -1,14 +1,13 @@
 <!DOCTYPE HTML>
 <script src="../resources/testharness.js"></script>
 <script src="../resources/testharnessreport.js"></script>
-<script src="../resources/run-after-layout-and-paint.js"></script>
 
 <div class="container">
     <input id="text1" type="text">
 </div>
 
 <script>
-test_after_layout_and_paint(function(t) {
+test(function(t) {
     var axTextInput1 = accessibilityController.accessibleElementById("text1");
     assert_equals(axTextInput1.name, "");
 }, "Text input");
@@ -19,7 +18,7 @@ test_after_layout_and_paint(function(t) {
 </div>
 
 <script>
-test_after_layout_and_paint(function(t) {
+test(function(t) {
     var axTextInput2 = accessibilityController.accessibleElementById("text2");
     assert_equals(axTextInput2.name, "text2-title");
     assert_equals(axTextInput2.nameFrom, "title");
@@ -31,7 +30,7 @@ test_after_layout_and_paint(function(t) {
 </div>
 
 <script>
-test_after_layout_and_paint(function(t) {
+test(function(t) {
     var axTextInput3 = accessibilityController.accessibleElementById("text3");
     assert_equals(axTextInput3.name, "text3-placeholder");
     assert_equals(axTextInput3.nameFrom, "placeholder");
@@ -44,7 +43,7 @@ test_after_layout_and_paint(function(t) {
 </div>
 
 <script>
-test_after_layout_and_paint(function(t) {
+test(function(t) {
     var axTextInput4 = accessibilityController.accessibleElementById("text4");
     assert_equals(axTextInput4.name, "label-for-text4");
     assert_equals(axTextInput4.nameFrom, "relatedElement");
@@ -57,7 +56,7 @@ test_after_layout_and_paint(function(t) {
 </div>
 
 <script>
-test_after_layout_and_paint(function(t) {
+test(function(t) {
     var axTextInput5 = accessibilityController.accessibleElementById("text5");
     assert_equals(axTextInput5.name, "text5-aria-label");
     assert_equals(axTextInput5.nameFrom, "attribute");
@@ -71,7 +70,7 @@ test_after_layout_and_paint(function(t) {
 </div>
 
 <script>
-test_after_layout_and_paint(function(t) {
+test(function(t) {
     var axTextInput6 = accessibilityController.accessibleElementById("text6");
     assert_equals(axTextInput6.name, "labelledby-for-text6");
     assert_equals(axTextInput6.nameFrom, "relatedElement");
@@ -80,12 +79,14 @@ test_after_layout_and_paint(function(t) {
 
 <div class="container">
     <label>label-wrapping-text7
-        <input id="text7" type="text" title="text7-title">
+        <span>   <!-- Also testing ancestor label that is not direct parent -->
+            <input id="text7" type="text" title="text7-title">
+        </span>
     </label>
 </div>
 
 <script>
-test_after_layout_and_paint(function(t) {
+test(function(t) {
     var axTextInput7 = accessibilityController.accessibleElementById("text7");
     assert_equals(axTextInput7.name, "label-wrapping-text7");
     assert_equals(axTextInput7.nameFrom, "relatedElement");
@@ -99,7 +100,7 @@ test_after_layout_and_paint(function(t) {
 </div>
 
 <script>
-test_after_layout_and_paint(function(t) {
+test(function(t) {
     var axTextInput8 = accessibilityController.accessibleElementById("text8");
     assert_equals(axTextInput8.name, "");
 }, "Text input with wrapped label with wrong ID");
@@ -111,7 +112,7 @@ test_after_layout_and_paint(function(t) {
 </div>
 
 <script>
-test_after_layout_and_paint(function(t) {
+test(function(t) {
     var axTextInput9 = accessibilityController.accessibleElementById("text9");
     assert_equals(axTextInput9.name,
                   "label-for-text9 label-wrapping-text9");
@@ -125,12 +126,12 @@ test_after_layout_and_paint(function(t) {
 </div>
 
 <script>
-test_after_layout_and_paint(function(t) {
+test(function(t) {
     var axTextInput10 = accessibilityController.accessibleElementById("text10");
     assert_equals(axTextInput10.name, "label-wrapping-text10");
     assert_equals(axTextInput10.nameFrom, "relatedElement");
     assert_equals(axTextInput10.description, "text10-title");
-    assert_equals(axTextInput10.descriptionFrom, "attribute");
+    assert_equals(axTextInput10.descriptionFrom, "title");
 }, "Text input with placeholder and label-wrapped");
 </script>
 
@@ -141,7 +142,7 @@ test_after_layout_and_paint(function(t) {
 </div>
 
 <script>
-test_after_layout_and_paint(function(t) {
+test(function(t) {
     var axTextInput11 = accessibilityController.accessibleElementById("text11");
     assert_equals(axTextInput11.name,
                   "first-label-for-text11 second-label-for-text11");
@@ -154,7 +155,7 @@ test_after_layout_and_paint(function(t) {
 </div>
 
 <script>
-test_after_layout_and_paint(function(t) {
+test(function(t) {
     var axTextInput12 = accessibilityController.accessibleElementById("text12");
     assert_equals(axTextInput12.name, "text12-aria-placeholder");
     assert_equals(axTextInput12.nameFrom, "placeholder");
@@ -166,7 +167,7 @@ test_after_layout_and_paint(function(t) {
 </div>
 
 <script>
-test_after_layout_and_paint(function(t) {
+test(function(t) {
     var axTextInput13 = accessibilityController.accessibleElementById("text13");
     assert_equals(axTextInput13.name, "text13-placeholder");
     assert_equals(axTextInput13.nameFrom, "placeholder");
@@ -178,7 +179,7 @@ test_after_layout_and_paint(function(t) {
 </div>
 
 <script>
-test_after_layout_and_paint(function(t) {
+test(function(t) {
     var axTextInput14 = accessibilityController.accessibleElementById("text14");
     assert_equals(axTextInput14.name, "text14-aria-placeholder");
     assert_equals(axTextInput14.nameFrom, "placeholder");
@@ -190,7 +191,7 @@ test_after_layout_and_paint(function(t) {
 </div>
 
 <script>
-test_after_layout_and_paint(function(t) {
+test(function(t) {
     var axTextInput15 = accessibilityController.accessibleElementById("text15");
     assert_equals(axTextInput15.name, "text15-aria-placeholder");
     assert_equals(axTextInput15.nameFrom, "placeholder");
@@ -201,7 +202,7 @@ test_after_layout_and_paint(function(t) {
     <div id="text16" role="button" aria-placeholder="text16-aria-placeholder">
 </div>
 <script>
-test_after_layout_and_paint(function(t) {
+test(function(t) {
     var axTextInput16 = accessibilityController.accessibleElementById("text16");
     assert_equals(axTextInput16.name, "");
     assert_equals(axTextInput16.nameFrom, "");

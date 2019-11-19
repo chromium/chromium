@@ -11,6 +11,8 @@
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
 #include "third_party/blink/renderer/core/loader/empty_clients.h"
+#include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
 
 namespace blink {
 
@@ -39,10 +41,10 @@ class ChromeClientTest : public testing::Test {};
 TEST_F(ChromeClientTest, SetToolTipFlood) {
   ChromeClientToolTipLogger logger;
   ChromeClient* client = &logger;
-  HitTestLocation location(LayoutPoint(10, 20));
+  HitTestLocation location(PhysicalOffset(10, 20));
   HitTestResult result(HitTestRequest(HitTestRequest::kMove), location);
-  Document* doc = Document::CreateForTest();
-  Element* element = HTMLElement::Create(html_names::kDivTag, *doc);
+  auto* doc = MakeGarbageCollected<Document>();
+  auto* element = MakeGarbageCollected<HTMLElement>(html_names::kDivTag, *doc);
   element->setAttribute(html_names::kTitleAttr, "tooltip");
   result.SetInnerNode(element);
 
@@ -71,11 +73,12 @@ TEST_F(ChromeClientTest, SetToolTipFlood) {
 }
 
 TEST_F(ChromeClientTest, SetToolTipEmptyString) {
-  ChromeClient* client = EmptyChromeClient::Create();
-  HitTestLocation location(LayoutPoint(10, 20));
+  ChromeClient* client = MakeGarbageCollected<EmptyChromeClient>();
+  HitTestLocation location(PhysicalOffset(10, 20));
   HitTestResult result(HitTestRequest(HitTestRequest::kMove), location);
-  auto& doc = *Document::CreateForTest();
-  auto& input_element = *HTMLInputElement::Create(doc, CreateElementFlags());
+  auto& doc = *MakeGarbageCollected<Document>();
+  auto& input_element =
+      *MakeGarbageCollected<HTMLInputElement>(doc, CreateElementFlags());
   input_element.setAttribute(html_names::kTypeAttr, "file");
 
   result.SetInnerNode(&input_element);

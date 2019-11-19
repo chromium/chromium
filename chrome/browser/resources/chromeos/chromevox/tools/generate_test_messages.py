@@ -6,6 +6,7 @@
 
 '''Generates test_messages.js from an extension message json file.'''
 
+import gzip
 import optparse
 import sys
 
@@ -18,9 +19,9 @@ def Die(message):
 # Tempalte for the test_messages.js.
 _JS_TEMPLATE = '''// GENERATED FROM %(in_file)s
 
-goog.provide('cvox.TestMessages');
+goog.provide('TestMessages');
 
-cvox.TestMessages = %(json)s;
+TestMessages = %(json)s;
 '''
 
 
@@ -35,7 +36,11 @@ def main():
   if len(args) != 1:
     Die('Exactly one input file must be specified')
   in_file_name = args[0]
-  with open(in_file_name) as in_file:
+  def _OpenFile(filename):
+    if filename.endswith('.gz'):
+      return gzip.open(filename)
+    return open(filename)
+  with _OpenFile(in_file_name) as in_file:
     json = in_file.read().strip()
   with open(options.output_file, 'w') as out_file:
     out_file.write(_JS_TEMPLATE % {'in_file': in_file_name, 'json': json})

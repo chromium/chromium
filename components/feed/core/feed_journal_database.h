@@ -16,22 +16,24 @@
 #include "base/sequenced_task_runner.h"
 #include "components/leveldb_proto/public/proto_database.h"
 
+namespace leveldb_proto {
+class ProtoDatabaseProvider;
+}  // namespace leveldb_proto
+
 namespace feed {
 
 class JournalMutation;
 class JournalOperation;
 class JournalStorageProto;
 
+using InitStatus = leveldb_proto::Enums::InitStatus;
+
 // FeedJournalDatabase is leveldb backend store for Feed's journal storage data.
-// Feed's journal data are key-value pairs.
+// Feed's journal data are key-value pairs.  In order to support callers from
+// different threads, this class posts all database operations to an owned
+// sequenced task runner.
 class FeedJournalDatabase {
  public:
-  enum State {
-    UNINITIALIZED,
-    INITIALIZED,
-    INIT_FAILURE,
-  };
-
   // Returns the journal data as a vector of strings when calling loading data
   // or keys.
   using JournalLoadCallback =
@@ -47,15 +49,21 @@ class FeedJournalDatabase {
 
   using JournalMap = base::flat_map<std::string, JournalStorageProto>;
 
-  // Initializes the database with |database_folder|.
-  explicit FeedJournalDatabase(const base::FilePath& database_folder);
+  using StorageEntryVector =
+      leveldb_proto::ProtoDatabase<JournalStorageProto>::KeyEntryVector;
 
-  // Initializes the database with |database_folder|. Creates storage using the
-  // given |storage_database| for local storage. Useful for testing.
+  // Initializes the database with |proto_database_provider| and
+  // |database_folder|.
   FeedJournalDatabase(
-      const base::FilePath& database_folder,
+      leveldb_proto::ProtoDatabaseProvider* proto_database_provider,
+      const base::FilePath& database_folder);
+
+  // Creates storage using the given |storage_database| for local storage.
+  // Useful for testing.
+  explicit FeedJournalDatabase(
       std::unique_ptr<leveldb_proto::ProtoDatabase<JournalStorageProto>>
-          storage_database);
+          storage_database,
+      scoped_refptr<base::SequencedTaskRunner> task_runner);
 
   ~FeedJournalDatabase();
 
@@ -86,9 +94,9 @@ class FeedJournalDatabase {
 
  private:
   // This method performs JournalOperation in the |journal_mutation|.
-  // If the first operation in |journal_mutation| is JOURNAL_DELETE, journal can
-  // be empty, otherwise we need to load |journal| from database and then pass
-  // to this method.
+  // If the first operation in |journal_mutation| is JOURNAL_DELETE, journal
+  // can be empty, otherwise we need to load |journal| from database and
+  // then pass to this method.
   void PerformOperations(std::unique_ptr<JournalStorageProto> journal,
                          std::unique_ptr<JournalMutation> journal_mutation,
                          ConfirmationCallback callback);
@@ -97,8 +105,22 @@ class FeedJournalDatabase {
                         JournalMap copy_to_journal,
                         ConfirmationCallback callback);
 
+  // The following *Internal methods must be executed from |task_runner_|.
+  void InitInternal();
+  void GetEntryInternal(
+      const std::string& key,
+      leveldb_proto::Callbacks::Internal<JournalStorageProto>::GetCallback
+          callback);
+  void LoadKeysInternal(JournalLoadCallback callback);
+  void DeleteAllEntriesInternal(ConfirmationCallback callback);
+  void UpdateEntriesInternal(
+      std::unique_ptr<StorageEntryVector> entries_to_save,
+      std::unique_ptr<std::vector<std::string>> keys_to_remove,
+      base::TimeTicks start_time,
+      ConfirmationCallback callback);
+
   // Callback methods given to |storage_database_| for async responses.
-  void OnDatabaseInitialized(bool success);
+  void OnDatabaseInitialized(InitStatus status);
   void OnGetEntryForLoadJournal(base::TimeTicks start_time,
                                 JournalLoadCallback callback,
                                 bool success,
@@ -122,19 +144,20 @@ class FeedJournalDatabase {
                             ConfirmationCallback callback,
                             bool success);
 
-  JournalStorageProto CopyJouarnal(const std::string& new_journal_name,
-                                   const JournalStorageProto& source_journal);
+  JournalStorageProto CopyJournal(const std::string& new_journal_name,
+                                  const JournalStorageProto& source_journal);
 
   // Status of the database initialization.
-  State database_status_;
+  InitStatus database_status_;
+
+  // Task runner on which to execute database calls.
+  scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
   // The database for storing journal storage information.
   std::unique_ptr<leveldb_proto::ProtoDatabase<JournalStorageProto>>
       storage_database_;
 
-  SEQUENCE_CHECKER(sequence_checker_);
-
-  base::WeakPtrFactory<FeedJournalDatabase> weak_ptr_factory_;
+  base::WeakPtrFactory<FeedJournalDatabase> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(FeedJournalDatabase);
 };

@@ -26,6 +26,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) AuthenticatorSelectionCriteria {
       const AuthenticatorSelectionCriteria& other);
   AuthenticatorSelectionCriteria& operator=(
       AuthenticatorSelectionCriteria&& other);
+  bool operator==(const AuthenticatorSelectionCriteria& other) const;
   ~AuthenticatorSelectionCriteria();
 
   AuthenticatorAttachment authenticator_attachment() const {
@@ -36,6 +37,18 @@ class COMPONENT_EXPORT(DEVICE_FIDO) AuthenticatorSelectionCriteria {
 
   UserVerificationRequirement user_verification_requirement() const {
     return user_verification_requirement_;
+  }
+
+  void SetAuthenticatorAttachmentForTesting(
+      AuthenticatorAttachment attachment) {
+    authenticator_attachment_ = attachment;
+  }
+  void SetRequireResidentKeyForTesting(bool require) {
+    require_resident_key_ = require;
+  }
+  void SetUserVerificationRequirementForTesting(
+      UserVerificationRequirement uv) {
+    user_verification_requirement_ = uv;
   }
 
  private:

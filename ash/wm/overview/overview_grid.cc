@@ -8,50 +8,55 @@
 #include <functional>
 #include <utility>
 
+#include "ash/display/screen_orientation_controller.h"
+#include "ash/metrics/histogram_macros.h"
 #include "ash/public/cpp/ash_features.h"
+#include "ash/public/cpp/fps_counter.h"
+#include "ash/public/cpp/presentation_time_recorder.h"
+#include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/shelf_types.h"
-#include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/window_properties.h"
-#include "ash/public/cpp/window_state_type.h"
 #include "ash/root_window_controller.h"
+#include "ash/root_window_settings.h"
 #include "ash/rotator/screen_rotation_animator.h"
 #include "ash/screen_util.h"
-#include "ash/shelf/shelf.h"
-#include "ash/shelf/shelf_constants.h"
 #include "ash/shell.h"
-#include "ash/strings/grit/ash_strings.h"
+#include "ash/wallpaper/wallpaper_controller_impl.h"
+#include "ash/wm/desks/desk_mini_view.h"
 #include "ash/wm/desks/desks_bar_view.h"
+#include "ash/wm/desks/desks_util.h"
 #include "ash/wm/overview/cleanup_animation_observer.h"
 #include "ash/wm/overview/drop_target_view.h"
 #include "ash/wm/overview/overview_constants.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_delegate.h"
+#include "ash/wm/overview/overview_grid_event_handler.h"
+#include "ash/wm/overview/overview_highlight_controller.h"
 #include "ash/wm/overview/overview_item.h"
+#include "ash/wm/overview/overview_item_view.h"
 #include "ash/wm/overview/overview_session.h"
 #include "ash/wm/overview/overview_utils.h"
-#include "ash/wm/overview/rounded_rect_view.h"
+#include "ash/wm/overview/overview_window_drag_controller.h"
 #include "ash/wm/overview/scoped_overview_animation_settings.h"
-#include "ash/wm/splitview/split_view_controller.h"
-#include "ash/wm/splitview/split_view_drag_indicators.h"
+#include "ash/wm/resize_shadow_controller.h"
+#include "ash/wm/splitview/split_view_constants.h"
+#include "ash/wm/splitview/split_view_divider.h"
+#include "ash/wm/splitview/split_view_utils.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_window_state.h"
-#include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
-#include "base/i18n/string_search.h"
+#include "ash/wm/work_area_insets.h"
+#include "ash/wm/workspace/backdrop_controller.h"
+#include "ash/wm/workspace/workspace_layout_manager.h"
+#include "ash/wm/workspace_controller.h"
+#include "base/containers/unique_ptr_adapters.h"
 #include "base/numerics/ranges.h"
-#include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
-#include "third_party/skia/include/core/SkColor.h"
 #include "ui/aura/client/aura_constants.h"
-#include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/layer_animation_observer.h"
-#include "ui/compositor/scoped_layer_animation_settings.h"
-#include "ui/compositor_extra/shadow.h"
 #include "ui/gfx/geometry/safe_integer_conversions.h"
-#include "ui/gfx/geometry/vector2d.h"
-#include "ui/views/background.h"
-#include "ui/views/controls/label.h"
-#include "ui/views/layout/box_layout.h"
+#include "ui/gfx/geometry/vector2d_f.h"
+#include "ui/gfx/transform_util.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/coordinate_conversion.h"
@@ -59,13 +64,6 @@
 
 namespace ash {
 namespace {
-
-// The color and opacity of the overview selector.
-constexpr SkColor kWindowSelectionColor = SkColorSetARGB(36, 255, 255, 255);
-
-// Corner radius and shadow applied to the overview selector border.
-constexpr int kWindowSelectionRadius = 9;
-constexpr int kWindowSelectionShadowElevation = 24;
 
 // Windows are not allowed to get taller than this.
 constexpr int kMaxHeight = 512;
@@ -76,60 +74,151 @@ constexpr float kOverviewInsetRatio = 0.05f;
 // Additional vertical inset reserved for windows in overview mode.
 constexpr float kOverviewVerticalInset = 0.1f;
 
-// Values for the no items indicator which appears when opening overview mode
-// with no opened windows.
-constexpr int kNoItemsIndicatorHeightDp = 32;
-constexpr int kNoItemsIndicatorHorizontalPaddingDp = 16;
-constexpr int kNoItemsIndicatorRoundingDp = 16;
-constexpr int kNoItemsIndicatorVerticalPaddingDp = 8;
-constexpr SkColor kNoItemsIndicatorBackgroundColor = SK_ColorBLACK;
-constexpr SkColor kNoItemsIndicatorTextColor = SK_ColorWHITE;
-constexpr float kNoItemsIndicatorBackgroundOpacity = 0.8f;
+// Number of rows for windows in tablet overview mode.
+constexpr int kTabletLayoutRow = 2;
 
-// Returns the vector for the fade in animation.
-gfx::Vector2d GetSlideVectorForFadeIn(OverviewSession::Direction direction,
-                                      const gfx::Rect& bounds) {
-  gfx::Vector2d vector;
-  switch (direction) {
-    case OverviewSession::UP:
-    case OverviewSession::LEFT:
-      vector.set_x(-bounds.width());
-      break;
-    case OverviewSession::DOWN:
-    case OverviewSession::RIGHT:
-      vector.set_x(bounds.width());
-      break;
+constexpr int kMinimumItemsForNewLayout = 6;
+
+// Wait a while before unpausing the occlusion tracker after a scroll has
+// completed as the user may start another scroll.
+constexpr base::TimeDelta kOcclusionUnpauseDurationForScroll =
+    base::TimeDelta::FromMilliseconds(500);
+
+constexpr base::TimeDelta kOcclusionUnpauseDurationForRotation =
+    base::TimeDelta::FromMilliseconds(300);
+
+// Histogram names for overview enter/exit smoothness in clamshell,
+// tablet mode and splitview.
+constexpr char kOverviewEnterClamshellHistogram[] =
+    "Ash.Overview.AnimationSmoothness.Enter.ClamshellMode";
+constexpr char kOverviewEnterSingleClamshellHistogram[] =
+    "Ash.Overview.AnimationSmoothness.Enter.SingleClamshellMode";
+constexpr char kOverviewEnterTabletHistogram[] =
+    "Ash.Overview.AnimationSmoothness.Enter.TabletMode";
+constexpr char kOverviewEnterSplitViewHistogram[] =
+    "Ash.Overview.AnimationSmoothness.Enter.SplitView";
+
+constexpr char kOverviewExitClamshellHistogram[] =
+    "Ash.Overview.AnimationSmoothness.Exit.ClamshellMode";
+constexpr char kOverviewExitSingleClamshellHistogram[] =
+    "Ash.Overview.AnimationSmoothness.Exit.SingleClamshellMode";
+constexpr char kOverviewExitTabletHistogram[] =
+    "Ash.Overview.AnimationSmoothness.Exit.TabletMode";
+constexpr char kOverviewExitSplitViewHistogram[] =
+    "Ash.Overview.AnimationSmoothness.Exit.SplitView";
+
+// The UMA histogram that records presentation time for grid scrolling in the
+// new overview layout.
+constexpr char kOverviewScrollHistogram[] =
+    "Ash.Overview.Scroll.PresentationTime.TabletMode";
+constexpr char kOverviewScrollMaxLatencyHistogram[] =
+    "Ash.Overview.Scroll.PresentationTime.MaxLatency.TabletMode";
+
+template <const char* clamshell_single_name,
+          const char* clamshell_multi_name,
+          const char* tablet_name,
+          const char* splitview_name>
+class OverviewFpsCounter : public FpsCounter {
+ public:
+  OverviewFpsCounter(ui::Compositor* compositor,
+                     bool in_split_view,
+                     bool single_animation_in_clamshell)
+      : FpsCounter(compositor),
+        in_split_view_(in_split_view),
+        single_animation_in_clamshell_(single_animation_in_clamshell) {}
+  ~OverviewFpsCounter() override {
+    int smoothness = ComputeSmoothness();
+    if (smoothness < 0)
+      return;
+    if (single_animation_in_clamshell_)
+      UMA_HISTOGRAM_PERCENTAGE_IN_CLAMSHELL(clamshell_single_name, smoothness);
+    else
+      UMA_HISTOGRAM_PERCENTAGE_IN_CLAMSHELL(clamshell_multi_name, smoothness);
+    UMA_HISTOGRAM_PERCENTAGE_IN_TABLET_NON_SPLITVIEW(in_split_view_,
+                                                     tablet_name, smoothness);
+    UMA_HISTOGRAM_PERCENTAGE_IN_SPLITVIEW(in_split_view_, splitview_name,
+                                          smoothness);
   }
-  return vector;
-}
 
-// Creates |drop_target_widget_|. It's created when a window (not from overview)
-// is dragged around and destroyed when the drag ends. If |animate| is true, do
-// the opacity animation for the drop target.
+ private:
+  bool in_split_view_;
+
+  // True if only top window animates upon enter/exit overview in clamshell.
+  bool single_animation_in_clamshell_;
+
+  DISALLOW_COPY_AND_ASSIGN(OverviewFpsCounter);
+};
+
+using OverviewEnterFpsCounter =
+    OverviewFpsCounter<kOverviewEnterSingleClamshellHistogram,
+                       kOverviewEnterClamshellHistogram,
+                       kOverviewEnterTabletHistogram,
+                       kOverviewEnterSplitViewHistogram>;
+using OverviewExitFpsCounter =
+    OverviewFpsCounter<kOverviewExitSingleClamshellHistogram,
+                       kOverviewExitClamshellHistogram,
+                       kOverviewExitTabletHistogram,
+                       kOverviewExitSplitViewHistogram>;
+
+class ShutdownAnimationFpsCounterObserver : public OverviewObserver {
+ public:
+  ShutdownAnimationFpsCounterObserver(ui::Compositor* compositor,
+                                      bool in_split_view,
+                                      bool single_animation)
+      : fps_counter_(compositor, in_split_view, single_animation) {
+    Shell::Get()->overview_controller()->AddObserver(this);
+  }
+  ~ShutdownAnimationFpsCounterObserver() override {
+    Shell::Get()->overview_controller()->RemoveObserver(this);
+  }
+
+  // OverviewObserver:
+  void OnOverviewModeEndingAnimationComplete(bool canceled) override {
+    delete this;
+  }
+
+ private:
+  OverviewExitFpsCounter fps_counter_;
+
+  DISALLOW_COPY_AND_ASSIGN(ShutdownAnimationFpsCounterObserver);
+};
+
+// Creates |drop_target_widget_|. It's created when a window or overview item is
+// dragged around, and destroyed when the drag ends. If |animate| is true, then
+// the drop target will fade in.
 std::unique_ptr<views::Widget> CreateDropTargetWidget(
     aura::Window* dragged_window,
     bool animate) {
+  aura::Window* parent = dragged_window->parent();
+  gfx::Rect bounds = dragged_window->bounds();
+  ::wm::ConvertRectToScreen(parent, &bounds);
+  bounds.Inset(/*left=*/0,
+               /*top=*/dragged_window->GetProperty(aura::client::kTopViewInset),
+               /*right=*/0, /*bottom=*/0);
   views::Widget::InitParams params;
   params.type = views::Widget::InitParams::TYPE_WINDOW_FRAMELESS;
   params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   params.activatable = views::Widget::InitParams::Activatable::ACTIVATABLE_NO;
   params.opacity = views::Widget::InitParams::TRANSLUCENT_WINDOW;
   params.accept_events = false;
-  params.parent = dragged_window->parent();
-  params.bounds = dragged_window->bounds();
+  params.parent = parent;
+  params.bounds = bounds;
+  params.init_properties_container.SetProperty(kHideInDeskMiniViewKey, true);
   auto widget = std::make_unique<views::Widget>();
   widget->set_focus_on_creation(false);
-  widget->Init(params);
+  widget->Init(std::move(params));
 
   // Show plus icon if drag a tab from a multi-tab window.
   widget->SetContentsView(new DropTargetView(
       dragged_window->GetProperty(ash::kTabDraggingSourceWindowKey)));
+  aura::Window* drop_target_window = widget->GetNativeWindow();
+  drop_target_window->parent()->StackChildAtBottom(drop_target_window);
   widget->Show();
 
   if (animate) {
     widget->SetOpacity(0.f);
     ScopedOverviewAnimationSettings settings(
-        OVERVIEW_ANIMATION_DROP_TARGET_FADE_IN, widget->GetNativeWindow());
+        OVERVIEW_ANIMATION_DROP_TARGET_FADE, drop_target_window);
     widget->SetOpacity(1.f);
   } else {
     widget->SetOpacity(1.f);
@@ -137,175 +226,81 @@ std::unique_ptr<views::Widget> CreateDropTargetWidget(
   return widget;
 }
 
-// Gets the expected grid bounds according the current |indicator_state| during
-// window dragging.
-gfx::Rect GetGridBoundsInScreenDuringDragging(aura::Window* dragged_window,
-                                              IndicatorState indicator_state) {
+// Returns the bounds for the overview window grid according to the split view
+// state. If split view mode is active, the overview window should open on the
+// opposite side of the default snap window. If |divider_changed| is true, maybe
+// clamp the bounds to a minimum size and shift the bounds offscreen.
+gfx::Rect GetGridBoundsInScreen(aura::Window* root_window,
+                                bool divider_changed) {
+  const gfx::Rect work_area =
+      WorkAreaInsets::ForWindow(root_window)->ComputeStableWorkArea();
   SplitViewController* split_view_controller =
-      Shell::Get()->split_view_controller();
-  switch (indicator_state) {
-    case IndicatorState::kPreviewAreaLeft:
-      return split_view_controller->GetSnappedWindowBoundsInScreen(
-          dragged_window, SplitViewController::RIGHT);
-    case IndicatorState::kPreviewAreaRight:
-      return split_view_controller->GetSnappedWindowBoundsInScreen(
-          dragged_window, SplitViewController::LEFT);
-    default:
-      return screen_util::GetDisplayWorkAreaBoundsInScreenForDefaultContainer(
-          dragged_window);
+      SplitViewController::Get(root_window);
+  if (!split_view_controller->InSplitViewMode())
+    return work_area;
+
+  SplitViewController::SnapPosition opposite_position =
+      (split_view_controller->default_snap_position() ==
+       SplitViewController::LEFT)
+          ? SplitViewController::RIGHT
+          : SplitViewController::LEFT;
+  gfx::Rect bounds = split_view_controller->GetSnappedWindowBoundsInScreen(
+      opposite_position, /*window_for_minimum_size=*/nullptr);
+  if (!divider_changed)
+    return bounds;
+
+  const bool landscape = IsCurrentScreenOrientationLandscape();
+  const int min_length =
+      (landscape ? work_area.width() : work_area.height()) / 3;
+  const int current_length = landscape ? bounds.width() : bounds.height();
+
+  if (current_length > min_length)
+    return bounds;
+
+  // Clamp bounds' length to the minimum length.
+  if (landscape)
+    bounds.set_width(min_length);
+  else
+    bounds.set_height(min_length);
+
+  // The |opposite_position| will be physically on the left or top of the screen
+  // (depending on whether the orientation is landscape or portrait
+  //  respectively), if |opposite_position| is left AND current orientation is
+  // primary, OR |opposite_position| is right AND current orientation is not
+  // primary. This is an X-NOR condition.
+  const bool primary = IsCurrentScreenOrientationPrimary();
+  const bool left_or_top =
+      (primary == (opposite_position == SplitViewController::LEFT));
+  if (left_or_top) {
+    // If we are shifting to the left or top we need to update the origin as
+    // well.
+    const int offset = min_length - current_length;
+    bounds.Offset(landscape ? gfx::Vector2d(-offset, 0)
+                            : gfx::Vector2d(0, -offset));
   }
+
+  return bounds;
 }
 
-// Gets the expected grid bounds according to current splitview state.
-gfx::Rect GetGridBoundsInScreenAfterDragging(aura::Window* dragged_window) {
-  SplitViewController* split_view_controller =
-      Shell::Get()->split_view_controller();
-  switch (split_view_controller->state()) {
-    case SplitViewController::LEFT_SNAPPED:
-      return split_view_controller->GetSnappedWindowBoundsInScreen(
-          dragged_window, SplitViewController::RIGHT);
-    case SplitViewController::RIGHT_SNAPPED:
-      return split_view_controller->GetSnappedWindowBoundsInScreen(
-          dragged_window, SplitViewController::LEFT);
-    default:
-      return screen_util::GetDisplayWorkAreaBoundsInScreenForDefaultContainer(
-          dragged_window);
-  }
+gfx::Insets GetGridInsets(const gfx::Rect& grid_bounds) {
+  const int horizontal_inset =
+      gfx::ToFlooredInt(std::min(kOverviewInsetRatio * grid_bounds.width(),
+                                 kOverviewInsetRatio * grid_bounds.height()));
+  const int vertical_inset =
+      horizontal_inset +
+      kOverviewVerticalInset * (grid_bounds.height() - 2 * horizontal_inset);
+
+  return gfx::Insets(std::max(0, vertical_inset - kWindowMargin),
+                     std::max(0, horizontal_inset - kWindowMargin));
+}
+
+// Returns the given |widget|'s bounds in its native window's root coordinates.
+gfx::Rect GetWidgetBoundsInRoot(views::Widget* widget) {
+  auto* window = widget->GetNativeWindow();
+  return window->GetBoundsInRootWindow();
 }
 
 }  // namespace
-
-// ShieldView contains the background for overview mode. It also contains text
-// which is shown if there are no windows to be displayed.
-// This view also takes care of disabling overview mode on:
-//   - Gesture tap.
-//   - Mouse release.
-class OverviewGrid::ShieldView : public views::View {
- public:
-  ShieldView() {
-    label_ = new views::Label(
-        l10n_util::GetStringUTF16(IDS_ASH_OVERVIEW_NO_RECENT_ITEMS),
-        views::style::CONTEXT_LABEL);
-    label_->SetHorizontalAlignment(gfx::ALIGN_CENTER);
-    label_->SetEnabledColor(kNoItemsIndicatorTextColor);
-    label_->SetBackgroundColor(kNoItemsIndicatorBackgroundColor);
-
-    // |label_container_| is the parent of |label_| which allows the text to
-    // have padding and rounded edges.
-    label_container_ = new RoundedRectView(kNoItemsIndicatorRoundingDp,
-                                           kNoItemsIndicatorBackgroundColor);
-    label_container_->SetLayoutManager(std::make_unique<views::BoxLayout>(
-        views::BoxLayout::kVertical,
-        gfx::Insets(kNoItemsIndicatorVerticalPaddingDp,
-                    kNoItemsIndicatorHorizontalPaddingDp)));
-    label_container_->AddChildView(label_);
-    label_container_->SetPaintToLayer();
-    label_container_->layer()->SetFillsBoundsOpaquely(false);
-    label_container_->layer()->SetOpacity(kNoItemsIndicatorBackgroundOpacity);
-    label_container_->SetVisible(false);
-
-    AddChildView(label_container_);
-  }
-
-  ~ShieldView() override = default;
-
-  const DesksBarView* desks_bar_view() const { return desks_bar_view_; }
-
-  // Call this only after this view has been added to a widget. This is needed
-  // because the desks mini views need to access the widget to get the
-  // root window in order to know how to layout themselves.
-  void MaybeInitVirtualDesksBar() {
-    if (!features::IsVirtualDesksEnabled())
-      return;
-
-    desks_bar_view_ = new DesksBarView;
-    AddChildView(desks_bar_view_);
-    desks_bar_view_->Init();
-  }
-
-  void SetLabelVisibility(bool visible) {
-    label_container_->SetVisible(visible);
-  }
-
-  gfx::Rect GetLabelBounds() const {
-    return label_container_->GetBoundsInScreen();
-  }
-
-  // ShieldView takes up the whole workspace since it changes opacity of the
-  // whole wallpaper. The bounds of the grid may be smaller in some cases of
-  // splitview. The label should be centered in the bounds of the grid.
-  void SetGridBounds(const gfx::Rect& bounds) {
-    const int label_width = label_->GetPreferredSize().width() +
-                            2 * kNoItemsIndicatorHorizontalPaddingDp;
-    gfx::Rect label_container_bounds = bounds;
-    label_container_bounds.ClampToCenteredSize(
-        gfx::Size(label_width, kNoItemsIndicatorHeightDp));
-    label_container_->SetBoundsRect(label_container_bounds);
-
-    UpdateDesksBarBounds();
-  }
-
-  bool IsLabelVisible() const { return label_container_->visible(); }
-
- protected:
-  // views::View:
-  void Layout() override {
-    UpdateDesksBarBounds();
-  }
-
- private:
-  // ui::EventHandler:
-  void OnMouseEvent(ui::MouseEvent* event) override {
-    if (event->type() == ui::ET_MOUSE_PRESSED) {
-      // In order to receive subsequent mouse release events in this view, we
-      // must mark the event as handled in this view.
-      event->SetHandled();
-      return;
-    }
-
-    HandleClickReleaseOrTap(event);
-  }
-
-  void OnGestureEvent(ui::GestureEvent* event) override {
-    HandleClickReleaseOrTap(event);
-  }
-
-  void HandleClickReleaseOrTap(ui::Event* event) {
-    if (event->type() != ui::ET_MOUSE_RELEASED &&
-        event->type() != ui::ET_GESTURE_TAP) {
-      return;
-    }
-
-    OverviewController* controller = Shell::Get()->overview_controller();
-    if (!controller->IsSelecting())
-      return;
-
-    // Events that happen while app list is sliding out during overview should
-    // be ignored to prevent overview from disappearing out from under the user.
-    if (!IsSlidingOutOverviewFromShelf())
-      controller->ToggleOverview();
-
-    event->StopPropagation();
-  }
-
-  void UpdateDesksBarBounds() {
-    if (!desks_bar_view_)
-      return;
-
-    // TODO: Make the ShieldView's bounds match the overview grid bounds rather
-    // than the entire screen?
-    const auto bar_bounds =
-        gfx::Rect{bounds().width(), DesksBarView::GetBarHeight()};
-    desks_bar_view_->SetBoundsRect(bar_bounds);
-  }
-
-  // Owned by views heirarchy.
-  RoundedRectView* label_container_ = nullptr;
-  views::Label* label_ = nullptr;
-  DesksBarView* desks_bar_view_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(ShieldView);
-};
 
 // The class to observe the overview window that the dragged tabs will merge
 // into. After the dragged tabs merge into the overview window, and if the
@@ -347,7 +342,7 @@ class OverviewGrid::TargetWindowObserver : public aura::WindowObserver {
   void UpdateWindowItemInOverviewContaining(aura::Window* window) {
     OverviewController* overview_controller =
         Shell::Get()->overview_controller();
-    if (!overview_controller->IsSelecting())
+    if (!overview_controller->InOverviewSession())
       return;
 
     OverviewGrid* grid =
@@ -376,16 +371,20 @@ class OverviewGrid::TargetWindowObserver : public aura::WindowObserver {
 
 OverviewGrid::OverviewGrid(aura::Window* root_window,
                            const std::vector<aura::Window*>& windows,
-                           OverviewSession* overview_session,
-                           const gfx::Rect& bounds_in_screen)
+                           OverviewSession* overview_session)
     : root_window_(root_window),
       overview_session_(overview_session),
-      window_observer_(this),
-      window_state_observer_(this),
-      bounds_(bounds_in_screen) {
+      split_view_drag_indicators_(
+          ShouldAllowSplitView()
+              ? std::make_unique<SplitViewDragIndicators>(root_window)
+              : nullptr),
+      bounds_(GetGridBoundsInScreen(root_window, /*divider_changed=*/false)) {
   for (auto* window : windows) {
     if (window->GetRootWindow() != root_window)
       continue;
+
+    // Hide the drag shadow if it is visible.
+    Shell::Get()->resize_shadow_controller()->HideShadow(window);
 
     // Stop ongoing animations before entering overview mode. Because we are
     // deferring SetTransform of the windows beneath the window covering the
@@ -396,8 +395,6 @@ OverviewGrid::OverviewGrid(aura::Window* root_window,
     auto* animator = window->layer()->GetAnimator();
     if (animator->is_animating())
       window->layer()->GetAnimator()->StopAnimating();
-    window_observer_.Add(window);
-    window_state_observer_.Add(wm::GetWindowState(window));
     window_list_.push_back(
         std::make_unique<OverviewItem>(window, overview_session_, this));
   }
@@ -406,78 +403,110 @@ OverviewGrid::OverviewGrid(aura::Window* root_window,
 OverviewGrid::~OverviewGrid() = default;
 
 void OverviewGrid::Shutdown() {
+  SplitViewController::Get(root_window_)->RemoveObserver(this);
   ScreenRotationAnimator::GetForRootWindow(root_window_)->RemoveObserver(this);
+  Shell::Get()->wallpaper_controller()->RemoveObserver(this);
+  grid_event_handler_.reset();
 
-  for (const auto& window : window_list_)
+  bool has_non_cover_animating = false;
+  int animate_count = 0;
+
+  for (const auto& window : window_list_) {
+    if (window->should_animate_when_exiting() && !has_non_cover_animating) {
+      has_non_cover_animating |=
+          !CanCoverAvailableWorkspace(window->GetWindow());
+      animate_count++;
+    }
     window->Shutdown();
+  }
+  bool single_animation_in_clamshell =
+      (animate_count == 1 && !has_non_cover_animating) &&
+      !Shell::Get()->tablet_mode_controller()->InTabletMode();
 
-  // Shutdown() implies |overview_session_| is about to be deleted, so reset it.
-  auto exit_overview_session_type =
-      overview_session_->enter_exit_overview_type();
+  const bool in_split_view =
+      SplitViewController::Get(root_window_)->InSplitViewMode();
+  // OverviewGrid in splitscreen does not include the window to be activated.
+  if (!window_list_.empty() || in_split_view) {
+    // The following instance self-destructs when shutdown animation ends.
+    new ShutdownAnimationFpsCounterObserver(
+        root_window_->layer()->GetCompositor(), in_split_view,
+        single_animation_in_clamshell);
+  }
+
+  while (!window_list_.empty())
+    RemoveItem(window_list_.back().get());
+
+  // RemoveItem() uses `overview_session_`, so clear it at the end.
   overview_session_ = nullptr;
-
-  // HomeLauncherGestureHandler will handle fading/sliding |shield_widget_| in
-  // this exit mode.
-  if (exit_overview_session_type ==
-      OverviewSession::EnterExitOverviewType::kSwipeFromShelf) {
-    return;
-  }
-
-  if (shield_widget_) {
-    // Fade out the shield widget. This animation continues past the lifetime
-    // of |this|.
-    FadeOutWidgetAndMaybeSlideOnExit(std::move(shield_widget_),
-                                     OVERVIEW_ANIMATION_RESTORE_WINDOW);
-  }
 }
 
 void OverviewGrid::PrepareForOverview() {
   if (!ShouldAnimateWallpaper())
-    InitShieldWidget(/*animate=*/false);
+    MaybeInitDesksWidget();
 
   for (const auto& window : window_list_)
     window->PrepareForOverview();
-  prepared_for_overview_ = true;
-  if (Shell::Get()
-          ->tablet_mode_controller()
-          ->IsTabletModeWindowManagerEnabled()) {
+  SplitViewController::Get(root_window_)->AddObserver(this);
+  if (Shell::Get()->tablet_mode_controller()->InTabletMode())
     ScreenRotationAnimator::GetForRootWindow(root_window_)->AddObserver(this);
-  }
+
+  grid_event_handler_ = std::make_unique<OverviewGridEventHandler>(this);
+  Shell::Get()->wallpaper_controller()->AddObserver(this);
 }
 
 void OverviewGrid::PositionWindows(
     bool animate,
-    OverviewItem* ignored_item,
+    const base::flat_set<OverviewItem*>& ignored_items,
     OverviewSession::OverviewTransition transition) {
-  if (!overview_session_ || suspend_reposition_)
+  if (!overview_session_ || suspend_reposition_ || window_list_.empty())
     return;
 
   DCHECK_NE(transition, OverviewSession::OverviewTransition::kExit);
-  // Keep the background shield widget covering the whole screen. A grid without
-  // any windows still needs the shield widget bounds updated.
-  if (shield_widget_) {
-    aura::Window* widget_window = shield_widget_->GetNativeWindow();
-    const gfx::Rect bounds = widget_window->parent()->bounds();
-    widget_window->SetBounds(bounds);
-    ShowNoRecentsWindowMessage(window_list_.empty());
+
+  std::vector<gfx::RectF> rects =
+      ShouldUseTabletModeGridLayout() &&
+              (window_list_.size() - ignored_items.size() >=
+               kMinimumItemsForNewLayout)
+          ? GetWindowRectsForTabletModeLayout(ignored_items)
+          : GetWindowRects(ignored_items);
+
+  if (transition == OverviewSession::OverviewTransition::kEnter) {
+    CalculateWindowListAnimationStates(/*selected_item=*/nullptr, transition,
+                                       rects);
   }
 
-  if (window_list_.empty())
-    return;
-
-  std::vector<gfx::RectF> rects = GetWindowRects(ignored_item);
-
   // Position the windows centering the left-aligned rows vertically. Do not
-  // position |ignored_item| if it is not nullptr and matches a item in
-  // |window_list_|.
-  OverviewAnimationType animation_type =
-      transition == OverviewSession::OverviewTransition::kEnter
-          ? OVERVIEW_ANIMATION_LAYOUT_OVERVIEW_ITEMS_ON_ENTER
-          : OVERVIEW_ANIMATION_LAYOUT_OVERVIEW_ITEMS_IN_OVERVIEW;
+  // position items in |ignored_items|.
+  OverviewAnimationType animation_type = OVERVIEW_ANIMATION_NONE;
+  switch (transition) {
+    case OverviewSession::OverviewTransition::kEnter: {
+      const bool entering_from_home =
+          overview_session_->enter_exit_overview_type() ==
+          OverviewSession::EnterExitOverviewType::kFadeInEnter;
+      animation_type = entering_from_home
+                           ? OVERVIEW_ANIMATION_ENTER_FROM_HOME_LAUNCHER
+                           : OVERVIEW_ANIMATION_LAYOUT_OVERVIEW_ITEMS_ON_ENTER;
+      break;
+    }
+    case OverviewSession::OverviewTransition::kInOverview:
+      animation_type = OVERVIEW_ANIMATION_LAYOUT_OVERVIEW_ITEMS_IN_OVERVIEW;
+      break;
+    case OverviewSession::OverviewTransition::kExit:
+      NOTREACHED();
+  }
+
+  int animate_count = 0;
+  bool has_non_cover_animating = false;
+  std::vector<OverviewAnimationType> animation_types(rects.size());
+
+  const bool can_do_spawn_animation =
+      animate && transition == OverviewSession::OverviewTransition::kInOverview;
+
   for (size_t i = 0; i < window_list_.size(); ++i) {
     OverviewItem* window_item = window_list_[i].get();
     if (window_item->animating_to_close() ||
-        (ignored_item != nullptr && window_item == ignored_item)) {
+        ignored_items.contains(window_item)) {
+      rects[i].SetRect(0, 0, 0, 0);
       continue;
     }
 
@@ -491,81 +520,44 @@ void OverviewGrid::PositionWindows(
     // animation by ourselves.
     if (IsDropTargetWindow(window_item->GetWindow()))
       should_animate_item = false;
-
-    window_item->SetBounds(rects[i], should_animate_item
-                                         ? animation_type
-                                         : OVERVIEW_ANIMATION_NONE);
-  }
-
-  // If the selection widget is active, reposition it without any animation.
-  if (selection_widget_)
-    MoveSelectionWidgetToTarget(animate);
-}
-
-bool OverviewGrid::Move(OverviewSession::Direction direction, bool animate) {
-  if (empty())
-    return true;
-
-  bool recreate_selection_widget = false;
-  bool out_of_bounds = false;
-  bool changed_selection_index = false;
-  gfx::RectF old_bounds;
-  if (SelectedWindow()) {
-    old_bounds = SelectedWindow()->target_bounds();
-    // Make the old selected window header non-transparent first.
-    SelectedWindow()->set_selected(false);
-  }
-
-  // [up] key is equivalent to [left] key and [down] key is equivalent to
-  // [right] key.
-  if (!selection_widget_) {
-    switch (direction) {
-      case OverviewSession::UP:
-      case OverviewSession::LEFT:
-        selected_index_ = window_list_.size() - 1;
-        break;
-      case OverviewSession::DOWN:
-      case OverviewSession::RIGHT:
-        selected_index_ = 0;
-        break;
+    if (animate && transition == OverviewSession::OverviewTransition::kEnter) {
+      if (window_item->should_animate_when_entering() &&
+          !has_non_cover_animating) {
+        has_non_cover_animating |=
+            !CanCoverAvailableWorkspace(window_item->GetWindow());
+        ++animate_count;
+      }
     }
-    changed_selection_index = true;
-  }
-  while (!changed_selection_index) {
-    switch (direction) {
-      case OverviewSession::UP:
-      case OverviewSession::LEFT:
-        if (selected_index_ == 0)
-          out_of_bounds = true;
-        selected_index_--;
-        break;
-      case OverviewSession::DOWN:
-      case OverviewSession::RIGHT:
-        if (selected_index_ >= window_list_.size() - 1)
-          out_of_bounds = true;
-        selected_index_++;
-        break;
-    }
-    if (!out_of_bounds && SelectedWindow()) {
-      if (SelectedWindow()->target_bounds().y() != old_bounds.y())
-        recreate_selection_widget = true;
-    }
-    changed_selection_index = true;
-  }
-  MoveSelectionWidget(direction, recreate_selection_widget, out_of_bounds,
-                      animate);
 
-  // Make the new selected window header fully transparent.
-  if (SelectedWindow())
-    SelectedWindow()->set_selected(true);
-  return out_of_bounds;
-}
+    if (can_do_spawn_animation && window_item->should_use_spawn_animation())
+      animation_type = OVERVIEW_ANIMATION_SPAWN_ITEM_IN_OVERVIEW;
 
-OverviewItem* OverviewGrid::SelectedWindow() const {
-  if (!selection_widget_)
-    return nullptr;
-  CHECK(selected_index_ < window_list_.size());
-  return window_list_[selected_index_].get();
+    animation_types[i] =
+        should_animate_item ? animation_type : OVERVIEW_ANIMATION_NONE;
+  }
+
+  if (animate && transition == OverviewSession::OverviewTransition::kEnter &&
+      !window_list_.empty()) {
+    bool single_animation_in_clamshell =
+        animate_count == 1 && !has_non_cover_animating &&
+        !Shell::Get()->tablet_mode_controller()->InTabletMode();
+    fps_counter_ = std::make_unique<OverviewEnterFpsCounter>(
+        window_list_[0]->GetWindow()->layer()->GetCompositor(),
+        SplitViewController::Get(root_window_)->InSplitViewMode(),
+        single_animation_in_clamshell);
+  }
+
+  // Apply the animation after creating fps_counter_ so that unit test
+  // can correctly count the measure requests.
+  for (size_t i = 0; i < window_list_.size(); ++i) {
+    if (rects[i].IsEmpty())
+      continue;
+    OverviewItem* window_item = window_list_[i].get();
+    window_item->SetBounds(rects[i], animation_types[i]);
+  }
+
+  overview_session_->highlight_controller()->OnWindowsRepositioned(
+      root_window_);
 }
 
 OverviewItem* OverviewGrid::GetOverviewItemContaining(
@@ -579,69 +571,194 @@ OverviewItem* OverviewGrid::GetOverviewItemContaining(
 
 void OverviewGrid::AddItem(aura::Window* window,
                            bool reposition,
-                           bool animate) {
+                           bool animate,
+                           const base::flat_set<OverviewItem*>& ignored_items,
+                           size_t index,
+                           bool use_spawn_animation) {
   DCHECK(!GetOverviewItemContaining(window));
+  DCHECK_LE(index, window_list_.size());
 
-  window_observer_.Add(window);
-  window_state_observer_.Add(wm::GetWindowState(window));
   window_list_.insert(
-      window_list_.begin(),
+      window_list_.begin() + index,
       std::make_unique<OverviewItem>(window, overview_session_, this));
-  window_list_.front()->PrepareForOverview();
-  // The item is added after overview enter animation is complete, so
-  // just call OnStartingAnimationComplete.
-  window_list_.front()->OnStartingAnimationComplete();
+  auto* item = window_list_[index].get();
+  item->PrepareForOverview();
 
-  if (reposition)
-    PositionWindows(animate);
-}
-
-void OverviewGrid::RemoveItem(OverviewItem* overview_item, bool reposition) {
-  auto iter = GetOverviewItemIterContainingWindow(overview_item->GetWindow());
-  if (iter != window_list_.end()) {
-    window_observer_.Remove(overview_item->GetWindow());
-    window_state_observer_.Remove(
-        wm::GetWindowState(overview_item->GetWindow()));
-    // Erase from the list first because deleting OverviewItem can lead to
-    // iterating through the |window_list_|.
-    std::unique_ptr<OverviewItem> tmp = std::move(*iter);
-    window_list_.erase(iter);
+  if (animate && use_spawn_animation && reposition) {
+    item->set_should_use_spawn_animation(true);
+  } else {
+    // The item is added after overview enter animation is complete, so
+    // just call OnStartingAnimationComplete() only if we won't animate it with
+    // with the spawn animation. Otherwise, OnStartingAnimationComplete() will
+    // be called when the spawn-item-animation completes (See
+    // OverviewItem::OnItemSpawnedAnimationCompleted()).
+    item->OnStartingAnimationComplete();
   }
 
   if (reposition)
-    PositionWindows(/*animate=*/true);
+    PositionWindows(animate, ignored_items);
 }
 
-void OverviewGrid::SetBoundsAndUpdatePositions(const gfx::Rect& bounds) {
-  SetBoundsAndUpdatePositionsIgnoringWindow(bounds, nullptr);
+void OverviewGrid::AppendItem(aura::Window* window,
+                              bool reposition,
+                              bool animate,
+                              bool use_spawn_animation) {
+  AddItem(window, reposition, animate, /*ignored_items=*/{},
+          window_list_.size(), use_spawn_animation);
 }
 
-void OverviewGrid::SetBoundsAndUpdatePositionsIgnoringWindow(
-    const gfx::Rect& bounds,
-    OverviewItem* ignored_item) {
-  bounds_ = bounds;
-  if (shield_view_)
-    shield_view_->SetGridBounds(bounds_);
-  PositionWindows(/*animate=*/true, ignored_item);
-}
+void OverviewGrid::RemoveItem(OverviewItem* overview_item,
+                              bool item_destroying,
+                              bool reposition) {
+  auto* window = overview_item->GetWindow();
+  // Use reverse iterator to be efficiently when removing all.
+  auto iter = std::find_if(window_list_.rbegin(), window_list_.rend(),
+                           [window](std::unique_ptr<OverviewItem>& item) {
+                             return item->GetWindow() == window;
+                           });
+  DCHECK(iter != window_list_.rend());
 
-void OverviewGrid::SetSelectionWidgetVisibility(bool visible) {
-  if (!selection_widget_)
+  // This can also be called when shutting down |this|, at which the item will
+  // be cleaning up and its associated view may be nullptr.
+  if (overview_session_ && (*iter)->overview_item_view()) {
+    overview_session_->highlight_controller()->OnViewDestroyingOrDisabling(
+        (*iter)->overview_item_view());
+  }
+
+  // Erase from the list first because deleting OverviewItem can lead to
+  // iterating through the |window_list_|.
+  std::unique_ptr<OverviewItem> tmp = std::move(*iter);
+  window_list_.erase(std::next(iter).base());
+  tmp.reset();
+
+  if (!item_destroying)
     return;
 
-  if (visible)
-    selection_widget_->Show();
-  else
-    selection_widget_->Hide();
-}
-
-void OverviewGrid::ShowNoRecentsWindowMessage(bool visible) {
-  // Only show the warning on the grid associated with primary root.
-  if (root_window_ != Shell::GetPrimaryRootWindow())
+  if (!overview_session_)
     return;
 
-  if (shield_view_)
-    shield_view_->SetLabelVisibility(visible);
+  if (empty()) {
+    overview_session_->OnGridEmpty();
+    return;
+  }
+
+  if (reposition) {
+    // Update the grid bounds if needed and reposition the windows minus the
+    // currently overview dragged window, if there is one. Note: this does not
+    // update the grid bounds if the window being dragged from the top or shelf,
+    // the former being handled in TabletModeWindowDragDelegate's destructor.
+    base::flat_set<OverviewItem*> ignored_items;
+    if (overview_session_->window_drag_controller() &&
+        overview_session_->window_drag_controller()->item()) {
+      ignored_items.insert(overview_session_->window_drag_controller()->item());
+    }
+    const gfx::Rect grid_bounds = GetGridBoundsInScreenForSplitview(
+        root_window_,
+        split_view_drag_indicators_
+            ? base::make_optional(
+                  split_view_drag_indicators_->current_window_dragging_state())
+            : base::nullopt);
+    SetBoundsAndUpdatePositions(grid_bounds, ignored_items, /*animate=*/true);
+  }
+}
+
+void OverviewGrid::AddDropTargetForDraggingFromOverview(
+    OverviewItem* dragged_item) {
+  DCHECK_EQ(dragged_item->GetWindow()->GetRootWindow(), root_window_);
+  DCHECK(!drop_target_widget_);
+  drop_target_widget_ =
+      CreateDropTargetWidget(dragged_item->GetWindow(), /*animate=*/false);
+  const size_t position = GetOverviewItemIndex(dragged_item) + 1u;
+  overview_session_->AddItem(drop_target_widget_->GetNativeWindow(),
+                             /*reposition=*/true, /*animate=*/false,
+                             /*ignored_items=*/{dragged_item}, position);
+
+  // This part is necessary because |OverviewItem::OnSelectorItemDragStarted| is
+  // called on all overview items before the drop target exists among them. That
+  // is because |AddDropTargetForDraggingFromOverview| is only called for drag
+  // to snap, but |OnSelectorItemDragStarted| is called before the drag has been
+  // disambiguated between drag to close and drag to snap.
+  GetDropTarget()->OnSelectorItemDragStarted(dragged_item);
+}
+
+void OverviewGrid::RemoveDropTarget() {
+  DCHECK(drop_target_widget_);
+  OverviewItem* drop_target = GetDropTarget();
+  overview_session_->RemoveItem(drop_target);
+  drop_target_widget_.reset();
+}
+
+void OverviewGrid::SetBoundsAndUpdatePositions(
+    const gfx::Rect& bounds_in_screen,
+    const base::flat_set<OverviewItem*>& ignored_items,
+    bool animate) {
+  bounds_ = bounds_in_screen;
+  MaybeUpdateDesksWidgetBounds();
+  PositionWindows(animate, ignored_items);
+}
+
+void OverviewGrid::RearrangeDuringDrag(
+    aura::Window* dragged_window,
+    SplitViewDragIndicators::WindowDraggingState window_dragging_state) {
+  OverviewItem* drop_target = GetDropTarget();
+
+  // Update the drop target visibility according to |window_dragging_state|.
+  if (drop_target) {
+    ScopedOverviewAnimationSettings settings(
+        OVERVIEW_ANIMATION_DROP_TARGET_FADE,
+        drop_target_widget_->GetNativeWindow());
+    drop_target->SetOpacity(
+        SplitViewDragIndicators::GetSnapPosition(window_dragging_state) ==
+                SplitViewController::NONE
+            ? 1.f
+            : 0.f);
+  }
+
+  // Update the grid's bounds.
+  const gfx::Rect wanted_grid_bounds = GetGridBoundsInScreenForSplitview(
+      root_window_, base::make_optional(window_dragging_state));
+  if (bounds_ != wanted_grid_bounds) {
+    SetBoundsAndUpdatePositions(wanted_grid_bounds,
+                                {GetOverviewItemContaining(dragged_window)},
+                                /*animate=*/true);
+  }
+}
+
+void OverviewGrid::SetSplitViewDragIndicatorsDraggedWindow(
+    aura::Window* dragged_window) {
+  DCHECK(split_view_drag_indicators_);
+  split_view_drag_indicators_->SetDraggedWindow(dragged_window);
+}
+
+void OverviewGrid::SetSplitViewDragIndicatorsWindowDraggingState(
+    SplitViewDragIndicators::WindowDraggingState window_dragging_state) {
+  DCHECK(split_view_drag_indicators_);
+  split_view_drag_indicators_->SetWindowDraggingState(window_dragging_state);
+}
+
+bool OverviewGrid::MaybeUpdateDesksWidgetBounds() {
+  if (!desks_widget_)
+    return false;
+
+  const gfx::Rect desks_widget_bounds = GetDesksWidgetBounds();
+  if (desks_widget_bounds != GetWidgetBoundsInRoot(desks_widget_.get())) {
+    desks_widget_->SetBounds(desks_widget_bounds);
+    return true;
+  }
+  return false;
+}
+
+void OverviewGrid::UpdateDropTargetBackgroundVisibility(
+    OverviewItem* dragged_item,
+    const gfx::PointF& location_in_screen) {
+  DCHECK(drop_target_widget_);
+  aura::Window* target_window =
+      GetTargetWindowOnLocation(location_in_screen, dragged_item);
+  DropTargetView* drop_target_view =
+      static_cast<DropTargetView*>(drop_target_widget_->GetContentsView());
+  DCHECK(drop_target_view);
+  drop_target_view->UpdateBackgroundVisibility(
+      target_window && IsDropTargetWindow(target_window));
 }
 
 void OverviewGrid::UpdateCannotSnapWarningVisibility() {
@@ -654,15 +771,16 @@ void OverviewGrid::OnSelectorItemDragStarted(OverviewItem* item) {
     overview_mode_item->OnSelectorItemDragStarted(item);
 }
 
-void OverviewGrid::OnSelectorItemDragEnded() {
+void OverviewGrid::OnSelectorItemDragEnded(bool snap) {
   for (auto& overview_mode_item : window_list_)
-    overview_mode_item->OnSelectorItemDragEnded();
+    overview_mode_item->OnSelectorItemDragEnded(snap);
 }
 
 void OverviewGrid::OnWindowDragStarted(aura::Window* dragged_window,
                                        bool animate) {
   DCHECK_EQ(dragged_window->GetRootWindow(), root_window_);
   DCHECK(!drop_target_widget_);
+  dragged_window_ = dragged_window;
   drop_target_widget_ = CreateDropTargetWidget(dragged_window, animate);
   overview_session_->AddItem(drop_target_widget_->GetNativeWindow(),
                              /*reposition=*/true, animate);
@@ -674,50 +792,24 @@ void OverviewGrid::OnWindowDragStarted(aura::Window* dragged_window,
   OnSelectorItemDragStarted(/*item=*/nullptr);
 }
 
-void OverviewGrid::OnWindowDragContinued(aura::Window* dragged_window,
-                                         const gfx::Point& location_in_screen,
-                                         IndicatorState indicator_state) {
+void OverviewGrid::OnWindowDragContinued(
+    aura::Window* dragged_window,
+    const gfx::PointF& location_in_screen,
+    SplitViewDragIndicators::WindowDraggingState window_dragging_state) {
+  DCHECK_EQ(dragged_window_, dragged_window);
   DCHECK_EQ(dragged_window->GetRootWindow(), root_window_);
 
-  // Adjust the window grid's bounds and the drop target's visibility
-  // according to |indicator_state| if split view is not active at the moment.
-  if (!Shell::Get()->split_view_controller()->IsSplitViewModeActive()) {
-    OverviewItem* drop_target = GetDropTarget();
-    const bool should_visible =
-        (indicator_state != IndicatorState::kPreviewAreaLeft &&
-         indicator_state != IndicatorState::kPreviewAreaRight);
-    if (drop_target) {
-      const bool visible = drop_target_widget_->IsVisible();
-      if (should_visible != visible) {
-        drop_target_widget_->GetLayer()->SetVisible(should_visible);
-        drop_target->SetOpacity(should_visible ? 1.f : 0.f);
-      }
-    }
+  RearrangeDuringDrag(dragged_window, window_dragging_state);
+  UpdateDropTargetBackgroundVisibility(nullptr, location_in_screen);
 
-    // Update the grid's bounds.
-    const gfx::Rect expected_bounds =
-        GetGridBoundsInScreenDuringDragging(dragged_window, indicator_state);
-    if (bounds_ != expected_bounds) {
-      SetBoundsAndUpdatePositionsIgnoringWindow(
-          expected_bounds, should_visible ? nullptr : drop_target);
-    }
-  }
+  aura::Window* target_window =
+      GetTargetWindowOnLocation(location_in_screen, /*ignored_item=*/nullptr);
 
-  aura::Window* target_window = GetTargetWindowOnLocation(location_in_screen);
-  DropTargetView* drop_target_view =
-      static_cast<DropTargetView*>(drop_target_widget_->GetContentsView());
-  DCHECK(drop_target_view);
-  drop_target_view->UpdateBackgroundVisibility(
-      target_window && IsDropTargetWindow(target_window));
-
-  if (indicator_state == IndicatorState::kPreviewAreaLeft ||
-      indicator_state == IndicatorState::kPreviewAreaRight) {
+  if (SplitViewDragIndicators::GetSnapPosition(window_dragging_state) !=
+      SplitViewController::NONE) {
     // If the dragged window is currently dragged into preview window area,
-    // clear the selection widget.
-    if (SelectedWindow()) {
-      SelectedWindow()->set_selected(false);
-      selection_widget_.reset();
-    }
+    // hide the highlight.
+    overview_session_->highlight_controller()->ClearTabDragHighlight();
 
     // Also clear ash::kIsDeferredTabDraggingTargetWindowKey key on the target
     // overview item so that it can't merge into this overview item if the
@@ -728,73 +820,53 @@ void OverviewGrid::OnWindowDragContinued(aura::Window* dragged_window,
     return;
   }
 
-  // Show the selection widget if |location_in_screen| is contained by the
+  // Show the tab drag highlight if |location_in_screen| is contained by the
   // browser windows' overview item in overview.
   if (target_window &&
       target_window->GetProperty(ash::kIsDeferredTabDraggingTargetWindowKey)) {
-    size_t previous_selected_index = selected_index_;
-    selected_index_ = GetOverviewItemIterContainingWindow(target_window) -
-                      window_list_.begin();
-    if (previous_selected_index == selected_index_ && selection_widget_)
+    auto* item = GetOverviewItemContaining(target_window);
+    if (!item)
       return;
 
-    if (previous_selected_index != selected_index_)
-      selection_widget_.reset();
-
-    const OverviewSession::Direction direction =
-        (selected_index_ - previous_selected_index > 0) ? OverviewSession::RIGHT
-                                                        : OverviewSession::LEFT;
-    MoveSelectionWidget(direction,
-                        /*recreate_selection_widget=*/true,
-                        /*out_of_bounds=*/false,
-                        /*animate=*/false);
+    overview_session_->highlight_controller()->UpdateTabDragHighlight(
+        target_window->GetRootWindow(),
+        item->overview_item_view()->GetBoundsInScreen());
     return;
   }
 
-  if (SelectedWindow()) {
-    SelectedWindow()->set_selected(false);
-    selection_widget_.reset();
-  }
+  overview_session_->highlight_controller()->ClearTabDragHighlight();
 }
 
 void OverviewGrid::OnWindowDragEnded(aura::Window* dragged_window,
-                                     const gfx::Point& location_in_screen,
-                                     bool should_drop_window_into_overview) {
+                                     const gfx::PointF& location_in_screen,
+                                     bool should_drop_window_into_overview,
+                                     bool snap) {
+  DCHECK_EQ(dragged_window_, dragged_window);
   DCHECK_EQ(dragged_window->GetRootWindow(), root_window_);
   DCHECK(drop_target_widget_.get());
+  dragged_window_ = nullptr;
 
   // Add the dragged window into drop target in overview if
   // |should_drop_window_into_overview| is true. Only consider add the dragged
   // window into drop target if SelectedWindow is false since drop target will
   // not be selected and tab dragging might drag a tab window to merge it into a
   // browser window in overview.
-  if (SelectedWindow()) {
-    SelectedWindow()->set_selected(false);
-    selection_widget_.reset();
-  } else if (should_drop_window_into_overview) {
+  if (overview_session_->highlight_controller()->IsTabDragHighlightVisible())
+    overview_session_->highlight_controller()->ClearTabDragHighlight();
+  else if (should_drop_window_into_overview)
     AddDraggedWindowIntoOverviewOnDragEnd(dragged_window);
-  }
 
-  OverviewItem* drop_target_item =
-      GetOverviewItemContaining(drop_target_widget_->GetNativeWindow());
-  // TODO(http://crbug.com/916856): Disable tab and app dragging that doesn't
-  // happen in the primary display.
-  // The |drop_target_widget_| may not in the same display as
-  // |dragged_window|, which will cause |drop_target_item| to be null.
-  if (drop_target_item) {
-    overview_session_->RemoveOverviewItem(drop_target_item,
-                                          /*reposition=*/false);
-  }
-  drop_target_widget_.reset();
+  RemoveDropTarget();
 
   // Called to reset caption and title visibility after dragging.
-  OnSelectorItemDragEnded();
+  OnSelectorItemDragEnded(snap);
 
   // After drag ends, if the dragged window needs to merge into another window
   // |target_window|, and we may need to update |minimized_widget_| that holds
   // the contents of |target_window| if |target_window| is a minimized window
   // in overview.
-  aura::Window* target_window = GetTargetWindowOnLocation(location_in_screen);
+  aura::Window* target_window =
+      GetTargetWindowOnLocation(location_in_screen, /*ignored_item=*/nullptr);
   if (target_window &&
       target_window->GetProperty(ash::kIsDeferredTabDraggingTargetWindowKey)) {
     // Create an window observer and update the minimized window widget after
@@ -807,8 +879,31 @@ void OverviewGrid::OnWindowDragEnded(aura::Window* dragged_window,
   // Update the grid bounds and reposition windows. Since the grid bounds might
   // be updated based on the preview area during drag, but the window finally
   // didn't be snapped to the preview area.
-  SetBoundsAndUpdatePositions(
-      GetGridBoundsInScreenAfterDragging(dragged_window));
+  SetBoundsAndUpdatePositions(GetGridBoundsInScreenForSplitview(root_window_),
+                              /*ignored_items=*/{},
+                              /*animate=*/true);
+}
+
+void OverviewGrid::SetVisibleDuringWindowDragging(bool visible, bool animate) {
+  for (const auto& window_item : window_list_)
+    window_item->SetVisibleDuringWindowDragging(visible, animate);
+
+  // Update |desks_widget_|.
+  if (desks_widget_) {
+    ui::Layer* layer = desks_widget_->GetNativeWindow()->layer();
+    float new_opacity = visible ? 1.f : 0.f;
+    if (layer->GetTargetOpacity() == new_opacity)
+      return;
+
+    if (animate) {
+      ScopedOverviewAnimationSettings settings(
+          OVERVIEW_ANIMATION_OPACITY_ON_WINDOW_DRAG,
+          desks_widget_->GetNativeWindow());
+      layer->SetOpacity(new_opacity);
+    } else {
+      layer->SetOpacity(new_opacity);
+    }
+  }
 }
 
 bool OverviewGrid::IsDropTargetWindow(aura::Window* window) const {
@@ -817,117 +912,81 @@ bool OverviewGrid::IsDropTargetWindow(aura::Window* window) const {
 }
 
 OverviewItem* OverviewGrid::GetDropTarget() {
-  if (!drop_target_widget_ || window_list_.empty())
-    return nullptr;
-
-  OverviewItem* first_item = window_list_.front().get();
-  return IsDropTargetWindow(first_item->GetWindow()) ? first_item : nullptr;
+  return drop_target_widget_
+             ? GetOverviewItemContaining(drop_target_widget_->GetNativeWindow())
+             : nullptr;
 }
 
-void OverviewGrid::OnWindowDestroying(aura::Window* window) {
-  window_observer_.Remove(window);
-  window_state_observer_.Remove(wm::GetWindowState(window));
-  auto iter = GetOverviewItemIterContainingWindow(window);
-  DCHECK(iter != window_list_.end());
+void OverviewGrid::OnDisplayMetricsChanged() {
+  if (split_view_drag_indicators_)
+    split_view_drag_indicators_->OnDisplayBoundsChanged();
 
-  // Windows that are animating to a close state already call PositionWindows,
-  // no need to call it twice.
-  const bool needs_repositioning = !((*iter)->animating_to_close());
-
-  size_t removed_index = iter - window_list_.begin();
-  // Erase from the list first because deleting OverviewItem can lead to
-  // iterating through the |window_list_|.
-  std::unique_ptr<OverviewItem> tmp = std::move(*iter);
-  window_list_.erase(iter);
-  tmp.reset();
-
-  if (empty()) {
-    selection_widget_.reset();
-    // If the grid is now empty, notify |overview_session_| so that it erases us
-    // from its grid list.
-    if (overview_session_)
-      overview_session_->OnGridEmpty(this);
+  // In case of split view mode, the grid bounds and item positions will be
+  // updated in |OnSplitViewDividerPositionChanged|.
+  if (SplitViewController::Get(root_window_)->InSplitViewMode())
     return;
-  }
-
-  // If selecting, update the selection index.
-  if (selection_widget_) {
-    bool send_focus_alert = selected_index_ == removed_index;
-    if (selected_index_ >= removed_index && selected_index_ != 0)
-      selected_index_--;
-    SelectedWindow()->set_selected(true);
-    if (send_focus_alert)
-      SelectedWindow()->SendAccessibleSelectionEvent();
-  }
-
-  if (needs_repositioning)
-    PositionWindows(true);
+  SetBoundsAndUpdatePositions(
+      GetGridBoundsInScreen(root_window_, /*divider_changed=*/false),
+      /*ignored_items=*/{}, /*animate=*/false);
 }
 
-void OverviewGrid::OnWindowBoundsChanged(aura::Window* window,
-                                         const gfx::Rect& old_bounds,
-                                         const gfx::Rect& new_bounds,
-                                         ui::PropertyChangeReason reason) {
-  // During preparation, window bounds can change. Ignore bounds
-  // change notifications in this case; we'll reposition soon.
-  if (!prepared_for_overview_)
+void OverviewGrid::OnSplitViewStateChanged(
+    SplitViewController::State previous_state,
+    SplitViewController::State state) {
+  // Do nothing if overview is being shutdown.
+  OverviewController* overview_controller = Shell::Get()->overview_controller();
+  if (!overview_controller->InOverviewSession())
     return;
 
-  auto iter = GetOverviewItemIterContainingWindow(window);
-  DCHECK(iter != window_list_.end());
+  SplitViewController* split_view_controller =
+      SplitViewController::Get(root_window_);
+  const bool unsnappable_window_activated =
+      state == SplitViewController::State::kNoSnap &&
+      split_view_controller->end_reason() ==
+          SplitViewController::EndReason::kUnsnappableWindowActivated;
 
-  // Immediately finish any active bounds animation.
-  window->layer()->GetAnimator()->StopAnimatingProperty(
-      ui::LayerAnimationElement::BOUNDS);
-  (*iter)->UpdateWindowDimensionsType();
-  PositionWindows(false);
+  // Restore focus unless either a window was just snapped (and activated) or
+  // split view mode was ended by activating an unsnappable window.
+  if (state != SplitViewController::State::kNoSnap ||
+      unsnappable_window_activated) {
+    overview_session_->ResetFocusRestoreWindow(false);
+  }
+
+  // If two windows were snapped to both sides of the screen or an unsnappable
+  // window was just activated, or we're in single split mode in clamshell mode
+  // and there is no window in overview, end overview mode and bail out.
+  if (state == SplitViewController::State::kBothSnapped ||
+      unsnappable_window_activated ||
+      (split_view_controller->InClamshellSplitViewMode() &&
+       overview_session_->IsEmpty())) {
+    overview_controller->EndOverview();
+    return;
+  }
+
+  // Adjust the grid bounds and update the cannot snap warnings.
+  SetBoundsAndUpdatePositions(
+      GetGridBoundsInScreen(root_window_, /*divider_changed=*/false),
+      /*ignored_items=*/{}, /*animate=*/false);
+  UpdateCannotSnapWarningVisibility();
+
+  // Activate the overview focus window, to match the behavior of entering
+  // overview mode in the beginning.
+  wm::ActivateWindow(overview_session_->GetOverviewFocusWindow());
 }
 
-void OverviewGrid::OnWindowPropertyChanged(aura::Window* window,
-                                           const void* key,
-                                           intptr_t old) {
-  if (prepared_for_overview_ && key == aura::client::kTopViewInset &&
-      window->GetProperty(aura::client::kTopViewInset) !=
-          static_cast<int>(old)) {
-    PositionWindows(/*animate=*/false);
-  }
-}
-
-void OverviewGrid::OnPostWindowStateTypeChange(
-    wm::WindowState* window_state,
-    mojom::WindowStateType old_type) {
-  // During preparation, window state can change, e.g. updating shelf
-  // visibility may show the temporarily hidden (minimized) panels.
-  if (!prepared_for_overview_)
-    return;
-
-  // When swiping away overview mode via shelf, windows will get minimized, but
-  // we do not want to create minimized widgets in their place.
-  if (overview_session_->enter_exit_overview_type() ==
-      OverviewSession::EnterExitOverviewType::kSwipeFromShelf) {
-    return;
-  }
-
-  mojom::WindowStateType new_type = window_state->GetStateType();
-  if (IsMinimizedWindowStateType(old_type) ==
-      IsMinimizedWindowStateType(new_type)) {
-    return;
-  }
-
-  auto iter = std::find_if(window_list_.begin(), window_list_.end(),
-                           [window_state](std::unique_ptr<OverviewItem>& item) {
-                             return item->Contains(window_state->window());
-                           });
-  if (iter != window_list_.end()) {
-    (*iter)->OnMinimizedStateChanged();
-    PositionWindows(/*animate=*/false);
-  }
+void OverviewGrid::OnSplitViewDividerPositionChanged() {
+  SetBoundsAndUpdatePositions(GetGridBoundsInScreen(root_window_,
+                                                    /*divider_changed=*/true),
+                              /*ignored_items=*/{}, /*animate=*/false);
 }
 
 void OverviewGrid::OnScreenCopiedBeforeRotation() {
+  Shell::Get()->overview_controller()->PauseOcclusionTracker();
+
   for (auto& window : window_list()) {
     window->set_disable_mask(true);
-    window->UpdateMaskAndShadow();
+    window->UpdateRoundedCornersAndShadow();
+    window->StopWidgetAnimation();
   }
 }
 
@@ -936,23 +995,37 @@ void OverviewGrid::OnScreenRotationAnimationFinished(
     bool canceled) {
   for (auto& window : window_list())
     window->set_disable_mask(false);
-  Shell::Get()->overview_controller()->DelayedUpdateMaskAndShadow();
+  Shell::Get()->overview_controller()->DelayedUpdateRoundedCornersAndShadow();
+  Shell::Get()->overview_controller()->UnpauseOcclusionTracker(
+      kOcclusionUnpauseDurationForRotation);
 }
 
-void OverviewGrid::OnStartingAnimationComplete() {
-  if (!shield_widget_) {
-    InitShieldWidget(/*animate=*/true);
-    ShowNoRecentsWindowMessage(window_list_.empty());
-  }
+void OverviewGrid::OnWallpaperChanging() {
+  grid_event_handler_.reset();
+}
+
+void OverviewGrid::OnWallpaperChanged() {
+  grid_event_handler_ = std::make_unique<OverviewGridEventHandler>(this);
+}
+
+void OverviewGrid::OnStartingAnimationComplete(bool canceled) {
+  fps_counter_.reset();
+  if (canceled)
+    return;
+
+  MaybeInitDesksWidget();
 
   for (auto& window : window_list())
     window->OnStartingAnimationComplete();
 }
 
 bool OverviewGrid::ShouldAnimateWallpaper() const {
-  // Never animate when doing app dragging.
-  if (overview_session_->enter_exit_overview_type() ==
-      OverviewSession::EnterExitOverviewType::kWindowDragged) {
+  // Never animate when doing app dragging or when immediately exiting.
+  const auto enter_exit_type = overview_session_->enter_exit_overview_type();
+  if (enter_exit_type ==
+          OverviewSession::EnterExitOverviewType::kImmediateEnter ||
+      enter_exit_type ==
+          OverviewSession::EnterExitOverviewType::kImmediateExit) {
     return false;
   }
 
@@ -965,70 +1038,140 @@ bool OverviewGrid::ShouldAnimateWallpaper() const {
   return true;
 }
 
-bool OverviewGrid::IsNoItemsIndicatorLabelVisibleForTesting() {
-  return shield_view_ && shield_view_->IsLabelVisible();
-}
-
-gfx::Rect OverviewGrid::GetNoItemsIndicatorLabelBoundsForTesting() const {
-  if (!shield_view_)
-    return gfx::Rect();
-
-  return shield_view_->GetLabelBounds();
-}
-
 void OverviewGrid::CalculateWindowListAnimationStates(
     OverviewItem* selected_item,
-    OverviewSession::OverviewTransition transition) {
-  // |selected_item| is nullptr during entering animation.
-  DCHECK(transition == OverviewSession::OverviewTransition::kExit ||
-         selected_item == nullptr);
+    OverviewSession::OverviewTransition transition,
+    const std::vector<gfx::RectF>& target_bounds) {
+  using OverviewTransition = OverviewSession::OverviewTransition;
 
-  bool has_covered_available_workspace = false;
-  bool has_checked_selected_item = false;
-  if (!selected_item ||
-      !wm::GetWindowState(selected_item->GetWindow())->IsFullscreen()) {
-    // Check the always on top window first if |selected_item| is nullptr or the
-    // |selected_item|'s window is not fullscreen. Because always on top windows
-    // are visible and may have a window which can cover available workspace.
-    // If the |selected_item| is fullscreen, we will depromote all always on top
-    // windows.
-    aura::Window* always_on_top_container =
-        RootWindowController::ForWindow(root_window_)
-            ->GetContainer(kShellWindowId_AlwaysOnTopContainer);
-    aura::Window::Windows top_windows = always_on_top_container->children();
-    for (aura::Window::Windows::const_reverse_iterator
-             it = top_windows.rbegin(),
-             rend = top_windows.rend();
-         it != rend; ++it) {
-      aura::Window* top_window = *it;
-      OverviewItem* container_item = GetOverviewItemContaining(top_window);
-      if (!container_item)
-        continue;
+  // Sanity checks to enforce assumptions used in later codes.
+  switch (transition) {
+    case OverviewTransition::kEnter:
+      DCHECK_EQ(target_bounds.size(), window_list_.size());
+      break;
+    case OverviewTransition::kExit:
+      DCHECK(target_bounds.empty());
+      break;
+    default:
+      NOTREACHED();
+  }
 
-      const bool is_selected_item = (selected_item == container_item);
-      if (!has_checked_selected_item && is_selected_item)
-        has_checked_selected_item = true;
-      CalculateOverviewItemAnimationState(
-          container_item, &has_covered_available_workspace,
-          /*selected=*/is_selected_item, transition);
+  // Create a copy of |window_list_| which has always on top windows in the
+  // front.
+  std::vector<OverviewItem*> items;
+  std::transform(
+      window_list_.begin(), window_list_.end(), std::back_inserter(items),
+      [](const std::unique_ptr<OverviewItem>& item) -> OverviewItem* {
+        return item.get();
+      });
+  // Sort items by:
+  // 1) Selected items that are always on top windows.
+  // 2) Other always on top windows.
+  // 3) Selected items that are not always on top windows.
+  // 4) Other not always on top windows.
+  // Preserves ordering if the category is the same.
+  std::sort(items.begin(), items.end(),
+            [&selected_item](OverviewItem* a, OverviewItem* b) {
+              // NB: This treats all non-normal z-ordered windows the same. If
+              // Aura ever adopts z-order levels, this will need to be changed.
+              const bool a_on_top =
+                  a->GetWindow()->GetProperty(aura::client::kZOrderingKey) !=
+                  ui::ZOrderLevel::kNormal;
+              const bool b_on_top =
+                  b->GetWindow()->GetProperty(aura::client::kZOrderingKey) !=
+                  ui::ZOrderLevel::kNormal;
+              if (selected_item && a_on_top && b_on_top)
+                return a == selected_item;
+              if (a_on_top)
+                return true;
+              if (b_on_top)
+                return false;
+              if (selected_item)
+                return a == selected_item;
+              return false;
+            });
+
+  SkRegion occluded_region;
+  auto* split_view_controller = SplitViewController::Get(root_window_);
+  if (split_view_controller->InSplitViewMode()) {
+    // Snapped windows and the split view divider are not included in
+    // |target_bounds| or |window_list_|, but can occlude other windows, so add
+    // them manually to |region| here.
+    SkIRect snapped_window_bounds = gfx::RectToSkIRect(
+        split_view_controller->GetDefaultSnappedWindow()->GetBoundsInScreen());
+    occluded_region.op(snapped_window_bounds, SkRegion::kUnion_Op);
+
+    auto* divider = split_view_controller->split_view_divider();
+    if (divider) {
+      aura::Window* divider_window =
+          divider->divider_widget()->GetNativeWindow();
+      SkIRect divider_bounds =
+          gfx::RectToSkIRect(divider_window->GetBoundsInScreen());
+      occluded_region.op(divider_bounds, SkRegion::kUnion_Op);
     }
   }
 
-  if (!has_checked_selected_item) {
-    CalculateOverviewItemAnimationState(selected_item,
-                                        &has_covered_available_workspace,
-                                        /*selected=*/true, transition);
-  }
-  for (const auto& item : window_list_) {
-    // Has checked the |selected_item|.
-    if (selected_item == item.get())
+  gfx::Rect screen_bounds = GetGridEffectiveBounds();
+  for (size_t i = 0; i < items.size(); ++i) {
+    const bool minimized =
+        WindowState::Get(items[i]->GetWindow())->IsMinimized();
+    bool src_occluded = minimized;
+    bool dst_occluded = false;
+    gfx::Rect src_bounds_temp =
+        minimized ? gfx::Rect()
+                  : items[i]->GetWindow()->GetBoundsInRootWindow();
+    if (!src_bounds_temp.IsEmpty()) {
+      if (transition == OverviewTransition::kEnter &&
+          Shell::Get()->tablet_mode_controller()->InTabletMode()) {
+        BackdropController* backdrop_controller =
+            GetActiveWorkspaceController(root_window_)
+                ->layout_manager()
+                ->backdrop_controller();
+        if (backdrop_controller->GetTopmostWindowWithBackdrop() ==
+            items[i]->GetWindow()) {
+          src_bounds_temp = screen_util::GetDisplayWorkAreaBoundsInParent(
+              items[i]->GetWindow());
+        }
+      } else if (transition == OverviewTransition::kExit) {
+        // On exiting overview, |GetBoundsInRootWindow()| will have the overview
+        // translation applied to it, so use |bounds()| and
+        // |ConvertRectToScreen()| to get the true target bounds.
+        src_bounds_temp = items[i]->GetWindow()->bounds();
+        ::wm::ConvertRectToScreen(items[i]->root_window(), &src_bounds_temp);
+      }
+    }
+
+    // The bounds of of the destination may be partially or fully offscreen.
+    // Partially offscreen rects should be clipped so the onscreen portion is
+    // treated normally. Fully offscreen rects (intersection with the screen
+    // bounds is empty) should never be animated.
+    gfx::Rect dst_bounds_temp = gfx::ToEnclosedRect(
+        transition == OverviewTransition::kEnter ? target_bounds[i]
+                                                 : items[i]->target_bounds());
+    dst_bounds_temp.Intersect(screen_bounds);
+    if (dst_bounds_temp.IsEmpty()) {
+      items[i]->set_should_animate_when_entering(false);
+      items[i]->set_should_animate_when_exiting(false);
       continue;
-    // Has checked all always on top windows.
-    if (item->GetWindow()->GetProperty(aura::client::kAlwaysOnTopKey))
-      continue;
-    CalculateOverviewItemAnimationState(item.get(),
-                                        &has_covered_available_workspace,
-                                        /*selected=*/false, transition);
+    }
+
+    SkIRect src_bounds = gfx::RectToSkIRect(src_bounds_temp);
+    SkIRect dst_bounds = gfx::RectToSkIRect(dst_bounds_temp);
+    if (!occluded_region.isEmpty()) {
+      src_occluded |=
+          (!src_bounds.isEmpty() && occluded_region.contains(src_bounds));
+      dst_occluded |= occluded_region.contains(dst_bounds);
+    }
+
+    // Add |src_bounds| to our region if it is not empty (minimized window).
+    if (!src_bounds.isEmpty())
+      occluded_region.op(src_bounds, SkRegion::kUnion_Op);
+
+    const bool should_animate = !(src_occluded && dst_occluded);
+    if (transition == OverviewSession::OverviewTransition::kEnter)
+      items[i]->set_should_animate_when_entering(should_animate);
+    else if (transition == OverviewSession::OverviewTransition::kExit)
+      items[i]->set_should_animate_when_exiting(should_animate);
   }
 }
 
@@ -1063,16 +1206,9 @@ void OverviewGrid::StartNudge(OverviewItem* item) {
   for (const auto& window_item : window_list_)
     src_rects.push_back(window_item->target_bounds());
 
-  std::vector<gfx::RectF> dst_rects = GetWindowRects(item);
+  std::vector<gfx::RectF> dst_rects = GetWindowRects({item});
 
-  // Get the index of |item|.
-  size_t index =
-      std::find_if(window_list_.begin(), window_list_.end(),
-                   [&item](const std::unique_ptr<OverviewItem>& item_ptr) {
-                     return item == item_ptr.get();
-                   }) -
-      window_list_.begin();
-  DCHECK_LT(index, window_list_.size());
+  const size_t index = GetOverviewItemIndex(item);
 
   // Returns a vector of integers indicating which row the item is in. |index|
   // is the index of the element which is going to be deleted and should not
@@ -1198,215 +1334,312 @@ void OverviewGrid::SlideWindowsIn() {
     window_item->SlideWindowIn();
 }
 
-void OverviewGrid::UpdateYPositionAndOpacity(
+std::unique_ptr<ui::ScopedLayerAnimationSettings>
+OverviewGrid::UpdateYPositionAndOpacity(
     int new_y,
     float opacity,
-    const gfx::Rect& work_area,
     OverviewSession::UpdateAnimationSettingsCallback callback) {
-  // Translate |shield_widget_| to |new_y|. The shield widget covers the shelf
-  // so scale it down while moving it, so that it does not cover the launcher,
-  // which is showing as this is disappearing.
-  aura::Window* shield_window = shield_widget_->GetNativeWindow();
-  float height_ratio = 1.f;
-  std::unique_ptr<ui::ScopedLayerAnimationSettings> settings;
-  if (!callback.is_null()) {
-    settings = std::make_unique<ui::ScopedLayerAnimationSettings>(
-        shield_window->layer()->GetAnimator());
-    callback.Run(settings.get(), /*observe=*/true);
-  } else {
-    height_ratio = static_cast<float>(work_area.height()) /
-                   static_cast<float>(shield_window->bounds().height());
+  std::unique_ptr<ui::ScopedLayerAnimationSettings> settings_to_observe;
+  if (desks_widget_) {
+    aura::Window* window = desks_widget_->GetNativeWindow();
+    ui::Layer* layer = window->layer();
+    if (!callback.is_null()) {
+      settings_to_observe = std::make_unique<ui::ScopedLayerAnimationSettings>(
+          layer->GetAnimator());
+      callback.Run(settings_to_observe.get());
+    }
+    window->SetTransform(gfx::Transform(1.f, 0.f, 0.f, 1.f, 0.f, -new_y));
+    layer->SetOpacity(opacity);
   }
-  shield_window->SetTransform(gfx::Transform(1.f, 0.f, 0.f, height_ratio, 0.f,
-                                             static_cast<float>(new_y)));
-  shield_window->layer()->SetOpacity(opacity);
 
-  // Apply the same translation and opacity change to the windows in the grid.
-  for (const auto& window_item : window_list_)
-    window_item->UpdateYPositionAndOpacity(new_y, opacity, callback);
+  // Translate the window items to |new_y| with the opacity. Observe the
+  // animation of the last item, if any.
+  for (const auto& window_item : window_list_) {
+    auto new_settings =
+        window_item->UpdateYPositionAndOpacity(new_y, opacity, callback);
+    if (new_settings)
+      settings_to_observe = std::move(new_settings);
+  }
+  return settings_to_observe;
 }
 
 aura::Window* OverviewGrid::GetTargetWindowOnLocation(
-    const gfx::Point& location_in_screen) {
-  // Find the overview item that contains |location_in_screen|.
-  auto iter = std::find_if(
-      window_list_.begin(), window_list_.end(),
-      [&location_in_screen](std::unique_ptr<OverviewItem>& item) {
-        return item->target_bounds().Contains(gfx::PointF(location_in_screen));
-      });
-
-  return (iter != window_list_.end()) ? (*iter)->GetWindow() : nullptr;
-}
-
-const DesksBarView* OverviewGrid::GetDesksBarViewForTesting() const {
-  return shield_view_->desks_bar_view();
+    const gfx::PointF& location_in_screen,
+    OverviewItem* ignored_item) {
+  for (std::unique_ptr<OverviewItem>& item : window_list_) {
+    if (item.get() == ignored_item)
+      continue;
+    if (item->target_bounds().Contains(location_in_screen))
+      return item->GetWindow();
+  }
+  return nullptr;
 }
 
 bool OverviewGrid::IsDesksBarViewActive() const {
-  DCHECK(features::IsVirtualDesksEnabled());
+  DCHECK(desks_util::ShouldDesksBarBeCreated());
 
   // The desk bar view is not active if there is only a single desk when
   // overview is started. Once there are more than one desk, it should stay
   // active even if the 2nd to last desk is deleted.
   return DesksController::Get()->desks().size() > 1 ||
-         (shield_view_ &&
-          !shield_view_->desks_bar_view()->mini_views().empty());
+         (desks_bar_view_ && !desks_bar_view_->mini_views().empty());
 }
 
-void OverviewGrid::InitShieldWidget(bool animate) {
-  // TODO(varkha): The code assumes that SHELF_BACKGROUND_MAXIMIZED is
-  // synonymous with a black shelf background. Update this code if that
-  // assumption is no longer valid.
-  const float initial_opacity =
-      (Shelf::ForWindow(root_window_)->GetBackgroundType() ==
-       SHELF_BACKGROUND_MAXIMIZED)
-          ? 1.f
-          : 0.f;
-  shield_widget_ = CreateBackgroundWidget(
-      root_window_, ui::LAYER_NOT_DRAWN, SK_ColorTRANSPARENT, 0, 0,
-      SK_ColorTRANSPARENT, initial_opacity, /*parent=*/nullptr,
-      /*stack_on_top=*/true, /*accept_events=*/true);
-  aura::Window* widget_window = shield_widget_->GetNativeWindow();
-  aura::Window* parent_window = widget_window->parent();
-  const gfx::Rect bounds = ash::screen_util::SnapBoundsToDisplayEdge(
-      parent_window->bounds(), parent_window);
-  widget_window->SetBounds(bounds);
-  widget_window->SetName("OverviewModeShield");
+gfx::Rect OverviewGrid::GetGridEffectiveBounds() const {
+  if (!desks_util::ShouldDesksBarBeCreated() || !IsDesksBarViewActive())
+    return bounds_;
 
-  // Create |shield_view_| and animate its background and label if needed.
-  shield_view_ = new ShieldView();
-  shield_widget_->SetContentsView(shield_view_);
-  shield_view_->MaybeInitVirtualDesksBar();
-  shield_view_->SetGridBounds(bounds_);
+  gfx::Rect effective_bounds = bounds_;
+  effective_bounds.Inset(
+      0, DesksBarView::GetBarHeightForWidth(desks_bar_view_, bounds_.width()),
+      0, 0);
+  return effective_bounds;
+}
 
-  if (animate) {
-    shield_widget_->SetOpacity(initial_opacity);
-    ScopedOverviewAnimationSettings settings(OVERVIEW_ANIMATION_SHIELD_FADE,
-                                             shield_widget_->GetNativeWindow());
-    shield_widget_->SetOpacity(1.f);
-  } else {
-    shield_widget_->SetOpacity(1.f);
+bool OverviewGrid::IntersectsWithDesksBar(const gfx::Point& screen_location,
+                                          bool update_desks_bar_drag_details,
+                                          bool for_drop) {
+  DCHECK(desks_util::ShouldDesksBarBeCreated());
+
+  const bool dragged_item_over_bar =
+      desks_widget_->GetWindowBoundsInScreen().Contains(screen_location);
+  if (update_desks_bar_drag_details) {
+    desks_bar_view_->SetDragDetails(screen_location,
+                                    !for_drop && dragged_item_over_bar);
   }
+  return dragged_item_over_bar;
 }
 
-void OverviewGrid::InitSelectionWidget(OverviewSession::Direction direction) {
-  selection_widget_ = CreateBackgroundWidget(
-      root_window_, ui::LAYER_TEXTURED, kWindowSelectionColor, 0,
-      kWindowSelectionRadius, SK_ColorTRANSPARENT, 0.f, /*parent=*/nullptr,
-      /*stack_on_top=*/true, /*accept_events=*/false);
-  aura::Window* widget_window = selection_widget_->GetNativeWindow();
-  gfx::Rect target_bounds =
-      gfx::ToEnclosedRect(SelectedWindow()->target_bounds());
-  ::wm::ConvertRectFromScreen(root_window_, &target_bounds);
-  gfx::Vector2d fade_out_direction =
-      GetSlideVectorForFadeIn(direction, target_bounds);
-  widget_window->SetBounds(target_bounds - fade_out_direction);
-  widget_window->SetName("OverviewModeSelector");
+bool OverviewGrid::MaybeDropItemOnDeskMiniView(
+    const gfx::Point& screen_location,
+    OverviewItem* drag_item) {
+  DCHECK(desks_util::ShouldDesksBarBeCreated());
 
-  selector_shadow_ = std::make_unique<ui::Shadow>();
-  selector_shadow_->Init(kWindowSelectionShadowElevation);
-  selector_shadow_->layer()->SetVisible(true);
-  selection_widget_->GetLayer()->SetMasksToBounds(false);
-  selection_widget_->GetLayer()->Add(selector_shadow_->layer());
-  selector_shadow_->SetContentBounds(gfx::Rect(target_bounds.size()));
-}
-
-void OverviewGrid::MoveSelectionWidget(OverviewSession::Direction direction,
-                                       bool recreate_selection_widget,
-                                       bool out_of_bounds,
-                                       bool animate) {
-  // If the selection widget is already active, fade it out in the selection
-  // direction.
-  if (selection_widget_ && (recreate_selection_widget || out_of_bounds)) {
-    // Animate the old selection widget and then destroy it.
-    views::Widget* old_selection = selection_widget_.get();
-    aura::Window* old_selection_window = old_selection->GetNativeWindow();
-    gfx::Vector2d fade_out_direction =
-        GetSlideVectorForFadeIn(direction, old_selection_window->bounds());
-
-    ScopedOverviewAnimationSettings settings(
-        OVERVIEW_ANIMATION_SELECTION_WINDOW, old_selection_window);
-    // CleanupAnimationObserver will delete itself (and the widget) when the
-    // motion animation is complete. Ownership over the observer is passed to
-    // the overview_session_->delegate() which has longer lifetime so that
-    // animations can continue even after the overview session is shut down.
-    std::unique_ptr<CleanupAnimationObserver> observer(
-        new CleanupAnimationObserver(std::move(selection_widget_)));
-    settings.AddObserver(observer.get());
-    overview_session_->delegate()->AddDelayedAnimationObserver(
-        std::move(observer));
-    old_selection->SetOpacity(0.f);
-    old_selection_window->SetBounds(old_selection_window->bounds() +
-                                    fade_out_direction);
-    old_selection->Hide();
+  // End the drag for the DesksBarView.
+  if (!IntersectsWithDesksBar(screen_location,
+                              /*update_desks_bar_drag_details=*/true,
+                              /*for_drop=*/true)) {
+    return false;
   }
-  if (out_of_bounds)
-    return;
 
-  if (!selection_widget_)
-    InitSelectionWidget(direction);
-  // Send an a11y alert so that if ChromeVox is enabled, the item label is
-  // read.
-  SelectedWindow()->SendAccessibleSelectionEvent();
-  // The selection widget is moved to the newly selected item in the same
-  // grid.
-  MoveSelectionWidgetToTarget(animate);
+  auto* desks_controller = DesksController::Get();
+  for (auto& mini_view : desks_bar_view_->mini_views()) {
+    if (!mini_view->IsPointOnMiniView(screen_location))
+      continue;
+
+    aura::Window* const dragged_window = drag_item->GetWindow();
+    Desk* const target_desk = mini_view->desk();
+    if (target_desk == desks_controller->active_desk())
+      return false;
+
+    return desks_controller->MoveWindowFromActiveDeskTo(
+        dragged_window, target_desk,
+        DesksMoveWindowFromActiveDeskSource::kDragAndDrop);
+  }
+
+  return false;
 }
 
-void OverviewGrid::MoveSelectionWidgetToTarget(bool animate) {
-  gfx::Rect bounds = gfx::ToEnclosingRect(SelectedWindow()->target_bounds());
-  ::wm::ConvertRectFromScreen(root_window_, &bounds);
-  if (animate) {
-    ScopedOverviewAnimationSettings settings(
-        OVERVIEW_ANIMATION_SELECTION_WINDOW,
-        selection_widget_->GetNativeWindow());
-    selection_widget_->SetBounds(bounds);
-    selection_widget_->SetOpacity(1.f);
+void OverviewGrid::StartScroll() {
+  Shell::Get()->overview_controller()->PauseOcclusionTracker();
 
-    if (selector_shadow_) {
-      ScopedOverviewAnimationSettings settings(
-          OVERVIEW_ANIMATION_SELECTION_WINDOW_SHADOW,
-          selector_shadow_->shadow_layer()->GetAnimator());
-      bounds.Inset(1, 1);
-      selector_shadow_->SetContentBounds(
-          gfx::Rect(gfx::Point(1, 1), bounds.size()));
+  // Users are not allowed to scroll past the leftmost or rightmost bounds of
+  // the items on screen in the grid. |scroll_offset_min_| is the amount needed
+  // to fit the rightmost window into |total_bounds|. The max is zero which is
+  // default because windows are aligned to the left from the beginning.
+  gfx::Rect total_bounds = GetGridEffectiveBounds();
+  total_bounds.Inset(GetGridInsets(total_bounds));
+
+  float rightmost_window_right = 0;
+  items_scrolling_bounds_.resize(window_list_.size());
+  for (size_t i = 0; i < items_scrolling_bounds_.size(); ++i) {
+    const gfx::RectF bounds = window_list_[i]->target_bounds();
+    if (rightmost_window_right < bounds.right())
+      rightmost_window_right = bounds.right();
+
+    items_scrolling_bounds_[i] = bounds;
+  }
+
+  // |rightmost_window_right| may have been modified by an earlier scroll.
+  // |scroll_offset_| is added to adjust for that.
+  rightmost_window_right -= scroll_offset_;
+  scroll_offset_min_ = total_bounds.right() - rightmost_window_right;
+
+  presentation_time_recorder_ = CreatePresentationTimeHistogramRecorder(
+      const_cast<ui::Compositor*>(root_window()->layer()->GetCompositor()),
+      kOverviewScrollHistogram, kOverviewScrollMaxLatencyHistogram);
+}
+
+bool OverviewGrid::UpdateScrollOffset(float delta) {
+  float new_scroll_offset = scroll_offset_;
+  new_scroll_offset += delta;
+  new_scroll_offset =
+      base::ClampToRange(new_scroll_offset, scroll_offset_min_, 0.f);
+
+  // For flings, we want to return false if we hit one of the edges, which is
+  // when |new_scroll_offset| is exactly 0.f or |scroll_offset_min_|.
+  const bool in_range =
+      new_scroll_offset < 0.f && new_scroll_offset > scroll_offset_min_;
+  if (new_scroll_offset == scroll_offset_)
+    return in_range;
+
+  // Update the bounds of the items which are currently visible on screen.
+  DCHECK_EQ(items_scrolling_bounds_.size(), window_list_.size());
+  for (size_t i = 0; i < items_scrolling_bounds_.size(); ++i) {
+    const gfx::RectF previous_bounds = items_scrolling_bounds_[i];
+    items_scrolling_bounds_[i].Offset(new_scroll_offset - scroll_offset_, 0.f);
+    const gfx::RectF new_bounds = items_scrolling_bounds_[i];
+    if (gfx::RectF(GetGridEffectiveBounds()).Intersects(new_bounds) ||
+        gfx::RectF(GetGridEffectiveBounds()).Intersects(previous_bounds)) {
+      window_list_[i]->SetBounds(new_bounds, OVERVIEW_ANIMATION_NONE);
     }
+  }
+
+  scroll_offset_ = new_scroll_offset;
+
+  DCHECK(presentation_time_recorder_);
+  presentation_time_recorder_->RequestNext();
+  return in_range;
+}
+
+void OverviewGrid::EndScroll() {
+  Shell::Get()->overview_controller()->UnpauseOcclusionTracker(
+      kOcclusionUnpauseDurationForScroll);
+  items_scrolling_bounds_.clear();
+  presentation_time_recorder_.reset();
+
+  if (!overview_session_->is_shutting_down())
+    PositionWindows(/*animate=*/false);
+}
+
+int OverviewGrid::CalculateWidthAndMaybeSetUnclippedBounds(OverviewItem* item,
+                                                           int height) {
+  const gfx::Size item_size(0, height);
+  gfx::RectF target_bounds = item->GetTargetBoundsInScreen();
+  float scale = item->GetItemScale(item_size);
+
+  // The drop target, unlike the other windows has its bounds set directly, so
+  // |GetTargetBoundsInScreen()| won't return the value we want. Instead, get
+  // the scale from the window it was meant to be a placeholder for.
+  if (IsDropTargetWindow(item->GetWindow())) {
+    aura::Window* dragged_window = nullptr;
+    OverviewItem* item =
+        overview_session_->window_drag_controller()
+            ? overview_session_->window_drag_controller()->item()
+            : nullptr;
+    if (item)
+      dragged_window = item->GetWindow();
+    else if (dragged_window_)
+      dragged_window = dragged_window_;
+
+    if (dragged_window && dragged_window->parent()) {
+      target_bounds = ::ash::GetTargetBoundsInScreen(dragged_window);
+      const gfx::SizeF inset_size(0, height - 2 * kWindowMargin);
+      scale = ScopedOverviewTransformWindow::GetItemScale(
+          target_bounds.size(), inset_size,
+          dragged_window->GetProperty(aura::client::kTopViewInset),
+          kHeaderHeightDp);
+    }
+  }
+
+  int width = std::max(
+      1, gfx::ToFlooredInt(target_bounds.width() * scale) + 2 * kWindowMargin);
+  switch (item->GetWindowDimensionsType()) {
+    case ScopedOverviewTransformWindow::GridWindowFillMode::kLetterBoxed:
+      width =
+          ScopedOverviewTransformWindow::kExtremeWindowRatioThreshold * height;
+      break;
+    case ScopedOverviewTransformWindow::GridWindowFillMode::kPillarBoxed:
+      width =
+          height / ScopedOverviewTransformWindow::kExtremeWindowRatioThreshold;
+      break;
+    default:
+      break;
+  }
+
+  // Get the bounds of the window if there is a snapped window or a window
+  // about to be snapped.
+  base::Optional<gfx::RectF> split_view_bounds =
+      GetSplitviewBoundsMaintainingAspectRatio(item->GetWindow());
+  if (!split_view_bounds) {
+    item->set_unclipped_size(base::nullopt);
+    return width;
+  }
+
+  // Perform horizontal clipping if the window's aspect ratio is wider than the
+  // split view bounds aspect ratio, and vertical clipping otherwise.
+  const float aspect_ratio =
+      target_bounds.width() /
+      (target_bounds.height() -
+       item->GetWindow()->GetProperty(aura::client::kTopViewInset));
+  const float target_aspect_ratio =
+      split_view_bounds->width() / split_view_bounds->height();
+  const bool clip_horizontally = aspect_ratio > target_aspect_ratio;
+  const int window_height = height - 2 * kWindowMargin - kHeaderHeightDp;
+  gfx::Size unclipped_size;
+  if (clip_horizontally) {
+    unclipped_size.set_width(width - 2 * kWindowMargin);
+    unclipped_size.set_height(height - 2 * kWindowMargin);
+    // For horizontal clipping, shrink |width| so that the aspect ratio matches
+    // that of |split_view_bounds|.
+    width = std::max(1, gfx::ToFlooredInt(target_aspect_ratio * window_height) +
+                            2 * kWindowMargin);
+  } else {
+    // For vertical clipping, we want |height| to stay the same, so calculate
+    // what the unclipped height would be based on |split_view_bounds|.
+
+    // Find the width so that it matches height and matches the aspect ratio of
+    // |split_view_bounds|.
+    width = split_view_bounds->width() * window_height /
+            split_view_bounds->height();
+    // The unclipped height is the height which matches |width| but keeps the
+    // aspect ratio of |target_bounds|. Clipping takes the overview header into
+    // account, so add that back in.
+    const int unclipped_height =
+        width * target_bounds.height() / target_bounds.width();
+    unclipped_size.set_width(width);
+    unclipped_size.set_height(unclipped_height + kHeaderHeightDp);
+
+    // Add some space between this item and the next one (if it exists).
+    width += (2 * kWindowMargin);
+  }
+
+  DCHECK(!unclipped_size.IsEmpty());
+  item->set_unclipped_size(base::make_optional(unclipped_size));
+  return width;
+}
+
+void OverviewGrid::OnDesksChanged() {
+  if (MaybeUpdateDesksWidgetBounds())
+    PositionWindows(/*animate=*/false, /*ignored_items=*/{});
+  else
+    desks_bar_view_->Layout();
+}
+
+void OverviewGrid::MaybeInitDesksWidget() {
+  if (!desks_util::ShouldDesksBarBeCreated() || desks_widget_)
     return;
-  }
-  selection_widget_->SetBounds(bounds);
-  selection_widget_->SetOpacity(1.f);
-  if (selector_shadow_) {
-    bounds.Inset(1, 1);
-    selector_shadow_->SetContentBounds(
-        gfx::Rect(gfx::Point(1, 1), bounds.size()));
-  }
+
+  desks_widget_ =
+      DesksBarView::CreateDesksWidget(root_window_, GetDesksWidgetBounds());
+  desks_bar_view_ = new DesksBarView(this);
+
+  // The following order of function calls is significant: SetContentsView()
+  // must be called before DesksBarView:: Init(). This is needed because the
+  // desks mini views need to access the widget to get the root window in order
+  // to know how to layout themselves.
+  desks_widget_->SetContentsView(desks_bar_view_);
+  desks_bar_view_->Init();
+
+  desks_widget_->Show();
 }
 
 std::vector<gfx::RectF> OverviewGrid::GetWindowRects(
-    OverviewItem* ignored_item) {
-  gfx::Rect total_bounds = bounds_;
-
-  if (features::IsVirtualDesksEnabled()) {
-    const int desks_bar_height = DesksBarView::GetBarHeight();
-
-    // Always reduce the grid's height, even if the desks bar is not active. We
-    // do this to avoid changing the overview windows sizes once the desks bar
-    // becomes active, and we shift the grid downwards.
-    total_bounds.set_height(total_bounds.height() - desks_bar_height);
-
-    if (IsDesksBarViewActive())
-      total_bounds.Offset(0, desks_bar_height);
-  }
+    const base::flat_set<OverviewItem*>& ignored_items) {
+  gfx::Rect total_bounds = GetGridEffectiveBounds();
 
   // Windows occupy vertically centered area with additional vertical insets.
-  int horizontal_inset =
-      gfx::ToFlooredInt(std::min(kOverviewInsetRatio * total_bounds.width(),
-                                 kOverviewInsetRatio * total_bounds.height()));
-  int vertical_inset =
-      horizontal_inset +
-      kOverviewVerticalInset * (total_bounds.height() - 2 * horizontal_inset);
-  total_bounds.Inset(std::max(0, horizontal_inset - kWindowMargin),
-                     std::max(0, vertical_inset - kWindowMargin));
+  total_bounds.Inset(GetGridInsets(total_bounds));
   std::vector<gfx::RectF> rects;
 
   // Keep track of the lowest coordinate.
@@ -1450,7 +1683,7 @@ std::vector<gfx::RectF> OverviewGrid::GetWindowRects(
     overview_mode_bounds.set_width(right_bound - total_bounds.x());
     bool windows_fit = FitWindowRectsInBounds(
         overview_mode_bounds, std::min(kMaxHeight + 2 * kWindowMargin, height),
-        ignored_item, &rects, &max_bottom, &min_right, &max_right);
+        ignored_items, &rects, &max_bottom, &min_right, &max_right);
 
     if (height_fixed) {
       if (!windows_fit) {
@@ -1497,7 +1730,7 @@ std::vector<gfx::RectF> OverviewGrid::GetWindowRects(
     overview_mode_bounds.set_width(right_bound - total_bounds.x());
     FitWindowRectsInBounds(
         overview_mode_bounds, std::min(kMaxHeight + 2 * kWindowMargin, height),
-        ignored_item, &rects, &max_bottom, &min_right, &max_right);
+        ignored_items, &rects, &max_bottom, &min_right, &max_right);
   }
 
   gfx::Vector2dF offset(0, (total_bounds.bottom() - max_bottom) / 2.f);
@@ -1506,15 +1739,84 @@ std::vector<gfx::RectF> OverviewGrid::GetWindowRects(
   return rects;
 }
 
-bool OverviewGrid::FitWindowRectsInBounds(const gfx::Rect& bounds,
-                                          int height,
-                                          OverviewItem* ignored_item,
-                                          std::vector<gfx::RectF>* out_rects,
-                                          int* out_max_bottom,
-                                          int* out_min_right,
-                                          int* out_max_right) {
-  out_rects->resize(window_list_.size());
-  bool windows_fit = true;
+std::vector<gfx::RectF> OverviewGrid::GetWindowRectsForTabletModeLayout(
+    const base::flat_set<OverviewItem*>& ignored_items) {
+  gfx::Rect total_bounds = GetGridEffectiveBounds();
+  // Windows occupy vertically centered area with additional vertical insets.
+  total_bounds.Inset(GetGridInsets(total_bounds));
+
+  // |scroll_offset_min_| may be changed on positioning (either by closing
+  // windows or display changes). Recalculate it and clamp |scroll_offset_|, so
+  // that the items are always aligned left or right.
+  float rightmost_window_right = 0;
+  for (const auto& item : window_list_) {
+    if (item->animating_to_close() || ignored_items.contains(item.get()))
+      continue;
+    rightmost_window_right =
+        std::max(rightmost_window_right, item->target_bounds().right());
+  }
+
+  // |rightmost_window_right| may have been modified by an earlier scroll.
+  // |scroll_offset_| is added to adjust for that.
+  rightmost_window_right -= scroll_offset_;
+  scroll_offset_min_ = total_bounds.right() - rightmost_window_right;
+  scroll_offset_ = base::ClampToRange(scroll_offset_, scroll_offset_min_, 0.f);
+
+  // Map which contains up to |kTabletLayoutRow| entries with information on the
+  // last items right bound per row. Used so we can place the next item directly
+  // next to the last item. The key is the y-value of the row, and the value is
+  // the rightmost x-value.
+  base::flat_map<float, float> right_edge_map;
+
+  // Since the number of rows is limited, windows are laid out column-wise so
+  // that the most recently used windows are displayed first. When the dragged
+  // item becomes an |ignored_item|, move the other windows accordingly.
+  // |window_position| matches the positions of the windows' indexes from
+  // |window_list_|. However, if a window turns out to be an ignored item,
+  // |window_position| remains where the item was as to then reposition the
+  // other window's bounds in place of that item.
+  const int height = total_bounds.height() / kTabletLayoutRow;
+  int window_position = 0;
+  std::vector<gfx::RectF> rects;
+  for (size_t i = 0; i < window_list_.size(); ++i) {
+    OverviewItem* item = window_list_[i].get();
+    if (item->animating_to_close() || ignored_items.contains(item)) {
+      rects.push_back(gfx::RectF());
+      continue;
+    }
+
+    // Calculate the width and y position of the item.
+    const int width =
+        CalculateWidthAndMaybeSetUnclippedBounds(window_list_[i].get(), height);
+    const int y =
+        height * (window_position % kTabletLayoutRow) + total_bounds.y();
+
+    // Use the right bounds of the item next to in the row as the x position, if
+    // that item exists.
+    const int x = right_edge_map.contains(y)
+                      ? right_edge_map[y]
+                      : total_bounds.x() + scroll_offset_;
+    right_edge_map[y] = x + width;
+    DCHECK_LE(int{right_edge_map.size()}, kTabletLayoutRow);
+
+    const gfx::RectF bounds(x, y, width, height);
+    rects.push_back(bounds);
+    ++window_position;
+  }
+
+  return rects;
+}
+
+bool OverviewGrid::FitWindowRectsInBounds(
+    const gfx::Rect& bounds,
+    int height,
+    const base::flat_set<OverviewItem*>& ignored_items,
+    std::vector<gfx::RectF>* out_rects,
+    int* out_max_bottom,
+    int* out_min_right,
+    int* out_max_right) {
+  const size_t window_count = window_list_.size();
+  out_rects->resize(window_count);
 
   // Start in the top-left corner of |bounds|.
   int left = bounds.x();
@@ -1530,33 +1832,14 @@ bool OverviewGrid::FitWindowRectsInBounds(const gfx::Rect& bounds,
 
   // All elements are of same height and only the height is necessary to
   // determine each item's scale.
-  const gfx::Size item_size(0, height);
-  size_t i = 0;
-  for (const auto& window : window_list_) {
-    if (window->animating_to_close() ||
-        (ignored_item && ignored_item == window.get())) {
-      // Increment the index anyways. PositionWindows will handle skipping this
-      // entry.
-      ++i;
+  for (size_t i = 0u; i < window_count; ++i) {
+    if (window_list_[i]->animating_to_close() ||
+        ignored_items.contains(window_list_[i].get())) {
       continue;
     }
 
-    const gfx::RectF target_bounds = window->GetTargetBoundsInScreen();
-    int width = std::max(1, gfx::ToFlooredInt(target_bounds.width() *
-                                              window->GetItemScale(item_size)) +
-                                2 * kWindowMargin);
-    switch (window->GetWindowDimensionsType()) {
-      case ScopedOverviewTransformWindow::GridWindowFillMode::kLetterBoxed:
-        width = ScopedOverviewTransformWindow::kExtremeWindowRatioThreshold *
-                height;
-        break;
-      case ScopedOverviewTransformWindow::GridWindowFillMode::kPillarBoxed:
-        width = height /
-                ScopedOverviewTransformWindow::kExtremeWindowRatioThreshold;
-        break;
-      default:
-        break;
-    }
+    int width =
+        CalculateWidthAndMaybeSetUnclippedBounds(window_list_[i].get(), height);
 
     if (left + width > bounds.right()) {
       // Move to the next row if possible.
@@ -1570,58 +1853,27 @@ bool OverviewGrid::FitWindowRectsInBounds(const gfx::Rect& bounds,
       // row does not fit within the available width.
       if (top + height > bounds.bottom() ||
           bounds.x() + width > bounds.right()) {
-        windows_fit = false;
-        // If the |ignored_item| is the last item, update |out_max_bottom|
-        // before breaking the loop, but no need to add the height, as the last
-        // item does not contribute to the grid bounds.
-        if (window_list_.back()->animating_to_close() ||
-            (ignored_item && ignored_item == window_list_.back().get())) {
-          *out_max_bottom = top;
-        }
-        break;
+        return false;
       }
       left = bounds.x();
     }
 
     // Position the current rect.
-    (*out_rects)[i] = gfx::RectF(gfx::Rect(left, top, width, height));
+    (*out_rects)[i] = gfx::RectF(left, top, width, height);
 
-    // Increment horizontal position using sanitized positive |width()|.
-    left += gfx::ToRoundedInt((*out_rects)[i].width());
+    // Increment horizontal position using sanitized positive |width|.
+    left += width;
 
-    if (++i == out_rects->size()) {
-      // Update the narrowest and widest row width for the last row.
-      if (*out_min_right > left)
-        *out_min_right = left;
-      if (*out_max_right < left)
-        *out_max_right = left;
-    }
     *out_max_bottom = top + height;
   }
-  return windows_fit;
-}
 
-void OverviewGrid::CalculateOverviewItemAnimationState(
-    OverviewItem* overview_item,
-    bool* has_covered_available_workspace,
-    bool selected,
-    OverviewSession::OverviewTransition transition) {
-  if (!overview_item)
-    return;
+  // Update the narrowest and widest row width for the last row.
+  if (*out_min_right > left)
+    *out_min_right = left;
+  if (*out_max_right < left)
+    *out_max_right = left;
 
-  aura::Window* window = overview_item->GetWindow();
-  // |overview_item| should be contained in the |window_list_|.
-  DCHECK(GetOverviewItemContaining(window));
-
-  bool can_cover_available_workspace = CanCoverAvailableWorkspace(window);
-  const bool should_animate = selected || !(*has_covered_available_workspace);
-  if (transition == OverviewSession::OverviewTransition::kEnter)
-    overview_item->set_should_animate_when_entering(should_animate);
-  if (transition == OverviewSession::OverviewTransition::kExit)
-    overview_item->set_should_animate_when_exiting(should_animate);
-
-  if (!(*has_covered_available_workspace) && can_cover_available_workspace)
-    *has_covered_available_workspace = true;
+  return true;
 }
 
 std::vector<std::unique_ptr<OverviewItem>>::iterator
@@ -1630,6 +1882,13 @@ OverviewGrid::GetOverviewItemIterContainingWindow(aura::Window* window) {
                       [window](std::unique_ptr<OverviewItem>& item) {
                         return item->GetWindow() == window;
                       });
+}
+
+size_t OverviewGrid::GetOverviewItemIndex(OverviewItem* item) const {
+  auto iter = std::find_if(window_list_.begin(), window_list_.end(),
+                           base::MatchesUniquePtr(item));
+  DCHECK(iter != window_list_.end());
+  return iter - window_list_.begin();
 }
 
 void OverviewGrid::AddDraggedWindowIntoOverviewOnDragEnd(
@@ -1641,7 +1900,7 @@ void OverviewGrid::AddDraggedWindowIntoOverviewOnDragEnd(
   // Update the dragged window's bounds before adding it to overview. The
   // dragged window might have resized to a smaller size if the drag
   // happens on tab(s).
-  if (wm::IsDraggingTabs(dragged_window)) {
+  if (window_util::IsDraggingTabs(dragged_window)) {
     const gfx::Rect old_bounds = dragged_window->bounds();
     // We need to temporarily disable the dragged window's ability to merge
     // into another window when changing the dragged window's bounds, so
@@ -1649,13 +1908,12 @@ void OverviewGrid::AddDraggedWindowIntoOverviewOnDragEnd(
     // its changed bounds.
     dragged_window->SetProperty(ash::kCanAttachToAnotherWindowKey, false);
     TabletModeWindowState::UpdateWindowPosition(
-        wm::GetWindowState(dragged_window), /*animate=*/false);
+        WindowState::Get(dragged_window), /*animate=*/false);
     const gfx::Rect new_bounds = dragged_window->bounds();
     if (old_bounds != new_bounds) {
       // It's for smoother animation.
-      gfx::Transform transform =
-          ScopedOverviewTransformWindow::GetTransformForRect(
-              gfx::RectF(new_bounds), gfx::RectF(old_bounds));
+      const gfx::Transform transform = gfx::TransformBetweenRects(
+          gfx::RectF(new_bounds), gfx::RectF(old_bounds));
       dragged_window->SetTransform(transform);
     }
     dragged_window->ClearProperty(ash::kCanAttachToAnotherWindowKey);
@@ -1663,6 +1921,30 @@ void OverviewGrid::AddDraggedWindowIntoOverviewOnDragEnd(
 
   overview_session_->AddItem(dragged_window, /*reposition=*/false,
                              /*animate=*/false);
+}
+
+// Returns the desks widget bounds in root, given the screen bounds of the
+// overview grid.
+gfx::Rect OverviewGrid::GetDesksWidgetBounds() const {
+  gfx::Rect desks_widget_root_bounds = bounds_;
+  ::wm::ConvertRectFromScreen(root_window_, &desks_widget_root_bounds);
+  desks_widget_root_bounds.set_height(DesksBarView::GetBarHeightForWidth(
+      desks_bar_view_, desks_widget_root_bounds.width()));
+  // Shift the widget down to make room for the splitview indicator guidance
+  // when it's shown at the top of the screen when in portrait mode and no other
+  // windows are snapped.
+  if (split_view_drag_indicators_ &&
+      split_view_drag_indicators_->current_window_dragging_state() ==
+          SplitViewDragIndicators::WindowDraggingState::kFromOverview &&
+      !IsCurrentScreenOrientationLandscape() &&
+      !SplitViewController::Get(root_window_)->InSplitViewMode()) {
+    desks_widget_root_bounds.Offset(
+        0, bounds_.height() * kHighlightScreenPrimaryAxisRatio +
+               2 * kHighlightScreenEdgePaddingDp);
+  }
+
+  return screen_util::SnapBoundsToDisplayEdge(desks_widget_root_bounds,
+                                              root_window_);
 }
 
 }  // namespace ash

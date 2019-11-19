@@ -8,7 +8,7 @@
 #include "base/macros.h"
 #include "chrome/browser/page_load_metrics/observers/data_reduction_proxy_metrics_observer_base.h"
 
-// Sends Data Reduction Proxy pingbacks for the Lite Page Redirect preview.
+// Sets UKM metrics for Lite Page Redirect previews.
 class PreviewsLitePageRedirectMetricsObserver
     : public data_reduction_proxy::DataReductionProxyMetricsObserverBase {
  public:

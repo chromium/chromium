@@ -190,7 +190,7 @@ template<typename ReplyMsgClass, typename CallbackType>
 int32_t PluginResource::Call(Destination dest,
                              const IPC::Message& msg,
                              const CallbackType& callback) {
-  return Call<ReplyMsgClass>(dest, msg, callback, NULL);
+  return Call<ReplyMsgClass>(dest, msg, callback, nullptr);
 }
 
 template<typename ReplyMsgClass, typename CallbackType>

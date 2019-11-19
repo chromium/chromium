@@ -13,6 +13,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/extensions/accelerator_priority.h"
+#include "chrome/browser/ui/views/extensions/extension_popup.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/toolbar/browser_actions_container.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_action_view_delegate_views.h"
@@ -79,13 +80,12 @@ void ExtensionActionPlatformDelegateViews::ShowPopup(
   // performs the flipping in RTL cases.
   views::BubbleBorder::Arrow arrow = views::BubbleBorder::TOP_RIGHT;
 
-  views::View* reference_view = GetDelegateViews()->GetReferenceViewForPopup();
-
   ExtensionPopup::ShowAction popup_show_action =
       show_action == ExtensionActionViewController::SHOW_POPUP ?
           ExtensionPopup::SHOW : ExtensionPopup::SHOW_AND_INSPECT;
-  ExtensionPopup::ShowPopup(std::move(host), reference_view, arrow,
-                            popup_show_action);
+  ExtensionPopup::ShowPopup(std::move(host),
+                            GetDelegateViews()->GetReferenceButtonForPopup(),
+                            arrow, popup_show_action);
 }
 
 void ExtensionActionPlatformDelegateViews::ShowContextMenu() {
@@ -121,7 +121,7 @@ bool ExtensionActionPlatformDelegateViews::AcceleratorPressed(
   // this is a browser action.
   DCHECK(controller_->extension_action()->action_type() ==
              ActionInfo::TYPE_BROWSER ||
-         GetDelegateViews()->GetAsView()->visible());
+         GetDelegateViews()->GetAsView()->GetVisible());
 
   // Normal priority shortcuts must be handled via standard browser commands to
   // be processed at the proper time.
@@ -129,7 +129,10 @@ bool ExtensionActionPlatformDelegateViews::AcceleratorPressed(
       ui::AcceleratorManager::kNormalPriority)
     return false;
 
-  controller_->ExecuteAction(true);
+  if (controller_->IsShowingPopup())
+    controller_->HidePopup();
+  else
+    controller_->ExecuteAction(true);
   return true;
 }
 
@@ -137,9 +140,9 @@ bool ExtensionActionPlatformDelegateViews::CanHandleAccelerators() const {
   // Page actions can only handle accelerators when they are visible.
   // Browser actions can handle accelerators even when not visible, since they
   // might be hidden in an overflow menu.
-  return controller_->extension_action()->action_type() ==
-      ActionInfo::TYPE_PAGE ? GetDelegateViews()->GetAsView()->visible() :
-          true;
+  return controller_->extension_action()->action_type() == ActionInfo::TYPE_PAGE
+             ? GetDelegateViews()->GetAsView()->GetVisible()
+             : true;
 }
 
 void ExtensionActionPlatformDelegateViews::UnregisterCommand(

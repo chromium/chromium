@@ -9,6 +9,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <utility>
 
 #include "base/files/file.h"
 #include "base/logging.h"
@@ -20,20 +21,19 @@ namespace em = enterprise_management;
 namespace policy {
 
 namespace {
-static const int64_t kLogFileVersion = 3;
-static const ssize_t kMaxLogs = 1024;
+constexpr int64_t kLogFileVersion = 3;
+constexpr ssize_t kMaxLogs = 1024;
 }  // namespace
 
 AppInstallEventLog::AppInstallEventLog(const base::FilePath& file_name)
     : file_name_(file_name) {
   base::File file(file_name_, base::File::FLAG_OPEN | base::File::FLAG_READ);
-  if (!file.IsValid()) {
+  if (!file.IsValid())
     return;
-  }
 
   int64_t version;
-  if (file.ReadAtCurrentPos(reinterpret_cast<char*>(&version),
-                            sizeof(version)) != sizeof(version)) {
+  if (!file.ReadAtCurrentPosAndCheck(
+          base::as_writable_bytes(base::make_span(&version, 1)))) {
     LOG(WARNING) << "Corrupted app install log.";
     return;
   }
@@ -44,8 +44,8 @@ AppInstallEventLog::AppInstallEventLog(const base::FilePath& file_name)
   }
 
   ssize_t entries;
-  if (file.ReadAtCurrentPos(reinterpret_cast<char*>(&entries),
-                            sizeof(entries)) != sizeof(entries)) {
+  if (!file.ReadAtCurrentPosAndCheck(
+          base::as_writable_bytes(base::make_span(&entries, 1)))) {
     LOG(WARNING) << "Corrupted app install log.";
     return;
   }
@@ -73,7 +73,7 @@ AppInstallEventLog::AppInstallEventLog(const base::FilePath& file_name)
   }
 }
 
-AppInstallEventLog::~AppInstallEventLog() {}
+AppInstallEventLog::~AppInstallEventLog() = default;
 
 void AppInstallEventLog::Add(const std::string& package,
                              const em::AppInstallReportLogEvent& event) {
@@ -83,9 +83,8 @@ void AppInstallEventLog::Add(const std::string& package,
   }
 
   auto& log = logs_[package];
-  if (log == nullptr) {
-    log.reset(new SingleAppInstallEventLog(package));
-  }
+  if (!log)
+    log = std::make_unique<SingleAppInstallEventLog>(package);
   total_size_ -= log->size();
   log->Add(event);
   total_size_ += log->size();
@@ -105,16 +104,15 @@ void AppInstallEventLog::Store() {
     return;
   }
 
-  if (file.WriteAtCurrentPos(reinterpret_cast<const char*>(&kLogFileVersion),
-                             sizeof(kLogFileVersion)) !=
-      sizeof(kLogFileVersion)) {
+  if (!file.WriteAtCurrentPosAndCheck(
+          base::as_bytes(base::make_span(&kLogFileVersion, 1)))) {
     LOG(WARNING) << "Unable to store app install log.";
     return;
   }
 
   ssize_t entries = logs_.size();
-  if (file.WriteAtCurrentPos(reinterpret_cast<const char*>(&entries),
-                             sizeof(entries)) != sizeof(entries)) {
+  if (!file.WriteAtCurrentPosAndCheck(
+          base::as_bytes(base::make_span(&entries, 1)))) {
     LOG(WARNING) << "Unable to store app install log.";
     return;
   }

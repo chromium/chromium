@@ -12,7 +12,9 @@
 #include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/values.h"
-#include "google_apis/gaia/oauth2_token_service.h"
+#include "google_apis/gaia/core_account_id.h"
+#include "google_apis/gaia/google_service_auth_error.h"
+#include "google_apis/gaia/oauth2_access_token_manager.h"
 
 namespace invalidation {
 
@@ -64,7 +66,7 @@ class IdentityProvider {
   virtual ~IdentityProvider();
 
   // Gets the active account's account ID.
-  virtual std::string GetActiveAccountId() = 0;
+  virtual CoreAccountId GetActiveAccountId() = 0;
 
   // Returns true iff (1) there is an active account and (2) that account has
   // a refresh token.
@@ -75,16 +77,17 @@ class IdentityProvider {
   // or error. To cancel the request, destroy the returned TokenFetcher.
   virtual std::unique_ptr<ActiveAccountAccessTokenFetcher> FetchAccessToken(
       const std::string& oauth_consumer_name,
-      const OAuth2TokenService::ScopeSet& scopes,
+      const OAuth2AccessTokenManager::ScopeSet& scopes,
       ActiveAccountAccessTokenCallback callback) = 0;
 
   // Marks an OAuth2 |access_token| issued for the active account and |scopes|
   // as invalid.
-  virtual void InvalidateAccessToken(const OAuth2TokenService::ScopeSet& scopes,
-                                     const std::string& access_token) = 0;
+  virtual void InvalidateAccessToken(
+      const OAuth2AccessTokenManager::ScopeSet& scopes,
+      const std::string& access_token) = 0;
 
   // Set the account id that should be registered for invalidations.
-  virtual void SetActiveAccountId(const std::string& account_id) = 0;
+  virtual void SetActiveAccountId(const CoreAccountId& account_id) = 0;
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
@@ -97,11 +100,11 @@ class IdentityProvider {
 
   // Processes a refresh token update, firing the observer callback if
   // |account_id| is the active account.
-  void ProcessRefreshTokenUpdateForAccount(const std::string& account_id);
+  void ProcessRefreshTokenUpdateForAccount(const CoreAccountId& account_id);
 
   // Processes a refresh token removal, firing the observer callback if
   // |account_id| is the active account.
-  void ProcessRefreshTokenRemovalForAccount(const std::string& account_id);
+  void ProcessRefreshTokenRemovalForAccount(const CoreAccountId& account_id);
 
   // Fires an OnActiveAccountLogin notification.
   void FireOnActiveAccountLogin();

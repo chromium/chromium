@@ -23,8 +23,8 @@
 #include "ios/chrome/browser/sessions/ios_chrome_session_tab_helper.h"
 #include "ios/chrome/browser/ui/omnibox/web_omnibox_edit_controller.h"
 #include "ios/public/provider/chrome/browser/chrome_browser_provider.h"
-#import "ios/web/public/navigation_manager.h"
-#import "ios/web/public/web_state/web_state.h"
+#import "ios/web/public/navigation/navigation_manager.h"
+#import "ios/web/public/web_state.h"
 #include "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -68,33 +68,6 @@ bool ChromeOmniboxClientIOS::IsLoading() const {
 }
 
 bool ChromeOmniboxClientIOS::IsPasteAndGoEnabled() const {
-  return false;
-}
-
-bool ChromeOmniboxClientIOS::IsInstantNTP() const {
-  // This is currently only called by the OmniboxEditModel to determine if the
-  // Google landing page is showing.
-  // TODO(lliabraa): This should also check the user's default search engine
-  // because if they're not using Google the Google landing page is not shown
-  // (crbug/315563).
-  GURL currentURL = controller_->GetWebState()->GetVisibleURL();
-  return currentURL == kChromeUINewTabURL;
-}
-
-bool ChromeOmniboxClientIOS::IsSearchResultsPage() const {
-  ios::ChromeBrowserState* browser_state =
-      ios::ChromeBrowserState::FromBrowserState(
-          controller_->GetWebState()->GetBrowserState());
-  return ios::TemplateURLServiceFactory::GetForBrowserState(browser_state)
-      ->IsSearchResultsPageFromDefaultSearchProvider(GetURL());
-}
-
-bool ChromeOmniboxClientIOS::IsNewTabPage(const GURL& url) const {
-  return url.spec() == kChromeUINewTabURL;
-}
-
-bool ChromeOmniboxClientIOS::IsHomePage(const GURL& url) const {
-  // iOS does not have a notion of home page.
   return false;
 }
 

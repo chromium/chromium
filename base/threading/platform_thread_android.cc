@@ -12,11 +12,11 @@
 #include <unistd.h>
 
 #include "base/android/jni_android.h"
+#include "base/base_jni_headers/ThreadUtils_jni.h"
 #include "base/lazy_instance.h"
 #include "base/logging.h"
 #include "base/threading/platform_thread_internal_posix.h"
 #include "base/threading/thread_id_name_manager.h"
-#include "jni/ThreadUtils_jni.h"
 
 namespace base {
 

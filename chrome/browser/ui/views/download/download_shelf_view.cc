@@ -61,11 +61,10 @@ int CenterPosition(int size, int target_size) {
 }  // namespace
 
 DownloadShelfView::DownloadShelfView(Browser* browser, BrowserView* parent)
-    : browser_(browser),
+    : AnimationDelegateViews(this),
+      browser_(browser),
       new_item_animation_(this),
       shelf_animation_(this),
-      show_all_view_(nullptr),
-      close_button_(views::CreateVectorImageButton(this)),
       parent_(parent),
       mouse_watcher_(
           std::make_unique<views::MouseWatcherViewHost>(this, gfx::Insets()),
@@ -74,32 +73,37 @@ DownloadShelfView::DownloadShelfView(Browser* browser, BrowserView* parent)
   // cases, like when installing a theme. See DownloadShelf::AddDownload().
   SetVisible(false);
 
-  show_all_view_ = views::MdTextButton::Create(
+  auto show_all_view = views::MdTextButton::Create(
       this, l10n_util::GetStringUTF16(IDS_SHOW_ALL_DOWNLOADS));
-  AddChildView(show_all_view_);
+  show_all_view_ = AddChildView(std::move(show_all_view));
 
-  close_button_->SetAccessibleName(
-      l10n_util::GetStringUTF16(IDS_ACCNAME_CLOSE));
-  AddChildView(close_button_);
+  auto close_button = views::CreateVectorImageButton(this);
+  close_button->SetAccessibleName(l10n_util::GetStringUTF16(IDS_ACCNAME_CLOSE));
+  close_button->SetFocusForPlatform();
+  close_button_ = AddChildView(std::move(close_button));
 
-  accessible_alert_ = new views::View();
-  AddChildView(accessible_alert_);
+  accessible_alert_ = AddChildView(std::make_unique<views::View>());
 
   if (gfx::Animation::ShouldRenderRichAnimation()) {
-    new_item_animation_.SetSlideDuration(kNewItemAnimationDurationMs);
-    shelf_animation_.SetSlideDuration(kShelfAnimationDurationMs);
+    new_item_animation_.SetSlideDuration(
+        base::TimeDelta::FromMilliseconds(800));
+    shelf_animation_.SetSlideDuration(base::TimeDelta::FromMilliseconds(120));
   } else {
-    new_item_animation_.SetSlideDuration(0);
-    shelf_animation_.SetSlideDuration(0);
+    new_item_animation_.SetSlideDuration(base::TimeDelta());
+    shelf_animation_.SetSlideDuration(base::TimeDelta());
   }
 
   GetViewAccessibility().OverrideName(
       l10n_util::GetStringUTF16(IDS_ACCNAME_DOWNLOADS_BAR));
   GetViewAccessibility().OverrideRole(ax::mojom::Role::kGroup);
 
-  mouse_watcher_.set_notify_on_exit_time(
-      base::TimeDelta::FromMilliseconds(kNotifyOnExitTimeMS));
-  set_id(VIEW_ID_DOWNLOAD_SHELF);
+  // Delay 5 seconds if the mouse leaves the shelf by way of entering another
+  // window. This is much larger than the normal delay as opening a download is
+  // most likely going to trigger a new window to appear over the button. Delay
+  // a long time so that the user has a chance to quickly close the other app
+  // and return to chrome with the download shelf still open.
+  mouse_watcher_.set_notify_on_exit_time(base::TimeDelta::FromSeconds(5));
+  SetID(VIEW_ID_DOWNLOAD_SHELF);
   parent->AddChildView(this);
 }
 
@@ -123,7 +127,7 @@ void DownloadShelfView::AddDownloadView(DownloadItemView* view) {
 
   new_item_animation_.Reset();
   new_item_animation_.Show();
-  if (was_empty && !shelf_animation_.is_animating() && visible()) {
+  if (was_empty && !shelf_animation_.is_animating() && GetVisible()) {
     // Force a re-layout of the parent to adjust height of shelf properly.
     parent_->ToolbarSizeChanged(shelf_animation_.IsShowing());
   }
@@ -346,7 +350,7 @@ void DownloadShelfView::ButtonPressed(
 }
 
 bool DownloadShelfView::IsShowing() const {
-  return visible() && shelf_animation_.IsShowing();
+  return GetVisible() && shelf_animation_.IsShowing();
 }
 
 bool DownloadShelfView::IsClosing() const {

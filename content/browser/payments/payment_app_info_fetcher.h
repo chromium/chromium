@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/memory/weak_ptr.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/stored_payment_app.h"
@@ -32,7 +33,7 @@ class PaymentAppInfoFetcher {
   using PaymentAppInfoFetchCallback =
       base::OnceCallback<void(std::unique_ptr<PaymentAppInfo> app_info)>;
 
-  // Only accessed on the IO thread.
+  // Only accessed on the service worker core thread.
   static void Start(
       const GURL& context_url,
       scoped_refptr<ServiceWorkerContextWrapper> service_worker_context,
@@ -82,6 +83,7 @@ class PaymentAppInfoFetcher {
     std::unique_ptr<WebContentsHelper> web_contents_helper_;
     std::unique_ptr<PaymentAppInfo> fetched_payment_app_info_;
     PaymentAppInfoFetchCallback callback_;
+    base::WeakPtrFactory<SelfDeleteFetcher> weak_ptr_factory_{this};
 
     DISALLOW_COPY_AND_ASSIGN(SelfDeleteFetcher);
   };

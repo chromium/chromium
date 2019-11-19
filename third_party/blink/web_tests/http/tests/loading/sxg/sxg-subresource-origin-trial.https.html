@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<head>
+<title>Signed Exchange subresource Origin Trial</title>
+<!-- Generate token with the command:
+generate_token.py https://127.0.0.1:8443 SignedExchangeSubresourcePrefetch --expire-timestamp=2000000000
+-->
+<meta http-equiv="origin-trial" content="AkPuNZ6wN6pkhO5BsawPJCR9+8TDqRn4NUKsrhif+5Hs6l3dbRCdhhBpImxV13ZM8luH7wYH+rC9LYwD9xIQOAwAAABqeyJvcmlnaW4iOiAiaHR0cHM6Ly8xMjcuMC4wLjE6ODQ0MyIsICJmZWF0dXJlIjogIlNpZ25lZEV4Y2hhbmdlU3VicmVzb3VyY2VQcmVmZXRjaCIsICJleHBpcnkiOiAyMDAwMDAwMDAwfQ==">
+<script src="./resources/sxg-util.js"></script>
+</head>
+<body>
+<script>
+const kSignedExchangeSubresourcePrefetch = 2953; // see web_feature.mojom
+if (window.testRunner) {
+  testRunner.dumpAsText();
+  testRunner.waitUntilDone();
+}
+(async function() {
+  await waitUntilDidFinishLoadForFrame;
+  const sxg_path = "https://127.0.0.1:8443/loading/sxg/resources/sxg-subresource-origin-trial-page.php";
+  new PerformanceObserver((list) => {
+    for (let e of list.getEntries()) {
+      if (e.name.endsWith('sxg-subresource-script.sxg')) {
+        if (internals.isUseCounted(document,
+                                   kSignedExchangeSubresourcePrefetch)) {
+          location.href = sxg_path;
+        }
+      }
+    }
+  }).observe({ entryTypes: ['resource'] });
+  const link = document.createElement('link');
+  link.rel = 'prefetch';
+  link.href = sxg_path;
+  document.body.appendChild(link);
+})();
+// cache-control: public, max-age=600
+</script>
+</body>

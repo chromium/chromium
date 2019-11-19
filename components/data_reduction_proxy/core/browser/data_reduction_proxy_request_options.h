@@ -32,7 +32,6 @@ extern const char kSecureSessionHeaderOption[];
 extern const char kBuildNumberHeaderOption[];
 extern const char kPatchNumberHeaderOption[];
 extern const char kClientHeaderOption[];
-extern const char kExperimentsOption[];
 
 #if defined(OS_ANDROID)
 extern const char kAndroidWebViewProtocolVersion[];
@@ -64,11 +63,14 @@ class DataReductionProxyRequestOptions {
   // main frame requests.
   void AddRequestHeader(net::HttpRequestHeaders* request_headers,
                         base::Optional<uint64_t> page_id);
+  static void AddRequestHeader(net::HttpRequestHeaders* request_headers,
+                               base::Optional<uint64_t> page_id,
+                               const std::string& session_header_value);
 
   // Adds |page_id| to the 'Chrome-Proxy' header, merging with existing value if
   // it exists.
-  void AddPageIDRequestHeader(net::HttpRequestHeaders* request_headers,
-                              uint64_t page_id) const;
+  static void AddPageIDRequestHeader(net::HttpRequestHeaders* request_headers,
+                                     uint64_t page_id);
 
   // Stores the supplied key and sets up credentials suitable for authenticating
   // with the data reduction proxy.
@@ -76,8 +78,8 @@ class DataReductionProxyRequestOptions {
   // have a default key defined, this function will be called some time after
   // this class has been constructed. Android WebView is a platform that does
   // this. The caller needs to make sure |this| pointer is valid when
-  // SetKeyOnIO is called.
-  void SetKeyOnIO(const std::string& key);
+  // SetKey is called.
+  void SetKeyForTesting(const std::string& key);
 
   // Sets the credentials for sending to the Data Reduction Proxy.
   void SetSecureSession(const std::string& secure_session);
@@ -126,13 +128,6 @@ class DataReductionProxyRequestOptions {
   // session info. crbug.com/709624
   void ResetPageId();
 
-  // Updates the value of the experiments to be run and regenerate the header if
-  // necessary.
-  void UpdateExperiments();
-
-  // Adds the server-side experiment from the field trial.
-  void AddServerExperimentFromFieldTrial();
-
   // Generates and updates the session ID and credentials.
   void UpdateCredentials();
 
@@ -147,11 +142,11 @@ class DataReductionProxyRequestOptions {
   std::string key_;
 
   // Name of the client and version of the data reduction proxy protocol to use.
-  std::string client_;
+  const std::string client_;
   std::string secure_session_;
   std::string build_;
   std::string patch_;
-  std::vector<std::string> experiments_;
+  const std::string server_experiments_;
 
   // Must outlive |this|.
   DataReductionProxyConfig* data_reduction_proxy_config_;

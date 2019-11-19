@@ -4,19 +4,24 @@
 
 #include "chrome/browser/ui/webui/log_web_ui_url.h"
 
+#include "chrome/common/webui_url_constants.h"
 #include "extensions/buildflags/buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
 TEST(LogWebUIUrlTest, ValidUrls) {
   // Typical WebUI page.
-  EXPECT_TRUE(webui::LogWebUIUrl(GURL("chrome://downloads")));
+  EXPECT_TRUE(webui::LogWebUIUrl(GURL(chrome::kChromeUIDownloadsURL)));
 
   // WebUI page with a subpage.
-  EXPECT_TRUE(webui::LogWebUIUrl(GURL("chrome://settings/clearBrowserData")));
+  GURL::Replacements replace_clear_data_path;
+  replace_clear_data_path.SetPathStr(chrome::kClearBrowserDataSubPage);
+  EXPECT_TRUE(
+      webui::LogWebUIUrl(GURL(chrome::kChromeUISettingsURL)
+                             .ReplaceComponents(replace_clear_data_path)));
 
   // Developer tools scheme.
-  EXPECT_TRUE(webui::LogWebUIUrl(GURL("chrome-devtools://devtools")));
+  EXPECT_TRUE(webui::LogWebUIUrl(GURL("devtools://devtools")));
 }
 
 TEST(LogWebUIUrlTest, InvalidUrls) {

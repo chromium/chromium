@@ -39,13 +39,9 @@
 namespace blink {
 class Database;
 
-class InspectorDatabaseResource
-    : public GarbageCollectedFinalized<InspectorDatabaseResource> {
+class InspectorDatabaseResource final
+    : public GarbageCollected<InspectorDatabaseResource> {
  public:
-  static InspectorDatabaseResource* Create(Database*,
-                                           const String& domain,
-                                           const String& name,
-                                           const String& version);
   InspectorDatabaseResource(Database*,
                             const String& domain,
                             const String& name,

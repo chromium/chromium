@@ -7,12 +7,17 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_value.h"
+#include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
 
 class CORE_EXPORT CSSInvalidVariableValue : public CSSValue {
  public:
   static CSSInvalidVariableValue* Create();
+
+  // Only construct through MakeGarbageCollected for the initial value. Use
+  // Create() to get the pooled value.
+  CSSInvalidVariableValue() : CSSValue(kInvalidVariableValueClass) {}
 
   String CustomCSSText() const;
 
@@ -24,11 +29,14 @@ class CORE_EXPORT CSSInvalidVariableValue : public CSSValue {
 
  private:
   friend class CSSValuePool;
-
-  CSSInvalidVariableValue() : CSSValue(kInvalidVariableValueClass) {}
 };
 
-DEFINE_CSS_VALUE_TYPE_CASTS(CSSInvalidVariableValue, IsInvalidVariableValue());
+template <>
+struct DowncastTraits<CSSInvalidVariableValue> {
+  static bool AllowFrom(const CSSValue& value) {
+    return value.IsInvalidVariableValue();
+  }
+};
 
 }  // namespace blink
 

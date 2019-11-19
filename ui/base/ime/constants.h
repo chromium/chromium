@@ -5,7 +5,8 @@
 #ifndef UI_BASE_IME_CONSTANTS_H_
 #define UI_BASE_IME_CONSTANTS_H_
 
-#include "ui/base/ime/ui_base_ime_export.h"
+#include "base/component_export.h"
+#include "stddef.h"
 
 namespace ui {
 
@@ -14,7 +15,13 @@ namespace ui {
 // This is used where the key event is simulated by the virtual keyboard
 // (e.g. IME extension API) as well as the input field implementation (e.g.
 // Textfield).
-UI_BASE_IME_EXPORT extern const char kPropertyFromVK[];
+COMPONENT_EXPORT(UI_BASE_IME) extern const char kPropertyFromVK[];
+
+// kPropertyFromVKIsMirroringIndex is an index into kPropertyFromVK
+// and is used when the key event occurs when mirroring is detected.
+COMPONENT_EXPORT(UI_BASE_IME)
+extern const size_t kPropertyFromVKIsMirroringIndex;
+COMPONENT_EXPORT(UI_BASE_IME) extern const size_t kPropertyFromVKSize;
 
 }  // namespace ui
 

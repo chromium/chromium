@@ -3,10 +3,15 @@
 # found in the LICENSE file.
 
 import os
+import posixpath
 import re
 
 from collections import defaultdict
 
+
+def uniform_path_format(native_path):
+  """Alters the path if needed to be separated by forward slashes."""
+  return posixpath.normpath(native_path.replace(os.sep, posixpath.sep))
 
 def parse(filename):
   """Searches the file for lines that start with `# TEAM:` or `# COMPONENT:`.
@@ -39,22 +44,20 @@ def parse(filename):
   return result
 
 
-def aggregate_components_from_owners(all_owners_data, root,
-                                     include_subdirs=False):
+def aggregate_components_from_owners(all_owners_data, root):
   """Converts the team/component/os tags parsed from OWNERS into mappings.
 
   Args:
     all_owners_data (dict): A mapping from relative path to a dir to a dict
         mapping the tag names to their values. See docstring for scrape_owners.
     root (str): the path to the src directory.
-    include_subdirs (bool): Deprecated, whether to generate the additional
-        dir-to-team mapping. This mapping is being replaced by the result of
-        scrape_owners below.
 
   Returns:
-    A tuple (data, warnings, errors, stats) where data is a dict of the form
+    A tuple (data, warnings, stats) where data is a dict of the form
       {'component-to-team': {'Component1': 'team1@chr...', ...},
+       'teams-per-component': {'Component1': ['team1@chr...', 'team2@chr...]},
        'dir-to-component': {'/path/to/1': 'Component1', ...}}
+       'dir-to-team': {'/path/to/1': 'team1@', ...}}
       , warnings is a list of strings, stats is a dict of form
       {'OWNERS-count': total number of OWNERS files,
        'OWNERS-with-component-only-count': number of OWNERS have # COMPONENT,
@@ -73,17 +76,16 @@ def aggregate_components_from_owners(all_owners_data, root,
   num_with_component_by_depth = defaultdict(int)
   num_with_team_component_by_depth = defaultdict(int)
   warnings = []
-  component_to_team = defaultdict(set)
+  teams_per_component = defaultdict(set)
+  topmost_team = {}
   dir_to_component = {}
   dir_missing_info_by_depth = defaultdict(list)
-  # TODO(sergiyb): Remove this mapping. Please do not use it as it is going to
-  # be removed in the future. See http://crbug.com/702202.
   dir_to_team = {}
   for rel_dirname, owners_data in all_owners_data.iteritems():
-    # We apply relpath to remove any possible `.` and `..` chunks and make
-    # counting separators work correctly as a means of obtaining the file_depth.
-    rel_path = os.path.relpath(rel_dirname, root)
-    file_depth = 0 if rel_path == '.' else rel_path.count(os.path.sep) + 1
+    # Normalize this relative path to posix-style to make counting separators
+    # work correctly as a means of obtaining the file_depth.
+    rel_path = uniform_path_format(os.path.relpath(rel_dirname, root))
+    file_depth = 0 if rel_path == '.' else rel_path.count(posixpath.sep) + 1
     num_total += 1
     num_total_by_depth[file_depth] += 1
     component = owners_data.get('component')
@@ -91,6 +93,8 @@ def aggregate_components_from_owners(all_owners_data, root,
     os_tag = owners_data.get('os')
     if os_tag and component:
       component = '%s(%s)' % (component, os_tag)
+    if team:
+      dir_to_team[rel_dirname] = team
     if component:
       num_with_component += 1
       num_with_component_by_depth[file_depth] += 1
@@ -98,32 +102,27 @@ def aggregate_components_from_owners(all_owners_data, root,
       if team:
         num_with_team_component += 1
         num_with_team_component_by_depth[file_depth] += 1
-        component_to_team[component].add(team)
+        teams_per_component[component].add(team)
+        if component not in topmost_team or file_depth < topmost_team[
+            component]['depth']:
+          topmost_team[component] = {'depth': file_depth, 'team': team}
     else:
-      rel_owners_path = os.path.join(rel_dirname, 'OWNERS')
+      rel_owners_path = uniform_path_format(os.path.join(rel_dirname, 'OWNERS'))
       warnings.append('%s has no COMPONENT tag' % rel_owners_path)
       if not team and not os_tag:
         dir_missing_info_by_depth[file_depth].append(rel_owners_path)
 
-    # TODO(robertocn): Remove the dir-to-team mapping once the raw owners data
-    # is being exported in its own file and being used by sergiyb's scripts.
-    # Add dir-to-team mapping unless there is also dir-to-component mapping.
-    if (include_subdirs and team and not component and
-        rel_dirname.startswith('third_party/blink/web_tests')):
-      dir_to_team[rel_dirname] = team
-
-    if include_subdirs and rel_dirname not in dir_to_component:
-      rel_parent_dirname = os.path.relpath(rel_dirname, root)
-      if rel_parent_dirname in dir_to_component:
-        dir_to_component[rel_dirname] = dir_to_component[rel_parent_dirname]
-      if rel_parent_dirname in dir_to_team:
-        dir_to_team[rel_dirname] = dir_to_team[rel_parent_dirname]
-
-  mappings = {'component-to-team': component_to_team,
-              'dir-to-component': dir_to_component}
-  if include_subdirs:
-    mappings['dir-to-team'] = dir_to_team
-  errors = validate_one_team_per_component(mappings)
+  mappings = {
+      'component-to-team': {
+          k: v['team'] for k, v in topmost_team.iteritems()
+      },
+      'teams-per-component': {
+          k: sorted(list(v)) for k, v in teams_per_component.iteritems()
+      },
+      'dir-to-component': dir_to_component,
+      'dir-to-team': dir_to_team,
+  }
+  warnings += validate_one_team_per_component(mappings)
   stats = {'OWNERS-count': num_total,
            'OWNERS-with-component-only-count': num_with_component,
            'OWNERS-with-team-and-component-count': num_with_team_component,
@@ -134,26 +133,26 @@ def aggregate_components_from_owners(all_owners_data, root,
            num_with_team_component_by_depth,
            'OWNERS-missing-info-by-depth':
            dir_missing_info_by_depth}
-  return unwrap(mappings), warnings, errors, stats
+  return mappings, warnings, stats
 
 
 def validate_one_team_per_component(m):
   """Validates that each component is associated with at most 1 team."""
-  errors = []
+  warnings = []
   # TODO(robertocn): Validate the component names: crbug.com/679540
-  component_to_team = m['component-to-team']
-  for c in component_to_team:
-    if len(component_to_team[c]) > 1:
-      errors.append('Component %s has more than one team assigned to it: %s' % (
-          c, ', '.join(list(component_to_team[c]))))
-  return errors
+  teams_per_component = m['teams-per-component']
+  for c in teams_per_component:
+    if len(teams_per_component[c]) > 1:
+      warnings.append('Component %s has the following teams assigned: %s.\n'
+                      'Team %s is being used, as it is defined at the OWNERS '
+                      'file at the topmost dir'
+                      % (
+                          c,
+                          ', '.join(teams_per_component[c]),
+                          m['component-to-team'][c]
+                      ))
+  return warnings
 
-
-def unwrap(mappings):
-  """Remove the set() wrapper around values in component-to-team mapping."""
-  for c in mappings['component-to-team']:
-    mappings['component-to-team'][c] = mappings['component-to-team'][c].pop()
-  return mappings
 
 def scrape_owners(root, include_subdirs):
   """Recursively parse OWNERS files for tags.
@@ -176,19 +175,32 @@ def scrape_owners(root, include_subdirs):
   }
   """
   data = {}
+
+  def nearest_ancestor_tag(dirname, tag):
+    """ Find the value of tag in the nearest ancestor that defines it."""
+    ancestor = os.path.dirname(dirname)
+    while ancestor:
+      rel_ancestor = uniform_path_format(os.path.relpath(ancestor, root))
+      if rel_ancestor in data and data[rel_ancestor].get(tag):
+        return data[rel_ancestor][tag]
+      if rel_ancestor == '.':
+        break
+      ancestor = os.path.dirname(ancestor)
+    return
+
   for dirname, _, files in os.walk(root):
     # Proofing against windows casing oddities.
     owners_file_names = [f for f in files if f.upper() == 'OWNERS']
-    rel_dirname = os.path.relpath(dirname, root)
-    if owners_file_names:
-      owners_full_path = os.path.join(dirname, owners_file_names[0])
-      data[rel_dirname] = parse(owners_full_path)
-    if include_subdirs and not data.get(rel_dirname):
-      parent_dirname = os.path.dirname(dirname)
-      # In the case where the root doesn't have an OWNERS file, don't try to
-      # check its parent.
-      if parent_dirname:
-        rel_parent_dirname = os.path.relpath(parent_dirname , root)
-        if rel_parent_dirname in data:
-          data[rel_dirname] = data[rel_parent_dirname]
+    rel_dirname = uniform_path_format(os.path.relpath(dirname, root))
+    if owners_file_names or include_subdirs:
+      if owners_file_names:
+        owners_full_path = os.path.join(dirname, owners_file_names[0])
+        data[rel_dirname] = parse(owners_full_path)
+      else:
+        data[rel_dirname] = {}
+      for tag in ('component', 'os', 'team'):
+        if not tag in data[rel_dirname]:
+          ancestor_tag = nearest_ancestor_tag(dirname, tag)
+          if ancestor_tag:
+            data[rel_dirname][tag] = ancestor_tag
   return data

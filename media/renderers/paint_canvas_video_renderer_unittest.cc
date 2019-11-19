@@ -8,12 +8,18 @@
 #include "base/bind.h"
 #include "base/macros.h"
 #include "base/memory/aligned_memory.h"
-#include "base/message_loop/message_loop.h"
+#include "base/test/task_environment.h"
 #include "cc/paint/paint_flags.h"
 #include "cc/paint/skia_paint_canvas.h"
+#include "components/viz/common/gpu/context_provider.h"
+#include "components/viz/test/test_context_provider.h"
+#include "components/viz/test/test_gpu_service_holder.h"
+#include "components/viz/test/test_in_process_context_provider.h"
 #include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/client/gles2_interface_stub.h"
 #include "gpu/command_buffer/common/capabilities.h"
+#include "gpu/command_buffer/common/shared_image_usage.h"
+#include "gpu/config/gpu_feature_info.h"
 #include "media/base/timestamp_constants.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_util.h"
@@ -24,8 +30,9 @@
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "third_party/skia/include/gpu/GrContext.h"
-#include "third_party/skia/include/gpu/gl/GrGLInterface.h"
 #include "ui/gfx/geometry/rect_f.h"
+#include "ui/gl/gl_implementation.h"
+#include "ui/gl/test/gl_surface_test_support.h"
 
 using media::VideoFrame;
 
@@ -60,6 +67,274 @@ scoped_refptr<VideoFrame> CreateTestY16Frame(const gfx::Size& coded_size,
       static_cast<uint8_t*>(external_memory), byte_size, timestamp);
 }
 
+// Destroys a list of shared images after a sync token is passed. Also runs
+// |callback|.
+static void DestroySharedImages(
+    scoped_refptr<viz::ContextProvider> context_provider,
+    std::vector<gpu::Mailbox> mailboxes,
+    base::OnceClosure callback,
+    const gpu::SyncToken& sync_token) {
+  auto* sii = context_provider->SharedImageInterface();
+  for (const auto& mailbox : mailboxes)
+    sii->DestroySharedImage(sync_token, mailbox);
+  std::move(callback).Run();
+}
+
+// Creates a video frame from a set of shared images with a common texture
+// target and sync token.
+static scoped_refptr<VideoFrame> CreateSharedImageFrame(
+    scoped_refptr<viz::ContextProvider> context_provider,
+    VideoPixelFormat format,
+    std::vector<gpu::Mailbox> mailboxes,
+    const gpu::SyncToken& sync_token,
+    GLenum texture_target,
+    const gfx::Size& coded_size,
+    const gfx::Rect& visible_rect,
+    const gfx::Size& natural_size,
+    base::TimeDelta timestamp,
+    base::OnceClosure destroyed_callback) {
+  gpu::MailboxHolder mailboxes_for_frame[VideoFrame::kMaxPlanes] = {};
+  size_t i = 0;
+  for (const auto& mailbox : mailboxes) {
+    mailboxes_for_frame[i++] =
+        gpu::MailboxHolder(mailbox, sync_token, texture_target);
+  }
+  auto callback =
+      base::BindOnce(&DestroySharedImages, std::move(context_provider),
+                     std::move(mailboxes), std::move(destroyed_callback));
+  return VideoFrame::WrapNativeTextures(format, mailboxes_for_frame,
+                                        std::move(callback), coded_size,
+                                        visible_rect, natural_size, timestamp);
+}
+
+// Upload pixels to a shared image using GL.
+static void UploadPixels(gpu::gles2::GLES2Interface* gl,
+                         const gpu::Mailbox& mailbox,
+                         const gfx::Size& size,
+                         GLenum format,
+                         GLenum type,
+                         const uint8_t* data) {
+  GLuint texture = gl->CreateAndTexStorage2DSharedImageCHROMIUM(mailbox.name);
+  gl->BeginSharedImageAccessDirectCHROMIUM(
+      texture, GL_SHARED_IMAGE_ACCESS_MODE_READWRITE_CHROMIUM);
+  gl->BindTexture(GL_TEXTURE_2D, texture);
+  gl->TexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, size.width(), size.height(), format,
+                    type, data);
+  gl->EndSharedImageAccessDirectCHROMIUM(texture);
+  gl->DeleteTextures(1, &texture);
+}
+
+// Creates a shared image backed frame in RGBA format, with colors on the shared
+// image mapped as follow.
+// Bk | R | G | Y
+// ---+---+---+---
+// Bl | M | C | W
+static scoped_refptr<VideoFrame> CreateSharedImageRGBAFrame(
+    scoped_refptr<viz::ContextProvider> context_provider,
+    const gfx::Size& coded_size,
+    const gfx::Rect& visible_rect,
+    base::OnceClosure destroyed_callback) {
+  DCHECK_EQ(coded_size.width() % 4, 0);
+  DCHECK_EQ(coded_size.height() % 2, 0);
+  size_t pixels_size = coded_size.GetArea() * 4;
+  auto pixels = std::make_unique<uint8_t[]>(pixels_size);
+  size_t i = 0;
+  for (size_t block_y = 0; block_y < 2u; ++block_y) {
+    for (int y = 0; y < coded_size.height() / 2; ++y) {
+      for (size_t block_x = 0; block_x < 4u; ++block_x) {
+        for (int x = 0; x < coded_size.width() / 4; ++x) {
+          pixels[i++] = 0xffu * (block_x % 2);  // R
+          pixels[i++] = 0xffu * (block_x / 2);  // G
+          pixels[i++] = 0xffu * block_y;        // B
+          pixels[i++] = 0xffu;                  // A
+        }
+      }
+    }
+  }
+  DCHECK_EQ(i, pixels_size);
+
+  auto* sii = context_provider->SharedImageInterface();
+  gpu::Mailbox mailbox =
+      sii->CreateSharedImage(viz::ResourceFormat::RGBA_8888, coded_size,
+                             gfx::ColorSpace(), gpu::SHARED_IMAGE_USAGE_GLES2);
+  auto* gl = context_provider->ContextGL();
+  gl->WaitSyncTokenCHROMIUM(sii->GenUnverifiedSyncToken().GetConstData());
+  UploadPixels(gl, mailbox, coded_size, GL_RGBA, GL_UNSIGNED_BYTE,
+               pixels.get());
+  gpu::SyncToken sync_token;
+  gl->GenUnverifiedSyncTokenCHROMIUM(sync_token.GetData());
+
+  return CreateSharedImageFrame(
+      std::move(context_provider), VideoPixelFormat::PIXEL_FORMAT_ABGR,
+      {mailbox}, sync_token, GL_TEXTURE_2D, coded_size, visible_rect,
+      visible_rect.size(), base::TimeDelta::FromSeconds(1),
+      std::move(destroyed_callback));
+}
+
+static constexpr const uint8_t kYuvColors[8][3] = {
+    {0x00, 0x80, 0x80},  // Black
+    {0x4c, 0x54, 0xff},  // Red
+    {0x95, 0x2b, 0x15},  // Green
+    {0xe1, 0x00, 0x94},  // Yellow
+    {0x1d, 0xff, 0x6b},  // Blue
+    {0x69, 0xd3, 0xec},  // Magenta
+    {0xb3, 0xaa, 0x00},  // Cyan
+    {0xff, 0x80, 0x80},  // White
+};
+
+// Creates a shared image backed frame in I420 format, with colors mapped
+// exactly like CreateSharedImageRGBAFrame above, noting that subsamples may get
+// interpolated leading to inconsistent colors around the "seams".
+static scoped_refptr<VideoFrame> CreateSharedImageI420Frame(
+    scoped_refptr<viz::ContextProvider> context_provider,
+    const gfx::Size& coded_size,
+    const gfx::Rect& visible_rect,
+    base::OnceClosure destroyed_callback) {
+  DCHECK_EQ(coded_size.width() % 8, 0);
+  DCHECK_EQ(coded_size.height() % 4, 0);
+  gfx::Size uv_size(coded_size.width() / 2, coded_size.height() / 2);
+  size_t y_pixels_size = coded_size.GetArea();
+  size_t uv_pixels_size = uv_size.GetArea();
+  auto y_pixels = std::make_unique<uint8_t[]>(y_pixels_size);
+  auto u_pixels = std::make_unique<uint8_t[]>(uv_pixels_size);
+  auto v_pixels = std::make_unique<uint8_t[]>(uv_pixels_size);
+  size_t y_i = 0;
+  size_t uv_i = 0;
+  for (size_t block_y = 0; block_y < 2u; ++block_y) {
+    for (int y = 0; y < coded_size.height() / 2; ++y) {
+      for (size_t block_x = 0; block_x < 4u; ++block_x) {
+        size_t color_index = block_x + block_y * 4;
+        const uint8_t* yuv = kYuvColors[color_index];
+        for (int x = 0; x < coded_size.width() / 4; ++x) {
+          y_pixels[y_i++] = yuv[0];
+          if ((x % 2) && (y % 2)) {
+            u_pixels[uv_i] = yuv[1];
+            v_pixels[uv_i++] = yuv[2];
+          }
+        }
+      }
+    }
+  }
+  DCHECK_EQ(y_i, y_pixels_size);
+  DCHECK_EQ(uv_i, uv_pixels_size);
+
+  auto* sii = context_provider->SharedImageInterface();
+  gpu::Mailbox y_mailbox =
+      sii->CreateSharedImage(viz::ResourceFormat::LUMINANCE_8, coded_size,
+                             gfx::ColorSpace(), gpu::SHARED_IMAGE_USAGE_GLES2);
+  gpu::Mailbox u_mailbox =
+      sii->CreateSharedImage(viz::ResourceFormat::LUMINANCE_8, uv_size,
+                             gfx::ColorSpace(), gpu::SHARED_IMAGE_USAGE_GLES2);
+  gpu::Mailbox v_mailbox =
+      sii->CreateSharedImage(viz::ResourceFormat::LUMINANCE_8, uv_size,
+                             gfx::ColorSpace(), gpu::SHARED_IMAGE_USAGE_GLES2);
+  auto* gl = context_provider->ContextGL();
+  gl->WaitSyncTokenCHROMIUM(sii->GenUnverifiedSyncToken().GetConstData());
+  UploadPixels(gl, y_mailbox, coded_size, GL_LUMINANCE, GL_UNSIGNED_BYTE,
+               y_pixels.get());
+  UploadPixels(gl, u_mailbox, uv_size, GL_LUMINANCE, GL_UNSIGNED_BYTE,
+               u_pixels.get());
+  UploadPixels(gl, v_mailbox, uv_size, GL_LUMINANCE, GL_UNSIGNED_BYTE,
+               v_pixels.get());
+  gpu::SyncToken sync_token;
+  gl->GenUnverifiedSyncTokenCHROMIUM(sync_token.GetData());
+
+  return CreateSharedImageFrame(
+      std::move(context_provider), VideoPixelFormat::PIXEL_FORMAT_I420,
+      {y_mailbox, u_mailbox, v_mailbox}, sync_token, GL_TEXTURE_2D, coded_size,
+      visible_rect, visible_rect.size(), base::TimeDelta::FromSeconds(1),
+      std::move(destroyed_callback));
+}
+
+// Creates a shared image backed frame in NV12 format, with colors mapped
+// exactly like CreateSharedImageRGBAFrame above.
+// This will return nullptr if the necessary extension is not available for NV12
+// support.
+static scoped_refptr<VideoFrame> CreateSharedImageNV12Frame(
+    scoped_refptr<viz::ContextProvider> context_provider,
+    const gfx::Size& coded_size,
+    const gfx::Rect& visible_rect,
+    base::OnceClosure destroyed_callback) {
+  DCHECK_EQ(coded_size.width() % 8, 0);
+  DCHECK_EQ(coded_size.height() % 4, 0);
+  if (!context_provider->ContextCapabilities().texture_rg)
+    return {};
+  gfx::Size uv_size(coded_size.width() / 2, coded_size.height() / 2);
+  size_t y_pixels_size = coded_size.GetArea();
+  size_t uv_pixels_size = uv_size.GetArea() * 2;
+  auto y_pixels = std::make_unique<uint8_t[]>(y_pixels_size);
+  auto uv_pixels = std::make_unique<uint8_t[]>(uv_pixels_size);
+  size_t y_i = 0;
+  size_t uv_i = 0;
+  for (size_t block_y = 0; block_y < 2u; ++block_y) {
+    for (int y = 0; y < coded_size.height() / 2; ++y) {
+      for (size_t block_x = 0; block_x < 4u; ++block_x) {
+        size_t color_index = block_x + block_y * 4;
+        const uint8_t* yuv = kYuvColors[color_index];
+        for (int x = 0; x < coded_size.width() / 4; ++x) {
+          y_pixels[y_i++] = yuv[0];
+          if ((x % 2) && (y % 2)) {
+            uv_pixels[uv_i++] = yuv[1];
+            uv_pixels[uv_i++] = yuv[2];
+          }
+        }
+      }
+    }
+  }
+  DCHECK_EQ(y_i, y_pixels_size);
+  DCHECK_EQ(uv_i, uv_pixels_size);
+
+  auto* sii = context_provider->SharedImageInterface();
+  gpu::Mailbox y_mailbox =
+      sii->CreateSharedImage(viz::ResourceFormat::LUMINANCE_8, coded_size,
+                             gfx::ColorSpace(), gpu::SHARED_IMAGE_USAGE_GLES2);
+  gpu::Mailbox uv_mailbox =
+      sii->CreateSharedImage(viz::ResourceFormat::RG_88, uv_size,
+                             gfx::ColorSpace(), gpu::SHARED_IMAGE_USAGE_GLES2);
+  auto* gl = context_provider->ContextGL();
+  gl->WaitSyncTokenCHROMIUM(sii->GenUnverifiedSyncToken().GetConstData());
+  UploadPixels(gl, y_mailbox, coded_size, GL_LUMINANCE, GL_UNSIGNED_BYTE,
+               y_pixels.get());
+  UploadPixels(gl, uv_mailbox, uv_size, GL_RG, GL_UNSIGNED_BYTE,
+               uv_pixels.get());
+  gpu::SyncToken sync_token;
+  gl->GenUnverifiedSyncTokenCHROMIUM(sync_token.GetData());
+
+  return CreateSharedImageFrame(
+      std::move(context_provider), VideoPixelFormat::PIXEL_FORMAT_NV12,
+      {y_mailbox, uv_mailbox}, sync_token, GL_TEXTURE_2D, coded_size,
+      visible_rect, visible_rect.size(), base::TimeDelta::FromSeconds(1),
+      std::move(destroyed_callback));
+}
+
+// Readback the contents of a RGBA texture into an array of RGBA values.
+static std::unique_ptr<uint8_t[]> ReadbackTexture(
+    gpu::gles2::GLES2Interface* gl,
+    GLuint texture,
+    const gfx::Size& size) {
+  size_t pixel_count = size.width() * size.height();
+  GLuint fbo = 0;
+  gl->GenFramebuffers(1, &fbo);
+  gl->BindFramebuffer(GL_FRAMEBUFFER, fbo);
+  gl->FramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D,
+                           texture, 0);
+  auto pixels = std::make_unique<uint8_t[]>(pixel_count * 4);
+  uint8_t* raw_pixels = pixels.get();
+  gl->ReadPixels(0, 0, size.width(), size.height(), GL_RGBA, GL_UNSIGNED_BYTE,
+                 raw_pixels);
+  gl->DeleteFramebuffers(1, &fbo);
+  return pixels;
+}
+
+// Returns a functor that retrieves a SkColor for a given pixel, from raw RGBA
+// data.
+static auto ColorGetter(uint8_t* pixels, const gfx::Size& size) {
+  return [pixels, size](size_t x, size_t y) {
+    uint8_t* p = pixels + (size.width() * y + x) * 4;
+    return SkColorSetARGB(p[3], p[0], p[1], p[2]);
+  };
+}
+
 class PaintCanvasVideoRendererTest : public testing::Test {
  public:
   enum Color {
@@ -77,18 +352,17 @@ class PaintCanvasVideoRendererTest : public testing::Test {
 
   // Paints the |video_frame| to the |canvas| using |renderer_|, setting the
   // color of |video_frame| to |color| first.
-  void Paint(const scoped_refptr<VideoFrame>& video_frame,
+  void Paint(scoped_refptr<VideoFrame> video_frame,
              cc::PaintCanvas* canvas,
              Color color);
-  void PaintRotated(const scoped_refptr<VideoFrame>& video_frame,
+  void PaintRotated(scoped_refptr<VideoFrame> video_frame,
                     cc::PaintCanvas* canvas,
                     const gfx::RectF& dest_rect,
                     Color color,
                     SkBlendMode mode,
-                    VideoRotation video_rotation);
+                    VideoTransformation video_transformation);
 
-  void Copy(const scoped_refptr<VideoFrame>& video_frame,
-            cc::PaintCanvas* canvas);
+  void Copy(scoped_refptr<VideoFrame> video_frame, cc::PaintCanvas* canvas);
 
   // Getters for various frame sizes.
   scoped_refptr<VideoFrame> natural_frame() { return natural_frame_; }
@@ -110,7 +384,7 @@ class PaintCanvasVideoRendererTest : public testing::Test {
 
   SkBitmap bitmap_;
   cc::SkiaPaintCanvas target_canvas_;
-  base::MessageLoop message_loop_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
 
   DISALLOW_COPY_AND_ASSIGN(PaintCanvasVideoRendererTest);
 };
@@ -225,25 +499,24 @@ PaintCanvasVideoRendererTest::~PaintCanvasVideoRendererTest() = default;
 void PaintCanvasVideoRendererTest::PaintWithoutFrame(cc::PaintCanvas* canvas) {
   cc::PaintFlags flags;
   flags.setFilterQuality(kLow_SkFilterQuality);
-  renderer_.Paint(nullptr, canvas, kNaturalRect, flags, VIDEO_ROTATION_0,
-                  Context3D(), nullptr);
+  renderer_.Paint(nullptr, canvas, kNaturalRect, flags, kNoTransformation,
+                  nullptr);
 }
 
-void PaintCanvasVideoRendererTest::Paint(
-    const scoped_refptr<VideoFrame>& video_frame,
-    cc::PaintCanvas* canvas,
-    Color color) {
-  PaintRotated(video_frame, canvas, kNaturalRect, color, SkBlendMode::kSrcOver,
-               VIDEO_ROTATION_0);
+void PaintCanvasVideoRendererTest::Paint(scoped_refptr<VideoFrame> video_frame,
+                                         cc::PaintCanvas* canvas,
+                                         Color color) {
+  PaintRotated(std::move(video_frame), canvas, kNaturalRect, color,
+               SkBlendMode::kSrcOver, kNoTransformation);
 }
 
 void PaintCanvasVideoRendererTest::PaintRotated(
-    const scoped_refptr<VideoFrame>& video_frame,
+    scoped_refptr<VideoFrame> video_frame,
     cc::PaintCanvas* canvas,
     const gfx::RectF& dest_rect,
     Color color,
     SkBlendMode mode,
-    VideoRotation video_rotation) {
+    VideoTransformation video_transformation) {
   switch (color) {
     case kNone:
       break;
@@ -260,14 +533,13 @@ void PaintCanvasVideoRendererTest::PaintRotated(
   cc::PaintFlags flags;
   flags.setBlendMode(mode);
   flags.setFilterQuality(kLow_SkFilterQuality);
-  renderer_.Paint(video_frame, canvas, dest_rect, flags, video_rotation,
-                  Context3D(), nullptr);
+  renderer_.Paint(std::move(video_frame), canvas, dest_rect, flags,
+                  video_transformation, nullptr);
 }
 
-void PaintCanvasVideoRendererTest::Copy(
-    const scoped_refptr<VideoFrame>& video_frame,
-    cc::PaintCanvas* canvas) {
-  renderer_.Copy(video_frame, canvas, Context3D(), nullptr);
+void PaintCanvasVideoRendererTest::Copy(scoped_refptr<VideoFrame> video_frame,
+                                        cc::PaintCanvas* canvas) {
+  renderer_.Copy(std::move(video_frame), canvas, nullptr);
 }
 
 TEST_F(PaintCanvasVideoRendererTest, NoFrame) {
@@ -282,7 +554,7 @@ TEST_F(PaintCanvasVideoRendererTest, TransparentFrame) {
   PaintRotated(
       VideoFrame::CreateTransparentFrame(gfx::Size(kWidth, kHeight)).get(),
       target_canvas(), kNaturalRect, kNone, SkBlendMode::kSrcOver,
-      VIDEO_ROTATION_0);
+      kNoTransformation);
   EXPECT_EQ(static_cast<SkColor>(SK_ColorRED), bitmap()->getColor(0, 0));
 }
 
@@ -292,7 +564,7 @@ TEST_F(PaintCanvasVideoRendererTest, TransparentFrameSrcMode) {
   PaintRotated(
       VideoFrame::CreateTransparentFrame(gfx::Size(kWidth, kHeight)).get(),
       target_canvas(), kNaturalRect, kNone, SkBlendMode::kSrc,
-      VIDEO_ROTATION_0);
+      kNoTransformation);
   EXPECT_EQ(static_cast<SkColor>(SK_ColorTRANSPARENT),
             bitmap()->getColor(0, 0));
 }
@@ -384,7 +656,7 @@ TEST_F(PaintCanvasVideoRendererTest, Video_Rotation_90) {
   SkBitmap bitmap = AllocBitmap(kWidth, kHeight);
   cc::SkiaPaintCanvas canvas(bitmap);
   PaintRotated(cropped_frame(), &canvas, kNaturalRect, kNone,
-               SkBlendMode::kSrcOver, VIDEO_ROTATION_90);
+               SkBlendMode::kSrcOver, VideoTransformation(VIDEO_ROTATION_90));
   // Check the corners.
   EXPECT_EQ(SK_ColorGREEN, bitmap.getColor(0, 0));
   EXPECT_EQ(SK_ColorBLACK, bitmap.getColor(kWidth - 1, 0));
@@ -396,7 +668,7 @@ TEST_F(PaintCanvasVideoRendererTest, Video_Rotation_180) {
   SkBitmap bitmap = AllocBitmap(kWidth, kHeight);
   cc::SkiaPaintCanvas canvas(bitmap);
   PaintRotated(cropped_frame(), &canvas, kNaturalRect, kNone,
-               SkBlendMode::kSrcOver, VIDEO_ROTATION_180);
+               SkBlendMode::kSrcOver, VideoTransformation(VIDEO_ROTATION_180));
   // Check the corners.
   EXPECT_EQ(SK_ColorBLUE, bitmap.getColor(0, 0));
   EXPECT_EQ(SK_ColorGREEN, bitmap.getColor(kWidth - 1, 0));
@@ -408,7 +680,7 @@ TEST_F(PaintCanvasVideoRendererTest, Video_Rotation_270) {
   SkBitmap bitmap = AllocBitmap(kWidth, kHeight);
   cc::SkiaPaintCanvas canvas(bitmap);
   PaintRotated(cropped_frame(), &canvas, kNaturalRect, kNone,
-               SkBlendMode::kSrcOver, VIDEO_ROTATION_270);
+               SkBlendMode::kSrcOver, VideoTransformation(VIDEO_ROTATION_270));
   // Check the corners.
   EXPECT_EQ(SK_ColorRED, bitmap.getColor(0, 0));
   EXPECT_EQ(SK_ColorBLUE, bitmap.getColor(kWidth - 1, 0));
@@ -423,7 +695,7 @@ TEST_F(PaintCanvasVideoRendererTest, Video_Translate) {
 
   PaintRotated(cropped_frame(), &canvas,
                gfx::RectF(kWidth / 2, kHeight / 2, kWidth / 2, kHeight / 2),
-               kNone, SkBlendMode::kSrcOver, VIDEO_ROTATION_0);
+               kNone, SkBlendMode::kSrcOver, kNoTransformation);
   // Check the corners of quadrant 2 and 4.
   EXPECT_EQ(SK_ColorMAGENTA, bitmap.getColor(0, 0));
   EXPECT_EQ(SK_ColorMAGENTA, bitmap.getColor((kWidth / 2) - 1, 0));
@@ -443,7 +715,8 @@ TEST_F(PaintCanvasVideoRendererTest, Video_Translate_Rotation_90) {
 
   PaintRotated(cropped_frame(), &canvas,
                gfx::RectF(kWidth / 2, kHeight / 2, kWidth / 2, kHeight / 2),
-               kNone, SkBlendMode::kSrcOver, VIDEO_ROTATION_90);
+               kNone, SkBlendMode::kSrcOver,
+               VideoTransformation(VIDEO_ROTATION_90));
   // Check the corners of quadrant 2 and 4.
   EXPECT_EQ(SK_ColorMAGENTA, bitmap.getColor(0, 0));
   EXPECT_EQ(SK_ColorMAGENTA, bitmap.getColor((kWidth / 2) - 1, 0));
@@ -463,7 +736,8 @@ TEST_F(PaintCanvasVideoRendererTest, Video_Translate_Rotation_180) {
 
   PaintRotated(cropped_frame(), &canvas,
                gfx::RectF(kWidth / 2, kHeight / 2, kWidth / 2, kHeight / 2),
-               kNone, SkBlendMode::kSrcOver, VIDEO_ROTATION_180);
+               kNone, SkBlendMode::kSrcOver,
+               VideoTransformation(VIDEO_ROTATION_180));
   // Check the corners of quadrant 2 and 4.
   EXPECT_EQ(SK_ColorMAGENTA, bitmap.getColor(0, 0));
   EXPECT_EQ(SK_ColorMAGENTA, bitmap.getColor((kWidth / 2) - 1, 0));
@@ -483,7 +757,8 @@ TEST_F(PaintCanvasVideoRendererTest, Video_Translate_Rotation_270) {
 
   PaintRotated(cropped_frame(), &canvas,
                gfx::RectF(kWidth / 2, kHeight / 2, kWidth / 2, kHeight / 2),
-               kNone, SkBlendMode::kSrcOver, VIDEO_ROTATION_270);
+               kNone, SkBlendMode::kSrcOver,
+               VideoTransformation(VIDEO_ROTATION_270));
   // Check the corners of quadrant 2 and 4.
   EXPECT_EQ(SK_ColorMAGENTA, bitmap.getColor(0, 0));
   EXPECT_EQ(SK_ColorMAGENTA, bitmap.getColor((kWidth / 2) - 1, 0));
@@ -556,16 +831,16 @@ TEST_F(PaintCanvasVideoRendererTest, Y16) {
       static_cast<unsigned char*>(base::AlignedAlloc(
           byte_size, media::VideoFrame::kFrameAddressAlignment)));
   const gfx::Rect rect(offset_x, offset_y, bitmap.width(), bitmap.height());
-  scoped_refptr<media::VideoFrame> video_frame =
+  auto video_frame =
       CreateTestY16Frame(gfx::Size(stride, offset_y + bitmap.height()), rect,
                          memory.get(), cropped_frame()->timestamp());
 
   cc::SkiaPaintCanvas canvas(bitmap);
   cc::PaintFlags flags;
   flags.setFilterQuality(kNone_SkFilterQuality);
-  renderer_.Paint(video_frame, &canvas,
+  renderer_.Paint(std::move(video_frame), &canvas,
                   gfx::RectF(bitmap.width(), bitmap.height()), flags,
-                  VIDEO_ROTATION_0, Context3D(), nullptr);
+                  kNoTransformation, nullptr);
   for (int j = 0; j < bitmap.height(); j++) {
     for (int i = 0; i < bitmap.width(); i++) {
       const int value = i + j * bitmap.width();
@@ -634,31 +909,30 @@ class TestGLES2Interface : public gpu::gles2::GLES2InterfaceStub {
                       const void* pixels)>
       texsubimage2d_callback_;
 };
+
 void MailboxHoldersReleased(const gpu::SyncToken& sync_token) {}
 }  // namespace
 
-// Test that PaintCanvasVideoRendererTest::Paint doesn't crash when GrContext is
-// abandoned.
+// Test that PaintCanvasVideoRenderer::Paint doesn't crash when GrContext is
+// unable to wrap a video frame texture (eg due to being abandoned).
 TEST_F(PaintCanvasVideoRendererTest, ContextLost) {
-  sk_sp<const GrGLInterface> null_interface(GrGLCreateNullInterface());
-  sk_sp<GrContext> gr_context = GrContext::MakeGL(std::move(null_interface));
-  gr_context->abandonContext();
+  auto context_provider = viz::TestContextProvider::Create();
+  context_provider->BindToCurrentThread();
+  context_provider->GrContext()->abandonContext();
 
   cc::SkiaPaintCanvas canvas(AllocBitmap(kWidth, kHeight));
 
-  TestGLES2Interface gles2;
-  Context3D context_3d(&gles2, gr_context.get());
   gfx::Size size(kWidth, kHeight);
   gpu::MailboxHolder holders[VideoFrame::kMaxPlanes] = {gpu::MailboxHolder(
       gpu::Mailbox::Generate(), gpu::SyncToken(), GL_TEXTURE_RECTANGLE_ARB)};
   auto video_frame = VideoFrame::WrapNativeTextures(
-      PIXEL_FORMAT_UYVY, holders, base::Bind(MailboxHoldersReleased), size,
+      PIXEL_FORMAT_NV12, holders, base::BindOnce(MailboxHoldersReleased), size,
       gfx::Rect(size), size, kNoTimestamp);
 
   cc::PaintFlags flags;
   flags.setFilterQuality(kLow_SkFilterQuality);
-  renderer_.Paint(video_frame, &canvas, kNaturalRect, flags, VIDEO_ROTATION_90,
-                  context_3d, nullptr);
+  renderer_.Paint(std::move(video_frame), &canvas, kNaturalRect, flags,
+                  kNoTransformation, context_provider.get());
 }
 
 void EmptyCallback(const gpu::SyncToken& sync_token) {}
@@ -682,8 +956,8 @@ TEST_F(PaintCanvasVideoRendererTest, CorrectFrameSizeToVisibleRect) {
 
   gfx::RectF visible_rect(visible_size.width(), visible_size.height());
   cc::PaintFlags flags;
-  renderer_.Paint(video_frame, &canvas, visible_rect, flags, VIDEO_ROTATION_0,
-                  Context3D(), nullptr);
+  renderer_.Paint(std::move(video_frame), &canvas, visible_rect, flags,
+                  kNoTransformation, nullptr);
 
   EXPECT_EQ(fWidth / 2, renderer_.LastImageDimensionsForTesting().width());
   EXPECT_EQ(fWidth / 2, renderer_.LastImageDimensionsForTesting().height());
@@ -702,16 +976,16 @@ TEST_F(PaintCanvasVideoRendererTest, TexImage2D_Y16_RGBA32F) {
       static_cast<unsigned char*>(base::AlignedAlloc(
           byte_size, media::VideoFrame::kFrameAddressAlignment)));
   const gfx::Rect rect(offset_x, offset_y, width, height);
-  scoped_refptr<media::VideoFrame> video_frame =
+  auto video_frame =
       CreateTestY16Frame(gfx::Size(stride, offset_y + height), rect,
                          memory.get(), cropped_frame()->timestamp());
 
   TestGLES2Interface gles2;
   // Bind the texImage2D callback to verify the uint16 to float32 conversion.
   gles2.teximage2d_callback_ =
-      base::Bind([](GLenum target, GLint level, GLint internalformat,
-                    GLsizei width, GLsizei height, GLint border, GLenum format,
-                    GLenum type, const void* pixels) {
+      base::BindRepeating([](GLenum target, GLint level, GLint internalformat,
+                             GLsizei width, GLsizei height, GLint border,
+                             GLenum format, GLenum type, const void* pixels) {
         EXPECT_EQ(static_cast<unsigned>(GL_FLOAT), type);
         EXPECT_EQ(static_cast<unsigned>(GL_RGBA), format);
         EXPECT_EQ(GL_RGBA, internalformat);
@@ -750,16 +1024,16 @@ TEST_F(PaintCanvasVideoRendererTest, TexSubImage2D_Y16_R32F) {
       static_cast<unsigned char*>(base::AlignedAlloc(
           byte_size, media::VideoFrame::kFrameAddressAlignment)));
   const gfx::Rect rect(offset_x, offset_y, width, height);
-  scoped_refptr<media::VideoFrame> video_frame =
+  auto video_frame =
       CreateTestY16Frame(gfx::Size(stride, offset_y + height), rect,
                          memory.get(), cropped_frame()->timestamp());
 
   TestGLES2Interface gles2;
   // Bind the texImage2D callback to verify the uint16 to float32 conversion.
   gles2.texsubimage2d_callback_ =
-      base::Bind([](GLenum target, GLint level, GLint xoffset, GLint yoffset,
-                    GLsizei width, GLsizei height, GLenum format, GLenum type,
-                    const void* pixels) {
+      base::BindRepeating([](GLenum target, GLint level, GLint xoffset,
+                             GLint yoffset, GLsizei width, GLsizei height,
+                             GLenum format, GLenum type, const void* pixels) {
         EXPECT_EQ(static_cast<unsigned>(GL_FLOAT), type);
         EXPECT_EQ(static_cast<unsigned>(GL_RED), format);
         EXPECT_EQ(2, xoffset);
@@ -780,6 +1054,365 @@ TEST_F(PaintCanvasVideoRendererTest, TexSubImage2D_Y16_R32F) {
   PaintCanvasVideoRenderer::TexSubImage2D(
       GL_TEXTURE_2D, &gles2, video_frame.get(), 0, GL_RED, GL_FLOAT,
       2 /*xoffset*/, 1 /*yoffset*/, false /*flip_y*/, true);
+}
+
+// Fixture for tests that require a GL context.
+class PaintCanvasVideoRendererWithGLTest : public PaintCanvasVideoRendererTest {
+ public:
+  using GetColorCallback = base::RepeatingCallback<SkColor(int, int)>;
+
+  void SetUp() override {
+    gl::GLSurfaceTestSupport::InitializeOneOff();
+    enable_pixels_.emplace();
+    media_context_ = base::MakeRefCounted<viz::TestInProcessContextProvider>(
+        false /* enable_oop_rasterization */, false /* support_locking */);
+    gpu::ContextResult result = media_context_->BindToCurrentThread();
+    ASSERT_EQ(result, gpu::ContextResult::kSuccess);
+
+    destination_context_ =
+        base::MakeRefCounted<viz::TestInProcessContextProvider>(
+            false /* enable_oop_rasterization */, false /* support_locking */);
+    result = destination_context_->BindToCurrentThread();
+    ASSERT_EQ(result, gpu::ContextResult::kSuccess);
+  }
+
+  void TearDown() override {
+    renderer_.ResetCache();
+    destination_context_.reset();
+    media_context_.reset();
+    enable_pixels_.reset();
+    viz::TestGpuServiceHolder::ResetInstance();
+    gl::GLSurfaceTestSupport::ShutdownGL();
+  }
+
+  // Uses CopyVideoFrameTexturesToGLTexture to copy |frame| into a GL texture,
+  // reads back its contents, and runs |check_pixels| to validate it.
+  template <class CheckPixels>
+  void CopyVideoFrameTexturesAndCheckPixels(scoped_refptr<VideoFrame> frame,
+                                            CheckPixels check_pixels) {
+    auto* destination_gl = destination_context_->ContextGL();
+    DCHECK(destination_gl);
+    GLenum target = GL_TEXTURE_2D;
+    GLuint texture = 0;
+    destination_gl->GenTextures(1, &texture);
+    destination_gl->BindTexture(target, texture);
+
+    renderer_.CopyVideoFrameTexturesToGLTexture(
+        media_context_.get(), destination_gl, frame, target, texture, GL_RGBA,
+        GL_RGBA, GL_UNSIGNED_BYTE, 0, false /* premultiply_alpha */,
+        false /* flip_y */);
+
+    gfx::Size expected_size = frame->visible_rect().size();
+
+    std::unique_ptr<uint8_t[]> pixels =
+        ReadbackTexture(destination_gl, texture, expected_size);
+    destination_gl->DeleteTextures(1, &texture);
+
+    auto get_color = base::BindRepeating(
+        [](uint8_t* pixels, const gfx::Size& size, int x, int y) {
+          uint8_t* p = pixels + (size.width() * y + x) * 4;
+          return SkColorSetARGB(p[3], p[0], p[1], p[2]);
+        },
+        pixels.get(), expected_size);
+    check_pixels(get_color);
+  }
+
+  // Uses Copy to paint |frame| into a bitmap-backed canvas, then
+  // runs |check_pixels| to validate the contents of the canvas.
+  template <class CheckPixels>
+  void PaintVideoFrameAndCheckPixels(scoped_refptr<VideoFrame> frame,
+                                     CheckPixels check_pixels) {
+    gfx::Size expected_size = frame->visible_rect().size();
+    SkBitmap bitmap =
+        AllocBitmap(expected_size.width(), expected_size.height());
+    cc::SkiaPaintCanvas canvas(bitmap);
+    canvas.clear(SK_ColorGRAY);
+    renderer_.Copy(frame, &canvas, media_context_.get());
+
+    auto get_color = base::BindRepeating(
+        [](SkBitmap* bitmap, int x, int y) { return bitmap->getColor(x, y); },
+        &bitmap);
+    check_pixels(get_color);
+  }
+
+  // Creates a cropped RGBA VideoFrame. |closure| is run once the shared images
+  // backing the VideoFrame have been destroyed.
+  scoped_refptr<VideoFrame> CreateTestRGBAFrame(base::OnceClosure closure) {
+    return CreateSharedImageRGBAFrame(media_context_, gfx::Size(16, 8),
+                                      gfx::Rect(3, 3, 12, 4),
+                                      std::move(closure));
+  }
+
+  // Checks that the contents of a texture/canvas match the expectations for the
+  // cropped RGBA frame above. |get_color| is a callback that returns the actual
+  // color at a given pixel location.
+  static void CheckRGBAFramePixels(GetColorCallback get_color) {
+    EXPECT_EQ(SK_ColorBLACK, get_color.Run(0, 0));
+    EXPECT_EQ(SK_ColorRED, get_color.Run(1, 0));
+    EXPECT_EQ(SK_ColorRED, get_color.Run(4, 0));
+    EXPECT_EQ(SK_ColorGREEN, get_color.Run(5, 0));
+    EXPECT_EQ(SK_ColorYELLOW, get_color.Run(9, 0));
+    EXPECT_EQ(SK_ColorYELLOW, get_color.Run(11, 0));
+    EXPECT_EQ(SK_ColorBLUE, get_color.Run(0, 1));
+    EXPECT_EQ(SK_ColorBLUE, get_color.Run(0, 3));
+    EXPECT_EQ(SK_ColorMAGENTA, get_color.Run(1, 1));
+    EXPECT_EQ(SK_ColorMAGENTA, get_color.Run(4, 1));
+    EXPECT_EQ(SK_ColorMAGENTA, get_color.Run(1, 3));
+    EXPECT_EQ(SK_ColorMAGENTA, get_color.Run(4, 3));
+    EXPECT_EQ(SK_ColorCYAN, get_color.Run(5, 1));
+    EXPECT_EQ(SK_ColorCYAN, get_color.Run(5, 3));
+    EXPECT_EQ(SK_ColorWHITE, get_color.Run(9, 1));
+    EXPECT_EQ(SK_ColorWHITE, get_color.Run(11, 1));
+    EXPECT_EQ(SK_ColorWHITE, get_color.Run(9, 3));
+    EXPECT_EQ(SK_ColorWHITE, get_color.Run(11, 3));
+  }
+
+  // Creates a cropped I420 VideoFrame. |closure| is run once the shared images
+  // backing the VideoFrame have been destroyed.
+  scoped_refptr<VideoFrame> CreateTestI420Frame(base::OnceClosure closure) {
+    return CreateSharedImageI420Frame(media_context_, gfx::Size(16, 8),
+                                      gfx::Rect(2, 2, 12, 4),
+                                      std::move(closure));
+  }
+  // Creates a cropped I420 VideoFrame. |closure| is run once the shared images
+  // backing the VideoFrame have been destroyed.
+  scoped_refptr<VideoFrame> CreateTestI420FrameNotSubset(
+      base::OnceClosure closure) {
+    return CreateSharedImageI420Frame(media_context_, gfx::Size(16, 8),
+                                      gfx::Rect(0, 0, 16, 8),
+                                      std::move(closure));
+  }
+
+  // Checks that the contents of a texture/canvas match the expectations for the
+  // cropped I420 frame above. |get_color| is a callback that returns the actual
+  // color at a given pixel location.
+  static void CheckI420FramePixels(GetColorCallback get_color) {
+    // Avoid checking around the "seams" where subsamples may be interpolated.
+    EXPECT_EQ(SK_ColorBLACK, get_color.Run(0, 0));
+    EXPECT_EQ(SK_ColorRED, get_color.Run(3, 0));
+    EXPECT_EQ(SK_ColorRED, get_color.Run(4, 0));
+    EXPECT_EQ(SK_ColorGREEN, get_color.Run(7, 0));
+    EXPECT_EQ(SK_ColorGREEN, get_color.Run(8, 0));
+    EXPECT_EQ(SK_ColorYELLOW, get_color.Run(11, 0));
+    EXPECT_EQ(SK_ColorBLUE, get_color.Run(0, 3));
+    EXPECT_EQ(SK_ColorMAGENTA, get_color.Run(3, 3));
+    EXPECT_EQ(SK_ColorCYAN, get_color.Run(7, 3));
+    EXPECT_EQ(SK_ColorWHITE, get_color.Run(11, 3));
+  }
+
+  // Checks that the contents of a texture/canvas match the expectations for the
+  // cropped I420 frame above. |get_color| is a callback that returns the actual
+  // color at a given pixel location.
+  static void CheckI420FramePixelsNotSubset(GetColorCallback get_color) {
+    // Avoid checking around the "seams" where subsamples may be interpolated.
+    EXPECT_EQ(SK_ColorBLACK, get_color.Run(2, 2));
+    EXPECT_EQ(SK_ColorRED, get_color.Run(5, 2));
+    EXPECT_EQ(SK_ColorRED, get_color.Run(6, 2));
+    EXPECT_EQ(SK_ColorGREEN, get_color.Run(9, 2));
+    EXPECT_EQ(SK_ColorGREEN, get_color.Run(10, 2));
+    EXPECT_EQ(SK_ColorYELLOW, get_color.Run(13, 2));
+    EXPECT_EQ(SK_ColorBLUE, get_color.Run(2, 5));
+    EXPECT_EQ(SK_ColorMAGENTA, get_color.Run(5, 5));
+    EXPECT_EQ(SK_ColorCYAN, get_color.Run(9, 5));
+    EXPECT_EQ(SK_ColorWHITE, get_color.Run(13, 5));
+  }
+
+  // Creates a cropped NV12 VideoFrame, or nullptr if the needed extension is
+  // not available. |closure| is run once the shared images backing the
+  // VideoFrame have been destroyed.
+  scoped_refptr<VideoFrame> CreateTestNV12Frame(base::OnceClosure closure) {
+    return CreateSharedImageNV12Frame(media_context_, gfx::Size(16, 8),
+                                      gfx::Rect(2, 2, 12, 4),
+                                      std::move(closure));
+  }
+
+  // Checks that the contents of a texture/canvas match the expectations for the
+  // cropped NV12 frame above. |get_color| is a callback that returns the actual
+  // color at a given pixel location. Note that the expectations are the same as
+  // for the I420 frame.
+  static void CheckNV12FramePixels(GetColorCallback get_color) {
+    CheckI420FramePixels(std::move(get_color));
+  }
+
+ protected:
+  base::Optional<gl::DisableNullDrawGLBindings> enable_pixels_;
+  scoped_refptr<viz::TestInProcessContextProvider> media_context_;
+  scoped_refptr<viz::TestInProcessContextProvider> destination_context_;
+};
+
+TEST_F(PaintCanvasVideoRendererWithGLTest, CopyVideoFrameYUVDataToGLTexture) {
+  auto* destination_gl = destination_context_->ContextGL();
+  DCHECK(destination_gl);
+  GLenum target = GL_TEXTURE_2D;
+  GLuint texture = 0;
+  destination_gl->GenTextures(1, &texture);
+  destination_gl->BindTexture(target, texture);
+
+  renderer_.CopyVideoFrameYUVDataToGLTexture(
+      media_context_.get(), destination_gl, *cropped_frame(), target, texture,
+      GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE, 0, false /* premultiply_alpha */,
+      false /* flip_y */);
+
+  gfx::Size expected_size = cropped_frame()->visible_rect().size();
+
+  std::unique_ptr<uint8_t[]> pixels =
+      ReadbackTexture(destination_gl, texture, expected_size);
+  auto get_color = ColorGetter(pixels.get(), expected_size);
+
+  // Avoid checking around the seams.
+  EXPECT_EQ(SK_ColorBLACK, get_color(0, 0));
+  EXPECT_EQ(SK_ColorRED, get_color(3, 0));
+  EXPECT_EQ(SK_ColorRED, get_color(7, 0));
+  EXPECT_EQ(SK_ColorGREEN, get_color(0, 3));
+  EXPECT_EQ(SK_ColorGREEN, get_color(0, 5));
+  EXPECT_EQ(SK_ColorBLUE, get_color(3, 3));
+  EXPECT_EQ(SK_ColorBLUE, get_color(7, 5));
+
+  destination_gl->DeleteTextures(1, &texture);
+}
+
+TEST_F(PaintCanvasVideoRendererWithGLTest,
+       CopyVideoFrameYUVDataToGLTexture_FlipY) {
+  auto* destination_gl = destination_context_->ContextGL();
+  DCHECK(destination_gl);
+  GLenum target = GL_TEXTURE_2D;
+  GLuint texture = 0;
+  destination_gl->GenTextures(1, &texture);
+  destination_gl->BindTexture(target, texture);
+
+  renderer_.CopyVideoFrameYUVDataToGLTexture(
+      media_context_.get(), destination_gl, *cropped_frame(), target, texture,
+      GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE, 0, false /* premultiply_alpha */,
+      true /* flip_y */);
+
+  gfx::Size expected_size = cropped_frame()->visible_rect().size();
+
+  std::unique_ptr<uint8_t[]> pixels =
+      ReadbackTexture(destination_gl, texture, expected_size);
+  auto get_color = ColorGetter(pixels.get(), expected_size);
+
+  // Avoid checking around the seams.
+  EXPECT_EQ(SK_ColorBLACK, get_color(0, 5));
+  EXPECT_EQ(SK_ColorRED, get_color(3, 5));
+  EXPECT_EQ(SK_ColorRED, get_color(7, 5));
+  EXPECT_EQ(SK_ColorGREEN, get_color(0, 2));
+  EXPECT_EQ(SK_ColorGREEN, get_color(0, 0));
+  EXPECT_EQ(SK_ColorBLUE, get_color(3, 2));
+  EXPECT_EQ(SK_ColorBLUE, get_color(7, 0));
+
+  destination_gl->DeleteTextures(1, &texture);
+}
+
+// Checks that we correctly copy a RGBA shared image VideoFrame when using
+// CopyVideoFrameYUVDataToGLTexture, including correct cropping.
+TEST_F(PaintCanvasVideoRendererWithGLTest,
+       CopyVideoFrameTexturesToGLTextureRGBA) {
+  base::RunLoop run_loop;
+  scoped_refptr<VideoFrame> frame = CreateTestRGBAFrame(run_loop.QuitClosure());
+
+  CopyVideoFrameTexturesAndCheckPixels(frame, &CheckRGBAFramePixels);
+
+  frame.reset();
+  run_loop.Run();
+}
+
+// Checks that we correctly copy a RGBA shared image VideoFrame that needs read
+// lock fences, when using CopyVideoFrameYUVDataToGLTexture, including correct
+// cropping.
+TEST_F(PaintCanvasVideoRendererWithGLTest,
+       CopyVideoFrameTexturesToGLTextureRGBA_ReadLockFence) {
+  base::RunLoop run_loop;
+  scoped_refptr<VideoFrame> frame = CreateTestRGBAFrame(run_loop.QuitClosure());
+  frame->metadata()->SetBoolean(VideoFrameMetadata::READ_LOCK_FENCES_ENABLED,
+                                true);
+
+  CopyVideoFrameTexturesAndCheckPixels(frame, &CheckRGBAFramePixels);
+
+  frame.reset();
+  run_loop.Run();
+}
+
+// Checks that we correctly paint a RGBA shared image VideoFrame, including
+// correct cropping.
+TEST_F(PaintCanvasVideoRendererWithGLTest, PaintRGBA) {
+  base::RunLoop run_loop;
+  scoped_refptr<VideoFrame> frame = CreateTestRGBAFrame(run_loop.QuitClosure());
+
+  PaintVideoFrameAndCheckPixels(frame, &CheckRGBAFramePixels);
+
+  frame.reset();
+  run_loop.Run();
+}
+
+// Checks that we correctly copy an I420 shared image VideoFrame when using
+// CopyVideoFrameYUVDataToGLTexture, including correct cropping.
+TEST_F(PaintCanvasVideoRendererWithGLTest,
+       CopyVideoFrameTexturesToGLTextureI420) {
+  base::RunLoop run_loop;
+  scoped_refptr<VideoFrame> frame = CreateTestI420Frame(run_loop.QuitClosure());
+
+  CopyVideoFrameTexturesAndCheckPixels(frame, &CheckI420FramePixels);
+
+  frame.reset();
+  run_loop.Run();
+}
+
+// Checks that we correctly paint a I420 shared image VideoFrame, including
+// correct cropping.
+TEST_F(PaintCanvasVideoRendererWithGLTest, PaintI420) {
+  base::RunLoop run_loop;
+  scoped_refptr<VideoFrame> frame = CreateTestI420Frame(run_loop.QuitClosure());
+
+  PaintVideoFrameAndCheckPixels(frame, &CheckI420FramePixels);
+
+  frame.reset();
+  run_loop.Run();
+}
+
+// Checks that we correctly paint a I420 shared image VideoFrame, including
+// correct cropping.
+TEST_F(PaintCanvasVideoRendererWithGLTest, PaintI420NotSubset) {
+  base::RunLoop run_loop;
+  scoped_refptr<VideoFrame> frame =
+      CreateTestI420FrameNotSubset(run_loop.QuitClosure());
+
+  PaintVideoFrameAndCheckPixels(frame, &CheckI420FramePixelsNotSubset);
+
+  frame.reset();
+  run_loop.Run();
+}
+
+// Checks that we correctly copy a NV12 shared image VideoFrame when using
+// CopyVideoFrameYUVDataToGLTexture, including correct cropping.
+TEST_F(PaintCanvasVideoRendererWithGLTest,
+       CopyVideoFrameTexturesToGLTextureNV12) {
+  base::RunLoop run_loop;
+  scoped_refptr<VideoFrame> frame = CreateTestNV12Frame(run_loop.QuitClosure());
+  if (!frame) {
+    LOG(ERROR) << "GL_EXT_texture_rg not supported, skipping NV12 test";
+    return;
+  }
+
+  CopyVideoFrameTexturesAndCheckPixels(frame, &CheckNV12FramePixels);
+
+  frame.reset();
+  run_loop.Run();
+}
+
+// Checks that we correctly paint a NV12 shared image VideoFrame, including
+// correct cropping.
+TEST_F(PaintCanvasVideoRendererWithGLTest, PaintNV12) {
+  base::RunLoop run_loop;
+  scoped_refptr<VideoFrame> frame = CreateTestNV12Frame(run_loop.QuitClosure());
+  if (!frame) {
+    LOG(ERROR) << "GL_EXT_texture_rg not supported, skipping NV12 test";
+    return;
+  }
+
+  PaintVideoFrameAndCheckPixels(frame, &CheckNV12FramePixels);
+
+  frame.reset();
+  run_loop.Run();
 }
 
 }  // namespace media

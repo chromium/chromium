@@ -11,14 +11,16 @@
 #include "base/sequenced_task_runner.h"
 #include "base/task/post_task.h"
 #include "components/leveldb_proto/internal/leveldb_database.h"
+#include "components/leveldb_proto/internal/proto_database_selector.h"
 #include "components/leveldb_proto/internal/proto_leveldb_wrapper.h"
+#include "components/leveldb_proto/public/proto_database.h"
 #include "components/leveldb_proto/public/proto_database_provider.h"
+#include "components/leveldb_proto/public/shared_proto_database_client_list.h"
 
 namespace leveldb_proto {
 
 namespace {
 
-const char kMetadataDatabaseName[] = "Metadata";
 const base::FilePath::CharType kMetadataDatabasePath[] =
     FILE_PATH_LITERAL("metadata");
 const int kMaxInitMetaDatabaseAttempts = 3;
@@ -37,7 +39,9 @@ inline void RunInitStatusCallbackOnCallingSequence(
     SharedProtoDatabase::SharedClientInitCallback callback,
     scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
     Enums::InitStatus status,
-    SharedDBMetadataProto::MigrationStatus migration_status) {
+    SharedDBMetadataProto::MigrationStatus migration_status,
+    ProtoDatabaseSelector::ProtoDatabaseInitState metric) {
+  ProtoDatabaseSelector::RecordInitState(metric);
   callback_task_runner->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), status, migration_status));
 }
@@ -54,14 +58,21 @@ SharedProtoDatabase::InitRequest::~InitRequest() = default;
 
 SharedProtoDatabase::SharedProtoDatabase(const std::string& client_db_id,
                                          const base::FilePath& db_dir)
-    : task_runner_(base::CreateSequencedTaskRunnerWithTraits(
-          {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+    : task_runner_(base::CreateSequencedTaskRunner(
+          {base::ThreadPool(), base::MayBlock(),
+           // crbug/1006954 and crbug/976223 explain why one of the clients
+           // needs run in visible priority. Download DB is always loaded to
+           // check for in progress downloads at startup. So, always load shared
+           // db in USER_VISIBLE priority.
+           base::TaskPriority::USER_VISIBLE,
            base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN})),
       db_dir_(db_dir),
       db_(std::make_unique<LevelDB>(client_db_id.c_str())),
       db_wrapper_(std::make_unique<ProtoLevelDBWrapper>(task_runner_)),
       metadata_db_wrapper_(
-          ProtoDatabaseProvider::CreateUniqueDB<SharedDBMetadataProto>(
+          ProtoDatabaseProvider::GetUniqueDB<SharedDBMetadataProto>(
+              ProtoDbType::SHARED_DB_METADATA,
+              db_dir_.Append(base::FilePath(kMetadataDatabasePath)),
               task_runner_)) {
   DETACH_FROM_SEQUENCE(on_task_runner_);
 }
@@ -139,7 +150,9 @@ void SharedProtoDatabase::OnGetClientMetadata(
   if (!success) {
     RunInitStatusCallbackOnCallingSequence(
         std::move(callback), std::move(callback_task_runner),
-        Enums::InitStatus::kOK, SharedDBMetadataProto::MIGRATION_NOT_ATTEMPTED);
+        Enums::InitStatus::kOK, SharedDBMetadataProto::MIGRATION_NOT_ATTEMPTED,
+        ProtoDatabaseSelector::ProtoDatabaseInitState::
+            kSharedDbMetadataLoadFailed);
     return;
   }
   if (!proto || !proto->has_migration_status()) {
@@ -154,19 +167,24 @@ void SharedProtoDatabase::OnGetClientMetadata(
               RunInitStatusCallbackOnCallingSequence(
                   std::move(callback), std::move(callback_task_runner),
                   Enums::InitStatus::kOK,
-                  SharedDBMetadataProto::MIGRATION_NOT_ATTEMPTED);
+                  SharedDBMetadataProto::MIGRATION_NOT_ATTEMPTED,
+                  ProtoDatabaseSelector::ProtoDatabaseInitState::
+                      kSharedDbMetadataWriteFailed);
             },
             std::move(callback), std::move(callback_task_runner)));
     return;
   }
   // If we've made it here, we know that the current status of our database is
   // OK. Make it return corrupt if the metadata disagrees.
+  bool is_corrupt = metadata_->corruptions() != proto->corruptions();
   RunInitStatusCallbackOnCallingSequence(
       std::move(callback), std::move(callback_task_runner),
-      metadata_->corruptions() != proto->corruptions()
-          ? Enums::InitStatus::kCorrupt
-          : Enums::InitStatus::kOK,
-      proto->migration_status());
+      is_corrupt ? Enums::InitStatus::kCorrupt : Enums::InitStatus::kOK,
+      proto->migration_status(),
+      is_corrupt ? ProtoDatabaseSelector::ProtoDatabaseInitState::
+                       kSharedDbClientCorrupt
+                 : ProtoDatabaseSelector::ProtoDatabaseInitState::
+                       kSharedDbClientSuccess);
 }
 
 void SharedProtoDatabase::CheckCorruptionAndRunInitCallback(
@@ -181,7 +199,8 @@ void SharedProtoDatabase::CheckCorruptionAndRunInitCallback(
   }
   RunInitStatusCallbackOnCallingSequence(
       std::move(callback), std::move(callback_task_runner), init_status_,
-      SharedDBMetadataProto::MIGRATION_NOT_ATTEMPTED);
+      SharedDBMetadataProto::MIGRATION_NOT_ATTEMPTED,
+      ProtoDatabaseSelector::ProtoDatabaseInitState::kSharedLevelDbInitFailure);
 }
 
 // Setting |create_if_missing| to false allows us to test whether or not the
@@ -196,6 +215,9 @@ void SharedProtoDatabase::Init(
     const std::string& client_db_id,
     SharedClientInitCallback callback,
     scoped_refptr<base::SequencedTaskRunner> callback_task_runner) {
+  // Try to create the db if any initialization request asked to do so.
+  create_if_missing_ = create_if_missing || create_if_missing_;
+
   switch (init_state_) {
     case InitState::kNotAttempted:
       outstanding_init_requests_.emplace(std::make_unique<InitRequest>(
@@ -203,8 +225,7 @@ void SharedProtoDatabase::Init(
 
       init_state_ = InitState::kInProgress;
       // First, try to initialize the metadata database.
-      InitMetadataDatabase(create_if_missing, 0 /* attempt */,
-                           false /* corruption */);
+      InitMetadataDatabase(0 /* attempt */, false /* corruption */);
       break;
 
     case InitState::kInProgress:
@@ -225,26 +246,31 @@ void SharedProtoDatabase::Init(
       RunInitStatusCallbackOnCallingSequence(
           std::move(callback), std::move(callback_task_runner),
           Enums::InitStatus::kError,
-          SharedDBMetadataProto::MIGRATION_NOT_ATTEMPTED);
+          SharedDBMetadataProto::MIGRATION_NOT_ATTEMPTED,
+          ProtoDatabaseSelector::ProtoDatabaseInitState::
+              kSharedLevelDbInitFailure);
       break;
 
     case InitState::kNotFound:
-      if (create_if_missing) {
+      if (create_if_missing_) {
         // If the shared DB doesn't exist and we should create it if missing,
         // then we skip initializing the metadata DB and initialize the shared
         // DB directly.
         DCHECK(metadata_);
+        init_state_ = InitState::kInProgress;
         outstanding_init_requests_.emplace(std::make_unique<InitRequest>(
             std::move(callback), std::move(callback_task_runner),
             client_db_id));
-        InitDatabase(create_if_missing);
+        InitDatabase();
       } else {
         // If the shared DB doesn't exist and we shouldn't create it if missing,
         // then we run the callback with kInvalidOperation (which is not found).
         RunInitStatusCallbackOnCallingSequence(
             std::move(callback), std::move(callback_task_runner),
             Enums::InitStatus::kInvalidOperation,
-            SharedDBMetadataProto::MIGRATION_NOT_ATTEMPTED);
+            SharedDBMetadataProto::MIGRATION_NOT_ATTEMPTED,
+            ProtoDatabaseSelector::ProtoDatabaseInitState::
+                kSharedDbClientMissing);
       }
       break;
   }
@@ -268,33 +294,31 @@ void SharedProtoDatabase::ProcessInitRequests(Enums::InitStatus status) {
 // the event that the metadata DB is corrupt, at least one retry will be made
 // so that we create the DB from scratch again.
 // |corruption| lets us know whether the retries are because of corruption.
-void SharedProtoDatabase::InitMetadataDatabase(bool create_shared_db_if_missing,
-                                               int attempt,
-                                               bool corruption) {
+void SharedProtoDatabase::InitMetadataDatabase(int attempt, bool corruption) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(on_task_runner_);
 
   if (attempt >= kMaxInitMetaDatabaseAttempts) {
+    // TODO(crbug/1003951): |attempt| is always 0, need to save it and do the
+    // retry, or delete it.
     init_state_ = InitState::kFailure;
     init_status_ = Enums::InitStatus::kError;
     ProcessInitRequests(init_status_);
     return;
   }
 
-  base::FilePath metadata_path =
-      db_dir_.Append(base::FilePath(kMetadataDatabasePath));
   // TODO: figure out destroy on corruption param
   metadata_db_wrapper_->Init(
-      kMetadataDatabaseName, metadata_path, CreateSimpleOptions(),
       base::BindOnce(&SharedProtoDatabase::OnMetadataInitComplete, this,
-                     create_shared_db_if_missing, attempt, corruption));
+                     attempt, corruption));
 }
 
 void SharedProtoDatabase::OnMetadataInitComplete(
-    bool create_shared_db_if_missing,
     int attempt,
     bool corruption,
-    bool success) {
+    leveldb_proto::Enums::InitStatus status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(on_task_runner_);
+
+  bool success = status == Enums::kOK;
 
   if (!success) {
     init_state_ = InitState::kFailure;
@@ -309,11 +333,10 @@ void SharedProtoDatabase::OnMetadataInitComplete(
   metadata_db_wrapper_->GetEntry(
       std::string(kGlobalMetadataKey),
       base::BindOnce(&SharedProtoDatabase::OnGetGlobalMetadata, this,
-                     create_shared_db_if_missing, corruption));
+                     corruption));
 }
 
 void SharedProtoDatabase::OnGetGlobalMetadata(
-    bool create_shared_db_if_missing,
     bool corruption,
     bool success,
     std::unique_ptr<SharedDBMetadataProto> proto) {
@@ -321,7 +344,7 @@ void SharedProtoDatabase::OnGetGlobalMetadata(
   if (success && proto) {
     // It existed so let's update our internal |corruption_count_|
     metadata_ = std::move(proto);
-    InitDatabase(create_shared_db_if_missing);
+    InitDatabase();
     return;
   }
 
@@ -331,12 +354,10 @@ void SharedProtoDatabase::OnGetGlobalMetadata(
   metadata_->set_corruptions(corruption ? 1U : 0U);
   metadata_->clear_migration_status();
   CommitUpdatedGlobalMetadata(
-      base::BindOnce(&SharedProtoDatabase::OnFinishCorruptionCountWrite, this,
-                     create_shared_db_if_missing));
+      base::BindOnce(&SharedProtoDatabase::OnFinishCorruptionCountWrite, this));
 }
 
 void SharedProtoDatabase::OnFinishCorruptionCountWrite(
-    bool create_shared_db_if_missing,
     bool success) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(on_task_runner_);
   // TODO(thildebr): Should we retry a few times if we fail this? It feels like
@@ -349,13 +370,13 @@ void SharedProtoDatabase::OnFinishCorruptionCountWrite(
     return;
   }
 
-  InitDatabase(create_shared_db_if_missing);
+  InitDatabase();
 }
 
-void SharedProtoDatabase::InitDatabase(bool create_shared_db_if_missing) {
+void SharedProtoDatabase::InitDatabase() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(on_task_runner_);
   auto options = CreateSimpleOptions();
-  options.create_if_missing = create_shared_db_if_missing;
+  options.create_if_missing = create_if_missing_;
   db_wrapper_->SetMetricsId(kSharedProtoDatabaseUmaName);
   // |db_wrapper_| uses the same SequencedTaskRunner that Init is called on,
   // so OnDatabaseInit will be called on the same sequence after Init.
@@ -363,10 +384,12 @@ void SharedProtoDatabase::InitDatabase(bool create_shared_db_if_missing) {
   // the InitState will be final after Init is called.
   db_wrapper_->InitWithDatabase(
       db_.get(), db_dir_, options, false /* destroy_on_corruption */,
-      base::BindOnce(&SharedProtoDatabase::OnDatabaseInit, this));
+      base::BindOnce(&SharedProtoDatabase::OnDatabaseInit, this,
+                     create_if_missing_));
 }
 
-void SharedProtoDatabase::OnDatabaseInit(Enums::InitStatus status) {
+void SharedProtoDatabase::OnDatabaseInit(bool create_if_missing,
+                                         Enums::InitStatus status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(on_task_runner_);
 
   // Update the corruption counter locally and in the database.
@@ -384,6 +407,16 @@ void SharedProtoDatabase::OnDatabaseInit(Enums::InitStatus status) {
     return;
   }
 
+  // If the previous initialization didn't create the database but a following
+  // request tries to create the db. Redo the initialization and create db.
+  if (create_if_missing_ && !create_if_missing &&
+      status == Enums::InitStatus::kInvalidOperation) {
+    DCHECK(init_state_ == InitState::kInProgress ||
+           init_state_ == InitState::kNotFound);
+    InitDatabase();
+    return;
+  }
+
   init_status_ = status;
 
   switch (status) {
@@ -391,6 +424,7 @@ void SharedProtoDatabase::OnDatabaseInit(Enums::InitStatus status) {
       init_state_ = InitState::kSuccess;
       break;
     case Enums::InitStatus::kInvalidOperation:
+      DCHECK(!create_if_missing_);
       init_state_ = InitState::kNotFound;
       break;
     case Enums::InitStatus::kError:
@@ -412,7 +446,8 @@ void SharedProtoDatabase::OnDatabaseInit(Enums::InitStatus status) {
     Callbacks::UpdateCallback obsolete_cleared_callback = base::DoNothing();
     base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
         FROM_HERE,
-        base::BindOnce(&DestroyObsoleteSharedProtoDatabaseClients,
+        base::BindOnce(&SharedProtoDatabaseClient::
+                           DestroyObsoleteSharedProtoDatabaseClients,
                        std::move(db_wrapper),
                        std::move(obsolete_cleared_callback)),
         kDelayToClearObsoleteDatabase);

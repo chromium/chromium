@@ -124,7 +124,7 @@ void InfoBarContainer::OnManagerShuttingDown(InfoBarManager* manager) {
 void InfoBarContainer::AddInfoBar(InfoBar* infobar,
                                   size_t position,
                                   bool animate) {
-  DCHECK(!base::ContainsValue(infobars_, infobar));
+  DCHECK(!base::Contains(infobars_, infobar));
   DCHECK_LE(position, infobars_.size());
   infobars_.insert(infobars_.begin() + position, infobar);
   PlatformSpecificAddInfoBar(infobar, position);

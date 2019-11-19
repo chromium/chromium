@@ -8,6 +8,7 @@
 #include <set>
 #include <string>
 
+#include "base/macros.h"
 #include "components/keyed_service/core/dependency_graph.h"
 #include "components/keyed_service/core/keyed_service_export.h"
 
@@ -25,6 +26,19 @@ class PrefRegistrySyncable;
 // broadcasting the context creation and destruction to each factory in
 // a safe order based on the stated dependencies.
 class KEYED_SERVICE_EXPORT DependencyManager {
+ public:
+  // Shuts down all keyed services managed by two
+  // DependencyManagers (DMs), then destroys them. The order of execution is:
+  // - Shutdown services in DM1
+  // - Shutdown services in DM2
+  // - Destroy services in DM1
+  // - Destroy services in DM2
+  static void PerformInterlockedTwoPhaseShutdown(
+      DependencyManager* dependency_manager1,
+      void* context1,
+      DependencyManager* dependency_manager2,
+      void* context2);
+
  protected:
   DependencyManager();
   virtual ~DependencyManager();
@@ -38,11 +52,8 @@ class KEYED_SERVICE_EXPORT DependencyManager {
   void AddEdge(KeyedServiceBaseFactory* depended,
                KeyedServiceBaseFactory* dependee);
 
-  // Registers preferences for all services via |registry| associated with
-  // |context| (the association is managed by the embedder). The |context|
-  // is used as a key to prevent multiple registration during tests.
-  void RegisterPrefsForServices(void* context,
-                                user_prefs::PrefRegistrySyncable* registry);
+  // Registers preferences for all services via |registry|.
+  void RegisterPrefsForServices(user_prefs::PrefRegistrySyncable* registry);
 
   // Called upon creation of |context| to create services that want to be
   // started at the creation of a context and register service-related
@@ -72,6 +83,11 @@ class KEYED_SERVICE_EXPORT DependencyManager {
   // 0xWhatever).
   void MarkContextLive(void* context);
 
+  // Marks |context| as dead (i.e., stale). Calls passing |context| to
+  //|AssertContextWasntDestroyed()| will flag an error until that context is
+  // marked as live again with MarkContextLive().
+  void MarkContextDead(void* context);
+
 #ifndef NDEBUG
   // Dumps service dependency graph as a Graphviz dot file |dot_file| with a
   // title |top_level_name|. Helper for |DumpContextDependencies|.
@@ -87,6 +103,12 @@ class KEYED_SERVICE_EXPORT DependencyManager {
   virtual void DumpContextDependencies(void* context) const = 0;
 #endif  // NDEBUG
 
+  std::vector<DependencyNode*> GetDestructionOrder();
+  static void ShutdownFactoriesInOrder(void* context,
+                                       std::vector<DependencyNode*>& order);
+  static void DestroyFactoriesInOrder(void* context,
+                                      std::vector<DependencyNode*>& order);
+
   DependencyGraph dependency_graph_;
 
   // A list of context objects that have gone through the Shutdown() phase.
@@ -94,6 +116,8 @@ class KEYED_SERVICE_EXPORT DependencyManager {
   // locations in memory so we can nicely assert if we're asked to do anything
   // with them.
   std::set<void*> dead_context_pointers_;
+
+  DISALLOW_COPY_AND_ASSIGN(DependencyManager);
 };
 
 #endif  // COMPONENTS_KEYED_SERVICE_CORE_DEPENDENCY_MANAGER_H_

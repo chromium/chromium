@@ -11,7 +11,7 @@
 #include "base/macros.h"
 #include "base/metrics/field_trial.h"
 #include "ios/chrome/browser/ios_chrome_field_trials.h"
-#include "ios/web/public/app/web_main_parts.h"
+#include "ios/web/public/init/web_main_parts.h"
 
 class ApplicationContextImpl;
 class PrefService;

@@ -8,7 +8,7 @@
 #include "third_party/blink/renderer/core/editing/markers/document_marker.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/platform/geometry/layout_rect.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
 
@@ -23,7 +23,7 @@ class LayoutObject;
 class LayoutPoint;
 class LayoutTextCombine;
 class StyleableMarker;
-class TextMatchMarker;
+class TextMarkerBase;
 
 enum class DocumentMarkerPaintPhase { kForeground, kBackground };
 
@@ -54,16 +54,16 @@ class InlineTextBoxPainter {
                            const ComputedStyle&,
                            const Font&,
                            bool grammar);
-  void PaintTextMatchMarkerForeground(const PaintInfo&,
-                                      const LayoutPoint& box_origin,
-                                      const TextMatchMarker&,
-                                      const ComputedStyle&,
-                                      const Font&);
-  void PaintTextMatchMarkerBackground(const PaintInfo&,
-                                      const LayoutPoint& box_origin,
-                                      const TextMatchMarker&,
-                                      const ComputedStyle&,
-                                      const Font&);
+  void PaintTextMarkerForeground(const PaintInfo&,
+                                 const LayoutPoint& box_origin,
+                                 const TextMarkerBase&,
+                                 const ComputedStyle&,
+                                 const Font&);
+  void PaintTextMarkerBackground(const PaintInfo&,
+                                 const LayoutPoint& box_origin,
+                                 const TextMarkerBase&,
+                                 const ComputedStyle&,
+                                 const Font&);
 
  private:
   enum class PaintOptions { kNormal, kCombinedText };

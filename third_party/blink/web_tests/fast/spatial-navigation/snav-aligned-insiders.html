@@ -1,0 +1,49 @@
+<!doctype html>
+<style>
+  div {height: 30px;}
+  div.green {background: green}
+  div.red {background: red}
+  *:focus {outline: blue solid 2px;}
+</style>
+<div id="container" href="www" style="top: 10px; left: 40px; width: 300px; height: 300px; background: yellow; position: relative; margin: 60px" tabindex="0">
+  <div class="red" id="redA" style="position: absolute; top: 10px; left: 240px; width: 40px;" tabindex="0"></div>
+  <div class="red" id="redB" style="position: absolute; top: 50px; left: 10px; width: 40px;" tabindex="0"></div>
+  <div class="red" id="redC" style="position: absolute; top: 50px; left: 240px; width: 40px;" tabindex="0"></div>
+  <div class="red" id="redD" style="position: absolute; top: 260px; left: 240px; width: 40px;" tabindex="0"></div>
+
+  <div class="green" id="greenC" style="position: absolute; top: 85px; left: 240px; width: 40px; height: 160px" tabindex="0"></div>
+  <div class="green" id="greenB" style="position: absolute; top: 260px; left: 10px; width: 220px;" tabindex="0"></div>
+  <div class="green" id="greenD" style="position: absolute; top: 85px; left: 10px; width: 40px; height: 160px" tabindex="0"></div>
+  <div class="green" id="greenA" style="position: absolute; top: 10px; left: 10px; width: 220px;" tabindex="0"></div>
+
+  <a id="linkA" href="www" style="position: absolute; top: 160px; left: 320px;">linkA</a>
+  <a id="linkB" href="www" style="position: absolute; top: 160px; left: -40px;">linkB</a>
+  <a id="linkC" href="www" style="position: absolute; top: -40px; left: 125px;">linkC</a>
+  <a id="linkD" href="www" style="position: absolute; top: 330px; left: 125px;">linkD</a>
+</div>
+
+<p><em>Manual test instruction: When moving into the yellow div, ensure
+that SpatNav picks "more aligned" candidates first.</em></p>
+
+<p>Note: In DOM order, the green candidates are <em>after</em> the red candidates.
+Here SpatNav must ignore DOM order because the green candidates have bigger
+projection surface.</p>
+
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="resources/snav-testharness.js"></script>
+<script>
+  container.focus();
+  var resultMap = [
+    ["Down", "greenA"],
+    ["Down", "redB"],
+    ["Down", "greenD"],
+    ["Left", "linkB"],
+    ["Right", "container"],
+    ["Right", "greenD"],
+    ["Right", "greenC"],
+    ["Down", "redD"],
+    ["Down", "linkD"],
+  ];
+  snav.assertFocusMoves(resultMap);
+</script>

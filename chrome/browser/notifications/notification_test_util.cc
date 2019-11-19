@@ -4,10 +4,13 @@
 
 #include "chrome/browser/notifications/notification_test_util.h"
 
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_context.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "content/public/test/test_utils.h"
+
+#if !defined(OS_ANDROID)
+#include "chrome/browser/ui/browser.h"
+#endif
 
 // -----------------------------------------------------------------------------
 
@@ -123,11 +126,6 @@ bool StubNotificationUIManager::CancelAllBySourceOrigin(
   return true;
 }
 
-bool StubNotificationUIManager::CancelAllByProfile(ProfileID profile_id) {
-  NOTIMPLEMENTED();
-  return false;
-}
-
 void StubNotificationUIManager::CancelAll() {
   for (const auto& pair : notifications_)
     pair.first.delegate()->Close(false /* by_user */);
@@ -139,6 +137,7 @@ void StubNotificationUIManager::StartShutdown() {
   CancelAll();
 }
 
+#if !defined(OS_ANDROID)
 FullscreenStateWaiter::FullscreenStateWaiter(
     Browser* browser, bool desired_state)
     : browser_(browser),
@@ -150,3 +149,4 @@ void FullscreenStateWaiter::Wait() {
     content::RunAllPendingInMessageLoop();
   }
 }
+#endif

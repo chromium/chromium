@@ -5,6 +5,7 @@
 #include "ui/ozone/platform/drm/gpu/drm_display.h"
 
 #include <xf86drmMode.h>
+#include <memory>
 
 #include "base/stl_util.h"
 #include "ui/display/types/display_snapshot.h"
@@ -87,13 +88,24 @@ DrmDisplay::DrmDisplay(ScreenManager* screen_manager,
 DrmDisplay::~DrmDisplay() {
 }
 
+uint32_t DrmDisplay::connector() const {
+  return connector_->connector_id;
+}
+
 std::unique_ptr<display::DisplaySnapshot> DrmDisplay::Update(
     HardwareDisplayControllerInfo* info,
     size_t device_index) {
   std::unique_ptr<display::DisplaySnapshot> params = CreateDisplaySnapshot(
       info, drm_->get_fd(), drm_->device_path(), device_index, origin_);
-  crtc_ = info->has_associated_crtc() ? info->crtc()->crtc_id : 0;
-  connector_ = info->connector()->connector_id;
+  crtc_ = info->crtc()->crtc_id;
+  // TODO(dcastagna): consider taking ownership of |info->connector()|
+  connector_ = ScopedDrmConnectorPtr(
+      drm_->GetConnector(info->connector()->connector_id));
+  if (!connector_) {
+    PLOG(ERROR) << "Failed to get connector "
+                << info->connector()->connector_id;
+  }
+
   display_id_ = params->display_id();
   modes_ = GetDrmModeVector(info->connector());
   return params;
@@ -104,11 +116,12 @@ bool DrmDisplay::Configure(const drmModeModeInfo* mode,
   VLOG(1) << "DRM configuring: device=" << drm_->device_path().value()
           << " crtc=" << crtc_ << " connector=" << connector_
           << " origin=" << origin.ToString()
-          << " size=" << (mode ? GetDrmModeSize(*mode).ToString() : "0x0");
+          << " size=" << (mode ? GetDrmModeSize(*mode).ToString() : "0x0")
+          << " refresh_rate=" << (mode ? mode->vrefresh : 0) << "Hz";
 
   if (mode) {
-    if (!screen_manager_->ConfigureDisplayController(drm_, crtc_, connector_,
-                                                     origin, *mode)) {
+    if (!screen_manager_->ConfigureDisplayController(
+            drm_, crtc_, connector_->connector_id, origin, *mode)) {
       VLOG(1) << "Failed to configure: device=" << drm_->device_path().value()
               << " crtc=" << crtc_ << " connector=" << connector_;
       return false;
@@ -126,21 +139,18 @@ bool DrmDisplay::Configure(const drmModeModeInfo* mode,
 }
 
 bool DrmDisplay::GetHDCPState(display::HDCPState* state) {
-  ScopedDrmConnectorPtr connector(drm_->GetConnector(connector_));
-  if (!connector) {
-    PLOG(ERROR) << "Failed to get connector " << connector_;
+  if (!connector_)
     return false;
-  }
 
   ScopedDrmPropertyPtr hdcp_property(
-      drm_->GetProperty(connector.get(), kContentProtection));
+      drm_->GetProperty(connector_.get(), kContentProtection));
   if (!hdcp_property) {
-    PLOG(ERROR) << "'" << kContentProtection << "' property doesn't exist.";
+    PLOG(INFO) << "'" << kContentProtection << "' property doesn't exist.";
     return false;
   }
 
   std::string name =
-      GetEnumNameForProperty(connector.get(), hdcp_property.get());
+      GetEnumNameForProperty(connector_.get(), hdcp_property.get());
   for (size_t i = 0; i < base::size(kContentProtectionStates); ++i) {
     if (name == kContentProtectionStates[i].name) {
       *state = kContentProtectionStates[i].state;
@@ -154,21 +164,20 @@ bool DrmDisplay::GetHDCPState(display::HDCPState* state) {
 }
 
 bool DrmDisplay::SetHDCPState(display::HDCPState state) {
-  ScopedDrmConnectorPtr connector(drm_->GetConnector(connector_));
-  if (!connector) {
-    PLOG(ERROR) << "Failed to get connector " << connector_;
+  if (!connector_) {
     return false;
   }
 
   ScopedDrmPropertyPtr hdcp_property(
-      drm_->GetProperty(connector.get(), kContentProtection));
+      drm_->GetProperty(connector_.get(), kContentProtection));
+
   if (!hdcp_property) {
-    LOG(ERROR) << "'" << kContentProtection << "' property doesn't exist.";
+    PLOG(INFO) << "'" << kContentProtection << "' property doesn't exist.";
     return false;
   }
 
   return drm_->SetProperty(
-      connector_, hdcp_property->prop_id,
+      connector_->connector_id, hdcp_property->prop_id,
       GetContentProtectionValue(hdcp_property.get(), state));
 }
 

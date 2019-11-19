@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 #include "ash/shell.h"
-#include "ash/wm/root_window_finder.h"
 #include "ash/wm/window_properties.h"
+#include "ash/wm/window_util.h"
 #include "ui/aura/client/capture_client.h"
 #include "ui/aura/client/screen_position_client.h"
 #include "ui/aura/env.h"
@@ -43,7 +43,8 @@ UIControlsAura* GetUIControlsForRootWindow(aura::Window* root_window) {
 // Returns the UIControls object for the RootWindow at |point_in_screen|.
 UIControlsAura* GetUIControlsAt(const gfx::Point& point_in_screen) {
   // TODO(mazda): Support the case passive grab is taken.
-  return GetUIControlsForRootWindow(ash::wm::GetRootWindowAt(point_in_screen));
+  return GetUIControlsForRootWindow(
+      window_util::GetRootWindowAt(point_in_screen));
 }
 
 }  // namespace
@@ -107,7 +108,7 @@ class UIControlsAsh : public UIControlsAura {
                                      int button_state,
                                      base::OnceClosure closure,
                                      int accelerator_state) override {
-    gfx::Point p(Shell::Get()->aura_env()->last_mouse_location());
+    gfx::Point p(aura::Env::GetInstance()->last_mouse_location());
     UIControlsAura* ui_controls = GetUIControlsAt(p);
     return ui_controls &&
            ui_controls->SendMouseEventsNotifyWhenDone(

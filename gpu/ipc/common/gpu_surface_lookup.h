@@ -27,10 +27,13 @@ class GPU_EXPORT GpuSurfaceLookup {
   static void InitInstance(GpuSurfaceLookup* lookup);
 
   virtual gfx::AcceleratedWidget AcquireNativeWidget(
-      gpu::SurfaceHandle surface_handle) = 0;
+      gpu::SurfaceHandle surface_handle,
+      bool* can_be_used_with_surface_control) = 0;
 
 #if defined(OS_ANDROID)
-  virtual gl::ScopedJavaSurface AcquireJavaSurface(int surface_id) = 0;
+  virtual gl::ScopedJavaSurface AcquireJavaSurface(
+      int surface_id,
+      bool* can_be_used_with_surface_control) = 0;
 #endif
 
  private:

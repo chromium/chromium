@@ -39,6 +39,7 @@ class ArcNotificationItemImpl : public ArcNotificationItem {
   void OpenSettings() override;
   void OpenSnooze() override;
   void ToggleExpansion() override;
+  void OnWindowActivated(bool activated) override;
   void OnRemoteInputActivationChanged(bool activated) override;
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
@@ -89,7 +90,7 @@ class ArcNotificationItemImpl : public ArcNotificationItem {
   bool manually_expanded_or_collapsed_ = false;
 
   THREAD_CHECKER(thread_checker_);
-  base::WeakPtrFactory<ArcNotificationItemImpl> weak_ptr_factory_;
+  base::WeakPtrFactory<ArcNotificationItemImpl> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ArcNotificationItemImpl);
 };

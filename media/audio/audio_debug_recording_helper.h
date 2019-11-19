@@ -102,7 +102,7 @@ class MEDIA_EXPORT AudioDebugRecordingHelper : public AudioDebugRecorder {
   // Runs in destructor if set.
   base::OnceClosure on_destruction_closure_;
 
-  base::WeakPtrFactory<AudioDebugRecordingHelper> weak_factory_;
+  base::WeakPtrFactory<AudioDebugRecordingHelper> weak_factory_{this};
   DISALLOW_COPY_AND_ASSIGN(AudioDebugRecordingHelper);
 };
 

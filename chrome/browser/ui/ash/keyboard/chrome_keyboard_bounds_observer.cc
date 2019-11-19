@@ -12,6 +12,9 @@
 #include "content/public/browser/render_widget_host_view.h"
 #include "extensions/browser/app_window/app_window.h"
 #include "ui/aura/window.h"
+#include "ui/base/ime/ime_bridge.h"
+#include "ui/base/ime/input_method.h"
+#include "ui/base/ime/text_input_client.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
@@ -33,6 +36,13 @@ content::RenderWidgetHostView* GetHostViewForWindow(aura::Window* window) {
   return nullptr;
 }
 
+ui::InputMethod* GetCurrentInputMethod() {
+  ui::IMEBridge* bridge = ui::IMEBridge::Get();
+  if (bridge && bridge->GetInputContextHandler())
+    return bridge->GetInputContextHandler()->GetInputMethod();
+  return nullptr;
+}
+
 }  // namespace
 
 ChromeKeyboardBoundsObserver::ChromeKeyboardBoundsObserver(
@@ -51,25 +61,25 @@ ChromeKeyboardBoundsObserver::~ChromeKeyboardBoundsObserver() {
 }
 
 void ChromeKeyboardBoundsObserver::OnKeyboardOccludedBoundsChanged(
-    const gfx::Rect& bounds) {
-  DVLOG(1) << "OnKeyboardOccludedBoundsChanged: " << bounds.ToString();
+    const gfx::Rect& screen_bounds) {
+  DVLOG(1) << "OnKeyboardOccludedBoundsChanged: " << screen_bounds.ToString();
   UpdateOccludedBounds(
       ChromeKeyboardControllerClient::Get()->IsKeyboardOverscrollEnabled()
-          ? bounds
+          ? screen_bounds
           : gfx::Rect());
 }
 
 void ChromeKeyboardBoundsObserver::UpdateOccludedBounds(
-    const gfx::Rect& occluded_bounds) {
-  DVLOG(1) << "UpdateOccludedBounds: " << occluded_bounds.ToString();
-  occluded_bounds_ = occluded_bounds;
+    const gfx::Rect& screen_bounds) {
+  DVLOG(1) << "UpdateOccludedBounds: " << screen_bounds.ToString();
+  occluded_bounds_in_screen_ = screen_bounds;
 
   std::unique_ptr<content::RenderWidgetHostIterator> hosts(
       content::RenderWidgetHost::GetRenderWidgetHosts());
 
-  // If |occluded_bounds| is empty (i.e. the keyboard is hidden or floating)
-  // reset the insets for all RenderWidgetHosts and remove observers.
-  if (occluded_bounds.IsEmpty()) {
+  // If the keyboard is hidden or floating then reset the insets for all
+  // RenderWidgetHosts and remove observers.
+  if (occluded_bounds_in_screen_.IsEmpty()) {
     while (content::RenderWidgetHost* host = hosts->GetNextHost()) {
       content::RenderWidgetHostView* view = host->GetView();
       if (view)
@@ -102,6 +112,13 @@ void ChromeKeyboardBoundsObserver::UpdateOccludedBounds(
     UpdateInsets(window, view);
     AddObservedWindow(window);
   }
+
+  // Window reshape can race with the IME trying to keep the text input caret
+  // visible. Do this here because the widget bounds change happens before the
+  // occluded bounds are updated. https://crbug.com/937722
+  ui::InputMethod* ime = GetCurrentInputMethod();
+  if (ime && ime->GetTextInputClient())
+    ime->GetTextInputClient()->EnsureCaretNotInRect(occluded_bounds_in_screen_);
 }
 
 void ChromeKeyboardBoundsObserver::AddObservedWindow(aura::Window* window) {
@@ -124,7 +141,8 @@ void ChromeKeyboardBoundsObserver::RemoveAllObservedWindows() {
 void ChromeKeyboardBoundsObserver::OnWidgetBoundsChanged(
     views::Widget* widget,
     const gfx::Rect& new_bounds) {
-  DVLOG(1) << "OnWidgetBoundsChanged: " << new_bounds.ToString();
+  DVLOG(1) << "OnWidgetBoundsChanged: " << widget->GetName() << " "
+           << new_bounds.ToString();
 
   aura::Window* window = widget->GetNativeView();
   if (!ShouldWindowOverscroll(window))
@@ -146,18 +164,20 @@ void ChromeKeyboardBoundsObserver::OnWidgetDestroying(views::Widget* widget) {
 void ChromeKeyboardBoundsObserver::UpdateInsets(
     aura::Window* window,
     content::RenderWidgetHostView* view) {
-  gfx::Rect view_bounds = view->GetViewBounds();
+  gfx::Rect view_bounds_in_screen = view->GetViewBounds();
   if (!ShouldEnableInsets(window)) {
     DVLOG(2) << "ResetInsets: " << window->GetName()
-             << " Bounds: " << view_bounds.ToString();
+             << " Bounds: " << view_bounds_in_screen.ToString();
     view->SetInsets(gfx::Insets());
     return;
   }
-  gfx::Rect intersect = gfx::IntersectRects(view_bounds, occluded_bounds_);
+  gfx::Rect intersect =
+      gfx::IntersectRects(view_bounds_in_screen, occluded_bounds_in_screen_);
   int overlap = intersect.height();
   DVLOG(2) << "SetInsets: " << window->GetName()
-           << " Bounds: " << view_bounds.ToString() << " Overlap: " << overlap;
-  if (overlap > 0 && overlap < view_bounds.height())
+           << " Bounds: " << view_bounds_in_screen.ToString()
+           << " Overlap: " << overlap;
+  if (overlap > 0 && overlap < view_bounds_in_screen.height())
     view->SetInsets(gfx::Insets(0, 0, overlap, 0));
   else
     view->SetInsets(gfx::Insets());

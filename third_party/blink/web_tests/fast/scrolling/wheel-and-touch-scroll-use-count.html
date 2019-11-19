@@ -1,0 +1,85 @@
+<!DOCTYPE HTML>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src='../../resources/gesture-util.js'></script>
+<style>
+
+  ::-webkit-scrollbar {
+    display: none;
+  }
+  body {
+    margin: 0px;
+    height: 1000px;
+    width: 1000px;
+  }
+  #scrollable {
+    background-color: #FF7F7F;
+    height: 600px;
+    width: 600px;
+    overflow: scroll;
+  }
+  #content {
+    height: 700px;
+    width: 700px;
+  }
+
+</style>
+
+<div id="scrollable">
+	<div id="content"></div>
+</div>
+
+<script>
+
+var scrollable = document.getElementById('scrollable');
+var rect = scrollable.getBoundingClientRect();
+var start_x = (rect.left + rect.right) / 2;
+var start_y = (rect.top + rect.bottom) / 2;
+
+async function scrollDown(pixels_to_scroll, gesture_source_type, precise_deltas) {
+  await waitForCompositorCommit();
+  const previous_scroll_offset = scrollable.scrollTop;
+
+  await smoothScroll(pixels_to_scroll, start_x, start_y, gesture_source_type,
+                    'down', SPEED_INSTANT, precise_deltas);
+  await waitFor(() => {
+    // To avoid test flakiness, instead of expecting to scroll by
+    // pixels_to_scroll precisely, up to 3 pixels error is also accepted.
+    // TODO(bokan): Change to precise expectation once https://crbug.com/897520
+    // fixed.
+    return approx_equals(scrollable.scrollTop - previous_scroll_offset,
+                         pixels_to_scroll,
+                         3 /* pixels */);
+  }, "Didn't scroll by approximately expected amount: " + pixels_to_scroll);
+  await waitForCompositorCommit();
+}
+
+var SCROLL_BY_TOUCH_COUNTER = 1847; // from enum Feature in UseCounter.h
+var SCROLL_BY_WHEEL_COUNTER = 1848; // from enum Feature in UseCounter.h
+var SCROLL_BY_PRECISIONTOUCHPAD_COUNTER = 2919; // from enum Feature in UseCounter.h
+
+promise_test(async () => {
+  await scrollDown(30, GestureSourceType.MOUSE_INPUT, false);
+  await waitFor(() => {
+    return internals.isUseCounted(document, SCROLL_BY_WHEEL_COUNTER);
+  }, "Didn't record wheel use count");
+}, "Scrolling by wheel on main/compositor should update usecounters.");
+
+const IS_MAC = navigator.platform.indexOf('Mac') == 0;
+if (!IS_MAC) {
+  promise_test(async () => {
+    await scrollDown(30, GestureSourceType.TOUCH_INPUT, true);
+    await waitFor(() => {
+      return internals.isUseCounted(document, SCROLL_BY_TOUCH_COUNTER);
+    }, "Didn't record touch use count");
+  }, "Scrolling by touch on main/compositor should update usecounters.");
+}
+
+promise_test(async () => {
+  await scrollDown(30, GestureSourceType.TOUCHPAD_INPUT, true);
+  await waitFor(() => {
+    return internals.isUseCounted(document, SCROLL_BY_PRECISIONTOUCHPAD_COUNTER);
+  }, "Didn't record precision touhchpad use count");
+}, "Scrolling by precision touchpad on main/compositor should update usecounters.");
+
+</script>

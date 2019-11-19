@@ -11,8 +11,7 @@ namespace bluez {
 
 // static
 void DBusBluezManagerWrapperLinux::Initialize() {
-  BluezDBusThreadManager::Initialize();
-  BluezDBusManager::Initialize();
+  BluezDBusManager::Initialize(nullptr /* system_bus */);
 }
 
 // static

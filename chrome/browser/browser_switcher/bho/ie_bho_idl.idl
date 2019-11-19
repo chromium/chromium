@@ -1,0 +1,36 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// This file will be processed by the MIDL tool to produce the type library
+// and marshalling code.
+
+import "oaidl.idl";
+import "ocidl.idl";
+
+[
+  object,
+  uuid(68CB9FDF-5E2E-41D7-A906-EF6C58AF0429), // B0608AA2-3C43-424B-9814-5A9DFF06AABE
+  dual,
+  nonextensible,
+  helpstring("IBrowserSwitcherBHO Interface"),
+  pointer_default(unique)
+]
+interface IBrowserSwitcherBHO : IDispatch{ };
+
+[
+  uuid(E042FD04-3D7E-4A3A-9B9E-D4D9C70B4484), // F240BFEF-88DD-4F6D-9816-D32E509B929B
+  version(1.0),
+  helpstring("BrowserSwitcher 1.0 Type Library")
+]
+library BrowserSwitcherLib
+{
+  importlib("stdole2.tlb");
+  [
+    uuid(08B5789A-BD8E-4DAE-85DF-EF792C658B86), // 8E425EB4-ADBD-4816-B1E8-49BB9DECF034
+    helpstring("BrowserSwitcherBHO Class")
+  ]
+  coclass BrowserSwitcherBHO {
+    [default] interface IBrowserSwitcherBHO;
+  };
+};

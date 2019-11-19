@@ -28,8 +28,8 @@ bool SessionCommand::GetPayload(void* dest, size_t count) const {
   return true;
 }
 
-base::Pickle* SessionCommand::PayloadAsPickle() const {
-  return new base::Pickle(contents(), static_cast<int>(size()));
+std::unique_ptr<base::Pickle> SessionCommand::PayloadAsPickle() const {
+  return std::make_unique<base::Pickle>(contents(), static_cast<int>(size()));
 }
 
 }  // namespace sessions

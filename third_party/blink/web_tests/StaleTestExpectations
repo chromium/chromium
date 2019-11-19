@@ -6,8 +6,3 @@
 #
 # Further documentation:
 # https://chromium.googlesource.com/chromium/src/+/master/docs/testing/web_test_expectations.md
-
-# We could fix this test for us and upstream it if the test shell user agent
-# would let us differentiate test_shell and WebKit DumpTreeNode.
-crbug.com/7482 [ Win Mac ] http/tests/misc/timer-vs-loading.html [ WontFix ]
-

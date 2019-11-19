@@ -30,34 +30,45 @@ namespace {{variant}} {
 {%-   endfor %}
 {%- endmacro %}
 
+{%- macro kythe_annotation(name) %}
+{%- if enable_kythe_annotations %}
+// @generated_from: {{name}}
+{%- endif %}
+{%- endmacro %}
+
 #ifndef {{header_guard}}
 #define {{header_guard}}
 
-#include "mojo/public/cpp/bindings/struct_ptr.h"
-
-{% if not disallow_interfaces -%}
-#include "mojo/public/cpp/bindings/associated_interface_ptr.h"
-#include "mojo/public/cpp/bindings/associated_interface_ptr_info.h"
-#include "mojo/public/cpp/bindings/associated_interface_request.h"
-#include "mojo/public/cpp/bindings/interface_ptr.h"
-#include "mojo/public/cpp/bindings/interface_request.h"
-#include "mojo/public/cpp/bindings/lib/control_message_handler.h"
-#include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
-#include "mojo/public/cpp/bindings/raw_ptr_impl_ref_traits.h"
-#include "mojo/public/cpp/bindings/thread_safe_interface_ptr.h"
-{%-   if for_blink %}
-#include "third_party/blink/renderer/platform/mojo/revocable_interface_ptr.h"
-{%-   endif %}
+{% if all_enums|length -%}
+#include <stdint.h>
 {%- endif %}
 
-{% if not disallow_native_types %}
-#include "mojo/public/cpp/bindings/lib/native_enum_serialization.h"
-#include "mojo/public/cpp/bindings/lib/native_struct_serialization.h"
+{% if structs|length -%}
+#include "mojo/public/cpp/bindings/struct_forward.h"
 {%- endif %}
 
-{%- if export_header %}
+{% if not disallow_interfaces and interfaces|length -%}
+#include "mojo/public/cpp/bindings/deprecated_interface_types_forward.h"
+{%- endif %}
+
+{% if not disallow_native_types and structs|length %}
+#include "mojo/public/interfaces/bindings/native_struct.mojom-forward.h"
+{%- endif %}
+
+{%- if export_header and module.constants|length %}
 #include "{{export_header}}"
+{%- endif %}
+
+{% if enable_kythe_annotations -%}
+#ifdef KYTHE_IS_RUNNING
+#pragma kythe_inline_metadata "Metadata comment"
+#endif
+{%- endif %}
+
+{% if not disallow_native_types and uses_native_types and all_enums|length -%}
+namespace mojo {
+enum class NativeEnum;
+}  // namespace mojo
 {%- endif %}
 
 {%- if variant %}
@@ -83,7 +94,12 @@ using {{enum|get_name_for_kind(flatten_nested_kind=True)}} = mojo::NativeEnum;
 {%- from "enum_macros.tmpl" import enum_hash_blink_forward%}
 {%- if for_blink %}
 {%-   if all_enums %}
-#include "third_party/blink/renderer/platform/wtf/hash_functions.h"
+
+namespace WTF {
+template <typename T>
+struct DefaultHash;
+}
+
 {%-   endif %}
 
 {%-   for enum in all_enums %}
@@ -94,6 +110,8 @@ using {{enum|get_name_for_kind(flatten_nested_kind=True)}} = mojo::NativeEnum;
 {%- endif %}
 
 {{namespace_begin()}}
+
+{%- set module_prefix = "%s"|format(namespaces_as_array|join(".")) %}
 
 {#- These are non-variant header only. #}
 {%- if not variant %}
@@ -133,6 +151,7 @@ using {{enum.name}} = {{enum.name}};  // Alias for definition in the parent name
 
 {#--- Constants #}
 {%- for constant in module.constants %}
+{{ kythe_annotation("%s.%s"|format(module_prefix, constant.name)) }}
 {{constant|format_constant_declaration}};
 {%- endfor %}
 
@@ -165,20 +184,21 @@ typedef mojo::StructPtr<{{union.name}}> {{union.name}}Ptr;
 {#--- Interface Forward Declarations -#}
 {%  for interface in interfaces %}
 class {{interface.name}};
+{{ kythe_annotation("%s.%s"|format(module_prefix, interface.name)) }}
 using {{interface.name}}Ptr = mojo::InterfacePtr<{{interface.name}}>;
-{%-   if for_blink %}
-using Revocable{{interface.name}}Ptr = ::blink::RevocableInterfacePtr<{{interface.name}}>;
-{%-   endif %}
 using {{interface.name}}PtrInfo = mojo::InterfacePtrInfo<{{interface.name}}>;
 using ThreadSafe{{interface.name}}Ptr =
     mojo::ThreadSafeInterfacePtr<{{interface.name}}>;
+{{ kythe_annotation("%s.%s"|format(module_prefix, interface.name)) }}
 using {{interface.name}}Request = mojo::InterfaceRequest<{{interface.name}}>;
+{{ kythe_annotation("%s.%s"|format(module_prefix, interface.name)) }}
 using {{interface.name}}AssociatedPtr =
     mojo::AssociatedInterfacePtr<{{interface.name}}>;
 using ThreadSafe{{interface.name}}AssociatedPtr =
     mojo::ThreadSafeAssociatedInterfacePtr<{{interface.name}}>;
 using {{interface.name}}AssociatedPtrInfo =
     mojo::AssociatedInterfacePtrInfo<{{interface.name}}>;
+{{ kythe_annotation("%s.%s"|format(module_prefix, interface.name)) }}
 using {{interface.name}}AssociatedRequest =
     mojo::AssociatedInterfaceRequest<{{interface.name}}>;
 {%  endfor %}

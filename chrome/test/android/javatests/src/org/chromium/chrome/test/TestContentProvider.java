@@ -20,7 +20,6 @@ import android.util.Log;
 import org.chromium.base.annotations.MainDex;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URLConnection;
 import java.util.HashMap;
@@ -58,9 +57,7 @@ public class TestContentProvider extends ContentProvider {
     private static final String RESET_RESOURCE_REQUEST_COUNTS = "reset_resource_request_counts";
     private static final String SET_DATA_PATH = "set_data_path";
     private static final String TAG = "TestContentProvider";
-    private enum ColumnIndex {
-        RESOURCE_REQUEST_COUNT_COLUMN,
-    }
+    private static final int EXPECTED_COLUMN_INDEX = 0;
     private Map<String, Integer> mResourceRequestCount;
     private String mDataFilePath;
 
@@ -89,7 +86,7 @@ public class TestContentProvider extends ContentProvider {
         final Cursor cursor = context.getContentResolver().query(uri, null, null, null, null);
         try {
             cursor.moveToFirst();
-            return cursor.getInt(ColumnIndex.RESOURCE_REQUEST_COUNT_COLUMN.ordinal());
+            return cursor.getInt(EXPECTED_COLUMN_INDEX);
         } finally {
             cursor.close();
         }
@@ -107,7 +104,7 @@ public class TestContentProvider extends ContentProvider {
     }
 
     @Override
-    public ParcelFileDescriptor openFile(final Uri uri, String mode) throws FileNotFoundException {
+    public ParcelFileDescriptor openFile(final Uri uri, String mode) {
         String resource = uri.getLastPathSegment();
         synchronized (mLock) {
             if (mResourceRequestCount.containsKey(resource)) {
@@ -159,7 +156,7 @@ public class TestContentProvider extends ContentProvider {
 
         @Override
         public boolean isNull(int columnIndex) {
-            return columnIndex != ColumnIndex.RESOURCE_REQUEST_COUNT_COLUMN.ordinal();
+            return columnIndex != EXPECTED_COLUMN_INDEX;
         }
 
         @Override
@@ -169,10 +166,8 @@ public class TestContentProvider extends ContentProvider {
 
         @Override
         public int getType(int columnIndex) {
-            if (columnIndex == ColumnIndex.RESOURCE_REQUEST_COUNT_COLUMN.ordinal()) {
-                return Cursor.FIELD_TYPE_INTEGER;
-            }
-            return Cursor.FIELD_TYPE_NULL;
+            return columnIndex == EXPECTED_COLUMN_INDEX ? Cursor.FIELD_TYPE_INTEGER
+                                                        : Cursor.FIELD_TYPE_NULL;
         }
 
         private void unsupported() {
@@ -193,10 +188,7 @@ public class TestContentProvider extends ContentProvider {
 
         @Override
         public int getInt(int columnIndex) {
-            if (columnIndex == ColumnIndex.RESOURCE_REQUEST_COUNT_COLUMN.ordinal()) {
-                return mResourceRequestCount;
-            }
-            return -1;
+            return columnIndex == EXPECTED_COLUMN_INDEX ? mResourceRequestCount : -1;
         }
 
         @Override

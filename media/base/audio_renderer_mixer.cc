@@ -11,6 +11,7 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "media/base/audio_renderer_mixer_input.h"
 #include "media/base/audio_timestamp_helper.h"
@@ -168,6 +169,11 @@ int AudioRendererMixer::Render(base::TimeDelta delay,
     audio_sink_->Pause();
     playing_ = false;
   }
+
+  // Since AudioConverter uses uint32_t for delay calculations, we must drop
+  // negative delay values (which are incorrect anyways).
+  if (delay < base::TimeDelta())
+    delay = base::TimeDelta();
 
   uint32_t frames_delayed =
       AudioTimestampHelper::TimeToFrames(delay, output_params_.sample_rate());

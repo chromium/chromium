@@ -35,7 +35,6 @@
 #include <map>
 #include <stdio.h>
 #include <string>
-#include <vector>
 
 // FIXME: We don't have any business owning this code. We should try to
 // upstream this to unicode.org if possible (for other implementations to use).
@@ -116,8 +115,8 @@ inline void Trim(std::string& s) {
   Ltrim(s);
 }
 
-static std::vector<std::string> ParseStringList(const std::string& str) {
-  std::vector<std::string> strings;
+static Vector<std::string> ParseStringList(const std::string& str) {
+  Vector<std::string> strings;
   static const std::string kSeparators(" \t");
   size_t last_pos = str.find_first_not_of(kSeparators);   // skip leading spaces
   size_t pos = str.find_first_of(kSeparators, last_pos);  // find next space
@@ -134,9 +133,9 @@ static int ParseInt(const std::string& str) {
   return atoi(str.c_str());
 }
 
-static std::vector<int> ParseIntList(const std::string& str) {
-  std::vector<int> ints;
-  std::vector<std::string> strings = ParseStringList(str);
+static Vector<int> ParseIntList(const std::string& str) {
+  Vector<int> ints;
+  Vector<std::string> strings = ParseStringList(str);
   for (size_t x = 0; x < strings.size(); x++) {
     int i = ParseInt(strings[x]);
     ints.push_back(i);
@@ -144,9 +143,9 @@ static std::vector<int> ParseIntList(const std::string& str) {
   return ints;
 }
 
-static std::vector<int> ParseLevels(const std::string& line) {
-  std::vector<int> levels;
-  std::vector<std::string> strings = ParseStringList(line);
+static Vector<int> ParseLevels(const std::string& line) {
+  Vector<int> levels;
+  Vector<std::string> strings = ParseStringList(line);
   for (size_t x = 0; x < strings.size(); x++) {
     const std::string& level_string = strings[x];
     int i;
@@ -164,34 +163,26 @@ static std::basic_string<UChar> ParseTestString(const std::string& line) {
   std::basic_string<UChar> test_string;
   static std::map<std::string, UChar> char_class_examples;
   if (char_class_examples.empty()) {
-    // FIXME: Explicit make_pair is ugly, but required for C++98 compat.
-    char_class_examples.insert(std::make_pair("L", 0x6c));     // 'l' for L
-    char_class_examples.insert(std::make_pair("R", 0x05D0));   // HEBREW ALEF
-    char_class_examples.insert(std::make_pair("EN", 0x33));    // '3' for EN
-    char_class_examples.insert(std::make_pair("ES", 0x2d));    // '-' for ES
-    char_class_examples.insert(std::make_pair("ET", 0x25));    // '%' for ET
-    char_class_examples.insert(std::make_pair("AN", 0x0660));  // arabic 0
-    char_class_examples.insert(std::make_pair("CS", 0x2c));    // ',' for CS
-    char_class_examples.insert(std::make_pair("B", 0x0A));     // <control-000A>
-    char_class_examples.insert(std::make_pair("S", 0x09));     // <control-0009>
-    char_class_examples.insert(std::make_pair("WS", 0x20));    // ' ' for WS
-    char_class_examples.insert(std::make_pair("ON", 0x3d));    // '=' for ON
-    char_class_examples.insert(
-        std::make_pair("NSM", 0x05BF));  // HEBREW POINT RAFE
-    char_class_examples.insert(std::make_pair("AL", 0x0608));  // ARABIC RAY
-    char_class_examples.insert(std::make_pair("BN", 0x00AD));  // SOFT HYPHEN
-    char_class_examples.insert(std::make_pair("LRE", 0x202A));
-    char_class_examples.insert(std::make_pair("RLE", 0x202B));
-    char_class_examples.insert(std::make_pair("PDF", 0x202C));
-    char_class_examples.insert(std::make_pair("LRO", 0x202D));
-    char_class_examples.insert(std::make_pair("RLO", 0x202E));
-    char_class_examples.insert(std::make_pair("LRI", 0x2066));
-    char_class_examples.insert(std::make_pair("RLI", 0x2067));
-    char_class_examples.insert(std::make_pair("FSI", 0x2068));
-    char_class_examples.insert(std::make_pair("PDI", 0x2069));
+    char_class_examples = {{"L", 0x6c},      // 'l' for L
+                           {"R", 0x05D0},    // HEBREW ALEF
+                           {"EN", 0x33},     // '3' for EN
+                           {"ES", 0x2d},     // '-' for ES
+                           {"ET", 0x25},     // '%' for ET
+                           {"AN", 0x0660},   // arabic 0
+                           {"CS", 0x2c},     // ',' for CS
+                           {"B", 0x0A},      // <control-000A>
+                           {"S", 0x09},      // <control-0009>
+                           {"WS", 0x20},     // ' ' for WS
+                           {"ON", 0x3d},     // '=' for ON
+                           {"NSM", 0x05BF},  // HEBREW POINT RAFE
+                           {"AL", 0x0608},   // ARABIC RAY
+                           {"BN", 0x00AD},   // SOFT HYPHEN
+                           {"LRE", 0x202A}, {"RLE", 0x202B}, {"PDF", 0x202C},
+                           {"LRO", 0x202D}, {"RLO", 0x202E}, {"LRI", 0x2066},
+                           {"RLI", 0x2067}, {"FSI", 0x2068}, {"PDI", 0x2069}};
   }
 
-  std::vector<std::string> char_classes = ParseStringList(line);
+  Vector<std::string> char_classes = ParseStringList(line);
   for (size_t i = 0; i < char_classes.size(); i++) {
     // FIXME: If the lookup failed we could return false for a parse error.
     test_string.push_back(char_class_examples.find(char_classes[i])->second);
@@ -218,8 +209,8 @@ void Harness<Runner>::Parse(std::istream& bidi_test_file) {
   // FIXME: UChar is an ICU type and cheating a bit to use here.
   // uint16_t might be more portable.
   std::basic_string<UChar> test_string;
-  std::vector<int> levels;
-  std::vector<int> reorder;
+  Vector<int> levels;
+  Vector<int> reorder;
   int paragraph_direction_mask;
 
   std::string line;
@@ -285,7 +276,7 @@ class CharacterHarness {
 static std::basic_string<UChar> ParseUCharHexadecimalList(
     const std::string& str) {
   std::basic_string<UChar> string;
-  std::vector<std::string> strings = ParseStringList(str);
+  Vector<std::string> strings = ParseStringList(str);
   for (size_t x = 0; x < strings.size(); x++) {
     int i = strtol(strings[x].c_str(), nullptr, 16);
     string.push_back((UChar)i);
@@ -308,7 +299,7 @@ static ParagraphDirection ParseParagraphDirection(const std::string& str) {
 }
 
 static int ParseSuppresedChars(const std::string& str) {
-  std::vector<std::string> strings = ParseStringList(str);
+  Vector<std::string> strings = ParseStringList(str);
   int suppresed_chars = 0;
   for (size_t x = 0; x < strings.size(); x++) {
     if (strings[x] == "x")
@@ -384,7 +375,7 @@ void CharacterHarness<Runner>::Parse(std::istream& bidi_test_file) {
     }
 
     int supressed_chars = ParseSuppresedChars(line.substr(0, separator_index));
-    std::vector<int> levels = ParseLevels(line.substr(0, separator_index));
+    Vector<int> levels = ParseLevels(line.substr(0, separator_index));
     if (test_string.size() != levels.size()) {
       ParseError(original_line, line_number);
       continue;
@@ -398,7 +389,7 @@ void CharacterHarness<Runner>::Parse(std::istream& bidi_test_file) {
       continue;
     }
 
-    std::vector<int> visual_ordering = ParseIntList(line);
+    Vector<int> visual_ordering = ParseIntList(line);
     if (test_string.size() - supressed_chars != visual_ordering.size()) {
       ParseError(original_line, line_number);
       continue;

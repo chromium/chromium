@@ -99,33 +99,15 @@ _java_reserved_types = [
   'R'
 ]
 
-def NameToComponent(name):
-  """ Returns a list of lowercase words corresponding to a given name. """
-  # Add underscores after uppercase letters when appropriate. An uppercase
-  # letter is considered the end of a word if it is followed by an upper and a
-  # lower. E.g. URLLoaderFactory -> URL_LoaderFactory
-  name = re.sub('([A-Z][0-9]*)(?=[A-Z][0-9]*[a-z])', r'\1_', name)
-  # Add underscores after lowercase letters when appropriate. A lowercase letter
-  # is considered the end of a word if it is followed by an upper.
-  # E.g. URLLoaderFactory -> URLLoader_Factory
-  name = re.sub('([a-z][0-9]*)(?=[A-Z])', r'\1_', name)
-  return [x.lower() for x in name.split('_')]
-
 def UpperCamelCase(name):
-  return ''.join([x.capitalize() for x in NameToComponent(name)])
+  return ''.join([x.capitalize() for x in generator.SplitCamelCase(name)])
 
 def CamelCase(name):
   uccc = UpperCamelCase(name)
   return uccc[0].lower() + uccc[1:]
 
 def ConstantStyle(name):
-  components = NameToComponent(name)
-  if components[0] == 'k' and len(components) > 1:
-    components = components[1:]
-  # variable cannot starts with a digit.
-  if components[0][0].isdigit():
-    components[0] = '_' + components[0]
-  return '_'.join([x.upper() for x in components])
+  return generator.ToConstantCase(name)
 
 def GetNameForElement(element):
   if (mojom.IsEnumKind(element) or mojom.IsInterfaceKind(element) or
@@ -134,7 +116,9 @@ def GetNameForElement(element):
     if name in _java_reserved_types:
       return name + '_'
     return name
-  if mojom.IsInterfaceRequestKind(element) or mojom.IsAssociatedKind(element):
+  if (mojom.IsInterfaceRequestKind(element) or
+      mojom.IsAssociatedKind(element) or mojom.IsPendingRemoteKind(element) or
+      mojom.IsPendingReceiverKind(element)):
     return GetNameForElement(element.kind)
   if isinstance(element, (mojom.Method,
                           mojom.Parameter,
@@ -150,7 +134,7 @@ def GetNameForElement(element):
   raise Exception('Unexpected element: %s' % element)
 
 def GetInterfaceResponseName(method):
-  return UpperCamelCase(method.name + 'Response')
+  return UpperCamelCase(method.name + '_Response')
 
 def ParseStringAttribute(attribute):
   assert isinstance(attribute, basestring)
@@ -199,8 +183,12 @@ def AppendEncodeDecodeParams(initial_params, context, kind, bit):
     params.append(GetArrayExpectedLength(kind))
   if mojom.IsInterfaceKind(kind):
     params.append('%s.MANAGER' % GetJavaType(context, kind))
+  if mojom.IsPendingRemoteKind(kind):
+    params.append('%s.MANAGER' % GetJavaType(context, kind.kind))
   if mojom.IsArrayKind(kind) and mojom.IsInterfaceKind(kind.kind):
     params.append('%s.MANAGER' % GetJavaType(context, kind.kind))
+  if mojom.IsArrayKind(kind) and mojom.IsPendingRemoteKind(kind.kind):
+    params.append('%s.MANAGER' % GetJavaType(context, kind.kind.kind))
   return params
 
 
@@ -211,13 +199,15 @@ def DecodeMethod(context, kind, offset, bit):
       return _DecodeMethodName(kind.kind) + 's'
     if mojom.IsEnumKind(kind):
       return _DecodeMethodName(mojom.INT32)
-    if mojom.IsInterfaceRequestKind(kind):
+    if mojom.IsInterfaceRequestKind(kind) or mojom.IsPendingReceiverKind(kind):
       return 'readInterfaceRequest'
-    if mojom.IsInterfaceKind(kind):
+    if mojom.IsInterfaceKind(kind) or mojom.IsPendingRemoteKind(kind):
       return 'readServiceInterface'
-    if mojom.IsAssociatedInterfaceRequestKind(kind):
+    if (mojom.IsAssociatedInterfaceRequestKind(kind) or
+        mojom.IsPendingAssociatedReceiverKind(kind)):
       return 'readAssociatedInterfaceRequestNotSupported'
-    if mojom.IsAssociatedInterfaceKind(kind):
+    if (mojom.IsAssociatedInterfaceKind(kind) or
+        mojom.IsPendingAssociatedRemoteKind(kind)):
       return 'readAssociatedServiceInterfaceNotSupported'
     return _spec_to_decode_method[kind.spec]
   methodName = _DecodeMethodName(kind)
@@ -271,12 +261,16 @@ def GetJavaType(context, kind, boxed=False, with_generics=True):
       mojom.IsInterfaceKind(kind) or
       mojom.IsUnionKind(kind)):
     return GetNameForKind(context, kind)
-  if mojom.IsInterfaceRequestKind(kind):
+  if mojom.IsPendingRemoteKind(kind):
+    return GetNameForKind(context, kind.kind)
+  if mojom.IsInterfaceRequestKind(kind) or mojom.IsPendingReceiverKind(kind):
     return ('org.chromium.mojo.bindings.InterfaceRequest<%s>' %
             GetNameForKind(context, kind.kind))
-  if mojom.IsAssociatedInterfaceKind(kind):
+  if (mojom.IsAssociatedInterfaceKind(kind) or
+      mojom.IsPendingAssociatedRemoteKind(kind)):
     return 'org.chromium.mojo.bindings.AssociatedInterfaceNotSupported'
-  if mojom.IsAssociatedInterfaceRequestKind(kind):
+  if (mojom.IsAssociatedInterfaceRequestKind(kind) or
+      mojom.IsPendingAssociatedReceiverKind(kind)):
     return 'org.chromium.mojo.bindings.AssociatedInterfaceRequestNotSupported'
   if mojom.IsMapKind(kind):
     if with_generics:
@@ -331,7 +325,6 @@ def ExpressionToText(context, token, kind_spec=''):
   if isinstance(token, mojom.NamedValue):
     return _TranslateNamedValue(token)
   if kind_spec.startswith('i') or kind_spec.startswith('u'):
-    # Add Long suffix to all integer literals.
     number = ast.literal_eval(token.lstrip('+ '))
     if not isinstance(number, (int, long)):
       raise ValueError('got unexpected type %r for int literal %r' % (
@@ -340,6 +333,8 @@ def ExpressionToText(context, token, kind_spec=''):
     # equivalent signed long.
     if number >= 2 ** 63:
       number -= 2 ** 64
+    if number < 2 ** 31 and number >= -2 ** 31:
+      return '%d' % number
     return '%dL' % number
   if isinstance(token, mojom.BuiltinValue):
     if token.value == 'double.INFINITY':
@@ -413,6 +408,15 @@ def TempDir():
   finally:
     shutil.rmtree(dirname)
 
+def EnumCoversContinuousRange(kind):
+  if not kind.fields:
+    return False
+  number_of_unique_keys = len(set(map(
+      lambda field: field.numeric_value, kind.fields)))
+  if kind.max_value - kind.min_value + 1 != number_of_unique_keys:
+    return False
+  return True
+
 class Generator(generator.Generator):
   def _GetJinjaExports(self):
     return {
@@ -428,6 +432,7 @@ class Generator(generator.Generator):
       'array_expected_length': GetArrayExpectedLength,
       'array': GetArrayKind,
       'constant_value': ConstantValue,
+      'covers_continuous_range': EnumCoversContinuousRange,
       'decode_method': DecodeMethod,
       'default_value': DefaultValue,
       'encode_method': EncodeMethod,
@@ -498,26 +503,26 @@ class Generator(generator.Generator):
     fileutil.EnsureDirectoryExists(self.output_dir)
 
     for struct in self.module.structs:
-      self.Write(self._GenerateStructSource(struct),
-                 '%s.java' % GetNameForElement(struct))
+      self.WriteWithComment(self._GenerateStructSource(struct),
+                            '%s.java' % GetNameForElement(struct))
 
     for union in self.module.unions:
-      self.Write(self._GenerateUnionSource(union),
-                 '%s.java' % GetNameForElement(union))
+      self.WriteWithComment(self._GenerateUnionSource(union),
+                            '%s.java' % GetNameForElement(union))
 
     for enum in self.module.enums:
-      self.Write(self._GenerateEnumSource(enum),
-                 '%s.java' % GetNameForElement(enum))
+      self.WriteWithComment(self._GenerateEnumSource(enum),
+                            '%s.java' % GetNameForElement(enum))
 
     for interface in self.module.interfaces:
-      self.Write(self._GenerateInterfaceSource(interface),
-                 '%s.java' % GetNameForElement(interface))
-      self.Write(self._GenerateInterfaceInternalSource(interface),
-                 '%s_Internal.java' % GetNameForElement(interface))
+      self.WriteWithComment(self._GenerateInterfaceSource(interface),
+                            '%s.java' % GetNameForElement(interface))
+      self.WriteWithComment(self._GenerateInterfaceInternalSource(interface),
+                            '%s_Internal.java' % GetNameForElement(interface))
 
     if self.module.constants:
-      self.Write(self._GenerateConstantsSource(self.module),
-                 '%s.java' % GetConstantsMainEntityName(self.module))
+      self.WriteWithComment(self._GenerateConstantsSource(self.module),
+                            '%s.java' % GetConstantsMainEntityName(self.module))
 
   def GenerateFiles(self, unparsed_args):
     # TODO(rockot): Support variant output for Java.

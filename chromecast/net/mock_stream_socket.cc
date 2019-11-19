@@ -23,7 +23,7 @@ MockStreamSocket::MockStreamSocket() {
   ON_CALL(*this, Write(_, _, _, _))
       .WillByDefault(Invoke(
           [](net::IOBuffer* buf, int buf_len,
-             const net::CompletionCallback& callback,
+             net::CompletionOnceCallback callback,
              const net::NetworkTrafficAnnotationTag& traffic_annotation) {
             return buf_len;
           }));

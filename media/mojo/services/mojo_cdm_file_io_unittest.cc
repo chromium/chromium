@@ -4,16 +4,19 @@
 
 #include "media/mojo/services/mojo_cdm_file_io.h"
 
-#include "base/files/file.h"
-#include "base/files/file_util.h"
-#include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "media/cdm/api/content_decryption_module.h"
+#include "mojo/public/cpp/bindings/associated_receiver.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using ::testing::_;
+using ::testing::Unused;
 using Status = cdm::FileIOClient::Status;
 
 namespace media {
@@ -30,41 +33,42 @@ class MockFileIOClient : public cdm::FileIOClient {
   MOCK_METHOD1(OnWriteComplete, void(Status));
 };
 
+class MockCdmFile : public mojom::CdmFile {
+ public:
+  MockCdmFile() = default;
+  ~MockCdmFile() override = default;
+
+  MOCK_METHOD1(Read, void(ReadCallback));
+  MOCK_METHOD2(Write, void(const std::vector<uint8_t>&, WriteCallback));
+};
+
 class MockCdmStorage : public mojom::CdmStorage {
  public:
-  MockCdmStorage() = default;
+  MockCdmStorage(mojo::PendingReceiver<mojom::CdmStorage> receiver,
+                 MockCdmFile* cdm_file)
+      : receiver_(this, std::move(receiver)), client_receiver_(cdm_file) {}
   ~MockCdmStorage() override = default;
 
-  bool SetUp() { return temp_directory_.CreateUniqueTempDir(); }
-
-  // MojoCdmFileIO calls CdmStorage::Open() to actually open the file.
-  // Simulate this by creating a file in the temp directory and returning it.
+  // MojoCdmFileIO calls CdmStorage::Open() to open the file. Receivers always
+  // succeed.
   void Open(const std::string& file_name, OpenCallback callback) override {
-    base::FilePath temp_file = temp_directory_.GetPath().AppendASCII(file_name);
-    DVLOG(1) << __func__ << " " << temp_file;
-    base::File file(temp_file, base::File::FLAG_CREATE_ALWAYS |
-                                   base::File::FLAG_READ |
-                                   base::File::FLAG_WRITE);
+    mojo::PendingAssociatedRemote<mojom::CdmFile> client_remote;
+    client_receiver_.Bind(client_remote.InitWithNewEndpointAndPassReceiver());
     std::move(callback).Run(mojom::CdmStorage::Status::kSuccess,
-                            std::move(file), nullptr);
+                            std::move(client_remote));
+
+    base::RunLoop().RunUntilIdle();
   }
 
  private:
-  base::ScopedTempDir temp_directory_;
+  mojo::Receiver<mojom::CdmStorage> receiver_;
+  mojo::AssociatedReceiver<mojom::CdmFile> client_receiver_;
 };
 
 }  // namespace
 
-// Currently MockCdmStorage::Open() returns NULL for the
-// CdmFileAssociatedPtrInfo, so it is not possible to connect to a CdmFile
-// object when writing data. This will require setting up a mojo connection
-// between MojoCdmFileIOTest and CdmStorage, rather than using the object
-// directly.
-//
 // Note that the current browser_test ECKEncryptedMediaTest.FileIOTest
-// does test writing (and reading) files using mojo. However, additional
-// unittests would be good.
-// TODO(crbug.com/777550): Implement tests that write to files.
+// does test reading and writing files with real data.
 
 class MojoCdmFileIOTest : public testing::Test, public MojoCdmFileIO::Delegate {
  protected:
@@ -74,10 +78,12 @@ class MojoCdmFileIOTest : public testing::Test, public MojoCdmFileIO::Delegate {
   // testing::Test implementation.
   void SetUp() override {
     client_ = std::make_unique<MockFileIOClient>();
-    cdm_storage_ = std::make_unique<MockCdmStorage>();
-    ASSERT_TRUE(cdm_storage_->SetUp());
+
+    cdm_storage_ = std::make_unique<MockCdmStorage>(
+        cdm_storage_remote_.BindNewPipeAndPassReceiver(), &cdm_file_);
+
     file_io_ = std::make_unique<MojoCdmFileIO>(this, client_.get(),
-                                               cdm_storage_.get());
+                                               cdm_storage_remote_.get());
   }
 
   // MojoCdmFileIO::Delegate implementation.
@@ -88,10 +94,12 @@ class MojoCdmFileIOTest : public testing::Test, public MojoCdmFileIO::Delegate {
 
   void ReportFileReadSize(int file_size_bytes) override {}
 
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_;
   std::unique_ptr<MojoCdmFileIO> file_io_;
-  std::unique_ptr<MockCdmStorage> cdm_storage_;
   std::unique_ptr<MockFileIOClient> client_;
+  mojo::Remote<mojom::CdmStorage> cdm_storage_remote_;
+  std::unique_ptr<MockCdmStorage> cdm_storage_;
+  MockCdmFile cdm_file_;
 };
 
 TEST_F(MojoCdmFileIOTest, OpenFile) {
@@ -140,31 +148,18 @@ TEST_F(MojoCdmFileIOTest, OpenDifferentFiles) {
   base::RunLoop().RunUntilIdle();
 }
 
-TEST_F(MojoCdmFileIOTest, OpenBadFileName) {
-  // Anything other than ASCII letter, digits, and -._ will fail. Add a
-  // Unicode character to the name.
-  const std::string kFileName = "openfile\u1234";
-  EXPECT_CALL(*client_.get(), OnOpenComplete(Status::kError));
-  file_io_->Open(kFileName.data(), kFileName.length());
-  base::RunLoop().RunUntilIdle();
-}
-
-TEST_F(MojoCdmFileIOTest, OpenTooLongFileName) {
-  // Limit is 256 characters, so try a file name with 257.
-  const std::string kFileName(257, 'a');
-  EXPECT_CALL(*client_.get(), OnOpenComplete(Status::kError));
-  file_io_->Open(kFileName.data(), kFileName.length());
-  base::RunLoop().RunUntilIdle();
-}
-
 TEST_F(MojoCdmFileIOTest, Read) {
   const std::string kFileName = "readfile";
   EXPECT_CALL(*client_.get(), OnOpenComplete(Status::kSuccess));
   file_io_->Open(kFileName.data(), kFileName.length());
   base::RunLoop().RunUntilIdle();
 
-  // File doesn't exist, so reading it should return 0 length buffer.
-  EXPECT_CALL(*client_.get(), OnReadComplete(Status::kSuccess, _, 0));
+  // Successful reads always return a 3-byte buffer.
+  EXPECT_CALL(cdm_file_, Read(_))
+      .WillOnce([](mojom::CdmFile::ReadCallback callback) {
+        std::move(callback).Run(mojom::CdmFile::Status::kSuccess, {1, 2, 3});
+      });
+  EXPECT_CALL(*client_.get(), OnReadComplete(Status::kSuccess, _, 3));
   file_io_->Read();
   base::RunLoop().RunUntilIdle();
 }
@@ -182,10 +177,60 @@ TEST_F(MojoCdmFileIOTest, TwoReads) {
   file_io_->Open(kFileName.data(), kFileName.length());
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_CALL(*client_.get(), OnReadComplete(Status::kSuccess, _, 0));
+  EXPECT_CALL(cdm_file_, Read(_))
+      .WillOnce([](mojom::CdmFile::ReadCallback callback) {
+        std::move(callback).Run(mojom::CdmFile::Status::kSuccess, {1, 2, 3, 4});
+      });
+  EXPECT_CALL(*client_.get(), OnReadComplete(Status::kSuccess, _, 4));
   EXPECT_CALL(*client_.get(), OnReadComplete(Status::kInUse, _, 0));
   file_io_->Read();
   file_io_->Read();
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(MojoCdmFileIOTest, Write) {
+  const std::string kFileName = "writefile";
+  std::vector<uint8_t> data{1, 2, 3, 4, 5};
+
+  EXPECT_CALL(*client_.get(), OnOpenComplete(Status::kSuccess));
+  file_io_->Open(kFileName.data(), kFileName.length());
+  base::RunLoop().RunUntilIdle();
+
+  // Writing always succeeds.
+  EXPECT_CALL(cdm_file_, Write(_, _))
+      .WillOnce([](Unused, mojom::CdmFile::WriteCallback callback) {
+        std::move(callback).Run(mojom::CdmFile::Status::kSuccess);
+      });
+  EXPECT_CALL(*client_.get(), OnWriteComplete(Status::kSuccess));
+  file_io_->Write(data.data(), data.size());
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(MojoCdmFileIOTest, WriteBeforeOpen) {
+  std::vector<uint8_t> data{1, 2, 3, 4, 5};
+
+  // File not open, so writing should fail.
+  EXPECT_CALL(*client_.get(), OnWriteComplete(Status::kError));
+  file_io_->Write(data.data(), data.size());
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(MojoCdmFileIOTest, TwoWrites) {
+  const std::string kFileName = "writefile";
+  std::vector<uint8_t> data{1, 2, 3, 4, 5};
+
+  EXPECT_CALL(*client_.get(), OnOpenComplete(Status::kSuccess));
+  file_io_->Open(kFileName.data(), kFileName.length());
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_CALL(cdm_file_, Write(_, _))
+      .WillOnce([](Unused, mojom::CdmFile::WriteCallback callback) {
+        std::move(callback).Run(mojom::CdmFile::Status::kSuccess);
+      });
+  EXPECT_CALL(*client_.get(), OnWriteComplete(Status::kSuccess));
+  EXPECT_CALL(*client_.get(), OnWriteComplete(Status::kInUse));
+  file_io_->Write(data.data(), data.size());
+  file_io_->Write(data.data(), data.size());
   base::RunLoop().RunUntilIdle();
 }
 

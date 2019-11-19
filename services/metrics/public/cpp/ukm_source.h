@@ -79,6 +79,10 @@ class METRICS_EXPORT UkmSource {
     // document navigations are fragment navigations, pushState/replaceState,
     // and same page history navigation.
     bool is_same_document_navigation = false;
+
+    // The navigation start time relative to session start. The navigation
+    // time within session should be monotonically increasing.
+    base::Optional<base::TimeTicks> navigation_time;
   };
 
   UkmSource(SourceId id, const GURL& url);

@@ -30,13 +30,15 @@ namespace cast {
 // discontinuities for playback.  Note: A NULL pointer can be returned when data
 // is not available (e.g., bad/missing packet).
 typedef base::Callback<void(std::unique_ptr<AudioBus> audio_bus,
-                            const base::TimeTicks& playout_time,
+                            base::TimeTicks playout_time,
                             bool is_continuous)>
     AudioFrameDecodedCallback;
 // TODO(miu): |video_frame| includes a timestamp, so use that instead.
-typedef base::Callback<void(const scoped_refptr<media::VideoFrame>& video_frame,
-                            const base::TimeTicks& playout_time,
-                            bool is_continuous)> VideoFrameDecodedCallback;
+typedef base::RepeatingCallback<void(
+    scoped_refptr<media::VideoFrame> video_frame,
+    base::TimeTicks playout_time,
+    bool is_continuous)>
+    VideoFrameDecodedCallback;
 
 // The following callback delivers encoded frame data and metadata.  The client
 // should examine the |frame_id| field to determine whether any frames have been

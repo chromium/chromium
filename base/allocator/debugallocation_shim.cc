@@ -7,28 +7,15 @@
 // AFDO can mess with them. Better not to use AFDO there.  This is a
 // temporary hack. We will add a mechanism in the build system to
 // avoid using -fauto-profile for tcmalloc files.
-#if !defined(__clang__) && (defined(OS_CHROMEOS) || __GNUC__ > 5)
+#if !defined(__clang__) && \
+    (defined(OS_CHROMEOS) || (__GNUC__ > 5 && __GNUC__ < 7))
 // Note that this option only seems to be available in the chromeos GCC 4.9
-// toolchain, and stock GCC 5 and up.
+// toolchain, and stock GCC 5 upto 7.
 #pragma GCC optimize ("no-auto-profile")
 #endif
-
-#include "base/allocator/buildflags.h"
-
-#if BUILDFLAG(USE_NEW_TCMALLOC)
 
 #if defined(TCMALLOC_FOR_DEBUGALLOCATION)
 #include "third_party/tcmalloc/chromium/src/debugallocation.cc"
 #else
 #include "third_party/tcmalloc/chromium/src/tcmalloc.cc"
-#endif
-
-#else
-
-#if defined(TCMALLOC_FOR_DEBUGALLOCATION)
-#include "third_party/tcmalloc/gperftools-2.0/chromium/src/debugallocation.cc"
-#else
-#include "third_party/tcmalloc/gperftools-2.0/chromium/src/tcmalloc.cc"
-#endif
-
 #endif

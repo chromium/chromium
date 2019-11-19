@@ -13,7 +13,7 @@ Running: testPseudoSectionPropertyEdit
 element.style { ()
 
 [expanded] 
-article, aside, footer, header, hgroup, main, nav, section { (user agent stylesheet)
+section { (user agent stylesheet)
     display: block;
 
 ======== Inherited from html ========
@@ -23,16 +23,16 @@ html { (user agent stylesheet)
 
 ======== Pseudo ::before element ========
 [expanded] 
-#pseudo::before { (<style>…</style>)
+#pseudo::before { (<style>)
     color: blue;
 
 ======== Pseudo ::after element ========
 [expanded] 
-#pseudo::after { (<style>…</style>)
+#pseudo::after { (<style>)
     border: 1px solid black;
 
 [expanded] 
-#pseudo::after { (<style>…</style>)
+#pseudo::after { (<style>)
 /-- overloaded --/     pseudo-property: "12";
 /-- overloaded --/     PROPERTY: INSERTED;
     color: red;

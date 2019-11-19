@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-<script src="../resources/js-test.js"></script>
 <style>
 #child {
     width: 50px;
@@ -24,26 +23,21 @@
 <div id="container">
     <div id="child"></div>
 </div>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
 <script>
-description("Canceling an animation should not leave dirty bits on display none elements.");
-
-window.jsTestIsAsync = true;
-if (window.testRunner) {
-    testRunner.waitUntilDone();
-    testRunner.dumpAsText();
-}
+var test = async_test("Canceling an animation should not leave dirty bits on display none elements");
 
 var child = document.getElementById("child");
 var container = document.getElementById("container");
 
-child.addEventListener("animationstart", function(event) {
+child.addEventListener("animationstart", test.step_func_done(() => {
     container.style.display = "none";
     child.style.borderWidth = "10px";
-    shouldBeEqualToString("getComputedStyle(child).borderWidth", "10px");
+    assert_equals(getComputedStyle(child).borderWidth, "10px");
     child.style.borderWidth = "5px";
-    shouldBeEqualToString("getComputedStyle(child).borderWidth", "5px");
-    finishJSTest();
-});
+    assert_equals(getComputedStyle(child).borderWidth, "5px");
+}));
 
 child.classList.add("animate");
 </script>

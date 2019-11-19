@@ -1,0 +1,49 @@
+{
+  "layers": [
+    {
+      "name": "Scrolling background of LayoutView #document",
+      "bounds": [808, 621],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF"
+    },
+    {
+      "name": "HorizontalScrollbar",
+      "position": [0, 585],
+      "bounds": [785, 15]
+    },
+    {
+      "name": "VerticalScrollbar",
+      "position": [785, 0],
+      "bounds": [15, 585]
+    },
+    {
+      "name": "LayoutView #document",
+      "bounds": [800, 600]
+    },
+    {
+      "name": "LayoutSVGRoot svg:svg",
+      "position": [200, 5],
+      "bounds": [166, 19],
+      "paintInvalidations": [
+        {
+          "object": "LayoutSVGRoot svg:svg",
+          "rect": [0, 0, 166, 19],
+          "reason": "paint property change"
+        }
+      ],
+      "transform": 1
+    }
+  ],
+  "transforms": [
+    {
+      "id": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [8, 8, 0, 1]
+      ]
+    }
+  ]
+}
+

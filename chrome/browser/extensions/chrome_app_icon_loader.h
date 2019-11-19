@@ -34,11 +34,11 @@ class ChromeAppIconLoader : public AppIconLoader, public ChromeAppIconDelegate {
   // IconLoader with perform the resizing. In both cases |resource_size_in_dip|
   // is used to pick the correct icon representation from resources.
   ChromeAppIconLoader(Profile* profile,
-                      int icon_size_in_dips,
+                      int icon_size_in_dip,
                       const ResizeFunction& resize_function,
                       AppIconLoaderDelegate* delegate);
   ChromeAppIconLoader(Profile* profile,
-                      int icon_size_in_dips,
+                      int icon_size_in_dip,
                       AppIconLoaderDelegate* delegate);
   ~ChromeAppIconLoader() override;
 

@@ -22,7 +22,7 @@ class PRINTING_EXPORT PrintingContextWin : public PrintingContext {
   ~PrintingContextWin() override;
 
   // Initializes with predefined settings.
-  Result InitWithSettingsForTest(const PrintSettings& settings);
+  Result InitWithSettingsForTest(std::unique_ptr<PrintSettings> settings);
 
   // PrintingContext implementation.
   void AskUserForSettings(int max_pages,

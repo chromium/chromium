@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<body>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+<script src="../resources/testdriver.js"></script>
+<script src="../resources/testdriver-vendor.js"></script>
+<script src="file:///gen/layout_test_data/mojo/public/js/mojo_bindings.js"></script>
+<script src="file:///gen/services/device/public/mojom/hid.mojom.js"></script>
+<script src="file:///gen/third_party/blink/public/mojom/hid/hid.mojom.js"></script>
+<script src="resources/hid-test-utils.js"></script>
+<script>
+
+const kTestVendorId = 0x1234;
+const kTestProductId = 0xabcd;
+
+hid_test(async (t, fake) => {
+  const guid = fake.addDevice(fake.makeDevice(kTestVendorId, kTestProductId));
+  fake.setSelectedDevice(guid);
+
+  await trustedClick();
+  const device = await navigator.hid.requestDevice({filters: []});
+  assert_true(device instanceof HIDDevice);
+  assert_false(device.opened);
+
+  await device.close();
+  assert_false(device.opened);
+}, 'Closing a closed device is not an error');
+
+hid_test(async (t, fake) => {
+  const guid = fake.addDevice(fake.makeDevice(kTestVendorId, kTestProductId));
+  fake.setSelectedDevice(guid);
+
+  await trustedClick();
+  const device = await navigator.hid.requestDevice({filters: []});
+  assert_false(device.opened);
+
+  await device.open();
+  assert_true(device.opened);
+
+  device.close();
+  assert_false(device.opened);
+}, 'Opening and closing a device works');
+
+hid_test(async (t, fake) => {
+  const guid = fake.addDevice(fake.makeDevice(kTestVendorId, kTestProductId));
+  fake.setSelectedDevice(guid);
+
+  await trustedClick();
+  const device = await navigator.hid.requestDevice({filters: []});
+  assert_false(device.opened);
+
+  await device.open();
+  return promise_rejects(t, 'InvalidStateError', device.open());
+}, 'Opening a device twice is an error');
+
+hid_test(async (t, fake) => {
+  const guid = fake.addDevice(fake.makeDevice(kTestVendorId, kTestProductId));
+  fake.setSelectedDevice(guid);
+
+  await trustedClick();
+  const device = await navigator.hid.requestDevice({filters: []});
+  assert_false(device.opened);
+
+  const firstRequest = device.open();
+  await promise_rejects(t, 'InvalidStateError', device.open());
+  await firstRequest;
+}, 'Opening a device twice simultaneously is an error');
+
+</script>
+</body>

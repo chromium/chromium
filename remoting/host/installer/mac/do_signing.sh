@@ -8,11 +8,8 @@
 # installer and then packages it into a .dmg.  It requires that Packages be
 # installed (for 'packagesbuild').
 # Packages: http://s.sudre.free.fr/Software/Packages/about.html
-#
-# usage: do_signing.sh output_dir input_dir [codesign_keychain codesign_id
-#            [productsign_id]]
-#
-# The final disk image (dmg) is placed in |output_dir|.
+# Optionally, it will submit the .dmg to Apple for notarization.
+# Run with "-h" to see usage information.
 
 set -e -u
 
@@ -40,14 +37,12 @@ setup() {
   REMOTE_ASSISTANCE_HOST_BUNDLE_NAME=$(read_property\
     "REMOTE_ASSISTANCE_HOST_BUNDLE_NAME")
 
-  # Binaries to sign.
+  # Binaries/bundles to sign.
   ME2ME_HOST="PrivilegedHelperTools/${HOST_BUNDLE_NAME}"
-  ME2ME_NM_HOST="PrivilegedHelperTools/${HOST_BUNDLE_NAME}/Contents/MacOS/"`
-                `"${NATIVE_MESSAGING_HOST_BUNDLE_NAME}/Contents/MacOS/"`
-                `"native_messaging_host"
-  IT2ME_NM_HOST="PrivilegedHelperTools/${HOST_BUNDLE_NAME}/Contents/MacOS/"`
-                `"${REMOTE_ASSISTANCE_HOST_BUNDLE_NAME}/Contents/MacOS/"`
-                `"remote_assistance_host"
+  ME2ME_EXE_DIR="${ME2ME_HOST}/Contents/MacOS/"
+  ME2ME_LAUNCHD_SERVICE="${ME2ME_EXE_DIR}/remoting_me2me_host_service"
+  ME2ME_NM_HOST="${ME2ME_EXE_DIR}/${NATIVE_MESSAGING_HOST_BUNDLE_NAME}/"
+  IT2ME_NM_HOST="${ME2ME_EXE_DIR}/${REMOTE_ASSISTANCE_HOST_BUNDLE_NAME}/"
   UNINSTALLER="Applications/${HOST_UNINSTALLER_NAME}.app"
 
   # The Chromoting Host installer is a meta-package that consists of 3
@@ -126,11 +121,16 @@ sign() {
   fi
 
   echo Signing "${name}"
+
+  # It may be more natural to define a separate array just for the keychain
+  # args, but there is a bug in older versions of Bash:
+  # Expanding a zero-size array with "set -u" aborts with "unbound variable".
+  local args=(-vv --sign "${id}")
   if [[ -n "${keychain}" ]]; then
-    codesign -vv -s "${id}" --keychain "${keychain}" "${name}"
-  else
-    codesign -vv -s "${id}" "${name}"
+      args+=(--keychain "${keychain}")
   fi
+  args+=(--timestamp --options runtime "${name}")
+  codesign "${args[@]}"
   codesign -v "${name}"
 }
 
@@ -139,10 +139,16 @@ sign_binaries() {
   local keychain="${2}"
   local id="${3}"
 
-  sign "${input_dir}/${ME2ME_NM_HOST}" "${keychain}" "${id}"
-  sign "${input_dir}/${IT2ME_NM_HOST}" "${keychain}" "${id}"
-  sign "${input_dir}/${ME2ME_HOST}" "${keychain}" "${id}"
-  sign "${input_dir}/${UNINSTALLER}" "${keychain}" "${id}"
+  local binaries=(\
+    "${ME2ME_LAUNCHD_SERVICE}" \
+    "${ME2ME_NM_HOST}" \
+    "${IT2ME_NM_HOST}" \
+    "${ME2ME_HOST}" \
+    "${UNINSTALLER}" \
+  )
+  for binary in "${binaries[@]}"; do
+    sign "${input_dir}/${binary}" "${keychain}" "${id}"
+  done
 }
 
 sign_installer() {
@@ -151,12 +157,12 @@ sign_installer() {
   local id="${3}"
 
   local package="${input_dir}/${PKG_DIR}/${PKG_FINAL}"
+  local args=(--sign "${id}" --timestamp)
   if [[ -n "${keychain}" ]]; then
-    productsign --sign "${id}" --keychain "${keychain}" \
-        "${package}" "${package}.signed"
-  else
-    productsign --sign "${id}" "${package}" "${package}.signed"
+      args+=(--keychain "${keychain}")
   fi
+  args+=("${package}" "${package}.signed")
+  productsign "${args[@]}"
   mv -f "${package}.signed" "${package}"
 }
 
@@ -193,6 +199,19 @@ build_dmg() {
   fi
 }
 
+notarize() {
+  local input_dir="${1}"
+  local dmg="${2}"
+  local user="${3}"
+
+  echo "Notarizing and stapling .dmg..."
+  "${input_dir}/notarize_thing.py" \
+      --user "${user}" \
+      --password @env:NOTARIZATION_PASSWORD \
+      --bundle-id "${HOST_BUNDLE_NAME}" \
+      "${dmg}"
+}
+
 cleanup() {
   if [[ "${#g_cleanup_dirs[@]}" > 0 ]]; then
     rm -rf "${g_cleanup_dirs[@]}"
@@ -201,10 +220,8 @@ cleanup() {
 
 usage() {
   echo "Usage: ${ME} -o output_dir -i input_dir "\
-      "[-c codesign_id] [-p productsign_id] [-k keychain]" >&2
-  echo >&2
-  echo "Usage (legacy): ${ME} output_dir input_dir [keychain codesign_id"\
-      "[productsign_id]]" >&2
+       "[-c codesign_id] [-p productsign_id] [-k keychain] "\
+       "[-n notarization_user]" >&2
   echo >&2
   echo "  Sign the binaries using the specified <codesign_id>, build" >&2
   echo "  the installer, and then sign the installer using the given" >&2
@@ -213,6 +230,9 @@ usage() {
   echo "  installer is built without signing any binaries." >&2
   echo "  If <keychain> is specified, it must contain all the signing ids." >&2
   echo "  If not specified, then the default keychains will be used." >&2
+  echo "  If <notarization_user> is specified, the final DMG will be" >&2
+  echo "  notarized by Apple and stapled, using the given user and the" >&2
+  echo "  password from \$NOTARIZATION_PASSWORD variable." >&2
 }
 
 main() {
@@ -222,10 +242,10 @@ main() {
   local codesign_id=""
   local productsign_id=""
   local keychain=""
+  local notarization_user=""
 
-  local opt_count=${#}
   local OPTNAME OPTIND OPTARG
-  while getopts ":o:i:c:p:k:h" OPTNAME; do
+  while getopts ":o:i:c:p:k:n:h" OPTNAME; do
     case ${OPTNAME} in
       o )
         output_dir="$(shell_safe_path "${OPTARG}")"
@@ -242,51 +262,19 @@ main() {
       k )
         keychain="$(shell_safe_path "${OPTARG}")"
         ;;
+      n )
+        notarization_user="${OPTARG}"
+        ;;
       h )
         usage
         exit 0
         ;;
       * )
-        err "Invalid command-line option: ${OPTARG}"
-        usage
-        exit 1
+        err "Ignoring invalid command-line option: ${OPTARG}"
         ;;
     esac
   done
   shift $(($OPTIND - 1))
-
-  # The opts need to be either all "flag-style" or all "position-style", not
-  # both. If there are any leftover opts at this point, it should be all the
-  # original ones (i.e. all positional).
-  # TODO(mmoss): The positional handling is legacy and can go away once the
-  # signing system has been migrated to using flags, which provides more
-  # flexibility for adding/removing opts if needed. b/31931170
-  if [[ ${#} -ne 0 ]]; then
-    if [[ ${opt_count} -ne ${#} ]]; then
-      err "Please use all flag opts, or all positional opts, not both."
-      usage
-      exit 1
-    fi
-    if [[ ${#} < 2 ]]; then
-      err "Too few positional opts."
-      usage
-      exit 1
-    fi
-    output_dir="$(shell_safe_path "${1}")"
-    input_dir="$(shell_safe_path "${2}")"
-    keychain=""
-    if [[ ${#} -ge 3 ]]; then
-      keychain="$(shell_safe_path "${3}")"
-    fi
-    codesign_id=""
-    if [[ ${#} -ge 4 ]]; then
-      codesign_id="${4}"
-    fi
-    productsign_id=""
-    if [[ ${#} -ge 5 ]]; then
-      productsign_id="${5}"
-    fi
-  fi
 
   if [[ -z "${output_dir}" || -z "${input_dir}" ]]; then
     err "output_dir and input_dir are required."
@@ -325,6 +313,15 @@ main() {
     sign_installer "${input_dir}" "${keychain}" "${productsign_id}"
   fi
   build_dmg "${input_dir}" "${output_dir}"
+  if [[ "${do_sign_binaries}" == 1 ]]; then
+    sign "${output_dir}/${DMG_FILE_NAME}" "${keychain}" "${codesign_id}"
+  fi
+
+  if [[ -n "${notarization_user}" ]]; then
+    notarize "${input_dir}" \
+             "${output_dir}/${DMG_FILE_NAME}" \
+             "${notarization_user}"
+  fi
 
   cleanup
 }

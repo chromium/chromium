@@ -1,3 +1,7 @@
+include_rules = {
+  "+chrome/android/features/media_router/jni_headers",
+}
+
 specific_include_rules = {
   # TODO(aberent): Fix layering violation crbug.com/396828
   "remote_media_player_manager\.": [

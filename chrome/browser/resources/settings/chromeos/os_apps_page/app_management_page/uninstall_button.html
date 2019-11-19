@@ -1,0 +1,41 @@
+<link rel="import" href="chrome://resources/html/polymer.html">
+
+<link rel="import" href="shared_style.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_button/cr_button.html">
+<link rel="import" href="chrome://resources/cr_elements/policy/cr_tooltip_icon.html">
+
+<dom-module id="app-management-uninstall-button">
+  <template>
+    <style include="app-management-shared-css">
+      :host {
+        align-items: center;
+        display: flex;
+        flex-direction: row;
+      }
+
+      #policyIndicator {
+        margin-inline-end: var(--settings-controlled-by-spacing);
+      }
+
+      #uninstallButton {
+        background: white;
+      }
+    </style>
+    <template is="dom-if" if="[[showPolicyIndicator_(app_)]]">
+      <cr-tooltip-icon
+          id="policyIndicator"
+          icon-class="cr20:domain"
+          tooltip-text="$i18n{appManagementAppInstalledByPolicyLabel}"
+          icon-aria-label="$i18n{appManagementAppInstalledByPolicyLabel}"
+          tooltip-position="bottom">
+      </cr-tooltip-icon>
+    </template>
+    <template is="dom-if" if="[[showUninstallButton_(app_)]]">
+      <cr-button id="uninstallButton" on-click="onClick_"
+          disabled$="[[getDisableState_(app_)]]">
+        $i18n{appManagementUninstallLabel}
+      </cr-button>
+    </template>
+  </template>
+  <script src="uninstall_button.js"></script>
+</dom-module>

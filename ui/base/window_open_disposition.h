@@ -9,7 +9,7 @@
 
 // DEPRECATED: Instead of introducing new references to this enum, use
 // the generated ui::mojom::WindowOpenDisposition in
-// ui/base/mojo/window_open_disposition.mojom.h.
+// ui/base/mojom/window_open_disposition.mojom.h.
 enum class WindowOpenDisposition {
   UNKNOWN,
   CURRENT_TAB,

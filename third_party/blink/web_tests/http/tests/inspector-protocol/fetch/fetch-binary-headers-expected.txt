@@ -1,0 +1,7 @@
+Tests binary headers in Fetch.fulfillRequest.
+Request to http://a.test/step1, type: Document
+Request to http://a.test/step2?%D1%82%D0%B5%D1%81%D1%82, type: Document
+Navigated to: http://a.test/step2?%D1%82%D0%B5%D1%81%D1%82
+Request to http://a.test/subresource, type: XHR
+Subresource headers: hétérogénéité, value
+

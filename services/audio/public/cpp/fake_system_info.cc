@@ -70,8 +70,8 @@ void FakeSystemInfo::GetInputDeviceInfo(const std::string& input_device_id,
   std::move(callback).Run(base::nullopt, base::nullopt);
 }
 
-void FakeSystemInfo::Bind(mojom::SystemInfoRequest request) {
-  bindings_.AddBinding(this, std::move(request));
+void FakeSystemInfo::Bind(mojo::PendingReceiver<mojom::SystemInfo> receiver) {
+  receivers_.Add(this, std::move(receiver));
 }
 
 }  // namespace audio

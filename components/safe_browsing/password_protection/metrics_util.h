@@ -23,25 +23,45 @@ extern const char kEnterprisePasswordEntryVerdictHistogram[];
 extern const char kEnterprisePasswordInterstitialHistogram[];
 extern const char kEnterprisePasswordPageInfoHistogram[];
 extern const char kEnterprisePasswordWarningDialogHistogram[];
-extern const char kGSuiteSyncPasswordEntryRequestOutcomeHistogram[];
+extern const char kGmailNonSyncPasswordInterstitialHistogram[];
+extern const char kGmailSyncPasswordPageInfoHistogram[];
+extern const char kGmailNonSyncPasswordPageInfoHistogram[];
+extern const char kGmailSyncPasswordWarningDialogHistogram[];
+extern const char kGmailNonSyncPasswordWarningDialogHistogram[];
+extern const char kNonSyncPasswordInterstitialHistogram[];
+extern const char kNonSyncPasswordPageInfoHistogram[];
+extern const char kGmailSyncPasswordEntryRequestOutcomeHistogram[];
+extern const char kGmailNonSyncPasswordEntryRequestOutcomeHistogram[];
+extern const char kGSuiteNonSyncPasswordEntryRequestOutcomeHistogram[];
 extern const char kGSuiteSyncPasswordEntryVerdictHistogram[];
+
+extern const char kGSuiteSyncPasswordEntryRequestOutcomeHistogram[];
+extern const char kGSuiteNonSyncPasswordEntryVerdictHistogram[];
+extern const char kGmailSyncPasswordEntryVerdictHistogram[];
+extern const char kGmailNonSyncPasswordEntryVerdictHistogram[];
 extern const char kGSuiteSyncPasswordInterstitialHistogram[];
+extern const char kGSuiteNonSyncPasswordInterstitialHistogram[];
 extern const char kGSuiteSyncPasswordPageInfoHistogram[];
+extern const char kGSuiteNonSyncPasswordPageInfoHistogram[];
 extern const char kGSuiteSyncPasswordWarningDialogHistogram[];
+extern const char kGSuiteNonSyncPasswordWarningDialogHistogram[];
 extern const char kPasswordOnFocusRequestOutcomeHistogram[];
 extern const char kPasswordOnFocusVerdictHistogram[];
+extern const char kNonSyncPasswordEntryRequestOutcomeHistogram[];
 extern const char kProtectedPasswordEntryRequestOutcomeHistogram[];
-extern const char kProtectedPasswordEntryVerdictHistogram[];
+extern const char kNonSyncPasswordEntryVerdictHistogram[];
 extern const char kSyncPasswordChromeSettingsHistogram[];
 extern const char kSyncPasswordEntryRequestOutcomeHistogram[];
 extern const char kSyncPasswordEntryVerdictHistogram[];
 extern const char kSyncPasswordInterstitialHistogram[];
 extern const char kSyncPasswordPageInfoHistogram[];
 extern const char kSyncPasswordWarningDialogHistogram[];
+extern const char kEnterprisePasswordAlertHistogram[];
+extern const char kGsuiteSyncPasswordAlertHistogram[];
+extern const char kGsuiteNonSyncPasswordAlertHistogram[];
 
-using PasswordReuseEvent = LoginReputationClientRequest::PasswordReuseEvent;
-using ReusedPasswordType =
-    LoginReputationClientRequest::PasswordReuseEvent::ReusedPasswordType;
+using ReusedPasswordAccountType =
+    LoginReputationClientRequest::PasswordReuseEvent::ReusedPasswordAccountType;
 using SyncAccountType =
     LoginReputationClientRequest::PasswordReuseEvent::SyncAccountType;
 using VerdictType = LoginReputationClientResponse::VerdictType;
@@ -133,30 +153,29 @@ enum class WarningUIType {
 
 // Logs the |outcome| to several UMA metrics, depending on the value
 // of |password_type| and |sync_account_type|.
-void LogPasswordEntryRequestOutcome(RequestOutcome outcome,
-                                    ReusedPasswordType password_type,
-                                    SyncAccountType sync_account_type);
+void LogPasswordEntryRequestOutcome(
+    RequestOutcome outcome,
+    ReusedPasswordAccountType password_account_type);
 
 // Logs the |outcome| to several UMA metrics for password on focus pings.
 void LogPasswordOnFocusRequestOutcome(RequestOutcome outcome);
 
 // Logs the |outcome| to several UMA metrics for password alert mode.
-void LogPasswordAlertModeOutcome(RequestOutcome outcome,
-                                 ReusedPasswordType password_type);
+void LogPasswordAlertModeOutcome(
+    RequestOutcome outcome,
+    ReusedPasswordAccountType password_account_type);
 
 // Logs password protection verdict based on |trigger_type|, |password_type|,
 // and |sync_account_type|.
 void LogPasswordProtectionVerdict(
     LoginReputationClientRequest::TriggerType trigger_type,
-    ReusedPasswordType password_type,
-    SyncAccountType sync_account_type,
+    ReusedPasswordAccountType password_account_type,
     VerdictType verdict_type);
 
 // Logs |reason| for why there's no ping sent out.
 void LogNoPingingReason(LoginReputationClientRequest::TriggerType trigger_type,
                         RequestOutcome reason,
-                        ReusedPasswordType password_type,
-                        SyncAccountType sync_account_type);
+                        ReusedPasswordAccountType password_account_type);
 
 // Logs the type of sync account.
 void LogSyncAccountType(SyncAccountType sync_account_type);
@@ -166,11 +185,13 @@ void LogPasswordProtectionNetworkResponseAndDuration(
     int response_code,
     const base::TimeTicks& request_start_time);
 
+// Logs when a sample ping of allowlist URLs is sent to Safe Browsing.
+void LogPasswordProtectionSampleReportSent();
+
 // Records user action on warnings to corresponding UMA histograms.
 void LogWarningAction(WarningUIType ui_type,
                       WarningAction action,
-                      ReusedPasswordType password_type,
-                      SyncAccountType sync_account_type);
+                      ReusedPasswordAccountType password_account_type);
 
 // Logs the number of verdict migrated to the new caching structure.
 void LogNumberOfVerdictMigrated(size_t verdicts_migrated);
@@ -182,9 +203,6 @@ void LogNumberOfReuseBeforeSyncPasswordChange(size_t reuse_count);
 void LogReferrerChainSize(
     LoginReputationClientResponse::VerdictType verdict_type,
     int referrer_chain_size);
-
-// Logs the content area size in DIPs.
-void LogContentsSize(const gfx::Size& size);
 
 }  // namespace safe_browsing
 

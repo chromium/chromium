@@ -63,6 +63,10 @@ class StereoPannerNode final : public AudioNode {
 
   AudioParam* pan() const;
 
+  // InspectorHelperMixin
+  void ReportDidCreate() final;
+  void ReportWillBeDestroyed() final;
+
  private:
   Member<AudioParam> pan_;
 };

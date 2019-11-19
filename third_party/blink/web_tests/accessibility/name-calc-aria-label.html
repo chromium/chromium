@@ -1,14 +1,13 @@
 <!DOCTYPE HTML>
 <script src="../resources/testharness.js"></script>
 <script src="../resources/testharnessreport.js"></script>
-<script src="../resources/run-after-layout-and-paint.js"></script>
 
 <div class="container">
     <button id="labelOnly" aria-label="Label">Contents</button>
 </div>
 
 <script>
-test_after_layout_and_paint(function(t) {
+test(function(t) {
     var axLabelOnly = accessibilityController.accessibleElementById("labelOnly");
     assert_equals(axLabelOnly.name, "Label");
     assert_equals(axLabelOnly.nameFrom, "attribute");
@@ -20,7 +19,7 @@ test_after_layout_and_paint(function(t) {
 </div>
 
 <script>
-test_after_layout_and_paint(function(t) {
+test(function(t) {
     var axEmptyLabel1 = accessibilityController.accessibleElementById("emptyLabel1");
     assert_equals(axEmptyLabel1.name, "Contents");
     assert_equals(axEmptyLabel1.nameFrom, "contents");
@@ -32,7 +31,7 @@ test_after_layout_and_paint(function(t) {
 </div>
 
 <script>
-test_after_layout_and_paint(function(t) {
+test(function(t) {
     var axEmptyLabel2 = accessibilityController.accessibleElementById("emptyLabel2");
     assert_equals(axEmptyLabel2.name, "Contents");
     assert_equals(axEmptyLabel2.nameFrom, "contents");
@@ -45,7 +44,7 @@ test_after_layout_and_paint(function(t) {
 </div>
 
 <script>
-test_after_layout_and_paint(function(t) {
+test(function(t) {
     var axLabelledby1 = accessibilityController.accessibleElementById("labelledby1");
     assert_equals(axLabelledby1.name, "Labelledby 1");
     assert_equals(axLabelledby1.nameFrom, "relatedElement");
@@ -60,7 +59,7 @@ test_after_layout_and_paint(function(t) {
 </div>
 
 <script>
-test_after_layout_and_paint(function(t) {
+test(function(t) {
     var axLabelledby2 = accessibilityController.accessibleElementById("labelledby2");
     assert_equals(axLabelledby2.name, "Label 2 label");
     assert_equals(axLabelledby2.nameFrom, "relatedElement");
@@ -75,7 +74,7 @@ test_after_layout_and_paint(function(t) {
 </div>
 
 <script>
-test_after_layout_and_paint(function(t) {
+test(function(t) {
     var axLabelledby3 = accessibilityController.accessibleElementById("labelledby3");
     assert_equals(axLabelledby3.name, "Contents 3");
     assert_equals(axLabelledby3.nameFrom, "relatedElement");
@@ -91,7 +90,7 @@ test_after_layout_and_paint(function(t) {
 </div>
 
 <script>
-test_after_layout_and_paint(function(t) {
+test(function(t) {
     var axLabelledby4 = accessibilityController.accessibleElementById("labelledby4");
     assert_equals(axLabelledby4.name, "Label 4 label");
     assert_equals(axLabelledby4.nameFrom, "relatedElement");

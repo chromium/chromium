@@ -12,11 +12,9 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/time/default_tick_clock.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/io_thread.h"
 #include "chrome/browser/net/dns_probe_service_factory.h"
 #include "chrome/browser/net/dns_probe_test_util.h"
 #include "chrome/browser/net/net_error_tab_helper.h"
-#include "chrome/browser/net/url_request_mock_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -34,6 +32,9 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/url_loader_interceptor.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/net_errors.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -60,10 +61,10 @@ namespace chrome_browser_net {
 namespace {
 
 // Postable function to run a Closure on the UI thread.  Since
-// base::PostTaskWithTraits returns a bool, it can't directly be posted to
+// base::PostTask returns a bool, it can't directly be posted to
 // another thread.
 void RunClosureOnUIThread(const base::Closure& closure) {
-  base::PostTaskWithTraits(FROM_HERE, {BrowserThread::UI}, closure);
+  base::PostTask(FROM_HERE, {BrowserThread::UI}, closure);
 }
 
 // Wraps DnsProbeService and delays probes until someone calls
@@ -144,18 +145,18 @@ class DelayableRequest {
 class DelayedURLLoader : public network::mojom::URLLoader,
                          public DelayableRequest {
  public:
-  DelayedURLLoader(network::mojom::URLLoaderRequest request,
-                   network::mojom::URLLoaderClientPtr client,
+  DelayedURLLoader(mojo::PendingReceiver<network::mojom::URLLoader> receiver,
+                   mojo::Remote<network::mojom::URLLoaderClient> client,
                    int net_error,
                    bool should_delay,
                    DestructionCallback destruction_callback)
-      : binding_(this, std::move(request)),
+      : receiver_(this, std::move(receiver)),
         client_(std::move(client)),
         net_error_(net_error),
         should_delay_(should_delay),
         destruction_callback_(std::move(destruction_callback)) {
-    binding_.set_connection_error_handler(base::BindOnce(
-        &DelayedURLLoader::OnConnectionError, base::Unretained(this)));
+    receiver_.set_disconnect_handler(base::BindOnce(
+        &DelayedURLLoader::OnMojoDisconnect, base::Unretained(this)));
     if (!should_delay)
       SendResponse();
   }
@@ -182,20 +183,19 @@ class DelayedURLLoader : public network::mojom::URLLoader,
       std::move(destruction_callback_).Run(this);
   }
 
-  void OnConnectionError() { delete this; }
+  void OnMojoDisconnect() { delete this; }
 
   // mojom::URLLoader implementation:
   void FollowRedirect(const std::vector<std::string>& removed_headers,
                       const net::HttpRequestHeaders& modified_headers,
                       const base::Optional<GURL>& new_url) override {}
-  void ProceedWithResponse() override {}
   void SetPriority(net::RequestPriority priority,
                    int32_t intra_priority_value) override {}
   void PauseReadingBodyFromNet() override {}
   void ResumeReadingBodyFromNet() override {}
 
-  mojo::Binding<network::mojom::URLLoader> binding_;
-  network::mojom::URLLoaderClientPtr client_;
+  mojo::Receiver<network::mojom::URLLoader> receiver_;
+  mojo::Remote<network::mojom::URLLoaderClient> client_;
   int net_error_;
   bool should_delay_;
   DestructionCallback destruction_callback_;
@@ -217,7 +217,7 @@ class BreakableCorrectionInterceptor {
   void InterceptURLLoaderRequest(
       content::URLLoaderInterceptor::RequestParams* params) {
     DelayedURLLoader* job = new DelayedURLLoader(
-        std::move(params->request), std::move(params->client), net_error_,
+        std::move(params->receiver), std::move(params->client), net_error_,
         delay_requests_,
         base::BindOnce(&BreakableCorrectionInterceptor::OnRequestDestroyed,
                        base::Unretained(this)));
@@ -387,7 +387,8 @@ class DnsProbeBrowserTest : public InProcessBrowserTest {
     return network_context_.get();
   }
 
-  network::mojom::DnsConfigChangeManagerPtr GetDnsConfigChangeManager();
+  mojo::Remote<network::mojom::DnsConfigChangeManager>
+  GetDnsConfigChangeManager();
 
   std::unique_ptr<FakeHostResolverNetworkContext> network_context_;
   std::unique_ptr<FakeDnsConfigChangeManager> dns_config_change_manager_;
@@ -422,10 +423,9 @@ void DnsProbeBrowserTest::SetUpOnMainThread() {
   browser()->profile()->GetPrefs()->SetBoolean(
       prefs::kAlternateErrorPagesEnabled, true);
 
-  base::PostTaskWithTraits(
-      FROM_HERE, {BrowserThread::IO},
-      BindOnce(&DnsProbeBrowserTestIOThreadHelper::SetUpOnIOThread,
-               Unretained(helper_)));
+  base::PostTask(FROM_HERE, {BrowserThread::IO},
+                 BindOnce(&DnsProbeBrowserTestIOThreadHelper::SetUpOnIOThread,
+                          Unretained(helper_)));
 
   ASSERT_TRUE(embedded_test_server()->Start());
 
@@ -437,7 +437,7 @@ void DnsProbeBrowserTest::SetUpOnMainThread() {
 }
 
 void DnsProbeBrowserTest::TearDownOnMainThread() {
-  base::PostTaskWithTraits(
+  base::PostTask(
       FROM_HERE, {BrowserThread::IO},
       BindOnce(
           &DnsProbeBrowserTestIOThreadHelper::CleanUpOnIOThreadAndDeleteHelper,
@@ -503,7 +503,7 @@ void DnsProbeBrowserTest::SetFakeHostResolverResults(
 void DnsProbeBrowserTest::SetCorrectionServiceBroken(bool broken) {
   int net_error = broken ? net::ERR_NAME_NOT_RESOLVED : net::OK;
 
-  base::PostTaskWithTraits(
+  base::PostTask(
       FROM_HERE, {BrowserThread::IO},
       BindOnce(&DnsProbeBrowserTestIOThreadHelper::SetCorrectionServiceNetError,
                Unretained(helper_), net_error));
@@ -511,7 +511,7 @@ void DnsProbeBrowserTest::SetCorrectionServiceBroken(bool broken) {
 
 void DnsProbeBrowserTest::SetCorrectionServiceDelayRequests(
     bool delay_requests) {
-  base::PostTaskWithTraits(
+  base::PostTask(
       FROM_HERE, {BrowserThread::IO},
       BindOnce(
           &DnsProbeBrowserTestIOThreadHelper::SetCorrectionServiceDelayRequests,
@@ -520,7 +520,7 @@ void DnsProbeBrowserTest::SetCorrectionServiceDelayRequests(
 
 void DnsProbeBrowserTest::WaitForDelayedRequestDestruction() {
   base::RunLoop run_loop;
-  base::PostTaskWithTraits(
+  base::PostTask(
       FROM_HERE, {BrowserThread::IO},
       BindOnce(
           &DnsProbeBrowserTestIOThreadHelper::SetRequestDestructionCallback,
@@ -618,12 +618,13 @@ void DnsProbeBrowserTest::OnDnsProbeStatusSent(
     awaiting_dns_probe_status_run_loop_->Quit();
 }
 
-network::mojom::DnsConfigChangeManagerPtr
+mojo::Remote<network::mojom::DnsConfigChangeManager>
 DnsProbeBrowserTest::GetDnsConfigChangeManager() {
-  network::mojom::DnsConfigChangeManagerPtr dns_config_change_manager_ptr;
+  mojo::Remote<network::mojom::DnsConfigChangeManager>
+      dns_config_change_manager_remote;
   dns_config_change_manager_ = std::make_unique<FakeDnsConfigChangeManager>(
-      mojo::MakeRequest(&dns_config_change_manager_ptr));
-  return dns_config_change_manager_ptr;
+      dns_config_change_manager_remote.BindNewPipeAndPassReceiver());
+  return dns_config_change_manager_remote;
 }
 
 // Test Fixture for tests where the DNS probes should succeed.

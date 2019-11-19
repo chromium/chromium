@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<style>
+  img {
+    will-change: transform; /* Enable direct compositing. */
+    width: 250px;
+  }
+  .filter {
+    -webkit-filter: blur(3px);
+  }
+</style>
+
+<script>
+  function preload_decode_append_img(title, url, parentNodeId) {
+      const img = new Image();
+      img.title = title;
+      img.src = url;
+      img.decode().then(() => {
+          var parentNode = document.getElementById(parentNodeId);
+          parentNode.appendChild(img);
+          img.classList.add('filter');
+          if (++images == expectedNumberImages && window.testRunner) {
+              setTimeout(function() { testRunner.notifyDone() }, 0);
+          }
+      }).catch(() => {
+          var error = document.createElement('p');
+          error.innerText = 'Error loading image'
+          document.body.appendChild(error);
+      });
+  }
+
+  var images = 0;
+  var expectedNumberImages = 3;
+  preload_decode_append_img('png image',
+                            '../resources/red-at-12-oclock-with-color-profile.png',
+                            'png-image');
+  preload_decode_append_img('jpeg image',
+                            '../resources/red-at-12-oclock-with-color-profile.jpg',
+                            'jpeg-image');
+  preload_decode_append_img('webp image',
+                            '../resources/webp-color-profile-lossy.webp',
+                            'webp-image');
+
+  if (window.testRunner)
+      testRunner.waitUntilDone();
+</script>
+
+
+<body>
+  <!-- The red sector of the images should be at 12 o'clock. -->
+  <span id="png-image"></span>
+  <span id="jpeg-image"></span>
+  <span id="webp-image"></span>
+</body>
+
+</html>

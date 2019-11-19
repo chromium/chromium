@@ -1,0 +1,2039 @@
+<?xml version="1.0" ?>
+<manifest
+    package="org.chromium.chrome"
+    platformBuildVersionCode="29"
+    platformBuildVersionName="10"
+    tools:ignore="MissingVersion"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+  <uses-sdk android:minSdkVersion="24" android:targetSdkVersion="29"/>
+  <uses-permission-sdk-23 android:name="android.permission.USE_FINGERPRINT"/>
+  <uses-permission-sdk-23 android:name="android.permission.REQUEST_INSTALL_PACKAGES"/>
+  <uses-permission-sdk-23 android:name="android.permission.REORDER_TASKS"/>
+  <uses-permission-sdk-23 android:name="android.permission.READ_CONTACTS"/>
+  <uses-permission-sdk-23 android:name="android.permission.BLUETOOTH_ADMIN"/>
+  <uses-permission-sdk-23 android:name="android.permission.BLUETOOTH"/>
+  <uses-permission-sdk-23 android:name="android.permission.ACCESS_WIFI_STATE"/>
+  <uses-permission android:name="org.chromium.chrome.permission.READ_WRITE_BOOKMARK_FOLDERS"/>
+  <uses-permission android:name="org.chromium.chrome.permission.C2D_MESSAGE"/>
+  <uses-permission android:name="org.chromium.chrome.TOS_ACKED"/>
+  <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE"/>
+  <uses-permission android:name="com.google.android.apps.now.CURRENT_ACCOUNT_ACCESS"/>
+  <uses-permission android:name="com.chrome.permission.DEVICE_EXTRAS"/>
+  <uses-permission android:name="com.android.launcher.permission.INSTALL_SHORTCUT"/>
+  <uses-permission android:name="com.android.browser.permission.WRITE_HISTORY_BOOKMARKS"/>
+  <uses-permission android:name="com.android.browser.permission.READ_HISTORY_BOOKMARKS"/>
+  <uses-permission android:name="android.permission.WRITE_SYNC_SETTINGS"/>
+  <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+  <uses-permission android:name="android.permission.WAKE_LOCK"/>
+  <uses-permission android:name="android.permission.VIBRATE"/>
+  <uses-permission android:name="android.permission.USE_CREDENTIALS"/>
+  <uses-permission android:name="android.permission.RECORD_AUDIO"/>
+  <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+  <uses-permission android:name="android.permission.READ_SYNC_STATS"/>
+  <uses-permission android:name="android.permission.READ_SYNC_SETTINGS"/>
+  <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+  <uses-permission android:name="android.permission.NFC"/>
+  <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS"/>
+  <uses-permission android:name="android.permission.MANAGE_ACCOUNTS"/>
+  <uses-permission android:name="android.permission.INTERNET"/>
+  <uses-permission android:name="android.permission.GET_ACCOUNTS"/>
+  <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+  <uses-permission android:name="android.permission.DOWNLOAD_WITHOUT_NOTIFICATION"/>
+  <uses-permission android:name="android.permission.CAMERA"/>
+  <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+  <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+  <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+  <uses-feature android:name="android.software.vr.mode" android:required="false"/>
+  <uses-feature android:name="android.hardware.vr.high_performance" android:required="false"/>
+  <uses-feature
+      android:name="android.hardware.vr.headtracking"
+      android:required="false"
+      android:version="1"/>
+  <uses-feature android:name="android.hardware.touchscreen" android:required="false"/>
+  <uses-feature android:name="android.hardware.sensor.gyroscope" android:required="false"/>
+  <uses-feature android:name="android.hardware.sensor.accelerometer" android:required="false"/>
+  <uses-feature android:name="android.hardware.screen.landscape" android:required="false"/>
+  <uses-feature android:name="android.hardware.microphone" android:required="false"/>
+  <uses-feature android:name="android.hardware.location.gps" android:required="false"/>
+  <uses-feature android:name="android.hardware.camera" android:required="false"/>
+  <uses-feature android:glEsVersion="0x00020000"/>
+  <permission
+      android:name="org.chromium.chrome.permission.READ_WRITE_BOOKMARK_FOLDERS"
+      android:protectionLevel="signatureOrSystem"/>
+  <permission
+      android:name="org.chromium.chrome.permission.CHILD_SERVICE"
+      android:protectionLevel="signature"/>
+  <permission
+      android:name="org.chromium.chrome.permission.C2D_MESSAGE"
+      android:protectionLevel="signature"/>
+  <permission
+      android:name="org.chromium.chrome.TOS_ACKED"
+      android:protectionLevel="signatureOrSystem"/>
+  <permission
+      android:label="Debug
+      web
+      pages"
+      android:name="org.chromium.chrome.permission.DEBUG"
+      android:permissionGroup="android.permission-group.DEVELOPMENT_TOOLS"
+      android:protectionLevel="signature"/>
+  <application
+      android:allowBackup="false"
+      android:appComponentFactory="android.support.v4.app.CoreComponentFactory"
+      android:extractNativeLibs="false"
+      android:icon="@drawable/ic_launcher"
+      android:label="@string/app_name"
+      android:largeHeap="false"
+      android:manageSpaceActivity="@string/manage_space_activity"
+      android:multiArch="true"
+      android:name="org.chromium.chrome.browser.MonochromeApplication"
+      android:networkSecurityConfig="@xml/network_security_config"
+      android:roundIcon="@drawable/ic_launcher_round"
+      android:supportsRtl="true"
+      android:use32bitAbi="true">
+    <activity
+        android:autoRemoveFromRecents="false"
+        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize|uiMode|density"
+        android:exported="false"
+        android:hardwareAccelerated="false"
+        android:name="org.chromium.chrome.browser.customtabs.SeparateTaskCustomTabActivity"
+        android:persistableMode="persistNever"
+        android:resizeableActivity="true"
+        android:supportsPictureInPicture="true"
+        android:taskAffinity=""
+        android:theme="@style/Theme.Chromium.Activity"
+        android:windowSoftInputMode="adjustResize">
+      <intent-filter>
+        <action android:name="org.chromium.chrome.browser.dummy.action"/>
+        <category android:name="com.google.intent.category.CARDBOARD"/>
+        <category android:name="com.google.intent.category.DAYDREAM"/>
+      </intent-filter>
+    </activity>
+    <activity
+        android:autoRemoveFromRecents="true"
+        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize"
+        android:excludeFromRecents="true"
+        android:label="@string/fre_activity_label"
+        android:launchMode="singleInstance"
+        android:name="org.chromium.chrome.browser.firstrun.FirstRunActivity"
+        android:theme="@style/Theme.Chromium.DialogWhenLarge"
+        android:windowSoftInputMode="stateHidden|adjustPan"/>
+    <activity
+        android:autoRemoveFromRecents="true"
+        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize"
+        android:excludeFromRecents="true"
+        android:label="@string/fre_activity_label"
+        android:launchMode="singleInstance"
+        android:name="org.chromium.chrome.browser.firstrun.LightweightFirstRunActivity"
+        android:theme="@style/Theme.Chromium.AlertDialog.NoActionBar"
+        android:windowSoftInputMode="stateHidden|adjustPan"/>
+    <activity
+        android:autoRemoveFromRecents="true"
+        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize"
+        android:excludeFromRecents="true"
+        android:label="@string/fre_activity_label"
+        android:launchMode="singleInstance"
+        android:name="org.chromium.chrome.browser.firstrun.TabbedModeFirstRunActivity"
+        android:theme="@style/Theme.Chromium.TabbedMode"
+        android:windowSoftInputMode="stateHidden|adjustPan"/>
+    <activity
+        android:autoRemoveFromRecents="true"
+        android:name="org.chromium.chrome.browser.sync.ui.PassphraseActivity"
+        android:theme="@style/Theme.Chromium.Activity"/>
+    <activity
+        android:clearTaskOnLaunch="true"
+        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize"
+        android:excludeFromRecents="true"
+        android:exported="false"
+        android:hardwareAccelerated="false"
+        android:label="Search"
+        android:launchMode="singleTask"
+        android:name="org.chromium.chrome.browser.searchwidget.SearchActivity"
+        android:taskAffinity=""
+        android:theme="@style/Theme.Chromium.SearchActivity"
+        android:windowSoftInputMode="adjustResize"/>
+    <activity
+        android:configChanges="keyboardHidden|orientation|screenSize"
+        android:excludeFromRecents="true"
+        android:exported="false"
+        android:launchMode="singleTop"
+        android:name="com.google.ar.core.InstallActivity"
+        android:theme="@android:style/Theme.Material.Light.Dialog.Alert"/>
+    <activity
+        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize"
+        android:enabled="false"
+        android:excludeFromRecents="true"
+        android:exported="true"
+        android:icon="@drawable/ic_devices_48dp"
+        android:label="@string/shared_clipboard_share_activity_title"
+        android:name="org.chromium.chrome.browser.sharing.shared_clipboard.SharedClipboardShareActivity"
+        android:noHistory="true"
+        android:theme="@style/Theme.Chromium.Activity.TranslucentNoAnimations">
+      <intent-filter>
+        <action android:name="android.intent.action.SEND"/>
+        <category android:name="android.intent.category.DEFAULT"/>
+        <data android:mimeType="text/plain"/>
+      </intent-filter>
+    </activity>
+    <activity
+        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize"
+        android:enabled="false"
+        android:excludeFromRecents="true"
+        android:exported="true"
+        android:icon="@drawable/ic_launcher"
+        android:label="@string/qr_code_share_icon_label"
+        android:name="org.chromium.chrome.browser.share.qrcode.QrCodeShareActivity"
+        android:noHistory="true"
+        android:theme="@android:style/Theme.NoDisplay">
+      <intent-filter>
+        <action android:name="android.intent.action.SEND"/>
+        <category android:name="android.intent.category.DEFAULT"/>
+        <data android:mimeType="text/plain"/>
+      </intent-filter>
+    </activity>
+    <activity
+        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize"
+        android:enabled="false"
+        android:excludeFromRecents="true"
+        android:exported="true"
+        android:icon="@drawable/ic_launcher"
+        android:label="@string/send_tab_to_self_share_activity_title"
+        android:name="org.chromium.chrome.browser.send_tab_to_self.SendTabToSelfShareActivity"
+        android:noHistory="true"
+        android:theme="@android:style/Theme.NoDisplay">
+      <intent-filter>
+        <action android:name="android.intent.action.SEND"/>
+        <category android:name="android.intent.category.DEFAULT"/>
+        <data android:mimeType="text/plain"/>
+      </intent-filter>
+    </activity>
+    <activity
+        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize"
+        android:enabled="false"
+        android:excludeFromRecents="true"
+        android:exported="true"
+        android:icon="@drawable/print"
+        android:label="@string/print_share_activity_title"
+        android:name="org.chromium.chrome.browser.printing.PrintShareActivity"
+        android:noHistory="true"
+        android:theme="@android:style/Theme.NoDisplay">
+      <intent-filter>
+        <action android:name="android.intent.action.SEND"/>
+        <category android:name="android.intent.category.DEFAULT"/>
+        <data android:mimeType="message/rfc822"/>
+        <data android:mimeType="multipart/related"/>
+        <data android:mimeType="text/plain"/>
+      </intent-filter>
+    </activity>
+    <activity
+        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize"
+        android:excludeFromRecents="true"
+        android:exported="true"
+        android:name="org.chromium.chrome.features.test_dummy.TestDummyActivity"
+        android:noHistory="true"
+        android:theme="@style/Theme.AppCompat"/>
+    <activity
+        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize"
+        android:excludeFromRecents="true"
+        android:hardwareAccelerated="true"
+        android:label="Chrome.CafExpandedControllerActivity"
+        android:launchMode="singleTask"
+        android:name="org.chromium.chrome.browser.media.router.caf.remoting.CafExpandedControllerActivity"
+        android:noHistory="true"
+        android:theme="@style/Theme.Chromium.Activity"/>
+    <activity
+        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize"
+        android:excludeFromRecents="true"
+        android:name="org.chromium.chrome.browser.bookmarks.BookmarkAddActivity"
+        android:theme="@android:style/Theme.NoDisplay"
+        android:windowSoftInputMode="stateHidden">
+      <intent-filter>
+        <action android:name="org.chromium.chrome.ADDBOOKMARK"/>
+        <category android:name="android.intent.category.DEFAULT"/>
+      </intent-filter>
+    </activity>
+    <activity
+        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize"
+        android:exported="false"
+        android:label="@string/bookmark_choose_folder"
+        android:name="org.chromium.chrome.browser.bookmarks.BookmarkFolderSelectActivity"
+        android:theme="@style/Theme.Chromium.DialogWhenLarge"
+        android:windowSoftInputMode="stateAlwaysHidden"/>
+    <activity
+        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize"
+        android:exported="false"
+        android:label="@string/edit_bookmark"
+        android:name="org.chromium.chrome.browser.bookmarks.BookmarkEditActivity"
+        android:theme="@style/Theme.Chromium.DialogWhenLarge"
+        android:windowSoftInputMode="stateHidden"/>
+    <activity
+        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize"
+        android:exported="false"
+        android:label="@string/preferences"
+        android:name="org.chromium.chrome.browser.preferences.Preferences"
+        android:theme="@style/Theme.Chromium.Preferences"/>
+    <activity
+        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize"
+        android:exported="false"
+        android:label="@string/storage_management_activity_label"
+        android:name="org.chromium.chrome.browser.preferences.website.ManageSpaceActivity"
+        android:theme="@style/Theme.Chromium.Preferences.ManageSpace"/>
+    <activity
+        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize"
+        android:exported="false"
+        android:name="org.chromium.chrome.browser.bookmarks.BookmarkActivity"
+        android:theme="@style/Theme.Chromium.Activity.Fullscreen"
+        android:windowSoftInputMode="stateAlwaysHidden|adjustResize"/>
+    <activity
+        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize"
+        android:exported="false"
+        android:name="org.chromium.chrome.browser.bookmarks.BookmarkAddEditFolderActivity"
+        android:theme="@style/Theme.Chromium.DialogWhenLarge"/>
+    <activity
+        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize"
+        android:exported="false"
+        android:name="org.chromium.chrome.browser.download.DownloadActivity"
+        android:theme="@style/Theme.Chromium.Activity.Fullscreen"
+        android:windowSoftInputMode="stateAlwaysHidden|adjustResize"/>
+    <activity
+        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize"
+        android:exported="false"
+        android:name="org.chromium.chrome.browser.history.HistoryActivity"
+        android:theme="@style/Theme.Chromium.Activity.Fullscreen"
+        android:windowSoftInputMode="stateAlwaysHidden|adjustResize"/>
+    <activity
+        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize"
+        android:exported="false"
+        android:name="org.chromium.chrome.browser.signin.SigninActivity"
+        android:theme="@style/Theme.Chromium.DialogWhenLarge"/>
+    <activity
+        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize|uiMode"
+        android:enableVrMode="@string/gvr_vr_mode_component"
+        android:excludeFromRecents="true"
+        android:exported="false"
+        android:launchMode="singleInstance"
+        android:name="org.chromium.chrome.browser.vr.VrFirstRunActivity"
+        android:theme="@style/VrActivityTheme">
+      <intent-filter>
+        <action android:name="org.chromium.chrome.browser.dummy.action"/>
+        <category android:name="com.google.intent.category.CARDBOARD"/>
+        <category android:name="com.google.intent.category.DAYDREAM"/>
+      </intent-filter>
+    </activity>
+    <activity
+        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize|uiMode|density"
+        android:documentLaunchMode="intoExisting"
+        android:exported="false"
+        android:hardwareAccelerated="false"
+        android:label="@string/webapp_activity_title"
+        android:launchMode="singleTop"
+        android:name="org.chromium.chrome.browser.webapps.WebApkActivity"
+        android:persistableMode="persistNever"
+        android:resizeableActivity="true"
+        android:supportsPictureInPicture="true"
+        android:theme="@style/Theme.Chromium.Webapp"
+        android:windowSoftInputMode="adjustResize">
+      <intent-filter>
+        <action android:name="org.chromium.chrome.browser.dummy.action"/>
+        <category android:name="com.google.intent.category.CARDBOARD"/>
+        <category android:name="com.google.intent.category.DAYDREAM"/>
+      </intent-filter>
+    </activity>
+    <activity
+        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize|uiMode|density"
+        android:documentLaunchMode="intoExisting"
+        android:exported="false"
+        android:hardwareAccelerated="false"
+        android:label="@string/webapp_activity_title"
+        android:launchMode="singleTop"
+        android:name="org.chromium.chrome.browser.webapps.WebappActivity"
+        android:persistableMode="persistNever"
+        android:resizeableActivity="true"
+        android:supportsPictureInPicture="true"
+        android:theme="@style/Theme.Chromium.Webapp"
+        android:windowSoftInputMode="adjustResize">
+      <intent-filter>
+        <action android:name="org.chromium.chrome.browser.dummy.action"/>
+        <category android:name="com.google.intent.category.CARDBOARD"/>
+        <category android:name="com.google.intent.category.DAYDREAM"/>
+      </intent-filter>
+    </activity>
+    <activity
+        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize|uiMode|density"
+        android:excludeFromRecents="true"
+        android:name="org.chromium.chrome.browser.document.ChromeLauncherActivity"
+        android:relinquishTaskIdentity="true"
+        android:taskAffinity=""
+        android:theme="@style/LauncherTheme">
+      <intent-filter>
+        <action android:name="org.chromium.chrome.browser.dummy.action"/>
+        <category android:name="com.google.intent.category.CARDBOARD"/>
+        <category android:name="com.google.intent.category.DAYDREAM"/>
+      </intent-filter>
+      <meta-data
+          android:name="com.google.android.vr.icon"
+          android:resource="@drawable/daydream_icon_foreground"/>
+      <meta-data
+          android:name="com.google.android.vr.icon_background"
+          android:resource="@drawable/daydream_icon_background"/>
+    </activity>
+    <activity
+        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize|uiMode|density"
+        android:exported="false"
+        android:hardwareAccelerated="false"
+        android:icon="@mipmap/app_shortcut_icon"
+        android:label="@string/webapp_activity_title"
+        android:launchMode="singleTask"
+        android:name="org.chromium.chrome.browser.webapps.WebApkActivity0"
+        android:persistableMode="persistNever"
+        android:resizeableActivity="true"
+        android:supportsPictureInPicture="true"
+        android:taskAffinity="org.chromium.chrome.webapps.WebApkActivity0"
+        android:theme="@style/Theme.Chromium.Webapp"
+        android:windowSoftInputMode="adjustResize">
+      <intent-filter>
+        <action android:name="org.chromium.chrome.browser.dummy.action"/>
+        <category android:name="com.google.intent.category.CARDBOARD"/>
+        <category android:name="com.google.intent.category.DAYDREAM"/>
+      </intent-filter>
+    </activity>
+    <activity
+        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize|uiMode|density"
+        android:exported="false"
+        android:hardwareAccelerated="false"
+        android:icon="@mipmap/app_shortcut_icon"
+        android:label="@string/webapp_activity_title"
+        android:launchMode="singleTask"
+        android:name="org.chromium.chrome.browser.webapps.WebApkActivity1"
+        android:persistableMode="persistNever"
+        android:resizeableActivity="true"
+        android:supportsPictureInPicture="true"
+        android:taskAffinity="org.chromium.chrome.webapps.WebApkActivity1"
+        android:theme="@style/Theme.Chromium.Webapp"
+        android:windowSoftInputMode="adjustResize">
+      <intent-filter>
+        <action android:name="org.chromium.chrome.browser.dummy.action"/>
+        <category android:name="com.google.intent.category.CARDBOARD"/>
+        <category android:name="com.google.intent.category.DAYDREAM"/>
+      </intent-filter>
+    </activity>
+    <activity
+        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize|uiMode|density"
+        android:exported="false"
+        android:hardwareAccelerated="false"
+        android:icon="@mipmap/app_shortcut_icon"
+        android:label="@string/webapp_activity_title"
+        android:launchMode="singleTask"
+        android:name="org.chromium.chrome.browser.webapps.WebApkActivity2"
+        android:persistableMode="persistNever"
+        android:resizeableActivity="true"
+        android:supportsPictureInPicture="true"
+        android:taskAffinity="org.chromium.chrome.webapps.WebApkActivity2"
+        android:theme="@style/Theme.Chromium.Webapp"
+        android:windowSoftInputMode="adjustResize">
+      <intent-filter>
+        <action android:name="org.chromium.chrome.browser.dummy.action"/>
+        <category android:name="com.google.intent.category.CARDBOARD"/>
+        <category android:name="com.google.intent.category.DAYDREAM"/>
+      </intent-filter>
+    </activity>
+    <activity
+        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize|uiMode|density"
+        android:exported="false"
+        android:hardwareAccelerated="false"
+        android:icon="@mipmap/app_shortcut_icon"
+        android:label="@string/webapp_activity_title"
+        android:launchMode="singleTask"
+        android:name="org.chromium.chrome.browser.webapps.WebApkActivity3"
+        android:persistableMode="persistNever"
+        android:resizeableActivity="true"
+        android:supportsPictureInPicture="true"
+        android:taskAffinity="org.chromium.chrome.webapps.WebApkActivity3"
+        android:theme="@style/Theme.Chromium.Webapp"
+        android:windowSoftInputMode="adjustResize">
+      <intent-filter>
+        <action android:name="org.chromium.chrome.browser.dummy.action"/>
+        <category android:name="com.google.intent.category.CARDBOARD"/>
+        <category android:name="com.google.intent.category.DAYDREAM"/>
+      </intent-filter>
+    </activity>
+    <activity
+        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize|uiMode|density"
+        android:exported="false"
+        android:hardwareAccelerated="false"
+        android:icon="@mipmap/app_shortcut_icon"
+        android:label="@string/webapp_activity_title"
+        android:launchMode="singleTask"
+        android:name="org.chromium.chrome.browser.webapps.WebApkActivity4"
+        android:persistableMode="persistNever"
+        android:resizeableActivity="true"
+        android:supportsPictureInPicture="true"
+        android:taskAffinity="org.chromium.chrome.webapps.WebApkActivity4"
+        android:theme="@style/Theme.Chromium.Webapp"
+        android:windowSoftInputMode="adjustResize">
+      <intent-filter>
+        <action android:name="org.chromium.chrome.browser.dummy.action"/>
+        <category android:name="com.google.intent.category.CARDBOARD"/>
+        <category android:name="com.google.intent.category.DAYDREAM"/>
+      </intent-filter>
+    </activity>
+    <activity
+        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize|uiMode|density"
+        android:exported="false"
+        android:hardwareAccelerated="false"
+        android:icon="@mipmap/app_shortcut_icon"
+        android:label="@string/webapp_activity_title"
+        android:launchMode="singleTask"
+        android:name="org.chromium.chrome.browser.webapps.WebApkActivity5"
+        android:persistableMode="persistNever"
+        android:resizeableActivity="true"
+        android:supportsPictureInPicture="true"
+        android:taskAffinity="org.chromium.chrome.webapps.WebApkActivity5"
+        android:theme="@style/Theme.Chromium.Webapp"
+        android:windowSoftInputMode="adjustResize">
+      <intent-filter>
+        <action android:name="org.chromium.chrome.browser.dummy.action"/>
+        <category android:name="com.google.intent.category.CARDBOARD"/>
+        <category android:name="com.google.intent.category.DAYDREAM"/>
+      </intent-filter>
+    </activity>
+    <activity
+        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize|uiMode|density"
+        android:exported="false"
+        android:hardwareAccelerated="false"
+        android:icon="@mipmap/app_shortcut_icon"
+        android:label="@string/webapp_activity_title"
+        android:launchMode="singleTask"
+        android:name="org.chromium.chrome.browser.webapps.WebApkActivity6"
+        android:persistableMode="persistNever"
+        android:resizeableActivity="true"
+        android:supportsPictureInPicture="true"
+        android:taskAffinity="org.chromium.chrome.webapps.WebApkActivity6"
+        android:theme="@style/Theme.Chromium.Webapp"
+        android:windowSoftInputMode="adjustResize">
+      <intent-filter>
+        <action android:name="org.chromium.chrome.browser.dummy.action"/>
+        <category android:name="com.google.intent.category.CARDBOARD"/>
+        <category android:name="com.google.intent.category.DAYDREAM"/>
+      </intent-filter>
+    </activity>
+    <activity
+        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize|uiMode|density"
+        android:exported="false"
+        android:hardwareAccelerated="false"
+        android:icon="@mipmap/app_shortcut_icon"
+        android:label="@string/webapp_activity_title"
+        android:launchMode="singleTask"
+        android:name="org.chromium.chrome.browser.webapps.WebApkActivity7"
+        android:persistableMode="persistNever"
+        android:resizeableActivity="true"
+        android:supportsPictureInPicture="true"
+        android:taskAffinity="org.chromium.chrome.webapps.WebApkActivity7"
+        android:theme="@style/Theme.Chromium.Webapp"
+        android:windowSoftInputMode="adjustResize">
+      <intent-filter>
+        <action android:name="org.chromium.chrome.browser.dummy.action"/>
+        <category android:name="com.google.intent.category.CARDBOARD"/>
+        <category android:name="com.google.intent.category.DAYDREAM"/>
+      </intent-filter>
+    </activity>
+    <activity
+        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize|uiMode|density"
+        android:exported="false"
+        android:hardwareAccelerated="false"
+        android:icon="@mipmap/app_shortcut_icon"
+        android:label="@string/webapp_activity_title"
+        android:launchMode="singleTask"
+        android:name="org.chromium.chrome.browser.webapps.WebApkActivity8"
+        android:persistableMode="persistNever"
+        android:resizeableActivity="true"
+        android:supportsPictureInPicture="true"
+        android:taskAffinity="org.chromium.chrome.webapps.WebApkActivity8"
+        android:theme="@style/Theme.Chromium.Webapp"
+        android:windowSoftInputMode="adjustResize">
+      <intent-filter>
+        <action android:name="org.chromium.chrome.browser.dummy.action"/>
+        <category android:name="com.google.intent.category.CARDBOARD"/>
+        <category android:name="com.google.intent.category.DAYDREAM"/>
+      </intent-filter>
+    </activity>
+    <activity
+        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize|uiMode|density"
+        android:exported="false"
+        android:hardwareAccelerated="false"
+        android:icon="@mipmap/app_shortcut_icon"
+        android:label="@string/webapp_activity_title"
+        android:launchMode="singleTask"
+        android:name="org.chromium.chrome.browser.webapps.WebApkActivity9"
+        android:persistableMode="persistNever"
+        android:resizeableActivity="true"
+        android:supportsPictureInPicture="true"
+        android:taskAffinity="org.chromium.chrome.webapps.WebApkActivity9"
+        android:theme="@style/Theme.Chromium.Webapp"
+        android:windowSoftInputMode="adjustResize">
+      <intent-filter>
+        <action android:name="org.chromium.chrome.browser.dummy.action"/>
+        <category android:name="com.google.intent.category.CARDBOARD"/>
+        <category android:name="com.google.intent.category.DAYDREAM"/>
+      </intent-filter>
+    </activity>
+    <activity
+        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize|uiMode|density"
+        android:exported="false"
+        android:hardwareAccelerated="false"
+        android:icon="@mipmap/app_shortcut_icon"
+        android:label="@string/webapp_activity_title"
+        android:launchMode="singleTask"
+        android:name="org.chromium.chrome.browser.webapps.WebappActivity0"
+        android:persistableMode="persistNever"
+        android:resizeableActivity="true"
+        android:supportsPictureInPicture="true"
+        android:taskAffinity="org.chromium.chrome.webapps.WebappActivity0"
+        android:theme="@style/Theme.Chromium.Webapp"
+        android:windowSoftInputMode="adjustResize">
+      <intent-filter>
+        <action android:name="org.chromium.chrome.browser.dummy.action"/>
+        <category android:name="com.google.intent.category.CARDBOARD"/>
+        <category android:name="com.google.intent.category.DAYDREAM"/>
+      </intent-filter>
+    </activity>
+    <activity
+        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize|uiMode|density"
+        android:exported="false"
+        android:hardwareAccelerated="false"
+        android:icon="@mipmap/app_shortcut_icon"
+        android:label="@string/webapp_activity_title"
+        android:launchMode="singleTask"
+        android:name="org.chromium.chrome.browser.webapps.WebappActivity1"
+        android:persistableMode="persistNever"
+        android:resizeableActivity="true"
+        android:supportsPictureInPicture="true"
+        android:taskAffinity="org.chromium.chrome.webapps.WebappActivity1"
+        android:theme="@style/Theme.Chromium.Webapp"
+        android:windowSoftInputMode="adjustResize">
+      <intent-filter>
+        <action android:name="org.chromium.chrome.browser.dummy.action"/>
+        <category android:name="com.google.intent.category.CARDBOARD"/>
+        <category android:name="com.google.intent.category.DAYDREAM"/>
+      </intent-filter>
+    </activity>
+    <activity
+        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize|uiMode|density"
+        android:exported="false"
+        android:hardwareAccelerated="false"
+        android:icon="@mipmap/app_shortcut_icon"
+        android:label="@string/webapp_activity_title"
+        android:launchMode="singleTask"
+        android:name="org.chromium.chrome.browser.webapps.WebappActivity2"
+        android:persistableMode="persistNever"
+        android:resizeableActivity="true"
+        android:supportsPictureInPicture="true"
+        android:taskAffinity="org.chromium.chrome.webapps.WebappActivity2"
+        android:theme="@style/Theme.Chromium.Webapp"
+        android:windowSoftInputMode="adjustResize">
+      <intent-filter>
+        <action android:name="org.chromium.chrome.browser.dummy.action"/>
+        <category android:name="com.google.intent.category.CARDBOARD"/>
+        <category android:name="com.google.intent.category.DAYDREAM"/>
+      </intent-filter>
+    </activity>
+    <activity
+        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize|uiMode|density"
+        android:exported="false"
+        android:hardwareAccelerated="false"
+        android:icon="@mipmap/app_shortcut_icon"
+        android:label="@string/webapp_activity_title"
+        android:launchMode="singleTask"
+        android:name="org.chromium.chrome.browser.webapps.WebappActivity3"
+        android:persistableMode="persistNever"
+        android:resizeableActivity="true"
+        android:supportsPictureInPicture="true"
+        android:taskAffinity="org.chromium.chrome.webapps.WebappActivity3"
+        android:theme="@style/Theme.Chromium.Webapp"
+        android:windowSoftInputMode="adjustResize">
+      <intent-filter>
+        <action android:name="org.chromium.chrome.browser.dummy.action"/>
+        <category android:name="com.google.intent.category.CARDBOARD"/>
+        <category android:name="com.google.intent.category.DAYDREAM"/>
+      </intent-filter>
+    </activity>
+    <activity
+        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize|uiMode|density"
+        android:exported="false"
+        android:hardwareAccelerated="false"
+        android:icon="@mipmap/app_shortcut_icon"
+        android:label="@string/webapp_activity_title"
+        android:launchMode="singleTask"
+        android:name="org.chromium.chrome.browser.webapps.WebappActivity4"
+        android:persistableMode="persistNever"
+        android:resizeableActivity="true"
+        android:supportsPictureInPicture="true"
+        android:taskAffinity="org.chromium.chrome.webapps.WebappActivity4"
+        android:theme="@style/Theme.Chromium.Webapp"
+        android:windowSoftInputMode="adjustResize">
+      <intent-filter>
+        <action android:name="org.chromium.chrome.browser.dummy.action"/>
+        <category android:name="com.google.intent.category.CARDBOARD"/>
+        <category android:name="com.google.intent.category.DAYDREAM"/>
+      </intent-filter>
+    </activity>
+    <activity
+        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize|uiMode|density"
+        android:exported="false"
+        android:hardwareAccelerated="false"
+        android:icon="@mipmap/app_shortcut_icon"
+        android:label="@string/webapp_activity_title"
+        android:launchMode="singleTask"
+        android:name="org.chromium.chrome.browser.webapps.WebappActivity5"
+        android:persistableMode="persistNever"
+        android:resizeableActivity="true"
+        android:supportsPictureInPicture="true"
+        android:taskAffinity="org.chromium.chrome.webapps.WebappActivity5"
+        android:theme="@style/Theme.Chromium.Webapp"
+        android:windowSoftInputMode="adjustResize">
+      <intent-filter>
+        <action android:name="org.chromium.chrome.browser.dummy.action"/>
+        <category android:name="com.google.intent.category.CARDBOARD"/>
+        <category android:name="com.google.intent.category.DAYDREAM"/>
+      </intent-filter>
+    </activity>
+    <activity
+        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize|uiMode|density"
+        android:exported="false"
+        android:hardwareAccelerated="false"
+        android:icon="@mipmap/app_shortcut_icon"
+        android:label="@string/webapp_activity_title"
+        android:launchMode="singleTask"
+        android:name="org.chromium.chrome.browser.webapps.WebappActivity6"
+        android:persistableMode="persistNever"
+        android:resizeableActivity="true"
+        android:supportsPictureInPicture="true"
+        android:taskAffinity="org.chromium.chrome.webapps.WebappActivity6"
+        android:theme="@style/Theme.Chromium.Webapp"
+        android:windowSoftInputMode="adjustResize">
+      <intent-filter>
+        <action android:name="org.chromium.chrome.browser.dummy.action"/>
+        <category android:name="com.google.intent.category.CARDBOARD"/>
+        <category android:name="com.google.intent.category.DAYDREAM"/>
+      </intent-filter>
+    </activity>
+    <activity
+        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize|uiMode|density"
+        android:exported="false"
+        android:hardwareAccelerated="false"
+        android:icon="@mipmap/app_shortcut_icon"
+        android:label="@string/webapp_activity_title"
+        android:launchMode="singleTask"
+        android:name="org.chromium.chrome.browser.webapps.WebappActivity7"
+        android:persistableMode="persistNever"
+        android:resizeableActivity="true"
+        android:supportsPictureInPicture="true"
+        android:taskAffinity="org.chromium.chrome.webapps.WebappActivity7"
+        android:theme="@style/Theme.Chromium.Webapp"
+        android:windowSoftInputMode="adjustResize">
+      <intent-filter>
+        <action android:name="org.chromium.chrome.browser.dummy.action"/>
+        <category android:name="com.google.intent.category.CARDBOARD"/>
+        <category android:name="com.google.intent.category.DAYDREAM"/>
+      </intent-filter>
+    </activity>
+    <activity
+        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize|uiMode|density"
+        android:exported="false"
+        android:hardwareAccelerated="false"
+        android:icon="@mipmap/app_shortcut_icon"
+        android:label="@string/webapp_activity_title"
+        android:launchMode="singleTask"
+        android:name="org.chromium.chrome.browser.webapps.WebappActivity8"
+        android:persistableMode="persistNever"
+        android:resizeableActivity="true"
+        android:supportsPictureInPicture="true"
+        android:taskAffinity="org.chromium.chrome.webapps.WebappActivity8"
+        android:theme="@style/Theme.Chromium.Webapp"
+        android:windowSoftInputMode="adjustResize">
+      <intent-filter>
+        <action android:name="org.chromium.chrome.browser.dummy.action"/>
+        <category android:name="com.google.intent.category.CARDBOARD"/>
+        <category android:name="com.google.intent.category.DAYDREAM"/>
+      </intent-filter>
+    </activity>
+    <activity
+        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize|uiMode|density"
+        android:exported="false"
+        android:hardwareAccelerated="false"
+        android:icon="@mipmap/app_shortcut_icon"
+        android:label="@string/webapp_activity_title"
+        android:launchMode="singleTask"
+        android:name="org.chromium.chrome.browser.webapps.WebappActivity9"
+        android:persistableMode="persistNever"
+        android:resizeableActivity="true"
+        android:supportsPictureInPicture="true"
+        android:taskAffinity="org.chromium.chrome.webapps.WebappActivity9"
+        android:theme="@style/Theme.Chromium.Webapp"
+        android:windowSoftInputMode="adjustResize">
+      <intent-filter>
+        <action android:name="org.chromium.chrome.browser.dummy.action"/>
+        <category android:name="com.google.intent.category.CARDBOARD"/>
+        <category android:name="com.google.intent.category.DAYDREAM"/>
+      </intent-filter>
+    </activity>
+    <activity
+        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize|uiMode|density"
+        android:exported="false"
+        android:hardwareAccelerated="false"
+        android:label="@string/webapp_activity_title"
+        android:name="org.chromium.chrome.browser.webapps.SameTaskWebApkActivity"
+        android:persistableMode="persistNever"
+        android:resizeableActivity="true"
+        android:supportsPictureInPicture="true"
+        android:theme="@style/Theme.Chromium.Webapp.Translucent"
+        android:windowSoftInputMode="adjustResize">
+      <intent-filter>
+        <action android:name="org.chromium.chrome.browser.dummy.action"/>
+        <category android:name="com.google.intent.category.CARDBOARD"/>
+        <category android:name="com.google.intent.category.DAYDREAM"/>
+      </intent-filter>
+    </activity>
+    <activity
+        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize|uiMode|density"
+        android:exported="false"
+        android:hardwareAccelerated="false"
+        android:launchMode="singleTask"
+        android:name="org.chromium.chrome.browser.ChromeTabbedActivity2"
+        android:resizeableActivity="true"
+        android:supportsPictureInPicture="true"
+        android:taskAffinity="org.chromium.chrome.ChromeTabbedActivity2"
+        android:theme="@style/Theme.Chromium.TabbedMode"
+        android:windowSoftInputMode="adjustResize">
+      <intent-filter>
+        <action android:name="org.chromium.chrome.browser.dummy.action"/>
+        <category android:name="com.google.intent.category.CARDBOARD"/>
+        <category android:name="com.google.intent.category.DAYDREAM"/>
+      </intent-filter>
+    </activity>
+    <activity
+        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize|uiMode|density"
+        android:exported="false"
+        android:hardwareAccelerated="false"
+        android:name="org.chromium.chrome.browser.customtabs.CustomTabActivity"
+        android:resizeableActivity="true"
+        android:supportsPictureInPicture="true"
+        android:theme="@style/Theme.Chromium.Activity"
+        android:windowSoftInputMode="adjustResize">
+      <intent-filter>
+        <action android:name="org.chromium.chrome.browser.dummy.action"/>
+        <category android:name="com.google.intent.category.CARDBOARD"/>
+        <category android:name="com.google.intent.category.DAYDREAM"/>
+      </intent-filter>
+    </activity>
+    <activity
+        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize|uiMode|density"
+        android:exported="false"
+        android:hardwareAccelerated="false"
+        android:name="org.chromium.chrome.browser.customtabs.PaymentHandlerActivity"
+        android:resizeableActivity="true"
+        android:supportsPictureInPicture="true"
+        android:theme="@style/Theme.Chromium.Activity.Translucent"
+        android:windowSoftInputMode="adjustResize">
+      <intent-filter>
+        <action android:name="org.chromium.chrome.browser.dummy.action"/>
+        <category android:name="com.google.intent.category.CARDBOARD"/>
+        <category android:name="com.google.intent.category.DAYDREAM"/>
+      </intent-filter>
+    </activity>
+    <activity
+        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize|uiMode|density"
+        android:exported="false"
+        android:hardwareAccelerated="false"
+        android:name="org.chromium.chrome.browser.customtabs.TranslucentCustomTabActivity"
+        android:resizeableActivity="true"
+        android:supportsPictureInPicture="true"
+        android:theme="@style/Theme.Chromium.Activity.FakeTranslucent"
+        android:windowSoftInputMode="adjustResize">
+      <intent-filter>
+        <action android:name="org.chromium.chrome.browser.dummy.action"/>
+        <category android:name="com.google.intent.category.CARDBOARD"/>
+        <category android:name="com.google.intent.category.DAYDREAM"/>
+      </intent-filter>
+    </activity>
+    <activity
+        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize|uiMode|density"
+        android:exported="false"
+        android:hardwareAccelerated="false"
+        android:name="org.chromium.chrome.browser.multiwindow.MultiInstanceChromeTabbedActivity"
+        android:theme="@style/Theme.Chromium.TabbedMode"
+        android:windowSoftInputMode="adjustResize"/>
+    <activity
+        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize|uiMode|density"
+        android:exported="true"
+        android:hardwareAccelerated="false"
+        android:launchMode="singleTask"
+        android:name="org.chromium.chrome.browser.ChromeTabbedActivity"
+        android:resizeableActivity="true"
+        android:supportsPictureInPicture="true"
+        android:theme="@style/Theme.Chromium.TabbedMode"
+        android:windowSoftInputMode="adjustResize">
+      <intent-filter>
+        <action android:name="org.chromium.chrome.browser.dummy.action"/>
+        <category android:name="com.google.intent.category.CARDBOARD"/>
+        <category android:name="com.google.intent.category.DAYDREAM"/>
+      </intent-filter>
+    </activity>
+    <activity
+        android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation"
+        android:excludeFromRecents="true"
+        android:exported="false"
+        android:name="org.chromium.chrome.browser.media.PictureInPictureActivity"
+        android:noHistory="true"
+        android:resizeableActivity="true"
+        android:supportsPictureInPicture="true"
+        android:theme="@style/Theme.Chromium.Activity"/>
+    <activity
+        android:enableVrMode="@string/gvr_vr_mode_component"
+        android:excludeFromRecents="true"
+        android:exported="false"
+        android:name="org.chromium.chrome.browser.vr.VrCancelAnimationActivity"
+        android:noHistory="true"
+        android:theme="@android:style/Theme.NoDisplay">
+      <intent-filter>
+        <action android:name="org.chromium.chrome.browser.dummy.action"/>
+        <category android:name="com.google.intent.category.CARDBOARD"/>
+        <category android:name="com.google.intent.category.DAYDREAM"/>
+      </intent-filter>
+    </activity>
+    <activity
+        android:enabled="false"
+        android:excludeFromRecents="true"
+        android:exported="true"
+        android:name="org.chromium.chrome.browser.incognito.IncognitoTabLauncher"
+        android:taskAffinity=""
+        android:theme="@android:style/Theme.NoDisplay">
+      <intent-filter>
+        <action android:name="org.chromium.chrome.browser.incognito.OPEN_PRIVATE_TAB"/>
+        <category android:name="android.intent.category.DEFAULT"/>
+      </intent-filter>
+    </activity>
+    <activity
+        android:enabled="false"
+        android:exported="false"
+        android:launchMode="singleInstance"
+        android:name="com.google.android.play.core.missingsplits.PlayCoreMissingSplitsActivity"
+        android:process=":playcore_missing_splits_activity"
+        android:stateNotNeeded="true"/>
+    <activity
+        android:enabled="false"
+        android:exported="false"
+        android:name="com.google.android.play.core.common.PlayCoreDialogWrapperActivity"
+        android:process=":playcore_dialog_wrapper_activity"
+        android:stateNotNeeded="true"
+        android:theme="@style/Theme.PlayCore.Transparent"/>
+    <activity
+        android:excludeFromRecents="true"
+        android:exported="false"
+        android:launchMode="singleInstance"
+        android:name="org.chromium.chrome.browser.BrowserRestartActivity"
+        android:process=":browser_restart_process"
+        android:theme="@android:style/Theme.Translucent.NoTitleBar"/>
+    <activity
+        android:excludeFromRecents="true"
+        android:exported="false"
+        android:name="org.chromium.chrome.browser.LauncherShortcutActivity"
+        android:taskAffinity=""
+        android:theme="@android:style/Theme.NoDisplay"/>
+    <activity
+        android:excludeFromRecents="true"
+        android:exported="false"
+        android:name="org.chromium.chrome.browser.instantapps.AuthenticatedProxyActivity"
+        android:noHistory="true"
+        android:theme="@android:style/Theme.NoDisplay"/>
+    <activity
+        android:excludeFromRecents="true"
+        android:name="org.chromium.chrome.browser.webapps.WebappLauncherActivity"
+        android:taskAffinity=""
+        android:theme="@android:style/Theme.NoDisplay">
+      <intent-filter>
+        <action
+            android:name="com.google.android.apps.chrome.webapps.WebappManager.ACTION_START_WEBAPP"/>
+        <category android:name="android.intent.category.DEFAULT"/>
+      </intent-filter>
+      <intent-filter>
+        <action android:name="org.webapk.ACTION_START_WEBAPK"/>
+        <category android:name="android.intent.category.DEFAULT"/>
+      </intent-filter>
+    </activity>
+    <activity
+        android:exported="false"
+        android:name="com.google.android.gms.common.api.GoogleApiActivity"
+        android:theme="@android:style/Theme.Translucent.NoTitleBar"/>
+    <activity
+        android:exported="false"
+        android:name="org.chromium.chrome.browser.browserservices.ClearDataDialogActivity"
+        android:theme="@style/Theme.Chromium.ClearDataDialogActivity"/>
+    <activity
+        android:exported="true"
+        android:name="org.chromium.chrome.browser.browserservices.ManageTrustedWebActivityDataActivity"
+        android:theme="@style/Theme.Chromium.Activity.Fullscreen.Transparent">
+      <intent-filter>
+        <action
+            android:name="android.support.customtabs.action.ACTION_MANAGE_TRUSTED_WEB_ACTIVITY_DATA"/>
+        <category android:name="android.intent.category.DEFAULT"/>
+        <data android:scheme="https"/>
+      </intent-filter>
+      <intent-filter>
+        <action
+            android:name="android.support.customtabs.action.ACTION_MANAGE_TRUSTED_WEB_ACTIVITY_DATA"/>
+        <category android:name="android.intent.category.DEFAULT"/>
+      </intent-filter>
+    </activity>
+    <activity
+        android:exported="true"
+        android:name="org.chromium.chrome.browser.webapps.ActivateWebApkActivity"
+        android:theme="@android:style/Theme.NoDisplay">
+      <intent-filter>
+        <action android:name="org.chromium.chrome.browser.webapps.ActivateWebApkActivity.ACTIVATE"/>
+        <category android:name="android.intent.category.DEFAULT"/>
+      </intent-filter>
+    </activity>
+    <activity
+        android:label="@string/license_activity_title"
+        android:name="org.chromium.android_webview.nonembedded.LicenseActivity"
+        android:process=":webview_apk">
+      <intent-filter>
+        <action android:name="android.settings.WEBVIEW_LICENSE"/>
+        <category android:name="android.intent.category.DEFAULT"/>
+      </intent-filter>
+      <meta-data
+          android:name="com.android.settings.PRIMARY_PROFILE_CONTROLLED"
+          android:value="true"/>
+    </activity>
+    <activity
+        android:label="WebView
+        Crashes"
+        android:launchMode="singleTop"
+        android:name="org.chromium.android_webview.devui.CrashesListActivity"
+        android:process=":webview_apk"
+        android:theme="@style/Theme.DevUi.DayNight"/>
+    <activity
+        android:label="WebView
+        DevTools"
+        android:launchMode="singleTask"
+        android:name="org.chromium.android_webview.devui.MainActivity"
+        android:process=":webview_apk"
+        android:theme="@style/Theme.DevUi.DayNight">
+      <intent-filter>
+        <action android:name="com.android.webview.SHOW_DEV_UI"/>
+        <category android:name="android.intent.category.DEFAULT"/>
+      </intent-filter>
+    </activity>
+    <activity
+        android:label="WebView
+        Flags"
+        android:launchMode="singleTop"
+        android:name="org.chromium.android_webview.devui.FlagsActivity"
+        android:process=":webview_apk"
+        android:theme="@style/Theme.DevUi.DayNight"/>
+    <activity
+        android:enabled="false"
+        android:excludeFromRecents="true"
+        android:exported="true"
+        android:name="org.chromium.chrome.browser.media.MediaLauncherActivity"
+        android:theme="@android:style/Theme.NoDisplay">
+      <intent-filter tools:ignore="AppLinkUrlError">
+        <action android:name="android.intent.action.VIEW"/>
+        <category android:name="android.intent.category.DEFAULT"/>
+        <data android:mimeType="image/*"/>
+        <data android:mimeType="video/*"/>
+        <data android:scheme="content"/>
+        <data android:scheme="file"/>
+      </intent-filter>
+    </activity>
+    <activity-alias
+        android:exported="false"
+        android:name="org.chromium.chrome.browser.webapps.SecureWebAppLauncher"
+        android:targetActivity="org.chromium.chrome.browser.webapps.WebappLauncherActivity">
+      <intent-filter>
+        <action
+            android:name="org.chromium.chrome.browser.webapps.WebappManager.ACTION_START_SECURE_WEBAPP"/>
+        <category android:name="android.intent.category.DEFAULT"/>
+      </intent-filter>
+    </activity-alias>
+    <activity-alias
+        android:exported="true"
+        android:name="com.google.android.apps.chrome.IntentDispatcher"
+        android:targetActivity="org.chromium.chrome.browser.document.ChromeLauncherActivity">
+      <intent-filter>
+        <action android:name="android.intent.action.MAIN"/>
+        <category android:name="android.intent.category.NOTIFICATION_PREFERENCES"/>
+        <category android:name="com.google.intent.category.DAYDREAM"/>
+      </intent-filter>
+      <intent-filter>
+        <action android:name="android.intent.action.MEDIA_SEARCH"/>
+        <category android:name="android.intent.category.DEFAULT"/>
+      </intent-filter>
+      <intent-filter>
+        <action android:name="android.intent.action.SEARCH"/>
+      </intent-filter>
+      <intent-filter>
+        <action android:name="android.intent.action.VIEW"/>
+        <category android:name="android.intent.category.BROWSABLE"/>
+        <category android:name="android.intent.category.DEFAULT"/>
+        <category android:name="com.google.intent.category.DAYDREAM"/>
+        <data android:host="*"/>
+        <data android:mimeType="*/*"/>
+        <data android:pathPattern="/.*\\.mht"/>
+        <data android:pathPattern="/.*\\.mhtml"/>
+        <data android:scheme="content"/>
+        <data android:scheme="file"/>
+      </intent-filter>
+      <intent-filter>
+        <action android:name="android.intent.action.VIEW"/>
+        <category android:name="android.intent.category.BROWSABLE"/>
+        <category android:name="android.intent.category.DEFAULT"/>
+        <category android:name="com.google.intent.category.DAYDREAM"/>
+        <data android:host="*"/>
+        <data android:pathPattern="/.*\\.mht"/>
+        <data android:pathPattern="/.*\\.mhtml"/>
+        <data android:scheme="content"/>
+        <data android:scheme="file"/>
+      </intent-filter>
+      <intent-filter>
+        <action android:name="android.intent.action.VIEW"/>
+        <category android:name="android.intent.category.BROWSABLE"/>
+        <category android:name="android.intent.category.DEFAULT"/>
+        <category android:name="com.google.intent.category.DAYDREAM"/>
+        <data android:mimeType="application/xhtml+xml"/>
+        <data android:mimeType="text/html"/>
+        <data android:mimeType="text/plain"/>
+        <data android:scheme="about"/>
+        <data android:scheme="content"/>
+        <data android:scheme="googlechrome"/>
+        <data android:scheme="http"/>
+        <data android:scheme="https"/>
+        <data android:scheme="javascript"/>
+      </intent-filter>
+      <intent-filter>
+        <action android:name="android.intent.action.VIEW"/>
+        <category android:name="android.intent.category.BROWSABLE"/>
+        <category android:name="android.intent.category.DEFAULT"/>
+        <category android:name="com.google.intent.category.DAYDREAM"/>
+        <data android:scheme="about"/>
+        <data android:scheme="googlechrome"/>
+        <data android:scheme="http"/>
+        <data android:scheme="https"/>
+        <data android:scheme="javascript"/>
+      </intent-filter>
+      <intent-filter>
+        <action android:name="android.intent.action.VIEW"/>
+        <category android:name="android.intent.category.DEFAULT"/>
+        <data android:mimeType="message/rfc822"/>
+        <data android:scheme="content"/>
+        <data android:scheme="file"/>
+      </intent-filter>
+      <intent-filter>
+        <action android:name="android.intent.action.VIEW"/>
+        <category android:name="android.intent.category.DEFAULT"/>
+        <data android:mimeType="multipart/related"/>
+        <data android:scheme="content"/>
+        <data android:scheme="file"/>
+      </intent-filter>
+      <intent-filter>
+        <action android:name="android.nfc.action.NDEF_DISCOVERED"/>
+        <category android:name="android.intent.category.DEFAULT"/>
+        <data android:scheme="http"/>
+        <data android:scheme="https"/>
+      </intent-filter>
+      <intent-filter>
+        <action android:name="android.speech.action.VOICE_SEARCH_RESULTS"/>
+        <category android:name="android.intent.category.DEFAULT"/>
+      </intent-filter>
+      <intent-filter>
+        <action android:name="com.sec.android.airview.HOVER"/>
+      </intent-filter>
+      <meta-data android:name="android.app.searchable" android:resource="@xml/searchable"/>
+      <meta-data
+          android:name="com.google.android.vr.icon"
+          android:resource="@drawable/daydream_icon_foreground"/>
+      <meta-data
+          android:name="com.google.android.vr.icon_background"
+          android:resource="@drawable/daydream_icon_background"/>
+    </activity-alias>
+    <activity-alias
+        android:exported="true"
+        android:name="com.google.android.apps.chrome.Main"
+        android:targetActivity="org.chromium.chrome.browser.ChromeTabbedActivity">
+      <intent-filter>
+        <action android:name="android.intent.action.MAIN"/>
+        <category android:name="android.intent.category.APP_BROWSER"/>
+        <category android:name="android.intent.category.BROWSABLE"/>
+        <category android:name="android.intent.category.DEFAULT"/>
+        <category android:name="android.intent.category.LAUNCHER"/>
+      </intent-filter>
+      <intent-filter>
+        <action android:name="org.chromium.chrome.browser.dummy.action"/>
+        <category android:name="com.google.intent.category.CARDBOARD"/>
+        <category android:name="com.google.intent.category.DAYDREAM"/>
+      </intent-filter>
+      <meta-data android:name="android.app.shortcuts" android:resource="@xml/launchershortcuts"/>
+    </activity-alias>
+    <activity-alias
+        android:icon="@mipmap/app_shortcut_icon"
+        android:label="@string/webapp_activity_title"
+        android:name="com.google.android.apps.chrome.webapps.WebappActivity0"
+        android:targetActivity="org.chromium.chrome.browser.webapps.WebappActivity0"/>
+    <activity-alias
+        android:icon="@mipmap/app_shortcut_icon"
+        android:label="@string/webapp_activity_title"
+        android:name="com.google.android.apps.chrome.webapps.WebappActivity1"
+        android:targetActivity="org.chromium.chrome.browser.webapps.WebappActivity1"/>
+    <activity-alias
+        android:icon="@mipmap/app_shortcut_icon"
+        android:label="@string/webapp_activity_title"
+        android:name="com.google.android.apps.chrome.webapps.WebappActivity2"
+        android:targetActivity="org.chromium.chrome.browser.webapps.WebappActivity2"/>
+    <activity-alias
+        android:icon="@mipmap/app_shortcut_icon"
+        android:label="@string/webapp_activity_title"
+        android:name="com.google.android.apps.chrome.webapps.WebappActivity3"
+        android:targetActivity="org.chromium.chrome.browser.webapps.WebappActivity3"/>
+    <activity-alias
+        android:icon="@mipmap/app_shortcut_icon"
+        android:label="@string/webapp_activity_title"
+        android:name="com.google.android.apps.chrome.webapps.WebappActivity4"
+        android:targetActivity="org.chromium.chrome.browser.webapps.WebappActivity4"/>
+    <activity-alias
+        android:icon="@mipmap/app_shortcut_icon"
+        android:label="@string/webapp_activity_title"
+        android:name="com.google.android.apps.chrome.webapps.WebappActivity5"
+        android:targetActivity="org.chromium.chrome.browser.webapps.WebappActivity5"/>
+    <activity-alias
+        android:icon="@mipmap/app_shortcut_icon"
+        android:label="@string/webapp_activity_title"
+        android:name="com.google.android.apps.chrome.webapps.WebappActivity6"
+        android:targetActivity="org.chromium.chrome.browser.webapps.WebappActivity6"/>
+    <activity-alias
+        android:icon="@mipmap/app_shortcut_icon"
+        android:label="@string/webapp_activity_title"
+        android:name="com.google.android.apps.chrome.webapps.WebappActivity7"
+        android:targetActivity="org.chromium.chrome.browser.webapps.WebappActivity7"/>
+    <activity-alias
+        android:icon="@mipmap/app_shortcut_icon"
+        android:label="@string/webapp_activity_title"
+        android:name="com.google.android.apps.chrome.webapps.WebappActivity8"
+        android:targetActivity="org.chromium.chrome.browser.webapps.WebappActivity8"/>
+    <activity-alias
+        android:icon="@mipmap/app_shortcut_icon"
+        android:label="@string/webapp_activity_title"
+        android:name="com.google.android.apps.chrome.webapps.WebappActivity9"
+        android:targetActivity="org.chromium.chrome.browser.webapps.WebappActivity9"/>
+    <activity-alias
+        android:label="@string/webapp_activity_title"
+        android:name="com.google.android.apps.chrome.webapps.WebappActivity"
+        android:resizeableActivity="true"
+        android:supportsPictureInPicture="true"
+        android:targetActivity="org.chromium.chrome.browser.webapps.WebappActivity"/>
+    <activity-alias
+        android:name="com.google.android.apps.chrome.webapps.WebappManager"
+        android:targetActivity="org.chromium.chrome.browser.webapps.WebappLauncherActivity"/>
+    <activity-alias
+        android:enabled="false"
+        android:excludeFromRecents="true"
+        android:exported="true"
+        android:name="org.chromium.chrome.browser.media.AudioLauncherActivity"
+        android:targetActivity="org.chromium.chrome.browser.media.MediaLauncherActivity"
+        android:theme="@android:style/Theme.NoDisplay">
+      <intent-filter tools:ignore="AppLinkUrlError">
+        <action android:name="android.intent.action.VIEW"/>
+        <category android:name="android.intent.category.DEFAULT"/>
+        <data android:mimeType="audio/*"/>
+        <data android:scheme="content"/>
+        <data android:scheme="file"/>
+      </intent-filter>
+    </activity-alias>
+    <meta-data android:name="android.allow_multiple_resumed_activities" android:value="true"/>
+    <meta-data
+        android:name="android.content.APP_RESTRICTIONS"
+        android:resource="@xml/app_restrictions"/>
+    <meta-data android:name="com.android.webview.WebViewLibrary" android:value="libmonochrome.so"/>
+    <meta-data
+        android:name="com.google.android.gms.cast.framework.OPTIONS_PROVIDER_CLASS_NAME"
+        android:value="org.chromium.chrome.browser.media.router.caf.CastOptionsProvider"/>
+    <meta-data
+        android:name="com.google.android.gms.version"
+        android:value="@integer/google_play_services_version"/>
+    <meta-data android:name="com.google.ar.core" android:value="optional"/>
+    <meta-data android:name="com.google.ar.core.min_apk_version" android:value="190531000"/>
+    <meta-data android:name="com.samsung.android.sdk.multiwindow.enable" android:value="true"/>
+    <meta-data
+        android:name="com.samsung.android.sdk.multiwindow.penwindow.enable"
+        android:value="true"/>
+    <meta-data
+        android:name="ipc.invalidation.ticl.gcm_upstream_service_class"
+        android:value="org.chromium.chrome.browser.services.gcm.InvalidationGcmUpstreamSender"/>
+    <meta-data
+        android:name="org.chromium.chrome:privileged_process0.ignore_multidex"
+        android:value="true"/>
+    <meta-data
+        android:name="org.chromium.chrome:privileged_process1.ignore_multidex"
+        android:value="true"/>
+    <meta-data
+        android:name="org.chromium.chrome:privileged_process2.ignore_multidex"
+        android:value="true"/>
+    <meta-data
+        android:name="org.chromium.chrome:privileged_process3.ignore_multidex"
+        android:value="true"/>
+    <meta-data
+        android:name="org.chromium.chrome:privileged_process4.ignore_multidex"
+        android:value="true"/>
+    <meta-data
+        android:name="org.chromium.content.browser.NUM_PRIVILEGED_SERVICES"
+        android:value="5"/>
+    <meta-data
+        android:name="org.chromium.content.browser.NUM_SANDBOXED_SERVICES"
+        android:value="40"/>
+    <meta-data
+        android:name="org.chromium.content.browser.REMOTE_MEDIA_PLAYERS"
+        android:value="org.chromium.chrome.browser.media.remote.DefaultMediaRouteController"/>
+    <meta-data
+        android:name="org.chromium.content.browser.SMART_CLIP_PROVIDER"
+        android:value="org.chromium.content_public.browser.SmartClipProvider"/>
+    <provider
+        android:authorities="org.chromium.chrome.ChromeBrowserProvider;org.chromium.chrome.browser;org.chromium.chrome"
+        android:exported="true"
+        android:name="org.chromium.chrome.browser.provider.ChromeBrowserProvider">
+      <path-permission
+          android:path="/bookmarks/search_suggest_query"
+          android:readPermission="android.permission.GLOBAL_SEARCH"/>
+    </provider>
+    <provider
+        android:authorities="org.chromium.chrome.DownloadFileProvider"
+        android:exported="false"
+        android:grantUriPermissions="true"
+        android:name="org.chromium.chrome.browser.download.DownloadFileProvider">
+      <meta-data
+          android:name="android.support.FILE_PROVIDER_PATHS"
+          android:resource="@xml/file_paths"/>
+    </provider>
+    <provider
+        android:authorities="org.chromium.chrome.FileProvider"
+        android:exported="false"
+        android:grantUriPermissions="true"
+        android:name="org.chromium.chrome.browser.util.ChromeFileProvider">
+      <meta-data
+          android:name="android.support.FILE_PROVIDER_PATHS"
+          android:resource="@xml/file_paths"/>
+    </provider>
+    <provider
+        android:authorities="org.chromium.chrome.LicenseContentProvider"
+        android:exported="true"
+        android:name="org.chromium.android_webview.nonembedded.LicenseContentProvider"
+        android:process=":webview_apk"/>
+    <receiver
+        android:exported="false"
+        android:name="com.google.android.gms.cast.framework.media.MediaIntentReceiver"/>
+    <receiver
+        android:exported="false"
+        android:name="com.google.ipc.invalidation.external.client.contrib.AndroidListener$AlarmReceiver"/>
+    <receiver
+        android:exported="false"
+        android:name="com.google.ipc.invalidation.ticl.android2.AndroidInternalScheduler$AlarmReceiver"/>
+    <receiver
+        android:exported="false"
+        android:name="org.chromium.chrome.browser.bookmarkswidget.BookmarkWidgetProxy"/>
+    <receiver
+        android:exported="false"
+        android:name="org.chromium.chrome.browser.locale.LocaleChangedBroadcastReceiver">
+      <intent-filter>
+        <action android:name="android.intent.action.LOCALE_CHANGED"/>
+      </intent-filter>
+    </receiver>
+    <receiver
+        android:exported="false"
+        android:name="org.chromium.chrome.browser.notifications.NotificationIntentInterceptor$Receiver"/>
+    <receiver
+        android:exported="false"
+        android:name="org.chromium.chrome.browser.notifications.NotificationService$Receiver">
+      <intent-filter>
+        <action android:name="org.chromium.chrome.browser.notifications.CLICK_NOTIFICATION"/>
+        <action android:name="org.chromium.chrome.browser.notifications.CLOSE_NOTIFICATION"/>
+      </intent-filter>
+    </receiver>
+    <receiver
+        android:exported="false"
+        android:name="org.chromium.chrome.browser.notifications.scheduler.DisplayAgent$Receiver"/>
+    <receiver
+        android:exported="false"
+        android:name="org.chromium.chrome.browser.offlinepages.AutoFetchNotifier$CompleteNotificationReceiver"/>
+    <receiver
+        android:exported="false"
+        android:name="org.chromium.chrome.browser.offlinepages.AutoFetchNotifier$InProgressCancelReceiver"/>
+    <receiver
+        android:exported="false"
+        android:name="org.chromium.chrome.browser.offlinepages.prefetch.PrefetchedPagesNotifier$ClickReceiver"/>
+    <receiver
+        android:exported="false"
+        android:name="org.chromium.chrome.browser.offlinepages.prefetch.PrefetchedPagesNotifier$SettingsReceiver"/>
+    <receiver
+        android:exported="false"
+        android:name="org.chromium.chrome.browser.omaha.UpdateNotificationController$UpdateNotificationReceiver"/>
+    <receiver
+        android:exported="false"
+        android:name="org.chromium.chrome.browser.send_tab_to_self.NotificationManager$DeleteReceiver"/>
+    <receiver
+        android:exported="false"
+        android:name="org.chromium.chrome.browser.send_tab_to_self.NotificationManager$TapReceiver"/>
+    <receiver
+        android:exported="false"
+        android:name="org.chromium.chrome.browser.send_tab_to_self.NotificationManager$TimeoutReceiver"/>
+    <receiver
+        android:exported="false"
+        android:name="org.chromium.chrome.browser.sharing.click_to_call.ClickToCallMessageHandler$TapReceiver"/>
+    <receiver
+        android:exported="false"
+        android:name="org.chromium.chrome.browser.sharing.shared_clipboard.SharedClipboardMessageHandler$TapReceiver"/>
+    <receiver
+        android:exported="false"
+        android:name="org.chromium.chrome.browser.sharing.shared_clipboard.SharedClipboardMessageHandler$TryAgainReceiver"/>
+    <receiver
+        android:exported="false"
+        android:name="org.chromium.chrome.browser.upgrade.PackageReplacedBroadcastReceiver">
+      <intent-filter>
+        <action android:name="android.intent.action.MY_PACKAGE_REPLACED"/>
+      </intent-filter>
+    </receiver>
+    <receiver
+        android:exported="true"
+        android:name="com.google.android.gms.gcm.GcmReceiver"
+        android:permission="com.google.android.c2dm.permission.SEND">
+      <intent-filter>
+        <action android:name="com.google.android.c2dm.intent.RECEIVE"/>
+        <action android:name="com.google.android.c2dm.intent.REGISTRATION"/>
+        <category android:name="org.chromium.chrome"/>
+      </intent-filter>
+    </receiver>
+    <receiver
+        android:exported="true"
+        android:name="org.chromium.chrome.browser.browserservices.ClientAppBroadcastReceiver">
+      <intent-filter>
+        <action android:name="android.intent.action.PACKAGE_DATA_CLEARED"/>
+        <action android:name="android.intent.action.PACKAGE_FULLY_REMOVED"/>
+        <data android:scheme="package"/>
+      </intent-filter>
+    </receiver>
+    <receiver
+        android:exported="true"
+        android:name="org.chromium.chrome.browser.sharing.click_to_call.ClickToCallMessageHandler$PhoneUnlockedReceiver">
+      <intent-filter>
+        <action android:name="android.intent.action.USER_PRESENT"/>
+      </intent-filter>
+    </receiver>
+    <receiver
+        android:label="@string/bookmark_widget_title"
+        android:name="com.google.android.apps.chrome.appwidget.bookmarks.BookmarkThumbnailWidgetProvider">
+      <intent-filter>
+        <action android:name=".BOOKMARK_APPWIDGET_UPDATE"/>
+        <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
+      </intent-filter>
+      <meta-data
+          android:name="android.appwidget.provider"
+          android:resource="@xml/bookmark_widget_info"/>
+    </receiver>
+    <receiver
+        android:label="@string/search_widget_title"
+        android:name="org.chromium.chrome.browser.searchwidget.SearchWidgetProvider">
+      <intent-filter>
+        <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
+      </intent-filter>
+      <intent-filter>
+        <action android:name="org.chromium.chrome.browser.searchwidget.START_TEXT_QUERY"/>
+      </intent-filter>
+      <intent-filter>
+        <action android:name="org.chromium.chrome.browser.searchwidget.START_VOICE_QUERY"/>
+      </intent-filter>
+      <intent-filter>
+        <action android:name="org.chromium.chrome.browser.searchwidget.UPDATE_ALL_WIDGETS"/>
+      </intent-filter>
+      <meta-data
+          android:name="android.appwidget.provider"
+          android:resource="@xml/search_widget_info"/>
+    </receiver>
+    <receiver
+        android:name="org.chromium.chrome.browser.media.ui.MediaNotificationManager$CastMediaButtonReceiver">
+      <intent-filter>
+        <action android:name="android.intent.action.MEDIA_BUTTON"/>
+      </intent-filter>
+    </receiver>
+    <receiver
+        android:name="org.chromium.chrome.browser.media.ui.MediaNotificationManager$PlaybackMediaButtonReceiver">
+      <intent-filter>
+        <action android:name="android.intent.action.MEDIA_BUTTON"/>
+      </intent-filter>
+    </receiver>
+    <receiver
+        android:name="org.chromium.chrome.browser.media.ui.MediaNotificationManager$PresentationMediaButtonReceiver">
+      <intent-filter>
+        <action android:name="android.intent.action.MEDIA_BUTTON"/>
+      </intent-filter>
+    </receiver>
+    <receiver android:name="org.chromium.chrome.browser.services.AccountsChangedReceiver">
+      <intent-filter>
+        <action android:name="android.accounts.LOGIN_ACCOUNTS_CHANGED"/>
+      </intent-filter>
+    </receiver>
+    <service
+        android:description="@string/decoder_description"
+        android:exported="false"
+        android:isolatedProcess="true"
+        android:name="org.chromium.chrome.browser.photo_picker.DecoderService"
+        android:process=":decoder_service"/>
+    <service
+        android:exported="false"
+        android:isolatedProcess="false"
+        android:name="org.chromium.content.app.PrivilegedProcessService0"
+        android:permission="org.chromium.chrome.permission.CHILD_SERVICE"
+        android:process=":privileged_process0"/>
+    <service
+        android:exported="false"
+        android:isolatedProcess="false"
+        android:name="org.chromium.content.app.PrivilegedProcessService1"
+        android:permission="org.chromium.chrome.permission.CHILD_SERVICE"
+        android:process=":privileged_process1"/>
+    <service
+        android:exported="false"
+        android:isolatedProcess="false"
+        android:name="org.chromium.content.app.PrivilegedProcessService2"
+        android:permission="org.chromium.chrome.permission.CHILD_SERVICE"
+        android:process=":privileged_process2"/>
+    <service
+        android:exported="false"
+        android:isolatedProcess="false"
+        android:name="org.chromium.content.app.PrivilegedProcessService3"
+        android:permission="org.chromium.chrome.permission.CHILD_SERVICE"
+        android:process=":privileged_process3"/>
+    <service
+        android:exported="false"
+        android:isolatedProcess="false"
+        android:name="org.chromium.content.app.PrivilegedProcessService4"
+        android:permission="org.chromium.chrome.permission.CHILD_SERVICE"
+        android:process=":privileged_process4"/>
+    <service
+        android:exported="false"
+        android:name="com.google.android.gms.cast.framework.ReconnectionService"/>
+    <service
+        android:exported="false"
+        android:name="com.google.android.gms.cast.framework.media.MediaNotificationService"/>
+    <service
+        android:exported="false"
+        android:name="com.google.ipc.invalidation.ticl.android2.TiclService"/>
+    <service
+        android:exported="false"
+        android:name="com.google.ipc.invalidation.ticl.android2.channel.AndroidInstanceIDListenerService">
+      <intent-filter>
+        <action android:name="com.google.android.gms.iid.InstanceID"/>
+      </intent-filter>
+    </service>
+    <service
+        android:exported="false"
+        android:name="com.google.ipc.invalidation.ticl.android2.channel.AndroidMessageSenderService"/>
+    <service
+        android:exported="false"
+        android:name="org.chromium.android_webview.services.AwVariationsSeedFetcher"
+        android:permission="android.permission.BIND_JOB_SERVICE"
+        android:process=":webview_service"/>
+    <service
+        android:exported="false"
+        android:name="org.chromium.chrome.browser.bookmarkswidget.BookmarkWidgetService"
+        android:permission="android.permission.BIND_REMOTEVIEWS"/>
+    <service
+        android:exported="false"
+        android:name="org.chromium.chrome.browser.crash.ChromeMinidumpUploadJobService"
+        android:permission="android.permission.BIND_JOB_SERVICE"/>
+    <service
+        android:exported="false"
+        android:name="org.chromium.chrome.browser.crash.MinidumpUploadService"/>
+    <service
+        android:exported="false"
+        android:name="org.chromium.chrome.browser.download.DownloadBroadcastManager"/>
+    <service
+        android:exported="false"
+        android:name="org.chromium.chrome.browser.download.DownloadForegroundService"/>
+    <service
+        android:exported="false"
+        android:name="org.chromium.chrome.browser.incognito.IncognitoNotificationService"/>
+    <service
+        android:exported="false"
+        android:name="org.chromium.chrome.browser.invalidation.ChromeBrowserSyncAdapterService">
+      <intent-filter>
+        <action android:name="android.content.SyncAdapter"/>
+      </intent-filter>
+      <meta-data android:name="android.content.SyncAdapter" android:resource="@xml/syncadapter"/>
+    </service>
+    <service
+        android:exported="false"
+        android:name="org.chromium.chrome.browser.media.MediaCaptureNotificationService"/>
+    <service
+        android:exported="false"
+        android:name="org.chromium.chrome.browser.media.ui.MediaNotificationManager$CastListenerService">
+      <intent-filter>
+        <action android:name="android.intent.action.MEDIA_BUTTON"/>
+      </intent-filter>
+    </service>
+    <service
+        android:exported="false"
+        android:name="org.chromium.chrome.browser.media.ui.MediaNotificationManager$PlaybackListenerService">
+      <intent-filter>
+        <action android:name="android.intent.action.MEDIA_BUTTON"/>
+      </intent-filter>
+    </service>
+    <service
+        android:exported="false"
+        android:name="org.chromium.chrome.browser.media.ui.MediaNotificationManager$PresentationListenerService">
+      <intent-filter>
+        <action android:name="android.intent.action.MEDIA_BUTTON"/>
+      </intent-filter>
+    </service>
+    <service
+        android:exported="false"
+        android:name="org.chromium.chrome.browser.notifications.NotificationJobService"
+        android:permission="android.permission.BIND_JOB_SERVICE"/>
+    <service
+        android:exported="false"
+        android:name="org.chromium.chrome.browser.notifications.NotificationService"/>
+    <service android:exported="false" android:name="org.chromium.chrome.browser.omaha.OmahaClient"/>
+    <service
+        android:exported="false"
+        android:name="org.chromium.chrome.browser.services.gcm.ChromeGcmListenerService">
+      <intent-filter>
+        <action android:name="com.google.android.c2dm.intent.RECEIVE"/>
+      </intent-filter>
+    </service>
+    <service
+        android:exported="false"
+        android:name="org.chromium.chrome.browser.services.gcm.GCMBackgroundService"/>
+    <service
+        android:exported="false"
+        android:name="org.chromium.chrome.browser.services.gcm.InvalidationGcmUpstreamSender"/>
+    <service
+        android:exported="false"
+        android:name="org.chromium.chrome.browser.tracing.TracingNotificationService"/>
+    <service
+        android:exported="false"
+        android:name="org.chromium.components.background_task_scheduler.BackgroundTaskJobService"
+        android:permission="android.permission.BIND_JOB_SERVICE"/>
+    <service
+        android:exported="true"
+        android:name="com.google.ipc.invalidation.ticl.android2.channel.GcmRegistrationTaskService"
+        android:permission="com.google.android.gms.permission.BIND_NETWORK_TASK_SERVICE">
+      <intent-filter>
+        <action android:name="com.google.android.gms.gcm.ACTION_TASK_READY"/>
+      </intent-filter>
+    </service>
+    <service
+        android:exported="true"
+        android:name="org.chromium.android_webview.services.AwMinidumpUploadJobService"
+        android:permission="android.permission.BIND_JOB_SERVICE"
+        android:process=":webview_service"/>
+    <service
+        android:exported="true"
+        android:name="org.chromium.android_webview.services.CrashReceiverService"
+        android:process=":webview_service"/>
+    <service
+        android:exported="true"
+        android:name="org.chromium.android_webview.services.VariationsSeedServer"
+        android:process=":webview_service"/>
+    <service
+        android:exported="true"
+        android:name="org.chromium.chrome.browser.ChromeBackgroundService"
+        android:permission="com.google.android.gms.permission.BIND_NETWORK_TASK_SERVICE">
+      <intent-filter>
+        <action android:name="com.google.android.gms.gcm.ACTION_TASK_READY"/>
+      </intent-filter>
+    </service>
+    <service
+        android:exported="true"
+        android:name="org.chromium.components.background_task_scheduler.BackgroundTaskGcmTaskService"
+        android:permission="com.google.android.gms.permission.BIND_NETWORK_TASK_SERVICE">
+      <intent-filter>
+        <action android:name="com.google.android.gms.gcm.ACTION_TASK_READY"/>
+      </intent-filter>
+    </service>
+    <service android:name="androidx.browser.customtabs.PostMessageService"/>
+    <service
+        android:exported="true"
+        android:externalService="true"
+        android:isolatedProcess="true"
+        android:name="org.chromium.content.app.SandboxedProcessService0"
+        android:permission="org.chromium.chrome.permission.CHILD_SERVICE"
+        android:process=":sandboxed_process0"
+        android:visibleToInstantApps="true"
+        tools:ignore="ExportedService"/>
+    <service
+        android:exported="true"
+        android:externalService="true"
+        android:isolatedProcess="true"
+        android:name="org.chromium.content.app.SandboxedProcessService1"
+        android:permission="org.chromium.chrome.permission.CHILD_SERVICE"
+        android:process=":sandboxed_process1"
+        android:visibleToInstantApps="true"
+        tools:ignore="ExportedService"/>
+    <service
+        android:exported="true"
+        android:externalService="true"
+        android:isolatedProcess="true"
+        android:name="org.chromium.content.app.SandboxedProcessService10"
+        android:permission="org.chromium.chrome.permission.CHILD_SERVICE"
+        android:process=":sandboxed_process10"
+        android:visibleToInstantApps="true"
+        tools:ignore="ExportedService"/>
+    <service
+        android:exported="true"
+        android:externalService="true"
+        android:isolatedProcess="true"
+        android:name="org.chromium.content.app.SandboxedProcessService11"
+        android:permission="org.chromium.chrome.permission.CHILD_SERVICE"
+        android:process=":sandboxed_process11"
+        android:visibleToInstantApps="true"
+        tools:ignore="ExportedService"/>
+    <service
+        android:exported="true"
+        android:externalService="true"
+        android:isolatedProcess="true"
+        android:name="org.chromium.content.app.SandboxedProcessService12"
+        android:permission="org.chromium.chrome.permission.CHILD_SERVICE"
+        android:process=":sandboxed_process12"
+        android:visibleToInstantApps="true"
+        tools:ignore="ExportedService"/>
+    <service
+        android:exported="true"
+        android:externalService="true"
+        android:isolatedProcess="true"
+        android:name="org.chromium.content.app.SandboxedProcessService13"
+        android:permission="org.chromium.chrome.permission.CHILD_SERVICE"
+        android:process=":sandboxed_process13"
+        android:visibleToInstantApps="true"
+        tools:ignore="ExportedService"/>
+    <service
+        android:exported="true"
+        android:externalService="true"
+        android:isolatedProcess="true"
+        android:name="org.chromium.content.app.SandboxedProcessService14"
+        android:permission="org.chromium.chrome.permission.CHILD_SERVICE"
+        android:process=":sandboxed_process14"
+        android:visibleToInstantApps="true"
+        tools:ignore="ExportedService"/>
+    <service
+        android:exported="true"
+        android:externalService="true"
+        android:isolatedProcess="true"
+        android:name="org.chromium.content.app.SandboxedProcessService15"
+        android:permission="org.chromium.chrome.permission.CHILD_SERVICE"
+        android:process=":sandboxed_process15"
+        android:visibleToInstantApps="true"
+        tools:ignore="ExportedService"/>
+    <service
+        android:exported="true"
+        android:externalService="true"
+        android:isolatedProcess="true"
+        android:name="org.chromium.content.app.SandboxedProcessService16"
+        android:permission="org.chromium.chrome.permission.CHILD_SERVICE"
+        android:process=":sandboxed_process16"
+        android:visibleToInstantApps="true"
+        tools:ignore="ExportedService"/>
+    <service
+        android:exported="true"
+        android:externalService="true"
+        android:isolatedProcess="true"
+        android:name="org.chromium.content.app.SandboxedProcessService17"
+        android:permission="org.chromium.chrome.permission.CHILD_SERVICE"
+        android:process=":sandboxed_process17"
+        android:visibleToInstantApps="true"
+        tools:ignore="ExportedService"/>
+    <service
+        android:exported="true"
+        android:externalService="true"
+        android:isolatedProcess="true"
+        android:name="org.chromium.content.app.SandboxedProcessService18"
+        android:permission="org.chromium.chrome.permission.CHILD_SERVICE"
+        android:process=":sandboxed_process18"
+        android:visibleToInstantApps="true"
+        tools:ignore="ExportedService"/>
+    <service
+        android:exported="true"
+        android:externalService="true"
+        android:isolatedProcess="true"
+        android:name="org.chromium.content.app.SandboxedProcessService19"
+        android:permission="org.chromium.chrome.permission.CHILD_SERVICE"
+        android:process=":sandboxed_process19"
+        android:visibleToInstantApps="true"
+        tools:ignore="ExportedService"/>
+    <service
+        android:exported="true"
+        android:externalService="true"
+        android:isolatedProcess="true"
+        android:name="org.chromium.content.app.SandboxedProcessService2"
+        android:permission="org.chromium.chrome.permission.CHILD_SERVICE"
+        android:process=":sandboxed_process2"
+        android:visibleToInstantApps="true"
+        tools:ignore="ExportedService"/>
+    <service
+        android:exported="true"
+        android:externalService="true"
+        android:isolatedProcess="true"
+        android:name="org.chromium.content.app.SandboxedProcessService20"
+        android:permission="org.chromium.chrome.permission.CHILD_SERVICE"
+        android:process=":sandboxed_process20"
+        android:visibleToInstantApps="true"
+        tools:ignore="ExportedService"/>
+    <service
+        android:exported="true"
+        android:externalService="true"
+        android:isolatedProcess="true"
+        android:name="org.chromium.content.app.SandboxedProcessService21"
+        android:permission="org.chromium.chrome.permission.CHILD_SERVICE"
+        android:process=":sandboxed_process21"
+        android:visibleToInstantApps="true"
+        tools:ignore="ExportedService"/>
+    <service
+        android:exported="true"
+        android:externalService="true"
+        android:isolatedProcess="true"
+        android:name="org.chromium.content.app.SandboxedProcessService22"
+        android:permission="org.chromium.chrome.permission.CHILD_SERVICE"
+        android:process=":sandboxed_process22"
+        android:visibleToInstantApps="true"
+        tools:ignore="ExportedService"/>
+    <service
+        android:exported="true"
+        android:externalService="true"
+        android:isolatedProcess="true"
+        android:name="org.chromium.content.app.SandboxedProcessService23"
+        android:permission="org.chromium.chrome.permission.CHILD_SERVICE"
+        android:process=":sandboxed_process23"
+        android:visibleToInstantApps="true"
+        tools:ignore="ExportedService"/>
+    <service
+        android:exported="true"
+        android:externalService="true"
+        android:isolatedProcess="true"
+        android:name="org.chromium.content.app.SandboxedProcessService24"
+        android:permission="org.chromium.chrome.permission.CHILD_SERVICE"
+        android:process=":sandboxed_process24"
+        android:visibleToInstantApps="true"
+        tools:ignore="ExportedService"/>
+    <service
+        android:exported="true"
+        android:externalService="true"
+        android:isolatedProcess="true"
+        android:name="org.chromium.content.app.SandboxedProcessService25"
+        android:permission="org.chromium.chrome.permission.CHILD_SERVICE"
+        android:process=":sandboxed_process25"
+        android:visibleToInstantApps="true"
+        tools:ignore="ExportedService"/>
+    <service
+        android:exported="true"
+        android:externalService="true"
+        android:isolatedProcess="true"
+        android:name="org.chromium.content.app.SandboxedProcessService26"
+        android:permission="org.chromium.chrome.permission.CHILD_SERVICE"
+        android:process=":sandboxed_process26"
+        android:visibleToInstantApps="true"
+        tools:ignore="ExportedService"/>
+    <service
+        android:exported="true"
+        android:externalService="true"
+        android:isolatedProcess="true"
+        android:name="org.chromium.content.app.SandboxedProcessService27"
+        android:permission="org.chromium.chrome.permission.CHILD_SERVICE"
+        android:process=":sandboxed_process27"
+        android:visibleToInstantApps="true"
+        tools:ignore="ExportedService"/>
+    <service
+        android:exported="true"
+        android:externalService="true"
+        android:isolatedProcess="true"
+        android:name="org.chromium.content.app.SandboxedProcessService28"
+        android:permission="org.chromium.chrome.permission.CHILD_SERVICE"
+        android:process=":sandboxed_process28"
+        android:visibleToInstantApps="true"
+        tools:ignore="ExportedService"/>
+    <service
+        android:exported="true"
+        android:externalService="true"
+        android:isolatedProcess="true"
+        android:name="org.chromium.content.app.SandboxedProcessService29"
+        android:permission="org.chromium.chrome.permission.CHILD_SERVICE"
+        android:process=":sandboxed_process29"
+        android:visibleToInstantApps="true"
+        tools:ignore="ExportedService"/>
+    <service
+        android:exported="true"
+        android:externalService="true"
+        android:isolatedProcess="true"
+        android:name="org.chromium.content.app.SandboxedProcessService3"
+        android:permission="org.chromium.chrome.permission.CHILD_SERVICE"
+        android:process=":sandboxed_process3"
+        android:visibleToInstantApps="true"
+        tools:ignore="ExportedService"/>
+    <service
+        android:exported="true"
+        android:externalService="true"
+        android:isolatedProcess="true"
+        android:name="org.chromium.content.app.SandboxedProcessService30"
+        android:permission="org.chromium.chrome.permission.CHILD_SERVICE"
+        android:process=":sandboxed_process30"
+        android:visibleToInstantApps="true"
+        tools:ignore="ExportedService"/>
+    <service
+        android:exported="true"
+        android:externalService="true"
+        android:isolatedProcess="true"
+        android:name="org.chromium.content.app.SandboxedProcessService31"
+        android:permission="org.chromium.chrome.permission.CHILD_SERVICE"
+        android:process=":sandboxed_process31"
+        android:visibleToInstantApps="true"
+        tools:ignore="ExportedService"/>
+    <service
+        android:exported="true"
+        android:externalService="true"
+        android:isolatedProcess="true"
+        android:name="org.chromium.content.app.SandboxedProcessService32"
+        android:permission="org.chromium.chrome.permission.CHILD_SERVICE"
+        android:process=":sandboxed_process32"
+        android:visibleToInstantApps="true"
+        tools:ignore="ExportedService"/>
+    <service
+        android:exported="true"
+        android:externalService="true"
+        android:isolatedProcess="true"
+        android:name="org.chromium.content.app.SandboxedProcessService33"
+        android:permission="org.chromium.chrome.permission.CHILD_SERVICE"
+        android:process=":sandboxed_process33"
+        android:visibleToInstantApps="true"
+        tools:ignore="ExportedService"/>
+    <service
+        android:exported="true"
+        android:externalService="true"
+        android:isolatedProcess="true"
+        android:name="org.chromium.content.app.SandboxedProcessService34"
+        android:permission="org.chromium.chrome.permission.CHILD_SERVICE"
+        android:process=":sandboxed_process34"
+        android:visibleToInstantApps="true"
+        tools:ignore="ExportedService"/>
+    <service
+        android:exported="true"
+        android:externalService="true"
+        android:isolatedProcess="true"
+        android:name="org.chromium.content.app.SandboxedProcessService35"
+        android:permission="org.chromium.chrome.permission.CHILD_SERVICE"
+        android:process=":sandboxed_process35"
+        android:visibleToInstantApps="true"
+        tools:ignore="ExportedService"/>
+    <service
+        android:exported="true"
+        android:externalService="true"
+        android:isolatedProcess="true"
+        android:name="org.chromium.content.app.SandboxedProcessService36"
+        android:permission="org.chromium.chrome.permission.CHILD_SERVICE"
+        android:process=":sandboxed_process36"
+        android:visibleToInstantApps="true"
+        tools:ignore="ExportedService"/>
+    <service
+        android:exported="true"
+        android:externalService="true"
+        android:isolatedProcess="true"
+        android:name="org.chromium.content.app.SandboxedProcessService37"
+        android:permission="org.chromium.chrome.permission.CHILD_SERVICE"
+        android:process=":sandboxed_process37"
+        android:visibleToInstantApps="true"
+        tools:ignore="ExportedService"/>
+    <service
+        android:exported="true"
+        android:externalService="true"
+        android:isolatedProcess="true"
+        android:name="org.chromium.content.app.SandboxedProcessService38"
+        android:permission="org.chromium.chrome.permission.CHILD_SERVICE"
+        android:process=":sandboxed_process38"
+        android:visibleToInstantApps="true"
+        tools:ignore="ExportedService"/>
+    <service
+        android:exported="true"
+        android:externalService="true"
+        android:isolatedProcess="true"
+        android:name="org.chromium.content.app.SandboxedProcessService39"
+        android:permission="org.chromium.chrome.permission.CHILD_SERVICE"
+        android:process=":sandboxed_process39"
+        android:visibleToInstantApps="true"
+        tools:ignore="ExportedService"/>
+    <service
+        android:exported="true"
+        android:externalService="true"
+        android:isolatedProcess="true"
+        android:name="org.chromium.content.app.SandboxedProcessService4"
+        android:permission="org.chromium.chrome.permission.CHILD_SERVICE"
+        android:process=":sandboxed_process4"
+        android:visibleToInstantApps="true"
+        tools:ignore="ExportedService"/>
+    <service
+        android:exported="true"
+        android:externalService="true"
+        android:isolatedProcess="true"
+        android:name="org.chromium.content.app.SandboxedProcessService5"
+        android:permission="org.chromium.chrome.permission.CHILD_SERVICE"
+        android:process=":sandboxed_process5"
+        android:visibleToInstantApps="true"
+        tools:ignore="ExportedService"/>
+    <service
+        android:exported="true"
+        android:externalService="true"
+        android:isolatedProcess="true"
+        android:name="org.chromium.content.app.SandboxedProcessService6"
+        android:permission="org.chromium.chrome.permission.CHILD_SERVICE"
+        android:process=":sandboxed_process6"
+        android:visibleToInstantApps="true"
+        tools:ignore="ExportedService"/>
+    <service
+        android:exported="true"
+        android:externalService="true"
+        android:isolatedProcess="true"
+        android:name="org.chromium.content.app.SandboxedProcessService7"
+        android:permission="org.chromium.chrome.permission.CHILD_SERVICE"
+        android:process=":sandboxed_process7"
+        android:visibleToInstantApps="true"
+        tools:ignore="ExportedService"/>
+    <service
+        android:exported="true"
+        android:externalService="true"
+        android:isolatedProcess="true"
+        android:name="org.chromium.content.app.SandboxedProcessService8"
+        android:permission="org.chromium.chrome.permission.CHILD_SERVICE"
+        android:process=":sandboxed_process8"
+        android:visibleToInstantApps="true"
+        tools:ignore="ExportedService"/>
+    <service
+        android:exported="true"
+        android:externalService="true"
+        android:isolatedProcess="true"
+        android:name="org.chromium.content.app.SandboxedProcessService9"
+        android:permission="org.chromium.chrome.permission.CHILD_SERVICE"
+        android:process=":sandboxed_process9"
+        android:visibleToInstantApps="true"
+        tools:ignore="ExportedService"/>
+    <service
+        android:exported="true"
+        android:name="org.chromium.chrome.browser.customtabs.CustomTabsConnectionService"
+        tools:ignore="ExportedService">
+      <intent-filter>
+        <action android:name="android.support.customtabs.action.CustomTabsService"/>
+        <category android:name="androidx.browser.customtabs.category.ColorSchemeCustomization"/>
+        <category android:name="androidx.browser.customtabs.category.NavBarColorCustomization"/>
+        <category android:name="androidx.browser.trusted.category.TrustedWebActivities"/>
+        <category
+            android:name="androidx.browser.trusted.category.TrustedWebActivitySplashScreensV1"/>
+        <category android:name="androidx.browser.trusted.category.WebShareTargetV2"/>
+      </intent-filter>
+    </service>
+    <service
+        android:exported="true"
+        android:name="org.chromium.chrome.browser.prerender.ChromePrerenderService"
+        tools:ignore="ExportedService"/>
+  </application>
+</manifest>

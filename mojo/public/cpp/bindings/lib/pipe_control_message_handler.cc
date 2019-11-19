@@ -42,9 +42,9 @@ bool PipeControlMessageHandler::Accept(Message* message) {
 }
 
 bool PipeControlMessageHandler::Validate(Message* message) {
-  internal::ValidationContext validation_context(message->payload(),
-                                                 message->payload_num_bytes(),
-                                                 0, 0, message, description_);
+  internal::ValidationContext validation_context(
+      message->payload(), message->payload_num_bytes(), 0, 0, message,
+      description_.c_str());
 
   if (message->name() == pipe_control::kRunOrClosePipeMessageId) {
     if (!internal::ValidateMessageIsRequestWithoutResponse(

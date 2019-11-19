@@ -9,4 +9,4 @@ public_deps = [
   "//base",
   "//mojo/public/cpp/base:shared_typemap_traits",
 ]
-type_mappings = [ "mojo_base.mojom.Token=base::Token" ]
+type_mappings = [ "mojo_base.mojom.Token=::base::Token" ]

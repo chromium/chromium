@@ -5,12 +5,13 @@
 #include "chrome/browser/ui/webui/settings/settings_manage_profile_handler.h"
 
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/profiles/profile_avatar_icon_util.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/web_ui_data_source.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_web_ui.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -39,7 +40,7 @@ class ManageProfileHandlerTest : public testing::Test {
     ASSERT_TRUE(profile_manager_.SetUp());
     profile_ = profile_manager_.CreateTestingProfile("Profile 1");
 
-    handler_.reset(new TestManageProfileHandler(profile_));
+    handler_ = std::make_unique<TestManageProfileHandler>(profile_);
     handler_->set_web_ui(&web_ui_);
     handler()->AllowJavascript();
     web_ui()->ClearTrackedCalls();
@@ -59,7 +60,7 @@ class ManageProfileHandlerTest : public testing::Test {
   TestManageProfileHandler* handler() const { return handler_.get(); }
 
  private:
-  content::TestBrowserThreadBundle thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
   TestingProfileManager profile_manager_;
   content::TestWebUI web_ui_;
 
@@ -79,8 +80,10 @@ class ManageProfileHandlerTest : public testing::Test {
       const base::DictionaryValue* icon = nullptr;
       EXPECT_TRUE(icons->GetDictionary(i, &icon));
       std::string icon_url;
+      size_t icon_index;
       EXPECT_TRUE(icon->GetString("url", &icon_url));
       EXPECT_FALSE(icon_url.empty());
+      EXPECT_TRUE(profiles::IsDefaultAvatarIconUrl(icon_url, &icon_index));
       std::string icon_label;
       EXPECT_TRUE(icon->GetString("label", &icon_label));
       EXPECT_FALSE(icon_label.empty());
@@ -88,7 +91,7 @@ class ManageProfileHandlerTest : public testing::Test {
       bool has_icon_selected = icon->GetBoolean("selected", &icon_selected);
       if (all_not_selected) {
         EXPECT_FALSE(has_icon_selected);
-      } else if (selected_index == i) {
+      } else if (selected_index == icon_index) {
         EXPECT_TRUE(has_icon_selected);
         EXPECT_TRUE(icon_selected);
       }
@@ -126,7 +129,7 @@ TEST_F(ManageProfileHandlerTest, HandleSetProfileName) {
 
 TEST_F(ManageProfileHandlerTest, HandleGetAvailableIcons) {
   PrefService* pref_service = profile()->GetPrefs();
-  pref_service->SetInteger(prefs::kProfileAvatarIndex, 7);
+  pref_service->SetInteger(prefs::kProfileAvatarIndex, 27);
 
   base::ListValue list_args_1;
   list_args_1.AppendString("get-icons-callback-id");
@@ -141,12 +144,32 @@ TEST_F(ManageProfileHandlerTest, HandleGetAvailableIcons) {
   ASSERT_TRUE(data_1.arg1()->GetAsString(&callback_id_1));
   EXPECT_EQ("get-icons-callback-id", callback_id_1);
 
-  VerifyIconListWithSingleSelection(data_1.arg3(), 7);
+  VerifyIconListWithSingleSelection(data_1.arg3(), 27);
+}
+
+TEST_F(ManageProfileHandlerTest, HandleGetAvailableIconsOldIconSelected) {
+  PrefService* pref_service = profile()->GetPrefs();
+  pref_service->SetInteger(prefs::kProfileAvatarIndex, 7);
+
+  base::ListValue list_args;
+  list_args.AppendString("get-icons-callback-id");
+  handler()->HandleGetAvailableIcons(&list_args);
+
+  EXPECT_EQ(1U, web_ui()->call_data().size());
+
+  const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
+  EXPECT_EQ("cr.webUIResponse", data.function_name());
+
+  std::string callback_id;
+  ASSERT_TRUE(data.arg1()->GetAsString(&callback_id));
+  EXPECT_EQ("get-icons-callback-id", callback_id);
+
+  VerifyIconListWithNoneSelected(data.arg3());
 }
 
 TEST_F(ManageProfileHandlerTest, HandleGetAvailableIconsGaiaAvatarSelected) {
   PrefService* pref_service = profile()->GetPrefs();
-  pref_service->SetInteger(prefs::kProfileAvatarIndex, 7);
+  pref_service->SetInteger(prefs::kProfileAvatarIndex, 27);
   pref_service->SetBoolean(prefs::kProfileUsingGAIAAvatar, true);
 
   base::ListValue list_args;

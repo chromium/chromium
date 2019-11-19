@@ -7,7 +7,7 @@
 
 #include <stddef.h>
 #include <stdint.h>
-
+#include <memory>
 #include <vector>
 
 #include "base/macros.h"
@@ -15,6 +15,7 @@
 #include "ui/display/types/display_constants.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/ozone/common/gpu/ozone_gpu_message_params.h"
+#include "ui/ozone/platform/drm/common/scoped_drm_types.h"
 
 typedef struct _drmModeModeInfo drmModeModeInfo;
 
@@ -38,11 +39,7 @@ class DrmDisplay {
   int64_t display_id() const { return display_id_; }
   scoped_refptr<DrmDevice> drm() const { return drm_; }
   uint32_t crtc() const { return crtc_; }
-  uint32_t connector() const { return connector_; }
-  void UpdateForTesting(uint32_t connector_id, uint32_t crtc_id) {
-    connector_ = connector_id;
-    crtc_ = crtc_id;
-  }
+  uint32_t connector() const;
   const std::vector<drmModeModeInfo>& modes() const { return modes_; }
 
   std::unique_ptr<display::DisplaySnapshot> Update(
@@ -64,7 +61,7 @@ class DrmDisplay {
   int64_t display_id_ = -1;
   const scoped_refptr<DrmDevice> drm_;
   uint32_t crtc_ = 0;
-  uint32_t connector_ = 0;
+  ScopedDrmConnectorPtr connector_;
   std::vector<drmModeModeInfo> modes_;
   gfx::Point origin_;
 

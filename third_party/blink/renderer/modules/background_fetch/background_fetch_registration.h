@@ -5,7 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_BACKGROUND_FETCH_BACKGROUND_FETCH_REGISTRATION_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_BACKGROUND_FETCH_BACKGROUND_FETCH_REGISTRATION_H_
 
-#include "mojo/public/cpp/bindings/binding.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/mojom/background_fetch/background_fetch.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
@@ -23,7 +24,6 @@ class ScriptPromiseResolver;
 class ScriptState;
 class ServiceWorkerRegistration;
 class RequestOrUSVString;
-struct WebBackgroundFetchRegistration;
 
 // Represents an individual Background Fetch registration. Gives developers
 // access to its properties, options, and enables them to abort the fetch.
@@ -38,7 +38,6 @@ class BackgroundFetchRegistration final
  public:
   BackgroundFetchRegistration(
       const String& developer_id,
-      const String& unique_id,
       uint64_t upload_total,
       uint64_t uploaded,
       uint64_t download_total,
@@ -47,15 +46,18 @@ class BackgroundFetchRegistration final
       mojom::BackgroundFetchFailureReason failure_reason);
 
   BackgroundFetchRegistration(
-      ServiceWorkerRegistration* registration,
-      const WebBackgroundFetchRegistration& web_registration);
+      ServiceWorkerRegistration* service_worker_registration,
+      mojom::blink::BackgroundFetchRegistrationPtr registration);
 
   ~BackgroundFetchRegistration() override;
 
   // Initializes the BackgroundFetchRegistration to be associated with the given
   // ServiceWorkerRegistration. It will register itself as an observer for
   // progress events, powering the `progress` JavaScript event.
-  void Initialize(ServiceWorkerRegistration* registration);
+  void Initialize(
+      ServiceWorkerRegistration* registration,
+      mojo::PendingRemote<mojom::blink::BackgroundFetchRegistrationService>
+          registration_service);
 
   // BackgroundFetchRegistrationObserver implementation.
   void OnProgress(uint64_t upload_total,
@@ -93,8 +95,6 @@ class BackgroundFetchRegistration final
   const String result() const;
   const String failureReason() const;
 
-  const String& unique_id() const { return unique_id_; }
-
   DEFINE_ATTRIBUTE_EVENT_LISTENER(progress, kProgress)
 
   ScriptPromise abort(ScriptState* script_state);
@@ -109,6 +109,12 @@ class BackgroundFetchRegistration final
 
   // Keeps the object alive until there are non-zero number of |observers_|.
   bool HasPendingActivity() const final;
+
+  void UpdateUI(
+      const String& in_title,
+      const SkBitmap& in_icon,
+      mojom::blink::BackgroundFetchRegistrationService::UpdateUICallback
+          callback);
 
  private:
   void DidAbort(ScriptPromiseResolver* resolver,
@@ -137,11 +143,6 @@ class BackgroundFetchRegistration final
   // have the same |developer_id_| as one or more inactive registrations.
   String developer_id_;
 
-  // Globally unique ID for the registration, generated in content/. Used to
-  // distinguish registrations in case a developer re-uses |developer_id_|s. Not
-  // exposed to JavaScript.
-  String unique_id_;
-
   uint64_t upload_total_;
   uint64_t uploaded_;
   uint64_t download_total_;
@@ -151,8 +152,11 @@ class BackgroundFetchRegistration final
   mojom::BackgroundFetchFailureReason failure_reason_;
   HeapVector<Member<BackgroundFetchRecord>> observers_;
 
-  mojo::Binding<blink::mojom::blink::BackgroundFetchRegistrationObserver>
-      observer_binding_;
+  mojo::Remote<mojom::blink::BackgroundFetchRegistrationService>
+      registration_service_;
+
+  mojo::Receiver<blink::mojom::blink::BackgroundFetchRegistrationObserver>
+      observer_receiver_{this};
 };
 
 }  // namespace blink

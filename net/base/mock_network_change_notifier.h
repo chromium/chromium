@@ -5,14 +5,19 @@
 #ifndef NET_BASE_MOCK_NETWORK_CHANGE_NOTIFIER_H_
 #define NET_BASE_MOCK_NETWORK_CHANGE_NOTIFIER_H_
 
+#include <memory>
+
 #include "net/base/network_change_notifier.h"
 
 namespace net {
+
+class SystemDnsConfigChangeNotifier;
+
 namespace test {
 
 class MockNetworkChangeNotifier : public NetworkChangeNotifier {
  public:
-  MockNetworkChangeNotifier();
+  static std::unique_ptr<MockNetworkChangeNotifier> Create();
   ~MockNetworkChangeNotifier() override;
 
   ConnectionType GetCurrentConnectionType() const override;
@@ -47,9 +52,14 @@ class MockNetworkChangeNotifier : public NetworkChangeNotifier {
   void NotifyNetworkConnected(NetworkChangeNotifier::NetworkHandle network);
 
  private:
+  // Create using MockNetworkChangeNotifier::Create().
+  MockNetworkChangeNotifier(
+      std::unique_ptr<SystemDnsConfigChangeNotifier> dns_config_notifier);
+
   bool force_network_handles_supported_;
   ConnectionType connection_type_;
   NetworkChangeNotifier::NetworkList connected_networks_;
+  std::unique_ptr<SystemDnsConfigChangeNotifier> dns_config_notifier_;
 };
 
 // Class to replace existing NetworkChangeNotifier singleton with a

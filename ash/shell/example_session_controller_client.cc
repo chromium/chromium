@@ -18,8 +18,9 @@ ExampleSessionControllerClient* instance = nullptr;
 }  // namespace
 
 ExampleSessionControllerClient::ExampleSessionControllerClient(
-    SessionController* controller)
-    : TestSessionControllerClient(controller) {
+    SessionControllerImpl* controller,
+    TestPrefServiceProvider* prefs_provider)
+    : TestSessionControllerClient(controller, prefs_provider) {
   DCHECK_EQ(instance, nullptr);
   DCHECK(controller);
   instance = this;
@@ -37,7 +38,7 @@ ExampleSessionControllerClient* ExampleSessionControllerClient::Get() {
 
 void ExampleSessionControllerClient::Initialize() {
   // Initialize and bind with the session controller.
-  InitializeAndBind();
+  InitializeAndSetClient();
 
   // ash_shell has 2 users.
   CreatePredefinedUserSessions(2);

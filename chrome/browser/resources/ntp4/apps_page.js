@@ -53,9 +53,7 @@ cr.define('ntp', function() {
       menu.appendChild(cr.ui.MenuItem.createSeparator());
       this.launchRegularTab_ = this.appendMenuItem_('applaunchtyperegular');
       this.launchPinnedTab_ = this.appendMenuItem_('applaunchtypepinned');
-      if (loadTimeData.getBoolean('canHostedAppsOpenInWindows')) {
-        this.launchNewWindow_ = this.appendMenuItem_('applaunchtypewindow');
-      }
+      this.launchNewWindow_ = this.appendMenuItem_('applaunchtypewindow');
       this.launchFullscreen_ = this.appendMenuItem_('applaunchtypefullscreen');
 
       const self = this;
@@ -90,6 +88,12 @@ cr.define('ntp', function() {
       this.createShortcut_.addEventListener(
           'activate', this.onCreateShortcut_.bind(this));
 
+      this.installLocallySeparator_ =
+          menu.appendChild(cr.ui.MenuItem.createSeparator());
+      this.installLocally_ = this.appendMenuItem_('appinstalllocally');
+      this.installLocally_.addEventListener(
+          'activate', this.onInstallLocally_.bind(this));
+
       document.body.appendChild(menu);
     },
 
@@ -100,7 +104,8 @@ cr.define('ntp', function() {
      * @private
      */
     appendMenuItem_: function(opt_textId) {
-      const button = cr.doc.createElement('button');
+      const button =
+          /** @type {!HTMLButtonElement} */ (document.createElement('button'));
       this.menu.appendChild(button);
       cr.ui.decorate(button, cr.ui.MenuItem);
       if (opt_textId) {
@@ -146,16 +151,11 @@ cr.define('ntp', function() {
       this.forAllLaunchTypes_(function(launchTypeButton, id) {
         launchTypeButton.disabled = false;
         launchTypeButton.checked = app.appData.launch_type == id;
-        // There are three cases when a launch type is hidden:
+        // There are two cases when a launch type is hidden:
         //  1. if the launch type can't be changed.
-        //  2. canHostedAppsOpenInWindows is false and type is launchTypeWindow
-        //  3. enableNewBookmarkApps is true and type is anything except
-        //     launchTypeWindow
+        //  2. type is anything except launchTypeWindow
         launchTypeButton.hidden = !app.appData.mayChangeLaunchType ||
-            (!loadTimeData.getBoolean('canHostedAppsOpenInWindows') &&
-             launchTypeButton == launchTypeWindow) ||
-            (loadTimeData.getBoolean('enableNewBookmarkApps') &&
-             launchTypeButton != launchTypeWindow);
+            launchTypeButton != launchTypeWindow;
         if (!launchTypeButton.hidden) {
           hasLaunchType = true;
         }
@@ -175,6 +175,9 @@ cr.define('ntp', function() {
 
       this.createShortcutSeparator_.hidden = this.createShortcut_.hidden =
           !app.appData.mayCreateShortcuts;
+
+      this.installLocallySeparator_.hidden = this.installLocally_.hidden =
+          app.appData.isLocallyInstalled;
     },
 
     /** @private */
@@ -192,11 +195,9 @@ cr.define('ntp', function() {
       let targetLaunchType = pressed;
       // When bookmark apps are enabled, hosted apps can only toggle between
       // open as window and open as tab.
-      if (loadTimeData.getBoolean('enableNewBookmarkApps')) {
-        targetLaunchType = this.launchNewWindow_.checked ?
-            this.launchRegularTab_ :
-            this.launchNewWindow_;
-      }
+      targetLaunchType = this.launchNewWindow_.checked ?
+          this.launchRegularTab_ :
+          this.launchNewWindow_;
       this.forAllLaunchTypes_(function(launchTypeButton, id) {
         if (launchTypeButton == targetLaunchType) {
           chrome.send('setLaunchType', [app.appId, id]);
@@ -230,6 +231,11 @@ cr.define('ntp', function() {
     },
 
     /** @private */
+    onInstallLocally_: function() {
+      chrome.send('installAppLocally', [this.app_.appData.id]);
+    },
+
+    /** @private */
     onShowAppInfo_: function() {
       chrome.send('showAppInfo', [this.app_.appData.id]);
     }
@@ -242,7 +248,7 @@ cr.define('ntp', function() {
    * @extends {HTMLDivElement}
    */
   function App(appData) {
-    const el = cr.doc.createElement('div');
+    const el = /** @type {!App} */ (document.createElement('div'));
     el.__proto__ = App.prototype;
     el.initialize(appData);
 
@@ -255,6 +261,10 @@ cr.define('ntp', function() {
     /**
      * Initialize the app object.
      * @param {Object} appData The data object that describes the app.
+     *
+     * TODO(crbug.com/425829): This function makes use of deprecated getter or
+     * setter functions.
+     * @suppress {deprecated}
      */
     initialize: function(appData) {
       this.appData = appData;
@@ -304,6 +314,10 @@ cr.define('ntp', function() {
       // This hack is here so that appContents.contextMenu will be the same as
       // this.contextMenu.
       const self = this;
+
+      // TODO(crbug.com/425829): Remove above suppression once we no longer use
+      // deprecated function defineGetter.
+      // eslint-disable-next-line no-restricted-properties
       this.appContents_.__defineGetter__('contextMenu', function() {
         return self.contextMenu;
       });

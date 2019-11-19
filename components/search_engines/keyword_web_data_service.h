@@ -10,6 +10,7 @@
 
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
+#include "base/timer/timer.h"
 #include "components/search_engines/keyword_table.h"
 #include "components/search_engines/template_url_id.h"
 #include "components/webdata/common/web_data_service_base.h"
@@ -19,21 +20,21 @@ namespace base {
 class SingleThreadTaskRunner;
 }
 
-class WDTypedResult;
 class WebDatabaseService;
 struct TemplateURLData;
 
 struct WDKeywordsResult {
   WDKeywordsResult();
-  WDKeywordsResult(const WDKeywordsResult& other);
+  WDKeywordsResult(const WDKeywordsResult&);
+  WDKeywordsResult& operator=(const WDKeywordsResult&);
   ~WDKeywordsResult();
 
   KeywordTable::Keywords keywords;
   // Identifies the ID of the TemplateURL that is the default search. A value of
   // 0 indicates there is no default search provider.
-  int64_t default_search_provider_id;
+  int64_t default_search_provider_id = 0;
   // Version of the built-in keywords. A value of 0 indicates a first run.
-  int builtin_keyword_version;
+  int builtin_keyword_version = 0;
 };
 
 class WebDataServiceConsumer;
@@ -43,8 +44,8 @@ class KeywordWebDataService : public WebDataServiceBase {
   // Instantiate this to turn on batch mode on the provided |service|
   // until the scoper is destroyed.  When batch mode is on, calls to any of the
   // three keyword table modification functions below will result in locally
-  // queueing the operation; on setting this back to false, all the
-  // modifications will be performed at once.  This is a performance
+  // queueing the operation; on setting this back to false, after a short delay,
+  // all the modifications will be performed at once.  This is a performance
   // optimization; see comments on KeywordTable::PerformOperations().
   //
   // If multiple scopers are in-scope simultaneously, batch mode will only be
@@ -87,6 +88,9 @@ class KeywordWebDataService : public WebDataServiceBase {
   // Sets the version of the builtin keywords.
   void SetBuiltinKeywordVersion(int version);
 
+  // WebDataServiceBase:
+  void ShutdownOnUISequence() override;
+
  protected:
   ~KeywordWebDataService() override;
 
@@ -94,21 +98,13 @@ class KeywordWebDataService : public WebDataServiceBase {
   // Called by the BatchModeScoper (see comments there).
   void AdjustBatchModeLevel(bool entering_batch_mode);
 
-  //////////////////////////////////////////////////////////////////////////////
-  //
-  // The following methods are only invoked on the DB sequence.
-  //
-  //////////////////////////////////////////////////////////////////////////////
-  WebDatabase::State PerformKeywordOperationsImpl(
-      const KeywordTable::Operations& operations,
-      WebDatabase* db);
-  std::unique_ptr<WDTypedResult> GetKeywordsImpl(WebDatabase* db);
-  WebDatabase::State SetDefaultSearchProviderIDImpl(TemplateURLID id,
-                                                    WebDatabase* db);
-  WebDatabase::State SetBuiltinKeywordVersionImpl(int version, WebDatabase* db);
+  // Schedules a task to commit any |queued_keyword_operations_| immediately.
+  void CommitQueuedOperations();
 
-  size_t batch_mode_level_;
+  size_t batch_mode_level_ = 0;
   KeywordTable::Operations queued_keyword_operations_;
+  base::RetainingOneShotTimer timer_;  // Used to commit updates no more often
+                                       // than every five seconds.
 
   DISALLOW_COPY_AND_ASSIGN(KeywordWebDataService);
 };

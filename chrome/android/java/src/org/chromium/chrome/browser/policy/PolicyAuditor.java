@@ -5,8 +5,10 @@
 package org.chromium.chrome.browser.policy;
 
 import android.content.Context;
-import android.support.annotation.IntDef;
 
+import androidx.annotation.IntDef;
+
+import org.chromium.base.annotations.NativeMethods;
 import org.chromium.content_public.browser.WebContents;
 
 import java.lang.annotation.Retention;
@@ -40,5 +42,8 @@ public class PolicyAuditor {
 
     public void notifyCertificateFailure(int certificateFailure, Context context) {}
 
-    public static native int nativeGetCertificateFailure(WebContents webContents);
+    @NativeMethods
+    public interface Natives {
+        int getCertificateFailure(WebContents webContents);
+    }
 }

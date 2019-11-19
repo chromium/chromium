@@ -32,7 +32,7 @@ class PhishingDOMFeatureExtractor {
  public:
   // Callback to be run when feature extraction finishes.  The callback
   // argument is true if extraction was successful, false otherwise.
-  typedef base::Callback<void(bool)> DoneCallback;
+  typedef base::OnceCallback<void(bool)> DoneCallback;
 
   // Creates a PhishingDOMFeatureExtractor instance.
   // |clock| is used for timing feature extractor operations, and may be
@@ -48,7 +48,7 @@ class PhishingDOMFeatureExtractor {
   // takes ownership of the callback.
   void ExtractFeatures(blink::WebDocument document,
                        FeatureMap* features,
-                       const DoneCallback& done_callback);
+                       DoneCallback done_callback);
 
   // Cancels any pending feature extraction.  The DoneCallback will not be run.
   // Must be called if there is a feature extraction in progress when the page
@@ -144,7 +144,7 @@ class PhishingDOMFeatureExtractor {
 
   // Used in scheduling ExtractFeaturesWithTimeout tasks.
   // These pointers are invalidated if extraction is cancelled.
-  base::WeakPtrFactory<PhishingDOMFeatureExtractor> weak_factory_;
+  base::WeakPtrFactory<PhishingDOMFeatureExtractor> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(PhishingDOMFeatureExtractor);
 };

@@ -4,9 +4,11 @@
 
 #include "chrome/service/net/in_process_network_connection_tracker.h"
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/run_loop.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "net/base/mock_network_change_notifier.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -39,9 +41,9 @@ class TestNetworkConnectionObserver
 class InProcessNetworkConnectionTrackerTest : public ::testing::Test {
  protected:
   void SetConnectionType(net::NetworkChangeNotifier::ConnectionType type) {
-    notifier_.SetConnectionType(type);
-    notifier_.NotifyObserversOfNetworkChangeForTests(
-        notifier_.GetConnectionType());
+    notifier_->SetConnectionType(type);
+    notifier_->NotifyObserversOfNetworkChangeForTests(
+        notifier_->GetConnectionType());
     task_environment_.RunUntilIdle();
   }
 
@@ -52,8 +54,9 @@ class InProcessNetworkConnectionTrackerTest : public ::testing::Test {
   }
 
  private:
-  base::test::ScopedTaskEnvironment task_environment_;
-  net::test::MockNetworkChangeNotifier notifier_;
+  base::test::TaskEnvironment task_environment_;
+  std::unique_ptr<net::test::MockNetworkChangeNotifier> notifier_ =
+      net::test::MockNetworkChangeNotifier::Create();
 };
 
 // Tests that a registered observer gets called.

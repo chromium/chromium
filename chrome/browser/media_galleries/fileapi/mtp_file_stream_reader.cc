@@ -15,7 +15,7 @@
 #include "net/base/io_buffer.h"
 #include "net/base/mime_sniffer.h"
 #include "net/base/net_errors.h"
-#include "storage/browser/fileapi/file_system_context.h"
+#include "storage/browser/file_system/file_system_context.h"
 
 using storage::FileStreamReader;
 
@@ -33,8 +33,7 @@ MTPFileStreamReader::MTPFileStreamReader(
       url_(url),
       current_offset_(initial_offset),
       expected_modification_time_(expected_modification_time),
-      media_header_validated_(!do_media_header_validation),
-      weak_factory_(this) {}
+      media_header_validated_(!do_media_header_validation) {}
 
 MTPFileStreamReader::~MTPFileStreamReader() {
 }

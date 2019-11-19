@@ -59,9 +59,13 @@ class CastToolbarButton : public ToolbarButton,
   // ToolbarButton:
   bool OnMousePressed(const ui::MouseEvent& event) override;
   void OnMouseReleased(const ui::MouseEvent& event) override;
+  void OnGestureEvent(ui::GestureEvent* event) override;
 
   // views::ButtonListener:
   void ButtonPressed(views::Button* sender, const ui::Event& event) override;
+
+  // views::View
+  void AddedToWidget() override;
 
   MediaRouterContextualMenu* context_menu_for_test() {
     return context_menu_.get();

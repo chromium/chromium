@@ -28,7 +28,10 @@
 #include "printing/print_job_constants.h"
 #include "printing/print_settings.h"
 #include "ui/aura/window.h"
-#include "ui/events/platform/x11/x11_event_source.h"
+
+#if defined(USE_X11)
+#include "ui/events/platform/x11/x11_event_source.h"  // nogncheck
+#endif
 
 using content::BrowserThread;
 using printing::PageRanges;
@@ -210,11 +213,11 @@ void PrintDialogGtk::UseDefaultSettings() {
   gtk_settings_ = gtk_print_settings_copy(GetLastUsedSettings().settings());
   page_setup_ = gtk_page_setup_new();
 
-  PrintSettings settings;
-  InitPrintSettings(&settings);
+  InitPrintSettings(std::make_unique<PrintSettings>());
 }
 
-void PrintDialogGtk::UpdateSettings(printing::PrintSettings* settings) {
+void PrintDialogGtk::UpdateSettings(
+    std::unique_ptr<printing::PrintSettings> settings) {
   if (!gtk_settings_)
     gtk_settings_ = gtk_print_settings_copy(GetLastUsedSettings().settings());
 
@@ -302,7 +305,7 @@ void PrintDialogGtk::UpdateSettings(printing::PrintSettings* settings) {
       gtk_settings_, settings->landscape() ? GTK_PAGE_ORIENTATION_LANDSCAPE
                                            : GTK_PAGE_ORIENTATION_PORTRAIT);
 
-  InitPrintSettings(settings);
+  InitPrintSettings(std::move(settings));
 }
 
 void PrintDialogGtk::ShowDialog(
@@ -353,8 +356,12 @@ void PrintDialogGtk::ShowDialog(
 
   // We need to call gtk_window_present after making the widgets visible to make
   // sure window gets correctly raised and gets focus.
+#if defined(USE_X11)
   gtk_window_present_with_time(
       GTK_WINDOW(dialog_), ui::X11EventSource::GetInstance()->GetTimestamp());
+#else
+  gtk_window_present(GTK_WINDOW(dialog_));
+#endif
 }
 
 void PrintDialogGtk::PrintDocument(const printing::MetafilePlayer& metafile,
@@ -386,10 +393,9 @@ void PrintDialogGtk::PrintDocument(const printing::MetafilePlayer& metafile,
   }
 
   // No errors, continue printing.
-  base::PostTaskWithTraits(
-      FROM_HERE, {BrowserThread::UI},
-      base::BindOnce(&PrintDialogGtk::SendDocumentToPrinter, this,
-                     document_name));
+  base::PostTask(FROM_HERE, {BrowserThread::UI},
+                 base::BindOnce(&PrintDialogGtk::SendDocumentToPrinter, this,
+                                document_name));
 }
 
 void PrintDialogGtk::AddRefToDialog() {
@@ -457,12 +463,12 @@ void PrintDialogGtk::OnResponse(GtkWidget* dialog, int response_id) {
           break;
       }
 
-      PrintSettings settings;
-      settings.set_is_modifiable(context_->settings().is_modifiable());
-      settings.set_ranges(ranges_vector);
-      settings.set_selection_only(print_selection_only);
-      InitPrintSettingsGtk(gtk_settings_, page_setup_, &settings);
-      context_->InitWithSettings(settings);
+      auto settings = std::make_unique<PrintSettings>();
+      settings->set_is_modifiable(context_->settings().is_modifiable());
+      settings->set_ranges(ranges_vector);
+      settings->set_selection_only(print_selection_only);
+      InitPrintSettingsGtk(gtk_settings_, page_setup_, settings.get());
+      context_->InitWithSettings(std::move(settings));
       std::move(callback_).Run(PrintingContextLinux::OK);
       return;
     }
@@ -512,18 +518,20 @@ void PrintDialogGtk::OnJobCompleted(GtkPrintJob* print_job,
   if (print_job)
     g_object_unref(print_job);
 
-  base::PostTaskWithTraits(FROM_HERE,
-                           {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
-                            base::TaskShutdownBehavior::BLOCK_SHUTDOWN},
-                           base::BindOnce(base::IgnoreResult(&base::DeleteFile),
-                                          path_to_pdf_, false));
+  base::PostTask(
+      FROM_HERE,
+      {base::ThreadPool(), base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+       base::TaskShutdownBehavior::BLOCK_SHUTDOWN},
+      base::BindOnce(base::IgnoreResult(&base::DeleteFile), path_to_pdf_,
+                     false));
   // Printing finished. Matches AddRef() in PrintDocument();
   Release();
 }
 
-void PrintDialogGtk::InitPrintSettings(PrintSettings* settings) {
-  InitPrintSettingsGtk(gtk_settings_, page_setup_, settings);
-  context_->InitWithSettings(*settings);
+void PrintDialogGtk::InitPrintSettings(
+    std::unique_ptr<PrintSettings> settings) {
+  InitPrintSettingsGtk(gtk_settings_, page_setup_, settings.get());
+  context_->InitWithSettings(std::move(settings));
 }
 
 void PrintDialogGtk::OnWindowDestroying(aura::Window* window) {

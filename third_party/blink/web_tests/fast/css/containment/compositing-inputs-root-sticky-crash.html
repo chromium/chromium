@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<p>The test passes if it doesn't crash in debug.</p>
+<ul id="myul" style="contain: strict; position: sticky; bottom: 0; overflow: scroll;">
+  <li id="myli" style="position: sticky;"></li>
+</ul>
+<script>
+  if (window.testRunner)
+    testRunner.dumpAsText();
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      document.body.style.color = "blue";
+      document.caretRangeFromPoint();
+      document.body.removeChild(myul);
+    });
+  });
+</script>

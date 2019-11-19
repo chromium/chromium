@@ -14,8 +14,7 @@
 namespace autofill {
 
 ChromeStorageImpl::ChromeStorageImpl(WriteablePrefStore* store)
-    : backing_store_(store),
-      scoped_observer_(this) {
+    : backing_store_(store) {
   scoped_observer_.Add(backing_store_);
 }
 

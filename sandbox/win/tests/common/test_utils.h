@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SANDBOX_TESTS_COMMON_TEST_UTILS_H_
-#define SANDBOX_TESTS_COMMON_TEST_UTILS_H_
+#ifndef SANDBOX_WIN_TESTS_COMMON_TEST_UTILS_H_
+#define SANDBOX_WIN_TESTS_COMMON_TEST_UTILS_H_
 
 #include <windows.h>
 
@@ -11,6 +11,8 @@
 #include <vector>
 
 #include "sandbox/win/src/sid.h"
+
+namespace sandbox {
 
 // Sets a reparse point. |source| will now point to |target|. Returns true if
 // the call succeeds, false otherwise.
@@ -48,5 +50,6 @@ bool GetVariableTokenInformation(HANDLE token,
                                  TOKEN_INFORMATION_CLASS information_class,
                                  std::vector<char>* information);
 
-#endif  // SANDBOX_TESTS_COMMON_TEST_UTILS_H_
+}  // namespace sandbox
 
+#endif  // SANDBOX_WIN_TESTS_COMMON_TEST_UTILS_H_

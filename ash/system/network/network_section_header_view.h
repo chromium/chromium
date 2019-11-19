@@ -8,13 +8,16 @@
 #include "ash/system/network/network_row_title_view.h"
 #include "ash/system/tray/tray_popup_utils.h"
 #include "ash/system/tray/tri_view.h"
+#include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
-#include "chromeos/network/network_state_handler.h"
 #include "ui/views/controls/button/toggle_button.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/view.h"
 
 namespace ash {
+
+class TrayNetworkStateModel;
+
 namespace tray {
 
 // A header row for sections in network detailed view which contains a title and
@@ -32,6 +35,9 @@ class NetworkSectionHeaderView : public views::View,
   // Modify enabled/disabled and on/off state of toggle.
   virtual void SetToggleState(bool toggle_enabled, bool is_on);
 
+  // views::View:
+  const char* GetClassName() const override;
+
  protected:
   void Init(bool enabled);
 
@@ -44,6 +50,7 @@ class NetworkSectionHeaderView : public views::View,
   // enabled/disable their respective technology, for example.
   virtual void OnToggleToggled(bool is_on) = 0;
 
+  TrayNetworkStateModel* model() { return model_; }
   TriView* container() const { return container_; }
 
   // views::View:
@@ -59,6 +66,8 @@ class NetworkSectionHeaderView : public views::View,
   // Resource ID for the string to use as the title of the section and for the
   // accessible text on the section header toggle button.
   const int title_id_;
+
+  TrayNetworkStateModel* model_;
 
   // View containing header row views, including title, toggle, and extra
   // buttons.
@@ -85,7 +94,8 @@ class MobileSectionHeaderView : public NetworkSectionHeaderView {
   // Updates mobile toggle state and returns the id of the status message
   // that should be shown while connecting to a network. Returns zero when no
   // message should be shown.
-  int UpdateToggleAndGetStatusMessage();
+  int UpdateToggleAndGetStatusMessage(bool mobile_has_networks,
+                                      bool tether_has_networks);
 
   // views::View:
   const char* GetClassName() const override;
@@ -104,7 +114,7 @@ class MobileSectionHeaderView : public NetworkSectionHeaderView {
   bool waiting_for_tether_initialize_ = false;
   base::OneShotTimer enable_bluetooth_timer_;
 
-  base::WeakPtrFactory<MobileSectionHeaderView> weak_ptr_factory_;
+  base::WeakPtrFactory<MobileSectionHeaderView> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(MobileSectionHeaderView);
 };

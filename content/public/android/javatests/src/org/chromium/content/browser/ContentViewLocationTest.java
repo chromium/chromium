@@ -86,7 +86,7 @@ public class ContentViewLocationTest {
         mJavascriptHelper.waitUntilHasValue();
     }
 
-    private void ensureGeolocationRunning(final boolean running) throws Exception {
+    private void ensureGeolocationRunning(final boolean running) {
         CriteriaHelper.pollInstrumentationThread(Criteria.equals(running, new Callable<Boolean>() {
             @Override
             public Boolean call() {
@@ -96,7 +96,7 @@ public class ContentViewLocationTest {
     }
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         mMockLocationProvider = new MockLocationProvider();
         LocationProviderOverrider.setLocationProviderImpl(mMockLocationProvider);
 
@@ -115,7 +115,7 @@ public class ContentViewLocationTest {
     }
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
         mMockLocationProvider.stopUpdates();
     }
 

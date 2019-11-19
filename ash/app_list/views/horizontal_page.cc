@@ -6,7 +6,7 @@
 
 #include "ui/views/focus/focus_manager.h"
 
-namespace app_list {
+namespace ash {
 
 void HorizontalPage::OnWillBeHidden() {}
 
@@ -28,8 +28,12 @@ bool HorizontalPage::ShouldShowSearchBox() const {
   return true;
 }
 
+const char* HorizontalPage::GetClassName() const {
+  return "HorizontalPage";
+}
+
 HorizontalPage::HorizontalPage() = default;
 
 HorizontalPage::~HorizontalPage() = default;
 
-}  // namespace app_list
+}  // namespace ash

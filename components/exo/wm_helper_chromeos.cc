@@ -15,8 +15,8 @@
 #include "ui/display/manager/display_configurator.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/types/display_snapshot.h"
-#include "ui/wm/public/activation_client.h"
 #include "ui/wm/core/capture_controller.h"
+#include "ui/wm/public/activation_client.h"
 
 namespace exo {
 namespace {
@@ -25,15 +25,15 @@ aura::Window* GetPrimaryRoot() {
   return ash::Shell::Get()->GetPrimaryRootWindow();
 }
 
+// A property key to store whether IME should be blocked for the surface.
+DEFINE_UI_CLASS_PROPERTY_KEY(bool, kImeBlockedKey, false)
+
 }  // namespace
 
 ////////////////////////////////////////////////////////////////////////////////
 // WMHelperChromeOS, public:
 
-WMHelperChromeOS::WMHelperChromeOS(aura::Env* env)
-    : vsync_manager_(
-          GetPrimaryRoot()->layer()->GetCompositor()->vsync_manager()),
-      env_(env) {}
+WMHelperChromeOS::WMHelperChromeOS() : vsync_timing_manager_(this) {}
 
 WMHelperChromeOS::~WMHelperChromeOS() {}
 
@@ -59,10 +59,6 @@ void WMHelperChromeOS::AddDisplayConfigurationObserver(
 void WMHelperChromeOS::RemoveDisplayConfigurationObserver(
     ash::WindowTreeHostManager::Observer* observer) {
   ash::Shell::Get()->window_tree_host_manager()->RemoveObserver(observer);
-}
-
-aura::Env* WMHelperChromeOS::env() {
-  return env_;
 }
 
 void WMHelperChromeOS::AddActivationObserver(
@@ -101,14 +97,8 @@ void WMHelperChromeOS::ResetDragDropDelegate(aura::Window* window) {
   aura::client::SetDragDropDelegate(window, nullptr);
 }
 
-void WMHelperChromeOS::AddVSyncObserver(
-    ui::CompositorVSyncManager::Observer* observer) {
-  vsync_manager_->AddObserver(observer);
-}
-
-void WMHelperChromeOS::RemoveVSyncObserver(
-    ui::CompositorVSyncManager::Observer* observer) {
-  vsync_manager_->RemoveObserver(observer);
+VSyncTimingManager& WMHelperChromeOS::GetVSyncTimingManager() {
+  return vsync_timing_manager_;
 }
 
 void WMHelperChromeOS::OnDragEntered(const ui::DropTargetEvent& event) {
@@ -128,12 +118,19 @@ void WMHelperChromeOS::OnDragExited() {
     observer.OnDragExited();
 }
 
-int WMHelperChromeOS::OnPerformDrop(const ui::DropTargetEvent& event) {
+int WMHelperChromeOS::OnPerformDrop(const ui::DropTargetEvent& event,
+                                    std::unique_ptr<ui::OSExchangeData> data) {
   for (DragDropObserver& observer : drag_drop_observers_)
     observer.OnPerformDrop(event);
   // TODO(hirono): Return the correct result instead of always returning
   // DRAG_MOVE.
   return ui::DragDropTypes::DRAG_MOVE;
+}
+
+void WMHelperChromeOS::AddVSyncParameterObserver(
+    mojo::PendingRemote<viz::mojom::VSyncParameterObserver> observer) {
+  GetPrimaryRoot()->layer()->GetCompositor()->AddVSyncParameterObserver(
+      std::move(observer));
 }
 
 const display::ManagedDisplayInfo& WMHelperChromeOS::GetDisplayInfo(
@@ -152,6 +149,13 @@ const std::vector<uint8_t>& WMHelperChromeOS::GetDisplayIdentificationData(
 
   static std::vector<uint8_t> no_data;
   return no_data;
+}
+
+bool WMHelperChromeOS::GetActiveModeForDisplayId(
+    int64_t display_id,
+    display::ManagedDisplayMode* mode) const {
+  return ash::Shell::Get()->display_manager()->GetActiveModeForDisplayId(
+      display_id, mode);
 }
 
 aura::Window* WMHelperChromeOS::GetPrimaryDisplayContainer(int container_id) {
@@ -198,10 +202,8 @@ void WMHelperChromeOS::RemovePostTargetHandler(ui::EventHandler* handler) {
   ash::Shell::Get()->RemovePostTargetHandler(handler);
 }
 
-bool WMHelperChromeOS::IsTabletModeWindowManagerEnabled() const {
-  return ash::Shell::Get()
-      ->tablet_mode_controller()
-      ->IsTabletModeWindowManagerEnabled();
+bool WMHelperChromeOS::InTabletMode() const {
+  return ash::Shell::Get()->tablet_mode_controller()->InTabletMode();
 }
 
 double WMHelperChromeOS::GetDefaultDeviceScaleFactor() const {
@@ -217,6 +219,15 @@ double WMHelperChromeOS::GetDefaultDeviceScaleFactor() const {
       display_manager->GetDisplayInfo(display::Display::InternalDisplayId());
   DCHECK(display_info.display_modes().size());
   return display_info.display_modes()[0].device_scale_factor();
+}
+
+void WMHelperChromeOS::SetImeBlocked(aura::Window* window, bool ime_blocked) {
+  DCHECK_EQ(window, window->GetToplevelWindow());
+  window->SetProperty(kImeBlockedKey, ime_blocked);
+}
+
+bool WMHelperChromeOS::IsImeBlocked(aura::Window* window) const {
+  return window && window->GetToplevelWindow()->GetProperty(kImeBlockedKey);
 }
 
 WMHelper::LifetimeManager* WMHelperChromeOS::GetLifetimeManager() {

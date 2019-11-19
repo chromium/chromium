@@ -12,7 +12,8 @@
 @protocol ShortcutsViewControllerDelegate;
 
 // The view controller displaying the omnibox shortcuts in the zero state.
-@interface ShortcutsViewController : UIViewController<ShortcutsConsumer>
+@interface ShortcutsViewController
+    : UICollectionViewController <ShortcutsConsumer>
 
 @property(nonatomic, weak) id<ShortcutsViewControllerDelegate> commandHandler;
 

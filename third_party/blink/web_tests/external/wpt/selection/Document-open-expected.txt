@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL Selection must not be replaced with a new object after document.open() assert_equals: After document.open(), the Selection object must be the same expected object "" but got object ""
+Harness: the test ran to completion.
+

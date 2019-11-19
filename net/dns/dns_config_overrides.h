@@ -21,9 +21,11 @@ namespace net {
 struct NET_EXPORT DnsConfigOverrides {
   DnsConfigOverrides();
   DnsConfigOverrides(const DnsConfigOverrides& other);
+  DnsConfigOverrides(DnsConfigOverrides&& other);
   ~DnsConfigOverrides();
 
   DnsConfigOverrides& operator=(const DnsConfigOverrides& other);
+  DnsConfigOverrides& operator=(DnsConfigOverrides&& other);
 
   bool operator==(const DnsConfigOverrides& other) const;
   bool operator!=(const DnsConfigOverrides& other) const;
@@ -55,6 +57,9 @@ struct NET_EXPORT DnsConfigOverrides {
   base::Optional<bool> use_local_ipv6;
   base::Optional<std::vector<DnsConfig::DnsOverHttpsServerConfig>>
       dns_over_https_servers;
+  base::Optional<DnsConfig::SecureDnsMode> secure_dns_mode;
+  base::Optional<bool> allow_dns_over_https_upgrade;
+  base::Optional<std::vector<std::string>> disabled_upgrade_providers;
 
   // Note no overriding value for |unhandled_options|. It is meta-configuration,
   // and there should be no reason to override it.

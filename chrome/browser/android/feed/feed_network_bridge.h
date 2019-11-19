@@ -46,7 +46,7 @@ class FeedNetworkBridge {
 
   FeedNetworkingHost* networking_host_;
 
-  base::WeakPtrFactory<FeedNetworkBridge> weak_factory_;
+  base::WeakPtrFactory<FeedNetworkBridge> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(FeedNetworkBridge);
 };

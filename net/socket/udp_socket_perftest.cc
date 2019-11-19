@@ -4,9 +4,9 @@
 
 #include "base/bind.h"
 #include "base/memory/weak_ptr.h"
-#include "base/message_loop/message_loop.h"
 #include "base/run_loop.h"
-#include "base/test/perf_time_logger.h"
+#include "base/test/task_environment.h"
+#include "base/timer/elapsed_timer.h"
 #include "net/base/io_buffer.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_errors.h"
@@ -19,6 +19,7 @@
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "testing/perf/perf_result_reporter.h"
 #include "testing/platform_test.h"
 
 using net::test::IsOk;
@@ -27,11 +28,22 @@ namespace net {
 
 namespace {
 
+static constexpr char kMetricPrefixUDPSocket[] = "UDPSocketWrite.";
+static constexpr char kMetricElapsedTimeMs[] = "elapsed_time";
+static constexpr char kMetricWriteSpeedBytesPerSecond[] = "write_speed";
+
+perf_test::PerfResultReporter SetUpUDPSocketReporter(const std::string& story) {
+  perf_test::PerfResultReporter reporter(kMetricPrefixUDPSocket, story);
+  reporter.RegisterImportantMetric(kMetricElapsedTimeMs, "ms");
+  reporter.RegisterImportantMetric(kMetricWriteSpeedBytesPerSecond,
+                                   "bytesPerSecond_biggerIsBetter");
+  return reporter;
+}
+
 class UDPSocketPerfTest : public PlatformTest {
  public:
   UDPSocketPerfTest()
-      : buffer_(base::MakeRefCounted<IOBufferWithSize>(kPacketSize)),
-        weak_factory_(this) {}
+      : buffer_(base::MakeRefCounted<IOBufferWithSize>(kPacketSize)) {}
 
   void DoneWritePacketsToSocket(UDPClientSocket* socket,
                                 int num_of_packets,
@@ -52,7 +64,7 @@ class UDPSocketPerfTest : public PlatformTest {
  protected:
   static const int kPacketSize = 1024;
   scoped_refptr<IOBufferWithSize> buffer_;
-  base::WeakPtrFactory<UDPSocketPerfTest> weak_factory_;
+  base::WeakPtrFactory<UDPSocketPerfTest> weak_factory_{this};
 };
 
 const int UDPSocketPerfTest::kPacketSize;
@@ -75,12 +87,12 @@ void UDPSocketPerfTest::WritePacketsToSocket(UDPClientSocket* socket,
   memset(io_buffer->data(), 'G', kPacketSize);
 
   while (num_of_packets) {
-    int rv =
-        socket->Write(io_buffer.get(), io_buffer->size(),
-                      base::Bind(&UDPSocketPerfTest::DoneWritePacketsToSocket,
-                                 weak_factory_.GetWeakPtr(), socket,
-                                 num_of_packets - 1, done_callback),
-                      TRAFFIC_ANNOTATION_FOR_TESTS);
+    int rv = socket->Write(
+        io_buffer.get(), io_buffer->size(),
+        base::BindOnce(&UDPSocketPerfTest::DoneWritePacketsToSocket,
+                       weak_factory_.GetWeakPtr(), socket, num_of_packets - 1,
+                       done_callback),
+        TRAFFIC_ANNOTATION_FOR_TESTS);
     if (rv == ERR_IO_PENDING)
       break;
     --num_of_packets;
@@ -92,7 +104,9 @@ void UDPSocketPerfTest::WritePacketsToSocket(UDPClientSocket* socket,
 }
 
 void UDPSocketPerfTest::WriteBenchmark(bool use_nonblocking_io) {
-  base::MessageLoopForIO message_loop;
+  base::ElapsedTimer total_elapsed_timer;
+  base::test::SingleThreadTaskEnvironment task_environment(
+      base::test::SingleThreadTaskEnvironment::MainThreadType::IO);
   const uint16_t kPort = 9999;
 
   // Setup the server to listen.
@@ -116,23 +130,26 @@ void UDPSocketPerfTest::WriteBenchmark(bool use_nonblocking_io) {
   EXPECT_THAT(rv, IsOk());
 
   base::RunLoop run_loop;
-  base::TimeTicks start_ticks = base::TimeTicks::Now();
+  base::ElapsedTimer write_elapsed_timer;
   int packets = 100000;
   client->SetSendBufferSize(1024);
   WritePacketsToSocket(client.get(), packets, run_loop.QuitClosure());
   run_loop.Run();
 
-  double elapsed = (base::TimeTicks::Now() - start_ticks).InSecondsF();
-  LOG(INFO) << "Write speed: " << packets / 1024 / elapsed << " MB/s";
+  double write_elapsed = write_elapsed_timer.Elapsed().InSecondsF();
+  double total_elapsed = total_elapsed_timer.Elapsed().InMillisecondsF();
+  auto reporter =
+      SetUpUDPSocketReporter(use_nonblocking_io ? "nonblocking" : "blocking");
+  reporter.AddResult(kMetricElapsedTimeMs, total_elapsed);
+  reporter.AddResult(kMetricWriteSpeedBytesPerSecond,
+                     packets * 1024 / write_elapsed);
 }
 
 TEST_F(UDPSocketPerfTest, Write) {
-  base::PerfTimeLogger timer("UDP_socket_write");
   WriteBenchmark(false);
 }
 
 TEST_F(UDPSocketPerfTest, WriteNonBlocking) {
-  base::PerfTimeLogger timer("UDP_socket_write_nonblocking");
   WriteBenchmark(true);
 }
 

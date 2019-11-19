@@ -9,8 +9,8 @@
 
 #include "base/base_export.h"
 #include "base/containers/span.h"
+#include "base/hash/sha1.h"
 #include "base/optional.h"
-#include "base/sha1.h"
 #include "base/strings/string_piece.h"
 
 // Functions for querying metadata from ELF binaries.

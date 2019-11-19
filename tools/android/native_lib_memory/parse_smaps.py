@@ -6,6 +6,8 @@
 """Parses /proc/[pid]/smaps on a device and shows the total amount of swap used.
 """
 
+from __future__ import print_function
+
 import argparse
 import collections
 import logging
@@ -21,6 +23,7 @@ from devil.android import device_utils
 
 class Mapping(object):
   """A single entry (mapping) in /proc/[pid]/smaps."""
+
   def __init__(self, start, end, permissions, offset, pathname):
     """Initializes an instance.
 
@@ -101,37 +104,152 @@ def _ParseProcSmapsLines(lines):
   return mappings
 
 
-def ParseProcSmaps(device, pid):
+def ParseProcSmaps(device, pid, store_file=False):
   """Parses /proc/[pid]/smaps on a device, and returns a list of Mapping.
 
   Args:
     device: (device_utils.DeviceUtils) device to parse the file from.
     pid: (int) PID of the process.
+    store_file: (bool) Whether to also write the file to disk.
 
   Returns:
     [Mapping] all the mappings in /proc/[pid]/smaps.
   """
   command = ['cat', '/proc/%d/smaps' % pid]
   lines = device.RunShellCommand(command, check_return=True)
+  if store_file:
+    with open('smaps-%d' % pid, 'w') as f:
+      f.write('\n'.join(lines))
   return _ParseProcSmapsLines(lines)
 
 
-def _PrintSwapStats(mappings):
-  total_swap_kb = sum(m.fields['Swap'] for m in mappings)
-  print 'Total Swap Size (kB) = %d' % total_swap_kb
-  swap_sorted = sorted(mappings, key=lambda m: m.fields['Swap'], reverse=True)
-  for mapping in swap_sorted:
-    swapped = mapping.fields['Swap']
-    if not swapped:
+def _GetPageTableFootprint(device, pid):
+  """Returns the page table footprint for a process in kiB."""
+  command = ['cat', '/proc/%d/status' % pid]
+  lines = device.RunShellCommand(command, check_return=True)
+  for line in lines:
+    if line.startswith('VmPTE:'):
+      value = int(line[len('VmPTE: '):line.index('kB')])
+      return value
+
+
+def _SummarizeMapping(mapping, metric):
+  return '%s %s %s: %d kB (Total Size: %d kB)' % (
+      hex(mapping.start),
+      mapping.pathname, mapping.permissions, metric,
+      (mapping.end - mapping.start) / 1024)
+
+
+def _PrintMappingsMetric(mappings, field_name):
+  """Shows a summary of mappings for a given metric.
+
+  For the given field, compute its aggregate value over all mappings, and
+  prints the mappings sorted by decreasing metric value.
+
+  Args:
+    mappings: ([Mapping]) all process mappings.
+    field_name: (str) Mapping field to process.
+  """
+  total_kb = sum(m.fields[field_name] for m in mappings)
+  print('Total Size (kB) = %d' % total_kb)
+  sorted_by_metric = sorted(mappings,
+                            key=lambda m: m.fields[field_name], reverse=True)
+  for mapping in sorted_by_metric:
+    metric = mapping.fields[field_name]
+    if not metric:
       break
-    print '%s %s: %d kB (Total Size: %d kB)' % (
-        mapping.pathname, mapping.permissions, swapped,
-        (mapping.end - mapping.start) / 1024)
+    print(_SummarizeMapping(mapping, metric))
+
+
+def _PrintSwapStats(mappings):
+  print('SWAP:')
+  _PrintMappingsMetric(mappings, 'Swap')
+
+
+def _FootprintForAnonymousMapping(mapping):
+  assert mapping.pathname.startswith('[anon:')
+  if (mapping.pathname == '[anon:libc_malloc]'
+      and mapping.fields['Shared_Dirty'] != 0):
+    # libc_malloc mappings can come from the zygote. In this case, the shared
+    # dirty memory is likely dirty in the zygote, don't count it.
+    return mapping.fields['Rss']
+  else:
+    return mapping.fields['Private_Dirty']
+
+
+def _PrintEstimatedFootprintStats(mappings, page_table_kb):
+  print('Private Dirty:')
+  _PrintMappingsMetric(mappings, 'Private_Dirty')
+  print('\n\nShared Dirty:')
+  _PrintMappingsMetric(mappings, 'Shared_Dirty')
+  print('\n\nPrivate Clean:')
+  _PrintMappingsMetric(mappings, 'Private_Clean')
+  print('\n\nShared Clean:')
+  _PrintMappingsMetric(mappings, 'Shared_Clean')
+  print('\n\nSwap PSS:')
+  _PrintMappingsMetric(mappings, 'SwapPss')
+  print('\n\nPage table = %d kiB' % page_table_kb)
+
+
+def _ComputeEstimatedFootprint(mappings, page_table_kb):
+  """Returns the estimated footprint in kiB.
+
+  Args:
+    mappings: ([Mapping]) all process mappings.
+    page_table_kb: (int) Sizeof the page tables in kiB.
+  """
+  footprint = page_table_kb
+  for mapping in mappings:
+    # Chrome shared memory.
+    #
+    # Even though it is shared memory, it exists because the process exists, so
+    # account for its entirety.
+    if mapping.pathname.startswith('/dev/ashmem/shared_memory'):
+      footprint += mapping.fields['Rss']
+    elif mapping.pathname.startswith('[anon'):
+      footprint += _FootprintForAnonymousMapping(mapping)
+    # Mappings without a name are most likely Chrome's native memory allocators:
+    # v8, PartitionAlloc, Oilpan.
+    # All of it should be charged to our process.
+    elif mapping.pathname.strip() == '':
+      footprint += mapping.fields['Rss']
+    # Often inherited from the zygote, only count the private dirty part,
+    # especially as the swap part likely comes from the zygote.
+    elif mapping.pathname.startswith('['):
+      footprint += mapping.fields['Private_Dirty']
+    # File mappings. Can be a real file, and/or Dalvik/ART.
+    else:
+      footprint += mapping.fields['Private_Dirty']
+  return footprint
+
+
+def _ShowAllocatorFootprint(mappings, allocator):
+  """Shows the total footprint from a specific allocator.
+
+  Args:
+    mappings: ([Mapping]) all process mappings.
+    allocator: (str) Allocator name.
+  """
+  total_footprint = 0
+  pathname = '[anon:%s]' % allocator
+  for mapping in mappings:
+    if mapping.pathname == pathname:
+      total_footprint += _FootprintForAnonymousMapping(mapping)
+  print('\tFootprint from %s: %d kB' % (allocator, total_footprint))
 
 
 def _CreateArgumentParser():
   parser = argparse.ArgumentParser()
-  parser.add_argument('--pid', help='PID.', required=True)
+  parser.add_argument('--pid', help='PID.', required=True, type=int)
+  parser.add_argument('--estimate-footprint',
+                      help='Show the estimated memory foootprint',
+                      action='store_true')
+  parser.add_argument('--store-smaps', help='Store the smaps file locally',
+                      action='store_true')
+  parser.add_argument('--show-allocator-footprint',
+                      help='Show the footprint from a given allocator',
+                      choices=['v8', 'libc_malloc', 'partition_alloc'],
+                      nargs='+')
   return parser
 
 
@@ -146,8 +264,19 @@ def main():
   device.EnableRoot()
   # Enable logging after device handling as devil is noisy at INFO level.
   logging.basicConfig(level=logging.INFO)
-  mappings = ParseProcSmaps(device, int(args.pid))
-  _PrintSwapStats(mappings)
+  mappings = ParseProcSmaps(device, args.pid, args.store_smaps)
+  if args.estimate_footprint:
+    page_table_kb = _GetPageTableFootprint(device, args.pid)
+    _PrintEstimatedFootprintStats(mappings, page_table_kb)
+    footprint = _ComputeEstimatedFootprint(mappings, page_table_kb)
+    print('\n\nEstimated Footprint = %d kiB' % footprint)
+  else:
+    _PrintSwapStats(mappings)
+
+  if args.show_allocator_footprint:
+    print('\n\nMemory Allocators footprint:')
+    for allocator in args.show_allocator_footprint:
+      _ShowAllocatorFootprint(mappings, allocator)
 
 
 if __name__ == '__main__':

@@ -6,9 +6,9 @@
 
 #include "base/bind.h"
 #include "base/compiler_specific.h"
-#include "base/message_loop/message_loop.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
+#include "base/test/task_environment.h"
 #include "base/threading/thread.h"
 #include "jingle/glue/thread_wrapper.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -90,7 +90,7 @@ class ThreadWrapperTest : public testing::Test {
   }
 
   // ThreadWrapper destroyes itself when |message_loop_| is destroyed.
-  base::MessageLoop message_loop_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
   rtc::Thread* thread_;
   MockMessageHandler handler1_;
   MockMessageHandler handler2_;
@@ -156,7 +156,7 @@ TEST_F(ThreadWrapperTest, PostDelayed) {
       .WillOnce(DeleteMessageData());
 
   base::RunLoop run_loop;
-  message_loop_.task_runner()->PostDelayedTask(
+  task_environment_.GetMainThreadTaskRunner()->PostDelayedTask(
       FROM_HERE, run_loop.QuitClosure(),
       base::TimeDelta::FromMilliseconds(kMaxTestDelay));
   run_loop.Run();
@@ -212,7 +212,7 @@ TEST_F(ThreadWrapperTest, ClearDelayed) {
       .WillOnce(DeleteMessageData());
 
   base::RunLoop run_loop;
-  message_loop_.task_runner()->PostDelayedTask(
+  task_environment_.GetMainThreadTaskRunner()->PostDelayedTask(
       FROM_HERE, run_loop.QuitClosure(),
       base::TimeDelta::FromMilliseconds(kMaxTestDelay));
   run_loop.Run();

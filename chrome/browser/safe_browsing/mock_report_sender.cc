@@ -37,10 +37,9 @@ void MockReportSender::Send(
   if (!content::BrowserThread::IsThreadInitialized(content::BrowserThread::UI))
     return;
 
-  base::PostTaskWithTraits(
-      FROM_HERE, {content::BrowserThread::UI},
-      base::BindOnce(&MockReportSender::NotifyReportSentOnUIThread,
-                     base::Unretained(this)));
+  base::PostTask(FROM_HERE, {content::BrowserThread::UI},
+                 base::BindOnce(&MockReportSender::NotifyReportSentOnUIThread,
+                                base::Unretained(this)));
 }
 
 void MockReportSender::WaitForReportSent() {

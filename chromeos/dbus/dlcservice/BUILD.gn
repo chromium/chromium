@@ -1,0 +1,57 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/protobuf/proto_library.gni")
+
+assert(is_chromeos, "Non-ChromeOS builds cannot depend on //chromeos")
+
+component("dlcservice") {
+  defines = [ "IS_DLCSERVICE_CLIENT_IMPL" ]
+
+  public_deps = [
+    ":dlcservice_proto",
+    "//chromeos/dbus:common",
+    "//chromeos/dbus:dbus",
+  ]
+
+  deps = [
+    "//base",
+    "//dbus",
+  ]
+
+  sources = [
+    "dlcservice_client.cc",
+    "dlcservice_client.h",
+    "fake_dlcservice_client.cc",
+    "fake_dlcservice_client.h",
+  ]
+}
+
+source_set("test_support") {
+  testonly = true
+
+  public_deps = [
+    ":dlcservice",
+  ]
+  deps = [
+    ":dlcservice_proto",
+    "//base",
+    "//base/test:test_support",
+    "//dbus:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+
+  sources = [
+    "dlcservice_client_unittest.cc",
+  ]
+}
+
+proto_library("dlcservice_proto") {
+  sources = [
+    "//third_party/cros_system_api/dbus/dlcservice/dlcservice.proto",
+  ]
+
+  proto_out_dir = "chromeos/dbus/dlcservice"
+}

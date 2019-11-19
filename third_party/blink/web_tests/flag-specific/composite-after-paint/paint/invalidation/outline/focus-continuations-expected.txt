@@ -1,0 +1,18 @@
+{
+  "layers": [
+    {
+      "name": "Scrolling background of LayoutView #document",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF",
+      "paintInvalidations": [
+        {
+          "object": "NGPhysicalBoxFragment LayoutInline SPAN id='outer'",
+          "rect": [7, 87, 88, 22],
+          "reason": "disappeared"
+        }
+      ]
+    }
+  ]
+}
+

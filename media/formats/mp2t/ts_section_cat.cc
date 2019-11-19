@@ -16,9 +16,9 @@ namespace mp2t {
 
 TsSectionCat::TsSectionCat(
     const RegisterCencPidsCb& register_cenc_ids_cb,
-    const RegisterEncryptionModeCb& register_encryption_mode_cb)
+    const RegisterEncryptionSchemeCb& register_encryption_scheme_cb)
     : register_cenc_ids_cb_(register_cenc_ids_cb),
-      register_encryption_mode_cb_(register_encryption_mode_cb),
+      register_encryption_scheme_cb_(register_encryption_scheme_cb),
       version_number_(-1) {}
 
 TsSectionCat::~TsSectionCat() {}
@@ -58,9 +58,9 @@ bool TsSectionCat::ParsePsiSection(BitReader* bit_reader) {
 
   Descriptors descriptors;
   int ca_pid, pssh_pid;
-  EncryptionMode mode;
+  EncryptionScheme scheme;
   RCHECK(descriptors.Read(bit_reader, section_length - 4));
-  RCHECK(descriptors.HasCADescriptorCenc(&ca_pid, &pssh_pid, &mode));
+  RCHECK(descriptors.HasCADescriptorCenc(&ca_pid, &pssh_pid, &scheme));
   int crc32;
   RCHECK(bit_reader->ReadBits(32, &crc32));
 
@@ -76,7 +76,7 @@ bool TsSectionCat::ParsePsiSection(BitReader* bit_reader) {
 
   // Can now register the PIDs and scheme.
   register_cenc_ids_cb_.Run(ca_pid, pssh_pid);
-  register_encryption_mode_cb_.Run(mode);
+  register_encryption_scheme_cb_.Run(scheme);
 
   version_number_ = version_number;
 

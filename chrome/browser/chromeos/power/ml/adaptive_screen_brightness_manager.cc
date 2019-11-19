@@ -8,19 +8,15 @@
 #include <utility>
 
 #include "ash/public/cpp/ash_pref_names.h"
-#include "ash/shell.h"
 #include "base/bind.h"
 #include "base/process/launch.h"
 #include "base/task/post_task.h"
-#include "base/time/clock.h"
-#include "base/time/default_clock.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/chromeos/accessibility/accessibility_manager.h"
 #include "chrome/browser/chromeos/accessibility/magnification_manager.h"
 #include "chrome/browser/chromeos/power/ml/adaptive_screen_brightness_ukm_logger.h"
 #include "chrome/browser/chromeos/power/ml/adaptive_screen_brightness_ukm_logger_impl.h"
-#include "chrome/browser/chromeos/power/ml/real_boot_clock.h"
 #include "chrome/browser/chromeos/power/ml/recent_events_counter.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"
@@ -35,11 +31,10 @@
 #include "components/viz/host/host_frame_sink_manager.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/page_importance_signals.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
-#include "services/viz/public/interfaces/compositing/video_detector_observer.mojom.h"
+#include "services/viz/public/mojom/compositing/video_detector_observer.mojom.h"
 #include "ui/aura/env.h"
-#include "ui/base/ui_base_features.h"
-#include "ui/base/user_activity/user_activity_detector.h"
 
 namespace chromeos {
 namespace power {
@@ -113,19 +108,13 @@ AdaptiveScreenBrightnessManager::AdaptiveScreenBrightnessManager(
     chromeos::PowerManagerClient* power_manager_client,
     AccessibilityManager* accessibility_manager,
     MagnificationManager* magnification_manager,
-    viz::mojom::VideoDetectorObserverRequest request,
-    std::unique_ptr<base::RepeatingTimer> periodic_timer,
-    base::Clock* clock,
-    std::unique_ptr<BootClock> boot_clock)
-    : clock_(clock),
-      boot_clock_(std::move(boot_clock)),
-      periodic_timer_(std::move(periodic_timer)),
+    mojo::PendingReceiver<viz::mojom::VideoDetectorObserver> receiver,
+    std::unique_ptr<base::RepeatingTimer> periodic_timer)
+    : periodic_timer_(std::move(periodic_timer)),
       ukm_logger_(std::move(ukm_logger)),
-      user_activity_observer_(this),
-      power_manager_client_observer_(this),
       accessibility_manager_(accessibility_manager),
       magnification_manager_(magnification_manager),
-      binding_(this, std::move(request)),
+      receiver_(this, std::move(receiver)),
       mouse_counter_(
           std::make_unique<RecentEventsCounter>(kUserInputEventsDuration,
                                                 kNumUserInputEventsBuckets)),
@@ -137,8 +126,7 @@ AdaptiveScreenBrightnessManager::AdaptiveScreenBrightnessManager(
                                                 kNumUserInputEventsBuckets)),
       touch_counter_(
           std::make_unique<RecentEventsCounter>(kUserInputEventsDuration,
-                                                kNumUserInputEventsBuckets)),
-      weak_ptr_factory_(this) {
+                                                kNumUserInputEventsBuckets)) {
   DCHECK(ukm_logger_);
   DCHECK(detector);
   user_activity_observer_.Add(detector);
@@ -161,13 +149,8 @@ AdaptiveScreenBrightnessManager::~AdaptiveScreenBrightnessManager() = default;
 
 std::unique_ptr<AdaptiveScreenBrightnessManager>
 AdaptiveScreenBrightnessManager::CreateInstance() {
-  // TODO(jiameng): video detector below doesn't work with MASH. Temporary
-  // solution is to disable logging if we're under MASH env.
-  // https://crbug.com/871914
-  if (chromeos::GetDeviceType() != chromeos::DeviceType::kChromebook ||
-      features::IsMultiProcessMash()) {
+  if (chromeos::GetDeviceType() != chromeos::DeviceType::kChromebook)
     return nullptr;
-  }
 
   chromeos::PowerManagerClient* const power_manager_client =
       chromeos::PowerManagerClient::Get();
@@ -180,17 +163,17 @@ AdaptiveScreenBrightnessManager::CreateInstance() {
   MagnificationManager* const magnification_manager =
       MagnificationManager::Get();
   DCHECK(magnification_manager);
-  viz::mojom::VideoDetectorObserverPtr video_observer_screen_brightness_logger;
+  mojo::PendingRemote<viz::mojom::VideoDetectorObserver>
+      video_observer_screen_brightness_logger;
 
   std::unique_ptr<AdaptiveScreenBrightnessManager> screen_brightness_manager =
       std::make_unique<AdaptiveScreenBrightnessManager>(
           std::make_unique<AdaptiveScreenBrightnessUkmLoggerImpl>(), detector,
           power_manager_client, accessibility_manager, magnification_manager,
-          mojo::MakeRequest(&video_observer_screen_brightness_logger),
-          std::make_unique<base::RepeatingTimer>(),
-          base::DefaultClock::GetInstance(), std::make_unique<RealBootClock>());
-  ash::Shell::Get()
-      ->aura_env()
+          video_observer_screen_brightness_logger
+              .InitWithNewPipeAndPassReceiver(),
+          std::make_unique<base::RepeatingTimer>());
+  aura::Env::GetInstance()
       ->context_factory_private()
       ->GetHostFrameSinkManager()
       ->AddVideoDetectorObserver(
@@ -203,7 +186,7 @@ void AdaptiveScreenBrightnessManager::OnUserActivity(
     const ui::Event* const event) {
   if (!event)
     return;
-  const base::TimeDelta time_since_boot = boot_clock_->GetTimeSinceBoot();
+  const base::TimeDelta time_since_boot = boot_clock_.GetTimeSinceBoot();
   // Update |start_activity_time_since_boot_| if the time since the last
   // activity is at least kInactivityDuration. An absense of activity for this
   // length of time indicates that one activity period has ended and the next
@@ -302,7 +285,7 @@ void AdaptiveScreenBrightnessManager::TabletModeEventReceived(
 
 void AdaptiveScreenBrightnessManager::OnVideoActivityStarted() {
   is_video_playing_ = true;
-  const base::TimeDelta time_since_boot = boot_clock_->GetTimeSinceBoot();
+  const base::TimeDelta time_since_boot = boot_clock_.GetTimeSinceBoot();
   if (!last_activity_time_since_boot_.has_value() ||
       time_since_boot - *last_activity_time_since_boot_ >=
           kInactivityDuration) {
@@ -313,7 +296,7 @@ void AdaptiveScreenBrightnessManager::OnVideoActivityStarted() {
 
 void AdaptiveScreenBrightnessManager::OnVideoActivityEnded() {
   is_video_playing_ = false;
-  last_activity_time_since_boot_ = boot_clock_->GetTimeSinceBoot();
+  last_activity_time_since_boot_ = boot_clock_.GetTimeSinceBoot();
 }
 
 void AdaptiveScreenBrightnessManager::OnTimerFired() {
@@ -360,7 +343,7 @@ void AdaptiveScreenBrightnessManager::LogEvent() {
     return;
   }
 
-  const base::TimeDelta time_since_boot = boot_clock_->GetTimeSinceBoot();
+  const base::TimeDelta time_since_boot = boot_clock_.GetTimeSinceBoot();
 
   ScreenBrightnessEvent screen_brightness;
   ScreenBrightnessEvent::Event* const event = screen_brightness.mutable_event();
@@ -380,7 +363,7 @@ void AdaptiveScreenBrightnessManager::LogEvent() {
   ScreenBrightnessEvent::Features::ActivityData* const activity_data =
       features->mutable_activity_data();
 
-  const base::Time now = clock_->Now();
+  const base::Time now = base::Time::Now();
   activity_data->set_time_of_day_sec((now - now.LocalMidnight()).InSeconds());
 
   base::Time::Exploded exploded;

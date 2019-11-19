@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/bind.h"
+#include "base/bind_helpers.h"
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "base/run_loop.h"
@@ -38,7 +39,6 @@
 #include "content/public/test/browser_test_utils.h"
 #include "net/base/escape.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
-#include "net/url_request/test_url_fetcher_factory.h"
 #include "services/device/public/cpp/test/scoped_geolocation_overrider.h"
 #include "services/device/public/mojom/geoposition.mojom.h"
 
@@ -106,7 +106,7 @@ IFrameLoader::IFrameLoader(Browser* browser, int iframe_id, const GURL& url)
       "window.domAutomationController.send(addIFrame(%d, \"%s\"));",
       iframe_id, url.spec().c_str()));
   web_contents->GetMainFrame()->ExecuteJavaScriptForTests(
-      base::UTF8ToUTF16(script));
+      base::UTF8ToUTF16(script), base::NullCallback());
   content::RunMessageLoop();
 
   EXPECT_EQ(base::StringPrintf("\"%d\"", iframe_id), javascript_response_);
@@ -169,39 +169,6 @@ class PermissionRequestObserver : public PermissionRequestManager::Observer {
   scoped_refptr<content::MessageLoopRunner> message_loop_runner_;
 
   DISALLOW_COPY_AND_ASSIGN(PermissionRequestObserver);
-};
-
-// Observer that waits until a TestURLFetcher with the specified fetcher_id
-// starts, after which it is made available through .fetcher().
-class TestURLFetcherObserver : public net::TestURLFetcher::DelegateForTests {
- public:
-  explicit TestURLFetcherObserver(int expected_fetcher_id)
-      : expected_fetcher_id_(expected_fetcher_id) {
-    factory_.SetDelegateForTests(this);
-  }
-  virtual ~TestURLFetcherObserver() {}
-
-  void Wait() { loop_.Run(); }
-
-  net::TestURLFetcher* fetcher() { return fetcher_; }
-
-  // net::TestURLFetcher::DelegateForTests:
-  void OnRequestStart(int fetcher_id) override {
-    if (fetcher_id == expected_fetcher_id_) {
-      fetcher_ = factory_.GetFetcherByID(fetcher_id);
-      fetcher_->SetDelegateForTests(nullptr);
-      factory_.SetDelegateForTests(nullptr);
-      loop_.Quit();
-    }
-  }
-  void OnChunkUpload(int fetcher_id) override {}
-  void OnRequestEnd(int fetcher_id) override {}
-
- private:
-  const int expected_fetcher_id_;
-  net::TestURLFetcher* fetcher_ = nullptr;
-  net::TestURLFetcherFactory factory_;
-  base::RunLoop loop_;
 };
 
 }  // namespace
@@ -475,7 +442,7 @@ IN_PROC_BROWSER_TEST_F(GeolocationBrowserTest, DisplaysPrompt) {
 
   EXPECT_EQ(CONTENT_SETTING_ALLOW,
             GetHostContentSettingsMap()->GetContentSetting(
-                current_url(), current_url(), CONTENT_SETTINGS_TYPE_GEOLOCATION,
+                current_url(), current_url(), ContentSettingsType::GEOLOCATION,
                 std::string()));
 
   // Ensure a second request doesn't create a prompt in this tab.
@@ -495,7 +462,7 @@ IN_PROC_BROWSER_TEST_F(GeolocationBrowserTest, ErrorOnPermissionDenied) {
 
   EXPECT_EQ(CONTENT_SETTING_BLOCK,
             GetHostContentSettingsMap()->GetContentSetting(
-                current_url(), current_url(), CONTENT_SETTINGS_TYPE_GEOLOCATION,
+                current_url(), current_url(), ContentSettingsType::GEOLOCATION,
                 std::string()));
 
   // Ensure a second request doesn't create a prompt in this tab.
@@ -515,7 +482,7 @@ IN_PROC_BROWSER_TEST_F(GeolocationBrowserTest, NoPromptForSecondTab) {
 IN_PROC_BROWSER_TEST_F(GeolocationBrowserTest, NoPromptForDeniedOrigin) {
   ASSERT_NO_FATAL_FAILURE(Initialize(INITIALIZATION_DEFAULT));
   GetHostContentSettingsMap()->SetContentSettingDefaultScope(
-      current_url(), current_url(), CONTENT_SETTINGS_TYPE_GEOLOCATION,
+      current_url(), current_url(), ContentSettingsType::GEOLOCATION,
       std::string(), CONTENT_SETTING_BLOCK);
 
   // Check that the request wasn't shown but we get an error for this origin.
@@ -531,7 +498,7 @@ IN_PROC_BROWSER_TEST_F(GeolocationBrowserTest, NoPromptForDeniedOrigin) {
 IN_PROC_BROWSER_TEST_F(GeolocationBrowserTest, NoPromptForAllowedOrigin) {
   ASSERT_NO_FATAL_FAILURE(Initialize(INITIALIZATION_DEFAULT));
   GetHostContentSettingsMap()->SetContentSettingDefaultScope(
-      current_url(), current_url(), CONTENT_SETTINGS_TYPE_GEOLOCATION,
+      current_url(), current_url(), ContentSettingsType::GEOLOCATION,
       std::string(), CONTENT_SETTING_ALLOW);
   // The request is not shown, there is no error, and the position gets to the
   // script.
@@ -539,7 +506,14 @@ IN_PROC_BROWSER_TEST_F(GeolocationBrowserTest, NoPromptForAllowedOrigin) {
   ExpectPosition(fake_latitude(), fake_longitude());
 }
 
-IN_PROC_BROWSER_TEST_F(GeolocationBrowserTest, PromptForOffTheRecord) {
+// Crashes on Win only.  http://crbug.com/1014506
+#if defined(OS_WIN)
+#define MAYBE_PromptForOffTheRecord DISABLED_PromptForOffTheRecord
+#else
+#define MAYBE_PromptForOffTheRecord PromptForOffTheRecord
+#endif
+
+IN_PROC_BROWSER_TEST_F(GeolocationBrowserTest, MAYBE_PromptForOffTheRecord) {
   // For a regular profile the user is prompted, and when granted the position
   // gets to the script.
   ASSERT_NO_FATAL_FAILURE(Initialize(INITIALIZATION_DEFAULT));
@@ -571,14 +545,23 @@ IN_PROC_BROWSER_TEST_F(GeolocationBrowserTest, NoLeakFromOffTheRecord) {
   ExpectPosition(fake_latitude(), fake_longitude());
 }
 
-IN_PROC_BROWSER_TEST_F(GeolocationBrowserTest, IFramesWithFreshPosition) {
-  // When permission delegation is enabled, there isn't a way to have a pending
-  // permission prompt when permission has already been granted in another frame
-  // on the same page. That means that this test isn't relevant and can be
-  // deleted after the feature is enabled by default.
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(features::kPermissionDelegation);
+// When permission delegation is enabled, there isn't a way to have a pending
+// permission prompt when permission has already been granted in another frame
+// on the same page. That means that once the feature is enabled by default,
+// tests which use this fixture are no longer relevant and can be deleted.
+class GeolocationBrowserTestWithNoPermissionDelegation
+    : public GeolocationBrowserTest {
+ public:
+  GeolocationBrowserTestWithNoPermissionDelegation() {
+    feature_list_.InitAndDisableFeature(features::kPermissionDelegation);
+  }
 
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(GeolocationBrowserTestWithNoPermissionDelegation,
+                       IFramesWithFreshPosition) {
   set_html_for_tests("/geolocation/two_iframes.html");
   ASSERT_NO_FATAL_FAILURE(Initialize(INITIALIZATION_DEFAULT));
   LoadIFrames();
@@ -632,12 +615,8 @@ IN_PROC_BROWSER_TEST_F(GeolocationBrowserTest, IFramesWithCachedPosition) {
   ExpectPosition(cached_position_latitude, cached_position_lognitude);
 }
 
-IN_PROC_BROWSER_TEST_F(GeolocationBrowserTest, CancelPermissionForFrame) {
-  // When permission delegation is removed, iframe requests are made for the top
-  // level frame. Navigating the iframe should not cancel the request. This
-  // test can be removed after the feature is enabled by default.
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(features::kPermissionDelegation);
+IN_PROC_BROWSER_TEST_F(GeolocationBrowserTestWithNoPermissionDelegation,
+                       CancelPermissionForFrame) {
   set_html_for_tests("/geolocation/two_iframes.html");
   ASSERT_NO_FATAL_FAILURE(Initialize(INITIALIZATION_DEFAULT));
   LoadIFrames();

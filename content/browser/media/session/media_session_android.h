@@ -11,7 +11,7 @@
 
 #include "base/android/jni_weak_ref.h"
 #include "base/android/scoped_java_ref.h"
-#include "mojo/public/cpp/bindings/binding.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
 
 namespace content {
@@ -45,6 +45,8 @@ class MediaSessionAndroid final
       const base::flat_map<media_session::mojom::MediaSessionImageType,
                            std::vector<media_session::MediaImage>>& images)
       override;
+  void MediaSessionPositionChanged(
+      const base::Optional<media_session::MediaPosition>& position) override;
 
   // MediaSession method wrappers.
   void Resume(JNIEnv* env, const base::android::JavaParamRef<jobject>& j_obj);
@@ -53,6 +55,9 @@ class MediaSessionAndroid final
   void Seek(JNIEnv* env,
             const base::android::JavaParamRef<jobject>& j_obj,
             const jlong millis);
+  void SeekTo(JNIEnv* env,
+              const base::android::JavaParamRef<jobject>& j_obj,
+              const jlong millis);
   void DidReceiveAction(JNIEnv* env,
                         const base::android::JavaParamRef<jobject>& j_obj,
                         jint action);
@@ -71,7 +76,7 @@ class MediaSessionAndroid final
 
   MediaSessionImpl* const media_session_;
 
-  mojo::Binding<media_session::mojom::MediaSessionObserver> observer_binding_{
+  mojo::Receiver<media_session::mojom::MediaSessionObserver> observer_receiver_{
       this};
 
   DISALLOW_COPY_AND_ASSIGN(MediaSessionAndroid);

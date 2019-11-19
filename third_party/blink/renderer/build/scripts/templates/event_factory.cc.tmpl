@@ -18,13 +18,13 @@
 namespace blink {
 
 Event* Event{{suffix}}Factory::Create(ExecutionContext* executionContext, const String& type) {
-  {% for event in events if event|name|create_event_whitelist or event|name|create_event_measure_whitelist %}
-  {% if event|name|create_event_whitelist or event|name|create_event_measure_whitelist %}
+  {% for event in events if event|name|create_event_ignore_case_list or event|name|create_event_ignore_case_and_measure_list %}
+  {% if event|name|create_event_ignore_case_list or event|name|create_event_ignore_case_and_measure_list %}
   if (DeprecatedEqualIgnoringCase(type, "{{event|name}}"){% if event.RuntimeEnabled %} && RuntimeEnabledFeatures::{{event.RuntimeEnabled}}(){% endif %}) {
   {% else %}
   if (type == "{{event|name}}"{% if event.RuntimeEnabled %} && RuntimeEnabledFeatures::{{event.RuntimeEnabled}}(){% endif %}) {
   {% endif %}
-    {% if not event|name|create_event_whitelist %}
+    {% if not event|name|create_event_ignore_case_list %}
     UseCounter::Count(executionContext, WebFeature::k{{event|name|measure_name}});
     {% endif %}
     return {{event|cpp_name}}::Create();

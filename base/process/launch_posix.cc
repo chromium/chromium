@@ -35,6 +35,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/posix/eintr_wrapper.h"
+#include "base/process/environment_internal.h"
 #include "base/process/process.h"
 #include "base/process/process_metrics.h"
 #include "base/strings/stringprintf.h"
@@ -300,10 +301,10 @@ Process LaunchProcess(const std::vector<std::string>& argv,
   std::unique_ptr<char* []> new_environ;
   char* const empty_environ = nullptr;
   char* const* old_environ = GetEnvironment();
-  if (options.clear_environ)
+  if (options.clear_environment)
     old_environ = &empty_environ;
-  if (!options.environ.empty())
-    new_environ = AlterEnvironment(old_environ, options.environ);
+  if (!options.environment.empty())
+    new_environ = internal::AlterEnvironment(old_environ, options.environment);
 
   sigset_t full_sigset;
   sigfillset(&full_sigset);
@@ -439,7 +440,7 @@ Process LaunchProcess(const std::vector<std::string>& argv,
       fd_shuffle2.push_back(InjectionArc(value.first, value.second, false));
     }
 
-    if (!options.environ.empty() || options.clear_environ)
+    if (!options.environment.empty() || options.clear_environment)
       SetEnvironment(new_environ.get());
 
     // fd_shuffle1 is mutated by this call because it cannot malloc.
@@ -574,16 +575,20 @@ static bool GetAppOutputInternal(
       // Adding another element here? Remeber to increase the argument to
       // reserve(), above.
 
-      for (const auto& i : fd_shuffle1)
-        fd_shuffle2.push_back(i);
+      // Cannot use STL iterators here, since debug iterators use locks.
+      // NOLINTNEXTLINE(modernize-loop-convert)
+      for (size_t i = 0; i < fd_shuffle1.size(); ++i)
+        fd_shuffle2.push_back(fd_shuffle1[i]);
 
       if (!ShuffleFileDescriptors(&fd_shuffle1))
         _exit(127);
 
       CloseSuperfluousFds(fd_shuffle2);
 
-      for (const auto& arg : argv)
-        argv_cstr.push_back(const_cast<char*>(arg.c_str()));
+      // Cannot use STL iterators here, since debug iterators use locks.
+      // NOLINTNEXTLINE(modernize-loop-convert)
+      for (size_t i = 0; i < argv.size(); ++i)
+        argv_cstr.push_back(const_cast<char*>(argv[i].c_str()));
       argv_cstr.push_back(nullptr);
 
       if (do_search_path)

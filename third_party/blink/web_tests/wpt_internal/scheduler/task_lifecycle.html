@@ -1,0 +1,23 @@
+<!doctype html>
+<title>Scheduling API: Task Lifecycle</title>
+<link rel="author" title="Scott Haseley" href="mailto:shaseley@chromium.org">
+<link rel="help" href="https://github.com/WICG/main-thread-scheduling">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<script>
+'use strict';
+
+async_test(t => {
+  let task = scheduler.postTask(t.step_func(() => {
+    assert_equals(task.status, 'running');
+    scheduler.postTask(t.step_func_done(() => {
+      assert_equals(task.status, 'completed');
+    }));
+  }));
+  assert_equals(task.priority, 'default');
+  assert_equals(task.status, 'pending');
+
+}, 'Test scheduler.postTask Task lifecycle');
+
+</script>

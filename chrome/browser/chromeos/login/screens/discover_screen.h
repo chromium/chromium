@@ -7,18 +7,18 @@
 
 #include <string>
 
+#include "base/callback.h"
 #include "base/macros.h"
 #include "chrome/browser/chromeos/login/screens/base_screen.h"
 
 namespace chromeos {
 
-class BaseScreenDelegate;
 class DiscoverScreenView;
 
 class DiscoverScreen : public BaseScreen {
  public:
-  DiscoverScreen(BaseScreenDelegate* base_screen_delegate,
-                 DiscoverScreenView* view);
+  DiscoverScreen(DiscoverScreenView* view,
+                 const base::RepeatingClosure& exit_callback);
   ~DiscoverScreen() override;
 
   // BaseScreen:
@@ -28,6 +28,7 @@ class DiscoverScreen : public BaseScreen {
 
  private:
   DiscoverScreenView* const view_;
+  base::RepeatingClosure exit_callback_;
   bool is_shown_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(DiscoverScreen);

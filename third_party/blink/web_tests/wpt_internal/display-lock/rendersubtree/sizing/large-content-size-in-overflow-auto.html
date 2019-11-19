@@ -1,0 +1,33 @@
+<!doctype HTML>
+<html class="reftest-wait">
+<meta charset="utf8">
+<title>Display Locking: intrinsic-size is larger than height</title>
+<link rel="author" title="Vladimir Levin" href="mailto:vmpstr@chromium.org">
+<link rel="help" href="https://github.com/WICG/display-locking">
+<link rel="match" href="large-content-size-in-overflow-auto-ref.html">
+<script src="/common/reftest-wait.js"></script>
+<script src="../resources/utils.js"></script>
+
+<style>
+#container {
+  intrinsic-size: 1px 200px;
+  width: 200px;
+  height: 100px;
+  overflow: auto;
+  background: lightblue;
+}
+div:not([rendersubtree~="invisible"]) {
+  intrinsic-size: legacy !important;
+}
+</style>
+
+<div id=container>Text</div>
+
+<script>
+function runTest() {
+  setInvisible(document.getElementById("container")).then(() => {
+    takeScreenshot();
+  });
+}
+window.onload = runTest;
+</script>

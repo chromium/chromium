@@ -32,9 +32,6 @@
   <message name="IDS_COPIED_TEXT_FROM_CLIPBOARD" desc="The actual text the user copied, surrounded by quotation marks.">
     &quot;<ph name="TEXT">$1<ex>search string</ex></ph>&quot;
   </message>
-  <message name="IDS_SEARCH_WEB_FOR_IMAGE" desc="Description for performing a search by image">
-    Search <ph name="SEARCH_ENGINE">$1<ex>Google</ex></ph> for Image
-  </message>
   <message name="IDS_SECURE_CONNECTION_EV" desc="Short text shown in the location bar when the connection is secure with an EV cert.">
     <ph name="ORGANIZATION">$1<ex>Paypal Inc.</ex></ph> [<ph name="COUNTRY">$2<ex>US</ex></ph>]
   </message>

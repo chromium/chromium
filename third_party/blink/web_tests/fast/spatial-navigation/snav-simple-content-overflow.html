@@ -1,5 +1,5 @@
-<html>
-  <!--
+<!DOCTYPE html>
+<!--
     This test ensures that overflowed content can be focused by Spatial Navigation.
 
     * Pre-conditions:
@@ -13,61 +13,34 @@
     * Expected results: After 'start' gets the focus, tapping down arrow should scroll its
       enclosing scrollable container (<div>) down, and *not* move focus to the link whose id is '2'.
   -->
-  <head>
-    <style type="text/css">
-      div.scroll {
-        height: 200px;
-        width: 300px;
-        overflow: auto;
-        border: 1px solid #666;
-        background-color: #ccc;
-        padding: 8px;
-      }
-    </style>
+<style type="text/css">
+  div.scroll {
+    height: 200px;
+    width: 300px;
+    overflow: auto;
+    border: 1px solid #666;
+    background-color: #ccc;
+    padding: 8px;
+  }
+</style>
 
-    <script src="../../resources/js-test.js"></script>
-    <script src="resources/spatial-navigation-utils.js"></script>
-    <script type="application/javascript">
+<div class="scroll">
+  <p>It has a visible <a id="start" href="a">link_1</a>.</p>
+  <br><br><br><br><br><br><br><br><br>
+  <p>... and an overflowed link like <a id="1" href="a">this</a>.</p>
+</div>
+<br><br><br><br><br><br><br>
+<p>This link should NOT get <a id="start" href="a">focused</a>.</p>
 
-    var resultMap = [
-      ["Down", "start"],
-      ["DONE", "DONE"]
-    ];
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="resources/snav-testharness.js"></script>
+<script type="application/javascript">
+  var resultMap = [
+    ["Down", "start"]
+  ];
 
-    if (window.testRunner) {
-      testRunner.dumpAsText();
-      testRunner.overridePreference("WebKitTabToLinksPreferenceKey", 1);
-      testRunner.overridePreference("WebKitSpatialNavigationEnabled", 1);
-      testRunner.waitUntilDone();
-    }
-
-    function runTest()
-    {
-      // starting the test itself: get to a known place.
-      document.getElementById("start").focus();
-
-      initTest(resultMap, testCompleted);
-    }
-
-    function testCompleted()
-    {
-      if (window.testRunner)
-        testRunner.notifyDone();
-    }
-
-    window.onload = runTest;
-
-    </script>
-  </head>
-
-  <body id="some-content" xmlns="http://www.w3.org/1999/xhtml">
-    <div class="scroll">
-      <p>It has a visible <a id="start" href="a">link_1</a>.</p>
-      <br><br><br><br><br><br><br><br><br>
-      <p>... and an overflowed link like <a id="1" href="a">this</a>.</p>
-    </div>
-    <br><br><br><br><br><br><br>
-    <p>This link should NOT get <a id="start" href="a">focused</a>.</p>
-    <div id="console"></div>
-  </body>
-</html>
+  // starting the test itself: get to a known place.
+  document.getElementById("start").focus();
+  snav.assertFocusMoves(resultMap);
+</script>

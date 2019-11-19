@@ -1,0 +1,20 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module gpu.mojom;
+
+// Sampler Ycbcr conversion information. All of this struct parameters are
+// enums defined in the vulkan api which are passed as uint32/uint64 over ipc.
+// We use all of these values in an "opaque" way and don't consume it directly
+// in chrome.
+// See gpu/ipc/common/vulkan_ycbcr_info.h.
+struct VulkanYCbCrInfo {
+  uint32 image_format;
+  uint64 external_format;
+  uint32 suggested_ycbcr_model;
+  uint32 suggested_ycbcr_range;
+  uint32 suggested_xchroma_offset;
+  uint32 suggested_ychroma_offset;
+  uint32 format_features;
+};

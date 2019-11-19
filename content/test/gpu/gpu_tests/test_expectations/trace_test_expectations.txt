@@ -1,0 +1,47 @@
+# tags: [ android chromeos linux mac win win10 win7 ]
+# tags: [ debug ]
+# tags: [ intel nvidia qualcomm-adreno-(tm)-418 nvidia-0x1cb3]
+# results: [ Failure RetryOnFailure Skip ]
+
+ # TODO(kbr): flakily timing out on this configuration.
+crbug.com/648369 [ linux debug intel ] TraceTest_* [ RetryOnFailure ]
+crbug.com/978516 [ win10 nvidia-0x1cb3 ] TraceTest_* [ RetryOnFailure ]
+
+# Device traces are not supported on all machines.
+DeviceTraceTest_* [ Skip ]
+
+# The TraceTest versions of the pixel tests' Video_Context_Loss tests
+# appear flaky on multiple platforms. These are mainly meant to run as
+# pixel tests so they're being skipped in this test suite.
+crbug.com/974077 TraceTest_Video_Context_Loss_MP4 [ Skip ]
+crbug.com/974077 DeviceTraceTest_Video_Context_Loss_MP4 [ Skip ]
+crbug.com/974077 TraceTest_Video_Context_Loss_VP9 [ Skip ]
+crbug.com/974077 DeviceTraceTest_Video_Context_Loss_VP9 [ Skip ]
+
+# Skip on platforms where DirectComposition isn't supported
+crbug.com/867136 [ mac ] VideoPathTraceTest_* [ Skip ]
+crbug.com/867136 [ linux ] VideoPathTraceTest_* [ Skip ]
+crbug.com/867136 [ android ] VideoPathTraceTest_* [ Skip ]
+crbug.com/867136 [ chromeos ] VideoPathTraceTest_* [ Skip ]
+crbug.com/867136 [ win7 ] VideoPathTraceTest_* [ Skip ]
+crbug.com/867136 [ mac ] OverlayModeTraceTest_* [ Skip ]
+crbug.com/867136 [ linux ] OverlayModeTraceTest_* [ Skip ]
+crbug.com/867136 [ android ] OverlayModeTraceTest_* [ Skip ]
+crbug.com/867136 [ chromeos ] OverlayModeTraceTest_* [ Skip ]
+crbug.com/867136 [ win7 ] OverlayModeTraceTest_* [ Skip ]
+crbug.com/1009860 [ mac ] SwapChainTraceTest_* [ Skip ]
+crbug.com/1009860 [ linux ] SwapChainTraceTest_* [ Skip ]
+crbug.com/1009860 [ android ] SwapChainTraceTest_* [ Skip ]
+crbug.com/1009860 [ chromeos ] SwapChainTraceTest_* [ Skip ]
+crbug.com/1009860 [ win7 ] SwapChainTraceTest_* [ Skip ]
+
+# VP9 videos fail to trigger zero copy video presentation path.
+crbug.com/930343 [ win intel ] VideoPathTraceTest_DirectComposition_Video_VP9_Fullsize [ Failure ]
+
+# Complex overlays test is flaky on Nvidia probably due to its small size.
+crbug.com/937545 [ win10 nvidia ] VideoPathTraceTest_DirectComposition_ComplexOverlays [ RetryOnFailure ]
+
+# Flaky for unknown reason.
+crbug.com/960007 [ win10 nvidia ] OverlayModeTraceTest_DirectComposition_Nonroot [ RetryOnFailure ]
+crbug.com/969117 [ win10 intel ] OverlayModeTraceTest_DirectComposition_Video_MP4_FourColors_Aspect_4x3 [ RetryOnFailure ]
+crbug.com/978181 [ win10 nvidia ] OverlayModeTraceTest_DirectComposition_Underlay [ RetryOnFailure ]

@@ -8,7 +8,7 @@ Running: testNestedConsoleTime
 Running: testUnbalancedConsoleTime
 
 Running: testConsoleTimeWithoutConsoleTimeEnd
-------------> Timestamp: Foo
-------------> Timestamp: Bar
-------------> Timestamp: Baz
+--------> Timestamp: Foo
+--------> Timestamp: Bar
+--------> Timestamp: Baz
 

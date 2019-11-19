@@ -1,0 +1,13 @@
+<body></body>
+<title>a page with an iframe</title>
+<!-- This page makes an iframe to |subframe_url|.-->
+<script>
+const url_params = new URLSearchParams(location.search);
+let subframe_url = url_params.get("subframe_url");
+if (subframe_url != null) {
+  let iframe = document.createElement('iframe');
+  iframe.src = subframe_url;
+  iframe.name = "subframe_name";
+  document.body.appendChild(iframe);
+}
+</script>

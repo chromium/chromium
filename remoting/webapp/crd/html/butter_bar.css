@@ -5,42 +5,29 @@
 
 #butter-bar {
   position: absolute;
-  top: 80px;
+  top: 0;
   left: 0;
+  bottom: 0;
+  right: 0;
   display: flex;
   justify-content: center;
-  width: 100%;
-}
-
-#butter-bar-dismiss img {
-  vertical-align: top;
-  opacity: 0.4;
-  margin-__MSG_@@bidi_start_edge__: 2px;
-  margin-__MSG_@@bidi_end_edge__: -12px;
-}
-
-#butter-bar-dimiss:hover {
-  opacity: 0.7;
+  align-items: center;
+  background-color: rgba(0,0,0,0.5);
+  z-index: 1;  /* Above the main content, but below the menu. */
 }
 
 #butter-bar > p {
-  background-color: #f9edbe;
-  border: 1px solid #f0c36d;
+  background-color: white;
+  border: 1px solid black;
   border-radius: 2px;
-  box-shadow: 0px 2px 4px rgba(0,0,0,0.2);
   color: #222;
   font-size: 12px;
   padding: 4px 16px;
   margin: 0 8px;
-}
-
-#butter-bar.red > p {
-  background-color: #f9bebe;
-  border: 1px solid #f06d6d;
+  max-width: 400px;
+  padding: 30px;
 }
 
 #butter-bar a {
-  color: inherit;
   text-decoration: underline;
-  padding-__MSG_@@bidi_start_edge__: 2px;
 }

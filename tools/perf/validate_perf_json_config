@@ -5,6 +5,9 @@
 
 import sys
 
+from core import path_util
+path_util.AddTelemetryToPath()
+
 from core import perf_json_config_validator
 
 

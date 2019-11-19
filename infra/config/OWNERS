@@ -1,24 +1,2 @@
-set noparent
-bpastene@chromium.org
-dpranke@chromium.org
-estaab@chromium.org
-hans@chromium.org
-hinoka@chromium.org
-iannucci@chromium.org
-jbudorick@chromium.org
-jchinlee@chromium.org
-martiniss@chromium.org
-maruel@chromium.org
-smut@google.com
-tandrii@chromium.org
-thakis@chromium.org
-vadimsh@chromium.org
-
-# For build parallelism configs.
-per-file cr-buildbucket.cfg=shinyak@chromium.org
-per-file cr-buildbucket.cfg=sque@chromium.org
-per-file cr-buildbucket.cfg=tikuta@chromium.org
-per-file cr-buildbucket.cfg=ukai@chromium.org
-per-file cr-buildbucket.cfg=yyanagisawa@chromium.org
 # TEAM: infra-dev@chromium.org
 # COMPONENT: Infra>Client>Chrome

@@ -4,50 +4,35 @@ Should be composited
 {
   "layers": [
     {
-      "name": "LayoutView #document",
-      "bounds": [800, 600],
-      "drawsContent": false,
-      "backgroundColor": "#FFFFFF"
-    },
-    {
-      "name": "Scrolling Layer",
-      "bounds": [800, 600],
-      "drawsContent": false
-    },
-    {
       "name": "Scrolling Contents Layer",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutBlockFlow DIV id='to-animate' class='container animating'",
-      "position": [8, 8],
-      "bounds": [262, 212]
+      "name": "LayoutNGBlockFlow DIV id='to-animate' class='container animating'",
+      "bounds": [262, 212],
+      "transform": 2
     },
     {
-      "name": "Squashing Containment Layer",
-      "position": [8, 8],
-      "drawsContent": false
-    },
-    {
-      "name": "LayoutBlockFlow DIV class='composited banner'",
+      "name": "LayoutNGBlockFlow DIV class='composited banner'",
       "bounds": [250, 50],
       "contentsOpaque": true,
       "backgroundColor": "#C0C0C0",
-      "transform": 1
+      "transform": 3
     },
     {
-      "name": "Squashing Layer (first squashed layer: LayoutBlockFlow (positioned) DIV class='test1 box')",
-      "position": [19, 29],
-      "bounds": [100, 100]
+      "name": "Squashing Layer (first squashed layer: LayoutNGBlockFlow (positioned) DIV class='test1 box')",
+      "position": [5, 15],
+      "bounds": [100, 100],
+      "transform": 3
     },
     {
-      "name": "LayoutBlockFlow (relative positioned) DIV class='box'",
-      "position": [18, 230],
+      "name": "LayoutNGBlockFlow (relative positioned) DIV class='box'",
       "bounds": [100, 100],
       "contentsOpaque": true,
-      "backgroundColor": "#0000FF"
+      "backgroundColor": "#0000FF",
+      "transform": 4
     }
   ],
   "transforms": [
@@ -57,9 +42,37 @@ Should be composited
         [1, 0, 0, 0],
         [0, 1, 0, 0],
         [0, 0, 1, 0],
-        [14, 14, 0, 1]
-      ],
-      "flattenInheritedTransform": false
+        [8, 8, 0, 1]
+      ]
+    },
+    {
+      "id": 2,
+      "parent": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [0, 0, 0, 1]
+      ]
+    },
+    {
+      "id": 3,
+      "parent": 2,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [6, 6, 0, 1]
+      ]
+    },
+    {
+      "id": 4,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [18, 230, 0, 1]
+      ]
     }
   ]
 }

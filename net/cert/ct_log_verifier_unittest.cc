@@ -155,10 +155,9 @@ const AuditProofTestVector kAuditProofs[] = {
 
 // Decodes a hexadecimal string into the binary data it represents.
 std::string HexToBytes(const std::string& hex_data) {
-  std::vector<uint8_t> output;
   std::string result;
-  if (base::HexStringToBytes(hex_data, &output))
-    result.assign(output.begin(), output.end());
+  if (!base::HexStringToString(hex_data, &result))
+    result.clear();
   return result;
 }
 
@@ -204,12 +203,10 @@ bool VerifyAuditProof(const CTLogVerifier& log,
 class CTLogVerifierTest : public ::testing::Test {
  public:
   void SetUp() override {
-    log_ = CTLogVerifier::Create(ct::GetTestPublicKey(), "testlog",
-                                 "ct.example.com");
+    log_ = CTLogVerifier::Create(ct::GetTestPublicKey(), "testlog");
 
     ASSERT_TRUE(log_);
     EXPECT_EQ(ct::GetTestPublicKeyId(), log_->key_id());
-    EXPECT_EQ("ct.example.com", log_->dns_domain());
   }
 
  protected:
@@ -467,7 +464,7 @@ TEST_F(CTLogVerifierTest, ExcessDataInPublicKey) {
   key += "extra";
 
   scoped_refptr<const CTLogVerifier> log =
-      CTLogVerifier::Create(key, "testlog", "ct.example.com");
+      CTLogVerifier::Create(key, "testlog");
   EXPECT_FALSE(log);
 }
 

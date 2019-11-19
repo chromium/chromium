@@ -20,10 +20,6 @@ namespace history {
 class HistoryService;
 }
 
-namespace syncer {
-class DeviceInfo;
-}  // namespace syncer
-
 namespace sync_sessions {
 
 class LocalSessionEventRouter;
@@ -49,10 +45,6 @@ class SyncSessionsClient {
   // TODO(zea): make this a standalone function if the url constants are
   // componentized.
   virtual bool ShouldSyncURL(const GURL& url) const = 0;
-
-  // Returns the DeviceInfo representing the local device. May return null if
-  // sync is not running.
-  virtual const syncer::DeviceInfo* GetLocalDeviceInfo() = 0;
 
   // Returns the SyncedWindowDelegatesGetter for this client.
   virtual SyncedWindowDelegatesGetter* GetSyncedWindowDelegatesGetter() = 0;

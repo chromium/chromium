@@ -1,0 +1,52 @@
+{
+  "layers": [
+    {
+      "name": "LayoutView #document",
+      "bounds": [800, 600],
+      "drawsContent": false,
+      "backgroundColor": "#FFFFFF"
+    },
+    {
+      "name": "Scrolling Layer",
+      "bounds": [800, 600],
+      "drawsContent": false
+    },
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF",
+      "paintInvalidations": [
+        {
+          "object": "LayoutBlockFlow (positioned) UL id='submenu'",
+          "rect": [48, 94, 40, 20],
+          "reason": "chunk disappeared"
+        }
+      ]
+    },
+    {
+      "name": "LayoutListItem (floating) LI id='watches'",
+      "position": [30, 44],
+      "bounds": [7, 19]
+    },
+    {
+      "name": "LayoutInline (relative positioned) SPAN id='placeholder'",
+      "position": [48, 44],
+      "drawsContent": false,
+      "backfaceVisibility": "hidden"
+    },
+    {
+      "name": "LayoutListItem (relative positioned) (floating) LI id='menu'",
+      "position": [30, 44],
+      "bounds": [7, 19],
+      "paintInvalidations": [
+        {
+          "object": "LayoutListMarker (anonymous)",
+          "rect": [0, 0, 7, 19],
+          "reason": "geometry"
+        }
+      ]
+    }
+  ]
+}
+

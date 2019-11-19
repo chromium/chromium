@@ -5,7 +5,8 @@
 package org.chromium.ui.base;
 
 import android.content.Context;
-import android.support.annotation.UiThread;
+
+import androidx.annotation.UiThread;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;

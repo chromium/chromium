@@ -34,7 +34,6 @@
 #include "third_party/blink/renderer/core/dom/node_traversal.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/html/custom/custom_element.h"
-#include "third_party/blink/renderer/platform/bindings/trace_wrapper_member.h"
 
 namespace blink {
 
@@ -70,17 +69,16 @@ void TreeScopeAdopter::MoveTreeToNewScope(Node& root) const {
         rare_data->NodeLists()->AdoptTreeScope();
     }
 
-    if (!node.IsElementNode())
+    auto* element = DynamicTo<Element>(node);
+    if (!element)
       continue;
-    Element& element = ToElement(node);
 
-    if (HeapVector<TraceWrapperMember<Attr>>* attrs =
-            element.GetAttrNodeList()) {
+    if (HeapVector<Member<Attr>>* attrs = element->GetAttrNodeList()) {
       for (const auto& attr : *attrs)
         MoveTreeToNewScope(*attr);
     }
 
-    if (ShadowRoot* shadow = element.GetShadowRoot()) {
+    if (ShadowRoot* shadow = element->GetShadowRoot()) {
       shadow->SetParentTreeScope(NewScope());
       if (will_move_to_new_document)
         MoveShadowTreeToNewDocument(*shadow, old_document, new_document);
@@ -111,17 +109,16 @@ void TreeScopeAdopter::MoveTreeToNewDocument(Node& root,
   for (Node& node : NodeTraversal::InclusiveDescendantsOf(root)) {
     MoveNodeToNewDocument(node, old_document, new_document);
 
-    if (!node.IsElementNode())
+    auto* element = DynamicTo<Element>(node);
+    if (!element)
       continue;
-    Element& element = ToElement(node);
 
-    if (HeapVector<TraceWrapperMember<Attr>>* attrs =
-            element.GetAttrNodeList()) {
+    if (HeapVector<Member<Attr>>* attrs = element->GetAttrNodeList()) {
       for (const auto& attr : *attrs)
         MoveTreeToNewDocument(*attr, old_document, new_document);
     }
 
-    if (ShadowRoot* shadow_root = element.GetShadowRoot())
+    if (ShadowRoot* shadow_root = element->GetShadowRoot())
       MoveShadowTreeToNewDocument(*shadow_root, old_document, new_document);
   }
 }
@@ -164,7 +161,7 @@ inline void TreeScopeAdopter::MoveNodeToNewDocument(
   old_document.MoveNodeIteratorsToNewDocument(node, new_document);
 
   if (node.GetCustomElementState() == CustomElementState::kCustom) {
-    CustomElement::EnqueueAdoptedCallback(ToElement(node), old_document,
+    CustomElement::EnqueueAdoptedCallback(To<Element>(node), old_document,
                                           new_document);
   }
 

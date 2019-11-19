@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_CHROMEOS_ARC_VIDEO_GPU_ARC_VIDEO_SERVICE_HOST_H_
 
 #include "base/macros.h"
-#include "components/arc/common/video.mojom.h"
+#include "components/arc/mojom/video.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "mojo/public/cpp/bindings/binding_set.h"
 

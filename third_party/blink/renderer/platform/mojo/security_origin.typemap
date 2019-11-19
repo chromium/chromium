@@ -6,7 +6,7 @@ mojom = "//url/mojom/origin.mojom"
 public_headers =
     [ "//third_party/blink/renderer/platform/weborigin/security_origin.h" ]
 traits_headers = [
-  "//third_party/blink/renderer/platform/mojo/security_origin_struct_traits.h",
+  "//third_party/blink/renderer/platform/mojo/security_origin_mojom_traits.h",
 ]
 
 # Note: consumers of this typemap must themselves depend on platform.
@@ -14,5 +14,4 @@ deps = [
   "//mojo/public/cpp/bindings",
   "//url",
 ]
-type_mappings =
-    [ "url.mojom.Origin=scoped_refptr<const ::blink::SecurityOrigin>" ]
+type_mappings = [ "url.mojom.Origin=::scoped_refptr<const ::blink::SecurityOrigin>[nullable_is_same_type]" ]

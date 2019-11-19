@@ -18,6 +18,14 @@ using autofill::PasswordForm;
 
 namespace password_manager {
 
+namespace {
+bool IsAllowedForPSLMatchedGoogleDomain(const GURL& url) {
+  return url.DomainIs("myaccount.google.com") ||
+         url.DomainIs("accounts.google.com");
+}
+
+}  // namespace
+
 std::ostream& operator<<(std::ostream& out, MatchResult result) {
   switch (result) {
     case MatchResult::NO_MATCH:
@@ -60,34 +68,27 @@ MatchResult GetMatchResult(const PasswordForm& form,
     return MatchResult::EXACT_MATCH;
 
   // PSL and federated matches only apply to HTML forms.
-  if (form_digest.scheme != PasswordForm::SCHEME_HTML ||
-      form.scheme != PasswordForm::SCHEME_HTML)
+  if (form_digest.scheme != PasswordForm::Scheme::kHtml ||
+      form.scheme != PasswordForm::Scheme::kHtml) {
     return MatchResult::NO_MATCH;
+  }
 
-  const bool allow_psl_match = ShouldPSLDomainMatchingApply(
-      GetRegistryControlledDomain(GURL(form_digest.signon_realm)));
-  const bool allow_federated_match = !form.federation_origin.opaque();
-
-  if (allow_psl_match &&
-      IsPublicSuffixDomainMatch(form.signon_realm, form_digest.signon_realm))
+  if (IsPublicSuffixDomainMatch(form.signon_realm, form_digest.signon_realm))
     return MatchResult::PSL_MATCH;
 
+  const bool allow_federated_match = !form.federation_origin.opaque();
   if (allow_federated_match &&
       IsFederatedRealm(form.signon_realm, form_digest.origin) &&
-      form.origin.GetOrigin() == form_digest.origin.GetOrigin())
+      form.origin.GetOrigin() == form_digest.origin.GetOrigin()) {
     return MatchResult::FEDERATED_MATCH;
+  }
 
-  if (allow_psl_match && allow_federated_match &&
-      IsFederatedPSLMatch(form.signon_realm, form.origin, form_digest.origin))
+  if (allow_federated_match &&
+      IsFederatedPSLMatch(form.signon_realm, form.origin, form_digest.origin)) {
     return MatchResult::FEDERATED_PSL_MATCH;
+  }
 
   return MatchResult::NO_MATCH;
-}
-
-bool ShouldPSLDomainMatchingApply(
-    const std::string& registry_controlled_domain) {
-  return !registry_controlled_domain.empty() &&
-         registry_controlled_domain != "google.com";
 }
 
 bool IsPublicSuffixDomainMatch(const std::string& url1,
@@ -100,6 +101,12 @@ bool IsPublicSuffixDomainMatch(const std::string& url1,
 
   if (gurl1 == gurl2)
     return true;
+
+  if (gurl1.DomainIs("google.com") && gurl2.DomainIs("google.com")) {
+    return gurl1.scheme() == gurl2.scheme() && gurl1.port() == gurl2.port() &&
+           IsAllowedForPSLMatchedGoogleDomain(gurl1) &&
+           IsAllowedForPSLMatchedGoogleDomain(gurl2);
+  }
 
   std::string domain1(GetRegistryControlledDomain(gurl1));
   std::string domain2(GetRegistryControlledDomain(gurl2));
@@ -115,29 +122,6 @@ std::string GetRegistryControlledDomain(const GURL& signon_realm) {
   return net::registry_controlled_domains::GetDomainAndRegistry(
       signon_realm,
       net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
-}
-
-std::string GetOrganizationIdentifyingName(const GURL& url) {
-  if (!url.is_valid())
-    return std::string();
-
-  const std::string organization_and_registrar =
-      net::registry_controlled_domains::GetDomainAndRegistry(
-          url, net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
-  const size_t registrar_length =
-      net::registry_controlled_domains::GetRegistryLength(
-          url, net::registry_controlled_domains::INCLUDE_UNKNOWN_REGISTRIES,
-          net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
-
-  if (organization_and_registrar.empty() || !registrar_length ||
-      registrar_length == std::string::npos) {
-    return std::string();
-  }
-
-  // No CHECK, std::string::substr gracefully handles an underflow there.
-  DCHECK_LT(registrar_length, organization_and_registrar.size());
-  return organization_and_registrar.substr(
-      0, organization_and_registrar.size() - registrar_length - 1);
 }
 
 }  // namespace password_manager

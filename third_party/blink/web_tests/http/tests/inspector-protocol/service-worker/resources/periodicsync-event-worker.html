@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Test periodicsync event in a serviceworker.</title>
+  <script>
+    function installSW() {
+      navigator.serviceWorker.register('periodicsync-event-worker.js');
+    }
+
+    window.__periodicsyncTagPromise = new Promise(fulfill =>
+      navigator.serviceWorker.onmessage = message => fulfill(message.data));
+
+  </script>
+</head>
+
+<body onload="installSW()"></body>
+
+</html>

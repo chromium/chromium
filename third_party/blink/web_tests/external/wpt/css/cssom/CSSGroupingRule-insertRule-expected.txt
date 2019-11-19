@@ -1,0 +1,10 @@
+This is a testharness.js-based test.
+PASS index before first
+PASS index after final
+FAIL index not specified Failed to execute 'insertRule' on 'CSSGroupingRule': 2 arguments required, but only 1 present.
+PASS index exceeds length
+PASS CSS parsing error
+PASS constraint violation
+PASS disallowed namespace rule
+Harness: the test ran to completion.
+

@@ -4,11 +4,26 @@
 
 module blink.mojom;
 
-// TODO(leonhsl) We can remove blink::MessageLevel and
-// content::ConsoleMessageLevel by using this mojom enum instead.
 enum ConsoleMessageLevel {
   kVerbose,
   kInfo,
   kWarning,
   kError
+};
+
+enum ConsoleMessageSource {
+  kXml,
+  kJavaScript,
+  kNetwork,
+  kConsoleApi,
+  kStorage,
+  kAppCache,
+  kRendering,
+  kSecurity,
+  kOther,
+  kDeprecation,
+  kWorker,
+  kViolation,
+  kIntervention,
+  kRecommendation
 };

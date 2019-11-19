@@ -1,7 +1,7 @@
 <link rel="import" href="chrome://resources/html/polymer.html">
 
 <link rel="import" href="chrome://resources/html/assert.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/paper-button/paper-button.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_button/cr_button.html">
 <link rel="import" href="chrome://resources/cr_elements/policy/cr_policy_pref_behavior.html">
 <link rel="import" href="chrome://resources/cr_elements/policy/cr_policy_pref_indicator.html">
 <link rel="import" href="chrome://resources/cr_elements/shared_vars_css.html">
@@ -42,10 +42,10 @@
       }
     </style>
 
-    <paper-button class$="[[getClass_(actionButton)]]"
+    <cr-button class$="[[actionClass_]]"
       disabled="[[!buttonEnabled_(enforced_, disabled)]]">
       [[label]]
-    </paper-button>
+    </cr-button>
 
     <template is="dom-if" if="[[hasPrefPolicyIndicator(pref.*)]]" restamp>
       <cr-policy-pref-indicator pref="[[pref]]" on-click="onIndicatorTap_"

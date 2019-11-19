@@ -59,7 +59,8 @@ class TetherNetworkDisconnectionHandler : public NetworkStateHandlerObserver {
   TetherSessionCompletionLogger* tether_session_completion_logger_;
 
   scoped_refptr<base::TaskRunner> task_runner_;
-  base::WeakPtrFactory<TetherNetworkDisconnectionHandler> weak_ptr_factory_;
+  base::WeakPtrFactory<TetherNetworkDisconnectionHandler> weak_ptr_factory_{
+      this};
 
   DISALLOW_COPY_AND_ASSIGN(TetherNetworkDisconnectionHandler);
 };

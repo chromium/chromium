@@ -27,6 +27,7 @@ class ListValue;
 
 namespace extensions {
 class APIBindingHooks;
+class InteractionProvider;
 
 // A class encompassing the necessary pieces to construct the JS entry points
 // for Extension APIs. Designed to be used on a single thread, but safe between
@@ -47,8 +48,7 @@ class APIBindingsSystem {
   APIBindingsSystem(GetAPISchemaMethod get_api_schema,
                     BindingAccessChecker::AvailabilityCallback is_available,
                     APIRequestHandler::SendRequestMethod send_request,
-                    APIRequestHandler::GetUserActivationState
-                        get_user_activation_state_callback,
+                    std::unique_ptr<InteractionProvider> interaction_provider,
                     APIEventListeners::ListenersUpdated event_listeners_changed,
                     APIEventHandler::ContextOwnerIdGetter context_owner_getter,
                     APIBinding::OnSilentRequest on_silent_request,
@@ -93,6 +93,9 @@ class APIBindingsSystem {
   // Handles any cleanup necessary before releasing the given |context|.
   void WillReleaseContext(v8::Local<v8::Context> context);
 
+  InteractionProvider* interaction_provider() {
+    return interaction_provider_.get();
+  }
   APIRequestHandler* request_handler() { return &request_handler_; }
   APIEventHandler* event_handler() { return &event_handler_; }
   APITypeReferenceMap* type_reference_map() { return &type_reference_map_; }
@@ -118,6 +121,9 @@ class APIBindingsSystem {
 
   // The exception handler for the system.
   ExceptionHandler exception_handler_;
+
+  // The interaction provider for the system.
+  std::unique_ptr<InteractionProvider> interaction_provider_;
 
   // The request handler associated with the system.
   APIRequestHandler request_handler_;

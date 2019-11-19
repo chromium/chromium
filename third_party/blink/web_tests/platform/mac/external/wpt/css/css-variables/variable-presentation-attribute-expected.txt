@@ -43,7 +43,8 @@ PASS Testing 'stroke-miterlimit'.
 PASS Testing 'stroke-opacity'.
 PASS Testing 'stroke-width'.
 PASS Testing 'text-anchor'.
-FAIL Testing 'text-decoration'. assert_equals: Default value. expected "none" but got "none solid rgb(0, 0, 0)"
+PASS Testing 'text-decoration-line'.
+PASS Testing 'text-decoration-style'.
 PASS Testing 'visibility'.
 PASS Testing 'word-spacing'.
 FAIL Testing 'writing-mode'. assert_equals: Default value. expected "lr-tb" but got "horizontal-tb"

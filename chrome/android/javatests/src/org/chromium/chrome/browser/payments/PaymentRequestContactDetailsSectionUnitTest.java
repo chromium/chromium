@@ -10,7 +10,6 @@ import android.support.test.filters.SmallTest;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.RuleChain;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseJUnit4ClassRunner;
@@ -18,9 +17,8 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
 import org.chromium.chrome.browser.payments.ui.ContactDetailsSection;
 import org.chromium.chrome.browser.payments.ui.SectionInformation;
-import org.chromium.chrome.browser.test.ChromeBrowserTestRule;
-import org.chromium.chrome.browser.test.ClearAppDataTestRule;
 import org.chromium.chrome.browser.widget.prefeditor.EditableOption;
+import org.chromium.chrome.test.ChromeBrowserTestRule;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,8 +29,7 @@ import java.util.List;
 @RunWith(BaseJUnit4ClassRunner.class)
 public class PaymentRequestContactDetailsSectionUnitTest {
     @Rule
-    public final RuleChain mChain =
-            RuleChain.outerRule(new ClearAppDataTestRule()).around(new ChromeBrowserTestRule());
+    public final ChromeBrowserTestRule mChromeBrowserTestRule = new ChromeBrowserTestRule();
 
     private ContactEditor mContactEditor;
     private ContactDetailsSection mContactDetailsSection;

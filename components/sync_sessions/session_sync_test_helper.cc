@@ -67,7 +67,7 @@ void SessionSyncTestHelper::VerifySyncedSession(
       FAIL();
     ASSERT_EQ(win_iter->size(), win_ptr->tabs.size());
     ASSERT_EQ(0, win_ptr->selected_tab_index);
-    ASSERT_EQ(sessions::SessionWindow::TYPE_TABBED, win_ptr->type);
+    ASSERT_EQ(sessions::SessionWindow::TYPE_NORMAL, win_ptr->type);
     int j = 0;
     for (auto tab_iter = (*win_iter).begin(); tab_iter != (*win_iter).end();
          ++tab_iter, ++j) {

@@ -9,9 +9,11 @@
 #include "base/task/sequence_manager/test/fake_task.h"
 #include "base/task/sequence_manager/test/sequence_manager_for_test.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/page/launching_process_state.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/main_thread_scheduler_impl.h"
 #include "third_party/blink/renderer/platform/scheduler/public/frame_scheduler.h"
@@ -48,15 +50,16 @@ class MainThreadMetricsHelperTest : public testing::Test {
  public:
   MainThreadMetricsHelperTest()
       : task_environment_(
-            base::test::ScopedTaskEnvironment::MainThreadType::MOCK_TIME,
-            base::test::ScopedTaskEnvironment::ExecutionMode::QUEUED) {
-    // Null clock might trigger some assertions.
-    task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(1));
-  }
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME,
+            base::test::TaskEnvironment::ThreadPoolExecutionMode::QUEUED) {}
 
   ~MainThreadMetricsHelperTest() override = default;
 
   void SetUp() override {
+    scoped_feature_list_.InitWithFeatures(
+        {} /* enabled_features */,
+        {features::
+             kPurgeRendererMemoryWhenBackgrounded} /* disabled_features */);
     histogram_tester_.reset(new base::HistogramTester());
     scheduler_ = std::make_unique<MainThreadSchedulerImplForTest>(
         base::sequence_manager::SequenceManagerForTest::Create(
@@ -117,14 +120,6 @@ class MainThreadMetricsHelperTest : public testing::Test {
     scheduler_->SetCurrentUseCaseForTest(use_case);
     metrics_helper_->RecordTaskMetrics(queue.get(), FakeTask(),
                                        FakeTaskTiming(start, start + duration));
-  }
-
-  base::TimeTicks Milliseconds(int milliseconds) {
-    return base::TimeTicks() + base::TimeDelta::FromMilliseconds(milliseconds);
-  }
-
-  base::TimeTicks Seconds(int seconds) {
-    return base::TimeTicks() + base::TimeDelta::FromSeconds(seconds);
   }
 
   void ForceUpdatePolicy() { scheduler_->ForceUpdatePolicy(); }
@@ -237,7 +232,8 @@ class MainThreadMetricsHelperTest : public testing::Test {
     return builder.Build();
   }
 
-  base::test::ScopedTaskEnvironment task_environment_;
+  base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::TaskEnvironment task_environment_;
   std::unique_ptr<MainThreadSchedulerImplForTest> scheduler_;
   MainThreadMetricsHelper* metrics_helper_;  // NOT OWNED
   std::unique_ptr<base::HistogramTester> histogram_tester_;
@@ -258,51 +254,69 @@ TEST_F(MainThreadMetricsHelperTest, Metrics_PerQueueType) {
   if (kLaunchingProcessIsBackgrounded)
     scheduler_->SetRendererBackgrounded(false);
 
-  RunTask(QueueType::kDefault, Seconds(1),
+  const base::TimeTicks start = Now();
+
+  RunTask(QueueType::kDefault, start + base::TimeDelta::FromSeconds(1),
           base::TimeDelta::FromMilliseconds(700));
-  RunTask(QueueType::kDefault, Seconds(2),
+  RunTask(QueueType::kDefault, start + base::TimeDelta::FromSeconds(2),
           base::TimeDelta::FromMilliseconds(700));
-  RunTask(QueueType::kDefault, Seconds(3),
+  RunTask(QueueType::kDefault, start + base::TimeDelta::FromSeconds(3),
           base::TimeDelta::FromMilliseconds(700));
 
-  RunTask(QueueType::kControl, Seconds(4), base::TimeDelta::FromSeconds(3));
-  RunTask(QueueType::kFrameLoading, Seconds(8),
+  RunTask(QueueType::kControl, start + base::TimeDelta::FromSeconds(4),
+          base::TimeDelta::FromSeconds(3));
+  RunTask(QueueType::kFrameLoading, start + base::TimeDelta::FromSeconds(8),
           base::TimeDelta::FromSeconds(6));
-  RunTask(QueueType::kFramePausable, Seconds(16),
+  RunTask(QueueType::kFramePausable, start + base::TimeDelta::FromSeconds(16),
           base::TimeDelta::FromSeconds(2));
-  RunTask(QueueType::kCompositor, Seconds(19), base::TimeDelta::FromSeconds(2));
-  RunTask(QueueType::kTest, Seconds(22), base::TimeDelta::FromSeconds(4));
+  RunTask(QueueType::kCompositor, start + base::TimeDelta::FromSeconds(19),
+          base::TimeDelta::FromSeconds(2));
+  RunTask(QueueType::kTest, start + base::TimeDelta::FromSeconds(22),
+          base::TimeDelta::FromSeconds(4));
 
   scheduler_->SetRendererBackgrounded(true);
   // Wait for internally triggered tasks to run.
   constexpr int kCoolingOfTimeSeconds = 10;
 
-  RunTask(QueueType::kControl, Seconds(26 + kCoolingOfTimeSeconds),
+  RunTask(QueueType::kControl,
+          start + base::TimeDelta::FromSeconds(26 + kCoolingOfTimeSeconds),
           base::TimeDelta::FromSeconds(2));
-  RunTask(QueueType::kFrameThrottleable, Seconds(28 + kCoolingOfTimeSeconds),
+  RunTask(QueueType::kFrameThrottleable,
+          start + base::TimeDelta::FromSeconds(28 + kCoolingOfTimeSeconds),
           base::TimeDelta::FromSeconds(8));
-  RunTask(QueueType::kUnthrottled, Seconds(38 + kCoolingOfTimeSeconds),
+  RunTask(QueueType::kUnthrottled,
+          start + base::TimeDelta::FromSeconds(38 + kCoolingOfTimeSeconds),
           base::TimeDelta::FromSeconds(5));
-  RunTask(QueueType::kFrameLoading, Seconds(45 + kCoolingOfTimeSeconds),
+  RunTask(QueueType::kFrameLoading,
+          start + base::TimeDelta::FromSeconds(45 + kCoolingOfTimeSeconds),
           base::TimeDelta::FromSeconds(10));
-  RunTask(QueueType::kFrameThrottleable, Seconds(60 + kCoolingOfTimeSeconds),
+  RunTask(QueueType::kFrameThrottleable,
+          start + base::TimeDelta::FromSeconds(60 + kCoolingOfTimeSeconds),
           base::TimeDelta::FromSeconds(5));
-  RunTask(QueueType::kCompositor, Seconds(70 + kCoolingOfTimeSeconds),
+  RunTask(QueueType::kCompositor,
+          start + base::TimeDelta::FromSeconds(70 + kCoolingOfTimeSeconds),
           base::TimeDelta::FromSeconds(20));
-  RunTask(QueueType::kIdle, Seconds(90 + kCoolingOfTimeSeconds),
+  RunTask(QueueType::kIdle,
+          start + base::TimeDelta::FromSeconds(90 + kCoolingOfTimeSeconds),
           base::TimeDelta::FromSeconds(5));
-  RunTask(QueueType::kFrameLoadingControl, Seconds(100 + kCoolingOfTimeSeconds),
+  RunTask(QueueType::kFrameLoadingControl,
+          start + base::TimeDelta::FromSeconds(100 + kCoolingOfTimeSeconds),
           base::TimeDelta::FromSeconds(5));
-  RunTask(QueueType::kControl, Seconds(106 + kCoolingOfTimeSeconds),
+  RunTask(QueueType::kControl,
+          start + base::TimeDelta::FromSeconds(106 + kCoolingOfTimeSeconds),
           base::TimeDelta::FromSeconds(6));
-  RunTask(QueueType::kFrameThrottleable, Seconds(114 + kCoolingOfTimeSeconds),
+  RunTask(QueueType::kFrameThrottleable,
+          start + base::TimeDelta::FromSeconds(114 + kCoolingOfTimeSeconds),
           base::TimeDelta::FromSeconds(6));
-  RunTask(QueueType::kFramePausable, Seconds(120 + kCoolingOfTimeSeconds),
+  RunTask(QueueType::kFramePausable,
+          start + base::TimeDelta::FromSeconds(120 + kCoolingOfTimeSeconds),
           base::TimeDelta::FromSeconds(17));
-  RunTask(QueueType::kIdle, Seconds(140 + kCoolingOfTimeSeconds),
+  RunTask(QueueType::kIdle,
+          start + base::TimeDelta::FromSeconds(140 + kCoolingOfTimeSeconds),
           base::TimeDelta::FromSeconds(15));
 
-  RunTask(QueueType::kDetached, Seconds(156 + kCoolingOfTimeSeconds),
+  RunTask(QueueType::kDetached,
+          start + base::TimeDelta::FromSeconds(156 + kCoolingOfTimeSeconds),
           base::TimeDelta::FromSeconds(2));
 
   std::vector<base::Bucket> expected_samples = {
@@ -347,28 +361,35 @@ TEST_F(MainThreadMetricsHelperTest, Metrics_PerQueueType) {
 }
 
 TEST_F(MainThreadMetricsHelperTest, Metrics_PerUseCase) {
-  RunTask(UseCase::kNone, Milliseconds(500),
+  const base::TimeTicks start = Now();
+
+  RunTask(UseCase::kNone, start + base::TimeDelta::FromMilliseconds(500),
           base::TimeDelta::FromMilliseconds(400));
 
-  RunTask(UseCase::kTouchstart, Seconds(1), base::TimeDelta::FromSeconds(2));
-  RunTask(UseCase::kTouchstart, Seconds(3),
+  RunTask(UseCase::kTouchstart, start + base::TimeDelta::FromSeconds(1),
+          base::TimeDelta::FromSeconds(2));
+  RunTask(UseCase::kTouchstart, start + base::TimeDelta::FromSeconds(3),
           base::TimeDelta::FromMilliseconds(300));
-  RunTask(UseCase::kTouchstart, Seconds(4),
+  RunTask(UseCase::kTouchstart, start + base::TimeDelta::FromSeconds(4),
           base::TimeDelta::FromMilliseconds(300));
 
-  RunTask(UseCase::kCompositorGesture, Seconds(5),
+  RunTask(UseCase::kCompositorGesture, start + base::TimeDelta::FromSeconds(5),
           base::TimeDelta::FromSeconds(5));
-  RunTask(UseCase::kCompositorGesture, Seconds(10),
+  RunTask(UseCase::kCompositorGesture, start + base::TimeDelta::FromSeconds(10),
           base::TimeDelta::FromSeconds(3));
 
-  RunTask(UseCase::kMainThreadCustomInputHandling, Seconds(14),
+  RunTask(UseCase::kMainThreadCustomInputHandling,
+          start + base::TimeDelta::FromSeconds(14),
           base::TimeDelta::FromSeconds(2));
-  RunTask(UseCase::kSynchronizedGesture, Seconds(17),
+  RunTask(UseCase::kSynchronizedGesture,
+          start + base::TimeDelta::FromSeconds(17),
           base::TimeDelta::FromSeconds(2));
-  RunTask(UseCase::kMainThreadCustomInputHandling, Seconds(19),
+  RunTask(UseCase::kMainThreadCustomInputHandling,
+          start + base::TimeDelta::FromSeconds(19),
           base::TimeDelta::FromSeconds(5));
-  RunTask(UseCase::kLoading, Seconds(25), base::TimeDelta::FromSeconds(6));
-  RunTask(UseCase::kMainThreadGesture, Seconds(31),
+  RunTask(UseCase::kLoading, start + base::TimeDelta::FromSeconds(25),
+          base::TimeDelta::FromSeconds(6));
+  RunTask(UseCase::kMainThreadGesture, start + base::TimeDelta::FromSeconds(31),
           base::TimeDelta::FromSeconds(6));
   EXPECT_THAT(
       histogram_tester_->GetAllSamples(
@@ -419,11 +440,14 @@ TEST_F(MainThreadMetricsHelperTest, TaskCountPerFrameStatus) {
       {FrameStatus::kSameOriginBackground, 9},
       {FrameStatus::kSameOriginVisibleService, 6}};
 
+  const base::TimeTicks start = Now();
+
   for (const auto& data : test_data) {
     std::unique_ptr<FakeFrameScheduler> frame =
         CreateFakeFrameSchedulerWithType(data.frame_status);
     for (int i = 0; i < data.count; ++i) {
-      RunTask(frame.get(), Milliseconds(++task_count),
+      RunTask(frame.get(),
+              start + base::TimeDelta::FromMilliseconds(++task_count),
               base::TimeDelta::FromMicroseconds(100));
     }
   }
@@ -450,7 +474,7 @@ TEST_F(MainThreadMetricsHelperTest, TaskCountPerFrameTypeLongerThan) {
   int total_duration = 0;
   struct TasksPerFrameStatus {
     FrameStatus frame_status;
-    std::vector<int> durations;
+    Vector<int> durations;
   };
   TasksPerFrameStatus test_data[] = {
       {FrameStatus::kSameOriginHidden,
@@ -462,11 +486,14 @@ TEST_F(MainThreadMetricsHelperTest, TaskCountPerFrameTypeLongerThan) {
        {21, 31, 41, 51, 61, 71, 81, 91, 101, 1001}},
   };
 
+  const base::TimeTicks start = Now();
+
   for (const auto& data : test_data) {
     std::unique_ptr<FakeFrameScheduler> frame =
         CreateFakeFrameSchedulerWithType(data.frame_status);
     for (size_t i = 0; i < data.durations.size(); ++i) {
-      RunTask(frame.get(), Milliseconds(++total_duration),
+      RunTask(frame.get(),
+              start + base::TimeDelta::FromMilliseconds(++total_duration),
               base::TimeDelta::FromMilliseconds(data.durations[i]));
       total_duration += data.durations[i];
     }
@@ -537,6 +564,9 @@ TEST_F(MainThreadMetricsHelperTest, TaskCountPerFrameTypeLongerThan) {
 
 // TODO(crbug.com/754656): Add tests for non-TaskDuration
 // histograms.
+
+// TODO(crbug.com/754656): Add tests for
+// RendererScheduler.TasksWithSafepoints histograms.
 
 }  // namespace scheduler
 }  // namespace blink

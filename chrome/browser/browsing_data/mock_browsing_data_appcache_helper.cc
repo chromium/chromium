@@ -4,17 +4,20 @@
 
 #include "chrome/browser/browsing_data/mock_browsing_data_appcache_helper.h"
 
+#include <utility>
 #include <vector>
 
 #include "base/callback.h"
+#include "chrome/browser/profiles/profile.h"
+#include "content/public/browser/browser_context.h"
+#include "content/public/browser/storage_partition.h"
+#include "content/public/browser/storage_usage_info.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/mojom/appcache/appcache_info.mojom.h"
 
-MockBrowsingDataAppCacheHelper::MockBrowsingDataAppCacheHelper(
-    content::BrowserContext* browser_context)
-    : BrowsingDataAppCacheHelper(browser_context),
-      response_(new content::AppCacheInfoCollection) {
-}
+MockBrowsingDataAppCacheHelper::MockBrowsingDataAppCacheHelper(Profile* profile)
+    : BrowsingDataAppCacheHelper(
+          content::BrowserContext::GetDefaultStoragePartition(profile)
+              ->GetAppCacheService()) {}
 
 MockBrowsingDataAppCacheHelper::~MockBrowsingDataAppCacheHelper() {
 }
@@ -26,27 +29,12 @@ void MockBrowsingDataAppCacheHelper::StartFetching(
   completion_callback_ = std::move(completion_callback);
 }
 
-void MockBrowsingDataAppCacheHelper::DeleteAppCacheGroup(
-    const GURL& manifest_url) {
-}
+void MockBrowsingDataAppCacheHelper::DeleteAppCaches(
+    const url::Origin& origin) {}
 
 void MockBrowsingDataAppCacheHelper::AddAppCacheSamples() {
-  const GURL kOriginURL("http://hello/");
-  const url::Origin kOrigin(url::Origin::Create(kOriginURL));
-  blink::mojom::AppCacheInfo mock_manifest_1;
-  blink::mojom::AppCacheInfo mock_manifest_2;
-  blink::mojom::AppCacheInfo mock_manifest_3;
-  mock_manifest_1.manifest_url = kOriginURL.Resolve("manifest1");
-  mock_manifest_1.size = 1;
-  mock_manifest_2.manifest_url = kOriginURL.Resolve("manifest2");
-  mock_manifest_2.size = 2;
-  mock_manifest_3.manifest_url = kOriginURL.Resolve("manifest3");
-  mock_manifest_3.size = 3;
-  std::vector<blink::mojom::AppCacheInfo> info_vector;
-  info_vector.push_back(mock_manifest_1);
-  info_vector.push_back(mock_manifest_2);
-  info_vector.push_back(mock_manifest_3);
-  response_->infos_by_origin[kOrigin] = info_vector;
+  response_.emplace_back(url::Origin::Create(GURL("http://hello/")), 6,
+                         base::Time());
 }
 
 void MockBrowsingDataAppCacheHelper::Notify() {

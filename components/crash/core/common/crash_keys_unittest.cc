@@ -24,7 +24,7 @@ class CrashKeysTest : public testing::Test {
  public:
   void SetUp() override {
     ResetData();
-    crash_reporter::InitializeCrashKeys();
+    crash_reporter::InitializeCrashKeysForTesting();
   }
 
   void TearDown() override {

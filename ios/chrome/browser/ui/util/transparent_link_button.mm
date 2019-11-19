@@ -142,7 +142,8 @@ const CGFloat kHighlightViewBackgroundAlpha = 0.25;
 + (NSArray*)buttonsForLinkFrames:(NSArray*)linkFrames
                              URL:(const GURL&)URL
                       lineHeight:(CGFloat)lineHeight
-              accessibilityLabel:(NSString*)label {
+              accessibilityLabel:(NSString*)label
+                 accessibilityID:(NSString*)accessibilityID {
   if (!linkFrames.count)
     return @[];
   NSMutableArray* buttons =
@@ -155,10 +156,11 @@ const CGFloat kHighlightViewBackgroundAlpha = 0.25;
                                               lineHeight:lineHeight];
     TransparentLinkButton* previousButton = [buttons lastObject];
     previousButton.nextLinkButton = button;
-    [button setPreviousLinkButton:previousButton];
+    button.previousLinkButton = previousButton;
     // Make buttons not accessible by default, but provide label for tests.
-    [button setIsAccessibilityElement:NO];
-    [button setAccessibilityLabel:label];
+    button.isAccessibilityElement = NO;
+    button.accessibilityLabel = label;
+    button.accessibilityIdentifier = accessibilityID;
     [buttons addObject:button];
   }
   // Make the first button accessible.

@@ -4,6 +4,8 @@
 
 #include "net/base/network_change_notifier_win.h"
 
+#include <utility>
+
 #include "base/bind.h"
 #include "base/macros.h"
 #include "base/run_loop.h"
@@ -11,7 +13,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "net/base/network_change_notifier.h"
 #include "net/base/network_change_notifier_factory.h"
-#include "net/test/test_with_scoped_task_environment.h"
+#include "net/test/test_with_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -22,13 +24,14 @@ using ::testing::StrictMock;
 
 namespace net {
 
-namespace {
-
 // Subclass of NetworkChangeNotifierWin that overrides functions so that no
-// Windows API networking functions are ever called.
+// Windows API networking function results effect tests.
 class TestNetworkChangeNotifierWin : public NetworkChangeNotifierWin {
  public:
-  TestNetworkChangeNotifierWin() {}
+  TestNetworkChangeNotifierWin() {
+    last_computed_connection_type_ = NetworkChangeNotifier::CONNECTION_UNKNOWN;
+    last_announced_offline_ = false;
+  }
 
   ~TestNetworkChangeNotifierWin() override {
     // This is needed so we don't try to stop watching for IP address changes,
@@ -37,16 +40,10 @@ class TestNetworkChangeNotifierWin : public NetworkChangeNotifierWin {
   }
 
   // From NetworkChangeNotifierWin.
-  NetworkChangeNotifier::ConnectionType RecomputeCurrentConnectionType()
-      const override {
-    return NetworkChangeNotifier::CONNECTION_UNKNOWN;
-  }
-
-  // From NetworkChangeNotifierWin.
-  void RecomputeCurrentConnectionTypeOnDnsThread(
-      base::Callback<void(ConnectionType)> reply_callback) const override {
+  void RecomputeCurrentConnectionTypeOnBlockingSequence(
+      base::OnceCallback<void(ConnectionType)> reply_callback) const override {
     base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE, base::BindOnce(reply_callback,
+        FROM_HERE, base::BindOnce(std::move(reply_callback),
                                   NetworkChangeNotifier::CONNECTION_UNKNOWN));
   }
 
@@ -78,9 +75,7 @@ bool ExitMessageLoopAndReturnFalse() {
   return false;
 }
 
-}  // namespace
-
-class NetworkChangeNotifierWinTest : public TestWithScopedTaskEnvironment {
+class NetworkChangeNotifierWinTest : public TestWithTaskEnvironment {
  public:
   // Calls WatchForAddressChange, and simulates a WatchForAddressChangeInternal
   // success.  Expects that |network_change_notifier_| has just been created, so

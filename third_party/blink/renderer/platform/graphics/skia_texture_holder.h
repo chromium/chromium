@@ -7,40 +7,51 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
+#include "gpu/GLES2/gl2extchromium.h"
 #include "third_party/blink/renderer/platform/graphics/texture_holder.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 
 namespace blink {
-
+class MailboxTextureHolder;
 class WebGraphicsContext3DProviderWrapper;
 
 class PLATFORM_EXPORT SkiaTextureHolder final : public TextureHolder {
  public:
   ~SkiaTextureHolder() override;
 
-  // Methods overriding TextureHolder
-  bool IsSkiaTextureHolder() final { return true; }
-  bool IsMailboxTextureHolder() final { return false; }
+  // TextureHolder impl.
   IntSize Size() const final {
-    return IntSize(image_->width(), image_->height());
+    if (image_)
+      return IntSize(image_->width(), image_->height());
+    return IntSize();
   }
   bool IsValid() const final;
-  bool CurrentFrameKnownToBeOpaque() final { return image_->isOpaque(); }
-  sk_sp<SkImage> GetSkImage() final { return image_; }
+  bool CurrentFrameKnownToBeOpaque() const final {
+    return image_ && image_->isOpaque();
+  }
+
+  const sk_sp<SkImage>& GetSkImage() const { return image_; }
 
   // When creating a AcceleratedStaticBitmap from a texture-backed SkImage, this
   // function will be called to create a TextureHolder object.
   SkiaTextureHolder(sk_sp<SkImage>,
                     base::WeakPtr<WebGraphicsContext3DProviderWrapper>&&);
+
   // This function consumes the mailbox in the input parameter and turn it into
   // a texture-backed SkImage.
-  SkiaTextureHolder(std::unique_ptr<TextureHolder>);
+  // |shared_image_texture_id| is an optional texture bound to the
+  // |texture_holder|'s mailbox and imported into its context. Note that if a
+  // texture is provided it must:
+  // 1) Be associated with a shared image mailbox.
+  // 2) Stay alive and have a read lock on the shared image until the
+  //    |MailboxRef| is destroyed.
+  SkiaTextureHolder(const MailboxTextureHolder* texture_holder,
+                    GLuint shared_image_texture_id);
 
  private:
-  //  void ReleaseImageThreadSafe();
-
-  // The m_image should always be texture-backed
+  // The image_ should always be texture-backed.
   sk_sp<SkImage> image_;
+
   THREAD_CHECKER(thread_checker_);
 };
 

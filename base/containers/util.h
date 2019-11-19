@@ -5,6 +5,8 @@
 #ifndef BASE_CONTAINERS_UTIL_H_
 #define BASE_CONTAINERS_UTIL_H_
 
+#include <stdint.h>
+
 namespace base {
 
 // TODO(crbug.com/817982): What we really need is for checked_math.h to be

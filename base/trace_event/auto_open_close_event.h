@@ -34,7 +34,7 @@ class AutoOpenCloseEvent : public TraceLog::AsyncEnabledStateObserver {
   // must be pointers to indefinitely lived strings (e.g. hard-coded string
   // literals are okay, but not strings created by c_str())
   AutoOpenCloseEvent(Type type, const char* event_name)
-      : event_name_(event_name), weak_factory_(this) {
+      : event_name_(event_name) {
     base::trace_event::TraceLog::GetInstance()->AddAsyncEnabledStateObserver(
         weak_factory_.GetWeakPtr());
   }
@@ -70,7 +70,7 @@ class AutoOpenCloseEvent : public TraceLog::AsyncEnabledStateObserver {
   const char* const event_name_;
   base::TimeTicks start_time_;
   base::ThreadChecker thread_checker_;
-  WeakPtrFactory<AutoOpenCloseEvent> weak_factory_;
+  WeakPtrFactory<AutoOpenCloseEvent> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(AutoOpenCloseEvent);
 };

@@ -8,7 +8,7 @@
 #include "base/file_descriptor_posix.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/message_loop/message_loop.h"
+#include "base/message_loop/message_pump_type.h"
 #include "base/single_thread_task_runner.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/threading/thread.h"
@@ -82,7 +82,7 @@ void StartUpPlugin() {
                               base::WaitableEvent::InitialState::NOT_SIGNALED);
   g_io_thread = new base::Thread("Chrome_NaClIOThread");
   g_io_thread->StartWithOptions(
-      base::Thread::Options(base::MessageLoop::TYPE_IO, 0));
+      base::Thread::Options(base::MessagePumpType::IO, 0));
 
   if (IsValidChannelHandle(g_manifest_service_handle)) {
     // Manifest service must be created on IOThread so that the main message

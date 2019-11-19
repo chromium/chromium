@@ -73,7 +73,8 @@ bool MoveFileOrDirectory(const base::FilePath& source,
 //!     failure.
 //!
 //! On POSIX, this function returns `true` if \a path refers to a file that is
-//! not a symbolic link, directory, or other kind of special file.
+//! not a symbolic link, directory, or other kind of special file. If this
+//! function fails because \a path does not exist, then no message is logged.
 //!
 //! On Windows, this function returns `true` if \a path refers to a file that
 //! is not a symbolic link or directory.
@@ -84,6 +85,9 @@ bool IsRegularFile(const base::FilePath& path);
 
 //! \brief Determines if a path refers to a directory, logging a message on
 //!     failure.
+//!
+//! On POSIX, if this function fails because \a path does not exist, then no
+//! message is logged.
 //!
 //! \param[in] path The path to check.
 //! \param[in] allow_symlinks Whether to allow the final component in the path

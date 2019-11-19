@@ -113,9 +113,9 @@ void TableSectionPainter::PaintCollapsedBorders(const PaintInfo& paint_info) {
 
 LayoutRect TableSectionPainter::TableAlignedRect(
     const PaintInfo& paint_info,
-    const LayoutPoint& paint_offset) {
-  LayoutRect local_cull_rect = LayoutRect(paint_info.GetCullRect().Rect());
-  local_cull_rect.MoveBy(-paint_offset);
+    const PhysicalOffset& paint_offset) {
+  PhysicalRect local_cull_rect(paint_info.GetCullRect().Rect());
+  local_cull_rect.offset -= paint_offset;
 
   LayoutRect table_aligned_rect =
       layout_table_section_.LogicalRectForWritingModeAndDirection(
@@ -166,7 +166,7 @@ void TableSectionPainter::PaintCollapsedSectionBorders(
 }
 
 void TableSectionPainter::PaintObject(const PaintInfo& paint_info,
-                                      const LayoutPoint& paint_offset) {
+                                      const PhysicalOffset& paint_offset) {
   CellSpan dirtied_rows;
   CellSpan dirtied_columns;
   layout_table_section_.DirtiedRowsAndEffectiveColumns(
@@ -266,7 +266,7 @@ void TableSectionPainter::PaintObject(const PaintInfo& paint_info,
 
 void TableSectionPainter::PaintBoxDecorationBackground(
     const PaintInfo& paint_info,
-    const LayoutPoint& paint_offset,
+    const PhysicalOffset& paint_offset,
     const CellSpan& dirtied_rows,
     const CellSpan& dirtied_columns) {
   bool may_have_background = layout_table_section_.Table()->HasColElements() ||
@@ -290,7 +290,7 @@ void TableSectionPainter::PaintBoxDecorationBackground(
 
   DrawingRecorder recorder(paint_info.context, layout_table_section_,
                            DisplayItem::kBoxDecorationBackground);
-  LayoutRect paint_rect(paint_offset, layout_table_section_.Size());
+  PhysicalRect paint_rect(paint_offset, layout_table_section_.Size());
 
   if (has_box_shadow) {
     BoxPainterBase::PaintNormalBoxShadow(paint_info, paint_rect,

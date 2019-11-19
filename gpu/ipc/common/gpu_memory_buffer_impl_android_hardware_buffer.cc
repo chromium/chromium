@@ -13,6 +13,7 @@
 #include "base/memory/ptr_util.h"
 #include "gpu/ipc/common/gpu_memory_buffer_support.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gl/android/android_surface_control_compat.h"
 
 namespace gpu {
 
@@ -47,6 +48,8 @@ AHardwareBuffer_Desc GetBufferDescription(const gfx::Size& size,
     case gfx::BufferUsage::SCANOUT:
       desc.usage = AHARDWAREBUFFER_USAGE_GPU_SAMPLED_IMAGE |
                    AHARDWAREBUFFER_USAGE_GPU_COLOR_OUTPUT;
+      if (usage == gfx::BufferUsage::SCANOUT)
+        desc.usage |= gl::SurfaceControl::RequiredUsage();
       break;
     default:
       NOTREACHED();

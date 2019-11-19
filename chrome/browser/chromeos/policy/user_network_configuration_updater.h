@@ -43,6 +43,7 @@ class CertificateImporter;
 
 namespace policy {
 
+class PolicyMap;
 class PolicyService;
 
 // Implements additional special handling of ONC user policies. Namely string
@@ -56,13 +57,10 @@ class UserNetworkConfigurationUpdater : public NetworkConfigurationUpdater,
 
   // Creates an updater that applies the ONC user policy from |policy_service|
   // for user |user| once the policy service is completely initialized and on
-  // each policy change. Server and authority certificates that request Web
-  // trust are are only granted Web trust if |allow_trusted_certs_from_policy|
-  // is true. A reference to |user| is stored. It must outlive the returned
-  // updater.
+  // each policy change.  A reference to |user| is stored. It must outlive the
+  // returned updater.
   static std::unique_ptr<UserNetworkConfigurationUpdater> CreateForUserPolicy(
       Profile* profile,
-      bool allow_trusted_certs_from_policy,
       const user_manager::User& user,
       PolicyService* policy_service,
       chromeos::ManagedNetworkConfigurationHandler* network_config_handler);
@@ -73,12 +71,17 @@ class UserNetworkConfigurationUpdater : public NetworkConfigurationUpdater,
   void SetClientCertificateImporterForTest(
       std::unique_ptr<chromeos::onc::CertificateImporter> certificate_importer);
 
+  // Determines if |policy_map| contains a OpenNetworkConfiguration policy that
+  // mandates that at least one additional certificate should be used and
+  // assignd 'Web' trust.
+  static bool PolicyHasWebTrustedAuthorityCertificate(
+      const PolicyMap& policy_map);
+
  private:
   class CrosTrustAnchorProvider;
 
   UserNetworkConfigurationUpdater(
       Profile* profile,
-      bool allow_trusted_certs_from_policy,
       const user_manager::User& user,
       PolicyService* policy_service,
       chromeos::ManagedNetworkConfigurationHandler* network_config_handler);
@@ -115,7 +118,7 @@ class UserNetworkConfigurationUpdater : public NetworkConfigurationUpdater,
 
   content::NotificationRegistrar registrar_;
 
-  base::WeakPtrFactory<UserNetworkConfigurationUpdater> weak_factory_;
+  base::WeakPtrFactory<UserNetworkConfigurationUpdater> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(UserNetworkConfigurationUpdater);
 };

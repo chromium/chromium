@@ -23,8 +23,8 @@
 #include "extensions/browser/api/file_handlers/mime_util.h"
 #include "extensions/browser/entry_info.h"
 #include "net/base/filename_util.h"
-#include "storage/browser/fileapi/file_system_context.h"
-#include "storage/browser/fileapi/file_system_url.h"
+#include "storage/browser/file_system/file_system_context.h"
+#include "storage/browser/file_system/file_system_url.h"
 
 using content::BrowserThread;
 using storage::FileSystemURL;
@@ -81,10 +81,7 @@ FileManagerPrivateInternalExecuteTaskFunction::Run() {
 
   file_manager::file_tasks::TaskDescriptor task;
   if (!file_manager::file_tasks::ParseTaskID(params->task_id, &task)) {
-    // TODO(crbug.com/514135): Stop relying on the result being set on error.
-    return RespondNow(ErrorWithArguments(
-        Create(extensions::api::file_manager_private::TASK_RESULT_FAILED),
-        kInvalidTask + params->task_id));
+    return RespondNow(Error(kInvalidTask + params->task_id));
   }
 
   if (params->urls.empty()) {
@@ -101,9 +98,7 @@ FileManagerPrivateInternalExecuteTaskFunction::Run() {
     const FileSystemURL url =
         file_system_context->CrackURL(GURL(params->urls[i]));
     if (!chromeos::FileSystemBackend::CanHandleURL(url)) {
-      return RespondNow(ErrorWithArguments(
-          Create(extensions::api::file_manager_private::TASK_RESULT_FAILED),
-          kInvalidFileUrl));
+      return RespondNow(Error(kInvalidFileUrl));
     }
     urls.push_back(url);
   }
@@ -114,19 +109,18 @@ FileManagerPrivateInternalExecuteTaskFunction::Run() {
           &FileManagerPrivateInternalExecuteTaskFunction::OnTaskExecuted,
           this));
   if (!result) {
-    return RespondNow(ErrorWithArguments(
-        Create(extensions::api::file_manager_private::TASK_RESULT_FAILED),
-        "ExecuteFileTask failed"));
+    return RespondNow(Error("ExecuteFileTask failed"));
   }
   return RespondLater();
 }
 
 void FileManagerPrivateInternalExecuteTaskFunction::OnTaskExecuted(
-    extensions::api::file_manager_private::TaskResult result) {
+    extensions::api::file_manager_private::TaskResult result,
+    std::string failure_reason) {
   auto result_list = extensions::api::file_manager_private_internal::
       ExecuteTask::Results::Create(result);
   if (result == extensions::api::file_manager_private::TASK_RESULT_FAILED) {
-    Respond(ErrorWithArguments(std::move(result_list), "Task result failed"));
+    Respond(Error("Task result failed: " + failure_reason));
   } else {
     Respond(ArgumentList(std::move(result_list)));
   }

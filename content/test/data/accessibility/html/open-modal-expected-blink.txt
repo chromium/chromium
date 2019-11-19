@@ -1,0 +1,23 @@
+rootWebArea
+++genericContainer ignored
+++++staticText name='some text'
+++++++inlineTextBox name='some text'
+++++genericContainer ignored
+=== Start Continuation ===
+rootWebArea
+++genericContainer ignored invisible
+++++genericContainer ignored invisible
+++genericContainer
+++dialog
+++++genericContainer name='Dialog Text'
+++++++staticText name='Dialog Text'
+++++++++inlineTextBox name='Dialog Text'
+=== Start Continuation ===
+rootWebArea
+++genericContainer ignored invisible
+++++genericContainer ignored invisible
+++genericContainer
+++dialog
+++++genericContainer name='Done'
+++++++staticText name='Done'
+++++++++inlineTextBox name='Done'

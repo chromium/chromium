@@ -14,7 +14,6 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/api/image_writer_private/error_messages.h"
-#include "services/service_manager/public/cpp/connector.h"
 
 #if defined(OS_CHROMEOS)
 #include "chromeos/dbus/dbus_thread_manager.h"
@@ -92,11 +91,10 @@ SimulateProgressInfo::SimulateProgressInfo(const SimulateProgressInfo&) =
     default;
 
 FakeImageWriterClient::FakeImageWriterClient()
-    : ImageWriterUtilityClient(
-          base::CreateSequencedTaskRunnerWithTraits(
-              {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
-               base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN}),
-          /*connector=*/nullptr) {}
+    : ImageWriterUtilityClient(base::CreateSequencedTaskRunner(
+          {base::ThreadPool(), base::MayBlock(),
+           base::TaskPriority::USER_VISIBLE,
+           base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})) {}
 FakeImageWriterClient::~FakeImageWriterClient() {}
 
 void FakeImageWriterClient::SimulateProgressAndCompletion(
@@ -316,7 +314,7 @@ bool ImageWriterTestUtils::FillFile(const base::FilePath& file,
 }
 
 ImageWriterUnitTestBase::ImageWriterUnitTestBase()
-    : thread_bundle_(content::TestBrowserThreadBundle::REAL_IO_THREAD) {}
+    : task_environment_(content::BrowserTaskEnvironment::IO_MAINLOOP) {}
 ImageWriterUnitTestBase::~ImageWriterUnitTestBase() {
 }
 

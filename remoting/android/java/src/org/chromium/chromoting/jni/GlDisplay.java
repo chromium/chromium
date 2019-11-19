@@ -11,6 +11,7 @@ import android.view.SurfaceHolder;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
+import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chromoting.DesktopView;
 import org.chromium.chromoting.Event;
 import org.chromium.chromoting.InputFeedbackRadiusMapper;
@@ -55,7 +56,8 @@ public class GlDisplay implements SurfaceHolder.Callback, RenderStub {
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
         if (mNativeJniGlDisplay != 0) {
-            nativeOnSurfaceCreated(mNativeJniGlDisplay, holder.getSurface());
+            GlDisplayJni.get().onSurfaceCreated(
+                    mNativeJniGlDisplay, GlDisplay.this, holder.getSurface());
         }
     }
 
@@ -69,7 +71,7 @@ public class GlDisplay implements SurfaceHolder.Callback, RenderStub {
     public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
         mOnClientSizeChanged.raise(new SizeChangedEventParameter(width, height));
         if (mNativeJniGlDisplay != 0) {
-            nativeOnSurfaceChanged(mNativeJniGlDisplay, width, height);
+            GlDisplayJni.get().onSurfaceChanged(mNativeJniGlDisplay, GlDisplay.this, width, height);
         }
     }
 
@@ -79,7 +81,7 @@ public class GlDisplay implements SurfaceHolder.Callback, RenderStub {
     @Override
     public void surfaceDestroyed(SurfaceHolder holder) {
         if (mNativeJniGlDisplay != 0) {
-            nativeOnSurfaceDestroyed(mNativeJniGlDisplay);
+            GlDisplayJni.get().onSurfaceDestroyed(mNativeJniGlDisplay, GlDisplay.this);
         }
     }
 
@@ -98,7 +100,8 @@ public class GlDisplay implements SurfaceHolder.Callback, RenderStub {
         if (mNativeJniGlDisplay != 0) {
             float[] matrixArray = new float[9];
             matrix.getValues(matrixArray);
-            nativeOnPixelTransformationChanged(mNativeJniGlDisplay, matrixArray);
+            GlDisplayJni.get().onPixelTransformationChanged(
+                    mNativeJniGlDisplay, GlDisplay.this, matrixArray);
             mScaleFactor = matrix.mapRadius(1);
         }
     }
@@ -107,7 +110,8 @@ public class GlDisplay implements SurfaceHolder.Callback, RenderStub {
     @Override
     public void moveCursor(PointF position) {
         if (mNativeJniGlDisplay != 0) {
-            nativeOnCursorPixelPositionChanged(mNativeJniGlDisplay, position.x, position.y);
+            GlDisplayJni.get().onCursorPixelPositionChanged(
+                    mNativeJniGlDisplay, GlDisplay.this, position.x, position.y);
         }
     }
 
@@ -117,7 +121,8 @@ public class GlDisplay implements SurfaceHolder.Callback, RenderStub {
     @Override
     public void setCursorVisibility(boolean visible) {
         if (mNativeJniGlDisplay != 0) {
-            nativeOnCursorVisibilityChanged(mNativeJniGlDisplay, visible);
+            GlDisplayJni.get().onCursorVisibilityChanged(
+                    mNativeJniGlDisplay, GlDisplay.this, visible);
         }
     }
 
@@ -135,7 +140,8 @@ public class GlDisplay implements SurfaceHolder.Callback, RenderStub {
         if (diameter <= 0.0f) {
             return;
         }
-        nativeOnCursorInputFeedback(mNativeJniGlDisplay, pos.x, pos.y, diameter);
+        GlDisplayJni.get().onCursorInputFeedback(
+                mNativeJniGlDisplay, GlDisplay.this, pos.x, pos.y, diameter);
     }
 
     @Override
@@ -183,16 +189,19 @@ public class GlDisplay implements SurfaceHolder.Callback, RenderStub {
         return new GlDisplay(nativeDisplayHandler);
     }
 
-    private native void nativeOnSurfaceCreated(long nativeJniGlDisplayHandler, Surface surface);
-    private native void nativeOnSurfaceChanged(long nativeJniGlDisplayHandler,
-                                               int width, int height);
-    private native void nativeOnSurfaceDestroyed(long nativeJniGlDisplayHandler);
-    private native void nativeOnPixelTransformationChanged(long nativeJniGlDisplayHandler,
-                                                           float[] matrix);
-    private native void nativeOnCursorPixelPositionChanged(long nativeJniGlDisplayHandler,
-                                                           float x, float y);
-    private native void nativeOnCursorInputFeedback(long nativeJniGlDisplayHandler,
-                                                    float x, float y, float diameter);
-    private native void nativeOnCursorVisibilityChanged(long nativeJniGlDisplayHandler,
-                                                        boolean visible);
+    @NativeMethods
+    interface Natives {
+        void onSurfaceCreated(long nativeJniGlDisplayHandler, GlDisplay caller, Surface surface);
+        void onSurfaceChanged(
+                long nativeJniGlDisplayHandler, GlDisplay caller, int width, int height);
+        void onSurfaceDestroyed(long nativeJniGlDisplayHandler, GlDisplay caller);
+        void onPixelTransformationChanged(
+                long nativeJniGlDisplayHandler, GlDisplay caller, float[] matrix);
+        void onCursorPixelPositionChanged(
+                long nativeJniGlDisplayHandler, GlDisplay caller, float x, float y);
+        void onCursorInputFeedback(
+                long nativeJniGlDisplayHandler, GlDisplay caller, float x, float y, float diameter);
+        void onCursorVisibilityChanged(
+                long nativeJniGlDisplayHandler, GlDisplay caller, boolean visible);
+    }
 }

@@ -83,8 +83,7 @@ DisplayConfigurationController::DisplayConfigurationController(
     display::DisplayManager* display_manager,
     WindowTreeHostManager* window_tree_host_manager)
     : display_manager_(display_manager),
-      window_tree_host_manager_(window_tree_host_manager),
-      weak_ptr_factory_(this) {
+      window_tree_host_manager_(window_tree_host_manager) {
   window_tree_host_manager_->AddObserver(this);
   if (chromeos::IsRunningAsSystemCompositor())
     limiter_.reset(new DisplayChangeLimiter);

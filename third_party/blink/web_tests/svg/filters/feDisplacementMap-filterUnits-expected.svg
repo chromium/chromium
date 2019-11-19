@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="500" height="300">
+  <rect fill="rgb(50%,50%,50%)" stroke="green" x="20" y="20" width="75" height="75"/>
+  <rect fill="rgb(50%,50%,50%)" stroke="green" x="186" y="20" width="54" height="75"/>
+  <rect fill="rgb(50%,50%,50%)" stroke="green" x="304" y="64" width="56" height="56"/>
+
+  <rect fill="rgb(50%,50%,50%)" stroke="green" x="44" y="164" width="76" height="76"/>
+  <rect fill="rgb(50%,50%,50%)" stroke="green" x="140" y="140" width="75" height="75"/>
+  <rect fill="rgb(50%,50%,50%)" stroke="green" x="287" y="167" width="73" height="73"/>
+</svg>

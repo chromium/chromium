@@ -42,7 +42,7 @@ class ServiceDiscoveryClientMac : public ServiceDiscoverySharedClient {
   // ServiceDiscoveryClient implementation.
   std::unique_ptr<ServiceWatcher> CreateServiceWatcher(
       const std::string& service_type,
-      const ServiceWatcher::UpdatedCallback& callback) override;
+      ServiceWatcher::UpdatedCallback callback) override;
   std::unique_ptr<ServiceResolver> CreateServiceResolver(
       const std::string& service_name,
       ServiceResolver::ResolveCompleteCallback callback) override;
@@ -64,7 +64,7 @@ class ServiceWatcherImplMac : public ServiceWatcher {
    public:
     NetServiceBrowserContainer(
         const std::string& service_type,
-        const ServiceWatcher::UpdatedCallback& callback,
+        ServiceWatcher::UpdatedCallback callback,
         scoped_refptr<base::SingleThreadTaskRunner> service_discovery_runner);
     ~NetServiceBrowserContainer();
 
@@ -98,7 +98,7 @@ class ServiceWatcherImplMac : public ServiceWatcher {
 
   ServiceWatcherImplMac(
       const std::string& service_type,
-      const ServiceWatcher::UpdatedCallback& callback,
+      ServiceWatcher::UpdatedCallback callback,
       scoped_refptr<base::SingleThreadTaskRunner> service_discovery_runner);
 
   ~ServiceWatcherImplMac() override;

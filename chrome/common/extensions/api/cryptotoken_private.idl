@@ -48,8 +48,5 @@ namespace cryptotokenPrivate {
     // require that some attestation be provided.
     static void canAppIdGetAttestation(CanAppIdGetAttestationOptions options,
                                        BooleanCallback callback);
-
-    // Checks whether Cryptotoken can proxy the request through to WebAuthn.
-    static void canProxyToWebAuthn(BooleanCallback callback);
   };
 };

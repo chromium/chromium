@@ -8,9 +8,9 @@
   await TestRunner.showPanel('security');
 
   var ordering = [
-    Protocol.Security.SecurityState.Info, Protocol.Security.SecurityState.Insecure,
-    Protocol.Security.SecurityState.Neutral, Protocol.Security.SecurityState.Secure,
-    Protocol.Security.SecurityState.Unknown
+    Protocol.Security.SecurityState.Info, Protocol.Security.SecurityState.InsecureBroken,
+    Protocol.Security.SecurityState.Insecure, Protocol.Security.SecurityState.Neutral,
+    Protocol.Security.SecurityState.Secure, Protocol.Security.SecurityState.Unknown
   ];
 
   TestRunner.assertEquals(ordering.length, Object.keys(Protocol.Security.SecurityState).length);

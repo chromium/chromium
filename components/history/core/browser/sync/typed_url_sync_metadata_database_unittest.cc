@@ -95,8 +95,8 @@ TEST_F(TypedURLSyncMetadataDatabaseTest, TypedURLGetAllSyncMetadata) {
   EntityMetadataMap metadata_records = metadata_batch.TakeAllMetadata();
 
   EXPECT_EQ(metadata_records.size(), 2u);
-  EXPECT_EQ(metadata_records[storage_key].sequence_number(), 1);
-  EXPECT_EQ(metadata_records[storage_key2].sequence_number(), 2);
+  EXPECT_EQ(metadata_records[storage_key]->sequence_number(), 1);
+  EXPECT_EQ(metadata_records[storage_key2]->sequence_number(), 2);
 
   // Now check that a model type state update replaces the old value
   model_type_state.set_initial_sync_done(false);

@@ -19,8 +19,8 @@ namespace blink {
 class InspectedFrames;
 class LocalFrame;
 
-class CORE_EXPORT InspectorResourceContainer
-    : public GarbageCollectedFinalized<InspectorResourceContainer> {
+class CORE_EXPORT InspectorResourceContainer final
+    : public GarbageCollected<InspectorResourceContainer> {
  public:
   explicit InspectorResourceContainer(InspectedFrames*);
   ~InspectorResourceContainer();

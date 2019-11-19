@@ -54,4 +54,4 @@ DistillerHeuristicsType GetDistillerHeuristicsType() {
   }
   return DistillerHeuristicsType::ADABOOST_MODEL;
 }
-}
+}  // namespace dom_distiller

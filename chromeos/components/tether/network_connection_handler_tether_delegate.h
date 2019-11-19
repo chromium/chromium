@@ -69,7 +69,7 @@ class NetworkConnectionHandlerTetherDelegate
   std::unordered_map<int, Callbacks> request_num_to_callbacks_map_;
 
   base::WeakPtrFactory<NetworkConnectionHandlerTetherDelegate>
-      weak_ptr_factory_;
+      weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(NetworkConnectionHandlerTetherDelegate);
 };

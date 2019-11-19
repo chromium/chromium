@@ -8,7 +8,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_response.h"
-#include "third_party/blink/renderer/platform/wtf/dtoa/utils.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 
@@ -22,16 +21,16 @@ TEST(HTTPParsersTest, ParseCacheControl) {
   EXPECT_TRUE(header.contains_no_cache);
   EXPECT_FALSE(header.contains_no_store);
   EXPECT_FALSE(header.contains_must_revalidate);
-  EXPECT_TRUE(std::isnan(header.max_age));
-  EXPECT_TRUE(std::isnan(header.stale_while_revalidate));
+  EXPECT_EQ(base::nullopt, header.max_age);
+  EXPECT_EQ(base::nullopt, header.stale_while_revalidate);
 
   header = ParseCacheControlDirectives("no-cache no-store", AtomicString());
   EXPECT_TRUE(header.parsed);
   EXPECT_TRUE(header.contains_no_cache);
   EXPECT_FALSE(header.contains_no_store);
   EXPECT_FALSE(header.contains_must_revalidate);
-  EXPECT_TRUE(std::isnan(header.max_age));
-  EXPECT_TRUE(std::isnan(header.stale_while_revalidate));
+  EXPECT_EQ(base::nullopt, header.max_age);
+  EXPECT_EQ(base::nullopt, header.stale_while_revalidate);
 
   header =
       ParseCacheControlDirectives("no-store must-revalidate", AtomicString());
@@ -39,72 +38,72 @@ TEST(HTTPParsersTest, ParseCacheControl) {
   EXPECT_FALSE(header.contains_no_cache);
   EXPECT_TRUE(header.contains_no_store);
   EXPECT_FALSE(header.contains_must_revalidate);
-  EXPECT_TRUE(std::isnan(header.max_age));
-  EXPECT_TRUE(std::isnan(header.stale_while_revalidate));
+  EXPECT_EQ(base::nullopt, header.max_age);
+  EXPECT_EQ(base::nullopt, header.stale_while_revalidate);
 
   header = ParseCacheControlDirectives("max-age=0", AtomicString());
   EXPECT_TRUE(header.parsed);
   EXPECT_FALSE(header.contains_no_cache);
   EXPECT_FALSE(header.contains_no_store);
   EXPECT_FALSE(header.contains_must_revalidate);
-  EXPECT_EQ(0.0, header.max_age);
-  EXPECT_TRUE(std::isnan(header.stale_while_revalidate));
+  EXPECT_EQ(base::TimeDelta(), header.max_age.value());
+  EXPECT_EQ(base::nullopt, header.stale_while_revalidate);
 
   header = ParseCacheControlDirectives("max-age", AtomicString());
   EXPECT_TRUE(header.parsed);
   EXPECT_FALSE(header.contains_no_cache);
   EXPECT_FALSE(header.contains_no_store);
   EXPECT_FALSE(header.contains_must_revalidate);
-  EXPECT_TRUE(std::isnan(header.max_age));
-  EXPECT_TRUE(std::isnan(header.stale_while_revalidate));
+  EXPECT_EQ(base::nullopt, header.max_age);
+  EXPECT_EQ(base::nullopt, header.stale_while_revalidate);
 
   header = ParseCacheControlDirectives("max-age=0 no-cache", AtomicString());
   EXPECT_TRUE(header.parsed);
   EXPECT_FALSE(header.contains_no_cache);
   EXPECT_FALSE(header.contains_no_store);
   EXPECT_FALSE(header.contains_must_revalidate);
-  EXPECT_EQ(0.0, header.max_age);
-  EXPECT_TRUE(std::isnan(header.stale_while_revalidate));
+  EXPECT_EQ(base::TimeDelta(), header.max_age.value());
+  EXPECT_EQ(base::nullopt, header.stale_while_revalidate);
 
   header = ParseCacheControlDirectives("no-cache=foo", AtomicString());
   EXPECT_TRUE(header.parsed);
   EXPECT_FALSE(header.contains_no_cache);
   EXPECT_FALSE(header.contains_no_store);
   EXPECT_FALSE(header.contains_must_revalidate);
-  EXPECT_TRUE(std::isnan(header.max_age));
-  EXPECT_TRUE(std::isnan(header.stale_while_revalidate));
+  EXPECT_EQ(base::nullopt, header.max_age);
+  EXPECT_EQ(base::nullopt, header.stale_while_revalidate);
 
   header = ParseCacheControlDirectives("nonsense", AtomicString());
   EXPECT_TRUE(header.parsed);
   EXPECT_FALSE(header.contains_no_cache);
   EXPECT_FALSE(header.contains_no_store);
   EXPECT_FALSE(header.contains_must_revalidate);
-  EXPECT_TRUE(std::isnan(header.max_age));
-  EXPECT_TRUE(std::isnan(header.stale_while_revalidate));
+  EXPECT_EQ(base::nullopt, header.max_age);
+  EXPECT_EQ(base::nullopt, header.stale_while_revalidate);
 
   header = ParseCacheControlDirectives("\rno-cache\n\t\v\0\b", AtomicString());
   EXPECT_TRUE(header.parsed);
   EXPECT_TRUE(header.contains_no_cache);
   EXPECT_FALSE(header.contains_no_store);
   EXPECT_FALSE(header.contains_must_revalidate);
-  EXPECT_TRUE(std::isnan(header.max_age));
-  EXPECT_TRUE(std::isnan(header.stale_while_revalidate));
+  EXPECT_EQ(base::nullopt, header.max_age);
+  EXPECT_EQ(base::nullopt, header.stale_while_revalidate);
 
   header = ParseCacheControlDirectives("      no-cache       ", AtomicString());
   EXPECT_TRUE(header.parsed);
   EXPECT_TRUE(header.contains_no_cache);
   EXPECT_FALSE(header.contains_no_store);
   EXPECT_FALSE(header.contains_must_revalidate);
-  EXPECT_TRUE(std::isnan(header.max_age));
-  EXPECT_TRUE(std::isnan(header.stale_while_revalidate));
+  EXPECT_EQ(base::nullopt, header.max_age);
+  EXPECT_EQ(base::nullopt, header.stale_while_revalidate);
 
   header = ParseCacheControlDirectives(AtomicString(), "no-cache");
   EXPECT_TRUE(header.parsed);
   EXPECT_TRUE(header.contains_no_cache);
   EXPECT_FALSE(header.contains_no_store);
   EXPECT_FALSE(header.contains_must_revalidate);
-  EXPECT_TRUE(std::isnan(header.max_age));
-  EXPECT_TRUE(std::isnan(header.stale_while_revalidate));
+  EXPECT_EQ(base::nullopt, header.max_age);
+  EXPECT_EQ(base::nullopt, header.stale_while_revalidate);
 
   header = ParseCacheControlDirectives(
       "stale-while-revalidate=2,stale-while-revalidate=3", AtomicString());
@@ -112,8 +111,8 @@ TEST(HTTPParsersTest, ParseCacheControl) {
   EXPECT_FALSE(header.contains_no_cache);
   EXPECT_FALSE(header.contains_no_store);
   EXPECT_FALSE(header.contains_must_revalidate);
-  EXPECT_TRUE(std::isnan(header.max_age));
-  EXPECT_EQ(2.0, header.stale_while_revalidate);
+  EXPECT_EQ(base::nullopt, header.max_age);
+  EXPECT_EQ(2.0, header.stale_while_revalidate.value().InSecondsF());
 }
 
 TEST(HTTPParsersTest, CommaDelimitedHeaderSet) {
@@ -244,7 +243,7 @@ TEST(HTTPParsersTest, ExtractMIMETypeFromMediaTypeInvalidInput) {
 }
 
 TEST(HTTPParsersTest, ParseHTTPRefresh) {
-  double delay;
+  base::TimeDelta delay;
   String url;
   EXPECT_FALSE(ParseHTTPRefresh("", nullptr, delay, url));
   EXPECT_FALSE(ParseHTTPRefresh(" ", nullptr, delay, url));
@@ -253,40 +252,40 @@ TEST(HTTPParsersTest, ParseHTTPRefresh) {
   EXPECT_FALSE(ParseHTTPRefresh("1e1 url=foo", nullptr, delay, url));
 
   EXPECT_TRUE(ParseHTTPRefresh("123 ", nullptr, delay, url));
-  EXPECT_EQ(123.0, delay);
+  EXPECT_EQ(base::TimeDelta::FromSeconds(123), delay);
   EXPECT_TRUE(url.IsEmpty());
 
   EXPECT_TRUE(ParseHTTPRefresh("1 ; url=dest", nullptr, delay, url));
-  EXPECT_EQ(1.0, delay);
+  EXPECT_EQ(base::TimeDelta::FromSeconds(1), delay);
   EXPECT_EQ("dest", url);
   EXPECT_TRUE(
       ParseHTTPRefresh("1 ;\nurl=dest", IsASCIISpace<UChar>, delay, url));
-  EXPECT_EQ(1.0, delay);
+  EXPECT_EQ(base::TimeDelta::FromSeconds(1), delay);
   EXPECT_EQ("dest", url);
   EXPECT_TRUE(ParseHTTPRefresh("1 ;\nurl=dest", nullptr, delay, url));
-  EXPECT_EQ(1.0, delay);
+  EXPECT_EQ(base::TimeDelta::FromSeconds(1), delay);
   EXPECT_EQ("url=dest", url);
 
   EXPECT_TRUE(ParseHTTPRefresh("1 url=dest", nullptr, delay, url));
-  EXPECT_EQ(1.0, delay);
+  EXPECT_EQ(base::TimeDelta::FromSeconds(1), delay);
   EXPECT_EQ("dest", url);
 
   EXPECT_TRUE(
       ParseHTTPRefresh("10\nurl=dest", IsASCIISpace<UChar>, delay, url));
-  EXPECT_EQ(10, delay);
+  EXPECT_EQ(base::TimeDelta::FromSeconds(10), delay);
   EXPECT_EQ("dest", url);
 
   EXPECT_TRUE(
       ParseHTTPRefresh("1.5; url=dest", IsASCIISpace<UChar>, delay, url));
-  EXPECT_EQ(1.5, delay);
+  EXPECT_EQ(base::TimeDelta::FromSecondsD(1.5), delay);
   EXPECT_EQ("dest", url);
   EXPECT_TRUE(
       ParseHTTPRefresh("1.5.9; url=dest", IsASCIISpace<UChar>, delay, url));
-  EXPECT_EQ(1.5, delay);
+  EXPECT_EQ(base::TimeDelta::FromSecondsD(1.5), delay);
   EXPECT_EQ("dest", url);
   EXPECT_TRUE(
       ParseHTTPRefresh("7..; url=dest", IsASCIISpace<UChar>, delay, url));
-  EXPECT_EQ(7, delay);
+  EXPECT_EQ(base::TimeDelta::FromSeconds(7), delay);
   EXPECT_EQ("dest", url);
 }
 
@@ -318,11 +317,17 @@ TEST(HTTPParsersTest, ParseMultipartHeadersResult) {
 
 TEST(HTTPParsersTest, ParseMultipartHeaders) {
   ResourceResponse response;
-  response.AddHTTPHeaderField("foo", "bar");
-  response.AddHTTPHeaderField("range", "piyo");
-  response.AddHTTPHeaderField("content-length", "999");
+  response.AddHttpHeaderField("foo", "bar");
+  response.AddHttpHeaderField("range", "piyo");
+  response.AddHttpHeaderField("content-length", "999");
+  response.AddHttpHeaderField("set-cookie", "a=1");
 
-  const char kData[] = "content-type: image/png\ncontent-length: 10\n\n";
+  const char kData[] =
+      "content-type: image/png\n"
+      "content-length: 10\n"
+      "set-cookie: x=2\n"
+      "set-cookie: y=3\n"
+      "\n";
   wtf_size_t end = 0;
   bool result =
       ParseMultipartHeadersFromBody(kData, strlen(kData), &response, &end);
@@ -333,6 +338,7 @@ TEST(HTTPParsersTest, ParseMultipartHeaders) {
   EXPECT_EQ("10", response.HttpHeaderField("content-length"));
   EXPECT_EQ("bar", response.HttpHeaderField("foo"));
   EXPECT_EQ(AtomicString(), response.HttpHeaderField("range"));
+  EXPECT_EQ("x=2, y=3", response.HttpHeaderField("set-cookie"));
 }
 
 TEST(HTTPParsersTest, ParseMultipartHeadersContentCharset) {
@@ -606,152 +612,6 @@ TEST(HTTPParsersTest, ParseContentTypeOptionsTest) {
   for (const auto& test : cases) {
     SCOPED_TRACE(test.value);
     EXPECT_EQ(test.result, ParseContentTypeOptionsHeader(test.value));
-  }
-}
-
-TEST(HTTPParsersTest, ParseXSSProtectionDirectives) {
-  // clang-format off
-  struct {
-    const char* input;
-    ReflectedXSSDisposition expected_result;
-    const char* expected_failure_reason;
-    unsigned expected_failure_position;
-    const char* expected_report_url;
-    unsigned line;
-  } tests[] = {
-
-#undef SUCC__
-#undef FAIL__
-#define SUCC__(a, b, d, e) { a, b, nullptr, d, e, __LINE__ }
-#define FAIL__(a, c, d) {a, kReflectedXSSInvalid, c, d, nullptr, __LINE__}
-
-      // Empty header.
-      SUCC__("", kReflectedXSSUnset, 0, nullptr),
-      SUCC__("     ", kReflectedXSSUnset, 0, nullptr),
-
-      // First positional parameter tests.
-      SUCC__("0", kAllowReflectedXSS, 0, nullptr),
-      SUCC__("  0  ", kAllowReflectedXSS, 0, nullptr),
-      SUCC__("  0 ;", kAllowReflectedXSS, 0, nullptr),
-      SUCC__("1", kFilterReflectedXSS, 0, nullptr),
-      SUCC__("  1  ", kFilterReflectedXSS, 0, nullptr),
-      SUCC__("  1 ;", kFilterReflectedXSS, 0, nullptr),
-      FAIL__(";", "expected token to be 0 or 1", 0),
-      FAIL__(";;", "expected token to be 0 or 1", 0),
-      FAIL__(";;;", "expected token to be 0 or 1", 0),
-      FAIL__("  ;  ", "expected token to be 0 or 1", 0),
-      FAIL__(" ; ; ", "expected token to be 0 or 1", 0),
-      FAIL__("; ; ;", "expected token to be 0 or 1", 0),
-      FAIL__("2", "expected token to be 0 or 1", 0),
-      FAIL__("  2  ", "expected token to be 0 or 1", 0),
-      FAIL__("-1", "expected token to be 0 or 1", 0),
-      FAIL__(" -1  ", "expected token to be 0 or 1", 0),
-      FAIL__("red", "expected token to be 0 or 1", 0),
-      FAIL__("12345678901234567", "expected token to be 0 or 1", 0),
-      FAIL__("1:", "expected semicolon", 1),
-      FAIL__("1 2", "expected semicolon", 2),
-      FAIL__("1; red", "unrecognized directive", 3),
-
-      // Don't allow quoted strings here.
-      FAIL__("\"", "expected token to be 0 or 1", 0),
-      FAIL__("\"0", "expected token to be 0 or 1", 0),
-      FAIL__("\"0\"", "expected token to be 0 or 1", 0),
-      FAIL__("\" 0 \"", "expected token to be 0 or 1", 0),
-      FAIL__("\" 0\";", "expected token to be 0 or 1", 0),
-      FAIL__("\" 0;\"", "expected token to be 0 or 1", 0),
-      FAIL__("\"1", "expected token to be 0 or 1", 0),
-      FAIL__("\"1\"", "expected token to be 0 or 1", 0),
-      FAIL__("\" 1 \"", "expected token to be 0 or 1", 0),
-      FAIL__("\" 1\";", "expected token to be 0 or 1", 0),
-      FAIL__("\" 1;\"", "expected token to be 0 or 1", 0),
-
-      // No other parameters unless enabled.
-      SUCC__("0; mode=block; report=http://u:p@x.com:n/f.x?q=3&v=%26#tag",
-             kAllowReflectedXSS, 0, nullptr),
-      SUCC__("0; all sorts of nonsense; \"here\"",
-             kAllowReflectedXSS, 0, nullptr),
-
-      // Mode parameter tests.
-      SUCC__("1;mode=block", kBlockReflectedXSS, 0, nullptr),
-      SUCC__("1; mode=block;", kBlockReflectedXSS, 0, nullptr),
-      SUCC__("1; mode=block; ", kBlockReflectedXSS, 0, nullptr),
-      SUCC__("1; mode=block ;", kBlockReflectedXSS, 0, nullptr),
-      SUCC__("1; mode= block;", kBlockReflectedXSS, 0, nullptr),
-      SUCC__("1; mode =block;", kBlockReflectedXSS, 0, nullptr),
-      FAIL__("1; mode", "expected equals sign", 7),
-      FAIL__("1; mode=", "invalid mode directive", 8),
-      FAIL__("1; mode =", "invalid mode directive", 9),
-      FAIL__("1; mode=purple", "invalid mode directive", 8),
-      FAIL__("1; mode=block-a-block-block", "invalid mode directive", 8),
-      FAIL__("1; mode=block=a-block-block", "expected semicolon", 13),
-      FAIL__("1; mode=block; mode=block", "duplicate mode directive", 15),
-      FAIL__("1; mode=block; report=foo; mode=block;",
-             "duplicate mode directive", 27),
-
-      // Quoted strings allowed here.
-      SUCC__("1; mode=\"block\"", kBlockReflectedXSS, 0, nullptr),
-      SUCC__("1; mode=\"block\";", kBlockReflectedXSS, 0, nullptr),
-      FAIL__("1; mode=\"block;\"", "invalid mode directive", 8),
-      FAIL__("1; mode=\"red\"", "invalid mode directive", 8),
-
-      // Report url parameter tests.
-      SUCC__("1;report=http://u:p@x.com:n/f.x?q=3&v=%26#tag",
-             kFilterReflectedXSS, 9, "http://u:p@x.com:n/f.x?q=3&v=%26#tag"),
-      SUCC__("1; report=http://u:p@x.com:n/f.x?q=3&v=%26#tag",
-             kFilterReflectedXSS, 10, "http://u:p@x.com:n/f.x?q=3&v=%26#tag"),
-      SUCC__("1; report=http://u:p@x.com:n/f.x?q=3&v=%26#tag ",
-             kFilterReflectedXSS, 10, "http://u:p@x.com:n/f.x?q=3&v=%26#tag"),
-      SUCC__("1; report= http://u:p@x.com:n/f.x?q=3&v=%26#tag",
-             kFilterReflectedXSS, 11, "http://u:p@x.com:n/f.x?q=3&v=%26#tag"),
-      SUCC__("1; report =http://u:p@x.com:n/f.x?q=3&v=%26#tag",
-             kFilterReflectedXSS, 11, "http://u:p@x.com:n/f.x?q=3&v=%26#tag"),
-      SUCC__("1; report=http://u:p@x.com:n/f.x?q=3&v=%26#tag;",
-             kFilterReflectedXSS, 10, "http://u:p@x.com:n/f.x?q=3&v=%26#tag"),
-      SUCC__("1; mode=block; report=http://u:p@x.com:n/f.x?q=3&v=%26#tag",
-             kBlockReflectedXSS, 22, "http://u:p@x.com:n/f.x?q=3&v=%26#tag"),
-      SUCC__("1; report=http://u:p@x.com:n/f.x?q=3&v=%26#tag; mode=block",
-             kBlockReflectedXSS, 10, "http://u:p@x.com:n/f.x?q=3&v=%26#tag"),
-      FAIL__("1; report", "expected equals sign", 9),
-      FAIL__("1; report=", "invalid report directive", 10),
-      FAIL__("1; report= ;", "invalid report directive", 11),
-      FAIL__("1; report=http://foo.com; mode=block; report=http://foo.com;",
-             "duplicate report directive", 38),
-      FAIL__("1; report=http://foo.com;SEQUID=7", "unrecognized directive", 25),
-      FAIL__("1; mode=block; report=http://foo.com;SEQUID=7",
-             "unrecognized directive", 37),
-
-      // Quoted strings allowed per https://crbug.com/825557
-      SUCC__("1; report=\"http://foo.com\"", kFilterReflectedXSS, 10,
-             "http://foo.com"),
-      SUCC__("1; report=\"http://foo.com;SEQUID=7\"", kFilterReflectedXSS, 10,
-             "http://foo.com;SEQUID=7"),
-      FAIL__("1; report=\"", "invalid report directive", 10),
-      FAIL__("1; report=\"http://foo.com", "invalid report directive", 10),
-      FAIL__("1; report=\"http://foo.com\";SEQUID=7",
-             "unrecognized directive", 27),
-
-#undef SUCC__
-#undef FAIL__
-  };
-  // clang-format on
-
-  for (const auto& test : tests) {
-    String report_url;
-    String failure_reason;
-    unsigned failure_position = 0;
-    ReflectedXSSDisposition result = ParseXSSProtectionHeader(
-        test.input, failure_reason, failure_position, report_url);
-    EXPECT_EQ(test.expected_result, result)
-        << "for testcase at line " << test.line;
-    if (result == kReflectedXSSInvalid) {
-      EXPECT_EQ(test.expected_failure_reason, failure_reason)
-          << "for testcase at line " << test.line;
-    } else {
-      EXPECT_EQ(test.expected_report_url, report_url)
-          << "for testcase at line " << test.line;
-    }
-    EXPECT_EQ(test.expected_failure_position, failure_position)
-        << "for testcase at line " << test.line;
   }
 }
 

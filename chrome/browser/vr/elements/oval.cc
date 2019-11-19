@@ -18,7 +18,7 @@ void Oval::NotifyClientSizeAnimated(const gfx::SizeF& size,
                                     cc::KeyframeModel* keyframe_model) {
   Rect::NotifyClientSizeAnimated(size, target_property_id, keyframe_model);
   if (target_property_id == BOUNDS)
-    set_corner_radius(0.5f * std::min(size.height(), size.width()));
+    SetCornerRadius(0.5f * std::min(size.height(), size.width()));
 }
 
 }  // namespace vr

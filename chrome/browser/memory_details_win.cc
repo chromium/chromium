@@ -101,7 +101,7 @@ void MemoryDetails::CollectProcessData(
   } while (::Process32Next(snapshot.Get(), &process_entry));
 
   // Finally return to the browser thread.
-  base::PostTaskWithTraits(
+  base::PostTask(
       FROM_HERE, {BrowserThread::UI},
       base::BindOnce(&MemoryDetails::CollectChildInfoOnUIThread, this));
 }

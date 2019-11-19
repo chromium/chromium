@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/weak_ptr.h"
 #include "base/strings/string_piece.h"
 #include "content/common/content_export.h"
 #include "device/fido/fido_device_discovery.h"
@@ -19,18 +20,15 @@ class FidoDevice;
 
 namespace content {
 
-class ScopedVirtualAuthenticatorEnvironment;
-
 // A fully automated FidoDeviceDiscovery implementation, which is disconnected
 // from the real world, and discovers VirtualFidoDevice instances.
 class CONTENT_EXPORT VirtualFidoDiscovery
-    : public ::device::FidoDeviceDiscovery {
+    : public ::device::FidoDeviceDiscovery,
+      public base::SupportsWeakPtr<VirtualFidoDiscovery> {
  public:
-  // The |environment| must outlive this instance.
-  VirtualFidoDiscovery(ScopedVirtualAuthenticatorEnvironment* environment,
-                       ::device::FidoTransportProtocol transport);
+  explicit VirtualFidoDiscovery(::device::FidoTransportProtocol transport);
 
-  // Notifies the |environment| of this instance being destroyed.
+  // Notifies the AuthenticatorEnvironment of this instance being destroyed.
   ~VirtualFidoDiscovery() override;
 
   void AddVirtualDevice(std::unique_ptr<::device::FidoDevice> device);
@@ -41,8 +39,6 @@ class CONTENT_EXPORT VirtualFidoDiscovery
   void StartInternal() override;
 
  private:
-  ScopedVirtualAuthenticatorEnvironment* environment_ = nullptr;
-
   std::vector<std::unique_ptr<::device::FidoDevice>>
       devices_pending_discovery_start_;
 

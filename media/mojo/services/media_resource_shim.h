@@ -12,6 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "media/base/media_resource.h"
 #include "media/mojo/services/mojo_demuxer_stream_adapter.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 
 namespace media {
 
@@ -21,8 +22,9 @@ class MediaResourceShim : public MediaResource {
   // Constructs the shim; at least a single audio or video stream must be
   // provided.  |demuxer_ready_cb| will be called once the streams have been
   // initialized.  Calling any method before then is an error.
-  MediaResourceShim(std::vector<mojom::DemuxerStreamPtrInfo> streams,
-                    const base::Closure& demuxer_ready_cb);
+  MediaResourceShim(
+      std::vector<mojo::PendingRemote<mojom::DemuxerStream>> streams,
+      const base::Closure& demuxer_ready_cb);
   ~MediaResourceShim() override;
 
   // MediaResource interface.
@@ -45,7 +47,7 @@ class MediaResourceShim : public MediaResource {
   size_t streams_ready_;
 
   // WeakPtrFactorys must always be the last member variable.
-  base::WeakPtrFactory<MediaResourceShim> weak_factory_;
+  base::WeakPtrFactory<MediaResourceShim> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(MediaResourceShim);
 };

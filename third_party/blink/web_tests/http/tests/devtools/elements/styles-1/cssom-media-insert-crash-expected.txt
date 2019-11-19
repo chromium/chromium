@@ -4,12 +4,12 @@ Tests that the inspected page does not crash after inspecting element with CSSOM
 element.style { ()
 
 [expanded] 
-#box { (<style>…</style>)
+#box { (<style>)
     color: white;
     background: red;
 
 [expanded] 
-div { (<style>…</style>)
+div { (<style>)
     border: 1px solid black;
 /-- overloaded --/     background-color: white;
     padding: 20px;

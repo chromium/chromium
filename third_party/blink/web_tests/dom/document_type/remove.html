@@ -1,14 +1,13 @@
 <!DOCTYPE html>
-<script src="../../resources/js-test.js"></script>
+<title>This tests the DOM 4 remove method on a DocumentType node</title>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
 <script>
-
-description('This tests the DOM 4 remove method on a DocumentType node.');
-
 var doctype = document.doctype;
-shouldBe('document.childNodes.length', '2');
+assert_equals(document.childNodes.length, 2);
 doctype.remove();
-shouldBe('document.childNodes.length', '1');
+assert_equals(document.childNodes.length, 1);
 doctype.remove();
-shouldBe('document.childNodes.length', '1');
-
+assert_equals(document.childNodes.length, 1);
+done();
 </script>

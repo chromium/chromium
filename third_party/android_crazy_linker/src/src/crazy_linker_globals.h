@@ -62,11 +62,6 @@ class Globals {
   // Return current minimum JNI version number.
   int minimum_jni_version() const { return min_jni_version_; }
 
-  // Android API level for the current device (if known).
-  // This is static because it must be set before the first call to Get().
-  // See LibraryList() constructor comment for details.
-  static int sdk_build_version;
-
   // Convenience function to get the global RDebug instance.
   static RDebug* GetRDebug() { return Get()->rdebug(); }
 

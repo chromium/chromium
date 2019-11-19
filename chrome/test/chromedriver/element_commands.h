@@ -52,13 +52,6 @@ Status ExecuteFindChildElements(int interval_ms,
                                 const base::DictionaryValue& params,
                                 std::unique_ptr<base::Value>* value);
 
-// Move the mouse to the given element.
-Status ExecuteHoverOverElement(Session* session,
-                               WebView* web_view,
-                               const std::string& element_id,
-                               const base::DictionaryValue& params,
-                               std::unique_ptr<base::Value>* value);
-
 // Click on the element.
 Status ExecuteClickElement(Session* session,
                            WebView* web_view,

@@ -5,8 +5,8 @@
 #include "chrome/browser/chromeos/android_sms/pairing_lost_notifier.h"
 
 #include "ash/public/cpp/notification_utils.h"
-#include "ash/public/cpp/vector_icons/vector_icons.h"
 #include "base/bind.h"
+#include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
 #include "chrome/grit/generated_resources.h"
@@ -45,8 +45,7 @@ PairingLostNotifier::PairingLostNotifier(
     : profile_(profile),
       multidevice_setup_client_(multidevice_setup_client),
       pref_service_(pref_service),
-      android_sms_app_helper_delegate_(android_sms_app_helper_delegate),
-      weak_ptr_factory_(this) {
+      android_sms_app_helper_delegate_(android_sms_app_helper_delegate) {
   multidevice_setup_client_->AddObserver(this);
   HandleMessagesFeatureState();
 }
@@ -124,8 +123,9 @@ void PairingLostNotifier::ShowPairingLostNotification() {
               base::BindRepeating(
                   &PairingLostNotifier::OnPairingLostNotificationClick,
                   weak_ptr_factory_.GetWeakPtr())),
-          ash::kNotificationMessagesIcon,
-          message_center::SystemNotificationWarningLevel::NORMAL));
+          kNotificationMessagesIcon,
+          message_center::SystemNotificationWarningLevel::NORMAL),
+      /*metadata=*/nullptr);
 }
 
 void PairingLostNotifier::ClosePairingLostNotificationIfVisible() {

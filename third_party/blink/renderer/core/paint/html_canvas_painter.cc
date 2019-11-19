@@ -30,23 +30,25 @@ InterpolationQuality InterpolationQualityForCanvas(const ComputedStyle& style) {
 }  // namespace
 
 void HTMLCanvasPainter::PaintReplaced(const PaintInfo& paint_info,
-                                      const LayoutPoint& paint_offset) {
+                                      const PhysicalOffset& paint_offset) {
   GraphicsContext& context = paint_info.context;
 
-  LayoutRect paint_rect = layout_html_canvas_.ReplacedContentRect();
-  paint_rect.MoveBy(paint_offset);
+  PhysicalRect paint_rect = layout_html_canvas_.ReplacedContentRect();
+  paint_rect.Move(paint_offset);
 
-  HTMLCanvasElement* canvas =
-      ToHTMLCanvasElement(layout_html_canvas_.GetNode());
+  auto* canvas = To<HTMLCanvasElement>(layout_html_canvas_.GetNode());
+  if (canvas->IsOffscreenCanvasRegistered())
+    canvas->UpdateOffscreenCanvasFilterQuality(canvas->FilterQuality());
 
   if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
     if (auto* layer = canvas->ContentsCcLayer()) {
       IntRect pixel_snapped_rect = PixelSnappedIntRect(paint_rect);
-      layer->SetOffsetToTransformParent(
-          gfx::Vector2dF(pixel_snapped_rect.X(), pixel_snapped_rect.Y()));
       layer->SetBounds(gfx::Size(pixel_snapped_rect.Size()));
       layer->SetIsDrawable(true);
-      RecordForeignLayer(context, DisplayItem::kForeignLayerCanvas, layer);
+      layer->SetHitTestable(true);
+      RecordForeignLayer(context, layout_html_canvas_,
+                         DisplayItem::kForeignLayerCanvas, layer,
+                         FloatPoint(pixel_snapped_rect.Location()));
       return;
     }
   }
@@ -58,7 +60,9 @@ void HTMLCanvasPainter::PaintReplaced(const PaintInfo& paint_info,
   DrawingRecorder recorder(context, layout_html_canvas_, paint_info.phase);
   ScopedInterpolationQuality interpolation_quality_scope(
       context, InterpolationQualityForCanvas(layout_html_canvas_.StyleRef()));
-  canvas->Paint(context, paint_rect);
+  canvas->Paint(
+      context, paint_rect,
+      paint_info.GetGlobalPaintFlags() == kGlobalPaintFlattenCompositingLayers);
 }
 
 }  // namespace blink

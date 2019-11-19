@@ -44,7 +44,8 @@ class ActiveRequestWeakHolder : public base::SupportsUserData::Data {
 // static
 std::unique_ptr<ChromeAuthenticatorRequestDelegate>
 AuthenticatorRequestScheduler::CreateRequestDelegate(
-    content::RenderFrameHost* render_frame_host) {
+    content::RenderFrameHost* render_frame_host,
+    const std::string& relying_party_id) {
   auto* const web_contents =
       content::WebContents::FromRenderFrameHost(render_frame_host);
   auto* const active_request_holder =
@@ -53,8 +54,17 @@ AuthenticatorRequestScheduler::CreateRequestDelegate(
   if (active_request_holder->request())
     return nullptr;
 
-  auto request =
-      std::make_unique<ChromeAuthenticatorRequestDelegate>(render_frame_host);
+  auto request = std::make_unique<ChromeAuthenticatorRequestDelegate>(
+      render_frame_host, relying_party_id);
   active_request_holder->request() = request->AsWeakPtr();
   return request;
+}
+
+// static
+ChromeAuthenticatorRequestDelegate*
+AuthenticatorRequestScheduler::GetRequestDelegateForTest(
+    content::WebContents* web_contents) {
+  return ActiveRequestWeakHolder::EnsureForWebContents(web_contents)
+      ->request()
+      .get();
 }

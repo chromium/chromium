@@ -28,17 +28,16 @@ OfflinePageTestArchiver::OfflinePageTestArchiver(
       create_archive_params_(std::string()),
       result_(result),
       size_to_report_(size_to_report),
+      expect_create_archive_called_(false),
       create_archive_called_(false),
-      publish_archive_called_(false),
-      archive_attempt_failure_(false),
       delayed_(false),
       result_title_(result_title),
       digest_to_report_(digest_to_report),
       task_runner_(task_runner) {}
 
 OfflinePageTestArchiver::~OfflinePageTestArchiver() {
-  EXPECT_TRUE(create_archive_called_ || publish_archive_called_ ||
-              archive_attempt_failure_);
+  if (expect_create_archive_called_)
+    EXPECT_TRUE(create_archive_called_);
 }
 
 void OfflinePageTestArchiver::CreateArchive(
@@ -54,44 +53,23 @@ void OfflinePageTestArchiver::CreateArchive(
     CompleteCreateArchive();
 }
 
-void OfflinePageTestArchiver::PublishArchive(
-    const OfflinePageItem& offline_page,
-    const scoped_refptr<base::SequencedTaskRunner>& background_task_runner,
-    const base::FilePath& new_file_path,
-    SystemDownloadManager* download_manager,
-    PublishArchiveDoneCallback publish_done_callback) {
-  publish_archive_called_ = true;
-  PublishArchiveResult publish_archive_result;
-
-  if (archive_attempt_failure_) {
-    publish_archive_result.move_result = SavePageResult::FILE_MOVE_FAILED;
-  } else {
-    publish_archive_result.move_result = SavePageResult::SUCCESS;
-    publish_archive_result.new_file_path =
-        new_file_path.Append(offline_page.file_path.BaseName());
-    publish_archive_result.download_id = 0;
-  }
-
-  // Note: once the |publish_done_callback| is invoked it is very likely that
-  // this instance will be destroyed. So all parameters sent to it must not be
-  // bound to the lifetime on this.
-  background_task_runner->PostTask(
-      FROM_HERE, base::BindOnce(std::move(publish_done_callback), offline_page,
-                                std::move(publish_archive_result)));
-}
-
 void OfflinePageTestArchiver::CompleteCreateArchive() {
   DCHECK(!callback_.is_null());
   base::FilePath archive_path;
+
   if (filename_.empty()) {
     ASSERT_TRUE(base::CreateTemporaryFileInDir(archives_dir_, &archive_path));
+  } else if (filename_.IsAbsolute()) {
+    archive_path = filename_;
   } else {
     archive_path = archives_dir_.Append(filename_);
     // This step ensures the file is created and closed immediately.
     base::File file(archive_path, base::File::FLAG_OPEN_ALWAYS);
   }
+
   if (observer_)
     observer_->SetLastPathCreatedByArchiver(archive_path);
+
   task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback_), result_, url_, archive_path,

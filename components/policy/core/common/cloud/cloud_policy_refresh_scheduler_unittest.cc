@@ -12,7 +12,7 @@
 #include "base/compiler_specific.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/test/test_simple_task_runner.h"
 #include "build/build_config.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
@@ -168,7 +168,7 @@ class CloudPolicyRefreshSchedulerTest : public testing::Test {
     last_update_ticks_ = base::TimeTicks::Now();
   }
 
-  base::test::ScopedTaskEnvironment task_environment_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
   MockCloudPolicyClient client_;
   MockCloudPolicyStore store_;
   std::unique_ptr<MockCloudPolicyService> service_;

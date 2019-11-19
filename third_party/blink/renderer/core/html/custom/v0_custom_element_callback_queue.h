@@ -44,8 +44,6 @@ namespace blink {
 class V0CustomElementCallbackQueue
     : public GarbageCollected<V0CustomElementCallbackQueue> {
  public:
-  static V0CustomElementCallbackQueue* Create(Element*);
-
   explicit V0CustomElementCallbackQueue(Element*);
 
   typedef int ElementQueueId;

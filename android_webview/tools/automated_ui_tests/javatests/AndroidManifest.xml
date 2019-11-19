@@ -8,8 +8,6 @@
       xmlns:android="http://schemas.android.com/apk/res/android"
       package="org.chromium.webview_ui_test.test">
 
-    <uses-sdk android:minSdkVersion="19" android:targetSdkVersion="23" />
-
     <uses-permission android:name="android.permission.RUN_INSTRUMENTATION" />
 
     <!-- We add an application tag here just so that we can indicate that this
@@ -19,7 +17,7 @@
         <uses-library android:name="android.test.runner" />
     </application>
 
-    <instrumentation android:name="android.support.test.runner.AndroidJUnitRunner"
+    <instrumentation android:name="org.chromium.base.test.BaseChromiumAndroidJUnitRunner"
         android:targetPackage="org.chromium.webview_ui_test"
         android:label="Tests for org.chromium.webview_ui_test"/>
 </manifest>

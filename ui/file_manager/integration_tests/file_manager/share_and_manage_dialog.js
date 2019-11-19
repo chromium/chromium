@@ -15,13 +15,13 @@ async function shareWithOthersExpectBrowserURL(
     path, url, teamDrive = undefined) {
   // Open Files app on Drive.
   const appId = await setupAndWaitUntilReady(
-      RootPath.DRIVE, [], BASIC_DRIVE_ENTRY_SET.concat(TEAM_DRIVE_ENTRY_SET));
+      RootPath.DRIVE, [], BASIC_DRIVE_ENTRY_SET.concat(SHARED_DRIVE_ENTRY_SET));
 
   // Navigate to the specified team drive if one is specified.
   if (teamDrive !== undefined) {
     await remoteCall.navigateWithDirectoryTree(
         appId, teamDrive === '' ? '/team_drives' : `/team_drives/${teamDrive}`,
-        'Team Drives', 'drive');
+        'Shared drives', 'drive');
 
     // Wait for the file list to update.
     await remoteCall.waitForFileListChange(appId, BASIC_DRIVE_ENTRY_SET.length);
@@ -76,13 +76,13 @@ async function manageWithDriveExpectBrowserURL(
     path, url, teamDrive = undefined) {
   // Open Files app on Drive.
   const appId = await setupAndWaitUntilReady(
-      RootPath.DRIVE, [], BASIC_DRIVE_ENTRY_SET.concat(TEAM_DRIVE_ENTRY_SET));
+      RootPath.DRIVE, [], BASIC_DRIVE_ENTRY_SET.concat(SHARED_DRIVE_ENTRY_SET));
 
   // Navigate to the specified team drive if one is specified.
   if (teamDrive !== undefined) {
     await remoteCall.navigateWithDirectoryTree(
         appId, teamDrive === '' ? '/team_drives' : `/team_drives/${teamDrive}`,
-        'Team Drives', 'drive');
+        'Shared drives', 'drive');
 
     // Wait for the file list to update.
     await remoteCall.waitForFileListChange(appId, BASIC_DRIVE_ENTRY_SET.length);
@@ -107,16 +107,9 @@ async function manageWithDriveExpectBrowserURL(
   chrome.test.assertTrue(!!await remoteCall.waitForElement(
       appId, '#file-context-menu:not([hidden])'));
 
-  // Wait for the "Manage in Drive" menu item to appear.
-  chrome.test.assertTrue(!!await remoteCall.waitForElement(
-      appId, '[command="#manage-in-drive"]:not([hidden]):not([disabled])'));
-
   // Click the "Manage in Drive" menu item.
-  chrome.test.assertTrue(
-      !!await remoteCall.callRemoteTestUtil(
-          'fakeMouseClick', appId,
-          ['[command="#manage-in-drive"]:not([hidden]):not([disabled])']),
-      'fakeMouseClick failed');
+  await remoteCall.waitAndClickElement(
+      appId, '[command="#manage-in-drive"]:not([hidden]):not([disabled])');
 
   // Wait for the context menu to disappear.
   chrome.test.assertTrue(
@@ -195,11 +188,11 @@ testcase.shareDirectoryTeamDrive = async () => {
 
   // Open Files app on Drive.
   const appId = await setupAndWaitUntilReady(
-      RootPath.DRIVE, [], BASIC_DRIVE_ENTRY_SET.concat(TEAM_DRIVE_ENTRY_SET));
+      RootPath.DRIVE, [], BASIC_DRIVE_ENTRY_SET.concat(SHARED_DRIVE_ENTRY_SET));
 
   // Navigate to the team drive.
   await remoteCall.navigateWithDirectoryTree(
-      appId, `/team_drives/${teamDrive}`, 'Team Drives', 'drive');
+      appId, `/team_drives/${teamDrive}`, 'Shared drives', 'drive');
 
   // Wait for the file list to update.
   await remoteCall.waitForFileListChange(appId, BASIC_DRIVE_ENTRY_SET.length);

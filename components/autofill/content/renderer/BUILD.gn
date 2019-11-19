@@ -32,8 +32,6 @@ jumbo_static_library("renderer") {
     "password_generation_agent.h",
     "prefilled_values_detector.cc",
     "prefilled_values_detector.h",
-    "provisionally_saved_password_form.cc",
-    "provisionally_saved_password_form.h",
     "renderer_save_password_progress_logger.cc",
     "renderer_save_password_progress_logger.h",
   ]
@@ -41,16 +39,9 @@ jumbo_static_library("renderer") {
   deps = [
     "//base",
     "//base:i18n",
-    "//components/autofill/content/common:mojo_interfaces",
+    "//components/autofill/content/common/mojom",
     "//components/autofill/core/common",
-
-    # TODO(melandory): remove once manual fallbacks are launched
-    # https://crbug.com/739343
-    "//components/password_manager/core/common:common",
-
-    # TODO(elawrence): remove security_state/core when the Form-Not-Secure
-    # feature is fully launched. https://crbug.com/677295
-    "//components/security_state/core",
+    "//components/safe_browsing:buildflags",
     "//components/strings",
     "//content/public/common",
     "//content/public/renderer",
@@ -74,8 +65,6 @@ jumbo_static_library("test_support") {
   sources = [
     "test_password_autofill_agent.cc",
     "test_password_autofill_agent.h",
-    "test_password_generation_agent.cc",
-    "test_password_generation_agent.h",
   ]
 
   public_deps = [
@@ -101,7 +90,7 @@ source_set("unit_tests") {
   deps = [
     ":test_support",
     "//base/test:test_support",
-    "//components/autofill/content/common:mojo_interfaces",
+    "//components/autofill/content/common/mojom",
     "//components/autofill/core/common",
     "//testing/gtest",
   ]

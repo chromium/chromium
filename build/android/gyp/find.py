@@ -7,6 +7,8 @@
 """Finds files in directories.
 """
 
+from __future__ import print_function
+
 import fnmatch
 import optparse
 import os
@@ -20,11 +22,12 @@ def main(argv):
 
   for d in directories:
     if not os.path.exists(d):
-      print >> sys.stderr, '%s does not exist' % d
+      print('%s does not exist' % d, file=sys.stderr)
       return 1
     for root, _, filenames in os.walk(d):
       for f in fnmatch.filter(filenames, options.pattern):
-        print os.path.join(root, f)
+        print(os.path.join(root, f))
+
 
 if __name__ == '__main__':
   sys.exit(main(sys.argv[1:]))

@@ -27,7 +27,8 @@ class CONTROLLER_EXPORT MemoryUsageMonitorAndroid : public MemoryUsageMonitor {
                                               int status_fd,
                                               uint64_t* private_footprint,
                                               uint64_t* swap_footprint,
-                                              uint64_t* vm_size);
+                                              uint64_t* vm_size,
+                                              uint64_t* vm_hwm_size);
 
   bool file_descriptors_reset_ = false;
   // The file descriptor to current process proc files. The files are kept open

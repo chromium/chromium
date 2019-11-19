@@ -19,11 +19,7 @@ namespace media {
 enum { kBufferSize = 32 * 1024 };
 
 static int AVIOReadOperation(void* opaque, uint8_t* buf, int buf_size) {
-  FFmpegURLProtocol* protocol = reinterpret_cast<FFmpegURLProtocol*>(opaque);
-  int result = protocol->Read(buf_size, buf);
-  if (result < 0)
-    result = AVERROR(EIO);
-  return result;
+  return reinterpret_cast<FFmpegURLProtocol*>(opaque)->Read(buf_size, buf);
 }
 
 static int64_t AVIOSeekOperation(void* opaque, int64_t offset, int whence) {
@@ -58,8 +54,6 @@ static int64_t AVIOSeekOperation(void* opaque, int64_t offset, int whence) {
     default:
       NOTREACHED();
   }
-  if (new_offset < 0)
-    new_offset = AVERROR(EIO);
   return new_offset;
 }
 

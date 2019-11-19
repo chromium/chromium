@@ -36,26 +36,28 @@ Modulator* Modulator::From(ScriptState* script_state) {
     return modulator;
   ExecutionContext* execution_context = ExecutionContext::From(script_state);
   if (auto* document = DynamicTo<Document>(execution_context)) {
-    modulator = DocumentModulatorImpl::Create(script_state);
+    modulator = MakeGarbageCollected<DocumentModulatorImpl>(script_state);
     Modulator::SetModulator(script_state, modulator);
 
     // See comment in LocalDOMWindow::modulator_ for this workaround.
     LocalDOMWindow* window = document->ExecutingWindow();
     window->SetModulator(modulator);
-  } else if (auto* scope = DynamicTo<WorkletGlobalScope>(execution_context)) {
-    modulator = WorkletModulatorImpl::Create(script_state);
+  } else if (auto* worklet_scope =
+                 DynamicTo<WorkletGlobalScope>(execution_context)) {
+    modulator = MakeGarbageCollected<WorkletModulatorImpl>(script_state);
     Modulator::SetModulator(script_state, modulator);
 
     // See comment in WorkerOrWorkletGlobalScope::modulator_ for this
     // workaround.
-    scope->SetModulator(modulator);
-  } else if (auto* scope = DynamicTo<WorkerGlobalScope>(execution_context)) {
-    modulator = WorkerModulatorImpl::Create(script_state);
+    worklet_scope->SetModulator(modulator);
+  } else if (auto* worker_scope =
+                 DynamicTo<WorkerGlobalScope>(execution_context)) {
+    modulator = MakeGarbageCollected<WorkerModulatorImpl>(script_state);
     Modulator::SetModulator(script_state, modulator);
 
     // See comment in WorkerOrWorkletGlobalScope::modulator_ for this
     // workaround.
-    scope->SetModulator(modulator);
+    worker_scope->SetModulator(modulator);
   } else {
     NOTREACHED();
   }

@@ -16,7 +16,7 @@
 #include "device/bluetooth/bluetooth_export.h"
 #include "device/bluetooth/bluetooth_gatt_characteristic.h"
 #include "device/bluetooth/bluetooth_gatt_service.h"
-#include "device/bluetooth/bluetooth_uuid.h"
+#include "device/bluetooth/public/cpp/bluetooth_uuid.h"
 
 namespace device {
 
@@ -45,8 +45,8 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothLocalGattService
   class Delegate {
    public:
     // Callbacks used for communicating GATT request responses.
-    typedef base::Callback<void(const std::vector<uint8_t>&)> ValueCallback;
-    typedef base::Closure ErrorCallback;
+    using ValueCallback = base::OnceCallback<void(const std::vector<uint8_t>&)>;
+    using ErrorCallback = base::OnceClosure;
 
     // Called when a remote device |device| requests to read the value of the
     // characteristic |characteristic| starting at offset |offset|.
@@ -65,8 +65,8 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothLocalGattService
         const BluetoothDevice* device,
         const BluetoothLocalGattCharacteristic* characteristic,
         int offset,
-        const ValueCallback& callback,
-        const ErrorCallback& error_callback) = 0;
+        ValueCallback callback,
+        ErrorCallback error_callback) = 0;
 
     // Called when a remote device |device| requests to write the value of the
     // characteristic |characteristic| starting at offset |offset|.
@@ -84,8 +84,8 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothLocalGattService
         const BluetoothLocalGattCharacteristic* characteristic,
         const std::vector<uint8_t>& value,
         int offset,
-        const base::Closure& callback,
-        const ErrorCallback& error_callback) = 0;
+        base::OnceClosure callback,
+        ErrorCallback error_callback) = 0;
 
     // Called when a remote device |device| requests to prepare write the value
     // of the characteristic |characteristic| starting at offset |offset|.
@@ -109,8 +109,8 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothLocalGattService
         const std::vector<uint8_t>& value,
         int offset,
         bool has_subsequent_request,
-        const base::Closure& callback,
-        const ErrorCallback& error_callback) = 0;
+        base::OnceClosure callback,
+        ErrorCallback error_callback) = 0;
 
     // Called when a remote device |device| requests to read the value of the
     // descriptor |descriptor| starting at offset |offset|.
@@ -129,8 +129,8 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothLocalGattService
         const BluetoothDevice* device,
         const BluetoothLocalGattDescriptor* descriptor,
         int offset,
-        const ValueCallback& callback,
-        const ErrorCallback& error_callback) = 0;
+        ValueCallback callback,
+        ErrorCallback error_callback) = 0;
 
     // Called when a remote device |devie| requests to write the value of the
     // descriptor |descriptor| starting at offset |offset|.
@@ -148,8 +148,8 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothLocalGattService
         const BluetoothLocalGattDescriptor* descriptor,
         const std::vector<uint8_t>& value,
         int offset,
-        const base::Closure& callback,
-        const ErrorCallback& error_callback) = 0;
+        base::OnceClosure callback,
+        ErrorCallback error_callback) = 0;
 
     // Called when a remote device |device| requests notifications to start for
     // |characteristic|. |notification_type| is either notify or indicate,

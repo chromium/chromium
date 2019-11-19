@@ -16,6 +16,7 @@ class TestSyncBrowserProxy extends TestBrowserProxy {
       'setSyncEncryption',
       'signOut',
       'pauseSync',
+      'sendSyncPrefsChanged',
       'startSignIn',
       'startSyncingWithEmail',
     ]);
@@ -94,5 +95,10 @@ class TestSyncBrowserProxy extends TestBrowserProxy {
   setSyncEncryption(syncPrefs) {
     this.methodCalled('setSyncEncryption', syncPrefs);
     return Promise.resolve(this.encryptionResponse);
+  }
+
+  /** @override */
+  sendSyncPrefsChanged() {
+    this.methodCalled('sendSyncPrefsChanged');
   }
 }

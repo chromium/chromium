@@ -5,22 +5,25 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_PAYMENTS_CLIENT_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_PAYMENTS_CLIENT_H_
 
+#include <set>
+#include <string>
+#include <utility>
+
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/autofill/core/browser/autofill_client.h"
-#include "components/autofill/core/browser/autofill_profile.h"
-#include "components/autofill/core/browser/card_unmask_delegate.h"
-#include "components/autofill/core/browser/credit_card.h"
-#include "components/prefs/pref_service.h"
+#include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/payments/card_unmask_delegate.h"
+#include "components/signin/public/identity_manager/access_token_fetcher.h"
+#include "components/signin/public/identity_manager/access_token_info.h"
 #include "google_apis/gaia/google_service_auth_error.h"
-#include "services/identity/public/cpp/access_token_fetcher.h"
-#include "services/identity/public/cpp/access_token_info.h"
 
-namespace identity {
+namespace signin {
 class IdentityManager;
-}  // namespace identity
+}  // namespace signin
 
 namespace network {
 struct ResourceRequest;
@@ -44,6 +47,11 @@ typedef base::OnceCallback<void(
     std::unique_ptr<std::unordered_map<std::string, std::string>> save_result,
     const std::string& display_text)>
     MigrateCardsCallback;
+
+// Callback type for GetUnmaskDetails callback.
+typedef base::OnceCallback<void(AutofillClient::PaymentsRpcResult,
+                                AutofillClient::UnmaskDetails&)>
+    GetUnmaskDetailsCallback;
 
 // Billable service number is defined in Payments server to distinguish
 // different requests.
@@ -74,9 +82,90 @@ class PaymentsClient {
     ~UnmaskRequestDetails();
 
     int64_t billing_customer_number = 0;
+    AutofillClient::UnmaskCardReason reason;
     CreditCard card;
     std::string risk_data;
-    CardUnmaskDelegate::UnmaskResponse user_response;
+    CardUnmaskDelegate::UserProvidedUnmaskDetails user_response;
+    base::Value fido_assertion_info;
+  };
+
+  // Information retrieved from an UnmaskRequest.
+  struct UnmaskResponseDetails {
+    UnmaskResponseDetails();
+    UnmaskResponseDetails(const UnmaskResponseDetails& other);
+    ~UnmaskResponseDetails();
+    UnmaskResponseDetails& operator=(const UnmaskResponseDetails& other);
+
+    UnmaskResponseDetails& with_real_pan(std::string r) {
+      real_pan = r;
+      return *this;
+    }
+
+    UnmaskResponseDetails& with_dcvv(std::string d) {
+      dcvv = d;
+      return *this;
+    }
+
+    std::string real_pan;
+    std::string dcvv;
+    // Challenge required for enrolling user into FIDO authentication for future
+    // card unmasking.
+    base::Optional<base::Value> fido_creation_options = base::nullopt;
+    // Challenge required for authorizing user for FIDO authentication for
+    // future card unmasking.
+    base::Optional<base::Value> fido_request_options = base::nullopt;
+    // An opaque token used to logically chain consecutive UnmaskCard and
+    // OptChange calls together.
+    std::string card_authorization_token = std::string();
+  };
+
+  // Information required to either opt-in or opt-out a user for FIDO
+  // Authentication.
+  struct OptChangeRequestDetails {
+    OptChangeRequestDetails();
+    OptChangeRequestDetails(const OptChangeRequestDetails& other);
+    ~OptChangeRequestDetails();
+
+    std::string app_locale;
+
+    // The reason for making the request.
+    enum Reason {
+      // Unknown default.
+      UNKNOWN_REASON = 0,
+      // The user wants to enable FIDO authentication for card unmasking.
+      ENABLE_FIDO_AUTH = 1,
+      // The user wants to disable FIDO authentication for card unmasking.
+      DISABLE_FIDO_AUTH = 2,
+      // The user is authorizing a new card for future FIDO authentication
+      // unmasking.
+      ADD_CARD_FOR_FIDO_AUTH = 3,
+    };
+
+    // Reason for the request.
+    Reason reason;
+    // Signature required for enrolling user into FIDO authentication for future
+    // card unmasking.
+    base::Value fido_authenticator_response;
+    // An opaque token used to logically chain consecutive UnmaskCard and
+    // OptChange calls together.
+    std::string card_authorization_token = std::string();
+  };
+
+  // Information retrieved from an OptChange request.
+  struct OptChangeResponseDetails {
+    OptChangeResponseDetails();
+    OptChangeResponseDetails(const OptChangeResponseDetails& other);
+    ~OptChangeResponseDetails();
+
+    // Unset if response failed. True if user is opted-in for FIDO
+    // authentication for card unmasking. False otherwise.
+    base::Optional<bool> user_is_opted_in;
+    // Challenge required for enrolling user into FIDO authentication for future
+    // card unmasking.
+    base::Optional<base::Value> fido_creation_options;
+    // Challenge required for authorizing user for FIDO authentication for
+    // future card unmasking.
+    base::Optional<base::Value> fido_request_options;
   };
 
   // A collection of the information required to make a credit card upload
@@ -132,14 +221,12 @@ class PaymentsClient {
   };
 
   // |url_loader_factory| is reference counted so it has no lifetime or
-  // ownership requirements. |pref_service| is used to get the registered
-  // preference value, |identity_manager| and |account_info_getter|
-  // must all outlive |this|. Either delegate might be nullptr.
-  // |is_off_the_record| denotes incognito mode.
+  // ownership requirements. |identity_manager| and |account_info_getter| must
+  // all outlive |this|. Either delegate might be nullptr. |is_off_the_record|
+  // denotes incognito mode.
   PaymentsClient(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      PrefService* const pref_service,
-      identity::IdentityManager* const identity_manager,
+      signin::IdentityManager* const identity_manager,
       AccountInfoGetter* const account_info_getter,
       bool is_off_the_record = false);
 
@@ -152,12 +239,24 @@ class PaymentsClient {
   // accepted an upload prompt.
   void Prepare();
 
-  PrefService* GetPrefService() const;
+  // The user has interacted with a credit card form and may attempt to unmask a
+  // card. This request returns what method of authentication is suggested,
+  // along with any information to facilitate the authentication.
+  virtual void GetUnmaskDetails(GetUnmaskDetailsCallback callback,
+                                const std::string& app_locale);
 
   // The user has attempted to unmask a card with the given cvc.
   void UnmaskCard(const UnmaskRequestDetails& request_details,
                   base::OnceCallback<void(AutofillClient::PaymentsRpcResult,
-                                          const std::string&)> callback);
+                                          UnmaskResponseDetails&)> callback);
+
+  // Opts-in or opts-out the user to use FIDO authentication for card unmasking
+  // on this device.
+  void OptChange(
+      const OptChangeRequestDetails request_details,
+      base::OnceCallback<void(AutofillClient::PaymentsRpcResult,
+                              PaymentsClient::OptChangeResponseDetails&)>
+          callback);
 
   // Determine if the user meets the Payments service's conditions for upload.
   // The service uses |addresses| (from which names and phone numbers are
@@ -178,7 +277,8 @@ class PaymentsClient {
       const std::string& app_locale,
       base::OnceCallback<void(AutofillClient::PaymentsRpcResult,
                               const base::string16&,
-                              std::unique_ptr<base::Value>)> callback,
+                              std::unique_ptr<base::Value>,
+                              std::vector<std::pair<int, int>>)> callback,
       const int billable_service_number,
       UploadCardSource upload_card_source =
           UploadCardSource::UNKNOWN_UPLOAD_CARD_SOURCE);
@@ -227,7 +327,7 @@ class PaymentsClient {
 
   // Callback that handles a completed access token request.
   void AccessTokenFetchFinished(GoogleServiceAuthError error,
-                                identity::AccessTokenInfo access_token_info);
+                                signin::AccessTokenInfo access_token_info);
 
   // Handles a completed access token request in the case of failure.
   void AccessTokenError(const GoogleServiceAuthError& error);
@@ -244,11 +344,8 @@ class PaymentsClient {
   // The URL loader factory for the request.
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 
-  // The pref service for this client.
-  PrefService* const pref_service_;
-
   // Provided in constructor; not owned by PaymentsClient.
-  identity::IdentityManager* const identity_manager_;
+  signin::IdentityManager* const identity_manager_;
 
   // Provided in constructor; not owned by PaymentsClient.
   AccountInfoGetter* const account_info_getter_;
@@ -263,7 +360,7 @@ class PaymentsClient {
   std::unique_ptr<network::SimpleURLLoader> simple_url_loader_;
 
   // The OAuth2 token fetcher for any account.
-  std::unique_ptr<identity::AccessTokenFetcher> token_fetcher_;
+  std::unique_ptr<signin::AccessTokenFetcher> token_fetcher_;
 
   // The OAuth2 token, or empty if not fetched.
   std::string access_token_;
@@ -275,7 +372,7 @@ class PaymentsClient {
   // server.
   bool has_retried_authorization_;
 
-  base::WeakPtrFactory<PaymentsClient> weak_ptr_factory_;
+  base::WeakPtrFactory<PaymentsClient> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(PaymentsClient);
 };

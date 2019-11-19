@@ -51,8 +51,13 @@ void CreateFenceLocked(const SyncToken& sync_token) {
       sync_points.pop();
     }
     // Need to use EGL fences since we are likely not in a single share group.
-    auto fence = gl::GLFenceEGL::Create();
-    CHECK(fence) << "eglCreateSyncKHR failed";
+    std::unique_ptr<gl::GLFence> fence = gl::GLFenceEGL::Create();
+    if (!fence) {
+      // Fall back to glFinish instead crashing such as in crbug.com/995376.
+      LOG(ERROR) << "eglCreateSyncKHR failed";
+      glFinish();
+      return;
+    }
     std::pair<SyncTokenToFenceMap::iterator, bool> result =
         sync_point_to_fence.insert(
             std::make_pair(sync_token, std::move(fence)));

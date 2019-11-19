@@ -8,8 +8,8 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/message_loop/message_loop.h"
 #include "base/run_loop.h"
+#include "base/test/task_environment.h"
 #include "remoting/base/compound_buffer.h"
 #include "remoting/proto/test_data_channel_manager.pb.h"
 #include "remoting/protocol/fake_message_pipe.h"
@@ -99,7 +99,7 @@ std::map<std::string, FakeNamedMessagePipeHandler*>
 FakeNamedMessagePipeHandler::handlers_;
 
 void TestDataChannelManagerFullMatch(bool asynchronous) {
-  base::MessageLoop message_loop;
+  base::test::SingleThreadTaskEnvironment task_environment;
   DataChannelManager manager;
   manager.RegisterCreateHandlerCallback("FullMatch", base::Bind(
       [](const std::string& expected_data,
@@ -191,7 +191,7 @@ void TestDataChannelManagerFullMatch(bool asynchronous) {
 }
 
 void TestDataChannelManagerMultipleRegistrations(bool asynchronous) {
-  base::MessageLoop message_loop;
+  base::test::SingleThreadTaskEnvironment task_environment;
   DataChannelManager manager;
   manager.RegisterCreateHandlerCallback("FullMatch", base::Bind(
       [](const std::string& expected_data,

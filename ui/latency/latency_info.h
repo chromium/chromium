@@ -44,17 +44,6 @@ enum LatencyComponentType {
   // BEGIN COMPONENT is when we show the latency begin in chrome://tracing.
   // Timestamp when the input event is sent from RenderWidgetHost to renderer.
   INPUT_EVENT_LATENCY_BEGIN_RWH_COMPONENT,
-  // In threaded scrolling, main thread scroll listener update is async to
-  // scroll processing in impl thread. This is the timestamp when we consider
-  // the main thread scroll listener update is begun.
-  LATENCY_BEGIN_SCROLL_LISTENER_UPDATE_MAIN_COMPONENT,
-  // The BeginFrame::frame_time of various frame sources.
-  LATENCY_BEGIN_FRAME_RENDERER_MAIN_COMPONENT,
-  LATENCY_BEGIN_FRAME_RENDERER_INVALIDATE_COMPONENT,
-  LATENCY_BEGIN_FRAME_RENDERER_COMPOSITOR_COMPONENT,
-  LATENCY_BEGIN_FRAME_UI_MAIN_COMPONENT,
-  LATENCY_BEGIN_FRAME_UI_COMPOSITOR_COMPONENT,
-  LATENCY_BEGIN_FRAME_DISPLAY_COMPOSITOR_COMPONENT,
   // ---------------------------NORMAL COMPONENT-------------------------------
   // The original timestamp of the touch event which converts to scroll update.
   INPUT_EVENT_LATENCY_SCROLL_UPDATE_ORIGINAL_COMPONENT,
@@ -73,8 +62,6 @@ enum LatencyComponentType {
   // This is special component indicating there is rendering scheduled for
   // the event associated with this LatencyInfo on impl thread.
   INPUT_EVENT_LATENCY_RENDERING_SCHEDULED_IMPL_COMPONENT,
-  // Timestamp when a scroll update is forwarded to the main thread.
-  INPUT_EVENT_LATENCY_FORWARD_SCROLL_UPDATE_TO_MAIN_COMPONENT,
   // Original timestamp of the last event that has been coalesced into this one.
   INPUT_EVENT_LATENCY_SCROLL_UPDATE_LAST_EVENT_COMPONENT,
   // Timestamp when the event's ack is received by the RWH.
@@ -104,7 +91,7 @@ enum class SourceEventType {
   KEY_PRESS,
   // TODO(crbug.com/868056) Touchpad scrolling latency report as WHEEL.
   TOUCHPAD,
-  FRAME,
+  SCROLLBAR,
   OTHER,
   LAST = OTHER,
 };
@@ -119,11 +106,14 @@ class LatencyInfo {
 
   LatencyInfo();
   LatencyInfo(const LatencyInfo& other);
+  LatencyInfo(LatencyInfo&& other);
   LatencyInfo(SourceEventType type);
   ~LatencyInfo();
 
   // For test only.
   LatencyInfo(int64_t trace_id, bool terminated);
+
+  LatencyInfo& operator=(const LatencyInfo& other);
 
   // Returns true if the vector |latency_info| is valid. Returns false
   // if it is not valid and log the |referring_msg|.
@@ -159,8 +149,7 @@ class LatencyInfo {
   // Modifies the current sequence number and adds a certain number of events
   // for a specific component.
   void AddLatencyNumberWithTimestamp(LatencyComponentType component,
-                                     base::TimeTicks time,
-                                     uint32_t event_count);
+                                     base::TimeTicks time);
 
   // Returns true if a component with |type| is found in the latency component.
   // The first such component (when iterating over latency_components_) is
@@ -173,6 +162,9 @@ class LatencyInfo {
   // When GestureScrollUpdate events are coalesced, update the aggregated
   // event's scroll_update_delta and the SCROLL_UPDATE_LAST_EVENT_COMPONENT.
   void CoalesceScrollUpdateWith(const LatencyInfo& other);
+
+  // Scale scroll_update_delta and predicted_scroll_update_delta.
+  LatencyInfo ScaledBy(float scale) const;
 
   const LatencyMap& latency_components() const { return latency_components_; }
 
@@ -194,11 +186,16 @@ class LatencyInfo {
   const std::string& trace_name() const { return trace_name_; }
   void set_scroll_update_delta(float delta) { scroll_update_delta_ = delta; }
   float scroll_update_delta() const { return scroll_update_delta_; }
+  void set_predicted_scroll_update_delta(float delta) {
+    predicted_scroll_update_delta_ = delta;
+  }
+  float predicted_scroll_update_delta() const {
+    return predicted_scroll_update_delta_;
+  }
 
  private:
   void AddLatencyNumberWithTimestampImpl(LatencyComponentType component,
                                          base::TimeTicks time,
-                                         uint32_t event_count,
                                          const char* trace_name_str);
 
   // Converts latencyinfo into format that can be dumped into trace buffer.
@@ -226,6 +223,7 @@ class LatencyInfo {
   SourceEventType source_event_type_;
 
   float scroll_update_delta_;
+  float predicted_scroll_update_delta_;
 
 #if !defined(OS_IOS)
   friend struct IPC::ParamTraits<ui::LatencyInfo>;

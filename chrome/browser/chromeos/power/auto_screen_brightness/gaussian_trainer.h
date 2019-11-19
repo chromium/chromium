@@ -13,6 +13,20 @@ namespace chromeos {
 namespace power {
 namespace auto_screen_brightness {
 
+struct TrainingResult {
+  TrainingResult();
+  TrainingResult(const base::Optional<MonotoneCubicSpline>& new_curve,
+                 double error);
+  TrainingResult(const TrainingResult& result);
+  ~TrainingResult();
+  // |new_curve| will be nullopt if trainer's curve stays unchanged after
+  // training.
+  base::Optional<MonotoneCubicSpline> new_curve;
+  // Evaluation error of the latest curve (possibly updated) using the training
+  // data points.
+  double error;
+};
+
 // GaussianTrainer updates an existing brightness curve (a mapping from
 // ambient light to screen brightness) using training data points that represent
 // how user changes brightness following an ambient value change. The update
@@ -33,11 +47,11 @@ class GaussianTrainer : public Trainer {
     // reasonable change would be between
     // brightness_old/(1+|brightness_step_size|) and
     // brightness_old*(1+|brightness_step_size|)
-    double brightness_step_size = 0.2;
+    double brightness_step_size = 1.5;
 
     // Similar to |brightness_step_size| except it defines reasonable brightness
     // change scale between target brightness and model predicted brightness.
-    double model_brightness_step_size = 0.3;
+    double model_brightness_step_size = 2.0;
 
     // One training data point could modify all the points on the curve, but its
     // effect is greatest on the point nearest to it (as measured by difference
@@ -71,8 +85,7 @@ class GaussianTrainer : public Trainer {
                         const MonotoneCubicSpline& current_curve) override;
   MonotoneCubicSpline GetGlobalCurve() const override;
   MonotoneCubicSpline GetCurrentCurve() const override;
-  MonotoneCubicSpline Train(
-      const std::vector<TrainingDataPoint>& data) override;
+  TrainingResult Train(const std::vector<TrainingDataPoint>& data) override;
 
  private:
   // Returns whether initial personal curve (passed in by |SetInitialCurves|) is
@@ -88,6 +101,10 @@ class GaussianTrainer : public Trainer {
   // constraints. It does this by changing points to the left and to the right
   // of |center_index|.
   void EnforceMonotonicity(size_t center_index);
+
+  // Calculates (possibly) updated curve's MAE error w.r.t. |data|. The error
+  // will be in the range of [0, 100].
+  double CalculateCurveError(const std::vector<TrainingDataPoint>& data) const;
 
   // Default params_ are valid.
   bool valid_params_ = true;

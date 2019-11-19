@@ -1,0 +1,64 @@
+// Copyright 2017 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module chrome_cleaner.mojom;
+
+// This interface was used to communicate between Chrome and the Chrome Cleanup
+// until M80, when it was replaced by
+// components/chrome_cleaner/public/proto/chrome_prompt.proto. It must be
+// supported until we drop support for Chrome M79 and earlier.
+
+// IMPORTANT NOTE: Avoid adding dependencies to typemapped .mojom files outside
+// the chrome/chrome_cleaner directory.  Enabling typemaps currently (as of
+// July 2017) requires indirectly depending on all existing typemap
+// definitions. The Chrome Cleaner is built independently from Chromium and
+// would like to avoid these dependencies.
+
+// Once it's possible to specify a limited subset of typemaps to use, be
+// careful not to add dependencies to [Native] mojo structures. The wire format
+// for [Native] structs is not guaranteed to be consistent between versions.
+
+import "chrome/chrome_cleaner/mojom/footprints.mojom";
+
+[Extensible]
+enum PromptAcceptance {
+  UNSPECIFIED = 0,
+  // The user explicitly accepted the cleanup operation and cleaner logs
+  // upload is allowed.
+  ACCEPTED_WITH_LOGS = 1,
+  // The user explicitly accepted the cleanup operation and cleaner logs
+  // upload is not allowed.
+  ACCEPTED_WITHOUT_LOGS = 2,
+  // The user explicitly denied the Chrome prompt.
+  DENIED = 3,
+  NUM_VALUES,
+};
+
+// Service provided by Chrome to prompt the user to start a cleanup if the
+// Chrome Cleanup Tool detects unwanted software on the system.
+interface ChromePrompt {
+  // Params:
+  //  - files_to_delete: list of fully-qualified paths of the files that will
+  //        be deleted by the Chrome Cleanup Tool.
+  //  - registry_keys: list of fully-qualified paths of the registry keys that
+  //        will be changed or deleted by the Chrome Cleanup Tool.
+  //  - extension_ids: list of IDs of extensions that will be removed by the
+  //        Chrome Cleanup Tool.
+  // Returns:
+  //  - prompt_acceptance: indicates if the user accepted the prompt.
+  PromptUser(array<FilePath> files_to_delete,
+             [MinVersion=1] array<RegistryKey>? registry_keys,
+             [MinVersion=2] array<ExtensionId>? extension_ids)
+      => (PromptAcceptance prompt_acceptance);
+
+  // Actually uninstalls the extensions.
+  // Params:
+  //  - extension_ids: list of IDs of extensions that will be removed from
+  //        Chrome. If there are any invalid IDs, none are removed and false is
+  //        returned.
+  // Returns:
+  //  - success: indicates if the extension removal was successful.
+  [MinVersion=3] DisableExtensions(array<ExtensionId> extension_ids)
+      => (bool success);
+};

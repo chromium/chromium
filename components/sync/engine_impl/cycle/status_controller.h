@@ -32,11 +32,9 @@ class StatusController {
   StatusController();
   ~StatusController();
 
-  // The types included in the get updates and commit client to server requests.
+  // The types included in the get updates client to server requests.
   const ModelTypeSet get_updates_request_types() const;
   void set_get_updates_request_types(ModelTypeSet value);
-  const ModelTypeSet commit_request_types() const;
-  void set_commit_request_types(ModelTypeSet value);
 
   // Various conflict counters.
   int num_encryption_conflicts() const;
@@ -81,7 +79,6 @@ class StatusController {
   // Commit counters.
   void increment_num_successful_commits();
   void increment_num_successful_bookmark_commits();
-  void set_num_successful_bookmark_commits(int value);
 
   // Server communication status tracking.
   void set_last_get_key_result(const SyncerError result);

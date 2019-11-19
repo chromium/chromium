@@ -14,7 +14,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.RetryOnFailure;
 import org.chromium.base.test.util.UrlUtils;
@@ -23,12 +22,19 @@ import org.chromium.chrome.browser.download.DownloadController;
 import org.chromium.chrome.browser.download.DownloadInfo;
 import org.chromium.chrome.browser.download.DownloadTestRule;
 import org.chromium.chrome.browser.download.DownloadTestRule.CustomMainActivityStart;
+import org.chromium.chrome.browser.download.items.OfflineContentAggregatorFactory;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.components.offline_items_collection.ContentId;
+import org.chromium.components.offline_items_collection.OfflineContentProvider;
+import org.chromium.components.offline_items_collection.OfflineItem;
+import org.chromium.components.offline_items_collection.UpdateDelta;
 import org.chromium.content_public.browser.LoadUrlParams;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.base.PageTransition;
 
+import java.util.ArrayList;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
@@ -44,7 +50,7 @@ public class MHTMLPageTest implements CustomMainActivityStart {
 
     private EmbeddedTestServer mTestServer;
 
-    static class TestDownloadNotificationService
+    private static class TestDownloadNotificationService
             implements DownloadController.DownloadNotificationService {
         private Semaphore mSemaphore;
 
@@ -68,14 +74,38 @@ public class MHTMLPageTest implements CustomMainActivityStart {
                 final DownloadInfo downloadInfo, boolean isAutoResumable) {}
     }
 
+    /**
+     * Observes the download updates from the new download backend. Depending on whether the new
+     * download backend is enabled or not, either this class or TestDownloadNotificationService will
+     * receive the update.
+     */
+    private static class TestNewDownloadBackendObserver implements OfflineContentProvider.Observer {
+        private Semaphore mSemaphore;
+
+        TestNewDownloadBackendObserver(Semaphore semaphore) {
+            mSemaphore = semaphore;
+        }
+
+        @Override
+        public void onItemsAdded(ArrayList<OfflineItem> items) {}
+
+        @Override
+        public void onItemRemoved(ContentId id) {}
+
+        @Override
+        public void onItemUpdated(OfflineItem item, UpdateDelta updateDelta) {
+            mSemaphore.release();
+        }
+    }
+
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         deleteTestFiles();
         mTestServer = EmbeddedTestServer.createAndStartServer(InstrumentationRegistry.getContext());
     }
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
         mTestServer.stopAndDestroyServer();
         deleteTestFiles();
     }
@@ -94,14 +124,13 @@ public class MHTMLPageTest implements CustomMainActivityStart {
         final Tab tab = mDownloadTestRule.getActivity().getActivityTab();
         final Semaphore semaphore = new Semaphore(0);
 
-        ThreadUtils.runOnUiThreadBlocking(new Runnable() {
-            @Override
-            public void run() {
-                DownloadController.setDownloadNotificationService(
-                        new TestDownloadNotificationService(semaphore));
-                tab.loadUrl(new LoadUrlParams(
-                        url, PageTransition.TYPED | PageTransition.FROM_ADDRESS_BAR));
-            }
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            DownloadController.setDownloadNotificationService(
+                    new TestDownloadNotificationService(semaphore));
+            OfflineContentAggregatorFactory.get().addObserver(
+                    new TestNewDownloadBackendObserver(semaphore));
+            tab.loadUrl(
+                    new LoadUrlParams(url, PageTransition.TYPED | PageTransition.FROM_ADDRESS_BAR));
         });
 
         Assert.assertTrue(semaphore.tryAcquire(TIMEOUT_MS, TimeUnit.MILLISECONDS));
@@ -116,14 +145,13 @@ public class MHTMLPageTest implements CustomMainActivityStart {
         final Tab tab = mDownloadTestRule.getActivity().getActivityTab();
         final Semaphore semaphore = new Semaphore(0);
 
-        ThreadUtils.runOnUiThreadBlocking(new Runnable() {
-            @Override
-            public void run() {
-                DownloadController.setDownloadNotificationService(
-                        new TestDownloadNotificationService(semaphore));
-                tab.loadUrl(new LoadUrlParams(
-                        url, PageTransition.TYPED | PageTransition.FROM_ADDRESS_BAR));
-            }
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            DownloadController.setDownloadNotificationService(
+                    new TestDownloadNotificationService(semaphore));
+            OfflineContentAggregatorFactory.get().addObserver(
+                    new TestNewDownloadBackendObserver(semaphore));
+            tab.loadUrl(
+                    new LoadUrlParams(url, PageTransition.TYPED | PageTransition.FROM_ADDRESS_BAR));
         });
 
         Assert.assertTrue(semaphore.tryAcquire(TIMEOUT_MS, TimeUnit.MILLISECONDS));
@@ -132,7 +160,7 @@ public class MHTMLPageTest implements CustomMainActivityStart {
     @Test
     @SmallTest
     @RetryOnFailure
-    public void testLoadMultipartRelatedPageFromLocalFile() throws Exception {
+    public void testLoadMultipartRelatedPageFromLocalFile() {
         // .mhtml file is mapped to "multipart/related" by the test server.
         String url = UrlUtils.getIsolatedTestFileUrl("chrome/test/data/android/hello.mhtml");
         mDownloadTestRule.loadUrl(url);
@@ -141,7 +169,7 @@ public class MHTMLPageTest implements CustomMainActivityStart {
     @Test
     @SmallTest
     @RetryOnFailure
-    public void testLoadMessageRfc822PageFromLocalFile() throws Exception {
+    public void testLoadMessageRfc822PageFromLocalFile() {
         // .mht file is mapped to "message/rfc822" by the test server.
         String url = UrlUtils.getIsolatedTestFileUrl("chrome/test/data/android/test.mht");
         mDownloadTestRule.loadUrl(url);

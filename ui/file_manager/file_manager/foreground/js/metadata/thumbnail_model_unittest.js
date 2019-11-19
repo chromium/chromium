@@ -55,47 +55,56 @@ function setUp() {
 }
 
 function testThumbnailModelGetBasic(callback) {
-  reportPromise(thumbnailModel.get([imageEntry]).then(results => {
-    assertEquals(1, results.length);
-    assertEquals(
-        new Date(2015, 0, 1).toString(),
-        results[0].filesystem.modificationTime.toString());
-    assertEquals('EXTERNAL_THUMBNAIL_URL', results[0].external.thumbnailUrl);
-    assertEquals('CUSTOM_ICON_URL', results[0].external.customIconUrl);
-    assertTrue(results[0].external.present);
-    assertEquals('CONTENT_THUMBNAIL_URL', results[0].thumbnail.url);
-    assertEquals(contentThumbnailTransform, results[0].thumbnail.transform);
-    assertEquals(imageTransformation, results[0].media.imageTransform);
-  }), callback);
+  reportPromise(
+      thumbnailModel.get([imageEntry]).then(results => {
+        assertEquals(1, results.length);
+        assertEquals(
+            new Date(2015, 0, 1).toString(),
+            results[0].filesystem.modificationTime.toString());
+        assertEquals(
+            'EXTERNAL_THUMBNAIL_URL', results[0].external.thumbnailUrl);
+        assertEquals('CUSTOM_ICON_URL', results[0].external.customIconUrl);
+        assertTrue(results[0].external.present);
+        assertEquals('CONTENT_THUMBNAIL_URL', results[0].thumbnail.url);
+        assertEquals(contentThumbnailTransform, results[0].thumbnail.transform);
+        assertEquals(imageTransformation, results[0].media.imageTransform);
+      }),
+      callback);
 }
 
 function testThumbnailModelGetNotPresent(callback) {
   metadata.present = false;
-  reportPromise(thumbnailModel.get([imageEntry]).then(results => {
-    assertEquals(1, results.length);
-    assertEquals(
-        new Date(2015, 0, 1).toString(),
-        results[0].filesystem.modificationTime.toString());
-    assertEquals('EXTERNAL_THUMBNAIL_URL', results[0].external.thumbnailUrl);
-    assertEquals('CUSTOM_ICON_URL', results[0].external.customIconUrl);
-    assertFalse(results[0].external.present);
-    assertEquals(undefined, results[0].thumbnail.url);
-    assertEquals(undefined, results[0].thumbnail.transform);
-    assertEquals(undefined, results[0].media.imageTransform);
-  }), callback);
+  reportPromise(
+      thumbnailModel.get([imageEntry]).then(results => {
+        assertEquals(1, results.length);
+        assertEquals(
+            new Date(2015, 0, 1).toString(),
+            results[0].filesystem.modificationTime.toString());
+        assertEquals(
+            'EXTERNAL_THUMBNAIL_URL', results[0].external.thumbnailUrl);
+        assertEquals('CUSTOM_ICON_URL', results[0].external.customIconUrl);
+        assertFalse(results[0].external.present);
+        assertEquals(undefined, results[0].thumbnail.url);
+        assertEquals(undefined, results[0].thumbnail.transform);
+        assertEquals(undefined, results[0].media.imageTransform);
+      }),
+      callback);
 }
 
 function testThumbnailModelGetNonImage(callback) {
-  reportPromise(thumbnailModel.get([nonImageEntry]).then(results => {
-    assertEquals(1, results.length);
-    assertEquals(
-        new Date(2015, 0, 1).toString(),
-        results[0].filesystem.modificationTime.toString());
-    assertEquals('EXTERNAL_THUMBNAIL_URL', results[0].external.thumbnailUrl);
-    assertEquals('CUSTOM_ICON_URL', results[0].external.customIconUrl);
-    assertTrue(results[0].external.present);
-    assertEquals(undefined, results[0].thumbnail.url);
-    assertEquals(undefined, results[0].thumbnail.transform);
-    assertEquals(undefined, results[0].media.imageTransform);
-  }), callback);
+  reportPromise(
+      thumbnailModel.get([nonImageEntry]).then(results => {
+        assertEquals(1, results.length);
+        assertEquals(
+            new Date(2015, 0, 1).toString(),
+            results[0].filesystem.modificationTime.toString());
+        assertEquals(
+            'EXTERNAL_THUMBNAIL_URL', results[0].external.thumbnailUrl);
+        assertEquals('CUSTOM_ICON_URL', results[0].external.customIconUrl);
+        assertTrue(results[0].external.present);
+        assertEquals(undefined, results[0].thumbnail.url);
+        assertEquals(undefined, results[0].thumbnail.transform);
+        assertEquals(undefined, results[0].media.imageTransform);
+      }),
+      callback);
 }

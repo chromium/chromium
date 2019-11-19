@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_MEDIA_ROUTER_MEDIA_ROUTER_FILE_DIALOG_H_
 
 #include "base/files/file_util.h"
+#include "base/memory/weak_ptr.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "chrome/browser/ui/chrome_select_file_policy.h"
 #include "chrome/common/media_router/issue.h"
@@ -91,11 +92,12 @@ class MediaRouterFileDialog : public ui::SelectFileDialog::Listener {
     scoped_refptr<ui::SelectFileDialog> select_file_dialog_;
   };
 
-  explicit MediaRouterFileDialog(MediaRouterFileDialogDelegate* delegate);
+  explicit MediaRouterFileDialog(
+      base::WeakPtr<MediaRouterFileDialogDelegate> delegate);
 
   // Constuctor with injectable FileSystemDelegate, used for tests.
   MediaRouterFileDialog(
-      MediaRouterFileDialogDelegate* delegate,
+      base::WeakPtr<MediaRouterFileDialogDelegate> delegate,
       std::unique_ptr<FileSystemDelegate> file_system_delegate);
 
   ~MediaRouterFileDialog() override;
@@ -152,7 +154,7 @@ class MediaRouterFileDialog : public ui::SelectFileDialog::Listener {
   std::unique_ptr<FileSystemDelegate> file_system_delegate_;
 
   // Object which the media router file dialog callbacks get sent to.
-  MediaRouterFileDialogDelegate* const delegate_;
+  base::WeakPtr<MediaRouterFileDialogDelegate> const delegate_;
 
   DISALLOW_COPY_AND_ASSIGN(MediaRouterFileDialog);
 };

@@ -95,7 +95,7 @@ class FakeWindow {
   scoped_refptr<gl::GLContext> context_;
   bool context_current_;
 
-  base::WeakPtrFactory<FakeWindow> weak_ptr_factory_;
+  base::WeakPtrFactory<FakeWindow> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(FakeWindow);
 };

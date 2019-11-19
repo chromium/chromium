@@ -17,4 +17,17 @@ const char* FcmChannelStateToString(FcmChannelState state) {
   }
 }
 
+const char* SubscriptionChannelStateToString(SubscriptionChannelState state) {
+  switch (state) {
+    case SubscriptionChannelState::NOT_STARTED:
+      return "NOT_STARTED";
+    case SubscriptionChannelState::ENABLED:
+      return "ENABLED";
+    case SubscriptionChannelState::ACCESS_TOKEN_FAILURE:
+      return "ACCESS_TOKEN_FAILURE";
+    case SubscriptionChannelState::SUBSCRIPTION_FAILURE:
+      return "SUBSCRIPTION_FAILURE";
+  }
+}
+
 }  // namespace syncer

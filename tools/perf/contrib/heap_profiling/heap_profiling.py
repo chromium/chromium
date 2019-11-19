@@ -28,11 +28,11 @@ class _HeapProfilingStorySet(story.StorySet):
             os.path.join(_PAGE_SETS_DATA, 'system_health_%s.json' % platform),
         cloud_storage_bucket=story.PARTNER_BUCKET)
     self.AddStory(
-        loading_stories.LoadGoogleStory(self, take_memory_measurement=True))
+        loading_stories.LoadGoogleStory2018(self, take_memory_measurement=True))
     self.AddStory(
         loading_stories.LoadTwitterStory(self, take_memory_measurement=True))
     self.AddStory(
-        loading_stories.LoadCnnStory(self, take_memory_measurement=True))
+        loading_stories.LoadCnnStory2018(self, take_memory_measurement=True))
 
 
 class _HeapProfilingBenchmark(perf_benchmark.PerfBenchmark):

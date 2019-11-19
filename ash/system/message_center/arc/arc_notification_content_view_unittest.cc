@@ -35,7 +35,6 @@
 #include "components/exo/wm_helper.h"
 #include "components/exo/wm_helper_chromeos.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "ui/aura/env.h"
 #include "ui/aura/test/test_window_delegate.h"
 #include "ui/aura/window.h"
 #include "ui/events/keycodes/dom/dom_code.h"
@@ -60,14 +59,21 @@ class MockKeyboardDelegate : public exo::KeyboardDelegate {
   MockKeyboardDelegate() = default;
 
   // Overridden from KeyboardDelegate:
-  MOCK_METHOD1(OnKeyboardDestroying, void(exo::Keyboard*));
-  MOCK_CONST_METHOD1(CanAcceptKeyboardEventsForSurface, bool(exo::Surface*));
-  MOCK_METHOD2(OnKeyboardEnter,
-               void(exo::Surface*,
-                    const base::flat_map<ui::DomCode, ui::DomCode>&));
-  MOCK_METHOD1(OnKeyboardLeave, void(exo::Surface*));
-  MOCK_METHOD3(OnKeyboardKey, uint32_t(base::TimeTicks, ui::DomCode, bool));
-  MOCK_METHOD1(OnKeyboardModifiers, void(int));
+  MOCK_METHOD(bool,
+              CanAcceptKeyboardEventsForSurface,
+              (exo::Surface*),
+              (const, override));
+  MOCK_METHOD(void,
+              OnKeyboardEnter,
+              (exo::Surface*,
+               (const base::flat_map<ui::DomCode, ui::DomCode>&)),
+              (override));
+  MOCK_METHOD(void, OnKeyboardLeave, (exo::Surface*), (override));
+  MOCK_METHOD(uint32_t,
+              OnKeyboardKey,
+              (base::TimeTicks, ui::DomCode, bool),
+              (override));
+  MOCK_METHOD(void, OnKeyboardModifiers, (int), (override));
 };
 
 class FakeNotificationSurface : public exo::NotificationSurface {
@@ -113,8 +119,7 @@ class ArcNotificationContentViewTest : public AshTestBase {
 
   void SetUp() override {
     AshTestBase::SetUp();
-    wm_helper_ =
-        std::make_unique<exo::WMHelperChromeOS>(ash::Shell::Get()->aura_env());
+    wm_helper_ = std::make_unique<exo::WMHelperChromeOS>();
     exo::WMHelper::SetInstance(wm_helper_.get());
     DCHECK(exo::WMHelper::HasInstance());
 
@@ -177,7 +182,7 @@ class ArcNotificationContentViewTest : public AshTestBase {
     params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
     params.context = Shell::GetPrimaryRootWindow();
     auto wrapper_widget = std::make_unique<views::Widget>();
-    wrapper_widget->Init(params);
+    wrapper_widget->Init(std::move(params));
     wrapper_widget->SetContentsView(notification_view.get());
     wrapper_widget->SetSize(notification_view->GetPreferredSize());
 

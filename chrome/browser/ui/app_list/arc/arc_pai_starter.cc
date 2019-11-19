@@ -4,16 +4,19 @@
 
 #include "chrome/browser/ui/app_list/arc/arc_pai_starter.h"
 
+#include <algorithm>
 #include <memory>
+#include <string>
+#include <utility>
 
 #include "base/bind.h"
 #include "chrome/browser/chromeos/arc/arc_optin_uma.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
-#include "components/arc/arc_bridge_service.h"
 #include "components/arc/arc_prefs.h"
 #include "components/arc/arc_service_manager.h"
 #include "components/arc/arc_util.h"
+#include "components/arc/session/arc_bridge_service.h"
 #include "components/prefs/pref_service.h"
 #include "ui/events/event_constants.h"
 
@@ -21,16 +24,15 @@ namespace arc {
 
 namespace {
 
-constexpr int kMinRetryTimeSeconds = 30;
-constexpr int kMaxRetryTimeSeconds = 1800;
+constexpr base::TimeDelta kMinRetryTime = base::TimeDelta::FromMinutes(2);
+constexpr base::TimeDelta kMaxRetryTime = base::TimeDelta::FromMinutes(30);
 
 }  // namespace
 
 ArcPaiStarter::ArcPaiStarter(Profile* profile)
     : profile_(profile),
       pref_service_(profile->GetPrefs()),
-      retry_interval_seconds_(kMinRetryTimeSeconds),
-      weak_ptr_factory_(this) {
+      retry_interval_(kMinRetryTime) {
   ArcAppListPrefs* prefs = ArcAppListPrefs::Get(profile_);
   // Prefs may not available in some unit tests.
   if (!prefs)
@@ -140,10 +142,9 @@ void ArcPaiStarter::OnPaiRequested(mojom::PaiFlowState state) {
 
   if (state != mojom::PaiFlowState::SUCCEEDED) {
     retry_timer_.Start(
-        FROM_HERE, base::TimeDelta::FromSeconds(retry_interval_seconds_),
+        FROM_HERE, retry_interval_,
         base::BindOnce(&ArcPaiStarter::MaybeStartPai, base::Unretained(this)));
-    retry_interval_seconds_ =
-        std::min(retry_interval_seconds_ * 2, kMaxRetryTimeSeconds);
+    retry_interval_ = std::min(retry_interval_ * 2, kMaxRetryTime);
     return;
   }
 

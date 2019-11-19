@@ -16,14 +16,9 @@ namespace storage_monitor {
 MtpManagerClientChromeOS::MtpManagerClientChromeOS(
     StorageMonitor::Receiver* receiver,
     device::mojom::MtpManager* mtp_manager)
-    : mtp_manager_(mtp_manager),
-      binding_(this),
-      notifications_(receiver),
-      weak_ptr_factory_(this) {
-  device::mojom::MtpManagerClientAssociatedPtrInfo client;
-  binding_.Bind(mojo::MakeRequest(&client));
+    : mtp_manager_(mtp_manager), notifications_(receiver) {
   mtp_manager_->EnumerateStoragesAndSetClient(
-      std::move(client),
+      receiver_.BindNewEndpointAndPassRemote(),
       base::BindOnce(&MtpManagerClientChromeOS::OnReceivedStorages,
                      weak_ptr_factory_.GetWeakPtr()));
 }
@@ -88,7 +83,7 @@ void MtpManagerClientChromeOS::StorageAttached(
   if (device_id.empty() || storage_label.empty())
     return;
 
-  DCHECK(!base::ContainsKey(storage_map_, location));
+  DCHECK(!base::Contains(storage_map_, location));
 
   StorageInfo storage_info(device_id, location, storage_label, vendor_name,
                            product_name, 0);

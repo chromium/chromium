@@ -14,16 +14,17 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
+#include "components/policy/core/common/cloud/device_management_service.h"
 
 namespace enterprise_management {
 class DeviceManagementResponse;
 }
 
-namespace identity {
+namespace signin {
 class AccessTokenFetcher;
 class IdentityManager;
 struct AccessTokenInfo;
-}  // namespace identity
+}  // namespace signin
 
 namespace network {
 class SharedURLLoaderFactory;
@@ -33,11 +34,8 @@ class GoogleServiceAuthError;
 
 namespace policy {
 
-class DeviceManagementRequestJob;
-class DeviceManagementService;
-
 // Interacts with the device management service and determines whether Android
-// management is enabled for the user or not. Uses the OAuth2TokenService to
+// management is enabled for the user or not. Uses the IdentityManager to
 // acquire access tokens for the device management.
 class AndroidManagementClient {
  public:
@@ -55,7 +53,7 @@ class AndroidManagementClient {
       DeviceManagementService* service,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const std::string& account_id,
-      identity::IdentityManager* identity_manager);
+      signin::IdentityManager* identity_manager);
   ~AndroidManagementClient();
 
   // Starts sending of check Android management request to DM server, issues
@@ -69,7 +67,7 @@ class AndroidManagementClient {
 
  private:
   void OnAccessTokenFetchComplete(GoogleServiceAuthError error,
-                                  identity::AccessTokenInfo token_info);
+                                  signin::AccessTokenInfo token_info);
 
   // Requests an access token.
   void RequestAccessToken();
@@ -79,6 +77,7 @@ class AndroidManagementClient {
 
   // Callback for check Android management requests.
   void OnAndroidManagementChecked(
+      DeviceManagementService::Job* job,
       DeviceManagementStatus status,
       int net_error,
       const enterprise_management::DeviceManagementResponse& response);
@@ -86,17 +85,17 @@ class AndroidManagementClient {
   // Used to communicate with the device management service.
   DeviceManagementService* const device_management_service_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
-  std::unique_ptr<DeviceManagementRequestJob> request_job_;
+  std::unique_ptr<DeviceManagementService::Job> request_job_;
 
   // The account ID that will be used for the access token fetch.
   const std::string account_id_;
 
-  identity::IdentityManager* identity_manager_;
-  std::unique_ptr<identity::AccessTokenFetcher> access_token_fetcher_;
+  signin::IdentityManager* identity_manager_;
+  std::unique_ptr<signin::AccessTokenFetcher> access_token_fetcher_;
 
   StatusCallback callback_;
 
-  base::WeakPtrFactory<AndroidManagementClient> weak_ptr_factory_;
+  base::WeakPtrFactory<AndroidManagementClient> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(AndroidManagementClient);
 };

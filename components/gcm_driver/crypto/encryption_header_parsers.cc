@@ -80,10 +80,8 @@ bool EncryptionHeaderIterator::GetNext() {
   bool found_rs = false;
 
   while (name_value_pairs.GetNext()) {
-    const base::StringPiece name(name_value_pairs.name_begin(),
-                                 name_value_pairs.name_end());
-    const base::StringPiece value(name_value_pairs.value_begin(),
-                                  name_value_pairs.value_end());
+    const base::StringPiece name = name_value_pairs.name_piece();
+    const base::StringPiece value = name_value_pairs.value_piece();
 
     if (base::LowerCaseEqualsASCII(name, "keyid")) {
       if (found_keyid)
@@ -131,10 +129,8 @@ bool CryptoKeyHeaderIterator::GetNext() {
   bool found_dh = false;
 
   while (name_value_pairs.GetNext()) {
-    const base::StringPiece name(name_value_pairs.name_begin(),
-                                 name_value_pairs.name_end());
-    const base::StringPiece value(name_value_pairs.value_begin(),
-                                  name_value_pairs.value_end());
+    const base::StringPiece name = name_value_pairs.name_piece();
+    const base::StringPiece value = name_value_pairs.value_piece();
 
     if (base::LowerCaseEqualsASCII(name, "keyid")) {
       if (found_keyid)

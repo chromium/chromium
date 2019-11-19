@@ -14,8 +14,8 @@
 #include "chrome/browser/sync_file_system/file_change.h"
 #include "chrome/browser/sync_file_system/sync_file_metadata.h"
 #include "chrome/browser/sync_file_system/syncable_file_system_util.h"
-#include "storage/browser/fileapi/file_system_url.h"
-#include "storage/common/fileapi/file_system_util.h"
+#include "storage/browser/file_system/file_system_url.h"
+#include "storage/common/file_system/file_system_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace sync_file_system {

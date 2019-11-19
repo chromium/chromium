@@ -53,7 +53,7 @@ ChromeOriginTrialPolicy::ChromeOriginTrialPolicy()
 ChromeOriginTrialPolicy::~ChromeOriginTrialPolicy() {}
 
 bool ChromeOriginTrialPolicy::IsOriginTrialsSupported() const {
-  return base::FeatureList::IsEnabled(features::kOriginTrials);
+  return true;
 }
 
 base::StringPiece ChromeOriginTrialPolicy::GetPublicKey() const {

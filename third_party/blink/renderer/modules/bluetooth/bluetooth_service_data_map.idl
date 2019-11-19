@@ -4,7 +4,10 @@
 
 // https://webbluetoothcg.github.io/web-bluetooth/#bluetoothadvertisingevent
 
-[RuntimeEnabled=WebBluetoothScanning, SecureContext]
-interface BluetoothServiceDataMap {
+[
+    Exposed=Window,
+    RuntimeEnabled=WebBluetoothScanning,
+    SecureContext
+] interface BluetoothServiceDataMap {
   readonly maplike<UUID, DataView>;
 };

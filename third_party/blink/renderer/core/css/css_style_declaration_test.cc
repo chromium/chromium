@@ -12,10 +12,8 @@
 
 namespace blink {
 
-using namespace css_test_helpers;
-
 TEST(CSSStyleDeclarationTest, getPropertyShorthand) {
-  TestStyleSheet sheet;
+  css_test_helpers::TestStyleSheet sheet;
 
   sheet.AddCSSRules("div { padding: var(--p); }");
   ASSERT_TRUE(sheet.CssRules());

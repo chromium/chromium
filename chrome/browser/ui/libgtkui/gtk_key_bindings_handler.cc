@@ -15,9 +15,7 @@
 #include "chrome/browser/ui/libgtkui/gtk_util.h"
 #include "content/public/browser/native_web_keyboard_event.h"
 #include "ui/base/ime/text_edit_commands.h"
-#include "ui/base/x/x11_util.h"
 #include "ui/events/event.h"
-#include "ui/gfx/x/x11.h"
 
 using ui::TextEditCommand;
 
@@ -43,16 +41,8 @@ GtkWidget* CreateInvisibleWindow() {
 namespace libgtkui {
 
 GtkKeyBindingsHandler::GtkKeyBindingsHandler()
-    : fake_window_(CreateInvisibleWindow()),
-      handler_(CreateNewHandler()),
-      has_xkb_(false) {
+    : fake_window_(CreateInvisibleWindow()), handler_(CreateNewHandler()) {
   gtk_container_add(GTK_CONTAINER(fake_window_), handler_);
-
-  int opcode, event, error;
-  int major = XkbMajorVersion;
-  int minor = XkbMinorVersion;
-  has_xkb_ = XkbQueryExtension(gfx::GetXDisplay(), &opcode, &event, &error,
-                               &major, &minor);
 }
 
 GtkKeyBindingsHandler::~GtkKeyBindingsHandler() {
@@ -66,19 +56,19 @@ bool GtkKeyBindingsHandler::MatchEvent(
   CHECK(event.IsKeyEvent());
 
   const ui::KeyEvent& key_event = static_cast<const ui::KeyEvent&>(event);
-  if (key_event.is_char() || !key_event.native_event())
+  if (key_event.is_char())
     return false;
 
-  GdkEventKey gdk_event;
-  BuildGdkEventKeyFromXEvent(key_event.native_event(), &gdk_event);
+  GdkEvent* gdk_event = GdkEventFromKeyEvent(key_event);
+  if (!gdk_event)
+    return false;
 
   edit_commands_.clear();
   // If this key event matches a predefined key binding, corresponding signal
   // will be emitted.
 
-  gtk_bindings_activate_event(
-      G_OBJECT(handler_),
-      &gdk_event);
+  gtk_bindings_activate_event(G_OBJECT(handler_), &gdk_event->key);
+  gdk_event_free(gdk_event);
 
   bool matched = !edit_commands_.empty();
   if (edit_commands)
@@ -109,44 +99,6 @@ GtkWidget* GtkKeyBindingsHandler::CreateNewHandler() {
 void GtkKeyBindingsHandler::EditCommandMatched(TextEditCommand command,
                                                const std::string& value) {
   edit_commands_.push_back(ui::TextEditCommandAuraLinux(command, value));
-}
-
-void GtkKeyBindingsHandler::BuildGdkEventKeyFromXEvent(
-    const ui::PlatformEvent& xevent,
-    GdkEventKey* gdk_event) {
-  GdkKeymap* keymap = gdk_keymap_get_for_display(gdk_display_get_default());
-  GdkModifierType consumed, state;
-
-  gdk_event->type =
-      xevent->xany.type == KeyPress ? GDK_KEY_PRESS : GDK_KEY_RELEASE;
-  gdk_event->time = xevent->xkey.time;
-  gdk_event->state = static_cast<GdkModifierType>(xevent->xkey.state);
-  gdk_event->hardware_keycode = xevent->xkey.keycode;
-
-  if (has_xkb_) {
-    gdk_event->group = XkbGroupForCoreState(xevent->xkey.state);
-  } else {
-    // The overwhelming majority of people will be using X servers that support
-    // XKB. GDK has a fallback here that does some complicated stuff to detect
-    // whether a modifier key affects the keybinding, but that should be
-    // extremely rare.
-    static bool logged = false;
-    if (!logged) {
-      NOTIMPLEMENTED();
-      logged = true;
-    }
-    gdk_event->group = 0;
-  }
-
-  gdk_event->keyval = GDK_KEY_VoidSymbol;
-  gdk_keymap_translate_keyboard_state(
-      keymap, gdk_event->hardware_keycode,
-      static_cast<GdkModifierType>(gdk_event->state), gdk_event->group,
-      &gdk_event->keyval, nullptr, nullptr, &consumed);
-
-  state = static_cast<GdkModifierType>(gdk_event->state & ~consumed);
-  gdk_keymap_add_virtual_modifiers(keymap, &state);
-  gdk_event->state |= state;
 }
 
 void GtkKeyBindingsHandler::HandlerInit(Handler* self) {
@@ -403,7 +355,7 @@ void GtkKeyBindingsHandler::MoveCursor(GtkTextView* text_view,
 void GtkKeyBindingsHandler::MoveViewport(GtkTextView* text_view,
                                          GtkScrollStep step,
                                          gint count) {
-  // Not supported by webkit.
+  // Not supported by Blink.
 }
 
 void GtkKeyBindingsHandler::PasteClipboard(GtkTextView* text_view) {
@@ -423,11 +375,11 @@ void GtkKeyBindingsHandler::SetAnchor(GtkTextView* text_view) {
 }
 
 void GtkKeyBindingsHandler::ToggleCursorVisible(GtkTextView* text_view) {
-  // Not supported by webkit.
+  // Not supported by Blink.
 }
 
 void GtkKeyBindingsHandler::ToggleOverwrite(GtkTextView* text_view) {
-  // Not supported by webkit.
+  // Not supported by Blink.
 }
 
 #if !GTK_CHECK_VERSION(3, 90, 0)

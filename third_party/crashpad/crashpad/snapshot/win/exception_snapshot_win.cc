@@ -17,9 +17,9 @@
 #include "client/crashpad_client.h"
 #include "snapshot/capture_memory.h"
 #include "snapshot/memory_snapshot.h"
-#include "snapshot/win/cpu_context_win.h"
+#include "snapshot/memory_snapshot_generic.h"
 #include "snapshot/win/capture_memory_delegate_win.h"
-#include "snapshot/win/memory_snapshot_win.h"
+#include "snapshot/win/cpu_context_win.h"
 #include "snapshot/win/process_reader_win.h"
 #include "util/win/nt_internals.h"
 

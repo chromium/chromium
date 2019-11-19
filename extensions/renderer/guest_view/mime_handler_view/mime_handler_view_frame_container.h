@@ -5,93 +5,94 @@
 #ifndef EXTENSIONS_RENDERER_GUEST_VIEW_MIME_HANDLER_VIEW_MIME_HANDLER_VIEW_FRAME_CONTAINER_H_
 #define EXTENSIONS_RENDERER_GUEST_VIEW_MIME_HANDLER_VIEW_MIME_HANDLER_VIEW_FRAME_CONTAINER_H_
 
-#include "extensions/renderer/guest_view/mime_handler_view/mime_handler_view_container_base.h"
+#include "components/guest_view/common/guest_view_constants.h"
+#include "extensions/renderer/guest_view/mime_handler_view/post_message_support.h"
 #include "third_party/blink/public/web/web_element.h"
 
+#include "ipc/ipc_message.h"
 #include "url/gurl.h"
 
 namespace blink {
-class WebElement;
 class WebFrame;
 class WebLocalFrame;
 }  // namespace blink
 
-namespace content {
-struct WebPluginInfo;
-}  // namespace content
-
-namespace v8 {
-class Isolate;
-template <typename T>
-class Local;
-class Object;
-}  // namespace v8
-
 namespace extensions {
+class MimeHandlerViewContainerManager;
 
-// The frame-based implementation of MimeHandlerViewFrameContainer. This class
-// performs tasks such as requesting resource, providing postMessage API, etc.
-// for an embedded MimeHandlerView extension in a cross-origin frame.
-class MimeHandlerViewFrameContainer : public MimeHandlerViewContainerBase {
+// This is a frame-based and light version of MimeHandlerViewContainer created
+// in the embedder process to support postMessage from the embedder side to the
+// corresponding MimeHandlerViewGuest. It is owned and managed by the
+// MimeHandlerViewContainerManager instance of the embedder frame.
+// To understand the role of MHVFC container consider the rough sketch:
+//
+//  #document <1-- arbitrary origin -->
+//
+//    <embed>
+//      #document <!-- origin = |resource_url| -->
+//      <iframe>
+//        #document <!-- MimeHandlerView extension -->
+//           <embed type="application/x-google-chrome=pdf></embed>
+//      </iframe>
+//    </embed>
+// Note that MimeHandlerViewFrameContainer is created for the <embed> in the
+// ancestor document and will facilitate postMessage to the extensions's
+// document. The postMessages are then forwarded to the inner most pepper
+// plugin.
+class MimeHandlerViewFrameContainer : public PostMessageSupport::Delegate {
  public:
-  static bool IsSupportedMimeType(const std::string& mime_type);
-  static bool Create(const blink::WebElement& plugin_element,
-                     const GURL& resource_url,
-                     const std::string& mime_type,
-                     const content::WebPluginInfo& plugin_info);
-  static v8::Local<v8::Object> GetScriptableObject(
+  MimeHandlerViewFrameContainer(
+      MimeHandlerViewContainerManager* container_manager,
       const blink::WebElement& plugin_element,
-      v8::Isolate* isolate);
-
-  // Called by MimeHandlerViewContainerManager (calls originate from browser).
-  void RetryCreatingMimeHandlerViewGuest();
-  void DestroyFrameContainer();
-  void DidLoad();
-
-  int32_t element_instance_id() const { return element_instance_id_; }
-
- private:
-  class RenderFrameLifetimeObserver;
-  friend class RenderFrameLifetimeObserver;
-  friend class MimeHandlerViewContainerManager;
-
-  static void CreateWithFrame(blink::WebLocalFrame* web_frame,
-                              const GURL& resource_url,
-                              const std::string& mime_type,
-                              const std::string& view_id);
-
-  MimeHandlerViewFrameContainer(blink::WebLocalFrame* web_frame,
-                                const GURL& resource_url,
-                                const std::string& mime_type,
-                                const std::string& view_id);
-
-  MimeHandlerViewFrameContainer(const blink::WebElement& plugin_element,
-                                const GURL& resource_url,
-                                const std::string& mime_type,
-                                const content::WebPluginInfo& plugin_info);
+      const GURL& resource_url,
+      const std::string& mime_type);
 
   ~MimeHandlerViewFrameContainer() override;
 
-  // MimeHandlerViewContainerBase overrides.
-  void CreateMimeHandlerViewGuestIfNecessary() final;
-  blink::WebRemoteFrame* GetGuestProxyFrame() const final;
-  int32_t GetInstanceId() const final;
-  gfx::Size GetElementSize() const final;
+  // PostMessageHelper::Delegate.
+  blink::WebLocalFrame* GetSourceFrame() override;
+  blink::WebFrame* GetTargetFrame() override;
+  bool IsEmbedded() const override;
+  bool IsResourceAccessibleBySource() const override;
+
+  int32_t element_instance_id() const { return element_instance_id_; }
+  const blink::WebElement& plugin_element() { return plugin_element_; }
+  const GURL& resource_url() const { return resource_url_; }
+  const std::string& mime_type() const { return mime_type_; }
 
   blink::WebFrame* GetContentFrame() const;
 
-  // mime_handler::BeforeUnloadControl implementation.
-  void SetShowBeforeUnloadDialog(
-      bool show_dialog,
-      SetShowBeforeUnloadDialogCallback callback) override;
+  // Verifies if the frames are valid and if so, the proxy IDs match the
+  // expected values. Note: calling this method might lead to the destruction of
+  // MimeHandlerViewFrameContainer (if the frames are not alive).
+  bool AreFramesAlive();
 
-  void OnMessageReceived(const IPC::Message& message);
+  // Establishes the expected routing IDs for the content frame and its first
+  // child (guest). These are verified every time GetTargetFrame is called.
+  void SetRoutingIds(int32_t content_frame_id, int32_t guest_frame_id);
 
+  void set_element_instance_id(int32_t id) { element_instance_id_ = id; }
+
+ private:
+  // Verifies that the frames are alive and the routing IDs match the expected
+  // values.
+  bool AreFramesValid();
+
+  // Controls the lifetime of |this| (always alive).
+  MimeHandlerViewContainerManager* const container_manager_;
   blink::WebElement plugin_element_;
-  const int32_t element_instance_id_;
-  std::unique_ptr<RenderFrameLifetimeObserver> render_frame_lifetime_observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(MimeHandlerViewFrameContainer);
+  const GURL resource_url_;
+  const std::string mime_type_;
+  // The |element_instance_id| of the MimeHandlerViewGuest associated with this
+  // frame container. This is updated in DidLoad().
+  int32_t element_instance_id_ = guest_view::kInstanceIDNone;
+  // The routing ID of the content frame (frame or proxy) and guest frame
+  // (proxy) which will be confirmed by the browser. Used to validate the
+  // destination for postMessage.
+  int32_t content_frame_id_ = MSG_ROUTING_NONE;
+  int32_t guest_frame_id_ = MSG_ROUTING_NONE;
+  // Determines whether the embedder can access |original_url_|. Used for UMA.
+  bool is_resource_accessible_to_embedder_;
 };
 
 }  // namespace extensions

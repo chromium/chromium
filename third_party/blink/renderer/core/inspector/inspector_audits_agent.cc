@@ -5,8 +5,8 @@
 #include "third_party/blink/renderer/core/inspector/inspector_audits_agent.h"
 
 #include "third_party/blink/public/platform/web_data.h"
-#include "third_party/blink/public/platform/web_image.h"
 #include "third_party/blink/public/platform/web_size.h"
+#include "third_party/blink/public/web/web_image.h"
 #include "third_party/blink/renderer/core/inspector/inspector_network_agent.h"
 #include "third_party/blink/renderer/platform/graphics/image_data_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/text/base64.h"
@@ -54,8 +54,7 @@ bool EncodeAsImage(char* body,
   if (!image_to_encode)
     return false;
 
-  String mime_type_name = "image/";
-  mime_type_name.append(encoding);
+  String mime_type_name = StringView("image/") + encoding;
   ImageEncodingMimeType mime_type;
   bool valid_mime_type = ParseImageEncodingMimeType(mime_type_name, mime_type);
   DCHECK(valid_mime_type);

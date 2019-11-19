@@ -23,7 +23,10 @@ struct FormDataPredictions {
   std::vector<FormFieldDataPredictions> fields;
 
   FormDataPredictions();
-  FormDataPredictions(const FormDataPredictions& other);
+  FormDataPredictions(const FormDataPredictions&);
+  FormDataPredictions& operator=(const FormDataPredictions&);
+  FormDataPredictions(FormDataPredictions&&);
+  FormDataPredictions& operator=(FormDataPredictions&&);
   ~FormDataPredictions();
 
   // Added for the sake of testing.

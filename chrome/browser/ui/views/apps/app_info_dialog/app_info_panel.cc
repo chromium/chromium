@@ -6,6 +6,7 @@
 
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
+#include "chrome/browser/ui/views/apps/app_info_dialog/app_info_label.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/geometry/insets.h"
@@ -37,38 +38,42 @@ void AppInfoPanel::OpenLink(const GURL& url) {
   Navigate(&params);
 }
 
-views::Label* AppInfoPanel::CreateHeading(const base::string16& text) const {
-  views::Label* label = new views::Label(text);
-  label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+std::unique_ptr<views::Label> AppInfoPanel::CreateHeading(
+    const base::string16& text) const {
+  auto label = std::make_unique<AppInfoLabel>(text);
   label->SetFontList(ui::ResourceBundle::GetSharedInstance().GetFontList(
       ui::ResourceBundle::MediumFont));
   return label;
 }
 
-views::View* AppInfoPanel::CreateVerticalStack(int child_spacing) const {
-  views::View* vertically_stacked_view = new views::View();
+std::unique_ptr<views::View> AppInfoPanel::CreateVerticalStack(
+    int child_spacing) const {
+  auto vertically_stacked_view = std::make_unique<views::View>();
   vertically_stacked_view->SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::kVertical, gfx::Insets(), child_spacing));
+      views::BoxLayout::Orientation::kVertical, gfx::Insets(), child_spacing));
   return vertically_stacked_view;
 }
 
-views::View* AppInfoPanel::CreateVerticalStack() const {
+std::unique_ptr<views::View> AppInfoPanel::CreateVerticalStack() const {
   return CreateVerticalStack(ChromeLayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_RELATED_CONTROL_VERTICAL));
 }
 
-views::View* AppInfoPanel::CreateHorizontalStack(int child_spacing) const {
-  views::View* vertically_stacked_view = new views::View();
+std::unique_ptr<views::View> AppInfoPanel::CreateHorizontalStack(
+    int child_spacing) const {
+  auto vertically_stacked_view = std::make_unique<views::View>();
   vertically_stacked_view->SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::kHorizontal, gfx::Insets(), child_spacing));
+      views::BoxLayout::Orientation::kHorizontal, gfx::Insets(),
+      child_spacing));
   return vertically_stacked_view;
 }
 
-views::View* AppInfoPanel::CreateKeyValueField(views::View* key,
-                                               views::View* value) const {
-  views::View* horizontal_stack =
+std::unique_ptr<views::View> AppInfoPanel::CreateKeyValueField(
+    std::unique_ptr<views::View> key,
+    std::unique_ptr<views::View> value) const {
+  auto horizontal_stack =
       CreateHorizontalStack(kSpacingBetweenKeyAndStartOfValue);
-  horizontal_stack->AddChildView(key);
-  horizontal_stack->AddChildView(value);
+  horizontal_stack->AddChildView(std::move(key));
+  horizontal_stack->AddChildView(std::move(value));
   return horizontal_stack;
 }

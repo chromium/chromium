@@ -67,7 +67,7 @@ FileOffset DisassemblerWin32::RVAToFileOffset(RVA rva) const {
 // structure.
 //
 bool DisassemblerWin32::ParseHeader() {
-  if (length() < kOffsetOfFileAddressOfNewExeHeader + 4 /*size*/)
+  if (!IsRangeInBounds(kOffsetOfFileAddressOfNewExeHeader, 4))
     return Bad("Too small");
 
   // Have 'MZ' magic for a DOS header?
@@ -75,99 +75,97 @@ bool DisassemblerWin32::ParseHeader() {
     return Bad("Not MZ");
 
   // offset from DOS header to PE header is stored in DOS header.
-  FileOffset file_offset = static_cast<FileOffset>(
+  FileOffset pe_header_offset = static_cast<FileOffset>(
       ReadU32(start(), kOffsetOfFileAddressOfNewExeHeader));
-
-  if (file_offset >= length())
-    return Bad("Bad offset to PE header");
-
-  const uint8_t* const pe_header = FileOffsetToPointer(file_offset);
-  const size_t kMinPEHeaderSize = 4 /*signature*/ + kSizeOfCoffHeader;
-  if (pe_header <= start() || pe_header >= end() - kMinPEHeaderSize)
-    return Bad("Bad file offset to PE header");
-
-  if (file_offset % 8 != 0)
+  if (pe_header_offset % 8 != 0)
     return Bad("Misaligned PE header");
+  if (pe_header_offset < kOffsetOfFileAddressOfNewExeHeader + 4)
+    return Bad("PE header pathological overlap");
+  if (!IsRangeInBounds(pe_header_offset, kMinPeHeaderSize))
+    return Bad("PE header past end of file");
+
+  const uint8_t* const pe_header = FileOffsetToPointer(pe_header_offset);
 
   // The 'PE' header is an IMAGE_NT_HEADERS structure as defined in WINNT.H.
   // See http://msdn.microsoft.com/en-us/library/ms680336(VS.85).aspx
   //
   // The first field of the IMAGE_NT_HEADERS is the signature.
   if (!(pe_header[0] == 'P' && pe_header[1] == 'E' && pe_header[2] == 0 &&
-        pe_header[3] == 0))
+        pe_header[3] == 0)) {
     return Bad("No PE signature");
+  }
 
   // The second field of the IMAGE_NT_HEADERS is the COFF header.
   // The COFF header is also called an IMAGE_FILE_HEADER
   //   http://msdn.microsoft.com/en-us/library/ms680313(VS.85).aspx
-  const uint8_t* const coff_header = pe_header + 4;
+  FileOffset coff_header_offset = pe_header_offset + 4;
+  if (!IsRangeInBounds(coff_header_offset, kSizeOfCoffHeader))
+    return Bad("COFF header past end of file");
+  const uint8_t* const coff_header = start() + coff_header_offset;
   machine_type_ = ReadU16(coff_header, 0);
   number_of_sections_ = ReadU16(coff_header, 2);
   size_of_optional_header_ = ReadU16(coff_header, 16);
-
-  // The rest of the IMAGE_NT_HEADERS is the IMAGE_OPTIONAL_HEADER(32|64)
-  const uint8_t* const optional_header = coff_header + kSizeOfCoffHeader;
-  optional_header_ = optional_header;
-
-  if (optional_header + size_of_optional_header_ >= end())
-    return Bad("Optional header past end of file");
-
   // Check we can read the magic.
   if (size_of_optional_header_ < 2)
     return Bad("Optional header no magic");
+  // Check that we can read the rest of the the fixed fields. Data directories
+  // directly follow the fixed fields of the IMAGE_OPTIONAL_HEADER.
+  if (size_of_optional_header_ < RelativeOffsetOfDataDirectories())
+    return Bad("Optional header too short");
 
-  uint16_t magic = ReadU16(optional_header, 0);
+  // The rest of the IMAGE_NT_HEADERS is the IMAGE_OPTIONAL_HEADER(32|64)
+  FileOffset optional_header_offset = pe_header_offset + kMinPeHeaderSize;
+  if (!IsRangeInBounds(optional_header_offset, size_of_optional_header_))
+    return Bad("Optional header past end of file");
+  optional_header_ = start() + optional_header_offset;
 
+  uint16_t magic = ReadU16(optional_header_, 0);
   switch (kind()) {
     case EXE_WIN_32_X86:
-      if (magic != kImageNtOptionalHdr32Magic) {
+      if (magic != kImageNtOptionalHdr32Magic)
         return Bad("64 bit executables are not supported by this disassembler");
-      }
       break;
 
     case EXE_WIN_32_X64:
-      if (magic != kImageNtOptionalHdr64Magic) {
+      if (magic != kImageNtOptionalHdr64Magic)
         return Bad("32 bit executables are not supported by this disassembler");
-      }
       break;
 
     default:
       return Bad("Unrecognized magic");
   }
 
-  // Check that we can read the rest of the the fixed fields.  Data directories
-  // directly follow the fixed fields of the IMAGE_OPTIONAL_HEADER.
-  if (size_of_optional_header_ < OffsetOfDataDirectories())
-    return Bad("Optional header too short");
-
   // The optional header is either an IMAGE_OPTIONAL_HEADER32 or
   // IMAGE_OPTIONAL_HEADER64
   // http://msdn.microsoft.com/en-us/library/ms680339(VS.85).aspx
   //
   // Copy the fields we care about.
-  size_of_code_ = ReadU32(optional_header, 4);
-  size_of_initialized_data_ = ReadU32(optional_header, 8);
-  size_of_uninitialized_data_ = ReadU32(optional_header, 12);
-  base_of_code_ = ReadU32(optional_header, 20);
+  size_of_code_ = ReadU32(optional_header_, 4);
+  size_of_initialized_data_ = ReadU32(optional_header_, 8);
+  size_of_uninitialized_data_ = ReadU32(optional_header_, 12);
+  base_of_code_ = ReadU32(optional_header_, 20);
 
   switch (kind()) {
     case EXE_WIN_32_X86:
-      base_of_data_ = ReadU32(optional_header, 24);
-      image_base_ = ReadU32(optional_header, 28);
-      size_of_image_ = ReadU32(optional_header, 56);
-      number_of_data_directories_ = ReadU32(optional_header, 92);
+      base_of_data_ = ReadU32(optional_header_, 24);
+      image_base_ = ReadU32(optional_header_, 28);
+      size_of_image_ = ReadU32(optional_header_, 56);
+      number_of_data_directories_ = ReadU32(optional_header_, 92);
       break;
 
     case EXE_WIN_32_X64:
       base_of_data_ = 0;
-      image_base_ = ReadU64(optional_header, 24);
-      size_of_image_ = ReadU32(optional_header, 56);
-      number_of_data_directories_ = ReadU32(optional_header, 108);
+      image_base_ = ReadU64(optional_header_, 24);
+      size_of_image_ = ReadU32(optional_header_, 56);
+      number_of_data_directories_ = ReadU32(optional_header_, 108);
       break;
 
     default:
       NOTREACHED();
   }
+
+  if (size_of_image_ >= 0x80000000U)
+    return Bad("Invalid SizeOfImage");
 
   if (size_of_code_ >= length() || size_of_initialized_data_ >= length() ||
       size_of_code_ + size_of_initialized_data_ >= length()) {
@@ -188,15 +186,19 @@ bool DisassemblerWin32::ParseHeader() {
   b &= ReadDataDirectory(12, &import_address_table_);
   b &= ReadDataDirectory(13, &delay_import_descriptor_);
   b &= ReadDataDirectory(14, &clr_runtime_header_);
-  if (!b) {
+  if (!b)
     return Bad("Malformed data directory");
-  }
 
   // Sections follow the optional header.
-  sections_ = reinterpret_cast<const Section*>(optional_header +
-                                               size_of_optional_header_);
-  size_t detected_length = 0;
+  FileOffset sections_offset =
+      optional_header_offset + size_of_optional_header_;
+  if (!IsArrayInBounds(sections_offset, number_of_sections_, sizeof(Section)))
+    return Bad("Sections past end of file");
+  sections_ = reinterpret_cast<const Section*>(start() + sections_offset);
+  if (!CheckSectionRanges())
+    return Bad("Out of bound section");
 
+  size_t detected_length = 0;
   for (int i = 0; i < number_of_sections_; ++i) {
     const Section* section = &sections_[i];
 
@@ -318,29 +320,47 @@ std::string DisassemblerWin32::SectionName(const Section* section) {
 bool DisassemblerWin32::QuickDetect(const uint8_t* start,
                                     size_t length,
                                     uint16_t magic) {
-  if (length < kOffsetOfFileAddressOfNewExeHeader + 4 /* size */)
+  if (length < kOffsetOfFileAddressOfNewExeHeader + 4)
     return false;
 
   // Have 'MZ' magic for a DOS header?
   if (start[0] != 'M' || start[1] != 'Z')
     return false;
 
-  FileOffset file_offset = static_cast<FileOffset>(
+  FileOffset pe_header_offset = static_cast<FileOffset>(
       ReadU32(start, kOffsetOfFileAddressOfNewExeHeader));
-  if (file_offset >= length || file_offset % 8 != 0)
+  if (pe_header_offset % 8 != 0 ||
+      pe_header_offset < kOffsetOfFileAddressOfNewExeHeader + 4 ||
+      pe_header_offset >= length ||
+      length - pe_header_offset < kMinPeHeaderSize) {
     return false;
-  const uint8_t* const pe_header = start + file_offset;
-  const size_t kMinPEHeaderSize = 4 /*signature*/ + kSizeOfCoffHeader;
-  if (pe_header <= start || pe_header + kMinPEHeaderSize >= start + length)
+  }
+  const uint8_t* pe_header = start + pe_header_offset;
+  if (!(pe_header[0] == 'P' && pe_header[1] == 'E' && pe_header[2] == 0 &&
+        pe_header[3] == 0)) {
     return false;
+  }
 
-  const uint8_t* optional_header = pe_header + 4 + kSizeOfCoffHeader;
-  // Check we can read the magic.
-  if (optional_header + 2 >= start + length)
+  FileOffset optional_header_offset = pe_header_offset + kMinPeHeaderSize;
+  if (optional_header_offset >= length || length - optional_header_offset < 2)
     return false;
-  if (magic != ReadU16(optional_header, 0))
-    return false;
+  const uint8_t* optional_header = start + optional_header_offset;
+  return magic == ReadU16(optional_header, 0);
+}
 
+bool DisassemblerWin32::IsRvaRangeInBounds(size_t start, size_t length) {
+  return start < size_of_image_ && length <= size_of_image_ - start;
+}
+
+bool DisassemblerWin32::CheckSectionRanges() {
+  for (int i = 0; i < number_of_sections_; ++i) {
+    const Section* section = &sections_[i];
+    if (!IsRangeInBounds(section->file_offset_of_raw_data,
+                         section->size_of_raw_data) ||
+        !IsRvaRangeInBounds(section->virtual_address, section->virtual_size)) {
+      return false;
+    }
+  }
   return true;
 }
 
@@ -629,12 +649,12 @@ std::string DisassemblerWin32::DescribeRVA(RVA rva) const {
 
 const Section* DisassemblerWin32::FindNextSection(
     FileOffset file_offset) const {
-  const Section* best = 0;
+  const Section* best = nullptr;
   for (int i = 0; i < number_of_sections_; ++i) {
     const Section* section = &sections_[i];
     if (section->size_of_raw_data > 0) {  // i.e. has data in file.
       if (file_offset <= section->file_offset_of_raw_data) {
-        if (best == 0 ||
+        if (best == nullptr ||
             section->file_offset_of_raw_data < best->file_offset_of_raw_data) {
           best = section;
         }
@@ -647,7 +667,7 @@ const Section* DisassemblerWin32::FindNextSection(
 bool DisassemblerWin32::ReadDataDirectory(int index,
                                           ImageDataDirectory* directory) {
   if (index < number_of_data_directories_) {
-    FileOffset file_offset = index * 8 + OffsetOfDataDirectories();
+    FileOffset file_offset = index * 8 + RelativeOffsetOfDataDirectories();
     if (file_offset >= size_of_optional_header_)
       return Bad("Number of data directories inconsistent");
     const uint8_t* data_directory = optional_header_ + file_offset;

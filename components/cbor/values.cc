@@ -13,6 +13,14 @@
 
 namespace cbor {
 
+// static
+Value Value::InvalidUTF8StringValueForTesting(base::StringPiece in_string) {
+  return Value(
+      base::span<const uint8_t>(
+          reinterpret_cast<const uint8_t*>(in_string.data()), in_string.size()),
+      Type::INVALID_UTF8);
+}
+
 Value::Value() noexcept : type_(Type::NONE) {}
 
 Value::Value(Value&& that) noexcept {
@@ -26,6 +34,7 @@ Value::Value(Type type) : type_(type) {
     case Type::NEGATIVE:
       integer_value_ = 0;
       return;
+    case Type::INVALID_UTF8:
     case Type::BYTE_STRING:
       new (&bytestring_value_) BinaryValue();
       return;
@@ -70,6 +79,11 @@ Value::Value(int64_t integer_value) : integer_value_(integer_value) {
 Value::Value(base::span<const uint8_t> in_bytes)
     : type_(Type::BYTE_STRING),
       bytestring_value_(in_bytes.begin(), in_bytes.end()) {}
+
+Value::Value(base::span<const uint8_t> in_bytes, Type type)
+    : type_(type), bytestring_value_(in_bytes.begin(), in_bytes.end()) {
+  DCHECK(type_ == Type::BYTE_STRING || type_ == Type::INVALID_UTF8);
+}
 
 Value::Value(BinaryValue&& in_bytes) noexcept
     : type_(Type::BYTE_STRING), bytestring_value_(std::move(in_bytes)) {}
@@ -143,6 +157,8 @@ Value Value::Clone() const {
   switch (type_) {
     case Type::NONE:
       return Value();
+    case Type::INVALID_UTF8:
+      return Value(bytestring_value_, Type::INVALID_UTF8);
     case Type::UNSIGNED:
     case Type::NEGATIVE:
       return Value(integer_value_);
@@ -220,6 +236,11 @@ const Value::MapValue& Value::GetMap() const {
   return map_value_;
 }
 
+const Value::BinaryValue& Value::GetInvalidUTF8() const {
+  CHECK(is_invalid_utf8());
+  return bytestring_value_;
+}
+
 void Value::InternalMoveConstructFrom(Value&& that) {
   type_ = that.type_;
 
@@ -228,6 +249,7 @@ void Value::InternalMoveConstructFrom(Value&& that) {
     case Type::NEGATIVE:
       integer_value_ = that.integer_value_;
       return;
+    case Type::INVALID_UTF8:
     case Type::BYTE_STRING:
       new (&bytestring_value_) BinaryValue(std::move(that.bytestring_value_));
       return;
@@ -255,6 +277,7 @@ void Value::InternalMoveConstructFrom(Value&& that) {
 void Value::InternalCleanup() {
   switch (type_) {
     case Type::BYTE_STRING:
+    case Type::INVALID_UTF8:
       bytestring_value_.~BinaryValue();
       break;
     case Type::STRING:

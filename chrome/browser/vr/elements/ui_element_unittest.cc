@@ -298,11 +298,11 @@ TEST(UiElement, HitTest) {
 
   UiElement circle;
   circle.SetSize(1.0, 1.0);
-  circle.set_corner_radius(1.0 / 2);
+  circle.SetCornerRadius(1.0 / 2);
 
   UiElement rounded_rect;
   rounded_rect.SetSize(1.0, 0.5);
-  rounded_rect.set_corner_radius(0.2);
+  rounded_rect.SetCornerRadius(0.2);
 
   struct {
     gfx::PointF location;

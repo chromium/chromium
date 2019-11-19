@@ -8,18 +8,18 @@
 #import "base/mac/foundation_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "components/strings/grit/components_strings.h"
-#import "ios/chrome/browser/ui/autofill/autofill_edit_accessory_view.h"
 #import "ios/chrome/browser/ui/autofill/cells/legacy_autofill_edit_item.h"
+#import "ios/chrome/browser/ui/autofill/form_input_accessory/form_input_accessory_view.h"
 #import "ios/chrome/browser/ui/collection_view/cells/MDCCollectionViewCell+Chrome.h"
 #import "ios/chrome/browser/ui/collection_view/cells/collection_view_footer_item.h"
 #import "ios/chrome/browser/ui/collection_view/cells/collection_view_switch_item.h"
-#import "ios/chrome/browser/ui/colors/MDCPalette+CrAdditions.h"
 #import "ios/chrome/browser/ui/list_model/list_item+Controller.h"
 #import "ios/chrome/browser/ui/payments/cells/payments_selector_edit_item.h"
 #import "ios/chrome/browser/ui/payments/cells/payments_text_item.h"
 #import "ios/chrome/browser/ui/payments/payment_request_edit_view_controller_actions.h"
 #import "ios/chrome/browser/ui/payments/payment_request_editor_field.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
+#import "ios/chrome/common/colors/semantic_color_names.h"
 #include "ios/chrome/grit/ios_theme_resources.h"
 #import "ios/third_party/material_components_ios/src/components/Typography/src/MaterialTypography.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -89,24 +89,27 @@ PaymentsTextItem* ErrorMessageItemForError(NSString* errorMessage) {
   PaymentsTextItem* errorMessageItem =
       [[PaymentsTextItem alloc] initWithType:ItemTypeErrorMessage];
   errorMessageItem.text = errorMessage;
-  errorMessageItem.leadingImage = NativeImage(IDR_IOS_PAYMENTS_WARNING);
+  errorMessageItem.leadingImage = [NativeImage(IDR_IOS_PAYMENTS_WARNING)
+      imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+  errorMessageItem.leadingImageTintColor = [UIColor colorNamed:kRedColor];
   errorMessageItem.accessibilityIdentifier = kWarningMessageAccessibilityID;
   return errorMessageItem;
 }
 
 }  // namespace
 
-@interface PaymentRequestEditViewController ()<
-    AutofillEditAccessoryDelegate,
+@interface PaymentRequestEditViewController () <
+    FormInputAccessoryViewDelegate,
     PaymentRequestEditViewControllerActions,
     UIPickerViewDataSource,
     UIPickerViewDelegate,
     UITextFieldDelegate> {
   // The currently focused cell. May be nil.
   __weak LegacyAutofillEditCell* _currentEditingCell;
-
-  AutofillEditAccessoryView* _accessoryView;
 }
+
+// The accessory view when editing any of text fields.
+@property(nonatomic, strong) FormInputAccessoryView* formInputAccessoryView;
 
 // The map of section identifiers to the fields definitions for the editor.
 @property(nonatomic, strong)
@@ -198,7 +201,7 @@ PaymentsTextItem* ErrorMessageItemForError(NSString* errorMessage) {
                target:self
                action:@selector(didCancel)];
     [cancelButton setTitleTextAttributes:@{
-      NSForegroundColorAttributeName : [UIColor lightGrayColor]
+      NSForegroundColorAttributeName : [UIColor colorNamed:kDisabledTintColor]
     }
                                 forState:UIControlStateDisabled];
     [cancelButton
@@ -212,7 +215,7 @@ PaymentsTextItem* ErrorMessageItemForError(NSString* errorMessage) {
                                         target:nil
                                         action:@selector(didSave)];
     [saveButton setTitleTextAttributes:@{
-      NSForegroundColorAttributeName : [UIColor lightGrayColor]
+      NSForegroundColorAttributeName : [UIColor colorNamed:kDisabledTintColor]
     }
                               forState:UIControlStateDisabled];
     [saveButton setAccessibilityLabel:l10n_util::GetNSString(IDS_ACCNAME_SAVE)];
@@ -227,7 +230,7 @@ PaymentsTextItem* ErrorMessageItemForError(NSString* errorMessage) {
                          style:(CollectionViewControllerStyle)style {
   self = [super initWithLayout:layout style:style];
   if (self) {
-    _accessoryView = [[AutofillEditAccessoryView alloc] initWithDelegate:self];
+    _formInputAccessoryView = [[FormInputAccessoryView alloc] init];
     _options = [[NSMutableDictionary alloc] init];
     _pickerViews = [[NSMutableDictionary alloc] init];
   }
@@ -237,6 +240,9 @@ PaymentsTextItem* ErrorMessageItemForError(NSString* errorMessage) {
 - (void)viewDidLoad {
   [super viewDidLoad];
 
+  [self.formInputAccessoryView setUpWithLeadingView:nil
+                                 navigationDelegate:self];
+
   self.collectionView.accessibilityIdentifier =
       kPaymentRequestEditCollectionViewAccessibilityID;
 
@@ -244,6 +250,7 @@ PaymentsTextItem* ErrorMessageItemForError(NSString* errorMessage) {
   self.styler.cellStyle = MDCCollectionViewCellStyleCard;
   self.styler.separatorInset =
       UIEdgeInsetsMake(0, kSeparatorEdgeInset, 0, kSeparatorEdgeInset);
+  self.styler.separatorColor = [UIColor colorNamed:kSeparatorColor];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -437,7 +444,7 @@ PaymentsTextItem* ErrorMessageItemForError(NSString* errorMessage) {
 
 - (void)textFieldDidBeginEditing:(UITextField*)textField {
   _currentEditingCell = AutofillEditCellForTextField(textField);
-  [textField setInputAccessoryView:_accessoryView];
+  [textField setInputAccessoryView:self.formInputAccessoryView];
   [self updateAccessoryViewButtonsStates];
 }
 
@@ -461,9 +468,9 @@ PaymentsTextItem* ErrorMessageItemForError(NSString* errorMessage) {
   DCHECK([_currentEditingCell textField] == textField);
   LegacyAutofillEditCell* nextCell = [self nextTextFieldWithOffset:1];
   if (nextCell)
-    [self nextPressed];
+    [nextCell.textField becomeFirstResponder];
   else
-    [self closePressed];
+    [[_currentEditingCell textField] resignFirstResponder];
 
   return NO;
 }
@@ -517,25 +524,23 @@ PaymentsTextItem* ErrorMessageItemForError(NSString* errorMessage) {
   return NO;
 }
 
-#pragma mark - AutofillEditAccessoryDelegate
+#pragma mark - FormInputAccessoryViewDelegate
 
-- (void)nextPressed {
-  LegacyAutofillEditCell* nextCell = [self nextTextFieldWithOffset:1];
-  if (nextCell)
-    [nextCell.textField becomeFirstResponder];
+- (void)formInputAccessoryViewDidTapNextButton:(FormInputAccessoryView*)sender {
+  [self moveToAnotherCellWithOffset:1];
 }
 
-- (void)previousPressed {
-  LegacyAutofillEditCell* previousCell = [self nextTextFieldWithOffset:-1];
-  if (previousCell)
-    [previousCell.textField becomeFirstResponder];
+- (void)formInputAccessoryViewDidTapPreviousButton:
+    (FormInputAccessoryView*)sender {
+  [self moveToAnotherCellWithOffset:-1];
 }
 
-- (void)closePressed {
+- (void)formInputAccessoryViewDidTapCloseButton:
+    (FormInputAccessoryView*)sender {
   [[_currentEditingCell textField] resignFirstResponder];
 }
 
-#pragma mark - UIPickerViewDataSource methods
+#pragma mark - UIPickerViewDataSource
 
 - (NSInteger)numberOfComponentsInPickerView:(UIPickerView*)pickerView {
   NSArray<NSArray<NSString*>*>* options =
@@ -609,11 +614,11 @@ PaymentsTextItem* ErrorMessageItemForError(NSString* errorMessage) {
       autofillEditCell.textField.clearButtonMode = UITextFieldViewModeNever;
       SetUILabelScaledFont(autofillEditCell.textLabel,
                            [MDCTypography body2Font]);
-      autofillEditCell.textLabel.textColor = [[MDCPalette greyPalette] tint900];
+      autofillEditCell.textLabel.textColor =
+          [UIColor colorNamed:kTextPrimaryColor];
       SetUITextFieldScaledFont(autofillEditCell.textField,
                                [MDCTypography body1Font]);
-      autofillEditCell.textField.textColor =
-          [[MDCPalette cr_bluePalette] tint500];
+      autofillEditCell.textField.textColor = [UIColor colorNamed:kBlueColor];
       break;
     }
     case ItemTypeSwitchField: {
@@ -629,15 +634,14 @@ PaymentsTextItem* ErrorMessageItemForError(NSString* errorMessage) {
           base::mac::ObjCCastStrict<PaymentsTextCell>(cell);
       SetUILabelScaledFont(errorMessageCell.textLabel,
                            [MDCTypography body1Font]);
-      errorMessageCell.textLabel.textColor =
-          [[MDCPalette cr_redPalette] tint600];
+      errorMessageCell.textLabel.textColor = [UIColor colorNamed:kRedColor];
       break;
     }
     case ItemTypeFooter: {
       CollectionViewFooterCell* footerCell =
           base::mac::ObjCCastStrict<CollectionViewFooterCell>(cell);
       SetUILabelScaledFont(footerCell.textLabel, [MDCTypography body2Font]);
-      footerCell.textLabel.textColor = [[MDCPalette greyPalette] tint600];
+      footerCell.textLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
       footerCell.textLabel.shadowColor = nil;  // No shadow.
       footerCell.horizontalPadding = kFooterCellHorizontalPadding;
       break;
@@ -740,6 +744,13 @@ PaymentsTextItem* ErrorMessageItemForError(NSString* errorMessage) {
 
 #pragma mark - Helper methods
 
+// Jumps to the cell at the passed offset, If such cell exists.
+- (void)moveToAnotherCellWithOffset:(NSInteger)offset {
+  LegacyAutofillEditCell* cell = [self nextTextFieldWithOffset:offset];
+  if (cell)
+    [cell.textField becomeFirstResponder];
+}
+
 - (NSIndexPath*)indexPathWithSectionOffset:(NSInteger)offset
                                   fromPath:(NSIndexPath*)indexPath {
   DCHECK(indexPath);
@@ -770,10 +781,9 @@ PaymentsTextItem* ErrorMessageItemForError(NSString* errorMessage) {
 
 - (void)updateAccessoryViewButtonsStates {
   LegacyAutofillEditCell* previousCell = [self nextTextFieldWithOffset:-1];
-  [[_accessoryView previousButton] setEnabled:previousCell != nil];
-
   LegacyAutofillEditCell* nextCell = [self nextTextFieldWithOffset:1];
-  [[_accessoryView nextButton] setEnabled:nextCell != nil];
+  [self.formInputAccessoryView.previousButton setEnabled:previousCell != nil];
+  [self.formInputAccessoryView.nextButton setEnabled:nextCell != nil];
 }
 
 - (void)addOrRemoveErrorMessage:(NSString*)errorMessage

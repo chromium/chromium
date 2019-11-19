@@ -4,6 +4,7 @@
 
 #include "components/sync/engine_impl/net/url_translator.h"
 
+#include "build/branding_buildflags.h"
 #include "net/base/escape.h"
 
 using std::string;
@@ -15,11 +16,11 @@ namespace {
 const char kParameterClient[] = "client";
 const char kParameterClientID[] = "client_id";
 
-#if defined(GOOGLE_CHROME_BUILD)
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 const char kClientName[] = "Google Chrome";
 #else
 const char kClientName[] = "Chromium";
-#endif  // defined(GOOGLE_CHROME_BUILD)
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 }  // namespace
 
 // This method appends the query string to the sync server path.

@@ -24,6 +24,7 @@
 #include "content/public/browser/devtools_agent_host_observer.h"
 #include "content/public/browser/notification_observer.h"
 #include "content/public/browser/notification_registrar.h"
+#include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_process_host_observer.h"
 #include "extensions/browser/activity.h"
 #include "extensions/browser/event_page_tracker.h"
@@ -350,6 +351,7 @@ class ProcessManager : public KeyedService,
   ExtensionRenderFrames all_extension_frames_;
 
   // TaskRunner for interacting with ServiceWorkerContexts.
+  // TODO(crbug.com/824858): This is unused when ServiceWorkerOnUI is enabled.
   scoped_refptr<base::SequencedTaskRunner> worker_task_runner_;
 
   // Contains all active extension Service Worker information for all
@@ -361,7 +363,7 @@ class ProcessManager : public KeyedService,
   // True if we have created the startup set of background hosts.
   bool startup_background_hosts_created_;
 
-  base::ObserverList<ProcessManagerObserver>::Unchecked observer_list_;
+  base::ObserverList<ProcessManagerObserver> observer_list_;
 
   // ID Counter used to set ProcessManager::BackgroundPageData close_sequence_id
   // members. These IDs are tracked per extension in background_page_data_ and
@@ -387,13 +389,13 @@ class ProcessManager : public KeyedService,
 
   // Observers of Service Worker RPH this ProcessManager manages.
   ScopedObserver<content::RenderProcessHost, content::RenderProcessHostObserver>
-      process_observer_;
+      process_observer_{this};
   // Maps render render_process_id -> extension_id for all Service Workers this
   // ProcessManager manages.
   std::map<int, std::set<ExtensionId>> worker_process_to_extension_ids_;
 
   // Must be last member, see doc on WeakPtrFactory.
-  base::WeakPtrFactory<ProcessManager> weak_ptr_factory_;
+  base::WeakPtrFactory<ProcessManager> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ProcessManager);
 };

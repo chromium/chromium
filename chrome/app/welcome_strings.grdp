@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<grit-part>
+  <!-- Shared strings -->
+  <message name="IDS_WELCOME_NEXT" desc="Label for a button to confirm and continue from the current welcome step.">
+    Next
+  </message>
+  <message name="IDS_WELCOME_SKIP" desc="Label for a button to skip the current welcome step.">
+    Skip
+  </message>
+  <message name="IDS_WELCOME_BOOKMARK_ADDED" desc="String read for accessibility to inform the user a bookmark was added.">
+    Bookmark added
+  </message>
+  <message name="IDS_WELCOME_BOOKMARKS_ADDED" desc="String read for accessibility to inform the user that several bookmarks were added.">
+    Bookmarks added
+  </message>
+  <message name="IDS_WELCOME_BOOKMARK_REMOVED" desc="String read for accessibility to inform the user a bookmark was removed.">
+    Bookmark removed
+  </message>
+  <message name="IDS_WELCOME_BOOKMARKS_REMOVED" desc="String read for accessibility to inform the user that several bookmarks were removed.">
+    Bookmarks removed
+  </message>
+  <message name="IDS_DEFAULT_BROWSER_CHANGED" desc="text notifying users that their default browser is successfully changed to Chrome">
+    Chrome is your default browser
+  </message>
+
+  <!-- Google apps selection module -->
+  <message name="IDS_WELCOME_GOOGLE_APPS_DESCRIPTION" desc="Description of what this section does in the welcome workflow. This section lets a user bookmark popular Google apps.">
+    Add bookmarks to your favorite Google Apps
+  </message>
+  <if expr="_google_chrome">
+    <message name="IDS_WELCOME_GOOGLE_SEARCH" desc="Label for a button that creates a bookmark to google.com, this should be the name of the brand.">
+      Google
+    </message>
+  </if>
+  <message name="IDS_WELCOME_GOOGLE_GMAIL" desc="Label for a button that creates a bookmark to gmail.com, this should be the name of the brand.">
+    Gmail
+  </message>
+  <message name="IDS_WELCOME_GOOGLE_APPS_MAPS" desc="Label for a button that creates a bookmark to maps.google.com, this should be the name of the brand.">
+    Maps
+  </message>
+  <message name="IDS_WELCOME_GOOGLE_APPS_NEWS" desc="Label for a button that creates a bookmark to news.google.com, this should be the name of the brand.">
+    News
+  </message>
+  <message name="IDS_WELCOME_GOOGLE_APPS_TRANSLATE" desc="Label for a button that creates a bookmark to translate.google.com, this should be the name of the brand.">
+    Translate
+  </message>
+  <message name="IDS_WELCOME_GOOGLE_APPS_YOUTUBE" desc="Label for a button that creates a bookmark to youtube.com, this should be the name of the brand.">
+    YouTube
+  </message>
+
+  <!-- NTP background selection module -->
+  <message name="IDS_WELCOME_NTP_BACKGROUND_DESCRIPTION" desc="Description of what this section does in the welcome workflow. This section lets a user change the background for the New Tab Page">
+    Pick a background
+  </message>
+  <message name="IDS_WELCOME_NTP_BACKGROUND_DEFAULT_TITLE" desc="Label for the default option when selecting a background. The default is to not have a background.">
+    Default
+  </message>
+  <message name="IDS_WELCOME_NTP_BACKGROUND_ART_TITLE" desc="Label for choosing a background/wallpaper from the 'Art' category">
+    Art
+  </message>
+  <message name="IDS_WELCOME_NTP_BACKGROUND_LANDSCAPE_TITLE" desc="Label for choosing a background/wallpaper from the 'Landscape' category, as in a category of photos of scenery and large outdoor spaces.">
+    Landscape
+  </message>
+  <message name="IDS_WELCOME_NTP_BACKGROUND_CITYSCAPE_TITLE" desc="Label for choosing a background/wallpaper from the 'Cityscape' category">
+    Cityscape
+  </message>
+  <message name="IDS_WELCOME_NTP_BACKGROUND_EARTH_TITLE" desc="Label for choosing a background/wallpaper from the 'Earth' category, as in a category of photos of planets and outer space.">
+    Earth
+  </message>
+  <message name="IDS_WELCOME_NTP_BACKGROUND_GEOMETRIC_SHAPES_TITLE" desc="Label for choosing a background/wallpaper from the 'Geometric Shapes' category">
+    Geometric shapes
+  </message>
+  <message name="IDS_WELCOME_NTP_BACKGROUND_PHOTO_BY_LABEL" desc="Label indicating who the background/wallpaper is created or photographed by">
+    Photo by <ph name="NAME">$1<ex>John Doe</ex></ph>
+  </message>
+  <message name="IDS_WELCOME_NTP_BACKGROUND_PREVIEW_UPDATED" desc="String read for accessibility to inform the user that the background of the New Tab Page (referred to as 'start page') has been changed to a specific photo.">
+    Start page background has been changed to <ph name="CATEGORY">$1<ex>Geometric shapes</ex></ph>.
+  </message>
+  <message name="IDS_WELCOME_NTP_BACKGROUND_RESET" desc="String read for accessibility to inform the user that the background of the New Tab Page (referred to as 'start page') has been reset to the default background.">
+    Start page background has been reset to the default background.
+  </message>
+
+  <!-- set default module -->
+  <message name="IDS_WELCOME_SET_AS_DEFAULT_HEADER" desc="Header for the page that prompts user to set Chrome as their default browser.">
+    Set Chrome as your default browser
+  </message>
+  <message name="IDS_WELCOME_SET_AS_DEFAULT_SUB_HEADER" desc="Sub-header for the page that prompts user to set Chrome as their default browser.">
+    Get Google Search and Google smarts everytime you browse
+  </message>
+  <message name="IDS_WELCOME_SET_AS_DEFAULT_SET_AS_DEFAULT" desc="The label for a button to confirm setting Chrome as their default browser.">
+    Set as default
+  </message>
+
+  <!-- Landing view -->
+  <message name="IDS_WELCOME_LANDING_TITLE" desc="Title for the page that prompts user to start setting up their new Chrome.">
+    Make Chrome your own
+  </message>
+  <message name="IDS_WELCOME_LANDING_DESCRIPTION" desc="Description for the page that prompts user to start setting up their new Chrome.">
+    Set up your browser in a few simple steps
+  </message>
+  <message name="IDS_WELCOME_LANDING_NEW_USER" desc="Label for a button that prompts new users to start setting up their new Chrome.">
+    Get Started
+  </message>
+  <message name="IDS_WELCOME_LANDING_EXISTING_USER" desc="Label for a button that prompts existing users to sign in.">
+    Already a Chrome user? Sign in
+  </message>
+
+  <!-- Sign-in view -->
+  <message name="IDS_WELCOME_SIGNIN_VIEW_HEADER" desc="Header for the page that prompts user to sign in to chrome.">
+    Your Chrome, Everywhere
+  </message>
+  <message name="IDS_WELCOME_SIGNIN_VIEW_SUB_HEADER" desc="Sub-header for the page that prompts user to sign in to chrome.">
+    Sign in and turn on sync to get your bookmarks, passwords and more on all devices
+  </message>
+  <message name="IDS_WELCOME_SIGNIN_VIEW_SIGNIN" desc="The label for a button to let users sign in to chrome.">
+    Continue
+  </message>
+</grit-part>

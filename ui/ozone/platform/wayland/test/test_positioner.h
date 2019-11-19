@@ -5,6 +5,8 @@
 #ifndef UI_OZONE_PLATFORM_WAYLAND_TEST_TEST_POSITIONER_H_
 #define UI_OZONE_PLATFORM_WAYLAND_TEST_TEST_POSITIONER_H_
 
+#include <utility>
+
 #include <xdg-shell-unstable-v6-server-protocol.h>
 
 #include "base/macros.h"
@@ -22,24 +24,30 @@ extern const struct zxdg_positioner_v6_interface kTestZxdgPositionerV6Impl;
 // surface relative to a parent surface.
 class TestPositioner : public ServerObject {
  public:
+  struct PopupPosition {
+    gfx::Rect anchor_rect;
+    gfx::Size size;
+    uint32_t anchor = 0;
+    uint32_t gravity = 0;
+    uint32_t constraint_adjustment = 0;
+  };
+
   explicit TestPositioner(wl_resource* resource);
   ~TestPositioner() override;
 
-  void set_size(gfx::Size size) { size_ = size; }
-  gfx::Size size() const { return size_; }
-
-  void set_anchor_rect(gfx::Rect anchor_rect) { anchor_rect_ = anchor_rect; }
-  gfx::Rect anchor_rect() const { return anchor_rect_; }
-
-  void set_anchor(uint32_t anchor) { anchor_ = anchor; }
-
-  void set_gravity(uint32_t gravity) { gravity_ = gravity; }
+  PopupPosition position() { return std::move(position_); }
+  void set_size(gfx::Size size) { position_.size = size; }
+  void set_anchor_rect(gfx::Rect anchor_rect) {
+    position_.anchor_rect = anchor_rect;
+  }
+  void set_anchor(uint32_t anchor) { position_.anchor = anchor; }
+  void set_gravity(uint32_t gravity) { position_.gravity = gravity; }
+  void set_constraint_adjustment(uint32_t constraint_adjustment) {
+    position_.constraint_adjustment = constraint_adjustment;
+  }
 
  private:
-  gfx::Rect anchor_rect_;
-  gfx::Size size_;
-  uint32_t anchor_;
-  uint32_t gravity_;
+  PopupPosition position_;
 
   DISALLOW_COPY_AND_ASSIGN(TestPositioner);
 };

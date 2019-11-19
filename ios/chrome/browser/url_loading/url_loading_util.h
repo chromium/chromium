@@ -8,7 +8,6 @@
 #import <Foundation/Foundation.h>
 
 #include "components/sessions/core/session_id.h"
-#import "ios/chrome/browser/ui/chrome_load_params.h"
 #include "ui/base/window_open_disposition.h"
 
 class GURL;

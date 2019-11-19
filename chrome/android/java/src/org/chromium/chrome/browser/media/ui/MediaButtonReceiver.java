@@ -10,7 +10,7 @@ import android.content.Intent;
 import android.view.KeyEvent;
 
 import org.chromium.base.Log;
-import org.chromium.chrome.browser.AppHooks;
+import org.chromium.chrome.browser.notifications.ForegroundServiceUtils;
 
 /**
  * MediaButtonReceiver is a basic BroadcastReceiver class that receives
@@ -40,6 +40,6 @@ public abstract class MediaButtonReceiver extends BroadcastReceiver {
         }
 
         intent.setClass(context, getServiceClass());
-        AppHooks.get().startForegroundService(intent);
+        ForegroundServiceUtils.getInstance().startForegroundService(intent);
     }
 }

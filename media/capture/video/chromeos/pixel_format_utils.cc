@@ -62,4 +62,16 @@ uint32_t PixFormatVideoToDrm(VideoPixelFormat from) {
   }
 }
 
+base::Optional<gfx::BufferFormat> PixFormatVideoToGfx(
+    VideoPixelFormat pixel_format) {
+  switch (pixel_format) {
+    case PIXEL_FORMAT_MJPEG:
+      return gfx::BufferFormat::R_8;
+    case PIXEL_FORMAT_NV12:
+      return gfx::BufferFormat::YUV_420_BIPLANAR;
+    default:
+      return base::nullopt;
+  }
+}
+
 }  // namespace media

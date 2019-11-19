@@ -74,10 +74,14 @@ def CreateCert(name, signer=None, ocsp=False):
   return (asn1cert, cert, pkey, signer[0])
 
 
-def CreateExtension():
+def CreateExtension(oid='1.2.3.4', critical=False):
   ext = rfc2459.Extension()
-  ext.setComponentByName('extnID', univ.ObjectIdentifier('1.2.3.4'))
+  ext.setComponentByName('extnID', univ.ObjectIdentifier(oid))
   ext.setComponentByName('extnValue', 'DEADBEEF')
+  if critical:
+    ext.setComponentByName('critical', univ.Boolean('True'))
+  else:
+    ext.setComponentByName('critical', univ.Boolean('False'))
 
   return ext
 
@@ -289,8 +293,6 @@ def Store(fname, description, ca, data):
 
   ocsp_request_der = CreateOCSPRequestDer(ca_cert_pem, cert_pem)
 
-  d64 = base64.b64encode(encoder.encode(data))
-  wd64 = '\n'.join(d64[pos:pos + 64] for pos in xrange(0, len(d64), 64))
   out = ('%s\n%s\n%s\n\n%s\n%s') % (
       description,
       MakePemBlock(encoder.encode(data), "OCSP RESPONSE"),
@@ -414,6 +416,30 @@ Store(
     CA,
     Create(responses=[
         CreateSingleResponse(CERT, 0, extensions=[CreateExtension()])
+    ]))
+Store(
+    'has_critical_single_extension',
+    'Has a critical extension in the SingleResponse', CA,
+    Create(responses=[
+        CreateSingleResponse(
+            CERT, 0, extensions=[CreateExtension('1.2.3.4', critical=True)])
+    ]))
+Store(
+    'has_critical_response_extension',
+    'Has a critical extension in the ResponseData', CA,
+    Create(
+        responses=[CreateSingleResponse(CERT, 0)],
+        extensions=[CreateExtension('1.2.3.4', critical=True)]))
+Store(
+    'has_critical_ct_extension',
+    'Has a critical CT extension in the SingleResponse', CA,
+    Create(responses=[
+        CreateSingleResponse(
+            CERT,
+            0,
+            extensions=[
+                CreateExtension('1.3.6.1.4.1.11129.2.4.5', critical=True)
+            ])
     ]))
 
 Store('missing_response', 'Missing a response for the cert', CA,

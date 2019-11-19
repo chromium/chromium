@@ -34,11 +34,47 @@
         name: "ScrollAnchorDisablingPropertyChanged",
         fields_to_diff: ["width", "min-width", "max-width", "height", "min-height", "max-height", "margin-top", "margin-left", "margin-right", "margin-bottom", 
                   "left", "right", "top", "bottom", "padding-top", 
-                  "padding-left", "padding-right", "padding-bottom"],
+                  "padding-left", "padding-right", "padding-bottom",
+                  "intrinsic-width", "intrinsic-height"],
         methods_to_diff: [
           {
             method: "GetPosition()",
             field_dependencies: ["position"]
+          },
+        ]
+    },
+    {
+        name: "DiffNeedsReshapeAndFullLayoutAndPaintInvalidation",
+        fields_to_diff: ["font"],
+        methods_to_diff: [
+          {
+            method: "FontInternal().LoadingCustomFonts()",
+            field_dependencies: ["font"]
+          },
+          {
+            method: "TextTransform()",
+            field_dependencies: ["text-transform"]
+          },
+          {
+            method: "WhiteSpace()",
+            field_dependencies: ["white-space"]
+          },
+        ]
+    },
+    {
+        name: "DiffNeedsCollectInlinesAndFullLayoutAndPaintInvalidation",
+        methods_to_diff: [
+          {
+            method: "Direction()",
+            field_dependencies: ["direction"]
+          },
+          {
+            method: "RtlOrdering()",
+            field_dependencies: ["-webkit-rtl-ordering"]
+          },
+          {
+            method: "GetUnicodeBidi()",
+            field_dependencies: ["unicode-bidi"]
           },
         ]
     },
@@ -49,7 +85,7 @@
                 "-webkit-margin-before-collapse",
                 "-webkit-margin-after-collapse", "-webkit-line-clamp",
                 "text-overflow", "shape-margin", "order", "-webkit-highlight",
-                "text-indent", "text-align-last", "TextIndentLine", "EffectiveZoom", 
+                "text-indent", "text-align-last", "TextIndentLine", "-internal-effective-zoom",
                 "word-break", "overflow-wrap", "-webkit-line-break", 
                 "-webkit-text-security", "hyphens", "HyphenationLimitBefore", 
                 "HyphenationLimitAfter", "-webkit-hyphenate-character", 
@@ -58,7 +94,7 @@
                 "TextEmphasisCustomMark", "text-justify", "text-orientation", 
                 "text-combine-upright", "tab-size", "text-size-adjust", 
                 "list-style-image", "line-height-step", 
-                "-webkit-text-stroke-width", "line-height", "font", 
+                "-webkit-text-stroke-width", "line-height",
                 "-webkit-border-horizontal-spacing", 
                 "-webkit-border-vertical-spacing", "TextAutosizingMultiplier", 
                 "NamedGridColumnLines", "NamedGridRowLines", "OrderedNamedGridColumnLines", 
@@ -75,7 +111,7 @@
                 "-webkit-box-pack", "-webkit-box-orient",
                 "grid-row-start", "grid-row-end", "grid-column-start", "grid-column-end",
                 "column-gap", "column-width", "column-rule-style",
-                "column-rule-width", "column-rule-color", "ColumnRuleColorIsCurrentColor", "VisitedLinkColumnRuleColor",
+                "column-rule-width", "column-rule-color", "ColumnRuleColorIsCurrentColor", "-internal-visited-column-rule-color",
                 "column-count", "HasAutoColumnCount", "HasAutoColumnWidth", "column-fill", "column-span",],
         methods_to_diff: [
           {
@@ -99,11 +135,7 @@
             field_dependencies: ["filter"]
           },
           {
-            method: "FontInternal().LoadingCustomFonts()",
-            field_dependencies: ["font"]
-          },
-          {
-            method: "HasPseudoStyle(kPseudoIdScrollbar)",
+            method: "HasPseudoElementStyle(kPseudoIdScrollbar)",
             field_dependencies: ["StyleType"]
           },
           {
@@ -111,24 +143,8 @@
             field_dependencies: ["-webkit-box-direction"]
           },
           {
-            method: "RtlOrdering()",
-            field_dependencies: ["-webkit-rtl-ordering"]
-          },
-          {
             method: "GetTextAlign()",
             field_dependencies: ["text-align"]
-          },
-          {
-            method: "TextTransform()",
-            field_dependencies: ["text-transform"]
-          },
-          {
-            method: "Direction()",
-            field_dependencies: ["direction"]
-          },
-          {
-            method: "WhiteSpace()",
-            field_dependencies: ["white-space"]
           },
           {
             method: "GetWritingMode()",
@@ -145,10 +161,6 @@
           {
             method: "Clear()",
             field_dependencies: ["clear"]
-          },
-          {
-            method: "GetUnicodeBidi()",
-            field_dependencies: ["unicode-bidi"]
           },
           {
             method: "Floating()",
@@ -204,7 +216,11 @@
         methods_to_diff: [
           {
             method: "ListStyleType()",
-            field_dependencies: ["list-style-type"]
+            field_dependencies: ["ListStyleType"]
+          },
+          {
+            method: "ListStyleStringValue()",
+            field_dependencies: ["ListStyleStringValue"]
           },
           {
             method: "ListStylePosition()",
@@ -217,7 +233,7 @@
         fields_to_diff: ["width", "min-width", "max-width", "height", "min-height",
                 "max-height", "VerticalAlignLength", "box-sizing", "align-content",
                 "align-items", "align-self", "justify-content", "justify-items",
-                "justify-self", "contain"],
+                "justify-self", "contain", "intrinsic-width", "intrinsic-height"],
         methods_to_diff: [
           {
             method: "VerticalAlign()",
@@ -251,8 +267,8 @@
             field_dependencies: ["InsideLink"]
           },
           {
-            method: "VisitedLinkBackgroundColor()",
-            field_dependencies: ["VisitedLinkBackgroundColor"]
+            method: "InternalVisitedBackgroundColor()",
+            field_dependencies: ["-internal-visited-background-color"]
           },
           {
             method: "Resize()",
@@ -277,24 +293,24 @@
             field_dependencies: ["outline-width", "outline-color", "OutlineColorIsCurrentColor", "outline-offset", "outline-style", "OutlineStyleIsAuto"]
           },
           {
-            predicate: "a.VisitedLinkBorderLeftColorHasNotChanged(b)",
-            field_dependencies: ["VisitedLinkBorderLeftColor"]
+            predicate: "a.InternalVisitedBorderLeftColorHasNotChanged(b)",
+            field_dependencies: ["-internal-visited-border-left-color"]
           },
           {
-            predicate: "a.VisitedLinkBorderRightColorHasNotChanged(b)",
-            field_dependencies: ["VisitedLinkBorderRightColor"]
+            predicate: "a.InternalVisitedBorderRightColorHasNotChanged(b)",
+            field_dependencies: ["-internal-visited-border-right-color"]
           },
           {
-            predicate: "a.VisitedLinkBorderBottomColorHasNotChanged(b)",
-            field_dependencies: ["VisitedLinkBorderBottomColor"]
+            predicate: "a.InternalVisitedBorderBottomColorHasNotChanged(b)",
+            field_dependencies: ["-internal-visited-border-bottom-color"]
           },
           {
-            predicate: "a.VisitedLinkBorderTopColorHasNotChanged(b)",
-            field_dependencies: ["VisitedLinkBorderTopColor"]
+            predicate: "a.InternalVisitedBorderTopColorHasNotChanged(b)",
+            field_dependencies: ["-internal-visited-border-top-color"]
           },
           {
-            predicate: "a.VisitedLinkOutlineColorHasNotChanged(b)",
-            field_dependencies: ["VisitedLinkOutlineColor"]
+            predicate: "a.InternalVisitedOutlineColorHasNotChanged(b)",
+            field_dependencies: ["-internal-visited-outline-color"]
           },
         ]
     },
@@ -401,9 +417,9 @@
     },
     {
         name: "UpdatePropertySpecificDifferencesTextDecorationOrColor",
-        fields_to_diff: ["color", "VisitedLinkColor", "text-decoration-line",
+        fields_to_diff: ["color", "-internal-visited-color", "text-decoration-line",
                 "text-decoration-style", "text-decoration-color",
-                "VisitedLinkTextDecorationColor", "TextEmphasisFill",
+                "-internal-visited-text-decoration-color", "TextEmphasisFill",
                 "text-underline-position", "text-decoration-skip-ink", "AppliedTextDecorations"],
         methods_to_diff: [
           {
@@ -423,24 +439,24 @@
             field_dependencies: ["-webkit-text-emphasis-color"]
           },
           {
-            method: "VisitedLinkTextFillColor()",
-            field_dependencies: ["VisitedLinkTextFillColor"]
+            method: "InternalVisitedTextFillColor()",
+            field_dependencies: ["-internal-visited-text-fill-color"]
           },
           {
-            method: "VisitedLinkTextStrokeColor()",
-            field_dependencies: ["VisitedLinkTextStrokeColor"]
+            method: "InternalVisitedTextStrokeColor()",
+            field_dependencies: ["-internal-visited-text-stroke-color"]
           },
           {
-            method: "VisitedLinkTextEmphasisColor()",
-            field_dependencies: ["VisitedLinkTextEmphasisColor"]
+            method: "InternalVisitedTextEmphasisColor()",
+            field_dependencies: ["-internal-visited-text-emphasis-color"]
           },
           {
             method: "CaretColor()",
             field_dependencies: ["caret-color"]
           },
           {
-            method: "VisitedLinkCaretColor()",
-            field_dependencies: ["VisitedLinkCaretColor"]
+            method: "InternalVisitedCaretColor()",
+            field_dependencies: ["-internal-visited-caret-color"]
           },
         ]
     },

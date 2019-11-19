@@ -8,15 +8,17 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/mac/mac_util.h"
 #include "base/mac/scoped_nsobject.h"
-#include "base/message_loop/message_loop.h"
+#include "base/message_loop/message_pump_type.h"
 #include "base/process/launch.h"
 #include "base/run_loop.h"
 #include "base/strings/sys_string_conversions.h"
+#include "base/test/task_environment.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/thread.h"
 #include "chrome/common/mac/launchd.h"
@@ -43,21 +45,22 @@ class ServiceProcessStateFileManipulationTest : public ::testing::Test {
 
   void SetUp() override {
     base::Thread::Options options;
-    options.message_loop_type = base::MessageLoop::TYPE_IO;
+    options.message_pump_type = base::MessagePumpType::IO;
     ASSERT_TRUE(io_thread_.StartWithOptions(options));
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     ASSERT_TRUE(MockLaunchd::MakeABundle(GetTempDirPath(), "Test",
                                          &bundle_path_, &executable_path_));
-    mock_launchd_.reset(new MockLaunchd(executable_path_, loop_.task_runner(),
-                                        run_loop_.QuitClosure(), false, false));
+    mock_launchd_.reset(new MockLaunchd(
+        executable_path_, task_environment_.GetMainThreadTaskRunner(),
+        run_loop_.QuitClosure(), true));
     scoped_launchd_instance_.reset(
         new Launchd::ScopedInstance(mock_launchd_.get()));
     ASSERT_TRUE(service_process_state_.Initialize());
     ASSERT_TRUE(service_process_state_.SignalReady(
         io_thread_.task_runner().get(), base::Closure()));
-    loop_.task_runner()->PostDelayedTask(FROM_HERE,
-                                         run_loop_.QuitWhenIdleClosure(),
-                                         TestTimeouts::action_max_timeout());
+    task_environment_.GetMainThreadTaskRunner()->PostDelayedTask(
+        FROM_HERE, run_loop_.QuitWhenIdleClosure(),
+        TestTimeouts::action_max_timeout());
   }
 
   const MockLaunchd* mock_launchd() const { return mock_launchd_.get(); }
@@ -74,7 +77,8 @@ class ServiceProcessStateFileManipulationTest : public ::testing::Test {
 
  private:
   base::ScopedTempDir temp_dir_;
-  base::MessageLoopForUI loop_;
+  base::test::SingleThreadTaskEnvironment task_environment_{
+      base::test::SingleThreadTaskEnvironment::MainThreadType::UI};
   base::RunLoop run_loop_;
   base::Thread io_thread_;
   base::FilePath executable_path_, bundle_path_;

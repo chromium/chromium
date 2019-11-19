@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_CHROMEOS_ARC_ACCESSIBILITY_ACCESSIBILITY_NODE_INFO_DATA_WRAPPER_H_
 #define CHROME_BROWSER_CHROMEOS_ARC_ACCESSIBILITY_ACCESSIBILITY_NODE_INFO_DATA_WRAPPER_H_
 
-#include "chrome/browser/chromeos/arc/accessibility/arc_accessibility_info_data.h"
+#include "chrome/browser/chromeos/arc/accessibility/accessibility_info_data_wrapper.h"
 #include "ui/accessibility/ax_enum_util.h"
 #include "ui/accessibility/ax_node_data.h"
 
@@ -14,13 +14,13 @@ namespace arc {
 class AXTreeSourceArc;
 
 // Wrapper class for an AccessibilityWindowInfoData.
-class AccessibilityNodeInfoDataWrapper : public ArcAccessibilityInfoData {
+class AccessibilityNodeInfoDataWrapper : public AccessibilityInfoDataWrapper {
  public:
-  explicit AccessibilityNodeInfoDataWrapper(
-      AXTreeSourceArc* tree_source,
-      mojom::AccessibilityNodeInfoData* node);
+  AccessibilityNodeInfoDataWrapper(AXTreeSourceArc* tree_source,
+                                   mojom::AccessibilityNodeInfoData* node,
+                                   bool is_clickable_leaf);
 
-  // ArcAccessibilityInfoData overrides.
+  // AccessibilityInfoDataWrapper overrides.
   bool IsNode() const override;
   mojom::AccessibilityNodeInfoData* GetNode() const override;
   mojom::AccessibilityWindowInfoData* GetWindow() const override;
@@ -33,7 +33,7 @@ class AccessibilityNodeInfoDataWrapper : public ArcAccessibilityInfoData {
   void PopulateAXState(ui::AXNodeData* out_data) const override;
   void Serialize(ui::AXNodeData* out_data) const override;
   void GetChildren(
-      std::vector<ArcAccessibilityInfoData*>* children) const override;
+      std::vector<AccessibilityInfoDataWrapper*>* children) const override;
 
   mojom::AccessibilityNodeInfoData* node() { return node_ptr_; }
 
@@ -55,8 +55,13 @@ class AccessibilityNodeInfoDataWrapper : public ArcAccessibilityInfoData {
   void ComputeNameFromContents(const AccessibilityNodeInfoDataWrapper* data,
                                std::vector<std::string>* names) const;
 
-  AXTreeSourceArc* tree_source_ = nullptr;
+  bool IsFocusableNativeWeb(ax::mojom::Role role) const;
+
+  bool IsInterestingLeaf() const;
+
   mojom::AccessibilityNodeInfoData* node_ptr_ = nullptr;
+
+  bool is_clickable_leaf_;
 
   DISALLOW_COPY_AND_ASSIGN(AccessibilityNodeInfoDataWrapper);
 };

@@ -1,4 +1,4 @@
-[Worker] This test tries calling various sync filesystem functions with null arguments.
+[Worker] This test tries calling various filesystem functions with null arguments.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 

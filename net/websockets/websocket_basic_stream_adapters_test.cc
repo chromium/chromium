@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/strings/string_piece.h"
 #include "net/base/host_port_pair.h"
@@ -19,16 +20,13 @@
 #include "net/base/test_completion_callback.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/http/http_network_session.h"
-#include "net/http/http_proxy_connect_job.h"
 #include "net/log/net_log_with_source.h"
 #include "net/socket/client_socket_handle.h"
-#include "net/socket/client_socket_pool_manager_impl.h"
+#include "net/socket/connect_job.h"
 #include "net/socket/socket_tag.h"
 #include "net/socket/socket_test_util.h"
-#include "net/socket/socks_connect_job.h"
-#include "net/socket/ssl_connect_job.h"
+#include "net/socket/ssl_client_socket.h"
 #include "net/socket/transport_client_socket_pool.h"
-#include "net/socket/transport_connect_job.h"
 #include "net/socket/websocket_endpoint_lock_manager.h"
 #include "net/spdy/spdy_session.h"
 #include "net/spdy/spdy_session_key.h"
@@ -38,7 +36,7 @@
 #include "net/test/cert_test_util.h"
 #include "net/test/gtest_util.h"
 #include "net/test/test_data_directory.h"
-#include "net/test/test_with_scoped_task_environment.h"
+#include "net/test/test_with_task_environment.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "net/websockets/websocket_test_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -52,65 +50,42 @@ namespace net {
 
 namespace test {
 
-const char* const kGroupName = "ssl/www.example.org:443";
-
-class WebSocketClientSocketHandleAdapterTest
-    : public TestWithScopedTaskEnvironment {
+class WebSocketClientSocketHandleAdapterTest : public TestWithTaskEnvironment {
  protected:
   WebSocketClientSocketHandleAdapterTest()
       : host_port_pair_("www.example.org", 443),
-        socket_pool_manager_(std::make_unique<ClientSocketPoolManagerImpl>(
-            net_log_.net_log(),
-            &socket_factory_,
-            nullptr,
-            nullptr,
-            &host_resolver,
-            nullptr,
-            nullptr,
-            nullptr,
-            nullptr,
-            nullptr,
-            nullptr,
-            nullptr,
-            nullptr,
-            &websocket_endpoint_lock_manager_,
-            nullptr,
-            HttpNetworkSession::NORMAL_SOCKET_POOL)),
-        transport_params_(base::MakeRefCounted<TransportSocketParams>(
-            host_port_pair_,
-            false,
-            OnHostResolutionCallback())),
-        ssl_params_(
-            base::MakeRefCounted<SSLSocketParams>(transport_params_,
-                                                  nullptr,
-                                                  nullptr,
-                                                  host_port_pair_,
-                                                  SSLConfig(),
-                                                  PRIVACY_MODE_DISABLED)) {}
+        network_session_(
+            SpdySessionDependencies::SpdyCreateSession(&session_deps_)),
+        websocket_endpoint_lock_manager_(
+            network_session_->websocket_endpoint_lock_manager()) {}
 
   ~WebSocketClientSocketHandleAdapterTest() override = default;
 
   bool InitClientSocketHandle(ClientSocketHandle* connection) {
+    scoped_refptr<ClientSocketPool::SocketParams> socks_params =
+        base::MakeRefCounted<ClientSocketPool::SocketParams>(
+            std::make_unique<SSLConfig>() /* ssl_config_for_origin */,
+            nullptr /* ssl_config_for_proxy */);
     TestCompletionCallback callback;
     int rv = connection->Init(
-        kGroupName,
-        TransportClientSocketPool::SocketParams::CreateFromSSLSocketParams(
-            ssl_params_),
+        ClientSocketPool::GroupId(
+            host_port_pair_, ClientSocketPool::SocketType::kSsl,
+            PrivacyMode::PRIVACY_MODE_DISABLED, NetworkIsolationKey(),
+            false /* disable_secure_dns */),
+        socks_params, TRAFFIC_ANNOTATION_FOR_TESTS /* proxy_annotation_tag */,
         MEDIUM, SocketTag(), ClientSocketPool::RespectLimits::ENABLED,
         callback.callback(), ClientSocketPool::ProxyAuthCallback(),
-        socket_pool_manager_->GetSocketPool(ProxyServer::Direct()), net_log_);
+        network_session_->GetSocketPool(HttpNetworkSession::NORMAL_SOCKET_POOL,
+                                        ProxyServer::Direct()),
+        NetLogWithSource());
     rv = callback.GetResult(rv);
     return rv == OK;
   }
 
   const HostPortPair host_port_pair_;
-  NetLogWithSource net_log_;
-  MockClientSocketFactory socket_factory_;
-  MockHostResolver host_resolver;
-  std::unique_ptr<ClientSocketPoolManagerImpl> socket_pool_manager_;
-  scoped_refptr<TransportSocketParams> transport_params_;
-  scoped_refptr<SSLSocketParams> ssl_params_;
-  WebSocketEndpointLockManager websocket_endpoint_lock_manager_;
+  SpdySessionDependencies session_deps_;
+  std::unique_ptr<HttpNetworkSession> network_session_;
+  WebSocketEndpointLockManager* websocket_endpoint_lock_manager_;
 };
 
 TEST_F(WebSocketClientSocketHandleAdapterTest, Uninitialized) {
@@ -121,9 +96,9 @@ TEST_F(WebSocketClientSocketHandleAdapterTest, Uninitialized) {
 
 TEST_F(WebSocketClientSocketHandleAdapterTest, IsInitialized) {
   StaticSocketDataProvider data;
-  socket_factory_.AddSocketDataProvider(&data);
+  session_deps_.socket_factory->AddSocketDataProvider(&data);
   SSLSocketDataProvider ssl_socket_data(ASYNC, OK);
-  socket_factory_.AddSSLSocketDataProvider(&ssl_socket_data);
+  session_deps_.socket_factory->AddSSLSocketDataProvider(&ssl_socket_data);
 
   auto connection = std::make_unique<ClientSocketHandle>();
   ClientSocketHandle* const connection_ptr = connection.get();
@@ -138,9 +113,9 @@ TEST_F(WebSocketClientSocketHandleAdapterTest, IsInitialized) {
 
 TEST_F(WebSocketClientSocketHandleAdapterTest, Disconnect) {
   StaticSocketDataProvider data;
-  socket_factory_.AddSocketDataProvider(&data);
+  session_deps_.socket_factory->AddSocketDataProvider(&data);
   SSLSocketDataProvider ssl_socket_data(ASYNC, OK);
-  socket_factory_.AddSSLSocketDataProvider(&ssl_socket_data);
+  session_deps_.socket_factory->AddSSLSocketDataProvider(&ssl_socket_data);
 
   auto connection = std::make_unique<ClientSocketHandle>();
   EXPECT_TRUE(InitClientSocketHandle(connection.get()));
@@ -158,9 +133,9 @@ TEST_F(WebSocketClientSocketHandleAdapterTest, Disconnect) {
 TEST_F(WebSocketClientSocketHandleAdapterTest, Read) {
   MockRead reads[] = {MockRead(SYNCHRONOUS, "foo"), MockRead("bar")};
   StaticSocketDataProvider data(reads, base::span<MockWrite>());
-  socket_factory_.AddSocketDataProvider(&data);
+  session_deps_.socket_factory->AddSocketDataProvider(&data);
   SSLSocketDataProvider ssl_socket_data(ASYNC, OK);
-  socket_factory_.AddSSLSocketDataProvider(&ssl_socket_data);
+  session_deps_.socket_factory->AddSSLSocketDataProvider(&ssl_socket_data);
 
   auto connection = std::make_unique<ClientSocketHandle>();
   EXPECT_TRUE(InitClientSocketHandle(connection.get()));
@@ -189,9 +164,9 @@ TEST_F(WebSocketClientSocketHandleAdapterTest, Read) {
 TEST_F(WebSocketClientSocketHandleAdapterTest, ReadIntoSmallBuffer) {
   MockRead reads[] = {MockRead(SYNCHRONOUS, "foo"), MockRead("bar")};
   StaticSocketDataProvider data(reads, base::span<MockWrite>());
-  socket_factory_.AddSocketDataProvider(&data);
+  session_deps_.socket_factory->AddSocketDataProvider(&data);
   SSLSocketDataProvider ssl_socket_data(ASYNC, OK);
-  socket_factory_.AddSSLSocketDataProvider(&ssl_socket_data);
+  session_deps_.socket_factory->AddSSLSocketDataProvider(&ssl_socket_data);
 
   auto connection = std::make_unique<ClientSocketHandle>();
   EXPECT_TRUE(InitClientSocketHandle(connection.get()));
@@ -228,9 +203,9 @@ TEST_F(WebSocketClientSocketHandleAdapterTest, ReadIntoSmallBuffer) {
 TEST_F(WebSocketClientSocketHandleAdapterTest, Write) {
   MockWrite writes[] = {MockWrite(SYNCHRONOUS, "foo"), MockWrite("bar")};
   StaticSocketDataProvider data(base::span<MockRead>(), writes);
-  socket_factory_.AddSocketDataProvider(&data);
+  session_deps_.socket_factory->AddSocketDataProvider(&data);
   SSLSocketDataProvider ssl_socket_data(ASYNC, OK);
-  socket_factory_.AddSSLSocketDataProvider(&ssl_socket_data);
+  session_deps_.socket_factory->AddSSLSocketDataProvider(&ssl_socket_data);
 
   auto connection = std::make_unique<ClientSocketHandle>();
   EXPECT_TRUE(InitClientSocketHandle(connection.get()));
@@ -262,9 +237,9 @@ TEST_F(WebSocketClientSocketHandleAdapterTest, AsyncReadAndWrite) {
   MockRead reads[] = {MockRead("foobar")};
   MockWrite writes[] = {MockWrite("baz")};
   StaticSocketDataProvider data(reads, writes);
-  socket_factory_.AddSocketDataProvider(&data);
+  session_deps_.socket_factory->AddSocketDataProvider(&data);
   SSLSocketDataProvider ssl_socket_data(ASYNC, OK);
-  socket_factory_.AddSSLSocketDataProvider(&ssl_socket_data);
+  session_deps_.socket_factory->AddSSLSocketDataProvider(&ssl_socket_data);
 
   auto connection = std::make_unique<ClientSocketHandle>();
   EXPECT_TRUE(InitClientSocketHandle(connection.get()));
@@ -303,7 +278,7 @@ class MockDelegate : public WebSocketSpdyStreamAdapter::Delegate {
   MOCK_METHOD1(OnClose, void(int));
 };
 
-class WebSocketSpdyStreamAdapterTest : public TestWithScopedTaskEnvironment {
+class WebSocketSpdyStreamAdapterTest : public TestWithTaskEnvironment {
  protected:
   WebSocketSpdyStreamAdapterTest()
       : url_("wss://www.example.org/"),
@@ -311,7 +286,9 @@ class WebSocketSpdyStreamAdapterTest : public TestWithScopedTaskEnvironment {
              ProxyServer::Direct(),
              PRIVACY_MODE_DISABLED,
              SpdySessionKey::IsProxySession::kFalse,
-             SocketTag()),
+             SocketTag(),
+             NetworkIsolationKey(),
+             false /* disable_secure_dns */),
         session_(SpdySessionDependencies::SpdyCreateSession(&session_deps_)),
         ssl_(SYNCHRONOUS, OK) {}
 
@@ -338,18 +315,17 @@ class WebSocketSpdyStreamAdapterTest : public TestWithScopedTaskEnvironment {
   }
 
   base::WeakPtr<SpdySession> CreateSpdySession() {
-    return ::net::CreateSpdySession(session_.get(), key_, net_log_);
+    return ::net::CreateSpdySession(session_.get(), key_, NetLogWithSource());
   }
 
   base::WeakPtr<SpdyStream> CreateSpdyStream(
       base::WeakPtr<SpdySession> session) {
     return CreateStreamSynchronously(SPDY_BIDIRECTIONAL_STREAM, session, url_,
-                                     LOWEST, net_log_);
+                                     LOWEST, NetLogWithSource());
   }
 
   SpdyTestUtil spdy_util_;
   StrictMock<MockDelegate> mock_delegate_;
-  NetLogWithSource net_log_;
 
  private:
   const GURL url_;
@@ -368,7 +344,8 @@ TEST_F(WebSocketSpdyStreamAdapterTest, Disconnect) {
 
   base::WeakPtr<SpdySession> session = CreateSpdySession();
   base::WeakPtr<SpdyStream> stream = CreateSpdyStream(session);
-  WebSocketSpdyStreamAdapter adapter(stream, &mock_delegate_, net_log_);
+  WebSocketSpdyStreamAdapter adapter(stream, &mock_delegate_,
+                                     NetLogWithSource());
   EXPECT_TRUE(adapter.is_initialized());
 
   base::RunLoop().RunUntilIdle();
@@ -401,7 +378,8 @@ TEST_F(WebSocketSpdyStreamAdapterTest, SendRequestHeadersThenDisconnect) {
 
   base::WeakPtr<SpdySession> session = CreateSpdySession();
   base::WeakPtr<SpdyStream> stream = CreateSpdyStream(session);
-  WebSocketSpdyStreamAdapter adapter(stream, &mock_delegate_, net_log_);
+  WebSocketSpdyStreamAdapter adapter(stream, &mock_delegate_,
+                                     NetLogWithSource());
   EXPECT_TRUE(adapter.is_initialized());
 
   int rv = stream->SendRequestHeaders(RequestHeaders(), MORE_DATA_TO_SEND);
@@ -442,7 +420,8 @@ TEST_F(WebSocketSpdyStreamAdapterTest, OnHeadersSentThenDisconnect) {
 
   base::WeakPtr<SpdySession> session = CreateSpdySession();
   base::WeakPtr<SpdyStream> stream = CreateSpdyStream(session);
-  WebSocketSpdyStreamAdapter adapter(stream, &mock_delegate_, net_log_);
+  WebSocketSpdyStreamAdapter adapter(stream, &mock_delegate_,
+                                     NetLogWithSource());
   EXPECT_TRUE(adapter.is_initialized());
 
   int rv = stream->SendRequestHeaders(RequestHeaders(), MORE_DATA_TO_SEND);
@@ -484,7 +463,8 @@ TEST_F(WebSocketSpdyStreamAdapterTest, OnHeadersReceivedThenDisconnect) {
 
   base::WeakPtr<SpdySession> session = CreateSpdySession();
   base::WeakPtr<SpdyStream> stream = CreateSpdyStream(session);
-  WebSocketSpdyStreamAdapter adapter(stream, &mock_delegate_, net_log_);
+  WebSocketSpdyStreamAdapter adapter(stream, &mock_delegate_,
+                                     NetLogWithSource());
   EXPECT_TRUE(adapter.is_initialized());
 
   int rv = stream->SendRequestHeaders(RequestHeaders(), MORE_DATA_TO_SEND);
@@ -515,7 +495,8 @@ TEST_F(WebSocketSpdyStreamAdapterTest, ServerClosesConnection) {
 
   base::WeakPtr<SpdySession> session = CreateSpdySession();
   base::WeakPtr<SpdyStream> stream = CreateSpdyStream(session);
-  WebSocketSpdyStreamAdapter adapter(stream, &mock_delegate_, net_log_);
+  WebSocketSpdyStreamAdapter adapter(stream, &mock_delegate_,
+                                     NetLogWithSource());
   EXPECT_TRUE(adapter.is_initialized());
 
   EXPECT_TRUE(session);
@@ -543,7 +524,8 @@ TEST_F(WebSocketSpdyStreamAdapterTest,
 
   base::WeakPtr<SpdySession> session = CreateSpdySession();
   base::WeakPtr<SpdyStream> stream = CreateSpdyStream(session);
-  WebSocketSpdyStreamAdapter adapter(stream, &mock_delegate_, net_log_);
+  WebSocketSpdyStreamAdapter adapter(stream, &mock_delegate_,
+                                     NetLogWithSource());
   EXPECT_TRUE(adapter.is_initialized());
 
   int rv = stream->SendRequestHeaders(RequestHeaders(), MORE_DATA_TO_SEND);
@@ -578,7 +560,8 @@ TEST_F(WebSocketSpdyStreamAdapterTest,
 
   base::WeakPtr<SpdySession> session = CreateSpdySession();
   base::WeakPtr<SpdyStream> stream = CreateSpdyStream(session);
-  WebSocketSpdyStreamAdapter adapter(stream, &mock_delegate_, net_log_);
+  WebSocketSpdyStreamAdapter adapter(stream, &mock_delegate_,
+                                     NetLogWithSource());
   EXPECT_TRUE(adapter.is_initialized());
 
   int rv = stream->SendRequestHeaders(RequestHeaders(), MORE_DATA_TO_SEND);
@@ -608,7 +591,8 @@ TEST_F(WebSocketSpdyStreamAdapterTest, DetachDelegate) {
 
   base::WeakPtr<SpdySession> session = CreateSpdySession();
   base::WeakPtr<SpdyStream> stream = CreateSpdyStream(session);
-  WebSocketSpdyStreamAdapter adapter(stream, &mock_delegate_, net_log_);
+  WebSocketSpdyStreamAdapter adapter(stream, &mock_delegate_,
+                                     NetLogWithSource());
   EXPECT_TRUE(adapter.is_initialized());
 
   // No Delegate methods shall be called after this.
@@ -653,7 +637,8 @@ TEST_F(WebSocketSpdyStreamAdapterTest, Read) {
 
   base::WeakPtr<SpdySession> session = CreateSpdySession();
   base::WeakPtr<SpdyStream> stream = CreateSpdyStream(session);
-  WebSocketSpdyStreamAdapter adapter(stream, &mock_delegate_, net_log_);
+  WebSocketSpdyStreamAdapter adapter(stream, &mock_delegate_,
+                                     NetLogWithSource());
   EXPECT_TRUE(adapter.is_initialized());
 
   int rv = stream->SendRequestHeaders(RequestHeaders(), MORE_DATA_TO_SEND);
@@ -721,7 +706,8 @@ TEST_F(WebSocketSpdyStreamAdapterTest, CallDelegateOnCloseShouldNotCrash) {
 
   base::WeakPtr<SpdySession> session = CreateSpdySession();
   base::WeakPtr<SpdyStream> stream = CreateSpdyStream(session);
-  WebSocketSpdyStreamAdapter adapter(stream, &mock_delegate_, net_log_);
+  WebSocketSpdyStreamAdapter adapter(stream, &mock_delegate_,
+                                     NetLogWithSource());
   EXPECT_TRUE(adapter.is_initialized());
 
   int rv = stream->SendRequestHeaders(RequestHeaders(), MORE_DATA_TO_SEND);
@@ -777,7 +763,7 @@ TEST_F(WebSocketSpdyStreamAdapterTest, Write) {
 
   base::WeakPtr<SpdySession> session = CreateSpdySession();
   base::WeakPtr<SpdyStream> stream = CreateSpdyStream(session);
-  WebSocketSpdyStreamAdapter adapter(stream, nullptr, net_log_);
+  WebSocketSpdyStreamAdapter adapter(stream, nullptr, NetLogWithSource());
   EXPECT_TRUE(adapter.is_initialized());
 
   int rv = stream->SendRequestHeaders(RequestHeaders(), MORE_DATA_TO_SEND);
@@ -822,7 +808,7 @@ TEST_F(WebSocketSpdyStreamAdapterTest, AsyncReadAndWrite) {
 
   base::WeakPtr<SpdySession> session = CreateSpdySession();
   base::WeakPtr<SpdyStream> stream = CreateSpdyStream(session);
-  WebSocketSpdyStreamAdapter adapter(stream, nullptr, net_log_);
+  WebSocketSpdyStreamAdapter adapter(stream, nullptr, NetLogWithSource());
   EXPECT_TRUE(adapter.is_initialized());
 
   int rv = stream->SendRequestHeaders(RequestHeaders(), MORE_DATA_TO_SEND);
@@ -896,7 +882,7 @@ TEST_F(WebSocketSpdyStreamAdapterTest, ReadCallbackDestroysAdapter) {
   base::WeakPtr<SpdySession> session = CreateSpdySession();
   base::WeakPtr<SpdyStream> stream = CreateSpdyStream(session);
   auto adapter = std::make_unique<WebSocketSpdyStreamAdapter>(
-      stream, &mock_delegate_, net_log_);
+      stream, &mock_delegate_, NetLogWithSource());
   EXPECT_TRUE(adapter->is_initialized());
 
   int rv = stream->SendRequestHeaders(RequestHeaders(), MORE_DATA_TO_SEND);
@@ -946,7 +932,7 @@ TEST_F(WebSocketSpdyStreamAdapterTest, WriteCallbackDestroysAdapter) {
   base::WeakPtr<SpdySession> session = CreateSpdySession();
   base::WeakPtr<SpdyStream> stream = CreateSpdyStream(session);
   auto adapter = std::make_unique<WebSocketSpdyStreamAdapter>(
-      stream, &mock_delegate_, net_log_);
+      stream, &mock_delegate_, NetLogWithSource());
   EXPECT_TRUE(adapter->is_initialized());
 
   int rv = stream->SendRequestHeaders(RequestHeaders(), MORE_DATA_TO_SEND);

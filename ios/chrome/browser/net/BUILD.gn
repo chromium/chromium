@@ -11,8 +11,8 @@ source_set("net") {
     "connection_type_observer_bridge.mm",
     "cookie_util.h",
     "cookie_util.mm",
-    "http_server_properties_manager_factory.cc",
-    "http_server_properties_manager_factory.h",
+    "http_server_properties_factory.cc",
+    "http_server_properties_factory.h",
     "ios_chrome_http_user_agent_settings.h",
     "ios_chrome_http_user_agent_settings.mm",
     "ios_chrome_network_delegate.cc",
@@ -26,6 +26,7 @@ source_set("net") {
     "//base",
     "//components/component_updater",
     "//components/content_settings/core/browser",
+    "//components/language/core/browser",
     "//components/pref_registry",
     "//components/prefs",
     "//components/update_client",
@@ -33,7 +34,7 @@ source_set("net") {
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/browsing_data",
     "//ios/net",
-    "//ios/web",
+    "//ios/web/common",
     "//net",
     "//net:extras",
     "//url",
@@ -68,6 +69,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//ios/net",
     "//ios/net:test_support",
+    "//ios/web/common",
     "//ios/web/public/test",
     "//services/network:test_support",
     "//testing/gtest",
@@ -75,6 +77,7 @@ source_set("unit_tests") {
 }
 
 source_set("eg_tests") {
+  defines = [ "CHROME_EARL_GREY_1" ]
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
@@ -84,10 +87,32 @@ source_set("eg_tests") {
     "//base",
     "//ios/chrome/test/app:test_support",
     "//ios/chrome/test/earl_grey:test_support",
+    "//ios/testing/earl_grey:earl_grey_support",
     "//ios/third_party/earl_grey:earl_grey+link",
     "//ios/web/public/test",
     "//ios/web/public/test/http_server",
     "//url",
   ]
   libs = [ "XCTest.framework" ]
+}
+
+source_set("eg2_tests") {
+  defines = [ "CHROME_EARL_GREY_2" ]
+  configs += [
+    "//build/config/compiler:enable_arc",
+    "//build/config/ios:xctest_config",
+  ]
+  testonly = true
+  sources = [
+    "cookies_egtest.mm",
+  ]
+  deps = [
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//ios/third_party/earl_grey2:test_lib",
+    "//ios/web/public/test/http_server",
+    "//ui/base",
+    "//url",
+  ]
+  libs = [ "UIKit.framework" ]
 }

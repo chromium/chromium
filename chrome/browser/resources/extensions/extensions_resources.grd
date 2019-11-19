@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<grit latest_public_release="0" current_release="1" output_all_resource_defines="false">
+  <outputs>
+    <output filename="grit/extensions_resources.h" type="rc_header">
+      <emit emit_type='prepend'></emit>
+    </output>
+    <output filename="grit/extensions_resources_map.cc"
+            type="resource_file_map_source" />
+    <output filename="grit/extensions_resources_map.h"
+            type="resource_map_header" />
+    <output filename="extensions_resources.pak" type="data_package" />
+  </outputs>
+  <release seq="1">
+    <includes>
+      <include name="IDR_EXTENSIONS_CODE_SECTION_JS"
+               file="${root_gen_dir}/chrome/browser/resources/extensions/code_section.js"
+               use_base_dir="false" type ="BINDATA" />
+      <include name="IDR_EXTENSIONS_ACTIVITY_LOG_ACTIVITY_LOG_JS"
+               file="${root_gen_dir}/chrome/browser/resources/extensions/activity_log/activity_log.js"
+               use_base_dir="false" type ="BINDATA" />
+      <include name="IDR_EXTENSIONS_ACTIVITY_LOG_ACTIVITY_LOG_HISTORY_JS"
+               file="${root_gen_dir}/chrome/browser/resources/extensions/activity_log/activity_log_history.js"
+               use_base_dir="false" type ="BINDATA" />
+      <include name="IDR_EXTENSIONS_ACTIVITY_LOG_ACTIVITY_LOG_HISTORY_ITEM_JS"
+               file="${root_gen_dir}/chrome/browser/resources/extensions/activity_log/activity_log_history_item.js"
+               use_base_dir="false" type ="BINDATA" />
+      <include name="IDR_EXTENSIONS_ACTIVITY_LOG_ACTIVITY_LOG_STREAM_JS"
+               file="${root_gen_dir}/chrome/browser/resources/extensions/activity_log/activity_log_stream.js"
+               use_base_dir="false" type ="BINDATA" />
+      <include name="IDR_EXTENSIONS_ACTIVITY_LOG_ACTIVITY_LOG_STREAM_ITEM_JS"
+               file="${root_gen_dir}/chrome/browser/resources/extensions/activity_log/activity_log_stream_item.js"
+               use_base_dir="false" type ="BINDATA" />
+      <include name="IDR_EXTENSIONS_DETAIL_VIEW_JS"
+               file="${root_gen_dir}/chrome/browser/resources/extensions/detail_view.js"
+               use_base_dir="false" type ="BINDATA" />
+      <include name="IDR_EXTENSIONS_DROP_OVERLAY_JS"
+               file="${root_gen_dir}/chrome/browser/resources/extensions/drop_overlay.js"
+               use_base_dir="false" type ="BINDATA" />
+      <include name="IDR_EXTENSIONS_ERROR_PAGE_JS"
+               file="${root_gen_dir}/chrome/browser/resources/extensions/error_page.js"
+               use_base_dir="false" type ="BINDATA" flattenhtml="true" />
+      <include name="IDR_EXTENSIONS_KEYBOARD_SHORTCUTS_JS"
+               file="${root_gen_dir}/chrome/browser/resources/extensions/keyboard_shortcuts.js"
+               use_base_dir="false" type ="BINDATA" />
+    <if expr="chromeos">
+      <include name="IDR_EXTENSIONS_KIOSK_DIALOG_JS"
+               file="${root_gen_dir}/chrome/browser/resources/extensions/kiosk_dialog.js"
+               use_base_dir="false" type ="BINDATA" />
+    </if>
+      <include name="IDR_EXTENSIONS_MANAGER_JS"
+               file="${root_gen_dir}/chrome/browser/resources/extensions/manager.js"
+               use_base_dir="false" type ="BINDATA" flattenhtml="true" />
+      <include name="IDR_EXTENSIONS_ICONS_JS"
+               file="${root_gen_dir}/chrome/browser/resources/extensions/icons.js"
+               use_base_dir="false" type ="BINDATA" />
+      <include name="IDR_EXTENSIONS_INSTALL_WARNINGS_DIALOG_JS"
+               file="${root_gen_dir}/chrome/browser/resources/extensions/install_warnings_dialog.js"
+               use_base_dir="false" type ="BINDATA" />
+      <include name="IDR_EXTENSIONS_ITEM_JS"
+               file="${root_gen_dir}/chrome/browser/resources/extensions/item.js"
+               use_base_dir="false" type ="BINDATA" />
+      <include name="IDR_EXTENSIONS_ITEM_LIST_JS"
+               file="${root_gen_dir}/chrome/browser/resources/extensions/item_list.js"
+               use_base_dir="false" type ="BINDATA" />
+      <include name="IDR_EXTENSIONS_LOAD_ERROR_JS"
+               file="${root_gen_dir}/chrome/browser/resources/extensions/load_error.js"
+               use_base_dir="false" type ="BINDATA" />
+      <include name="IDR_EXTENSIONS_HOST_PERMISSIONS_TOGGLE_LIST_JS"
+               file="${root_gen_dir}/chrome/browser/resources/extensions/host_permissions_toggle_list.js"
+               use_base_dir="false" type ="BINDATA" />
+      <include name="IDR_EXTENSIONS_OPTIONS_DIALOG_JS"
+               file="${root_gen_dir}/chrome/browser/resources/extensions/options_dialog.js"
+               use_base_dir="false" type ="BINDATA" />
+      <include name="IDR_EXTENSIONS_PACK_DIALOG_JS"
+               file="${root_gen_dir}/chrome/browser/resources/extensions/pack_dialog.js"
+               use_base_dir="false" type ="BINDATA" />
+      <include name="IDR_EXTENSIONS_PACK_DIALOG_ALERT_JS"
+               file="${root_gen_dir}/chrome/browser/resources/extensions/pack_dialog_alert.js"
+               use_base_dir="false" type ="BINDATA" />
+      <include name="IDR_EXTENSIONS_RUNTIME_HOST_PERMISSIONS_JS"
+               file="${root_gen_dir}/chrome/browser/resources/extensions/runtime_host_permissions.js"
+               use_base_dir="false" type ="BINDATA" />
+      <include name="IDR_EXTENSIONS_RUNTIME_HOSTS_DIALOG_JS"
+               file="${root_gen_dir}/chrome/browser/resources/extensions/runtime_hosts_dialog.js"
+               use_base_dir="false" type ="BINDATA" />
+      <include name="IDR_EXTENSIONS_SHARED_STYLE_JS"
+               file="${root_gen_dir}/chrome/browser/resources/extensions/shared_style.js"
+               use_base_dir="false" type ="BINDATA" />
+      <include name="IDR_EXTENSIONS_SHARED_VARS_JS"
+               file="${root_gen_dir}/chrome/browser/resources/extensions/shared_vars.js"
+               use_base_dir="false" type ="BINDATA" />
+      <include name="IDR_EXTENSIONS_SHORTCUT_INPUT_JS"
+               file="${root_gen_dir}/chrome/browser/resources/extensions/shortcut_input.js"
+               use_base_dir="false" type ="BINDATA" />
+      <include name="IDR_EXTENSIONS_SIDEBAR_JS"
+               file="${root_gen_dir}/chrome/browser/resources/extensions/sidebar.js"
+               use_base_dir="false" type ="BINDATA" />
+      <include name="IDR_EXTENSIONS_TOGGLE_ROW_JS"
+               file="${root_gen_dir}/chrome/browser/resources/extensions/toggle_row.js"
+               use_base_dir="false" type ="BINDATA" />
+      <include name="IDR_EXTENSIONS_TOOLBAR_JS"
+               file="${root_gen_dir}/chrome/browser/resources/extensions/toolbar.js"
+               use_base_dir="false" type ="BINDATA" flattenhtml="true" />
+      <include name="IDR_WEBUI_IMAGES_CHECKUP_IMAGE"
+               file="checkup_image.svg" type="BINDATA" compress="gzip" />
+      <include name="IDR_WEBUI_IMAGES_CHECKUP_IMAGE_DARKMODE"
+               file="checkup_image_dark.svg" type="BINDATA"
+               compress="gzip" />
+    </includes>
+    <structures>
+      <structure name="IDR_EXTENSIONS_ITEM_BEHAVIOR_JS"
+                 file="item_behavior.js"
+                 type="chrome_html" />
+      <structure name="IDR_EXTENSIONS_EXTENSIONS_HTML"
+                 file="extensions.html"
+                 type="chrome_html" />
+      <structure name="IDR_EXTENSIONS_DRAG_AND_DROP_HANDLER_JS"
+                 file="drag_and_drop_handler.js"
+                 type="chrome_html" />
+      <structure name="IDR_EXTENSIONS_EXTENSIONS_JS"
+                 file="extensions.js"
+                 preprocess="true"
+                 type="chrome_html" />
+      <structure name="IDR_EXTENSIONS_KEYBOARD_SHORTCUT_DELEGATE_JS"
+                 file="keyboard_shortcut_delegate.js"
+                 type="chrome_html" />
+    <if expr="chromeos">
+      <structure name="IDR_EXTENSIONS_KIOSK_BROWSER_PROXY_JS"
+                 file="kiosk_browser_proxy.js"
+                 type="chrome_html" />
+    </if>
+      <structure name="IDR_EXTENSIONS_ITEM_UTIL_JS"
+                 file="item_util.js"
+                 type="chrome_html" />
+      <structure name="IDR_EXTENSIONS_NAVIGATION_HELPER_JS"
+                 file="navigation_helper.js"
+                 type="chrome_html" />
+      <structure name="IDR_EXTENSIONS_SERVICE_JS"
+                 file="service.js"
+                 type="chrome_html" />
+      <structure name="IDR_EXTENSIONS_SHORTCUT_UTIL_JS"
+                 file="shortcut_util.js"
+                 type="chrome_html" />
+    </structures>
+  </release>
+</grit>

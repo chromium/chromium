@@ -30,6 +30,8 @@ class PepperPlayerDelegate : public MediaSessionPlayerObserver {
   void OnSeekBackward(int player_id, base::TimeDelta seek_time) override;
   void OnSetVolumeMultiplier(int player_id,
                              double volume_multiplier) override;
+  base::Optional<media_session::MediaPosition> GetPosition(
+      int player_id) const override;
   RenderFrameHost* render_frame_host() const override;
 
  private:

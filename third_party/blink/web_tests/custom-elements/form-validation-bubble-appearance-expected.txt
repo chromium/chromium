@@ -1,3 +1,0 @@
-Check if a validation bubble is shown
-
-🆖

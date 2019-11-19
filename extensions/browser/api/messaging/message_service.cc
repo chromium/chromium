@@ -27,6 +27,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/child_process_host.h"
 #include "extensions/browser/api/extensions_api_client.h"
+#include "extensions/browser/api/messaging/channel_endpoint.h"
 #include "extensions/browser/api/messaging/extension_message_port.h"
 #include "extensions/browser/api/messaging/message_port.h"
 #include "extensions/browser/api/messaging/messaging_delegate.h"
@@ -40,6 +41,7 @@
 #include "extensions/browser/guest_view/web_view/web_view_guest.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/common/api/messaging/messaging_endpoint.h"
+#include "extensions/common/api/messaging/port_context.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/manifest_handlers/background_info.h"
@@ -67,6 +69,43 @@ const char kProhibitedByPoliciesError[] =
     "administrator.";
 #endif
 
+LazyContextId LazyContextIdFor(content::BrowserContext* browser_context,
+                               const Extension* extension) {
+  if (BackgroundInfo::HasLazyBackgroundPage(extension))
+    return LazyContextId(browser_context, extension->id());
+
+  DCHECK(BackgroundInfo::IsServiceWorkerBased(extension));
+  return LazyContextId(browser_context, extension->id(), extension->url());
+}
+
+const Extension* GetExtensionForNativeAppChannel(
+    const ChannelEndpoint& source) {
+  DCHECK(!source.is_for_native_host());
+
+  if (source.is_for_service_worker()) {
+    const ExtensionId& extension_id =
+        source.port_context().worker->extension_id;
+    return ExtensionRegistry::Get(source.browser_context())
+        ->enabled_extensions()
+        .GetByID(extension_id);
+  }
+
+  DCHECK(source.is_for_render_frame());
+  content::RenderFrameHost* source_rfh = source.GetRenderFrameHost();
+  if (!source_rfh)
+    return nullptr;
+  content::WebContents* web_contents =
+      content::WebContents::FromRenderFrameHost(source_rfh);
+  if (!web_contents)
+    return nullptr;
+  ExtensionWebContentsObserver* extension_web_contents_observer =
+      ExtensionWebContentsObserver::GetForWebContents(web_contents);
+  if (!extension_web_contents_observer)
+    return nullptr;
+  return extension_web_contents_observer->GetExtensionFromFrame(source_rfh,
+                                                                true);
+}
+
 }  // namespace
 
 struct MessageService::MessageChannel {
@@ -75,8 +114,7 @@ struct MessageService::MessageChannel {
 };
 
 struct MessageService::OpenChannelParams {
-  int source_process_id;
-  int source_routing_id;
+  ChannelEndpoint source;
   std::unique_ptr<base::DictionaryValue> source_tab;
   int source_frame_id;
   std::unique_ptr<MessagePort> receiver;
@@ -89,8 +127,7 @@ struct MessageService::OpenChannelParams {
   bool include_guest_process_info;
 
   // Takes ownership of receiver.
-  OpenChannelParams(int source_process_id,
-                    int source_routing_id,
+  OpenChannelParams(const ChannelEndpoint& source,
                     std::unique_ptr<base::DictionaryValue> source_tab,
                     int source_frame_id,
                     MessagePort* receiver,
@@ -101,8 +138,7 @@ struct MessageService::OpenChannelParams {
                     const GURL& source_url,
                     const std::string& channel_name,
                     bool include_guest_process_info)
-      : source_process_id(source_process_id),
-        source_routing_id(source_routing_id),
+      : source(source),
         source_tab(std::move(source_tab)),
         source_frame_id(source_frame_id),
         receiver(receiver),
@@ -133,8 +169,7 @@ static content::RenderProcessHost* GetExtensionProcess(
 
 MessageService::MessageService(BrowserContext* context)
     : context_(context),
-      messaging_delegate_(ExtensionsAPIClient::Get()->GetMessagingDelegate()),
-      weak_factory_(this) {
+      messaging_delegate_(ExtensionsAPIClient::Get()->GetMessagingDelegate()) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK_NE(nullptr, messaging_delegate_);
 }
@@ -161,8 +196,7 @@ MessageService* MessageService::Get(BrowserContext* context) {
 }
 
 void MessageService::OpenChannelToExtension(
-    int source_process_id,
-    int source_routing_id,
+    const ChannelEndpoint& source,
     const PortId& source_port_id,
     const MessagingEndpoint& source_endpoint,
     std::unique_ptr<MessagePort> opener_port,
@@ -177,29 +211,24 @@ void MessageService::OpenChannelToExtension(
          source_endpoint.type == MessagingEndpoint::Type::kNativeApp);
   DCHECK_EQ(source_endpoint.native_app_name.has_value(),
             source_endpoint.type == MessagingEndpoint::Type::kNativeApp);
+  int source_process_id = source.render_process_id();
   DCHECK_EQ(source_process_id == content::ChildProcessHost::kInvalidUniqueID,
             source_endpoint.type == MessagingEndpoint::Type::kNativeApp);
-
-  content::RenderFrameHost* source_render_frame_host = nullptr;
-  BrowserContext* context = context_;
-  if (source_process_id != content::ChildProcessHost::kInvalidUniqueID) {
-    DCHECK_NE(source_routing_id, MSG_ROUTING_NONE);
-    source_render_frame_host =
-        content::RenderFrameHost::FromID(source_process_id, source_routing_id);
-    if (!source_render_frame_host)
-      return;
-    context = source_render_frame_host->GetProcess()->GetBrowserContext();
-    DCHECK(ExtensionsBrowserClient::Get()->IsSameContext(context, context_));
-  }
+  content::RenderFrameHost* source_render_frame_host =
+      source.is_for_render_frame() ? source.GetRenderFrameHost() : nullptr;
+  if (!source.IsValid())
+    return;
+  BrowserContext* context = source.browser_context();
+  DCHECK(ExtensionsBrowserClient::Get()->IsSameContext(context, context_));
 
   if (!opener_port) {
     DCHECK(source_endpoint.type == MessagingEndpoint::Type::kTab ||
            source_endpoint.type == MessagingEndpoint::Type::kExtension);
-    opener_port = std::make_unique<ExtensionMessagePort>(
+    opener_port = ExtensionMessagePort::CreateForEndpoint(
         weak_factory_.GetWeakPtr(), source_port_id,
         source_endpoint.extension_id ? *source_endpoint.extension_id
                                      : ExtensionId(),
-        source_render_frame_host, false /* include_child_frames */);
+        source, false /* include_child_frames */);
   }
   if (!opener_port->IsValidPort())
     return;
@@ -281,10 +310,10 @@ void MessageService::OpenChannelToExtension(
   }
 
   std::unique_ptr<OpenChannelParams> params(new OpenChannelParams(
-      source_process_id, source_routing_id, std::move(source_tab),
-      source_frame_id, nullptr, source_port_id.GetOppositePortId(),
-      source_endpoint, std::move(opener_port), target_extension_id, source_url,
-      channel_name, include_guest_process_info));
+      source, std::move(source_tab), source_frame_id, nullptr,
+      source_port_id.GetOppositePortId(), source_endpoint,
+      std::move(opener_port), target_extension_id, source_url, channel_name,
+      include_guest_process_info));
 
   pending_incognito_channels_[params->receiver_port_id.GetChannelId()] =
       PendingMessagesQueue();
@@ -333,34 +362,23 @@ void MessageService::OpenChannelToExtension(
 }
 
 void MessageService::OpenChannelToNativeApp(
-    int source_process_id,
-    int source_routing_id,
+    const ChannelEndpoint& source,
     const PortId& source_port_id,
     const std::string& native_app_name) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(source_port_id.is_opener);
 
-  content::RenderFrameHost* source =
-      content::RenderFrameHost::FromID(source_process_id, source_routing_id);
-  if (!source)
+  if (!source.IsValid())
     return;
+  const Extension* extension = GetExtensionForNativeAppChannel(source);
 
-  content::WebContents* web_contents =
-      content::WebContents::FromRenderFrameHost(source);
-  if (!web_contents)
-    return;
-  ExtensionWebContentsObserver* extension_web_contents_observer =
-      ExtensionWebContentsObserver::GetForWebContents(web_contents);
-  if (!extension_web_contents_observer)
-    return;
-  const Extension* extension =
-      extension_web_contents_observer->GetExtensionFromFrame(source, true);
   if (!extension)
     return;
 
-  auto opener_port = std::make_unique<ExtensionMessagePort>(
-      weak_factory_.GetWeakPtr(), source_port_id, extension->id(), source,
-      false /* include_child_frames */);
+  std::unique_ptr<ExtensionMessagePort> opener_port =
+      ExtensionMessagePort::CreateForEndpoint(
+          weak_factory_.GetWeakPtr(), source_port_id, extension->id(), source,
+          false /* include_child_frames */);
   if (!opener_port->IsValidPort())
     return;
 
@@ -373,7 +391,7 @@ void MessageService::OpenChannelToNativeApp(
   }
 
   // Verify that the host is not blocked by policies.
-  BrowserContext* source_context = source->GetProcess()->GetBrowserContext();
+  BrowserContext* source_context = source.browser_context();
   DCHECK(
       ExtensionsBrowserClient::Get()->IsSameContext(source_context, context_));
   MessagingDelegate::PolicyPermission policy_permission =
@@ -386,14 +404,19 @@ void MessageService::OpenChannelToNativeApp(
 
   std::unique_ptr<MessageChannel> channel = std::make_unique<MessageChannel>();
   channel->opener = std::move(opener_port);
-  channel->opener->OpenPort(source_process_id, source_routing_id);
+  channel->opener->OpenPort(source.render_process_id(), source.port_context());
 
+  content::RenderFrameHost* source_rfh =
+      source.is_for_render_frame() ? source.GetRenderFrameHost() : nullptr;
   std::string error = kReceivingEndDoesntExistError;
   const PortId receiver_port_id = source_port_id.GetOppositePortId();
+  // NOTE: We're creating |receiver| with nullptr |source_rfh|, which seems to
+  // work for native messaging tests. This might need further checking in case
+  // any issues arise from it.
   std::unique_ptr<MessagePort> receiver(
       messaging_delegate_->CreateReceiverForNativeApp(
-          weak_factory_.GetWeakPtr(), source, extension->id(), receiver_port_id,
-          native_app_name,
+          context_, weak_factory_.GetWeakPtr(), source_rfh, extension->id(),
+          receiver_port_id, native_app_name,
           policy_permission == MessagingDelegate::PolicyPermission::ALLOW_ALL,
           &error));
 
@@ -416,8 +439,7 @@ void MessageService::OpenChannelToNativeApp(
 #endif  // !(defined(OS_WIN) || defined(OS_MACOSX) || defined(OS_LINUX))
 }
 
-void MessageService::OpenChannelToTab(int source_process_id,
-                                      int source_routing_id,
+void MessageService::OpenChannelToTab(const ChannelEndpoint& source,
                                       const PortId& source_port_id,
                                       int tab_id,
                                       int frame_id,
@@ -427,18 +449,18 @@ void MessageService::OpenChannelToTab(int source_process_id,
   DCHECK_GE(frame_id, -1);
   DCHECK(source_port_id.is_opener);
 
-  content::RenderFrameHost* source =
-      content::RenderFrameHost::FromID(source_process_id, source_routing_id);
-  if (!source)
+  // RenderFrameHost or the worker thread might be gone.
+  if (!source.IsValid())
     return;
 
-  auto opener_port = std::make_unique<ExtensionMessagePort>(
-      weak_factory_.GetWeakPtr(), source_port_id, extension_id, source,
-      false /* include_child_frames */);
+  std::unique_ptr<ExtensionMessagePort> opener_port =
+      ExtensionMessagePort::CreateForEndpoint(
+          weak_factory_.GetWeakPtr(), source_port_id, extension_id, source,
+          false /* include_child_frames */);
   if (!opener_port->IsValidPort())
     return;
 
-  BrowserContext* source_context = source->GetProcess()->GetBrowserContext();
+  BrowserContext* source_context = source.browser_context();
   DCHECK(
       ExtensionsBrowserClient::Get()->IsSameContext(source_context, context_));
   content::WebContents* receiver_contents =
@@ -473,7 +495,7 @@ void MessageService::OpenChannelToTab(int source_process_id,
   DCHECK(ExtensionsBrowserClient::Get()->IsSameContext(receiver_context,
                                                        context_));
   std::unique_ptr<OpenChannelParams> params(new OpenChannelParams(
-      source_process_id, source_routing_id,
+      source,
       std::unique_ptr<base::DictionaryValue>(),  // Source tab doesn't make
                                                  // sense
                                                  // for opening to tabs.
@@ -498,14 +520,9 @@ void MessageService::OpenChannelImpl(BrowserContext* browser_context,
   DCHECK_EQ(target_extension != nullptr, !params->target_extension_id.empty());
 
   // Check whether the source got closed while in flight.
-  content::RenderFrameHost* source = nullptr;
-  if (params->source_process_id !=
-      content::ChildProcessHost::kInvalidUniqueID) {
-    source = content::RenderFrameHost::FromID(params->source_process_id,
-                                              params->source_routing_id);
-    if (!source)
-      return;
-  }
+  const ChannelEndpoint& source = params->source;
+  if (!source.IsValid())
+    return;  // Closed while in flight.
   if (!params->opener_port->IsValidPort())
     return;
 
@@ -514,8 +531,8 @@ void MessageService::OpenChannelImpl(BrowserContext* browser_context,
     return;
   }
 
-  params->opener_port->OpenPort(params->source_process_id,
-                                params->source_routing_id);
+  const PortContext& port_context = source.port_context();
+  params->opener_port->OpenPort(source.render_process_id(), port_context);
   params->opener_port->RevalidatePort();
 
   params->receiver->RemoveCommonFrames(*params->opener_port);
@@ -533,12 +550,15 @@ void MessageService::OpenChannelImpl(BrowserContext* browser_context,
 
   int guest_process_id = content::ChildProcessHost::kInvalidUniqueID;
   int guest_render_frame_routing_id = MSG_ROUTING_NONE;
-  if (params->include_guest_process_info) {
-    guest_process_id = params->source_process_id;
-    guest_render_frame_routing_id = params->source_routing_id;
+  if (params->include_guest_process_info &&
+      // TODO(lazyboy): Investigate <webview> SW messaging.
+      source.is_for_render_frame()) {
+    guest_process_id = params->source.render_process_id();
+    DCHECK(port_context.frame);
+    guest_render_frame_routing_id = port_context.frame->routing_id;
 
     DCHECK(WebViewGuest::FromWebContents(
-            WebContents::FromRenderFrameHost(source)));
+        WebContents::FromRenderFrameHost(source.GetRenderFrameHost())));
   }
 
   // Send the connect event to the receiver.  Give it the opener's port ID (the
@@ -591,12 +611,12 @@ void MessageService::AddChannel(std::unique_ptr<MessageChannel> channel,
   ChannelId channel_id = receiver_port_id.GetChannelId();
   CHECK(channels_.find(channel_id) == channels_.end());
   channels_[channel_id] = std::move(channel);
-  pending_lazy_background_page_channels_.erase(channel_id);
+  pending_lazy_context_channels_.erase(channel_id);
 }
 
 void MessageService::OpenPort(const PortId& port_id,
                               int process_id,
-                              int routing_id) {
+                              const PortContext& port_context) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(!port_id.is_opener);
 
@@ -605,27 +625,32 @@ void MessageService::OpenPort(const PortId& port_id,
   if (it == channels_.end())
     return;
 
-  it->second->receiver->OpenPort(process_id, routing_id);
+  it->second->receiver->OpenPort(process_id, port_context);
 }
 
 void MessageService::ClosePort(const PortId& port_id,
                                int process_id,
-                               int routing_id,
+                               const PortContext& context,
                                bool force_close) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  ClosePortImpl(port_id, process_id, routing_id, force_close, std::string());
+  int routing_id = context.frame ? context.frame->routing_id : MSG_ROUTING_NONE;
+  int worker_thread_id =
+      context.worker ? context.worker->thread_id : kMainThreadId;
+  ClosePortImpl(port_id, process_id, routing_id, worker_thread_id, force_close,
+                std::string());
 }
 
 void MessageService::CloseChannel(const PortId& port_id,
                                   const std::string& error_message) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   ClosePortImpl(port_id, content::ChildProcessHost::kInvalidUniqueID,
-                MSG_ROUTING_NONE, true, error_message);
+                MSG_ROUTING_NONE, kMainThreadId, true, error_message);
 }
 
 void MessageService::ClosePortImpl(const PortId& port_id,
                                    int process_id,
                                    int routing_id,
+                                   int worker_thread_id,
                                    bool force_close,
                                    const std::string& error_message) {
   // Note: The channel might be not yet created (if the opener became invalid
@@ -634,14 +659,15 @@ void MessageService::ClosePortImpl(const PortId& port_id,
   ChannelId channel_id = port_id.GetChannelId();
   auto it = channels_.find(channel_id);
   if (it == channels_.end()) {
-    auto pending = pending_lazy_background_page_channels_.find(channel_id);
-    if (pending != pending_lazy_background_page_channels_.end()) {
+    auto pending = pending_lazy_context_channels_.find(channel_id);
+    if (pending != pending_lazy_context_channels_.end()) {
       const LazyContextId& context_id = pending->second;
       context_id.GetTaskQueue()->AddPendingTask(
           context_id,
-          base::BindOnce(&MessageService::PendingLazyBackgroundPageClosePort,
+          base::BindOnce(&MessageService::PendingLazyContextClosePort,
                          weak_factory_.GetWeakPtr(), port_id, process_id,
-                         routing_id, force_close, error_message));
+                         routing_id, worker_thread_id, force_close,
+                         error_message));
     }
     return;
   }
@@ -652,9 +678,9 @@ void MessageService::ClosePortImpl(const PortId& port_id,
   if (force_close) {
     CloseChannelImpl(it, port_id, error_message, true);
   } else if (port_id.is_opener) {
-    it->second->opener->ClosePort(process_id, routing_id);
+    it->second->opener->ClosePort(process_id, routing_id, worker_thread_id);
   } else {
-    it->second->receiver->ClosePort(process_id, routing_id);
+    it->second->receiver->ClosePort(process_id, routing_id, worker_thread_id);
   }
 }
 
@@ -708,8 +734,7 @@ void MessageService::EnqueuePendingMessage(const PortId& source_port_id,
         PendingMessage(source_port_id, message));
     // A channel should only be holding pending messages because it is in one
     // of these states.
-    DCHECK(
-        !base::ContainsKey(pending_lazy_background_page_channels_, channel_id));
+    DCHECK(!base::Contains(pending_lazy_context_channels_, channel_id));
     return;
   }
   EnqueuePendingMessageForLazyBackgroundLoad(source_port_id,
@@ -723,12 +748,12 @@ void MessageService::EnqueuePendingMessageForLazyBackgroundLoad(
     const Message& message) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  auto pending = pending_lazy_background_page_channels_.find(channel_id);
-  if (pending != pending_lazy_background_page_channels_.end()) {
+  auto pending = pending_lazy_context_channels_.find(channel_id);
+  if (pending != pending_lazy_context_channels_.end()) {
     const LazyContextId& context_id = pending->second;
     context_id.GetTaskQueue()->AddPendingTask(
         context_id,
-        base::BindOnce(&MessageService::PendingLazyBackgroundPagePostMessage,
+        base::BindOnce(&MessageService::PendingLazyContextPostMessage,
                        weak_factory_.GetWeakPtr(), source_port_id, message));
   }
 }
@@ -745,7 +770,7 @@ void MessageService::DispatchMessage(const PortId& source_port_id,
   dest_port->DispatchOnMessage(message);
 }
 
-bool MessageService::MaybeAddPendingLazyBackgroundPageOpenChannelTask(
+bool MessageService::MaybeAddPendingLazyContextOpenChannelTask(
     BrowserContext* context,
     const Extension* extension,
     std::unique_ptr<OpenChannelParams>* params,
@@ -753,7 +778,11 @@ bool MessageService::MaybeAddPendingLazyBackgroundPageOpenChannelTask(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(ExtensionsBrowserClient::Get()->IsSameContext(context, context_));
 
-  if (!BackgroundInfo::HasLazyBackgroundPage(extension))
+  const bool is_event_page = BackgroundInfo::HasLazyBackgroundPage(extension);
+  bool is_worker_based = false;
+  if (!is_event_page)
+    is_worker_based = BackgroundInfo::IsServiceWorkerBased(extension);
+  if (!is_worker_based && !is_event_page)
     return false;
 
   // If the extension uses spanning incognito mode, make sure we're always
@@ -762,19 +791,17 @@ bool MessageService::MaybeAddPendingLazyBackgroundPageOpenChannelTask(
   if (!IncognitoInfo::IsSplitMode(extension))
     context = ExtensionsBrowserClient::Get()->GetOriginalContext(context);
 
-  const LazyContextId context_id(context, extension->id());
+  const LazyContextId context_id = LazyContextIdFor(context, extension);
   LazyContextTaskQueue* task_queue = context_id.GetTaskQueue();
   if (!task_queue->ShouldEnqueueTask(context, extension))
     return false;
 
   ChannelId channel_id = (*params)->receiver_port_id.GetChannelId();
-  pending_lazy_background_page_channels_.emplace(channel_id, context_id);
-  int source_id = (*params)->source_process_id;
+  pending_lazy_context_channels_.emplace(channel_id, context_id);
   task_queue->AddPendingTask(
       context_id,
-      base::BindOnce(&MessageService::PendingLazyBackgroundPageOpenChannel,
-                     weak_factory_.GetWeakPtr(), base::Passed(params),
-                     source_id));
+      base::BindOnce(&MessageService::PendingLazyContextOpenChannel,
+                     weak_factory_.GetWeakPtr(), std::move(*params)));
 
   for (const PendingMessage& message : pending_messages) {
     EnqueuePendingMessageForLazyBackgroundLoad(message.first, channel_id,
@@ -800,15 +827,11 @@ void MessageService::OnOpenChannelAllowed(
   pending_incognito_channels_.erase(pending_for_incognito);
 
   // Check whether the source got closed while in flight.
-  content::RenderFrameHost* source = nullptr;
-  if (params->source_process_id !=
-      content::ChildProcessHost::kInvalidUniqueID) {
-    DCHECK_NE(params->source_routing_id, MSG_ROUTING_NONE);
-    source = content::RenderFrameHost::FromID(params->source_process_id,
-                                              params->source_routing_id);
-    if (!source)
-      return;
-  }
+  const ChannelEndpoint& source = params->source;
+  // Re-lookup the source process since it may no longer be valid.
+  if (!source.IsValid())
+    return;
+
   if (!params->opener_port->IsValidPort())
     return;
 
@@ -817,10 +840,7 @@ void MessageService::OnOpenChannelAllowed(
     return;
   }
 
-  content::RenderProcessHost* source_process =
-      source ? source->GetProcess() : nullptr;
-  BrowserContext* context =
-      source_process ? source_process->GetBrowserContext() : context_;
+  BrowserContext* context = source.browser_context();
   DCHECK(ExtensionsBrowserClient::Get()->IsSameContext(context, context_));
 
   // Note: we use the source's profile here. If the source is an incognito
@@ -844,20 +864,19 @@ void MessageService::OnOpenChannelAllowed(
     return;
   }
 
-  // The target might be a lazy background page. In that case, we have to check
-  // if it is loaded and ready, and if not, queue up the task and load the
-  // page.
-  if (!MaybeAddPendingLazyBackgroundPageOpenChannelTask(
-          context, target_extension, &params, pending_messages)) {
+  // The target might be a lazy background page or a Service Worker. In that
+  // case, we have to check if it is loaded and ready, and if not, queue up the
+  // task and load the page.
+  if (!MaybeAddPendingLazyContextOpenChannelTask(context, target_extension,
+                                                 &params, pending_messages)) {
     OpenChannelImpl(context, std::move(params), target_extension,
                     false /* did_enqueue */);
     DispatchPendingMessages(pending_messages, channel_id);
   }
 }
 
-void MessageService::PendingLazyBackgroundPageOpenChannel(
+void MessageService::PendingLazyContextOpenChannel(
     std::unique_ptr<OpenChannelParams> params,
-    int source_process_id,
     std::unique_ptr<LazyContextTaskQueue::ContextInfo> context_info) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 

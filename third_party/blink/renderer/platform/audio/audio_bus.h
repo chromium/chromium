@@ -162,7 +162,7 @@ class PLATFORM_EXPORT AudioBus : public ThreadSafeRefCounted<AudioBus> {
   // Makes maximum absolute value == 1.0 (if possible).
   void Normalize();
 
-  static scoped_refptr<AudioBus> GetDataResource(const char* name,
+  static scoped_refptr<AudioBus> GetDataResource(int resource_id,
                                                  float sample_rate);
 
  protected:

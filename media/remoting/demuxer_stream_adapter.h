@@ -18,7 +18,7 @@
 #include "media/base/demuxer_stream.h"
 #include "media/base/video_decoder_config.h"
 #include "media/mojo/common/mojo_data_pipe_read_write.h"
-#include "media/mojo/interfaces/remoting.mojom.h"
+#include "media/mojo/mojom/remoting.mojom.h"
 #include "media/remoting/rpc_broker.h"
 #include "media/remoting/triggers.h"
 #include "mojo/public/cpp/system/data_pipe.h"
@@ -40,7 +40,7 @@ namespace remoting {
 // while RPC message should be sent on main thread using |main_task_runner|.
 class DemuxerStreamAdapter {
  public:
-  using ErrorCallback = base::Callback<void(StopTrigger)>;
+  using ErrorCallback = base::OnceCallback<void(StopTrigger)>;
 
   // |main_task_runner|: Task runner to post RPC message on main thread
   // |media_task_runner|: Task runner to run whole class on media thread.
@@ -63,7 +63,7 @@ class DemuxerStreamAdapter {
       int rpc_handle,
       mojom::RemotingDataStreamSenderPtrInfo stream_sender_info,
       mojo::ScopedDataPipeProducerHandle producer_handle,
-      const ErrorCallback& error_callback);
+      ErrorCallback error_callback);
   ~DemuxerStreamAdapter();
 
   // Rpc handle for this class. This is used for sending/receiving RPC message
@@ -189,9 +189,9 @@ class DemuxerStreamAdapter {
   // WeakPtrFactory only for reading buffer from demuxer stream. This is used
   // for canceling all read callbacks provided to the |demuxer_stream_| before a
   // flush.
-  base::WeakPtrFactory<DemuxerStreamAdapter> request_buffer_weak_factory_;
+  base::WeakPtrFactory<DemuxerStreamAdapter> request_buffer_weak_factory_{this};
   // WeakPtrFactory for normal usage.
-  base::WeakPtrFactory<DemuxerStreamAdapter> weak_factory_;
+  base::WeakPtrFactory<DemuxerStreamAdapter> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(DemuxerStreamAdapter);
 };

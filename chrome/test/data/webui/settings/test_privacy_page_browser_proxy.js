@@ -7,6 +7,7 @@ class TestPrivacyPageBrowserProxy extends TestBrowserProxy {
   constructor() {
     super([
       'getMetricsReporting',
+      'recordSettingsPageHistogram',
       'setMetricsReportingEnabled',
       'showManageSSLCertificates',
       'setBlockAutoplayEnabled',
@@ -23,6 +24,11 @@ class TestPrivacyPageBrowserProxy extends TestBrowserProxy {
   getMetricsReporting() {
     this.methodCalled('getMetricsReporting');
     return Promise.resolve(this.metricsReporting);
+  }
+
+  /** @override*/
+  recordSettingsPageHistogram(value) {
+    this.methodCalled('recordSettingsPageHistogram', value);
   }
 
   /** @override */

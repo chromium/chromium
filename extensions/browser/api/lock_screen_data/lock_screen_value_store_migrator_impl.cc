@@ -28,8 +28,7 @@ LockScreenValueStoreMigratorImpl::LockScreenValueStoreMigratorImpl(
       source_store_cache_(source_store_cache),
       target_store_cache_(target_store_cache),
       task_runner_(task_runner),
-      crypto_key_(crypto_key),
-      weak_ptr_factory_(this) {}
+      crypto_key_(crypto_key) {}
 
 LockScreenValueStoreMigratorImpl::~LockScreenValueStoreMigratorImpl() = default;
 

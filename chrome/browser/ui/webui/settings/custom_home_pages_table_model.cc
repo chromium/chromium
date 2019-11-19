@@ -227,12 +227,9 @@ void CustomHomePagesTableModel::LoadTitle(Entry* entry) {
                                            ServiceAccessType::EXPLICIT_ACCESS);
   if (history_service) {
     entry->task_id = history_service->QueryURL(
-        entry->url,
-        false,
-        base::Bind(&CustomHomePagesTableModel::OnGotTitle,
-                   base::Unretained(this),
-                   entry->url,
-                   false),
+        entry->url, false,
+        base::BindOnce(&CustomHomePagesTableModel::OnGotTitle,
+                       base::Unretained(this), entry->url, false),
         &task_tracker_);
   }
 }
@@ -260,11 +257,10 @@ void CustomHomePagesTableModel::LoadAllTitles() {
     observer_->OnModelChanged();
 }
 
-void CustomHomePagesTableModel::OnGotOneOfManyTitles(const GURL& entry_url,
-                                           bool found_url,
-                                           const history::URLRow& row,
-                                           const history::VisitVector& visits) {
-  OnGotTitle(entry_url, false, found_url, row, visits);
+void CustomHomePagesTableModel::OnGotOneOfManyTitles(
+    const GURL& entry_url,
+    history::QueryURLResult result) {
+  OnGotTitle(entry_url, false, std::move(result));
   DCHECK_GE(num_outstanding_title_lookups_, 1);
   if (--num_outstanding_title_lookups_ == 0 && observer_)
     observer_->OnModelChanged();
@@ -272,9 +268,7 @@ void CustomHomePagesTableModel::OnGotOneOfManyTitles(const GURL& entry_url,
 
 void CustomHomePagesTableModel::OnGotTitle(const GURL& entry_url,
                                            bool observable,
-                                           bool found_url,
-                                           const history::URLRow& row,
-                                           const history::VisitVector& visits) {
+                                           history::QueryURLResult result) {
   Entry* entry = NULL;
   size_t entry_index = 0;
   for (size_t i = 0; i < entries_.size(); ++i) {
@@ -289,8 +283,8 @@ void CustomHomePagesTableModel::OnGotTitle(const GURL& entry_url,
     return;
   }
   entry->task_id = base::CancelableTaskTracker::kBadTaskId;
-  if (found_url && !row.title().empty()) {
-    entry->title = row.title();
+  if (result.success && !result.row.title().empty()) {
+    entry->title = result.row.title();
     if (observer_ && observable)
       observer_->OnItemsChanged(static_cast<int>(entry_index), 1);
   }

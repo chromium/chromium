@@ -97,11 +97,14 @@ const DeviceLogUI = (function() {
    * @param {Object} data A JSON structure of event log entries.
    */
   const getLogCallback = function(data) {
+    const container = $('log-container');
     try {
       createEventLog(JSON.parse(data));
+      if (container.textContent == '') {
+        container.textContent = loadTimeData.getString('logNoEntriesText');
+      }
     } catch (e) {
-      const container = $('log-container');
-      container.textContent = 'No log entries';
+      container.textContent = loadTimeData.getString('logNoEntriesText');
     }
   };
 
@@ -112,13 +115,18 @@ const DeviceLogUI = (function() {
     chrome.send('DeviceLog.getLog');
   };
 
+  const clearLog = function() {
+    chrome.send('DeviceLog.clearLog');
+    requestLog();
+  };
+
   /**
    * Sets refresh rate if the interval is found in the url.
    */
   const setRefresh = function() {
-    const interval = parseQueryParams(window.location)['refresh'];
-    if (interval && interval != '') {
-      setInterval(requestLog, parseInt(interval) * 1000);
+    const interval = new URL(window.location).searchParams.get('refresh');
+    if (interval) {
+      setInterval(requestLog, parseInt(interval, 10) * 1000);
     }
   };
 
@@ -143,6 +151,7 @@ const DeviceLogUI = (function() {
     $('log-timedetail').checked = false;
 
     $('log-refresh').onclick = requestLog;
+    $('log-clear').onclick = clearLog;
     checkboxes = document.querySelectorAll(
         '#log-checkbox-container input[type="checkbox"]');
     for (let i = 0; i < checkboxes.length; ++i) {

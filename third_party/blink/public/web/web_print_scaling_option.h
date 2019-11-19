@@ -43,7 +43,9 @@ enum WebPrintScalingOption {
   kWebPrintScalingOptionSourceSize,  // Print output page size is same as the
                                      // actual source page size. Do not
                                      // scale/center/fit to printable area.
-  kWebPrintScalingOptionLast = kWebPrintScalingOptionSourceSize
+  kWebPrintScalingOptionFitToPaper,  // Reduces or enlarges each page to fit the
+                                     // selected printer paper size.
+  kWebPrintScalingOptionLast = kWebPrintScalingOptionFitToPaper
 };
 
 }  // namespace blink

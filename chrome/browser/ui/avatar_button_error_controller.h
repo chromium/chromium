@@ -8,6 +8,7 @@
 #include "base/scoped_observer.h"
 #include "chrome/browser/ui/avatar_button_error_controller_delegate.h"
 #include "components/signin/core/browser/signin_error_controller.h"
+#include "components/sync/driver/sync_service.h"
 #include "components/sync/driver/sync_service_observer.h"
 
 class Profile;
@@ -65,7 +66,8 @@ class AvatarButtonErrorController {
     Profile* profile_;
     AvatarButtonErrorController* avatar_button_error_controller_;
 
-    ScopedObserver<syncer::SyncService, SyncErrorObserver> sync_observer_;
+    ScopedObserver<syncer::SyncService, syncer::SyncServiceObserver>
+        sync_observer_{this};
 
     DISALLOW_COPY_AND_ASSIGN(SyncErrorObserver);
   };

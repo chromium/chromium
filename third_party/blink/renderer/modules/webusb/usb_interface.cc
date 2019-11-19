@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/modules/webusb/usb_interface.h"
 
-#include "device/usb/public/mojom/device.mojom-blink.h"
+#include "services/device/public/mojom/usb_device.mojom-blink.h"
 #include "third_party/blink/renderer/modules/webusb/usb_alternate_interface.h"
 #include "third_party/blink/renderer/modules/webusb/usb_configuration.h"
 #include "third_party/blink/renderer/modules/webusb/usb_device.h"

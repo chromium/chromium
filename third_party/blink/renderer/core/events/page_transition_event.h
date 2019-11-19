@@ -27,6 +27,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_EVENTS_PAGE_TRANSITION_EVENT_H_
 
 #include "third_party/blink/renderer/core/dom/events/event.h"
+#include "third_party/blink/renderer/core/event_type_names.h"
 #include "third_party/blink/renderer/core/events/page_transition_event_init.h"
 
 namespace blink {
@@ -39,8 +40,16 @@ class PageTransitionEvent final : public Event {
     return MakeGarbageCollected<PageTransitionEvent>();
   }
   static PageTransitionEvent* Create(const AtomicString& type, bool persisted) {
+    // Persisted pageshow events must be created through CreatePersistedPageshow
+    // (because it needs |navigation_start|).
+    DCHECK(!(persisted && type == event_type_names::kPageshow));
     return MakeGarbageCollected<PageTransitionEvent>(type, persisted);
   }
+  static PageTransitionEvent* CreatePersistedPageshow(
+      base::TimeTicks navigation_start) {
+    return MakeGarbageCollected<PageTransitionEvent>(navigation_start);
+  }
+
   static PageTransitionEvent* Create(
       const AtomicString& type,
       const PageTransitionEventInit* initializer) {
@@ -50,6 +59,7 @@ class PageTransitionEvent final : public Event {
   PageTransitionEvent();
   PageTransitionEvent(const AtomicString& type, bool persisted);
   PageTransitionEvent(const AtomicString&, const PageTransitionEventInit*);
+  explicit PageTransitionEvent(base::TimeTicks navigation_start);
   ~PageTransitionEvent() override;
 
   const AtomicString& InterfaceName() const override;
@@ -59,6 +69,7 @@ class PageTransitionEvent final : public Event {
   void Trace(blink::Visitor*) override;
 
  private:
+  // TODO(rakina): change to PageTransitionEventPersistence.
   bool persisted_;
 };
 

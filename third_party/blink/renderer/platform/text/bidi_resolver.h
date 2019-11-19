@@ -26,7 +26,7 @@
 #include "third_party/blink/renderer/platform/text/bidi_context.h"
 #include "third_party/blink/renderer/platform/text/bidi_run_list.h"
 #include "third_party/blink/renderer/platform/text/text_direction.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 

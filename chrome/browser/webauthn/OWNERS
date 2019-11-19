@@ -1,4 +1,4 @@
 file://device/fido/OWNERS
 
 # TEAM: identity-dev@chromium.org
-# Component: Blink>WebAuthentication
+# COMPONENT: Blink>WebAuthentication

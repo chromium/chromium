@@ -52,7 +52,6 @@ PASS not shadowed keypress (document.body)
 PASS not shadowed keyup (document.body)
 PASS not shadowed loadeddata (document.body)
 PASS not shadowed loadedmetadata (document.body)
-FAIL not shadowed loadend (document.body) assert_equals: alternative body should reflect expected (object) null but got (undefined) undefined
 PASS not shadowed loadstart (document.body)
 PASS not shadowed mousedown (document.body)
 PASS not shadowed mouseenter (document.body)
@@ -72,6 +71,7 @@ FAIL not shadowed securitypolicyviolation (document.body) assert_equals: alterna
 PASS not shadowed seeked (document.body)
 PASS not shadowed seeking (document.body)
 PASS not shadowed select (document.body)
+FAIL not shadowed slotchange (document.body) assert_equals: alternative body should reflect expected (object) null but got (undefined) undefined
 PASS not shadowed stalled (document.body)
 PASS not shadowed submit (document.body)
 PASS not shadowed suspend (document.body)
@@ -156,7 +156,6 @@ PASS not shadowed keypress (document.createElement("frameset"))
 PASS not shadowed keyup (document.createElement("frameset"))
 PASS not shadowed loadeddata (document.createElement("frameset"))
 PASS not shadowed loadedmetadata (document.createElement("frameset"))
-FAIL not shadowed loadend (document.createElement("frameset")) assert_equals: body should reflect expected (object) null but got (undefined) undefined
 PASS not shadowed loadstart (document.createElement("frameset"))
 PASS not shadowed mousedown (document.createElement("frameset"))
 PASS not shadowed mouseenter (document.createElement("frameset"))
@@ -176,6 +175,7 @@ FAIL not shadowed securitypolicyviolation (document.createElement("frameset")) a
 PASS not shadowed seeked (document.createElement("frameset"))
 PASS not shadowed seeking (document.createElement("frameset"))
 PASS not shadowed select (document.createElement("frameset"))
+FAIL not shadowed slotchange (document.createElement("frameset")) assert_equals: body should reflect expected (object) null but got (undefined) undefined
 PASS not shadowed stalled (document.createElement("frameset"))
 PASS not shadowed submit (document.createElement("frameset"))
 PASS not shadowed suspend (document.createElement("frameset"))
@@ -260,7 +260,6 @@ PASS not shadowed keypress (window)
 PASS not shadowed keyup (window)
 PASS not shadowed loadeddata (window)
 PASS not shadowed loadedmetadata (window)
-FAIL not shadowed loadend (window) assert_equals: body should reflect expected (object) null but got (undefined) undefined
 PASS not shadowed loadstart (window)
 PASS not shadowed mousedown (window)
 PASS not shadowed mouseenter (window)
@@ -280,6 +279,7 @@ FAIL not shadowed securitypolicyviolation (window) assert_equals: body should re
 PASS not shadowed seeked (window)
 PASS not shadowed seeking (window)
 PASS not shadowed select (window)
+FAIL not shadowed slotchange (window) assert_equals: body should reflect expected (object) null but got (undefined) undefined
 PASS not shadowed stalled (window)
 PASS not shadowed submit (window)
 PASS not shadowed suspend (window)

@@ -75,8 +75,6 @@ class ASH_EXPORT UnifiedMouseWarpController : public MouseWarpController {
   // the surrounding displays.
   std::map<int64_t, std::vector<DisplayEdge>> displays_edges_map_;
 
-  int64_t current_cursor_display_id_;
-
   bool update_location_for_test_;
 
   // True if the edge boundaries between displays (where mouse cursor should

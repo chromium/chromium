@@ -6,6 +6,7 @@
 #define UI_OZONE_PUBLIC_OVERLAY_SURFACE_H_
 
 #include "base/callback.h"
+#include "base/component_export.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "ui/gfx/geometry/rect.h"
@@ -15,7 +16,6 @@
 #include "ui/gfx/overlay_transform.h"
 #include "ui/gfx/presentation_feedback.h"
 #include "ui/gfx/swap_result.h"
-#include "ui/ozone/ozone_base_export.h"
 
 namespace ui {
 
@@ -23,7 +23,7 @@ struct OverlayPlane;
 
 // An overlay surface is similar to a surface, but natively uses overlays and
 // does not internally allocate any buffers.
-class OZONE_BASE_EXPORT OverlaySurface {
+class COMPONENT_EXPORT(OZONE_BASE) OverlaySurface {
  public:
   OverlaySurface();
   virtual ~OverlaySurface();

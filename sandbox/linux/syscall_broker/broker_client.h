@@ -71,7 +71,7 @@ class BrokerClient {
   int Stat(const char* pathname, bool follow_links, struct stat* sb) const;
   int Stat64(const char* pathname, bool folllow_links, struct stat64* sb) const;
 
-  // Can be used in place of rmdir().
+  // Can be used in place of unlink().
   int Unlink(const char* unlink) const;
 
  private:

@@ -20,7 +20,7 @@
 #include "chrome/browser/chromeos/file_system_provider/service.h"
 #include "chrome/common/extensions/api/file_system_provider.h"
 #include "chrome/common/extensions/api/file_system_provider_internal.h"
-#include "storage/browser/fileapi/watcher_manager.h"
+#include "storage/browser/file_system/watcher_manager.h"
 
 using chromeos::file_system_provider::MountOptions;
 using chromeos::file_system_provider::OpenedFiles;

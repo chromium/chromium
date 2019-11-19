@@ -9,6 +9,7 @@
 
 #include "base/unguessable_token.h"
 #include "content/common/content_export.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
 #include "services/audio/public/mojom/stream_factory.mojom.h"
 
 namespace content {
@@ -22,7 +23,7 @@ class CONTENT_EXPORT AudioMutingSession {
 
  private:
   const base::UnguessableToken group_id_;
-  audio::mojom::LocalMuterAssociatedPtr muter_;
+  mojo::AssociatedRemote<audio::mojom::LocalMuter> muter_;
 
   DISALLOW_COPY_AND_ASSIGN(AudioMutingSession);
 };

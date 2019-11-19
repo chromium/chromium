@@ -22,7 +22,6 @@
 #include "media/audio/fake_audio_manager.h"
 #include "media/audio/test_audio_thread.h"
 #include "media/base/media_switches.h"
-#include "net/url_request/url_request_context_getter.h"
 #include "net/url_request/url_request_test_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -35,7 +34,6 @@ namespace content {
 
 namespace {
 
-const int kSessionId = 1618;
 const char kSecurityOriginString[] = "http://localhost";
 const char kDefaultDeviceId[] = "default";
 const char kEmptyDeviceId[] = "";
@@ -44,10 +42,6 @@ const char kInvalidDeviceId[] = "invalid-device-id";
 using MockAuthorizationCallback = base::MockCallback<
     AudioOutputAuthorizationHandler::AuthorizationCompletedCallback>;
 
-url::Origin SecurityOrigin() {
-  return url::Origin::Create(GURL(kSecurityOriginString));
-}
-
 // TestBrowserContext has a URLRequestContextGetter which uses a NullTaskRunner.
 // This causes it to be destroyed on the wrong thread. This BrowserContext
 // instead uses the IO thread task runner for the URLRequestContextGetter.
@@ -55,25 +49,16 @@ class TestBrowserContextWithRealURLRequestContextGetter
     : public TestBrowserContext {
  public:
   TestBrowserContextWithRealURLRequestContextGetter() {
-    request_context_ = base::MakeRefCounted<net::TestURLRequestContextGetter>(
-        base::CreateSingleThreadTaskRunnerWithTraits({BrowserThread::IO}));
     salt_ = TestBrowserContext::GetMediaDeviceIDSalt();
   }
 
   ~TestBrowserContextWithRealURLRequestContextGetter() override {}
-
-  net::URLRequestContextGetter* CreateRequestContext(
-      ProtocolHandlerMap* protocol_handlers,
-      URLRequestInterceptorScopedVector request_interceptors) override {
-    return request_context_.get();
-  }
 
   std::string GetMediaDeviceIDSalt() override { return salt_; }
 
   void set_media_device_id_salt(std::string salt) { salt_ = std::move(salt); }
 
  private:
-  scoped_refptr<net::TestURLRequestContextGetter> request_context_;
   std::string salt_;
 };
 
@@ -83,7 +68,7 @@ class AudioOutputAuthorizationHandlerTest : public RenderViewHostTestHarness {
  public:
   AudioOutputAuthorizationHandlerTest()
       : RenderViewHostTestHarness(
-            content::TestBrowserThreadBundle::REAL_IO_THREAD) {
+            content::BrowserTaskEnvironment::REAL_IO_THREAD) {
     // Not threadsafe, thus set before threads are started:
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
         switches::kUseFakeDeviceForMediaStream);
@@ -93,9 +78,9 @@ class AudioOutputAuthorizationHandlerTest : public RenderViewHostTestHarness {
     audio_manager_->Shutdown();
   }
 
-  BrowserContext* CreateBrowserContext() override {
-    // Caller takes ownership.
-    return new TestBrowserContextWithRealURLRequestContextGetter();
+  std::unique_ptr<BrowserContext> CreateBrowserContext() override {
+    return std::make_unique<
+        TestBrowserContextWithRealURLRequestContextGetter>();
   }
 
   void SetUp() override {
@@ -134,15 +119,14 @@ class AudioOutputAuthorizationHandlerTest : public RenderViewHostTestHarness {
     // enough for our code.
     for (int i = 0; i < 20; ++i) {
       base::RunLoop().RunUntilIdle();
-      SyncWith(
-          base::CreateSingleThreadTaskRunnerWithTraits({BrowserThread::IO}));
+      SyncWith(base::CreateSingleThreadTaskRunner({BrowserThread::IO}));
       SyncWith(audio_manager_->GetWorkerTaskRunner());
     }
   }
 
   std::string GetRawNondefaultId() {
     std::string id;
-    base::PostTaskWithTraits(
+    base::PostTask(
         FROM_HERE, {BrowserThread::IO},
         base::BindOnce(
             &AudioOutputAuthorizationHandlerTest::GetRawNondefaultIdOnIOThread,
@@ -204,15 +188,15 @@ TEST_F(AudioOutputAuthorizationHandlerTest, AuthorizeDefaultDevice_Ok) {
       std::make_unique<AudioOutputAuthorizationHandler>(
           GetAudioSystem(), GetMediaStreamManager(), process()->GetID());
 
-  base::PostTaskWithTraits(
+  base::PostTask(
       FROM_HERE, {BrowserThread::IO},
       base::BindOnce(
           &AudioOutputAuthorizationHandler::RequestDeviceAuthorization,
-          base::Unretained(handler.get()), main_rfh()->GetRoutingID(), 0,
-          kDefaultDeviceId, listener.Get()));
+          base::Unretained(handler.get()), main_rfh()->GetRoutingID(),
+          base::UnguessableToken(), kDefaultDeviceId, listener.Get()));
 
   SyncWithAllThreads();
-  BrowserThread::DeleteSoon(BrowserThread::IO, FROM_HERE, handler.release());
+  base::DeleteSoon(FROM_HERE, {BrowserThread::IO}, handler.release());
   SyncWithAllThreads();
 }
 
@@ -226,30 +210,32 @@ TEST_F(AudioOutputAuthorizationHandlerTest,
       std::make_unique<AudioOutputAuthorizationHandler>(
           GetAudioSystem(), GetMediaStreamManager(), process()->GetID());
 
-  base::PostTaskWithTraits(
+  base::PostTask(
       FROM_HERE, {BrowserThread::IO},
       base::BindOnce(
           &AudioOutputAuthorizationHandler::RequestDeviceAuthorization,
-          base::Unretained(handler.get()), main_rfh()->GetRoutingID(), 0,
-          kEmptyDeviceId, listener.Get()));
+          base::Unretained(handler.get()), main_rfh()->GetRoutingID(),
+          base::UnguessableToken(), kEmptyDeviceId, listener.Get()));
 
   SyncWithAllThreads();
-  BrowserThread::DeleteSoon(BrowserThread::IO, FROM_HERE, handler.release());
+  base::DeleteSoon(FROM_HERE, {BrowserThread::IO}, handler.release());
   SyncWithAllThreads();
 }
 
 TEST_F(AudioOutputAuthorizationHandlerTest,
        AuthorizeNondefaultDeviceIdWithoutPermission_NotAuthorized) {
   std::string raw_nondefault_id = GetRawNondefaultId();
+  MediaDeviceSaltAndOrigin salt_and_origin = GetMediaDeviceSaltAndOrigin(
+      process()->GetID(), main_rfh()->GetRoutingID());
   std::string hashed_id = MediaStreamManager::GetHMACForMediaDeviceID(
-      browser_context()->GetMediaDeviceIDSalt(), SecurityOrigin(),
+      salt_and_origin.device_id_salt, salt_and_origin.origin,
       raw_nondefault_id);
 
   MockAuthorizationCallback listener;
   std::unique_ptr<AudioOutputAuthorizationHandler> handler =
       std::make_unique<AudioOutputAuthorizationHandler>(
           GetAudioSystem(), GetMediaStreamManager(), process()->GetID());
-  base::PostTaskWithTraits(
+  base::PostTask(
       FROM_HERE, {BrowserThread::IO},
       base::BindOnce(
           &AudioOutputAuthorizationHandler::OverridePermissionsForTesting,
@@ -260,29 +246,31 @@ TEST_F(AudioOutputAuthorizationHandlerTest,
                             std::string(), std::string()))
       .Times(1);
 
-  base::PostTaskWithTraits(
+  base::PostTask(
       FROM_HERE, {BrowserThread::IO},
       base::BindOnce(
           &AudioOutputAuthorizationHandler::RequestDeviceAuthorization,
-          base::Unretained(handler.get()), main_rfh()->GetRoutingID(), 0,
-          hashed_id, listener.Get()));
+          base::Unretained(handler.get()), main_rfh()->GetRoutingID(),
+          base::UnguessableToken(), hashed_id, listener.Get()));
 
   SyncWithAllThreads();
-  BrowserThread::DeleteSoon(BrowserThread::IO, FROM_HERE, handler.release());
+  base::DeleteSoon(FROM_HERE, {BrowserThread::IO}, handler.release());
   SyncWithAllThreads();
 }
 
 TEST_F(AudioOutputAuthorizationHandlerTest,
        AuthorizeNondefaultDeviceIdWithPermission_Ok) {
   std::string raw_nondefault_id = GetRawNondefaultId();
+  MediaDeviceSaltAndOrigin salt_and_origin = GetMediaDeviceSaltAndOrigin(
+      process()->GetID(), main_rfh()->GetRoutingID());
   std::string hashed_id = MediaStreamManager::GetHMACForMediaDeviceID(
-      browser_context()->GetMediaDeviceIDSalt(), SecurityOrigin(),
+      salt_and_origin.device_id_salt, salt_and_origin.origin,
       raw_nondefault_id);
   MockAuthorizationCallback listener;
   std::unique_ptr<AudioOutputAuthorizationHandler> handler =
       std::make_unique<AudioOutputAuthorizationHandler>(
           GetAudioSystem(), GetMediaStreamManager(), process()->GetID());
-  base::PostTaskWithTraits(
+  base::PostTask(
       FROM_HERE, {BrowserThread::IO},
       base::BindOnce(
           &AudioOutputAuthorizationHandler::OverridePermissionsForTesting,
@@ -292,15 +280,15 @@ TEST_F(AudioOutputAuthorizationHandlerTest,
                             raw_nondefault_id, std::string()))
       .Times(1);
 
-  base::PostTaskWithTraits(
+  base::PostTask(
       FROM_HERE, {BrowserThread::IO},
       base::BindOnce(
           &AudioOutputAuthorizationHandler::RequestDeviceAuthorization,
-          base::Unretained(handler.get()), main_rfh()->GetRoutingID(), 0,
-          hashed_id, listener.Get()));
+          base::Unretained(handler.get()), main_rfh()->GetRoutingID(),
+          base::UnguessableToken(), hashed_id, listener.Get()));
 
   SyncWithAllThreads();
-  BrowserThread::DeleteSoon(BrowserThread::IO, FROM_HERE, handler.release());
+  base::DeleteSoon(FROM_HERE, {BrowserThread::IO}, handler.release());
   SyncWithAllThreads();
 }
 
@@ -314,18 +302,18 @@ TEST_F(AudioOutputAuthorizationHandlerTest, AuthorizeInvalidDeviceId_NotFound) {
                             std::string(), std::string()))
       .Times(1);
 
-  base::PostTaskWithTraits(
+  base::PostTask(
       FROM_HERE, {BrowserThread::IO},
       base::BindOnce(
           &AudioOutputAuthorizationHandler::RequestDeviceAuthorization,
-          base::Unretained(handler.get()), main_rfh()->GetRoutingID(), 0,
-          kInvalidDeviceId, listener.Get()));
+          base::Unretained(handler.get()), main_rfh()->GetRoutingID(),
+          base::UnguessableToken(), kInvalidDeviceId, listener.Get()));
 
   SyncWithAllThreads();
   // It is possible to request an invalid device id from JS APIs,
   // so we don't want to crash the renderer for this.
   EXPECT_EQ(process()->bad_msg_count(), 0);
-  BrowserThread::DeleteSoon(BrowserThread::IO, FROM_HERE, handler.release());
+  base::DeleteSoon(FROM_HERE, {BrowserThread::IO}, handler.release());
   SyncWithAllThreads();
 }
 
@@ -349,16 +337,16 @@ TEST_F(AudioOutputAuthorizationHandlerTest,
                             std::string(), std::string()))
       .Times(1);
 
-  base::PostTaskWithTraits(
+  base::PostTask(
       FROM_HERE, {BrowserThread::IO},
       base::BindOnce(
           &AudioOutputAuthorizationHandler::RequestDeviceAuthorization,
-          base::Unretained(handler.get()), main_rfh()->GetRoutingID(), 0,
-          hashed_id, listener.Get()));
+          base::Unretained(handler.get()), main_rfh()->GetRoutingID(),
+          base::UnguessableToken(), hashed_id, listener.Get()));
   SyncWithAllThreads();
 
   EXPECT_EQ(process()->bad_msg_count(), 0);
-  BrowserThread::DeleteSoon(BrowserThread::IO, FROM_HERE, handler.release());
+  base::DeleteSoon(FROM_HERE, {BrowserThread::IO}, handler.release());
   SyncWithAllThreads();
 }
 
@@ -373,29 +361,31 @@ TEST_F(AudioOutputAuthorizationHandlerTest,
                             std::string()))
       .Times(1);
 
-  base::PostTaskWithTraits(
+  base::PostTask(
       FROM_HERE, {BrowserThread::IO},
       base::BindOnce(
           &AudioOutputAuthorizationHandler::RequestDeviceAuthorization,
           base::Unretained(handler.get()), main_rfh()->GetRoutingID(),
-          kSessionId, std::string(), listener.Get()));
+          base::UnguessableToken::Create(), std::string(), listener.Get()));
 
   SyncWithAllThreads();
-  BrowserThread::DeleteSoon(BrowserThread::IO, FROM_HERE, handler.release());
+  base::DeleteSoon(FROM_HERE, {BrowserThread::IO}, handler.release());
   SyncWithAllThreads();
 }
 
 TEST_F(AudioOutputAuthorizationHandlerTest,
        AuthorizeNondefaultDeviceIdAfterSaltChange_NotFound) {
   std::string raw_nondefault_id = GetRawNondefaultId();
+  MediaDeviceSaltAndOrigin salt_and_origin = GetMediaDeviceSaltAndOrigin(
+      process()->GetID(), main_rfh()->GetRoutingID());
   std::string hashed_id = MediaStreamManager::GetHMACForMediaDeviceID(
-      browser_context()->GetMediaDeviceIDSalt(), SecurityOrigin(),
+      salt_and_origin.device_id_salt, salt_and_origin.origin,
       raw_nondefault_id);
   MockAuthorizationCallback listener;
   std::unique_ptr<AudioOutputAuthorizationHandler> handler =
       std::make_unique<AudioOutputAuthorizationHandler>(
           GetAudioSystem(), GetMediaStreamManager(), process()->GetID());
-  base::PostTaskWithTraits(
+  base::PostTask(
       FROM_HERE, {BrowserThread::IO},
       base::BindOnce(
           &AudioOutputAuthorizationHandler::OverridePermissionsForTesting,
@@ -403,12 +393,12 @@ TEST_F(AudioOutputAuthorizationHandlerTest,
 
   EXPECT_CALL(listener, Run(media::OUTPUT_DEVICE_STATUS_OK, _,
                             raw_nondefault_id, std::string()));
-  base::PostTaskWithTraits(
+  base::PostTask(
       FROM_HERE, {BrowserThread::IO},
       base::BindOnce(
           &AudioOutputAuthorizationHandler::RequestDeviceAuthorization,
-          base::Unretained(handler.get()), main_rfh()->GetRoutingID(), 0,
-          hashed_id, listener.Get()));
+          base::Unretained(handler.get()), main_rfh()->GetRoutingID(),
+          base::UnguessableToken(), hashed_id, listener.Get()));
   SyncWithAllThreads();
 
   // Reset the salt and expect authorization of the device ID hashed with
@@ -419,15 +409,15 @@ TEST_F(AudioOutputAuthorizationHandlerTest,
   context->set_media_device_id_salt("new salt");
   EXPECT_CALL(listener, Run(media::OUTPUT_DEVICE_STATUS_ERROR_NOT_FOUND, _, _,
                             std::string()));
-  base::PostTaskWithTraits(
+  base::PostTask(
       FROM_HERE, {BrowserThread::IO},
       base::BindOnce(
           &AudioOutputAuthorizationHandler::RequestDeviceAuthorization,
-          base::Unretained(handler.get()), main_rfh()->GetRoutingID(), 0,
-          hashed_id, listener.Get()));
+          base::Unretained(handler.get()), main_rfh()->GetRoutingID(),
+          base::UnguessableToken(), hashed_id, listener.Get()));
 
   SyncWithAllThreads();
-  BrowserThread::DeleteSoon(BrowserThread::IO, FROM_HERE, handler.release());
+  base::DeleteSoon(FROM_HERE, {BrowserThread::IO}, handler.release());
   SyncWithAllThreads();
 }
 

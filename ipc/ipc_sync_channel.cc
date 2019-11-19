@@ -578,6 +578,16 @@ SyncChannel::SyncChannel(
   StartWatching();
 }
 
+void SyncChannel::AddListenerTaskRunner(
+    int32_t routing_id,
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
+  context()->AddListenerTaskRunner(routing_id, std::move(task_runner));
+}
+
+void SyncChannel::RemoveListenerTaskRunner(int32_t routing_id) {
+  context()->RemoveListenerTaskRunner(routing_id);
+}
+
 SyncChannel::~SyncChannel() = default;
 
 void SyncChannel::SetRestrictDispatchChannelGroup(int group) {

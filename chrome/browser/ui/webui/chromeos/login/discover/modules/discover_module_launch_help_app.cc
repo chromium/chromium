@@ -37,8 +37,7 @@ class DiscoverModuleLaunchHelpAppHandler : public DiscoverHandler {
 
 DiscoverModuleLaunchHelpAppHandler::DiscoverModuleLaunchHelpAppHandler(
     JSCallsContainer* js_calls_container)
-    : DiscoverHandler(DiscoverModuleLaunchHelpApp::kModuleName,
-                      js_calls_container) {}
+    : DiscoverHandler(js_calls_container) {}
 
 void DiscoverModuleLaunchHelpAppHandler::DeclareLocalizedValues(
     ::login::LocalizedValuesBuilder* builder) {

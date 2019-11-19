@@ -7,6 +7,9 @@
 
 #include "base/files/file_path.h"
 #include "base/logging.h"
+#include "base/strings/string_piece_forward.h"
+#include "components/services/app_service/public/mojom/types.mojom.h"
+#include "components/version_info/channel.h"
 #include "ui/base/layout.h"
 
 namespace extensions {
@@ -16,6 +19,9 @@ extern const char kExtensionScheme[];
 
 // The name of the manifest inside an extension.
 extern const base::FilePath::CharType kManifestFilename[];
+
+// The name of the differential fingerprint file inside an extension.
+extern const base::FilePath::CharType kDifferentialFingerprintFilename[];
 
 // The name of locale folder inside an extension.
 extern const base::FilePath::CharType kLocaleFolder[];
@@ -115,38 +121,8 @@ extern const size_t kWebstoreSignaturesPublicKeySize;
 // from a non-service worker context
 extern const int kMainThreadId;
 
-// Enumeration of possible app launch sources.
-// This should be kept in sync with LaunchSource in
-// extensions/common/api/app_runtime.idl, and GetLaunchSourceEnum() in
-// extensions/browser/api/app_runtime/app_runtime_api.cc.
-// Note the enumeration is used in UMA histogram so entries
-// should not be re-ordered or removed.
-enum AppLaunchSource {
-  SOURCE_NONE,
-  SOURCE_UNTRACKED,
-  SOURCE_APP_LAUNCHER,
-  SOURCE_NEW_TAB_PAGE,
-  SOURCE_RELOAD,
-  SOURCE_RESTART,
-  SOURCE_LOAD_AND_LAUNCH,
-  SOURCE_COMMAND_LINE,
-  SOURCE_FILE_HANDLER,
-  SOURCE_URL_HANDLER,
-  SOURCE_SYSTEM_TRAY,
-  SOURCE_ABOUT_PAGE,
-  SOURCE_KEYBOARD,
-  SOURCE_EXTENSIONS_PAGE,
-  SOURCE_MANAGEMENT_API,
-  SOURCE_EPHEMERAL_APP_DEPRECATED,
-  SOURCE_BACKGROUND,
-  SOURCE_KIOSK,
-  SOURCE_CHROME_INTERNAL,
-  SOURCE_TEST,
-  SOURCE_INSTALLED_NOTIFICATION,
-  SOURCE_CONTEXT_MENU,
-  SOURCE_ARC,
-  NUM_APP_LAUNCH_SOURCES
-};
+using apps::mojom::AppLaunchSource;
+using apps::mojom::LaunchContainer;
 
 // This enum is used for the launch type the user wants to use for an
 // application.
@@ -165,18 +141,6 @@ enum LaunchType {
   // if no user pref were set.  Update this constant to change
   // the default for the NTP and chrome.management.launchApp().
   LAUNCH_TYPE_DEFAULT = LAUNCH_TYPE_REGULAR
-};
-
-// Don't remove items or change the order of this enum.  It's used in
-// histograms and preferences.
-enum LaunchContainer {
-  LAUNCH_CONTAINER_WINDOW,
-  LAUNCH_CONTAINER_PANEL_DEPRECATED,
-  LAUNCH_CONTAINER_TAB,
-  // For platform apps, which don't actually have a container (they just get a
-  // "onLaunched" event).
-  LAUNCH_CONTAINER_NONE,
-  NUM_LAUNCH_CONTAINERS
 };
 
 // The origin of injected CSS.
@@ -250,20 +214,31 @@ extern const char kGeniusAppId[];
 // The extension id of the default Demo Mode Highlights app.
 extern const char kHighlightsAppId[];
 
-// The extension id of an alternate Demo Mode Highlights app.
-extern const char kHighlightsAlt1AppId[];
+// The extension id of the eve Demo Mode Highlights app.
+extern const char kHighlightsEveAppId[];
+
+// The extension id of the nocturne Demo Mode Highlights app.
+extern const char kHighlightsNocturneAppId[];
 
 // The extension id of an alternate Demo Mode Highlights app.
-extern const char kHighlightsAlt2AppId[];
+extern const char kHighlightsAltAppId[];
 
 // The extension id of the default Demo Mode screensaver app.
 extern const char kScreensaverAppId[];
 
-// The extension id of an alternate Demo Mode screensaver app.
-extern const char kScreensaverAlt1AppId[];
+// The extension id of the eve Demo Mode screensaver app.
+extern const char kScreensaverEveAppId[];
+
+// The extension id of the nocturne Demo Mode screensaver app.
+extern const char kScreensaverNocturneAppId[];
 
 // The extension id of an alternate Demo Mode screensaver app.
-extern const char kScreensaverAlt2AppId[];
+extern const char kScreensaverAltAppId[];
+
+// Returns true if this app is part of the "system UI". Generally this is UI
+// that that on other operating systems would be considered part of the OS,
+// for example the file manager.
+bool IsSystemUIApp(base::StringPiece extension_id);
 #endif
 
 // The extension id for the production version of Hangouts.
@@ -280,6 +255,10 @@ extern const int kContentVerificationDefaultBlockSize;
 
 // The minimum severity of a log or error in order to report it to the browser.
 extern const logging::LogSeverity kMinimumSeverityToReportError;
+
+// The minimum channel where Service Worker based extensions can run.
+constexpr version_info::Channel kMinChannelForServiceWorkerBasedExtension =
+    version_info::Channel::CANARY;
 
 }  // namespace extension_misc
 

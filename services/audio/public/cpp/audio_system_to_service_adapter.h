@@ -13,6 +13,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "media/audio/audio_system.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "services/audio/public/mojom/system_info.mojom.h"
 
 namespace service_manager {
@@ -57,15 +58,14 @@ class AudioSystemToServiceAdapter : public media::AudioSystem {
 
  private:
   mojom::SystemInfo* GetSystemInfo();
-  void DisconnectOnTimeout();
   void OnConnectionError();
 
   // Will be bound to the thread AudioSystemToServiceAdapter is used on.
   const std::unique_ptr<service_manager::Connector> connector_;
-  mojom::SystemInfoPtr system_info_;
+  mojo::Remote<mojom::SystemInfo> system_info_;
 
   // To disconnect from the audio service when not in use.
-  base::Optional<base::DelayTimer> disconnect_timer_;
+  const base::TimeDelta disconnect_timeout_;
 
   THREAD_CHECKER(thread_checker_);
   DISALLOW_COPY_AND_ASSIGN(AudioSystemToServiceAdapter);

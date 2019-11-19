@@ -1,0 +1,107 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// If you change or add any fields in this file, update proto_visitors.h and
+// potentially proto_enum_conversions.{h, cc}.
+
+syntax = "proto2";
+
+option java_multiple_files = true;
+option java_package = "org.chromium.components.sync.protocol";
+
+option optimize_for = LITE_RUNTIME;
+
+package sync_pb;
+
+import "encryption.proto";
+import "entity_metadata.proto";
+import "model_type_state.proto";
+import "nigori_specifics.proto";
+
+message CryptographerData {
+  // Contains all known Nigori keys.
+  optional NigoriKeyBag key_bag = 1;
+
+  // Default key is the key, that should be used for encryption. Can be empty
+  // in case we have pending keys (waiting for explicit passphrase, or client
+  // didn't received keystore keys).
+  optional string default_key_name = 2;
+}
+
+message CustomPassphraseKeyDerivationParams {
+  // Method used for deriving keys from custom passphrase.
+  optional NigoriSpecifics.KeyDerivationMethod
+      custom_passphrase_key_derivation_method = 1;
+
+  // Salt used for the derivation of the key from the custom passphrase. Should
+  // be set iff custom_passphrase_key_derivation_method == SCRYPT_8192_8_11.
+  optional string custom_passphrase_key_derivation_salt = 2;
+}
+
+message NigoriModel {
+  // Represents state of the cryptographer.
+  optional CryptographerData cryptographer_data = 1;
+
+  // Contains the name of the key, used for encryption of
+  // NigoriSpecifics.keystore_decryptor_token, should always be the name of the
+  // latest keystore key. Equals to cryptographer_data.default_key_name iff it
+  // is Nigori in full keystore mode (not in backward compatible keystore
+  // mode).
+  optional string current_keystore_key_name = 2;
+
+  // Contains keybag in encrypted form, should be empty once we were able to
+  // decrypt keybag from specifics.
+  optional EncryptedData pending_keys = 3;
+
+  // PassphraseType used for encryption. IMPLICIT_PASSPRHASE shouldn't be used
+  // here.
+  optional NigoriSpecifics.PassphraseType passphrase_type = 4
+      [default = UNKNOWN];
+
+  // The time (in UNIX epoch milliseconds) at which the keystore migration was
+  // performed.
+  optional int64 keystore_migration_time = 5;
+
+  // The time (in UNIX epoch milliseconds) at which a custom passphrase was
+  // set.
+  // Note: this field may not be set if the custom passphrase was applied before
+  // corresponding field in NigoriSpecifics was introduced.
+  optional int64 custom_passphrase_time = 6;
+
+  // Params used for deriving keys from custom passphrase. Should be set iff
+  // |passphrase_type| is CUSTOM_PASSPHRASE.
+  optional CustomPassphraseKeyDerivationParams
+      custom_passphrase_key_derivation_params = 7;
+
+  // Indicates whether we need to encrypt all encryptable user types.
+  optional bool encrypt_everything = 8;
+
+  // The list of encrypted UserEncryptableTypes, represented by their specifics
+  // field number.
+  repeated int32 encrypted_types_specifics_field_number = 9;
+
+  // Keystore keys are used to decrypt keystore-based Nigori. Should be
+  // persisted in order to not ask the keystore server for them during every
+  // browser startup. Due to backward compatibility requirements keys are
+  // always Base64 encoded.
+  repeated string keystore_key = 10;
+
+  // Encryptor keystore decryptor token. Used for decryption of keystore Nigori
+  // in case keystore keys arrived after NigoriSpecifics.
+  optional EncryptedData pending_keystore_decryptor_token = 11;
+}
+
+// Sync proto to store Nigori data in storage. Proto should be encrypted with
+// os_crypt before storing it somewhere, because it contains sensitive data (
+// nigori_model.cryptographer_data.key_bag and nigori_model.keystore_keys).
+message NigoriLocalData {
+  // Global metadata.
+  optional ModelTypeState model_type_state = 1;
+
+  // Metadata for Nigori entity.
+  optional EntityMetadata entity_metadata = 2;
+
+  // Nigori model state.
+  optional NigoriModel nigori_model = 3;
+}

@@ -11,8 +11,11 @@
 #include "base/sequence_checker.h"
 #include "components/mirroring/mojom/resource_provider.mojom.h"
 #include "media/audio/audio_input_ipc.h"
-#include "media/mojo/interfaces/audio_input_stream.mojom.h"
-#include "mojo/public/cpp/bindings/binding.h"
+#include "media/mojo/mojom/audio_input_stream.mojom.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 namespace mirroring {
 
@@ -23,10 +26,10 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) CapturedAudioInput final
       public mojom::AudioStreamCreatorClient,
       public media::mojom::AudioInputStreamClient {
  public:
-  using StreamCreatorCallback =
-      base::RepeatingCallback<void(mojom::AudioStreamCreatorClientPtr client,
-                                   const media::AudioParameters& params,
-                                   uint32_t total_segments)>;
+  using StreamCreatorCallback = base::RepeatingCallback<void(
+      mojo::PendingRemote<mojom::AudioStreamCreatorClient> client,
+      const media::AudioParameters& params,
+      uint32_t total_segments)>;
   explicit CapturedAudioInput(StreamCreatorCallback callback);
   ~CapturedAudioInput() override;
 
@@ -42,8 +45,9 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) CapturedAudioInput final
   void SetOutputDeviceForAec(const std::string& output_device_id) override;
 
   // mojom::AudioStreamCreatorClient implementation
-  void StreamCreated(media::mojom::AudioInputStreamPtr stream,
-                     media::mojom::AudioInputStreamClientRequest client_request,
+  void StreamCreated(mojo::PendingRemote<media::mojom::AudioInputStream> stream,
+                     mojo::PendingReceiver<media::mojom::AudioInputStreamClient>
+                         client_receiver,
                      media::mojom::ReadOnlyAudioDataPipePtr data_pipe,
                      bool initially_muted) override;
 
@@ -54,10 +58,12 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) CapturedAudioInput final
   SEQUENCE_CHECKER(sequence_checker_);
 
   const StreamCreatorCallback stream_creator_callback_;
-  mojo::Binding<media::mojom::AudioInputStreamClient> stream_client_binding_;
-  mojo::Binding<mojom::AudioStreamCreatorClient> stream_creator_client_binding_;
+  mojo::Receiver<media::mojom::AudioInputStreamClient> stream_client_receiver_{
+      this};
+  mojo::Receiver<mojom::AudioStreamCreatorClient>
+      stream_creator_client_receiver_{this};
   media::AudioInputIPCDelegate* delegate_ = nullptr;
-  media::mojom::AudioInputStreamPtr stream_;
+  mojo::Remote<media::mojom::AudioInputStream> stream_;
 
   DISALLOW_COPY_AND_ASSIGN(CapturedAudioInput);
 };

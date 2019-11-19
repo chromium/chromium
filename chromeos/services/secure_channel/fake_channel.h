@@ -11,7 +11,8 @@
 
 #include "base/macros.h"
 #include "chromeos/services/secure_channel/public/mojom/secure_channel.mojom.h"
-#include "mojo/public/cpp/bindings/binding.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 
 namespace chromeos {
 
@@ -23,8 +24,8 @@ class FakeChannel : public mojom::Channel {
   FakeChannel();
   ~FakeChannel() override;
 
-  mojom::ChannelPtr GenerateInterfacePtr();
-  void DisconnectGeneratedPtr();
+  mojo::PendingRemote<mojom::Channel> GenerateRemote();
+  void DisconnectGeneratedRemote();
 
   void set_connection_metadata_for_next_call(
       mojom::ConnectionMetadataPtr connection_metadata_for_next_call) {
@@ -42,7 +43,7 @@ class FakeChannel : public mojom::Channel {
                    SendMessageCallback callback) override;
   void GetConnectionMetadata(GetConnectionMetadataCallback callback) override;
 
-  mojo::Binding<mojom::Channel> binding_;
+  mojo::Receiver<mojom::Channel> receiver_{this};
 
   std::vector<std::pair<std::string, SendMessageCallback>> sent_messages_;
   mojom::ConnectionMetadataPtr connection_metadata_for_next_call_;

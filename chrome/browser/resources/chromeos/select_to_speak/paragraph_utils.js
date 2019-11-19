@@ -13,8 +13,8 @@ let ParagraphUtils = function() {};
 /**
  * Gets the first ancestor of a node which is a paragraph or is not inline,
  * or get the root node if none is found.
- * @param { AutomationNode } node The node to get the parent for.
- * @return { ?AutomationNode } the parent paragraph or null if there is none.
+ * @param {AutomationNode} node The node to get the parent for.
+ * @return {?AutomationNode} the parent paragraph or null if there is none.
  */
 ParagraphUtils.getFirstBlockAncestor = function(node) {
   let parent = node.parent;
@@ -39,9 +39,9 @@ ParagraphUtils.getFirstBlockAncestor = function(node) {
 /**
  * Determines whether two nodes are in the same block-like ancestor, i.e.
  * whether they are in the same paragraph.
- * @param { AutomationNode|undefined } first The first node to compare.
- * @param { AutomationNode|undefined } second The second node to compare.
- * @return { boolean } whether two nodes are in the same paragraph.
+ * @param {AutomationNode|undefined} first The first node to compare.
+ * @param {AutomationNode|undefined} second The second node to compare.
+ * @return {boolean} whether two nodes are in the same paragraph.
  */
 ParagraphUtils.inSameParagraph = function(first, second) {
   if (first === undefined || second === undefined) {
@@ -167,14 +167,17 @@ ParagraphUtils.findInlineTextNodeByCharacterIndex = function(
  * representing a paragraph of inline nodes.
  * @param {Array<!AutomationNode>} nodes List of automation nodes to use.
  * @param {number} index The index into nodes at which to start.
+ * @param {boolean} splitOnLanguage flag to determine if we should split nodes
+ *                  up based on language.
  * @return {ParagraphUtils.NodeGroup} info about the node group
  */
-ParagraphUtils.buildNodeGroup = function(nodes, index) {
+ParagraphUtils.buildNodeGroup = function(nodes, index, splitOnLanguage) {
   let node = nodes[index];
   let next = nodes[index + 1];
   let result = new ParagraphUtils.NodeGroup(
       ParagraphUtils.getFirstBlockAncestor(nodes[index]));
   let staticTextParent = null;
+  let currentLanguage = undefined;
   // TODO: Don't skip nodes. Instead, go through every node in
   // this paragraph from the first to the last in the nodes list.
   // This will catch nodes at the edges of the user's selection like
@@ -216,13 +219,40 @@ ParagraphUtils.buildNodeGroup = function(nodes, index) {
         result.nodes.push(newNode);
       }
     }
+
+    // Set currentLanguage if we don't have one yet.
+    // We have to do this before we consider stopping otherwise we miss out on
+    // the last language attribute of each NodeGroup which could be important if
+    // this NodeGroup only contains a single node, or if all previous nodes
+    // lacked any language information.
+    if (!currentLanguage) {
+      currentLanguage = node.detectedLanguage;
+    }
+
+    // Stop if any of following is true:
+    //  1. we have no more nodes to process.
+    //  2. the next node is not part of the same paragraph.
     if (index + 1 >= nodes.length ||
         !ParagraphUtils.inSameParagraph(node, next)) {
       break;
     }
+
+    // Stop if the next node would change our currentLanguage (if we have
+    // one). We allow an undefined detectedLanguage to match with any previous
+    // language, so that we will never break up a NodeGroup on an undefined
+    // detectedLanguage.
+    if (splitOnLanguage && currentLanguage && next.detectedLanguage &&
+        currentLanguage !== next.detectedLanguage) {
+      break;
+    }
+
     index += 1;
     node = next;
     next = nodes[index + 1];
+  }
+
+  if (splitOnLanguage && currentLanguage) {
+    result.detectedLanguage = currentLanguage;
   }
   result.endIndex = index;
   return result;
@@ -264,6 +294,12 @@ ParagraphUtils.NodeGroup = function(blockParent) {
    * @type {number}
    */
   this.endIndex = -1;
+
+  /**
+   * Language and country code for all nodes within this NodeGroup.
+   * @type {string|undefined}
+   */
+  this.detectedLanguage = undefined;
 };
 
 /**

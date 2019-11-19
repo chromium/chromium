@@ -10,13 +10,12 @@ see: https://goo.gl/WvZiiW
 
 import random
 
-from core import perf_benchmark
-
 from telemetry import benchmark
-from telemetry.value import scalar
 from telemetry.page import legacy_page_test
 
+from core import perf_benchmark
 from page_sets import dummy_story_set
+
 
 class _DummyTest(legacy_page_test.LegacyPageTest):
 
@@ -27,19 +26,15 @@ class _DummyTest(legacy_page_test.LegacyPageTest):
 
   def ValidateAndMeasurePage(self, page, tab, results):
     del tab  # unused
-    results.AddValue(scalar.ScalarValue(
-        page=page,
-        name='gaussian-value', units='ms',
-        value=random.gauss(self._avg, self._std),
-        description=('Random number that follows the Gaussian distribution '
-                     'with mean=%s and std=%s' % (self._avg, self._std))))
+    value = random.gauss(self._avg, self._std)
+    results.AddMeasurement('gaussian-value', 'ms', value)
 
 
 class _DummyBenchmark(perf_benchmark.PerfBenchmark):
   page_set = dummy_story_set.DummyStorySet
 
 
-@benchmark.Info(emails=['crouleau@chromium.org'], component='Speed>Telemetry')
+@benchmark.Info(emails=['crouleau@chromium.org'], component='Test>Telemetry')
 class DummyBenchmarkOne(_DummyBenchmark):
   """A low noise benchmark with mean=100 & std=1."""
 
@@ -51,7 +46,7 @@ class DummyBenchmarkOne(_DummyBenchmark):
     return 'dummy_benchmark.stable_benchmark_1'
 
 
-@benchmark.Info(emails=['crouleau@chromium.org'], component='Speed>Telemetry')
+@benchmark.Info(emails=['crouleau@chromium.org'], component='Test>Telemetry')
 class DummyBenchmarkTwo(_DummyBenchmark):
   """A noisy benchmark with mean=50 & std=20."""
 

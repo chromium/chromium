@@ -18,7 +18,7 @@
 #include "chromeos/services/secure_channel/ble_synchronizer_base.h"
 #include "device/bluetooth/bluetooth_device.h"
 #include "device/bluetooth/bluetooth_discovery_session.h"
-#include "device/bluetooth/bluetooth_uuid.h"
+#include "device/bluetooth/public/cpp/bluetooth_uuid.h"
 
 namespace chromeos {
 
@@ -74,8 +74,7 @@ BleScannerImpl::BleScannerImpl(Delegate* delegate,
       service_data_helper_(service_data_helper),
       ble_synchronizer_(ble_synchronizer),
       adapter_(adapter),
-      service_data_provider_(std::make_unique<ServiceDataProvider>()),
-      weak_ptr_factory_(this) {
+      service_data_provider_(std::make_unique<ServiceDataProvider>()) {
   adapter_->AddObserver(this);
 }
 

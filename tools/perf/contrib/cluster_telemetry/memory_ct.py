@@ -1,7 +1,9 @@
 # Copyright 2018 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
+
 from benchmarks import memory
+from core import perf_benchmark
 
 from contrib.cluster_telemetry import ct_benchmarks_util
 from contrib.cluster_telemetry import page_set
@@ -9,8 +11,7 @@ from contrib.cluster_telemetry import page_set
 from telemetry.page import traffic_setting
 
 
-# pylint: disable=protected-access
-class MemoryClusterTelemetry(memory._MemoryInfra):
+class MemoryClusterTelemetry(perf_benchmark.PerfBenchmark):
 
   options = {'upload_results': True}
 
@@ -41,8 +42,11 @@ class MemoryClusterTelemetry(memory._MemoryInfra):
     super(MemoryClusterTelemetry, cls).ProcessCommandLineArgs(parser, args)
     cls.enable_heap_profiling = not args.disable_heap_profiling
 
+  def CreateCoreTimelineBasedMeasurementOptions(self):
+    return memory.CreateCoreTimelineBasedMemoryMeasurementOptions()
+
   def SetExtraBrowserOptions(self, options):
-    super(MemoryClusterTelemetry, self).SetExtraBrowserOptions(options)
+    memory.SetExtraBrowserOptionsForMemoryMeasurement(options)
     if self.enable_heap_profiling:
       options.AppendExtraBrowserArgs([
           '--memlog=all --memlog-stack-mode=pseudo',

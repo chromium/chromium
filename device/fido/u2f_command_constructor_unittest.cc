@@ -20,13 +20,13 @@ namespace {
 
 CtapMakeCredentialRequest ConstructMakeCredentialRequest() {
   PublicKeyCredentialRpEntity rp("acme.com");
-  rp.SetRpName("acme.com");
+  rp.name = "acme.com";
 
   PublicKeyCredentialUserEntity user(
       fido_parsing_utils::Materialize(test_data::kUserId));
-  user.SetUserName("johnpsmith@example.com")
-      .SetDisplayName("John P. Smith")
-      .SetIconUrl(GURL("https://pics.acme.com/00/p/aBjjjpqPb.png"));
+  user.name = "johnpsmith@example.com";
+  user.display_name = "John P. Smith";
+  user.icon_url = GURL("https://pics.acme.com/00/p/aBjjjpqPb.png");
 
   return CtapMakeCredentialRequest(
       test_data::kClientDataJson, std::move(rp), std::move(user),
@@ -73,13 +73,13 @@ TEST(U2fCommandConstructorTest, TestConvertCtapMakeCredentialToU2fRegister) {
 
 TEST(U2fCommandConstructorTest, TestU2fRegisterCredentialAlgorithmRequirement) {
   PublicKeyCredentialRpEntity rp("acme.com");
-  rp.SetRpName("acme.com");
+  rp.name = "acme.com";
 
   PublicKeyCredentialUserEntity user(
       fido_parsing_utils::Materialize(test_data::kUserId));
-  user.SetUserName("johnpsmith@example.com")
-      .SetDisplayName("John P. Smith")
-      .SetIconUrl(GURL("https://pics.acme.com/00/p/aBjjjpqPb.png"));
+  user.name = "johnpsmith@example.com";
+  user.display_name = "John P. Smith";
+  user.icon_url = GURL("https://pics.acme.com/00/p/aBjjjpqPb.png");
 
   CtapMakeCredentialRequest make_credential_param(
       test_data::kClientDataJson, std::move(rp), std::move(user),
@@ -90,15 +90,15 @@ TEST(U2fCommandConstructorTest, TestU2fRegisterCredentialAlgorithmRequirement) {
 
 TEST(U2fCommandConstructorTest, TestU2fRegisterUserVerificationRequirement) {
   auto make_credential_param = ConstructMakeCredentialRequest();
-  make_credential_param.SetUserVerification(
-      UserVerificationRequirement::kRequired);
+  make_credential_param.user_verification =
+      UserVerificationRequirement::kRequired;
 
   EXPECT_FALSE(IsConvertibleToU2fRegisterCommand(make_credential_param));
 }
 
 TEST(U2fCommandConstructorTest, TestU2fRegisterResidentKeyRequirement) {
   auto make_credential_param = ConstructMakeCredentialRequest();
-  make_credential_param.SetResidentKeyRequired(true);
+  make_credential_param.resident_key_required = true;
 
   EXPECT_FALSE(IsConvertibleToU2fRegisterCommand(make_credential_param));
 }
@@ -118,7 +118,7 @@ TEST(U2fCommandConstructorTest, TestConvertCtapGetAssertionToU2fSignRequest) {
   allowed_list.push_back(PublicKeyCredentialDescriptor(
       CredentialType::kPublicKey,
       fido_parsing_utils::Materialize(test_data::kU2fSignKeyHandle)));
-  get_assertion_req.SetAllowList(std::move(allowed_list));
+  get_assertion_req.allow_list = std::move(allowed_list);
 
   const auto u2f_sign_command = ConvertToU2fSignCommand(
       get_assertion_req, ApplicationParameterType::kPrimary,
@@ -141,8 +141,8 @@ TEST(U2fCommandConstructorTest, TestU2fSignUserVerificationRequirement) {
   allowed_list.push_back(PublicKeyCredentialDescriptor(
       CredentialType::kPublicKey,
       fido_parsing_utils::Materialize(test_data::kU2fSignKeyHandle)));
-  get_assertion_req.SetAllowList(std::move(allowed_list));
-  get_assertion_req.SetUserVerification(UserVerificationRequirement::kRequired);
+  get_assertion_req.allow_list = std::move(allowed_list);
+  get_assertion_req.user_verification = UserVerificationRequirement::kRequired;
 
   EXPECT_FALSE(IsConvertibleToU2fSignCommand(get_assertion_req));
 }

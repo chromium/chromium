@@ -43,12 +43,6 @@ class SVGIntegerOptionalInteger final : public SVGPropertyBase {
   typedef void TearOffType;
   typedef void PrimitiveType;
 
-  static SVGIntegerOptionalInteger* Create(SVGInteger* first_integer,
-                                           SVGInteger* second_integer) {
-    return MakeGarbageCollected<SVGIntegerOptionalInteger>(first_integer,
-                                                           second_integer);
-  }
-
   SVGIntegerOptionalInteger(SVGInteger* first_integer,
                             SVGInteger* second_integer);
 
@@ -61,7 +55,7 @@ class SVGIntegerOptionalInteger final : public SVGPropertyBase {
   static constexpr int kInitialValueBits = SVGInteger::kInitialValueBits;
 
   void Add(SVGPropertyBase*, SVGElement*) override;
-  void CalculateAnimatedValue(SVGAnimationElement*,
+  void CalculateAnimatedValue(const SVGAnimateElement&,
                               float percentage,
                               unsigned repeat_count,
                               SVGPropertyBase* from,

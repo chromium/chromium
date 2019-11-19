@@ -16,6 +16,7 @@
 
 #include <fcntl.h>
 #include <sys/file.h>
+#include <sys/mman.h>
 #include <sys/stat.h>
 #include <unistd.h>
 
@@ -98,6 +99,12 @@ FileHandle OpenFileForOutput(int rdwr_or_wronly,
            permissions == FilePermissions::kWorldReadable ? 0644 : 0600));
 }
 
+#if defined(OS_LINUX)
+FileHandle OpenMemFileForOutput(const base::FilePath& path) {
+  return HANDLE_EINTR(memfd_create(path.value().c_str(), 0));
+}
+#endif
+
 }  // namespace
 
 namespace internal {
@@ -148,6 +155,14 @@ FileHandle LoggingOpenFileForWrite(const base::FilePath& path,
   PLOG_IF(ERROR, fd < 0) << "open " << path.value();
   return fd;
 }
+
+#if defined(OS_LINUX)
+FileHandle LoggingOpenMemFileForWrite(const base::FilePath& path) {
+  FileHandle fd = OpenMemFileForOutput(path);
+  PLOG_IF(ERROR, fd < 0) << "memfd_create " << path.value();
+  return fd;
+}
+#endif
 
 FileHandle LoggingOpenFileForReadAndWrite(const base::FilePath& path,
                                           FileWriteMode mode,

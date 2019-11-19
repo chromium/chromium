@@ -5,18 +5,20 @@
 
 """ Test runner for Mojom """
 
+from __future__ import print_function
+
 import subprocess
 import sys
 
 def TestMojom(testname, args):
-  print '\nRunning unit tests for %s.' % testname
+  print('\nRunning unit tests for %s.' % testname)
   try:
     args = [sys.executable, testname] + args
     subprocess.check_call(args, stdout=sys.stdout)
-    print 'Succeeded'
+    print('Succeeded')
     return 0
   except subprocess.CalledProcessError as err:
-    print 'Failed with %s.' % str(err)
+    print('Failed with %s.' % str(err))
     return 1
 
 
@@ -27,7 +29,7 @@ def main(args):
   errors += TestMojom('pack_tests.py', ['--test'])
 
   if errors:
-    print '\nFailed tests.'
+    print('\nFailed tests.')
   return min(errors, 127)  # Make sure the return value doesn't "wrap".
 
 

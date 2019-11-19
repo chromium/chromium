@@ -1,0 +1,14 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# To update the CIPD package for checkstyle:
+#   cipd auth-login
+#   cd //third_party/checkstyle
+#   rm checkstyle-all.jar
+#   cp <new checkstyle jar> .
+#   cipd create --pkg-def cipd.yaml # Make note of the instance ID
+#   Update //DEPS (instance ID output by cipd create)
+package: chromium/third_party/checkstyle
+data:
+  - file: checkstyle-all.jar

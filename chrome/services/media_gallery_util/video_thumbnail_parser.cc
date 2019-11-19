@@ -99,8 +99,8 @@ void ExtractVideoFrameOnMediaThread(
 VideoThumbnailParser::VideoThumbnailParser(
     std::unique_ptr<media::DataSource> source)
     : data_source_(std::move(source)),
-      media_task_runner_(
-          base::CreateSequencedTaskRunnerWithTraits({base::MayBlock()})) {}
+      media_task_runner_(base::CreateSequencedTaskRunner(
+          {base::ThreadPool(), base::MayBlock()})) {}
 
 VideoThumbnailParser::~VideoThumbnailParser() = default;
 

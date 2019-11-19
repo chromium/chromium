@@ -35,10 +35,11 @@ bool GetPasswordsDirectory(base::FilePath* directory_path) {
 }
 
 void DeletePasswordsDirectory() {
-  base::PostTaskWithTraits(FROM_HERE,
-                           {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
-                            base::TaskShutdownBehavior::BLOCK_SHUTDOWN},
-                           base::BindOnce(&DeletePasswordsDirectorySync));
+  base::PostTask(
+      FROM_HERE,
+      {base::ThreadPool(), base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+       base::TaskShutdownBehavior::BLOCK_SHUTDOWN},
+      base::BindOnce(&DeletePasswordsDirectorySync));
 }
 
 }  // namespace password_manager

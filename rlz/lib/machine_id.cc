@@ -6,8 +6,8 @@
 
 #include <stddef.h>
 
+#include "base/hash/sha1.h"
 #include "base/rand_util.h"
-#include "base/sha1.h"
 #include "base/strings/stringprintf.h"
 #include "rlz/lib/assert.h"
 #include "rlz/lib/crc8.h"

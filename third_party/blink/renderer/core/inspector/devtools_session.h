@@ -5,8 +5,14 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_DEVTOOLS_SESSION_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_DEVTOOLS_SESSION_H_
 
+#include <memory>
+#include "base/callback.h"
 #include "base/macros.h"
-#include "mojo/public/cpp/bindings/associated_binding.h"
+#include "mojo/public/cpp/bindings/associated_receiver.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
+#include "mojo/public/cpp/bindings/pending_associated_receiver.h"
+#include "mojo/public/cpp/bindings/pending_associated_remote.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "third_party/blink/public/mojom/devtools/devtools_agent.mojom-blink.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/inspector/inspector_session_state.h"
@@ -24,18 +30,20 @@ class DocumentLoader;
 class InspectorAgent;
 class LocalFrame;
 
-class CORE_EXPORT DevToolsSession
-    : public GarbageCollectedFinalized<DevToolsSession>,
-      public mojom::blink::DevToolsSession,
-      public protocol::FrontendChannel,
-      public v8_inspector::V8Inspector::Channel {
+class CORE_EXPORT DevToolsSession : public GarbageCollected<DevToolsSession>,
+                                    public mojom::blink::DevToolsSession,
+                                    public protocol::FrontendChannel,
+                                    public v8_inspector::V8Inspector::Channel {
  public:
   DevToolsSession(
       DevToolsAgent*,
-      mojom::blink::DevToolsSessionHostAssociatedPtrInfo host_ptr_info,
-      mojom::blink::DevToolsSessionAssociatedRequest main_request,
-      mojom::blink::DevToolsSessionRequest io_request,
-      mojom::blink::DevToolsSessionStatePtr reattach_session_state);
+      mojo::PendingAssociatedRemote<mojom::blink::DevToolsSessionHost>
+          host_remote,
+      mojo::PendingAssociatedReceiver<mojom::blink::DevToolsSession>
+          main_receiver,
+      mojo::PendingReceiver<mojom::blink::DevToolsSession> io_receiver,
+      mojom::blink::DevToolsSessionStatePtr reattach_session_state,
+      bool client_expects_binary_responses);
   ~DevToolsSession() override;
 
   void ConnectToV8(v8_inspector::V8Inspector*, int context_group_id);
@@ -61,7 +69,7 @@ class CORE_EXPORT DevToolsSession
       mojom::blink::DevToolsMessagePtr message) override;
   void DispatchProtocolCommandImpl(int call_id,
                                    const String& method,
-                                   std::vector<uint8_t> message);
+                                   Vector<uint8_t> message);
 
   // protocol::FrontendChannel implementation.
   void sendProtocolResponse(
@@ -82,22 +90,27 @@ class CORE_EXPORT DevToolsSession
       std::unique_ptr<v8_inspector::StringBuffer> message) override;
 
   bool IsDetached();
-  void SendProtocolResponse(int call_id,
-                            const protocol::ProtocolMessage& message);
+  void SendProtocolResponse(int call_id, std::vector<uint8_t> message);
+
+  // Converts to JSON if requested by the client.
+  blink::mojom::blink::DevToolsMessagePtr FinalizeMessage(
+      std::vector<uint8_t> message) const;
 
   Member<DevToolsAgent> agent_;
-  mojo::AssociatedBinding<mojom::blink::DevToolsSession> binding_;
-  mojom::blink::DevToolsSessionHostAssociatedPtr host_ptr_;
+  mojo::AssociatedReceiver<mojom::blink::DevToolsSession> receiver_;
+  mojo::AssociatedRemote<mojom::blink::DevToolsSessionHost> host_remote_;
   IOSession* io_session_;
   std::unique_ptr<v8_inspector::V8InspectorSession> v8_session_;
   std::unique_ptr<protocol::UberDispatcher> inspector_backend_dispatcher_;
   InspectorSessionState session_state_;
   HeapVector<Member<InspectorAgent>> agents_;
-  class Notification;
-  Vector<std::unique_ptr<Notification>> notification_queue_;
+  // Notifications are lazily serialized to shift the overhead we spend away
+  // from Javascript code that generates many events (e.g., a loop logging to
+  // console on every iteration).
+  Vector<base::OnceCallback<std::vector<uint8_t>()>> notification_queue_;
+  const bool client_expects_binary_responses_;
   InspectorAgentState v8_session_state_;
-  InspectorAgentState::String v8_session_state_json_;
-  InspectorAgentState::Boolean uses_binary_protocol_;
+  InspectorAgentState::Bytes v8_session_state_cbor_;
 
   DISALLOW_COPY_AND_ASSIGN(DevToolsSession);
 };

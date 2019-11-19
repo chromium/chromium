@@ -2,165 +2,165 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-cr.define('onboarding_welcome_navigation_behavior_test', function() {
-  suite('NavigationBehaviorTest', function() {
-    let elements = [];
-    let callOrders = [];
+import {Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {navigateTo, navigateToNextStep, NavigationBehavior, Routes} from 'chrome://welcome/navigation_behavior.js';
 
-    suiteSetup(function() {
-      Polymer({
-        is: 'test-element',
+import {eventToPromise} from '../test_util.m.js';
 
-        behaviors: [welcome.NavigationBehavior],
+suite('NavigationBehaviorTest', function() {
+  let elements = [];
+  let callOrders = [];
 
-        ready: function() {
-          this.reset();
-        },
+  suiteSetup(function() {
+    Polymer({
+      is: 'test-element',
 
-        onRouteEnter: function() {
-          this.enterCalled = true;
-          callOrders.push('enter');
-        },
+      behaviors: [NavigationBehavior],
 
-        onRouteChange: function() {
-          this.changeCalled = true;
-          callOrders.push('change');
-        },
+      ready: function() {
+        this.reset();
+      },
 
-        onRouteExit: function() {
-          this.exitCalled = true;
-          callOrders.push('exit');
-        },
+      onRouteEnter: function() {
+        this.enterCalled = true;
+        callOrders.push('enter');
+      },
 
-        reset: function() {
-          this.enterCalled = false;
-          this.changeCalled = false;
-          this.exitCalled = false;
-        }
-      });
-    });
+      onRouteChange: function() {
+        this.changeCalled = true;
+        callOrders.push('change');
+      },
 
-    setup(function() {
-      PolymerTest.clearBody();
-      // Creates 3 elements with IDs step-(0~2).
-      for (let i = 0; i < 3; i++) {
-        elements.push(document.createElement('test-element'));
-        elements[i].id = `step-${i}`;
+      onRouteExit: function() {
+        this.exitCalled = true;
+        callOrders.push('exit');
+      },
+
+      reset: function() {
+        this.enterCalled = false;
+        this.changeCalled = false;
+        this.exitCalled = false;
       }
     });
+  });
 
-    teardown(function() {
-      callOrders = [];
-      elements = [];
-    });
-
-    function appendAll() {
-      elements.forEach(elem => document.body.appendChild(elem));
+  setup(function() {
+    PolymerTest.clearBody();
+    // Creates 3 elements with IDs step-(0~2).
+    for (let i = 0; i < 3; i++) {
+      elements.push(document.createElement('test-element'));
+      elements[i].id = `step-${i}`;
     }
+  });
 
-    function resetAll() {
-      elements.forEach(elem => elem.reset());
-      callOrders = [];
-    }
+  teardown(function() {
+    callOrders = [];
+    elements = [];
+  });
 
-    // exit should be called first, enter last, and all change calls in between.
-    function assertCallOrders() {
-      assertEquals(callOrders[0], 'exit');
-      assertEquals(callOrders[callOrders.length - 1], 'enter');
-      callOrders.slice(1, callOrders.length - 1).forEach(called => {
-        assertEquals(called, 'change');
-      });
-    }
+  function appendAll() {
+    elements.forEach(elem => document.body.appendChild(elem));
+  }
 
-    test('correct hooks fire when elements are attached', function() {
-      // Setup the "current route" state before things are appended.
-      welcome.navigateTo(
-          /* doesn't matter which route */ welcome.Routes.NEW_USER, 1);
-      appendAll();
+  function resetAll() {
+    elements.forEach(elem => elem.reset());
+    callOrders = [];
+  }
 
-      assertFalse(elements[0].enterCalled);
-      assertTrue(elements[0].changeCalled);
-      assertFalse(elements[0].exitCalled);
-
-      assertTrue(elements[1].enterCalled);
-      assertTrue(elements[1].changeCalled);
-      assertFalse(elements[1].exitCalled);
-
-      assertFalse(elements[2].enterCalled);
-      assertTrue(elements[2].changeCalled);
-      assertFalse(elements[2].exitCalled);
+  // exit should be called first, enter last, and all change calls in between.
+  function assertCallOrders() {
+    assertEquals(callOrders[0], 'exit');
+    assertEquals(callOrders[callOrders.length - 1], 'enter');
+    callOrders.slice(1, callOrders.length - 1).forEach(called => {
+      assertEquals(called, 'change');
     });
+  }
 
-    test('hooks fire in expected order when elements are attached', function() {
-      // Pretend we're on step-1
-      welcome.navigateTo(
-          /* doesn't matter which route */ welcome.Routes.NEW_USER, 1);
-      appendAll();
-      resetAll();
+  test('correct hooks fire when elements are attached', function() {
+    // Setup the "current route" state before things are appended.
+    navigateTo(/* doesn't matter which route */ Routes.NEW_USER, 1);
+    appendAll();
 
-      // move on from step-1 to step 2.
-      welcome.navigateToNextStep();
+    assertFalse(elements[0].enterCalled);
+    assertTrue(elements[0].changeCalled);
+    assertFalse(elements[0].exitCalled);
 
-      assertFalse(elements[0].enterCalled);
-      assertTrue(elements[0].changeCalled);
-      assertFalse(elements[0].exitCalled);
+    assertTrue(elements[1].enterCalled);
+    assertTrue(elements[1].changeCalled);
+    assertFalse(elements[1].exitCalled);
 
-      assertFalse(elements[1].enterCalled);
-      assertTrue(elements[1].changeCalled);
-      assertTrue(elements[1].exitCalled);
+    assertFalse(elements[2].enterCalled);
+    assertTrue(elements[2].changeCalled);
+    assertFalse(elements[2].exitCalled);
+  });
 
-      assertTrue(elements[2].enterCalled);
-      assertTrue(elements[2].changeCalled);
-      assertFalse(elements[2].exitCalled);
-      assertCallOrders();
-    });
+  test('hooks fire in expected order when elements are attached', function() {
+    // Pretend we're on step-1
+    navigateTo(/* doesn't matter which route */ Routes.NEW_USER, 1);
+    appendAll();
+    resetAll();
 
-    test('popstate works as expected', async function() {
-      // Pretend we're on step-1
-      welcome.navigateTo(
-          /* doesn't matter which route */ welcome.Routes.NEW_USER, 1);
-      appendAll();
-      // move on from step-1 to step 2.
-      welcome.navigateToNextStep();
-      resetAll();
+    // move on from step-1 to step 2.
+    navigateToNextStep();
 
-      // back from step-2 to step 1.
-      window.history.back();
+    assertFalse(elements[0].enterCalled);
+    assertTrue(elements[0].changeCalled);
+    assertFalse(elements[0].exitCalled);
 
-      await test_util.eventToPromise('popstate', window);
+    assertFalse(elements[1].enterCalled);
+    assertTrue(elements[1].changeCalled);
+    assertTrue(elements[1].exitCalled);
 
-      assertFalse(elements[0].enterCalled);
-      assertTrue(elements[0].changeCalled);
-      assertFalse(elements[0].exitCalled);
+    assertTrue(elements[2].enterCalled);
+    assertTrue(elements[2].changeCalled);
+    assertFalse(elements[2].exitCalled);
+    assertCallOrders();
+  });
 
-      assertTrue(elements[1].enterCalled);
-      assertTrue(elements[1].changeCalled);
-      assertFalse(elements[1].exitCalled);
+  test('popstate works as expected', async function() {
+    // Pretend we're on step-1
+    navigateTo(/* doesn't matter which route */ Routes.NEW_USER, 1);
+    appendAll();
+    // move on from step-1 to step 2.
+    navigateToNextStep();
+    resetAll();
 
-      assertFalse(elements[2].enterCalled);
-      assertTrue(elements[2].changeCalled);
-      assertTrue(elements[2].exitCalled);
+    // back from step-2 to step 1.
+    window.history.back();
 
-      assertCallOrders();
+    await eventToPromise('popstate', window);
 
-      resetAll();
-      // move on from step-1 to step 2 again.
-      window.history.forward();
+    assertFalse(elements[0].enterCalled);
+    assertTrue(elements[0].changeCalled);
+    assertFalse(elements[0].exitCalled);
 
-      await test_util.eventToPromise('popstate', window);
+    assertTrue(elements[1].enterCalled);
+    assertTrue(elements[1].changeCalled);
+    assertFalse(elements[1].exitCalled);
 
-      assertFalse(elements[0].enterCalled);
-      assertTrue(elements[0].changeCalled);
-      assertFalse(elements[0].exitCalled);
+    assertFalse(elements[2].enterCalled);
+    assertTrue(elements[2].changeCalled);
+    assertTrue(elements[2].exitCalled);
 
-      assertFalse(elements[1].enterCalled);
-      assertTrue(elements[1].changeCalled);
-      assertTrue(elements[1].exitCalled);
+    assertCallOrders();
 
-      assertTrue(elements[2].enterCalled);
-      assertTrue(elements[2].changeCalled);
-      assertFalse(elements[2].exitCalled);
-      assertCallOrders();
-    });
+    resetAll();
+    // move on from step-1 to step 2 again.
+    window.history.forward();
+
+    await eventToPromise('popstate', window);
+
+    assertFalse(elements[0].enterCalled);
+    assertTrue(elements[0].changeCalled);
+    assertFalse(elements[0].exitCalled);
+
+    assertFalse(elements[1].enterCalled);
+    assertTrue(elements[1].changeCalled);
+    assertTrue(elements[1].exitCalled);
+
+    assertTrue(elements[2].enterCalled);
+    assertTrue(elements[2].changeCalled);
+    assertFalse(elements[2].exitCalled);
+    assertCallOrders();
   });
 });

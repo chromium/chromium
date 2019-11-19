@@ -5,8 +5,8 @@
 #include "chrome/browser/android/location_settings_impl.h"
 
 #include "base/android/jni_android.h"
+#include "chrome/android/chrome_jni_headers/LocationSettings_jni.h"
 #include "content/public/browser/web_contents.h"
-#include "jni/LocationSettings_jni.h"
 
 using base::android::AttachCurrentThread;
 

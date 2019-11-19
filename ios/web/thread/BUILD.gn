@@ -1,0 +1,16 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//ios/build/config.gni")
+
+source_set("thread") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  deps = [
+    "//ios/web/public",
+  ]
+
+  sources = [
+    "web_task_traits.cc",
+  ]
+}

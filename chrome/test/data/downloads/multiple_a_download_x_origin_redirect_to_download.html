@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<body></body>
+<script>
+const url_params = new URLSearchParams(location.search);
+let link = document.createElement('a');
+link.download = '';
+link.href = url_params.get('download_url');
+document.body.appendChild(link);
+link.click();
+link.click();
+link.click();
+</script>

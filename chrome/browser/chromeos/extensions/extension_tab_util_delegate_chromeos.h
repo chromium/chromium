@@ -8,16 +8,6 @@
 #include "base/macros.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 
-namespace api {
-namespace tabs {
-class Tab;
-}
-}
-
-namespace content {
-class WebContents;
-}
-
 namespace extensions {
 class Extension;
 
@@ -32,9 +22,8 @@ class ExtensionTabUtilDelegateChromeOS : public ExtensionTabUtil::Delegate {
   ~ExtensionTabUtilDelegateChromeOS() override;
 
   // ExtensionTabUtil::Delegate
-  void ScrubTabForExtension(const Extension* extension,
-                            content::WebContents* contents,
-                            api::tabs::Tab* tab) override;
+  ExtensionTabUtil::ScrubTabBehaviorType GetScrubTabBehavior(
+      const Extension* extension) override;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(ExtensionTabUtilDelegateChromeOS);

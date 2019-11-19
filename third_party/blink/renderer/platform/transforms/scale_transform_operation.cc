@@ -24,6 +24,40 @@
 #include "third_party/blink/renderer/platform/geometry/blend.h"
 
 namespace blink {
+namespace {
+// Return the correct OperationType for a given scale.
+TransformOperation::OperationType GetTypeForScale(double x,
+                                                  double y,
+                                                  double z) {
+  // Note: purely due to ordering, we will convert scale(1, 1, 1) to kScaleX.
+  // This is fine; they are equivalent.
+
+  if (z != 1)
+    return TransformOperation::kScale3D;
+
+  if (y == 1)
+    return TransformOperation::kScaleX;
+
+  if (x == 1)
+    return TransformOperation::kScaleY;
+
+  // Both x and y are non-1, so a 2D scale.
+  return TransformOperation::kScale;
+}
+}  // namespace
+
+scoped_refptr<TransformOperation> ScaleTransformOperation::Accumulate(
+    const TransformOperation& other) {
+  DCHECK(other.CanBlendWith(*this));
+  const auto& other_op = ToScaleTransformOperation(other);
+  // Scale parameters are one in the identity transform function so use
+  // accumulation for one-based values.
+  double new_x = x_ + other_op.x_ - 1;
+  double new_y = y_ + other_op.y_ - 1;
+  double new_z = z_ + other_op.z_ - 1;
+  return ScaleTransformOperation::Create(new_x, new_y, new_z,
+                                         GetTypeForScale(new_x, new_y, new_z));
+}
 
 scoped_refptr<TransformOperation> ScaleTransformOperation::Blend(
     const TransformOperation* from,

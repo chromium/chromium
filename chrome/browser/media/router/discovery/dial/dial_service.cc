@@ -25,7 +25,6 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/network_service_instance.h"
 #include "net/base/address_family.h"
-#include "net/base/completion_callback.h"
 #include "net/base/io_buffer.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_errors.h"
@@ -57,6 +56,17 @@ using net::StringIOBuffer;
 using net::UDPSocket;
 
 namespace media_router {
+
+#if !defined(OS_CHROMEOS)
+void PostSendNetworkList(
+    base::WeakPtr<DialServiceImpl> impl,
+    const base::Optional<net::NetworkInterfaceList>& networks) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  base::PostTask(FROM_HERE, {BrowserThread::IO},
+                 base::BindOnce(&DialServiceImpl::SendNetworkList,
+                                std::move(impl), networks));
+}
+#endif  // !defined(OS_CHROMEOS)
 
 namespace {
 
@@ -152,6 +162,24 @@ net::IPAddressList GetBestBindAddressOnUIThread() {
                "uninitialized NetworkHandler";
   }
   return bind_address_list;
+}
+#else
+// This function and PostSendNetworkList together handle DialServiceImpl's use
+// of the network service, while keeping all of DialServiceImpl running on the
+// IO thread.  DialServiceImpl has a legacy threading model, where it was
+// designed to be called from the UI thread and run on the IO thread.  Although
+// a WeakPtr is desired for safety when posting tasks, they are not
+// thread/sequence-safe.  DialServiceImpl's simple use of the network service,
+// however, doesn't actually require that any of its state be accessed on the UI
+// thread.  Therefore, the UI thread functions can be free functions which just
+// pass-through an IO thread WeakPtr which will be used when passing the network
+// service result back to the IO thread.  This model will change when the
+// network service is fully launched and this code is updated.
+void GetNetworkListOnUIThread(base::WeakPtr<DialServiceImpl> impl) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  content::GetNetworkService()->GetNetworkList(
+      net::INCLUDE_HOST_SCOPE_VIRTUAL_INTERFACES,
+      base::BindOnce(&PostSendNetworkList, std::move(impl)));
 }
 #endif  // defined(OS_CHROMEOS)
 
@@ -327,11 +355,10 @@ bool DialServiceImpl::DialSocket::ParseResponse(const std::string& response,
     VLOG(1) << "Headers invalid or empty, ignoring: " << response;
     return false;
   }
-  std::string raw_headers =
-      HttpUtil::AssembleRawHeaders(response.c_str(), headers_end);
+  std::string raw_headers = HttpUtil::AssembleRawHeaders(
+      base::StringPiece(response.c_str(), headers_end));
   VLOG(3) << "raw_headers: " << raw_headers << "\n";
-  scoped_refptr<HttpResponseHeaders> headers =
-      new HttpResponseHeaders(raw_headers);
+  auto headers = base::MakeRefCounted<HttpResponseHeaders>(raw_headers);
 
   std::string device_url_str;
   if (!GetHeader(headers.get(), kSsdpLocationHeader, &device_url_str) ||
@@ -385,6 +412,7 @@ DialServiceImpl::DialServiceImpl(net::NetLog* net_log)
                     TimeDelta::FromSeconds(kDialResponseTimeoutSecs)),
       request_interval_(
           TimeDelta::FromMilliseconds(kDialRequestIntervalMillis)) {
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
   IPAddress address;
   bool success = address.AssignFromIPLiteral(kDialRequestAddress);
   DCHECK(success);
@@ -433,8 +461,7 @@ void DialServiceImpl::StartDiscovery() {
     return;
   }
 
-  auto task_runner =
-      base::CreateSingleThreadTaskRunnerWithTraits({BrowserThread::UI});
+  auto task_runner = base::CreateSingleThreadTaskRunner({BrowserThread::UI});
 
 #if defined(OS_CHROMEOS)
   task_tracker_.PostTaskAndReplyWithResult(
@@ -443,69 +470,55 @@ void DialServiceImpl::StartDiscovery() {
       base::BindOnce(&DialServiceImpl::DiscoverOnAddresses,
                      base::Unretained(this)));
 #else
-  task_tracker_.PostTask(
-      task_runner.get(), FROM_HERE,
-      base::BindOnce(&DialServiceImpl::GetNetworkListOnUIThread,
-                     base::Unretained(this)));
+  task_tracker_.PostTask(task_runner.get(), FROM_HERE,
+                         base::BindOnce(&GetNetworkListOnUIThread,
+                                        weak_ptr_factory_.GetWeakPtr()));
 #endif
 }
 
-void DialServiceImpl::GetNetworkListOnUIThread() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  content::GetNetworkService()->GetNetworkList(
-      net::INCLUDE_HOST_SCOPE_VIRTUAL_INTERFACES,
-      base::BindOnce(&DialServiceImpl::PostSendNetworkList,
-                     weak_ptr_factory_for_ui_.GetWeakPtr()));
-}
-
-void DialServiceImpl::PostSendNetworkList(
-    const base::Optional<net::NetworkInterfaceList>& networks) {
-  if (!networks.has_value())
-    VLOG(1) << "Could not retrieve network list!";
-
-  base::PostTaskWithTraits(
-      FROM_HERE, {BrowserThread::IO},
-      base::BindOnce(
-          &DialServiceImpl::SendNetworkList,
-          weak_ptr_factory_for_io_.GetWeakPtr(),
-          networks.has_value() ? *networks : net::NetworkInterfaceList()));
-}
-
-void DialServiceImpl::SendNetworkList(const NetworkInterfaceList& networks) {
+void DialServiceImpl::SendNetworkList(
+    const base::Optional<NetworkInterfaceList>& networks) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
+
   using InterfaceIndexAddressFamily = std::pair<uint32_t, net::AddressFamily>;
   std::set<InterfaceIndexAddressFamily> interface_index_addr_family_seen;
   net::IPAddressList ip_addresses;
 
-  // Binds a socket to each IPv4 network interface found. Note that
-  // there may be duplicates in |networks|, so address family + interface index
-  // is used to identify unique interfaces.
-  // TODO(mfoltz): Support IPV6 multicast.  http://crbug.com/165286
-  for (const auto& network : networks) {
-    net::AddressFamily addr_family = net::GetAddressFamily(network.address);
-    VLOG(2) << "Found " << network.name << ", " << network.address.ToString()
-            << ", address family: " << addr_family;
-    if (addr_family == net::ADDRESS_FAMILY_IPV4) {
-      InterfaceIndexAddressFamily interface_index_addr_family =
-          std::make_pair(network.interface_index, addr_family);
-      bool inserted =
-          interface_index_addr_family_seen.insert(interface_index_addr_family)
-              .second;
-      // We have not seen this interface before, so add its IP address to the
-      // discovery list.
-      if (inserted) {
-        VLOG(2) << "Encountered "
-                << "interface index: " << network.interface_index << ", "
-                << "address family: " << addr_family << " for the first time, "
-                << "adding IP address " << network.address.ToString()
-                << " to list.";
-        ip_addresses.push_back(network.address);
-      } else {
-        VLOG(2) << "Already encountered "
-                << "interface index: " << network.interface_index << ", "
-                << "address family: " << addr_family << " before, not adding.";
+  if (networks.has_value()) {
+    // Binds a socket to each IPv4 network interface found. Note that
+    // there may be duplicates in |networks|, so address family + interface
+    // index is used to identify unique interfaces.
+    // TODO(mfoltz): Support IPV6 multicast.  http://crbug.com/165286
+    for (const auto& network : *networks) {
+      net::AddressFamily addr_family = net::GetAddressFamily(network.address);
+      VLOG(2) << "Found " << network.name << ", " << network.address.ToString()
+              << ", address family: " << addr_family;
+      if (addr_family == net::ADDRESS_FAMILY_IPV4) {
+        InterfaceIndexAddressFamily interface_index_addr_family =
+            std::make_pair(network.interface_index, addr_family);
+        bool inserted =
+            interface_index_addr_family_seen.insert(interface_index_addr_family)
+                .second;
+        // We have not seen this interface before, so add its IP address to the
+        // discovery list.
+        if (inserted) {
+          VLOG(2) << "Encountered "
+                  << "interface index: " << network.interface_index << ", "
+                  << "address family: " << addr_family
+                  << " for the first time, "
+                  << "adding IP address " << network.address.ToString()
+                  << " to list.";
+          ip_addresses.push_back(network.address);
+        } else {
+          VLOG(2) << "Already encountered "
+                  << "interface index: " << network.interface_index << ", "
+                  << "address family: " << addr_family
+                  << " before, not adding.";
+        }
       }
     }
+  } else {
+    VLOG(1) << "Could not retrieve network list!";
   }
 
   DiscoverOnAddresses(ip_addresses);

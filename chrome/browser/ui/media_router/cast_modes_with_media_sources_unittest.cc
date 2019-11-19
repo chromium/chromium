@@ -5,7 +5,7 @@
 #include "chrome/browser/ui/media_router/cast_modes_with_media_sources.h"
 
 #include "chrome/common/media_router/media_sink.h"
-#include "chrome/common/media_router/media_source_helper.h"
+#include "chrome/common/media_router/media_source.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -13,11 +13,11 @@
 namespace media_router {
 
 TEST(MediaRouterCastModesWithMediaSourcesTest, AddAndRemoveSources) {
-  const MediaSource presentationSource1(MediaSourceForPresentationUrl(
+  const MediaSource presentationSource1(MediaSource::ForPresentationUrl(
       GURL("http://www.example.com/presentation.html")));
-  const MediaSource presentationSource2(MediaSourceForPresentationUrl(
+  const MediaSource presentationSource2(MediaSource::ForPresentationUrl(
       GURL("http://www.example.net/presentation.html")));
-  const MediaSource tabSourceA(MediaSourceForTab(123));
+  const MediaSource tabSourceA(MediaSource::ForTab(123));
   const CastModeSet castModeSetEmpty;
   const CastModeSet castModeSetPresentation({MediaCastMode::PRESENTATION});
   const CastModeSet castModeSetTab({MediaCastMode::TAB_MIRROR});

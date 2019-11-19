@@ -24,8 +24,6 @@ jumbo_static_library("internal") {
     "chrome_variations_configuration.h",
     "condition_validator.cc",
     "condition_validator.h",
-    "configuration.cc",
-    "configuration.h",
     "display_lock_controller.h",
     "display_lock_controller_impl.cc",
     "display_lock_controller_impl.h",
@@ -101,7 +99,6 @@ jumbo_source_set("unit_tests") {
     "availability_model_impl_unittest.cc",
     "chrome_variations_configuration_unittest.cc",
     "condition_validator_unittest.cc",
-    "configuration_unittest.cc",
     "display_lock_controller_impl_unittest.cc",
     "editable_configuration_unittest.cc",
     "event_model_impl_unittest.cc",
@@ -140,9 +137,12 @@ if (is_android) {
 
     deps = [
       "//base:base_java",
+      "//base:jni_java",
       "//components/feature_engagement/public:public_java",
-      "//third_party/android_deps:android_support_annotations_java",
+      "//third_party/android_deps:androidx_annotation_annotation_java",
+      "//ui/android:ui_java",
     ]
+    annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   }
 
   generate_jni("jni_headers") {
@@ -150,6 +150,5 @@ if (is_android) {
     sources = [
       "android/java/src/org/chromium/components/feature_engagement/internal/TrackerImpl.java",
     ]
-    jni_package = "components/feature_engagement/internal"
   }
 }

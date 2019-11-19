@@ -26,6 +26,12 @@
 
 // https://www.khronos.org/registry/webgl/specs/latest/1.0/#5.2
 
+enum WebGLPowerPreference {
+    "default",
+    "low-power",
+    "high-performance",
+};
+
 dictionary WebGLContextAttributes {
     boolean alpha = true;
     boolean depth = true;
@@ -33,8 +39,8 @@ dictionary WebGLContextAttributes {
     boolean antialias = true;
     boolean premultipliedAlpha = true;
     boolean preserveDrawingBuffer = false;
+    WebGLPowerPreference powerPreference = "default";
     boolean failIfMajorPerformanceCaveat = false;
-    [OriginTrialEnabled=WebXR] boolean xrCompatible = false;
-    // TODO(crbug.com/788439): remove OriginTrialEnabled.
-    [OriginTrialEnabled=LowLatencyCanvas] boolean lowLatency = false;
+    [RuntimeEnabled=WebXR] boolean xrCompatible = false;
+    [RuntimeEnabled=SurfaceEmbeddingFeatures] boolean desynchronized = false;
 };

@@ -1,0 +1,29 @@
+This is a testharness.js-based test.
+PASS Calling dispatchEvent(null).
+PASS If the event's initialized flag is not set, an InvalidStateError must be thrown (BeforeUnloadEvent).
+PASS If the event's initialized flag is not set, an InvalidStateError must be thrown (CompositionEvent).
+PASS If the event's initialized flag is not set, an InvalidStateError must be thrown (CustomEvent).
+PASS If the event's initialized flag is not set, an InvalidStateError must be thrown (DeviceMotionEvent).
+PASS If the event's initialized flag is not set, an InvalidStateError must be thrown (DeviceOrientationEvent).
+PASS If the event's initialized flag is not set, an InvalidStateError must be thrown (DragEvent).
+PASS If the event's initialized flag is not set, an InvalidStateError must be thrown (Event).
+PASS If the event's initialized flag is not set, an InvalidStateError must be thrown (Events).
+PASS If the event's initialized flag is not set, an InvalidStateError must be thrown (FocusEvent).
+PASS If the event's initialized flag is not set, an InvalidStateError must be thrown (HashChangeEvent).
+PASS If the event's initialized flag is not set, an InvalidStateError must be thrown (HTMLEvents).
+PASS If the event's initialized flag is not set, an InvalidStateError must be thrown (KeyboardEvent).
+PASS If the event's initialized flag is not set, an InvalidStateError must be thrown (MessageEvent).
+PASS If the event's initialized flag is not set, an InvalidStateError must be thrown (MouseEvent).
+PASS If the event's initialized flag is not set, an InvalidStateError must be thrown (MouseEvents).
+PASS If the event's initialized flag is not set, an InvalidStateError must be thrown (StorageEvent).
+PASS If the event's initialized flag is not set, an InvalidStateError must be thrown (SVGEvents).
+PASS If the event's initialized flag is not set, an InvalidStateError must be thrown (TextEvent).
+PASS If the event's initialized flag is not set, an InvalidStateError must be thrown (TouchEvent).
+PASS If the event's initialized flag is not set, an InvalidStateError must be thrown (UIEvent).
+PASS If the event's initialized flag is not set, an InvalidStateError must be thrown (UIEvents).
+PASS If the event's dispatch flag is set, an InvalidStateError must be thrown.
+PASS Exceptions from event listeners must not be propagated.
+PASS Event listeners added during dispatch should be called
+FAIL Capturing event listeners should be called before non-capturing ones assert_array_equals: property 1, expected 3 but got 2
+Harness: the test ran to completion.
+

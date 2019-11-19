@@ -1,0 +1,25 @@
+<script>
+const scriptURL = 'worklet_script_fetch.js';
+
+// Test AudioWorklet.
+const audioContext = new OfflineAudioContext(2,44100*40,44100);
+const audioWorkletPromise = audioContext.audioWorklet.addModule(scriptURL);
+
+// Test PaintWorklet.
+const paintWorkletPromise = CSS.paintWorklet.addModule(scriptURL);
+
+// TODO(https://crbug.com/1011208): Test AnimationWorklet and LayoutWorklet.
+
+const promises = [audioWorkletPromise, paintWorkletPromise];
+Promise.allSettled(promises)
+  .then(results => {
+    // The subresource filter should pass or block them all.
+    const numOfSuccess = results.filter(r => r.status === 'fulfilled').length;
+    if (numOfSuccess === promises.length)
+      document.title = 'FetchSucceeded';
+    else if (numOfSuccess === 0)
+      document.title = 'FetchFailed';
+    else
+      document.title = 'FetchPartiallyFailed';
+  });
+</script>

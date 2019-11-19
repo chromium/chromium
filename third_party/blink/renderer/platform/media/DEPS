@@ -1,0 +1,15 @@
+include_rules = [
+    "+media/base/audio_timestamp_helper.h",
+    "+media/base/bind_to_current_loop.h",
+    "+media/base/media_log.h",
+]
+
+specific_include_rules = {
+    "webaudiosourceprovider_impl_test.cc": [
+        "+media/base/audio_parameters.h",
+        "+media/base/fake_audio_render_callback.h",
+        "+media/base/media_util.h",
+        "+media/base/mock_audio_renderer_sink.h",
+    ],
+}
+

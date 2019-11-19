@@ -25,7 +25,8 @@ class SubresourceFilterConfigurationTest
 
 // Do not configure the URL with Safe Browsing to be part of any list. The only
 // time we should filter subresources is if we have ALL_SITES scope.
-TEST_P(SubresourceFilterConfigurationTest, NoList_UsuallyNoActivation) {
+TEST_P(SubresourceFilterConfigurationTest,
+       DISABLED_NoList_UsuallyNoActivation) {
   ActivationScope scope;
   ActivationList activation_list;
   ActivationLevel level;
@@ -43,7 +44,7 @@ TEST_P(SubresourceFilterConfigurationTest, NoList_UsuallyNoActivation) {
   }
 }
 
-TEST_P(SubresourceFilterConfigurationTest, OneListActivation) {
+TEST_P(SubresourceFilterConfigurationTest, DISABLED_OneListActivation) {
   ActivationScope scope;
   ActivationList activation_list;
   ActivationLevel level;

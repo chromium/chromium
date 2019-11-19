@@ -46,6 +46,6 @@ enum USBTransferStatus {
     [CallWith=ScriptState, MeasureAs=UsbDeviceTransferIn] Promise<USBInTransferResult> transferIn(octet endpointNumber, unsigned long length);
     [CallWith=ScriptState, MeasureAs=UsbDeviceTransferOut] Promise<USBOutTransferResult> transferOut(octet endpointNumber, BufferSource data);
     [CallWith=ScriptState, MeasureAs=UsbDeviceIsochronousTransferIn] Promise<USBIsochronousInTransferResult>  isochronousTransferIn(octet endpointNumber, sequence<unsigned long> packetLengths);
-    [CallWith=ScriptState, MeasureAs=UsbDeviceIsochronousTransferOut] Promise<UsbIsochronousOutTransferResult> isochronousTransferOut(octet endpointNumber, BufferSource data, sequence<unsigned long> packetLengths);
+    [CallWith=ScriptState, MeasureAs=UsbDeviceIsochronousTransferOut] Promise<USBIsochronousOutTransferResult> isochronousTransferOut(octet endpointNumber, BufferSource data, sequence<unsigned long> packetLengths);
     [CallWith=ScriptState, MeasureAs=UsbDeviceReset] Promise<void> reset();
 };

@@ -6,6 +6,9 @@
         "accu_weather_desktop_gpu_raster_2018": {
             "DEFAULT": "rendering_mobile_000.wprgo"
         },
+        "accu_weather_mobile_pinch_2018": {
+            "DEFAULT": "rendering_mobile_c47e7f29dd.wprgo"
+        },
         "amazon_2018": {
             "DEFAULT": "rendering_mobile_000.wprgo"
         },
@@ -117,6 +120,9 @@
         "cnn_mobile_2018": {
             "DEFAULT": "rendering_mobile_011.wprgo"
         },
+        "cnn_mobile_pinch_2018": {
+            "DEFAULT": "rendering_mobile_c47e7f29dd.wprgo"
+        },
         "cnn_pathological_2018": {
             "DEFAULT": "rendering_mobile_025.wprgo"
         },
@@ -149,6 +155,9 @@
         },
         "ebay_mobile_2018": {
             "DEFAULT": "rendering_mobile_011.wprgo"
+        },
+        "ebay_mobile_pinch_2018": {
+            "DEFAULT": "rendering_mobile_c47e7f29dd.wprgo"
         },
         "ebay_scroll_2018": {
             "DEFAULT": "rendering_mobile_016.wprgo"
@@ -234,6 +243,9 @@
         "google_plus_mobile_2018": {
             "DEFAULT": "rendering_mobile_011.wprgo"
         },
+        "google_search_mobile_pinch_2018": {
+            "DEFAULT": "rendering_mobile_c47e7f29dd.wprgo"
+        },
         "google_web_search_2018": {
             "DEFAULT": "rendering_mobile_000.wprgo"
         },
@@ -292,16 +304,19 @@
             "DEFAULT": "rendering_mobile_025.wprgo"
         },
         "linkedin_2018": {
-            "DEFAULT": "rendering_mobile_000.wprgo"
+            "DEFAULT": "rendering_mobile_d5f51fba2e.wprgo"
         },
         "linkedin_desktop_gpu_raster_2018": {
-            "DEFAULT": "rendering_mobile_000.wprgo"
+            "DEFAULT": "rendering_mobile_fae11cb2b3.wprgo"
         },
         "linkedin_mobile_2018": {
-            "DEFAULT": "rendering_mobile_011.wprgo"
+            "DEFAULT": "rendering_mobile_d5f51fba2e.wprgo"
+        },
+        "linkedin_mobile_pinch_2018": {
+            "DEFAULT": "rendering_mobile_c47e7f29dd.wprgo"
         },
         "linkedin_pathological_2018": {
-            "DEFAULT": "rendering_mobile_025.wprgo"
+            "DEFAULT": "rendering_mobile_d5f51fba2e.wprgo"
         },
         "list_recycle_transform": {
             "DEFAULT": "rendering_mobile_018.wprgo"
@@ -498,8 +513,8 @@
         "reddit_mobile_2018": {
             "DEFAULT": "rendering_mobile_011.wprgo"
         },
-        "runway": {
-            "DEFAULT": "rendering_mobile_004.wprgo"
+        "runway_2019": {
+            "DEFAULT": "rendering_mobile_4596353b1a.wprgo"
         },
         "san_angeles": {
             "DEFAULT": "rendering_mobile_026.wprgo"
@@ -545,6 +560,9 @@
         },
         "twitch_desktop_gpu_raster_2018": {
             "DEFAULT": "rendering_mobile_000.wprgo"
+        },
+        "twitch_mobile_pinch_2018": {
+            "DEFAULT": "rendering_mobile_c47e7f29dd.wprgo"
         },
         "twitter_2018": {
             "DEFAULT": "rendering_mobile_000.wprgo"
@@ -617,6 +635,9 @@
         },
         "yahoo_sports_desktop_gpu_raster_2018": {
             "DEFAULT": "rendering_mobile_000.wprgo"
+        },
+        "yahoo_sports_mobile_pinch_2018": {
+            "DEFAULT": "rendering_mobile_d00c7313f6.wprgo"
         },
         "yahoo_sports_pathological_2018": {
             "DEFAULT": "rendering_mobile_025.wprgo"

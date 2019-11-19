@@ -1,0 +1,602 @@
+// Copyright 2015 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module media_router.mojom;
+
+import "chrome/common/media_router/mojom/media_controller.mojom";
+import "chrome/common/media_router/mojom/media_status.mojom";
+import "components/mirroring/mojom/mirroring_service_host.mojom";
+import "media/mojo/mojom/mirror_service_remoting.mojom";
+import "mojo/public/mojom/base/time.mojom";
+import "services/network/public/mojom/ip_address.mojom";
+import "services/network/public/mojom/ip_endpoint.mojom";
+import "third_party/blink/public/mojom/presentation/presentation.mojom";
+import "url/mojom/origin.mojom";
+import "url/mojom/url.mojom";
+
+// This must stay in sync with ash.mojom.SinkIconType.
+enum SinkIconType {
+  CAST,
+  CAST_AUDIO_GROUP,
+  CAST_AUDIO,
+  MEETING,
+  HANGOUT,
+  EDUCATION,
+  WIRED_DISPLAY,
+  GENERIC
+};
+
+// Represents an output sink to which media can be routed.
+struct MediaSink {
+  // The sink identifier, e.g. "rs71w7mFzYLFlabir_qO4NHl6SUc."
+  string sink_id;
+  // The human-readable name, e.g. "Janet's Chromecast".
+  string name;
+  // Optional description of the sink.
+  //
+  // DEPRECATED.  This is currently used in the Media Router UX to relay a
+  // Hangouts meeting name.  It should not be used for other purposes.
+  // TODO(crbug.com/786208): Remove this at a future date when Hangouts names
+  // are no longer required.
+  string? description;
+  // Optional domain of the sink if this sink is associated with an identity.
+  string? domain;
+  // The type of icon to show in the UI for this media sink.
+  SinkIconType icon_type;
+  // The ID of the MediaRouteProvider that this sink belongs to.
+  MediaRouteProvider.Id provider_id;
+  // This is currently only set by MediaRouter in OnSinksDiscovered().
+  MediaSinkExtraData? extra_data;
+};
+
+union MediaSinkExtraData {
+  DialMediaSink dial_media_sink;
+  CastMediaSink cast_media_sink;
+};
+
+struct DialMediaSink {
+  network.mojom.IPAddress ip_address;
+
+  // Model name of the sink, if it represents a physical device.
+  string model_name;
+
+  // Used for DIAL launch
+  url.mojom.Url app_url;
+};
+
+struct CastMediaSink {
+  network.mojom.IPEndPoint ip_endpoint;
+
+  // Model name of the sink, if it represents a physical device.
+  string model_name;
+
+  // A bit vector representing capabilities of the sink. Meaning of capacity
+  // value for each bit:
+  // NONE: 0,
+  // VIDEO_OUT: 1 << 0,
+  // VIDEO_IN: 1 << 1,
+  // AUDIO_OUT: 1 << 2,
+  // AUDIO_IN: 1 << 3,
+  // DEV_MODE: 1 << 4,
+  // MULTIZONE_GROUP: 1 << 5
+  uint8 capabilities;
+
+  // ID of Cast channel opened by Media Router. The ID is defined by the
+  // chrome.cast.channel API.
+  int32 cast_channel_id;
+};
+
+// TODO(crbug.com/993437): Replace the use of this enum with a boolean field.
+enum RouteControllerType {
+  kNone,
+  kGeneric,
+  kMirroring
+};
+
+// MediaRoute objects contain the status and metadata of a routing
+// operation.
+// This struct should be kept in sync with media_route.h.
+struct MediaRoute {
+  // The ID of this media route, e.g. "r_PR1O_blkC9dsKp-tb1ti8qurOo".
+  string media_route_id;
+  // The ID of the presentation that this route is associated with.
+  string presentation_id;
+  // The ID of the media source being sent through this media route.
+  // May be missing if route is not local.
+  string? media_source;
+  // The ID of sink that is rendering the media content.
+  string media_sink_id;
+  // Human readable description of the casting activity.  Examples:
+  // "Mirroring tab (www.example.com)", "Casting media", "Casting YouTube"
+  //
+  // TODO(crbug.com/786208): Localize this properly by passing it in a way that
+  // permits use of template strings and placeholders.
+  string description;
+  // Specifies that the route is requested locally.
+  bool is_local;
+  // The type of route controller that can be created for this route. See
+  // media_controller.mojom for details.
+  RouteControllerType controller_type;
+  // Set to true if this route should be displayed for |media_sink_id| in UI.
+  bool for_display;
+  // Set to true if this route was created by an incognito profile.
+  bool is_incognito;
+  // Set to true if this route corresponds to a local presentation.
+  bool is_local_presentation;
+};
+
+// Notifications or an actionable events to be shown to the user.
+// When is_blocking is true, media router UI shows issue only:
+//
+//       Title
+//       Message
+//       default_action_button secondary_action_button
+//
+// When is_blocking is false, media router UI uses banner:
+//
+//       Title default_action_link secondary_action_link
+//
+// above receiver list if route_id is not provided; otherwise it is
+// above route detail and controls.
+struct Issue {
+  enum Severity {
+    FATAL,
+    WARNING,
+    NOTIFICATION
+  };
+
+  enum ActionType {
+    DISMISS,
+    LEARN_MORE
+  };
+
+  // If set, the ID of the route to which this issue pertains.
+  // If this is an empty string (default), then this is a global issue.
+  string route_id;
+
+  // The ID of the sink associated with this issue.
+  // If this is an empty string (default), then this is a global issue.
+  // TODO(https://crbug.com/554646): Associate all issues with sinks.
+  string sink_id;
+
+  Severity severity;
+
+  // When true, the issue must be presented to the user and resolved
+  // before other actions are allowed.
+  bool is_blocking;
+
+  // Short description about the issue.
+  string title;
+
+  // Message about issue detail or how to handle issue.
+  // Messages should be suitable for end users to decide which actions to take.
+  string? message;
+
+  ActionType default_action;
+
+  array<ActionType> secondary_actions;
+
+  // The ID of the help page to be opened if users select learn_more.
+  int32 help_page_id;
+};
+
+struct RouteMessage {
+  enum Type {
+    TEXT,
+    BINARY
+  };
+  // The type of this message.
+  Type type;
+  // Used when the |type| is TEXT.
+  string? message;
+  // Used when the |type| is BINARY.
+  array<uint8>? data;
+};
+
+struct SinkSearchCriteria {
+  // Input to the search method which each Media Route Provider may interpret
+  // differently.
+  string input;
+  // The user's current hosted domain.
+  string domain;
+};
+
+// Keep in sync with:
+// - RouteRequestResult::ResultCode in route_request_result.h
+// - MediaRouteProviderResult enum in tools/metrics/histograms.xml.
+// - mr.RouteRequestResultCode in route_request_error.js
+// - media_router_mojom_traits.h
+enum RouteRequestResultCode {
+  UNKNOWN_ERROR,
+  OK,
+  TIMED_OUT,
+  ROUTE_NOT_FOUND,
+  SINK_NOT_FOUND,
+  INVALID_ORIGIN,
+  INCOGNITO_MISMATCH,
+  NO_SUPPORTED_PROVIDER,
+  CANCELLED,
+  ROUTE_ALREADY_EXISTS,
+  DESKTOP_PICKER_FAILED
+// New values must be added here.
+};
+
+// Used to pass feature configuration data from the Browser to Media Route
+// Provider. This object is used by the extension MRP only.
+struct MediaRouteProviderConfig {
+  // If the MRP should enable DIAL discovery.
+  bool enable_dial_discovery;
+
+  // If the MRP should enable Cast discovery.
+  bool enable_cast_discovery;
+
+  // If the MRP should enable DIAL sink query.
+  bool enable_dial_sink_query;
+
+  // If the MRP should enable Cast sink query.
+  bool enable_cast_sink_query;
+
+  // If Mirroring Service is being used.
+  bool use_mirroring_service;
+};
+
+// Used to pass a pair of PresentationConnection pipes as part of a route
+// result.  An MRP may return this as part of any route creation callback to
+// allow direct communication with the controlling page.
+struct RoutePresentationConnection {
+  // Remote to send messages to the MRP.
+  pending_remote<blink.mojom.PresentationConnection> connection_remote;
+
+  // Receiver which the controlling page should bind to receive messages from
+  // the MRP.
+  pending_receiver<blink.mojom.PresentationConnection> connection_receiver;
+};
+
+// Modeled after the MediaRouter interface defined in
+// chrome/browser/media/router/media_router.h
+//
+// MediaRouteProvider is responsible for discovering MediaSinks, and managing
+// MediaRoutes associated with them.
+// A MediaRouteProvider is associated with a MediaRouter. MediaRouter issues
+// commands to the MediaRouteProvider, such as observing MediaSinks or creating
+// a MediaRoute. In return, the MediaRouteProvider notifies the MediaRouter when
+// there are changes related to sinks or routes.
+// A MediaRouteProvider may live in the Media Router component extension, or
+// the browser (e.g. DIAL and Cast MediaRouteProviders will soon move to the
+// browser).
+interface MediaRouteProvider {
+  // Each MediaRouteProvider is associated with a unique ID. This enum must be
+  // kept in sync with MediaRouteProviderId in C++.
+  enum Id {
+    EXTENSION,
+    WIRED_DISPLAY,
+    CAST,
+    DIAL
+  };
+
+  // Creates a media route from |media_source| to the sink given by |sink_id|.
+  //
+  // The presentation ID of the route created will be |presentation_id|, but it
+  // may be overridden by a provider implementation. The presentation ID will
+  // be used by the presentation API to refer to the created route.
+  //
+  // |origin| and |tab_id| may be passed in for enforcing same-origin and/or
+  // same-tab scopes. Use -1 as |tab_id| in cases where the request is not
+  // made on behalf of a tab.
+  //
+  // If |timeout| is positive, it will be used in place of the default timeout
+  // defined by Media Route Provider Manager.
+  //
+  // If |incognito| is true, the request was made by an incognito profile.
+  //
+  // If the operation was successful, |route| will be defined and |error_text|
+  // will be null.  If the operation failed, |route| will be null and
+  // |error_text| will be set.  If |connection| is set, it should be returned to
+  // the presentation controller for communication with the MRP/receiver.
+  //
+  // |result_code| will be set to OK if successful, or an error code if an error
+  // occurred.
+  // TODO(btolsch): Consolidate result params into struct.
+  CreateRoute(string media_source,
+              string sink_id,
+              string original_presentation_id,
+              url.mojom.Origin origin,
+              int32 tab_id,
+              mojo_base.mojom.TimeDelta timeout,
+              bool incognito) =>
+                  (MediaRoute? route,
+                   RoutePresentationConnection? connection,
+                   string? error_text,
+                   RouteRequestResultCode result_code);
+
+  // Requests a connection to an established route for |media_source| given
+  // by |presentation_id|.
+  //
+  // |origin| and |tab_id| are used for validating same-origin/tab scopes;
+  // see CreateRoute for additional documentation.
+  //
+  // If |timeout| is positive, it will be used in place of the default timeout
+  // defined by Media Route Provider Manager.
+  //
+  // If the route request was created by an incognito profile,
+  // |incognito| must be true.
+  //
+  // If the operation was successful, |route| will be defined and |error_text|
+  // will be null.  If the operation failed, |route| will be null and
+  // |error_text| will be set.  If |connection| is set, it should be returned to
+  // the presentation controller for communication with the MRP/receiver.
+  //
+  // |result_code| will be set to OK if successful, or an error code if an error
+  // occurred.
+  JoinRoute(string media_source,
+            string presentation_id,
+            url.mojom.Origin origin,
+            int32 tab_id,
+            mojo_base.mojom.TimeDelta timeout,
+            bool incognito) =>
+                (MediaRoute? route,
+                 RoutePresentationConnection? connection,
+                 string? error_text,
+                 RouteRequestResultCode result_code);
+
+  // Creates a new route for |media_source| that connects to the established
+  // route given by |route_id|.
+  //
+  // The presentation ID of the new route will be |presentation_id|, but it may
+  // be overridden by a provider implementation.  The presentation ID will be
+  // used by the presentation API to refer to the created route.
+  //
+  // |origin| and |tab_id| are used for validating same-origin/tab scopes; see
+  // CreateRoute for additional documentation.
+  //
+  // If |timeout| is positive, it will be used in place of the default timeout
+  // defined by Media Route Provider Manager; see CreateRoute for additional
+  // documentation.
+  //
+  // If the route request was created by an incognito profile,
+  // |incognito| must be true.
+  //
+  // If the operation was successful, |route| will be defined and
+  // |error_text| will be null.  If the operation failed, |route| will be null
+  // and |error_text| will be set.  If |connection| is set, it should be
+  // returned to the presentation controller for communication with the
+  // MRP/receiver.
+  //
+  // |result_code| will be set to OK if successful, or an error code if an error
+  // occurred.
+  ConnectRouteByRouteId(
+      string media_source,
+      string route_id,
+      string presentation_id,
+      url.mojom.Origin origin,
+      int32 tab_id,
+      mojo_base.mojom.TimeDelta timeout,
+      bool incognito) =>
+          (MediaRoute? route,
+           RoutePresentationConnection? connection,
+           string? error_text,
+           RouteRequestResultCode result_code);
+
+  // Terminates the route specified by |route_id|.  If the route was terminated
+  // successfully, |result_code| is set to OK and |error_text| is null.
+  // Otherwise, |result_code| is an error code and |error_text| describes the
+  // error.
+  TerminateRoute(string route_id) =>
+      (string? error_text, RouteRequestResultCode result_code);
+
+  // Sends |message| via the media route |media_route_id|.
+  // If the operation was successful, |sent| is true; otherwise it is false.
+  SendRouteMessage(string media_route_id, string message);
+
+  // Sends |data| via the media route |media_route_id|.
+  // If the operation was successful, |sent| is true; otherwise it is false.
+  SendRouteBinaryMessage(string media_route_id, array<uint8> data);
+
+  // Starts querying for sinks capable of displaying |media_source|. If
+  // |media_source| is empty, queries for all available sinks.
+  StartObservingMediaSinks(string media_source);
+
+  // Stops querying sinks for |media_source|.
+  StopObservingMediaSinks(string media_source);
+
+  // Starts reporting the state of active media routes via
+  // OnRoutesUpdated() in the context of the |media_source|.  The
+  // |media_source| represents the application interested in the media
+  // routes (usually the web page from which the content originates).
+  // If no |media_source| is given, this should be considered an
+  // observer that is not associated with a media source, and thus
+  // cannot connect to a remote route without showing a source.  The
+  // |media_source| should be considered when returning joinable routes in the
+  // OnRoutesUpdated() call. If an empty |media_source| is given, there is no
+  // context in which a joinable route makes sense and therefore, there should
+  // not be any joinable routes returned in OnRoutesUpdated().
+  // Querying will continue until StopObservingMediaRoutes() is called with
+  // the same |media_source| (even if it's an empty string).
+  StartObservingMediaRoutes(string media_source);
+
+  // Stops querying the state of all media routes in the context of
+  // the |media_source|.  StartObservingMediaRoutes() has
+  // to be called with the same |media_source| for this to have any effect even
+  // if it's empty.  Thus, StartObservingMediaRoutes(media_source) must be
+  // matched with StopObservingMediaRoutes(media_source).
+  // Calling StopObservingMediaRoutes() without a media_source will stop
+  // any media routes queries associated with emtpy strings (queries
+  // that being with StartObservingMediaRoutes()).
+  StopObservingMediaRoutes(string media_source);
+
+  // Starts listening for messages from the media sink for the route given by
+  // |route_id|.
+  // |MediaRouter::OnRouteMessagesReceived| will be invoked when a batch of
+  // messages arrives, or when there is an error.
+  // |StopListeningForRouteMessages| will stop the Media Router from receiving
+  // further messages for |route_id|.
+  StartListeningForRouteMessages(string route_id);
+
+  // Called when there are no more listeners for messages for |route_id|.
+  StopListeningForRouteMessages(string route_id);
+
+  // Indicates that a PresentationConnection that was connected to route
+  // |route_id| has been closed (via .close(), garbage collection or
+  // navigation).
+  DetachRoute(string route_id);
+
+  // Enables mDNS discovery. No-op if mDNS discovery is already enabled.
+  // Calling this will trigger a firewall prompt on Windows if there is not
+  // already a firewall rule for mDNS.
+  EnableMdnsDiscovery();
+
+  // Requests the MediaRouteProvider to update the list of media sinks capable
+  // of displaying |media_source|. This call is made when a user gesture is
+  // detected, so MediaRouteProvider may treat this as a signal to take actions
+  // to become more responsive, e.g., initiate a one-off round of device
+  // discovery.
+  // TODO(https://crbug.com/698940): Rename this to OnUserGesture and remove the
+  // |media_source| parameter.
+  UpdateMediaSinks(string media_source);
+
+  // Indicates that the Media Router is interested in finding a sink that
+  // matches |search_criteria| and is compatible with the source urn
+  // |media_source|. |search_criteria| should contain an exact copy of the user
+  // input. The user's current domain is also used to search.  The domain is the
+  // hosted domain of the user's signed-in identity, or empty if the user has no
+  // domain or is not signed in.
+  SearchSinks(string sink_id,
+              string media_source,
+              SinkSearchCriteria search_criteria) =>
+                  (string sink_id);
+
+  // Called when the list of MediaSinks discovered by Media Router has been
+  // updated. The sinks are supplied to the MediaRouteProvider so that they can
+  // be used for other operations, such as route creation.
+  ProvideSinks(string provider_name, array<MediaSink> sinks);
+
+  // Creates a controller for the media route with given |route_id| and binds it
+  // to |media_controller| for receiving media commands. This method returns
+  // false if such a media route doesn't exist, a controller already exists
+  // for it, or there was an error while creating a controller. This method must
+  // close |media_controller| in case of such a failure. |media_controller|
+  // becomes invalid when the media route is terminated. The created controller
+  // is destroyed when |media_controller| becomes invalid, after which this
+  // method can be called again with the same |route_id|. This method also sets
+  // |observer| to be notified whenever there is a change in the status of the
+  // media route.
+  // TODO(takumif): Consider returning an enum instead of a bool to distinguish
+  // between error conditions for metrics/debugging.
+  CreateMediaRouteController(string route_id,
+                             pending_receiver<MediaController> media_controller,
+                             pending_remote<MediaStatusObserver> observer) =>
+                                 (bool success);
+};
+
+// Interface for a service which observes MediaRouteProviders for state changes
+// across media sources, sinks, and issues. The MediaRouter lives in the browser
+// process.
+interface MediaRouter {
+
+  // Represents overall media sink availability states.
+  // UNAVAILABLE - No sinks are available.
+  // PER_SOURCE - Sinks are available, but are only compatible with specific
+  //              media sources.
+  // AVAILABLE - A sink is available regardless of source.
+  enum SinkAvailability {
+    UNAVAILABLE,
+    PER_SOURCE,
+    AVAILABLE
+  };
+
+  // TODO(crbug.com/831416): Remove and use presentation.mojom type instead.
+  enum PresentationConnectionState {
+    CONNECTING,
+    CONNECTED,
+    CLOSED,
+    TERMINATED
+  };
+
+  // TODO(crbug.com/831416): Remove and use presentation.mojom type instead.
+  enum PresentationConnectionCloseReason {
+    CONNECTION_ERROR,
+    CLOSED,
+    WENT_AWAY
+  };
+
+  // Registers a MediaRouteProvider with the MediaRouter.
+  // Returns a string that uniquely identifies the Media Router browser
+  // process.
+  RegisterMediaRouteProvider(MediaRouteProvider.Id provider_id,
+      pending_remote<MediaRouteProvider> media_router_provider) =>
+          (string instance_id, MediaRouteProviderConfig config);
+
+  // Called when a MediaRouteProvider receives a new list of |sinks|
+  // compatible with |media_source|. The result is only valid for |origins|. If
+  // |origins| is empty, the result is valid for any origin.
+  OnSinksReceived(MediaRouteProvider.Id provider_id,
+                  string media_source,
+                  array<MediaSink> sinks,
+                  array<url.mojom.Origin> origins);
+
+  // Called when issues are reported for media routes.
+  OnIssue(Issue issue);
+
+  // Called when list of routes for a MediaRouteProvider has been updated in the
+  // context of the calling |media_source|.  The array |joinable_route_ids|
+  // should contain route IDs of joinable routes found in the |routes| array.
+  OnRoutesUpdated(MediaRouteProvider.Id provider_id,
+                  array<MediaRoute> routes,
+                  string media_source,
+                  array<string> joinable_route_ids);
+
+  // Called when the availability of media sinks for a MediaRouteProvider has
+  // been updated.
+  OnSinkAvailabilityUpdated(MediaRouteProvider.Id provider_id,
+                            SinkAvailability availability);
+
+  // Called when the state of presentation connected to route |route_id| has
+  // changed to |state|.
+  OnPresentationConnectionStateChanged(
+      string route_id, PresentationConnectionState state);
+
+  // Called when the presentation connected to route |route_id| has closed.
+  OnPresentationConnectionClosed(
+      string route_id, PresentationConnectionCloseReason reason,
+      string message);
+
+  // Called when the a batch of messages arrives from the media sink for the
+  // route given by |route_id|.
+  // |StartListeningForRouteMessages| must be called first in order to receive
+  // messages.
+  // |route_id|: ID of route of the messages.
+  // |messages|: A non-empty list of messages received.
+  OnRouteMessagesReceived(string route_id,
+                          array<RouteMessage> messages);
+
+  // Called when a MediaRemoter for a tab with |tab_id| is started. |remoter|
+  // can be used to access the MediaRemoter to control a media remoting session
+  // and send RPC messages to the remote device. |remoting_source| is bound to
+  // receive the updates/messages from MediaRemoter.
+  OnMediaRemoterCreated(
+      int32 tab_id,
+      pending_remote<media.mojom.MirrorServiceRemoter> remoter,
+      pending_receiver<media.mojom.MirrorServiceRemotingSource>
+          remoting_source);
+
+  // Returns current status of media sink service in JSON format.
+  GetMediaSinkServiceStatus() => (string status);
+
+  // Called to get a mirroring.mojom.MirroringServiceHost. These APIs are used
+  // by Media Router extension to start mirroring through the mirroring service.
+  // TODO(http://crbug.com/809249): Remove these APIs when native Cast MRP with
+  // mirroring support is rolled out.  NOTE(jrw): Removing these methods from
+  // the mojo interface is probably OK, but the implementation still needs
+  // to be called by the native Cast MRP.
+  GetMirroringServiceHostForTab(int32 target_tab_id,
+      pending_receiver<mirroring.mojom.MirroringServiceHost> receiver);
+  GetMirroringServiceHostForDesktop(
+      int32 initiator_tab_id,  // The tab used to register the stream.
+      string desktop_stream_id,
+      pending_receiver<mirroring.mojom.MirroringServiceHost> receiver);
+  GetMirroringServiceHostForOffscreenTab(
+      url.mojom.Url presentation_url,
+      string presentation_id,
+      pending_receiver<mirroring.mojom.MirroringServiceHost> receiver);
+};

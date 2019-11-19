@@ -4,7 +4,7 @@
 
 #include "ash/accessibility/spoken_feedback_enabler.h"
 
-#include "ash/accessibility/accessibility_controller.h"
+#include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/shell.h"
 #include "ui/events/base_event_utils.h"
 
@@ -35,14 +35,15 @@ void SpokenFeedbackEnabler::OnTimer() {
   double tick_count_f = (now - start_time_) / kTimerDelay;
   int tick_count = roundf(tick_count_f);
 
-  AccessibilityController* delegate = Shell::Get()->accessibility_controller();
-  CHECK(delegate);
+  AccessibilityControllerImpl* controller =
+      Shell::Get()->accessibility_controller();
+  CHECK(controller);
   if (tick_count >= kTimerTicksOfFirstSoundFeedback &&
       tick_count < kTimerTicksToToggleSpokenFeedback) {
-    delegate->PlaySpokenFeedbackToggleCountdown(tick_count);
+    controller->PlaySpokenFeedbackToggleCountdown(tick_count);
   } else if (tick_count == kTimerTicksToToggleSpokenFeedback) {
-    delegate->SetSpokenFeedbackEnabled(!delegate->spoken_feedback_enabled(),
-                                       A11Y_NOTIFICATION_SHOW);
+    controller->SetSpokenFeedbackEnabled(!controller->spoken_feedback_enabled(),
+                                         A11Y_NOTIFICATION_SHOW);
     timer_.Stop();
   }
 }

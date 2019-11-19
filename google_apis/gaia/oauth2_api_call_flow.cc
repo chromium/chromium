@@ -17,6 +17,7 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 
 namespace {
 static const char kAuthorizationValueFormat[] = "Bearer %s";
@@ -89,8 +90,7 @@ std::unique_ptr<network::SimpleURLLoader> OAuth2ApiCallFlow::CreateURLLoader(
   auto request = std::make_unique<network::ResourceRequest>();
   request->url = CreateApiCallUrl();
   request->method = request_type;
-  request->load_flags =
-      net::LOAD_DO_NOT_SEND_COOKIES | net::LOAD_DO_NOT_SAVE_COOKIES;
+  request->credentials_mode = network::mojom::CredentialsMode::kOmit;
   request->headers.SetHeader("Authorization",
                              MakeAuthorizationValue(access_token));
   std::unique_ptr<network::SimpleURLLoader> result =

@@ -16,8 +16,6 @@
 #include "services/service_manager/public/cpp/service.h"
 #include "services/service_manager/public/cpp/service_binding.h"
 #include "services/service_manager/public/mojom/service.mojom.h"
-#include "services/tracing/agent_registry.h"
-#include "services/tracing/coordinator.h"
 
 namespace tracing {
 
@@ -36,16 +34,11 @@ class TracingService : public service_manager::Service {
                        mojo::ScopedMessagePipeHandle interface_pipe) override;
 
  private:
-  void OnCoordinatorConnectionClosed();
-  void CloseAgentConnectionsAndTerminate();
-
   service_manager::ServiceBinding service_binding_;
 
   service_manager::BinderRegistryWithArgs<
       const service_manager::BindSourceInfo&>
       registry_;
-  std::unique_ptr<tracing::AgentRegistry> tracing_agent_registry_;
-  std::unique_ptr<Coordinator> tracing_coordinator_;
 
   std::unique_ptr<ServiceListener> service_listener_;
 

@@ -5,6 +5,7 @@
 #include <memory>
 #include <utility>
 
+#include "ash/public/cpp/ash_switches.h"
 #include "base/macros.h"
 #include "base/values.h"
 #include "chrome/browser/chrome_notification_types.h"
@@ -23,7 +24,7 @@
 namespace policy {
 
 namespace {
-const char kStartUpURL1[] = "chrome://chrome/";
+const char kStartUpURL1[] = "chrome://help/";
 const char kStartUpURL2[] = "chrome://version/";
 }
 
@@ -35,6 +36,7 @@ class RestoreOnStartupTestChromeOS : public LoginPolicyTestBase {
 
   // LoginPolicyTestBase:
   void GetMandatoryPoliciesValue(base::DictionaryValue* policy) const override;
+  void SetUpCommandLine(base::CommandLine* command_line) override;
 
   void LogInAndVerifyStartUpURLs();
 
@@ -55,6 +57,12 @@ void RestoreOnStartupTestChromeOS::GetMandatoryPoliciesValue(
   policy->Set(key::kRestoreOnStartupURLs, std::move(urls));
 }
 
+void RestoreOnStartupTestChromeOS::SetUpCommandLine(
+    base::CommandLine* command_line) {
+  LoginPolicyTestBase::SetUpCommandLine(command_line);
+  command_line->AppendSwitch(ash::switches::kShowWebUiLogin);
+}
+
 void RestoreOnStartupTestChromeOS::LogInAndVerifyStartUpURLs() {
   LogIn(kAccountId, kAccountPassword, kEmptyServices);
 
@@ -70,19 +78,13 @@ void RestoreOnStartupTestChromeOS::LogInAndVerifyStartUpURLs() {
 }
 
 // Verify that the policies are honored on a new user's login.
-// Disabled https://crbug.com/694269
-IN_PROC_BROWSER_TEST_F(RestoreOnStartupTestChromeOS,
-                       DISABLED_PRE_LogInAndVerify) {
+IN_PROC_BROWSER_TEST_F(RestoreOnStartupTestChromeOS, PRE_LogInAndVerify) {
   SkipToLoginScreen();
   LogInAndVerifyStartUpURLs();
 }
 
 // Verify that the policies are honored on an existing user's login.
-// Disabled https://crbug.com/694269
-IN_PROC_BROWSER_TEST_F(RestoreOnStartupTestChromeOS, DISABLED_LogInAndVerify) {
-  content::WindowedNotificationObserver(
-      chrome::NOTIFICATION_LOGIN_OR_LOCK_WEBUI_VISIBLE,
-      content::NotificationService::AllSources()).Wait();
+IN_PROC_BROWSER_TEST_F(RestoreOnStartupTestChromeOS, LogInAndVerify) {
   LogInAndVerifyStartUpURLs();
 }
 

@@ -41,8 +41,7 @@ AutofillProfileValidator::ValidationRequest::ValidationRequest(
     : profile_(*profile),
       validator_(validator),
       on_validated_(std::move(on_validated)),
-      has_responded_(false),
-      weak_factory_(this) {
+      has_responded_(false) {
   on_timeout_.Reset(base::BindOnce(&ValidationRequest::OnRulesLoaded,
                              weak_factory_.GetWeakPtr()));
   base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(

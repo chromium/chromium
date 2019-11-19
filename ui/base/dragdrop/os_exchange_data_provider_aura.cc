@@ -17,7 +17,7 @@ OSExchangeDataProviderAura::OSExchangeDataProviderAura()
     : formats_(0) {
 }
 
-OSExchangeDataProviderAura::~OSExchangeDataProviderAura() {}
+OSExchangeDataProviderAura::~OSExchangeDataProviderAura() = default;
 
 std::unique_ptr<OSExchangeData::Provider>
 OSExchangeDataProviderAura::Clone() const {

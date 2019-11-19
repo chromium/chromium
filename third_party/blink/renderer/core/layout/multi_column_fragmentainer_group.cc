@@ -169,13 +169,13 @@ LayoutSize MultiColumnFragmentainerGroup::FlowThreadTranslationAtOffset(
           : ColumnIndexAtOffset(offset_in_flow_thread, rule);
 
   LayoutRect portion_rect(FlowThreadPortionRectAt(column_index));
-  flow_thread->FlipForWritingMode(portion_rect);
-  portion_rect.MoveBy(flow_thread->PhysicalLocation());
+  flow_thread->DeprecatedFlipForWritingMode(portion_rect);
+  portion_rect.MoveBy(flow_thread->PhysicalLocation().ToLayoutPoint());
 
   LayoutRect column_rect(ColumnRectAt(column_index));
   column_rect.Move(OffsetFromColumnSet());
-  column_set_.FlipForWritingMode(column_rect);
-  column_rect.MoveBy(column_set_.PhysicalLocation());
+  column_set_.DeprecatedFlipForWritingMode(column_rect);
+  column_rect.MoveBy(column_set_.PhysicalLocation().ToLayoutPoint());
 
   LayoutSize translation_relative_to_flow_thread =
       column_rect.Location() - portion_rect.Location();
@@ -262,7 +262,8 @@ LayoutRect MultiColumnFragmentainerGroup::FragmentsBoundingBox(
   // Find the start and end column intersected by the bounding box.
   LayoutRect flipped_bounding_box_in_flow_thread(bounding_box_in_flow_thread);
   LayoutFlowThread* flow_thread = column_set_.FlowThread();
-  flow_thread->FlipForWritingMode(flipped_bounding_box_in_flow_thread);
+  flow_thread->DeprecatedFlipForWritingMode(
+      flipped_bounding_box_in_flow_thread);
   bool is_horizontal_writing_mode = column_set_.IsHorizontalWritingMode();
   LayoutUnit bounding_box_logical_top =
       is_horizontal_writing_mode ? flipped_bounding_box_in_flow_thread.Y()
@@ -283,7 +284,8 @@ LayoutRect MultiColumnFragmentainerGroup::FragmentsBoundingBox(
 
   LayoutRect start_column_flow_thread_overflow_portion =
       FlowThreadPortionOverflowRectAt(start_column);
-  flow_thread->FlipForWritingMode(start_column_flow_thread_overflow_portion);
+  flow_thread->DeprecatedFlipForWritingMode(
+      start_column_flow_thread_overflow_portion);
   LayoutRect start_column_rect(bounding_box_in_flow_thread);
   start_column_rect.Intersect(start_column_flow_thread_overflow_portion);
   start_column_rect.Move(
@@ -295,7 +297,8 @@ LayoutRect MultiColumnFragmentainerGroup::FragmentsBoundingBox(
 
   LayoutRect end_column_flow_thread_overflow_portion =
       FlowThreadPortionOverflowRectAt(end_column);
-  flow_thread->FlipForWritingMode(end_column_flow_thread_overflow_portion);
+  flow_thread->DeprecatedFlipForWritingMode(
+      end_column_flow_thread_overflow_portion);
   LayoutRect end_column_rect(bounding_box_in_flow_thread);
   end_column_rect.Intersect(end_column_flow_thread_overflow_portion);
   end_column_rect.Move(FlowThreadTranslationAtOffset(
@@ -413,15 +416,12 @@ LayoutRect MultiColumnFragmentainerGroup::ColumnRectAt(
   LayoutUnit column_logical_left;
   LayoutUnit column_gap = column_set_.ColumnGap();
 
-  if (column_set_.MultiColumnFlowThread()->ProgressionIsInline()) {
-    if (column_set_.StyleRef().IsLeftToRightDirection())
-      column_logical_left += column_index * (column_logical_width + column_gap);
-    else
-      column_logical_left += column_set_.ContentLogicalWidth() -
-                             column_logical_width -
-                             column_index * (column_logical_width + column_gap);
+  if (column_set_.StyleRef().IsLeftToRightDirection()) {
+    column_logical_left += column_index * (column_logical_width + column_gap);
   } else {
-    column_logical_top += column_index * (ColumnLogicalHeight() + column_gap);
+    column_logical_left += column_set_.ContentLogicalWidth() -
+                           column_logical_width -
+                           column_index * (column_logical_width + column_gap);
   }
 
   LayoutRect column_rect(column_logical_left, column_logical_top,
@@ -520,26 +520,20 @@ unsigned MultiColumnFragmentainerGroup::ConstrainedColumnIndexAtOffset(
 
 unsigned MultiColumnFragmentainerGroup::ColumnIndexAtVisualPoint(
     const LayoutPoint& visual_point) const {
-  bool is_column_progression_inline =
-      column_set_.MultiColumnFlowThread()->ProgressionIsInline();
-  bool is_horizontal_writing_mode = column_set_.IsHorizontalWritingMode();
-  LayoutUnit column_length_in_column_progression_direction =
-      is_column_progression_inline ? column_set_.PageLogicalWidth()
-                                   : ColumnLogicalHeight();
+  LayoutUnit column_length = column_set_.PageLogicalWidth();
   LayoutUnit offset_in_column_progression_direction =
-      is_horizontal_writing_mode == is_column_progression_inline
-          ? visual_point.X()
-          : visual_point.Y();
-  if (!column_set_.StyleRef().IsLeftToRightDirection() &&
-      is_column_progression_inline)
+      column_set_.IsHorizontalWritingMode() ? visual_point.X()
+                                            : visual_point.Y();
+  if (!column_set_.StyleRef().IsLeftToRightDirection()) {
     offset_in_column_progression_direction =
         column_set_.LogicalWidth() - offset_in_column_progression_direction;
+  }
   LayoutUnit column_gap = column_set_.ColumnGap();
-  if (column_length_in_column_progression_direction + column_gap <= 0)
+  if (column_length + column_gap <= 0)
     return 0;
   // Column boundaries are in the middle of the column gap.
   int index = ((offset_in_column_progression_direction + column_gap / 2) /
-               (column_length_in_column_progression_direction + column_gap))
+               (column_length + column_gap))
                   .ToInt();
   if (index < 0)
     return 0;
@@ -573,26 +567,22 @@ void MultiColumnFragmentainerGroup::ColumnIntervalForVisualRect(
     const LayoutRect& rect,
     unsigned& first_column,
     unsigned& last_column) const {
-  bool is_column_progression_inline =
-      column_set_.MultiColumnFlowThread()->ProgressionIsInline();
-  bool is_flipped_column_progression =
-      !column_set_.StyleRef().IsLeftToRightDirection() &&
-      is_column_progression_inline;
-  if (column_set_.IsHorizontalWritingMode() == is_column_progression_inline) {
-    if (is_flipped_column_progression) {
-      first_column = ColumnIndexAtVisualPoint(rect.MaxXMinYCorner());
-      last_column = ColumnIndexAtVisualPoint(rect.MinXMinYCorner());
-    } else {
+  bool is_column_ltr = column_set_.StyleRef().IsLeftToRightDirection();
+  if (column_set_.IsHorizontalWritingMode()) {
+    if (is_column_ltr) {
       first_column = ColumnIndexAtVisualPoint(rect.MinXMinYCorner());
       last_column = ColumnIndexAtVisualPoint(rect.MaxXMinYCorner());
+    } else {
+      first_column = ColumnIndexAtVisualPoint(rect.MaxXMinYCorner());
+      last_column = ColumnIndexAtVisualPoint(rect.MinXMinYCorner());
     }
   } else {
-    if (is_flipped_column_progression) {
-      first_column = ColumnIndexAtVisualPoint(rect.MinXMaxYCorner());
-      last_column = ColumnIndexAtVisualPoint(rect.MinXMinYCorner());
-    } else {
+    if (is_column_ltr) {
       first_column = ColumnIndexAtVisualPoint(rect.MinXMinYCorner());
       last_column = ColumnIndexAtVisualPoint(rect.MinXMaxYCorner());
+    } else {
+      first_column = ColumnIndexAtVisualPoint(rect.MinXMaxYCorner());
+      last_column = ColumnIndexAtVisualPoint(rect.MinXMinYCorner());
     }
   }
   DCHECK_LE(first_column, last_column);

@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/usb/usb_blocklist.h"
+
+#include "base/strings/string_piece.h"
 #include "components/variations/variations_params_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

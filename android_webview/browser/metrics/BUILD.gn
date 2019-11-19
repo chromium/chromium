@@ -1,0 +1,28 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("metrics") {
+  sources = [
+    "aw_metrics_log_uploader.cc",
+    "aw_metrics_log_uploader.h",
+    "aw_metrics_service_client.cc",
+    "aw_metrics_service_client.h",
+    "memory_metrics_logger.cc",
+    "memory_metrics_logger.h",
+  ]
+  deps = [
+    "//android_webview:browser_jni_headers",
+    "//android_webview/common",
+    "//base",
+    "//components/metrics",
+    "//components/metrics:gpu",
+    "//components/metrics:net",
+    "//components/metrics:ui",
+    "//components/prefs",
+    "//components/version_info",
+    "//components/version_info/android:channel_getter",
+    "//content/public/browser",
+    "//services/resource_coordinator/public/cpp/memory_instrumentation:browser",
+  ]
+}

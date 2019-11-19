@@ -7,6 +7,7 @@
 
 #include "base/macros.h"
 #include "chrome/browser/ui/webui/omnibox/omnibox.mojom.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 
 class OmniboxPageHandler;
@@ -18,7 +19,8 @@ class OmniboxUI : public ui::MojoWebUIController {
   ~OmniboxUI() override;
 
  private:
-  void BindOmniboxPageHandler(mojom::OmniboxPageHandlerRequest request);
+  void BindOmniboxPageHandler(
+      mojo::PendingReceiver<mojom::OmniboxPageHandler> receiver);
 
   std::unique_ptr<OmniboxPageHandler> omnibox_handler_;
 

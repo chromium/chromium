@@ -632,7 +632,7 @@ class NET_EXPORT UDPSocketPosix {
   THREAD_CHECKER(thread_checker_);
 
   // Used for alternate writes that are posted for concurrent execution.
-  base::WeakPtrFactory<UDPSocketPosix> weak_factory_;
+  base::WeakPtrFactory<UDPSocketPosix> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(UDPSocketPosix);
 };

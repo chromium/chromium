@@ -9,7 +9,7 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/sync/driver/sync_session_durations_metrics_recorder.h"
 
-namespace identity {
+namespace signin {
 class IdentityManager;
 }
 namespace syncer {
@@ -23,7 +23,7 @@ class AndroidProfileSessionDurationsService : public KeyedService {
   // Callers must ensure that the parameters outlive this object.
   AndroidProfileSessionDurationsService(
       syncer::SyncService* sync_service,
-      identity::IdentityManager* identity_manager);
+      signin::IdentityManager* identity_manager);
   ~AndroidProfileSessionDurationsService() override;
 
   // KeyedService:

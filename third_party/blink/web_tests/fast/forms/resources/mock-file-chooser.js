@@ -12,7 +12,7 @@ class MockFileChooserFactory extends EventTarget {
     this.baseDir_ = undefined;
     this.bindingSet_ = new mojo.BindingSet(blink.mojom.FileChooser);
     this.interceptor_ = new MojoInterfaceInterceptor(
-        blink.mojom.FileChooser.name);
+        blink.mojom.FileChooser.name, "context", true);
     this.interceptor_.oninterfacerequest = e => {
       this.bindingSet_.addBinding(
           new MockFileChooser(this, this.paths_, this.baseDir_), e.handle);

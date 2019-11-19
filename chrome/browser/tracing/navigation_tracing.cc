@@ -18,6 +18,7 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "services/tracing/public/cpp/perfetto/trace_event_data_source.h"
 
 using content::RenderFrameHost;
 
@@ -37,14 +38,16 @@ void OnNavigationTracingUploadComplete(
 }
 
 void NavigationUploadCallback(
-    const scoped_refptr<base::RefCountedString>& file_contents,
-    std::unique_ptr<const base::DictionaryValue> metadata,
+    std::unique_ptr<std::string> file_contents,
     content::BackgroundTracingManager::FinishedProcessingCallback callback) {
   TraceCrashServiceUploader* uploader = new TraceCrashServiceUploader(
       g_browser_process->shared_url_loader_factory());
 
+  std::unique_ptr<base::DictionaryValue> metadata =
+      TraceEventMetadataSource::GetInstance()->GenerateLegacyMetadataDict();
+
   uploader->DoUpload(
-      file_contents->data(), content::TraceUploader::UNCOMPRESSED_UPLOAD,
+      *file_contents, content::TraceUploader::UNCOMPRESSED_UPLOAD,
       std::move(metadata), content::TraceUploader::UploadProgressCallback(),
       base::BindOnce(&OnNavigationTracingUploadComplete, base::Owned(uploader),
                      std::move(callback)));
@@ -93,7 +96,7 @@ void SetupNavigationTracing() {
   DCHECK(config);
 
   content::BackgroundTracingManager::GetInstance()->SetActiveScenario(
-      std::move(config), base::Bind(&NavigationUploadCallback),
+      std::move(config), base::BindRepeating(&NavigationUploadCallback),
       content::BackgroundTracingManager::NO_DATA_FILTERING);
 }
 

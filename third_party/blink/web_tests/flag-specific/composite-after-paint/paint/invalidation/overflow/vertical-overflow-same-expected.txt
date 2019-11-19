@@ -1,0 +1,34 @@
+{
+  "layers": [
+    {
+      "name": "Scrolling background of LayoutView #document",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF"
+    },
+    {
+      "name": "HorizontalScrollbar",
+      "bounds": [302, 202],
+      "paintInvalidations": [
+        {
+          "object": "LayoutNGBlockFlow DIV class='vertical-rl container'",
+          "rect": [1, 1, 100, 100],
+          "reason": "chunk appeared"
+        }
+      ],
+      "transform": 1
+    }
+  ],
+  "transforms": [
+    {
+      "id": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [28, 20, 0, 1]
+      ]
+    }
+  ]
+}
+

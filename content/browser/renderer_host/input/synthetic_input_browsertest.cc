@@ -52,7 +52,7 @@ class GestureScrollObserver : public RenderWidgetHost::InputEventObserver {
 // CompletionCallback isn't destroyed before being called or the Mojo pipe
 // being closed.
 IN_PROC_BROWSER_TEST_F(SyntheticInputTest, DestroyWidgetWithOngoingGesture) {
-  NavigateToURL(shell(), GURL("about:blank"));
+  EXPECT_TRUE(NavigateToURL(shell(), GURL("about:blank")));
   WaitForLoadStop(shell()->web_contents());
 
   GestureScrollObserver gesture_observer;

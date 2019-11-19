@@ -7,7 +7,9 @@
 #include "base/bind.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/post_task.h"
+#include "base/threading/sequenced_task_runner_handle.h"
 #include "content/public/browser/browser_task_traits.h"
+#include "extensions/browser/extension_file_task_runner.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/file_util.h"
@@ -101,11 +103,10 @@ void TestContentVerifyJobObserver::JobFinished(
     const base::FilePath& relative_path,
     ContentVerifyJob::FailureReason failure_reason) {
   if (!content::BrowserThread::CurrentlyOn(creation_thread_)) {
-    base::PostTaskWithTraits(
-        FROM_HERE, {creation_thread_},
-        base::BindOnce(&TestContentVerifyJobObserver::JobFinished,
-                       base::Unretained(this), extension_id, relative_path,
-                       failure_reason));
+    base::PostTask(FROM_HERE, {creation_thread_},
+                   base::BindOnce(&TestContentVerifyJobObserver::JobFinished,
+                                  base::Unretained(this), extension_id,
+                                  relative_path, failure_reason));
     return;
   }
   Result result = failure_reason == ContentVerifyJob::NONE ? Result::SUCCESS
@@ -133,12 +134,13 @@ void TestContentVerifyJobObserver::JobFinished(
 MockContentVerifierDelegate::MockContentVerifierDelegate() = default;
 MockContentVerifierDelegate::~MockContentVerifierDelegate() = default;
 
-ContentVerifierDelegate::Mode MockContentVerifierDelegate::ShouldBeVerified(
-    const Extension& extension) {
-  return ContentVerifierDelegate::ENFORCE_STRICT;
+ContentVerifierDelegate::VerifierSourceType
+MockContentVerifierDelegate::GetVerifierSourceType(const Extension& extension) {
+  return verifier_source_type_;
 }
 
 ContentVerifierKey MockContentVerifierDelegate::GetPublicKey() {
+  DCHECK_EQ(VerifierSourceType::SIGNED_HASHES, verifier_source_type_);
   return ContentVerifierKey(kWebstoreSignaturesPublicKey,
                             kWebstoreSignaturesPublicKeySize);
 }
@@ -146,6 +148,7 @@ ContentVerifierKey MockContentVerifierDelegate::GetPublicKey() {
 GURL MockContentVerifierDelegate::GetSignatureFetchUrl(
     const ExtensionId& extension_id,
     const base::Version& version) {
+  DCHECK_EQ(VerifierSourceType::SIGNED_HASHES, verifier_source_type_);
   std::string url =
       base::StringPrintf("http://localhost/getsignature?id=%s&version=%s",
                          extension_id.c_str(), version.GetString().c_str());
@@ -154,7 +157,6 @@ GURL MockContentVerifierDelegate::GetSignatureFetchUrl(
 
 std::set<base::FilePath> MockContentVerifierDelegate::GetBrowserImagePaths(
     const extensions::Extension* extension) {
-  ADD_FAILURE() << "Unexpected call for this test";
   return std::set<base::FilePath>();
 }
 
@@ -165,6 +167,11 @@ void MockContentVerifierDelegate::VerifyFailed(
 }
 
 void MockContentVerifierDelegate::Shutdown() {}
+
+void MockContentVerifierDelegate::SetVerifierSourceType(
+    VerifierSourceType type) {
+  verifier_source_type_ = type;
+}
 
 // VerifierObserver -----------------------------------------------------------
 VerifierObserver::VerifierObserver() {
@@ -191,7 +198,7 @@ void VerifierObserver::WaitForFetchComplete(const ExtensionId& extension_id) {
 void VerifierObserver::OnFetchComplete(const ExtensionId& extension_id,
                                        bool success) {
   if (!content::BrowserThread::CurrentlyOn(creation_thread_)) {
-    base::PostTaskWithTraits(
+    base::PostTask(
         FROM_HERE, {creation_thread_},
         base::BindOnce(&VerifierObserver::OnFetchComplete,
                        base::Unretained(this), extension_id, success));
@@ -200,6 +207,62 @@ void VerifierObserver::OnFetchComplete(const ExtensionId& extension_id,
   completed_fetches_.insert(extension_id);
   if (extension_id == id_to_wait_for_)
     loop_runner_->Quit();
+}
+
+// ContentHashResult ----------------------------------------------------------
+ContentHashResult::ContentHashResult(
+    const ExtensionId& extension_id,
+    bool success,
+    bool was_cancelled,
+    const std::set<base::FilePath> mismatch_paths)
+    : extension_id(extension_id),
+      success(success),
+      was_cancelled(was_cancelled),
+      mismatch_paths(mismatch_paths) {}
+ContentHashResult::~ContentHashResult() = default;
+
+// ContentHashWaiter ----------------------------------------------------------
+ContentHashWaiter::ContentHashWaiter()
+    : reply_task_runner_(base::SequencedTaskRunnerHandle::Get()) {}
+ContentHashWaiter::~ContentHashWaiter() = default;
+
+std::unique_ptr<ContentHashResult> ContentHashWaiter::CreateAndWaitForCallback(
+    ContentHash::FetchKey key,
+    ContentVerifierDelegate::VerifierSourceType source_type) {
+  GetExtensionFileTaskRunner()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&ContentHashWaiter::CreateContentHash,
+                     base::Unretained(this), std::move(key), source_type));
+  run_loop_.Run();
+  DCHECK(result_);
+  return std::move(result_);
+}
+
+void ContentHashWaiter::CreatedCallback(scoped_refptr<ContentHash> content_hash,
+                                        bool was_cancelled) {
+  if (!reply_task_runner_->RunsTasksInCurrentSequence()) {
+    reply_task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&ContentHashWaiter::CreatedCallback,
+                       base::Unretained(this), content_hash, was_cancelled));
+    return;
+  }
+
+  DCHECK(content_hash);
+  result_ = std::make_unique<ContentHashResult>(
+      content_hash->extension_id(), content_hash->succeeded(), was_cancelled,
+      content_hash->hash_mismatch_unix_paths());
+
+  run_loop_.QuitWhenIdle();
+}
+
+void ContentHashWaiter::CreateContentHash(
+    ContentHash::FetchKey key,
+    ContentVerifierDelegate::VerifierSourceType source_type) {
+  ContentHash::Create(std::move(key), source_type,
+                      ContentHash::IsCancelledCallback(),
+                      base::BindOnce(&ContentHashWaiter::CreatedCallback,
+                                     base::Unretained(this)));
 }
 
 namespace content_verifier_test_utils {

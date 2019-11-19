@@ -7,8 +7,8 @@
 <script>
 spellcheck_test(
     '<div contenteditable>|</div>',
-    'insertText wellcome.',
-    '<div contenteditable>#wellcome#.</div>',
+    'insertText wellcome. ',
+    '<div contenteditable>#wellcome#.\u00A0</div>',
     {
       title: 'Mark misspelled word "wellcome".',
       callback: sample => test(() => {

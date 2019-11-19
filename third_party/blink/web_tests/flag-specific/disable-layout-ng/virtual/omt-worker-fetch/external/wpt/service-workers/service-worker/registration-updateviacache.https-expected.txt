@@ -1,0 +1,28 @@
+This is a testharness.js-based test.
+PASS register-with-updateViaCache-undefined
+PASS register-with-updateViaCache-imports
+PASS register-with-updateViaCache-all
+PASS register-with-updateViaCache-none
+PASS register-with-updateViaCache-undefined-then-undefined
+PASS register-with-updateViaCache-undefined-then-imports
+PASS register-with-updateViaCache-undefined-then-all
+PASS register-with-updateViaCache-undefined-then-none
+PASS register-with-updateViaCache-imports-then-undefined
+PASS register-with-updateViaCache-imports-then-imports
+PASS register-with-updateViaCache-imports-then-all
+PASS register-with-updateViaCache-imports-then-none
+PASS register-with-updateViaCache-all-then-undefined
+PASS register-with-updateViaCache-all-then-imports
+PASS register-with-updateViaCache-all-then-all
+PASS register-with-updateViaCache-all-then-none
+PASS register-with-updateViaCache-none-then-undefined
+PASS register-with-updateViaCache-none-then-imports
+PASS register-with-updateViaCache-none-then-all
+PASS register-with-updateViaCache-none-then-none
+PASS access-updateViaCache-after-unregister-undefined
+PASS access-updateViaCache-after-unregister-imports
+PASS access-updateViaCache-after-unregister-all
+PASS access-updateViaCache-after-unregister-none
+PASS updateViaCache is not updated if register() rejects
+Harness: the test ran to completion.
+

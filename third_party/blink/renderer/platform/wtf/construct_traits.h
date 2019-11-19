@@ -5,7 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_CONSTRUCT_TRAITS_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_CONSTRUCT_TRAITS_H_
 
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/type_traits.h"
 #include "third_party/blink/renderer/platform/wtf/vector_traits.h"
 
@@ -22,14 +22,23 @@ class ConstructTraits {
   // Construct a single element that would otherwise be constructed using
   // placement new.
   template <typename... Args>
-  static T* ConstructAndNotifyElement(void* location, Args&&... args) {
-    T* object = new (NotNull, location) T(std::forward<Args>(args)...);
-    Allocator::template NotifyNewObject<T, Traits>(object);
-    return object;
+  static T* Construct(void* location, Args&&... args) {
+    return new (NotNull, location) T(std::forward<Args>(args)...);
   }
 
   // After constructing elements using memcopy or memmove (or similar)
-  // |NotifyNewElements| needs to be called to propagate that information.
+  // |NotifyNewElement| needs to be called to propagate that information.
+  static void NotifyNewElement(T* element) {
+    Allocator::template NotifyNewObject<T, Traits>(element);
+  }
+
+  template <typename... Args>
+  static T* ConstructAndNotifyElement(void* location, Args&&... args) {
+    T* object = Construct(location, std::forward<Args>(args)...);
+    NotifyNewElement(object);
+    return object;
+  }
+
   static void NotifyNewElements(T* array, size_t len) {
     Allocator::template NotifyNewObjects<T, Traits>(array, len);
   }

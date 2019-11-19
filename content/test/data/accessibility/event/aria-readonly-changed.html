@@ -1,0 +1,29 @@
+<!--
+@UIA-WIN-DENY:*
+@UIA-WIN-ALLOW:AriaProperties*
+@UIA-WIN-ALLOW:ValueIsReadOnly*
+-->
+<!DOCTYPE html>
+<html>
+<body>
+  <textarea id="textarea1" aria-label="textarea1">Textarea1</textarea>
+  <textarea id="textarea2" aria-label="textarea2">Textarea2</textarea>
+  <textarea id="textarea3" aria-label="textarea3" aria-readonly="true">Textarea3</textarea>
+  <textarea id="textarea4" aria-label="textarea4" aria-readonly="true">Textarea4</textarea>
+  <script>
+    function go() {
+      // Set aria-readonly default false->false; should not fire an event.
+      document.getElementById('textarea1').setAttribute('aria-readonly', false);
+
+      // Set aria-readonly from false->true; should fire an event.
+      document.getElementById('textarea2').setAttribute('aria-readonly', true);
+
+      // Set aria-readonly from true->false; should fire an event.
+      document.getElementById('textarea3').setAttribute('aria-readonly', false);
+
+      // Set aria-readonly from true->[removed]; should fire an event.
+      document.getElementById('textarea4').removeAttribute('aria-readonly');
+    }
+  </script>
+</body>
+</html>

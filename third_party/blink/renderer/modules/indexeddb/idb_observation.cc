@@ -65,14 +65,6 @@ const String& IDBObservation::type() const {
   }
 }
 
-IDBObservation* IDBObservation::Create(int64_t object_store_id,
-                                       mojom::IDBOperationType type,
-                                       IDBKeyRange* key_range,
-                                       std::unique_ptr<IDBValue> value) {
-  return MakeGarbageCollected<IDBObservation>(object_store_id, type, key_range,
-                                              std::move(value));
-}
-
 IDBObservation::IDBObservation(int64_t object_store_id,
                                mojom::IDBOperationType type,
                                IDBKeyRange* key_range,

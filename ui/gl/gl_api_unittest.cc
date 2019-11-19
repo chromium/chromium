@@ -47,12 +47,12 @@ class GLApiTest : public testing::Test {
   }
 
   void InitializeAPI(const char* disabled_extensions) {
-    driver_.reset(new DriverGL());
+    driver_ = std::make_unique<DriverGL>();
     driver_->fn.glGetStringFn = &FakeGetString;
     driver_->fn.glGetStringiFn = &FakeGetStringi;
     driver_->fn.glGetIntegervFn = &FakeGetIntegervFn;
 
-    api_.reset(new RealGLApi());
+    api_ = std::make_unique<RealGLApi>();
     if (disabled_extensions) {
       api_->SetDisabledExtensions(disabled_extensions);
     }

@@ -73,7 +73,7 @@ class PreloadCheckStub : public PreloadCheck {
   bool started_ = false;
   Errors errors_;
 
-  base::WeakPtrFactory<PreloadCheckStub> weak_ptr_factory_;
+  base::WeakPtrFactory<PreloadCheckStub> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(PreloadCheckStub);
 };

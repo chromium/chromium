@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>com.apple.application-identifier</key>
+	<string>${CHROMIUM_TEAM_ID}.${CHROMIUM_BUNDLE_ID}</string>
+	<key>keychain-access-groups</key>
+	<array>
+		<string>${CHROMIUM_TEAM_ID}.${CHROMIUM_BUNDLE_ID}.webauthn</string>
+	</array>
+	<key>com.apple.developer.associated-domains.applinks.read-write</key>
+	<true/>
+	<key>com.apple.security.device.audio-input</key>
+	<true/>
+	<key>com.apple.security.device.bluetooth</key>
+	<true/>
+	<key>com.apple.security.device.camera</key>
+	<true/>
+	<key>com.apple.security.device.print</key>
+	<true/>
+	<key>com.apple.security.device.usb</key>
+	<true/>
+</dict>
+</plist>

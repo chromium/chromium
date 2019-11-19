@@ -5,14 +5,15 @@
 #include "media/device_monitors/system_message_window_win.h"
 
 #include <dbt.h>
+
 #include <string>
 #include <vector>
 
 #include "base/files/file_path.h"
-#include "base/message_loop/message_loop.h"
 #include "base/run_loop.h"
 #include "base/system/system_monitor.h"
 #include "base/test/mock_devices_changed_observer.h"
+#include "base/test/task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -27,7 +28,8 @@ class SystemMessageWindowWinTest : public testing::Test {
     system_monitor_.AddDevicesChangedObserver(&observer_);
   }
 
-  base::MessageLoop message_loop_;
+  // Run single threaded to not require explicit COM initialization
+  base::test::SingleThreadTaskEnvironment task_environment_;
   base::SystemMonitor system_monitor_;
   base::MockDevicesChangedObserver observer_;
   SystemMessageWindowWin window_;

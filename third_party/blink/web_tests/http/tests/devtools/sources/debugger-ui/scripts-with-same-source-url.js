@@ -29,7 +29,7 @@
     if (event.data.project().type() !== 'network')
       return;
     event.data.requestContent().then(function(it, content) {
-      TestRunner.addResult('Content: ' + content);
+      TestRunner.addResult('Content: ' + content.content);
       if (it)
         TestRunner.completeTest();
     }.bind(null, iteration++));

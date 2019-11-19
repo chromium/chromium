@@ -86,7 +86,7 @@ class PluginObject : public gin::Wrappable<PluginObject>,
 
   v8::StdGlobalValueMap<std::string, v8::FunctionTemplate> template_cache_;
 
-  base::WeakPtrFactory<PluginObject> weak_factory_;
+  base::WeakPtrFactory<PluginObject> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(PluginObject);
 };

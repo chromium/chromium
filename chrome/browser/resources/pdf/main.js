@@ -2,7 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-'use strict';
+import './elements/viewer-error-screen.js';
+import './elements/viewer-page-indicator.js';
+import './elements/viewer-password-screen.js';
+import './elements/viewer-pdf-toolbar.js';
+import './elements/viewer-zoom-toolbar.js';
+import './elements/shared-vars.js';
+// <if expr="chromeos">
+import './elements/viewer-ink-host.js';
+import './elements/viewer-form-warning.js';
+// </if>
+
+import {BrowserApi, createBrowserApi} from './browser_api.js';
+import {PDFViewer} from './pdf_viewer.js';
 
 /**
  * Global PDFViewer object, accessible for testing.
@@ -12,7 +24,6 @@
 window.viewer = null;
 
 
-(function() {
 /**
  * Stores any pending messages received which should be passed to the
  * PDFViewer when it is created.
@@ -33,30 +44,29 @@ function handleScriptingMessage(message) {
 /**
  * Initialize the global PDFViewer and pass any outstanding messages to it.
  *
- * @param {Promise<BrowserApi>} browserApi A promise resolving to an API
- *     to the browser.
+ * @param {!BrowserApi} browserApi
  */
 function initViewer(browserApi) {
   // PDFViewer will handle any messages after it is created.
   window.removeEventListener('message', handleScriptingMessage, false);
-  viewer = new PDFViewer(browserApi);
+  window.viewer = new PDFViewer(browserApi);
   while (pendingMessages.length > 0) {
-    viewer.handleScriptingMessage(pendingMessages.shift());
+    window.viewer.handleScriptingMessage(pendingMessages.shift());
   }
 }
 
 /**
  * Determine if the content settings allow PDFs to execute javascript.
  *
- * @param {Promise<BrowserApi>} browserApi A promise resolving to an API
- *     to the browser.
+ * @param {!BrowserApi} browserApi
+ * @return {!Promise<!BrowserApi>}
  */
 function configureJavaScriptContentSetting(browserApi) {
   return new Promise((resolve, reject) => {
     chrome.contentSettings.javascript.get(
         {
           'primaryUrl': browserApi.getStreamInfo().originalUrl,
-          'secondaryUrl': window.origin
+          'secondaryUrl': window.location.origin
         },
         (result) => {
           browserApi.getStreamInfo().javascript = result.setting;
@@ -84,4 +94,3 @@ function main() {
 }
 
 main();
-})();

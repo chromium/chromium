@@ -7,12 +7,14 @@ package org.chromium.base.test;
 import android.support.test.internal.runner.listener.InstrumentationRunListener;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.runner.Description;
+import org.junit.runner.notification.Failure;
+import org.junit.runners.model.InitializationError;
 
 import org.chromium.base.Log;
 
-import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
@@ -21,7 +23,6 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
@@ -38,47 +39,62 @@ public class TestListInstrumentationRunListener extends InstrumentationRunListen
             Arrays.asList(new String[] {"toString", "hashCode", "annotationType", "equals"}));
 
     private final Map<Class<?>, JSONObject> mTestClassJsonMap = new HashMap<>();
+    private Failure mFirstFailure;
 
-    /**
-     * Store the test method description to a Map at the beginning of a test run.
-     */
     @Override
-    public void testStarted(Description desc) throws Exception {
-        if (mTestClassJsonMap.containsKey(desc.getTestClass())) {
-            ((JSONArray) mTestClassJsonMap.get(desc.getTestClass()).get("methods"))
-                .put(getTestMethodJSON(desc));
-        } else {
-            Class<?> testClass = desc.getTestClass();
-            mTestClassJsonMap.put(desc.getTestClass(), new JSONObject()
-                    .put("class", testClass.getName())
-                    .put("superclass", testClass.getSuperclass().getName())
-                    .put("annotations",
-                            getAnnotationJSON(Arrays.asList(testClass.getAnnotations())))
-                    .put("methods", new JSONArray().put(getTestMethodJSON(desc))));
+    public void testFailure(Failure failure) {
+        if (mFirstFailure == null) {
+            mFirstFailure = failure;
         }
     }
 
+    @Override
+    public void testFinished(Description desc) throws Exception {
+        Class<?> testClass = desc.getTestClass();
+        JSONObject classEntry = mTestClassJsonMap.get(testClass);
+        if (classEntry == null) {
+            classEntry =
+                    new JSONObject()
+                            .put("class", testClass.getName())
+                            .put("superclass", testClass.getSuperclass().getName())
+                            .put("annotations",
+                                    getAnnotationJSON(Arrays.asList(testClass.getAnnotations())))
+                            .put("methods", new JSONArray());
+            mTestClassJsonMap.put(testClass, classEntry);
+        }
+        ((JSONArray) classEntry.get("methods")).put(getTestMethodJSON(desc));
+    }
+
     /**
-     * Create a JSONArray with all the test class JSONObjects and save it to listed output path.
+     * Store the test method description to a Map at the beginning of a test
+     * run.
+     */
+    @Override
+    public void testStarted(Description desc) throws Exception {
+        // BaseJUnit4ClassRunner only fires testFinished(), so a call to
+        // testStarted means a different runner is active, and the test is
+        // actually being executed rather than just listed.
+        throw new InitializationError("All tests must use"
+                + " @RunWith(BaseJUnit4ClassRunner.class) or a subclass thereof."
+                + " Found that this test does not: " + desc.getTestClass());
+    }
+
+    /**
+     * Create a JSONArray with all the test class JSONObjects and save it to
+     * listed output path.
      */
     public void saveTestsToJson(String outputPath) throws IOException {
-        Writer writer = null;
-        File file = new File(outputPath);
-        try {
-            writer = new OutputStreamWriter(new FileOutputStream(file), "UTF-8");
+        if (mFirstFailure != null) {
+            throw new RuntimeException(
+                    "Failed on " + mFirstFailure.getDescription(), mFirstFailure.getException());
+        }
+
+        try (Writer writer = new OutputStreamWriter(new FileOutputStream(outputPath), "UTF-8")) {
             JSONArray allTestClassesJSON = new JSONArray(mTestClassJsonMap.values());
             writer.write(allTestClassesJSON.toString());
         } catch (IOException e) {
             Log.e(TAG, "failed to write json to file", e);
             throw e;
-        } finally {
-            if (writer != null) {
-                try {
-                    writer.close();
-                } catch (IOException e) {
-                    // Intentionally ignore IOException when closing writer
-                }
-            }
         }
     }
 
@@ -92,7 +108,8 @@ public class TestListInstrumentationRunListener extends InstrumentationRunListen
     }
 
     /**
-     * Create a JSONObject that represent a collection of anntations.
+     * Make a JSONObject dictionary out of annotations, keyed by the
+     * Annotation types' simple java names.
      *
      * For example, for the following group of annotations for ExampleClass
      * <code>
@@ -112,80 +129,58 @@ public class TestListInstrumentationRunListener extends InstrumentationRunListen
      * }
      * </code>
      *
-     * The method accomplish this by though through each annotation and reflectively call the
-     * annotation's method to get the element value, with exceptions to methods like "equals()"
-     * or "hashCode".
+     * The method accomplish this by though through each annotation and
+     * reflectively call the annotation's method to get the element value,
+     * with exceptions to methods like "equals()" or "hashCode".
      */
     static JSONObject getAnnotationJSON(Collection<Annotation> annotations)
-            throws Exception {
-        JSONObject annotationsJsons = new JSONObject();
+            throws IllegalAccessException, InvocationTargetException, JSONException {
+        JSONObject result = new JSONObject();
         for (Annotation a : annotations) {
-            JSONObject elementJsonObject = new JSONObject();
-            for (Method method : a.annotationType().getMethods()) {
+            JSONObject aJSON = (JSONObject) asJSON(a);
+            String aType = aJSON.keys().next();
+            result.put(aType, aJSON.get(aType));
+        }
+        return result;
+    }
+
+    /**
+     * Recursively serialize an Annotation or an Annotation field value to
+     * a JSON compatible type.
+     */
+    private static Object asJSON(Object obj)
+            throws IllegalAccessException, InvocationTargetException, JSONException {
+        // Use instanceof to determine if it is an Annotation.
+        // obj.getClass().isAnnotation() doesn't work as expected because
+        // obj.getClass() returns a proxy class.
+        if (obj instanceof Annotation) {
+            Class<? extends Annotation> annotationType = ((Annotation) obj).annotationType();
+            JSONObject json = new JSONObject();
+            for (Method method : annotationType.getMethods()) {
                 if (SKIP_METHODS.contains(method.getName())) {
                     continue;
                 }
-                try {
-                    Object value = method.invoke(a);
-                    if (value == null) {
-                        elementJsonObject.put(method.getName(), null);
-                    } else if (value.getClass().isArray()) {
-                        Class<?> componentClass = value.getClass().getComponentType();
-                        // Arrays of primitives can't be cast to Object arrays, so we have to
-                        // special case them and manually make a copy.
-                        // This could be done more cleanly with something like
-                        // Arrays.stream(value).boxed().toArray(Integer[]::new), but that requires
-                        // a minimum SDK level of 24 to use.
-                        Object[] arrayValue = componentClass.isPrimitive()
-                                ? copyPrimitiveArrayToObjectArray(value)
-                                : ((Object[]) value);
-                        elementJsonObject.put(
-                                method.getName(), new JSONArray(Arrays.asList(arrayValue)));
-                    } else {
-                        elementJsonObject.put(method.getName(), value.toString());
-                    }
-                } catch (IllegalArgumentException e) {
-                }
+                json.put(method.getName(), asJSON(method.invoke(obj)));
             }
-            annotationsJsons.put(a.annotationType().getSimpleName(), elementJsonObject);
-        }
-        return annotationsJsons;
-    }
-
-    private static Object[] copyPrimitiveArrayToObjectArray(Object primitiveArray)
-            throws NoSuchMethodException, IllegalAccessException, InvocationTargetException,
-                   ClassCastException {
-        Class<?> primitiveClass = primitiveArray.getClass();
-        Class<?> componentClass = primitiveClass.getComponentType();
-        Class<?> wrapperClass = null;
-        if (componentClass == Boolean.TYPE) {
-            wrapperClass = Boolean.class;
-        } else if (componentClass == Byte.TYPE) {
-            wrapperClass = Byte.class;
-        } else if (componentClass == Character.TYPE) {
-            wrapperClass = Character.class;
-        } else if (componentClass == Double.TYPE) {
-            wrapperClass = Double.class;
-        } else if (componentClass == Float.TYPE) {
-            wrapperClass = Float.class;
-        } else if (componentClass == Integer.TYPE) {
-            wrapperClass = Integer.class;
-        } else if (componentClass == Long.TYPE) {
-            wrapperClass = Long.class;
-        } else if (componentClass == Short.TYPE) {
-            wrapperClass = Short.class;
+            JSONObject outerJson = new JSONObject();
+            // If proguard is enabled and InnerClasses attribute is not kept,
+            // then getCanonicalName() will return Outer$Inner instead of
+            // Outer.Inner.  So just use getName().
+            outerJson.put(annotationType.getName().replaceFirst(
+                                  annotationType.getPackage().getName() + ".", ""),
+                    json);
+            return outerJson;
         } else {
-            // This should only be void since there are 8 primitives + void, but we can't support
-            // void.
-            throw new ClassCastException(
-                    "Cannot cast a primitive void array to Object void array.");
+            Class<?> clazz = obj.getClass();
+            if (clazz.isArray()) {
+                JSONArray jarr = new JSONArray();
+                for (int i = 0; i < Array.getLength(obj); i++) {
+                    jarr.put(asJSON(Array.get(obj, i)));
+                }
+                return jarr;
+            } else {
+                return obj;
+            }
         }
-        Method converterMethod = wrapperClass.getMethod("valueOf", componentClass);
-        ArrayList<Object> arrayValue = new ArrayList<Object>();
-        for (int i = 0; i < Array.getLength(primitiveClass.cast(primitiveArray)); i++) {
-            arrayValue.add(
-                    converterMethod.invoke(Array.get(primitiveClass.cast(primitiveArray), i)));
-        }
-        return arrayValue.toArray();
     }
 }

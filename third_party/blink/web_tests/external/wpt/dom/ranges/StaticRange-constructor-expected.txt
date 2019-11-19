@@ -1,0 +1,22 @@
+This is a testharness.js-based test.
+FAIL Construct static range with Element container Illegal constructor
+FAIL Construct static range with Text container Illegal constructor
+FAIL Construct static range with Element startContainer and Text endContainer Illegal constructor
+FAIL Construct static range with Text startContainer and Element endContainer Illegal constructor
+FAIL Construct static range with ProcessingInstruction container Illegal constructor
+FAIL Construct static range with Comment container Illegal constructor
+FAIL Construct static range with CDATASection container Illegal constructor
+FAIL Construct static range with Document container Illegal constructor
+FAIL Construct static range with DocumentFragment container Illegal constructor
+FAIL Construct collapsed static range Illegal constructor
+FAIL Construct inverted static range Illegal constructor
+FAIL Construct static range with offset greater than length Illegal constructor
+FAIL Construct static range with standalone Node container Illegal constructor
+FAIL Construct static range with endpoints in disconnected trees Illegal constructor
+FAIL Construct static range with endpoints in disconnected documents Illegal constructor
+FAIL Throw on DocumentType or Attr container assert_throws: throw a InvalidNodeTypeError when a DocumentType is passed as a startContainer or endContainer function "function() {
+        const staticRange = new StaticRange({startContainer: document.doctype, startOffset: 0, endContainer: document.doctype, endOffset: 0});
+    }" threw object "TypeError: Illegal constructor" that is not a DOMException INVALID_NODE_TYPE_ERR: property "code" is equal to undefined, expected 24
+PASS Throw on missing or invalid arguments
+Harness: the test ran to completion.
+

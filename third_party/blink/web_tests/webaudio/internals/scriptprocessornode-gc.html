@@ -1,0 +1,84 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Test GC of ScriptProcessorNode</title>
+    <script src="../../resources/gc.js"></script>
+    <script src="../../resources/testharness.js"></script>
+    <script src="../../resources/testharnessreport.js"></script>
+    <script src="../resources/audit-util.js"></script>
+    <script src="../resources/audit.js"></script>
+  </head>
+
+  <body>
+    <script>
+      // Power of two so there's no round-off in computing time from frame.
+      // Otherwise, it's arbitrary.
+      const sampleRate = 32768;
+
+      const audit = Audit.createTaskRunner();
+
+      // Number of ScriptProcessorNodes to create for testing.  Fairly
+      // arbitrary, but we don't need a huge number.
+      const numberOfNodes = 20;
+
+      audit.define('Test GC of ScriptProcessorNodes', (task, should) => {
+        // Initial number of handlers.
+        let initialCount = 0;
+        let nodes = [];
+        let context = new OfflineAudioContext(
+            {length: sampleRate, sampleRate: sampleRate});
+        asyncGC()
+            .then(() => {
+              initialCount = internals.audioHandlerCount();
+              // For information only
+              should(initialCount, 'Number of handlers before GC')
+                  .beEqualTo(initialCount);
+            })
+            .then(() => {
+              // Create a bunch of ScriptProcessorNodes for testing
+              for (let k = 0; k < numberOfNodes; ++k) {
+                let node = context.createScriptProcessor(256, 1, 1);
+                node.onaudioprocess = (event) => {
+                  // Just copy input to output.
+                  let input = event.inputBuffer.getChannelData(0);
+                  event.outputBuffer.copyToChannel(input, 0, 0);
+                };
+                node.connect(context.destination);
+                nodes.push(node);
+              }
+
+              // Wait a bit and then remove the event listener and drop all
+              // references to the nodes.
+              context.suspend(1024 / context.sampleRate)
+                  .then(() => {
+                    // Remove the event listener
+                    for (let k = 0; k < nodes.length; ++k) {
+                      nodes[k].onaudioprocess = null;
+                    }
+                    // Drop all references to the nodes
+                    nodes.fill(null);
+                  })
+                  .then(() => context.resume());
+
+              // Render the graph
+              return context.startRendering();
+            })
+            .then(() => {
+              // Collect garbage which should remove all of the
+              // ScriptProcessorNodes.
+              return asyncGC();
+            })
+            .then(() => {
+              should(nodes.length, 'Number of nodes created')
+                  .beEqualTo(numberOfNodes);
+              should(
+                  internals.audioHandlerCount(), 'Number of handlers after GC')
+                  .beEqualTo(initialCount);
+            })
+            .then(() => task.done());
+      });
+
+      audit.run();
+    </script>
+  </body>
+</html>

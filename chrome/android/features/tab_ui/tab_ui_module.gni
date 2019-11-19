@@ -1,0 +1,11 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chrome/android/features/tab_ui/buildflags.gni")
+
+tab_ui_module_desc = {
+  name = "tab_ui"
+  java_deps = [ "//chrome/android/features/tab_ui:java" ]
+  android_manifest = "//chrome/android/features/tab_ui/AndroidManifest.xml"
+}

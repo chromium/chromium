@@ -8,11 +8,13 @@
 #include <vector>
 
 #include "ash/ime/ime_controller.h"
+#include "ash/keyboard/ui/keyboard_util.h"
+#include "ash/public/cpp/system_tray_client.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/style/ash_color_provider.h"
 #include "ash/system/model/system_tray_model.h"
-#include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_detailed_view.h"
 #include "ash/system/tray/tray_popup_item_style.h"
 #include "ash/system/tray/tray_popup_utils.h"
@@ -23,7 +25,6 @@
 #include "ui/gfx/font.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/paint_vector_icon.h"
-#include "ui/keyboard/keyboard_util.h"
 #include "ui/views/controls/image_view.h"
 
 namespace ash {
@@ -64,8 +65,11 @@ void IMEDetailedView::HandleButtonPressed(views::Button* sender,
 void IMEDetailedView::CreateExtraTitleRowButtons() {
   if (ime_controller_->managed_by_policy()) {
     controlled_setting_icon_ = TrayPopupUtils::CreateMainImageView();
-    controlled_setting_icon_->SetImage(
-        gfx::CreateVectorIcon(kSystemMenuBusinessIcon, kMenuIconColor));
+    controlled_setting_icon_->SetImage(gfx::CreateVectorIcon(
+        kSystemMenuBusinessIcon,
+        AshColorProvider::Get()->GetContentLayerColor(
+            AshColorProvider::ContentLayerType::kIconPrimary,
+            AshColorProvider::AshColorMode::kLight)));
     controlled_setting_icon_->set_tooltip_text(
         l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_IME_MANAGED));
     tri_view()->AddView(TriView::Container::END, controlled_setting_icon_);
@@ -78,8 +82,12 @@ void IMEDetailedView::CreateExtraTitleRowButtons() {
 
 void IMEDetailedView::ShowSettings() {
   base::RecordAction(base::UserMetricsAction("StatusArea_IME_Detailed"));
-  Shell::Get()->system_tray_model()->client_ptr()->ShowIMESettings();
-  CloseBubble();
+  CloseBubble();  // Deletes |this|.
+  Shell::Get()->system_tray_model()->client()->ShowIMESettings();
+}
+
+const char* IMEDetailedView::GetClassName() const {
+  return "IMEDetailedView";
 }
 
 }  // namespace tray

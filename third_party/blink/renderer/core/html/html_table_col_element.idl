@@ -20,8 +20,10 @@
 
 // https://html.spec.whatwg.org/C/#the-colgroup-element
 // https://html.spec.whatwg.org/C/#the-col-element
-[HTMLConstructor]
-interface HTMLTableColElement : HTMLElement {
+[
+    Exposed=Window,
+    HTMLConstructor
+] interface HTMLTableColElement : HTMLElement {
     [CEReactions] attribute unsigned long span;
 
     // obsolete attributes

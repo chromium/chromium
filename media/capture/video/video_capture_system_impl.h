@@ -7,10 +7,6 @@
 
 #include "media/capture/video/video_capture_system.h"
 
-#if defined(OS_CHROMEOS)
-#include "media/capture/video/chromeos/mojo/cros_image_capture.mojom.h"
-#endif  // defined(OS_CHROMEOS)
-
 namespace media {
 
 // Layer on top of VideoCaptureDeviceFactory that translates device descriptors
@@ -25,11 +21,6 @@ class CAPTURE_EXPORT VideoCaptureSystemImpl : public VideoCaptureSystem {
   void GetDeviceInfosAsync(DeviceInfoCallback result_callback) override;
   std::unique_ptr<VideoCaptureDevice> CreateDevice(
       const std::string& device_id) override;
-
-#if defined(OS_CHROMEOS)
-  void BindCrosImageCaptureRequest(
-      cros::mojom::CrosImageCaptureRequest request) override;
-#endif  // defined(OS_CHROMEOS)
 
  private:
   using DeviceEnumQueue = std::list<DeviceInfoCallback>;

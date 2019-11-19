@@ -30,6 +30,17 @@ class TranslateBubbleModel {
     // The view state when the detailed settings is shown. This view appears
     // when the user click a link 'Advanced' on other views.
     VIEW_STATE_ADVANCED,
+
+    // The view state for TAB ui when the source language combobox is shown.
+    // This view appears when the user selects "Page is not in {source
+    // language}"
+    // under option menu.
+    VIEW_STATE_SOURCE_LANGUAGE,
+
+    // The view state for TAB ui when the source language combobox is shown.
+    // This view appears when the user selects "More options..." under option
+    // menu.
+    VIEW_STATE_TARGET_LANGUAGE
   };
 
   virtual ~TranslateBubbleModel() {}

@@ -7,8 +7,11 @@
 
 #include "media/base/decoder_buffer.h"
 #include "media/mojo/common/mojo_data_pipe_read_write.h"
-#include "media/mojo/interfaces/remoting.mojom.h"
+#include "media/mojo/mojom/remoting.mojom.h"
 #include "mojo/public/cpp/bindings/binding.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 namespace media {
 namespace remoting {
@@ -18,7 +21,7 @@ class RendererController;
 class FakeRemotingDataStreamSender : public mojom::RemotingDataStreamSender {
  public:
   FakeRemotingDataStreamSender(
-      mojom::RemotingDataStreamSenderRequest request,
+      mojo::PendingReceiver<mojom::RemotingDataStreamSender> receiver,
       mojo::ScopedDataPipeConsumerHandle consumer_handle);
   ~FakeRemotingDataStreamSender() override;
 
@@ -37,7 +40,7 @@ class FakeRemotingDataStreamSender : public mojom::RemotingDataStreamSender {
 
   void OnFrameRead(bool success);
 
-  mojo::Binding<RemotingDataStreamSender> binding_;
+  mojo::Binding<RemotingDataStreamSender> receiver_;
   MojoDataPipeReader data_pipe_reader_;
 
   std::vector<uint8_t> next_frame_data_;
@@ -51,16 +54,18 @@ class FakeRemotingDataStreamSender : public mojom::RemotingDataStreamSender {
 class FakeRemoter final : public mojom::Remoter {
  public:
   // |start_will_fail| indicates whether starting remoting will fail.
-  FakeRemoter(mojom::RemotingSourcePtr source, bool start_will_fail);
+  FakeRemoter(mojo::PendingRemote<mojom::RemotingSource> source,
+              bool start_will_fail);
   ~FakeRemoter() override;
 
   // mojom::Remoter implementations.
   void Start() override;
-  void StartDataStreams(
-      mojo::ScopedDataPipeConsumerHandle audio_pipe,
-      mojo::ScopedDataPipeConsumerHandle video_pipe,
-      mojom::RemotingDataStreamSenderRequest audio_sender_request,
-      mojom::RemotingDataStreamSenderRequest video_sender_request) override;
+  void StartDataStreams(mojo::ScopedDataPipeConsumerHandle audio_pipe,
+                        mojo::ScopedDataPipeConsumerHandle video_pipe,
+                        mojo::PendingReceiver<mojom::RemotingDataStreamSender>
+                            audio_sender_receiver,
+                        mojo::PendingReceiver<mojom::RemotingDataStreamSender>
+                            video_sender_receiver) override;
   void Stop(mojom::RemotingStopReason reason) override;
   void SendMessageToSink(const std::vector<uint8_t>& message) override;
   void EstimateTransmissionCapacity(
@@ -71,13 +76,13 @@ class FakeRemoter final : public mojom::Remoter {
   void StartFailed();
   void Stopped(mojom::RemotingStopReason reason);
 
-  mojom::RemotingSourcePtr source_;
+  mojo::Remote<mojom::RemotingSource> source_;
   bool start_will_fail_;
 
   std::unique_ptr<FakeRemotingDataStreamSender> audio_stream_sender_;
   std::unique_ptr<FakeRemotingDataStreamSender> video_stream_sender_;
 
-  base::WeakPtrFactory<FakeRemoter> weak_factory_;
+  base::WeakPtrFactory<FakeRemoter> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(FakeRemoter);
 };
@@ -89,8 +94,8 @@ class FakeRemoterFactory final : public mojom::RemoterFactory {
   ~FakeRemoterFactory() override;
 
   // mojom::RemoterFactory implementation.
-  void Create(mojom::RemotingSourcePtr source,
-              mojom::RemoterRequest request) override;
+  void Create(mojo::PendingRemote<mojom::RemotingSource> source,
+              mojo::PendingReceiver<mojom::Remoter> receiver) override;
 
   static std::unique_ptr<RendererController> CreateController(
       bool start_will_fail);

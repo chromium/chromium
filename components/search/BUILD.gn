@@ -10,7 +10,7 @@ static_library("search") {
 
   deps = [
     "//base",
-    "//components/google/core/browser",
+    "//components/google/core/common",
     "//components/search_engines",
     "//url",
   ]

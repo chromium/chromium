@@ -6,8 +6,8 @@
 
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser.h"
-#include "services/identity/public/cpp/identity_manager.h"
-#include "services/identity/public/cpp/identity_test_utils.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/signin/public/identity_manager/identity_test_utils.h"
 
 NTP4LoggedInWebUITest::NTP4LoggedInWebUITest() {}
 
@@ -16,5 +16,5 @@ NTP4LoggedInWebUITest::~NTP4LoggedInWebUITest() {}
 void NTP4LoggedInWebUITest::SetLoginName(const std::string& name) {
   auto* identity_manager =
       IdentityManagerFactory::GetForProfile(browser()->profile());
-  identity::SetPrimaryAccount(identity_manager, name);
+  signin::SetPrimaryAccount(identity_manager, name);
 }

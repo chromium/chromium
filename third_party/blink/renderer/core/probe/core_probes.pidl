@@ -57,8 +57,8 @@ interface CoreProbes {
   class FontCustomPlatformData;
   class FontFace;
   class HTMLDocumentParser;
-  class WorkerInspectorProxy;
   class XMLHttpRequest;
+  class HTMLPortalElement;
 
   void DidClearDocumentOfWindowObject([Keep] LocalFrame*);
   void WillInsertDOMNode([Keep] Node* parent);
@@ -84,30 +84,28 @@ interface CoreProbes {
   void DidFireWebGLWarning(Element*);
   void DidFireWebGLErrorOrWarning(Element*, const String& message);
   void DidResizeMainFrame(LocalFrame*);
-  /* This is for pre-BlinkGenPropertyTrees. TODO(wangxianzhu): Remove this function for BlinkGenPropertyTrees. */
-  void DidPaint(LocalFrame*, const cc::Layer*, const LayoutRect&);
   void ApplyAcceptLanguageOverride(ExecutionContext*, String* accept_language);
   void ApplyUserAgentOverride(CoreProbeSink*, String* user_agent);
   void DidBlockRequest(CoreProbeSink*, const ResourceRequest&, DocumentLoader*, const KURL& fetch_context_url, const FetchInitiatorInfo&, ResourceRequestBlockedReason, ResourceType);
-  void DidChangeResourcePriority(LocalFrame*, DocumentLoader*, unsigned long identifier, ResourceLoadPriority load_priority);
+  void DidChangeResourcePriority(LocalFrame*, DocumentLoader*, uint64_t identifier, ResourceLoadPriority load_priority);
   void PrepareRequest(CoreProbeSink*, DocumentLoader*, ResourceRequest&, const FetchInitiatorInfo&, ResourceType);
-  void WillSendRequest(CoreProbeSink*, unsigned long identifier, DocumentLoader*, const KURL& fetch_context_url, const ResourceRequest&, const ResourceResponse& redirect_response, const FetchInitiatorInfo&, ResourceType);
-  void WillSendNavigationRequest(CoreProbeSink*, unsigned long identifier, DocumentLoader*, const KURL&, const AtomicString& http_method, EncodedFormData*);
-  void MarkResourceAsCached(LocalFrame*, DocumentLoader*, unsigned long identifier);
-  void DidReceiveResourceResponse(CoreProbeSink*, unsigned long identifier, DocumentLoader*, const ResourceResponse&, Resource*);
-  void DidReceiveData(CoreProbeSink*, unsigned long identifier, DocumentLoader*, const char* data, uint64_t data_length);
-  void DidReceiveBlob(CoreProbeSink*, unsigned long identifier, DocumentLoader*, BlobDataHandle*);
-  void DidReceiveEncodedDataLength(CoreProbeSink*, DocumentLoader* loader, unsigned long identifier, size_t encoded_data_length);
-  void DidFinishLoading(CoreProbeSink*, unsigned long identifier, DocumentLoader*, TimeTicks finish_time, int64_t encoded_data_length, int64_t decoded_body_length, bool should_report_corb_blocking);
-  void DidReceiveCorsRedirectResponse(ExecutionContext*, unsigned long identifier, DocumentLoader*, const ResourceResponse&, Resource*);
-  void DidFailLoading(CoreProbeSink*, unsigned long identifier, DocumentLoader*, const ResourceError&);
+  void WillSendRequest(CoreProbeSink*, uint64_t identifier, DocumentLoader*, const KURL& fetch_context_url, const ResourceRequest&, const ResourceResponse& redirect_response, const FetchInitiatorInfo&, ResourceType);
+  void WillSendNavigationRequest(CoreProbeSink*, uint64_t identifier, DocumentLoader*, const KURL&, const AtomicString& http_method, EncodedFormData*);
+  void MarkResourceAsCached(LocalFrame*, DocumentLoader*, uint64_t identifier);
+  void DidReceiveResourceResponse(CoreProbeSink*, uint64_t identifier, DocumentLoader*, const ResourceResponse&, const Resource*);
+  void DidReceiveData(CoreProbeSink*, uint64_t identifier, DocumentLoader*, const char* data, uint64_t data_length);
+  void DidReceiveBlob(CoreProbeSink*, uint64_t identifier, DocumentLoader*, BlobDataHandle*);
+  void DidReceiveEncodedDataLength(CoreProbeSink*, DocumentLoader* loader, uint64_t identifier, size_t encoded_data_length);
+  void DidFinishLoading(CoreProbeSink*, uint64_t identifier, DocumentLoader*, base::TimeTicks finish_time, int64_t encoded_data_length, int64_t decoded_body_length, bool should_report_corb_blocking);
+  void DidReceiveCorsRedirectResponse(ExecutionContext*, uint64_t identifier, DocumentLoader*, const ResourceResponse&, Resource*);
+  void DidFailLoading(CoreProbeSink*, uint64_t identifier, DocumentLoader*, const ResourceError&);
   void WillSendEventSourceRequest(ExecutionContext*);
-  void WillDispatchEventSourceEvent(ExecutionContext*, unsigned long identifier, const AtomicString& event_name, const AtomicString& event_id, const String& data);
+  void WillDispatchEventSourceEvent(ExecutionContext*, uint64_t identifier, const AtomicString& event_name, const AtomicString& event_id, const String& data);
   void WillLoadXHR([Keep] ExecutionContext*, const AtomicString& method, const KURL& url, bool async, EncodedFormData* form_data, const HTTPHeaderMap& headers, bool include_credentials);
   void DidFinishXHR(ExecutionContext*, XMLHttpRequest* xhr);
-  void ScriptImported(ExecutionContext*, unsigned long identifier, const String& source_string);
+  void ScriptImported(ExecutionContext*, uint64_t identifier, const String& source_string);
   void ScriptExecutionBlockedByCSP(ExecutionContext*, const String& directive_text);
-  void DidReceiveScriptResponse(ExecutionContext*, unsigned long identifier);
+  void DidReceiveScriptResponse(ExecutionContext*, uint64_t identifier);
   void DomContentLoadedEventFired([Keep] LocalFrame*);
   void LoadEventFired([Keep] LocalFrame*);
   void FrameAttachedToParent([Keep] LocalFrame*);
@@ -121,15 +119,16 @@ interface CoreProbes {
   void FrameOwnerContentUpdated([Keep] LocalFrame*, HTMLFrameOwnerElement*);
   void FrameStartedLoading([Keep] LocalFrame*);
   void FrameStoppedLoading([Keep] LocalFrame*);
-  void FrameScheduledNavigation([Keep] LocalFrame*, const KURL& url, double delay, ClientNavigationReason reason);
+  void FrameRequestedNavigation(LocalFrame*, Frame* target_frame, const KURL& url, ClientNavigationReason reason);
+  void FrameScheduledNavigation([Keep] LocalFrame*, const KURL& url, base::TimeDelta delay, ClientNavigationReason reason);
   void FrameClearedScheduledNavigation([Keep] LocalFrame*);
-  void DidCreateWebSocket([Keep] ExecutionContext*, unsigned long identifier, const KURL& request_url, const String& protocol);
-  void WillSendWebSocketHandshakeRequest([Keep] ExecutionContext*, unsigned long identifier, network::mojom::blink::WebSocketHandshakeRequest* request);
-  void DidReceiveWebSocketHandshakeResponse([Keep] ExecutionContext*, unsigned long identifier, network::mojom::blink::WebSocketHandshakeRequest* request, network::mojom::blink::WebSocketHandshakeResponse* response);
-  void DidCloseWebSocket([Keep] ExecutionContext*, unsigned long identifier);
-  void DidReceiveWebSocketMessage(ExecutionContext*, unsigned long identifier, int opcode, bool masked, const char* payload, size_t payload_length);
-  void DidSendWebSocketMessage(ExecutionContext*, unsigned long identifier, int opcode, bool masked, const char* payload, size_t payload_length);
-  void DidReceiveWebSocketMessageError(ExecutionContext*, unsigned long identifier, const String& error_message);
+  void DidCreateWebSocket([Keep] ExecutionContext*, uint64_t identifier, const KURL& request_url, const String& protocol);
+  void WillSendWebSocketHandshakeRequest([Keep] ExecutionContext*, uint64_t identifier, network::mojom::blink::WebSocketHandshakeRequest* request);
+  void DidReceiveWebSocketHandshakeResponse([Keep] ExecutionContext*, uint64_t identifier, network::mojom::blink::WebSocketHandshakeRequest* request, network::mojom::blink::WebSocketHandshakeResponse* response);
+  void DidCloseWebSocket([Keep] ExecutionContext*, uint64_t identifier);
+  void DidReceiveWebSocketMessage(ExecutionContext*, uint64_t identifier, int opcode, bool masked, const Vector<base::span<const char>>& data);
+  void DidSendWebSocketMessage(ExecutionContext*, uint64_t identifier, int opcode, bool masked, const char* payload, size_t payload_length);
+  void DidReceiveWebSocketMessageError(ExecutionContext*, uint64_t identifier, const String& error_message);
   void NetworkStateChanged([Keep] LocalFrame*, bool online);
   void UpdateApplicationCacheStatus([Keep] LocalFrame*);
   /* This is for pre-BlinkGenPropertyTrees. TODO(wangxianzhu): Remove this function for BlinkGenPropertyTrees. */
@@ -167,4 +166,10 @@ interface CoreProbes {
   void DidSuspendAudioContext(Document*);
   void ProduceCompilationCache(LocalFrame*, const ScriptSourceCode& source, v8::Local<v8::Script> script);
   void ConsumeCompilationCache(ExecutionContext*, const ScriptSourceCode& source, v8::ScriptCompiler::CachedData** cached_data);
+  void NodeCreated([Keep] Node* node);
+  void PortalRemoteFrameCreated(Document*, HTMLPortalElement* portal_element);
+
+  void PlayerEventsAdded(LocalFrame* frame, String player_id, const Vector<InspectorPlayerEvent>& events);
+  void PlayerPropertiesChanged(LocalFrame* frame, String player_id, const Vector<InspectorPlayerProperty>& properties);
+  void PlayersCreated(LocalFrame* frame, const Vector<WebString>& players);
 }

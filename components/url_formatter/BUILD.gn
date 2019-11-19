@@ -12,8 +12,8 @@ jumbo_static_library("url_formatter") {
   sources = [
     "elide_url.cc",
     "elide_url.h",
-    "idn_spoof_checker.cc",
-    "idn_spoof_checker.h",
+    "spoof_checks/idn_spoof_checker.cc",
+    "spoof_checks/idn_spoof_checker.h",
     "url_fixer.cc",
     "url_fixer.h",
     "url_formatter.cc",
@@ -31,8 +31,8 @@ jumbo_static_library("url_formatter") {
   deps = [
     "//base",
     "//base:i18n",
-    "//components/url_formatter/top_domains:common",
-    "//components/url_formatter/top_domains:generate_top_domains_trie",
+    "//components/url_formatter/spoof_checks/top_domains:common",
+    "//components/url_formatter/spoof_checks/top_domains:generate_top_domains_trie",
     "//net",
     "//net:preload_decoder",
     "//third_party/icu",
@@ -49,6 +49,7 @@ jumbo_source_set("unit_tests") {
   testonly = true
   sources = [
     "elide_url_unittest.cc",
+    "spoof_checks/idn_spoof_checker_unittest.cc",
     "url_fixer_unittest.cc",
     "url_formatter_unittest.cc",
   ]
@@ -57,7 +58,7 @@ jumbo_source_set("unit_tests") {
     ":url_formatter",
     "//base",
     "//base/test:test_support",
-    "//components/url_formatter/top_domains:generate_top_domains_test_trie",
+    "//components/url_formatter/spoof_checks/top_domains:generate_top_domains_test_trie",
     "//net",
     "//net:preload_decoder",
     "//testing/gtest",

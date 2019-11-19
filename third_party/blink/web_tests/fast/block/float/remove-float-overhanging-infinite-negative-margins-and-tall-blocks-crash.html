@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<!-- The absolutely positioned wrapper is here just to contain the actual test
+     and make the testharness output pretty. -->
+<div style="position:absolute; width:500px;">
+  <div style="overflow:hidden;"></div>
+  <div style="margin-top:-2px; padding-top:123456789px;">
+    <div>
+      <div style="height:500px;">
+        <div id="bye" style="float:left; width:100px; height:100px;"></div>
+      </div>
+    </div>
+    <div></div>
+  </div>
+  <div style="margin-top:-123456789px; padding-bottom:123456789%;"></div>
+  <div></div>
+  <div style="padding-top:500px;">
+    <div style="float:left; width:10px; height:10px;"></div>
+  </div>
+</div>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<script>
+  document.body.offsetTop;
+  bye.style.width = "301px";
+  document.body.offsetTop;
+  bye.style.display = "none";
+  test(() => { }, "no crash");
+</script>

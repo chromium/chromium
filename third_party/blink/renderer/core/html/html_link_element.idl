@@ -20,12 +20,14 @@
  */
 
 // https://html.spec.whatwg.org/C/#the-link-element
-[HTMLConstructor]
-interface HTMLLinkElement : HTMLElement {
+[
+    Exposed=Window,
+    HTMLConstructor
+] interface HTMLLinkElement : HTMLElement {
     // FIXME: The disabled attribute has been removed from the spec:
     // https://www.w3.org/Bugs/Public/show_bug.cgi?id=14703
     [Reflect, Measure] attribute boolean disabled;
-    [Reflect, URL, RaisesException=Setter] attribute URLString href;
+    [Reflect, URL] attribute USVString href;
     [CEReactions, Reflect, ReflectOnly=("anonymous","use-credentials"), ReflectEmpty="anonymous", ReflectInvalid="anonymous"] attribute DOMString? crossOrigin;
     [CEReactions, Reflect] attribute DOMString rel;
     [SameObject, PutForwards=value] readonly attribute DOMTokenList relList;
@@ -35,9 +37,9 @@ interface HTMLLinkElement : HTMLElement {
     [Reflect, ReflectOnly=("script","style","image", "track", "font", "fetch")] attribute DOMString as;
     [CEReactions, Reflect, ReflectOnly=("","no-referrer","origin","no-referrer-when-downgrade","origin-when-cross-origin","unsafe-url"), ReflectMissing="", ReflectInvalid=""] attribute DOMString referrerPolicy;
     [PutForwards=value] readonly attribute DOMTokenList sizes;
-    [CEReactions, MeasureAs=PriorityHints, OriginTrialEnabled=PriorityHints, Reflect, ReflectOnly=("low", "auto", "high"), ReflectMissing="auto", ReflectInvalid="auto"] attribute DOMString importance;
-    [RuntimeEnabled=PreloadImageSrcSet, CEReactions, Reflect] attribute DOMString imageSrcset;
-    [RuntimeEnabled=PreloadImageSrcSet, CEReactions, Reflect] attribute DOMString imageSizes;
+    [CEReactions, MeasureAs=PriorityHints, RuntimeEnabled=PriorityHints, Reflect, ReflectOnly=("low", "auto", "high"), ReflectMissing="auto", ReflectInvalid="auto"] attribute DOMString importance;
+    [CEReactions, Reflect] attribute DOMString imageSrcset;
+    [CEReactions, Reflect] attribute DOMString imageSizes;
 
     // obsolete members
     // https://html.spec.whatwg.org/C/#HTMLLinkElement-partial
@@ -45,13 +47,13 @@ interface HTMLLinkElement : HTMLElement {
     [CEReactions, Reflect] attribute DOMString rev;
     [CEReactions, Reflect] attribute DOMString target;
 
-    // HTMLLinkElement implements LinkStyle
+    // HTMLLinkElement includes LinkStyle
     // https://drafts.csswg.org/cssom/#the-linkstyle-interface
     readonly attribute StyleSheet? sheet;
 
     // HTML Imports
     // https://w3c.github.io/webcomponents/spec/imports/#interface-import
-    [OriginTrialEnabled=HTMLImports] readonly attribute Document? import;
+    [RuntimeEnabled=HTMLImports] readonly attribute Document? import;
 
     // Subresource Integrity
     // https://w3c.github.io/webappsec-subresource-integrity/#HTMLLinkElement

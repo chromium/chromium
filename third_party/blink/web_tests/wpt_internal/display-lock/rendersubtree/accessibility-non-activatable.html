@@ -1,0 +1,41 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/utils.js"></script>
+</head>
+<body>
+
+<div id="container">
+  <div id="locked" rendersubtree="invisible skip-activation">
+    locked
+    <div id="child">
+      child
+    </div>
+  </div>
+</div>
+
+<script>
+function axElementById(id) {
+  return accessibilityController.accessibleElementById(id);
+}
+
+async_test(async (t) => {
+  let locked = document.getElementById("locked");
+  let axLocked = axElementById("locked");
+  t.step(() => { assert_false(axLocked.isIgnored); });
+  t.step(() => { assert_equals(axLocked.childrenCount, 0); });
+
+  // Trigger style & layout recalc in the locked subtree with update().
+  await locked.updateRendering();
+  t.step(() => { assert_equals(axLocked.childrenCount, 0, "After update, nodes in locked subtree are still ignored"); });
+
+  await setVisible(locked);
+  // The ax object for #locked got replaced since the layout object changed, so use the new ax object.
+  axLocked = axElementById("locked");
+  t.step(() => { assert_equals(axLocked.childrenCount, 2, "After commit, nodes in locked subtree are not ignored"); });
+  t.done();
+}, "Nodes in locked non-activatable tree are not exposed to accessibility tree");
+</script>
+</body>

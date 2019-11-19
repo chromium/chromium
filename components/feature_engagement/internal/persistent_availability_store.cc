@@ -24,10 +24,6 @@ namespace {
 using KeyAvailabilityPair = std::pair<std::string, Availability>;
 using KeyAvailabilityList = std::vector<KeyAvailabilityPair>;
 
-// Corresponds to a UMA suffix "LevelDBOpenResults" in histograms.xml.
-// Please do not change.
-const char kDatabaseUMAName[] = "FeatureEngagementTrackerAvailabilityStore";
-
 void OnDBUpdateComplete(
     std::unique_ptr<leveldb_proto::ProtoDatabase<Availability>> db,
     PersistentAvailabilityStore::OnLoadedCallback on_loaded_callback,
@@ -147,8 +143,7 @@ void PersistentAvailabilityStore::LoadAndUpdateStore(
     PersistentAvailabilityStore::OnLoadedCallback on_loaded_callback,
     uint32_t current_day) {
   auto* db_ptr = db.get();
-  db_ptr->Init(kDatabaseUMAName,
-               base::BindOnce(&OnDBInitComplete, std::move(db),
+  db_ptr->Init(base::BindOnce(&OnDBInitComplete, std::move(db),
                               std::move(feature_filter),
                               std::move(on_loaded_callback), current_day));
 }

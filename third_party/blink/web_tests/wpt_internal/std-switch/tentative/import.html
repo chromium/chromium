@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<body>
+<script>
+test(() => {
+  assert_not_own_property(window, 'StdSwitchElement');
+  assert_true(document.createElement('std-switch') instanceof HTMLElement);
+}, 'StdSwitchElement should not be available before import');
+
+let t = async_test('StdSwitchElement should be available after import');
+</script>
+<script type="module">
+import { StdSwitchElement } from 'std:elements/switch';
+
+t.step(() => {
+  assert_not_own_property(window, 'StdSwitchElement');
+  assert_true(document.createElement('std-switch') instanceof StdSwitchElement);
+  t.done();
+});
+</script>
+</body>

@@ -5,7 +5,6 @@
 #include "content/public/test/test_navigation_observer.h"
 
 #include "base/bind.h"
-#include "content/browser/frame_host/navigation_handle_impl.h"
 #include "content/browser/frame_host/navigation_request.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -69,7 +68,8 @@ TestNavigationObserver::TestNavigationObserver(
     MessageLoopRunner::QuitMode quit_mode)
     : TestNavigationObserver(web_contents,
                              number_of_navigations,
-                             GURL(),
+                             GURL() /* target_url */,
+                             net::OK /* target_error */,
                              quit_mode) {}
 
 TestNavigationObserver::TestNavigationObserver(
@@ -83,6 +83,17 @@ TestNavigationObserver::TestNavigationObserver(
     : TestNavigationObserver(nullptr,
                              -1 /* num_of_navigations */,
                              target_url,
+                             net::OK /* target_error */,
+                             quit_mode) {}
+
+TestNavigationObserver::TestNavigationObserver(
+    WebContents* web_contents,
+    net::Error target_error,
+    MessageLoopRunner::QuitMode quit_mode)
+    : TestNavigationObserver(web_contents,
+                             -1 /* num_of_navigations */,
+                             GURL(),
+                             target_error,
                              quit_mode) {}
 
 TestNavigationObserver::~TestNavigationObserver() {
@@ -122,12 +133,14 @@ TestNavigationObserver::TestNavigationObserver(
     WebContents* web_contents,
     int number_of_navigations,
     const GURL& target_url,
+    net::Error target_error,
     MessageLoopRunner::QuitMode quit_mode)
     : wait_event_(WaitEvent::kLoadStopped),
       navigation_started_(false),
       navigations_completed_(0),
       number_of_navigations_(number_of_navigations),
       target_url_(target_url),
+      target_error_(target_error),
       last_navigation_succeeded_(false),
       last_net_error_code_(net::OK),
       last_navigation_type_(NAVIGATION_TYPE_UNKNOWN),
@@ -146,11 +159,7 @@ void TestNavigationObserver::OnWebContentsCreated(WebContents* web_contents) {
 void TestNavigationObserver::OnWebContentsDestroyed(
     TestWebContentsObserver* observer,
     WebContents* web_contents) {
-  web_contents_observers_.erase(std::find_if(
-      web_contents_observers_.begin(), web_contents_observers_.end(),
-      [observer](const std::unique_ptr<TestWebContentsObserver>& ptr) {
-        return ptr.get() == observer;
-      }));
+  web_contents_observers_.erase(web_contents_observers_.find(observer));
 }
 
 void TestNavigationObserver::OnNavigationEntryCommitted(
@@ -182,13 +191,9 @@ void TestNavigationObserver::OnDidStopLoading(WebContents* web_contents) {
 void TestNavigationObserver::OnDidStartNavigation(
     NavigationHandle* navigation_handle) {
   last_navigation_succeeded_ = false;
-  NavigationHandleImpl* nav_handle =
-      static_cast<NavigationHandleImpl*>(navigation_handle);
-  if (nav_handle->frame_tree_node()->navigation_request()) {
-    last_initiator_origin_ = nav_handle->frame_tree_node()
-                                 ->navigation_request()
-                                 ->common_params()
-                                 .initiator_origin;
+  NavigationRequest* request = NavigationRequest::From(navigation_handle);
+  if (request) {
+    last_initiator_origin_ = request->common_params().initiator_origin;
   } else {
     last_initiator_origin_.reset();
   }
@@ -196,25 +201,31 @@ void TestNavigationObserver::OnDidStartNavigation(
 
 void TestNavigationObserver::OnDidFinishNavigation(
     NavigationHandle* navigation_handle) {
+  NavigationRequest* request = NavigationRequest::From(navigation_handle);
+
   last_navigation_url_ = navigation_handle->GetURL();
+  last_initiator_origin_ = request->common_params().initiator_origin;
   last_navigation_succeeded_ = !navigation_handle->IsErrorPage();
   last_net_error_code_ = navigation_handle->GetNetErrorCode();
-  last_navigation_type_ =
-      static_cast<NavigationHandleImpl*>(navigation_handle)->navigation_type();
+  last_navigation_type_ = request->navigation_type();
 
   if (wait_event_ == WaitEvent::kNavigationFinished)
     EventTriggered();
 }
 
 void TestNavigationObserver::EventTriggered() {
-  if (target_url_ == GURL()) {
+  if (target_url_ == GURL() && target_error_ == net::OK) {
     DCHECK_GE(navigations_completed_, 0);
 
     ++navigations_completed_;
     if (navigations_completed_ != number_of_navigations_) {
       return;
     }
-  } else if (target_url_ != last_navigation_url_) {
+  } else if (target_url_ != GURL()) {
+    if (target_url_ != last_navigation_url_) {
+      return;
+    }
+  } else if (target_error_ != last_net_error_code_) {
     return;
   }
 

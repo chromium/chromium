@@ -6,7 +6,7 @@
 #define IOS_CHROME_APP_STARTUP_IOS_CHROME_MAIN_DELEGATE_H_
 
 #include "base/macros.h"
-#include "ios/web/public/app/web_main_delegate.h"
+#include "ios/web/public/init/web_main_delegate.h"
 
 // Implementation of WebMainDelegate for Chrome on iOS.
 class IOSChromeMainDelegate : public web::WebMainDelegate {

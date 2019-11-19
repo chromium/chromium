@@ -64,8 +64,23 @@ StructTraits<chromeos::multidevice::mojom::RemoteDeviceDataView,
 const std::string&
 StructTraits<chromeos::multidevice::mojom::RemoteDeviceDataView,
              chromeos::multidevice::RemoteDevice>::
+    instance_id(const chromeos::multidevice::RemoteDevice& remote_device) {
+  return remote_device.instance_id;
+}
+
+const std::string&
+StructTraits<chromeos::multidevice::mojom::RemoteDeviceDataView,
+             chromeos::multidevice::RemoteDevice>::
     device_name(const chromeos::multidevice::RemoteDevice& remote_device) {
   return remote_device.name;
+}
+
+const std::string&
+StructTraits<chromeos::multidevice::mojom::RemoteDeviceDataView,
+             chromeos::multidevice::RemoteDevice>::
+    pii_free_device_name(
+        const chromeos::multidevice::RemoteDevice& remote_device) {
+  return remote_device.pii_free_name;
 }
 
 const std::string&
@@ -105,7 +120,9 @@ bool StructTraits<chromeos::multidevice::mojom::RemoteDeviceDataView,
   std::string device_id;
   base::Time last_update_time;
 
-  if (!in.ReadUserId(&out->user_id) || !in.ReadDeviceName(&out->name) ||
+  if (!in.ReadUserId(&out->user_id) || !in.ReadInstanceId(&out->instance_id) ||
+      !in.ReadDeviceName(&out->name) ||
+      !in.ReadPiiFreeDeviceName(&out->pii_free_name) ||
       !in.ReadDeviceId(&device_id) ||
       !in.ReadPersistentSymmetricKey(&out->persistent_symmetric_key) ||
       !in.ReadLastUpdateTime(&last_update_time) ||
@@ -115,7 +132,7 @@ bool StructTraits<chromeos::multidevice::mojom::RemoteDeviceDataView,
   }
 
   out->public_key =
-      chromeos::multidevice::RemoteDeviceRef::DerivePublicKey(device_id);
+      chromeos::multidevice::RemoteDevice::DerivePublicKey(device_id);
   out->last_update_time_millis = last_update_time.ToJavaTime();
 
   return true;

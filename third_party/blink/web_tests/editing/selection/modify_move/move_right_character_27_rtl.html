@@ -3,34 +3,29 @@
 <script src="../../../resources/testharnessreport.js"></script>
 <script src="../../assert_selection.js"></script>
 <script>
-const usesBidiAffinity = window.internals && internals.runtimeFlags.bidiCaretAffinityEnabled;
 
 selection_test(
   '<div contenteditable dir="rtl">|abc<input>\u05D0\u05D1\u05D2<img><img>\u05D3\u05D4\u05D5ghi</div>',
   selection => selection.modify('move', 'right', 'character'),
-  usesBidiAffinity
-      ? '<div contenteditable dir="rtl">a|bc<input>\u05D0\u05D1\u05D2<img><img>\u05D3\u05D4\u05D5ghi</div>'
-      : '<div contenteditable dir="rtl">|abc<input>\u05D0\u05D1\u05D2<img><img>\u05D3\u05D4\u05D5ghi</div>',
+  '<div contenteditable dir="rtl">|abc<input>\u05D0\u05D1\u05D2<img><img>\u05D3\u05D4\u05D5ghi</div>',
   '27-0 rtl right character');
 
 selection_test(
   '<div contenteditable dir="rtl">a|bc<input>\u05D0\u05D1\u05D2<img><img>\u05D3\u05D4\u05D5ghi</div>',
   selection => selection.modify('move', 'right', 'character'),
-  '<div contenteditable dir="rtl">ab|c<input>\u05D0\u05D1\u05D2<img><img>\u05D3\u05D4\u05D5ghi</div>',
+  '<div contenteditable dir="rtl">|abc<input>\u05D0\u05D1\u05D2<img><img>\u05D3\u05D4\u05D5ghi</div>',
   '27-1 rtl right character');
 
 selection_test(
   '<div contenteditable dir="rtl">ab|c<input>\u05D0\u05D1\u05D2<img><img>\u05D3\u05D4\u05D5ghi</div>',
   selection => selection.modify('move', 'right', 'character'),
-  usesBidiAffinity
-      ? '<div contenteditable dir="rtl">abc|<input>\u05D0\u05D1\u05D2<img><img>\u05D3\u05D4\u05D5ghi</div>'
-      : '<div contenteditable dir="rtl">|abc<input>\u05D0\u05D1\u05D2<img><img>\u05D3\u05D4\u05D5ghi</div>',
+  '<div contenteditable dir="rtl">a|bc<input>\u05D0\u05D1\u05D2<img><img>\u05D3\u05D4\u05D5ghi</div>',
   '27-2 rtl right character');
 
 selection_test(
   '<div contenteditable dir="rtl">abc|<input>\u05D0\u05D1\u05D2<img><img>\u05D3\u05D4\u05D5ghi</div>',
   selection => selection.modify('move', 'right', 'character'),
-  '<div contenteditable dir="rtl">a|bc<input>\u05D0\u05D1\u05D2<img><img>\u05D3\u05D4\u05D5ghi</div>',
+  '<div contenteditable dir="rtl">ab|c<input>\u05D0\u05D1\u05D2<img><img>\u05D3\u05D4\u05D5ghi</div>',
   '27-3 rtl right character');
 
 selection_test(
@@ -84,30 +79,24 @@ selection_test(
 selection_test(
   '<div contenteditable dir="rtl">abc<input>\u05D0\u05D1\u05D2<img><img>\u05D3\u05D4\u05D5|ghi</div>',
   selection => selection.modify('move', 'right', 'character'),
-  usesBidiAffinity
-      ? '<div contenteditable dir="rtl">abc<input>\u05D0\u05D1\u05D2<img><img>\u05D3\u05D4\u05D5g|hi</div>'
-      : '<div contenteditable dir="rtl">abc<input>\u05D0\u05D1\u05D2<img><img>\u05D3\u05D4|\u05D5ghi</div>',
+  '<div contenteditable dir="rtl">abc<input>\u05D0\u05D1\u05D2<img><img>\u05D3\u05D4|\u05D5ghi</div>',
   '27-12 rtl right character');
 
 selection_test(
   '<div contenteditable dir="rtl">abc<input>\u05D0\u05D1\u05D2<img><img>\u05D3\u05D4\u05D5g|hi</div>',
   selection => selection.modify('move', 'right', 'character'),
-  '<div contenteditable dir="rtl">abc<input>\u05D0\u05D1\u05D2<img><img>\u05D3\u05D4\u05D5gh|i</div>',
+  '<div contenteditable dir="rtl">abc<input>\u05D0\u05D1\u05D2<img><img>\u05D3\u05D4\u05D5|ghi</div>',
   '27-13 rtl right character');
 
 selection_test(
   '<div contenteditable dir="rtl">abc<input>\u05D0\u05D1\u05D2<img><img>\u05D3\u05D4\u05D5gh|i</div>',
   selection => selection.modify('move', 'right', 'character'),
-  usesBidiAffinity
-      ? '<div contenteditable dir="rtl">abc<input>\u05D0\u05D1\u05D2<img><img>\u05D3\u05D4\u05D5ghi|</div>'
-      : '<div contenteditable dir="rtl">abc<input>\u05D0\u05D1\u05D2<img><img>\u05D3\u05D4\u05D5|ghi</div>',
+  '<div contenteditable dir="rtl">abc<input>\u05D0\u05D1\u05D2<img><img>\u05D3\u05D4\u05D5g|hi</div>',
   '27-14 rtl right character');
 
 selection_test(
   '<div contenteditable dir="rtl">abc<input>\u05D0\u05D1\u05D2<img><img>\u05D3\u05D4\u05D5ghi|</div>',
   selection => selection.modify('move', 'right', 'character'),
-  usesBidiAffinity
-      ? '<div contenteditable dir="rtl">abc<input>\u05D0\u05D1\u05D2<img><img>\u05D3\u05D4|\u05D5ghi</div>'
-      : '<div contenteditable dir="rtl">abc<input>\u05D0\u05D1\u05D2<img><img>\u05D3\u05D4\u05D5g|hi</div>',
+  '<div contenteditable dir="rtl">abc<input>\u05D0\u05D1\u05D2<img><img>\u05D3\u05D4\u05D5gh|i</div>',
   '27-15 rtl right character');
 </script>

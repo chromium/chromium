@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL register worker that calls waitUntil with a promise that never resolves in oninstall promise_test: Unhandled rejection with value: object "TypeError: Cannot read property 'scriptURL' of null"
-Harness: the test ran to completion.
-

@@ -4,10 +4,8 @@
 
 var contextMenuTitle = "Context Menu #2 - Extension #3";
 
-window.onload = function() {
-  chrome.contextMenus.create({ "title": contextMenuTitle }, function() {
-    if (!chrome.runtime.lastError) {
-      chrome.test.sendMessage("created item");
-    }
-  });
-};
+chrome.contextMenus.create({ "title": contextMenuTitle }, function() {
+  if (!chrome.runtime.lastError) {
+    chrome.test.sendMessage("created item");
+  }
+});

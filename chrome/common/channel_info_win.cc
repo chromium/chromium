@@ -7,12 +7,13 @@
 #include "base/debug/profiler.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/branding_buildflags.h"
 #include "chrome/install_static/install_util.h"
 
 namespace chrome {
 
 std::string GetChannelName() {
-#if defined(GOOGLE_CHROME_BUILD)
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   base::string16 channel(install_static::GetChromeChannelName());
 #if defined(DCHECK_IS_CONFIGURABLE)
   // Adorn the channel when DCHECKs are baked into the build, as there will be

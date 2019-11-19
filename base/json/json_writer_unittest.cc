@@ -4,6 +4,7 @@
 
 #include "base/json/json_writer.h"
 
+#include "base/containers/span.h"
 #include "base/memory/ptr_util.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -57,13 +58,13 @@ TEST(JSONWriterTest, NestedTypes) {
   // Writer unittests like empty list/dict nesting,
   // list list nesting, etc.
   DictionaryValue root_dict;
-  std::unique_ptr<ListValue> list(new ListValue());
-  std::unique_ptr<DictionaryValue> inner_dict(new DictionaryValue());
-  inner_dict->SetInteger("inner int", 10);
-  list->Append(std::move(inner_dict));
-  list->Append(std::make_unique<ListValue>());
-  list->AppendBoolean(true);
-  root_dict.Set("list", std::move(list));
+  ListValue list;
+  DictionaryValue inner_dict;
+  inner_dict.SetIntKey("inner int", 10);
+  list.Append(std::move(inner_dict));
+  list.Append(Value(Value::Type::LIST));
+  list.Append(true);
+  root_dict.SetKey("list", std::move(list));
 
   // Test the pretty-printer.
   EXPECT_TRUE(JSONWriter::Write(root_dict, &output_js));
@@ -91,17 +92,17 @@ TEST(JSONWriterTest, KeysWithPeriods) {
   std::string output_js;
 
   DictionaryValue period_dict;
-  period_dict.SetKey("a.b", base::Value(3));
-  period_dict.SetKey("c", base::Value(2));
-  std::unique_ptr<DictionaryValue> period_dict2(new DictionaryValue());
-  period_dict2->SetKey("g.h.i.j", base::Value(1));
-  period_dict.SetWithoutPathExpansion("d.e.f", std::move(period_dict2));
+  period_dict.SetIntKey("a.b", 3);
+  period_dict.SetIntKey("c", 2);
+  DictionaryValue period_dict2;
+  period_dict2.SetIntKey("g.h.i.j", 1);
+  period_dict.SetKey("d.e.f", std::move(period_dict2));
   EXPECT_TRUE(JSONWriter::Write(period_dict, &output_js));
   EXPECT_EQ("{\"a.b\":3,\"c\":2,\"d.e.f\":{\"g.h.i.j\":1}}", output_js);
 
   DictionaryValue period_dict3;
-  period_dict3.SetInteger("a.b", 2);
-  period_dict3.SetKey("a.b", base::Value(1));
+  period_dict3.SetIntPath("a.b", 2);
+  period_dict3.SetIntKey("a.b", 1);
   EXPECT_TRUE(JSONWriter::Write(period_dict3, &output_js));
   EXPECT_EQ("{\"a\":{\"b\":2},\"a.b\":1}", output_js);
 }
@@ -111,29 +112,31 @@ TEST(JSONWriterTest, BinaryValues) {
 
   // Binary values should return errors unless suppressed via the
   // OPTIONS_OMIT_BINARY_VALUES flag.
-  std::unique_ptr<Value> root(Value::CreateWithCopiedBuffer("asdf", 4));
-  EXPECT_FALSE(JSONWriter::Write(*root, &output_js));
+  const auto kBufferSpan =
+      base::make_span(reinterpret_cast<const uint8_t*>("asdf"), 4);
+  Value root(kBufferSpan);
+  EXPECT_FALSE(JSONWriter::Write(root, &output_js));
   EXPECT_TRUE(JSONWriter::WriteWithOptions(
-      *root, JSONWriter::OPTIONS_OMIT_BINARY_VALUES, &output_js));
+      root, JSONWriter::OPTIONS_OMIT_BINARY_VALUES, &output_js));
   EXPECT_TRUE(output_js.empty());
 
   ListValue binary_list;
-  binary_list.Append(Value::CreateWithCopiedBuffer("asdf", 4));
-  binary_list.Append(std::make_unique<Value>(5));
-  binary_list.Append(Value::CreateWithCopiedBuffer("asdf", 4));
-  binary_list.Append(std::make_unique<Value>(2));
-  binary_list.Append(Value::CreateWithCopiedBuffer("asdf", 4));
+  binary_list.Append(Value(kBufferSpan));
+  binary_list.Append(5);
+  binary_list.Append(Value(kBufferSpan));
+  binary_list.Append(2);
+  binary_list.Append(Value(kBufferSpan));
   EXPECT_FALSE(JSONWriter::Write(binary_list, &output_js));
   EXPECT_TRUE(JSONWriter::WriteWithOptions(
       binary_list, JSONWriter::OPTIONS_OMIT_BINARY_VALUES, &output_js));
   EXPECT_EQ("[5,2]", output_js);
 
   DictionaryValue binary_dict;
-  binary_dict.Set("a", Value::CreateWithCopiedBuffer("asdf", 4));
-  binary_dict.SetInteger("b", 5);
-  binary_dict.Set("c", Value::CreateWithCopiedBuffer("asdf", 4));
-  binary_dict.SetInteger("d", 2);
-  binary_dict.Set("e", Value::CreateWithCopiedBuffer("asdf", 4));
+  binary_dict.SetKey("a", Value(kBufferSpan));
+  binary_dict.SetIntKey("b", 5);
+  binary_dict.SetKey("c", Value(kBufferSpan));
+  binary_dict.SetIntKey("d", 2);
+  binary_dict.SetKey("e", Value(kBufferSpan));
   EXPECT_FALSE(JSONWriter::Write(binary_dict, &output_js));
   EXPECT_TRUE(JSONWriter::WriteWithOptions(
       binary_dict, JSONWriter::OPTIONS_OMIT_BINARY_VALUES, &output_js));
@@ -149,6 +152,38 @@ TEST(JSONWriterTest, DoublesAsInts) {
       double_value, JSONWriter::OPTIONS_OMIT_DOUBLE_TYPE_PRESERVATION,
       &output_js));
   EXPECT_EQ("10000000000", output_js);
+}
+
+TEST(JSONWriterTest, StackOverflow) {
+  std::string output_js;
+  ListValue deep_list;
+  ListValue* next_list = &deep_list;
+
+  const size_t max_depth = 100000;
+
+  for (size_t i = 0; i < max_depth; ++i) {
+    ListValue inner_list;
+    next_list->Append(std::move(inner_list));
+    next_list->GetList(0, &next_list);
+  }
+
+  EXPECT_FALSE(JSONWriter::Write(deep_list, &output_js));
+  EXPECT_FALSE(JSONWriter::WriteWithOptions(
+      deep_list, JSONWriter::OPTIONS_PRETTY_PRINT, &output_js));
+
+  // We cannot just let deep_list tear down since it
+  // would cause a stack overflow. Therefore, we tear
+  // down from the inner lists outwards safely.
+  const size_t step = 200;
+  for (size_t i = max_depth - step; i > 0; i -= step) {
+    next_list = &deep_list;
+    for (size_t curr_depth = 0; curr_depth < i && next_list; ++curr_depth) {
+      if (!next_list->GetList(0, &next_list))
+        next_list = nullptr;
+    }
+    if (next_list)
+      next_list->Remove(0, nullptr);
+  }
 }
 
 }  // namespace base

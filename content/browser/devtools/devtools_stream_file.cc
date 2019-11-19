@@ -14,13 +14,13 @@
 #include "base/third_party/icu/icu_utf.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "storage/browser/fileapi/file_system_context.h"
+#include "storage/browser/file_system/file_system_context.h"
 
 namespace content {
 
 scoped_refptr<base::SequencedTaskRunner> impl_task_runner() {
   constexpr base::TaskTraits kBlockingTraits = {
-      base::MayBlock(), base::TaskPriority::BEST_EFFORT};
+      base::ThreadPool(), base::MayBlock(), base::TaskPriority::BEST_EFFORT};
   static base::LazySequencedTaskRunner s_sequenced_task_unner =
       LAZY_SEQUENCED_TASK_RUNNER_INITIALIZER(kBlockingTraits);
   return s_sequenced_task_unner.Get();
@@ -121,9 +121,9 @@ void DevToolsStreamFile::ReadOnFileSequence(off_t position,
     base::Base64Encode(raw_data, data.get());
     base64_encoded = true;
   }
-  base::PostTaskWithTraits(FROM_HERE, {BrowserThread::UI},
-                           base::BindOnce(std::move(callback), std::move(data),
-                                          base64_encoded, status));
+  base::PostTask(FROM_HERE, {BrowserThread::UI},
+                 base::BindOnce(std::move(callback), std::move(data),
+                                base64_encoded, status));
 }
 
 void DevToolsStreamFile::AppendOnFileSequence(

@@ -8,8 +8,8 @@
 #include "third_party/blink/renderer/platform/transforms/transformation_matrix.h"
 
 namespace blink {
-XRHitResult::XRHitResult(std::unique_ptr<TransformationMatrix> hit_transform)
-    : hit_transform_(std::move(hit_transform)) {}
+XRHitResult::XRHitResult(const TransformationMatrix& hit_transform)
+    : hit_transform_(std::make_unique<TransformationMatrix>(hit_transform)) {}
 
 XRHitResult::~XRHitResult() {}
 

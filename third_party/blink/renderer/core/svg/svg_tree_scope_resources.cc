@@ -32,11 +32,12 @@ LocalSVGResource* SVGTreeScopeResources::ExistingResourceForId(
   return resources_.at(id);
 }
 
-void SVGTreeScopeResources::ClearWeakMembers(Visitor*) {
+void SVGTreeScopeResources::ProcessCustomWeakness(
+    const WeakCallbackInfo& info) {
   // Unregister and remove any resources that are no longer alive.
   Vector<AtomicString> to_remove;
   for (auto& resource_entry : resources_) {
-    if (ThreadHeap::IsHeapObjectAlive(resource_entry.value))
+    if (info.IsHeapObjectAlive(resource_entry.value))
       continue;
     resource_entry.value->Unregister();
     to_remove.push_back(resource_entry.key);
@@ -45,8 +46,9 @@ void SVGTreeScopeResources::ClearWeakMembers(Visitor*) {
 }
 
 void SVGTreeScopeResources::Trace(Visitor* visitor) {
-  visitor->template RegisterWeakMembers<
-      SVGTreeScopeResources, &SVGTreeScopeResources::ClearWeakMembers>(this);
+  visitor->template RegisterWeakCallbackMethod<
+      SVGTreeScopeResources, &SVGTreeScopeResources::ProcessCustomWeakness>(
+      this);
   visitor->Trace(resources_);
   visitor->Trace(tree_scope_);
 }

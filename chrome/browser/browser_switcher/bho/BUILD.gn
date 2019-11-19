@@ -1,0 +1,149 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/compiler/compiler.gni")
+import("//build/toolchain/win/midl.gni")
+import("//testing/test.gni")
+
+assert(is_win)
+assert(target_cpu == "x86" || target_cpu == "x64")
+
+declare_args() {
+  # If true, compile a BHO that doesn't depend on the CRT to significantly
+  # minimize binary size.
+  use_mini_bho = false
+}
+
+shared_library("browser_switcher_bho") {
+  if (current_cpu == "x64") {
+    # Name the 32-bit and 64-bit output differently, since they'll be copied to
+    # the same directory.
+    output_name = "browser_switcher_bho_64"
+  }
+
+  visibility = [
+    ":browser_switcher_dlls",
+    ":copy_browser_switcher_binaries",
+  ]
+
+  defines = [
+    # Needed to build COM objects that will be hosted in a DLL.
+    "_WINDLL",
+  ]
+
+  if (use_mini_bho) {
+    configs += [ "//build/config/win:sdk_link" ]
+
+    no_default_deps = true
+
+    libs = [
+      # For buffer overflow checks with the /GS flag.
+      "bufferoverflowU.lib",
+    ]
+    ldflags = [
+      "/NODEFAULTLIB",
+      "/ENTRY:DllMain",
+    ]
+  }
+
+  # TODO(nicolaso): avoid code duplication, by using BrowserSwitcherSitelist and
+  # AlternativeBrowserDriver classes from chrome/browser_switcher/.
+  if (use_mini_bho) {
+    sources = [
+      "mini_bho.cc",
+      "mini_bho.def",
+      "mini_bho_util.cc",
+      "mini_bho_util.h",
+    ]
+  } else {
+    sources = [
+      "//base/win/atl.h",
+      "bho.cc",
+      "bho.h",
+      "browser_switcher_core.cc",
+      "browser_switcher_core.h",
+      "ie_bho.cc",
+      "ie_bho.def",
+      "logging.cc",
+      "logging.h",
+      "resource.h",
+    ]
+  }
+  deps = [
+    ":ie_bho_idl",
+  ]
+}
+
+test("browser_switcher_bho_unittests") {
+  sources = [
+    "mini_bho_util.cc",
+    "mini_bho_util.h",
+    "mini_bho_util_unittest.cc",
+  ]
+  deps = [
+    "//base",
+    "//base/test:test_support",
+    "//testing/gtest",
+  ]
+}
+
+if (is_clang) {
+  browser_switcher_x64_toolchain = "//build/toolchain/win:win_clang_x64"
+  browser_switcher_x86_toolchain = "//build/toolchain/win:win_clang_x86"
+} else {
+  browser_switcher_x64_toolchain = "//build/toolchain/win:x64"
+  browser_switcher_x86_toolchain = "//build/toolchain/win:x86"
+}
+
+browser_switcher_x64_label =
+    ":browser_switcher_bho($browser_switcher_x64_toolchain)"
+browser_switcher_x86_label =
+    ":browser_switcher_bho($browser_switcher_x86_toolchain)"
+
+copy("copy_browser_switcher_binaries") {
+  # Make sure we have both bitnesses in the root out directory.
+  if (target_cpu == "x86") {
+    cross_build_label = browser_switcher_x64_label
+    cross_build_dll = "browser_switcher_bho_64.dll"
+  } else if (target_cpu == "x64") {
+    cross_build_label = browser_switcher_x86_label
+    cross_build_dll = "browser_switcher_bho.dll"
+  }
+
+  cross_build_out_dir = get_label_info(cross_build_label, "root_out_dir")
+
+  sources = [
+    "$cross_build_out_dir/$cross_build_dll",
+  ]
+  if (symbol_level > 0) {
+    sources += [ "$cross_build_out_dir/$cross_build_dll.pdb" ]
+  }
+
+  outputs = [
+    "$root_out_dir/{{source_file_part}}",
+  ]
+  deps = [
+    browser_switcher_x64_label,
+    browser_switcher_x86_label,
+  ]
+}
+
+group("browser_switcher_dlls") {
+  # Build a DLL for each bitness, and put them in the root out dir.
+  deps = [
+    ":copy_browser_switcher_binaries",
+    browser_switcher_x64_label,
+    browser_switcher_x86_label,
+  ]
+}
+
+midl("ie_bho_idl") {
+  sources = [
+    "ie_bho_idl.idl",
+  ]
+
+  # We have a custom output directory (that excludes the toolchain details).
+  generated_dir =
+      "//third_party/win_build_output/midl/chrome/browser/browser_switcher/bho"
+}

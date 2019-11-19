@@ -42,7 +42,7 @@ void ContentsWebView::OnVisibleBoundsChanged() {
 }
 
 void ContentsWebView::ViewHierarchyChanged(
-    const ViewHierarchyChangedDetails& details) {
+    const views::ViewHierarchyChangedDetails& details) {
   WebView::ViewHierarchyChanged(details);
   if (details.is_add)
     UpdateBackgroundColor();

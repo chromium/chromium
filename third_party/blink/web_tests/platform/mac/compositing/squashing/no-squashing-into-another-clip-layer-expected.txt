@@ -1,41 +1,30 @@
 {
   "layers": [
     {
-      "name": "LayoutView #document",
-      "bounds": [800, 600],
-      "drawsContent": false,
-      "backgroundColor": "#FFFFFF"
-    },
-    {
-      "name": "Scrolling Layer",
-      "bounds": [800, 600],
-      "drawsContent": false
-    },
-    {
       "name": "Scrolling Contents Layer",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutBlockFlow DIV",
+      "name": "LayoutNGBlockFlow DIV",
       "bounds": [784, 10],
       "contentsOpaque": true,
       "backgroundColor": "#ADD8E6",
       "transform": 1
     },
     {
-      "name": "LayoutBlockFlow DIV id='inner'",
+      "name": "LayoutNGBlockFlow DIV id='inner'",
       "bounds": [784, 10],
       "contentsOpaque": true,
       "backgroundColor": "#F5F5F5",
       "transform": 1
     },
     {
-      "name": "LayoutBlockFlow (positioned) DIV class='hoverable'",
-      "position": [8, 0],
+      "name": "LayoutNGBlockFlow (positioned) DIV class='hoverable'",
       "bounds": [211, 100],
-      "backgroundColor": "#90EE90"
+      "backgroundColor": "#90EE90",
+      "transform": 2
     }
   ],
   "transforms": [
@@ -46,6 +35,15 @@
         [0, 1, 0, 0],
         [0, 0, 1, 0],
         [8, 8, 0, 1]
+      ]
+    },
+    {
+      "id": 2,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [8, 0, 0, 1]
       ]
     }
   ]

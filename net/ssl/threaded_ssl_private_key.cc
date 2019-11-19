@@ -53,8 +53,7 @@ ThreadedSSLPrivateKey::ThreadedSSLPrivateKey(
     std::unique_ptr<ThreadedSSLPrivateKey::Delegate> delegate,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner)
     : core_(new Core(std::move(delegate))),
-      task_runner_(std::move(task_runner)),
-      weak_factory_(this) {}
+      task_runner_(std::move(task_runner)) {}
 
 std::string ThreadedSSLPrivateKey::GetProviderName() {
   return core_->delegate()->GetProviderName();

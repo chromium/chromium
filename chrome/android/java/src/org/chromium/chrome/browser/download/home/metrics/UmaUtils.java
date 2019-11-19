@@ -4,8 +4,8 @@
 
 package org.chromium.chrome.browser.download.home.metrics;
 
-import android.support.annotation.IdRes;
-import android.support.annotation.IntDef;
+import androidx.annotation.IdRes;
+import androidx.annotation.IntDef;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
@@ -14,6 +14,7 @@ import org.chromium.chrome.browser.download.home.filter.Filters.FilterType;
 import org.chromium.chrome.download.R;
 import org.chromium.components.offline_items_collection.OfflineItem;
 import org.chromium.components.offline_items_collection.OfflineItemFilter;
+import org.chromium.components.offline_items_collection.RenameResult;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -40,7 +41,7 @@ public class UmaUtils {
     // Please treat this list as append only and keep it in sync with
     // Android.DownloadManager.List.View.Actions in enums.xml.
     @IntDef({ViewAction.OPEN, ViewAction.RESUME, ViewAction.PAUSE, ViewAction.CANCEL,
-            ViewAction.MENU_SHARE, ViewAction.MENU_DELETE, ViewAction.RETRY})
+            ViewAction.MENU_SHARE, ViewAction.MENU_DELETE, ViewAction.RETRY, ViewAction.MENU_RENAME})
     @Retention(RetentionPolicy.SOURCE)
     public @interface ViewAction {
         int OPEN = 0;
@@ -50,47 +51,26 @@ public class UmaUtils {
         int MENU_SHARE = 4;
         int MENU_DELETE = 5;
         int RETRY = 6;
-        int NUM_ENTRIES = 7;
+        int MENU_RENAME = 7;
+        int NUM_ENTRIES = 8;
     }
 
     // Please treat this list as append only and keep it in sync with
-    // Android.DownloadManager.List.Section.Menu.Actions in enums.xml.
-    @IntDef({ImagesMenuAction.MENU_START_SELECTING, ImagesMenuAction.MENU_SHARE_ALL,
-            ImagesMenuAction.MENU_DELETE_ALL})
+    // Android.Download.Rename.Dialog.Action in enums.xml.
+    @IntDef({RenameDialogAction.RENAME_DIALOG_CONFIRM, RenameDialogAction.RENAME_DIALOG_CANCEL,
+            RenameDialogAction.RENAME_DIALOG_OTHER,
+            RenameDialogAction.RENAME_EXTENSION_DIALOG_CONFIRM,
+            RenameDialogAction.RENAME_EXTENSION_DIALOG_CANCEL,
+            RenameDialogAction.RENAME_EXTENSION_DIALOG_OTHER})
     @Retention(RetentionPolicy.SOURCE)
-    public @interface ImagesMenuAction {
-        int MENU_START_SELECTING = 0;
-        int MENU_SHARE_ALL = 1;
-        int MENU_DELETE_ALL = 2;
-        int NUM_ENTRIES = 3;
-    }
-
-    /**
-     * Called to record metrics for the given images section menu action.
-     * @param action The given menu action.
-     */
-    public static void recordImagesMenuAction(@ImagesMenuAction int action) {
-        String userActionSuffix;
-        switch (action) {
-            case ImagesMenuAction.MENU_START_SELECTING:
-                userActionSuffix = "StartSelecting";
-                break;
-            case ImagesMenuAction.MENU_SHARE_ALL:
-                userActionSuffix = "ShareAll";
-                break;
-            case ImagesMenuAction.MENU_DELETE_ALL:
-                userActionSuffix = "DeleteAll";
-                break;
-            default:
-                assert false : "Unexpected action " + action + " passed to recordImagesMenuAction.";
-                return;
-        }
-
-        RecordHistogram.recordEnumeratedHistogram(
-                "Android.DownloadManager.List.Section.Menu.Images.Action", action,
-                ImagesMenuAction.NUM_ENTRIES);
-        RecordUserAction.record(
-                "Android.DownloadManager.List.Selection.Menu.Images.Action." + userActionSuffix);
+    public @interface RenameDialogAction {
+        int RENAME_DIALOG_CONFIRM = 0;
+        int RENAME_DIALOG_CANCEL = 1;
+        int RENAME_DIALOG_OTHER = 2;
+        int RENAME_EXTENSION_DIALOG_CONFIRM = 3;
+        int RENAME_EXTENSION_DIALOG_CANCEL = 4;
+        int RENAME_EXTENSION_DIALOG_OTHER = 5;
+        int NUM_ENTRIES = 6;
     }
 
     /**
@@ -121,6 +101,9 @@ public class UmaUtils {
             case ViewAction.RETRY:
                 userActionSuffix = "Retry";
                 break;
+            case ViewAction.MENU_RENAME:
+                userActionSuffix = "MenuRename";
+                break;
             default:
                 assert false : "Unexpected action " + action + " passed to recordItemAction.";
                 return;
@@ -140,7 +123,7 @@ public class UmaUtils {
         int action;
         String userActionSuffix;
 
-        if (menuId == R.id.close_menu_id || menuId == R.id.with_settings_close_menu_id) {
+        if (menuId == R.id.close_menu_id) {
             action = MenuAction.CLOSE;
             userActionSuffix = "Close";
         } else if (menuId == R.id.selection_mode_delete_menu_id) {
@@ -149,7 +132,7 @@ public class UmaUtils {
         } else if (menuId == R.id.selection_mode_share_menu_id) {
             action = MenuAction.MULTI_SHARE;
             userActionSuffix = "MultiShare";
-        } else if (menuId == R.id.with_settings_search_menu_id || menuId == R.id.search_menu_id) {
+        } else if (menuId == R.id.search_menu_id) {
             action = MenuAction.SEARCH;
             userActionSuffix = "Search";
         } else if (menuId == R.id.settings_menu_id) {
@@ -189,7 +172,7 @@ public class UmaUtils {
      */
     public static void recordItemsShared(Collection<OfflineItem> items) {
         for (OfflineItem item : items) {
-            if (item.filter == OfflineItemFilter.FILTER_PAGE) {
+            if (item.filter == OfflineItemFilter.PAGE) {
                 RecordUserAction.record("OfflinePages.Sharing.SharePageFromDownloadHome");
             }
 
@@ -263,5 +246,23 @@ public class UmaUtils {
     public static void recordChipStats(int numEnabledChips) {
         RecordHistogram.recordCustomCountHistogram(
                 "Android.DownloadManager.Chips.Enabled", numEnabledChips, 1, 10, 10);
+    }
+
+    /**
+     * Called to record metrics for the given rename action.
+     * @param action The given rename action.
+     */
+    public static void recordRenameAction(@RenameDialogAction int action) {
+        RecordHistogram.recordEnumeratedHistogram(
+                "Android.Download.Rename.Dialog.Action", action, RenameDialogAction.NUM_ENTRIES);
+    }
+
+    /**
+     * Called to record metrics for the given rename result.
+     * @param result The given rename result.
+     */
+    public static void recordRenameResult(@RenameResult int result) {
+        RecordHistogram.recordEnumeratedHistogram(
+                "Android.Download.Rename.Result", result, RenameResult.MAX_VALUE);
     }
 }

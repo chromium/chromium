@@ -14,10 +14,6 @@ class BookmarkTabHelperObserver;
 class Browser;
 @class BrowserWindowTouchBarController;
 
-namespace content {
-class WebContents;
-}
-
 // Provides a default touch bar for the browser window. This class implements
 // the NSTouchBarDelegate and handles the items in the touch bar.
 API_AVAILABLE(macos(10.12.2))
@@ -29,18 +25,18 @@ API_AVAILABLE(macos(10.12.2))
 // True if the current page is starred. Used by star touch bar button.
 @property(nonatomic, assign) BOOL isStarred;
 
-// Designated initializer.
-- (instancetype)initWithBrowser:(Browser*)browser
-                     controller:(BrowserWindowTouchBarController*)controller;
+// True if the back button is enabled.
+@property(nonatomic, assign) BOOL canGoBack;
+
+// True if the forward button is enabled.
+@property(nonatomic, assign) BOOL canGoForward;
+
+@property(nonatomic, assign) BrowserWindowTouchBarController* controller;
+
+@property(nonatomic) Browser* browser;
 
 // Creates and returns a touch bar for the browser window.
 - (NSTouchBar*)makeTouchBar;
-
-- (void)updateWebContents:(content::WebContents*)contents;
-
-// Updates the back/forward button. Called when creating the touch bar or when
-// the back and forward commands have changed.
-- (void)updateBackForwardControl;
 
 - (BrowserWindowTouchBarController*)controller;
 
@@ -49,16 +45,17 @@ API_AVAILABLE(macos(10.12.2))
 // Private methods exposed for testing.
 @interface BrowserWindowDefaultTouchBar (ExposedForTesting)
 
+@property(readonly, class) NSString* reloadOrStopItemIdentifier;
+@property(readonly, class) NSString* backItemIdentifier;
+@property(readonly, class) NSString* forwardItemIdentifier;
+@property(readonly, class) NSString* fullscreenOriginItemIdentifier;
+
 // Updates the reload/stop button. Called when creating the touch bar or the
 // page load state has been updated.
 - (void)updateReloadStopButton;
 
 // Returns the reload/stop button on the touch bar. Creates it if it's null.
 - (NSButton*)reloadStopButton;
-
-// Returns the back/forward segmented control on the touch bar. Creates it if
-// it's null.
-- (NSSegmentedControl*)backForwardControl;
 
 // Returns the bridge object that BrowserWindowDefaultTouchBar uses to receive
 // notifications.

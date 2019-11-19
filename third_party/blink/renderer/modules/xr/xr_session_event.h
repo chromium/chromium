@@ -44,4 +44,4 @@ class XRSessionEvent final : public Event {
 
 }  // namespace blink
 
-#endif  // XRDisplayEvent_h
+#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_XR_XR_SESSION_EVENT_H_

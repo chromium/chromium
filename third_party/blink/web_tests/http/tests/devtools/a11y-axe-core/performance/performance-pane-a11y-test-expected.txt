@@ -1,0 +1,16 @@
+
+Running: testDetailsView
+Tests accessibility in performance Details view using the axe-core linter
+aXe violations: []
+
+
+Running: testBottomUpView
+Tests accessibility in performance BottomUp view using the axe-core linter
+aXe violations: []
+
+
+Running: testCallTreeView
+Tests accessibility in performance CallTree view using the axe-core linter
+aXe violations: []
+
+

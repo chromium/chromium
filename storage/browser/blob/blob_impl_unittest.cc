@@ -12,7 +12,10 @@
 #include "base/bind.h"
 #include "base/run_loop.h"
 #include "base/task/post_task.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/data_pipe_drainer.h"
 #include "net/base/net_errors.h"
 #include "storage/browser/blob/blob_data_builder.h"
@@ -102,7 +105,7 @@ class BlobImplTest : public testing::Test {
   }
 
  protected:
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_;
   std::unique_ptr<BlobStorageContext> context_;
 };
 
@@ -110,30 +113,32 @@ TEST_F(BlobImplTest, GetInternalUUID) {
   const std::string kId = "id";
   auto handle = CreateBlobFromString(kId, "hello world");
 
-  blink::mojom::BlobPtr ptr;
-  auto blob = BlobImpl::Create(std::move(handle), MakeRequest(&ptr));
+  mojo::Remote<blink::mojom::Blob> remote;
+  auto blob =
+      BlobImpl::Create(std::move(handle), remote.BindNewPipeAndPassReceiver());
   EXPECT_EQ(kId, UUIDFromBlob(blob.get()));
-  EXPECT_EQ(kId, UUIDFromBlob(ptr.get()));
+  EXPECT_EQ(kId, UUIDFromBlob(remote.get()));
 }
 
 TEST_F(BlobImplTest, CloneAndLifetime) {
   const std::string kId = "id";
   auto handle = CreateBlobFromString(kId, "hello world");
 
-  blink::mojom::BlobPtr ptr;
-  auto blob = BlobImpl::Create(std::move(handle), MakeRequest(&ptr));
-  EXPECT_EQ(kId, UUIDFromBlob(ptr.get()));
+  mojo::Remote<blink::mojom::Blob> remote;
+  auto blob =
+      BlobImpl::Create(std::move(handle), remote.BindNewPipeAndPassReceiver());
+  EXPECT_EQ(kId, UUIDFromBlob(remote.get()));
 
   // Blob should exist in registry as long as connection is alive.
   EXPECT_TRUE(context_->registry().HasEntry(kId));
   EXPECT_TRUE(blob);
 
-  blink::mojom::BlobPtr clone;
-  blob->Clone(MakeRequest(&clone));
+  mojo::Remote<blink::mojom::Blob> clone;
+  blob->Clone(clone.BindNewPipeAndPassReceiver());
   EXPECT_EQ(kId, UUIDFromBlob(clone.get()));
   clone.FlushForTesting();
 
-  ptr.reset();
+  remote.reset();
   blob->FlushForTesting();
   EXPECT_TRUE(context_->registry().HasEntry(kId));
   EXPECT_TRUE(blob);
@@ -149,20 +154,19 @@ TEST_F(BlobImplTest, ReadAll) {
   const std::string kContents = "hello world";
   auto handle = CreateBlobFromString(kId, kContents);
 
-  blink::mojom::BlobPtr ptr;
-  BlobImpl::Create(std::move(handle), MakeRequest(&ptr));
+  mojo::Remote<blink::mojom::Blob> remote;
+  BlobImpl::Create(std::move(handle), remote.BindNewPipeAndPassReceiver());
 
   MockBlobReaderClient client;
-  blink::mojom::BlobReaderClientPtr client_ptr;
-  mojo::Binding<blink::mojom::BlobReaderClient> client_binding(
-      &client, MakeRequest(&client_ptr));
+  mojo::Receiver<blink::mojom::BlobReaderClient> client_receiver(&client);
 
   mojo::DataPipe pipe;
-  ptr->ReadAll(std::move(pipe.producer_handle), std::move(client_ptr));
+  remote->ReadAll(std::move(pipe.producer_handle),
+                  client_receiver.BindNewPipeAndPassRemote());
   std::string received = ReadDataPipe(std::move(pipe.consumer_handle));
   EXPECT_EQ(kContents, received);
 
-  client_binding.FlushForTesting();
+  client_receiver.FlushForTesting();
   EXPECT_TRUE(client.calculated_size_);
   EXPECT_EQ(kContents.size(), client.total_size_);
   EXPECT_EQ(kContents.size(), client.expected_content_size_);
@@ -177,11 +181,11 @@ TEST_F(BlobImplTest, ReadAll_WithoutClient) {
   const std::string kContents = "hello world";
   auto handle = CreateBlobFromString(kId, kContents);
 
-  blink::mojom::BlobPtr ptr;
-  BlobImpl::Create(std::move(handle), MakeRequest(&ptr));
+  mojo::Remote<blink::mojom::Blob> remote;
+  BlobImpl::Create(std::move(handle), remote.BindNewPipeAndPassReceiver());
 
   mojo::DataPipe pipe;
-  ptr->ReadAll(std::move(pipe.producer_handle), nullptr);
+  remote->ReadAll(std::move(pipe.producer_handle), mojo::NullRemote());
   std::string received = ReadDataPipe(std::move(pipe.consumer_handle));
   EXPECT_EQ(kContents, received);
 }
@@ -191,21 +195,20 @@ TEST_F(BlobImplTest, ReadAll_BrokenBlob) {
   auto handle = context_->AddBrokenBlob(
       kId, "", "", BlobStatus::ERR_INVALID_CONSTRUCTION_ARGUMENTS);
 
-  blink::mojom::BlobPtr ptr;
-  BlobImpl::Create(std::move(handle), MakeRequest(&ptr));
+  mojo::Remote<blink::mojom::Blob> remote;
+  BlobImpl::Create(std::move(handle), remote.BindNewPipeAndPassReceiver());
 
   MockBlobReaderClient client;
-  blink::mojom::BlobReaderClientPtr client_ptr;
-  mojo::Binding<blink::mojom::BlobReaderClient> client_binding(
-      &client, MakeRequest(&client_ptr));
+  mojo::Receiver<blink::mojom::BlobReaderClient> client_receiver(&client);
 
   mojo::DataPipe pipe;
-  ptr->ReadAll(std::move(pipe.producer_handle), std::move(client_ptr));
+  remote->ReadAll(std::move(pipe.producer_handle),
+                  client_receiver.BindNewPipeAndPassRemote());
 
   std::string received = ReadDataPipe(std::move(pipe.consumer_handle));
   EXPECT_EQ("", received);
 
-  client_binding.FlushForTesting();
+  client_receiver.FlushForTesting();
   EXPECT_FALSE(client.calculated_size_);
   EXPECT_TRUE(client.completed_);
   EXPECT_EQ(net::ERR_FAILED, client.status_);
@@ -217,21 +220,20 @@ TEST_F(BlobImplTest, ReadRange) {
   const std::string kContents = "hello world";
   auto handle = CreateBlobFromString(kId, kContents);
 
-  blink::mojom::BlobPtr ptr;
-  BlobImpl::Create(std::move(handle), MakeRequest(&ptr));
+  mojo::Remote<blink::mojom::Blob> remote;
+  BlobImpl::Create(std::move(handle), remote.BindNewPipeAndPassReceiver());
 
   MockBlobReaderClient client;
-  blink::mojom::BlobReaderClientPtr client_ptr;
-  mojo::Binding<blink::mojom::BlobReaderClient> client_binding(
-      &client, MakeRequest(&client_ptr));
+  mojo::Receiver<blink::mojom::BlobReaderClient> client_receiver(&client);
 
   mojo::DataPipe pipe;
-  ptr->ReadRange(2, 5, std::move(pipe.producer_handle), std::move(client_ptr));
+  remote->ReadRange(2, 5, std::move(pipe.producer_handle),
+                    client_receiver.BindNewPipeAndPassRemote());
 
   std::string received = ReadDataPipe(std::move(pipe.consumer_handle));
   EXPECT_EQ(kContents.substr(2, 5), received);
 
-  client_binding.FlushForTesting();
+  client_receiver.FlushForTesting();
   EXPECT_TRUE(client.calculated_size_);
   EXPECT_EQ(kContents.size(), client.total_size_);
   EXPECT_EQ(5u, client.expected_content_size_);
@@ -246,11 +248,11 @@ TEST_F(BlobImplTest, ReadRange_WithoutClient) {
   const std::string kContents = "hello world";
   auto handle = CreateBlobFromString(kId, kContents);
 
-  blink::mojom::BlobPtr ptr;
-  BlobImpl::Create(std::move(handle), MakeRequest(&ptr));
+  mojo::Remote<blink::mojom::Blob> remote;
+  BlobImpl::Create(std::move(handle), remote.BindNewPipeAndPassReceiver());
 
   mojo::DataPipe pipe;
-  ptr->ReadRange(2, 5, std::move(pipe.producer_handle), nullptr);
+  remote->ReadRange(2, 5, std::move(pipe.producer_handle), mojo::NullRemote());
 
   std::string received = ReadDataPipe(std::move(pipe.consumer_handle));
   EXPECT_EQ(kContents.substr(2, 5), received);
@@ -261,21 +263,20 @@ TEST_F(BlobImplTest, ReadRange_TooLargeLength) {
   const std::string kContents = "hello world";
   auto handle = CreateBlobFromString(kId, kContents);
 
-  blink::mojom::BlobPtr ptr;
-  BlobImpl::Create(std::move(handle), MakeRequest(&ptr));
+  mojo::Remote<blink::mojom::Blob> remote;
+  BlobImpl::Create(std::move(handle), remote.BindNewPipeAndPassReceiver());
 
   MockBlobReaderClient client;
-  blink::mojom::BlobReaderClientPtr client_ptr;
-  mojo::Binding<blink::mojom::BlobReaderClient> client_binding(
-      &client, MakeRequest(&client_ptr));
+  mojo::Receiver<blink::mojom::BlobReaderClient> client_receiver(&client);
 
   mojo::DataPipe pipe;
-  ptr->ReadRange(2, 15, std::move(pipe.producer_handle), std::move(client_ptr));
+  remote->ReadRange(2, 15, std::move(pipe.producer_handle),
+                    client_receiver.BindNewPipeAndPassRemote());
 
   std::string received = ReadDataPipe(std::move(pipe.consumer_handle));
   EXPECT_EQ(kContents.substr(2, 15), received);
 
-  client_binding.FlushForTesting();
+  client_receiver.FlushForTesting();
   EXPECT_TRUE(client.calculated_size_);
   EXPECT_EQ(kContents.size(), client.total_size_);
   EXPECT_EQ(kContents.size() - 2, client.expected_content_size_);
@@ -290,22 +291,21 @@ TEST_F(BlobImplTest, ReadRange_UnboundedLength) {
   const std::string kContents = "hello world";
   auto handle = CreateBlobFromString(kId, kContents);
 
-  blink::mojom::BlobPtr ptr;
-  BlobImpl::Create(std::move(handle), MakeRequest(&ptr));
+  mojo::Remote<blink::mojom::Blob> remote;
+  BlobImpl::Create(std::move(handle), remote.BindNewPipeAndPassReceiver());
 
   MockBlobReaderClient client;
-  blink::mojom::BlobReaderClientPtr client_ptr;
-  mojo::Binding<blink::mojom::BlobReaderClient> client_binding(
-      &client, MakeRequest(&client_ptr));
+  mojo::Receiver<blink::mojom::BlobReaderClient> client_receiver(&client);
 
   mojo::DataPipe pipe;
-  ptr->ReadRange(2, std::numeric_limits<uint64_t>::max(),
-                 std::move(pipe.producer_handle), std::move(client_ptr));
+  remote->ReadRange(2, std::numeric_limits<uint64_t>::max(),
+                    std::move(pipe.producer_handle),
+                    client_receiver.BindNewPipeAndPassRemote());
 
   std::string received = ReadDataPipe(std::move(pipe.consumer_handle));
   EXPECT_EQ(kContents.substr(2, kContents.size()), received);
 
-  client_binding.FlushForTesting();
+  client_receiver.FlushForTesting();
   EXPECT_TRUE(client.calculated_size_);
   EXPECT_EQ(kContents.size(), client.total_size_);
   EXPECT_EQ(kContents.size() - 2, client.expected_content_size_);
@@ -320,21 +320,20 @@ TEST_F(BlobImplTest, ReadRange_BrokenBlob) {
   auto handle = context_->AddBrokenBlob(
       kId, "", "", BlobStatus::ERR_INVALID_CONSTRUCTION_ARGUMENTS);
 
-  blink::mojom::BlobPtr ptr;
-  BlobImpl::Create(std::move(handle), MakeRequest(&ptr));
+  mojo::Remote<blink::mojom::Blob> remote;
+  BlobImpl::Create(std::move(handle), remote.BindNewPipeAndPassReceiver());
 
   MockBlobReaderClient client;
-  blink::mojom::BlobReaderClientPtr client_ptr;
-  mojo::Binding<blink::mojom::BlobReaderClient> client_binding(
-      &client, MakeRequest(&client_ptr));
+  mojo::Receiver<blink::mojom::BlobReaderClient> client_receiver(&client);
 
   mojo::DataPipe pipe;
-  ptr->ReadRange(2, 5, std::move(pipe.producer_handle), std::move(client_ptr));
+  remote->ReadRange(2, 5, std::move(pipe.producer_handle),
+                    client_receiver.BindNewPipeAndPassRemote());
 
   std::string received = ReadDataPipe(std::move(pipe.consumer_handle));
   EXPECT_EQ("", received);
 
-  client_binding.FlushForTesting();
+  client_receiver.FlushForTesting();
   EXPECT_FALSE(client.calculated_size_);
   EXPECT_TRUE(client.completed_);
   EXPECT_EQ(net::ERR_FAILED, client.status_);
@@ -346,22 +345,21 @@ TEST_F(BlobImplTest, ReadRange_InvalidRange) {
   const std::string kContents = "hello world";
   auto handle = CreateBlobFromString(kId, kContents);
 
-  blink::mojom::BlobPtr ptr;
-  BlobImpl::Create(std::move(handle), MakeRequest(&ptr));
+  mojo::Remote<blink::mojom::Blob> remote;
+  BlobImpl::Create(std::move(handle), remote.BindNewPipeAndPassReceiver());
 
   MockBlobReaderClient client;
-  blink::mojom::BlobReaderClientPtr client_ptr;
-  mojo::Binding<blink::mojom::BlobReaderClient> client_binding(
-      &client, MakeRequest(&client_ptr));
+  mojo::Receiver<blink::mojom::BlobReaderClient> client_receiver(&client);
 
   base::RunLoop loop;
   mojo::DataPipe pipe;
-  ptr->ReadRange(15, 4, std::move(pipe.producer_handle), std::move(client_ptr));
+  remote->ReadRange(15, 4, std::move(pipe.producer_handle),
+                    client_receiver.BindNewPipeAndPassRemote());
 
   std::string received = ReadDataPipe(std::move(pipe.consumer_handle));
   EXPECT_EQ("", received);
 
-  client_binding.FlushForTesting();
+  client_receiver.FlushForTesting();
   EXPECT_FALSE(client.calculated_size_);
   EXPECT_TRUE(client.completed_);
   EXPECT_EQ(net::ERR_REQUEST_RANGE_NOT_SATISFIABLE, client.status_);

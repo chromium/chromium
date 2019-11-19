@@ -22,8 +22,11 @@
     </Expand>
   </Type>
   <Type Name="base::Optional&lt;*&gt;">
-    <DisplayString Condition="storage_.is_null_">(null)</DisplayString>
+    <DisplayString Condition="!storage_.is_populated_">(null)</DisplayString>
     <DisplayString>{storage_.value_}</DisplayString>
+    <Expand>
+      <Item Name="Value" Condition="storage_.is_populated_">storage_.value_</Item>
+    </Expand>
   </Type>
   <Type Name="base::RefCounted&lt;*&gt;">
     <DisplayString>RefCount: {ref_count_}</DisplayString>

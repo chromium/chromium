@@ -24,7 +24,6 @@
 #include "content/test/test_content_browser_client.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace content {
@@ -44,9 +43,9 @@ class RenderWidgetHostViewChildFrameTest : public ContentBrowserTest {
   }
 
   void CheckScreenWidth(RenderFrameHost* render_frame_host) {
-    int width;
-    ExecuteScriptAndGetValue(render_frame_host, "window.screen.width")
-        ->GetAsInteger(&width);
+    int width =
+        ExecuteScriptAndGetValue(render_frame_host, "window.screen.width")
+            .GetInt();
     EXPECT_EQ(expected_screen_width_, width);
   }
 
@@ -100,7 +99,7 @@ class RenderWidgetHostViewChildFrameTest : public ContentBrowserTest {
 // Tests that the screen is properly reflected for RWHVChildFrame.
 IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewChildFrameTest, Screen) {
   GURL main_url(embedded_test_server()->GetURL("/site_per_process_main.html"));
-  NavigateToURL(shell(), main_url);
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
 
   FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
                             ->GetFrameTree()
@@ -111,10 +110,10 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewChildFrameTest, Screen) {
       embedded_test_server()->GetURL("foo.com", "/title2.html"));
   NavigateFrameToURL(root->child_at(0), cross_site_url);
 
-  int main_frame_screen_width = 0;
-  ExecuteScriptAndGetValue(shell()->web_contents()->GetMainFrame(),
-                           "window.screen.width")
-      ->GetAsInteger(&main_frame_screen_width);
+  int main_frame_screen_width =
+      ExecuteScriptAndGetValue(shell()->web_contents()->GetMainFrame(),
+                               "window.screen.width")
+          .GetInt();
   set_expected_screen_width(main_frame_screen_width);
   EXPECT_NE(main_frame_screen_width, 0);
 
@@ -157,47 +156,12 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewChildFrameTest,
   EXPECT_EQ(gfx::Size(75, 75), rwhv->GetVisibleViewportSize());
 }
 
-// Tests that while in mus, the child frame receives an updated FrameSinkId
-// representing the frame sink used by the RenderFrameProxy.
-IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewChildFrameTest, ChildFrameSinkId) {
-  // Only when mus hosts viz do we expect a RenderFrameProxy to provide the
-  // FrameSinkId.
-  if (!features::IsMultiProcessMash())
-    return;
-
-  GURL main_url(embedded_test_server()->GetURL("/site_per_process_main.html"));
-  NavigateToURL(shell(), main_url);
-
-  FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
-                            ->GetFrameTree()
-                            ->root();
-  scoped_refptr<SynchronizeVisualPropertiesMessageFilter> message_filter(
-      new SynchronizeVisualPropertiesMessageFilter());
-  root->current_frame_host()->GetProcess()->AddFilter(message_filter.get());
-
-  // Load cross-site page into iframe.
-  GURL cross_site_url(
-      embedded_test_server()->GetURL("foo.com", "/title2.html"));
-  // The child frame is created during this blocking call, on the UI thread.
-  // This is racing the IPC we are testing for, which arrives on the IO thread.
-  // Due to this we cannot get the pre-IPC value of the viz::FrameSinkId.
-  NavigateFrameToURL(root->child_at(0), cross_site_url);
-
-  // Ensure that the IPC providing the new viz::FrameSinkId. If it does not then
-  // this test will timeout.
-  set_expected_frame_sink_id(message_filter->GetOrWaitForId());
-
-  shell()->web_contents()->ForEachFrame(
-      base::BindRepeating(&RenderWidgetHostViewChildFrameTest::CheckFrameSinkId,
-                          base::Unretained(this)));
-}
-
 // Validate that OOPIFs receive presentation feedbacks.
 IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewChildFrameTest,
                        PresentationFeedback) {
   base::HistogramTester histogram_tester;
   GURL main_url(embedded_test_server()->GetURL("/site_per_process_main.html"));
-  NavigateToURL(shell(), main_url);
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
 
   FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
                             ->GetFrameTree()
@@ -212,7 +176,9 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewChildFrameTest,
   // Hide the frame and make it visible again, to force it to record the
   // tab-switch time, which is generated from presentation-feedback.
   child_rwh_impl->WasHidden();
-  child_rwh_impl->WasShown(true /* record_presentation_time */);
+  child_rwh_impl->WasShown(RecordTabSwitchTimeRequest{
+      base::TimeTicks::Now(), /* destination_is_loaded */ true,
+      /* destination_is_frozen */ false});
   // Force the child to submit a new frame.
   ASSERT_TRUE(ExecuteScript(root->child_at(0)->current_frame_host(),
                             "document.write('Force a new frame.');"));

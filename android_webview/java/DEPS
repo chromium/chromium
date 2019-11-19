@@ -1,16 +1,15 @@
 include_rules = [
   "+components/autofill/android/java",
-  "+components/background_task_scheduler/android/java",
   "+components/embedder_support/android/java",
-  "+components/minidump_uploader/android/java",
   "+components/navigation_interception/android/java",
   "+components/policy/android/java",
   "+components/safe_browsing/android/java",
-  "+components/variations/android/java",
 
   "-content/public/android/java",
   "+content/public/android/java/src/org/chromium/content_public",
 
   "+device/gamepad/android/java",
   "+media/base/android/java",
+
+  "+mojo/public/java",
 ]

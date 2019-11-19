@@ -166,7 +166,7 @@ class CertificateReportingService : public KeyedService {
 
     base::Closure no_in_flight_reports_;
 
-    base::WeakPtrFactory<Reporter> weak_factory_;
+    base::WeakPtrFactory<Reporter> weak_factory_{this};
 
     DISALLOW_COPY_AND_ASSIGN(Reporter);
   };

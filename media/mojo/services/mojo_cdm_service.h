@@ -16,12 +16,14 @@
 #include "base/memory/weak_ptr.h"
 #include "media/base/content_decryption_module.h"
 #include "media/base/eme_constants.h"
-#include "media/mojo/interfaces/content_decryption_module.mojom.h"
+#include "media/mojo/mojom/content_decryption_module.mojom.h"
 #include "media/mojo/services/media_mojo_export.h"
 #include "media/mojo/services/mojo_cdm_promise.h"
 #include "media/mojo/services/mojo_cdm_service_context.h"
 #include "media/mojo/services/mojo_decryptor_service.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/binding.h"
+#include "mojo/public/cpp/bindings/pending_associated_remote.h"
 
 namespace media {
 
@@ -31,17 +33,6 @@ class CdmFactory;
 // media::ContentDecryptionModule.
 class MEDIA_MOJO_EXPORT MojoCdmService : public mojom::ContentDecryptionModule {
  public:
-  // Get the CDM associated with |cdm_id|, which is unique per process.
-  // Can be called on any thread. The returned CDM is not guaranteed to be
-  // thread safe.
-  // Note: This provides a generic hack to get the CDM in the process where
-  // MediaService is running, regardless of which render process or
-  // render frame the caller is associated with. In the future, we should move
-  // all out-of-process media players into the MediaService so that we can use
-  // MojoCdmServiceContext (per render frame) to get the CDM.
-  static scoped_refptr<::media::ContentDecryptionModule> LegacyGetCdm(
-      int cdm_id);
-
   // Constructs a MojoCdmService and strongly binds it to the |request|.
   // - |cdm_factory| is used to create CDM instances. Must not be null.
   // - |context| is used to keep track of all CDM instances such that we can
@@ -53,7 +44,8 @@ class MEDIA_MOJO_EXPORT MojoCdmService : public mojom::ContentDecryptionModule {
 
   // mojom::ContentDecryptionModule implementation.
   void SetClient(
-      mojom::ContentDecryptionModuleClientAssociatedPtrInfo client) final;
+      mojo::PendingAssociatedRemote<mojom::ContentDecryptionModuleClient>
+          client) final;
   void Initialize(const std::string& key_system,
                   const url::Origin& security_origin,
                   const CdmConfig& cdm_config,
@@ -101,6 +93,8 @@ class MEDIA_MOJO_EXPORT MojoCdmService : public mojom::ContentDecryptionModule {
   // Callback for when |decryptor_| loses connectivity.
   void OnDecryptorConnectionError();
 
+  bool has_initialize_been_called_ = false;
+
   CdmFactory* cdm_factory_;
   MojoCdmServiceContext* const context_ = nullptr;
   scoped_refptr<::media::ContentDecryptionModule> cdm_;
@@ -113,9 +107,9 @@ class MEDIA_MOJO_EXPORT MojoCdmService : public mojom::ContentDecryptionModule {
   // Set to a valid CDM ID if the |cdm_| is successfully created.
   int cdm_id_;
 
-  mojom::ContentDecryptionModuleClientAssociatedPtr client_;
+  mojo::AssociatedRemote<mojom::ContentDecryptionModuleClient> client_;
 
-  base::WeakPtrFactory<MojoCdmService> weak_factory_;
+  base::WeakPtrFactory<MojoCdmService> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(MojoCdmService);
 };

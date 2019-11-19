@@ -10,27 +10,14 @@
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/unguessable_token.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/aura/window_observer.h"
+#include "ui/gfx/geometry/size.h"
 
 class GURL;
 
-namespace base {
-class UnguessableToken;
-}
-
 namespace content {
 class WebContents;
-}
-
-namespace gfx {
-class Rect;
-class Size;
-}  // namespace gfx
-
-namespace views {
-class RemoteViewProvider;
 }
 
 class ChromeKeyboardBoundsObserver;
@@ -42,8 +29,7 @@ class ChromeKeyboardBoundsObserver;
 class ChromeKeyboardWebContents : public content::WebContentsObserver,
                                   public aura::WindowObserver {
  public:
-  using LoadCallback = base::OnceCallback<void(const base::UnguessableToken&,
-                                               const gfx::Size& size)>;
+  using LoadCallback = base::OnceCallback<void()>;
   using UnembedCallback = base::RepeatingClosure;
 
   // Immediately starts loading |url| in a WebContents. |load_callback| is
@@ -75,8 +61,6 @@ class ChromeKeyboardWebContents : public content::WebContentsObserver,
   void RenderViewCreated(content::RenderViewHost* render_view_host) override;
   void DidStopLoading() override;
 
-  void OnGotEmbedToken(const base::UnguessableToken& token);
-
   // Loads the web contents for the given |url|.
   void LoadContents(const GURL& url);
 
@@ -86,25 +70,16 @@ class ChromeKeyboardWebContents : public content::WebContentsObserver,
                              const gfx::Rect& new_bounds,
                              ui::PropertyChangeReason reason) override;
 
-  // |calback_| is run once the contents have stopped loading, the embed
-  // token has been received, and the window size is known.
-  void MaybeRunLoadCallback();
-
   std::unique_ptr<content::WebContents> web_contents_;
   std::unique_ptr<ChromeKeyboardBoundsObserver> window_bounds_observer_;
 
-  // Called from DidStopLoading(). If the Window Service is running, passes a
-  // token for embedding the contents, otherwise passes an empty token.
+  // Called from DidStopLoading().
   LoadCallback load_callback_;
 
   // Called when content is unembedded from Window Service.
   UnembedCallback unembed_callback_;
 
-  base::UnguessableToken token_;
   gfx::Size contents_size_;
-
-  // Helper to prepare the native view of |web_contents_| to be embedded.
-  std::unique_ptr<views::RemoteViewProvider> remote_view_provider_;
 
   base::WeakPtrFactory<ChromeKeyboardWebContents> weak_ptr_factory_{this};
 

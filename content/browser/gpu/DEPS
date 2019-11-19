@@ -1,8 +1,12 @@
+include_rules = [
+  "+components/ui_devtools/buildflags.h",
+]
+
 # TODO(crbug.com/734668): Dependencies on ozone should be removed, as content
 # embedded in mus won't be able to talk to the native ozone.
 specific_include_rules = {
   "gpu_data_manager_impl_private\.cc": [
-    "+ui/ozone/public/ozone_switches.h",
+    "+ui/ozone/public",
   ],
   "gpu_process_host\.cc": [
     "+ui/ozone/public",

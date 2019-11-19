@@ -13,9 +13,9 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "components/update_client/network.h"
+#include "services/network/public/mojom/url_response_head.mojom-forward.h"
 
 namespace network {
-struct ResourceResponseHead;
 class SharedURLLoaderFactory;
 class SimpleURLLoader;
 }  // namespace network
@@ -47,7 +47,7 @@ class NetworkFetcherImpl : public NetworkFetcher {
   void OnResponseStartedCallback(
       ResponseStartedCallback response_started_callback,
       const GURL& final_url,
-      const network::ResourceResponseHead& response_head);
+      const network::mojom::URLResponseHead& response_head);
 
   void OnProgressCallback(ProgressCallback response_started_callback,
                           uint64_t current);

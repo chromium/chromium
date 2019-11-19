@@ -1,0 +1,44 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module media.learning.mojom;
+
+import "mojo/public/mojom/base/unguessable_token.mojom";
+import "media/learning/mojo/public/mojom/learning_types.mojom";
+
+// Client for a single learning task.  Intended to be the primary API for client
+// code that generates FeatureVectors / requests predictions for a single task.
+// The API supports sending in an observed FeatureVector without a target value,
+// so that framework-provided features (FeatureProvider) can be snapshotted at
+// the right time.  One doesn't generally want to wait until the TargetValue is
+// observed to do that.
+//
+// Typically, this interface will allow non-browser processes to communicate
+// with the learning framework in the browser.
+interface LearningTaskController {
+  // Start a new observation.  Call this at the time one would try to predict
+  // the TargetValue.  This lets the framework snapshot any framework-provided
+  // feature values at prediction time.  Later, if you want to turn these
+  // features into an example for training a model, then call
+  // CompleteObservation with the same id and an ObservationCompletion.
+  // Otherwise, call CancelObservation with |id|.  It's also okay to destroy the
+  // controller with outstanding observations; these will be cancelled if no
+  // |default_target| was specified, else they will be completed using that as
+  // the target value.
+  BeginObservation(mojo_base.mojom.UnguessableToken id,
+          array<FeatureValue> features,
+          TargetValue? default_target);
+
+  // Complete observation |id| by providing |completion|.
+  CompleteObservation(mojo_base.mojom.UnguessableToken id,
+          ObservationCompletion completion);
+
+  // Cancel observation |id|.  Deleting |this| will do the same.
+  CancelObservation(mojo_base.mojom.UnguessableToken id);
+
+  // Update the default target for |id| to |default_target|.  May also unset it,
+  // so that the observation will be cancelled if the controller is destroyed.
+  UpdateDefaultTarget(mojo_base.mojom.UnguessableToken id,
+          TargetValue? default_target);
+};

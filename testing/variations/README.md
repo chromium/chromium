@@ -53,7 +53,8 @@ Each *study configuration* is a dictionary containing `platforms` and
 `experiments`.
 
 `platforms` is an array of strings, indicating the targetted platforms. The
-strings may be `android`, `chromeos`, `ios`, `linux`, `mac`, or `windows`.
+strings may be `android`, `android_webview`, `chromeos`, `ios`, `linux`, `mac`,
+or `windows`.
 
 `experiments` is an array containing the *experiments*.
 

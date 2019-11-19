@@ -34,10 +34,13 @@
 #include <utility>
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
 
 class FloatPolygonTestValue {
+  STACK_ALLOCATED();
+
  public:
   FloatPolygonTestValue(const float* coordinates, unsigned coordinates_length) {
     DCHECK(!(coordinates_length % 2));

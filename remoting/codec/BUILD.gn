@@ -34,7 +34,7 @@ source_set("encoder") {
     "//third_party/libvpx",
     "//third_party/libyuv",
     "//third_party/opus",
-    "//third_party/webrtc/modules/desktop_capture:primitives",
+    "//third_party/webrtc_overrides:webrtc_component",
     "//ui/gfx:color_space",
     "//ui/gfx/geometry",
   ]
@@ -42,9 +42,7 @@ source_set("encoder") {
   # Currently, building WebrtcVideoEncoderGpu is only supported on Windows and
   # Linux, and encoding with WebrtcVideoEncoderGpu is only supported on Windows.
   if (is_win || is_linux) {
-    public_configs = [
-      "//skia:skia_config",
-    ]
+    public_configs = [ "//skia:skia_config" ]
     sources += [
       "webrtc_video_encoder_gpu.cc",
       "webrtc_video_encoder_gpu.h",
@@ -95,7 +93,7 @@ source_set("decoder") {
     "//third_party/libvpx",
     "//third_party/libyuv",
     "//third_party/opus",
-    "//third_party/webrtc/modules/desktop_capture:primitives",
+    "//third_party/webrtc_overrides:webrtc_component",
   ]
 }
 
@@ -115,7 +113,7 @@ source_set("vpx_codec") {
     "//base/third_party/dynamic_annotations",
     "//remoting/proto",
     "//third_party/libyuv",
-    "//third_party/webrtc/modules/desktop_capture:primitives",
+    "//third_party/webrtc_overrides:webrtc_component",
   ]
 }
 
@@ -141,7 +139,7 @@ source_set("unit_tests") {
     "//base",
     "//remoting/proto",
     "//testing/gtest",
-    "//third_party/webrtc/modules/desktop_capture",
+    "//third_party/webrtc_overrides:webrtc_component",
     "//ui/gfx:color_space",
   ]
 

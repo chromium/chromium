@@ -12,9 +12,10 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/keyed_service/content/browser_context_keyed_service_shutdown_notifier_factory.h"
+#include "components/signin/public/identity_manager/access_token_info.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
 #include "google_apis/gaia/gaia_constants.h"
-#include "services/identity/public/cpp/identity_manager.h"
-#include "services/identity/public/cpp/primary_account_access_token_fetcher.h"
 #include "services/identity/public/cpp/scope_set.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
@@ -75,17 +76,17 @@ void TokenHandleFetcher::BackfillToken(Profile* profile,
   // owned by this object (thus destroyed when this object is destroyed) and
   // PrimaryAccountAccessTokenFetcher guarantees that it doesn't invoke its
   // callback after it is destroyed.
-  access_token_fetcher_ = std::make_unique<
-      identity::PrimaryAccountAccessTokenFetcher>(
-      kAccessTokenFetchId, identity_manager_, scopes,
-      base::BindOnce(&TokenHandleFetcher::OnAccessTokenFetchComplete,
-                     base::Unretained(this)),
-      identity::PrimaryAccountAccessTokenFetcher::Mode::kWaitUntilAvailable);
+  access_token_fetcher_ =
+      std::make_unique<signin::PrimaryAccountAccessTokenFetcher>(
+          kAccessTokenFetchId, identity_manager_, scopes,
+          base::BindOnce(&TokenHandleFetcher::OnAccessTokenFetchComplete,
+                         base::Unretained(this)),
+          signin::PrimaryAccountAccessTokenFetcher::Mode::kWaitUntilAvailable);
 }
 
 void TokenHandleFetcher::OnAccessTokenFetchComplete(
     GoogleServiceAuthError error,
-    identity::AccessTokenInfo token_info) {
+    signin::AccessTokenInfo token_info) {
   access_token_fetcher_.reset();
 
   if (error.state() != GoogleServiceAuthError::NONE) {

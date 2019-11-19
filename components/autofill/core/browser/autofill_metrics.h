@@ -6,6 +6,7 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_AUTOFILL_METRICS_H_
 
 #include <stddef.h>
+#include <memory>
 #include <set>
 #include <string>
 #include <utility>
@@ -14,13 +15,15 @@
 #include "base/macros.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/autofill_client.h"
-#include "components/autofill/core/browser/autofill_profile.h"
-#include "components/autofill/core/browser/credit_card.h"
+#include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_types.h"
 #include "components/autofill/core/browser/metrics/form_events.h"
 #include "components/autofill/core/browser/sync_utils.h"
+#include "components/autofill/core/browser/ui/popup_types.h"
 #include "components/autofill/core/common/form_field_data.h"
+#include "components/autofill/core/common/mojom/autofill_types.mojom.h"
 #include "components/autofill/core/common/signatures_util.h"
 #include "components/security_state/core/security_state.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
@@ -29,10 +32,15 @@ namespace autofill {
 
 class AutofillField;
 class CreditCard;
-enum class SubmissionSource;
 
 // A given maximum is enforced to minimize the number of buckets generated.
 extern const int kMaxBucketsCount;
+
+// Reduce FormSignature space (in UKM) to a small range for privacy reasons.
+int64_t HashFormSignature(autofill::FormSignature form_signature);
+
+// Reduce FieldSignature space (in UKM) to a small range for privacy reasons.
+int64_t HashFieldSignature(autofill::FieldSignature field_signature);
 
 class AutofillMetrics {
  public:
@@ -50,13 +58,6 @@ class AutofillMetrics {
     FILLABLE_FORM_AUTOFILLED_NONE_DID_SHOW_SUGGESTIONS,
     FILLABLE_FORM_AUTOFILLED_NONE_DID_NOT_SHOW_SUGGESTIONS,
     AUTOFILL_FORM_SUBMITTED_STATE_ENUM_SIZE,
-  };
-
-  enum class BillingIdStatus {
-    MISSING = 0,
-    PARSE_ERROR = 1,
-    VALID = 2,
-    kMaxValue = VALID,
   };
 
   enum CardUploadDecisionMetric {
@@ -114,6 +115,13 @@ class AutofillMetrics {
     // All the required conditions were satisfied even though the form is
     // unfocused after the user entered information into it.
     UPLOAD_OFFERED_FROM_NON_FOCUSABLE_FIELD = 1 << 15,
+    // The card does not satisfy any of the ranges of supported BIN ranges.
+    UPLOAD_NOT_OFFERED_UNSUPPORTED_BIN_RANGE = 1 << 16,
+    // All the required conditions were satisfied even though the form is
+    // dynamic changed.
+    UPLOAD_OFFERED_FROM_DYNAMIC_CHANGE_FORM = 1 << 17,
+    // The legal message was invalid.
+    UPLOAD_NOT_OFFERED_INVALID_LEGAL_MESSAGE = 1 << 18,
     // Update |kNumCardUploadDecisionMetrics| when adding new enum here.
   };
 
@@ -196,14 +204,6 @@ class AutofillMetrics {
     LOCAL = 0,
     SERVER = 1,
     kMaxValue = SERVER,
-  };
-
-  // Metric to measure volume of cards that are disallowed for upload by their
-  // network, most likely due to their network being blocked by Google Payments.
-  enum UploadDisallowedForNetworkMetric {
-    DISALLOWED_ELO = 0,
-    DISALLOWED_JCB = 1,
-    kMaxValue = DISALLOWED_JCB,
   };
 
   // Metric to measure if a card for which upload was offered is already stored
@@ -300,6 +300,17 @@ class AutofillMetrics {
     SAVE_CARD_ICON_SHOWN_WITHOUT_PROMPT,
 
     NUM_SAVE_CARD_PROMPT_METRICS,
+  };
+
+  enum CreditCardUploadFeedbackMetric {
+    // The loading indicator animation which indicates uploading is in progress
+    // is successfully shown.
+    CREDIT_CARD_UPLOAD_FEEDBACK_LOADING_ANIMATION_SHOWN,
+    // The credit card icon with the saving failure badge is shown.
+    CREDIT_CARD_UPLOAD_FEEDBACK_FAILURE_ICON_SHOWN,
+    // The failure icon is clicked and the save card failure bubble is shown.
+    CREDIT_CARD_UPLOAD_FEEDBACK_FAILURE_BUBBLE_SHOWN,
+    NUM_CREDIT_CARD_UPLOAD_FEEDBACK_METRICS,
   };
 
   // Metrics to measure user interaction with the Manage Cards view
@@ -469,6 +480,35 @@ class AutofillMetrics {
     // The user selected something in the dropdown besides "scan card".
     SCAN_CARD_OTHER_ITEM_SELECTED,
     NUM_SCAN_CREDIT_CARD_PROMPT_METRICS,
+  };
+
+  // Metrics to record the decision on whether to offer local card migration.
+  enum class LocalCardMigrationDecisionMetric {
+    // All the required conditions are satisfied and main prompt is shown.
+    OFFERED = 0,
+    // Migration not offered because user uses new card.
+    NOT_OFFERED_USE_NEW_CARD = 1,
+    // Migration not offered because failed migration prerequisites.
+    NOT_OFFERED_FAILED_PREREQUISITES = 2,
+    // The Autofill StrikeDatabase decided not to allow offering migration
+    // because max strike count was reached.
+    NOT_OFFERED_REACHED_MAX_STRIKE_COUNT = 3,
+    // Migration not offered because no migratable cards.
+    NOT_OFFERED_NO_MIGRATABLE_CARDS = 4,
+    // Met the migration requirements but the request to Payments for upload
+    // details failed.
+    NOT_OFFERED_GET_UPLOAD_DETAILS_FAILED = 5,
+    // Abandoned the migration because no supported local cards were left after
+    // filtering out unsupported cards.
+    NOT_OFFERED_NO_SUPPORTED_CARDS = 6,
+    // User used a local card and they only have a single migratable local card
+    // on file, we will offer Upstream instead.
+    NOT_OFFERED_SINGLE_LOCAL_CARD = 7,
+    // User used an unsupported local card, we will abort the migration.
+    NOT_OFFERED_USE_UNSUPPORTED_LOCAL_CARD = 8,
+    // Legal message was invalid, we will abort the migration.
+    NOT_OFFERED_INVALID_LEGAL_MESSAGE = 9,
+    kMaxValue = NOT_OFFERED_INVALID_LEGAL_MESSAGE,
   };
 
   // Metrics to track events when local credit card migration is offered.
@@ -656,6 +696,79 @@ class AutofillMetrics {
     NUM_UNMASK_PROMPT_EVENTS,
   };
 
+  // Events related to user-perceived latency due to GetDetailsForGetRealPan
+  // call.
+  enum class PreflightCallEvent {
+    // Returned before card chosen.
+    kPreflightCallReturnedBeforeCardChosen = 0,
+    // Did not return before card was chosen. When opted-in, this means
+    // the UI had to wait for the call to return. When opted-out, this means we
+    // did not offer to opt-in.
+    kCardChosenBeforePreflightCallReturned = 1,
+    // Preflight call was irrelevant; skipped waiting.
+    kDidNotChooseMaskedCard = 2,
+    kMaxValue = kDidNotChooseMaskedCard,
+  };
+
+  // Metric for tracking which authentication method was used for a user with
+  // FIDO authentication enabled.
+  enum class CardUnmaskTypeDecisionMetric {
+    // Only WebAuthn prompt was shown.
+    kFidoOnly = 0,
+    // CVC authentication was required in addition to WebAuthn.
+    kCvcThenFido = 1,
+    kMaxValue = kCvcThenFido,
+  };
+
+  // Possible scenarios where a WebAuthn prompt may show.
+  enum class WebauthnFlowEvent {
+    // WebAuthn is immediately prompted for unmasking.
+    kImmediateAuthentication = 0,
+    // WebAuthn is prompted after a CVC check.
+    kAuthenticationAfterCvc = 1,
+    // WebAuthn is prompted after being offered to opt-in from a checkout flow.
+    kCheckoutOptIn = 2,
+    // WebAuthn is prompted after being offered to opt-in from the settings
+    // page.
+    kSettingsPageOptIn = 3,
+    kMaxValue = kSettingsPageOptIn,
+  };
+
+  // The result of a WebAuthn user-verification prompt.
+  enum class WebauthnResultMetric {
+    // User-verification succeeded.
+    kSuccess = 0,
+    // Other checks failed (e.g. invalid domain, algorithm unsupported, etc.)
+    kOtherError = 1,
+    // User either failed verification or cancelled.
+    kNotAllowedError = 2,
+    kMaxValue = kNotAllowedError,
+  };
+
+  // The user decision for the WebAuthn opt-in promo.
+  enum class WebauthnOptInPromoUserDecisionMetric {
+    // User accepted promo.
+    kAccepted = 0,
+    // User immediately declined promo.
+    kDeclinedImmediately = 1,
+    // Once user accepts the dialog, a round-trip call to Payments is sent,
+    // which is required for user authentication. The user has the option to
+    // cancel the dialog before the round-trip call is returned.
+    kDeclinedAfterAccepting = 2,
+    kMaxValue = kDeclinedAfterAccepting,
+  };
+
+  // The parameters with which opt change was called.
+  enum class WebauthnOptInParameters {
+    // Call made to fetch a challenge.
+    kFetchingChallenge = 0,
+    // Call made with signature of creation challenge.
+    kWithCreationChallenge = 1,
+    // Call made with signature of request challenge.
+    kWithRequestChallenge = 2,
+    kMaxValue = kWithRequestChallenge,
+  };
+
   // Possible results of Payments RPCs.
   enum PaymentsRpcResult {
     // Request succeeded.
@@ -744,7 +857,7 @@ class AutofillMetrics {
     NUM_WALLET_REQUIRED_ACTIONS
   };
 
-  // For mesuring how wallet addresses are converted to local profiles.
+  // For measuring how wallet addresses are converted to local profiles.
   enum WalletAddressConversionType : int {
     // The converted wallet address was merged into an existing local profile.
     CONVERTED_ADDRESS_MERGED,
@@ -753,8 +866,26 @@ class AutofillMetrics {
     NUM_CONVERTED_ADDRESS_CONVERSION_TYPES
   };
 
-  // To record whether or not the upload event was sent,
+  // To record whether the upload event was sent.
   enum class UploadEventStatus { kNotSent, kSent, kMaxValue = kSent };
+
+  // Log all the scenarios that contribute to the decision of whether card
+  // upload is enabled or not.
+  enum class CardUploadEnabledMetric {
+    SYNC_SERVICE_NULL = 0,
+    SYNC_SERVICE_PERSISTENT_AUTH_ERROR = 1,
+    SYNC_SERVICE_MISSING_AUTOFILL_WALLET_DATA_ACTIVE_TYPE = 2,
+    SYNC_SERVICE_MISSING_AUTOFILL_PROFILE_ACTIVE_TYPE = 3,
+    // Deprecated: ACCOUNT_WALLET_STORAGE_UPLOAD_DISABLED = 4,
+    USING_SECONDARY_SYNC_PASSPHRASE = 5,
+    LOCAL_SYNC_ENABLED = 6,
+    PAYMENTS_INTEGRATION_DISABLED = 7,
+    EMAIL_EMPTY = 8,
+    EMAIL_DOMAIN_NOT_SUPPORTED = 9,
+    AUTOFILL_UPSTREAM_DISABLED = 10,
+    CARD_UPLOAD_ENABLED = 11,
+    kMaxValue = CARD_UPLOAD_ENABLED,
+  };
 
   // Utility to log URL keyed form interaction events.
   class FormInteractionsUkmLogger {
@@ -781,7 +912,8 @@ class AutofillMetrics {
                                FormSignature form_signature);
     void LogSuggestionsShown(const FormStructure& form,
                              const AutofillField& field,
-                             const base::TimeTicks& form_parsed_timestamp);
+                             const base::TimeTicks& form_parsed_timestamp,
+                             bool off_the_record);
     void LogDidFillSuggestion(int record_type,
                               bool is_for_credit_card,
                               const FormStructure& form,
@@ -844,6 +976,11 @@ class AutofillMetrics {
     DISALLOW_IMPLICIT_CONSTRUCTORS(UkmTimestampPin);
   };
 
+  // When the autofill-use-improved-label-disambiguation experiment is enabled
+  // and suggestions are available, records if a LabelFormatter successfully
+  // created the suggestions.
+  static void LogProfileSuggestionsMadeWithFormatter(bool made_with_formatter);
+
   static void LogSubmittedCardStateMetric(SubmittedCardStateMetric metric);
 
   // If a credit card that matches a server card (unmasked or not) was submitted
@@ -866,10 +1003,6 @@ class AutofillMetrics {
   static void LogLocalCardMigrationNotOfferedDueToMaxStrikesMetric(
       SaveTypeMetric metric);
 
-  // When credit card upload is disallowed for a particular network, logs which
-  // network was blocked.
-  static void LogUploadDisallowedForNetworkMetric(const std::string& network);
-
   // When credit card upload is offered, logs whether the card being offered is
   // already a local card on the device or not.
   static void LogUploadOfferedCardOriginMetric(
@@ -888,9 +1021,6 @@ class AutofillMetrics {
   // user accepts upload, logs whether the final cardholder name was changed
   // from its prefilled value or not.
   static void LogSaveCardCardholderNameWasEdited(bool edited);
-
-  // Logs the PaymentsCustomerData billing ID status at the time of use.
-  static void LogPaymentsCustomerDataBillingIdStatus(BillingIdStatus status);
 
   // |upload_decision_metrics| is a bitmask of |CardUploadDecisionMetric|.
   static void LogCardUploadDecisionMetrics(int upload_decision_metrics);
@@ -914,9 +1044,13 @@ class AutofillMetrics {
       SaveCardPromptMetric metric,
       bool is_uploading,
       security_state::SecurityLevel security_level);
+  static void LogCreditCardUploadFeedbackMetric(
+      CreditCardUploadFeedbackMetric metric);
   static void LogManageCardsPromptMetric(ManageCardsPromptMetric metric,
                                          bool is_uploading);
   static void LogScanCreditCardPromptMetric(ScanCreditCardPromptMetric metric);
+  static void LogLocalCardMigrationDecisionMetric(
+      LocalCardMigrationDecisionMetric metric);
   static void LogLocalCardMigrationBubbleOfferMetric(
       LocalCardMigrationBubbleOfferMetric metric,
       bool is_reshow);
@@ -944,7 +1078,6 @@ class AutofillMetrics {
 
   static void LogSaveCardWithFirstAndLastNameOffered(bool is_local);
   static void LogSaveCardWithFirstAndLastNameComplete(bool is_local);
-  static void LogSaveCardReachedPersonalDataManager(bool is_local);
 
   static void LogDeveloperEngagementMetric(DeveloperEngagementMetric metric);
 
@@ -969,17 +1102,64 @@ class AutofillMetrics {
   static void LogUserHappinessMetric(
       UserHappinessMetric metric,
       FieldTypeGroup field_type_group,
-      security_state::SecurityLevel security_level);
+      security_state::SecurityLevel security_level,
+      uint32_t profile_form_bitmask);
 
   static void LogUserHappinessMetric(
       UserHappinessMetric metric,
       const std::set<FormType>& form_types,
-      security_state::SecurityLevel security_level);
+      security_state::SecurityLevel security_level,
+      uint32_t profile_form_bitmask);
 
   static void LogUserHappinessBySecurityLevel(
       UserHappinessMetric metric,
       FormType form_type,
       security_state::SecurityLevel security_level);
+
+  static void LogUserHappinessByProfileFormType(UserHappinessMetric metric,
+                                                uint32_t profile_form_bitmask);
+
+  // Logs the card fetch latency after a WebAuthn prompt.
+  static void LogCardUnmaskDurationAfterWebauthn(
+      const base::TimeDelta& duration,
+      AutofillClient::PaymentsRpcResult result);
+
+  // Logs the count of calls to PaymentsClient::GetUnmaskDetails() (aka
+  // GetDetailsForGetRealPan).
+  static void LogCardUnmaskPreflightCalled();
+
+  // Logs the duration of the PaymentsClient::GetUnmaskDetails() call (aka
+  // GetDetailsForGetRealPan).
+  static void LogCardUnmaskPreflightDuration(const base::TimeDelta& duration);
+
+  // Logs the count of calls to PaymentsClient::OptChange() (aka
+  // UpdateAutofillUserPreference).
+  static void LogWebauthnOptChangeCalled(bool request_to_opt_in,
+                                         bool is_checkout_flow,
+                                         WebauthnOptInParameters metric);
+
+  // Logs the number of times the opt-in promo for enabling FIDO authentication
+  // for card unmasking has been shown.
+  static void LogWebauthnOptInPromoShown(bool is_checkout_flow);
+
+  // Logs the user response to the opt-in promo for enabling FIDO authentication
+  // for card unmasking.
+  static void LogWebauthnOptInPromoUserDecision(
+      bool is_checkout_flow,
+      WebauthnOptInPromoUserDecisionMetric metric);
+
+  // Logs which unmask type was used for a user with FIDO authentication
+  // enabled.
+  static void LogCardUnmaskTypeDecision(CardUnmaskTypeDecisionMetric metric);
+
+  // Logs the existence of any user-perceived latency between selecting a Google
+  // Payments server card and seeing a card unmask prompt.
+  static void LogUserPerceivedLatencyOnCardSelection(PreflightCallEvent event,
+                                                     bool fido_auth_enabled);
+
+  // Logs the result of a WebAuthn prompt.
+  static void LogWebauthnResult(WebauthnFlowEvent event,
+                                WebauthnResultMetric metric);
 
   // Logs |event| to the unmask prompt events histogram.
   static void LogUnmaskPromptEvent(UnmaskPromptEvent event);
@@ -1043,8 +1223,24 @@ class AutofillMetrics {
       bool enabled,
       AutofillSyncSigninState sync_state);
 
+  // This should be called each time a page containing forms is loaded.
+  static void LogIsProfileAutofillEnabledAtPageLoad(
+      bool enabled,
+      AutofillSyncSigninState sync_state);
+
+  // This should be called each time a page containing forms is loaded.
+  static void LogIsCreditCardAutofillEnabledAtPageLoad(
+      bool enabled,
+      AutofillSyncSigninState sync_state);
+
   // This should be called each time a new chrome profile is launched.
   static void LogIsAutofillEnabledAtStartup(bool enabled);
+
+  // This should be called each time a new chrome profile is launched.
+  static void LogIsProfileAutofillEnabledAtStartup(bool enabled);
+
+  // This should be called each time a new chrome profile is launched.
+  static void LogIsCreditCardAutofillEnabledAtStartup(bool enabled);
 
   // Records the number of stored address profiles. This is be called each time
   // a new chrome profile is launched.
@@ -1082,11 +1278,6 @@ class AutofillMetrics {
   static void LogNumberOfProfilesAtAutofillableFormSubmission(
       size_t num_profiles);
 
-  // Log whether user modified an address profile shortly before submitting
-  // credit card form.
-  static void LogHasModifiedProfileOnCreditCardFormSubmission(
-      bool has_modified_profile);
-
   // Log the number of autofill address suggestions suppressed because they have
   // not been used for a long time. Note that these addresses are only
   // suppressed when the user has not typed any data into the field from which
@@ -1105,7 +1296,12 @@ class AutofillMetrics {
   static void LogAddressSuggestionsCount(size_t num_suggestions);
 
   // Log the index of the selected Autofill suggestion in the popup.
-  static void LogAutofillSuggestionAcceptedIndex(int index);
+  static void LogAutofillSuggestionAcceptedIndex(int index,
+                                                 PopupType popup_type,
+                                                 bool off_the_record);
+
+  // Logs that the user cleared the form.
+  static void LogAutofillFormCleared();
 
   // Log the number of days since an Autocomplete suggestion was last used.
   static void LogAutocompleteDaysSinceLastUse(size_t days);
@@ -1179,11 +1375,12 @@ class AutofillMetrics {
   // Returns the UMA metric used to track whether or not an upload was sent
   // after being triggered by |submission_source|. This is exposed for testing.
   static const char* SubmissionSourceToUploadEventMetric(
-      SubmissionSource submission_source);
+      mojom::SubmissionSource submission_source);
 
   // Logs whether or not an upload |was_sent| after being triggered by a
   // |submission_source| event.
-  static void LogUploadEvent(SubmissionSource submission_source, bool was_sent);
+  static void LogUploadEvent(mojom::SubmissionSource submission_source,
+                             bool was_sent);
 
   // Logs the card upload decisions ukm for the specified |url|.
   // |upload_decision_metrics| is a bitmask of |CardUploadDecisionMetric|.
@@ -1210,13 +1407,6 @@ class AutofillMetrics {
   // autofilled to support synthetic fields.
   static void LogHiddenOrPresentationalSelectFieldsFilled();
 
-  // Logs the the |ukm_entry_name| with the specified |url| and the specified
-  // |metrics|. Returns whether the ukm was sucessfully logged.
-  static bool LogUkm(ukm::UkmRecorder* ukm_recorder,
-                     const GURL& url,
-                     const std::string& ukm_entry_name,
-                     const std::vector<std::pair<const char*, int>>& metrics);
-
   // Converts form type to bit vector to store in UKM.
   static int64_t FormTypesToBitVector(const std::set<FormType>& form_types);
 
@@ -1229,13 +1419,18 @@ class AutofillMetrics {
   // server cards to be shown.
   static void LogWalletSyncTransportCardsOptIn(bool is_opted_in);
 
+  // Records the reason for why (or why not) card upload was enabled for the
+  // user.
+  static void LogCardUploadEnabledMetric(CardUploadEnabledMetric metric,
+                                         AutofillSyncSigninState sync_state);
+
   static const char* GetMetricsSyncStateSuffix(
       AutofillSyncSigninState sync_state);
 
  private:
   static void Log(AutocompleteEvent event);
 
-  static const int kNumCardUploadDecisionMetrics = 16;
+  static const int kNumCardUploadDecisionMetrics = 19;
 
   DISALLOW_IMPLICIT_CONSTRUCTORS(AutofillMetrics);
 };

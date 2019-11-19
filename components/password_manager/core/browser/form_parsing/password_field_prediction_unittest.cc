@@ -13,8 +13,8 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using autofill::AutofillField;
 using autofill::ACCOUNT_CREATION_PASSWORD;
+using autofill::AutofillField;
 using autofill::CONFIRMATION_PASSWORD;
 using autofill::EMAIL_ADDRESS;
 using autofill::FormData;
@@ -24,6 +24,7 @@ using autofill::NEW_PASSWORD;
 using autofill::NO_SERVER_DATA;
 using autofill::PASSWORD;
 using autofill::ServerFieldType;
+using autofill::SINGLE_USERNAME;
 using autofill::UNKNOWN_TYPE;
 using autofill::USERNAME;
 using autofill::USERNAME_AND_EMAIL_ADDRESS;
@@ -46,7 +47,7 @@ TEST(FormPredictionsTest, ConvertToFormPredictions) {
   } test_fields[] = {
       {"full_name", "text", UNKNOWN_TYPE, UNKNOWN_TYPE, false},
       // Password Manager is interested only in credential related types.
-      {"Email", "email", EMAIL_ADDRESS, UNKNOWN_TYPE, false},
+      {"Email", "email", EMAIL_ADDRESS, EMAIL_ADDRESS, false},
       {"username", "text", USERNAME, USERNAME, true},
       {"Password", "password", PASSWORD, PASSWORD, false},
       {"confirm_password", "password", CONFIRMATION_PASSWORD,
@@ -62,38 +63,32 @@ TEST(FormPredictionsTest, ConvertToFormPredictions) {
   }
 
   FormStructure form_structure(form_data);
-  size_t expected_predictions = 0;
   // Set server predictions and create expected votes.
   for (size_t i = 0; i < base::size(test_fields); ++i) {
     AutofillField* field = form_structure.field(i);
     field->set_server_type(test_fields[i].input_type);
-    ServerFieldType expected_type = test_fields[i].expected_type;
 
     FieldPrediction prediction;
     prediction.set_may_use_prefilled_placeholder(
         test_fields[i].may_use_prefilled_placeholder);
     field->set_server_predictions({prediction});
-
-    if (expected_type != UNKNOWN_TYPE)
-      ++expected_predictions;
   }
 
-  FormPredictions actual_predictions = ConvertToFormPredictions(form_structure);
+  constexpr int driver_id = 1000;
+  FormPredictions actual_predictions =
+      ConvertToFormPredictions(driver_id, form_structure);
 
   // Check whether actual predictions are equal to expected ones.
-  EXPECT_EQ(expected_predictions, actual_predictions.size());
+  EXPECT_EQ(driver_id, actual_predictions.driver_id);
+  EXPECT_EQ(form_structure.form_signature(), actual_predictions.form_signature);
+  EXPECT_EQ(base::size(test_fields), actual_predictions.fields.size());
 
   for (size_t i = 0; i < base::size(test_fields); ++i) {
-    uint32_t unique_renderer_id = form_data.fields[i].unique_renderer_id;
-    auto it = actual_predictions.find(unique_renderer_id);
-    if (test_fields[i].expected_type == UNKNOWN_TYPE) {
-      EXPECT_EQ(actual_predictions.end(), it);
-    } else {
-      ASSERT_NE(actual_predictions.end(), it);
-      EXPECT_EQ(test_fields[i].expected_type, it->second.type);
-      EXPECT_EQ(test_fields[i].may_use_prefilled_placeholder,
-                it->second.may_use_prefilled_placeholder);
-    }
+    const PasswordFieldPrediction& actual_prediction =
+        actual_predictions.fields[i];
+    EXPECT_EQ(test_fields[i].expected_type, actual_prediction.type);
+    EXPECT_EQ(test_fields[i].may_use_prefilled_placeholder,
+              actual_prediction.may_use_prefilled_placeholder);
   }
 }
 
@@ -146,7 +141,7 @@ TEST(FormPredictionsTest, ConvertToFormPredictions_SynthesiseConfirmation) {
     }
 
     FormPredictions actual_predictions =
-        ConvertToFormPredictions(form_structure);
+        ConvertToFormPredictions(0 /*driver_id*/, form_structure);
 
     for (size_t i = 0; i < form_data.fields.size(); ++i) {
       SCOPED_TRACE(testing::Message()
@@ -155,9 +150,7 @@ TEST(FormPredictionsTest, ConvertToFormPredictions_SynthesiseConfirmation) {
                    << ", input type=" << test_form[i].input_type
                    << ", expected type=" << test_form[i].expected_type
                    << ", synthesised FormFieldData=" << form_data.fields[i]);
-      auto it = actual_predictions.find(form_data.fields[i].unique_renderer_id);
-      ASSERT_NE(actual_predictions.end(), it);
-      EXPECT_EQ(test_form[i].expected_type, it->second.type);
+      EXPECT_EQ(test_form[i].expected_type, actual_predictions.fields[i].type);
     }
   }
 }
@@ -174,6 +167,8 @@ TEST(FormPredictionsTest, DeriveFromServerFieldType) {
       {"Username", USERNAME, CredentialFieldType::kUsername},
       {"Username/Email", USERNAME_AND_EMAIL_ADDRESS,
        CredentialFieldType::kUsername},
+      {"Single Username", SINGLE_USERNAME,
+       CredentialFieldType::kSingleUsername},
       {"Password", PASSWORD, CredentialFieldType::kCurrentPassword},
       {"New password", NEW_PASSWORD, CredentialFieldType::kNewPassword},
       {"Account creation password", ACCOUNT_CREATION_PASSWORD,

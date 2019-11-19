@@ -183,8 +183,8 @@ bool Task::ReportsWebCacheStats() const {
   return false;
 }
 
-blink::WebCache::ResourceTypeStats Task::GetWebCacheStats() const {
-  return blink::WebCache::ResourceTypeStats();
+blink::WebCacheResourceTypeStats Task::GetWebCacheStats() const {
+  return blink::WebCacheResourceTypeStats();
 }
 
 int Task::GetKeepaliveCount() const {

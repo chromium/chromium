@@ -79,9 +79,6 @@ bool TransientWindowStackingClient::AdjustStacking(
   if (transient_manager && transient_manager->IsStackingTransient(*target))
     return true;
 
-  if (!(*child)->parent()->ShouldRestackTransientChildren())
-    return true;
-
   // For windows that have transient children stack the transient ancestors that
   // are siblings. This prevents one transient group from being inserted in the
   // middle of another.

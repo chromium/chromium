@@ -11,7 +11,7 @@
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service_factory.h"
 #include "components/signin/core/browser/account_investigator.h"
-#include "services/identity/public/cpp/identity_manager.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 
 // static
 AccountInvestigatorFactory* AccountInvestigatorFactory::GetInstance() {

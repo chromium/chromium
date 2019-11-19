@@ -38,6 +38,71 @@ TEST(ExploreSitesFeatureTest, ExploreSitesEnabledWithExperiment) {
   EXPECT_EQ(ExploreSitesVariation::EXPERIMENT, GetExploreSitesVariation());
 }
 
+TEST(ExploreSitesFeatureTest, ExploreSitesEnabledWithDenseTitleBottom) {
+  std::map<std::string, std::string> parameters;
+  parameters[kExploreSitesDenseVariationParameterName] =
+      kExploreSitesDenseVariationDenseTitleBottom;
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(kExploreSites,
+                                                         parameters);
+  EXPECT_EQ(DenseVariation::DENSE_TITLE_BOTTOM, GetDenseVariation());
+}
+
+TEST(ExploreSitesFeatureTest, ExploreSitesEnabledWithDenseTitleRight) {
+  std::map<std::string, std::string> parameters;
+  parameters[kExploreSitesDenseVariationParameterName] =
+      kExploreSitesDenseVariationDenseTitleRight;
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(kExploreSites,
+                                                         parameters);
+  EXPECT_EQ(DenseVariation::DENSE_TITLE_RIGHT, GetDenseVariation());
+}
+
+TEST(ExploreSitesFeatureTest, ExploreSitesDenseVariationOriginal) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kExploreSites);
+  EXPECT_EQ(DenseVariation::ORIGINAL, GetDenseVariation());
+}
+
+TEST(ExploreSitesFeatureTest, ExploreSitesEnabledWithIconArrow) {
+  std::map<std::string, std::string> parameters;
+  parameters[kExploreSitesVariationParameterName] =
+      kExploreSitesVariationMostLikelyTile;
+  parameters[kExploreSitesMostLikelyVariationParameterName] =
+      kExploreSitesMostLikelyVariationIconArrow;
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(kExploreSites,
+                                                         parameters);
+  EXPECT_EQ(ExploreSitesVariation::MOST_LIKELY, GetExploreSitesVariation());
+  EXPECT_EQ(MostLikelyVariation::ICON_ARROW, GetMostLikelyVariation());
+}
+
+TEST(ExploreSitesFeatureTest, ExploreSitesEnabledWithIconDots) {
+  std::map<std::string, std::string> parameters;
+  parameters[kExploreSitesVariationParameterName] =
+      kExploreSitesVariationMostLikelyTile;
+  parameters[kExploreSitesMostLikelyVariationParameterName] =
+      kExploreSitesMostLikelyVariationIconDots;
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(kExploreSites,
+                                                         parameters);
+  EXPECT_EQ(ExploreSitesVariation::MOST_LIKELY, GetExploreSitesVariation());
+  EXPECT_EQ(MostLikelyVariation::ICON_DOTS, GetMostLikelyVariation());
+}
+
+TEST(ExploreSitesFeatureTest, ExploreSitesEnabledWithIconGrouped) {
+  std::map<std::string, std::string> parameters;
+  parameters[kExploreSitesVariationParameterName] =
+      kExploreSitesVariationMostLikelyTile;
+  parameters[kExploreSitesMostLikelyVariationParameterName] =
+      kExploreSitesMostLikelyVariationIconGrouped;
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(kExploreSites,
+                                                         parameters);
+  EXPECT_EQ(ExploreSitesVariation::MOST_LIKELY, GetExploreSitesVariation());
+  EXPECT_EQ(MostLikelyVariation::ICON_GROUPED, GetMostLikelyVariation());
+}
+
 TEST(ExploreSitesFeatureTest, ExploreSitesEnabledWithBogus) {
   const char bogusParamValue[] = "bogus";
   std::map<std::string, std::string> parameters;

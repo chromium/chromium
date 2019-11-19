@@ -1,0 +1,19 @@
+This is a testharness.js-based test.
+PASS Property background-position-y value 'center' computes to '50%'
+PASS Property background-position-y value 'top' computes to '0%'
+PASS Property background-position-y value 'bottom' computes to '100%'
+FAIL Property background-position-y value 'y-start' computes to 'y-start' assert_true: 'y-start' is a supported value for background-position-y. expected true got false
+FAIL Property background-position-y value 'y-end' computes to 'y-end' assert_true: 'y-end' is a supported value for background-position-y. expected true got false
+PASS Property background-position-y value '-20%' computes to '-20%'
+PASS Property background-position-y value '10px' computes to '10px'
+PASS Property background-position-y value '0.5em' computes to '20px'
+PASS Property background-position-y value 'calc(10px - 0.5em)' computes to '-10px'
+FAIL Property background-position-y value 'top -20%' computes to '-20%' assert_true: 'top -20%' is a supported value for background-position-y. expected true got false
+FAIL Property background-position-y value 'bottom -10px' computes to 'calc(100% + 10px)' assert_true: 'bottom -10px' is a supported value for background-position-y. expected true got false
+PASS Property background-position-y value '-20%, 10px' computes to '-20%'
+PASS Property background-position-y value 'center, top, bottom' computes to '50%'
+FAIL Property background-position-y value '0.5em, y-start, y-end' computes to '20px' assert_true: '0.5em, y-start, y-end' is a supported value for background-position-y. expected true got false
+PASS Property background-position-y value 'calc(10px - 0.5em), -20%, 10px' computes to '-10px'
+FAIL Property background-position-y value 'calc(10px - 0.5em), top -20%, bottom 10px' computes to '-10px' assert_true: 'calc(10px - 0.5em), top -20%, bottom 10px' is a supported value for background-position-y. expected true got false
+Harness: the test ran to completion.
+

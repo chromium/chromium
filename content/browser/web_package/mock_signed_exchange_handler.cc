@@ -14,52 +14,85 @@
 
 namespace content {
 
-MockSignedExchangeHandler::MockSignedExchangeHandler(
+MockSignedExchangeHandlerParams::MockSignedExchangeHandlerParams(
+    const GURL& outer_url,
     SignedExchangeLoadResult result,
     net::Error error,
-    const GURL& request_url,
+    const GURL& inner_url,
     const std::string& mime_type,
-    const std::vector<std::string>& response_headers,
+    std::vector<std::string> response_headers,
+    base::Optional<net::SHA256HashValue> header_integrity,
+    const base::Time& signature_expire_time)
+    : outer_url(outer_url),
+      result(result),
+      error(error),
+      inner_url(inner_url),
+      mime_type(mime_type),
+      response_headers(std::move(response_headers)),
+      header_integrity(std::move(header_integrity)),
+      signature_expire_time(signature_expire_time.is_null()
+                                ? base::Time::Now() +
+                                      base::TimeDelta::FromDays(1)
+                                : signature_expire_time) {}
+
+MockSignedExchangeHandlerParams::MockSignedExchangeHandlerParams(
+    const MockSignedExchangeHandlerParams& other) = default;
+MockSignedExchangeHandlerParams::~MockSignedExchangeHandlerParams() = default;
+
+MockSignedExchangeHandler::MockSignedExchangeHandler(
+    const MockSignedExchangeHandlerParams& params,
     std::unique_ptr<net::SourceStream> body,
-    ExchangeHeadersCallback headers_callback) {
+    ExchangeHeadersCallback headers_callback)
+    : header_integrity_(params.header_integrity),
+      signature_expire_time_(params.signature_expire_time) {
   network::ResourceResponseHead head;
-  if (error == net::OK) {
+  if (params.error == net::OK) {
     head.headers =
         base::MakeRefCounted<net::HttpResponseHeaders>("HTTP/1.1 200 OK");
-    head.mime_type = mime_type;
+    head.mime_type = params.mime_type;
     head.headers->AddHeader(
-        base::StringPrintf("Content-type: %s", mime_type.c_str()));
-    for (const auto& header : response_headers)
+        base::StringPrintf("Content-type: %s", params.mime_type.c_str()));
+    for (const auto& header : params.response_headers)
       head.headers->AddHeader(header);
+    head.is_signed_exchange_inner_response = true;
+    head.content_length = head.headers->GetContentLength();
   }
   base::SequencedTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(headers_callback), result, error,
-                                request_url, head, std::move(body)));
+      FROM_HERE,
+      base::BindOnce(std::move(headers_callback), params.result, params.error,
+                     params.inner_url, head, std::move(body)));
+}
+
+base::Optional<net::SHA256HashValue>
+MockSignedExchangeHandler::ComputeHeaderIntegrity() const {
+  return header_integrity_;
+}
+
+base::Time MockSignedExchangeHandler::GetSignatureExpireTime() const {
+  return signature_expire_time_;
 }
 
 MockSignedExchangeHandler::~MockSignedExchangeHandler() {}
 
 MockSignedExchangeHandlerFactory::MockSignedExchangeHandlerFactory(
-    SignedExchangeLoadResult result,
-    net::Error error,
-    const GURL& request_url,
-    const std::string& mime_type,
-    std::vector<std::string> response_headers)
-    : result_(result),
-      error_(error),
-      request_url_(request_url),
-      mime_type_(mime_type),
-      response_headers_(std::move(response_headers)) {}
+    std::vector<MockSignedExchangeHandlerParams> params_list)
+    : params_list_(std::move(params_list)) {}
 
 MockSignedExchangeHandlerFactory::~MockSignedExchangeHandlerFactory() = default;
 
 std::unique_ptr<SignedExchangeHandler> MockSignedExchangeHandlerFactory::Create(
+    const GURL& outer_url,
     std::unique_ptr<net::SourceStream> body,
     ExchangeHeadersCallback headers_callback,
     std::unique_ptr<SignedExchangeCertFetcherFactory> cert_fetcher_factory) {
-  return std::make_unique<MockSignedExchangeHandler>(
-      result_, error_, request_url_, mime_type_, response_headers_,
-      std::move(body), std::move(headers_callback));
+  for (const auto& params : params_list_) {
+    if (params.outer_url == outer_url) {
+      return std::make_unique<MockSignedExchangeHandler>(
+          params, std::move(body), std::move(headers_callback));
+    }
+  }
+  NOTREACHED();
+  return nullptr;
 }
 
 }  // namespace content

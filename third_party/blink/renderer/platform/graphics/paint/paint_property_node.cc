@@ -90,4 +90,21 @@ const ScrollPaintPropertyNode& LowestCommonAncestorInternal(
   return LowestCommonAncestorTemplate(a, b);
 }
 
+const char* PaintPropertyChangeTypeToString(PaintPropertyChangeType change) {
+  switch (change) {
+    case PaintPropertyChangeType::kUnchanged:
+      return "unchanged";
+    case PaintPropertyChangeType::kChangedOnlyCompositedValues:
+      return "composited-values";
+    case PaintPropertyChangeType::kChangedOnlyNonRerasterValues:
+      return "non-reraster";
+    case PaintPropertyChangeType::kChangedOnlySimpleValues:
+      return "simple-values";
+    case PaintPropertyChangeType::kChangedOnlyValues:
+      return "values";
+    case PaintPropertyChangeType::kNodeAddedOrRemoved:
+      return "node-add-remove";
+  }
+}
+
 }  // namespace blink

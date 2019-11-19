@@ -14,7 +14,7 @@
 #include "chromeos/constants/chromeos_switches.h"
 #include "components/metrics/serialization/metric_sample.h"
 #include "components/metrics/serialization/serialization_utils.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace chromeos {  // Need this because of the FRIEND_TEST
@@ -32,7 +32,7 @@ class ExternalMetricsTest : public testing::Test {
 
   base::ScopedTempDir dir_;
   scoped_refptr<ExternalMetrics> external_metrics_;
-  content::TestBrowserThreadBundle thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
 };
 
 TEST_F(ExternalMetricsTest, CustomInterval) {

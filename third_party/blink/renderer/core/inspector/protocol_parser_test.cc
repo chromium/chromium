@@ -333,7 +333,7 @@ TEST(ProtocolParserTest, Reading) {
       "  \"S\":\"str\"\n"
       "}\n");
   ASSERT_TRUE(root2.get());
-  EXPECT_EQ(root->serializeToJSON(), root2->serializeToJSON());
+  EXPECT_EQ(root->toJSONString(), root2->toJSONString());
 
   root2 = ParseJSON(
       "{\r\n"
@@ -342,7 +342,7 @@ TEST(ProtocolParserTest, Reading) {
       "  \"S\":\"str\"\r\n"
       "}\r\n");
   ASSERT_TRUE(root2.get());
-  EXPECT_EQ(root->serializeToJSON(), root2->serializeToJSON());
+  EXPECT_EQ(root->toJSONString(), root2->toJSONString());
 
   // Test nesting
   root = ParseJSON("{\"inner\":{\"array\":[true]},\"false\":false,\"d\":{}}");

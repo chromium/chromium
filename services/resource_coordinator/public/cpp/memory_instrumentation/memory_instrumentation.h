@@ -8,38 +8,40 @@
 #include "base/callback_forward.h"
 #include "base/component_export.h"
 #include "base/memory/ref_counted.h"
-#include "base/threading/thread_local.h"
 #include "base/trace_event/memory_dump_request_args.h"
-#include "services/resource_coordinator/public/cpp/memory_instrumentation/coordinator.h"
+#include "mojo/public/cpp/bindings/shared_remote.h"
 #include "services/resource_coordinator/public/cpp/memory_instrumentation/global_memory_dump.h"
 #include "services/resource_coordinator/public/mojom/memory_instrumentation/memory_instrumentation.mojom.h"
-#include "services/service_manager/public/cpp/connector.h"
-
-namespace base {
-class SingleThreadTaskRunner;
-}  // namespace base
 
 namespace memory_instrumentation {
 
-// This a public API for the memory-infra service and allows any thread/process
-// to request memory snapshots. This is a convenience wrapper around the
-// memory_instrumentation service and hides away the complexity associated with
-// having to deal with it (e.g., maintaining service connections, bindings,
-// handling timeouts).
+// This a public API for the memory-infra service and allows any
+// sequence/process to request memory snapshots. This is a convenience wrapper
+// around the memory_instrumentation service and hides away the complexity
+// associated with having to deal with it (e.g., maintaining service
+// connections, bindings, handling timeouts).
 class COMPONENT_EXPORT(RESOURCE_COORDINATOR_PUBLIC_MEMORY_INSTRUMENTATION)
     MemoryInstrumentation {
  public:
   using MemoryDumpType = base::trace_event::MemoryDumpType;
   using MemoryDumpLevelOfDetail = base::trace_event::MemoryDumpLevelOfDetail;
+  using MemoryDumpDeterminism = base::trace_event::MemoryDumpDeterminism;
   using RequestGlobalDumpCallback =
       base::OnceCallback<void(bool success,
                               std::unique_ptr<GlobalMemoryDump> dump)>;
   using RequestGlobalMemoryDumpAndAppendToTraceCallback =
       base::OnceCallback<void(bool success, uint64_t dump_id)>;
 
-  static void CreateInstance(service_manager::Connector*,
-                             const std::string& service_name);
+  static void CreateInstance(
+      mojo::PendingRemote<memory_instrumentation::mojom::Coordinator>
+          coordinator);
   static MemoryInstrumentation* GetInstance();
+
+  // Retrieves a Coordinator interface to communicate with the service. This is
+  // safe to call from any thread.
+  memory_instrumentation::mojom::Coordinator* GetCoordinator() const {
+    return coordinator_.get();
+  }
 
   // Requests a global memory dump with |allocator_dump_names| indicating
   // the name of allocator dumps in which the consumer is interested. If
@@ -48,7 +50,7 @@ class COMPONENT_EXPORT(RESOURCE_COORDINATOR_PUBLIC_MEMORY_INSTRUMENTATION)
   //  (true, global_dump) if succeeded;
   //  (false, global_dump) if failed, with global_dump being non-null
   //  but missing data.
-  // The callback (if not null), will be posted on the same thread of the
+  // The callback (if not null), will be posted on the same sequence of the
   // RequestGlobalDump() call.
   // Note: Even if |allocator_dump_names| is empty, all MemoryDumpProviders will
   // still be queried.
@@ -59,7 +61,7 @@ class COMPONENT_EXPORT(RESOURCE_COORDINATOR_PUBLIC_MEMORY_INSTRUMENTATION)
   //  (true, global_dump) if succeeded;
   //  (false, global_dump) if failed, with global_dump being non-null
   //  but missing data.
-  // The callback (if not null), will be posted on the same thread of the
+  // The callback (if not null), will be posted on the same sequence of the
   // RequestPrivateMemoryFootprint() call.
   // Passing a null |pid| is the same as requesting the PrivateMemoryFootprint
   // for all processes.
@@ -74,7 +76,7 @@ class COMPONENT_EXPORT(RESOURCE_COORDINATOR_PUBLIC_MEMORY_INSTRUMENTATION)
   //  (true, global_dump) if succeeded;
   //  (false, global_dump) if failed, with global_dump being non-null
   //  but missing data.
-  // The callback (if not null), will be posted on the same thread of the
+  // The callback (if not null), will be posted on the same sequence of the
   // RequestGlobalDump() call.
   void RequestGlobalDumpForPid(
       base::ProcessId pid,
@@ -83,29 +85,26 @@ class COMPONENT_EXPORT(RESOURCE_COORDINATOR_PUBLIC_MEMORY_INSTRUMENTATION)
 
   // Requests a global memory dump and serializes the result into the trace.
   // This requires that both tracing and the memory-infra category have been
-  // previousy enabled. Will just gracefully fail otherwise.
+  // previously enabled. Will just gracefully fail otherwise.
   // Returns asynchronously, via the callback argument:
   //  (true, id of the object injected into the trace) if succeeded;
   //  (false, undefined) if failed.
-  // The callback (if not null), will be posted on the same thread of the
+  // The callback (if not null), will be posted on the same sequence of the
   // RequestGlobalDumpAndAppendToTrace() call.
   void RequestGlobalDumpAndAppendToTrace(
       MemoryDumpType,
       MemoryDumpLevelOfDetail,
+      MemoryDumpDeterminism,
       RequestGlobalMemoryDumpAndAppendToTraceCallback);
 
  private:
-  MemoryInstrumentation(service_manager::Connector* connector,
-                        const std::string& service_name);
+  explicit MemoryInstrumentation(
+      mojo::PendingRemote<memory_instrumentation::mojom::Coordinator>
+          coordinator);
   ~MemoryInstrumentation();
 
-  const mojom::CoordinatorPtr& GetCoordinatorBindingForCurrentThread();
-  void BindCoordinatorRequestOnConnectorThread(mojom::CoordinatorRequest);
-
-  service_manager::Connector* const connector_;
-  scoped_refptr<base::SingleThreadTaskRunner> connector_task_runner_;
-  base::ThreadLocalOwnedPointer<mojom::CoordinatorPtr> tls_coordinator_;
-  const std::string service_name_;
+  const mojo::SharedRemote<memory_instrumentation::mojom::Coordinator>
+      coordinator_;
 
   DISALLOW_COPY_AND_ASSIGN(MemoryInstrumentation);
 };

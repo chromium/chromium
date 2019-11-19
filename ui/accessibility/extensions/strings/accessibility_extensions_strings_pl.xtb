@@ -31,6 +31,7 @@
 <translation id="4769065380738716500">Obrazy zastępuje tekst alternatywny.</translation>
 <translation id="4896660567607030658">Brak potwierdzenia – po prostu wyświetl kursor.</translation>
 <translation id="4937901943818762779">Zezwalaj na wyświetlanie animowanych obrazów, ale tylko raz.</translation>
+<translation id="4949131196216960195">Aby włączyć przeglądanie przy użyciu kursora, naciśnij &lt;span class='key'&gt;Wyszukaj&lt;/span&gt; + &lt;img src='increase_brightness.png'&gt; (klawisz zwiększania jasności lub F7). Aby wyłączyć tę funkcję, naciśnij tę samą kombinację ponownie.</translation>
 <translation id="4954450790315188152">Gdy przeglądanie przy użyciu kursora jest włączone:</translation>
 <translation id="5041932793799765940">Dostosowanie kolorów</translation>
 <translation id="5094574508723441140">Większy kontrast</translation>
@@ -60,7 +61,6 @@
 <translation id="7658239707568436148">Anuluj</translation>
 <translation id="786423340267544509">Dodaj obramowanie do elementów z atrybutem aria-describedat lub longdesc.</translation>
 <translation id="7942349550061667556">Czerwony</translation>
-<translation id="8254860724243898966">Naciśnij &lt;span class='key'&gt;Alt&lt;/span&gt; + &lt;img src='increase_brightness.png'&gt; (klawisz zwiększania jasności lub F7), by włączyć przeglądanie przy użyciu kursora. Naciśnij ponownie, by je wyłączyć.</translation>
 <translation id="8260673944985561857">Opcje przeglądania przy użyciu kursora</translation>
 <translation id="8321034316479930120">Zasady animacji</translation>
 <translation id="8480209185614411573">Wysoki kontrast.</translation>

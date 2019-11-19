@@ -43,6 +43,18 @@ TEST(EventDeviceInfoTest, BasicCrosKeyboard) {
   EXPECT_EQ(ui::InputDeviceType::INPUT_DEVICE_INTERNAL, devinfo.device_type());
 }
 
+TEST(EventDeviceInfoTest, SideVolumeButton) {
+  EventDeviceInfo devinfo;
+  EXPECT_TRUE(CapabilitiesToDeviceInfo(kSideVolumeButton, &devinfo));
+
+  EXPECT_FALSE(devinfo.HasKeyboard());
+  EXPECT_FALSE(devinfo.HasMouse());
+  EXPECT_FALSE(devinfo.HasTouchpad());
+  EXPECT_FALSE(devinfo.HasTouchscreen());
+  EXPECT_FALSE(devinfo.HasTablet());
+  EXPECT_FALSE(devinfo.HasGamepad());
+}
+
 TEST(EventDeviceInfoTest, BasicCrosTouchscreen) {
   EventDeviceInfo devinfo;
   EXPECT_TRUE(CapabilitiesToDeviceInfo(kLinkTouchscreen, &devinfo));
@@ -251,6 +263,12 @@ TEST(EventDeviceInfoTest, IllitekTP) {
   EXPECT_FALSE(devinfo.HasGamepad());
 
   EXPECT_EQ(ui::InputDeviceType::INPUT_DEVICE_USB, devinfo.device_type());
+}
+TEST(EventDeviceInfoTest, Nocturne_Touchscreen) {
+  EventDeviceInfo devinfo;
+  EXPECT_TRUE(CapabilitiesToDeviceInfo(kNocturneTouchScreen, &devinfo));
+  EXPECT_EQ(40, devinfo.GetAbsResolution(ABS_MT_POSITION_X));
+  EXPECT_EQ(10404, devinfo.GetAbsMaximum(ABS_MT_POSITION_X));
 }
 
 }  // namespace ui

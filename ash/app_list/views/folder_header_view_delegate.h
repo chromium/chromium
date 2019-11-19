@@ -11,7 +11,7 @@ namespace ui {
 class Event;
 }
 
-namespace app_list {
+namespace ash {
 
 class AppListFolderItem;
 
@@ -34,6 +34,6 @@ class FolderHeaderViewDelegate {
   virtual ~FolderHeaderViewDelegate() {}
 };
 
-}  // namespace app_list
+}  // namespace ash
 
 #endif  // ASH_APP_LIST_VIEWS_FOLDER_HEADER_VIEW_DELEGATE_H_

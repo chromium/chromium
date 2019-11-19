@@ -37,11 +37,11 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothRemoteGattDescriptorMac
   // BluetoothRemoteGattDescriptor
   const std::vector<uint8_t>& GetValue() const override;
   BluetoothRemoteGattCharacteristic* GetCharacteristic() const override;
-  void ReadRemoteDescriptor(const ValueCallback& callback,
-                            const ErrorCallback& error_callback) override;
+  void ReadRemoteDescriptor(ValueCallback callback,
+                            ErrorCallback error_callback) override;
   void WriteRemoteDescriptor(const std::vector<uint8_t>& new_value,
-                             const base::Closure& callback,
-                             const ErrorCallback& error_callback) override;
+                             base::OnceClosure callback,
+                             ErrorCallback error_callback) override;
 
  private:
   friend class BluetoothLowEnergyDeviceMac;
@@ -74,7 +74,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothRemoteGattDescriptorMac
   // ReadRemoteDescriptor request callbacks.
   std::pair<ValueCallback, ErrorCallback> read_value_callbacks_;
   // WriteRemoteDescriptor request callbacks.
-  std::pair<base::Closure, ErrorCallback> write_value_callbacks_;
+  std::pair<base::OnceClosure, ErrorCallback> write_value_callbacks_;
 };
 
 // Stream operator for logging.

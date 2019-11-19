@@ -123,26 +123,26 @@ Tree:
 
 Tree:
 
-Attached a to root
+Attached TextData to root
 
 Tree:
- a
+ TextData
 
 Added secondCol
 
 Tree:
- a | a foo
+ TextData | a foo
 
-Attached b to root
+Attached NullData to root
 
 Tree:
- a | a foo
- b | b foo
+ TextData | a foo
+ NullData | 
 
 Removed secondCol
 
 Tree:
- a
- b
+ TextData
+ NullData
 
 

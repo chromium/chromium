@@ -4,8 +4,10 @@
 
 package org.chromium.chrome.browser.jsdialog;
 
-import org.chromium.base.VisibleForTesting;
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.annotations.CalledByNative;
+import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeActivity;
 import org.chromium.ui.base.WindowAndroid;
@@ -63,7 +65,8 @@ public class JavascriptAppModalDialog extends JavascriptModalDialog {
         ChromeActivity activity = (ChromeActivity) window.getActivity().get();
         // If the activity has gone away, then just clean up the native pointer.
         if (activity == null) {
-            nativeDidCancelAppModalDialog(nativeDialogPointer, false);
+            JavascriptAppModalDialogJni.get().didCancelAppModalDialog(
+                    nativeDialogPointer, JavascriptAppModalDialog.this, false);
             return;
         }
 
@@ -81,14 +84,16 @@ public class JavascriptAppModalDialog extends JavascriptModalDialog {
     @Override
     protected void accept(String promptResult, boolean suppressDialogs) {
         if (mNativeDialogPointer != 0) {
-            nativeDidAcceptAppModalDialog(mNativeDialogPointer, promptResult, suppressDialogs);
+            JavascriptAppModalDialogJni.get().didAcceptAppModalDialog(mNativeDialogPointer,
+                    JavascriptAppModalDialog.this, promptResult, suppressDialogs);
         }
     }
 
     @Override
     protected void cancel(boolean buttonClicked, boolean suppressDialogs) {
         if (mNativeDialogPointer != 0) {
-            nativeDidCancelAppModalDialog(mNativeDialogPointer, suppressDialogs);
+            JavascriptAppModalDialogJni.get().didCancelAppModalDialog(
+                    mNativeDialogPointer, JavascriptAppModalDialog.this, suppressDialogs);
         }
     }
 
@@ -97,12 +102,15 @@ public class JavascriptAppModalDialog extends JavascriptModalDialog {
      */
     @VisibleForTesting
     public static JavascriptAppModalDialog getCurrentDialogForTest() {
-        return nativeGetCurrentModalDialog();
+        return JavascriptAppModalDialogJni.get().getCurrentModalDialog();
     }
 
-    private native void nativeDidAcceptAppModalDialog(
-            long nativeJavascriptAppModalDialogAndroid, String prompt, boolean suppress);
-    private native void nativeDidCancelAppModalDialog(
-            long nativeJavascriptAppModalDialogAndroid, boolean suppress);
-    private static native JavascriptAppModalDialog nativeGetCurrentModalDialog();
+    @NativeMethods
+    interface Natives {
+        void didAcceptAppModalDialog(long nativeJavascriptAppModalDialogAndroid,
+                JavascriptAppModalDialog caller, String prompt, boolean suppress);
+        void didCancelAppModalDialog(long nativeJavascriptAppModalDialogAndroid,
+                JavascriptAppModalDialog caller, boolean suppress);
+        JavascriptAppModalDialog getCurrentModalDialog();
+    }
 }

@@ -12,8 +12,11 @@
 #include "base/time/time.h"
 #include "content/common/content_export.h"
 #include "content/renderer/service_worker/controller_service_worker_connector.h"
-#include "mojo/public/cpp/bindings/binding.h"
-#include "mojo/public/cpp/bindings/binding_set.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "net/url_request/redirect_info.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
@@ -30,7 +33,6 @@ namespace content {
 
 class ControllerServiceWorkerConnector;
 
-// S13nServiceWorker:
 // A custom URLLoader implementation used by Service Worker controllees
 // for loading subresources via the controller Service Worker.
 // Currently an instance of this class is created and used only on
@@ -43,12 +45,12 @@ class CONTENT_EXPORT ServiceWorkerSubresourceLoader
   // See the comments for ServiceWorkerSubresourceLoaderFactory's ctor (below)
   // to see how each parameter is used.
   ServiceWorkerSubresourceLoader(
-      network::mojom::URLLoaderRequest request,
+      mojo::PendingReceiver<network::mojom::URLLoader>,
       int32_t routing_id,
       int32_t request_id,
       uint32_t options,
       const network::ResourceRequest& resource_request,
-      network::mojom::URLLoaderClientPtr client,
+      mojo::PendingRemote<network::mojom::URLLoaderClient> client,
       const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
       scoped_refptr<ControllerServiceWorkerConnector> controller_connector,
       scoped_refptr<network::SharedURLLoaderFactory> fallback_factory,
@@ -109,17 +111,15 @@ class CONTENT_EXPORT ServiceWorkerSubresourceLoader
   void FollowRedirect(const std::vector<std::string>& removed_headers,
                       const net::HttpRequestHeaders& modified_headers,
                       const base::Optional<GURL>& new_url) override;
-  void ProceedWithResponse() override;
   void SetPriority(net::RequestPriority priority,
                    int intra_priority_value) override;
   void PauseReadingBodyFromNet() override;
   void ResumeReadingBodyFromNet() override;
 
   int StartBlobReading(mojo::ScopedDataPipeConsumerHandle* body_pipe);
-  void OnBlobSideDataReadingComplete(
-      mojo::ScopedDataPipeConsumerHandle data_pipe,
-      const base::Optional<std::vector<uint8_t>>& metadata);
-  void OnBlobReadingComplete(int net_error);
+  void OnSideDataReadingComplete(mojo::ScopedDataPipeConsumerHandle data_pipe,
+                                 base::Optional<mojo_base::BigBuffer> metadata);
+  void OnBodyReadingComplete(int net_error);
 
   // Calls url_loader_client_->OnReceiveResponse() with |response_head_|.
   void CommitResponseHeaders();
@@ -143,19 +143,22 @@ class CONTENT_EXPORT ServiceWorkerSubresourceLoader
 
   void TransitionToStatus(Status new_status);
 
-  network::ResourceResponseHead response_head_;
+  network::mojom::URLResponseHeadPtr response_head_ =
+      network::mojom::URLResponseHead::New();
   base::Optional<net::RedirectInfo> redirect_info_;
   int redirect_limit_;
 
-  network::mojom::URLLoaderClientPtr url_loader_client_;
+  mojo::Remote<network::mojom::URLLoaderClient> url_loader_client_;
   mojo::Binding<network::mojom::URLLoader> url_loader_binding_;
 
   // For handling FetchEvent response.
-  mojo::Binding<blink::mojom::ServiceWorkerFetchResponseCallback>
-      response_callback_binding_;
+  mojo::Receiver<blink::mojom::ServiceWorkerFetchResponseCallback>
+      response_callback_receiver_{this};
   // The blob needs to be held while it's read to keep it alive.
-  blink::mojom::BlobPtr body_as_blob_;
+  mojo::Remote<blink::mojom::Blob> body_as_blob_;
   uint64_t body_as_blob_size_;
+  // The blob needs to be held while it's read to keep it alive.
+  mojo::Remote<blink::mojom::Blob> side_data_as_blob_;
 
   scoped_refptr<ControllerServiceWorkerConnector> controller_connector_;
 
@@ -163,10 +166,10 @@ class CONTENT_EXPORT ServiceWorkerSubresourceLoader
   // to the controller. If a broken connection is observed, this loader attempts
   // to restart the controller and dispatch the event again.
   ScopedObserver<ControllerServiceWorkerConnector,
-                 ServiceWorkerSubresourceLoader>
-      controller_connector_observer_;
+                 ControllerServiceWorkerConnector::Observer>
+      controller_connector_observer_{this};
   bool fetch_request_restarted_;
-  bool blob_reading_complete_;
+  bool body_reading_complete_;
   bool side_data_reading_complete_;
 
   // These are given by the constructor (as the params for
@@ -193,12 +196,11 @@ class CONTENT_EXPORT ServiceWorkerSubresourceLoader
   blink::mojom::ServiceWorkerFetchEventTimingPtr fetch_event_timing_;
   network::mojom::FetchResponseSource response_source_;
 
-  base::WeakPtrFactory<ServiceWorkerSubresourceLoader> weak_factory_;
+  base::WeakPtrFactory<ServiceWorkerSubresourceLoader> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ServiceWorkerSubresourceLoader);
 };
 
-// S13nServiceWorker:
 // A custom URLLoaderFactory implementation used by Service Worker controllees
 // for loading subresources via the controller Service Worker.
 // Self destroys when no more bindings exist.
@@ -216,37 +218,39 @@ class CONTENT_EXPORT ServiceWorkerSubresourceLoaderFactory
   static void Create(
       scoped_refptr<ControllerServiceWorkerConnector> controller_connector,
       scoped_refptr<network::SharedURLLoaderFactory> fallback_factory,
-      network::mojom::URLLoaderFactoryRequest request,
+      mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver,
       scoped_refptr<base::SequencedTaskRunner> task_runner);
 
   ~ServiceWorkerSubresourceLoaderFactory() override;
 
   // network::mojom::URLLoaderFactory overrides:
-  void CreateLoaderAndStart(network::mojom::URLLoaderRequest request,
-                            int32_t routing_id,
-                            int32_t request_id,
-                            uint32_t options,
-                            const network::ResourceRequest& resource_request,
-                            network::mojom::URLLoaderClientPtr client,
-                            const net::MutableNetworkTrafficAnnotationTag&
-                                traffic_annotation) override;
-  void Clone(network::mojom::URLLoaderFactoryRequest request) override;
+  void CreateLoaderAndStart(
+      mojo::PendingReceiver<network::mojom::URLLoader> receiver,
+      int32_t routing_id,
+      int32_t request_id,
+      uint32_t options,
+      const network::ResourceRequest& resource_request,
+      mojo::PendingRemote<network::mojom::URLLoaderClient> client,
+      const net::MutableNetworkTrafficAnnotationTag& traffic_annotation)
+      override;
+  void Clone(mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver)
+      override;
 
  private:
   ServiceWorkerSubresourceLoaderFactory(
       scoped_refptr<ControllerServiceWorkerConnector> controller_connector,
       scoped_refptr<network::SharedURLLoaderFactory> fallback_factory,
-      network::mojom::URLLoaderFactoryRequest request,
+      mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver,
       scoped_refptr<base::SequencedTaskRunner> task_runner);
 
-  void OnConnectionError();
+  void OnMojoDisconnect();
 
   scoped_refptr<ControllerServiceWorkerConnector> controller_connector_;
 
   // Used when a request falls back to network.
   scoped_refptr<network::SharedURLLoaderFactory> fallback_factory_;
 
-  mojo::BindingSet<network::mojom::URLLoaderFactory> bindings_;
+  mojo::ReceiverSet<network::mojom::URLLoaderFactory> receivers_;
 
   // The task runner where this factory is running.
   scoped_refptr<base::SequencedTaskRunner> task_runner_;

@@ -1,4 +1,3 @@
-<html>
 <head>
   <title>Pause and resume animation should not crash</title>
   <style type="text/css" media="screen">
@@ -11,49 +10,36 @@
       animation-direction: alternate;
       animation-iteration-count: infinite;
     }
-    
+
     @keyframes anim {
         from { transform: matrix3d(1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1); }
         to   { transform: matrix3d(1,0,0,0, 0,1,0,0, 0,0,1,0, 400,0,0,1); }
     }
   </style>
+  <script src="../../resources/testharness.js"></script>
+  <script src="../../resources/testharnessreport.js"></script>
   <script type="text/javascript" charset="utf-8">
-    if (window.testRunner) {
-        testRunner.dumpAsText();
-        testRunner.waitUntilDone();
-    }
-
+    var test = async_test("Tests pause and resume animation. Should not crash. (https://bugs.webkit.org/show_bug.cgi?id=67510)");
     function animationStarted()
     {
-        setTimeout(function() {
+        test.step_timeout(test.step_func(() => {
             document.getElementById('box1').style.animationPlayState = "paused";
-            setTimeout(function() {
+            test.step_timeout(test.step_func(() => {
                 document.getElementById('box1').style.animationPlayState = "running";
-                setTimeout(function() {
-                    document.getElementById('results').innerHTML = 'Did not crash, so PASSED';
-                    if (window.testRunner)
-                        testRunner.notifyDone();
-                }, 50);
-            }, 50);
-        }, 50);
+                test.step_timeout(test.step_func_done(() => {}, 50));
+            }, 50));
+        }, 50));
     }
-    
+
     function startTest()
     {
         document.getElementById('box1').addEventListener('animationstart', animationStarted);
         document.getElementById('box1').style.animationName = "anim";
     }
 
-    window.addEventListener('load', startTest, false);
+    window.addEventListener('load', test.step_func(startTest), false);
   </script>
 </head>
-<body>
-
-<p>Tests pause and resume animation. Should not crash. (https://bugs.webkit.org/show_bug.cgi?id=67510)</p>
-
 <div id="container">
   <div id="box1" class="box"></div>
 </div>
-<div id="results"></div>
-</body>
-</html>

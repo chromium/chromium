@@ -107,6 +107,9 @@ class PrefetchServiceTestTaco {
   std::unique_ptr<PrefetchService> CreateAndReturnPrefetchService();
 
   PrefService* pref_service() const { return pref_service_.get(); }
+  PrefetchNetworkRequestFactory* network_request_factory() const {
+    return network_request_factory_.get();
+  }
 
  private:
   std::unique_ptr<OfflineMetricsCollector> metrics_collector_;

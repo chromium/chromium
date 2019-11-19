@@ -63,8 +63,7 @@ MarkOperationDoneTask::MarkOperationDoneTask(
     const std::string& operation_name)
     : prefetch_dispatcher_(prefetch_dispatcher),
       prefetch_store_(prefetch_store),
-      operation_name_(operation_name),
-      weak_factory_(this) {}
+      operation_name_(operation_name) {}
 
 MarkOperationDoneTask::~MarkOperationDoneTask() {}
 

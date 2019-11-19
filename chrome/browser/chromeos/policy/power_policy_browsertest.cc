@@ -24,11 +24,9 @@
 #include "chrome/browser/chromeos/policy/device_policy_builder.h"
 #include "chrome/browser/chromeos/policy/device_policy_cros_browser_test.h"
 #include "chrome/browser/chromeos/policy/user_cloud_policy_manager_chromeos.h"
-#include "chrome/browser/chromeos/policy/user_policy_manager_factory_chromeos.h"
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
-#include "chrome/browser/policy/profile_policy_connector_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"
@@ -36,12 +34,12 @@
 #include "chromeos/constants/chromeos_switches.h"
 #include "chromeos/cryptohome/cryptohome_parameters.h"
 #include "chromeos/dbus/constants/dbus_paths.h"
-#include "chromeos/dbus/cryptohome_client.h"
+#include "chromeos/dbus/cryptohome/cryptohome_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/dbus/fake_power_manager_client.h"
-#include "chromeos/dbus/fake_session_manager_client.h"
+#include "chromeos/dbus/power/fake_power_manager_client.h"
+#include "chromeos/dbus/power/power_policy_controller.h"
 #include "chromeos/dbus/power_manager/policy.pb.h"
-#include "chromeos/dbus/power_policy_controller.h"
+#include "chromeos/dbus/session_manager/fake_session_manager_client.h"
 #include "components/account_id/account_id.h"
 #include "components/policy/core/common/cloud/cloud_policy_core.h"
 #include "components/policy/core/common/cloud/cloud_policy_store.h"
@@ -129,7 +127,6 @@ class PowerPolicyBrowserTestBase : public DevicePolicyCrosBrowserTest {
   PowerPolicyBrowserTestBase();
 
   // DevicePolicyCrosBrowserTest:
-  void SetUpInProcessBrowserTestFixture() override;
   void SetUpOnMainThread() override;
 
   void InstallUserKey();
@@ -183,14 +180,6 @@ class PowerPolicyInSessionBrowserTest : public PowerPolicyBrowserTestBase {
 };
 
 PowerPolicyBrowserTestBase::PowerPolicyBrowserTestBase() = default;
-
-void PowerPolicyBrowserTestBase::SetUpInProcessBrowserTestFixture() {
-  DevicePolicyCrosBrowserTest::SetUpInProcessBrowserTestFixture();
-
-  // Initialize device policy.
-  InstallOwnerKey();
-  MarkAsEnterpriseOwned();
-}
 
 void PowerPolicyBrowserTestBase::SetUpOnMainThread() {
   DevicePolicyCrosBrowserTest::SetUpOnMainThread();
@@ -266,8 +255,7 @@ void PowerPolicyBrowserTestBase::RunClosureAndWaitForUserPolicyUpdate(
       .WillOnce(InvokeWithoutArgs(&run_loop, &base::RunLoop::Quit));
   EXPECT_CALL(observer, OnPolicyServiceInitialized(_)).Times(AnyNumber());
   PolicyService* policy_service =
-      ProfilePolicyConnectorFactory::GetForBrowserContext(profile)
-          ->policy_service();
+      profile->GetProfilePolicyConnector()->policy_service();
   ASSERT_TRUE(policy_service);
   policy_service->AddObserver(POLICY_DOMAIN_CHROME, &observer);
   closure.Run();
@@ -277,8 +265,7 @@ void PowerPolicyBrowserTestBase::RunClosureAndWaitForUserPolicyUpdate(
 
 void PowerPolicyBrowserTestBase::ReloadUserPolicy(Profile* profile) {
   UserCloudPolicyManagerChromeOS* policy_manager =
-      UserPolicyManagerFactoryChromeOS::GetCloudPolicyManagerForProfile(
-          profile);
+      profile->GetUserCloudPolicyManagerChromeOS();
   ASSERT_TRUE(policy_manager);
   policy_manager->core()->store()->Load();
 }

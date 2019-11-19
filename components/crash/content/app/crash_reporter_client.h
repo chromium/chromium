@@ -109,7 +109,8 @@ class CrashReporterClient {
   // to fallback to default handler.
   // WARNING: this handler runs in a compromised context. It may not call into
   // libc nor allocate memory normally.
-  virtual bool HandleCrashDump(const char* crashdump_filename);
+  virtual bool HandleCrashDump(const char* crashdump_filename,
+                               uint64_t crash_pid);
 #endif
 
   // The location where minidump files should be written. Returns true if

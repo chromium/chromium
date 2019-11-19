@@ -22,6 +22,7 @@
 
       span {
         --span-variable: green;
+        --camelCased: blue;
       }
     </style>
     <body>

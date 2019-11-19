@@ -1,0 +1,50 @@
+<link rel="import" href="chrome://resources/html/polymer.html">
+
+<link rel="import" href="chrome://resources/html/i18n_behavior.html">
+<link rel="import" href="chrome://resources/cr_components/chromeos/cellular_setup/base_page.html">
+<link rel="import" href="chrome://resources/cr_components/chromeos/cellular_setup/webview_post_util.html">
+<link rel="import" href="chrome://resources/cr_elements/hidden_style_css.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/paper-spinner/paper-spinner-lite.html">
+
+<dom-module id="provisioning-page">
+  <template>
+    <style include="iron-flex cr-hidden-style">
+      paper-spinner-lite {
+        height: 200px;
+        width: 200px;
+      }
+
+      #portalContainer {
+        height: 100%;
+        width: 100%;
+      }
+
+      #error-icon-container {
+        background-image: -webkit-image-set(
+            url(error_1x.png) 1x,
+            url(error_2x.png) 2x);
+        background-position: center center;
+        background-repeat: no-repeat;
+        height: 100%;
+        width: 100%;
+      }
+    </style>
+    <base-page title="[[getPageTitle_(
+                            showError, carrierName_, hasCarrierPortalLoaded_)]]"
+        message="[[getPageMessage_(showError)]]">
+      <div slot="page-body" class="layout horizontal center-center">
+        <paper-spinner-lite active
+            hidden$="[[!shouldShowSpinner_(
+                           showError, hasCarrierPortalLoaded_)]]">
+        </paper-spinner-lite>
+        <div id="portalContainer"
+            hidden$="[[!shouldShowPortal_(
+                           showError, hasCarrierPortalLoaded_)]]">
+        </div>
+        <div id="error-icon-container" hidden$="[[!showError]]"></div>
+      </div>
+    </base-page>
+  </template>
+  <script src="provisioning_page.js"></script>
+</dom-module>

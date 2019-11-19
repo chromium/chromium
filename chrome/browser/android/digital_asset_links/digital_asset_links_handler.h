@@ -8,6 +8,8 @@
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
+#include "content/public/browser/web_contents_observer.h"
+#include "services/data_decoder/public/cpp/data_decoder.h"
 
 namespace network {
 class SharedURLLoaderFactory;
@@ -34,11 +36,13 @@ using RelationshipCheckResultCallback =
 // for details of usage and APIs. These APIs are used to verify declared
 // relationships between different asset types like web domains or Android apps.
 // The lifecycle of this handler will be governed by the owner.
-class DigitalAssetLinksHandler {
+// The WebContents are used for logging console messages.
+class DigitalAssetLinksHandler : public content::WebContentsObserver {
  public:
-  explicit DigitalAssetLinksHandler(
+  DigitalAssetLinksHandler(
+      content::WebContents* web_contents,
       scoped_refptr<network::SharedURLLoaderFactory> factory);
-  ~DigitalAssetLinksHandler();
+  ~DigitalAssetLinksHandler() override;
 
   // Checks whether the given "relationship" has been declared by the target
   // |web_domain| for the source Android app which is uniquely defined by the
@@ -64,12 +68,11 @@ class DigitalAssetLinksHandler {
                          const std::string& relationship,
                          std::unique_ptr<std::string> response_body);
 
-  // Callbacks for the SafeJsonParser.
-  void OnJSONParseSucceeded(const std::string& package,
-                            const std::string& fingerprint,
-                            const std::string& relationship,
-                            std::unique_ptr<base::Value> result);
-  void OnJSONParseFailed(const std::string& error_message);
+  // Callback for the DataDecoder.
+  void OnJSONParseResult(const std::string& package,
+                         const std::string& fingerprint,
+                         const std::string& relationship,
+                         data_decoder::DataDecoder::ValueOrError result);
 
   scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory_;
 
@@ -79,7 +82,7 @@ class DigitalAssetLinksHandler {
   // reset every time we get a new CheckDigitalAssetLinkRelationship call.
   RelationshipCheckResultCallback callback_;
 
-  base::WeakPtrFactory<DigitalAssetLinksHandler> weak_ptr_factory_;
+  base::WeakPtrFactory<DigitalAssetLinksHandler> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(DigitalAssetLinksHandler);
 };

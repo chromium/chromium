@@ -1,0 +1,5 @@
+AriaProperties changed on role=combobox
+AriaProperties changed on role=option, name=Apple
+AutomationFocusChanged on role=option, name=Apple
+ExpandCollapseExpandCollapseState changed on role=combobox
+SelectionItem_ElementSelected on role=option, name=Apple

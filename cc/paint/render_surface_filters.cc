@@ -11,6 +11,7 @@
 #include "cc/paint/filter_operation.h"
 #include "cc/paint/filter_operations.h"
 #include "cc/paint/paint_filter.h"
+#include "third_party/skia/include/core/SkColorFilter.h"
 #include "third_party/skia/include/core/SkImageFilter.h"
 #include "third_party/skia/include/core/SkRegion.h"
 #include "third_party/skia/include/effects/SkAlphaThresholdFilter.h"
@@ -26,31 +27,31 @@ namespace cc {
 
 namespace {
 
-void GetBrightnessMatrix(float amount, SkScalar matrix[20]) {
+void GetBrightnessMatrix(float amount, float matrix[20]) {
   // Spec implementation
   // (http://dvcs.w3.org/hg/FXTF/raw-file/tip/filters/index.html#brightnessEquivalent)
   // <feFunc[R|G|B] type="linear" slope="[amount]">
-  memset(matrix, 0, 20 * sizeof(SkScalar));
+  memset(matrix, 0, 20 * sizeof(float));
   matrix[0] = matrix[6] = matrix[12] = amount;
   matrix[18] = 1.f;
 }
 
-void GetSaturatingBrightnessMatrix(float amount, SkScalar matrix[20]) {
+void GetSaturatingBrightnessMatrix(float amount, float matrix[20]) {
   // Legacy implementation used by internal clients.
   // <feFunc[R|G|B] type="linear" intercept="[amount]"/>
-  memset(matrix, 0, 20 * sizeof(SkScalar));
+  memset(matrix, 0, 20 * sizeof(float));
   matrix[0] = matrix[6] = matrix[12] = matrix[18] = 1.f;
-  matrix[4] = matrix[9] = matrix[14] = amount * 255.f;
+  matrix[4] = matrix[9] = matrix[14] = amount;
 }
 
-void GetContrastMatrix(float amount, SkScalar matrix[20]) {
-  memset(matrix, 0, 20 * sizeof(SkScalar));
+void GetContrastMatrix(float amount, float matrix[20]) {
+  memset(matrix, 0, 20 * sizeof(float));
   matrix[0] = matrix[6] = matrix[12] = amount;
-  matrix[4] = matrix[9] = matrix[14] = (-0.5f * amount + 0.5f) * 255.f;
+  matrix[4] = matrix[9] = matrix[14] = (-0.5f * amount + 0.5f);
   matrix[18] = 1.f;
 }
 
-void GetSaturateMatrix(float amount, SkScalar matrix[20]) {
+void GetSaturateMatrix(float amount, float matrix[20]) {
   // Note, these values are computed to ensure MatrixNeedsClamping is false
   // for amount in [0..1]
   matrix[0] = 0.213f + 0.787f * amount;
@@ -69,7 +70,7 @@ void GetSaturateMatrix(float amount, SkScalar matrix[20]) {
   matrix[18] = 1.f;
 }
 
-void GetHueRotateMatrix(float hue, SkScalar matrix[20]) {
+void GetHueRotateMatrix(float hue, float matrix[20]) {
   float cos_hue = cosf(hue * base::kPiFloat / 180.f);
   float sin_hue = sinf(hue * base::kPiFloat / 180.f);
   matrix[0] = 0.213f + cos_hue * 0.787f - sin_hue * 0.213f;
@@ -89,20 +90,20 @@ void GetHueRotateMatrix(float hue, SkScalar matrix[20]) {
   matrix[19] = 0.f;
 }
 
-void GetInvertMatrix(float amount, SkScalar matrix[20]) {
-  memset(matrix, 0, 20 * sizeof(SkScalar));
+void GetInvertMatrix(float amount, float matrix[20]) {
+  memset(matrix, 0, 20 * sizeof(float));
   matrix[0] = matrix[6] = matrix[12] = 1.f - 2.f * amount;
-  matrix[4] = matrix[9] = matrix[14] = amount * 255.f;
+  matrix[4] = matrix[9] = matrix[14] = amount;
   matrix[18] = 1.f;
 }
 
-void GetOpacityMatrix(float amount, SkScalar matrix[20]) {
-  memset(matrix, 0, 20 * sizeof(SkScalar));
+void GetOpacityMatrix(float amount, float matrix[20]) {
+  memset(matrix, 0, 20 * sizeof(float));
   matrix[0] = matrix[6] = matrix[12] = 1.f;
   matrix[18] = amount;
 }
 
-void GetGrayscaleMatrix(float amount, SkScalar matrix[20]) {
+void GetGrayscaleMatrix(float amount, float matrix[20]) {
   // Note, these values are computed to ensure MatrixNeedsClamping is false
   // for amount in [0..1]
   matrix[0] = 0.2126f + 0.7874f * amount;
@@ -124,7 +125,7 @@ void GetGrayscaleMatrix(float amount, SkScalar matrix[20]) {
   matrix[18] = 1.f;
 }
 
-void GetSepiaMatrix(float amount, SkScalar matrix[20]) {
+void GetSepiaMatrix(float amount, float matrix[20]) {
   matrix[0] = 0.393f + 0.607f * amount;
   matrix[1] = 0.769f - 0.769f * amount;
   matrix[2] = 0.189f - 0.189f * amount;
@@ -144,10 +145,14 @@ void GetSepiaMatrix(float amount, SkScalar matrix[20]) {
   matrix[18] = 1.f;
 }
 
-sk_sp<PaintFilter> CreateMatrixImageFilter(const SkScalar matrix[20],
+sk_sp<PaintFilter> CreateMatrixImageFilter(const float matrix[20],
                                            sk_sp<PaintFilter> input) {
-  return sk_make_sp<ColorFilterPaintFilter>(
-      SkColorFilter::MakeMatrixFilterRowMajor255(matrix), std::move(input));
+  auto color_filter = SkColorFilters::Matrix(matrix);
+  if (!color_filter)
+    return nullptr;
+
+  return sk_make_sp<ColorFilterPaintFilter>(std::move(color_filter),
+                                            std::move(input));
 }
 
 }  // namespace
@@ -157,7 +162,7 @@ sk_sp<PaintFilter> RenderSurfaceFilters::BuildImageFilter(
     const gfx::SizeF& size,
     const gfx::Vector2dF& offset) {
   sk_sp<PaintFilter> image_filter;
-  SkScalar matrix[20];
+  float matrix[20];
   for (size_t i = 0; i < filters.size(); ++i) {
     const FilterOperation& op = filters.at(i);
     switch (op.type()) {
@@ -271,7 +276,7 @@ sk_sp<PaintFilter> RenderSurfaceFilters::BuildImageFilter(
           has_input = !!color_paint_filter->input();
         }
 
-        if (cf && cf->asColorMatrix(matrix) && !has_input) {
+        if (cf && cf->asAColorMatrix(matrix) && !has_input) {
           image_filter =
               CreateMatrixImageFilter(matrix, std::move(image_filter));
         } else if (image_filter) {

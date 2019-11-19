@@ -20,9 +20,11 @@
 namespace gl {
 
 class GLContext;
-struct GLContextAttribs;
 class GLShareGroup;
 class GLSurface;
+
+struct GLContextAttribs;
+struct GLVersionInfo;
 
 namespace init {
 
@@ -55,6 +57,7 @@ GL_INIT_EXPORT void ShutdownGL(bool due_to_fallback);
 // Return information about the GL window system binding implementation (e.g.,
 // EGL, GLX, WGL). Returns true if the information was retrieved successfully.
 GL_INIT_EXPORT bool GetGLWindowSystemBindingInfo(
+    const GLVersionInfo& gl_info,
     GLWindowSystemBindingInfo* info);
 
 // Creates a GL context that is compatible with the given surface.

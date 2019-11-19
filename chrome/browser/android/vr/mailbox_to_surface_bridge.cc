@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <utility>
 
 #include "base/bind.h"
 #include "base/logging.h"
@@ -19,12 +20,14 @@
 #include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/client/context_support.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
+#include "gpu/command_buffer/client/shared_image_interface.h"
+#include "gpu/command_buffer/common/gpu_memory_buffer_support.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/mailbox_holder.h"
 #include "gpu/ipc/client/gpu_channel_host.h"
 #include "gpu/ipc/common/gpu_memory_buffer_impl_android_hardware_buffer.h"
 #include "gpu/ipc/common/gpu_surface_tracker.h"
-#include "services/ws/public/cpp/gpu/context_provider_command_buffer.h"
+#include "services/viz/public/cpp/gpu/context_provider_command_buffer.h"
 #include "ui/gl/android/surface_texture.h"
 
 #include <android/native_window_jni.h>
@@ -134,16 +137,14 @@ GLuint ConsumeTexture(gpu::gles2::GLES2Interface* gl,
   TRACE_EVENT0("gpu", "MailboxToSurfaceBridge::ConsumeTexture");
   gl->WaitSyncTokenCHROMIUM(mailbox.sync_token.GetConstData());
 
-  return gl->CreateAndConsumeTextureCHROMIUM(mailbox.mailbox.name);
+  return gl->CreateAndTexStorage2DSharedImageCHROMIUM(mailbox.mailbox.name);
 }
 
 }  // namespace
 
 namespace vr {
 
-MailboxToSurfaceBridge::MailboxToSurfaceBridge()
-    : constructor_thread_task_runner_(base::ThreadTaskRunnerHandle::Get()),
-      weak_ptr_factory_(this) {
+MailboxToSurfaceBridge::MailboxToSurfaceBridge() {
   DVLOG(1) << __FUNCTION__;
 }
 
@@ -175,20 +176,12 @@ void MailboxToSurfaceBridge::OnContextAvailableOnUiThread(
   // destruction.
   context_provider_ = std::move(provider);
 
-  if (on_context_provider_ready_) {
-    // We have a custom callback from CreateUnboundContextProvider. Run that.
-    // The client is responsible for running BindContextProviderToCurrentThread
-    // before use.
-    constructor_thread_task_runner_->PostTask(
-        FROM_HERE, base::ResetAndReturn(&on_context_provider_ready_));
-  } else {
-    DCHECK(on_context_bound_);
-    constructor_thread_task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            &MailboxToSurfaceBridge::BindContextProviderToCurrentThread,
-            base::Unretained(this)));
-  }
+  DCHECK(on_context_bound_);
+  gl_thread_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          &MailboxToSurfaceBridge::BindContextProviderToCurrentThread,
+          base::Unretained(this)));
 }
 
 void MailboxToSurfaceBridge::BindContextProviderToCurrentThread() {
@@ -213,7 +206,7 @@ void MailboxToSurfaceBridge::BindContextProviderToCurrentThread() {
 
   DVLOG(1) << __FUNCTION__ << ": Context ready";
   if (on_context_bound_) {
-    base::ResetAndReturn(&on_context_bound_).Run();
+    std::move(on_context_bound_).Run();
   }
 }
 
@@ -226,26 +219,17 @@ void MailboxToSurfaceBridge::CreateSurface(
   surface_ = std::make_unique<gl::ScopedJavaSurface>(surface_texture);
   surface_handle_ =
       tracker->AddSurfaceForNativeWidget(gpu::GpuSurfaceTracker::SurfaceRecord(
-          window, surface_->j_surface().obj()));
+          window, surface_->j_surface().obj(),
+          false /* can_be_used_with_surface_control */));
   // Unregistering happens in the destructor.
   ANativeWindow_release(window);
 }
 
-void MailboxToSurfaceBridge::CreateUnboundContextProvider(
-    base::OnceClosure callback) {
-  on_context_provider_ready_ = std::move(callback);
-  DCHECK(!on_context_bound_);
-  CreateContextProviderInternal();
-}
-
 void MailboxToSurfaceBridge::CreateAndBindContextProvider(
     base::OnceClosure on_bound_callback) {
+  gl_thread_task_runner_ = base::ThreadTaskRunnerHandle::Get();
   on_context_bound_ = std::move(on_bound_callback);
-  DCHECK(!on_context_provider_ready_);
-  CreateContextProviderInternal();
-}
 
-void MailboxToSurfaceBridge::CreateContextProviderInternal() {
   // The callback to run in this thread. It is necessary to keep |surface| alive
   // until the context becomes available. So pass it on to the callback, so that
   // it stays alive, and is destroyed on the same thread once done.
@@ -253,7 +237,7 @@ void MailboxToSurfaceBridge::CreateContextProviderInternal() {
       base::BindRepeating(&MailboxToSurfaceBridge::OnContextAvailableOnUiThread,
                           weak_ptr_factory_.GetWeakPtr());
 
-  base::PostTaskWithTraits(
+  base::PostTask(
       FROM_HERE, {content::BrowserThread::UI},
       base::BindOnce(
           [](int surface_handle,
@@ -289,17 +273,19 @@ void MailboxToSurfaceBridge::CreateContextProviderInternal() {
 }
 
 void MailboxToSurfaceBridge::ResizeSurface(int width, int height) {
+  surface_width_ = width;
+  surface_height_ = height;
+
   if (!IsConnected()) {
     // We're not initialized yet, save the requested size for later.
     needs_resize_ = true;
-    resize_width_ = width;
-    resize_height_ = height;
     return;
   }
-  DVLOG(1) << __FUNCTION__ << ": resize Surface to " << width << "x" << height;
-  gl_->ResizeCHROMIUM(width, height, 1.f, GL_COLOR_SPACE_UNSPECIFIED_CHROMIUM,
-                      false);
-  gl_->Viewport(0, 0, width, height);
+  DVLOG(1) << __FUNCTION__ << ": resize Surface to " << surface_width_ << "x"
+           << surface_height_;
+  gl_->ResizeCHROMIUM(surface_width_, surface_height_, 1.f,
+                      GL_COLOR_SPACE_UNSPECIFIED_CHROMIUM, false);
+  gl_->Viewport(0, 0, surface_width_, surface_height_);
 }
 
 bool MailboxToSurfaceBridge::CopyMailboxToSurfaceAndSwap(
@@ -312,13 +298,25 @@ bool MailboxToSurfaceBridge::CopyMailboxToSurfaceAndSwap(
   }
 
   TRACE_EVENT0("gpu", __FUNCTION__);
+
   if (needs_resize_) {
-    ResizeSurface(resize_width_, resize_height_);
+    ResizeSurface(surface_width_, surface_height_);
     needs_resize_ = false;
   }
 
+  DCHECK(mailbox.mailbox.IsSharedImage());
+
+  // While it's not an error to use a zero-sized Surface, it's not going to
+  // produce any visible output. Show a debug mode warning in that case to avoid
+  // another annoying debugging session.
+  DLOG_IF(WARNING, !surface_width_ || !surface_height_)
+      << "Surface is zero-sized. Missing call to ResizeSurface?";
+
   GLuint sourceTexture = ConsumeTexture(gl_, mailbox);
+  gl_->BeginSharedImageAccessDirectCHROMIUM(
+      sourceTexture, GL_SHARED_IMAGE_ACCESS_MODE_READ_CHROMIUM);
   DrawQuad(sourceTexture);
+  gl_->EndSharedImageAccessDirectCHROMIUM(sourceTexture);
   gl_->DeleteTextures(1, &sourceTexture);
   gl_->SwapBuffers(swap_id_++);
   return true;
@@ -355,46 +353,34 @@ void MailboxToSurfaceBridge::CreateGpuFence(
   gl_->DestroyGpuFenceCHROMIUM(id);
 }
 
-uint32_t MailboxToSurfaceBridge::CreateMailboxTexture(gpu::Mailbox* mailbox) {
+gpu::MailboxHolder MailboxToSurfaceBridge::CreateSharedImage(
+    gpu::GpuMemoryBufferImplAndroidHardwareBuffer* buffer,
+    const gfx::ColorSpace& color_space,
+    uint32_t usage) {
   TRACE_EVENT0("gpu", __FUNCTION__);
   DCHECK(IsConnected());
 
-  GLuint tex = 0;
-  gl_->GenTextures(1, &tex);
-  gl_->BindTexture(GL_TEXTURE_2D, tex);
-  gl_->ProduceTextureDirectCHROMIUM(tex, mailbox->name);
+  auto* sii = context_provider_->SharedImageInterface();
+  DCHECK(sii);
 
-  return tex;
+  gpu::MailboxHolder mailbox_holder;
+  mailbox_holder.mailbox =
+      sii->CreateSharedImage(buffer, nullptr, color_space, usage);
+  mailbox_holder.sync_token = sii->GenVerifiedSyncToken();
+  DCHECK(!gpu::NativeBufferNeedsPlatformSpecificTextureTarget(
+      buffer->GetFormat()));
+  mailbox_holder.texture_target = GL_TEXTURE_2D;
+  return mailbox_holder;
 }
 
-uint32_t MailboxToSurfaceBridge::BindSharedBufferImage(
-    gfx::GpuMemoryBuffer* buffer,
-    const gfx::Size& size,
-    gfx::BufferFormat format,
-    gfx::BufferUsage usage,
-    uint32_t texture_id) {
+void MailboxToSurfaceBridge::DestroySharedImage(
+    const gpu::MailboxHolder& mailbox_holder) {
   TRACE_EVENT0("gpu", __FUNCTION__);
   DCHECK(IsConnected());
 
-  auto img = gl_->CreateImageCHROMIUM(buffer->AsClientBuffer(), size.width(),
-                                      size.height(), GL_RGBA);
-
-  gl_->BindTexture(GL_TEXTURE_2D, texture_id);
-  gl_->BindTexImage2DCHROMIUM(GL_TEXTURE_2D, img);
-  gl_->BindTexture(GL_TEXTURE_2D, 0);
-
-  return img;
-}
-
-void MailboxToSurfaceBridge::UnbindSharedBuffer(GLuint image_id,
-                                                GLuint texture_id) {
-  TRACE_EVENT0("gpu", __FUNCTION__);
-  DCHECK(IsConnected());
-
-  gl_->BindTexture(GL_TEXTURE_2D, texture_id);
-  gl_->ReleaseTexImage2DCHROMIUM(GL_TEXTURE_2D, image_id);
-  gl_->BindTexture(GL_TEXTURE_2D, 0);
-  gl_->DestroyImageCHROMIUM(image_id);
+  auto* sii = context_provider_->SharedImageInterface();
+  DCHECK(sii);
+  sii->DestroySharedImage(mailbox_holder.sync_token, mailbox_holder.mailbox);
 }
 
 void MailboxToSurfaceBridge::DestroyContext() {

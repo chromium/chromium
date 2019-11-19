@@ -1,0 +1,223 @@
+/* Copyright 2016 The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
+body {
+  border: 0;
+  height: 35px;
+  margin: 0;
+  overflow: hidden;
+  padding: 0;
+}
+
+#main {
+  background-color: #000;
+  display: flex;
+  height: 35px;
+  left: 0;
+  position: fixed;
+  right: 0;
+  top: 0;
+}
+
+button {
+  background-color: #000;
+  border: 0;
+  margin: 0;
+  outline: none;
+  padding: 0;
+}
+
+#menus_button {
+  height: 35px;
+  min-width: 52px;
+}
+
+#menus_button:hover {
+  background-color: rgb(246, 145, 57);
+}
+
+#options_close {
+  height: 35px;
+  min-width: 48px;
+}
+
+#chromevox {
+  height: 19px;
+  margin: 8px 0;
+  width: 19px;
+}
+
+#triangle {
+  height: 6px;
+  margin: 14px 0;
+  width: 6px;
+}
+
+#options {
+  background-image: url(/images/options-19.png);
+  height: 19px;
+  margin: 8px 0;
+  width: 19px;
+}
+
+#options:hover {
+  background-image: url(/images/options-hover-19.png);
+}
+
+#close {
+  background-image: url(/images/close-19.png);
+  height: 19px;
+  width: 19px;
+}
+
+#close:hover {
+  background-image: url(/images/close-hover-19.png);
+}
+
+#caption {
+  color: #fff;
+  flex-grow: 1;
+  margin: 0 12px;
+}
+
+#speech-container {
+  height: 35px;
+  margin: 0 12px;
+}
+
+#speech {
+  font-family: 'Roboto', sans-serif;
+  font-size: 12pt;
+  height: 35px;
+  line-height: 35px;
+  overflow: hidden;
+}
+
+.usertext {
+  font-style: italic;
+  font-weight: 700;
+}
+
+#braille-container {
+  height: 35px;
+  position: relative;
+  top: -35px;
+}
+
+#braille-text {
+  font-family: 'Droid Sans Mono', Courier, monospace;
+  font-size: 12pt;
+  height: 17px;
+  letter-spacing: 3.13px;
+  line-height: 17px;
+  white-space: pre;
+}
+
+#braille-cells {
+  font-family: 'Droid Sans Mono', Courier, monospace;
+  font-size: 13pt;
+  height: 17px;
+  line-height: 17px;
+  white-space: pre;
+}
+
+#search-container {
+  height: 35px;
+  margin: 0 12px;
+}
+
+#search {
+  background-color: #000;
+  border: 1px solid #fff;
+  color: #fff;
+  font-family: 'Roboto', sans-serif;
+  font-size: 12pt;
+  height: 35px;
+  line-height: 35px;
+  overflow: hidden;
+  width: 100%;
+}
+
+#menus_background {
+  background-color: #eee;
+  bottom: 0;
+  left: 0;
+  position: fixed;
+  right: 0;
+  top: 35px;
+}
+
+#menu-bar {
+  background-color: #000;
+  display: flex;
+  height: 35px;
+  width: 100%;
+}
+
+.menu-bar-item {
+  color: #fff;
+  cursor: pointer;
+  flex-grow: 1;
+  font-family: 'Roboto', sans-serif;
+  font-size: 12pt;
+  font-weight: bold;
+  height: 35px;
+  height: 35px;
+  line-height: 35px;
+  overflow: hidden;
+  padding: 0 12px;
+  text-align: center;
+}
+
+.menu-bar-item.active {
+  background-color: rgb(246, 145, 57);
+  color: #fff;
+}
+
+.menu-container {
+  background-color: #fff;
+  border: 1px solid #000;
+  border-top: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  position: absolute;
+}
+
+.menu {
+  border-spacing: 0;
+}
+
+.menu-item {
+  color: #000;
+  cursor: pointer;
+  display: table-row;
+  font-family: 'Roboto', sans-serif;
+  font-size: 12pt;
+  height: 35px;
+  line-height: 35px;
+  margin: 0;
+  overflow: hidden;
+  padding: 0 12px;
+}
+
+.menu-item:hover,
+.menu-item.hover,
+.menu-item:focus {
+  background-color: rgb(246, 145, 57);
+  color: #fff;
+}
+
+.menu-item-title {
+  border: 0;
+  margin: 0;
+  padding: 0 18px;
+}
+
+.menu-item-shortcut {
+  border: 0;
+  margin: 0;
+  padding: 0 18px 0 24px;
+  text-align: right;
+}

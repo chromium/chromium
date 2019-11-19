@@ -1,0 +1,64 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("send_tab_to_self") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "ios_send_tab_to_self_infobar_delegate.cc",
+    "ios_send_tab_to_self_infobar_delegate.h",
+    "send_tab_to_self_client_service_factory.h",
+    "send_tab_to_self_client_service_factory.mm",
+    "send_tab_to_self_client_service_ios.h",
+    "send_tab_to_self_client_service_ios.mm",
+    "send_tab_to_self_util.h",
+    "send_tab_to_self_util.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/infobars/core",
+    "//components/keyed_service/core",
+    "//components/keyed_service/ios",
+    "//components/send_tab_to_self",
+    "//components/sync",
+    "//components/sync_device_info",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/app/theme:theme_grit",
+    "//ios/chrome/browser",
+    "//ios/chrome/browser/browser_state",
+    "//ios/chrome/browser/infobars",
+    "//ios/chrome/browser/infobars:public",
+    "//ios/chrome/browser/sync",
+    "//ios/chrome/browser/tabs",
+    "//ios/chrome/browser/ui/commands",
+    "//ios/chrome/browser/ui/infobars:infobars_ui",
+    "//ios/chrome/browser/ui/util",
+    "//ios/chrome/browser/web_state_list",
+    "//ios/web",
+    "//ui/base",
+    "//ui/gfx",
+    "//ui/strings:ui_strings_grit",
+  ]
+}
+
+source_set("unit_tests") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  testonly = true
+  sources = [
+    "send_tab_to_self_util_unittest.mm",
+  ]
+  deps = [
+    ":send_tab_to_self",
+    "//base",
+    "//base/test:test_support",
+    "//components/send_tab_to_self",
+    "//components/send_tab_to_self:test_support",
+    "//components/sync",
+    "//ios/chrome/browser/browser_state:test_support",
+    "//ios/chrome/browser/sync",
+    "//ios/chrome/browser/sync:test_support",
+    "//testing/gtest",
+    "//third_party/ocmock",
+    "//url",
+  ]
+}

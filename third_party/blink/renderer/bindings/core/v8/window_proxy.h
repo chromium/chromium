@@ -141,7 +141,7 @@ struct WrapperTypeInfo;
 // ====== References ======
 // https://wiki.mozilla.org/Gecko:SplitWindow
 // https://whatwg.org/C/browsers.html#the-windowproxy-exotic-object
-class WindowProxy : public GarbageCollectedFinalized<WindowProxy> {
+class WindowProxy : public GarbageCollected<WindowProxy> {
  public:
   virtual ~WindowProxy();
 
@@ -256,7 +256,9 @@ class WindowProxy : public GarbageCollectedFinalized<WindowProxy> {
 
   virtual void Initialize() = 0;
 
-  virtual void DisposeContext(Lifecycle next_status, FrameReuseStatus) = 0;
+  virtual void DisposeContext(Lifecycle next_status,
+                              FrameReuseStatus,
+                              v8::Context::DetachedWindowReason) = 0;
 
   WARN_UNUSED_RESULT v8::Local<v8::Object> AssociateWithWrapper(
       DOMWindow*,

@@ -15,8 +15,8 @@ body {
   border: none;
   border-radius: 8px;
   bottom: 0;
-  box-shadow: 0 1px 3px 0 rgba(var(--GG800-rgb), 0.3),
-      0 4px 8px 3px rgba(var(--GG800-rgb), 0.15);
+  box-shadow: 0 1px 3px 0 rgba(var(--GG800-rgb), .3),
+      0 4px 8px 3px rgba(var(--GG800-rgb), .15);
   margin: auto;
   min-width: 320px;
   padding: 16px;
@@ -24,10 +24,11 @@ body {
   z-index: 10000;
 }
 
-html[darkmode=true] #edit-link-dialog {
-  background-color: rgb(41, 42, 45);
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.3),
-      0 4px 8px 3px rgba(0, 0, 0, 0.15);
+@media (prefers-color-scheme: dark) {
+  #edit-link-dialog {
+    background-color: rgb(var(--dark-mode-dialog-rgb));
+    box-shadow: var(--dark-mode-shadow);
+  }
 }
 
 #edit-link-dialog::backdrop {
@@ -45,8 +46,10 @@ html[darkmode=true] #edit-link-dialog {
   margin-bottom: 16px;
 }
 
-html[darkmode=true] #dialog-title {
-  color: rgb(var(--GG200-rgb));
+@media (prefers-color-scheme: dark) {
+  #dialog-title {
+    color: rgb(var(--GG200-rgb));
+  }
 }
 
 .field-container {
@@ -60,8 +63,10 @@ html[darkmode=true] #dialog-title {
   margin-bottom: 4px;
 }
 
-html[darkmode=true] .field-title {
-  color: rgb(var(--GG400-rgb));
+@media (prefers-color-scheme: dark) {
+  .field-title {
+    color: rgb(var(--GG400-rgb));
+  }
 }
 
 .input-container {
@@ -75,8 +80,8 @@ input {
   caret-color: rgb(var(--GB600-rgb));
   color: rgb(var(--GG900-rgb));
   font-size: 13px;
-  height: 32px;
-  line-height: 24px;
+  line-height: 1.6;
+  min-height: 32px;
   outline: none;
   padding-inline-end: 8px;
   padding-inline-start: 8px;
@@ -87,18 +92,22 @@ html[dir=rtl] input {
   text-align: right;  /* csschecker-disable-line left-right */
 }
 
-html[darkmode=true] input {
-  background-color: rgba(0, 0, 0, 0.3);
-  caret-color: rgb(var(--GB300-rgb));
-  color: rgb(var(--GG200-rgb));
+@media (prefers-color-scheme: dark) {
+  input {
+    background-color: rgba(0, 0, 0, .3);
+    caret-color: rgb(var(--GB300-rgb));
+    color: rgb(var(--GG200-rgb));
+  }
 }
 
 input::placeholder {
-  color: rgba(var(--GG900-rgb), 0.38);
+  color: rgba(var(--GG900-rgb), .38);
 }
 
-html[darkmode=true] input::placeholder {
-  color: rgb(var(--GG500-rgb));
+@media (prefers-color-scheme: dark) {
+  input::placeholder {
+    color: rgb(var(--GG500-rgb));
+  }
 }
 
 .underline {
@@ -114,8 +123,10 @@ html[darkmode=true] input::placeholder {
   width: 0;
 }
 
-html[darkmode=true] .underline {
-  border-color: rgb(var(--GB300-rgb));
+@media (prefers-color-scheme: dark) {
+  .underline {
+    border-color: rgb(var(--GB300-rgb));
+  }
 }
 
 input:focus + .underline {
@@ -128,8 +139,10 @@ input:focus + .underline {
   color: rgb(var(--GB600-rgb));
 }
 
-html[darkmode=true] .field-title.focused {
-  color: rgb(var(--GB300-rgb));
+@media (prefers-color-scheme: dark) {
+  .field-title.focused {
+    color: rgb(var(--GB300-rgb));
+  }
 }
 
 .error-msg {
@@ -140,16 +153,20 @@ html[darkmode=true] .field-title.focused {
   margin-top: 6px;
 }
 
-html[darkmode=true] .error-msg {
-  color: rgb(var(--GR300-rgb));
+@media (prefers-color-scheme: dark) {
+  .error-msg {
+    color: rgb(var(--GR300-rgb));
+  }
 }
 
 .invalid label {
   color: rgb(var(--GR600-rgb));
 }
 
-html[darkmode=true] .invalid label {
-  color: rgb(var(--GR300-rgb));
+@media (prefers-color-scheme: dark) {
+  .invalid label {
+    color: rgb(var(--GR300-rgb));
+  }
 }
 
 .invalid .error-msg {
@@ -163,8 +180,10 @@ html[darkmode=true] .invalid label {
   width: 100%;
 }
 
-html[darkmode=true] .invalid .underline {
-  border-color: rgb(var(--GR300-rgb));
+@media (prefers-color-scheme: dark) {
+  .invalid .underline {
+    border-color: rgb(var(--GR300-rgb));
+  }
 }
 
 .buttons-container {

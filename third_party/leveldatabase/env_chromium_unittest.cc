@@ -15,9 +15,10 @@
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/test/test_suite.h"
 #include "base/trace_event/process_memory_dump.h"
+#include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/leveldatabase/env_chromium.h"
 #include "third_party/leveldatabase/leveldb_chrome.h"
@@ -26,6 +27,10 @@
 #include "third_party/leveldatabase/src/include/leveldb/db.h"
 
 #define FPL FILE_PATH_LITERAL
+
+#if defined(OS_WIN) && defined(DeleteFile)
+#undef DeleteFile
+#endif
 
 using base::trace_event::MemoryDumpArgs;
 using base::trace_event::MemoryDumpLevelOfDetail;
@@ -265,8 +270,7 @@ TEST(ChromiumEnvTest, TestOpenOnRead) {
 class ChromiumEnvDBTrackerTest : public ::testing::Test {
  protected:
   ChromiumEnvDBTrackerTest()
-      : scoped_task_environment_(
-            base::test::ScopedTaskEnvironment::MainThreadType::UI) {}
+      : task_environment_(base::test::TaskEnvironment::MainThreadType::UI) {}
   void SetUp() override {
     testing::Test::SetUp();
     ASSERT_TRUE(scoped_temp_dir_.CreateUniqueTempDir());
@@ -301,7 +305,7 @@ class ChromiumEnvDBTrackerTest : public ::testing::Test {
 
  private:
   base::ScopedTempDir scoped_temp_dir_;
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_;
 };
 
 TEST_F(ChromiumEnvDBTrackerTest, OpenDatabase) {

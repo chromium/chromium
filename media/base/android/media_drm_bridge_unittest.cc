@@ -10,7 +10,7 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "media/base/android/media_drm_bridge.h"
 #include "media/base/provision_fetcher.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -116,7 +116,7 @@ class MediaDrmBridgeTest : public ProvisionFetcher, public testing::Test {
     return std::make_unique<ProvisionFetcherWrapper>(this);
   }
 
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_;
 };
 
 TEST_F(MediaDrmBridgeTest, IsKeySystemSupported_Widevine) {
@@ -186,6 +186,16 @@ TEST_F(MediaDrmBridgeTest, Provision_Widevine) {
   // if it's not supported.
   if (!MediaDrmBridge::IsPerOriginProvisioningSupported()) {
     VLOG(0) << "Origin isolated storage not supported on device.";
+    return;
+  }
+
+  // On Android M occasionally MediaDrm.getProvisionRequest() throws and thus a
+  // request can not be generated. This has been fixed in Android N. As Android
+  // M is unlikely to be fixed, disabling this test if running on Android M.
+  // http://crbug.com/973096#c21
+  if (base::android::BuildInfo::GetInstance()->sdk_int() ==
+      base::android::SDK_VERSION_MARSHMALLOW) {
+    VLOG(0) << "Disabled for Android M.";
     return;
   }
 

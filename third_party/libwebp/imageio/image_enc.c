@@ -29,11 +29,13 @@
                          // code with COBJMACROS.
 #include <ole2.h>  // CreateStreamOnHGlobal()
 #include <shlwapi.h>
+#include <tchar.h>
 #include <windows.h>
 #include <wincodec.h>
 #endif
 
 #include "./imageio_util.h"
+#include "../examples/unicode.h"
 
 //------------------------------------------------------------------------------
 // PNG
@@ -61,11 +63,12 @@ static HRESULT CreateOutputStream(const char* out_file_name,
     // Output to a memory buffer. This is freed when 'stream' is released.
     IFS(CreateStreamOnHGlobal(NULL, TRUE, stream));
   } else {
-    IFS(SHCreateStreamOnFileA(out_file_name, STGM_WRITE | STGM_CREATE, stream));
+    IFS(SHCreateStreamOnFile((const LPTSTR)out_file_name,
+                             STGM_WRITE | STGM_CREATE, stream));
   }
   if (FAILED(hr)) {
-    fprintf(stderr, "Error opening output file %s (%08lx)\n",
-            out_file_name, hr);
+    _ftprintf(stderr, _T("Error opening output file %s (%08lx)\n"),
+              (const LPTSTR)out_file_name, hr);
   }
   return hr;
 }
@@ -549,7 +552,8 @@ int WebPSaveImage(const WebPDecBuffer* const buffer,
                   const char* const out_file_name) {
   FILE* fout = NULL;
   int needs_open_file = 1;
-  const int use_stdout = (out_file_name != NULL) && !strcmp(out_file_name, "-");
+  const int use_stdout =
+      (out_file_name != NULL) && !WSTRCMP(out_file_name, "-");
   int ok = 1;
 
   if (buffer == NULL || out_file_name == NULL) return 0;
@@ -560,9 +564,10 @@ int WebPSaveImage(const WebPDecBuffer* const buffer,
 
   if (needs_open_file) {
     fout = use_stdout ? ImgIoUtilSetBinaryMode(stdout)
-                      : fopen(out_file_name, "wb");
+                      : WFOPEN(out_file_name, "wb");
     if (fout == NULL) {
-      fprintf(stderr, "Error opening output file %s\n", out_file_name);
+      WFPRINTF(stderr, "Error opening output file %s\n",
+               (const W_CHAR*)out_file_name);
       return 0;
     }
   }

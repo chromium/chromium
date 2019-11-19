@@ -55,9 +55,9 @@ bool FindBarIcon::Update() {
   if (!browser_->window() || !browser_->HasFindBarController())
     return false;
 
-  const bool was_visible = visible();
+  const bool was_visible = GetVisible();
   SetVisible(browser_->GetFindBarController()->find_bar()->IsFindBarVisible());
-  const bool visibility_changed = was_visible != visible();
-  SetActive(visible(), visibility_changed);
+  const bool visibility_changed = was_visible != GetVisible();
+  SetActive(GetVisible(), visibility_changed);
   return visibility_changed;
 }

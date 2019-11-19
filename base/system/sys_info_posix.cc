@@ -9,6 +9,7 @@
 #include <stdint.h>
 #include <string.h>
 #include <sys/param.h>
+#include <sys/resource.h>
 #include <sys/utsname.h>
 #include <unistd.h>
 
@@ -19,10 +20,6 @@
 #include "base/system/sys_info_internal.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "build/build_config.h"
-
-#if !defined(OS_FUCHSIA)
-#include <sys/resource.h>
-#endif
 
 #if defined(OS_ANDROID)
 #include <sys/vfs.h>
@@ -38,7 +35,7 @@
 
 namespace {
 
-#if !defined(OS_OPENBSD) && !defined(OS_FUCHSIA)
+#if !defined(OS_OPENBSD)
 int NumberOfProcessors() {
   // sysconf returns the number of "logical" (not "physical") processors on both
   // Mac and Linux.  So we get the number of max available "logical" processors.
@@ -64,9 +61,8 @@ int NumberOfProcessors() {
 
 base::LazyInstance<base::internal::LazySysInfoValue<int, NumberOfProcessors>>::
     Leaky g_lazy_number_of_processors = LAZY_INSTANCE_INITIALIZER;
-#endif  // !defined(OS_OPENBSD) && !defined(OS_FUCHSIA)
+#endif  // !defined(OS_OPENBSD)
 
-#if !defined(OS_FUCHSIA)
 int64_t AmountOfVirtualMemory() {
   struct rlimit limit;
   int result = getrlimit(RLIMIT_DATA, &limit);
@@ -80,7 +76,6 @@ int64_t AmountOfVirtualMemory() {
 base::LazyInstance<
     base::internal::LazySysInfoValue<int64_t, AmountOfVirtualMemory>>::Leaky
     g_lazy_virtual_memory = LAZY_INSTANCE_INITIALIZER;
-#endif  // !defined(OS_FUCHSIA)
 
 #if defined(OS_LINUX)
 bool IsStatsZeroIfUnlimited(const base::FilePath& path) {
@@ -97,7 +92,7 @@ bool IsStatsZeroIfUnlimited(const base::FilePath& path) {
   }
   return false;
 }
-#endif
+#endif  // defined(OS_LINUX)
 
 bool GetDiskSpaceInfo(const base::FilePath& path,
                       int64_t* available_bytes,
@@ -132,18 +127,16 @@ bool GetDiskSpaceInfo(const base::FilePath& path,
 
 namespace base {
 
-#if !defined(OS_OPENBSD) && !defined(OS_FUCHSIA)
+#if !defined(OS_OPENBSD)
 int SysInfo::NumberOfProcessors() {
   return g_lazy_number_of_processors.Get().value();
 }
-#endif
+#endif  // !defined(OS_OPENBSD)
 
-#if !defined(OS_FUCHSIA)
 // static
 int64_t SysInfo::AmountOfVirtualMemory() {
   return g_lazy_virtual_memory.Get().value();
 }
-#endif
 
 // static
 int64_t SysInfo::AmountOfFreeDiskSpace(const FilePath& path) {
@@ -177,7 +170,7 @@ std::string SysInfo::OperatingSystemName() {
   }
   return std::string(info.sysname);
 }
-#endif
+#endif  //! defined(OS_MACOSX) && !defined(OS_ANDROID)
 
 #if !defined(OS_MACOSX) && !defined(OS_ANDROID) && !defined(OS_CHROMEOS)
 // static

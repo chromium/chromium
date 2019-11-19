@@ -8,16 +8,15 @@
 #include "base/task/post_task.h"
 #include "build/build_config.h"
 #include "content/browser/utility_process_host.h"
-#include "content/browser/utility_process_host_client.h"
 #include "content/public/browser/browser_child_process_observer.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/child_process_data.h"
 #include "content/public/browser/child_process_termination_info.h"
-#include "content/public/common/bind_interface_helpers.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/test_service.mojom.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 #if defined(OS_MACOSX) || defined(OS_LINUX)
 #include <sys/wait.h>
@@ -46,7 +45,7 @@ class UtilityProcessHostBrowserTest : public BrowserChildProcessObserver,
     done_closure_ =
         base::BindOnce(&UtilityProcessHostBrowserTest::DoneRunning,
                        base::Unretained(this), run_loop.QuitClosure(), crash);
-    base::PostTaskWithTraits(
+    base::PostTask(
         FROM_HERE, {BrowserThread::IO},
         base::BindOnce(
             &UtilityProcessHostBrowserTest::RunUtilityProcessOnIOThread,
@@ -64,9 +63,7 @@ class UtilityProcessHostBrowserTest : public BrowserChildProcessObserver,
 
   void RunUtilityProcessOnIOThread(bool elevated, bool crash) {
     DCHECK_CURRENTLY_ON(BrowserThread::IO);
-    UtilityProcessHost* host =
-        new UtilityProcessHost(/*client=*/nullptr,
-                               /*client_task_runner=*/nullptr);
+    UtilityProcessHost* host = new UtilityProcessHost();
     host->SetName(base::ASCIIToUTF16("TestProcess"));
     host->SetMetricsName(kTestProcessName);
 #if defined(OS_WIN)
@@ -76,7 +73,8 @@ class UtilityProcessHostBrowserTest : public BrowserChildProcessObserver,
 #endif
     EXPECT_TRUE(host->Start());
 
-    BindInterface(host, &service_);
+    host->GetChildProcess()->BindReceiver(
+        service_.BindNewPipeAndPassReceiver());
     if (crash) {
       service_->DoCrashImmediately(
           base::BindOnce(&UtilityProcessHostBrowserTest::OnSomethingOnIOThread,
@@ -98,11 +96,10 @@ class UtilityProcessHostBrowserTest : public BrowserChildProcessObserver,
     // If service crashes then this never gets called.
     ASSERT_EQ(false, expect_crash);
     ResetServiceOnIOThread();
-    base::PostTaskWithTraits(FROM_HERE, {BrowserThread::UI},
-                             std::move(done_closure_));
+    base::PostTask(FROM_HERE, {BrowserThread::UI}, std::move(done_closure_));
   }
 
-  mojom::TestServicePtr service_;
+  mojo::Remote<mojom::TestService> service_;
   base::OnceClosure done_closure_;
 
   // Access on UI thread.
@@ -136,7 +133,7 @@ class UtilityProcessHostBrowserTest : public BrowserChildProcessObserver,
     EXPECT_EQ(kTestProcessName, data.metrics_name);
     EXPECT_EQ(false, has_crashed);
     has_crashed = true;
-    base::PostTaskWithTraits(
+    base::PostTask(
         FROM_HERE, {BrowserThread::IO},
         base::BindOnce(&UtilityProcessHostBrowserTest::ResetServiceOnIOThread,
                        base::Unretained(this)));
@@ -161,7 +158,7 @@ IN_PROC_BROWSER_TEST_F(UtilityProcessHostBrowserTest,
 
 // Disabled because currently this causes a WER dialog to appear.
 IN_PROC_BROWSER_TEST_F(UtilityProcessHostBrowserTest,
-                       LaunchElevatedProcessAndCrash_DISABLED) {
+                       DISABLED_LaunchElevatedProcessAndCrash) {
   RunUtilityProcess(true, true);
 }
 #endif

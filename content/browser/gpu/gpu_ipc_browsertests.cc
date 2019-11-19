@@ -19,8 +19,8 @@
 #include "content/test/gpu_browsertest_helpers.h"
 #include "gpu/ipc/client/command_buffer_proxy_impl.h"
 #include "gpu/ipc/client/gpu_channel_host.h"
-#include "services/viz/privileged/interfaces/gl/gpu_service.mojom.h"
-#include "services/ws/public/cpp/gpu/context_provider_command_buffer.h"
+#include "services/viz/privileged/mojom/gl/gpu_service.mojom.h"
+#include "services/viz/public/cpp/gpu/context_provider_command_buffer.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkPaint.h"
 #include "third_party/skia/include/core/SkSurface.h"
@@ -83,7 +83,7 @@ class ContextTestBase : public content::ContentBrowserTest {
   gpu::ContextSupport* context_support_ = nullptr;
 
  private:
-  scoped_refptr<ws::ContextProviderCommandBuffer> provider_;
+  scoped_refptr<viz::ContextProviderCommandBuffer> provider_;
 };
 
 }  // namespace
@@ -180,34 +180,6 @@ IN_PROC_BROWSER_TEST_F(BrowserGpuChannelHostFactoryTest,
 }
 #endif
 
-// Test fails on Chromeos + Mac, flaky on Windows because UI Compositor
-// establishes a GPU channel.
-#if defined(OS_LINUX) && !defined(OS_CHROMEOS)
-#define MAYBE_CallbacksDontRunOnEstablishSync CallbacksDontRunOnEstablishSync
-#else
-#define MAYBE_CallbacksDontRunOnEstablishSync \
-  DISABLED_CallbacksDontRunOnEstablishSync
-#endif
-IN_PROC_BROWSER_TEST_F(BrowserGpuChannelHostFactoryTest,
-                       MAYBE_CallbacksDontRunOnEstablishSync) {
-  DCHECK(!IsChannelEstablished());
-  bool event = false;
-  base::RunLoop run_loop;
-  GetFactory()->EstablishGpuChannel(
-      base::BindOnce(&BrowserGpuChannelHostFactoryTest::SignalAndQuitLoop,
-                     base::Unretained(this), &event, &run_loop));
-
-  scoped_refptr<gpu::GpuChannelHost> gpu_channel =
-      GetFactory()->EstablishGpuChannelSync();
-
-  // Expect async callback didn't run yet.
-  EXPECT_FALSE(event);
-
-  run_loop.Run();
-  EXPECT_TRUE(event);
-  EXPECT_EQ(gpu_channel.get(), GetGpuChannel());
-}
-
 // Test fails on Windows because GPU Channel set-up fails.
 #if !defined(OS_WIN)
 #define MAYBE_GrContextKeepsGpuChannelAlive GrContextKeepsGpuChannelAlive
@@ -219,7 +191,7 @@ IN_PROC_BROWSER_TEST_F(BrowserGpuChannelHostFactoryTest,
                        MAYBE_GrContextKeepsGpuChannelAlive) {
   // Test for crbug.com/551143
   // This test verifies that holding a reference to the GrContext created by
-  // a ws::ContextProviderCommandBuffer will keep the gpu channel alive after
+  // a viz::ContextProviderCommandBuffer will keep the gpu channel alive after
   // the
   // provider has been destroyed. Without this behavior, user code would have
   // to be careful to destroy objects in the right order to avoid using freed
@@ -229,7 +201,7 @@ IN_PROC_BROWSER_TEST_F(BrowserGpuChannelHostFactoryTest,
 
   // Step 2: verify that holding onto the provider's GrContext will
   // retain the host after provider is destroyed.
-  scoped_refptr<ws::ContextProviderCommandBuffer> provider =
+  scoped_refptr<viz::ContextProviderCommandBuffer> provider =
       content::GpuBrowsertestCreateContext(GetGpuChannel());
   ASSERT_EQ(provider->BindToCurrentThread(), gpu::ContextResult::kSuccess);
 
@@ -276,12 +248,11 @@ IN_PROC_BROWSER_TEST_F(BrowserGpuChannelHostFactoryTest,
   EstablishAndWait();
   scoped_refptr<gpu::GpuChannelHost> host = GetGpuChannel();
 
-  scoped_refptr<ws::ContextProviderCommandBuffer> provider =
+  scoped_refptr<viz::ContextProviderCommandBuffer> provider =
       content::GpuBrowsertestCreateContext(GetGpuChannel());
   ContextLostRunLoop run_loop(provider.get());
   ASSERT_EQ(provider->BindToCurrentThread(), gpu::ContextResult::kSuccess);
-  GpuProcessHost::CallOnIO(GpuProcessHost::GPU_PROCESS_KIND_SANDBOXED,
-                           false /* force_create */,
+  GpuProcessHost::CallOnIO(GPU_PROCESS_KIND_SANDBOXED, false /* force_create */,
                            base::BindOnce([](GpuProcessHost* host) {
                              if (host)
                                host->gpu_service()->Crash();
@@ -347,7 +318,7 @@ IN_PROC_BROWSER_TEST_F(BrowserGpuChannelHostFactoryTest, CreateTransferBuffer) {
   // channel on the IO thread, which then notifies the main thread about the
   // error state.
   base::RunLoop wait_for_io_run_loop;
-  base::CreateSingleThreadTaskRunnerWithTraits({BrowserThread::IO})
+  base::CreateSingleThreadTaskRunner({BrowserThread::IO})
       ->PostTask(FROM_HERE, wait_for_io_run_loop.QuitClosure());
   // Waits for the IO thread to run.
   wait_for_io_run_loop.Run();

@@ -1,6 +1,9 @@
 include_rules = [
+  "+components/cdm/renderer",
   "+content/public/renderer",
+  "+media",
   "+mojo/public/cpp/bindings",
   "+services/service_manager/public/cpp",
   "+third_party/blink/public/common/associated_interfaces",
+  "+third_party/widevine/cdm/widevine_cdm_common.h",
 ]

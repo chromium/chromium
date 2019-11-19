@@ -373,21 +373,27 @@ bool DisassemblerWin32<Traits>::ParseAndStoreRel32() {
     rva_t start_rva = section.virtual_address;
     rva_t end_rva = start_rva + section.virtual_size;
 
+    // |virtual_size < size_of_raw_data| is possible. In this case, disassembly
+    // should not proceed beyond |virtual_size|, so rel32 location RVAs remain
+    // translatable to file offsets.
+    uint32_t size_to_use =
+        std::min(section.virtual_size, section.size_of_raw_data);
     ConstBufferView region =
-        image_[{section.file_offset_of_raw_data, section.size_of_raw_data}];
+        image_[{section.file_offset_of_raw_data, size_to_use}];
     Abs32GapFinder gap_finder(image_, region, abs32_locations_,
                               Traits::kVAWidth);
-    typename Traits::RelFinder finder(image_);
+    typename Traits::RelFinder finder;
     // Iterate over gaps between abs32 references, to avoid collision.
     for (auto gap = gap_finder.GetNext(); gap.has_value();
          gap = gap_finder.GetNext()) {
-      finder.Reset(gap.value());
+      finder.SetRegion(gap.value());
       // Iterate over heuristically detected rel32 references, validate, and add
       // to |rel32_locations_|.
       for (auto rel32 = finder.GetNext(); rel32.has_value();
            rel32 = finder.GetNext()) {
         offset_t rel32_offset = offset_t(rel32->location - image_.begin());
         rva_t rel32_rva = location_offset_to_rva.Convert(rel32_offset);
+        DCHECK_NE(rel32_rva, kInvalidRva);
         rva_t target_rva = rel32_rva + 4 + image_.read<uint32_t>(rel32_offset);
         if (target_rva_checker.IsValid(target_rva) &&
             (rel32->can_point_outside_section ||

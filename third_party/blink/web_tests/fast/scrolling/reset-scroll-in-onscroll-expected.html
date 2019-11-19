@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <style>
+      body, html {
+        margin: 0;
+      }
+
+      #scroller {
+        position: absolute;
+        clip: rect(0, 1000px, 1000px, 0);
+        width: 300px;
+        height: 300px;
+        overflow: auto;
+      }
+
+      #spacer {
+        height: 1000px;
+      }
+
+      #topbox {
+        height: 5px;
+        width: 100%;
+        background-color: green;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="scroller">
+      <div id="topbox"></div>
+      <div id="spacer"></div>
+    </div>
+  </body>
+</html>

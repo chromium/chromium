@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL PaymentRequest setting allowpaymentrequest after load and then navigating assert_array_equals: before navigation lengths differ, expected 3 got 4
-Harness: the test ran to completion.
-

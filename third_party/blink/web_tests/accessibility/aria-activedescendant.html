@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <script src="../resources/testharness.js"></script>
 <script src="../resources/testharnessreport.js"></script>
-<script src="../resources/run-after-layout-and-paint.js"></script>
 
 <div id="contenteditable-combobox" role="combobox" contenteditable="true"
     aria-expanded="true" aria-haspopup="menu" aria-autocomplete="list"
@@ -121,7 +120,7 @@ function testNext(t) {
     t.step(() => { testExpectations(t, nextIds[0], nextIds[1], nextIds[2]) });
 }
 
-async_test_after_layout_and_paint((t) => {
+async_test((t) => {
     testNext(t);
 }, 'Changing active descendant correctly sets focused element');
 </script>

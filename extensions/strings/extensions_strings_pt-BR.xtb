@@ -12,7 +12,6 @@
 <translation id="2159915644201199628">Não foi possível decodificar a imagem: '<ph name="IMAGE_NAME" />'</translation>
 <translation id="2350172092385603347">Localização utilizada, mas default_locale não foi especificada no manifesto.</translation>
 <translation id="2576842806987913196">Já existe um arquivo CRX com este nome.</translation>
-<translation id="2753617847762399167">Caminho ilegal (absoluto ou relativo com '..'): '<ph name="IMAGE_PATH" />'</translation>
 <translation id="2785530881066938471">Não foi possível carregar o arquivo "<ph name="RELATIVE_PATH" />" para o script de conteúdo. Ele não possui a codificação UTF-8.</translation>
 <translation id="2903070246402204397">A extensão <ph name="EXTENSION_NAME" /> (código "<ph name="EXTENSION_ID" />") está bloqueada pelo administrador. <ph name="ADMIN_INFO" /></translation>
 <translation id="2988488679308982380">Não foi possível instalar o pacote: "<ph name="ERROR_CODE" />"</translation>
@@ -38,8 +37,6 @@
 <translation id="5436430103864390185">Janelas com formas não são suportadas.</translation>
 <translation id="5456409301717116725">Esta extensão inclui o arquivo de chave '<ph name="KEY_PATH" />'. Você provavelmente não quer fazer isso.</translation>
 <translation id="5486326529110362464">O valor inserido para a chave privada deve existir.</translation>
-<translation id="5627523580512561598">extensão <ph name="EXTENSION_NAME" /></translation>
-<translation id="5960890139610307736">ExtensionView: <ph name="EXTENSIONVIEW_TAG_NAME" /></translation>
 <translation id="5972529113578162692">O administrador desta máquina requer a instalação da extensão <ph name="EXTENSION_NAME" />. Ela não pode ser desinstalada.</translation>
 <translation id="6027032947578871493">Produto <ph name="PRODUCT_ID" /> desconhecido de <ph name="VENDOR_NAME" /> (número de série <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="6068932090455285721"><ph name="PRODUCT_NAME" /> do fornecedor <ph name="VENDOR_ID" /></translation>
@@ -51,7 +48,6 @@
 <translation id="6542618148162044354">"<ph name="APP_NAME" />" está solicitando acesso a um ou mais dos seus dispositivos:</translation>
 <translation id="657064425229075395">Não foi possível carregar o script de plano de fundo "<ph name="BACKGROUND_SCRIPT" />".</translation>
 <translation id="6580950983454333167"><ph name="PRODUCT_NAME" /> de <ph name="VENDOR_NAME" /> (número de série <ph name="SERIAL_NUMBER" />)</translation>
-<translation id="6731255991101203740">Não foi possível criar um diretório para descompactação: ​​'<ph name="DIRECTORY_PATH" />'</translation>
 <translation id="677806580227005219">Gerenciador Mime: <ph name="MIMEHANDLERVIEW_TAG_NAME" /></translation>
 <translation id="6840444547062817500">Esta extensão foi recarregada automaticamente com muita frequência.</translation>
 <translation id="7003844668372540529">Produto <ph name="PRODUCT_ID" /> desconhecido de <ph name="VENDOR_NAME" /></translation>

@@ -7,15 +7,16 @@
 
 #include <map>
 
+#include "base/component_export.h"
 #include "chrome/browser/ui/frame_button_display_types.h"
-#include "chrome/browser/ui/libgtkui/libgtkui_export.h"
 #include "chrome/browser/ui/views/nav_button_provider.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/views/controls/button/button.h"
 
 namespace libgtkui {
 
-class LIBGTKUI_EXPORT NavButtonProviderGtk : public views::NavButtonProvider {
+class COMPONENT_EXPORT(LIBGTKUI) NavButtonProviderGtk
+    : public views::NavButtonProvider {
  public:
   NavButtonProviderGtk();
   ~NavButtonProviderGtk() override;

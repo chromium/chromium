@@ -5,13 +5,12 @@
 #include "base/bind.h"
 #include "base/macros.h"
 #include "base/test/launcher/unit_test_launcher.h"
-#include "base/test/scoped_task_environment.h"
 #include "base/test/test_suite.h"
 #include "build/build_config.h"
 #include "media/base/media.h"
-#include "services/service_manager/public/cpp/binder_registry.h"
+#include "media/blink/blink_platform_with_task_environment.h"
+#include "mojo/public/cpp/bindings/binder_map.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
-#include "third_party/blink/public/platform/scheduler/web_thread_scheduler.h"
 #include "third_party/blink/public/web/blink.h"
 
 #if defined(OS_ANDROID)
@@ -25,6 +24,8 @@
 #if defined(V8_USE_EXTERNAL_STARTUP_DATA)
 #include "gin/v8_initializer.h"
 
+using media::BlinkPlatformWithTaskEnvironment;
+
 constexpr gin::V8Initializer::V8SnapshotFileType kSnapshotType =
 #if defined(USE_V8_CONTEXT_SNAPSHOT)
     gin::V8Initializer::V8SnapshotFileType::kWithAdditionalContext;
@@ -32,30 +33,6 @@ constexpr gin::V8Initializer::V8SnapshotFileType kSnapshotType =
     gin::V8Initializer::V8SnapshotFileType::kDefault;
 #endif  // defined(USE_V8_CONTEXT_SNAPSHOT)
 #endif  // defined(V8_USE_EXTERNAL_STARTUP_DATA)
-
-// We must use a custom blink::Platform that ensures the main thread scheduler
-// knows about the ScopedTaskEnvironment.
-class BlinkPlatformWithTaskEnvironment : public blink::Platform {
- public:
-  BlinkPlatformWithTaskEnvironment()
-      : main_thread_scheduler_(
-            blink::scheduler::WebThreadScheduler::CreateMainThreadScheduler()) {
-  }
-
-  ~BlinkPlatformWithTaskEnvironment() override {
-    main_thread_scheduler_->Shutdown();
-  }
-
-  blink::scheduler::WebThreadScheduler* GetMainThreadScheduler() {
-    return main_thread_scheduler_.get();
-  }
-
- private:
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
-  std::unique_ptr<blink::scheduler::WebThreadScheduler> main_thread_scheduler_;
-
-  DISALLOW_COPY_AND_ASSIGN(BlinkPlatformWithTaskEnvironment);
-};
 
 class MediaBlinkTestSuite : public base::TestSuite {
  public:
@@ -76,7 +53,6 @@ class MediaBlinkTestSuite : public base::TestSuite {
 
 #if defined(V8_USE_EXTERNAL_STARTUP_DATA)
     gin::V8Initializer::LoadV8Snapshot(kSnapshotType);
-    gin::V8Initializer::LoadV8Natives();
 #endif
 
 #if !defined(OS_IOS)
@@ -85,7 +61,9 @@ class MediaBlinkTestSuite : public base::TestSuite {
 #endif
 
     platform_ = std::make_unique<BlinkPlatformWithTaskEnvironment>();
-    blink::Initialize(platform_.get(), &empty_registry_,
+
+    mojo::BinderMap binders;
+    blink::Initialize(platform_.get(), &binders,
                       platform_->GetMainThreadScheduler());
   }
 
@@ -95,7 +73,6 @@ class MediaBlinkTestSuite : public base::TestSuite {
   }
 
   std::unique_ptr<BlinkPlatformWithTaskEnvironment> platform_;
-  service_manager::BinderRegistry empty_registry_;
 
   DISALLOW_COPY_AND_ASSIGN(MediaBlinkTestSuite);
 };

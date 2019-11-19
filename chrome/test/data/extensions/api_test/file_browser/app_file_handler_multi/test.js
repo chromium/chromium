@@ -209,12 +209,12 @@ function launchWithEntries(isolatedEntries) {
             ]).then(function(args) {
               chrome.test.assertEq(entries.length, args[1].items.length);
               chrome.test.assertEq(
-                  entries.map(function(entry) { return entry.name; }),
-                  args[1].items.map(function(item) { return item.entry.name; }),
+                  entries.map(entry => entry.name).sort(),
+                  args[1].items.map(item => item.entry.name).sort(),
                   'Wrong entries are passed to the application handler.');
               chrome.test.assertEq(
-                  entries.map(function(entry) { return entry.toURL(); }),
-                  args[2].map(function(entry) { return entry.toURL(); }),
+                  entries.map(entry => entry.toURL()).sort(),
+                  args[2].map(entry => entry.toURL()).sort(),
                   'Entries passed to the application handler cannot be ' +
                       'resolved.');
             })

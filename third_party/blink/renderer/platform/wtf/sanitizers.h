@@ -8,10 +8,14 @@
 // TODO(sof): Add SyZyASan support?
 #if defined(ADDRESS_SANITIZER)
 #include <sanitizer/asan_interface.h>
+#define ASAN_REGION_IS_POISONED(addr, size) \
+  __asan_region_is_poisoned(addr, size)
 #define NO_SANITIZE_ADDRESS __attribute__((no_sanitize_address))
 #else
 #define ASAN_POISON_MEMORY_REGION(addr, size) ((void)(addr), (void)(size))
 #define ASAN_UNPOISON_MEMORY_REGION(addr, size) ((void)(addr), (void)(size))
+#define ASAN_REGION_IS_POISONED(addr, size) \
+  ((void)(addr), (void)(size), (void*)nullptr)
 #define NO_SANITIZE_ADDRESS
 #endif
 

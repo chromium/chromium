@@ -27,6 +27,8 @@
 #include "content/public/browser/favicon_status.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
+#include "extensions/common/features/feature.h"
+#include "third_party/blink/public/common/page/page_zoom.h"
 
 using base::DictionaryValue;
 using base::ListValue;
@@ -41,12 +43,16 @@ namespace {
 bool WillDispatchTabUpdatedEvent(
     WebContents* contents,
     const std::set<std::string> changed_property_names,
-    content::BrowserContext* context,
+    content::BrowserContext* browser_context,
+    Feature::Context target_context,
     const Extension* extension,
     Event* event,
     const base::DictionaryValue* listener_filter) {
+  ExtensionTabUtil::ScrubTabBehavior scrub_tab_behavior =
+      ExtensionTabUtil::GetScrubTabBehavior(extension, target_context,
+                                            contents);
   std::unique_ptr<api::tabs::Tab> tab_object =
-      ExtensionTabUtil::CreateTabObject(contents, ExtensionTabUtil::kScrubTab,
+      ExtensionTabUtil::CreateTabObject(contents, scrub_tab_behavior,
                                         extension);
 
   std::unique_ptr<base::DictionaryValue> tab_value = tab_object->ToValue();
@@ -66,14 +72,17 @@ bool WillDispatchTabUpdatedEvent(
 
 bool WillDispatchTabCreatedEvent(WebContents* contents,
                                  bool active,
-                                 content::BrowserContext* context,
+                                 content::BrowserContext* browser_context,
+                                 Feature::Context target_context,
                                  const Extension* extension,
                                  Event* event,
                                  const base::DictionaryValue* listener_filter) {
   event->event_args->Clear();
+  ExtensionTabUtil::ScrubTabBehavior scrub_tab_behavior =
+      ExtensionTabUtil::GetScrubTabBehavior(extension, target_context,
+                                            contents);
   std::unique_ptr<base::DictionaryValue> tab_value =
-      ExtensionTabUtil::CreateTabObject(contents, ExtensionTabUtil::kScrubTab,
-                                        extension)
+      ExtensionTabUtil::CreateTabObject(contents, scrub_tab_behavior, extension)
           ->ToValue();
   tab_value->SetBoolean(tabs_constants::kSelectedKey, active);
   tab_value->SetBoolean(tabs_constants::kActiveKey, active);
@@ -154,10 +163,7 @@ void TabsEventRouter::TabEntry::WebContentsDestroyed() {
 }
 
 TabsEventRouter::TabsEventRouter(Profile* profile)
-    : profile_(profile),
-      favicon_scoped_observer_(this),
-      browser_tab_strip_tracker_(this, this, this),
-      tab_manager_scoped_observer_(this) {
+    : profile_(profile), browser_tab_strip_tracker_(this, this, this) {
   DCHECK(!profile->IsOffTheRecord());
 
   browser_tab_strip_tracker_.Init();
@@ -187,38 +193,40 @@ void TabsEventRouter::OnTabStripModelChanged(
     const TabStripSelectionChange& selection) {
   switch (change.type()) {
     case TabStripModelChange::kInserted: {
-      for (const auto& delta : change.deltas()) {
-        DispatchTabInsertedAt(tab_strip_model, delta.insert.contents,
-                              delta.insert.index,
-                              selection.new_contents == delta.insert.contents);
+      for (const auto& contents : change.GetInsert()->contents) {
+        DispatchTabInsertedAt(tab_strip_model, contents.contents,
+                              contents.index,
+                              selection.new_contents == contents.contents);
       }
       break;
     }
     case TabStripModelChange::kRemoved: {
-      for (const auto& delta : change.deltas()) {
-        if (delta.remove.will_be_deleted)
-          DispatchTabClosingAt(tab_strip_model, delta.remove.contents,
-                               delta.remove.index);
+      const bool will_be_deleted = change.GetRemove()->will_be_deleted;
+      for (const auto& contents : change.GetRemove()->contents) {
+        if (will_be_deleted) {
+          DispatchTabClosingAt(tab_strip_model, contents.contents,
+                               contents.index);
+        }
 
-        DispatchTabDetachedAt(delta.remove.contents, delta.remove.index,
-                              selection.old_contents == delta.remove.contents);
+        DispatchTabDetachedAt(contents.contents, contents.index,
+                              selection.old_contents == contents.contents);
       }
       break;
     }
     case TabStripModelChange::kMoved: {
-      for (const auto& delta : change.deltas()) {
-        DispatchTabMoved(delta.move.contents, delta.move.from_index,
-                         delta.move.to_index);
-      }
+      auto* move = change.GetMove();
+      DispatchTabMoved(move->contents, move->from_index, move->to_index);
       break;
     }
     case TabStripModelChange::kReplaced: {
-      for (const auto& delta : change.deltas()) {
-        DispatchTabReplacedAt(delta.replace.old_contents,
-                              delta.replace.new_contents, delta.replace.index);
-      }
+      auto* replace = change.GetReplace();
+      DispatchTabReplacedAt(replace->old_contents, replace->new_contents,
+                            replace->index);
       break;
     }
+    case TabStripModelChange::kGroupChanged:
+      // TODO(crbug.com/930988): Dispatch Tab Group-related events.
+      break;
     case TabStripModelChange::kSelectionOnly:
       break;
   }
@@ -265,9 +273,9 @@ void TabsEventRouter::OnZoomChanged(
   api::tabs::OnZoomChange::ZoomChangeInfo zoom_change_info;
   zoom_change_info.tab_id = tab_id;
   zoom_change_info.old_zoom_factor =
-      content::ZoomLevelToZoomFactor(data.old_zoom_level);
+      blink::PageZoomLevelToZoomFactor(data.old_zoom_level);
   zoom_change_info.new_zoom_factor =
-      content::ZoomLevelToZoomFactor(data.new_zoom_level);
+      blink::PageZoomLevelToZoomFactor(data.new_zoom_level);
   ZoomModeToZoomSettings(data.zoom_mode, &zoom_change_info.zoom_settings);
 
   // Dispatch the |onZoomChange| event.

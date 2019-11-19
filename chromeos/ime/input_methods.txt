@@ -34,7 +34,7 @@
 # U.S. English
 xkb:us::eng             us               en,en-US,en-AU,en-NZ US   login
 xkb:us:intl:eng         us(intl)         en,en-US             INTL login
-xkb:us:intl_pc:eng      us(intl_pc)      en,en-US             INTL
+xkb:us:intl_pc:eng      us(intl_pc)      en,en-US             INTL login
 xkb:us:altgr-intl:eng   us(altgr-intl)   en,en-US             EXTD login
 xkb:us:dvorak:eng       us(dvorak)       en,en-US             DV   login
 xkb:us:dvp:eng          us(dvp)          en,en-US             DVP  login
@@ -86,7 +86,7 @@ xkb:cz::cze           cz             cs        CZ login
 xkb:cz:qwerty:cze     cz(qwerty)     cs        CS login
 xkb:ee::est           ee             et        EE login
 xkb:es::spa           es             es        ES login
-xkb:es:cat:cat        es(cat)        ca        CAS login
+xkb:es:cat:cat        es(cat)        ca        CAT login
 xkb:dk::dan           dk             da        DK login
 xkb:fo::fao           fo             fo        FO
 xkb:gr::gre           gr             el        GR

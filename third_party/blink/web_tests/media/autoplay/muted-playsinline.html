@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<title>Test autoplay muted and playsinline interaction</title>
+<script src='../../resources/testharness.js'></script>
+<script src='../../resources/testharnessreport.js'></script>
+<div></div>
+<script>
+promise_test(t => {
+  t.add_cleanup(() => {
+    internals.settings.setAutoplayPolicy('no-user-gesture-required');
+    internals.runtimeFlags.autoplayMutedVideosEnabled = false;
+    internals.runtimeFlags.videoAutoFullscreenEnabled = false;
+  });
+  internals.settings.setAutoplayPolicy('user-gesture-required');
+  internals.runtimeFlags.autoplayMutedVideosEnabled = true;
+  internals.runtimeFlags.videoAutoFullscreenEnabled = true;
+
+  var video = document.createElement('video');
+  video.muted = true;
+  video.autoplay = true;
+  video.playsInline = true;
+  document.querySelector('div').appendChild(video);
+  video.src = '../content/test.ogv';
+
+  return new Promise(resolve => {
+    video.addEventListener('play', resolve());
+  });
+}, "'autoplay muted playsInline' works with video auto-fullscreen");
+
+promise_test(t => {
+  t.add_cleanup(() => {
+    internals.settings.setAutoplayPolicy('no-user-gesture-required');
+    internals.runtimeFlags.autoplayMutedVideosEnabled = false;
+    internals.runtimeFlags.videoAutoFullscreenEnabled = false;
+  });
+  internals.settings.setAutoplayPolicy('user-gesture-required');
+  internals.runtimeFlags.autoplayMutedVideosEnabled = true;
+  internals.runtimeFlags.videoAutoFullscreenEnabled = true;
+
+  var video = document.createElement('video');
+  video.muted = true;
+  video.playsInline = true;
+  video.src = '../content/test.ogv';
+  document.querySelector('div').appendChild(video);
+
+  return video.play();
+}, "'muted playsInline'.play() works with video auto-fullscreen");
+
+promise_test(t => {
+  t.add_cleanup(() => {
+    internals.settings.setAutoplayPolicy('no-user-gesture-required');
+    internals.runtimeFlags.autoplayMutedVideosEnabled = false;
+    internals.runtimeFlags.videoAutoFullscreenEnabled = false;
+  });
+  internals.settings.setAutoplayPolicy('user-gesture-required');
+  internals.runtimeFlags.autoplayMutedVideosEnabled = true;
+  internals.runtimeFlags.videoAutoFullscreenEnabled = true;
+
+  var video = document.createElement('video');
+  video.muted = true;
+  video.playsInline = false;
+  video.src = '../content/test.ogv';
+
+  document.querySelector('div').appendChild(video);
+  return promise_rejects(t, "NotAllowedError", video.play());
+}, "'autoplay muted'.play() doesn't work with video auto-fullscreen");
+</script>

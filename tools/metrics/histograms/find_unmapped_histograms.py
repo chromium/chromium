@@ -10,6 +10,8 @@ trials are entirely ignored by this script.
 
 """
 
+from __future__ import print_function
+
 import hashlib
 import logging
 import optparse
@@ -315,8 +317,8 @@ def output_csv(unmapped_histograms, location_map):
     parts = location_map[histogram].split(':')
     assert len(parts) == 2
     (filename, line_number) = parts
-    print '%s,%s,%s,%s' % (filename, line_number, histogram,
-                           hashHistogramName(histogram))
+    print('%s,%s,%s,%s' % (filename, line_number, histogram,
+                           hashHistogramName(histogram)))
 
 
 def output_log(unmapped_histograms, location_map, verbose):

@@ -49,8 +49,7 @@ Camera3AController::Camera3AController(
                      ANDROID_CONTROL_AWB_STATE_INACTIVE),
       awb_mode_set_(false),
       set_point_of_interest_running_(false),
-      ae_locked_for_point_of_interest_(false),
-      weak_ptr_factory_(this) {
+      ae_locked_for_point_of_interest_(false) {
   DCHECK(task_runner_->BelongsToCurrentThread());
 
   capture_metadata_dispatcher_->AddResultMetadataObserver(this);

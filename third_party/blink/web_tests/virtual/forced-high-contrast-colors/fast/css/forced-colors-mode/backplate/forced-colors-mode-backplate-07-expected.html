@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>
+  Forced colors mode - backplate reference.
+  Tests backplate invalidation.
+</title>
+<style>
+  body {
+    background-image: url("../resources/test-image.jpg");
+    font-family: Ahem;
+    font-size: 10px;
+    forced-color-adjust: none; /* This turns the backplate feature off in
+                                  forced colors mode. The backplate is
+                                  simulated in testing using a Window
+                                  background-color behind the text.
+                                */
+  }
+</style>
+<body>
+  <span style="background-color: Window;">
+    There should be a backplate covering one line of text.
+  </span>
+</body>

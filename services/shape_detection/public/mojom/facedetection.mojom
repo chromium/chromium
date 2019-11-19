@@ -6,8 +6,8 @@
 
 module shape_detection.mojom;
 
-import "skia/public/interfaces/bitmap.mojom";
-import "ui/gfx/geometry/mojo/geometry.mojom";
+import "skia/public/mojom/bitmap.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
 
 // https://wicg.github.io/shape-detection-api/#enumdef-landmarktype
 enum LandmarkType { MOUTH, EYE, NOSE };
@@ -18,7 +18,7 @@ struct Landmark {
   LandmarkType type;
 };
 
-// Since "//ui/gfx/geometry/mojo" is not exposed to blink, we need to declare
+// Since "//ui/gfx/geometry/mojom" is not exposed to blink, we need to declare
 // a wrapper struct, so that gfx.mojom.RectF will not be directly referenced
 // inside Blink, and browser can still use gfx types.
 struct FaceDetectionResult {

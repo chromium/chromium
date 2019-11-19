@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<title>Scrollbar forward button must not scroll ancestor</title>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<script src="../../../resources/gesture-util.js"></script>
+<style>
+.subscroller {
+  width:100px;
+  height:100px;
+  overflow:auto;
+  position:absolute;
+  top:0px;
+  left:0px;
+}
+.subscroller>.child {
+  height:400px;
+}
+.talldiv {
+  height:4000px;
+}
+</style>
+
+<div class="subscroller">
+  <div class="child">subscroller</div>
+</div>
+<div class="talldiv">talldiv</div>
+
+<script>
+
+let clicks = 0;
+window.addEventListener("click", e => clicks++);
+
+promise_test(async () => {
+    // Ensure the page is ready to receive input.
+    await waitForCompositorCommit();
+
+    // Tap on the top of the scrollbar - this shouldn't scroll and thus
+    // click should be fired.
+    await touchTapOn(95, 5);
+    assert_equals(clicks, 1, "Tapping on scrollbar that doesn't scroll " +
+        "must fire a click event");
+
+    // Tap on the bottom of the scrollbar - this should scroll and no click
+    // event should be fired.
+    await touchTapOn(95, 95);
+    assert_equals(clicks, 1, "Tapping on scrollbar that doesn't scroll " +
+        "must fire a click event");
+}, "Tapping a scrollbar part that doesn't scroll should fire a click event");
+</script>

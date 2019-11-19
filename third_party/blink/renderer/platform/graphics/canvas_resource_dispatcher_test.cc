@@ -7,10 +7,11 @@
 #include <memory>
 
 #include "components/viz/common/quads/texture_draw_quad.h"
-#include "services/viz/public/interfaces/hit_test/hit_test_region_list.mojom-blink.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "services/viz/public/mojom/hit_test/hit_test_region_list.mojom-blink.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/platform/modules/frame_sinks/embedded_frame_sink.mojom-blink.h"
+#include "third_party/blink/public/mojom/frame_sinks/embedded_frame_sink.mojom-blink.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
 #include "third_party/blink/renderer/platform/graphics/test/mock_compositor_frame_sink.h"
@@ -18,7 +19,7 @@
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/skia/include/core/SkSurface.h"
-#include "ui/gfx/mojo/presentation_feedback.mojom-blink.h"
+#include "ui/gfx/mojom/presentation_feedback.mojom-blink.h"
 
 using testing::_;
 using testing::Mock;
@@ -88,10 +89,11 @@ class CanvasResourceDispatcherTest
     dispatcher_ = std::make_unique<MockCanvasResourceDispatcher>();
     resource_provider_ = CanvasResourceProvider::Create(
         IntSize(kWidth, kHeight),
-        CanvasResourceProvider::kSoftwareCompositedResourceUsage,
+        CanvasResourceProvider::ResourceUsage::kSoftwareCompositedResourceUsage,
         nullptr,  // context_provider_wrapper
         0,        // msaa_sample_count
-        CanvasColorParams(), CanvasResourceProvider::kDefaultPresentationMode,
+        kLow_SkFilterQuality, CanvasColorParams(),
+        CanvasResourceProvider::kDefaultPresentationMode,
         dispatcher_->GetWeakPtr());
   }
 
@@ -205,11 +207,11 @@ TEST_P(CanvasResourceDispatcherTest, DispatchFrame) {
   // by theCanvasResourceDispatcher, we have to override the Mojo
   // EmbeddedFrameSinkProvider interface impl and its CompositorFrameSinkClient.
   MockEmbeddedFrameSinkProvider mock_embedded_frame_sink_provider;
-  mojo::Binding<mojom::blink::EmbeddedFrameSinkProvider>
-      embedded_frame_sink_provider_binding(&mock_embedded_frame_sink_provider);
+  mojo::Receiver<mojom::blink::EmbeddedFrameSinkProvider>
+      embedded_frame_sink_provider_receiver(&mock_embedded_frame_sink_provider);
   auto override =
       mock_embedded_frame_sink_provider.CreateScopedOverrideMojoInterface(
-          &embedded_frame_sink_provider_binding);
+          &embedded_frame_sink_provider_receiver);
 
   CreateCanvasResourceDispatcher();
 
@@ -247,7 +249,7 @@ TEST_P(CanvasResourceDispatcherTest, DispatchFrame) {
                       gfx::Rect(kDamageWidth, kDamageHeight));
 
             const auto* quad = render_pass->quad_list.front();
-            EXPECT_EQ(quad->material, viz::DrawQuad::TEXTURE_CONTENT);
+            EXPECT_EQ(quad->material, viz::DrawQuad::Material::kTextureContent);
             EXPECT_EQ(quad->rect, gfx::Rect(kWidth, kHeight));
             EXPECT_EQ(quad->visible_rect, gfx::Rect(kWidth, kHeight));
 

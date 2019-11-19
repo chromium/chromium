@@ -4,7 +4,7 @@
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//      http://www.apache.org/licenses/LICENSE-2.0
+//      https://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -202,14 +202,10 @@ TYPED_TEST(HashPointer, Works) {
   EXPECT_NE(hash(&dummy), hash(cuptr));
 }
 
-// Cartesian product of (string, std::string, absl::string_view)
-// with (string, std::string, absl::string_view, const char*).
+// Cartesian product of (std::string, absl::string_view)
+// with (std::string, absl::string_view, const char*).
 using StringTypesCartesianProduct = Types<
     // clang-format off
-
-    std::pair<std::string, std::string>,
-    std::pair<std::string, absl::string_view>,
-    std::pair<std::string, const char*>,
 
     std::pair<absl::string_view, std::string>,
     std::pair<absl::string_view, absl::string_view>,

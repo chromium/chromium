@@ -6,6 +6,8 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 
+#include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
+
 namespace blink {
 
 namespace {
@@ -93,11 +95,12 @@ TEST(CSSParserTokenStreamTest, ConsumeIncludingWhitespace) {
 }
 
 TEST(CSSParserTokenStreamTest, RangesDoNotGetInvalidatedWhenConsuming) {
-  String s = "1 ";
+  StringBuilder s;
+  s.Append("1 ");
   for (int i = 0; i < 100; i++)
-    s.append("A ");
+    s.Append("A ");
 
-  CSSTokenizer tokenizer(s);
+  CSSTokenizer tokenizer(s.ToString());
   CSSParserTokenStream stream(tokenizer);
 
   // Consume a single token range.

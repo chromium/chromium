@@ -57,7 +57,7 @@ unsigned UncachedNthOfTypeIndex(Element& element, unsigned& sibling_count) {
   const QualifiedName& tag = element.TagQName();
   for (const Element* sibling = ElementTraversal::PreviousSibling(element);
        sibling; sibling = ElementTraversal::PreviousSibling(*sibling)) {
-    if (sibling->TagQName() == tag)
+    if (sibling->TagQName().Matches(tag))
       ++index;
     ++sibling_count;
   }
@@ -69,7 +69,7 @@ unsigned UncachedNthLastOfTypeIndex(Element& element, unsigned& sibling_count) {
   const QualifiedName& tag = element.TagQName();
   for (const Element* sibling = ElementTraversal::NextSibling(element); sibling;
        sibling = ElementTraversal::NextSibling(*sibling)) {
-    if (sibling->TagQName() == tag)
+    if (sibling->TagQName().Matches(tag))
       ++index;
     ++sibling_count;
   }

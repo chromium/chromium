@@ -7,6 +7,8 @@
 #include <string>
 #include <utility>
 
+#include "ash/public/cpp/notifier_metadata.h"
+#include "ash/public/cpp/notifier_settings_observer.h"
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/macros.h"
@@ -24,29 +26,43 @@
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/user_manager/scoped_user_manager.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notifier_id.h"
 
 namespace {
 
-class ChromeAshMessageCenterClientTest : public testing::Test {
+class ChromeAshMessageCenterClientTest : public testing::Test,
+                                         public ash::NotifierSettingsObserver {
  protected:
   ChromeAshMessageCenterClientTest()
       : testing_profile_manager_(TestingBrowserProcess::GetGlobal()) {}
   ~ChromeAshMessageCenterClientTest() override {}
 
+  // testing::Test:
   void SetUp() override {
     ASSERT_TRUE(testing_profile_manager_.SetUp());
 
     // Initialize the UserManager singleton to a fresh FakeUserManager instance.
     user_manager_enabler_ = std::make_unique<user_manager::ScopedUserManager>(
         std::make_unique<chromeos::FakeChromeUserManager>());
+
+    message_center::MessageCenter::Initialize();
   }
 
-  void TearDown() override { client_.reset(); }
+  void TearDown() override {
+    client_.reset();
+    message_center::MessageCenter::Shutdown();
+  }
+
+  // ash::NotifierSettingsObserver:
+  void OnNotifiersUpdated(
+      const std::vector<ash::NotifierMetadata>& notifiers) override {
+    notifiers_ = notifiers;
+  }
 
   TestingProfile* CreateProfile(const std::string& name) {
     TestingProfile* profile =
@@ -69,6 +85,7 @@ class ChromeAshMessageCenterClientTest : public testing::Test {
 
   void CreateClient() {
     client_.reset(new ChromeAshMessageCenterClient(nullptr));
+    client_->AddNotifierSettingsObserver(this);
   }
 
   ChromeAshMessageCenterClient* message_center_client() {
@@ -76,13 +93,9 @@ class ChromeAshMessageCenterClientTest : public testing::Test {
   }
 
  protected:
-  void RefreshNotifierList() {
-    message_center_client()->GetNotifierList(
-        base::BindOnce(&ChromeAshMessageCenterClientTest::SetNotifierUiData,
-                       base::Unretained(this)));
-  }
+  void RefreshNotifierList() { message_center_client()->GetNotifiers(); }
 
-  std::vector<ash::mojom::NotifierUiDataPtr> notifiers_;
+  std::vector<ash::NotifierMetadata> notifiers_;
 
  private:
   chromeos::FakeChromeUserManager* GetFakeUserManager() {
@@ -90,11 +103,7 @@ class ChromeAshMessageCenterClientTest : public testing::Test {
         user_manager::UserManager::Get());
   }
 
-  void SetNotifierUiData(std::vector<ash::mojom::NotifierUiDataPtr> notifiers) {
-    notifiers_ = std::move(notifiers);
-  }
-
-  content::TestBrowserThreadBundle thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
   TestingProfileManager testing_profile_manager_;
   std::unique_ptr<ChromeAshMessageCenterClient> client_;
   std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
@@ -106,7 +115,7 @@ class ChromeAshMessageCenterClientTest : public testing::Test {
 // in ChromeOS.
 
 TEST_F(ChromeAshMessageCenterClientTest, NotifierSortOrder) {
-  TestingProfile* profile = CreateProfile("Profile-1");
+  TestingProfile* profile = CreateProfile("profile1@gmail.com");
   extensions::TestExtensionSystem* test_extension_system =
       static_cast<extensions::TestExtensionSystem*>(
           extensions::ExtensionSystem::Get(profile));
@@ -215,12 +224,12 @@ TEST_F(ChromeAshMessageCenterClientTest, NotifierSortOrder) {
 
   RefreshNotifierList();
   ASSERT_EQ(2u, notifiers_.size());
-  EXPECT_EQ(kBarId, notifiers_[0]->notifier_id.id);
-  EXPECT_EQ(kFooId, notifiers_[1]->notifier_id.id);
+  EXPECT_EQ(kBarId, notifiers_[0].notifier_id.id);
+  EXPECT_EQ(kFooId, notifiers_[1].notifier_id.id);
 }
 
 TEST_F(ChromeAshMessageCenterClientTest, SetWebPageNotifierEnabled) {
-  Profile* profile = CreateProfile("MyProfile");
+  Profile* profile = CreateProfile("myprofile@gmail.com");
   CreateClient();
 
   GURL origin("https://example.com/");
@@ -229,7 +238,7 @@ TEST_F(ChromeAshMessageCenterClientTest, SetWebPageNotifierEnabled) {
 
   ContentSetting default_setting =
       HostContentSettingsMapFactory::GetForProfile(profile)
-          ->GetDefaultContentSetting(CONTENT_SETTINGS_TYPE_NOTIFICATIONS, NULL);
+          ->GetDefaultContentSetting(ContentSettingsType::NOTIFICATIONS, NULL);
   ASSERT_EQ(CONTENT_SETTING_ASK, default_setting);
 
   PermissionManager* permission_manager = PermissionManager::Get(profile);
@@ -238,7 +247,7 @@ TEST_F(ChromeAshMessageCenterClientTest, SetWebPageNotifierEnabled) {
   message_center_client()->SetNotifierEnabled(notifier_id, true);
   EXPECT_EQ(CONTENT_SETTING_ALLOW,
             permission_manager
-                ->GetPermissionStatus(CONTENT_SETTINGS_TYPE_NOTIFICATIONS,
+                ->GetPermissionStatus(ContentSettingsType::NOTIFICATIONS,
                                       origin, origin)
                 .content_setting);
 
@@ -246,20 +255,20 @@ TEST_F(ChromeAshMessageCenterClientTest, SetWebPageNotifierEnabled) {
   message_center_client()->SetNotifierEnabled(notifier_id, false);
   EXPECT_EQ(CONTENT_SETTING_ASK,
             permission_manager
-                ->GetPermissionStatus(CONTENT_SETTINGS_TYPE_NOTIFICATIONS,
+                ->GetPermissionStatus(ContentSettingsType::NOTIFICATIONS,
                                       origin, origin)
                 .content_setting);
 
   // Change the default content setting vaule for notifications to ALLOW.
   HostContentSettingsMapFactory::GetForProfile(profile)
-      ->SetDefaultContentSetting(CONTENT_SETTINGS_TYPE_NOTIFICATIONS,
+      ->SetDefaultContentSetting(ContentSettingsType::NOTIFICATIONS,
                                  CONTENT_SETTING_ALLOW);
 
   // (3) Disable the permission when the default is allowed (expected to set).
   message_center_client()->SetNotifierEnabled(notifier_id, false);
   EXPECT_EQ(CONTENT_SETTING_BLOCK,
             permission_manager
-                ->GetPermissionStatus(CONTENT_SETTINGS_TYPE_NOTIFICATIONS,
+                ->GetPermissionStatus(ContentSettingsType::NOTIFICATIONS,
                                       origin, origin)
                 .content_setting);
 
@@ -267,20 +276,20 @@ TEST_F(ChromeAshMessageCenterClientTest, SetWebPageNotifierEnabled) {
   message_center_client()->SetNotifierEnabled(notifier_id, true);
   EXPECT_EQ(CONTENT_SETTING_ALLOW,
             permission_manager
-                ->GetPermissionStatus(CONTENT_SETTINGS_TYPE_NOTIFICATIONS,
+                ->GetPermissionStatus(ContentSettingsType::NOTIFICATIONS,
                                       origin, origin)
                 .content_setting);
 
   // Now change the default content setting value to BLOCK.
   HostContentSettingsMapFactory::GetForProfile(profile)
-      ->SetDefaultContentSetting(CONTENT_SETTINGS_TYPE_NOTIFICATIONS,
+      ->SetDefaultContentSetting(ContentSettingsType::NOTIFICATIONS,
                                  CONTENT_SETTING_BLOCK);
 
   // (5) Enable the permission when the default is blocked (expected to set).
   message_center_client()->SetNotifierEnabled(notifier_id, true);
   EXPECT_EQ(CONTENT_SETTING_ALLOW,
             permission_manager
-                ->GetPermissionStatus(CONTENT_SETTINGS_TYPE_NOTIFICATIONS,
+                ->GetPermissionStatus(ContentSettingsType::NOTIFICATIONS,
                                       origin, origin)
                 .content_setting);
 
@@ -288,7 +297,7 @@ TEST_F(ChromeAshMessageCenterClientTest, SetWebPageNotifierEnabled) {
   message_center_client()->SetNotifierEnabled(notifier_id, false);
   EXPECT_EQ(CONTENT_SETTING_BLOCK,
             permission_manager
-                ->GetPermissionStatus(CONTENT_SETTINGS_TYPE_NOTIFICATIONS,
+                ->GetPermissionStatus(ContentSettingsType::NOTIFICATIONS,
                                       origin, origin)
                 .content_setting);
 }

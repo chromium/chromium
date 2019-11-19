@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/core/page/validation_message_client.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/svg/svg_document_extensions.h"
+#include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 
 namespace blink {
@@ -22,10 +23,6 @@ PageAnimator::PageAnimator(Page& page)
       servicing_animations_(false),
       updating_layout_and_style_for_painting_(false) {}
 
-PageAnimator* PageAnimator::Create(Page& page) {
-  return MakeGarbageCollected<PageAnimator>(page);
-}
-
 void PageAnimator::Trace(blink::Visitor* visitor) {
   visitor->Trace(page_);
 }
@@ -33,6 +30,10 @@ void PageAnimator::Trace(blink::Visitor* visitor) {
 void PageAnimator::ServiceScriptedAnimations(
     base::TimeTicks monotonic_animation_start_time) {
   base::AutoReset<bool> servicing(&servicing_animations_, true);
+
+  // Once we are inside a frame's lifecycle, the AnimationClock should hold its
+  // time value until the end of the frame.
+  Clock().SetAllowedToDynamicallyUpdateTime(false);
   Clock().UpdateTime(monotonic_animation_start_time);
 
   HeapVector<Member<Document>, 32> documents;
@@ -47,8 +48,10 @@ void PageAnimator::ServiceScriptedAnimations(
     TRACE_EVENT0("blink,rail", "PageAnimator::serviceScriptedAnimations");
     DocumentAnimations::UpdateAnimationTimingForAnimationFrame(*document);
     if (document->View()) {
-      if (document->View()->ShouldThrottleRendering())
+      if (document->View()->ShouldThrottleRendering()) {
+        document->SetCurrentFrameIsThrottled(true);
         continue;
+      }
       // Disallow throttling in case any script needs to do a synchronous
       // lifecycle update in other frames which are throttled.
       DocumentLifecycle::DisallowThrottlingScope no_throttling_scope(
@@ -83,6 +86,31 @@ void PageAnimator::ServiceScriptedAnimations(
   }
 
   page_->GetValidationMessageClient().LayoutOverlay();
+}
+
+void PageAnimator::PostAnimate() {
+  HeapVector<Member<Document>, 32> documents;
+  for (Frame* frame = page_->MainFrame(); frame;
+       frame = frame->Tree().TraverseNext()) {
+    if (frame->IsLocalFrame())
+      documents.push_back(To<LocalFrame>(frame)->GetDocument());
+  }
+
+  // Run the post-animation frame callbacks. See
+  // https://github.com/WICG/requestPostAnimationFrame
+  for (auto& document : documents)
+    document->RunPostAnimationFrameCallbacks();
+
+  // If we don't have an imminently incoming frame, we need to let the
+  // AnimationClock update its own time to properly service out-of-lifecycle
+  // events such as setInterval (see https://crbug.com/995806). This isn't a
+  // perfect heuristic, but at the very least we know that if there is a pending
+  // RAF we will be getting a new frame and thus don't need to unlock the clock.
+  bool next_frame_has_raf = false;
+  for (auto& document : documents)
+    next_frame_has_raf |= document->NextFrameHasPendingRAF();
+  if (!next_frame_has_raf)
+    Clock().SetAllowedToDynamicallyUpdateTime(true);
 }
 
 void PageAnimator::SetSuppressFrameRequestsWorkaroundFor704763Only(

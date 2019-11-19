@@ -150,14 +150,39 @@ void BiquadProcessor::GetFrequencyResponse(int n_frequencies,
                                            const float* frequency_hz,
                                            float* mag_response,
                                            float* phase_response) {
+  DCHECK(IsMainThread());
+
   // Compute the frequency response on a separate temporary kernel
   // to avoid interfering with the processing running in the audio
   // thread on the main kernels.
 
   std::unique_ptr<BiquadDSPKernel> response_kernel =
       std::make_unique<BiquadDSPKernel>(this);
-  response_kernel->GetFrequencyResponse(n_frequencies, frequency_hz,
-                                        mag_response, phase_response);
+
+  float cutoff_frequency;
+  float q;
+  float gain;
+  float detune;  // in Cents
+
+  {
+    // Get a copy of the current biquad filter coefficients so we can update
+    // |response_kernel| with these values.  We need to synchronize with
+    // |Process()| to prevent process() from updating the filter coefficients
+    // while we're trying to access them.  Since this is on the main thread, we
+    // can wait.  The audio thread will update the coefficients the next time
+    // around, it it were blocked.
+    MutexLocker process_locker(process_lock_);
+
+    cutoff_frequency = Parameter1().Value();
+    q = Parameter2().Value();
+    gain = Parameter3().Value();
+    detune = Parameter4().Value();
+  }
+
+  response_kernel->UpdateCoefficients(1, &cutoff_frequency, &q, &gain, &detune);
+  BiquadDSPKernel::GetFrequencyResponse(*response_kernel, n_frequencies,
+                                        frequency_hz, mag_response,
+                                        phase_response);
 }
 
 }  // namespace blink

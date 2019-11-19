@@ -27,6 +27,8 @@ namespace data_reduction_proxy {
 
 namespace {
 
+static const char kDataReductionCoreProxy[] = "proxy.googlezip.net";
+
 // Returns the Data Reduction Proxy servers in |proxy_type_info| that should be
 // marked bad according to |data_reduction_proxy_info|.
 std::vector<net::ProxyServer> GetProxiesToMarkBad(
@@ -159,7 +161,7 @@ bool DataReductionProxyBypassProtocol::MaybeBypassProxyAndPrepareToRetry(
       // TODO(sclittle): Remove this workaround once http://crbug.com/876776 is
       // fixed.
       placeholder_proxy_servers.push_back(
-          DataReductionProxyServer(proxy_server, ProxyServer_ProxyType_CORE));
+          DataReductionProxyServer(proxy_server));
     } else {
       ReportResponseProxyServerStatusHistogram(
           RESPONSE_PROXY_SERVER_STATUS_DRP);
@@ -224,7 +226,6 @@ bool DataReductionProxyBypassProtocol::HandleInvalidResponseHeadersCase(
   data_reduction_proxy_info->bypass_all = false;
   data_reduction_proxy_info->mark_proxies_as_bad = true;
   data_reduction_proxy_info->bypass_duration = base::TimeDelta::FromMinutes(5);
-  data_reduction_proxy_info->bypass_action = BYPASS_ACTION_TYPE_BYPASS;
   *bypass_type = BYPASS_EVENT_TYPE_MEDIUM;
 
   return true;
@@ -291,6 +292,18 @@ bool IsProxyBypassedAtTime(const net::ProxyRetryInfoMap& retry_map,
     *retry_delay = found->second.current_delay;
 
   return true;
+}
+
+bool IsQuicProxy(const net::ProxyServer& proxy_server) {
+  // Enable QUIC for whitelisted proxies.
+  return (proxy_server.is_https() || proxy_server.is_quic()) &&
+         (proxy_server.host_port_pair() ==
+          net::HostPortPair(kDataReductionCoreProxy, 443));
+}
+
+void RecordQuicProxyStatus(QuicProxyStatus status) {
+  UMA_HISTOGRAM_ENUMERATION("DataReductionProxy.Quic.ProxyStatus", status,
+                            QUIC_PROXY_STATUS_BOUNDARY);
 }
 
 }  // namespace data_reduction_proxy

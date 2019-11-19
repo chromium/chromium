@@ -13,12 +13,12 @@
 #include "chrome/browser/app_mode/app_mode_utils.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chrome_content_browser_client.h"
+#include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/extensions/activity_log/activity_log.h"
 #include "chrome/browser/extensions/api/chrome_extensions_api_client.h"
 #include "chrome/browser/extensions/api/content_settings/content_settings_service.h"
 #include "chrome/browser/extensions/api/runtime/chrome_runtime_api_delegate.h"
 #include "chrome/browser/extensions/chrome_component_extension_resource_manager.h"
-#include "chrome/browser/extensions/chrome_extension_api_frame_id_map_helper.h"
 #include "chrome/browser/extensions/chrome_extension_host_delegate.h"
 #include "chrome/browser/extensions/chrome_extension_web_contents_observer.h"
 #include "chrome/browser/extensions/chrome_extensions_browser_api_provider.h"
@@ -33,7 +33,6 @@
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/menu_manager.h"
 #include "chrome/browser/extensions/updater/chrome_update_client_config.h"
-#include "chrome/browser/extensions/user_script_listener.h"
 #include "chrome/browser/external_protocol/external_protocol_handler.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/profiles/profile.h"
@@ -47,12 +46,11 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
-#include "components/net_log/chrome_net_log.h"
+#include "chrome/common/url_constants.h"
 #include "components/update_client/update_client.h"
 #include "components/version_info/version_info.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
-#include "content/public/browser/resource_request_info.h"
 #include "content/public/common/content_switches.h"
 #include "extensions/browser/core_extensions_browser_api_provider.h"
 #include "extensions/browser/extension_prefs.h"
@@ -115,12 +113,7 @@ bool ChromeExtensionsBrowserClient::AreExtensionsDisabled(
 
 bool ChromeExtensionsBrowserClient::IsValidContext(
     content::BrowserContext* context) {
-  // TODO(https://crbug.com/870838): Remove after investigating the bug.
-  if (!context) {
-    LOG(ERROR) << "Unexpected null context";
-    NOTREACHED();
-    return false;
-  }
+  DCHECK(context);
   if (!g_browser_process) {
     LOG(ERROR) << "Unexpected null g_browser_process";
     NOTREACHED();
@@ -188,39 +181,24 @@ bool ChromeExtensionsBrowserClient::CanExtensionCrossIncognito(
       || util::CanCrossIncognito(extension, context);
 }
 
-net::URLRequestJob*
-ChromeExtensionsBrowserClient::MaybeCreateResourceBundleRequestJob(
-    net::URLRequest* request,
-    net::NetworkDelegate* network_delegate,
-    const base::FilePath& directory_path,
-    const std::string& content_security_policy,
-    bool send_cors_header) {
-  return chrome_url_request_util::MaybeCreateURLRequestResourceBundleJob(
-      request,
-      network_delegate,
-      directory_path,
-      content_security_policy,
-      send_cors_header);
-}
-
 base::FilePath ChromeExtensionsBrowserClient::GetBundleResourcePath(
     const network::ResourceRequest& request,
     const base::FilePath& extension_resources_path,
-    ComponentExtensionResourceInfo* resource_info) const {
+    int* resource_id) const {
   return chrome_url_request_util::GetBundleResourcePath(
-      request, extension_resources_path, resource_info);
+      request, extension_resources_path, resource_id);
 }
 
 void ChromeExtensionsBrowserClient::LoadResourceFromResourceBundle(
     const network::ResourceRequest& request,
-    network::mojom::URLLoaderRequest loader,
+    mojo::PendingReceiver<network::mojom::URLLoader> loader,
     const base::FilePath& resource_relative_path,
-    const ComponentExtensionResourceInfo& resource_info,
+    int resource_id,
     const std::string& content_security_policy,
-    network::mojom::URLLoaderClientPtr client,
+    mojo::PendingRemote<network::mojom::URLLoaderClient> client,
     bool send_cors_header) {
   chrome_url_request_util::LoadResourceFromResourceBundle(
-      request, std::move(loader), resource_relative_path, resource_info,
+      request, std::move(loader), resource_relative_path, resource_id,
       content_security_policy, std::move(client), send_cors_header);
 }
 
@@ -251,7 +229,7 @@ PrefService* ChromeExtensionsBrowserClient::GetPrefServiceForContext(
 
 void ChromeExtensionsBrowserClient::GetEarlyExtensionPrefsObservers(
     content::BrowserContext* context,
-    std::vector<ExtensionPrefsObserver*>* observers) const {
+    std::vector<EarlyExtensionPrefsObserver*>* observers) const {
   observers->push_back(ContentSettingsService::Get(context));
 }
 
@@ -373,21 +351,23 @@ ChromeExtensionsBrowserClient::GetComponentExtensionResourceManager() {
 void ChromeExtensionsBrowserClient::BroadcastEventToRenderers(
     events::HistogramValue histogram_value,
     const std::string& event_name,
-    std::unique_ptr<base::ListValue> args) {
+    std::unique_ptr<base::ListValue> args,
+    bool dispatch_to_off_the_record_profiles) {
   g_browser_process->extension_event_router_forwarder()
       ->BroadcastEventToRenderers(histogram_value, event_name, std::move(args),
-                                  GURL());
-}
-
-net::NetLog* ChromeExtensionsBrowserClient::GetNetLog() {
-  return g_browser_process->net_log();
+                                  GURL(), dispatch_to_off_the_record_profiles);
 }
 
 ExtensionCache* ChromeExtensionsBrowserClient::GetExtensionCache() {
   if (!extension_cache_.get()) {
 #if defined(OS_CHROMEOS)
+    base::TaskPriority task_priority =
+        chromeos::ProfileHelper::IsSigninProfileInitialized() &&
+                chromeos::ProfileHelper::SigninProfileHasLoginScreenExtensions()
+            ? base::TaskPriority::USER_VISIBLE
+            : base::TaskPriority::BEST_EFFORT;
     extension_cache_.reset(new ExtensionCacheImpl(
-        std::make_unique<ChromeOSExtensionCacheDelegate>()));
+        std::make_unique<ChromeOSExtensionCacheDelegate>(), task_priority));
 #else
     extension_cache_.reset(new NullExtensionCache());
 #endif
@@ -470,12 +450,6 @@ ChromeExtensionsBrowserClient::CreateUpdateClient(
       ChromeUpdateClientConfig::Create(context));
 }
 
-std::unique_ptr<ExtensionApiFrameIdMapHelper>
-ChromeExtensionsBrowserClient::CreateExtensionApiFrameIdMapHelper(
-    ExtensionApiFrameIdMap* map) {
-  return std::make_unique<ChromeExtensionApiFrameIdMapHelper>(map);
-}
-
 std::unique_ptr<content::BluetoothChooser>
 ChromeExtensionsBrowserClient::CreateBluetoothChooser(
     content::RenderFrameHost* frame,
@@ -488,20 +462,6 @@ bool ChromeExtensionsBrowserClient::IsActivityLoggingEnabled(
     content::BrowserContext* context) {
   ActivityLog* activity_log = ActivityLog::GetInstance(context);
   return activity_log && activity_log->is_active();
-}
-
-ExtensionNavigationUIData*
-ChromeExtensionsBrowserClient::GetExtensionNavigationUIData(
-    net::URLRequest* request) {
-  content::ResourceRequestInfo* info =
-      content::ResourceRequestInfo::ForRequest(request);
-  if (!info)
-    return nullptr;
-  ChromeNavigationUIData* navigation_data =
-      static_cast<ChromeNavigationUIData*>(info->GetNavigationUIData());
-  if (!navigation_data)
-    return nullptr;
-  return navigation_data->GetExtensionNavigationUIData();
 }
 
 void ChromeExtensionsBrowserClient::GetTabAndWindowIdForWebContents(
@@ -559,15 +519,30 @@ ChromeExtensionsBrowserClient::GetSystemNetworkContext() {
 }
 
 UserScriptListener* ChromeExtensionsBrowserClient::GetUserScriptListener() {
-  // Create lazily since this accesses g_browser_process which may not be set up
-  // when ChromeExtensionsBrowserClient is created.
-  if (!user_script_listener_)
-    user_script_listener_ = std::make_unique<UserScriptListener>();
-  return user_script_listener_.get();
+  return &user_script_listener_;
 }
 
 std::string ChromeExtensionsBrowserClient::GetUserAgent() const {
   return ::GetUserAgent();
+}
+
+bool ChromeExtensionsBrowserClient::ShouldSchemeBypassNavigationChecks(
+    const std::string& scheme) const {
+  if (scheme == chrome::kChromeSearchScheme)
+    return true;
+
+  return ExtensionsBrowserClient::ShouldSchemeBypassNavigationChecks(scheme);
+}
+
+bool ChromeExtensionsBrowserClient::ShouldForceWebRequestExtraHeaders(
+    content::BrowserContext* context) const {
+  // If OOR-CORS is disabled, we never apply this enforcement.
+  if (!context->ShouldEnableOutOfBlinkCors())
+    return false;
+
+  // Enables the enforcement if the prefs is managed by the enterprise policy.
+  return Profile::FromBrowserContext(context)->GetPrefs()->IsManagedPreference(
+      prefs::kCorsMitigationList);
 }
 
 // static

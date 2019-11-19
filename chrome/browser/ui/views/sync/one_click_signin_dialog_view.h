@@ -18,10 +18,6 @@
 #include "ui/views/controls/link_listener.h"
 #include "ui/views/window/dialog_delegate.h"
 
-namespace views {
-class View;
-}
-
 // This class allows users to confirm sync signin in cases where signin is
 // untrusted.
 class OneClickSigninDialogView : public views::DialogDelegateView,
@@ -62,8 +58,6 @@ class OneClickSigninDialogView : public views::DialogDelegateView,
   base::string16 GetWindowTitle() const override;
   ui::ModalType GetModalType() const override;
   void WindowClosing() override;
-  views::View* CreateExtraView() override;
-  base::string16 GetDialogButtonLabel(ui::DialogButton button) const override;
   bool Accept() override;
 
   // Overridden from views::LinkListener:

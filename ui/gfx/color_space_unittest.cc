@@ -147,5 +147,37 @@ TEST(ColorSpace, ConversionToAndFromSkColorSpace) {
   }
 }
 
+TEST(ColorSpace, MixedInvalid) {
+  ColorSpace color_space;
+  color_space = color_space.GetWithMatrixAndRange(ColorSpace::MatrixID::INVALID,
+                                                  ColorSpace::RangeID::INVALID);
+  EXPECT_TRUE(!color_space.IsValid());
+  color_space = color_space.GetWithMatrixAndRange(
+      ColorSpace::MatrixID::SMPTE170M, ColorSpace::RangeID::LIMITED);
+  EXPECT_TRUE(!color_space.IsValid());
+}
+
+TEST(ColorSpace, MixedSRGBWithRec601) {
+  const ColorSpace expected_color_space = ColorSpace(
+      ColorSpace::PrimaryID::BT709, ColorSpace::TransferID::IEC61966_2_1,
+      ColorSpace::MatrixID::SMPTE170M, ColorSpace::RangeID::LIMITED);
+  ColorSpace color_space = ColorSpace::CreateSRGB();
+  color_space = color_space.GetWithMatrixAndRange(
+      ColorSpace::MatrixID::SMPTE170M, ColorSpace::RangeID::LIMITED);
+  EXPECT_TRUE(expected_color_space.IsValid());
+  EXPECT_EQ(color_space, expected_color_space);
+}
+
+TEST(ColorSpace, MixedHDR10WithRec709) {
+  const ColorSpace expected_color_space = ColorSpace(
+      ColorSpace::PrimaryID::BT2020, ColorSpace::TransferID::SMPTEST2084,
+      ColorSpace::MatrixID::BT709, ColorSpace::RangeID::LIMITED);
+  ColorSpace color_space = ColorSpace::CreateHDR10();
+  color_space = color_space.GetWithMatrixAndRange(ColorSpace::MatrixID::BT709,
+                                                  ColorSpace::RangeID::LIMITED);
+  EXPECT_TRUE(expected_color_space.IsValid());
+  EXPECT_EQ(color_space, expected_color_space);
+}
+
 }  // namespace
 }  // namespace gfx

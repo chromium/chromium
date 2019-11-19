@@ -40,15 +40,10 @@ class ChromeBrowserStateImpl : public ios::ChromeBrowserState {
                                    const base::Closure& completion) override;
   net::URLRequestContextGetter* CreateRequestContext(
       ProtocolHandlerMap* protocol_handlers) override;
-  net::URLRequestContextGetter* CreateIsolatedRequestContext(
-      const base::FilePath& partition_path) override;
 
   // BrowserState:
   bool IsOffTheRecord() const override;
   base::FilePath GetStatePath() const override;
-  std::unique_ptr<service_manager::Service> HandleServiceRequest(
-      const std::string& service_name,
-      service_manager::mojom::ServiceRequest request) override;
 
  private:
   friend class ChromeBrowserStateManagerImpl;

@@ -1,11 +1,12 @@
 <link rel="import" href="chrome://resources/html/polymer.html">
 
 <link rel="import" href="chrome://resources/cr_elements/cr_action_menu/cr_action_menu.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_button/cr_button.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_link_row/cr_link_row.html">
 <link rel="import" href="chrome://resources/cr_elements/shared_vars_css.html">
 <link rel="import" href="chrome://resources/html/assert.html">
 <link rel="import" href="chrome://resources/html/cr/ui/focus_without_ink.html">
 <link rel="import" href="chrome://resources/html/web_ui_listener_behavior.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/paper-icon-button/paper-icon-button-light.html">
 <link rel="import" href="../i18n_setup.html">
 <link rel="import" href="../settings_shared_css.html">
 <link rel="import" href="../controls/settings_toggle_button.html">
@@ -25,7 +26,7 @@
       }
 
       #migrateCreditCards {
-        border-bottom: var(--settings-separator-line);
+        border-bottom: var(--cr-separator-line);
         border-top: none;
       }
 
@@ -40,6 +41,20 @@
         sub-label="$i18n{enableCreditCardsSublabel}"
         pref="{{prefs.autofill.credit_card_enabled}}">
     </settings-toggle-button>
+    <template is="dom-if"
+        if="[[shouldShowFidoToggle_(
+            prefs.autofill.credit_card_enabled.value,
+            userIsFidoVerifiable_)]]">
+      <settings-toggle-button
+          class="settings-box first"
+          id="autofillCreditCardFIDOAuthToggle"
+          aria-label="$i18n{creditCards}" no-extension-indicator
+          label="$i18n{enableCreditCardFIDOAuthLabel}"
+          sub-label="$i18n{enableCreditCardFIDOAuthSublabel}"
+          pref="{{prefs.autofill.credit_card_fido_auth_enabled}}"
+          on-change="setFIDOAuthenticationEnabledState_">
+      </settings-toggle-button>
+    </template>
     <template is="dom-if"
         if="[[prefs.autofill.credit_card_enabled.extensionId]]">
       <div class="settings-box continuation">
@@ -61,31 +76,23 @@
 
     <div class="settings-box continuation">
       <h2 class="start">$i18n{creditCards}</h2>
-      <paper-button id="addCreditCard"
-          class="secondary-button header-aligned-button"
+      <cr-button id="addCreditCard" class="header-aligned-button"
           on-click="onAddCreditCardTap_"
           hidden$="[[!prefs.autofill.credit_card_enabled.value]]">
         $i18n{add}
-      </paper-button>
+      </cr-button>
     </div>
-    <div class="settings-box two-line" id="migrateCreditCards"
-        hidden$="[[!checkIfMigratable_(syncStatus, creditCards,
+    <cr-link-row id="migrateCreditCards"
+        hidden$="[[!checkIfMigratable_(creditCards,
             prefs.autofill.credit_card_enabled.value)]]"
-        on-click="onMigrateCreditCardsClick_" actionable>
-      <div class="start">
-        $i18n{migrateCreditCardsLabel}
-        <div class="secondary">[[migratableCreditCardsInfo_]]</div>
-      </div>
-      <paper-icon-button-light id="migrateCreditCardsButton"
-          class="subpage-arrow">
-        <button aria-label="[[migrateCreditCardsLabel_]]"></button>
-      </paper-icon-button-light>
-    </div>
+        on-click="onMigrateCreditCardsClick_"
+        label="$i18n{migrateCreditCardsLabel}"
+        sub-label="[[migratableCreditCardsInfo_]]"></cr-link-row>
     <settings-credit-card-list id="creditCardList" class="list-frame"
         credit-cards="[[creditCards]]">
     </settings-credit-card-list>
 
-    <cr-action-menu id="creditCardSharedMenu">
+    <cr-action-menu id="creditCardSharedMenu" role-description="$i18n{menu}">
       <button id="menuEditCreditCard" class="dropdown-item"
           on-click="onMenuEditCreditCardTap_">$i18n{edit}</button>
       <button id="menuRemoveCreditCard" class="dropdown-item"

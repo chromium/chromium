@@ -1,0 +1,26 @@
+This is a testharness.js-based test.
+PASS Unmapped / should resolve ./ specifiers as URLs
+PASS Unmapped / should resolve ../ specifiers as URLs
+PASS Unmapped / should resolve / specifiers as URLs
+PASS Unmapped / should parse absolute fetch-scheme URLs
+FAIL Unmapped / should fail for absolute non-fetch-scheme URLs assert_throws: function "() => resolveUnderTest('mailto:bad')" did not throw
+FAIL Unmapped / should fail for strings not parseable as absolute URLs and not starting with ./ ../ or / assert_throws: function "() => resolveUnderTest('https://ex ample.org/')" did not throw
+PASS Mapped using the "imports" key only (no scopes) / should fail when the mapping is to an empty array
+PASS Mapped using the "imports" key only (no scopes) / Package-like scenarios / should work for package main modules
+PASS Mapped using the "imports" key only (no scopes) / Package-like scenarios / should work for package submodules
+PASS Mapped using the "imports" key only (no scopes) / Package-like scenarios / should work for package names that end in a slash by just passing through
+PASS Mapped using the "imports" key only (no scopes) / Package-like scenarios / should still fail for package modules that are not declared
+PASS Mapped using the "imports" key only (no scopes) / Package-like scenarios / should fail for package submodules that map to nowhere
+PASS Mapped using the "imports" key only (no scopes) / Tricky specifiers / should work for explicitly-mapped specifiers that happen to have a slash
+PASS Mapped using the "imports" key only (no scopes) / Tricky specifiers / should work when the specifier has punctuation
+PASS Mapped using the "imports" key only (no scopes) / Tricky specifiers / should fail for attempting to get a submodule of something not declared with a trailing slash
+PASS Mapped using the "imports" key only (no scopes) / URL-like specifiers / should remap to other URLs
+PASS Mapped using the "imports" key only (no scopes) / URL-like specifiers / should fail for URLs that remap to empty arrays
+PASS Mapped using the "imports" key only (no scopes) / URL-like specifiers / should remap URLs that are just composed from / and .
+FAIL Mapped using the "imports" key only (no scopes) / URL-like specifiers / should remap URLs that are prefix-matched by keys with trailing slashes assert_equals: expected "https://example.com/lib/url-trailing-slash/foo.mjs" but got "https://example.com/test/foo.mjs"
+PASS Mapped using the "imports" key only (no scopes) / URL-like specifiers / should use the last entry's address when URL-like specifiers parse to the same absolute URL
+PASS Mapped using the "imports" key only (no scopes) / Overlapping entries with trailing slashes / should favor the most-specific key (no empty arrays)
+PASS Mapped using the "imports" key only (no scopes) / Overlapping entries with trailing slashes / should favor the most-specific key when empty arrays are involved for less-specific keys
+PASS Mapped using the "imports" key only (no scopes) / Overlapping entries with trailing slashes / should favor the most-specific key when empty arrays are involved for more-specific keys
+Harness: the test ran to completion.
+

@@ -28,11 +28,9 @@ js_library("settings_animated_pages") {
     ":settings_subpage",
     "..:route",
     "//ui/webui/resources/js:assert",
-    "//ui/webui/resources/js:cr",
-    "//ui/webui/resources/js:load_time_data",
-    "//ui/webui/resources/js:util",
     "//ui/webui/resources/js/cr/ui:focus_without_ink",
   ]
+  externs_list = [ "$externs_path/pending_polymer.js" ]
 }
 
 js_library("settings_section") {

@@ -1,0 +1,31 @@
+{
+  "layers": [
+    {
+      "name": "LayoutBlockFlow HTML",
+      "bounds": [800, 600]
+    },
+    {
+      "name": "LayoutBlockFlow (positioned) DIV class='accelerated stacking-context'",
+      "bounds": [160, 90],
+      "contentsOpaque": true,
+      "backgroundColor": "#FF0000",
+      "transform": 1
+    },
+    {
+      "name": "LayoutBlockFlow HTML (foreground) Layer",
+      "bounds": [800, 600]
+    }
+  ],
+  "transforms": [
+    {
+      "id": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [8, 8, 0, 1]
+      ]
+    }
+  ]
+}
+

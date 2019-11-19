@@ -13,9 +13,9 @@
 #include "base/strings/stringprintf.h"
 #include "base/task/post_task.h"
 #include "build/build_config.h"
-#include "content/browser/gpu/video_capture_dependencies.h"
 #include "content/browser/renderer_host/media/in_process_launched_video_capture_device.h"
 #include "content/browser/renderer_host/media/video_capture_controller.h"
+#include "content/common/buildflags.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/desktop_media_id.h"
@@ -23,16 +23,14 @@
 #include "media/base/media_switches.h"
 #include "media/capture/video/fake_video_capture_device.h"
 #include "media/capture/video/fake_video_capture_device_factory.h"
-#include "media/capture/video/scoped_video_capture_jpeg_decoder.h"
 #include "media/capture/video/video_capture_buffer_pool_impl.h"
 #include "media/capture/video/video_capture_buffer_tracker_factory_impl.h"
 #include "media/capture/video/video_capture_device_client.h"
-#include "media/capture/video/video_capture_jpeg_decoder_impl.h"
 #include "media/capture/video/video_frame_receiver.h"
 #include "media/capture/video/video_frame_receiver_on_task_runner.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
 
-#if defined(ENABLE_SCREEN_CAPTURE)
+#if BUILDFLAG(ENABLE_SCREEN_CAPTURE)
 #include "content/browser/media/capture/desktop_capture_device_uma_types.h"
 #if defined(OS_ANDROID)
 #include "content/browser/media/capture/screen_capture_device_android.h"
@@ -43,15 +41,22 @@
 #endif
 #include "content/browser/media/capture/desktop_capture_device.h"
 #endif  // defined(OS_ANDROID)
-#endif  // defined(ENABLE_SCREEN_CAPTURE)
+#endif  // BUILDFLAG(ENABLE_SCREEN_CAPTURE)
+
+#if defined(OS_CHROMEOS)
+#include "content/browser/gpu/chromeos/video_capture_dependencies.h"
+#include "media/capture/video/chromeos/scoped_video_capture_jpeg_decoder.h"
+#include "media/capture/video/chromeos/video_capture_jpeg_decoder_impl.h"
+#endif  // defined(OS_CHROMEOS)
 
 namespace {
 
+#if defined(OS_CHROMEOS)
 std::unique_ptr<media::VideoCaptureJpegDecoder> CreateGpuJpegDecoder(
     media::VideoCaptureJpegDecoder::DecodeDoneCB decode_done_cb,
     base::Callback<void(const std::string&)> send_log_message_cb) {
-  auto io_task_runner = base::CreateSingleThreadTaskRunnerWithTraits(
-      {content::BrowserThread::IO});
+  auto io_task_runner =
+      base::CreateSingleThreadTaskRunner({content::BrowserThread::IO});
   return std::make_unique<media::ScopedVideoCaptureJpegDecoder>(
       std::make_unique<media::VideoCaptureJpegDecoderImpl>(
           base::BindRepeating(
@@ -60,6 +65,7 @@ std::unique_ptr<media::VideoCaptureJpegDecoder> CreateGpuJpegDecoder(
           std::move(send_log_message_cb)),
       io_task_runner);
 }
+#endif  // defined(OS_CHROMEOS)
 
 // The maximum number of video frame buffers in-flight at any one time. This
 // value should be based on the logical capacity of the capture pipeline, and
@@ -84,7 +90,7 @@ InProcessVideoCaptureDeviceLauncher::~InProcessVideoCaptureDeviceLauncher() {
 
 void InProcessVideoCaptureDeviceLauncher::LaunchDeviceAsync(
     const std::string& device_id,
-    blink::MediaStreamType stream_type,
+    blink::mojom::MediaStreamType stream_type,
     const media::VideoCaptureParams& params,
     base::WeakPtr<media::VideoFrameReceiver> receiver_on_io_thread,
     base::OnceClosure /* connection_lost_cb */,
@@ -106,7 +112,7 @@ void InProcessVideoCaptureDeviceLauncher::LaunchDeviceAsync(
   // to the IO thread.
   auto receiver = std::make_unique<media::VideoFrameReceiverOnTaskRunner>(
       receiver_on_io_thread,
-      base::CreateSingleThreadTaskRunnerWithTraits({BrowserThread::IO}));
+      base::CreateSingleThreadTaskRunner({BrowserThread::IO}));
 
   base::OnceClosure start_capture_closure;
   // Use of Unretained |this| is safe, because |done_cb| guarantees that |this|
@@ -116,7 +122,7 @@ void InProcessVideoCaptureDeviceLauncher::LaunchDeviceAsync(
                      base::Unretained(this), callbacks, std::move(done_cb)));
 
   switch (stream_type) {
-    case blink::MEDIA_DEVICE_VIDEO_CAPTURE: {
+    case blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE: {
       if (!video_capture_system_) {
         // Clients who create an instance of |this| without providing a
         // VideoCaptureSystem instance are expected to know that
@@ -135,9 +141,9 @@ void InProcessVideoCaptureDeviceLauncher::LaunchDeviceAsync(
       break;
     }
 
-#if defined(ENABLE_SCREEN_CAPTURE)
+#if BUILDFLAG(ENABLE_SCREEN_CAPTURE)
 #if !defined(OS_ANDROID)
-    case blink::MEDIA_GUM_TAB_VIDEO_CAPTURE:
+    case blink::mojom::MediaStreamType::GUM_TAB_VIDEO_CAPTURE:
       start_capture_closure = base::BindOnce(
           &InProcessVideoCaptureDeviceLauncher::DoStartTabCaptureOnDeviceThread,
           base::Unretained(this), device_id, params, std::move(receiver),
@@ -145,9 +151,9 @@ void InProcessVideoCaptureDeviceLauncher::LaunchDeviceAsync(
       break;
 #endif  // !defined(OS_ANDROID)
 
-    case blink::MEDIA_GUM_DESKTOP_VIDEO_CAPTURE:
+    case blink::mojom::MediaStreamType::GUM_DESKTOP_VIDEO_CAPTURE:
       FALLTHROUGH;
-    case blink::MEDIA_DISPLAY_VIDEO_CAPTURE: {
+    case blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE: {
       const DesktopMediaID desktop_id = DesktopMediaID::Parse(device_id);
       if (desktop_id.is_null()) {
         DLOG(ERROR) << "Desktop media ID is null";
@@ -216,7 +222,7 @@ void InProcessVideoCaptureDeviceLauncher::LaunchDeviceAsync(
           std::move(after_start_capture_callback));
       break;
     }
-#endif  // defined(ENABLE_SCREEN_CAPTURE)
+#endif  // BUILDFLAG(ENABLE_SCREEN_CAPTURE)
 
     default: {
       NOTIMPLEMENTED();
@@ -246,8 +252,9 @@ InProcessVideoCaptureDeviceLauncher::CreateDeviceClient(
   scoped_refptr<media::VideoCaptureBufferPool> buffer_pool =
       new media::VideoCaptureBufferPoolImpl(
           std::make_unique<media::VideoCaptureBufferTrackerFactoryImpl>(),
-          buffer_pool_max_buffer_count);
+          requested_buffer_type, buffer_pool_max_buffer_count);
 
+#if defined(OS_CHROMEOS)
   return std::make_unique<media::VideoCaptureDeviceClient>(
       requested_buffer_type, std::move(receiver), std::move(buffer_pool),
       base::BindRepeating(
@@ -256,6 +263,10 @@ InProcessVideoCaptureDeviceLauncher::CreateDeviceClient(
                               receiver_on_io_thread),
           base::BindRepeating(&media::VideoFrameReceiver::OnLog,
                               receiver_on_io_thread)));
+#else
+  return std::make_unique<media::VideoCaptureDeviceClient>(
+      requested_buffer_type, std::move(receiver), std::move(buffer_pool));
+#endif  // defined(OS_CHROMEOS)
 }
 
 void InProcessVideoCaptureDeviceLauncher::OnDeviceStarted(
@@ -271,11 +282,11 @@ void InProcessVideoCaptureDeviceLauncher::OnDeviceStarted(
         callbacks->OnDeviceLaunchFailed(
             media::VideoCaptureError::
                 kInProcessDeviceLauncherFailedToCreateDeviceInstance);
-        base::ResetAndReturn(&done_cb).Run();
+        std::move(done_cb).Run();
         return;
       case State::DEVICE_START_ABORTING:
         callbacks->OnDeviceLaunchAborted();
-        base::ResetAndReturn(&done_cb).Run();
+        std::move(done_cb).Run();
         return;
       case State::READY_TO_LAUNCH:
         NOTREACHED();
@@ -289,12 +300,12 @@ void InProcessVideoCaptureDeviceLauncher::OnDeviceStarted(
   switch (state_copy) {
     case State::DEVICE_START_IN_PROGRESS:
       callbacks->OnDeviceLaunched(std::move(launched_device));
-      base::ResetAndReturn(&done_cb).Run();
+      std::move(done_cb).Run();
       return;
     case State::DEVICE_START_ABORTING:
       launched_device.reset();
       callbacks->OnDeviceLaunchAborted();
-      base::ResetAndReturn(&done_cb).Run();
+      std::move(done_cb).Run();
       return;
     case State::READY_TO_LAUNCH:
       NOTREACHED();
@@ -319,7 +330,7 @@ void InProcessVideoCaptureDeviceLauncher::DoStartDeviceCaptureOnDeviceThread(
   std::move(result_callback).Run(std::move(video_capture_device));
 }
 
-#if defined(ENABLE_SCREEN_CAPTURE)
+#if BUILDFLAG(ENABLE_SCREEN_CAPTURE)
 
 #if !defined(OS_ANDROID)
 void InProcessVideoCaptureDeviceLauncher::DoStartTabCaptureOnDeviceThread(
@@ -397,7 +408,7 @@ void InProcessVideoCaptureDeviceLauncher::DoStartDesktopCaptureOnDeviceThread(
   std::move(result_callback).Run(std::move(video_capture_device));
 }
 
-#endif  // defined(ENABLE_SCREEN_CAPTURE)
+#endif  // BUILDFLAG(ENABLE_SCREEN_CAPTURE)
 
 void InProcessVideoCaptureDeviceLauncher::
     DoStartFakeDisplayCaptureOnDeviceThread(

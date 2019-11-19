@@ -28,7 +28,6 @@
 [
     Constructor(sequence<BlobPart> fileBits, USVString fileName, optional FilePropertyBag options),
     ConstructorCallWith=ExecutionContext,
-    RaisesException=Constructor,
     Exposed=(Window,Worker),
     Serializable
 ] interface File : Blob {

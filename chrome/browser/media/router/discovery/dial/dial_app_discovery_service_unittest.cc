@@ -29,8 +29,8 @@ constexpr char kYouTubeName[] = "YouTube";
 
 class TestSafeDialAppInfoParser : public SafeDialAppInfoParser {
  public:
-  TestSafeDialAppInfoParser() : SafeDialAppInfoParser(nullptr) {}
-  ~TestSafeDialAppInfoParser() override {}
+  TestSafeDialAppInfoParser() = default;
+  ~TestSafeDialAppInfoParser() override = default;
 
   MOCK_METHOD1(ParseInternal, void(const std::string& xml_text));
 
@@ -53,8 +53,7 @@ class TestSafeDialAppInfoParser : public SafeDialAppInfoParser {
 class DialAppDiscoveryServiceTest : public ::testing::Test {
  public:
   DialAppDiscoveryServiceTest()
-      : test_parser_(new TestSafeDialAppInfoParser()),
-        dial_app_discovery_service_(nullptr) {
+      : test_parser_(new TestSafeDialAppInfoParser()) {
     dial_app_discovery_service_.SetParserForTest(
         std::unique_ptr<TestSafeDialAppInfoParser>(test_parser_));
   }

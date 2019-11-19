@@ -4,6 +4,7 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/containers/flat_map.h"
 #include "base/message_loop/message_loop_current.h"
 #include "base/run_loop.h"
 #include "content/public/browser/render_frame_host.h"
@@ -28,8 +29,8 @@ class CommitObserver : public RenderViewObserver {
 
   void DidCommitCompositorFrame() override {
     commit_count_++;
-    for (base::Closure* closure : quit_closures_) {
-      closure->Run();
+    for (const auto& pair : quit_closures_) {
+      pair.second.Run();
     }
   }
 
@@ -41,12 +42,11 @@ class CommitObserver : public RenderViewObserver {
   void WaitForCommitNumber(int commit_number) {
     if (commit_number > commit_count_) {
       scoped_refptr<MessageLoopRunner> runner = new MessageLoopRunner;
-      base::Closure quit_closure =
-          base::Bind(&CommitObserver::QuitAfterCommit, base::Unretained(this),
-                     commit_number, runner);
-      quit_closures_.insert(&quit_closure);
+      quit_closures_[commit_number] =
+          base::BindRepeating(&CommitObserver::QuitAfterCommit,
+                              base::Unretained(this), commit_number, runner);
       runner->Run();
-      quit_closures_.erase(&quit_closure);
+      quit_closures_.erase(commit_number);
     }
   }
 
@@ -56,7 +56,7 @@ class CommitObserver : public RenderViewObserver {
   // RenderViewObserver implementation.
   void OnDestruct() override { delete this; }
 
-  std::set<base::Closure*> quit_closures_;
+  base::flat_map<int, base::RepeatingClosure> quit_closures_;
   int commit_count_;
 };
 
@@ -103,18 +103,18 @@ IN_PROC_BROWSER_TEST_F(VisualStateTest, DISABLED_CallbackDoesNotDeadlock) {
   // two commits then this test will prove nothing. We could detect this
   // with a high level of confidence if we used a timeout, but that's
   // discouraged (see https://codereview.chromium.org/939673002).
-  NavigateToURL(shell(), GURL("about:blank"));
+  EXPECT_TRUE(NavigateToURL(shell(), GURL("about:blank")));
   CommitObserver observer(RenderView::FromRoutingID(
       shell()->web_contents()->GetRenderViewHost()->GetRoutingID()));
 
   // Wait for the commit corresponding to the load.
 
-  PostTaskToInProcessRendererAndWait(base::Bind(
+  PostTaskToInProcessRendererAndWait(base::BindOnce(
       &VisualStateTest::WaitForCommit, base::Unretained(this), &observer, 1));
 
   // Try our best to check that there are no pending updates or commits.
   PostTaskToInProcessRendererAndWait(
-      base::Bind(&VisualStateTest::AssertIsIdle, base::Unretained(this)));
+      base::BindOnce(&VisualStateTest::AssertIsIdle, base::Unretained(this)));
 
   // Insert a visual state callback.
   shell()->web_contents()->GetMainFrame()->InsertVisualStateCallback(
@@ -122,7 +122,7 @@ IN_PROC_BROWSER_TEST_F(VisualStateTest, DISABLED_CallbackDoesNotDeadlock) {
                      base::Unretained(this)));
 
   // Verify that the callback is invoked and a new commit completed.
-  PostTaskToInProcessRendererAndWait(base::Bind(
+  PostTaskToInProcessRendererAndWait(base::BindOnce(
       &VisualStateTest::WaitForCommit, base::Unretained(this), &observer, 2));
   EXPECT_EQ(1, GetCallbackCount());
 }

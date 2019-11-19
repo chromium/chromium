@@ -1,0 +1,23 @@
+{
+  "layers": [
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF",
+      "paintInvalidations": [
+        {
+          "object": "LayoutBlockFlow DIV id='innerDiv'",
+          "rect": [8, 8, 300, 300],
+          "reason": "paint property change"
+        },
+        {
+          "object": "VerticalScrollbar",
+          "rect": [762, 8, 15, 300],
+          "reason": "scroll control"
+        }
+      ]
+    }
+  ]
+}
+

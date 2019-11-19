@@ -7,6 +7,7 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/macros.h"
+#include "chrome/android/chrome_jni_headers/ProfileDownloader_jni.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_android.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
@@ -16,9 +17,9 @@
 #include "chrome/browser/profiles/profile_downloader_delegate.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
+#include "content/public/browser/storage_partition.h"
 #include "google_apis/gaia/gaia_auth_util.h"
-#include "jni/ProfileDownloader_jni.h"
-#include "services/identity/public/cpp/identity_manager.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/android/java_bitmap.h"
 #include "ui/gfx/image/image_skia.h"
@@ -32,7 +33,7 @@ namespace {
 class AccountInfoRetriever : public ProfileDownloaderDelegate {
  public:
   AccountInfoRetriever(Profile* profile,
-                       const std::string& account_id,
+                       const CoreAccountId& account_id,
                        const std::string& email,
                        const int desired_image_side_pixels,
                        bool is_pre_signin)
@@ -62,8 +63,14 @@ class AccountInfoRetriever : public ProfileDownloaderDelegate {
     return desired_image_side_pixels_;
   }
 
-  Profile* GetBrowserProfile() override {
-    return profile_;
+  signin::IdentityManager* GetIdentityManager() override {
+    return IdentityManagerFactory::GetForProfile(profile_);
+  }
+
+  network::mojom::URLLoaderFactory* GetURLLoaderFactory() override {
+    return content::BrowserContext::GetDefaultStoragePartition(profile_)
+        ->GetURLLoaderFactoryForBrowserProcess()
+        .get();
   }
 
   std::string GetCachedPictureURL() const override {
@@ -105,7 +112,7 @@ class AccountInfoRetriever : public ProfileDownloaderDelegate {
   Profile* profile_;
 
   // The account ID and email address of account to be loaded.
-  const std::string account_id_;
+  const CoreAccountId account_id_;
   const std::string email_;
 
   // Desired side length of the profile image (in pixels).
@@ -168,8 +175,8 @@ JNI_ProfileDownloader_GetCachedAvatarForPrimaryAccount(
           GetProfileAttributesWithPath(profile->GetPath(), &entry)) {
     gfx::Image avatar_image = entry->GetAvatarIcon();
     if (!avatar_image.IsEmpty() &&
-        avatar_image.Width() > profiles::kAvatarIconWidth &&
-        avatar_image.Height() > profiles::kAvatarIconHeight &&
+        avatar_image.Width() > profiles::kAvatarIconSize &&
+        avatar_image.Height() > profiles::kAvatarIconSize &&
         avatar_image.AsImageSkia().bitmap()) {
       jbitmap = gfx::ConvertToJavaBitmap(avatar_image.AsImageSkia().bitmap());
     }
@@ -191,7 +198,8 @@ void JNI_ProfileDownloader_StartFetchingAccountInfoFor(
 
   auto maybe_account_info =
       IdentityManagerFactory::GetForProfile(profile)
-          ->FindAccountInfoForAccountWithRefreshTokenByEmailAddress(email);
+          ->FindExtendedAccountInfoForAccountWithRefreshTokenByEmailAddress(
+              email);
 
   if (!maybe_account_info.has_value()) {
     LOG(ERROR) << "Attempted to get AccountInfo for account not in the "

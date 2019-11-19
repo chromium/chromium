@@ -15,7 +15,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/process/process.h"
 #include "base/sequenced_task_runner.h"
-#include "services/service_manager/public/mojom/service_factory.mojom.h"
+#include "services/service_manager/public/mojom/service.mojom.h"
 #include "services/service_manager/sandbox/sandbox_type.h"
 #include "services/service_manager/service_process_launcher_delegate.h"
 

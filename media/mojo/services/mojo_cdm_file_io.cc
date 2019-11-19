@@ -5,13 +5,10 @@
 #include "media/mojo/services/mojo_cdm_file_io.h"
 
 #include <utility>
-#include <vector>
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/task/post_task.h"
-#include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 
@@ -20,30 +17,28 @@ namespace media {
 namespace {
 
 using ClientStatus = cdm::FileIOClient::Status;
+using FileStatus = media::mojom::CdmFile::Status;
 using StorageStatus = media::mojom::CdmStorage::Status;
 
-// File size limit is 32MB. Licenses saved by the CDM are typically several
-// hundreds of bytes.
-const int64_t kMaxFileSizeBytes = 32 * 1024 * 1024;
+// File size limit is 512KB. Licenses saved by the CDM are typically several
+// hundreds of bytes. This value should match what is in CdmFileImpl.
+const int64_t kMaxFileSizeBytes = 512 * 1024;
 
-// Maximum length of a file name.
-const size_t kFileNameMaxLength = 256;
-
-// File names must only contain letters (A-Za-z), digits(0-9), or "._-",
-// and not start with "_". It must contain at least 1 character, and not
-// more then |kFileNameMaxLength| characters.
-bool IsValidFileName(const std::string& name) {
-  if (name.empty() || name.length() > kFileNameMaxLength || name[0] == '_')
-    return false;
-
-  for (auto ch : name) {
-    if (!base::IsAsciiAlpha(ch) && !base::IsAsciiDigit(ch) && ch != '.' &&
-        ch != '_' && ch != '-') {
-      return false;
-    }
+const char* ConvertStorageStatus(StorageStatus status) {
+  switch (status) {
+    case StorageStatus::kSuccess:
+      return "kSuccess";
+    case StorageStatus::kInUse:
+      return "kInUse";
+    case StorageStatus::kFailure:
+      return "kFailure";
   }
 
-  return true;
+  return "unknown";
+}
+
+const char* ConvertFileStatus(FileStatus status) {
+  return status == FileStatus::kSuccess ? "kSuccess" : "kFailure";
 }
 
 }  // namespace
@@ -51,10 +46,7 @@ bool IsValidFileName(const std::string& name) {
 MojoCdmFileIO::MojoCdmFileIO(Delegate* delegate,
                              cdm::FileIOClient* client,
                              mojom::CdmStorage* cdm_storage)
-    : delegate_(delegate),
-      client_(client),
-      cdm_storage_(cdm_storage),
-      weak_factory_(this) {
+    : delegate_(delegate), client_(client), cdm_storage_(cdm_storage) {
   DVLOG(1) << __func__;
   DCHECK(delegate_);
   DCHECK(client_);
@@ -69,8 +61,6 @@ void MojoCdmFileIO::Open(const char* file_name, uint32_t file_name_size) {
   std::string file_name_string(file_name, file_name_size);
   DVLOG(3) << __func__ << " file: " << file_name_string;
 
-  TRACE_EVENT1("media", "MojoCdmFileIO::Open", "file_name", file_name_string);
-
   // Open is only allowed if the current state is kUnopened and the file name
   // is valid.
   if (state_ != State::kUnopened) {
@@ -78,42 +68,40 @@ void MojoCdmFileIO::Open(const char* file_name, uint32_t file_name_size) {
     return;
   }
 
-  if (!IsValidFileName(file_name_string)) {
-    OnError(ErrorType::kOpenError);
-    return;
-  }
-
   state_ = State::kOpening;
   file_name_ = file_name_string;
 
+  TRACE_EVENT_ASYNC_BEGIN1("media", "MojoCdmFileIO::Open", this, "file_name",
+                           file_name_);
+
+  // Wrap the callback to detect the case when the mojo connection is
+  // terminated prior to receiving the response. This avoids problems if the
+  // service is destroyed before the CDM. If that happens let the CDM know that
+  // Open() failed.
   auto callback = mojo::WrapCallbackWithDefaultInvokeIfNotRun(
       base::BindOnce(&MojoCdmFileIO::OnFileOpened, weak_factory_.GetWeakPtr()),
-      StorageStatus::kFailure, base::File(), nullptr);
+      StorageStatus::kFailure, mojo::NullAssociatedRemote());
   cdm_storage_->Open(file_name_string, std::move(callback));
 }
 
-void MojoCdmFileIO::OnFileOpened(StorageStatus status,
-                                 base::File file,
-                                 mojom::CdmFileAssociatedPtrInfo cdm_file) {
+void MojoCdmFileIO::OnFileOpened(
+    StorageStatus status,
+    mojo::PendingAssociatedRemote<mojom::CdmFile> cdm_file) {
   DVLOG(3) << __func__ << " file: " << file_name_ << ", status: " << status;
 
-  TRACE_EVENT2("media", "MojoCdmFileIO::FileOpened", "file_name", file_name_,
-               "status", static_cast<int32_t>(status));
-
+  // This logs the end of the async Open() request, and separately logs
+  // how long the client takes in OnOpenComplete().
+  TRACE_EVENT_ASYNC_END1("media", "MojoCdmFileIO::Open", this, "status",
+                         ConvertStorageStatus(status));
   switch (status) {
     case StorageStatus::kSuccess:
-      if (!file.IsValid()) {
-        NOTREACHED() << "File received is invalid.";
-        state_ = State::kError;
-        OnError(ErrorType::kOpenError);
-        return;
-      }
-
       // File was successfully opened.
       state_ = State::kOpened;
-      file_for_reading_ = std::move(file);
       cdm_file_.Bind(std::move(cdm_file));
-      client_->OnOpenComplete(ClientStatus::kSuccess);
+      {
+        TRACE_EVENT0("media", "FileIOClient::OnOpenComplete");
+        client_->OnOpenComplete(ClientStatus::kSuccess);
+      }
       return;
     case StorageStatus::kInUse:
       // File already open by somebody else.
@@ -133,8 +121,6 @@ void MojoCdmFileIO::OnFileOpened(StorageStatus status,
 void MojoCdmFileIO::Read() {
   DVLOG(3) << __func__ << " file: " << file_name_;
 
-  TRACE_EVENT1("media", "MojoCdmFileIO::Read", "file_name", file_name_);
-
   // If another operation is in progress, fail.
   if (state_ == State::kReading || state_ == State::kWriting) {
     OnError(ErrorType::kReadInUse);
@@ -147,82 +133,49 @@ void MojoCdmFileIO::Read() {
     return;
   }
 
-  // Determine the size of the file (so we know how many bytes to read).
-  int64_t num_bytes = file_for_reading_.GetLength();
-  if (num_bytes < 0) {
-    // Negative bytes mean failure, so fail. This error is not recoverable,
-    // so don't allow any more operations other than close on the file.
-    state_ = State::kError;
-    OnError(ErrorType::kReadError);
-    return;
-  }
+  TRACE_EVENT_ASYNC_BEGIN1("media", "MojoCdmFileIO::Read", this, "file_name",
+                           file_name_);
 
-  // Files are limited to 32MB, so fail if file too big. Setting |state_|
-  // back to Opened so that the CDM could write something valid to this file.
-  if (num_bytes > kMaxFileSizeBytes) {
-    DLOG(WARNING) << __func__
-                  << " Too much data to read. #bytes = " << num_bytes;
-    OnError(ErrorType::kReadError);
-    return;
-  }
-
-  // Do the actual read asynchronously so that we don't need to copy the
-  // data when calling |client_|.
   state_ = State::kReading;
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(&MojoCdmFileIO::DoRead,
-                                weak_factory_.GetWeakPtr(), num_bytes));
+
+  // Wrap the callback to detect the case when the mojo connection is
+  // terminated prior to receiving the response. This avoids problems if the
+  // service is destroyed before the CDM. If that happens let the CDM know that
+  // Read() failed.
+  auto callback = mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+      base::BindOnce(&MojoCdmFileIO::OnFileRead, weak_factory_.GetWeakPtr()),
+      FileStatus::kFailure, std::vector<uint8_t>());
+  cdm_file_->Read(std::move(callback));
 }
 
-void MojoCdmFileIO::DoRead(int64_t num_bytes) {
+void MojoCdmFileIO::OnFileRead(FileStatus status,
+                               const std::vector<uint8_t>& data) {
   DVLOG(3) << __func__ << " file: " << file_name_;
   DCHECK_EQ(State::kReading, state_);
 
-  TRACE_EVENT2("media", "MojoCdmFileIO::DoRead", "file_name", file_name_,
-               "bytes_to_read", num_bytes);
+  // This logs the end of the async Read() request, and separately logs
+  // how long the client takes in OnReadComplete().
+  TRACE_EVENT_ASYNC_END2("media", "MojoCdmFileIO::Read", this, "bytes_read",
+                         data.size(), "status", ConvertFileStatus(status));
 
-  // We know how much data is available, so read the complete contents of the
-  // file into a buffer and passing it back to |client_|. As these should be
-  // small files, we don't worry about breaking it up into chunks to read it.
-
-  // Read the contents of the file. Read() sizes (provided and returned) are
-  // type int, so cast appropriately.
-  int bytes_to_read = base::checked_cast<int>(num_bytes);
-  std::vector<uint8_t> buffer(bytes_to_read);
-
-  // If the file has 0 bytes, no need to read anything.
-  if (bytes_to_read != 0) {
-    TRACE_EVENT0("media", "MojoCdmFileIO::ActualRead");
-    base::TimeTicks start = base::TimeTicks::Now();
-    int bytes_read = file_for_reading_.Read(
-        0, reinterpret_cast<char*>(buffer.data()), bytes_to_read);
-    base::TimeDelta read_time = base::TimeTicks::Now() - start;
-    if (bytes_to_read != bytes_read) {
-      // Unable to read the contents of the file. Setting |state_| to kOpened
-      // so that the CDM can write something valid to this file.
-      DVLOG(1) << "Failed to read file " << file_name_ << ". Requested "
-               << bytes_to_read << " bytes, got " << bytes_read;
-      state_ = State::kOpened;
-      OnError(ErrorType::kReadError);
-      return;
-    }
-
-    // Only report reading time for successful reads.
-    UMA_HISTOGRAM_TIMES("Media.EME.CdmFileIO.ReadTime", read_time);
+  if (status != FileStatus::kSuccess) {
+    DVLOG(1) << "Failed to read file " << file_name_;
+    state_ = State::kOpened;
+    OnError(ErrorType::kReadError);
+    return;
   }
 
   // Call this before OnReadComplete() so that we always have the latest file
   // size before CDM fires errors.
-  delegate_->ReportFileReadSize(bytes_to_read);
+  delegate_->ReportFileReadSize(data.size());
 
   state_ = State::kOpened;
-  client_->OnReadComplete(ClientStatus::kSuccess, buffer.data(), buffer.size());
+  TRACE_EVENT0("media", "FileIOClient::OnReadComplete");
+  client_->OnReadComplete(ClientStatus::kSuccess, data.data(), data.size());
 }
 
 void MojoCdmFileIO::Write(const uint8_t* data, uint32_t data_size) {
   DVLOG(3) << __func__ << " file: " << file_name_ << ", bytes: " << data_size;
-
-  TRACE_EVENT1("media", "MojoCdmFileIO::Write", "file_name", file_name_);
 
   // If another operation is in progress, fail.
   if (state_ == State::kReading || state_ == State::kWriting) {
@@ -236,7 +189,7 @@ void MojoCdmFileIO::Write(const uint8_t* data, uint32_t data_size) {
     return;
   }
 
-  // Files are limited to 32MB, so fail if file too big.
+  // Files are limited in size, so fail if file too big.
   if (data_size > kMaxFileSizeBytes) {
     DLOG(WARNING) << __func__
                   << " Too much data to write. #bytes = " << data_size;
@@ -244,76 +197,40 @@ void MojoCdmFileIO::Write(const uint8_t* data, uint32_t data_size) {
     return;
   }
 
-  // Now open a temporary file for writing. Close |file_for_reading_| as it
-  // won't be used again.
+  TRACE_EVENT_ASYNC_BEGIN2("media", "MojoCdmFileIO::Write", this, "file_name",
+                           file_name_, "bytes_to_write", data_size);
+
   state_ = State::kWriting;
-  file_for_reading_.Close();
-  cdm_file_->OpenFileForWriting(
-      base::BindOnce(&MojoCdmFileIO::DoWrite, weak_factory_.GetWeakPtr(),
-                     std::vector<uint8_t>(data, data + data_size)));
+
+  // Wrap the callback to detect the case when the mojo connection is
+  // terminated prior to receiving the response. This avoids problems if the
+  // service is destroyed before the CDM. If that happens let the CDM know that
+  // Write() failed.
+  auto callback = mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+      base::BindOnce(&MojoCdmFileIO::OnFileWritten, weak_factory_.GetWeakPtr()),
+      FileStatus::kFailure);
+  cdm_file_->Write(std::vector<uint8_t>(data, data + data_size),
+                   std::move(callback));
 }
 
-void MojoCdmFileIO::DoWrite(const std::vector<uint8_t>& data,
-                            base::File temporary_file) {
-  DVLOG(3) << __func__ << " file: " << file_name_ << ", result: "
-           << base::File::ErrorToString(temporary_file.error_details());
-  DCHECK_EQ(State::kWriting, state_);
-
-  TRACE_EVENT2("media", "MojoCdmFileIO::DoWrite", "file_name", file_name_,
-               "bytes_to_write", data.size());
-
-  if (!temporary_file.IsValid()) {
-    // Failed to open temporary file.
-    state_ = State::kError;
-    OnError(ErrorType::kWriteError);
-    return;
-  }
-
-  // As the temporary file should have been newly created, it should be empty.
-  // No need to call write() if there is no data.
-  CHECK_EQ(0u, temporary_file.GetLength()) << "Temporary file is not empty.";
-  int bytes_to_write = base::checked_cast<int>(data.size());
-  if (bytes_to_write > 0) {
-    TRACE_EVENT0("media", "MojoCdmFileIO::ActualWrite");
-    base::TimeTicks start = base::TimeTicks::Now();
-    int bytes_written = temporary_file.Write(
-        0, reinterpret_cast<const char*>(data.data()), bytes_to_write);
-    base::TimeDelta write_time = base::TimeTicks::Now() - start;
-    if (bytes_written != bytes_to_write) {
-      // Failed to write to the temporary file.
-      state_ = State::kError;
-      OnError(ErrorType::kWriteError);
-      return;
-    }
-
-    // Only report writing time for successful writes.
-    UMA_HISTOGRAM_TIMES("Media.EME.CdmFileIO.WriteTime", write_time);
-  }
-
-  // Close the temporary file returned before renaming. Original file was
-  // closed previously.
-  temporary_file.Close();
-  DCHECK(!file_for_reading_.IsValid()) << "Original file was not closed.";
-  cdm_file_->CommitWrite(base::BindOnce(&MojoCdmFileIO::OnWriteCommitted,
-                                        weak_factory_.GetWeakPtr()));
-}
-
-void MojoCdmFileIO::OnWriteCommitted(base::File reopened_file) {
+void MojoCdmFileIO::OnFileWritten(FileStatus status) {
   DVLOG(3) << __func__ << " file: " << file_name_;
   DCHECK_EQ(State::kWriting, state_);
-  DCHECK(!file_for_reading_.IsValid()) << "Original file was not closed.";
 
-  TRACE_EVENT1("media", "MojoCdmFileIO::WriteDone", "file_name", file_name_);
+  // This logs the end of the async Write() request, and separately logs
+  // how long the client takes in OnWriteComplete().
+  TRACE_EVENT_ASYNC_END1("media", "MojoCdmFileIO::Write", this, "status",
+                         ConvertFileStatus(status));
 
-  if (!reopened_file.IsValid()) {
-    // Rename failed, and no file to use.
+  if (status != FileStatus::kSuccess) {
+    DVLOG(1) << "Failed to write file " << file_name_;
     state_ = State::kError;
     OnError(ErrorType::kWriteError);
     return;
   }
 
   state_ = State::kOpened;
-  file_for_reading_ = std::move(reopened_file);
+  TRACE_EVENT0("media", "FileIOClient::OnWriteComplete");
   client_->OnWriteComplete(ClientStatus::kSuccess);
 }
 
@@ -333,6 +250,7 @@ void MojoCdmFileIO::OnError(ErrorType error) {
 }
 
 void MojoCdmFileIO::NotifyClientOfError(ErrorType error) {
+  // Note that no event tracing is done for error conditions.
   switch (error) {
     case ErrorType::kOpenError:
       client_->OnOpenComplete(ClientStatus::kError);

@@ -14,6 +14,7 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/message_loop/message_pump_type.h"
 #include "build/build_config.h"
 #include "net/base/load_flags.h"
 #include "net/base/net_errors.h"
@@ -22,7 +23,6 @@
 #include "net/cookies/cookie_monster.h"
 #include "net/http/http_auth_handler_factory.h"
 #include "net/proxy_resolution/proxy_config_service_fixed.h"
-#include "net/ssl/channel_id_service.h"
 #include "net/tools/quic/quic_http_proxy_backend.h"
 #include "net/tools/quic/quic_http_proxy_backend_stream.h"
 #include "net/url_request/url_request_context.h"
@@ -52,7 +52,7 @@ bool QuicHttpProxyBackend::InitializeBackend(const std::string& backend_url) {
   if (proxy_thread_ == nullptr) {
     proxy_thread_ = std::make_unique<base::Thread>("quic proxy thread");
     base::Thread::Options options;
-    options.message_loop_type = base::MessageLoop::TYPE_IO;
+    options.message_pump_type = base::MessagePumpType::IO;
     bool result = proxy_thread_->StartWithOptions(options);
     proxy_task_runner_ = proxy_thread_->task_runner();
     CHECK(result);

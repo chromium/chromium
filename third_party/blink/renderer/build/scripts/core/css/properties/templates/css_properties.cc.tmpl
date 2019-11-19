@@ -1,0 +1,93 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+{% from 'templates/macros.tmpl' import source_files_for_generated_file %}
+{% from 'core/css/properties/templates/style_builder_functions.tmpl' import style_builder_functions %}
+{{source_files_for_generated_file(template_file, input_files)}}
+
+{% set namespace = 'css_longhand' if is_longhand else 'css_shorthand' %}
+{% set include = 'longhands.h' if is_longhand else 'shorthands.h' %}
+
+#include "third_party/blink/renderer/core/css/properties/{{include}}"
+
+#include "third_party/blink/renderer/core/css/css_custom_ident_value.h"
+#include "third_party/blink/renderer/core/css/css_identifier_value.h"
+#include "third_party/blink/renderer/core/css/css_primitive_value.h"
+#include "third_party/blink/renderer/core/css/css_primitive_value_mappings.h"
+#include "third_party/blink/renderer/core/css/css_value_list.h"
+#include "third_party/blink/renderer/core/css/css_value_pair.h"
+#include "third_party/blink/renderer/core/css/properties/css_direction_aware_resolver.h"
+#include "third_party/blink/renderer/core/css/properties/style_building_utils.h"
+#include "third_party/blink/renderer/core/css/resolver/font_builder.h"
+#include "third_party/blink/renderer/core/css/resolver/style_builder_converter.h"
+#include "third_party/blink/renderer/core/css/resolver/style_resolver_state.h"
+#include "third_party/blink/renderer/core/style/computed_style.h"
+#include "third_party/blink/renderer/core/style/style_svg_resource.h"
+#include "third_party/blink/renderer/core/style/svg_computed_style.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+
+namespace blink {
+namespace {{namespace}} {
+
+{% for property in properties %}
+{% set class_name = property.name.to_upper_camel_case() %}
+{% set is_alias = property.alias_for %}
+// {{property.name}}
+
+  {% if property.is_internal or property.runtime_flag %}
+CSSExposure {{class_name}}::Exposure() const {
+    {% if property.runtime_flag %}
+  if (!RuntimeEnabledFeatures::{{property.runtime_flag}}Enabled())
+    return CSSExposure::kNone;
+    {% endif %}
+    {% if property.is_internal %}
+  return CSSExposure::kUA;
+    {% else %}
+  return CSSExposure::kWeb;
+    {% endif %}
+}
+  {% endif %}
+
+const char* {{class_name}}::GetPropertyName() const {
+  return "{{property.name}}";
+}
+
+const WTF::AtomicString& {{class_name}}::GetPropertyNameAtomicString() const {
+  DEFINE_STATIC_LOCAL(const AtomicString, name, ("{{property.name}}"));
+  return name;
+}
+
+const char* {{class_name}}::GetJSPropertyName() const {
+  return "{{class_name[0].lower() + class_name[1:]}}";
+}
+  {% if not is_alias %}
+  {% if property.visited_property %}
+const CSSProperty* {{class_name}}::GetVisitedProperty() const {
+  return &Get{{property.visited_property.property_id}}();
+}
+  {% endif %}
+  {% if property.unvisited_property %}
+const CSSProperty* {{class_name}}::GetUnvisitedProperty() const {
+  return &Get{{property.unvisited_property.property_id}}();
+}
+  {% endif %}
+
+  {% if property.direction_aware_options %}
+    {% set options = property.direction_aware_options %}
+    {% set resolver_name = options.resolver_name.to_upper_camel_case() %}
+    {% set physical_group_name = options.physical_group_name.to_upper_camel_case() %}
+const CSSProperty& {{class_name}}::ResolveDirectionAwareProperty(
+    TextDirection direction,
+    blink::WritingMode writing_mode) const {
+  return CSSDirectionAwareResolver::Resolve{{resolver_name}}(direction, writing_mode,
+      CSSDirectionAwareResolver::{{physical_group_name}}Group());
+}
+  {% endif %}
+
+{{style_builder_functions(property)}}
+  {% endif %} {# not is_alias #}
+{% endfor %} {# properties #}
+
+}  // namespace {{namespace}}
+}  // namespace blink

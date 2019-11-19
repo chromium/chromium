@@ -9,7 +9,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/single_thread_task_runner.h"
 #include "base/task/post_task.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chromecast/device/bluetooth/bluetooth_util.h"
 #include "chromecast/device/bluetooth/le/remote_characteristic.h"
@@ -49,12 +49,13 @@ class MockLeScanManagerObserver : public LeScanManager::Observer {
 class LeScanManagerTest : public ::testing::Test {
  protected:
   LeScanManagerTest()
-      : io_task_runner_(base::CreateSingleThreadTaskRunnerWithTraits(
-            {base::TaskPriority::BEST_EFFORT, base::MayBlock()})),
+      : io_task_runner_(base::CreateSingleThreadTaskRunner(
+            {base::ThreadPool(), base::TaskPriority::BEST_EFFORT,
+             base::MayBlock()})),
         le_scan_manager_(&le_scanner_) {
     le_scan_manager_.Initialize(io_task_runner_);
     le_scan_manager_.AddObserver(&mock_observer_);
-    scoped_task_environment_.RunUntilIdle();
+    task_environment_.RunUntilIdle();
   }
   ~LeScanManagerTest() override {
     le_scan_manager_.RemoveObserver(&mock_observer_);
@@ -65,7 +66,7 @@ class LeScanManagerTest : public ::testing::Test {
     return &le_scan_manager_;
   }
 
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_;
   scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
   bluetooth_v2_shlib::MockLeScanner le_scanner_;
   LeScanManagerImpl le_scan_manager_;
@@ -86,14 +87,51 @@ TEST_F(LeScanManagerTest, TestEnableDisableScan) {
   EXPECT_CALL(mock_observer_, OnScanEnableChanged(true));
   le_scan_manager_.RequestScan(base::BindOnce(
       &CopyResult<std::unique_ptr<LeScanManager::ScanHandle>>, &scan_handle));
-  scoped_task_environment_.RunUntilIdle();
+  task_environment_.RunUntilIdle();
   ASSERT_TRUE(scan_handle);
 
   // After deleting the last handle, we expect scan to be disabled.
   EXPECT_CALL(le_scanner_, StopScan()).WillOnce(Return(true));
   EXPECT_CALL(mock_observer_, OnScanEnableChanged(false));
   scan_handle.reset();
-  scoped_task_environment_.RunUntilIdle();
+  task_environment_.RunUntilIdle();
+}
+
+TEST_F(LeScanManagerTest, TestPauseRestartScan) {
+  std::unique_ptr<LeScanManager::ScanHandle> scan_handle;
+
+  // Don't call StartScan or StopScan if there is no handle.
+  EXPECT_CALL(le_scanner_, StopScan()).Times(0);
+  le_scan_manager_.PauseScan();
+  EXPECT_CALL(le_scanner_, StartScan()).Times(0);
+  le_scan_manager_.RestartScan();
+  task_environment_.RunUntilIdle();
+
+  // Create a handle.
+  EXPECT_CALL(le_scanner_, StartScan()).WillOnce(Return(true));
+  EXPECT_CALL(mock_observer_, OnScanEnableChanged(true));
+  le_scan_manager_.RequestScan(base::BindOnce(
+      &CopyResult<std::unique_ptr<LeScanManager::ScanHandle>>, &scan_handle));
+  task_environment_.RunUntilIdle();
+  ASSERT_TRUE(scan_handle);
+
+  // Pause scan, we shouldn't declare scan is disabled.
+  EXPECT_CALL(mock_observer_, OnScanEnableChanged(_)).Times(0);
+  EXPECT_CALL(le_scanner_, StopScan()).WillOnce(Return(true));
+  le_scan_manager_.PauseScan();
+  task_environment_.RunUntilIdle();
+
+  // Restart scan.
+  EXPECT_CALL(mock_observer_, OnScanEnableChanged(_)).Times(0);
+  EXPECT_CALL(le_scanner_, StartScan()).WillOnce(Return(true));
+  le_scan_manager_.RestartScan();
+  task_environment_.RunUntilIdle();
+
+  // Delete the handle.
+  EXPECT_CALL(le_scanner_, StopScan()).WillOnce(Return(true));
+  EXPECT_CALL(mock_observer_, OnScanEnableChanged(false));
+  scan_handle.reset();
+  task_environment_.RunUntilIdle();
 }
 
 TEST_F(LeScanManagerTest, TestMultipleHandles) {
@@ -107,7 +145,7 @@ TEST_F(LeScanManagerTest, TestMultipleHandles) {
     std::unique_ptr<LeScanManager::ScanHandle> handle;
     le_scan_manager_.RequestScan(base::BindOnce(
         &CopyResult<std::unique_ptr<LeScanManager::ScanHandle>>, &handle));
-    scoped_task_environment_.RunUntilIdle();
+    task_environment_.RunUntilIdle();
     ASSERT_TRUE(handle);
     scan_handles.push_back(std::move(handle));
   }
@@ -115,14 +153,14 @@ TEST_F(LeScanManagerTest, TestMultipleHandles) {
   EXPECT_CALL(le_scanner_, StopScan()).Times(0);
   for (int i = 0; i < kNumHandles - 1; ++i) {
     scan_handles.pop_back();
-    scoped_task_environment_.RunUntilIdle();
+    task_environment_.RunUntilIdle();
   }
 
   // After deleting the last handle, we expect scan to be disabled.
   EXPECT_CALL(le_scanner_, StopScan()).WillOnce(Return(true));
   EXPECT_CALL(mock_observer_, OnScanEnableChanged(false));
   scan_handles.pop_back();
-  scoped_task_environment_.RunUntilIdle();
+  task_environment_.RunUntilIdle();
 }
 
 TEST_F(LeScanManagerTest, TestGetScanResultsEmpty) {
@@ -132,7 +170,7 @@ TEST_F(LeScanManagerTest, TestGetScanResultsEmpty) {
   le_scan_manager_.GetScanResults(
       base::BindOnce(&CopyResult<std::vector<LeScanResult>>, &results));
 
-  scoped_task_environment_.RunUntilIdle();
+  task_environment_.RunUntilIdle();
   ASSERT_EQ(0u, results.size());
 }
 
@@ -145,7 +183,7 @@ TEST_F(LeScanManagerTest, TestEnableScanFails) {
   EXPECT_CALL(le_scanner_, StartScan()).WillOnce(Return(false));
   le_scan_manager_.RequestScan(base::BindOnce(
       &CopyResult<std::unique_ptr<LeScanManager::ScanHandle>>, &scan_handle));
-  scoped_task_environment_.RunUntilIdle();
+  task_environment_.RunUntilIdle();
   EXPECT_FALSE(scan_handle);
 }
 
@@ -157,14 +195,14 @@ TEST_F(LeScanManagerTest, TestGetScanResults) {
 
   EXPECT_CALL(mock_observer_, OnNewScanResult(_));
   delegate()->OnScanResult(raw_scan_result);
-  scoped_task_environment_.RunUntilIdle();
+  task_environment_.RunUntilIdle();
 
   std::vector<LeScanResult> results;
   // Get asynchronous scan results.
   le_scan_manager_.GetScanResults(
       base::BindOnce(&CopyResult<std::vector<LeScanResult>>, &results));
 
-  scoped_task_environment_.RunUntilIdle();
+  task_environment_.RunUntilIdle();
 
   ASSERT_EQ(1u, results.size());
   ASSERT_EQ(kTestAddr1, results[0].addr);
@@ -187,14 +225,14 @@ TEST_F(LeScanManagerTest, TestGetScanResultsWithService) {
   raw_scan_result.rssi = 1234;
   delegate()->OnScanResult(raw_scan_result);
 
-  scoped_task_environment_.RunUntilIdle();
+  task_environment_.RunUntilIdle();
 
   // Get asynchronous scan results for results with service 0x4444.
   std::vector<LeScanResult> results;
   le_scan_manager_.GetScanResults(
       base::BindOnce(&CopyResult<std::vector<LeScanResult>>, &results),
       ScanFilter::From16bitUuid(0x4444));
-  scoped_task_environment_.RunUntilIdle();
+  task_environment_.RunUntilIdle();
 
   ASSERT_EQ(1u, results.size());
   ASSERT_EQ(kTestAddr1, results[0].addr);
@@ -206,7 +244,7 @@ TEST_F(LeScanManagerTest, TestGetScanResultsWithService) {
   le_scan_manager_.GetScanResults(
       base::BindOnce(&CopyResult<std::vector<LeScanResult>>, &results),
       ScanFilter::From16bitUuid(0x5555));
-  scoped_task_environment_.RunUntilIdle();
+  task_environment_.RunUntilIdle();
 
   ASSERT_EQ(1u, results.size());
   ASSERT_EQ(kTestAddr2, results[0].addr);
@@ -218,7 +256,7 @@ TEST_F(LeScanManagerTest, TestGetScanResultsWithService) {
   le_scan_manager_.GetScanResults(
       base::BindOnce(&CopyResult<std::vector<LeScanResult>>, &results),
       ScanFilter::From16bitUuid(0x6666));
-  scoped_task_environment_.RunUntilIdle();
+  task_environment_.RunUntilIdle();
 
   ASSERT_EQ(0u, results.size());
 }
@@ -245,14 +283,14 @@ TEST_F(LeScanManagerTest, TestGetScanResultsSortedByRssi) {
   raw_scan_result.rssi = 2;
   delegate()->OnScanResult(raw_scan_result);
 
-  scoped_task_environment_.RunUntilIdle();
+  task_environment_.RunUntilIdle();
 
   std::vector<LeScanResult> results;
   // Get asynchronous scan results.
   le_scan_manager_.GetScanResults(
       base::BindOnce(&CopyResult<std::vector<LeScanResult>>, &results));
 
-  scoped_task_environment_.RunUntilIdle();
+  task_environment_.RunUntilIdle();
 
   ASSERT_EQ(3u, results.size());
   EXPECT_EQ(kTestAddr2, results[0].addr);
@@ -275,7 +313,7 @@ TEST_F(LeScanManagerTest, TestOnNewScanResult) {
   raw_scan_result.adv_data = {0x03, 0x02, 0x44, 0x44};
   raw_scan_result.rssi = 1;
   delegate()->OnScanResult(raw_scan_result);
-  scoped_task_environment_.RunUntilIdle();
+  task_environment_.RunUntilIdle();
 
   // Ensure that the observer was notified.
   ASSERT_EQ(kTestAddr1, result.addr);
@@ -298,14 +336,14 @@ TEST_F(LeScanManagerTest, TestMaxScanResultEntries) {
     delegate()->OnScanResult(raw_scan_result);
   }
 
-  scoped_task_environment_.RunUntilIdle();
+  task_environment_.RunUntilIdle();
 
   std::vector<LeScanResult> results;
   // Get asynchronous scan results.
   le_scan_manager_.GetScanResults(
       base::BindOnce(&CopyResult<std::vector<LeScanResult>>, &results));
 
-  scoped_task_environment_.RunUntilIdle();
+  task_environment_.RunUntilIdle();
 
   // First 5 addresses should have been kicked out.
   ASSERT_EQ(1024u, results.size());

@@ -4,16 +4,15 @@
 
 package org.chromium.chrome.browser.preferences;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.support.v4.view.ViewCompat;
+import android.support.v7.preference.PreferenceViewHolder;
 import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.style.ClickableSpan;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -47,12 +46,11 @@ public class ClearBrowsingDataCheckBoxPreference extends ChromeBaseCheckBoxPrefe
         mLinkClickDelegate = linkClickDelegate;
     }
 
-    @SuppressLint("ClickableViewAccessibility")
     @Override
-    public View onCreateView(ViewGroup parent) {
-        if (mView != null) return mView;
+    public void onBindViewHolder(PreferenceViewHolder holder) {
+        super.onBindViewHolder(holder);
 
-        mView = super.onCreateView(parent);
+        mView = holder.itemView;
         setupLayout(mView);
 
         final TextView textView = (TextView) mView.findViewById(android.R.id.summary);
@@ -86,8 +84,6 @@ public class ClearBrowsingDataCheckBoxPreference extends ChromeBaseCheckBoxPrefe
                 return false;
             }
         });
-
-        return mView;
     }
 
     /**

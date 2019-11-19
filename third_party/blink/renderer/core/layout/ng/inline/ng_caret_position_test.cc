@@ -6,12 +6,9 @@
 
 #include "third_party/blink/renderer/core/editing/text_affinity.h"
 #include "third_party/blink/renderer/core/layout/layout_block_flow.h"
-#include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_fragment_traversal.h"
+#include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_cursor.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_offset_mapping.h"
-#include "third_party/blink/renderer/core/layout/ng/inline/ng_physical_text_fragment.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_layout_test.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
-#include "third_party/blink/renderer/core/paint/ng/ng_paint_fragment.h"
 
 namespace blink {
 
@@ -28,21 +25,22 @@ class NGCaretPositionTest : public NGLayoutTest {
   void SetInlineFormattingContext(const char* id,
                                   const char* html,
                                   unsigned width,
-                                  TextDirection dir = TextDirection::kLtr) {
+                                  TextDirection dir = TextDirection::kLtr,
+                                  const char* style = nullptr) {
+    InsertStyleElement(
+        "body { font: 10px/10px Ahem;  }"
+        "bdo { display:block; }");
     const char* pattern =
         dir == TextDirection::kLtr
-            ? "<div id='%s' style='font: 10px/10px Ahem; width: %u0px; "
-              "word-break: break-all'>%s</div>"
-            : "<bdo dir=rtl id='%s' style='font: 10px/10px Ahem; width: %u0px; "
-              "word-break: break-all; display: block'>%s</bdo>";
-    SetBodyInnerHTML(String::Format(pattern, id, width, html));
+            ? "<div id='%s' style='width: %u0px; %s'>%s</div>"
+            : "<bdo dir=rtl id='%s' style='width: %u0px; %s'>%s</bdo>";
+    SetBodyInnerHTML(String::Format(
+        pattern, id, width, style ? style : "word-break: break-all", html));
     container_ = GetElementById(id);
     DCHECK(container_);
-    context_ = ToLayoutBlockFlow(container_->GetLayoutObject());
+    context_ = To<LayoutBlockFlow>(container_->GetLayoutObject());
     DCHECK(context_);
     DCHECK(context_->IsLayoutNGMixin());
-    root_fragment_ = context_->CurrentFragment();
-    DCHECK(root_fragment_);
   }
 
   NGCaretPosition ComputeNGCaretPosition(unsigned offset,
@@ -50,22 +48,19 @@ class NGCaretPositionTest : public NGLayoutTest {
     return blink::ComputeNGCaretPosition(*context_, offset, affinity);
   }
 
-  const NGPhysicalFragment* FragmentOf(const Node* node) const {
-    auto fragments = NGInlineFragmentTraversal::SelfFragmentsOf(
-        *root_fragment_, node->GetLayoutObject());
-    DCHECK_EQ(1u, fragments.size());
-    return fragments.front().fragment.get();
+  NGInlineCursor FragmentOf(const Node* node) const {
+    NGInlineCursor cursor;
+    cursor.MoveTo(*node->GetLayoutObject());
+    return cursor;
   }
 
   Persistent<Element> container_;
   const LayoutBlockFlow* context_;
-  const NGPhysicalBoxFragment* root_fragment_;
 };
 
 #define TEST_CARET(caret, fragment_, type_, offset_)                         \
   {                                                                          \
-    EXPECT_EQ(&caret.fragment->PhysicalFragment(), fragment_)                \
-        << caret.fragment->PhysicalFragment().ToString();                    \
+    EXPECT_EQ(caret.cursor, fragment_);                                      \
     EXPECT_EQ(caret.position_type, NGCaretPositionType::type_);              \
     EXPECT_EQ(caret.text_offset, offset_) << caret.text_offset.value_or(-1); \
   }
@@ -73,7 +68,7 @@ class NGCaretPositionTest : public NGLayoutTest {
 TEST_F(NGCaretPositionTest, CaretPositionInOneLineOfText) {
   SetInlineFormattingContext("t", "foo", 3);
   const Node* text = container_->firstChild();
-  const NGPhysicalFragment* text_fragment = FragmentOf(text);
+  const NGInlineCursor& text_fragment = FragmentOf(text);
 
   // Beginning of line
   TEST_CARET(ComputeNGCaretPosition(0, TextAffinity::kDownstream),
@@ -94,13 +89,32 @@ TEST_F(NGCaretPositionTest, CaretPositionInOneLineOfText) {
              kAtTextOffset, base::Optional<unsigned>(3));
 }
 
+// For http://crbug.com/1021993
+// We should not call |NGInlineCursor::CurrentBidiLevel()| for soft hyphen
+TEST_F(NGCaretPositionTest, CaretPositionAtSoftHyphen) {
+  // We have three fragment "foo\u00AD", "\u2010", "bar"
+  SetInlineFormattingContext("t", "foo&shy;bar", 3, TextDirection::kLtr, "");
+  const LayoutText& text =
+      *To<Text>(container_->firstChild())->GetLayoutObject();
+  NGInlineCursor cursor;
+  cursor.MoveTo(text);
+  const NGInlineCursor foo_fragment = cursor;
+
+  TEST_CARET(ComputeNGCaretPosition(4, TextAffinity::kDownstream), foo_fragment,
+             kAtTextOffset, base::Optional<unsigned>(4));
+  TEST_CARET(ComputeNGCaretPosition(4, TextAffinity::kUpstream), foo_fragment,
+             kAtTextOffset, base::Optional<unsigned>(4));
+}
+
 TEST_F(NGCaretPositionTest, CaretPositionAtSoftLineWrap) {
   SetInlineFormattingContext("t", "foobar", 3);
-  const Node* text = container_->firstChild();
-  const auto text_fragments = NGInlineFragmentTraversal::SelfFragmentsOf(
-      *root_fragment_, text->GetLayoutObject());
-  const NGPhysicalFragment* foo_fragment = text_fragments[0].fragment.get();
-  const NGPhysicalFragment* bar_fragment = text_fragments[1].fragment.get();
+  const LayoutText& text =
+      *To<Text>(container_->firstChild())->GetLayoutObject();
+  NGInlineCursor cursor;
+  cursor.MoveTo(text);
+  const NGInlineCursor foo_fragment = cursor;
+  cursor.MoveToNextForSameLayoutObject();
+  const NGInlineCursor bar_fragment = cursor;
 
   TEST_CARET(ComputeNGCaretPosition(3, TextAffinity::kDownstream), bar_fragment,
              kAtTextOffset, base::Optional<unsigned>(3));
@@ -110,11 +124,13 @@ TEST_F(NGCaretPositionTest, CaretPositionAtSoftLineWrap) {
 
 TEST_F(NGCaretPositionTest, CaretPositionAtSoftLineWrapWithSpace) {
   SetInlineFormattingContext("t", "foo bar", 3);
-  const Node* text = container_->firstChild();
-  const auto text_fragments = NGInlineFragmentTraversal::SelfFragmentsOf(
-      *root_fragment_, text->GetLayoutObject());
-  const NGPhysicalFragment* foo_fragment = text_fragments[0].fragment.get();
-  const NGPhysicalFragment* bar_fragment = text_fragments[1].fragment.get();
+  const LayoutText& text =
+      *To<Text>(container_->firstChild())->GetLayoutObject();
+  NGInlineCursor cursor;
+  cursor.MoveTo(text);
+  const NGInlineCursor foo_fragment = cursor;
+  cursor.MoveToNextForSameLayoutObject();
+  const NGInlineCursor bar_fragment = cursor;
 
   // Before the space
   TEST_CARET(ComputeNGCaretPosition(3, TextAffinity::kDownstream), foo_fragment,
@@ -134,8 +150,8 @@ TEST_F(NGCaretPositionTest, CaretPositionAtForcedLineBreak) {
   const Node* foo = container_->firstChild();
   const Node* br = foo->nextSibling();
   const Node* bar = br->nextSibling();
-  const NGPhysicalFragment* foo_fragment = FragmentOf(foo);
-  const NGPhysicalFragment* bar_fragment = FragmentOf(bar);
+  const NGInlineCursor& foo_fragment = FragmentOf(foo);
+  const NGInlineCursor& bar_fragment = FragmentOf(bar);
 
   // Before the BR
   TEST_CARET(ComputeNGCaretPosition(3, TextAffinity::kDownstream), foo_fragment,
@@ -155,7 +171,7 @@ TEST_F(NGCaretPositionTest, CaretPositionAtEmptyLine) {
   const Node* foo = container_->firstChild();
   const Node* br1 = foo->nextSibling();
   const Node* br2 = br1->nextSibling();
-  const NGPhysicalFragment* br2_fragment = FragmentOf(br2);
+  const NGInlineCursor& br2_fragment = FragmentOf(br2);
 
   TEST_CARET(ComputeNGCaretPosition(4, TextAffinity::kDownstream), br2_fragment,
              kAtTextOffset, base::Optional<unsigned>(4));
@@ -166,7 +182,7 @@ TEST_F(NGCaretPositionTest, CaretPositionAtEmptyLine) {
 TEST_F(NGCaretPositionTest, CaretPositionInOneLineOfImage) {
   SetInlineFormattingContext("t", "<img>", 3);
   const Node* img = container_->firstChild();
-  const NGPhysicalFragment* img_fragment = FragmentOf(img);
+  const NGInlineCursor& img_fragment = FragmentOf(img);
 
   // Before the image
   TEST_CARET(ComputeNGCaretPosition(0, TextAffinity::kDownstream), img_fragment,
@@ -188,8 +204,8 @@ TEST_F(NGCaretPositionTest, CaretPositionAtSoftLineWrapBetweenImages) {
                              1);
   const Node* img1 = container_->firstChild();
   const Node* img2 = img1->nextSibling();
-  const NGPhysicalFragment* img1_fragment = FragmentOf(img1);
-  const NGPhysicalFragment* img2_fragment = FragmentOf(img2);
+  const NGInlineCursor& img1_fragment = FragmentOf(img1);
+  const NGInlineCursor& img2_fragment = FragmentOf(img2);
 
   TEST_CARET(ComputeNGCaretPosition(1, TextAffinity::kDownstream),
              img2_fragment, kBeforeBox, base::nullopt);
@@ -209,8 +225,8 @@ TEST_F(NGCaretPositionTest,
                              3);
   const Node* text_c = GetElementById("span-c")->firstChild();
   const Node* text_d = GetElementById("span-d")->firstChild();
-  const NGPhysicalFragment* fragment_c = FragmentOf(text_c);
-  const NGPhysicalFragment* fragment_d = FragmentOf(text_d);
+  const NGInlineCursor& fragment_c = FragmentOf(text_c);
+  const NGInlineCursor& fragment_d = FragmentOf(text_d);
 
   const Position wrap_position(text_c, 1);
   const NGOffsetMapping& mapping = *NGOffsetMapping::GetFor(wrap_position);
@@ -234,8 +250,8 @@ TEST_F(NGCaretPositionTest,
                              3, TextDirection::kRtl);
   const Node* text_c = GetElementById("span-c")->firstChild();
   const Node* text_d = GetElementById("span-d")->firstChild();
-  const NGPhysicalFragment* fragment_c = FragmentOf(text_c);
-  const NGPhysicalFragment* fragment_d = FragmentOf(text_d);
+  const NGInlineCursor& fragment_c = FragmentOf(text_c);
+  const NGInlineCursor& fragment_d = FragmentOf(text_d);
 
   const Position wrap_position(text_c, 1);
   const NGOffsetMapping& mapping = *NGOffsetMapping::GetFor(wrap_position);
@@ -260,8 +276,8 @@ TEST_F(NGCaretPositionTest, CaretPositionAtSoftLineWrapBetweenDeepTextNodes) {
       4);  // Wider space to allow border and 3 characters
   const Node* text_c = GetElementById("span-c")->firstChild();
   const Node* text_d = GetElementById("span-d")->firstChild();
-  const NGPhysicalFragment* fragment_c = FragmentOf(text_c);
-  const NGPhysicalFragment* fragment_d = FragmentOf(text_d);
+  const NGInlineCursor& fragment_c = FragmentOf(text_c);
+  const NGInlineCursor& fragment_d = FragmentOf(text_d);
 
   const Position wrap_position(text_c, 1);
   const NGOffsetMapping& mapping = *NGOffsetMapping::GetFor(wrap_position);
@@ -280,7 +296,7 @@ TEST_F(NGCaretPositionTest, InlineBlockBeforeContent) {
       "<span id=span>bar</span>",
       100);  // Line width doesn't matter here.
   const Node* text = GetElementById("span")->firstChild();
-  const NGPhysicalFragment* text_fragment = FragmentOf(text);
+  const NGInlineCursor& text_fragment = FragmentOf(text);
 
   // Test caret position of "|bar", which shouldn't be affected by ::before
   const Position position(text, 0);

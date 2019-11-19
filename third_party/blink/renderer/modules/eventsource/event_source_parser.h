@@ -16,7 +16,7 @@
 namespace blink {
 
 class MODULES_EXPORT EventSourceParser final
-    : public GarbageCollectedFinalized<EventSourceParser> {
+    : public GarbageCollected<EventSourceParser> {
  public:
   class MODULES_EXPORT Client : public GarbageCollectedMixin {
    public:

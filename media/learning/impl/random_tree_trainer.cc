@@ -40,8 +40,7 @@ struct InteriorNode : public Model {
         split_point_(split_point) {}
 
   // Model
-  TargetDistribution PredictDistribution(
-      const FeatureVector& features) override {
+  TargetHistogram PredictDistribution(const FeatureVector& features) override {
     // Figure out what feature value we should use for the split.
     FeatureValue f;
     switch (ordering_) {
@@ -59,16 +58,16 @@ struct InteriorNode : public Model {
 
     // If we've never seen this feature value, then return nothing.
     if (iter == children_.end())
-      return TargetDistribution();
+      return TargetHistogram();
 
     return iter->second->PredictDistribution(features);
   }
 
-  TargetDistribution PredictDistributionWithMissingValues(
+  TargetHistogram PredictDistributionWithMissingValues(
       const FeatureVector& features) {
-    TargetDistribution total;
+    TargetHistogram total;
     for (auto& child_pair : children_) {
-      TargetDistribution predicted =
+      TargetHistogram predicted =
           child_pair.second->PredictDistribution(features);
       // TODO(liberato): Normalize?  Weight?
       total += predicted;
@@ -102,19 +101,26 @@ struct LeafNode : public Model {
     for (size_t idx : training_idx)
       distribution_ += training_data[idx];
 
-    // Note that we don't treat numeric targets any differently.  We want to
-    // weight the leaf by the number of examples, so replacing it with an
-    // average would just introduce rounding errors.  One might as well take the
-    // average of the final distribution.
+    // Each leaf gets one vote.
+    // See https://en.wikipedia.org/wiki/Bootstrap_aggregating .  TL;DR: the
+    // individual trees should average (regression) or vote (classification).
+    //
+    // TODO(liberato): It's unclear that a leaf should get to vote with an
+    // entire distribution; we might want to take the max for kUnordered here.
+    // If so, then we might also want to Average() for kNumeric targets, though
+    // in that case, the results would be the same anyway.  That's not, of
+    // course, guaranteed for all methods of converting |distribution_| into a
+    // numeric prediction.  In general, we should provide a single estimate.
+    distribution_.Normalize();
   }
 
   // TreeNode
-  TargetDistribution PredictDistribution(const FeatureVector&) override {
+  TargetHistogram PredictDistribution(const FeatureVector&) override {
     return distribution_;
   }
 
  private:
-  TargetDistribution distribution_;
+  TargetHistogram distribution_;
 };
 
 RandomTreeTrainer::RandomTreeTrainer(RandomNumberGenerator* rng)
@@ -297,7 +303,8 @@ RandomTreeTrainer::Split RandomTreeTrainer::ConstructSplit(
 
   // Find the split's feature values and construct the training set for each.
   // I think we want to iterate on the underlying vector, and look up the int in
-  // the training data directly.
+  // the training data directly.  |total_weight| will hold the total weight of
+  // all examples that come into this node.
   double total_weight = 0.;
   for (size_t idx : training_idx) {
     const LabelledExample& example = training_data[idx];
@@ -324,7 +331,7 @@ RandomTreeTrainer::Split RandomTreeTrainer::ConstructSplit(
 
     Split::BranchInfo& branch_info = iter->second;
     branch_info.training_idx.push_back(idx);
-    branch_info.target_distribution += example;
+    branch_info.target_histogram += example;
   }
 
   // Figure out how good / bad this split is.
@@ -340,18 +347,22 @@ RandomTreeTrainer::Split RandomTreeTrainer::ConstructSplit(
   return split;
 }
 
-void RandomTreeTrainer::ComputeSplitScore_Nominal(Split* split,
-                                                  double total_weight) {
+void RandomTreeTrainer::ComputeSplitScore_Nominal(
+    Split* split,
+    double total_incoming_weight) {
   // Compute the nats given that we're at this node.
   split->nats_remaining = 0;
   for (auto& info_iter : split->branch_infos) {
     Split::BranchInfo& branch_info = info_iter.second;
 
-    const double total_counts = branch_info.target_distribution.total_counts();
+    // |weight_along_branch| is the total weight of examples that would follow
+    // this branch in the tree.
+    const double weight_along_branch =
+        branch_info.target_histogram.total_counts();
     // |p_branch| is the probability of following this branch.
-    const double p_branch = total_counts / total_weight;
-    for (auto& iter : branch_info.target_distribution) {
-      double p = iter.second / total_counts;
+    const double p_branch = weight_along_branch / total_incoming_weight;
+    for (auto& iter : branch_info.target_histogram) {
+      double p = iter.second / total_incoming_weight;
       // p*log(p) is the expected nats if the answer is |iter|.  We multiply
       // that by the probability of being in this bucket at all.
       split->nats_remaining -= (p * log(p)) * p_branch;
@@ -359,25 +370,29 @@ void RandomTreeTrainer::ComputeSplitScore_Nominal(Split* split,
   }
 }
 
-void RandomTreeTrainer::ComputeSplitScore_Numeric(Split* split,
-                                                  double total_weight) {
+void RandomTreeTrainer::ComputeSplitScore_Numeric(
+    Split* split,
+    double total_incoming_weight) {
   // Compute the nats given that we're at this node.
   split->nats_remaining = 0;
   for (auto& info_iter : split->branch_infos) {
     Split::BranchInfo& branch_info = info_iter.second;
 
-    const double total_counts = branch_info.target_distribution.total_counts();
+    // |weight_along_branch| is the total weight of examples that would follow
+    // this branch in the tree.
+    const double weight_along_branch =
+        branch_info.target_histogram.total_counts();
     // |p_branch| is the probability of following this branch.
-    const double p_branch = total_counts / total_weight;
+    const double p_branch = weight_along_branch / total_incoming_weight;
 
     // Compute the average at this node.  Note that we have no idea if the leaf
     // node would actually use an average, but really it should match.  It would
-    // be really nice if we could compute the value (or TargetDistribution) as
+    // be really nice if we could compute the value (or TargetHistogram) as
     // part of computing the split, and have somebody just hand that target
     // distribution to the leaf if it ends up as one.
-    double average = branch_info.target_distribution.Average();
+    double average = branch_info.target_histogram.Average();
 
-    for (auto& iter : branch_info.target_distribution) {
+    for (auto& iter : branch_info.target_histogram) {
       // Compute the squared error for all |iter.second| counts that each have a
       // value of |iter.first|, when this leaf approximates them as |average|.
       double sq_err = (iter.first.value() - average) *

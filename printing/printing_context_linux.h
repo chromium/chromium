@@ -5,6 +5,7 @@
 #ifndef PRINTING_PRINTING_CONTEXT_LINUX_H_
 #define PRINTING_PRINTING_CONTEXT_LINUX_H_
 
+#include <memory>
 #include <string>
 
 #include "base/macros.h"
@@ -22,9 +23,8 @@ class PRINTING_EXPORT PrintingContextLinux : public PrintingContext {
   ~PrintingContextLinux() override;
 
   // Sets the function that creates the print dialog.
-  static void SetCreatePrintDialogFunction(
-      PrintDialogGtkInterface* (*create_dialog_func)(
-          PrintingContextLinux* context));
+  static void SetCreatePrintDialogFunction(PrintDialogGtkInterface* (
+      *create_dialog_func)(PrintingContextLinux* context));
 
   // Sets the function that returns pdf paper size through the native API.
   static void SetPdfPaperSizeFunction(
@@ -34,7 +34,7 @@ class PRINTING_EXPORT PrintingContextLinux : public PrintingContext {
   void PrintDocument(const MetafilePlayer& metafile);
 
   // Initializes with predefined settings.
-  void InitWithSettings(const PrintSettings& settings);
+  void InitWithSettings(std::unique_ptr<PrintSettings> settings);
 
   // PrintingContext implementation.
   void AskUserForSettings(int max_pages,

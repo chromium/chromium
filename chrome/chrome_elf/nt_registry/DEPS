@@ -1,0 +1,12 @@
+include_rules = [
+  # Nothing from base.
+  "-base",
+  # Nothing from chrome.
+  "-chrome",
+  "+chrome/chrome_elf/nt_registry/nt_registry.h",
+]
+specific_include_rules = {
+  ".*_unittest\.cc": [
+    "+base",
+  ]
+}

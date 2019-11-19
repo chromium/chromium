@@ -5,8 +5,8 @@
 var video;
 
 // Some videos are less than 60 fps, so actual video frame presentations
-// could be much less than 60.
-var g_swaps_before_success = 60
+// could be much less than 30.
+var g_swaps_before_success = 30
 
 function main() {
   video = document.getElementById("video");

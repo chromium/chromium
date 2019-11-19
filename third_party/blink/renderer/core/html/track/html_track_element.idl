@@ -25,10 +25,12 @@
 
 // https://html.spec.whatwg.org/C/#the-track-element
 
-[HTMLConstructor]
-interface HTMLTrackElement : HTMLElement {
+[
+    Exposed=Window,
+    HTMLConstructor
+] interface HTMLTrackElement : HTMLElement {
     [CEReactions] attribute DOMString kind;
-    [CEReactions, Reflect, URL, RaisesException=Setter] attribute URLString src;
+    [CEReactions, Reflect, URL] attribute USVString src;
     [CEReactions, Reflect] attribute DOMString srclang;
     [CEReactions, Reflect] attribute DOMString label;
     [CEReactions, Reflect] attribute boolean default;

@@ -1,3 +1,5 @@
 rootWebArea
 ++genericContainer
-++++button name='Button'
+++++button inputType='button' name='Button'
+++++++staticText name='Button'
+++++++++inlineTextBox name='Button'

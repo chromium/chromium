@@ -1,0 +1,13 @@
+This is a testharness.js-based test.
+PASS e.style['stop-color'] = "auto" should not set the property value
+FAIL e.style['stop-color'] = "123" should not set the property value assert_equals: expected "" but got "rgb(17, 34, 51)"
+PASS e.style['stop-color'] = "#12" should not set the property value
+PASS e.style['stop-color'] = "#123456789" should not set the property value
+PASS e.style['stop-color'] = "rgb" should not set the property value
+PASS e.style['stop-color'] = "rgb(1)" should not set the property value
+PASS e.style['stop-color'] = "rgb(1,2,3,4,5)" should not set the property value
+PASS e.style['stop-color'] = "hsla(1,2,3,4,5)" should not set the property value
+PASS e.style['stop-color'] = "rgb(10%, 20, 30%)" should not set the property value
+PASS e.style['stop-color'] = "rgba(-2, 300, 400%, -0.5)" should not set the property value
+Harness: the test ran to completion.
+

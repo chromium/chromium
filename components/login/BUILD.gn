@@ -8,8 +8,6 @@ component("login") {
     "base_screen_handler_utils.h",
     "localized_values_builder.cc",
     "localized_values_builder.h",
-    "screens/screen_context.cc",
-    "screens/screen_context.h",
     "secure_module_util_chromeos.cc",
     "secure_module_util_chromeos.h",
   ]
@@ -23,18 +21,5 @@ component("login") {
 
   public_deps = [
     "//base",
-  ]
-}
-
-source_set("unit_tests") {
-  testonly = true
-  sources = [
-    "screens/screen_context_unittest.cc",
-  ]
-
-  deps = [
-    ":login",
-    "//base",
-    "//testing/gtest",
   ]
 }

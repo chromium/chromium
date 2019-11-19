@@ -26,6 +26,7 @@
 // https://html.spec.whatwg.org/C/#the-audio-element
 
 [
+    Exposed=Window,
     HTMLConstructor,
     NamedConstructor=Audio(optional DOMString src),
     ConstructorCallWith=Document

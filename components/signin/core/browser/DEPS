@@ -1,13 +1,15 @@
 include_rules = [
-  "+components/account_id",
-  "+components/data_use_measurement/core",
-  "+components/image_fetcher/core",
   "+components/metrics",
-  "+jni",
-  "+mojo/public",
-  "+services/identity/public",
-  "+services/network/public",
-  "+services/network/test",
-  "+third_party/re2",
-  "+ui/gfx",
+  "+components/signin/public/base",
+  "+components/signin/public/identity_manager",
 ]
+
+specific_include_rules = {
+  "active_directory_account_reconcilor_delegate.cc": [
+    "+chromeos/tpm/install_attributes.h"
+  ],
+  "account_reconcilor_unittest.cc": [
+    "+chromeos/tpm/install_attributes.h",
+    "+chromeos/tpm/stub_install_attributes.h"
+  ]
+}

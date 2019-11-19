@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL Checks hyperlinks are overridden in forced colors mode. assert_equals: expected "rgba(0, 0, 0, 0.18)" but got "rgba(0, 0, 0, 0.4)"
+Harness: the test ran to completion.
+

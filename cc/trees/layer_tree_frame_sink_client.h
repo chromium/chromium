@@ -15,12 +15,12 @@
 #include "ui/gfx/geometry/rect.h"
 
 namespace gfx {
-struct PresentationFeedback;
 class Transform;
 }
 
 namespace viz {
 class BeginFrameSource;
+struct FrameTimingDetails;
 struct HitTestRegionList;
 }
 
@@ -57,19 +57,15 @@ class CC_EXPORT LayerTreeFrameSinkClient {
   // so that frames are submitted only at the rate it can handle them.
   virtual void DidReceiveCompositorFrameAck() = 0;
 
-  // See ui/gfx/presentation_feedback.h for details on args. |time| is always
-  // non-zero.
+  // See components/viz/common/frame_timing_details.h for details on args.
   virtual void DidPresentCompositorFrame(
-      uint32_t presentation_token,
-      const gfx::PresentationFeedback& feedback) = 0;
+      uint32_t frame_token,
+      const viz::FrameTimingDetails& details) = 0;
 
   // The LayerTreeFrameSink is lost when the viz::ContextProviders held by it
   // encounter an error. In this case the LayerTreeFrameSink (and the
   // viz::ContextProviders) must be recreated.
   virtual void DidLoseLayerTreeFrameSink() = 0;
-
-  // Notification that the client does not need a new BeginFrame.
-  virtual void DidNotNeedBeginFrame() = 0;
 
   // For SynchronousCompositor (WebView) to ask the layer compositor to submit
   // a new CompositorFrame synchronously.
@@ -85,6 +81,8 @@ class CC_EXPORT LayerTreeFrameSinkClient {
   // For SynchronousCompositor (WebView) to change which tiles should be
   // included in submitted CompositorFrames independently of what the viewport
   // is.
+  // |viewport_rect| is in device viewport space.
+  // |transform| transforms from from device viewport space to screen space.
   virtual void SetExternalTilePriorityConstraints(
       const gfx::Rect& viewport_rect,
       const gfx::Transform& transform) = 0;

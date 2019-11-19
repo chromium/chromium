@@ -4,6 +4,7 @@
 
 #include "ash/login/ui/non_accessible_view.h"
 
+#include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 
 namespace ash {

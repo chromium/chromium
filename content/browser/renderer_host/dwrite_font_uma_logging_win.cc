@@ -8,7 +8,6 @@
 #include "base/metrics/histogram_macros.h"
 
 namespace content {
-namespace dwrite_font_uma_logging {
 
 void LogLoaderType(DirectWriteFontLoaderType loader_type) {
   UMA_HISTOGRAM_ENUMERATION("DirectWrite.Fonts.Proxy.LoaderType", loader_type);
@@ -29,5 +28,4 @@ void LogMessageFilterError(MessageFilterError error) {
                             error);
 }
 
-}  // namespace dwrite_font_uma_logging
 }  // namespace content

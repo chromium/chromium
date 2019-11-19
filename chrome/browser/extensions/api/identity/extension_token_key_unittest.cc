@@ -26,9 +26,9 @@ TEST(IdentityExtensionTokenKeyTest, Ordering) {
   extension_ids.push_back(extension_id1);
   extension_ids.push_back(extension_id2);
 
-  std::vector<std::string> user_ids;
-  user_ids.push_back("user_id_1");
-  user_ids.push_back("user_id_2");
+  std::vector<CoreAccountId> user_ids;
+  user_ids.push_back(CoreAccountId("user_id_1"));
+  user_ids.push_back(CoreAccountId("user_id_2"));
 
   std::vector<std::set<std::string> > scopesets;
   scopesets.push_back(scopes1);
@@ -40,7 +40,7 @@ TEST(IdentityExtensionTokenKeyTest, Ordering) {
       ExtensionTokenKeyIterator;
 
   std::vector<std::string>::const_iterator extension_it;
-  std::vector<std::string>::const_iterator user_it;
+  std::vector<CoreAccountId>::const_iterator user_it;
   std::vector<std::set<std::string> >::const_iterator scope_it;
 
   for (extension_it = extension_ids.begin();

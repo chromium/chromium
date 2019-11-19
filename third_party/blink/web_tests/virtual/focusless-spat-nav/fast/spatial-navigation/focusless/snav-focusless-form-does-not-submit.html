@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<script src="../../../../../resources/testharness.js"></script>
+<script src="../../../../../resources/testharnessreport.js"></script>
+<script src="file:///gen/layout_test_data/mojo/public/js/mojo_bindings.js"></script>
+<script src="file:///gen/third_party/blink/public/mojom/page/spatial_navigation.mojom.js"></script>
+<script src="../../../../../fast/spatial-navigation/resources/mock-snav-service.js"></script>
+<script src="../../../../../fast/spatial-navigation/resources/snav-testharness.js"></script>
+
+<form action="javascript:fail();">
+<input type="text" id="first"></input><p />
+<input type="submit" value="Submit" />
+</form>
+
+<script>
+  if (accessibilityController) {
+    accessibilityController.reset();
+  }
+
+  function fail() {
+    assert_false(true, "Form should not have been submitted.");
+  }
+  promise_test(async () => {
+    let first = document.getElementById("first");
+
+    snav.triggerMove("Down");
+    await snavCallback();
+
+    assert_false(mockSnavService.canExitFocus,
+                "Should not be able to exit focus.");
+    assert_true(mockSnavService.canSelectElement,
+                "Should be able to select element.");
+    assert_false(mockSnavService.hasNextFormElement,
+                 "Should not be able to move to next form element.");
+
+    eventSender.keyDown('Enter');
+    assert_equals(document.activeElement,
+                  first,
+                  "'first' should be focused.");
+
+    await snav.rAF();
+
+    assert_true(mockSnavService.canExitFocus,
+                "Should be able to exit focus.");
+    assert_true(mockSnavService.canSelectElement,
+                "Should be able to select element.");
+    assert_false(mockSnavService.hasNextFormElement,
+                 "Should not be able to move to next form element.");
+  }, 'Form does not submit when passing spat nav focus.');
+</script>

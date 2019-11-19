@@ -1,0 +1,104 @@
+diff --git a/build/config/BUILDCONFIG.gn b/build/config/BUILDCONFIG.gn
+index f89e7e831b79..ebfb4ba88b35 100644
+--- a/build/config/BUILDCONFIG.gn
++++ b/build/config/BUILDCONFIG.gn
+@@ -291,9 +291,10 @@ is_ios = current_os == "ios"
+ is_linux = current_os == "chromeos" || current_os == "linux"
+ is_mac = current_os == "mac"
+ is_nacl = current_os == "nacl"
++is_wasm = current_os == "wasm"
+ is_win = current_os == "win" || current_os == "winuwp"
+ 
+-is_posix = !is_win && !is_fuchsia
++is_posix = !is_win && !is_fuchsia && !is_wasm
+ 
+ # =============================================================================
+ # SOURCES FILTERS
+diff --git a/build/config/compiler/BUILD.gn b/build/config/compiler/BUILD.gn
+index 0f91977e1352..acd5ab11f111 100644
+--- a/build/config/compiler/BUILD.gn
++++ b/build/config/compiler/BUILD.gn
+@@ -1508,7 +1508,7 @@ config("default_warnings") {
+         cflags += [ "-Wno-nonportable-include-path" ]
+       }
+ 
+-      if (current_toolchain == host_toolchain || !use_xcode_clang) {
++      if ((current_toolchain == host_toolchain || !use_xcode_clang) && !is_wasm) {
+         # Flags NaCl (Clang 3.7) and Xcode 9.2 (Clang clang-900.0.39.2) do not
+         # recognize.
+         cflags += [
+@@ -2296,6 +2296,9 @@ config("symbols") {
+         cflags += [ "-fno-standalone-debug" ]
+       }
+     }
++  } else if (is_wasm) {
++    cflags = [ "-g4" ]
++    ldflags = [ "-g4" ]
+   } else {
+     cflags = []
+     if (is_mac && enable_dsyms) {
+diff --git a/build/toolchain/toolchain.gni b/build/toolchain/toolchain.gni
+index 3edc9762907d..ab483e44a11c 100644
+--- a/build/toolchain/toolchain.gni
++++ b/build/toolchain/toolchain.gni
+@@ -58,6 +58,9 @@ if (is_mac || is_ios) {
+   shlib_extension = ".so"
+ } else if (is_win) {
+   shlib_extension = ".dll"
++} else if (is_wasm) {
++  # WebAssembly does not stably support shared libraries. (as of Oct 2019)
++  shlib_extension = ".wasm"
+ } else {
+   assert(false, "Platform not supported")
+ }
+diff --git a/build/toolchain/wasm/BUILD.gn b/build/toolchain/wasm/BUILD.gn
+new file mode 100644
+index 000000000000..15bc7a4ea258
+--- /dev/null
++++ b/build/toolchain/wasm/BUILD.gn
+@@ -0,0 +1,31 @@
++# Copyright 2019 The Chromium Authors. All rights reserved.
++# Use of this source code is governed by a BSD-style license that can be
++# found in the LICENSE file.
++
++import("//build/toolchain/gcc_toolchain.gni")
++
++gcc_toolchain("wasm") {
++  cc = "emcc"
++  cxx = "em++"
++  nm = "emcc"
++  ar = "emar"
++  ld = cxx
++
++  toolchain_args = {
++    current_cpu = "wasm"
++    current_os = "wasm"
++
++    is_clang = true
++    use_goma = false
++    use_debug_fission = false
++    clang_use_chrome_plugins = false
++    use_allocator_shim = false
++    is_component_build = false
++  }
++  extra_ldflags = "-s BINARYEN_METHOD='native-wasm'"
++  executable_extension = ".js"
++  link_outputs = [
++    "{{output_dir}}/{{target_output_name}}.wasm",
++    "{{output_dir}}/{{target_output_name}}.wasm.map",
++  ]
++}
+diff --git a/tools/binary_size/BUILD.gn b/tools/binary_size/BUILD.gn
+index a9629c27bc42..aa07d6376ac7 100644
+--- a/tools/binary_size/BUILD.gn
++++ b/tools/binary_size/BUILD.gn
+@@ -30,3 +30,9 @@ if (is_linux) {
+     ]
+   }
+ }
++
++group("caspian_web") {
++  deps = [
++    "//tools/binary_size/libsupersize/caspian:caspian_web(//build/toolchain/wasm:wasm)",
++  ]
++}

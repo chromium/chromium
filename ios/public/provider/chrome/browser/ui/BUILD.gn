@@ -8,23 +8,10 @@ source_set("ui") {
     "fullscreen_provider.h",
     "fullscreen_provider.mm",
     "logo_vendor.h",
-    "text_field_styling.h",
   ]
   deps = [
     "//base",
     "//ios/public/provider/chrome/browser/voice",
   ]
   libs = [ "CoreGraphics.framework" ]
-}
-
-source_set("test_support") {
-  configs += [ "//build/config/compiler:enable_arc" ]
-  testonly = true
-  sources = [
-    "test_styled_text_field.h",
-    "test_styled_text_field.mm",
-  ]
-  deps = [
-    ":ui",
-  ]
 }

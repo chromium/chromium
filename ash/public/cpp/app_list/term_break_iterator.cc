@@ -9,7 +9,7 @@
 #include "base/strings/string_util.h"
 #include "third_party/icu/source/common/unicode/uchar.h"
 
-namespace app_list {
+namespace ash {
 
 TermBreakIterator::TermBreakIterator(const base::string16& word)
     : word_(word),
@@ -72,4 +72,4 @@ TermBreakIterator::State TermBreakIterator::GetNewState(base::char16 ch) {
   return STATE_CHAR;
 }
 
-}  // namespace app_list
+}  // namespace ash

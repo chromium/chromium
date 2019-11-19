@@ -11,11 +11,15 @@
 #include "base/containers/circular_deque.h"
 #include "base/macros.h"
 #include "base/threading/thread_checker.h"
+#include "base/timer/timer.h"
 #include "base/values.h"
+#include "net/base/backoff_entry.h"
 #include "remoting/base/chromoting_event.h"
 #include "remoting/base/chromoting_event_log_writer.h"
+#include "remoting/base/grpc_support/grpc_authenticated_executor.h"
 #include "remoting/base/oauth_token_getter.h"
 #include "remoting/base/url_request.h"
+#include "remoting/proto/remoting/v1/telemetry_service.grpc.pb.h"
 
 namespace remoting {
 
@@ -28,30 +32,26 @@ namespace remoting {
 // unless otherwise noted.
 class TelemetryLogWriter : public ChromotingEventLogWriter {
  public:
-  TelemetryLogWriter(const std::string& telemetry_base_url,
-                     std::unique_ptr<OAuthTokenGetter> token_getter);
+  TelemetryLogWriter(std::unique_ptr<OAuthTokenGetter> token_getter);
 
   ~TelemetryLogWriter() override;
-
-  void Init(std::unique_ptr<UrlRequestFactory> request_factory);
 
   // Push the log entry to the pending list and send out all the pending logs.
   void Log(const ChromotingEvent& entry) override;
 
  private:
   void SendPendingEntries();
-  void PostJsonToServer(const std::string& json,
-                        OAuthTokenGetter::Status status,
-                        const std::string& user_email,
-                        const std::string& access_token);
-  void OnSendLogResult(const remoting::UrlRequest::Result& result);
+  void DoSend(apis::v1::CreateEventRequest request);
+  void OnSendLogResult(const grpc::Status& status,
+                       const apis::v1::CreateEventResponse& response);
 
   THREAD_CHECKER(thread_checker_);
 
-  std::string telemetry_base_url_;
-  std::unique_ptr<UrlRequestFactory> request_factory_;
   std::unique_ptr<OAuthTokenGetter> token_getter_;
-  std::unique_ptr<UrlRequest> request_;
+  std::unique_ptr<apis::v1::RemotingTelemetryService::Stub> stub_;
+  GrpcAuthenticatedExecutor executor_;
+  net::BackoffEntry backoff_;
+  base::OneShotTimer backoff_timer_;
 
   // Entries to be sent.
   base::circular_deque<ChromotingEvent> pending_entries_;

@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<div contenteditable></div> <!-- Trigger legacy layout for the entire document. -->
+<div id="container" style="position:relative; width:110px;">
+  <div style="float:left; width:100px; height:100px;">
+    <div></div>
+    <video style="position:absolute; height:1%;"></video>
+  </div>
+</div>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script>
+  test(()=> {
+    document.documentElement.offsetTop;
+    container.style.width = "111px";
+  }, "did not crash");
+</script>

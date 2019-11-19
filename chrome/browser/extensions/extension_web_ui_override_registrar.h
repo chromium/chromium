@@ -9,6 +9,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observer.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
+#include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
 
 namespace content {
@@ -16,7 +17,6 @@ class BrowserContext;
 }
 
 namespace extensions {
-class ExtensionRegistry;
 
 class ExtensionWebUIOverrideRegistrar : public BrowserContextKeyedAPI,
                                         public ExtensionRegistryObserver {
@@ -51,9 +51,9 @@ class ExtensionWebUIOverrideRegistrar : public BrowserContextKeyedAPI,
 
   // Listen to extension load, unloaded notifications.
   ScopedObserver<ExtensionRegistry, ExtensionRegistryObserver>
-      extension_registry_observer_;
+      extension_registry_observer_{this};
 
-  base::WeakPtrFactory<ExtensionWebUIOverrideRegistrar> weak_factory_;
+  base::WeakPtrFactory<ExtensionWebUIOverrideRegistrar> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ExtensionWebUIOverrideRegistrar);
 };

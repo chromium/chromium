@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/memory/ptr_util.h"
+#include "base/memory/unsafe_shared_memory_region.h"
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/gpu_memory_buffer.h"
 
@@ -22,12 +23,11 @@ class GpuMemoryBufferImpl : public gfx::GpuMemoryBuffer {
       : mapped_(false),
         format_(format),
         size_(size),
-        num_planes_(gfx::NumberOfPlanesForBufferFormat(format)),
+        num_planes_(gfx::NumberOfPlanesForLinearBufferFormat(format)),
         id_(g_next_gpu_memory_buffer_id++) {
     DCHECK(gfx::BufferFormat::R_8 == format_ ||
            gfx::BufferFormat::RG_88 == format_ ||
            gfx::BufferFormat::YUV_420_BIPLANAR == format_ ||
-           gfx::BufferFormat::UYVY_422 == format_ ||
            gfx::BufferFormat::BGRX_1010102 == format_ ||
            gfx::BufferFormat::RGBX_1010102 == format_ ||
            gfx::BufferFormat::RGBA_8888 == format_ ||
@@ -115,17 +115,9 @@ MockGpuVideoAcceleratorFactories::CreateGpuMemoryBuffer(
   return ret;
 }
 
-std::unique_ptr<base::SharedMemory>
-MockGpuVideoAcceleratorFactories::CreateSharedMemory(size_t size) {
-  std::unique_ptr<base::SharedMemory> shared_memory(new base::SharedMemory);
-  if (shared_memory->CreateAndMapAnonymous(size))
-    return shared_memory;
-  return nullptr;
-}
-
-std::unique_ptr<VideoDecodeAccelerator>
-MockGpuVideoAcceleratorFactories::CreateVideoDecodeAccelerator() {
-  return base::WrapUnique(DoCreateVideoDecodeAccelerator());
+base::UnsafeSharedMemoryRegion
+MockGpuVideoAcceleratorFactories::CreateSharedMemoryRegion(size_t size) {
+  return base::UnsafeSharedMemoryRegion::Create(size);
 }
 
 std::unique_ptr<VideoEncodeAccelerator>

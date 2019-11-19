@@ -31,29 +31,40 @@
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
+#include "third_party/blink/renderer/core/paint/ng/ng_paint_fragment.h"
 #include "third_party/blink/renderer/core/paint/object_paint_invalidator.h"
 
 namespace blink {
 
 namespace {
 
-// Invalidate InineItems() in LayoutNGText.
+// Invalidate LayoutNG properties for insertion.
 //
 // They need to be invalidated when moving across inline formatting context
 // (i.e., to a different LayoutBlockFlow.)
 void InvalidateInlineItems(LayoutObject* object) {
-  if (object->IsInLayoutNGInlineFormattingContext())
-    object->SetFirstInlineFragment(nullptr);
-  if (object->IsText()) {
-    ToLayoutText(object)->InvalidateInlineItems();
-  } else if (object->IsLayoutInline()) {
-    // When moving without |notify_layout_object|, only top-level objects are
-    // moved. Ensure to invalidate all LayoutNGText in this inline formatting
-    // context.
-    for (LayoutObject* curr = object->SlowFirstChild(); curr;
-         curr = curr->NextSibling())
-      InvalidateInlineItems(curr);
+  DCHECK(object->IsInLayoutNGInlineFormattingContext());
+
+  if (auto* layout_text = ToLayoutTextOrNull(object)) {
+    layout_text->InvalidateInlineItems();
+  } else if (auto* layout_inline = ToLayoutInlineOrNull(object)) {
+    // In some cases, only top-level objects are moved, when |SplitFlow()| moves
+    // subtree, or when moving without |notify_layout_object|. Ensure to
+    // invalidate all descendants in this inline formatting context.
+    for (LayoutObject* child = layout_inline->FirstChild(); child;
+         child = child->NextSibling()) {
+      if (child->IsInLayoutNGInlineFormattingContext())
+        InvalidateInlineItems(child);
+    }
   }
+
+  if (NGPaintFragment* fragment = object->FirstInlineFragment()) {
+    // This LayoutObject is not technically destroyed, but further access should
+    // be prohibited when moved to different parent as if it were destroyed.
+    fragment->LayoutObjectWillBeDestroyed();
+    object->SetFirstInlineFragment(nullptr);
+  }
+  object->SetIsInLayoutNGInlineFormattingContext(false);
 }
 
 }  // namespace
@@ -114,6 +125,10 @@ LayoutObject* LayoutObjectChildList::RemoveChildNode(
     } else if (old_child->IsBox() &&
                ToLayoutBox(old_child)->IsOrthogonalWritingModeRoot()) {
       ToLayoutBox(old_child)->UnmarkOrthogonalWritingModeRoot();
+    }
+
+    if (old_child->IsInLayoutNGInlineFormattingContext()) {
+      owner->SetChildNeedsCollectInlines();
     }
   }
 
@@ -189,14 +204,21 @@ void LayoutObjectChildList::InsertChildNode(LayoutObject* owner,
   }
 
   if (!owner->DocumentBeingDestroyed()) {
+    // Run LayoutNG invalidations outside of |InsertedIntoTree| because it needs
+    // to run regardless of |notify_layout_object|. |notify_layout_object| is an
+    // optimization to skip notifications when moving within the same tree.
+    if (new_child->IsInLayoutNGInlineFormattingContext()) {
+      InvalidateInlineItems(new_child);
+    }
+
     if (notify_layout_object) {
       new_child->InsertedIntoTree();
       LayoutCounter::LayoutObjectSubtreeAttached(new_child);
-    } else if (RuntimeEnabledFeatures::LayoutNGEnabled()) {
-      // |notify_layout_object| is an optimization to skip notifications when
-      // moving within the same tree. Inline items need to be invalidated even
-      // when moving.
-      InvalidateInlineItems(new_child);
+    }
+
+    if (owner->IsInLayoutNGInlineFormattingContext() ||
+        (owner->EverHadLayout() && owner->ChildrenInline())) {
+      owner->SetChildNeedsCollectInlines();
     }
   }
 
@@ -210,9 +232,12 @@ void LayoutObjectChildList::InsertChildNode(LayoutObject* owner,
   if (new_child->WasNotifiedOfSubtreeChange())
     owner->NotifyAncestorsOfSubtreeChange();
 
-  // Clear NeedsCollectInlines to ensure the marking doesn't stop on
-  // |new_child|.
-  new_child->ClearNeedsCollectInlines();
+  if (owner->ForceLegacyLayout()) {
+    new_child->SetForceLegacyLayout();
+    // TODO(crbug.com/943574): This would be a great place to DCHECK that the
+    // child isn't an NG object, but there are unfortunately cases where this
+    // actually happens.
+  }
 
   new_child->SetNeedsLayoutAndPrefWidthsRecalc(
       layout_invalidation_reason::kAddedToLayout);
@@ -228,8 +253,6 @@ void LayoutObjectChildList::InsertChildNode(LayoutObject* owner,
   if (!owner->NormalChildNeedsLayout()) {
     owner->SetChildNeedsLayout();  // We may supply the static position for an
                                    // absolute positioned child.
-  } else {
-    owner->MarkContainerNeedsCollectInlines();
   }
 
   if (!owner->DocumentBeingDestroyed())

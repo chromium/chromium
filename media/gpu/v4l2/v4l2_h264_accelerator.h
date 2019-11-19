@@ -5,8 +5,7 @@
 #ifndef MEDIA_GPU_V4L2_V4L2_H264_ACCELERATOR_H_
 #define MEDIA_GPU_V4L2_V4L2_H264_ACCELERATOR_H_
 
-#include <linux/videodev2.h>
-
+#include <memory>
 #include <vector>
 
 #include "base/macros.h"
@@ -19,6 +18,7 @@ namespace media {
 class V4L2Device;
 class V4L2DecodeSurface;
 class V4L2DecodeSurfaceHandler;
+struct V4L2H264AcceleratorPrivate;
 
 class V4L2H264Accelerator : public H264Decoder::H264Accelerator {
  public:
@@ -36,24 +36,22 @@ class V4L2H264Accelerator : public H264Decoder::H264Accelerator {
                              const H264Picture::Vector& ref_pic_listp0,
                              const H264Picture::Vector& ref_pic_listb0,
                              const H264Picture::Vector& ref_pic_listb1,
-                             const scoped_refptr<H264Picture>& pic) override;
+                             scoped_refptr<H264Picture> pic) override;
   Status SubmitSlice(const H264PPS* pps,
                      const H264SliceHeader* slice_hdr,
                      const H264Picture::Vector& ref_pic_list0,
                      const H264Picture::Vector& ref_pic_list1,
-                     const scoped_refptr<H264Picture>& pic,
+                     scoped_refptr<H264Picture> pic,
                      const uint8_t* data,
                      size_t size,
                      const std::vector<SubsampleEntry>& subsamples) override;
-  Status SubmitDecode(const scoped_refptr<H264Picture>& pic) override;
-  bool OutputPicture(const scoped_refptr<H264Picture>& pic) override;
+  Status SubmitDecode(scoped_refptr<H264Picture> pic) override;
+  bool OutputPicture(scoped_refptr<H264Picture> pic) override;
   void Reset() override;
 
  private:
   // Max size of reference list.
   static constexpr size_t kDPBIndicesListSize = 32;
-  // TODO(posciak): This should be queried from hardware once supported.
-  static constexpr size_t kMaxSlices = 16;
 
   void H264PictureListToDPBIndicesList(const H264Picture::Vector& src_pic_list,
                                        uint8_t dst_list[kDPBIndicesListSize]);
@@ -61,14 +59,15 @@ class V4L2H264Accelerator : public H264Decoder::H264Accelerator {
       const H264DPB& dpb,
       std::vector<scoped_refptr<V4L2DecodeSurface>>* ref_surfaces);
   scoped_refptr<V4L2DecodeSurface> H264PictureToV4L2DecodeSurface(
-      const scoped_refptr<H264Picture>& pic);
+      H264Picture* pic);
 
   size_t num_slices_;
   V4L2DecodeSurfaceHandler* const surface_handler_;
   V4L2Device* const device_;
 
-  struct v4l2_ctrl_h264_slice_param v4l2_slice_params_[kMaxSlices];
-  struct v4l2_ctrl_h264_decode_param v4l2_decode_param_;
+  // Contains the kernel-specific structures that we don't want to expose
+  // outside of the compilation unit.
+  const std::unique_ptr<V4L2H264AcceleratorPrivate> priv_;
 
   DISALLOW_COPY_AND_ASSIGN(V4L2H264Accelerator);
 };

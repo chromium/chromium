@@ -24,6 +24,8 @@ Scheduled Task on Windows XP.
 
 """
 
+from __future__ import print_function
+
 import optparse
 import os
 import os.path
@@ -89,7 +91,7 @@ def _ReadPassword(pwfilename):
 def _RunCommand(cmd, dry_run, shell=False, echo_cmd=True):
   """Runs the command if dry_run is false, otherwise just prints the command."""
   if echo_cmd:
-    print cmd
+    print(cmd)
   if not dry_run:
     return subprocess.call(cmd, shell=shell)
   else:
@@ -111,7 +113,7 @@ def run_coverity(options, args):
     lock_file = os.open(lock_filename,
                         os.O_CREAT | os.O_EXCL | os.O_TRUNC | os.O_RDWR)
   except OSError, err:
-    print 'Failed to open lock file:\n  ' + str(err)
+    print('Failed to open lock file:\n  ' + str(err))
     return 1
 
   # Write the pid of this script (the python.exe process) to the lock file.
@@ -121,7 +123,7 @@ def run_coverity(options, args):
 
   start_time = time.time()
 
-  print 'Change directory to ' + options.source_dir
+  print('Change directory to ' + options.source_dir)
   os.chdir(options.source_dir)
 
   # The coverity-password filename may have been a relative path.
@@ -132,11 +134,11 @@ def run_coverity(options, args):
   cmd = 'gclient sync'
   gclient_exit = _RunCommand(cmd, options.dry_run, shell=True)
   if gclient_exit != 0:
-    print 'gclient aborted with status %s' % gclient_exit
+    print('gclient aborted with status %s' % gclient_exit)
     _ReleaseLock(lock_file, lock_filename)
     return 1
 
-  print 'Elapsed time: %ds' % (time.time() - start_time)
+  print('Elapsed time: %ds' % (time.time() - start_time))
 
   # Do a clean build.  Remove the build output directory first.
   if sys.platform.startswith('linux'):
@@ -147,26 +149,26 @@ def run_coverity(options, args):
   elif sys.platform == 'darwin':
     rm_path = os.path.join(options.source_dir,'src','xcodebuild')
   else:
-    print 'Platform "%s" unrecognized, aborting' % sys.platform
+    print('Platform "%s" unrecognized, aborting' % sys.platform)
     _ReleaseLock(lock_file, lock_filename)
     return 1
 
   if options.dry_run:
-    print 'shutil.rmtree(%s)' % repr(rm_path)
+    print('shutil.rmtree(%s)' % repr(rm_path))
   else:
     shutil.rmtree(rm_path,True)
 
   if options.preserve_intermediate_dir:
-      print 'Preserving intermediate directory.'
+    print('Preserving intermediate directory.')
   else:
     if options.dry_run:
-      print 'shutil.rmtree(%s)' % repr(options.coverity_intermediate_dir)
-      print 'os.mkdir(%s)' % repr(options.coverity_intermediate_dir)
+      print('shutil.rmtree(%s)' % repr(options.coverity_intermediate_dir))
+      print('os.mkdir(%s)' % repr(options.coverity_intermediate_dir))
     else:
       shutil.rmtree(options.coverity_intermediate_dir,True)
       os.mkdir(options.coverity_intermediate_dir)
 
-  print 'Elapsed time: %ds' % (time.time() - start_time)
+  print('Elapsed time: %ds' % (time.time() - start_time))
 
   use_shell_during_make = False
   if sys.platform.startswith('linux'):
@@ -192,14 +194,14 @@ def run_coverity(options, args):
 
 
   _RunCommand(cmd, options.dry_run, shell=use_shell_during_make)
-  print 'Elapsed time: %ds' % (time.time() - start_time)
+  print('Elapsed time: %ds' % (time.time() - start_time))
 
   cov_analyze_exe = os.path.join(options.coverity_bin_dir,'cov-analyze')
   cmd = '%s --dir %s %s' % (cov_analyze_exe,
                             options.coverity_intermediate_dir,
                             options.coverity_analyze_options)
   _RunCommand(cmd, options.dry_run, shell=use_shell_during_make)
-  print 'Elapsed time: %ds' % (time.time() - start_time)
+  print('Elapsed time: %ds' % (time.time() - start_time))
 
   cov_commit_exe = os.path.join(options.coverity_bin_dir,'cov-commit-defects')
 
@@ -227,7 +229,7 @@ def run_coverity(options, args):
   # Avoid echoing the Commit command because it has a password in it
   _RunCommand(cmd, options.dry_run, shell=use_shell_during_make, echo_cmd=False)
 
-  print 'Total time: %ds' % (time.time() - start_time)
+  print('Total time: %ds' % (time.time() - start_time))
 
   _ReleaseLock(lock_file, lock_filename)
 

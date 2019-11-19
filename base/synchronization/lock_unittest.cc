@@ -9,6 +9,7 @@
 #include "base/compiler_specific.h"
 #include "base/debug/activity_tracker.h"
 #include "base/macros.h"
+#include "base/test/gtest_util.h"
 #include "base/threading/platform_thread.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -252,6 +253,36 @@ TEST(LockTest, MutexFourThreads) {
   PlatformThread::Join(handle3);
 
   EXPECT_EQ(4 * 40, value);
+}
+
+TEST(LockTest, AutoLockMaybe) {
+  Lock lock;
+  {
+    AutoLockMaybe auto_lock(&lock);
+    lock.AssertAcquired();
+  }
+  EXPECT_DCHECK_DEATH(lock.AssertAcquired());
+}
+
+TEST(LockTest, AutoLockMaybeNull) {
+  AutoLockMaybe auto_lock(nullptr);
+}
+
+TEST(LockTest, ReleasableAutoLockExplicitRelease) {
+  Lock lock;
+  ReleasableAutoLock auto_lock(&lock);
+  lock.AssertAcquired();
+  auto_lock.Release();
+  EXPECT_DCHECK_DEATH(lock.AssertAcquired());
+}
+
+TEST(LockTest, ReleasableAutoLockImplicitRelease) {
+  Lock lock;
+  {
+    ReleasableAutoLock auto_lock(&lock);
+    lock.AssertAcquired();
+  }
+  EXPECT_DCHECK_DEATH(lock.AssertAcquired());
 }
 
 }  // namespace base

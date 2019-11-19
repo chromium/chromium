@@ -8,8 +8,9 @@ import android.annotation.TargetApi;
 import android.os.Build;
 import android.support.v4.app.NotificationManagerCompat;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.ContextUtils;
-import org.chromium.base.VisibleForTesting;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.metrics.RecordHistogram;
 

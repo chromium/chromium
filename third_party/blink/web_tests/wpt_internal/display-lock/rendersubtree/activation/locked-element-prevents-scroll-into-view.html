@@ -1,0 +1,43 @@
+<!doctype HTML>
+<html class="reftest-wait">
+<meta charset="utf8">
+<title>Display Locking: scrollIntoView prevented</title>
+<link rel="author" title="Vladimir Levin" href="mailto:vmpstr@chromium.org">
+<link rel="help" href="https://github.com/WICG/display-locking">
+<link rel="match" href="spacer-and-container-ref.html">
+<script src="/common/reftest-wait.js"></script>
+<script src="../resources/utils.js"></script>
+
+<style>
+.spacer {
+  width: 150px;
+  height: 3000px;
+  background: lightblue;
+}
+#container {
+  width: 150px;
+  height: 150px;
+  background: lightgreen;
+}
+#target {
+  width: 100px;
+  height: 100px;
+  background: green;
+}
+</style>
+
+<div class="spacer"></div>
+<div id="container"><div id="target"></div></div>
+
+<script>
+function runTest() {
+  const container = document.getElementById("container");
+  setInvisible(container).then(() => {
+    document.getElementById("target").scrollIntoView();
+    requestAnimationFrame(takeScreenshot);
+  });
+}
+
+window.onload = () => { requestAnimationFrame(runTest); };
+</script>
+</html>

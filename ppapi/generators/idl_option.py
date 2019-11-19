@@ -100,7 +100,7 @@ def ParseOptions(args):
       if opt[0:2] == '--': opt = opt[2:]
       OptionMap[opt].Set(val)
 
-  except getopt.error, e:
+  except getopt.error as e:
     ErrOut.Log('Illegal option: %s\n' % str(e))
     DumpHelp()
     sys.exit(-1)

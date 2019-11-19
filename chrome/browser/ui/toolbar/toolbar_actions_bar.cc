@@ -29,6 +29,7 @@
 #include "chrome/browser/ui/toolbar/toolbar_action_view_controller.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_bar_delegate.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_bar_observer.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/pref_names.h"
 #include "components/crx_file/id_util.h"
 #include "components/pref_registry/pref_registry_syncable.h"
@@ -108,13 +109,13 @@ ToolbarActionsBar::ToolbarActionsBar(ToolbarActionsBarDelegate* delegate,
       should_check_extension_bubble_(!main_bar),
       popped_out_action_(nullptr),
       is_popped_out_sticky_(false),
-      is_showing_bubble_(false),
-      tab_strip_observer_(this),
-      weak_ptr_factory_(this) {
+      is_showing_bubble_(false) {
   if (model_)  // |model_| can be null in unittests.
     model_observer_.Add(model_);
 
-  tab_strip_observer_.Add(browser_->tab_strip_model());
+  DCHECK(!base::FeatureList::IsEnabled(features::kExtensionsToolbarMenu));
+
+  browser_->tab_strip_model()->AddObserver(this);
 }
 
 ToolbarActionsBar::~ToolbarActionsBar() {
@@ -122,6 +123,11 @@ ToolbarActionsBar::~ToolbarActionsBar() {
   // the order of deletion between the views and the ToolbarActionsBar.
   DCHECK(toolbar_actions_.empty())
       << "Must call DeleteActions() before destruction.";
+
+  // Make sure we don't listen to any more model changes during
+  // ToolbarActionsBar destruction.
+  model_observer_.RemoveAll();
+
   for (ToolbarActionsBarObserver& observer : observers_)
     observer.OnToolbarActionsBarDestroyed();
 }
@@ -324,7 +330,8 @@ void ToolbarActionsBar::CreateActions() {
     base::AutoReset<bool> layout_resetter(&suppress_layout_, true);
 
     // Get the toolbar actions.
-    toolbar_actions_ = model_->CreateActions(browser_, this);
+    toolbar_actions_ =
+        model_->CreateActions(browser_, GetMainBar(), in_overflow_mode());
     if (!toolbar_actions_.empty())
       ReorderActions();
 
@@ -464,10 +471,10 @@ void ToolbarActionsBar::OnBubbleClosed() {
   is_showing_bubble_ = false;
 }
 
-bool ToolbarActionsBar::IsActionVisibleOnMainBar(
+bool ToolbarActionsBar::IsActionVisibleOnToolbar(
     const ToolbarActionViewController* action) const {
   if (in_overflow_mode())
-    return main_bar_->IsActionVisibleOnMainBar(action);
+    return main_bar_->IsActionVisibleOnToolbar(action);
 
   if (action == popped_out_action_)
     return true;
@@ -485,7 +492,7 @@ void ToolbarActionsBar::PopOutAction(ToolbarActionViewController* controller,
                                      const base::Closure& closure) {
   DCHECK(!in_overflow_mode()) << "Only the main bar can pop out actions.";
   DCHECK(!popped_out_action_) << "Only one action can be popped out at a time!";
-  bool needs_redraw = !IsActionVisibleOnMainBar(controller);
+  bool needs_redraw = !IsActionVisibleOnToolbar(controller);
   popped_out_action_ = controller;
   is_popped_out_sticky_ = is_sticky;
   if (needs_redraw) {
@@ -504,6 +511,10 @@ void ToolbarActionsBar::PopOutAction(ToolbarActionViewController* controller,
   }
 }
 
+ToolbarActionViewController* ToolbarActionsBar::GetPoppedOutAction() const {
+  return popped_out_action_;
+}
+
 void ToolbarActionsBar::UndoPopOut() {
   DCHECK(!in_overflow_mode()) << "Only the main bar can pop out actions.";
   DCHECK(popped_out_action_);
@@ -511,7 +522,7 @@ void ToolbarActionsBar::UndoPopOut() {
   popped_out_action_ = nullptr;
   is_popped_out_sticky_ = false;
   popped_out_closure_.Reset();
-  if (!IsActionVisibleOnMainBar(controller))
+  if (!IsActionVisibleOnToolbar(controller))
     delegate_->Redraw(true);
   ResizeDelegate(gfx::Tween::LINEAR);
 }
@@ -528,12 +539,6 @@ void ToolbarActionsBar::HideActivePopup() {
   if (popup_owner_)
     popup_owner_->HidePopup();
   DCHECK(!popup_owner_);
-}
-
-ToolbarActionViewController* ToolbarActionsBar::GetMainControllerForAction(
-    ToolbarActionViewController* action) {
-  return in_overflow_mode() ? main_bar_->GetActionForId(action->GetId())
-                            : action;
 }
 
 void ToolbarActionsBar::AddObserver(ToolbarActionsBarObserver* observer) {
@@ -559,7 +564,7 @@ void ToolbarActionsBar::ShowToolbarActionBubble(
     ToolbarActionViewController* controller =
         GetActionForId(bubble->GetAnchorActionId());
     bool close_overflow_menu =
-        controller && !IsActionVisibleOnMainBar(controller);
+        controller && !IsActionVisibleOnToolbar(controller);
     if (close_overflow_menu)
       delegate_->CloseOverflowMenuIfOpen();
 
@@ -607,6 +612,10 @@ void ToolbarActionsBar::MaybeShowExtensionBubble() {
           g_extension_bubble_appearance_wait_time_in_seconds));
 }
 
+ToolbarActionsBar* ToolbarActionsBar::GetMainBar() {
+  return main_bar_ ? main_bar_ : this;
+}
+
 // static
 void ToolbarActionsBar::set_extension_bubble_appearance_wait_time_for_testing(
     int time_in_seconds) {
@@ -625,8 +634,10 @@ void ToolbarActionsBar::OnToolbarActionAdded(
       << "Asked to add a toolbar action view for an action that already "
          "exists";
 
-  toolbar_actions_.insert(toolbar_actions_.begin() + index,
-                          model_->CreateActionForId(browser_, this, action_id));
+  toolbar_actions_.insert(
+      toolbar_actions_.begin() + index,
+      model_->CreateActionForId(browser_, GetMainBar(), in_overflow_mode(),
+                                action_id));
   delegate_->AddViewForAction(toolbar_actions_[index].get(), index);
 
   // We may need to resize (e.g. to show the new icon). We don't need to check
@@ -757,8 +768,8 @@ void ToolbarActionsBar::OnToolbarHighlightModeChanged(bool is_highlighting) {
       }
 
       if (!found) {
-        toolbar_actions_.push_back(
-            model_->CreateActionForId(browser_, this, model_action_id));
+        toolbar_actions_.push_back(model_->CreateActionForId(
+            browser_, GetMainBar(), in_overflow_mode(), model_action_id));
         delegate_->AddViewForAction(toolbar_actions_.back().get(),
                                     toolbar_actions_.size() - 1);
       }
@@ -783,6 +794,10 @@ void ToolbarActionsBar::OnToolbarModelInitialized() {
   CHECK(toolbar_actions_.empty());
   CreateActions();
   ResizeDelegate(gfx::Tween::EASE_OUT);
+}
+
+void ToolbarActionsBar::OnToolbarPinnedActionsChanged() {
+  NOTREACHED();
 }
 
 void ToolbarActionsBar::OnTabStripModelChanged(

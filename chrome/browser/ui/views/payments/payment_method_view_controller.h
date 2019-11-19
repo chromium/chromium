@@ -29,8 +29,10 @@ class PaymentMethodViewController : public PaymentRequestSheetController {
   // PaymentRequestSheetController:
   base::string16 GetSheetTitle() override;
   void FillContentView(views::View* content_view) override;
-  std::unique_ptr<views::View> CreateExtraFooterView() override;
   void ButtonPressed(views::Button* sender, const ui::Event& event) override;
+  base::string16 GetSecondaryButtonLabel() override;
+  int GetSecondaryButtonTag() override;
+  int GetSecondaryButtonId() override;
 
   PaymentRequestItemList payment_method_list_;
 

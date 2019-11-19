@@ -65,8 +65,7 @@ public class HintedDropDownAdapter<T> extends DropdownFieldAdapter<T> {
             ViewCompat.setPaddingRelative(convertView, ViewCompat.getPaddingStart(convertView), 0,
                     ViewCompat.getPaddingEnd(convertView), 0);
             mTextView.setCompoundDrawablesWithIntrinsicBounds(null, null, null, null);
-            ApiCompatibilityUtils.setTextAppearance(
-                    mTextView, android.R.style.TextAppearance_Widget_DropDownItem);
+            ApiCompatibilityUtils.setTextAppearance(mTextView, R.style.TextAppearance_BlackTitle1);
         }
         convertView = super.getDropDownView(position, convertView, parent);
 

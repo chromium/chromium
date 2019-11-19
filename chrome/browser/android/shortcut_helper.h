@@ -27,9 +27,6 @@ class WebContents;
 // ShortcutHelper in Java.
 class ShortcutHelper {
  public:
-  using WebApkInfoCallback =
-      base::Callback<void(const std::vector<WebApkInfo>&)>;
-
   // Creates a ShortcutInfo struct suitable for adding a shortcut to the home
   // screen.
   static std::unique_ptr<ShortcutInfo> CreateShortcutInfo(
@@ -66,6 +63,9 @@ class ShortcutHelper {
   // Returns the ideal size for a badge icon of a WebAPK.
   static int GetIdealBadgeIconSizeInPx();
 
+  // Returns the ideal size for an adaptive launcher icon of a WebAPK
+  static int GetIdealAdaptiveLauncherIconSizeInPx();
+
   // Fetches the splash screen image and stores it inside the WebappDataStorage
   // of the webapp. The WebappDataStorage object *must* have been previously
   // created by AddToLauncherWithSkBitmap(); this method should be passed as a
@@ -100,13 +100,13 @@ class ShortcutHelper {
                                 const GURL& start_url,
                                 const GURL& manifest_url);
 
-  // Generates a scope URL based on the passed in |url|. It should be used
-  // when the Web Manifest does not specify a scope URL.
-  static GURL GetScopeFromURL(const GURL& url);
+  // Sets a flag to force an update for the WebAPK corresponding to |id| on next
+  // launch.
+  static void SetForceWebApkUpdate(const std::string& id);
 
-  // Fetches information on all the WebAPKs installed on the device and returns
-  // the info to the |callback|.
-  static void RetrieveWebApks(const WebApkInfoCallback& callback);
+  // Returns if the Android version supports Adaptive Icon (i.e. API level >=
+  // 26)
+  static bool DoesAndroidSupportMaskableIcons();
 
  private:
   DISALLOW_IMPLICIT_CONSTRUCTORS(ShortcutHelper);

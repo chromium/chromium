@@ -25,10 +25,6 @@ class Process;
 class SingleThreadTaskRunner;
 }
 
-namespace service_manager {
-class Connector;
-}
-
 namespace update_client {
 
 class Component;
@@ -44,7 +40,8 @@ class ActionRunner {
   void Run(Callback run_complete);
 
  private:
-  void RunOnTaskRunner(std::unique_ptr<service_manager::Connector> connector);
+  void RunOnTaskRunner(std::unique_ptr<Unzipper> unzipper,
+                       scoped_refptr<Patcher> patcher);
   void UnpackComplete(const ComponentUnpacker::Result& result);
 
   void RunCommand(const base::CommandLine& cmdline);

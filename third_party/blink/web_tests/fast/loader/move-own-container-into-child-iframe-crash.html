@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<div id="container">
+  <object onload="object_loaded()" type="application/ecmascript">
+    <iframe id="iframe"></iframe>
+  </object>
+</div>
+<script>
+  t = async_test("Should not crash");
+  function object_loaded() {
+      iframe.contentDocument.adoptNode(container);
+      t.done();
+  }
+</script>

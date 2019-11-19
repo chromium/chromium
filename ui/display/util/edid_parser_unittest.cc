@@ -8,6 +8,7 @@
 
 #include <memory>
 
+#include "base/containers/flat_set.h"
 #include "base/numerics/ranges.h"
 #include "base/stl_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -152,6 +153,26 @@ constexpr unsigned char kEve[] =
     "\x00\x4c\x51\x31\x32\x33\x50\x31\x4a\x58\x33\x32\x0a\x20\x00\xb6";
 constexpr size_t kEveLength = base::size(kEve);
 
+// A Samsung monitor that supports HDR metadata.
+constexpr unsigned char kHDRMetadata[] =
+    "\x00\xff\xff\xff\xff\xff\xff\x00\x4c\x2d\xf6\x0d\x00\x0e\x00\x01"
+    "\x01\x1b\x01\x03\x80\x5f\x36\x78\x0a\x23\xad\xa4\x54\x4d\x99\x26"
+    "\x0f\x47\x4a\xbd\xef\x80\x71\x4f\x81\xc0\x81\x00\x81\x80\x95\x00"
+    "\xa9\xc0\xb3\x00\x01\x01\x04\x74\x00\x30\xf2\x70\x5a\x80\xb0\x58"
+    "\x8a\x00\x50\x1d\x74\x00\x00\x1e\x02\x3a\x80\x18\x71\x38\x2d\x40"
+    "\x58\x2c\x45\x00\x50\x1d\x74\x00\x00\x1e\x00\x00\x00\xfd\x00\x18"
+    "\x4b\x0f\x51\x1e\x00\x0a\x20\x20\x20\x20\x20\x20\x00\x00\x00\xfc"
+    "\x00\x53\x41\x4d\x53\x55\x4e\x47\x0a\x20\x20\x20\x20\x20\x01\x5a"
+    "\x02\x03\x4f\xf0\x53\x5f\x10\x1f\x04\x13\x05\x14\x20\x21\x22\x5d"
+    "\x5e\x62\x63\x64\x07\x16\x03\x12\x2c\x09\x07\x07\x15\x07\x50\x3d"
+    "\x04\xc0\x57\x07\x00\x83\x01\x00\x00\xe2\x00\x0f\xe3\x05\x83\x01"
+    "\x6e\x03\x0c\x00\x30\x00\xb8\x3c\x20\x00\x80\x01\x02\x03\x04\xe3"
+    "\x06\x0d\x01\xe5\x0e\x60\x61\x65\x66\xe5\x01\x8b\x84\x90\x01\x01"
+    "\x1d\x80\xd0\x72\x1c\x16\x20\x10\x2c\x25\x80\x50\x1d\x74\x00\x00"
+    "\x9e\x66\x21\x56\xaa\x51\x00\x1e\x30\x46\x8f\x33\x00\x50\x1d\x74"
+    "\x00\x00\x1e\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\xbd";
+constexpr size_t kHDRMetadataLength = base::size(kHDRMetadata);
+
 // Primaries coordinates ({RX, RY, GX, GY, BX, BY, WX, WY}) calculated by hand
 // and rounded to 4 decimal places.
 constexpr SkColorSpacePrimaries kNormalDisplayPrimaries = {
@@ -172,6 +193,8 @@ constexpr SkColorSpacePrimaries kSamusPrimaries = {
     0.6338f, 0.3477f, 0.3232f, 0.5771f, 0.1514f, 0.0908f, 0.3135f, 0.3291f};
 constexpr SkColorSpacePrimaries kEvePrimaries = {
     0.6396f, 0.3291f, 0.2998f, 0.5996f, 0.1494f, 0.0596f, 0.3125f, 0.3281f};
+constexpr SkColorSpacePrimaries kHDRPrimaries = {
+    0.6406f, 0.3300f, 0.3007f, 0.6005f, 0.1503f, 0.0605f, 0.2802f, 0.2900f};
 
 // Chromaticity primaries in EDID are specified with 10 bits precision.
 constexpr static float kPrimariesPrecision = 1 / 2048.f;
@@ -219,40 +242,204 @@ struct TestParams {
   std::string manufacturer_id_string;
   std::string product_id_string;
 
+  base::flat_set<gfx::ColorSpace::PrimaryID> supported_color_primary_ids_;
+  base::flat_set<gfx::ColorSpace::TransferID> supported_color_transfer_ids_;
+
   const unsigned char* edid_blob;
   size_t edid_blob_length;
 } kTestCases[] = {
-    {0x22f0u, 0x6c28u, "HP ZR30w", gfx::Size(2560, 1600), 2012, false, 2.2, 10,
-     kNormalDisplayPrimaries, 586181672, 9834734971736576, "HWP", "286C",
-     kNormalDisplay, kNormalDisplayLength},
-    {0x4ca3u, 0x4231u, "", gfx::Size(1280, 800), 2011, false, 2.2, -1,
-     kInternalDisplayPrimaries, 1285767729, 21571318625337344, "SEC", "3142",
-     kInternalDisplay, kInternalDisplayLength},
-    {0x4c2du, 0xfe08u, "SAMSUNG", gfx::Size(1920, 1080), 2011, true, 2.2, -1,
-     kOverscanDisplayPrimaries, 1278082568, 21442559853606400, "SAM", "08FE",
-     kOverscanDisplay, kOverscanDisplayLength},
-    {0x10ACu, 0x6440u, "DELL U3011", gfx::Size(1920, 1200), 2011, false, 2.2,
-     -1, kMisdetectedDisplayPrimaries, 279733312, 4692848143772416, "DEL",
-     "4064", kMisdetectedDisplay, kMisdetectedDisplayLength},
-    {0x22f0u, 0x7626u, "HP LP2465", gfx::Size(1920, 1200), 2008, false, 2.2, -1,
-     kLP2565APrimaries, 586184230, 9834630174887424, "HWP", "2676", kLP2565A,
+    {0x22f0u,
+     0x6c28u,
+     "HP ZR30w",
+     gfx::Size(2560, 1600),
+     2012,
+     false,
+     2.2,
+     10,
+     kNormalDisplayPrimaries,
+     586181672,
+     9834734971736576,
+     "HWP",
+     "286C",
+     {},
+     {},
+     kNormalDisplay,
+     kNormalDisplayLength},
+    {0x4ca3u,
+     0x4231u,
+     "",
+     gfx::Size(1280, 800),
+     2011,
+     false,
+     2.2,
+     -1,
+     kInternalDisplayPrimaries,
+     1285767729,
+     21571318625337344,
+     "SEC",
+     "3142",
+     {},
+     {},
+     kInternalDisplay,
+     kInternalDisplayLength},
+    {0x4c2du,
+     0xfe08u,
+     "SAMSUNG",
+     gfx::Size(1920, 1080),
+     2011,
+     true,
+     2.2,
+     -1,
+     kOverscanDisplayPrimaries,
+     1278082568,
+     21442559853606400,
+     "SAM",
+     "08FE",
+     {},
+     {},
+     kOverscanDisplay,
+     kOverscanDisplayLength},
+    {0x10ACu,
+     0x6440u,
+     "DELL U3011",
+     gfx::Size(1920, 1200),
+     2011,
+     false,
+     2.2,
+     -1,
+     kMisdetectedDisplayPrimaries,
+     279733312,
+     4692848143772416,
+     "DEL",
+     "4064",
+     {gfx::ColorSpace::PrimaryID::BT709, gfx::ColorSpace::PrimaryID::SMPTE170M},
+     {},
+     kMisdetectedDisplay,
+     kMisdetectedDisplayLength},
+    {0x22f0u,
+     0x7626u,
+     "HP LP2465",
+     gfx::Size(1920, 1200),
+     2008,
+     false,
+     2.2,
+     -1,
+     kLP2565APrimaries,
+     586184230,
+     9834630174887424,
+     "HWP",
+     "2676",
+     {},
+     {},
+     kLP2565A,
      kLP2565ALength},
-    {0x22f0u, 0x7526u, "HP LP2465", gfx::Size(1920, 1200), 2008, false, 2.2, -1,
-     kLP2565BPrimaries, 586183974, 9834630174887424, "HWP", "2675", kLP2565B,
+    {0x22f0u,
+     0x7526u,
+     "HP LP2465",
+     gfx::Size(1920, 1200),
+     2008,
+     false,
+     2.2,
+     -1,
+     kLP2565BPrimaries,
+     586183974,
+     9834630174887424,
+     "HWP",
+     "2675",
+     {},
+     {},
+     kLP2565B,
      kLP2565BLength},
-    {0x22f0u, 0x7532u, "HP Z32x", gfx::Size(3840, 2160), 2017, false, 2.2, 10,
-     kHPz32xPrimaries, 586183986, 9834799315992832, "HWP", "3275", kHPz32x,
+    {0x22f0u,
+     0x7532u,
+     "HP Z32x",
+     gfx::Size(3840, 2160),
+     2017,
+     false,
+     2.2,
+     10,
+     kHPz32xPrimaries,
+     586183986,
+     9834799315992832,
+     "HWP",
+     "3275",
+     {},
+     {},
+     kHPz32x,
      kHPz32xLength},
-    {0x30E4u, 0x2E04u, "", gfx::Size(2560, 1700), 2014, false, 2.5, 8,
-     kSamusPrimaries, 820260356, 13761487533244416, "LGD", "042E", kSamus,
+    {0x30E4u,
+     0x2E04u,
+     "",
+     gfx::Size(2560, 1700),
+     2014,
+     false,
+     2.5,
+     8,
+     kSamusPrimaries,
+     820260356,
+     13761487533244416,
+     "LGD",
+     "042E",
+     {},
+     {},
+     kSamus,
      kSamusLength},
-    {0x4D10u, 0x8A14u, "LQ123P1JX32", gfx::Size(2400, 1600), 2017, false, 2.2,
-     8, kEvePrimaries, 1292929556, 21692109949126656, "SHP", "148A", kEve,
+    {0x4D10u,
+     0x8A14u,
+     "LQ123P1JX32",
+     gfx::Size(2400, 1600),
+     2017,
+     false,
+     2.2,
+     8,
+     kEvePrimaries,
+     1292929556,
+     21692109949126656,
+     "SHP",
+     "148A",
+     {},
+     {},
+     kEve,
      kEveLength},
+    {19501u,
+     62989u,
+     "SAMSUNG",
+     gfx::Size(3840, 2160),
+     2017,
+     true,
+     2.2,
+     -1,
+     kHDRPrimaries,
+     1278080525,
+     21442559853606400,
+     "SAM",
+     "0DF6",
+     {gfx::ColorSpace::PrimaryID::BT709, gfx::ColorSpace::PrimaryID::SMPTE170M,
+      gfx::ColorSpace::PrimaryID::BT2020},
+     {gfx::ColorSpace::TransferID::BT709,
+      gfx::ColorSpace::TransferID::SMPTEST2084,
+      gfx::ColorSpace::TransferID::ARIB_STD_B67},
+     kHDRMetadata,
+     kHDRMetadataLength},
 
     // Empty Edid, which is tantamount to error.
-    {0, 0, "", gfx::Size(0, 0), display::kInvalidYearOfManufacture, false, 0.0,
-     -1, SkColorSpacePrimaries(), 0, 0, "@@@", "0000", nullptr, 0u},
+    {0,
+     0,
+     "",
+     gfx::Size(0, 0),
+     display::kInvalidYearOfManufacture,
+     false,
+     0.0,
+     -1,
+     SkColorSpacePrimaries(),
+     0,
+     0,
+     "@@@",
+     "0000",
+     {},
+     {},
+     nullptr,
+     0u},
 };
 
 class EDIDParserTest : public TestWithParam<TestParams> {
@@ -290,6 +477,11 @@ TEST_P(EDIDParserTest, ParseEdids) {
             GetParam().manufacturer_id_string);
   EXPECT_EQ(EdidParser::ProductIdToString(parser_.product_id()),
             GetParam().product_id_string);
+
+  EXPECT_EQ(GetParam().supported_color_primary_ids_,
+            parser_.supported_color_primary_ids());
+  EXPECT_EQ(GetParam().supported_color_transfer_ids_,
+            parser_.supported_color_transfer_ids());
 }
 
 INSTANTIATE_TEST_SUITE_P(, EDIDParserTest, ValuesIn(kTestCases));

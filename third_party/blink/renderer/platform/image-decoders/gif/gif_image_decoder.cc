@@ -27,7 +27,7 @@
 
 #include <limits>
 #include "third_party/blink/renderer/platform/image-decoders/segment_stream.h"
-#include "third_party/blink/renderer/platform/wtf/not_found.h"
+#include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
 
 namespace blink {
@@ -146,10 +146,10 @@ bool GIFImageDecoder::FrameIsReceivedAtIndex(size_t index) const {
   return frame_info.fFullyReceived;
 }
 
-TimeDelta GIFImageDecoder::FrameDurationAtIndex(size_t index) const {
+base::TimeDelta GIFImageDecoder::FrameDurationAtIndex(size_t index) const {
   if (index < frame_buffer_cache_.size())
     return frame_buffer_cache_[index].Duration();
-  return TimeDelta();
+  return base::TimeDelta();
 }
 
 bool GIFImageDecoder::SetFailed() {
@@ -200,7 +200,7 @@ void GIFImageDecoder::InitializeNewFrame(size_t index) {
   SkCodec::FrameInfo frame_info;
   bool frame_info_received = codec_->getFrameInfo(index, &frame_info);
   DCHECK(frame_info_received);
-  frame.SetDuration(TimeDelta::FromMilliseconds(frame_info.fDuration));
+  frame.SetDuration(base::TimeDelta::FromMilliseconds(frame_info.fDuration));
   size_t required_previous_frame_index;
   if (frame_info.fRequiredFrame == SkCodec::kNoFrame) {
     required_previous_frame_index = kNotFound;

@@ -36,7 +36,7 @@ void DefaultCaptureClient::SetCapture(Window* window) {
   if (capture_window_ == window)
     return;
   if (window)
-    window->env()->gesture_recognizer()->CancelActiveTouchesExcept(window);
+    Env::GetInstance()->gesture_recognizer()->CancelActiveTouchesExcept(window);
 
   Window* old_capture_window = capture_window_;
   capture_window_ = window;

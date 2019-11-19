@@ -18,10 +18,7 @@ namespace google_apis {
 FilesListRequestRunner::FilesListRequestRunner(
     RequestSender* request_sender,
     const google_apis::DriveApiUrlGenerator& url_generator)
-    : request_sender_(request_sender),
-      url_generator_(url_generator),
-      weak_ptr_factory_(this) {
-}
+    : request_sender_(request_sender), url_generator_(url_generator) {}
 
 FilesListRequestRunner::~FilesListRequestRunner() {
 }

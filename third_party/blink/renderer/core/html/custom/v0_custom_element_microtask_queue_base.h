@@ -13,7 +13,7 @@
 namespace blink {
 
 class V0CustomElementMicrotaskQueueBase
-    : public GarbageCollectedFinalized<V0CustomElementMicrotaskQueueBase> {
+    : public GarbageCollected<V0CustomElementMicrotaskQueueBase> {
  public:
   virtual ~V0CustomElementMicrotaskQueueBase() = default;
 

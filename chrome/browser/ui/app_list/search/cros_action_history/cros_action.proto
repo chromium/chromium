@@ -1,0 +1,33 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+
+package app_list;
+
+// CrOSActionProto records one individual action.
+message CrOSActionProto {
+  // Name of the action.
+  optional string action_name = 1;
+  // Time of the action.
+  optional int64 secs_since_epoch = 2;
+
+  // CrOSActionConditionProto records other features that may useful for this
+  // action.
+  message CrOSActionConditionProto {
+    // name of the condition.
+    optional string name = 1;
+    // value of the condition.
+    optional int32 value = 2;
+  }
+
+  repeated CrOSActionConditionProto conditions = 3;
+}
+
+// A history consists a list of actions.
+message CrOSActionHistoryProto {
+  repeated CrOSActionProto actions = 1;
+}

@@ -67,7 +67,7 @@ class RecentTabsBuilderTestHelper {
   sync_pb::SessionSpecifics BuildTabSpecifics(int session_index,
                                               int window_index,
                                               int tab_index);
-  syncer::UpdateResponseData BuildUpdateResponseData(
+  std::unique_ptr<syncer::UpdateResponseData> BuildUpdateResponseData(
       const sync_pb::SessionSpecifics& specifics,
       base::Time timestamp);
 

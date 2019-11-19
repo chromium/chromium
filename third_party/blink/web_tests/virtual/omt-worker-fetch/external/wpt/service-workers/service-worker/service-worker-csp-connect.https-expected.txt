@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-PASS CSP test for connect-src in ServiceWorkerGlobalScope
-PASS importScripts test for connect-src
-FAIL Fetch test for connect-src assert_unreached: unexpected rejection: assert_unreached: fetch should fail. Reached unreachable code Reached unreachable code
-FAIL Redirected fetch test for connect-src assert_unreached: unexpected rejection: assert_unreached: Redirected fetch should fail. Reached unreachable code Reached unreachable code
-Harness: the test ran to completion.
-

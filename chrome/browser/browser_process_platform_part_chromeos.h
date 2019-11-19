@@ -12,13 +12,17 @@
 #include "base/macros.h"
 #include "base/sequence_checker.h"
 #include "chrome/browser/browser_process_platform_part_base.h"
+#include "components/keyed_service/core/keyed_service_shutdown_notifier.h"
 
 class BrowserProcessPlatformPartTestApi;
+class Profile;
 
 namespace chromeos {
 class AccountManagerFactory;
 class ChromeSessionManager;
 class ChromeUserManager;
+class KerberosCredentialsManager;
+class InSessionPasswordChangeManager;
 class ProfileHelper;
 class TimeZoneResolver;
 
@@ -37,10 +41,6 @@ class CrOSComponentManager;
 
 namespace policy {
 class BrowserPolicyConnectorChromeOS;
-}
-
-namespace ws {
-class InputDeviceControllerClient;
 }
 
 class ScopedKeepAlive;
@@ -64,6 +64,16 @@ class BrowserProcessPlatformPart : public BrowserProcessPlatformPartBase {
 
   void InitializeCrosComponentManager();
   void ShutdownCrosComponentManager();
+
+  // Initializes all services that need the primary profile. Gets called as soon
+  // as the primary profile is available, which implies that the primary user
+  // has logged in. The services are shut down automatically when the primary
+  // profile is destroyed.
+  // Use this for simple 'leaf-type' services with no or negligible inter-
+  // dependencies. If your service has more complex dependencies, consider using
+  // a BrowserContextKeyedService and restricting service creation to the
+  // primary profile.
+  void InitializePrimaryProfileServices(Profile* primary_profile);
 
   // Disable the offline interstitial easter egg if the device is enterprise
   // enrolled.
@@ -112,14 +122,19 @@ class BrowserProcessPlatformPart : public BrowserProcessPlatformPartBase {
   chromeos::system::SystemClock* GetSystemClock();
   void DestroySystemClock();
 
-  ws::InputDeviceControllerClient* GetInputDeviceControllerClient();
-
   chromeos::AccountManagerFactory* GetAccountManagerFactory();
+
+  chromeos::InSessionPasswordChangeManager*
+  in_session_password_change_manager() {
+    return in_session_password_change_manager_.get();
+  }
 
  private:
   friend class BrowserProcessPlatformPartTestApi;
 
   void CreateProfileHelper();
+
+  void ShutdownPrimaryProfileServices();
 
   std::unique_ptr<chromeos::ChromeSessionManager> session_manager_;
 
@@ -152,10 +167,14 @@ class BrowserProcessPlatformPart : public BrowserProcessPlatformPartBase {
 
   std::unique_ptr<chromeos::AccountManagerFactory> account_manager_factory_;
 
-#if defined(USE_OZONE)
-  std::unique_ptr<ws::InputDeviceControllerClient>
-      input_device_controller_client_;
-#endif
+  std::unique_ptr<chromeos::KerberosCredentialsManager>
+      kerberos_credentials_manager_;
+
+  std::unique_ptr<chromeos::InSessionPasswordChangeManager>
+      in_session_password_change_manager_;
+
+  std::unique_ptr<KeyedServiceShutdownNotifier::Subscription>
+      primary_profile_shutdown_subscription_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

@@ -52,8 +52,7 @@ PPB_Graphics3D_Impl::PPB_Graphics3D_Impl(PP_Instance instance)
       use_image_chromium_(
           !base::CommandLine::ForCurrentProcess()->HasSwitch(
               switches::kDisablePepper3DImageChromium) &&
-          base::FeatureList::IsEnabled(features::kPepper3DImageChromium)),
-      weak_ptr_factory_(this) {}
+          base::FeatureList::IsEnabled(features::kPepper3DImageChromium)) {}
 
 PPB_Graphics3D_Impl::~PPB_Graphics3D_Impl() {
   // Unset the client before the command_buffer_ is destroyed, similar to how
@@ -186,10 +185,9 @@ int32_t PPB_Graphics3D_Impl::DoSwapBuffers(const gpu::SyncToken& sync_token,
     if (use_image_chromium_)
       target = GL_TEXTURE_RECTANGLE_ARB;
 #endif
-    viz::TransferableResource resource =
-        viz::TransferableResource::MakeGLOverlay(taken_front_buffer_, GL_LINEAR,
-                                                 target, sync_token, size,
-                                                 is_overlay_candidate);
+    viz::TransferableResource resource = viz::TransferableResource::MakeGL(
+        taken_front_buffer_, GL_LINEAR, target, sync_token, size,
+        is_overlay_candidate);
     HostGlobals::Get()
         ->GetInstance(pp_instance())
         ->CommitTransferableResource(resource);

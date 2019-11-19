@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// https://github.com/inexorabletash/idle-detection
+// https://github.com/samuelgoto/idle-detection
 
 enum UserIdleState {
     "active",

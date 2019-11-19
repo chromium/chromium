@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-PASS secure/same-origin => secure/same-origin worker
-FAIL insecure/same-origin => secure/same-origin worker promise_test: Unhandled rejection with value: object "SecurityError: Failed to construct 'Worker': Script at 'http://web-platform.test:8444/upgrade-insecure-requests/support/redirect-cors.py?location=https%3A%2F%2Fweb-platform.test%3A8444%2Fupgrade-insecure-requests%2Fsupport%2Fworker.js' cannot be accessed from origin 'https://web-platform.test:8444'."
-PASS secure/same-origin => insecure/same-origin worker
-FAIL insecure/same-origin => insecure/same-origin worker promise_test: Unhandled rejection with value: object "SecurityError: Failed to construct 'Worker': Script at 'http://web-platform.test:8444/upgrade-insecure-requests/support/redirect-cors.py?location=http%3A%2F%2Fweb-platform.test%3A8444%2Fupgrade-insecure-requests%2Fsupport%2Fworker.js' cannot be accessed from origin 'https://web-platform.test:8444'."
-Harness: the test ran to completion.
-

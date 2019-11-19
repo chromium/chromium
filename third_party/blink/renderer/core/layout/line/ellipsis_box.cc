@@ -49,23 +49,19 @@ IntRect EllipsisBox::SelectionRect() const {
 }
 
 bool EllipsisBox::NodeAtPoint(HitTestResult& result,
-                              const HitTestLocation& location_in_container,
-                              const LayoutPoint& accumulated_offset,
+                              const HitTestLocation& hit_test_location,
+                              const PhysicalOffset& accumulated_offset,
                               LayoutUnit line_top,
                               LayoutUnit line_bottom) {
-  LayoutPoint adjusted_location = accumulated_offset + Location();
-
-  LayoutPoint box_origin = PhysicalLocation();
-  box_origin.MoveBy(accumulated_offset);
-  LayoutRect bounds_rect(box_origin, Size());
+  PhysicalOffset adjusted_location = accumulated_offset + PhysicalLocation();
+  PhysicalRect bounds_rect(adjusted_location, Size());
   if (VisibleToHitTestRequest(result.GetHitTestRequest()) &&
       bounds_rect.Intersects(
-          HitTestLocation::RectForPoint(location_in_container.Point()))) {
+          HitTestLocation::RectForPoint(hit_test_location.Point()))) {
     GetLineLayoutItem().UpdateHitTestResult(
-        result,
-        location_in_container.Point() - ToLayoutSize(adjusted_location));
+        result, hit_test_location.Point() - adjusted_location);
     if (result.AddNodeToListBasedTestResult(GetLineLayoutItem().GetNode(),
-                                            location_in_container,
+                                            hit_test_location,
                                             bounds_rect) == kStopHitTesting)
       return true;
   }

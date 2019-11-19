@@ -1,0 +1,48 @@
+This is a testharness.js-based test.
+PASS Test driver
+PASS Partial interface Navigator: original interface defined
+PASS Partial interface Navigator: member names are unique
+PASS Navigator interface: attribute clipboard
+PASS Navigator interface: navigator must inherit property "clipboard" with the proper type
+PASS ClipboardEvent interface: existence and properties of interface object
+PASS ClipboardEvent interface object length
+PASS ClipboardEvent interface object name
+PASS ClipboardEvent interface: existence and properties of interface prototype object
+PASS ClipboardEvent interface: existence and properties of interface prototype object's "constructor" property
+PASS ClipboardEvent interface: existence and properties of interface prototype object's @@unscopables property
+PASS ClipboardEvent interface: attribute clipboardData
+PASS ClipboardEvent must be primary interface of new ClipboardEvent("x")
+PASS Stringification of new ClipboardEvent("x")
+PASS ClipboardEvent interface: new ClipboardEvent("x") must inherit property "clipboardData" with the proper type
+PASS Clipboard interface: existence and properties of interface object
+PASS Clipboard interface object length
+PASS Clipboard interface object name
+PASS Clipboard interface: existence and properties of interface prototype object
+PASS Clipboard interface: existence and properties of interface prototype object's "constructor" property
+PASS Clipboard interface: existence and properties of interface prototype object's @@unscopables property
+PASS Clipboard interface: operation read()
+PASS Clipboard interface: operation readText()
+PASS Clipboard interface: operation write(ClipboardItems)
+PASS Clipboard interface: operation writeText(DOMString)
+PASS Clipboard must be primary interface of navigator.clipboard
+PASS Stringification of navigator.clipboard
+PASS Clipboard interface: navigator.clipboard must inherit property "read()" with the proper type
+PASS Clipboard interface: navigator.clipboard must inherit property "readText()" with the proper type
+PASS Clipboard interface: navigator.clipboard must inherit property "write(ClipboardItems)" with the proper type
+PASS Clipboard interface: calling write(ClipboardItems) on navigator.clipboard with too few arguments must throw TypeError
+PASS Clipboard interface: navigator.clipboard must inherit property "writeText(DOMString)" with the proper type
+PASS Clipboard interface: calling writeText(DOMString) on navigator.clipboard with too few arguments must throw TypeError
+PASS ClipboardItem interface: existence and properties of interface object
+PASS ClipboardItem interface object length
+PASS ClipboardItem interface object name
+PASS ClipboardItem interface: existence and properties of interface prototype object
+PASS ClipboardItem interface: existence and properties of interface prototype object's "constructor" property
+PASS ClipboardItem interface: existence and properties of interface prototype object's @@unscopables property
+FAIL ClipboardItem interface: operation createDelayed([object Object],[object Object], ClipboardItemOptions) assert_own_property: interface object missing static operation expected property "createDelayed" missing
+FAIL ClipboardItem interface: attribute presentationStyle assert_true: The prototype object must have a property "presentationStyle" expected true got false
+FAIL ClipboardItem interface: attribute lastModified assert_true: The prototype object must have a property "lastModified" expected true got false
+FAIL ClipboardItem interface: attribute delayed assert_true: The prototype object must have a property "delayed" expected true got false
+PASS ClipboardItem interface: attribute types
+PASS ClipboardItem interface: operation getType(DOMString)
+Harness: the test ran to completion.
+

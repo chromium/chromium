@@ -26,7 +26,6 @@
 #include "chrome/browser/engagement/site_engagement_score.h"
 #include "chrome/browser/engagement/site_engagement_service_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
@@ -77,7 +76,7 @@ class SiteEngagementChangeWaiter : public content_settings::Observer {
       const ContentSettingsPattern& secondary_pattern,
       ContentSettingsType content_type,
       const std::string& resource_identifier) override {
-    if (content_type == CONTENT_SETTINGS_TYPE_SITE_ENGAGEMENT)
+    if (content_type == ContentSettingsType::SITE_ENGAGEMENT)
       Proceed();
   }
 
@@ -226,7 +225,7 @@ class SiteEngagementServiceTest : public ChromeRenderViewHostTestHarness {
       const GURL& url) {
     double score = 0;
     base::RunLoop run_loop;
-    base::CreateSingleThreadTaskRunnerWithTraits({thread_id})
+    base::CreateSingleThreadTaskRunner({thread_id})
         ->PostTaskAndReply(
             FROM_HERE,
             base::BindOnce(&SiteEngagementServiceTest::CheckScoreFromSettings,
@@ -1083,10 +1082,10 @@ TEST_F(SiteEngagementServiceTest, NavigationAccumulation) {
                                              ui::PAGE_TRANSITION_AUTO_BOOKMARK);
   NavigateWithTransitionAndExpectHigherScore(
       service, url, ui::PAGE_TRANSITION_KEYWORD_GENERATED);
+  NavigateWithTransitionAndExpectHigherScore(service, url,
+                                             ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
 
   // Other transition types should not accumulate engagement.
-  NavigateWithTransitionAndExpectEqualScore(service, url,
-                                            ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
   NavigateWithTransitionAndExpectEqualScore(service, url,
                                             ui::PAGE_TRANSITION_LINK);
   NavigateWithTransitionAndExpectEqualScore(service, url,
@@ -1723,6 +1722,9 @@ TEST_F(SiteEngagementServiceTest, CleanupMovesScoreBackToRebase) {
 }
 
 TEST_F(SiteEngagementServiceTest, IncognitoEngagementService) {
+  base::Time current_day = GetReferenceTime();
+  clock_.SetNow(current_day);
+
   SiteEngagementService* service = SiteEngagementService::Get(profile());
   ASSERT_TRUE(service);
 
@@ -1734,8 +1736,8 @@ TEST_F(SiteEngagementServiceTest, IncognitoEngagementService) {
   service->AddPoints(url1, 1);
   service->AddPoints(url2, 2);
 
-  SiteEngagementService* incognito_service =
-      SiteEngagementService::Get(profile()->GetOffTheRecordProfile());
+  auto incognito_service = base::WrapUnique(
+      new SiteEngagementService(profile()->GetOffTheRecordProfile(), &clock_));
   EXPECT_EQ(1, incognito_service->GetScore(url1));
   EXPECT_EQ(2, incognito_service->GetScore(url2));
   EXPECT_EQ(0, incognito_service->GetScore(url3));
@@ -1756,6 +1758,16 @@ TEST_F(SiteEngagementServiceTest, IncognitoEngagementService) {
   service->AddPoints(url4, 2);
   EXPECT_EQ(2, incognito_service->GetScore(url4));
   EXPECT_EQ(2, service->GetScore(url4));
+
+  // Engagement should never become stale in incognito.
+  current_day += incognito_service->GetStalePeriod();
+  clock_.SetNow(current_day);
+  EXPECT_FALSE(incognito_service->IsLastEngagementStale());
+  current_day += incognito_service->GetStalePeriod();
+  clock_.SetNow(current_day);
+  EXPECT_FALSE(incognito_service->IsLastEngagementStale());
+
+  incognito_service->Shutdown();
 }
 
 TEST_F(SiteEngagementServiceTest, GetScoreFromSettings) {

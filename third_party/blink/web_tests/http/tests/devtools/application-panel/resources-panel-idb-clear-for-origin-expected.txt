@@ -1,0 +1,20 @@
+Validate IndexeddbModel clearForOrigin
+
+Create IndexedDB in main frame
+Database Length: 1
+Database Entries:
+  Security Origin:http://127.0.0.1:8000, Database Name:Database-main-frame
+**done**
+
+Removing bogus security origin...
+Database Length: 1
+Database Entries:
+  Security Origin:http://127.0.0.1:8000, Database Name:Database-main-frame
+**done**
+
+Removing http://127.0.0.1:8000 security origin...
+Database Length: 0
+Database Entries:
+**done**
+
+

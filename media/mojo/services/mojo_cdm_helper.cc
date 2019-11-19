@@ -10,13 +10,14 @@
 #include "media/mojo/services/mojo_cdm_allocator.h"
 #include "media/mojo/services/mojo_cdm_file_io.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/service_manager/public/cpp/connect.h"
 
 namespace media {
 
 MojoCdmHelper::MojoCdmHelper(
     service_manager::mojom::InterfaceProvider* interface_provider)
-    : interface_provider_(interface_provider), weak_factory_(this) {}
+    : interface_provider_(interface_provider) {}
 
 MojoCdmHelper::~MojoCdmHelper() = default;
 
@@ -29,7 +30,7 @@ cdm::FileIO* MojoCdmHelper::CreateCdmFileIO(cdm::FileIOClient* client) {
 
   // Pass a reference to CdmStorage so that MojoCdmFileIO can open a file.
   auto mojo_cdm_file_io =
-      std::make_unique<MojoCdmFileIO>(this, client, cdm_storage_ptr_.get());
+      std::make_unique<MojoCdmFileIO>(this, client, cdm_storage_remote_.get());
 
   cdm::FileIO* cdm_file_io = mojo_cdm_file_io.get();
   DVLOG(3) << __func__ << ": cdm_file_io = " << cdm_file_io;
@@ -38,24 +39,26 @@ cdm::FileIO* MojoCdmHelper::CreateCdmFileIO(cdm::FileIOClient* client) {
   return cdm_file_io;
 }
 
+#if BUILDFLAG(ENABLE_CDM_PROXY)
 cdm::CdmProxy* MojoCdmHelper::CreateCdmProxy(cdm::CdmProxyClient* client) {
   DVLOG(3) << __func__;
-
   if (cdm_proxy_) {
     DVLOG(1) << __func__ << ": Only one outstanding CdmProxy allowed.";
     return nullptr;
   }
 
-  mojom::CdmProxyPtr cdm_proxy_ptr;
-  service_manager::GetInterface<mojom::CdmProxy>(interface_provider_,
-                                                 &cdm_proxy_ptr);
-  cdm_proxy_ = std::make_unique<MojoCdmProxy>(std::move(cdm_proxy_ptr), client);
+  mojo::PendingRemote<mojom::CdmProxy> cdm_proxy_remote;
+  service_manager::GetInterface<mojom::CdmProxy>(
+      interface_provider_, cdm_proxy_remote.InitWithNewPipeAndPassReceiver());
+  cdm_proxy_ =
+      std::make_unique<MojoCdmProxy>(std::move(cdm_proxy_remote), client);
   return cdm_proxy_.get();
 }
 
 int MojoCdmHelper::GetCdmProxyCdmId() {
   return cdm_proxy_ ? cdm_proxy_->GetCdmId() : CdmContext::kInvalidCdmId;
 }
+#endif  // BUILDFLAG(ENABLE_CDM_PROXY)
 
 cdm::Buffer* MojoCdmHelper::CreateCdmBuffer(size_t capacity) {
   return GetAllocator()->CreateCdmBuffer(capacity);
@@ -69,7 +72,7 @@ void MojoCdmHelper::QueryStatus(QueryStatusCB callback) {
   QueryStatusCB scoped_callback = mojo::WrapCallbackWithDefaultInvokeIfNotRun(
       std::move(callback), false, 0, 0);
   ConnectToOutputProtection();
-  output_protection_ptr_->QueryStatus(std::move(scoped_callback));
+  output_protection_->QueryStatus(std::move(scoped_callback));
 }
 
 void MojoCdmHelper::EnableProtection(uint32_t desired_protection_mask,
@@ -77,8 +80,8 @@ void MojoCdmHelper::EnableProtection(uint32_t desired_protection_mask,
   EnableProtectionCB scoped_callback =
       mojo::WrapCallbackWithDefaultInvokeIfNotRun(std::move(callback), false);
   ConnectToOutputProtection();
-  output_protection_ptr_->EnableProtection(desired_protection_mask,
-                                           std::move(scoped_callback));
+  output_protection_->EnableProtection(desired_protection_mask,
+                                       std::move(scoped_callback));
 }
 
 void MojoCdmHelper::ChallengePlatform(const std::string& service_id,
@@ -88,15 +91,15 @@ void MojoCdmHelper::ChallengePlatform(const std::string& service_id,
       mojo::WrapCallbackWithDefaultInvokeIfNotRun(std::move(callback), false,
                                                   "", "", "");
   ConnectToPlatformVerification();
-  platform_verification_ptr_->ChallengePlatform(service_id, challenge,
-                                                std::move(scoped_callback));
+  platform_verification_->ChallengePlatform(service_id, challenge,
+                                            std::move(scoped_callback));
 }
 
 void MojoCdmHelper::GetStorageId(uint32_t version, StorageIdCB callback) {
   StorageIdCB scoped_callback = mojo::WrapCallbackWithDefaultInvokeIfNotRun(
       std::move(callback), version, std::vector<uint8_t>());
   ConnectToPlatformVerification();
-  platform_verification_ptr_->GetStorageId(version, std::move(scoped_callback));
+  platform_verification_->GetStorageId(version, std::move(scoped_callback));
 }
 
 void MojoCdmHelper::CloseCdmFileIO(MojoCdmFileIO* cdm_file_io) {
@@ -114,9 +117,9 @@ void MojoCdmHelper::ReportFileReadSize(int file_size_bytes) {
 }
 
 void MojoCdmHelper::ConnectToCdmStorage() {
-  if (!cdm_storage_ptr_) {
-    service_manager::GetInterface<mojom::CdmStorage>(interface_provider_,
-                                                     &cdm_storage_ptr_);
+  if (!cdm_storage_remote_) {
+    service_manager::GetInterface<mojom::CdmStorage>(
+        interface_provider_, cdm_storage_remote_.BindNewPipeAndPassReceiver());
   }
 }
 
@@ -127,16 +130,17 @@ CdmAllocator* MojoCdmHelper::GetAllocator() {
 }
 
 void MojoCdmHelper::ConnectToOutputProtection() {
-  if (!output_protection_ptr_) {
+  if (!output_protection_) {
     service_manager::GetInterface<mojom::OutputProtection>(
-        interface_provider_, &output_protection_ptr_);
+        interface_provider_, output_protection_.BindNewPipeAndPassReceiver());
   }
 }
 
 void MojoCdmHelper::ConnectToPlatformVerification() {
-  if (!platform_verification_ptr_) {
-    service_manager::GetInterface<mojom::PlatformVerification>(
-        interface_provider_, &platform_verification_ptr_);
+  if (!platform_verification_) {
+    interface_provider_->GetInterface(
+        mojom::PlatformVerification::Name_,
+        platform_verification_.BindNewPipeAndPassReceiver().PassPipe());
   }
 }
 

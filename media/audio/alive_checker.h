@@ -135,7 +135,7 @@ class MEDIA_EXPORT AliveChecker {
   // Used for getting suspend/resume notifications.
   std::unique_ptr<PowerObserverHelper> power_observer_;
 
-  base::WeakPtrFactory<AliveChecker> weak_factory_;
+  base::WeakPtrFactory<AliveChecker> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(AliveChecker);
 };

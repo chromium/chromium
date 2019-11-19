@@ -18,8 +18,7 @@
 #endif
 
 @interface NonModalAlertCoordinator () {
-  // Observer that updates the non-modal presentation for fullscreen events.
-  std::unique_ptr<FullscreenControllerObserver> _fullscreenObserver;
+  std::unique_ptr<FullscreenUIUpdater> _fullscreenUIUpdater;
 }
 // The non-modal presentation updater.
 @property(nonatomic, strong)
@@ -50,19 +49,14 @@
   FullscreenController* fullscreenController =
       FullscreenControllerFactory::GetInstance()->GetForBrowserState(
           self.browserState);
-  if (_fullscreenObserver) {
-    // Stop updating the old non-modal presentation controller.
-    fullscreenController->RemoveObserver(_fullscreenObserver.get());
-    _fullscreenObserver = nullptr;
-  }
+  _fullscreenUIUpdater = nullptr;
 
   _nonModalPresentationUpdater = nonModalPresentationUpdater;
 
   if (_nonModalPresentationUpdater) {
     // Create an updater for the new non-modal presentation controller.
-    _fullscreenObserver =
-        std::make_unique<FullscreenUIUpdater>(_nonModalPresentationUpdater);
-    fullscreenController->AddObserver(_fullscreenObserver.get());
+    _fullscreenUIUpdater = std::make_unique<FullscreenUIUpdater>(
+        fullscreenController, _nonModalPresentationUpdater);
     // Use the current viewport insets to set up the non-modal presentation.
     [_nonModalPresentationUpdater
         setUpNonModalPresentationWithViewportInsets:

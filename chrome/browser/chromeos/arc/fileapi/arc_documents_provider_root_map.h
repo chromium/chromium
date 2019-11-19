@@ -9,6 +9,7 @@
 #include <memory>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "base/files/file_path.h"
 #include "base/macros.h"
@@ -61,7 +62,10 @@ class ArcDocumentsProviderRootMap : public KeyedService {
   // Register a DocumentsProvider's Root to make the corresponding
   // ArcDocumentsProviderRoot instance available.
   void RegisterRoot(const std::string& authority,
-                    const std::string& root_document_id);
+                    const std::string& root_document_id,
+                    const std::string& root_id,
+                    bool read_only,
+                    const std::vector<std::string>& mime_types);
 
   // Unregister a DocumentsProvider's Root.
   void UnregisterRoot(const std::string& authority,

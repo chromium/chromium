@@ -40,7 +40,7 @@ class ContentMutation {
 
   // This will remove the first ContentOperation in |operations_list_| and
   // return it to caller.
-  ContentOperation TakeFristOperation();
+  ContentOperation TakeFirstOperation();
 
  private:
   std::list<ContentOperation> operations_list_;

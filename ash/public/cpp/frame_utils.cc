@@ -21,7 +21,7 @@ int FrameBorderNonClientHitTest(views::NonClientFrameView* view,
   gfx::Rect expanded_bounds = view->bounds();
   int outside_bounds = kResizeOutsideBoundsSize;
 
-  if (view->GetWidget()->GetNativeWindow()->env()->is_touch_down())
+  if (aura::Env::GetInstance()->is_touch_down())
     outside_bounds *= kResizeOutsideBoundsScaleForTouch;
   expanded_bounds.Inset(-outside_bounds, -outside_bounds);
 

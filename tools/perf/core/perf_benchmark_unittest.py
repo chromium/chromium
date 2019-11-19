@@ -8,6 +8,7 @@ import shutil
 import tempfile
 import unittest
 
+from telemetry.core import util
 from telemetry.internal.browser import browser_finder
 from telemetry.testing import options_for_unittests
 
@@ -126,6 +127,17 @@ class PerfBenchmarkTest(unittest.TestCase):
       self.assertNotIn(arg, options.browser_options.extra_browser_args)
 
   def testNoAdTaggingRuleset(self):
+    # This tests (badly) assumes that util.GetBuildDirectories() will always
+    # return a list of multiple directories, with Debug ordered before Release.
+    # This is not the case if CHROMIUM_OUTPUT_DIR is set or a build.ninja file
+    # exists in the current working directory - in those cases, only a single
+    # directory is returned. So, abort early if we only get back one directory.
+    num_dirs = 0
+    for _ in util.GetBuildDirectories(self._chrome_root):
+      num_dirs += 1
+    if num_dirs < 2:
+      return
+
     benchmark = perf_benchmark.PerfBenchmark()
     options = options_for_unittests.GetCopy()
 
@@ -193,6 +205,17 @@ class PerfBenchmarkTest(unittest.TestCase):
     # cause the benchmark to fail to find the ruleset because we only check
     # directories matching the browser_type.
     self._PopulateGenFiles(os.path.join(self._chrome_root, 'out', 'Debug'))
+
+    # This tests (badly) assumes that util.GetBuildDirectories() will always
+    # return a list of multiple directories, with Debug ordered before Release.
+    # This is not the case if CHROMIUM_OUTPUT_DIR is set or a build.ninja file
+    # exists in the current working directory - in those cases, only a single
+    # directory is returned. So, abort early if we only get back one directory.
+    num_dirs = 0
+    for _ in util.GetBuildDirectories(self._chrome_root):
+      num_dirs += 1
+    if num_dirs < 2:
+      return
 
     benchmark = perf_benchmark.PerfBenchmark()
     options = options_for_unittests.GetCopy()

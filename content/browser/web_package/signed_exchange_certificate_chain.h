@@ -13,6 +13,11 @@
 #include "base/strings/string_piece_forward.h"
 #include "content/browser/web_package/signed_exchange_consts.h"
 #include "content/common/content_export.h"
+#include "services/network/ignore_errors_cert_verifier.h"
+
+namespace base {
+class CommandLine;
+}  // namespace base
 
 namespace net {
 class X509Certificate;
@@ -27,6 +32,38 @@ class SignedExchangeDevToolsProxy;
 // https://wicg.github.io/webpackage/draft-yasskin-http-origin-signed-responses.html#cert-chain-format
 class CONTENT_EXPORT SignedExchangeCertificateChain {
  public:
+  // An utility class which holds a set of certificates whose errors should be
+  // ignored. It parses a comma-delimited list of base64-encoded SHA-256 SPKI
+  // fingerprints, and can query if a certificate is included in the set.
+  // CONTENT_EXPORT since it is used from the unit test.
+  class CONTENT_EXPORT IgnoreErrorsSPKIList {
+   public:
+    static bool ShouldIgnoreErrors(
+        scoped_refptr<net::X509Certificate> certificate);
+
+    explicit IgnoreErrorsSPKIList(const base::CommandLine& command_line);
+    ~IgnoreErrorsSPKIList();
+
+    // Used for tests to override the instance. Returns the old instance, which
+    // should be restored when the test's done.
+    static std::unique_ptr<IgnoreErrorsSPKIList> SetInstanceForTesting(
+        std::unique_ptr<IgnoreErrorsSPKIList> p);
+
+   private:
+    FRIEND_TEST_ALL_PREFIXES(SignedExchangeCertificateChainTest,
+                             IgnoreErrorsSPKIList);
+
+    static std::unique_ptr<IgnoreErrorsSPKIList>& GetInstance();
+
+    explicit IgnoreErrorsSPKIList(const std::string& spki_list);
+    void Parse(const std::string& spki_list);
+    bool ShouldIgnoreErrorsInternal(
+        scoped_refptr<net::X509Certificate> certificate);
+
+    network::IgnoreErrorsCertVerifier::SPKIHashSet hash_set_;
+    DISALLOW_COPY_AND_ASSIGN(IgnoreErrorsSPKIList);
+  };
+
   static std::unique_ptr<SignedExchangeCertificateChain> Parse(
       base::span<const uint8_t> cert_response_body,
       SignedExchangeDevToolsProxy* devtools_proxy);
@@ -41,6 +78,11 @@ class CONTENT_EXPORT SignedExchangeCertificateChain {
   const scoped_refptr<net::X509Certificate>& cert() const { return cert_; }
   const std::string& ocsp() const { return ocsp_; }
   const std::string& sct() const { return sct_; }
+
+  // Returns true if SPKI hash of |cert_| is included in the
+  // --ignore-certificate-errors-spki-list command line flag, and
+  // ContentBrowserClient::CanAcceptUntrustedExchangesIfNeeded() returns true.
+  bool ShouldIgnoreErrors() const;
 
  private:
   scoped_refptr<net::X509Certificate> cert_;

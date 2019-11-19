@@ -14,57 +14,68 @@ HostInfo::HostInfo(const HostInfo& other) = default;
 
 HostInfo::~HostInfo() = default;
 
-bool HostInfo::ParseHostInfo(const base::DictionaryValue& host_info) {
-  const base::ListValue* list_value = nullptr;
-
+bool HostInfo::ParseHostInfo(const base::Value& host_info) {
   // Add TokenUrlPatterns to HostInfo.
-  if (host_info.GetList("tokenUrlPatterns", &list_value)) {
-    if (!list_value->empty()) {
-      for (const auto& item : *list_value) {
-        std::string token_url_pattern;
-        if (!item.GetAsString(&token_url_pattern)) {
-          return false;
-        }
-        token_url_patterns.push_back(token_url_pattern);
+  const base::Value* list_value = host_info.FindListKey("tokenUrlPatterns");
+  if (list_value) {
+    for (const base::Value& item : list_value->GetList()) {
+      if (!item.is_string()) {
+        return false;
       }
+      token_url_patterns.push_back(item.GetString());
     }
   }
 
-  std::string response_status;
-  host_info.GetString("status", &response_status);
-  if (response_status == "ONLINE") {
+  const std::string* string_value;
+
+  string_value = host_info.FindStringKey("status");
+  if (string_value && *string_value == "ONLINE") {
     status = kHostStatusOnline;
-  } else if (response_status == "OFFLINE") {
+  } else if (string_value && *string_value == "OFFLINE") {
     status = kHostStatusOffline;
   } else {
-    LOG(ERROR) << "Response Status is " << response_status;
+    LOG(ERROR) << "Response Status is "
+               << (string_value ? *string_value : "<unset>");
     return false;
   }
 
-  if (!host_info.GetString("hostId", &host_id)) {
+  string_value = host_info.FindStringKey("hostId");
+  if (string_value) {
+    host_id = *string_value;
+  } else {
     LOG(ERROR) << "hostId was not found in host_info";
     return false;
   }
 
-  if (!host_info.GetString("hostName", &host_name)) {
+  string_value = host_info.FindStringKey("hostName");
+  if (string_value) {
+    host_name = *string_value;
+  } else {
     LOG(ERROR) << "hostName was not found in host_info";
     return false;
   }
 
-  if (!host_info.GetString("publicKey", &public_key)) {
+  string_value = host_info.FindStringKey("publicKey");
+  if (string_value) {
+    public_key = *string_value;
+  } else {
     LOG(ERROR) << "publicKey was not found for " << host_name;
     return false;
   }
 
   // If the host entry was created but the host was never online, then the jid
   // is never set.
-  if (!host_info.GetString("jabberId", &host_jid) &&
-      status == kHostStatusOnline) {
+  string_value = host_info.FindStringKey("jabberId");
+  if (string_value) {
+    host_jid = *string_value;
+  } else if (status == kHostStatusOnline) {
     LOG(ERROR) << host_name << " is online but is missing a jabberId";
     return false;
   }
 
-  host_info.GetString("hostOfflineReason", &offline_reason);
+  string_value = host_info.FindStringKey("hostOfflineReason");
+  if (string_value)
+    offline_reason = *string_value;
 
   return true;
 }

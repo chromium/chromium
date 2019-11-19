@@ -1,0 +1,18 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//mojo/public/tools/bindings/mojom.gni")
+
+if (is_win) {
+  source_set("features") {
+    sources = [
+      "quarantine_features_win.cc",
+      "quarantine_features_win.h",
+    ]
+
+    public_deps = [
+      "//base",
+    ]
+  }
+}

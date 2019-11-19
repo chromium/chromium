@@ -14,10 +14,19 @@ iframe {
 <div style='width:10px;height:2000px;background:white;position:absolute'></div>
 <iframe src='http://127.0.0.1:8000/navigation/resources/focus-shifting-frame-with-anchor.html' sandbox='allow-scripts'></iframe>
 <script>
+
 if (window.testRunner) {
   testRunner.waitUntilDone();
 }
+
 onload = function() {
+  if (window.eventSender) {
+    // Give the frame user gesture to make sure 'focus' API works.
+    const iframe = document.querySelector("iframe");
+    window.eventSender.mouseMoveTo(iframe.offsetLeft + 10, iframe.offsetTop + 10);
+    window.eventSender.mouseDown();
+    window.eventSender.mouseUp();
+  }
   requestAnimationFrame(function() {
     if (window.testRunner) {
       testRunner.notifyDone();

@@ -9,18 +9,20 @@ cycle time manageable. Other system health benchmarks should be using the same
 stories as memory ones, only with fewer actions (no memory dumping).
 """
 
+import collections
 import unittest
 
-from core import path_util
-from core import perf_benchmark
+from chrome_telemetry_build import chromium_config
 
-from telemetry import benchmark as benchmark_module
+from core import perf_benchmark
+from core import results_processor
+from core import testing
+
 from telemetry import decorators
-from telemetry.internal.browser import browser_finder
-from telemetry.testing import options_for_unittests
 from telemetry.testing import progress_reporter
 
 from py_utils import discover
+from py_utils import tempfile_ext
 
 from benchmarks import system_health
 
@@ -34,18 +36,34 @@ def GetSystemHealthBenchmarksToSmokeTest():
 
 
 _DISABLED_TESTS = frozenset({
-  # crbug.com/878390 - These stories are already covered by their 2018 versions
-  # and will later be removed.
+  # crbug.com/983326 - flaky.
+  'system_health.memory_desktop/browse_accessibility:media:youtube',
+
+  # crbug.com/878390 - These stories are already covered by their 2018 or
+  # 2019 versions and will later be removed.
   'system_health.memory_mobile/browse:tech:discourse_infinite_scroll',
+  'system_health.memory_mobile/browse:shopping:amazon',
   'system_health.memory_mobile/browse:social:facebook_infinite_scroll',
+  'system_health.memory_mobile/browse:social:instagram',
+  'system_health.memory_mobile/browse:news:reddit',
   'system_health.memory_mobile/browse:social:tumblr_infinite_scroll',
+  'system_health.memory_mobile/browse:social:twitter',
+  'system_health.memory_mobile/browse:tools:maps',
   'system_health.memory_mobile/browse:news:cnn',
+  'system_health.memory_mobile/browse:news:washingtonpost',
+  'system_health.memory_mobile/browse:media:youtube',
+  'system_health.memory_mobile/load:media:facebook_photos',
   'system_health.memory_mobile/load:news:cnn',
+  'system_health.memory_mobile/load:news:nytimes',
+  'system_health.memory_mobile/load:news:qq',
+  'system_health.memory_mobile/load:news:reddit',
+  'system_health.memory_mobile/load:news:washingtonpost',
   'system_health.memory_mobile/load:tools:stackoverflow',
   'system_health.memory_desktop/load_accessibility:shopping:amazon',
   'system_health.memory_desktop/browse_accessibility:tech:codesearch',
   'system_health.memory_desktop/load_accessibility:media:wikipedia',
   'system_health.memory_desktop/browse:tech:discourse_infinite_scroll',
+  'system_health.memory_desktop/browse:tools:maps',
   'system_health.memory_desktop/browse:social:facebook_infinite_scroll',
   'system_health.memory_desktop/browse:social:tumblr_infinite_scroll',
   'system_health.memory_desktop/browse:news:flipboard',
@@ -61,6 +79,8 @@ _DISABLED_TESTS = frozenset({
   'system_health.memory_desktop/browse:news:reddit',
   'system_health.memory_desktop/browse:media:tumblr',
   'system_health.memory_desktop/browse:social:twitter_infinite_scroll',
+  'system_health.memory_mobile/load:social:twitter',
+  'system_health.memory_desktop/load:social:vk',
 
   # crbug.com/637230
   'system_health.memory_desktop/browse:news:cnn',
@@ -87,6 +107,7 @@ _DISABLED_TESTS = frozenset({
   'system_health.memory_desktop/browse:media:youtube',
   'system_health.memory_desktop/browse:search:google_india',
   'system_health.memory_desktop/load:games:alphabetty',
+  'system_health.memory_desktop/load:games:bubbles',
   'system_health.memory_desktop/load:games:miniclip',
   'system_health.memory_desktop/load:games:spychase',
   'system_health.memory_desktop/load:media:flickr',
@@ -104,6 +125,7 @@ _DISABLED_TESTS = frozenset({
   'system_health.memory_desktop/load:tools:stackoverflow',
   'system_health.memory_mobile/load:media:soundcloud',
   # MOBILE:
+  'system_health.memory_mobile/load:games:bubbles',
   'system_health.memory_mobile/load:games:spychase',
   'system_health.memory_mobile/load:media:flickr',
   'system_health.memory_mobile/load:media:google_images',
@@ -137,10 +159,47 @@ _DISABLED_TESTS = frozenset({
 
   # crbug.com/937006
   'system_health.memory_mobile/browse:news:toi',
+
+  # crbug.com/978358
+  'system_health.memory_desktop/browse:news:flipboard:2018',
+
+  # crbug.com/1008001
+  'system_health.memory_desktop/browse:tools:sheets:2019',
+  'system_health.memory_desktop/browse:tools:maps:2019',
+
+  # crbug.com/1014661
+  'system_health.memory_desktop/browse:social:tumblr_infinite_scroll:2018'
+  'system_health.memory_desktop/browse:search:google_india:2018'
+
+  # The following tests are disabled because they are disabled on the perf
+  # waterfall (using tools/perf/expectations.config) on one platform or another.
+  # They may run fine on the CQ, but it isn't worth the bot time to run them.
+  # [
+  # crbug.com/799106
+  'system_health.memory_desktop/browse:media:flickr_infinite_scroll'
+  # crbug.com/836407
+  'system_health.memory_desktop/browse:tools:maps'
+  # crbug.com/924330
+  'system_health.memory_desktop/browse:media:pinterest:2018'
+  # crbug.com/899887
+  'system_health.memory_desktop/browse:social:facebook_infinite_scroll:2018'
+  # crbug.com/649392
+  'system_health.memory_desktop/play:media:google_play_music'
+  # crbug.com/934885
+  'system_health.memory_desktop/load_accessibility:media:wikipedia:2018'
+  # crbug.com/942952
+  'system_health.memory_desktop/browse:news:hackernews:2018',
+  # crbug.com/992436
+  'system_health.memory_desktop/browse:social:twitter:2018'
+  # ]
 })
 
 
-MAX_NUM_VALUES = 50000
+# We want to prevent benchmarks from accidentally trying to upload too much
+# data to the chrome perf dashboard. So the smoke tests below cap the max
+# number of values that each story tested would produce when running on the
+# waterfall.
+MAX_VALUES_PER_TEST_CASE = 1000
 
 
 def _GenerateSmokeTestCase(benchmark_class, story_to_smoke_test):
@@ -153,7 +212,6 @@ def _GenerateSmokeTestCase(benchmark_class, story_to_smoke_test):
   # failing, disable it by putting it into the _DISABLED_TESTS list above.
   @decorators.Disabled('chromeos')  # crbug.com/351114
   def RunTest(self):
-
     class SinglePageBenchmark(benchmark_class):  # pylint: disable=no-init
       def CreateStorySet(self, options):
         # pylint: disable=super-on-old-class
@@ -165,41 +223,33 @@ def _GenerateSmokeTestCase(benchmark_class, story_to_smoke_test):
         assert story_set.stories
         return story_set
 
-    options = GenerateBenchmarkOptions(benchmark_class)
+    with tempfile_ext.NamedTemporaryDirectory() as temp_dir:
+      # Set the benchmark's default arguments.
+      options = GenerateBenchmarkOptions(
+          output_dir=temp_dir,
+          benchmark_cls=SinglePageBenchmark)
+      simplified_test_name = self.id().replace(
+          'benchmarks.system_health_smoke_test.SystemHealthBenchmarkSmokeTest.',
+          '')
+      # Sanity check to ensure that that substring removal was effective.
+      assert len(simplified_test_name) < len(self.id())
 
-    # Prevent benchmarks from accidentally trying to upload too much data to the
-    # chromeperf dashboard. The number of values uploaded is equal to (the
-    # average number of values produced by a single story) * (1 + (the number of
-    # stories)). The "1 + " accounts for values summarized across all stories.
-    # We can approximate "the average number of values produced by a single
-    # story" as the number of values produced by the given story.
-    # pageset_repeat doesn't matter because values are summarized across
-    # repetitions before uploading.
-    story_set = benchmark_class().CreateStorySet(options)
-    SinglePageBenchmark.MAX_NUM_VALUES = MAX_NUM_VALUES / len(story_set.stories)
-
-    possible_browser = browser_finder.FindBrowser(options)
-    if possible_browser is None:
-      self.skipTest('Cannot find the browser to run the test.')
-
-
-    simplified_test_name = self.id().replace(
-        'benchmarks.system_health_smoke_test.SystemHealthBenchmarkSmokeTest.',
-        '')
-
-    # Sanity check to ensure that that substring removal was effective.
-    assert len(simplified_test_name) < len(self.id())
-
-    if (simplified_test_name in _DISABLED_TESTS and
-        not options.run_disabled_tests):
-      self.skipTest('Test is explicitly disabled')
-
-    single_page_benchmark = SinglePageBenchmark()
-    with open(path_util.GetExpectationsPath()) as fp:
-      single_page_benchmark.AugmentExpectationsWithParser(fp.read())
-
-    self.assertEqual(0, single_page_benchmark.Run(options),
-                     msg='Failed: %s' % benchmark_class)
+      if (simplified_test_name in _DISABLED_TESTS and
+          not options.run_disabled_tests):
+        self.skipTest('Test is explicitly disabled')
+      single_page_benchmark = SinglePageBenchmark()
+      return_code = single_page_benchmark.Run(options)
+      # TODO(crbug.com/1019139): Make 111 be the exit code that means
+      # "no stories were run.".
+      if return_code in (-1, 111):
+        self.skipTest('The benchmark was not run.')
+      self.assertEqual(
+          return_code, 0,
+          msg='Benchmark run failed: %s' % benchmark_class.Name())
+      return_code = results_processor.ProcessResults(options)
+      self.assertEqual(
+          return_code, 0,
+          msg='Result processing failed: %s' % benchmark_class.Name())
 
   # We attach the test method to SystemHealthBenchmarkSmokeTest dynamically
   # so that we can set the test method name to include
@@ -215,31 +265,20 @@ def _GenerateSmokeTestCase(benchmark_class, story_to_smoke_test):
   return SystemHealthBenchmarkSmokeTest(methodName=test_method_name)
 
 
-def GenerateBenchmarkOptions(benchmark_class):
-  # Set the benchmark's default arguments.
-  options = options_for_unittests.GetCopy()
-  options.output_formats = ['none']
-  parser = options.CreateParser()
-
-  # TODO(nednguyen): probably this logic of setting up the benchmark options
-  # parser & processing the options should be sharable with telemetry's
-  # core.
-  benchmark_class.AddCommandLineArgs(parser)
-  benchmark_module.AddCommandLineArgs(parser)
-  benchmark_class.SetArgumentDefaults(parser)
-  options.MergeDefaultValues(parser.get_default_values())
-
-  benchmark_class.ProcessCommandLineArgs(None, options)
-  benchmark_module.ProcessCommandLineArgs(None, options)
-  # Only measure a single story so that this test cycles reasonably quickly.
-  options.pageset_repeat = 1
+def GenerateBenchmarkOptions(output_dir, benchmark_cls):
+  options = testing.GetRunOptions(
+      output_dir=output_dir, benchmark_cls=benchmark_cls,
+      environment=chromium_config.GetDefaultChromiumConfig())
+  options.pageset_repeat = 1  # For smoke testing only run each page once.
+  options.output_formats = ['histograms']
+  options.max_values_per_test_case = MAX_VALUES_PER_TEST_CASE
 
   # Enable browser logging in the smoke test only. Hopefully, this will detect
   # all crashes and hence remove the need to enable logging in actual perf
   # benchmarks.
   options.browser_options.logging_verbosity = 'non-verbose'
-  options.target_platforms = benchmark_class.GetSupportedPlatformNames(
-      benchmark_class.SUPPORTED_PLATFORMS)
+  options.target_platforms = benchmark_cls.GetSupportedPlatformNames(
+      benchmark_cls.SUPPORTED_PLATFORMS)
   return options
 
 
@@ -251,7 +290,7 @@ def load_tests(loader, standard_tests, pattern):
   names_stories_to_smoke_tests = []
   for benchmark_class in benchmark_classes:
 
-    # HACK: these options should be derived from options_for_unittests which are
+    # HACK: these options should be derived from GetRunOptions which are
     # the resolved options from run_tests' arguments. However, options is only
     # parsed during test time which happens after load_tests are called.
     # Since none of our system health benchmarks creates stories based on
@@ -267,21 +306,65 @@ def load_tests(loader, standard_tests, pattern):
         story_names=story_names)
 
     for story_to_smoke_test in stories_set.stories:
+      # Per crbug.com/1019383 we don't have many device cycles to work with on
+      # Android, so let's just run the most important stories.
+      if (benchmark_class.Name() == 'system_health.memory_mobile' and
+          'health_check' not in story_to_smoke_test.tags):
+        continue
       suite.addTest(
           _GenerateSmokeTestCase(benchmark_class, story_to_smoke_test))
 
       names_stories_to_smoke_tests.append(
           benchmark_class.Name() + '/' + story_to_smoke_test.name)
 
-  for i, story_name in enumerate(names_stories_to_smoke_tests):
-    for j in xrange(i + 1, len(names_stories_to_smoke_tests)):
-      other_story_name = names_stories_to_smoke_tests[j]
-      if (other_story_name.startswith(story_name + ':') and
-          story_name not in _DISABLED_TESTS):
-        raise ValueError(
-            'Story %s is to be replaced by %s. Please put %s in '
-            '_DISABLED_TESTS list to save CQ capacity (see crbug.com/893615)). '
-            'You can use crbug.com/878390 for the disabling reference.' %
-            (repr(story_name), repr(other_story_name), repr(story_name)))
+  # The full story name should follow this convention: story_name[:version],
+  # where version is a year. Please refer to the link below for details:
+  # https://docs.google.com/document/d/134u_j_Lk2hLiDHYxK3NVdZM_sOtExrsExU-hiNFa1uw
+  # Raise exception for stories which have more than one version enabled.
+  multi_version_stories = find_multi_version_stories(
+      names_stories_to_smoke_tests, _DISABLED_TESTS)
+  if len(multi_version_stories):
+    msg = ''
+    for prefix, stories in multi_version_stories.items():
+      msg += prefix + ' : ' + ','.join(stories) + '\n'
+    raise ValueError(
+        'The stories below has multiple versions.'
+        'In order to save CQ capacity, we should only run the latest '
+        'version on CQ. Please put the legacy stories in _DISABLED_TESTS '
+        'list or remove them to save CQ capacity (see crbug.com/893615)). '
+        'You can use crbug.com/878390 for the disabling reference.'
+        '[StoryName] : [StoryVersion1],[StoryVersion2]...\n%s' % (msg))
 
   return suite
+
+
+def find_multi_version_stories(stories, disabled):
+  """Looks for stories with multiple versions enabled.
+
+  Args:
+    stories: list of strings, which are names of all the candidate stories.
+    disabled: frozenset of strings, which are names of stories which are
+      disabled.
+
+  Returns:
+    A dict mapping from a prefix string to a list of stories each of which
+    has the name with that prefix and has multiple versions enabled.
+  """
+  prefixes = collections.defaultdict(list)
+  for name in stories:
+    if name in disabled:
+      continue
+    lastColon = name.rfind(':')
+    if lastColon == -1:
+      prefix = name
+    else:
+      version = name[lastColon+1:]
+      if version.isdigit():
+        prefix = name[:lastColon]
+      else:
+        prefix = name
+    prefixes[prefix].append(name)
+  for prefix, stories in prefixes.items():
+    if len(stories) == 1:
+      prefixes.pop(prefix)
+  return prefixes

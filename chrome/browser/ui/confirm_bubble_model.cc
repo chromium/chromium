@@ -8,11 +8,9 @@
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 
-ConfirmBubbleModel::ConfirmBubbleModel() {
-}
+ConfirmBubbleModel::ConfirmBubbleModel() {}
 
-ConfirmBubbleModel::~ConfirmBubbleModel() {
-}
+ConfirmBubbleModel::~ConfirmBubbleModel() {}
 
 int ConfirmBubbleModel::GetButtons() const {
   return BUTTON_OK | BUTTON_CANCEL;
@@ -22,11 +20,9 @@ base::string16 ConfirmBubbleModel::GetButtonLabel(BubbleButton button) const {
   return l10n_util::GetStringUTF16((button == BUTTON_OK) ? IDS_OK : IDS_CANCEL);
 }
 
-void ConfirmBubbleModel::Accept() {
-}
+void ConfirmBubbleModel::Accept() {}
 
-void ConfirmBubbleModel::Cancel() {
-}
+void ConfirmBubbleModel::Cancel() {}
 
 base::string16 ConfirmBubbleModel::GetLinkText() const {
   return base::string16();

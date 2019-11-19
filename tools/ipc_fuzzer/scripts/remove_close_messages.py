@@ -8,6 +8,8 @@ for fuzzing - many found bugs are related to a renderer disappearing. So the
 fuzzer should be crafting random WidgetHostMsg_Close messages.
 """
 
+from __future__ import print_function
+
 import argparse
 import os
 import platform
@@ -49,7 +51,7 @@ def main():
 
   message_util_path = os.path.join(build_dir, message_util_binary)
   if not os.path.exists(message_util_path):
-    print 'ipc_message_util executable not found at ', message_util_path
+    print('ipc_message_util executable not found at ', message_util_path)
     return 1
 
   filter_command = [
@@ -65,7 +67,7 @@ def main():
   index = 0
   for testcase in testcase_list:
     index += 1
-    print '[%d/%d] Processing %s' % (index, testcase_count, testcase)
+    print('[%d/%d] Processing %s' % (index, testcase_count, testcase))
     testcase_path = os.path.join(parsed.testcase_dir, testcase)
     filtered_path = create_temp_file()
     filter_command[-2] = testcase_path

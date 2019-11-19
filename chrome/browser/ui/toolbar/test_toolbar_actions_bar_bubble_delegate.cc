@@ -43,7 +43,7 @@ class TestToolbarActionsBarBubbleDelegate::DelegateImpl
   }
   void OnBubbleClosed(CloseAction action) override {
     CHECK(!parent_->close_action_);
-    parent_->close_action_.reset(new CloseAction(action));
+    parent_->close_action_ = std::make_unique<CloseAction>(action);
   }
 
   TestToolbarActionsBarBubbleDelegate* parent_;

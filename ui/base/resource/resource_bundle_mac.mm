@@ -60,8 +60,8 @@ void ResourceBundle::LoadCommonResources() {
 }
 
 // static
-base::FilePath ResourceBundle::GetLocaleFilePath(const std::string& app_locale,
-                                                 bool test_file_exists) {
+base::FilePath ResourceBundle::GetLocaleFilePath(
+    const std::string& app_locale) {
   NSString* mac_locale = base::SysUTF8ToNSString(app_locale);
 
   // Mac OS X uses "_" instead of "-", so swap to get a Mac-style value.
@@ -84,7 +84,7 @@ base::FilePath ResourceBundle::GetLocaleFilePath(const std::string& app_locale,
   if (locale_file_path.empty() || !locale_file_path.IsAbsolute())
     return base::FilePath();
 
-  if (test_file_exists && !base::PathExists(locale_file_path))
+  if (!base::PathExists(locale_file_path))
     return base::FilePath();
 
   return locale_file_path;
@@ -139,7 +139,7 @@ gfx::Image& ResourceBundle::GetNativeImageNamed(int resource_id) {
 
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  auto inserted = images_.insert(std::make_pair(resource_id, image));
+  auto inserted = images_.emplace(resource_id, image);
   DCHECK(inserted.second);
   return inserted.first->second;
 }

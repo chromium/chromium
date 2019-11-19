@@ -14,27 +14,37 @@
 
 namespace {
 
-bool HandleTestFileRequestCallback(
-    const std::string& path,
-    const content::WebUIDataSource::GotDataCallback& callback) {
-  base::ScopedAllowBlockingForTesting allow_blocking;
+bool ShouldHandleTestFileRequestCallback(const std::string& path) {
   std::vector<std::string> url_substr =
       base::SplitString(path, "/", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
   if (url_substr.size() != 2 || url_substr[0] != "test")
     return false;
 
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  base::FilePath test_data_dir;
+  base::PathService::Get(chrome::DIR_TEST_DATA, &test_data_dir);
+  return base::PathExists(
+      test_data_dir.AppendASCII("webui").AppendASCII(url_substr[1]));
+}
+
+void HandleTestFileRequestCallback(
+    const std::string& path,
+    const content::WebUIDataSource::GotDataCallback& callback) {
+  DCHECK(ShouldHandleTestFileRequestCallback(path));
+  base::ScopedAllowBlockingForTesting allow_blocking;
+
+  std::vector<std::string> url_substr =
+      base::SplitString(path, "/", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
   std::string contents;
   base::FilePath test_data_dir;
   base::PathService::Get(chrome::DIR_TEST_DATA, &test_data_dir);
-  if (!base::ReadFileToString(
-          test_data_dir.AppendASCII("webui").AppendASCII(url_substr[1]),
-          &contents))
-    return false;
+  CHECK(base::ReadFileToString(
+      test_data_dir.AppendASCII("webui").AppendASCII(url_substr[1]),
+      &contents));
 
   base::RefCountedString* ref_contents = new base::RefCountedString();
   ref_contents->data() = contents;
   callback.Run(ref_contents);
-  return true;
 }
 
 }  // namespace
@@ -43,6 +53,11 @@ namespace test {
 
 content::WebUIDataSource::HandleRequestCallback GetTestFilesRequestFilter() {
   return base::Bind(&HandleTestFileRequestCallback);
+}
+
+content::WebUIDataSource::ShouldHandleRequestCallback
+GetTestShouldHandleRequest() {
+  return base::BindRepeating(&ShouldHandleTestFileRequestCallback);
 }
 
 }  // namespace test

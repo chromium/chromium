@@ -4,6 +4,7 @@
 
 #include "net/android/network_change_notifier_factory_android.h"
 
+#include "base/memory/ptr_util.h"
 #include "net/android/network_change_notifier_android.h"
 #include "net/android/network_change_notifier_delegate_android.h"
 
@@ -13,8 +14,9 @@ NetworkChangeNotifierFactoryAndroid::NetworkChangeNotifierFactoryAndroid() {}
 
 NetworkChangeNotifierFactoryAndroid::~NetworkChangeNotifierFactoryAndroid() {}
 
-NetworkChangeNotifier* NetworkChangeNotifierFactoryAndroid::CreateInstance() {
-  return new NetworkChangeNotifierAndroid(&delegate_);
+std::unique_ptr<NetworkChangeNotifier>
+NetworkChangeNotifierFactoryAndroid::CreateInstance() {
+  return base::WrapUnique(new NetworkChangeNotifierAndroid(&delegate_));
 }
 
 }  // namespace net

@@ -31,6 +31,7 @@ source_set("unit_tests") {
   deps = [
     ":timezone",
     "//base",
+    "//base/test:test_support",
     "//chromeos/geolocation",
     "//net",
     "//services/network:test_support",

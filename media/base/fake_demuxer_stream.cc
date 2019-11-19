@@ -66,17 +66,21 @@ void FakeDemuxerStream::Initialize() {
   next_read_num_ = 0;
 }
 
-void FakeDemuxerStream::Read(const ReadCB& read_cb) {
+void FakeDemuxerStream::Read(ReadCB read_cb) {
   DCHECK(task_runner_->BelongsToCurrentThread());
   DCHECK(!read_cb_);
 
-  read_cb_ = BindToCurrentLoop(read_cb);
+  read_cb_ = BindToCurrentLoop(std::move(read_cb));
 
   if (read_to_hold_ == next_read_num_)
     return;
 
   DCHECK(read_to_hold_ == -1 || read_to_hold_ > next_read_num_);
   DoRead();
+}
+
+bool FakeDemuxerStream::IsReadPending() const {
+  return !read_cb_.is_null();
 }
 
 AudioDecoderConfig FakeDemuxerStream::audio_decoder_config() {
@@ -134,7 +138,7 @@ void FakeDemuxerStream::Reset() {
   read_to_hold_ = -1;
 
   if (read_cb_)
-    std::move(read_cb_).Run(kAborted, NULL);
+    std::move(read_cb_).Run(kAborted, nullptr);
 }
 
 void FakeDemuxerStream::Error() {
@@ -157,10 +161,11 @@ void FakeDemuxerStream::SeekToEndOfStream() {
 void FakeDemuxerStream::UpdateVideoDecoderConfig() {
   const gfx::Rect kVisibleRect(kStartWidth, kStartHeight);
   video_decoder_config_.Initialize(
-      kCodecVP8, VIDEO_CODEC_PROFILE_UNKNOWN, PIXEL_FORMAT_I420,
-      VideoColorSpace(), VIDEO_ROTATION_0, next_coded_size_, kVisibleRect,
-      next_coded_size_, EmptyExtraData(),
-      is_encrypted_ ? AesCtrEncryptionScheme() : Unencrypted());
+      kCodecVP8, VIDEO_CODEC_PROFILE_UNKNOWN,
+      VideoDecoderConfig::AlphaMode::kIsOpaque, VideoColorSpace(),
+      kNoTransformation, next_coded_size_, kVisibleRect, next_coded_size_,
+      EmptyExtraData(),
+      is_encrypted_ ? EncryptionScheme::kCenc : EncryptionScheme::kUnencrypted);
   next_coded_size_.Enlarge(kWidthDelta, kHeightDelta);
 }
 
@@ -180,7 +185,7 @@ void FakeDemuxerStream::DoRead() {
     // Config change.
     num_buffers_left_in_current_config_ = num_buffers_in_one_config_;
     UpdateVideoDecoderConfig();
-    std::move(read_cb_).Run(kConfigChanged, NULL);
+    std::move(read_cb_).Run(kConfigChanged, nullptr);
     return;
   }
 

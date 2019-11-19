@@ -8,7 +8,7 @@
 #import "ios/web/public/test/web_js_test.h"
 #import "ios/web/public/test/web_test_with_web_state.h"
 #import "ios/web/public/test/web_view_interaction_test_util.h"
-#import "ios/web/public/web_state/web_state.h"
+#import "ios/web/public/web_state.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 
@@ -61,29 +61,29 @@ class SearchEngineJsTest : public web::WebJsTest<web::WebTestWithWebState> {
 
   void SetUp() override {
     WebTestWithWebState::SetUp();
-    web_state()->AddScriptCommandCallback(
+    subscription_ = web_state()->AddScriptCommandCallback(
         base::BindRepeating(&SearchEngineJsTest::OnMessageFromJavaScript,
                             base::Unretained(this)),
         kCommandPrefix);
   }
 
   void TearDown() override {
-    web_state()->RemoveScriptCommandCallback(kCommandPrefix);
     WebTestWithWebState::TearDown();
   }
 
-  bool OnMessageFromJavaScript(const base::DictionaryValue& message,
+  void OnMessageFromJavaScript(const base::DictionaryValue& message,
                                const GURL& page_url,
-                               bool has_user_gesture,
-                               bool form_in_main_frame,
+                               bool user_is_interacting,
                                web::WebFrame* sender_frame) {
     message_received_ = true;
     message_ = message.Clone();
-    return true;
   }
 
   base::Value message_;
   bool message_received_ = false;
+
+  // Subscription for JS message.
+  std::unique_ptr<web::WebState::ScriptCommandSubscription> subscription_;
 
   DISALLOW_COPY_AND_ASSIGN(SearchEngineJsTest);
 };

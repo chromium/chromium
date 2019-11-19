@@ -24,7 +24,7 @@ constexpr wchar_t kTestString2[] = L"456789";
 TEST(ScopedHStringTest, Init) {
   // ScopedHString requires WinRT core functions, which are not available in
   // older versions.
-  if (GetVersion() < VERSION_WIN8) {
+  if (GetVersion() < Version::WIN8) {
     EXPECT_FALSE(ScopedHString::ResolveCoreWinRTStringDelayload());
     return;
   }

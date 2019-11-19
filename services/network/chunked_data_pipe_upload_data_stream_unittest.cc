@@ -11,9 +11,9 @@
 
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/message_loop/message_loop.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/test/task_environment.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "mojo/public/cpp/system/data_pipe_utils.h"
 #include "net/base/completion_once_callback.h"
@@ -40,7 +40,7 @@ class ChunkedDataPipeUploadDataStreamTest : public testing::Test {
     chunked_data_pipe_getter_ = std::make_unique<TestChunkedDataPipeGetter>();
     chunked_upload_stream_ = std::make_unique<ChunkedDataPipeUploadDataStream>(
         base::MakeRefCounted<network::ResourceRequestBody>(),
-        chunked_data_pipe_getter_->GetDataPipeGetterPtr());
+        chunked_data_pipe_getter_->GetDataPipeGetterRemote());
     // Nothing interesting happens before Init, so always wait for it in the
     // test fixture.
     net::TestCompletionCallback callback;
@@ -55,7 +55,8 @@ class ChunkedDataPipeUploadDataStreamTest : public testing::Test {
   }
 
  protected:
-  base::MessageLoopForIO message_loop_;
+  base::test::SingleThreadTaskEnvironment task_environment_{
+      base::test::SingleThreadTaskEnvironment::MainThreadType::IO};
   std::unique_ptr<TestChunkedDataPipeGetter> chunked_data_pipe_getter_;
   std::unique_ptr<ChunkedDataPipeUploadDataStream> chunked_upload_stream_;
 
@@ -318,7 +319,7 @@ TEST_F(ChunkedDataPipeUploadDataStreamTest, GetSizeSucceedsBeforeInit) {
   chunked_data_pipe_getter_ = std::make_unique<TestChunkedDataPipeGetter>();
   chunked_upload_stream_ = std::make_unique<ChunkedDataPipeUploadDataStream>(
       base::MakeRefCounted<network::ResourceRequestBody>(),
-      chunked_data_pipe_getter_->GetDataPipeGetterPtr());
+      chunked_data_pipe_getter_->GetDataPipeGetterRemote());
   get_size_callback_ = chunked_data_pipe_getter_->WaitForGetSize();
   std::move(get_size_callback_).Run(net::OK, kData.size());
   // Wait for the ChunkedUploadStream to receive the size.
@@ -407,7 +408,7 @@ TEST_F(ChunkedDataPipeUploadDataStreamTest, GetSizeFailsBeforeInit) {
   chunked_data_pipe_getter_ = std::make_unique<TestChunkedDataPipeGetter>();
   chunked_upload_stream_ = std::make_unique<ChunkedDataPipeUploadDataStream>(
       base::MakeRefCounted<network::ResourceRequestBody>(),
-      chunked_data_pipe_getter_->GetDataPipeGetterPtr());
+      chunked_data_pipe_getter_->GetDataPipeGetterRemote());
   get_size_callback_ = chunked_data_pipe_getter_->WaitForGetSize();
   std::move(get_size_callback_).Run(net::ERR_ACCESS_DENIED, 0);
   // Wait for the ChunkedUploadStream to receive the size.
@@ -691,13 +692,14 @@ TEST_F(ChunkedDataPipeUploadDataStreamTest, ExtraBytes2) {
   EXPECT_FALSE(chunked_upload_stream_->IsEOF());
 
   // Start another read.
+  net::TestCompletionCallback callback2;
   ASSERT_EQ(net::ERR_IO_PENDING, chunked_upload_stream_->Read(
-                                     io_buffer.get(), 1, callback.callback()));
+                                     io_buffer.get(), 1, callback2.callback()));
 
   // Learn the size was only one byte. Read should complete, indicating the end
   // of the stream was reached.
   std::move(get_size_callback_).Run(net::OK, 1);
-  EXPECT_EQ(net::OK, callback.WaitForResult());
+  EXPECT_EQ(net::OK, callback2.WaitForResult());
   EXPECT_TRUE(chunked_upload_stream_->IsEOF());
 
   // More data is copied to the stream unexpectedly.  It should be ignored.
@@ -710,7 +712,7 @@ TEST_F(ChunkedDataPipeUploadDataStreamTest, ClosePipeGetterBeforeInit) {
   chunked_data_pipe_getter_ = std::make_unique<TestChunkedDataPipeGetter>();
   chunked_upload_stream_ = std::make_unique<ChunkedDataPipeUploadDataStream>(
       base::MakeRefCounted<network::ResourceRequestBody>(),
-      chunked_data_pipe_getter_->GetDataPipeGetterPtr());
+      chunked_data_pipe_getter_->GetDataPipeGetterRemote());
 
   // Destroy the DataPipeGetter pipe, which is the pipe used for
   // GetSizeCallback.
@@ -772,13 +774,18 @@ TEST_F(ChunkedDataPipeUploadDataStreamTest,
   // upload body should succeed once.
   EXPECT_EQ(kDataLen, callback.GetResult(result));
   EXPECT_TRUE(chunked_upload_stream_->IsEOF());
+
+  net::TestCompletionCallback callback2;
   EXPECT_EQ(0, chunked_upload_stream_->Read(io_buffer.get(), kDataLen,
-                                            callback.callback()));
+                                            callback2.callback()));
 
   // But trying again will result in failure.
   chunked_upload_stream_->Reset();
-  EXPECT_EQ(net::ERR_FAILED, chunked_upload_stream_->Init(
-                                 callback.callback(), net::NetLogWithSource()));
+
+  net::TestCompletionCallback callback3;
+  EXPECT_EQ(net::ERR_FAILED,
+            chunked_upload_stream_->Init(callback3.callback(),
+                                         net::NetLogWithSource()));
 }
 
 }  // namespace

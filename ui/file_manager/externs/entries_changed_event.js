@@ -2,14 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-/**
- * @constructor
- * @extends {Event}
- */
-var EntriesChangedEvent = function() {};
+class EntriesChangedEvent extends Event {
+  constructor() {
+    /** @type {util.EntryChangedKind} */
+    this.kind;
 
-/** @type {util.EntryChangedKind} */
-EntriesChangedEvent.prototype.kind;
-
-/** @type {Array<!Entry>} */
-EntriesChangedEvent.prototype.entries;
+    /** @type {Array<!Entry>} */
+    this.entries;
+  }
+}

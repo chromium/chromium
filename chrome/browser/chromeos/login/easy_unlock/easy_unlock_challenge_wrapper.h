@@ -68,7 +68,7 @@ class EasyUnlockChallengeWrapper {
   // Called when wrapping completes.
   WrappedChallengeCallback callback_;
 
-  base::WeakPtrFactory<EasyUnlockChallengeWrapper> weak_ptr_factory_;
+  base::WeakPtrFactory<EasyUnlockChallengeWrapper> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(EasyUnlockChallengeWrapper);
 };

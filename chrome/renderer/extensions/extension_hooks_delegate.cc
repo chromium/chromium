@@ -17,6 +17,7 @@
 #include "extensions/renderer/message_target.h"
 #include "extensions/renderer/messaging_util.h"
 #include "extensions/renderer/native_renderer_messaging_service.h"
+#include "extensions/renderer/runtime_hooks_delegate.h"
 #include "extensions/renderer/script_context.h"
 #include "gin/converter.h"
 #include "gin/dictionary.h"
@@ -77,8 +78,13 @@ void GetAliasedFeature(v8::Local<v8::Name> property_name,
   if (!has_property.IsJust() || !has_property.FromJust())
     return;
 
-  info.GetReturnValue().Set(
-      runtime_obj->Get(context, property_name).ToLocalChecked());
+  v8::Local<v8::Value> property_value;
+  // Try and grab the chrome.runtime version. It's possible this has been
+  // tampered with, so early-out if an exception is thrown.
+  if (!runtime_obj->Get(context, property_name).ToLocal(&property_value))
+    return;
+
+  info.GetReturnValue().Set(property_value);
 }
 
 // A helper method to throw a deprecation error on access.
@@ -141,16 +147,15 @@ RequestResult ExtensionHooksDelegate::HandleRequest(
                                                 arguments);
   }
 
-  std::string error;
-  std::vector<v8::Local<v8::Value>> parsed_arguments;
-  if (!signature->ParseArgumentsToV8(context, *arguments, refs,
-                                     &parsed_arguments, &error)) {
+  APISignature::V8ParseResult parse_result =
+      signature->ParseArgumentsToV8(context, *arguments, refs);
+  if (!parse_result.succeeded()) {
     RequestResult result(RequestResult::INVALID_INVOCATION);
-    result.error = std::move(error);
+    result.error = std::move(*parse_result.error);
     return result;
   }
 
-  return (this->*handler)(script_context, parsed_arguments);
+  return (this->*handler)(script_context, *parse_result.arguments);
 }
 
 void ExtensionHooksDelegate::InitializeTemplate(
@@ -234,17 +239,10 @@ RequestResult ExtensionHooksDelegate::HandleSendRequest(
 RequestResult ExtensionHooksDelegate::HandleGetURL(
     ScriptContext* script_context,
     const std::vector<v8::Local<v8::Value>>& arguments) {
-  DCHECK_EQ(1u, arguments.size());
-  DCHECK(arguments[0]->IsString());
-  DCHECK(script_context->extension());
-
-  std::string path = gin::V8ToString(script_context->isolate(), arguments[0]);
-
-  RequestResult result(RequestResult::HANDLED);
-  result.return_value =
-      gin::StringToV8(script_context->isolate(),
-                      script_context->extension()->GetResourceURL(path).spec());
-  return result;
+  // We call a static implementation here rather using an alias due to not being
+  // able to remove the extension.json GetURL entry, as it is used for generated
+  // documentation and api feature lists some other methods refer to.
+  return RuntimeHooksDelegate::GetURL(script_context, arguments);
 }
 
 APIBindingHooks::RequestResult ExtensionHooksDelegate::HandleGetViews(

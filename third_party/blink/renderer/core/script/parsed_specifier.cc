@@ -4,37 +4,91 @@
 
 #include "third_party/blink/renderer/core/script/parsed_specifier.h"
 
+#include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
+
 namespace blink {
 
+namespace {
+
+static const char kStdScheme[] = "std";
+
+constexpr char kBuiltinSpecifierPrefix[] = "@std/";
+
+}  // namespace
+
 // <specdef href="https://html.spec.whatwg.org/#resolve-a-module-specifier">
+// <specdef label="import-specifier"
+// href="https://wicg.github.io/import-maps/#parse-a-url-like-import-specifier">
+// This can return a kBare ParsedSpecifier for cases where the spec concepts
+// listed above should return failure/null. The users of ParsedSpecifier should
+// handle kBare cases properly, depending on contexts and whether import maps
+// are enabled.
 ParsedSpecifier ParsedSpecifier::Create(const String& specifier,
-                                        const KURL& base_url) {
+                                        const KURL& base_url,
+                                        bool support_builtin_modules) {
+  if (support_builtin_modules) {
+    // Not spec'ed: we support @std/foo specifiers as an alias of std:foo.
+    const StringView prefix(kBuiltinSpecifierPrefix);
+    if (specifier.StartsWith(prefix)) {
+      StringBuilder url_string;
+      url_string.Append(kStdScheme);
+      url_string.Append(":");
+      url_string.Append(specifier.Substring(prefix.length()));
+      KURL url(NullURL(), url_string.ToString());
+      if (url.IsValid())
+        return ParsedSpecifier(url);
+    }
+  }
+
   // <spec step="1">Apply the URL parser to specifier. If the result is not
   // failure, return the result.</spec>
+  //
+  // <spec label="import-specifier" step="2">Let url be the result of parsing
+  // specifier (with no base URL).</spec>
   KURL url(NullURL(), specifier);
-  if (url.IsValid())
+  if (url.IsValid()) {
+    // <spec label="import-specifier" step="4">If url’s scheme is either a fetch
+    // scheme or "std", then return url.</spec>
+    //
+    // TODO(hiroshige): This check is done in the callers of ParsedSpecifier.
     return ParsedSpecifier(url);
+  }
 
   // <spec step="2">If specifier does not start with the character U+002F
   // SOLIDUS (/), the two-character sequence U+002E FULL STOP, U+002F SOLIDUS
   // (./), or the three-character sequence U+002E FULL STOP, U+002E FULL STOP,
   // U+002F SOLIDUS (../), return failure.</spec>
+  //
+  // <spec label="import-specifier" step="1">If specifier starts with "/", "./",
+  // or "../", then:</spec>
   if (!specifier.StartsWith("/") && !specifier.StartsWith("./") &&
       !specifier.StartsWith("../")) {
     // Do not consider an empty specifier as a valid bare specifier.
+    //
+    // <spec
+    // href="https://wicg.github.io/import-maps/#normalize-a-specifier-key"
+    // step="1">If specifierKey is the empty string, then:</spec>
     if (specifier.IsEmpty())
       return ParsedSpecifier();
 
+    // <spec label="import-specifier" step="3">If url is failure, then return
+    // null.</spec>
     return ParsedSpecifier(specifier);
   }
 
   // <spec step="3">Return the result of applying the URL parser to specifier
   // with base URL as the base URL.</spec>
+  //
+  // <spec label="import-specifier" step="1.1">Let url be the result of parsing
+  // specifier with baseURL as the base URL.</spec>
   DCHECK(base_url.IsValid());
   KURL absolute_url(base_url, specifier);
+  // <spec label="import-specifier" step="1.3">Return url.</spec>
   if (absolute_url.IsValid())
     return ParsedSpecifier(absolute_url);
 
+  // <spec label="import-specifier" step="1.2">If url is failure, then return
+  // null.</spec>
   return ParsedSpecifier();
 }
 

@@ -1,9 +1,0 @@
-include_rules = [
-  "+content/public/android/java/src/org/chromium/content_public",
-]
-
-specific_include_rules = {
-  "NoTouchActivityTest\.java": [
-    "+components/safe_browsing",
-  ]
-}

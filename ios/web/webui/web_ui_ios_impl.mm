@@ -10,16 +10,21 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
+#include "ios/web/public/js_messaging/web_frame.h"
+#import "ios/web/public/web_client.h"
 #include "ios/web/public/webui/web_ui_ios_controller.h"
 #include "ios/web/public/webui/web_ui_ios_controller_factory.h"
 #include "ios/web/public/webui/web_ui_ios_message_handler.h"
-#import "ios/web/web_state/web_state_impl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
 using web::WebUIIOSController;
+
+namespace {
+const char kCommandPrefix[] = "webui";
+}
 
 namespace web {
 
@@ -40,8 +45,11 @@ base::string16 WebUIIOS::GetJavascriptCall(
          base::char16(')') + base::char16(';');
 }
 
-WebUIIOSImpl::WebUIIOSImpl(WebStateImpl* web_state) : web_state_(web_state) {
+WebUIIOSImpl::WebUIIOSImpl(WebState* web_state) : web_state_(web_state) {
   DCHECK(web_state);
+  subscription_ = web_state->AddScriptCommandCallback(
+      base::BindRepeating(&WebUIIOSImpl::OnJsMessage, base::Unretained(this)),
+      kCommandPrefix);
 }
 
 WebUIIOSImpl::~WebUIIOSImpl() {
@@ -92,6 +100,32 @@ void WebUIIOSImpl::RejectJavascriptCallback(const base::Value& callback_id,
 void WebUIIOSImpl::RegisterMessageCallback(const std::string& message,
                                            const MessageCallback& callback) {
   message_callbacks_.insert(std::make_pair(message, callback));
+}
+
+void WebUIIOSImpl::OnJsMessage(const base::DictionaryValue& message,
+                               const GURL& page_url,
+                               bool user_is_interacting,
+                               web::WebFrame* sender_frame) {
+  // Chrome message are only handled if sent from the main frame.
+  if (!sender_frame->IsMainFrame())
+    return;
+
+  web::URLVerificationTrustLevel trust_level =
+      web::URLVerificationTrustLevel::kNone;
+  const GURL current_url = web_state_->GetCurrentURL(&trust_level);
+  if (web::GetWebClient()->IsAppSpecificURL(current_url)) {
+    std::string message_content;
+    const base::ListValue* arguments = nullptr;
+    if (!message.GetString("message", &message_content)) {
+      DLOG(WARNING) << "JS message parameter not found: message";
+      return;
+    }
+    if (!message.GetList("arguments", &arguments)) {
+      DLOG(WARNING) << "JS message parameter not found: arguments";
+      return;
+    }
+    ProcessWebUIIOSMessage(current_url, message_content, *arguments);
+  }
 }
 
 void WebUIIOSImpl::ProcessWebUIIOSMessage(const GURL& source_url,

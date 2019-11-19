@@ -8,10 +8,10 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "components/dom_distiller/content/common/distiller_page_notifier_service.mojom.h"
+#include "components/dom_distiller/content/common/mojom/distiller_page_notifier_service.mojom.h"
 #include "components/dom_distiller/content/renderer/distiller_page_notifier_service_impl.h"
 #include "content/public/renderer/render_frame.h"
-#include "mojo/public/cpp/bindings/strong_binding.h"
+#include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/service_manager/public/cpp/binder_registry.h"
 #include "v8/include/v8.h"
 
@@ -19,12 +19,11 @@ namespace dom_distiller {
 
 DistillerJsRenderFrameObserver::DistillerJsRenderFrameObserver(
     content::RenderFrame* render_frame,
-    const int distiller_isolated_world_id,
+    const int32_t distiller_isolated_world_id,
     service_manager::BinderRegistry* registry)
     : RenderFrameObserver(render_frame),
       distiller_isolated_world_id_(distiller_isolated_world_id),
-      is_distiller_page_(false),
-      weak_factory_(this) {
+      is_distiller_page_(false) {
   registry->AddInterface(base::Bind(
       &DistillerJsRenderFrameObserver::CreateDistillerPageNotifierService,
       weak_factory_.GetWeakPtr()));
@@ -47,7 +46,7 @@ void DistillerJsRenderFrameObserver::DidFinishLoad() {
 
 void DistillerJsRenderFrameObserver::DidCreateScriptContext(
     v8::Local<v8::Context> context,
-    int world_id) {
+    int32_t world_id) {
   if (world_id != distiller_isolated_world_id_ || !is_distiller_page_) {
     return;
   }
@@ -58,12 +57,12 @@ void DistillerJsRenderFrameObserver::DidCreateScriptContext(
 }
 
 void DistillerJsRenderFrameObserver::CreateDistillerPageNotifierService(
-    mojom::DistillerPageNotifierServiceRequest request) {
+    mojo::PendingReceiver<mojom::DistillerPageNotifierService> receiver) {
   if (!load_active_)
     return;
-  mojo::MakeStrongBinding(
+  mojo::MakeSelfOwnedReceiver(
       std::make_unique<DistillerPageNotifierServiceImpl>(this),
-      std::move(request));
+      std::move(receiver));
 }
 
 void DistillerJsRenderFrameObserver::SetIsDistillerPage() {

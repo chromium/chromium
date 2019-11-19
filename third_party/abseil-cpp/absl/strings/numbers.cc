@@ -4,7 +4,7 @@
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//      http://www.apache.org/licenses/LICENSE-2.0
+//      https://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -54,7 +54,7 @@ bool SimpleAtof(absl::string_view str, float* out) {
     // not all non-whitespace characters consumed
     return false;
   }
-  // from_chars() with DR 3801's current wording will return max() on
+  // from_chars() with DR 3081's current wording will return max() on
   // overflow.  SimpleAtof returns infinity instead.
   if (result.ec == std::errc::result_out_of_range) {
     if (*out > 1.0) {
@@ -80,7 +80,7 @@ bool SimpleAtod(absl::string_view str, double* out) {
     // not all non-whitespace characters consumed
     return false;
   }
-  // from_chars() with DR 3801's current wording will return max() on
+  // from_chars() with DR 3081's current wording will return max() on
   // overflow.  SimpleAtod returns infinity instead.
   if (result.ec == std::errc::result_out_of_range) {
     if (*out > 1.0) {

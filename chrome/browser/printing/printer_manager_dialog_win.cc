@@ -12,6 +12,9 @@
 #include "base/path_service.h"
 #include "base/task/post_task.h"
 #include "base/threading/thread.h"
+#include "base/win/windows_version.h"
+#include "chrome/browser/platform_util.h"
+#include "url/gurl.h"
 
 namespace {
 
@@ -32,10 +35,15 @@ void OpenPrintersDialogCallback() {
 
 namespace printing {
 
-void PrinterManagerDialog::ShowPrinterManagerDialog() {
-  base::PostTaskWithTraits(
-      FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_BLOCKING},
-      base::BindOnce(OpenPrintersDialogCallback));
+void PrinterManagerDialog::ShowPrinterManagerDialog(Profile* profile) {
+  if (base::win::GetVersion() >= base::win::Version::WIN10_RS1) {
+    platform_util::OpenExternal(profile, GURL("ms-settings:printers"));
+  } else {
+    base::PostTask(FROM_HERE,
+                   {base::ThreadPool(), base::MayBlock(),
+                    base::TaskPriority::USER_BLOCKING},
+                   base::BindOnce(OpenPrintersDialogCallback));
+  }
 }
 
 }  // namespace printing

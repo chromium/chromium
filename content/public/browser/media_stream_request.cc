@@ -15,8 +15,8 @@ MediaStreamRequest::MediaStreamRequest(
     blink::MediaStreamRequestType request_type,
     const std::string& requested_audio_device_id,
     const std::string& requested_video_device_id,
-    blink::MediaStreamType audio_type,
-    blink::MediaStreamType video_type,
+    blink::mojom::MediaStreamType audio_type,
+    blink::mojom::MediaStreamType video_type,
     bool disable_local_echo)
     : render_process_id(render_process_id),
       render_frame_id(render_frame_id),

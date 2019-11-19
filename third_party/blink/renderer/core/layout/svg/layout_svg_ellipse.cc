@@ -133,7 +133,7 @@ bool LayoutSVGEllipse::ShapeDependentFillContains(
 
 bool LayoutSVGEllipse::HasContinuousStroke() const {
   const SVGComputedStyle& svg_style = StyleRef().SvgStyle();
-  return svg_style.StrokeDashArray()->IsEmpty();
+  return svg_style.StrokeDashArray()->data.IsEmpty();
 }
 
 }  // namespace blink

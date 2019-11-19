@@ -4,11 +4,11 @@
 
 #include "base/strings/stringprintf.h"
 #import "ios/chrome/browser/ui/tab_grid/tab_grid_constants.h"
-#import "ios/chrome/browser/ui/tab_grid/tab_grid_egtest_util.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
+#import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ios/web/public/test/http_server/http_server.h"
 #import "ios/web/public/test/http_server/http_server_util.h"
 
@@ -36,9 +36,22 @@ char kResponse3[] = "Test Page 3 content";
 
 @implementation TabGridTestCase
 
+#if defined(CHROME_EARL_GREY_2)
++ (void)setUpForTestCase {
+  [super setUpForTestCase];
+  [self setUpHelper];
+}
+#elif defined(CHROME_EARL_GREY_1)
 // Set up called once for the class.
 + (void)setUp {
   [super setUp];
+  [self setUpHelper];
+}
+#else
+#error Not an EarlGrey Test
+#endif
+
++ (void)setUpHelper {
   std::map<GURL, std::string> responses;
   const char kPageFormat[] = "<head><title>%s</title></head><body>%s</body>";
   responses[web::test::HttpServer::MakeUrl(kURL1)] =
@@ -141,13 +154,13 @@ char kResponse3[] = "Test Page 3 content";
 
 - (void)loadTestURLs {
   [ChromeEarlGrey loadURL:_URL1];
-  [ChromeEarlGrey waitForWebViewContainingText:kResponse1];
+  [ChromeEarlGrey waitForWebStateContainingText:kResponse1];
 
   [ChromeEarlGrey loadURL:_URL2];
-  [ChromeEarlGrey waitForWebViewContainingText:kResponse2];
+  [ChromeEarlGrey waitForWebStateContainingText:kResponse2];
 
   [ChromeEarlGrey loadURL:_URL3];
-  [ChromeEarlGrey waitForWebViewContainingText:kResponse3];
+  [ChromeEarlGrey waitForWebStateContainingText:kResponse3];
 }
 
 // Test that Clear Browsing Data can be successfully done from tab grid.
@@ -157,11 +170,12 @@ char kResponse3[] = "Test Page 3 content";
 
   [[EarlGrey selectElementWithMatcher:chrome_test_util::ShowTabsButton()]
       performAction:grey_tap()];
-  // Swipe over to Recent Tabs
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kTabGridScrollViewIdentifier)]
-      performAction:[GREYActions
-                        actionForSwipeFastInDirection:kGREYDirectionLeft]];
+
+  // Switch over to Recent Tabs.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kTabGridRemoteTabsPageButtonIdentifier)]
+      performAction:grey_tap()];
 
   // Tap on "Show History"
   // Undo is available after close all action.

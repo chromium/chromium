@@ -1,0 +1,45 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/polymer/polymer.gni")
+
+js_type_check("closure_compile") {
+  is_polymer3 = true
+  closure_flags = default_closure_args + [
+                    "js_module_root=../../chrome/browser/resources/chromeos/crostini_installer/",
+                    "js_module_root=./gen/chrome/browser/resources/chromeos/crostini_installer/",
+                  ]
+  deps = [
+    ":app",
+    ":browser_proxy",
+  ]
+}
+
+js_library("app") {
+  deps = [
+    ":browser_proxy",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/js:load_time_data.m",
+  ]
+}
+
+js_library("browser_proxy") {
+  deps = [
+    "//chrome/browser/ui/webui/chromeos/crostini_installer:mojo_bindings_js_library_for_compile",
+    "//ui/webui/resources/js:cr.m",
+  ]
+}
+
+polymer_modulizer("app") {
+  js_file = "app.js"
+  html_file = "app.html"
+  html_type = "v3-ready"
+}
+
+group("polymer3_elements") {
+  deps = [
+    ":app_module",
+  ]
+}

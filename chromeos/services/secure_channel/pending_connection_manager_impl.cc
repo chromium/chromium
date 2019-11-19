@@ -103,7 +103,7 @@ void PendingConnectionManagerImpl::HandleConnectionRequest(
 void PendingConnectionManagerImpl::OnConnectionAttemptSucceeded(
     const ConnectionDetails& connection_details,
     std::unique_ptr<AuthenticatedChannel> authenticated_channel) {
-  if (!base::ContainsKey(details_to_attempt_details_map_, connection_details)) {
+  if (!base::Contains(details_to_attempt_details_map_, connection_details)) {
     PA_LOG(ERROR) << "PendingConnectionManagerImpl::"
                   << "OnConnectionAttemptSucceeded(): Attempt succeeded, but "
                   << "there was no corresponding map entry. "
@@ -162,8 +162,8 @@ void PendingConnectionManagerImpl::HandleBleInitiatorRequest(
     ConnectionPriority connection_priority) {
   // If no ConnectionAttempt exists to this device in the initiator role, create
   // one.
-  if (!base::ContainsKey(id_pair_to_ble_initiator_connection_attempts_,
-                         connection_attempt_details.device_id_pair())) {
+  if (!base::Contains(id_pair_to_ble_initiator_connection_attempts_,
+                      connection_attempt_details.device_id_pair())) {
     id_pair_to_ble_initiator_connection_attempts_[connection_attempt_details
                                                       .device_id_pair()] =
         BleInitiatorConnectionAttempt::Factory::Get()->BuildInstance(
@@ -195,8 +195,8 @@ void PendingConnectionManagerImpl::HandleBleListenerRequest(
     ConnectionPriority connection_priority) {
   // If no ConnectionAttempt exists to this device in the listener role, create
   // one.
-  if (!base::ContainsKey(id_pair_to_ble_listener_connection_attempts_,
-                         connection_attempt_details.device_id_pair())) {
+  if (!base::Contains(id_pair_to_ble_listener_connection_attempts_,
+                      connection_attempt_details.device_id_pair())) {
     id_pair_to_ble_listener_connection_attempts_[connection_attempt_details
                                                      .device_id_pair()] =
         BleListenerConnectionAttempt::Factory::Get()->BuildInstance(

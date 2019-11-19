@@ -11,6 +11,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/optional.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
 #include "net/log/net_log.h"
@@ -37,8 +38,7 @@ TCPServerSocket::TCPServerSocket(
     : delegate_(delegate),
       socket_(std::move(server_socket)),
       backlog_(backlog),
-      traffic_annotation_(traffic_annotation),
-      weak_factory_(this) {}
+      traffic_annotation_(traffic_annotation) {}
 
 TCPServerSocket::~TCPServerSocket() {}
 
@@ -56,11 +56,13 @@ int TCPServerSocket::Listen(const net::IPEndPoint& local_addr,
   return net_error;
 }
 
-void TCPServerSocket::Accept(mojom::SocketObserverPtr observer,
-                             AcceptCallback callback) {
+void TCPServerSocket::Accept(
+    mojo::PendingRemote<mojom::SocketObserver> observer,
+    AcceptCallback callback) {
   if (pending_accepts_queue_.size() >= static_cast<size_t>(backlog_)) {
     std::move(callback).Run(net::ERR_INSUFFICIENT_RESOURCES, base::nullopt,
-                            nullptr, mojo::ScopedDataPipeConsumerHandle(),
+                            mojo::NullRemote(),
+                            mojo::ScopedDataPipeConsumerHandle(),
                             mojo::ScopedDataPipeProducerHandle());
     return;
   }
@@ -76,8 +78,9 @@ void TCPServerSocket::SetSocketForTest(
   socket_ = std::move(socket);
 }
 
-TCPServerSocket::PendingAccept::PendingAccept(AcceptCallback callback,
-                                              mojom::SocketObserverPtr observer)
+TCPServerSocket::PendingAccept::PendingAccept(
+    AcceptCallback callback,
+    mojo::PendingRemote<mojom::SocketObserver> observer)
     : callback(std::move(callback)), observer(std::move(observer)) {}
 
 TCPServerSocket::PendingAccept::~PendingAccept() {}
@@ -97,7 +100,7 @@ void TCPServerSocket::OnAcceptCompleted(int result) {
   if (result == net::OK) {
     mojo::DataPipe send_pipe;
     mojo::DataPipe receive_pipe;
-    mojom::TCPConnectedSocketPtr socket;
+    mojo::PendingRemote<mojom::TCPConnectedSocket> socket;
     auto connected_socket = std::make_unique<TCPConnectedSocket>(
         std::move(pending_accept->observer),
         base::WrapUnique(static_cast<net::TransportClientSocket*>(
@@ -105,14 +108,14 @@ void TCPServerSocket::OnAcceptCompleted(int result) {
         std::move(receive_pipe.producer_handle),
         std::move(send_pipe.consumer_handle), traffic_annotation_);
     delegate_->OnAccept(std::move(connected_socket),
-                        mojo::MakeRequest(&socket));
+                        socket.InitWithNewPipeAndPassReceiver());
     std::move(pending_accept->callback)
         .Run(result, peer_addr, std::move(socket),
              std::move(receive_pipe.consumer_handle),
              std::move(send_pipe.producer_handle));
   } else {
     std::move(pending_accept->callback)
-        .Run(result, base::nullopt, nullptr,
+        .Run(result, base::nullopt, mojo::NullRemote(),
              mojo::ScopedDataPipeConsumerHandle(),
              mojo::ScopedDataPipeProducerHandle());
   }

@@ -4,19 +4,19 @@
 
 /**
  * BackgroundComponents.
- * @constructor
- * @struct
  */
-function BackgroundComponents() {
-  /**
-   * @type {!Object<string>}
-   */
-  this.stringData;
+class BackgroundComponents {
+  constructor() {
+    /**
+     * @type {!Object<string>}
+     */
+    this.stringData;
 
-  /**
-   * @type {!VolumeManager}
-   */
-  this.volumeManager;
+    /**
+     * @type {!VolumeManager}
+     */
+    this.volumeManager;
+  }
 }
 
 /**

@@ -5,24 +5,6 @@
 var listenOnce = chrome.test.listenOnce;
 var listenForever = chrome.test.listenForever;
 
-function clobberJSON() {
-  JSON.parse = function() {
-    return "JSON.parse clobbered by extension.";
-  };
-
-  JSON.stringify = function() {
-    return "JSON.stringify clobbered by extension.";
-  };
-
-  Array.prototype.toJSON = function() {
-    return "Array.prototype.toJSON clobbered by extension.";
-  };
-
-  Object.prototype.toJSON = function() {
-    return "Object.prototype.toJSON clobbered by extension.";
-  };
-}
-
 // Keep track of the tab that we're running tests in, for simplicity.
 var testTab = null;
 
@@ -45,10 +27,6 @@ function compareSenders(expected, actual) {
 }
 
 chrome.test.getConfig(function(config) {
-  // We don't clobber JSON with native bindings. See https://crbug.com/792602.
-  if (!config.nativeCrxBindingsEnabled)
-    clobberJSON();
-
   chrome.test.runTests([
     function setupTestTab() {
       chrome.test.log("Creating tab...");
@@ -279,20 +257,16 @@ chrome.test.getConfig(function(config) {
     // Tests that a message which fails to serialize prints an error and
     // doesn't send (http://crbug.com/263077).
     function unserializableMessage() {
-      // Unserializable messages throw an error with native bindings, and only
-      // log a warning with JS bindings.
-      var expectThrow = config.nativeCrxBindingsEnabled;
       try {
         chrome.tabs.connect(testTab.id).postMessage(function() {
           // This shouldn't ever be called, so it's a bit pointless.
           chrome.test.fail();
         });
-        // Didn't crash.
-        chrome.test.assertFalse(expectThrow);
+        // The call above should have thrown an error.
+        chrome.test.fail();
       } catch (e) {
-        chrome.test.assertTrue(expectThrow);
+        chrome.test.succeed();
       }
-      chrome.test.succeed();
     },
 
     // Tests that reloading a child frame disconnects the port if it was the

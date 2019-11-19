@@ -14,11 +14,10 @@
 #include "ios/chrome/browser/chrome_url_constants.h"
 #include "ios/chrome/browser/ntp/features.h"
 #include "ios/chrome/browser/ntp/new_tab_page_tab_helper_delegate.h"
-#include "ios/chrome/browser/ui/ui_feature_flags.h"
-#import "ios/web/public/navigation_item.h"
-#import "ios/web/public/navigation_manager.h"
-#import "ios/web/public/web_state/navigation_context.h"
-#import "ios/web/public/web_state/web_state.h"
+#import "ios/web/public/navigation/navigation_context.h"
+#import "ios/web/public/navigation/navigation_item.h"
+#import "ios/web/public/navigation/navigation_manager.h"
+#import "ios/web/public/web_state.h"
 #include "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -55,13 +54,12 @@ NewTabPageTabHelper::NewTabPageTabHelper(
     id<NewTabPageTabHelperDelegate> delegate)
     : delegate_(delegate), web_state_(web_state) {
   DCHECK(delegate);
-  DCHECK(base::FeatureList::IsEnabled(kBrowserContainerContainsNTP));
 
   web_state->AddObserver(this);
 
   active_ = IsNTPURL(web_state->GetVisibleURL());
   if (active_) {
-    UpdatePendingItem();
+    UpdateItem(web_state_->GetNavigationManager()->GetPendingItem());
     [delegate_ newTabPageHelperDidChangeVisibility:this forWebState:web_state_];
 
     // If about://newtab is currently loading but has not yet committed, block
@@ -120,7 +118,7 @@ void NewTabPageTabHelper::DidStartNavigation(
     web::WebState* web_state,
     web::NavigationContext* navigation_context) {
   if (IsNTPURL(navigation_context->GetUrl())) {
-    UpdatePendingItem();
+    UpdateItem(web_state_->GetNavigationManager()->GetPendingItem());
   } else {
     SetActive(false);
   }
@@ -129,10 +127,13 @@ void NewTabPageTabHelper::DidStartNavigation(
 void NewTabPageTabHelper::DidFinishNavigation(
     web::WebState* web_state,
     web::NavigationContext* navigation_context) {
-  if (navigation_context->IsSameDocument()) {
+  web::NavigationItem* item =
+      web_state_->GetNavigationManager()->GetLastCommittedItem();
+  if (navigation_context->IsSameDocument() || !item) {
     return;
   }
 
+  UpdateItem(web_state_->GetNavigationManager()->GetLastCommittedItem());
   DisableIgnoreLoadRequests();
   SetActive(IsNTPURL(web_state->GetLastCommittedURL()));
 }
@@ -149,10 +150,8 @@ void NewTabPageTabHelper::SetActive(bool active) {
   }
 }
 
-void NewTabPageTabHelper::UpdatePendingItem() {
-  web::NavigationManager* manager = web_state_->GetNavigationManager();
-  web::NavigationItem* item = manager->GetPendingItem();
-  if (item) {
+void NewTabPageTabHelper::UpdateItem(web::NavigationItem* item) {
+  if (item && item->GetURL() == GURL(kChromeUIAboutNewTabURL)) {
     item->SetVirtualURL(GURL(kChromeUINewTabURL));
     item->SetTitle(l10n_util::GetStringUTF16(IDS_NEW_TAB_TITLE));
   }

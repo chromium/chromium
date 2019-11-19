@@ -49,5 +49,18 @@ public class SyncUserDataWiper {
 
         return promise;
     }
-}
 
+    /**
+     * Wipes the user's bookmarks and sync data if required.
+     * @param required Whether the promise the user's bookmarks and sync data should be wiped.
+     * @return A promise which will be fulfilled once the data is wiped if required is true, or
+     *         immediately otherwise.
+     */
+    public static Promise<Void> wipeSyncUserDataIfRequired(boolean required) {
+        if (required) {
+            return SyncUserDataWiper.wipeSyncUserData();
+        } else {
+            return Promise.fulfilled(null);
+        }
+    }
+}

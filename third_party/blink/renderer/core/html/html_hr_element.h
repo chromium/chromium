@@ -33,8 +33,6 @@ class HTMLHRElement final : public HTMLElement {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  DECLARE_NODE_FACTORY(HTMLHRElement);
-
   explicit HTMLHRElement(Document&);
 
   bool CanContainRangeEndPoint() const override { return HasChildren(); }

@@ -41,7 +41,7 @@ cr.define('ntp', function() {
    * @extends {HTMLDivElement}
    */
   function Tile(contents) {
-    const tile = cr.doc.createElement('div');
+    const tile = /** @type {!Tile} */ (document.createElement('div'));
     tile.__proto__ = Tile.prototype;
     tile.initialize(contents);
 
@@ -372,7 +372,7 @@ cr.define('ntp', function() {
    * @implements {cr.ui.DragWrapperDelegate}
    */
   function TilePage(gridValues) {
-    const el = cr.doc.createElement('div');
+    const el = /** @type {!TilePage} */ (document.createElement('div'));
     el.gridValues_ = gridValues;
     el.__proto__ = TilePage.prototype;
     el.initialize();

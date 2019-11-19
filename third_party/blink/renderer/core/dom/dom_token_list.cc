@@ -254,13 +254,21 @@ void DOMTokenList::UpdateWithTokenSet(const SpaceSplitString& token_set) {
   setValue(token_set.SerializeToString());
 }
 
+AtomicString DOMTokenList::value() const {
+  DCHECK_NE(attribute_name_, g_null_name)
+      << "The subclass of DOMTokenList should override value().";
+  return element_->getAttribute(attribute_name_);
+}
+
 void DOMTokenList::setValue(const AtomicString& value) {
+  DCHECK_NE(attribute_name_, g_null_name)
+      << "The subclass of DOMTokenList should override setValue().";
   element_->setAttribute(attribute_name_, value);
+  // setAttribute() will call DidUpdateAttributeValue().
 }
 
 void DOMTokenList::DidUpdateAttributeValue(const AtomicString& old_value,
                                            const AtomicString& new_value) {
-  value_ = new_value;
   if (is_in_update_step_)
     return;
   if (old_value != new_value)

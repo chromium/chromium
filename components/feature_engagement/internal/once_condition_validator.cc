@@ -4,8 +4,8 @@
 
 #include "components/feature_engagement/internal/once_condition_validator.h"
 
-#include "components/feature_engagement/internal/configuration.h"
 #include "components/feature_engagement/internal/event_model.h"
+#include "components/feature_engagement/public/configuration.h"
 
 namespace feature_engagement {
 

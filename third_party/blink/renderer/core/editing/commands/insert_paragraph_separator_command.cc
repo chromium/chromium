@@ -43,10 +43,9 @@
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/layout_text.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
 
 namespace blink {
-
-using namespace html_names;
 
 // When inserting a new line, we want to avoid nesting empty divs if we can.
 // Otherwise, when pasting, it's easy to have each new line be a div deeper than
@@ -102,7 +101,7 @@ void InsertParagraphSeparatorCommand::CalculateStyleBeforeInsertion(
     return;
 
   DCHECK(pos.IsNotNull());
-  style_ = EditingStyle::Create(pos);
+  style_ = MakeGarbageCollected<EditingStyle>(pos);
   style_->MergeTypingStyle(pos.GetDocument());
 }
 
@@ -111,11 +110,11 @@ void InsertParagraphSeparatorCommand::ApplyStyleAfterInsertion(
     EditingState* editing_state) {
   // Not only do we break out of header tags, but we also do not preserve the
   // typing style, in order to match other browsers.
-  if (original_enclosing_block->HasTagName(kH1Tag) ||
-      original_enclosing_block->HasTagName(kH2Tag) ||
-      original_enclosing_block->HasTagName(kH3Tag) ||
-      original_enclosing_block->HasTagName(kH4Tag) ||
-      original_enclosing_block->HasTagName(kH5Tag)) {
+  if (original_enclosing_block->HasTagName(html_names::kH1Tag) ||
+      original_enclosing_block->HasTagName(html_names::kH2Tag) ||
+      original_enclosing_block->HasTagName(html_names::kH3Tag) ||
+      original_enclosing_block->HasTagName(html_names::kH4Tag) ||
+      original_enclosing_block->HasTagName(html_names::kH5Tag)) {
     return;
   }
 
@@ -138,11 +137,11 @@ bool InsertParagraphSeparatorCommand::ShouldUseDefaultParagraphElement(
   if (!IsEndOfBlock(EndingVisibleSelection().VisibleStart()))
     return false;
 
-  return enclosing_block->HasTagName(kH1Tag) ||
-         enclosing_block->HasTagName(kH2Tag) ||
-         enclosing_block->HasTagName(kH3Tag) ||
-         enclosing_block->HasTagName(kH4Tag) ||
-         enclosing_block->HasTagName(kH5Tag);
+  return enclosing_block->HasTagName(html_names::kH1Tag) ||
+         enclosing_block->HasTagName(html_names::kH2Tag) ||
+         enclosing_block->HasTagName(html_names::kH3Tag) ||
+         enclosing_block->HasTagName(html_names::kH4Tag) ||
+         enclosing_block->HasTagName(html_names::kH5Tag);
 }
 
 void InsertParagraphSeparatorCommand::GetAncestorsInsideBlock(
@@ -170,7 +169,7 @@ Element* InsertParagraphSeparatorCommand::CloneHierarchyUnderNewBlock(
     Element& child = ancestors[i - 1]->CloneWithoutChildren();
     // It should always be okay to remove id from the cloned elements, since the
     // originals are not deleted.
-    child.removeAttribute(kIdAttr);
+    child.removeAttribute(html_names::kIdAttr);
     AppendNode(&child, parent, editing_state);
     if (editing_state->IsAborted())
       return nullptr;
@@ -194,7 +193,7 @@ void InsertParagraphSeparatorCommand::DoApply(EditingState* editing_state) {
 
   // Delete the current selection.
   if (EndingSelection().IsRange()) {
-    GetDocument().UpdateStyleAndLayoutIgnorePendingStylesheets();
+    GetDocument().UpdateStyleAndLayout();
     CalculateStyleBeforeInsertion(insertion_position);
     if (!DeleteSelection(editing_state, DeleteSelectionOptions::NormalDelete()))
       return;
@@ -204,7 +203,7 @@ void InsertParagraphSeparatorCommand::DoApply(EditingState* editing_state) {
     affinity = visble_selection_after_delete.Affinity();
   }
 
-  GetDocument().UpdateStyleAndLayoutIgnorePendingStylesheets();
+  GetDocument().UpdateStyleAndLayout();
 
   // FIXME: The parentAnchoredEquivalent conversion needs to be moved into
   // enclosingBlock.
@@ -212,9 +211,7 @@ void InsertParagraphSeparatorCommand::DoApply(EditingState* editing_state) {
       insertion_position.ParentAnchoredEquivalent().ComputeContainerNode());
   Node* list_child_node = EnclosingListChild(
       insertion_position.ParentAnchoredEquivalent().ComputeContainerNode());
-  HTMLElement* list_child = list_child_node && list_child_node->IsHTMLElement()
-                                ? ToHTMLElement(list_child_node)
-                                : nullptr;
+  auto* list_child = DynamicTo<HTMLElement>(list_child_node);
   Position canonical_pos =
       CreateVisiblePosition(insertion_position).DeepEquivalent();
   if (!start_block || !start_block->NonShadowBoundaryParentNode() ||
@@ -226,9 +223,10 @@ void InsertParagraphSeparatorCommand::DoApply(EditingState* editing_state) {
       || (!canonical_pos.IsNull() &&
           IsDisplayInsideTable(canonical_pos.AnchorNode())) ||
       (!canonical_pos.IsNull() &&
-       IsHTMLHRElement(*canonical_pos.AnchorNode()))) {
-    ApplyCommandToComposite(InsertLineBreakCommand::Create(GetDocument()),
-                            editing_state);
+       IsA<HTMLHRElement>(*canonical_pos.AnchorNode()))) {
+    ApplyCommandToComposite(
+        MakeGarbageCollected<InsertLineBreakCommand>(GetDocument()),
+        editing_state);
     return;
   }
 
@@ -251,10 +249,10 @@ void InsertParagraphSeparatorCommand::DoApply(EditingState* editing_state) {
     // |positionAvoidingSpecialElementBoundary()| creates new A element and
     // move to another place.
     list_child =
-        ToHTMLElement(EnclosingAnchorElement(original_insertion_position));
+        To<HTMLElement>(EnclosingAnchorElement(original_insertion_position));
   }
 
-  GetDocument().UpdateStyleAndLayoutIgnorePendingStylesheets();
+  GetDocument().UpdateStyleAndLayout();
   CalculateStyleBeforeInsertion(insertion_position);
 
   //---------------------------------------------------------------------
@@ -389,7 +387,7 @@ void InsertParagraphSeparatorCommand::DoApply(EditingState* editing_state) {
       ref_node = insertion_position.AnchorNode();
     }
 
-    GetDocument().UpdateStyleAndLayoutIgnorePendingStylesheets();
+    GetDocument().UpdateStyleAndLayout();
 
     // find ending selection position easily before inserting the paragraph
     insertion_position = MostForwardCaretPosition(insertion_position);
@@ -434,11 +432,11 @@ void InsertParagraphSeparatorCommand::DoApply(EditingState* editing_state) {
   // it if visiblePos is at the start of a paragraph so that the
   // content will move down a line.
   if (IsStartOfParagraph(visible_pos)) {
-    HTMLBRElement* br = HTMLBRElement::Create(GetDocument());
+    auto* br = MakeGarbageCollected<HTMLBRElement>(GetDocument());
     InsertNodeAt(br, insertion_position, editing_state);
     if (editing_state->IsAborted())
       return;
-    GetDocument().UpdateStyleAndLayoutIgnorePendingStylesheets();
+    GetDocument().UpdateStyleAndLayout();
 
     insertion_position = Position::InParentAfterNode(*br);
     visible_pos = CreateVisiblePosition(insertion_position);
@@ -487,31 +485,33 @@ void InsertParagraphSeparatorCommand::DoApply(EditingState* editing_state) {
   // FIXME: leadingCollapsibleWhitespacePosition is returning the position
   // before preserved newlines for positions after the preserved newline,
   // causing the newline to be turned into a nbsp.
-  if (leading_whitespace.IsNotNull() &&
-      leading_whitespace.AnchorNode()->IsTextNode()) {
-    Text* text_node = ToText(leading_whitespace.AnchorNode());
-    DCHECK(!text_node->GetLayoutObject() ||
-           text_node->GetLayoutObject()->Style()->CollapseWhiteSpace())
-        << text_node;
-    ReplaceTextInNode(text_node,
-                      leading_whitespace.ComputeOffsetInContainerNode(), 1,
-                      NonBreakingSpaceString());
-    GetDocument().UpdateStyleAndLayoutIgnorePendingStylesheets();
+  if (leading_whitespace.IsNotNull()) {
+    if (auto* text_node = DynamicTo<Text>(leading_whitespace.AnchorNode())) {
+      DCHECK(!text_node->GetLayoutObject() ||
+             text_node->GetLayoutObject()->Style()->CollapseWhiteSpace())
+          << text_node;
+      ReplaceTextInNode(text_node,
+                        leading_whitespace.ComputeOffsetInContainerNode(), 1,
+                        NonBreakingSpaceString());
+      GetDocument().UpdateStyleAndLayout();
+    }
   }
 
   // Split at pos if in the middle of a text node.
   Position position_after_split;
-  if (insertion_position.IsOffsetInAnchor() &&
-      insertion_position.ComputeContainerNode()->IsTextNode()) {
-    Text* text_node = ToText(insertion_position.ComputeContainerNode());
-    int text_offset = insertion_position.OffsetInContainerNode();
-    bool at_end = static_cast<unsigned>(text_offset) >= text_node->length();
-    if (text_offset > 0 && !at_end) {
-      SplitTextNode(text_node, text_offset);
-      GetDocument().UpdateStyleAndLayoutIgnorePendingStylesheets();
+  if (insertion_position.IsOffsetInAnchor()) {
+    if (auto* text_node =
+            DynamicTo<Text>(insertion_position.ComputeContainerNode())) {
+      int text_offset = insertion_position.OffsetInContainerNode();
+      bool at_end = static_cast<unsigned>(text_offset) >= text_node->length();
+      if (text_offset > 0 && !at_end) {
+        SplitTextNode(text_node, text_offset);
+        GetDocument().UpdateStyleAndLayout();
 
-      position_after_split = Position::FirstPositionInNode(*text_node);
-      insertion_position = Position(text_node->previousSibling(), text_offset);
+        position_after_split = Position::FirstPositionInNode(*text_node);
+        insertion_position =
+            Position(text_node->previousSibling(), text_offset);
+      }
     }
   }
 
@@ -534,7 +534,7 @@ void InsertParagraphSeparatorCommand::DoApply(EditingState* editing_state) {
   if (editing_state->IsAborted())
     return;
 
-  GetDocument().UpdateStyleAndLayoutIgnorePendingStylesheets();
+  GetDocument().UpdateStyleAndLayout();
   visible_pos = CreateVisiblePosition(insertion_position);
 
   // If the paragraph separator was inserted at the end of a paragraph, an empty
@@ -543,11 +543,11 @@ void InsertParagraphSeparatorCommand::DoApply(EditingState* editing_state) {
   // won't be one that will hold an empty line open, add a br.
   if (IsEndOfParagraph(visible_pos) &&
       !LineBreakExistsAtVisiblePosition(visible_pos)) {
-    AppendNode(HTMLBRElement::Create(GetDocument()), block_to_insert,
-               editing_state);
+    AppendNode(MakeGarbageCollected<HTMLBRElement>(GetDocument()),
+               block_to_insert, editing_state);
     if (editing_state->IsAborted())
       return;
-    GetDocument().UpdateStyleAndLayoutIgnorePendingStylesheets();
+    GetDocument().UpdateStyleAndLayout();
   }
 
   // Move the start node and the siblings of the start node.
@@ -565,7 +565,7 @@ void InsertParagraphSeparatorCommand::DoApply(EditingState* editing_state) {
       if (split_to)
         SplitTreeToNode(split_to, start_block);
 
-      GetDocument().UpdateStyleAndLayoutIgnorePendingStylesheets();
+      GetDocument().UpdateStyleAndLayout();
 
       for (n = start_block->firstChild(); n; n = n->nextSibling()) {
         VisiblePosition before_node_position = VisiblePosition::BeforeNode(*n);
@@ -584,7 +584,7 @@ void InsertParagraphSeparatorCommand::DoApply(EditingState* editing_state) {
 
   // Handle whitespace that occurs after the split
   if (position_after_split.IsNotNull()) {
-    GetDocument().UpdateStyleAndLayoutIgnorePendingStylesheets();
+    GetDocument().UpdateStyleAndLayout();
     if (!IsRenderedCharacter(position_after_split)) {
       // Clear out all whitespace and insert one non-breaking space
       DCHECK(!position_after_split.ComputeContainerNode()->GetLayoutObject() ||
@@ -594,9 +594,12 @@ void InsertParagraphSeparatorCommand::DoApply(EditingState* editing_state) {
                  ->CollapseWhiteSpace())
           << position_after_split;
       DeleteInsignificantTextDownstream(position_after_split);
-      if (position_after_split.AnchorNode()->IsTextNode())
-        InsertTextIntoNode(ToText(position_after_split.ComputeContainerNode()),
-                           0, NonBreakingSpaceString());
+      if (auto* is_text_node =
+              DynamicTo<Text>(position_after_split.AnchorNode())) {
+        InsertTextIntoNode(
+            To<Text>(position_after_split.ComputeContainerNode()), 0,
+            NonBreakingSpaceString());
+      }
     }
   }
 

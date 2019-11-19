@@ -17,11 +17,11 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/chromeos/login/screens/base_screen.h"
-#include "components/login/screens/screen_context.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "device/bluetooth/bluetooth_device.h"
 #include "device/bluetooth/bluetooth_discovery_session.h"
-#include "mojo/public/cpp/bindings/associated_binding.h"
+#include "mojo/public/cpp/bindings/associated_receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "services/device/public/mojom/input_service.mojom.h"
 
 namespace chromeos {
@@ -35,21 +35,11 @@ class HIDDetectionScreen : public BaseScreen,
                            public device::BluetoothDevice::PairingDelegate,
                            public device::mojom::InputDeviceManagerClient {
  public:
-  static const char kContextKeyKeyboardState[];
-  static const char kContextKeyMouseState[];
-  static const char kContextKeyNumKeysEnteredExpected[];
-  static const char kContextKeyNumKeysEnteredPinCode[];
-  static const char kContextKeyPinCode[];
-  static const char kContextKeyMouseDeviceName[];
-  static const char kContextKeyKeyboardDeviceName[];
-  static const char kContextKeyKeyboardLabel[];
-  static const char kContextKeyContinueButtonEnabled[];
-
   using InputDeviceInfoPtr = device::mojom::InputDeviceInfoPtr;
   using DeviceMap = std::map<std::string, InputDeviceInfoPtr>;
 
-  HIDDetectionScreen(BaseScreenDelegate* base_screen_delegate,
-                     HIDDetectionView* view);
+  HIDDetectionScreen(HIDDetectionView* view,
+                     const base::RepeatingClosure& exit_callback);
   ~HIDDetectionScreen() override;
 
   // Called when continue button was clicked.
@@ -198,19 +188,21 @@ class HIDDetectionScreen : public BaseScreen,
   void SendKeyboardDeviceNotification();
 
   // Helper method. Sets device name or placeholder if the name is empty.
-  void SetKeyboardDeviceName_(const std::string& name);
+  void SetKeyboardDeviceName(const std::string& name);
 
   scoped_refptr<device::BluetoothAdapter> GetAdapterForTesting();
   void SetAdapterInitialPoweredForTesting(bool powered);
 
   HIDDetectionView* view_;
+  base::RepeatingClosure exit_callback_;
 
   // Default bluetooth adapter, used for all operations.
   scoped_refptr<device::BluetoothAdapter> adapter_;
 
-  device::mojom::InputDeviceManagerPtr input_device_manager_;
+  mojo::Remote<device::mojom::InputDeviceManager> input_device_manager_;
 
-  mojo::AssociatedBinding<device::mojom::InputDeviceManagerClient> binding_;
+  mojo::AssociatedReceiver<device::mojom::InputDeviceManagerClient> receiver_{
+      this};
 
   // Save the connected input devices.
   DeviceMap devices_;
@@ -242,7 +234,7 @@ class HIDDetectionScreen : public BaseScreen,
 
   bool showing_ = false;
 
-  base::WeakPtrFactory<HIDDetectionScreen> weak_ptr_factory_;
+  base::WeakPtrFactory<HIDDetectionScreen> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(HIDDetectionScreen);
 };

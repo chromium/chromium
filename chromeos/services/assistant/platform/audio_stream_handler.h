@@ -11,7 +11,8 @@
 #include "chromeos/services/assistant/public/mojom/assistant_audio_decoder.mojom.h"
 #include "libassistant/shared/public/platform_audio_output.h"
 #include "mojo/public/cpp/bindings/associated_binding.h"
-#include "mojo/public/cpp/bindings/binding.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 namespace chromeos {
 namespace assistant {
@@ -74,9 +75,9 @@ class AudioStreamHandler : public mojom::AssistantAudioDecoderClient,
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   assistant_client::AudioOutput::Delegate* delegate_;
 
-  mojo::Binding<mojom::AssistantAudioDecoderClient> client_binding_;
+  mojo::Receiver<mojom::AssistantAudioDecoderClient> client_receiver_{this};
   std::unique_ptr<AudioMediaDataSource> media_data_source_;
-  mojom::AssistantAudioDecoderPtr audio_decoder_;
+  mojo::Remote<mojom::AssistantAudioDecoder> audio_decoder_;
 
   // True when there is more decoded data.
   bool no_more_data_ = false;

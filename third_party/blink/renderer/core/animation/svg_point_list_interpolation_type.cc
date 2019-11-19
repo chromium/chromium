@@ -5,10 +5,13 @@
 #include "third_party/blink/renderer/core/animation/svg_point_list_interpolation_type.h"
 
 #include <memory>
+#include <utility>
+
 #include "third_party/blink/renderer/core/animation/interpolation_environment.h"
 #include "third_party/blink/renderer/core/animation/string_keyframe.h"
 #include "third_party/blink/renderer/core/animation/underlying_length_checker.h"
 #include "third_party/blink/renderer/core/svg/svg_point_list.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
 
 namespace blink {
 
@@ -18,15 +21,14 @@ InterpolationValue SVGPointListInterpolationType::MaybeConvertNeutral(
   wtf_size_t underlying_length =
       UnderlyingLengthChecker::GetUnderlyingLength(underlying);
   conversion_checkers.push_back(
-      UnderlyingLengthChecker::Create(underlying_length));
+      std::make_unique<UnderlyingLengthChecker>(underlying_length));
 
   if (underlying_length == 0)
     return nullptr;
 
-  std::unique_ptr<InterpolableList> result =
-      InterpolableList::Create(underlying_length);
+  auto result = std::make_unique<InterpolableList>(underlying_length);
   for (wtf_size_t i = 0; i < underlying_length; i++)
-    result->Set(i, InterpolableNumber::Create(0));
+    result->Set(i, std::make_unique<InterpolableNumber>(0));
   return InterpolationValue(std::move(result));
 }
 
@@ -36,12 +38,11 @@ InterpolationValue SVGPointListInterpolationType::MaybeConvertSVGValue(
     return nullptr;
 
   const SVGPointList& point_list = ToSVGPointList(svg_value);
-  std::unique_ptr<InterpolableList> result =
-      InterpolableList::Create(point_list.length() * 2);
+  auto result = std::make_unique<InterpolableList>(point_list.length() * 2);
   for (wtf_size_t i = 0; i < point_list.length(); i++) {
     const SVGPoint& point = *point_list.at(i);
-    result->Set(2 * i, InterpolableNumber::Create(point.X()));
-    result->Set(2 * i + 1, InterpolableNumber::Create(point.Y()));
+    result->Set(2 * i, std::make_unique<InterpolableNumber>(point.X()));
+    result->Set(2 * i + 1, std::make_unique<InterpolableNumber>(point.Y()));
   }
 
   return InterpolationValue(std::move(result));
@@ -79,7 +80,7 @@ void SVGPointListInterpolationType::Composite(
 SVGPropertyBase* SVGPointListInterpolationType::AppliedSVGValue(
     const InterpolableValue& interpolable_value,
     const NonInterpolableValue*) const {
-  SVGPointList* result = SVGPointList::Create();
+  auto* result = MakeGarbageCollected<SVGPointList>();
 
   const InterpolableList& list = ToInterpolableList(interpolable_value);
   DCHECK_EQ(list.length() % 2, 0U);
@@ -87,7 +88,7 @@ SVGPropertyBase* SVGPointListInterpolationType::AppliedSVGValue(
     FloatPoint point =
         FloatPoint(ToInterpolableNumber(list.Get(i))->Value(),
                    ToInterpolableNumber(list.Get(i + 1))->Value());
-    result->Append(SVGPoint::Create(point));
+    result->Append(MakeGarbageCollected<SVGPoint>(point));
   }
 
   return result;

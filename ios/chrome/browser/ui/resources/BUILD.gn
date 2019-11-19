@@ -4,46 +4,6 @@
 
 import("//build/config/ios/asset_catalog.gni")
 
-imageset("custom_row_voice_pressed") {
-  sources = [
-    "custom_row_voice_pressed.imageset/Contents.json",
-    "custom_row_voice_pressed.imageset/custom_row_voice_pressed.png",
-    "custom_row_voice_pressed.imageset/custom_row_voice_pressed@2x.png",
-    "custom_row_voice_pressed.imageset/custom_row_voice_pressed@2x~ipad.png",
-    "custom_row_voice_pressed.imageset/custom_row_voice_pressed@3x.png",
-    "custom_row_voice_pressed.imageset/custom_row_voice_pressed~ipad.png",
-  ]
-}
-
-imageset("keyboard_bg_portrait_tablet") {
-  sources = [
-    "keyboard_bg_portrait_tablet.imageset/Contents.json",
-    "keyboard_bg_portrait_tablet.imageset/keyboard_bg_portrait_tablet.png",
-  ]
-}
-
-imageset("custom_row_voice") {
-  sources = [
-    "custom_row_voice.imageset/Contents.json",
-    "custom_row_voice.imageset/custom_row_voice.png",
-    "custom_row_voice.imageset/custom_row_voice@2x.png",
-    "custom_row_voice.imageset/custom_row_voice@2x~ipad.png",
-    "custom_row_voice.imageset/custom_row_voice@3x.png",
-    "custom_row_voice.imageset/custom_row_voice~ipad.png",
-  ]
-}
-
-imageset("keyboard_button") {
-  sources = [
-    "keyboard_button.imageset/Contents.json",
-    "keyboard_button.imageset/keyboard_button.png",
-    "keyboard_button.imageset/keyboard_button@2x.png",
-    "keyboard_button.imageset/keyboard_button@2x~ipad.png",
-    "keyboard_button.imageset/keyboard_button@3x.png",
-    "keyboard_button.imageset/keyboard_button~ipad.png",
-  ]
-}
-
 imageset("menu_shadow") {
   sources = [
     "menu_shadow.imageset/Contents.json",

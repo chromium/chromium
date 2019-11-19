@@ -19,4 +19,13 @@ include_rules = [
   "+services/service_manager/public",
   "+services/service_manager/sandbox",
   "+third_party/boringssl/src/include",
+  "+url",
 ]
+
+specific_include_rules = {
+  # Some tests use a real proxy_resolver::ProxyResolverImpl.
+  "test_mojo_proxy_resolver_factory\.h": [
+    "+services/proxy_resolver/proxy_resolver_factory_impl.h",
+  ],
+}
+                                                                                

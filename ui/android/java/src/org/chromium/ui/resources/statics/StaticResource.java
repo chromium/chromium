@@ -20,7 +20,7 @@ import org.chromium.ui.resources.ResourceFactory;
  * this means a {@link Bitmap} and a potential {@link NinePatchData}.
  */
 public class StaticResource implements Resource {
-    private final Bitmap mBitmap;
+    private Bitmap mBitmap;
     private final NinePatchData mNinePatchData;
     private final Rect mBitmapSize;
 
@@ -42,7 +42,10 @@ public class StaticResource implements Resource {
 
     @Override
     public Bitmap getBitmap() {
-        return mBitmap;
+        assert mBitmap != null : "StaticResource#getBitmap can only be called once per lifecycle";
+        Bitmap bitmap = mBitmap;
+        mBitmap = null;
+        return bitmap;
     }
 
     @Override

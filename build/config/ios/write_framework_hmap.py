@@ -2,14 +2,17 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+from __future__ import print_function
+
 import os
 import struct
 import sys
 
 def Main(args):
   if len(args) < 4:
-    print >> sys.stderr, "Usage: %s output.hmap Foo.framework header1.h..." %\
-        (args[0])
+    print(
+        "Usage: %s output.hmap Foo.framework header1.h..." % args[0],
+        file=sys.stderr)
     return 1
 
   (out, framework, all_headers) = args[1], args[2], args[3:]

@@ -1,0 +1,37 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/ios/asset_catalog.gni")
+
+imageset("send_tab_to_self_devices") {
+  sources = [
+    "send_tab_to_self_devices.imageset/Contents.json",
+    "send_tab_to_self_devices.imageset/send_tab_to_self_devices_2x.png",
+    "send_tab_to_self_devices.imageset/send_tab_to_self_devices_3x.png",
+  ]
+}
+
+imageset("send_tab_to_self_laptop") {
+  sources = [
+    "send_tab_to_self_laptop.imageset/Contents.json",
+    "send_tab_to_self_laptop.imageset/send_tab_to_self_laptop_2x.png",
+    "send_tab_to_self_laptop.imageset/send_tab_to_self_laptop_3x.png",
+  ]
+}
+
+imageset("send_tab_to_self_smartphone") {
+  sources = [
+    "send_tab_to_self_smartphone.imageset/Contents.json",
+    "send_tab_to_self_smartphone.imageset/send_tab_to_self_smartphone_2x.png",
+    "send_tab_to_self_smartphone.imageset/send_tab_to_self_smartphone_3x.png",
+  ]
+}
+
+imageset("send_tab_to_self_tablet") {
+  sources = [
+    "send_tab_to_self_tablet.imageset/Contents.json",
+    "send_tab_to_self_tablet.imageset/send_tab_to_self_tablet_2x.png",
+    "send_tab_to_self_tablet.imageset/send_tab_to_self_tablet_3x.png",
+  ]
+}

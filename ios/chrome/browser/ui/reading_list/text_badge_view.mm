@@ -6,6 +6,7 @@
 
 #include "base/logging.h"
 #include "ios/chrome/browser/ui/util/ui_util.h"
+#import "ios/chrome/common/colors/semantic_color_names.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -60,10 +61,7 @@ const CGFloat kDefaultLabelHorizontalMargin = 8.5f;
     [self addSubview:self.label];
     self.didAddSubviews = YES;
     [self activateConstraints];
-    [self setBackgroundColor:[UIColor colorWithRed:0.101
-                                             green:0.45
-                                              blue:0.909
-                                             alpha:0.1]];
+    [self setBackgroundColor:[UIColor colorNamed:kBlueHaloColor]];
     [self setAccessibilityLabel:self.label.text];
   }
   [super willMoveToSuperview:newSuperview];
@@ -94,8 +92,7 @@ const CGFloat kDefaultLabelHorizontalMargin = 8.5f;
   UILabel* label = [[UILabel alloc] initWithFrame:CGRectZero];
   [label
       setFont:[UIFont systemFontOfSize:kFontSize weight:UIFontWeightSemibold]];
-  [label
-      setTextColor:[UIColor colorWithRed:0.101 green:0.45 blue:0.909 alpha:1]];
+  [label setTextColor:[UIColor colorNamed:kBlueColor]];
   [label setTranslatesAutoresizingMaskIntoConstraints:NO];
   [label setText:text];
   [label setTextAlignment:NSTextAlignmentCenter];

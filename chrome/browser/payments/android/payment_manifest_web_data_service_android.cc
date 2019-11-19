@@ -10,11 +10,11 @@
 #include "base/android/jni_string.h"
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
+#include "chrome/android/chrome_jni_headers/PaymentManifestWebDataService_jni.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/web_data_service_factory.h"
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/webdata/common/web_data_results.h"
-#include "jni/PaymentManifestWebDataService_jni.h"
 
 namespace payments {
 
@@ -148,12 +148,9 @@ void PaymentManifestWebDataServiceAndroid::AddPaymentWebAppManifest(
 
   std::vector<WebAppManifestSection> manifest;
 
-  jsize jcount_of_sections = env->GetArrayLength(jmanifest_sections.obj());
-  for (jsize i = 0; i < jcount_of_sections; i++) {
+  for (auto jsection : jmanifest_sections.ReadElements<jobject>()) {
     WebAppManifestSection section;
 
-    base::android::ScopedJavaLocalRef<jobject> jsection(
-        env, env->GetObjectArrayElement(jmanifest_sections.obj(), i));
     section.id = base::android::ConvertJavaStringToUTF8(
         Java_PaymentManifestWebDataService_getIdFromSection(env, jsection));
     section.min_version = static_cast<int64_t>(
@@ -163,13 +160,8 @@ void PaymentManifestWebDataServiceAndroid::AddPaymentWebAppManifest(
     base::android::ScopedJavaLocalRef<jobjectArray> jsection_fingerprints(
         Java_PaymentManifestWebDataService_getFingerprintsFromSection(
             env, jsection));
-    jsize jcount_of_fingerprints =
-        env->GetArrayLength(jsection_fingerprints.obj());
-    for (jsize j = 0; j < jcount_of_fingerprints; j++) {
+    for (auto jfingerprint : jsection_fingerprints.ReadElements<jbyteArray>()) {
       std::vector<uint8_t> fingerprint;
-      base::android::ScopedJavaLocalRef<jbyteArray> jfingerprint(
-          env, (jbyteArray)env->GetObjectArrayElement(
-                   jsection_fingerprints.obj(), j));
       base::android::JavaByteArrayToByteVector(env, jfingerprint, &fingerprint);
       section.fingerprints.emplace_back(fingerprint);
     }

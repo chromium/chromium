@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/scoped_observer.h"
+#include "components/history/core/browser/history_backend.h"
 #include "components/history/core/browser/history_backend_observer.h"
 #include "components/history/core/browser/sync/typed_url_sync_metadata_database.h"
 #include "components/sync/model/metadata_change_list.h"
@@ -23,7 +24,7 @@
 namespace history {
 
 class TypedURLSyncBridge : public syncer::ModelTypeSyncBridge,
-                           public history::HistoryBackendObserver {
+                           public HistoryBackendObserver {
  public:
   // |sync_metadata_store| is owned by |history_backend|, and must outlive
   // TypedURLSyncBridge.
@@ -48,7 +49,7 @@ class TypedURLSyncBridge : public syncer::ModelTypeSyncBridge,
   std::string GetStorageKey(const syncer::EntityData& entity_data) override;
   bool SupportsGetStorageKey() const override;
 
-  // history::HistoryBackendObserver:
+  // HistoryBackendObserver:
   void OnURLVisited(HistoryBackend* history_backend,
                     ui::PageTransition transition,
                     const URLRow& row,
@@ -259,7 +260,7 @@ class TypedURLSyncBridge : public syncer::ModelTypeSyncBridge,
   // Tracks observed history backend, for receiving updates from history
   // backend.
   ScopedObserver<HistoryBackend, HistoryBackendObserver>
-      history_backend_observer_;
+      history_backend_observer_{this};
 
   DISALLOW_COPY_AND_ASSIGN(TypedURLSyncBridge);
 };

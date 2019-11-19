@@ -10,6 +10,7 @@
 #include <algorithm>
 
 #include "base/strings/string_number_conversions.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/mojom/chunked_data_pipe_getter.mojom.h"
 #include "services/network/public/mojom/data_pipe_getter.mojom.h"
 
@@ -62,40 +63,45 @@ void DataElement::SetToBlobRange(const std::string& blob_uuid,
   length_ = length;
 }
 
-void DataElement::SetToDataPipe(mojom::DataPipeGetterPtr data_pipe_getter) {
+void DataElement::SetToDataPipe(
+    mojo::PendingRemote<mojom::DataPipeGetter> data_pipe_getter) {
   DCHECK(data_pipe_getter);
   type_ = mojom::DataElementType::kDataPipe;
-  data_pipe_getter_ = data_pipe_getter.PassInterface();
+  data_pipe_getter_ = std::move(data_pipe_getter);
 }
 
 void DataElement::SetToChunkedDataPipe(
-    mojom::ChunkedDataPipeGetterPtr chunked_data_pipe_getter) {
+    mojo::PendingRemote<mojom::ChunkedDataPipeGetter>
+        chunked_data_pipe_getter) {
   type_ = mojom::DataElementType::kChunkedDataPipe;
-  chunked_data_pipe_getter_ = chunked_data_pipe_getter.PassInterface();
+  chunked_data_pipe_getter_ = std::move(chunked_data_pipe_getter);
 }
 
 base::File DataElement::ReleaseFile() {
   return std::move(file_);
 }
 
-mojom::DataPipeGetterPtrInfo DataElement::ReleaseDataPipeGetter() {
+mojo::PendingRemote<mojom::DataPipeGetter>
+DataElement::ReleaseDataPipeGetter() {
   DCHECK_EQ(mojom::DataElementType::kDataPipe, type_);
   DCHECK(data_pipe_getter_.is_valid());
   return std::move(data_pipe_getter_);
 }
 
-mojom::DataPipeGetterPtr DataElement::CloneDataPipeGetter() const {
+mojo::PendingRemote<mojom::DataPipeGetter> DataElement::CloneDataPipeGetter()
+    const {
   DCHECK_EQ(mojom::DataElementType::kDataPipe, type_);
   DCHECK(data_pipe_getter_.is_valid());
   auto* mutable_this = const_cast<DataElement*>(this);
-  mojom::DataPipeGetterPtr owned(std::move(mutable_this->data_pipe_getter_));
-  mojom::DataPipeGetterPtr clone;
-  owned->Clone(MakeRequest(&clone));
-  mutable_this->data_pipe_getter_ = owned.PassInterface();
+  mojo::Remote<mojom::DataPipeGetter> owned(
+      std::move(mutable_this->data_pipe_getter_));
+  mojo::PendingRemote<mojom::DataPipeGetter> clone;
+  owned->Clone(clone.InitWithNewPipeAndPassReceiver());
+  mutable_this->data_pipe_getter_ = owned.Unbind();
   return clone;
 }
 
-mojom::ChunkedDataPipeGetterPtrInfo
+mojo::PendingRemote<mojom::ChunkedDataPipeGetter>
 DataElement::ReleaseChunkedDataPipeGetter() {
   DCHECK_EQ(mojom::DataElementType::kChunkedDataPipe, type_);
   return std::move(chunked_data_pipe_getter_);

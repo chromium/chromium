@@ -9,8 +9,8 @@
 #include <utility>
 #include <vector>
 
-#include "ash/public/cpp/menu_utils.h"
-#include "ash/public/interfaces/constants.mojom.h"
+#include "ash/public/cpp/app_list/app_list_controller.h"
+#include "ash/public/cpp/tablet_mode.h"
 #include "base/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -28,18 +28,16 @@
 #include "chrome/browser/ui/app_list/search/search_controller.h"
 #include "chrome/browser/ui/app_list/search/search_controller_factory.h"
 #include "chrome/browser/ui/app_list/search/search_resource_manager.h"
+#include "chrome/browser/ui/app_list/search/search_result_ranker/app_launch_data.h"
 #include "chrome/browser/ui/app_list/search/search_result_ranker/ranking_item_util.h"
 #include "chrome/browser/ui/ash/launcher/chrome_launcher_controller.h"
 #include "chrome/browser/ui/ash/launcher/chrome_launcher_controller_util.h"
-#include "chrome/browser/ui/ash/tablet_mode_client.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
-#include "content/public/common/service_manager_connection.h"
 #include "extensions/common/extension.h"
 #include "services/content/public/mojom/constants.mojom.h"
 #include "services/service_manager/public/cpp/connector.h"
-#include "ui/base/models/menu_model.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/display/types/display_constants.h"
@@ -50,23 +48,14 @@ namespace {
 AppListClientImpl* g_app_list_client_instance = nullptr;
 
 bool IsTabletMode() {
-  return TabletModeClient::Get() &&
-         TabletModeClient::Get()->tablet_mode_enabled();
+  return ash::TabletMode::Get() && ash::TabletMode::Get()->InTabletMode();
 }
 
 }  // namespace
 
 AppListClientImpl::AppListClientImpl()
-    : template_url_service_observer_(this),
-      binding_(this),
-      weak_ptr_factory_(this) {
-  // Bind this to the AppListController in Ash.
-  content::ServiceManagerConnection::GetForProcess()
-      ->GetConnector()
-      ->BindInterface(ash::mojom::kServiceName, &app_list_controller_);
-  ash::mojom::AppListClientPtr client;
-  binding_.Bind(mojo::MakeRequest(&client));
-  app_list_controller_->SetClient(std::move(client));
+    : app_list_controller_(ash::AppListController::Get()) {
+  app_list_controller_->SetClient(this);
   user_manager::UserManager::Get()->AddSessionStateObserver(this);
 
   DCHECK(!g_app_list_client_instance);
@@ -74,15 +63,28 @@ AppListClientImpl::AppListClientImpl()
 }
 
 AppListClientImpl::~AppListClientImpl() {
+  SetProfile(nullptr);
+
   user_manager::UserManager::Get()->RemoveSessionStateObserver(this);
 
   DCHECK_EQ(this, g_app_list_client_instance);
   g_app_list_client_instance = nullptr;
+
+  if (app_list_controller_)
+    app_list_controller_->SetClient(nullptr);
 }
 
 // static
 AppListClientImpl* AppListClientImpl::GetInstance() {
   return g_app_list_client_instance;
+}
+
+void AppListClientImpl::OnAppListControllerDestroyed() {
+  // |app_list_controller_| could be released earlier, e.g. starting a kiosk
+  // next session.
+  app_list_controller_ = nullptr;
+  if (current_model_updater_)
+    current_model_updater_->SetActive(false);
 }
 
 void AppListClientImpl::StartSearch(const base::string16& trimmed_query) {
@@ -93,25 +95,48 @@ void AppListClientImpl::StartSearch(const base::string16& trimmed_query) {
 }
 
 void AppListClientImpl::OpenSearchResult(const std::string& result_id,
-                                         int event_flags) {
+                                         int event_flags,
+                                         ash::AppListLaunchedFrom launched_from,
+                                         ash::AppListLaunchType launch_type,
+                                         int suggestion_index,
+                                         bool launch_as_default) {
   if (!search_controller_)
     return;
+
   ChromeSearchResult* result = search_controller_->FindSearchResult(result_id);
-  if (result) {
-    search_controller_->OpenResult(result, event_flags);
+  if (!result)
+    return;
 
-    // Send training signal to search controller.
-    search_controller_->Train(
-        result_id, app_list::RankingItemTypeFromSearchResult(*result));
+  app_list::AppLaunchData app_launch_data;
+  app_launch_data.id = result_id;
+  app_launch_data.ranking_item_type =
+      app_list::RankingItemTypeFromSearchResult(*result);
+  app_launch_data.launch_type = launch_type;
+  app_launch_data.launched_from = launched_from;
+
+  if (launch_type == ash::AppListLaunchType::kAppSearchResult &&
+      launched_from == ash::AppListLaunchedFrom::kLaunchedFromSearchBox &&
+      app_launch_data.ranking_item_type == app_list::RankingItemType::kApp &&
+      search_controller_->GetLastQueryLength() != 0) {
+    ash::RecordSuccessfulAppLaunchUsingSearch(
+        launched_from, search_controller_->GetLastQueryLength());
   }
-}
 
-void AppListClientImpl::LogSearchClick(
-    const std::string& result_id,
-    int suggestion_index,
-    ash::mojom::AppListLaunchedFrom launched_from) {
-  app_launch_event_logger_.OnSuggestionChipOrSearchBoxClicked(
-      result_id, suggestion_index, static_cast<int>(launched_from));
+  // Send training signal to search controller.
+  search_controller_->Train(std::move(app_launch_data));
+
+  RecordSearchResultOpenTypeHistogram(
+      launched_from, result->GetSearchResultType(), IsTabletMode());
+
+  if (launch_as_default)
+    RecordDefaultSearchResultOpenTypeHistogram(result->GetSearchResultType());
+
+  if (!search_controller_->GetLastQueryLength() &&
+      launched_from == ash::AppListLaunchedFrom::kLaunchedFromSearchBox)
+    RecordZeroStateSuggestionOpenTypeHistogram(result->GetSearchResultType());
+
+  // OpenResult may cause |result| to be deleted.
+  search_controller_->OpenResult(result, event_flags);
 }
 
 void AppListClientImpl::InvokeSearchResultAction(const std::string& result_id,
@@ -128,138 +153,146 @@ void AppListClientImpl::GetSearchResultContextMenuModel(
     const std::string& result_id,
     GetContextMenuModelCallback callback) {
   if (!search_controller_) {
-    std::move(callback).Run(std::vector<ash::mojom::MenuItemPtr>());
+    std::move(callback).Run(nullptr);
     return;
   }
   ChromeSearchResult* result = search_controller_->FindSearchResult(result_id);
   if (!result) {
-    std::move(callback).Run(std::vector<ash::mojom::MenuItemPtr>());
+    std::move(callback).Run(nullptr);
     return;
   }
   result->GetContextMenuModel(base::BindOnce(
       [](GetContextMenuModelCallback callback,
-         std::unique_ptr<ui::MenuModel> menu_model) {
-        std::move(callback).Run(
-            ash::menu_utils::GetMojoMenuItemsFromModel(menu_model.get()));
+         std::unique_ptr<ui::SimpleMenuModel> menu_model) {
+        std::move(callback).Run(std::move(menu_model));
       },
       std::move(callback)));
 }
 
-void AppListClientImpl::SearchResultContextMenuItemSelected(
-    const std::string& result_id,
-    int command_id,
-    int event_flags) {
-  if (!search_controller_)
-    return;
-  ChromeSearchResult* result = search_controller_->FindSearchResult(result_id);
-  if (!result)
-    return;
-  result->ContextMenuItemSelected(command_id, event_flags);
-}
-
 void AppListClientImpl::ViewClosing() {
   display_id_ = display::kInvalidDisplayId;
+  if (search_controller_)
+    search_controller_->ViewClosing();
 }
 
 void AppListClientImpl::ViewShown(int64_t display_id) {
-  if (model_updater_) {
+  if (current_model_updater_) {
     base::RecordAction(base::UserMetricsAction("Launcher_Show"));
     base::UmaHistogramSparse("Apps.AppListBadgedAppsCount",
-                             model_updater_->BadgedItemCount());
+                             current_model_updater_->BadgedItemCount());
   }
   display_id_ = display_id;
 }
 
-void AppListClientImpl::ActivateItem(const std::string& id, int event_flags) {
-  if (!model_updater_)
-    return;
-  model_updater_->ActivateChromeItem(id, event_flags);
+void AppListClientImpl::ActivateItem(int profile_id,
+                                     const std::string& id,
+                                     int event_flags) {
+  auto* requested_model_updater = profile_model_mappings_[profile_id];
 
-  // Send training signal to search controller.
-  const auto* item = model_updater_->FindItem(id);
-  if (item) {
-    search_controller_->Train(
-        id, app_list::RankingItemTypeFromChromeAppListItem(*item));
+  // Pointless to notify the AppListModelUpdater of the activated item if the
+  // |requested_model_updater| is not the current one, which means that the
+  // active profile is changed. The same rule applies to the GetContextMenuModel
+  // and ContextMenuItemSelected.
+  if (requested_model_updater != current_model_updater_ ||
+      !requested_model_updater) {
+    return;
   }
 
-  app_launch_event_logger_.OnGridClicked(id);
+  // Send a training signal to the search controller.
+  const auto* item = current_model_updater_->FindItem(id);
+  if (item) {
+    app_list::AppLaunchData app_launch_data;
+    app_launch_data.id = id;
+    app_launch_data.ranking_item_type =
+        app_list::RankingItemTypeFromChromeAppListItem(*item);
+    app_launch_data.launched_from = ash::AppListLaunchedFrom::kLaunchedFromGrid;
+    search_controller_->Train(std::move(app_launch_data));
+  }
+
+  requested_model_updater->ActivateChromeItem(id, event_flags);
 }
 
 void AppListClientImpl::GetContextMenuModel(
+    int profile_id,
     const std::string& id,
     GetContextMenuModelCallback callback) {
-  if (!model_updater_) {
-    std::move(callback).Run(std::vector<ash::mojom::MenuItemPtr>());
+  auto* requested_model_updater = profile_model_mappings_[profile_id];
+  if (requested_model_updater != current_model_updater_ ||
+      !requested_model_updater) {
+    std::move(callback).Run(nullptr);
     return;
   }
-  model_updater_->GetContextMenuModel(
-      id,
-      base::BindOnce(
-          [](GetContextMenuModelCallback callback,
-             std::unique_ptr<ui::MenuModel> menu_model) {
-            std::move(callback).Run(
-                ash::menu_utils::GetMojoMenuItemsFromModel(menu_model.get()));
-          },
-          std::move(callback)));
+  requested_model_updater->GetContextMenuModel(
+      id, base::BindOnce(
+              [](GetContextMenuModelCallback callback,
+                 std::unique_ptr<ui::SimpleMenuModel> menu_model) {
+                std::move(callback).Run(std::move(menu_model));
+              },
+              std::move(callback)));
 }
 
-void AppListClientImpl::ContextMenuItemSelected(const std::string& id,
-                                                int command_id,
-                                                int event_flags) {
-  if (!model_updater_)
-    return;
-  model_updater_->ContextMenuItemSelected(id, command_id, event_flags);
-}
-
-void AppListClientImpl::OnAppListTargetVisibilityChanged(bool visible) {
+void AppListClientImpl::OnAppListVisibilityWillChange(bool visible) {
   app_list_target_visibility_ = visible;
 }
 
 void AppListClientImpl::OnAppListVisibilityChanged(bool visible) {
   app_list_visible_ = visible;
+  if (visible && search_controller_)
+    search_controller_->AppListShown();
 }
 
 void AppListClientImpl::OnFolderCreated(
-    ash::mojom::AppListItemMetadataPtr item) {
-  if (!model_updater_)
+    int profile_id,
+    std::unique_ptr<ash::AppListItemMetadata> item) {
+  auto* requested_model_updater = profile_model_mappings_[profile_id];
+  if (!requested_model_updater)
     return;
   DCHECK(item->is_folder);
-  model_updater_->OnFolderCreated(std::move(item));
+  requested_model_updater->OnFolderCreated(std::move(item));
 }
 
 void AppListClientImpl::OnFolderDeleted(
-    ash::mojom::AppListItemMetadataPtr item) {
-  if (!model_updater_)
+    int profile_id,
+    std::unique_ptr<ash::AppListItemMetadata> item) {
+  auto* requested_model_updater = profile_model_mappings_[profile_id];
+  if (!requested_model_updater)
     return;
   DCHECK(item->is_folder);
-  model_updater_->OnFolderDeleted(std::move(item));
+  requested_model_updater->OnFolderDeleted(std::move(item));
 }
 
-void AppListClientImpl::OnItemUpdated(ash::mojom::AppListItemMetadataPtr item) {
-  if (!model_updater_)
+void AppListClientImpl::OnItemUpdated(
+    int profile_id,
+    std::unique_ptr<ash::AppListItemMetadata> item) {
+  auto* requested_model_updater = profile_model_mappings_[profile_id];
+  if (!requested_model_updater)
     return;
-  model_updater_->OnItemUpdated(std::move(item));
+  requested_model_updater->OnItemUpdated(std::move(item));
 }
 
 void AppListClientImpl::OnPageBreakItemAdded(
+    int profile_id,
     const std::string& id,
     const syncer::StringOrdinal& position) {
-  if (!model_updater_)
+  auto* requested_model_updater = profile_model_mappings_[profile_id];
+  if (!requested_model_updater)
     return;
-  model_updater_->OnPageBreakItemAdded(id, position);
+  requested_model_updater->OnPageBreakItemAdded(id, position);
 }
 
-void AppListClientImpl::OnPageBreakItemDeleted(const std::string& id) {
-  if (!model_updater_)
+void AppListClientImpl::OnPageBreakItemDeleted(int profile_id,
+                                               const std::string& id) {
+  auto* requested_model_updater = profile_model_mappings_[profile_id];
+  if (!requested_model_updater)
     return;
-  model_updater_->OnPageBreakItemDeleted(id);
+  requested_model_updater->OnPageBreakItemDeleted(id);
 }
 
 void AppListClientImpl::GetNavigableContentsFactory(
-    content::mojom::NavigableContentsFactoryRequest request) {
+    mojo::PendingReceiver<content::mojom::NavigableContentsFactory> receiver) {
   if (profile_) {
-    content::BrowserContext::GetConnectorFor(profile_)->BindInterface(
-        content::mojom::kServiceName, std::move(request));
+    content::BrowserContext::GetConnectorFor(profile_)->Connect(
+        content::mojom::kServiceName, std::move(receiver));
   }
 }
 
@@ -275,10 +308,10 @@ void AppListClientImpl::OnSearchResultVisibilityChanged(const std::string& id,
   result->OnVisibilityChanged(visibility);
 }
 
-void AppListClientImpl::ActiveUserChanged(
-    const user_manager::User* active_user) {
+void AppListClientImpl::ActiveUserChanged(user_manager::User* active_user) {
   if (!active_user->is_profile_created())
     return;
+
   UpdateProfile();
 }
 
@@ -286,8 +319,9 @@ void AppListClientImpl::UpdateProfile() {
   Profile* profile = ProfileManager::GetActiveUserProfile();
   app_list::AppListSyncableService* syncable_service =
       app_list::AppListSyncableServiceFactory::GetForProfile(profile);
-  DCHECK(syncable_service);
-  SetProfile(profile);
+  // AppListSyncableService is null in tests.
+  if (syncable_service)
+    SetProfile(profile);
 }
 
 void AppListClientImpl::SetProfile(Profile* new_profile) {
@@ -295,13 +329,13 @@ void AppListClientImpl::SetProfile(Profile* new_profile) {
     return;
 
   if (profile_) {
-    DCHECK(model_updater_);
-    model_updater_->SetActive(false);
+    DCHECK(current_model_updater_);
+    current_model_updater_->SetActive(false);
 
     search_resource_manager_.reset();
     search_controller_.reset();
     app_sync_ui_state_watcher_.reset();
-    model_updater_ = nullptr;
+    current_model_updater_ = nullptr;
   }
 
   template_url_service_observer_.RemoveAll();
@@ -323,38 +357,49 @@ void AppListClientImpl::SetProfile(Profile* new_profile) {
   app_list::AppListSyncableService* syncable_service =
       app_list::AppListSyncableServiceFactory::GetForProfile(profile_);
 
-  model_updater_ = syncable_service->GetModelUpdater();
-  model_updater_->SetActive(true);
+  current_model_updater_ = syncable_service->GetModelUpdater();
+  current_model_updater_->SetActive(true);
+
+  // On ChromeOS, there is no way to sign-off just one user. When signing off
+  // all users, AppListClientImpl instance is destructed before profiles are
+  // unloaded. So we don't need to remove elements from
+  // |profile_model_mappings_| explicitly.
+  profile_model_mappings_[current_model_updater_->model_id()] =
+      current_model_updater_;
 
   app_sync_ui_state_watcher_ =
-      std::make_unique<AppSyncUIStateWatcher>(profile_, model_updater_);
+      std::make_unique<AppSyncUIStateWatcher>(profile_, current_model_updater_);
 
   SetUpSearchUI();
   OnTemplateURLServiceChanged();
 
   // Clear search query.
-  model_updater_->UpdateSearchBox(base::string16(),
-                                  false /* initiated_by_user */);
+  current_model_updater_->UpdateSearchBox(base::string16(),
+                                          false /* initiated_by_user */);
 }
 
 void AppListClientImpl::SetUpSearchUI() {
   search_resource_manager_ = std::make_unique<app_list::SearchResourceManager>(
-      profile_, model_updater_);
+      profile_, current_model_updater_);
 
   search_controller_ =
-      app_list::CreateSearchController(profile_, model_updater_, this);
+      app_list::CreateSearchController(profile_, current_model_updater_, this);
+
+  // Refresh the results used for the suggestion chips with empty query.
+  // This fixes crbug.com/999287.
+  StartSearch(base::string16());
 }
 
-app_list::SearchController* AppListClientImpl::GetSearchControllerForTest() {
+app_list::SearchController* AppListClientImpl::search_controller() {
   return search_controller_.get();
 }
 
 AppListModelUpdater* AppListClientImpl::GetModelUpdaterForTest() {
-  return model_updater_;
+  return current_model_updater_;
 }
 
 void AppListClientImpl::OnTemplateURLServiceChanged() {
-  DCHECK(model_updater_);
+  DCHECK(current_model_updater_);
 
   TemplateURLService* template_url_service =
       TemplateURLServiceFactory::GetForProfile(profile_);
@@ -365,13 +410,7 @@ void AppListClientImpl::OnTemplateURLServiceChanged() {
       default_provider->GetEngineType(
           template_url_service->search_terms_data()) == SEARCH_ENGINE_GOOGLE;
 
-  model_updater_->SetSearchEngineIsGoogle(is_google);
-}
-
-void AppListClientImpl::ShowAndSwitchToState(ash::AppListState state) {
-  if (!app_list_controller_)
-    return;
-  app_list_controller_->ShowAppListAndSwitchToState(state);
+  current_model_updater_->SetSearchEngineIsGoogle(is_google);
 }
 
 void AppListClientImpl::ShowAppList() {
@@ -386,14 +425,18 @@ Profile* AppListClientImpl::GetCurrentAppListProfile() const {
   return ChromeLauncherController::instance()->profile();
 }
 
-ash::mojom::AppListController* AppListClientImpl::GetAppListController() const {
-  return app_list_controller_.get();
+ash::AppListController* AppListClientImpl::GetAppListController() const {
+  return app_list_controller_;
 }
 
 void AppListClientImpl::DismissView() {
   if (!app_list_controller_)
     return;
   app_list_controller_->DismissAppList();
+}
+
+aura::Window* AppListClientImpl::GetAppListWindow() {
+  return app_list_controller_->GetWindow();
 }
 
 int64_t AppListClientImpl::GetAppListDisplayId() {
@@ -480,6 +523,16 @@ void AppListClientImpl::LaunchApp(Profile* profile,
     DismissView();
 }
 
+void AppListClientImpl::NotifySearchResultsForLogging(
+    const base::string16& trimmed_query,
+    const ash::SearchResultIdWithPositionIndices& results,
+    int position_index) {
+  if (search_controller_) {
+    search_controller_->OnSearchResultsDisplayed(trimmed_query, results,
+                                                 position_index);
+  }
+}
+
 ash::ShelfLaunchSource AppListClientImpl::AppListSourceToLaunchSource(
     AppListSource source) {
   switch (source) {
@@ -490,9 +543,4 @@ ash::ShelfLaunchSource AppListClientImpl::AppListSourceToLaunchSource(
     default:
       return ash::LAUNCH_FROM_UNKNOWN;
   }
-}
-
-void AppListClientImpl::FlushMojoForTesting() {
-  app_list_controller_.FlushForTesting();
-  binding_.FlushForTesting();
 }

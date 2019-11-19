@@ -12,7 +12,6 @@
 #include "ash/wm/window_util.h"  // mash-ok
 #include "base/logging.h"
 #include "ui/base/ime/ime_bridge.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/chromeos/ime/infolist_window.h"
 #include "ui/views/widget/widget.h"
 
@@ -41,16 +40,15 @@ void CandidateWindowControllerImpl::InitCandidateWindowView() {
 
   gfx::NativeView parent = nullptr;
 
-  // NOTE: CandidateWindowView takes care of the mash (window-service) case.
-  if (!features::IsUsingWindowService()) {
-    aura::Window* active_window = ash::wm::GetActiveWindow();
-    parent = ash::Shell::GetContainer(
-        active_window ? active_window->GetRootWindow()
-                      : ash::Shell::GetRootWindowForNewWindows(),
-        ash::kShellWindowId_SettingBubbleContainer);
-  }
+  aura::Window* active_window = ash::window_util::GetActiveWindow();
+  // Use VirtualKeyboardContainer so that it works even with a system modal
+  // dialog.
+  parent = ash::Shell::GetContainer(
+      active_window ? active_window->GetRootWindow()
+                    : ash::Shell::GetRootWindowForNewWindows(),
+      ash::kShellWindowId_VirtualKeyboardContainer);
   candidate_window_view_ = new ui::ime::CandidateWindowView(
-      parent, ash::kShellWindowId_SettingBubbleContainer);
+      parent, ash::kShellWindowId_VirtualKeyboardContainer);
   candidate_window_view_->AddObserver(this);
   candidate_window_view_->SetCursorBounds(cursor_bounds_, composition_head_);
   views::Widget* widget = candidate_window_view_->InitWidget();

@@ -23,7 +23,6 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "third_party/blink/public/platform/web_cursor_info.h"
 #include "third_party/blink/renderer/platform/cursor.h"
 #include "third_party/blink/renderer/platform/wtf/assertions.h"
 
@@ -61,7 +60,7 @@ IntPoint DetermineHotSpot(Image* image,
 }
 
 Cursor::Cursor(Image* image, bool hot_spot_specified, const IntPoint& hot_spot)
-    : type_(kCustom),
+    : type_(ui::CursorType::kCustom),
       image_(image),
       hot_spot_(DetermineHotSpot(image, hot_spot_specified, hot_spot)),
       image_scale_factor_(1) {}
@@ -70,12 +69,12 @@ Cursor::Cursor(Image* image,
                bool hot_spot_specified,
                const IntPoint& hot_spot,
                float scale)
-    : type_(kCustom),
+    : type_(ui::CursorType::kCustom),
       image_(image),
       hot_spot_(DetermineHotSpot(image, hot_spot_specified, hot_spot)),
       image_scale_factor_(scale) {}
 
-Cursor::Cursor(Type type) : type_(type), image_scale_factor_(1) {}
+Cursor::Cursor(ui::CursorType type) : type_(type), image_scale_factor_(1) {}
 
 Cursor::Cursor(const Cursor& other) = default;
 
@@ -90,273 +89,228 @@ Cursor& Cursor::operator=(const Cursor& other) {
 Cursor::~Cursor() = default;
 
 const Cursor& PointerCursor() {
-  DEFINE_STATIC_LOCAL(Cursor, c, (Cursor::kPointer));
+  DEFINE_STATIC_LOCAL(Cursor, c, (ui::CursorType::kPointer));
   return c;
 }
 
 const Cursor& CrossCursor() {
-  DEFINE_STATIC_LOCAL(Cursor, c, (Cursor::kCross));
+  DEFINE_STATIC_LOCAL(Cursor, c, (ui::CursorType::kCross));
   return c;
 }
 
 const Cursor& HandCursor() {
-  DEFINE_STATIC_LOCAL(Cursor, c, (Cursor::kHand));
+  DEFINE_STATIC_LOCAL(Cursor, c, (ui::CursorType::kHand));
   return c;
 }
 
 const Cursor& MoveCursor() {
-  DEFINE_STATIC_LOCAL(Cursor, c, (Cursor::kMove));
+  DEFINE_STATIC_LOCAL(Cursor, c, (ui::CursorType::kMove));
   return c;
 }
 
 const Cursor& VerticalTextCursor() {
-  DEFINE_STATIC_LOCAL(Cursor, c, (Cursor::kVerticalText));
+  DEFINE_STATIC_LOCAL(Cursor, c, (ui::CursorType::kVerticalText));
   return c;
 }
 
 const Cursor& CellCursor() {
-  DEFINE_STATIC_LOCAL(Cursor, c, (Cursor::kCell));
+  DEFINE_STATIC_LOCAL(Cursor, c, (ui::CursorType::kCell));
   return c;
 }
 
 const Cursor& ContextMenuCursor() {
-  DEFINE_STATIC_LOCAL(Cursor, c, (Cursor::kContextMenu));
+  DEFINE_STATIC_LOCAL(Cursor, c, (ui::CursorType::kContextMenu));
   return c;
 }
 
 const Cursor& AliasCursor() {
-  DEFINE_STATIC_LOCAL(Cursor, c, (Cursor::kAlias));
+  DEFINE_STATIC_LOCAL(Cursor, c, (ui::CursorType::kAlias));
   return c;
 }
 
 const Cursor& ZoomInCursor() {
-  DEFINE_STATIC_LOCAL(Cursor, c, (Cursor::kZoomIn));
+  DEFINE_STATIC_LOCAL(Cursor, c, (ui::CursorType::kZoomIn));
   return c;
 }
 
 const Cursor& ZoomOutCursor() {
-  DEFINE_STATIC_LOCAL(Cursor, c, (Cursor::kZoomOut));
+  DEFINE_STATIC_LOCAL(Cursor, c, (ui::CursorType::kZoomOut));
   return c;
 }
 
 const Cursor& CopyCursor() {
-  DEFINE_STATIC_LOCAL(Cursor, c, (Cursor::kCopy));
+  DEFINE_STATIC_LOCAL(Cursor, c, (ui::CursorType::kCopy));
   return c;
 }
 
 const Cursor& NoneCursor() {
-  DEFINE_STATIC_LOCAL(Cursor, c, (Cursor::kNone));
+  DEFINE_STATIC_LOCAL(Cursor, c, (ui::CursorType::kNone));
   return c;
 }
 
 const Cursor& ProgressCursor() {
-  DEFINE_STATIC_LOCAL(Cursor, c, (Cursor::kProgress));
+  DEFINE_STATIC_LOCAL(Cursor, c, (ui::CursorType::kProgress));
   return c;
 }
 
 const Cursor& NoDropCursor() {
-  DEFINE_STATIC_LOCAL(Cursor, c, (Cursor::kNoDrop));
+  DEFINE_STATIC_LOCAL(Cursor, c, (ui::CursorType::kNoDrop));
   return c;
 }
 
 const Cursor& NotAllowedCursor() {
-  DEFINE_STATIC_LOCAL(Cursor, c, (Cursor::kNotAllowed));
+  DEFINE_STATIC_LOCAL(Cursor, c, (ui::CursorType::kNotAllowed));
   return c;
 }
 
 const Cursor& IBeamCursor() {
-  DEFINE_STATIC_LOCAL(Cursor, c, (Cursor::kIBeam));
+  DEFINE_STATIC_LOCAL(Cursor, c, (ui::CursorType::kIBeam));
   return c;
 }
 
 const Cursor& WaitCursor() {
-  DEFINE_STATIC_LOCAL(Cursor, c, (Cursor::kWait));
+  DEFINE_STATIC_LOCAL(Cursor, c, (ui::CursorType::kWait));
   return c;
 }
 
 const Cursor& HelpCursor() {
-  DEFINE_STATIC_LOCAL(Cursor, c, (Cursor::kHelp));
+  DEFINE_STATIC_LOCAL(Cursor, c, (ui::CursorType::kHelp));
   return c;
 }
 
 const Cursor& EastResizeCursor() {
-  DEFINE_STATIC_LOCAL(Cursor, c, (Cursor::kEastResize));
+  DEFINE_STATIC_LOCAL(Cursor, c, (ui::CursorType::kEastResize));
   return c;
 }
 
 const Cursor& NorthResizeCursor() {
-  DEFINE_STATIC_LOCAL(Cursor, c, (Cursor::kNorthResize));
+  DEFINE_STATIC_LOCAL(Cursor, c, (ui::CursorType::kNorthResize));
   return c;
 }
 
 const Cursor& NorthEastResizeCursor() {
-  DEFINE_STATIC_LOCAL(Cursor, c, (Cursor::kNorthEastResize));
+  DEFINE_STATIC_LOCAL(Cursor, c, (ui::CursorType::kNorthEastResize));
   return c;
 }
 
 const Cursor& NorthWestResizeCursor() {
-  DEFINE_STATIC_LOCAL(Cursor, c, (Cursor::kNorthWestResize));
+  DEFINE_STATIC_LOCAL(Cursor, c, (ui::CursorType::kNorthWestResize));
   return c;
 }
 
 const Cursor& SouthResizeCursor() {
-  DEFINE_STATIC_LOCAL(Cursor, c, (Cursor::kSouthResize));
+  DEFINE_STATIC_LOCAL(Cursor, c, (ui::CursorType::kSouthResize));
   return c;
 }
 
 const Cursor& SouthEastResizeCursor() {
-  DEFINE_STATIC_LOCAL(Cursor, c, (Cursor::kSouthEastResize));
+  DEFINE_STATIC_LOCAL(Cursor, c, (ui::CursorType::kSouthEastResize));
   return c;
 }
 
 const Cursor& SouthWestResizeCursor() {
-  DEFINE_STATIC_LOCAL(Cursor, c, (Cursor::kSouthWestResize));
+  DEFINE_STATIC_LOCAL(Cursor, c, (ui::CursorType::kSouthWestResize));
   return c;
 }
 
 const Cursor& WestResizeCursor() {
-  DEFINE_STATIC_LOCAL(Cursor, c, (Cursor::kWestResize));
+  DEFINE_STATIC_LOCAL(Cursor, c, (ui::CursorType::kWestResize));
   return c;
 }
 
 const Cursor& NorthSouthResizeCursor() {
-  DEFINE_STATIC_LOCAL(Cursor, c, (Cursor::kNorthSouthResize));
+  DEFINE_STATIC_LOCAL(Cursor, c, (ui::CursorType::kNorthSouthResize));
   return c;
 }
 
 const Cursor& EastWestResizeCursor() {
-  DEFINE_STATIC_LOCAL(Cursor, c, (Cursor::kEastWestResize));
+  DEFINE_STATIC_LOCAL(Cursor, c, (ui::CursorType::kEastWestResize));
   return c;
 }
 
 const Cursor& NorthEastSouthWestResizeCursor() {
-  DEFINE_STATIC_LOCAL(Cursor, c, (Cursor::kNorthEastSouthWestResize));
+  DEFINE_STATIC_LOCAL(Cursor, c, (ui::CursorType::kNorthEastSouthWestResize));
   return c;
 }
 
 const Cursor& NorthWestSouthEastResizeCursor() {
-  DEFINE_STATIC_LOCAL(Cursor, c, (Cursor::kNorthWestSouthEastResize));
+  DEFINE_STATIC_LOCAL(Cursor, c, (ui::CursorType::kNorthWestSouthEastResize));
   return c;
 }
 
 const Cursor& ColumnResizeCursor() {
-  DEFINE_STATIC_LOCAL(Cursor, c, (Cursor::kColumnResize));
+  DEFINE_STATIC_LOCAL(Cursor, c, (ui::CursorType::kColumnResize));
   return c;
 }
 
 const Cursor& RowResizeCursor() {
-  DEFINE_STATIC_LOCAL(Cursor, c, (Cursor::kRowResize));
+  DEFINE_STATIC_LOCAL(Cursor, c, (ui::CursorType::kRowResize));
   return c;
 }
 
 const Cursor& MiddlePanningCursor() {
-  DEFINE_STATIC_LOCAL(Cursor, c, (Cursor::kMiddlePanning));
+  DEFINE_STATIC_LOCAL(Cursor, c, (ui::CursorType::kMiddlePanning));
+  return c;
+}
+
+const Cursor& MiddlePanningVerticalCursor() {
+  DEFINE_STATIC_LOCAL(Cursor, c, (ui::CursorType::kMiddlePanningVertical));
+  return c;
+}
+
+const Cursor& MiddlePanningHorizontalCursor() {
+  DEFINE_STATIC_LOCAL(Cursor, c, (ui::CursorType::kMiddlePanningHorizontal));
   return c;
 }
 
 const Cursor& EastPanningCursor() {
-  DEFINE_STATIC_LOCAL(Cursor, c, (Cursor::kEastPanning));
+  DEFINE_STATIC_LOCAL(Cursor, c, (ui::CursorType::kEastPanning));
   return c;
 }
 
 const Cursor& NorthPanningCursor() {
-  DEFINE_STATIC_LOCAL(Cursor, c, (Cursor::kNorthPanning));
+  DEFINE_STATIC_LOCAL(Cursor, c, (ui::CursorType::kNorthPanning));
   return c;
 }
 
 const Cursor& NorthEastPanningCursor() {
-  DEFINE_STATIC_LOCAL(Cursor, c, (Cursor::kNorthEastPanning));
+  DEFINE_STATIC_LOCAL(Cursor, c, (ui::CursorType::kNorthEastPanning));
   return c;
 }
 
 const Cursor& NorthWestPanningCursor() {
-  DEFINE_STATIC_LOCAL(Cursor, c, (Cursor::kNorthWestPanning));
+  DEFINE_STATIC_LOCAL(Cursor, c, (ui::CursorType::kNorthWestPanning));
   return c;
 }
 
 const Cursor& SouthPanningCursor() {
-  DEFINE_STATIC_LOCAL(Cursor, c, (Cursor::kSouthPanning));
+  DEFINE_STATIC_LOCAL(Cursor, c, (ui::CursorType::kSouthPanning));
   return c;
 }
 
 const Cursor& SouthEastPanningCursor() {
-  DEFINE_STATIC_LOCAL(Cursor, c, (Cursor::kSouthEastPanning));
+  DEFINE_STATIC_LOCAL(Cursor, c, (ui::CursorType::kSouthEastPanning));
   return c;
 }
 
 const Cursor& SouthWestPanningCursor() {
-  DEFINE_STATIC_LOCAL(Cursor, c, (Cursor::kSouthWestPanning));
+  DEFINE_STATIC_LOCAL(Cursor, c, (ui::CursorType::kSouthWestPanning));
   return c;
 }
 
 const Cursor& WestPanningCursor() {
-  DEFINE_STATIC_LOCAL(Cursor, c, (Cursor::kWestPanning));
+  DEFINE_STATIC_LOCAL(Cursor, c, (ui::CursorType::kWestPanning));
   return c;
 }
 
 const Cursor& GrabCursor() {
-  DEFINE_STATIC_LOCAL(Cursor, c, (Cursor::kGrab));
+  DEFINE_STATIC_LOCAL(Cursor, c, (ui::CursorType::kGrab));
   return c;
 }
 
 const Cursor& GrabbingCursor() {
-  DEFINE_STATIC_LOCAL(Cursor, c, (Cursor::kGrabbing));
+  DEFINE_STATIC_LOCAL(Cursor, c, (ui::CursorType::kGrabbing));
   return c;
 }
 
-STATIC_ASSERT_ENUM(WebCursorInfo::kTypePointer, Cursor::kPointer);
-STATIC_ASSERT_ENUM(WebCursorInfo::kTypeCross, Cursor::kCross);
-STATIC_ASSERT_ENUM(WebCursorInfo::kTypeHand, Cursor::kHand);
-STATIC_ASSERT_ENUM(WebCursorInfo::kTypeIBeam, Cursor::kIBeam);
-STATIC_ASSERT_ENUM(WebCursorInfo::kTypeWait, Cursor::kWait);
-STATIC_ASSERT_ENUM(WebCursorInfo::kTypeHelp, Cursor::kHelp);
-STATIC_ASSERT_ENUM(WebCursorInfo::kTypeEastResize, Cursor::kEastResize);
-STATIC_ASSERT_ENUM(WebCursorInfo::kTypeNorthResize, Cursor::kNorthResize);
-STATIC_ASSERT_ENUM(WebCursorInfo::kTypeNorthEastResize,
-                   Cursor::kNorthEastResize);
-STATIC_ASSERT_ENUM(WebCursorInfo::kTypeNorthWestResize,
-                   Cursor::kNorthWestResize);
-STATIC_ASSERT_ENUM(WebCursorInfo::kTypeSouthResize, Cursor::kSouthResize);
-STATIC_ASSERT_ENUM(WebCursorInfo::kTypeSouthEastResize,
-                   Cursor::kSouthEastResize);
-STATIC_ASSERT_ENUM(WebCursorInfo::kTypeSouthWestResize,
-                   Cursor::kSouthWestResize);
-STATIC_ASSERT_ENUM(WebCursorInfo::kTypeWestResize, Cursor::kWestResize);
-STATIC_ASSERT_ENUM(WebCursorInfo::kTypeNorthSouthResize,
-                   Cursor::kNorthSouthResize);
-STATIC_ASSERT_ENUM(WebCursorInfo::kTypeEastWestResize, Cursor::kEastWestResize);
-STATIC_ASSERT_ENUM(WebCursorInfo::kTypeNorthEastSouthWestResize,
-                   Cursor::kNorthEastSouthWestResize);
-STATIC_ASSERT_ENUM(WebCursorInfo::kTypeNorthWestSouthEastResize,
-                   Cursor::kNorthWestSouthEastResize);
-STATIC_ASSERT_ENUM(WebCursorInfo::kTypeColumnResize, Cursor::kColumnResize);
-STATIC_ASSERT_ENUM(WebCursorInfo::kTypeRowResize, Cursor::kRowResize);
-STATIC_ASSERT_ENUM(WebCursorInfo::kTypeMiddlePanning, Cursor::kMiddlePanning);
-STATIC_ASSERT_ENUM(WebCursorInfo::kTypeEastPanning, Cursor::kEastPanning);
-STATIC_ASSERT_ENUM(WebCursorInfo::kTypeNorthPanning, Cursor::kNorthPanning);
-STATIC_ASSERT_ENUM(WebCursorInfo::kTypeNorthEastPanning,
-                   Cursor::kNorthEastPanning);
-STATIC_ASSERT_ENUM(WebCursorInfo::kTypeNorthWestPanning,
-                   Cursor::kNorthWestPanning);
-STATIC_ASSERT_ENUM(WebCursorInfo::kTypeSouthPanning, Cursor::kSouthPanning);
-STATIC_ASSERT_ENUM(WebCursorInfo::kTypeSouthEastPanning,
-                   Cursor::kSouthEastPanning);
-STATIC_ASSERT_ENUM(WebCursorInfo::kTypeSouthWestPanning,
-                   Cursor::kSouthWestPanning);
-STATIC_ASSERT_ENUM(WebCursorInfo::kTypeWestPanning, Cursor::kWestPanning);
-STATIC_ASSERT_ENUM(WebCursorInfo::kTypeMove, Cursor::kMove);
-STATIC_ASSERT_ENUM(WebCursorInfo::kTypeVerticalText, Cursor::kVerticalText);
-STATIC_ASSERT_ENUM(WebCursorInfo::kTypeCell, Cursor::kCell);
-STATIC_ASSERT_ENUM(WebCursorInfo::kTypeContextMenu, Cursor::kContextMenu);
-STATIC_ASSERT_ENUM(WebCursorInfo::kTypeAlias, Cursor::kAlias);
-STATIC_ASSERT_ENUM(WebCursorInfo::kTypeProgress, Cursor::kProgress);
-STATIC_ASSERT_ENUM(WebCursorInfo::kTypeNoDrop, Cursor::kNoDrop);
-STATIC_ASSERT_ENUM(WebCursorInfo::kTypeCopy, Cursor::kCopy);
-STATIC_ASSERT_ENUM(WebCursorInfo::kTypeNone, Cursor::kNone);
-STATIC_ASSERT_ENUM(WebCursorInfo::kTypeNotAllowed, Cursor::kNotAllowed);
-STATIC_ASSERT_ENUM(WebCursorInfo::kTypeZoomIn, Cursor::kZoomIn);
-STATIC_ASSERT_ENUM(WebCursorInfo::kTypeZoomOut, Cursor::kZoomOut);
-STATIC_ASSERT_ENUM(WebCursorInfo::kTypeGrab, Cursor::kGrab);
-STATIC_ASSERT_ENUM(WebCursorInfo::kTypeGrabbing, Cursor::kGrabbing);
-STATIC_ASSERT_ENUM(WebCursorInfo::kTypeCustom, Cursor::kCustom);
 }  // namespace blink

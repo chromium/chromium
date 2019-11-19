@@ -20,12 +20,10 @@
     package="{{{manifest_package}}}"
     android:versionCode="{{{version_code}}}"
     android:versionName="{{{version_name}}}" >
-
-    <uses-permission android:name="android.permission.VIBRATE"></uses-permission>
     {{{raw_manifest_tags}}}
 
     <uses-sdk
-        android:minSdkVersion="16"
+        android:minSdkVersion="19"
         android:targetSdkVersion="28" />
 
     <application
@@ -44,42 +42,42 @@
                 <category android:name="android.intent.category.BROWSABLE"></category>
                 <data android:scheme="{{{scope_url_scheme}}}" android:host="{{{scope_url_host}}}" {{{scope_url_path_type}}}="{{{scope_url_path}}}"></data>
             </intent-filter>
+            <intent-filter>
+                <action android:name="android.nfc.action.NDEF_DISCOVERED"></action>
+                <category android:name="android.intent.category.DEFAULT"></category>
+                <data android:scheme="{{{scope_url_scheme}}}" android:host="{{{scope_url_host}}}" {{{scope_url_path_type}}}="{{{scope_url_path}}}"></data>
+            </intent-filter>
             {{/intent_filters}}
             {{{raw_intent_filters}}}
          </activity>
 
         [[#use_new_splash]]
         <activity android:name="org.chromium.webapk.shell_apk.h2o.H2OOpaqueMainActivity"
-                  android:theme="@style/EarlySplashTheme"
-                  android:relinquishTaskIdentity="true"
-                  android:excludeFromRecents="true"
-                  android:enabled="false"
-                  android:noHistory="true">
+                  android:theme="@style/SplashTheme"
+                  android:relinquishTaskIdentity="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+            <meta-data android:name="android.app.shortcuts" android:resource="@xml/shortcuts" />
         </activity>
         <activity android:name="org.chromium.webapk.shell_apk.h2o.SplashActivity"
-                  android:theme="@style/EarlySplashTheme"
+                  android:theme="@style/SplashTheme"
                   android:launchMode="singleTask">
         </activity>
-        <activity android:name="org.chromium.webapk.shell_apk.h2o.OverlaySplashActivity"
-                  android:theme="@style/OverlaySplashTheme"
-                  android:exported="true">
-          <intent-filter>
-            <action android:name="org.chromium.webapk.shell_apk.ACTION_SHOW_SPLASH"></action>
-            <category android:name="android.intent.category.DEFAULT" />
-          </intent-filter>
-        </activity>
+        <provider android:name="org.chromium.webapk.shell_apk.h2o.SplashContentProvider"
+                  android:authorities="{{manifest_package}}.SplashContentProvider"
+                  android:exported="true" />
         [[/use_new_splash]]
         <activity android:name="org.chromium.webapk.shell_apk.[[#use_new_splash]]h2o.H2O[[/use_new_splash]]MainActivity"
                   android:theme="@android:style/Theme.Translucent.NoTitleBar"
+                  [[#use_new_splash]]android:enabled="false"[[/use_new_splash]]
                   android:excludeFromRecents="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+            <meta-data android:name="android.app.shortcuts" android:resource="@xml/shortcuts" />
         </activity>
 
         {{#share_template}}
@@ -88,13 +86,13 @@
                   android:targetActivity="org.chromium.webapk.shell_apk.[[#use_new_splash]]h2o.H2O[[/use_new_splash]]TransparentLauncherActivity">
           <meta-data android:name="org.chromium.webapk.shell_apk.shareAction" android:value="{{{action}}}" />
           <meta-data android:name="org.chromium.webapk.shell_apk.shareMethod" android:value="{{{method}}}" />
+          <meta-data android:name="org.chromium.webapk.shell_apk.shareParamTitle" android:value="{{{param_title}}}" />
+          <meta-data android:name="org.chromium.webapk.shell_apk.shareParamText" android:value="{{{param_text}}}" />
+          <meta-data android:name="org.chromium.webapk.shell_apk.shareParamUrl" android:value="{{{param_url}}}" />
           {{#enctype}}
           <meta-data android:name="org.chromium.webapk.shell_apk.shareEnctype" android:value="{{{enctype}}}" />
           {{/enctype}}
           {{^is_file_upload}}
-          <meta-data android:name="org.chromium.webapk.shell_apk.shareParamTitle" android:value="{{{param_title}}}" />
-          <meta-data android:name="org.chromium.webapk.shell_apk.shareParamText" android:value="{{{param_text}}}" />
-          <meta-data android:name="org.chromium.webapk.shell_apk.shareParamUrl" android:value="{{{param_url}}}" />
           <intent-filter>
             <action android:name="android.intent.action.SEND" />
             <category android:name="android.intent.category.DEFAULT" />
@@ -102,11 +100,15 @@
           </intent-filter>
           {{/is_file_upload}}
           {{#is_file_upload}}
+          {{^is_file_upload_param_empty}}
           <meta-data android:name="org.chromium.webapk.shell_apk.shareParamNames" android:value="{{{param_names}}}" />
           <meta-data android:name="org.chromium.webapk.shell_apk.shareParamAccepts" android:value="{{{param_accepts}}}" />
+          {{/is_file_upload_param_empty}}
           <intent-filter>
             <action android:name="android.intent.action.SEND" />
+            {{^is_file_upload_param_empty}}
             <action android:name="android.intent.action.SEND_MULTIPLE" />
+            {{/is_file_upload_param_empty}}
             <category android:name="android.intent.category.DEFAULT" />
             {{#mime_types}}
             <data android:mimeType="{{{mime_type}}}" />
@@ -128,9 +130,17 @@
         <meta-data android:name="org.chromium.webapk.shell_apk.displayMode" android:value="{{{display_mode}}}" />
         <meta-data android:name="org.chromium.webapk.shell_apk.orientation" android:value="{{{orientation}}}" />
         <meta-data android:name="org.chromium.webapk.shell_apk.themeColor" android:value="{{{theme_color}}}" />
+
+        <!-- Empty if the Web Manifest does not provide a background color. -->
         <meta-data android:name="org.chromium.webapk.shell_apk.backgroundColor" android:value="{{{background_color}}}" />
+
+        <meta-data android:name="org.chromium.webapk.shell_apk.defaultBackgroundColorId" android:resource="@color/webapp_default_bg" />
         <meta-data android:name="org.chromium.webapk.shell_apk.iconId" android:resource="@mipmap/app_icon" />
+        {{#has_maskable_icon}}
+        <meta-data android:name="org.chromium.webapk.shell_apk.maskableIconId" android:resource="@mipmap/maskable_app_icon"/>
+        {{/has_maskable_icon}}
         <meta-data android:name="org.chromium.webapk.shell_apk.splashId" android:resource="@drawable/splash_icon" />
+        <meta-data android:name="org.chromium.webapk.shell_apk.isSplashIconMaskableBooleanId" android:resource="@bool/is_splash_icon_maskable"/>
         <meta-data android:name="org.chromium.webapk.shell_apk.distributor" android:value="{{{distributor}}}" />
 
         {{!  Hashes of icons should be taken of the icons as they are available on the web. The icon

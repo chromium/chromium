@@ -18,9 +18,20 @@ class FlagsStorage {
   virtual ~FlagsStorage() {}
 
   // Retrieves the flags as a set of strings.
-  virtual std::set<std::string> GetFlags() = 0;
+  virtual std::set<std::string> GetFlags() const = 0;
   // Stores the |flags| and returns true on success.
   virtual bool SetFlags(const std::set<std::string>& flags) = 0;
+
+  // Retrieves the serialized origin list corresponding to
+  // |internal_entry_name|. Does not check if the return value is well formed.
+  virtual std::string GetOriginListFlag(
+      const std::string& internal_entry_name) const = 0;
+  // Sets the serialized |origin_list_value| corresponding to
+  // |internal_entry_name|. Does not check if |origin_list_value| is well
+  // formed.
+  virtual void SetOriginListFlag(const std::string& internal_entry_name,
+                                 const std::string& origin_list_value) = 0;
+
   // Lands pending changes to disk immediately.
   virtual void CommitPendingWrites() = 0;
 };

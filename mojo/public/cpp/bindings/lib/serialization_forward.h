@@ -8,6 +8,7 @@
 #include "base/optional.h"
 #include "mojo/public/cpp/bindings/array_traits.h"
 #include "mojo/public/cpp/bindings/enum_traits.h"
+#include "mojo/public/cpp/bindings/lib/buffer.h"
 #include "mojo/public/cpp/bindings/lib/template_util.h"
 #include "mojo/public/cpp/bindings/map_traits.h"
 #include "mojo/public/cpp/bindings/string_traits.h"

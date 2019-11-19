@@ -9,7 +9,7 @@
 #include "base/macros.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile_window.h"
-#include "components/signin/core/browser/signin_metrics.h"
+#include "components/signin/public/base/signin_metrics.h"
 #include "content/public/browser/web_contents_delegate.h"
 
 namespace base {

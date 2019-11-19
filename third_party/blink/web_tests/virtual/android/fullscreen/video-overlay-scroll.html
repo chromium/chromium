@@ -1,19 +1,15 @@
 <!DOCTYPE html>
 <body>
   <script src="../../../fullscreen/full-screen-test.js"></script>
-  <div style="width: 100px; height: 1000px"></div>
+  <div id="extra" style="width: 100px; height: 1000px"></div>
   <video id="video"></video>
-  <pre id="layertree"></pre>
   <script>
     if (window.testRunner)
       testRunner.dumpAsText();
 
-    var clientRect;
-    var video = document.getElementById('video');
-
     window.scrollTo(0, 1000);
     waitForEventAndEnd(document, 'fullscreenchange', function(){
-      document.getElementById("layertree").innerText = internals.elementLayerTreeAsText(document.fullscreenElement);
+      testRunner.setCustomTextOutput(internals.layerTreeAsText(document));
     });
 
     runWithKeyDown(function(){

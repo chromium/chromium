@@ -13,7 +13,7 @@
 namespace device {
 
 // LocationProviderAndroid
-LocationProviderAndroid::LocationProviderAndroid() : weak_ptr_factory_(this) {}
+LocationProviderAndroid::LocationProviderAndroid() {}
 
 LocationProviderAndroid::~LocationProviderAndroid() {
   DCHECK(thread_checker_.CalledOnValidThread());

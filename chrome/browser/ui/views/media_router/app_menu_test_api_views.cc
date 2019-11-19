@@ -42,7 +42,7 @@ bool AppMenuTestApiViews::IsMenuShowing() {
 }
 
 void AppMenuTestApiViews::ShowMenu() {
-  GetAppMenuButton()->ShowMenu(false);
+  GetAppMenuButton()->ShowMenu(views::MenuRunner::NO_FLAGS);
 }
 
 void AppMenuTestApiViews::ExecuteCommand(int command) {

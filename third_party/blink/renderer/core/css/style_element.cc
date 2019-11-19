@@ -121,17 +121,9 @@ void StyleElement::ClearSheet(Element& owner_element) {
   sheet_.Release()->ClearOwnerNode();
 }
 
-static bool ShouldBypassMainWorldCSP(const Element& element) {
-  // Main world CSP is bypassed within an isolated world.
-  if (ContentSecurityPolicy::ShouldBypassMainWorld(&element.GetDocument()))
-    return true;
-
-  // Main world CSP is bypassed for style elements in user agent shadow DOM.
+static bool IsInUserAgentShadowDOM(const Element& element) {
   ShadowRoot* root = element.ContainingShadowRoot();
-  if (root && root->IsUserAgent())
-    return true;
-
-  return false;
+  return root && root->IsUserAgent();
 }
 
 StyleElement::ProcessingResult StyleElement::CreateSheet(Element& element,
@@ -139,11 +131,14 @@ StyleElement::ProcessingResult StyleElement::CreateSheet(Element& element,
   DCHECK(element.isConnected());
   Document& document = element.GetDocument();
 
-  const ContentSecurityPolicy* csp = document.GetContentSecurityPolicy();
+  const ContentSecurityPolicy* csp =
+      document.GetContentSecurityPolicyForWorld();
+
+  // CSP is bypassed for style elements in user agent shadow DOM.
   bool passes_content_security_policy_checks =
-      ShouldBypassMainWorldCSP(element) ||
-      csp->AllowInline(ContentSecurityPolicy::InlineType::kInlineStyleElement,
-                       &element, text, element.nonce(), document.Url(),
+      IsInUserAgentShadowDOM(element) ||
+      csp->AllowInline(ContentSecurityPolicy::InlineType::kStyle, &element,
+                       text, element.nonce(), document.Url(),
                        start_position_.line_);
 
   // Clearing the current sheet may remove the cache entry so create the new

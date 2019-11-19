@@ -11,6 +11,8 @@
 #include "build/build_config.h"
 #include "chrome/browser/autocomplete/autocomplete_classifier_factory.h"
 #include "chrome/browser/autocomplete/chrome_autocomplete_provider_client.h"
+#include "chrome/browser/extensions/extension_action_test_util.h"
+#include "chrome/browser/extensions/load_error_reporter.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/search_engines/chrome_template_url_service_client.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
@@ -27,7 +29,7 @@
 #include "components/omnibox/browser/test_scheme_classifier.h"
 #include "components/search_engines/search_terms_data.h"
 #include "components/search_engines/template_url_service.h"
-#include "components/signin/core/browser/list_accounts_test_utils.h"
+#include "components/signin/public/base/list_accounts_test_utils.h"
 #include "content/public/test/test_utils.h"
 #include "services/network/test/test_url_loader_factory.h"
 
@@ -42,13 +44,13 @@ std::unique_ptr<KeyedService> CreateTemplateURLService(
     content::BrowserContext* context) {
   Profile* profile = static_cast<Profile*>(context);
   return std::make_unique<TemplateURLService>(
-      profile->GetPrefs(), std::make_unique<UIThreadSearchTermsData>(profile),
+      profile->GetPrefs(), std::make_unique<UIThreadSearchTermsData>(),
       WebDataServiceFactory::GetKeywordWebDataForProfile(
           profile, ServiceAccessType::EXPLICIT_ACCESS),
       std::make_unique<ChromeTemplateURLServiceClient>(
           HistoryServiceFactory::GetForProfile(
               profile, ServiceAccessType::EXPLICIT_ACCESS)),
-      nullptr, nullptr, base::Closure());
+      nullptr, base::Closure());
 }
 
 std::unique_ptr<KeyedService> CreateAutocompleteClassifier(
@@ -102,13 +104,17 @@ TestingProfile* TestWithBrowserView::CreateProfile() {
   // location bar.
   AutocompleteClassifierFactory::GetInstance()->SetTestingFactory(
       profile, base::BindRepeating(&CreateAutocompleteClassifier));
+  // ToolbarActionsModel must exist before the toolbar initializes the
+  // extensions area.
+  extensions::LoadErrorReporter::Init(/* enable_noisy_errors */ false);
+  extensions::extension_action_test_util::CreateToolbarModelForProfile(profile);
 
   // Configure the GaiaCookieManagerService to return no accounts.
   signin::SetListAccountsResponseHttpNotFound(test_url_loader_factory());
   return profile;
 }
 
-BrowserWindow* TestWithBrowserView::CreateBrowserWindow() {
+std::unique_ptr<BrowserWindow> TestWithBrowserView::CreateBrowserWindow() {
   // Allow BrowserWithTestWindowTest to use Browser to create the default
   // BrowserView and BrowserFrame.
   return nullptr;

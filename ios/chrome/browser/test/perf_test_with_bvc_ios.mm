@@ -12,15 +12,16 @@
 #include "ios/chrome/browser/autocomplete/autocomplete_classifier_factory.h"
 #include "ios/chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "ios/chrome/browser/browser_state/test_chrome_browser_state_manager.h"
+#import "ios/chrome/browser/main/test_browser.h"
 #include "ios/chrome/browser/search_engines/template_url_service_factory.h"
 #import "ios/chrome/browser/sessions/session_ios.h"
 #import "ios/chrome/browser/sessions/session_service_ios.h"
 #import "ios/chrome/browser/sessions/session_window_ios.h"
 #import "ios/chrome/browser/tabs/tab_model.h"
 #import "ios/chrome/browser/ui/browser_container/browser_container_view_controller.h"
-#import "ios/chrome/browser/ui/browser_view_controller+private.h"
-#import "ios/chrome/browser/ui/browser_view_controller.h"
-#import "ios/chrome/browser/ui/browser_view_controller_dependency_factory.h"
+#import "ios/chrome/browser/ui/browser_view/browser_view_controller+private.h"
+#import "ios/chrome/browser/ui/browser_view/browser_view_controller.h"
+#import "ios/chrome/browser/ui/browser_view/browser_view_controller_dependency_factory.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
 #import "ios/chrome/browser/web/chrome_web_client.h"
 #include "ios/public/provider/chrome/browser/chrome_browser_provider.h"
@@ -45,7 +46,9 @@ PerfTestWithBVC::PerfTestWithBVC(std::string testGroup)
       web_client_(std::make_unique<ChromeWebClient>()),
       provider_(ios::CreateChromeBrowserProvider()),
       browser_state_manager_(
-          std::make_unique<TestChromeBrowserStateManager>(base::FilePath())) {}
+          std::make_unique<TestChromeBrowserStateManager>(base::FilePath())),
+      web_state_list_(&web_state_list_delegate_),
+      otr_web_state_list_(&web_state_list_delegate_) {}
 
 PerfTestWithBVC::PerfTestWithBVC(std::string testGroup,
                                  std::string firstLabel,
@@ -64,7 +67,9 @@ PerfTestWithBVC::PerfTestWithBVC(std::string testGroup,
       web_client_(std::make_unique<ChromeWebClient>()),
       provider_(ios::CreateChromeBrowserProvider()),
       browser_state_manager_(
-          std::make_unique<TestChromeBrowserStateManager>(base::FilePath())) {}
+          std::make_unique<TestChromeBrowserStateManager>(base::FilePath())),
+      web_state_list_(&web_state_list_delegate_),
+      otr_web_state_list_(&web_state_list_delegate_) {}
 
 PerfTestWithBVC::~PerfTestWithBVC() {}
 
@@ -101,15 +106,22 @@ void PerfTestWithBVC::SetUp() {
   // view controller, which is created in OpenStackView().
   tab_model_ =
       [[TabModel alloc] initWithSessionService:[SessionServiceIOS sharedService]
-                                  browserState:chrome_browser_state_.get()];
+                                  browserState:chrome_browser_state_.get()
+                                  webStateList:&web_state_list_];
   [tab_model_ restoreSessionWindow:session.sessionWindows[0]
                  forInitialRestore:YES];
   otr_tab_model_ = [[TabModel alloc]
       initWithSessionService:[SessionServiceIOS sharedService]
                 browserState:chrome_browser_state_
-                                 ->GetOffTheRecordChromeBrowserState()];
+                                 ->GetOffTheRecordChromeBrowserState()
+                webStateList:&otr_web_state_list_];
   [otr_tab_model_ restoreSessionWindow:session.sessionWindows[0]
                      forInitialRestore:YES];
+
+  browser_ =
+      std::make_unique<TestBrowser>(chrome_browser_state_.get(), tab_model_);
+  otr_browser_ = std::make_unique<TestBrowser>(
+      incognito_chrome_browser_state_.get(), otr_tab_model_);
 
   command_dispatcher_ = [[CommandDispatcher alloc] init];
   // Create the browser view controller with its testing factory.
@@ -117,8 +129,7 @@ void PerfTestWithBVC::SetUp() {
       initWithBrowserState:chrome_browser_state_.get()
               webStateList:[tab_model_ webStateList]];
   bvc_ = [[BrowserViewController alloc]
-                    initWithTabModel:tab_model_
-                        browserState:chrome_browser_state_.get()
+                     initWithBrowser:browser_.get()
                    dependencyFactory:bvc_factory_
           applicationCommandEndpoint:nil
                    commandDispatcher:command_dispatcher_
@@ -144,7 +155,7 @@ void PerfTestWithBVC::TearDown() {
   bvc_ = nil;
   bvc_factory_ = nil;
   tab_model_ = nil;
-  [otr_tab_model_ browserStateDestroyed];
+  [otr_tab_model_ disconnect];
   otr_tab_model_ = nil;
 
   // The base class |TearDown| method calls the run loop so the

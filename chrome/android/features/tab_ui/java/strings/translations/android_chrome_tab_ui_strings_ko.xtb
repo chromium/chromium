@@ -1,0 +1,29 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="ko">
+<translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" />개의 탭을 최근 사용하지 않았습니다. 탭을 닫을까요?</translation>
+<translation id="1181037720776840403">삭제</translation>
+<translation id="125153950246128346">다른 탭을 보려면 탭하세요.</translation>
+<translation id="1869137256605757565">{TABS_COUNT,plural, =1{탭 <ph name="TABS_COUNT_ONE" />개}other{탭 <ph name="TABS_COUNT_MANY" />개}}</translation>
+<translation id="257674075312929031">그룹</translation>
+<translation id="2613747923081026172">그룹 만들기</translation>
+<translation id="2671423594960767771">그룹 공유</translation>
+<translation id="2977480621796371840">그룹에서 삭제</translation>
+<translation id="4212246570487010370">계속 탐색</translation>
+<translation id="4648718555153979859">탭은 여기에서 그룹화됩니다.</translation>
+<translation id="5007392906805964215">검토</translation>
+<translation id="5073204694187207510">전체화면 그리드 숨기기</translation>
+<translation id="5082793167783849073">그룹을 만들어서 페이지를 빠르게 비교하세요. 시작하려면 링크를 길게 터치합니다.</translation>
+<translation id="5580090775658607195"><ph name="TAB_COUNT" />개의 탭 그룹화됨</translation>
+<translation id="5792534911093536736">탭 더보기</translation>
+<translation id="58326064309361797">탭을 드래그하여 그룹화하세요.</translation>
+<translation id="6040143037577758943">닫기</translation>
+<translation id="6193448654517602979">탭 선택</translation>
+<translation id="6615455863669487791">표시</translation>
+<translation id="6840760312327750441">탭을 그룹화하려면 탭을 길게 터치한 다음 다른 탭으로 드래그하세요.</translation>
+<translation id="7151209024774799310">그룹에서 탭 삭제</translation>
+<translation id="7559245342362162951">그룹 탭을 전체화면 그리드로 표시</translation>
+<translation id="9150694013019234766">화면 하단의 탭 그룹에서 탭 간 전환</translation>
+<translation id="9169594135889675189">그룹에 새 탭 추가</translation>
+<translation id="959682366969460160">깔끔하게 정리하기</translation>
+</translationbundle>

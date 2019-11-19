@@ -56,7 +56,7 @@ async function middleClickAutoscroll() {
 }
 
 async function wheelScrollDown() {
-  const precise_deltas = true;
+  const precise_deltas = false;
   await waitForCompositorCommit();
   var previous_scroll_offset = scrollable.scrollTop;
 

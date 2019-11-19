@@ -16,10 +16,18 @@ namespace content {
 class BrowserContext;
 }
 
+namespace sync_pb {
+class PrinterSpecifics;
+}
+
 namespace printers_helper {
 
 // Create a test printer.
 chromeos::Printer CreateTestPrinter(int index);
+
+// Create a test printer, as PrinterSpecifics.
+std::unique_ptr<sync_pb::PrinterSpecifics> CreateTestPrinterSpecifics(
+    int index);
 
 // Add printer to the supplied store.
 void AddPrinter(chromeos::SyncedPrintersManager* manager,

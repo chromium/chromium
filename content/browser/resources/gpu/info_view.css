@@ -42,8 +42,8 @@
 #info-view th,
 #info-view td {
   border: 1px solid #777;
-  padding-left: 4px;
-  padding-right: 4px;
+  padding-end: 4px;
+  padding-start: 4px;
   text-align: top;
 }
 
@@ -61,6 +61,14 @@
 
 #info-view .feature-red {
   color: rgb(255, 0, 0);
+}
+
+#info-view .feature-gray {
+  color: rgb(128, 128, 128);
+}
+
+#vulkan-info-value {
+  white-space: pre;
 }
 
 #copy-to-clipboard {

@@ -17,8 +17,8 @@ class PLATFORM_EXPORT CompositorThread : public WorkerThread {
   ~CompositorThread() override;
 
  private:
-  std::unique_ptr<NonMainThreadSchedulerImpl> CreateNonMainThreadScheduler()
-      override;
+  std::unique_ptr<NonMainThreadSchedulerImpl> CreateNonMainThreadScheduler(
+      base::sequence_manager::SequenceManager* sequence_manager) override;
 
   DISALLOW_COPY_AND_ASSIGN(CompositorThread);
 };

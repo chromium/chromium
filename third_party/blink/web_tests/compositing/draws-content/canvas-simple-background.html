@@ -13,6 +13,9 @@
       }
     </style>
     <script>
+        if (window.internals)
+            internals.runtimeFlags.accelerated2dCanvasEnabled = true;
+
         function drawCanvas(canvasID) {
             var canvas = document.getElementById(canvasID);
             var context = canvas.getContext("2d");

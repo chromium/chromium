@@ -38,8 +38,7 @@ UploadFileElementReader::UploadFileElementReader(
       content_length_(0),
       bytes_remaining_(0),
       next_state_(State::IDLE),
-      init_called_while_operation_pending_(false),
-      weak_ptr_factory_(this) {
+      init_called_while_operation_pending_(false) {
   DCHECK(file.IsValid());
   DCHECK(task_runner_.get());
   file_stream_ = std::make_unique<FileStream>(std::move(file), task_runner);
@@ -59,8 +58,7 @@ UploadFileElementReader::UploadFileElementReader(
       content_length_(0),
       bytes_remaining_(0),
       next_state_(State::IDLE),
-      init_called_while_operation_pending_(false),
-      weak_ptr_factory_(this) {
+      init_called_while_operation_pending_(false) {
   DCHECK(task_runner_.get());
 }
 

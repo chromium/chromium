@@ -8,97 +8,97 @@
 #include <utility>
 
 #include "base/logging.h"
-#include "base/time/clock.h"
-#include "base/time/default_clock.h"
+#include "base/no_destructor.h"
 #include "base/timer/timer.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
+#include "components/user_manager/user.h"
+#include "components/user_manager/user_manager.h"
 
 namespace chromeos {
 namespace parent_access {
 
-ParentAccessService::Delegate::Delegate() = default;
-ParentAccessService::Delegate::~Delegate() = default;
+namespace {
+
+// Returns true when the device owner is a child.
+bool IsDeviceOwnedByChild() {
+  AccountId owner_account_id =
+      user_manager::UserManager::Get()->GetOwnerAccountId();
+  if (owner_account_id.empty())
+    return false;
+  const user_manager::User* device_owner =
+      user_manager::UserManager::Get()->FindUser(owner_account_id);
+  CHECK(device_owner);
+  return device_owner->IsChild();
+}
+
+}  // namespace
 
 // static
 void ParentAccessService::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(prefs::kParentAccessCodeConfig);
 }
 
-ParentAccessService::ParentAccessService(
-    std::unique_ptr<ConfigSource> config_source)
-    : config_source_(std::move(config_source)),
-      clock_(base::DefaultClock::GetInstance()) {
-  CreateValidators(config_source_->GetConfigSet());
-  LoginScreenClient::Get()->SetParentAccessDelegate(this);
+// static
+ParentAccessService& ParentAccessService::Get() {
+  static base::NoDestructor<ParentAccessService> instance;
+  return *instance;
 }
 
-ParentAccessService::~ParentAccessService() {
-  if (LoginScreenClient::HasInstance())
-    LoginScreenClient::Get()->SetParentAccessDelegate(nullptr);
+// static
+bool ParentAccessService::IsApprovalRequired(SupervisedAction action) {
+  switch (action) {
+    case SupervisedAction::kUpdateClock:
+    case SupervisedAction::kUpdateTimezone:
+      if (!base::FeatureList::IsEnabled(
+              features::kParentAccessCodeForTimeChange)) {
+        return false;
+      }
+      if (user_manager::UserManager::Get()->IsUserLoggedIn())
+        return user_manager::UserManager::Get()->GetActiveUser()->IsChild();
+      return IsDeviceOwnedByChild();
+  }
 }
 
-void ParentAccessService::SetDelegate(Delegate* delegate) {
-  DCHECK(!(delegate_ && delegate));
-  delegate_ = delegate;
-}
+ParentAccessService::ParentAccessService() = default;
 
-void ParentAccessService::ValidateParentAccessCode(
+ParentAccessService::~ParentAccessService() = default;
+
+bool ParentAccessService::ValidateParentAccessCode(
+    const AccountId& account_id,
     const std::string& access_code,
-    ValidateParentAccessCodeCallback callback) {
+    base::Time validation_time) {
   bool validation_result = false;
-  for (auto& validator : access_code_validators_) {
-    if (validator->Validate(access_code, clock_->Now())) {
-      validation_result = true;
-      break;
+  for (const auto& map_entry : config_source_.config_map()) {
+    if (!account_id.is_valid() || account_id == map_entry.first) {
+      for (const auto& validator : map_entry.second) {
+        if (validator->Validate(access_code, validation_time)) {
+          validation_result = true;
+          break;
+        }
+      }
     }
+    if (validation_result)
+      break;
   }
 
-  if (delegate_)
-    delegate_->OnAccessCodeValidation(validation_result);
+  for (auto& observer : observers_)
+    observer.OnAccessCodeValidation(validation_result, account_id);
 
-  std::move(callback).Run(validation_result);
+  return validation_result;
 }
 
-void ParentAccessService::OnConfigChanged(
-    const ConfigSource::ConfigSet& configs) {
-  CreateValidators(configs);
+void ParentAccessService::LoadConfigForUser(const user_manager::User* user) {
+  config_source_.LoadConfigForUser(user);
 }
 
-void ParentAccessService::SetClockForTesting(base::Clock* clock) {
-  clock_ = clock;
+void ParentAccessService::AddObserver(Observer* observer) {
+  observers_.AddObserver(observer);
 }
 
-void ParentAccessService::CreateValidators(
-    const ConfigSource::ConfigSet& configs) {
-  access_code_validators_.clear();
-
-  // Validators are added to |access_code_validators_| in the order that
-  // optimizes validation process. Parent access codes will be validated
-  // starting from the front of the vector. The correct validation order:
-  // * future configuration
-  // * current configuration
-  // * old configurations
-  if (configs.future_config.has_value()) {
-    access_code_validators_.push_back(
-        std::make_unique<Authenticator>(configs.future_config.value()));
-  } else {
-    LOG(WARNING) << "No future config for parent access code in the policy";
-  }
-
-  if (configs.current_config.has_value()) {
-    access_code_validators_.push_back(
-        std::make_unique<Authenticator>(configs.current_config.value()));
-  } else {
-    LOG(WARNING) << "No current config for parent access code in the policy";
-  }
-
-  for (const auto& config : configs.old_configs) {
-    access_code_validators_.push_back(std::make_unique<Authenticator>(config));
-  }
-
-  if (access_code_validators_.empty())
-    LOG(ERROR) << "No config to validate parent access available";
+void ParentAccessService::RemoveObserver(Observer* observer) {
+  observers_.RemoveObserver(observer);
 }
 
 }  // namespace parent_access

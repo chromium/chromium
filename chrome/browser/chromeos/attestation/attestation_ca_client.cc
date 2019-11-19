@@ -145,9 +145,8 @@ void AttestationCAClient::FetchURL(const std::string& url,
   auto resource_request = std::make_unique<network::ResourceRequest>();
   resource_request->url = GURL(url);
   resource_request->method = "POST";
-  resource_request->load_flags = net::LOAD_DO_NOT_SEND_COOKIES |
-                                 net::LOAD_DO_NOT_SAVE_COOKIES |
-                                 net::LOAD_DISABLE_CACHE;
+  resource_request->load_flags = net::LOAD_DISABLE_CACHE;
+  resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
 
   auto url_loader = network::SimpleURLLoader::Create(
       std::move(resource_request), traffic_annotation);

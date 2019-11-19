@@ -47,9 +47,9 @@ void CameraDetector::StartPresenceCheck(const base::Closure& callback) {
   DVLOG(1) << "Starting camera presence check";
   presence_check_in_progress_ = true;
   base::PostTaskAndReplyWithResult(
-      base::CreateTaskRunnerWithTraits(
-          {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
-           base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})
+      base::CreateTaskRunner({base::ThreadPool(), base::MayBlock(),
+                              base::TaskPriority::BEST_EFFORT,
+                              base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})
           .get(),
       FROM_HERE, base::Bind(&CameraDetector::CheckPresence),
       base::Bind(&CameraDetector::OnPresenceCheckDone, callback));

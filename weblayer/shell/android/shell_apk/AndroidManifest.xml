@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!-- Copyright 2019 The Chromium Authors. All rights reserved.
+
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file.
+ -->
+
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="org.chromium.weblayer.shell">
+
+    <application android:label="WebLayer shell">
+        <activity android:name="WebLayerShellActivity"
+                  android:launchMode="singleTask"
+                  android:theme="@android:style/Theme.Holo.Light.NoActionBar"
+                  android:windowSoftInputMode="adjustPan|stateUnspecified"
+                  android:configChanges="orientation|screenSize">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity>
+        <activity android:name="InstrumentationActivity">
+        </activity>
+        {% if weblayer_package is defined %}
+            <meta-data android:name="org.chromium.weblayer.WebLayerPackage"
+                       android:value="{{ weblayer_package }}"/>
+        {% endif %}
+    </application>
+</manifest>

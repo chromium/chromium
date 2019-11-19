@@ -10,10 +10,10 @@
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/metrics/histogram_macros.h"
+#include "components/spellcheck/browser/android/jni_headers/SpellCheckerSessionBridge_jni.h"
 #include "components/spellcheck/common/spellcheck_result.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
-#include "jni/SpellCheckerSessionBridge_jni.h"
 
 using base::android::JavaParamRef;
 

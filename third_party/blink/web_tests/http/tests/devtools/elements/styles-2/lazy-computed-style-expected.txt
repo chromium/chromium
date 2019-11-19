@@ -5,7 +5,7 @@ Tests that computed styles expand and allow tracing to style rules.
 element.style { ()
 
 [expanded] 
-#inspected { (<style>…</style>)
+#inspected { (<style>)
     background: gray;
         background-image: initial;
         background-position-x: initial;
@@ -19,12 +19,12 @@ element.style { ()
         background-color: gray;
 
 [expanded] 
-#inspected { (<style>…</style>)
+#inspected { (<style>)
 /-- overloaded --/     background-color: black;
     font-family: Courier;
 
 [expanded] 
-#inspected { (<style>…</style>)
+#inspected { (<style>)
 /-- overloaded --/     background-color: green;
 /-- overloaded --/     font-family: Times;
 
@@ -39,39 +39,39 @@ html { (user agent stylesheet)
 
 ==== All styles (computed should be there) ====
 background-attachment: scroll;
-    initial - #inspected <style>…</style>
+    initial - #inspected <style>
 background-clip: border-box;
-    initial - #inspected <style>…</style>
+    initial - #inspected <style>
 background-color: rgb(128, 128, 128);
-    gray - #inspected <style>…</style>
-    OVERLOADED black - #inspected <style>…</style>
-    OVERLOADED green - #inspected <style>…</style>
+    gray - #inspected <style>
+    OVERLOADED black - #inspected <style>
+    OVERLOADED green - #inspected <style>
 background-image: none;
-    initial - #inspected <style>…</style>
+    initial - #inspected <style>
 background-origin: padding-box;
-    initial - #inspected <style>…</style>
+    initial - #inspected <style>
 background-position-x: 0%;
-    initial - #inspected <style>…</style>
+    initial - #inspected <style>
 background-position-y: 0%;
-    initial - #inspected <style>…</style>
+    initial - #inspected <style>
 background-repeat-x: ;
-    initial - #inspected <style>…</style>
+    initial - #inspected <style>
 background-repeat-y: ;
-    initial - #inspected <style>…</style>
+    initial - #inspected <style>
 background-size: auto;
-    initial - #inspected <style>…</style>
+    initial - #inspected <style>
 color: rgb(0, 0, 0);
     -internal-root-color - html user agent stylesheet
 display: block;
     block - div user agent stylesheet
 font-family: Courier;
-    Courier - #inspected <style>…</style>
-    OVERLOADED Times - #inspected <style>…</style>
+    Courier - #inspected <style>
+    OVERLOADED Times - #inspected <style>
 [expanded] 
 element.style { ()
 
 [expanded] 
-#inspected { (<style>…</style>)
+#inspected { (<style>)
     background: gray;
         background-image: initial;
         background-position-x: initial;
@@ -85,12 +85,12 @@ element.style { ()
         background-color: gray;
 
 [expanded] 
-#inspected { (<style>…</style>)
+#inspected { (<style>)
 /-- overloaded --/     background-color: black;
     font-family: Courier;
 
 [expanded] 
-#inspected { (<style>…</style>)
+#inspected { (<style>)
 /-- overloaded --/     background-color: green;
 /-- overloaded --/     font-family: Times;
 

@@ -72,6 +72,7 @@ cr.define('settings', function() {
           code: 'sw',
           displayName: 'Swahili',
           nativeDisplayName: 'Kiswahili',
+          supportsSpellcheck: true,
           supportsTranslate: true,
           supportsUI: true,
         },
@@ -239,7 +240,7 @@ cr.define('settings', function() {
      */
     moveLanguage(languageCode, moveType) {
       let languageCodes = this.settingsPrefs_.prefs.intl.accept_languages.value;
-      let languages = languageCodes.split(',');
+      const languages = languageCodes.split(',');
       const index = languages.indexOf(languageCode);
 
       if (moveType == chrome.languageSettingsPrivate.MoveType.TOP) {
@@ -254,7 +255,7 @@ cr.define('settings', function() {
           return;
         }
 
-        let temp = languages[index - 1];
+        const temp = languages[index - 1];
         languages[index - 1] = languageCode;
         languages[index] = temp;
       } else if (moveType == chrome.languageSettingsPrivate.MoveType.DOWN) {
@@ -262,7 +263,7 @@ cr.define('settings', function() {
           return;
         }
 
-        let temp = languages[index + 1];
+        const temp = languages[index + 1];
         languages[index + 1] = languageCode;
         languages[index] = temp;
       }
@@ -405,6 +406,11 @@ cr.define('settings', function() {
         value: 'en-US,sw',
       },
       {
+        key: 'spellcheck.blacklisted_dictionaries',
+        type: chrome.settingsPrivate.PrefType.LIST,
+        value: [],
+      },
+      {
         key: 'spellcheck.dictionaries',
         type: chrome.settingsPrivate.PrefType.LIST,
         value: ['en-US'],
@@ -413,6 +419,11 @@ cr.define('settings', function() {
         key: 'spellcheck.forced_dictionaries',
         type: chrome.settingsPrivate.PrefType.LIST,
         value: [],
+      },
+      {
+        key: 'spellcheck.use_spelling_service',
+        type: chrome.settingsPrivate.PrefType.BOOLEAN,
+        value: false,
       },
       {
         key: 'translate.enabled',

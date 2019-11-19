@@ -51,7 +51,7 @@ scoped_refptr<X509Certificate> CreateCertificateChainFromFile(
   CertificateList certs = CreateCertificateListFromFile(
       certs_dir, cert_file, format);
   if (certs.empty())
-    return NULL;
+    return nullptr;
 
   std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> intermediates;
   for (size_t i = 1; i < certs.size(); ++i)
@@ -69,13 +69,13 @@ scoped_refptr<X509Certificate> ImportCertFromFile(
   base::FilePath cert_path = certs_dir.AppendASCII(cert_file);
   std::string cert_data;
   if (!base::ReadFileToString(cert_path, &cert_data))
-    return NULL;
+    return nullptr;
 
   CertificateList certs_in_file =
       X509Certificate::CreateCertificateListFromBytes(
           cert_data.data(), cert_data.size(), X509Certificate::FORMAT_AUTO);
   if (certs_in_file.empty())
-    return NULL;
+    return nullptr;
   return certs_in_file[0];
 }
 

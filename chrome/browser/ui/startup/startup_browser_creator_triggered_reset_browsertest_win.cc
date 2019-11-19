@@ -122,12 +122,6 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTriggeredResetTest,
   // Avoid showing the Welcome page.
   profile->GetPrefs()->SetBoolean(prefs::kHasSeenWelcomePage, true);
 
-#if defined(OS_WIN)
-  // Do not show the Windows 10 promo page.
-  g_browser_process->local_state()->SetBoolean(prefs::kHasSeenWin10PromoPage,
-                                               true);
-#endif
-
   // Set the startup preference to open these URLs.
   SessionStartupPref pref(SessionStartupPref::URLS);
   pref.urls = urls;
@@ -243,13 +237,15 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTriggeredResetTest,
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   base::FilePath path =
       profile_manager->user_data_dir().AppendASCII("test_profile");
-  Profile* other_profile = nullptr;
+  std::unique_ptr<Profile> other_profile;
   {
     base::ScopedAllowBlockingForTesting allow_blocking;
     other_profile =
         Profile::CreateProfile(path, nullptr, Profile::CREATE_MODE_SYNCHRONOUS);
   }
-  profile_manager->RegisterTestingProfile(other_profile, true, false);
+  Profile* other_profile_ptr = other_profile.get();
+  profile_manager->RegisterTestingProfile(std::move(other_profile), true,
+                                          false);
 
   // Use a couple same-site HTTP URLs.
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -260,7 +256,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTriggeredResetTest,
   // Set the startup preference to open these URLs.
   SessionStartupPref other_prefs(SessionStartupPref::URLS);
   other_prefs.urls = urls;
-  SessionStartupPref::SetStartupPref(other_profile, other_prefs);
+  SessionStartupPref::SetStartupPref(other_profile_ptr, other_prefs);
 
   // Again prep the next launch to get a reset prompt.
   MockTriggeredProfileResetter::SetHasResetTrigger(true);
@@ -269,11 +265,11 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTriggeredResetTest,
   {
     StartupBrowserCreatorImpl launch(base::FilePath(), dummy,
                                      chrome::startup::IS_NOT_FIRST_RUN);
-    ASSERT_TRUE(launch.Launch(other_profile, std::vector<GURL>(), false));
+    ASSERT_TRUE(launch.Launch(other_profile_ptr, std::vector<GURL>(), false));
   }
 
   Browser* other_profile_browser =
-      chrome::FindBrowserWithProfile(other_profile);
+      chrome::FindBrowserWithProfile(other_profile_ptr);
   ASSERT_NE(nullptr, other_profile_browser);
 
   // Check for the expected reset dialog in the second browser too.

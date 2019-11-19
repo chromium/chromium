@@ -7,9 +7,11 @@
 
 #include "base/base_export.h"
 #include "base/logging.h"
+#include "base/message_loop/message_pump_type.h"
 #include "base/message_loop/timer_slack.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 
 namespace base {
 
@@ -17,6 +19,17 @@ class TimeTicks;
 
 class BASE_EXPORT MessagePump {
  public:
+  using MessagePumpFactory = std::unique_ptr<MessagePump>();
+  // Uses the given base::MessagePumpFactory to override the default MessagePump
+  // implementation for 'MessagePumpType::UI'. May only be called once.
+  static void OverrideMessagePumpForUIFactory(MessagePumpFactory* factory);
+
+  // Returns true if the MessagePumpForUI has been overidden.
+  static bool IsMessagePumpForUIFactoryOveridden();
+
+  // Creates the default MessagePump based on |type|. Caller owns return value.
+  static std::unique_ptr<MessagePump> Create(MessagePumpType type);
+
   // Please see the comments above the Run method for an illustration of how
   // these delegate methods are used.
   class BASE_EXPORT Delegate {
@@ -59,8 +72,8 @@ class BASE_EXPORT MessagePump {
     // |!delayed_run_time.is_max()|; and it will not be invoked again until
     // ScheduleWork() otherwise. Redundant/spurious invocations outside of those
     // guarantees are not impossible however. DoIdleWork() will not be called so
-    // long as this returns a null |delayed_run_time|. See design doc for
-    // details :
+    // long as this returns a NextWorkInfo which is_immediate(). See design doc
+    // for details :
     // https://docs.google.com/document/d/1no1JMli6F1r8gTF9KDIOvoWkUUZcXDktPf4A1IXYc3M/edit#
     virtual NextWorkInfo DoSomeWork() = 0;
 
@@ -158,12 +171,16 @@ class BASE_EXPORT MessagePump {
   // only be used on the thread that called Run.
   virtual void Quit() = 0;
 
-  // Schedule a DoWork callback to happen reasonably soon.  Does nothing if a
-  // DoWork callback is already scheduled. Once this call is made, DoWork should
-  // not be "starved" at least until it returns a value of false. Thread-safe
-  // (and callers should avoid holding a Lock at all cost while making this call
-  // as some platforms' priority boosting features have been observed to cause
-  // the caller to get descheduled : https://crbug.com/890978).
+  // Schedule a DoSomeWork callback to happen reasonably soon.  Does nothing if
+  // a DoSomeWork callback is already scheduled. Once this call is made,
+  // DoSomeWork is guaranteed to be called repeatedly at least until it returns
+  // a non-immediate NextWorkInfo (or, if this pump wasn't yet migrated,
+  // DoWork() will be called until it returns false). This call can be expensive
+  // and callers should attempt not to invoke it again before a non-immediate
+  // NextWorkInfo was returned from DoSomeWork(). Thread-safe (and callers
+  // should avoid holding a Lock at all cost while making this call as some
+  // platforms' priority boosting features have been observed to cause the
+  // caller to get descheduled : https://crbug.com/890978).
   virtual void ScheduleWork() = 0;
 
   // Schedule a DoDelayedWork callback to happen at the specified time,

@@ -5,7 +5,8 @@ include_rules = [
     "+mojo/public/cpp/bindings",
     "+services/network/public/cpp/shared_url_loader_factory.h",
     "+services/service_manager/public/mojom/interface_provider.mojom-blink.h",
-    "+services/viz/public/interfaces/hit_test/hit_test_region_list.mojom-blink.h",
+    "+services/service_manager/public/mojom/interface_provider.mojom-blink-forward.h",
+    "+services/viz/public/mojom/hit_test/hit_test_region_list.mojom-blink.h",
     "+third_party/blink/public/common",
     "+third_party/blink/public/web",
     "+third_party/blink/renderer/bindings",
@@ -19,3 +20,13 @@ include_rules = [
     "+third_party/blink/renderer/modules",
     "-web",
 ]
+
+specific_include_rules = {
+    "media_capabilities_fuzzer.cc": [
+        "+testing/libfuzzer/proto/lpm_interface.h",
+        "+third_party/protobuf/src/google/protobuf/repeated_field.h",
+    ],
+    "canvas_fuzzer.cc": [
+        "+base/test/bind_test_util.h",
+    ]
+}

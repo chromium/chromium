@@ -5,13 +5,17 @@
 package org.chromium.chrome.browser.signin;
 
 import android.app.Dialog;
-import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.CheckBox;
+import android.widget.TextView;
 
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.ProfileAccountManagementMetrics;
 import org.chromium.components.signin.GAIAServiceType;
 
@@ -32,8 +36,10 @@ public class SignOutDialogFragment extends DialogFragment implements
     public interface SignOutDialogListener {
         /**
          * Called when the user clicks "Sign out".
+         *
+         * @param forceWipeUserData Whether the user selected to wipe local device data.
          */
-        void onSignOutClicked();
+        void onSignOutClicked(boolean forceWipeUserData);
 
         /**
          * Called when the dialog is dismissed.
@@ -45,6 +51,7 @@ public class SignOutDialogFragment extends DialogFragment implements
     }
 
     private boolean mSignOutClicked;
+    private CheckBox mWipeUserData;
 
     /**
      * The GAIA service that's prompted this dialog.
@@ -57,56 +64,57 @@ public class SignOutDialogFragment extends DialogFragment implements
             mGaiaServiceType = getArguments().getInt(
                     SHOW_GAIA_SERVICE_TYPE_EXTRA, mGaiaServiceType);
         }
-
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.UNIFIED_CONSENT)) {
-            return createDialogUnifiedConsentFeatureEnabled();
+        String domain = IdentityServicesProvider.getSigninManager().getManagementDomain();
+        if (domain != null) {
+            return createDialogForManagedAccount(domain);
         }
-        return createDialogPreUnifiedConsent();
+
+        return createDialog();
     }
 
-    private Dialog createDialogUnifiedConsentFeatureEnabled() {
-        String domain = SigninManager.get().getManagementDomain();
-        String message = domain == null
-                ? getString(R.string.signout_message)
-                : getString(R.string.signout_managed_account_message, domain);
+    private Dialog createDialogForManagedAccount(String domain) {
         return new AlertDialog.Builder(getActivity(), R.style.Theme_Chromium_AlertDialog)
-                .setTitle(R.string.signout_title)
+                .setTitle(R.string.signout_managed_account_title)
                 .setPositiveButton(R.string.continue_button, this)
                 .setNegativeButton(R.string.cancel, this)
-                .setMessage(message)
+                .setMessage(getString(R.string.signout_managed_account_message, domain))
                 .create();
     }
 
-    private Dialog createDialogPreUnifiedConsent() {
-        String domain = SigninManager.get().getManagementDomain();
-        String message = domain == null
-                ? getString(R.string.signout_message_legacy)
-                : getString(R.string.signout_managed_account_message, domain);
-        return new AlertDialog.Builder(getActivity(), R.style.Theme_Chromium_AlertDialog)
-                .setTitle(R.string.signout_title_legacy)
-                .setPositiveButton(R.string.signout_dialog_positive_button, this)
+    private Dialog createDialog() {
+        AlertDialog.Builder builder =
+                new AlertDialog.Builder(getActivity(), R.style.Theme_Chromium_AlertDialog);
+        LayoutInflater inflater = LayoutInflater.from(builder.getContext());
+        View body = inflater.inflate(R.layout.signout_wipe_storage_dialog, null);
+        mWipeUserData = body.findViewById(R.id.remove_local_data);
+
+        ((TextView) body.findViewById(android.R.id.message)).setText(R.string.signout_message);
+        return builder.setTitle(R.string.signout_title)
+                .setView(body)
+                .setPositiveButton(R.string.continue_button, this)
                 .setNegativeButton(R.string.cancel, this)
-                .setMessage(message)
                 .create();
     }
 
     @Override
     public void onClick(DialogInterface dialog, int which) {
         if (which == AlertDialog.BUTTON_POSITIVE) {
-            AccountManagementScreenHelper.logEvent(
-                    ProfileAccountManagementMetrics.SIGNOUT_SIGNOUT, mGaiaServiceType);
+            SigninUtils.logEvent(ProfileAccountManagementMetrics.SIGNOUT_SIGNOUT, mGaiaServiceType);
 
             mSignOutClicked = true;
+            if (IdentityServicesProvider.getSigninManager().getManagementDomain() == null) {
+                RecordHistogram.recordBooleanHistogram(
+                        "Signin.UserRequestedWipeDataOnSignout", mWipeUserData.isChecked());
+            }
             SignOutDialogListener targetFragment = (SignOutDialogListener) getTargetFragment();
-            targetFragment.onSignOutClicked();
+            targetFragment.onSignOutClicked(mWipeUserData != null && mWipeUserData.isChecked());
         }
     }
 
     @Override
     public void onDismiss(DialogInterface dialog) {
         super.onDismiss(dialog);
-        AccountManagementScreenHelper.logEvent(
-                ProfileAccountManagementMetrics.SIGNOUT_CANCEL, mGaiaServiceType);
+        SigninUtils.logEvent(ProfileAccountManagementMetrics.SIGNOUT_CANCEL, mGaiaServiceType);
 
         SignOutDialogListener targetFragment = (SignOutDialogListener) getTargetFragment();
         targetFragment.onSignOutDialogDismissed(mSignOutClicked);

@@ -12,10 +12,10 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-CWV_EXPORT
-// Represents a suggestion for an address, creditcard, or password form based
-// off of a single field. Filling using a suggestion may fill more than one
-// field at once.
+// Represents a suggestion for an address, credit card, or password form based
+// off of a single field. May also represent non-fillable suggestions whose
+// action when used is described in its |value| property.
+// Filling using a suggestion may fill more than one field at once.
 // Example:
 //   If an address profile is:
 //   John Doe
@@ -36,6 +36,7 @@ CWV_EXPORT
 //   |value| "John"
 //   |displayDescription| "1600 Amphitheatre Pkwy ..."
 //   Using this suggestion would replace all fields with the appropriate value.
+CWV_EXPORT
 @interface CWVAutofillSuggestion : NSObject
 
 // The 'name' attribute of the html form element.
@@ -49,11 +50,12 @@ CWV_EXPORT
 @property(nonatomic, copy, readonly) NSString* frameID;
 
 // The string that will replace the field's value attribute.
+// If this is a non-fillable suggestion, this will describe its action.
 @property(nonatomic, copy, readonly) NSString* value;
 
 // Non-nil if this suggestion is created from a credit card or address profile.
 // Contain extra information from that profile to help differentiate from other
-// suggestions.
+// suggestions. Not applicable for non-fillable suggestions.
 @property(nonatomic, copy, readonly, nullable) NSString* displayDescription;
 
 // The icon image of the suggestion, currently this is only used for displaying

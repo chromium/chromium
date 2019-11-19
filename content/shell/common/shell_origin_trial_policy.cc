@@ -33,7 +33,7 @@ ShellOriginTrialPolicy::ShellOriginTrialPolicy()
 ShellOriginTrialPolicy::~ShellOriginTrialPolicy() {}
 
 bool ShellOriginTrialPolicy::IsOriginTrialsSupported() const {
-  return base::FeatureList::IsEnabled(features::kOriginTrials);
+  return true;
 }
 
 base::StringPiece ShellOriginTrialPolicy::GetPublicKey() const {

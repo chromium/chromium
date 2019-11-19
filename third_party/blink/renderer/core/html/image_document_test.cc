@@ -66,7 +66,7 @@ class WindowToViewportScalingChromeClient : public EmptyChromeClient {
       : EmptyChromeClient(), scale_factor_(1.f) {}
 
   void SetScalingFactor(float s) { scale_factor_ = s; }
-  float WindowToViewportScalar(const float s) const override {
+  float WindowToViewportScalar(LocalFrame*, const float s) const override {
     return s * scale_factor_;
   }
 
@@ -76,7 +76,9 @@ class WindowToViewportScalingChromeClient : public EmptyChromeClient {
 
 class ImageDocumentTest : public testing::Test {
  protected:
-  void TearDown() override { ThreadState::Current()->CollectAllGarbage(); }
+  void TearDown() override {
+    ThreadState::Current()->CollectAllGarbageForTesting();
+  }
 
   void CreateDocumentWithoutLoadingImage(int view_width, int view_height);
   void CreateDocument(int view_width, int view_height);
@@ -101,14 +103,15 @@ void ImageDocumentTest::CreateDocumentWithoutLoadingImage(int view_width,
   FillWithEmptyClients(page_clients);
   chrome_client_ = MakeGarbageCollected<WindowToViewportScalingChromeClient>();
   page_clients.chrome_client = chrome_client_;
-  dummy_page_holder_ =
-      DummyPageHolder::Create(IntSize(view_width, view_height), &page_clients);
+  dummy_page_holder_ = std::make_unique<DummyPageHolder>(
+      IntSize(view_width, view_height), &page_clients);
 
   LocalFrame& frame = dummy_page_holder_->GetFrame();
   frame.GetDocument()->Shutdown();
   DocumentInit init = DocumentInit::Create().WithDocumentLoader(
       frame.Loader().GetDocumentLoader());
   frame.DomWindow()->InstallNewDocument("image/jpeg", init, false);
+  frame.GetDocument()->SetURL(KURL("http://www.example.com/image.jpg"));
 }
 
 void ImageDocumentTest::CreateDocument(int view_width, int view_height) {
@@ -234,16 +237,26 @@ TEST_F(ImageDocumentTest, MAYBE(ImageCenteredAtDeviceScaleFactor)) {
   GetDocument().ImageClicked(15, 27);
   ScrollOffset offset =
       GetDocument().GetFrame()->View()->LayoutViewport()->GetScrollOffset();
-  EXPECT_EQ(22, offset.Width());
-  EXPECT_EQ(42, offset.Height());
+  if (RuntimeEnabledFeatures::FractionalScrollOffsetsEnabled()) {
+    EXPECT_EQ(22.5f, offset.Width());
+    EXPECT_EQ(42, offset.Height());
+  } else {
+    EXPECT_EQ(22, offset.Width());
+    EXPECT_EQ(42, offset.Height());
+  }
 
   GetDocument().ImageClicked(20, 20);
 
   GetDocument().ImageClicked(12, 15);
   offset =
       GetDocument().GetFrame()->View()->LayoutViewport()->GetScrollOffset();
-  EXPECT_EQ(11, offset.Width());
-  EXPECT_EQ(22, offset.Height());
+  if (RuntimeEnabledFeatures::FractionalScrollOffsetsEnabled()) {
+    EXPECT_EQ(11.25f, offset.Width());
+    EXPECT_EQ(22.5f, offset.Height());
+  } else {
+    EXPECT_EQ(11, offset.Width());
+    EXPECT_EQ(22, offset.Height());
+  }
 }
 
 class ImageDocumentViewportTest : public SimTest {
@@ -280,7 +293,7 @@ TEST_F(ImageDocumentViewportTest, HidingURLBarDoesntChangeImageLocation) {
   // Initialize with the URL bar showing. Make the viewport very thin so that
   // we load an image much wider than the viewport but fits vertically. The
   // page will load zoomed out so the image will be vertically centered.
-  WebView().ResizeWithBrowserControls(IntSize(5, 40), 10, 0, true);
+  WebView().ResizeWithBrowserControls(IntSize(5, 40), 10, 10, true);
   SimRequest request("https://example.com/test.jpg", "image/jpeg");
   LoadURL("https://example.com/test.jpg");
 
@@ -307,11 +320,13 @@ TEST_F(ImageDocumentViewportTest, HidingURLBarDoesntChangeImageLocation) {
 
   // Hide the URL bar. This will make the viewport taller but won't change the
   // layout size so the image location shouldn't change.
-  WebView().ResizeWithBrowserControls(IntSize(5, 50), 10, 0, false);
+  WebView().ResizeWithBrowserControls(IntSize(5, 50), 10, 10, false);
   Compositor().BeginFrame();
   rect = img->getBoundingClientRect();
+  EXPECT_EQ(50, rect->width());
+  EXPECT_EQ(50, rect->height());
   EXPECT_EQ(0, rect->x());
-  EXPECT_EQ(175, rect->y());
+  EXPECT_EQ(125, rect->y());
 }
 
 TEST_F(ImageDocumentViewportTest, ZoomForDSFScaleImage) {

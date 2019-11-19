@@ -39,18 +39,17 @@
 #ifndef CHROME_BROWSER_METRICS_THREAD_WATCHER_H_
 #define CHROME_BROWSER_METRICS_THREAD_WATCHER_H_
 
+#include <stdint.h>
+
 #include <map>
 #include <string>
 #include <vector>
-
-#include <stdint.h>
 
 #include "base/command_line.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/metrics/histogram.h"
 #include "base/single_thread_task_runner.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/platform_thread.h"
@@ -59,15 +58,15 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/metrics/call_stack_profile_params.h"
-#include "components/omnibox/browser/omnibox_event_global_tracker.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_registrar.h"
 
 class CustomThreadWatcher;
 class StartupTimeBomb;
 class ThreadWatcherList;
-class ThreadWatcherObserver;
+
+namespace base {
+class HistogramBase;
+}
 
 // This class performs health check on threads that would like to be watched.
 class ThreadWatcher {
@@ -284,7 +283,7 @@ class ThreadWatcher {
   // We use this factory to create callback tasks for ThreadWatcher object. We
   // use this during ping-pong messaging between WatchDog thread and watched
   // thread.
-  base::WeakPtrFactory<ThreadWatcher> weak_ptr_factory_;
+  base::WeakPtrFactory<ThreadWatcher> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ThreadWatcher);
 };
@@ -437,61 +436,6 @@ class ThreadWatcherList {
   RegistrationList registered_;
 
   DISALLOW_COPY_AND_ASSIGN(ThreadWatcherList);
-};
-
-// This class ensures that the thread watching is actively taking place. Only
-// one instance of this class exists.
-class ThreadWatcherObserver : public content::NotificationObserver {
- public:
-  // Registers |g_thread_watcher_observer_| as the Notifications observer.
-  // |wakeup_interval| specifies how often to wake up thread watchers. This
-  // method is accessible on UI thread.
-  static void SetupNotifications(const base::TimeDelta& wakeup_interval);
-
-  // Removes all ints from |registrar_| and deletes
-  // |g_thread_watcher_observer_|. This method is accessible on UI thread.
-  static void RemoveNotifications();
-
- private:
-  // Constructor of |g_thread_watcher_observer_| singleton.
-  explicit ThreadWatcherObserver(const base::TimeDelta& wakeup_interval);
-
-  // Destructor of |g_thread_watcher_observer_| singleton.
-  ~ThreadWatcherObserver() override;
-
-  // This ensures all thread watchers are active because there is some user
-  // activity. It will wake up all thread watchers every |wakeup_interval_|
-  // seconds. This is the implementation of content::NotificationObserver. When
-  // a matching notification is posted to the notification service, this method
-  // is called.
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override;
-
-  // Called when a URL is opened from the Omnibox.
-  void OnURLOpenedFromOmnibox(OmniboxLog* log);
-
-  // Called when user activity is detected.
-  void OnUserActivityDetected();
-
-  // The singleton of this class.
-  static ThreadWatcherObserver* g_thread_watcher_observer_;
-
-  // The registrar that holds ints to be observed.
-  content::NotificationRegistrar registrar_;
-
-  // This is the last time when woke all thread watchers up.
-  base::TimeTicks last_wakeup_time_;
-
-  // It is the time interval between wake up calls to thread watchers.
-  const base::TimeDelta wakeup_interval_;
-
-  // Subscription for receiving callbacks that a URL was opened from the
-  // omnibox.
-  std::unique_ptr<base::CallbackList<void(OmniboxLog*)>::Subscription>
-      omnibox_url_opened_subscription_;
-
-  DISALLOW_COPY_AND_ASSIGN(ThreadWatcherObserver);
 };
 
 // Class for WatchDogThread and in its Init method, we start watching UI, IO,

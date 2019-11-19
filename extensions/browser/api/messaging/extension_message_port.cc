@@ -4,6 +4,9 @@
 
 #include "extensions/browser/api/messaging/extension_message_port.h"
 
+#include <memory>
+#include <utility>
+
 #include "base/bind.h"
 #include "base/scoped_observer.h"
 #include "base/strings/strcat.h"
@@ -14,6 +17,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "extensions/browser/api/messaging/channel_endpoint.h"
 #include "extensions/browser/extension_host.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/browser/process_manager_observer.h"
@@ -34,6 +38,7 @@ std::string PortIdToString(const extensions::PortId& port_id) {
 namespace extensions {
 
 const char kReceivingEndDoesntExistError[] =
+    // TODO(lazyboy): Test these in service worker implementation.
     "Could not establish connection. Receiving end does not exist.";
 
 // Helper class to detect when frames are destroyed.
@@ -102,6 +107,13 @@ class ExtensionMessagePort::FrameTracker : public content::WebContentsObserver,
   DISALLOW_COPY_AND_ASSIGN(FrameTracker);
 };
 
+// Represents target of an IPC (render frame, ServiceWorker or render process).
+struct ExtensionMessagePort::IPCTarget {
+  content::RenderProcessHost* render_process_host;
+  content::RenderFrameHost* render_frame_host;
+  int worker_thread_id;
+};
+
 ExtensionMessagePort::ExtensionMessagePort(
     base::WeakPtr<ChannelDelegate> channel_delegate,
     const PortId& port_id,
@@ -119,6 +131,12 @@ ExtensionMessagePort::ExtensionMessagePort(
                        ->GetRenderFrameHostsForExtension(extension_id);
   for (content::RenderFrameHost* rfh : all_hosts)
     RegisterFrame(rfh);
+
+  std::vector<WorkerId> running_workers_in_process =
+      ProcessManager::Get(browser_context_)
+          ->GetServiceWorkers(extension_id_, extension_process_->GetID());
+  for (const WorkerId& running_worker_id : running_workers_in_process)
+    RegisterWorker(running_worker_id);
 
   frame_tracker_->TrackExtensionProcessFrames();
 }
@@ -169,6 +187,35 @@ ExtensionMessagePort::ExtensionMessagePort(
   }
 }
 
+ExtensionMessagePort::ExtensionMessagePort(
+    base::WeakPtr<ChannelDelegate> channel_delegate,
+    const PortId& port_id,
+    content::BrowserContext* browser_context)
+    : weak_channel_delegate_(channel_delegate),
+      port_id_(port_id),
+      browser_context_(browser_context) {}
+
+// static
+std::unique_ptr<ExtensionMessagePort> ExtensionMessagePort::CreateForEndpoint(
+    base::WeakPtr<ChannelDelegate> channel_delegate,
+    const PortId& port_id,
+    const std::string& extension_id,
+    const ChannelEndpoint& endpoint,
+    bool include_child_frames) {
+  if (endpoint.is_for_render_frame()) {
+    return std::make_unique<ExtensionMessagePort>(
+        channel_delegate, port_id, extension_id, endpoint.GetRenderFrameHost(),
+        include_child_frames);
+  }
+  DCHECK(!include_child_frames);
+  // NOTE: We don't want all the workers within the extension, so we cannot
+  // reuse other constructor from above.
+  std::unique_ptr<ExtensionMessagePort> port(new ExtensionMessagePort(
+      channel_delegate, port_id, endpoint.browser_context()));
+  port->RegisterWorker(endpoint.GetWorkerId());
+  return port;
+}
+
 ExtensionMessagePort::~ExtensionMessagePort() {}
 
 void ExtensionMessagePort::RemoveCommonFrames(const MessagePort& port) {
@@ -188,7 +235,7 @@ bool ExtensionMessagePort::HasFrame(content::RenderFrameHost* rfh) const {
 }
 
 bool ExtensionMessagePort::IsValidPort() {
-  return !frames_.empty();
+  return !frames_.empty() || !service_workers_.empty();
 }
 
 void ExtensionMessagePort::RevalidatePort() {
@@ -199,14 +246,29 @@ void ExtensionMessagePort::RevalidatePort() {
 
   // Only opener ports need to be revalidated, because these are created in the
   // renderer before the browser knows about them.
-  DCHECK(!extension_process_);
-  DCHECK_LE(frames_.size(), 1U);
+  if (service_workers_.empty())
+    DCHECK(!extension_process_);
+  DCHECK_LE(frames_.size() + service_workers_.size(), 1U);
 
-  // TODO(crbug.com/925918): Support messages to Service Worker.
-  const int thread_id = kMainThreadId;
+  DCHECK(frames_.empty() ^ service_workers_.empty())
+      << "Either frame or Service Worker should be present.";
+
   // If the port is unknown, the renderer will respond by closing the port.
-  SendToPort(std::make_unique<ExtensionMsg_ValidateMessagePort>(
-      MSG_ROUTING_NONE, thread_id, port_id_));
+  // NOTE: There is only one opener target.
+  if (!frames_.empty()) {
+    SendToIPCTarget({nullptr, *frames_.begin(), kMainThreadId},
+                    std::make_unique<ExtensionMsg_ValidateMessagePort>(
+                        MSG_ROUTING_NONE, kMainThreadId, port_id_));
+    return;
+  }
+  if (!service_workers_.empty()) {
+    const WorkerId& service_worker = *service_workers_.begin();
+    SendToIPCTarget(
+        {content::RenderProcessHost::FromID(service_worker.render_process_id),
+         nullptr, service_worker.thread_id},
+        std::make_unique<ExtensionMsg_ValidateMessagePort>(
+            MSG_ROUTING_NONE, service_worker.thread_id, port_id_));
+  }
 }
 
 void ExtensionMessagePort::DispatchOnConnect(
@@ -218,45 +280,41 @@ void ExtensionMessagePort::DispatchOnConnect(
     const MessagingEndpoint& source_endpoint,
     const std::string& target_extension_id,
     const GURL& source_url) {
-  ExtensionMsg_TabConnectionInfo source;
-  if (source_tab)
-    source.tab.Swap(source_tab.get());
-  source.frame_id = source_frame_id;
-
-  ExtensionMsg_ExternalConnectionInfo info;
-  info.target_id = target_extension_id;
-  info.source_endpoint = source_endpoint;
-  info.source_url = source_url;
-  info.guest_process_id = guest_process_id;
-  info.guest_render_frame_routing_id = guest_render_frame_routing_id;
-
-  // TODO(crbug.com/925918): Support messages to Service Worker.
-  const int thread_id = kMainThreadId;
-  SendToPort(std::make_unique<ExtensionMsg_DispatchOnConnect>(
-      MSG_ROUTING_NONE, thread_id, port_id_, channel_name, source, info));
+  SendToPort(base::BindRepeating(
+      &ExtensionMessagePort::BuildDispatchOnConnectIPC,
+      // Called synchronously.
+      base::Unretained(this), channel_name, source_tab.get(), source_frame_id,
+      guest_process_id, guest_render_frame_routing_id, source_endpoint,
+      target_extension_id, source_url));
 }
 
 void ExtensionMessagePort::DispatchOnDisconnect(
     const std::string& error_message) {
-  // TODO(crbug.com/925918): Support messages to Service Worker.
-  const int thread_id = kMainThreadId;
-  SendToPort(std::make_unique<ExtensionMsg_DispatchOnDisconnect>(
-      MSG_ROUTING_NONE, thread_id, port_id_, error_message));
+  SendToPort(
+      base::BindRepeating(&ExtensionMessagePort::BuildDispatchOnDisconnectIPC,
+                          base::Unretained(this), error_message));
 }
 
 void ExtensionMessagePort::DispatchOnMessage(const Message& message) {
-  // TODO(crbug.com/925918): Support messages to Service Worker.
-  const int thread_id = kMainThreadId;
-  SendToPort(std::make_unique<ExtensionMsg_DeliverMessage>(
-      MSG_ROUTING_NONE, thread_id, port_id_, message));
+  SendToPort(base::BindRepeating(&ExtensionMessagePort::BuildDeliverMessageIPC,
+                                 // Called synchronously.
+                                 base::Unretained(this), message));
 }
 
 void ExtensionMessagePort::IncrementLazyKeepaliveCount() {
   ProcessManager* pm = ProcessManager::Get(browser_context_);
   ExtensionHost* host = pm->GetBackgroundHostForExtension(extension_id_);
-  if (host && BackgroundInfo::HasLazyBackgroundPage(host->extension()))
+  if (host && BackgroundInfo::HasLazyBackgroundPage(host->extension())) {
     pm->IncrementLazyKeepaliveCount(host->extension(), Activity::MESSAGE_PORT,
                                     PortIdToString(port_id_));
+  }
+
+  for (const auto& worker_id : service_workers_) {
+    std::string request_uuid = pm->IncrementServiceWorkerKeepaliveCount(
+        worker_id, Activity::MESSAGE_PORT, PortIdToString(port_id_));
+    if (!request_uuid.empty())
+      pending_keepalive_uuids_[worker_id].push_back(request_uuid);
+  }
 
   // Keep track of the background host, so when we decrement, we only do so if
   // the host hasn't reloaded.
@@ -266,31 +324,55 @@ void ExtensionMessagePort::IncrementLazyKeepaliveCount() {
 void ExtensionMessagePort::DecrementLazyKeepaliveCount() {
   ProcessManager* pm = ProcessManager::Get(browser_context_);
   ExtensionHost* host = pm->GetBackgroundHostForExtension(extension_id_);
-  if (host && host == background_host_ptr_)
+  if (host && host == background_host_ptr_) {
     pm->DecrementLazyKeepaliveCount(host->extension(), Activity::MESSAGE_PORT,
                                     PortIdToString(port_id_));
+    return;
+  }
+
+  for (const auto& worker_id : service_workers_) {
+    auto& uuids = pending_keepalive_uuids_[worker_id];
+    DCHECK(!uuids.empty());
+    std::string request_uuid = std::move(uuids.back());
+    uuids.pop_back();
+    pm->DecrementServiceWorkerKeepaliveCount(worker_id, request_uuid,
+                                             Activity::MESSAGE_PORT,
+                                             PortIdToString(port_id_));
+  }
 }
 
-void ExtensionMessagePort::OpenPort(int process_id, int routing_id) {
-  DCHECK(routing_id != MSG_ROUTING_NONE || extension_process_);
+void ExtensionMessagePort::OpenPort(int process_id,
+                                    const PortContext& port_context) {
+  DCHECK((port_context.is_for_render_frame() &&
+          port_context.frame->routing_id != MSG_ROUTING_NONE) ||
+         (port_context.is_for_service_worker() &&
+          port_context.worker->thread_id != kMainThreadId) ||
+         extension_process_);
 
   did_create_port_ = true;
 }
 
-void ExtensionMessagePort::ClosePort(int process_id, int routing_id) {
-  if (routing_id == MSG_ROUTING_NONE) {
+void ExtensionMessagePort::ClosePort(int process_id,
+                                     int routing_id,
+                                     int worker_thread_id) {
+  const bool is_for_service_worker = worker_thread_id != kMainThreadId;
+  if (!is_for_service_worker && routing_id == MSG_ROUTING_NONE) {
     // The only non-frame-specific message is the response to an unhandled
     // onConnect event in the extension process.
     DCHECK(extension_process_);
     frames_.clear();
-    CloseChannel();
+    if (!HasReceivers())
+      CloseChannel();
     return;
   }
 
-  content::RenderFrameHost* rfh =
-      content::RenderFrameHost::FromID(process_id, routing_id);
-  if (rfh)
-    UnregisterFrame(rfh);
+  if (is_for_service_worker) {
+    UnregisterWorker(process_id, worker_thread_id);
+  } else {
+    DCHECK_NE(MSG_ROUTING_NONE, routing_id);
+    if (auto* rfh = content::RenderFrameHost::FromID(process_id, routing_id))
+      UnregisterFrame(rfh);
+  }
 }
 
 void ExtensionMessagePort::CloseChannel() {
@@ -310,26 +392,143 @@ void ExtensionMessagePort::RegisterFrame(content::RenderFrameHost* rfh) {
 }
 
 void ExtensionMessagePort::UnregisterFrame(content::RenderFrameHost* rfh) {
-  if (frames_.erase(rfh) != 0 && frames_.empty())
+  if (frames_.erase(rfh) != 0 && !HasReceivers())
     CloseChannel();
 }
 
-void ExtensionMessagePort::SendToPort(std::unique_ptr<IPC::Message> msg) {
-  DCHECK_GT(frames_.size(), 0UL);
-  if (extension_process_) {
-    // All extension frames reside in the same process, so we can just send a
-    // single IPC message to the extension process as an optimization.
-    // The frame tracking is then only used to make sure that the port gets
-    // closed when all frames have closed / reloaded.
-    msg->set_routing_id(MSG_ROUTING_CONTROL);
-    extension_process_->Send(msg.release());
+bool ExtensionMessagePort::HasReceivers() const {
+  return !frames_.empty() || !service_workers_.empty();
+}
+
+void ExtensionMessagePort::RegisterWorker(const WorkerId& worker_id) {
+  DCHECK(!worker_id.extension_id.empty());
+  service_workers_.insert(worker_id);
+}
+
+void ExtensionMessagePort::UnregisterWorker(const WorkerId& worker_id) {
+  DCHECK_EQ(extension_id_, worker_id.extension_id);
+  if (service_workers_.erase(worker_id) == 0)
+    return;
+
+  if (!HasReceivers())
+    CloseChannel();
+}
+
+void ExtensionMessagePort::UnregisterWorker(int render_process_id,
+                                            int worker_thread_id) {
+  DCHECK_NE(kMainThreadId, worker_thread_id);
+
+  // Note: We iterate through *each* workers belonging to this port to find the
+  // worker we are interested in. Since there will only be a handful of such
+  // workers, this is OK.
+  for (auto iter = service_workers_.begin(); iter != service_workers_.end();) {
+    if (iter->render_process_id == render_process_id &&
+        iter->thread_id == worker_thread_id) {
+      service_workers_.erase(iter);
+      break;
+    } else {
+      ++iter;
+    }
+  }
+
+  if (!HasReceivers())
+    CloseChannel();
+}
+
+void ExtensionMessagePort::SendToPort(IPCBuilderCallback ipc_builder) {
+  std::vector<IPCTarget> targets;
+  {
+    // Build the list of targets.
+    if (extension_process_) {
+      // All extension frames reside in the same process, so we can just send a
+      // single IPC message to the extension process as an optimization if
+      // there are not Service Worker recipient for this port.
+      // The frame tracking is then only used to make sure that the port gets
+      // closed when all frames have closed / reloaded.
+      targets.push_back({extension_process_, nullptr, kMainThreadId});
+    } else {
+      for (content::RenderFrameHost* frame : frames_)
+        targets.push_back({nullptr, frame, kMainThreadId});
+    }
+
+    for (const auto& running_worker : service_workers_) {
+      targets.push_back(
+          {content::RenderProcessHost::FromID(running_worker.render_process_id),
+           nullptr, running_worker.thread_id});
+    }
+  }
+
+  for (const IPCTarget& target : targets) {
+    std::unique_ptr<IPC::Message> ipc_message = ipc_builder.Run(target);
+    SendToIPCTarget(target, std::move(ipc_message));
+  }
+}
+
+void ExtensionMessagePort::SendToIPCTarget(const IPCTarget& target,
+                                           std::unique_ptr<IPC::Message> msg) {
+  if (target.render_frame_host) {
+    msg->set_routing_id(target.render_frame_host->GetRoutingID());
+    target.render_frame_host->Send(msg.release());
     return;
   }
-  for (content::RenderFrameHost* rfh : frames_) {
-    IPC::Message* msg_copy = new IPC::Message(*msg);
-    msg_copy->set_routing_id(rfh->GetRoutingID());
-    rfh->Send(msg_copy);
+
+  if (target.render_process_host) {
+    msg->set_routing_id(MSG_ROUTING_CONTROL);
+    target.render_process_host->Send(msg.release());
+    return;
   }
+
+  DCHECK(extension_process_);
+  msg->set_routing_id(MSG_ROUTING_CONTROL);
+  extension_process_->Send(msg.release());
+}
+
+std::unique_ptr<IPC::Message> ExtensionMessagePort::BuildDispatchOnConnectIPC(
+    const std::string& channel_name,
+    const base::DictionaryValue* source_tab,
+    int source_frame_id,
+    int guest_process_id,
+    int guest_render_frame_routing_id,
+    const MessagingEndpoint& source_endpoint,
+    const std::string& target_extension_id,
+    const GURL& source_url,
+    const IPCTarget& target) {
+  ExtensionMsg_TabConnectionInfo source;
+  if (source_tab) {
+    std::unique_ptr<base::Value> source_tab_value =
+        base::Value::ToUniquePtrValue(source_tab->Clone());
+    // TODO(lazyboy): Make ExtensionMsg_TabConnectionInfo.tab a base::Value and
+    // remove this cast.
+    source.tab.Swap(
+        static_cast<base::DictionaryValue*>(source_tab_value.get()));
+  }
+  source.frame_id = source_frame_id;
+
+  ExtensionMsg_ExternalConnectionInfo info;
+  info.target_id = target_extension_id;
+  info.source_endpoint = source_endpoint;
+  info.source_url = source_url;
+  info.guest_process_id = guest_process_id;
+  info.guest_render_frame_routing_id = guest_render_frame_routing_id;
+
+  return std::make_unique<ExtensionMsg_DispatchOnConnect>(
+      MSG_ROUTING_NONE, target.worker_thread_id, port_id_, channel_name, source,
+      info);
+}
+
+std::unique_ptr<IPC::Message>
+ExtensionMessagePort::BuildDispatchOnDisconnectIPC(
+    const std::string& error_message,
+    const IPCTarget& target) {
+  return std::make_unique<ExtensionMsg_DispatchOnDisconnect>(
+      MSG_ROUTING_NONE, target.worker_thread_id, port_id_, error_message);
+}
+
+std::unique_ptr<IPC::Message> ExtensionMessagePort::BuildDeliverMessageIPC(
+    const Message& message,
+    const IPCTarget& target) {
+  return std::make_unique<ExtensionMsg_DeliverMessage>(
+      MSG_ROUTING_NONE, target.worker_thread_id, port_id_, message);
 }
 
 }  // namespace extensions

@@ -13,7 +13,7 @@ class Point;
 
 namespace ui {
 
-class PlatformWindow;
+class PlatformWindowBase;
 
 class WmMoveResizeHandler {
  public:
@@ -21,10 +21,11 @@ class WmMoveResizeHandler {
   // on the |hittest| value. The |hittest| value identifies in which direction
   // the window should be resized or whether it should be moved. See
   // ui/base/hit_test.h for a concrete example with chromium symbolic names
-  // defined. The |pointer_location| indicates the position of the button press
-  // with respect to the platform window, which is needed when sending a
-  // move/resize request in such backends as X11. See _NET_WM_MOVERESIZE section
-  // in https://specifications.freedesktop.org/wm-spec/1.4/ar01s04.html.
+  // defined. The |pointer_location_in_px| indicates the position of the button
+  // press with respect to the platform window in screen pixel coordinates,
+  // which is needed when sending a move/resize request in such backends as X11.
+  // See _NET_WM_MOVERESIZE section in
+  // https://specifications.freedesktop.org/wm-spec/1.4/ar01s04.html.
   //
   // There is no need to implement this by all the platforms except Ozone/X11
   // and Ozone/Wayland, compositors of which support interactive move/resize.
@@ -45,17 +46,17 @@ class WmMoveResizeHandler {
   // browser.
   virtual void DispatchHostWindowDragMovement(
       int hittest,
-      const gfx::Point& pointer_location) = 0;
+      const gfx::Point& pointer_location_in_px) = 0;
 
  protected:
   virtual ~WmMoveResizeHandler() {}
 };
 
 WM_PLATFORM_EXPORT void SetWmMoveResizeHandler(
-    PlatformWindow* platform_window,
+    PlatformWindowBase* platform_window,
     WmMoveResizeHandler* move_resize_handler);
 WM_PLATFORM_EXPORT WmMoveResizeHandler* GetWmMoveResizeHandler(
-    const PlatformWindow& platform_window);
+    const PlatformWindowBase& platform_window);
 
 }  // namespace ui
 

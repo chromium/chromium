@@ -801,12 +801,12 @@ class BASE_EXPORT GlobalActivityTracker {
   // records it's important to ensure that what is returned was created before
   // the |exit_stamp|. Movement of |process_data| information is allowed.
   using ProcessExitCallback =
-      Callback<void(int64_t process_id,
-                    int64_t exit_stamp,
-                    int exit_code,
-                    ProcessPhase exit_phase,
-                    std::string&& command_line,
-                    ActivityUserData::Snapshot&& process_data)>;
+      RepeatingCallback<void(int64_t process_id,
+                             int64_t exit_stamp,
+                             int exit_code,
+                             ProcessPhase exit_phase,
+                             std::string&& command_line,
+                             ActivityUserData::Snapshot&& process_data)>;
 
   // This structure contains information about a loaded module, as shown to
   // users of the tracker.

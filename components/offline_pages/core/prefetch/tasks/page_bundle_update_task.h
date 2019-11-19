@@ -58,7 +58,7 @@ class PageBundleUpdateTask : public Task {
   std::string operation_name_;
   std::vector<RenderPageInfo> pages_;
 
-  base::WeakPtrFactory<PageBundleUpdateTask> weak_factory_;
+  base::WeakPtrFactory<PageBundleUpdateTask> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(PageBundleUpdateTask);
 };

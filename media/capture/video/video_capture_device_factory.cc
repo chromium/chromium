@@ -26,4 +26,10 @@ void VideoCaptureDeviceFactory::GetCameraLocationsAsync(
   NOTIMPLEMENTED();
 }
 
+#if defined(OS_CHROMEOS)
+bool VideoCaptureDeviceFactory::IsSupportedCameraAppDeviceBridge() {
+  return false;
+}
+#endif  // defined(OS_CHROMEOS)
+
 }  // namespace media

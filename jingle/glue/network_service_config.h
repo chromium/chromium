@@ -10,12 +10,13 @@
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/single_thread_task_runner.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "services/network/public/mojom/proxy_resolving_socket.mojom.h"
 
 namespace jingle_glue {
 
 using GetProxyResolvingSocketFactoryCallback = base::RepeatingCallback<void(
-    network::mojom::ProxyResolvingSocketFactoryRequest)>;
+    mojo::PendingReceiver<network::mojom::ProxyResolvingSocketFactory>)>;
 
 struct NetworkServiceConfig {
   NetworkServiceConfig();

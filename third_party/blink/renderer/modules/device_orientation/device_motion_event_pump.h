@@ -17,7 +17,7 @@ class DeviceSensorEntry;
 class PlatformEventController;
 
 class MODULES_EXPORT DeviceMotionEventPump
-    : public GarbageCollectedFinalized<DeviceMotionEventPump>,
+    : public GarbageCollected<DeviceMotionEventPump>,
       public DeviceSensorEventPump {
   USING_GARBAGE_COLLECTED_MIXIN(DeviceMotionEventPump);
 
@@ -58,7 +58,7 @@ class MODULES_EXPORT DeviceMotionEventPump
   DeviceMotionData* GetDataFromSharedMemory();
 
   Member<DeviceMotionData> data_;
-  WeakMember<PlatformEventController> controller_;
+  Member<PlatformEventController> controller_;
 
   DISALLOW_COPY_AND_ASSIGN(DeviceMotionEventPump);
 };

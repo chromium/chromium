@@ -109,15 +109,6 @@ class ExtensionsClient {
   // Returns false if content scripts are forbidden from running on |url|.
   virtual bool IsScriptableURL(const GURL& url, std::string* error) const = 0;
 
-  // Determines if certain fatal extensions errors should be surpressed
-  // (i.e., only logged) or allowed (i.e., logged before crashing).
-  virtual bool ShouldSuppressFatalErrors() const = 0;
-
-  // Records that a fatal error was caught and suppressed. It is expected that
-  // embedders will only do so if ShouldSuppressFatalErrors at some point
-  // returned true.
-  virtual void RecordDidSuppressFatalError() = 0;
-
   // Returns the base webstore URL prefix.
   virtual const GURL& GetWebstoreBaseURL() const = 0;
 

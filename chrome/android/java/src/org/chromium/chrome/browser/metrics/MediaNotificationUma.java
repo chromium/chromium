@@ -7,7 +7,8 @@ package org.chromium.chrome.browser.metrics;
 import static org.chromium.base.metrics.CachedMetrics.EnumeratedHistogramSample;
 
 import android.content.Intent;
-import android.support.annotation.IntDef;
+
+import androidx.annotation.IntDef;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

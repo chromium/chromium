@@ -6,8 +6,9 @@ package org.chromium.net;
 
 import android.content.Context;
 import android.net.http.HttpResponseCache;
-import android.support.annotation.VisibleForTesting;
 import android.util.Log;
+
+import androidx.annotation.VisibleForTesting;
 
 import java.io.IOException;
 import java.net.URL;

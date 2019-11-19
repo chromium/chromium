@@ -12,15 +12,17 @@
 #include "base/location.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/message_loop/message_loop.h"
+#include "base/message_loop/message_pump_type.h"
 #include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_executor.h"
 #include "base/threading/simple_thread.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/net_errors.h"
-#include "net/dns/host_resolver_impl.h"
+#include "net/base/network_isolation_key.h"
+#include "net/dns/host_resolver.h"
 #include "net/log/net_log.h"
 #include "net/log/net_log_with_source.h"
 
@@ -57,19 +59,21 @@ ResolverThread::ResolverThread()
 ResolverThread::~ResolverThread() = default;
 
 void ResolverThread::Run() {
-  base::MessageLoopForIO loop;
+  base::SingleThreadTaskExecutor io_task_executor(base::MessagePumpType::IO);
 
   net::NetLog net_log;
-  net::HostResolver::Options options;
+  net::HostResolver::ManagerOptions options;
   options.max_concurrent_resolves = 6;
-  options.max_retry_attempts = 3u;
-  std::unique_ptr<net::HostResolverImpl> resolver(
-      new net::HostResolverImpl(options, &net_log));
+  options.max_system_retry_attempts = 3u;
+  std::unique_ptr<net::HostResolver> resolver =
+      net::HostResolver::CreateStandaloneResolver(&net_log, options);
 
   HostPortPair host_port_pair(host_, 80);
+  // No need to use a NetworkIsolationKey here, since this is an external tool
+  // not used by net/ consumers.
   std::unique_ptr<net::HostResolver::ResolveHostRequest> request =
-      resolver->CreateRequest(host_port_pair, NetLogWithSource(),
-                              base::nullopt);
+      resolver->CreateRequest(host_port_pair, NetworkIsolationKey(),
+                              NetLogWithSource(), base::nullopt);
 
   base::RunLoop run_loop;
   rv_ = request->Start(base::BindOnce(&ResolverThread::OnResolutionComplete,

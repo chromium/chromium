@@ -1,8 +1,0 @@
-include_rules = [
-  "+gpu/config",
-  "+gpu/command_buffer",
-  "+gpu/ipc/client",
-  "+gpu/ipc/common",
-  "+gpu/ipc/host",
-  "+services/viz/privileged/interfaces",
-]

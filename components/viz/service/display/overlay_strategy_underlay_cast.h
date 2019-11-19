@@ -5,11 +5,18 @@
 #ifndef COMPONENTS_VIZ_SERVICE_DISPLAY_OVERLAY_STRATEGY_UNDERLAY_CAST_H_
 #define COMPONENTS_VIZ_SERVICE_DISPLAY_OVERLAY_STRATEGY_UNDERLAY_CAST_H_
 
+#include <memory>
+
 #include "base/callback.h"
 #include "base/macros.h"
 #include "components/viz/service/display/overlay_strategy_underlay.h"
 #include "components/viz/service/viz_service_export.h"
 #include "ui/gfx/overlay_transform.h"
+
+#if defined(IS_CHROMECAST)
+#include "chromecast/media/service/mojom/video_geometry_setter.mojom.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#endif
 
 namespace viz {
 
@@ -28,6 +35,7 @@ class VIZ_SERVICE_EXPORT OverlayStrategyUnderlayCast
       const OverlayProcessor::FilterOperationsMap& render_pass_backdrop_filters,
       DisplayResourceProvider* resource_provider,
       RenderPassList* render_pass,
+      const PrimaryPlane* primary_plane,
       OverlayCandidateList* candidate_list,
       std::vector<gfx::Rect>* content_bounds) override;
 
@@ -38,7 +46,18 @@ class VIZ_SERVICE_EXPORT OverlayStrategyUnderlayCast
       base::RepeatingCallback<void(const gfx::RectF&, gfx::OverlayTransform)>;
   static void SetOverlayCompositedCallback(const OverlayCompositedCallback& cb);
 
-  OverlayProcessor::StrategyType GetUMAEnum() const override;
+#if defined(IS_CHROMECAST)
+  // In Chromecast build, OverlayStrategyUnderlayCast needs a valid mojo
+  // interface to VideoGeometrySetter Service (shared by all instances of
+  // OverlaystrategyUnderlayCast). This must be called before compositor starts.
+  // Ideally, it can be called after compositor thread is created.
+  // Must be called on compositor thread.
+  static void ConnectVideoGeometrySetter(
+      mojo::PendingRemote<chromecast::media::mojom::VideoGeometrySetter>
+          video_geometry_setter);
+#endif
+
+  OverlayStrategy GetUMAEnum() const override;
 
  private:
   // Keep track if an overlay is being used on the previous frame.

@@ -2,6 +2,7 @@ main frame - DidStartNavigation
 main frame - ReadyToCommitNavigation
 main frame - didCommitLoadForFrame
 frame "<!--framePath //<!--frame0-->-->" - didReceiveTitle: 
+frame "<!--framePath //<!--frame0-->-->" - BeginNavigation request to 'about:blank', http method GET
 frame "<!--framePath //<!--frame0-->-->" - DidStartNavigation
 frame "<!--framePath //<!--frame0-->-->" - ReadyToCommitNavigation
 frame "<!--framePath //<!--frame0-->-->" - didCommitLoadForFrame
@@ -13,10 +14,12 @@ main frame - didReceiveTitle:
 main frame - didFinishDocumentLoadForFrame
 main frame - didHandleOnloadEventsForFrame
 main frame - didFinishLoadForFrame
+main frame - BeginNavigation request to 'http://127.0.0.1:8000/loading/dont-preload-non-img-srcset.html', http method GET
 main frame - DidStartNavigation
 main frame - ReadyToCommitNavigation
 main frame - didCommitLoadForFrame
 frame "<!--framePath //<!--frame0-->-->" - didReceiveTitle: 
+frame "<!--framePath //<!--frame0-->-->" - BeginNavigation request to 'about:blank', http method GET
 frame "<!--framePath //<!--frame0-->-->" - DidStartNavigation
 frame "<!--framePath //<!--frame0-->-->" - ReadyToCommitNavigation
 frame "<!--framePath //<!--frame0-->-->" - didCommitLoadForFrame

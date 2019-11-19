@@ -11,8 +11,10 @@
 #include "chrome/browser/media/router/test/mock_media_router.h"
 #include "chrome/browser/media/router/test/test_helper.h"
 #include "chrome/common/media_router/media_source.h"
-#include "chrome/common/media_router/media_source_helper.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 using blink::mojom::PresentationConnectionMessage;
@@ -41,30 +43,32 @@ class BrowserPresentationConnectionProxyTest : public ::testing::Test {
   void SetUp() override {
     mock_controller_connection_proxy_ =
         std::make_unique<MockPresentationConnectionProxy>();
-    blink::mojom::PresentationConnectionPtr controller_connection_ptr;
-    binding_.reset(new mojo::Binding<blink::mojom::PresentationConnection>(
+    mojo::PendingRemote<blink::mojom::PresentationConnection>
+        controller_connection_remote;
+    receiver_.reset(new mojo::Receiver<blink::mojom::PresentationConnection>(
         mock_controller_connection_proxy_.get(),
-        mojo::MakeRequest(&controller_connection_ptr)));
+        controller_connection_remote.InitWithNewPipeAndPassReceiver()));
     EXPECT_CALL(mock_router_, RegisterRouteMessageObserver(_));
     EXPECT_CALL(
         *mock_controller_connection_proxy_,
         DidChangeState(blink::mojom::PresentationConnectionState::CONNECTED));
 
-    blink::mojom::PresentationConnectionPtr receiver_connection_ptr;
+    mojo::Remote<blink::mojom::PresentationConnection>
+        receiver_connection_remote;
 
     base::RunLoop run_loop;
     browser_connection_proxy_ =
         std::make_unique<BrowserPresentationConnectionProxy>(
             &mock_router_, "MockRouteId",
-            mojo::MakeRequest(&receiver_connection_ptr),
-            std::move(controller_connection_ptr));
+            receiver_connection_remote.BindNewPipeAndPassReceiver(),
+            std::move(controller_connection_remote));
     run_loop.RunUntilIdle();
   }
 
   void TearDown() override {
     EXPECT_CALL(mock_router_, UnregisterRouteMessageObserver(_));
     browser_connection_proxy_.reset();
-    binding_.reset();
+    receiver_.reset();
     mock_controller_connection_proxy_.reset();
   }
 
@@ -79,10 +83,11 @@ class BrowserPresentationConnectionProxyTest : public ::testing::Test {
   MockMediaRouter* mock_router() { return &mock_router_; }
 
  private:
-  content::TestBrowserThreadBundle thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<MockPresentationConnectionProxy>
       mock_controller_connection_proxy_;
-  std::unique_ptr<mojo::Binding<blink::mojom::PresentationConnection>> binding_;
+  std::unique_ptr<mojo::Receiver<blink::mojom::PresentationConnection>>
+      receiver_;
   std::unique_ptr<BrowserPresentationConnectionProxy> browser_connection_proxy_;
   MockMediaRouter mock_router_;
 };

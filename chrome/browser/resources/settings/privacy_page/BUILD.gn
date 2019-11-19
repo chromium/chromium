@@ -9,6 +9,11 @@ js_type_check("closure_compile") {
     ":personalization_options",
     ":privacy_page",
     ":privacy_page_browser_proxy",
+    ":security_keys_bio_enroll_dialog",
+    ":security_keys_credential_management_dialog",
+    ":security_keys_reset_dialog",
+    ":security_keys_set_pin_dialog",
+    ":security_keys_subpage",
   ]
 }
 
@@ -19,6 +24,7 @@ js_library("personalization_options") {
     "..:route",
     "../controls:settings_toggle_button",
     "../people_page:sync_browser_proxy",
+    "../prefs:prefs_behavior",
     "//ui/webui/resources/js:web_ui_listener_behavior",
   ]
   externs_list = [ "$externs_path/settings_private.js" ]
@@ -47,6 +53,66 @@ js_library("privacy_page") {
     "//ui/webui/resources/js:i18n_behavior",
     "//ui/webui/resources/js:web_ui_listener_behavior",
     "//ui/webui/resources/js/cr/ui:focus_without_ink",
+  ]
+  externs_list = [ "$externs_path/settings_private.js" ]
+}
+
+js_library("security_keys_browser_proxy") {
+  deps = [
+    "//ui/webui/resources/js:cr",
+  ]
+  externs_list = [ "$externs_path/chrome_send.js" ]
+}
+
+js_library("security_keys_subpage") {
+  deps = [
+    ":security_keys_browser_proxy",
+    "..:route",
+    "../settings_page:settings_animated_pages",
+    "//ui/webui/resources/js:i18n_behavior",
+  ]
+  externs_list = [ "$externs_path/settings_private.js" ]
+}
+
+js_library("security_keys_set_pin_dialog") {
+  deps = [
+    ":security_keys_browser_proxy",
+    "//third_party/polymer/v1_0/components-chromium/iron-a11y-announcer:iron-a11y-announcer-extracted",
+    "//ui/webui/resources/js:i18n_behavior",
+  ]
+  externs_list = [ "$externs_path/settings_private.js" ]
+}
+
+js_library("security_keys_pin_field") {
+  deps = [
+    "//ui/webui/resources/js:i18n_behavior",
+  ]
+}
+
+js_library("security_keys_credential_management_dialog") {
+  deps = [
+    ":security_keys_browser_proxy",
+    ":security_keys_pin_field",
+    "//ui/webui/resources/js:i18n_behavior",
+    "//ui/webui/resources/js:web_ui_listener_behavior",
+  ]
+}
+
+js_library("security_keys_reset_dialog") {
+  deps = [
+    ":security_keys_browser_proxy",
+    "//ui/webui/resources/js:i18n_behavior",
+  ]
+  externs_list = [ "$externs_path/settings_private.js" ]
+}
+
+js_library("security_keys_bio_enroll_dialog") {
+  deps = [
+    ":security_keys_browser_proxy",
+    ":security_keys_pin_field",
+    "//third_party/polymer/v1_0/components-chromium/iron-a11y-announcer:iron-a11y-announcer-extracted",
+    "//ui/webui/resources/cr_elements/cr_fingerprint:cr_fingerprint_progress_arc",
+    "//ui/webui/resources/js:i18n_behavior",
   ]
   externs_list = [ "$externs_path/settings_private.js" ]
 }

@@ -1,0 +1,29 @@
+# Copyright 2018 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+component("tab_count_metrics") {
+  sources = [
+    "tab_count_metrics.cc",
+    "tab_count_metrics.h",
+  ]
+
+  defines = [ "IS_TAB_COUNT_METRICS_IMPL" ]
+
+  public_deps = [
+    "//base",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "tab_count_metrics_unittest.cc",
+  ]
+
+  deps = [
+    ":tab_count_metrics",
+    "//base/test:test_support",
+    "//testing/gtest",
+  ]
+}

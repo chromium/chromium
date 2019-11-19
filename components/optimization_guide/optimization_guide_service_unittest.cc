@@ -12,7 +12,8 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/macros.h"
 #include "base/run_loop.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/metrics/histogram_tester.h"
+#include "base/test/task_environment.h"
 #include "base/version.h"
 #include "components/optimization_guide/hints_component_info.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -63,7 +64,7 @@ class OptimizationGuideServiceTest : public testing::Test {
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     optimization_guide_service_ = std::make_unique<OptimizationGuideService>(
-        scoped_task_environment_.GetMainThreadTaskRunner());
+        task_environment_.GetMainThreadTaskRunner());
 
     observer_ = std::make_unique<TestObserver>();
   }
@@ -82,14 +83,14 @@ class OptimizationGuideServiceTest : public testing::Test {
 
   void MaybeUpdateHintsComponent(const HintsComponentInfo& info) {
     optimization_guide_service_->MaybeUpdateHintsComponent(info);
-    scoped_task_environment_.RunUntilIdle();
+    task_environment_.RunUntilIdle();
     base::RunLoop().RunUntilIdle();
   }
 
   base::FilePath temp_dir() const { return temp_dir_.GetPath(); }
 
  private:
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_;
   base::ScopedTempDir temp_dir_;
 
   std::unique_ptr<OptimizationGuideService> optimization_guide_service_;
@@ -99,6 +100,8 @@ class OptimizationGuideServiceTest : public testing::Test {
 };
 
 TEST_F(OptimizationGuideServiceTest, ProcessHintsIssuesNotification) {
+  base::HistogramTester histogram_tester;
+
   AddObserver();
 
   HintsComponentInfo component_info(base::Version("1.0.0.0"),
@@ -109,9 +112,13 @@ TEST_F(OptimizationGuideServiceTest, ProcessHintsIssuesNotification) {
   EXPECT_EQ(observer()->hints_component_notification_count(), 1);
   EXPECT_EQ(component_info.version, observer()->hints_component_version());
   EXPECT_EQ(component_info.path, observer()->hints_component_path());
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.OptimizationHintsComponent.MajorVersion", 1, 1);
 }
 
 TEST_F(OptimizationGuideServiceTest, ProcessHintsNewVersionProcessed) {
+  base::HistogramTester histogram_tester;
+
   AddObserver();
 
   HintsComponentInfo component_info_1(base::Version("1.0.0.0"),
@@ -125,9 +132,18 @@ TEST_F(OptimizationGuideServiceTest, ProcessHintsNewVersionProcessed) {
   EXPECT_EQ(observer()->hints_component_notification_count(), 2);
   EXPECT_EQ(component_info_2.version, observer()->hints_component_version());
   EXPECT_EQ(component_info_2.path, observer()->hints_component_path());
+  // The histogram should be recorded twice - once for each update.
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.OptimizationHintsComponent.MajorVersion", 2);
+  histogram_tester.ExpectBucketCount(
+      "OptimizationGuide.OptimizationHintsComponent.MajorVersion", 1, 1);
+  histogram_tester.ExpectBucketCount(
+      "OptimizationGuide.OptimizationHintsComponent.MajorVersion", 2, 1);
 }
 
 TEST_F(OptimizationGuideServiceTest, ProcessHintsPastVersionIgnored) {
+  base::HistogramTester histogram_tester;
+
   AddObserver();
 
   HintsComponentInfo component_info_1(base::Version("2.0.0.0"),
@@ -141,9 +157,15 @@ TEST_F(OptimizationGuideServiceTest, ProcessHintsPastVersionIgnored) {
   EXPECT_EQ(observer()->hints_component_notification_count(), 1);
   EXPECT_EQ(component_info_1.version, observer()->hints_component_version());
   EXPECT_EQ(component_info_1.path, observer()->hints_component_path());
+  // The histogram should only be recorded once - for the version it actually
+  // updated to.
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.OptimizationHintsComponent.MajorVersion", 2, 1);
 }
 
 TEST_F(OptimizationGuideServiceTest, ProcessHintsSameVersionIgnored) {
+  base::HistogramTester histogram_tester;
+
   AddObserver();
 
   HintsComponentInfo component_info_1(base::Version("2.0.0.0"),
@@ -157,10 +179,14 @@ TEST_F(OptimizationGuideServiceTest, ProcessHintsSameVersionIgnored) {
   EXPECT_EQ(observer()->hints_component_notification_count(), 1);
   EXPECT_EQ(component_info_1.version, observer()->hints_component_version());
   EXPECT_EQ(component_info_1.path, observer()->hints_component_path());
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.OptimizationHintsComponent.MajorVersion", 2, 1);
 }
 
 TEST_F(OptimizationGuideServiceTest,
        UnregisteredObserverDoesNotReceiveNotification) {
+  base::HistogramTester histogram_tester;
+
   // Add and remove observer to ensure that observer properly unregistered.
   AddObserver();
   RemoveObserver();
@@ -171,11 +197,17 @@ TEST_F(OptimizationGuideServiceTest,
   MaybeUpdateHintsComponent(component_info);
 
   EXPECT_EQ(observer()->hints_component_notification_count(), 0);
+  // We should still log the histogram since that is what the component updater
+  // storage has.
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.OptimizationHintsComponent.MajorVersion", 1, 1);
 }
 
 TEST_F(OptimizationGuideServiceTest,
        RegisteredObserverReceivesNotificationForCurrentComponent) {
-  HintsComponentInfo component_info(base::Version("1.0.0.0"),
+  base::HistogramTester histogram_tester;
+
+  HintsComponentInfo component_info(base::Version("172"),
                                     temp_dir().Append(kFileName1));
 
   MaybeUpdateHintsComponent(component_info);
@@ -185,6 +217,8 @@ TEST_F(OptimizationGuideServiceTest,
   EXPECT_EQ(observer()->hints_component_notification_count(), 1);
   EXPECT_EQ(component_info.version, observer()->hints_component_version());
   EXPECT_EQ(component_info.path, observer()->hints_component_path());
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.OptimizationHintsComponent.MajorVersion", 172, 1);
 }
 
 }  // namespace optimization_guide

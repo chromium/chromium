@@ -33,11 +33,21 @@ TEST_F(DesktopFocusRulesTest, DontFocusWindowsInOtherHierarchies) {
   aura::client::GetFocusClient(w2->GetNativeView())->FocusWindow(w2_child);
   aura::Window* focused =
       aura::client::GetFocusClient(w2->GetNativeView())->GetFocusedWindow();
-  EXPECT_TRUE((focused == NULL) || w2->GetNativeView()->Contains(focused));
+  EXPECT_TRUE((focused == nullptr) || w2->GetNativeView()->Contains(focused));
   wm::RemoveTransientChild(w1->GetNativeView(), w2_child);
 
   w1->CloseNow();
   w2->CloseNow();
+}
+
+// Verifies root windows are not activatable.
+TEST_F(DesktopFocusRulesTest, CanActivateWindowForRootWindow) {
+  Widget* w1 = CreateTopLevelNativeWidget();
+  aura::Window* content_window = w1->GetNativeWindow();
+  aura::Window* root_window = content_window->GetRootWindow();
+  EXPECT_TRUE(wm::CanActivateWindow(content_window));
+  EXPECT_FALSE(wm::CanActivateWindow(root_window));
+  w1->CloseNow();
 }
 
 }  // namespace views

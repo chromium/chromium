@@ -109,6 +109,10 @@ class CONTENT_EXPORT BrowserCompositorMac : public DelegatedFrameHostClient,
 
   viz::FrameSinkId GetRootFrameSinkId();
 
+  bool has_saved_frame_before_state_transition() const {
+    return has_saved_frame_before_state_transition_;
+  }
+
   const gfx::Size& GetRendererSize() const { return dfh_size_dip_; }
   void GetRendererScreenInfo(ScreenInfo* screen_info) const;
   viz::ScopedSurfaceIdAllocator GetScopedRendererSurfaceIdAllocator(
@@ -192,6 +196,16 @@ class CONTENT_EXPORT BrowserCompositorMac : public DelegatedFrameHostClient,
   gfx::Size dfh_size_pixels_;
   gfx::Size dfh_size_dip_;
   display::Display dfh_display_;
+
+  // This is used to cache the saved frame state to be used for tab switching
+  // metric. In tab switch in MacOS, DelegatedFrameHost::WasShown is called once
+  // inside BrowserCompositor::TransitionToState before it is called again by
+  // RenderWidgetHostViewMac::WasUnOccluded. Since tab switching metric begins
+  // inside RenderWidgetHostView(Mac|Aura), DelegatedFrameHost::HasSavedFrame
+  // will always return true in Mac when we check later.
+  // TODO(jonross): unify the order of DelegatedFrameHost::WasShown and
+  // RenderWidgetHostViewBase::WadUnOccluded across platforms.
+  bool has_saved_frame_before_state_transition_ = false;
 
   bool is_first_navigation_ = true;
 

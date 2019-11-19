@@ -8,7 +8,7 @@
 #include "third_party/blink/renderer/core/animation/css_interpolation_type.h"
 
 #include "third_party/blink/renderer/core/animation/list_interpolation_functions.h"
-#include "third_party/blink/renderer/core/css/css_syntax_descriptor.h"
+#include "third_party/blink/renderer/core/css/css_syntax_definition.h"
 
 namespace blink {
 
@@ -18,6 +18,7 @@ class CSSCustomListInterpolationType : public CSSInterpolationType {
       PropertyHandle property,
       const PropertyRegistration* registration,
       std::unique_ptr<CSSInterpolationType> inner_interpolation_type,
+      CSSSyntaxType syntax_type,
       CSSSyntaxRepeat syntax_repeat)
       : CSSInterpolationType(property, registration),
         inner_interpolation_type_(std::move(inner_interpolation_type)),
@@ -66,6 +67,9 @@ class CSSCustomListInterpolationType : public CSSInterpolationType {
     return nullptr;
   }
 
+  ListInterpolationFunctions::NonInterpolableValuesAreCompatibleCallback
+  GetNonInterpolableValuesAreCompatibleCallback() const;
+
   // This InterpolationType represents the interpolation of elements inside
   // the list.
   //
@@ -76,6 +80,10 @@ class CSSCustomListInterpolationType : public CSSInterpolationType {
   // their mandatory association with specific properties, so please do not call
   // InterpolationType::Apply on inner_interpolation_type_.
   std::unique_ptr<CSSInterpolationType> inner_interpolation_type_;
+
+  // TODO(crbug.com/981537, 981538, 981542): Add support for <image>,
+  // <transform-function> and <transform-list> and make use of |syntax_type_|.
+  // CSSSyntaxType syntax_type_;
 
   const CSSSyntaxRepeat syntax_repeat_;
 };

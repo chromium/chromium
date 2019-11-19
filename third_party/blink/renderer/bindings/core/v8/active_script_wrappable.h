@@ -6,13 +6,12 @@
 #define THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_ACTIVE_SCRIPT_WRAPPABLE_H_
 
 #include "base/macros.h"
-#include "third_party/blink/renderer/core/dom/document.h"
-#include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/bindings/active_script_wrappable_base.h"
-#include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
 
+class ExecutionContext;
 class ScriptWrappable;
 
 // Derived by wrappable objects which need to remain alive due to ongoing
@@ -48,28 +47,8 @@ class ActiveScriptWrappable : public ActiveScriptWrappableBase {
   ActiveScriptWrappable() = default;
 
   bool IsContextDestroyed() const final {
-    const auto* execution_context =
-        static_cast<const T*>(this)->GetExecutionContext();
-    if (!execution_context)
-      return true;
-
-    if (execution_context->IsContextDestroyed())
-      return true;
-
-    if (const auto* doc = DynamicTo<Document>(execution_context)) {
-      // Not all Document objects have an ExecutionContext that is actually
-      // destroyed. In such cases we defer to the ContextDocument if possible.
-      // If no such Document exists we consider the ExecutionContext as
-      // destroyed. This is needed to ensure that an ActiveScriptWrappable that
-      // always returns true in HasPendingActivity does not result in a memory
-      // leak.
-      const Document* context_doc = doc->ContextDocument();
-      if (!context_doc)
-        return true;
-      return context_doc->IsContextDestroyed();
-    }
-
-    return false;
+    return IsContextDestroyedForActiveScriptWrappable(
+        static_cast<const T*>(this)->GetExecutionContext());
   }
 
   bool DispatchHasPendingActivity() const final {
@@ -80,6 +59,10 @@ class ActiveScriptWrappable : public ActiveScriptWrappableBase {
  private:
   DISALLOW_COPY_AND_ASSIGN(ActiveScriptWrappable);
 };
+
+// Helper for ActiveScriptWrappable<T>::IsContextDestroyed();
+CORE_EXPORT bool IsContextDestroyedForActiveScriptWrappable(
+    const ExecutionContext* execution_context);
 
 }  // namespace blink
 

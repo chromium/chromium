@@ -5,29 +5,20 @@
 #ifndef COMPONENTS_NTP_TILES_CONSTANTS_H_
 #define COMPONENTS_NTP_TILES_CONSTANTS_H_
 
-namespace base {
-struct Feature;
-}  // namespace base
+#include <stddef.h>
+
+#include <utility>
 
 namespace ntp_tiles {
 
-// Name of the field trial to configure PopularSites.
-extern const char kPopularSitesFieldTrialName[];
+// Maximum number of custom links that can be set by the user. Used on desktop.
+extern const size_t kMaxNumCustomLinks;
 
-// This feature is enabled by default. Otherwise, users who need it would not
-// get the right configuration timely enough. The configuration affects only
-// Android or iOS users.
-extern const base::Feature kPopularSitesBakedInContentFeature;
+// Maximum number of Most Visited sites that will be generated. Used on desktop.
+extern const int kMaxNumMostVisited;
 
-// Feature to allow the new Google favicon server for fetching favicons for Most
-// Likely tiles on the New Tab Page.
-extern const base::Feature kNtpMostLikelyFaviconsFromServerFeature;
-
-// Feature to provide site exploration tiles in addition to personal tiles.
-extern const base::Feature kSiteExplorationUiFeature;
-
-// If this feature is enabled, we enable popular sites in the suggestions UI.
-extern const base::Feature kUsePopularSitesSuggestions;
+// Maximum number of tiles that can be shown on the NTP.
+const int kMaxNumTiles = 10;
 
 }  // namespace ntp_tiles
 

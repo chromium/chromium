@@ -12,7 +12,6 @@
 #include "base/sampling_heap_profiler/sampling_heap_profiler.h"
 #include "base/strings/stringprintf.h"
 #include "content/public/browser/render_process_host.h"
-#include "content/public/common/bind_interface_helpers.h"
 #include "content/public/common/child_process_host.h"
 
 namespace content {
@@ -20,8 +19,7 @@ namespace protocol {
 
 MemoryHandler::MemoryHandler()
     : DevToolsDomainHandler(Memory::Metainfo::domainName),
-      process_host_id_(ChildProcessHost::kInvalidUniqueID),
-      weak_factory_(this) {}
+      process_host_id_(ChildProcessHost::kInvalidUniqueID) {}
 
 MemoryHandler::~MemoryHandler() {}
 
@@ -37,29 +35,27 @@ void MemoryHandler::SetRenderer(int process_host_id,
 Response MemoryHandler::GetBrowserSamplingProfile(
     std::unique_ptr<Memory::SamplingProfile>* out_profile) {
   base::ModuleCache module_cache;
-  std::unique_ptr<Array<Memory::SamplingProfileNode>> samples =
-      Array<Memory::SamplingProfileNode>::create();
+  auto samples = std::make_unique<Array<Memory::SamplingProfileNode>>();
   std::vector<base::SamplingHeapProfiler::Sample> raw_samples =
       base::SamplingHeapProfiler::Get()->GetSamples(0);
 
   for (auto& sample : raw_samples) {
-    std::unique_ptr<Array<String>> stack = Array<String>::create();
+    auto stack = std::make_unique<Array<String>>();
     for (const void* frame : sample.stack) {
       uintptr_t address = reinterpret_cast<uintptr_t>(frame);
       module_cache.GetModuleForAddress(address);  // Populates module_cache.
-      stack->addItem(base::StringPrintf("0x%" PRIxPTR, address));
+      stack->emplace_back(base::StringPrintf("0x%" PRIxPTR, address));
     }
-    samples->addItem(Memory::SamplingProfileNode::Create()
-                         .SetSize(sample.size)
-                         .SetTotal(sample.total)
-                         .SetStack(std::move(stack))
-                         .Build());
+    samples->emplace_back(Memory::SamplingProfileNode::Create()
+                              .SetSize(sample.size)
+                              .SetTotal(sample.total)
+                              .SetStack(std::move(stack))
+                              .Build());
   }
 
-  std::unique_ptr<Array<Memory::Module>> modules =
-      Array<Memory::Module>::create();
+  auto modules = std::make_unique<Array<Memory::Module>>();
   for (const auto* module : module_cache.GetModules()) {
-    modules->addItem(
+    modules->emplace_back(
         Memory::Module::Create()
             .SetName(base::StringPrintf(
                 "%" PRFilePath, module->GetDebugBasename().value().c_str()))
@@ -114,8 +110,8 @@ void MemoryHandler::PrepareForLeakDetection(
   }
 
   leak_detection_callback_ = std::move(callback);
-  BindInterface(process, &leak_detector_);
-  leak_detector_.set_connection_error_handler(base::BindOnce(
+  process->BindReceiver(leak_detector_.BindNewPipeAndPassReceiver());
+  leak_detector_.set_disconnect_handler(base::BindOnce(
       &MemoryHandler::OnLeakDetectorIsGone, base::Unretained(this)));
   leak_detector_->PerformLeakDetection(base::BindOnce(
       &MemoryHandler::OnLeakDetectionComplete, weak_factory_.GetWeakPtr()));

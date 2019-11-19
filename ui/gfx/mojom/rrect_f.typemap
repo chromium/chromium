@@ -1,0 +1,11 @@
+# Copyright 2018 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+mojom = "//ui/gfx/mojom/rrect_f.mojom"
+public_headers = [ "//ui/gfx/rrect_f.h" ]
+traits_headers = [ "//ui/gfx/mojom/rrect_f_mojom_traits.h" ]
+type_mappings = [ "gfx.mojom.RRectF=::gfx::RRectF" ]
+deps = [
+  "//ui/gfx/geometry/mojom:mojom_traits",
+]

@@ -8,13 +8,13 @@
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/run_loop.h"
 #include "base/test/mock_callback.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "components/mirroring/service/fake_video_capture_host.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_frame_metadata.h"
 #include "media/capture/mojom/video_capture_types.mojom.h"
 #include "mojo/public/cpp/base/shared_memory_utils.h"
-#include "mojo/public/cpp/bindings/binding.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -44,9 +44,9 @@ class VideoCaptureClientTest : public ::testing::Test,
                                public ::testing::WithParamInterface<bool> {
  public:
   VideoCaptureClientTest() {
-    media::mojom::VideoCaptureHostPtr host;
-    host_impl_ =
-        std::make_unique<FakeVideoCaptureHost>(mojo::MakeRequest(&host));
+    mojo::PendingRemote<media::mojom::VideoCaptureHost> host;
+    host_impl_ = std::make_unique<FakeVideoCaptureHost>(
+        host.InitWithNewPipeAndPassReceiver());
     client_ = std::make_unique<VideoCaptureClient>(media::VideoCaptureParams(),
                                                    std::move(host));
   }
@@ -59,7 +59,7 @@ class VideoCaptureClientTest : public ::testing::Test,
       client_->Stop();
       run_loop.Run();
     }
-    scoped_task_environment_.RunUntilIdle();
+    task_environment_.RunUntilIdle();
   }
 
   MOCK_METHOD1(OnFrameReceived, void(const gfx::Size&));
@@ -80,7 +80,7 @@ class VideoCaptureClientTest : public ::testing::Test,
                                        base::Unretained(this)),
                    error_cb_.Get());
     run_loop.Run();
-    scoped_task_environment_.RunUntilIdle();
+    task_environment_.RunUntilIdle();
   }
 
   void OnNewBuffer(int buffer_id, int buffer_size) {
@@ -96,7 +96,7 @@ class VideoCaptureClientTest : public ::testing::Test,
           media::mojom::VideoBufferHandle::NewReadOnlyShmemRegion(
               mojo::CreateReadOnlySharedMemoryRegion(buffer_size).region));
     }
-    scoped_task_environment_.RunUntilIdle();
+    task_environment_.RunUntilIdle();
   }
 
   void OnBufferReady(int buffer_id, const gfx::Size& frame_size) {
@@ -109,11 +109,11 @@ class VideoCaptureClientTest : public ::testing::Test,
         .WillOnce(InvokeWithoutArgs(&run_loop, &base::RunLoop::Quit));
     client_->OnBufferReady(buffer_id, GetVideoFrameInfo(frame_size));
     run_loop.Run();
-    scoped_task_environment_.RunUntilIdle();
+    task_environment_.RunUntilIdle();
   }
 
  private:
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_;
   base::MockCallback<base::OnceClosure> error_cb_;
   std::unique_ptr<FakeVideoCaptureHost> host_impl_;
   std::unique_ptr<VideoCaptureClient> client_;

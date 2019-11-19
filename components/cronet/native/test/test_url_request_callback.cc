@@ -125,6 +125,7 @@ void TestUrlRequestCallback::OnResponseStarted(Cronet_UrlRequestPtr request,
   CHECK(response_step_ == NOTHING || response_step_ == ON_RECEIVED_REDIRECT);
   CHECK(!last_error_);
   response_step_ = ON_RESPONSE_STARTED;
+  original_response_info_ = info;
   response_info_ = std::make_unique<UrlResponseInfo>(info);
   if (MaybeCancelOrPause(request)) {
     return;
@@ -142,6 +143,7 @@ void TestUrlRequestCallback::OnReadCompleted(Cronet_UrlRequestPtr request,
         response_step_ == ON_READ_COMPLETED);
   CHECK(!last_error_);
   response_step_ = ON_READ_COMPLETED;
+  original_response_info_ = info;
   response_info_ = std::make_unique<UrlResponseInfo>(info);
   response_data_length_ += bytes_read;
 
@@ -168,6 +170,7 @@ void TestUrlRequestCallback::OnSucceeded(Cronet_UrlRequestPtr request,
   CHECK(!on_canceled_called_);
   CHECK(!last_error_);
   response_step_ = ON_SUCCEEDED;
+  original_response_info_ = info;
   response_info_ = std::make_unique<UrlResponseInfo>(info);
 
   MaybeCancelOrPause(request);
@@ -189,8 +192,10 @@ void TestUrlRequestCallback::OnFailed(Cronet_UrlRequestPtr request,
   response_step_ = ON_FAILED;
   on_error_called_ = true;
   // It is possible that |info| is nullptr if response has not started.
-  if (info)
+  if (info) {
+    original_response_info_ = info;
     response_info_ = std::make_unique<UrlResponseInfo>(info);
+  }
   last_error_ = error;
   last_error_code_ = Cronet_Error_error_code_get(error);
   last_error_message_ = Cronet_Error_message_get(error);
@@ -209,6 +214,11 @@ void TestUrlRequestCallback::OnCanceled(Cronet_UrlRequestPtr request,
 
   response_step_ = ON_CANCELED;
   on_canceled_called_ = true;
+  // It is possible |info| is nullptr if the response has not started.
+  if (info) {
+    original_response_info_ = info;
+    response_info_ = std::make_unique<UrlResponseInfo>(info);
+  }
   MaybeCancelOrPause(request);
   SignalDone();
 }

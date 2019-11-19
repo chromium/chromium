@@ -3,7 +3,6 @@
 <body>
 <script src="../resources/testharness.js"></script>
 <script src="../resources/testharnessreport.js"></script>
-<script src="../resources/run-after-layout-and-paint.js"></script>
 
 <style>
 myelement {
@@ -49,7 +48,7 @@ myelement {
       assert_equals(axElement.role, expectedRole, id);
   }
 
-test_after_layout_and_paint((t) => {
+test((t) => {
     var comboBoxRole = (testRunner.platformName == "gtk" || testRunner.platformName == "efl") ? "AXRole: AXComboBox" : "AXRole: AXPopUpButton";
 
     // Check rendered controls.

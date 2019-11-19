@@ -7,7 +7,7 @@ found in the LICENSE file.
 <html>
 <head>
 <meta charset="utf-8">
-<title>C++11 and C++14 use in Chromium</title>
+<title>Modern C++ use in Chromium</title>
 <link rel="stylesheet" href="c++11.css">
 <style>
 table tbody tr td:first-child {
@@ -18,19 +18,21 @@ table tbody tr td:first-child {
 </head>
 <body>
 <div id="content">
-<h1>C++11 and C++14 use in Chromium</h1>
+<h1>C++ use in Chromium</h1>
 
 <p><i>This document lives at src/styleguide/c++/c++11.html in a Chromium
 checkout and is part of the more general
 <a href="https://chromium.googlesource.com/chromium/src/+/master/styleguide/c++/c++.md">
-Chromium C++ style guide</a>.</i></p>
+Chromium C++ style guide</a>. It summarizes the supported state of new and
+updated language and library features in recent C++ standards. This guide
+applies to both Chromium and its subprojects, though subprojects can choose to
+be more restrictive if necessary for toolchain support.</i></p>
 
-<p>This summarizes the new and updated features in C++11 and C++14 (for both
-the language itself and the Standard Library) from the perspective of what's
-allowed in Chromium.  When applicable, it contains pointers to more detailed
-information.  This Guide applies to Chromium and its subprojects, though
-subprojects can choose to be more restrictive if necessary for toolchain
-support.</p>
+<p>The C++ language has in recent years received an updated standard every three
+years (C++11, C++14, C++17). For various reasons, Chromium does not immediately
+allow new features on the publication of such a standard. Instead, once
+toolchain support is sufficient, a standard is declared "initially supported",
+with new language/library features banned pending discussion.</p>
 
 <p>You can propose changing the status of a feature by sending an email to
 <a href="https://groups.google.com/a/chromium.org/forum/#!forum/cxx">
@@ -39,701 +41,31 @@ think it should or should not be allowed, along with links to any relevant
 previous discussion. If the list arrives at some consensus, send a codereview to
 change this file accordingly, linking to your discussion thread.</p>
 
+<p>Two years after a standard is initially supported in Chromium, style arbiters
+should make a final decision on any remaining TBD features to be banned, then
+default-allow all non-banned portions of the standard.  The current status of
+existing standards is:
+<ul><li><b>C++11:</b> <i>Default allowed; see banned features below</i></li>
+<li><b>C++14:</b> <i>Default allowed; see banned features below</i></li>
+<li><b>C++17:</b> <i>Not yet supported in Chromium</i></li>
+<li><b>C++20:</b> <i>Not yet standardized</i></li></ul></p>
+
 <h2>Table of Contents</h2>
 <ol class="toc">
-<li>Allowed Features<ol>
-    <li>Language
-      <a href="#core-whitelist">C++11</a>
-      <a href="#core-whitelist-14">C++14</a>
-    </li>
-    <li>Library
-      <a href="#library-whitelist">C++11</a>
-      <a href="#library-whitelist-14">C++14</a>
-    </li>
-</ol></li>
 <li>Banned Features<ol>
     <li>Language
       <a href="#core-blocklist">C++11</a>
-      <a href="#core-blocklist-14">C++14</a>
     </li>
     <li>Library
       <a href="#library-blocklist">C++11</a>
       <a href="#library-blocklist-14">C++14</a>
     </li>
 </ol></li>
-<li>To Be Discussed<ol>
-    <li>Language
-      <a href="#core-review">C++11</a>
-      <a href="#core-review-14">C++14</a>
-    </li>
-    <li>Library
-      <a href="#library-review">C++11</a>
-      <a href="#library-review-14">C++14</a>
-    </li>
-</ol></li>
 </ol>
 
-<h2 id="whitelist"><a name="core-whitelist"></a>C++11 Allowed Features</h2>
+<h2 id="blocklist_banned"><a name="core-blocklist"></a>C++11 Banned Language Features</h2>
 
-<p>The following features are currently allowed.</p>
-
-<table id="whitelist_lang_list" class="unlined striped">
-<tbody>
-
-<tr>
-<th style='width:220px;'>Feature</th>
-<th style='width:260px;'>Snippet</th>
-<th style='width:240px;'>Description</th>
-<th style='width:240px;'>Documentation Link</th>
-<th style='width:240px;'>Notes and Discussion Thread</th>
-</tr>
-
-<tr>
-<td>__func__ Local Variable</td>
-<td><code>__func__</code></td>
-<td>Provides a local variable containing the name of the enclosing function</td>
-<td><a href="http://en.cppreference.com/w/cpp/language/function#func">__func__</a></td>
-<td>Use instead of the non-standard <code>__FUNCTION__</code>. <a href="https://groups.google.com/a/chromium.org/forum/#!topic/chromium-dev/ojGfcgSDzHM">Discussion thread</a></td>
-</tr>
-
-<tr>
-<td>Alignment Features</td>
-<td><code>alignas(alignof(T)) char[10];</code></td>
-<td>Specifies or queries storage alignment.</td>
-<td><a href="http://en.cppreference.com/w/chttp://en.cppreference.com/w/cpp/language/alignas">alignas</a>, <a href="http://en.cppreference.com/w/cpp/language/alignof">alignof</a></td>
-<td><code>alignof()</code> can be used. <code>alignas()</code> must be used with care because it does not interact well with export and packing specifiers. If your declaration contains any other attributes, use <code>ALIGNAS()</code> from <code>base/compiler_specific.h</code> instead. <a href="https://codereview.chromium.org/2670873002/">Patch where this was discussed</a></td>
-</tr>
-
-<tr>
-<td>Angle Bracket Parsing in Templates</td>
-<td><code>&gt;&gt;</code> for <code>&gt; &gt;</code>, <code>&lt;::</code> for <code>&lt; ::</code></td>
-<td>More intuitive parsing of template parameters</td>
-<td><a href="http://stackoverflow.com/questions/15785496/c-templates-angle-brackets-pitfall-what-is-the-c11-fix">C++ templates angle brackets pitfall</a></td>
-<td>Recommended to increase readability. Approved without discussion.</td>
-</tr>
-
-<tr>
-<td>Arrays</td>
-<td><code>std::array</code></td>
-<td>A fixed-size replacement for built-in arrays, with STL support</td>
-<td><a href="http://en.cppreference.com/w/cpp/container/array">std::array</a></td>
-<td>Useful in performance-critical situations, with small, fixed-size arrays. In most cases, consider std::vector instead. std::vector is cheaper to std::move and is more widely used. <a href="https://groups.google.com/a/chromium.org/forum/#!topic/cxx/pVRQCRWHEU8">Discussion thread</a></td>
-</tr>
-
-<tr>
-<td>Automatic Types</td>
-<td><code>auto</code></td>
-<td>Automatic type deduction</td>
-<td><a href="http://en.cppreference.com/w/cpp/language/auto">auto specifier</a></td>
-<td>General guidance in <a href="https://google.github.io/styleguide/cppguide.html#auto">Google Style Guide</a>. Additionally, do not use <code>auto</code> to deduce a raw pointer, use <code>auto*</code> instead. <a href="https://groups.google.com/a/chromium.org/forum/#!topic/chromium-dev/OQyYSfH9m2M">Discussion thread</a>. <a href="https://groups.google.com/a/chromium.org/forum/#!topic/chromium-dev/5-Bt3BJzAo0">Another discussion thread</a></td>
-</tr>
-
-<tr>
-<td>Constant Expressions</td>
-<td><code>constexpr</code></td>
-<td>Compile-time constant expressions</td>
-<td><a href="http://en.cppreference.com/w/cpp/language/constexpr">constexpr specifier</a></td>
-<td>Prefer to <code>const</code> for variables where possible. Use cautiously on functions. Don't go out of the way to convert existing code. <a href="https://google.github.io/styleguide/cppguide.html#Use_of_constexpr">Google Style Guide</a>. <a href="https://groups.google.com/a/chromium.org/forum/#!topic/cxx/BE9xLUI-Vww">Discussion thread</a></td>
-</tr>
-
-<tr>
-<td>Declared Type Accessor</td>
-<td><code>decltype(<i>expression</i>)</code></td>
-<td>Provides a means to determine the type of an expression at compile-time, useful most often in templates.</td>
-<td><a href="http://en.cppreference.com/w/cpp/language/decltype">decltype specifier</a></td>
-<td>Usage should be rare. <a href="https://groups.google.com/a/chromium.org/forum/#!topic/chromium-dev/_zoNvZd_dSo">Discussion thread</a></td>
-</tr>
-
-<tr>
-<td>Default Function Creation</td>
-<td><code><i>Function</i>(<i>arguments</i>) = default;</code></td>
-<td>Instructs the compiler to generate a default version of the indicated function</td>
-<td><a href="http://stackoverflow.com/questions/823935/whats-the-point-in-defaulting-functions-in-c11">What's the point in defaulting functions in C++11?</a></td>
-<td><a href="https://groups.google.com/a/chromium.org/forum/#!topic/chromium-dev/qgU4mh_MpGA">Discussion thread</a></td>
-</tr>
-
-<tr>
-<td>Default Function Template Arguments</td>
-<td><code>template &lt;typename T = <i>type</i>&gt;<br />
-<i>type</i> <i>Function</i>(T <i>var</i>) {}</code></td>
-<td>Allow function templates, like classes, to have default arguments</td>
-<td><a href="http://stackoverflow.com/questions/2447458/default-template-arguments-for-function-templates">Default Template Arguments for Function Templates</a></td>
-<td><a href="https://groups.google.com/a/chromium.org/forum/#!topic/cxx/9KtaAsome-o">Discussion thread</a></td>
-</tr>
-
-<tr>
-<td>Delegated Constructors</td>
-<td><code>Class() : Class(0) {}<br />
-Class(<i>type</i> <i>var</i>) : Class(<i>var</i>, 0) {}</code></td>
-<td>Allow overloaded constructors to use common initialization code</td>
-<td><a href="https://www.ibm.com/developerworks/community/blogs/5894415f-be62-4bc0-81c5-3956e82276f3/entry/introduction_to_the_c_11_feature_delegating_constructors?lang=en">Introduction to the C++11 feature: delegating constructors</a></td>
-<td><a href="https://groups.google.com/a/chromium.org/forum/#!topic/chromium-dev/0zVA8Ctx3Xo">Discussion thread</a></td>
-</tr>
-
-<tr>
-<td>Enumerated Type Classes and Enum Bases</td>
-<td><code>enum class <i>classname</i><br />
-enum class <i>classname</i> : <i>base-type</i><br />
-enum <i>enumname</i> : <i>base-type</i></code></td>
-<td>Provide enums as full classes, with no implicit conversion to booleans or integers. Provide an explicit underlying type for enum classes and regular enums.</td>
-<td><a href="http://en.cppreference.com/w/cpp/language/enum">enumeration declaration</a></td>
-<td>Enum classes are still enums and follow enum naming rules. <a href="https://google.github.io/styleguide/cppguide.html#Enumerator_Names">Google Style Guide</a>. <a href="https://groups.google.com/a/chromium.org/forum/#!topic/chromium-dev/Q5WmkAImanc">Discussion thread</a></td>
-</tr>
-
-<tr>
-<td>Explicit Conversion Operators</td>
-<td><code>explicit operator <i>type</i>() { ... }</code></td>
-<td>Allows conversion operators that cannot be implicitly invoked</td>
-<td><a href="http://en.cppreference.com/w/cpp/language/explicit">explicit specifier</a></td>
-<td>Prefer to the "safe bool" idiom. <a href="https://groups.google.com/a/chromium.org/forum/#!topic/chromium-dev/zGF1SrQ-1HQ">Discussion thread</a></td>
-</tr>
-
-<tr>
-<td>Final Specifier</td>
-<td><code>final</code></td>
-<td> Indicates that a class or function is final and cannot be overridden</td>
-<td><a href="http://en.cppreference.com/w/cpp/language/final">final specifier</a></td>
-<td>Recommended for new code. <a href="https://groups.google.com/a/chromium.org/forum/#!topic/chromium-dev/VTNZzizN0zo">Discussion thread</a></td>
-</tr>
-
-<tr>
-<td>Function Suppression</td>
-<td><code><i>Function</i>(<i>arguments</i>) = delete;</code></td>
-<td>Suppresses the implementation of a function, especially a synthetic function such as a copy constructor</td>
-<td><a href="http://en.cppreference.com/w/cpp/language/function#Deleted_functions">Deleted functions</a></td>
-<td><a href="https://groups.google.com/a/chromium.org/forum/#!topic/chromium-dev/i1o7-RNRnMs">Discussion thread</a></td>
-</tr>
-
-<tr>
-<td>Inherited Constructors</td>
-<td><code>class Derived : Base {<br />
-&nbsp;&nbsp;using Base::Base;<br />
-};</code></td>
-<td>Allows derived classes to inherit constructors from base classes</td>
-<td><a href="http://en.cppreference.com/w/cpp/language/using_declaration#Inheriting_constructors">Inheriting constructors</a></td>
-<td><a href="https://groups.google.com/a/chromium.org/forum/#!topic/chromium-dev/BULzgIKZ-Ao">Discussion thread</a></td>
-</tr>
-
-<tr>
-<td>Lambda Expressions</td>
-<td><code>[<i>captures</i>](<i>params</i>) -&gt; <i>ret</i> { <i>body</i> }</code></td>
-<td>Anonymous functions</td>
-<td><a href="http://en.cppreference.com/w/cpp/language/lambda">Lambda functions</a></td>
-<td>Lambdas are typically useful as a parameter to methods or functions that will use them immediately, such as those in <code>&lt;algorithm&gt;</code>. Be careful with default captures (<code>[=]</code>, <code>[&amp;]</code>), and do not bind or store any capturing lambdas outside the lifetime of the stack frame they are defined in; use <code>base::Callback</code> for this instead, as it helps prevent object lifetime mistakes. (Captureless lambdas can be used with <code>base::Bind</code> as they do not have the same risks.) <a href="https://google.github.io/styleguide/cppguide.html#Lambda_expressions">Google Style Guide</a>. <a href="https://groups.google.com/a/chromium.org/forum/#!topic/chromium-dev/D9UnnxBnciQ">Discussion thread</a>. <a href="https://groups.google.com/a/chromium.org/forum/#!topic/cxx/QxjsPELDYdQ">Another discussion thread</a> (about captureless lambdas and <code>base::Bind</code>).</td>
-</tr>
-
-<tr>
-<td>Local Types as Template Arguments</td>
-<td><code>void func() {<br />
-&nbsp;&nbsp;class Pred {<br />
-&nbsp;&nbsp;&nbsp;public:<br />
-&nbsp;&nbsp;&nbsp;&nbsp;bool operator()(const T&amp;) { ... }<br />
-&nbsp;&nbsp;};<br />
-&nbsp;&nbsp;std::remove_if(vec.begin(), vec.end(), Pred());</code></td>
-<td>Allows local and unnamed types as template arguments</td>
-<td><a href="http://stackoverflow.com/questions/742607/using-local-classes-with-stl-algorithms">Local types, types without linkage and unnamed types as template arguments</a></td>
-<td>Usage should be rare. Approved without discussion.</td>
-</tr>
-
-<tr>
-<td>Noexcept Specifier</td>
-<td><code>void f() noexcept</code></td>
-<td>Specifies that a function will not throw exceptions</td>
-<td><a href="http://en.cppreference.com/w/cpp/language/noexcept_spec">noexcept specifier</a></td>
-<td>Chromium compiles without exception support, but there are still cases where explicitly marking a function as <code>noexcept</code> may be necessary to compile, or for performance reasons. Use noexcept for move constructors whenever possible (see "Notes" section on <a href="http://en.cppreference.com/w/cpp/language/move_constructor">move constructors</a>). Other usage should be rare. <a href="https://groups.google.com/a/chromium.org/forum/#!topic/chromium-dev/8i4tMqNpHhg">Discussion thread</a></td>
-</tr>
-
-<tr>
-<td>Non-Static Class Member Initializers</td>
-<td><code>class C {<br />
-&nbsp;&nbsp;<i>type</i> <i>var</i> = <i>value</i>;<br />
-&nbsp;&nbsp;C()&nbsp;&nbsp;// copy-initializes <i>var</i></code>
-<td>Allows non-static class members to be initialized at their definitions (outside constructors)</td>
-<td><a href="http://en.cppreference.com/w/cpp/language/data_members">Non-static data members</a></td>
-<td><a href="https://groups.google.com/a/chromium.org/forum/#!topic/chromium-dev/zqB-DySA4V0">Discussion thread</a></td>
-</tr>
-
-<tr>
-<td>Null Pointer Constant</td>
-<td><code>nullptr</code></td>
-<td>Declares a type-safe null pointer</td>
-<td><a href="http://en.cppreference.com/w/cpp/language/nullptr">nullptr, the pointer literal</a></td>
-<td>Prefer over <code>NULL</code> or <code>0</code>. <a href="https://google.github.io/styleguide/cppguide.html#0_and_nullptr/NULL">Google Style Guide</a>. <a href="https://groups.google.com/a/chromium.org/forum/#!topic/chromium-dev/4mijeJHzxLg">Discussion thread</a></td>
-</tr>
-
-<tr>
-<td>Override Specifier</td>
-<td><code>override</code></td>
-<td>Indicates that a class or function overrides a base implementation</td>
-<td><a href="http://en.cppreference.com/w/cpp/language/override">override specifier</a></td>
-<td>Recommended for new code. <a href="https://groups.google.com/a/chromium.org/forum/#!topic/chromium-dev/VTNZzizN0zo">Discussion thread</a></td>
-</tr>
-
-<tr>
-<td>Range-Based For Loops</td>
-<td><code>for (<i>type</i> <i>var</i> : <i>range</i>)</code></td>
-<td>Facilitates a more concise syntax for iterating over the elements of a container (or a range of iterators) in a <code>for</code> loop</td>
-<td><a href="http://en.cppreference.com/w/cpp/language/range-for">Range-based for loop</a></td>
-<td>As a rule of thumb, use <code>for (const auto&amp; ...)</code>, <code>for (auto&amp; ...)</code>, or <code>for (<i>concrete type</i> ...)</code>. For pointers, use <code>for (auto* ...)</code> to make clear that the copy of the loop variable is intended, and only a pointer is copied. <a href="https://groups.google.com/a/chromium.org/forum/#!topic/chromium-dev/hpzz4EqbVmc">Discussion thread</a></td>
-</tr>
-
-<tr>
-<td>Raw String Literals</td>
-<td><code>string <i>var</i>=R&quot;(<i>raw_string</i>)&quot;;</code></td>
-<td>Allows a string to be encoded without any escape sequences, easing parsing in regex expressions, for example</td>
-<td><a href="http://en.cppreference.com/w/cpp/language/string_literal">string literal</a></td>
-<td>Beware of passing these as macro arguments, which can trigger a <a href="https://gcc.gnu.org/bugzilla/show_bug.cgi?id=57824">lexer bug</a> on older GCC versions. <a href="https://groups.google.com/a/chromium.org/forum/#!topic/chromium-dev/2kWQHbbuMHI">Discussion thread</a></td>
-</tr>
-
-<tr>
-<td>Rvalue References</td>
-<td><code>T(T&amp;&amp; t)</code> and <code>T&amp; operator=(T&amp;&amp; t)<br/><br/>
-template &lt;typename T&gt;<br/>void Function(T&amp;&amp; t) { ... }</code></td>
-<td>Reference that only binds to a temporary object</td>
-<td><a href="http://en.cppreference.com/w/cpp/language/reference#Rvalue_references">Rvalue references</a></td>
-<td>Only use these to define move constructors and move assignment operators, and for perfect forwarding. Most classes should not be copyable, even if movable. Continue to use DISALLOW_COPY_AND_ASSIGN in most cases. <a href="https://google.github.io/styleguide/cppguide.html#Rvalue_references">Google Style Guide</a>. <a href="https://groups.google.com/a/chromium.org/forum/#!topic/chromium-dev/UnRaORb4TSw">Discussion thread</a>. <a href="https://groups.google.com/a/chromium.org/forum/#!topic/cxx/Q526tkruXpM">Another discussion thread</a></td>
-</tr>
-
-<tr>
-<td>Standard Integers</td>
-<td>Typedefs within <code>&lt;stdint.h&gt;</code> and <code>&lt;inttypes&gt;</code></td>
-<td>Provides fixed-size integers independent of platforms</td>
-<td><a href="http://en.cppreference.com/w/cpp/header/cstdint">Standard library header &lt;cstdint&gt;</a></td>
-<td>Approved without discussion. Required by the <a href="http://google.github.io/styleguide/cppguide.html#Integer_Types">Google Style Guide</a>.</td>
-</tr>
-
-<tr>
-<td>Static Assertions</td>
-<td><code>static_assert(<i>bool</i>, <i>string</i>)</code></td>
-<td>Tests compile-time conditions</td>
-<td><a href="http://en.cppreference.com/w/cpp/language/static_assert">Static Assertion</a></td>
-<td><a href="https://groups.google.com/a/chromium.org/forum/#!topic/chromium-dev/POISBQEhGzU">Discussion thread</a></td>
-</tr>
-
-<tr>
-<td>Trailing Return Types</td>
-<td><code>auto <i>function declaration</i> -&gt; <i>return_type</i></code></td>
-<td>Allows trailing function return value syntax</td>
-<td><a href="http://en.cppreference.com/w/cpp/language/function">Declaring functions</a></td>
-<td>Use only where it considerably improves readability. <a href="https://groups.google.com/a/chromium.org/forum/#!topic/chromium-dev/OQyYSfH9m2M">Discussion thread</a>. <a href="https://groups.google.com/a/chromium.org/forum/#!topic/cxx/Lkp0nubVd0Q">Another discussion thread</a></td>
-</tr>
-
-<tr>
-<td>Type Aliases ("using" instead of "typedef")</td>
-<td><code>using <i>new_alias</i> = <i>typename</i></code></td>
-<td>Allows parameterized typedefs</td>
-<td><a href="http://en.cppreference.com/w/cpp/language/type_alias">Type alias, alias template</a></td>
-<td>Use instead of typedef, unless the header needs to be compatible with C. <a href="https://groups.google.com/a/chromium.org/forum/#!topic/chromium-dev/8dOAMzgR4ao">Discussion thread</a></td>
-</tr>
-
-<tr>
-<td>Uniform Initialization Syntax</td>
-<td><code><i>type</i> <i>name</i> {[<i>value</i> ..., <i>value</i>]};</code></td>
-<td>Allows any object of primitive, aggregate or class type to be initialized using brace syntax</td>
-<td><a href="http://www.stroustrup.com/C++11FAQ.html#uniform-init">Uniform initialization syntax and semantics</a></td>
-<td>See the <a href="https://www.chromium.org/developers/coding-style/cpp-dos-and-donts?pli=1#TOC-Variable-initialization">Chromium C++ Dos And Don'ts guidance</a> on when to use this. <a href="https://groups.google.com/a/chromium.org/forum/#!topic/chromium-dev/GF96FshwHLw">Discussion thread</a></td>
-</tr>
-
-<tr>
-<td>Union Class Members</td>
-<td><code>union <i>name</i> {<i>class</i> <i>var</i>}</code></td>
-<td>Allows class type members</td>
-<td><a href="http://en.cppreference.com/w/cpp/language/union">Union declaration</a></td>
-<td>Usage should be rare. <a href="https://groups.google.com/a/chromium.org/forum/#!topic/cxx/3oK78s1ntgU">Discussion thread</a></td>
-</tr>
-
-<tr>
-<td>Variadic Macros</td>
-<td><code>#define <i>MACRO</i>(...) <i>Impl</i>(<i>args</i>, __VA_ARGS__)</code></td>
-<td>Allows macros that accept a variable number of arguments</td>
-<td><a href="http://stackoverflow.com/questions/4786649/are-variadic-macros-nonstandard">Are Variadic macros nonstandard?</a></td>
-<td>Usage should be rare. <a href="https://groups.google.com/a/chromium.org/forum/#!topic/chromium-dev/sRx9j3CQqyA">Discussion thread</a></td>
-</tr>
-
-<tr>
-<td>Variadic Templates</td>
-<td><code>template &lt;<i>typename</i> ... <i>arg</i>&gt;</code></td>
-<td>Allows templates that accept a variable number of arguments</td>
-<td><a href="http://en.cppreference.com/w/cpp/language/parameter_pack">Parameter pack</a></td>
-<td>Usage should be rare. Use instead of .pump files. <a href="https://groups.google.com/a/chromium.org/forum/#!topic/chromium-dev/6ItymeMXpMc">Discussion thread</a></td>
-</tr>
-
-</tbody>
-</table>
-
-<h2 id="whitelist"><a name="core-whitelist-14"></a>C++14 Allowed Features</h2>
-
-<p>The following features are currently allowed.</p>
-
-<table id="whitelist_lang_list_14" class="unlined striped">
-<tbody>
-
-<tr>
-<th style='width:220px;'>Feature</th>
-<th style='width:260px;'>Snippet</th>
-<th style='width:240px;'>Description</th>
-<th style='width:240px;'>Documentation Link</th>
-<th style='width:240px;'>Notes and Discussion Thread</th>
-</tr>
-
-<tr>
-<td>Aggregate member initialization</td>
-<td><code>struct Point { int x, y, z = 0; };<br>Point p = {2, 3};</code></td>
-<td>Allows classes with default member initializers to be initialized with aggregate initialization, optionally omitting data members with such initializers.</td>
-<td><a href="http://en.cppreference.com/w/cpp/language/aggregate_initialization">aggregate initialization</a></td>
-<td><a href="https://groups.google.com/a/chromium.org/d/topic/cxx/WMBs3K9OQ_E/discussion">Discussion thread</a></td>
-</tr>
-
-<tr>
-<td>Binary literals</td>
-<td><code>int i = 0b1001;</code></td>
-<td>Allows defining literals in base two.</td>
-<td><a href="http://en.cppreference.com/w/cpp/language/integer_literal">Integer literals</a></td>
-<td><a href="https://groups.google.com/a/chromium.org/d/topic/cxx/zsGhgaKLmIk/discussion">Discussion thread</a></td>
-</tr>
-
-<tr>
-<td>Function return type deduction</td>
-<td><code>auto f() { return 42; }<br>decltype(auto) g() { return 42; }</code></td>
-<td>Allows the return type of a function to be automatically deduced from its return statements, according to either template or <code>decltype</code> rules.</td>
-<td><a href="http://en.cppreference.com/w/cpp/language/function#Return_type_deduction">Return type deduction</a></td>
-<td>Usage should be rare, primarily for abstract template code. If you're not sure of the difference, prefer decltype(auto) for templated forwarding/wrapper functions and auto for other cases; see Effective Modern C++ item 3 for more detail. <a href="https://groups.google.com/a/chromium.org/d/topic/cxx/-Ox7YgRS_no/discussion">Discussion thread</a></td>
-</tr>
-
-<tr>
-<td>Generic lambdas</td>
-<td><code>[](const auto&amp; x) { <i>...</i> }</code></td>
-<td>Allows lambda argument types to be deduced using <code>auto</code> (according to the rules that apply to templates).</td>
-<td><a href="http://en.cppreference.com/w/cpp/language/lambda">lambda expressions</a></td>
-<td><a href="https://groups.google.com/a/chromium.org/d/topic/cxx/LasGKwE3SFM/discussion">Discussion thread</a></td>
-</tr>
-
-<tr>
-<td>Number literal separators</td>
-<td><code>float f = 1'000'000.000'1;</code></td>
-<td><code>'</code>s anywhere in int or float literals are ignored</td>
-<td><a href="http://en.cppreference.com/w/cpp/language/integer_literal">Integer literals</a>, <a href="http://en.cppreference.com/w/cpp/language/floating_literal">Floating point literals</a></td>
-<td><a href="https://groups.google.com/a/chromium.org/d/topic/cxx/exS1aGs1wes/discussion">Discussion thread</a></td>
-</tr>
-
-<tr>
-<td>Relaxed constant expressions</td>
-<td><code>constexpr int Factorial(int n) {<br>&nbsp;&nbsp;int result = 1;<br>&nbsp;&nbsp;while (n > 0)<br>&nbsp;&nbsp;&nbsp;&nbsp;result *= n--;<br>&nbsp;&nbsp;return result;<br>}</code></td>
-<td>Allows use of more declarations, conditional statements and loops inside <code>constexpr</code> functions.</td>
-<td><a href="http://en.cppreference.com/w/cpp/language/constexpr">constexpr specifier</a></td>
-<td>Prefer to <code>const</code> for variables where possible. Use cautiously on functions. Don't go out of the way to convert existing code. <a href="https://google.github.io/styleguide/cppguide.html#Use_of_constexpr">Google Style Guide</a>. <a href="https://groups.google.com/a/chromium.org/forum/#!topic/cxx/Psuq_EKJBAo">Discussion thread</a></td>
-</tr>
-
-</tbody>
-</table>
-
-<h2 id="whitelist"><a name="library-whitelist"></a>C++11 Allowed Library Features</h2>
-
-<p>The following library features are currently allowed.</p>
-
-<table id="whitelist_lib_list" class="unlined striped">
-<tbody>
-
-<tr>
-<th style='width:240px;'>Feature or Library</th>
-<th style='width:240px;'>Snippet</th>
-<th style='width:240px;'>Description</th>
-<th style='width:240px;'>Documentation Link</th>
-<th style='width:240px;'>Notes and Discussion Thread</th>
-</tr>
-
-<tr>
-<td>Access to underlying <code>std::vector</code> data</td>
-<td><code>v.data()</code></td>
-<td>Returns a pointer to a <code>std::vector</code>'s underlying data, accounting for empty vectors.</td>
-<td><a href="http://en.cppreference.com/w/cpp/container/vector/data">std::vector::data</a></td>
-<td><a href="https://groups.google.com/a/chromium.org/forum/#!topic/cxx/16V7fmtbzok">Discussion thread</a></td>
-</tr>
-
-<tr>
-<td>Algorithms</td>
-<td>All C++11 features in <code>&lt;algorithm&gt;</code>:<br/>
-<code>all_of</code>, <code>any_of</code>, <code>none_of</code><br/>
-<code>find_if_not</code><br/>
-<code>copy_if</code>, <code>copy_n</code><br/>
-<code>move</code>, <code>move_backward</code> (see note)<br/>
-<code>shuffle</code><br/>
-<code>is_partitioned</code>, <code>partition_copy</code>, <code>partition_point</code><br/>
-<code>is_sorted</code>, <code>is_sorted_until</code><br/>
-<code>is_heap</code>, <code>is_heap_until</code><br/>
-<code>minmax</code>, <code>minmax_element</code><br/>
-<code>is_permutation<br/></td>
-<td>Safe and performant implementations of common algorithms</td>
-<td><a href="http://en.cppreference.com/w/cpp/header/algorithm">Standard library header &lt;algorithm&gt;</a></td>
-<td>Note that &lt;algorithm&gt; contains a range-based <code>move</code> method. This is allowed, but because people may confuse it with the single-arg <code>std::move</code>, there is often a way to write code without it that is more readable. <a href="https://groups.google.com/a/chromium.org/forum/#!topic/cxx/UJQk8S1IuHk">Discussion thread</a>. <a href='https://groups.google.com/a/chromium.org/forum/#!topic/cxx/8WzmtYrZvQ8'>Another discussion thread</a></td>
-</tr>
-
-<tr>
-<td>Atomics</td>
-<td><code>&lt;atomic&gt;</code></td>
-<td>Fine-grained atomic types and operations</td>
-<td><a href="http://en.cppreference.com/w/cpp/atomic">Atomic operations library</a></td>
-<td>Direct use should be rare because the semantics are subtle. Prefer to use higher-level abstractions built on top of atomics or synchronization primitives.</td>
-</tr>
-
-<tr>
-<td>Begin and End Non-Member Functions</td>
-<td><code>std::begin()</code>, <code>std::end()</code></td>
-<td>Allows use of free functions on any container, including fixed-size arrays</td>
-<td><a href="http://en.cppreference.com/w/cpp/iterator/begin">std::begin</a>, <a href="http://en.cppreference.com/w/cpp/iterator/end">std::end</a></td>
-<td>Useful for fixed-size arrays. Note that non-member <code>cbegin()</code> and <code>cend()</code> are not available until C++14. <a href="https://groups.google.com/a/chromium.org/forum/#!topic/cxx/5iFNE8P5qT4">Discussion thread</a></td>
-</tr>
-
-<tr>
-<td>Conditional Type Selection</td>
-<td><code>std::enable_if</code>, <code>std::conditional</code></td>
-<td>Enables compile-time conditional type selection</td>
-<td><a href="http://en.cppreference.com/w/cpp/types/enable_if">std::enable_if</a>, <a href="http://en.cppreference.com/w/cpp/types/conditional">conditional</a></td>
-<td>Usage should be rare. <a href='https://groups.google.com/a/chromium.org/forum/#!topic/cxx/vCxo4tZNd_M'>Discussion thread</a></td>
-</tr>
-
-<tr>
-<td>Constant Iterator Methods on Containers</td>
-<td>E.g. <code>std::vector::cbegin()</code>, <code>std::vector::cend()</code></td>
-<td>Allows more widespread use of <code>const_iterator</code></td>
-<td><a href="http://en.cppreference.com/w/cpp/container/vector/begin">std::vector::cbegin</a>, <a href="http://en.cppreference.com/w/cpp/container/vector/end">std::vector::cend<a></td>
-<td>Applies to all containers, not just <code>vector</code>. Consider using <code>const_iterator</code> over <code>iterator</code> where possible for the same reason as using <code>const</code> variables and functions where possible; see Effective Modern C++ item 13. <a href="https://groups.google.com/a/chromium.org/forum/#!topic/cxx/cS83F_buqLM">Discussion thread</a></td>
-</tr>
-
-<tr>
-<td>Container Compaction Functions</td>
-<td><code>std::vector::shrink_to_fit()</code>, <code>std::deque::shrink_to_fit()</code>, <code>std::string::shrink_to_fit()</code></td>
-<td>Requests the removal of unused space in the container</td>
-<td><a href="http://en.cppreference.com/w/cpp/container/vector/shrink_to_fit">std::vector::shrink_to_fit</a>, <a href="http://en.cppreference.com/w/cpp/container/deque/shrink_to_fit">std::deque::shrink_to_fit</a>, <a href="http://en.cppreference.com/w/cpp/string/basic_string/shrink_to_fit">std::basic_string::shrink_to_fit</a></td>
-<td></td>
-</tr>
-
-<tr>
-<td>Declared Type As Value</td>
-<td><code>std::declval&lt;<i>class</i>&gt;()</code></td>
-<td>Converts a type to a reference of the type to allow use of members of the type without constructing it in templates.</td>
-<td><a href="http://en.cppreference.com/w/cpp/utility/declval">std::declval</a></td>
-<td>Usage should be rare. <a href="https://groups.google.com/a/chromium.org/d/topic/cxx/ku6lYjk0-OU/discussion">Discussion thread</a></td>
-</tr>
-
-<tr>
-<td>Emplacement methods for containers</td>
-<td><code>emplace()</code>, <code>emplace_back()</code>, <code>emplace_front()</code>, <code>emplace_hint()</code></td>
-<td>Constructs elements directly within a container without a copy or a move. Less verbose than <code>push_back()</code> due to not naming the type being constructed.</td>
-<td>E.g. <a href="http://en.cppreference.com/w/cpp/container/vector/emplace_back">std::vector::emplace_back</a></td>
-<td>When using emplacement for performance reasons, your type should probably be movable (since e.g. a vector of it might be resized); given a movable type, then, consider whether you really need to avoid the move done by <code>push_back()</code>. For readability concerns, treat like <code>auto</code>; sometimes the brevity over <code>push_back()</code> is a win, sometimes a loss. <a href="https://groups.google.com/a/chromium.org/forum/#!topic/cxx/m3cblzEta7A">Discussion thread</a></td>
-</tr>
-
-<tr>
-<td>Forwarding references</td>
-<td><code>std::forward()</code></td>
-<td>Perfectly forwards arguments (including rvalues)</td>
-<td><a href="http://en.cppreference.com/w/cpp/utility/forward">std::forward</a></td>
-<td>Allowed, though usage should be rare (primarily for forwarding constructor arguments, or in carefully reviewed library code). <a href="https://groups.google.com/a/chromium.org/forum/#!topic/cxx/-O7euklhSxs">Discussion thread</a>
-</td>
-</tr>
-
-<tr>
-<td>Initializer Lists</td>
-<td><code>std::initializer_list&lt;T&gt;</code></td>
-<td>Allows containers to be initialized with aggregate elements</td>
-<td><a href="http://en.cppreference.com/w/cpp/utility/initializer_list">std::initializer_list</a></td>
-<td>Be cautious adding new constructors which take these, as they can hide non-initializer_list constructors in undesirable ways; see Effective Modern C++ Item 7. <a href="https://groups.google.com/a/chromium.org/forum/#!topic/cxx/TQQ-L51_naM">Discussion thread</a>. <a href="https://groups.google.com/a/chromium.org/forum/#!topic/cxx/UpiCpuu9UNc">Another discussion thread</a></td>
-</tr>
-
-<tr>
-<td>Iterator Operators</td>
-<td><code>std::next()</code>, <code>std::prev()</code></td>
-<td>Copies an iterator and increments or decrements the copy by some value</td>
-<td><a href="http://en.cppreference.com/w/cpp/iterator/next">std::next</a>, <a href="http://en.cppreference.com/w/cpp/iterator/prev">std::prev</a></td>
-<td><a href="https://groups.google.com/a/chromium.org/forum/#!topic/cxx/KeHhLI-E2Ww">Discussion thread</a></td>
-</tr>
-
-<tr>
-<td>Math functions</td>
-<td>All C++11 features in <code>&lt;cmath&gt;</code>, e.g.:<br/>
-<code>INFINITY</code>, <code>NAN</code>, <code>FP_NAN</code><br/>
-<code>float_t</code>, <code>double_t</code><br/>
-<code>fmax</code>, <code>fmin</code>, <code>trunc</code>, <code>round</code><br/>
-<code>isinf</code>, <code>isnan</code><br/></td>
-<td>Useful for math-related code</td>
-<td><a href="http://en.cppreference.com/w/cpp/header/cmath">Standard library header &lt;cmath&gt;</a></td>
-<td><a href="https://groups.google.com/a/chromium.org/forum/#!topic/cxx/P-1bFBXMeUk">Discussion thread</a></td>
-</tr>
-
-<tr>
-<td>Move Iterator Adaptor</td>
-<td><code>std::make_move_iterator()</code></td>
-<td>Wraps an iterator so that it moves objects instead of copying them.</td>
-<td><a href="http://en.cppreference.com/w/cpp/iterator/make_move_iterator">std::make_move_iterator</a></td>
-<td>Useful to move objects between containers that contain move-only types like <code>std::unique_ptr</code>. <a href="https://groups.google.com/a/chromium.org/forum/#!topic/cxx/lccnUljOHQU">Discussion thread</a></td>
-</tr>
-
-<tr>
-<td>Move Semantics</td>
-<td><code>std::move()</code></td>
-<td>Facilitates efficient move operations</td>
-<td><a href="http://en.cppreference.com/w/cpp/utility/move">std::move</a></td>
-<td><a href='https://groups.google.com/a/chromium.org/forum/#!topic/cxx/x_dWFxJFdbM'>Discussion thread</a></td>
-</tr>
-
-<tr>
-<td>Null Pointer Type</td>
-<td><code>std::nullptr_t</code></td>
-<td>Allows referencing the type of <code>nullptr</code>, e.g. in templates</td>
-<td><a href="http://en.cppreference.com/w/cpp/types/nullptr_t">std::nullptr_t</a></td>
-<td><a href="https://groups.google.com/a/chromium.org/forum/#!topic/chromium-dev/UNaXc8R7eJ0">Discussion thread</a></td>
-</tr>
-
-<tr>
-<td>Random Number Distributions</td>
-<td>The random number distributions defined in <code>&lt;random&gt;</code> (see separate item for random number engines), e.g.:<br/>
-<code>uniform_int_distribution</code>, <code>uniform_real_distribution</code><br/>
-<code>poisson_distribution</code>, <code>gamma_distribution</code><br/>
-<code>normal_distribution</code>, <code>chi_squared_distribution</code><br/>
-</td>
-<td>Utilities for producing random distributions given a random bit generator.</td>
-<td><a href="http://en.cppreference.com/w/cpp/numeric/random">Pseudo-random number generation</a></td>
-<td>Because the standard does not define precisely how the <code><i>xxx</i>_distribution</code> objects generate output, the same object may produce different output for the same seed across platforms, or even across different versions of the STL. Do not use these objects in any scenario where behavioral consistency is required. <a href="https://groups.google.com/a/chromium.org/forum/#!topic/cxx/MLgK9vCE4BA">Discussion thread</a></td>
-</tr>
-
-<tr>
-<td>Reference Wrapper Classes</td>
-<td><code>std::reference_wrapper</code> and <code>std::ref()</code>, <code>std::cref()</code></td>
-<td>Allows you to wrap a reference within a standard object (and use those within containers)</td>
-<td><a href="http://en.cppreference.com/w/cpp/utility/functional/reference_wrapper">std::reference_wrapper</a>, <a href="http://en.cppreference.com/w/cpp/utility/functional/ref">std::ref, std::cref</a></td>
-<td><a href="https://groups.google.com/a/chromium.org/d/msg/cxx/oVdPIhPji3E/sr4Dv0geAgAJ">Discussion thread</a></td>
-</tr>
-
-<tr>
-<td>String Direct Reference Functions</td>
-<td><code>std::string::front()</code>, <code>std::string::back()</code></td>
-<td>Returns a reference to the front or back of a string</td>
-<td><a href="http://en.cppreference.com/w/cpp/string/basic_string/front">std::basic_string::front</a>, <a href="http://en.cppreference.com/w/cpp/string/basic_string/back">std::basic_string::back</a></td>
-<td><a href="https://groups.google.com/a/chromium.org/forum/#!topic/cxx/DRJuROAYCV4">Discussion thread</a></td>
-</tr>
-
-<tr>
-<td>Type Traits</td>
-<td>All C++11 features in <code>&lt;type_traits&gt;</code> except for aligned storage (see separate item), e.g.:<br/>
-<code>integral_constant</code><br/>
-<code>is_floating_point</code>, <code>is_rvalue_reference</code>, <code>is_scalar</code><br/>
-<code>is_const</code>, <code>is_pod</code>, <code>is_unsigned</code><br/>
-<code>is_default_constructible</code>, <code>is_move_constructible</code>, <code>is_copy_assignable</code><br/>
-<code>enable_if</code>, <code>conditional</code>, <code>result_of</code><br/></td>
-<td>Allows compile-time inspection of the properties of types</td>
-<td><a href="http://en.cppreference.com/w/cpp/header/type_traits">Standard library header &lt;type_traits&gt;</a></td>
-<td><a href='https://groups.google.com/a/chromium.org/forum/#!topic/cxx/vCxo4tZNd_M'>Discussion thread</a></td>
-</tr>
-
-<tr>
-<td>Tuples</td>
-<td>All C++11 features in <code>&lt;tuple&gt;</code>, e.g. <code>std::tie</code> and <code>std::tuple</code>.</td>
-<td>A fixed-size ordered collection of values of mixed types</td>
-<td><a href="http://en.cppreference.com/w/cpp/header/tuple">Standard library header &lt;tuple&gt;</a></td>
-<td><a href="https://groups.google.com/a/chromium.org/forum/#!topic/cxx/0NnCRmMY1xY">Discussion thread</a>. <a href="https://groups.google.com/a/chromium.org/forum/#!topic/cxx/VA7Ej2IWS2w">Another discussion thread</a></td>
-</tr>
-
-<tr>
-<td>Unordered Associative Containers</td>
-<td><code>std::unordered_set</code>, <code>std::unordered_map</code>, <code>std::unordered_multiset</code>, <code>std::unordered_multimap</code></td>
-<td>Allows efficient containers of key/value pairs</td>
-<td><a href="http://en.cppreference.com/w/cpp/container/unordered_map">std::unordered_map</a>, <a href="http://en.cppreference.com/w/cpp/container/unordered_set">std::unordered_set</a></td>
-<td>Specify custom hashers instead of specializing <code>std::hash</code> for custom types. <a href="https://google.github.io/styleguide/cppguide.html#std_hash">Google Style Guide</a>. <a href="https://groups.google.com/a/chromium.org/forum/#!topic/cxx/nCdjQqnouO4">Discussion thread</a></td>
-</tr>
-
-<tr>
-<td>Unique Pointers</td>
-<td><code>std::unique_ptr&lt;<i>type</i>&gt;</code></td>
-<td>A smart pointer with sole ownership of the owned object.</td>
-<td><a href="http://en.cppreference.com/w/cpp/memory/unique_ptr">std::unique_ptr</a></td>
-<td><a href="https://google.github.io/styleguide/cppguide.html#Ownership_and_Smart_Pointers">Google Style Guide</a>. <a href="https://groups.google.com/a/chromium.org/forum/#!topic/cxx/aT2wsBLKvzI">Discussion thread</a></td>
-</tr>
-
-</tbody>
-</table>
-
-<h2 id="whitelist"><a name="library-whitelist-14"></a>C++14 Allowed Library Features</h2>
-
-<p>The following library features are currently allowed.</p>
-
-<table id="whitelist_lib_list" class="unlined striped">
-<tbody>
-
-<tr>
-<th style='width:240px;'>Feature or Library</th>
-<th style='width:240px;'>Snippet</th>
-<th style='width:240px;'>Description</th>
-<th style='width:240px;'>Documentation Link</th>
-<th style='width:240px;'>Notes and Discussion Thread</th>
-</tr>
-
-<tr>
-<td>Constant begin/end non-member functions</td>
-<td><code>std::cbegin(<i>container</i>)<br>std::cend(<i>container</i>)<br>std::crbegin(<i>container</i>)<br>std::crend(<i>container</i>)</br></code></td>
-<td>Constant counterparts to <code>std::begin</code> etc.</td>
-<td><a href="http://en.cppreference.com/w/cpp/iterator/begin">std::cbegin</a></td>
-<td></td>
-</tr>
-
-<tr>
-<td>Heterogeneous lookup in associative containers</td>
-<td><code><i>// Does not construct an std::string to use as the lookup key.</i><br>std::map&lt;std::string, int, std::less&lt;&gt;&gt; map;<br>auto it = map.find("answer");</code></td>
-<td>Allows searching associative containers without converting the key to exactly match the stored key type, assuming a suitable comparator exists.</td>
-<td><a href="http://en.cppreference.com/w/cpp/utility/functional/less">std::less</a></td>
-<td><a href="https://groups.google.com/a/chromium.org/d/msg/cxx/ow7hmdDm4yw/EDEvBRi_BQAJ">Discussion thread</a></td>
-</tr>
-
-<tr>
-<td><code>std::integer_sequence</code></td>
-<td><code>template &lt;size_t... I&gt;<br>void CallFooImpl(std::index_sequence&lt;I...&gt;) {<br>&nbsp;&nbsp;Foo(I...);<br>}<br><br>template &lt;size_t N&gt;<br>void CallFoo() {<br>&nbsp;&nbsp;CallFooImpl(std::make_index_sequence&lt;N&gt;());<br>}</code></td>
-<td>Template metaprogramming utility for representing a sequence of integers as a type.</td>
-<td><a href="http://en.cppreference.com/w/cpp/utility/integer_sequence">std::integer_sequence</a></td>
-<td>This also includes the alias, <code>std::index_sequence</code>, which is the specialization for <code>size_t</code>. <a href="https://groups.google.com/a/chromium.org/d/msg/cxx/ow7hmdDm4yw/EDEvBRi_BQAJ">Discussion thread</a></td>
-</tr>
-
-<tr>
-<td><code>std::make_unique</code></td>
-<td><code>auto widget = std::make_unique&lt;Widget&gt;();</code></td>
-<td>Allocates objects on the heap and immediately constructs an <code>std::unique_ptr</code> to assume ownership.</td>
-<td><a href="http://en.cppreference.com/w/cpp/memory/unique_ptr/make_unique">std::make_unique</a></td>
-<td>Should replace <code>base::MakeUnique</code> and <code>WTF::MakeUnique</code>. <a href="https://groups.google.com/a/chromium.org/d/msg/cxx/ow7hmdDm4yw/EDEvBRi_BQAJ">Discussion thread</a></td>
-</tr>
-
-<tr>
-<td>Transparent function objects</td>
-<td>Arithmetic operations:<br><code>std::plus&lt;&gt;, std::minus&lt;&gt;</code> ...<br>Comparisons:<br><code>std::less&lt;&gt;, std::equal_to&lt;&gt;</code>...<br>Logical operations:<br><code>std::logical_and&lt;&gt;, std::logical_or&lt;&gt;</code>...<br>Bitwise operations:<br><code>std::bit_and&lt;&gt;, std::bit_or&lt;&gt;</code>...<br></td>
-<td>Function objects that deduce argument types.</td>
-<td><a href="http://en.cppreference.com/w/cpp/utility/functional/less_void">std::less&lt;&gt;</a></td>
-<td>Should replace <code>base::less</code> and usage of these functors with explicit types where appropriate. <a href="https://groups.google.com/a/chromium.org/forum/#!topic/cxx/cPoULd2NY9k">Discussion thread</a></td>
-</tr>
-
-<tr>
-<td>Tuple addressing by type</td>
-<td><code>std::tuple&lt;int, char&gt; enterprise(1701, 'D');<br>int n = std::get&lt;int&gt;(enterprise);</code></td>
-<td>Allows entries in a tuple to be accessed by type rather than entry, if it is not ambiguous.</td>
-<td><a href="http://en.cppreference.com/w/cpp/utility/tuple/get">std::get(std::tuple)</a></td>
-<td></td>
-</tr>
-
-<tr>
-<td>Reverse Iterator Adaptor</td>
-<td><code>std::make_reverse_iterator()</code></td>
-<td>For a given iterator, deduces the type of a corresponding reverse iterator and constructs it.</td>
-<td><a href="http://en.cppreference.com/w/cpp/iterator/make_reverse_iterator">std::make_reverse_iterator</a></td>
-<td>Useful to reduce boilerplate when constructing reverse iterators. The alternative is using <code>std::reverse_iterator<T>(i)</code> where <code>T</code> is the, usually long, type of the iterator <code>i</code>. <a href="https://groups.google.com/a/chromium.org/forum/#!topic/cxx/qOE1XA0b6Dk">Discussion thread</a></td>
-</tr>
-
-</tbody>
-</table>
-
-<h2 id="blocklist">C++11 and C++14 Disallowed Features</h2>
-
-<p>This section lists features that are not allowed to be used yet.
-
-<h3 id="blocklist_banned"><a name="core-blocklist"></a>C++11 Banned Features</h3>
-
-<p>This section lists C++11 features that are not allowed in the Chromium codebase.</p>
+<p>The following C++11 language features are not allowed in the Chromium codebase.</p>
 
 <table id="banned_list" class="unlined striped">
 <tbody>
@@ -759,21 +91,7 @@ template &lt;typename T&gt;<br/>void Function(T&amp;&amp; t) { ... }</code></td>
 <td><code>long long <i>var</i> = <i>value</i>;</code></td>
 <td>An integer of at least 64 bits</td>
 <td><a href="http://en.cppreference.com/w/cpp/language/types">Fundamental types</a></td>
-<td>Use a stdint.h type if you need a 64bit number. <a href="https://groups.google.com/a/chromium.org/forum/#!topic/chromium-dev/RxugZ-pIDxk">Discussion thread</a></td>
-</tr>
-
-<tr>
-<td>Ref-qualified Member Functions</td>
-<td><code>class T {<br />
-&nbsp;&nbsp;void f() &amp; {}<br />
-&nbsp;&nbsp;void f() &amp;&amp; {}<br />
-};<br />
-t.f();&nbsp;&nbsp;// first<br />
-T().f();&nbsp;&nbsp;// second<br />
-std::move(t).f();&nbsp;&nbsp;// second</code></td>
-<td>Allows class member functions to only bind to |this| as an rvalue or lvalue.</td>
-<td><a href="http://en.cppreference.com/w/cpp/language/member_functions#const-.2C_volatile-.2C_and_ref-qualified_member_functions">const-, volatile-, and ref-qualified member functions</a></td>
-<td>Banned in the <a href="https://google.github.io/styleguide/cppguide.html#C++11">Google Style Guide</a>. May only be used in Chromium with explicit approval from <code>styleguide/c++/OWNERS</code>. <a href="https://groups.google.com/a/chromium.org/forum/#!topic/cxx/gowclr2LPQA">Discussion Thread</a></td>
+<td>Use a stdint.h type if you need a 64-bit number. <a href="https://groups.google.com/a/chromium.org/forum/#!topic/chromium-dev/RxugZ-pIDxk">Discussion thread</a></td>
 </tr>
 
 <tr>
@@ -789,34 +107,15 @@ std::move(t).f();&nbsp;&nbsp;// second</code></td>
 <td><code>thread_local int foo = 1;</code></td>
 <td>Puts variables into thread local storage.</td>
 <td><a href="http://en.cppreference.com/w/cpp/language/storage_duration">Storage duration</a></td>
-<td>Some surprising effects on Mac (<a href="https://groups.google.com/a/chromium.org/forum/#!topic/chromium-dev/2msN8k3Xzgs">discussion</a>, <a href="https://groups.google.com/a/chromium.org/forum/#!topic/cxx/h7O5BdtWCZw">fork</a>). Use <a href="https://cs.chromium.org/chromium/src/base/threading/sequence_local_storage_slot.h">SequenceLocalStorageSlot</a> for sequence support, and <a href="https://cs.chromium.org/chromium/src/base/threading/thread_local.h">ThreadLocal</a>/<a href="https://cs.chromium.org/chromium/src/base/threading/thread_local_storage.h">ThreadLocalStorage</a> otherwise.</td>
+<td>Some surprising effects on Mac (<a href="https://groups.google.com/a/chromium.org/forum/#!topic/chromium-dev/2msN8k3Xzgs">discussion</a>, <a href="https://groups.google.com/a/chromium.org/forum/#!topic/cxx/h7O5BdtWCZw">fork</a>). Use <code>base::SequenceLocalStorageSlot</code> for sequence support, and <code>base::ThreadLocal</code>/<code>base::ThreadLocalStorage</code> otherwise.</td>
 </tr>
 
 </tbody>
 </table>
 
-<h3 id="blocklist_banned"><a name="core-blocklist-14"></a>C++14 Banned Features</h3>
+<h2 id="blocklist_stdlib"><a name="library-blocklist"></a>C++11 Banned Library Features</h2>
 
-<p>This section lists C++14 features that are not allowed in the Chromium codebase.</p>
-
-<table id="banned_list" class="unlined striped">
-<tbody>
-
-<tr>
-<th style='width:240px;'>Feature</th>
-<th style='width:240px;'>Snippet</th>
-<th style='width:240px;'>Description</th>
-<th style='width:240px;'>Documentation Link</th>
-<th style='width:240px;'>Notes and Discussion Thread</th>
-</tr>
-
-<tr>
-</tbody>
-</table>
-
-<h3 id="blocklist_stdlib"><a name="library-blocklist"></a>C++11 Banned Library Features</h3>
-
-<p>This section lists C++11 library features that are not allowed in the Chromium codebase.</p>
+<p>The following C++11 library features are not allowed in the Chromium codebase.</p>
 
 <table id="blocklist_lib_list" class="unlined striped">
 <tbody>
@@ -827,14 +126,6 @@ std::move(t).f();&nbsp;&nbsp;// second</code></td>
 <th style='width:240px;'>Description</th>
 <th style='width:240px;'>Documentation Link</th>
 <th style='width:240px;'>Notes and Discussion Thread</th>
-</tr>
-
-<tr>
-<td>Aligned storage</td>
-<td><code>std::aligned_storage&lt;10, 128&gt;</code></td>
-<td>Uninitialized storage for objects requiring specific alignment.</td>
-<td><a href="http://en.cppreference.com/w/cpp/types/aligned_storage">std::aligned_storage</a></td>
-<td>MSVC 2017's implementation does not align on boundaries greater than sizeof(double) = 8 bytes. Use <code>alignas(128) char foo[10];</code> instead. <a href="https://codereview.chromium.org/2932053002">Patch where this was discovered</a>.</td>
 </tr>
 
 <td>Bind Operations</td>
@@ -865,7 +156,7 @@ std::move(t).f();&nbsp;&nbsp;// second</code></td>
 <td><code>&lt;exception&gt;</code></td>
 <td>Enhancements to exception throwing and handling</td>
 <td><a href="http://en.cppreference.com/w/cpp/header/exception">Standard library header &lt;exception&gt;</a></td>
-<td>Exceptions are banned by the <a href="https://google.github.io/styleguide/cppguide.html#Exceptions">Google Style Guide</a> and disabled in Chromium compiles. Note that the <code>noexcept</code> specifier is explicitly allowed above. <a href="https://groups.google.com/a/chromium.org/forum/#!topic/chromium-dev/8i4tMqNpHhg">Discussion thread</a></td>
+<td>Exceptions are banned by the <a href="https://google.github.io/styleguide/cppguide.html#Exceptions">Google Style Guide</a> and disabled in Chromium compiles. However, the <code>noexcept</code> specifier is explicitly allowed. <a href="https://groups.google.com/a/chromium.org/forum/#!topic/chromium-dev/8i4tMqNpHhg">Discussion thread</a></td>
 </tr>
 
 <tr>
@@ -913,6 +204,14 @@ std::move(t).f();&nbsp;&nbsp;// second</code></td>
 </tr>
 
 <tr>
+<td>String-Number Conversion Functions</td>
+<td><code>std::stoi()</code>, <code>std::stol()</code>, <code>std::stoul()</code>, <code>std::stoll</code>, <code>std::stoull()</code>, <code>std::stof()</code>, <code>std::stod()</code>, <code>std::stold()</code>, <code>std::to_string()</code></td>
+<td>Converts strings to/from numbers</td>
+<td><a href="http://en.cppreference.com/w/cpp/string/basic_string/stol">std::stoi, std::stol, std::stoll</a>, <a href="http://en.cppreference.com/w/cpp/string/basic_string/stoul">std::stoul, std::stoull</a>, <a href="http://en.cppreference.com/w/cpp/string/basic_string/stof">std::stof, std::stod, std::stold</a>, <a href="http://en.cppreference.com/w/cpp/string/basic_string/to_string">std::to_string</a></td>
+<td>The string-to-number conversions rely on exceptions to communicate failure, while the number-to-string conversions have performance concerns and depend on the locale.  Use the routines in <code>base/strings/string_number_conversions.h</code> instead.</td>
+</tr>
+
+<tr>
 <td>Thread Library</td>
 <td><code>&lt;thread&gt;</code> and related headers, including<br />
 <code>&lt;future&gt;</code>, <code>&lt;mutex&gt;</code>, <code>&lt;condition_variable&gt;</code></td>
@@ -921,12 +220,20 @@ std::move(t).f();&nbsp;&nbsp;// second</code></td>
 <td>Overlaps with many classes in <code>base/</code>. Keep using the <code>base/</code> classes for now. <code>base::Thread</code> is tightly coupled to <code>MessageLoop</code> which would make it hard to replace. We should investigate using standard mutexes, or unique_lock, etc. to replace our locking/synchronization classes.</td>
 </tr>
 
+<tr>
+<td>Weak Pointers</td>
+<td><code>std::weak_ptr</code></td>
+<td>Allows a weak reference to a <code>std::shared_ptr</code></td>
+<td><a href="http://en.cppreference.com/w/cpp/memory/weak_ptr">std::weak_ptr</a></td>
+<td>Banned because <code>std::shared_ptr</code> is banned.  Use <code>base::WeakPtr</code> instead.</td>
+</tr>
+
 </tbody>
 </table>
 
-<h3 id="blocklist_stdlib"><a name="library-blocklist-14"></a>C++14 Banned Library Features</h3>
+<h2 id="blocklist_stdlib"><a name="library-blocklist-14"></a>C++14 Banned Library Features</h2>
 
-<p>This section lists C++14 library features that are not allowed in the Chromium codebase.</p>
+<p>The following C++14 library features are not allowed in the Chromium codebase.</p>
 
 <table id="blocklist_lib_list" class="unlined striped">
 <tbody>
@@ -945,299 +252,6 @@ std::move(t).f();&nbsp;&nbsp;// second</code></td>
 <td>Allows <code>std::chrono</code> types to be more easily constructed.</td>
 <td><a href="http://en.cppreference.com/w/cpp/chrono/operator%22%22s">std::literals::chrono_literals::operator""s</a></td>
 <td>Banned because <code>&lt;chrono&gt;</code> is banned.</td>
-</tr>
-
-</tbody>
-</table>
-
-<h3 id="blocklist_review"><a name="core-review"></a>C++11 Features To Be Discussed</h3>
-
-<p>The following C++ language features are currently disallowed. See the top of this page on how to propose moving a feature from this list into the allowed or banned sections.</p>
-
-<table id="blocklist_review_list" class="unlined striped">
-<tbody>
-
-<tr>
-<th style='width:240px;'>Feature</th>
-<th style='width:240px;'>Snippet</th>
-<th style='width:240px;'>Description</th>
-<th style='width:240px;'>Documentation Link</th>
-<th style='width:240px;'>Notes and Discussion Thread</th>
-</tr>
-
-<tr>
-<td>Attributes</td>
-<td><code>[[<i>attribute_name</i>]]</code></td>
-<td>Attaches properties to declarations that specific compiler implementations may use.</td>
-<td><a href="http://www.codesynthesis.com/~boris/blog/2012/04/18/cxx11-generalized-attributes/">C++11 generalized attributes</a></td>
-<td></td>
-</tr>
-
-<tr>
-<td>UTF-8, UTF-16, UTF-32 String Literals</td>
-<td><code>u8&quot;<i>string</i>&quot;, u&quot;<i>string</i>&quot;, U&quot;<i>string</i>&quot;</code></td>
-<td>Enforces UTF-8, UTF-16, UTF-32 encoding on all string literals</td>
-<td><a href="http://en.cppreference.com/w/cpp/language/string_literal">string literal</a></td>
-<td>Reevaluate now that MSVS2015 is available. <a href="https://groups.google.com/a/chromium.org/forum/#!topic/chromium-dev/gcoUbcjfsII">Discussion thread</a></td>
-</tr>
-
-<tr>
-<td>UTF-16 and UTF-32 Support (16-Bit and 32-Bit Character Types)</td>
-<td><code>char16_t</code> and <code>char32_t</code></td>
-<td>Provides character types for handling 16-bit and 32-bit code units (useful for encoding UTF-16 and UTF-32 string data)</td>
-<td><a href="http://en.cppreference.com/w/cpp/language/types">Fundamental types</a></td>
-<td>Reevaluate now that MSVS2015 is available. Non-UTF-8 text is banned by the <a href="https://google.github.io/styleguide/cppguide.html#Non-ASCII_Characters">Google Style Guide</a>. However, may be useful for consuming non-ASCII data. <a href="https://groups.google.com/a/chromium.org/forum/#!topic/chromium-dev/ME2kL7_Kvyk">Discussion thread</a></td>
-</tr>
-
-</tbody>
-</table>
-
-<h3 id="blocklist_review"><a name="core-review-14"></a>C++14 Features To Be Discussed</h3>
-
-<p>The following C++14 language features are currently disallowed. See the top of this page on how to propose moving a feature from this list into the allowed or banned sections.</p>
-
-<table id="blocklist_review_list" class="unlined striped">
-<tbody>
-
-<tr>
-<th style='width:240px;'>Feature</th>
-<th style='width:240px;'>Snippet</th>
-<th style='width:240px;'>Description</th>
-<th style='width:240px;'>Documentation Link</th>
-<th style='width:240px;'>Notes and Discussion Thread</th>
-</tr>
-
-<tr>
-<td><code>[[deprecated]]</code> attribute</td>
-<td><code>[[deprecated]] void f();<br>
-[[deprecated("use h() instead")]] void g();</code></td>
-<td>Marks a function as deprecated.</td>
-<td><a href="http://en.cppreference.com/w/cpp/language/attributes">Standard attributes</a></td>
-<td>We don't use deprecation warnings in Chromium; if you want to deprecate
-something, remove all callers and remove the function instead.</td>
-</tr>
-
-<tr>
-<td><code>decltype(auto)</code> variable declarations</td>
-<td><code>decltype(auto) x = 42;</code></td>
-<td>Allows deducing the type of a variable using <code>decltype</code> rules.</td>
-<td><a href="http://en.cppreference.com/w/cpp/language/auto">auto specifier</a></td>
-<td>Often more surprising than <code>auto</code>. For instance, the <code>decltype</code> deduction rules do not remove references.</td>
-</tr>
-
-<tr>
-<td>Lambda capture expressions</td>
-<td><code>auto widget = std::make_unique&lt;Widget&gt;();<br>auto lambda = [widget = std::move(widget)]() {<br>&nbsp;&nbsp;SetWidget(std::move(widget));<br>}</code></td>
-<td>Allows lambda captures to be explicitly initialized with expressions.</td>
-<td><a href="http://en.cppreference.com/w/cpp/language/lambda#Lambda_capture">Lambda capture</a></td>
-<td>Particularly useful to capture move-only types in a lambda when a reference would go out of scope. Less useful without allowing lambdas to outlive the scope.</td>
-</tr>
-
-<tr>
-<td>Variable templates</td>
-<td><code>template &lt;typename T&gt;<br>constexpr T tau = T(6.283185307179586476925286766559);</code></td>
-<td>Allows templates that declare variables, rather than functions or classes.</td>
-<td><a href="http://en.cppreference.com/w/cpp/language/variable_template">Variable template</a></td>
-<td></td>
-</tr>
-
-</tbody>
-</table>
-
-<h3 id="blocklist_stdlib_review"><a name="library-review"></a>C++11 Standard Library Features To Be Discussed</h3>
-
-<p>The following C++ library features are currently disallowed. See the top of this page on how to propose moving a feature from this list into the allowed or banned sections.</p>
-
-<table id="banned_stdlib" class="unlined striped">
-
-<tbody>
-<tr>
-<th style='width:240px;'>Feature</th>
-<th style='width:240px;'>Snippet</th>
-<th style='width:240px;'>Description</th>
-<th style='width:240px;'>Documentation Link</th>
-<th style='width:240px;'>Notes</th>
-</tr>
-
-<tr>
-<td>Address Retrieval</td>
-<td><code>std::addressof()</code></td>
-<td>Obtains the address of an object even with overloaded <code>operator&amp;</code></td>
-<td><a href="http://en.cppreference.com/w/cpp/memory/addressof">std::addressof</a></td>
-<td>Usage should be rare as <a href="https://google.github.io/styleguide/cppguide.html#Operator_Overloading">operator overloading</a> is rare and <code>&amp;</code> should suffice in most cases. May be preferable over <code>&amp;</code> for performing object identity checks.</td>
-</tr>
-
-<tr>
-<td>Aligned Storage</td>
-<td><code>std::alignment_of&lt;T&gt;</code>, <code>std::aligned_union&lt;Size, ...Types&gt;</code> <code>std::max_align_t</code></td>
-<td>Declare uninitialized storage having a specified alignment, or determine alignments.</td>
-<td><a href="http://en.cppreference.com/w/cpp/types/aligned_union">std::aligned_union</a></td>
-<td><code>std::aligned_union</code> is disallowed in google3 over concerns about compatibility with internal cross-compiling toolchains. <code>std::aligned_storage</code> is on the disallowed list due to compatibility concerns.</td>
-</tr>
-
-<tr>
-<td>Allocator Traits</td>
-<td><code>std::allocator_traits</code></td>
-<td>Provides an interface for accessing custom allocators</td>
-<td><a href="http://en.cppreference.com/w/cpp/memory/allocator_traits">std::allocator_traits</a></td>
-<td>Usage should be rare.</td>
-</tr>
-
-<tr>
-<td>Complex Inverse Trigonometric and Hyperbolic Functions</td>
-<td>Functions within <code>&lt;complex&gt;</code></td>
-<td>Adds inverse trigonomentric and hyperbolic non-member functions to the <code>&lt;complex&gt;</code> library.</td>
-<td><a href="http://en.cppreference.com/w/cpp/numeric/complex">std::complex</a></td>
-<td></td>
-</tr>
-
-<tr>
-<td>Date/Time String Formatting Specifiers</td>
-<td><code>std::strftime()</code></td>
-<td>Converts date and time information into a formatted string using new specifiers</td>
-<td><a href="http://en.cppreference.com/w/cpp/chrono/c/strftime">std::strftime</a></td>
-<td></td>
-</tr>
-
-<tr>
-<td>Function Return Type Extraction</td>
-<td><code>std::result_of&lt;<i>Functor(ArgTypes...)</i>&gt;</code></td>
-<td>Extracts the return type from the type signature of a function call invocation at compile-time.</td>
-<td><a href="http://en.cppreference.com/w/cpp/types/result_of">std::result_of</a></td>
-<td><a href="http://stackoverflow.com/questions/15486951/why-does-stdresult-of-take-an-unrelated-function-type-as-a-type-argument">Why does std::result_of take an (unrelated) function type as a type argument?</a></td>
-</tr>
-
-<tr>
-<td>Forward Lists</td>
-<td><code>std::forward_list</code></td>
-<td>Provides an efficient singly linked list</td>
-<td><a href="http://en.cppreference.com/w/cpp/container/forward_list">std::forward_list</a></td>
-<td></td>
-</tr>
-
-<tr>
-<td>Gamma Natural Log</td>
-<td><code>std::lgamma()</code></td>
-<td>Computes the natural log of the gamma of a floating point value</td>
-<td><a href="http://en.cppreference.com/w/cpp/numeric/math/lgamma">std::lgamma</a></td>
-<td></td>
-</tr>
-
-<tr>
-<td>Garbage Collection Features</td>
-<td><code>std::{un}declare_reachable()</code>, <code>std::{un}declare_no_pointers()</code></td>
-<td>Enables garbage collection implementations</td>
-<td><a href="http://en.cppreference.com/w/cpp/memory/gc/declare_reachable">std::declare_reachable</a>, <a href="http://en.cppreference.com/w/cpp/memory/gc/declare_no_pointers">std::declare_no_pointers</a></td>
-<td></td>
-</tr>
-
-<tr>
-<td>Pointer Traits Class Template</td>
-<td><code>std::pointer_traits</code></td>
-<td>Provides a standard way to access properties of pointers and pointer-like types</td>
-<td><a href="http://en.cppreference.com/w/cpp/memory/pointer_traits">std::pointer_traits</a></td>
-<td>Useful for determining the element type pointed at by a (possibly smart) pointer.</td>
-</tr>
-
-<tr>
-<td>Soft Program Exits</td>
-<td><code>std::at_quick_exit()</code>, <code>std::quick_exit()</code></td>
-<td>Allows registration of functions to be called upon exit, allowing cleaner program exit than <code>abort()</code> or <code>exit</code></td>
-<td><a href="http://en.cppreference.com/w/cpp/utility/program/quick_exit">std:quick_exit</a></td>
-<td></td>
-</tr>
-
-<tr>
-<td>String-Number Conversion Functions</td>
-<td><code>std::stoi()</code>, <code>std::stol()</code>, <code>std::stoul()</code>, <code>std::stoll</code>, <code>std::stoull()</code>, <code>std::stof()</code>, <code>std::stod()</code>, <code>std::stold()</code>, <code>std::to_string()</code></td>
-<td>Converts strings to/from numbers</td>
-<td><a href="http://en.cppreference.com/w/cpp/string/basic_string/stol">std::stoi, std::stol, std::stoll</a>, <a href="http://en.cppreference.com/w/cpp/string/basic_string/stoul">std::stoul, std::stoull</a>, <a href="http://en.cppreference.com/w/cpp/string/basic_string/stof">std::stof, std::stod, std::stold</a>, <a href="http://en.cppreference.com/w/cpp/string/basic_string/to_string">std::to_string</a></td>
-<td>May be useful to <a href="https://bugs.chromium.org/p/chromium/issues/detail?id=593512">replace dmg_fp</a>.</td>
-</tr>
-
-<tr>
-<td>System Errors</td>
-<td><code>&lt;system_error&gt;</code></td>
-<td>Provides a standard system error library</td>
-<td><a href="http://en.cppreference.com/w/cpp/header/system_error">Standard library header &lt;system_error&gt;</a></td>
-<td></td>
-</tr>
-
-<tr>
-<td>Type-Generic Math Functions</td>
-<td><code>&lt;ctgmath&gt;</code></td>
-<td>Provides a means to call real or complex functions based on the type of arguments</td>
-<td><a href="http://en.cppreference.com/w/cpp/header/ctgmath">Standard library header &lt;ctgmath&gt;</a></td>
-<td></td>
-</tr>
-
-<tr>
-<td>Type Info Enhancements</td>
-<td><code>std::type_index</code>, <code>std::type_info::hash_code()</code></td>
-<td>Allows type information (most often within containers) that can be copied, assigned, or hashed</td>
-<td><a href="http://en.cppreference.com/w/cpp/types/type_index">std::type_index</a>, <a href="http://en.cppreference.com/w/cpp/types/type_info/hash_code">std::type_info::hash_code</a></td>
-<td><code>std::type_index</code> is a thin wrapper for <code>std::type_info</code>, allowing you to use it directly within both associative and unordered containers.</td>
-</tr>
-
-<tr>
-<td>Variadic Copy Macro</td>
-<td><code>va_copy(va_list <i>dest</i>, va_list <i>src</i>)</code></td>
-<td>Makes a copy of the variadic function arguments</td>
-<td><a href="http://en.cppreference.com/w/cpp/utility/variadic/va_copy">va_copy</a></td>
-<td></td>
-</tr>
-
-<tr>
-<td>Weak Pointers</td>
-<td><code>std::weak_ptr</code></td>
-<td>Allows a weak reference to a <code>std::shared_ptr</code></td>
-<td><a href="http://en.cppreference.com/w/cpp/memory/weak_ptr">std::weak_ptr</a></td>
-<td><a href="https://google.github.io/styleguide/cppguide.html#Ownership_and_Smart_Pointers">Ownership and Smart Pointers</a></td>
-</tr>
-
-<tr>
-<td>Wide String Support</td>
-<td><code>std::wstring_convert</code>, <code>std::wbuffer_convert</code><br />
-<code>std::codecvt_utf8</code>, <code>std::codecvt_utf16</code>, <code>std::codecvt_utf8_utf16</code></td>
-<td>Converts between string encodings</td>
-<td><a href="http://en.cppreference.com/w/cpp/locale/wstring_convert">std::wstring_convert</a>, <a href="http://en.cppreference.com/w/cpp/locale/wbuffer_convert">std::wbuffer_convert</a>, <a href="http://en.cppreference.com/w/cpp/locale/codecvt_utf8">std::codecvt_utf8</a>, <a href="http://en.cppreference.com/w/cpp/locale/codecvt_utf16">std::codecvt_utf16</a>, <a href="http://en.cppreference.com/w/cpp/locale/codecvt_utf8_utf16">std::codecvt_utf8_utf16</a></td>
-<td>Non-UTF-8 text is banned by the <a href="https://google.github.io/styleguide/cppguide.html#Non-ASCII_Characters">Google Style Guide</a>. However, may be useful for consuming non-ASCII data.</td>
-</tr>
-
-</tbody>
-</table>
-
-<h3 id="blocklist_stdlib_review"><a name="library-review-14"></a>C++14 Standard Library Features To Be Discussed</h3>
-
-<p>The following C++14 library features are currently disallowed. See the top of this page on how to propose moving a feature from this list into the allowed or banned sections.</p>
-
-<table id="banned_stdlib" class="unlined striped">
-
-<tbody>
-<tr>
-<th style='width:240px;'>Feature</th>
-<th style='width:240px;'>Snippet</th>
-<th style='width:240px;'>Description</th>
-<th style='width:240px;'>Documentation Link</th>
-<th style='width:240px;'>Notes</th>
-</tr>
-
-<tr>
-<td><code>std::complex</code> literals</td>
-<td><code>using namespace std::complex_literals;<br>std::complex&lt;double&gt; c = 2.0 + 0.5i;</code></td>
-<td>Allows <code>std::complex</code> objects to be more easily constructed.</td>
-<td><a href="http://en.cppreference.com/w/cpp/numeric/complex/operator%22%22i">std::literals::complex_literals</a></td>
-<td></td>
-</tr>
-
-<td><code>std::string</code> literals</td>
-<td><code>
-#include &lt;string&gt;<br>
-using std::literals::string_literals::operator"" s;<br>
-auto s = "asdf"s;  // deduces to std::string</code></td>
-<td>Allows literals of type <code>std::string</code></td>
-<td><a href="http://en.cppreference.com/w/cpp/string/basic_string/operator%22%22s">std::literals::string_literals::operator""s</a></td>
-<td></td>
 </tr>
 
 </tbody>

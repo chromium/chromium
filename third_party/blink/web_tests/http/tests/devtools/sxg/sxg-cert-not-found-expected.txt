@@ -12,7 +12,7 @@ inspected-page.html:1 Failed to fetch the certificate.
     Error: {"message":"Invalid reponse code: 404"}
     Error: {"message":"Failed to fetch the certificate.","signatureIndex":0,"errorField":"signatureCertUrl"}
 * https://127.0.0.1:8443/loading/sxg/resources/not_found_cert.pem.cbor
-  failed: false
+  failed: true
   statusCode: 404
   resourceType: other
 * https://127.0.0.1:8443/loading/sxg/resources/inner-url.html

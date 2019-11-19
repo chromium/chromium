@@ -9,6 +9,7 @@ source_set("broker_service") {
   ]
   deps = [
     "//base",
+    "//chromecast/external_mojo/public/cpp:common",
     "//chromecast/external_mojo/public/cpp:external_mojo_broker",
     "//services/service_manager/public/cpp",
     "//services/service_manager/public/mojom",

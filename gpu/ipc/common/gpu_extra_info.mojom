@@ -1,0 +1,22 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// gpu/config/gpu_extra_info.h
+module gpu.mojom;
+
+// gpu::ANGLEFeature
+struct ANGLEFeature {
+  string name;
+  string category;
+  string description;
+  string bug;
+  string status;
+  string condition;
+};
+
+// gpu:GpuExtraInfo
+struct GpuExtraInfo {
+  // List of features queried from ANGLE
+  array<ANGLEFeature> angle_features;
+};

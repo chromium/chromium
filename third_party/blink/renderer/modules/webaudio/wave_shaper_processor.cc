@@ -97,12 +97,8 @@ void WaveShaperProcessor::Process(const AudioBus* source,
     return;
   }
 
-  bool channel_count_matches =
-      source->NumberOfChannels() == destination->NumberOfChannels() &&
-      source->NumberOfChannels() == kernels_.size();
-  DCHECK(channel_count_matches);
-  if (!channel_count_matches)
-    return;
+  DCHECK_EQ(source->NumberOfChannels(), destination->NumberOfChannels());
+  DCHECK_EQ(source->NumberOfChannels(), kernels_.size());
 
   // The audio thread can't block on this lock, so we call tryLock() instead.
   MutexTryLocker try_locker(process_lock_);

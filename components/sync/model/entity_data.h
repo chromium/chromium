@@ -5,30 +5,16 @@
 #ifndef COMPONENTS_SYNC_MODEL_ENTITY_DATA_H_
 #define COMPONENTS_SYNC_MODEL_ENTITY_DATA_H_
 
-#include <iosfwd>
-#include <map>
 #include <memory>
 #include <string>
-#include <vector>
 
 #include "base/macros.h"
 #include "base/time/time.h"
 #include "base/values.h"
-#include "components/sync/base/proto_value_ptr.h"
+#include "components/sync/base/client_tag_hash.h"
 #include "components/sync/protocol/sync.pb.h"
 
 namespace syncer {
-
-struct EntityData;
-
-struct EntityDataTraits {
-  static void SwapValue(EntityData* dest, EntityData* src);
-  static bool HasValue(const EntityData& value);
-  static const EntityData& DefaultValue();
-};
-
-using EntityDataPtr = ProtoValuePtr<EntityData, EntityDataTraits>;
-using EntityDataList = std::vector<EntityDataPtr>;
 
 // A light-weight container for sync entity data which represents either
 // local data created on the local model side or remote data created on
@@ -51,7 +37,7 @@ struct EntityData {
   // Used for various map lookups. Should always be available for all data types
   // except bookmarks. Sent to the server as
   // SyncEntity::client_defined_unique_tag.
-  std::string client_tag_hash;
+  ClientTagHash client_tag_hash;
 
   // A GUID that identifies the the sync client who initially committed this
   // entity. It's relevant only for bookmarks. See the definition in sync.proto
@@ -70,7 +56,7 @@ struct EntityData {
   std::string server_defined_unique_tag;
 
   // Entity name, used mostly for Debug purposes.
-  std::string non_unique_name;
+  std::string name;
 
   // Model type specific sync data.
   sync_pb::EntitySpecifics specifics;
@@ -95,29 +81,6 @@ struct EntityData {
   // specifics hasn't been set.
   bool is_deleted() const { return specifics.ByteSize() == 0; }
 
-  // Transfers this struct's data to EntityDataPtr.
-  // The return value must be assigned into another EntityDataPtr.
-  EntityDataPtr PassToPtr() WARN_UNUSED_RESULT;
-
-  // Makes a copy of EntityData and updates its id to |new_id|. This is needed
-  // when entity id is updated with commit response while EntityData for next
-  // local change is cached in ProcessorEntityTracker.
-  EntityDataPtr UpdateId(const std::string& new_id) const WARN_UNUSED_RESULT;
-
-  // Makes a copy of EntityData and updates its client tag hash to
-  // |new_client_tag_hash|. This is needed when a Wallet entity id is updated
-  // and it has no client_tag_hash.
-  // TODO(crbug.com/874001): Remove this when we have a longer term fix for
-  // wallet data.
-  EntityDataPtr UpdateClientTagHash(
-      const std::string& new_client_tag_hash) const WARN_UNUSED_RESULT;
-
-  // Makes a copy of EntityData and updates its specifics to |new_specifics|.
-  // This is needed when specifics is updated after decryption in the
-  // ModelTypeWorker::DecryptStoredEntities().
-  EntityDataPtr UpdateSpecifics(
-      const sync_pb::EntitySpecifics& new_specifics) const WARN_UNUSED_RESULT;
-
   // Dumps all info into a DictionaryValue and returns it.
   std::unique_ptr<base::DictionaryValue> ToDictionaryValue();
 
@@ -125,10 +88,6 @@ struct EntityData {
   size_t EstimateMemoryUsage() const;
 
  private:
-  // Allow copy ctor so that UpdateId and UpdateSpecifics can make a copy of
-  // this EntityData.
-  EntityData(const EntityData& src);
-
   DISALLOW_ASSIGN(EntityData);
 };
 

@@ -7,7 +7,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/memory/ptr_util.h"
 #include "base/values.h"
 #include "components/policy/core/browser/policy_error_map.h"
 #include "components/policy/core/common/policy_map.h"
@@ -54,14 +53,14 @@ class URLBlacklistPolicyHandlerTest : public testing::Test {
 TEST_F(URLBlacklistPolicyHandlerTest,
        CheckPolicySettings_DisabledSchemesUnspecified) {
   EXPECT_TRUE(
-      CheckPolicy(key::kURLBlacklist, base::WrapUnique(new base::ListValue)));
+      CheckPolicy(key::kURLBlacklist, std::make_unique<base::ListValue>()));
   EXPECT_EQ(0U, errors_.size());
 }
 
 TEST_F(URLBlacklistPolicyHandlerTest,
        CheckPolicySettings_URLBlacklistUnspecified) {
-  EXPECT_TRUE(CheckPolicy(key::kDisabledSchemes,
-                          base::WrapUnique(new base::ListValue)));
+  EXPECT_TRUE(
+      CheckPolicy(key::kDisabledSchemes, std::make_unique<base::ListValue>()));
   EXPECT_EQ(0U, errors_.size());
 }
 
@@ -110,7 +109,7 @@ TEST_F(URLBlacklistPolicyHandlerTest,
 
 TEST_F(URLBlacklistPolicyHandlerTest,
        ApplyPolicySettings_DisabledSchemesEmpty) {
-  SetPolicy(key::kDisabledSchemes, base::WrapUnique(new base::ListValue));
+  SetPolicy(key::kDisabledSchemes, std::make_unique<base::ListValue>());
   ApplyPolicies();
   base::Value* out;
   EXPECT_TRUE(prefs_.GetValue(policy_prefs::kUrlBlacklist, &out));
@@ -121,7 +120,7 @@ TEST_F(URLBlacklistPolicyHandlerTest,
 
 TEST_F(URLBlacklistPolicyHandlerTest,
        ApplyPolicySettings_URLBlacklistEmpty) {
-  SetPolicy(key::kURLBlacklist, base::WrapUnique(new base::ListValue));
+  SetPolicy(key::kURLBlacklist, std::make_unique<base::ListValue>());
   ApplyPolicies();
   base::Value* out;
   EXPECT_TRUE(prefs_.GetValue(policy_prefs::kUrlBlacklist, &out));

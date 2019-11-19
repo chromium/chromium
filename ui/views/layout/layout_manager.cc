@@ -9,8 +9,7 @@
 
 namespace views {
 
-LayoutManager::~LayoutManager() {
-}
+LayoutManager::~LayoutManager() = default;
 
 void LayoutManager::Installed(View* host) {
 }
@@ -40,12 +39,24 @@ void LayoutManager::ViewAdded(View* host, View* view) {
 void LayoutManager::ViewRemoved(View* host, View* view) {
 }
 
-void LayoutManager::ViewVisibilitySet(View* host, View* view, bool visible) {}
+void LayoutManager::ViewVisibilitySet(View* host, View* view, bool visible) {
+  // Changing the visibility of a child view should force a re-layout. There is
+  // more sophisticated logic in LayoutManagerBase but this should be adequate
+  // for most legacy layouts (none of which override this method).
+  // TODO(dfried): Remove this if/when LayoutManager and LayoutManagerBase can
+  // be merged.
+  host->InvalidateLayout();
+}
 
 void LayoutManager::SetViewVisibility(View* view, bool visible) {
   DCHECK_EQ(view->parent()->GetLayoutManager(), this);
   base::AutoReset<View*> setter(&view_setting_visibility_on_, view);
   view->SetVisible(visible);
+}
+
+std::vector<View*> LayoutManager::GetChildViewsInPaintOrder(
+    const View* host) const {
+  return host->children();
 }
 
 }  // namespace views

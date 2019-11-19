@@ -45,15 +45,17 @@ void ActiveTabTracker::OnTabStripModelChanged(
   const int prev_active_tab_index = selection.old_model.active();
 
   if (change.type() == TabStripModelChange::Type::kRemoved) {
-    for (const auto& delta : change.deltas()) {
-      // Ignore if the tab isn't being closed (this would happen if it were
-      // dragged to a different tab strip).
-      if (!delta.remove.will_be_deleted)
-        continue;
-      // If the closing tab was the active tab, call the callback.
-      if (delta.remove.index == prev_active_tab_index)
-        active_tab_closed_callback_.Run(
-            model, clock_->NowTicks() - active_tab_changed_times_[model]);
+    auto* remove = change.GetRemove();
+    // If the closing tab was the active tab, call the callback.
+    // Ignore if the tab isn't being closed (this would happen if it were
+    // dragged to a different tab strip).
+    if (remove->will_be_deleted) {
+      for (const auto& contents : remove->contents) {
+        if (contents.index == prev_active_tab_index) {
+          active_tab_closed_callback_.Run(
+              model, clock_->NowTicks() - active_tab_changed_times_[model]);
+        }
+      }
     }
   }
 

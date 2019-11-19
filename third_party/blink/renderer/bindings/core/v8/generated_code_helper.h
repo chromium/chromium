@@ -19,6 +19,7 @@
 
 namespace blink {
 
+class QualifiedName;
 class ScriptState;
 class SerializedScriptValue;
 
@@ -81,6 +82,19 @@ using InstallRuntimeEnabledFeaturesFunction =
              v8::Local<v8::Function> interface);
 
 using InstallRuntimeEnabledFeaturesOnTemplateFunction = InstallTemplateFunction;
+
+// Helpers for [CEReactions, Reflect] IDL attributes.
+void V8SetReflectedBooleanAttribute(
+    const v8::FunctionCallbackInfo<v8::Value>& info,
+    const char* interface_name,
+    const char* idl_attribute_name,
+    const QualifiedName& content_attr);
+void V8SetReflectedDOMStringAttribute(
+    const v8::FunctionCallbackInfo<v8::Value>& info,
+    const QualifiedName& content_attr);
+void V8SetReflectedNullableDOMStringAttribute(
+    const v8::FunctionCallbackInfo<v8::Value>& info,
+    const QualifiedName& content_attr);
 
 }  // namespace blink
 

@@ -5,10 +5,13 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_GAMEPAD_GAMEPAD_BUTTON_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_GAMEPAD_GAMEPAD_BUTTON_H_
 
-#include "device/gamepad/public/cpp/gamepad.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
-#include "third_party/blink/renderer/platform/wtf/vector.h"
+#include "third_party/blink/renderer/platform/heap/heap_allocator.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
+
+namespace device {
+class GamepadButton;
+}
 
 namespace blink {
 
@@ -16,8 +19,6 @@ class GamepadButton final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static GamepadButton* Create();
-
   GamepadButton();
 
   double value() const { return value_; }

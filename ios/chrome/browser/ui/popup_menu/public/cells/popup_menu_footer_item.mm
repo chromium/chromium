@@ -42,7 +42,8 @@ const CGFloat kSeparatorMargin = 12;
   if (self) {
     UIView* separator = [[UIView alloc] init];
     separator.translatesAutoresizingMaskIntoConstraints = NO;
-    separator.backgroundColor = [UIColor colorWithWhite:0 alpha:0.05];
+    separator.backgroundColor =
+        [UIColor colorNamed:@"popup_menu_separator_color"];
     [self.contentView addSubview:separator];
     [NSLayoutConstraint activateConstraints:@[
       [separator.heightAnchor constraintEqualToConstant:kSeparatorHeight],

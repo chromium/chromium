@@ -5,6 +5,8 @@
 #ifndef CHROME_CHROME_CLEANER_CONSTANTS_CHROME_CLEANER_SWITCHES_H_
 #define CHROME_CHROME_CLEANER_CONSTANTS_CHROME_CLEANER_SWITCHES_H_
 
+#include "chrome/chrome_cleaner/buildflags.h"
+
 namespace chrome_cleaner {
 
 // Command line switches.
@@ -18,7 +20,6 @@ extern const char kFileSizeLimitSwitch[];
 extern const char kForceLogsUploadFailureSwitch[];
 extern const char kForceRecoveryComponentSwitch[];
 extern const char kForceSelfDeleteSwitch[];
-extern const char kForceUwsDetectionSwitch[];
 extern const char kInitDoneNotifierSwitch[];
 extern const char kIntegrationTestTimeoutMinutesSwitch[];
 extern const char kLoadEmptyDLLSwitch[];
@@ -48,9 +49,17 @@ extern const char kUserResponseTimeoutMinutesSwitch[];
 extern const char kWithCleanupModeLogsSwitch[];
 
 // Unoffical build only switches.
-#if !defined(CHROME_CLEANER_OFFICIAL_BUILD)
+#if !BUILDFLAG(IS_OFFICIAL_CHROME_CLEANER_BUILD)
 extern const char kAllowUnsecureDLLsSwitch[];
-#endif  // CHROME_CLEANER_OFFICIAL_BUILD
+extern const char kRunWithoutSandboxForTestingSwitch[];
+#endif
+
+// Deprecated switches that were set by older Chrome versions.
+// These must still be handled until we drop support for those versions.
+
+// The Mojo pipe token for IPC communication between the Software Reporter and
+// Chrome. Dropped in M80.
+extern const char kChromeMojoPipeTokenSwitch[];
 
 }  // namespace chrome_cleaner
 

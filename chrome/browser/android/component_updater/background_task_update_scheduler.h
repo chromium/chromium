@@ -10,6 +10,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/callback.h"
 #include "base/macros.h"
+#include "base/memory/weak_ptr.h"
 #include "components/component_updater/update_scheduler.h"
 
 namespace component_updater {
@@ -42,6 +43,8 @@ class BackgroundTaskUpdateScheduler : public UpdateScheduler {
   base::android::ScopedJavaGlobalRef<jobject> j_update_scheduler_;
   UserTask user_task_;
   OnStopTaskCallback on_stop_;
+
+  base::WeakPtrFactory<BackgroundTaskUpdateScheduler> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(BackgroundTaskUpdateScheduler);
 };

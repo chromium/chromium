@@ -22,32 +22,21 @@
 
 #include "third_party/blink/renderer/core/html/html_base_element.h"
 
-#include "third_party/blink/renderer/bindings/core/v8/usv_string_or_trusted_url.h"
 #include "third_party/blink/renderer/core/dom/attribute.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
 #include "third_party/blink/renderer/core/html/parser/text_resource_decoder.h"
 #include "third_party/blink/renderer/core/html_names.h"
-#include "third_party/blink/renderer/core/trustedtypes/trusted_url.h"
 
 namespace blink {
 
-using namespace html_names;
-
-inline HTMLBaseElement::HTMLBaseElement(Document& document)
-    : HTMLElement(kBaseTag, document) {}
-
-DEFINE_NODE_FACTORY(HTMLBaseElement)
-
-const AttrNameToTrustedType& HTMLBaseElement::GetCheckedAttributeTypes() const {
-  DEFINE_STATIC_LOCAL(AttrNameToTrustedType, attribute_map,
-                      ({{"href", SpecificTrustedType::kTrustedURL}}));
-  return attribute_map;
-}
+HTMLBaseElement::HTMLBaseElement(Document& document)
+    : HTMLElement(html_names::kBaseTag, document) {}
 
 void HTMLBaseElement::ParseAttribute(
     const AttributeModificationParams& params) {
-  if (params.name == kHrefAttr || params.name == kTargetAttr)
+  if (params.name == html_names::kHrefAttr ||
+      params.name == html_names::kTargetAttr)
     GetDocument().ProcessBaseElement();
   else
     HTMLElement::ParseAttribute(params);
@@ -68,12 +57,8 @@ void HTMLBaseElement::RemovedFrom(ContainerNode& insertion_point) {
 }
 
 bool HTMLBaseElement::IsURLAttribute(const Attribute& attribute) const {
-  return attribute.GetName().LocalName() == kHrefAttr ||
+  return attribute.GetName().LocalName() == html_names::kHrefAttr ||
          HTMLElement::IsURLAttribute(attribute);
-}
-
-void HTMLBaseElement::href(USVStringOrTrustedURL& result) const {
-  result.SetUSVString(href());
 }
 
 KURL HTMLBaseElement::href() const {
@@ -83,7 +68,7 @@ KURL HTMLBaseElement::href() const {
   // document's fallback base URL and ignore the base URL.
   // https://html.spec.whatwg.org/C/#dom-base-href
 
-  const AtomicString& attribute_value = FastGetAttribute(kHrefAttr);
+  const AtomicString& attribute_value = FastGetAttribute(html_names::kHrefAttr);
   if (attribute_value.IsNull())
     return GetDocument().Url();
 
@@ -100,9 +85,8 @@ KURL HTMLBaseElement::href() const {
   return url;
 }
 
-void HTMLBaseElement::setHref(const USVStringOrTrustedURL& stringOrUrl,
-                              ExceptionState& exception_state) {
-  setAttribute(kHrefAttr, stringOrUrl, exception_state);
+void HTMLBaseElement::setHref(const AtomicString& url_string) {
+  setAttribute(html_names::kHrefAttr, url_string);
 }
 
 }  // namespace blink

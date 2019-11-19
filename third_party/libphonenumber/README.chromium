@@ -2,7 +2,7 @@ Name: International Phone Number Library
 Short Name: libphonenumber
 URL: https://github.com/googlei18n/libphonenumber/
 Version: unknown
-Revision: a4da30df63a097d67e3c429ead6790ad91d36cf4
+Revision: 68eba9d6ee8b11fb58ece36b6c46d07965d7f7ff
 License: Apache 2.0
 License File: LICENSE
 Security Critical: yes
@@ -16,19 +16,16 @@ This library depends on
 - third_party/protobuf Lite version.
 
 Additional files, not in the original library:
-  libphonenumber.gyp
+  BUILD.gn
   README.chromium
   LICENSE # Taken from https://github.com/googlei18n/libphonenumber/
   phonenumber_api.h
 
-The library is mapped through the DEPS file into dist/ folder. To update:
+The library is mapped through the DEPS file into the Chromium sources root
+folder. To update:
 1. Get the latest commit hash from
    https://github.com/googlei18n/libphonenumber/
-2. Locally update this file and DEPS.
+2. Locally update this file and src/DEPS.
 3. run 'gclient sync'
-4. Adjust libphonenumber.gyp/BUILD.gn if necessary.
+4. Adjust BUILD.gn if necessary.
 5. Verify that all compiles and all of the tests are successfull.
-
-WARNING: This library is only thread-safe on POSIX. This means that
-PhoneNumberUtil and the other singletons should be accessed from a single
-thread.

@@ -10,6 +10,7 @@
 #include "base/test/simple_test_tick_clock.h"
 #include "content/browser/media/media_web_contents_observer.h"
 #include "content/public/test/test_renderer_host.h"
+#include "content/public/test/test_service_manager_context.h"
 #include "content/test/test_web_contents.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -32,6 +33,8 @@ class AudibleMetricsTest : public RenderViewHostTestHarness {
 
   void SetUp() override {
     RenderViewHostTestHarness::SetUp();
+    test_service_manager_context_ =
+        std::make_unique<content::TestServiceManagerContext>();
     audible_metrics_ = std::make_unique<AudibleMetrics>();
 
     // Set the clock to a value different than 0 so the time it gives is
@@ -42,6 +45,8 @@ class AudibleMetricsTest : public RenderViewHostTestHarness {
 
   void TearDown() override {
     audible_metrics_.reset();
+    // Must be reset before browser thread teardown.
+    test_service_manager_context_.reset();
     RenderViewHostTestHarness::TearDown();
   }
 
@@ -76,6 +81,11 @@ class AudibleMetricsTest : public RenderViewHostTestHarness {
   base::SimpleTestTickClock clock_;
   base::HistogramTester histogram_tester_;
   base::UserActionTester user_action_tester_;
+
+  // WebContentsImpl accesses the system Connector, so the Service Manager must
+  // be initialized.
+  std::unique_ptr<content::TestServiceManagerContext>
+      test_service_manager_context_;
 
   DISALLOW_COPY_AND_ASSIGN(AudibleMetricsTest);
 };

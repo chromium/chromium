@@ -26,8 +26,8 @@ class SyncErrorFactory;
 // See crbug.com/100114.
 class SyncableService : public base::SupportsWeakPtr<SyncableService> {
  public:
-  SyncableService();
-  virtual ~SyncableService();
+  SyncableService() = default;
+  virtual ~SyncableService() = default;
 
   // A StartSyncFlare is useful when your SyncableService has a need for sync
   // to start ASAP. This is typically for one of three reasons:
@@ -42,6 +42,11 @@ class SyncableService : public base::SupportsWeakPtr<SyncableService> {
   // included so that the recieving end can track usage and timing statistics,
   // make pptimizations or tradeoffs by type, etc.
   using StartSyncFlare = base::Callback<void(ModelType)>;
+
+  // Allows the SyncableService to delay sync events (all below) until the model
+  // becomes ready to sync. Callers must ensure there is no previous ongoing
+  // wait (per datatype, if the SyncableService supports multiple).
+  virtual void WaitUntilReadyToSync(base::OnceClosure done) = 0;
 
   // Informs the service to begin syncing the specified synced datatype |type|.
   // The service should then merge |initial_sync_data| into it's local data,

@@ -16,12 +16,15 @@
 #include "base/logging.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/process/kill.h"
-#include "base/test/clang_coverage.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 
 #if defined(OS_MACOSX)
 #include <sys/event.h>
+#endif
+
+#if BUILDFLAG(CLANG_COVERAGE)
+#include "base/test/clang_coverage.h"
 #endif
 
 namespace {

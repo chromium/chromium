@@ -84,7 +84,7 @@ void AudioStreamMonitor::RenderProcessGone(int render_process_id) {
 void AudioStreamMonitor::StartMonitoringStream(int render_process_id,
                                                int render_frame_id,
                                                int stream_id) {
-  base::PostTaskWithTraits(
+  base::PostTask(
       FROM_HERE, {BrowserThread::UI},
       base::BindOnce(
           [](const StreamID& sid) {
@@ -100,7 +100,7 @@ void AudioStreamMonitor::StartMonitoringStream(int render_process_id,
 void AudioStreamMonitor::StopMonitoringStream(int render_process_id,
                                               int render_frame_id,
                                               int stream_id) {
-  base::PostTaskWithTraits(
+  base::PostTask(
       FROM_HERE, {BrowserThread::UI},
       base::BindOnce(
           [](const StreamID& sid) {
@@ -117,7 +117,7 @@ void AudioStreamMonitor::UpdateStreamAudibleState(int render_process_id,
                                                   int render_frame_id,
                                                   int stream_id,
                                                   bool is_audible) {
-  base::PostTaskWithTraits(
+  base::PostTask(
       FROM_HERE, {BrowserThread::UI},
       base::BindOnce(
           [](const StreamID& sid, bool is_audible) {
@@ -208,7 +208,7 @@ void AudioStreamMonitor::MaybeToggle() {
 
   if (should_indicator_be_on != indicator_is_on_) {
     indicator_is_on_ = should_indicator_be_on;
-    web_contents_->NotifyNavigationStateChanged(INVALIDATE_TYPE_TAB);
+    web_contents_->NotifyNavigationStateChanged(INVALIDATE_TYPE_AUDIO);
   }
 
   if (should_stop_timer) {

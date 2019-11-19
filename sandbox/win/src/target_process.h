@@ -98,7 +98,7 @@ class TargetProcess {
   // Returns the handle to the main thread.
   HANDLE MainThread() const { return sandbox_process_info_.thread_handle(); }
 
-  // Transfers a 32-bit variable between the broker and the target.
+  // Transfers variable at |address| of |size| bytes from broker to target.
   ResultCode TransferVariable(const char* name, void* address, size_t size);
 
  private:

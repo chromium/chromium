@@ -1,0 +1,270 @@
+    <style include="cr-hidden-style">
+      :host ::selection {
+        background: rgba(255, 255, 255, 0.3);
+      }
+
+      /* We introduce a wrapper aligner element to help with laying out the main
+       * toolbar content without changing the bottom-aligned progress bar. */
+      #aligner {
+        align-items: center;
+        display: flex;
+        padding: 0 8px;
+        width: 100%;
+      }
+
+      #title {
+        flex: 5;
+        font-size: 0.87rem;
+        font-weight: 500;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      #pageselector-container {
+        text-align: center;
+        /* The container resizes according to the width of the toolbar. On small
+         * screens with large numbers of pages, overflow page numbers without
+         * wrapping. */
+        white-space: nowrap;
+      }
+
+      #buttons {
+        flex: 5;
+        text-align: end;
+        user-select: none;
+      }
+
+      cr-icon-button {
+        --cr-icon-button-color: rgb(241, 241, 241);
+        margin: 6px;
+      }
+
+      cr-icon-button:hover {
+        background: rgba(255, 255, 255, 0.08);
+        border-radius: 50%;
+      }
+
+      paper-progress {
+        --paper-progress-active-color: var(--google-blue-300);
+        --paper-progress-container-color: transparent;
+        --paper-progress-height: 3px;
+        transition: opacity 150ms;
+        width: 100%;
+      }
+
+      #toolbar {
+        @apply --shadow-elevation-2dp;
+        background-color: rgb(50, 54, 57);
+        position: relative;
+      }
+
+      #annotations-bar {
+        align-items: center;
+        background-color: rgb(32, 33, 34);
+        justify-content: center;
+      }
+
+      #toolbar,
+      #annotations-bar {
+        color: rgb(241, 241, 241);
+        display: flex;
+        height: 48px;
+        padding: 0 16px;
+      }
+
+      #progress-container {
+        bottom: 0;
+        left: 0;
+        margin: 0;
+        position: absolute;
+        right: 0;
+        top: auto;
+        width: auto;
+      }
+
+      #pen,
+      #highlighter {
+        --dropdown-width: 346px;
+      }
+
+      #pen,
+      #highlighter {
+        --dropdown-open-background: rgb(50, 54, 57);
+      }
+
+      #eraser {
+        opacity: 0.38;
+      }
+
+      #eraser[selected],
+      #eraser:focus,
+      #eraser:hover {
+        opacity: 1;
+      }
+
+      #annotation-separator {
+        background: white;
+        height: 30px;
+        margin-inline-end: 12px;
+        margin-inline-start: 12px;
+        opacity: 0.38;
+        width: 1px;
+      }
+
+      :host([annotation-mode]) #annotate {
+        background-color: rgba(255, 255, 255, 0.24);
+        border-radius: 50%;
+      }
+
+      #bookmarks {
+        margin-inline-start: 8px;
+      }
+
+      #pen {
+        margin-inline-end: 10px;
+      }
+
+      #highlighter {
+        margin-inline-end: 6px;
+      }
+
+      .invisible {
+        visibility: hidden;
+      }
+
+      @media(max-width: 675px) {
+        #bookmarks,
+        #rotate-left {
+          display: none;
+        }
+
+        #pageselector-container {
+          flex: 2;
+        }
+      }
+
+      @media(max-width: 450px) {
+        #rotate-right {
+          display: none;
+        }
+      }
+
+      @media(max-width: 400px) {
+        #buttons,
+        #pageselector-container {
+          display: none;
+        }
+      }
+    </style>
+    <div id="toolbar">
+      <div id="aligner">
+        <span id="title" title="{{docTitle}}">
+          <span>{{docTitle}}</span>
+        </span>
+
+        <div id="pageselector-container">
+          <viewer-page-selector id="pageselector" class="invisible"
+              doc-length="{{docLength}}" page-no="{{pageNo}}"
+              strings="{{strings}}">
+          </viewer-page-selector>
+        </div>
+
+        <div id="buttons" class="invisible">
+          <template is="dom-if" if="[[pdfAnnotationsEnabled]]">
+            <cr-icon-button id="annotate" iron-icon="pdf:create"
+                disabled="[[!annotationAvailable]]" on-click="toggleAnnotation"
+                aria-label$="{{strings.tooltipAnnotate}}"
+                title$="{{strings.tooltipAnnotate}}"></cr-icon-button>
+          </template>
+
+          <cr-icon-button id="rotate-right" iron-icon="pdf:rotate-right"
+              disabled="[[annotationMode]]" on-click="rotateRight"
+              aria-label$="{{strings.tooltipRotateCW}}"
+              title$="{{strings.tooltipRotateCW}}"></cr-icon-button>
+
+          <cr-icon-button id="download" iron-icon="cr:file-download"
+              on-click="download" aria-label$="{{strings.tooltipDownload}}"
+              title$="{{strings.tooltipDownload}}"></cr-icon-button>
+
+          <cr-icon-button id="print" iron-icon="cr:print" on-click="print"
+              hidden="[[!printingEnabled]]" title$="{{strings.tooltipPrint}}"
+              aria-label$="{{strings.tooltipPrint}}"></cr-icon-button>
+
+          <viewer-toolbar-dropdown id="bookmarks"
+                                   selected
+                                   metrics-id="bookmarks"
+                                   hidden$="[[!bookmarks.length]]"
+                                   open-icon="pdf:bookmark"
+                                   closed-icon="pdf:bookmark-border"
+                                   header="{{strings.bookmarks}}">
+            <template is="dom-repeat" items="[[bookmarks]]">
+              <viewer-bookmark bookmark="[[item]]" depth="0"></viewer-bookmark>
+            </template>
+          </viewer-toolbar-dropdown>
+        </div>
+      </div>
+      <div id="progress-container">
+        <paper-progress id="progress"
+            value="[[loadProgress]]"
+            indeterminate="[[annotationMode]]"></paper-progress>
+      </div>
+    </div>
+
+    <div id="annotations-bar" hidden>
+      <viewer-toolbar-dropdown id="pen"
+          selected$="[[isAnnotationTool_('pen', annotationTool.tool)]]"
+          open-after-select
+          on-click="annotationToolClicked_"
+          open-icon="pdf:marker"
+          closed-icon="pdf:marker"
+          dropdown-centered
+          hide-header
+          header$="{{strings.annotationPen}}"
+          style="--pen-tip-fill: #000000">
+        <viewer-pen-options
+          selected-color="#000000"
+          selected-size="0.1429"
+          strings="[[strings]]"
+          on-selected-size-changed="annotationToolOptionChanged_"
+          on-selected-color-changed="annotationToolOptionChanged_">
+        </viewer-pen-options>
+      </viewer-toolbar-dropdown>
+
+      <viewer-toolbar-dropdown id="highlighter"
+          selected$="[[isAnnotationTool_('highlighter', annotationTool.tool)]]"
+          open-after-select
+          on-click="annotationToolClicked_"
+          open-icon="pdf:highlighter"
+          closed-icon="pdf:highlighter"
+          dropdown-centered
+          hide-header
+          header$="{{strings.annotationHighlighter}}"
+          style="--pen-tip-fill: #ffbc00">
+        <viewer-pen-options
+          selected-color="#ffbc00"
+          selected-size="0.7143"
+          strings="[[strings]]"
+          on-selected-size-changed="annotationToolOptionChanged_"
+          on-selected-color-changed="annotationToolOptionChanged_">
+        </viewer-pen-options>
+      </viewer-toolbar-dropdown>
+
+      <cr-icon-button id="eraser"
+          selected$="[[isAnnotationTool_('eraser', annotationTool.tool)]]"
+          on-click="annotationToolClicked_" iron-icon="pdf:eraser"
+          aria-label$="{{strings.annotationEraser}}"
+          title$="{{strings.annotationEraser}}"></cr-icon-button>
+
+      <div id="annotation-separator"></div>
+
+      <cr-icon-button id="undo" disabled="[[!canUndoAnnotation]]"
+          iron-icon="pdf:undo" on-click="undo"
+          aria-label$="{{strings.annotationUndo}}"
+          title$="{{strings.annotationUndo}}"></cr-icon-button>
+
+      <cr-icon-button id="redo" disabled="[[!canRedoAnnotation]]"
+          iron-icon="pdf:redo" on-click="redo"
+          aria-label$="{{strings.annotationRedo}}"
+          title$="{{strings.annotationRedo}}"></cr-icon-button>
+    </div>

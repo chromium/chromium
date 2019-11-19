@@ -10,8 +10,8 @@
 #include <utility>
 #include <vector>
 
-#include "ash/app_list/app_list_controller_impl.h"
-#include "ash/app_list/home_launcher_gesture_handler.h"
+#include "ash/home_screen/home_launcher_gesture_handler.h"
+#include "ash/home_screen/home_screen_controller.h"
 #include "ash/public/cpp/window_animation_types.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
@@ -47,9 +47,8 @@ namespace {
 
 const int kLayerAnimationsForMinimizeDurationMS = 200;
 
-// Durations for the cross-fade animation, in milliseconds.
-const float kCrossFadeDurationMinMs = 200.f;
-const float kCrossFadeDurationMaxMs = 400.f;
+constexpr base::TimeDelta kCrossFadeMaxDuration =
+    base::TimeDelta::FromMilliseconds(400);
 
 // Durations for the brightness/grayscale fade animation, in milliseconds.
 const int kBrightnessGrayscaleFadeDurationMs = 1000;
@@ -64,9 +63,9 @@ const float kWindowAnimation_ShowBrightnessGrayscale = 0.f;
 const float kWindowAnimation_HideOpacity = 0.f;
 const float kWindowAnimation_ShowOpacity = 1.f;
 
-int64_t Round64(float f) {
-  return static_cast<int64_t>(f + 0.5f);
-}
+// Duration for gfx::Tween::ZERO animation of showing window.
+constexpr base::TimeDelta kZeroAnimationMs =
+    base::TimeDelta::FromMilliseconds(300);
 
 base::TimeDelta GetCrossFadeDuration(aura::Window* window,
                                      const gfx::RectF& old_bounds,
@@ -79,17 +78,16 @@ base::TimeDelta GetCrossFadeDuration(aura::Window* window,
   int max_area = std::max(old_area, new_area);
   // Avoid divide by zero.
   if (max_area == 0)
-    return base::TimeDelta::FromMilliseconds(kCrossFadeDurationMS);
+    return kCrossFadeDuration;
 
   int delta_area = std::abs(old_area - new_area);
   // If the area didn't change, the animation is instantaneous.
   if (delta_area == 0)
-    return base::TimeDelta::FromMilliseconds(kCrossFadeDurationMS);
+    return kCrossFadeDuration;
 
   float factor = static_cast<float>(delta_area) / static_cast<float>(max_area);
-  const float kRange = kCrossFadeDurationMaxMs - kCrossFadeDurationMinMs;
-  return base::TimeDelta::FromMilliseconds(
-      Round64(kCrossFadeDurationMinMs + (factor * kRange)));
+  const auto kRange = kCrossFadeMaxDuration - kCrossFadeDuration;
+  return kCrossFadeDuration + factor * kRange;
 }
 
 class CrossFadeMetricsReporter : public ui::AnimationMetricsReporter {
@@ -109,8 +107,6 @@ base::LazyInstance<CrossFadeMetricsReporter>::Leaky g_reporter_cross_fade =
     LAZY_INSTANCE_INITIALIZER;
 
 }  // namespace
-
-const int kCrossFadeDurationMS = 200;
 
 void AddLayerAnimationsForMinimize(aura::Window* window, bool show) {
   // Recalculate the transform at restore time since the launcher item may have
@@ -245,40 +241,6 @@ void AnimateHideWindow_BrightnessGrayscale(aura::Window* window) {
   AnimateShowHideWindowCommon_BrightnessGrayscale(window, false);
 }
 
-bool AnimateShowWindow_SlideDown(aura::Window* window) {
-  AppListControllerImpl* app_list_controller =
-      Shell::Get()->app_list_controller();
-  const TabletModeController* tablet_mode_controller =
-      Shell::Get()->tablet_mode_controller();
-
-  if (app_list_controller && tablet_mode_controller &&
-      tablet_mode_controller->IsTabletModeWindowManagerEnabled()) {
-    // Slide down the window from above screen to show and, meanwhile, slide
-    // down the home launcher off screen.
-    HomeLauncherGestureHandler* handler =
-        app_list_controller->home_launcher_gesture_handler();
-    if (handler &&
-        handler->HideHomeLauncherForWindow(
-            display::Screen::GetScreen()->GetDisplayNearestView(window),
-            window)) {
-      // Now that the window has been restored, we need to clear its animation
-      // style to default so that normal animation applies.
-      ::wm::SetWindowVisibilityAnimationType(
-          window, ::wm::WINDOW_VISIBILITY_ANIMATION_TYPE_DEFAULT);
-      return true;
-    }
-  }
-
-  // Fallback to no animation.
-  return false;
-}
-
-bool AnimateHideWindow_SlideDown(aura::Window* window) {
-  // The hide animation should be handled in HomeLauncherGestureHandler, so
-  // fallback to no animation.
-  return false;
-}
-
 void AnimateHideWindow_SlideOut(aura::Window* window) {
   base::TimeDelta duration =
       base::TimeDelta::FromMilliseconds(PipPositioner::kPipDismissTimeMs);
@@ -293,7 +255,23 @@ void AnimateHideWindow_SlideOut(aura::Window* window) {
       display::Screen::GetScreen()->GetDisplayNearestWindow(window);
   gfx::Rect dismissed_bounds =
       PipPositioner::GetDismissedPosition(display, bounds);
+  ::wm::ConvertRectFromScreen(window->parent(), &dismissed_bounds);
   window->layer()->SetBounds(dismissed_bounds);
+}
+
+void AnimateShowWindow_StepEnd(aura::Window* window) {
+  window->layer()->SetOpacity(kWindowAnimation_HideOpacity);
+  ui::ScopedLayerAnimationSettings settings(window->layer()->GetAnimator());
+  settings.SetTransitionDuration(kZeroAnimationMs);
+  settings.SetTweenType(gfx::Tween::ZERO);
+  window->layer()->SetOpacity(kWindowAnimation_ShowOpacity);
+}
+
+void AnimateHideWindow_StepEnd(aura::Window* window) {
+  ::wm::ScopedHidingAnimationSettings settings(window);
+  settings.layer_animation_settings()->SetTransitionDuration(kZeroAnimationMs);
+  settings.layer_animation_settings()->SetTweenType(gfx::Tween::ZERO);
+  window->layer()->SetVisible(false);
 }
 
 bool AnimateShowWindow(aura::Window* window) {
@@ -303,17 +281,17 @@ bool AnimateShowWindow(aura::Window* window) {
   }
 
   switch (::wm::GetWindowVisibilityAnimationType(window)) {
-    case wm::WINDOW_VISIBILITY_ANIMATION_TYPE_MINIMIZE:
+    case WINDOW_VISIBILITY_ANIMATION_TYPE_MINIMIZE:
       AnimateShowWindow_Minimize(window);
       return true;
-    case wm::WINDOW_VISIBILITY_ANIMATION_TYPE_BRIGHTNESS_GRAYSCALE:
+    case WINDOW_VISIBILITY_ANIMATION_TYPE_BRIGHTNESS_GRAYSCALE:
       AnimateShowWindow_BrightnessGrayscale(window);
       return true;
-    case wm::WINDOW_VISIBILITY_ANIMATION_TYPE_SLIDE_DOWN:
-      return AnimateShowWindow_SlideDown(window);
-      return true;
-    case wm::WINDOW_VISIBILITY_ANIMATION_TYPE_FADE_IN_SLIDE_OUT:
+    case WINDOW_VISIBILITY_ANIMATION_TYPE_FADE_IN_SLIDE_OUT:
       AnimateShowWindow_FadeIn(window);
+      return true;
+    case WINDOW_VISIBILITY_ANIMATION_TYPE_STEP_END:
+      AnimateShowWindow_StepEnd(window);
       return true;
     default:
       NOTREACHED();
@@ -328,16 +306,17 @@ bool AnimateHideWindow(aura::Window* window) {
   }
 
   switch (::wm::GetWindowVisibilityAnimationType(window)) {
-    case wm::WINDOW_VISIBILITY_ANIMATION_TYPE_MINIMIZE:
+    case WINDOW_VISIBILITY_ANIMATION_TYPE_MINIMIZE:
       AnimateHideWindow_Minimize(window);
       return true;
-    case wm::WINDOW_VISIBILITY_ANIMATION_TYPE_BRIGHTNESS_GRAYSCALE:
+    case WINDOW_VISIBILITY_ANIMATION_TYPE_BRIGHTNESS_GRAYSCALE:
       AnimateHideWindow_BrightnessGrayscale(window);
       return true;
-    case wm::WINDOW_VISIBILITY_ANIMATION_TYPE_SLIDE_DOWN:
-      return AnimateHideWindow_SlideDown(window);
-    case wm::WINDOW_VISIBILITY_ANIMATION_TYPE_FADE_IN_SLIDE_OUT:
+    case WINDOW_VISIBILITY_ANIMATION_TYPE_FADE_IN_SLIDE_OUT:
       AnimateHideWindow_SlideOut(window);
+      return true;
+    case WINDOW_VISIBILITY_ANIMATION_TYPE_STEP_END:
+      AnimateHideWindow_StepEnd(window);
       return true;
     default:
       NOTREACHED();
@@ -385,8 +364,7 @@ class CrossFadeObserver : public aura::WindowObserver,
 
 base::TimeDelta CrossFadeAnimation(
     aura::Window* window,
-    std::unique_ptr<ui::LayerTreeOwner> old_layer_owner,
-    gfx::Tween::Type tween_type) {
+    std::unique_ptr<ui::LayerTreeOwner> old_layer_owner) {
   ui::Layer* old_layer = old_layer_owner->root();
   ui::Layer* new_layer = window->layer();
 
@@ -423,7 +401,7 @@ base::TimeDelta CrossFadeAnimation(
     settings.AddObserver(
         new CrossFadeObserver(window, std::move(old_layer_owner)));
     settings.SetTransitionDuration(duration);
-    settings.SetTweenType(tween_type);
+    settings.SetTweenType(gfx::Tween::EASE_OUT);
     // Only add reporter to |old_layer|.
     settings.SetAnimationMetricsReporter(g_reporter_cross_fade.Pointer());
     settings.DeferPaint();
@@ -470,7 +448,7 @@ base::TimeDelta CrossFadeAnimation(
     // its newly set bounds.
     ui::ScopedLayerAnimationSettings settings(new_layer->GetAnimator());
     settings.SetTransitionDuration(duration);
-    settings.SetTweenType(tween_type);
+    settings.SetTweenType(gfx::Tween::EASE_OUT);
     settings.DeferPaint();
     if (!old_on_top) {
       // Only caching render surface when there is an opacity animation and

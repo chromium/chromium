@@ -9,6 +9,8 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/optional.h"
+#include "components/image_fetcher/core/cache/proto/cached_image_metadata.pb.h"
 
 namespace image_fetcher {
 
@@ -20,11 +22,18 @@ enum class InitializationStatus {
 };
 
 // Returns the resulting raw image data as a std::string. Data will be returned
-// using move semantics.
-using ImageDataCallback = base::OnceCallback<void(std::string)>;
+// using move semantics. If |needs_transcoding| is true, this data must be
+// decoded in a sandbox process.
+using ImageDataCallback =
+    base::OnceCallback<void(bool needs_transcoding, std::string)>;
 
 // Returns bool success when the underlying storage completes an operation.
 using ImageStoreOperationCallback = base::OnceCallback<void(bool)>;
+
+// CachedImageMetadataProto will be returned if image metadata is loaded
+// successfully.
+using ImageMetadataCallback =
+    base::OnceCallback<void(base::Optional<CachedImageMetadataProto>)>;
 
 // Returns a vector of keys.
 using KeysCallback = base::OnceCallback<void(std::vector<std::string>)>;

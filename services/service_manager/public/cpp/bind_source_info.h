@@ -27,6 +27,9 @@ struct SERVICE_MANAGER_PUBLIC_CPP_TYPES_EXPORT BindSourceInfo {
   CapabilitySet required_capabilities;
 };
 
+// TODO(https://crbug.com/939141): Rename BindSourceInfo and delete this alias.
+using ConnectSourceInfo = BindSourceInfo;
+
 }  // namespace service_manager
 
 #endif  // SERVICES_SERVICE_MANAGER_PUBLIC_CPP_BIND_SOURCE_INFO_H_

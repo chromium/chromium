@@ -25,7 +25,6 @@ class BrowserSyncedTabDelegate
   // SyncedTabDelegate:
   SessionID GetWindowId() const override;
   SessionID GetSessionId() const override;
-  SessionID GetSourceTabID() const override;
   bool IsPlaceholderTab() const override;
 
  private:

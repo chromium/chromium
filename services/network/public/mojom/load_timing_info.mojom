@@ -1,0 +1,34 @@
+// Copyright 2018 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module network.mojom;
+
+import "mojo/public/mojom/base/time.mojom";
+
+// Mirror of net::LoadTimingInfo::ConnectTiming.
+struct LoadTimingInfoConnectTiming {
+  mojo_base.mojom.TimeTicks dns_start;
+  mojo_base.mojom.TimeTicks dns_end;
+  mojo_base.mojom.TimeTicks connect_start;
+  mojo_base.mojom.TimeTicks connect_end;
+  mojo_base.mojom.TimeTicks ssl_start;
+  mojo_base.mojom.TimeTicks ssl_end;
+};
+
+// Mirror of net::LoadTimingInfo.
+struct LoadTimingInfo {
+  bool socket_reused;
+  uint32 socket_log_id;
+  mojo_base.mojom.Time request_start_time;
+  mojo_base.mojom.TimeTicks request_start;
+  mojo_base.mojom.TimeTicks proxy_resolve_start;
+  mojo_base.mojom.TimeTicks proxy_resolve_end;
+  LoadTimingInfoConnectTiming connect_timing;
+  mojo_base.mojom.TimeTicks send_start;
+  mojo_base.mojom.TimeTicks send_end;
+  mojo_base.mojom.TimeTicks receive_headers_start;
+  mojo_base.mojom.TimeTicks receive_headers_end;
+  mojo_base.mojom.TimeTicks push_start;
+  mojo_base.mojom.TimeTicks push_end;
+};

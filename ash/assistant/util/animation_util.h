@@ -22,6 +22,10 @@ class LayerAnimationSequence;
 class LayerAnimator;
 }  // namespace ui
 
+namespace views {
+class View;
+}  // namespace views
+
 namespace ash {
 namespace assistant {
 namespace util {
@@ -94,6 +98,15 @@ void StartLayerAnimationSequence(
     ::ui::LayerAnimationSequence* layer_animation_sequence,
     ::ui::LayerAnimationObserver* observer = nullptr);
 
+// Starts the specified |layer_animation_sequence| on the layer of the given
+// |view|. If an optional |observer| is supplied, it will be added to the
+// sequence.
+COMPONENT_EXPORT(ASSISTANT_UTIL)
+void StartLayerAnimationSequence(
+    views::View* view,
+    ::ui::LayerAnimationSequence* layer_animation_sequence,
+    ::ui::LayerAnimationObserver* observer = nullptr);
+
 // Starts the specified |layer_animation_sequences| together on the given
 // |layer_animator|. If an optional |observer| is supplied, it will be added
 // to each sequence in the animation set.
@@ -102,6 +115,11 @@ void StartLayerAnimationSequencesTogether(
     ::ui::LayerAnimator* layer_animator,
     const std::vector<::ui::LayerAnimationSequence*>& layer_animation_sequences,
     ::ui::LayerAnimationObserver* observer = nullptr);
+
+// Starts the animation to fade out the given view, and hide it when the fadeout
+// is completed.
+COMPONENT_EXPORT(ASSISTANT_UTIL)
+void FadeOutAndHide(views::View* view, base::TimeDelta fade_out_duration);
 
 }  // namespace util
 }  // namespace assistant

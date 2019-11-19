@@ -12,7 +12,6 @@
 <translation id="2159915644201199628">Nepavyko iššifruoti vaizdo: „<ph name="IMAGE_NAME" />“</translation>
 <translation id="2350172092385603347">Naudotas lokalizavimas, bet deklaracijoje nenurodyta numatytoji lokalė.</translation>
 <translation id="2576842806987913196">CRX failas tokiu pavadinimu jau yra.</translation>
-<translation id="2753617847762399167">Netinkamas kelias (absoliutus arba susijęs su „..“): „<ph name="IMAGE_PATH" />“</translation>
 <translation id="2785530881066938471">Nepavyko įkelti turinio scenarijaus failo „<ph name="RELATIVE_PATH" />“. Jis nėra užkoduotas naudojant UTF-8.</translation>
 <translation id="2903070246402204397">„<ph name="EXTENSION_NAME" />“ (plėtinio ID „<ph name="EXTENSION_ID" />“) užblokavo administratorius. <ph name="ADMIN_INFO" /></translation>
 <translation id="2988488679308982380">Nepavyko įdiegti paketo: „<ph name="ERROR_CODE" />“</translation>
@@ -38,8 +37,6 @@
 <translation id="5436430103864390185">Tam tikros formos langai nepalaikomi.</translation>
 <translation id="5456409301717116725">Šiame plėtinyje yra rakto failas „<ph name="KEY_PATH" />“. Neturėtumėte to daryti.</translation>
 <translation id="5486326529110362464">Turi būti privačiojo rakto įvesties vertė.</translation>
-<translation id="5627523580512561598">„<ph name="EXTENSION_NAME" />“ plėtinys</translation>
-<translation id="5960890139610307736">Plėtinio peržiūra: „<ph name="EXTENSIONVIEW_TAG_NAME" />“</translation>
 <translation id="5972529113578162692">Šio įrenginio administratorius reikalauja, kad „<ph name="EXTENSION_NAME" />“ plėtinys būtų įdiegtas. Jo negalima pašalinti.</translation>
 <translation id="6027032947578871493">Nežinomas produktas „<ph name="PRODUCT_ID" />“ iš „<ph name="VENDOR_NAME" />“ (serijos numeris: <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="6068932090455285721">„<ph name="PRODUCT_NAME" />“ iš teikėjo „<ph name="VENDOR_ID" />“</translation>
@@ -51,7 +48,6 @@
 <translation id="6542618148162044354">„<ph name="APP_NAME" />“ prašo leidimo pasiekti vieną ar daugiau jūsų įrenginių:</translation>
 <translation id="657064425229075395">Nepavyko įkelti foninio scenarijaus „<ph name="BACKGROUND_SCRIPT" />“.</translation>
 <translation id="6580950983454333167">„<ph name="PRODUCT_NAME" />“, pardavėjas „<ph name="VENDOR_NAME" />“ (serijos numeris <ph name="SERIAL_NUMBER" />)</translation>
-<translation id="6731255991101203740">Nepavyko sukurti išarchyvavimo katalogo: „<ph name="DIRECTORY_PATH" />“</translation>
 <translation id="677806580227005219">MIME tvarkyklė: „<ph name="MIMEHANDLERVIEW_TAG_NAME" />“</translation>
 <translation id="6840444547062817500">Šis plėtinys buvo per dažnai įkeltas iš naujo.</translation>
 <translation id="7003844668372540529">Nežinomas produktas „<ph name="PRODUCT_ID" />“ iš „<ph name="VENDOR_NAME" />“</translation>

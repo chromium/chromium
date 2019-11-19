@@ -36,7 +36,7 @@ public class ContentShellShellManagementTest {
     @SmallTest
     @Feature({"Main"})
     @RetryOnFailure
-    public void testMultipleShellsLaunched() throws InterruptedException, ExecutionException {
+    public void testMultipleShellsLaunched() throws ExecutionException {
         final ContentShellActivity activity =
                 mActivityTestRule.launchContentShellWithUrl(TEST_PAGE_1);
         Assert.assertEquals(TEST_PAGE_1,
@@ -57,5 +57,4 @@ public class ContentShellShellManagementTest {
         Assert.assertNull(previousActiveShell.getWebContents());
         Assert.assertTrue(previousActiveShell.isDestroyed());
     }
-
 }

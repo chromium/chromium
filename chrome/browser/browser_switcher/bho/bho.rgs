@@ -1,0 +1,42 @@
+HKCR {
+  browser_switcher_bho.BrowserSwitcherBHO.1 = s 'BrowserSwitcherBHO Class' {
+    CLSID = s '{08B5789A-BD8E-4DAE-85DF-EF792C658B86}'
+  }
+  browser_switcher_bho.BrowserSwitcherBHO = s 'BrowserSwitcherBHO Class' {
+    CLSID = s '{08B5789A-BD8E-4DAE-85DF-EF792C658B86}'
+    CurVer = s 'browser_switcher_bho.BrowserSwitcherBHO.1'
+  }
+  NoRemove CLSID {
+    ForceRemove {08B5789A-BD8E-4DAE-85DF-EF792C658B86} = s 'Browser Switcher BHO' {
+      ProgID = s 'browser_switcher_bho.BrowserSwitcherBHO.1'
+      VersionIndependentProgID = s 'browser_switcher_bho.BrowserSwitcherBHO'
+      ForceRemove 'Programmable'
+      InprocServer32 = s '%MODULE%' {
+        val ThreadingModel = s 'Apartment'
+      }
+      'TypeLib' = s '{E042FD04-3D7E-4A3A-9B9E-D4D9C70B4484}'
+      'Implemented Categories' = s '' {
+        {59fb2056-d625-48d0-a944-1a85b5ab2640} = s '' {
+        }
+      }
+    }
+  }
+}
+
+HKLM {
+  NoRemove SOFTWARE {
+    NoRemove Microsoft {
+      NoRemove Windows {
+        NoRemove CurrentVersion {
+          NoRemove Explorer {
+            NoRemove 'Browser Helper Objects' {
+              ForceRemove '{08B5789A-BD8E-4DAE-85DF-EF792C658B86}' = s 'Browser Switcher BHO' {
+                val 'NoExplorer' = d '1'
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -120,7 +120,7 @@ void CrxDownloader::OnDownloadComplete(
   DCHECK(thread_checker_.CalledOnValidThread());
 
   if (!result.error)
-    base::PostTaskWithTraits(
+    base::PostTask(
         FROM_HERE, kTaskTraits,
         base::BindOnce(&CrxDownloader::VerifyResponse, base::Unretained(this),
                        is_handled, result, download_metrics));

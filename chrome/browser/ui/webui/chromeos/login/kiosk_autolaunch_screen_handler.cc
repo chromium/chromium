@@ -12,11 +12,12 @@
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_app_manager.h"
 #include "chrome/browser/chromeos/login/oobe_screen.h"
+#include "chrome/browser/chromeos/login/screens/kiosk_autolaunch_screen.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/constants/chromeos_switches.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/dbus/session_manager_client.h"
+#include "chromeos/dbus/session_manager/session_manager_client.h"
 #include "components/login/localized_values_builder.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
@@ -24,18 +25,13 @@
 #include "content/public/browser/notification_service.h"
 #include "ui/base/webui/web_ui_util.h"
 
-namespace {
-
-const char kJsScreenPath[] = "login.AutolaunchScreen";
-
-}  // namespace
-
 namespace chromeos {
+
+constexpr StaticOobeScreenId KioskAutolaunchScreenView::kScreenId;
 
 KioskAutolaunchScreenHandler::KioskAutolaunchScreenHandler(
     JSCallsContainer* js_calls_container)
     : BaseScreenHandler(kScreenId, js_calls_container) {
-  set_call_js_prefix(kJsScreenPath);
   KioskAppManager::Get()->AddObserver(this);
 }
 
@@ -55,7 +51,8 @@ void KioskAutolaunchScreenHandler::Show() {
   ShowScreen(kScreenId);
 }
 
-void KioskAutolaunchScreenHandler::SetDelegate(Delegate* delegate) {
+void KioskAutolaunchScreenHandler::SetDelegate(
+    KioskAutolaunchScreen* delegate) {
   delegate_ = delegate;
   if (page_is_ready())
     Initialize();

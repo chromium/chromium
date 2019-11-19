@@ -18,7 +18,7 @@
 #include "components/account_id/account_id.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -52,8 +52,8 @@ class SigninPrepareUserListTest : public testing::Test,
     profile_manager_.reset(
         new TestingProfileManager(TestingBrowserProcess::GetGlobal()));
     ASSERT_TRUE(profile_manager_->SetUp());
-    controller_.reset(new MultiProfileUserController(
-        this, TestingBrowserProcess::GetGlobal()->local_state()));
+    controller_ = std::make_unique<MultiProfileUserController>(
+        this, TestingBrowserProcess::GetGlobal()->local_state());
     fake_user_manager_->set_multi_profile_user_controller(controller_.get());
 
     for (size_t i = 0; i < base::size(kUsersPublic); ++i)
@@ -78,7 +78,7 @@ class SigninPrepareUserListTest : public testing::Test,
   FakeChromeUserManager* user_manager() { return fake_user_manager_; }
 
  private:
-  content::TestBrowserThreadBundle thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
   ScopedCrosSettingsTestHelper cros_settings_test_helper_;
   FakeChromeUserManager* fake_user_manager_;
   user_manager::ScopedUserManager user_manager_enabler_;

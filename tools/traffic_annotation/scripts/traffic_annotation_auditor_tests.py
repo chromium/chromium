@@ -6,6 +6,8 @@
 """Runs tests to ensure annotation tests are working as expected.
 """
 
+from __future__ import print_function
+
 import os
 import argparse
 import sys
@@ -21,7 +23,7 @@ TEST_IS_ENABLED = True
 MINIMUM_EXPECTED_NUMBER_OF_ANNOTATIONS = 260
 
 class TrafficAnnotationTestsChecker():
-  def __init__(self, build_path=None):
+  def __init__(self, build_path=None, annotations_filename=None):
     """Initializes a TrafficAnnotationTestsChecker object.
 
     Args:
@@ -30,7 +32,12 @@ class TrafficAnnotationTestsChecker():
     """
     self.tools = NetworkTrafficAnnotationTools(build_path)
     self.last_result = None
-
+    self.persist_annotations = bool(annotations_filename)
+    if not annotations_filename:
+      annotations_file = tempfile.NamedTemporaryFile()
+      annotations_filename = annotations_file.name
+      annotations_file.close()
+    self.annotations_filename = annotations_filename
 
   def RunAllTests(self):
     """Runs all tests and returns the result."""
@@ -47,9 +54,23 @@ class TrafficAnnotationTestsChecker():
     """
 
     configs = [
-      ["--test-only", "--error-resilient"],  # Similar to trybot.
-      ["--test-only"],                       # Failing on any runtime error.
-      ["--test-only", "--no-filtering"]      # Not using heuristic filtering.
+        # Similar to trybot.
+      [
+          "--test-only",
+          "--error-resilient",
+          "--extractor-backend=python_script",
+      ],
+      # Failing on any runtime error.
+      [
+          "--test-only",
+          "--extractor-backend=python_script",
+      ],
+      # No heuristic filtering.
+      [
+          "--test-only",
+          "--no-filtering",
+          "--extractor-backend=python_script",
+      ],
     ]
 
     self.last_result = None
@@ -97,29 +118,37 @@ class TrafficAnnotationTestsChecker():
     """
 
     print("Running auditor using config: %s" % args)
-    temp_file = tempfile.NamedTemporaryFile()
-    temp_filename = temp_file.name
-    temp_file.close()
 
-    _, stderr_text, return_code = self.tools.RunAuditor(
-        args + ["--annotations-file=%s" % temp_filename])
+    try:
+      os.remove(self.annotations_filename)
+    except OSError:
+      pass
 
-    if os.path.exists(temp_filename):
+    stdout_text, stderr_text, return_code = self.tools.RunAuditor(
+        args + ["--annotations-file=%s" % self.annotations_filename])
+
+    annotations = None
+    if os.path.exists(self.annotations_filename):
       # When tests are run on all files (without filtering), there might be some
       # compile errors in irrelevant files on Windows that can be ignored.
       if (return_code and "--no-filtering" in args and
           sys.platform.startswith(('win', 'cygwin'))):
         print("Ignoring return code: %i" % return_code)
         return_code = 0
-      annotations = None if return_code else open(temp_filename).read()
-      os.remove(temp_filename)
-    else:
-      annotations = None
+      if not return_code:
+        annotations = open(self.annotations_filename).read()
+      if not self.persist_annotations:
+        os.remove(self.annotations_filename)
 
     if annotations:
       print("Test PASSED.")
     else:
-      print("Test FAILED.\n%s" % stderr_text)
+      print("Test FAILED.")
+
+    if stdout_text:
+      print(stdout_text)
+    if stderr_text:
+      print(stderr_text)
 
     return annotations
 
@@ -135,9 +164,13 @@ def main():
       help='Specifies a compiled build directory, e.g. out/Debug. If not '
            'specified, the script tries to guess it. Will not proceed if not '
            'found.')
+  parser.add_argument(
+      '--annotations-file',
+      help='Optional path to a TSV output file with all annotations.')
 
   args = parser.parse_args()
-  checker = TrafficAnnotationTestsChecker(args.build_path)
+  checker = TrafficAnnotationTestsChecker(args.build_path,
+                                          args.annotations_file)
   return 0 if checker.RunAllTests() else 1
 
 

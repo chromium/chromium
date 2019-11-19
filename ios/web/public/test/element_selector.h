@@ -5,53 +5,39 @@
 #ifndef IOS_WEB_PUBLIC_TEST_ELEMENT_SELECTOR_H_
 #define IOS_WEB_PUBLIC_TEST_ELEMENT_SELECTOR_H_
 
-#include <string>
+#import <Foundation/Foundation.h>
 
-namespace web {
-namespace test {
+#include <string>
 
 // An ElementSelector is used to generate the proper javascript to retrieve an
 // element on a web page. It encapsulates the various means of finding an
 // element and is intended to be passed around.
-class ElementSelector {
- public:
-  // Returns an ElementSelector to retrieve an element by ID.
-  static const ElementSelector ElementSelectorId(const std::string element_id);
+@interface ElementSelector : NSObject
 
-  // Returns an ElementSelector to retrieve an element in iframe by ID. iframe
-  // is an immediate child of the main frame with the given index. The script of
-  // this selector will throw an exception if target iframe has a different
-  // origin from the main frame.
-  static const ElementSelector ElementSelectorIdInFrame(
-      const std::string element_id,
-      const int frame_index);
+// The javascript to invoke on a page to retrieve the element.
+@property(nonatomic, readonly, copy) NSString* selectorScript;
 
-  // Returns an ElementSelector to retrieve an element by a CSS selector.
-  static const ElementSelector ElementSelectorCss(
-      const std::string css_selector);
+// A human readable description of the query.
+@property(nonatomic, readonly, copy) NSString* selectorDescription;
 
-  // Returns an ElementSelector to retrieve an element by a xpath query.
-  static const ElementSelector ElementSelectorXPath(
-      const std::string xpath_selector);
+// Returns an ElementSelector to retrieve an element by ID.
++ (ElementSelector*)selectorWithElementID:(const std::string&)elementID;
 
-  ElementSelector(const ElementSelector& that) = default;
-  ElementSelector(ElementSelector&& that) = default;
-  ~ElementSelector() = default;
+// Returns an ElementSelector to retrieve an element in iframe by ID. iframe
+// is an immediate child of the main frame with the given index. The script of
+// this selector will throw an exception if target iframe has a different
+// origin from the main frame.
++ (ElementSelector*)selectorWithElementID:(const std::string&)elementID
+                         inFrameWithIndex:(int)frameIndex;
 
-  // Returns the javascript to invoke on a page to retrieve the element.
-  const std::string GetSelectorScript() const;
+// Returns an ElementSelector to retrieve an element by a CSS selector.
++ (ElementSelector*)selectorWithCSSSelector:(const std::string&)selector;
 
-  // Returns a human readable description of the query.
-  const std::string GetSelectorDescription() const;
+// Returns an ElementSelector to retrieve an element by a xpath query.
++ (ElementSelector*)selectorWithXPathQuery:(const std::string&)query;
 
- private:
-  ElementSelector(const std::string&& script, const std::string&& description);
+- (instancetype)init NS_UNAVAILABLE;
 
-  const std::string script_;
-  const std::string description_;
-};
-
-}  // namespace test
-}  // namespace web
+@end
 
 #endif  // IOS_WEB_PUBLIC_TEST_ELEMENT_SELECTOR_H_

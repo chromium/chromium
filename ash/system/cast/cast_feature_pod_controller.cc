@@ -17,11 +17,11 @@ namespace ash {
 CastFeaturePodController::CastFeaturePodController(
     UnifiedSystemTrayController* tray_controller)
     : tray_controller_(tray_controller) {
-  Shell::Get()->cast_config()->AddObserver(this);
 }
 
 CastFeaturePodController::~CastFeaturePodController() {
-  Shell::Get()->cast_config()->RemoveObserver(this);
+  if (CastConfigController::Get() && button_)
+    CastConfigController::Get()->RemoveObserver(this);
 }
 
 FeaturePodButton* CastFeaturePodController::CreateButton() {
@@ -32,7 +32,13 @@ FeaturePodButton* CastFeaturePodController::CreateButton() {
       l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_CAST_TOOLTIP));
   button_->ShowDetailedViewArrow();
   button_->DisableLabelButtonFocus();
-  button_->set_id(VIEW_ID_CAST_MAIN_VIEW);
+  button_->SetID(VIEW_ID_CAST_MAIN_VIEW);
+
+  if (CastConfigController::Get()) {
+    CastConfigController::Get()->AddObserver(this);
+    CastConfigController::Get()->RequestDeviceRefresh();
+  }
+
   Update();
   return button_;
 }
@@ -46,14 +52,13 @@ SystemTrayItemUmaType CastFeaturePodController::GetUmaType() const {
 }
 
 void CastFeaturePodController::OnDevicesUpdated(
-    std::vector<mojom::SinkAndRoutePtr> devices) {
+    const std::vector<SinkAndRoute>& devices) {
   Update();
 }
 
 void CastFeaturePodController::Update() {
-  CastConfigController* cast_config = Shell::Get()->cast_config();
-  button_->SetVisible(cast_config->Connected() &&
-                      cast_config->HasSinksAndRoutes() &&
+  auto* cast_config = CastConfigController::Get();
+  button_->SetVisible(cast_config && cast_config->HasSinksAndRoutes() &&
                       !cast_config->HasActiveRoute());
 }
 

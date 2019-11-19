@@ -8,11 +8,24 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
+#include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 
 namespace blink {
 
-V8TestingScope::V8TestingScope()
-    : holder_(DummyPageHolder::Create()),
+std::unique_ptr<DummyPageHolder> V8TestingScope::CreateDummyPageHolder(
+    const KURL& url) {
+  std::unique_ptr<DummyPageHolder> holder = std::make_unique<DummyPageHolder>();
+  if (url.IsValid()) {
+    holder->GetFrame().Loader().CommitNavigation(
+        WebNavigationParams::CreateWithHTMLBuffer(SharedBuffer::Create(), url),
+        nullptr /* extra_data */);
+    blink::test::RunPendingTasks();
+  }
+  return holder;
+}
+
+V8TestingScope::V8TestingScope(const KURL& url)
+    : holder_(CreateDummyPageHolder(url)),
       handle_scope_(GetIsolate()),
       context_(GetScriptState()->GetContext()),
       context_scope_(GetContext()),

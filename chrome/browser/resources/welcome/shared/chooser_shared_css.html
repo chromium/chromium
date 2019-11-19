@@ -1,0 +1,35 @@
+<template>
+  <style include="navi-colors-css">
+    .option {
+      background: var(--cr-card-background-color);
+      border: 1px solid var(--navi-border-color);
+      color: var(--cr-primary-text-color);
+      cursor: pointer;
+      flex-direction: column;
+    }
+
+    .option:hover {
+      box-shadow: var(--navi-option-box-shadow);
+    }
+
+    .option-name {
+      font-size: .875rem;
+    }
+
+    .button-bar {
+      display: flex;
+      justify-content: space-between;
+    }
+
+    :host-context([dir=rtl]) iron-icon[icon='cr:chevron-right'] {
+      transform: scaleX(-1);
+    }
+
+    iron-icon[icon='cr:chevron-right'] {
+      height: 1.25rem;
+      margin-inline-end: -.625rem;
+      margin-inline-start: .375rem;
+      width: 1.25rem;
+    }
+  </style>
+</template>

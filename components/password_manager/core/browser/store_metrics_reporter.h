@@ -9,7 +9,7 @@
 
 class PrefService;
 
-namespace identity {
+namespace signin {
 class IdentityManager;
 }
 
@@ -33,12 +33,12 @@ class StoreMetricsReporter {
   // Reports various metrics based on whether password manager is enabled. Uses
   // |client| to obtain the password store and password syncing state. Uses
   // |sync_service| and |identity_manager| to obtain the sync username to report
-  // about its presence among saved credentials. Uses the |prefs| to obtain the
-  // state of the first-run-experience bubble.
-  StoreMetricsReporter(bool password_manager_enabled,
-                       PasswordManagerClient* client,
+  // about its presence among saved credentials. Uses the |prefs| to obtain
+  // information wither the password manager and the leak detection feature is
+  // enabled.
+  StoreMetricsReporter(PasswordManagerClient* client,
                        const syncer::SyncService* sync_service,
-                       const identity::IdentityManager* identity_manager,
+                       const signin::IdentityManager* identity_manager,
                        PrefService* prefs);
 
   ~StoreMetricsReporter();

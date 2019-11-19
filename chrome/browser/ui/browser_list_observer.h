@@ -8,7 +8,7 @@
 class Browser;
 
 class BrowserListObserver {
-  public:
+ public:
   // Called immediately after a browser is added to the list
   virtual void OnBrowserAdded(Browser* browser) {}
 

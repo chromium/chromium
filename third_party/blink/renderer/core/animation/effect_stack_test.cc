@@ -6,16 +6,17 @@
 
 #include <memory>
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/renderer/core/animation/animatable/animatable_double.h"
 #include "third_party/blink/renderer/core/animation/animation_clock.h"
 #include "third_party/blink/renderer/core/animation/animation_test_helper.h"
 #include "third_party/blink/renderer/core/animation/document_timeline.h"
 #include "third_party/blink/renderer/core/animation/element_animations.h"
+#include "third_party/blink/renderer/core/animation/interpolable_length.h"
 #include "third_party/blink/renderer/core/animation/invalidatable_interpolation.h"
 #include "third_party/blink/renderer/core/animation/keyframe_effect_model.h"
 #include "third_party/blink/renderer/core/animation/pending_animations.h"
 #include "third_party/blink/renderer/core/animation/string_keyframe.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
 
 namespace blink {
 
@@ -24,7 +25,7 @@ class AnimationEffectStackTest : public PageTestBase {
   void SetUp() override {
     PageTestBase::SetUp(IntSize());
     GetDocument().GetAnimationClock().ResetTimeForTesting();
-    timeline = DocumentTimeline::Create(&GetDocument());
+    timeline = GetDocument().Timeline();
     element = GetDocument().CreateElementForBinding("foo");
   }
 
@@ -35,7 +36,7 @@ class AnimationEffectStackTest : public PageTestBase {
     return animation;
   }
 
-  void UpdateTimeline(TimeDelta time) {
+  void UpdateTimeline(base::TimeDelta time) {
     GetDocument().GetAnimationClock().UpdateTime(
         GetDocument().Timeline().ZeroTime() + time);
     timeline->ServiceAnimations(kTimingUpdateForAnimationFrame);
@@ -50,21 +51,21 @@ class AnimationEffectStackTest : public PageTestBase {
   KeyframeEffectModelBase* MakeEffectModel(CSSPropertyID id,
                                            const String& value) {
     StringKeyframeVector keyframes(2);
-    keyframes[0] = StringKeyframe::Create();
+    keyframes[0] = MakeGarbageCollected<StringKeyframe>();
     keyframes[0]->SetOffset(0.0);
     keyframes[0]->SetCSSPropertyValue(
         id, value, SecureContextMode::kInsecureContext, nullptr);
-    keyframes[1] = StringKeyframe::Create();
+    keyframes[1] = MakeGarbageCollected<StringKeyframe>();
     keyframes[1]->SetOffset(1.0);
     keyframes[1]->SetCSSPropertyValue(
         id, value, SecureContextMode::kInsecureContext, nullptr);
-    return StringKeyframeEffectModel::Create(keyframes);
+    return MakeGarbageCollected<StringKeyframeEffectModel>(keyframes);
   }
 
   InertEffect* MakeInertEffect(KeyframeEffectModelBase* effect) {
     Timing timing;
     timing.fill_mode = Timing::FillMode::BOTH;
-    return InertEffect::Create(effect, timing, false, 0);
+    return MakeGarbageCollected<InertEffect>(effect, timing, false, 0);
   }
 
   KeyframeEffect* MakeKeyframeEffect(KeyframeEffectModelBase* effect,
@@ -72,7 +73,7 @@ class AnimationEffectStackTest : public PageTestBase {
     Timing timing;
     timing.fill_mode = Timing::FillMode::BOTH;
     timing.iteration_duration = AnimationTimeDelta::FromSecondsD(duration);
-    return KeyframeEffect::Create(element.Get(), effect, timing);
+    return MakeGarbageCollected<KeyframeEffect>(element.Get(), effect, timing);
   }
 
   double GetFontSizeValue(
@@ -84,11 +85,11 @@ class AnimationEffectStackTest : public PageTestBase {
     const TypedInterpolationValue* typed_value =
         ToInvalidatableInterpolation(*interpolations.at(0))
             .GetCachedValueForTesting();
-    // font-size is stored as an array of length values; here we assume pixels.
-    EXPECT_TRUE(typed_value->GetInterpolableValue().IsList());
-    const InterpolableList* list =
-        ToInterpolableList(&typed_value->GetInterpolableValue());
-    return ToInterpolableNumber(list->Get(0))->Value();
+    // font-size is stored as an |InterpolableLength|; here we assume pixels.
+    EXPECT_TRUE(typed_value->GetInterpolableValue().IsLength());
+    const InterpolableLength& length =
+        To<InterpolableLength>(typed_value->GetInterpolableValue());
+    return length.CreateCSSValue(kValueRangeAll)->GetDoubleValue();
   }
 
   double GetZIndexValue(const ActiveInterpolationsMap& active_interpolations) {
@@ -109,9 +110,11 @@ class AnimationEffectStackTest : public PageTestBase {
 };
 
 TEST_F(AnimationEffectStackTest, ElementAnimationsSorted) {
-  Play(MakeKeyframeEffect(MakeEffectModel(CSSPropertyFontSize, "1px")), 10);
-  Play(MakeKeyframeEffect(MakeEffectModel(CSSPropertyFontSize, "2px")), 15);
-  Play(MakeKeyframeEffect(MakeEffectModel(CSSPropertyFontSize, "3px")), 5);
+  Play(MakeKeyframeEffect(MakeEffectModel(CSSPropertyID::kFontSize, "1px")),
+       10);
+  Play(MakeKeyframeEffect(MakeEffectModel(CSSPropertyID::kFontSize, "2px")),
+       15);
+  Play(MakeKeyframeEffect(MakeEffectModel(CSSPropertyID::kFontSize, "3px")), 5);
   ActiveInterpolationsMap result = EffectStack::ActiveInterpolations(
       &element->GetElementAnimations()->GetEffectStack(), nullptr, nullptr,
       KeyframeEffect::kDefaultPriority);
@@ -120,13 +123,14 @@ TEST_F(AnimationEffectStackTest, ElementAnimationsSorted) {
 }
 
 TEST_F(AnimationEffectStackTest, NewAnimations) {
-  Play(MakeKeyframeEffect(MakeEffectModel(CSSPropertyFontSize, "1px")), 15);
-  Play(MakeKeyframeEffect(MakeEffectModel(CSSPropertyZIndex, "2")), 10);
+  Play(MakeKeyframeEffect(MakeEffectModel(CSSPropertyID::kFontSize, "1px")),
+       15);
+  Play(MakeKeyframeEffect(MakeEffectModel(CSSPropertyID::kZIndex, "2")), 10);
   HeapVector<Member<const InertEffect>> new_animations;
   InertEffect* inert1 =
-      MakeInertEffect(MakeEffectModel(CSSPropertyFontSize, "3px"));
+      MakeInertEffect(MakeEffectModel(CSSPropertyID::kFontSize, "3px"));
   InertEffect* inert2 =
-      MakeInertEffect(MakeEffectModel(CSSPropertyZIndex, "4"));
+      MakeInertEffect(MakeEffectModel(CSSPropertyID::kZIndex, "4"));
   new_animations.push_back(inert1);
   new_animations.push_back(inert2);
   ActiveInterpolationsMap result = EffectStack::ActiveInterpolations(
@@ -139,10 +143,10 @@ TEST_F(AnimationEffectStackTest, NewAnimations) {
 
 TEST_F(AnimationEffectStackTest, CancelledAnimations) {
   HeapHashSet<Member<const Animation>> cancelled_animations;
-  Animation* animation =
-      Play(MakeKeyframeEffect(MakeEffectModel(CSSPropertyFontSize, "1px")), 0);
+  Animation* animation = Play(
+      MakeKeyframeEffect(MakeEffectModel(CSSPropertyID::kFontSize, "1px")), 0);
   cancelled_animations.insert(animation);
-  Play(MakeKeyframeEffect(MakeEffectModel(CSSPropertyZIndex, "2")), 0);
+  Play(MakeKeyframeEffect(MakeEffectModel(CSSPropertyID::kZIndex, "2")), 0);
   ActiveInterpolationsMap result = EffectStack::ActiveInterpolations(
       &element->GetElementAnimations()->GetEffectStack(), nullptr,
       &cancelled_animations, KeyframeEffect::kDefaultPriority);
@@ -151,8 +155,8 @@ TEST_F(AnimationEffectStackTest, CancelledAnimations) {
 }
 
 TEST_F(AnimationEffectStackTest, ClearedEffectsRemoved) {
-  Animation* animation =
-      Play(MakeKeyframeEffect(MakeEffectModel(CSSPropertyFontSize, "1px")), 10);
+  Animation* animation = Play(
+      MakeKeyframeEffect(MakeEffectModel(CSSPropertyID::kFontSize, "1px")), 10);
   ActiveInterpolationsMap result = EffectStack::ActiveInterpolations(
       &element->GetElementAnimations()->GetEffectStack(), nullptr, nullptr,
       KeyframeEffect::kDefaultPriority);
@@ -167,19 +171,18 @@ TEST_F(AnimationEffectStackTest, ClearedEffectsRemoved) {
 }
 
 TEST_F(AnimationEffectStackTest, ForwardsFillDiscarding) {
-  Play(MakeKeyframeEffect(MakeEffectModel(CSSPropertyFontSize, "1px")), 2);
-  Play(MakeKeyframeEffect(MakeEffectModel(CSSPropertyFontSize, "2px")), 6);
-  Play(MakeKeyframeEffect(MakeEffectModel(CSSPropertyFontSize, "3px")), 4);
-  GetDocument().GetPendingAnimations().Update(
-      base::Optional<CompositorElementIdSet>());
+  Play(MakeKeyframeEffect(MakeEffectModel(CSSPropertyID::kFontSize, "1px")), 2);
+  Play(MakeKeyframeEffect(MakeEffectModel(CSSPropertyID::kFontSize, "2px")), 6);
+  Play(MakeKeyframeEffect(MakeEffectModel(CSSPropertyID::kFontSize, "3px")), 4);
+  GetDocument().GetPendingAnimations().Update(nullptr);
 
   // Because we will be forcing a naive GC that assumes there are no Oilpan
   // objects on the stack (e.g. passes BlinkGC::kNoHeapPointersOnStack), we have
   // to keep the ActiveInterpolationsMap in a Persistent.
   Persistent<ActiveInterpolationsMap> interpolations;
 
-  UpdateTimeline(TimeDelta::FromSeconds(11));
-  ThreadState::Current()->CollectAllGarbage();
+  UpdateTimeline(base::TimeDelta::FromSeconds(11));
+  ThreadState::Current()->CollectAllGarbageForTesting();
   interpolations = MakeGarbageCollected<ActiveInterpolationsMap>(
       EffectStack::ActiveInterpolations(
           &element->GetElementAnimations()->GetEffectStack(), nullptr, nullptr,
@@ -188,8 +191,8 @@ TEST_F(AnimationEffectStackTest, ForwardsFillDiscarding) {
   EXPECT_EQ(GetFontSizeValue(*interpolations), 3);
   EXPECT_EQ(3u, SampledEffectCount());
 
-  UpdateTimeline(TimeDelta::FromSeconds(13));
-  ThreadState::Current()->CollectAllGarbage();
+  UpdateTimeline(base::TimeDelta::FromSeconds(13));
+  ThreadState::Current()->CollectAllGarbageForTesting();
   interpolations = MakeGarbageCollected<ActiveInterpolationsMap>(
       EffectStack::ActiveInterpolations(
           &element->GetElementAnimations()->GetEffectStack(), nullptr, nullptr,
@@ -198,8 +201,8 @@ TEST_F(AnimationEffectStackTest, ForwardsFillDiscarding) {
   EXPECT_EQ(GetFontSizeValue(*interpolations), 3);
   EXPECT_EQ(3u, SampledEffectCount());
 
-  UpdateTimeline(TimeDelta::FromSeconds(15));
-  ThreadState::Current()->CollectAllGarbage();
+  UpdateTimeline(base::TimeDelta::FromSeconds(15));
+  ThreadState::Current()->CollectAllGarbageForTesting();
   interpolations = MakeGarbageCollected<ActiveInterpolationsMap>(
       EffectStack::ActiveInterpolations(
           &element->GetElementAnimations()->GetEffectStack(), nullptr, nullptr,
@@ -208,8 +211,8 @@ TEST_F(AnimationEffectStackTest, ForwardsFillDiscarding) {
   EXPECT_EQ(GetFontSizeValue(*interpolations), 3);
   EXPECT_EQ(2u, SampledEffectCount());
 
-  UpdateTimeline(TimeDelta::FromSeconds(17));
-  ThreadState::Current()->CollectAllGarbage();
+  UpdateTimeline(base::TimeDelta::FromSeconds(17));
+  ThreadState::Current()->CollectAllGarbageForTesting();
   interpolations = MakeGarbageCollected<ActiveInterpolationsMap>(
       EffectStack::ActiveInterpolations(
           &element->GetElementAnimations()->GetEffectStack(), nullptr, nullptr,

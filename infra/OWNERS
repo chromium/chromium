@@ -1,6 +1,17 @@
-iannucci@chromium.org
-sergiyb@chromium.org
-dpranke@chromium.org
+# This is reserved for people that are comfortable with Chromium builders
+# and understand the implications of changing their configurations.
 
-per-file recipe*=recipe-roller@chromium.org
-per-file recipe*=martiniss@chromium.org
+agable@chromium.org
+bpastene@chromium.org
+dpranke@chromium.org
+gbeaty@chromium.org
+hans@chromium.org
+jbudorick@chromium.org
+kbr@chromium.org
+martiniss@chromium.org
+thakis@chromium.org
+tikuta@chromium.org
+ynovikov@chromium.org
+
+# TEAM: infra-dev@chromium.org
+# COMPONENT: Infra>Client>Chrome

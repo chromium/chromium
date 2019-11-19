@@ -11,7 +11,7 @@
 
 MidiSysexPermissionContext::MidiSysexPermissionContext(Profile* profile)
     : PermissionContextBase(profile,
-                            CONTENT_SETTINGS_TYPE_MIDI_SYSEX,
+                            ContentSettingsType::MIDI_SYSEX,
                             blink::mojom::FeaturePolicyFeature::kMidiFeature) {}
 
 MidiSysexPermissionContext::~MidiSysexPermissionContext() {}

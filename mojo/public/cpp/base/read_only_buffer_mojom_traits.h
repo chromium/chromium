@@ -5,14 +5,16 @@
 #ifndef MOJO_PUBLIC_CPP_BASE_READ_ONLY_BUFFER_MOJOM_TRAITS_H_
 #define MOJO_PUBLIC_CPP_BASE_READ_ONLY_BUFFER_MOJOM_TRAITS_H_
 
+#include "base/component_export.h"
 #include "base/containers/span.h"
 #include "mojo/public/mojom/base/read_only_buffer.mojom-shared.h"
 
 namespace mojo {
 
 template <>
-struct StructTraits<mojo_base::mojom::ReadOnlyBufferDataView,
-                    base::span<const uint8_t>> {
+struct COMPONENT_EXPORT(MOJO_BASE_SHARED_TRAITS)
+    StructTraits<mojo_base::mojom::ReadOnlyBufferDataView,
+                 base::span<const uint8_t>> {
   static base::span<const uint8_t> buffer(base::span<const uint8_t> input) {
     return input;
   }

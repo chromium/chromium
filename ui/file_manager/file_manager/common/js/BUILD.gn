@@ -4,6 +4,7 @@
 
 import("//third_party/closure_compiler/compile_js.gni")
 import("//third_party/closure_compiler/js_unit_tests.gni")
+import("//ui/file_manager/base/gn/js_test_gen_html.gni")
 
 # TODO(tapted): This entire folder should move to //ui/file_manager/base.
 visibility = [ "//ui/file_manager/*" ]
@@ -12,8 +13,8 @@ group("closure_compile") {
   testonly = true
   deps = [
     ":closure_compile_module",
+    ":js_test_gen_html_type_check_auto",
     ":test_support_type_check",
-    ":unit_tests_type_check",
   ]
 }
 
@@ -44,18 +45,11 @@ js_type_check("test_support_type_check") {
 js_library("async_util") {
 }
 
-js_unittest("async_util_unittest") {
-  deps = [
-    ":async_util",
-    "//ui/file_manager/base/js:test_error_reporting",
-  ]
-}
-
 js_library("files_app_entry_types") {
   deps = [
-    "../../../externs:file_manager_private",
+    "//ui/file_manager/externs:file_manager_private",
   ]
-  externs_list = [ "../../../externs/volume_info.js" ]
+  externs_list = [ "//ui/file_manager/externs/volume_info.js" ]
 }
 
 js_unittest("files_app_entry_types_unittest") {
@@ -90,12 +84,8 @@ js_library("importer_common") {
   visibility = [ "//ui/file_manager/file_manager/*" ]
   deps = [
     ":file_type",
-    "../../../externs:volume_manager",
     "//ui/file_manager/base/js:volume_manager_types",
-  ]
-  externs_list = [
-    "../../../externs/background_window.js",
-    "../../../externs/background/file_browser_background.js",
+    "//ui/file_manager/externs:volume_manager",
   ]
 }
 
@@ -136,7 +126,7 @@ js_library("metrics") {
   visibility = [ "//ui/file_manager/file_manager/*" ]
   deps = [
     ":metrics_base",
-    "../../../externs:file_manager_private",
+    "//ui/file_manager/externs:file_manager_private",
     "//ui/webui/resources/js:assert",
   ]
 }
@@ -170,7 +160,7 @@ js_library("unittest_util") {
 js_library("util") {
   deps = [
     ":files_app_entry_types",
-    "../../../externs:file_manager_private",
+    "//ui/file_manager/externs:file_manager_private",
 
     # TODO(tapted): Remove these base util dependencies, which exist temporarily
     # to allow targets to depend only on util, if they depend on one of these.
@@ -183,9 +173,11 @@ js_library("util") {
   ]
   externs_list = [
     "$externs_path/command_line_private.js",
-    "../../../externs/entry_location.js",
-    "../../../externs/platform.js",
-    "../../../externs/volume_info.js",
+    "//ui/file_manager/externs/entry_location.js",
+    "//ui/file_manager/externs/platform.js",
+    "//ui/file_manager/externs/volume_info.js",
+    "//ui/file_manager/externs/volume_info_list.js",
+    "//ui/file_manager/externs/volume_manager.js",
   ]
 }
 
@@ -199,9 +191,8 @@ js_unittest("util_unittest") {
   ]
 }
 
-js_unit_tests("unit_tests") {
+js_test_gen_html("js_test_gen_html") {
   deps = [
-    ":async_util_unittest",
     ":file_type_unittest",
     ":files_app_entry_types_unittest",
     ":importer_common_unittest",

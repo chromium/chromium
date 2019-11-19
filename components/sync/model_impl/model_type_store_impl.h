@@ -70,7 +70,7 @@ class ModelTypeStoreImpl : public ModelTypeStore {
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  base::WeakPtrFactory<ModelTypeStoreImpl> weak_ptr_factory_;
+  base::WeakPtrFactory<ModelTypeStoreImpl> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ModelTypeStoreImpl);
 };

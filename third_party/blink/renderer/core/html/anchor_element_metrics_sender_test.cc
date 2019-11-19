@@ -36,10 +36,10 @@ TEST_F(AnchorElementMetricsSenderTest, AddAnhcorElement) {
   LoadURL(source);
   main_resource.Complete(
       "<a id='anchor1' href=''>example</a><a id='anchor2' href=''>example</a>");
-  HTMLAnchorElement* anchor_element_1 =
-      ToHTMLAnchorElement(GetDocument().getElementById("anchor1"));
-  HTMLAnchorElement* anchor_element_2 =
-      ToHTMLAnchorElement(GetDocument().getElementById("anchor2"));
+  auto* anchor_element_1 =
+      To<HTMLAnchorElement>(GetDocument().getElementById("anchor1"));
+  auto* anchor_element_2 =
+      To<HTMLAnchorElement>(GetDocument().getElementById("anchor2"));
 
   AnchorElementMetricsSender* sender =
       AnchorElementMetricsSender::From(GetDocument());

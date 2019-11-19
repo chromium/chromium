@@ -13,92 +13,27 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/run_loop.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/thread.h"
 #include "build/build_config.h"
+#include "media/base/bind_to_current_loop.h"
 #include "media/base/media_switches.h"
 #include "media/capture/video/fake_video_capture_device_factory.h"
 #include "media/capture/video/mock_video_capture_device_client.h"
 #include "media/capture/video/video_capture_device.h"
 #include "media/capture/video_capture_types.h"
+#include "media/video/fake_gpu_memory_buffer.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using ::testing::_;
-using ::testing::Bool;
 using ::testing::Combine;
-using ::testing::Invoke;
-using ::testing::SaveArg;
 using ::testing::Values;
 
 namespace media {
 
 namespace {
-
-class StubBufferHandle : public VideoCaptureBufferHandle {
- public:
-  StubBufferHandle(size_t mapped_size, uint8_t* data)
-      : mapped_size_(mapped_size), data_(data) {}
-
-  size_t mapped_size() const override { return mapped_size_; }
-  uint8_t* data() const override { return data_; }
-  const uint8_t* const_data() const override { return data_; }
-
- private:
-  const size_t mapped_size_;
-  uint8_t* const data_;
-};
-
-class StubBufferHandleProvider
-    : public VideoCaptureDevice::Client::Buffer::HandleProvider {
- public:
-  StubBufferHandleProvider(size_t mapped_size, uint8_t* data)
-      : mapped_size_(mapped_size), data_(data) {}
-
-  ~StubBufferHandleProvider() override = default;
-
-  mojo::ScopedSharedBufferHandle GetHandleForInterProcessTransit(
-      bool read_only) override {
-    NOTREACHED();
-    return mojo::ScopedSharedBufferHandle();
-  }
-
-  base::SharedMemoryHandle GetNonOwnedSharedMemoryHandleForLegacyIPC()
-      override {
-    NOTREACHED();
-    return base::SharedMemoryHandle();
-  }
-
-  std::unique_ptr<VideoCaptureBufferHandle> GetHandleForInProcessAccess()
-      override {
-    return std::make_unique<StubBufferHandle>(mapped_size_, data_);
-  }
-
- private:
-  const size_t mapped_size_;
-  uint8_t* const data_;
-};
-
-class StubReadWritePermission
-    : public VideoCaptureDevice::Client::Buffer::ScopedAccessPermission {
- public:
-  StubReadWritePermission(uint8_t* data) : data_(data) {}
-  ~StubReadWritePermission() override { delete[] data_; }
-
- private:
-  uint8_t* const data_;
-};
-
-VideoCaptureDevice::Client::Buffer CreateStubBuffer(int buffer_id,
-                                                    size_t mapped_size) {
-  auto* buffer = new uint8_t[mapped_size];
-  const int arbitrary_frame_feedback_id = 0;
-  return VideoCaptureDevice::Client::Buffer(
-      buffer_id, arbitrary_frame_feedback_id,
-      std::make_unique<StubBufferHandleProvider>(mapped_size, buffer),
-      std::make_unique<StubReadWritePermission>(buffer));
-}
 
 class ImageCaptureClient : public base::RefCounted<ImageCaptureClient> {
  public:
@@ -147,48 +82,15 @@ class FakeVideoCaptureDeviceTestBase : public ::testing::Test {
   void SetUp() override { EXPECT_CALL(*client_, OnError(_, _, _)).Times(0); }
 
   std::unique_ptr<MockVideoCaptureDeviceClient> CreateClient() {
-    auto result = std::make_unique<MockVideoCaptureDeviceClient>();
-    ON_CALL(*result, ReserveOutputBuffer(_, _, _, _))
-        .WillByDefault(
-            Invoke([](const gfx::Size& dimensions, VideoPixelFormat format, int,
-                      VideoCaptureDevice::Client::Buffer* buffer) {
-              EXPECT_GT(dimensions.GetArea(), 0);
-              const VideoCaptureFormat frame_format(dimensions, 0.0, format);
-              *buffer = CreateStubBuffer(0, frame_format.ImageAllocationSize());
-              return VideoCaptureDevice::Client::ReserveResult::kSucceeded;
-            }));
-    ON_CALL(*result, OnIncomingCapturedData(_, _, _, _, _, _, _))
-        .WillByDefault(
-            Invoke([this](const uint8_t*, int,
-                          const media::VideoCaptureFormat& frame_format, int,
-                          base::TimeTicks, base::TimeDelta,
-                          int) { OnFrameCaptured(frame_format); }));
-    ON_CALL(*result, OnIncomingCapturedGfxBuffer(_, _, _, _, _, _))
-        .WillByDefault(
-            Invoke([this](gfx::GpuMemoryBuffer*,
-                          const media::VideoCaptureFormat& frame_format, int,
-                          base::TimeTicks, base::TimeDelta,
-                          int) { OnFrameCaptured(frame_format); }));
-    ON_CALL(*result, DoOnIncomingCapturedBuffer(_, _, _, _))
-        .WillByDefault(
-            Invoke([this](media::VideoCaptureDevice::Client::Buffer&,
-                          const media::VideoCaptureFormat& frame_format,
-                          base::TimeTicks,
-                          base::TimeDelta) { OnFrameCaptured(frame_format); }));
-    ON_CALL(*result, DoOnIncomingCapturedBufferExt(_, _, _, _, _, _))
-        .WillByDefault(
-            Invoke([this](media::VideoCaptureDevice::Client::Buffer&,
-                          const media::VideoCaptureFormat& frame_format,
-                          base::TimeTicks, base::TimeDelta, gfx::Rect,
-                          const media::VideoFrameMetadata&) {
-              OnFrameCaptured(frame_format);
-            }));
-    return result;
+    return MockVideoCaptureDeviceClient::CreateMockClientWithBufferAllocator(
+        BindToCurrentLoop(base::BindRepeating(
+            &FakeVideoCaptureDeviceTestBase::OnFrameCaptured,
+            base::Unretained(this))));
   }
 
   void OnFrameCaptured(const VideoCaptureFormat& format) {
     last_format_ = format;
-    run_loop_->QuitClosure().Run();
+    run_loop_->Quit();
   }
 
   void WaitForCapturedFrame() {
@@ -198,7 +100,7 @@ class FakeVideoCaptureDeviceTestBase : public ::testing::Test {
 
   const VideoCaptureFormat& last_format() const { return last_format_; }
 
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
   std::unique_ptr<VideoCaptureDeviceDescriptors> descriptors_;
   std::unique_ptr<base::RunLoop> run_loop_;
   std::unique_ptr<MockVideoCaptureDeviceClient> client_;
@@ -218,9 +120,12 @@ class FakeVideoCaptureDeviceTest
 // Tests that a frame is delivered with the expected settings.
 // Sweeps through a fixed set of requested/expected resolutions.
 TEST_P(FakeVideoCaptureDeviceTest, CaptureUsing) {
-  if (testing::get<1>(GetParam()) ==
+  const auto pixel_format = testing::get<0>(GetParam());
+  const auto delivery_mode = testing::get<1>(GetParam());
+  const auto frame_rate = testing::get<2>(GetParam());
+  if (delivery_mode ==
           FakeVideoCaptureDevice::DeliveryMode::USE_CLIENT_PROVIDED_BUFFERS &&
-      testing::get<0>(GetParam()) == PIXEL_FORMAT_MJPEG) {
+      pixel_format == PIXEL_FORMAT_MJPEG) {
     // Unsupported case
     return;
   }
@@ -230,8 +135,8 @@ TEST_P(FakeVideoCaptureDeviceTest, CaptureUsing) {
 
   std::unique_ptr<VideoCaptureDevice> device =
       FakeVideoCaptureDeviceFactory::CreateDeviceWithDefaultResolutions(
-          testing::get<0>(GetParam()), testing::get<1>(GetParam()),
-          testing::get<2>(GetParam()));
+          pixel_format, delivery_mode, frame_rate,
+          std::make_unique<FakeGpuMemoryBufferSupport>());
   ASSERT_TRUE(device);
 
   // First: Requested, Second: Expected
@@ -250,13 +155,23 @@ TEST_P(FakeVideoCaptureDeviceTest, CaptureUsing) {
 
     VideoCaptureParams capture_params;
     capture_params.requested_format.frame_size = resolution.first;
-    capture_params.requested_format.frame_rate = testing::get<2>(GetParam());
+    capture_params.requested_format.frame_rate = frame_rate;
+    if (delivery_mode ==
+        FakeVideoCaptureDevice::DeliveryMode::USE_GPU_MEMORY_BUFFERS) {
+      capture_params.buffer_type = VideoCaptureBufferType::kGpuMemoryBuffer;
+    }
     device->AllocateAndStart(capture_params, std::move(client));
 
     WaitForCapturedFrame();
     EXPECT_EQ(resolution.second.width(), last_format().frame_size.width());
     EXPECT_EQ(resolution.second.height(), last_format().frame_size.height());
-    EXPECT_EQ(last_format().pixel_format, testing::get<0>(GetParam()));
+    if (delivery_mode ==
+        FakeVideoCaptureDevice::DeliveryMode::USE_GPU_MEMORY_BUFFERS) {
+      // NV12 is the only opaque format backing GpuMemoryBuffer.
+      EXPECT_EQ(last_format().pixel_format, PIXEL_FORMAT_NV12);
+    } else {
+      EXPECT_EQ(last_format().pixel_format, pixel_format);
+    }
     EXPECT_EQ(last_format().frame_rate, testing::get<2>(GetParam()));
     device->StopAndDeAllocate();
   }
@@ -269,7 +184,8 @@ INSTANTIATE_TEST_SUITE_P(
         Values(PIXEL_FORMAT_I420, PIXEL_FORMAT_Y16, PIXEL_FORMAT_MJPEG),
         Values(
             FakeVideoCaptureDevice::DeliveryMode::USE_DEVICE_INTERNAL_BUFFERS,
-            FakeVideoCaptureDevice::DeliveryMode::USE_CLIENT_PROVIDED_BUFFERS),
+            FakeVideoCaptureDevice::DeliveryMode::USE_CLIENT_PROVIDED_BUFFERS,
+            FakeVideoCaptureDevice::DeliveryMode::USE_GPU_MEMORY_BUFFERS),
         Values(20, 29.97, 30, 50, 60)));
 
 TEST_F(FakeVideoCaptureDeviceTest, GetDeviceSupportedFormats) {
@@ -310,21 +226,6 @@ TEST_F(FakeVideoCaptureDeviceTest, GetDeviceSupportedFormats) {
     EXPECT_GE(supported_formats[4].frame_rate, 20.0);
     device_index++;
   }
-}
-
-TEST_F(FakeVideoCaptureDeviceTest, GetCameraCalibration) {
-  const size_t device_count = 2;
-  video_capture_device_factory_->SetToDefaultDevicesConfig(device_count);
-  video_capture_device_factory_->GetDeviceDescriptors(descriptors_.get());
-  ASSERT_EQ(device_count, descriptors_->size());
-  ASSERT_FALSE(descriptors_->at(0).camera_calibration);
-  const VideoCaptureDeviceDescriptor& depth_device = descriptors_->at(1);
-  EXPECT_EQ("/dev/video1", depth_device.device_id);
-  ASSERT_TRUE(depth_device.camera_calibration);
-  EXPECT_EQ(135.0, depth_device.camera_calibration->focal_length_x);
-  EXPECT_EQ(135.6, depth_device.camera_calibration->focal_length_y);
-  EXPECT_EQ(0.0, depth_device.camera_calibration->depth_near);
-  EXPECT_EQ(65.535, depth_device.camera_calibration->depth_far);
 }
 
 TEST_F(FakeVideoCaptureDeviceTest, ErrorDeviceReportsError) {
@@ -419,6 +320,17 @@ TEST_F(FakeVideoCaptureDeviceTest, GetAndSetCapabilities) {
   EXPECT_EQ(96, state->width->min);
   EXPECT_EQ(1920, state->width->max);
   EXPECT_EQ(1, state->width->step);
+
+  EXPECT_EQ(100, state->pan->min);
+  EXPECT_EQ(400, state->pan->max);
+  EXPECT_EQ(1, state->pan->step);
+  EXPECT_GE(state->pan->current, state->pan->min);
+  EXPECT_GE(state->pan->max, state->pan->current);
+  EXPECT_EQ(100, state->tilt->min);
+  EXPECT_EQ(400, state->tilt->max);
+  EXPECT_EQ(1, state->tilt->step);
+  EXPECT_GE(state->tilt->current, state->tilt->min);
+  EXPECT_GE(state->tilt->max, state->tilt->current);
   EXPECT_EQ(100, state->zoom->min);
   EXPECT_EQ(400, state->zoom->max);
   EXPECT_EQ(1, state->zoom->step);

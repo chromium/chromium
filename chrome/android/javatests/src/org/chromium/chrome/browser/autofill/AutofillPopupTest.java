@@ -7,12 +7,13 @@ package org.chromium.chrome.browser.autofill;
 import android.app.Activity;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
-import android.support.annotation.Nullable;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.filters.MediumTest;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
+
+import androidx.annotation.Nullable;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -34,6 +35,7 @@ import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
 import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.content_public.browser.ImeAdapter;
 import org.chromium.content_public.browser.WebContents;
@@ -48,7 +50,6 @@ import org.chromium.ui.R;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
 /**
@@ -56,6 +57,7 @@ import java.util.concurrent.TimeoutException;
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @RetryOnFailure
+@DisableFeatures({ChromeFeatureList.AUTOFILL_KEYBOARD_ACCESSORY})
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class AutofillPopupTest {
     @Rule
@@ -147,7 +149,7 @@ public class AutofillPopupTest {
     private List<AutofillLogger.LogEntry> mAutofillLoggedEntries;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         mAutofillLoggedEntries = new ArrayList<AutofillLogger.LogEntry>();
         AutofillLogger.setLoggerForTesting(
                 logEntry -> mAutofillLoggedEntries.add(logEntry)
@@ -158,15 +160,14 @@ public class AutofillPopupTest {
     }
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
         mActivityTestRule.getActivity().setRequestedOrientation(
                 ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
     }
 
     private void loadForm(final String formDataUrl, final String inputText,
-            @Nullable Callback<Activity> updateActivity)
-            throws InterruptedException, ExecutionException, TimeoutException {
+            @Nullable Callback<Activity> updateActivity) throws TimeoutException {
         mActivityTestRule.startMainActivityWithURL(formDataUrl);
         if (updateActivity != null) {
             updateActivity.onResult(mActivityTestRule.getActivity());
@@ -203,8 +204,7 @@ public class AutofillPopupTest {
     }
 
     private void loadAndFillForm(final String formDataUrl, final String inputText,
-            @Nullable Callback<Activity> updateActivity)
-            throws InterruptedException, ExecutionException, TimeoutException {
+            @Nullable Callback<Activity> updateActivity) throws TimeoutException {
         loadForm(formDataUrl, inputText, updateActivity);
 
         final WebContents webContents = mActivityTestRule.getActivity().getCurrentWebContents();
@@ -224,7 +224,7 @@ public class AutofillPopupTest {
     }
 
     private void loadAndFillForm(final String formDataUrl, final String inputText)
-            throws InterruptedException, ExecutionException, TimeoutException {
+            throws TimeoutException {
         loadAndFillForm(formDataUrl, inputText, null);
     }
 
@@ -236,8 +236,7 @@ public class AutofillPopupTest {
     @MediumTest
     @Feature({"autofill"})
     @DisabledTest(message = "Flaky. crbug.com/936183")
-    public void testClickAutofillPopupSuggestion()
-            throws InterruptedException, ExecutionException, TimeoutException {
+    public void testClickAutofillPopupSuggestion() throws TimeoutException {
         loadAndFillForm(BASIC_PAGE_DATA, "J");
         final WebContents webContents = mActivityTestRule.getActivity().getCurrentWebContents();
 
@@ -283,8 +282,7 @@ public class AutofillPopupTest {
     @Test
     @MediumTest
     @Feature({"autofill"})
-    public void testLoggingInitiatedElementFilled()
-            throws InterruptedException, ExecutionException, TimeoutException {
+    public void testLoggingInitiatedElementFilled() throws TimeoutException {
         loadAndFillForm(INITIATING_ELEMENT_FILLED, "o");
         final String profileFullName = FIRST_NAME + " " + LAST_NAME;
         final int loggedEntries = 4;
@@ -303,8 +301,7 @@ public class AutofillPopupTest {
     @Test
     @MediumTest
     @Feature({"autofill"})
-    public void testLoggingAnotherElementFilled()
-            throws InterruptedException, ExecutionException, TimeoutException {
+    public void testLoggingAnotherElementFilled() throws TimeoutException {
         loadAndFillForm(ANOTHER_ELEMENT_FILLED, "J");
         final String profileFullName = FIRST_NAME + " " + LAST_NAME;
         final int loggedEntries = 3;
@@ -322,8 +319,7 @@ public class AutofillPopupTest {
     @Test
     @MediumTest
     @Feature({"autofill"})
-    public void testNotLoggingInvalidOption()
-            throws InterruptedException, ExecutionException, TimeoutException {
+    public void testNotLoggingInvalidOption() throws TimeoutException {
         loadAndFillForm(INVALID_OPTION, "o");
         final String profileFullName = FIRST_NAME + " " + LAST_NAME;
         final int loggedEntries = 3;
@@ -339,8 +335,7 @@ public class AutofillPopupTest {
     @MediumTest
     @Feature({"autofill"})
     @EnableFeatures(ChromeFeatureList.AUTOFILL_REFRESH_STYLE_ANDROID)
-    public void testScreenOrientationPortrait()
-            throws InterruptedException, ExecutionException, TimeoutException {
+    public void testScreenOrientationPortrait() throws TimeoutException {
         runTestScreenOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
     }
 
@@ -348,13 +343,11 @@ public class AutofillPopupTest {
     @MediumTest
     @Feature({"autofill"})
     @EnableFeatures(ChromeFeatureList.AUTOFILL_REFRESH_STYLE_ANDROID)
-    public void testScreenOrientationLandscape()
-            throws InterruptedException, ExecutionException, TimeoutException {
+    public void testScreenOrientationLandscape() throws TimeoutException {
         runTestScreenOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
     }
 
-    private void runTestScreenOrientation(int orientation)
-            throws InterruptedException, ExecutionException, TimeoutException {
+    private void runTestScreenOrientation(int orientation) throws TimeoutException {
         // TODO(crbug.com/905081): Also test different screen sizes.
         loadForm(BASIC_PAGE_DATA, "J", activity -> activity.setRequestedOrientation(orientation));
 
@@ -421,8 +414,6 @@ public class AutofillPopupTest {
                                     DOMUtils.getNodeValue(
                                             mActivityTestRule.getActivity().getCurrentWebContents(),
                                             "fn"));
-                        } catch (InterruptedException e) {
-                            return false;
                         } catch (TimeoutException e) {
                             return false;
                         }

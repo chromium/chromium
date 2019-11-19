@@ -13,7 +13,6 @@
 #include "ios/chrome/browser/sync/sync_observer_bridge.h"
 #include "ios/chrome/browser/sync/sync_setup_service.h"
 #import "ios/chrome/browser/ui/list_model/list_model.h"
-#import "ios/chrome/browser/ui/settings/cells/settings_multiline_detail_item.h"
 #import "ios/chrome/browser/ui/settings/cells/sync_switch_item.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_command_handler.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_consumer.h"
@@ -22,6 +21,7 @@
 #import "ios/chrome/browser/ui/table_view/cells/table_view_image_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_item.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
+#import "ios/chrome/common/colors/UIColor+cr_semantic_colors.h"
 #include "ios/chrome/grit/ios_chromium_strings.h"
 #include "ios/chrome/grit/ios_strings.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -31,6 +31,9 @@
 #endif
 
 using l10n_util::GetNSString;
+
+NSString* const kDataFromChromeSyncAccessibilityIdentifier =
+    @"DataFromChromeSyncAccessibilityIdentifier";
 
 namespace {
 
@@ -243,23 +246,26 @@ NSString* kGoogleServicesSyncErrorImage = @"google_services_sync_error";
   [self updateEncryptionItem:NO];
 
   // GoogleActivityControlsItemType.
-  SettingsMultilineDetailItem* googleActivityControlsItem =
-      [[SettingsMultilineDetailItem alloc]
-          initWithType:GoogleActivityControlsItemType];
-  googleActivityControlsItem.text =
+  TableViewImageItem* googleActivityControlsItem =
+      [[TableViewImageItem alloc] initWithType:GoogleActivityControlsItemType];
+  googleActivityControlsItem.title =
       GetNSString(IDS_IOS_MANAGE_SYNC_GOOGLE_ACTIVITY_CONTROLS_TITLE);
   googleActivityControlsItem.detailText =
       GetNSString(IDS_IOS_MANAGE_SYNC_GOOGLE_ACTIVITY_CONTROLS_DESCRIPTION);
+  googleActivityControlsItem.accessibilityTraits |= UIAccessibilityTraitButton;
   [model addItem:googleActivityControlsItem
       toSectionWithIdentifier:AdvancedSettingsSectionIdentifier];
 
   // AdvancedSettingsSectionIdentifier.
-  SettingsMultilineDetailItem* dataFromChromeSyncItem =
-      [[SettingsMultilineDetailItem alloc] initWithType:DataFromChromeSync];
-  dataFromChromeSyncItem.text =
+  TableViewImageItem* dataFromChromeSyncItem =
+      [[TableViewImageItem alloc] initWithType:DataFromChromeSync];
+  dataFromChromeSyncItem.title =
       GetNSString(IDS_IOS_MANAGE_SYNC_DATA_FROM_CHROME_SYNC_TITLE);
   dataFromChromeSyncItem.detailText =
       GetNSString(IDS_IOS_MANAGE_SYNC_DATA_FROM_CHROME_SYNC_DESCRIPTION);
+  dataFromChromeSyncItem.accessibilityIdentifier =
+      kDataFromChromeSyncAccessibilityIdentifier;
+  dataFromChromeSyncItem.accessibilityTraits |= UIAccessibilityTraitButton;
   [model addItem:dataFromChromeSyncItem
       toSectionWithIdentifier:AdvancedSettingsSectionIdentifier];
 }
@@ -287,8 +293,7 @@ NSString* kGoogleServicesSyncErrorImage = @"google_services_sync_error";
   if (self.shouldEncryptionItemBeEnabled) {
     self.encryptionItem.textColor = nil;
   } else {
-    self.encryptionItem.textColor =
-        UIColorFromRGB(kTableViewSecondaryLabelLightGrayTextColor);
+    self.encryptionItem.textColor = UIColor.cr_secondaryLabelColor;
   }
   if (needsUpdate && notifyConsumer) {
     [self.consumer reloadItem:self.self.encryptionItem];
@@ -404,6 +409,12 @@ NSString* kGoogleServicesSyncErrorImage = @"google_services_sync_error";
     switch (itemType) {
       case SyncEverythingItemType:
         self.syncSetupService->SetSyncingAllDataTypes(value);
+        if (value) {
+          // When sync everything is turned on, the autocomplete wallet
+          // should be turned on. This code can be removed once
+          // crbug.com/937234 is fixed.
+          self.autocompleteWalletPreference.value = true;
+        }
         break;
       case AutofillDataTypeItemType:
       case BookmarksDataTypeItemType:

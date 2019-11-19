@@ -13,12 +13,12 @@ import static org.chromium.net.CronetTestRule.getContext;
 
 import android.content.Context;
 import android.support.test.filters.SmallTest;
+import android.support.test.runner.AndroidJUnit4;
 
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Feature;
 
 import java.util.ArrayList;
@@ -28,7 +28,7 @@ import java.util.List;
 /**
  * Tests {@link CronetEngine.Builder}.
  */
-@RunWith(BaseJUnit4ClassRunner.class)
+@RunWith(AndroidJUnit4.class)
 public class CronetEngineBuilderTest {
     @Rule
     public final CronetTestRule mTestRule = new CronetTestRule();

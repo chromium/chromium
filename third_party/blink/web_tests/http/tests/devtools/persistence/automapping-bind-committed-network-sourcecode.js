@@ -10,7 +10,7 @@
       {'http://127.0.0.1:8000/devtools/persistence/resources/foo.js': null});
   TestRunner.addScriptTag('resources/foo.js');
   var networkUISourceCode = await TestRunner.waitForUISourceCode('foo.js', Workspace.projectTypes.Network);
-  var content = await networkUISourceCode.requestContent();
+  var { content } = await networkUISourceCode.requestContent();
   content = content.replace(/foo/g, 'bar');
   networkUISourceCode.addRevision(content);
 

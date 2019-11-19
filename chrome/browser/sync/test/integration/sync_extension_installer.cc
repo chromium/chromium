@@ -15,8 +15,7 @@
 #include "content/public/browser/notification_source.h"
 
 SyncedExtensionInstaller::SyncedExtensionInstaller(Profile* profile)
-    : profile_(profile),
-      weak_ptr_factory_(this) {
+    : profile_(profile) {
   DoInstallSyncedExtensions();
   registrar_.Add(this,
                  extensions::NOTIFICATION_EXTENSION_UPDATING_STARTED,

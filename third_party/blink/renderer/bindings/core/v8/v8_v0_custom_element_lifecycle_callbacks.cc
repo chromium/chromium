@@ -48,35 +48,6 @@ namespace blink {
   V(detached, DetachedCallback) \
   V(attribute_changed, AttributeChangedCallback)
 
-V8V0CustomElementLifecycleCallbacks*
-V8V0CustomElementLifecycleCallbacks::Create(
-    ScriptState* script_state,
-    v8::Local<v8::Object> prototype,
-    v8::MaybeLocal<v8::Function> created,
-    v8::MaybeLocal<v8::Function> attached,
-    v8::MaybeLocal<v8::Function> detached,
-    v8::MaybeLocal<v8::Function> attribute_changed) {
-  v8::Isolate* isolate = script_state->GetIsolate();
-
-// A given object can only be used as a Custom Element prototype
-// once; see customElementIsInterfacePrototypeObject
-#define SET_PRIVATE_PROPERTY(Maybe, Name)                          \
-  V8PrivateProperty::Symbol symbol##Name =                         \
-      V8PrivateProperty::GetCustomElementLifecycle##Name(isolate); \
-  DCHECK(!symbol##Name.HasValue(prototype));                       \
-  {                                                                \
-    v8::Local<v8::Function> function;                              \
-    if (Maybe.ToLocal(&function))                                  \
-      symbol##Name.Set(prototype, function);                       \
-  }
-
-  CALLBACK_LIST(SET_PRIVATE_PROPERTY)
-#undef SET_PRIVATE_PROPERTY
-
-  return MakeGarbageCollected<V8V0CustomElementLifecycleCallbacks>(
-      script_state, prototype, created, attached, detached, attribute_changed);
-}
-
 static V0CustomElementLifecycleCallbacks::CallbackType FlagSet(
     v8::MaybeLocal<v8::Function> attached,
     v8::MaybeLocal<v8::Function> detached,
@@ -106,19 +77,31 @@ V8V0CustomElementLifecycleCallbacks::V8V0CustomElementLifecycleCallbacks(
     : V0CustomElementLifecycleCallbacks(
           FlagSet(attached, detached, attribute_changed)),
       script_state_(script_state),
-      prototype_(script_state->GetIsolate(), prototype),
-      created_(script_state->GetIsolate(), created),
-      attached_(script_state->GetIsolate(), attached),
-      detached_(script_state->GetIsolate(), detached),
-      attribute_changed_(script_state->GetIsolate(), attribute_changed) {
-  prototype_.SetPhantom();
+      prototype_(script_state->GetIsolate(), prototype){
+  v8::Isolate* isolate = script_state->GetIsolate();
+  v8::Local<v8::Function> function;
 
-#define MAKE_WEAK(Var, Ignored) \
-  if (!Var##_.IsEmpty())        \
-    Var##_.SetPhantom();
+// A given object can only be used as a Custom Element prototype
+// once; see customElementIsInterfacePrototypeObject
+#define SET_PRIVATE_PROPERTY(Maybe, Name)                            \
+  static const V8PrivateProperty::SymbolKey kPrivateProperty##Name;  \
+  V8PrivateProperty::Symbol symbol##Name =                           \
+      V8PrivateProperty::GetSymbol(isolate, kPrivateProperty##Name); \
+  DCHECK(!symbol##Name.HasValue(prototype));                         \
+  {                                                                  \
+    if (Maybe.ToLocal(&function))                                    \
+      symbol##Name.Set(prototype, function);                         \
+  }
 
-  CALLBACK_LIST(MAKE_WEAK)
-#undef MAKE_WEAK
+  CALLBACK_LIST(SET_PRIVATE_PROPERTY)
+#undef SET_PRIVATE_PROPERTY
+
+#define SET_FIELD(maybe, ignored)    \
+  if (maybe.ToLocal(&function))      \
+    maybe##_.Set(isolate, function);
+
+  CALLBACK_LIST(SET_FIELD)
+#undef SET_FIELD
 }
 
 V8PerContextData* V8V0CustomElementLifecycleCallbacks::CreationContextData() {
@@ -228,7 +211,7 @@ void V8V0CustomElementLifecycleCallbacks::AttributeChanged(
 }
 
 void V8V0CustomElementLifecycleCallbacks::Call(
-    const ScopedPersistent<v8::Function>& weak_callback,
+    const TraceWrapperV8Reference<v8::Function>& callback_reference,
     Element* element) {
   // FIXME: callbacks while paused should be queued up for execution to
   // continue then be delivered in order rather than delivered immediately.
@@ -238,7 +221,7 @@ void V8V0CustomElementLifecycleCallbacks::Call(
   ScriptState::Scope scope(script_state_);
   v8::Isolate* isolate = script_state_->GetIsolate();
   v8::Local<v8::Context> context = script_state_->GetContext();
-  v8::Local<v8::Function> callback = weak_callback.NewLocal(isolate);
+  v8::Local<v8::Function> callback = callback_reference.NewLocal(isolate);
   if (callback.IsEmpty())
     return;
 
@@ -254,6 +237,11 @@ void V8V0CustomElementLifecycleCallbacks::Call(
 
 void V8V0CustomElementLifecycleCallbacks::Trace(blink::Visitor* visitor) {
   visitor->Trace(script_state_);
+  visitor->Trace(prototype_);
+  visitor->Trace(created_);
+  visitor->Trace(attached_);
+  visitor->Trace(detached_);
+  visitor->Trace(attribute_changed_);
   V0CustomElementLifecycleCallbacks::Trace(visitor);
 }
 

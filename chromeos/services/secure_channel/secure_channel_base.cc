@@ -12,8 +12,9 @@ SecureChannelBase::SecureChannelBase() = default;
 
 SecureChannelBase::~SecureChannelBase() = default;
 
-void SecureChannelBase::BindRequest(mojom::SecureChannelRequest request) {
-  bindings_.AddBinding(this, std::move(request));
+void SecureChannelBase::BindReceiver(
+    mojo::PendingReceiver<mojom::SecureChannel> receiver) {
+  receivers_.Add(this, std::move(receiver));
 }
 
 }  // namespace secure_channel

@@ -7,8 +7,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="org.chromium.tools.spnegoauthenticator" >
 
-    <uses-sdk android:minSdkVersion="21" android:targetSdkVersion="23" />
-
     <!--
       Deprecated permissions. Normal protection level, autogranted. Needed
       for API level 22 and before.

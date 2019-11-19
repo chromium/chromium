@@ -40,6 +40,17 @@ std::unique_ptr<content::SerialChooser> ChromeSerialDelegate::RunChooser(
   return std::make_unique<SerialChooser>(std::move(bubble_reference));
 }
 
+bool ChromeSerialDelegate::CanRequestPortPermission(
+    content::RenderFrameHost* frame) {
+  auto* web_contents = content::WebContents::FromRenderFrameHost(frame);
+  auto* profile =
+      Profile::FromBrowserContext(web_contents->GetBrowserContext());
+  auto* chooser_context = SerialChooserContextFactory::GetForProfile(profile);
+  return chooser_context->CanRequestObjectPermission(
+      frame->GetLastCommittedOrigin(),
+      web_contents->GetMainFrame()->GetLastCommittedOrigin());
+}
+
 bool ChromeSerialDelegate::HasPortPermission(
     content::RenderFrameHost* frame,
     const device::mojom::SerialPortInfo& port) {

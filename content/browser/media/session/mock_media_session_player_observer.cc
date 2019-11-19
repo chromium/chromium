@@ -56,6 +56,13 @@ void MockMediaSessionPlayerObserver::OnSetVolumeMultiplier(
   players_[player_id].volume_multiplier_ = volume_multiplier;
 }
 
+base::Optional<media_session::MediaPosition>
+MockMediaSessionPlayerObserver::GetPosition(int player_id) const {
+  EXPECT_GE(player_id, 0);
+  EXPECT_GT(players_.size(), static_cast<size_t>(player_id));
+  return players_[player_id].position_;
+}
+
 RenderFrameHost* MockMediaSessionPlayerObserver::render_frame_host() const {
   return render_frame_host_;
 }
@@ -81,6 +88,13 @@ void MockMediaSessionPlayerObserver::SetPlaying(size_t player_id,
   players_[player_id].is_playing_ = playing;
 }
 
+void MockMediaSessionPlayerObserver::SetPosition(
+    size_t player_id,
+    media_session::MediaPosition& position) {
+  EXPECT_GT(players_.size(), player_id);
+  players_[player_id].position_ = position;
+}
+
 int MockMediaSessionPlayerObserver::received_suspend_calls() const {
   return received_suspend_calls_;
 }
@@ -96,5 +110,14 @@ int MockMediaSessionPlayerObserver::received_seek_forward_calls() const {
 int MockMediaSessionPlayerObserver::received_seek_backward_calls() const {
   return received_seek_backward_calls_;
 }
+
+MockMediaSessionPlayerObserver::MockPlayer::MockPlayer(bool is_playing,
+                                                       double volume_multiplier)
+    : is_playing_(is_playing), volume_multiplier_(volume_multiplier) {}
+
+MockMediaSessionPlayerObserver::MockPlayer::~MockPlayer() = default;
+
+MockMediaSessionPlayerObserver::MockPlayer::MockPlayer(const MockPlayer&) =
+    default;
 
 }  // namespace content

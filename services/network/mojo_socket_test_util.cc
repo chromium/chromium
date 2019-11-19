@@ -8,19 +8,17 @@
 
 namespace network {
 
-TestSocketObserver::TestSocketObserver() : binding_(this) {}
+TestSocketObserver::TestSocketObserver() = default;
 
 TestSocketObserver::~TestSocketObserver() {
   EXPECT_EQ(net::OK, read_error_);
   EXPECT_EQ(net::OK, write_error_);
 }
 
-mojom::SocketObserverPtr TestSocketObserver::GetObserverPtr() {
-  DCHECK(!binding_);
-
-  mojom::SocketObserverPtr ptr;
-  binding_.Bind(mojo::MakeRequest(&ptr));
-  return ptr;
+mojo::PendingRemote<mojom::SocketObserver>
+TestSocketObserver::GetObserverRemote() {
+  DCHECK(!receiver_.is_bound());
+  return receiver_.BindNewPipeAndPassRemote();
 }
 
 int TestSocketObserver::WaitForReadError() {

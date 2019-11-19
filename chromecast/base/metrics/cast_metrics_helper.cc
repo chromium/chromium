@@ -308,10 +308,17 @@ void CastMetricsHelper::RecordEventWithValue(const std::string& event,
 }
 
 void CastMetricsHelper::RecordApplicationEvent(const std::string& event) {
+  RecordApplicationEvent(app_id_, session_id_, sdk_version_, event);
+}
+
+void CastMetricsHelper::RecordApplicationEvent(const std::string& app_id,
+                                               const std::string& session_id,
+                                               const std::string& sdk_version,
+                                               const std::string& event) {
   base::Value cast_event = CreateEventBase(event);
-  cast_event.SetKey("app_id", base::Value(app_id_));
-  cast_event.SetKey("session_id", base::Value(session_id_));
-  cast_event.SetKey("sdk_version", base::Value(sdk_version_));
+  cast_event.SetKey("app_id", base::Value(app_id));
+  cast_event.SetKey("session_id", base::Value(session_id));
+  cast_event.SetKey("sdk_version", base::Value(sdk_version));
   std::string message;
   base::JSONWriter::Write(cast_event, &message);
   RecordSimpleAction(message);

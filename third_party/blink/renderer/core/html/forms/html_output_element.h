@@ -40,8 +40,6 @@ class CORE_EXPORT HTMLOutputElement final : public HTMLFormControlElement {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static HTMLOutputElement* Create(Document&);
-
   explicit HTMLOutputElement(Document&);
   ~HTMLOutputElement() override;
 
@@ -69,11 +67,10 @@ class CORE_EXPORT HTMLOutputElement final : public HTMLFormControlElement {
   bool SupportsFocus() const override;
   void ChildrenChanged(const ChildrenChange&) override;
   void ResetImpl() override;
-  int tabIndex() const override;
 
   bool is_default_value_mode_;
   String default_value_;
-  TraceWrapperMember<DOMTokenList> tokens_;
+  Member<DOMTokenList> tokens_;
 };
 
 }  // namespace blink

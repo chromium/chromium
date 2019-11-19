@@ -1,0 +1,55 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module storage.mojom;
+
+import "mojo/public/mojom/base/big_buffer.mojom";
+import "third_party/blink/public/mojom/blob/blob.mojom";
+
+// A reader for the data and side data in a cache storage entry.
+interface BlobDataItemReader {
+  // Causes a subrange of the contents of this entry to be written into the
+  // given data pipe.  Returns the net::Error result.
+  Read(uint64 offset, uint64 length, handle<data_pipe_producer> pipe)
+      => (int32 success);
+  // Reads the side-data (if any) associated with this entry.  Returns
+  // a net::Error result and the data, if any.
+  ReadSideData() => (int32 success, mojo_base.mojom.BigBuffer data);
+};
+
+// The type of BlobDataItem.  Used for histograms.
+enum BlobDataItemType {
+  kUnknown,       // Type not known.
+  kCacheStorage,  // Data comes from the cache storage system.
+};
+
+// A remote representation of a BlobDataItem::DataHandle for cache storage.
+struct BlobDataItem {
+  BlobDataItemType type;
+
+  // The size of the normal data.  BlobDataItem::DataHandle needs this
+  // synchronously, which is why it is in a struct and not the interface.
+  uint64 size;
+
+  // The size of the side data.  This is zero if there is no side data.
+  uint64 side_data_size;
+
+  // An interface to read the normal and side data of this entry.
+  pending_remote<BlobDataItemReader> reader;
+};
+
+// This interface is the primary access point to the browser's blob system
+// for chrome internals.  This is a simplified version of the
+// blink.mojom.BlobRegistry interface.  To avoid giving the renderer
+// different capabilities, this is a separate interface.
+interface BlobStorageContext {
+  // Create a blob with a particular uuid and consisting of a single
+  // BlobDataItem::DataHandle constructed from |item|.
+  RegisterFromDataItem(pending_receiver<blink.mojom.Blob> blob, string uuid,
+                       BlobDataItem item);
+  // Create a blob with a particular uuid whose contents are contained
+  // in |data|.
+  RegisterFromMemory(pending_receiver<blink.mojom.Blob> blob, string uuid,
+                     mojo_base.mojom.BigBuffer data);
+};

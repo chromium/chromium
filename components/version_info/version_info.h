@@ -46,6 +46,9 @@ std::string GetOSType();
 // is branded or not and without any additional modifiers.
 std::string GetChannelString(Channel channel);
 
+// Returns a list of sanitizers enabled in this build.
+std::string GetSanitizerList();
+
 }  // namespace version_info
 
 #endif  // COMPONENTS_VERSION_INFO_VERSION_INFO_H_

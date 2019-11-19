@@ -1,2 +1,0 @@
-# Testing support for Linux implementation of FontRenderParams.
-per-file fontconfig_util_linux.*=derat@chromium.org

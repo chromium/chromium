@@ -21,7 +21,7 @@
 
 namespace mojo {
 
-class MessageReceiver;
+class MessageFilter;
 
 // Represents the binding of an interface implementation to a message pipe.
 // When the |Binding| object is destroyed, the binding between the message pipe
@@ -97,15 +97,16 @@ class Binding {
   // binding it to the previously specified implementation.
   void Bind(InterfaceRequest<Interface> request,
             scoped_refptr<base::SequencedTaskRunner> runner = nullptr) {
-    internal_state_.Bind(request.PassMessagePipe(), std::move(runner));
+    internal_state_.Bind(request.internal_state(), std::move(runner));
   }
 
-  // Adds a message filter to be notified of each incoming message before
+  // Sets a message filter to be notified of each incoming message before
   // dispatch. If a filter returns |false| from Accept(), the message is not
-  // dispatched and the pipe is closed. Filters cannot be removed.
-  void AddFilter(std::unique_ptr<MessageReceiver> filter) {
+  // dispatched and the pipe is closed. Filters cannot be removed once added
+  // and only one can be set.
+  void SetFilter(std::unique_ptr<MessageFilter> filter) {
     DCHECK(is_bound());
-    internal_state_.AddFilter(std::move(filter));
+    internal_state_.SetFilter(std::move(filter));
   }
 
   // Whether there are any associated interfaces running on the pipe currently.

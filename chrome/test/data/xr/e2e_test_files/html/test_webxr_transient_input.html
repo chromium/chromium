@@ -1,0 +1,88 @@
+<!doctype html>
+<!--
+Tests that the ordering of events is correct when receiving clicks from transient
+input such a user tapping on the canvas for an inline session.
+-->
+<html>
+  <head>
+    <link rel="stylesheet" type="text/css" href="../resources/webxr_e2e.css">
+  </head>
+  <body>
+    <canvas id="webgl-canvas"></canvas>
+    <script src="../../../../../../third_party/blink/web_tests/resources/testharness.js"></script>
+    <script src="../resources/webxr_e2e.js"></script>
+    <script src="../resources/webxr_boilerplate.js"></script>
+    <script>
+      var selectStartCount = 0;
+      var selectEndCount = 0;
+      var selectCount = 0;
+
+      var iterations;
+      var currentIteration = 0;
+      var finishAfterEachInput = true;
+
+      gl = webglCanvas.getContext('webgl', { xrCompatible: true });
+
+      var inputSourceAdded = false;
+      function onInputSourcesChange() {
+        // Toggle whether or not we are "inside" a pair of input events
+        inputSourceAdded = !inputSourceAdded;
+        if (!inputSourceAdded) {
+          // If we closed this out, let's ensure we got all of the
+          // events that we expect.
+          currentIteration++;
+          assert_true(selectStartCount == currentIteration,
+            "selectStartCount should match the current iteration count");
+          assert_true(selectCount == currentIteration,
+            "selectCount should match the current iteration count");
+          assert_true(selectEndCount == currentIteration,
+            "selectEndCount should match the current iteration count");
+          if (currentIteration == iterations) {
+            done();
+          } else if (finishAfterEachInput) {
+            finishJavaScriptStep();
+          }
+        }
+      }
+
+      function onSelectStart() {
+        // selectstart should always be fired first, so check that.
+        assert_true(inputSourceAdded, "Should've seen input source added event");
+        assert_true(selectStartCount == selectEndCount,
+                    'selectstart fired before selectend');
+        assert_true(selectStartCount == selectCount,
+                    'selectstart fired before select');
+        selectStartCount++;
+      }
+
+      function onSelect() {
+        // select should always be fired between selectstart and selectend.
+        assert_true(inputSourceAdded, "Should've seen input source added event");
+        assert_true(selectCount + 1 == selectStartCount,
+                    'select fired after selectstart');
+        assert_true(selectCount == selectEndCount,
+                    'select fired after selectend');
+        selectCount++;
+      }
+
+      function onSelectEnd() {
+        // selectend should always be fired last.
+        assert_true(inputSourceAdded, "Should've seen input source added event");
+        selectEndCount++;
+        assert_true(selectEndCount == selectStartCount,
+                    'selectend fired after selectstart');
+        assert_true(selectEndCount == selectCount,
+                    'selectend fired before select');
+      }
+
+      function stepSetupListeners(numIterations) {
+        iterations = numIterations;
+        let currentSession = sessionInfos[sessionTypes.MAGIC_WINDOW].currentSession;
+        currentSession.addEventListener('inputsourceschange', onInputSourcesChange, false);
+        currentSession.addEventListener('selectstart', onSelectStart, false);
+        currentSession.addEventListener('selectend', onSelectEnd, false);
+        currentSession.addEventListener('select', onSelect, false);
+      }
+    </script>
+  </body>
+</html>

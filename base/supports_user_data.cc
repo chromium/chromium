@@ -6,11 +6,18 @@
 
 namespace base {
 
+std::unique_ptr<SupportsUserData::Data> SupportsUserData::Data::Clone() {
+  return nullptr;
+}
+
 SupportsUserData::SupportsUserData() {
   // Harmless to construct on a different execution sequence to subsequent
   // usage.
   sequence_checker_.DetachFromSequence();
 }
+
+SupportsUserData::SupportsUserData(SupportsUserData&&) = default;
+SupportsUserData& SupportsUserData::operator=(SupportsUserData&&) = default;
 
 SupportsUserData::Data* SupportsUserData::GetUserData(const void* key) const {
   DCHECK(sequence_checker_.CalledOnValidSequence());
@@ -27,7 +34,10 @@ void SupportsUserData::SetUserData(const void* key,
   DCHECK(sequence_checker_.CalledOnValidSequence());
   // Avoid null keys; they are too vulnerable to collision.
   DCHECK(key);
-  user_data_[key] = std::move(data);
+  if (data.get())
+    user_data_[key] = std::move(data);
+  else
+    RemoveUserData(key);
 }
 
 void SupportsUserData::RemoveUserData(const void* key) {
@@ -39,6 +49,14 @@ void SupportsUserData::DetachFromSequence() {
   sequence_checker_.DetachFromSequence();
 }
 
+void SupportsUserData::CloneDataFrom(const SupportsUserData& other) {
+  for (const auto& data_pair : other.user_data_) {
+    auto cloned_data = data_pair.second->Clone();
+    if (cloned_data)
+      SetUserData(data_pair.first, std::move(cloned_data));
+  }
+}
+
 SupportsUserData::~SupportsUserData() {
   DCHECK(sequence_checker_.CalledOnValidSequence() || user_data_.empty());
   DataMap local_user_data;
@@ -46,6 +64,11 @@ SupportsUserData::~SupportsUserData() {
   // Now this->user_data_ is empty, and any destructors called transitively from
   // the destruction of |local_user_data| will see it that way instead of
   // examining a being-destroyed object.
+}
+
+void SupportsUserData::ClearAllUserData() {
+  DCHECK(sequence_checker_.CalledOnValidSequence());
+  user_data_.clear();
 }
 
 }  // namespace base

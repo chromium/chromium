@@ -53,7 +53,6 @@ class ApacheHTTP(server_base.ServerBase):
         self._pid_file = self._filesystem.join(self._runtime_path, '%s.pid' % self._name)
 
         executable = self._port_obj.path_to_apache()
-        server_root = self._filesystem.dirname(self._filesystem.dirname(executable))
 
         test_dir = self._port_obj.web_tests_dir()
         document_root = self._filesystem.join(test_dir, 'http', 'tests')
@@ -75,7 +74,7 @@ class ApacheHTTP(server_base.ServerBase):
         start_cmd = [
             executable,
             '-f', '%s' % self._port_obj.path_to_apache_config_file(),
-            '-C', 'ServerRoot "%s"' % server_root,
+            '-C', 'ServerRoot "%s"' % self._port_obj.apache_server_root(),
             '-C', 'DocumentRoot "%s"' % document_root,
             '-c', 'Alias /js-test-resources "%s/resources"' % test_dir,
             '-c', 'Alias /geolocation-api/js-test-resources "%s/geolocation-api/resources"' % test_dir,
@@ -92,6 +91,7 @@ class ApacheHTTP(server_base.ServerBase):
             '-c', 'Alias /webaudio-resources "%s"' % webaudio_resources_dir,
             '-c', 'Alias /inspector-sources "%s"' % inspector_sources_dir,
             '-c', 'Alias /gen "%s"' % generated_sources_dir,
+            '-c', 'Alias /wpt_internal "%s/wpt_internal"' % test_dir,
             '-c', 'TypesConfig "%s"' % mime_types_path,
             '-c', 'CustomLog "%s" common' % self._access_log_path,
             '-c', 'ErrorLog "%s"' % self._error_log_path,
@@ -180,6 +180,7 @@ class ApacheHTTP(server_base.ServerBase):
 
         proc = self._executive.popen([self._port_obj.path_to_apache(),
                                       '-f', self._port_obj.path_to_apache_config_file(),
+                                      '-C', 'ServerRoot "%s"' % self._port_obj.apache_server_root(),
                                       '-c', 'PidFile "%s"' % self._pid_file,
                                       '-k', 'stop'])
         _, err = proc.communicate()

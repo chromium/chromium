@@ -186,7 +186,7 @@ message AutofillRandomizedFieldMetadata {
 
 // This message contains information about the field types in a single form.
 // It is sent by the toolbar to contribute to the field type statistics.
-// Next available id: 39
+// Next available id: 41
 message AutofillUploadContents {
   required string client_version = 1;
   required fixed64 form_signature = 2;
@@ -305,6 +305,11 @@ message AutofillUploadContents {
     // A list of possible types for the field with their corresponding validity
     // states based on the user's data.
     repeated AutofillTypeValiditiesPair autofill_type_validities = 35;
+
+    // A low-entropy hash of the field's initial value before user-interactions
+    // or automatic fillings. This field is used to detect static
+    // placeholders.
+    optional uint32 initial_value_hash = 40;
   }
   // Signature of the form action host (e.g. Hash64Bit("example.com")).
   optional fixed64 action_signature = 13;
@@ -320,7 +325,7 @@ message AutofillUploadContents {
   // The form name.
   optional string form_name = 16;
 
-  // True iff the the non-obfuscated password values were shown to the user.
+  // True if the non-obfuscated password values were shown to the user.
   optional bool passwords_revealed = 24;
 
   // The section of noisified data about password.
@@ -332,22 +337,28 @@ message AutofillUploadContents {
   // Whether the password has any lowercase letter.
   optional bool password_has_lowercase_letter = 25;
 
-  // Whether the password has any uppercase letter.
-  optional bool password_has_uppercase_letter = 26;
+  // Deprecated since M80: Whether the password has any uppercase letter.
+  optional bool password_has_uppercase_letter = 26 [deprecated = true];
 
-  // Whether the password has any digit.
-  optional bool password_has_numeric = 27;
+  // Deprecated since M80: Whether the password has any digit.
+  optional bool password_has_numeric = 27 [deprecated = true];
 
   // Whether the password has any special symbol.
   optional bool password_has_special_symbol = 28;
 
-  // Noisifed password length.
+  // Noisified password length.
   optional uint32 password_length = 29;
+
+  // If |password_has_special_symbol| is true, this field contains noisified
+  // information about a special symbol used in a user-created password stored
+  // in ASCII code.
+  // Otherwise, this field is unset.
+  optional uint32 password_special_symbol = 39;
+
   // The end of the section of password attributes.
 
   // Event observed by the password manager which indicated that the form was
-  // successfully submitted. Corresponds to
-  // |SubmissionIndicatorEvent|.
+  // successfully submitted. Corresponds to |mojom::SubmissionIndicatorEvent|.
   enum SubmissionIndicatorEvent {
     NONE = 0;
     HTML_FORM_SUBMISSION = 1;
@@ -378,7 +389,8 @@ message AutofillUploadContents {
     optional string title = 1;
 
     // Describes how the button is implemented in HTML source. Corresponds to
-    // components/autofill/core/common/button_title_type.h
+    // the mojo ButtonTitleType enum defined in
+    // components/autofill/core/common/mojom/autofill_types.mojom.h
     enum ButtonTitleType {
       NONE = 0;
       BUTTON_ELEMENT_SUBMIT_TYPE = 1;  // <button type='submit'>

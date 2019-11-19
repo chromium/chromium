@@ -1,0 +1,5 @@
+[document web]
+++[push button] name='Regular button'
+++[toggle button] name='Toggle button unpressed' checkable:true
+++[toggle button] name='Toggle button pressed' pressed checkable:true
+++[toggle button] name='Toggle button mixed' indeterminate checkable:true

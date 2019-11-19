@@ -11,11 +11,6 @@
 #include "build/build_config.h"
 #include "media/base/bind_to_current_loop.h"
 
-#if defined(OS_CHROMEOS)
-#include "media/capture/video/chromeos/public/cros_features.h"
-#include "media/capture/video/chromeos/video_capture_device_factory_chromeos.h"
-#endif  // defined(OS_CHROMEOS)
-
 namespace {
 
 // Compares two VideoCaptureFormat by checking smallest frame_size area, then
@@ -162,17 +157,5 @@ void VideoCaptureSystemImpl::DeviceInfosReady(
   std::move(request_cb).Run(devices_info_cache_);
   ProcessDeviceInfoRequest();
 }
-
-#if defined(OS_CHROMEOS)
-void VideoCaptureSystemImpl::BindCrosImageCaptureRequest(
-    cros::mojom::CrosImageCaptureRequest request) {
-  CHECK(factory_);
-
-  if (media::ShouldUseCrosCameraService()) {
-    static_cast<VideoCaptureDeviceFactoryChromeOS*>(factory_.get())
-        ->BindCrosImageCaptureRequest(std::move(request));
-  }
-}
-#endif  // defined(OS_CHROMEOS)
 
 }  // namespace media

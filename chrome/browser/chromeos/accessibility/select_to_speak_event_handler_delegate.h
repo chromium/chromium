@@ -5,32 +5,23 @@
 #ifndef CHROME_BROWSER_CHROMEOS_ACCESSIBILITY_SELECT_TO_SPEAK_EVENT_HANDLER_DELEGATE_H_
 #define CHROME_BROWSER_CHROMEOS_ACCESSIBILITY_SELECT_TO_SPEAK_EVENT_HANDLER_DELEGATE_H_
 
-#include <memory>
-
-#include "ash/public/interfaces/accessibility_controller.mojom.h"
+#include "ash/public/cpp/select_to_speak_event_handler_delegate.h"
 #include "base/macros.h"
-#include "mojo/public/cpp/bindings/binding.h"
-#include "ui/events/event.h"
 
 namespace chromeos {
 
-// SelectToSpeakEventHandlerDelegate receives mouse and key events and forwards
-// them to the Select-to-Speak extension in Chrome. The
-// SelectToSpeakEventHandler in the Ash process handles events and passes them
-// to this delegate via a Mojo interface defined in
-// accessibility_controller.mojom.
+// SelectToSpeakEventHandlerDelegate receives mouse and key events from Ash's
+// event handler and forwards them to the Select-to-Speak extension in Chrome.
 class SelectToSpeakEventHandlerDelegate
-    : public ash::mojom::SelectToSpeakEventHandlerDelegate {
+    : public ash::SelectToSpeakEventHandlerDelegate {
  public:
   SelectToSpeakEventHandlerDelegate();
-  ~SelectToSpeakEventHandlerDelegate() override;
+  virtual ~SelectToSpeakEventHandlerDelegate();
 
  private:
-  // ash::mojom::SelectToSpeakEventHandlerDelegate:
-  void DispatchKeyEvent(std::unique_ptr<ui::Event> event) override;
-  void DispatchMouseEvent(std::unique_ptr<ui::Event> event) override;
-
-  mojo::Binding<ash::mojom::SelectToSpeakEventHandlerDelegate> binding_;
+  // ash::SelectToSpeakEventHandlerDelegate:
+  void DispatchKeyEvent(const ui::KeyEvent& event) override;
+  void DispatchMouseEvent(const ui::MouseEvent& event) override;
 
   DISALLOW_COPY_AND_ASSIGN(SelectToSpeakEventHandlerDelegate);
 };

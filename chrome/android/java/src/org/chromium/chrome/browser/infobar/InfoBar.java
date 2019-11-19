@@ -9,9 +9,14 @@ import android.graphics.Bitmap;
 import android.view.View;
 import android.widget.TextView;
 
+import androidx.annotation.ColorRes;
+import androidx.annotation.Nullable;
+
 import org.chromium.base.annotations.CalledByNative;
+import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.snackbar.SnackbarManager;
+import org.chromium.ui.modelutil.PropertyModel;
 
 /**
  * The base class for all InfoBar classes.
@@ -23,14 +28,17 @@ public abstract class InfoBar implements InfoBarView {
 
     private final int mIconDrawableId;
     private final Bitmap mIconBitmap;
+    private final @ColorRes int mIconTintId;
     private final CharSequence mMessage;
 
-    private InfoBarContainer mContainer;
-    private View mView;
-    private Context mContext;
+    private @Nullable InfoBarContainer mContainer;
+    private @Nullable View mView;
+    private @Nullable Context mContext;
 
     private boolean mIsDismissed;
     private boolean mControlsEnabled = true;
+
+    private @Nullable PropertyModel mModel;
 
     // This points to the InfoBarAndroid class not any of its subclasses.
     private long mNativeInfoBarPtr;
@@ -38,12 +46,15 @@ public abstract class InfoBar implements InfoBarView {
     /**
      * Constructor for regular infobars.
      * @param iconDrawableId ID of the resource to use for the Icon.  If 0, no icon will be shown.
-     * @param iconBitmap Icon to draw, in bitmap form.  Used mainly for generated icons.
+     * @param iconTintId The {@link ColorRes} used as tint for the {@code iconDrawableId}.
      * @param message The message to show in the infobar.
+     * @param iconBitmap Icon to draw, in bitmap form.  Used mainly for generated icons.
      */
-    public InfoBar(int iconDrawableId, Bitmap iconBitmap, CharSequence message) {
+    public InfoBar(
+            int iconDrawableId, @ColorRes int iconTintId, CharSequence message, Bitmap iconBitmap) {
         mIconDrawableId = iconDrawableId;
         mIconBitmap = iconBitmap;
+        mIconTintId = iconTintId;
         mMessage = message;
     }
 
@@ -73,9 +84,10 @@ public abstract class InfoBar implements InfoBarView {
     }
 
     /**
-     * @return The Context used to create the InfoBar.  This will be null until the InfoBar is added
-     *         to the InfoBarContainer, and should never be null afterward.
+     * @return The {@link Context} used to create the InfoBar. This will be null before the InfoBar
+     *         is added to an {@link InfoBarContainer}, or after the InfoBar is closed.
      */
+    @Nullable
     protected Context getContext() {
         return mContext;
     }
@@ -88,19 +100,27 @@ public abstract class InfoBar implements InfoBarView {
         assert mContext != null;
 
         if (usesCompactLayout()) {
-            InfoBarCompactLayout layout =
-                    new InfoBarCompactLayout(mContext, this, mIconDrawableId, mIconBitmap);
+            InfoBarCompactLayout layout = new InfoBarCompactLayout(
+                    mContext, this, mIconDrawableId, mIconTintId, mIconBitmap);
             createCompactLayoutContent(layout);
             mView = layout;
         } else {
-            InfoBarLayout layout =
-                    new InfoBarLayout(mContext, this, mIconDrawableId, mIconBitmap, mMessage);
+            InfoBarLayout layout = new InfoBarLayout(
+                    mContext, this, mIconDrawableId, mIconTintId, mIconBitmap, mMessage);
             createContent(layout);
             layout.onContentCreated();
             mView = layout;
         }
 
         return mView;
+    }
+
+    /**
+     * @return The model for this infobar if one was created.
+     */
+    @Nullable
+    PropertyModel getModel() {
+        return mModel;
     }
 
     /**
@@ -162,20 +182,15 @@ public abstract class InfoBar implements InfoBarView {
     }
 
     @Override
-    public boolean isLegalDisclosure() {
-        return false;
-    }
-
-    @Override
-    public boolean isBottomMostInfoBar() {
-        return false;
+    public int getPriority() {
+        return InfoBarPriority.PAGE_TRIGGERED;
     }
 
     @Override
     @InfoBarIdentifier
     public int getInfoBarIdentifier() {
         if (mNativeInfoBarPtr == 0) return InfoBarIdentifier.INVALID;
-        return nativeGetInfoBarIdentifier(mNativeInfoBarPtr);
+        return InfoBarJni.get().getInfoBarIdentifier(mNativeInfoBarPtr, InfoBar.this);
     }
 
     /**
@@ -190,6 +205,9 @@ public abstract class InfoBar implements InfoBarView {
                 onStartedHiding();
                 mContainer.removeInfoBar(this);
             }
+            mContainer = null;
+            mView = null;
+            mContext = null;
             return true;
         }
         return false;
@@ -217,6 +235,13 @@ public abstract class InfoBar implements InfoBarView {
         mContainer = container;
     }
 
+    /**
+     * @return Whether or not this InfoBar is already dismissed (i.e. closed).
+     */
+    boolean isDismissed() {
+        return mIsDismissed;
+    }
+
     @Override
     public boolean areControlsEnabled() {
         return mControlsEnabled;
@@ -233,7 +258,7 @@ public abstract class InfoBar implements InfoBarView {
 
     @Override
     public void onLinkClicked() {
-        if (mNativeInfoBarPtr != 0) nativeOnLinkClicked(mNativeInfoBarPtr);
+        if (mNativeInfoBarPtr != 0) InfoBarJni.get().onLinkClicked(mNativeInfoBarPtr, InfoBar.this);
     }
 
     /**
@@ -241,12 +266,16 @@ public abstract class InfoBar implements InfoBarView {
      * @param action The type of action defined in {@link ActionType} in this class.
      */
     protected void onButtonClicked(@ActionType int action) {
-        if (mNativeInfoBarPtr != 0) nativeOnButtonClicked(mNativeInfoBarPtr, action);
+        if (mNativeInfoBarPtr != 0) {
+            InfoBarJni.get().onButtonClicked(mNativeInfoBarPtr, InfoBar.this, action);
+        }
     }
 
     @Override
     public void onCloseButtonClicked() {
-        if (mNativeInfoBarPtr != 0) nativeOnCloseButtonClicked(mNativeInfoBarPtr);
+        if (mNativeInfoBarPtr != 0 && !mIsDismissed) {
+            InfoBarJni.get().onCloseButtonClicked(mNativeInfoBarPtr, InfoBar.this);
+        }
     }
 
     @Override
@@ -254,8 +283,12 @@ public abstract class InfoBar implements InfoBarView {
     }
 
     @InfoBarIdentifier
-    private native int nativeGetInfoBarIdentifier(long nativeInfoBarAndroid);
-    private native void nativeOnLinkClicked(long nativeInfoBarAndroid);
-    private native void nativeOnButtonClicked(long nativeInfoBarAndroid, int action);
-    private native void nativeOnCloseButtonClicked(long nativeInfoBarAndroid);
+
+    @NativeMethods
+    interface Natives {
+        int getInfoBarIdentifier(long nativeInfoBarAndroid, InfoBar caller);
+        void onLinkClicked(long nativeInfoBarAndroid, InfoBar caller);
+        void onButtonClicked(long nativeInfoBarAndroid, InfoBar caller, int action);
+        void onCloseButtonClicked(long nativeInfoBarAndroid, InfoBar caller);
+    }
 }

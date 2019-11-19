@@ -26,6 +26,9 @@ const char* const kPublicSessionWhitelist[] = {
     "haeblkpifdemlfnkogkipmghfcbonief",  // Charismathics Smart Card Middleware
     "mpnkhdpphjiihmlmkcamhpogecnnfffa",  // Service NSW Kiosk Utility
     "npilppbicblkkgjfnbmibmhhgjhobpll",  // QwickACCESS
+    // TODO(isandrk): Only on the whitelist for the purpose of getting the soft MGS warning.  Remove
+    // once dynamic MGS warnings are implemented.
+    "ppkfnjlimknmjoaemnpidmdlfchhehel",  // VMware Horizon Client for Chrome
 
     // Libraries:
     "aclofikceldphonlfmghmimkodjdmhck",  // Ancoris login component
@@ -102,9 +105,11 @@ const char* const kPublicSessionWhitelist[] = {
     "lpmakjfjcconjeehbidjclhdlpjmfjjj",  // Highlights app
     "iggildboghmjpbjcpmobahnkmoefkike",  // Highlights app (eve)
     "elhbopodaklenjkeihkdhhfaghalllba",  // Highlights app (nocturne)
+    "gjeelkjnolfmhphfhhjokaijbicopfln",  // Highlights app (other)
     "mnoijifedipmbjaoekhadjcijipaijjc",  // Screensaver
     "gdobaoeekhiklaljmhladjfdfkigampc",  // Screensaver (eve)
     "lminefdanffajachfahfpmphfkhahcnj",  // Screensaver (nocturne)
+    "bnabjkecnachpogjlfilfcnlpcmacglh",  // Screensaver (other)
 
     // Testing extensions:
     "ongnjlefhnoajpbodoldndkbkdgfomlp",  // Show Managed Storage

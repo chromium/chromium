@@ -2,24 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-
 /**
  * @fileoverview Tests the microphone module of Voice Search on the local NTP.
  */
-
 
 /**
  * Voice Search Microphone module's object for test and setup functions.
  */
 test.microphone = {};
 
-
 /**
  * Utility to test code that uses timeouts.
  * @type {MockClock}
  */
 test.microphone.clock = new MockClock();
-
 
 /**
  * Set up the microphone DOM and test environment.
@@ -34,14 +30,12 @@ test.microphone.setUp = function() {
   test.microphone.clock.install();
 };
 
-
 /**
  * Makes sure the microphone module sets up with the correct settings.
  */
 test.microphone.testInitialization = function() {
   assertFalse(microphone.isLevelAnimating_);
 };
-
 
 /**
  * Make sure the volume level animation starts.
@@ -51,7 +45,6 @@ test.microphone.testStartLevelAnimationFromInactive = function() {
   assertTrue(microphone.isLevelAnimating_);
 };
 
-
 /**
  * Make sure the level animation stops.
  */
@@ -60,7 +53,6 @@ test.microphone.testStopLevelAnimationFromActive = function() {
   microphone.stopInputAnimation();
   assertFalse(microphone.isLevelAnimating_);
 };
-
 
 /**
  * Make sure the level animation doesn't start again.

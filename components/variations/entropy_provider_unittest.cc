@@ -17,6 +17,7 @@
 #include "base/rand_util.h"
 #include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/test/scoped_field_trial_list_resetter.h"
 #include "components/variations/hashing.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -177,6 +178,7 @@ void PerformEntropyUniformityTest(
 }  // namespace
 
 TEST(EntropyProviderTest, UseOneTimeRandomizationSHA1) {
+  base::test::ScopedFieldTrialListResetter resetter;
   // Simply asserts that two trials using one-time randomization
   // that have different names, normally generate different results.
   //
@@ -185,14 +187,13 @@ TEST(EntropyProviderTest, UseOneTimeRandomizationSHA1) {
   // particular client_id we use for unit tests they won't.
   base::FieldTrialList field_trial_list(
       std::make_unique<SHA1EntropyProvider>("client_id"));
-  const int kNoExpirationYear = base::FieldTrialList::kNoExpirationYear;
   scoped_refptr<base::FieldTrial> trials[] = {
       base::FieldTrialList::FactoryGetFieldTrial(
-          "one", 100, "default", kNoExpirationYear, 1, 1,
-          base::FieldTrial::ONE_TIME_RANDOMIZED, nullptr),
+          "one", 100, "default", base::FieldTrial::ONE_TIME_RANDOMIZED,
+          nullptr),
       base::FieldTrialList::FactoryGetFieldTrial(
-          "two", 100, "default", kNoExpirationYear, 1, 1,
-          base::FieldTrial::ONE_TIME_RANDOMIZED, nullptr),
+          "two", 100, "default", base::FieldTrial::ONE_TIME_RANDOMIZED,
+          nullptr),
   };
 
   for (size_t i = 0; i < base::size(trials); ++i) {
@@ -207,6 +208,7 @@ TEST(EntropyProviderTest, UseOneTimeRandomizationSHA1) {
 }
 
 TEST(EntropyProviderTest, UseOneTimeRandomizationNormalizedMurmurHash) {
+  base::test::ScopedFieldTrialListResetter resetter;
   // Simply asserts that two trials using one-time randomization
   // that have different names, normally generate different results.
   //
@@ -216,14 +218,13 @@ TEST(EntropyProviderTest, UseOneTimeRandomizationNormalizedMurmurHash) {
   base::FieldTrialList field_trial_list(
       std::make_unique<NormalizedMurmurHashEntropyProvider>(
           1234, kMaxLowEntropySize));
-  const int kNoExpirationYear = base::FieldTrialList::kNoExpirationYear;
   scoped_refptr<base::FieldTrial> trials[] = {
       base::FieldTrialList::FactoryGetFieldTrial(
-          "one", 100, "default", kNoExpirationYear, 1, 1,
-          base::FieldTrial::ONE_TIME_RANDOMIZED, nullptr),
+          "one", 100, "default", base::FieldTrial::ONE_TIME_RANDOMIZED,
+          nullptr),
       base::FieldTrialList::FactoryGetFieldTrial(
-          "two", 100, "default", kNoExpirationYear, 1, 1,
-          base::FieldTrial::ONE_TIME_RANDOMIZED, nullptr),
+          "two", 100, "default", base::FieldTrial::ONE_TIME_RANDOMIZED,
+          nullptr),
   };
 
   for (size_t i = 0; i < base::size(trials); ++i) {
@@ -238,19 +239,19 @@ TEST(EntropyProviderTest, UseOneTimeRandomizationNormalizedMurmurHash) {
 }
 
 TEST(EntropyProviderTest, UseOneTimeRandomizationWithCustomSeedSHA1) {
+  base::test::ScopedFieldTrialListResetter resetter;
   // Ensures that two trials with different names but the same custom seed used
   // for one time randomization produce the same group assignments.
   base::FieldTrialList field_trial_list(
       std::make_unique<SHA1EntropyProvider>("client_id"));
-  const int kNoExpirationYear = base::FieldTrialList::kNoExpirationYear;
   const uint32_t kCustomSeed = 9001;
   scoped_refptr<base::FieldTrial> trials[] = {
       base::FieldTrialList::FactoryGetFieldTrialWithRandomizationSeed(
-          "one", 100, "default", kNoExpirationYear, 1, 1,
-          base::FieldTrial::ONE_TIME_RANDOMIZED, kCustomSeed, nullptr, nullptr),
+          "one", 100, "default", base::FieldTrial::ONE_TIME_RANDOMIZED,
+          kCustomSeed, nullptr, nullptr),
       base::FieldTrialList::FactoryGetFieldTrialWithRandomizationSeed(
-          "two", 100, "default", kNoExpirationYear, 1, 1,
-          base::FieldTrial::ONE_TIME_RANDOMIZED, kCustomSeed, nullptr, nullptr),
+          "two", 100, "default", base::FieldTrial::ONE_TIME_RANDOMIZED,
+          kCustomSeed, nullptr, nullptr),
   };
 
   for (size_t i = 0; i < base::size(trials); ++i) {
@@ -266,20 +267,20 @@ TEST(EntropyProviderTest, UseOneTimeRandomizationWithCustomSeedSHA1) {
 
 TEST(EntropyProviderTest,
      UseOneTimeRandomizationWithCustomSeedNormalizedMurmurHash) {
+  base::test::ScopedFieldTrialListResetter resetter;
   // Ensures that two trials with different names but the same custom seed used
   // for one time randomization produce the same group assignments.
   base::FieldTrialList field_trial_list(
       std::make_unique<NormalizedMurmurHashEntropyProvider>(
           1234, kMaxLowEntropySize));
-  const int kNoExpirationYear = base::FieldTrialList::kNoExpirationYear;
   const uint32_t kCustomSeed = 9001;
   scoped_refptr<base::FieldTrial> trials[] = {
       base::FieldTrialList::FactoryGetFieldTrialWithRandomizationSeed(
-          "one", 100, "default", kNoExpirationYear, 1, 1,
-          base::FieldTrial::ONE_TIME_RANDOMIZED, kCustomSeed, nullptr, nullptr),
+          "one", 100, "default", base::FieldTrial::ONE_TIME_RANDOMIZED,
+          kCustomSeed, nullptr, nullptr),
       base::FieldTrialList::FactoryGetFieldTrialWithRandomizationSeed(
-          "two", 100, "default", kNoExpirationYear, 1, 1,
-          base::FieldTrial::ONE_TIME_RANDOMIZED, kCustomSeed, nullptr, nullptr),
+          "two", 100, "default", base::FieldTrial::ONE_TIME_RANDOMIZED,
+          kCustomSeed, nullptr, nullptr),
   };
 
   for (size_t i = 0; i < base::size(trials); ++i) {

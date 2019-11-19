@@ -11,8 +11,8 @@
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_script_value.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "third_party/blink/renderer/platform/shared_buffer.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_view.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "v8/include/v8.h"
@@ -26,7 +26,6 @@ class IDBValue;
 class ScriptState;
 class ScriptValue;
 class SerializedScriptValue;
-class SharedBuffer;
 
 const base::Feature kIndexedDBLargeValueWrapping{
     "IndexedDBLargeValueWrapping", base::FEATURE_DISABLED_BY_DEFAULT};

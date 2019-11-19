@@ -6,7 +6,7 @@
 
 #include <functional>
 
-#include "base/hash.h"
+#include "base/hash/hash.h"
 #include "chromeos/components/multidevice/remote_device_ref.h"
 
 namespace chromeos {

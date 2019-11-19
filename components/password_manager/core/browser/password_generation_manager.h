@@ -1,97 +1,93 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_GENERATION_MANAGER_H_
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_GENERATION_MANAGER_H_
 
-#include <vector>
+#include <map>
+#include <memory>
 
-#include "base/macros.h"
-#include "base/strings/string16.h"
-#include "components/autofill/core/common/signatures_util.h"
-#include "url/gurl.h"
-
-namespace autofill {
-class FormStructure;
-}
+#include "base/memory/weak_ptr.h"
+#include "base/optional.h"
+#include "base/time/clock.h"
+#include "components/autofill/core/common/password_form.h"
 
 namespace password_manager {
 
+class FormFetcher;
+class FormSaver;
 class PasswordManagerClient;
 class PasswordManagerDriver;
 
-// Per-tab manager for password generation. Will enable this feature only if
-//
-// -  Password manager is enabled
-// -  Password sync is enabled
-//
-// NOTE: At the moment, the creation of the renderer PasswordGenerationManager
-// is controlled by a switch (--enable-password-generation) so this feature will
-// not be enabled regardless of the above criteria without the switch being
-// present.
-//
-// This class is used to determine what forms we should offer to generate
-// passwords for and manages the popup which is created if the user chooses to
-// generate a password.
 class PasswordGenerationManager {
  public:
-  PasswordGenerationManager(PasswordManagerClient* client,
-                            PasswordManagerDriver* driver);
-  virtual ~PasswordGenerationManager();
+  PasswordGenerationManager(FormSaver* form_saver,
+                            PasswordManagerClient* client);
+  ~PasswordGenerationManager();
+  PasswordGenerationManager(const PasswordGenerationManager& rhs) = delete;
+  PasswordGenerationManager& operator=(const PasswordGenerationManager&) =
+      delete;
 
-  // Instructs the PasswordRequirementsService to fetch requirements for
-  // |origin|. This needs to be called to enable domain-wide password
-  // requirements overrides.
-  void PrefetchSpec(const GURL& origin);
+  std::unique_ptr<PasswordGenerationManager> Clone(FormSaver* form_saver) const;
 
-  // Stores password requirements received from the autofill server for the
-  // |forms| and fetches domain-wide requirements.
-  void ProcessPasswordRequirements(
-      const std::vector<autofill::FormStructure*>& forms);
+  // Returns true iff the generated password was presaved.
+  bool HasGeneratedPassword() const { return presaved_.has_value(); }
 
-  // Detect account creation forms from forms with autofill type annotated.
-  // Will send a message to the renderer if we find a correctly annotated form
-  // and the feature is enabled.
-  void DetectFormsEligibleForGeneration(
-      const std::vector<autofill::FormStructure*>& forms);
+  const base::string16& generated_password() const {
+    return presaved_->password_value;
+  }
 
-  // Determines current state of password generation
-  // |log_debug_data| determines whether log entries are sent to the
-  // autofill::SavePasswordProgressLogger.
-  bool IsGenerationEnabled(bool log_debug_data) const;
+  // Called when user wants to start generation flow for |generated|. If there
+  // is no username conflict, the message is synchronously passed to |driver|.
+  // |fetcher| to fill that UI with correct data.
+  // Otherwise, the UI on the client is invoked to ask for overwrite permission.
+  // There is one corner case that is still not covered.
+  // The user had the current password saved with empty username.
+  // - The change password form has no username.
+  // - The user generates a password and sees the bubble with an empty username.
+  // - The user clicks 'Update'.
+  // - The actual form submission doesn't succeed for some reason.
+  void GeneratedPasswordAccepted(autofill::PasswordForm generated,
+                                 const FormFetcher& fetcher,
+                                 base::WeakPtr<PasswordManagerDriver> driver);
 
-  // Returns a randomly generated password that should (but is not guaranteed
-  // to) match the requirements of the site.
-  // |last_committed_url| refers to the main frame URL and may impact the
-  // password generation rules that are imposed by the site.
-  // |form_signature| and |field_signature| identify the field for which a
-  // password shall be generated.
-  // |max_length| refers to the maximum allowed length according to the site and
-  // may be 0 if unset.
-  //
-  // Virtual for testing
-  //
-  // TODO(crbug.com/855595): Add a stub for this class to facilitate testing.
-  virtual base::string16 GeneratePassword(
-      const GURL& last_committed_url,
-      autofill::FormSignature form_signature,
-      autofill::FieldSignature field_signature,
-      uint32_t max_length,
-      uint32_t* spec_priority);
+  // Called when generated password is accepted or changed by user.
+  void PresaveGeneratedPassword(
+      autofill::PasswordForm generated,
+      const std::vector<const autofill::PasswordForm*>& matches);
+
+  // Signals that the user cancels password generation.
+  void PasswordNoLongerGenerated();
+
+  // Finish the generation flow by saving the final credential |generated|.
+  // |matches| and |old_password| have the same meaning as in FormSaver.
+  void CommitGeneratedPassword(
+      autofill::PasswordForm generated,
+      const std::vector<const autofill::PasswordForm*>& matches,
+      const base::string16& old_password);
+
+#if defined(UNIT_TEST)
+  void set_clock(std::unique_ptr<base::Clock> clock) {
+    clock_ = std::move(clock);
+  }
+#endif
 
  private:
-  friend class PasswordGenerationManagerTest;
+  void OnPresaveBubbleResult(const base::WeakPtr<PasswordManagerDriver>& driver,
+                             bool accepted,
+                             const autofill::PasswordForm& pending);
 
-  // The PasswordManagerClient instance associated with this instance. Must
-  // outlive this instance.
-  PasswordManagerClient* client_;
-
-  // The PasswordManagerDriver instance associated with this instance. Must
-  // outlive this instance.
-  PasswordManagerDriver* driver_;
-
-  DISALLOW_COPY_AND_ASSIGN(PasswordGenerationManager);
+  // Weak reference to the interface for saving credentials.
+  FormSaver* const form_saver_;
+  // The client for the password form.
+  PasswordManagerClient* const client_;
+  // Stores the pre-saved credential.
+  base::Optional<autofill::PasswordForm> presaved_;
+  // Interface to get current time.
+  std::unique_ptr<base::Clock> clock_;
+  // Used to produce callbacks.
+  base::WeakPtrFactory<PasswordGenerationManager> weak_factory_{this};
 };
 
 }  // namespace password_manager

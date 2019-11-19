@@ -53,7 +53,7 @@ class IDBObjectStore;
 // This allows for lazy conversion to script values (via IDBBindingUtilities),
 // and avoids the need for many dedicated union types.
 
-class MODULES_EXPORT IDBAny : public GarbageCollectedFinalized<IDBAny> {
+class MODULES_EXPORT IDBAny final : public GarbageCollected<IDBAny> {
  public:
   static IDBAny* CreateUndefined();
   static IDBAny* CreateNull();

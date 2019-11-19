@@ -1,0 +1,413 @@
+<style include="iron-flex cr-shared-style cr-icons action-link
+    shared-style">
+  :host {
+    --iron-icon-fill-color: var(--cr-secondary-text-color);
+    display: block;
+    height: 100%;
+  }
+
+  #enable-section {
+    margin-bottom: 8px;
+  }
+
+  #enable-section cr-tooltip-icon {
+    margin-inline-end: 20px;
+  }
+
+  #enable-section span {
+    color: var(--cr-secondary-text-color);
+    font-weight: 500;
+  }
+
+  #enable-section .enabled-text {
+    color: var(--google-blue-500);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    #enable-section .enabled-text {
+      color: var(--google-blue-refresh-300);
+    }
+  }
+
+  #icon {
+    height: 24px;
+    margin-inline-end: 12px;
+    margin-inline-start: 16px;
+    width: 24px;
+  }
+
+  #name {
+    flex-grow: 1;
+  }
+
+  .section {
+    @apply --cr-section;
+  }
+
+  .section.block {
+    box-sizing: border-box;
+    display: block;
+    padding-bottom: var(--cr-section-vertical-padding);
+    padding-top: var(--cr-section-vertical-padding);
+  }
+
+  .section.continuation {
+    border-top: none;
+  }
+
+  .section.control-line {
+    justify-content: space-between;
+  }
+
+  .section:first-child {
+    border: none;
+  }
+
+  .section-content {
+    color: var(--cr-secondary-text-color);
+  }
+
+  .actionable {
+    cursor: pointer;
+  }
+
+  .inspectable-view {
+    height: 20px;
+    width: auto;  /* override the default button size of 24x24 */
+  }
+
+  @media (prefers-color-scheme: light) {
+    .warning .action-button {
+      background: white;
+      color: var(--google-blue-500);
+    }
+
+    #reload-button {
+      color: var(--google-blue-500);
+    }
+  }
+
+  .warning span {
+    color: var(--error-color);
+    flex: 1;
+  }
+
+  .warning-icon {
+    --iron-icon-fill-color: var(--error-color);
+    flex-shrink: 0;
+    height: 18px;
+    margin-inline-end: 8px;
+    width: 18px;
+  }
+
+  ul {
+    margin: 0;
+    padding-inline-start: 20px;
+  }
+
+  #options-section .control-line:first-child {
+    border-top: var(--cr-separator-line);
+  }
+
+  extensions-toggle-row {
+    @apply --cr-section;
+    box-sizing: border-box;
+    padding-inline-end: 0;
+    padding-inline-start: 0;
+    --toggle-row-label-horizontal-padding: var(--cr-section-padding);
+    --toggle-row-label-vertical-padding: var(--cr-section-vertical-padding);
+  }
+
+  #load-path {
+    word-break: break-all;
+  }
+
+  #load-path > a[is='action-link'] {
+    display: inline;
+  }
+
+  #size {
+    align-items: center;
+    display: flex;
+  }
+
+  paper-spinner-lite {
+    @apply --cr-icon-height-width;
+  }
+</style>
+<div class="page-container" id="container">
+  <div class="page-content">
+    <div class="page-header">
+      <cr-icon-button class="icon-arrow-back no-overlap" id="closeButton"
+          aria-label="$i18n{back}" on-click="onCloseButtonTap_">
+      </cr-icon-button>
+      <img id="icon" src="[[data.iconUrl]]"
+          alt$="[[appOrExtension(
+              data.type,
+              '$i18nPolymer{appIcon}',
+              '$i18nPolymer{extensionIcon}')]]">
+      <span id="name" class="cr-title-text" role="heading" aria-level="1">
+        [[data.name]]
+      </span>
+    </div>
+    <div class="section continuation control-line" id="enable-section">
+      <span class$="[[computeEnabledStyle_(data.state)]]">
+        [[computeEnabledText_(data.state, '$i18nPolymer{itemOn}',
+            '$i18nPolymer{itemOff}')]]
+      </span>
+      <div class="layout horizontal">
+        <cr-tooltip-icon hidden$="[[!data.controlledInfo]]"
+            tooltip-text="[[data.controlledInfo.text]]"
+            icon-class="[[getIndicatorIcon_(data.controlledInfo.type)]]"
+            icon-aria-label="[[data.controlledInfo.type]]">
+        </cr-tooltip-icon>
+        <template is="dom-if" if="[[isTerminated_(data.state)]]">
+          <cr-button id="terminated-reload-button" class="action-button"
+              on-click="onReloadTap_">
+            $i18n{itemReload}
+          </cr-button>
+        </template>
+        <cr-toggle id="enable-toggle"
+            aria-label$="[[appOrExtension(
+                data.type,
+                '$i18nPolymer{appEnabled}',
+                '$i18nPolymer{extensionEnabled}')]]"
+            aria-describedby="name"
+            checked="[[isEnabled_(data.state)]]"
+            on-change="onEnableChange_"
+            disabled="[[!isEnableToggleEnabled_(data.*)]]"
+            hidden$="[[isTerminated_(data.state)]]">
+        </cr-toggle>
+      </div>
+    </div>
+    <div id="warnings" hidden$="[[!hasWarnings_(data.*)]]">
+      <div id="runtime-warnings" hidden$="[[!data.runtimeWarnings.length]]"
+          class="section continuation warning control-line">
+        <iron-icon class="warning-icon" icon="cr:error"></iron-icon>
+        <span>
+          <template is="dom-repeat" items="[[data.runtimeWarnings]]">
+            [[item]]
+          </template>
+        </span>
+        <template is="dom-if" if="[[!isTerminated_(data.state)]]">
+          <cr-button id="warnings-reload-button" class="action-button"
+              on-click="onReloadTap_">
+            $i18n{itemReload}
+          </cr-button>
+        </template>
+      </div>
+      <div class="section continuation warning" id="suspicious-warning"
+          hidden$="[[!data.disableReasons.suspiciousInstall]]">
+        <iron-icon class="warning-icon" icon="cr:warning"></iron-icon>
+        <span>
+          $i18n{itemSuspiciousInstall}
+          <a target="_blank" href="$i18n{suspiciousInstallHelpUrl}">
+            $i18n{learnMore}
+          </a>
+        </span>
+      </div>
+      <div class="section continuation warning control-line"
+          id="corrupted-warning"
+          hidden$="[[!data.disableReasons.corruptInstall]]">
+        <iron-icon class="warning-icon" icon="cr:warning"></iron-icon>
+        <span>$i18n{itemCorruptInstall}</span>
+        <cr-button id="repair-button" class="action-button"
+            on-click="onRepairTap_">
+          $i18n{itemRepair}
+        </cr-button>
+      </div>
+      <div class="section continuation warning" id="blacklisted-warning"
+          hidden$="[[!data.blacklistText]]">
+        <iron-icon class="warning-icon" icon="cr:warning"></iron-icon>
+        <span>[[data.blacklistText]]</span>
+      </div>
+      <div class="section continuation warning" id="update-required-warning"
+          hidden$="[[!data.disableReasons.updateRequired]]">
+        <iron-icon class="warning-icon" icon="cr:warning"></iron-icon>
+        <span>$i18n{updateRequiredByPolicy}</span>
+      </div>
+    </div>
+    <div class="section continuation block">
+      <div class="section-title" role="heading" aria-level="2">
+        $i18n{itemDescriptionLabel}
+      </div>
+      <div class="section-content" id="description">
+        [[getDescription_(data.description, '$i18nPolymer{noDescription}')]]
+      </div>
+    </div>
+    <div class="section block">
+      <div class="section-title" role="heading" aria-level="2">
+        $i18n{itemVersion}
+      </div>
+      <div class="section-content">[[data.version]]</div>
+    </div>
+    <div class="section block">
+      <div class="section-title" role="heading" aria-level="2">
+        $i18n{itemSize}
+      </div>
+      <div class="section-content" id="size">
+        <span>[[size_]]</span>
+        <paper-spinner-lite active="[[!size_]]" hidden="[[size_]]">
+        </paper-spinner-lite>
+      </div>
+    </div>
+    <div class="section block" id="id-section" hidden$="[[!inDevMode]]">
+      <div class="section-title" role="heading" aria-level="2">
+        $i18n{itemIdHeading}
+      </div>
+      <div class="section-content">[[data.id]]</div>
+    </div>
+    <template is="dom-if" if="[[inDevMode]]">
+      <div class="section block" id="inspectable-views">
+        <div class="section-title" role="heading" aria-level="2">
+          $i18n{itemInspectViews}
+        </div>
+        <div class="section-content">
+          <ul id="inspect-views">
+            <li hidden="[[data.views.length]]">
+              $i18n{noActiveViews}
+            </li>
+            <template is="dom-repeat" items="[[data.views]]">
+              <li>
+                <a is="action-link" class="inspectable-view"
+                    on-click="onInspectTap_">
+                  [[computeInspectLabel_(item)]]
+                </a>
+              </li>
+            </template>
+          </ul>
+        </div>
+      </div>
+    </template>
+    <div class="section block">
+      <div class="section-title" role="heading" aria-level="2">
+        $i18n{itemPermissions}
+      </div>
+      <div class="section-content">
+        <span id="no-permissions" hidden$="[[hasPermissions_(data.*)]]">
+          $i18n{itemPermissionsEmpty}
+        </span>
+        <ul id="permissions-list"
+            hidden$="[[!data.permissions.simplePermissions.length]]">
+          <template is="dom-repeat"
+              items="[[data.permissions.simplePermissions]]">
+            <li>
+              [[item.message]]
+              <ul hidden="[[!item.submessages.length]]">
+                <template is="dom-repeat" items="[[item.submessages]]">
+                  <li>[[item]]</li>
+                </template>
+              </ul>
+            </li>
+          </template>
+        </ul>
+      </div>
+    </div>
+    <div class="section block">
+      <div class="section-title" role="heading" aria-level="2">
+        $i18n{itemSiteAccess}
+      </div>
+      <div class="section-content">
+        <span id="no-site-access"
+            hidden$="[[showSiteAccessContent_(data.*)]]">
+          $i18n{itemSiteAccessEmpty}
+        </span>
+        <template is="dom-if"
+            if="[[showFreeformRuntimeHostPermissions_(data.*)]]">
+          <extensions-runtime-host-permissions
+              permissions="[[data.permissions.runtimeHostPermissions]]"
+              delegate="[[delegate]]"
+              item-id="[[data.id]]">
+          </extensions-runtime-host-permissions>
+        </template>
+        <template is="dom-if"
+            if="[[showHostPermissionsToggleList_(data.*)]]">
+          <extensions-host-permissions-toggle-list
+              permissions="[[data.permissions.runtimeHostPermissions]]"
+              delegate="[[delegate]]"
+              item-id="[[data.id]]">
+          </extensions-host-permissions-toggle-list>
+        </template>
+      </div>
+    </div>
+    <template is="dom-if"
+        if="[[hasDependentExtensions_(data.dependentExtensions.splices)]]">
+      <div class="section block">
+        <div class="section-title" role="heading" aria-level="2">
+          $i18n{itemDependencies}
+        </div>
+        <div class="section-content">
+          <ul id="dependent-extensions-list">
+            <template is="dom-repeat" items="[[data.dependentExtensions]]">
+              <li>[[computeDependentEntry_(item)]]</li>
+            </template>
+          </ul>
+        </div>
+      </div>
+    </template>
+    <template is="dom-if" if="[[shouldShowOptionsSection_(data.*)]]">
+      <div id="options-section">
+        <template is="dom-if"
+          if="[[shouldShowIncognitoOption_(
+              data.incognitoAccess.isEnabled, incognitoAvailable)]]">
+          <extensions-toggle-row id="allow-incognito"
+              checked="[[data.incognitoAccess.isActive]]"
+              on-change="onAllowIncognitoChange_">
+            <div>
+              <div>$i18n{itemAllowIncognito}</div>
+              <div class="section-content">$i18n{incognitoInfoWarning}</div>
+            </div>
+          </extensions-toggle-row>
+        </template>
+        <template is="dom-if" if="[[data.fileAccess.isEnabled]]">
+          <extensions-toggle-row id="allow-on-file-urls"
+              checked="[[data.fileAccess.isActive]]"
+              on-change="onAllowOnFileUrlsChange_">
+            <span>$i18n{itemAllowOnFileUrls}</span>
+          </extensions-toggle-row>
+        </template>
+        <template is="dom-if" if="[[data.errorCollection.isEnabled]]">
+          <extensions-toggle-row id="collect-errors"
+            checked="[[data.errorCollection.isActive]]"
+            on-change="onCollectErrorsChange_">
+            <span>$i18n{itemCollectErrors}</span>
+          </extensions-toggle-row>
+        </template>
+      </div>
+    </template>
+    <cr-link-row class="hr" id="extensions-options"
+        disabled="[[!isEnabled_(data.state)]]"
+        hidden="[[!shouldShowOptionsLink_(data.*)]]"
+        label="$i18n{itemOptions}" on-click="onExtensionOptionsTap_"
+        external></cr-link-row>
+    <cr-link-row class="hr"
+        id="extensionsActivityLogLink" hidden$="[[!showActivityLog]]"
+        label="$i18n{viewActivityLog}" on-click="onActivityLogTap_">
+    </cr-link-row>
+    <cr-link-row class="hr" hidden="[[!data.manifestHomePageUrl.length]]"
+        id="extensionWebsite" label="$i18n{extensionWebsite}"
+        on-click="onExtensionWebSiteTap_" external></cr-link-row>
+    <cr-link-row class="hr" hidden="[[!data.webStoreUrl.length]]"
+        id="viewInStore" label="$i18n{viewInStore}"
+        on-click="onViewInStoreTap_" external></cr-link-row>
+    <div class="section block">
+      <div class="section-title" role="heading" aria-level="2">
+        $i18n{itemSource}
+      </div>
+      <div id="source" class="section-content">
+        [[computeSourceString_(data.*)]]
+      </div>
+      <div id="load-path" class="section-content"
+          hidden$="[[!data.prettifiedPath]]">
+        <span>$i18n{itemExtensionPath}</span>
+        <a is="action-link" on-click="onLoadPathTap_">
+          [[data.prettifiedPath]]
+        </a>
+      </div>
+    </div>
+    <cr-link-row class="hr" id="remove-extension"
+        hidden="[[isControlled_(data.controlledInfo)]]"
+        label="$i18n{itemRemoveExtension}" on-click="onRemoveTap_">
+    </cr-link-row>
+  </div>
+</div>

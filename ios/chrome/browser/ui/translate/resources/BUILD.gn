@@ -7,7 +7,6 @@ import("//build/config/ios/asset_catalog.gni")
 imageset("translate_icon") {
   sources = [
     "translate_icon.imageset/Contents.json",
-    "translate_icon.imageset/translate_icon.png",
     "translate_icon.imageset/translate_icon@2x.png",
     "translate_icon.imageset/translate_icon@3x.png",
   ]

@@ -1,0 +1,38 @@
+# Copyright 2017 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//mojo/public/tools/bindings/mojom.gni")
+
+mojom("mojom") {
+  sources = [
+    "viz_main.mojom",
+  ]
+
+  public_deps = [
+    "//components/discardable_memory/public/mojom",
+    "//services/network/public/mojom",
+    "//services/viz/privileged/mojom/compositing",
+    "//services/viz/privileged/mojom/gl",
+    "//services/viz/public/mojom",
+    "//ui/gfx/mojom",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "mojom_traits_unittest.cc",
+  ]
+
+  deps = [
+    "//base/test:test_support",
+    "//components/viz/common:common",
+    "//media/capture/mojom:video_capture",
+    "//services/service_manager/public/cpp",
+    "//services/viz/privileged/mojom/compositing",
+    "//testing/gtest",
+    "//ui/gfx:test_support",
+  ]
+}

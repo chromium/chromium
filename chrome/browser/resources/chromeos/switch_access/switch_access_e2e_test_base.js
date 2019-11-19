@@ -37,7 +37,7 @@ SwitchAccessE2ETest.prototype = {
 #include "chrome/browser/chromeos/accessibility/accessibility_manager.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "ui/accessibility/accessibility_switches.h"
-#include "ui/keyboard/keyboard_util.h"
+#include "ash/keyboard/ui/keyboard_util.h"
     `);
   },
 
@@ -83,6 +83,11 @@ SwitchAccessE2ETest.prototype = {
    *     the desktop node once the document is ready.
    */
   runWithLoadedTree: function(url, callback) {
+    const prefix = url.substring(0, 4);
+    if (prefix !== 'http' && prefix !== 'data') {
+      url = 'data:text/html;charset=utf-8,' + url;
+    }
+
     callback = this.newCallback(callback);
     chrome.automation.getDesktop(function(desktopRootNode) {
       var createParams = {active: true, url: url};
@@ -98,8 +103,9 @@ SwitchAccessE2ETest.prototype = {
             // URL encoding of newlines in the target root URL were causing
             // tests to fail, so we decode %0A to \n.
             const targetUrl = evt.target.root.url.replace(/%0A/g, '\n');
-            if (targetUrl != url)
+            if (targetUrl != url) {
               return;
+            }
             callback && callback(desktopRootNode);
             callback = null;
           });

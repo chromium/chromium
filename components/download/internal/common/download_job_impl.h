@@ -14,10 +14,9 @@ class DownloadItem;
 
 class COMPONENTS_DOWNLOAD_EXPORT DownloadJobImpl : public DownloadJob {
  public:
-  DownloadJobImpl(
-      DownloadItem* download_item,
-      std::unique_ptr<DownloadRequestHandleInterface> request_handle,
-      bool is_parallizable);
+  DownloadJobImpl(DownloadItem* download_item,
+                  CancelRequestCallback cancel_request_callback,
+                  bool is_parallizable);
   ~DownloadJobImpl() override;
 
   // DownloadJob implementation.

@@ -1,0 +1,11 @@
+{
+  "id": "ggbflgnkafappblpkiflbgpmkfdpnhhe",
+  "users": "1234",
+  "average_rating": 1.0,
+  "rating_count": 999,
+  "verified_site": "chrome.google.com",
+  "localized_name": "Name of App 1",
+  "localized_description": "Description of App 1",
+  "icon_url": "webstore/inlineinstall/detail/app_1_green16x16.png",
+  "manifest":"{ \"manifest_version\": 2, \"name\": \"Test Kiosk App\", \"version\": \"1.0.0\", \"icons\": { \"128\": \"icon-128.png\", \"16\": \"icon-16.png\"}, \"app\": { \"background\": { \"scripts\": [\"main.js\"] } }, \"kiosk_enabled\": true, \"permissions\": [ \"power\", \"webview\" ] }"
+}

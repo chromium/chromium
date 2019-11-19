@@ -13,10 +13,10 @@
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/url_constants.h"
+#include "content/public/test/accessibility_notification_waiter.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/shell/browser/shell.h"
-#include "content/test/accessibility_browser_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/ax_mode.h"
 
@@ -64,13 +64,13 @@ class AccessibilityModeTest : public ContentBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(AccessibilityModeTest, AccessibilityModeOff) {
-  NavigateToURL(shell(), GURL(kMinimalPageDataURL));
+  EXPECT_TRUE(NavigateToURL(shell(), GURL(kMinimalPageDataURL)));
   EXPECT_TRUE(web_contents()->GetAccessibilityMode().is_mode_off());
   EXPECT_EQ(nullptr, GetManager());
 }
 
 IN_PROC_BROWSER_TEST_F(AccessibilityModeTest, AccessibilityModeComplete) {
-  NavigateToURL(shell(), GURL(kMinimalPageDataURL));
+  EXPECT_TRUE(NavigateToURL(shell(), GURL(kMinimalPageDataURL)));
   ASSERT_TRUE(web_contents()->GetAccessibilityMode().is_mode_off());
 
   AccessibilityNotificationWaiter waiter(shell()->web_contents());
@@ -82,7 +82,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityModeTest, AccessibilityModeComplete) {
 
 IN_PROC_BROWSER_TEST_F(AccessibilityModeTest,
                        AccessibilityModeWebContentsOnly) {
-  NavigateToURL(shell(), GURL(kMinimalPageDataURL));
+  EXPECT_TRUE(NavigateToURL(shell(), GURL(kMinimalPageDataURL)));
   ASSERT_TRUE(web_contents()->GetAccessibilityMode().is_mode_off());
 
   AccessibilityNotificationWaiter waiter(shell()->web_contents());
@@ -95,7 +95,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityModeTest,
 }
 
 IN_PROC_BROWSER_TEST_F(AccessibilityModeTest, AddingModes) {
-  NavigateToURL(shell(), GURL(kMinimalPageDataURL));
+  EXPECT_TRUE(NavigateToURL(shell(), GURL(kMinimalPageDataURL)));
 
   AccessibilityNotificationWaiter waiter(shell()->web_contents());
   web_contents()->AddAccessibilityMode(ui::kAXModeWebContentsOnly);
@@ -116,13 +116,13 @@ IN_PROC_BROWSER_TEST_F(AccessibilityModeTest,
   // TODO(dmazzoni): On Android we use an ifdef to disable inline text boxes,
   // we should do it with accessibility flags instead. http://crbug.com/672205
 #if !defined(OS_ANDROID)
-  NavigateToURL(shell(), GURL(url::kAboutBlankURL));
+  EXPECT_TRUE(NavigateToURL(shell(), GURL(url::kAboutBlankURL)));
 
   AccessibilityNotificationWaiter waiter(shell()->web_contents(),
                                          ui::kAXModeComplete,
                                          ax::mojom::Event::kLoadComplete);
   GURL url("data:text/html,<p>Para</p>");
-  NavigateToURL(shell(), url);
+  EXPECT_TRUE(NavigateToURL(shell(), url));
   waiter.WaitForNotification();
 
   const BrowserAccessibility* text =
@@ -140,14 +140,14 @@ IN_PROC_BROWSER_TEST_F(AccessibilityModeTest,
   // TODO(dmazzoni): On Android we use an ifdef to disable inline text boxes,
   // we should do it with accessibility flags instead. http://crbug.com/672205
 #if !defined(OS_ANDROID)
-  NavigateToURL(shell(), GURL(url::kAboutBlankURL));
+  EXPECT_TRUE(NavigateToURL(shell(), GURL(url::kAboutBlankURL)));
 
   AccessibilityNotificationWaiter waiter(
       shell()->web_contents(),
       ui::AXMode::kNativeAPIs | ui::AXMode::kWebContents,
       ax::mojom::Event::kLoadComplete);
   GURL url("data:text/html,<p>Para</p>");
-  NavigateToURL(shell(), url);
+  EXPECT_TRUE(NavigateToURL(shell(), url));
   waiter.WaitForNotification();
 
   const BrowserAccessibility* text =
@@ -158,14 +158,14 @@ IN_PROC_BROWSER_TEST_F(AccessibilityModeTest,
 }
 
 IN_PROC_BROWSER_TEST_F(AccessibilityModeTest, AddScreenReaderModeFlag) {
-  NavigateToURL(shell(), GURL(url::kAboutBlankURL));
+  EXPECT_TRUE(NavigateToURL(shell(), GURL(url::kAboutBlankURL)));
 
   AccessibilityNotificationWaiter waiter(
       shell()->web_contents(),
       ui::AXMode::kNativeAPIs | ui::AXMode::kWebContents,
       ax::mojom::Event::kLoadComplete);
   GURL url("data:text/html,<input aria-label=Foo placeholder=Bar>");
-  NavigateToURL(shell(), url);
+  EXPECT_TRUE(NavigateToURL(shell(), url));
   waiter.WaitForNotification();
 
   const BrowserAccessibility* textbox =

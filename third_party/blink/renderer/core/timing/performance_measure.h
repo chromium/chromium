@@ -27,44 +27,52 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_TIMING_PERFORMANCE_MEASURE_H_
 
 #include "base/memory/scoped_refptr.h"
+#include "third_party/blink/public/mojom/timing/performance_mark_or_measure.mojom-blink-forward.h"
+#include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_script_value.h"
 #include "third_party/blink/renderer/core/timing/performance_entry.h"
+#include "third_party/blink/renderer/platform/bindings/trace_wrapper_v8_reference.h"
+#include "third_party/blink/renderer/platform/heap/heap_allocator.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
 
-class SerializedScriptValue;
+class ExceptionState;
 
-class PerformanceMeasure final : public PerformanceEntry {
+class CORE_EXPORT PerformanceMeasure final : public PerformanceEntry {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static PerformanceMeasure* Create(ScriptState* script_state,
-                                    const AtomicString& name,
-                                    double start_time,
-                                    double end_time,
-                                    const ScriptValue& detail) {
-    return MakeGarbageCollected<PerformanceMeasure>(
-        script_state, name, start_time, end_time, detail);
-  }
-
   PerformanceMeasure(ScriptState*,
                      const AtomicString& name,
                      double start_time,
                      double end_time,
-                     const ScriptValue& detail);
+                     scoped_refptr<SerializedScriptValue>,
+                     ExceptionState&);
 
-  ScriptValue detail(ScriptState*) const;
+  static PerformanceMeasure* Create(ScriptState*,
+                                    const AtomicString& name,
+                                    double start_time,
+                                    double end_time,
+                                    const ScriptValue& detail,
+                                    ExceptionState&);
+
+  ScriptValue detail(ScriptState*);
 
   AtomicString entryType() const override;
   PerformanceEntryType EntryTypeEnum() const override;
+  mojom::blink::PerformanceMarkOrMeasurePtr ToMojoPerformanceMarkOrMeasure()
+      override;
 
-  void Trace(blink::Visitor* visitor) override {
-    PerformanceEntry::Trace(visitor);
-  }
+  void Trace(blink::Visitor* visitor) override;
 
  private:
   ~PerformanceMeasure() override = default;
-  scoped_refptr<SerializedScriptValue> detail_;
+  scoped_refptr<SerializedScriptValue> serialized_detail_;
+  // In order to prevent cross-world reference leak, we create a copy of the
+  // detail for each world.
+  HeapHashMap<WeakMember<ScriptState>, TraceWrapperV8Reference<v8::Value>>
+      deserialized_detail_map_;
 };
 
 }  // namespace blink

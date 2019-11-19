@@ -12,6 +12,24 @@
 #error "This file requires ARC support."
 #endif
 
+@implementation ComposedEdgeLayoutGuide
+- (NSLayoutXAxisAnchor*)leadingAnchor {
+  return self.leadingAnchorProvider.leadingAnchor
+             ?: self.baseLayoutGuide.leadingAnchor;
+}
+- (NSLayoutXAxisAnchor*)trailingAnchor {
+  return self.trailingAnchorProvider.trailingAnchor
+             ?: self.baseLayoutGuide.trailingAnchor;
+}
+- (NSLayoutYAxisAnchor*)topAnchor {
+  return self.topAnchorProvider.topAnchor ?: self.baseLayoutGuide.topAnchor;
+}
+- (NSLayoutYAxisAnchor*)bottomAnchor {
+  return self.bottomAnchorProvider.bottomAnchor
+             ?: self.baseLayoutGuide.bottomAnchor;
+}
+@end
+
 void ApplyVisualConstraints(NSArray* constraints,
                             NSDictionary* subviewsDictionary) {
   ApplyVisualConstraintsWithMetricsAndOptions(constraints, subviewsDictionary,
@@ -90,8 +108,8 @@ void AddSameCenterYConstraint(UIView* unused_parentView,
   AddSameCenterYConstraint(subview1, subview2);
 }
 
-void AddSameConstraints(id<LayoutGuideProvider> view1,
-                        id<LayoutGuideProvider> view2) {
+void AddSameConstraints(id<EdgeLayoutGuideProvider> view1,
+                        id<EdgeLayoutGuideProvider> view2) {
   [NSLayoutConstraint activateConstraints:@[
     [view1.leadingAnchor constraintEqualToAnchor:view2.leadingAnchor],
     [view1.trailingAnchor constraintEqualToAnchor:view2.trailingAnchor],
@@ -100,19 +118,29 @@ void AddSameConstraints(id<LayoutGuideProvider> view1,
   ]];
 }
 
-void PinToSafeArea(id<LayoutGuideProvider> innerView, UIView* outerView) {
+void AddSameConstraintsWithInsets(id<EdgeLayoutGuideProvider> innerView,
+                                  id<EdgeLayoutGuideProvider> outerView,
+                                  ChromeDirectionalEdgeInsets insets) {
+  AddSameConstraintsToSidesWithInsets(
+      innerView, outerView,
+      (LayoutSides::kTop | LayoutSides::kLeading | LayoutSides::kBottom |
+       LayoutSides::kTrailing),
+      insets);
+}
+
+void PinToSafeArea(id<EdgeLayoutGuideProvider> innerView, UIView* outerView) {
   AddSameConstraints(innerView, outerView.safeAreaLayoutGuide);
 }
 
-void AddSameConstraintsToSides(id<LayoutGuideProvider> view1,
-                               id<LayoutGuideProvider> view2,
+void AddSameConstraintsToSides(id<EdgeLayoutGuideProvider> view1,
+                               id<EdgeLayoutGuideProvider> view2,
                                LayoutSides side_flags) {
   AddSameConstraintsToSidesWithInsets(
       view1, view2, side_flags, ChromeDirectionalEdgeInsetsMake(0, 0, 0, 0));
 }
 
-void AddSameConstraintsToSidesWithInsets(id<LayoutGuideProvider> innerView,
-                                         id<LayoutGuideProvider> outerView,
+void AddSameConstraintsToSidesWithInsets(id<EdgeLayoutGuideProvider> innerView,
+                                         id<EdgeLayoutGuideProvider> outerView,
                                          LayoutSides side_flags,
                                          ChromeDirectionalEdgeInsets insets) {
   NSMutableArray* constraints = [[NSMutableArray alloc] init];
@@ -140,15 +168,15 @@ void AddSameConstraintsToSidesWithInsets(id<LayoutGuideProvider> innerView,
   [NSLayoutConstraint activateConstraints:constraints];
 }
 
-void AddOptionalVerticalPadding(id<LayoutGuideProvider> outerView,
-                                id<LayoutGuideProvider> innerView,
+void AddOptionalVerticalPadding(id<EdgeLayoutGuideProvider> outerView,
+                                id<EdgeLayoutGuideProvider> innerView,
                                 CGFloat padding) {
   AddOptionalVerticalPadding(outerView, innerView, innerView, padding);
 }
 
-void AddOptionalVerticalPadding(id<LayoutGuideProvider> outerView,
-                                id<LayoutGuideProvider> topInnerView,
-                                id<LayoutGuideProvider> bottomInnerView,
+void AddOptionalVerticalPadding(id<EdgeLayoutGuideProvider> outerView,
+                                id<EdgeLayoutGuideProvider> topInnerView,
+                                id<EdgeLayoutGuideProvider> bottomInnerView,
                                 CGFloat padding) {
   NSLayoutConstraint* topPaddingConstraint = [topInnerView.topAnchor
       constraintGreaterThanOrEqualToAnchor:outerView.topAnchor

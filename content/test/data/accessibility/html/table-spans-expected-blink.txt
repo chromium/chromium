@@ -1,28 +1,29 @@
 rootWebArea name='Table example with rowspan and colspan'
-++table
-++++row
-++++++cell name='AD'
-++++++++staticText name='AD'
-++++++++++inlineTextBox name='AD'
-++++++cell name='BC'
-++++++++staticText name='BC'
-++++++++++inlineTextBox name='BC'
-++++row
-++++++cell name='EF'
-++++++++staticText name='EF'
-++++++++++inlineTextBox name='EF'
-++table
-++++row
-++++++cell name='AD'
-++++++++staticText name='AD'
-++++++++++inlineTextBox name='AD'
-++++++cell name='BC'
-++++++++staticText name='BC'
-++++++++++inlineTextBox name='BC'
-++++row
-++++++cell name='EF'
-++++++++staticText name='EF'
-++++++++++inlineTextBox name='EF'
-++++++cell name='GH'
-++++++++staticText name='GH'
-++++++++++inlineTextBox name='GH'
+++genericContainer ignored
+++++table
+++++++row
+++++++++cell name='AD'
+++++++++++staticText name='AD'
+++++++++++++inlineTextBox name='AD'
+++++++++cell name='BC'
+++++++++++staticText name='BC'
+++++++++++++inlineTextBox name='BC'
+++++++row
+++++++++cell name='EF'
+++++++++++staticText name='EF'
+++++++++++++inlineTextBox name='EF'
+++++table
+++++++row
+++++++++cell name='AD'
+++++++++++staticText name='AD'
+++++++++++++inlineTextBox name='AD'
+++++++++cell name='BC'
+++++++++++staticText name='BC'
+++++++++++++inlineTextBox name='BC'
+++++++row
+++++++++cell name='EF'
+++++++++++staticText name='EF'
+++++++++++++inlineTextBox name='EF'
+++++++++cell name='GH'
+++++++++++staticText name='GH'
+++++++++++++inlineTextBox name='GH'

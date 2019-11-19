@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <script src="../resources/testharness.js"></script>
 <script src="../resources/testharnessreport.js"></script>
-<script src="../resources/run-after-layout-and-paint.js"></script>
 
 <select id="select" size="0">
 <option id="option1">Apple</option>
@@ -14,7 +13,7 @@ function axElementById(id) {
   return accessibilityController.accessibleElementById(id);
 }
 
-test_after_layout_and_paint(() => {
+test(() => {
   var select = document.querySelector('select');
   select.focus();
   select.selectedIndex = 0;
@@ -32,7 +31,7 @@ test_after_layout_and_paint(() => {
   assert_equals(axMenuListPopup.activeDescendant, axOption1);
 }, 'An active descendant should be exposed on the menu list popup when an option is selected and the select element is focused.');
 
-test_after_layout_and_paint(() => {
+test(() => {
   var select = document.querySelector('select');
   select.blur();
   select.selectedIndex = 1;

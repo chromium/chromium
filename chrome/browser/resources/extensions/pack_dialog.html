@@ -1,0 +1,49 @@
+<style include="cr-shared-style">
+  cr-input {
+    margin-top: var(--cr-form-field-bottom-spacing);
+    --cr-input-error-display: none;
+  }
+
+  cr-button[slot='suffix'] {
+    margin-inline-start: 10px;
+  }
+
+  /* Prevent focus-outline from being chopped by bottom of dialog body. */
+  cr-input {
+    margin-bottom: 2px;
+  }
+</style>
+<cr-dialog id="dialog" close-text="$i18n{close}">
+  <div slot="title">$i18n{packDialogTitle}</div>
+  <div slot="body">
+    <div>$i18n{packDialogContent}</div>
+    <cr-input id="root-dir" label="$i18n{packDialogExtensionRoot}"
+        value="{{packDirectory_}}">
+      <cr-button id="root-dir-browse" on-click="onRootBrowse_"
+          slot="suffix">
+        $i18n{packDialogBrowse}
+      </cr-button>
+    </cr-input>
+    <cr-input id="key-file" label="$i18n{packDialogKeyFile}"
+        value="{{keyFile_}}">
+      <cr-button id="key-file-browse" on-click="onKeyBrowse_"
+          slot="suffix">
+        $i18n{packDialogBrowse}
+      </cr-button>
+    </cr-input>
+  </div>
+  <div slot="button-container">
+    <cr-button class="cancel-button" on-click="onCancelTap_">
+      $i18n{cancel}
+    </cr-button>
+    <cr-button class="action-button" on-click="onConfirmTap_"
+        disabled="[[!packDirectory_]]">
+      $i18n{packDialogConfirm}
+    </cr-button>
+  </div>
+</cr-dialog>
+<template is="dom-if" if="[[lastResponse_]]" restamp>
+  <extensions-pack-dialog-alert model="[[lastResponse_]]"
+      on-close="onAlertClose_">
+  </extensions-pack-dialog-alert>
+</template>

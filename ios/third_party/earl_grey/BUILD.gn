@@ -290,6 +290,7 @@ ios_framework_bundle("earl_grey") {
   deps = [
     "//build/config/ios:xctest",
     "//ios/third_party/fishhook",
+    "//ios/third_party/webkit",
   ]
   public_deps = [
     "//ios/third_party/ochamcrest:ochamcrest+link",
@@ -302,7 +303,6 @@ ios_framework_bundle("earl_grey") {
     "IOKit.framework",
     "QuartzCore.framework",
     "UIKit.framework",
-    "WebKit.framework",
     "XCTest.framework",
   ]
   public_configs = [ ":config" ]

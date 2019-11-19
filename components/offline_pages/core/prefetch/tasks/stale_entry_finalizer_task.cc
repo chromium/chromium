@@ -177,8 +177,11 @@ void ReportAndFinalizeStuckItems(base::Time now, sql::Database* db) {
     statement.BindInt64(2, static_cast<int>(PrefetchItemState::ZOMBIE));
 
     while (statement.Step()) {
-      base::UmaHistogramSparse("OfflinePages.Prefetching.StuckItemState",
-                               statement.ColumnInt(0));
+      int state_int = statement.ColumnInt(0);
+      if (ToPrefetchItemState(state_int)) {  // Only report valid enum values.
+        base::UmaHistogramSparse("OfflinePages.Prefetching.StuckItemState",
+                                 state_int);
+      }
     }
   }
   // Finalize.
@@ -245,8 +248,7 @@ StaleEntryFinalizerTask::StaleEntryFinalizerTask(
     PrefetchDispatcher* prefetch_dispatcher,
     PrefetchStore* prefetch_store)
     : prefetch_dispatcher_(prefetch_dispatcher),
-      prefetch_store_(prefetch_store),
-      weak_ptr_factory_(this) {
+      prefetch_store_(prefetch_store) {
   DCHECK(prefetch_dispatcher_);
   DCHECK(prefetch_store_);
 }

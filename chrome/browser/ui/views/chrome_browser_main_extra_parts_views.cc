@@ -8,26 +8,29 @@
 
 #include "base/command_line.h"
 #include "build/build_config.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/ui/views/chrome_constrained_window_views_client.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_views_delegate.h"
+#include "chrome/browser/ui/views/devtools_process_observer.h"
 #include "chrome/browser/ui/views/relaunch_notification/relaunch_notification_controller.h"
 #include "components/constrained_window/constrained_window_views.h"
+#include "components/ui_devtools/connector_delegate.h"
+#include "components/ui_devtools/switches.h"
+#include "components/ui_devtools/views/devtools_server_util.h"
+#include "content/public/browser/system_connector.h"
 #include "services/service_manager/sandbox/switches.h"
+#include "services/tracing/public/mojom/constants.mojom.h"
 #include "ui/base/material_design/material_design_controller.h"
 
 #if defined(USE_AURA)
 #include "base/run_loop.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/net/system_network_context_manager.h"
-#include "components/ui_devtools/switches.h"
-#include "components/ui_devtools/views/devtools_server_util.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/common/service_manager_connection.h"
 #include "services/service_manager/public/cpp/connector.h"
-#include "services/ws/public/cpp/gpu/gpu.h"  // nogncheck
-#include "services/ws/public/mojom/constants.mojom.h"
+#include "services/viz/public/cpp/gpu/gpu.h"  // nogncheck
 #include "ui/display/screen.h"
 #include "ui/views/widget/desktop_aura/desktop_screen.h"
 #include "ui/wm/core/wm_state.h"
@@ -44,6 +47,20 @@
 #include "content/public/common/content_switches.h"
 #include "ui/base/l10n/l10n_util.h"
 #endif  // defined(OS_LINUX) && !defined(OS_CHROMEOS)
+
+// This connector is used in ui_devtools's TracingAgent to hook up with the
+// tracing service.
+class UiDevtoolsConnector : public ui_devtools::ConnectorDelegate {
+ public:
+  UiDevtoolsConnector() {}
+  ~UiDevtoolsConnector() override = default;
+
+  void BindTracingConsumerHost(
+      mojo::PendingReceiver<tracing::mojom::ConsumerHost> receiver) override {
+    content::GetSystemConnector()->Connect(tracing::mojom::kServiceName,
+                                           std::move(receiver));
+  }
+};
 
 ChromeBrowserMainExtraPartsViews::ChromeBrowserMainExtraPartsViews() {}
 
@@ -65,7 +82,7 @@ void ChromeBrowserMainExtraPartsViews::ToolkitInitialized() {
   ui::MaterialDesignController::Initialize();
 
 #if defined(USE_AURA)
-  wm_state_.reset(new wm::WMState);
+  wm_state_ = std::make_unique<wm::WMState>();
 #endif
 
   // TODO(pkasting): Try to move ViewsDelegate creation here as well;
@@ -75,21 +92,22 @@ void ChromeBrowserMainExtraPartsViews::ToolkitInitialized() {
 }
 
 void ChromeBrowserMainExtraPartsViews::PreCreateThreads() {
-#if defined(USE_AURA)
+#if defined(USE_AURA) && !defined(OS_CHROMEOS)
   views::InstallDesktopScreenIfNecessary();
 #endif
 }
 
 void ChromeBrowserMainExtraPartsViews::PreProfileInit() {
-#if defined(USE_AURA)
   if (ui_devtools::UiDevToolsServer::IsUiDevToolsEnabled(
           ui_devtools::switches::kEnableUiDevTools)) {
-    // Start the UI Devtools server using Chrome's local aura::Env instance.
-    // ChromeBrowserMainExtraPartsAsh wires up Ash UI for SingleProcessMash.
+    // Starts the UI Devtools server for browser UI (and Ash UI on Chrome OS).
+    auto connector = std::make_unique<UiDevtoolsConnector>();
     devtools_server_ = ui_devtools::CreateUiDevToolsServerForViews(
-        g_browser_process->system_network_context_manager()->GetContext());
+        g_browser_process->system_network_context_manager()->GetContext(),
+        std::move(connector));
+    devtools_process_observer_ = std::make_unique<DevtoolsProcessObserver>(
+        devtools_server_->tracing_agent());
   }
-#endif
 
 #if defined(OS_LINUX) && !defined(OS_CHROMEOS)
   // On the Linux desktop, we want to prevent the user from logging in as root,
@@ -136,13 +154,4 @@ void ChromeBrowserMainExtraPartsViews::PostMainMessageLoopRun() {
   // down explicitly here to avoid a case where such an event arrives during
   // shutdown.
   relaunch_notification_controller_.reset();
-
-#if defined(USE_AURA)
-  // Explicitly release |devtools_server_| to avoid use-after-free under
-  // single process mash, where |devtools_server_| indirectly accesses
-  // the Env of ash::Shell during destruction and ash::Shell as part of
-  // ChromeBrowserMainExtraPartsAsh is released before
-  // ChromeBrowserMainExtraPartsViews.
-  devtools_server_.reset();
-#endif
 }

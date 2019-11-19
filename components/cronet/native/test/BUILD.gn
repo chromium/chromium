@@ -37,6 +37,7 @@ source_set("cronet_native_tests") {
     "//components/grpc_support:bidirectional_stream_test",
     "//components/grpc_support/test:get_stream_engine_header",
     "//net:test_support",
+    "//testing/gmock",
     "//testing/gtest",
   ]
 
@@ -46,6 +47,8 @@ source_set("cronet_native_tests") {
     "buffer_test.cc",
     "engine_test.cc",
     "executors_test.cc",
+    "test_request_finished_info_listener.cc",
+    "test_request_finished_info_listener.h",
     "test_stream_engine.cc",
     "test_upload_data_provider.cc",
     "test_upload_data_provider.h",

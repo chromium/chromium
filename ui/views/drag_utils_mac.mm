@@ -7,7 +7,7 @@
 namespace views {
 
 void RunShellDrag(gfx::NativeView view,
-                  const ui::OSExchangeData& data,
+                  std::unique_ptr<ui::OSExchangeData> data,
                   const gfx::Point& location,
                   int operation,
                   ui::DragDropTypes::DragEventSource source) {

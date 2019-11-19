@@ -140,8 +140,8 @@ class IDLOutFile(object):
         InfoOut.Log('Output %s written.' % self.filename)
       return True
 
-    except IOError as (errno, strerror):
-      ErrOut.Log("I/O error(%d): %s" % (errno, strerror))
+    except IOError as e:
+      ErrOut.Log("I/O error(%d): %s" % (e.errno, e.strerror))
     except:
       ErrOut.Log("Unexpected error: %s" % sys.exc_info()[0])
       raise

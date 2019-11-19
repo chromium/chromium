@@ -9,14 +9,15 @@ namespace sequence_manager {
 
 Task::Task(internal::PostedTask posted_task,
            TimeTicks desired_run_time,
-           internal::EnqueueOrder sequence_order,
-           internal::EnqueueOrder enqueue_order,
+           EnqueueOrder sequence_order,
+           EnqueueOrder enqueue_order,
            internal::WakeUpResolution resolution)
     : PendingTask(posted_task.location,
                   std::move(posted_task.callback),
                   desired_run_time,
                   posted_task.nestable),
       task_type(posted_task.task_type),
+      task_runner(std::move(posted_task.task_runner)),
       enqueue_order_(enqueue_order) {
   // We use |sequence_num| in DelayedWakeUp for ordering purposes and it
   // may wrap around to a negative number during the static cast, hence,
@@ -28,18 +29,25 @@ Task::Task(internal::PostedTask posted_task,
   queue_time = posted_task.queue_time;
 }
 
-namespace internal {
+Task::Task(Task&& move_from) = default;
 
-PostedTask::PostedTask(OnceClosure callback,
+Task::~Task() = default;
+
+Task& Task::operator=(Task&& other) = default;
+
+namespace internal {
+PostedTask::PostedTask(scoped_refptr<SequencedTaskRunner> task_runner,
+                       OnceClosure callback,
                        Location location,
                        TimeDelta delay,
                        Nestable nestable,
-                       int task_type)
+                       TaskType task_type)
     : callback(std::move(callback)),
       location(location),
       delay(delay),
       nestable(nestable),
-      task_type(task_type) {}
+      task_type(task_type),
+      task_runner(std::move(task_runner)) {}
 
 PostedTask::PostedTask(PostedTask&& move_from) noexcept
     : callback(std::move(move_from.callback)),
@@ -47,6 +55,7 @@ PostedTask::PostedTask(PostedTask&& move_from) noexcept
       delay(move_from.delay),
       nestable(move_from.nestable),
       task_type(move_from.task_type),
+      task_runner(std::move(move_from.task_runner)),
       queue_time(move_from.queue_time) {}
 
 PostedTask::~PostedTask() = default;

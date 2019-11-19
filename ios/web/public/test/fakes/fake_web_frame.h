@@ -7,8 +7,9 @@
 
 #include <map>
 #include <memory>
+#include <vector>
 
-#include "ios/web/public/web_state/web_frame.h"
+#include "ios/web/public/js_messaging/web_frame.h"
 
 namespace web {
 
@@ -31,11 +32,20 @@ class FakeWebFrame : public WebFrame {
   // |can_call_function_|. Will execute callback with value passed in to
   // AddJsResultForFunctionCall(). If no such value exists, will pass null.
   bool CallJavaScriptFunction(
-      std::string name,
+      const std::string& name,
       const std::vector<base::Value>& parameters,
       base::OnceCallback<void(const base::Value*)> callback,
       base::TimeDelta timeout) override;
-  std::string last_javascript_call() { return last_javascript_call_; }
+
+  // Returns the most recent JavaScript handler call made to this frame.
+  std::string GetLastJavaScriptCall() const {
+    return java_script_calls_.size() == 0 ? "" : java_script_calls_.back();
+  }
+
+  // Returns |javascript_calls|. Use LastJavaScriptCall() if possible.
+  const std::vector<std::string>& GetJavaScriptCallHistory() {
+    return java_script_calls_;
+  }
 
   // Sets |js_result| that will be passed into callback for |name| function
   // call. The same result will be pass regardless of call arguments.
@@ -60,8 +70,9 @@ class FakeWebFrame : public WebFrame {
   bool is_main_frame_ = false;
   // The security origin associated with this frame.
   GURL security_origin_;
-  // The last Javascript script that was called, converted as a string.
-  std::string last_javascript_call_;
+  // Vector holding history of all javascript handler calls made in this frame.
+  // The calls are sorted with the most recent appended at the end.
+  std::vector<std::string> java_script_calls_;
   // The return value of CanCallJavaScriptFunction().
   bool can_call_function_ = true;
 };

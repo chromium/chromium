@@ -16,7 +16,7 @@
 #include "base/bind.h"
 #include "base/bind_helpers.h"
 #include "base/macros.h"
-#include "base/message_loop/message_loop.h"
+#include "base/message_loop/message_pump_type.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/single_thread_task_runner.h"
 #include "base/threading/thread.h"
@@ -603,7 +603,7 @@ bool BatteryStatusManagerLinux::StartNotifierThreadIfNecessary() {
   if (notifier_thread_)
     return true;
 
-  base::Thread::Options thread_options(base::MessageLoop::TYPE_IO, 0);
+  base::Thread::Options thread_options(base::MessagePumpType::IO, 0);
   auto notifier_thread =
       std::make_unique<BatteryStatusNotificationThread>(callback_);
   if (!notifier_thread->StartWithOptions(thread_options)) {

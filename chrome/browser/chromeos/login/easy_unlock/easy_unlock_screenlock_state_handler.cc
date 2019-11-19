@@ -12,6 +12,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/chromeos/login/easy_unlock/easy_unlock_metrics.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/components/proximity_auth/proximity_auth_pref_manager.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/devicetype_utils.h"
 
@@ -46,6 +47,8 @@ proximity_auth::ScreenlockBridge::UserPodCustomIcon GetIconForState(
       return proximity_auth::ScreenlockBridge::USER_POD_CUSTOM_ICON_NONE;
     case ScreenlockState::PASSWORD_REAUTH:
       return proximity_auth::ScreenlockBridge::USER_POD_CUSTOM_ICON_HARDLOCKED;
+    case ScreenlockState::PRIMARY_USER_ABSENT:
+      return proximity_auth::ScreenlockBridge::USER_POD_CUSTOM_ICON_LOCKED;
   }
 
   NOTREACHED();
@@ -81,6 +84,8 @@ size_t GetTooltipResourceId(ScreenlockState state) {
       return IDS_EASY_UNLOCK_SCREENLOCK_TOOLTIP_HARDLOCK_INSTRUCTIONS;
     case ScreenlockState::PASSWORD_REAUTH:
       return IDS_EASY_UNLOCK_SCREENLOCK_TOOLTIP_PASSWORD_REAUTH;
+    case ScreenlockState::PRIMARY_USER_ABSENT:
+      return IDS_EASY_UNLOCK_SCREENLOCK_TOOLTIP_PRIMARY_USER_ABSENT;
   }
 
   NOTREACHED();
@@ -107,10 +112,12 @@ bool IsLockedState(ScreenlockState state) {
 EasyUnlockScreenlockStateHandler::EasyUnlockScreenlockStateHandler(
     const AccountId& account_id,
     HardlockState initial_hardlock_state,
-    proximity_auth::ScreenlockBridge* screenlock_bridge)
+    proximity_auth::ScreenlockBridge* screenlock_bridge,
+    proximity_auth::ProximityAuthPrefManager* pref_manager)
     : state_(ScreenlockState::INACTIVE),
       account_id_(account_id),
       screenlock_bridge_(screenlock_bridge),
+      pref_manager_(pref_manager),
       hardlock_state_(initial_hardlock_state) {
   DCHECK(screenlock_bridge_);
   screenlock_bridge_->AddObserver(this);
@@ -182,6 +189,13 @@ void EasyUnlockScreenlockStateHandler::ChangeState(ScreenlockState new_state) {
   if (state_ == ScreenlockState::BLUETOOTH_CONNECTING) {
     icon_options.SetAriaLabel(
         l10n_util::GetStringUTF16(IDS_SMART_LOCK_SPINNER_ACCESSIBILITY_LABEL));
+  }
+
+  // Accessibility users may not be able to see the green icon which indicates
+  // the phone is authenticated. Provide message to that effect.
+  if (state_ == ScreenlockState::AUTHENTICATED) {
+    icon_options.SetAriaLabel(l10n_util::GetStringUTF16(
+        IDS_SMART_LOCK_SCREENLOCK_AUTHENTICATED_LABEL));
   }
 
   screenlock_bridge_->lock_handler()->ShowUserPodCustomIcon(account_id_,
@@ -311,7 +325,16 @@ void EasyUnlockScreenlockStateHandler::ShowHardlockUI() {
       NOTREACHED();
   }
 
-  icon_options.SetTooltip(tooltip, true /* autoshow */);
+  bool autoshow = true;
+  if (hardlock_state_ == LOGIN_DISABLED) {
+    // If Signin with Smart Lock is disabled, only automatically show the
+    // tooltip if it hasn't been shown yet. See https://crbug.com/848893 for
+    // details.
+    autoshow = !pref_manager_->HasShownLoginDisabledMessage();
+    pref_manager_->SetHasShownLoginDisabledMessage(true);
+  }
+
+  icon_options.SetTooltip(tooltip, autoshow);
 
   screenlock_bridge_->lock_handler()->ShowUserPodCustomIcon(account_id_,
                                                             icon_options);

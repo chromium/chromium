@@ -6,7 +6,7 @@
 
 #include <algorithm>
 
-#include "base/hash.h"
+#include "base/hash/hash.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace media_session {
@@ -50,7 +50,7 @@ double GetImageDominantSizeScore(int min_size,
   if (dominant_size < min_size)
     return 0;
 
-  if (dominant_size <= ideal_size)
+  if (dominant_size < ideal_size)
     return 0.8 * (dominant_size - min_size) / (ideal_size - min_size) + 0.2;
 
   return 1.0 * ideal_size / dominant_size;

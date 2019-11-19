@@ -10,27 +10,13 @@
 
 namespace views {
 
-// An image button representing a back-to-tab button. When user hovers/focuses
-// the button, a grey circular background appears as an indicator.
+// An image button representing a back-to-tab button.
 class BackToTabImageButton : public views::ImageButton {
  public:
   explicit BackToTabImageButton(ButtonListener*);
   ~BackToTabImageButton() override = default;
 
-  // views::Button:
-  void StateChanged(ButtonState old_state) override;
-
-  // views::View:
-  void OnFocus() override;
-  void OnBlur() override;
-
-  // Sets the position of itself with an offset from the given window size.
-  void SetPosition(const gfx::Size& size,
-                   OverlayWindowViews::WindowQuadrant quadrant);
-
  private:
-  const gfx::ImageSkia back_to_tab_background_;
-
   DISALLOW_COPY_AND_ASSIGN(BackToTabImageButton);
 };
 

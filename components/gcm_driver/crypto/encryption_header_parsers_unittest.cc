@@ -251,7 +251,7 @@ TEST(EncryptionHeaderParsersTest, ParseValidMultiValueCryptoKeyHeaders) {
   }
 }
 
-TEST(EncryptionHeaderParsersTest, ParseInvalidCryptoKeyHeaders) {
+TEST(EncryptionHeaderParsersTest, DISABLED_ParseInvalidCryptoKeyHeaders) {
   const char* const expected_failures[] = {
     // Values in the name-value pairs are not optional.
     "keyid",

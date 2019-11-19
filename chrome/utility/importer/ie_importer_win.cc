@@ -520,7 +520,7 @@ void IEImporter::ImportHistory() {
 
       GURL url(url_string);
       // Skips the URLs that are invalid or have other schemes.
-      if (!url.is_valid() || !base::ContainsValue(kSchemes, url.scheme()))
+      if (!url.is_valid() || !base::Contains(kSchemes, url.scheme()))
         continue;
 
       ImporterURLRow row(url);

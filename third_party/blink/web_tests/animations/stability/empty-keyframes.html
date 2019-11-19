@@ -4,7 +4,7 @@
 <html lang="en">
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <title>Empty keyframes</title>
+  <title>Test for empty keyframes rule. Should not crash</title>
   <style type="text/css" media="screen">
     #box {
       animation-name: test, test-one;
@@ -17,14 +17,12 @@
       0% {}
     }
   </style>
+  <script src="../../resources/testharness.js"></script>
+  <script src="../../resources/testharnessreport.js"></script>
   <script type="text/javascript" charset="utf-8">
-    if (window.testRunner)
-        testRunner.dumpAsText();
+    done();
   </script>
 </head>
-<body>
-  <p>Test for empty keyframes rule. Should not crash</p>
 <div id="box">
 </div>
-</body>
 </html>

@@ -10,33 +10,25 @@
 
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/observer_list.h"
 #include "base/single_thread_task_runner.h"
 #include "build/build_config.h"
-#include "mojo/public/cpp/bindings/binding_set.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
 #include "services/device/public/mojom/wake_lock.mojom.h"
 #include "services/device/public/mojom/wake_lock_context.mojom.h"
 #include "services/device/wake_lock/power_save_blocker/power_save_blocker.h"
-#include "services/device/wake_lock/wake_lock.h"
-#include "services/device/wake_lock/wake_lock_context.h"
 #include "ui/gfx/native_widget_types.h"
 
 namespace device {
 
+// Callback that maps a context ID to the NativeView associated with
+// that context. This callback is provided to the Device Service by its
+// embedder.
+using WakeLockContextCallback = base::Callback<gfx::NativeView(int)>;
+
 class WakeLock : public mojom::WakeLock {
  public:
-  WakeLock(mojom::WakeLockRequest request,
-           mojom::WakeLockType type,
-           mojom::WakeLockReason reason,
-           const std::string& description,
-           int context_id,
-           WakeLockContextCallback native_view_getter,
-           scoped_refptr<base::SingleThreadTaskRunner> file_task_runner);
-  ~WakeLock() override;
-
   // This is an interface for classes to be notified of wake lock events.
-  // Observers should register themselves by calling the parent class's
-  // |AddObserver| method.
   class Observer {
    public:
     virtual ~Observer() = default;
@@ -59,14 +51,21 @@ class WakeLock : public mojom::WakeLock {
                                    WakeLock* wake_lock) {}
   };
 
-  // For managing |Observer|s.
-  void AddObserver(Observer* observer);
-  void RemoveObserver(Observer* observer);
+  // |observer| must outlive this WakeLock instance.
+  WakeLock(mojo::PendingReceiver<mojom::WakeLock> receiver,
+           mojom::WakeLockType type,
+           mojom::WakeLockReason reason,
+           const std::string& description,
+           int context_id,
+           WakeLockContextCallback native_view_getter,
+           scoped_refptr<base::SingleThreadTaskRunner> file_task_runner,
+           Observer* observer);
+  ~WakeLock() override;
 
-  // WakeLockSevice implementation.
+  // mojom::WakeLock implementation.
   void RequestWakeLock() override;
   void CancelWakeLock() override;
-  void AddClient(mojom::WakeLockRequest request) override;
+  void AddClient(mojo::PendingReceiver<mojom::WakeLock> receiver) override;
   void ChangeType(mojom::WakeLockType type,
                   ChangeTypeCallback callback) override;
   void HasWakeLockForTests(HasWakeLockForTestsCallback callback) override;
@@ -97,14 +96,15 @@ class WakeLock : public mojom::WakeLock {
   // The actual power save blocker for screen.
   std::unique_ptr<PowerSaveBlocker> wake_lock_;
 
+  // Not owned. |observer_| must outlive this instance of WakeLock.
+  Observer* const observer_;
+
   // Multiple clients that associate to the same WebContents share the same one
   // WakeLock instance. Two consecutive |RequestWakeLock| requests
   // from the same client should be coalesced as one request. Everytime a new
-  // client is being added into the BindingSet, we create an unique_ptr<bool>
+  // client is being added into the ReceiverSet, we create an unique_ptr<bool>
   // as its context, which records this client's request status.
-  mojo::BindingSet<mojom::WakeLock, std::unique_ptr<bool>> binding_set_;
-
-  base::ObserverList<Observer>::Unchecked observers_;
+  mojo::ReceiverSet<mojom::WakeLock, std::unique_ptr<bool>> receiver_set_;
 
   DISALLOW_COPY_AND_ASSIGN(WakeLock);
 };

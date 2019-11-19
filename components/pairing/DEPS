@@ -1,8 +1,0 @@
-include_rules = [
-  "+chromeos/constants",
-  "+device/bluetooth",
-  "+mojo/public/cpp",
-  "+net",  # For IOBuffer
-  "+services/device/public/mojom",
-  "+services/service_manager/public/cpp",
-]

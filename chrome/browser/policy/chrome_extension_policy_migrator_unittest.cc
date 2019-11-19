@@ -6,10 +6,12 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "extensions/common/hashed_extension_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace policy {
 
@@ -100,6 +102,28 @@ TEST(ChromeExtensionPolicyMigratorTest, CopyPoliciesIfUnset) {
   // This policy was transformed by MultiplyByTwo.
   ASSERT_TRUE(chrome_map.GetValue(kNewPolicy4));
   EXPECT_EQ(base::Value(kNewValue4), *chrome_map.GetValue(kNewPolicy4));
+}
+
+TEST(ChromeExtensionPolicyMigratorTest, DeprecatedWarnings) {
+  PolicyBundle bundle;
+
+  PolicyMap& chrome_map = bundle.Get(
+      PolicyNamespace(POLICY_DOMAIN_CHROME, /* component_id */ std::string()));
+
+  PolicyMap& extension_map =
+      bundle.Get(PolicyNamespace(POLICY_DOMAIN_EXTENSIONS, kExtensionId));
+  SetPolicy(&extension_map, kOldPolicy1,
+            std::make_unique<base::Value>(kOldValue1));
+
+  TestingPolicyMigrator().Migrate(&bundle);
+
+  // Policies in kMigrations should be renamed + copied into the Chrome domain.
+  EXPECT_EQ(1u, chrome_map.size());
+  ASSERT_TRUE(chrome_map.GetValue(kNewPolicy1));
+  base::RepeatingCallback<base::string16(int)> l10nlookup =
+      base::BindRepeating(&l10n_util::GetStringUTF16);
+  EXPECT_FALSE(
+      chrome_map.Get(kNewPolicy1)->GetLocalizedErrors(l10nlookup).empty());
 }
 
 }  // namespace policy

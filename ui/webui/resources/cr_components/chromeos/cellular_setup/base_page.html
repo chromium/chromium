@@ -1,0 +1,31 @@
+<link rel="import" href="chrome://resources/html/polymer.html">
+
+<link rel="import" href="chrome://resources/cr_elements/shared_vars_css.html">
+
+<dom-module id="base-page">
+  <template>
+    <style>
+      #title {
+        color: var(--google-grey-900);
+        font-size: 24px;
+        font-weight: normal;
+        line-height: 24px;
+        margin: 20px 0;
+      }
+
+      #message {
+        margin-bottom: 20px;
+      }
+
+      :host ::slotted([slot='page-body']) {
+        display: block;
+        height: 500px;
+        width: 100%;
+      }
+    </style>
+    <h1 id="title">[[title]]</h1>
+    <div id="message">[[message]]</div>
+    <slot name="page-body"></slot>
+  </template>
+  <script src="base_page.js"></script>
+</dom-module>

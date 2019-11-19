@@ -12,4 +12,7 @@
        </script>
     </head>
     <iframe id="iframe" src="http://localhost:8000/security/vibration/resources/vibrate-in-cross-origin-iframe-blocked.html"></iframe>
+    <script>
+      fetch_tests_from_window(document.getElementById("iframe").contentWindow);
+    </script>
 </html>

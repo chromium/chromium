@@ -39,10 +39,6 @@ struct GpuMemoryBufferFormatSet {
 
 struct Capabilities;
 
-// Returns the GL internalformat that is compatible with |format|.
-GPU_EXPORT unsigned InternalFormatForGpuMemoryBufferFormat(
-    gfx::BufferFormat format);
-
 // Returns true if creating an image for a GpuMemoryBuffer with |format| is
 // supported by |capabilities|.
 GPU_EXPORT bool IsImageFromGpuMemoryBufferFormatSupported(

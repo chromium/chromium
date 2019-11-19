@@ -1,0 +1,89 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Definitions for the probe API exposed by the cros_healthd daemon. This API is
+// normally consumed by the browser.
+
+// NOTE: This mojom should be kept in sync with the copy in Chromium OS's repo
+// in src/platform2/diagnostics/mojo/cros_healthd_probe.mojom.
+
+module chromeos.cros_healthd.mojom;
+
+// An enumeration of each category of information that cros_healthd can report.
+[Extensible]
+enum ProbeCategoryEnum {
+  kBattery,
+  kNonRemovableBlockDevices,
+  kCachedVpdData,
+};
+
+// Information related to the main battery.
+struct BatteryInfo {
+  // TODO(https://crbug.com/979245): Update "smart" cycle count.
+  int64 cycle_count;
+  // Current battery voltage (V)
+  double voltage_now;
+  // Manufacturer of the battery
+  string vendor;
+  // Serial number of the battery
+  string serial_number;
+  // Design capacity (Ah)
+  double charge_full_design;
+  // Full capacity (Ah)
+  double charge_full;
+  // Desired minimum output voltage (V)
+  double voltage_min_design;
+  // Smart Manufacture Date is defined in
+  // http://sbs-forum.org/specs/sbdat110.pdf. The value is calculated by
+  // ((year-1980) * 512 + month * 32 + day).
+  int64 manufacture_date_smart;
+  // Temperature in 0.1°K as Smart Battery Temperature defined in
+  // http://sbs-forum.org/specs/sbdat110.pdf
+  uint64 temperature_smart;
+  // Model name.
+  string model_name;
+  // Current battery charge (Ah)
+  double charge_now;
+};
+
+// Information related to a specific non-removable block device.
+struct NonRemovableBlockDeviceInfo {
+  // The path of this storage on the system. It is useful if caller needs to
+  // correlate with other information.
+  string path;
+  // Exact size of this storage, reported in bytes
+  uint64 size;
+  // Storage type, could be MMC / NVMe / ATA, based on udev subsystem.
+  string type;
+  // Manufacturer ID, 8 bits.
+  uint8 manufacturer_id;
+  // PNM: Product name, ASCII characters for 6 bytes.
+  string name;
+  // PSN: Product serial number, 32 bits
+  uint32 serial;
+};
+
+// Cached VPD read from sysfs.
+struct CachedVpdInfo {
+  // Contents of /sys/firmware/vpd/ro/sku_number.
+  string sku_number;
+};
+
+// A collection of all the device's telemetry information that cros_healthd is
+// capable of reporting. Note that every field in TelemetryInfo is nullable, and
+// the response for a particular ProbeTelemetryInfo request will only contain
+// fields corresponding to the categories passed to the ProbeTelemetryInfo
+// request.
+struct TelemetryInfo {
+  // Information about the device's main battery. Only present when kBattery was
+  // included in the categories input to ProbeTelemetryInfo.
+  BatteryInfo? battery_info;
+  // Information about all of the device's non-removable block devices. Only
+  // present when kNonRemovableBlockDevices was included in the categories input
+  // to ProbeTelemetryInfo.
+  array<NonRemovableBlockDeviceInfo>? block_device_info;
+  // Only present when kCachedVpdData was included in the categories input to
+  // ProbeTelemetryInfo.
+  CachedVpdInfo? vpd_info;
+};

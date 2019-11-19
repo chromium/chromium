@@ -102,7 +102,7 @@ class KeepAliveDelegate : public CastTransport::Delegate {
 
   THREAD_CHECKER(thread_checker_);
 
-  base::WeakPtrFactory<KeepAliveDelegate> weak_factory_;
+  base::WeakPtrFactory<KeepAliveDelegate> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(KeepAliveDelegate);
 };

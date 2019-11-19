@@ -16,7 +16,7 @@
     </style>
     <script src="../../resources/check-layout.js"></script>
   </head>
-  <body onload="checkLayout('#container'); container.scrollLeft = 1000;">
+  <body onload="checkLayout('#container'); container.scrollLeft = 0;">
     <!-- We have to set the scroll position, because of https://bugs.webkit.org/show_bug.cgi?id=76129
          Furthermore, inner.scrollIntoView() doesn't work, so just set some insane left value.
          This is just to make it look good; checkLayout() doesn't care. -->

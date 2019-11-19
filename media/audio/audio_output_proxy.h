@@ -36,6 +36,7 @@ class MEDIA_EXPORT AudioOutputProxy : public AudioOutputStream {
   void SetVolume(double volume) override;
   void GetVolume(double* volume) override;
   void Close() override;
+  void Flush() override;
 
   AudioOutputDispatcher* get_dispatcher_for_testing() const {
     return dispatcher_.get();

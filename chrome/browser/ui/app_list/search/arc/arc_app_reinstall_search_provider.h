@@ -26,9 +26,9 @@ FORWARD_DECLARE_TEST(ArcAppReinstallSearchProviderTest,
                      TestResultsWithAppsChanged);
 FORWARD_DECLARE_TEST(ArcAppReinstallSearchProviderTest,
                      TestResultListComparison);
+FORWARD_DECLARE_TEST(ArcAppReinstallSearchProviderTest, TestShouldShowAnything);
 
 namespace app_list {
-
 // A search provider that returns app candidates that are reinstallation
 // candidates. The current provider of candidates for this provider is the Fast
 // App Reinstall API. This Provider returns a list of applications, in
@@ -43,6 +43,26 @@ class ArcAppReinstallSearchProvider
       public ArcAppListPrefs::Observer,
       public ArcAppReinstallAppResult::Observer {
  public:
+  // Fields for working with pref syncable state.
+  // constants used for prefs.
+  static constexpr char kInstallTime[] = "install_time";
+
+  // Overall dictionary to use for all arc app reinstall states.
+  static constexpr char kAppState[] = "arc_app_reinstall_state";
+
+  // field name for install start time, as milliseconds since epoch
+  static constexpr char kInstallStartTime[] = "install_start_time";
+
+  // field name for install opened time, as milliseconds since epoch
+  static constexpr char kOpenTime[] = "open_time";
+  // field name for uninstalltime, as milliseconds since epoch.
+  static constexpr char kUninstallTime[] = "uninstall_time";
+
+  // field name for latest impressiontime, as milliseconds since epoch.
+  static constexpr char kImpressionTime[] = "impression_time";
+  // Number of impressions.
+  static constexpr char kImpressionCount[] = "impression_count";
+
   // Constructor receives the Profile in order to
   // instantiate App results. Ownership is not taken.
   //
@@ -60,12 +80,12 @@ class ArcAppReinstallSearchProvider
   void SetTimerForTesting(std::unique_ptr<base::RepeatingTimer> timer);
 
   // ArcAppReinstallAppResult::Observer:
-  void OnOpened(const std::string& id) override;
+  void OnOpened(const std::string& package_name) override;
 
-  void OnVisibilityChanged(const std::string& id, bool visibility) override;
+  void OnVisibilityChanged(const std::string& package_name,
+                           bool visibility) override;
 
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
-
  private:
   FRIEND_TEST_ALL_PREFIXES(::ArcAppReinstallSearchProviderTest,
                            TestResultsWithSearchChanged);
@@ -73,6 +93,8 @@ class ArcAppReinstallSearchProvider
                            TestResultsWithAppsChanged);
   FRIEND_TEST_ALL_PREFIXES(::ArcAppReinstallSearchProviderTest,
                            TestResultListComparison);
+  FRIEND_TEST_ALL_PREFIXES(::ArcAppReinstallSearchProviderTest,
+                           TestShouldShowAnything);
 
   // Called to start fetching from our server for this result set. Called when
   // the play store becomes available.
@@ -141,7 +163,7 @@ class ArcAppReinstallSearchProvider
   // url to imageskia of icons being loaded.
   std::unordered_map<std::string, gfx::ImageSkia> loading_icon_urls_;
 
-  base::WeakPtrFactory<ArcAppReinstallSearchProvider> weak_ptr_factory_;
+  base::WeakPtrFactory<ArcAppReinstallSearchProvider> weak_ptr_factory_{this};
   DISALLOW_COPY_AND_ASSIGN(ArcAppReinstallSearchProvider);
 };
 

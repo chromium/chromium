@@ -134,6 +134,16 @@ class Extension : public base::RefCountedThreadSafe<Extension> {
     // before they are fully installed and enabled.
     MAY_BE_UNTRUSTED = 1 << 12,
 
+    // |FOR_LOGIN_SCREEN| means that this extension was force-installed through
+    // policy for the login screen. Extensions created with this flag will have
+    // type |TYPE_LOGIN_SCREEN_EXTENSION| (with limited API capabilities)
+    // instead of the usual |TYPE_EXTENSION|.
+    FOR_LOGIN_SCREEN = 1 << 13,
+
+    // |WITHHOLD_PERMISSIONS| indicates that on installation the user indicated
+    // for permissions to be withheld from the extension by default.
+    WITHHOLD_PERMISSIONS = 1 << 14,
+
     // When adding new flags, make sure to update kInitFromValueFlagBits.
   };
 
@@ -187,7 +197,7 @@ class Extension : public base::RefCountedThreadSafe<Extension> {
 
   // Returns an extension resource object. |relative_path| should be UTF8
   // encoded.
-  ExtensionResource GetResource(const std::string& relative_path) const;
+  ExtensionResource GetResource(base::StringPiece relative_path) const;
 
   // As above, but with |relative_path| following the file system's encoding.
   ExtensionResource GetResource(const base::FilePath& relative_path) const;
@@ -251,6 +261,7 @@ class Extension : public base::RefCountedThreadSafe<Extension> {
   const base::Version& version() const { return version_; }
   const std::string& version_name() const { return version_name_; }
   const std::string VersionString() const;
+  const std::string DifferentialFingerprint() const;
   const std::string GetVersionForDisplay() const;
   const std::string& name() const { return display_name_; }
   const std::string& short_name() const { return short_name_; }
@@ -312,6 +323,7 @@ class Extension : public base::RefCountedThreadSafe<Extension> {
   bool is_extension() const;            // Regular browser extension, not an app
   bool is_shared_module() const;        // Shared module
   bool is_theme() const;                // Theme
+  bool is_login_screen_extension() const;  // Extension on login screen.
 
   // True if this is a platform app, hosted app, or legacy packaged app.
   bool is_app() const;

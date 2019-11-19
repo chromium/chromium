@@ -5,10 +5,10 @@ PASS event.pageX is 100
 PASS event.pageY is 100
 
 Just zoomed
-PASS event.clientX is 83
-PASS event.clientY is 83
-PASS event.pageX is 83
-PASS event.pageY is 83
+PASS event.clientX is within 0.0001 of 83.3333
+PASS event.clientY is within 0.0001 of 83.3333
+PASS event.pageX is within 0.0001 of 83.3333
+PASS event.pageX is within 0.0001 of 83.3333
 
 Just scrolled
 PASS event.clientX is 100
@@ -17,10 +17,10 @@ PASS event.pageX is 150
 PASS event.pageY is 150
 
 Zoomed and scrolled
-PASS event.clientX is 83
-PASS event.clientY is 83
-PASS event.pageX is 133
-PASS event.pageY is 133
+PASS event.clientX is within 0.0001 of 83.3333
+PASS event.clientY is within 0.0001 of 83.3333
+PASS event.pageX is within 0.0001 of 133.3333
+PASS event.pageY is within 0.0001 of 133.3333
 
 RTL and scrolled
 PASS event.clientX is 100

@@ -18,7 +18,9 @@ class NotificationSurfaceManager;
 class Surface;
 
 // Handles notification surface role of a given surface.
-class NotificationSurface : public SurfaceTreeHost, public SurfaceObserver {
+class NotificationSurface : public SurfaceTreeHost,
+                            public SurfaceObserver,
+                            public aura::WindowObserver {
  public:
   NotificationSurface(NotificationSurfaceManager* manager,
                       Surface* surface,
@@ -38,11 +40,21 @@ class NotificationSurface : public SurfaceTreeHost, public SurfaceObserver {
   // Overridden from SurfaceObserver:
   void OnSurfaceDestroying(Surface* surface) override;
 
+  // Overridden from WindowObserver:
+  void OnWindowDestroying(aura::Window* window) override;
+  void OnWindowAddedToRootWindow(aura::Window* window) override;
+  void OnWindowRemovingFromRootWindow(aura::Window* window,
+                                      aura::Window* new_root) override;
+
  private:
   NotificationSurfaceManager* const manager_;  // Not owned.
   const std::string notification_key_;
 
   bool added_to_manager_ = false;
+
+  // True if the notification is visible by e.g. being embedded in the message
+  // center.
+  bool is_embedded_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(NotificationSurface);
 };

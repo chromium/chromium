@@ -1,26 +1,27 @@
 rootWebArea
-++list
-++++listItem
-++++++listMarker name='• '
-++++++staticText name='First item properly groups itself despite '
-++++++++inlineTextBox name='First item properly groups itself despite '
-++++++staticText name='bolded'
-++++++++inlineTextBox name='bolded'
-++++++staticText name=' text.'
-++++++++inlineTextBox name=' text.'
-++++listItem
-++++++listMarker name='• '
-++++++staticText name='This should also be '
-++++++++inlineTextBox name='This should also be '
-++++++staticText name='seen'
-++++++++inlineTextBox name='seen'
-++++++staticText name=' as a group.'
-++++++++inlineTextBox name=' as a group.'
-++++listItem
-++++++listMarker name='• '
-++++++staticText name='Some '
-++++++++inlineTextBox name='Some '
-++++++staticText name='more'
-++++++++inlineTextBox name='more'
-++++++staticText name=' text.'
-++++++++inlineTextBox name=' text.'
+++genericContainer ignored
+++++list
+++++++listItem
+++++++++listMarker name='• '
+++++++++staticText name='First item properly groups itself despite '
+++++++++++inlineTextBox name='First item properly groups itself despite '
+++++++++staticText name='bolded'
+++++++++++inlineTextBox name='bolded'
+++++++++staticText name=' text.'
+++++++++++inlineTextBox name=' text.'
+++++++listItem
+++++++++listMarker name='• '
+++++++++staticText name='This should also be '
+++++++++++inlineTextBox name='This should also be '
+++++++++staticText name='seen'
+++++++++++inlineTextBox name='seen'
+++++++++staticText name=' as a group.'
+++++++++++inlineTextBox name=' as a group.'
+++++++listItem
+++++++++listMarker name='• '
+++++++++staticText name='Some '
+++++++++++inlineTextBox name='Some '
+++++++++staticText name='more'
+++++++++++inlineTextBox name='more'
+++++++++staticText name=' text.'
+++++++++++inlineTextBox name=' text.'

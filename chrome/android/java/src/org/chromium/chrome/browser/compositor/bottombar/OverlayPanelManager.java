@@ -4,11 +4,12 @@
 
 package org.chromium.chrome.browser.compositor.bottombar;
 
-import android.support.annotation.IntDef;
 import android.view.ViewGroup;
 
+import androidx.annotation.IntDef;
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.ObserverList;
-import org.chromium.base.VisibleForTesting;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel.StateChangeReason;
 import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
 

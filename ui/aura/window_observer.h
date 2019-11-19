@@ -55,6 +55,9 @@ class AURA_EXPORT WindowObserver : public base::CheckedObserver {
   // Invoked prior to removing |window| as a child of this window.
   virtual void OnWillRemoveWindow(Window* window) {}
 
+  // Invoked after |removed_window| had been removed as a child of this window.
+  virtual void OnWindowRemoved(Window* removed_window) {}
+
   // Invoked when this window's parent window changes.  |parent| may be NULL.
   virtual void OnWindowParentChanged(Window* window, Window* parent) {}
 
@@ -121,6 +124,10 @@ class AURA_EXPORT WindowObserver : public base::CheckedObserver {
   // Invoked when the alpha shape of the |window|'s layer is set.
   virtual void OnWindowAlphaShapeSet(Window* window) {}
 
+  // Invoked when whether |window|'s layer fills its bounds opaquely or not
+  // is changed.
+  virtual void OnWindowTransparentChanged(Window* window) {}
+
   // Invoked when |window|'s position among its siblings in the stacking order
   // has changed.
   virtual void OnWindowStackingChanged(Window* window) {}
@@ -148,17 +155,6 @@ class AURA_EXPORT WindowObserver : public base::CheckedObserver {
   virtual void OnWindowRemovingFromRootWindow(Window* window,
                                               Window* new_root) {}
 
-  // Called from SetBoundsInScreen() when a window is moving to a new display as
-  // the result of changing bounds. |new_display_id| is the specified new
-  // display id. This is called before the bounds are actually changed.
-  virtual void OnWillMoveWindowToDisplay(Window* window,
-                                         int64_t new_display_id) {}
-
-  // Called from SetBoundsInScreen() when the task of the window moving to a new
-  // display finished. Sometimes the window may stay in the old display, but
-  // this will be called anyways.
-  virtual void OnDidMoveWindowToDisplay(Window* window) {}
-
   // Called when the window title has changed.
   virtual void OnWindowTitleChanged(Window* window) {}
 
@@ -184,6 +180,9 @@ class AURA_EXPORT WindowObserver : public base::CheckedObserver {
   // Called when the window manager ends an interactive resize loop. This is not
   // called if the window is destroyed during the loop.
   virtual void OnResizeLoopEnded(Window* window) {}
+
+  // Called when the opaque regions for occlusion of |window| is changed.
+  virtual void OnWindowOpaqueRegionsForOcclusionChanged(Window* window) {}
 
  protected:
   ~WindowObserver() override;

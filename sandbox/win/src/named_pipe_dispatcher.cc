@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include "base/strings/string_split.h"
+#include "base/strings/string_util.h"
 
 #include "sandbox/win/src/crosscall_client.h"
 #include "sandbox/win/src/interception.h"
@@ -23,7 +24,7 @@ namespace sandbox {
 NamedPipeDispatcher::NamedPipeDispatcher(PolicyBase* policy_base)
     : policy_base_(policy_base) {
   static const IPCCall create_params = {
-      {IPC_CREATENAMEDPIPEW_TAG,
+      {IpcTag::CREATENAMEDPIPEW,
        {WCHAR_TYPE, UINT32_TYPE, UINT32_TYPE, UINT32_TYPE, UINT32_TYPE,
         UINT32_TYPE, UINT32_TYPE}},
       reinterpret_cast<CallbackGeneric>(&NamedPipeDispatcher::CreateNamedPipe)};
@@ -32,8 +33,8 @@ NamedPipeDispatcher::NamedPipeDispatcher(PolicyBase* policy_base)
 }
 
 bool NamedPipeDispatcher::SetupService(InterceptionManager* manager,
-                                       int service) {
-  if (IPC_CREATENAMEDPIPEW_TAG == service)
+                                       IpcTag service) {
+  if (IpcTag::CREATENAMEDPIPEW == service)
     return INTERCEPT_EAT(manager, kKerneldllName, CreateNamedPipeW,
                          CREATE_NAMED_PIPE_ID, 36);
 
@@ -41,7 +42,7 @@ bool NamedPipeDispatcher::SetupService(InterceptionManager* manager,
 }
 
 bool NamedPipeDispatcher::CreateNamedPipe(IPCInfo* ipc,
-                                          base::string16* name,
+                                          std::wstring* name,
                                           uint32_t open_mode,
                                           uint32_t pipe_mode,
                                           uint32_t max_instances,
@@ -51,13 +52,13 @@ bool NamedPipeDispatcher::CreateNamedPipe(IPCInfo* ipc,
   ipc->return_info.win32_result = ERROR_ACCESS_DENIED;
   ipc->return_info.handle = INVALID_HANDLE_VALUE;
 
-  base::StringPiece16 dotdot(L"..");
+  base::StringPiece16 dotdot(STRING16_LITERAL(".."));
 
-  for (const base::StringPiece16& path :
-       base::SplitStringPiece(*name, base::string16(1, '/'),
-                              base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL)) {
+  for (const base::StringPiece16& path : base::SplitStringPiece(
+           base::AsStringPiece16(*name), STRING16_LITERAL("/"),
+           base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL)) {
     for (const base::StringPiece16& inner :
-         base::SplitStringPiece(path, base::string16(1, '\\'),
+         base::SplitStringPiece(path, STRING16_LITERAL("\\"),
                                 base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL)) {
       if (inner == dotdot)
         return true;
@@ -69,7 +70,7 @@ bool NamedPipeDispatcher::CreateNamedPipe(IPCInfo* ipc,
   params[NameBased::NAME] = ParamPickerMake(pipe_name);
 
   EvalResult eval =
-      policy_base_->EvalPolicy(IPC_CREATENAMEDPIPEW_TAG, params.GetBase());
+      policy_base_->EvalPolicy(IpcTag::CREATENAMEDPIPEW, params.GetBase());
 
   // "For file I/O, the "\\?\" prefix to a path string tells the Windows APIs to
   // disable all string parsing and to send the string that follows it straight
@@ -77,7 +78,7 @@ bool NamedPipeDispatcher::CreateNamedPipe(IPCInfo* ipc,
   // http://msdn.microsoft.com/en-us/library/aa365247(VS.85).aspx
   // This ensures even if there is a path traversal in the pipe name, and it is
   // able to get past the checks above, it will still not be allowed to escape
-  // our whitelisted namespace.
+  // our allowed namespace.
   if (name->compare(0, 4, L"\\\\.\\") == 0)
     name->replace(0, 4, L"\\\\\?\\");
 

@@ -12,16 +12,12 @@
 #include "base/version.h"
 #include "components/data_reduction_proxy/core/browser/data_reduction_proxy_data.h"
 #include "components/data_reduction_proxy/core/common/data_reduction_proxy_headers.h"
-#include "components/data_reduction_proxy/core/common/lofi_decider.h"
 #include "components/data_reduction_proxy/core/common/version.h"
 #include "net/base/net_errors.h"
 #include "net/base/url_util.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_status_code.h"
 #include "net/http/http_util.h"
-#include "net/proxy_resolution/proxy_config.h"
-#include "net/proxy_resolution/proxy_info.h"
-#include "net/url_request/url_request.h"
 
 #if defined(USE_GOOGLE_API_KEYS)
 #include "google_apis/google_api_keys.h"
@@ -39,55 +35,6 @@ const char kApiKeyName[] = "key";
 // Hostname used for the other bucket which consists of chrome-services traffic.
 // This should be in sync with the same in DataReductionSiteBreakdownView.java
 const char kOtherHostName[] = "Other";
-
-// Scales |byte_count| by the ratio of |numerator|:|denomenator|.
-int64_t ScaleByteCountByRatio(int64_t byte_count,
-                              int64_t numerator,
-                              int64_t denomenator) {
-  DCHECK_LE(0, byte_count);
-  DCHECK_LE(0, numerator);
-  DCHECK_LT(0, denomenator);
-
-  // As an optimization, use integer arithmetic if it won't overflow.
-  if (byte_count <= std::numeric_limits<int32_t>::max() &&
-      numerator <= std::numeric_limits<int32_t>::max()) {
-    return byte_count * numerator / denomenator;
-  }
-
-  double scaled_byte_count = static_cast<double>(byte_count) *
-                             static_cast<double>(numerator) /
-                             static_cast<double>(denomenator);
-  if (scaled_byte_count >
-      static_cast<double>(std::numeric_limits<int64_t>::max())) {
-    // If this ever triggers, then byte counts can no longer be safely stored in
-    // 64-bit ints.
-    NOTREACHED();
-    return byte_count;
-  }
-  return static_cast<int64_t>(scaled_byte_count);
-}
-
-// Estimate the size of the original headers of |request|. If |used_drp| is
-// true, then it's assumed that the original request would have used HTTP/1.1,
-// otherwise it assumes that the original request would have used the same
-// protocol as |request| did. This is to account for stuff like HTTP/2 header
-// compression.
-int64_t EstimateOriginalHeaderBytes(const net::URLRequest& request,
-                                    const LoFiDecider* lofi_decider) {
-  // If this is an auto-reload of an image, then this request would ordinarily
-  // not be issued, so return 0.
-  if (lofi_decider && lofi_decider->IsClientLoFiAutoReloadRequest(request))
-    return 0;
-  data_reduction_proxy::DataReductionProxyData* data =
-      data_reduction_proxy::DataReductionProxyData::GetData(request);
-  if (data && data->used_data_reduction_proxy()) {
-    // TODO(sclittle): Remove headers added by Data Reduction Proxy when
-    // computing original size. https://crbug.com/535701.
-    return request.response_headers()->raw_headers().size();
-  }
-  return std::max<int64_t>(0, request.GetTotalReceivedBytes() -
-                                  request.received_response_content_length());
-}
 
 }  // namespace
 
@@ -174,105 +121,6 @@ GURL AddApiKeyToUrl(const GURL& url) {
   return net::AppendOrReplaceQueryParameter(new_url, "alt", "proto");
 }
 
-bool EligibleForDataReductionProxy(const net::ProxyInfo& proxy_info,
-                                   const GURL& url,
-                                   const std::string& method) {
-  return proxy_info.is_direct() && proxy_info.proxy_list().size() == 1 &&
-         !url.SchemeIsWSOrWSS() && net::HttpUtil::IsMethodIdempotent(method);
-}
-
-bool ApplyProxyConfigToProxyInfo(const net::ProxyConfig& proxy_config,
-                                 const net::ProxyRetryInfoMap& proxy_retry_info,
-                                 const GURL& url,
-                                 net::ProxyInfo* data_reduction_proxy_info) {
-  DCHECK(data_reduction_proxy_info);
-  if (proxy_config.proxy_rules().empty())
-    return false;
-  proxy_config.proxy_rules().Apply(url, data_reduction_proxy_info);
-  data_reduction_proxy_info->DeprioritizeBadProxies(proxy_retry_info);
-  return !data_reduction_proxy_info->is_empty() &&
-         !data_reduction_proxy_info->proxy_server().is_direct();
-}
-
-int64_t CalculateOCLFromOFCL(const net::URLRequest& request) {
-  const net::HttpResponseHeaders* response_headers = request.response_headers();
-  if (!response_headers)
-    return request.received_response_content_length();
-
-  int64_t original_content_length = GetDataReductionProxyOFCL(response_headers);
-
-  if (response_headers->response_code() == net::HTTP_PARTIAL_CONTENT) {
-    int64_t first, last, range_content_length;
-    if (response_headers->GetContentRangeFor206(&first, &last,
-                                                &range_content_length) &&
-        range_content_length > 0 && original_content_length > 0) {
-      // For a range request, OFCL indicates the original content length of the
-      // entire resource. The received response content length should be scaled
-      // by the compression ratio given by OFCL / range_content_length.
-      original_content_length =
-          ScaleByteCountByRatio(request.received_response_content_length(),
-                                original_content_length, range_content_length);
-    }
-  }
-  return original_content_length;
-}
-
-int64_t EstimateOriginalBodySize(const net::URLRequest& request,
-                                 const LoFiDecider* lofi_decider) {
-  if (lofi_decider) {
-    // If this is an auto-reload of an image, then this request would ordinarily
-    // not be issued, so return 0.
-    if (lofi_decider->IsClientLoFiAutoReloadRequest(request))
-      return 0;
-
-    int64_t first, last, length;
-    if (!request.was_cached() &&
-        lofi_decider->IsClientLoFiImageRequest(request) &&
-        request.response_headers() &&
-        request.response_headers()->GetContentRangeFor206(&first, &last,
-                                                          &length) &&
-        length > request.received_response_content_length()) {
-      return length;
-    }
-  }
-
-  data_reduction_proxy::DataReductionProxyData* data =
-      data_reduction_proxy::DataReductionProxyData::GetData(request);
-  if (!data || !data->used_data_reduction_proxy() || request.was_cached() ||
-      !request.response_headers()) {
-    return std::min<int64_t>(request.GetTotalReceivedBytes(),
-                             request.received_response_content_length());
-  }
-
-  int64_t original_content_length_from_header = CalculateOCLFromOFCL(request);
-
-  if (original_content_length_from_header < 0)
-    return request.received_response_content_length();
-  if (request.status().error() == net::OK)
-    return original_content_length_from_header;
-
-  int64_t content_length_from_header =
-      request.response_headers()->GetContentLength();
-
-  if (content_length_from_header < 0)
-    return request.received_response_content_length();
-  if (content_length_from_header == 0)
-    return original_content_length_from_header;
-
-  return ScaleByteCountByRatio(request.received_response_content_length(),
-                               original_content_length_from_header,
-                               content_length_from_header);
-}
-
-int64_t EstimateOriginalReceivedBytes(const net::URLRequest& request,
-                                      const LoFiDecider* lofi_decider) {
-  if (request.was_cached() || !request.response_headers())
-    return request.GetTotalReceivedBytes();
-
-  return EstimateOriginalHeaderBytes(request, lofi_decider) +
-         EstimateOriginalBodySize(request, lofi_decider);
-}
-
 const char* GetSiteBreakdownOtherHostName() {
   return kOtherHostName;
 }
@@ -280,50 +128,6 @@ const char* GetSiteBreakdownOtherHostName() {
 }  // namespace util
 
 namespace protobuf_parser {
-
-PageloadMetrics_EffectiveConnectionType
-ProtoEffectiveConnectionTypeFromEffectiveConnectionType(
-    net::EffectiveConnectionType effective_connection_type) {
-  switch (effective_connection_type) {
-    case net::EFFECTIVE_CONNECTION_TYPE_UNKNOWN:
-      return PageloadMetrics_EffectiveConnectionType_EFFECTIVE_CONNECTION_TYPE_UNKNOWN;
-    case net::EFFECTIVE_CONNECTION_TYPE_OFFLINE:
-      return PageloadMetrics_EffectiveConnectionType_EFFECTIVE_CONNECTION_TYPE_OFFLINE;
-    case net::EFFECTIVE_CONNECTION_TYPE_SLOW_2G:
-      return PageloadMetrics_EffectiveConnectionType_EFFECTIVE_CONNECTION_TYPE_SLOW_2G;
-    case net::EFFECTIVE_CONNECTION_TYPE_2G:
-      return PageloadMetrics_EffectiveConnectionType_EFFECTIVE_CONNECTION_TYPE_2G;
-    case net::EFFECTIVE_CONNECTION_TYPE_3G:
-      return PageloadMetrics_EffectiveConnectionType_EFFECTIVE_CONNECTION_TYPE_3G;
-    case net::EFFECTIVE_CONNECTION_TYPE_4G:
-      return PageloadMetrics_EffectiveConnectionType_EFFECTIVE_CONNECTION_TYPE_4G;
-    default:
-      NOTREACHED();
-      return PageloadMetrics_EffectiveConnectionType_EFFECTIVE_CONNECTION_TYPE_UNKNOWN;
-  }
-}
-
-PageloadMetrics_ConnectionType ProtoConnectionTypeFromConnectionType(
-    net::NetworkChangeNotifier::ConnectionType connection_type) {
-  switch (connection_type) {
-    case net::NetworkChangeNotifier::CONNECTION_UNKNOWN:
-      return PageloadMetrics_ConnectionType_CONNECTION_UNKNOWN;
-    case net::NetworkChangeNotifier::CONNECTION_ETHERNET:
-      return PageloadMetrics_ConnectionType_CONNECTION_ETHERNET;
-    case net::NetworkChangeNotifier::CONNECTION_WIFI:
-      return PageloadMetrics_ConnectionType_CONNECTION_WIFI;
-    case net::NetworkChangeNotifier::CONNECTION_2G:
-      return PageloadMetrics_ConnectionType_CONNECTION_2G;
-    case net::NetworkChangeNotifier::CONNECTION_3G:
-      return PageloadMetrics_ConnectionType_CONNECTION_3G;
-    case net::NetworkChangeNotifier::CONNECTION_4G:
-      return PageloadMetrics_ConnectionType_CONNECTION_4G;
-    case net::NetworkChangeNotifier::CONNECTION_NONE:
-      return PageloadMetrics_ConnectionType_CONNECTION_NONE;
-    case net::NetworkChangeNotifier::CONNECTION_BLUETOOTH:
-      return PageloadMetrics_ConnectionType_CONNECTION_BLUETOOTH;
-  }
-}
 
 net::ProxyServer::Scheme SchemeFromProxyScheme(
     ProxyServer_ProxyScheme proxy_scheme) {

@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <utility>
+
 #include "chromeos/services/multidevice_setup/multidevice_setup_initializer.h"
 
 #include "base/logging.h"
@@ -98,7 +100,7 @@ MultiDeviceSetupInitializer::MultiDeviceSetupInitializer(
 MultiDeviceSetupInitializer::~MultiDeviceSetupInitializer() = default;
 
 void MultiDeviceSetupInitializer::SetAccountStatusChangeDelegate(
-    mojom::AccountStatusChangeDelegatePtr delegate) {
+    mojo::PendingRemote<mojom::AccountStatusChangeDelegate> delegate) {
   if (multidevice_setup_impl_) {
     multidevice_setup_impl_->SetAccountStatusChangeDelegate(
         std::move(delegate));
@@ -109,7 +111,7 @@ void MultiDeviceSetupInitializer::SetAccountStatusChangeDelegate(
 }
 
 void MultiDeviceSetupInitializer::AddHostStatusObserver(
-    mojom::HostStatusObserverPtr observer) {
+    mojo::PendingRemote<mojom::HostStatusObserver> observer) {
   if (multidevice_setup_impl_) {
     multidevice_setup_impl_->AddHostStatusObserver(std::move(observer));
     return;
@@ -119,7 +121,7 @@ void MultiDeviceSetupInitializer::AddHostStatusObserver(
 }
 
 void MultiDeviceSetupInitializer::AddFeatureStateObserver(
-    mojom::FeatureStateObserverPtr observer) {
+    mojo::PendingRemote<mojom::FeatureStateObserver> observer) {
   if (multidevice_setup_impl_) {
     multidevice_setup_impl_->AddFeatureStateObserver(std::move(observer));
     return;
@@ -136,6 +138,16 @@ void MultiDeviceSetupInitializer::GetEligibleHostDevices(
   }
 
   pending_get_eligible_hosts_args_.push_back(std::move(callback));
+}
+
+void MultiDeviceSetupInitializer::GetEligibleActiveHostDevices(
+    GetEligibleActiveHostDevicesCallback callback) {
+  if (multidevice_setup_impl_) {
+    multidevice_setup_impl_->GetEligibleActiveHostDevices(std::move(callback));
+    return;
+  }
+
+  pending_get_eligible_active_hosts_args_.push_back(std::move(callback));
 }
 
 void MultiDeviceSetupInitializer::SetHostDevice(
@@ -325,6 +337,12 @@ void MultiDeviceSetupInitializer::InitializeImplementation() {
         std::move(get_eligible_callback));
   }
   pending_get_eligible_hosts_args_.clear();
+
+  for (auto& get_eligible_callback : pending_get_eligible_active_hosts_args_) {
+    multidevice_setup_impl_->GetEligibleActiveHostDevices(
+        std::move(get_eligible_callback));
+  }
+  pending_get_eligible_active_hosts_args_.clear();
 
   for (auto& get_host_callback : pending_get_host_args_)
     multidevice_setup_impl_->GetHostStatus(std::move(get_host_callback));

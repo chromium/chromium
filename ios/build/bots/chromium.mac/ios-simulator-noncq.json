@@ -1,0 +1,94 @@
+{
+  "comments": [
+    "Runs tests on 64-bit iOS 12 and 13 tests on iPad, iPhone,",
+    "@3x, and @2x on main waterfall ios-simulator-noncq."
+  ],
+  "xcode build version": "11a1027",
+  "gn_args": [
+    "goma_dir=\"$(goma_dir)\"",
+    "is_component_build=false",
+    "is_debug=true",
+    "symbol_level=1",
+    "target_cpu=\"x64\"",
+    "target_os=\"ios\"",
+    "use_goma=true"
+  ],
+  "additional_compile_targets": [
+    "all"
+  ],
+  "configuration": "Debug",
+  "tests": [
+    {
+      "xcode parallelization": true,
+      "include": "eg2_tests.json",
+      "device type": "iPhone X",
+      "os": "13.1",
+      "xcode build version": "11a1027",
+      "pool":"chromium.tests",
+      "host os": "Mac-10.14.6"
+    },
+    {
+      "xcode parallelization": true,
+      "include": "eg2_tests.json",
+      "device type": "iPhone 7",
+      "os": "13.1",
+      "xcode build version": "11a1027",
+      "pool":"chromium.tests",
+      "host os": "Mac-10.14.6"
+    },
+    {
+      "xcode parallelization": true,
+      "include": "eg2_tests.json",
+      "device type": "iPad (6th generation)",
+      "os": "13.1",
+      "xcode build version": "11a1027",
+      "pool":"chromium.tests",
+      "host os": "Mac-10.14.6"
+    },
+    {
+      "xcode parallelization": true,
+      "include": "eg2_tests.json",
+      "device type": "iPad Air 2",
+      "os": "13.1",
+      "xcode build version": "11a1027",
+      "pool":"chromium.tests",
+      "host os": "Mac-10.14.6"
+    },
+    {
+      "xcode parallelization": true,
+      "include": "eg2_tests.json",
+      "device type": "iPhone X",
+      "os": "12.2",
+      "xcode build version": "11a1027",
+      "pool":"chromium.tests",
+      "host os": "Mac-10.14.6"
+    },
+    {
+      "xcode parallelization": true,
+      "include": "eg2_tests.json",
+      "device type": "iPhone 7",
+      "os": "12.2",
+      "xcode build version": "11a1027",
+      "pool":"chromium.tests",
+      "host os": "Mac-10.14.6"
+    },
+    {
+      "xcode parallelization": true,
+      "include": "eg2_tests.json",
+      "device type": "iPad (6th generation)",
+      "os": "12.2",
+      "xcode build version": "11a1027",
+      "pool":"chromium.tests",
+      "host os": "Mac-10.14.6"
+    },
+    {
+      "xcode parallelization": true,
+      "include": "eg2_tests.json",
+      "device type": "iPad Air 2",
+      "os": "12.2",
+      "xcode build version": "11a1027",
+      "pool":"chromium.tests",
+      "host os": "Mac-10.14.6"
+    }
+  ]
+}

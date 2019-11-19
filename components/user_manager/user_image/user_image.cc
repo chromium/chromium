@@ -4,7 +4,8 @@
 
 #include "components/user_manager/user_image/user_image.h"
 
-#include "base/memory/ptr_util.h"
+#include <memory>
+
 #include "base/trace_event/trace_event.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/codec/jpeg_codec.h"
@@ -54,7 +55,7 @@ std::unique_ptr<UserImage> UserImage::CreateAndEncode(
     const gfx::ImageSkia& image,
     ImageFormat image_format) {
   if (image.isNull())
-    return base::WrapUnique(new UserImage);
+    return std::make_unique<UserImage>();
 
   scoped_refptr<base::RefCountedBytes> image_bytes = Encode(*image.bitmap(),
                                                             image_format);
@@ -64,7 +65,7 @@ std::unique_ptr<UserImage> UserImage::CreateAndEncode(
     result->MarkAsSafe();
     return result;
   }
-  return base::WrapUnique(new UserImage(image));
+  return std::make_unique<UserImage>(image);
 }
 
 // static

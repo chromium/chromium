@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<grit-part>
+  <include name="IDR_WEBUI_JS_CR_UI_FOCUS_ROW_BEHAVIOR_M_JS"
+           file="${root_gen_dir}/ui/webui/resources/js/cr/ui/focus_row_behavior.m.js"
+           use_base_dir="false" type="BINDATA" compress="gzip" />
+  <include name="IDR_WEBUI_JS_FIND_SHORTCUT_BEHAVIOR_M_JS"
+           file="${root_gen_dir}/ui/webui/resources/js/find_shortcut_behavior.m.js"
+           use_base_dir="false" type="BINDATA" compress="gzip" />
+  <include name="IDR_WEBUI_JS_I18N_BEHAVIOR_M_JS"
+           file="${root_gen_dir}/ui/webui/resources/js/i18n_behavior.m.js"
+           use_base_dir="false" type="BINDATA" compress="gzip" />
+  <include name="IDR_WEBUI_JS_LIST_PROPERTY_UPDATE_BEHAVIOR_M_JS"
+           file="${root_gen_dir}/ui/webui/resources/js/list_property_update_behavior.m.js"
+           use_base_dir="false" type="BINDATA" compress="gzip" />
+  <include name="IDR_WEBUI_JS_SEARCH_HIGHLIGHT_UTILS_M_JS"
+           file="${root_gen_dir}/ui/webui/resources/js/search_highlight_utils.m.js"
+           use_base_dir="false" type="BINDATA" compress="gzip" />
+  <include name="IDR_WEBUI_JS_WEBUI_LISTENER_BEHAVIOR_M_JS"
+           file="${root_gen_dir}/ui/webui/resources/js/web_ui_listener_behavior.m.js"
+           use_base_dir="false" type="BINDATA" compress="gzip" />
+</grit-part>

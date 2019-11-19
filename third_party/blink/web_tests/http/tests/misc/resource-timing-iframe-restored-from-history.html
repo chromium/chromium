@@ -21,8 +21,10 @@ function runTest() {
     }
 }
 
-window.onload = function() {
-  document.querySelector("iframe").src = "resources/frame-initial-url.html";
+if (!sessionStorage.didNav) {
+  window.onload = function() {
+    document.querySelector("iframe").src = "resources/frame-initial-url.html";
+  }
 }
 
 </script>

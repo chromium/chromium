@@ -1,13 +1,12 @@
 <link rel="import" href="chrome://resources/html/polymer.html">
 
-<link rel="import" href="chrome://resources/cr_elements/chromeos/network/cr_onc_types.html">
 <link rel="import" href="chrome://resources/cr_elements/cr_input/cr_input.html">
 <link rel="import" href="chrome://resources/cr_elements/cr_radio_button/cr_radio_button.html">
 <link rel="import" href="chrome://resources/cr_elements/cr_radio_group/cr_radio_group.html">
 <link rel="import" href="chrome://resources/cr_elements/policy/cr_policy_indicator.html">
-<link rel="import" href="chrome://resources/cr_elements/policy/cr_policy_network_behavior.html">
+<link rel="import" href="chrome://resources/cr_elements/policy/cr_policy_network_behavior_mojo.html">
 <link rel="import" href="chrome://resources/html/i18n_behavior.html">
-<link rel="import" href="chrome://resources/html/md_select_css.html">
+<link rel="import" href="chrome://resources/cr_elements/md_select_css.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-flex-layout/iron-flex-layout-classes.html">
 <link rel="import" href="network_shared_css.html">
 
@@ -32,6 +31,8 @@
       .nameservers {
         /* Aligns with the start of cr-radio-button's text. */
         margin-inline-start: 38px;
+        padding-bottom: 0;
+        padding-top: 0;
       }
 
       .nameservers:not([changeable]) {
@@ -55,8 +56,8 @@
       <div class="start">
         [[i18n('networkNameservers')]]
       </div>
-      <cr-policy-indicator indicator-type="[[getPolicyIndicatorType_(
-          networkProperties, 'NameServersConfigType')]]">
+      <cr-policy-indicator indicator-type="[[getPolicyIndicatorType(
+          managedProperties.nameServersConfigType)]]">
       </cr-policy-indicator>
     </div>
     <div id="radioGroupDiv">
@@ -102,9 +103,10 @@
           <div class="property-box single-column two-line">
             <template is="dom-repeat" items="[[nameservers_]]">
               <cr-input id="nameserver[[index]]" value="[[item]]"
+                  aria-label="[[getCustomNameServerInputA11yLabel_(index)]]"
                   on-change="onValueChange_"
-                  disabled="[[!canEditCustomNameServers_(editable,
-                      nameserversType_, networkProperties)]]">
+                  disabled="[[!canEditCustomNameServers_(nameserversType_,
+                      managedProperties)]]">
               </cr-input>
             </template>
           </div>

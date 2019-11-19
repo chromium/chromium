@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<script src='../../resources/testharness.js'></script>
+<script src='../../resources/testharnessreport.js'></script>
+<div style='height:1000px'></div>
+<iframe sandbox srcdoc="&lt;object data=fake.html&gt;&lt;/object&gt;"></iframe>
+<script>
+  // The iframe is outside the scrolling viewport of the top document, so it
+  // will be throttled as soon as it loads. When the plugin element loads, it
+  // will also become throttled, because its parent document is throttled. The
+  // throttling state transition for the plugin can happen when the plugin
+  // hasn't yet installed its content document. This test ensures that the
+  // throttling state transition for the plugin doesn't cause a crash due to
+  // the missing document.
+  test(() => {}, "No crash when a plugin element inside a cross-origin iframe becomes throttled during load");
+</script>

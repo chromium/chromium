@@ -5,7 +5,8 @@
 #ifndef CONTENT_BROWSER_MEDIA_AUDIO_LOG_FACTORY_H_
 #define CONTENT_BROWSER_MEDIA_AUDIO_LOG_FACTORY_H_
 
-#include "media/mojo/interfaces/audio_logging.mojom.h"
+#include "media/mojo/mojom/audio_logging.mojom.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 
 namespace content {
 
@@ -17,7 +18,8 @@ class AudioLogFactory : public media::mojom::AudioLogFactory {
   // media::mojom::AudioLogFactory implementation.
   void CreateAudioLog(media::mojom::AudioLogComponent component,
                       int32_t component_id,
-                      media::mojom::AudioLogRequest audio_log_request) override;
+                      mojo::PendingReceiver<media::mojom::AudioLog>
+                          audio_log_receiver) override;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(AudioLogFactory);

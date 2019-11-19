@@ -7,6 +7,7 @@
 <link rel="import" href="chrome://resources/polymer/v1_0/paper-progress/paper-progress.html">
 <dom-module id="assistant-loading">
   <template>
+    <link rel="stylesheet" href="../login/oobe_dialog_host.css">
     <link rel="stylesheet" href="../login/oobe_flex_layout.css">
     <link rel="stylesheet" href="assistant_loading.css">
     <link rel="stylesheet" href="assistant_shared_styles.css">
@@ -33,7 +34,7 @@
             disabled="[[buttonsDisabled]]">
           <div i18n-content="assistantOptinSkipButton"></div>
         </oobe-text-button>
-        <oobe-text-button id="retry-button" inverse android
+        <oobe-text-button id="retry-button" inverse
             on-tap="onRetryTap_" disabled="[[buttonsDisabled]]">
           <div i18n-content="assistantOptinRetryButton"></div>
         </oobe-text-button>

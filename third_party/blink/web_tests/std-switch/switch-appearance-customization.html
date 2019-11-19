@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<body>
+<style>
+std-switch {
+  margin: 0.5em;
+}
+
+/* ---------------------------------------------------------------- */
+
+.material std-switch {
+  block-size: 20px;
+  inline-size: 36px;
+
+  --thumb-size: 20px;
+  --ripple-color: rgba(100,100,100,0.3);
+  --ripple-max-size: 48px;
+}
+
+.material std-switch::part(track) {
+  background: rgba(0,0,0,0.4);
+  block-size: 14px;
+  border: none;
+  box-shadow: none;
+}
+
+.material std-switch::part(track-fill) {
+  background: rgba(63,81,181,0.5);
+}
+
+.material std-switch::part(thumb) {
+  block-size: var(--thumb-size);
+  border-radius: calc(var(--thumb-size) / 2);
+  border: none;
+  box-shadow: 0 1px 5px 0 rgba(0,0,0,0.6);
+  inline-size: var(--thumb-size);
+  margin-inline-start: -100%;
+}
+
+.material std-switch[on]::part(thumb) {
+  background: rgb(63,81,181);
+  margin-inline-start: calc(0px - 20px);
+}
+
+.material std-switch:hover::part(thumb) {
+  inline-size: var(--thumb-size);
+}
+
+/*
+ * Ripple effect
+ *
+ * Translucent circle is painted on the thumb if the element is :active or
+ * :focus-visible.  It has
+ *   - Size transition when it appears
+ *   - Opacity transition when it disappears
+ * part(thumb)::before represents the former, and part(thumb)::after represents
+ * the latter.
+ */
+.material std-switch::part(thumb)::before {
+  background: var(--ripple-color);
+  block-size: 0px;
+  border-radius: 0px;
+  content: "";
+  display: inline-block;
+  inline-size: 0px;
+  left: calc(var(--thumb-size) / 2);
+  position: relative;
+  top: calc(var(--thumb-size) / 2);
+  transition: none;
+}
+
+.material std-switch:active::part(thumb)::before,
+.material std-switch:focus-visible::part(thumb)::before {
+  block-size: var(--ripple-max-size);
+  border-radius: calc(var(--ripple-max-size) / 2);
+  inline-size: var(--ripple-max-size);
+  left: calc((var(--thumb-size) - var(--ripple-max-size)) / 2);
+  top: calc((var(--thumb-size) - var(--ripple-max-size)) / 2);
+  /* transition: all linear 0.1s; transition is harmful in pixel tests. */
+}
+
+.material std-switch::part(thumb)::after {
+  background: var(--ripple-color);
+  block-size: var(--ripple-max-size);
+  border-radius: calc(var(--ripple-max-size) / 2);
+  content: "";
+  display: inline-block;
+  inline-size: var(--ripple-max-size);
+  left: calc((var(--thumb-size) - var(--ripple-max-size)) / 2);
+  opacity: 0;
+  position: relative;
+  /* Why 18px? */
+  top: calc((var(--thumb-size) - var(--ripple-max-size)) / 2 - 18px);
+  /* transition: opacity linear 0.3s; transition is harmful in pixel tests. */
+}
+
+.material std-switch:active::part(thumb)::after,
+.material std-switch:focus-visible::part(thumb)::after {
+  block-size: 0px;
+  content: "";
+  inline-size: 0px;
+  opacity: 1;
+  transition: none;
+}
+
+/* ---------------------------------------------------------------- */
+
+.cocoa std-switch {
+  block-size: 31px;
+  inline-size: 51px;
+}
+
+.cocoa std-switch::part(track) {
+  border-radius: 15px;
+  border: 1px solid lightgray;
+  box-shadow: none;
+}
+
+.cocoa std-switch::part(track-fill) {
+  background: #4ad963;
+}
+
+.cocoa std-switch[on]::part(track) {
+  border: 1px solid #4ad963;
+}
+
+.cocoa std-switch::part(thumb) {
+  block-size: 29px;
+  border-radius: 14.5px;
+  border: none;
+  box-shadow: 0px 3px 4px 1px rgba(0,0,0,0.2);
+  inline-size: 29px;
+  margin-inline-start: calc(-100% + 1px);
+}
+
+.cocoa std-switch[on]::part(thumb) {
+  margin-inline-start: calc(0px - 29px - 1px);
+}
+
+/* ---------------------------------------------------------------- */
+
+.fluent std-switch {
+  block-size: 20px;
+  inline-size: 44px;
+}
+
+.fluent std-switch::part(track) {
+  border: 2px solid #333333;
+  box-shadow: none;
+}
+
+.fluent std-switch[on]::part(track) {
+  border: 2px solid #4cafff;
+}
+
+.fluent std-switch::part(track-fill) {
+  background: #4cafff;
+}
+
+.fluent std-switch::part(thumb) {
+  background: #333333;
+  block-size: 10px;
+  border-radius: 5px;
+  border: none;
+  inline-size: 10px;
+  margin-inline-start: calc(-100% + 5px);
+}
+
+.fluent std-switch[on]::part(thumb) {
+  background: white;
+  margin-inline-start: calc(0px - 10px - 5px);
+}
+
+.fluent std-switch:active::part(track) {
+  background: darkgray;
+  border: 2px solid darkgray;
+}
+
+.fluent std-switch:active::part(thumb) {
+  background: white;
+}
+
+/* ---------------------------------------------------------------- */
+
+div.material, div.cocoa, div.fluent {
+  overflow: auto;
+}
+
+.container {
+  float: left;
+  font-family: monospace;
+}
+</style>
+<div class="material"><h2>Material-like</h2></div>
+<div class="cocoa"><h2>Cocoa-like</h2></div>
+<div class="fluent"><h2>Fluent-like</h2></div>
+<script src="resources/state-combo.js"></script>
+<script type="module">
+import 'std:elements/switch';
+
+function wrapAndConnect(query, indicator, element) {
+  let container = document.createElement('div');
+  container.className = 'container';
+  container.appendChild(document.createTextNode(indicator));
+  container.appendChild(element);
+  document.querySelector(query).appendChild(container);
+}
+
+generateSwitchElements(wrapAndConnect.bind(null, 'div.material'));
+generateSwitchElements(wrapAndConnect.bind(null, 'div.cocoa'));
+generateSwitchElements(wrapAndConnect.bind(null, 'div.fluent'));
+</script>
+</body>

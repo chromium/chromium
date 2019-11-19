@@ -1,0 +1,15 @@
+This is a testharness.js-based test.
+PASS setting up
+PASS making a same-origin request for CORP: same-origin
+PASS making a same-origin request for no CORP
+PASS making a same-origin request for CORP: cross-origin
+PASS making a cross-origin request for CORP: same-origin
+FAIL making a cross-origin request for no CORP assert_unreached: Should have rejected: undefined Reached unreachable code
+PASS making a cross-origin request for CORP: cross-origin
+PASS making a cross-origin request for CORP: same-origin [PASS THROUGH]
+FAIL making a cross-origin request for no CORP [PASS THROUGH] assert_unreached: Should have rejected: undefined Reached unreachable code
+PASS making a cross-origin request for CORP: cross-origin [PASS THROUGH]
+PASS making a cross-origin request with CORS without ACAO
+PASS making a cross-origin request with CORS
+Harness: the test ran to completion.
+

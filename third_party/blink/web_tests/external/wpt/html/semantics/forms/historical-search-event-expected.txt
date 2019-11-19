@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL search event should not be supported assert_true: Not expecting event, but got search event expected true got false
+Harness: the test ran to completion.
+

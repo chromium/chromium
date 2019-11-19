@@ -26,6 +26,8 @@
 
 #include <limits.h>
 
+#include "third_party/blink/renderer/platform/wtf/text/string_buffer.h"
+
 namespace WTF {
 
 static const char kBase64EncMap[64] = {
@@ -49,19 +51,23 @@ static const char kBase64DecMap[128] = {
     0x25, 0x26, 0x27, 0x28, 0x29, 0x2A, 0x2B, 0x2C, 0x2D, 0x2E, 0x2F, 0x30,
     0x31, 0x32, 0x33, 0x00, 0x00, 0x00, 0x00, 0x00};
 
-String Base64Encode(const char* data,
-                    unsigned length,
-                    Base64EncodePolicy policy) {
-  Vector<char> result;
-  Base64Encode(data, length, result, policy);
-  return String(result.data(), result.size());
-}
+namespace {
 
-void Base64Encode(const char* data,
-                  unsigned len,
-                  Vector<char>& out,
-                  Base64EncodePolicy policy) {
-  out.clear();
+class Base64EncoderImpl {
+ public:
+  Base64EncoderImpl(wtf_size_t len, Base64EncodePolicy policy);
+
+  wtf_size_t out_length() const { return out_length_; }
+  void Encode(base::span<const uint8_t> data, base::span<char> out) const;
+
+ private:
+  wtf_size_t in_length_ = 0;
+  wtf_size_t out_length_ = 0;
+  bool insert_lfs_ = false;
+};
+
+Base64EncoderImpl::Base64EncoderImpl(wtf_size_t len,
+                                     Base64EncodePolicy policy) {
   if (!len)
     return;
 
@@ -72,23 +78,31 @@ void Base64Encode(const char* data,
   if (len > kMaxInputBufferSize)
     return;
 
+  in_length_ = len;
+  out_length_ = ((len + 2) / 3) * 4;
+
+  // Deal with the 76 character per line limit specified in RFC 2045.
+  insert_lfs_ = (policy == kBase64InsertLFs && out_length_ > 76);
+  if (insert_lfs_)
+    out_length_ += ((out_length_ - 1) / 76);
+}
+
+void Base64EncoderImpl::Encode(base::span<const uint8_t> data,
+                               base::span<char> out) const {
+  DCHECK_EQ(in_length_, data.size());
+  DCHECK_EQ(out_length_, out.size());
+  DCHECK_NE(0u, out.size());
+
+  auto len = data.size();
   unsigned sidx = 0;
   unsigned didx = 0;
 
-  unsigned out_length = ((len + 2) / 3) * 4;
-
-  // Deal with the 76 character per line limit specified in RFC 2045.
-  bool insert_l_fs = (policy == kBase64InsertLFs && out_length > 76);
-  if (insert_l_fs)
-    out_length += ((out_length - 1) / 76);
-
   int count = 0;
-  out.Grow(out_length);
 
   // 3-byte to 4-byte conversion + 0-63 to ascii printable conversion
   if (len > 1) {
     while (sidx < len - 2) {
-      if (insert_l_fs) {
+      if (insert_lfs_) {
         if (count && !(count % 76))
           out[didx++] = '\n';
         count += 4;
@@ -104,7 +118,7 @@ void Base64Encode(const char* data,
   }
 
   if (sidx < len) {
-    if (insert_l_fs && (count > 0) && !(count % 76))
+    if (insert_lfs_ && (count > 0) && !(count % 76))
       out[didx++] = '\n';
 
     out[didx++] = kBase64EncMap[(data[sidx] >> 2) & 077];
@@ -122,6 +136,35 @@ void Base64Encode(const char* data,
     out[didx] = '=';
     ++didx;
   }
+}
+
+}  // namespace
+
+String Base64Encode(base::span<const uint8_t> data, Base64EncodePolicy policy) {
+  Base64EncoderImpl encoder(data.size(), policy);
+  auto size = encoder.out_length();
+  if (size == 0)
+    return String();
+
+  StringBuffer<LChar> result(size);
+  base::span<char> result_span(reinterpret_cast<char*>(result.Characters()),
+                               result.length());
+  encoder.Encode(data, result_span);
+  return result.Release();
+}
+
+void Base64Encode(base::span<const uint8_t> data,
+                  Vector<char>& out,
+                  Base64EncodePolicy policy) {
+  Base64EncoderImpl encoder(data.size(), policy);
+  auto size = encoder.out_length();
+  if (size == 0) {
+    out.clear();
+    return;
+  }
+
+  out.resize(size);
+  encoder.Encode(data, out);
 }
 
 bool Base64Decode(const Vector<char>& in,
@@ -259,10 +302,23 @@ bool Base64Decode(const String& in,
                                      should_ignore_character, policy);
 }
 
+bool Base64UnpaddedURLDecode(const String& in,
+                             Vector<char>& out,
+                             CharacterMatchFunctionPtr should_ignore_character,
+                             Base64DecodePolicy policy) {
+  if (in.Contains('+') || in.Contains('/') || in.Contains('='))
+    return false;
+
+  return Base64Decode(NormalizeToBase64(in), out, should_ignore_character,
+                      policy);
+}
+
 String Base64URLEncode(const char* data,
                        unsigned length,
                        Base64EncodePolicy policy) {
-  return Base64Encode(data, length, policy).Replace('+', '-').Replace('/', '_');
+  return Base64Encode(base::as_bytes(base::make_span(data, length)), policy)
+      .Replace('+', '-')
+      .Replace('/', '_');
 }
 
 String NormalizeToBase64(const String& encoding) {

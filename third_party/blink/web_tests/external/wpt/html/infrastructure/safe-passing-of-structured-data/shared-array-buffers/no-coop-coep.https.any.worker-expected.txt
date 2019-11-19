@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+FAIL SharedArrayBuffer over MessageChannel without COOP+COEP assert_throws: function "() => channel.port1.postMessage(sab)" did not throw
+FAIL SharedArrayBuffer over BroadcastChannel without COOP+COEP assert_throws: function "() => channel.postMessage(sab)" did not throw
+FAIL Bonus: self.crossOriginIsolated assert_false: expected false got undefined
+Harness: the test ran to completion.
+

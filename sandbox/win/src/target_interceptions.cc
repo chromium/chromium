@@ -4,16 +4,15 @@
 
 #include "sandbox/win/src/target_interceptions.h"
 
+#include "base/win/static_constants.h"
 #include "sandbox/win/src/interception_agent.h"
 #include "sandbox/win/src/sandbox_factory.h"
 #include "sandbox/win/src/sandbox_nt_util.h"
-#include "sandbox/win/src/target_services.h"
 
 namespace sandbox {
 
 SANDBOX_INTERCEPT NtExports g_nt;
 
-const char VERIFIER_DLL_NAME[] = "verifier.dll";
 const char KERNEL32_DLL_NAME[] = "kernel32.dll";
 
 enum SectionLoadState {
@@ -61,14 +60,14 @@ TargetNtMapViewOfSection(NtMapViewOfSectionFunction orig_MapViewOfSection,
         // indicates Application Verifier is enabled and we should wait until
         // the next module is loaded.
         if (ansi_module_name &&
-            (g_nt._strnicmp(ansi_module_name, VERIFIER_DLL_NAME,
-                            sizeof(VERIFIER_DLL_NAME)) == 0))
+            (g_nt._strnicmp(
+                 ansi_module_name, base::win::kApplicationVerifierDllName,
+                 g_nt.strlen(base::win::kApplicationVerifierDllName) + 1) == 0))
           break;
 
         if (ansi_module_name &&
             (g_nt._strnicmp(ansi_module_name, KERNEL32_DLL_NAME,
                             sizeof(KERNEL32_DLL_NAME)) == 0)) {
-          SandboxFactory::GetTargetServices()->GetState()->SetKernel32Loaded();
           s_state = kAfterKernel32;
         }
       } __except (EXCEPTION_EXECUTE_HANDLER) {

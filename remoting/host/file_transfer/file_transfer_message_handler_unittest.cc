@@ -12,7 +12,7 @@
 #include "base/bind.h"
 #include "base/containers/queue.h"
 #include "base/memory/ptr_util.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "net/base/io_buffer.h"
 #include "remoting/base/compound_buffer.h"
@@ -83,7 +83,7 @@ class FileTransferMessageHandlerTest : public testing::Test {
   const std::string kTestDataTwo = "this is the second test string";
   const std::string kTestDataThree = "this is the third test string";
 
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_;
   std::unique_ptr<protocol::FakeMessagePipe> fake_pipe_;
   protocol::FileTransfer fake_metadata_;
   protocol::FileTransfer fake_end_;
@@ -92,9 +92,9 @@ class FileTransferMessageHandlerTest : public testing::Test {
 };
 
 FileTransferMessageHandlerTest::FileTransferMessageHandlerTest()
-    : scoped_task_environment_(
-          base::test::ScopedTaskEnvironment::MainThreadType::DEFAULT,
-          base::test::ScopedTaskEnvironment::ExecutionMode::QUEUED) {}
+    : task_environment_(
+          base::test::TaskEnvironment::MainThreadType::DEFAULT,
+          base::test::TaskEnvironment::ThreadPoolExecutionMode::QUEUED) {}
 FileTransferMessageHandlerTest::~FileTransferMessageHandlerTest() = default;
 
 void FileTransferMessageHandlerTest::SetUp() {
@@ -129,7 +129,7 @@ TEST_F(FileTransferMessageHandlerTest, WritesThreeChunks) {
   fake_pipe_->Receive(DataToBuffer(kTestDataTwo));
   fake_pipe_->Receive(DataToBuffer(kTestDataThree));
   fake_pipe_->Receive(MessageToBuffer(fake_end_));
-  scoped_task_environment_.RunUntilIdle();
+  task_environment_.RunUntilIdle();
 
   fake_pipe_->ClosePipe();
 
@@ -163,11 +163,11 @@ TEST_F(FileTransferMessageHandlerTest, HandlesWriteError) {
   fake_pipe_->Receive(MessageToBuffer(fake_metadata_));
   fake_pipe_->Receive(DataToBuffer(kTestDataOne));
   fake_pipe_->Receive(DataToBuffer(kTestDataTwo));
-  scoped_task_environment_.RunUntilIdle();
+  task_environment_.RunUntilIdle();
   test_io.io_error = fake_error;
   fake_pipe_->Receive(DataToBuffer(kTestDataTwo));
   fake_pipe_->Receive(MessageToBuffer(fake_end_));
-  scoped_task_environment_.RunUntilIdle();
+  task_environment_.RunUntilIdle();
 
   fake_pipe_->ClosePipe();
 
@@ -198,9 +198,9 @@ TEST_F(FileTransferMessageHandlerTest, HandlesErrorMessage) {
   fake_pipe_->Receive(MessageToBuffer(fake_metadata_));
   fake_pipe_->Receive(DataToBuffer(kTestDataOne));
   fake_pipe_->Receive(DataToBuffer(kTestDataTwo));
-  scoped_task_environment_.RunUntilIdle();
+  task_environment_.RunUntilIdle();
   fake_pipe_->Receive(MessageToBuffer(fake_error_message));
-  scoped_task_environment_.RunUntilIdle();
+  task_environment_.RunUntilIdle();
 
   fake_pipe_->ClosePipe();
 
@@ -230,7 +230,7 @@ TEST_F(FileTransferMessageHandlerTest, HandlesPrematureClose) {
   fake_pipe_->Receive(MessageToBuffer(fake_metadata_));
   fake_pipe_->Receive(DataToBuffer(kTestDataOne));
   fake_pipe_->Receive(DataToBuffer(kTestDataTwo));
-  scoped_task_environment_.RunUntilIdle();
+  task_environment_.RunUntilIdle();
 
   fake_pipe_->ClosePipe();
 
@@ -254,7 +254,7 @@ TEST_F(FileTransferMessageHandlerTest, ErrorsOnMissingMetadata) {
   fake_pipe_->Receive(DataToBuffer(kTestDataTwo));
   fake_pipe_->Receive(DataToBuffer(kTestDataThree));
   fake_pipe_->Receive(MessageToBuffer(fake_end_));
-  scoped_task_environment_.RunUntilIdle();
+  task_environment_.RunUntilIdle();
 
   fake_pipe_->ClosePipe();
 
@@ -284,7 +284,7 @@ TEST_F(FileTransferMessageHandlerTest, ErrorsOnNewMetadata) {
   fake_pipe_->Receive(DataToBuffer(kTestDataTwo));
   fake_pipe_->Receive(DataToBuffer(kTestDataThree));
   fake_pipe_->Receive(MessageToBuffer(fake_end_));
-  scoped_task_environment_.RunUntilIdle();
+  task_environment_.RunUntilIdle();
   fake_pipe_->Receive(MessageToBuffer(fake_metadata_));
 
   fake_pipe_->ClosePipe();
@@ -315,7 +315,7 @@ TEST_F(FileTransferMessageHandlerTest, ErrorsOnDataAfterClose) {
   fake_pipe_->Receive(DataToBuffer(kTestDataThree));
   fake_pipe_->Receive(MessageToBuffer(fake_end_));
   fake_pipe_->Receive(DataToBuffer(kTestDataOne));
-  scoped_task_environment_.RunUntilIdle();
+  task_environment_.RunUntilIdle();
 
   fake_pipe_->ClosePipe();
 
@@ -351,9 +351,9 @@ TEST_F(FileTransferMessageHandlerTest, ReadsFile) {
 
   fake_pipe_->OpenPipe();
   fake_pipe_->Receive(MessageToBuffer(fake_request_transfer_));
-  scoped_task_environment_.RunUntilIdle();
+  task_environment_.RunUntilIdle();
   fake_pipe_->Receive(MessageToBuffer(fake_success_));
-  scoped_task_environment_.RunUntilIdle();
+  task_environment_.RunUntilIdle();
 
   fake_pipe_->ClosePipe();
 
@@ -383,7 +383,7 @@ TEST_F(FileTransferMessageHandlerTest, ForwardsReaderOpenError) {
 
   fake_pipe_->OpenPipe();
   fake_pipe_->Receive(MessageToBuffer(fake_request_transfer_));
-  scoped_task_environment_.RunUntilIdle();
+  task_environment_.RunUntilIdle();
 
   fake_pipe_->ClosePipe();
 
@@ -413,7 +413,7 @@ TEST_F(FileTransferMessageHandlerTest, ForwardsReadError) {
 
   fake_pipe_->OpenPipe();
   fake_pipe_->Receive(MessageToBuffer(fake_request_transfer_));
-  scoped_task_environment_.RunUntilIdle();
+  task_environment_.RunUntilIdle();
 
   fake_pipe_->ClosePipe();
 

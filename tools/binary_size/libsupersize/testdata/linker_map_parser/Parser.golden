@@ -20,6 +20,7 @@
 .note.android.ident      152
 .note.crashpad.info      28
 .note.gnu.build-id       36
+.part.end                4096
 .plt                     6096
 .rel.dyn                 184789
 .rel.plt                 3032
@@ -66,7 +67,7 @@
 .rodata@213420(size_without_padding=29,padding=0,full_name=typeinfo name for std::__ndk1::ios_base::failure,object_path=../../third_party/android_ndk/sources/cxx-stl/llvm-libc++/libs/armeabi-v7a/libc++_static.a(ios.o),source_path=,flags={},num_aliases=1,component=)
 .rodata@213440(size_without_padding=21,padding=0,full_name=typeinfo name for std::__ndk1::ios_base,object_path=../../third_party/android_ndk/sources/cxx-stl/llvm-libc++/libs/armeabi-v7a/libc++_static.a(ios.o),source_path=,flags={},num_aliases=1,component=)
 .rodata@213460(size_without_padding=33,padding=0,full_name=typeinfo name for std::__ndk1::__iostream_category,object_path=../../third_party/android_ndk/sources/cxx-stl/llvm-libc++/libs/armeabi-v7a/libc++_static.a(ios.o),source_path=,flags={},num_aliases=1,component=)
-.rodata@213490(size_without_padding=45,padding=0,full_name=,object_path=../../third_party/android_ndk/sources/cxx-stl/llvm-libc++/libs/armeabi-v7a/libc++_static.a(ios.o),source_path=,flags={},num_aliases=1,component=)
+.rodata@213490(size_without_padding=45,padding=0,full_name=_ZTSNSt6__ndk19basic_iosIcNS_11char_traitsIcEEEE,object_path=../../third_party/android_ndk/sources/cxx-stl/llvm-libc++/libs/armeabi-v7a/libc++_static.a(ios.o),source_path=,flags={},num_aliases=1,component=)
 .rodata@21368b(size_without_padding=2897806,padding=0,full_name=** lld merge strings,object_path=,source_path=,flags={},num_aliases=1,component=)
 .rodata@4d6e20(size_without_padding=27,padding=0,full_name=typeinfo name for std::__ndk1::__stdinbuf<wchar_t>,object_path=../../third_party/android_ndk/sources/cxx-stl/llvm-libc++/libs/armeabi-v7a/libc++_static.a(iostream.o),source_path=,flags={},num_aliases=1,component=)
 .rodata@4d7920(size_without_padding=9836,padding=0,full_name=** lld merge strings,object_path=,source_path=,flags={},num_aliases=1,component=)
@@ -104,6 +105,8 @@
 .text@97c834(size_without_padding=1244,padding=0,full_name=vpx_convolve8_avg_horiz_filter_type1_neon,object_path=obj/third_party/libvpx/libvpx_assembly_arm.a(libvpx_assembly_arm/vpx_convolve8_avg_horiz_filter_type1_neon.asm.o),source_path=,flags={},num_aliases=1,component=)
 .text@99cad8(size_without_padding=252,padding=0,full_name=sinh,object_path=../../third_party/android_ndk/sources/cxx-stl/llvm-libc++/libs/armeabi-v7a/libandroid_support.a(e_sinh.o),source_path=,flags={},num_aliases=1,component=)
 .text@1401788(size_without_padding=164,padding=0,full_name=$_21::operator()(FamilyData*, char const*, char const**) const,object_path=,source_path=,flags={},num_aliases=1,component=)
+.text@1401820(size_without_padding=16,padding=0,full_name=UnlikelyFunc,object_path=,source_path=,flags={unlikely},num_aliases=1,component=)
+.text@1401850(size_without_padding=16,padding=0,full_name=StartUpFunc,object_path=,source_path=,flags={startup},num_aliases=1,component=)
 .data@2d4c000(size_without_padding=4,padding=0,full_name=v8_Default_embedded_blob_,object_path=obj/v8/v8_external_snapshot/embedded.o,source_path=,flags={},num_aliases=1,component=)
 .data@2d4c004(size_without_padding=4,padding=0,full_name=__dso_handle,object_path=../../third_party/android_ndk/platforms/android-16/arch-arm/usr/lib/crtbegin_so.o,source_path=,flags={},num_aliases=1,component=)
 .data.rel.ro@2d69000(size_without_padding=60,padding=0,full_name=fft_tab_vfp,object_path=obj/third_party/ffmpeg/libffmpeg_internal.a(ffmpeg_internal/fft_vfp.o),source_path=,flags={},num_aliases=1,component=)
@@ -122,3 +125,4 @@
 .bss@2f56000(size_without_padding=4,padding=0,full_name=WebRtcSpl_CrossCorrelation,object_path=,source_path=,flags={},num_aliases=1,component=)
 .bss@2f56004(size_without_padding=4,padding=0,full_name=WebRtcSpl_DownsampleFast,object_path=,source_path=,flags={},num_aliases=1,component=)
 .bss@2f56008(size_without_padding=4,padding=0,full_name=WebRtcSpl_MaxAbsValueW16,object_path=,source_path=,flags={},num_aliases=1,component=)
+.part.end@0(size_without_padding=4096,padding=0,full_name=** ,object_path=,source_path=,flags={},num_aliases=1,component=)

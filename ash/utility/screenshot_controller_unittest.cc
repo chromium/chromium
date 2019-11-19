@@ -14,7 +14,6 @@
 #include "ash/test_screenshot_delegate.h"
 #include "ash/wm/window_util.h"
 #include "base/run_loop.h"
-#include "services/ws/window_tree_test_helper.h"
 #include "ui/aura/env.h"
 #include "ui/aura/window_event_dispatcher.h"
 #include "ui/base/cursor/cursor.h"
@@ -262,12 +261,12 @@ TEST_F(PartialScreenshotControllerTest, MouseWarpTest) {
   StartPartialScreenshotSession();
   EXPECT_FALSE(TestIfMouseWarpsAt(gfx::Point(499, 11)));
   EXPECT_EQ(gfx::Point(499, 11),
-            Shell::Get()->aura_env()->last_mouse_location());
+            aura::Env::GetInstance()->last_mouse_location());
 
   Cancel();
   EXPECT_TRUE(TestIfMouseWarpsAt(gfx::Point(499, 11)));
   EXPECT_EQ(gfx::Point(501, 11),
-            Shell::Get()->aura_env()->last_mouse_location());
+            aura::Env::GetInstance()->last_mouse_location());
 }
 
 TEST_F(PartialScreenshotControllerTest, CursorVisibilityTest) {
@@ -478,22 +477,6 @@ TEST_F(ScreenshotControllerTest, BreaksCapture) {
   EXPECT_TRUE(window->HasCapture());
   Cancel();
   EXPECT_FALSE(window->HasCapture());
-}
-
-TEST_F(ScreenshotControllerTest, DontTargetNonTopLevels) {
-  std::unique_ptr<aura::Window> toplevel = CreateTestWindow();
-  std::unique_ptr<aura::Window> content(GetWindowTreeTestHelper()->NewWindow());
-  content->SetBounds(gfx::Rect(toplevel->bounds().size()));
-  toplevel->AddChild(content.get());
-  content->set_owned_by_parent(false);
-  content->Show();
-
-  StartWindowScreenshotSession();
-
-  ui::test::EventGenerator generator(Shell::GetPrimaryRootWindow());
-  generator.MoveMouseTo(toplevel->GetBoundsInScreen().CenterPoint());
-
-  EXPECT_EQ(toplevel.get(), GetCurrentSelectedWindow());
 }
 
 }  // namespace ash

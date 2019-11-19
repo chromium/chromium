@@ -6,10 +6,9 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SCRIPT_MODULATOR_IMPL_BASE_H_
 
 #include "base/single_thread_task_runner.h"
-#include "third_party/blink/renderer/bindings/core/v8/script_module.h"
+#include "third_party/blink/renderer/bindings/core/v8/module_record.h"
 #include "third_party/blink/renderer/core/script/modulator.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
-#include "third_party/blink/renderer/platform/bindings/trace_wrapper_member.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 
@@ -28,7 +27,7 @@ class ScriptState;
 class ModulatorImplBase : public Modulator {
  public:
   ~ModulatorImplBase() override;
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) override;
 
  protected:
   explicit ModulatorImplBase(ScriptState*);
@@ -42,8 +41,15 @@ class ModulatorImplBase : public Modulator {
 
   bool IsScriptingDisabled() const override;
 
-  ScriptModuleResolver* GetScriptModuleResolver() override {
-    return script_module_resolver_.Get();
+  bool ImportMapsEnabled() const override;
+  bool BuiltInModuleInfraEnabled() const override;
+  bool BuiltInModuleEnabled(layered_api::Module) const override;
+  void BuiltInModuleUseCount(layered_api::Module) const override;
+
+  static bool BuiltInModuleRequireSecureContext(layered_api::Module);
+
+  ModuleRecordResolver* GetModuleRecordResolver() override {
+    return module_record_resolver_.Get();
   }
   base::SingleThreadTaskRunner* TaskRunner() override {
     return task_runner_.get();
@@ -74,12 +80,18 @@ class ModulatorImplBase : public Modulator {
                           const KURL&,
                           const ReferrerScriptInfo&,
                           ScriptPromiseResolver*) override;
-  void RegisterImportMap(const ImportMap*) final;
+  const ImportMap* GetImportMapForTest() const final { return import_map_; }
+
+  ScriptValue CreateTypeError(const String& message) const override;
+  ScriptValue CreateSyntaxError(const String& message) const override;
+  void RegisterImportMap(const ImportMap*, ScriptValue error_to_rethrow) final;
   bool IsAcquiringImportMaps() const final { return acquiring_import_maps_; }
   void ClearIsAcquiringImportMaps() final { acquiring_import_maps_ = false; }
-  ModuleImportMeta HostGetImportMetaProperties(ScriptModule) const override;
-  ScriptValue InstantiateModule(ScriptModule) override;
-  Vector<ModuleRequest> ModuleRequestsFromScriptModule(ScriptModule) override;
+  ModuleImportMeta HostGetImportMetaProperties(
+      v8::Local<v8::Module>) const override;
+  ScriptValue InstantiateModule(v8::Local<v8::Module>, const KURL&) override;
+  Vector<ModuleRequest> ModuleRequestsFromModuleRecord(
+      v8::Local<v8::Module>) override;
   ScriptValue ExecuteModule(ModuleScript*, CaptureEvalErrorFlag) override;
 
   // Populates |reason| and returns true if the dynamic import is disallowed on
@@ -95,9 +107,9 @@ class ModulatorImplBase : public Modulator {
 
   Member<ScriptState> script_state_;
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
-  TraceWrapperMember<ModuleMap> map_;
-  TraceWrapperMember<ModuleTreeLinkerRegistry> tree_linker_registry_;
-  Member<ScriptModuleResolver> script_module_resolver_;
+  Member<ModuleMap> map_;
+  Member<ModuleTreeLinkerRegistry> tree_linker_registry_;
+  Member<ModuleRecordResolver> module_record_resolver_;
   Member<DynamicModuleResolver> dynamic_module_resolver_;
 
   Member<const ImportMap> import_map_;

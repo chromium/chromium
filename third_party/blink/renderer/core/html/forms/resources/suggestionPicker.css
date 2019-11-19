@@ -54,3 +54,39 @@
     border-top: 1px solid #dcdcdc;
     height: 0;
 }
+
+.controls-refresh .suggestion-list {
+  border-color: transparent;
+  padding: 4px;
+}
+
+.controls-refresh .suggestion-list-entry {
+  border-radius: 2px;
+  font-size: 14px;
+  height: 32px;
+  line-height: 32px;
+}
+
+.controls-refresh .suggestion-list-entry:focus {
+  background-color: #E5E5E5;
+}
+
+.controls-refresh .suggestion-list-entry .title {
+  color: #101010;
+}
+
+.controls-refresh .suggestion-list-entry .label {
+  color: rgba(16, 16, 16, 0.6) !important;
+}
+
+@media (forced-colors: active) {
+  .suggestion-list-entry:focus {
+    background-color: Highlight !important;
+    color: Window !important;
+    forced-color-adjust: none;
+  }
+
+  .suggestion-list-entry:focus .label {
+    color: Window !important;
+  }
+}

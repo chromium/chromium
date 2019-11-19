@@ -24,18 +24,19 @@
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/core/html/html_progress_element.h"
 #include "third_party/blink/renderer/core/layout/layout_theme.h"
-#include "third_party/blink/renderer/platform/wtf/time.h"
 
 namespace blink {
 
-LayoutProgress::LayoutProgress(HTMLProgressElement* element)
+LayoutProgress::LayoutProgress(Element* element)
     : LayoutBlockFlow(element),
       position_(HTMLProgressElement::kInvalidPosition),
       animating_(false),
       animation_timer_(
           element->GetDocument().GetTaskRunner(TaskType::kInternalDefault),
           this,
-          &LayoutProgress::AnimationTimerFired) {}
+          &LayoutProgress::AnimationTimerFired) {
+  DCHECK(IsHTMLProgressElement(element));
+}
 
 LayoutProgress::~LayoutProgress() = default;
 
@@ -61,7 +62,7 @@ void LayoutProgress::UpdateFromElement() {
 double LayoutProgress::AnimationProgress() const {
   if (!animating_)
     return 0;
-  TimeDelta elapsed = CurrentTimeTicks() - animation_start_time_;
+  base::TimeDelta elapsed = base::TimeTicks::Now() - animation_start_time_;
   return (elapsed % animation_duration_).InSecondsF() /
          animation_duration_.InSecondsF();
 }
@@ -91,14 +92,14 @@ void LayoutProgress::UpdateAnimationState() {
   animation_repeat_interval_ =
       LayoutTheme::GetTheme().AnimationRepeatIntervalForProgressBar();
 
-  bool animating = !IsDeterminate() && StyleRef().HasAppearance() &&
-                   animation_duration_ > TimeDelta();
+  bool animating = !IsDeterminate() && StyleRef().HasEffectiveAppearance() &&
+                   animation_duration_ > base::TimeDelta();
   if (animating == animating_)
     return;
 
   animating_ = animating;
   if (animating_) {
-    animation_start_time_ = CurrentTimeTicks();
+    animation_start_time_ = base::TimeTicks::Now();
     animation_timer_.StartOneShot(animation_repeat_interval_, FROM_HERE);
   } else {
     animation_timer_.Stop();
@@ -106,7 +107,7 @@ void LayoutProgress::UpdateAnimationState() {
 }
 
 HTMLProgressElement* LayoutProgress::ProgressElement() const {
-  return ToHTMLProgressElement(GetNode());
+  return To<HTMLProgressElement>(GetNode());
 }
 
 }  // namespace blink

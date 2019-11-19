@@ -1,0 +1,164 @@
+<!doctype html>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<script src="../../assert_selection.js"></script>
+<script>
+if (window.internals)
+  internals.settings.setEditingBehavior('win');
+
+selection_test(
+  '<div contenteditable dir="rtl">|abc def <span>hij opq</span> rst uvw</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl">|abc def <span>hij opq</span> rst uvw</div>',
+  '4-0 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl">a|bc def <span>hij opq</span> rst uvw</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl">|abc def <span>hij opq</span> rst uvw</div>',
+  '4-1 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl">ab|c def <span>hij opq</span> rst uvw</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl">|abc def <span>hij opq</span> rst uvw</div>',
+  '4-2 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl">abc| def <span>hij opq</span> rst uvw</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl">|abc def <span>hij opq</span> rst uvw</div>',
+  '4-3 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl">abc |def <span>hij opq</span> rst uvw</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl">|abc def <span>hij opq</span> rst uvw</div>',
+  '4-4 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl">abc d|ef <span>hij opq</span> rst uvw</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl">abc |def <span>hij opq</span> rst uvw</div>',
+  '4-5 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl">abc de|f <span>hij opq</span> rst uvw</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl">abc |def <span>hij opq</span> rst uvw</div>',
+  '4-6 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl">abc def| <span>hij opq</span> rst uvw</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl">abc |def <span>hij opq</span> rst uvw</div>',
+  '4-7 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl">abc def |<span>hij opq</span> rst uvw</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl">abc |def <span>hij opq</span> rst uvw</div>',
+  '4-8 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl">abc def <span>|hij opq</span> rst uvw</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl">abc |def <span>hij opq</span> rst uvw</div>',
+  '4-9 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl">abc def <span>h|ij opq</span> rst uvw</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl">abc def |<span>hij opq</span> rst uvw</div>',
+  '4-10 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl">abc def <span>hi|j opq</span> rst uvw</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl">abc def |<span>hij opq</span> rst uvw</div>',
+  '4-11 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl">abc def <span>hij| opq</span> rst uvw</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl">abc def |<span>hij opq</span> rst uvw</div>',
+  '4-12 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl">abc def <span>hij |opq</span> rst uvw</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl">abc def |<span>hij opq</span> rst uvw</div>',
+  '4-13 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl">abc def <span>hij o|pq</span> rst uvw</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl">abc def <span>hij |opq</span> rst uvw</div>',
+  '4-14 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl">abc def <span>hij op|q</span> rst uvw</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl">abc def <span>hij |opq</span> rst uvw</div>',
+  '4-15 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl">abc def <span>hij opq|</span> rst uvw</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl">abc def <span>hij |opq</span> rst uvw</div>',
+  '4-16 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl">abc def <span>hij opq</span>| rst uvw</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl">abc def <span>hij |opq</span> rst uvw</div>',
+  '4-17 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl">abc def <span>hij opq</span> |rst uvw</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl">abc def <span>hij |opq</span> rst uvw</div>',
+  '4-18 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl">abc def <span>hij opq</span> r|st uvw</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl">abc def <span>hij opq</span> |rst uvw</div>',
+  '4-19 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl">abc def <span>hij opq</span> rs|t uvw</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl">abc def <span>hij opq</span> |rst uvw</div>',
+  '4-20 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl">abc def <span>hij opq</span> rst| uvw</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl">abc def <span>hij opq</span> |rst uvw</div>',
+  '4-21 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl">abc def <span>hij opq</span> rst |uvw</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl">abc def <span>hij opq</span> |rst uvw</div>',
+  '4-22 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl">abc def <span>hij opq</span> rst u|vw</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl">abc def <span>hij opq</span> rst |uvw</div>',
+  '4-23 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl">abc def <span>hij opq</span> rst uv|w</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl">abc def <span>hij opq</span> rst |uvw</div>',
+  '4-24 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl">abc def <span>hij opq</span> rst uvw|</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl">abc def <span>hij opq</span> rst |uvw</div>',
+  '4-25 right word');
+</script>

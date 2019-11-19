@@ -22,7 +22,6 @@ const char kVisitorDispatcherName[] = "VisitorDispatcher";
 const char kVisitorVarName[] = "visitor";
 const char kAdjustAndMarkName[] = "AdjustAndMark";
 const char kIsHeapObjectAliveName[] = "IsHeapObjectAlive";
-const char kIsEagerlyFinalizedName[] = "IsEagerlyFinalizedMarker";
 const char kConstIteratorName[] = "const_iterator";
 const char kIteratorName[] = "iterator";
 const char kConstReverseIteratorName[] = "const_reverse_iterator";

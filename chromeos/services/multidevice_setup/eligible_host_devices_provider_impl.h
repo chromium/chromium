@@ -40,15 +40,23 @@ class EligibleHostDevicesProviderImpl
 
   // EligibleHostDevicesProvider:
   multidevice::RemoteDeviceRefList GetEligibleHostDevices() const override;
+  multidevice::DeviceWithConnectivityStatusList GetEligibleActiveHostDevices()
+      const override;
 
   // device_sync::DeviceSyncClient::Observer:
   void OnNewDevicesSynced() override;
 
   void UpdateEligibleDevicesSet();
 
+  void OnGetDevicesActivityStatus(
+      device_sync::mojom::NetworkRequestResult,
+      base::Optional<std::vector<device_sync::mojom::DeviceActivityStatusPtr>>);
+
   device_sync::DeviceSyncClient* device_sync_client_;
 
   multidevice::RemoteDeviceRefList eligible_devices_from_last_sync_;
+  multidevice::DeviceWithConnectivityStatusList
+      eligible_active_devices_from_last_sync_;
 
   DISALLOW_COPY_AND_ASSIGN(EligibleHostDevicesProviderImpl);
 };

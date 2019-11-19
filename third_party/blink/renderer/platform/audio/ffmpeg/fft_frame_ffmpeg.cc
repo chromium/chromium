@@ -44,6 +44,9 @@ namespace blink {
 // (2^15 points).
 const int kMaxFFTPow2Size = 16;
 
+// Min FFT size for FFMPEG.
+const int kMinFFTPow2Size = 2;
+
 // Normal constructor: allocates for a given fftSize.
 FFTFrame::FFTFrame(unsigned fft_size)
     : fft_size_(fft_size),
@@ -85,7 +88,15 @@ FFTFrame::FFTFrame(const FFTFrame& frame)
   memcpy(ImagData(), frame.ImagData(), nbytes);
 }
 
-void FFTFrame::Initialize() {}
+int FFTFrame::MinFFTSize() {
+  return 1 << kMinFFTPow2Size;
+}
+
+int FFTFrame::MaxFFTSize() {
+  return 1 << kMaxFFTPow2Size;
+}
+
+void FFTFrame::Initialize(float sample_rate) {}
 
 void FFTFrame::Cleanup() {}
 

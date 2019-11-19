@@ -31,6 +31,10 @@ blink_platform_sources("network") {
     "content_security_policy_response_headers.h",
     "encoded_form_data.cc",
     "encoded_form_data.h",
+    "encoded_form_data_element_mojom_traits.cc",
+    "encoded_form_data_element_mojom_traits.h",
+    "encoded_form_data_mojom_traits.cc",
+    "encoded_form_data_mojom_traits.h",
     "form_data_encoder.cc",
     "form_data_encoder.h",
     "header_field_tokenizer.cc",
@@ -60,6 +64,7 @@ blink_platform_sources("network") {
     "parsed_content_type.h",
     "server_timing_header.cc",
     "server_timing_header.h",
+    "wrapped_data_pipe_getter.h",
   ]
 
   sources += get_target_outputs(":http_names")
@@ -88,6 +93,8 @@ jumbo_source_set("unit_tests") {
 
   deps = [
     "//testing/gtest",
+  ]
+  public_deps = [
     "//third_party/blink/renderer/platform:platform",
   ]
 }

@@ -1,5 +1,5 @@
-ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE offset:0 font-family:-webkit-serif
-++IA2_ROLE_LANDMARK offset:0 font-family:-webkit-monospace offset:1 font-family:-webkit-sans-serif
-++++IA2_ROLE_PARAGRAPH offset:0 font-family:-webkit-monospace
-++++++ROLE_SYSTEM_STATICTEXT name='Monospace' offset:0 font-family:-webkit-monospace
-++++ROLE_SYSTEM_STATICTEXT name='Sans serif' offset:0 font-family:-webkit-sans-serif
+ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE offset:0 font-family:Times New Roman
+++IA2_ROLE_LANDMARK offset:0 font-family:Courier New offset:1 font-family:Arial
+++++IA2_ROLE_PARAGRAPH offset:0 font-family:Courier New
+++++++ROLE_SYSTEM_STATICTEXT name='Monospace' offset:0 font-family:Courier New
+++++ROLE_SYSTEM_STATICTEXT name='Sans serif' offset:0 font-family:Arial

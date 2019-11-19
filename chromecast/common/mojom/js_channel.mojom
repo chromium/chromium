@@ -1,0 +1,27 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module chromecast.mojom;
+
+// Send a message on this channel to the browser.
+interface JsChannel {
+  // Message from javascript.
+  PostMessage(string message);
+};
+
+// Implemented on the renderer, this gets notified by the browser to
+// add/remove channels as needed.
+interface JsChannelClient {
+  // Add a new channel binding, connecting window.channel.postMessage to |pipe|.
+  CreateChannel(string channel, pending_remote<JsChannel> pipe);
+  // Remove any existing channel binding.
+  RemoveChannel(string channel);
+};
+
+// Implemented by the browser.
+interface JsChannelBindingProvider {
+  // The RenderFrame reports its routing ID to the browser here and provides the
+  // pipe to manage channels.
+  Register(int32 routing_id, pending_remote<JsChannelClient> client);
+};

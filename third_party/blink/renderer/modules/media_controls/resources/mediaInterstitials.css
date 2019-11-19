@@ -108,8 +108,8 @@ video::-internal-media-remoting-toast-message {
 
 video::-internal-media-remoting-cast-icon {
     background-image: -webkit-image-set(
-      url(default_100_percent/legacy/mediaremoting_cast.png) 1x,
-      url(default_200_percent/legacy/mediaremoting_cast.png) 2x);
+      url(default_100_percent/mediaremoting_cast.png) 1x,
+      url(default_200_percent/mediaremoting_cast.png) 2x);
 }
 
 video::-internal-picture-in-picture-interstitial-message.sizing-medium {

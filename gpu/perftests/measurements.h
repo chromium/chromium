@@ -20,17 +20,17 @@ namespace gpu {
 struct Measurement {
   Measurement();
   Measurement(const Measurement& m);
-  Measurement(const std::string& name,
+  Measurement(const std::string& metric_basename,
               const base::TimeDelta wall_time,
               const base::TimeDelta cpu_time,
               const base::TimeDelta gpu_time);
   ~Measurement();
 
-  void PrintResult(const std::string& graph) const;
+  void PrintResult(const std::string& story) const;
   Measurement& Increment(const Measurement& m);
   Measurement Divide(int a) const;
 
-  std::string name;
+  std::string metric_basename;
   base::TimeDelta wall_time;
   base::TimeDelta cpu_time;
   base::TimeDelta gpu_time;

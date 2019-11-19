@@ -2,8 +2,10 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/sanitizers/sanitizers.gni")
 import("//chrome/common/features.gni")
 import("//chrome/test/base/js2gtest.gni")
+import("//ui/webui/resources/tools/js_modulizer.gni")
 
 js2gtest("interactive_ui_tests_js_webui") {
   test_type = "webui"
@@ -11,7 +13,10 @@ js2gtest("interactive_ui_tests_js_webui") {
   sources = [
     "bookmarks/bookmarks_focus_test.js",
     "cr_elements/cr_elements_focus_test.js",
+    "cr_elements/cr_elements_v3_focus_test.js",
+    "cr_focus_outline_manager_test.js",
     "cr_focus_row_behavior_interactive_test.js",
+    "cr_focus_row_behavior_v3_interactive_test.js",
     "extensions/cr_extensions_interactive_ui_tests.js",
     "history/history_focus_test.js",
     "print_preview/print_preview_interactive_ui_tests.js",
@@ -25,9 +30,24 @@ js2gtest("interactive_ui_tests_js_webui") {
   ]
 
   deps = [
+    ":modulize",
     "//chrome/browser/ui",
   ]
-
+  data = [
+    "$root_gen_dir/chrome/test/data/webui/cr_focus_row_behavior_test.m.js",
+    "$root_gen_dir/chrome/test/data/webui/cr_elements/cr_action_menu_test.m.js",
+    "$root_gen_dir/chrome/test/data/webui/cr_elements/cr_checkbox_test.m.js",
+    "$root_gen_dir/chrome/test/data/webui/cr_elements/cr_expand_button_focus_tests.m.js",
+    "$root_gen_dir/chrome/test/data/webui/cr_elements/cr_icon_button_focus_tests.m.js",
+    "$root_gen_dir/chrome/test/data/webui/cr_elements/cr_input_test.m.js",
+    "$root_gen_dir/chrome/test/data/webui/cr_elements/cr_tabs_test.m.js",
+    "$root_gen_dir/chrome/test/data/webui/cr_elements/cr_toggle_test.m.js",
+    "$root_gen_dir/chrome/test/data/webui/cr_elements/iron_list_focus_test.m.js",
+    "$root_gen_dir/chrome/test/data/webui/test_browser_proxy.m.js",
+    "$root_gen_dir/chrome/test/data/webui/mock_controller.m.js",
+    "$root_gen_dir/chrome/test/data/webui/test_store.m.js",
+    "$root_gen_dir/chrome/test/data/webui/test_util.m.js",
+  ]
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 }
 
@@ -38,27 +58,24 @@ js2gtest("browser_tests_js_webui") {
   # and are handled by a rule, but in the GN build they're in a separate
   # action so need to be separated out.
   sources = [
-    "../../../browser/ui/webui/chromeos/bluetooth_pairing_dialog_browsertest.js",
-    "../../../browser/ui/webui/chromeos/certificate_manager_dialog_browsertest.js",
-    "../../../browser/ui/webui/chromeos/set_time_ui_browsertest.js",
     "../../../browser/ui/webui/identity_internals_ui_browsertest.js",
     "../../../browser/ui/webui/sync_internals_browsertest.js",
-    "../chromeos/oobe_webui_browsertest.js",
-    "//third_party/axe-core/axe.js",
-    "a11y/accessibility_audit_rules.js",
-    "a11y/accessibility_test.js",
     "about_invalidations_browsertest.js",
     "assertions.js",
     "async_gen.js",
     "bookmarks/bookmarks_browsertest.js",
     "chrome_send_browsertest.js",
     "cr_components/cr_components_browsertest.js",
+    "cr_components/cr_components_v3_browsertest.js",
     "cr_elements/cr_elements_browsertest.js",
+    "cr_elements/cr_elements_v3_browsertest.js",
     "find_shortcut_behavior_browsertest.js",
+    "find_shortcut_behavior_v3_browsertest.js",
     "history/history_browsertest.js",
+    "js/webui_resource_module_async_browsertest.js",
     "js2gtest_browsertest.js",
     "load_time_data_browsertest.js",
-    "media_router/media_router_elements_browsertest.js",
+    "management/a11y/management_a11y_test.js",
     "mock4js_browsertest.js",
     "net_internals/chromeos_view.js",
     "net_internals/dns_view.js",
@@ -66,49 +83,75 @@ js2gtest("browser_tests_js_webui") {
     "net_internals/main.js",
     "net_internals/net_internals_test.js",
     "ntp4.js",
-    "polymer_browser_test_base.js",
     "resources/webui_resources_browsertest.js",
+    "resources/webui_resources_v3_browsertest.js",
     "sandboxstatus_browsertest.js",
     "settings/a11y/about_a11y_test.js",
     "settings/a11y/accessibility_a11y_test.js",
     "settings/a11y/basic_a11y_test.js",
     "settings/a11y/edit_dictionary_a11y_test.js",
-    "settings/a11y/manage_accessibility_a11y_test.js",
-    "settings/a11y/manage_profile_a11y_test.js",
-    "settings/a11y/multidevice_a11y_test.js",
-    "settings/a11y/multidevice_features_a11y_test.js",
     "settings/a11y/passwords_a11y_test.js",
-    "settings/a11y/settings_accessibility_test.js",
-    "settings/a11y/sign_out_a11y_test.js",
-    "settings/a11y/tts_subpage_a11y_test.js",
     "settings/advanced_page_browsertest.js",
     "settings/basic_page_browsertest.js",
     "settings/cr_settings_browsertest.js",
     "settings/help_page_browsertest.js",
     "settings/settings_idle_load_browsertest.js",
-    "settings/settings_page_browsertest.js",
     "settings/site_settings_page_browsertest.js",
     "text_defaults_browsertest.js",
     "webui_resource_async_browsertest.js",
   ]
 
+  gen_include_files = [
+    "a11y/accessibility_audit_rules.js",
+    "a11y/accessibility_test.js",
+    "polymer_browser_test_base.js",
+    "settings/a11y/settings_accessibility_test.js",
+    "settings/settings_page_browsertest.js",
+    "//third_party/axe-core/axe.js",
+  ]
+
+  if (is_chromeos) {
+    gen_include_files += [ "settings/a11y/crostini_accessibility_test.js" ]
+  }
+
   extra_js_files = [
     "test_browser_proxy.js",
     "settings/test_password_manager_proxy.js",
     "settings/passwords_and_autofill_fake_data.js",
-    "//chrome/browser/resources/signin/dice_sync_confirmation/sync_confirmation_browser_proxy.js",
+    "//chrome/browser/resources/signin/sync_confirmation/sync_confirmation_browser_proxy.js",
+    "//chrome/browser/ui/webui/chromeos/account_migration_proxy_test.js",
   ]
 
   if (is_chromeos) {
     sources += [
+      "../../../browser/ui/webui/chromeos/account_migration_welcome_test.js",
+      "../../../browser/ui/webui/chromeos/bluetooth_pairing_dialog_browsertest.js",
+      "../../../browser/ui/webui/chromeos/certificate_manager_dialog_browsertest.js",
+      "../chromeos/oobe_webui_browsertest.js",
       "certificate_viewer_dialog_test.js",
+      "set_time_dialog_browsertest.js",
+      "settings/a11y/crostini_settings_details_a11y_test.js",
+      "settings/a11y/crostini_settings_export_import_a11y_test.js",
+      "settings/a11y/crostini_settings_shared_paths_a11y_test.js",
+      "settings/a11y/crostini_settings_shared_usb_devices_a11y_test.js",
+      "settings/a11y/crostini_settings_subpage_a11y_test.js",
+      "settings/a11y/google_assistant_a11y_test.js",
+      "settings/a11y/manage_accessibility_a11y_test.js",
+      "settings/a11y/multidevice_a11y_test.js",
+      "settings/a11y/multidevice_features_a11y_test.js",
+      "settings/a11y/tts_subpage_a11y_test.js",
+      "settings/chromeos/os_settings_browsertest.js",
+      "settings/chromeos/os_settings_ui_browsertest.js",
       "sys_internals/sys_internals_browsertest.js",
     ]
   } else {
     sources += [
-      "md_user_manager/user_manager_browsertest.js",
+      "settings/a11y/manage_profile_a11y_test.js",
+      "settings/a11y/sign_out_a11y_test.js",
       "signin/signin_browsertest.js",
-      "welcome/onboarding_welcome_browsertest.js",
+      "user_manager/user_manager_browsertest.js",
+      "welcome/a11y_tests.js",
+      "welcome/welcome_browsertest.js",
     ]
   }
 
@@ -123,25 +166,67 @@ js2gtest("browser_tests_js_webui") {
     ]
   }
   if (enable_print_preview) {
-    sources += [ "print_preview/new_print_preview_ui_browsertest.js" ]
+    sources += [ "print_preview/print_preview_ui_browsertest.js" ]
+  }
+  if (enable_webui_tab_strip) {
+    sources += [ "tab_strip/tab_strip_browsertest.js" ]
   }
   deps = [
+    ":modulize",
+    "//build:branding_buildflags",
     "//chrome/browser/ui",
+    "//services/network/public/cpp",
     "//skia",
   ]
+  data = [
+    "$root_gen_dir/chrome/test/data/webui/cr_components/managed_footnote_test.m.js",
+    "$root_gen_dir/chrome/test/data/webui/cr_elements/cr_button_tests.m.js",
+    "$root_gen_dir/chrome/test/data/webui/cr_elements/cr_container_shadow_behavior_test.m.js",
+    "$root_gen_dir/chrome/test/data/webui/cr_elements/cr_dialog_test.m.js",
+    "$root_gen_dir/chrome/test/data/webui/cr_elements/cr_drawer_tests.m.js",
+    "$root_gen_dir/chrome/test/data/webui/cr_elements/cr_expand_button_tests.m.js",
+    "$root_gen_dir/chrome/test/data/webui/cr_elements/cr_icon_button_tests.m.js",
+    "$root_gen_dir/chrome/test/data/webui/cr_elements/cr_lazy_render_tests.m.js",
+    "$root_gen_dir/chrome/test/data/webui/cr_elements/cr_link_row_tests.m.js",
+    "$root_gen_dir/chrome/test/data/webui/cr_elements/cr_radio_button_test.m.js",
+    "$root_gen_dir/chrome/test/data/webui/cr_elements/cr_radio_group_test.m.js",
+    "$root_gen_dir/chrome/test/data/webui/cr_elements/cr_search_field_tests.m.js",
+    "$root_gen_dir/chrome/test/data/webui/cr_elements/cr_splitter_test.m.js",
+    "$root_gen_dir/chrome/test/data/webui/cr_elements/cr_toast_test.m.js",
+    "$root_gen_dir/chrome/test/data/webui/cr_elements/cr_toast_manager_test.m.js",
+    "$root_gen_dir/chrome/test/data/webui/cr_elements/cr_toolbar_search_field_tests.m.js",
+    "$root_gen_dir/chrome/test/data/webui/cr_elements/cr_view_manager_test.m.js",
+    "$root_gen_dir/chrome/test/data/webui/fake_chrome_event.m.js",
+    "$root_gen_dir/chrome/test/data/webui/find_shortcut_behavior_test.m.js",
+    "$root_gen_dir/chrome/test/data/webui/mock_controller.m.js",
+    "$root_gen_dir/chrome/test/data/webui/mock_timer.m.js",
+    "$root_gen_dir/chrome/test/data/webui/resources/list_property_update_behavior_tests.m.js",
+    "$root_gen_dir/chrome/test/data/webui/test_browser_proxy.m.js",
+    "$root_gen_dir/chrome/test/data/webui/test_store.m.js",
+    "$root_gen_dir/chrome/test/data/webui/test_util.m.js",
+  ]
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  # https://crbug.com/1013656
+  if (is_cfi) {
+    defines += [ "IS_CFI" ]
+  }
 }
 
 js2gtest("browser_tests_js_mojo_lite_webui") {
   test_type = "mojo_lite_webui"
 
   sources = [
-    "app_management/app_management_browsertest.js",
     "bluetooth_internals_browsertest.js",
     "downloads/downloads_browsertest.js",
     "engagement/site_engagement_browsertest.js",
     "interventions_internals_browsertest.js",
     "media/media_engagement_browsertest.js",
+    "usb_internals_browsertest.js",
+  ]
+
+  deps = [
+    "//chrome/browser/ui",
   ]
 
   if (is_win || is_mac || is_desktop_linux || is_chromeos) {
@@ -149,12 +234,13 @@ js2gtest("browser_tests_js_mojo_lite_webui") {
   }
 
   if (is_chromeos) {
-    sources += [ "multidevice_setup/multidevice_setup_browsertest.js" ]
+    sources += [
+      "chromeos/crostini_installer_browsertest.js",
+      "chromeos/machine_learning_internals_browsertest.js",
+      "multidevice_setup/multidevice_setup_browsertest.js",
+    ]
+    deps += [ "//chromeos/services/machine_learning/public/cpp:test_support" ]
   }
-
-  deps = [
-    "//chrome/browser/ui",
-  ]
 
   extra_js_files = [ "//chrome/browser/resources/downloads/constants.js" ]
 
@@ -164,7 +250,6 @@ js2gtest("browser_tests_js_mojo_lite_webui") {
 js2gtest("unit_tests_js") {
   test_type = "unit"
   sources = [
-    "../../../browser/resources/downloads/search_service_unittest.gtestjs",
     "../../../renderer/resources/extensions/notifications_custom_bindings.gtestjs",
     "../unit/framework_unittest.gtestjs",
   ]
@@ -178,20 +263,55 @@ js2gtest("unit_tests_js") {
   if (is_chromeos) {
     sources += [
       "../../../browser/resources/chromeos/braille_ime/braille_ime_unittest.gtestjs",
+      "../../../browser/resources/chromeos/machine_learning/machine_learning_internals_utils_unittest.gtestjs",
       "../../../browser/resources/chromeos/select_to_speak/node_utils_unittest.gtestjs",
       "../../../browser/resources/chromeos/select_to_speak/paragraph_utils_unittest.gtestjs",
       "../../../browser/resources/chromeos/select_to_speak/rect_utils_unittest.gtestjs",
       "../../../browser/resources/chromeos/select_to_speak/select_to_speak_unittest.gtestjs",
       "../../../browser/resources/chromeos/select_to_speak/word_utils_unittest.gtestjs",
+      "../../../browser/resources/chromeos/switch_access/rect_helper_unittest.gtestjs",
     ]
     extra_js_files += [
       "../../../browser/resources/chromeos/braille_ime/braille_ime.js",
+      "../../../browser/resources/chromeos/machine_learning/machine_learning_internals_utils.js",
       "../../../browser/resources/chromeos/select_to_speak/paragraph_utils.js",
       "../../../browser/resources/chromeos/select_to_speak/rect_utils.js",
       "../../../browser/resources/chromeos/select_to_speak/select_to_speak.js",
       "../../../browser/resources/chromeos/select_to_speak/test_support.js",
       "../../../browser/resources/chromeos/select_to_speak/word_utils.js",
       "../../../browser/resources/chromeos/select_to_speak/node_utils.js",
+      "../../../browser/resources/chromeos/switch_access/rect_helper.js",
     ]
   }
+}
+
+group("modulize") {
+  deps = [
+    ":modulize_local",
+    "./cr_components:modulize",
+    "./cr_elements:modulize",
+    "./resources:modulize",
+  ]
+}
+
+js_modulizer("modulize_local") {
+  input_files = [
+    "cr_focus_row_behavior_test.js",
+    "fake_chrome_event.js",
+    "find_shortcut_behavior_test.js",
+    "mock_controller.js",
+    "mock_timer.js",
+    "test_browser_proxy.js",
+    "test_store.js",
+    "test_util.js",
+  ]
+  namespace_rewrites = [
+    "cr.ui.FocusRowBehavior|FocusRowBehavior",
+    "cr.ui.Store|Store",
+    "MockInteractions.down|down",
+    "MockInteractions.pressAndReleaseKeyOn|pressAndReleaseKeyOn",
+    "MockInteractions.up|up",
+    "test_util.eventToPromise|eventToPromise",
+    "test_util.waitAfterNextRender|waitAfterNextRender",
+  ]
 }

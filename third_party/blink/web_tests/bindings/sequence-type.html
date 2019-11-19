@@ -204,4 +204,59 @@
                        "Changing the original object does not change the sequence value");
    }
  }, "Converting DOM object sequences");
+
+ test(() => {
+   const sequenceTest = internals.sequenceTest();
+
+   const array = [
+     1,
+     {valueOf: () => { array.pop(); return 2; }},
+     3
+   ];
+   assert_array_equals(
+     sequenceTest.identityLongSequence(array),
+     [1, 2],
+     "Array iteration should respect new length");
+ }, "Array to sequence<> conversions with pop() during iteration");
+
+ test(() => {
+   const sequenceTest = internals.sequenceTest();
+
+   const array = [
+     1,
+     {valueOf: () => { array.push(3); return 2; }},
+   ];
+   assert_array_equals(
+     sequenceTest.identityLongSequence(array),
+     [1, 2, 3],
+     "Array iteration should respect new length");
+ }, "Array to sequence<> conversions with push() during iteration");
+
+ test(() => {
+   const sequenceTest = internals.sequenceTest();
+
+   const array = [
+     1,
+     {valueOf: () => { array.length = 3; return 2; }}
+   ];
+   assert_array_equals(
+     sequenceTest.identityLongSequence(array),
+     [1, 2, 0],
+     "Array iteration should respect new length");
+ }, "Array to sequence<> conversions with length increase during iteration");
+
+ test(() => {
+   const sequenceTest = internals.sequenceTest();
+
+   const array = [
+     1,
+     {valueOf: () => { array.length = 2; return 2; }},
+     3
+   ];
+   assert_array_equals(
+     sequenceTest.identityLongSequence(array),
+     [1, 2],
+     "Array iteration should respect new length");
+ }, "Array to sequence<> conversions with length decrease during iteration");
+
 </script>

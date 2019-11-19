@@ -39,12 +39,12 @@
 #include "third_party/blink/public/web/web_local_frame_client.h"
 #include "third_party/blink/public/web/web_menu_item_info.h"
 #include "third_party/blink/public/web/web_popup_menu_info.h"
-#include "third_party/blink/public/web/web_view.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/events/current_input_event.h"
 #include "third_party/blink/renderer/core/exported/web_view_impl.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
+#include "third_party/blink/renderer/core/frame/web_frame_widget_base.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/html/forms/html_option_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
@@ -61,11 +61,9 @@
 namespace blink {
 
 ExternalPopupMenu::ExternalPopupMenu(LocalFrame& frame,
-                                     HTMLSelectElement& owner_element,
-                                     WebView& web_view)
+                                     HTMLSelectElement& owner_element)
     : owner_element_(owner_element),
       local_frame_(frame),
-      web_view_(web_view),
       dispatch_event_timer_(frame.GetTaskRunner(TaskType::kInternalDefault),
                             this,
                             &ExternalPopupMenu::DispatchEvent),
@@ -99,10 +97,10 @@ bool ExternalPopupMenu::ShowInternal() {
     LayoutObject* layout_object = owner_element_->GetLayoutObject();
     if (!layout_object || !layout_object->IsBox())
       return false;
-    FloatQuad quad(ToLayoutBox(layout_object)
-                       ->LocalToAbsoluteQuad(FloatQuad(
-                           ToLayoutBox(layout_object)->BorderBoundingBox())));
-    IntRect rect(quad.EnclosingBoundingBox());
+    IntRect rect = EnclosingIntRect(
+        ToLayoutBox(layout_object)
+            ->LocalToAbsoluteRect(
+                ToLayoutBox(layout_object)->PhysicalBorderBoxRect()));
     IntRect rect_in_viewport = local_frame_->View()->FrameToViewport(rect);
     web_external_popup_menu_->Show(rect_in_viewport);
     return true;
@@ -123,7 +121,7 @@ void ExternalPopupMenu::Show() {
     synthetic_event_ = std::make_unique<WebMouseEvent>();
     *synthetic_event_ = *static_cast<const WebMouseEvent*>(current_event);
     synthetic_event_->SetType(WebInputEvent::kMouseUp);
-    dispatch_event_timer_.StartOneShot(TimeDelta(), FROM_HERE);
+    dispatch_event_timer_.StartOneShot(base::TimeDelta(), FROM_HERE);
     // FIXME: show() is asynchronous. If preparing a popup is slow and a
     // user released the mouse button before showing the popup, mouseup and
     // click events are correctly dispatched. Dispatching the synthetic
@@ -133,8 +131,9 @@ void ExternalPopupMenu::Show() {
 }
 
 void ExternalPopupMenu::DispatchEvent(TimerBase*) {
-  web_view_.MainFrameWidget()->HandleInputEvent(
-      blink::WebCoalescedInputEvent(*synthetic_event_));
+  WebLocalFrameImpl::FromFrame(local_frame_->LocalFrameRoot())
+      ->FrameWidgetImpl()
+      ->HandleInputEvent(blink::WebCoalescedInputEvent(*synthetic_event_));
   synthetic_event_.reset();
 }
 
@@ -186,6 +185,7 @@ void ExternalPopupMenu::Update() {
 void ExternalPopupMenu::DisconnectClient() {
   Hide();
   owner_element_ = nullptr;
+  dispatch_event_timer_.Stop();
 }
 
 void ExternalPopupMenu::DidChangeSelection(int index) {}
@@ -252,13 +252,13 @@ void ExternalPopupMenu::GetPopupMenuInfo(WebPopupMenuInfo& info,
     popup_item.label = owner_element.ItemText(item_element);
     popup_item.tool_tip = item_element.title();
     popup_item.checked = false;
-    if (IsHTMLHRElement(item_element)) {
+    if (IsA<HTMLHRElement>(item_element)) {
       popup_item.type = WebMenuItemInfo::kSeparator;
-    } else if (IsHTMLOptGroupElement(item_element)) {
+    } else if (IsA<HTMLOptGroupElement>(item_element)) {
       popup_item.type = WebMenuItemInfo::kGroup;
     } else {
       popup_item.type = WebMenuItemInfo::kOption;
-      popup_item.checked = ToHTMLOptionElement(item_element).Selected();
+      popup_item.checked = To<HTMLOptionElement>(item_element).Selected();
     }
     popup_item.enabled = !item_element.IsDisabledFormControl();
     const ComputedStyle& style = *owner_element.ItemComputedStyle(item_element);

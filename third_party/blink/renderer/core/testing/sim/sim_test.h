@@ -25,6 +25,7 @@ class SimTest : public testing::Test {
   ~SimTest() override;
 
   void SetUp() override;
+  void TearDown() override;
 
   void LoadURL(const String& url);
 
@@ -32,7 +33,7 @@ class SimTest : public testing::Test {
   // web runtime features.
   // These methods should be accessed inside test body after a call to SetUp.
   LocalDOMWindow& Window();
-  SimPage& Page();
+  SimPage& GetPage();
   Document& GetDocument();
   WebViewImpl& WebView();
   WebLocalFrameImpl& MainFrame();
@@ -44,13 +45,16 @@ class SimTest : public testing::Test {
   Vector<String>& ConsoleMessages();
 
  private:
-  SimNetwork network_;
-  SimCompositor compositor_;
-  frame_test_helpers::TestWebFrameClient web_frame_client_;
-  frame_test_helpers::TestWebWidgetClient web_widget_client_;
-  frame_test_helpers::TestWebViewClient web_view_client_;
-  SimPage page_;
-  frame_test_helpers::WebViewHelper web_view_helper_;
+  // These are unique_ptrs in order to destroy them in TearDown. Subclasses
+  // may override Platform::Current() and these must shutdown before the
+  // subclass destructor.
+  std::unique_ptr<SimNetwork> network_;
+  std::unique_ptr<SimCompositor> compositor_;
+  std::unique_ptr<frame_test_helpers::TestWebFrameClient> web_frame_client_;
+  std::unique_ptr<frame_test_helpers::TestWebWidgetClient> web_widget_client_;
+  std::unique_ptr<frame_test_helpers::TestWebViewClient> web_view_client_;
+  std::unique_ptr<SimPage> page_;
+  std::unique_ptr<frame_test_helpers::WebViewHelper> web_view_helper_;
 };
 
 }  // namespace blink

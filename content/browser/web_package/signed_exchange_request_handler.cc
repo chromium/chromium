@@ -8,18 +8,19 @@
 
 #include "base/bind.h"
 #include "base/feature_list.h"
+#include "content/browser/loader/single_request_url_loader_factory.h"
 #include "content/browser/web_package/signed_exchange_devtools_proxy.h"
 #include "content/browser/web_package/signed_exchange_loader.h"
 #include "content/browser/web_package/signed_exchange_prefetch_metric_recorder.h"
 #include "content/browser/web_package/signed_exchange_reporter.h"
 #include "content/browser/web_package/signed_exchange_utils.h"
-#include "content/common/throttling_url_loader.h"
 #include "content/public/common/content_features.h"
-#include "mojo/public/cpp/bindings/strong_binding.h"
+#include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "net/http/http_response_headers.h"
 #include "services/network/public/cpp/resource_response.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
+#include "third_party/blink/public/common/loader/throttling_url_loader.h"
 #include "third_party/blink/public/common/origin_trials/trial_token_validator.h"
 
 namespace content {
@@ -44,16 +45,13 @@ SignedExchangeRequestHandler::SignedExchangeRequestHandler(
       url_loader_factory_(url_loader_factory),
       url_loader_throttles_getter_(std::move(url_loader_throttles_getter)),
       metric_recorder_(std::move(metric_recorder)),
-      accept_langs_(std::move(accept_langs)),
-      weak_factory_(this) {
-  DCHECK(signed_exchange_utils::IsSignedExchangeHandlingEnabled());
-}
+      accept_langs_(std::move(accept_langs)) {}
 
 SignedExchangeRequestHandler::~SignedExchangeRequestHandler() = default;
 
 void SignedExchangeRequestHandler::MaybeCreateLoader(
     const network::ResourceRequest& tentative_resource_request,
-    ResourceContext* resource_context,
+    BrowserContext* browser_context,
     LoaderCallback callback,
     FallbackCallback fallback_callback) {
   if (!signed_exchange_loader_) {
@@ -72,45 +70,45 @@ void SignedExchangeRequestHandler::MaybeCreateLoader(
 
   DCHECK(tentative_resource_request.url.EqualsIgnoringRef(
       *signed_exchange_loader_->inner_request_url()));
-  std::move(callback).Run(
+  std::move(callback).Run(base::MakeRefCounted<SingleRequestURLLoaderFactory>(
       base::BindOnce(&SignedExchangeRequestHandler::StartResponse,
-                     weak_factory_.GetWeakPtr()));
+                     weak_factory_.GetWeakPtr())));
 }
 
 bool SignedExchangeRequestHandler::MaybeCreateLoaderForResponse(
     const network::ResourceRequest& request,
-    const network::ResourceResponseHead& response,
+    const network::ResourceResponseHead& response_head,
+    mojo::ScopedDataPipeConsumerHandle* response_body,
     network::mojom::URLLoaderPtr* loader,
-    network::mojom::URLLoaderClientRequest* client_request,
-    ThrottlingURLLoader* url_loader,
-    bool* skip_other_interceptors) {
+    mojo::PendingReceiver<network::mojom::URLLoaderClient>* client_receiver,
+    blink::ThrottlingURLLoader* url_loader,
+    bool* skip_other_interceptors,
+    bool* will_return_unsafe_redirect) {
   DCHECK(!signed_exchange_loader_);
   if (!signed_exchange_utils::ShouldHandleAsSignedHTTPExchange(request.url,
-                                                               response)) {
+                                                               response_head)) {
     return false;
   }
 
-  network::mojom::URLLoaderClientPtr client;
-  *client_request = mojo::MakeRequest(&client);
-
-  base::RepeatingCallback<int(void)> frame_tree_node_id_getter =
-      base::BindRepeating([](int id) { return id; }, frame_tree_node_id_);
+  mojo::PendingRemote<network::mojom::URLLoaderClient> client;
+  *client_receiver = client.InitWithNewPipeAndPassReceiver();
 
   // This lets the SignedExchangeLoader directly returns an artificial redirect
-  // to the downstream client without going through ThrottlingURLLoader, which
-  // means some checks like SafeBrowsing may not see the redirect. Given that
-  // the redirected request will be checked when it's restarted we suppose
+  // to the downstream client without going through blink::ThrottlingURLLoader,
+  // which means some checks like SafeBrowsing may not see the redirect. Given
+  // that the redirected request will be checked when it's restarted we suppose
   // this is fine.
   signed_exchange_loader_ = std::make_unique<SignedExchangeLoader>(
-      request, response, std::move(client), url_loader->Unbind(),
-      url_loader_options_, true /* should_redirect_to_fallback */,
+      request, response_head, std::move(*response_body), std::move(client),
+      url_loader->Unbind(), url_loader_options_,
+      true /* should_redirect_to_fallback */,
       std::make_unique<SignedExchangeDevToolsProxy>(
-          request.url, response, frame_tree_node_id_getter,
+          request.url, response_head, frame_tree_node_id_,
           devtools_navigation_token_, request.report_raw_headers),
       SignedExchangeReporter::MaybeCreate(request.url, request.referrer.spec(),
-                                          response, frame_tree_node_id_getter),
-      url_loader_factory_, url_loader_throttles_getter_,
-      frame_tree_node_id_getter, metric_recorder_, accept_langs_);
+                                          response_head, frame_tree_node_id_),
+      url_loader_factory_, url_loader_throttles_getter_, frame_tree_node_id_,
+      metric_recorder_, accept_langs_);
 
   *skip_other_interceptors = true;
   return true;
@@ -118,11 +116,11 @@ bool SignedExchangeRequestHandler::MaybeCreateLoaderForResponse(
 
 void SignedExchangeRequestHandler::StartResponse(
     const network::ResourceRequest& resource_request,
-    network::mojom::URLLoaderRequest request,
-    network::mojom::URLLoaderClientPtr client) {
+    mojo::PendingReceiver<network::mojom::URLLoader> receiver,
+    mojo::PendingRemote<network::mojom::URLLoaderClient> client) {
   signed_exchange_loader_->ConnectToClient(std::move(client));
-  mojo::MakeStrongBinding(std::move(signed_exchange_loader_),
-                          std::move(request));
+  mojo::MakeSelfOwnedReceiver(std::move(signed_exchange_loader_),
+                              std::move(receiver));
 }
 
 }  // namespace content

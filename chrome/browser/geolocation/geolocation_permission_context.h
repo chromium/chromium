@@ -9,6 +9,7 @@
 #include "base/macros.h"
 #include "chrome/browser/geolocation/geolocation_permission_context_extensions.h"
 #include "chrome/browser/permissions/permission_context_base.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "services/device/public/mojom/geolocation_control.mojom.h"
 
 namespace content {
@@ -31,7 +32,7 @@ class GeolocationPermissionContext  : public PermissionContextBase {
                         const GURL& requesting_origin,
                         const GURL& embedding_origin,
                         bool user_gesture,
-                        const BrowserPermissionCallback& callback) override;
+                        BrowserPermissionCallback callback) override;
 
  private:
   void UpdateTabContext(const PermissionRequestID& id,
@@ -44,7 +45,7 @@ class GeolocationPermissionContext  : public PermissionContextBase {
   // This must only be accessed from the UI thread.
   GeolocationPermissionContextExtensions extensions_context_;
 
-  device::mojom::GeolocationControlPtr geolocation_control_;
+  mojo::Remote<device::mojom::GeolocationControl> geolocation_control_;
 
   DISALLOW_COPY_AND_ASSIGN(GeolocationPermissionContext);
 };

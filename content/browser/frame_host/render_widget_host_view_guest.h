@@ -24,11 +24,12 @@
 #include "ui/gfx/geometry/vector2d_f.h"
 #include "ui/gfx/native_widget_types.h"
 
-namespace base {
-class UnguessableToken;
-}
+namespace IPC {
+class Message;
+}  // namespace IPC
 
 namespace content {
+
 class BrowserPluginGuest;
 class RenderWidgetHost;
 class RenderWidgetHostImpl;
@@ -70,23 +71,19 @@ class CONTENT_EXPORT RenderWidgetHostViewGuest
   void SetSize(const gfx::Size& size) override;
   void SetBounds(const gfx::Rect& rect) override;
   void Focus() override;
-  bool HasFocus() const override;
+  bool HasFocus() override;
   void Show() override;
   void Hide() override;
-  gfx::NativeView GetNativeView() const override;
+  gfx::NativeView GetNativeView() override;
   gfx::NativeViewAccessible GetNativeViewAccessible() override;
-  gfx::Rect GetViewBounds() const override;
+  gfx::Rect GetViewBounds() override;
   gfx::Rect GetBoundsInRootWindow() override;
-  gfx::Size GetCompositorViewportPixelSize() const override;
+  gfx::Size GetCompositorViewportPixelSize() override;
   base::string16 GetSelectedText() override;
   TouchSelectionControllerClientManager*
   GetTouchSelectionControllerClientManager() override;
   gfx::PointF TransformPointToRootCoordSpaceF(
       const gfx::PointF& point) override;
-  bool TransformPointToLocalCoordSpaceLegacy(
-      const gfx::PointF& point,
-      const viz::SurfaceId& original_surface,
-      gfx::PointF* transformed_point) override;
   gfx::PointF TransformRootPointToViewCoordSpace(
       const gfx::PointF& point) override;
 
@@ -105,8 +102,7 @@ class CONTENT_EXPORT RenderWidgetHostViewGuest
       const gfx::Range& range,
       const std::vector<gfx::Rect>& character_bounds) override;
 #endif
-  void RenderProcessGone(base::TerminationStatus status,
-                         int error_code) override;
+  void RenderProcessGone() override;
   void Destroy() override;
   void SetTooltipText(const base::string16& tooltip_text) override;
   void SelectionChanged(const base::string16& text,
@@ -118,7 +114,7 @@ class CONTENT_EXPORT RenderWidgetHostViewGuest
   void PreProcessTouchEvent(const blink::WebTouchEvent& event) override;
 
   void DidStopFlinging() override;
-  bool LockMouse() override;
+  bool LockMouse(bool request_unadjusted_movement) override;
   void UnlockMouse() override;
   viz::FrameSinkId GetRootFrameSinkId() override;
   const viz::LocalSurfaceIdAllocation& GetLocalSurfaceIdAllocation()
@@ -146,7 +142,7 @@ class CONTENT_EXPORT RenderWidgetHostViewGuest
   bool IsRenderWidgetHostViewGuest() override;
   RenderWidgetHostViewBase* GetOwnerRenderWidgetHostView() const;
 
-  void GetScreenInfo(ScreenInfo* screen_info) const override;
+  void GetScreenInfo(ScreenInfo* screen_info) override;
 
   void EnableAutoResize(const gfx::Size& min_size,
                         const gfx::Size& max_size) override;
@@ -157,7 +153,7 @@ class CONTENT_EXPORT RenderWidgetHostViewGuest
 
   void MaybeSendSyntheticTapGestureForTest(
       const blink::WebFloatPoint& position,
-      const blink::WebFloatPoint& screen_position) const;
+      const blink::WebFloatPoint& screen_position);
 
  private:
   friend class RenderWidgetHostView;
@@ -179,7 +175,7 @@ class CONTENT_EXPORT RenderWidgetHostViewGuest
   void MaybeSendSyntheticTapGesture(
       RenderWidgetHostViewBase* owner_view,
       const blink::WebFloatPoint& position,
-      const blink::WebFloatPoint& screen_position) const;
+      const blink::WebFloatPoint& screen_position);
 
   void OnHandleInputEvent(RenderWidgetHostImpl* embedder,
                           int browser_plugin_instance_id,
@@ -187,10 +183,6 @@ class CONTENT_EXPORT RenderWidgetHostViewGuest
 
   void ProcessTouchpadZoomEventAckInRoot(const blink::WebGestureEvent& event,
                                          InputEventAckState ack_result);
-
-#if defined(USE_AURA)
-  void OnGotEmbedToken(const base::UnguessableToken& token);
-#endif
 
   // BrowserPluginGuest and RenderWidgetHostViewGuest's lifetimes are not tied
   // to one another, therefore we access |guest_| through WeakPtr.
@@ -206,7 +198,7 @@ class CONTENT_EXPORT RenderWidgetHostViewGuest
   // session.
   bool should_forward_text_selection_ = false;
 
-  base::WeakPtrFactory<RenderWidgetHostViewGuest> weak_ptr_factory_;
+  base::WeakPtrFactory<RenderWidgetHostViewGuest> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(RenderWidgetHostViewGuest);
 };

@@ -8,19 +8,25 @@
 
 namespace autofill_assistant {
 
-FakeScriptExecutorDelegate::FakeScriptExecutorDelegate() = default;
+FakeScriptExecutorDelegate::FakeScriptExecutorDelegate()
+    : trigger_context_(TriggerContext::CreateEmpty()) {}
+
 FakeScriptExecutorDelegate::~FakeScriptExecutorDelegate() = default;
+
+const ClientSettings& FakeScriptExecutorDelegate::GetSettings() {
+  return client_settings_;
+}
 
 const GURL& FakeScriptExecutorDelegate::GetCurrentURL() {
   return current_url_;
 }
 
-Service* FakeScriptExecutorDelegate::GetService() {
-  return service_;
+const GURL& FakeScriptExecutorDelegate::GetDeeplinkURL() {
+  return current_url_;
 }
 
-UiController* FakeScriptExecutorDelegate::GetUiController() {
-  return ui_controller_;
+Service* FakeScriptExecutorDelegate::GetService() {
+  return service_;
 }
 
 WebController* FakeScriptExecutorDelegate::GetWebController() {
@@ -31,9 +37,8 @@ ClientMemory* FakeScriptExecutorDelegate::GetClientMemory() {
   return &memory_;
 }
 
-const std::map<std::string, std::string>&
-FakeScriptExecutorDelegate::GetParameters() {
-  return parameters_;
+TriggerContext* FakeScriptExecutorDelegate::GetTriggerContext() {
+  return trigger_context_.get();
 }
 
 autofill::PersonalDataManager*
@@ -41,8 +46,16 @@ FakeScriptExecutorDelegate::GetPersonalDataManager() {
   return nullptr;
 }
 
+WebsiteLoginFetcher* FakeScriptExecutorDelegate::GetWebsiteLoginFetcher() {
+  return nullptr;
+}
+
 content::WebContents* FakeScriptExecutorDelegate::GetWebContents() {
   return nullptr;
+}
+
+std::string FakeScriptExecutorDelegate::GetAccountEmailAddress() {
+  return std::string();
 }
 
 void FakeScriptExecutorDelegate::EnterState(AutofillAssistantState state) {
@@ -60,23 +73,96 @@ std::string FakeScriptExecutorDelegate::GetStatusMessage() const {
   return status_message_;
 }
 
-void FakeScriptExecutorDelegate::SetDetails(const Details& details) {
-  details_ = std::make_unique<Details>(details);
+void FakeScriptExecutorDelegate::SetBubbleMessage(const std::string& message) {
+  status_message_ = message;
 }
 
-void FakeScriptExecutorDelegate::ClearDetails() {
-  details_ = nullptr;
+std::string FakeScriptExecutorDelegate::GetBubbleMessage() const {
+  return status_message_;
+}
+
+void FakeScriptExecutorDelegate::SetDetails(std::unique_ptr<Details> details) {
+  details_ = std::move(details);
+}
+
+void FakeScriptExecutorDelegate::SetInfoBox(const InfoBox& info_box) {
+  info_box_ = std::make_unique<InfoBox>(info_box);
+}
+
+void FakeScriptExecutorDelegate::ClearInfoBox() {
+  info_box_ = nullptr;
 }
 
 void FakeScriptExecutorDelegate::SetProgress(int progress) {}
 
-void FakeScriptExecutorDelegate::SetChips(
-    std::unique_ptr<std::vector<Chip>> chips) {
-  chips_ = std::move(chips);
+void FakeScriptExecutorDelegate::SetProgressVisible(bool visible) {}
+
+void FakeScriptExecutorDelegate::SetUserActions(
+    std::unique_ptr<std::vector<UserAction>> user_actions) {
+  user_actions_ = std::move(user_actions);
 }
 
-void FakeScriptExecutorDelegate::SetPaymentRequestOptions(
-    std::unique_ptr<PaymentRequestOptions> options) {
+void FakeScriptExecutorDelegate::SetCollectUserDataOptions(
+    std::unique_ptr<CollectUserDataOptions> options,
+    std::unique_ptr<UserData> information) {
   payment_request_options_ = std::move(options);
+  payment_request_info_ = std::move(information);
+}
+
+void FakeScriptExecutorDelegate::WriteUserData(
+    base::OnceCallback<void(const CollectUserDataOptions*,
+                            UserData*,
+                            UserData::FieldChange*)> write_callback) {
+  if (payment_request_options_ == nullptr || payment_request_info_ == nullptr) {
+    return;
+  }
+
+  UserData::FieldChange field_change = UserData::FieldChange::NONE;
+  std::move(write_callback)
+      .Run(payment_request_options_.get(), payment_request_info_.get(),
+           &field_change);
+}
+
+void FakeScriptExecutorDelegate::SetViewportMode(ViewportMode mode) {
+  viewport_mode_ = mode;
+}
+
+ViewportMode FakeScriptExecutorDelegate::GetViewportMode() {
+  return viewport_mode_;
+}
+
+void FakeScriptExecutorDelegate::SetPeekMode(
+    ConfigureBottomSheetProto::PeekMode peek_mode) {
+  peek_mode_ = peek_mode;
+}
+
+ConfigureBottomSheetProto::PeekMode FakeScriptExecutorDelegate::GetPeekMode() {
+  return peek_mode_;
+}
+
+bool FakeScriptExecutorDelegate::HasNavigationError() {
+  return navigation_error_;
+}
+
+bool FakeScriptExecutorDelegate::IsNavigatingToNewDocument() {
+  return navigating_to_new_document_;
+}
+
+void FakeScriptExecutorDelegate::RequireUI() {
+  require_ui_ = true;
+}
+
+void FakeScriptExecutorDelegate::AddListener(Listener* listener) {
+  listeners_.insert(listener);
+}
+
+void FakeScriptExecutorDelegate::RemoveListener(Listener* listener) {
+  listeners_.erase(listener);
+}
+
+bool FakeScriptExecutorDelegate::SetForm(
+    std::unique_ptr<FormProto> form,
+    base::RepeatingCallback<void(const FormProto::Result*)> callback) {
+  return true;
 }
 }  // namespace autofill_assistant

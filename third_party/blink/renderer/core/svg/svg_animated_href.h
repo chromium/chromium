@@ -19,8 +19,6 @@ namespace blink {
 // or the wrapped object and forwards the operation to it.)
 class SVGAnimatedHref final : public SVGAnimatedString {
  public:
-  static SVGAnimatedHref* Create(SVGElement* context_element);
-
   explicit SVGAnimatedHref(SVGElement* context_element);
 
   SVGString* CurrentValue();

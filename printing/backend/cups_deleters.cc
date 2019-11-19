@@ -23,10 +23,4 @@ void OptionDeleter::operator()(cups_option_t* option) const {
   cupsFreeOptions(1, option);
 }
 
-JobsDeleter::JobsDeleter(int num_jobs) : num_jobs_(num_jobs) {}
-
-void JobsDeleter::operator()(cups_job_t* jobs) const {
-  cupsFreeJobs(num_jobs_, jobs);
-}
-
 }  // namespace printing

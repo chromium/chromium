@@ -6,6 +6,7 @@
 
 #include "base/android/jni_android.h"
 #include "base/bind.h"
+#include "chrome/android/public/profiles/jni_headers/ProfileManagerUtils_jni.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -13,7 +14,6 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
-#include "jni/ProfileManagerUtils_jni.h"
 #include "net/url_request/url_request_context.h"
 #include "net/url_request/url_request_context_getter.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"

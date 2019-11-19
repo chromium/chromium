@@ -23,9 +23,10 @@ std::vector<GLImplementation> GetAllowedGLImplementations() {
   return GetSurfaceFactoryOzone()->GetAllowedGLImplementations();
 }
 
-bool GetGLWindowSystemBindingInfo(GLWindowSystemBindingInfo* info) {
+bool GetGLWindowSystemBindingInfo(const GLVersionInfo& gl_info,
+                                  GLWindowSystemBindingInfo* info) {
   if (HasGLOzone())
-    return GetGLOzone()->GetGLWindowSystemBindingInfo(info);
+    return GetGLOzone()->GetGLWindowSystemBindingInfo(gl_info, info);
 
   return false;
 }
@@ -49,6 +50,8 @@ scoped_refptr<GLContext> CreateGLContext(GLShareGroup* share_group,
       stub_context->SetUseStubApi(true);
       return stub_context;
     }
+    case kGLImplementationDisabled:
+      return nullptr;
     default:
       NOTREACHED() << "Expected Mock or Stub, actual:" << GetGLImplementation();
   }

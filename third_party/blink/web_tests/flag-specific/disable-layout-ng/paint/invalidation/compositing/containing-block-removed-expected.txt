@@ -1,0 +1,48 @@
+{
+  "layers": [
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF",
+      "paintInvalidations": [
+        {
+          "object": "LayoutBlockFlow (positioned) DIV class='fixed'",
+          "rect": [50, 50, 75, 75],
+          "reason": "chunk appeared"
+        }
+      ]
+    },
+    {
+      "name": "LayoutBlockFlow (positioned) DIV id='container'",
+      "bounds": [100, 100],
+      "contentsOpaque": true,
+      "backgroundColor": "#0000FF",
+      "paintInvalidations": [
+        {
+          "object": "LayoutBlockFlow (positioned) DIV id='container'",
+          "rect": [0, 0, 100, 100],
+          "reason": "paint property change"
+        },
+        {
+          "object": "LayoutBlockFlow (positioned) DIV class='fixed'",
+          "rect": [50, 50, 75, 75],
+          "reason": "chunk disappeared"
+        }
+      ],
+      "transform": 1
+    }
+  ],
+  "transforms": [
+    {
+      "id": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [200, 100, 0, 1]
+      ]
+    }
+  ]
+}
+

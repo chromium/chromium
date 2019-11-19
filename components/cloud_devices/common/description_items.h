@@ -60,7 +60,7 @@ class ListCapability {
   const Option& operator[](size_t i) const { return options_[i]; }
 
   bool Contains(const Option& option) const {
-    return base::ContainsValue(options_, option);
+    return base::Contains(options_, option);
   }
 
   void AddOption(Option&& option) { options_.emplace_back(std::move(option)); }
@@ -108,7 +108,7 @@ class SelectionCapability {
   const Option& operator[](size_t i) const { return options_[i]; }
 
   bool Contains(const Option& option) const {
-    return base::ContainsValue(options_, option);
+    return base::Contains(options_, option);
   }
 
   const Option& GetDefault() const {

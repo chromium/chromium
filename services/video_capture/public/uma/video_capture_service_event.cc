@@ -56,5 +56,14 @@ void LogDurationUntilReconnectAfterCapture(base::TimeDelta duration) {
   DVLOG(4) << "Logged DurationUntilReconnectAfterCapture";
 }
 
+#if defined(OS_MACOSX)
+void LogMacbookRetryGetDeviceInfosEvent(MacbookRetryGetDeviceInfosEvent event) {
+  UMA_HISTOGRAM_ENUMERATION(
+      "Media.VideoCapture.MacBook.RetryGetDeviceInfosEvent", event,
+      NUM_RETRY_GET_DEVICE_INFOS_EVENT);
+  DVLOG(4) << "Logged MacbookRetryGetDeviceInfosEvent " << event;
+}
+#endif
+
 }  // namespace uma
 }  // namespace video_capture

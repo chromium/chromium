@@ -5,6 +5,7 @@
 #include "chrome/browser/android/explore_sites/get_version_task.h"
 
 #include <string>
+#include <tuple>
 
 #include "base/bind.h"
 #include "chrome/browser/android/explore_sites/explore_sites_schema.h"
@@ -19,28 +20,18 @@ std::string GetVersionSync(sql::Database* db) {
   if (!db)
     return "";
 
-  sql::MetaTable meta_table;
-  if (!ExploreSitesSchema::InitMetaTable(db, &meta_table))
-    return "";
+  std::string catalog_version_token, downloading_version_token;
+  std::tie(catalog_version_token, downloading_version_token) =
+      ExploreSitesSchema::GetVersionTokens(db);
 
-  std::string catalog_version_token;
-  if (meta_table.GetValue("downloading_catalog", &catalog_version_token) &&
-      !catalog_version_token.empty()) {
-    return catalog_version_token;
-  }
-
-  catalog_version_token = "";
-  if (meta_table.GetValue("current_catalog", &catalog_version_token) &&
-      !catalog_version_token.empty()) {
-    return catalog_version_token;
-  }
-
-  return "";
+  if (!downloading_version_token.empty())
+    return downloading_version_token;
+  return catalog_version_token;
 }
 
 GetVersionTask::GetVersionTask(ExploreSitesStore* store,
                                base::OnceCallback<void(std::string)> callback)
-    : store_(store), callback_(std::move(callback)), weak_ptr_factory_(this) {}
+    : store_(store), callback_(std::move(callback)) {}
 
 GetVersionTask::~GetVersionTask() = default;
 

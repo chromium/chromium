@@ -2,17 +2,62 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/test/base/interactive_test_utils.h"
-
-#include "base/message_loop/message_loop.h"
+#include "base/bind.h"
+#include "base/macros.h"
 #include "base/run_loop.h"
 #include "build/buildflag.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/test/base/interactive_test_utils.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/buildflags.h"
+#include "ui/compositor/layer.h"
+#include "ui/compositor/layer_animator.h"
 #include "ui/views/focus/focus_manager.h"
+#include "ui/views/view.h"
+#include "ui/views/view_observer.h"
+#include "ui/views/widget/widget.h"
 
 namespace ui_test_utils {
+
+namespace {
+
+// A helper to wait until a view either gains or loses focus.
+class ViewFocusWaiter : public views::ViewObserver {
+ public:
+  ViewFocusWaiter(views::View* view, bool focused)
+      : view_(view), target_focused_(focused) {
+    view->AddObserver(this);
+  }
+
+  ~ViewFocusWaiter() override { view_->RemoveObserver(this); }
+
+  // views::ViewObserver:
+  void OnViewFocused(views::View* observed_view) override {
+    if (run_loop_.running() && target_focused_)
+      run_loop_.Quit();
+  }
+
+  void OnViewBlurred(views::View* observed_view) override {
+    if (run_loop_.running() && !target_focused_)
+      run_loop_.Quit();
+  }
+
+  void Wait() {
+    if (view_->HasFocus() != target_focused_)
+      run_loop_.Run();
+  }
+
+ private:
+  base::RunLoop run_loop_;
+  views::View* view_;
+  const bool target_focused_;
+
+  DISALLOW_COPY_AND_ASSIGN(ViewFocusWaiter);
+};
+
+}  // namespace
 
 bool IsViewFocused(const Browser* browser, ViewID vid) {
   BrowserWindow* browser_window = browser->window();
@@ -24,7 +69,7 @@ bool IsViewFocused(const Browser* browser, ViewID vid) {
   const views::FocusManager* focus_manager = widget->GetFocusManager();
   DCHECK(focus_manager);
   DCHECK(focus_manager->GetFocusedView());
-  return focus_manager->GetFocusedView()->id() == vid;
+  return focus_manager->GetFocusedView()->GetID() == vid;
 }
 
 void ClickOnView(const Browser* browser, ViewID vid) {
@@ -34,7 +79,7 @@ void ClickOnView(const Browser* browser, ViewID vid) {
   base::RunLoop loop;
   MoveMouseToCenterAndPress(view, ui_controls::LEFT,
                             ui_controls::DOWN | ui_controls::UP,
-                            loop.QuitWhenIdleClosure());
+                            loop.QuitClosure());
   loop.Run();
 }
 
@@ -43,6 +88,45 @@ void FocusView(const Browser* browser, ViewID vid) {
       BrowserView::GetBrowserViewForBrowser(browser)->GetViewByID(vid);
   DCHECK(view);
   view->RequestFocus();
+}
+
+void MoveMouseToCenterAndPress(views::View* view,
+                               ui_controls::MouseButton button,
+                               int button_state,
+                               base::OnceClosure closure,
+                               int accelerator_state) {
+  DCHECK(view);
+  DCHECK(view->GetWidget());
+  // Complete any in-progress animation before sending the events so that the
+  // mouse-event targeting happens reliably, and does not flake because of
+  // unreliable animation state.
+  ui::Layer* layer = view->GetWidget()->GetLayer();
+  if (layer) {
+    ui::LayerAnimator* animator = layer->GetAnimator();
+    if (animator && animator->is_animating())
+      animator->StopAnimating();
+  }
+
+  gfx::Point view_center = GetCenterInScreenCoordinates(view);
+  ui_controls::SendMouseMoveNotifyWhenDone(
+      view_center.x(), view_center.y(),
+      base::BindOnce(&internal::ClickTask, button, button_state,
+                     std::move(closure), accelerator_state));
+}
+
+gfx::Point GetCenterInScreenCoordinates(const views::View* view) {
+  gfx::Point center = view->GetLocalBounds().CenterPoint();
+  views::View::ConvertPointToScreen(view, &center);
+  return center;
+}
+
+void WaitForViewFocus(Browser* browser, ViewID vid, bool focused) {
+  views::View* view = views::Widget::GetWidgetForNativeWindow(
+                          browser->window()->GetNativeWindow())
+                          ->GetContentsView()
+                          ->GetViewByID(vid);
+  ASSERT_TRUE(view);
+  ViewFocusWaiter(view, focused).Wait();
 }
 
 }  // namespace ui_test_utils

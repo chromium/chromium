@@ -25,7 +25,7 @@ class CC_PAINT_EXPORT PaintOpBufferSerializer {
                           TransferCacheSerializeHelper* transfer_cache,
                           ClientPaintCache* paint_cache,
                           SkStrikeServer* strike_server,
-                          SkColorSpace* color_space,
+                          sk_sp<SkColorSpace> color_space,
                           bool can_use_lcd_text,
                           bool context_supports_distance_field_text,
                           int max_texture_size,
@@ -110,7 +110,7 @@ class CC_PAINT_EXPORT PaintOpBufferSerializer {
   TransferCacheSerializeHelper* transfer_cache_;
   ClientPaintCache* paint_cache_;
   SkStrikeServer* strike_server_;
-  SkColorSpace* color_space_;
+  sk_sp<SkColorSpace> color_space_;
   bool can_use_lcd_text_;
   bool context_supports_distance_field_text_;
   int max_texture_size_;
@@ -129,7 +129,7 @@ class CC_PAINT_EXPORT SimpleBufferSerializer : public PaintOpBufferSerializer {
                          TransferCacheSerializeHelper* transfer_cache,
                          ClientPaintCache* paint_cache,
                          SkStrikeServer* strike_server,
-                         SkColorSpace* color_space,
+                         sk_sp<SkColorSpace> color_space,
                          bool can_use_lcd_text,
                          bool context_supports_distance_field_text,
                          int max_texture_size,

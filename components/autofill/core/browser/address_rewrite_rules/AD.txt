@@ -1,0 +1,25 @@
+\bparroquia\s+de\s+andorra\s+la\s+vella\b	07
+\bprincipal\s+de\s+andorra\b	07
+\bprincipat\s+de\s+andorra\b	07
+\bsant\s+julia\s+de\s+loria\b	06
+\bescaldes\s+engordany\b	08
+\bandorra\s+la\s+vella\b	07
+\bcarrer\s+del\b	
+\bla\s+massana\b	04
+\bsant\s+julia\b	06
+\bcarrer\s+de\b	
+\bandorra\b	07
+\bcanillo\b	02
+\bmassana\b	04
+\bencamp\b	03
+\bordino\b	05
+\bc\s+del\b	
+\bc\s+de\b	
+\bad\b	07
+\ban\b	07
+\bca\b	02
+\bee\b	08
+\ben\b	03
+\bjl\b	06
+\bma\b	04
+\bor\b	05

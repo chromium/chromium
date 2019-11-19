@@ -9,12 +9,13 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_RUNTIME_CALL_STATS_H_
 
 #include "base/optional.h"
-#include "third_party/blink/renderer/platform/bindings/runtime_call_stats_count_everything_buildflags.h"
+#include "base/time/time.h"
+#include "third_party/blink/renderer/platform/bindings/buildflags.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
-#include "third_party/blink/renderer/platform/wtf/time.h"
+
 #include "v8/include/v8.h"
 
 #if BUILDFLAG(RCS_COUNT_EVERYTHING)
@@ -38,17 +39,17 @@ class PLATFORM_EXPORT RuntimeCallCounter {
  public:
   explicit RuntimeCallCounter(const char* name) : count_(0), name_(name) {}
 
-  void IncrementAndAddTime(TimeDelta time) {
+  void IncrementAndAddTime(base::TimeDelta time) {
     count_++;
     time_ += time;
   }
 
   uint64_t GetCount() const { return count_; }
-  TimeDelta GetTime() const { return time_; }
+  base::TimeDelta GetTime() const { return time_; }
   const char* GetName() const { return name_; }
 
   void Reset() {
-    time_ = TimeDelta();
+    time_ = base::TimeDelta();
     count_ = 0;
   }
 
@@ -58,7 +59,7 @@ class PLATFORM_EXPORT RuntimeCallCounter {
   RuntimeCallCounter() = default;
 
   uint64_t count_;
-  TimeDelta time_;
+  base::TimeDelta time_;
   const char* name_;
 
   friend class RuntimeCallStats;
@@ -84,28 +85,28 @@ class PLATFORM_EXPORT RuntimeCallTimer {
 
   // Resets the timer. Call this before reusing a timer.
   void Reset() {
-    start_ticks_ = TimeTicks();
-    elapsed_time_ = TimeDelta();
+    start_ticks_ = base::TimeTicks();
+    elapsed_time_ = base::TimeDelta();
   }
 
  private:
-  void Pause(TimeTicks now) {
+  void Pause(base::TimeTicks now) {
     DCHECK(IsRunning());
     elapsed_time_ += (now - start_ticks_);
-    start_ticks_ = TimeTicks();
+    start_ticks_ = base::TimeTicks();
   }
 
-  void Resume(TimeTicks now) {
+  void Resume(base::TimeTicks now) {
     DCHECK(!IsRunning());
     start_ticks_ = now;
   }
 
-  bool IsRunning() { return start_ticks_ != TimeTicks(); }
+  bool IsRunning() { return start_ticks_ != base::TimeTicks(); }
 
   RuntimeCallCounter* counter_;
   RuntimeCallTimer* parent_;
-  TimeTicks start_ticks_;
-  TimeDelta elapsed_time_;
+  base::TimeTicks start_ticks_;
+  base::TimeDelta elapsed_time_;
   const base::TickClock* clock_ = nullptr;
 };
 

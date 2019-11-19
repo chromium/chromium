@@ -12,7 +12,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "net/base/completion_once_callback.h"
-#include "storage/browser/fileapi/file_stream_reader.h"
+#include "storage/browser/file_system/file_stream_reader.h"
 
 class GURL;
 
@@ -51,7 +51,8 @@ class ArcDocumentsProviderFileStreamReader : public storage::FileStreamReader {
   std::unique_ptr<storage::FileStreamReader> underlying_reader_;
   std::vector<base::OnceClosure> pending_operations_;
 
-  base::WeakPtrFactory<ArcDocumentsProviderFileStreamReader> weak_ptr_factory_;
+  base::WeakPtrFactory<ArcDocumentsProviderFileStreamReader> weak_ptr_factory_{
+      this};
 
   DISALLOW_COPY_AND_ASSIGN(ArcDocumentsProviderFileStreamReader);
 };

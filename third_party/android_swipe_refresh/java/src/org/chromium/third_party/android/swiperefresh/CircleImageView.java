@@ -17,7 +17,6 @@
 package org.chromium.third_party.android.swiperefresh;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -25,11 +24,12 @@ import android.graphics.RadialGradient;
 import android.graphics.Shader;
 import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.OvalShape;
-import android.support.annotation.ColorInt;
-import android.support.annotation.ColorRes;
 import android.view.View;
 import android.view.animation.Animation;
 import android.widget.ImageView;
+
+import androidx.annotation.ColorInt;
+import androidx.annotation.ColorRes;
 
 /**
  * Private class created to work around issues with AnimationListeners being

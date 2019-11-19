@@ -1,0 +1,103 @@
+{
+  "layers": [
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF",
+      "paintInvalidations": [
+        {
+          "object": "InlineTextBox ' eleifend'",
+          "rect": [8, 122, 195, 99],
+          "reason": "appeared"
+        },
+        {
+          "object": "InlineTextBox 'convallis.'",
+          "rect": [8, 122, 195, 99],
+          "reason": "appeared"
+        },
+        {
+          "object": "InlineTextBox 'lacus, at sagittis eros leo'",
+          "rect": [8, 122, 195, 99],
+          "reason": "appeared"
+        },
+        {
+          "object": "InlineTextBox 'pulvinar velit. Integer'",
+          "rect": [8, 122, 195, 99],
+          "reason": "appeared"
+        },
+        {
+          "object": "InlineTextBox 'sollicitudin nisi ut urna blandit'",
+          "rect": [8, 122, 195, 99],
+          "reason": "appeared"
+        },
+        {
+          "object": "InlineTextBox ' eleifend lacus,'",
+          "rect": [8, 142, 195, 79],
+          "reason": "disappeared"
+        },
+        {
+          "object": "InlineTextBox 'at sagittis eros leo pulvinar'",
+          "rect": [8, 142, 195, 79],
+          "reason": "disappeared"
+        },
+        {
+          "object": "InlineTextBox 'urna blandit convallis.'",
+          "rect": [8, 142, 195, 79],
+          "reason": "disappeared"
+        },
+        {
+          "object": "InlineTextBox 'velit. Integer sollicitudin nisi ut'",
+          "rect": [8, 142, 195, 79],
+          "reason": "disappeared"
+        },
+        {
+          "object": "InlineTextBox 'Cras faucibus. Nunc'",
+          "rect": [8, 82, 192, 59],
+          "reason": "geometry"
+        },
+        {
+          "object": "InlineTextBox 'adipiscing, enim in scelerisque'",
+          "rect": [8, 82, 192, 59],
+          "reason": "geometry"
+        },
+        {
+          "object": "InlineTextBox 'augue '",
+          "rect": [8, 82, 192, 59],
+          "reason": "appeared"
+        },
+        {
+          "object": "InlineTextBox 'augue'",
+          "rect": [8, 82, 192, 59],
+          "reason": "disappeared"
+        },
+        {
+          "object": "InlineTextBox 'convallis,\n'",
+          "rect": [8, 82, 192, 59],
+          "reason": "appeared"
+        },
+        {
+          "object": "InlineTextBox 'convallis,\n'",
+          "rect": [8, 82, 192, 59],
+          "reason": "disappeared"
+        },
+        {
+          "object": "InlineFlowBox",
+          "rect": [114, 92, 35, 49],
+          "reason": "appeared"
+        },
+        {
+          "object": "InlineTextBox 'purus'",
+          "rect": [114, 122, 35, 19],
+          "reason": "appeared"
+        },
+        {
+          "object": "InlineTextBox 'purus'",
+          "rect": [38, 142, 35, 19],
+          "reason": "disappeared"
+        }
+      ]
+    }
+  ]
+}
+

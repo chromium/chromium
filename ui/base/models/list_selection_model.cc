@@ -102,7 +102,7 @@ void ListSelectionModel::SetSelectedIndex(int index) {
 }
 
 bool ListSelectionModel::IsSelected(int index) const {
-  return base::ContainsValue(selected_indices_, index);
+  return base::Contains(selected_indices_, index);
 }
 
 void ListSelectionModel::AddIndexToSelection(int index) {

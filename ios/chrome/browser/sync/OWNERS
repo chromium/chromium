@@ -7,3 +7,4 @@ per-file consent_auditor_factory.*=msramek@chromium.org
 
 # TEAM: ios-directory-owners@chromium.org
 # OS: iOS
+# COMPONENT: Services>Sync

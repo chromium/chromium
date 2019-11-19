@@ -18,6 +18,8 @@
 #include "chrome/browser/ui/webui/downloads/downloads.mojom.h"
 #include "components/download/content/public/all_download_item_notifier.h"
 #include "components/download/public/common/download_item.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 namespace content {
 class DownloadManager;
@@ -29,7 +31,7 @@ class DownloadsListTracker
     : public download::AllDownloadItemNotifier::Observer {
  public:
   DownloadsListTracker(content::DownloadManager* download_manager,
-                       downloads::mojom::PagePtr page);
+                       mojo::PendingRemote<downloads::mojom::Page> page);
   ~DownloadsListTracker() override;
 
   // Clears all downloads on the page if currently sending updates and resets
@@ -62,7 +64,7 @@ class DownloadsListTracker
  protected:
   // Testing constructor.
   DownloadsListTracker(content::DownloadManager* download_manager,
-                       downloads::mojom::PagePtr page,
+                       mojo::PendingRemote<downloads::mojom::Page> page,
                        base::Callback<bool(const download::DownloadItem&)>);
 
   // Creates a dictionary value that's sent to the page as JSON.
@@ -108,7 +110,7 @@ class DownloadsListTracker
   download::AllDownloadItemNotifier main_notifier_;
   std::unique_ptr<download::AllDownloadItemNotifier> original_notifier_;
 
-  downloads::mojom::PagePtr page_;
+  mojo::Remote<downloads::mojom::Page> page_;
 
   // Callback used to determine if an item should show on the page. Set to
   // |ShouldShow()| in default constructor, passed in while testing.

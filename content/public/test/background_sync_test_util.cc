@@ -23,10 +23,10 @@ namespace background_sync_test_util {
 
 namespace {
 
-void SetOnlineOnIOThread(
+void SetOnlineOnCoreThread(
     const scoped_refptr<BackgroundSyncContextImpl>& sync_context,
     bool online) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
 
   BackgroundSyncManager* sync_manager = sync_context->background_sync_manager();
   BackgroundSyncNetworkObserver* network_observer =
@@ -54,10 +54,10 @@ void SetIgnoreNetworkChanges(bool ignore) {
 
 // static
 void SetOnline(WebContents* web_contents, bool online) {
-  base::PostTaskWithTraits(
-      FROM_HERE, {BrowserThread::IO},
+  RunOrPostTaskOnThread(
+      FROM_HERE, ServiceWorkerContext::GetCoreThreadId(),
       base::BindOnce(
-          &SetOnlineOnIOThread,
+          &SetOnlineOnCoreThread,
           base::Unretained(
               GetStoragePartition(web_contents)->GetBackgroundSyncContext()),
           online));

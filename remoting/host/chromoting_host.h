@@ -175,7 +175,7 @@ class ChromotingHost : public ClientSession::EventHandler {
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  base::WeakPtrFactory<ChromotingHost> weak_factory_;
+  base::WeakPtrFactory<ChromotingHost> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ChromotingHost);
 };

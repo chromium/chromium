@@ -12,7 +12,6 @@
 #include "base/path_service.h"
 #include "base/task/post_task.h"
 #include "chrome/browser/chromeos/arc/arc_util.h"
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_scoped_pref_update.h"
@@ -20,7 +19,7 @@
 #include "chrome/common/chrome_paths.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "content/public/browser/browser_thread.h"
-#include "extensions/browser/extension_system.h"
+#include "extensions/browser/extension_registry.h"
 
 namespace {
 
@@ -29,6 +28,7 @@ constexpr char kAppPath[] = "app_path";
 constexpr char kName[] = "name";
 constexpr char kOem[] = "oem";
 constexpr char kPackageName[] = "package_name";
+constexpr char kSystem[] = "system";
 
 constexpr char kDefaultApps[] = "arc.apps.default";
 constexpr char kHidden[] = "hidden";
@@ -87,12 +87,14 @@ std::unique_ptr<ArcDefaultAppList::AppInfoMap> ReadAppsFromFileThread(
     std::string activity;
     std::string app_path;
     bool oem = false;
+    bool system = false;
 
     app_info_dictionary->GetString(kName, &name);
     app_info_dictionary->GetString(kPackageName, &package_name);
     app_info_dictionary->GetString(kActivity, &activity);
     app_info_dictionary->GetString(kAppPath, &app_path);
     app_info_dictionary->GetBoolean(kOem, &oem);
+    app_info_dictionary->GetBoolean(kSystem, &system);
 
     if (name.empty() || package_name.empty() || activity.empty() ||
         app_path.empty()) {
@@ -104,8 +106,9 @@ std::unique_ptr<ArcDefaultAppList::AppInfoMap> ReadAppsFromFileThread(
     const std::string app_id =
         ArcAppListPrefs::GetAppId(package_name, activity);
     std::unique_ptr<ArcDefaultAppList::AppInfo> app =
-        std::make_unique<ArcDefaultAppList::AppInfo>(
-            name, package_name, activity, oem, root_dir.Append(app_path));
+        std::make_unique<ArcDefaultAppList::AppInfo>(name, package_name,
+                                                     activity, oem, system,
+                                                     root_dir.Append(app_path));
     apps.get()->insert(
         std::pair<std::string, std::unique_ptr<ArcDefaultAppList::AppInfo>>(
             app_id, std::move(app)));
@@ -139,9 +142,7 @@ void ArcDefaultAppList::RegisterProfilePrefs(
 
 ArcDefaultAppList::ArcDefaultAppList(Profile* profile,
                                      base::OnceClosure ready_callback)
-    : profile_(profile),
-      ready_callback_(std::move(ready_callback)),
-      weak_ptr_factory_(this) {
+    : profile_(profile), ready_callback_(std::move(ready_callback)) {
   DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
 
   // Load default apps from two sources.
@@ -175,8 +176,9 @@ ArcDefaultAppList::ArcDefaultAppList(Profile* profile,
 
   // Once ready OnAppsReady is called.
   for (const auto& source : sources) {
-    base::PostTaskWithTraitsAndReplyWithResult(
-        FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+    base::PostTaskAndReplyWithResult(
+        FROM_HERE,
+        {base::ThreadPool(), base::MayBlock(), base::TaskPriority::BEST_EFFORT},
         base::BindOnce(&ReadAppsFromFileThread, source),
         base::BindOnce(&ArcDefaultAppList::OnAppsRead,
                        weak_ptr_factory_.GetWeakPtr()));
@@ -202,17 +204,16 @@ void ArcDefaultAppList::OnAppsReady() {
   const PrefService* const prefs = profile_->GetPrefs();
   // Register Play Store as default app. Some services and ArcSupportHost may
   // not be available in tests.
-  extensions::ExtensionService* service =
-      extensions::ExtensionSystem::Get(profile_)->extension_service();
+  extensions::ExtensionRegistry* registry =
+      extensions::ExtensionRegistry::Get(profile_);
   const extensions::Extension* arc_host =
-      service ? service->GetInstalledExtension(arc::kPlayStoreAppId) : nullptr;
+      registry->GetInstalledExtension(arc::kPlayStoreAppId);
   if (arc_host && arc::IsPlayStoreAvailable()) {
     std::unique_ptr<ArcDefaultAppList::AppInfo> play_store_app =
-        std::make_unique<ArcDefaultAppList::AppInfo>(arc_host->name(),
-                                       arc::kPlayStorePackage,
-                                       arc::kPlayStoreActivity,
-                                       false /* oem */,
-                                       base::FilePath() /* app_path */);
+        std::make_unique<ArcDefaultAppList::AppInfo>(
+            arc_host->name(), arc::kPlayStorePackage, arc::kPlayStoreActivity,
+            false /* oem */, true /* system */,
+            base::FilePath() /* app_path */);
     AppInfoMap& app_map =
         IsAppHidden(prefs, arc::kPlayStoreAppId) ? hidden_apps_ : visible_apps_;
     app_map.insert(
@@ -225,14 +226,16 @@ void ArcDefaultAppList::OnAppsReady() {
 
 const ArcDefaultAppList::AppInfo* ArcDefaultAppList::GetApp(
     const std::string& app_id) const {
-  if ((filter_level_ == FilterLevel::ALL) ||
-      (filter_level_ == FilterLevel::OPTIONAL_APPS &&
-       app_id != arc::kPlayStoreAppId)) {
+  if (filter_level_ == FilterLevel::ALL)
     return nullptr;
-  }
+
   const auto it = visible_apps_.find(app_id);
   if (it == visible_apps_.end())
     return nullptr;
+
+  if (filter_level_ == FilterLevel::OPTIONAL_APPS && !it->second->system)
+    return nullptr;
+
   return it->second.get();
 }
 
@@ -242,6 +245,15 @@ bool ArcDefaultAppList::HasApp(const std::string& app_id) const {
 
 bool ArcDefaultAppList::HasPackage(const std::string& package_name) const {
   for (const auto& it : visible_apps_) {
+    if (it.second->package_name == package_name)
+      return true;
+  }
+  return false;
+}
+
+bool ArcDefaultAppList::HasHiddenPackage(
+    const std::string& package_name) const {
+  for (const auto& it : hidden_apps_) {
     if (it.second->package_name == package_name)
       return true;
   }
@@ -296,11 +308,13 @@ ArcDefaultAppList::AppInfo::AppInfo(const std::string& name,
                                     const std::string& package_name,
                                     const std::string& activity,
                                     bool oem,
+                                    bool system,
                                     const base::FilePath app_path)
     : name(name),
       package_name(package_name),
       activity(activity),
       oem(oem),
+      system(system),
       app_path(app_path) {}
 
 ArcDefaultAppList::AppInfo::~AppInfo() {}

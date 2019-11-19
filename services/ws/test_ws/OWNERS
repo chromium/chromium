@@ -1,5 +1,0 @@
-per-file manifest.json=set noparent
-per-file manifest.json=file://ipc/SECURITY_OWNERS
-
-per-file *.mojom=set noparent
-per-file *.mojom=file://ipc/SECURITY_OWNERS

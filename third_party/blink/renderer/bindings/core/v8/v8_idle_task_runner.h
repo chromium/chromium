@@ -52,7 +52,7 @@ class V8IdleTaskRunner : public gin::V8IdleTaskRunner {
     scheduler_->PostIdleTask(
         FROM_HERE,
         WTF::Bind(
-            [](std::unique_ptr<v8::IdleTask> task, TimeTicks deadline) {
+            [](std::unique_ptr<v8::IdleTask> task, base::TimeTicks deadline) {
               task->Run(deadline.since_origin().InSecondsF());
             },
             std::move(task)));

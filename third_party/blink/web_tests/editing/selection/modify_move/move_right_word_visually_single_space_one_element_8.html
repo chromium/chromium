@@ -1,0 +1,152 @@
+<!doctype html>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<script src="../../assert_selection.js"></script>
+<script>
+if (window.internals)
+  internals.settings.setEditingBehavior('win');
+
+selection_test(
+  '<div contenteditable dir="rtl">|abc def שנב סטז uvw xyz</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl">|abc def שנב סטז uvw xyz</div>',
+  '8-0 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl">a|bc def שנב סטז uvw xyz</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl">|abc def \u05E9\u05E0\u05D1 \u05E1\u05D8\u05D6 uvw xyz</div>',
+  '8-1 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl">ab|c def שנב סטז uvw xyz</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl">|abc def \u05E9\u05E0\u05D1 \u05E1\u05D8\u05D6 uvw xyz</div>',
+  '8-2 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl">abc| def שנב סטז uvw xyz</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl">|abc def שנב סטז uvw xyz</div>',
+  '8-3 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl">abc |def שנב סטז uvw xyz</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl">|abc def שנב סטז uvw xyz</div>',
+  '8-4 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl">abc d|ef שנב סטז uvw xyz</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl">abc |def \u05E9\u05E0\u05D1 \u05E1\u05D8\u05D6 uvw xyz</div>',
+  '8-5 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl">abc de|f שנב סטז uvw xyz</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl">abc |def \u05E9\u05E0\u05D1 \u05E1\u05D8\u05D6 uvw xyz</div>',
+  '8-6 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl">abc def| שנב סטז uvw xyz</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl">abc |def \u05E9\u05E0\u05D1 \u05E1\u05D8\u05D6 uvw xyz</div>',
+  '8-7 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl">abc def |שנב סטז uvw xyz</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl">abc |def \u05E9\u05E0\u05D1 \u05E1\u05D8\u05D6 uvw xyz</div>',
+  '8-8 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl">abc def ש|נב סטז uvw xyz</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl">abc def |שנב סטז uvw xyz</div>',
+  '8-9 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl">abc def שנ|ב סטז uvw xyz</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl">abc def |שנב סטז uvw xyz</div>',
+  '8-10 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl">abc def שנב| סטז uvw xyz</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl">abc def |שנב סטז uvw xyz</div>',
+  '8-11 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl">abc def שנב |סטז uvw xyz</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl">abc def |שנב סטז uvw xyz</div>',
+  '8-12 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl">abc def שנב ס|טז uvw xyz</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl">abc def שנב |סטז uvw xyz</div>',
+  '8-13 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl">abc def שנב סט|ז uvw xyz</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl">abc def שנב |סטז uvw xyz</div>',
+  '8-14 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl">abc def שנב סטז| uvw xyz</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl">abc def שנב |סטז uvw xyz</div>',
+  '8-15 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl">abc def שנב סטז |uvw xyz</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl">abc def שנב |סטז uvw xyz</div>',
+  '8-16 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl">abc def שנב סטז u|vw xyz</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl">abc def \u05E9\u05E0\u05D1 \u05E1\u05D8\u05D6 |uvw xyz</div>',
+  '8-17 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl">abc def שנב סטז uv|w xyz</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl">abc def \u05E9\u05E0\u05D1 \u05E1\u05D8\u05D6 |uvw xyz</div>',
+  '8-18 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl">abc def שנב סטז uvw| xyz</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl">abc def שנב סטז |uvw xyz</div>',
+  '8-19 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl">abc def שנב סטז uvw |xyz</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl">abc def שנב סטז |uvw xyz</div>',
+  '8-20 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl">abc def שנב סטז uvw x|yz</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl">abc def \u05E9\u05E0\u05D1 \u05E1\u05D8\u05D6 uvw |xyz</div>',
+  '8-21 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl">abc def שנב סטז uvw xy|z</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl">abc def \u05E9\u05E0\u05D1 \u05E1\u05D8\u05D6 uvw |xyz</div>',
+  '8-22 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl">abc def שנב סטז uvw xyz|</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl">abc def \u05E9\u05E0\u05D1 \u05E1\u05D8\u05D6 uvw |xyz</div>',
+  '8-23 right word');
+</script>

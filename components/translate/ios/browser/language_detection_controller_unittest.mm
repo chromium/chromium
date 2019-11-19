@@ -16,6 +16,7 @@
 #include "components/translate/core/common/language_detection_details.h"
 #import "components/translate/ios/browser/js_language_detection_manager.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
+#include "ios/web/public/test/fakes/fake_web_frame.h"
 #import "ios/web/public/test/fakes/test_web_state.h"
 #include "net/http/http_response_headers.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -37,18 +38,21 @@
 
 namespace translate {
 
-namespace {
-
-class LanguageDetectionControllerTest : public PlatformTest {
+class LanguageDetectionControllerTest
+    : public PlatformTest,
+      public language::IOSLanguageDetectionTabHelper::Observer {
  protected:
-  LanguageDetectionControllerTest() : details_(nullptr) {
+  LanguageDetectionControllerTest()
+      : fake_main_frame_(/*frame_id=*/"", /*is_main_frame=*/true, GURL()),
+        details_(nullptr) {
     prefs_.registry()->RegisterBooleanPref(prefs::kOfferTranslateEnabled, true);
 
     language::IOSLanguageDetectionTabHelper::CreateForWebState(
         &web_state_,
-        base::Bind(&LanguageDetectionControllerTest::OnLanguageDetermined,
-                   base::Unretained(this)),
-        nullptr);
+        /*url_language_histogram=*/nullptr);
+    auto* language_detection_tab_helper =
+        language::IOSLanguageDetectionTabHelper::FromWebState(&web_state_);
+    language_detection_tab_helper->AddObserver(this);
 
     MockJsLanguageDetectionManager* js_manager =
         [[MockJsLanguageDetectionManager alloc] init];
@@ -56,9 +60,18 @@ class LanguageDetectionControllerTest : public PlatformTest {
         &web_state_, js_manager, &prefs_);
   }
 
+  ~LanguageDetectionControllerTest() override {
+    auto* language_detection_tab_helper =
+        language::IOSLanguageDetectionTabHelper::FromWebState(&web_state_);
+    language_detection_tab_helper->RemoveObserver(this);
+  }
+
   web::TestWebState& web_state() { return web_state_; }
   LanguageDetectionController* controller() { return controller_.get(); }
   LanguageDetectionDetails* details() { return details_.get(); }
+
+ protected:
+  web::FakeWebFrame fake_main_frame_;
 
  private:
   TestingPrefServiceSimple prefs_;
@@ -66,12 +79,15 @@ class LanguageDetectionControllerTest : public PlatformTest {
   std::unique_ptr<LanguageDetectionController> controller_;
   std::unique_ptr<LanguageDetectionDetails> details_;
 
-  void OnLanguageDetermined(const LanguageDetectionDetails& details) {
+  void OnLanguageDetermined(const LanguageDetectionDetails& details) override {
     details_ = std::make_unique<LanguageDetectionDetails>(details);
   }
-};
 
-}  // namespace
+  void IOSLanguageDetectionTabHelperWasDestroyed(
+      language::IOSLanguageDetectionTabHelper* tab_helper) override {
+    // No-op.
+  }
+};
 
 // Tests that OnTextCaptured() correctly handles messages from the JS side and
 // informs the driver.
@@ -87,8 +103,7 @@ TEST_F(LanguageDetectionControllerTest, OnTextCaptured) {
   command.SetString("htmlLang", kRootLanguage);
   command.SetString("httpContentLanguage", kContentLanguage);
   controller()->OnTextCaptured(command, GURL("http://google.com"),
-                               /*interacting=*/false, /*is_main_frame=*/true,
-                               /*sender_frame=*/nullptr);
+                               /*interacting=*/false, &fake_main_frame_);
 
   const LanguageDetectionDetails* const details = this->details();
   EXPECT_NE(nullptr, details);
@@ -116,8 +131,7 @@ TEST_F(LanguageDetectionControllerTest, MissingHttpContentLanguage) {
   command.SetString("htmlLang", "");
   command.SetString("httpContentLanguage", "");
   controller()->OnTextCaptured(command, GURL("http://google.com"),
-                               /*interacting=*/false, /*is_main_frame=*/true,
-                               /*sender_frame=*/nullptr);
+                               /*interacting=*/false, &fake_main_frame_);
 
   const LanguageDetectionDetails* const details = this->details();
   EXPECT_NE(nullptr, details);

@@ -13,7 +13,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
-#include "components/arc/common/app.mojom.h"
+#include "components/arc/mojom/app.mojom.h"
 
 class PrefService;
 class Profile;
@@ -86,11 +86,11 @@ class ArcPaiStarter : public ArcAppListPrefs::Observer {
   base::OneShotTimer retry_timer_;
   // Contains interval for the next retry. Doubled on next attempt until reached
   // maximum value.
-  int retry_interval_seconds_;
+  base::TimeDelta retry_interval_;
   // Used to report PAI flow time uma.
   base::Time request_start_time_;
   // Keep last.
-  base::WeakPtrFactory<ArcPaiStarter> weak_ptr_factory_;
+  base::WeakPtrFactory<ArcPaiStarter> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ArcPaiStarter);
 };

@@ -6,11 +6,18 @@
 
 #include <utility>
 
+#include "base/bind.h"
 #include "base/callback.h"
+#include "content/browser/web_contents/web_contents_impl.h"
+#include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/serial_chooser.h"
 #include "content/public/browser/serial_delegate.h"
+#include "content/public/browser/web_contents.h"
+#include "content/public/common/content_client.h"
+#include "mojo/public/cpp/bindings/interface_request.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/mojom/feature_policy/feature_policy.mojom.h"
 
 namespace content {
@@ -36,12 +43,25 @@ SerialService::SerialService(RenderFrameHost* render_frame_host)
     : render_frame_host_(render_frame_host) {
   DCHECK(render_frame_host_->IsFeatureEnabled(
       blink::mojom::FeaturePolicyFeature::kSerial));
+  // Serial API is not supported for back-forward cache for now because we
+  // don't have support for closing/freezing ports when the frame is added to
+  // the back-forward cache, so we mark frames that use this API as disabled
+  // for back-forward cache.
+  BackForwardCache::DisableForRenderFrameHost(render_frame_host, "Serial");
+
+  watchers_.set_disconnect_handler(base::BindRepeating(
+      &SerialService::OnWatcherConnectionError, base::Unretained(this)));
 }
 
-SerialService::~SerialService() = default;
+SerialService::~SerialService() {
+  // The remaining watchers will be closed from this end.
+  if (!watchers_.empty())
+    DecrementActiveFrameCount();
+}
 
-void SerialService::Bind(blink::mojom::SerialServiceRequest request) {
-  bindings_.AddBinding(this, std::move(request));
+void SerialService::Bind(
+    mojo::PendingReceiver<blink::mojom::SerialService> receiver) {
+  receivers_.Add(this, std::move(receiver));
 }
 
 void SerialService::GetPorts(GetPortsCallback callback) {
@@ -66,10 +86,34 @@ void SerialService::RequestPort(
     return;
   }
 
+  if (!delegate->CanRequestPortPermission(render_frame_host_)) {
+    std::move(callback).Run(nullptr);
+    return;
+  }
+
   chooser_ = delegate->RunChooser(
       render_frame_host_, std::move(filters),
       base::BindOnce(&SerialService::FinishRequestPort,
                      weak_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void SerialService::GetPort(
+    const base::UnguessableToken& token,
+    mojo::PendingReceiver<device::mojom::SerialPort> receiver) {
+  SerialDelegate* delegate = GetContentClient()->browser()->GetSerialDelegate();
+  if (!delegate)
+    return;
+
+  if (watchers_.empty()) {
+    auto* web_contents_impl = static_cast<WebContentsImpl*>(
+        WebContents::FromRenderFrameHost(render_frame_host_));
+    web_contents_impl->IncrementSerialActiveFrameCount();
+  }
+
+  mojo::PendingRemote<device::mojom::SerialPortConnectionWatcher> watcher;
+  watchers_.Add(this, watcher.InitWithNewPipeAndPassReceiver());
+  delegate->GetPortManager(render_frame_host_)
+      ->GetPort(token, std::move(receiver), std::move(watcher));
 }
 
 void SerialService::FinishGetPorts(
@@ -99,6 +143,17 @@ void SerialService::FinishRequestPort(RequestPortCallback callback,
   }
 
   std::move(callback).Run(ToBlinkType(*port));
+}
+
+void SerialService::OnWatcherConnectionError() {
+  if (watchers_.empty())
+    DecrementActiveFrameCount();
+}
+
+void SerialService::DecrementActiveFrameCount() {
+  auto* web_contents_impl = static_cast<WebContentsImpl*>(
+      WebContents::FromRenderFrameHost(render_frame_host_));
+  web_contents_impl->DecrementSerialActiveFrameCount();
 }
 
 }  // namespace content

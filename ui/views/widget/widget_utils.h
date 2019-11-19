@@ -17,4 +17,4 @@ VIEWS_EXPORT gfx::NativeWindow GetRootWindow(const Widget* widget);
 
 }  // namespace views
 
-#endif  // UI_VIEWS_WIDGET_WIDGET_H_
+#endif  // UI_VIEWS_WIDGET_WIDGET_UTILS_H_

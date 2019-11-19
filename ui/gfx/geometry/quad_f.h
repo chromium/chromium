@@ -63,10 +63,10 @@ class GEOMETRY_EXPORT QuadF {
   // the quad may lie on the right/bottom edge of the resulting rectangle,
   // rather than being strictly inside it.
   RectF BoundingBox() const {
-    float rl = std::min(std::min(p1_.x(), p2_.x()), std::min(p3_.x(), p4_.x()));
-    float rr = std::max(std::max(p1_.x(), p2_.x()), std::max(p3_.x(), p4_.x()));
-    float rt = std::min(std::min(p1_.y(), p2_.y()), std::min(p3_.y(), p4_.y()));
-    float rb = std::max(std::max(p1_.y(), p2_.y()), std::max(p3_.y(), p4_.y()));
+    float rl = std::min({p1_.x(), p2_.x(), p3_.x(), p4_.x()});
+    float rr = std::max({p1_.x(), p2_.x(), p3_.x(), p4_.x()});
+    float rt = std::min({p1_.y(), p2_.y(), p3_.y(), p4_.y()});
+    float rb = std::max({p1_.y(), p2_.y(), p3_.y(), p4_.y()});
     return RectF(rl, rt, rr - rl, rb - rt);
   }
 

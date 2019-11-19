@@ -1,6 +1,0 @@
-Solid black underline.
-Solid black overline, solid black underline with wavy green underline on top.
-Wavy green underline, solid black underline on top.
-Solid black underline, wavy green underline on top.
-Wavy red underline, solid black underline on top.
-Wavy red underline, solid blue underline on top, blue text.

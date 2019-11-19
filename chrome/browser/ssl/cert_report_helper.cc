@@ -12,27 +12,19 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/branding_buildflags.h"
 #include "build/build_config.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ssl/ssl_cert_reporter.h"
-#include "chrome/common/channel_info.h"
-#include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/common/safe_browsing_prefs.h"
+#include "components/security_interstitials/content/ssl_cert_reporter.h"
 #include "components/security_interstitials/core/controller_client.h"
 #include "components/security_interstitials/core/metrics_helper.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/user_prefs/user_prefs.h"
 #include "components/variations/variations_associated_data.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
-
-#if defined(OS_WIN)
-#include "base/enterprise_util.h"
-#elif defined(OS_CHROMEOS)
-#include "chrome/browser/chromeos/policy/browser_policy_connector_chromeos.h"
-#endif
 
 namespace {
 
@@ -40,9 +32,8 @@ namespace {
 // set by tests.
 static bool g_is_fake_official_build_for_cert_report_testing = false;
 
-// Returns a pointer to the Profile associated with |web_contents|.
-Profile* GetProfile(content::WebContents* web_contents) {
-  return Profile::FromBrowserContext(web_contents->GetBrowserContext());
+PrefService* GetPrefs(content::WebContents* web_contents) {
+  return user_prefs::UserPrefs::Get(web_contents->GetBrowserContext());
 }
 
 }  // namespace
@@ -73,8 +64,7 @@ CertReportHelper::CertReportHelper(
       interstitial_time_(interstitial_time),
       metrics_helper_(metrics_helper) {}
 
-CertReportHelper::~CertReportHelper() {
-}
+CertReportHelper::~CertReportHelper() = default;
 
 // static
 void CertReportHelper::SetFakeOfficialBuildForTesting() {
@@ -92,9 +82,9 @@ void CertReportHelper::PopulateExtendedReportingOption(
   if (!show)
     return;
 
-  load_time_data->SetBoolean(security_interstitials::kBoxChecked,
-                             safe_browsing::IsExtendedReportingEnabled(
-                                 *GetProfile(web_contents_)->GetPrefs()));
+  load_time_data->SetBoolean(
+      security_interstitials::kBoxChecked,
+      safe_browsing::IsExtendedReportingEnabled(*GetPrefs(web_contents_)));
 
   const std::string privacy_link = base::StringPrintf(
       security_interstitials::kPrivacyLinkHtml,
@@ -142,8 +132,7 @@ void CertReportHelper::FinishCertCollection() {
   if (!ShouldShowCertificateReporterCheckbox())
     return;
 
-  if (!safe_browsing::IsExtendedReportingEnabled(
-          *GetProfile(web_contents_)->GetPrefs()))
+  if (!safe_browsing::IsExtendedReportingEnabled(*GetPrefs(web_contents_)))
     return;
 
   if (metrics_helper_) {
@@ -157,17 +146,8 @@ void CertReportHelper::FinishCertCollection() {
   std::string serialized_report;
   CertificateErrorReport report(request_url_.host(), ssl_info_);
 
-  report.AddNetworkTimeInfo(g_browser_process->network_time_tracker());
-
-  report.AddChromeChannel(chrome::GetChannel());
-
-#if defined(OS_WIN)
-  report.SetIsEnterpriseManaged(base::IsMachineExternallyManaged());
-#elif defined(OS_CHROMEOS)
-  report.SetIsEnterpriseManaged(g_browser_process->platform_part()
-                                    ->browser_policy_connector_chromeos()
-                                    ->IsEnterpriseManaged());
-#endif
+  if (client_details_callback_)
+    client_details_callback_.Run(&report);
 
   report.SetInterstitialInfo(
       interstitial_reason_, user_action_,
@@ -188,7 +168,7 @@ bool CertReportHelper::ShouldShowCertificateReporterCheckbox() {
   // and the window is not incognito and the feature is not disabled by policy.
   const bool in_incognito =
       web_contents_->GetBrowserContext()->IsOffTheRecord();
-  const PrefService* pref_service = GetProfile(web_contents_)->GetPrefs();
+  const PrefService* pref_service = GetPrefs(web_contents_);
   bool can_show_checkbox =
       safe_browsing::IsExtendedReportingOptInAllowed(*pref_service) &&
       !safe_browsing::IsExtendedReportingPolicyManaged(*pref_service);
@@ -202,7 +182,7 @@ bool CertReportHelper::ShouldReportCertificateError() {
   DCHECK(ShouldShowCertificateReporterCheckbox());
 
   bool is_official_build = g_is_fake_official_build_for_cert_report_testing;
-#if defined(OFFICIAL_BUILD) && defined(GOOGLE_CHROME_BUILD)
+#if defined(OFFICIAL_BUILD) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
   is_official_build = true;
 #endif
 

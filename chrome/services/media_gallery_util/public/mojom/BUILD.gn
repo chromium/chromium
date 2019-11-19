@@ -6,12 +6,11 @@ import("//mojo/public/tools/bindings/mojom.gni")
 
 mojom("mojom") {
   sources = [
-    "constants.mojom",
     "media_parser.mojom",
   ]
 
   public_deps = [
-    "//media/mojo/interfaces",
+    "//media/mojo/mojom",
     "//mojo/public/mojom/base",
   ]
 }

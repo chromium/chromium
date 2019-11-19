@@ -25,10 +25,10 @@ class TestCompositorHostWin : public TestCompositorHost,
                         ui::ContextFactory* context_factory,
                         ui::ContextFactoryPrivate* context_factory_private) {
     Init(NULL, bounds);
-    compositor_.reset(new ui::Compositor(
+    compositor_ = std::make_unique<ui::Compositor>(
         context_factory_private->AllocateFrameSinkId(), context_factory,
         context_factory_private, base::ThreadTaskRunnerHandle::Get(),
-        false /* enable_pixel_canvas */));
+        false /* enable_pixel_canvas */);
     allocator_.GenerateId();
     compositor_->SetAcceleratedWidget(hwnd());
     compositor_->SetScaleAndSize(

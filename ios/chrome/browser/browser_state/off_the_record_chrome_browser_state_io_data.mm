@@ -24,14 +24,14 @@
 #include "ios/chrome/browser/net/ios_chrome_url_request_context_getter.h"
 #include "ios/chrome/browser/pref_names.h"
 #import "ios/net/cookies/system_cookie_store.h"
-#include "ios/web/public/web_task_traits.h"
-#include "ios/web/public/web_thread.h"
+#include "ios/web/public/thread/web_task_traits.h"
+#include "ios/web/public/thread/web_thread.h"
 #include "net/cookies/cookie_store.h"
 #include "net/disk_cache/disk_cache.h"
 #include "net/ftp/ftp_network_layer.h"
 #include "net/http/http_cache.h"
 #include "net/http/http_network_session.h"
-#include "net/http/http_server_properties_impl.h"
+#include "net/http/http_server_properties.h"
 #include "net/url_request/url_request_job_factory_impl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -57,7 +57,7 @@ void OffTheRecordChromeBrowserStateIOData::Handle::DoomIncognitoCache() {
   // The cache for the incognito profile is in RAM.
   scoped_refptr<net::URLRequestContextGetter> getter =
       main_request_context_getter_;
-  base::PostTaskWithTraits(
+  base::PostTask(
       FROM_HERE, {web::WebThread::IO}, base::BindOnce(^{
         DCHECK_CURRENTLY_ON(web::WebThread::IO);
         net::HttpCache* cache = getter->GetURLRequestContext()
@@ -168,9 +168,8 @@ void OffTheRecordChromeBrowserStateIOData::InitializeInternal(
   main_context->set_cert_transparency_verifier(
       io_thread_globals->cert_transparency_verifier.get());
 
-  // For incognito, we use the default non-persistent HttpServerPropertiesImpl.
-  set_http_server_properties(std::unique_ptr<net::HttpServerProperties>(
-      new net::HttpServerPropertiesImpl()));
+  // For incognito, we use the default non-persistent HttpServerProperties.
+  set_http_server_properties(std::make_unique<net::HttpServerProperties>());
   main_context->set_http_server_properties(http_server_properties());
 
   main_cookie_store_ = cookie_util::CreateCookieStore(
@@ -187,25 +186,8 @@ void OffTheRecordChromeBrowserStateIOData::InitializeInternal(
 
   main_context->set_http_transaction_factory(main_http_factory_.get());
 
-  std::unique_ptr<net::URLRequestJobFactoryImpl> main_job_factory(
-      new net::URLRequestJobFactoryImpl());
+  main_job_factory_ = std::make_unique<net::URLRequestJobFactoryImpl>();
 
-  InstallProtocolHandlers(main_job_factory.get(), protocol_handlers);
-  main_job_factory_ = SetUpJobFactoryDefaults(std::move(main_job_factory),
-                                              main_context->network_delegate());
+  InstallProtocolHandlers(main_job_factory_.get(), protocol_handlers);
   main_context->set_job_factory(main_job_factory_.get());
-}
-
-ChromeBrowserStateIOData::AppRequestContext*
-OffTheRecordChromeBrowserStateIOData::InitializeAppRequestContext(
-    net::URLRequestContext* main_context) const {
-  NOTREACHED();
-  return nullptr;
-}
-
-ChromeBrowserStateIOData::AppRequestContext*
-OffTheRecordChromeBrowserStateIOData::AcquireIsolatedAppRequestContext(
-    net::URLRequestContext* main_context) const {
-  NOTREACHED();
-  return nullptr;
 }

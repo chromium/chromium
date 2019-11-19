@@ -19,9 +19,6 @@
 // Returns the text to be displayed by the cell.
 - (nonnull NSString*)text;
 
-// Accessibility identifier of the cells configured by the items.
-+ (nonnull NSString*)accessibilityIdentifier;
-
 @end
 
 // Associated cell, displaying the text to know more about suggested content.

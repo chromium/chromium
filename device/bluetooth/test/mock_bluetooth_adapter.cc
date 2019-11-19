@@ -15,8 +15,15 @@ namespace device {
 using testing::Invoke;
 using testing::_;
 
-MockBluetoothAdapter::Observer::Observer() = default;
-MockBluetoothAdapter::Observer::~Observer() = default;
+MockBluetoothAdapter::Observer::Observer(
+    scoped_refptr<BluetoothAdapter> adapter)
+    : adapter_(std::move(adapter)) {
+  adapter_->AddObserver(this);
+}
+
+MockBluetoothAdapter::Observer::~Observer() {
+  adapter_->RemoveObserver(this);
+}
 
 MockBluetoothAdapter::MockBluetoothAdapter() {
   ON_CALL(*this, AddObserver(_))
@@ -36,33 +43,24 @@ void MockBluetoothAdapter::Shutdown() {
 }
 #endif
 
+base::WeakPtr<BluetoothAdapter> MockBluetoothAdapter::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 bool MockBluetoothAdapter::SetPoweredImpl(bool powered) {
   return false;
 }
 
-void MockBluetoothAdapter::AddDiscoverySession(
-    BluetoothDiscoveryFilter* discovery_filter,
-    const base::Closure& callback,
-    DiscoverySessionErrorCallback error_callback) {}
-
-void MockBluetoothAdapter::RemoveDiscoverySession(
-    BluetoothDiscoveryFilter* discovery_filter,
-    const base::Closure& callback,
-    DiscoverySessionErrorCallback error_callback) {}
-
-void MockBluetoothAdapter::SetDiscoveryFilter(
+void MockBluetoothAdapter::StartScanWithFilter(
     std::unique_ptr<BluetoothDiscoveryFilter> discovery_filter,
-    const base::Closure& callback,
-    DiscoverySessionErrorCallback error_callback) {
-  SetDiscoveryFilterRaw(discovery_filter.get(), callback, error_callback);
+    DiscoverySessionResultCallback callback) {
+  StartScanWithFilter_(discovery_filter.get(), callback);
 }
 
-void MockBluetoothAdapter::StartDiscoverySessionWithFilter(
+void MockBluetoothAdapter::UpdateFilter(
     std::unique_ptr<BluetoothDiscoveryFilter> discovery_filter,
-    const DiscoverySessionCallback& callback,
-    const ErrorCallback& error_callback) {
-  StartDiscoverySessionWithFilterRaw(discovery_filter.get(), callback,
-                                     error_callback);
+    DiscoverySessionResultCallback callback) {
+  UpdateFilter_(discovery_filter.get(), callback);
 }
 
 void MockBluetoothAdapter::AddMockDevice(

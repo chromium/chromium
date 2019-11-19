@@ -5,15 +5,18 @@
 #ifndef CHROME_COMMON_EXTENSIONS_EXTENSION_TEST_UTIL_H_
 #define CHROME_COMMON_EXTENSIONS_EXTENSION_TEST_UTIL_H_
 
+#include <memory>
 #include <string>
 
 #include "base/memory/ref_counted.h"
+#include "chrome/common/extensions/api/extension_action/action_info.h"
 #include "extensions/common/manifest.h"
 
 class GURL;
 
 namespace extensions {
 class Extension;
+class ScopedCurrentChannel;
 }
 
 namespace extension_test_util {
@@ -52,8 +55,15 @@ scoped_refptr<extensions::Extension> LoadManifestStrict(
 scoped_refptr<extensions::Extension> LoadManifest(const std::string& dir,
                                                   const std::string& test_file);
 
-void SetGalleryURL(const GURL& new_url);
 void SetGalleryUpdateURL(const GURL& new_url);
+
+// Returns a ScopedCurrentChannel object to use in tests if one is necessary for
+// the given |action_type| specified in the manifest. This will only return
+// non-null if the "action" manifest key is used.
+// TODO(https://crbug.com/893373): Remove this one the "action" key is launched
+// to stable.
+std::unique_ptr<extensions::ScopedCurrentChannel>
+GetOverrideChannelForActionType(extensions::ActionInfo::Type action_type);
 
 }  // namespace extension_test_util
 

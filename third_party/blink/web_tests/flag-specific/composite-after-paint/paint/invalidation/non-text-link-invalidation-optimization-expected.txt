@@ -1,0 +1,43 @@
+{
+  "layers": [
+    {
+      "name": "Scrolling background of LayoutView #document",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF",
+      "paintInvalidations": [
+        {
+          "object": "NGPhysicalTextFragment ' text is invalidated and '",
+          "rect": [164, 8, 145, 19],
+          "reason": "style change"
+        },
+        {
+          "object": "NGPhysicalTextFragment ' passes if '",
+          "rect": [75, 8, 61, 19],
+          "reason": "style change"
+        },
+        {
+          "object": "NGPhysicalTextFragment 'This test '",
+          "rect": [8, 8, 57, 19],
+          "reason": "style change"
+        },
+        {
+          "object": "NGPhysicalTextFragment ' images.'",
+          "rect": [353, 8, 52, 19],
+          "reason": "style change"
+        },
+        {
+          "object": "NGPhysicalTextFragment 'only'",
+          "rect": [136, 8, 28, 19],
+          "reason": "style change"
+        },
+        {
+          "object": "NGPhysicalTextFragment ' no '",
+          "rect": [319, 8, 24, 19],
+          "reason": "style change"
+        }
+      ]
+    }
+  ]
+}
+

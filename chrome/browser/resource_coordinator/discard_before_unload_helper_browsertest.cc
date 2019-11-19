@@ -29,7 +29,6 @@ class HasBeforeUnloadHandlerTest : public InProcessBrowserTest {
     InProcessBrowserTest::SetUpOnMainThread();
     host_resolver()->AddRule("*", "127.0.0.1");
     ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
-    embedded_test_server()->ServeFilesFromSourceDirectory("chrome/test/data");
     embedded_test_server()->StartAcceptingConnections();
   }
 
@@ -53,7 +52,7 @@ class HasBeforeUnloadHandlerTest : public InProcessBrowserTest {
     HasBeforeUnloadHandler(wc, std::move(callback));
 
     // The callback should not be invoked synchronously. In a world where
-    // NeedToFireBeforeUnload works properly this expectation changes.
+    // NeedToFireBeforeUnloadOrUnload works properly this expectation changes.
     ASSERT_FALSE(callback_invoked);
 
     // Run the loop until we process the callback.

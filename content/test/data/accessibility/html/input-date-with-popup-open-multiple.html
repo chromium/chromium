@@ -1,0 +1,24 @@
+<!--
+@BLINK-ALLOW:inputType=*
+@MAC-ALLOW:AXRole*
+@UIA-WIN-ALLOW:ControllerFor=*
+@UIA-WIN-ALLOW:LocalizedControlType='date picker'
+@DEFAULT-ACTION-ON:Show date picker,Third date picker
+@WAIT-FOR:Today
+
+Windows 7 formats dates differently than Windows 10 (September, 2008 in Windows
+7 vs September 2008 in Windows 10), so skip the name attribute in this case
+so this test can pass on both platforms.
+
+@BLINK-DENY:name='September*
+@WIN-DENY:name='September*
+@UIA-WIN-DENY:Name='September*
+-->
+<!DOCTYPE html>
+<html>
+<body>
+  <input type="date" value="2008-09-01">
+  <input type="date" value="2008-09-01">
+  <input type="date" value="2008-09-01" aria-label="Third date picker">
+</body>
+</html>

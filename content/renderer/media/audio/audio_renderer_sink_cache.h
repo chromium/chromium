@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/memory/scoped_refptr.h"
+#include "base/unguessable_token.h"
 #include "content/common/content_export.h"
 #include "media/base/output_device_info.h"
 
@@ -32,9 +33,10 @@ class CONTENT_EXPORT AudioRendererSinkCache {
   static void ObserveFrame(RenderFrame* frame);
 
   // Returns output device information for a specified sink.
-  virtual media::OutputDeviceInfo GetSinkInfo(int source_render_frame_id,
-                                              int session_id,
-                                              const std::string& device_id) = 0;
+  virtual media::OutputDeviceInfo GetSinkInfo(
+      int source_render_frame_id,
+      const base::UnguessableToken& session_id,
+      const std::string& device_id) = 0;
 
   // Provides a sink for usage. The sink must be returned to the cache by
   // calling ReleaseSink(). The sink must be stopped by the user before

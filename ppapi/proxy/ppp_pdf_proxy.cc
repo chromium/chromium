@@ -105,6 +105,14 @@ void Redo(PP_Instance instance) {
       new PpapiMsg_PPPPdf_Redo(API_ID_PPP_PDF, instance));
 }
 
+void HandleAccessibilityAction(
+    PP_Instance instance,
+    const PP_PdfAccessibilityActionData& action_data) {
+  HostDispatcher::GetForInstance(instance)->Send(
+      new PpapiMsg_PPPPdf_HandleAccessibilityAction(API_ID_PPP_PDF, instance,
+                                                    action_data));
+}
+
 int32_t PrintBegin(PP_Instance instance,
                    const PP_PrintSettings_Dev* print_settings,
                    const PP_PdfPrintSettings_Dev* pdf_print_settings) {
@@ -129,6 +137,7 @@ const PPP_Pdf ppp_pdf_interface = {
     &CanRedo,
     &Undo,
     &Redo,
+    &HandleAccessibilityAction,
     &PrintBegin,
 };
 #else
@@ -181,6 +190,8 @@ bool PPP_Pdf_Proxy::OnMessageReceived(const IPC::Message& msg) {
     IPC_MESSAGE_HANDLER(PpapiMsg_PPPPdf_CanRedo, OnPluginMsgCanRedo)
     IPC_MESSAGE_HANDLER(PpapiMsg_PPPPdf_Undo, OnPluginMsgUndo)
     IPC_MESSAGE_HANDLER(PpapiMsg_PPPPdf_Redo, OnPluginMsgRedo)
+    IPC_MESSAGE_HANDLER(PpapiMsg_PPPPdf_HandleAccessibilityAction,
+                        OnPluginMsgHandleAccessibilityAction)
     IPC_MESSAGE_HANDLER(PpapiMsg_PPPPdf_PrintBegin, OnPluginMsgPrintBegin)
     IPC_MESSAGE_UNHANDLED(handled = false)
   IPC_END_MESSAGE_MAP()
@@ -266,6 +277,15 @@ void PPP_Pdf_Proxy::OnPluginMsgUndo(PP_Instance instance) {
 void PPP_Pdf_Proxy::OnPluginMsgRedo(PP_Instance instance) {
   if (ppp_pdf_)
     CallWhileUnlocked(ppp_pdf_->Redo, instance);
+}
+
+void PPP_Pdf_Proxy::OnPluginMsgHandleAccessibilityAction(
+    PP_Instance instance,
+    const PP_PdfAccessibilityActionData& action_data) {
+  if (ppp_pdf_) {
+    CallWhileUnlocked(ppp_pdf_->HandleAccessibilityAction, instance,
+                      action_data);
+  }
 }
 
 void PPP_Pdf_Proxy::OnPluginMsgPrintBegin(

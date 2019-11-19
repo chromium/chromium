@@ -1,0 +1,47 @@
+# tags: [ android linux lion mac mountainlion win win7 win8 win10]
+# tags: [ debug ]
+# tags: [ amd-0x6613 nvidia qualcomm-adreno-(tm)-418 qualcomm-adreno-(tm)-420 ]
+# tags: [ asan no-asan ]
+# results: [ Failure RetryOnFailure Skip ]
+
+# Linux AMD R7 240
+crbug.com/1008125 [ linux amd-0x6613 ] ContextLost_WebGL2Blocked [ Skip ]
+
+# Win7 bots
+crbug.com/603329 [ win7 ] ContextLost_WebGLContextLostFromGPUProcessExit [ RetryOnFailure ]
+
+# Win8 Release and Debug NVIDIA bots.
+crbug.com/524808 [ win8 nvidia ] ContextLost_WebGLContextLostFromSelectElement [ Skip ]
+
+# Win10 NVIDIA
+crbug.com/965268 [ win10 nvidia ] ContextLost_WebGLBlockedAfterJSNavigation [ RetryOnFailure ]
+
+# Flakily timing out on Win x64 Debug bot. Unfortunately we can't identify this
+# separately from the 32-bit bots. Also unfortunately, the flaky retry mechanism
+# doesn't work well in this harness if the test times out. Skip it on this
+# configuration for now.
+crbug.com/628697 [ win debug ] ContextLost_WebGLContextLostFromQuantity [ Skip ]
+
+# Flaky on Mac 10.7 and 10.8 resulting in crashes during browser
+# startup, so skip this test in those configurations.
+crbug.com/497411 [ mountainlion debug ] ContextLost_WebGLContextLostFromSelectElement [ Skip ]
+crbug.com/498149 [ lion debug ] ContextLost_WebGLContextLostFromSelectElement [ Skip ]
+
+# Too difficult to make this test work on Mac and Android for now. Disabling
+# GLES3 support at the GL bindings level doesn't work there yet.
+crbug.com/923134 [ mac ] ContextLost_WebGL2Blocked [ Skip ]
+crbug.com/923134 [ android ] ContextLost_WebGL2Blocked [ Skip ]
+
+# Flaking on Nexus 5X
+crbug.com/965268 [ android qualcomm-adreno-(tm)-418 ] ContextLost_WebGLBlockedAfterJSNavigation [ Skip ]
+crbug.com/965268 [ android qualcomm-adreno-(tm)-418 ] ContextLost_WebGLUnblockedAfterUserInitiatedReload [ Skip ]
+crbug.com/880078 [ android ] ContextLost_WorkerRAFAfterGPUCrash [ Failure ]
+crbug.com/880078 [ android ] ContextLost_WorkerRAFAfterGPUCrash_OOPD [ Failure ]
+
+# Nexus 6
+# The Nexus 6 times out on these tests while waiting for the JS to complete
+crbug.com/611906 [ android qualcomm-adreno-(tm)-420 ] ContextLost_WebGLContextLostFromLoseContextExtension [ Failure ]
+crbug.com/611906 [ android qualcomm-adreno-(tm)-420 ] ContextLost_WebGLContextLostFromQuantity [ Failure ]
+crbug.com/609629 [ android qualcomm-adreno-(tm)-420 ] GpuCrash_GPUProcessCrashesExactlyOncePerVisitToAboutGpuCrash [ Skip ]
+crbug.com/609629 [ android qualcomm-adreno-(tm)-420 ] ContextLost_WebGLContextLostFromGPUProcessExit [ Skip ]
+crbug.com/609629 [ android qualcomm-adreno-(tm)-420 ] ContextLost_WebGLContextLostInHiddenTab [ Skip ]

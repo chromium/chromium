@@ -10,25 +10,18 @@
 class OmniboxPopupContentsView;
 class OmniboxResultView;
 
-namespace gfx {
-class SlideAnimation;
-}
-
 class OmniboxTabSwitchButton : public views::MdTextButton {
  public:
   OmniboxTabSwitchButton(OmniboxPopupContentsView* popup_contents_view,
                          OmniboxResultView* result_view,
                          const base::string16& hint,
                          const base::string16& hint_short,
-                         const gfx::VectorIcon& icon);
+                         const gfx::VectorIcon& icon,
+                         const ui::ThemeProvider* theme_provider);
 
   ~OmniboxTabSwitchButton() override;
 
   // views::MdTextButton:
-  gfx::Size CalculatePreferredSize() const override;
-  void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
-  std::unique_ptr<views::InkDropMask> CreateInkDropMask() const override;
-  void AnimationProgressed(const gfx::Animation* animation) override;
   void StateChanged(ButtonState old_state) override;
 
   // Called by parent views to change background on external (not mouse related)
@@ -37,7 +30,7 @@ class OmniboxTabSwitchButton : public views::MdTextButton {
 
   // Called by parent view to provide the width of the surrounding area
   // so the button can adjust its size or even presence.
-  void ProvideWidthHint(size_t width);
+  void ProvideWidthHint(int width);
 
   // Called to indicate button has been focused.
   void ProvideFocusHint();
@@ -60,9 +53,7 @@ class OmniboxTabSwitchButton : public views::MdTextButton {
 
   // Helper function to translate parent width into goal width, and
   // pass back the text at that width.
-  size_t CalculateGoalWidth(size_t parent_width, base::string16* goal_text);
-
-  static constexpr int kButtonHeight = 32;
+  int CalculateGoalWidth(int parent_width, base::string16* goal_text);
 
   // The ancestor views.
   OmniboxPopupContentsView* const popup_contents_view_;
@@ -70,21 +61,15 @@ class OmniboxTabSwitchButton : public views::MdTextButton {
 
   // Only calculate the width of various contents once.
   static bool calculated_widths_;
-  static size_t icon_only_width_;
-  static size_t short_text_width_;
-  static size_t full_text_width_;
-
-  // To distinguish start-up case, where we don't want animation.
-  bool initialized_;
-  // Animation starting width, and final value.
-  size_t start_width_, goal_width_;
-  // The text to be displayed when we reach |goal_width_|.
-  base::string16 goal_text_;
-  std::unique_ptr<gfx::SlideAnimation> animation_;
+  static int icon_only_width_;
+  static int short_text_width_;
+  static int full_text_width_;
 
   // Label strings for hint text and its short version (may be same).
   base::string16 hint_;
   base::string16 hint_short_;
+
+  const ui::ThemeProvider* theme_provider_;
 
   DISALLOW_COPY_AND_ASSIGN(OmniboxTabSwitchButton);
 };

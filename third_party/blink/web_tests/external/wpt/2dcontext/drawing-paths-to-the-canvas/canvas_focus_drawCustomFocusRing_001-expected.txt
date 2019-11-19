@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-FAIL drawCustomFocusRing must return false for an element that is not focused. context.drawCustomFocusRing is not a function
-FAIL drawCustomFocusRing must return false for an element that is not a descendant of the canvas element. context.drawCustomFocusRing is not a function
-Harness: the test ran to completion.
-

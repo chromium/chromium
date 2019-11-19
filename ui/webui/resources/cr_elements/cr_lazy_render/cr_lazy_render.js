@@ -14,20 +14,15 @@
  *   </cr-lazy-render>
  *
  *   this.$.menu.get().show();
- *
- * TODO(calamity): Use Polymer.Templatize instead of inheriting the
- * Polymer.Templatizer behavior once Polymer 2.0 is available.
  */
 
 Polymer({
   is: 'cr-lazy-render',
 
-  behaviors: [Polymer.Templatizer],
-
   /** @private {?Element} */
   child_: null,
 
-  /** @private {?Element} */
+  /** @private {?Element|?TemplateInstanceBase} */
   instance_: null,
 
   /**
@@ -51,37 +46,17 @@ Polymer({
 
   /** @private */
   render_: function() {
-    const template = this.getContentChildren()[0];
-    if (!this.ctor) {
-      this.templatize(template);
-    }
+    const template =
+        /** @type {!HTMLTemplateElement} */ (this.getContentChildren()[0]);
+    const TemplateClass = Polymer.Templatize.templatize(template, this, {
+      mutableData: false,
+      forwardHostProp: this._forwardHostPropV2,
+    });
     const parentNode = this.parentNode;
     if (parentNode && !this.child_) {
-      this.instance_ = this.stamp({});
+      this.instance_ = new TemplateClass();
       this.child_ = this.instance_.root.firstElementChild;
       parentNode.insertBefore(this.instance_.root, this);
-    }
-  },
-
-  /**
-   * TODO(dpapad): Delete this method once migration to Polymer 2 has finished.
-   * @param {string} prop
-   * @param {Object} value
-   */
-  _forwardParentProp: function(prop, value) {
-    if (this.child_) {
-      this.child_._templateInstance[prop] = value;
-    }
-  },
-
-  /**
-   * TODO(dpapad): Delete this method once migration to Polymer 2 has finished.
-   * @param {string} path
-   * @param {Object} value
-   */
-  _forwardParentPath: function(path, value) {
-    if (this.child_) {
-      this.child_._templateInstance.notifyPath(path, value, true);
     }
   },
 

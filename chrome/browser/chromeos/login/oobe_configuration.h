@@ -76,7 +76,7 @@ class OobeConfiguration {
   base::ObserverList<Observer>::Unchecked observer_list_;
 
   // Factory of callbacks.
-  base::WeakPtrFactory<OobeConfiguration> weak_factory_;
+  base::WeakPtrFactory<OobeConfiguration> weak_factory_{this};
 };
 
 }  // namespace chromeos

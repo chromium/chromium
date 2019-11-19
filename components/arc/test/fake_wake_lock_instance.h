@@ -6,7 +6,7 @@
 #define COMPONENTS_ARC_TEST_FAKE_WAKE_LOCK_INSTANCE_H_
 
 #include "base/macros.h"
-#include "components/arc/common/wake_lock.mojom.h"
+#include "components/arc/mojom/wake_lock.mojom.h"
 
 namespace arc {
 

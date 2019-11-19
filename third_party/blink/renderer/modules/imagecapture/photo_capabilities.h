@@ -5,7 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_IMAGECAPTURE_PHOTO_CAPABILITIES_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_IMAGECAPTURE_PHOTO_CAPABILITIES_H_
 
-#include "media/capture/mojom/image_capture.mojom-blink.h"
+#include "media/capture/mojom/image_capture.mojom-blink-forward.h"
 #include "third_party/blink/renderer/modules/imagecapture/media_settings_range.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -17,8 +17,6 @@ class PhotoCapabilities final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static PhotoCapabilities* Create();
-
   PhotoCapabilities() = default;
   ~PhotoCapabilities() override = default;
 

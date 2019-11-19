@@ -11,6 +11,7 @@
 #include "chrome/browser/profiles/profile_window.h"
 #include "chrome/browser/resource_coordinator/tab_manager_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -77,11 +78,8 @@ IN_PROC_BROWSER_TEST_F(LocalSiteCharacteristicsDataStoreFactoryTest, EndToEnd) {
   EXPECT_TRUE(DataStoreRespectsOffTheRecordValue(incognito_profile,
                                                  incognito_data_store));
 
-  content::WindowedNotificationObserver browser_creation_observer(
-      chrome::NOTIFICATION_BROWSER_OPENED,
-      content::NotificationService::AllSources());
   profiles::SwitchToGuestProfile(ProfileManager::CreateCallback());
-  browser_creation_observer.Wait();
+  ui_test_utils::WaitForBrowserToOpen();
 
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   Profile* guest_profile =

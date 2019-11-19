@@ -91,6 +91,14 @@ inline bool IsSVGGraphicsElement(const SVGElement& element) {
   return element.IsSVGGraphicsElement();
 }
 
+template <>
+struct DowncastTraits<SVGGraphicsElement> {
+  static bool AllowFrom(const Node& node) {
+    auto* svg_element = DynamicTo<SVGElement>(node);
+    return svg_element && IsSVGGraphicsElement(*svg_element);
+  }
+};
+
 DEFINE_SVGELEMENT_TYPE_CASTS_WITH_FUNCTION(SVGGraphicsElement);
 
 }  // namespace blink

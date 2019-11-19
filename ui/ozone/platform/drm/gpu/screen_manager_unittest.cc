@@ -5,7 +5,7 @@
 #include <drm_fourcc.h>
 #include <stddef.h>
 #include <stdint.h>
-
+#include <memory>
 #include <utility>
 
 #include "base/bind_helpers.h"
@@ -28,8 +28,8 @@ namespace ui {
 namespace {
 
 // Create a basic mode for a 6x4 screen.
-const drmModeModeInfo kDefaultMode =
-    {0, 6, 0, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, {'\0'}};
+const drmModeModeInfo kDefaultMode = {0, 6, 0, 0, 0, 0, 4,     0,
+                                      0, 0, 0, 0, 0, 0, {'\0'}};
 
 const uint32_t kPrimaryCrtc = 1;
 const uint32_t kPrimaryConnector = 2;
@@ -60,8 +60,8 @@ class ScreenManagerTest : public testing::Test {
   void SetUp() override {
     auto gbm = std::make_unique<ui::MockGbmDevice>();
     drm_ = new ui::MockDrmDevice(std::move(gbm));
-    device_manager_.reset(new ui::DrmDeviceManager(nullptr));
-    screen_manager_.reset(new ui::ScreenManager());
+    device_manager_ = std::make_unique<ui::DrmDeviceManager>(nullptr);
+    screen_manager_ = std::make_unique<ui::ScreenManager>();
   }
   void TearDown() override {
     screen_manager_.reset();
@@ -82,7 +82,7 @@ class ScreenManagerTest : public testing::Test {
       modifiers.push_back(format_modifier);
     auto buffer = drm_->gbm_device()->CreateBufferWithModifiers(
         format, size, GBM_BO_USE_SCANOUT, modifiers);
-    return DrmFramebuffer::AddFramebuffer(drm_, buffer.get());
+    return DrmFramebuffer::AddFramebuffer(drm_, buffer.get(), modifiers);
   }
 
  protected:

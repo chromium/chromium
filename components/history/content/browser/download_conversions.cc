@@ -5,6 +5,7 @@
 #include "components/history/content/browser/download_conversions.h"
 
 #include "base/logging.h"
+#include "components/download/public/common/download_danger_type.h"
 #include "components/history/core/browser/download_constants.h"
 
 namespace history {
@@ -71,6 +72,20 @@ download::DownloadDangerType ToContentDownloadDangerType(
       return download::DOWNLOAD_DANGER_TYPE_POTENTIALLY_UNWANTED;
     case DownloadDangerType::WHITELISTED_BY_POLICY:
       return download::DOWNLOAD_DANGER_TYPE_WHITELISTED_BY_POLICY;
+    case DownloadDangerType::ASYNC_SCANNING:
+      return download::DOWNLOAD_DANGER_TYPE_ASYNC_SCANNING;
+    case DownloadDangerType::BLOCKED_PASSWORD_PROTECTED:
+      return download::DOWNLOAD_DANGER_TYPE_BLOCKED_PASSWORD_PROTECTED;
+    case DownloadDangerType::BLOCKED_TOO_LARGE:
+      return download::DOWNLOAD_DANGER_TYPE_BLOCKED_TOO_LARGE;
+    case DownloadDangerType::SENSITIVE_CONTENT_WARNING:
+      return download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_WARNING;
+    case DownloadDangerType::SENSITIVE_CONTENT_BLOCK:
+      return download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_BLOCK;
+    case DownloadDangerType::DEEP_SCANNED_SAFE:
+      return download::DOWNLOAD_DANGER_TYPE_DEEP_SCANNED_SAFE;
+    case DownloadDangerType::DEEP_SCANNED_OPENED_DANGEROUS:
+      return download::DOWNLOAD_DANGER_TYPE_DEEP_SCANNED_OPENED_DANGEROUS;
     case DownloadDangerType::INVALID:
       NOTREACHED();
       return download::DOWNLOAD_DANGER_TYPE_MAX;
@@ -102,6 +117,21 @@ DownloadDangerType ToHistoryDownloadDangerType(
       return DownloadDangerType::POTENTIALLY_UNWANTED;
     case download::DOWNLOAD_DANGER_TYPE_WHITELISTED_BY_POLICY:
       return DownloadDangerType::WHITELISTED_BY_POLICY;
+    case download::DOWNLOAD_DANGER_TYPE_ASYNC_SCANNING:
+      return DownloadDangerType::ASYNC_SCANNING;
+    case download::DOWNLOAD_DANGER_TYPE_BLOCKED_PASSWORD_PROTECTED:
+      return DownloadDangerType::BLOCKED_PASSWORD_PROTECTED;
+    case download::DOWNLOAD_DANGER_TYPE_BLOCKED_TOO_LARGE:
+      return DownloadDangerType::BLOCKED_TOO_LARGE;
+    case download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_WARNING:
+      return DownloadDangerType::SENSITIVE_CONTENT_WARNING;
+    case download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_BLOCK:
+      return DownloadDangerType::SENSITIVE_CONTENT_BLOCK;
+    case download::DOWNLOAD_DANGER_TYPE_DEEP_SCANNED_SAFE:
+      return DownloadDangerType::DEEP_SCANNED_SAFE;
+    case download::DOWNLOAD_DANGER_TYPE_DEEP_SCANNED_OPENED_DANGEROUS:
+      return DownloadDangerType::DEEP_SCANNED_OPENED_DANGEROUS;
+
     default:
       NOTREACHED();
       return DownloadDangerType::INVALID;

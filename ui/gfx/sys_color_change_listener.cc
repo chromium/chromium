@@ -74,8 +74,8 @@ SysColorChangeObserver* SysColorChangeObserver::GetInstance() {
 
 SysColorChangeObserver::SysColorChangeObserver()
     : singleton_hwnd_observer_(new SingletonHwndObserver(
-          base::Bind(&SysColorChangeObserver::OnWndProc,
-                     base::Unretained(this)))) {}
+          base::BindRepeating(&SysColorChangeObserver::OnWndProc,
+                              base::Unretained(this)))) {}
 
 SysColorChangeObserver::~SysColorChangeObserver() {}
 

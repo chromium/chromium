@@ -41,6 +41,9 @@ class NotificationDisplayServiceTester {
   // Sets |closure| to be invoked when any notification has been added.
   void SetNotificationAddedClosure(base::RepeatingClosure closure);
 
+  // Sets |closure| to be invoked when any notification has been closed.
+  void SetNotificationClosedClosure(base::RepeatingClosure closure);
+
   // Synchronously gets a vector of the displayed Notifications for the |type|.
   std::vector<message_center::Notification> GetDisplayedNotificationsForType(
       NotificationHandler::Type type);

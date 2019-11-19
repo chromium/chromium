@@ -14,70 +14,17 @@
 #include "base/containers/span.h"
 #include "base/macros.h"
 #include "base/optional.h"
+#include "extensions/browser/api/declarative_net_request/ruleset_source.h"
+#include "extensions/common/api/declarative_net_request.h"
 
 namespace base {
 class FilePath;
-class ListValue;
-class Token;
 }  // namespace base
 
-namespace service_manager {
-class Connector;
-}  // namespace service_manager
-
 namespace extensions {
-struct InstallWarning;
+struct WebRequestInfo;
 
 namespace declarative_net_request {
-struct RulesetSource;
-
-struct IndexAndPersistRulesResult {
- public:
-  static IndexAndPersistRulesResult CreateSuccessResult(
-      int ruleset_checksum,
-      std::vector<InstallWarning> warnings);
-  static IndexAndPersistRulesResult CreateErrorResult(std::string error);
-
-  ~IndexAndPersistRulesResult();
-  IndexAndPersistRulesResult(IndexAndPersistRulesResult&&);
-  IndexAndPersistRulesResult& operator=(IndexAndPersistRulesResult&&);
-
-  // Whether IndexAndPersistRules succeeded.
-  bool success;
-
-  // Checksum of the persisted indexed ruleset file. Valid if |success| if true.
-  int ruleset_checksum;
-
-  // Valid if |success| is true.
-  std::vector<InstallWarning> warnings;
-
-  // Valid if |success| is false.
-  std::string error;
-
- private:
-  IndexAndPersistRulesResult();
-  DISALLOW_COPY_AND_ASSIGN(IndexAndPersistRulesResult);
-};
-
-// Indexes and persists the JSON ruleset for |source|. This is potentially
-// unsafe since the JSON rules file is parsed in-process. Note: This must be
-// called on a sequence where file IO is allowed.
-IndexAndPersistRulesResult IndexAndPersistRulesUnsafe(
-    const RulesetSource& source);
-
-using IndexAndPersistRulesCallback =
-    base::OnceCallback<void(IndexAndPersistRulesResult)>;
-// Same as IndexAndPersistRulesUnsafe but parses the JSON rules file out-of-
-// process. |connector| should be a connector to the ServiceManager usable on
-// the current sequence. Optionally clients can pass a valid |decoder_batch_id|
-// to be used when accessing the data decoder service, which is used internally
-// to parse JSON.
-//
-// NOTE: This must be called on a sequence where file IO is allowed.
-void IndexAndPersistRules(service_manager::Connector* connector,
-                          const base::Optional<base::Token>& decoder_batch_id,
-                          RulesetSource source,
-                          IndexAndPersistRulesCallback callback);
 
 // Returns true if |data| represents a valid data buffer containing indexed
 // ruleset data with |expected_checksum|.
@@ -96,6 +43,26 @@ void SetIndexedRulesetFormatVersionForTesting(int version);
 // Strips the version header from |ruleset_data|. Returns false on version
 // mismatch.
 bool StripVersionHeaderAndParseVersion(std::string* ruleset_data);
+
+// Helper function to persist the indexed ruleset |data| at the given |path|.
+// The ruleset is composed of a version header corresponding to the current
+// ruleset format version, followed by the actual ruleset data. Note: The
+// checksum only corresponds to this ruleset data and does not include the
+// version header.
+bool PersistIndexedRuleset(const base::FilePath& path,
+                           base::span<const uint8_t> data,
+                           int* ruleset_checksum);
+
+// Helper to clear each renderer's in-memory cache the next time it navigates.
+void ClearRendererCacheOnNavigation();
+
+// Helper to log the |kReadDynamicRulesJSONStatusHistogram| histogram.
+void LogReadDynamicRulesStatus(ReadJSONRulesResult::Status status);
+
+// Constructs an api::declarative_net_request::RequestDetails from a
+// WebRequestInfo.
+api::declarative_net_request::RequestDetails CreateRequestDetails(
+    const WebRequestInfo& request);
 
 }  // namespace declarative_net_request
 }  // namespace extensions

@@ -11,6 +11,7 @@
 #include "base/path_service.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_paths.h"
@@ -32,7 +33,7 @@
 #endif
 
 #if defined(OS_ANDROID)
-#include "chrome/common/descriptors_android.h"
+#include "chrome/common/chrome_descriptors.h"
 #endif
 
 #if defined(OS_CHROMEOS)
@@ -44,7 +45,45 @@
 void ChromeCrashReporterClient::Create() {
   static base::NoDestructor<ChromeCrashReporterClient> crash_client;
   crash_reporter::SetCrashReporterClient(crash_client.get());
+
+  // By setting the BREAKPAD_DUMP_LOCATION environment variable, an alternate
+  // location to write crash dumps can be set.
+  std::unique_ptr<base::Environment> env(base::Environment::Create());
+  std::string alternate_crash_dump_location;
+  base::FilePath crash_dumps_dir_path;
+  if (env->GetVar("BREAKPAD_DUMP_LOCATION", &alternate_crash_dump_location)) {
+    crash_dumps_dir_path =
+        base::FilePath::FromUTF8Unsafe(alternate_crash_dump_location);
+  } else if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+                 "breakpad-dump-location")) {
+    // This is needed for Android tests, where we want dumps to go to a location
+    // where they don't get uploaded/deleted, but we can't use environment
+    // variables.
+    crash_dumps_dir_path =
+        base::CommandLine::ForCurrentProcess()->GetSwitchValuePath(
+            "breakpad-dump-location");
+  }
+  if (!crash_dumps_dir_path.empty()) {
+    base::PathService::Override(chrome::DIR_CRASH_DUMPS, crash_dumps_dir_path);
+  }
 }
+
+#if defined(OS_CHROMEOS)
+// static
+bool ChromeCrashReporterClient::ShouldPassCrashLoopBefore(
+    const std::string& process_type) {
+  if (process_type == ::switches::kRendererProcess ||
+      process_type == ::switches::kUtilityProcess ||
+      process_type == ::switches::kPpapiPluginProcess ||
+      process_type == service_manager::switches::kZygoteProcess) {
+    // These process types never cause a log-out, even if they crash. So the
+    // normal crash handling process should work fine; we shouldn't need to
+    // invoke the special crash-loop mode.
+    return false;
+  }
+  return true;
+}
+#endif
 
 ChromeCrashReporterClient::ChromeCrashReporterClient() {}
 
@@ -97,17 +136,15 @@ base::FilePath ChromeCrashReporterClient::GetReporterLogFilename() {
 
 bool ChromeCrashReporterClient::GetCrashDumpLocation(
     base::FilePath* crash_dir) {
-  // By setting the BREAKPAD_DUMP_LOCATION environment variable, an alternate
-  // location to write breakpad crash dumps can be set.
-  std::unique_ptr<base::Environment> env(base::Environment::Create());
-  std::string alternate_crash_dump_location;
-  if (env->GetVar("BREAKPAD_DUMP_LOCATION", &alternate_crash_dump_location)) {
-    base::FilePath crash_dumps_dir_path =
-        base::FilePath::FromUTF8Unsafe(alternate_crash_dump_location);
-    base::PathService::Override(chrome::DIR_CRASH_DUMPS, crash_dumps_dir_path);
-  }
   return base::PathService::Get(chrome::DIR_CRASH_DUMPS, crash_dir);
 }
+
+#if defined(OS_MACOSX) || defined(OS_LINUX)
+bool ChromeCrashReporterClient::GetCrashMetricsLocation(
+    base::FilePath* metrics_dir) {
+  return base::PathService::Get(chrome::DIR_USER_DATA, metrics_dir);
+}
+#endif  // OS_MACOSX || OS_LINUX
 
 bool ChromeCrashReporterClient::IsRunningUnattended() {
   std::unique_ptr<base::Environment> env(base::Environment::Create());
@@ -115,7 +152,7 @@ bool ChromeCrashReporterClient::IsRunningUnattended() {
 }
 
 bool ChromeCrashReporterClient::GetCollectStatsConsent() {
-#if defined(GOOGLE_CHROME_BUILD)
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   bool is_official_chrome_build = true;
 #else
   bool is_official_chrome_build = false;
@@ -127,8 +164,12 @@ bool ChromeCrashReporterClient::GetCollectStatsConsent() {
   bool is_stable_channel =
       chrome::GetChannel() == version_info::Channel::STABLE;
 
-  if (is_guest_session && is_stable_channel)
+  if (is_guest_session && is_stable_channel) {
+    VLOG(1) << "GetCollectStatsConsent(): is_guest_session " << is_guest_session
+            << " && is_stable_channel " << is_stable_channel
+            << " so returning false";
     return false;
+  }
 #endif  // defined(OS_CHROMEOS)
 
 #if defined(OS_ANDROID)
@@ -137,8 +178,15 @@ bool ChromeCrashReporterClient::GetCollectStatsConsent() {
   // do not upload them.
   return is_official_chrome_build;
 #else  // !defined(OS_ANDROID)
-  return is_official_chrome_build &&
-      GoogleUpdateSettings::GetCollectStatsConsent();
+  if (!is_official_chrome_build) {
+    VLOG(1) << "GetCollectStatsConsent(): is_official_chrome_build is false "
+            << "so returning false";
+    return false;
+  }
+  bool settings_consent = GoogleUpdateSettings::GetCollectStatsConsent();
+  VLOG(1) << "GetCollectStatsConsent(): settings_consent: " << settings_consent
+          << " so returning that";
+  return settings_consent;
 #endif  // defined(OS_ANDROID)
 }
 
@@ -147,6 +195,15 @@ int ChromeCrashReporterClient::GetAndroidMinidumpDescriptor() {
   return kAndroidMinidumpDescriptor;
 }
 #endif
+
+#if defined(OS_LINUX)
+bool ChromeCrashReporterClient::ShouldMonitorCrashHandlerExpensively() {
+  // TODO(jperaza): Turn this on less frequently for stable channels when
+  // Crashpad is always enabled on Linux. Consider combining with the
+  // macOS implementation.
+  return true;
+}
+#endif  // OS_LINUX
 
 bool ChromeCrashReporterClient::EnableBreakpadForProcess(
     const std::string& process_type) {

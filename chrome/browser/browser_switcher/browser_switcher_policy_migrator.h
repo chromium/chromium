@@ -9,6 +9,8 @@
 
 namespace browser_switcher {
 
+extern const char kLBSExtensionId[];
+
 class BrowserSwitcherPolicyMigrator
     : public policy::ChromeExtensionPolicyMigrator {
  public:

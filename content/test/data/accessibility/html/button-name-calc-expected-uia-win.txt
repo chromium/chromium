@@ -1,0 +1,14 @@
+document
+++button Name='InnerText0'
+++button Name='InnerText1' FullDescription='Title1'
+++button Name='AriaLabel2' FullDescription='Title2'
+++button Name='LabelledBy3' FullDescription='Title3'
+++button Name='LabelledBy4' FullDescription='DescribedBy4'
+++button Name='InnerText5' FullDescription='DescribedBy5'
+++button Name='Outer inner'
+++++group
+++button Name='Outer inner1'
+++++group Name='inner1'
+++button Name='Outer grandchild'
+++++group
+++++++group

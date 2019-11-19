@@ -30,7 +30,8 @@ class BackgroundFetchDataManager;
 
 // The JobController will be responsible for coordinating communication with the
 // DownloadManager. It will get requests from the RequestManager and dispatch
-// them to the DownloadService. It lives entirely on the IO thread.
+// them to the DownloadService. It lives entirely on the service worker core
+// thread.
 //
 // Lifetime: It is created lazily only once a Background Fetch registration
 // starts downloading, and it is destroyed once no more communication with the
@@ -47,7 +48,11 @@ class CONTENT_EXPORT BackgroundFetchJobController
                               blink::mojom::BackgroundFetchFailureReason,
                               ErrorCallback)>;
   using ProgressCallback = base::RepeatingCallback<void(
-      const blink::mojom::BackgroundFetchRegistration&)>;
+      const std::string& unique_id,
+      const blink::mojom::BackgroundFetchRegistrationData&)>;
+  using RequestStartedCallback =
+      base::OnceCallback<void(const BackgroundFetchRegistrationId&,
+                              const BackgroundFetchRequestInfo*)>;
   using RequestFinishedCallback =
       base::OnceCallback<void(const BackgroundFetchRegistrationId&,
                               scoped_refptr<BackgroundFetchRequestInfo>)>;
@@ -80,9 +85,9 @@ class CONTENT_EXPORT BackgroundFetchJobController
   uint64_t GetInProgressDownloadedBytes();
   uint64_t GetInProgressUploadedBytes();
 
-  // Returns a blink::mojom::BackgroundFetchRegistrationPtr object
+  // Returns a blink::mojom::BackgroundFetchRegistrationDataPtr object
   // created with member fields.
-  blink::mojom::BackgroundFetchRegistrationPtr NewRegistration() const;
+  blink::mojom::BackgroundFetchRegistrationDataPtr NewRegistrationData() const;
 
   const BackgroundFetchRegistrationId& registration_id() const {
     return registration_id_;
@@ -110,8 +115,10 @@ class CONTENT_EXPORT BackgroundFetchJobController
              ErrorCallback callback);
 
   // Request processing.
-  void PopNextRequest(RequestFinishedCallback request_finished_callback);
+  void PopNextRequest(RequestStartedCallback request_started_callback,
+                      RequestFinishedCallback request_finished_callback);
   void DidPopNextRequest(
+      RequestStartedCallback request_started_callback,
       RequestFinishedCallback request_finished_callback,
       blink::mojom::BackgroundFetchError error,
       scoped_refptr<BackgroundFetchRequestInfo> request_info);
@@ -206,7 +213,7 @@ class CONTENT_EXPORT BackgroundFetchJobController
   // Custom callback that runs after the controller is finished.
   FinishedCallback finished_callback_;
 
-  base::WeakPtrFactory<BackgroundFetchJobController> weak_ptr_factory_;
+  base::WeakPtrFactory<BackgroundFetchJobController> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(BackgroundFetchJobController);
 };

@@ -4,8 +4,11 @@
 
 #include "components/leveldb_proto/public/proto_database_provider.h"
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/files/file_path.h"
+#include "base/memory/ptr_util.h"
 #include "base/sequenced_task_runner.h"
 #include "base/synchronization/lock.h"
 #include "base/task/post_task.h"
@@ -23,19 +26,9 @@ const char kSharedProtoDatabaseDirectory[] = "shared_proto_db";
 
 ProtoDatabaseProvider::ProtoDatabaseProvider(const base::FilePath& profile_dir)
     : profile_dir_(profile_dir),
-      task_runner_(base::CreateSequencedTaskRunnerWithTraits(
-          {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
-           base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN})),
-      creation_sequence_(base::SequencedTaskRunnerHandle::Get()),
-      weak_factory_(this) {}
+      client_task_runner_(base::SequencedTaskRunnerHandle::Get()) {}
 
 ProtoDatabaseProvider::~ProtoDatabaseProvider() = default;
-
-// static
-ProtoDatabaseProvider* ProtoDatabaseProvider::Create(
-    const base::FilePath& profile_dir) {
-  return new ProtoDatabaseProvider(profile_dir);
-}
 
 void ProtoDatabaseProvider::GetSharedDBInstance(
     GetSharedDBInstanceCallback callback,

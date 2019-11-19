@@ -87,8 +87,9 @@ void GLOzoneGLX::ShutdownGL() {
 }
 
 bool GLOzoneGLX::GetGLWindowSystemBindingInfo(
+    const gl::GLVersionInfo& gl_info,
     gl::GLWindowSystemBindingInfo* info) {
-  return gl::GetGLWindowSystemBindingInfoGLX(info);
+  return gl::GetGLWindowSystemBindingInfoGLX(gl_info, info);
 }
 
 scoped_refptr<gl::GLContext> GLOzoneGLX::CreateGLContext(

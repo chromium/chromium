@@ -75,12 +75,34 @@ const char* crazy_context_get_error(crazy_context_t* context) _CRAZY_PUBLIC;
 void crazy_context_clear_error(crazy_context_t* context) _CRAZY_PUBLIC;
 
 // Set the explicit load address in a context object. Value 0 means
-// the address is randomized.
+// the address is randomized. NOTE: This will achieve a best-effort load,
+// if the address range is reserved, the library will still be loaded at
+// a different address. Use crazy_context_set_reserved_map() if you want
+// to ensure that the library can only be loaded at a fixed address.
 void crazy_context_set_load_address(crazy_context_t* context,
                                     size_t load_address) _CRAZY_PUBLIC;
 
 // Return the current load address in a context.
 size_t crazy_context_get_load_address(crazy_context_t* context) _CRAZY_PUBLIC;
+
+// Set the explicit library file descriptor in a context object. Values >= 0
+// will be used during the next crazy_library_open() call to read the library
+// file, instead of opening it using its path.
+void crazy_context_set_library_fd(crazy_context_t* context,
+                                  int fd) _CRAZY_PUBLIC;
+
+// Return the current library file descriptor in a context.
+int crazy_context_get_library_fd(crazy_context_t* context) _CRAZY_PUBLIC;
+
+// Set an explicit reserved memory mapping to be used on the next library
+// load. |reserved_address| is the page-aligned reserved address,
+// |reserved_size| is the page-aligned reserved size, and if |load_fallback|
+// is true, then the linker will try to load the library at a different
+// address if it fails to load its segments at the reserved address range.
+void crazy_context_set_reserved_map(crazy_context_t* context,
+                                    uintptr_t reserved_address,
+                                    size_t reserved_size,
+                                    bool load_fallback) _CRAZY_PUBLIC;
 
 // Destroy a given context object.
 void crazy_context_destroy(crazy_context_t* context) _CRAZY_PUBLIC;
@@ -120,10 +142,6 @@ crazy_status_t crazy_add_search_path_for_address(void* address) _CRAZY_PUBLIC;
 // that were added with crazy_add_search_path() or
 // crazy_context_add_search_path_for_address().
 void crazy_reset_search_paths(void) _CRAZY_PUBLIC;
-
-// Pass the platform's SDK build version to the crazy linker. The value is
-// from android.os.Build.VERSION.SDK_INT.
-void crazy_set_sdk_build_version(int sdk_build_version);
 
 // Opaque handle to a library as seen/loaded by the crazy linker.
 typedef struct crazy_library_t crazy_library_t;

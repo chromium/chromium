@@ -120,7 +120,7 @@ class SECURITY_ATTRIBUTES_SDDL : public SECURITY_ATTRIBUTES {
 };
 
 std::wstring CreateSddlWithSid(const Sid& sid) {
-  base::string16 sddl_string;
+  std::wstring sddl_string;
   if (!sid.ToSddlString(&sddl_string))
     return L"";
   std::wstring base_sddl = L"D:(A;;GA;;;WD)(A;;GA;;;";
@@ -153,7 +153,7 @@ void AccessCheckFile(AppContainerProfile* profile,
 }  // namespace
 
 TEST(AppContainerTest, SecurityCapabilities) {
-  if (base::win::GetVersion() < base::win::VERSION_WIN8)
+  if (base::win::GetVersion() < base::win::Version::WIN8)
     return;
 
   // This isn't a valid package SID but it doesn't matter for this test.
@@ -176,7 +176,7 @@ TEST(AppContainerTest, SecurityCapabilities) {
 }
 
 TEST(AppContainerTest, CreateAndDeleteAppContainerProfile) {
-  if (base::win::GetVersion() < base::win::VERSION_WIN8)
+  if (base::win::GetVersion() < base::win::Version::WIN8)
     return;
 
   std::wstring package_name = GenerateRandomPackageName();
@@ -191,7 +191,7 @@ TEST(AppContainerTest, CreateAndDeleteAppContainerProfile) {
 }
 
 TEST(AppContainerTest, CreateAndOpenAppContainerProfile) {
-  if (base::win::GetVersion() < base::win::VERSION_WIN8)
+  if (base::win::GetVersion() < base::win::Version::WIN8)
     return;
 
   std::wstring package_name = GenerateRandomPackageName();
@@ -215,7 +215,7 @@ TEST(AppContainerTest, CreateAndOpenAppContainerProfile) {
 
 TEST(AppContainerTest, SetLowPrivilegeAppContainer) {
   // LPAC first supported in RS1.
-  if (base::win::GetVersion() < base::win::VERSION_WIN10_RS1)
+  if (base::win::GetVersion() < base::win::Version::WIN10_RS1)
     return;
   std::wstring package_name = GenerateRandomPackageName();
   scoped_refptr<AppContainerProfileBase> profile =
@@ -226,7 +226,7 @@ TEST(AppContainerTest, SetLowPrivilegeAppContainer) {
 }
 
 TEST(AppContainerTest, OpenAppContainerProfileAndGetSecurityCapabilities) {
-  if (base::win::GetVersion() < base::win::VERSION_WIN8)
+  if (base::win::GetVersion() < base::win::Version::WIN8)
     return;
 
   std::wstring package_name = GenerateRandomPackageName();
@@ -240,7 +240,7 @@ TEST(AppContainerTest, OpenAppContainerProfileAndGetSecurityCapabilities) {
       no_capabilities.get(), profile->GetPackageSid(), capabilities));
 
   // No support for named capabilities prior to Win10.
-  if (base::win::GetVersion() >= base::win::VERSION_WIN10) {
+  if (base::win::GetVersion() >= base::win::Version::WIN10) {
     ASSERT_TRUE(profile->AddCapability(L"FakeCapability"));
     capabilities.push_back(Sid::FromNamedCapability(L"FakeCapability"));
   }
@@ -256,7 +256,7 @@ TEST(AppContainerTest, OpenAppContainerProfileAndGetSecurityCapabilities) {
 }
 
 TEST(AppContainerTest, GetResources) {
-  if (base::win::GetVersion() < base::win::VERSION_WIN8)
+  if (base::win::GetVersion() < base::win::Version::WIN8)
     return;
 
   std::wstring package_name = GenerateRandomPackageName();
@@ -282,7 +282,7 @@ TEST(AppContainerTest, GetResources) {
 }
 
 TEST(AppContainerTest, AccessCheckFile) {
-  if (base::win::GetVersion() < base::win::VERSION_WIN8)
+  if (base::win::GetVersion() < base::win::Version::WIN8)
     return;
 
   // We don't need a valid profile to do the access check tests.
@@ -308,7 +308,7 @@ TEST(AppContainerTest, AccessCheckFile) {
                   GENERIC_READ | GENERIC_EXECUTE,
                   FILE_GENERIC_READ | FILE_GENERIC_EXECUTE, TRUE);
   // No support for LPAC less than Win10 RS1.
-  if (base::win::GetVersion() < base::win::VERSION_WIN10_RS1)
+  if (base::win::GetVersion() < base::win::Version::WIN10_RS1)
     return;
   profile->SetEnableLowPrivilegeAppContainer(true);
   AccessCheckFile(profile.get(), path, ::WinBuiltinAnyPackageSid,
@@ -318,7 +318,7 @@ TEST(AppContainerTest, AccessCheckFile) {
 }
 
 TEST(AppContainerTest, AccessCheckRegistry) {
-  if (base::win::GetVersion() < base::win::VERSION_WIN8)
+  if (base::win::GetVersion() < base::win::Version::WIN8)
     return;
 
   // We don't need a valid profile to do the access check tests.
@@ -349,7 +349,7 @@ TEST(AppContainerTest, AccessCheckRegistry) {
 }
 
 TEST(AppContainerTest, ImpersonationCapabilities) {
-  if (base::win::GetVersion() < base::win::VERSION_WIN8)
+  if (base::win::GetVersion() < base::win::Version::WIN8)
     return;
 
   std::wstring package_name = GenerateRandomPackageName();
@@ -373,7 +373,7 @@ TEST(AppContainerTest, ImpersonationCapabilities) {
   impersonation_capabilities.push_back(
       Sid::FromKnownCapability(kPrivateNetworkClientServer));
   // No support for named capabilities prior to Win10.
-  if (base::win::GetVersion() >= base::win::VERSION_WIN10) {
+  if (base::win::GetVersion() >= base::win::Version::WIN10) {
     ASSERT_TRUE(profile->AddImpersonationCapability(L"FakeCapability"));
     impersonation_capabilities.push_back(
         Sid::FromNamedCapability(L"FakeCapability"));

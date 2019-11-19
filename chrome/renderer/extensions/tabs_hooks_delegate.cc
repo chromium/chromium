@@ -66,16 +66,15 @@ RequestResult TabsHooksDelegate::HandleRequest(
   if (!handler)
     return RequestResult(RequestResult::NOT_HANDLED);
 
-  std::string error;
-  std::vector<v8::Local<v8::Value>> parsed_arguments;
-  if (!signature->ParseArgumentsToV8(context, *arguments, refs,
-                                     &parsed_arguments, &error)) {
+  APISignature::V8ParseResult parse_result =
+      signature->ParseArgumentsToV8(context, *arguments, refs);
+  if (!parse_result.succeeded()) {
     RequestResult result(RequestResult::INVALID_INVOCATION);
-    result.error = std::move(error);
+    result.error = std::move(*parse_result.error);
     return result;
   }
 
-  return (this->*handler)(script_context, parsed_arguments);
+  return (this->*handler)(script_context, *parse_result.arguments);
 }
 
 RequestResult TabsHooksDelegate::HandleSendRequest(

@@ -1,0 +1,89 @@
+<!--
+@UIA-WIN-DENY:*
+@UIA-WIN-ALLOW:SelectionItem_Element*
+@UIA-WIN-ALLOW:Selection_Invalidated*
+-->
+<!DOCTYPE html>
+<html>
+<body>
+    <select multiple aria-label="Combo1">
+      <option id='opt1'>Option1</option>
+      <option id='opt2'>Option2</option>
+      <option id='opt3'>Option3</option>
+    </select>
+    <select multiple aria-label="Combo2">
+      <option id='opt4' selected>Option4</option>
+      <option id='opt5' selected>Option5</option>
+      <option id='opt6' selected>Option6</option>
+    </select>
+    <select aria-label="Combo3">
+      <option id='opt7' selected>Option7</option>
+      <option id='opt8'>Option8</option>
+      <option id='opt9'>Option9</option>
+    </select>
+    <select multiple aria-label="Combo4">
+      <option id='opt10'>Option10</option>
+      <option id='opt11'>Option11</option>
+      <option id='opt12'>Option12</option>
+      <option id='opt13'>Option13</option>
+      <option id='opt14'>Option14</option>
+      <option id='opt15'>Option15</option>
+      <option id='opt16'>Option16</option>
+      <option id='opt17'>Option17</option>
+      <option id='opt18'>Option18</option>
+      <option id='opt19'>Option19</option>
+      <option id='opt20'>Option20</option>
+      <option id='opt21'>Option21</option>
+      <option id='opt22'>Option22</option>
+      <option id='opt23'>Option23</option>
+      <option id='opt24'>Option24</option>
+      <option id='opt25'>Option25</option>
+      <option id='opt26'>Option26</option>
+      <option id='opt27'>Option27</option>
+      <option id='opt28'>Option28</option>
+      <option id='opt29'>Option29</option>
+      <option id='opt30'>Option30</option>
+      <option id='opt31'>Option31</option>
+      <option id='opt32'>Option32</option>
+      <option id='opt33'>Option33</option>
+      <option id='opt34'>Option34</option>
+      <option id='opt35'>Option35</option>
+      <option id='opt36'>Option36</option>
+      <option id='opt37'>Option37</option>
+      <option id='opt38'>Option38</option>
+      <option id='opt39'>Option39</option>
+    </select>
+    <script>
+      var go_passes = [
+        // Select opt2 & opt3; the first should fire 'ElementSelected' (on opt2,
+        // the only item selected), and then the second should fire
+        // 'ElementAdded'.
+        () => document.getElementById('opt2').setAttribute('selected', 'true'),
+        () => document.getElementById('opt3').setAttribute('selected', 'true'),
+
+        // Deselect opt4 & opt5; the first should fire 'ElementRemoved' (because
+        // there are still multiple elements selected), and the second should
+        // fire 'ElementSelected' (on opt6, the only item that remains
+        // selected).
+        () => document.getElementById('opt4').removeAttribute('selected'),
+        () => document.getElementById('opt5').removeAttribute('selected'),
+
+        // Select opt8 from the third <select>; since this element only supports
+        // single select, it should simply fire 'ElementSelected'.
+        () => document.getElementById('opt8').setAttribute('selected', 'true'),
+
+        // Select a bunch of items from the fourth <select>; beyond 20 changes,
+        // we should just get a 'SelectionInvalidated' event.
+        () => {
+          for(var i = 10; i < 35; ++i)
+            document.getElementById(`opt${i}`).setAttribute('selected', 'true');
+        },
+      ];
+      var current_pass = 0;
+      function go() {
+        go_passes[current_pass++].call();
+        return current_pass < go_passes.length;
+      }
+    </script>
+</body>
+</html>

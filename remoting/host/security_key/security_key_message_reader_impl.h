@@ -61,7 +61,7 @@ class SecurityKeyMessageReaderImpl : public SecurityKeyMessageReader {
   scoped_refptr<base::SingleThreadTaskRunner> read_task_runner_;
 
   base::WeakPtr<SecurityKeyMessageReaderImpl> reader_;
-  base::WeakPtrFactory<SecurityKeyMessageReaderImpl> weak_factory_;
+  base::WeakPtrFactory<SecurityKeyMessageReaderImpl> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(SecurityKeyMessageReaderImpl);
 };

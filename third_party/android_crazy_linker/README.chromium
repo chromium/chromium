@@ -101,3 +101,7 @@ Local Modifications:
 - Improve FileDescriptor class.
 
 - Safer zip parsing code (avoid integer overflows and add range checks).
+
+- Add a document about testing the crazy linker in a Chromium checkout
+
+- Remove unnecessary alignment check for size of area that is about to mmap(2).

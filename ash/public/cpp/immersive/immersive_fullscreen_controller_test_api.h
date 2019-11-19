@@ -30,11 +30,8 @@ class ImmersiveFullscreenControllerTestApi {
   };
 
   // Disables animations and moves the mouse so that it is not over the
-  // top-of-window views for the sake of testing. |wait_for_mouse_move| should
-  // normally be true to wait for the generated mouse events to go through under
-  // mash. It is provided for tests that call SetupForTest under the scope of
-  // TestMockTimeTaskRunner::ScopedContext that does not allow RunLoop::Run().
-  void SetupForTest(bool wait_for_mouse_event = true);
+  // top-of-window views for the sake of testing.
+  void SetupForTest();
 
   bool IsTopEdgeHoverTimerRunning() const;
 

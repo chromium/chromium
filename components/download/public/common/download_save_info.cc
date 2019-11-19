@@ -15,4 +15,8 @@ DownloadSaveInfo::~DownloadSaveInfo() = default;
 
 DownloadSaveInfo::DownloadSaveInfo(DownloadSaveInfo&& that) = default;
 
+int64_t DownloadSaveInfo::GetStartingFileWriteOffset() {
+  return file_offset >= 0 ? file_offset : offset;
+}
+
 }  // namespace download

@@ -12,9 +12,10 @@
 namespace url {
 
 COMPONENT_EXPORT(URL) extern const char kAboutBlankURL[];
+COMPONENT_EXPORT(URL) extern const char kAboutSrcdocURL[];
 
 COMPONENT_EXPORT(URL) extern const char kAboutBlankPath[];
-COMPONENT_EXPORT(URL) extern const char kAboutBlankWithHashPath[];
+COMPONENT_EXPORT(URL) extern const char kAboutSrcdocPath[];
 
 COMPONENT_EXPORT(URL) extern const char kAboutScheme[];
 COMPONENT_EXPORT(URL) extern const char kBlobScheme[];
@@ -25,11 +26,12 @@ COMPONENT_EXPORT(URL) extern const char kDataScheme[];
 COMPONENT_EXPORT(URL) extern const char kFileScheme[];
 COMPONENT_EXPORT(URL) extern const char kFileSystemScheme[];
 COMPONENT_EXPORT(URL) extern const char kFtpScheme[];
-COMPONENT_EXPORT(URL) extern const char kGopherScheme[];
 COMPONENT_EXPORT(URL) extern const char kHttpScheme[];
 COMPONENT_EXPORT(URL) extern const char kHttpsScheme[];
 COMPONENT_EXPORT(URL) extern const char kJavaScriptScheme[];
 COMPONENT_EXPORT(URL) extern const char kMailToScheme[];
+COMPONENT_EXPORT(URL) extern const char kQuicTransportScheme[];
+COMPONENT_EXPORT(URL) extern const char kTelScheme[];
 COMPONENT_EXPORT(URL) extern const char kWsScheme[];
 COMPONENT_EXPORT(URL) extern const char kWssScheme[];
 

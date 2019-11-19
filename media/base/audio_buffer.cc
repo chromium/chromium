@@ -240,7 +240,7 @@ void AudioBuffer::AdjustSampleRate(int sample_rate) {
 void AudioBuffer::ReadFrames(int frames_to_copy,
                              int source_frame_offset,
                              int dest_frame_offset,
-                             AudioBus* dest) {
+                             AudioBus* dest) const {
   // Deinterleave each channel (if necessary) and convert to 32bit
   // floating-point with nominal range -1.0 -> +1.0 (if necessary).
 
@@ -411,7 +411,7 @@ void AudioBuffer::TrimRange(int start, int end) {
   TrimEnd(frames_to_trim);
 }
 
-bool AudioBuffer::IsBitstreamFormat() {
+bool AudioBuffer::IsBitstreamFormat() const {
   return IsBitstream(sample_format_);
 }
 

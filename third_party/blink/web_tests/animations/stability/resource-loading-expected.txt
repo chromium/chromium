@@ -1,1 +1,0 @@
-This test passes if it does not crash. Newly referenced resources in the Web Animations api should be resolved in the style building stage.

@@ -28,7 +28,7 @@ std::string ComputeMurmur2Hash(const std::string& raw_image_data) {
   // image's raw, unsanitized bytes from the web. |raw_image_data| may contain
   // malicious data. Decoding unsanitized bitmap data to an SkBitmap in the
   // browser process is a security bug.
-  uint64_t hash = MurmurHash64A(&raw_image_data.front(), raw_image_data.size(),
+  uint64_t hash = MurmurHash64A(raw_image_data.data(), raw_image_data.size(),
                                 kMurmur2HashSeed);
   return base::NumberToString(hash);
 }
@@ -38,15 +38,18 @@ std::string ComputeMurmur2Hash(const std::string& raw_image_data) {
 // static
 void WebApkIconHasher::DownloadAndComputeMurmur2Hash(
     network::mojom::URLLoaderFactory* url_loader_factory,
+    const url::Origin& request_initiator,
     const GURL& icon_url,
     const Murmur2HashCallback& callback) {
   DownloadAndComputeMurmur2HashWithTimeout(
-      url_loader_factory, icon_url, kDownloadTimeoutInMilliseconds, callback);
+      url_loader_factory, request_initiator, icon_url,
+      kDownloadTimeoutInMilliseconds, callback);
 }
 
 // static
 void WebApkIconHasher::DownloadAndComputeMurmur2HashWithTimeout(
     network::mojom::URLLoaderFactory* url_loader_factory,
+    const url::Origin& request_initiator,
     const GURL& icon_url,
     int timeout_ms,
     const Murmur2HashCallback& callback) {
@@ -69,11 +72,13 @@ void WebApkIconHasher::DownloadAndComputeMurmur2HashWithTimeout(
   }
 
   // The icon hasher will delete itself when it is done.
-  new WebApkIconHasher(url_loader_factory, icon_url, timeout_ms, callback);
+  new WebApkIconHasher(url_loader_factory, request_initiator, icon_url,
+                       timeout_ms, callback);
 }
 
 WebApkIconHasher::WebApkIconHasher(
     network::mojom::URLLoaderFactory* url_loader_factory,
+    const url::Origin& request_initiator,
     const GURL& icon_url,
     int timeout_ms,
     const Murmur2HashCallback& callback)
@@ -86,6 +91,7 @@ WebApkIconHasher::WebApkIconHasher(
                  base::Unretained(this)));
 
   auto resource_request = std::make_unique<network::ResourceRequest>();
+  resource_request->request_initiator = request_initiator;
   resource_request->url = icon_url;
   simple_url_loader_ = network::SimpleURLLoader::Create(
       std::move(resource_request),

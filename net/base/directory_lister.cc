@@ -80,10 +80,10 @@ DirectoryLister::~DirectoryLister() {
 }
 
 void DirectoryLister::Start() {
-  base::PostTaskWithTraits(
-      FROM_HERE,
-      {base::MayBlock(), base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
-      base::BindOnce(&Core::Start, core_));
+  base::PostTask(FROM_HERE,
+                 {base::ThreadPool(), base::MayBlock(),
+                  base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
+                 base::BindOnce(&Core::Start, core_));
 }
 
 void DirectoryLister::Cancel() {
@@ -118,9 +118,9 @@ void DirectoryLister::Core::Start() {
 
   if (!base::DirectoryExists(dir_)) {
     origin_task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(&Core::DoneOnOriginSequence, this,
-                                  base::Passed(std::move(directory_list)),
-                                  ERR_FILE_NOT_FOUND));
+        FROM_HERE,
+        base::BindOnce(&Core::DoneOnOriginSequence, this,
+                       std::move(directory_list), ERR_FILE_NOT_FOUND));
     return;
   }
 
@@ -167,7 +167,7 @@ void DirectoryLister::Core::Start() {
 
   origin_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&Core::DoneOnOriginSequence, this,
-                                base::Passed(std::move(directory_list)), OK));
+                                std::move(directory_list), OK));
 }
 
 bool DirectoryLister::Core::IsCancelled() const {

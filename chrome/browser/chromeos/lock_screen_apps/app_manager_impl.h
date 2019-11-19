@@ -179,7 +179,7 @@ class AppManagerImpl : public AppManager,
   // This counter is reset when the AppManager is restarted.
   int available_lock_screen_app_reloads_ = 0;
 
-  base::WeakPtrFactory<AppManagerImpl> weak_ptr_factory_;
+  base::WeakPtrFactory<AppManagerImpl> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(AppManagerImpl);
 };

@@ -12,20 +12,18 @@
 
 #include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
-#include "components/signin/core/browser/account_info.h"
+#include "components/signin/public/identity_manager/account_info.h"
 #include "ios/chrome/browser/application_context.h"
 #include "ios/chrome/browser/browser_state/browser_state_info_cache.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state_manager.h"
 
 SigninBrowserStateInfoUpdater::SigninBrowserStateInfoUpdater(
-    identity::IdentityManager* identity_manager,
+    signin::IdentityManager* identity_manager,
     SigninErrorController* signin_error_controller,
     const base::FilePath& browser_state_path)
     : identity_manager_(identity_manager),
       signin_error_controller_(signin_error_controller),
-      browser_state_path_(browser_state_path),
-      identity_manager_observer_(this),
-      signin_error_controller_observer_(this) {
+      browser_state_path_(browser_state_path) {
   // Some tests don't have a ChromeBrowserStateManager, disable this service.
   if (!GetApplicationContext()->GetChromeBrowserStateManager())
     return;

@@ -27,16 +27,17 @@ bool MessageInfoToCastMessage(const api::cast_channel::MessageInfo& message,
   message_proto->set_namespace_(message.namespace_);
   // Determine the type of the base::Value and set the message payload
   // appropriately.
-  std::string data;
   switch (message.data->type()) {
     // JS string
-    case base::Value::Type::STRING:
+    case base::Value::Type::STRING: {
+      std::string data;
       if (message.data->GetAsString(&data)) {
         message_proto->set_payload_type(
             ::cast_channel::CastMessage_PayloadType_STRING);
-        message_proto->set_payload_utf8(data);
+        message_proto->set_payload_utf8(std::move(data));
       }
       break;
+    }
     // JS ArrayBuffer
     case base::Value::Type::BINARY:
       message_proto->set_payload_type(

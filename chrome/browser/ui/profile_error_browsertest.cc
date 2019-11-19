@@ -83,7 +83,6 @@ class ProfileErrorBrowserTest : public InProcessBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(ProfileErrorBrowserTest, MAYBE_CorruptedProfile) {
   const char kPaintHistogram[] = "Startup.FirstWebContents.NonEmptyPaint2";
-  const char kLoadHistogram[] = "Startup.FirstWebContents.MainFrameLoad2";
 
   // Navigate to a URL so the first non-empty paint is registered.
   ui_test_utils::NavigateToURL(browser(), GURL("http://www.example.com/"));
@@ -104,10 +103,8 @@ IN_PROC_BROWSER_TEST_P(ProfileErrorBrowserTest, MAYBE_CorruptedProfile) {
 
   if (do_corrupt_) {
     histogram_tester_.ExpectTotalCount(kPaintHistogram, 0);
-    histogram_tester_.ExpectTotalCount(kLoadHistogram, 0);
   } else {
     histogram_tester_.ExpectTotalCount(kPaintHistogram, 1);
-    histogram_tester_.ExpectTotalCount(kLoadHistogram, 1);
   }
 }
 

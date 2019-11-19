@@ -32,13 +32,9 @@
 
 namespace blink {
 
-using namespace html_names;
-
-inline HTMLTitleElement::HTMLTitleElement(Document& document)
-    : HTMLElement(kTitleTag, document),
+HTMLTitleElement::HTMLTitleElement(Document& document)
+    : HTMLElement(html_names::kTitleTag, document),
       ignore_title_updates_when_children_change_(false) {}
-
-DEFINE_NODE_FACTORY(HTMLTitleElement)
 
 Node::InsertionNotificationRequest HTMLTitleElement::InsertedInto(
     ContainerNode& insertion_point) {
@@ -64,8 +60,8 @@ String HTMLTitleElement::text() const {
   StringBuilder result;
 
   for (Node* n = firstChild(); n; n = n->nextSibling()) {
-    if (n->IsTextNode())
-      result.Append(ToText(n)->data());
+    if (auto* text_node = DynamicTo<Text>(n))
+      result.Append(text_node->data());
   }
 
   return result.ToString();

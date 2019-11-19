@@ -1,0 +1,24 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# These are primarily relevant in current_cpu == "x64" contexts, where
+# X64 code is being compiled.
+if (current_cpu == "x64") {
+  declare_args() {
+    # The micro architecture of x64 cpu. This will be a string like "haswell" or
+    # "skylake". An empty string means to use the default architecture which is
+    # "x86-64".
+    # CPU options for "x86-64" in GCC can be found at
+    # https://gcc.gnu.org/onlinedocs/gcc/x86-Options.html
+    # CPU options for "x86-64" in llvm can be found at
+    # https://github.com/llvm/llvm-project/blob/master/llvm/include/llvm/Support/X86TargetParser.def
+    x64_arch = ""
+  }
+
+  if ((is_posix && !(is_mac || is_ios)) || is_fuchsia) {
+    if (x64_arch == "") {
+      x64_arch = "x86-64"
+    }
+  }
+}

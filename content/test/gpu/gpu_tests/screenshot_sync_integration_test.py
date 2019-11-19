@@ -10,7 +10,6 @@ import sys
 from gpu_tests import color_profile_manager
 from gpu_tests import gpu_integration_test
 from gpu_tests import path_util
-from gpu_tests import screenshot_sync_expectations
 
 from telemetry.util import image_util
 from telemetry.util import rgba_color
@@ -71,10 +70,6 @@ class ScreenshotSyncIntegrationTest(gpu_integration_test.GpuIntegrationTest):
       '--force-color-profile=srgb',
       '--ensure-forced-color-profile',
       '--test-type=gpu'] + browser_args
-
-  @classmethod
-  def _CreateExpectations(cls):
-    return screenshot_sync_expectations.ScreenshotSyncExpectations()
 
   @classmethod
   def GenerateGpuTests(cls, options):
@@ -144,6 +139,13 @@ class ScreenshotSyncIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     repetitions = 20
     for _ in range(0, repetitions):
       self._CheckScreenshot()
+
+  @classmethod
+  def ExpectationsFiles(cls):
+    return [
+        os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                     'test_expectations',
+                     'screenshot_sync_expectations.txt')]
 
 def load_tests(loader, tests, pattern):
   del loader, tests, pattern  # Unused.

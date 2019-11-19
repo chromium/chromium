@@ -140,8 +140,6 @@ class VR_UI_EXPORT Text : public TexturedElement {
   void SetUnsupportedCodePointsForTest(bool unsupported);
 
  protected:
-  void SetOnUnhandledCodePointCallback(
-      base::RepeatingCallback<void()> callback);
   void SetOnRenderTextCreated(
       base::RepeatingCallback<void(gfx::RenderText*)> callback);
   void SetOnRenderTextRendered(

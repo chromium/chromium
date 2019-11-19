@@ -1,4 +1,4 @@
 include_rules = [
-  "+jni",
+  "+components/minidump_uploader/minidump_uploader_jni_headers",
   "+third_party/crashpad",
 ]

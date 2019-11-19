@@ -11,7 +11,6 @@
 #include "ui/gfx/image/image.h"
 
 namespace content {
-
 namespace background_fetch {
 
 namespace {
@@ -47,9 +46,10 @@ void SerializeIcon(const SkBitmap& icon, SerializeIconCallback callback) {
   // Do the serialization on a seperate thread to avoid blocking on
   // expensive operations (image conversions), then post back to current
   // thread and continue normally.
-  base::PostTaskWithTraitsAndReplyWithResult(
+  base::PostTaskAndReplyWithResult(
       FROM_HERE,
-      {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN,
+      {base::ThreadPool(), base::MayBlock(),
+       base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN,
        base::TaskPriority::BEST_EFFORT},
       base::BindOnce(&ConvertAndSerializeIcon, icon), std::move(callback));
 }
@@ -60,14 +60,14 @@ void DeserializeIcon(std::unique_ptr<std::string> serialized_icon,
   // Do the deserialization on a seperate thread to avoid blocking on
   // expensive operations (image conversions), then post back to current
   // thread and continue normally.
-  base::PostTaskWithTraitsAndReplyWithResult(
+  base::PostTaskAndReplyWithResult(
       FROM_HERE,
-      {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN,
+      {base::ThreadPool(), base::MayBlock(),
+       base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN,
        base::TaskPriority::BEST_EFFORT},
       base::BindOnce(&DeserializeAndConvertIcon, std::move(serialized_icon)),
       base::BindOnce(std::move(callback)));
 }
 
 }  // namespace background_fetch
-
 }  // namespace content

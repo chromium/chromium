@@ -27,15 +27,15 @@
 
 #include <cmath>
 
+#include "base/compiler_specific.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/wtf/assertions.h"
-#include "third_party/blink/renderer/platform/wtf/cpu.h"
 
 #if defined(OS_MACOSX)
 #include "third_party/blink/renderer/platform/audio/mac/vector_math_mac.h"
-#elif WTF_CPU_ARM_NEON
+#elif defined(CPU_ARM_NEON)
 #include "third_party/blink/renderer/platform/audio/cpu/arm/vector_math_neon.h"
-#elif HAVE_MIPS_MSA_INTRINSICS
+#elif defined(HAVE_MIPS_MSA_INTRINSICS)
 #include "third_party/blink/renderer/platform/audio/cpu/mips/vector_math_msa.h"
 #elif defined(ARCH_CPU_X86_FAMILY)
 #include "third_party/blink/renderer/platform/audio/cpu/x86/vector_math_x86.h"
@@ -50,9 +50,9 @@ namespace vector_math {
 namespace {
 #if defined(OS_MACOSX)
 namespace impl = mac;
-#elif WTF_CPU_ARM_NEON
+#elif defined(CPU_ARM_NEON)
 namespace impl = neon;
-#elif HAVE_MIPS_MSA_INTRINSICS
+#elif defined(HAVE_MIPS_MSA_INTRINSICS)
 namespace impl = msa;
 #elif defined(ARCH_CPU_X86_FAMILY)
 namespace impl = x86;

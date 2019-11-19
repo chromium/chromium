@@ -40,8 +40,7 @@ function setUp() {
 function testCopySuccess() {
   // Dispatch copy event.
   fileOperationManager.dispatchEvent(
-      /** @type {!Event} */ ({
-        type: 'copy-progress',
+      /** @type {!Event} */ (Object.assign(new Event('copy-progress'), {
         taskId: 'TASK_ID',
         reason: fileOperationUtil.EventRouter.EventType.BEGIN,
         status: {
@@ -51,7 +50,7 @@ function testCopySuccess() {
           totalBytes: 200,
           processedBytes: 0,
         },
-      }));
+      })));
 
   // Check the updated item.
   let item = progressCenter.items['TASK_ID'];
@@ -64,14 +63,13 @@ function testCopySuccess() {
 
   // Dispatch success event.
   fileOperationManager.dispatchEvent(
-      /** @type {!Event} */ ({
-        type: 'copy-progress',
+      /** @type {!Event} */ (Object.assign(new Event('copy-progress'), {
         taskId: 'TASK_ID',
         reason: fileOperationUtil.EventRouter.EventType.SUCCESS,
         status: {
           operationType: 'COPY',
         },
-      }));
+      })));
 
   // Check the item completed.
   item = progressCenter.items['TASK_ID'];
@@ -89,8 +87,7 @@ function testCopySuccess() {
 function testCopyCancel() {
   // Dispatch copy event.
   fileOperationManager.dispatchEvent(
-      /** @type {!Event} */ ({
-        type: 'copy-progress',
+      /** @type {!Event} */ (Object.assign(new Event('copy-progress'), {
         taskId: 'TASK_ID',
         reason: fileOperationUtil.EventRouter.EventType.BEGIN,
         status: {
@@ -100,7 +97,7 @@ function testCopyCancel() {
           totalBytes: 200,
           processedBytes: 0,
         },
-      }));
+      })));
 
   // Check the updated item.
   let item = progressCenter.items['TASK_ID'];
@@ -112,14 +109,13 @@ function testCopyCancel() {
 
   // Setup cancel event.
   fileOperationManager.cancelEvent =
-      /** @type {!Event} */ ({
-        type: 'copy-progress',
+      /** @type {!Event} */ (Object.assign(new Event('copy-progress'), {
         taskId: 'TASK_ID',
         reason: fileOperationUtil.EventRouter.EventType.CANCELED,
         status: {
           operationType: 'COPY',
         },
-      });
+      }));
 
   // Dispatch cancel event.
   assertTrue(item.cancelable);
@@ -140,8 +136,7 @@ function testCopyCancel() {
 function testCopyTargetExistsError() {
   // Dispatch error event.
   fileOperationManager.dispatchEvent(
-      /** @type {!Event} */ ({
-        type: 'copy-progress',
+      /** @type {!Event} */ (Object.assign(new Event('copy-progress'), {
         taskId: 'TASK_ID',
         reason: fileOperationUtil.EventRouter.EventType.ERROR,
         status: {
@@ -153,7 +148,7 @@ function testCopyTargetExistsError() {
             name: 'sample.txt',
           },
         },
-      }));
+      })));
 
   // Check the item errored.
   const item = progressCenter.items['TASK_ID'];
@@ -170,8 +165,7 @@ function testCopyTargetExistsError() {
 function testCopyFileSystemError() {
   // Dispatch error event.
   fileOperationManager.dispatchEvent(
-      /** @type {!Event} */ ({
-        type: 'copy-progress',
+      /** @type {!Event} */ (Object.assign(new Event('copy-progress'), {
         taskId: 'TASK_ID',
         reason: fileOperationUtil.EventRouter.EventType.ERROR,
         status: {
@@ -183,7 +177,7 @@ function testCopyFileSystemError() {
             name: 'sample.txt',
           },
         },
-      }));
+      })));
 
   // Check the item errored.
   const item = progressCenter.items['TASK_ID'];
@@ -200,8 +194,7 @@ function testCopyFileSystemError() {
 function testCopyUnexpectedError() {
   // Dispatch error event.
   fileOperationManager.dispatchEvent(
-      /** @type {!Event} */ ({
-        type: 'copy-progress',
+      /** @type {!Event} */ (Object.assign(new Event('copy-progress'), {
         taskId: 'TASK_ID',
         reason: fileOperationUtil.EventRouter.EventType.ERROR,
         status: {
@@ -213,7 +206,7 @@ function testCopyUnexpectedError() {
             name: 'sample.txt',
           },
         },
-      }));
+      })));
 
   // Check the item errored.
   const item = progressCenter.items['TASK_ID'];

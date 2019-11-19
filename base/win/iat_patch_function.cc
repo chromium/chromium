@@ -24,9 +24,9 @@ struct InterceptFunctionInformation {
 };
 
 void* GetIATFunction(IMAGE_THUNK_DATA* iat_thunk) {
-  if (NULL == iat_thunk) {
+  if (!iat_thunk) {
     NOTREACHED();
-    return NULL;
+    return nullptr;
   }
 
   // Works around the 64 bit portability warning:
@@ -48,22 +48,20 @@ bool InterceptEnumCallback(const base::win::PEImage& image, const char* module,
   InterceptFunctionInformation* intercept_information =
     reinterpret_cast<InterceptFunctionInformation*>(cookie);
 
-  if (NULL == intercept_information) {
+  if (!intercept_information) {
     NOTREACHED();
     return false;
   }
 
   DCHECK(module);
 
-  if ((0 == lstrcmpiA(module, intercept_information->imported_from_module)) &&
-     (NULL != name) &&
-     (0 == lstrcmpiA(name, intercept_information->function_name))) {
+  if (name && (0 == lstrcmpiA(name, intercept_information->function_name))) {
     // Save the old pointer.
-    if (NULL != intercept_information->old_function) {
+    if (intercept_information->old_function) {
       *(intercept_information->old_function) = GetIATFunction(iat);
     }
 
-    if (NULL != intercept_information->iat_thunk) {
+    if (intercept_information->iat_thunk) {
       *(intercept_information->iat_thunk) = iat;
     }
 
@@ -104,8 +102,8 @@ DWORD InterceptImportedFunction(HMODULE module_handle,
                                 const char* function_name, void* new_function,
                                 void** old_function,
                                 IMAGE_THUNK_DATA** iat_thunk) {
-  if ((NULL == module_handle) || (NULL == imported_from_module) ||
-     (NULL == function_name) || (NULL == new_function)) {
+  if (!module_handle || !imported_from_module || !function_name ||
+      !new_function) {
     NOTREACHED();
     return ERROR_INVALID_PARAMETER;
   }
@@ -127,10 +125,11 @@ DWORD InterceptImportedFunction(HMODULE module_handle,
 
   // First go through the IAT. If we don't find the import we are looking
   // for in IAT, search delay import table.
-  target_image.EnumAllImports(InterceptEnumCallback, &intercept_information);
+  target_image.EnumAllImports(InterceptEnumCallback, &intercept_information,
+                              imported_from_module);
   if (!intercept_information.finished_operation) {
-    target_image.EnumAllDelayImports(InterceptEnumCallback,
-                                     &intercept_information);
+    target_image.EnumAllDelayImports(
+        InterceptEnumCallback, &intercept_information, imported_from_module);
   }
 
   return intercept_information.return_code;
@@ -147,8 +146,7 @@ DWORD InterceptImportedFunction(HMODULE module_handle,
 DWORD RestoreImportedFunction(void* intercept_function,
                               void* original_function,
                               IMAGE_THUNK_DATA* iat_thunk) {
-  if ((NULL == intercept_function) || (NULL == original_function) ||
-      (NULL == iat_thunk)) {
+  if (!intercept_function || !original_function || !iat_thunk) {
     NOTREACHED();
     return ERROR_INVALID_PARAMETER;
   }
@@ -166,15 +164,10 @@ DWORD RestoreImportedFunction(void* intercept_function,
 
 }  // namespace
 
-IATPatchFunction::IATPatchFunction()
-    : module_handle_(NULL),
-      intercept_function_(NULL),
-      original_function_(NULL),
-      iat_thunk_(NULL) {
-}
+IATPatchFunction::IATPatchFunction() = default;
 
 IATPatchFunction::~IATPatchFunction() {
-  if (NULL != intercept_function_) {
+  if (intercept_function_) {
     DWORD error = Unpatch();
     DCHECK_EQ(static_cast<DWORD>(NO_ERROR), error);
   }
@@ -185,7 +178,7 @@ DWORD IATPatchFunction::Patch(const wchar_t* module,
                               const char* function_name,
                               void* new_function) {
   HMODULE module_handle = LoadLibraryW(module);
-  if (module_handle == NULL) {
+  if (!module_handle) {
     NOTREACHED();
     return GetLastError();
   }
@@ -205,9 +198,9 @@ DWORD IATPatchFunction::PatchFromModule(HMODULE module,
                                         const char* imported_from_module,
                                         const char* function_name,
                                         void* new_function) {
-  DCHECK_EQ(static_cast<void*>(NULL), original_function_);
-  DCHECK_EQ(static_cast<IMAGE_THUNK_DATA*>(NULL), iat_thunk_);
-  DCHECK_EQ(static_cast<void*>(NULL), intercept_function_);
+  DCHECK_EQ(nullptr, original_function_);
+  DCHECK_EQ(nullptr, iat_thunk_);
+  DCHECK_EQ(nullptr, intercept_function_);
   DCHECK(module);
 
   DWORD error = InterceptImportedFunction(module,
@@ -239,10 +232,10 @@ DWORD IATPatchFunction::Unpatch() {
   // not going to be any safer
   if (module_handle_)
     FreeLibrary(module_handle_);
-  module_handle_ = NULL;
-  intercept_function_ = NULL;
-  original_function_ = NULL;
-  iat_thunk_ = NULL;
+  module_handle_ = nullptr;
+  intercept_function_ = nullptr;
+  original_function_ = nullptr;
+  iat_thunk_ = nullptr;
 
   return error;
 }

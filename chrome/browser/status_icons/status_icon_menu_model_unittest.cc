@@ -90,10 +90,6 @@ TEST_F(StatusIconMenuModelTest, SetProperties) {
   menu_model()->ChangeLabelForCommandId(0, ASCIIToUTF16("label2"));
   EXPECT_EQ(ASCIIToUTF16("label2"), menu_model()->GetLabelForCommandId(0));
 
-  // Set the sublabel and icon image for the second menu item.
-  menu_model()->ChangeSublabelForCommandId(1, ASCIIToUTF16("sublabel"));
-  EXPECT_EQ(ASCIIToUTF16("sublabel"), menu_model()->GetSublabelForCommandId(1));
-
   // Try setting icon image and changing it.
   menu_model()->ChangeIconForCommandId(1, test_image1);
   EXPECT_TRUE(menu_model()->GetIconForCommandId(1, &image_arg));
@@ -102,9 +98,8 @@ TEST_F(StatusIconMenuModelTest, SetProperties) {
   // Ensure changes to one menu item does not affect the other menu item.
   EXPECT_FALSE(menu_model()->GetAcceleratorForCommandId(1, &accel_arg));
   EXPECT_EQ(base::string16(), menu_model()->GetLabelForCommandId(1));
-  EXPECT_EQ(base::string16(), menu_model()->GetSublabelForCommandId(0));
   EXPECT_FALSE(menu_model()->GetIconForCommandId(0, &image_arg));
 
-  // Menu state should have changed 7 times in this test.
-  EXPECT_EQ(7, changed_count());
+  // Menu state should have changed 6 times in this test.
+  EXPECT_EQ(6, changed_count());
 }

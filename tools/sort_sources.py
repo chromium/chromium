@@ -86,6 +86,8 @@ should be fixed manually.
 
 """
 
+from __future__ import print_function
+
 import difflib
 import optparse
 import re
@@ -155,7 +157,7 @@ def ProcessFile(filename, should_confirm):
 
   new_lines = SortSources(original_lines)
   if original_lines == new_lines:
-    print '%s: no change' % filename
+    print('%s: no change' % filename)
     return
 
   if should_confirm:

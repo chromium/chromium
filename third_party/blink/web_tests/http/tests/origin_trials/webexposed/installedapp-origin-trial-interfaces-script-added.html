@@ -11,13 +11,18 @@ let token = "Akja9TlIC1gfGeeC9bkfQDkEVUWMgRRPCjxOhbdvY1hs7t5XnI4Nrfd8H0diidi6jrb
 
 let properties_to_check = {'Navigator': ['getInstalledRelatedApps']};
 
-test(t => {
-  OriginTrialsHelper.check_properties_missing(this, properties_to_check);
-}, "InstalledApp related properties is not on interfaces before adding trial token via script.");
+// Can only run this test if feature is not enabled via a Chrome flag.
+// That is only the case when running this in a virtual test suite (by default,
+// runtime enabled features are on for layout tests).
+if (!self.internals.runtimeFlags.installedAppEnabled) {
+  test(t => {
+    OriginTrialsHelper.check_properties_missing(this, properties_to_check);
+  }, "InstalledApp related properties is not on interfaces before adding trial token via script.");
+}
 
 OriginTrialsHelper.add_token(token);
 
 test(t => {
-  OriginTrialsHelper.check_properties(this, properties_to_check);
+  OriginTrialsHelper.check_properties_exist(this, properties_to_check);
 }, "InstalledApp related properties is on interfaces after adding trial token via script.");
 </script>

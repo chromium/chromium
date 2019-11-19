@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/web/public/global_state/ios_global_state_configuration.h"
+#include "ios/web/public/init/ios_global_state_configuration.h"
 
 #include "base/single_thread_task_runner.h"
 #include "base/task/post_task.h"
-#include "ios/web/public/web_task_traits.h"
-#include "ios/web/public/web_thread.h"
+#include "ios/web/public/thread/web_task_traits.h"
+#include "ios/web/public/thread/web_thread.h"
 #include "ios/web_view/internal/web_view_global_state_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -22,7 +22,7 @@ GetSharedNetworkIOThreadTaskRunner() {
   dispatch_once(&once_token, ^{
     ios_web_view::InitializeGlobalState();
   });
-  return base::CreateSingleThreadTaskRunnerWithTraits({web::WebThread::IO});
+  return base::CreateSingleThreadTaskRunner({web::WebThread::IO});
 }
 
 }  // namespace ios_global_state

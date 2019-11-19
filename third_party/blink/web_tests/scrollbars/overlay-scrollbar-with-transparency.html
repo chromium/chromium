@@ -1,0 +1,40 @@
+<!doctype html>
+<style>
+#scroller::-webkit-scrollbar {
+  background: transparent;
+}
+#scroller::-webkit-scrollbar:vertical {
+  width: 100px;
+}
+#scroller::-webkit-scrollbar-thumb {
+  background: transparent;
+}
+#scroller {
+  width: 100px;
+  height: 100px;
+  overflow-y: overlay;
+  overflow-x: hidden;
+  position: relative;
+}
+#notransform {
+  width: 100px;
+  height: 50px;
+  background: green;
+}
+#transform {
+  width: 100px;
+  height: 50px;
+  background: green;
+  will-change: transform;
+}
+</style>
+<!--
+Test for https://crbug.com/984167.
+A transparent overlay scrollbar should not clip the scrolling content.
+There should be a 100x100 green square below.
+-->
+<div id="scroller">
+  <div id="notransform"></div>
+  <div id="transform"></div>
+  <div id="forcescroll" style="height: 200px; width: 10px;"></div>
+</div>

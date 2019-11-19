@@ -35,7 +35,7 @@ class TextResourceDecoderForFuzzing : public TextResourceDecoder {
                                           FuzzedEncoding(fuzzed_data));
 
       case TextResourceDecoderOptions::kAlwaysUseUTF8ForText:
-        return TextResourceDecoderOptions::CreateAlwaysUseUTF8ForText();
+        return TextResourceDecoderOptions::CreateUTF8Decode();
     }
   }
 

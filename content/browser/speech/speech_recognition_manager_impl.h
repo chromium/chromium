@@ -64,9 +64,8 @@ class CONTENT_EXPORT SpeechRecognitionManagerImpl
                                       int render_frame_id) override;
   void StopAudioCaptureForSession(int session_id) override;
   const SpeechRecognitionSessionConfig& GetSessionConfig(
-      int session_id) const override;
-  SpeechRecognitionSessionContext GetSessionContext(
-      int session_id) const override;
+      int session_id) override;
+  SpeechRecognitionSessionContext GetSessionContext(int session_id) override;
 
   // SpeechRecognitionEventListener methods.
   void OnRecognitionStart(int session_id) override;
@@ -194,7 +193,7 @@ class CONTENT_EXPORT SpeechRecognitionManagerImpl
   // Used for posting asynchronous tasks (on the IO thread) without worrying
   // about this class being destroyed in the meanwhile (due to browser shutdown)
   // since tasks pending on a destroyed WeakPtr are automatically discarded.
-  base::WeakPtrFactory<SpeechRecognitionManagerImpl> weak_factory_;
+  base::WeakPtrFactory<SpeechRecognitionManagerImpl> weak_factory_{this};
 };
 
 }  // namespace content

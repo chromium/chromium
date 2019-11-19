@@ -5,6 +5,7 @@
 ''' Base class for preprocessing of RC files.
 '''
 
+from __future__ import print_function
 
 class PreProcessor(object):
   ''' Base class for preprocessing of the RC file data before being

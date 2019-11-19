@@ -35,8 +35,6 @@ class FlashTemporaryPermissionTrackerFactory
   // RefcountedBrowserContextKeyedServiceFactory methods:
   scoped_refptr<RefcountedKeyedService> BuildServiceInstanceFor(
       content::BrowserContext* context) const override;
-
-  // BrowserContextKeyedBaseFactory methods:
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
 

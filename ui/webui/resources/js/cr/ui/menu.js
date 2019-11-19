@@ -47,7 +47,7 @@ cr.define('cr.ui', function() {
     /**
      * Adds menu item at the end of the list.
      * @param {Object} item Menu item properties.
-     * @return {cr.ui.MenuItem} The created menu item.
+     * @return {!cr.ui.MenuItem} The created menu item.
      */
     addMenuItem: function(item) {
       const menuItem = this.ownerDocument.createElement('cr-menu-item');
@@ -171,9 +171,23 @@ cr.define('cr.ui', function() {
      * first.
      */
     focusSelectedItem: function() {
-      if (this.selectedIndex < 0 ||
-          this.selectedIndex > this.menuItems.length) {
-        this.selectedIndex = 0;
+      const items = this.menuItems;
+      if (this.selectedIndex < 0 || this.selectedIndex > items.length) {
+        // Find first visible item to focus by default.
+        for (let idx = 0; idx < items.length; idx++) {
+          const item = items[idx];
+          if (item.hasAttribute('hidden') || item.isSeparator()) {
+            continue;
+          }
+          // If the item is disabled we accept it, but try to find the next
+          // enabled item, but keeping the first disabled item.
+          if (!item.disabled) {
+            this.selectedIndex = idx;
+            break;
+          } else if (this.selectedIndex === -1) {
+            this.selectedIndex = idx;
+          }
+        }
       }
 
       if (this.selectedItem) {
@@ -285,7 +299,7 @@ cr.define('cr.ui', function() {
             // Store |contextElement| since it'll be removed when handling the
             // 'activate' event.
             const contextElement = this.contextElement;
-            const activationEvent = cr.doc.createEvent('Event');
+            const activationEvent = document.createEvent('Event');
             activationEvent.initEvent('activate', true, true);
             activationEvent.originalEvent = e;
             if (item.dispatchEvent(activationEvent)) {

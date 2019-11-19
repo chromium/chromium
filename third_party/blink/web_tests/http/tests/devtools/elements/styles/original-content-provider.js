@@ -34,6 +34,7 @@ div {}
 </style>
 <div id="inspected"></div>
     `);
+  await ElementsTestRunner.selectNodeAndWaitForStylesPromise('inspected');
 
   TestRunner.addSniffer(SDK.CSSModel.prototype, '_originalContentRequestedForTest', onOriginalContentRequested, true);
   function onOriginalContentRequested(header) {
@@ -100,8 +101,8 @@ div {}
 
   function onContents(contents) {
     TestRunner.addResult('== Original ==');
-    TestRunner.addResult(contents[0].trim());
+    TestRunner.addResult(contents[0].content.trim());
     TestRunner.addResult('== Current ==');
-    TestRunner.addResult(contents[1].trim());
+    TestRunner.addResult(contents[1].content.trim());
   }
 })();

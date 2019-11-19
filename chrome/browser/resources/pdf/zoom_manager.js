@@ -2,44 +2,61 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-'use strict';
+import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
+
+import {BrowserApi} from './browser_api.js';
 
 /**
  * Abstract parent of classes that manage updating the browser
  * with zoom changes and/or updating the viewer's zoom when
  * the browser zoom changes.
  */
-class ZoomManager {
+export class ZoomManager {
   /**
-   * @param {!Viewport} viewport A Viewport for which to manage zoom.
+   * @param {function():number} getViewportZoom Callback to get the viewport's
+   *     current zoom level.
    * @param {number} initialZoom The initial browser zoom level.
    */
-  constructor(viewport, initialZoom) {
+  constructor(getViewportZoom, initialZoom) {
     if (this.constructor === ZoomManager) {
       throw new TypeError('Instantiated abstract class: ZoomManager');
     }
-    this.viewport_ = viewport;
+
+    /** @private {number} */
     this.browserZoom_ = initialZoom;
+
+    /** @private {function():number} */
+    this.getViewportZoom_ = getViewportZoom;
+
+    /** @private {!EventTarget} */
+    this.eventTarget_ = new EventTarget();
+  }
+
+  /** @return {!EventTarget} */
+  getEventTarget() {
+    return this.eventTarget_;
   }
 
   /**
    * Creates the appropriate kind of zoom manager given the zoom behavior.
    *
    * @param {BrowserApi.ZoomBehavior} zoomBehavior How to manage zoom.
-   * @param {!Viewport} viewport A Viewport for which to manage zoom.
-   * @param {Function} setBrowserZoomFunction A function that sets the browser
-   *     zoom to the provided value.
+   * @param {function():number} getViewportZoom A function that gets the current
+   *     viewport zoom.
+   * @param {function(number):Promise} setBrowserZoomFunction A function that
+   *     sets the browser zoom to the provided value.
    * @param {number} initialZoom The initial browser zoom level.
    */
-  static create(zoomBehavior, viewport, setBrowserZoomFunction, initialZoom) {
+  static create(
+      zoomBehavior, getViewportZoom, setBrowserZoomFunction, initialZoom) {
     switch (zoomBehavior) {
       case BrowserApi.ZoomBehavior.MANAGE:
         return new ActiveZoomManager(
-            viewport, setBrowserZoomFunction, initialZoom);
+            getViewportZoom, setBrowserZoomFunction, initialZoom);
       case BrowserApi.ZoomBehavior.PROPAGATE_PARENT:
-        return new EmbeddedZoomManager(viewport, initialZoom);
+        return new EmbeddedZoomManager(getViewportZoom, initialZoom);
       default:
-        return new InactiveZoomManager(viewport, initialZoom);
+        return new InactiveZoomManager(getViewportZoom, initialZoom);
     }
   }
 
@@ -96,7 +113,7 @@ class ZoomManager {
  * InactiveZoomManager has no control over the browser's zoom
  * and does not respond to browser zoom changes.
  */
-class InactiveZoomManager extends ZoomManager {}
+export class InactiveZoomManager extends ZoomManager {}
 
 /**
  * ActiveZoomManager controls the browser's zoom.
@@ -104,15 +121,19 @@ class InactiveZoomManager extends ZoomManager {}
 class ActiveZoomManager extends ZoomManager {
   /**
    * Constructs a ActiveZoomManager.
-   *
-   * @param {!Viewport} viewport A Viewport for which to manage zoom.
-   * @param {Function} setBrowserZoomFunction A function that sets the browser
-   *     zoom to the provided value.
+   * @param {function():number} getViewportZoom A function that gets the current
+   *     viewport zoom level
+   * @param {function(number):Promise} setBrowserZoomFunction A function that
+   *     sets the browser zoom to the provided value.
    * @param {number} initialZoom The initial browser zoom level.
    */
-  constructor(viewport, setBrowserZoomFunction, initialZoom) {
-    super(viewport, initialZoom);
+  constructor(getViewportZoom, setBrowserZoomFunction, initialZoom) {
+    super(getViewportZoom, initialZoom);
+
+    /** @private {function(number):Promise} */
     this.setBrowserZoomFunction_ = setBrowserZoomFunction;
+
+    /** @private {?Promise} */
     this.changingBrowserZoom_ = null;
   }
 
@@ -135,11 +156,13 @@ class ActiveZoomManager extends ZoomManager {
     }
 
     this.browserZoom_ = newZoom;
-    this.viewport_.setZoom(newZoom);
+    this.eventTarget_.dispatchEvent(
+        new CustomEvent('set-zoom', {detail: newZoom}));
   }
 
   /**
    * Invoked when an extension-initiated zoom-level change occurs.
+   * @override
    */
   onPdfZoomChange() {
     // If we are already changing the browser zoom level in response to a
@@ -150,20 +173,21 @@ class ActiveZoomManager extends ZoomManager {
       return;
     }
 
-    const zoom = this.viewport_.zoom;
-    if (this.floatingPointEquals(this.browserZoom_, zoom)) {
+    const viewportZoom = this.getViewportZoom_();
+    if (this.floatingPointEquals(this.browserZoom_, viewportZoom)) {
       return;
     }
 
-    this.changingBrowserZoom_ = this.setBrowserZoomFunction_(zoom).then(() => {
-      this.browserZoom_ = zoom;
-      this.changingBrowserZoom_ = null;
+    this.changingBrowserZoom_ =
+        this.setBrowserZoomFunction_(viewportZoom).then(() => {
+          this.browserZoom_ = viewportZoom;
+          this.changingBrowserZoom_ = null;
 
-      // The extension's zoom level may have changed while the browser zoom
-      // change was in progress. We call back into onPdfZoomChange to ensure
-      // the browser zoom is up to date.
-      this.onPdfZoomChange();
-    });
+          // The extension's zoom level may have changed while the browser zoom
+          // change was in progress. We call back into onPdfZoomChange to ensure
+          // the browser zoom is up to date.
+          this.onPdfZoomChange();
+        });
   }
 
   /**
@@ -206,6 +230,7 @@ class EmbeddedZoomManager extends ZoomManager {
   onBrowserZoomChange(newZoom) {
     const oldZoom = this.browserZoom_;
     this.browserZoom_ = newZoom;
-    this.viewport_.updateZoomFromBrowserChange(oldZoom);
+    this.eventTarget_.dispatchEvent(
+        new CustomEvent('update-zoom-from-browser', {detail: oldZoom}));
   }
 }

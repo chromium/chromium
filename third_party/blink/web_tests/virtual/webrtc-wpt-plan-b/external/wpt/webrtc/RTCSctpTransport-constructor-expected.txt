@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+PASS setRemoteDescription() with answer not containing data media should not initialize pc.sctp
+PASS setLocalDescription() with answer not containing data media should not initialize pc.sctp
+FAIL setRemoteDescription() with answer containing data media should initialize pc.sctp assert_not_equals: RTCSctpTransport must be available got disallowed value null
+FAIL setLocalDescription() with answer containing data media should initialize pc.sctp assert_not_equals: RTCSctpTransport must be available got disallowed value null
+Harness: the test ran to completion.
+

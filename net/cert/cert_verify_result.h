@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/memory/ref_counted.h"
+#include "base/supports_user_data.h"
 #include "net/base/net_export.h"
 #include "net/cert/cert_status_flags.h"
 #include "net/cert/ocsp_verify_result.h"
@@ -18,11 +19,20 @@ namespace net {
 class X509Certificate;
 
 // The result of certificate verification.
-class NET_EXPORT CertVerifyResult {
+//
+// Additional debugging or purely informational data may be added through
+// SupportsUserData, but such data must not be used for anything that changes
+// how the results are interpreted or acted upon: any data that changes the
+// meaning of the result must be added as a member in this class, not through
+// SupportsUserData.
+// Any Data added through SupportsUserData must implement Clone().
+class NET_EXPORT CertVerifyResult : public base::SupportsUserData {
  public:
   CertVerifyResult();
   CertVerifyResult(const CertVerifyResult& other);
-  ~CertVerifyResult();
+  ~CertVerifyResult() override;
+
+  CertVerifyResult& operator=(const CertVerifyResult& other);
 
   void Reset();
 

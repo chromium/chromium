@@ -1,6 +1,0 @@
-This is a testharness.js-based test.
-PASS e.style['overflow-wrap'] = "normal" should set the property value
-PASS e.style['overflow-wrap'] = "break-word" should set the property value
-FAIL e.style['overflow-wrap'] = "anywhere" should set the property value assert_not_equals: property should be set got disallowed value ""
-Harness: the test ran to completion.
-

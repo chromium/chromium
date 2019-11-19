@@ -89,20 +89,32 @@ void InputMethodEngine::UpdateComposition(
   }
 }
 
+bool InputMethodEngine::SetCompositionRange(
+    uint32_t before,
+    uint32_t after,
+    const std::vector<ui::ImeTextSpan>& text_spans) {
+  // Not supported on non-Chrome OS platforms.
+  return false;
+}
+
+bool InputMethodEngine::SetSelectionRange(uint32_t start, uint32_t end) {
+  // Not supported on non-Chrome OS platforms.
+  return false;
+}
+
 void InputMethodEngine::CommitTextToInputContext(int context_id,
                                                  const std::string& text) {
-  // Append the text to the buffer, as it allows committing text multiple times
-  // when processing a key event.
-  text_ += text;
-
   ui::IMEInputContextHandlerInterface* input_context =
       ui::IMEBridge::Get()->GetInputContextHandler();
   // If the IME extension is handling key event, hold the text until the key
   // event is handled.
   if (input_context && !handling_key_event_) {
-    input_context->CommitText(text_);
+    input_context->CommitText(text);
     text_ = "";
   } else {
+    // Append the text to the buffer, as it allows committing text multiple
+    // times when processing a key event.
+    text_ += text;
     commit_text_changed_ = true;
   }
 }
@@ -270,14 +282,13 @@ bool InputMethodEngine::IsValidKeyForAllPages(ui::KeyEvent* ui_event) {
                                                            ui::VKEY_RETURN};
   if (ui_event->GetDomKey().IsCharacter() && !ui_event->IsControlDown() &&
       !ui_event->IsCommandDown()) {
-    return !base::ContainsValue(invalid_character_keycodes,
-                                ui_event->key_code());
+    return !base::Contains(invalid_character_keycodes, ui_event->key_code());
   }
 
   // Whitelists Backspace key and arrow keys.
   std::vector<ui::KeyboardCode> whitelist_keycodes{
       ui::VKEY_BACK, ui::VKEY_LEFT, ui::VKEY_RIGHT, ui::VKEY_UP, ui::VKEY_DOWN};
-  return base::ContainsValue(whitelist_keycodes, ui_event->key_code());
+  return base::Contains(whitelist_keycodes, ui_event->key_code());
 }
 
 }  // namespace input_method

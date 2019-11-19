@@ -126,7 +126,7 @@ class CloudExternalDataPolicyObserver
       std::map<std::string, std::unique_ptr<WeakPtrFactory>>;
   FetchWeakPtrMap fetch_weak_ptrs_;
 
-  base::WeakPtrFactory<CloudExternalDataPolicyObserver> weak_factory_;
+  base::WeakPtrFactory<CloudExternalDataPolicyObserver> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(CloudExternalDataPolicyObserver);
 };

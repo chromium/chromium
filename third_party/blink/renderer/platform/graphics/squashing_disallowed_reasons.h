@@ -21,7 +21,6 @@ using SquashingDisallowedReasons = unsigned;
   V(FilterMismatch)                             \
   V(WouldBreakPaintOrder)                       \
   V(SquashingVideoIsDisallowed)                 \
-  V(SquashedLayerClipsCompositingDescendants)   \
   V(SquashingLayoutEmbeddedContentIsDisallowed) \
   V(SquashingBlendingIsDisallowed)              \
   V(NearestFixedPositionMismatch)               \
@@ -30,9 +29,12 @@ using SquashingDisallowedReasons = unsigned;
   V(RenderingContextMismatch)                   \
   V(FragmentedContent)                          \
   V(ClipPathMismatch)                           \
-  V(MaskMismatch)
+  V(MaskMismatch)                               \
+  V(CrossesLayoutContainmentBoundary)
 
 class PLATFORM_EXPORT SquashingDisallowedReason {
+  DISALLOW_NEW();
+
  private:
   // This contains ordinal values for squashing disallowed reasons and will be
   // used to generate the squashing disallowed reason bits.

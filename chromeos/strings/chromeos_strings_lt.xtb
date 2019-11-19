@@ -1,22 +1,41 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="lt">
+<translation id="1482734542997480527"><ph name="ENROLLMENT_DOMAIN" /> tvarko šį įrenginį ir gali stebėti jūsų veiklą.</translation>
 <translation id="1510238584712386396">Paleidimo priemonė</translation>
 <translation id="1734367976349034509">Šis įrenginys valdomas įmonės</translation>
+<translation id="1930797645656624981">„Chrome“ OS įvesties metodo paslauga</translation>
+<translation id="1979103255016296513">Vėluojama pakeisti slaptažodį</translation>
 <translation id="2049639323467105390">Įrenginys valdomas „<ph name="DOMAIN" />“.</translation>
 <translation id="2083960536266308407">Ekrane nieko nerasta</translation>
 <translation id="2338501278241028356">Įjunkite „Bluetooth“, kad aptiktumėte įrenginius netoliese</translation>
 <translation id="2805756323405976993">Taikomosios programos</translation>
 <translation id="2872961005593481000">Stabdyti</translation>
-<translation id="3147142846278915599">Paleidimo priemonė (sinchronizuojamos programos...)</translation>
+<translation id="3008341117444806826">ATNAUJINTI</translation>
+<translation id="3838338534323494292">Naujas slaptažodis</translation>
+<translation id="4003259559679196451"><ph name="ENROLLMENT_DOMAIN" /> tvarko šį įrenginį ir gali pasiekti visus naudotojo veiklos duomenis, įskaitant tinklalapius, kuriuose lankėsi, slaptažodžius ir el. paštą.</translation>
+<translation id="4227825898293920515">Slaptažodžio galiojimas baigsis už <ph name="TIME" /></translation>
+<translation id="4429881212383817840">„Kerberos“ bilietas netrukus baigs galioti</translation>
+<translation id="445059817448385655">Senas slaptažodis</translation>
+<translation id="467510802200863975">Slaptažodžiai neatitinka</translation>
 <translation id="4731797938093519117">Tėvų prieiga</translation>
+<translation id="4890353053343094602">Nedelsdami pasirinkite naują</translation>
 <translation id="5212543919916444558">Ekrane nieko nerasta, dėl ko galėtume jums padėti.
 Palieskite mikrofoną, kad užduotumėte reikiamus klausimus.</translation>
 <translation id="5222676887888702881">Atsijungti</translation>
+<translation id="5317780077021120954">Išsaugoti</translation>
+<translation id="5332948983412042822">Pasirinkite naują slaptažodį dabar</translation>
 <translation id="5457599981699367932">Naršyti kaip svečiui</translation>
 <translation id="54609108002486618">Valdoma</translation>
 <translation id="5832805196449965646">Pridėti asmenį</translation>
 <translation id="5895138241574237353">Paleisti iš naujo</translation>
+<translation id="6058625436358447366">Norėdami užbaigti įveskite seną ir naują slaptažodžius</translation>
+<translation id="6106186594183574873">Norėdami užbaigti įveskite seną slaptažodį</translation>
+<translation id="6146993107019042706">Norėdami užbaigti įveskite naują slaptažodį</translation>
 <translation id="7658239707568436148">Atšaukti</translation>
+<translation id="7690294790491645610">Patvirtinkite naują slaptažodį</translation>
+<translation id="808894953321890993">Keisti slaptažodį</translation>
+<translation id="8747900814994928677">Patvirtinti pakeitimą</translation>
+<translation id="910415269708673980">Atnaujinkite <ph name="PRINCIPAL_NAME" /> bilietą</translation>
 <translation id="9111102763498581341">Atrakinti</translation>
 </translationbundle>

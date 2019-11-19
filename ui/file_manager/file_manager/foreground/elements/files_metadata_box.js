@@ -6,67 +6,46 @@ var FilesMetadataBox = Polymer({
   is: 'files-metadata-box',
 
   properties: {
-    // File media type, e.g. image, video.
+    // File path and type, e.g. image, video.
+    filePath: String,
     type: String,
+
+    // File size, modification time, mimeType.
     size: String,
     modificationTime: String,
-    filePath: String,
     mediaMimeType: String,
 
-    // File type specific metadata below.
-    imageWidth: {
-      type: Number,
-      observer: 'metadataUpdated_',
-    },
-    imageHeight: {
-      type: Number,
-      observer: 'metadataUpdated_',
-    },
-    mediaAlbum: {
-      type: String,
-      observer: 'metadataUpdated_',
-    },
-    mediaArtist: {
-      type: String,
-      observer: 'metadataUpdated_',
-    },
-    mediaDuration: {
-      type: Number,
-      observer: 'metadataUpdated_',
-    },
-    mediaGenre: {
-      type: String,
-      observer: 'metadataUpdated_',
-    },
-    mediaTitle: {
-      type: String,
-      observer: 'metadataUpdated_',
-    },
-    mediaTrack: {
-      type: String,
-      observer: 'metadataUpdated_',
-    },
-    mediaYearRecorded: {
-      type: String,
-      observer: 'metadataUpdated_',
-    },
-    /**
-     * Exif information parsed by exif_parser.js or null if there is no
-     * information.
-     * @type {?Object}
-     */
-    ifd: {
-      type: Object,
-      observer: 'metadataUpdated_',
-    },
-
-    // Whether the size is the middle of loading.
+    // True if the size field is loading.
     isSizeLoading: Boolean,
 
+    // File-specific metadata.
+    /** @type {?Object} */
+    ifd: Object,
+    imageWidth: Number,
+    imageHeight: Number,
+    mediaAlbum: String,
+    mediaArtist: String,
+    mediaDuration: Number,
+    mediaGenre: String,
+    mediaTitle: String,
+    mediaTrack: String,
+    mediaYearRecorded: String,
+
     /**
+     * True if the file has file-specific metadata.
      * @private
      */
-    hasFileSpecificInfo_: Boolean,
+    hasFileSpecificMetadata_: Boolean,
+
+    /**
+     * FilesMetadataBox [metadata] attribute. Used to indicate the metadata box
+     * field rendering phases.
+     * @private
+     */
+    metadata: {
+      type: String,
+      reflectToAttribute: true,
+    },
   },
 
   /**
@@ -74,11 +53,21 @@ var FilesMetadataBox = Polymer({
    * @param {boolean} keepSizeFields do not clear size and isSizeLoading fields.
    */
   clear: function(keepSizeFields) {
-    this.type = '';
+    this.filePath = '';
+    this.metadata = '';
+
+    if (!keepSizeFields) {
+      this.size = '';
+      this.isSizeLoading = false;
+    }
     this.modificationTime = '';
     this.mediaMimeType = '';
-    this.filePath = '';
 
+    this.type = '';
+    this.hasFileSpecificMetadata_ = false;
+
+    /** @type {?Object} */
+    this.ifd = null;
     this.imageWidth = 0;
     this.imageHeight = 0;
     this.mediaTitle = '';
@@ -88,12 +77,6 @@ var FilesMetadataBox = Polymer({
     this.mediaGenre = '';
     this.mediaTrack = '';
     this.mediaYearRecorded = '';
-    this.ifd = null;
-
-    if (!keepSizeFields) {
-      this.size = '';
-      this.isSizeLoading = false;
-    }
   },
 
   /**
@@ -127,15 +110,41 @@ var FilesMetadataBox = Polymer({
   },
 
   /**
-   * Update private properties computed from metadata.
+   * Sets this.hasFileSpecificMetadata_ if there is file-specific metadata.
+   * @return {boolean}
+   *
    * @private
    */
-  metadataUpdated_: function() {
-    this.hasFileSpecificInfo_ =
+  setFileSpecificMetadata_: function() {
+    this.hasFileSpecificMetadata_ =
         !!(this.imageWidth && this.imageHeight || this.mediaTitle ||
            this.mediaArtist || this.mediaAlbum || this.mediaDuration ||
            this.mediaGenre || this.mediaTrack || this.mediaYearRecorded ||
            this.ifd);
+    return this.hasFileSpecificMetadata_;
+  },
+
+  /**
+   * Sets the file |type| field based on setFileSpecificMetadata_().
+   * @public
+   */
+  setFileTypeInfo: function(type) {
+    this.type = this.setFileSpecificMetadata_() ? type : '';
+  },
+
+  /**
+   * Update the metadata attribute with the rendered metadata |type|.
+   * @param {?string} type
+   * @public
+   */
+  metadataRendered: function(type) {
+    if (!type) {
+      this.metadata = '';
+    } else if (!this.metadata) {
+      this.metadata = type;
+    } else {
+      this.metadata += ' ' + type;
+    }
   },
 
   /**
@@ -180,8 +189,17 @@ var FilesMetadataBox = Polymer({
    * @private
    */
   deviceModel_: function(ifd) {
+    if (!ifd) {
+      return '';
+    }
+
+    if (ifd['raw']) {
+      return ifd['raw']['cameraModel'] || '';
+    }
+
     const id = 272;
-    return (ifd && ifd.image && ifd.image[id] && ifd.image[id].value) || '';
+    const model = (ifd.image && ifd.image[id] && ifd.image[id].value) || '';
+    return model.replace(/\0+$/, '').trim();
   },
 
   /**
@@ -226,40 +244,118 @@ var FilesMetadataBox = Polymer({
   },
 
   /**
-   * Returns device settings as a string in the form of
-   * 'FNumber exposureTime focalLength isoSpeedRating'.
-   * Example: 'f/2 1/120 4.67mm ISO108'.
+   * Returns device settings as a string containing the fNumber, exposureTime,
+   * focalLength, and isoSpeed. Example: 'f/2.8 0.008 23mm ISO4000'.
    * @param {?Object} ifd
    * @return {string}
    *
    * @private
    */
   deviceSettings_: function(ifd) {
-    const exif = ifd && ifd.exif;
+    let result = '';
+
+    if (ifd && ifd['raw']) {
+      result = this.rawDeviceSettings_(ifd['raw']);
+    } else if (ifd) {
+      result = this.ifdDeviceSettings_(ifd);
+    }
+
+    return result;
+  },
+
+  /**
+   * @param {!Object} raw
+   * @return {string}
+   *
+   * @private
+   */
+  rawDeviceSettings_: function(raw) {
+    let result = '';
+
+    const aperture = raw['aperture'] || 0;
+    if (aperture) {
+      result += 'f/' + aperture + ' ';
+    }
+
+    const exposureTime = raw['exposureTime'] || 0;
+    if (exposureTime) {
+      result += exposureTime + ' ';
+    }
+
+    const focalLength = raw['focalLength'] || 0;
+    if (focalLength) {
+      result += focalLength + 'mm ';
+    }
+
+    const isoSpeed = raw['isoSpeed'] || 0;
+    if (isoSpeed) {
+      result += 'ISO' + isoSpeed + ' ';
+    }
+
+    return result.trimEnd();
+  },
+
+  /**
+   * @param {!Object} ifd
+   * @return {string}
+   *
+   * @private
+   */
+  ifdDeviceSettings_: function(ifd) {
+    const exif = ifd['exif'];
     if (!exif) {
       return '';
     }
 
-    const f = exif[33437] ? this.parseRational_(exif[33437].value) : 0;
-    let fNumber = '';
-    if (f) {
-      fNumber = 'f/' + (Number.isInteger(f) ? f : Number(f).toFixed(1));
-    }
-    const exposureTime =
-        exif[33434] ? exif[33434].value[0] + '/' + exif[33434].value[1] : '';
-    const focalLength = exif[37386] ?
-        Number(this.parseRational_(exif[37386].value)).toFixed(2) + 'mm' :
-        '';
-    const iso = exif[34855] ? 'ISO' + exif[34855].value : '';
+    /**
+     * @param {Object} field Exif field to be parsed as a number.
+     * @return {number}
+     */
+    function parseExifNumber(field) {
+      let number = 0;
 
-    const values = [fNumber, exposureTime, focalLength, iso];
+      if (field && field.value) {
+        if (Array.isArray(field.value)) {
+          const denominator = parseInt(field.value[1], 10);
+          if (denominator) {
+            number = parseInt(field.value[0], 10) / denominator;
+          }
+        } else {
+          number = parseInt(field.value, 10);
+        }
+
+        if (Number.isNaN(number)) {
+          number = 0;
+        } else if (!Number.isInteger(number)) {
+          number = Number(number.toFixed(3).replace(/0+$/, ''));
+        }
+      }
+
+      return number;
+    }
 
     let result = '';
-    for (let i = 0; i < values.length; i++) {
-      if (values[i]) {
-        result += (result ? ' ' : '') + values[i];
-      }
+
+    const aperture = parseExifNumber(exif[33437]);
+    if (aperture) {
+      result += 'f/' + aperture + ' ';
     }
-    return result;
+
+    const exposureTime = parseExifNumber(exif[33434]);
+    if (exposureTime) {
+      result += exposureTime + ' ';
+    }
+
+    const focalLength = parseExifNumber(exif[37386]);
+    if (focalLength) {
+      result += focalLength + 'mm ';
+    }
+
+    const isoSpeed = parseExifNumber(exif[34855]);
+    if (isoSpeed) {
+      result += 'ISO' + isoSpeed + ' ';
+    }
+
+    return result.trimEnd();
   },
 });

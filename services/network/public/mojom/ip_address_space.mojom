@@ -1,0 +1,17 @@
+// Copyright 2018 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module network.mojom;
+
+// Represents AddressSpace from the "CORS and RFC1918" spec. The ordering is
+// important, as it's used to determine whether preflights are required, as per
+// https://wicg.github.io/cors-rfc1918/#framework
+enum IPAddressSpace {
+  kLocal,    // loopback, link local
+  kPrivate,  // Reserved by RFC1918
+  kPublic,   // Everything else
+
+  kUnknown,  // For security checks, "unknown" will be treated as "public", as
+             // that's the lowest-privilege value.
+};

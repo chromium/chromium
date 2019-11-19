@@ -25,6 +25,7 @@
 
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
+#include "third_party/blink/renderer/core/css/css_rule_list.h"
 #include "third_party/blink/renderer/core/css/pseudo_style_request.h"
 #include "third_party/blink/renderer/core/css/resolver/element_resolve_context.h"
 #include "third_party/blink/renderer/core/css/resolver/match_request.h"
@@ -36,11 +37,9 @@
 namespace blink {
 
 class CSSStyleSheet;
-class CSSRuleList;
 class PartNames;
 class RuleData;
 class SelectorFilter;
-class StaticCSSRuleList;
 class StyleRuleUsageTracker;
 
 // TODO(kochi): ShadowV0CascadeOrder is used only for Shadow DOM V0
@@ -114,7 +113,7 @@ class ElementRuleCollector {
   ~ElementRuleCollector();
 
   void SetMode(SelectorChecker::Mode mode) { mode_ = mode; }
-  void SetPseudoStyleRequest(const PseudoStyleRequest& request) {
+  void SetPseudoElementStyleRequest(const PseudoElementStyleRequest& request) {
     pseudo_style_request_ = request;
   }
   void SetSameOriginOnly(bool f) { same_origin_only_ = f; }
@@ -125,7 +124,7 @@ class ElementRuleCollector {
 
   const MatchResult& MatchedResult() const;
   StyleRuleList* MatchedStyleRuleList();
-  CSSRuleList* MatchedCSSRuleList();
+  RuleIndexList* MatchedCSSRuleList();
 
   void CollectMatchingRules(const MatchRequest&,
                             ShadowV0CascadeOrder = kIgnoreCascadeOrder,
@@ -170,11 +169,11 @@ class ElementRuleCollector {
 
   template <class CSSRuleCollection>
   CSSRule* FindStyleRule(CSSRuleCollection*, StyleRule*);
-  void AppendCSSOMWrapperForRule(CSSStyleSheet*, StyleRule*);
+  void AppendCSSOMWrapperForRule(CSSStyleSheet*, const RuleData*);
 
   void SortMatchedRules();
 
-  StaticCSSRuleList* EnsureRuleList();
+  RuleIndexList* EnsureRuleList();
   StyleRuleList* EnsureStyleRuleList();
 
  private:
@@ -183,7 +182,7 @@ class ElementRuleCollector {
   scoped_refptr<ComputedStyle>
       style_;  // FIXME: This can be mutated during matching!
 
-  PseudoStyleRequest pseudo_style_request_;
+  PseudoElementStyleRequest pseudo_style_request_;
   SelectorChecker::Mode mode_;
   bool can_use_fast_reject_;
   bool same_origin_only_;
@@ -193,7 +192,7 @@ class ElementRuleCollector {
   HeapVector<MatchedRule, 32> matched_rules_;
 
   // Output.
-  Member<StaticCSSRuleList> css_rule_list_;
+  Member<RuleIndexList> css_rule_list_;
   Member<StyleRuleList> style_rule_list_;
   MatchResult result_;
   DISALLOW_COPY_AND_ASSIGN(ElementRuleCollector);

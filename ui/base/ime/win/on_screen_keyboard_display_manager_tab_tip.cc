@@ -102,7 +102,8 @@ class OnScreenKeyboardDetector {
 
   // Should be the last member in the class. Helps ensure that tasks spawned
   // by this class instance are canceled when it is destroyed.
-  base::WeakPtrFactory<OnScreenKeyboardDetector> keyboard_detector_factory_;
+  base::WeakPtrFactory<OnScreenKeyboardDetector> keyboard_detector_factory_{
+      this};
 
   DISALLOW_COPY_AND_ASSIGN(OnScreenKeyboardDetector);
 };
@@ -110,7 +111,7 @@ class OnScreenKeyboardDetector {
 // OnScreenKeyboardDetector member definitions.
 OnScreenKeyboardDetector::OnScreenKeyboardDetector(
     OnScreenKeyboardDisplayManagerTabTip* display_manager)
-    : display_manager_(display_manager), keyboard_detector_factory_(this) {}
+    : display_manager_(display_manager) {}
 
 OnScreenKeyboardDetector::~OnScreenKeyboardDetector() {}
 
@@ -254,13 +255,13 @@ void OnScreenKeyboardDetector::HandleKeyboardHidden() {
 OnScreenKeyboardDisplayManagerTabTip::OnScreenKeyboardDisplayManagerTabTip(
     HWND hwnd)
     : hwnd_(hwnd) {
-  DCHECK_GE(base::win::GetVersion(), base::win::VERSION_WIN8);
+  DCHECK_GE(base::win::GetVersion(), base::win::Version::WIN8);
 }
 
 OnScreenKeyboardDisplayManagerTabTip::~OnScreenKeyboardDisplayManagerTabTip() {}
 
 bool OnScreenKeyboardDisplayManagerTabTip::DisplayVirtualKeyboard() {
-  if (base::win::IsKeyboardPresentOnSlate(nullptr, ui::GetHiddenWindow()))
+  if (base::win::IsKeyboardPresentOnSlate(ui::GetHiddenWindow(), nullptr))
     return false;
 
   if (osk_path_.empty() && !GetOSKPath(&osk_path_)) {

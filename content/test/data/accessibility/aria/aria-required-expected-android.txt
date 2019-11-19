@@ -1,4 +1,4 @@
 android.webkit.WebView focusable focused scrollable
 ++android.view.View role_description='radio group'
 ++++android.widget.RadioButton role_description='radio button' checkable clickable
-++++android.widget.RadioButton role_description='radio button' checkable clickable
+++++android.widget.RadioButton role_description='radio button' checkable clickable item_index=1 row_index=1

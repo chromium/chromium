@@ -12,7 +12,6 @@
 <translation id="2159915644201199628">Не вдалося декодувати зображення: "<ph name="IMAGE_NAME" />"</translation>
 <translation id="2350172092385603347">Використано локалізацію, але параметр мови за умовчанням (default_locale) не визначено в маніфесті.</translation>
 <translation id="2576842806987913196">Файл у форматі CRX із такою назвою вже існує.</translation>
-<translation id="2753617847762399167">Заборонений шлях (узагалі або у зв’язку з ".."): "<ph name="IMAGE_PATH" />"</translation>
 <translation id="2785530881066938471">Неможливо завантажити файл "<ph name="RELATIVE_PATH" />" для сценарію вмісту. Кодування файлу не UTF-8.</translation>
 <translation id="2903070246402204397"><ph name="EXTENSION_NAME" /> (ідентифікатор розширення "<ph name="EXTENSION_ID" />") заблоковано адміністратором. <ph name="ADMIN_INFO" /></translation>
 <translation id="2988488679308982380">Неможливо встановити пакет: "<ph name="ERROR_CODE" />"</translation>
@@ -38,8 +37,6 @@
 <translation id="5436430103864390185">Нестандартні вікна не підтримуються.</translation>
 <translation id="5456409301717116725">Це розширення включає файл ключа "<ph name="KEY_PATH" />". Можливо, ви не хочете цього робити.</translation>
 <translation id="5486326529110362464">Має бути дійсне значення секретного ключа.</translation>
-<translation id="5627523580512561598">розширення <ph name="EXTENSION_NAME" /></translation>
-<translation id="5960890139610307736">ExtensionView: <ph name="EXTENSIONVIEW_TAG_NAME" /></translation>
 <translation id="5972529113578162692">Адміністратор цього комп’ютера вимагає встановити розширення <ph name="EXTENSION_NAME" />. Його неможливо видалити.</translation>
 <translation id="6027032947578871493">Невідомий продукт <ph name="PRODUCT_ID" /> від постачальника <ph name="VENDOR_NAME" /> (серійний номер: <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="6068932090455285721"><ph name="PRODUCT_NAME" /> від постачальника <ph name="VENDOR_ID" /></translation>
@@ -51,7 +48,6 @@
 <translation id="6542618148162044354"><ph name="APP_NAME" /> просить надати доступ до одного або кількох ваших пристроїв:</translation>
 <translation id="657064425229075395">Не вдалося завантажити фоновий сценарій "<ph name="BACKGROUND_SCRIPT" />".</translation>
 <translation id="6580950983454333167"><ph name="PRODUCT_NAME" /> від постачальника <ph name="VENDOR_NAME" /> (серійний номер <ph name="SERIAL_NUMBER" />)</translation>
-<translation id="6731255991101203740">Не вдалося створити каталог для розпакування: "<ph name="DIRECTORY_PATH" />"</translation>
 <translation id="677806580227005219">Обробник MIME: <ph name="MIMEHANDLERVIEW_TAG_NAME" /></translation>
 <translation id="6840444547062817500">Це розширення перезавантажувалося надто часто.</translation>
 <translation id="7003844668372540529">Невідомий продукт <ph name="PRODUCT_ID" /> від постачальника <ph name="VENDOR_NAME" /></translation>

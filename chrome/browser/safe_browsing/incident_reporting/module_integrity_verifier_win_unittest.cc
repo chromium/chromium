@@ -95,7 +95,7 @@ class SafeBrowsingModuleVerifierWinTest : public testing::Test {
         LoadNativeLibrary(base::FilePath(kTestDllNames[0]), NULL);
     ASSERT_NE(static_cast<HMODULE>(NULL), mem_dll_handle)
         << "GLE=" << GetLastError();
-    mem_dll_handle_.Reset(mem_dll_handle);
+    mem_dll_handle_ = base::ScopedNativeLibrary(mem_dll_handle);
     ASSERT_TRUE(mem_dll_handle_.is_valid());
   }
 

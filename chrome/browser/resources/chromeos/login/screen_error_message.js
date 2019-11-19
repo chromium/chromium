@@ -7,19 +7,13 @@
  */
 
 login.createScreen('ErrorMessageScreen', 'error-message', function() {
-  var CONTEXT_KEY_ERROR_STATE_CODE = 'error-state-code';
-  var CONTEXT_KEY_ERROR_STATE_NETWORK = 'error-state-network';
-  var CONTEXT_KEY_GUEST_SIGNIN_ALLOWED = 'guest-signin-allowed';
-  var CONTEXT_KEY_OFFLINE_SIGNIN_ALLOWED = 'offline-signin-allowed';
-  var CONTEXT_KEY_SHOW_CONNECTING_INDICATOR = 'show-connecting-indicator';
-  var CONTEXT_KEY_UI_STATE = 'ui-state';
-
   var USER_ACTION_CONFIGURE_CERTS = 'configure-certs';
   var USER_ACTION_DIAGNOSE = 'diagnose';
   var USER_ACTION_LAUNCH_OOBE_GUEST = 'launch-oobe-guest';
   var USER_ACTION_LOCAL_STATE_POWERWASH = 'local-state-error-powerwash';
   var USER_ACTION_REBOOT = 'reboot';
   var USER_ACTION_SHOW_CAPTIVE_PORTAL = 'show-captive-portal';
+  var USER_ACTION_NETWORK_CONNECTED = 'network-connected';
 
   // Link which starts guest session for captive portal fixing.
   /** @const */ var FIX_CAPTIVE_PORTAL_ID = 'captive-portal-fix-link';
@@ -72,9 +66,16 @@ login.createScreen('ErrorMessageScreen', 'error-message', function() {
 
   return {
     EXTERNAL_API: [
-      'updateLocalizedContent', 'onBeforeShow', 'onBeforeHide',
-      'allowGuestSignin', 'allowOfflineLogin', 'setUIState', 'setErrorState',
-      'showConnectingIndicator'
+      'updateLocalizedContent',
+      'onBeforeShow',
+      'onBeforeHide',
+      'allowGuestSignin',
+      'allowOfflineLogin',
+      'setUIState',
+      'setErrorState',
+      'showConnectingIndicator',
+      'setErrorStateNetwork',
+      'setIsPersistentError',
     ],
 
     // Error screen initial UI state.
@@ -83,12 +84,18 @@ login.createScreen('ErrorMessageScreen', 'error-message', function() {
     // Error screen initial error state.
     error_state_: ERROR_STATE.UNKNOWN,
 
+    // True if it is forbidden to close the error message.
+    is_persistent_error_: false,
+
     /**
      * Whether the screen can be closed.
+     * |is_persistent_error_| prevents error screen to be closable even
+     * if there are some user pods.
+     * (E.g. out of OOBE process on the sign-in screen).
      * @type {boolean}
      */
     get closable() {
-      return Oobe.getInstance().hasUserPods;
+      return Oobe.getInstance().hasUserPods && !this.is_persistent_error_;
     },
 
     /**
@@ -104,31 +111,8 @@ login.createScreen('ErrorMessageScreen', 'error-message', function() {
       this.updateLocalizedContent();
 
       var self = this;
-      this.context.addObserver(
-          CONTEXT_KEY_ERROR_STATE_CODE, function(error_state) {
-            self.setErrorState(error_state);
-          });
-      this.context.addObserver(
-          CONTEXT_KEY_ERROR_STATE_NETWORK, function(network) {
-            self.setNetwork_(network);
-          });
-      this.context.addObserver(
-          CONTEXT_KEY_GUEST_SIGNIN_ALLOWED, function(allowed) {
-            self.allowGuestSignin(allowed);
-          });
-      this.context.addObserver(
-          CONTEXT_KEY_OFFLINE_SIGNIN_ALLOWED, function(allowed) {
-            self.allowOfflineLogin(allowed);
-          });
-      this.context.addObserver(
-          CONTEXT_KEY_SHOW_CONNECTING_INDICATOR, function(show) {
-            self.showConnectingIndicator(show);
-          });
-      this.context.addObserver(CONTEXT_KEY_UI_STATE, function(ui_state) {
-        self.setUIState(ui_state);
-      });
       $('error-message-back-button')
-          .addEventListener('tap', this.cancel.bind(this));
+          .addEventListener('click', this.cancel.bind(this));
 
       $('error-message-md-reboot-button').addEventListener('tap', function(e) {
         self.send(login.Screen.CALLBACK_USER_ACTED, USER_ACTION_REBOOT);
@@ -151,7 +135,7 @@ login.createScreen('ErrorMessageScreen', 'error-message', function() {
             e.stopPropagation();
           });
       $('error-message-md-ok-button').addEventListener('tap', function(e) {
-        chrome.send('cancelOnReset');
+        chrome.send('login.ResetScreen.userActed', ['cancel-reset']);
         e.stopPropagation();
       });
       $('error-message-md-powerwash-button')
@@ -160,6 +144,12 @@ login.createScreen('ErrorMessageScreen', 'error-message', function() {
                 login.Screen.CALLBACK_USER_ACTED,
                 USER_ACTION_LOCAL_STATE_POWERWASH);
             e.stopPropagation();
+          });
+      $('offline-network-control')
+          .addEventListener('selected-network-connected', function(e) {
+            self.send(
+                login.Screen.CALLBACK_USER_ACTED,
+                USER_ACTION_NETWORK_CONNECTED);
           });
     },
 
@@ -252,7 +242,7 @@ login.createScreen('ErrorMessageScreen', 'error-message', function() {
       $('connecting-indicator').innerHTML =
           loadTimeData.getStringF('connectingIndicatorText', ellipsis);
 
-      $('offline-network-control').setCrOncStrings();
+      $('offline-network-control').setOncStrings();
 
       this.onContentChange_();
     },
@@ -272,6 +262,8 @@ login.createScreen('ErrorMessageScreen', 'error-message', function() {
      */
     onBeforeHide: function() {
       Oobe.getInstance().setSigninUIState(SIGNIN_UI_STATE.HIDDEN);
+      // Reset property to the default state.
+      this.setIsPersistentError(false);
     },
 
     /**
@@ -283,12 +275,6 @@ login.createScreen('ErrorMessageScreen', 'error-message', function() {
       this.classList.remove(this.ui_state);
       this.ui_state = ui_state;
       this.classList.add(this.ui_state);
-
-      if (ui_state == ERROR_SCREEN_UI_STATE.LOCAL_STATE_ERROR) {
-        // Hide header bar and progress dots, because there are no way
-        // from the error screen about broken local state.
-        Oobe.getInstance().headerHidden = true;
-      }
       this.onContentChange_();
     },
 
@@ -376,6 +362,14 @@ login.createScreen('ErrorMessageScreen', 'error-message', function() {
     },
 
     /**
+     * Sets current error network state of the screen.
+     * @param {string} network Name of the current network
+     */
+    setErrorStateNetwork: function(value) {
+      this.setNetwork_(value);
+    },
+
+    /**
      * Updates visibility of the label indicating we're reconnecting.
      * @param {boolean} show Whether the label should be shown.
      */
@@ -391,5 +385,12 @@ login.createScreen('ErrorMessageScreen', 'error-message', function() {
       if (this.closable)
         Oobe.showUserPods();
     },
+
+    /**
+     * Makes error message non-closable.
+     */
+    setIsPersistentError: function(is_persistent) {
+      this.is_persistent_error_ = is_persistent;
+    }
   };
 });

@@ -37,17 +37,14 @@ TEST_F(ShortcutInfoTest, AllAttributesUpdate) {
   info_.scope = GURL("https://old.com/");
   manifest_.scope = GURL("https://new.com/");
 
-  info_.display = blink::kWebDisplayModeStandalone;
-  manifest_.display = blink::kWebDisplayModeFullscreen;
+  info_.display = blink::mojom::DisplayMode::kStandalone;
+  manifest_.display = blink::mojom::DisplayMode::kFullscreen;
 
   info_.theme_color = 0xffff0000;
   manifest_.theme_color = 0xffcc0000;
 
   info_.background_color = 0xffaa0000;
   manifest_.background_color = 0xffbb0000;
-
-  info_.splash_screen_url = GURL("https://old.com/splash.html");
-  manifest_.splash_screen_url = GURL("https://new.com/splash.html");
 
   info_.icon_urls.push_back("https://old.com/icon.png");
   blink::Manifest::ImageResource icon;
@@ -63,7 +60,6 @@ TEST_F(ShortcutInfoTest, AllAttributesUpdate) {
   ASSERT_EQ(manifest_.display, info_.display);
   ASSERT_EQ(manifest_.theme_color, info_.theme_color);
   ASSERT_EQ(manifest_.background_color, info_.background_color);
-  ASSERT_EQ(manifest_.splash_screen_url, info_.splash_screen_url);
   ASSERT_EQ(1u, info_.icon_urls.size());
   ASSERT_EQ(manifest_.icons[0].src, GURL(info_.icon_urls[0]));
 }
@@ -101,7 +97,7 @@ TEST_F(ShortcutInfoTest, IgnoreEmptyNameAndShortName) {
 
   info_.name = initial_name;
   info_.short_name = initial_short_name;
-  manifest_.display = blink::kWebDisplayModeStandalone;
+  manifest_.display = blink::mojom::DisplayMode::kStandalone;
   manifest_.name = base::NullableString16(base::string16(), false);
   info_.UpdateFromManifest(manifest_);
 

@@ -48,7 +48,6 @@
         "password": "test-password3"
       }
     ],
-    "Cellular.Carrier": "cellular_provider",
     "Cellular.HomeProvider": {
       "country": "us",
       "name": "cellular_provider"
@@ -56,11 +55,7 @@
     "Cellular.SIMLockStatus": {
       "LockType": "sim-pin",
       "LockEnabled": true
-    },
-    "Cellular.SupportedCarriers": [
-      "cellular_provider",
-      "generic_provider"
-    ],
+    }
   },
-  "Profile": "/profile/default",
+  "Profile": "/profile/default"
 }

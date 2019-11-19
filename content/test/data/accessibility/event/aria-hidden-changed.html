@@ -1,0 +1,28 @@
+<!--
+@UIA-WIN-DENY:*
+@UIA-WIN-ALLOW:AriaProperties*
+-->
+<!DOCTYPE html>
+<html>
+<body>
+  <h4 id="d1">Item1</h4>
+  <h4 id="d2" aria-hidden="true">Item2</h4>
+  <h4 id="d3" aria-hidden="false">Item3</h4>
+  <h4 id="d4" aria-hidden="true">Item4</h4>
+  <script>
+    function go() {
+      // Set aria-hidden from [removed]->false; should not fire an event.
+      document.getElementById('d1').setAttribute('aria-hidden', 'false');
+
+      // Set aria-hidden from true->false; should fire an event.
+      document.getElementById('d2').setAttribute('aria-hidden', 'false');
+
+      // Set aria-hidden from false->true; should fire an event.
+      document.getElementById('d3').setAttribute('aria-hidden', 'true');
+
+      // Set aria-hidden from true->[removed]; should fire an event.
+      document.getElementById('d4').removeAttribute('aria-hidden');
+    }
+  </script>
+</body>
+</html>

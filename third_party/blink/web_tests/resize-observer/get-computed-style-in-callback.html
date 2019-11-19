@@ -1,0 +1,15 @@
+<!doctype HTML>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+
+<div id="sizeChangingDiv"></div>
+
+<script>
+test(() => {
+  document.body.offsetTop;
+  const resizeObserver = new ResizeObserver(() => assert_equals(getComputedStyle(document.body).height, "123px"));
+  resizeObserver.observe(sizeChangingDiv);
+  sizeChangingDiv.style.height = "123px";
+}, "getComputedStyle gets up-to-date style when called from within a ResizeObserver callback");
+</script>
+

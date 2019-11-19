@@ -82,24 +82,24 @@ void ShellContentClient::AddAdditionalSchemes(Schemes* schemes) {
   schemes->csp_bypassing_schemes.push_back(kExtensionScheme);
 }
 
-base::string16 ShellContentClient::GetLocalizedString(int message_id) const {
+base::string16 ShellContentClient::GetLocalizedString(int message_id) {
   return l10n_util::GetStringUTF16(message_id);
 }
 
 base::StringPiece ShellContentClient::GetDataResource(
     int resource_id,
-    ui::ScaleFactor scale_factor) const {
+    ui::ScaleFactor scale_factor) {
   return ui::ResourceBundle::GetSharedInstance().GetRawDataResourceForScale(
       resource_id, scale_factor);
 }
 
 base::RefCountedMemory* ShellContentClient::GetDataResourceBytes(
-    int resource_id) const {
+    int resource_id) {
   return ui::ResourceBundle::GetSharedInstance().LoadDataResourceBytes(
       resource_id);
 }
 
-gfx::Image& ShellContentClient::GetNativeImageNamed(int resource_id) const {
+gfx::Image& ShellContentClient::GetNativeImageNamed(int resource_id) {
   return ui::ResourceBundle::GetSharedInstance().GetNativeImageNamed(
       resource_id);
 }

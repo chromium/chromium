@@ -11,9 +11,7 @@ An Android app bundle is an alternative application distribution format for
 Android applications on the Google Play Store, that allows reducing the size
 of binaries sent for installation to individual devices that run on Android L
 and beyond. For more information about them, see the official Android
-documentation at:
-
-  https://developer.android.com/guide/app-bundle/
+[documentation](https://developer.android.com/guide/app-bundle/).
 
 For the context of this document, the most important points are:
 
@@ -26,9 +24,10 @@ For the context of this document, the most important points are:
   - The splitting can be based on various criteria: e.g. language or screen
     density for resources, or cpu ABI for native code.
 
-  - The bundle also uses the notion of modules to separate several application
-    features. Each module has its own code, assets and resources, and can be
-    installed separately from the rest of the application if needed.
+  - The bundle also uses the notion of dynamic features modules (DFMs) to
+    separate several application features. Each module has its own code, assets
+    and resources, and can be installed separately from the rest of the
+    application if needed.
 
   - The main application itself is stored in the '`base`' module (this name
     cannot be changed).
@@ -36,8 +35,8 @@ For the context of this document, the most important points are:
 
 # Declaring app bundles with GN templates
 
-Here's an example that shows how to declare a simple bundle that contains
-a single base module, which enables language-based splits:
+Here's an example that shows how to declare a simple bundle that contains a
+single base module, which enables language-based splits:
 
 ```gn
 
@@ -83,9 +82,14 @@ the following:
     This works like an APK wrapper script (e.g. `foo_apk`). Use `--help`
     to see all possible commands supported by the script.
 
-If you need more modules besides the base one, you will need to list all the
-extra ones using the extra_modules variable which takes a list of GN scopes,
-as in:
+
+# Declaring dynamic feature modules with GN templates
+
+Please see
+[Dynamic Feature Modules](../../../docs/android_dynamic_feature_modules.md) for
+more details. In short, if you need more modules besides the base one, you
+will need to list all the extra ones using the extra_modules variable which
+takes a list of GN scopes, as in:
 
 ```gn
 
@@ -196,4 +200,11 @@ able to look at its content (with `unzip -l`), or install it manually with:
   build/android/gyp/bundletool.py install-apks \
       --apks=/tmp/BundleFoo.apks \
       --adb=$(which adb)
+```
+
+The task of examining the manifest is simplified by running the following,
+which dumps the application manifest as XML to stdout:
+
+```sh
+  build/android/gyp/bundletool.py dump-manifest
 ```

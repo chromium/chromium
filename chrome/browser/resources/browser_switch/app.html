@@ -1,0 +1,31 @@
+<style>
+  :host {
+    @apply --cr-card-elevation;
+    background-color: var(--cr-card-background-color);
+    border-radius: var(--cr-card-border-radius);
+    display: block;
+    margin: 16px;
+    max-width: 640px;
+    min-width: 500px;
+    padding: 16px;
+  }
+
+  h1 {
+    color: var(--cr-primary-text-color);
+    font-size: 1rem;
+    font-weight: 500;
+    margin: 0;
+    padding: 0 0 14px 0;
+  }
+
+  p {
+    color: var(--cr-primary-text-color);
+    /* Should be 13px when html font-size is 16px */
+    font-size: 0.8125rem;
+    margin: 0;
+    max-width: 450px;
+  }
+</style>
+
+<h1>[[computeTitle_(error_, secondCounter_)]]</h1>
+<p inner-h-t-m-l="[[computeDescription_(url_, error_)]]"></p>

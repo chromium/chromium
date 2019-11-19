@@ -6,7 +6,7 @@
 
 #include "base/callback.h"
 #include "base/run_loop.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/events/event.h"
@@ -67,8 +67,7 @@ class MockMediaKeysListenerDelegate : public MediaKeysListener::Delegate {
 class GlobalMediaKeysListenerWinInteractiveTest : public testing::Test {
  public:
   GlobalMediaKeysListenerWinInteractiveTest()
-      : scoped_task_environment_(
-            base::test::ScopedTaskEnvironment::MainThreadType::UI) {}
+      : task_environment_(base::test::TaskEnvironment::MainThreadType::UI) {}
 
  protected:
   void SendKeyDown(KeyboardCode code) {
@@ -90,7 +89,7 @@ class GlobalMediaKeysListenerWinInteractiveTest : public testing::Test {
   }
 
  private:
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_;
   DWORD time_stamp_ = 0;
 
   DISALLOW_COPY_AND_ASSIGN(GlobalMediaKeysListenerWinInteractiveTest);

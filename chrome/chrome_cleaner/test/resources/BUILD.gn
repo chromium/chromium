@@ -5,6 +5,9 @@
 import("//build/config/win/manifest.gni")
 import("//tools/grit/grit_rule.gni")
 
+# Nothing outside //chrome/chrome_cleaner can depend on these targets.
+visibility = [ "//chrome/chrome_cleaner/*" ]
+
 sample_dll_file = "$root_out_dir/empty_dll.dll"
 
 sample_dll_digest_pb_file = "$target_gen_dir/sample_dll_digest.pb"
@@ -15,6 +18,7 @@ action("compute_sample_dll_digest") {
   deps = [
     "//chrome/chrome_cleaner/proto:file_digest_proto",
     "//chrome/chrome_cleaner/test:empty_dll",
+    "//third_party/protobuf:py_proto",
   ]
 
   inputs = [

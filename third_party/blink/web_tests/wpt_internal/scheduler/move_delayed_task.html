@@ -1,0 +1,31 @@
+<!doctype html>
+<title>Scheduling API: Move Delayed Tasks</title>
+<link rel="author" title="Scott Haseley" href="mailto:shaseley@chromium.org">
+<link rel="help" href="https://github.com/WICG/main-thread-scheduling">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<script>
+'use strict';
+
+let taskCount = 0;
+let taskToMove;
+
+async_test(t => {
+  let now = performance.now();
+
+  scheduler.postTask(t.step_func(() => {
+    assert_equals(++taskCount, 1);
+    scheduler.getTaskQueue('immediate').take(taskToMove);
+  }), { priority: 'immediate', delay: 10 });
+
+  taskToMove = scheduler.postTask(t.step_func_done(() => {
+    assert_equals(++taskCount, 2);
+
+    let elapsed = performance.now() - now;
+    assert_greater_than_equal(elapsed, 20);
+  }), { priority: 'low', delay: 20 });
+
+}, 'Tests delay when moving a delayed task');
+
+</script>

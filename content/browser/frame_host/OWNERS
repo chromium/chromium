@@ -1,4 +1,7 @@
 # COMPONENT: Internals>Sandbox>SiteIsolation
+# TEAM: site-isolation-dev@chromium.org
+
+arthursonzogni@chromium.org
 
 # For surface ID propagation and synchronization
 per-file render_widget_host_view_guest*=fsamuel@chromium.org
@@ -9,3 +12,6 @@ per-file render_widget_host_view_guest*=jonross@chromium.org
 per-file cross_process_frame_connector*=kenrb@chromium.org
 per-file render_frame_host_impl*=kenrb@chromium.org
 per-file render_widget_host_view_guest*=kenrb@chromium.org
+
+# BackForwardCache
+per-file back_forward_cache*=altimin@chromium.org

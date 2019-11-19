@@ -5,7 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_RESOURCE_FETCHER_PROPERTIES_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_RESOURCE_FETCHER_PROPERTIES_H_
 
-#include "third_party/blink/public/mojom/service_worker/service_worker_object.mojom-shared.h"
+#include "third_party/blink/public/mojom/service_worker/controller_service_worker_mode.mojom-blink.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/scheduler/public/frame_status.h"
@@ -24,12 +24,16 @@ class FetchClientSettingsObject;
 // GetCachePolicy(const ResourceRequest&, ResourceType). Do not put a function
 // with default implementation.
 //
+// Storing a non-null ResourceFetcherProperties in an object that can be valid
+// after the associated ResourceFetcher is detached is dangerous. Use
+// DetachedResourceFetcherProperties below.
+//
 // The distinction between FetchClientSettingsObject and
 // ResourceFetcherProperties is sometimes ambiguous. Put a property in
 // FetchClientSettingsObject when the property is clearly defined in the spec.
 // Otherwise, put it to this class.
 class PLATFORM_EXPORT ResourceFetcherProperties
-    : public GarbageCollectedFinalized<ResourceFetcherProperties> {
+    : public GarbageCollected<ResourceFetcherProperties> {
  public:
   using ControllerServiceWorkerMode = mojom::ControllerServiceWorkerMode;
 
@@ -70,9 +74,83 @@ class PLATFORM_EXPORT ResourceFetcherProperties
   // Returns whether we should disallow a sub resource loading.
   virtual bool ShouldBlockLoadingSubResource() const = 0;
 
+  // Returns whether we should de-prioritize requests in sub frames.
+  // TODO(yhirano): Make this ShouldDepriotizeRequest once the related
+  // histograms get deprecated. See https://crbug.com/800035.
+  virtual bool IsSubframeDeprioritizationEnabled() const = 0;
+
   // Returns the scheduling status of the associated frame. Returns |kNone|
   // if there is no such a frame.
   virtual scheduler::FrameStatus GetFrameStatus() const = 0;
+};
+
+// A delegating ResourceFetcherProperties subclass which can be retained
+// even when the associated ResourceFetcher is detached.
+class PLATFORM_EXPORT DetachableResourceFetcherProperties final
+    : public ResourceFetcherProperties {
+ public:
+  explicit DetachableResourceFetcherProperties(
+      const ResourceFetcherProperties& properties)
+      : properties_(properties) {}
+  ~DetachableResourceFetcherProperties() override = default;
+
+  void Detach();
+
+  void Trace(Visitor* visitor) override;
+
+  // ResourceFetcherProperties implementation
+  // Add a test in resource_fetcher_test.cc when you change behaviors.
+  const FetchClientSettingsObject& GetFetchClientSettingsObject()
+      const override {
+    return properties_ ? properties_->GetFetchClientSettingsObject()
+                       : *fetch_client_settings_object_;
+  }
+  bool IsMainFrame() const override {
+    return properties_ ? properties_->IsMainFrame() : is_main_frame_;
+  }
+  ControllerServiceWorkerMode GetControllerServiceWorkerMode() const override {
+    return properties_ ? properties_->GetControllerServiceWorkerMode()
+                       : ControllerServiceWorkerMode::kNoController;
+  }
+  int64_t ServiceWorkerId() const override {
+    // When detached, GetControllerServiceWorkerMode returns kNoController, so
+    // this function must not be called.
+    DCHECK(properties_);
+    return properties_->ServiceWorkerId();
+  }
+  bool IsPaused() const override {
+    return properties_ ? properties_->IsPaused() : paused_;
+  }
+  bool IsDetached() const override {
+    return properties_ ? properties_->IsDetached() : true;
+  }
+  bool IsLoadComplete() const override {
+    return properties_ ? properties_->IsLoadComplete() : load_complete_;
+  }
+  bool ShouldBlockLoadingSubResource() const override {
+    // Returns true when detached in order to preserve the existing behavior.
+    return properties_ ? properties_->ShouldBlockLoadingSubResource() : true;
+  }
+  bool IsSubframeDeprioritizationEnabled() const override {
+    return properties_ ? properties_->IsSubframeDeprioritizationEnabled()
+                       : is_subframe_deprioritization_enabled_;
+  }
+
+  scheduler::FrameStatus GetFrameStatus() const override {
+    return properties_ ? properties_->GetFrameStatus()
+                       : scheduler::FrameStatus::kNone;
+  }
+
+ private:
+  // |properties_| is null if and only if detached.
+  Member<const ResourceFetcherProperties> properties_;
+
+  // The following members are used when detached.
+  Member<const FetchClientSettingsObject> fetch_client_settings_object_;
+  bool is_main_frame_ = false;
+  bool paused_ = false;
+  bool load_complete_ = false;
+  bool is_subframe_deprioritization_enabled_ = false;
 };
 
 }  // namespace blink

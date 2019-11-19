@@ -33,7 +33,7 @@ class ElevationIconSetter {
   void SetButtonIcon(base::OnceClosure callback, const SkBitmap& icon);
 
   views::LabelButton* button_;
-  base::WeakPtrFactory<ElevationIconSetter> weak_factory_;
+  base::WeakPtrFactory<ElevationIconSetter> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ElevationIconSetter);
 };

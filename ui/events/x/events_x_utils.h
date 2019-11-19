@@ -12,6 +12,7 @@
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
 #include "ui/events/event_constants.h"
+#include "ui/events/pointer_details.h"
 #include "ui/events/x/events_x_export.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/x/x11_types.h"
@@ -48,9 +49,6 @@ EVENTS_X_EXPORT int GetChangedMouseButtonFlagsFromXEvent(const XEvent& xev);
 // Gets the mouse wheel offsets from a XEvent.
 EVENTS_X_EXPORT gfx::Vector2d GetMouseWheelOffsetFromXEvent(const XEvent& xev);
 
-// Clear the touch id from bookkeeping if it is a release/cancel event.
-EVENTS_X_EXPORT void ClearTouchIdIfReleasedFromXEvent(const XEvent& xev);
-
 // Gets the touch id from a XEvent.
 EVENTS_X_EXPORT int GetTouchIdFromXEvent(const XEvent& xev);
 
@@ -67,6 +65,10 @@ EVENTS_X_EXPORT float GetTouchForceFromXEvent(const XEvent& xev);
 // Gets the pointer type from a native_event.
 EVENTS_X_EXPORT EventPointerType
 GetTouchPointerTypeFromXEvent(const XEvent& xev);
+
+// Gets the pointer details from an XEvent.
+EVENTS_X_EXPORT PointerDetails
+GetTouchPointerDetailsFromXEvent(const XEvent& xev);
 
 // Returns whether this is a scroll event and optionally gets the amount to be
 // scrolled. |x_offset|, |y_offset| and |finger_count| can be NULL.

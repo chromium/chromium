@@ -489,4 +489,8 @@ void IMM32Manager::ConvertInputModeToImmFlags(TextInputMode input_mode,
   *new_conversion_mode = initial_conversion_mode;
 }
 
+bool IMM32Manager::IsImm32ImeActive() {
+  return ::ImmGetIMEFileName(::GetKeyboardLayout(0), nullptr, 0) > 0;
+}
+
 }  // namespace ui

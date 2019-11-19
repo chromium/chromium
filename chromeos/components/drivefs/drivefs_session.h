@@ -26,6 +26,7 @@ class COMPONENT_EXPORT(DRIVEFS) DiskMounter {
   virtual ~DiskMounter() = default;
   virtual void Mount(const base::UnguessableToken& token,
                      const base::FilePath& data_path,
+                     const base::FilePath& my_files_path,
                      const std::string& desired_mount_dir_name,
                      base::OnceCallback<void(base::FilePath)> callback) = 0;
 
@@ -68,6 +69,7 @@ class COMPONENT_EXPORT(DRIVEFS) DriveFsSession : public mojom::DriveFsDelegate {
                  std::unique_ptr<DiskMounter> disk_mounter,
                  std::unique_ptr<DriveFsConnection> connection,
                  const base::FilePath& data_path,
+                 const base::FilePath& my_files_path,
                  const std::string& desired_mount_dir_name,
                  MountObserver* observer);
   ~DriveFsSession() override;

@@ -2,18 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-/**
- * @constructor
- * @extends {Event}
- * @struct
- */
-var DirectoryChangeEvent = function() {};
+class DirectoryChangeEvent extends Event {
+  constructor() {
+    /** @type {DirectoryEntry} */
+    this.previousDirEntry;
 
-/** @type {DirectoryEntry} */
-DirectoryChangeEvent.prototype.previousDirEntry;
+    /** @type {DirectoryEntry|FakeEntry} */
+    this.newDirEntry;
 
-/** @type {DirectoryEntry|FakeEntry} */
-DirectoryChangeEvent.prototype.newDirEntry;
-
-/** @type {boolean} */
-DirectoryChangeEvent.prototype.volumeChanged;
+    /** @type {boolean} */
+    this.volumeChanged;
+  }
+}

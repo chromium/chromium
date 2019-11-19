@@ -19,7 +19,7 @@ class ContextualSearchInternalStateControllerWrapper
             CollectionUtil.newArrayList(InternalState.TAP_RECOGNIZED,
                     InternalState.TAP_GESTURE_COMMIT, InternalState.GATHERING_SURROUNDINGS,
                     InternalState.DECIDING_SUPPRESSION, InternalState.START_SHOWING_TAP_UI,
-                    InternalState.SHOW_FULL_TAP_UI, InternalState.RESOLVING);
+                    InternalState.SHOW_RESOLVING_UI, InternalState.RESOLVING);
     static final List<Integer> EXPECTED_LONGPRESS_SEQUENCE =
             CollectionUtil.newArrayList(InternalState.LONG_PRESS_RECOGNIZED,
                     InternalState.GATHERING_SURROUNDINGS, InternalState.SHOWING_LONGPRESS_SEARCH);

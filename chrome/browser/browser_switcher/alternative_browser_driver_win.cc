@@ -17,6 +17,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/win/registry.h"
 #include "chrome/browser/browser_switcher/browser_switcher_prefs.h"
+#include "chrome/grit/generated_resources.h"
 #include "url/gurl.h"
 
 namespace browser_switcher {
@@ -48,10 +49,13 @@ const wchar_t kSafariVarName[] = L"${safari}";
 const struct {
   const wchar_t* var_name;
   const wchar_t* registry_key;
+  const char* browser_name;
 } kBrowserVarMappings[] = {
-    {kChromeVarName, kChromeKey},   {kIEVarName, kIExploreKey},
-    {kFirefoxVarName, kFirefoxKey}, {kOperaVarName, kOperaKey},
-    {kSafariVarName, kSafariKey},
+    {kChromeVarName, kChromeKey, ""},
+    {kIEVarName, kIExploreKey, "Internet Explorer"},
+    {kFirefoxVarName, kFirefoxKey, "Mozilla Firefox"},
+    {kOperaVarName, kOperaKey, "Opera"},
+    {kSafariVarName, kSafariKey, "Safari"},
 };
 
 // DDE Callback function which is not used in our case at all.
@@ -161,6 +165,17 @@ bool AlternativeBrowserDriverImpl::TryLaunch(const GURL& url) {
   VLOG(2) << "  path = " << prefs_->GetAlternativeBrowserPath();
   VLOG(2) << "  url = " << url.spec();
   return (TryLaunchWithDde(url) || TryLaunchWithExec(url));
+}
+
+std::string AlternativeBrowserDriverImpl::GetBrowserName() const {
+  std::wstring path = base::UTF8ToWide(prefs_->GetAlternativeBrowserPath());
+  if (path.empty())
+    path = kIEVarName;
+  for (const auto& mapping : kBrowserVarMappings) {
+    if (!path.compare(mapping.var_name))
+      return std::string(mapping.browser_name);
+  }
+  return std::string();
 }
 
 bool AlternativeBrowserDriverImpl::TryLaunchWithDde(const GURL& url) {

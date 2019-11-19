@@ -14,7 +14,7 @@ namespace net {
 
 namespace {
 
-URLRequestInterceptor* g_interceptor_for_testing = NULL;
+URLRequestInterceptor* g_interceptor_for_testing = nullptr;
 
 }  // namespace
 
@@ -36,7 +36,7 @@ bool URLRequestJobFactoryImpl::SetProtocolHandler(
     return true;
   }
 
-  if (base::ContainsKey(protocol_handler_map_, scheme))
+  if (base::Contains(protocol_handler_map_, scheme))
     return false;
   protocol_handler_map_[scheme] = std::move(protocol_handler);
   return true;
@@ -56,27 +56,14 @@ URLRequestJob* URLRequestJobFactoryImpl::MaybeCreateJobWithProtocolHandler(
 
   auto it = protocol_handler_map_.find(scheme);
   if (it == protocol_handler_map_.end())
-    return NULL;
+    return nullptr;
   return it->second->MaybeCreateJob(request, network_delegate);
-}
-
-URLRequestJob* URLRequestJobFactoryImpl::MaybeInterceptRedirect(
-    URLRequest* request,
-    NetworkDelegate* network_delegate,
-    const GURL& location) const {
-  return nullptr;
-}
-
-URLRequestJob* URLRequestJobFactoryImpl::MaybeInterceptResponse(
-    URLRequest* request,
-    NetworkDelegate* network_delegate) const {
-  return nullptr;
 }
 
 bool URLRequestJobFactoryImpl::IsHandledProtocol(
     const std::string& scheme) const {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  return base::ContainsKey(protocol_handler_map_, scheme) ||
+  return base::Contains(protocol_handler_map_, scheme) ||
          URLRequestJobManager::GetInstance()->SupportsScheme(scheme);
 }
 

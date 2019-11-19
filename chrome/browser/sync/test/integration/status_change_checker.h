@@ -5,10 +5,9 @@
 #ifndef CHROME_BROWSER_SYNC_TEST_INTEGRATION_STATUS_CHANGE_CHECKER_H_
 #define CHROME_BROWSER_SYNC_TEST_INTEGRATION_STATUS_CHANGE_CHECKER_H_
 
-#include <string>
+#include <iosfwd>
 
 #include "base/run_loop.h"
-#include "base/time/time.h"
 
 // Interface for a helper class that can pump the message loop while waiting
 // for a certain state transition to take place.
@@ -22,14 +21,10 @@ class StatusChangeChecker {
  public:
   StatusChangeChecker();
 
-  // Returns a string representing this current StatusChangeChecker, and
-  // possibly some small part of its state.  For example: "AwaitPassphraseError"
-  // or "AwaitMigrationDone(BOOKMARKS)".
-  virtual std::string GetDebugMessage() const = 0;
-
   // Returns whether the state the checker is currently in is its desired
-  // configuration.
-  virtual bool IsExitConditionSatisfied() = 0;
+  // configuration. |os| must not be null and allows subclasses to provide
+  // details about why the condition was not satisfied. |os| must not be null.
+  virtual bool IsExitConditionSatisfied(std::ostream* os) = 0;
 
   // Block if IsExitConditionSatisfied() is currently false until TimedOut()
   // becomes true. Checkers should call CheckExitCondition upon changes, which
@@ -42,9 +37,6 @@ class StatusChangeChecker {
 
  protected:
   virtual ~StatusChangeChecker();
-
-  // Timeout length when blocking.
-  virtual base::TimeDelta GetTimeoutDuration();
 
   // Stop the nested running of the message loop started in StartBlockingWait().
   void StopWaiting();

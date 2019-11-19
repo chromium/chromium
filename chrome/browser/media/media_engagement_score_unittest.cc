@@ -48,7 +48,7 @@ class MediaEngagementScoreTest : public ChromeRenderViewHostTestHarness {
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
     test_clock.SetNow(GetReferenceTime());
-    score_ = new MediaEngagementScore(&test_clock, GURL(), nullptr);
+    score_ = new MediaEngagementScore(&test_clock, url::Origin(), nullptr);
   }
 
   void TearDown() override {
@@ -68,7 +68,6 @@ class MediaEngagementScoreTest : public ChromeRenderViewHostTestHarness {
                    bool has_high_score,
                    int audible_playbacks,
                    int significant_playbacks,
-                   int visits_with_media_tag,
                    int high_score_changes,
                    int media_element_playbacks,
                    int audio_context_playbacks) {
@@ -79,7 +78,6 @@ class MediaEngagementScoreTest : public ChromeRenderViewHostTestHarness {
     EXPECT_EQ(has_high_score, score->high_score());
     EXPECT_EQ(audible_playbacks, score->audible_playbacks());
     EXPECT_EQ(significant_playbacks, score->significant_playbacks());
-    EXPECT_EQ(visits_with_media_tag, score->visits_with_media_tag());
     EXPECT_EQ(high_score_changes, score->high_score_changes());
     EXPECT_EQ(media_element_playbacks, score->media_element_playbacks());
     EXPECT_EQ(audio_context_playbacks, score->audio_context_playbacks());
@@ -92,7 +90,6 @@ class MediaEngagementScoreTest : public ChromeRenderViewHostTestHarness {
     score->IncrementMediaPlaybacks();
     score->IncrementAudiblePlaybacks(1);
     score->IncrementSignificantPlaybacks(1);
-    score->IncrementVisitsWithMediaTag();
     score->IncrementMediaElementPlaybacks();
     score->IncrementAudioContextPlaybacks();
   }
@@ -105,17 +102,17 @@ class MediaEngagementScoreTest : public ChromeRenderViewHostTestHarness {
       bool has_high_score,
       int audible_playbacks,
       int significant_playbacks,
-      int visits_with_media_tag,
       int high_score_changes,
       int media_element_playbacks,
-      int audio_context_playbacks) {
-    MediaEngagementScore* initial_score = new MediaEngagementScore(
-        &test_clock, GURL(), std::move(score_dict), nullptr /* settings */);
+      int audio_context_playbacks,
+      bool update_score_expectation) {
+    MediaEngagementScore* initial_score =
+        new MediaEngagementScore(&test_clock, url::Origin(),
+                                 std::move(score_dict), nullptr /* settings */);
     VerifyScore(initial_score, expected_visits, expected_media_playbacks,
                 expected_last_media_playback_time, has_high_score,
-                audible_playbacks, significant_playbacks, visits_with_media_tag,
-                high_score_changes, media_element_playbacks,
-                audio_context_playbacks);
+                audible_playbacks, significant_playbacks, high_score_changes,
+                media_element_playbacks, audio_context_playbacks);
 
     // Updating the score dict should return false, as the score shouldn't
     // have changed at this point.
@@ -123,7 +120,7 @@ class MediaEngagementScoreTest : public ChromeRenderViewHostTestHarness {
 
     // Increment the scores and check that the values were stored correctly.
     UpdateScore(initial_score);
-    EXPECT_TRUE(initial_score->UpdateScoreDict());
+    EXPECT_EQ(update_score_expectation, initial_score->UpdateScoreDict());
     delete initial_score;
   }
 
@@ -147,20 +144,11 @@ class MediaEngagementScoreTest : public ChromeRenderViewHostTestHarness {
     EXPECT_EQ(details->media_playbacks, score->media_playbacks());
     EXPECT_EQ(details->last_media_playback_time,
               score->last_media_playback_time().ToJsTime());
-    EXPECT_EQ(details->audible_playbacks, score->audible_playbacks());
-    EXPECT_EQ(details->significant_playbacks, score->significant_playbacks());
-    EXPECT_EQ(details->high_score_changes, score->high_score_changes());
-    EXPECT_EQ(details->audio_context_playbacks,
-              score->audio_context_playbacks());
-    EXPECT_EQ(details->media_element_playbacks,
-              score->media_element_playbacks());
   }
 
   void OverrideFieldTrial(int min_visits,
                           double lower_threshold,
                           double upper_threshold) {
-    field_trial_list_.reset();
-    field_trial_list_ = std::make_unique<base::FieldTrialList>(nullptr);
     base::FieldTrialParamAssociator::GetInstance()->ClearAllParamsForTesting();
 
     std::map<std::string, std::string> params;
@@ -185,7 +173,6 @@ class MediaEngagementScoreTest : public ChromeRenderViewHostTestHarness {
 
  private:
   std::unique_ptr<base::test::ScopedFeatureList> scoped_feature_list_;
-  std::unique_ptr<base::FieldTrialList> field_trial_list_;
 };
 
 // Test Mojo serialization.
@@ -200,7 +187,7 @@ TEST_F(MediaEngagementScoreTest, MojoSerialization) {
 TEST_F(MediaEngagementScoreTest, EmptyDictionary) {
   std::unique_ptr<base::DictionaryValue> dict(new base::DictionaryValue());
   TestScoreInitializesAndUpdates(std::move(dict), 0, 0, base::Time(), false, 0,
-                                 0, 0, 0, 0, 0);
+                                 0, 0, 0, 0, true);
 }
 
 // Test that scores are read / written correctly from / to partially empty
@@ -210,7 +197,7 @@ TEST_F(MediaEngagementScoreTest, PartiallyEmptyDictionary) {
   dict->SetInteger(MediaEngagementScore::kVisitsKey, 2);
 
   TestScoreInitializesAndUpdates(std::move(dict), 2, 0, base::Time(), false, 0,
-                                 0, 0, 0, 0, 0);
+                                 0, 0, 0, 0, true);
 }
 
 // Test that scores are read / written correctly from / to populated score
@@ -224,49 +211,47 @@ TEST_F(MediaEngagementScoreTest, PopulatedDictionary) {
   dict->SetBoolean(MediaEngagementScore::kHasHighScoreKey, true);
   dict->SetInteger(MediaEngagementScore::kAudiblePlaybacksKey, 2);
   dict->SetInteger(MediaEngagementScore::kSignificantPlaybacksKey, 4);
-  dict->SetInteger(MediaEngagementScore::kVisitsWithMediaTagKey, 6);
   dict->SetInteger(MediaEngagementScore::kHighScoreChanges, 3);
   dict->SetInteger(MediaEngagementScore::kSignificantMediaPlaybacksKey, 1);
   dict->SetInteger(MediaEngagementScore::kSignificantAudioContextPlaybacksKey,
                    2);
 
   TestScoreInitializesAndUpdates(std::move(dict), 20, 12, test_clock.Now(),
-                                 true, 2, 4, 6, 3, 1, 2);
+                                 true, 2, 4, 3, 1, 2, true);
 }
 
 // Test getting and commiting the score works correctly with different
 // origins.
 TEST_F(MediaEngagementScoreTest, ContentSettingsMultiOrigin) {
-  GURL url("https://www.google.com");
+  url::Origin origin = url::Origin::Create(GURL("https://www.google.com"));
 
   // Replace |score_| with one with an actual URL, and with a settings map.
   HostContentSettingsMap* settings_map =
       HostContentSettingsMapFactory::GetForProfile(profile());
   MediaEngagementScore* score =
-      new MediaEngagementScore(&test_clock, url, settings_map);
+      new MediaEngagementScore(&test_clock, origin, settings_map);
 
   // Verify the score is originally zero, try incrementing and storing
   // the score.
-  VerifyScore(score, 0, 0, base::Time(), false, 0, 0, 0, 0, 0, 0);
+  VerifyScore(score, 0, 0, base::Time(), false, 0, 0, 0, 0, 0);
   score->IncrementVisits();
   UpdateScore(score);
   score->Commit();
 
   // Now confirm the correct score is present on the same origin,
   // but zero for a different origin.
-  GURL same_origin("https://www.google.com");
-  GURL different_origin("https://www.google.co.uk");
+  url::Origin same_origin = url::Origin::Create(GURL("https://www.google.com"));
+  url::Origin different_origin =
+      url::Origin::Create(GURL("https://www.google.co.uk"));
   MediaEngagementScore* new_score =
-      new MediaEngagementScore(&test_clock, url, settings_map);
+      new MediaEngagementScore(&test_clock, origin, settings_map);
   MediaEngagementScore* same_origin_score =
       new MediaEngagementScore(&test_clock, same_origin, settings_map);
   MediaEngagementScore* different_origin_score =
       new MediaEngagementScore(&test_clock, different_origin, settings_map);
-  VerifyScore(new_score, 2, 1, test_clock.Now(), false, 1, 1, 1, 0, 1, 1);
-  VerifyScore(same_origin_score, 2, 1, test_clock.Now(), false, 1, 1, 1, 0, 1,
-              1);
-  VerifyScore(different_origin_score, 0, 0, base::Time(), false, 0, 0, 0, 0, 0,
-              0);
+  VerifyScore(new_score, 2, 1, test_clock.Now(), false, 1, 1, 0, 1, 1);
+  VerifyScore(same_origin_score, 2, 1, test_clock.Now(), false, 1, 1, 0, 1, 1);
+  VerifyScore(different_origin_score, 0, 0, base::Time(), false, 0, 0, 0, 0, 0);
 
   delete score;
   delete new_score;
@@ -282,13 +267,12 @@ TEST_F(MediaEngagementScoreTest, ContentSettings) {
   int example_media_playbacks = 5;
   int example_audible_playbacks = 3;
   int example_significant_playbacks = 5;
-  int example_visits_with_media_tags = 20;
   int example_high_score_changes = 1;
   int example_media_element_playbacks = 1;
   int example_audio_context_playbacks = 3;
 
   // Store some example data in content settings.
-  GURL origin("https://www.google.com");
+  url::Origin origin = url::Origin::Create(GURL("https://www.google.com"));
   std::unique_ptr<base::DictionaryValue> score_dict =
       std::make_unique<base::DictionaryValue>();
   score_dict->SetInteger(MediaEngagementScore::kVisitsKey, example_num_visits);
@@ -301,8 +285,6 @@ TEST_F(MediaEngagementScoreTest, ContentSettings) {
                          example_audible_playbacks);
   score_dict->SetInteger(MediaEngagementScore::kSignificantPlaybacksKey,
                          example_significant_playbacks);
-  score_dict->SetInteger(MediaEngagementScore::kVisitsWithMediaTagKey,
-                         example_visits_with_media_tags);
   score_dict->SetInteger(MediaEngagementScore::kHighScoreChanges,
                          example_high_score_changes);
   score_dict->SetInteger(MediaEngagementScore::kSignificantMediaPlaybacksKey,
@@ -311,7 +293,7 @@ TEST_F(MediaEngagementScoreTest, ContentSettings) {
       MediaEngagementScore::kSignificantAudioContextPlaybacksKey,
       example_audio_context_playbacks);
   settings_map->SetWebsiteSettingDefaultScope(
-      origin, GURL(), CONTENT_SETTINGS_TYPE_MEDIA_ENGAGEMENT,
+      origin.GetURL(), GURL(), ContentSettingsType::MEDIA_ENGAGEMENT,
       content_settings::ResourceIdentifier(), std::move(score_dict));
 
   // Make sure we read that data back correctly.
@@ -323,8 +305,6 @@ TEST_F(MediaEngagementScoreTest, ContentSettings) {
   EXPECT_FALSE(score->high_score());
   EXPECT_EQ(score->audible_playbacks(), example_audible_playbacks);
   EXPECT_EQ(score->significant_playbacks(), example_significant_playbacks);
-  EXPECT_EQ(score->visits_with_media_tag(), example_visits_with_media_tags);
-  EXPECT_EQ(score->visits_with_media_tag(), example_visits_with_media_tags);
   EXPECT_EQ(score->high_score_changes(), example_high_score_changes);
   EXPECT_EQ(score->media_element_playbacks(), example_media_element_playbacks);
   EXPECT_EQ(score->audio_context_playbacks(), example_audio_context_playbacks);
@@ -341,13 +321,12 @@ TEST_F(MediaEngagementScoreTest, ContentSettings) {
   bool stored_has_high_score;
   int stored_audible_playbacks;
   int stored_significant_playbacks;
-  int stored_visits_with_media_tag;
   int stored_high_score_changes;
   int stored_media_element_playbacks;
   int stored_audio_context_playbacks;
   std::unique_ptr<base::DictionaryValue> values =
       base::DictionaryValue::From(settings_map->GetWebsiteSetting(
-          origin, GURL(), CONTENT_SETTINGS_TYPE_MEDIA_ENGAGEMENT,
+          origin.GetURL(), GURL(), ContentSettingsType::MEDIA_ENGAGEMENT,
           content_settings::ResourceIdentifier(), nullptr));
   values->GetInteger(MediaEngagementScore::kVisitsKey, &stored_visits);
   values->GetInteger(MediaEngagementScore::kMediaPlaybacksKey,
@@ -360,8 +339,6 @@ TEST_F(MediaEngagementScoreTest, ContentSettings) {
                      &stored_audible_playbacks);
   values->GetInteger(MediaEngagementScore::kSignificantPlaybacksKey,
                      &stored_significant_playbacks);
-  values->GetInteger(MediaEngagementScore::kVisitsWithMediaTagKey,
-                     &stored_visits_with_media_tag);
   values->GetInteger(MediaEngagementScore::kHighScoreChanges,
                      &stored_high_score_changes);
   values->GetInteger(MediaEngagementScore::kSignificantMediaPlaybacksKey,
@@ -374,7 +351,6 @@ TEST_F(MediaEngagementScoreTest, ContentSettings) {
             test_clock.Now().ToInternalValue());
   EXPECT_EQ(stored_audible_playbacks, example_audible_playbacks + 1);
   EXPECT_EQ(stored_significant_playbacks, example_significant_playbacks + 1);
-  EXPECT_EQ(stored_visits_with_media_tag, example_visits_with_media_tags + 1);
   EXPECT_TRUE(stored_has_high_score);
   EXPECT_EQ(stored_high_score_changes, example_high_score_changes + 1);
   EXPECT_EQ(stored_media_element_playbacks,
@@ -402,7 +378,8 @@ TEST_F(MediaEngagementScoreTest, EngagementScoreCalculation) {
 
 // Test that a score without the high_score bit uses the correct bounds.
 TEST_F(MediaEngagementScoreTest, HighScoreLegacy_High) {
-  const GURL url("https://www.example.com");
+  const url::Origin origin =
+      url::Origin::Create(GURL("https://www.example.com"));
   HostContentSettingsMap* settings_map =
       HostContentSettingsMapFactory::GetForProfile(profile());
 
@@ -411,20 +388,21 @@ TEST_F(MediaEngagementScoreTest, HighScoreLegacy_High) {
     dict->SetInteger(MediaEngagementScore::kVisitsKey, 20);
     dict->SetInteger(MediaEngagementScore::kMediaPlaybacksKey, 6);
     settings_map->SetWebsiteSettingDefaultScope(
-        url, GURL(), CONTENT_SETTINGS_TYPE_MEDIA_ENGAGEMENT,
+        origin.GetURL(), GURL(), ContentSettingsType::MEDIA_ENGAGEMENT,
         content_settings::ResourceIdentifier(), std::move(dict));
   }
 
   {
     std::unique_ptr<MediaEngagementScore> score(
-        new MediaEngagementScore(&test_clock, url, settings_map));
-    VerifyScore(score.get(), 20, 6, base::Time(), true, 0, 0, 0, 1, 6, 0);
+        new MediaEngagementScore(&test_clock, origin, settings_map));
+    VerifyScore(score.get(), 20, 6, base::Time(), true, 0, 0, 1, 6, 0);
   }
 }
 
 // Test that a score without the high_score bit uses the correct bounds.
 TEST_F(MediaEngagementScoreTest, HighScoreLegacy_Low) {
-  const GURL url("https://www.example.com");
+  const url::Origin origin =
+      url::Origin::Create(GURL("https://www.example.com"));
   HostContentSettingsMap* settings_map =
       HostContentSettingsMapFactory::GetForProfile(profile());
 
@@ -433,21 +411,22 @@ TEST_F(MediaEngagementScoreTest, HighScoreLegacy_Low) {
     dict->SetInteger(MediaEngagementScore::kVisitsKey, 20);
     dict->SetInteger(MediaEngagementScore::kMediaPlaybacksKey, 4);
     settings_map->SetWebsiteSettingDefaultScope(
-        url, GURL(), CONTENT_SETTINGS_TYPE_MEDIA_ENGAGEMENT,
+        origin.GetURL(), GURL(), ContentSettingsType::MEDIA_ENGAGEMENT,
         content_settings::ResourceIdentifier(), std::move(dict));
   }
 
   {
     std::unique_ptr<MediaEngagementScore> score(
-        new MediaEngagementScore(&test_clock, url, settings_map));
-    VerifyScore(score.get(), 20, 4, base::Time(), false, 0, 0, 0, 0, 4, 0);
+        new MediaEngagementScore(&test_clock, origin, settings_map));
+    VerifyScore(score.get(), 20, 4, base::Time(), false, 0, 0, 0, 4, 0);
   }
 }
 
 // Test that if we changed the boundaries the high_score bit is updated
 // when the score is loaded.
 TEST_F(MediaEngagementScoreTest, HighScoreUpdated) {
-  const GURL url("https://www.example.com");
+  const url::Origin origin =
+      url::Origin::Create(GURL("https://www.example.com"));
   HostContentSettingsMap* settings_map =
       HostContentSettingsMapFactory::GetForProfile(profile());
 
@@ -460,13 +439,13 @@ TEST_F(MediaEngagementScoreTest, HighScoreUpdated) {
     dict->SetBoolean(MediaEngagementScore::kHasHighScoreKey, true);
 
     settings_map->SetWebsiteSettingDefaultScope(
-        url, GURL(), CONTENT_SETTINGS_TYPE_MEDIA_ENGAGEMENT,
+        origin.GetURL(), GURL(), ContentSettingsType::MEDIA_ENGAGEMENT,
         content_settings::ResourceIdentifier(), std::move(dict));
   }
 
   {
     std::unique_ptr<MediaEngagementScore> score(
-        new MediaEngagementScore(&test_clock, url, settings_map));
+        new MediaEngagementScore(&test_clock, origin, settings_map));
     EXPECT_FALSE(score->high_score());
     base::RunLoop().RunUntilIdle();
   }
@@ -474,7 +453,7 @@ TEST_F(MediaEngagementScoreTest, HighScoreUpdated) {
   {
     std::unique_ptr<base::DictionaryValue> dict =
         base::DictionaryValue::From(settings_map->GetWebsiteSetting(
-            url, GURL(), CONTENT_SETTINGS_TYPE_MEDIA_ENGAGEMENT,
+            origin.GetURL(), GURL(), ContentSettingsType::MEDIA_ENGAGEMENT,
             content_settings::ResourceIdentifier(), nullptr));
 
     bool stored_high_score = false;
@@ -538,13 +517,14 @@ TEST_F(MediaEngagementScoreTest, OverrideFieldTrial) {
 }
 
 TEST_F(MediaEngagementScoreTest, HighScoreChanges) {
-  const GURL kUrl("https://www.example.com");
+  const url::Origin kOrigin =
+      url::Origin::Create(GURL("https://www.example.com"));
   HostContentSettingsMap* settings_map =
       HostContentSettingsMapFactory::GetForProfile(profile());
 
   {
     std::unique_ptr<MediaEngagementScore> score(
-        new MediaEngagementScore(&test_clock, kUrl, settings_map));
+        new MediaEngagementScore(&test_clock, kOrigin, settings_map));
 
     EXPECT_EQ(0, score->high_score_changes());
     // Perfect score, high_score bit has changed.
@@ -555,7 +535,7 @@ TEST_F(MediaEngagementScoreTest, HighScoreChanges) {
 
   {
     std::unique_ptr<MediaEngagementScore> score(
-        new MediaEngagementScore(&test_clock, kUrl, settings_map));
+        new MediaEngagementScore(&test_clock, kOrigin, settings_map));
 
     // Worse score, high_score bit has changed.
     SetScore(score.get(), 20, 0);
@@ -566,7 +546,7 @@ TEST_F(MediaEngagementScoreTest, HighScoreChanges) {
   // Bad score, high_score bit has not changed.
   {
     std::unique_ptr<MediaEngagementScore> score(
-        new MediaEngagementScore(&test_clock, kUrl, settings_map));
+        new MediaEngagementScore(&test_clock, kOrigin, settings_map));
 
     SetScore(score.get(), 20, 1);
     score->Commit();
@@ -576,7 +556,8 @@ TEST_F(MediaEngagementScoreTest, HighScoreChanges) {
 
 // Test that we migrate the media playbacks value to media element playbacks.
 TEST_F(MediaEngagementScoreTest, MigrateMediaElementPlaybacks) {
-  const GURL url("https://www.example.com");
+  const url::Origin origin =
+      url::Origin::Create(GURL("https://www.example.com"));
   HostContentSettingsMap* settings_map =
       HostContentSettingsMapFactory::GetForProfile(profile());
   int media_playbacks = 6;
@@ -587,13 +568,13 @@ TEST_F(MediaEngagementScoreTest, MigrateMediaElementPlaybacks) {
     dict->SetInteger(MediaEngagementScore::kMediaPlaybacksKey, media_playbacks);
 
     settings_map->SetWebsiteSettingDefaultScope(
-        url, GURL(), CONTENT_SETTINGS_TYPE_MEDIA_ENGAGEMENT,
+        origin.GetURL(), GURL(), ContentSettingsType::MEDIA_ENGAGEMENT,
         content_settings::ResourceIdentifier(), std::move(dict));
   }
 
   {
     std::unique_ptr<MediaEngagementScore> score(
-        new MediaEngagementScore(&test_clock, url, settings_map));
+        new MediaEngagementScore(&test_clock, origin, settings_map));
     EXPECT_EQ(media_playbacks, score->media_playbacks());
     EXPECT_EQ(media_playbacks, score->media_element_playbacks());
 
@@ -603,7 +584,7 @@ TEST_F(MediaEngagementScoreTest, MigrateMediaElementPlaybacks) {
   {
     std::unique_ptr<base::DictionaryValue> dict =
         base::DictionaryValue::From(settings_map->GetWebsiteSetting(
-            url, GURL(), CONTENT_SETTINGS_TYPE_MEDIA_ENGAGEMENT,
+            origin.GetURL(), GURL(), ContentSettingsType::MEDIA_ENGAGEMENT,
             content_settings::ResourceIdentifier(), nullptr));
 
     int stored_media_playbacks = 0;
@@ -623,7 +604,8 @@ TEST_F(MediaEngagementScoreTest, MigrateMediaElementPlaybacks) {
 // context playback.
 TEST_F(MediaEngagementScoreTest,
        NoMigrateMediaElementPlaybacks_AudioContextPresent) {
-  const GURL url("https://www.example.com");
+  const url::Origin origin =
+      url::Origin::Create(GURL("https://www.example.com"));
   HostContentSettingsMap* settings_map =
       HostContentSettingsMapFactory::GetForProfile(profile());
   int media_playbacks = 6;
@@ -637,13 +619,13 @@ TEST_F(MediaEngagementScoreTest,
                      audio_context_playbacks);
 
     settings_map->SetWebsiteSettingDefaultScope(
-        url, GURL(), CONTENT_SETTINGS_TYPE_MEDIA_ENGAGEMENT,
+        origin.GetURL(), GURL(), ContentSettingsType::MEDIA_ENGAGEMENT,
         content_settings::ResourceIdentifier(), std::move(dict));
   }
 
   {
     std::unique_ptr<MediaEngagementScore> score(
-        new MediaEngagementScore(&test_clock, url, settings_map));
+        new MediaEngagementScore(&test_clock, origin, settings_map));
     EXPECT_EQ(media_playbacks, score->media_playbacks());
     EXPECT_EQ(0, score->media_element_playbacks());
     EXPECT_EQ(audio_context_playbacks, score->audio_context_playbacks());
@@ -654,7 +636,7 @@ TEST_F(MediaEngagementScoreTest,
   {
     std::unique_ptr<base::DictionaryValue> dict =
         base::DictionaryValue::From(settings_map->GetWebsiteSetting(
-            url, GURL(), CONTENT_SETTINGS_TYPE_MEDIA_ENGAGEMENT,
+            origin.GetURL(), GURL(), ContentSettingsType::MEDIA_ENGAGEMENT,
             content_settings::ResourceIdentifier(), nullptr));
 
     EXPECT_NE(nullptr, dict->FindKey(MediaEngagementScore::kMediaPlaybacksKey));
@@ -668,7 +650,8 @@ TEST_F(MediaEngagementScoreTest,
 // element playback.
 TEST_F(MediaEngagementScoreTest,
        NoMigrateMediaElementPlaybacks_MediaElementPresent) {
-  const GURL url("https://www.example.com");
+  const url::Origin origin =
+      url::Origin::Create(GURL("https://www.example.com"));
   HostContentSettingsMap* settings_map =
       HostContentSettingsMapFactory::GetForProfile(profile());
   int media_playbacks = 6;
@@ -682,13 +665,13 @@ TEST_F(MediaEngagementScoreTest,
                      media_element_playbacks);
 
     settings_map->SetWebsiteSettingDefaultScope(
-        url, GURL(), CONTENT_SETTINGS_TYPE_MEDIA_ENGAGEMENT,
+        origin.GetURL(), GURL(), ContentSettingsType::MEDIA_ENGAGEMENT,
         content_settings::ResourceIdentifier(), std::move(dict));
   }
 
   {
     std::unique_ptr<MediaEngagementScore> score(
-        new MediaEngagementScore(&test_clock, url, settings_map));
+        new MediaEngagementScore(&test_clock, origin, settings_map));
     EXPECT_EQ(media_playbacks, score->media_playbacks());
     EXPECT_EQ(media_element_playbacks, score->media_element_playbacks());
 
@@ -698,7 +681,7 @@ TEST_F(MediaEngagementScoreTest,
   {
     std::unique_ptr<base::DictionaryValue> dict =
         base::DictionaryValue::From(settings_map->GetWebsiteSetting(
-            url, GURL(), CONTENT_SETTINGS_TYPE_MEDIA_ENGAGEMENT,
+            origin.GetURL(), GURL(), ContentSettingsType::MEDIA_ENGAGEMENT,
             content_settings::ResourceIdentifier(), nullptr));
 
     int stored_media_playbacks = 0;
@@ -712,4 +695,55 @@ TEST_F(MediaEngagementScoreTest,
     EXPECT_EQ(media_playbacks, stored_media_playbacks);
     EXPECT_EQ(media_element_playbacks, stored_media_element_playbacks);
   }
+}
+
+// Test that scores are read / written correctly from / to populated score
+// dictionaries.
+TEST_F(MediaEngagementScoreTest, PopulatedDictionary_HTTPSOnly) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(media::kMediaEngagementHTTPSOnly);
+
+  std::unique_ptr<base::DictionaryValue> dict(new base::DictionaryValue());
+  dict->SetInteger(MediaEngagementScore::kVisitsKey, 20);
+  dict->SetInteger(MediaEngagementScore::kMediaPlaybacksKey, 12);
+  dict->SetDouble(MediaEngagementScore::kLastMediaPlaybackTimeKey,
+                  test_clock.Now().ToDeltaSinceWindowsEpoch().InMicroseconds());
+  dict->SetBoolean(MediaEngagementScore::kHasHighScoreKey, true);
+  dict->SetInteger(MediaEngagementScore::kAudiblePlaybacksKey, 2);
+  dict->SetInteger(MediaEngagementScore::kSignificantPlaybacksKey, 4);
+  dict->SetInteger(MediaEngagementScore::kHighScoreChanges, 3);
+  dict->SetInteger(MediaEngagementScore::kSignificantMediaPlaybacksKey, 1);
+  dict->SetInteger(MediaEngagementScore::kSignificantAudioContextPlaybacksKey,
+                   2);
+
+  TestScoreInitializesAndUpdates(std::move(dict), 0, 0, base::Time(), false, 0,
+                                 0, 0, 0, 0, false);
+}
+
+TEST_F(MediaEngagementScoreTest, DoNotStoreDeprecatedFields) {
+  constexpr char kVisitsWithMediaTag[] = "visitsWithMediaTag";
+
+  // Store data with deprecated fields in content settings.
+  url::Origin origin = url::Origin::Create(GURL("https://www.google.com"));
+  HostContentSettingsMap* settings_map =
+      HostContentSettingsMapFactory::GetForProfile(profile());
+  std::unique_ptr<base::DictionaryValue> score_dict =
+      std::make_unique<base::DictionaryValue>();
+  score_dict->SetInteger(kVisitsWithMediaTag, 10);
+  settings_map->SetWebsiteSettingDefaultScope(
+      origin.GetURL(), GURL(), ContentSettingsType::MEDIA_ENGAGEMENT,
+      content_settings::ResourceIdentifier(), std::move(score_dict));
+
+  // Run the data through media engagement score.
+  auto score =
+      std::make_unique<MediaEngagementScore>(&test_clock, origin, settings_map);
+  UpdateScore(score.get());
+  score->Commit();
+
+  // Check the deprecated fields have been dropped.
+  std::unique_ptr<base::DictionaryValue> values =
+      base::DictionaryValue::From(settings_map->GetWebsiteSetting(
+          origin.GetURL(), GURL(), ContentSettingsType::MEDIA_ENGAGEMENT,
+          content_settings::ResourceIdentifier(), nullptr));
+  EXPECT_FALSE(values->HasKey(kVisitsWithMediaTag));
 }

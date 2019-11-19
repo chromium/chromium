@@ -16,6 +16,11 @@ template <typename Type>
 struct DefaultSingletonTraits;
 }  // namespace base
 
+namespace content {
+class CommandlineStartupTracingTest;
+class BackgroundStartupTracingTest;
+}
+
 namespace tracing {
 
 // TraceStartupConfig is a singleton that contains the configurations of startup
@@ -52,6 +57,13 @@ namespace tracing {
 //                   e.g., by DevTools. In that case, the trace log will not be
 //                   saved to this file.
 //
+// result_directory: A directory to save traces to. The saved traces will be
+//                   named chrometrace.log, prefixed with the Unix timestamp of
+//                   Chrome's startup time. This is meant for cases where Chrome
+//                   is started multiple times from one command line, such as
+//                   during tests. This option is ignored if result_file is also
+//                   specified.
+//
 // The trace config file can be specified by the --trace-config-file flag on
 // most platforms except on Android, e.g., --trace-config-file=path/to/file/.
 // This flag should not be used with --trace-startup; otherwise,
@@ -72,6 +84,16 @@ namespace tracing {
 // TracingControllerAndroid::GenerateTracingFilePath.
 class TRACING_EXPORT TraceStartupConfig {
  public:
+  enum class SessionOwner {
+    kTracingController,
+    kDevToolsTracingHandler,
+    // The background tracing config set in application preferences on the
+    // previous session, for current session.
+    kBackgroundTracing,
+    // We expect the System tracing to take over.
+    kSystemTracing
+  };
+
   static TraceStartupConfig* GetInstance();
 
   // Default minimum startup trace config with enough events to debug issues.
@@ -100,22 +122,37 @@ class TRACING_EXPORT TraceStartupConfig {
   // saved to result file.
   bool ShouldTraceToResultFile() const;
   base::FilePath GetResultFile() const;
-
-  // Get the background tracing config set in application preferences on the
-  // previous session, for current session.
-  bool GetBackgroundStartupTracingEnabled() const;
+  void OnTraceToResultFileFinished();
 
   // Set the background tracing config in preferences for the next session.
   void SetBackgroundStartupTracingEnabled(bool enabled);
 
- private:
-  bool IsUsingPerfettoOutput() const;
+  // Returns when the startup tracing is finished and written to file, false on
+  // all other cases.
+  bool finished_writing_to_file_for_testing() const {
+    return finished_writing_to_file_;
+  }
 
+  SessionOwner GetSessionOwner() const;
+
+  // Called by a potential session owner to determine if it should take
+  // ownership of the startup tracing session and begin tracing. Returns |true|
+  // if the passed |owner| should adopt the session.
+  bool AttemptAdoptBySessionOwner(SessionOwner owner);
+
+ private:
   // This allows constructor and destructor to be private and usable only
   // by the Singleton class.
   friend struct base::DefaultSingletonTraits<TraceStartupConfig>;
+  friend class content::CommandlineStartupTracingTest;
+  friend class content::BackgroundStartupTracingTest;
+
+  constexpr static int kDefaultStartupDurationInSeconds = 5;
+
   TraceStartupConfig();
   ~TraceStartupConfig();
+
+  bool IsUsingPerfettoOutput() const;
 
   bool EnableFromCommandLine();
   bool EnableFromConfigFile();
@@ -123,12 +160,15 @@ class TRACING_EXPORT TraceStartupConfig {
 
   bool ParseTraceConfigFileContent(const std::string& content);
 
-  bool is_enabled_;
-  bool is_enabled_from_background_tracing_;
+  bool is_enabled_ = false;
+  bool enable_background_tracing_for_testing_ = false;
   base::trace_event::TraceConfig trace_config_;
-  int startup_duration_;
-  bool should_trace_to_result_file_;
+  int startup_duration_in_seconds_ = kDefaultStartupDurationInSeconds;
+  bool should_trace_to_result_file_ = false;
   base::FilePath result_file_;
+  bool finished_writing_to_file_ = false;
+  SessionOwner session_owner_ = SessionOwner::kTracingController;
+  bool session_adopted_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(TraceStartupConfig);
 };

@@ -97,6 +97,10 @@ const BrowserBridge = (function() {
       this.send('storeDebugLogs');
     },
 
+    storeCombinedDebugLogs: function() {
+      this.send('storeCombinedDebugLogs');
+    },
+
     setNetworkDebugMode: function(subsystem) {
       this.send('setNetworkDebugMode', [subsystem]);
     },
@@ -136,6 +140,12 @@ const BrowserBridge = (function() {
     receivedStoreDebugLogs: function(status) {
       for (let i = 0; i < this.storeDebugLogsObservers_.length; i++) {
         this.storeDebugLogsObservers_[i].onStoreDebugLogs(status);
+      }
+    },
+
+    receivedStoreCombinedDebugLogs: function(status) {
+      for (let i = 0; i < this.storeDebugLogsObservers_.length; i++) {
+        this.storeDebugLogsObservers_[i].onStoreCombinedDebugLogs(status);
       }
     },
 
@@ -182,6 +192,7 @@ const BrowserBridge = (function() {
      * back with:
      *
      *   observer.onStoreDebugLogs(status);
+     *   observer.onStoreCombinedDebugLogs(status);
      */
     addStoreDebugLogsObserver: function(observer) {
       this.storeDebugLogsObservers_.push(observer);

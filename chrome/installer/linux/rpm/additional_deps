@@ -4,9 +4,6 @@
 #
 # Additional dependencies not in the rpm find-requires output.
 
-# For lsb_release.
-/usr/bin/lsb_release
-
 # Make sure users have SSL certificates.
 ca-certificates
 

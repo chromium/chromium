@@ -9,9 +9,12 @@
 #include "base/cancelable_callback.h"
 #include "base/files/file_util.h"
 #include "base/run_loop.h"
+#include "base/sequenced_task_runner.h"
 #include "base/stl_util.h"
 #include "base/sys_byteorder.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/task/post_task.h"
+#include "base/task/task_traits.h"
+#include "base/test/task_environment.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/platform_thread.h"
 #include "net/base/ip_address.h"
@@ -185,14 +188,35 @@ TEST(DnsConfigServicePosixTest, RejectEmptyNameserver) {
 TEST(DnsConfigServicePosixTest, DestroyWhileJobsWorking) {
   // Regression test to verify crash does not occur if DnsConfigServicePosix
   // instance is destroyed while SerialWorker jobs have posted to worker pool.
-  base::test::ScopedTaskEnvironment scoped_task_environment;
+  base::test::TaskEnvironment task_environment(
+      base::test::TaskEnvironment::MainThreadType::IO);
 
   std::unique_ptr<internal::DnsConfigServicePosix> service(
       new internal::DnsConfigServicePosix());
-  service->ReadConfig(base::Bind(&DummyConfigCallback));
+  // Call WatchConfig() which also tests ReadConfig().
+  service->WatchConfig(base::BindRepeating(&DummyConfigCallback));
   service.reset();
-  scoped_task_environment.RunUntilIdle();
+  task_environment.RunUntilIdle();
   base::PlatformThread::Sleep(base::TimeDelta::FromMilliseconds(1000));
+}
+
+TEST(DnsConfigServicePosixTest, DestroyOnDifferentThread) {
+  // Regression test to verify crash does not occur if DnsConfigServicePosix
+  // instance is destroyed on another thread.
+  base::test::TaskEnvironment task_environment;
+
+  scoped_refptr<base::SequencedTaskRunner> runner =
+      base::CreateSequencedTaskRunner({base::ThreadPool(), base::MayBlock()});
+  std::unique_ptr<internal::DnsConfigServicePosix, base::OnTaskRunnerDeleter>
+      service(new internal::DnsConfigServicePosix(),
+              base::OnTaskRunnerDeleter(runner));
+
+  runner->PostTask(FROM_HERE,
+                   base::BindOnce(&internal::DnsConfigServicePosix::WatchConfig,
+                                  base::Unretained(service.get()),
+                                  base::BindRepeating(&DummyConfigCallback)));
+  service.reset();
+  task_environment.RunUntilIdle();
 }
 
 }  // namespace
@@ -218,7 +242,7 @@ class DnsConfigServicePosixTest : public testing::Test {
 
   void TearDown() override { ASSERT_TRUE(base::DeleteFile(temp_file_, false)); }
 
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_;
   bool seen_config_;
   base::FilePath temp_file_;
   std::unique_ptr<DnsConfigServicePosix> service_;
@@ -229,15 +253,15 @@ class DnsConfigServicePosixTest : public testing::Test {
 TEST_F(DnsConfigServicePosixTest, ChangeConfigMultipleTimes) {
   service_->WatchConfig(base::Bind(&DnsConfigServicePosixTest::OnConfigChanged,
                                    base::Unretained(this)));
-  scoped_task_environment_.RunUntilIdle();
+  task_environment_.RunUntilIdle();
 
   for (int i = 0; i < 5; i++) {
-    service_->OnConfigChanged(true);
+    service_->RefreshConfig();
     // Wait for config read after the change. OnConfigChanged() will only be
     // called if the new config is different from the old one, so this can't be
     // ExpectChange().
     base::PlatformThread::Sleep(base::TimeDelta::FromMilliseconds(50));
-    scoped_task_environment_.RunUntilIdle();
+    task_environment_.RunUntilIdle();
   }
 
   // There should never be more than 4 nameservers in a real config.

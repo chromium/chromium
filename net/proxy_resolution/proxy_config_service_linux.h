@@ -129,7 +129,7 @@ class NET_EXPORT_PRIVATE ProxyConfigServiceLinux : public ProxyConfigService {
                                std::vector<std::string>* result) = 0;
 
     // Returns true if the bypass list should be interpreted as a proxy
-    // whitelist rather than blacklist. (This is KDE-specific.)
+    // allow list rather than block list. (This is KDE-specific.)
     virtual bool BypassListIsReversed() = 0;
 
     // Returns the format to use when parsing the bypass rules list.

@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {TestStore} from 'chrome://test/bookmarks/test_store.js';
+import 'chrome://bookmarks/bookmarks.js';
+import {createFolder, createItem, replaceBody} from 'chrome://test/bookmarks/test_util.js';
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
 suite('<bookmarks-edit-dialog>', function() {
   let dialog;
   let lastUpdate;
@@ -48,7 +53,7 @@ suite('<bookmarks-edit-dialog>', function() {
     const item = createItem('1', {url: 'http://website.com', title: 'website'});
     dialog.showEditDialog(item);
 
-    MockInteractions.tap(dialog.$.saveButton);
+    dialog.$.saveButton.click();
 
     assertEquals(item.id, lastUpdate.id);
     assertEquals(item.url, lastUpdate.edit.url);
@@ -59,7 +64,7 @@ suite('<bookmarks-edit-dialog>', function() {
     dialog.showEditDialog(folder);
     dialog.titleValue_ = 'Awesome websites';
 
-    MockInteractions.tap(dialog.$.saveButton);
+    dialog.$.saveButton.click();
 
     assertEquals(folder.id, lastUpdate.id);
     assertEquals(undefined, lastUpdate.edit.url);
@@ -71,9 +76,9 @@ suite('<bookmarks-edit-dialog>', function() {
 
     dialog.titleValue_ = 'Permission Site';
     dialog.urlValue_ = 'permission.site';
-    Polymer.dom.flush();
+    flush();
 
-    MockInteractions.tap(dialog.$.saveButton);
+    dialog.$.saveButton.click();
 
     assertEquals('1', lastCreation.parentId);
     assertEquals('http://permission.site', lastCreation.url);
@@ -88,9 +93,9 @@ suite('<bookmarks-edit-dialog>', function() {
     assertTrue(dialog.validateUrl_());
 
     dialog.urlValue_ = 'example.com';
-    Polymer.dom.flush();
+    flush();
     assertTrue(dialog.validateUrl_());
-    Polymer.dom.flush();
+    flush();
     assertEquals('http://example.com', dialog.urlValue_);
 
     dialog.urlValue_ = '';
@@ -106,9 +111,9 @@ suite('<bookmarks-edit-dialog>', function() {
 
     dialog.urlValue_ = '';
 
-    Polymer.dom.flush();
-    MockInteractions.tap(dialog.$.saveButton);
-    Polymer.dom.flush();
+    flush();
+    dialog.$.saveButton.click();
+    flush();
 
     assertTrue(dialog.$.url.invalid);
     assertTrue(dialog.$.dialog.open);

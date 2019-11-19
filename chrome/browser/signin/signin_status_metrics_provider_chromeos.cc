@@ -4,17 +4,15 @@
 
 #include "chrome/browser/signin/signin_status_metrics_provider_chromeos.h"
 
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chromeos/login/login_state/login_state.h"
+#include "components/user_manager/user_manager.h"
 
 namespace {
 
 // Returns true if user is signed in to a non-guest profile.
 bool IsSignedInNonGuest() {
-  ProfileManager* profile_manager = g_browser_process->profile_manager();
-  if (profile_manager &&
-      profile_manager->IsLoggedIn() &&
+  if (user_manager::UserManager::IsInitialized() &&
+      user_manager::UserManager::Get()->IsUserLoggedIn() &&
       chromeos::LoginState::Get() &&
       !chromeos::LoginState::Get()->IsGuestSessionUser()) {
     return true;

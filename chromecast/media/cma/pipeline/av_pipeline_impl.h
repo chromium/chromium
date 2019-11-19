@@ -20,6 +20,7 @@
 #include "chromecast/media/cma/backend/cma_backend.h"
 #include "chromecast/media/cma/pipeline/av_pipeline_client.h"
 #include "chromecast/media/cma/pipeline/stream_decryptor.h"
+#include "chromecast/public/media/cast_decrypt_config.h"
 #include "chromecast/public/media/stream_id.h"
 #include "media/base/pipeline_status.h"
 
@@ -35,7 +36,6 @@ class BufferingFrameProvider;
 class BufferingState;
 class CodedFrameProvider;
 class DecoderBufferBase;
-struct EncryptionScheme;
 
 class AvPipelineImpl : CmaBackend::Decoder::Delegate {
  public:
@@ -75,7 +75,7 @@ class AvPipelineImpl : CmaBackend::Decoder::Delegate {
       StreamId id,
       const ::media::AudioDecoderConfig& audio_config,
       const ::media::VideoDecoderConfig& video_config) = 0;
-  virtual const EncryptionScheme& GetEncryptionScheme(StreamId id) const = 0;
+  virtual EncryptionScheme GetEncryptionScheme(StreamId id) const = 0;
 
   // Create a decoder for decrypt and decode.
   virtual std::unique_ptr<StreamDecryptor> CreateDecryptor() = 0;

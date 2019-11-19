@@ -252,6 +252,7 @@ TEST_P(VideoEncoderTest, MAYBE_EncodesVariedFrameSizes) {
              encoded_frames[encoded_frames.size() - 4])) {
       auto video_frame = CreateTestVideoFrame(frame_size);
       const base::TimeTicks reference_time = Now();
+      const base::TimeDelta timestamp = video_frame->timestamp();
       const bool accepted_request = video_encoder()->EncodeVideoFrame(
           std::move(video_frame), reference_time,
           base::BindRepeating(
@@ -271,8 +272,7 @@ TEST_P(VideoEncoderTest, MAYBE_EncodesVariedFrameSizes) {
                 encoded_frames->emplace_back(std::move(encoded_frame));
               },
               encoded_frames_weak_factory.GetWeakPtr(),
-              RtpTimeTicks::FromTimeDelta(video_frame->timestamp(),
-                                          kVideoFrequency),
+              RtpTimeTicks::FromTimeDelta(timestamp, kVideoFrequency),
               reference_time));
       if (accepted_request) {
         ++count_frames_accepted;

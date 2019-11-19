@@ -39,8 +39,8 @@ struct CONTENT_EXPORT MediaDeviceSaltAndOrigin {
 // unique media-device IDs for each origin and renderer process. These values
 // should not be cached since the user can explicitly change them at any time.
 // This function must run on the UI thread.
-MediaDeviceSaltAndOrigin GetMediaDeviceSaltAndOrigin(int render_process_id,
-                                                     int render_frame_id);
+CONTENT_EXPORT MediaDeviceSaltAndOrigin
+GetMediaDeviceSaltAndOrigin(int render_process_id, int render_frame_id);
 
 // Returns a translated version of |device_info| suitable for use in a renderer
 // process.

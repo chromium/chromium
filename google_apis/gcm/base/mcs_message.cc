@@ -61,7 +61,7 @@ MCSMessage::~MCSMessage() {
 }
 
 bool MCSMessage::IsValid() const {
-  return core_.get() != NULL;
+  return core_.get() != nullptr;
 }
 
 std::string MCSMessage::SerializeAsString() const {

@@ -37,6 +37,8 @@ class VideoDecoderWrapper : public CmaBackend::VideoDecoder {
   bool SetConfig(const VideoConfig& config) override;
   void GetStatistics(Statistics* statistics) override;
 
+  scoped_refptr<DecoderBufferBase> pushed_buffer_;
+
   MediaPipelineBackend::VideoDecoder* decoder_;
   std::unique_ptr<RevokedVideoDecoder> revoked_video_decoder_;
 

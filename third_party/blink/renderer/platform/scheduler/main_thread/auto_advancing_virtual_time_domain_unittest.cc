@@ -32,10 +32,10 @@ class AutoAdvancingVirtualTimeDomainTest : public testing::Test {
     // A null clock triggers some assertions.
     test_task_runner_->AdvanceMockTickClock(
         base::TimeDelta::FromMilliseconds(5));
+    sequence_manager_ = base::sequence_manager::SequenceManagerForTest::Create(
+        nullptr, test_task_runner_, test_task_runner_->GetMockTickClock());
     scheduler_helper_.reset(new NonMainThreadSchedulerHelper(
-        base::sequence_manager::SequenceManagerForTest::Create(
-            nullptr, test_task_runner_, test_task_runner_->GetMockTickClock()),
-        nullptr, TaskType::kInternalTest));
+        sequence_manager_.get(), nullptr, TaskType::kInternalTest));
 
     scheduler_helper_->AddTaskTimeObserver(&test_task_time_observer_);
     task_queue_ = scheduler_helper_->DefaultNonMainThreadTaskQueue();
@@ -56,6 +56,8 @@ class AutoAdvancingVirtualTimeDomainTest : public testing::Test {
   scoped_refptr<base::TestMockTimeTaskRunner> test_task_runner_;
   base::Time initial_time_;
   base::TimeTicks initial_time_ticks_;
+  std::unique_ptr<base::sequence_manager::SequenceManagerForTest>
+      sequence_manager_;
   std::unique_ptr<NonMainThreadSchedulerHelper> scheduler_helper_;
   scoped_refptr<base::sequence_manager::TaskQueue> task_queue_;
   std::unique_ptr<AutoAdvancingVirtualTimeDomain> auto_advancing_time_domain_;

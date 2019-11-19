@@ -36,6 +36,8 @@ class CONTENT_EXPORT DevToolsAgentHostImpl : public DevToolsAgentHost {
   bool IsAttached() override;
   void InspectElement(RenderFrameHost* frame_host, int x, int y) override;
   std::string GetId() override;
+  std::string CreateIOStreamFromData(
+      scoped_refptr<base::RefCountedMemory> data) override;
   std::string GetParentId() override;
   std::string GetOpenerId() override;
   std::string GetDescription() override;

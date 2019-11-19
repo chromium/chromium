@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 (async function() {
-  TestRunner.addResult(`Checks the RunMicrotasks event is emitted.\n`);
+  TestRunner.addResult(`Checks the RunMicrotasks event is emitted and nested into RunTask.\n`);
   await TestRunner.loadModule('performance_test_runner');
   await TestRunner.showPanel('timeline');
   await TestRunner.evaluateInPagePromise(`
@@ -27,8 +27,15 @@
   `);
 
   await PerformanceTestRunner.invokeAsyncWithTimeline('performActions');
-  const event = PerformanceTestRunner.mainTrackEvents().find(
+
+  const microTaskEvent = PerformanceTestRunner.mainTrackEvents().find(
       e => e.name === TimelineModel.TimelineModel.RecordType.RunMicrotasks);
-  PerformanceTestRunner.printTraceEventProperties(event);
+  PerformanceTestRunner.printTraceEventProperties(microTaskEvent);
+  const nested = PerformanceTestRunner.mainTrackEvents()
+      .filter(e => e.name === TimelineModel.TimelineModel.RecordType.Task)
+      .some(e => e.startTime <= microTaskEvent.startTime && microTaskEvent.endTime <= e.endTime);
+
+  TestRunner.addResult(`Microtask event is nested into Task event: ${nested}`);
+
   TestRunner.completeTest();
 })();

@@ -43,7 +43,7 @@ TEST_F(DiskCacheTest, StorageBlock_SetData) {
 
   CacheEntryBlock entry2(file.get(), disk_cache::Addr(0xa0010002));
   EXPECT_TRUE(entry2.Load());
-  EXPECT_TRUE(entry2.Data() != NULL);
+  EXPECT_TRUE(entry2.Data() != nullptr);
   EXPECT_TRUE(0 == entry2.Data()->hash);
 
   EXPECT_TRUE(entry2.Data() != entry1.Data());

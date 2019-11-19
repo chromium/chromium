@@ -142,22 +142,30 @@ class WTFStringImplProvider:
     def get_length(self):
         return self.valobj.GetChildMemberWithName('length_').GetValueAsUnsigned(0)
 
-    def get_data8(self):
-        # FIXME: This should be the equivalent of reinterpret_cast<LChar*>(self.valobj + 1)
-        return self.valobj.GetChildAtIndex(2).GetChildMemberWithName('m_data8')
-
-    def get_data16(self):
-        # FIXME: This should be the equivalent of reinterpret_cast<UChar*>(self.valobj + 1)
-        return self.valobj.GetChildAtIndex(2).GetChildMemberWithName('m_data16')
-
     def to_string(self):
+        val_type = self.valobj.GetType()
+        process = self.valobj.GetProcess()
+        endianness = process.GetByteOrder()
+        pointer_size = process.GetAddressByteSize()
+        offset = val_type.GetPointeeType().GetByteSize()
+
+        char_start = self.valobj.GetValueAsUnsigned(0) + offset
+        pointer = lldb.SBData.CreateDataFromUInt64Array(endianness, pointer_size, [char_start])
         error = lldb.SBError()
         if self.is_8bit():
-            return lstring_to_string(self.get_data8(), error, self.get_length())
-        return ustring_to_string(self.get_data16(), error, self.get_length())
+            return lstring_to_string(
+                self.valobj.CreateValueFromData(
+                    'str_impl', pointer,
+                    val_type.GetBasicType(lldb.eBasicTypeChar).GetPointerType()),
+                error, self.get_length())
+        return ustring_to_string(
+            self.valobj.CreateValueFromData(
+                'str_impl', pointer,
+                val_type.GetBasicType(lldb.eBasicTypeUnsignedChar).GetPointerType()),
+            error, self.get_length())
 
     def is_8bit(self):
-        return self.valobj.GetChildMemberWithName('is_8bit_')
+        return self.valobj.GetChildMemberWithName('is_8bit_').GetValueAsUnsigned(0)
 
 
 class WTFStringProvider:

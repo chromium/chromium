@@ -13,7 +13,7 @@
 #include "base/numerics/ranges.h"
 #include "base/stl_util.h"
 #include "build/build_config.h"
-#include "chrome/browser/ui/views/frame/hosted_app_button_container.h"
+#include "chrome/browser/ui/views/web_apps/web_app_frame_toolbar_view.h"
 #include "chrome/common/chrome_switches.h"
 #include "ui/gfx/font.h"
 #include "ui/views/controls/button/image_button.h"
@@ -72,9 +72,9 @@ OpaqueBrowserFrameViewLayout::OpaqueBrowserFrameViewLayout()
       close_button_(nullptr),
       window_icon_(nullptr),
       window_title_(nullptr),
-      trailing_buttons_{views::FRAME_BUTTON_MINIMIZE,
-                        views::FRAME_BUTTON_MAXIMIZE,
-                        views::FRAME_BUTTON_CLOSE} {}
+      trailing_buttons_{views::FrameButton::kMinimize,
+                        views::FrameButton::kMaximize,
+                        views::FrameButton::kClose} {}
 
 OpaqueBrowserFrameViewLayout::~OpaqueBrowserFrameViewLayout() {}
 
@@ -85,7 +85,7 @@ void OpaqueBrowserFrameViewLayout::SetButtonOrdering(
   trailing_buttons_ = trailing_buttons;
 }
 
-gfx::Rect OpaqueBrowserFrameViewLayout::GetBoundsForTabStrip(
+gfx::Rect OpaqueBrowserFrameViewLayout::GetBoundsForTabStripRegion(
     const gfx::Size& tabstrip_preferred_size,
     int total_width) const {
   const int x = available_space_leading_x_;
@@ -146,14 +146,13 @@ int OpaqueBrowserFrameViewLayout::NonClientTopHeight(bool restored) const {
   const int caption_button_height = DefaultCaptionButtonY(restored) +
                                     kCaptionButtonHeight +
                                     kCaptionButtonBottomPadding;
-  int hosted_app_button_height = 0;
-  if (hosted_app_button_container_) {
-    hosted_app_button_height =
-        hosted_app_button_container_->GetPreferredSize().height() +
-        kVerticalPadding;
+  int web_app_button_height = 0;
+  if (web_app_frame_toolbar_) {
+    web_app_button_height =
+        web_app_frame_toolbar_->GetPreferredSize().height() + kVerticalPadding;
   }
   return std::max(std::max(icon_height, caption_button_height),
-                  hosted_app_button_height) +
+                  web_app_button_height) +
          kContentEdgeShadowThickness;
 }
 
@@ -205,13 +204,13 @@ chrome::FrameButtonDisplayType
 OpaqueBrowserFrameViewLayout::GetButtonDisplayType(
     views::FrameButton button_id) const {
   switch (button_id) {
-    case views::FRAME_BUTTON_MINIMIZE:
+    case views::FrameButton::kMinimize:
       return chrome::FrameButtonDisplayType::kMinimize;
-    case views::FRAME_BUTTON_MAXIMIZE:
+    case views::FrameButton::kMaximize:
       return delegate_->IsMaximized()
                  ? chrome::FrameButtonDisplayType::kRestore
                  : chrome::FrameButtonDisplayType::kMaximize;
-    case views::FRAME_BUTTON_CLOSE:
+    case views::FrameButton::kClose:
       return chrome::FrameButtonDisplayType::kClose;
     default:
       NOTREACHED();
@@ -272,9 +271,9 @@ bool OpaqueBrowserFrameViewLayout::IsFrameEdgeVisible(bool restored) const {
 void OpaqueBrowserFrameViewLayout::LayoutWindowControls() {
   // Keep a list of all buttons that we don't show.
   std::vector<views::FrameButton> buttons_not_shown;
-  buttons_not_shown.push_back(views::FRAME_BUTTON_MAXIMIZE);
-  buttons_not_shown.push_back(views::FRAME_BUTTON_MINIMIZE);
-  buttons_not_shown.push_back(views::FRAME_BUTTON_CLOSE);
+  buttons_not_shown.push_back(views::FrameButton::kMaximize);
+  buttons_not_shown.push_back(views::FrameButton::kMinimize);
+  buttons_not_shown.push_back(views::FrameButton::kClose);
 
   if (delegate_->ShouldShowCaptionButtons()) {
     for (const auto& button : leading_buttons_) {
@@ -298,8 +297,9 @@ void OpaqueBrowserFrameViewLayout::LayoutTitleBar() {
   int size = delegate_->GetIconSize();
   bool should_show_icon = delegate_->ShouldShowWindowIcon() && window_icon_;
   bool should_show_title = delegate_->ShouldShowWindowTitle() && window_title_;
+  int icon_y = 0;
 
-  if (should_show_icon || should_show_title || hosted_app_button_container_) {
+  if (should_show_icon || should_show_title || web_app_frame_toolbar_) {
     use_hidden_icon_location = false;
 
     // Our frame border has a different "3D look" than Windows'.  Theirs has
@@ -319,17 +319,22 @@ void OpaqueBrowserFrameViewLayout::LayoutTitleBar() {
     const int icon_height =
         unavailable_px_at_top + size + kContentEdgeShadowThickness;
     const int y = unavailable_px_at_top + (available_height - icon_height) / 2;
+    icon_y = y;
 
+    if (web_app_frame_toolbar_)
+      available_space_leading_x_ = y - kIconLeftSpacing;
     window_icon_bounds_ =
         gfx::Rect(available_space_leading_x_ + kIconLeftSpacing, y, size, size);
     available_space_leading_x_ += size + kIconLeftSpacing;
     minimum_size_for_buttons_ += size + kIconLeftSpacing;
 
-    if (hosted_app_button_container_) {
-      available_space_trailing_x_ =
-          hosted_app_button_container_->LayoutInContainer(
-              available_space_leading_x_, available_space_trailing_x_, 0,
-              available_height);
+    if (web_app_frame_toolbar_) {
+      std::pair<int, int> remaining_bounds =
+          web_app_frame_toolbar_->LayoutInContainer(available_space_leading_x_,
+                                                    available_space_trailing_x_,
+                                                    0, available_height);
+      available_space_leading_x_ = remaining_bounds.first;
+      available_space_trailing_x_ = remaining_bounds.second;
     }
   }
 
@@ -341,12 +346,14 @@ void OpaqueBrowserFrameViewLayout::LayoutTitleBar() {
     if (should_show_title) {
       window_title_->SetText(delegate_->GetWindowTitle());
 
-      int text_width =
-          std::max(0, available_space_trailing_x_ - kCaptionSpacing -
-                          available_space_leading_x_ - kIconTitleSpacing);
-      window_title_->SetBounds(available_space_leading_x_ + kIconTitleSpacing,
-                               window_icon_bounds_.y(), text_width,
-                               window_icon_bounds_.height());
+      // Extra space between icon and title.
+      int extra_space = web_app_frame_toolbar_ ? icon_y - kIconTitleSpacing : 0;
+      int text_width = std::max(
+          0, available_space_trailing_x_ - kCaptionSpacing -
+                 available_space_leading_x_ - kIconTitleSpacing - extra_space);
+      window_title_->SetBounds(
+          available_space_leading_x_ + kIconTitleSpacing + extra_space,
+          window_icon_bounds_.y(), text_width, window_icon_bounds_.height());
       available_space_leading_x_ += text_width + kIconTitleSpacing;
     }
   }
@@ -369,12 +376,12 @@ void OpaqueBrowserFrameViewLayout::LayoutTitleBar() {
 void OpaqueBrowserFrameViewLayout::ConfigureButton(views::FrameButton button_id,
                                                    ButtonAlignment alignment) {
   switch (button_id) {
-    case views::FRAME_BUTTON_MINIMIZE: {
+    case views::FrameButton::kMinimize: {
       minimize_button_->SetVisible(true);
       SetBoundsForButton(button_id, minimize_button_, alignment);
       break;
     }
-    case views::FRAME_BUTTON_MAXIMIZE: {
+    case views::FrameButton::kMaximize: {
       // When the window is restored, we show a maximized button; otherwise, we
       // show a restore button.
       bool is_restored = !delegate_->IsMaximized() && !delegate_->IsMinimized();
@@ -388,7 +395,7 @@ void OpaqueBrowserFrameViewLayout::ConfigureButton(views::FrameButton button_id,
       SetBoundsForButton(button_id, visible_button, alignment);
       break;
     }
-    case views::FRAME_BUTTON_CLOSE: {
+    case views::FrameButton::kClose: {
       close_button_->SetVisible(true);
       SetBoundsForButton(button_id, close_button_, alignment);
       break;
@@ -398,14 +405,14 @@ void OpaqueBrowserFrameViewLayout::ConfigureButton(views::FrameButton button_id,
 
 void OpaqueBrowserFrameViewLayout::HideButton(views::FrameButton button_id) {
   switch (button_id) {
-    case views::FRAME_BUTTON_MINIMIZE:
+    case views::FrameButton::kMinimize:
       minimize_button_->SetVisible(false);
       break;
-    case views::FRAME_BUTTON_MAXIMIZE:
+    case views::FrameButton::kMaximize:
       restore_button_->SetVisible(false);
       maximize_button_->SetVisible(false);
       break;
-    case views::FRAME_BUTTON_CLOSE:
+    case views::FrameButton::kClose:
       close_button_->SetVisible(false);
       break;
   }
@@ -444,10 +451,11 @@ void OpaqueBrowserFrameViewLayout::SetBoundsForButton(
                  kImageButton) {
     DCHECK_EQ(std::string(views::ImageButton::kViewClassName),
               button->GetClassName());
-    static_cast<views::ImageButton*>(button)->SetImageAlignment(
+    auto* const image_button = static_cast<views::ImageButton*>(button);
+    image_button->SetImageHorizontalAlignment(
         (alignment == ALIGN_LEADING) ? views::ImageButton::ALIGN_RIGHT
-                                     : views::ImageButton::ALIGN_LEFT,
-        views::ImageButton::ALIGN_BOTTOM);
+                                     : views::ImageButton::ALIGN_LEFT);
+    image_button->SetImageVerticalAlignment(views::ImageButton::ALIGN_BOTTOM);
   }
 
   TopAreaPadding top_area_padding = GetTopAreaPadding();
@@ -537,10 +545,9 @@ void OpaqueBrowserFrameViewLayout::SetView(int id, views::View* view) {
       }
       window_title_ = static_cast<views::Label*>(view);
       break;
-    case VIEW_ID_HOSTED_APP_BUTTON_CONTAINER:
-      DCHECK_EQ(view->GetClassName(), HostedAppButtonContainer::kViewClassName);
-      hosted_app_button_container_ =
-          static_cast<HostedAppButtonContainer*>(view);
+    case VIEW_ID_WEB_APP_FRAME_TOOLBAR:
+      DCHECK_EQ(view->GetClassName(), WebAppFrameToolbarView::kViewClassName);
+      web_app_frame_toolbar_ = static_cast<WebAppFrameToolbarView*>(view);
       break;
     default:
       NOTREACHED() << "Unknown view id " << id;
@@ -599,10 +606,10 @@ gfx::Size OpaqueBrowserFrameViewLayout::GetPreferredSize(
 
 void OpaqueBrowserFrameViewLayout::ViewAdded(views::View* host,
                                              views::View* view) {
-  SetView(view->id(), view);
+  SetView(view->GetID(), view);
 }
 
 void OpaqueBrowserFrameViewLayout::ViewRemoved(views::View* host,
                                                views::View* view) {
-  SetView(view->id(), nullptr);
+  SetView(view->GetID(), nullptr);
 }

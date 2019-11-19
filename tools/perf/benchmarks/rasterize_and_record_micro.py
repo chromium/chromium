@@ -44,8 +44,11 @@ class _RasterizeAndRecordMicro(perf_benchmark.PerfBenchmark):
 
 
 @benchmark.Info(
-    emails=['vmpstr@chromium.org', 'wkorman@chromium.org'],
-    component='Internals>Compositing>Rasterization')
+    emails=['pdr@chromium.org',
+             'wangxianzhu@chromium.org',
+             'vmpstr@chromium.org'],
+    component='Internals>Compositing>Rasterization',
+    documentation_url='https://bit.ly/rasterize-and-record-benchmark')
 class RasterizeAndRecordMicroTop25(_RasterizeAndRecordMicro):
   """Measures rasterize and record performance on the top 25 web pages.
 
@@ -58,8 +61,11 @@ class RasterizeAndRecordMicroTop25(_RasterizeAndRecordMicro):
 
 
 @benchmark.Info(
-    emails=['vmpstr@chromium.org', 'wkorman@chromium.org'],
-    component='Internals>Compositing>Rasterization')
+    emails=['pdr@chromium.org',
+             'wangxianzhu@chromium.org',
+             'vmpstr@chromium.org'],
+    component='Internals>Compositing>Rasterization',
+    documentation_url='https://bit.ly/rasterize-and-record-benchmark')
 class RasterizeAndRecordMicroPartialInvalidation(_RasterizeAndRecordMicro):
   """Measures rasterize and record performance for partial inval. on big pages.
 

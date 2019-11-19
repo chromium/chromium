@@ -34,7 +34,6 @@
 #include "third_party/blink/public/web/web_settings.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
-#include "third_party/blink/renderer/platform/wtf/compiler.h"
 
 namespace blink {
 
@@ -66,6 +65,7 @@ class CORE_EXPORT WebSettingsImpl final : public WebSettings {
   void SetAutoZoomFocusedNodeToLegibleScale(bool) override;
   void SetClobberUserAgentInitialScaleQuirk(bool) override;
   void SetCookieEnabled(bool) override;
+  void SetCaretBrowsingEnabled(bool) override;
   void SetNavigateOnDragDrop(bool) override;
   void SetCursiveFontFamily(const WebString&,
                             UScriptCode = USCRIPT_COMMON) override;
@@ -78,6 +78,7 @@ class CORE_EXPORT WebSettingsImpl final : public WebSettings {
   void SetDeviceScaleAdjustment(float) override;
 
   void SetDisableReadingFromCanvas(bool) override;
+  void SetDontSendKeyEventsToJavascript(bool) override;
   void SetDoubleTapToZoomEnabled(bool) override;
   void SetDownloadableBinaryFontsEnabled(bool) override;
   void SetEditingBehavior(EditingBehavior) override;
@@ -97,7 +98,6 @@ class CORE_EXPORT WebSettingsImpl final : public WebSettings {
   void SetHideDownloadUI(bool) override;
   void SetPresentationReceiver(bool) override;
   void SetHighlightAds(bool) override;
-  void SetHistoryEntryRequiresUserGesture(bool) override;
   void SetHyperlinkAuditingEnabled(bool) override;
   void SetIgnoreMainFrameOverflowHiddenQuirk(bool) override;
   void SetImageAnimationPolicy(ImageAnimationPolicy) override;
@@ -118,10 +118,8 @@ class CORE_EXPORT WebSettingsImpl final : public WebSettings {
   void SetPresentationRequiresUserGesture(bool) override;
   void SetEmbeddedMediaExperienceEnabled(bool) override;
   void SetImmersiveModeEnabled(bool) override;
-  void SetMinimumAccelerated2dCanvasSize(int) override;
   void SetMinimumFontSize(int) override;
   void SetMinimumLogicalFontSize(int) override;
-  void SetMockScrollbarsEnabled(bool) override;
   void SetHideScrollbars(bool) override;
   void SetOfflineWebApplicationCacheEnabled(bool) override;
   void SetPassiveEventListenerDefault(PassiveEventListenerDefault) override;
@@ -176,25 +174,25 @@ class CORE_EXPORT WebSettingsImpl final : public WebSettings {
   void SetTextTrackTextColor(const WebString&) override;
   void SetTextTrackTextShadow(const WebString&) override;
   void SetTextTrackTextSize(const WebString&) override;
+  void SetTextTrackWindowColor(const WebString&) override;
+  void SetTextTrackWindowPadding(const WebString&) override;
+  void SetTextTrackWindowRadius(const WebString&) override;
   void SetThreadedScrollingEnabled(bool) override;
   void SetTouchDragDropEnabled(bool) override;
   void SetBarrelButtonForDragEnabled(bool) override;
   void SetUseLegacyBackgroundSizeShorthandBehavior(bool) override;
   void SetViewportStyle(WebViewportStyle) override;
-  void SetUseSolidColorScrollbars(bool) override;
   void SetUseWideViewport(bool) override;
   void SetV8CacheOptions(V8CacheOptions) override;
   void SetValidationMessageTimerMagnification(int) override;
   void SetViewportEnabled(bool) override;
   void SetViewportMetaEnabled(bool) override;
-  void SetViewportMetaLayoutSizeQuirk(bool) override;
   void SetViewportMetaMergeContentQuirk(bool) override;
   void SetViewportMetaNonUserScalableQuirk(bool) override;
   void SetViewportMetaZeroValuesQuirk(bool) override;
   void SetWebGLErrorsToConsoleEnabled(bool) override;
   void SetWebSecurityEnabled(bool) override;
   void SetWideViewportQuirkEnabled(bool) override;
-  void SetXSSAuditorEnabled(bool) override;
   void SetMediaControlsEnabled(bool) override;
   void SetDoNotUpdateSelectionOnMutatingSelectionRange(bool) override;
   void SetLowPriorityIframesThreshold(WebEffectiveConnectionType) override;
@@ -215,8 +213,14 @@ class CORE_EXPORT WebSettingsImpl final : public WebSettings {
   void SetLazyImageLoadingDistanceThresholdPx2G(int) override;
   void SetLazyImageLoadingDistanceThresholdPx3G(int) override;
   void SetLazyImageLoadingDistanceThresholdPx4G(int) override;
+  void SetLazyImageFirstKFullyLoadUnknown(int) override;
+  void SetLazyImageFirstKFullyLoadSlow2G(int) override;
+  void SetLazyImageFirstKFullyLoad2G(int) override;
+  void SetLazyImageFirstKFullyLoad3G(int) override;
+  void SetLazyImageFirstKFullyLoad4G(int) override;
 
   void SetForceDarkModeEnabled(bool) override;
+  void SetNavigationControls(NavigationControls) override;
 
   bool RenderVSyncNotificationEnabled() const {
     return render_v_sync_notification_enabled_;
@@ -229,9 +233,6 @@ class CORE_EXPORT WebSettingsImpl final : public WebSettings {
     return support_deprecated_target_density_dpi_;
   }
   bool ViewportMetaEnabled() const;
-  bool ViewportMetaLayoutSizeQuirk() const {
-    return viewport_meta_layout_size_quirk_;
-  }
   bool ViewportMetaNonUserScalableQuirk() const {
     return viewport_meta_non_user_scalable_quirk_;
   }
@@ -248,10 +249,6 @@ class CORE_EXPORT WebSettingsImpl final : public WebSettings {
   bool render_v_sync_notification_enabled_;
   bool auto_zoom_focused_node_to_legible_scale_;
   bool support_deprecated_target_density_dpi_;
-  // This quirk is to maintain compatibility with Android apps built on
-  // the Android SDK prior to and including version 18. Presumably, this
-  // can be removed any time after 2015. See http://crbug.com/277369.
-  bool viewport_meta_layout_size_quirk_;
   // This quirk is to maintain compatibility with Android apps built on
   // the Android SDK prior to and including version 18. Presumably, this
   // can be removed any time after 2015. See http://crbug.com/312691.

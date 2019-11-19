@@ -33,18 +33,20 @@
 #include <limits>
 
 #include "base/macros.h"
+#include "base/time/default_tick_clock.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/thread_specific.h"
-#include "third_party/blink/renderer/platform/wtf/time.h"
 #include "v8/include/v8.h"
 
 namespace blink {
 
-static constexpr TimeDelta kTwentyMinutes = TimeDelta::FromMinutes(20);
-static constexpr TimeDelta kFiftyMs = TimeDelta::FromMilliseconds(50);
+static constexpr base::TimeDelta kTwentyMinutes =
+    base::TimeDelta::FromMinutes(20);
+static constexpr base::TimeDelta kFiftyMs =
+    base::TimeDelta::FromMilliseconds(50);
 
 static void GetHeapSize(HeapInfo& info) {
   v8::HeapStatistics heap_statistics;
@@ -54,17 +56,13 @@ static void GetHeapSize(HeapInfo& info) {
   info.total_js_heap_size =
       heap_statistics.total_physical_size() + heap_statistics.external_memory();
   info.js_heap_size_limit = heap_statistics.heap_size_limit();
-  info.used_js_heap_size_without_external_memory =
-      heap_statistics.used_heap_size();
-  info.total_js_heap_size_without_external_memory =
-      heap_statistics.total_physical_size();
 }
 
 class HeapSizeCache {
   USING_FAST_MALLOC(HeapSizeCache);
 
  public:
-  HeapSizeCache() {}
+  HeapSizeCache() : clock_(base::DefaultTickClock::GetInstance()) {}
 
   void GetCachedHeapSize(HeapInfo& info, MemoryInfo::Precision precision) {
     MaybeUpdate(precision);
@@ -77,16 +75,19 @@ class HeapSizeCache {
     return *heap_size_cache;
   }
 
+  void SetTickClockForTesting(const base::TickClock* clock) { clock_ = clock; }
+  void ResetLastUpdateTimeForTesting() { last_update_time_ = base::nullopt; }
+
  private:
   void MaybeUpdate(MemoryInfo::Precision precision) {
     // We rate-limit queries to once every twenty minutes in the Bucketized case
     // to make it more difficult for attackers to compare memory usage before
     // and after some event. We limit to once every 50 ms in the Precise case to
     // avoid exposing precise GC timings.
-    TimeTicks now = CurrentTimeTicks();
-    TimeDelta delta_allowed = precision == MemoryInfo::Precision::Bucketized
-                                  ? kTwentyMinutes
-                                  : kFiftyMs;
+    base::TimeTicks now = clock_->NowTicks();
+    base::TimeDelta delta_allowed =
+        precision == MemoryInfo::Precision::Bucketized ? kTwentyMinutes
+                                                       : kFiftyMs;
     if (!last_update_time_.has_value() ||
         now - last_update_time_.value() >= delta_allowed) {
       Update(precision);
@@ -102,13 +103,10 @@ class HeapSizeCache {
     info_.used_js_heap_size = QuantizeMemorySize(info_.used_js_heap_size);
     info_.total_js_heap_size = QuantizeMemorySize(info_.total_js_heap_size);
     info_.js_heap_size_limit = QuantizeMemorySize(info_.js_heap_size_limit);
-    info_.used_js_heap_size_without_external_memory =
-        QuantizeMemorySize(info_.used_js_heap_size_without_external_memory);
-    info_.total_js_heap_size_without_external_memory =
-        QuantizeMemorySize(info_.total_js_heap_size_without_external_memory);
   }
 
-  base::Optional<TimeTicks> last_update_time_;
+  base::Optional<base::TimeTicks> last_update_time_;
+  const base::TickClock* clock_;
 
   HeapInfo info_;
   DISALLOW_COPY_AND_ASSIGN(HeapSizeCache);
@@ -178,6 +176,14 @@ MemoryInfo::MemoryInfo(Precision precision) {
   // The values must have been computed, so totalJSHeapSize must be greater than
   // 0.
   DCHECK_GT(totalJSHeapSize(), 0u);
+}
+
+// static
+void MemoryInfo::SetTickClockForTestingForCurrentThread(
+    const base::TickClock* clock) {
+  HeapSizeCache& cache = HeapSizeCache::ForCurrentThread();
+  cache.SetTickClockForTesting(clock);
+  cache.ResetLastUpdateTimeForTesting();
 }
 
 }  // namespace blink

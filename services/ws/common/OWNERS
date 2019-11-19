@@ -1,4 +1,0 @@
-per-file *_type_converter*.*=set noparent
-per-file *_type_converter*.*=file://ipc/SECURITY_OWNERS
-per-file *gpu*.*=fsamuel@chromium.org
-per-file *gpu*.*=sadrul@chromium.org

@@ -4,6 +4,9 @@
 
 #include "components/viz/service/display/display_resource_provider.h"
 
+#include <algorithm>
+#include <string>
+
 #include "base/atomic_sequence_num.h"
 #include "base/numerics/safe_math.h"
 #include "base/stl_util.h"
@@ -169,10 +172,10 @@ bool DisplayResourceProvider::OnMemoryDump(
   return true;
 }
 
-#if defined(OS_ANDROID)
 void DisplayResourceProvider::SendPromotionHints(
-    const OverlayCandidateList::PromotionHintInfoMap& promotion_hints,
+    const std::map<ResourceId, gfx::RectF>& promotion_hints,
     const ResourceIdSet& requestor_set) {
+#if defined(OS_ANDROID)
   GLES2Interface* gl = ContextGL();
   if (!gl)
     return;
@@ -207,8 +210,10 @@ void DisplayResourceProvider::SendPromotionHints(
     }
     UnlockForRead(id);
   }
+#endif
 }
 
+#if defined(OS_ANDROID)
 bool DisplayResourceProvider::IsBackedBySurfaceTexture(ResourceId id) {
   ChildResource* resource = GetResource(id);
   return resource->transferable.is_backed_by_surface_texture;
@@ -216,6 +221,20 @@ bool DisplayResourceProvider::IsBackedBySurfaceTexture(ResourceId id) {
 
 size_t DisplayResourceProvider::CountPromotionHintRequestsForTesting() {
   return wants_promotion_hints_set_.size();
+}
+
+void DisplayResourceProvider::InitializePromotionHintRequest(ResourceId id) {
+  ChildResource* resource = TryGetResource(id);
+  // TODO(ericrk): We should never fail TryGetResource, but we appear to
+  // be doing so on Android in rare cases. Handle this gracefully until a
+  // better solution can be found. https://crbug.com/811858
+  if (!resource)
+    return;
+
+  // We could sync all |wants_promotion_hint| resources elsewhere, and send 'no'
+  // to all resources that weren't used.  However, there's no real advantage.
+  if (resource->transferable.wants_promotion_hint)
+    wants_promotion_hints_set_.insert(id);
 }
 #endif
 
@@ -253,8 +272,12 @@ GLenum DisplayResourceProvider::GetResourceTextureTarget(ResourceId id) {
 }
 
 gfx::BufferFormat DisplayResourceProvider::GetBufferFormat(ResourceId id) {
+  return BufferFormat(GetResourceFormat(id));
+}
+
+ResourceFormat DisplayResourceProvider::GetResourceFormat(ResourceId id) {
   ChildResource* resource = GetResource(id);
-  return BufferFormat(resource->transferable.format);
+  return resource->transferable.format;
 }
 
 const gfx::ColorSpace& DisplayResourceProvider::GetColorSpace(ResourceId id) {
@@ -270,13 +293,11 @@ void DisplayResourceProvider::WaitSyncToken(ResourceId id) {
   if (!resource)
     return;
   WaitSyncTokenInternal(resource);
+
 #if defined(OS_ANDROID)
-  // Now that the resource is synced, we may send it a promotion hint.  We could
-  // sync all |wants_promotion_hint| resources elsewhere, and send 'no' to all
-  // resources that weren't used.  However, there's no real advantage.
-  if (resource->transferable.wants_promotion_hint)
-    wants_promotion_hints_set_.insert(id);
-#endif  // OS_ANDROID
+  // Now that the resource is synced, we may send it a promotion hint.
+  InitializePromotionHintRequest(id);
+#endif
 }
 
 int DisplayResourceProvider::CreateChild(const ReturnCallback& return_callback,
@@ -424,7 +445,7 @@ void DisplayResourceProvider::PopulateSkBitmapWithResource(
 
 void DisplayResourceProvider::DeleteResourceInternal(ResourceMap::iterator it,
                                                      DeleteStyle style) {
-  TRACE_EVENT0("viz", "DosplayResourceProvider::DeleteResourceInternal");
+  TRACE_EVENT0("viz", "DisplayResourceProvider::DeleteResourceInternal");
   ChildResource* resource = &it->second;
 
   if (resource->gl_id) {
@@ -482,7 +503,8 @@ DisplayResourceProvider::LockForRead(ResourceId id) {
       }
       resource->SetLocallyUsed();
     }
-    if (mailbox.IsSharedImage() && enable_shared_images_) {
+    if (mailbox.IsSharedImage() && enable_shared_images_ &&
+        resource->lock_for_read_count == 0) {
       gl->BeginSharedImageAccessDirectCHROMIUM(
           resource->gl_id, GL_SHARED_IMAGE_ACCESS_MODE_READ_CHROMIUM);
     }
@@ -524,69 +546,21 @@ void DisplayResourceProvider::UnlockForRead(ResourceId id) {
   ChildResource* resource = &it->second;
   DCHECK_GT(resource->lock_for_read_count, 0);
   if (resource->transferable.mailbox_holder.mailbox.IsSharedImage() &&
-      resource->is_gpu_resource_type() && enable_shared_images_) {
+      resource->is_gpu_resource_type() && enable_shared_images_ &&
+      resource->lock_for_read_count == 1) {
     DCHECK(resource->gl_id);
     GLES2Interface* gl = ContextGL();
     DCHECK(gl);
     gl->EndSharedImageAccessDirectCHROMIUM(resource->gl_id);
   }
   resource->lock_for_read_count--;
-  TryReleaseResource(it);
+  TryReleaseResource(id, resource);
 }
 
-ResourceMetadata DisplayResourceProvider::LockForExternalUse(ResourceId id) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  auto it = resources_.find(id);
-  DCHECK(it != resources_.end());
-
-  ChildResource* resource = &it->second;
-  ResourceMetadata metadata;
-  // Make sure there is no outstanding LockForExternalUse without calling
-  // UnlockForExternalUse.
-  DCHECK(!resource->locked_for_external_use);
-  // TODO(penghuang): support software resource.
-  DCHECK(resource->is_gpu_resource_type());
-
-  metadata.mailbox_holder = resource->transferable.mailbox_holder;
-  metadata.size = resource->transferable.size;
-  metadata.resource_format = resource->transferable.format;
-  metadata.mailbox_holder.sync_token = resource->sync_token();
-  metadata.color_space = resource->transferable.color_space;
-
-  resource->locked_for_external_use = true;
-  return metadata;
-}
-
-void DisplayResourceProvider::UnlockForExternalUse(
-    ResourceId id,
-    const gpu::SyncToken& sync_token) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  auto it = resources_.find(id);
-  DCHECK(it != resources_.end());
-  DCHECK(sync_token.verified_flush());
-
-  ChildResource* resource = &it->second;
-  DCHECK(resource->locked_for_external_use);
-  // TODO(penghuang): support software resource.
-  DCHECK(resource->is_gpu_resource_type());
-
-  // Update the resource sync token to |sync_token|. When the next frame is
-  // being composited, the DeclareUsedResourcesFromChild() will be called with
-  // resources belong to every child for the next frame. If the resource is not
-  // used by the next frame, the resource will be returned to a child which
-  // owns it with the |sync_token|. The child is responsible for issuing a
-  // WaitSyncToken GL command with the |sync_token| before reusing it.
-  resource->UpdateSyncToken(sync_token);
-  resource->locked_for_external_use = false;
-
-  TryReleaseResource(it);
-}
-
-void DisplayResourceProvider::TryReleaseResource(ResourceMap::iterator it) {
-  ResourceId id = it->first;
-  ChildResource* resource = &it->second;
+void DisplayResourceProvider::TryReleaseResource(ResourceId id,
+                                                 ChildResource* resource) {
   if (resource->marked_for_deletion && !resource->lock_for_read_count &&
-      !resource->locked_for_external_use) {
+      !resource->locked_for_external_use && !resource->lock_for_overlay_count) {
     auto child_it = children_.find(resource->child_id);
     DeleteAndReturnUnusedResourcesToChild(child_it, NORMAL, {id});
   }
@@ -666,12 +640,10 @@ void DisplayResourceProvider::DeleteAndReturnUnusedResourcesToChild(
   to_return.reserve(unused.size());
   std::vector<ReturnedResource*> need_synchronization_resources;
   std::vector<GLbyte*> unverified_sync_tokens;
-  std::vector<sk_sp<SkImage>> external_used_sk_images;
-  std::vector<ReturnedResource*> external_used_resources;
-  if (external_use_client_) {
-    external_used_sk_images.reserve(unused.size());
-    external_used_resources.reserve(unused.size());
-  }
+
+  std::vector<std::unique_ptr<ExternalUseClient::ImageContext>>
+      image_contexts_to_return;
+  image_contexts_to_return.reserve(unused.size());
 
   GLES2Interface* gl = ContextGL();
   for (ResourceId local_id : unused) {
@@ -679,13 +651,8 @@ void DisplayResourceProvider::DeleteAndReturnUnusedResourcesToChild(
     CHECK(it != resources_.end());
     ChildResource& resource = it->second;
 
-    bool is_external_used_resource = false;
     auto sk_image_it = resource_sk_images_.find(local_id);
     if (sk_image_it != resource_sk_images_.end()) {
-      if (external_use_client_) {
-        external_used_sk_images.push_back(std::move(sk_image_it->second));
-        is_external_used_resource = true;
-      }
       resource_sk_images_.erase(sk_image_it);
     }
 
@@ -713,10 +680,14 @@ void DisplayResourceProvider::DeleteAndReturnUnusedResourcesToChild(
       is_lost = true;
     }
 
+    if (resource.image_context)
+      image_contexts_to_return.emplace_back(std::move(resource.image_context));
+
     if (resource.is_gpu_resource_type() &&
+        resource.gl_id &&
         resource.filter != resource.transferable.filter) {
       DCHECK(resource.transferable.mailbox_holder.texture_target);
-      DCHECK(resource.gl_id);
+      DCHECK(!resource.ShouldWaitSyncToken());
       DCHECK(gl);
       gl->BindTexture(resource.transferable.mailbox_holder.texture_target,
                       resource.gl_id);
@@ -738,9 +709,6 @@ void DisplayResourceProvider::DeleteAndReturnUnusedResourcesToChild(
                  !returned.sync_token.verified_flush()) {
         unverified_sync_tokens.push_back(returned.sync_token.GetData());
       }
-
-      if (is_external_used_resource)
-        external_used_resources.push_back(&returned);
     }
 
     child_info->child_to_parent_map.erase(child_id);
@@ -770,11 +738,9 @@ void DisplayResourceProvider::DeleteAndReturnUnusedResourcesToChild(
   for (ReturnedResource* returned : need_synchronization_resources)
     returned->sync_token = new_sync_token;
 
-  if (external_use_client_ && !external_used_sk_images.empty()) {
-    auto sync_token = external_use_client_->ReleasePromiseSkImages(
-        std::move(external_used_sk_images));
-    for (auto* to_return : external_used_resources)
-      to_return->sync_token = sync_token;
+  if (external_use_client_ && !image_contexts_to_return.empty()) {
+    external_use_client_->ReleaseImageContexts(
+        std::move(image_contexts_to_return));
   }
 
   if (!to_return.empty())
@@ -879,7 +845,8 @@ DisplayResourceProvider::ScopedSamplerGL::~ScopedSamplerGL() = default;
 DisplayResourceProvider::ScopedReadLockSkImage::ScopedReadLockSkImage(
     DisplayResourceProvider* resource_provider,
     ResourceId resource_id,
-    SkAlphaType alpha_type)
+    SkAlphaType alpha_type,
+    GrSurfaceOrigin origin)
     : resource_provider_(resource_provider), resource_id_(resource_id) {
   const ChildResource* resource = resource_provider->LockForRead(resource_id);
   DCHECK(resource);
@@ -902,7 +869,7 @@ DisplayResourceProvider::ScopedReadLockSkImage::ScopedReadLockSkImage(
                                      GrMipMapped::kNo, texture_info);
     sk_image_ = SkImage::MakeFromTexture(
         resource_provider->compositor_context_provider_->GrContext(),
-        backend_texture, kTopLeft_GrSurfaceOrigin,
+        backend_texture, origin,
         ResourceFormatToClosestSkColorType(!resource_provider->IsSoftware(),
                                            resource->transferable.format),
         alpha_type, resource->transferable.color_space.ToSkColorSpace());
@@ -921,6 +888,7 @@ DisplayResourceProvider::ScopedReadLockSkImage::ScopedReadLockSkImage(
     return;
   }
 
+  DCHECK(origin == kTopLeft_GrSurfaceOrigin);
   SkBitmap sk_bitmap;
   resource_provider->PopulateSkBitmapWithResource(&sk_bitmap, resource);
   sk_bitmap.setImmutable();
@@ -932,9 +900,39 @@ DisplayResourceProvider::ScopedReadLockSkImage::~ScopedReadLockSkImage() {
   resource_provider_->UnlockForRead(resource_id_);
 }
 
+DisplayResourceProvider::ScopedReadLockSharedImage::ScopedReadLockSharedImage(
+    DisplayResourceProvider* resource_provider,
+    ResourceId resource_id)
+    : resource_provider_(resource_provider),
+      resource_id_(resource_id),
+      resource_(resource_provider_->GetResource(resource_id_)) {
+  DCHECK(resource_);
+  DCHECK(resource_->is_gpu_resource_type());
+  DCHECK(resource_->transferable.mailbox_holder.mailbox.IsSharedImage());
+
+  resource_->lock_for_overlay_count++;
+}
+
+gpu::Mailbox DisplayResourceProvider::ScopedReadLockSharedImage::mailbox()
+    const {
+  return resource_->transferable.mailbox_holder.mailbox;
+}
+
+gpu::SyncToken DisplayResourceProvider::ScopedReadLockSharedImage::sync_token()
+    const {
+  return resource_->transferable.mailbox_holder.sync_token;
+}
+
+DisplayResourceProvider::ScopedReadLockSharedImage::
+    ~ScopedReadLockSharedImage() {
+  DCHECK(resource_->lock_for_overlay_count);
+  resource_->lock_for_overlay_count--;
+  resource_provider_->TryReleaseResource(resource_id_, resource_);
+}
+
 DisplayResourceProvider::LockSetForExternalUse::LockSetForExternalUse(
     DisplayResourceProvider* resource_provider,
-    SkiaOutputSurface* client)
+    ExternalUseClient* client)
     : resource_provider_(resource_provider) {
   DCHECK(!resource_provider_->external_use_client_);
   resource_provider_->external_use_client_ = client;
@@ -944,32 +942,66 @@ DisplayResourceProvider::LockSetForExternalUse::~LockSetForExternalUse() {
   DCHECK(resources_.empty());
 }
 
-ResourceMetadata DisplayResourceProvider::LockSetForExternalUse::LockResource(
-    ResourceId id) {
-  DCHECK(!base::ContainsValue(resources_, id));
-  resources_.push_back(id);
-  return resource_provider_->LockForExternalUse(id);
-}
-
-sk_sp<SkImage>
-DisplayResourceProvider::LockSetForExternalUse::LockResourceAndCreateSkImage(
+ExternalUseClient::ImageContext*
+DisplayResourceProvider::LockSetForExternalUse::LockResource(
     ResourceId id,
-    SkAlphaType alpha_type) {
-  auto metadata = LockResource(id);
-  metadata.alpha_type = alpha_type;
-  auto& resource_sk_image = resource_provider_->resource_sk_images_[id];
-  if (!resource_sk_image) {
-    resource_sk_image =
-        resource_provider_->external_use_client_->MakePromiseSkImage(
-            std::move(metadata));
+    bool is_video_plane) {
+  auto it = resource_provider_->resources_.find(id);
+  DCHECK(it != resource_provider_->resources_.end());
+
+  ChildResource& resource = it->second;
+  DCHECK(resource.is_gpu_resource_type());
+
+  if (!resource.locked_for_external_use) {
+    DCHECK(!base::Contains(resources_, std::make_pair(id, &resource)));
+    resources_.emplace_back(id, &resource);
+
+    if (!resource.image_context) {
+      resource.image_context =
+          resource_provider_->external_use_client_->CreateImageContext(
+              resource.transferable.mailbox_holder, resource.transferable.size,
+              resource.transferable.format, resource.transferable.ycbcr_info,
+              // The resource |color_space| is ignored by SkiaRenderer for video
+              // planes and usually cannot be converted to SkColorSpace.
+              is_video_plane
+                  ? nullptr
+                  : resource.transferable.color_space.ToSkColorSpace());
+    }
+    resource.locked_for_external_use = true;
+
+    if (resource.transferable.read_lock_fences_enabled) {
+      if (resource_provider_->current_read_lock_fence_.get())
+        resource_provider_->current_read_lock_fence_->Set();
+      resource.read_lock_fence = resource_provider_->current_read_lock_fence_;
+    }
   }
-  return resource_sk_image;
+
+  DCHECK(base::Contains(resources_, std::make_pair(id, &resource)));
+  return resource.image_context.get();
 }
 
 void DisplayResourceProvider::LockSetForExternalUse::UnlockResources(
     const gpu::SyncToken& sync_token) {
-  for (const auto& id : resources_)
-    resource_provider_->UnlockForExternalUse(id, sync_token);
+  DCHECK(sync_token.verified_flush());
+  for (const auto& pair : resources_) {
+    auto id = pair.first;
+    auto* resource = pair.second;
+    DCHECK(resource->locked_for_external_use);
+
+    // TODO(penghuang): support software resource.
+    DCHECK(resource->is_gpu_resource_type());
+
+    // Update the resource sync token to |sync_token|. When the next frame is
+    // being composited, the DeclareUsedResourcesFromChild() will be called with
+    // resources belong to every child for the next frame. If the resource is
+    // not used by the next frame, the resource will be returned to a child
+    // which owns it with the |sync_token|. The child is responsible for issuing
+    // a WaitSyncToken GL command with the |sync_token| before reusing it.
+    resource->UpdateSyncToken(sync_token);
+    resource->locked_for_external_use = false;
+
+    resource_provider_->TryReleaseResource(id, resource);
+  }
   resources_.clear();
 }
 
@@ -989,10 +1021,6 @@ bool DisplayResourceProvider::SynchronousFence::HasPassed() {
     Synchronize();
   }
   return true;
-}
-
-void DisplayResourceProvider::SynchronousFence::Wait() {
-  HasPassed();
 }
 
 void DisplayResourceProvider::SynchronousFence::Synchronize() {
@@ -1018,9 +1046,7 @@ DisplayResourceProvider::Child::~Child() = default;
 DisplayResourceProvider::ChildResource::ChildResource(
     int child_id,
     const TransferableResource& transferable)
-    : child_id(child_id),
-      transferable(transferable),
-      filter(transferable.filter) {
+    : child_id(child_id), transferable(transferable), filter(GL_NONE) {
   if (is_gpu_resource_type())
     UpdateSyncToken(transferable.mailbox_holder.sync_token);
   else

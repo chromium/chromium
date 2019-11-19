@@ -6,8 +6,8 @@ import("//third_party/blink/renderer/core/core.gni")
 
 blink_core_sources("accessibility") {
   sources = [
-    "apply_high_contrast_check.cc",
-    "apply_high_contrast_check.h",
+    "apply_dark_mode.cc",
+    "apply_dark_mode.h",
     "ax_context.cc",
     "ax_context.h",
     "ax_object_cache.cc",
@@ -20,6 +20,6 @@ blink_core_sources("accessibility") {
 
 blink_core_tests("unit_tests") {
   sources = [
-    "apply_high_contrast_check_test.cc",
+    "apply_dark_mode_test.cc",
   ]
 }

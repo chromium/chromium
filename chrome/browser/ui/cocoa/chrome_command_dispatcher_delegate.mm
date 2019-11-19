@@ -6,12 +6,12 @@
 
 #include "base/logging.h"
 #include "chrome/browser/global_keyboard_shortcuts_mac.h"
+#include "components/remote_cocoa/app_shim/native_widget_ns_window_bridge.h"
+#include "components/remote_cocoa/common/native_widget_ns_window_host.mojom.h"
 #include "content/public/browser/native_web_keyboard_event.h"
 #include "ui/base/accelerators/accelerator_manager.h"
 #include "ui/content_accelerators/accelerator_util.h"
 #include "ui/views/widget/widget.h"
-#include "ui/views_bridge_mac/bridged_native_widget_impl.h"
-#include "ui/views_bridge_mac/mojo/bridged_native_widget_host.mojom.h"
 
 @implementation ChromeCommandDispatcherDelegate
 
@@ -31,8 +31,8 @@
   //  2) As page/browser popup actions, see
   //     ExtensionActionPlatformDelegateViews. This always has high priority.
   //  3) As a bookmark override. This always has regular priority, and is
-  //     actually handled as a special case of the IDC_BOOKMARK_PAGE browser
-  //     command. See BookmarkCurrentPageAllowingExtensionOverrides.
+  //     actually handled as a special case of the IDC_BOOKMARK_THIS_TAB browser
+  //     command. See BookmarkCurrentTabAllowingExtensionOverrides.
   //
   // The only reasonable way to access the registered accelerators for (1) and
   // (2) is to use the FocusManager. That is what we do here. But that will also
@@ -47,7 +47,8 @@
   content::NativeWebKeyboardEvent keyboard_event(event);
   ui::Accelerator accelerator =
       ui::GetAcceleratorFromNativeWebKeyboardEvent(keyboard_event);
-  auto* bridge = views::BridgedNativeWidgetImpl::GetFromNativeWindow(window);
+  auto* bridge =
+      remote_cocoa::NativeWidgetNSWindowBridge::GetFromNativeWindow(window);
   bool was_handled = false;
   if (bridge) {
     bridge->host()->HandleAccelerator(
@@ -68,8 +69,9 @@
   if ([responder conformsToProtocol:@protocol(CommandDispatcherTarget)]) {
     NSObject<CommandDispatcherTarget>* target =
         static_cast<NSObject<CommandDispatcherTarget>*>(responder);
-    if ([target isKeyLocked:event])
+    if ([target isKeyLocked:event]) {
       return ui::PerformKeyEquivalentResult::kUnhandled;
+    }
   }
 
   if ([self eventHandledByViewsFocusManager:event
@@ -93,7 +95,8 @@
   // highlighting of the NSMenu.
   CommandForKeyEventResult result = CommandForKeyEvent(event);
   if (result.found()) {
-    auto* bridge = views::BridgedNativeWidgetImpl::GetFromNativeWindow(window);
+    auto* bridge =
+        remote_cocoa::NativeWidgetNSWindowBridge::GetFromNativeWindow(window);
     if (bridge) {
       bool was_executed = false;
       bridge->host()->ExecuteCommand(
@@ -124,7 +127,8 @@
   }
 
   if (result.found()) {
-    auto* bridge = views::BridgedNativeWidgetImpl::GetFromNativeWindow(window);
+    auto* bridge =
+        remote_cocoa::NativeWidgetNSWindowBridge::GetFromNativeWindow(window);
     if (bridge) {
       // postPerformKeyEquivalent: is only called on events that are not
       // reserved. We want to bypass the main menu if and only if the event is

@@ -1,0 +1,24 @@
+{
+  "layers": [
+    {
+      "name": "Scrolling background of LayoutView #document",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF",
+      "paintInvalidations": [
+        {
+          "object": "LayoutNGBlockFlow HTML",
+          "rect": [712, 8, 80, 20],
+          "reason": "chunk disappeared"
+        }
+      ]
+    },
+    {
+      "name": "LayoutFlexibleBox (positioned) NAV class='nav-bar'",
+      "position": [8, 0],
+      "bounds": [200, 600],
+      "contentsOpaque": true
+    }
+  ]
+}
+

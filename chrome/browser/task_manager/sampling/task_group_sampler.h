@@ -71,6 +71,10 @@ class TaskGroupSampler : public base::RefCountedThreadSafe<TaskGroupSampler> {
 
   std::unique_ptr<base::ProcessMetrics> process_metrics_;
 
+  // Keep track of whether or not we have real cpu usage. First call to
+  // GetPlatformIndependentCPUUsage returns 0, which we treat as NaN.
+  bool cpu_usage_calculated_ = false;
+
   // The specific blocking pool SequencedTaskRunner that will be used to post
   // the refresh tasks onto serially.
   scoped_refptr<base::SequencedTaskRunner> blocking_pool_runner_;

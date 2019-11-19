@@ -106,31 +106,31 @@ FacetManager::FacetManager(const FacetURI& facet_uri,
 FacetManager::~FacetManager() {
   // The manager will be destroyed while there are pending requests only if the
   // entire backend is going away. Fail pending requests in this case.
-  for (const auto& request_info : pending_requests_)
-    ServeRequestWithFailure(request_info);
+  for (auto& request_info : pending_requests_)
+    ServeRequestWithFailure(std::move(request_info));
 }
 
 void FacetManager::GetAffiliationsAndBranding(
     StrategyOnCacheMiss cache_miss_strategy,
-    const AffiliationService::ResultCallback& callback,
+    AffiliationService::ResultCallback callback,
     const scoped_refptr<base::TaskRunner>& callback_task_runner) {
   RequestInfo request_info;
-  request_info.callback = callback;
+  request_info.callback = std::move(callback);
   request_info.callback_task_runner = callback_task_runner;
   if (IsCachedDataFresh()) {
     AffiliatedFacetsWithUpdateTime affiliation;
     if (!backend_->ReadAffiliationsAndBrandingFromDatabase(facet_uri_,
                                                            &affiliation)) {
-      ServeRequestWithFailure(request_info);
+      ServeRequestWithFailure(std::move(request_info));
       return;
     }
     DCHECK_EQ(affiliation.last_update_time, last_update_time_) << facet_uri_;
-    ServeRequestWithSuccess(request_info, affiliation.facets);
+    ServeRequestWithSuccess(std::move(request_info), affiliation.facets);
   } else if (cache_miss_strategy == StrategyOnCacheMiss::FETCH_OVER_NETWORK) {
-    pending_requests_.push_back(request_info);
+    pending_requests_.push_back(std::move(request_info));
     backend_->SignalNeedNetworkRequest();
   } else {
-    ServeRequestWithFailure(request_info);
+    ServeRequestWithFailure(std::move(request_info));
   }
 }
 
@@ -162,8 +162,8 @@ void FacetManager::OnFetchSucceeded(
     const AffiliatedFacetsWithUpdateTime& affiliation) {
   last_update_time_ = affiliation.last_update_time;
   DCHECK(IsCachedDataFresh()) << facet_uri_;
-  for (const auto& request_info : pending_requests_)
-    ServeRequestWithSuccess(request_info, affiliation.facets);
+  for (auto& request_info : pending_requests_)
+    ServeRequestWithSuccess(std::move(request_info), affiliation.facets);
   pending_requests_.clear();
 
   base::Time next_required_fetch(GetNextRequiredFetchTimeDueToPrefetch());
@@ -236,17 +236,18 @@ base::Time FacetManager::GetNextRequiredFetchTimeDueToPrefetch() const {
 
 // static
 void FacetManager::ServeRequestWithSuccess(
-    const RequestInfo& request_info,
+    RequestInfo request_info,
     const AffiliatedFacets& affiliation) {
   request_info.callback_task_runner->PostTask(
-      FROM_HERE, base::BindOnce(request_info.callback, affiliation, true));
+      FROM_HERE,
+      base::BindOnce(std::move(request_info.callback), affiliation, true));
 }
 
 // static
-void FacetManager::ServeRequestWithFailure(const RequestInfo& request_info) {
+void FacetManager::ServeRequestWithFailure(RequestInfo request_info) {
   request_info.callback_task_runner->PostTask(
-      FROM_HERE,
-      base::BindOnce(request_info.callback, AffiliatedFacets(), false));
+      FROM_HERE, base::BindOnce(std::move(request_info.callback),
+                                AffiliatedFacets(), false));
 }
 
 }  // namespace password_manager

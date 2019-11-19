@@ -2,8 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// https://wicg.github.io/ResizeObserver/#resize-observer-entry-interface
+// https://drafts.csswg.org/resize-observer-1/#resize-observer-entry-interface
 
+[Exposed=Window]
 interface ResizeObserverEntry {
     readonly attribute Element target;
     readonly attribute DOMRectReadOnly contentRect;

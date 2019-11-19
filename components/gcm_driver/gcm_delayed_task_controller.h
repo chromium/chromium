@@ -19,7 +19,7 @@ class GCMDelayedTaskController {
   ~GCMDelayedTaskController();
 
   // Adds a task that will be invoked once we're ready.
-  void AddTask(const base::Closure& task);
+  void AddTask(base::OnceClosure task);
 
   // Sets ready status, which will release all of the pending tasks.
   void SetReady();
@@ -33,7 +33,7 @@ class GCMDelayedTaskController {
   // Flag that indicates that controlled component is ready.
   bool ready_;
 
-  std::vector<base::Closure> delayed_tasks_;
+  std::vector<base::OnceClosure> delayed_tasks_;
 
   DISALLOW_COPY_AND_ASSIGN(GCMDelayedTaskController);
 };

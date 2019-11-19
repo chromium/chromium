@@ -13,7 +13,7 @@ layer at (0,0) size 800x600
       LayoutBlockFlow {DIV} at (0,56) size 784x20
         LayoutText {#text} at (0,0) size 25x19
           text run at (0,0) width 25: "foo "
-        LayoutInline {SPAN} at (0,0) size 20x19
+        LayoutInline {SPAN} at (25,0) size 20x19
           LayoutText {#text} at (25,0) size 20x19
             text run at (25,0) width 20: "bar"
         LayoutText {#text} at (45,0) size 101x19

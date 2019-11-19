@@ -12,7 +12,6 @@
 namespace offline_pages {
 
 class ArchiveManager;
-class ClientPolicyController;
 class OfflinePageMetadataStore;
 
 // This task is responsible for executing maintenance sub-tasks during Chrome
@@ -21,8 +20,7 @@ class OfflinePageMetadataStore;
 class StartupMaintenanceTask : public Task {
  public:
   StartupMaintenanceTask(OfflinePageMetadataStore* store,
-                         ArchiveManager* archive_manager,
-                         ClientPolicyController* policy_controller);
+                         ArchiveManager* archive_manager);
   ~StartupMaintenanceTask() override;
 
   // Task implementation:
@@ -35,11 +33,8 @@ class StartupMaintenanceTask : public Task {
   OfflinePageMetadataStore* store_;
   // The archive manager storing archive directories. Not owned.
   ArchiveManager* archive_manager_;
-  // The policy controller which is used to acquire names of namespaces. Not
-  // owned.
-  ClientPolicyController* policy_controller_;
 
-  base::WeakPtrFactory<StartupMaintenanceTask> weak_ptr_factory_;
+  base::WeakPtrFactory<StartupMaintenanceTask> weak_ptr_factory_{this};
   DISALLOW_COPY_AND_ASSIGN(StartupMaintenanceTask);
 };
 

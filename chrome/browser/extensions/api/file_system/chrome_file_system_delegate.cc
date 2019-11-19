@@ -36,10 +36,10 @@
 #include "extensions/browser/extension_util.h"
 #include "extensions/common/api/file_system.h"
 #include "extensions/common/extension.h"
-#include "storage/browser/fileapi/external_mount_points.h"
-#include "storage/browser/fileapi/isolated_context.h"
-#include "storage/common/fileapi/file_system_types.h"
-#include "storage/common/fileapi/file_system_util.h"
+#include "storage/browser/file_system/external_mount_points.h"
+#include "storage/browser/file_system/isolated_context.h"
+#include "storage/common/file_system/file_system_types.h"
+#include "storage/common/file_system/file_system_util.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
 
 #if defined(OS_MACOSX)
@@ -106,7 +106,7 @@ bool GetVolumeListForExtension(
 // Callback called when consent is granted or denied.
 void OnConsentReceived(
     content::BrowserContext* browser_context,
-    scoped_refptr<UIThreadExtensionFunction> requester,
+    scoped_refptr<ExtensionFunction> requester,
     const FileSystemDelegate::FileSystemCallback& success_callback,
     const FileSystemDelegate::ErrorCallback& error_callback,
     const std::string& extension_id,
@@ -167,12 +167,12 @@ void OnConsentReceived(
   // Set a fixed register name, as the automatic one would leak the mount point
   // directory.
   std::string register_name = "fs";
-  const std::string file_system_id =
+  const storage::IsolatedContext::ScopedFSHandle file_system =
       isolated_context->RegisterFileSystemForPath(
           storage::kFileSystemTypeNativeForPlatformApp,
           std::string() /* file_system_id */, original_url.path(),
           &register_name);
-  if (file_system_id.empty()) {
+  if (!file_system.is_valid()) {
     error_callback.Run(kSecurityError);
     return;
   }
@@ -184,21 +184,21 @@ void OnConsentReceived(
       content::ChildProcessSecurityPolicy::GetInstance();
   DCHECK(policy);
 
-  const auto process_id = requester->render_frame_host()->GetProcess()->GetID();
+  const auto process_id = requester->source_process_id();
   // Read-only permisisons.
   policy->GrantReadFile(process_id, volume->mount_path());
-  policy->GrantReadFileSystem(process_id, file_system_id);
+  policy->GrantReadFileSystem(process_id, file_system.id());
 
   // Additional write permissions.
   if (writable) {
     policy->GrantCreateReadWriteFile(process_id, volume->mount_path());
     policy->GrantCopyInto(process_id, volume->mount_path());
-    policy->GrantWriteFileSystem(process_id, file_system_id);
-    policy->GrantDeleteFromFileSystem(process_id, file_system_id);
-    policy->GrantCreateFileForFileSystem(process_id, file_system_id);
+    policy->GrantWriteFileSystem(process_id, file_system.id());
+    policy->GrantDeleteFromFileSystem(process_id, file_system.id());
+    policy->GrantCreateFileForFileSystem(process_id, file_system.id());
   }
 
-  success_callback.Run(file_system_id, register_name);
+  success_callback.Run(file_system.id(), register_name);
 }
 
 }  // namespace
@@ -252,7 +252,7 @@ base::FilePath ChromeFileSystemDelegate::GetDefaultDirectory() {
 }
 
 bool ChromeFileSystemDelegate::ShowSelectFileDialog(
-    scoped_refptr<UIThreadExtensionFunction> extension_function,
+    scoped_refptr<ExtensionFunction> extension_function,
     ui::SelectFileDialog::Type type,
     const base::FilePath& default_path,
     const ui::SelectFileDialog::FileTypeInfo* file_types,
@@ -282,7 +282,7 @@ bool ChromeFileSystemDelegate::ShowSelectFileDialog(
     return false;
   }
 
-  // The file picker will hold a reference to the UIThreadExtensionFunction
+  // The file picker will hold a reference to the ExtensionFunction
   // instance, preventing its destruction (and subsequent sending of the
   // function response) until the user has selected a file or cancelled the
   // picker. At that point, the picker will delete itself, which will also free
@@ -330,7 +330,7 @@ ChromeFileSystemDelegate::GetGrantVolumesMode(
 
 void ChromeFileSystemDelegate::RequestFileSystem(
     content::BrowserContext* browser_context,
-    scoped_refptr<UIThreadExtensionFunction> requester,
+    scoped_refptr<ExtensionFunction> requester,
     const Extension& extension,
     std::string volume_id,
     bool writable,

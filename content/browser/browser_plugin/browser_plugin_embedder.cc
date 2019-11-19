@@ -20,10 +20,7 @@
 namespace content {
 
 BrowserPluginEmbedder::BrowserPluginEmbedder(WebContentsImpl* web_contents)
-    : WebContentsObserver(web_contents),
-      guest_drag_ending_(false),
-      weak_ptr_factory_(this) {
-}
+    : WebContentsObserver(web_contents), guest_drag_ending_(false) {}
 
 BrowserPluginEmbedder::~BrowserPluginEmbedder() {
 }

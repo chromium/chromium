@@ -13,7 +13,6 @@
 #include "base/logging.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
-#include "base/memory/shared_memory.h"
 #include "base/process/process_handle.h"
 #include "base/single_thread_task_runner.h"
 #include "build/build_config.h"
@@ -43,44 +42,44 @@
 #include "base/win/scoped_handle.h"
 #endif  // defined(OS_WIN)
 
-const bool kReadOnly = true;
-
 namespace remoting {
 
 class DesktopSessionProxy::IpcSharedBufferCore
     : public base::RefCountedThreadSafe<IpcSharedBufferCore> {
  public:
-  IpcSharedBufferCore(int id,
-                      base::SharedMemoryHandle handle,
-                      size_t size)
-      : id_(id),
-        shared_memory_(handle, kReadOnly),
-        size_(size) {
-    if (!shared_memory_.Map(size)) {
+  IpcSharedBufferCore(int id, base::ReadOnlySharedMemoryRegion region)
+      : id_(id) {
+    mapping_ = region.Map();
+    if (!mapping_.IsValid()) {
       LOG(ERROR) << "Failed to map a shared buffer: id=" << id
-                 << ", size=" << size;
+                 << ", size=" << region.GetSize();
     }
+    // After being mapped, |region| is no longer needed and can be discarded.
   }
 
-  int id() { return id_; }
-  size_t size() { return size_; }
-  void* memory() { return shared_memory_.memory(); }
+  int id() const { return id_; }
+  size_t size() const { return mapping_.size(); }
+  const void* memory() const { return mapping_.memory(); }
 
  private:
   virtual ~IpcSharedBufferCore() = default;
   friend class base::RefCountedThreadSafe<IpcSharedBufferCore>;
 
   int id_;
-  base::SharedMemory shared_memory_;
-  size_t size_;
+  base::ReadOnlySharedMemoryMapping mapping_;
 
   DISALLOW_COPY_AND_ASSIGN(IpcSharedBufferCore);
 };
 
 class DesktopSessionProxy::IpcSharedBuffer : public webrtc::SharedMemory {
  public:
+  // Note that the webrtc::SharedMemory class is used for both read-only and
+  // writable shared memory, necessitating the ugly const_cast here.
   IpcSharedBuffer(scoped_refptr<IpcSharedBufferCore> core)
-      : SharedMemory(core->memory(), core->size(), 0, core->id()),
+      : SharedMemory(const_cast<void*>(core->memory()),
+                     core->size(),
+                     0,
+                     core->id()),
         core_(core) {}
 
  private:
@@ -516,12 +515,12 @@ void DesktopSessionProxy::OnAudioPacket(const std::string& serialized_packet) {
 
 void DesktopSessionProxy::OnCreateSharedBuffer(
     int id,
-    base::SharedMemoryHandle handle,
+    base::ReadOnlySharedMemoryRegion region,
     uint32_t size) {
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
 
   scoped_refptr<IpcSharedBufferCore> shared_buffer =
-      new IpcSharedBufferCore(id, handle, size);
+      new IpcSharedBufferCore(id, std::move(region));
 
   if (shared_buffer->memory() != nullptr &&
       !shared_buffers_.insert(std::make_pair(id, shared_buffer)).second) {
@@ -539,6 +538,13 @@ void DesktopSessionProxy::OnReleaseSharedBuffer(int id) {
 void DesktopSessionProxy::OnDesktopDisplayChanged(
     const protocol::VideoLayout& displays) {
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
+  LOG(INFO) << "DSP::OnDesktopDisplayChanged";
+  for (int display_id = 0; display_id < displays.video_track_size();
+       display_id++) {
+    protocol::VideoTrackLayout track = displays.video_track(display_id);
+    LOG(INFO) << "   #" << display_id << " : "
+              << " [" << track.x_dpi() << "," << track.y_dpi() << "]";
+  }
 
   if (client_session_control_) {
     auto layout = std::make_unique<protocol::VideoLayout>();

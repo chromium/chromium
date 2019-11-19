@@ -8,7 +8,6 @@
 #include <windows.h>
 #include <string>
 
-#include "base/strings/string16.h"
 #include "base/win/scoped_handle.h"
 #include "sandbox/win/src/sandbox.h"
 
@@ -155,14 +154,14 @@ class TestRunner {
 BrokerServices* GetBroker();
 
 // Constructs a full path to a file inside the system32 folder.
-base::string16 MakePathToSys32(const wchar_t* name, bool is_obj_man_path);
+std::wstring MakePathToSys32(const wchar_t* name, bool is_obj_man_path);
 
 // Constructs a full path to a file inside the syswow64 folder.
-base::string16 MakePathToSysWow64(const wchar_t* name, bool is_obj_man_path);
+std::wstring MakePathToSysWow64(const wchar_t* name, bool is_obj_man_path);
 
 // Constructs a full path to a file inside the system32 (or syswow64) folder
 // depending on whether process is running in wow64 or not.
-base::string16 MakePathToSys(const wchar_t* name, bool is_obj_man_path);
+std::wstring MakePathToSys(const wchar_t* name, bool is_obj_man_path);
 
 // Runs the given test on the target process.
 int DispatchCall(int argc, wchar_t **argv);

@@ -10,7 +10,7 @@
 namespace heap_profiling {
 
 // This class overrides ClientConnectionManager in order to prevent incognito
-// renderers from being profiled.
+// and guest mode renderers from being profiled.
 // Like ClientConnectionManager, this class must only be constructed/accessed
 // from the UI thread.
 class ChromeClientConnectionManager : public ClientConnectionManager {

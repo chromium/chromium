@@ -13,6 +13,8 @@
 #include "base/containers/span.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/address_family.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/ip_endpoint.h"
@@ -71,7 +73,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) UDPSocket : public mojom::UDPSocket {
                          net::CompletionOnceCallback callback) = 0;
   };
 
-  UDPSocket(mojom::UDPSocketReceiverPtr receiver, net::NetLog* net_log);
+  UDPSocket(mojo::PendingRemote<mojom::UDPSocketListener> listener,
+            net::NetLog* net_log);
   ~UDPSocket() override;
 
   // UDPSocket implementation.
@@ -147,7 +150,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) UDPSocket : public mojom::UDPSocket {
   bool is_connected_;
 
   // The interface which gets data from fulfilled receive requests.
-  mojom::UDPSocketReceiverPtr receiver_;
+  mojo::Remote<mojom::UDPSocketListener> listener_;
 
   std::unique_ptr<SocketWrapper> wrapped_socket_;
 

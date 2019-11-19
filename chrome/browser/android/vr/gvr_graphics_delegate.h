@@ -216,7 +216,7 @@ class GvrGraphicsDelegate : public BaseGraphicsDelegate {
   std::string frame_buffer_dump_filepath_suffix_;
   unsigned int last_bound_buffer_index_;
 
-  base::WeakPtrFactory<GvrGraphicsDelegate> weak_ptr_factory_;
+  base::WeakPtrFactory<GvrGraphicsDelegate> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(GvrGraphicsDelegate);
 };

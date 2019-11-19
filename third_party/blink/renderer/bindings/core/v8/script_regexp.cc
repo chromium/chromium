@@ -36,6 +36,10 @@
 
 namespace blink {
 
+namespace {
+const uint32_t kBacktrackLimit = 1'000'000;
+}  // namespace
+
 ScriptRegexp::ScriptRegexp(const String& pattern,
                            TextCaseSensitivity case_sensitivity,
                            MultilineMode multiline_mode,
@@ -56,8 +60,9 @@ ScriptRegexp::ScriptRegexp(const String& pattern,
     flags |= v8::RegExp::kUnicode;
 
   v8::Local<v8::RegExp> regex;
-  if (v8::RegExp::New(context, V8String(isolate, pattern),
-                      static_cast<v8::RegExp::Flags>(flags))
+  if (v8::RegExp::NewWithBacktrackLimit(context, V8String(isolate, pattern),
+                                        static_cast<v8::RegExp::Flags>(flags),
+                                        kBacktrackLimit)
           .ToLocal(&regex))
     regex_.Set(isolate, regex);
   if (try_catch.HasCaught() && !try_catch.Message().IsEmpty())
@@ -88,15 +93,10 @@ int ScriptRegexp::Match(const String& string,
   v8::TryCatch try_catch(isolate);
 
   v8::Local<v8::RegExp> regex = regex_.NewLocal(isolate);
-  v8::Local<v8::Value> exec;
-  if (!regex->Get(context, V8AtomicString(isolate, "exec")).ToLocal(&exec))
-    return -1;
-  v8::Local<v8::Value> argv[] = {
-      V8String(isolate, string.Substring(start_from))};
+  v8::Local<v8::String> subject =
+      V8String(isolate, string.Substring(start_from));
   v8::Local<v8::Value> return_value;
-  if (!V8ScriptRunner::CallInternalFunction(isolate, exec.As<v8::Function>(),
-                                            regex, base::size(argv), argv)
-           .ToLocal(&return_value))
+  if (!regex->Exec(context, subject).ToLocal(&return_value))
     return -1;
 
   // RegExp#exec returns null if there's no match, otherwise it returns an

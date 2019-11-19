@@ -496,9 +496,7 @@ PortableDeviceWatcherWin::DeviceDetails::~DeviceDetails() {
 }
 
 PortableDeviceWatcherWin::PortableDeviceWatcherWin()
-    : notifications_(nullptr),
-      storage_notifications_(nullptr),
-      weak_ptr_factory_(this) {}
+    : notifications_(nullptr), storage_notifications_(nullptr) {}
 
 PortableDeviceWatcherWin::~PortableDeviceWatcherWin() {
   UnregisterDeviceNotification(notifications_);
@@ -507,8 +505,8 @@ PortableDeviceWatcherWin::~PortableDeviceWatcherWin() {
 void PortableDeviceWatcherWin::Init(HWND hwnd) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   notifications_ = RegisterPortableDeviceNotification(hwnd);
-  media_task_runner_ = base::CreateCOMSTATaskRunnerWithTraits(
-      {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+  media_task_runner_ = base::CreateCOMSTATaskRunner(
+      {base::ThreadPool(), base::MayBlock(), base::TaskPriority::BEST_EFFORT,
        base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN});
   EnumerateAttachedDevices();
 }
@@ -632,11 +630,11 @@ void PortableDeviceWatcherWin::OnDidHandleDeviceAttachEvent(
   const StorageObjects& storage_objects = device_details->storage_objects;
   const base::string16& name = device_details->name;
   const base::string16& location = device_details->location;
-  DCHECK(!base::ContainsKey(device_map_, location));
+  DCHECK(!base::Contains(device_map_, location));
   for (StorageObjects::const_iterator storage_iter = storage_objects.begin();
        storage_iter != storage_objects.end(); ++storage_iter) {
     const std::string& storage_id = storage_iter->object_persistent_id;
-    DCHECK(!base::ContainsKey(storage_map_, storage_id));
+    DCHECK(!base::Contains(storage_map_, storage_id));
 
     if (storage_id.empty() || name.empty())
       return;

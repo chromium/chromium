@@ -1,7 +1,5 @@
 <!DOCTYPE html>
 <html>
-<script src="../resources/run-after-layout-and-paint.js"></script>
-
 <style>
   img {
     -webkit-mask: url(resources/color-profile-mask-image.svg) top left;
@@ -14,7 +12,7 @@
 <body>
   <!-- The blue sector of the images should be at 12 o'clock. -->
 
-  <svg onload="load()" xmlns:xlink="http://www.w3.org/1999/xlink" width="380" height="380">
+  <svg xmlns:xlink="http://www.w3.org/1999/xlink" width="380" height="380">
    <defs>
     <mask id="mask" maskUnits="objectBoundingBox" maskContentUnits="objectBoundingBox">
      <circle cx=".5" cy=".5" r=".47" fill="white"/>
@@ -26,15 +24,3 @@
   <img src="resources/red-at-12-oclock-with-color-profile.jpg">
 </body>
 
-<script>
-function load() {
-  if (window.testRunner)
-    runAfterLayoutAndPaint(function() { testRunner.notifyDone() });
-}
-
-if (window.testRunner) {
-  testRunner.dumpAsTextWithPixelResults();
-  testRunner.waitUntilDone();
-}
-</script>
-</html>

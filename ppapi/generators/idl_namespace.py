@@ -10,6 +10,8 @@ This file defines the behavior of the AST namespace which allows for resolving
 a symbol as one or more AST nodes given a release or range of releases.
 """
 
+from __future__ import print_function
+
 import sys
 
 from idl_option import GetOption, Option, ParseOptions
@@ -68,7 +70,7 @@ class IDLNamespace(object):
     name = node.GetName()
     verlist = self._name_to_releases.setdefault(name,IDLReleaseList())
     if GetOption('namespace_debug'):
-        print "Adding to namespace: %s" % node
+      print("Adding to namespace: %s" % node)
     return verlist.AddNode(node)
 
 
@@ -101,11 +103,13 @@ class MockNode(IDLRelease):
     return self.name
 
   def Error(self, msg):
-    if GetOption('release_debug'): print 'Error: %s' % msg
+    if GetOption('release_debug'):
+      print('Error: %s' % msg)
     self.errors.append(msg)
 
   def Warn(self, msg):
-    if GetOption('release_debug'): print 'Warn: %s' % msg
+    if GetOption('release_debug'):
+      print('Warn: %s' % msg)
     self.warns.append(msg)
 
   def GetProperty(self, name):
@@ -118,15 +122,15 @@ errors = 0
 # Dumps all the information relevant  to an add failure.
 def DumpFailure(namespace, node, msg):
   global errors
-  print '\n******************************'
-  print 'Failure: %s %s' % (node, msg)
+  print('\n******************************')
+  print('Failure: %s %s' % (node, msg))
   for warn in node.warns:
-    print '  WARN: %s' % warn
+    print('  WARN: %s' % warn)
   for err in node.errors:
-    print '  ERROR: %s' % err
-  print '\n'
+    print('  ERROR: %s' % err)
+  print('\n')
   namespace.Dump()
-  print '******************************\n'
+  print('******************************\n')
   errors += 1
 
 # Add expecting no errors or warnings
@@ -150,15 +154,15 @@ def AddError(namespace, node, msg):
     DumpFailure(namespace, node, 'Expected errors')
   if msg not in node.errors:
     DumpFailure(namespace, node, 'Expected error: %s' % msg)
-    print ">>%s<<\n>>%s<<\n" % (node.errors[0], msg)
+    print(">>%s<<\n>>%s<<\n" % (node.errors[0], msg))
 
 # Verify that a FindRelease call on the namespace returns the expected node.
 def VerifyFindOne(namespace, name, release, node):
   global errors
   if (namespace.FindRelease(name, release) != node):
-    print "Failed to find %s as release %f of %s" % (node, release, name)
+    print("Failed to find %s as release %f of %s" % (node, release, name))
     namespace.Dump()
-    print "\n"
+    print("\n")
     errors += 1
 
 # Verify that a FindRage call on the namespace returns a set of expected nodes.
@@ -166,14 +170,11 @@ def VerifyFindAll(namespace, name, rmin, rmax, nodes):
   global errors
   out = namespace.FindRange(name, rmin, rmax)
   if (out != nodes):
-    print "Found [%s] instead of[%s] for releases %f to %f of %s" % (
-        ' '.join([str(x) for x in out]),
-        ' '.join([str(x) for x in nodes]),
-        rmin,
-        rmax,
-        name)
+    print("Found [%s] instead of[%s] for releases %f to %f of %s" % (' '.join([
+        str(x) for x in out
+    ]), ' '.join([str(x) for x in nodes]), rmin, rmax, name))
     namespace.Dump()
-    print "\n"
+    print("\n")
     errors += 1
 
 def Main(args):
@@ -238,9 +239,9 @@ def Main(args):
   AddOkay(namespace, FooBar)
 
   if errors:
-    print 'Test failed with %d errors.' % errors
+    print('Test failed with %d errors.' % errors)
   else:
-    print 'Passed.'
+    print('Passed.')
   return errors
 
 

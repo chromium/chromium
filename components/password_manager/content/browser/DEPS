@@ -4,6 +4,7 @@ include_rules = [
   "+components/autofill/content/common",
   "+components/keyed_service/content",
   "+components/keyed_service/core",
+  "+components/safe_browsing/buildflags.h",
   "+content/public/browser",
   "+net",
   "+services/service_manager/public/cpp",

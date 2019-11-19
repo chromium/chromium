@@ -47,6 +47,7 @@ static_library("libphonenumber_without_metadata") {
     "dist/cpp/src/phonenumbers/phonenumbermatch.cc",
     "dist/cpp/src/phonenumbers/phonenumbermatcher.cc",
     "dist/cpp/src/phonenumbers/phonenumberutil.cc",
+    "dist/cpp/src/phonenumbers/regex_based_matcher.cc",
     "dist/cpp/src/phonenumbers/regexp_adapter_icu.cc",
     "dist/cpp/src/phonenumbers/regexp_cache.cc",
     "dist/cpp/src/phonenumbers/string_byte_sink.cc",

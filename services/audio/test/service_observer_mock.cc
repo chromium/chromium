@@ -8,10 +8,11 @@ namespace audio {
 
 ServiceObserverMock::ServiceObserverMock(
     const std::string& service_name,
-    service_manager::mojom::ServiceManagerListenerRequest request)
-    : service_name_(service_name), binding_(this, std::move(request)) {}
+    mojo::PendingReceiver<service_manager::mojom::ServiceManagerListener>
+        receiver)
+    : service_name_(service_name), receiver_(this, std::move(receiver)) {}
 
-ServiceObserverMock::~ServiceObserverMock() {}
+ServiceObserverMock::~ServiceObserverMock() = default;
 
 void ServiceObserverMock::OnInit(
     std::vector<service_manager::mojom::RunningServiceInfoPtr> instances) {

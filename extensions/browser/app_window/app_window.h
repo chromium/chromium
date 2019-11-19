@@ -255,17 +255,16 @@ class AppWindow : public content::WebContentsDelegate,
   // is on startup and from within UpdateWindowTitle().
   base::string16 GetTitle() const;
 
-  // |callback| will be called when the first navigation in the window is
-  // ready to commit or when the window goes away before that. |ready_to_commit|
-  // argument of the |callback| is set to true for the former case and false for
-  // the later.
-  using FirstCommitOrWindowClosedCallback =
-      base::OnceCallback<void(bool ready_to_commit)>;
-  void SetOnFirstCommitOrWindowClosedCallback(
-      FirstCommitOrWindowClosedCallback callback);
+  // |callback| will be called when the first navigation was completed or window
+  // is closed before that. |did_finish| argument of the |callback| is set to
+  // true for the former case and false for the latter.
+  using DidFinishFirstNavigationCallback =
+      base::OnceCallback<void(bool did_finish)>;
+  void AddOnDidFinishFirstNavigationCallback(
+      DidFinishFirstNavigationCallback callback);
 
-  // Called when the first navigation in the window is ready to commit.
-  void OnReadyToCommitFirstNavigation();
+  // Called when first navigation was completed.
+  void OnDidFinishFirstNavigation();
 
   // Call to notify ShellRegistry and delete the window. Subclasses should
   // invoke this method instead of using "delete this".
@@ -383,6 +382,8 @@ class AppWindow : public content::WebContentsDelegate,
     app_window_contents_ = std::move(contents);
   }
 
+  bool DidFinishFirstNavigation() { return did_finish_first_navigation_; }
+
  protected:
   ~AppWindow() override;
 
@@ -409,19 +410,18 @@ class AppWindow : public content::WebContentsDelegate,
   void EnterFullscreenModeForTab(
       content::WebContents* source,
       const GURL& origin,
-      const blink::WebFullscreenOptions& options) override;
+      const blink::mojom::FullscreenOptions& options) override;
   void ExitFullscreenModeForTab(content::WebContents* source) override;
-  bool IsFullscreenForTabOrPending(
-      const content::WebContents* source) const override;
-  blink::WebDisplayMode GetDisplayMode(
-      const content::WebContents* source) const override;
+  bool IsFullscreenForTabOrPending(const content::WebContents* source) override;
+  blink::mojom::DisplayMode GetDisplayMode(
+      const content::WebContents* source) override;
   void RequestMediaAccessPermission(
       content::WebContents* web_contents,
       const content::MediaStreamRequest& request,
       content::MediaResponseCallback callback) override;
   bool CheckMediaAccessPermission(content::RenderFrameHost* render_frame_host,
                                   const GURL& security_origin,
-                                  blink::MediaStreamType type) override;
+                                  blink::mojom::MediaStreamType type) override;
   content::WebContents* OpenURLFromTab(
       content::WebContents* source,
       const content::OpenURLParams& params) override;
@@ -446,10 +446,12 @@ class AppWindow : public content::WebContentsDelegate,
       content::RenderFrameHost* frame,
       const content::BluetoothChooser::EventHandler& event_handler) override;
   bool TakeFocus(content::WebContents* source, bool reverse) override;
-  gfx::Size EnterPictureInPicture(content::WebContents* web_contents,
-                                  const viz::SurfaceId& surface_id,
-                                  const gfx::Size& natural_size) override;
+  content::PictureInPictureResult EnterPictureInPicture(
+      content::WebContents* web_contents,
+      const viz::SurfaceId& surface_id,
+      const gfx::Size& natural_size) override;
   void ExitPictureInPicture() override;
+  bool ShouldShowStaleContentOnEviction(content::WebContents* source) override;
 
   // content::WebContentsObserver implementation.
   bool OnMessageReceived(const IPC::Message& message,
@@ -586,11 +588,15 @@ class AppWindow : public content::WebContentsDelegate,
   // race condition of loading custom app icon and app content simultaneously.
   bool window_ready_ = false;
 
-  // PlzNavigate: this is called when the first navigation is ready to commit or
-  // when the window is closed.
-  FirstCommitOrWindowClosedCallback on_first_commit_or_window_closed_callback_;
+  // These callbacks are called when the navigation is finished on both browser
+  // and renderer sides.
+  std::vector<DidFinishFirstNavigationCallback>
+      on_did_finish_first_navigation_callbacks_;
+  // Whether the first navigation was completed in both browser and renderer
+  // processes.
+  bool did_finish_first_navigation_ = false;
 
-  base::WeakPtrFactory<AppWindow> image_loader_ptr_factory_;
+  base::WeakPtrFactory<AppWindow> image_loader_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(AppWindow);
 };

@@ -10,7 +10,7 @@
 #include <string>
 #include <vector>
 
-#include "ash/public/interfaces/cros_display_config.mojom.h"
+#include "ash/public/mojom/cros_display_config.mojom.h"
 #include "chrome/browser/chromeos/policy/display_settings_handler.h"
 #include "ui/display/display.h"
 

@@ -8,18 +8,18 @@
  *
  */
 
-goog.provide('cvox.CompositeTts');
+goog.provide('CompositeTts');
 
-goog.require('cvox.TtsInterface');
+goog.require('TtsInterface');
 
 /**
  * A Composite Tts
  * @constructor
- * @implements {cvox.TtsInterface}
+ * @implements {TtsInterface}
  */
-cvox.CompositeTts = function() {
+CompositeTts = function() {
   /**
-   * @type {Array<cvox.TtsInterface>}
+   * @type {Array<TtsInterface>}
    * @private
    */
   this.ttsEngines_ = [];
@@ -28,10 +28,10 @@ cvox.CompositeTts = function() {
 
 /**
  * Adds a TTS engine to the composite TTS
- * @param {cvox.TtsInterface} tts The TTS to add.
- * @return {cvox.CompositeTts} this.
+ * @param {TtsInterface} tts The TTS to add.
+ * @return {CompositeTts} this.
  */
-cvox.CompositeTts.prototype.add = function(tts) {
+CompositeTts.prototype.add = function(tts) {
   this.ttsEngines_.push(tts);
   return this;
 };
@@ -40,8 +40,7 @@ cvox.CompositeTts.prototype.add = function(tts) {
 /**
  * @override
  */
-cvox.CompositeTts.prototype.speak = function(
-    textString, queueMode, properties) {
+CompositeTts.prototype.speak = function(textString, queueMode, properties) {
   this.ttsEngines_.forEach(function(engine) {
     engine.speak(textString, queueMode, properties);
   });
@@ -53,7 +52,7 @@ cvox.CompositeTts.prototype.speak = function(
  * Returns true if any of the TTSes are still speaking.
  * @override
  */
-cvox.CompositeTts.prototype.isSpeaking = function() {
+CompositeTts.prototype.isSpeaking = function() {
   return this.ttsEngines_.some(function(engine) {
     return engine.isSpeaking();
   });
@@ -63,7 +62,7 @@ cvox.CompositeTts.prototype.isSpeaking = function() {
 /**
  * @override
  */
-cvox.CompositeTts.prototype.stop = function() {
+CompositeTts.prototype.stop = function() {
   this.ttsEngines_.forEach(function(engine) {
     engine.stop();
   });
@@ -73,7 +72,7 @@ cvox.CompositeTts.prototype.stop = function() {
 /**
  * @override
  */
-cvox.CompositeTts.prototype.addCapturingEventListener = function(listener) {
+CompositeTts.prototype.addCapturingEventListener = function(listener) {
   this.ttsEngines_.forEach(function(engine) {
     engine.addCapturingEventListener(listener);
   });
@@ -83,7 +82,7 @@ cvox.CompositeTts.prototype.addCapturingEventListener = function(listener) {
 /**
  * @override
  */
-cvox.CompositeTts.prototype.increaseOrDecreaseProperty = function(
+CompositeTts.prototype.increaseOrDecreaseProperty = function(
     propertyName, increase) {
   this.ttsEngines_.forEach(function(engine) {
     engine.increaseOrDecreaseProperty(propertyName, increase);
@@ -94,11 +93,12 @@ cvox.CompositeTts.prototype.increaseOrDecreaseProperty = function(
 /**
  * @override
  */
-cvox.CompositeTts.prototype.propertyToPercentage = function(property) {
+CompositeTts.prototype.propertyToPercentage = function(property) {
   for (var i = 0, engine; engine = this.ttsEngines_[i]; i++) {
     var value = engine.propertyToPercentage(property);
-    if (value !== undefined)
+    if (value !== undefined) {
       return value;
+    }
   }
   return null;
 };
@@ -107,17 +107,18 @@ cvox.CompositeTts.prototype.propertyToPercentage = function(property) {
 /**
  * @override
  */
-cvox.CompositeTts.prototype.getDefaultProperty = function(property) {
+CompositeTts.prototype.getDefaultProperty = function(property) {
   for (var i = 0, engine; engine = this.ttsEngines_[i]; i++) {
     var value = engine.getDefaultProperty(property);
-    if (value !== undefined)
+    if (value !== undefined) {
       return value;
+    }
   }
   return null;
 };
 
 /** @override */
-cvox.CompositeTts.prototype.toggleSpeechOnOrOff = function() {
+CompositeTts.prototype.toggleSpeechOnOrOff = function() {
   var value = false;
   this.ttsEngines_.forEach(function(engine) {
     value = value || engine.toggleSpeechOnOrOff();

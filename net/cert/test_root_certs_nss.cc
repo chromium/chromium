@@ -9,8 +9,11 @@
 #include "base/logging.h"
 #include "base/macros.h"
 #include "crypto/nss_util.h"
+#include "net/cert/internal/cert_errors.h"
 #include "net/cert/x509_certificate.h"
+#include "net/cert/x509_util.h"
 #include "net/cert/x509_util_nss.h"
+#include "third_party/boringssl/src/include/openssl/pool.h"
 
 namespace net {
 
@@ -56,6 +59,20 @@ bool TestRootCerts::Add(X509Certificate* certificate) {
 
   trust_cache_.push_back(
       std::make_unique<TrustEntry>(std::move(cert_handle), original_trust));
+
+  // Add the certificate to the parallel |test_trust_store_|.  TrustStoreNSS
+  // ignores temporary certs, so it won't see the cert that was added above.
+  // (See https://crbug.com/951166)
+  // TODO(https://crbug.com/951479): remove this when the istemp check is
+  // removed from TrustStoreNSS.
+  CertErrors errors;
+  scoped_refptr<ParsedCertificate> parsed = ParsedCertificate::Create(
+      bssl::UpRef(certificate->cert_buffer()),
+      x509_util::DefaultParseCertificateOptions(), &errors);
+  if (!parsed)
+    return false;
+  test_trust_store_.AddTrustAnchor(parsed);
+
   return true;
 }
 
@@ -76,6 +93,8 @@ void TestRootCerts::Clear() {
     DCHECK_EQ(SECSuccess, rv) << "Cannot restore certificate trust.";
   }
   trust_cache_.clear();
+
+  test_trust_store_.Clear();
 }
 
 bool TestRootCerts::IsEmpty() const {

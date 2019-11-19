@@ -8,12 +8,11 @@
 #include "base/command_line.h"
 #include "base/logging.h"
 #include "chrome/browser/chromeos/ui/idle_app_name_notification_view.h"
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/chrome_switches.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
+#include "chromeos/dbus/power/power_manager_client.h"
 #include "components/user_manager/user_manager.h"
-#include "extensions/browser/extension_system.h"
+#include "extensions/browser/extension_registry.h"
 #include "ui/base/user_activity/user_activity_detector.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
@@ -86,12 +85,10 @@ void KioskModeIdleAppNameNotification::OnUserActivity(const ui::Event* event) {
       const std::string app_id =
           command_line->GetSwitchValueASCII(::switches::kAppId);
       Profile* profile = ProfileManager::GetActiveUserProfile();
-      notification_.reset(
-          new IdleAppNameNotificationView(
-              kMessageVisibilityTimeMs,
-              kMessageAnimationTimeMs,
-              extensions::ExtensionSystem::Get(profile
-                  )->extension_service()->GetInstalledExtension(app_id)));
+      notification_.reset(new IdleAppNameNotificationView(
+          kMessageVisibilityTimeMs, kMessageAnimationTimeMs,
+          extensions::ExtensionRegistry::Get(profile)->GetInstalledExtension(
+              app_id)));
     }
     show_notification_upon_next_user_activity_ = false;
   }

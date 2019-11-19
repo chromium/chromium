@@ -152,7 +152,7 @@ std::set<content::WebContents*> BackgroundPrintingManager::CurrentContentSet() {
 
 bool BackgroundPrintingManager::HasPrintPreviewDialog(
     WebContents* preview_dialog) {
-  return base::ContainsKey(printing_contents_map_, preview_dialog);
+  return base::Contains(printing_contents_map_, preview_dialog);
 }
 
 BackgroundPrintingManager::PrintingContents::PrintingContents() = default;

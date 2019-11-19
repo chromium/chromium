@@ -31,14 +31,14 @@
 #include "components/feature_engagement/buildflags.h"
 #include "components/prefs/pref_member.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/browsing_data_filter_builder.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
-#include "services/identity/public/cpp/identity_manager.h"
 #include "ui/base/text/bytes_formatting.h"
 
-#if BUILDFLAG(ENABLE_DESKTOP_IN_PRODUCT_HELP)
+#if BUILDFLAG(ENABLE_LEGACY_DESKTOP_IN_PRODUCT_HELP)
 #include "chrome/browser/feature_engagement/incognito_window/incognito_window_tracker.h"
 #include "chrome/browser/feature_engagement/incognito_window/incognito_window_tracker_factory.h"
 #endif
@@ -76,8 +76,7 @@ ClearBrowsingDataHandler::ClearBrowsingDataHandler(content::WebUI* webui)
     : profile_(Profile::FromWebUI(webui)),
       sync_service_(ProfileSyncServiceFactory::GetForProfile(profile_)),
       sync_service_observer_(this),
-      show_history_deletion_dialog_(false),
-      weak_ptr_factory_(this) {}
+      show_history_deletion_dialog_(false) {}
 
 ClearBrowsingDataHandler::~ClearBrowsingDataHandler() {
 }
@@ -278,7 +277,7 @@ void ClearBrowsingDataHandler::HandleClearBrowsingData(
           content::BrowsingDataFilterBuilder::BLACKLIST),
       remover, std::move(callback));
 
-#if BUILDFLAG(ENABLE_DESKTOP_IN_PRODUCT_HELP)
+#if BUILDFLAG(ENABLE_LEGACY_DESKTOP_IN_PRODUCT_HELP)
   feature_engagement::IncognitoWindowTrackerFactory::GetInstance()
       ->GetForProfile(profile_)
       ->OnBrowsingDataCleared();
@@ -340,7 +339,7 @@ void ClearBrowsingDataHandler::OnStateChanged(syncer::SyncService* sync) {
 }
 
 void ClearBrowsingDataHandler::UpdateSyncState() {
-  identity::IdentityManager* identity_manager =
+  signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile_);
   FireWebUIListener(
       "update-sync-state",

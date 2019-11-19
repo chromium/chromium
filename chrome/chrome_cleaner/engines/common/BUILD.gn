@@ -1,0 +1,74 @@
+# Copyright 2018 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Nothing outside //chrome/chrome_cleaner can depend on these targets.
+visibility = [ "//chrome/chrome_cleaner/*" ]
+
+source_set("common") {
+  sources = [
+    "engine_digest_verifier.cc",
+    "engine_digest_verifier.h",
+    "engine_result_codes.h",
+    "registry_util.cc",
+    "registry_util.h",
+    "sandbox_error_code.h",
+  ]
+
+  deps = [
+    ":resources_header",
+    "//base",
+    "//chrome/chrome_cleaner/os:common_os",
+    "//chrome/chrome_cleaner/strings",
+    "//sandbox/win:sandbox",
+  ]
+}
+
+source_set("resources_header") {
+  sources = [
+    "engine_resources.h",
+  ]
+
+  deps = [
+    "//base",
+  ]
+
+  public_deps = [
+    "//chrome/chrome_cleaner/logging/proto:shared_data_proto",
+  ]
+}
+
+source_set("dummy_engine_resources") {
+  sources = [
+    "dummy_engine_resources.cc",
+  ]
+
+  deps = [
+    ":resources_header",
+    "//chrome/chrome_cleaner/pup_data:pup_data_base",
+    "//chrome/chrome_cleaner/test:test_uws_catalog",
+  ]
+}
+
+source_set("unittest_sources") {
+  testonly = true
+
+  sources = [
+    "registry_util_unittest.cc",
+  ]
+
+  deps = [
+    ":common",
+    "//base",
+    "//chrome/chrome_cleaner/ipc:ipc_test_util",
+    "//chrome/chrome_cleaner/ipc:mojo_task_runner",
+    "//chrome/chrome_cleaner/mojom:engine_sandbox_interface",
+    "//chrome/chrome_cleaner/os:common_os",
+    "//chrome/chrome_cleaner/test:test_util",
+    "//mojo/core/embedder",
+    "//mojo/public/cpp/bindings",
+    "//mojo/public/cpp/system",
+    "//sandbox/win:sandbox",
+    "//testing/gtest",
+  ]
+}

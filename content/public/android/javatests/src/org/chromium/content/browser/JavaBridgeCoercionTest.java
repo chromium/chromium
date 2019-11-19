@@ -199,7 +199,7 @@ public class JavaBridgeCoercionTest {
     }
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         mTestObject = new TestObject();
         mTestController = new TestController();
         mActivityTestRule.injectObjectsAndReload(

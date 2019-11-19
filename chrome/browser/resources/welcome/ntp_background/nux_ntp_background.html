@@ -1,0 +1,190 @@
+<style include="animations chooser-shared-css">
+  :host {
+    text-align: center;
+  }
+
+  #backgroundPreview {
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    bottom: 0;
+    left: 0;
+    opacity: 0;
+    position: fixed;
+    right: 0;
+    top: 0;
+    transition: background 300ms, opacity 400ms;
+  }
+
+  #backgroundPreview.active {
+    opacity: 1;
+  }
+
+  #backgroundPreview::before {
+    /* Copied from browser/resources/local_ntp/custom_backgrounds.js */
+    background-image: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, .3));
+    /* Pseudo element needs some content (even an empty string) to be
+     * displayed. */
+    content: '';
+    display: block;
+    height: 100%;
+    width: 100%;
+  }
+
+  .content {
+    /* Put a non-static position on the content so that it can have a
+     * higher stacking level than its previous sibling,
+     * the #backgroundPreview element. */
+    position: relative;
+  }
+
+  .ntp-background-logo {
+    content: url(../images/module_icons/wallpaper_light.svg);
+    height: 39px;
+    margin: auto;
+    margin-bottom: 16px;
+    width: 44px;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .ntp-background-logo {
+      content: url(../images/module_icons/wallpaper_dark.svg);
+    }
+  }
+
+  h1 {
+    color: var(--cr-primary-text-color);
+    font-size: 1.5rem;
+    font-weight: 500;
+    margin: 0;
+    margin-bottom: 46px;
+    outline: none;
+    transition: color 400ms;
+  }
+
+  #backgroundPreview.active + .content h1 {
+    color: white;
+  }
+
+  .ntp-backgrounds-grid {
+    display: grid;
+    grid-gap: 32px;
+    grid-template-columns: repeat(3, 176px);
+    grid-template-rows: repeat(2, 176px);
+    width: 592px;
+  }
+
+  .option {
+    align-items: stretch;
+    border-radius: 4px;
+    display: flex;
+    height: 100%;
+    overflow: hidden;
+    padding: 0;
+    text-align: start;
+    transition: border-color 400ms, box-shadow 500ms;
+    width: 100%;
+  }
+
+  #backgroundPreview.active + .content .option {
+    border-color: var(--google-grey-refresh-700);
+  }
+
+  /* Remove outline when button is focused using the mouse. */
+  .option:focus:not(.keyboard-focused) {
+    outline: none;
+  }
+
+  .ntp-background-thumbnail {
+    background-color: var(--cr-card-background-color);
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    flex: 1;
+  }
+
+  .option-name {
+    border-top: var(--cr-separator-line);
+    color: var(--navi-wallpaper-text-color);
+    height: 3rem;
+    line-height: 3rem;
+    overflow: hidden;
+    padding: 0 .75rem;
+    text-overflow: ellipsis;
+  }
+
+  .option[active] .option-name {
+    background: var(--cr-checked-color);
+    color: var(--cr-card-background-color);
+  }
+
+  .button-bar {
+    margin-top: 56px;
+  }
+
+  #skipButton {
+    background-color: var(--cr-card-background-color)
+  }
+
+  #skipButton:hover {
+    background-image:
+        linear-gradient(var(--hover-bg-color), var(--hover-bg-color));
+  }
+
+  /* Wallpaper Thumbnails */
+  .art {
+    background-image: url(../images/ntp_thumbnails/art.jpg);
+  }
+
+  .cityscape {
+    background-image: url(../images/ntp_thumbnails/cityscape.jpg);
+  }
+
+  .earth {
+    background-image: url(../images/ntp_thumbnails/earth.jpg);
+  }
+
+  .geometric-shapes {
+    background-image: url(../images/ntp_thumbnails/geometric_shapes.jpg);
+  }
+
+  .landscape {
+    background-image: url(../images/ntp_thumbnails/landscape.jpg);
+  }
+</style>
+<div
+    id="backgroundPreview"
+    on-transitionend="onBackgroundPreviewTransitionEnd_">
+</div>
+
+<div class="content">
+  <div class="ntp-background-logo"></div>
+  <h1 tabindex="-1">$i18n{ntpBackgroundDescription}</h1>
+
+  <div class="ntp-backgrounds-grid slide-in">
+    <template is="dom-repeat" items="[[backgrounds_]]">
+      <button
+          active$="[[isSelectedBackground_(item, selectedBackground_)]]"
+          class="option"
+          on-click="onBackgroundClick_"
+          on-keyup="onBackgroundKeyUp_"
+          on-pointerdown="onBackgroundPointerDown_">
+        <div
+            class$="ntp-background-thumbnail [[item.thumbnailClass]]">
+        </div>
+        <div class="option-name">[[item.title]]</div>
+      </button>
+    </template>
+  </div>
+
+  <div class="button-bar">
+    <cr-button id="skipButton" on-click="onSkipClicked_">
+      $i18n{skip}
+    </cr-button>
+    <step-indicator model="[[indicatorModel]]"></step-indicator>
+    <cr-button class="action-button" on-click="onNextClicked_">
+      $i18n{next}
+      <iron-icon icon="cr:chevron-right"></iron-icon>
+    </cr-button>
+  </div>
+</div>

@@ -11,8 +11,10 @@
 
 #include "base/sequenced_task_runner.h"
 #include "base/single_thread_task_runner.h"
-#include "mojo/public/cpp/bindings/interface_ptr_set.h"
 #include "mojo/public/cpp/bindings/interface_request.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
 #include "services/device/public/mojom/wake_lock_context.mojom.h"
 #include "services/device/public/mojom/wake_lock_provider.mojom.h"
 #include "services/device/wake_lock/wake_lock.h"
@@ -29,20 +31,21 @@ class WakeLockProvider : public mojom::WakeLockProvider,
                    const WakeLockContextCallback& native_view_getter);
   ~WakeLockProvider() override;
 
-  // Adds this request to |bindings_|.
-  void AddBinding(mojom::WakeLockProviderRequest request);
+  // Adds this receiver to |receiverss_|.
+  void AddBinding(mojo::PendingReceiver<mojom::WakeLockProvider> receiver);
 
   // mojom::WakeLockProvider overrides.
   void GetWakeLockContextForID(
       int context_id,
-      mojo::InterfaceRequest<mojom::WakeLockContext> request) override;
-  void GetWakeLockWithoutContext(mojom::WakeLockType type,
-                                 mojom::WakeLockReason reason,
-                                 const std::string& description,
-                                 mojom::WakeLockRequest request) override;
+      mojo::PendingReceiver<mojom::WakeLockContext> receiver) override;
+  void GetWakeLockWithoutContext(
+      mojom::WakeLockType type,
+      mojom::WakeLockReason reason,
+      const std::string& description,
+      mojo::PendingReceiver<device::mojom::WakeLock> receiver) override;
   void NotifyOnWakeLockDeactivation(
       mojom::WakeLockType type,
-      mojom::WakeLockObserverPtr observer) override;
+      mojo::PendingRemote<mojom::WakeLockObserver> pending_observer) override;
   void GetActiveWakeLocksForTests(
       mojom::WakeLockType type,
       GetActiveWakeLocksForTestsCallback callback) override;
@@ -64,7 +67,7 @@ class WakeLockProvider : public mojom::WakeLockProvider,
   scoped_refptr<base::SingleThreadTaskRunner> file_task_runner_;
   WakeLockContextCallback native_view_getter_;
 
-  mojo::BindingSet<mojom::WakeLockProvider> bindings_;
+  mojo::ReceiverSet<mojom::WakeLockProvider> receivers_;
 
   // Stores wake lock count and observers associated with each wake lock type.
   std::map<mojom::WakeLockType, std::unique_ptr<WakeLockDataPerType>>

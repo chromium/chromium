@@ -46,7 +46,7 @@ class IOSurfaceContext
   CGLContextObj cgl_context() const { return cgl_context_; }
 
   // ui::GpuSwitchingObserver implementation.
-  void OnGpuSwitched() override;
+  void OnGpuSwitched(gl::GpuPreference active_gpu_heuristic) override;
 
  private:
   friend class base::RefCounted<IOSurfaceContext>;

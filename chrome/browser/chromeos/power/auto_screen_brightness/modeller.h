@@ -13,6 +13,8 @@ namespace chromeos {
 namespace power {
 namespace auto_screen_brightness {
 
+struct Model;
+
 // Interface to on-device adaptive model.
 class Modeller {
  public:
@@ -29,9 +31,7 @@ class Modeller {
     // Called when the model is initialized. If model is disabled, both
     // |global_curve| and |personal_curve| will be nullopt. If there is only a
     // global curve, then |personal_curve| will be nullopt.
-    virtual void OnModelInitialized(
-        const base::Optional<MonotoneCubicSpline>& global_curve,
-        const base::Optional<MonotoneCubicSpline>& personal_curve) = 0;
+    virtual void OnModelInitialized(const Model& model) = 0;
 
    private:
     DISALLOW_COPY_AND_ASSIGN(Observer);

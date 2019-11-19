@@ -26,7 +26,6 @@
 #include "net/base/host_port_pair.h"
 #include "net/base/load_flags.h"
 #include "net/base/proxy_server.h"
-#include "net/url_request/url_request.h"
 
 #if defined(USE_GOOGLE_API_KEYS_FOR_AUTH_KEY)
 #include "google_apis/google_api_keys.h"
@@ -56,7 +55,6 @@ const char kSecureSessionHeaderOption[] = "s";
 const char kBuildNumberHeaderOption[] = "b";
 const char kPatchNumberHeaderOption[] = "p";
 const char kClientHeaderOption[] = "c";
-const char kExperimentsOption[] = "exp";
 const char kPageIdOption[] = "pid";
 
 // The empty version for the authentication protocol. Currently used by
@@ -85,6 +83,7 @@ DataReductionProxyRequestOptions::DataReductionProxyRequestOptions(
     const std::string& version,
     DataReductionProxyConfig* config)
     : client_(util::GetStringForClient(client)),
+      server_experiments_(params::GetDataSaverServerExperiments()),
       data_reduction_proxy_config_(config),
       current_page_id_(base::RandUint64()) {
   DCHECK(data_reduction_proxy_config_);
@@ -98,7 +97,7 @@ void DataReductionProxyRequestOptions::Init() {
   DCHECK(thread_checker_.CalledOnValidThread());
   key_ = GetDefaultKey(),
   UpdateCredentials();
-  UpdateExperiments();
+  RegenerateRequestHeaderValue();
   // Called on the UI thread, but should be checked on the IO thread.
   thread_checker_.DetachFromThread();
 }
@@ -108,43 +107,10 @@ std::string DataReductionProxyRequestOptions::GetHeaderValueForTesting() const {
   return header_value_;
 }
 
-void DataReductionProxyRequestOptions::UpdateExperiments() {
-  experiments_.clear();
-  std::string experiments =
-      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-          data_reduction_proxy::switches::kDataReductionProxyExperiment);
-
-  // The command line override takes precedence over field trial "exp"
-  // directives.
-  if (!experiments.empty()) {
-    base::StringTokenizer experiment_tokenizer(experiments, ", ");
-    experiment_tokenizer.set_quote_chars("\"");
-    while (experiment_tokenizer.GetNext()) {
-      if (!experiment_tokenizer.token().empty())
-        experiments_.push_back(experiment_tokenizer.token());
-    }
-  } else {
-    // If no other "exp" directive is forced by flags, add the field trial
-    // value.
-    AddServerExperimentFromFieldTrial();
-  }
-
-  RegenerateRequestHeaderValue();
-}
-
-void DataReductionProxyRequestOptions::AddServerExperimentFromFieldTrial() {
-  if (!params::IsIncludedInServerExperimentsFieldTrial())
-    return;
-  const std::string server_experiment = variations::GetVariationParamValue(
-      params::GetServerExperimentsFieldTrialName(), kExperimentsOption);
-  if (!server_experiment.empty())
-    experiments_.push_back(server_experiment);
-}
-
+// static
 void DataReductionProxyRequestOptions::AddPageIDRequestHeader(
     net::HttpRequestHeaders* request_headers,
-    uint64_t page_id) const {
-  DCHECK(thread_checker_.CalledOnValidThread());
+    uint64_t page_id) {
   std::string header_value;
   if (request_headers->HasHeader(chrome_proxy_header())) {
     request_headers->GetHeader(chrome_proxy_header(), &header_value);
@@ -168,6 +134,14 @@ void DataReductionProxyRequestOptions::AddRequestHeader(
     net::HttpRequestHeaders* request_headers,
     base::Optional<uint64_t> page_id) {
   DCHECK(thread_checker_.CalledOnValidThread());
+  AddRequestHeader(request_headers, page_id, header_value_);
+}
+
+// static
+void DataReductionProxyRequestOptions::AddRequestHeader(
+    net::HttpRequestHeaders* request_headers,
+    base::Optional<uint64_t> page_id,
+    const std::string& session_header_value) {
   DCHECK(!page_id || page_id.value() > 0u);
   std::string header_value;
   if (request_headers->HasHeader(chrome_proxy_header())) {
@@ -176,7 +150,7 @@ void DataReductionProxyRequestOptions::AddRequestHeader(
     header_value += ", ";
   }
   request_headers->SetHeader(chrome_proxy_header(),
-                             header_value + header_value_);
+                             header_value + session_header_value);
   if (page_id)
     AddPageIDRequestHeader(request_headers, page_id.value());
 }
@@ -185,7 +159,8 @@ void DataReductionProxyRequestOptions::UpdateCredentials() {
   RegenerateRequestHeaderValue();
 }
 
-void DataReductionProxyRequestOptions::SetKeyOnIO(const std::string& key) {
+void DataReductionProxyRequestOptions::SetKeyForTesting(
+    const std::string& key) {
   DCHECK(thread_checker_.CalledOnValidThread());
   if(!key.empty()) {
     key_ = key;
@@ -248,8 +223,11 @@ void DataReductionProxyRequestOptions::RegenerateRequestHeaderValue() {
   DCHECK(!patch_.empty());
   headers.push_back(FormatOption(kPatchNumberHeaderOption, patch_));
 
-  for (const auto& experiment : experiments_)
-    headers.push_back(FormatOption(kExperimentsOption, experiment));
+  if (!server_experiments_.empty()) {
+    headers.push_back(
+        FormatOption(params::GetDataSaverServerExperimentsOptionName(),
+                     server_experiments_));
+  }
 
   header_value_ = base::JoinString(headers, ", ");
 
@@ -295,6 +273,14 @@ DataReductionProxyRequestOptions::GetPageIdFromRequestHeaders(
         kPageIdOption) {
       uint64_t page_id;
       if (base::StringToUint64(
+              base::TrimWhitespaceASCII(kv_pair.second, base::TRIM_ALL)
+                  .as_string(),
+              &page_id)) {
+        return page_id;
+      }
+
+      // Also attempt parsing the page_id as a hex string.
+      if (base::HexStringToUInt64(
               base::TrimWhitespaceASCII(kv_pair.second, base::TRIM_ALL)
                   .as_string(),
               &page_id)) {

@@ -1,0 +1,43 @@
+# Copyright 2016 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//mojo/public/tools/bindings/mojom.gni")
+
+mojom("mojom") {
+  generate_java = true
+  sources = [
+    "accelerated_widget.mojom",
+    "buffer_types.mojom",
+    "ca_layer_params.mojom",
+    "color_space.mojom",
+    "font_render_params.mojom",
+    "gpu_fence_handle.mojom",
+    "overlay_transform.mojom",
+    "presentation_feedback.mojom",
+    "rrect_f.mojom",
+    "selection_bound.mojom",
+    "swap_result.mojom",
+    "swap_timings.mojom",
+    "transform.mojom",
+  ]
+
+  public_deps = [
+    "//mojo/public/mojom/base",
+    "//ui/gfx/geometry/mojom",
+  ]
+
+  if (is_linux || use_ozone) {
+    enabled_features = [ "supports_native_pixmap" ]
+  }
+}
+
+mojom("test_interfaces") {
+  sources = [
+    "traits_test_service.mojom",
+  ]
+
+  public_deps = [
+    ":mojom",
+  ]
+}

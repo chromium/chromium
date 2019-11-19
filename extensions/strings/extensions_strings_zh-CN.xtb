@@ -12,7 +12,6 @@
 <translation id="2159915644201199628">无法对图片解码：“<ph name="IMAGE_NAME" />”</translation>
 <translation id="2350172092385603347">已使用本地化功能，但未在清单中指定 default_locale。</translation>
 <translation id="2576842806987913196">已经有其他 CRX 文件使用了此名称。</translation>
-<translation id="2753617847762399167">非法路径（具有“..”的绝对或相对路径）：“<ph name="IMAGE_PATH" />”</translation>
 <translation id="2785530881066938471">无法为内容脚本加载“<ph name="RELATIVE_PATH" />”文件。该文件采用的不是 UTF-8 编码。</translation>
 <translation id="2903070246402204397"><ph name="EXTENSION_NAME" />（扩展程序 ID为“<ph name="EXTENSION_ID" />”）已被管理员阻止。<ph name="ADMIN_INFO" /></translation>
 <translation id="2988488679308982380">无法安装程序包：“<ph name="ERROR_CODE" />”</translation>
@@ -38,8 +37,6 @@
 <translation id="5436430103864390185">不支持成形的窗口。</translation>
 <translation id="5456409301717116725">此扩展程序包含密钥文件“<ph name="KEY_PATH" />”，您最好不要执行此操作。</translation>
 <translation id="5486326529110362464">请输入私有密钥值。</translation>
-<translation id="5627523580512561598">扩展程序“<ph name="EXTENSION_NAME" />”</translation>
-<translation id="5960890139610307736">ExtensionView：<ph name="EXTENSIONVIEW_TAG_NAME" /></translation>
 <translation id="5972529113578162692">此设备的管理员要求安装“<ph name="EXTENSION_NAME" />”，因此不能卸载该扩展程序。</translation>
 <translation id="6027032947578871493">来自<ph name="VENDOR_NAME" />的未知产品 <ph name="PRODUCT_ID" />（序列号为 <ph name="SERIAL_NUMBER" />）</translation>
 <translation id="6068932090455285721">来自供应商 <ph name="VENDOR_ID" /> 的<ph name="PRODUCT_NAME" /></translation>
@@ -51,7 +48,6 @@
 <translation id="6542618148162044354">“<ph name="APP_NAME" />”请求访问您的一台或多台设备：</translation>
 <translation id="657064425229075395">无法加载背景脚本“<ph name="BACKGROUND_SCRIPT" />”。</translation>
 <translation id="6580950983454333167"><ph name="VENDOR_NAME" />提供的<ph name="PRODUCT_NAME" />（序列号：<ph name="SERIAL_NUMBER" />）</translation>
-<translation id="6731255991101203740">无法创建解压缩目录：“<ph name="DIRECTORY_PATH" />”</translation>
 <translation id="677806580227005219">MIME 处理程序：<ph name="MIMEHANDLERVIEW_TAG_NAME" /></translation>
 <translation id="6840444547062817500">此扩展程序自行重新加载的频率过高。</translation>
 <translation id="7003844668372540529">来自<ph name="VENDOR_NAME" />的未知产品 <ph name="PRODUCT_ID" /></translation>

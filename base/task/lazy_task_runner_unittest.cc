@@ -8,7 +8,7 @@
 #include "base/bind_helpers.h"
 #include "base/sequence_checker_impl.h"
 #include "base/task/scoped_set_task_priority_for_current_thread.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/threading/thread_checker_impl.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -22,27 +22,29 @@ namespace base {
 namespace {
 
 LazySequencedTaskRunner g_sequenced_task_runner_user_visible =
-    LAZY_SEQUENCED_TASK_RUNNER_INITIALIZER({TaskPriority::USER_VISIBLE});
+    LAZY_SEQUENCED_TASK_RUNNER_INITIALIZER(
+        TaskTraits(ThreadPool(), TaskPriority::USER_VISIBLE));
 LazySequencedTaskRunner g_sequenced_task_runner_user_blocking =
-    LAZY_SEQUENCED_TASK_RUNNER_INITIALIZER({TaskPriority::USER_BLOCKING});
+    LAZY_SEQUENCED_TASK_RUNNER_INITIALIZER(
+        TaskTraits(ThreadPool(), TaskPriority::USER_BLOCKING));
 
 LazySingleThreadTaskRunner g_single_thread_task_runner_user_visible =
     LAZY_SINGLE_THREAD_TASK_RUNNER_INITIALIZER(
-        {TaskPriority::USER_VISIBLE},
+        TaskTraits(ThreadPool(), TaskPriority::USER_VISIBLE),
         SingleThreadTaskRunnerThreadMode::SHARED);
 LazySingleThreadTaskRunner g_single_thread_task_runner_user_blocking =
     LAZY_SINGLE_THREAD_TASK_RUNNER_INITIALIZER(
-        {TaskPriority::USER_BLOCKING},
+        TaskTraits(ThreadPool(), TaskPriority::USER_BLOCKING),
         SingleThreadTaskRunnerThreadMode::SHARED);
 
 #if defined(OS_WIN)
 LazyCOMSTATaskRunner g_com_sta_task_runner_user_visible =
     LAZY_COM_STA_TASK_RUNNER_INITIALIZER(
-        {TaskPriority::USER_VISIBLE},
+        TaskTraits(ThreadPool(), TaskPriority::USER_VISIBLE),
         SingleThreadTaskRunnerThreadMode::SHARED);
 LazyCOMSTATaskRunner g_com_sta_task_runner_user_blocking =
     LAZY_COM_STA_TASK_RUNNER_INITIALIZER(
-        {TaskPriority::USER_BLOCKING},
+        TaskTraits(ThreadPool(), TaskPriority::USER_BLOCKING),
         SingleThreadTaskRunnerThreadMode::SHARED);
 #endif  // defined(OS_WIN)
 
@@ -80,9 +82,9 @@ void ExpectSingleThreadEnvironment(SequenceCheckerImpl* sequence_checker,
 #endif
 }
 
-class TaskSchedulerLazyTaskRunnerEnvironmentTest : public testing::Test {
+class LazyTaskRunnerEnvironmentTest : public testing::Test {
  protected:
-  TaskSchedulerLazyTaskRunnerEnvironmentTest() = default;
+  LazyTaskRunnerEnvironmentTest() = default;
 
   void TestTaskRunnerEnvironment(scoped_refptr<SequencedTaskRunner> task_runner,
                                  bool expect_single_thread,
@@ -97,7 +99,7 @@ class TaskSchedulerLazyTaskRunnerEnvironmentTest : public testing::Test {
     task_runner->PostTask(FROM_HERE,
                           BindOnce(&InitCheckers, Unretained(&sequence_checker),
                                    Unretained(&thread_checker)));
-    scoped_task_environment_.RunUntilIdle();
+    task_environment_.RunUntilIdle();
 
     OnceClosure task =
         expect_single_thread
@@ -113,84 +115,78 @@ class TaskSchedulerLazyTaskRunnerEnvironmentTest : public testing::Test {
                        Unretained(&sequence_checker),
                        Unretained(&thread_checker), expected_priority);
     task_runner->PostTask(FROM_HERE, std::move(task));
-    scoped_task_environment_.RunUntilIdle();
+    task_environment_.RunUntilIdle();
   }
 
-  test::ScopedTaskEnvironment scoped_task_environment_;
+  test::TaskEnvironment task_environment_;
 
  private:
-  DISALLOW_COPY_AND_ASSIGN(TaskSchedulerLazyTaskRunnerEnvironmentTest);
+  DISALLOW_COPY_AND_ASSIGN(LazyTaskRunnerEnvironmentTest);
 };
 
 }  // namespace
 
-TEST_F(TaskSchedulerLazyTaskRunnerEnvironmentTest,
-       LazySequencedTaskRunnerUserVisible) {
+TEST_F(LazyTaskRunnerEnvironmentTest, LazySequencedTaskRunnerUserVisible) {
   TestTaskRunnerEnvironment(g_sequenced_task_runner_user_visible.Get(), false,
                             TaskPriority::USER_VISIBLE);
 }
 
-TEST_F(TaskSchedulerLazyTaskRunnerEnvironmentTest,
-       LazySequencedTaskRunnerUserBlocking) {
+TEST_F(LazyTaskRunnerEnvironmentTest, LazySequencedTaskRunnerUserBlocking) {
   TestTaskRunnerEnvironment(g_sequenced_task_runner_user_blocking.Get(), false,
                             TaskPriority::USER_BLOCKING);
 }
 
-TEST_F(TaskSchedulerLazyTaskRunnerEnvironmentTest,
-       LazySingleThreadTaskRunnerUserVisible) {
+TEST_F(LazyTaskRunnerEnvironmentTest, LazySingleThreadTaskRunnerUserVisible) {
   TestTaskRunnerEnvironment(g_single_thread_task_runner_user_visible.Get(),
                             true, TaskPriority::USER_VISIBLE);
 }
 
-TEST_F(TaskSchedulerLazyTaskRunnerEnvironmentTest,
-       LazySingleThreadTaskRunnerUserBlocking) {
+TEST_F(LazyTaskRunnerEnvironmentTest, LazySingleThreadTaskRunnerUserBlocking) {
   TestTaskRunnerEnvironment(g_single_thread_task_runner_user_blocking.Get(),
                             true, TaskPriority::USER_BLOCKING);
 }
 
 #if defined(OS_WIN)
-TEST_F(TaskSchedulerLazyTaskRunnerEnvironmentTest,
-       LazyCOMSTATaskRunnerUserVisible) {
+TEST_F(LazyTaskRunnerEnvironmentTest, LazyCOMSTATaskRunnerUserVisible) {
   TestTaskRunnerEnvironment(g_com_sta_task_runner_user_visible.Get(), true,
                             TaskPriority::USER_VISIBLE, true);
 }
 
-TEST_F(TaskSchedulerLazyTaskRunnerEnvironmentTest,
-       LazyCOMSTATaskRunnerUserBlocking) {
+TEST_F(LazyTaskRunnerEnvironmentTest, LazyCOMSTATaskRunnerUserBlocking) {
   TestTaskRunnerEnvironment(g_com_sta_task_runner_user_blocking.Get(), true,
                             TaskPriority::USER_BLOCKING, true);
 }
 #endif  // defined(OS_WIN)
 
-TEST(TaskSchdulerLazyTaskRunnerTest, LazySequencedTaskRunnerReset) {
+TEST(LazyTaskRunnerTest, LazySequencedTaskRunnerReset) {
   for (int i = 0; i < 2; ++i) {
-    test::ScopedTaskEnvironment scoped_task_environment;
-    // If the TaskRunner isn't released when the test::ScopedTaskEnvironment
+    test::TaskEnvironment task_environment;
+    // If the TaskRunner isn't released when the test::TaskEnvironment
     // goes out of scope, the second invocation of the line below will access a
-    // deleted TaskScheduler and crash.
+    // deleted ThreadPoolInstance and crash.
     g_sequenced_task_runner_user_visible.Get()->PostTask(FROM_HERE,
                                                          DoNothing());
   }
 }
 
-TEST(TaskSchdulerLazyTaskRunnerTest, LazySingleThreadTaskRunnerReset) {
+TEST(LazyTaskRunnerTest, LazySingleThreadTaskRunnerReset) {
   for (int i = 0; i < 2; ++i) {
-    test::ScopedTaskEnvironment scoped_task_environment;
-    // If the TaskRunner isn't released when the test::ScopedTaskEnvironment
+    test::TaskEnvironment task_environment;
+    // If the TaskRunner isn't released when the test::TaskEnvironment
     // goes out of scope, the second invocation of the line below will access a
-    // deleted TaskScheduler and crash.
+    // deleted ThreadPoolInstance and crash.
     g_single_thread_task_runner_user_visible.Get()->PostTask(FROM_HERE,
                                                              DoNothing());
   }
 }
 
 #if defined(OS_WIN)
-TEST(TaskSchdulerLazyTaskRunnerTest, LazyCOMSTATaskRunnerReset) {
+TEST(LazyTaskRunnerTest, LazyCOMSTATaskRunnerReset) {
   for (int i = 0; i < 2; ++i) {
-    test::ScopedTaskEnvironment scoped_task_environment;
-    // If the TaskRunner isn't released when the test::ScopedTaskEnvironment
+    test::TaskEnvironment task_environment;
+    // If the TaskRunner isn't released when the test::TaskEnvironment
     // goes out of scope, the second invocation of the line below will access a
-    // deleted TaskScheduler and crash.
+    // deleted ThreadPoolInstance and crash.
     g_com_sta_task_runner_user_visible.Get()->PostTask(FROM_HERE, DoNothing());
   }
 }

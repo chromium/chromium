@@ -33,13 +33,14 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/browser/notification_service.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/external_install_info.h"
 #include "extensions/browser/external_provider_interface.h"
 #include "extensions/browser/notification_types.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest.h"
+#include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -217,12 +218,13 @@ class DemoExtensionsExternalLoaderTest : public testing::Test {
 
   std::unique_ptr<DemoModeTestHelper> demo_mode_test_helper_;
 
-  content::TestBrowserThreadBundle thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
 
  private:
   scoped_refptr<network::WeakWrapperSharedURLLoaderFactory>
       test_shared_loader_factory_;
 
+  data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
   content::InProcessUtilityThreadHelper in_process_utility_thread_helper_;
 
   user_manager::ScopedUserManager scoped_user_manager_;
@@ -468,7 +470,7 @@ TEST_F(DemoExtensionsExternalLoaderTest, LoadApp) {
   loader->LoadApp(kTestExtensionId);
   // Verify that a downloader has started and is attempting to download an
   // update manifest.
-  thread_bundle_.RunUntilIdle();
+  task_environment_.RunUntilIdle();
   EXPECT_EQ(1, test_url_loader_factory_.NumPending());
   // Return a manifest to the downloader.
   std::string manifest;
@@ -476,7 +478,7 @@ TEST_F(DemoExtensionsExternalLoaderTest, LoadApp) {
   ASSERT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &test_dir));
   EXPECT_TRUE(base::ReadFileToString(
       test_dir.Append(kTestExtensionUpdateManifest), &manifest));
-  thread_bundle_.RunUntilIdle();
+  task_environment_.RunUntilIdle();
   EXPECT_EQ(1, test_url_loader_factory_.NumPending());
   test_url_loader_factory_.AddResponse(
       test_url_loader_factory_.pending_requests()->at(0).request.url.spec(),
@@ -489,7 +491,7 @@ TEST_F(DemoExtensionsExternalLoaderTest, LoadApp) {
       .Wait();
 
   // Verify that the downloader is attempting to download a CRX file.
-  thread_bundle_.RunUntilIdle();
+  task_environment_.RunUntilIdle();
   EXPECT_EQ(1, test_url_loader_factory_.NumPending());
   // Trigger downloading of the CRX file.
   test_url_loader_factory_.AddResponse(
@@ -548,7 +550,7 @@ class ShouldCreateDemoExtensionsExternalLoaderTest : public testing::Test {
   FakeChromeUserManager* user_manager_ = nullptr;
 
  private:
-  content::TestBrowserThreadBundle thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
   std::unique_ptr<DemoModeTestHelper> demo_mode_test_helper_;
 

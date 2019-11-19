@@ -27,9 +27,7 @@ class GCM_EXPORT InstanceIDDeleteTokenRequestHandler :
   void BuildRequestBody(std::string* body) override;
   UnregistrationRequest::Status ParseResponse(
       const std::string& response) override;
-  void ReportUMAs(UnregistrationRequest::Status status,
-                  int retry_count,
-                  base::TimeDelta complete_time) override;
+  void ReportUMAs(UnregistrationRequest::Status status) override;
 
  private:
   std::string instance_id_;

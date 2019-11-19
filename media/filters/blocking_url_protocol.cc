@@ -46,11 +46,16 @@ int BlockingUrlProtocol::Read(int size, uint8_t* data) {
       return AVERROR(EIO);
     }
 
-    // Even though FFmpeg defines AVERROR_EOF, it's not to be used with I/O
-    // routines. Instead return 0 for any read at or past EOF.
+    // Not sure this can happen, but it's unclear from the ffmpeg code, so guard
+    // against it.
+    if (size < 0)
+      return AVERROR(EIO);
+    if (!size)
+      return 0;
+
     int64_t file_size;
     if (data_source_->GetSize(&file_size) && read_position_ >= file_size)
-      return 0;
+      return AVERROR_EOF;
 
     // Blocking read from data source until either:
     //   1) |last_read_bytes_| is set and |read_complete_| is signalled

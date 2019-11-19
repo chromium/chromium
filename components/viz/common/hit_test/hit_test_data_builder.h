@@ -13,8 +13,8 @@
 
 namespace viz {
 
-// TODO(riajiang): Move this back to viz/client once DirectLayerTreeFrameSink
-// no longer needs this.
+// TODO(crbug.com/923398): Move this back to viz/client once
+// DirectLayerTreeFrameSink no longer needs this.
 class VIZ_COMMON_EXPORT HitTestDataBuilder {
  public:
   static base::Optional<HitTestRegionList> CreateHitTestData(

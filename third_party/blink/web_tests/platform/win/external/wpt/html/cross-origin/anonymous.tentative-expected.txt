@@ -1,0 +1,13 @@
+This is a testharness.js-based test.
+FAIL Top-level with anonymous policy: navigating a frame to a null policy should fail. assert_equals: expected null but got Document node with 1 child
+FAIL Top-level with anonymous policy: navigating a frame from an anonymous policy to a null policy should fail. assert_equals: Navigation to null policy should fail expected null but got Document node with 1 child
+FAIL Top-level with anonymous policy: navigating a frame from a use-credentials policy to a null policy should fail. assert_equals: Navigation to null policy should fail expected null but got Document node with 1 child
+PASS Top-level with anonymous policy: creating a noopener popup with null policy should work.
+PASS Top-level with anonymous policy: creating a popup with null policy should fail.
+PASS Top-level noopener with anonymous policy: navigating to a different policy should work
+FAIL Fetch policy: anonymous policy no-cors fetches should be changed to cors assert_equals: type should have been changed to cors expected "cors" but got "opaque"
+PASS Top-level popup with anonymous policy: Navigating the popup to a null policy should fail.
+PASS Top-level popup with anonymous policy: Navigating the popup to a null policy should fail. (even when we clear the opener)
+PASS Top-level popup with anonymous policy: Navigating the popup to a null policy should fail. (even opener window is closed)
+Harness: the test ran to completion.
+

@@ -7,16 +7,14 @@
 
 cr.ui.decorate('#sync-results-splitter', cr.ui.Splitter);
 
-var allLinks = document.getElementsByClassName('sync-search-quicklink');
-
 chrome.sync.decorateQuickQueryControls(
-  allLinks,
-  $('sync-search-submit'),
-  $('sync-search-query'));
+  document.getElementsByClassName('sync-search-quicklink'),
+  /** @type {!HTMLButtonElement} */ ($('sync-search-submit')),
+  /** @type {!HTMLInputElement} */ ($('sync-search-query')));
 
 chrome.sync.decorateSearchControls(
-  $('sync-search-query'),
-  $('sync-search-submit'),
-  $('sync-search-status'),
-  $('sync-results-list'),
-  $('sync-result-details'));
+  /** @type {!HTMLInputElement} */ ($('sync-search-query')),
+  /** @type {!HTMLButtonElement} */ ($('sync-search-submit')),
+  getRequiredElement('sync-search-status'),
+  getRequiredElement('sync-results-list'),
+  /** @type {!HTMLPreElement} */ ($('sync-result-details')));

@@ -81,7 +81,7 @@ ArcUsbHostPermissionManager::UsbPermissionRequest::~UsbPermissionRequest() =
 void ArcUsbHostPermissionManager::UsbPermissionRequest::Resolve(bool allowed) {
   if (!callback_)
     return;
-  base::ResetAndReturn(&*callback_).Run(allowed);
+  std::move(*callback_).Run(allowed);
 }
 
 // UsbDeviceEntry
@@ -138,9 +138,7 @@ ArcUsbHostPermissionManager::ArcUsbHostPermissionManager(
     Profile* profile,
     ArcAppListPrefs* arc_app_list_prefs,
     ArcUsbHostBridge* arc_usb_host_bridge)
-    : profile_(profile),
-      arc_app_list_prefs_(arc_app_list_prefs),
-      weak_ptr_factory_(this) {
+    : profile_(profile), arc_app_list_prefs_(arc_app_list_prefs) {
   RestorePermissionFromChromePrefs();
   arc_app_list_prefs_->AddObserver(this);
   arc_usb_host_bridge->SetUiDelegate(this);

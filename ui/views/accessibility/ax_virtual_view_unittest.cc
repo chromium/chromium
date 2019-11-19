@@ -5,6 +5,7 @@
 #include "ui/views/accessibility/ax_virtual_view.h"
 
 #include "base/memory/ptr_util.h"
+#include "build/build_config.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/gfx/geometry/rect.h"
@@ -15,6 +16,10 @@
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 
+#if defined(OS_WIN)
+#include "ui/views/win/hwnd_util.h"
+#endif
+
 namespace views {
 namespace test {
 
@@ -22,11 +27,10 @@ namespace {
 
 class TestButton : public Button {
  public:
-  TestButton() : Button(NULL) {}
+  TestButton() : Button(nullptr) {}
+  TestButton(const TestButton&) = delete;
+  TestButton& operator=(const TestButton&) = delete;
   ~TestButton() override = default;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestButton);
 };
 
 }  // namespace
@@ -34,6 +38,8 @@ class TestButton : public Button {
 class AXVirtualViewTest : public ViewsTestBase {
  public:
   AXVirtualViewTest() = default;
+  AXVirtualViewTest(const AXVirtualViewTest&) = delete;
+  AXVirtualViewTest& operator=(const AXVirtualViewTest&) = delete;
   ~AXVirtualViewTest() override = default;
 
   void SetUp() override {
@@ -42,7 +48,7 @@ class AXVirtualViewTest : public ViewsTestBase {
     widget_ = new Widget;
     Widget::InitParams params = CreateParams(Widget::InitParams::TYPE_WINDOW);
     params.bounds = gfx::Rect(0, 0, 200, 200);
-    widget_->Init(params);
+    widget_->Init(std::move(params));
     button_ = new TestButton;
     button_->SetSize(gfx::Size(20, 20));
     widget_->GetContentsView()->AddChildView(button_);
@@ -70,9 +76,6 @@ class AXVirtualViewTest : public ViewsTestBase {
   Button* button_;
   // Weak, |button_| owns this.
   AXVirtualView* virtual_label_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AXVirtualViewTest);
 };
 
 TEST_F(AXVirtualViewTest, AccessibilityRoleAndName) {
@@ -342,6 +345,58 @@ TEST_F(AXVirtualViewTest, OverrideFocus) {
   EXPECT_EQ(button_accessibility.GetNativeObject(),
             button_accessibility.GetFocusedDescendant());
 }
+
+TEST_F(AXVirtualViewTest, Navigation) {
+  ASSERT_EQ(0, virtual_label_->GetChildCount());
+
+  AXVirtualView* virtual_child_1 = new AXVirtualView;
+  virtual_label_->AddChildView(base::WrapUnique(virtual_child_1));
+  EXPECT_EQ(1, virtual_label_->GetChildCount());
+
+  AXVirtualView* virtual_child_2 = new AXVirtualView;
+  virtual_label_->AddChildView(base::WrapUnique(virtual_child_2));
+  EXPECT_EQ(2, virtual_label_->GetChildCount());
+
+  AXVirtualView* virtual_child_3 = new AXVirtualView;
+  virtual_label_->AddChildView(base::WrapUnique(virtual_child_3));
+
+  AXVirtualView* virtual_child_4 = new AXVirtualView;
+  virtual_child_2->AddChildView(base::WrapUnique(virtual_child_4));
+
+  EXPECT_EQ(nullptr, virtual_label_->GetNextSibling());
+  EXPECT_EQ(nullptr, virtual_label_->GetPreviousSibling());
+  EXPECT_EQ(0, virtual_label_->GetIndexInParent());
+
+  EXPECT_EQ(virtual_child_2->GetNativeObject(),
+            virtual_child_1->GetNextSibling());
+  EXPECT_EQ(nullptr, virtual_child_1->GetPreviousSibling());
+  EXPECT_EQ(0, virtual_child_1->GetIndexInParent());
+
+  EXPECT_EQ(virtual_child_3->GetNativeObject(),
+            virtual_child_2->GetNextSibling());
+  EXPECT_EQ(virtual_child_1->GetNativeObject(),
+            virtual_child_2->GetPreviousSibling());
+  EXPECT_EQ(1, virtual_child_2->GetIndexInParent());
+
+  EXPECT_EQ(nullptr, virtual_child_3->GetNextSibling());
+  EXPECT_EQ(virtual_child_2->GetNativeObject(),
+            virtual_child_3->GetPreviousSibling());
+  EXPECT_EQ(2, virtual_child_3->GetIndexInParent());
+
+  EXPECT_EQ(nullptr, virtual_child_4->GetNextSibling());
+  EXPECT_EQ(nullptr, virtual_child_4->GetPreviousSibling());
+  EXPECT_EQ(0, virtual_child_4->GetIndexInParent());
+}
+
+// Test for GetTargetForNativeAccessibilityEvent().
+#if defined(OS_WIN)
+TEST_F(AXVirtualViewTest, GetTargetForEvents) {
+  EXPECT_EQ(button_, virtual_label_->GetOwnerView());
+  EXPECT_NE(nullptr, HWNDForView(virtual_label_->GetOwnerView()));
+  EXPECT_EQ(HWNDForView(button_),
+            virtual_label_->GetTargetForNativeAccessibilityEvent());
+}
+#endif
 
 }  // namespace test
 }  // namespace views

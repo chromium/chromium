@@ -6,6 +6,14 @@
 
 namespace switches {
 
+// TODO(crbug.com/657130): Sync integration tests depend on the precommit get
+// updates because invalidations aren't working for them. Therefore, they pass
+// the command line switch to enable this feature. Once sync integrations test
+// support invalidation, this should be removed.
+// Enables feature to perform GetUpdate requests before every commit.
+const char kSyncEnableGetUpdatesBeforeCommit[] =
+    "sync-enable-get-update-before-commits";
+
 const base::Feature kSyncResetPollIntervalOnStart{
     "SyncResetPollIntervalOnStart", base::FEATURE_DISABLED_BY_DEFAULT};
 
@@ -15,6 +23,9 @@ const base::Feature kSyncResetPollIntervalOnStart{
 // via scrypt when we receive a remote Nigori node that specifies it as the key
 // derivation method.
 const base::Feature kSyncUseScryptForNewCustomPassphrases{
-    "SyncUseScryptForNewCustomPassphrases", base::FEATURE_DISABLED_BY_DEFAULT};
+    "SyncUseScryptForNewCustomPassphrases", base::FEATURE_ENABLED_BY_DEFAULT};
+
+const base::Feature kSyncSupportTrustedVaultPassphrase{
+    "SyncSupportTrustedVaultPassphrase", base::FEATURE_DISABLED_BY_DEFAULT};
 
 }  // namespace switches

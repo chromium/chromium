@@ -18,8 +18,10 @@
  */
 
 // https://html.spec.whatwg.org/C/#the-ol-element
-[HTMLConstructor]
-interface HTMLOListElement : HTMLElement {
+[
+    Exposed=Window,
+    HTMLConstructor
+] interface HTMLOListElement : HTMLElement {
     [CEReactions, Reflect] attribute boolean reversed;
     [CEReactions] attribute long start;
     [CEReactions, Reflect] attribute DOMString type;

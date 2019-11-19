@@ -4,19 +4,27 @@
 
 #include "content/public/browser/media_session.h"
 
+#include "base/bind_helpers.h"
 #include "base/command_line.h"
 #include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/synchronization/lock.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
+#include "content/browser/frame_host/render_frame_host_impl.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
+#include "content/public/test/media_start_stop_observer.h"
+#include "content/public/test/test_utils.h"
 #include "content/shell/browser/shell.h"
 #include "media/base/media_switches.h"
+#include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "services/media_session/public/cpp/features.h"
 #include "services/media_session/public/cpp/test/audio_focus_test_util.h"
@@ -67,11 +75,11 @@ class MediaImageGetterHelper {
 // Integration tests for content::MediaSession that do not take into
 // consideration the implementation details contrary to
 // MediaSessionImplBrowserTest.
-class MediaSessionBrowserTest : public ContentBrowserTest {
+class MediaSessionBrowserTestBase : public ContentBrowserTest {
  public:
-  MediaSessionBrowserTest() {
+  MediaSessionBrowserTestBase() {
     embedded_test_server()->RegisterRequestMonitor(base::BindRepeating(
-        &MediaSessionBrowserTest::OnServerRequest, base::Unretained(this)));
+        &MediaSessionBrowserTestBase::OnServerRequest, base::Unretained(this)));
   }
 
   void SetUp() override {
@@ -83,25 +91,19 @@ class MediaSessionBrowserTest : public ContentBrowserTest {
     command_line->AppendSwitchASCII(
         switches::kAutoplayPolicy,
         switches::autoplay::kNoUserGestureRequiredPolicy);
-
-    scoped_feature_list_.InitAndEnableFeature(media::kInternalMediaSession);
-  }
-
-  void DisableInternalMediaSession() {
-    disabled_feature_list_.InitWithFeatures(
-        {}, {media::kInternalMediaSession,
-             media_session::features::kMediaSessionService});
   }
 
   void StartPlaybackAndWait(Shell* shell, const std::string& id) {
     shell->web_contents()->GetMainFrame()->ExecuteJavaScriptForTests(
-        base::ASCIIToUTF16("document.querySelector('#" + id + "').play();"));
+        base::ASCIIToUTF16("document.querySelector('#" + id + "').play();"),
+        base::NullCallback());
     WaitForStart(shell);
   }
 
   void StopPlaybackAndWait(Shell* shell, const std::string& id) {
     shell->web_contents()->GetMainFrame()->ExecuteJavaScriptForTests(
-        base::ASCIIToUTF16("document.querySelector('#" + id + "').pause();"));
+        base::ASCIIToUTF16("document.querySelector('#" + id + "').pause();"),
+        base::NullCallback());
     WaitForStop(shell);
   }
 
@@ -129,12 +131,13 @@ class MediaSessionBrowserTest : public ContentBrowserTest {
   }
 
   bool WasURLVisited(const GURL& url) {
-    return base::ContainsKey(visited_urls_, url);
+    base::AutoLock lock(visited_urls_lock_);
+    return base::Contains(visited_urls_, url);
   }
 
   MediaSession* SetupMediaImageTest() {
-    NavigateToURL(shell(),
-                  embedded_test_server()->GetURL(kMediaSessionImageTestURL));
+    EXPECT_TRUE(NavigateToURL(
+        shell(), embedded_test_server()->GetURL(kMediaSessionImageTestURL)));
     StartPlaybackAndWait(shell(), kMediaSessionImageTestPageVideoElement);
 
     MediaSession* media_session = MediaSession::Get(shell()->web_contents());
@@ -163,58 +166,71 @@ class MediaSessionBrowserTest : public ContentBrowserTest {
   }
 
  private:
-  class MediaStartStopObserver : public WebContentsObserver {
-   public:
-    enum class Type { kStart, kStop };
-
-    MediaStartStopObserver(WebContents* web_contents, Type type)
-        : WebContentsObserver(web_contents), type_(type) {}
-
-    void MediaStartedPlaying(const MediaPlayerInfo& info,
-                             const MediaPlayerId& id) override {
-      if (type_ != Type::kStart)
-        return;
-
-      run_loop_.Quit();
-    }
-
-    void MediaStoppedPlaying(
-        const MediaPlayerInfo& info,
-        const MediaPlayerId& id,
-        WebContentsObserver::MediaStoppedReason reason) override {
-      if (type_ != Type::kStop)
-        return;
-
-      run_loop_.Quit();
-    }
-
-    void Wait() { run_loop_.Run(); }
-
-   private:
-    base::RunLoop run_loop_;
-    Type type_;
-
-    DISALLOW_COPY_AND_ASSIGN(MediaStartStopObserver);
-  };
-
   void OnServerRequest(const net::test_server::HttpRequest& request) {
+    // Note this method is called on the EmbeddedTestServer's background thread.
+    base::AutoLock lock(visited_urls_lock_);
     visited_urls_.insert(request.GetURL());
   }
 
+  // visited_urls_ is accessed both on the main thread and on the
+  // EmbeddedTestServer's background thread via OnServerRequest(), so it must be
+  // locked.
+  base::Lock visited_urls_lock_;
   std::set<GURL> visited_urls_;
 
-  base::test::ScopedFeatureList disabled_feature_list_;
-  base::test::ScopedFeatureList scoped_feature_list_;
+  DISALLOW_COPY_AND_ASSIGN(MediaSessionBrowserTestBase);
+};
 
-  DISALLOW_COPY_AND_ASSIGN(MediaSessionBrowserTest);
+class MediaSessionBrowserTest : public MediaSessionBrowserTestBase {
+ public:
+  MediaSessionBrowserTest() {
+    feature_list_.InitAndEnableFeature(media::kInternalMediaSession);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+class MediaSessionBrowserTestWithoutInternalMediaSession
+    : public MediaSessionBrowserTestBase {
+ public:
+  MediaSessionBrowserTestWithoutInternalMediaSession() {
+    disabled_feature_list_.InitWithFeatures(
+        {}, {media::kInternalMediaSession,
+             media_session::features::kMediaSessionService});
+  }
+
+ private:
+  base::test::ScopedFeatureList disabled_feature_list_;
+};
+
+// A MediaSessionBrowserTest with BackForwardCache enabled.
+class MediaSessionBrowserTestWithBackForwardCache
+    : public MediaSessionBrowserTestBase {
+ public:
+  MediaSessionBrowserTestWithBackForwardCache() {
+    feature_list_.InitWithFeaturesAndParameters(
+        {{features::kBackForwardCache,
+          {{"TimeToLiveInBackForwardCacheInSeconds", "3600"}}},
+         {media::kInternalMediaSession, {}}},
+        /*disabled_features=*/{});
+  }
+
+  void SetUpOnMainThread() override {
+    host_resolver()->AddRule("*", "127.0.0.1");
+    MediaSessionBrowserTestBase::SetUpOnMainThread();
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 }  // anonymous namespace
 
-IN_PROC_BROWSER_TEST_F(MediaSessionBrowserTest, MediaSessionNoOpWhenDisabled) {
-  DisableInternalMediaSession();
-
-  NavigateToURL(shell(), GetTestUrl("media/session", "media-session.html"));
+IN_PROC_BROWSER_TEST_F(MediaSessionBrowserTestWithoutInternalMediaSession,
+                       MediaSessionNoOpWhenDisabled) {
+  EXPECT_TRUE(NavigateToURL(shell(),
+                            GetTestUrl("media/session", "media-session.html")));
 
   MediaSession* media_session = MediaSession::Get(shell()->web_contents());
   ASSERT_NE(nullptr, media_session);
@@ -231,7 +247,8 @@ IN_PROC_BROWSER_TEST_F(MediaSessionBrowserTest, MediaSessionNoOpWhenDisabled) {
 }
 
 IN_PROC_BROWSER_TEST_F(MediaSessionBrowserTest, SimplePlayPause) {
-  NavigateToURL(shell(), GetTestUrl("media/session", "media-session.html"));
+  EXPECT_TRUE(NavigateToURL(shell(),
+                            GetTestUrl("media/session", "media-session.html")));
 
   MediaSession* media_session = MediaSession::Get(shell()->web_contents());
   ASSERT_NE(nullptr, media_session);
@@ -248,7 +265,8 @@ IN_PROC_BROWSER_TEST_F(MediaSessionBrowserTest, SimplePlayPause) {
 }
 
 IN_PROC_BROWSER_TEST_F(MediaSessionBrowserTest, MultiplePlayersPlayPause) {
-  NavigateToURL(shell(), GetTestUrl("media/session", "media-session.html"));
+  EXPECT_TRUE(NavigateToURL(shell(),
+                            GetTestUrl("media/session", "media-session.html")));
 
   MediaSession* media_session = MediaSession::Get(shell()->web_contents());
   ASSERT_NE(nullptr, media_session);
@@ -267,8 +285,15 @@ IN_PROC_BROWSER_TEST_F(MediaSessionBrowserTest, MultiplePlayersPlayPause) {
   EXPECT_TRUE(IsPlaying(shell(), "long-audio"));
 }
 
-IN_PROC_BROWSER_TEST_F(MediaSessionBrowserTest, WebContents_Muted) {
-  NavigateToURL(shell(), GetTestUrl("media/session", "media-session.html"));
+// Flaky on Mac. See https://crbug.com/980663
+#if defined(OS_MACOSX)
+#define MAYBE_WebContents_Muted DISABLED_WebContents_Muted
+#else
+#define MAYBE_WebContents_Muted WebContents_Muted
+#endif
+IN_PROC_BROWSER_TEST_F(MediaSessionBrowserTest, MAYBE_WebContents_Muted) {
+  EXPECT_TRUE(NavigateToURL(shell(),
+                            GetTestUrl("media/session", "media-session.html")));
 
   shell()->web_contents()->SetAudioMuted(true);
   MediaSession* media_session = MediaSession::Get(shell()->web_contents());
@@ -294,8 +319,10 @@ IN_PROC_BROWSER_TEST_F(MediaSessionBrowserTest, WebContents_Muted) {
 IN_PROC_BROWSER_TEST_F(MediaSessionBrowserTest, MultipleTabsPlayPause) {
   Shell* other_shell = CreateBrowser();
 
-  NavigateToURL(shell(), GetTestUrl("media/session", "media-session.html"));
-  NavigateToURL(other_shell, GetTestUrl("media/session", "media-session.html"));
+  EXPECT_TRUE(NavigateToURL(shell(),
+                            GetTestUrl("media/session", "media-session.html")));
+  EXPECT_TRUE(NavigateToURL(other_shell,
+                            GetTestUrl("media/session", "media-session.html")));
 
   MediaSession* media_session = MediaSession::Get(shell()->web_contents());
   MediaSession* other_media_session =
@@ -404,4 +431,43 @@ IN_PROC_BROWSER_TEST_F(MediaSessionBrowserTest,
   EXPECT_FALSE(WasURLVisited(image.src));
 }
 
+IN_PROC_BROWSER_TEST_F(MediaSessionBrowserTestWithBackForwardCache,
+                       DoNotCacheIfMediaSessionExists) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  // 1) Navigate to a page containing media.
+  EXPECT_TRUE(NavigateToURL(shell(),
+                            GetTestUrl("media/session", "media-session.html")));
+
+  RenderFrameHost* rfh_a = shell()->web_contents()->GetMainFrame();
+  RenderFrameDeletedObserver delete_observer_rfh_a(rfh_a);
+
+  // 2) Navigate away.
+  EXPECT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("b.com", "/title1.html")));
+
+  // The page should not have been cached in the back forward cache.
+  delete_observer_rfh_a.WaitUntilDeleted();
+}
+
+IN_PROC_BROWSER_TEST_F(MediaSessionBrowserTestWithBackForwardCache,
+                       CachesPageWithoutMedia) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  // 1) Navigate to a page not containing any media.
+  EXPECT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("a.com", "/title1.html")));
+
+  RenderFrameHostImpl* rfh_a = static_cast<RenderFrameHostImpl*>(
+      shell()->web_contents()->GetMainFrame());
+  RenderFrameDeletedObserver delete_observer_rfh_a(rfh_a);
+
+  // 2) Navigate away.
+  EXPECT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("b.com", "/title1.html")));
+
+  // The page should be cached in the back forward cache.
+  EXPECT_FALSE(delete_observer_rfh_a.deleted());
+  EXPECT_TRUE(rfh_a->is_in_back_forward_cache());
+}
 }  // namespace content

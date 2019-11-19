@@ -24,17 +24,27 @@ class BluetoothPairingDialogTest : public WebUIBrowserTest {
  private:
   scoped_refptr<testing::NiceMock<device::MockBluetoothAdapter>> mock_adapter_;
   std::unique_ptr<device::MockBluetoothDevice> mock_device_;
+
+  // In the course of running ShowDialog(),
+  // BluetoothPrivateConnectFunction::DoWork() is invoked. In this particular
+  // test, ExtensionFunction::Respond() is not immediately called because
+  // device::BluetoothDevice::Connect() first expects its callbacks to be
+  // completed. BluetoothPrivateConnectFunction has no way of invoking those
+  // callbacks before ShowDialog() finishes. Until it does, the simplest thing
+  // to do is set
+  // ExtensionFunction::ignore_all_did_respond_for_testing_do_not_use to true
+  // for the duration of the test.
+  base::AutoReset<bool> ignore_did_respond;
 };
 
-BluetoothPairingDialogTest::BluetoothPairingDialogTest() {}
+BluetoothPairingDialogTest::BluetoothPairingDialogTest()
+    : ignore_did_respond(
+          &ExtensionFunction::ignore_all_did_respond_for_testing_do_not_use,
+          true) {}
 
 BluetoothPairingDialogTest::~BluetoothPairingDialogTest() {}
 
 void BluetoothPairingDialogTest::ShowDialog() {
-  // Since we use mocks, callbacks are never called for the bluetooth API
-  // functions. :(
-  base::AutoReset<bool> ignore_did_respond(
-      &ExtensionFunction::ignore_all_did_respond_for_testing_do_not_use, true);
   mock_adapter_ = new testing::NiceMock<device::MockBluetoothAdapter>();
   device::BluetoothAdapterFactory::SetAdapterForTesting(mock_adapter_);
   EXPECT_CALL(*mock_adapter_, IsPresent())
@@ -44,12 +54,13 @@ void BluetoothPairingDialogTest::ShowDialog() {
 
   const bool kNotPaired = false;
   const bool kNotConnected = false;
-  mock_device_.reset(new testing::NiceMock<device::MockBluetoothDevice>(
-      nullptr, 0, "Bluetooth 2.0 Mouse", "28:CF:DA:00:00:00", kNotPaired,
-      kNotConnected));
+  mock_device_ =
+      std::make_unique<testing::NiceMock<device::MockBluetoothDevice>>(
+          nullptr, 0, "Bluetooth 2.0 Mouse", "28:CF:DA:00:00:00", kNotPaired,
+          kNotConnected);
 
   EXPECT_CALL(*mock_adapter_, GetDevice(testing::_))
-      .WillOnce(testing::Return(mock_device_.get()));
+      .WillRepeatedly(testing::Return(mock_device_.get()));
 
   chromeos::SystemWebDialogDelegate* dialog =
       chromeos::BluetoothPairingDialog::ShowDialog(

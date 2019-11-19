@@ -26,9 +26,11 @@ reference.
 
 ##### `CacheStorageDispatcherHost`=>`CacheStorageCacheHandle`~>`CacheStorageCache`
 * The `CacheStorageDispatcherHost` holds onto handles for:
-  * currently running operations
+  * JavaScript references to cache objects
+
+##### `CacheStorageDispatcherHost`=>`CacheStorageHandle`~>`CacheStorage`
+* The `CacheStorageDispatcherHost` holds onto handles for:
   * JavaScript references to caches
-  * recently opened caches (to prevent open/close/open churn)
 
 ##### `CacheStorageCacheDataHandle`=>`CacheStorageCacheHandle`~>`CacheStorageCache`
 * `CacheStorageCacheDataHandle` is the blob data handle for a response body
@@ -38,6 +40,12 @@ reference.
   one of its `disk_cache::Entry`s is reachable. Otherwise, a new backend might
   open and clobber the entry.
 
+##### `CacheStorageCache`=>`CacheStorageCacheHandle`~>`CacheStorageCache`
+* The `CacheStorageCache` will hold a self-reference while executing an
+  operation.  This self-reference is dropped between subsequent operations,
+  so shutdown is possible when there are no external references even if there
+  are more operations in the scheduler queue.
+
 ### CacheStorageDispatcherHost
 1. Receives IPC messages from a render process and creates the appropriate
    `CacheStorageManager` or `CacheStorageCache` operation.
@@ -45,8 +53,10 @@ reference.
    alive since the operation is asynchronous.
 3. For each cache reference held by the render process, holds a
    `CacheStorageCacheHandle`.
-4. Holds a newly opened cache open for a few seconds (by storing a handle) to
-   mitigate rapid opening/closing/opening churn.
+4. For each CacheStorage reference held by the renderer process, holds a
+   `CacheStorageHandle`.  This is used to inform the CacheStorage about
+   whether its externally used so it can keep warmed cache objects alive
+   to mitigate rapid opening/closing/opening churn.
 
 ### CacheStorageManager
 1. Forwards calls to the appropriate `CacheStorage` for a given origin-owner
@@ -81,6 +91,14 @@ reference.
 3. The `CacheStorageCache` may be deleted before the `CacheStorageCacheHandle`
    (on `CacheStorage` destruction), so it must be checked for validity before
    use.
+
+### CacheStorageHandle
+1. Holds a weak reference to a `CacheStorage`.
+2. When the last `CacheStorageHandle` to a `CacheStorage` is
+   deleted, internal state is cleaned up.  The `CacheStorage` object is not
+   deleted, however.
+3. The `CacheStorage` may be deleted before the `CacheStorageHandle`
+   (on browser shutdown), so it must be checked for validity before use.
 
 ## Directory Structure
 $PROFILE/Service Worker/CacheStorage/`origin`/`cache`/

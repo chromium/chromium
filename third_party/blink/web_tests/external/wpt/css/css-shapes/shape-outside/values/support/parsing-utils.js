@@ -446,31 +446,32 @@ function each(object, func) {
     }
 }
 
-function setupFonts(func) {
-    return function () {
-        var fontProperties = {
-            'font-family': 'Ahem',
-            'font-size': '16px',
-            'line-height': '1'
-        };
-        var savedValues = { };
-        each(fontProperties, function (key, value) {
-            savedValues[key] = document.body.style.getPropertyValue(key);
-            document.body.style.setProperty(key, value);
-        });
-        try {
-            func.apply(this, arguments);
-        } finally {
-            each(savedValues, function (key, value) {
-                if (value) {
-                    document.body.style.setProperty(key, value);
-                }
-                else {
-                    document.body.style.removeProperty(key);
-                }
-            });
-        }
+/// For saving and restoring font properties
+var savedFontValues = { };
+
+function setupFonts() {
+    var fontProperties = {
+        'font-family': 'Ahem',
+        'font-size': '16px',
+        'line-height': '1'
     };
+    savedFontValues = { };
+    each(fontProperties, function (key, value) {
+        savedFontValues[key] = document.body.style.getPropertyValue(key);
+        document.body.style.setProperty(key, value);
+    });
+}
+
+function restoreFonts() {
+    each(savedFontValues, function (key, value) {
+        if (value) {
+            document.body.style.setProperty(key, value);
+        }
+        else {
+            document.body.style.removeProperty(key);
+        }
+    });
+    savedFontValues = { };
 }
 
 var validUnits = [
@@ -735,17 +736,13 @@ var validCircleRadii = [
 ]
 var validEllipseRadii = [
     ['', 'at 50% 50%', 'at 50% 50%'],
-    ['50u1', '50u1 at 50% 50%', '50u1 at 50% 50%'],
-    ['50%', '50% at 50% 50%', '50% at 50% 50%'],
-    ['closest-side', 'at 50% 50%', 'at 50% 50%'],
-    ['farthest-side', 'farthest-side at 50% 50%', 'farthest-side at 50% 50%'],
     ['50u1 100u1', '50u1 100u1 at 50% 50%'],
     ['100u1 100px', '100u1 100px at 50% 50%'],
     ['25% 50%', '25% 50% at 50% 50%'],
     ['50u1 25%', '50u1 25% at 50% 50%'],
     ['25% 50u1', '25% 50u1 at 50% 50%'],
-    ['25% closest-side', '25% at 50% 50%'],
-    ['25u1 closest-side', '25u1 at 50% 50%'],
+    ['25% closest-side', '25% closest-side at 50% 50%'],
+    ['25u1 closest-side', '25u1 closest-side at 50% 50%'],
     ['closest-side 75%', 'closest-side 75% at 50% 50%'],
     ['closest-side 75u1', 'closest-side 75u1 at 50% 50%'],
     ['25% farthest-side', '25% farthest-side at 50% 50%'],
@@ -755,7 +752,7 @@ var validEllipseRadii = [
     ['closest-side closest-side', 'at 50% 50%'],
     ['farthest-side farthest-side', 'farthest-side farthest-side at 50% 50%'],
     ['closest-side farthest-side', 'closest-side farthest-side at 50% 50%'],
-    ['farthest-side closest-side', 'farthest-side at 50% 50%']
+    ['farthest-side closest-side', 'farthest-side closest-side at 50% 50%']
 ]
 
 var validInsets = [
@@ -823,11 +820,11 @@ var calcTestValues = [
 
 return {
     testInlineStyle: testInlineStyle,
-    testComputedStyle: setupFonts(testComputedStyle),
+    testComputedStyle: testComputedStyle,
     testShapeMarginInlineStyle: testShapeMarginInlineStyle,
-    testShapeMarginComputedStyle: setupFonts(testShapeMarginComputedStyle),
+    testShapeMarginComputedStyle: testShapeMarginComputedStyle,
     testShapeThresholdInlineStyle: testShapeThresholdInlineStyle,
-    testShapeThresholdComputedStyle: setupFonts(testShapeThresholdComputedStyle),
+    testShapeThresholdComputedStyle: testShapeThresholdComputedStyle,
     buildTestCases: buildTestCases,
     buildRadiiTests: buildRadiiTests,
     buildPositionTests: buildPositionTests,
@@ -838,6 +835,7 @@ return {
     validUnits: validUnits,
     calcTestValues: calcTestValues,
     roundResultStr: roundResultStr,
-    setupFonts: setupFonts
+    setupFonts: setupFonts,
+    restoreFonts: restoreFonts,
 }
 })();

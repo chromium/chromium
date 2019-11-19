@@ -11,6 +11,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
+#include "content/public/test/hit_test_region_observer.h"
 #include "content/shell/browser/shell.h"
 #include "ui/events/gesture_detection/gesture_configuration.h"
 
@@ -101,14 +102,15 @@ class WheelScrollLatchingBrowserTest : public ContentBrowserTest {
 
   void LoadURL(const std::string& page_data) {
     const GURL data_url("data:text/html," + page_data);
-    NavigateToURL(shell(), data_url);
+    EXPECT_TRUE(NavigateToURL(shell(), data_url));
 
     RenderWidgetHostImpl* host = GetWidgetHost();
     host->GetView()->SetSize(gfx::Size(600, 600));
 
     // The page is loaded in the renderer, wait for a new frame to arrive.
-    while (!host->RequestRepaintForTesting())
-      GiveItSomeTime();
+    // That's equivalent to hit test data being ready.
+    HitTestRegionObserver hittest_observer(host->GetFrameSinkId());
+    hittest_observer.WaitForHitTestData();
   }
   int ExecuteScriptAndExtractInt(const std::string& script) {
     int value = 0;
@@ -164,8 +166,9 @@ IN_PROC_BROWSER_TEST_F(WheelScrollLatchingBrowserTest, MAYBE_WheelEventTarget) {
   float delta_x = 0;
   float delta_y = -0.6 * scrollable_div_top;
   blink::WebMouseWheelEvent wheel_event =
-      SyntheticWebMouseWheelEventBuilder::Build(x, y, x, y, delta_x, delta_y, 0,
-                                                true);
+      SyntheticWebMouseWheelEventBuilder::Build(
+          x, y, x, y, delta_x, delta_y, 0,
+          ui::input_types::ScrollGranularity::kScrollByPrecisePixel);
 
   wheel_event.phase = blink::WebMouseWheelEvent::kPhaseBegan;
   GetRouter()->RouteMouseWheelEvent(GetRootView(), &wheel_event,
@@ -217,8 +220,9 @@ IN_PROC_BROWSER_TEST_F(WheelScrollLatchingBrowserTest,
   float delta_x = 0;
   float delta_y = -0.6 * scrollable_div_top;
   blink::WebMouseWheelEvent wheel_event =
-      SyntheticWebMouseWheelEventBuilder::Build(x, y, x, y, delta_x, delta_y, 0,
-                                                true);
+      SyntheticWebMouseWheelEventBuilder::Build(
+          x, y, x, y, delta_x, delta_y, 0,
+          ui::input_types::ScrollGranularity::kScrollByPrecisePixel);
   wheel_event.phase = blink::WebMouseWheelEvent::kPhaseBegan;
   GetRouter()->RouteMouseWheelEvent(GetRootView(), &wheel_event,
                                     ui::LatencyInfo());
@@ -284,10 +288,10 @@ IN_PROC_BROWSER_TEST_F(WheelScrollLatchingBrowserTest,
       blink::WebGestureEvent::kGestureScrollBegin,
       blink::WebInputEvent::kNoModifiers,
       blink::WebInputEvent::GetStaticTimeStampForTests(),
-      blink::kWebGestureDeviceTouchpad);
+      blink::WebGestureDevice::kTouchpad);
   gesture_scroll_begin.data.scroll_begin.delta_hint_units =
-      precise ? blink::WebGestureEvent::ScrollUnits::kPrecisePixels
-              : blink::WebGestureEvent::ScrollUnits::kPixels;
+      precise ? ui::input_types::ScrollGranularity::kScrollByPrecisePixel
+              : ui::input_types::ScrollGranularity::kScrollByPixel;
   gesture_scroll_begin.data.scroll_begin.delta_x_hint = 0.f;
   gesture_scroll_begin.data.scroll_begin.delta_y_hint = -20.f;
   gesture_scroll_begin.SetPositionInWidget(gfx::PointF(x, y));
@@ -298,8 +302,8 @@ IN_PROC_BROWSER_TEST_F(WheelScrollLatchingBrowserTest,
   blink::WebGestureEvent gesture_scroll_update(gesture_scroll_begin);
   gesture_scroll_update.SetType(blink::WebGestureEvent::kGestureScrollUpdate);
   gesture_scroll_update.data.scroll_update.delta_units =
-      precise ? blink::WebGestureEvent::ScrollUnits::kPrecisePixels
-              : blink::WebGestureEvent::ScrollUnits::kPixels;
+      precise ? ui::input_types::ScrollGranularity::kScrollByPrecisePixel
+              : ui::input_types::ScrollGranularity::kScrollByPixel;
   gesture_scroll_update.data.scroll_update.delta_x = 0.f;
   gesture_scroll_update.data.scroll_update.delta_y = -20.f;
   GetRootView()->ProcessGestureEvent(gesture_scroll_update, ui::LatencyInfo());
@@ -376,7 +380,9 @@ IN_PROC_BROWSER_TEST_F(WheelScrollLatchingBrowserTest,
   auto wheel_msg_watcher = std::make_unique<InputMsgWatcher>(
       GetWidgetHost(), blink::WebInputEvent::kMouseWheel);
   blink::WebMouseWheelEvent wheel_event =
-      SyntheticWebMouseWheelEventBuilder::Build(x, y, x, y, 1, 1, 0, true);
+      SyntheticWebMouseWheelEventBuilder::Build(
+          x, y, x, y, 1, 1, 0,
+          ui::input_types::ScrollGranularity::kScrollByPrecisePixel);
   wheel_event.phase = blink::WebMouseWheelEvent::kPhaseBegan;
   GetRouter()->RouteMouseWheelEvent(GetRootView(), &wheel_event,
                                     ui::LatencyInfo());

@@ -70,8 +70,8 @@ TEST_F(LayoutTableRowDeathTest, CrashIfSettingUnsetRowIndex) {
 
 class LayoutTableRowTest : public RenderingTest {
  protected:
-  LayoutTableRow* GetRowByElementId(const char* id) {
-    return ToLayoutTableRow(GetLayoutObjectByElementId(id));
+  LayoutBox* GetRowByElementId(const char* id) {
+    return ToLayoutBox(GetLayoutObjectByElementId(id));
   }
 };
 
@@ -87,7 +87,7 @@ TEST_F(LayoutTableRowTest,
   )HTML");
 
   EXPECT_FALSE(GetRowByElementId("row")->BackgroundIsKnownToBeOpaqueInRect(
-      LayoutRect(0, 0, 1, 1)));
+      PhysicalRect(0, 0, 1, 1)));
 }
 
 TEST_F(LayoutTableRowTest, BackgroundIsKnownToBeOpaqueWithBorderSpacing) {
@@ -98,7 +98,7 @@ TEST_F(LayoutTableRowTest, BackgroundIsKnownToBeOpaqueWithBorderSpacing) {
   )HTML");
 
   EXPECT_FALSE(GetRowByElementId("row")->BackgroundIsKnownToBeOpaqueInRect(
-      LayoutRect(0, 0, 1, 1)));
+      PhysicalRect(0, 0, 1, 1)));
 }
 
 TEST_F(LayoutTableRowTest, BackgroundIsKnownToBeOpaqueWithEmptyCell) {
@@ -110,7 +110,7 @@ TEST_F(LayoutTableRowTest, BackgroundIsKnownToBeOpaqueWithEmptyCell) {
   )HTML");
 
   EXPECT_FALSE(GetRowByElementId("row")->BackgroundIsKnownToBeOpaqueInRect(
-      LayoutRect(0, 0, 1, 1)));
+      PhysicalRect(0, 0, 1, 1)));
 }
 
 TEST_F(LayoutTableRowTest, VisualOverflow) {

@@ -4,8 +4,8 @@
 
 #include "chrome/browser/chromeos/login/login_auth_recorder.h"
 
+#include "ash/public/cpp/tablet_mode.h"
 #include "base/metrics/histogram_macros.h"
-#include "chrome/browser/ui/ash/tablet_mode_client.h"
 #include "components/session_manager/core/session_manager.h"
 
 namespace chromeos {
@@ -15,7 +15,7 @@ using AuthMethodSwitchType = LoginAuthRecorder::AuthMethodSwitchType;
 
 namespace {
 
-AuthMethodSwitchType SwitchFromPasswordTo(AuthMethod current) {
+base::Optional<AuthMethodSwitchType> SwitchFromPasswordTo(AuthMethod current) {
   DCHECK_NE(AuthMethod::kPassword, current);
   switch (current) {
     case AuthMethod::kPin:
@@ -24,14 +24,15 @@ AuthMethodSwitchType SwitchFromPasswordTo(AuthMethod current) {
       return AuthMethodSwitchType::kPasswordToSmartlock;
     case AuthMethod::kFingerprint:
       return AuthMethodSwitchType::kPasswordToFingerprint;
+    case AuthMethod::kChallengeResponse:
+      return AuthMethodSwitchType::kPasswordToChallengeResponse;
     case AuthMethod::kPassword:
-    case AuthMethod::kMethodCount:
       NOTREACHED();
-      return AuthMethodSwitchType::kSwitchTypeCount;
+      return base::nullopt;
   }
 }
 
-AuthMethodSwitchType SwitchFromPinTo(AuthMethod current) {
+base::Optional<AuthMethodSwitchType> SwitchFromPinTo(AuthMethod current) {
   DCHECK_NE(AuthMethod::kPin, current);
   switch (current) {
     case AuthMethod::kPassword:
@@ -41,13 +42,13 @@ AuthMethodSwitchType SwitchFromPinTo(AuthMethod current) {
     case AuthMethod::kFingerprint:
       return AuthMethodSwitchType::kPinToFingerprint;
     case AuthMethod::kPin:
-    case AuthMethod::kMethodCount:
+    case AuthMethod::kChallengeResponse:
       NOTREACHED();
-      return AuthMethodSwitchType::kSwitchTypeCount;
+      return base::nullopt;
   }
 }
 
-AuthMethodSwitchType SwitchFromSmartlockTo(AuthMethod current) {
+base::Optional<AuthMethodSwitchType> SwitchFromSmartlockTo(AuthMethod current) {
   DCHECK_NE(AuthMethod::kSmartlock, current);
   switch (current) {
     case AuthMethod::kPassword:
@@ -57,13 +58,14 @@ AuthMethodSwitchType SwitchFromSmartlockTo(AuthMethod current) {
     case AuthMethod::kFingerprint:
       return AuthMethodSwitchType::kSmartlockToFingerprint;
     case AuthMethod::kSmartlock:
-    case AuthMethod::kMethodCount:
+    case AuthMethod::kChallengeResponse:
       NOTREACHED();
-      return AuthMethodSwitchType::kSwitchTypeCount;
+      return base::nullopt;
   }
 }
 
-AuthMethodSwitchType SwitchFromFingerprintTo(AuthMethod current) {
+base::Optional<AuthMethodSwitchType> SwitchFromFingerprintTo(
+    AuthMethod current) {
   DCHECK_NE(AuthMethod::kFingerprint, current);
   switch (current) {
     case AuthMethod::kPassword:
@@ -73,13 +75,14 @@ AuthMethodSwitchType SwitchFromFingerprintTo(AuthMethod current) {
     case AuthMethod::kPin:
       return AuthMethodSwitchType::kFingerprintToPin;
     case AuthMethod::kFingerprint:
-    case AuthMethod::kMethodCount:
+    case AuthMethod::kChallengeResponse:
       NOTREACHED();
-      return AuthMethodSwitchType::kSwitchTypeCount;
+      return base::nullopt;
   }
 }
 
-AuthMethodSwitchType FindSwitchType(AuthMethod previous, AuthMethod current) {
+base::Optional<AuthMethodSwitchType> FindSwitchType(AuthMethod previous,
+                                                    AuthMethod current) {
   DCHECK_NE(previous, current);
   switch (previous) {
     case AuthMethod::kPassword:
@@ -90,9 +93,9 @@ AuthMethodSwitchType FindSwitchType(AuthMethod previous, AuthMethod current) {
       return SwitchFromSmartlockTo(current);
     case AuthMethod::kFingerprint:
       return SwitchFromFingerprintTo(current);
-    case AuthMethod::kMethodCount:
+    case AuthMethod::kChallengeResponse:
       NOTREACHED();
-      return AuthMethodSwitchType::kSwitchTypeCount;
+      return base::nullopt;
   }
 }
 
@@ -107,27 +110,29 @@ LoginAuthRecorder::~LoginAuthRecorder() {
 }
 
 void LoginAuthRecorder::RecordAuthMethod(AuthMethod method) {
-  DCHECK_NE(method, AuthMethod::kMethodCount);
   if (session_manager::SessionManager::Get()->session_state() !=
       session_manager::SessionState::LOCKED) {
     return;
   }
 
-  // Record usage of PIN / Password / Smartlock / Fingerprint in lock screen.
-  const bool is_tablet_mode = TabletModeClient::Get()->tablet_mode_enabled();
+  // Record usage of the authentication method in lock screen.
+  const bool is_tablet_mode = ash::TabletMode::Get()->InTabletMode();
   if (is_tablet_mode) {
     UMA_HISTOGRAM_ENUMERATION("Ash.Login.Lock.AuthMethod.Used.TabletMode",
-                              method, AuthMethod::kMethodCount);
+                              method);
   } else {
     UMA_HISTOGRAM_ENUMERATION("Ash.Login.Lock.AuthMethod.Used.ClamShellMode",
-                              method, AuthMethod::kMethodCount);
+                              method);
   }
 
   if (last_auth_method_ != method) {
     // Record switching between unlock methods.
-    UMA_HISTOGRAM_ENUMERATION("Ash.Login.Lock.AuthMethod.Switched",
-                              FindSwitchType(last_auth_method_, method),
-                              AuthMethodSwitchType::kSwitchTypeCount);
+    const base::Optional<AuthMethodSwitchType> switch_type =
+        FindSwitchType(last_auth_method_, method);
+    if (switch_type) {
+      UMA_HISTOGRAM_ENUMERATION("Ash.Login.Lock.AuthMethod.Switched",
+                                *switch_type);
+    }
 
     last_auth_method_ = method;
   }

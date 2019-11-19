@@ -80,56 +80,56 @@ TEST(CubicBezierTest, Range) {
   double epsilon = 0.00015;
 
   // Derivative is a constant.
-  std::unique_ptr<CubicBezier> function(
-      new CubicBezier(0.25, (1.0 / 3.0), 0.75, (2.0 / 3.0)));
+  std::unique_ptr<CubicBezier> function =
+      std::make_unique<CubicBezier>(0.25, (1.0 / 3.0), 0.75, (2.0 / 3.0));
   EXPECT_EQ(0, function->range_min());
   EXPECT_EQ(1, function->range_max());
 
   // Derivative is linear.
-  function.reset(new CubicBezier(0.25, -0.5, 0.75, (-1.0 / 6.0)));
+  function = std::make_unique<CubicBezier>(0.25, -0.5, 0.75, (-1.0 / 6.0));
   EXPECT_NEAR(function->range_min(), -0.225, epsilon);
   EXPECT_EQ(1, function->range_max());
 
   // Derivative has no real roots.
-  function.reset(new CubicBezier(0.25, 0.25, 0.75, 0.5));
+  function = std::make_unique<CubicBezier>(0.25, 0.25, 0.75, 0.5);
   EXPECT_EQ(0, function->range_min());
   EXPECT_EQ(1, function->range_max());
 
   // Derivative has exactly one real root.
-  function.reset(new CubicBezier(0.0, 1.0, 1.0, 0.0));
+  function = std::make_unique<CubicBezier>(0.0, 1.0, 1.0, 0.0);
   EXPECT_EQ(0, function->range_min());
   EXPECT_EQ(1, function->range_max());
 
   // Derivative has one root < 0 and one root > 1.
-  function.reset(new CubicBezier(0.25, 0.1, 0.75, 0.9));
+  function = std::make_unique<CubicBezier>(0.25, 0.1, 0.75, 0.9);
   EXPECT_EQ(0, function->range_min());
   EXPECT_EQ(1, function->range_max());
 
   // Derivative has two roots in [0,1].
-  function.reset(new CubicBezier(0.25, 2.5, 0.75, 0.5));
+  function = std::make_unique<CubicBezier>(0.25, 2.5, 0.75, 0.5);
   EXPECT_EQ(0, function->range_min());
   EXPECT_NEAR(function->range_max(), 1.28818, epsilon);
-  function.reset(new CubicBezier(0.25, 0.5, 0.75, -1.5));
+  function = std::make_unique<CubicBezier>(0.25, 0.5, 0.75, -1.5);
   EXPECT_NEAR(function->range_min(), -0.28818, epsilon);
   EXPECT_EQ(1, function->range_max());
 
   // Derivative has one root < 0 and one root in [0,1].
-  function.reset(new CubicBezier(0.25, 0.1, 0.75, 1.5));
+  function = std::make_unique<CubicBezier>(0.25, 0.1, 0.75, 1.5);
   EXPECT_EQ(0, function->range_min());
   EXPECT_NEAR(function->range_max(), 1.10755, epsilon);
 
   // Derivative has one root in [0,1] and one root > 1.
-  function.reset(new CubicBezier(0.25, -0.5, 0.75, 0.9));
+  function = std::make_unique<CubicBezier>(0.25, -0.5, 0.75, 0.9);
   EXPECT_NEAR(function->range_min(), -0.10755, epsilon);
   EXPECT_EQ(1, function->range_max());
 
   // Derivative has two roots < 0.
-  function.reset(new CubicBezier(0.25, 0.3, 0.75, 0.633));
+  function = std::make_unique<CubicBezier>(0.25, 0.3, 0.75, 0.633);
   EXPECT_EQ(0, function->range_min());
   EXPECT_EQ(1, function->range_max());
 
   // Derivative has two roots > 1.
-  function.reset(new CubicBezier(0.25, 0.367, 0.75, 0.7));
+  function = std::make_unique<CubicBezier>(0.25, 0.367, 0.75, 0.7);
   EXPECT_EQ(0.f, function->range_min());
   EXPECT_EQ(1.f, function->range_max());
 }
@@ -185,17 +185,31 @@ TEST(CubicBezierTest, InputOutOfRange) {
   EXPECT_EQ(0.0, vertical_gradient.Solve(-1.0));
   EXPECT_EQ(1.0, vertical_gradient.Solve(2.0));
 
+  CubicBezier vertical_trailing_gradient(0.5, 0.0, 1.0, 0.5);
+  EXPECT_EQ(0.0, vertical_trailing_gradient.Solve(-1.0));
+  EXPECT_EQ(1.0, vertical_trailing_gradient.Solve(2.0));
+
   CubicBezier distinct_endpoints(0.1, 0.2, 0.8, 0.8);
   EXPECT_EQ(-2.0, distinct_endpoints.Solve(-1.0));
   EXPECT_EQ(2.0, distinct_endpoints.Solve(2.0));
 
-  CubicBezier coincident_endpoint(0.0, 0.0, 0.8, 0.8);
-  EXPECT_EQ(-1.0, coincident_endpoint.Solve(-1.0));
-  EXPECT_EQ(2.0, coincident_endpoint.Solve(2.0));
+  CubicBezier coincident_leading_endpoint(0.0, 0.0, 0.5, 1.0);
+  EXPECT_EQ(-2.0, coincident_leading_endpoint.Solve(-1.0));
+  EXPECT_EQ(1.0, coincident_leading_endpoint.Solve(2.0));
 
-  CubicBezier three_coincident_points(0.0, 0.0, 0.0, 0.0);
-  EXPECT_EQ(0, three_coincident_points.Solve(-1.0));
-  EXPECT_EQ(2.0, three_coincident_points.Solve(2.0));
+  CubicBezier coincident_trailing_endpoint(1.0, 0.5, 1.0, 1.0);
+  EXPECT_EQ(-0.5, coincident_trailing_endpoint.Solve(-1.0));
+  EXPECT_EQ(1.0, coincident_trailing_endpoint.Solve(2.0));
+
+  // Two special cases with three coincident points. Both are equivalent to
+  // linear.
+  CubicBezier all_zeros(0.0, 0.0, 0.0, 0.0);
+  EXPECT_EQ(-1.0, all_zeros.Solve(-1.0));
+  EXPECT_EQ(2.0, all_zeros.Solve(2.0));
+
+  CubicBezier all_ones(1.0, 1.0, 1.0, 1.0);
+  EXPECT_EQ(-1.0, all_ones.Solve(-1.0));
+  EXPECT_EQ(2.0, all_ones.Solve(2.0));
 }
 
 TEST(CubicBezierTest, GetPoints) {
@@ -224,6 +238,35 @@ TEST(CubicBezierTest, GetPoints) {
   EXPECT_NEAR(-1.5, cubic_oor.GetY1(), epsilon);
   EXPECT_NEAR(1.5, cubic_oor.GetX2(), epsilon);
   EXPECT_NEAR(-1.6, cubic_oor.GetY2(), epsilon);
+}
+
+void validateSolver(const CubicBezier& cubic_bezier) {
+  const double epsilon = 1e-7;
+  const double precision = 1e-5;
+  for (double t = 0; t <= 1; t += 0.05) {
+    double x = cubic_bezier.SampleCurveX(t);
+    double root = cubic_bezier.SolveCurveX(x, epsilon);
+    EXPECT_NEAR(t, root, precision);
+  }
+}
+
+TEST(CubicBezierTest, CommonEasingFunctions) {
+  validateSolver(CubicBezier(0.25, 0.1, 0.25, 1));  // ease
+  validateSolver(CubicBezier(0.42, 0, 1, 1));       // ease-in
+  validateSolver(CubicBezier(0, 0, 0.58, 1));       // ease-out
+  validateSolver(CubicBezier(0.42, 0, 0.58, 1));    // ease-in-out
+}
+
+TEST(CubicBezierTest, LinearEquivalentBeziers) {
+  validateSolver(CubicBezier(0.0, 0.0, 0.0, 0.0));
+  validateSolver(CubicBezier(1.0, 1.0, 1.0, 1.0));
+}
+
+TEST(CubicBezierTest, ControlPointsOutsideUnitSquare) {
+  validateSolver(CubicBezier(0.3, 1.5, 0.8, 1.5));
+  validateSolver(CubicBezier(0.4, -0.8, 0.7, 1.7));
+  validateSolver(CubicBezier(0.7, -2.0, 1.0, -1.5));
+  validateSolver(CubicBezier(0, 4, 1, -3));
 }
 
 }  // namespace

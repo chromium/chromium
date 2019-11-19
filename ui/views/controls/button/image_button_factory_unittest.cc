@@ -15,31 +15,29 @@
 
 namespace views {
 
-typedef ViewsTestBase ImageButtonFactoryTest;
+using ImageButtonFactoryTest = ViewsTestBase;
 
 TEST_F(ImageButtonFactoryTest, CreateVectorImageButton) {
-  ImageButton* button = CreateVectorImageButton(nullptr);
+  auto button = CreateVectorImageButton(nullptr);
   EXPECT_EQ(ImageButton::ALIGN_CENTER, button->h_alignment_);
   EXPECT_EQ(ImageButton::ALIGN_MIDDLE, button->v_alignment_);
-  delete button;
 }
 
 TEST_F(ImageButtonFactoryTest, SetImageFromVectorIcon) {
-  ImageButton* button = CreateVectorImageButton(nullptr);
-  SetImageFromVectorIcon(button, vector_icons::kCloseRoundedIcon, SK_ColorRED);
+  auto button = CreateVectorImageButton(nullptr);
+  SetImageFromVectorIcon(button.get(), vector_icons::kCloseRoundedIcon,
+                         SK_ColorRED);
   EXPECT_FALSE(button->GetImage(Button::STATE_NORMAL).isNull());
   EXPECT_FALSE(button->GetImage(Button::STATE_DISABLED).isNull());
   EXPECT_EQ(color_utils::DeriveDefaultIconColor(SK_ColorRED),
             button->GetInkDropBaseColor());
-  delete button;
 }
 
 TEST_F(ImageButtonFactoryTest, SetImageFromVectorIcon_Default) {
-  ImageButton* button = CreateVectorImageButton(nullptr);
-  SetImageFromVectorIcon(button, vector_icons::kCloseRoundedIcon);
+  auto button = CreateVectorImageButton(nullptr);
+  SetImageFromVectorIcon(button.get(), vector_icons::kCloseRoundedIcon);
   EXPECT_EQ(button->GetNativeTheme()->GetSystemColor(
                 ui::NativeTheme::kColorId_DefaultIconColor),
             button->GetInkDropBaseColor());
-  delete button;
 }
-}  // views
+}  // namespace views

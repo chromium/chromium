@@ -26,7 +26,8 @@ using ::testing::_;
 
 namespace media {
 
-static const double kDefaultTimecodeScaleInUs = 1000.0;  // 1 ms resolution
+// WebM muxing commonly uses 1 millisecond resolution.
+static const int64_t kOneMsInNs = 1000000;
 
 class WebMTracksParserTest : public testing::Test {
  public:
@@ -152,10 +153,8 @@ TEST_F(WebMTracksParserTest, AudioVideoDefaultDurationUnset) {
   EXPECT_LE(0, result);
   EXPECT_EQ(static_cast<int>(buf.size()), result);
 
-  EXPECT_EQ(kNoTimestamp,
-            parser->GetAudioDefaultDuration(kDefaultTimecodeScaleInUs));
-  EXPECT_EQ(kNoTimestamp,
-            parser->GetVideoDefaultDuration(kDefaultTimecodeScaleInUs));
+  EXPECT_EQ(kNoTimestamp, parser->GetAudioDefaultDuration(kOneMsInNs));
+  EXPECT_EQ(kNoTimestamp, parser->GetVideoDefaultDuration(kOneMsInNs));
 
   const VideoDecoderConfig& video_config = parser->video_decoder_config();
   EXPECT_TRUE(video_config.IsValidConfig());
@@ -183,14 +182,14 @@ TEST_F(WebMTracksParserTest, AudioVideoDefaultDurationSet) {
   EXPECT_EQ(static_cast<int>(buf.size()), result);
 
   EXPECT_EQ(base::TimeDelta::FromMicroseconds(12000),
-            parser->GetAudioDefaultDuration(kDefaultTimecodeScaleInUs));
+            parser->GetAudioDefaultDuration(kOneMsInNs));
   EXPECT_EQ(base::TimeDelta::FromMicroseconds(985000),
-            parser->GetVideoDefaultDuration(5000.0));  // 5 ms resolution
-  EXPECT_EQ(kNoTimestamp, parser->GetAudioDefaultDuration(12346.0));
+            parser->GetVideoDefaultDuration(5000000));  // 5 ms resolution
+  EXPECT_EQ(kNoTimestamp, parser->GetAudioDefaultDuration(12346000));
   EXPECT_EQ(base::TimeDelta::FromMicroseconds(12345),
-            parser->GetAudioDefaultDuration(12345.0));
+            parser->GetAudioDefaultDuration(12345000));
   EXPECT_EQ(base::TimeDelta::FromMicroseconds(12003),
-            parser->GetAudioDefaultDuration(1000.3));  // 1.0003 ms resolution
+            parser->GetAudioDefaultDuration(1000300));  // 1.0003 ms resolution
 }
 
 TEST_F(WebMTracksParserTest, InvalidZeroDefaultDurationSet) {
@@ -249,6 +248,51 @@ TEST_F(WebMTracksParserTest, HighTrackUID) {
   std::unique_ptr<WebMTracksParser> parser(
       new WebMTracksParser(&media_log_, true));
   EXPECT_GT(parser->Parse(&buf[0], buf.size()),0);
+}
+
+TEST_F(WebMTracksParserTest, PrecisionCapping) {
+  struct CappingCases {
+    int64_t scale_ns;
+    int64_t duration_ns;
+    base::TimeDelta expected_result;
+  };
+
+  const CappingCases kCappingCases[] = {
+      {kOneMsInNs, -1, kNoTimestamp},
+      {kOneMsInNs, 0, kNoTimestamp},
+      {kOneMsInNs, 1, kNoTimestamp},
+      {kOneMsInNs, 999999, kNoTimestamp},
+      {kOneMsInNs, 1000000, base::TimeDelta::FromMilliseconds(1)},
+      {kOneMsInNs, 1000001, base::TimeDelta::FromMilliseconds(1)},
+      {kOneMsInNs, 1999999, base::TimeDelta::FromMilliseconds(1)},
+      {kOneMsInNs, 2000000, base::TimeDelta::FromMilliseconds(2)},
+      {1, -1, kNoTimestamp},
+      {1, 0, kNoTimestamp},
+
+      // Result < 1us, so kNoTimestamp
+      {1, 1, kNoTimestamp},
+      {1, 999, kNoTimestamp},
+
+      {1, 1000, base::TimeDelta::FromMicroseconds(1)},
+      {1, 1999, base::TimeDelta::FromMicroseconds(1)},
+      {1, 2000, base::TimeDelta::FromMicroseconds(2)},
+
+      {64, 1792, base::TimeDelta::FromMicroseconds(1)},
+  };
+
+  std::unique_ptr<WebMTracksParser> parser(
+      new WebMTracksParser(&media_log_, false));
+
+  for (size_t i = 0; i < base::size(kCappingCases); ++i) {
+    InSequence s;
+    int64_t scale_ns = kCappingCases[i].scale_ns;
+    int64_t duration_ns = kCappingCases[i].duration_ns;
+    base::TimeDelta expected_result = kCappingCases[i].expected_result;
+
+    EXPECT_EQ(parser->PrecisionCappedDefaultDuration(scale_ns, duration_ns),
+              expected_result)
+        << i << ": " << scale_ns << ", " << duration_ns;
+  }
 }
 
 }  // namespace media

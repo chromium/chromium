@@ -8,7 +8,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/css_style_value_or_string.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/css/cssom/css_style_value.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
 
@@ -17,7 +17,6 @@ class CSSProperty;
 class CSSPropertyName;
 class CSSValue;
 class ExecutionContext;
-class PropertyRegistration;
 
 class CORE_EXPORT StyleValueFactory {
   STATIC_ONLY(StyleValueFactory);
@@ -26,7 +25,6 @@ class CORE_EXPORT StyleValueFactory {
   static CSSStyleValueVector FromString(
       CSSPropertyID,
       const AtomicString& custom_property_name,
-      const PropertyRegistration*,
       const String&,
       const CSSParserContext*);
   static CSSStyleValue* CssValueToStyleValue(const CSSPropertyName&,
@@ -37,7 +35,6 @@ class CORE_EXPORT StyleValueFactory {
   static CSSStyleValueVector CoerceStyleValuesOrStrings(
       const CSSProperty& property,
       const AtomicString& custom_property_name,
-      const PropertyRegistration*,
       const HeapVector<CSSStyleValueOrString>& values,
       const ExecutionContext&);
   // Reify a CSSStyleValue without the context of a CSS property. For most

@@ -1,0 +1,10 @@
+# Copyright 2018 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+mojom = "//components/arc/mojom/timer.mojom"
+traits_headers = [ "//components/arc/timer/arc_timer_mojom_traits.h" ]
+sources = [
+  "//components/arc/timer/arc_timer_mojom_traits.cc",
+]
+type_mappings = [ "arc.mojom.ClockId=::clockid_t" ]

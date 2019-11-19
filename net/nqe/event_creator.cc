@@ -23,18 +23,17 @@ namespace internal {
 
 namespace {
 
-std::unique_ptr<base::Value> NetworkQualityChangedNetLogCallback(
+base::Value NetworkQualityChangedNetLogParams(
     base::TimeDelta http_rtt,
     base::TimeDelta transport_rtt,
     int32_t downstream_throughput_kbps,
-    EffectiveConnectionType effective_connection_type,
-    NetLogCaptureMode capture_mode) {
-  std::unique_ptr<base::DictionaryValue> dict(new base::DictionaryValue());
-  dict->SetInteger("http_rtt_ms", http_rtt.InMilliseconds());
-  dict->SetInteger("transport_rtt_ms", transport_rtt.InMilliseconds());
-  dict->SetInteger("downstream_throughput_kbps", downstream_throughput_kbps);
-  dict->SetString("effective_connection_type",
-                  GetNameForEffectiveConnectionType(effective_connection_type));
+    EffectiveConnectionType effective_connection_type) {
+  base::DictionaryValue dict;
+  dict.SetInteger("http_rtt_ms", http_rtt.InMilliseconds());
+  dict.SetInteger("transport_rtt_ms", transport_rtt.InMilliseconds());
+  dict.SetInteger("downstream_throughput_kbps", downstream_throughput_kbps);
+  dict.SetString("effective_connection_type",
+                 GetNameForEffectiveConnectionType(effective_connection_type));
   return std::move(dict);
 }
 
@@ -107,12 +106,12 @@ void EventCreator::MaybeAddNetworkQualityChangedEventToNetLog(
   past_effective_connection_type_ = effective_connection_type;
   past_network_quality_ = network_quality;
 
-  net_log_.AddEvent(
-      NetLogEventType::NETWORK_QUALITY_CHANGED,
-      base::Bind(&NetworkQualityChangedNetLogCallback,
-                 network_quality.http_rtt(), network_quality.transport_rtt(),
-                 network_quality.downstream_throughput_kbps(),
-                 effective_connection_type));
+  net_log_.AddEvent(NetLogEventType::NETWORK_QUALITY_CHANGED, [&] {
+    return NetworkQualityChangedNetLogParams(
+        network_quality.http_rtt(), network_quality.transport_rtt(),
+        network_quality.downstream_throughput_kbps(),
+        effective_connection_type);
+  });
 }
 
 }  // namespace internal

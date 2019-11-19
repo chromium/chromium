@@ -1,0 +1,16 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+mojom = "//media/fuchsia/mojom/fuchsia_cdm_provider.mojom"
+os_whitelist = [ "fuchsia" ]
+public_headers = [ "fuchsia/media/drm/cpp/fidl.h" ]
+traits_headers = [ "//media/fuchsia/mojom/cdm_request_mojom_traits.h" ]
+sources = [
+  "//media/fuchsia/mojom/cdm_request_mojom_traits.h",
+]
+public_deps = [
+  "//fuchsia/mojom:traits",
+  "//third_party/fuchsia-sdk/sdk:media_drm",
+]
+type_mappings = [ "media.mojom.CdmRequest=::fidl::InterfaceRequest<::fuchsia::media::drm::ContentDecryptionModule>[move_only]" ]

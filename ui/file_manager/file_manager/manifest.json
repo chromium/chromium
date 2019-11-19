@@ -18,6 +18,7 @@
   },
   "permissions": [
     "chrome://extension-icon/",
+    "chrome://app-icon/",
     "chrome://resources/",
     "chrome://theme/",
     "clipboardRead",
@@ -68,6 +69,9 @@
     "view-pdf": {
       "extensions": [
         "pdf"
+      ],
+      "types": [
+        "application/pdf"
       ]
     },
     "view-swf": {
@@ -86,6 +90,9 @@
         "xhtml",
         "svg",
         "txt"
+      ],
+      "types": [
+        "text/plain"
       ]
     },
     "open-hosted-generic": {
@@ -116,6 +123,11 @@
     "install-linux-package": {
       "extensions": [
         "deb"
+      ]
+    },
+    "import-crostini-image": {
+      "extensions": [
+        "tini"
       ]
     },
     "select": {
@@ -165,6 +177,6 @@
       ]
     },
     // chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp is the image loader extension.
-    "content_security_policy": "default-src 'none'; script-src 'self' blob: filesystem: chrome://resources chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp; style-src 'self' blob: filesystem: 'unsafe-inline' chrome://resources; frame-src 'self' blob: filesystem: about:; img-src 'self' blob: filesystem: chrome://resources chrome://theme data: https://docs.google.com https://*.googleusercontent.com chrome://extension-icon; media-src 'self' blob: filesystem: https://*.googleusercontent.com; connect-src https://drive.google.com https://www.google-analytics.com chrome://resources; object-src 'self' blob: filesystem:; font-src chrome://resources;"
+    "content_security_policy": "default-src 'none'; script-src 'self' blob: filesystem: chrome://resources chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp; style-src 'self' blob: filesystem: 'unsafe-inline' chrome://resources; frame-src 'self' blob: filesystem: about:; img-src 'self' blob: filesystem: chrome://resources chrome://theme data: https://docs.google.com https://*.googleusercontent.com chrome://extension-icon chrome://app-icon; media-src 'self' blob: filesystem: https://*.googleusercontent.com; connect-src https://drive.google.com https://www.google-analytics.com chrome://resources; object-src 'self' blob: filesystem:; font-src chrome://resources;"
   }
 }

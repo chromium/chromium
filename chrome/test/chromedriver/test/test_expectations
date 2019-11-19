@@ -11,22 +11,33 @@ import fnmatch
 
 
 _NEGATIVE_FILTER = [
-    # Flaky: https://bugs.chromium.org/p/chromedriver/issues/detail?id=528
-    'PageLoadingTest.testShouldDoNothingIfThereIsNothingToGoBackTo',
-
     # https://bugs.chromium.org/p/chromedriver/issues/detail?id=2532
     'SlowLoadingPageTest.testRefreshShouldBlockUntilPageLoads',
     'PageLoadingTest.testShouldTimeoutIfAPageTakesTooLongToRefresh',
-
-    # https://bugs.chromium.org/p/chromedriver/issues/detail?id=2653
-    'ReferrerTest.navigationWhenProxyInterceptsASpecificUrl',
-
-    # https://bugs.chromium.org/p/chromedriver/issues/detail?id=2661
-    'WindowTest.testSetsTheSizeOfTheCurrentWindowFromIframe',
 ]
 
 _READY_TO_RUN_FILTER = [
     # marked as not yet implemented with chrome but already works
+    'AlertsTest.testIncludesAlertTextInUnhandledAlertException',
+    'BasicKeyboardInterfaceTest.testSelectionSelectBySymbol',
+    'BasicKeyboardInterfaceTest.testSelectionSelectByWord',
+    'BasicMouseInterfaceTest.testCanMoveOverAndOutOfAnElement',
+    'BasicMouseInterfaceTest.testMoveMouseByOffsetOverAndOutOfAnElement',
+    'BasicMouseInterfaceTest.testMovingMouseToRelativeElementOffset',
+    'BasicMouseInterfaceTest.testMovingMouseToRelativeZeroElementOffset',
+    'CombinedInputActionsTest.testClickAfterMoveToAnElementWithAnOffsetShouldUseLastMousePosition',
+    'ContentEditableTest.appendsTextToEndOfContentEditableWithMultipleTextNodes',
+    'ContentEditableTest.testShouldAppendToTinyMCE',
+    'ContentEditableTest.testShouldBeAbleToTypeIntoContentEditableElementWithExistingValue',
+    'CookieImplementationTest.canHandleHttpOnlyCookie',
+    'DragAndDropTest.canDragAnElementNotVisibleInTheCurrentViewportDueToAParentOverflow',
+    'ExecutingJavascriptTest.testShouldBeAbleToReturnADateObject',
+    'PageLoadingTest.testEagerStrategyShouldNotWaitForResources',
+    'PageLoadingTest.testEagerStrategyShouldNotWaitForResourcesOnRefresh',
+    'PageLoadingTest.testEagerStrategyShouldWaitForDocumentToBeLoaded',
+    'WindowSwitchingTest.canOpenANewWindow',
+    'LocationContextTest.testShouldSetAndGetLatitude',
+    'LocationContextTest.testShouldSetAndGetLongitude',
 ]
 
 _OS_NEGATIVE_FILTER = {}
@@ -36,13 +47,9 @@ _OS_NEGATIVE_FILTER['linux'] = [
 ]
 _OS_NEGATIVE_FILTER['mac'] = [
     # https://bugs.chromium.org/p/chromedriver/issues/detail?id=2663
-    'WindowTest.canFullscreenTheWindow',
+    # Test 'WindowTest.testSetsTheSizeOfTheCurrentWindowFromIframe' passes while it is run
+    # standalone and fails in a test suit run
     'WindowTest.testSetsTheSizeOfTheCurrentWindowFromIframe',
-    'WindowTest.testSetsTheSizeOfTheCurrentWindowFromFrame',
-    'WindowTest.canFullscreenTheWindowFromFrame',
-    'WindowTest.canFullscreenTheWindowFromIframe',
-    'WindowTest.testSetsTheSizeOfTheCurrentWindow',
-    'BasicMouseInterfaceTest.testMovingMouseByRelativeOffset',
 ]
 
 _OS_NEGATIVE_FILTER['android:chrome'] = [
@@ -76,7 +83,6 @@ _OS_NEGATIVE_FILTER['android:chrome'] = [
     'PerformanceLogTypeTest.pageLoadShouldProducePerformanceLogEntries',
     'ProxySettingTest.*',
     'CorrectEventFiringTest.testSendingKeysToAnotherElementShouldCauseTheBlurEventToFireInNonTopmostWindow',
-    'ReferrerTest.navigationWhenProxyInterceptsASpecificUrl',
     'ReferrerTest.crossDomainHistoryNavigationWhenProxyInterceptsHostRequests',
     'ReferrerTest.crossDomainHistoryNavigationWithAProxiedHost',
 
@@ -86,8 +92,10 @@ _OS_NEGATIVE_FILTER['android:chrome'] = [
     'ReferrerTest.crossDomainHistoryNavigationWithoutAProxy',
     'ReferrerTest.basicHistoryNavigationWithoutAProxy',
 
-    # Test with file upload not supported on Android
+    # Test using local files; not supported on Android
+    'UploadTest.testFileUploading',
     'UploadTest.testUploadingWithHiddenFileInput',
+    'UploadTest.testUploadingWithInvisibleFileInput',
 
     # This tests are failing because of Keys.CONTROL/SHIFT/.. are not being supported for drop down items.
     'CombinedInputActionsTest.testControlClickingOnMultiSelectionList',
@@ -113,11 +121,9 @@ _OS_NEGATIVE_FILTER['android:chrome'] = [
     "GetLogsTest.turningOffLogShouldMeanNoLogMessages",
     "SessionHandlingTest.callingAnyOperationAfterQuitShouldThrowAnException",
     "SessionHandlingTest.callingQuitMoreThanOnceOnASessionIsANoOp",
-    # Test is written using local files; doesn't work on Android.
-    'UploadTest.testFileUploading',
 
-    # Flaky: https://bugs.chromium.org/p/chromedriver/issues/detail?id=528
-    'PageLoadingTest.testShouldDoNothingIfThereIsNothingToGoBackTo',
+    # https://bugs.chromium.org/p/chromedriver/issues/detail?id=2861
+    'PageLoadingTest.testShouldTimeoutIfAPageTakesTooLongToLoadAfterClick',
 
     # https://bugs.chromium.org/p/chromedriver/issues/detail?id=604
     'I18nTest.testShouldBeAbleToActivateIMEEngine',
@@ -135,9 +141,6 @@ _OS_NEGATIVE_FILTER['android:chrome'] = [
     # https://bugs.chromium.org/p/chromedriver/issues/detail?id=1176
     'ChromeDriverTests.clientLogShouldBeEnabledByDefault',
 
-    # https://bugs.chromium.org/p/chromedriver/issues/detail?id=1119
-    'CombinedInputActionsTest.testCanClickOnLinksWithAnOffset',
-    'CombinedInputActionsTest.testMouseMovementWorksWhenNavigatingToAnotherPage',
     # https://bugs.chromium.org/p/chromedriver/issues/detail?id=1005
     'WindowTest.*',
 
@@ -158,7 +161,6 @@ _OS_NEGATIVE_FILTER['android:chrome'] = [
     'CorrectEventFiringTest.testShouldFireTwoClickEventsWhenClickingOnALabel',
     'CorrectEventFiringTest.testShouldIssueClickEvents',
     'CorrectEventFiringTest.testShouldFireMouseMoveEventWhenClicking',
-    'CombinedInputActionsTest.testChordControlCutAndPaste',
     'BasicKeyboardInterfaceTest.testSendingKeysWithShiftPressed',
     'BasicKeyboardInterfaceTest.testBasicKeyboardInputOnActiveElement',
     'BasicKeyboardInterfaceTest.testSendingKeyUp',
@@ -196,23 +198,29 @@ _OS_NEGATIVE_FILTER['android:chrome_beta'] = (
 )
 _OS_NEGATIVE_FILTER['android:chromium'] = (
     _OS_NEGATIVE_FILTER['android:chrome'] + [
-    # https://bugs.chromium.org/p/chromedriver/issues/detail?id=2580
-    'LocalStorageTest.*',
-    'LocationContextTest.*',
-    'SessionStorageTest.*',
     ]
 )
 _OS_NEGATIVE_FILTER['android:chromedriver_webview_shell'] = (
     _OS_NEGATIVE_FILTER['android:chrome'] + [
-         # https://bugs.chromium.org/p/chromedriver/issues/detail?id=2330
-        'VisibilityTest.testShouldModifyTheVisibilityOfAnElementDynamically',
-         # Not applicable on ChromeDriverWebViewShell (doesn't support tabs).
+        # Not applicable. ChromeDriverWebViewShell doesn't support tabs.
         'WindowSwitchingTest.*',
+        'PageLoadingTest.testShouldDoNothingIfThereIsNothingToGoBackTo',
+
+        # Not applicable. ChromeDriverWebViewShell doesn't support local storage
+        'LocalStorageTest.*',
+
+        # https://bugs.chromium.org/p/chromedriver/issues/detail?id=2330
+        'VisibilityTest.testShouldModifyTheVisibilityOfAnElementDynamically',
+
         # https://bugs.chromium.org/p/chromedriver/issues/detail?id=2595
         'TakesScreenshotTest.*',
 
         # https://bugs.chromium.org/p/chromedriver/issues/detail?id=2376
         'ImplicitWaitTest.testShouldRetainImplicitlyWaitFromTheReturnedWebDriverOfFrameSwitchTo',
+
+        # https://bugs.chromium.org/p/chromedriver/issues/detail?id=2899
+        'ClickScrollingTest.testShouldBeAbleToClickOnAnElementHiddenByDoubleOverflow',
+        'ClickTest.testCanClickOnALinkThatOverflowsAndFollowIt',
     ]
 )
 

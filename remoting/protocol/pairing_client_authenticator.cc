@@ -18,8 +18,7 @@ PairingClientAuthenticator::PairingClientAuthenticator(
     const ClientAuthenticationConfig& client_auth_config,
     const CreateBaseAuthenticatorCallback& create_base_authenticator_callback)
     : client_auth_config_(client_auth_config),
-      create_base_authenticator_callback_(create_base_authenticator_callback),
-      weak_factory_(this) {}
+      create_base_authenticator_callback_(create_base_authenticator_callback) {}
 
 PairingClientAuthenticator::~PairingClientAuthenticator() = default;
 

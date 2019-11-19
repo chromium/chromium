@@ -5,15 +5,14 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_PEERCONNECTION_ADAPTERS_QUIC_TRANSPORT_HOST_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_PEERCONNECTION_ADAPTERS_QUIC_TRANSPORT_HOST_H_
 
-#include <unordered_map>
-
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/single_thread_task_runner.h"
 #include "base/threading/thread_checker.h"
-#include "net/third_party/quic/core/quic_types.h"
+#include "net/third_party/quiche/src/quic/core/quic_types.h"
 #include "third_party/blink/renderer/modules/peerconnection/adapters/p2p_quic_transport.h"
 #include "third_party/blink/renderer/modules/peerconnection/adapters/p2p_quic_transport_factory.h"
+#include "third_party/blink/renderer/platform/wtf/hash_map.h"
 
 namespace blink {
 
@@ -61,6 +60,8 @@ class QuicTransportHost final : public P2PQuicTransport::Delegate {
 
   void CreateStream(std::unique_ptr<QuicStreamHost> stream_host);
 
+  void SendDatagram(Vector<uint8_t> datagram);
+
   void GetStats(uint32_t request_id);
 
   // QuicStreamHost callbacks.
@@ -71,15 +72,16 @@ class QuicTransportHost final : public P2PQuicTransport::Delegate {
   void OnRemoteStopped() override;
   void OnConnectionFailed(const std::string& error_details,
                           bool from_remote) override;
-  void OnConnected() override;
+  void OnConnected(P2PQuicNegotiatedParams negotiated_params) override;
   void OnStream(P2PQuicStream* stream) override;
+  void OnDatagramSent() override;
+  void OnDatagramReceived(Vector<uint8_t> datagram) override;
 
   std::unique_ptr<P2PQuicTransportFactory> quic_transport_factory_;
   std::unique_ptr<P2PQuicTransport> quic_transport_;
   base::WeakPtr<QuicTransportProxy> proxy_;
   IceTransportHost* ice_transport_host_ = nullptr;
-  std::unordered_map<QuicStreamHost*, std::unique_ptr<QuicStreamHost>>
-      stream_hosts_;
+  HashMap<QuicStreamHost*, std::unique_ptr<QuicStreamHost>> stream_hosts_;
 
   THREAD_CHECKER(thread_checker_);
 };

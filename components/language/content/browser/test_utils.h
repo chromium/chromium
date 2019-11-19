@@ -5,7 +5,8 @@
 #ifndef COMPONENTS_LANGUAGE_CONTENT_BROWSER_TEST_UTILS_H_
 #define COMPONENTS_LANGUAGE_CONTENT_BROWSER_TEST_UTILS_H_
 
-#include "mojo/public/cpp/bindings/binding.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "services/device/public/mojom/constants.mojom.h"
 #include "services/device/public/mojom/geolocation.mojom.h"
 #include "services/device/public/mojom/geoposition.mojom.h"
@@ -26,7 +27,8 @@ class MockGeoLocation : public device::mojom::Geolocation {
   void SetHighAccuracy(bool high_accuracy) override;
   void QueryNextPosition(QueryNextPositionCallback callback) override;
 
-  void BindGeoLocation(device::mojom::GeolocationRequest request);
+  void BindGeoLocation(
+      mojo::PendingReceiver<device::mojom::Geolocation> receiver);
   void MoveToLocation(float latitude, float longitude);
 
   int query_next_position_called_times() const {
@@ -36,7 +38,7 @@ class MockGeoLocation : public device::mojom::Geolocation {
  private:
   int query_next_position_called_times_ = 0;
   device::mojom::Geoposition position_;
-  mojo::Binding<device::mojom::Geolocation> binding_;
+  mojo::Receiver<device::mojom::Geolocation> receiver_{this};
 };
 
 // Mock impl of mojom::PublicIpAddressGeolocationProvider that binds Geolocation
@@ -51,11 +53,12 @@ class MockIpGeoLocationProvider
 
   void CreateGeolocation(
       const net::MutablePartialNetworkTrafficAnnotationTag& /* unused */,
-      device::mojom::GeolocationRequest request) override;
+      mojo::PendingReceiver<device::mojom::Geolocation> receiver) override;
 
  private:
   MockGeoLocation* mock_geo_location_;
-  mojo::Binding<device::mojom::PublicIpAddressGeolocationProvider> binding_;
+  mojo::Receiver<device::mojom::PublicIpAddressGeolocationProvider> receiver_{
+      this};
 };
 
 }  // namespace language

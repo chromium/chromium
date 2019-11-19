@@ -5,6 +5,7 @@
 <translation id="1185134272377778587">Om Chromium</translation>
 <translation id="1289966288285062467">Erklæring om privatliv for Chromium</translation>
 <translation id="1472013873724362412">Din konto fungerer ikke sammen med Chromium. Kontakt din domæneadministrator, eller brug en almindelig Google-konto til at logge ind.</translation>
+<translation id="1507010443238049608">Vær med til at forbedre Chromiums funktioner og effektivitet</translation>
 <translation id="1617663976202781617">Data fra Chromium Sync</translation>
 <translation id="1736662517232558588">Chromium-data blev ryddet</translation>
 <translation id="1838412507805038478">Chromium har bekræftet, at <ph name="ISSUER" /> har udstedt certifikatet for dette website.</translation>
@@ -14,24 +15,16 @@
 <translation id="2168108852149185974">Nogle tilføjelser får Chromium til at gå ned. Prøv at afinstallere:</translation>
 <translation id="2178608107313874732">Chromium kan ikke bruge dit kamera lige nu</translation>
 <translation id="2195025571279539885">Skal Chromium tilbyde at oversætte sider på <ph name="LANGUAGE_NAME" /> fra dette website næste gang?</translation>
-<translation id="2517624234762908348">Synkroniser dine Chromium-data</translation>
-<translation id="2647554856022461007">Chromium bruger muligvis webtjenester for at forbedre din browseroplevelse. Du kan vælge at deaktivere disse tjenester. <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
+<translation id="2590893390871230428">Synkroniser dine Chromium-data</translation>
 <translation id="2730884209570016437">Chromium kan ikke bruge dit kamera, da det bruges af en anden app</translation>
 <translation id="2915596697727466327">Chromium bruger Face ID til at sikre autoriseret adgang til dine adgangskoder.</translation>
 <translation id="3256316712990552818">Kopieret til Chromium</translation>
-<translation id="3413120535237193088">Log ind på Chromium for at se dine bogmærker på alle dine enheder.</translation>
-<translation id="3473048256428424907">Aktivér QR-scanneren fra Chromium</translation>
-<translation id="3605252743693911722">Log ind på Chromium for at få dine bogmærker, adgangskoder og meget mere på alle dine enheder.</translation>
 <translation id="3805899903892079518">Chromium har ikke adgang til dine billeder eller videoer. Gå til iOS Indstillinger &gt; Privatliv &gt; Billeder for at få adgang.</translation>
-<translation id="4024541897090868497">Log ind på Chromium for at se dine faner på alle dine enheder.</translation>
-<translation id="4157467675761413638">Chromium-tip. Hvis du vil se flere indstillinger for faner, skal du trykke på knappen Vis faner på værktøjslinjen nederst eller øverst på skærmen.</translation>
-<translation id="4241912885070669028">Du er ved at logge ud af en konto, der administreres af <ph name="SIGNOUT_MANAGED_DOMAIN" />. Denne handling sletter dine Chromium-data fra denne enhed, men dine data forbliver gemt på din Google-konto.</translation>
-<translation id="4272892696084633551">Vær med til at forbedre Chromiums funktioner og ydeevne</translation>
 <translation id="4555020257205549924">Når denne funktion er aktiveret, vil Chromium tilbyde at oversætte sider, der er skrevet på andre sprog, ved hjælp af Google Oversæt. <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
+<translation id="4681781466797808448">Aktivér Chromium-scanner</translation>
 <translation id="4787850887676698916">Faner, du har åbnet i Chromium på dine andre enheder, vises her.</translation>
-<translation id="495292094137889840">Begynd at bruge QR-scanneren fra Chromium</translation>
 <translation id="4999538639245140991">Da du er ved at logge ud af en konto, der administreres af <ph name="SIGNOUT_MANAGED_DOMAIN" />, slettes dine Chromium-data på denne enhed. Dine data forbliver på din Google-konto.</translation>
-<translation id="5231355151045086930">Log ud af Chromium</translation>
+<translation id="5573014823074921752">Chromium-tip. Hvis du vil se flere faneindstillinger, skal du trykke på knappen Vis faner på værktøjslinjen og holde fingeren nede. Du finder knappen nederst eller øverst på skærmen.</translation>
 <translation id="5862307444128926510">Velkommen til Chromium</translation>
 <translation id="5945387852661427312">Du er ved at logge ind med en konto, der administreres af <ph name="DOMAIN" />, hvilket giver administratoren kontrol over dine Chromium-data. Dine data tilknyttes denne konto permanent. Hvis du logger ud af Chromium, slettes dine data fra denne enhed, men de forbliver gemt på din Google-konto.</translation>
 <translation id="6068866989048414399">Chromium Servicevilkår</translation>
@@ -48,11 +41,13 @@
 <translation id="7674213385180944843">Åbn Indstillinger &gt; Privatliv &gt; Kamera &gt; Chromium, og slå kameraet til.</translation>
 <translation id="7746854981345936341">Chromium-tip. Nogle knapper som f.eks. Tilbage, Frem og Søg findes nu nederst på skærmen.</translation>
 <translation id="786327964234957808">Du er ved at skifte synkroniseringskonto fra <ph name="USER_EMAIL1" /> til <ph name="USER_EMAIL2" />. Dine eksisterende Chromium-data administreres af <ph name="DOMAIN" />. Denne handling sletter dine data fra denne enhed, men dine data forbliver gemt på <ph name="USER_EMAIL1" />.</translation>
+<translation id="7890287942691234100">Begynd at bruge Chromium-scanner</translation>
 <translation id="8073677936375100957">Vil du rydde dine Chromium-data på denne enhed?</translation>
 <translation id="8175055321229419309">Tip! <ph name="BEGIN_LINK" />Flyt Chromium til din dock<ph name="END_LINK" /></translation>
 <translation id="8252885722420466166">Angiv din placering, og få en bedre oplevelse, når du bruger Chromium.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> Forfatterne bag Chromium. Alle rettigheder forbeholdes.</translation>
 <translation id="8809780021347235332">Tryk på Indstillinger, og giv Chromium tilladelse til at anvende dine billeder for at gemme billeder</translation>
 <translation id="9022552996538154597">Log ind på Chromium</translation>
+<translation id="9217078088703304241"><ph name="BEGIN_LINK" />Se de opdaterede servicevilkår for Chromium.<ph name="END_LINK" /></translation>
 <translation id="985602178874221306">Forfatterne til Chromium</translation>
 </translationbundle>

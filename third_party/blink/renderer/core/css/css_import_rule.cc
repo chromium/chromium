@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/core/css/media_list.h"
 #include "third_party/blink/renderer/core/css/style_rule_import.h"
 #include "third_party/blink/renderer/core/css/style_sheet_contents.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
@@ -41,9 +42,10 @@ String CSSImportRule::href() const {
 }
 
 MediaList* CSSImportRule::media() const {
-  if (!media_cssom_wrapper_)
-    media_cssom_wrapper_ = MediaList::Create(import_rule_->MediaQueries(),
-                                             const_cast<CSSImportRule*>(this));
+  if (!media_cssom_wrapper_) {
+    media_cssom_wrapper_ = MakeGarbageCollected<MediaList>(
+        import_rule_->MediaQueries(), const_cast<CSSImportRule*>(this));
+  }
   return media_cssom_wrapper_.Get();
 }
 
@@ -72,7 +74,7 @@ CSSStyleSheet* CSSImportRule::styleSheet() const {
     return nullptr;
 
   if (!style_sheet_cssom_wrapper_)
-    style_sheet_cssom_wrapper_ = CSSStyleSheet::Create(
+    style_sheet_cssom_wrapper_ = MakeGarbageCollected<CSSStyleSheet>(
         import_rule_->GetStyleSheet(), const_cast<CSSImportRule*>(this));
   return style_sheet_cssom_wrapper_.Get();
 }

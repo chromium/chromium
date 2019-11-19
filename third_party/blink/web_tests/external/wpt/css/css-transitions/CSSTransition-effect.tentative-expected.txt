@@ -1,9 +1,0 @@
-This is a testharness.js-based test.
-FAIL After setting a transition's effect to null, it still reports the original transition property assert_equals: expected (string) "left" but got (undefined) undefined
-PASS After setting a transition's effect to null, it becomes finished
-PASS After setting a transition's effect to null, style is updated
-PASS After setting a new keyframe effect with a shorter duration, the transition becomes finished
-FAIL After setting a new keyframe effect targeting different properties, the transition continues to report the original transition property assert_equals: expected (string) "left" but got (undefined) undefined
-FAIL After setting a new keyframe effect on a play-pending transition, the transition remains pending assert_true: expected true got undefined
-Harness: the test ran to completion.
-

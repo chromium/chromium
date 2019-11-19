@@ -22,31 +22,31 @@ namespace ash {
 namespace {
 
 bool ShouldShowNotification() {
-  CastConfigController* cast_config = Shell::Get()->cast_config();
-  return cast_config->Connected() && cast_config->HasSinksAndRoutes() &&
+  auto* cast_config = CastConfigController::Get();
+  return cast_config && cast_config->HasSinksAndRoutes() &&
          cast_config->HasActiveRoute();
 }
 
-base::string16 GetNotificationTitle(const mojom::CastSinkPtr& sink,
-                                    const mojom::CastRoutePtr& route) {
-  switch (route->content_source) {
-    case ash::mojom::ContentSource::UNKNOWN:
+base::string16 GetNotificationTitle(const CastSink& sink,
+                                    const CastRoute& route) {
+  switch (route.content_source) {
+    case ContentSource::kUnknown:
       return l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_CAST_CAST_UNKNOWN);
-    case ash::mojom::ContentSource::TAB:
-    case ash::mojom::ContentSource::DESKTOP:
+    case ContentSource::kTab:
+    case ContentSource::kDesktop:
       return l10n_util::GetStringFUTF16(
           IDS_ASH_STATUS_TRAY_CAST_NOTIFICATION_TITLE,
-          base::UTF8ToUTF16(sink->name));
+          base::UTF8ToUTF16(sink.name));
   }
 }
 
-base::string16 GetNotificationMessage(const mojom::CastRoutePtr& route) {
-  switch (route->content_source) {
-    case ash::mojom::ContentSource::UNKNOWN:
+base::string16 GetNotificationMessage(const CastRoute& route) {
+  switch (route.content_source) {
+    case ContentSource::kUnknown:
       return base::string16();
-    case ash::mojom::ContentSource::TAB:
-      return base::UTF8ToUTF16(route->title);
-    case ash::mojom::ContentSource::DESKTOP:
+    case ContentSource::kTab:
+      return base::UTF8ToUTF16(route.title);
+    case ContentSource::kDesktop:
       return l10n_util::GetStringUTF16(
           IDS_ASH_STATUS_TRAY_CAST_CAST_DESKTOP_NOTIFICATION_MESSAGE);
   }
@@ -58,40 +58,41 @@ const char kNotifierId[] = "ash.cast";
 }  // namespace
 
 CastNotificationController::CastNotificationController() {
-  Shell::Get()->cast_config()->AddObserver(this);
-  Shell::Get()->cast_config()->RequestDeviceRefresh();
+  if (CastConfigController::Get()) {
+    CastConfigController::Get()->AddObserver(this);
+    CastConfigController::Get()->RequestDeviceRefresh();
+  }
 }
 
 CastNotificationController::~CastNotificationController() {
-  Shell::Get()->cast_config()->RemoveObserver(this);
+  if (CastConfigController::Get())
+    CastConfigController::Get()->RemoveObserver(this);
 }
 
 void CastNotificationController::OnDevicesUpdated(
-    std::vector<mojom::SinkAndRoutePtr> devices) {
-  if (ShouldShowNotification())
-    ShowNotification(std::move(devices));
-  else
-    RemoveNotification();
-}
+    const std::vector<SinkAndRoute>& devices) {
+  if (!ShouldShowNotification()) {
+    message_center::MessageCenter::Get()->RemoveNotification(
+        kNotificationId, false /* by_user */);
+    return;
+  }
 
-void CastNotificationController::ShowNotification(
-    std::vector<mojom::SinkAndRoutePtr> devices) {
   for (const auto& device : devices) {
-    const mojom::CastSinkPtr& sink = device->sink;
-    const mojom::CastRoutePtr& route = device->route;
+    const CastSink& sink = device.sink;
+    const CastRoute& route = device.route;
 
     // We only want to display casts that came from this machine, since on a
     // busy network many other people could be casting.
-    if (route->id.empty() || !route->is_local_source)
+    if (route.id.empty() || !route.is_local_source)
       continue;
 
-    displayed_route_ = route.Clone();
+    displayed_route_id_ = route.id;
 
     message_center::RichNotificationData data;
     data.buttons.push_back(message_center::ButtonInfo(
         l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_CAST_STOP)));
 
-    std::unique_ptr<Notification> notification = ash::CreateSystemNotification(
+    std::unique_ptr<Notification> notification = CreateSystemNotification(
         message_center::NOTIFICATION_TYPE_SIMPLE, kNotificationId,
         GetNotificationTitle(sink, route), GetNotificationMessage(route),
         base::string16() /* display_source */, GURL(),
@@ -110,13 +111,8 @@ void CastNotificationController::ShowNotification(
   }
 }
 
-void CastNotificationController::RemoveNotification() {
-  message_center::MessageCenter::Get()->RemoveNotification(kNotificationId,
-                                                           false /* by_user */);
-}
-
 void CastNotificationController::StopCasting() {
-  Shell::Get()->cast_config()->StopCasting(displayed_route_.Clone());
+  CastConfigController::Get()->StopCasting(displayed_route_id_);
   Shell::Get()->metrics()->RecordUserMetricsAction(
       UMA_STATUS_AREA_CAST_STOP_CAST);
 }

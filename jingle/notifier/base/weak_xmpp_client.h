@@ -48,7 +48,7 @@ class WeakXmppClient : public jingle_xmpp::XmppClient {
   // We use our own WeakPtrFactory instead of inheriting from
   // SupportsWeakPtr since we want to invalidate in other places
   // besides the destructor.
-  base::WeakPtrFactory<WeakXmppClient> weak_ptr_factory_;
+  base::WeakPtrFactory<WeakXmppClient> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(WeakXmppClient);
 };

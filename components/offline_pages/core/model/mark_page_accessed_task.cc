@@ -75,10 +75,7 @@ bool MarkPageAccessedSync(const base::Time& access_time,
 MarkPageAccessedTask::MarkPageAccessedTask(OfflinePageMetadataStore* store,
                                            int64_t offline_id,
                                            const base::Time& access_time)
-    : store_(store),
-      offline_id_(offline_id),
-      access_time_(access_time),
-      weak_ptr_factory_(this) {
+    : store_(store), offline_id_(offline_id), access_time_(access_time) {
   DCHECK(store_);
 }
 

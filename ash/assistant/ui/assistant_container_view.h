@@ -11,12 +11,14 @@
 #include "ash/assistant/ui/assistant_container_view_focus_traversable.h"
 #include "base/component_export.h"
 #include "base/macros.h"
+#include "base/optional.h"
+#include "ui/aura/window_occlusion_tracker.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
 namespace ash {
 
 class AssistantContainerViewAnimator;
-class AssistantMainView;
+class AssistantMainViewDeprecated;
 class AssistantMiniView;
 class AssistantViewDelegate;
 class AssistantWebView;
@@ -31,13 +33,13 @@ class COMPONENT_EXPORT(ASSISTANT_UI) AssistantContainerView
   // views::BubbleDialogDelegateView:
   const char* GetClassName() const override;
   void AddedToWidget() override;
-  ax::mojom::Role GetAccessibleWindowRole() const override;
+  ax::mojom::Role GetAccessibleWindowRole() override;
   base::string16 GetAccessibleWindowTitle() const override;
   int GetDialogButtons() const override;
   views::FocusTraversable* GetFocusTraversable() override;
   void ChildPreferredSizeChanged(views::View* child) override;
   void ViewHierarchyChanged(
-      const ViewHierarchyChangedDetails& details) override;
+      const views::ViewHierarchyChangedDetails& details) override;
   void SizeToContents() override;
   void OnBeforeBubbleWidgetInit(views::Widget::InitParams* params,
                                 views::Widget* widget) const override;
@@ -46,7 +48,8 @@ class COMPONENT_EXPORT(ASSISTANT_UI) AssistantContainerView
   void RequestFocus() override;
 
   // AssistantUiModelObserver:
-  void OnUiModeChanged(AssistantUiMode ui_mode) override;
+  void OnUiModeChanged(AssistantUiMode ui_mode,
+                       bool due_to_interaction) override;
   void OnUsableWorkAreaChanged(const gfx::Rect& usable_work_area) override;
 
   // Returns the first focusable view or nullptr to defer to views::FocusSearch.
@@ -68,12 +71,16 @@ class COMPONENT_EXPORT(ASSISTANT_UI) AssistantContainerView
 
   AssistantViewDelegate* const delegate_;
 
-  AssistantMainView* assistant_main_view_;  // Owned by view hierarchy.
+  AssistantMainViewDeprecated*
+      assistant_main_view_;                 // Owned by view hierarchy.
   AssistantMiniView* assistant_mini_view_;  // Owned by view hierarchy.
   AssistantWebView* assistant_web_view_;    // Owned by view hierarchy.
 
   std::unique_ptr<AssistantContainerViewAnimator> animator_;
   AssistantContainerViewFocusTraversable focus_traversable_;
+
+  base::Optional<aura::WindowOcclusionTracker::ScopedExclude>
+      occlusion_excluder_;
 
   DISALLOW_COPY_AND_ASSIGN(AssistantContainerView);
 };

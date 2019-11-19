@@ -4,6 +4,7 @@
 
 #include "components/gwp_asan/client/guarded_page_allocator.h"
 
+#include <algorithm>
 #include <array>
 #include <set>
 #include <utility>
@@ -11,20 +12,35 @@
 
 #include "base/bits.h"
 #include "base/process/process_metrics.h"
+#include "base/test/bind_test_util.h"
 #include "base/test/gtest_util.h"
 #include "base/threading/simple_thread.h"
+#include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace gwp_asan {
 namespace internal {
 
-static constexpr size_t kGpaMaxPages = AllocatorState::kGpaMaxPages;
+static constexpr size_t kMaxMetadata = AllocatorState::kMaxMetadata;
+static constexpr size_t kMaxSlots = AllocatorState::kMaxSlots;
 
-class GuardedPageAllocatorTest : public testing::Test {
+class BaseGpaTest : public testing::Test {
  protected:
-  explicit GuardedPageAllocatorTest(size_t max_allocated_pages = kGpaMaxPages) {
-    gpa_.Init(max_allocated_pages, kGpaMaxPages);
+  BaseGpaTest(size_t max_allocated_pages, bool is_partition_alloc) {
+    gpa_.Init(max_allocated_pages, kMaxMetadata, kMaxSlots,
+              base::BindLambdaForTesting(
+                  [&](size_t allocations) { allocator_oom_ = true; }),
+              is_partition_alloc);
   }
+
+  GuardedPageAllocator gpa_;
+  bool allocator_oom_ = false;
+};
+
+class GuardedPageAllocatorTest : public BaseGpaTest,
+                                 public testing::WithParamInterface<bool> {
+ protected:
+  GuardedPageAllocatorTest() : BaseGpaTest(kMaxMetadata, GetParam()) {}
 
   // Get a left- or right- aligned allocation (or nullptr on error.)
   char* GetAlignedAllocation(bool left_aligned, size_t sz, size_t align = 0) {
@@ -56,11 +72,13 @@ class GuardedPageAllocatorTest : public testing::Test {
 
     return reinterpret_cast<uintptr_t>(buf) & page_mask;
   }
-
-  GuardedPageAllocator gpa_;
 };
 
-TEST_F(GuardedPageAllocatorTest, SingleAllocDealloc) {
+INSTANTIATE_TEST_SUITE_P(VaryPartitionAlloc,
+                         GuardedPageAllocatorTest,
+                         testing::Values(false, true));
+
+TEST_P(GuardedPageAllocatorTest, SingleAllocDealloc) {
   char* buf = reinterpret_cast<char*>(gpa_.Allocate(base::GetPageSize()));
   EXPECT_NE(buf, nullptr);
   EXPECT_TRUE(gpa_.PointerIsMine(buf));
@@ -71,14 +89,14 @@ TEST_F(GuardedPageAllocatorTest, SingleAllocDealloc) {
   EXPECT_DEATH(gpa_.Deallocate(buf), "");
 }
 
-TEST_F(GuardedPageAllocatorTest, CrashOnBadDeallocPointer) {
+TEST_P(GuardedPageAllocatorTest, CrashOnBadDeallocPointer) {
   EXPECT_DEATH(gpa_.Deallocate(nullptr), "");
   char* buf = reinterpret_cast<char*>(gpa_.Allocate(8));
   EXPECT_DEATH(gpa_.Deallocate(buf + 1), "");
   gpa_.Deallocate(buf);
 }
 
-TEST_F(GuardedPageAllocatorTest, PointerIsMine) {
+TEST_P(GuardedPageAllocatorTest, PointerIsMine) {
   void* buf = gpa_.Allocate(1);
   auto malloc_ptr = std::make_unique<char>();
   EXPECT_TRUE(gpa_.PointerIsMine(buf));
@@ -89,7 +107,17 @@ TEST_F(GuardedPageAllocatorTest, PointerIsMine) {
   EXPECT_FALSE(gpa_.PointerIsMine(malloc_ptr.get()));
 }
 
-TEST_F(GuardedPageAllocatorTest, LeftAlignedAllocation) {
+TEST_P(GuardedPageAllocatorTest, GetRequestedSize) {
+  void* buf = gpa_.Allocate(100);
+  EXPECT_EQ(gpa_.GetRequestedSize(buf), 100U);
+#if !defined(OS_MACOSX)
+  EXPECT_DEATH({ gpa_.GetRequestedSize((char*)buf + 1); }, "");
+#else
+  EXPECT_EQ(gpa_.GetRequestedSize((char*)buf + 1), 0U);
+#endif
+}
+
+TEST_P(GuardedPageAllocatorTest, LeftAlignedAllocation) {
   char* buf = GetAlignedAllocation(true, 16);
   ASSERT_NE(buf, nullptr);
   EXPECT_DEATH(buf[-1] = 'A', "");
@@ -98,7 +126,7 @@ TEST_F(GuardedPageAllocatorTest, LeftAlignedAllocation) {
   gpa_.Deallocate(buf);
 }
 
-TEST_F(GuardedPageAllocatorTest, RightAlignedAllocation) {
+TEST_P(GuardedPageAllocatorTest, RightAlignedAllocation) {
   char* buf =
       GetAlignedAllocation(false, GuardedPageAllocator::kGpaAllocAlignment);
   ASSERT_NE(buf, nullptr);
@@ -108,7 +136,7 @@ TEST_F(GuardedPageAllocatorTest, RightAlignedAllocation) {
   gpa_.Deallocate(buf);
 }
 
-TEST_F(GuardedPageAllocatorTest, AllocationAlignment) {
+TEST_P(GuardedPageAllocatorTest, AllocationAlignment) {
   const uintptr_t page_size = base::GetPageSize();
 
   EXPECT_EQ(GetRightAlignedAllocationOffset(9, 1), page_size - 9);
@@ -128,16 +156,27 @@ TEST_F(GuardedPageAllocatorTest, AllocationAlignment) {
   EXPECT_EQ(GetAlignedAllocation(false, 5, page_size * 2), nullptr);
 }
 
+TEST_P(GuardedPageAllocatorTest, OutOfMemoryCallback) {
+  for (size_t i = 0; i < kMaxMetadata; i++)
+    EXPECT_NE(gpa_.Allocate(1), nullptr);
+
+  for (size_t i = 0; i < GuardedPageAllocator::kOutOfMemoryCount - 1; i++)
+    EXPECT_EQ(gpa_.Allocate(1), nullptr);
+  EXPECT_FALSE(allocator_oom_);
+  EXPECT_EQ(gpa_.Allocate(1), nullptr);
+  EXPECT_TRUE(allocator_oom_);
+}
+
 class GuardedPageAllocatorParamTest
-    : public GuardedPageAllocatorTest,
+    : public BaseGpaTest,
       public testing::WithParamInterface<size_t> {
  protected:
-  GuardedPageAllocatorParamTest() : GuardedPageAllocatorTest(GetParam()) {}
+  GuardedPageAllocatorParamTest() : BaseGpaTest(GetParam(), false) {}
 };
 
 TEST_P(GuardedPageAllocatorParamTest, AllocDeallocAllPages) {
   size_t num_allocations = GetParam();
-  char* bufs[kGpaMaxPages];
+  char* bufs[kMaxMetadata];
   for (size_t i = 0; i < num_allocations; i++) {
     bufs[i] = reinterpret_cast<char*>(gpa_.Allocate(1));
     EXPECT_NE(bufs[i], nullptr);
@@ -165,33 +204,32 @@ TEST_P(GuardedPageAllocatorParamTest, AllocDeallocAllPages) {
 }
 INSTANTIATE_TEST_SUITE_P(VaryNumPages,
                          GuardedPageAllocatorParamTest,
-                         testing::Values(1, kGpaMaxPages / 2, kGpaMaxPages));
+                         testing::Values(1, kMaxMetadata / 2, kMaxMetadata));
 
 class ThreadedAllocCountDelegate : public base::DelegateSimpleThread::Delegate {
  public:
-  explicit ThreadedAllocCountDelegate(
-      GuardedPageAllocator* gpa,
-      std::array<void*, kGpaMaxPages>* allocations)
+  ThreadedAllocCountDelegate(GuardedPageAllocator* gpa,
+                             std::array<void*, kMaxMetadata>* allocations)
       : gpa_(gpa), allocations_(allocations) {}
 
   void Run() override {
-    for (size_t i = 0; i < kGpaMaxPages; i++) {
+    for (size_t i = 0; i < kMaxMetadata; i++) {
       (*allocations_)[i] = gpa_->Allocate(1);
     }
   }
 
  private:
   GuardedPageAllocator* gpa_;
-  std::array<void*, kGpaMaxPages>* allocations_;
+  std::array<void*, kMaxMetadata>* allocations_;
 
   DISALLOW_COPY_AND_ASSIGN(ThreadedAllocCountDelegate);
 };
 
 // Test that no pages are double-allocated or left unallocated, and that no
 // extra pages are allocated when there's concurrent calls to Allocate().
-TEST_F(GuardedPageAllocatorTest, ThreadedAllocCount) {
+TEST_P(GuardedPageAllocatorTest, ThreadedAllocCount) {
   constexpr size_t num_threads = 2;
-  std::array<void*, kGpaMaxPages> allocations[num_threads];
+  std::array<void*, kMaxMetadata> allocations[num_threads];
   {
     base::DelegateSimpleThreadPool threads("alloc_threads", num_threads);
     threads.Start();
@@ -208,12 +246,12 @@ TEST_F(GuardedPageAllocatorTest, ThreadedAllocCount) {
   }
   std::set<void*> allocations_set;
   for (size_t i = 0; i < num_threads; i++) {
-    for (size_t j = 0; j < kGpaMaxPages; j++) {
+    for (size_t j = 0; j < kMaxMetadata; j++) {
       allocations_set.insert(allocations[i][j]);
     }
   }
   allocations_set.erase(nullptr);
-  EXPECT_EQ(allocations_set.size(), kGpaMaxPages);
+  EXPECT_EQ(allocations_set.size(), kMaxMetadata);
 }
 
 class ThreadedHighContentionDelegate
@@ -250,8 +288,12 @@ class ThreadedHighContentionDelegate
 
 // Test that allocator remains in consistent state under high contention and
 // doesn't double-allocate pages or fail to deallocate pages.
-TEST_F(GuardedPageAllocatorTest, ThreadedHighContention) {
+TEST_P(GuardedPageAllocatorTest, ThreadedHighContention) {
+#if defined(OS_ANDROID)
+  constexpr size_t num_threads = 200;
+#else
   constexpr size_t num_threads = 1000;
+#endif
   {
     base::DelegateSimpleThreadPool threads("page_writers", num_threads);
     threads.Start();
@@ -267,8 +309,39 @@ TEST_F(GuardedPageAllocatorTest, ThreadedHighContention) {
   }
 
   // Verify all pages have been deallocated now that all threads are done.
-  for (size_t i = 0; i < kGpaMaxPages; i++)
+  for (size_t i = 0; i < kMaxMetadata; i++)
     EXPECT_NE(gpa_.Allocate(1), nullptr);
+}
+
+class GuardedPageAllocatorPartitionAllocTest : public BaseGpaTest {
+ protected:
+  GuardedPageAllocatorPartitionAllocTest() : BaseGpaTest(kMaxMetadata, true) {}
+};
+
+TEST_F(GuardedPageAllocatorPartitionAllocTest,
+       DifferentPartitionsNeverOverlap) {
+  constexpr const char* kType1 = "fake type1";
+  constexpr const char* kType2 = "fake type2";
+
+  std::set<void*> type1, type2;
+  for (size_t i = 0; i < kMaxSlots * 3; i++) {
+    void* alloc1 = gpa_.Allocate(1, 0, kType1);
+    ASSERT_NE(alloc1, nullptr);
+    void* alloc2 = gpa_.Allocate(1, 0, kType2);
+    ASSERT_NE(alloc2, nullptr);
+
+    type1.insert(alloc1);
+    type2.insert(alloc2);
+
+    gpa_.Deallocate(alloc1);
+    gpa_.Deallocate(alloc2);
+  }
+
+  std::vector<void*> intersection;
+  std::set_intersection(type1.begin(), type1.end(), type2.begin(), type2.end(),
+                        std::back_inserter(intersection));
+
+  EXPECT_EQ(intersection.size(), 0u);
 }
 
 }  // namespace internal

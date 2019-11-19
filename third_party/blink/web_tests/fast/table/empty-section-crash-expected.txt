@@ -1,5 +1,0 @@
-Test for http://bugzilla.opendarwin.org/show_bug.cgi?id=9009 REGRESSION: ToT crash in WebCore at Zap2it.
-
-No crash means PASS.
-
-

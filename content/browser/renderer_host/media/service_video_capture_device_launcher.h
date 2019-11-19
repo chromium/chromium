@@ -8,13 +8,14 @@
 #include "content/browser/renderer_host/media/ref_counted_video_source_provider.h"
 #include "content/browser/renderer_host/media/video_capture_provider.h"
 #include "content/public/browser/video_capture_device_launcher.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "services/video_capture/public/mojom/device_factory.mojom.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
 
 namespace content {
 
-// Implementation of VideoCaptureDeviceLauncher that uses the "video_capture"
-// service.
+// Implementation of VideoCaptureDeviceLauncher that uses uses
+// video_capture::mojom::VideoCaptureService.
 class CONTENT_EXPORT ServiceVideoCaptureDeviceLauncher
     : public VideoCaptureDeviceLauncher {
  public:
@@ -28,7 +29,7 @@ class CONTENT_EXPORT ServiceVideoCaptureDeviceLauncher
 
   // VideoCaptureDeviceLauncher implementation.
   void LaunchDeviceAsync(const std::string& device_id,
-                         blink::MediaStreamType stream_type,
+                         blink::mojom::MediaStreamType stream_type,
                          const media::VideoCaptureParams& params,
                          base::WeakPtr<media::VideoFrameReceiver> receiver,
                          base::OnceClosure connection_lost_cb,
@@ -46,8 +47,9 @@ class CONTENT_EXPORT ServiceVideoCaptureDeviceLauncher
   };
 
   void OnCreatePushSubscriptionCallback(
-      video_capture::mojom::VideoSourcePtr source,
-      video_capture::mojom::PushVideoStreamSubscriptionPtr subscription,
+      mojo::Remote<video_capture::mojom::VideoSource> source,
+      mojo::Remote<video_capture::mojom::PushVideoStreamSubscription>
+          subscription,
       base::OnceClosure connection_lost_cb,
       video_capture::mojom::CreatePushSubscriptionResultCode result_code,
       const media::VideoCaptureParams& params);

@@ -33,7 +33,7 @@ source_set("reading_list") {
     "//components/dom_distiller/ios",
     "//components/favicon/core",
     "//components/favicon/ios",
-    "//components/google/core/browser",
+    "//components/google/core/common",
     "//components/keyed_service/core",
     "//components/keyed_service/ios",
     "//components/pref_registry",
@@ -46,9 +46,11 @@ source_set("reading_list") {
     "//ios/chrome/browser/favicon",
     "//ios/chrome/browser/history",
     "//ios/chrome/common",
-    "//ios/web",
     "//ios/web/public",
+    "//ios/web/public/deprecated",
+    "//ios/web/public/security",
     "//net",
+    "//ui/base",
     "//url",
   ]
   public_deps = [
@@ -65,6 +67,8 @@ source_set("features") {
   ]
   deps = [
     "//base",
+    "//ios/chrome/browser/web:feature_flags",
+    "//ios/web/common",
     "//ios/web/public",
   ]
 }

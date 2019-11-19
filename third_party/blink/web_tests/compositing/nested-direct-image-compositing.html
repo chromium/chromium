@@ -27,30 +27,17 @@ div.magnify img
     <img src="resources/simple_image.png">
 </div>
 
-
+<script src="../resources/run-after-layout-and-paint.js"></script>
 <script type="text/javascript">
 function updateStack()
 {
     var cell = document.getElementById("cell");
     cell.className = "cell";
-
-    setTimeout(function() {
-        if (window.testRunner) {
-            testRunner.notifyDone();
-        }
-    }, 10);
 }
 
 window.onload = function ()
 {
-    if (window.testRunner) {
-        testRunner.dumpAsTextWithPixelResults();
-        testRunner.waitUntilDone();
-    }
-
-    setTimeout(function() {
-        updateStack();
-    }, 200);
+    runAfterLayoutAndPaint(updateStack, true);
 }
 </script>
 

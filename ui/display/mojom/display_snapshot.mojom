@@ -1,0 +1,38 @@
+// Copyright 2017 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module display.mojom;
+
+import "mojo/public/mojom/base/file_path.mojom";
+import "ui/display/mojom/display_constants.mojom";
+import "ui/display/mojom/display_mode.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
+import "ui/gfx/mojom/color_space.mojom";
+
+// Corresponds to display::DisplaySnapshot.
+struct DisplaySnapshot {
+  int64 display_id;
+  gfx.mojom.Point origin;
+  gfx.mojom.Size physical_size;
+  display.mojom.DisplayConnectionType type;
+  bool is_aspect_preserving_scaling;
+  bool has_overscan;
+  bool has_color_correction_matrix;
+  bool color_correction_in_linear_space;
+  gfx.mojom.ColorSpace color_space;
+  uint32 bits_per_channel;
+  string display_name;
+  mojo_base.mojom.FilePath sys_path;
+  array<display.mojom.DisplayMode> modes;
+  display.mojom.PanelOrientation panel_orientation;
+  array<uint8> edid;
+  uint64 current_mode_index;
+  bool has_current_mode;
+  uint64 native_mode_index;
+  bool has_native_mode;
+  // |product_code| is a combination of the manufacturer id and the product id.
+  int64 product_code;
+  int32 year_of_manufacture;
+  gfx.mojom.Size maximum_cursor_size;
+};

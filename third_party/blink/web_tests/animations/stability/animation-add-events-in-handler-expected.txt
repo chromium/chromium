@@ -1,1 +1,0 @@
-PASS: Adding animation events in the handler did not crash.

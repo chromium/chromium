@@ -4,6 +4,7 @@
 
 module blink.mojom;
 
+import "mojo/public/mojom/base/big_buffer.mojom";
 import "services/network/public/mojom/data_pipe_getter.mojom";
 import "services/network/public/mojom/http_request_headers.mojom";
 
@@ -29,15 +30,15 @@ interface BlobReaderClient {
 // This interface provides access to a blob in the blob system.
 interface Blob {
   // Creates a copy of this Blob reference.
-  Clone(Blob& blob);
+  Clone(pending_receiver<Blob> blob);
 
   // Creates a reference to this Blob as a DataPipeGetter.
-  AsDataPipeGetter(network.mojom.DataPipeGetter& data_pipe_getter);
+  AsDataPipeGetter(pending_receiver<network.mojom.DataPipeGetter> data_pipe_getter);
 
   // Causes the entire contents of this blob to be written into the given data
   // pipe. An optional BlobReaderClient will be informed of the result of the
   // read operation.
-  ReadAll(handle<data_pipe_producer> pipe, BlobReaderClient? client);
+  ReadAll(handle<data_pipe_producer> pipe, pending_remote<BlobReaderClient>? client);
 
   // Causes a subrange of the contents of this blob to be written into the
   // given data pipe. If |length| is -1 (uint64_t max), the range's end is
@@ -45,12 +46,12 @@ interface Blob {
   // optional BlobReaderClient will be informed of the result of the read
   // operation.
   ReadRange(uint64 offset, uint64 length, handle<data_pipe_producer> pipe,
-            BlobReaderClient? client);
+            pending_remote<BlobReaderClient>? client);
 
   // Reads the side-data (if any) associated with this blob. This is the same
   // data that would be passed to OnReceivedCachedMetadata if you were reading
   // this blob through a blob URL.
-  ReadSideData() => (array<uint8>? data);
+  ReadSideData() => (mojo_base.mojom.BigBuffer? data);
 
   // This method is an implementation detail of the blob system. You should not
   // ever need to call it directly.

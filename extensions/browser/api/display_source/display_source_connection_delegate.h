@@ -9,6 +9,7 @@
 #include "base/observer_list.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "extensions/common/api/display_source.h"
+#include "net/base/ip_address.h"
 
 namespace extensions {
 
@@ -34,10 +35,10 @@ class DisplaySourceConnectionDelegate : public KeyedService {
     virtual const DisplaySourceSinkInfo& GetConnectedSink() const = 0;
 
     // Returns the local address of the source.
-    virtual std::string GetLocalAddress() const = 0;
+    virtual net::IPAddress GetLocalAddress() const = 0;
 
     // Returns the address of the connected sink.
-    virtual std::string GetSinkAddress() const = 0;
+    virtual net::IPAddress GetSinkAddress() const = 0;
 
     // Sends a control message to the connected sink.
     // If an error occurs 'Observer::OnConnectionError' is invoked.

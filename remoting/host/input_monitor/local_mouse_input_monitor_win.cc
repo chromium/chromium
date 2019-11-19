@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "remoting/host/input_monitor/local_mouse_input_monitor.h"
+#include "remoting/host/input_monitor/local_pointer_input_monitor.h"
 
 #include <utility>
 
@@ -12,6 +12,7 @@
 #include "base/single_thread_task_runner.h"
 #include "remoting/host/input_monitor/local_input_monitor_win.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
+#include "ui/events/event.h"
 
 namespace remoting {
 
@@ -26,7 +27,7 @@ class MouseRawInputHandlerWin : public LocalInputMonitorWin::RawInputHandler {
   MouseRawInputHandlerWin(
       scoped_refptr<base::SingleThreadTaskRunner> caller_task_runner,
       scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner,
-      LocalInputMonitor::MouseMoveCallback on_mouse_move,
+      LocalInputMonitor::PointerMoveCallback on_mouse_move,
       base::OnceClosure disconnect_callback);
   ~MouseRawInputHandlerWin() override;
 
@@ -39,7 +40,7 @@ class MouseRawInputHandlerWin : public LocalInputMonitorWin::RawInputHandler {
   scoped_refptr<base::SingleThreadTaskRunner> caller_task_runner_;
   scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner_;
 
-  LocalInputMonitor::MouseMoveCallback on_mouse_move_;
+  LocalInputMonitor::PointerMoveCallback on_mouse_move_;
   base::OnceClosure disconnect_callback_;
 
   webrtc::DesktopVector mouse_position_;
@@ -53,7 +54,7 @@ class MouseRawInputHandlerWin : public LocalInputMonitorWin::RawInputHandler {
 MouseRawInputHandlerWin::MouseRawInputHandlerWin(
     scoped_refptr<base::SingleThreadTaskRunner> caller_task_runner,
     scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner,
-    LocalInputMonitor::MouseMoveCallback on_mouse_move,
+    LocalInputMonitor::PointerMoveCallback on_mouse_move,
     base::OnceClosure disconnect_callback)
     : caller_task_runner_(caller_task_runner),
       ui_task_runner_(ui_task_runner),
@@ -124,7 +125,8 @@ void MouseRawInputHandlerWin::OnInputEvent(const RAWINPUT* input) {
   mouse_position_ = new_position;
 
   caller_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(on_mouse_move_, std::move(new_position)));
+      FROM_HERE, base::BindOnce(on_mouse_move_, std::move(new_position),
+                                ui::ET_MOUSE_MOVED));
 }
 
 void MouseRawInputHandlerWin::OnError() {
@@ -135,7 +137,8 @@ void MouseRawInputHandlerWin::OnError() {
   }
 }
 
-class LocalMouseInputMonitorWin : public LocalMouseInputMonitor {
+// Note that this class does not detect touch input and so is named accordingly.
+class LocalMouseInputMonitorWin : public LocalPointerInputMonitor {
  public:
   explicit LocalMouseInputMonitorWin(
       std::unique_ptr<LocalInputMonitorWin> local_input_monitor);
@@ -153,11 +156,11 @@ LocalMouseInputMonitorWin::~LocalMouseInputMonitorWin() = default;
 
 }  // namespace
 
-std::unique_ptr<LocalMouseInputMonitor> LocalMouseInputMonitor::Create(
+std::unique_ptr<LocalPointerInputMonitor> LocalPointerInputMonitor::Create(
     scoped_refptr<base::SingleThreadTaskRunner> caller_task_runner,
     scoped_refptr<base::SingleThreadTaskRunner> input_task_runner,
     scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner,
-    LocalInputMonitor::MouseMoveCallback on_mouse_move,
+    LocalInputMonitor::PointerMoveCallback on_mouse_move,
     base::OnceClosure disconnect_callback) {
   auto raw_input_handler = std::make_unique<MouseRawInputHandlerWin>(
       caller_task_runner, ui_task_runner, std::move(on_mouse_move),

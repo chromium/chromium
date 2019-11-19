@@ -2,75 +2,29 @@
 <!-- Copyright 2019 The Chromium Authors. All rights reserved.
     Use of this source code is governed by a BSD-style license that can be
     found in the LICENSE file. -->
-<org.chromium.chrome.browser.omnibox.suggestions.answer.AnswerSuggestionView
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:clickable="false"
-    android:focusable="false"
-    android:layout_height="@dimen/omnibox_suggestion_answer_height"
-    android:layout_width="match_parent">
+    android:id="@+id/omnibox_answer"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:minHeight="@dimen/omnibox_suggestion_height"
+    android:paddingVertical="10dp">
 
-    <view class="org.chromium.chrome.browser.omnibox.suggestions.answer.AnswerSuggestionView$FocusableView"
-        android:background="?attr/selectableItemBackground"
-        android:clickable="true"
-        android:focusable="true"
-        android:id="@+id/omnibox_answer"
-        android:layout_alignParentStart="true"
-        android:layout_centerVertical="true"
-        android:paddingVertical="10dp"
+    <TextView
+        android:id="@+id/omnibox_answer_line_1"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_toStartOf="@+id/omnibox_answer_refine_icon"
-        android:layout_width="0dp">
+        android:maxLines="1"
+        android:ellipsize="end"
+        android:textAlignment="viewStart" />
 
-        <ImageView
-            android:contentDescription="@null"
-            android:id="@+id/omnibox_answer_icon"
-            android:layout_centerVertical="true"
-            android:layout_height="36dp"
-            android:layout_marginEnd="10dp"
-            android:layout_marginStart="@dimen/omnibox_answer_suggestion_icon_margin_start"
-            android:layout_width="36dp"
-            android:scaleType="fitCenter" />
+    <TextView
+        android:id="@+id/omnibox_answer_line_2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:maxLines="3"
+        android:ellipsize="end"
+        android:textAlignment="viewStart" />
 
-        <TextView
-            android:ellipsize="end"
-            android:id="@+id/omnibox_answer_line_1"
-            android:layout_alignParentEnd="true"
-            android:layout_height="wrap_content"
-            android:layout_toEndOf="@id/omnibox_answer_icon"
-            android:layout_width="0dp"
-            android:maxLines="1"
-            android:singleLine="true"
-            android:textAlignment="viewStart" />
-
-        <TextView
-            android:ellipsize="end"
-            android:id="@+id/omnibox_answer_line_2"
-            android:layout_alignEnd="@id/omnibox_answer_line_1"
-            android:layout_alignStart="@id/omnibox_answer_line_1"
-            android:layout_below="@id/omnibox_answer_line_1"
-            android:layout_height="wrap_content"
-            android:layout_width="0dp"
-            android:maxLines="3"
-            android:singleLine="false"
-            android:textAlignment="viewStart" />
-
-    </view>
-
-    <ImageView
-        android:background="?attr/selectableItemBackground"
-        android:clickable="true"
-        android:contentDescription="@null"
-        android:focusable="true"
-        android:id="@id/omnibox_answer_refine_icon"
-        android:layout_alignBottom="@id/omnibox_answer"
-        android:layout_alignParentEnd="true"
-        android:layout_alignTop="@id/omnibox_answer"
-        android:layout_centerVertical="true"
-        android:layout_height="match_parent"
-        android:layout_marginEnd="@dimen/omnibox_suggestion_refine_view_modern_end_padding"
-        android:layout_width="@dimen/omnibox_suggestion_refine_width"
-        android:scaleType="center"
-        android:src="@drawable/btn_suggestion_refine" />
-
-</org.chromium.chrome.browser.omnibox.suggestions.answer.AnswerSuggestionView>
+</LinearLayout>

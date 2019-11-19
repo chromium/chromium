@@ -180,7 +180,7 @@ class NetworkingPrivateServiceClient
   // Task runner for worker tasks.
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   // Use WeakPtrs for callbacks from |wifi_service_|.
-  base::WeakPtrFactory<NetworkingPrivateServiceClient> weak_factory_;
+  base::WeakPtrFactory<NetworkingPrivateServiceClient> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(NetworkingPrivateServiceClient);
 };

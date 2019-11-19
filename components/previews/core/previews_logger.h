@@ -123,11 +123,11 @@ class PreviewsLogger {
   std::unordered_map<std::string, base::Time> blacklisted_hosts_;
 
   // The current user blacklisted status.
-  bool user_blacklisted_status_;
+  bool user_blacklisted_status_ = false;
 
   // The current status of whether PreviewsBlackList decisions are ignored or
   // not.
-  bool blacklist_ignored_;
+  bool blacklist_ignored_ = false;
 
   // Collection of recorded navigation log messages.
   std::list<MessageLog> navigations_logs_;

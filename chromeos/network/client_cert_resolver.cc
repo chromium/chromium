@@ -20,8 +20,7 @@
 #include "base/stl_util.h"
 #include "base/task/post_task.h"
 #include "base/time/clock.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/dbus/shill_service_client.h"
+#include "chromeos/dbus/shill/shill_service_client.h"
 #include "chromeos/network/certificate_helper.h"
 #include "chromeos/network/managed_network_configuration_handler.h"
 #include "chromeos/network/network_event_log.h"
@@ -98,7 +97,7 @@ std::map<std::string, std::string> GetSubstitutionsForCert(
     std::string firstSANEmail;
     if (!names.empty())
       firstSANEmail = names[0];
-    substitutions[onc::substitutes::kCertSANEmail] = firstSANEmail;
+    substitutions[::onc::substitutes::kCertSANEmail] = firstSANEmail;
   }
 
   {
@@ -108,10 +107,10 @@ std::map<std::string, std::string> GetSubstitutionsForCert(
     std::string firstSANUPN;
     if (!names.empty())
       firstSANUPN = names[0];
-    substitutions[onc::substitutes::kCertSANUPN] = firstSANUPN;
+    substitutions[::onc::substitutes::kCertSANUPN] = firstSANUPN;
   }
 
-  substitutions[onc::substitutes::kCertSubjectCommonName] =
+  substitutions[::onc::substitutes::kCertSubjectCommonName] =
       certificate::GetCertAsciiSubjectCommonName(cert);
 
   return substitutions;
@@ -414,8 +413,7 @@ ClientCertResolver::ClientCertResolver()
       network_properties_changed_(false),
       network_state_handler_(nullptr),
       managed_network_config_handler_(nullptr),
-      testing_clock_(nullptr),
-      weak_ptr_factory_(this) {
+      testing_clock_(nullptr) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
@@ -617,7 +615,7 @@ void ClientCertResolver::ResolveNetworks(
     if (network->profile_path().empty())
       continue;
 
-    onc::ONCSource onc_source = onc::ONC_SOURCE_NONE;
+    ::onc::ONCSource onc_source = ::onc::ONC_SOURCE_NONE;
     const base::DictionaryValue* policy =
         managed_network_config_handler_->FindPolicyByGuidAndProfile(
             network->guid(), network->profile_path(), &onc_source);
@@ -660,9 +658,10 @@ void ClientCertResolver::ResolveNetworks(
 
   VLOG(2) << "Start task for resolving client cert patterns.";
   resolve_task_running_ = true;
-  base::PostTaskWithTraitsAndReplyWithResult(
+  base::PostTaskAndReplyWithResult(
       FROM_HERE,
-      {base::MayBlock(), base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
+      {base::ThreadPool(), base::MayBlock(),
+       base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
       base::BindOnce(&FindCertificateMatches,
                      NetworkCertLoader::CloneNetworkCertList(
                          NetworkCertLoader::Get()->client_certs()),
@@ -723,7 +722,7 @@ void ClientCertResolver::ConfigureCertificates(
       client_cert::SetEmptyShillProperties(match.cert_config_type,
                                            &shill_properties);
     }
-    DBusThreadManager::Get()->GetShillServiceClient()->SetProperties(
+    ShillServiceClient::Get()->SetProperties(
         dbus::ObjectPath(match.service_path), shill_properties,
         base::DoNothing(), base::BindRepeating(&LogError, match.service_path));
     network_state_handler_->RequestUpdateForNetwork(match.service_path);

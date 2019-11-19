@@ -14,6 +14,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "chromecast/base/cast_features.h"
 #include "chromecast/browser/cast_touch_device_manager.h"
+#include "chromecast/chromecast_buildflags.h"
 #include "chromecast/graphics/cast_display_util.h"
 #include "chromecast/graphics/cast_screen.h"
 #include "chromecast/public/graphics_properties_shlib.h"
@@ -31,17 +32,25 @@ constexpr char kCastGraphicsHeight[] = "cast-graphics-height";
 constexpr char kCastGraphicsWidth[] = "cast-graphics-width";
 constexpr char kDisplayRotation[] = "display-rotation";
 
-// Helper to return the screen resolution (device pixels)
-// to use.
-gfx::Size GetScreenResolution() {
-  gfx::Size res(1280, 720);
+gfx::Size GetDefaultScreenResolution() {
+#if BUILDFLAG(IS_CAST_AUDIO_ONLY)
+  return gfx::Size(1, 1);
+#else
   const base::CommandLine* cmd_line = base::CommandLine::ForCurrentProcess();
   if (!chromecast::IsFeatureEnabled(kTripleBuffer720) &&
       GraphicsPropertiesShlib::IsSupported(GraphicsPropertiesShlib::k1080p,
                                            cmd_line->argv())) {
-    res = gfx::Size(1920, 1080);
+    return gfx::Size(1920, 1080);
   }
 
+  return gfx::Size(1280, 720);
+#endif
+}
+
+// Helper to return the screen resolution (device pixels)
+// to use.
+gfx::Size GetScreenResolution() {
+  const base::CommandLine* cmd_line = base::CommandLine::ForCurrentProcess();
   int cast_gfx_width = 0;
   int cast_gfx_height = 0;
   if (base::StringToInt(cmd_line->GetSwitchValueASCII(kCastGraphicsWidth),
@@ -49,10 +58,10 @@ gfx::Size GetScreenResolution() {
       base::StringToInt(cmd_line->GetSwitchValueASCII(kCastGraphicsHeight),
                         &cast_gfx_height) &&
       cast_gfx_width > 0 && cast_gfx_height > 0) {
-    res.set_width(cast_gfx_width);
-    res.set_height(cast_gfx_height);
+    return gfx::Size(cast_gfx_width, cast_gfx_height);
   }
-  return res;
+
+  return GetDefaultScreenResolution();
 }
 
 display::Display::Rotation GetRotationFromCommandLine() {
@@ -87,7 +96,7 @@ gfx::Rect GetScreenBounds(const gfx::Size& size_in_pixels,
 
 CastDisplayConfigurator::CastDisplayConfigurator(CastScreen* screen)
     : delegate_(
-#if defined(USE_OZONE)
+#if defined(USE_OZONE) && !BUILDFLAG(IS_CAST_AUDIO_ONLY)
           ui::OzonePlatform::GetInstance()->CreateNativeDisplayDelegate()
 #else
           nullptr
@@ -198,8 +207,8 @@ void CastDisplayConfigurator::OnDisplayConfigured(
   DCHECK_EQ(display, display_);
 
   const gfx::Rect bounds(origin, mode->size());
-  VLOG(1) << __func__ << " success=" << success
-          << " bounds=" << bounds.ToString();
+  DVLOG(1) << __func__ << " success=" << success
+           << " bounds=" << bounds.ToString();
   if (success) {
     // Need to update the display state otherwise it becomes stale.
     display_->set_current_mode(mode);

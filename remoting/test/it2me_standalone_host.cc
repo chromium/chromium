@@ -38,8 +38,8 @@ constexpr char kSessionJid[] = "user@domain/rest-of-jid";
 using ::remoting::protocol::MockSession;
 
 It2MeStandaloneHost::It2MeStandaloneHost()
-    : scoped_task_environment_(
-          base::test::ScopedTaskEnvironment::MainThreadType::UI),
+    : task_environment_(
+          base::test::SingleThreadTaskEnvironment::MainThreadType::UI),
       context_(ChromotingHostContext::Create(
           new AutoThreadTaskRunner(base::ThreadTaskRunnerHandle::Get(),
                                    run_loop_.QuitClosure()))),
@@ -47,8 +47,7 @@ It2MeStandaloneHost::It2MeStandaloneHost()
       factory_(main_task_runner_,
                context_->video_capture_task_runner(),
                context_->input_task_runner(),
-               context_->ui_task_runner(),
-               nullptr),
+               context_->ui_task_runner()),
       connection_(base::WrapUnique(new testing::NiceMock<MockSession>())),
       session_jid_(kSessionJid),
 #if defined(OS_LINUX)

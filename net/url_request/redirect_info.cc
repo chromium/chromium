@@ -106,6 +106,7 @@ URLRequest::ReferrerPolicy ProcessReferrerPolicyHeaderOnRedirect(
 RedirectInfo::RedirectInfo()
     : status_code(-1),
       insecure_scheme_was_upgraded(false),
+      is_signed_exchange_fallback_redirect(false),
       new_referrer_policy(
           URLRequest::CLEAR_REFERRER_ON_TRANSITION_FROM_SECURE_TO_INSECURE) {}
 
@@ -116,8 +117,8 @@ RedirectInfo::~RedirectInfo() = default;
 RedirectInfo RedirectInfo::ComputeRedirectInfo(
     const std::string& original_method,
     const GURL& original_url,
+    const base::Optional<url::Origin>& initiator,
     const GURL& original_site_for_cookies,
-    const base::Optional<url::Origin>& original_top_frame_origin,
     URLRequest::FirstPartyURLPolicy original_first_party_url_policy,
     URLRequest::ReferrerPolicy original_referrer_policy,
     const std::string& original_referrer,
@@ -125,7 +126,8 @@ RedirectInfo RedirectInfo::ComputeRedirectInfo(
     const GURL& new_location,
     const base::Optional<std::string>& referrer_policy_header,
     bool insecure_scheme_was_upgraded,
-    bool copy_fragment) {
+    bool copy_fragment,
+    bool is_signed_exchange_fallback_redirect) {
   RedirectInfo redirect_info;
 
   redirect_info.status_code = http_status_code;
@@ -149,27 +151,25 @@ RedirectInfo RedirectInfo::ComputeRedirectInfo(
   }
 
   redirect_info.insecure_scheme_was_upgraded = insecure_scheme_was_upgraded;
+  redirect_info.is_signed_exchange_fallback_redirect =
+      is_signed_exchange_fallback_redirect;
 
   // Update the first-party URL if appropriate.
   if (original_first_party_url_policy ==
       URLRequest::UPDATE_FIRST_PARTY_URL_ON_REDIRECT) {
     redirect_info.new_site_for_cookies = redirect_info.new_url;
-    if (original_top_frame_origin) {
-      redirect_info.new_top_frame_origin =
-          url::Origin::Create(redirect_info.new_url);
-    }
   } else {
     redirect_info.new_site_for_cookies = original_site_for_cookies;
-    redirect_info.new_top_frame_origin = original_top_frame_origin;
   }
 
   redirect_info.new_referrer_policy = ProcessReferrerPolicyHeaderOnRedirect(
       original_referrer_policy, referrer_policy_header);
 
   // Alter the referrer if redirecting cross-origin (especially HTTP->HTTPS).
+  GURL referrer_url(original_referrer);
   redirect_info.new_referrer =
       URLRequestJob::ComputeReferrerForPolicy(redirect_info.new_referrer_policy,
-                                              GURL(original_referrer),
+                                              referrer_url, initiator,
                                               redirect_info.new_url)
           .spec();
 

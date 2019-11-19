@@ -58,9 +58,19 @@ activeElement: LI.parent.object-properties-section-root-element.selected
 active text: {y: 2}
 
 ArrowDown:
+Viewport virtual selection: 1
+activeElement: SPAN.devtools-link
+active text: console-key-expand.js:51
+
+ArrowDown:
 Viewport virtual selection: 2
 activeElement: DIV.console-message-wrapper.console-from-api.console-info-level.console-selected
 active text: console-key-expand.js:51 after
+
+ArrowUp:
+Viewport virtual selection: 1
+activeElement: SPAN.devtools-link
+active text: console-key-expand.js:51
 
 ArrowUp:
 Viewport virtual selection: 1
@@ -79,7 +89,7 @@ Message count: 3
 Force selecting index 1
 Viewport virtual selection: 1
 activeElement: DIV.console-message-wrapper.console-from-api.console-info-level.console-selected
-active text: console-key-expand.js:70 text {x: 1} {y: 2}
+active text: console-key-expand.js:74 text {x: 1} {y: 2}
 
 ArrowRight:
 Viewport virtual selection: 1
@@ -97,29 +107,32 @@ activeElement: LI.selected
 active text: x: 1
 
 ArrowDown:
-
-ArrowDown:
-Viewport virtual selection: 2
-activeElement: DIV.console-message-wrapper.console-from-api.console-info-level.console-selected
-active text: console-key-expand.js:70 after
+Viewport virtual selection: 1
+activeElement: LI.parent.object-properties-section-root-element.selected
+active text: {y: 2}
 
 ArrowRight:
+Viewport virtual selection: 1
+activeElement: LI.parent.object-properties-section-root-element.selected.expanded
+active text: {y: 2}
+
+ArrowDown:
+
+ArrowDown:
+
+ArrowDown:
 Viewport virtual selection: 2
 activeElement: DIV.console-message-wrapper.console-from-api.console-info-level.console-selected
-active text: console-key-expand.js:70 after
-
-ArrowDown:
-
-ArrowDown:
-
-ArrowDown:
-
-ArrowDown:
-Viewport virtual selection: 2
-activeElement: DIV.console-message-wrapper.console-from-api.console-info-level.console-selected
-active text: console-key-expand.js:70 after
+active text: console-key-expand.js:74 after
 
 ArrowUp:
+
+ArrowUp:
+Viewport virtual selection: 1
+activeElement: LI.parent.object-properties-section-root-element.expanded.selected
+active text: {y: 2}
+
+ArrowLeft:
 Viewport virtual selection: 1
 activeElement: LI.parent.object-properties-section-root-element.selected
 active text: {y: 2}
@@ -127,12 +140,7 @@ active text: {y: 2}
 ArrowLeft:
 Viewport virtual selection: 1
 activeElement: DIV.console-message-wrapper.console-from-api.console-info-level.console-selected
-active text: console-key-expand.js:70 text {x: 1}x: 1 {y: 2}y: 2
-
-ArrowLeft:
-Viewport virtual selection: 1
-activeElement: DIV.console-message-wrapper.console-from-api.console-info-level.console-selected
-active text: console-key-expand.js:70 text {x: 1}x: 1 {y: 2}y: 2
+active text: console-key-expand.js:74 text {x: 1}x: 1 {y: 2}y: 2
 
 Running: testExpandingObjectInTrace
 Evaluating: console.log("before");console.warn("warning", obj1);console.log("after");
@@ -143,16 +151,16 @@ Viewport virtual selection: 1
 Has object: collapsed
 Is trace expanded: NO
 activeElement: DIV.console-message-wrapper.console-from-api.console-warning-level.console-selected
-active text: console-key-expand.js:112 warning {x: 1}
-(anonymous) @ console-key-expand.js:112
+active text: console-key-expand.js:117 warning {x: 1}
+(anonymous) @ console-key-expand.js:117
 
 ArrowRight:
 Viewport virtual selection: 1
 Has object: collapsed
 Is trace expanded: YES
 activeElement: DIV.console-message-wrapper.console-from-api.console-warning-level.console-selected
-active text: console-key-expand.js:112 warning {x: 1}
-(anonymous) @ console-key-expand.js:112
+active text: console-key-expand.js:117 warning {x: 1}
+(anonymous) @ console-key-expand.js:117
 
 ArrowRight:
 Viewport virtual selection: 1
@@ -178,18 +186,22 @@ active text: x: 1
 ArrowDown:
 
 ArrowDown:
+
+ArrowDown:
 Viewport virtual selection: 2
 Has object: expanded
 Is trace expanded: YES
 activeElement: DIV.console-message-wrapper.console-from-api.console-info-level.console-selected
-active text: console-key-expand.js:112 after
+active text: console-key-expand.js:117 after
+
+ArrowUp:
 
 ArrowUp:
 Viewport virtual selection: 1
 Has object: expanded
 Is trace expanded: YES
 activeElement: SPAN.devtools-link
-active text: console-key-expand.js:112
+active text: console-key-expand.js:117
 
 ArrowUp:
 Viewport virtual selection: 1
@@ -203,24 +215,24 @@ Viewport virtual selection: 1
 Has object: expanded
 Is trace expanded: YES
 activeElement: DIV.console-message-wrapper.console-from-api.console-warning-level.console-selected
-active text: console-key-expand.js:112 warning {x: 1}x: 1
-(anonymous) @ console-key-expand.js:112
+active text: console-key-expand.js:117 warning {x: 1}x: 1
+(anonymous) @ console-key-expand.js:117
 
 ArrowLeft:
 Viewport virtual selection: 1
 Has object: expanded
 Is trace expanded: NO
 activeElement: DIV.console-message-wrapper.console-from-api.console-warning-level.console-selected
-active text: console-key-expand.js:112 warning {x: 1}x: 1
-(anonymous) @ console-key-expand.js:112
+active text: console-key-expand.js:117 warning {x: 1}x: 1
+(anonymous) @ console-key-expand.js:117
 
 ArrowLeft:
 Viewport virtual selection: 1
 Has object: expanded
 Is trace expanded: NO
 activeElement: DIV.console-message-wrapper.console-from-api.console-warning-level.console-selected
-active text: console-key-expand.js:112 warning {x: 1}x: 1
-(anonymous) @ console-key-expand.js:112
+active text: console-key-expand.js:117 warning {x: 1}x: 1
+(anonymous) @ console-key-expand.js:117
 
 Running: testExpandingElement
 Evaluating: console.log("before");console.log(el);console.log("after");
@@ -229,7 +241,9 @@ Message count: 3
 Force selecting index 1
 Viewport virtual selection: 1
 activeElement: DIV.console-message-wrapper.console-from-api.console-info-level.console-selected
-active text: console-key-expand.js:160 <div>​…​</div>​
+active text: console-key-expand.js:167 <div>​…​</div>​
+
+ArrowDown:
 
 ArrowDown:
 Viewport virtual selection: 1
@@ -247,6 +261,8 @@ Message count: 2
 Setting focus in prompt:
 
 Shift+Tab:
+
+ArrowUp:
 Viewport virtual selection: 1
 Has object: collapsed
 activeElement: LI.parent.object-properties-section-root-element.selected
@@ -264,10 +280,14 @@ Message count: 2
 Setting focus in prompt:
 
 Shift+Tab:
+
+ArrowUp:
 Viewport virtual selection: 1
 Has object: collapsed
 activeElement: DIV.console-message-wrapper.console-from-api.console-info-level.console-selected
-active text: console-key-expand.js:191 after
+active text: console-key-expand.js:199 after
+
+ArrowUp:
 
 ArrowUp:
 Viewport virtual selection: 0
@@ -282,6 +302,8 @@ Setting focus in prompt:
 
 Shift+Tab:
 
+ArrowUp:
+
 ArrowRight:
 
 Tab:
@@ -290,6 +312,8 @@ Has object: expanded
 activeElement: TEXTAREA
 
 Shift+Tab:
+
+ArrowUp:
 Viewport virtual selection: 0
 Has object: expanded
 activeElement: LI.parent.object-properties-section-root-element.expanded.selected

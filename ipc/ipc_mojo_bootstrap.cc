@@ -91,6 +91,27 @@ ControllerMemoryDumpProvider& GetMemoryDumpProvider() {
   return *provider;
 }
 
+// Messages are grouped by this info when recording memory metrics.
+struct MessageMemoryDumpInfo {
+  MessageMemoryDumpInfo(const mojo::Message& message)
+      : id(message.name()), profiler_tag(message.heap_profiler_tag()) {}
+  MessageMemoryDumpInfo() = default;
+
+  bool operator==(const MessageMemoryDumpInfo& other) const {
+    return other.id == id && other.profiler_tag == profiler_tag;
+  }
+
+  uint32_t id = 0;
+  const char* profiler_tag = nullptr;
+};
+
+struct MessageMemoryDumpInfoHash {
+  size_t operator()(const MessageMemoryDumpInfo& info) const {
+    return base::HashInts32(
+        info.id, info.profiler_tag ? base::Hash(info.profiler_tag) : 0);
+  }
+};
+
 class ChannelAssociatedGroupController
     : public mojo::AssociatedGroupController,
       public mojo::MessageReceiver,
@@ -99,19 +120,21 @@ class ChannelAssociatedGroupController
   ChannelAssociatedGroupController(
       bool set_interface_id_namespace_bit,
       const scoped_refptr<base::SingleThreadTaskRunner>& ipc_task_runner,
-      const scoped_refptr<base::SingleThreadTaskRunner>& proxy_task_runner)
+      const scoped_refptr<base::SingleThreadTaskRunner>& proxy_task_runner,
+      const scoped_refptr<mojo::internal::MessageQuotaChecker>& quota_checker)
       : task_runner_(ipc_task_runner),
         proxy_task_runner_(proxy_task_runner),
+        quota_checker_(quota_checker),
         set_interface_id_namespace_bit_(set_interface_id_namespace_bit),
-        filters_(this),
+        dispatcher_(this),
         control_message_handler_(this),
         control_message_proxy_thunk_(this),
         control_message_proxy_(&control_message_proxy_thunk_) {
     thread_checker_.DetachFromThread();
     control_message_handler_.SetDescription(
         "IPC::mojom::Bootstrap [master] PipeControlMessageHandler");
-    filters_.Append<mojo::MessageHeaderValidator>(
-        "IPC::mojom::Bootstrap [master] MessageHeaderValidator");
+    dispatcher_.SetValidator(std::make_unique<mojo::MessageHeaderValidator>(
+        "IPC::mojom::Bootstrap [master] MessageHeaderValidator"));
 
     GetMemoryDumpProvider().AddController(this);
   }
@@ -121,17 +144,21 @@ class ChannelAssociatedGroupController
     return outgoing_messages_.size();
   }
 
-  std::pair<uint32_t, size_t> GetTopQueuedMessageNameAndCount() {
-    std::unordered_map<uint32_t, size_t> counts;
-    std::pair<uint32_t, size_t> top_message_name_and_count = {0, 0};
+  void GetTopQueuedMessageMemoryDumpInfo(MessageMemoryDumpInfo* info,
+                                         size_t* count) {
+    std::unordered_map<MessageMemoryDumpInfo, size_t, MessageMemoryDumpInfoHash>
+        counts;
+    std::pair<MessageMemoryDumpInfo, size_t> top_message_info_and_count = {
+        MessageMemoryDumpInfo(), 0};
     base::AutoLock lock(outgoing_messages_lock_);
     for (const auto& message : outgoing_messages_) {
-      auto it_and_inserted = counts.emplace(message.name(), 0);
+      auto it_and_inserted = counts.emplace(MessageMemoryDumpInfo(message), 0);
       it_and_inserted.first->second++;
-      if (it_and_inserted.first->second > top_message_name_and_count.second)
-        top_message_name_and_count = *it_and_inserted.first;
+      if (it_and_inserted.first->second > top_message_info_and_count.second)
+        top_message_info_and_count = *it_and_inserted.first;
     }
-    return top_message_name_and_count;
+    *info = top_message_info_and_count.first;
+    *count = top_message_info_and_count.second;
   }
 
   void Bind(mojo::ScopedMessagePipeHandle handle) {
@@ -141,12 +168,14 @@ class ChannelAssociatedGroupController
     connector_.reset(new mojo::Connector(
         std::move(handle), mojo::Connector::SINGLE_THREADED_SEND,
         task_runner_));
-    connector_->set_incoming_receiver(&filters_);
+    connector_->set_incoming_receiver(&dispatcher_);
     connector_->set_connection_error_handler(
         base::Bind(&ChannelAssociatedGroupController::OnPipeError,
                    base::Unretained(this)));
     connector_->set_enforce_errors_from_incoming_receiver(false);
     connector_->SetWatcherHeapProfilerTag("IPC Channel");
+    if (quota_checker_)
+      connector_->SetMessageQuotaChecker(quota_checker_);
 
     // Don't let the Connector do any sort of queuing on our behalf. Individual
     // messages bound for the IPC::ChannelProxy thread (i.e. that vast majority
@@ -173,12 +202,16 @@ class ChannelAssociatedGroupController
       base::AutoLock lock(outgoing_messages_lock_);
       std::swap(outgoing_messages, outgoing_messages_);
     }
+    if (quota_checker_ && outgoing_messages.size())
+      quota_checker_->AfterMessagesDequeued(outgoing_messages.size());
+
     for (auto& message : outgoing_messages)
       SendMessage(&message);
   }
 
-  void CreateChannelEndpoints(mojom::ChannelAssociatedPtr* sender,
-                              mojom::ChannelAssociatedRequest* receiver) {
+  void CreateChannelEndpoints(
+      mojo::AssociatedRemote<mojom::Channel>* sender,
+      mojo::PendingAssociatedReceiver<mojom::Channel>* receiver) {
     mojo::InterfaceId sender_id, receiver_id;
     if (set_interface_id_namespace_bit_) {
       sender_id = 1 | mojo::kInterfaceIdNamespaceMask;
@@ -203,8 +236,10 @@ class ChannelAssociatedGroupController
     mojo::ScopedInterfaceEndpointHandle receiver_handle =
         CreateScopedInterfaceEndpointHandle(receiver_id);
 
-    sender->Bind(mojom::ChannelAssociatedPtrInfo(std::move(sender_handle), 0));
-    *receiver = mojom::ChannelAssociatedRequest(std::move(receiver_handle));
+    sender->Bind(mojo::PendingAssociatedRemote<mojom::Channel>(
+        std::move(sender_handle), 0));
+    *receiver = mojo::PendingAssociatedReceiver<mojom::Channel>(
+        std::move(receiver_handle));
   }
 
   void ShutDown() {
@@ -215,6 +250,9 @@ class ChannelAssociatedGroupController
     connector_.reset();
 
     base::AutoLock lock(outgoing_messages_lock_);
+    if (quota_checker_ && outgoing_messages_.size())
+      quota_checker_->AfterMessagesDequeued(outgoing_messages_.size());
+
     outgoing_messages_.clear();
   }
 
@@ -233,7 +271,7 @@ class ChannelAssociatedGroupController
         id = next_interface_id_++;
         if (set_interface_id_namespace_bit_)
           id |= mojo::kInterfaceIdNamespaceMask;
-      } while (ContainsKey(endpoints_, id));
+      } while (base::Contains(endpoints_, id));
 
       Endpoint* endpoint = new Endpoint(this, id);
       if (encountered_error_)
@@ -295,7 +333,7 @@ class ChannelAssociatedGroupController
       return;
     {
       base::AutoLock locker(lock_);
-      DCHECK(ContainsKey(endpoints_, id));
+      DCHECK(base::Contains(endpoints_, id));
       Endpoint* endpoint = endpoints_[id].get();
       DCHECK(!endpoint->client());
       DCHECK(!endpoint->closed());
@@ -316,7 +354,7 @@ class ChannelAssociatedGroupController
     DCHECK(client);
 
     base::AutoLock locker(lock_);
-    DCHECK(ContainsKey(endpoints_, id));
+    DCHECK(base::Contains(endpoints_, id));
 
     Endpoint* endpoint = endpoints_[id].get();
     endpoint->AttachClient(client, std::move(runner));
@@ -334,7 +372,7 @@ class ChannelAssociatedGroupController
     DCHECK(mojo::IsValidInterfaceId(id));
 
     base::AutoLock locker(lock_);
-    DCHECK(ContainsKey(endpoints_, id));
+    DCHECK(base::Contains(endpoints_, id));
 
     Endpoint* endpoint = endpoints_[id].get();
     endpoint->DetachClient();
@@ -672,11 +710,14 @@ class ChannelAssociatedGroupController
   }
 
   bool SendMessage(mojo::Message* message) {
+    DCHECK(message->heap_profiler_tag());
     if (task_runner_->BelongsToCurrentThread()) {
       DCHECK(thread_checker_.CalledOnValidThread());
       if (!connector_ || paused_) {
         if (!shut_down_) {
           base::AutoLock lock(outgoing_messages_lock_);
+          if (quota_checker_)
+            quota_checker_->BeforeMessagesEnqueued(1);
           outgoing_messages_.emplace_back(std::move(*message));
         }
         return true;
@@ -813,7 +854,7 @@ class ChannelAssociatedGroupController
     mojo::InterfaceId id = message->interface_id();
     DCHECK(mojo::IsValidInterfaceId(id));
 
-    base::AutoLock locker(lock_);
+    base::ReleasableAutoLock locker(&lock_);
     Endpoint* endpoint = FindEndpoint(id);
     if (!endpoint)
       return true;
@@ -844,10 +885,16 @@ class ChannelAssociatedGroupController
         return true;
       }
 
+      // If |proxy_task_runner_| has been torn down already, this PostTask will
+      // fail and destroy |message|. That operation may need to in turn destroy
+      // in-transit associated endpoints and thus acquire |lock_|. We no longer
+      // need the lock to be held now since |proxy_task_runner_| is safe to
+      // access unguarded.
+      locker.Release();
       proxy_task_runner_->PostTask(
           FROM_HERE,
           base::BindOnce(&ChannelAssociatedGroupController::AcceptOnProxyThread,
-                         this, base::Passed(message)));
+                         this, std::move(*message)));
       return true;
     }
 
@@ -856,7 +903,7 @@ class ChannelAssociatedGroupController
     DCHECK(!message->has_flag(mojo::Message::kFlagIsSync) ||
            !message->has_flag(mojo::Message::kFlagIsResponse));
 
-    base::AutoUnlock unlocker(lock_);
+    locker.Release();
     return client->HandleIncomingMessage(message);
   }
 
@@ -947,11 +994,12 @@ class ChannelAssociatedGroupController
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 
-  scoped_refptr<base::SingleThreadTaskRunner> proxy_task_runner_;
+  const scoped_refptr<base::SingleThreadTaskRunner> proxy_task_runner_;
+  const scoped_refptr<mojo::internal::MessageQuotaChecker> quota_checker_;
   const bool set_interface_id_namespace_bit_;
   bool paused_ = false;
   std::unique_ptr<mojo::Connector> connector_;
-  mojo::FilterChain filters_;
+  mojo::MessageDispatcher dispatcher_;
   mojo::PipeControlMessageHandler control_message_handler_;
   ControlMessageProxyThunk control_message_proxy_thunk_;
 
@@ -991,12 +1039,23 @@ bool ControllerMemoryDumpProvider::OnMemoryDump(
     dump->AddScalar(base::trace_event::MemoryAllocatorDump::kNameObjectCount,
                     base::trace_event::MemoryAllocatorDump::kUnitsObjects,
                     controller->GetQueuedMessageCount());
-    auto top_message_name_and_count =
-        controller->GetTopQueuedMessageNameAndCount();
-    dump->AddScalar("top_message_name", "id", top_message_name_and_count.first);
+    MessageMemoryDumpInfo info;
+    size_t count = 0;
+    controller->GetTopQueuedMessageMemoryDumpInfo(&info, &count);
+    dump->AddScalar("top_message_name", "id", info.id);
     dump->AddScalar("top_message_count",
                     base::trace_event::MemoryAllocatorDump::kUnitsObjects,
-                    top_message_name_and_count.second);
+                    count);
+
+    if (info.profiler_tag) {
+      // TODO(ssid): Memory dumps currently do not support adding string
+      // arguments in background dumps. So, add this value as a trace event for
+      // now.
+      TRACE_EVENT2(base::trace_event::MemoryDumpManager::kTraceCategory,
+                   "ControllerMemoryDumpProvider::OnMemoryDump",
+                   "top_queued_message_tag", info.profiler_tag,
+                   "count", count);
+    }
   }
 
   return true;
@@ -1016,8 +1075,9 @@ class MojoBootstrapImpl : public MojoBootstrap {
   }
 
  private:
-  void Connect(mojom::ChannelAssociatedPtr* sender,
-               mojom::ChannelAssociatedRequest* receiver) override {
+  void Connect(
+      mojo::AssociatedRemote<mojom::Channel>* sender,
+      mojo::PendingAssociatedReceiver<mojom::Channel>* receiver) override {
     controller_->Bind(std::move(handle_));
     controller_->CreateChannelEndpoints(sender, receiver);
   }
@@ -1053,11 +1113,12 @@ std::unique_ptr<MojoBootstrap> MojoBootstrap::Create(
     mojo::ScopedMessagePipeHandle handle,
     Channel::Mode mode,
     const scoped_refptr<base::SingleThreadTaskRunner>& ipc_task_runner,
-    const scoped_refptr<base::SingleThreadTaskRunner>& proxy_task_runner) {
+    const scoped_refptr<base::SingleThreadTaskRunner>& proxy_task_runner,
+    const scoped_refptr<mojo::internal::MessageQuotaChecker>& quota_checker) {
   return std::make_unique<MojoBootstrapImpl>(
-      std::move(handle),
-      new ChannelAssociatedGroupController(mode == Channel::MODE_SERVER,
-                                           ipc_task_runner, proxy_task_runner));
+      std::move(handle), new ChannelAssociatedGroupController(
+                             mode == Channel::MODE_SERVER, ipc_task_runner,
+                             proxy_task_runner, quota_checker));
 }
 
 }  // namespace IPC

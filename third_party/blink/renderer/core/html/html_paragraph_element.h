@@ -31,8 +31,6 @@ class CORE_EXPORT HTMLParagraphElement final : public HTMLElement {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  DECLARE_NODE_FACTORY(HTMLParagraphElement);
-
   explicit HTMLParagraphElement(Document&);
 
  private:

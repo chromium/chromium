@@ -61,9 +61,9 @@ class WebBlob {
 
   BLINK_EXPORT static WebBlob CreateFromUUID(const WebString& uuid,
                                              const WebString& type,
-                                             long long size);
+                                             uint64_t size);
   BLINK_EXPORT static WebBlob CreateFromFile(const WebString& path,
-                                             long long size);
+                                             uint64_t size);
   BLINK_EXPORT static WebBlob FromV8Value(v8::Local<v8::Value>);
 
   BLINK_EXPORT void Reset();

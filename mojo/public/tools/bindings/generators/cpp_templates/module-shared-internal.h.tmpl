@@ -27,6 +27,12 @@
 #include "{{export_header}}"
 {%- endif %}
 
+{% if enable_kythe_annotations -%}
+#ifdef KYTHE_IS_RUNNING
+#pragma kythe_inline_metadata "Metadata comment"
+#endif
+{%- endif %}
+
 namespace mojo {
 namespace internal {
 class ValidationContext;

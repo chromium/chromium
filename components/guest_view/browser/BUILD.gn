@@ -36,6 +36,7 @@ static_library("browser") {
     "//content/public/browser",
     "//content/public/common",
     "//ipc",
+    "//third_party/blink/public/common",
     "//url",
   ]
 }

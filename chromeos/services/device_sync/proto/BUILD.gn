@@ -7,9 +7,11 @@ import("//third_party/protobuf/proto_library.gni")
 proto_library("proto") {
   sources = [
     "cryptauth_api.proto",
+    "cryptauth_better_together_device_metadata.proto",
     "cryptauth_better_together_feature_metadata.proto",
     "cryptauth_client_app_metadata.proto",
     "cryptauth_common.proto",
+    "cryptauth_devicesync.proto",
     "cryptauth_directive.proto",
     "cryptauth_enrollment.proto",
     "securemessage.proto",
@@ -18,6 +20,8 @@ proto_library("proto") {
 
 static_library("util") {
   sources = [
+    "cryptauth_proto_to_query_parameters_util.cc",
+    "cryptauth_proto_to_query_parameters_util.h",
     "device_classifier_util.cc",
     "device_classifier_util.h",
     "enum_util.cc",
@@ -31,5 +35,23 @@ static_library("util") {
   deps = [
     "//base",
     "//components/version_info",
+  ]
+}
+
+static_library("test_support") {
+  testonly = true
+
+  sources = [
+    "cryptauth_v2_test_util.cc",
+    "cryptauth_v2_test_util.h",
+  ]
+
+  public_deps = [
+    ":proto",
+  ]
+
+  deps = [
+    "//base",
+    "//chromeos/services/device_sync/public/cpp:cpp",
   ]
 }

@@ -31,17 +31,13 @@
   <div id="contents"></div>
 </div>
 
-<script id="visual_update"  type="text/worklet">
+<script id="test_animator"  type="text/worklet">
 registerAnimator("test_animator", class {
   animate(currentTime, effect) {
-    if (!isNaN(currentTime)) {
-      // If this happens then the scroller was composited somehow and the test
-      // is invalid. Set the output to 100% to signal that and fail the test.
-      effect.localTime = 1000;
-    } else {
-      // Otherwise, output the halfway point.
-      effect.localTime = 500;
-    }
+    // This method should not get called. If this happens then the scroller was
+    // composited somehow and the test is invalid. Set the output to 50% to
+    // signal that and fail the test.
+    effect.localTime = 500;
   }
 });
 </script>
@@ -53,7 +49,7 @@ if (window.testRunner) {
 }
 
 runInAnimationWorklet(
-  document.getElementById('visual_update').textContent
+  document.getElementById('test_animator').textContent
 ).then(()=>{
   const box = document.getElementById('box');
   const effect = new KeyframeEffect(box,
@@ -67,7 +63,7 @@ runInAnimationWorklet(
 
   const scroller = document.getElementById('scroller');
   const timeline = new ScrollTimeline({ scrollSource: scroller, timeRange: 1000, orientation: 'block' });
-  const animation = new WorkletAnimation('test_animator', [effect], timeline, {});
+  const animation = new WorkletAnimation('test_animator', effect, timeline);
   animation.play();
 
   if (window.testRunner) {

@@ -36,7 +36,7 @@ void CrashDoubleFree(void) {
 
 void CrashNullPointerDereference(void) {
   // Cause the program to segfault with a NULL pointer dereference
-  int *p = NULL;
+  int* p = nullptr;
   *p = 0;
 }
 

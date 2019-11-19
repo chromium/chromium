@@ -80,7 +80,7 @@ class HistoryCounter : public browsing_data::BrowsingDataCounter {
 
   BrowsingDataCounter::ResultInt local_result_;
 
-  base::WeakPtrFactory<HistoryCounter> weak_ptr_factory_;
+  base::WeakPtrFactory<HistoryCounter> weak_ptr_factory_{this};
 };
 
 }  // namespace browsing_data

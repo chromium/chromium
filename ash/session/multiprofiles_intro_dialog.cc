@@ -43,7 +43,7 @@ bool MultiprofilesIntroDialog::Cancel() {
 }
 
 bool MultiprofilesIntroDialog::Accept() {
-  std::move(on_accept_).Run(true, never_show_again_checkbox_->checked());
+  std::move(on_accept_).Run(true, never_show_again_checkbox_->GetChecked());
   return true;
 }
 
@@ -80,7 +80,7 @@ void MultiprofilesIntroDialog::InitDialog() {
       provider->GetDialogInsetsForContentType(views::TEXT, views::CONTROL)));
 
   SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::kVertical, gfx::Insets(),
+      views::BoxLayout::Orientation::kVertical, gfx::Insets(),
       provider->GetDistanceMetric(views::DISTANCE_UNRELATED_CONTROL_VERTICAL)));
 
   // Explanation string

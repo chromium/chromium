@@ -8,7 +8,7 @@
 
 #include "base/files/file_util.h"
 #include "base/logging.h"
-#include "base/metrics/histogram_macros.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/path_service.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
@@ -53,8 +53,8 @@ bool GetStartTimestamp(
 }
 
 void LogCollectionStatus(CollectionStatus status) {
-  UMA_HISTOGRAM_ENUMERATION("ActivityTracker.Collect.Status", status,
-                            COLLECTION_STATUS_MAX);
+  base::UmaHistogramEnumeration("ActivityTracker.Collect.Status", status,
+                                COLLECTION_STATUS_MAX);
 }
 
 }  // namespace
@@ -212,7 +212,7 @@ void PostmortemReportCollector::RecordSystemShutdownState(
   }
 
   report->mutable_system_state()->set_session_state(session_state);
-  UMA_HISTOGRAM_ENUMERATION(
+  base::UmaHistogramEnumeration(
       "ActivityTracker.Collect.SystemSessionAnalysisStatus", status,
       SYSTEM_SESSION_ANALYSIS_STATUS_MAX);
 }

@@ -10,7 +10,9 @@
 #include "base/test/values_test_util.h"
 #include "chrome/browser/extensions/test_extension_environment.h"
 #include "chrome/common/extensions/permissions/chrome_permission_message_provider.h"
+#include "components/version_info/version_info.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/features/feature_channel.h"
 #include "extensions/common/features/simple_feature.h"
 #include "extensions/common/permissions/permission_message_test_util.h"
 #include "extensions/common/permissions/permissions_data.h"
@@ -1177,6 +1179,37 @@ TEST_F(PermissionMessageCombinationsUnittest, NewTabPagePermissionMessages) {
   CreateAndInstall(kManifest);
   ASSERT_TRUE(CheckManifestProducesPermissions(
       "Replace the page you see when opening a new tab"));
+}
+
+TEST_F(PermissionMessageCombinationsUnittest,
+       DeclarativeNetRequestFeedbackPermissionMessages) {
+  // Set the current channel to trunk.
+  ScopedCurrentChannel scoped_channel(version_info::Channel::UNKNOWN);
+
+  CreateAndInstall(
+      "{"
+      "  'permissions': ["
+      "    'declarativeNetRequestFeedback'"
+      "  ]"
+      "}");
+  ASSERT_TRUE(CheckManifestProducesPermissions("Read your browsing history"));
+
+  CreateAndInstall(
+      "{"
+      "  'permissions': ["
+      "    'tabs', 'declarativeNetRequestFeedback'"
+      "  ]"
+      "}");
+  ASSERT_TRUE(CheckManifestProducesPermissions("Read your browsing history"));
+
+  CreateAndInstall(
+      "{"
+      "  'permissions': ["
+      "    '<all_urls>', 'declarativeNetRequestFeedback'"
+      "  ]"
+      "}");
+  ASSERT_TRUE(CheckManifestProducesPermissions(
+      "Read and change all your data on the websites you visit"));
 }
 
 // TODO(sashab): Add a test that checks that messages are generated correctly

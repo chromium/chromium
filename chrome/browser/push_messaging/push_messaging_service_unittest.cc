@@ -27,10 +27,9 @@
 #include "components/gcm_driver/fake_gcm_client_factory.h"
 #include "components/gcm_driver/fake_gcm_profile_service.h"
 #include "components/gcm_driver/gcm_profile_service.h"
-#include "content/public/common/push_messaging_status.mojom.h"
-#include "content/public/common/push_subscription_options.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/mojom/push_messaging/push_messaging_status.mojom.h"
 
 #if defined(OS_ANDROID)
 #include "components/gcm_driver/instance_id/instance_id_android.h"
@@ -94,7 +93,7 @@ class PushMessagingServiceTest : public ::testing::Test {
     HostContentSettingsMap* host_content_settings_map =
         HostContentSettingsMapFactory::GetForProfile(&profile_);
     host_content_settings_map->SetDefaultContentSetting(
-        CONTENT_SETTINGS_TYPE_NOTIFICATIONS, CONTENT_SETTING_ALLOW);
+        ContentSettingsType::NOTIFICATIONS, CONTENT_SETTING_ALLOW);
 
     // Override the GCM Profile service so that we can send fake messages.
     gcm::GCMProfileServiceFactory::GetInstance()->SetTestingFactory(
@@ -105,17 +104,20 @@ class PushMessagingServiceTest : public ::testing::Test {
 
   // Callback to use when the subscription may have been subscribed.
   void DidRegister(std::string* subscription_id_out,
+                   GURL* endpoint_out,
                    std::vector<uint8_t>* p256dh_out,
                    std::vector<uint8_t>* auth_out,
                    base::Closure done_callback,
                    const std::string& registration_id,
+                   const GURL& endpoint,
                    const std::vector<uint8_t>& p256dh,
                    const std::vector<uint8_t>& auth,
-                   content::mojom::PushRegistrationStatus status) {
-    EXPECT_EQ(content::mojom::PushRegistrationStatus::SUCCESS_FROM_PUSH_SERVICE,
+                   blink::mojom::PushRegistrationStatus status) {
+    EXPECT_EQ(blink::mojom::PushRegistrationStatus::SUCCESS_FROM_PUSH_SERVICE,
               status);
 
     *subscription_id_out = registration_id;
+    *endpoint_out = endpoint;
     *p256dh_out = p256dh;
     *auth_out = auth;
 
@@ -141,7 +143,7 @@ class PushMessagingServiceTest : public ::testing::Test {
   PushMessagingTestingProfile* profile() { return &profile_; }
 
  private:
-  content::TestBrowserThreadBundle thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
   PushMessagingTestingProfile profile_;
 
 #if defined(OS_ANDROID)
@@ -162,25 +164,31 @@ TEST_F(PushMessagingServiceTest, PayloadEncryptionTest) {
             push_service->GetPermissionStatus(origin, true));
 
   std::string subscription_id;
+  GURL endpoint;
   std::vector<uint8_t> p256dh, auth;
 
   base::RunLoop run_loop;
 
   // (2) Subscribe for Push Messaging, and verify that we've got the required
   // information in order to be able to create encrypted messages.
-  content::PushSubscriptionOptions options;
-  options.user_visible_only = true;
-  options.sender_info = kTestSenderId;
+  auto options = blink::mojom::PushSubscriptionOptions::New();
+  options->user_visible_only = true;
+  options->application_server_key = std::vector<uint8_t>(
+      kTestSenderId, kTestSenderId + sizeof(kTestSenderId) / sizeof(char) - 1);
+
   push_service->SubscribeFromWorker(
-      origin, kTestServiceWorkerId, options,
+      origin, kTestServiceWorkerId, std::move(options),
       base::Bind(&PushMessagingServiceTest::DidRegister, base::Unretained(this),
-                 &subscription_id, &p256dh, &auth, run_loop.QuitClosure()));
+                 &subscription_id, &endpoint, &p256dh, &auth,
+                 run_loop.QuitClosure()));
 
   EXPECT_EQ(0u, subscription_id.size());  // this must be asynchronous
 
   run_loop.Run();
 
   ASSERT_GT(subscription_id.size(), 0u);
+  ASSERT_TRUE(endpoint.is_valid());
+  ASSERT_GT(endpoint.spec().size(), 0u);
   ASSERT_GT(p256dh.size(), 0u);
   ASSERT_GT(auth.size(), 0u);
 
@@ -256,13 +264,4 @@ TEST_F(PushMessagingServiceTest, NormalizeSenderInfo) {
   p256dh[0] = 0x05;  // invalidate |p256dh| as a public key.
 
   EXPECT_EQ(p256dh, push_service->NormalizeSenderInfo(p256dh));
-}
-
-TEST_F(PushMessagingServiceTest, DifferentEndpoints) {
-  PushMessagingServiceImpl* push_service = profile()->GetPushMessagingService();
-  ASSERT_TRUE(push_service);
-
-  // Verifies that the service returns different endpoints depending on whether
-  // support for the standard protocol is requested.
-  EXPECT_NE(push_service->GetEndpoint(true), push_service->GetEndpoint(false));
 }

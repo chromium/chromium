@@ -1,0 +1,13 @@
+Name: Material Components for Android
+Short Name: material
+URL: http://developer.android.com/tools/extras/support-library.html
+Version: 1.0.0-rc02
+License: Apache Version 2.0
+License File: LICENSE
+Security Critical: yes
+
+Description:
+Material Components for Android is a static library that you can add to your Android application in order to use APIs that provide implementations of the Material Design specification. Compatible on devices running API 14 or later.
+
+Local Modifications:
+No modifications.

@@ -9,6 +9,7 @@
 # as reasonablly possible. Translation is done when requested. It is to make it
 # always possible to probe the original data.
 
+from __future__ import print_function
 
 import collections
 import logging
@@ -725,20 +726,20 @@ def main(argv):
     procs[pid] = _ProcessMemory(pid)
     procs[pid].read_all()
 
-    print '=== PID: %d ===' % pid
+    print('=== PID: %d ===' % pid)
 
-    print '   stat: %d' % procs[pid].stat.vsize
-    print '  statm: %d' % (procs[pid].statm.size * 4096)
-    print ' status: %d (Peak:%d)' % (procs[pid].status.vm_size * 1024,
-                                     procs[pid].status.vm_peak * 1024)
-    print '  smaps: %d' % (procs[pid].smaps.size * 1024)
-    print 'pagemap: %d' % procs[pid].pagemap.vsize
-    print '   stat: %d' % (procs[pid].stat.rss * 4096)
-    print '  statm: %d' % (procs[pid].statm.resident * 4096)
-    print ' status: %d (Peak:%d)' % (procs[pid].status.vm_rss * 1024,
-                                     procs[pid].status.vm_hwm * 1024)
-    print '  smaps: %d' % (procs[pid].smaps.rss * 1024)
-    print 'pagemap: %d' % procs[pid].pagemap.present
+    print('   stat: %d' % procs[pid].stat.vsize)
+    print('  statm: %d' % (procs[pid].statm.size * 4096))
+    print(' status: %d (Peak:%d)' % (procs[pid].status.vm_size * 1024,
+                                     procs[pid].status.vm_peak * 1024))
+    print('  smaps: %d' % (procs[pid].smaps.size * 1024))
+    print('pagemap: %d' % procs[pid].pagemap.vsize)
+    print('   stat: %d' % (procs[pid].stat.rss * 4096))
+    print('  statm: %d' % (procs[pid].statm.resident * 4096))
+    print(' status: %d (Peak:%d)' % (procs[pid].status.vm_rss * 1024,
+                                     procs[pid].status.vm_hwm * 1024))
+    print('  smaps: %d' % (procs[pid].smaps.rss * 1024))
+    print('pagemap: %d' % procs[pid].pagemap.present)
 
   return 0
 

@@ -11,31 +11,38 @@
 #include "base/logging.h"
 #include "base/macros.h"
 #include "media/capabilities/bucket_utility.h"
-#include "media/mojo/interfaces/media_types.mojom.h"
+#include "media/mojo/mojom/media_types.mojom.h"
 
 namespace media {
 
 VideoDecodeStatsReporter::VideoDecodeStatsReporter(
-    mojom::VideoDecodeStatsRecorderPtr recorder_ptr,
+    mojo::PendingRemote<mojom::VideoDecodeStatsRecorder> recorder_remote,
     GetPipelineStatsCB get_pipeline_stats_cb,
-    const VideoDecoderConfig& video_config,
+    VideoCodecProfile codec_profile,
+    const gfx::Size& natural_size,
+    std::string key_system,
+    base::Optional<CdmConfig> cdm_config,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner,
     const base::TickClock* tick_clock)
     : kRecordingInterval(
           base::TimeDelta::FromMilliseconds(kRecordingIntervalMs)),
       kTinyFpsWindowDuration(
           base::TimeDelta::FromMilliseconds(kTinyFpsWindowMs)),
-      recorder_ptr_(std::move(recorder_ptr)),
+      recorder_remote_(std::move(recorder_remote)),
       get_pipeline_stats_cb_(std::move(get_pipeline_stats_cb)),
-      video_config_(video_config),
-      natural_size_(GetSizeBucket(video_config.natural_size())),
+      codec_profile_(codec_profile),
+      natural_size_(GetSizeBucket(natural_size)),
+      key_system_(key_system),
+      use_hw_secure_codecs_(cdm_config ? cdm_config->use_hw_secure_codecs
+                                       : false),
       tick_clock_(tick_clock),
       stats_cb_timer_(tick_clock_) {
-  DCHECK(recorder_ptr_.is_bound());
+  DCHECK(recorder_remote_.is_bound());
   DCHECK(get_pipeline_stats_cb_);
-  DCHECK(video_config_.IsValidConfig());
+  DCHECK_NE(VIDEO_CODEC_PROFILE_UNKNOWN, codec_profile_);
+  DCHECK(!cdm_config || !key_system_.empty());
 
-  recorder_ptr_.set_connection_error_handler(base::BindRepeating(
+  recorder_remote_.set_disconnect_handler(base::BindRepeating(
       &VideoDecodeStatsReporter::OnIpcConnectionError, base::Unretained(this)));
   stats_cb_timer_.SetTaskRunner(task_runner);
 }
@@ -65,62 +72,6 @@ void VideoDecodeStatsReporter::OnPaused() {
 
   // Stop timer until playing resumes.
   stats_cb_timer_.AbandonAndStop();
-}
-
-void VideoDecodeStatsReporter::OnNaturalSizeChanged(
-    const gfx::Size& natural_size) {
-  gfx::Size bucketed_size = GetSizeBucket(natural_size);
-
-  DVLOG(2) << __func__ << " " << natural_size.ToString()
-           << " buckets-to:" << bucketed_size.ToString();
-
-  if (bucketed_size == natural_size_)
-    return;
-
-  natural_size_ = bucketed_size;
-
-  // We haven't seen any pipeline stats for this size yet, so it may be that
-  // the frame rate will change too. Once frame rate stabilized, UpdateStats()
-  // will call the recorder_ptr_->StartNewRecord() with this latest size.
-  ResetFrameRateState();
-
-  // Bucketed size will be empty for tiny sizes. Stop reporting until the size
-  // is larger.
-  if (natural_size_.IsEmpty()) {
-    DCHECK(!ShouldBeReporting());
-    stats_cb_timer_.AbandonAndStop();
-
-    // Consider starting the timer. Natural size may now be large enough to
-    // begin reporting. Also, resetting frame rate state above may give us
-    // another chance at frame rate detection if past attempts failed. Avoid
-    // calling if already running, as this will increase the delay for the next
-    // UpdateStats() callback.
-  } else if (ShouldBeReporting() && !stats_cb_timer_.IsRunning()) {
-    RunStatsTimerAtInterval(kRecordingInterval);
-  }
-}
-
-void VideoDecodeStatsReporter::OnVideoConfigChanged(
-    const VideoDecoderConfig& video_config) {
-  DVLOG(2) << __func__ << " " << video_config.AsHumanReadableString();
-
-  if (video_config.Matches(video_config_))
-    return;
-
-  video_config_ = video_config;
-  natural_size_ = GetSizeBucket(video_config.natural_size());
-
-  // Force frame rate detection for the new config. Once frame rate stabilized,
-  // UpdateStats() will call the recorder_ptr_->StartNewRecord() with this
-  // latest config.
-  ResetFrameRateState();
-
-  // Resetting the frame rate state may allow us to begin reporting again. Also,
-  // if the timer is already running we still want to reset the timer to give
-  // the pipeline a chance to stabilize. Config changes may trigger little
-  // hiccups while the decoder is reset.
-  if (ShouldBeReporting())
-    RunStatsTimerAtInterval(kRecordingInterval);
 }
 
 void VideoDecodeStatsReporter::OnHidden() {
@@ -157,6 +108,13 @@ void VideoDecodeStatsReporter::OnShown() {
     RunStatsTimerAtInterval(kRecordingInterval);
 }
 
+bool VideoDecodeStatsReporter::MatchesBucketedNaturalSize(
+    const gfx::Size& natural_size) const {
+  // Stored natural size should always be bucketed.
+  DCHECK(natural_size_ == GetSizeBucket(natural_size_));
+  return GetSizeBucket(natural_size) == natural_size_;
+}
+
 void VideoDecodeStatsReporter::RunStatsTimerAtInterval(
     base::TimeDelta interval) {
   DVLOG(2) << __func__ << " " << interval.InMicroseconds() << " us";
@@ -174,9 +132,10 @@ void VideoDecodeStatsReporter::StartNewRecord(
     uint32_t frames_dropped_offset,
     uint32_t frames_decoded_power_efficient_offset) {
   DVLOG(2) << __func__ << " "
-           << " profile:" << video_config_.profile()
-           << " fps:" << last_observed_fps_
-           << " size:" << natural_size_.ToString();
+           << " profile:" << codec_profile_
+           << " size:" << natural_size_.ToString()
+           << " fps:" << last_observed_fps_ << " key_system:" << key_system_
+           << " use_hw_secure_codecs:" << use_hw_secure_codecs_;
 
   // Size and frame rate should always be bucketed.
   DCHECK(natural_size_ == GetSizeBucket(natural_size_));
@@ -192,9 +151,13 @@ void VideoDecodeStatsReporter::StartNewRecord(
   frames_dropped_offset_ = frames_dropped_offset;
   frames_decoded_power_efficient_offset_ =
       frames_decoded_power_efficient_offset;
+
+  bool use_hw_secure_codecs = use_hw_secure_codecs_;
   mojom::PredictionFeaturesPtr features = mojom::PredictionFeatures::New(
-      video_config_.profile(), natural_size_, last_observed_fps_);
-  recorder_ptr_->StartNewRecord(std::move(features));
+      codec_profile_, natural_size_, last_observed_fps_, key_system_,
+      use_hw_secure_codecs);
+
+  recorder_remote_->StartNewRecord(std::move(features));
 }
 
 void VideoDecodeStatsReporter::ResetFrameRateState() {
@@ -225,7 +188,6 @@ bool VideoDecodeStatsReporter::UpdateDecodeProgress(
     const PipelineStatistics& stats) {
   DCHECK_GE(stats.video_frames_decoded, last_frames_decoded_);
   DCHECK_GE(stats.video_frames_dropped, last_frames_dropped_);
-  DCHECK_GE(stats.video_frames_decoded, stats.video_frames_dropped);
 
   // Check if additional frames decoded since last stats update.
   if (stats.video_frames_decoded == last_frames_decoded_) {
@@ -346,17 +308,26 @@ void VideoDecodeStatsReporter::UpdateStats() {
   if (stats.video_frames_decoded == frames_decoded_offset_)
     return;
 
+  // Cap all counts to |frames_decoded|. We should never exceed this cap, but
+  // we have some hard to track bug where we accumulate 1 extra dropped frame
+  // in a tiny minority of cases. Dropping all frames is a strong signal we
+  // don't want to discard, so just sanitize the data and carry on.
+  uint32_t frames_decoded = stats.video_frames_decoded - frames_decoded_offset_;
+  uint32_t frames_dropped = std::min(
+      stats.video_frames_dropped - frames_dropped_offset_, frames_decoded);
+  uint32_t frames_power_efficient =
+      std::min(stats.video_frames_decoded_power_efficient -
+                   frames_decoded_power_efficient_offset_,
+               frames_decoded);
+
   mojom::PredictionTargetsPtr targets = mojom::PredictionTargets::New(
-      stats.video_frames_decoded - frames_decoded_offset_,
-      stats.video_frames_dropped - frames_dropped_offset_,
-      stats.video_frames_decoded_power_efficient -
-          frames_decoded_power_efficient_offset_);
+      frames_decoded, frames_dropped, frames_power_efficient);
 
   DVLOG(2) << __func__ << " Recording -- dropped:" << targets->frames_dropped
            << "/" << targets->frames_decoded
            << " power efficient:" << targets->frames_power_efficient << "/"
            << targets->frames_decoded;
-  recorder_ptr_->UpdateRecord(std::move(targets));
+  recorder_remote_->UpdateRecord(std::move(targets));
 }
 
 }  // namespace media

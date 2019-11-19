@@ -30,11 +30,11 @@
 #include "chrome/browser/media_galleries/win/mtp_device_operations_util.h"
 #include "chrome/browser/media_galleries/win/portable_device_map_service.h"
 #include "chrome/browser/media_galleries/win/snapshot_file_details.h"
-#include "components/services/filesystem/public/interfaces/types.mojom.h"
+#include "components/services/filesystem/public/mojom/types.mojom.h"
 #include "components/storage_monitor/storage_monitor.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "storage/common/fileapi/file_system_util.h"
+#include "storage/common/file_system/file_system_util.h"
 
 namespace {
 
@@ -320,7 +320,7 @@ void CreateMTPDeviceAsyncDelegate(
   DCHECK(!device_location.empty());
   base::string16* pnp_device_id = new base::string16;
   base::string16* storage_object_id = new base::string16;
-  base::PostTaskWithTraitsAndReplyWithResult<bool>(
+  base::PostTaskAndReplyWithResult(
       FROM_HERE, {content::BrowserThread::UI},
       base::Bind(&GetStorageInfoOnUIThread, device_location,
                  base::Unretained(pnp_device_id),
@@ -362,8 +362,7 @@ MTPDeviceDelegateImplWin::MTPDeviceDelegateImplWin(
       storage_device_info_(pnp_device_id,
                            registered_device_path,
                            storage_object_id),
-      task_in_progress_(false),
-      weak_ptr_factory_(this) {
+      task_in_progress_(false) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
   DCHECK(!registered_device_path.empty());
   DCHECK(!pnp_device_id.empty());

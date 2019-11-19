@@ -5,6 +5,7 @@
 #include "chrome/browser/extensions/system_display/display_info_provider_mac.h"
 
 #include "base/logging.h"
+#include "chrome/browser/extensions/system_display/display_info_provider.h"
 
 namespace extensions {
 
@@ -16,9 +17,8 @@ void DisplayInfoProviderMac::UpdateDisplayUnitInfoForPlatform(
   NOTIMPLEMENTED_LOG_ONCE();
 }
 
-// static
-DisplayInfoProvider* DisplayInfoProvider::Create() {
-  return new DisplayInfoProviderMac();
+std::unique_ptr<DisplayInfoProvider> CreateChromeDisplayInfoProvider() {
+  return std::make_unique<DisplayInfoProviderMac>();
 }
 
 }  // namespace extensions

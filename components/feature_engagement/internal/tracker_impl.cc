@@ -153,8 +153,7 @@ TrackerImpl::TrackerImpl(
       condition_validator_(std::move(condition_validator)),
       time_provider_(std::move(time_provider)),
       event_model_initialization_finished_(false),
-      availability_model_initialization_finished_(false),
-      weak_ptr_factory_(this) {
+      availability_model_initialization_finished_(false) {
   event_model_->Initialize(
       base::Bind(&TrackerImpl::OnEventModelInitializationFinished,
                  weak_ptr_factory_.GetWeakPtr()),

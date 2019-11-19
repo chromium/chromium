@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,13 +7,13 @@ package org.chromium.chrome.browser.preferences;
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.TypedArray;
-import android.preference.Preference;
+import android.support.v7.preference.Preference;
+import android.support.v7.preference.PreferenceViewHolder;
 import android.util.AttributeSet;
-import android.view.View;
-import android.view.View.OnClickListener;
 import android.widget.TextView;
 
 import org.chromium.base.ApiCompatibilityUtils;
+import org.chromium.base.ContextUtils;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.help.HelpAndFeedback;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -22,43 +22,45 @@ import org.chromium.chrome.browser.profiles.Profile;
  * A preference that opens a HelpAndFeedback activity to learn more about the specified context.
  */
 public class LearnMorePreference extends Preference {
-
+    /**
+     * Resource id for the help page to link to by context name. Corresponds to go/mobilehelprecs.
+     */
     private final int mHelpContext;
+
+    /**
+     * Link text color.
+     */
     private final int mColor;
 
     public LearnMorePreference(Context context, AttributeSet attrs) {
         super(context, attrs);
-        TypedArray a = context.obtainStyledAttributes(attrs,
-                R.styleable.LearnMorePreference, 0, 0);
-        mHelpContext = a.getResourceId(R.styleable.LearnMorePreference_helpContext, 0);
+
+        TypedArray styledAttributes =
+                context.obtainStyledAttributes(attrs, R.styleable.LearnMorePreference, 0, 0);
+        mHelpContext =
+                styledAttributes.getResourceId(R.styleable.LearnMorePreference_helpContext, 0);
         mColor = ApiCompatibilityUtils.getColor(
                 context.getResources(), R.color.default_text_color_link);
-        a.recycle();
+        styledAttributes.recycle();
+
         setTitle(R.string.learn_more);
+        setSelectable(false);
+        setSingleLineTitle(false);
     }
 
     @Override
     protected void onClick() {
-        HelpAndFeedback.getInstance(getContext())
-                .show((Activity) getContext(), getContext().getString(mHelpContext),
-                        Profile.getLastUsedProfile(), null);
+        Activity activity = ContextUtils.activityFromContext(getContext());
+        HelpAndFeedback.getInstance().show(
+                activity, activity.getString(mHelpContext), Profile.getLastUsedProfile(), null);
     }
 
     @Override
-    protected void onBindView(View view) {
-        super.onBindView(view);
-        TextView titleView = (TextView) view.findViewById(android.R.id.title);
-        titleView.setSingleLine(false);
-
-        setSelectable(false);
-
+    public void onBindViewHolder(PreferenceViewHolder holder) {
+        super.onBindViewHolder(holder);
+        TextView titleView = (TextView) holder.findViewById(android.R.id.title);
         titleView.setClickable(true);
         titleView.setTextColor(mColor);
-        titleView.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                LearnMorePreference.this.onClick();
-            }
-        });
+        titleView.setOnClickListener(v -> LearnMorePreference.this.onClick());
     }
 }

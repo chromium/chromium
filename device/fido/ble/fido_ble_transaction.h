@@ -34,6 +34,9 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoBleTransaction {
   void WriteRequestFrame(FidoBleFrame request_frame, FrameCallback callback);
   void OnResponseFragment(std::vector<uint8_t> data);
 
+  // Cancel requests that a cancelation command be sent if possible.
+  void Cancel();
+
  private:
   void WriteRequestFragment(const FidoBleFrameFragment& fragment);
   void OnRequestFragmentWritten(bool success);
@@ -56,8 +59,13 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoBleTransaction {
   base::OneShotTimer timer_;
 
   bool has_pending_request_fragment_write_ = false;
+  // cancel_pending_ is true if a cancelation should be sent after the current
+  // set of frames has finished transmitting.
+  bool cancel_pending_ = false;
+  // cancel_sent_ records whether a cancel message has already been sent.
+  bool cancel_sent_ = false;
 
-  base::WeakPtrFactory<FidoBleTransaction> weak_factory_;
+  base::WeakPtrFactory<FidoBleTransaction> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(FidoBleTransaction);
 };

@@ -10,3 +10,4 @@ per-file *websocket*=ricea@chromium.org
 per-file *websocket*=yhirano@chromium.org
 
 # COMPONENT: Internals>Plugins>Pepper
+# TEAM: pepper-dev@chromium.org

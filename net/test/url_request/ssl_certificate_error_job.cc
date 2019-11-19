@@ -42,8 +42,7 @@ class MockJobInterceptor : public URLRequestInterceptor {
 SSLCertificateErrorJob::SSLCertificateErrorJob(
     URLRequest* request,
     NetworkDelegate* network_delegate)
-    : URLRequestJob(request, network_delegate), weak_factory_(this) {
-}
+    : URLRequestJob(request, network_delegate) {}
 
 void SSLCertificateErrorJob::Start() {
   base::ThreadTaskRunnerHandle::Get()->PostTask(
@@ -67,7 +66,7 @@ SSLCertificateErrorJob::~SSLCertificateErrorJob() = default;
 void SSLCertificateErrorJob::NotifyError() {
   SSLInfo info;
   info.cert_status = CERT_STATUS_DATE_INVALID;
-  NotifySSLCertificateError(info, true);
+  NotifySSLCertificateError(net::ERR_CERT_DATE_INVALID, info, true);
 }
 
 }  // namespace net

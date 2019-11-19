@@ -5,8 +5,11 @@
 #ifndef UI_AURA_CLIENT_DRAG_DROP_DELEGATE_H_
 #define UI_AURA_CLIENT_DRAG_DROP_DELEGATE_H_
 
+#include <memory>
+
 #include "ui/aura/aura_export.h"
 #include "ui/aura/window.h"
+#include "ui/base/dragdrop/os_exchange_data.h"
 
 namespace ui {
 class DropTargetEvent;
@@ -35,8 +38,13 @@ class AURA_EXPORT DragDropDelegate {
   virtual void OnDragExited() = 0;
 
   // Invoked during a drag and drop session when OnDragUpdated returns a valid
-  // operation and the user release the mouse.
-  virtual int OnPerformDrop(const ui::DropTargetEvent& event) = 0;
+  // operation and the user release the mouse. This function gets the ownership
+  // of underlying OSExchangeData. A reference to this same OSExchangeData is
+  // also stored in the DropTargetEvent. Implementor of this function should be
+  // aware of keeping the OSExchageData alive until it wants to access it
+  // through the parameter or the stored reference in DropTargetEvent.
+  virtual int OnPerformDrop(const ui::DropTargetEvent& event,
+                            std::unique_ptr<ui::OSExchangeData> data) = 0;
 
  protected:
   virtual ~DragDropDelegate() {}

@@ -1,7 +1,5 @@
 #include "rar.hpp"
 
-namespace third_party_unrar {
-
 ComprDataIO::ComprDataIO()
 {
 #ifndef RAR_NOCRYPT
@@ -27,6 +25,7 @@ void ComprDataIO::Init()
   NextVolumeMissing=false;
   SrcFile=NULL;
   DestFile=NULL;
+  UnpWrAddr=NULL;
   UnpWrSize=0;
   Command=NULL;
   Encryption=false;
@@ -120,7 +119,7 @@ int ComprDataIO::UnpRead(byte *Addr,size_t Count)
     // Since we adjust data size for decryption earlier above,
     // it does not hurt "Keep broken files" mode efficiency.
     if (UnpVolume && UnpPackedSize == 0 && 
-        (ReadSize==0 || (Decryption && (TotalRead & CRYPT_BLOCK_MASK) != 0)) )
+        (ReadSize==0 || Decryption && (TotalRead & CRYPT_BLOCK_MASK) != 0) )
     {
 #ifndef NOVOLUME
       if (!MergeArchive(*SrcArc,this,true,CurrentCommand))
@@ -320,5 +319,3 @@ void ComprDataIO::SetUnpackToMemory(byte *Addr,uint Size)
   UnpackToMemoryAddr=Addr;
   UnpackToMemorySize=Size;
 }
-
-}  // namespace third_party_unrar

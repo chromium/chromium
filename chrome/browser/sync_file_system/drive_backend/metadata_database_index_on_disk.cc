@@ -224,7 +224,7 @@ void RemoveUnreachableItemsFromDB(LevelDBWrapper* db,
         continue;
       }
 
-      if (base::ContainsKey(visited_trackers, tracker->tracker_id())) {
+      if (base::Contains(visited_trackers, tracker->tracker_id())) {
         referred_file_ids.insert(tracker->file_id());
       } else {
         PutFileTrackerDeletionToDB(tracker->tracker_id(), db);
@@ -246,7 +246,7 @@ void RemoveUnreachableItemsFromDB(LevelDBWrapper* db,
         continue;
       }
 
-      if (!base::ContainsKey(referred_file_ids, metadata->file_id()))
+      if (!base::Contains(referred_file_ids, metadata->file_id()))
         PutFileMetadataDeletionToDB(metadata->file_id(), db);
     }
   }

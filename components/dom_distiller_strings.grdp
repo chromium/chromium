@@ -34,8 +34,8 @@
   <message name="IDS_DOM_DISTILLER_VIEWER_FAILED_TO_FIND_ARTICLE_CONTENT" desc="The text to show in place of reading list article content if the article is not found.">
     Could not find the requested article.
   </message>
-  <message name="IDS_DOM_DISTILLER_VIEWER_LOADING_TITLE" desc="The text to show in place of a reading list article title while the article is loading.">
-    Reader Mode
+  <message name="IDS_DOM_DISTILLER_VIEWER_LOADING_TITLE" desc="The text to show in place of a reading list article title while the article is loading. Translation should match TC ID 7558334641404735182, 7078777000119799848, and 8486137854427127199.">
+    Simplified view
   </message>
   <message name="IDS_DOM_DISTILLER_VIEWER_NO_DATA_CONTENT" desc="The text to show in place of reading list article content if there is no data found.">
     No data found.

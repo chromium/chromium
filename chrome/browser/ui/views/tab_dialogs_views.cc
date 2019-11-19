@@ -40,8 +40,7 @@ gfx::NativeView TabDialogsViews::GetDialogParentView() const {
 }
 
 void TabDialogsViews::ShowCollectedCookies() {
-  // Deletes itself on close.
-  new CollectedCookiesViews(web_contents_);
+  CollectedCookiesViews::CreateAndShowForWebContents(web_contents_);
 }
 
 void TabDialogsViews::ShowHungRendererDialog(

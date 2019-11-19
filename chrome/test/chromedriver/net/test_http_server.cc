@@ -7,9 +7,8 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/callback_helpers.h"
 #include "base/location.h"
-#include "base/message_loop/message_loop.h"
+#include "base/message_loop/message_pump_type.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
@@ -34,7 +33,7 @@ TestHttpServer::~TestHttpServer() {
 }
 
 bool TestHttpServer::Start() {
-  base::Thread::Options options(base::MessageLoop::TYPE_IO, 0);
+  base::Thread::Options options(base::MessagePumpType::IO, 0);
   bool thread_started = thread_.StartWithOptions(options);
   EXPECT_TRUE(thread_started);
   if (!thread_started)
@@ -115,14 +114,13 @@ void TestHttpServer::OnWebSocketRequest(
   }
 }
 
-void TestHttpServer::OnWebSocketMessage(int connection_id,
-                                        const std::string& data) {
+void TestHttpServer::OnWebSocketMessage(int connection_id, std::string data) {
   WebSocketMessageAction action;
   base::Closure callback;
   {
     base::AutoLock lock(action_lock_);
     action = message_action_;
-    callback = base::ResetAndReturn(&message_callback_);
+    callback = std::move(message_callback_);
   }
   if (!callback.is_null())
     callback.Run();

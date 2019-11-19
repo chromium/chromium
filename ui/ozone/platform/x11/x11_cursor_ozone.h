@@ -20,14 +20,19 @@ class Point;
 
 namespace ui {
 
-// Ref counted class to hold an X11 cursor resource. Handles creating X11 cursor
-// resources from SkBitmap/hotspot and clears the X11 resources on destruction.
+// Ref counted class to hold an X11 cursor resource.  Clears the X11 resources
+// on destruction
 class X11CursorOzone : public base::RefCounted<X11CursorOzone> {
  public:
+  // Handles creating X11 cursor resources from SkBitmap/hotspot.
   X11CursorOzone(const SkBitmap& bitmap, const gfx::Point& hotspot);
   X11CursorOzone(const std::vector<SkBitmap>& bitmaps,
                  const gfx::Point& hotspot,
                  int frame_delay_ms);
+  // Loads an X11 cursor named |name| by calling XcursorLibraryLoadCursor().
+  // May end up wrapping an x11::None so validity must be checked after using
+  // this constructor.
+  explicit X11CursorOzone(const char* name);
 
   // Creates a new cursor that is invisible.
   static scoped_refptr<X11CursorOzone> CreateInvisible();

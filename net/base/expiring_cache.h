@@ -127,12 +127,12 @@ class ExpiringCache {
   const ValueType* Get(const KeyType& key, const ExpirationType& now) {
     typename EntryMap::iterator it = entries_.find(key);
     if (it == entries_.end())
-      return NULL;
+      return nullptr;
 
     // Immediately remove expired entries.
     if (!expiration_comp_(now, it->second.second)) {
       Evict(it, now, true);
-      return NULL;
+      return nullptr;
     }
 
     return &it->second.first;

@@ -1,0 +1,38 @@
+{
+  "layers": [
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF",
+      "paintInvalidations": [
+        {
+          "object": "LayoutInline SPAN id='outer'",
+          "rect": [16, 108, 90, 63],
+          "reason": "appeared"
+        },
+        {
+          "object": "InlineTextBox 'CONTENTS'",
+          "rect": [18, 150, 86, 19],
+          "reason": "appeared"
+        },
+        {
+          "object": "InlineTextBox 'CONTENTS'",
+          "rect": [18, 150, 86, 19],
+          "reason": "disappeared"
+        },
+        {
+          "object": "InlineTextBox 'CONTENTS'",
+          "rect": [18, 110, 86, 19],
+          "reason": "appeared"
+        },
+        {
+          "object": "InlineTextBox 'CONTENTS'",
+          "rect": [18, 110, 86, 19],
+          "reason": "disappeared"
+        }
+      ]
+    }
+  ]
+}
+

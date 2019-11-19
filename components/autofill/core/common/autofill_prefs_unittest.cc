@@ -78,8 +78,8 @@ TEST_F(AutofillPrefsTest, MigrateDeprecatedAutofillPrefs) {
 // Tests that setting and getting the AutofillSyncTransportOptIn works as
 // expected.
 TEST_F(AutofillPrefsTest, WalletSyncTransportPref_GetAndSet) {
-  const std::string account1 = "account1";
-  const std::string account2 = "account2";
+  const CoreAccountId account1("account1");
+  const CoreAccountId account2("account2");
 
   // There should be no opt-in recorded at first.
   ASSERT_FALSE(IsUserOptedInWalletSyncTransport(pref_service(), account1));
@@ -129,7 +129,7 @@ TEST_F(AutofillPrefsTest, WalletSyncTransportPref_GetAndSet) {
 // Tests that AutofillSyncTransportOptIn is not stored using the plain text
 // account id.
 TEST_F(AutofillPrefsTest, WalletSyncTransportPref_UsesHashAccountId) {
-  const std::string account1 = "account1";
+  const CoreAccountId account1("account1");
 
   // There should be no opt-in recorded at first.
   EXPECT_TRUE(pref_service()
@@ -146,13 +146,13 @@ TEST_F(AutofillPrefsTest, WalletSyncTransportPref_UsesHashAccountId) {
   auto* dictionary =
       pref_service()->GetDictionary(prefs::kAutofillSyncTransportOptIn);
   EXPECT_EQ(NULL,
-            dictionary->FindKeyOfType(account1, base::Value::Type::INTEGER));
+            dictionary->FindKeyOfType(account1.id, base::Value::Type::INTEGER));
 }
 
 // Tests that clearing the AutofillSyncTransportOptIn works as expected.
 TEST_F(AutofillPrefsTest, WalletSyncTransportPref_Clear) {
-  const std::string account1 = "account1";
-  const std::string account2 = "account2";
+  const CoreAccountId account1("account1");
+  const CoreAccountId account2("account2");
 
   // There should be no opt-in recorded at first.
   EXPECT_TRUE(pref_service()
@@ -181,7 +181,7 @@ TEST_F(AutofillPrefsTest, WalletSyncTransportPref_Clear) {
 // Tests that the account id hash that we generate can be written and read from
 // JSON properly.
 TEST_F(AutofillPrefsTest, WalletSyncTransportPref_CanBeSetAndReadFromJSON) {
-  const std::string account1 = "account1";
+  const CoreAccountId account1("account1");
 
   // Set the opt-in for the first account.
   SetUserOptedInWalletSyncTransport(pref_service(), account1, true);
@@ -189,14 +189,13 @@ TEST_F(AutofillPrefsTest, WalletSyncTransportPref_CanBeSetAndReadFromJSON) {
                    ->GetDictionary(prefs::kAutofillSyncTransportOptIn)
                    ->DictEmpty());
 
-  const base::DictionaryValue* dictionary =
+  const base::Value* dictionary =
       pref_service()->GetDictionary(prefs::kAutofillSyncTransportOptIn);
+  ASSERT_TRUE(dictionary);
 
   std::string output_js;
-  EXPECT_TRUE(base::JSONWriter::Write(*dictionary, &output_js));
-  EXPECT_TRUE(dictionary->Equals(
-      base::DictionaryValue::From(base::JSONReader::ReadDeprecated(output_js))
-          .get()));
+  ASSERT_TRUE(base::JSONWriter::Write(*dictionary, &output_js));
+  EXPECT_EQ(*dictionary, *base::JSONReader::Read(output_js));
 }
 
 }  // namespace prefs

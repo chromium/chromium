@@ -42,7 +42,7 @@ static SkBitmap GetCursorBitmap(const Cursor& cursor) {
 }
 
 WebCursorInfo::WebCursorInfo(const Cursor& cursor)
-    : type(static_cast<Type>(cursor.GetType())),
+    : type(static_cast<ui::CursorType>(cursor.GetType())),
       hot_spot(cursor.HotSpot()),
       image_scale_factor(cursor.ImageScaleFactor()),
       custom_image(GetCursorBitmap(cursor))

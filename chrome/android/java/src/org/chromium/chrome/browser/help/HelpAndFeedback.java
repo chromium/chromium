@@ -9,18 +9,19 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.provider.Browser;
-import android.support.annotation.Nullable;
 import android.text.TextUtils;
+
+import androidx.annotation.Nullable;
 
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.AppHooks;
-import org.chromium.chrome.browser.UrlConstants;
 import org.chromium.chrome.browser.feedback.FeedbackCollector;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.util.UrlUtilities;
+import org.chromium.chrome.browser.util.UrlConstants;
+import org.chromium.chrome.browser.util.UrlUtilitiesJni;
 
 import javax.annotation.Nonnull;
 
@@ -30,14 +31,14 @@ import javax.annotation.Nonnull;
 public class HelpAndFeedback {
     protected static final String FALLBACK_SUPPORT_URL =
             "https://support.google.com/chrome/topic/6069782";
-    private static final String TAG = "cr_HelpAndFeedback";
+    private static final String TAG = "HelpAndFeedback";
 
     private static HelpAndFeedback sInstance;
 
     /**
      * Returns the singleton instance of HelpAndFeedback, creating it if needed.
      */
-    public static HelpAndFeedback getInstance(Context context) {
+    public static HelpAndFeedback getInstance() {
         ThreadUtils.assertOnUiThread();
         if (sInstance == null) {
             sInstance = AppHooks.get().createHelpAndFeedback();
@@ -137,7 +138,7 @@ public class HelpAndFeedback {
         } else if (url.equals(UrlConstants.HISTORY_URL)) {
             return context.getString(R.string.help_context_history);
         // Note: For www.google.com the following function returns false.
-        } else if (UrlUtilities.nativeIsGoogleSearchUrl(url)) {
+        } else if (UrlUtilitiesJni.get().isGoogleSearchUrl(url)) {
             return context.getString(R.string.help_context_search_results);
         // For incognito NTP, we want to show incognito help.
         } else if (isIncognito) {

@@ -6,6 +6,7 @@
 
 #include "base/ios/ios_util.h"
 #include "ios/chrome/browser/ui/util/ui_util.h"
+#import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/showcase/test/showcase_eg_utils.h"
 #import "ios/showcase/test/showcase_test_case.h"
@@ -138,7 +139,7 @@ id<GREYMatcher> UIAlertViewMessageForDelegateCallWithArgument(
 - (void)testVerifyFiltering {
   // TODO(crbug.com/753098): Re-enable this test on iPad once grey_typeText
   // works.
-  if (IsIPadIdiom()) {
+  if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_DISABLED(@"Test disabled on iPad.");
   }
 

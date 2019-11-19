@@ -4,7 +4,7 @@
 
 #include "ash/system/user/login_status.h"
 
-#include "ash/session/session_controller.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "base/strings/string_util.h"

@@ -38,6 +38,11 @@ import com.google.protobuf.Descriptors.EnumValueDescriptor;
 import com.google.protobuf.Descriptors.FieldDescriptor;
 import com.google.protobuf.Descriptors.FileDescriptor;
 import com.google.protobuf.Descriptors.OneofDescriptor;
+import com.google.protobuf.Internal.BooleanList;
+import com.google.protobuf.Internal.DoubleList;
+import com.google.protobuf.Internal.FloatList;
+import com.google.protobuf.Internal.IntList;
+import com.google.protobuf.Internal.LongList;
 // In opensource protobuf, we have versioned this GeneratedMessageV3 class to GeneratedMessageV3V3 and
 // in the future may have GeneratedMessageV3V4 etc. This allows us to change some aspects of this
 // class without breaking binary compatibility with old generated code that still subclasses
@@ -119,6 +124,21 @@ public abstract class GeneratedMessageV3 extends AbstractMessage
   @Override
   public Descriptor getDescriptorForType() {
     return internalGetFieldAccessorTable().descriptor;
+  }
+
+  protected void mergeFromAndMakeImmutableInternal(
+      CodedInputStream input, ExtensionRegistryLite extensionRegistry)
+      throws InvalidProtocolBufferException {
+    Schema<GeneratedMessageV3> schema =
+        (Schema<GeneratedMessageV3>) Protobuf.getInstance().schemaFor(this);
+    try {
+      schema.mergeFrom(this, CodedInputStreamReader.forCodedInput(input), extensionRegistry);
+    } catch (InvalidProtocolBufferException e) {
+      throw e.setUnfinishedMessage(this);
+    } catch (IOException e) {
+      throw new InvalidProtocolBufferException(e).setUnfinishedMessage(this);
+    }
+    schema.makeImmutable(this);
   }
 
   /**
@@ -293,16 +313,17 @@ public abstract class GeneratedMessageV3 extends AbstractMessage
     return unknownFields.mergeFieldFrom(tag, input);
   }
 
+  /**
+   * Delegates to parseUnknownField. This method is obsolete, but we must retain it for
+   * compatibility with older generated code.
+   */
   protected boolean parseUnknownFieldProto3(
       CodedInputStream input,
       UnknownFieldSet.Builder unknownFields,
       ExtensionRegistryLite extensionRegistry,
       int tag)
       throws IOException {
-    if (input.shouldDiscardUnknownFieldsProto3()) {
-      return input.skipField(tag);
-    }
-    return unknownFields.mergeFieldFrom(tag, input);
+    return parseUnknownField(input, unknownFields, extensionRegistry, tag);
   }
 
   protected static <M extends Message> M parseWithIOException(Parser<M> parser, InputStream input)
@@ -358,10 +379,81 @@ public abstract class GeneratedMessageV3 extends AbstractMessage
       throw e.unwrapIOException();
     }
   }
-  
+
   protected static boolean canUseUnsafe() {
     return UnsafeUtil.hasUnsafeArrayOperations() && UnsafeUtil.hasUnsafeByteBufferOperations();
   }
+
+  protected static IntList emptyIntList() {
+    return IntArrayList.emptyList();
+  }
+
+  protected static IntList newIntList() {
+    return new IntArrayList();
+  }
+
+  protected static IntList mutableCopy(IntList list) {
+    int size = list.size();
+    return list.mutableCopyWithCapacity(
+        size == 0 ? AbstractProtobufList.DEFAULT_CAPACITY : size * 2);
+  }
+
+  protected static LongList emptyLongList() {
+    return LongArrayList.emptyList();
+  }
+
+  protected static LongList newLongList() {
+    return new LongArrayList();
+  }
+
+  protected static LongList mutableCopy(LongList list) {
+    int size = list.size();
+    return list.mutableCopyWithCapacity(
+        size == 0 ? AbstractProtobufList.DEFAULT_CAPACITY : size * 2);
+  }
+
+  protected static FloatList emptyFloatList() {
+    return FloatArrayList.emptyList();
+  }
+
+  protected static FloatList newFloatList() {
+    return new FloatArrayList();
+  }
+
+  protected static FloatList mutableCopy(FloatList list) {
+    int size = list.size();
+    return list.mutableCopyWithCapacity(
+        size == 0 ? AbstractProtobufList.DEFAULT_CAPACITY : size * 2);
+  }
+
+  protected static DoubleList emptyDoubleList() {
+    return DoubleArrayList.emptyList();
+  }
+
+  protected static DoubleList newDoubleList() {
+    return new DoubleArrayList();
+  }
+
+  protected static DoubleList mutableCopy(DoubleList list) {
+    int size = list.size();
+    return list.mutableCopyWithCapacity(
+        size == 0 ? AbstractProtobufList.DEFAULT_CAPACITY : size * 2);
+  }
+
+  protected static BooleanList emptyBooleanList() {
+    return BooleanArrayList.emptyList();
+  }
+
+  protected static BooleanList newBooleanList() {
+    return new BooleanArrayList();
+  }
+
+  protected static BooleanList mutableCopy(BooleanList list) {
+    int size = list.size();
+    return list.mutableCopyWithCapacity(
+        size == 0 ? AbstractProtobufList.DEFAULT_CAPACITY : size * 2);
+  }
+
 
   @Override
   public void writeTo(final CodedOutputStream output) throws IOException {
@@ -381,6 +473,29 @@ public abstract class GeneratedMessageV3 extends AbstractMessage
   }
 
 
+
+  /**
+   * This class is used to make a generated protected method inaccessible from user's code (e.g.,
+   * the {@link #newInstance} method below). When this class is used as a parameter's type in a
+   * generated protected method, the method is visible to user's code in the same package, but
+   * since the constructor of this class is private to protobuf runtime, user's code can't obtain
+   * an instance of this class and as such can't actually make a method call on the protected
+   * method.
+   */
+  protected static final class UnusedPrivateParameter {
+    static final UnusedPrivateParameter INSTANCE = new UnusedPrivateParameter();
+
+    private UnusedPrivateParameter() {
+    }
+  }
+
+  /**
+   * Creates a new instance of this message type. Overridden in the generated code.
+   */
+  @SuppressWarnings({"unused"})
+  protected Object newInstance(UnusedPrivateParameter unused) {
+    throw new UnsupportedOperationException("This method must be overridden by the subclass.");
+  }
 
   /**
    * Used by parsing constructors in generated classes.
@@ -634,20 +749,23 @@ public abstract class GeneratedMessageV3 extends AbstractMessage
       return (BuilderType) this;
     }
 
-    @Override
-    public BuilderType setUnknownFields(final UnknownFieldSet unknownFields) {
+    private BuilderType setUnknownFieldsInternal(final UnknownFieldSet unknownFields) {
       this.unknownFields = unknownFields;
       onChanged();
       return (BuilderType) this;
     }
 
+    @Override
+    public BuilderType setUnknownFields(final UnknownFieldSet unknownFields) {
+      return setUnknownFieldsInternal(unknownFields);
+    }
+
+    /**
+     * This method is obsolete, but we must retain it for compatibility with
+     * older generated code.
+     */
     protected BuilderType setUnknownFieldsProto3(final UnknownFieldSet unknownFields) {
-      if (CodedInputStream.getProto3DiscardUnknownFieldsDefault()) {
-        return (BuilderType) this;
-      }
-      this.unknownFields = unknownFields;
-      onChanged();
-      return (BuilderType) this;
+      return setUnknownFieldsInternal(unknownFields);
     }
 
     @Override
@@ -1009,19 +1127,17 @@ public abstract class GeneratedMessageV3 extends AbstractMessage
           getDescriptorForType(), new MessageReflection.ExtensionAdapter(extensions), tag);
     }
 
+    /**
+     * Delegates to parseUnknownField. This method is obsolete, but we must retain it for
+     * compatibility with older generated code.
+     */
     @Override
     protected boolean parseUnknownFieldProto3(
         CodedInputStream input,
         UnknownFieldSet.Builder unknownFields,
         ExtensionRegistryLite extensionRegistry,
         int tag) throws IOException {
-      return MessageReflection.mergeFieldFrom(
-          input,
-          input.shouldDiscardUnknownFieldsProto3() ? null : unknownFields,
-          extensionRegistry,
-          getDescriptorForType(),
-          new MessageReflection.ExtensionAdapter(extensions),
-          tag);
+      return parseUnknownField(input, unknownFields, extensionRegistry, tag);
     }
 
 
@@ -1605,6 +1721,15 @@ public abstract class GeneratedMessageV3 extends AbstractMessage
         return (BuilderType) this;
       } else {
         return super.addRepeatedField(field, value);
+      }
+    }
+
+    @Override
+    public Message.Builder newBuilderForField(final FieldDescriptor field) {
+      if (field.isExtension()) {
+        return DynamicMessage.newBuilder(field.getMessageType());
+      } else {
+        return super.newBuilderForField(field);
       }
     }
 

@@ -12,12 +12,13 @@
 #include "base/mac/bundle_locations.h"
 #include "base/mac/foundation_util.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/url_loading/url_loading_params.h"
 #import "ios/chrome/browser/url_loading/url_loading_service.h"
 #import "ios/chrome/browser/url_loading/url_loading_service_factory.h"
-#import "ios/web/public/navigation_manager.h"
-#import "ios/web/public/web_state/ui/crw_context_menu_delegate.h"
-#import "ios/web/public/web_state/ui/crw_native_content.h"
-#import "ios/web/public/web_view_creation_util.h"
+#import "ios/web/common/web_view_creation_util.h"
+#import "ios/web/public/deprecated/crw_context_menu_delegate.h"
+#import "ios/web/public/deprecated/crw_native_content.h"
+#import "ios/web/public/navigation/navigation_manager.h"
 #import "net/base/mac/url_conversions.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -134,7 +135,7 @@
 }
 
 - (void)executeJavaScript:(NSString*)script
-        completionHandler:(web::JavaScriptResultBlock)handler {
+        completionHandler:(void (^)(id, NSError*))handler {
   [webView_ evaluateJavaScript:script completionHandler:handler];
 }
 
@@ -233,11 +234,11 @@
   // if they are issued by the main frame.
   if (fromMainFrame) {
     dispatch_async(dispatch_get_main_queue(), ^{
-      ChromeLoadParams params(net::GURLWithNSURL([request URL]));
       ios::ChromeBrowserState* chrome_browser_state =
           ios::ChromeBrowserState::FromBrowserState(browserState_);
       UrlLoadingServiceFactory::GetForBrowserState(chrome_browser_state)
-          ->LoadUrlInCurrentTab(params);
+          ->Load(
+              UrlLoadParams::InCurrentTab(net::GURLWithNSURL([request URL])));
     });
   }
   return NO;

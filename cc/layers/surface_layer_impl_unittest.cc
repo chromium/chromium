@@ -7,8 +7,7 @@
 #include <stddef.h>
 
 #include "cc/layers/append_quads_data.h"
-#include "cc/test/layer_test_common.h"
-#include "cc/trees/layer_tree_host_common.h"
+#include "cc/test/layer_tree_impl_test_base.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -25,15 +24,15 @@ TEST(SurfaceLayerImplTest, Occlusion) {
   const viz::LocalSurfaceId kArbitraryLocalSurfaceId(
       9, base::UnguessableToken::Create());
 
-  LayerTestCommon::LayerImplTest impl;
+  LayerTreeImplTestBase impl;
 
-  SurfaceLayerImpl* surface_layer_impl =
-      impl.AddChildToRoot<SurfaceLayerImpl>();
+  SurfaceLayerImpl* surface_layer_impl = impl.AddLayer<SurfaceLayerImpl>();
   surface_layer_impl->SetBounds(layer_size);
   surface_layer_impl->SetDrawsContent(true);
   viz::SurfaceId surface_id(kArbitraryFrameSinkId, kArbitraryLocalSurfaceId);
   surface_layer_impl->SetRange(viz::SurfaceRange(base::nullopt, surface_id),
                                base::nullopt);
+  CopyProperties(impl.root_layer(), surface_layer_impl);
 
   impl.CalcDrawProps(viewport_size);
 
@@ -42,8 +41,7 @@ TEST(SurfaceLayerImplTest, Occlusion) {
     gfx::Rect occluded;
     impl.AppendQuadsWithOcclusion(surface_layer_impl, occluded);
 
-    LayerTestCommon::VerifyQuadsExactlyCoverRect(impl.quad_list(),
-                                                 gfx::Rect(layer_size));
+    VerifyQuadsExactlyCoverRect(impl.quad_list(), gfx::Rect(layer_size));
     EXPECT_EQ(1u, impl.quad_list().size());
     EXPECT_TRUE(surface_layer_impl->WillDraw(DRAW_MODE_HARDWARE, nullptr));
   }
@@ -53,7 +51,7 @@ TEST(SurfaceLayerImplTest, Occlusion) {
     gfx::Rect occluded(surface_layer_impl->visible_layer_rect());
     impl.AppendQuadsWithOcclusion(surface_layer_impl, occluded);
 
-    LayerTestCommon::VerifyQuadsExactlyCoverRect(impl.quad_list(), gfx::Rect());
+    VerifyQuadsExactlyCoverRect(impl.quad_list(), gfx::Rect());
     EXPECT_EQ(impl.quad_list().size(), 0u);
     EXPECT_FALSE(surface_layer_impl->WillDraw(DRAW_MODE_HARDWARE, nullptr));
   }
@@ -64,8 +62,8 @@ TEST(SurfaceLayerImplTest, Occlusion) {
     impl.AppendQuadsWithOcclusion(surface_layer_impl, occluded);
 
     size_t partially_occluded_count = 0;
-    LayerTestCommon::VerifyQuadsAreOccluded(
-        impl.quad_list(), occluded, &partially_occluded_count);
+    VerifyQuadsAreOccluded(impl.quad_list(), occluded,
+                           &partially_occluded_count);
     // The layer outputs one quad, which is partially occluded.
     EXPECT_EQ(1u, impl.quad_list().size());
     EXPECT_EQ(1u, partially_occluded_count);
@@ -76,9 +74,8 @@ TEST(SurfaceLayerImplTest, Occlusion) {
 // This test verifies that activation_dependencies and the fallback_surface_id
 // are populated correctly if primary and fallback surfaces differ.
 TEST(SurfaceLayerImplTest, SurfaceLayerImplWithTwoDifferentSurfaces) {
-  LayerTestCommon::LayerImplTest impl;
-  SurfaceLayerImpl* surface_layer_impl =
-      impl.AddChildToRoot<SurfaceLayerImpl>();
+  LayerTreeImplTestBase impl;
+  SurfaceLayerImpl* surface_layer_impl = impl.AddLayer<SurfaceLayerImpl>();
 
   // Populate the primary viz::SurfaceInfo.
   const viz::LocalSurfaceId kArbitraryLocalSurfaceId1(
@@ -98,6 +95,7 @@ TEST(SurfaceLayerImplTest, SurfaceLayerImplWithTwoDifferentSurfaces) {
   surface_layer_impl->SetDrawsContent(true);
   surface_layer_impl->SetRange(viz::SurfaceRange(surface_id2, surface_id1), 2u);
   surface_layer_impl->SetBackgroundColor(SK_ColorBLUE);
+  CopyProperties(impl.root_layer(), surface_layer_impl);
 
   gfx::Size viewport_size(1000, 1000);
   impl.CalcDrawProps(viewport_size);
@@ -174,12 +172,12 @@ TEST(SurfaceLayerImplTest, SurfaceLayerImplWithTwoDifferentSurfaces) {
 // and the other uses the default then AppendQuadsData is populated
 // correctly.
 TEST(SurfaceLayerImplTest, SurfaceLayerImplsWithDeadlines) {
-  LayerTestCommon::LayerImplTest impl;
-  SurfaceLayerImpl* surface_layer_impl =
-      impl.AddChildToRoot<SurfaceLayerImpl>();
+  LayerTreeImplTestBase impl;
+  SurfaceLayerImpl* surface_layer_impl = impl.AddLayer<SurfaceLayerImpl>();
+  CopyProperties(impl.root_layer(), surface_layer_impl);
 
-  SurfaceLayerImpl* surface_layer_impl2 =
-      impl.AddChildToRoot<SurfaceLayerImpl>();
+  SurfaceLayerImpl* surface_layer_impl2 = impl.AddLayer<SurfaceLayerImpl>();
+  CopyProperties(impl.root_layer(), surface_layer_impl2);
 
   const viz::LocalSurfaceId kArbitraryLocalSurfaceId1(
       1, base::UnguessableToken::Create());
@@ -218,9 +216,8 @@ TEST(SurfaceLayerImplTest, SurfaceLayerImplsWithDeadlines) {
 // SurfaceLayerImpl holds the same surface ID for both the primary
 // and fallback viz::SurfaceInfo.
 TEST(SurfaceLayerImplTest, SurfaceLayerImplWithMatchingPrimaryAndFallback) {
-  LayerTestCommon::LayerImplTest impl;
-  SurfaceLayerImpl* surface_layer_impl =
-      impl.AddChildToRoot<SurfaceLayerImpl>();
+  LayerTreeImplTestBase impl;
+  SurfaceLayerImpl* surface_layer_impl = impl.AddLayer<SurfaceLayerImpl>();
 
   // Populate the primary viz::SurfaceId.
   const viz::LocalSurfaceId kArbitraryLocalSurfaceId1(
@@ -236,6 +233,7 @@ TEST(SurfaceLayerImplTest, SurfaceLayerImplWithMatchingPrimaryAndFallback) {
   surface_layer_impl->SetRange(viz::SurfaceRange(surface_id1), 1u);
   surface_layer_impl->SetRange(viz::SurfaceRange(surface_id1), 2u);
   surface_layer_impl->SetBackgroundColor(SK_ColorBLUE);
+  CopyProperties(impl.root_layer(), surface_layer_impl);
 
   gfx::Size viewport_size(1000, 1000);
   impl.CalcDrawProps(viewport_size);
@@ -243,13 +241,8 @@ TEST(SurfaceLayerImplTest, SurfaceLayerImplWithMatchingPrimaryAndFallback) {
   std::unique_ptr<viz::RenderPass> render_pass = viz::RenderPass::Create();
   AppendQuadsData data;
   surface_layer_impl->AppendQuads(render_pass.get(), &data);
-  // As the primary and fallback SurfaceInfos match, there is no reason to
-  // add the primary surface ID to |activation_dependencies| because it is not
-  // an unresolved dependency. The fallback surface will already be added as a
-  // reference in referenced_surfaces. Since the primary and fallback surface
-  // IDs match, there is no reason to propagate the deadline.
-  EXPECT_THAT(data.activation_dependencies, testing::IsEmpty());
-  EXPECT_EQ(base::nullopt, data.deadline_in_frames);
+  EXPECT_THAT(data.activation_dependencies, UnorderedElementsAre(surface_id1));
+  EXPECT_EQ(2u, data.deadline_in_frames);
 
   ASSERT_EQ(1u, render_pass->quad_list.size());
   const viz::SurfaceDrawQuad* surface_draw_quad1 =
@@ -259,6 +252,31 @@ TEST(SurfaceLayerImplTest, SurfaceLayerImplWithMatchingPrimaryAndFallback) {
   EXPECT_EQ(surface_id1, surface_draw_quad1->surface_range.end());
   EXPECT_EQ(surface_id1, surface_draw_quad1->surface_range.start());
   EXPECT_EQ(SK_ColorBLUE, surface_draw_quad1->default_background_color);
+}
+
+TEST(SurfaceLayerImplTest, GetEnclosingRectInTargetSpace) {
+  gfx::Size layer_size(902, 1000);
+  gfx::Size viewport_size(902, 1000);
+  LayerTreeImplTestBase impl;
+  SurfaceLayerImpl* surface_layer_impl = impl.AddLayer<SurfaceLayerImpl>();
+  surface_layer_impl->SetBounds(layer_size);
+  surface_layer_impl->SetDrawsContent(true);
+  CopyProperties(impl.root_layer(), surface_layer_impl);
+
+  // A device scale of 1.33 and transform of 1.5 were chosen as they produce
+  // different results when rounding at each stage, vs applying a single
+  // transform.
+  gfx::Transform transform;
+  transform.Scale(1.5, 1.5);
+  impl.host_impl()->active_tree()->SetDeviceScaleFactor(1.33);
+  impl.CalcDrawProps(viewport_size);
+  surface_layer_impl->draw_properties().target_space_transform = transform;
+
+  // GetEnclosingRectInTargetSpace() and GetScaledEnclosingRectInTargetSpace()
+  // should return the same value, otherwise we may not damage the right
+  // pixels.
+  EXPECT_EQ(surface_layer_impl->GetScaledEnclosingRectInTargetSpace(1.33),
+            surface_layer_impl->GetEnclosingRectInTargetSpace());
 }
 
 }  // namespace

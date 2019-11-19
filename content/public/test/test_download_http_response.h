@@ -42,7 +42,8 @@ class TestDownloadHttpResponse {
     HttpResponseData() = default;
     HttpResponseData(int64_t min_offset,
                      int64_t max_offset,
-                     const std::string& response);
+                     const std::string& response,
+                     bool is_transient);
     HttpResponseData(const HttpResponseData& other) = default;
 
     // The range for first byte position in range header to use this response.
@@ -50,6 +51,10 @@ class TestDownloadHttpResponse {
     int64_t max_offset = -1;
 
     std::string response;
+
+    // Whether the response data is transient and will be invalidated after
+    // sending once.
+    bool is_transient = false;
   };
 
   struct Parameters {
@@ -76,10 +81,15 @@ class TestDownloadHttpResponse {
     void ClearInjectedErrors();
 
     // Sets the response for range request when the starting offset of
-    // the request falls into [min_offset, max_offset].
+    // the request falls into [min_offset, max_offset]. If |is_transient|
+    // is true, |response| will only be sent once for the given range. And
+    // later responses will be calculated from the parameters. If
+    // |is_transient| is false, the |response| will be applied to the
+    // given range request forever.
     void SetResponseForRangeRequest(int64_t min_offset,
                                     int64_t max_offset,
-                                    const std::string& response);
+                                    const std::string& response,
+                                    bool is_transient = false);
 
     // Contents of the ETag header field of the response.  No Etag header is
     // sent if this field is empty.
@@ -324,7 +334,7 @@ class TestDownloadHttpResponse {
   // Callback to run when the response is sent.
   OnResponseSentCallback on_response_sent_callback_;
 
-  base::WeakPtrFactory<TestDownloadHttpResponse> weak_ptr_factory_;
+  base::WeakPtrFactory<TestDownloadHttpResponse> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(TestDownloadHttpResponse);
 };

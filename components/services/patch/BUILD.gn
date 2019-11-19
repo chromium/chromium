@@ -6,19 +6,36 @@ source_set("lib") {
   sources = [
     "file_patcher_impl.cc",
     "file_patcher_impl.h",
-    "patch_service.cc",
-    "patch_service.h",
   ]
 
   deps = [
     "//base",
-    "//components/services/filesystem/public/interfaces",
+    "//components/services/filesystem/public/mojom",
     "//courgette:courgette_lib",
     "//mojo/public/cpp/bindings",
   ]
 
   public_deps = [
-    "//components/services/patch/public/interfaces",
-    "//services/service_manager/public/cpp",
+    "//components/services/patch/public/mojom",
+  ]
+}
+
+source_set("in_process") {
+  # NOTE: In-process file patching is unsafe! Unfortunately on iOS we have no
+  # other choice. On all other platforms, this target is restricted to tests.
+  testonly = !is_ios
+
+  sources = [
+    "in_process_file_patcher.cc",
+    "in_process_file_patcher.h",
+  ]
+
+  deps = [
+    ":lib",
+  ]
+
+  public_deps = [
+    "//components/services/patch/public/mojom",
+    "//mojo/public/cpp/bindings",
   ]
 }

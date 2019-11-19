@@ -17,7 +17,7 @@ class ActiveSuggestionMarkerListImplTest : public EditingTestBase {
   DocumentMarker* CreateMarker(unsigned start_offset, unsigned end_offset) {
     return MakeGarbageCollected<ActiveSuggestionMarker>(
         start_offset, end_offset, Color::kTransparent,
-        ws::mojom::ImeTextSpanThickness::kThin, Color::kBlack);
+        ui::mojom::ImeTextSpanThickness::kThin, Color::kBlack);
   }
 
   Persistent<ActiveSuggestionMarkerListImpl> marker_list_;

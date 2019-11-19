@@ -6,14 +6,11 @@
 
 #include "base/bind.h"
 #include "base/macros.h"
-#include "base/message_loop/message_loop.h"
-#include "mojo/public/cpp/bindings/binding_set.h"
-#include "services/service_manager/public/cpp/binder_registry.h"
+#include "base/task/single_thread_task_executor.h"
 #include "services/service_manager/public/cpp/service.h"
 #include "services/service_manager/public/cpp/service_binding.h"
 #include "services/service_manager/public/cpp/service_executable/service_main.h"
 #include "services/service_manager/public/mojom/service.mojom.h"
-#include "services/service_manager/public/mojom/service_factory.mojom.h"
 #include "services/service_manager/tests/service_manager/test_manifests.h"
 
 namespace {
@@ -30,47 +27,31 @@ class PackagedService : public service_manager::Service {
   DISALLOW_COPY_AND_ASSIGN(PackagedService);
 };
 
-class Embedder : public service_manager::Service,
-                 public service_manager::mojom::ServiceFactory {
+class Embedder : public service_manager::Service {
  public:
   explicit Embedder(service_manager::mojom::ServiceRequest request)
-      : service_binding_(this, std::move(request)) {
-    registry_.AddInterface<service_manager::mojom::ServiceFactory>(
-        base::Bind(&Embedder::Create, base::Unretained(this)));
-  }
-
+      : service_binding_(this, std::move(request)) {}
   ~Embedder() override = default;
 
  private:
   // service_manager::Service:
-  void OnBindInterface(const service_manager::BindSourceInfo& source_info,
-                       const std::string& interface_name,
-                       mojo::ScopedMessagePipeHandle interface_pipe) override {
-    registry_.BindInterface(interface_name, std::move(interface_pipe));
-  }
-
-  void Create(service_manager::mojom::ServiceFactoryRequest request) {
-    service_factory_bindings_.AddBinding(this, std::move(request));
-  }
-
-  // mojom::ServiceFactory:
-  void CreateService(
-      service_manager::mojom::ServiceRequest request,
-      const std::string& name,
-      service_manager::mojom::PIDReceiverPtr pid_receiver) override {
-    if (name == service_manager::kTestRegularServiceName ||
-        name == service_manager::kTestSharedServiceName ||
-        name == service_manager::kTestSingletonServiceName) {
-      packaged_service_ = std::make_unique<PackagedService>(std::move(request));
+  void CreatePackagedServiceInstance(
+      const std::string& service_name,
+      mojo::PendingReceiver<service_manager::mojom::Service> receiver,
+      CreatePackagedServiceInstanceCallback callback) override {
+    if (service_name == service_manager::kTestRegularServiceName ||
+        service_name == service_manager::kTestSharedServiceName ||
+        service_name == service_manager::kTestSingletonServiceName) {
+      packaged_service_ = std::make_unique<PackagedService>(
+          service_manager::mojom::ServiceRequest(std::move(receiver)));
+      std::move(callback).Run(base::GetCurrentProcId());
     } else {
-      LOG(ERROR) << "Failed to create unknown service " << name;
+      LOG(ERROR) << "Failed to create unknown service " << service_name;
+      std::move(callback).Run(base::nullopt);
     }
   }
 
   service_manager::ServiceBinding service_binding_;
-  service_manager::BinderRegistry registry_;
-  mojo::BindingSet<service_manager::mojom::ServiceFactory>
-      service_factory_bindings_;
   std::unique_ptr<service_manager::Service> packaged_service_;
 
   DISALLOW_COPY_AND_ASSIGN(Embedder);
@@ -79,6 +60,6 @@ class Embedder : public service_manager::Service,
 }  // namespace
 
 void ServiceMain(service_manager::mojom::ServiceRequest request) {
-  base::MessageLoop message_loop;
+  base::SingleThreadTaskExecutor main_task_executor;
   Embedder(std::move(request)).RunUntilTermination();
 }

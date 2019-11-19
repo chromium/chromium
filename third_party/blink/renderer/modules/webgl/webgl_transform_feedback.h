@@ -55,7 +55,7 @@ class WebGLTransformFeedback : public WebGLContextObject {
 
   bool active() const { return active_; }
   bool paused() const { return paused_; }
-  const HeapVector<TraceWrapperMember<WebGLBuffer>>&
+  const HeapVector<Member<WebGLBuffer>>&
   bound_indexed_transform_feedback_buffers() const {
     return bound_indexed_transform_feedback_buffers_;
   }
@@ -81,8 +81,7 @@ class WebGLTransformFeedback : public WebGLContextObject {
   TFType type_;
   GLenum target_;
 
-  HeapVector<TraceWrapperMember<WebGLBuffer>>
-      bound_indexed_transform_feedback_buffers_;
+  HeapVector<Member<WebGLBuffer>> bound_indexed_transform_feedback_buffers_;
 
   Member<WebGLProgram> program_;
   unsigned program_link_count_;

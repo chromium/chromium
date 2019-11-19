@@ -9,7 +9,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/logging.h"
-#include "base/message_loop/message_loop.h"
+#include "base/message_loop/message_pump_type.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/trace_event.h"
@@ -83,7 +83,7 @@ void EventThreadEvdev::Start(
   thread_.reset(
       new EvdevThread(std::move(dispatcher), cursor, std::move(callback)));
   base::Thread::Options thread_options;
-  thread_options.message_loop_type = base::MessageLoop::TYPE_UI;
+  thread_options.message_pump_type = base::MessagePumpType::UI;
   thread_options.priority = base::ThreadPriority::DISPLAY;
   if (!thread_->StartWithOptions(thread_options))
     LOG(FATAL) << "Failed to create input thread";

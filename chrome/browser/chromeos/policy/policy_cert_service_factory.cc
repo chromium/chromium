@@ -6,7 +6,11 @@
 
 #include "base/memory/singleton.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/browser_process_platform_part.h"
+#include "chrome/browser/chromeos/policy/browser_policy_connector_chromeos.h"
+#include "chrome/browser/chromeos/policy/device_network_configuration_updater.h"
 #include "chrome/browser/chromeos/policy/policy_cert_service.h"
+#include "chrome/browser/chromeos/policy/user_network_configuration_updater.h"
 #include "chrome/browser/chromeos/policy/user_network_configuration_updater_factory.h"
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/profiles/incognito_helpers.h"
@@ -17,9 +21,25 @@
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/user_manager/user_manager.h"
 #include "services/network/cert_verifier_with_trust_anchors.h"
-#include "services/network/public/cpp/features.h"
 
 namespace policy {
+namespace {
+
+// Returns the PolicyCertificateProvider that should be used for |profile|.
+// May return nullptr, which should be treated as no policy-provided
+// certificates set.
+chromeos::PolicyCertificateProvider* GetPolicyCertificateProvider(
+    Profile* profile) {
+  if (chromeos::ProfileHelper::Get()->IsSigninProfile(profile)) {
+    return g_browser_process->platform_part()
+        ->browser_policy_connector_chromeos()
+        ->GetDeviceNetworkConfigurationUpdater();
+  }
+
+  return UserNetworkConfigurationUpdaterFactory::GetForBrowserContext(profile);
+}
+
+}  // namespace
 
 // static
 PolicyCertService* PolicyCertServiceFactory::GetForProfile(Profile* profile) {
@@ -28,30 +48,10 @@ PolicyCertService* PolicyCertServiceFactory::GetForProfile(Profile* profile) {
 }
 
 // static
-std::unique_ptr<network::CertVerifierWithTrustAnchors>
-PolicyCertServiceFactory::CreateForProfile(Profile* profile) {
-  DCHECK(!base::FeatureList::IsEnabled(network::features::kNetworkService));
-  DCHECK(!GetInstance()->GetServiceForBrowserContext(profile, false));
-  PolicyCertService* service = static_cast<PolicyCertService*>(
-      GetInstance()->GetServiceForBrowserContext(profile, true));
-  if (!service)
-    return nullptr;
-  return service->CreatePolicyCertVerifier();
-}
-
-// static
 bool PolicyCertServiceFactory::CreateAndStartObservingForProfile(
     Profile* profile) {
-  DCHECK(base::FeatureList::IsEnabled(network::features::kNetworkService));
-  // This can be called multiple times if the network process crashes.
-  if (GetInstance()->GetServiceForBrowserContext(profile, false))
-    return true;
-  PolicyCertService* service = static_cast<PolicyCertService*>(
-      GetInstance()->GetServiceForBrowserContext(profile, true));
-  if (!service)
-    return false;
-  service->StartObservingPolicyCerts();
-  return true;
+  // Note that this can be called multiple times if the network process crashes.
+  return GetInstance()->GetServiceForBrowserContext(profile, true) != nullptr;
 }
 
 // static
@@ -74,7 +74,7 @@ void PolicyCertServiceFactory::ClearUsedPolicyCertificates(
     const std::string& user_id) {
   ListPrefUpdate update(g_browser_process->local_state(),
                         prefs::kUsedPolicyCertificates);
-  update->Remove(base::Value(user_id), NULL);
+  update->Remove(base::Value(user_id), nullptr);
 }
 
 // static
@@ -106,22 +106,34 @@ PolicyCertServiceFactory::~PolicyCertServiceFactory() {}
 
 KeyedService* PolicyCertServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
-  Profile* profile = static_cast<Profile*>(context);
+  Profile* profile = Profile::FromBrowserContext(context);
+
+  chromeos::PolicyCertificateProvider* policy_certificate_provider =
+      GetPolicyCertificateProvider(profile);
+  if (!policy_certificate_provider)
+    return nullptr;
+
+  if (chromeos::ProfileHelper::Get()->IsSigninProfile(profile)) {
+    return new PolicyCertService(profile, policy_certificate_provider,
+                                 /*may_use_profile_wide_trust_anchors=*/false,
+                                 /*user_id=*/std::string(),
+                                 /*user_manager=*/nullptr);
+  }
 
   user_manager::UserManager* user_manager = user_manager::UserManager::Get();
   const user_manager::User* user =
       chromeos::ProfileHelper::Get()->GetUserByProfile(
           profile->GetOriginalProfile());
   if (!user)
-    return NULL;
+    return nullptr;
 
-  UserNetworkConfigurationUpdater* net_conf_updater =
-      UserNetworkConfigurationUpdaterFactory::GetForBrowserContext(profile);
-  if (!net_conf_updater)
-    return NULL;
+  bool may_use_profile_wide_trust_anchors =
+      user == user_manager->GetPrimaryUser() &&
+      user->GetType() != user_manager::USER_TYPE_GUEST;
 
-  return new PolicyCertService(profile, user->GetAccountId().GetUserEmail(),
-                               net_conf_updater, user_manager);
+  return new PolicyCertService(
+      profile, policy_certificate_provider, may_use_profile_wide_trust_anchors,
+      user->GetAccountId().GetUserEmail(), user_manager);
 }
 
 content::BrowserContext* PolicyCertServiceFactory::GetBrowserContextToUse(

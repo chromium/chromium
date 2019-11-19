@@ -14,10 +14,10 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
-#include "components/signin/core/browser/ubertoken_fetcher.h"
+#include "components/signin/public/identity_manager/access_token_fetcher.h"
+#include "components/signin/public/identity_manager/ubertoken_fetcher.h"
 #include "content/public/common/url_constants.h"
 #include "google_apis/gaia/gaia_auth_fetcher.h"
-#include "services/identity/public/cpp/access_token_fetcher.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace arc {
@@ -92,15 +92,15 @@ void ArcAuthContext::Prepare(const PrepareCallback& callback) {
   StartFetchers();
 }
 
-std::unique_ptr<identity::AccessTokenFetcher>
+std::unique_ptr<signin::AccessTokenFetcher>
 ArcAuthContext::CreateAccessTokenFetcher(
     const std::string& consumer_name,
     const identity::ScopeSet& scopes,
-    identity::AccessTokenFetcher::TokenCallback callback) {
+    signin::AccessTokenFetcher::TokenCallback callback) {
   DCHECK(identity_manager_->HasAccountWithRefreshToken(account_id_));
   return identity_manager_->CreateAccessTokenFetcherForAccount(
       account_id_, consumer_name, scopes, std::move(callback),
-      identity::AccessTokenFetcher::Mode::kImmediate);
+      signin::AccessTokenFetcher::Mode::kImmediate);
 }
 
 void ArcAuthContext::OnRefreshTokenUpdatedForAccount(

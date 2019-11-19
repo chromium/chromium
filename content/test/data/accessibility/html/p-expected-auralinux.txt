@@ -1,5 +1,5 @@
 [document web]
-++[text] name='Before'
+++[static] name='Before'
 ++[paragraph]
-++++[text] name='Paragraph'
-++[text] name='After'
+++++[static] name='Paragraph'
+++[static] name='After'

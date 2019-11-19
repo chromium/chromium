@@ -16,7 +16,7 @@ import java.util.concurrent.Callable;
  * Helpers for dealing with .lock files used during install / first run.
  */
 final class LockFile {
-    private static final String TAG = "cr.incrementalinstall";
+    private static final String TAG = "incrementalinstall";
 
     private final File mFile;
     private final FileOutputStream mOutputStream;

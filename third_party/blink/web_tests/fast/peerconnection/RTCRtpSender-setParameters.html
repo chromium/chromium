@@ -7,9 +7,12 @@
 </head>
 <body>
 <script>
-promise_test(async () => {
+promise_test(async t => {
   let pc1 = new RTCPeerConnection();
+  t.add_cleanup(() => pc1.close());
   let pc2 = new RTCPeerConnection();
+
+  t.add_cleanup(() => pc2.close());
 
   let stream = await navigator.mediaDevices.getUserMedia({ video: true });
   let videoSender = pc1.addTrack(stream.getVideoTracks()[0], stream);
@@ -27,9 +30,12 @@ promise_test(async () => {
   assert_equals(videoParameters.encodings[0].maxBitrate, 1337000);
 }, 'setParameters() changes getParameters() returned values');
 
-promise_test(async () => {
+promise_test(async t => {
   let pc1 = new RTCPeerConnection();
+  t.add_cleanup(() => pc1.close());
   let pc2 = new RTCPeerConnection();
+
+  t.add_cleanup(() => pc2.close());
 
   let stream = await navigator.mediaDevices.getUserMedia({ video: true });
   let videoSender = pc1.addTrack(stream.getVideoTracks()[0], stream);
@@ -45,7 +51,10 @@ promise_test(async () => {
 
 promise_test(async (t) => {
   let pc1 = new RTCPeerConnection();
+  t.add_cleanup(() => pc1.close());
   let pc2 = new RTCPeerConnection();
+
+  t.add_cleanup(() => pc2.close());
 
   let stream = await navigator.mediaDevices.getUserMedia({ video: true }, 1);
   let videoSender = pc1.addTrack(stream.getVideoTracks()[0], stream);
@@ -70,7 +79,10 @@ promise_test(async (t) => {
 
 promise_test(async (t) => {
   let pc1 = new RTCPeerConnection();
+  t.add_cleanup(() => pc1.close());
   let pc2 = new RTCPeerConnection();
+
+  t.add_cleanup(() => pc2.close());
 
   let stream = await navigator.mediaDevices.getUserMedia({ video: true }, 1);
   let videoSender = pc1.addTrack(stream.getVideoTracks()[0], stream);
@@ -326,9 +338,12 @@ for (testCase of requiredParameters) {
   'video setParameters() check for ' + testCase.name);
 }
 
-promise_test(async function() {
+promise_test(async t => {
   let pc1 = new RTCPeerConnection();
+  t.add_cleanup(() => pc1.close());
   let pc2 = new RTCPeerConnection();
+
+  t.add_cleanup(() => pc2.close());
 
   let stream = await navigator.mediaDevices.getUserMedia({video:true});
   let videoSender = pc1.addTrack(stream.getVideoTracks()[0], stream);

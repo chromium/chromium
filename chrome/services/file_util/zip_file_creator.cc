@@ -9,8 +9,8 @@
 
 #include "base/files/file.h"
 #include "base/files/file_path.h"
-#include "components/services/filesystem/public/interfaces/types.mojom-shared.h"
-#include "mojo/public/cpp/bindings/strong_binding.h"
+#include "components/services/filesystem/public/mojom/types.mojom-shared.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/zlib/google/zip.h"
 
 namespace chrome {
@@ -23,9 +23,11 @@ namespace {
 // converted to relative when calling filesystem::mojom::Directory APIs.
 class MojoFileAccessor : public zip::FileAccessor {
  public:
-  MojoFileAccessor(const base::FilePath& source_dir,
-                   filesystem::mojom::DirectoryPtr source_dir_mojo)
-      : source_dir_(source_dir), source_dir_mojo_(std::move(source_dir_mojo)) {}
+  MojoFileAccessor(
+      const base::FilePath& source_dir,
+      mojo::PendingRemote<filesystem::mojom::Directory> source_dir_remote)
+      : source_dir_(source_dir),
+        source_dir_remote_(std::move(source_dir_remote)) {}
   ~MojoFileAccessor() override = default;
 
  private:
@@ -50,7 +52,7 @@ class MojoFileAccessor : public zip::FileAccessor {
       details.push_back(std::move(open_details));
     }
     std::vector<filesystem::mojom::FileOpenResultPtr> results;
-    if (!source_dir_mojo_->OpenFileHandles(std::move(details), &results))
+    if (!source_dir_remote_->OpenFileHandles(std::move(details), &results))
       return std::vector<base::File>();
 
     std::vector<base::File> files;
@@ -69,32 +71,32 @@ class MojoFileAccessor : public zip::FileAccessor {
     DCHECK(dir_path.IsAbsolute());
 
     std::vector<DirectoryContentEntry> results;
-    // dir_mojo_ptr is the  directory that is open if |dir_path| is not the
+    // |dir_remote| is the  directory that is open if |dir_path| is not the
     // source dir. Note that it must be defined outside of the else block so it
-    // does not get deleted before dir_mojo is used (which would make dir_mojo
+    // does not get deleted before |dir| is used (which would make |dir|
     // invalid).
-    filesystem::mojom::DirectoryPtr dir_mojo_ptr;
-    filesystem::mojom::Directory* dir_mojo = nullptr;
+    mojo::Remote<filesystem::mojom::Directory> dir_remote;
+    filesystem::mojom::Directory* dir = nullptr;
     if (source_dir_ == dir_path) {
-      dir_mojo = source_dir_mojo_.get();
+      dir = source_dir_remote_.get();
     } else {
       base::FilePath relative_path = GetRelativePath(dir_path);
       base::File::Error error;
-      source_dir_mojo_->OpenDirectory(
-          relative_path.value(), mojo::MakeRequest(&dir_mojo_ptr),
+      source_dir_remote_->OpenDirectory(
+          relative_path.value(), dir_remote.BindNewPipeAndPassReceiver(),
           filesystem::mojom::kFlagRead | filesystem::mojom::kFlagOpen, &error);
       if (error != base::File::Error::FILE_OK) {
         LOG(ERROR) << "Failed to open " << dir_path.value() << " error "
                    << error;
         return results;
       }
-      dir_mojo = dir_mojo_ptr.get();
+      dir = dir_remote.get();
     }
 
     base::Optional<std::vector<filesystem::mojom::DirectoryEntryPtr>>
         directory_contents;
     base::File::Error error;
-    dir_mojo->Read(&error, &directory_contents);
+    dir->Read(&error, &directory_contents);
     if (error != base::File::Error::FILE_OK) {
       LOG(ERROR) << "Failed to list content of " << dir_path.value()
                  << " error " << error;
@@ -122,7 +124,8 @@ class MojoFileAccessor : public zip::FileAccessor {
     base::FilePath relative_path = GetRelativePath(absolute_path);
     base::File::Error error;
     filesystem::mojom::FileInformationPtr file_info_mojo;
-    source_dir_mojo_->StatFile(relative_path.value(), &error, &file_info_mojo);
+    source_dir_remote_->StatFile(relative_path.value(), &error,
+                                 &file_info_mojo);
     if (error != base::File::Error::FILE_OK) {
       LOG(ERROR) << "Failed to get last modified time of "
                  << absolute_path.value() << " error " << error;
@@ -145,21 +148,19 @@ class MojoFileAccessor : public zip::FileAccessor {
   base::FilePath source_dir_;
 
   // Interface ptr to the actual interface implementation used to access files.
-  filesystem::mojom::DirectoryPtr source_dir_mojo_;
+  mojo::Remote<filesystem::mojom::Directory> source_dir_remote_;
 
   DISALLOW_COPY_AND_ASSIGN(MojoFileAccessor);
 };
 
 }  // namespace
 
-ZipFileCreator::ZipFileCreator(
-    std::unique_ptr<service_manager::ServiceContextRef> service_ref)
-    : service_ref_(std::move(service_ref)) {}
+ZipFileCreator::ZipFileCreator() = default;
 
 ZipFileCreator::~ZipFileCreator() = default;
 
 void ZipFileCreator::CreateZipFile(
-    filesystem::mojom::DirectoryPtr source_dir_mojo,
+    mojo::PendingRemote<filesystem::mojom::Directory> source_dir_remote,
     const base::FilePath& source_dir,
     const std::vector<base::FilePath>& source_relative_paths,
     base::File zip_file,
@@ -178,7 +179,7 @@ void ZipFileCreator::CreateZipFile(
   zip::ZipParams zip_params(source_dir, zip_file.GetPlatformFile());
   zip_params.set_files_to_zip(source_relative_paths);
   zip_params.set_file_accessor(std::make_unique<MojoFileAccessor>(
-      source_dir, std::move(source_dir_mojo)));
+      source_dir, std::move(source_dir_remote)));
   bool success = zip::Zip(zip_params);
   std::move(callback).Run(success);
 }

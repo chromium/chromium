@@ -81,6 +81,13 @@ class MEDIA_EXPORT AudioManagerAndroid : public AudioManagerBase {
   void SetOutputVolumeOverride(double volume);
   bool HasOutputVolumeOverride(double* out_volume) const;
 
+  // Get the latency introduced by the hardware.  It relies on
+  // AudioManager.getOutputLatency, which is both (a) hidden and (b) not
+  // guaranteed to be meaningful.  Do not use this, except in the context of
+  // b/80326798 to adjust (hackily) for hardware latency that OpenSLES isn't
+  // otherwise accounting for.
+  base::TimeDelta GetOutputLatency();
+
  protected:
   void ShutdownOnAudioThread() override;
   AudioParameters GetPreferredOutputStreamParameters(
@@ -100,6 +107,9 @@ class MEDIA_EXPORT AudioManagerAndroid : public AudioManagerBase {
   void DoSetMuteOnAudioThread(bool muted);
   void DoSetVolumeOnAudioThread(double volume);
 
+  // Returns whether or not we can and should use AAudio.
+  bool UseAAudio();
+
   // Java AudioManager instance.
   base::android::ScopedJavaGlobalRef<jobject> j_audio_manager_;
 
@@ -109,6 +119,8 @@ class MEDIA_EXPORT AudioManagerAndroid : public AudioManagerBase {
   // Enabled when first input stream is created and set to false when last
   // input stream is destroyed. Also affects the stream type of output streams.
   bool communication_mode_is_on_;
+
+  base::Optional<bool> is_aaudio_available_;
 
   // If set, overrides volume level on output streams
   bool output_volume_override_set_;

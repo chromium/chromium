@@ -17,9 +17,9 @@ namespace test {
 
 // Values supplied to |behavior|.
 // NativeWidget implementation is not customized in anyway.
-const uint32_t kDefault = 0u;
+constexpr uint32_t kDefault = 0u;
 // Indicates capture should be mocked out and not interact with the system.
-const uint32_t kStubCapture = 1 << 0;
+constexpr uint32_t kStubCapture = 1 << 0;
 
 // Creates the appropriate platform specific NativeWidget implementation.
 // If |destroyed| is non-null it it set to true from the destructor of the

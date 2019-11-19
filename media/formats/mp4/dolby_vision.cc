@@ -13,35 +13,37 @@
 namespace media {
 namespace mp4 {
 
-DolbyVisionConfiguration::DolbyVisionConfiguration()
-    : dv_version_major(0),
-      dv_version_minor(0),
-      dv_profile(0),
-      dv_level(0),
-      rpu_present_flag(0),
-      el_present_flag(0),
-      bl_present_flag(0),
-      codec_profile(VIDEO_CODEC_PROFILE_UNKNOWN) {}
-
-DolbyVisionConfiguration::~DolbyVisionConfiguration() {}
+DolbyVisionConfiguration::DolbyVisionConfiguration() = default;
+DolbyVisionConfiguration::~DolbyVisionConfiguration() = default;
 
 FourCC DolbyVisionConfiguration::BoxType() const {
   return FOURCC_DVCC;
 }
 
 bool DolbyVisionConfiguration::Parse(BoxReader* reader) {
-  return ParseInternal(reader, reader->media_log());
+  return dovi_config.Parse(reader, reader->media_log());
 }
 
-bool DolbyVisionConfiguration::ParseForTesting(const uint8_t* data,
-                                               int data_size) {
+DolbyVisionConfiguration8::DolbyVisionConfiguration8() = default;
+DolbyVisionConfiguration8::~DolbyVisionConfiguration8() = default;
+
+FourCC DolbyVisionConfiguration8::BoxType() const {
+  return FOURCC_DVVC;
+}
+
+bool DolbyVisionConfiguration8::Parse(BoxReader* reader) {
+  return dovi_config.Parse(reader, reader->media_log());
+}
+
+bool DOVIDecoderConfigurationRecord::ParseForTesting(const uint8_t* data,
+                                                     int data_size) {
   BufferReader reader(data, data_size);
   NullMediaLog media_log;
-  return ParseInternal(&reader, &media_log);
+  return Parse(&reader, &media_log);
 }
 
-bool DolbyVisionConfiguration::ParseInternal(BufferReader* reader,
-                                             MediaLog* media_log) {
+bool DOVIDecoderConfigurationRecord::Parse(BufferReader* reader,
+                                           MediaLog* media_log) {
   uint16_t profile_track_indication = 0;
   RCHECK(reader->Read1(&dv_version_major) && reader->Read1(&dv_version_minor) &&
          reader->Read2(&profile_track_indication));
@@ -64,6 +66,12 @@ bool DolbyVisionConfiguration::ParseInternal(BufferReader* reader,
       break;
     case 7:
       codec_profile = DOLBYVISION_PROFILE7;
+      break;
+    case 8:
+      codec_profile = DOLBYVISION_PROFILE8;
+      break;
+    case 9:
+      codec_profile = DOLBYVISION_PROFILE9;
       break;
     default:
       DVLOG(2) << "Deprecated or invalid Dolby Vision profile:"

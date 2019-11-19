@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<title>Test the timing in the worker to be consistent between animation and performance.now().</title>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script id="worker" type="text/worker">
+var countWorker = 10;
+function animate(time) {
+  var timeNow = performance.now();
+  countWorker--;
+  self.postMessage([time, timeNow, countWorker]);
+  if(countWorker > 0)
+    requestAnimationFrame(animate);
+};
+
+self.onmessage = function(msg){
+  requestAnimationFrame(animate);
+}
+</script>
+<script>
+async_test(function(t) {
+  const blob = new Blob([document.getElementById("worker").textContent]);
+  const worker = new Worker(URL.createObjectURL(blob));
+  let delta = 0;
+  worker.onmessage = t.step_func(function(pairTime) {
+    const time = pairTime.data[0];
+    const timeNow = pairTime.data[1];
+    const count = pairTime.data[2];
+    if (count == 9) {
+      delta = time - timeNow;
+    }
+    console.log(time, timeNow, count, delta);
+    assert_approx_equals(time, timeNow + delta, 1000, "Times must be close enough");
+    if(count == 0)
+      t.done();
+  });
+  worker.postMessage("");
+}, 'Test the timing in the worker to be consistent between animation and performance.now');
+</script>

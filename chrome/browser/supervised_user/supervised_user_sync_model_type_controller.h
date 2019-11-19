@@ -29,7 +29,7 @@ class SupervisedUserSyncModelTypeController
   ~SupervisedUserSyncModelTypeController() override;
 
   // DataTypeController override.
-  bool ReadyForStart() const override;
+  PreconditionState GetPreconditionState() const override;
 
  private:
   const Profile* const profile_;

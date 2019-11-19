@@ -24,7 +24,6 @@ class ChromeCleanerRebootDialogControllerImpl
     virtual void ShowChromeCleanerRebootPrompt(
         Browser* browser,
         ChromeCleanerRebootDialogControllerImpl* controller) = 0;
-    virtual void OpenSettingsPage(Browser* browser) = 0;
     virtual void OnSettingsPageIsActiveTab() = 0;
   };
 

@@ -10,7 +10,7 @@
 #include "chrome/browser/media/android/router/media_router_android_bridge.h"
 #include "chrome/browser/media/router/test/test_helper.h"
 #include "content/public/browser/presentation_service_delegate.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/origin.h"
@@ -60,7 +60,7 @@ class MediaRouterAndroidTest : public testing::Test {
  protected:
   // For the checks that MediaRouter calls are running on the UI thread.
   // Needs to be the first member variable to be destroyed last.
-  content::TestBrowserThreadBundle thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
 
   std::unique_ptr<MediaRouterAndroid> router_;
   MockMediaRouterAndroidBridge* mock_bridge_;

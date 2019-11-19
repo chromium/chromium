@@ -12,13 +12,13 @@
 #include "base/run_loop.h"
 #include "chrome/browser/chromeos/arc/fileapi/arc_file_system_operation_runner.h"
 #include "chrome/test/base/testing_profile.h"
-#include "components/arc/arc_bridge_service.h"
 #include "components/arc/arc_service_manager.h"
-#include "components/arc/common/file_system.mojom.h"
+#include "components/arc/mojom/file_system.mojom.h"
+#include "components/arc/session/arc_bridge_service.h"
 #include "components/arc/test/connection_holder_util.h"
 #include "components/arc/test/fake_file_system_instance.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -115,6 +115,11 @@ class ArcFileSystemOperationRunnerTest : public testing::Test {
         base::BindOnce(
             [](int* counter, mojo::ScopedHandle handle) { ++*counter; },
             counter));
+    runner_->OpenFileToWrite(
+        GURL(kUrl),
+        base::BindOnce(
+            [](int* counter, mojo::ScopedHandle handle) { ++*counter; },
+            counter));
 
     // RemoveWatcher() is never deferred.
     runner_->RemoveWatcher(
@@ -122,7 +127,7 @@ class ArcFileSystemOperationRunnerTest : public testing::Test {
                             counter));
   }
 
-  content::TestBrowserThreadBundle thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
   FakeFileSystemInstance file_system_instance_;
 
   // Use the same initialization/destruction order as
@@ -140,7 +145,7 @@ TEST_F(ArcFileSystemOperationRunnerTest, RunImmediately) {
   CallSetShouldDefer(false);
   CallAllFunctions(&counter);
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(9, counter);
+  EXPECT_EQ(10, counter);
 }
 
 TEST_F(ArcFileSystemOperationRunnerTest, DeferAndRun) {
@@ -152,7 +157,7 @@ TEST_F(ArcFileSystemOperationRunnerTest, DeferAndRun) {
 
   CallSetShouldDefer(false);
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(9, counter);
+  EXPECT_EQ(10, counter);
 }
 
 // TODO(nya,hidehiko): Check if we should keep this test.
@@ -177,7 +182,7 @@ TEST_F(ArcFileSystemOperationRunnerTest, FileInstanceUnavailable) {
   CallSetShouldDefer(false);
   CallAllFunctions(&counter);
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(9, counter);
+  EXPECT_EQ(10, counter);
 }
 
 }  // namespace arc

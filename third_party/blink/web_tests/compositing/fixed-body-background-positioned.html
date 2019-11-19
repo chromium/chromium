@@ -33,7 +33,7 @@
         runAfterLayoutAndPaint(function()
         {
             if (window.internals && window.testRunner) {
-                var layerTree = internals.layerTreeAsText(document, internals.LAYER_TREE_INCLUDES_ROOT_LAYER);
+                var layerTree = internals.layerTreeAsText(document);
                 testRunner.setCustomTextOutput(layerTree);
             }
         }, true);

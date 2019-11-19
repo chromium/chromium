@@ -11,7 +11,7 @@
 
 #include "url/gurl.h"
 
-struct InstallableData;
+enum class WebappInstallSource;
 struct WebApplicationInfo;
 class SkBitmap;
 
@@ -25,7 +25,8 @@ class WebContents;
 
 namespace web_app {
 
-struct BitmapAndSource;
+enum class ExternalInstallSource;
+enum class InstallResultCode;
 
 enum class ForInstallableSite {
   kYes,
@@ -33,45 +34,42 @@ enum class ForInstallableSite {
   kUnknown,
 };
 
-// A map of icon urls to the bitmaps provided by that url.
-using IconsMap = std::map<GURL, std::vector<SkBitmap>>;
-
 // Update the given WebApplicationInfo with information from the manifest.
 void UpdateWebAppInfoFromManifest(const blink::Manifest& manifest,
                                   WebApplicationInfo* web_app_info,
                                   ForInstallableSite installable_site);
 
-// Returns icon sizes to be generated from downloaded icons.
-std::set<int> SizesToGenerate();
-
-// Form a list of icons to download:
-// Remove icons with invalid urls. Skip primary icon that we already have
-// downloaded during installability check phase.
+// Form a list of icons to download: Remove icons with invalid urls.
 std::vector<GURL> GetValidIconUrlsToDownload(
-    const InstallableData& data,
     const WebApplicationInfo& web_app_info);
 
-// Merge primary icon from installability check phase:
-// Add the primary icon to the final web app creation data.
-void MergeInstallableDataIcon(const InstallableData& data,
-                              WebApplicationInfo* web_app_info);
+// A map of icon urls to the bitmaps provided by that url.
+using IconsMap = std::map<GURL, std::vector<SkBitmap>>;
 
-// Get a list of non-empty square icons from downloaded |icons_map| and
-// |web_app_info| (merged together).
-std::vector<BitmapAndSource> FilterSquareIcons(
-    const IconsMap& icons_map,
-    const WebApplicationInfo& web_app_info);
-
-// Ensure that the necessary-sized icons are available by resizing larger
-// icons down to smaller sizes, and generating icons for sizes where resizing
-// is not possible.
-void ResizeDownloadedIconsGenerateMissing(
-    std::vector<BitmapAndSource> downloaded_icons,
-    WebApplicationInfo* web_app_info);
+// Filter out square icons, ensure that the necessary-sized icons are available
+// by resizing larger icons down to smaller sizes, and generating icons for
+// sizes where resizing is not possible. |icons_map| is optional.
+//
+// Historically, |is_for_sync| is a hack for the old |ExtensionSyncService|
+// system to avoid sync wars. It is important that the linked app information in
+// any web app that gets created from sync matches the linked app information
+// that came from sync. If there are any changes, they will be synced back to
+// other devices and could potentially create a never ending sync cycle. If
+// |is_for_sync| is true then icon links won't be changed.
+void FilterAndResizeIconsGenerateMissing(WebApplicationInfo* web_app_info,
+                                         const IconsMap* icons_map,
+                                         bool is_for_sync);
 
 // Record an app banner added to homescreen event to ensure banners are not
 // shown for this app.
 void RecordAppBanner(content::WebContents* contents, const GURL& app_url);
+
+WebappInstallSource ConvertExternalInstallSourceToInstallSource(
+    ExternalInstallSource external_install_source);
+
+void RecordExternalAppInstallResultCode(
+    const char* histogram_name,
+    std::map<GURL, InstallResultCode> install_results);
 
 }  // namespace web_app
 

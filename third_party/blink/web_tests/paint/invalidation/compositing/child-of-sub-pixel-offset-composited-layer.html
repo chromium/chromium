@@ -3,7 +3,7 @@
 <head>
 <style>
 .container {
-  transform: translateZ(0);
+  will-change: transform;
   position: absolute;
   top: 100px;
   left:100.5px;
@@ -32,8 +32,6 @@
 <script>
 // This test ensures that children of a composited element with a sub-pixel offset are properly repainted.
 // The box should have a fully green border.
-if (window.testRunner)
-    testRunner.dumpAsTextWithPixelResults();
 function repaintTest() {
   var target = document.getElementById('target');
   target.classList.add('green');

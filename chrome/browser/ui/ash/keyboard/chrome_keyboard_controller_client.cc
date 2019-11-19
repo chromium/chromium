@@ -6,7 +6,10 @@
 
 #include <utility>
 
-#include "ash/public/interfaces/constants.mojom.h"
+#include "ash/keyboard/ui/keyboard_ui_controller.h"
+#include "ash/keyboard/ui/resources/keyboard_resource_util.h"
+#include "ash/public/cpp/keyboard/keyboard_switches.h"
+#include "ash/public/mojom/constants.mojom.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/command_line.h"
@@ -25,16 +28,11 @@
 #include "extensions/browser/event_router.h"
 #include "extensions/common/api/virtual_keyboard_private.h"
 #include "extensions/common/extension_messages.h"
-#include "services/service_manager/public/cpp/connector.h"
 #include "ui/base/ime/chromeos/input_method_manager.h"
 #include "ui/base/ime/ime_bridge.h"
 #include "ui/base/ime/input_method.h"
 #include "ui/base/ime/text_input_client.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/keyboard/keyboard_controller.h"
-#include "ui/keyboard/public/keyboard_switches.h"
-#include "ui/keyboard/resources/keyboard_resource_util.h"
 #include "ui/wm/core/coordinate_conversion.h"
 
 namespace virtual_keyboard_private = extensions::api::virtual_keyboard_private;
@@ -48,20 +46,19 @@ static ChromeKeyboardControllerClient* g_chrome_keyboard_controller_client =
 
 // static
 std::unique_ptr<ChromeKeyboardControllerClient>
-ChromeKeyboardControllerClient::Create(service_manager::Connector* connector) {
+ChromeKeyboardControllerClient::Create() {
   // Use WrapUnique to allow the constructor to be private.
   std::unique_ptr<ChromeKeyboardControllerClient> client =
-      base::WrapUnique(new ChromeKeyboardControllerClient(connector));
+      base::WrapUnique(new ChromeKeyboardControllerClient());
   client->InitializePrefObserver();
   return client;
 }
 
 // static
 std::unique_ptr<ChromeKeyboardControllerClient>
-ChromeKeyboardControllerClient::CreateForTest(
-    service_manager::Connector* connector) {
+ChromeKeyboardControllerClient::CreateForTest() {
   // Use WrapUnique to allow the constructor to be private.
-  return base::WrapUnique(new ChromeKeyboardControllerClient(connector));
+  return base::WrapUnique(new ChromeKeyboardControllerClient());
 }
 
 // static
@@ -76,40 +73,30 @@ bool ChromeKeyboardControllerClient::HasInstance() {
   return !!g_chrome_keyboard_controller_client;
 }
 
-ChromeKeyboardControllerClient::ChromeKeyboardControllerClient(
-    service_manager::Connector* connector) {
+ChromeKeyboardControllerClient::ChromeKeyboardControllerClient() {
   CHECK(!g_chrome_keyboard_controller_client);
   g_chrome_keyboard_controller_client = this;
+}
 
-  if (!connector)
-    return;  // May be null in tests.
-
-  connector->BindInterface(ash::mojom::kServiceName, &keyboard_controller_ptr_);
+void ChromeKeyboardControllerClient::Init(
+    ash::KeyboardController* keyboard_controller) {
+  DCHECK(!keyboard_controller_);
+  keyboard_controller_ = keyboard_controller;
 
   // Add this as a KeyboardController observer.
-  ash::mojom::KeyboardControllerObserverAssociatedPtrInfo ptr_info;
-  keyboard_controller_observer_binding_.Bind(mojo::MakeRequest(&ptr_info));
-  keyboard_controller_ptr_->AddObserver(std::move(ptr_info));
+  keyboard_controller_->AddObserver(this);
 
   // Request the initial enabled state.
-  keyboard_controller_ptr_->IsKeyboardEnabled(
-      base::BindOnce(&ChromeKeyboardControllerClient::OnKeyboardEnabledChanged,
-                     weak_ptr_factory_.GetWeakPtr()));
+  OnKeyboardEnabledChanged(keyboard_controller_->IsKeyboardEnabled());
 
   // Request the initial set of enable flags.
-  keyboard_controller_ptr_->GetEnableFlags(base::BindOnce(
-      &ChromeKeyboardControllerClient::OnKeyboardEnableFlagsChanged,
-      weak_ptr_factory_.GetWeakPtr()));
+  OnKeyboardEnableFlagsChanged(keyboard_controller_->GetEnableFlags());
 
   // Request the initial visible state.
-  keyboard_controller_ptr_->IsKeyboardVisible(base::BindOnce(
-      &ChromeKeyboardControllerClient::OnKeyboardVisibilityChanged,
-      weak_ptr_factory_.GetWeakPtr()));
+  OnKeyboardVisibilityChanged(keyboard_controller_->IsKeyboardVisible());
 
   // Request the configuration.
-  keyboard_controller_ptr_->GetKeyboardConfig(
-      base::BindOnce(&ChromeKeyboardControllerClient::OnKeyboardConfigChanged,
-                     weak_ptr_factory_.GetWeakPtr()));
+  OnKeyboardConfigChanged(keyboard_controller_->GetKeyboardConfig());
 }
 
 ChromeKeyboardControllerClient::~ChromeKeyboardControllerClient() {
@@ -125,14 +112,19 @@ void ChromeKeyboardControllerClient::InitializePrefObserver() {
 }
 
 void ChromeKeyboardControllerClient::Shutdown() {
+  if (keyboard_controller_) {
+    keyboard_controller_->RemoveObserver(this);
+    keyboard_controller_ = nullptr;
+  }
+
   if (session_manager::SessionManager::Get())
     session_manager::SessionManager::Get()->RemoveObserver(this);
   pref_change_registrar_.RemoveAll();
-  if (!::features::IsUsingWindowService() &&
-      keyboard::KeyboardController::HasInstance()) {
+
+  if (keyboard::KeyboardUIController::HasInstance()) {
     // In classic Ash, keyboard::KeyboardController owns ChromeKeyboardUI which
     // accesses this class, so make sure that the UI has been destroyed.
-    keyboard::KeyboardController::Get()->DisableKeyboard();
+    keyboard::KeyboardUIController::Get()->Shutdown();
   }
   keyboard_contents_.reset();
 }
@@ -152,96 +144,97 @@ void ChromeKeyboardControllerClient::NotifyKeyboardLoaded() {
     observer.OnKeyboardLoaded();
 }
 
-keyboard::mojom::KeyboardConfig
-ChromeKeyboardControllerClient::GetKeyboardConfig() {
+keyboard::KeyboardConfig ChromeKeyboardControllerClient::GetKeyboardConfig() {
   if (!cached_keyboard_config_) {
     // Unlikely edge case (called before the Ash mojo service replies to the
     // initial GetKeyboardConfig request). Return the default value.
-    return keyboard::mojom::KeyboardConfig();
+    return keyboard::KeyboardConfig();
   }
-  return *cached_keyboard_config_.get();
+  return *cached_keyboard_config_;
 }
 
 void ChromeKeyboardControllerClient::SetKeyboardConfig(
-    const keyboard::mojom::KeyboardConfig& config) {
+    const keyboard::KeyboardConfig& config) {
   // Update the cache immediately.
-  cached_keyboard_config_ = keyboard::mojom::KeyboardConfig::New(config);
-  keyboard_controller_ptr_->SetKeyboardConfig(config.Clone());
+  cached_keyboard_config_ = config;
+  keyboard_controller_->SetKeyboardConfig(config);
 }
 
-void ChromeKeyboardControllerClient::GetKeyboardEnabled(
-    base::OnceCallback<void(bool)> callback) {
-  keyboard_controller_ptr_->IsKeyboardEnabled(std::move(callback));
+bool ChromeKeyboardControllerClient::GetKeyboardEnabled() {
+  return keyboard_controller_->IsKeyboardEnabled();
 }
 
 void ChromeKeyboardControllerClient::SetEnableFlag(
-    const keyboard::mojom::KeyboardEnableFlag& flag) {
-  DVLOG(1) << "SetEnableFlag: " << flag;
-  keyboard_controller_ptr_->SetEnableFlag(flag);
+    const keyboard::KeyboardEnableFlag& flag) {
+  DVLOG(1) << "SetEnableFlag: " << static_cast<int>(flag);
+  keyboard_controller_->SetEnableFlag(flag);
 }
 
 void ChromeKeyboardControllerClient::ClearEnableFlag(
-    const keyboard::mojom::KeyboardEnableFlag& flag) {
-  keyboard_controller_ptr_->ClearEnableFlag(flag);
+    const keyboard::KeyboardEnableFlag& flag) {
+  keyboard_controller_->ClearEnableFlag(flag);
 }
 
 bool ChromeKeyboardControllerClient::IsEnableFlagSet(
-    const keyboard::mojom::KeyboardEnableFlag& flag) {
-  return base::ContainsKey(keyboard_enable_flags_, flag);
+    const keyboard::KeyboardEnableFlag& flag) {
+  return base::Contains(keyboard_enable_flags_, flag);
 }
 
 void ChromeKeyboardControllerClient::ReloadKeyboardIfNeeded() {
-  keyboard_controller_ptr_->ReloadKeyboardIfNeeded();
+  keyboard_controller_->ReloadKeyboardIfNeeded();
 }
 
 void ChromeKeyboardControllerClient::RebuildKeyboardIfEnabled() {
-  keyboard_controller_ptr_->RebuildKeyboardIfEnabled();
+  keyboard_controller_->RebuildKeyboardIfEnabled();
 }
 
 void ChromeKeyboardControllerClient::ShowKeyboard() {
-  keyboard_controller_ptr_->ShowKeyboard();
+  keyboard_controller_->ShowKeyboard();
 }
 
-void ChromeKeyboardControllerClient::HideKeyboard(
-    ash::mojom::HideReason reason) {
-  keyboard_controller_ptr_->HideKeyboard(reason);
+void ChromeKeyboardControllerClient::HideKeyboard(ash::HideReason reason) {
+  keyboard_controller_->HideKeyboard(reason);
 }
 
 void ChromeKeyboardControllerClient::SetContainerType(
-    keyboard::mojom::ContainerType container_type,
+    keyboard::ContainerType container_type,
     const base::Optional<gfx::Rect>& target_bounds,
     base::OnceCallback<void(bool)> callback) {
-  keyboard_controller_ptr_->SetContainerType(container_type, target_bounds,
-                                             std::move(callback));
+  keyboard_controller_->SetContainerType(container_type, target_bounds,
+                                         std::move(callback));
 }
 
 void ChromeKeyboardControllerClient::SetKeyboardLocked(bool locked) {
-  keyboard_controller_ptr_->SetKeyboardLocked(locked);
+  keyboard_controller_->SetKeyboardLocked(locked);
 }
 
 void ChromeKeyboardControllerClient::SetOccludedBounds(
     const std::vector<gfx::Rect>& bounds) {
-  keyboard_controller_ptr_->SetOccludedBounds(bounds);
+  keyboard_controller_->SetOccludedBounds(bounds);
 }
 
 void ChromeKeyboardControllerClient::SetHitTestBounds(
     const std::vector<gfx::Rect>& bounds) {
-  keyboard_controller_ptr_->SetHitTestBounds(bounds);
+  keyboard_controller_->SetHitTestBounds(bounds);
+}
+
+bool ChromeKeyboardControllerClient::SetAreaToRemainOnScreen(
+    const gfx::Rect& bounds) {
+  return keyboard_controller_->SetAreaToRemainOnScreen(bounds);
 }
 
 void ChromeKeyboardControllerClient::SetDraggableArea(const gfx::Rect& bounds) {
-  keyboard_controller_ptr_->SetDraggableArea(bounds);
+  keyboard_controller_->SetDraggableArea(bounds);
 }
 
 bool ChromeKeyboardControllerClient::IsKeyboardOverscrollEnabled() {
   DCHECK(cached_keyboard_config_);
   if (cached_keyboard_config_->overscroll_behavior !=
-      keyboard::mojom::KeyboardOverscrollBehavior::kDefault) {
+      keyboard::KeyboardOverscrollBehavior::kDefault) {
     return cached_keyboard_config_->overscroll_behavior ==
-           keyboard::mojom::KeyboardOverscrollBehavior::kEnabled;
+           keyboard::KeyboardOverscrollBehavior::kEnabled;
   }
-  return !base::CommandLine::ForCurrentProcess()->HasSwitch(
-      keyboard::switches::kDisableVirtualKeyboardOverscroll);
+  return true;
 }
 
 GURL ChromeKeyboardControllerClient::GetVirtualKeyboardUrl() {
@@ -262,22 +255,12 @@ GURL ChromeKeyboardControllerClient::GetVirtualKeyboardUrl() {
 }
 
 aura::Window* ChromeKeyboardControllerClient::GetKeyboardWindow() const {
-  if (::features::IsUsingWindowService()) {
-    content::WebContents* contents =
-        keyboard_contents_ ? keyboard_contents_->web_contents() : nullptr;
-    return contents ? contents->GetNativeView() : nullptr;
-  }
-  return keyboard::KeyboardController::Get()->GetKeyboardWindow();
-}
-
-void ChromeKeyboardControllerClient::FlushForTesting() {
-  keyboard_controller_ptr_.FlushForTesting();
+  return keyboard::KeyboardUIController::Get()->GetKeyboardWindow();
 }
 
 void ChromeKeyboardControllerClient::OnKeyboardEnableFlagsChanged(
-    const std::vector<keyboard::mojom::KeyboardEnableFlag>& flags) {
-  keyboard_enable_flags_ =
-      std::set<keyboard::mojom::KeyboardEnableFlag>(flags.begin(), flags.end());
+    const std::set<keyboard::KeyboardEnableFlag>& flags) {
+  keyboard_enable_flags_ = flags;
 }
 
 void ChromeKeyboardControllerClient::OnKeyboardEnabledChanged(bool enabled) {
@@ -306,7 +289,7 @@ void ChromeKeyboardControllerClient::OnKeyboardEnabledChanged(bool enabled) {
 }
 
 void ChromeKeyboardControllerClient::OnKeyboardConfigChanged(
-    keyboard::mojom::KeyboardConfigPtr config) {
+    const keyboard::KeyboardConfig& config) {
   // Only notify extensions after the initial config is received.
   bool notify = !!cached_keyboard_config_;
   cached_keyboard_config_ = std::move(config);
@@ -362,10 +345,9 @@ void ChromeKeyboardControllerClient::OnKeyboardOccludedBoundsChanged(
     const gfx::Rect& screen_bounds) {
   if (!GetKeyboardWindow())
     return;
-  gfx::Rect bounds = BoundsFromScreen(screen_bounds);
-  DVLOG(1) << "OnKeyboardOccludedBoundsChanged: " << bounds.ToString();
+  DVLOG(1) << "OnKeyboardOccludedBoundsChanged: " << screen_bounds.ToString();
   for (auto& observer : observers_)
-    observer.OnKeyboardOccludedBoundsChanged(bounds);
+    observer.OnKeyboardOccludedBoundsChanged(screen_bounds);
 }
 
 void ChromeKeyboardControllerClient::OnLoadKeyboardContentsRequested() {
@@ -392,12 +374,9 @@ void ChromeKeyboardControllerClient::OnKeyboardUIDestroyed() {
   keyboard_contents_.reset();
 }
 
-void ChromeKeyboardControllerClient::OnKeyboardContentsLoaded(
-    const base::UnguessableToken& token,
-    const gfx::Size& size) {
-  DVLOG(1) << "OnLoadKeyboardContentsRequested: " << size.ToString();
+void ChromeKeyboardControllerClient::OnKeyboardContentsLoaded() {
+  DVLOG(1) << "OnKeyboardContentsLoaded";
   NotifyKeyboardLoaded();
-  keyboard_controller_ptr_->KeyboardContentsLoaded(token, size);
 }
 
 void ChromeKeyboardControllerClient::OnSessionStateChanged() {
@@ -420,7 +399,7 @@ void ChromeKeyboardControllerClient::OnSessionStateChanged() {
 }
 
 void ChromeKeyboardControllerClient::SetVirtualKeyboardBehaviorFromPrefs() {
-  using keyboard::mojom::KeyboardEnableFlag;
+  using keyboard::KeyboardEnableFlag;
   const PrefService* service = pref_change_registrar_.prefs();
   if (service->HasPrefPath(prefs::kTouchVirtualKeyboardEnabled)) {
     // Since these flags are mutually exclusive, setting one clears the other.

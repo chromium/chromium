@@ -1,0 +1,250 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        
+        <title>
+            
+    Mako 1.0.14 Documentation
+
+        </title>
+
+        
+            <!-- begin iterate through site-imported + sphinx environment css_files -->
+                <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+                <link rel="stylesheet" href="_static/changelog.css" type="text/css" />
+                <link rel="stylesheet" href="_static/sphinx_paramlinks.css" type="text/css" />
+                <link rel="stylesheet" href="_static/docs.css" type="text/css" />
+            <!-- end iterate through site-imported + sphinx environment css_files -->
+        
+
+        
+    
+
+    <!-- begin layout.mako headers -->
+
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="top" title="Mako 1.0.14 Documentation" href="#" />
+        <link rel="next" title="Usage" href="usage.html" />
+    <!-- end layout.mako headers -->
+
+
+    </head>
+    <body>
+        
+
+
+
+
+
+
+
+
+
+
+<div id="docs-container">
+
+
+
+<div id="docs-header">
+    <h1>Mako 1.0.14 Documentation</h1>
+
+    <div id="docs-search">
+    Search:
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" size="18" /> <input type="submit" value="Search" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+
+    <div id="docs-version-header">
+        Release: <span class="version-num">1.0.14</span>
+
+    </div>
+
+</div>
+
+<div id="docs-top-navigation">
+    <div id="docs-top-page-control" class="docs-navigation-links">
+        <ul>
+            <li>Next:
+            <a href="usage.html" title="next chapter">Usage</a>
+            </li>
+
+        <li>
+            <a href="#">Table of Contents</a> |
+            <a href="genindex.html">Index</a>
+        </li>
+        </ul>
+    </div>
+
+    <div id="docs-navigation-banner">
+        <a href="#">Mako 1.0.14 Documentation</a>
+
+        <h2>
+            
+                Table of Contents
+            
+        </h2>
+    </div>
+
+</div>
+
+<div id="docs-body-container">
+
+
+    <div id="docs-body" class="" >
+        
+<div class="section" id="table-of-contents">
+<h1>Table of Contents<a class="headerlink" href="#table-of-contents" title="Permalink to this headline">¶</a></h1>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#basic-usage">Basic Usage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#using-file-based-templates">Using File-Based Templates</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#using-templatelookup">Using <code class="docutils literal notranslate"><span class="pre">TemplateLookup</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#using-unicode-and-encoding">Using Unicode and Encoding</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#handling-exceptions">Handling Exceptions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#common-framework-integrations">Common Framework Integrations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#api-reference">API Reference</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="syntax.html">Syntax</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="syntax.html#expression-substitution">Expression Substitution</a></li>
+<li class="toctree-l2"><a class="reference internal" href="syntax.html#expression-escaping">Expression Escaping</a></li>
+<li class="toctree-l2"><a class="reference internal" href="syntax.html#control-structures">Control Structures</a></li>
+<li class="toctree-l2"><a class="reference internal" href="syntax.html#comments">Comments</a></li>
+<li class="toctree-l2"><a class="reference internal" href="syntax.html#newline-filters">Newline Filters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="syntax.html#python-blocks">Python Blocks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="syntax.html#module-level-blocks">Module-level Blocks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="syntax.html#tags">Tags</a></li>
+<li class="toctree-l2"><a class="reference internal" href="syntax.html#exiting-early-from-a-template">Exiting Early from a Template</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="defs.html">Defs and Blocks</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="defs.html#using-defs">Using Defs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="defs.html#using-blocks">Using Blocks</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="runtime.html">The Mako Runtime Environment</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="runtime.html#context">Context</a></li>
+<li class="toctree-l2"><a class="reference internal" href="runtime.html#the-loop-context">The Loop Context</a></li>
+<li class="toctree-l2"><a class="reference internal" href="runtime.html#all-the-built-in-names">All the Built-in Names</a></li>
+<li class="toctree-l2"><a class="reference internal" href="runtime.html#api-reference">API Reference</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="namespaces.html">Namespaces</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="namespaces.html#ways-to-call-namespaces">Ways to Call Namespaces</a></li>
+<li class="toctree-l2"><a class="reference internal" href="namespaces.html#namespaces-from-regular-python-modules">Namespaces from Regular Python Modules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="namespaces.html#declaring-defs-in-namespaces">Declaring Defs in Namespaces</a></li>
+<li class="toctree-l2"><a class="reference internal" href="namespaces.html#the-body-method">The <code class="docutils literal notranslate"><span class="pre">body()</span></code> Method</a></li>
+<li class="toctree-l2"><a class="reference internal" href="namespaces.html#built-in-namespaces">Built-in Namespaces</a></li>
+<li class="toctree-l2"><a class="reference internal" href="namespaces.html#inheritable-namespaces">Inheritable Namespaces</a></li>
+<li class="toctree-l2"><a class="reference internal" href="namespaces.html#namespace-api-usage-example-static-dependencies">Namespace API Usage Example - Static Dependencies</a></li>
+<li class="toctree-l2"><a class="reference internal" href="namespaces.html#api-reference">API Reference</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="inheritance.html">Inheritance</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="inheritance.html#nesting-blocks">Nesting Blocks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="inheritance.html#rendering-a-named-block-multiple-times">Rendering a Named Block Multiple Times</a></li>
+<li class="toctree-l2"><a class="reference internal" href="inheritance.html#but-what-about-defs">But what about Defs?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="inheritance.html#using-the-next-namespace-to-produce-content-wrapping">Using the <code class="docutils literal notranslate"><span class="pre">next</span></code> Namespace to Produce Content Wrapping</a></li>
+<li class="toctree-l2"><a class="reference internal" href="inheritance.html#using-the-parent-namespace-to-augment-defs">Using the <code class="docutils literal notranslate"><span class="pre">parent</span></code> Namespace to Augment Defs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="inheritance.html#using-include-with-template-inheritance">Using <code class="docutils literal notranslate"><span class="pre">&lt;%include&gt;</span></code> with Template Inheritance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="inheritance.html#inheritable-attributes">Inheritable Attributes</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="filtering.html">Filtering and Buffering</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="filtering.html#expression-filtering">Expression Filtering</a></li>
+<li class="toctree-l2"><a class="reference internal" href="filtering.html#filtering-defs-and-blocks">Filtering Defs and Blocks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="filtering.html#buffering">Buffering</a></li>
+<li class="toctree-l2"><a class="reference internal" href="filtering.html#decorating">Decorating</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="unicode.html">The Unicode Chapter</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="unicode.html#specifying-the-encoding-of-a-template-file">Specifying the Encoding of a Template File</a></li>
+<li class="toctree-l2"><a class="reference internal" href="unicode.html#handling-expressions">Handling Expressions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="unicode.html#defining-output-encoding">Defining Output Encoding</a></li>
+<li class="toctree-l2"><a class="reference internal" href="unicode.html#saying-to-heck-with-it-disabling-the-usage-of-unicode-entirely">Saying to Heck with It: Disabling the Usage of Unicode Entirely</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="caching.html">Caching</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="caching.html#cache-arguments">Cache Arguments</a></li>
+<li class="toctree-l2"><a class="reference internal" href="caching.html#programmatic-cache-access">Programmatic Cache Access</a></li>
+<li class="toctree-l2"><a class="reference internal" href="caching.html#cache-plugins">Cache Plugins</a></li>
+<li class="toctree-l2"><a class="reference internal" href="caching.html#api-reference">API Reference</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="changelog.html">Changelog</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="changelog.html#id1">1.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changelog.html#id2">0.9</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changelog.html#id3">0.8</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changelog.html#id4">0.7</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changelog.html#older-versions">Older Versions</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section" id="indices-and-tables">
+<h2>Indices and Tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></p></li>
+<li><p><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></p></li>
+</ul>
+</div>
+</div>
+
+    </div>
+
+</div>
+
+<div id="docs-bottom-navigation" class="docs-navigation-links">
+        Next:
+        <a href="usage.html" title="next chapter">Usage</a>
+
+    <div id="docs-copyright">
+        &copy; Copyright the Mako authors and contributors.
+        Documentation generated using <a href="http://sphinx.pocoo.org/">Sphinx</a> 2.1.2
+        with Mako templates.
+    </div>
+</div>
+
+</div>
+
+
+
+        
+        
+
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+          URL_ROOT:    './',
+          VERSION:     '1.0.14',
+          COLLAPSE_MODINDEX: false,
+          FILE_SUFFIX: '.html'
+      };
+    </script>
+
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+
+    <!-- begin iterate through sphinx environment script_files -->
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+    <!-- end iterate through sphinx environment script_files -->
+
+    <script type="text/javascript" src="_static/detectmobile.js"></script>
+    <script type="text/javascript" src="_static/init.js"></script>
+
+
+    </body>
+</html>
+
+

@@ -41,8 +41,6 @@ class CORE_EXPORT SVGImageElement final
   USING_GARBAGE_COLLECTED_MIXIN(SVGImageElement);
 
  public:
-  DECLARE_NODE_FACTORY(SVGImageElement);
-
   explicit SVGImageElement(Document&);
 
   void Trace(blink::Visitor*) override;
@@ -96,7 +94,7 @@ class CORE_EXPORT SVGImageElement final
   void AttachLayoutTree(AttachContext&) override;
   InsertionNotificationRequest InsertedInto(ContainerNode&) override;
 
-  LayoutObject* CreateLayoutObject(const ComputedStyle&) override;
+  LayoutObject* CreateLayoutObject(const ComputedStyle&, LegacyLayout) override;
 
   const AtomicString ImageSourceURL() const override;
 

@@ -1,0 +1,14 @@
+Tests the filter is properly applied to coverage list view.
+
+Filter: 'devtools'
+.../devtools/coverage/resources/coverage.js JS (per function) used: 411 unused: 157 total: 568
+.../devtools/coverage/resources/highlight-in-source.css CSS used: 67 unused: 142 total: 209
+.../devtools/coverage/resources/basic-coverage.html JS (per function) used: 51 unused: 0 total: 51
+Filter: 'CES/COV'
+.../devtools/coverage/resources/coverage.js JS (per function) used: 411 unused: 157 total: 568
+Filter: 'no pasaran'
+Filter: ''
+.../devtools/coverage/resources/coverage.js JS (per function) used: 411 unused: 157 total: 568
+.../devtools/coverage/resources/highlight-in-source.css CSS used: 67 unused: 142 total: 209
+.../devtools/coverage/resources/basic-coverage.html JS (per function) used: 51 unused: 0 total: 51
+

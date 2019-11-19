@@ -43,4 +43,4 @@ interface SVGAnimationElement : SVGElement {
     [MeasureAs=SVGSMILBeginEndAnimationElement] void endElementAt(float offset);
 };
 
-SVGAnimationElement implements SVGTests;
+SVGAnimationElement includes SVGTests;

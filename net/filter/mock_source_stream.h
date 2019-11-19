@@ -35,6 +35,7 @@ class MockSourceStream : public SourceStream {
            int buffer_size,
            CompletionOnceCallback callback) override;
   std::string Description() const override;
+  bool MayHaveMoreBytes() const override;
 
   // Enqueues a result to be returned by |Read|. This method does not make a
   // copy of |data|, so |data| must outlive this object. If |mode| is SYNC,
@@ -55,6 +56,10 @@ class MockSourceStream : public SourceStream {
     read_one_byte_at_a_time_ = read_one_byte_at_a_time;
   }
 
+  void set_always_report_has_more_bytes(bool always_report_has_more_bytes) {
+    always_report_has_more_bytes_ = always_report_has_more_bytes;
+  }
+
   // Returns true if a read is waiting to be completed.
   bool awaiting_completion() const { return awaiting_completion_; }
 
@@ -68,12 +73,13 @@ class MockSourceStream : public SourceStream {
     const Mode mode;
   };
 
-  bool read_one_byte_at_a_time_;
+  bool read_one_byte_at_a_time_ = false;
+  bool always_report_has_more_bytes_ = true;
   base::queue<QueuedResult> results_;
-  bool awaiting_completion_;
+  bool awaiting_completion_ = false;
   scoped_refptr<IOBuffer> dest_buffer_;
   CompletionOnceCallback callback_;
-  int dest_buffer_size_;
+  int dest_buffer_size_ = 0;
 
   DISALLOW_COPY_AND_ASSIGN(MockSourceStream);
 };

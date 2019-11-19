@@ -12,10 +12,9 @@
 #include "base/logging.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
-#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "cc/base/switches.h"
-#include "components/viz/common/features.h"
+#include "cc/test/pixel_test_utils.h"
 #include "components/viz/common/switches.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_switches.h"
@@ -25,6 +24,7 @@
 #include "headless/public/devtools/domains/dom_snapshot.h"
 #include "headless/public/devtools/domains/emulation.h"
 #include "headless/public/devtools/domains/headless_experimental.h"
+#include "headless/public/devtools/domains/io.h"
 #include "headless/public/devtools/domains/page.h"
 #include "headless/public/devtools/domains/runtime.h"
 #include "headless/public/devtools/domains/security.h"
@@ -339,6 +339,128 @@ class HeadlessWebContentsPDFTest : public HeadlessAsyncDevTooledBrowserTest {
 };
 
 HEADLESS_ASYNC_DEVTOOLED_TEST_F(HeadlessWebContentsPDFTest);
+
+class HeadlessWebContentsPDFStreamTest
+    : public HeadlessAsyncDevTooledBrowserTest {
+ public:
+  const double kPaperWidth = 10;
+  const double kPaperHeight = 15;
+  const double kDocHeight = 50;
+
+  void RunDevTooledTest() override {
+    std::string height_expression = "document.body.style.height = '" +
+                                    base::NumberToString(kDocHeight) + "in'";
+    std::unique_ptr<runtime::EvaluateParams> params =
+        runtime::EvaluateParams::Builder()
+            .SetExpression(height_expression)
+            .Build();
+    devtools_client_->GetRuntime()->Evaluate(
+        std::move(params),
+        base::BindOnce(&HeadlessWebContentsPDFStreamTest::OnPageSetupCompleted,
+                       base::Unretained(this)));
+  }
+
+  void OnPageSetupCompleted(std::unique_ptr<runtime::EvaluateResult> result) {
+    devtools_client_->GetPage()->GetExperimental()->PrintToPDF(
+        page::PrintToPDFParams::Builder()
+            .SetTransferMode(page::PrintToPDFTransferMode::RETURN_AS_STREAM)
+            .SetPaperHeight(kPaperHeight)
+            .SetPaperWidth(kPaperWidth)
+            .SetMarginTop(0)
+            .SetMarginBottom(0)
+            .SetMarginLeft(0)
+            .SetMarginRight(0)
+            .Build(),
+        base::BindOnce(&HeadlessWebContentsPDFStreamTest::OnPDFCreated,
+                       base::Unretained(this)));
+  }
+
+  void OnPDFCreated(std::unique_ptr<page::PrintToPDFResult> result) {
+    EXPECT_EQ(result->GetData().size(), 0U);
+    stream_ = result->GetStream();
+    devtools_client_->GetIO()->Read(
+        stream_, base::BindOnce(&HeadlessWebContentsPDFStreamTest::OnReadChunk,
+                                base::Unretained(this)));
+  }
+
+  void OnReadChunk(std::unique_ptr<io::ReadResult> result) {
+    base64_data_ = base64_data_ + result->GetData();
+    if (result->GetEof()) {
+      OnPDFLoaded();
+    } else {
+      devtools_client_->GetIO()->Read(
+          stream_,
+          base::BindOnce(&HeadlessWebContentsPDFStreamTest::OnReadChunk,
+                         base::Unretained(this)));
+    }
+  }
+
+  void OnPDFLoaded() {
+    EXPECT_GT(base64_data_.size(), 0U);
+    bool success;
+    protocol::Binary pdf_data =
+        protocol::Binary::fromBase64(base64_data_, &success);
+    EXPECT_TRUE(success);
+    EXPECT_GT(pdf_data.size(), 0U);
+    auto pdf_span = base::make_span(pdf_data.data(), pdf_data.size());
+    int num_pages;
+    EXPECT_TRUE(chrome_pdf::GetPDFDocInfo(pdf_span, &num_pages, nullptr));
+    EXPECT_EQ(std::ceil(kDocHeight / kPaperHeight), num_pages);
+    FinishAsynchronousTest();
+  }
+
+ private:
+  std::string stream_;
+  std::string base64_data_;
+};
+
+HEADLESS_ASYNC_DEVTOOLED_TEST_F(HeadlessWebContentsPDFStreamTest);
+
+class HeadlessWebContentsPDFPageSizeRoundingTest
+    : public HeadlessAsyncDevTooledBrowserTest,
+      public page::Observer {
+ public:
+  void RunDevTooledTest() override {
+    EXPECT_TRUE(embedded_test_server()->Start());
+
+    devtools_client_->GetPage()->AddObserver(this);
+
+    base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
+    devtools_client_->GetPage()->Enable(run_loop.QuitClosure());
+    run_loop.Run();
+
+    devtools_client_->GetPage()->Navigate(
+        embedded_test_server()->GetURL("/red_square.html").spec());
+  }
+
+  void OnLoadEventFired(const page::LoadEventFiredParams&) override {
+    devtools_client_->GetPage()->GetExperimental()->PrintToPDF(
+        page::PrintToPDFParams::Builder()
+            .SetPrintBackground(true)
+            .SetPaperHeight(41)
+            .SetPaperWidth(41)
+            .SetMarginTop(0)
+            .SetMarginBottom(0)
+            .SetMarginLeft(0)
+            .SetMarginRight(0)
+            .Build(),
+        base::BindOnce(
+            &HeadlessWebContentsPDFPageSizeRoundingTest::OnPDFCreated,
+            base::Unretained(this)));
+  }
+
+  void OnPDFCreated(std::unique_ptr<page::PrintToPDFResult> result) {
+    protocol::Binary pdf_data = result->GetData();
+    EXPECT_GT(pdf_data.size(), 0U);
+    auto pdf_span = base::make_span(pdf_data.data(), pdf_data.size());
+    int num_pages;
+    EXPECT_TRUE(chrome_pdf::GetPDFDocInfo(pdf_span, &num_pages, nullptr));
+    EXPECT_THAT(num_pages, testing::Eq(1));
+    FinishAsynchronousTest();
+  }
+};
+
+HEADLESS_ASYNC_DEVTOOLED_TEST_F(HeadlessWebContentsPDFPageSizeRoundingTest);
 #endif
 
 class HeadlessWebContentsSecurityTest
@@ -487,9 +609,6 @@ class HeadlessWebContentsBeginFrameControlTest
     command_line->AppendSwitch(cc::switches::kDisableCheckerImaging);
     command_line->AppendSwitch(cc::switches::kDisableThreadedAnimation);
     command_line->AppendSwitch(switches::kDisableThreadedScrolling);
-
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kEnableSurfaceSynchronization);
   }
 
   void OnCreateTargetResult(
@@ -607,8 +726,6 @@ class HeadlessWebContentsBeginFrameControlTest
             &HeadlessWebContentsBeginFrameControlTest::FinishAsynchronousTest,
             base::Unretained(this)));
   }
-
-  base::test::ScopedFeatureList scoped_feature_list_;
 
   HeadlessBrowserContext* browser_context_ = nullptr;  // Not owned.
   HeadlessWebContentsImpl* web_contents_ = nullptr;    // Not owned.
@@ -734,20 +851,16 @@ class HeadlessWebContentsBeginFrameControlViewportTest
       SkBitmap result_bitmap;
       EXPECT_TRUE(DecodePNG(png_data, &result_bitmap));
 
-      EXPECT_EQ(300, result_bitmap.width());
-      EXPECT_EQ(300, result_bitmap.height());
-      SkColor expected_color = SkColorSetRGB(0x00, 0x00, 0xff);
+      // Expext a 300x300 bitmap that is all blue.
+      SkBitmap expected_bitmap;
+      SkImageInfo info;
+      expected_bitmap.allocPixels(
+          SkImageInfo::MakeN32(300, 300, kOpaque_SkAlphaType), /*row_bytes=*/0);
+      expected_bitmap.eraseColor(SkColorSetRGB(0x00, 0x00, 0xff));
 
-      SkColor actual_color = result_bitmap.getColor(100, 100);
-      EXPECT_EQ(expected_color, actual_color);
-      actual_color = result_bitmap.getColor(0, 0);
-      EXPECT_EQ(expected_color, actual_color);
-      actual_color = result_bitmap.getColor(0, 299);
-      EXPECT_EQ(expected_color, actual_color);
-      actual_color = result_bitmap.getColor(299, 0);
-      EXPECT_EQ(expected_color, actual_color);
-      actual_color = result_bitmap.getColor(299, 299);
-      EXPECT_EQ(expected_color, actual_color);
+      EXPECT_TRUE(
+          cc::MatchesBitmap(result_bitmap, expected_bitmap,
+                            cc::ExactPixelComparator(/*discard_alpha=*/false)));
     }
 
     // Post completion to avoid deleting the WebContents on the same callstack

@@ -31,9 +31,11 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_FONT_CACHE_KEY_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_FONT_CACHE_KEY_H_
 
+#include <limits>
+
 #include "third_party/blink/renderer/platform/fonts/font_face_creation_params.h"
 #include "third_party/blink/renderer/platform/fonts/opentype/font_settings.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/hash_table_deleted_value_type.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string_hash.h"
@@ -43,7 +45,7 @@ namespace blink {
 
 // Multiplying the floating point size by 100 gives two decimal point
 // precision which should be sufficient.
-static const unsigned kFontSizePrecisionMultiplier = 100;
+static constexpr unsigned kFontSizePrecisionMultiplier = 100;
 
 struct FontCacheKey {
   DISALLOW_NEW();
@@ -69,7 +71,13 @@ struct FontCacheKey {
         is_unique_match_(is_unique_match) {}
 
   FontCacheKey(WTF::HashTableDeletedValueType)
-      : font_size_(HashTableDeletedSize()) {}
+      : font_size_(std::numeric_limits<unsigned>::max()),
+        device_scale_factor_(std::numeric_limits<float>::max()) {}
+
+  bool IsHashTableDeletedValue() const {
+    return font_size_ == std::numeric_limits<unsigned>::max() &&
+           device_scale_factor_ == std::numeric_limits<float>::max();
+  }
 
   unsigned GetHash() const {
     // Convert from float with 3 digit precision before hashing.
@@ -92,16 +100,13 @@ struct FontCacheKey {
            is_unique_match_ == other.is_unique_match_;
   }
 
-  bool IsHashTableDeletedValue() const {
-    return font_size_ == HashTableDeletedSize();
+  static constexpr unsigned PrecisionMultiplier() {
+    return kFontSizePrecisionMultiplier;
   }
-
-  static unsigned PrecisionMultiplier() { return kFontSizePrecisionMultiplier; }
 
   void ClearFontSize() { font_size_ = 0; }
 
  private:
-  static unsigned HashTableDeletedSize() { return 0xFFFFFFFFU; }
 
   FontFaceCreationParams creation_params_;
   unsigned font_size_;
@@ -128,6 +133,10 @@ struct FontCacheKeyHash {
 
 struct FontCacheKeyTraits : WTF::SimpleClassHashTraits<FontCacheKey> {
   STATIC_ONLY(FontCacheKeyTraits);
+
+  // std::string's empty state need not be zero in all implementations,
+  // and it is held within FontFaceCreationParams.
+  static const bool kEmptyValueIsZero = false;
 };
 
 }  // namespace blink

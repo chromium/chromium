@@ -73,7 +73,7 @@ class WifiDataProviderCommon : public WifiDataProvider {
   std::unique_ptr<WlanApiInterface> wlan_api_;
 
   // Holder for delayed tasks; takes care of cleanup.
-  base::WeakPtrFactory<WifiDataProviderCommon> weak_factory_;
+  base::WeakPtrFactory<WifiDataProviderCommon> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(WifiDataProviderCommon);
 };

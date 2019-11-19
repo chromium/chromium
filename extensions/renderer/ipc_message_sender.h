@@ -34,8 +34,7 @@ class IPCMessageSender {
   // Sends a request message to the browser.
   virtual void SendRequestIPC(
       ScriptContext* context,
-      std::unique_ptr<ExtensionHostMsg_Request_Params> params,
-      binding::RequestThread thread) = 0;
+      std::unique_ptr<ExtensionHostMsg_Request_Params> params) = 0;
 
   // Handles sending any additional messages required after receiving a response
   // to a request.

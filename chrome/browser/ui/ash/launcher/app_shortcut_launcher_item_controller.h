@@ -44,9 +44,9 @@ class AppShortcutLauncherItemController : public ash::ShelfItemDelegate {
                     int64_t display_id,
                     ash::ShelfLaunchSource source,
                     ItemSelectedCallback callback) override;
-  ash::MenuItemList GetAppMenuItems(int event_flags) override;
+  AppMenuItems GetAppMenuItems(int event_flags) override;
   void GetContextMenu(int64_t display_id,
-                      GetMenuModelCallback callback) override;
+                      GetContextMenuCallback callback) override;
   void ExecuteCommand(bool from_context_menu,
                       int64_t command_id,
                       int32_t event_flags,

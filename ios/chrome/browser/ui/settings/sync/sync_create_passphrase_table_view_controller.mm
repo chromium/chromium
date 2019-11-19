@@ -18,7 +18,9 @@
 #error "This file requires ARC support."
 #endif
 
-using namespace sync_encryption_passphrase;
+using sync_encryption_passphrase::ItemTypeConfirmPassphrase;
+using sync_encryption_passphrase::ItemTypeEnterPassphrase;
+using sync_encryption_passphrase::SectionIdentifierPassphrase;
 
 @interface SyncCreatePassphraseTableViewController () {
   UITextField* confirmPassphrase_;

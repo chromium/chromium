@@ -17,7 +17,7 @@ IN_PROC_BROWSER_TEST_F(ChromeUIOverridesBrowserTest,
       "--enable-override-bookmarks-ui", "1");
 
   ASSERT_TRUE(LoadExtension(test_data_dir_.AppendASCII("bookmarks_ui")));
-  EXPECT_FALSE(chrome::IsCommandEnabled(browser(), IDC_BOOKMARK_PAGE));
+  EXPECT_FALSE(chrome::IsCommandEnabled(browser(), IDC_BOOKMARK_THIS_TAB));
 
   AddTabAtIndex(1,
                 GURL(chrome::kChromeUINewTabURL),

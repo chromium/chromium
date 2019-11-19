@@ -7,11 +7,11 @@
 #include "cc/test/fake_picture_layer.h"
 #include "cc/test/layer_tree_test.h"
 #include "cc/test/skia_common.h"
+#include "cc/test/test_layer_tree_frame_sink.h"
 #include "cc/trees/layer_tree_impl.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "components/viz/test/begin_frame_args_test.h"
 #include "components/viz/test/fake_external_begin_frame_source.h"
-#include "components/viz/test/test_layer_tree_frame_sink.h"
 
 namespace cc {
 namespace {
@@ -20,20 +20,25 @@ const char kCheckerboardImagesMetric[] = "CheckerboardedImagesCount";
 
 class LayerTreeHostCheckerImagingTest : public LayerTreeTest {
  public:
-  LayerTreeHostCheckerImagingTest() : url_(GURL("https://example.com")) {}
+  LayerTreeHostCheckerImagingTest() : url_(GURL("https://example.com")),
+                                      ukm_source_id_(123) {}
 
   void BeginTest() override {
-    layer_tree_host()->SetURLForUkm(url_);
+    layer_tree_host()->SetSourceURL(ukm_source_id_, url_);
     PostSetNeedsCommitToMainThread();
   }
-  void AfterTest() override {}
 
   void VerifyUkmAndEndTest(LayerTreeHostImpl* impl) {
-    // Change the URL to ensure any accumulated metrics are flushed.
-    impl->ukm_manager()->SetSourceURL(GURL("chrome://test2"));
-
     auto* recorder = static_cast<ukm::TestUkmRecorder*>(
         impl->ukm_manager()->recorder_for_testing());
+    // Tie the source id to the URL. In production, this is already done in
+    // Document, and the source id is passed down to cc.
+    recorder->UpdateSourceURL(ukm_source_id_, url_);
+
+    // Change the source to ensure any accumulated metrics are flushed.
+    impl->ukm_manager()->SetSourceId(200);
+    recorder->UpdateSourceURL(200, GURL("chrome://test2"));
+
     const auto& entries = recorder->GetEntriesByName(kRenderingEvent);
     ASSERT_EQ(1u, entries.size());
     auto* entry = entries[0];
@@ -76,6 +81,9 @@ class LayerTreeHostCheckerImagingTest : public LayerTreeTest {
   // Accessed only on the main thread.
   FakeContentLayerClient content_layer_client_;
   GURL url_;
+
+  // Accessed on the impl thread.
+  const ukm::SourceId ukm_source_id_;
 };
 
 class LayerTreeHostCheckerImagingTestMergeWithMainFrame
@@ -112,7 +120,7 @@ class LayerTreeHostCheckerImagingTestMergeWithMainFrame
       case 2: {
         // Ensure that the expected tiles are invalidated on the sync tree.
         PictureLayerImpl* sync_layer_impl = static_cast<PictureLayerImpl*>(
-            host_impl->sync_tree()->root_layer_for_testing());
+            host_impl->sync_tree()->root_layer());
         PictureLayerTiling* sync_tiling =
             sync_layer_impl->picture_layer_tiling_set()
                 ->FindTilingWithResolution(TileResolution::HIGH_RESOLUTION);
@@ -172,8 +180,8 @@ class LayerTreeHostCheckerImagingTestImplSideTree
     EXPECT_EQ(host_impl->sync_tree()->source_frame_number(), 0);
 
     // Ensure that the expected tiles are invalidated on the sync tree.
-    PictureLayerImpl* sync_layer_impl = static_cast<PictureLayerImpl*>(
-        host_impl->sync_tree()->root_layer_for_testing());
+    PictureLayerImpl* sync_layer_impl =
+        static_cast<PictureLayerImpl*>(host_impl->sync_tree()->root_layer());
     PictureLayerTiling* sync_tiling =
         sync_layer_impl->picture_layer_tiling_set()->FindTilingWithResolution(
             TileResolution::HIGH_RESOLUTION);

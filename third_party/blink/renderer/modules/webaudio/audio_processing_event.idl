@@ -25,6 +25,7 @@
 
 // See https://webaudio.github.io/web-audio-api/#audioprocessingevent
 [
+    Exposed=Window,
     Constructor(DOMString type, AudioProcessingEventInit eventInitDict)
 ]
 interface AudioProcessingEvent : Event {

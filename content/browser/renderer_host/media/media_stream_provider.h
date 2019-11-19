@@ -16,6 +16,7 @@
 #include <string>
 
 #include "base/memory/ref_counted.h"
+#include "base/unguessable_token.h"
 #include "content/common/content_export.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
 
@@ -31,23 +32,21 @@ enum MediaStreamProviderError {
   kUnknownError
 };
 
-enum { kInvalidMediaCaptureSessionId = 0xFFFFFFFF };
-
 // Callback class used by MediaStreamProvider.
 class CONTENT_EXPORT MediaStreamProviderListener {
  public:
   // Called by a MediaStreamProvider when a stream has been opened.
-  virtual void Opened(blink::MediaStreamType stream_type,
-                      int capture_session_id) = 0;
+  virtual void Opened(blink::mojom::MediaStreamType stream_type,
+                      const base::UnguessableToken& capture_session_id) = 0;
 
   // Called by a MediaStreamProvider when a stream has been closed.
-  virtual void Closed(blink::MediaStreamType stream_type,
-                      int capture_session_id) = 0;
+  virtual void Closed(blink::mojom::MediaStreamType stream_type,
+                      const base::UnguessableToken& capture_session_id) = 0;
 
   // Called by a MediaStreamProvider when the device has been aborted due to
   // device error.
-  virtual void Aborted(blink::MediaStreamType stream_type,
-                       int capture_session_id) = 0;
+  virtual void Aborted(blink::mojom::MediaStreamType stream_type,
+                       const base::UnguessableToken& capture_session_id) = 0;
 
  protected:
   virtual ~MediaStreamProviderListener() {}
@@ -67,10 +66,11 @@ class CONTENT_EXPORT MediaStreamProvider
   // possible for other applications to open the device before the device is
   // started. |Opened| is called when the device is opened.
   // kInvalidMediaCaptureSessionId is returned on error.
-  virtual int Open(const blink::MediaStreamDevice& device) = 0;
+  virtual base::UnguessableToken Open(
+      const blink::MediaStreamDevice& device) = 0;
 
   // Closes the specified device and calls |Closed| when done.
-  virtual void Close(int capture_session_id) = 0;
+  virtual void Close(const base::UnguessableToken& capture_session_id) = 0;
 
  protected:
   friend class base::RefCountedThreadSafe<MediaStreamProvider>;

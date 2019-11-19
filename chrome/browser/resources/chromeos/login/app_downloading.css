@@ -4,10 +4,6 @@
 
 :root {
   color: #333;
-  font: 13px Roboto, sans-serif;
-  font-weight: 400; /* roboto-regular */
-  height: 640px;
-  width: 768px;
 }
 
 #app-downloading-video-container {

@@ -13,7 +13,7 @@ class CSSTextIndentInterpolationType : public CSSInterpolationType {
  public:
   CSSTextIndentInterpolationType(PropertyHandle property)
       : CSSInterpolationType(property) {
-    DCHECK_EQ(CssProperty().PropertyID(), CSSPropertyTextIndent);
+    DCHECK_EQ(CssProperty().PropertyID(), CSSPropertyID::kTextIndent);
   }
 
   InterpolationValue MaybeConvertStandardPropertyUnderlyingValue(

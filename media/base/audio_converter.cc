@@ -58,7 +58,8 @@ AudioConverter::AudioConverter(const AudioParameters& input_params,
     resampler_.reset(new MultiChannelResampler(
         downmix_early_ ? output_params.channels() : input_params.channels(),
         io_sample_rate_ratio_, request_size,
-        base::Bind(&AudioConverter::ProvideInput, base::Unretained(this))));
+        base::BindRepeating(&AudioConverter::ProvideInput,
+                            base::Unretained(this))));
   }
 
   // The resampler can be configured to work with a specific request size, so a
@@ -76,7 +77,8 @@ AudioConverter::AudioConverter(const AudioParameters& input_params,
     audio_fifo_.reset(new AudioPullFifo(
         downmix_early_ ? output_params.channels() : input_params.channels(),
         chunk_size_,
-        base::Bind(&AudioConverter::SourceCallback, base::Unretained(this))));
+        base::BindRepeating(&AudioConverter::SourceCallback,
+                            base::Unretained(this))));
   }
 }
 

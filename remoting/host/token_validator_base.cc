@@ -97,6 +97,14 @@ bool WorseThan(const std::string& issuer,
   return c1->valid_expiry() < c2->valid_expiry();
 }
 
+#if defined(OS_WIN)
+HCERTSTORE OpenLocalMachineCertStore() {
+  return ::CertOpenStore(
+      CERT_STORE_PROV_SYSTEM, 0, NULL,
+      CERT_SYSTEM_STORE_LOCAL_MACHINE | CERT_STORE_READONLY_FLAG, L"MY");
+}
+#endif
+
 }  // namespace
 
 namespace remoting {
@@ -108,8 +116,7 @@ TokenValidatorBase::TokenValidatorBase(
     : third_party_auth_config_(third_party_auth_config),
       token_scope_(token_scope),
       request_context_getter_(request_context_getter),
-      buffer_(base::MakeRefCounted<net::IOBuffer>(kBufferSize)),
-      weak_factory_(this) {
+      buffer_(base::MakeRefCounted<net::IOBuffer>(kBufferSize)) {
   DCHECK(third_party_auth_config_.token_url.is_valid());
   DCHECK(third_party_auth_config_.token_validation_url.is_valid());
 }
@@ -204,10 +211,8 @@ void TokenValidatorBase::OnCertificateRequested(
   // store instead.
   // The ACL on the private key of the machine certificate in the "Local
   // Machine" cert store needs to allow access by "Local Service".
-  HCERTSTORE cert_store = ::CertOpenStore(
-      CERT_STORE_PROV_SYSTEM, 0, NULL,
-      CERT_SYSTEM_STORE_LOCAL_MACHINE | CERT_STORE_READONLY_FLAG, L"MY");
-  client_cert_store = new net::ClientCertStoreWin(cert_store);
+  client_cert_store = new net::ClientCertStoreWin(
+      base::BindRepeating(&OpenLocalMachineCertStore));
 #elif defined(OS_MACOSX)
   client_cert_store = new net::ClientCertStoreMac();
 #else
@@ -219,8 +224,9 @@ void TokenValidatorBase::OnCertificateRequested(
   // give it a WeakPtr for |this|, and ownership of the other parameters.
   client_cert_store->GetClientCerts(
       *cert_request_info,
-      base::Bind(&TokenValidatorBase::OnCertificatesSelected,
-                 weak_factory_.GetWeakPtr(), base::Owned(client_cert_store)));
+      base::BindOnce(&TokenValidatorBase::OnCertificatesSelected,
+                     weak_factory_.GetWeakPtr(),
+                     base::Owned(client_cert_store)));
 }
 
 void TokenValidatorBase::OnCertificatesSelected(
@@ -246,8 +252,8 @@ void TokenValidatorBase::OnCertificatesSelected(
         (*best_match_position)->certificate();
     net::ClientCertIdentity::SelfOwningAcquirePrivateKey(
         std::move(*best_match_position),
-        base::Bind(&TokenValidatorBase::ContinueWithCertificate,
-                   weak_factory_.GetWeakPtr(), std::move(cert)));
+        base::BindOnce(&TokenValidatorBase::ContinueWithCertificate,
+                       weak_factory_.GetWeakPtr(), std::move(cert)));
   }
 }
 

@@ -61,7 +61,7 @@ class DownloadServiceImpl : public DownloadService {
   std::map<DownloadTaskType, base::OnceClosure> pending_tasks_;
   bool startup_completed_;
 
-  base::WeakPtrFactory<DownloadServiceImpl> weak_ptr_factory_;
+  base::WeakPtrFactory<DownloadServiceImpl> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(DownloadServiceImpl);
 };

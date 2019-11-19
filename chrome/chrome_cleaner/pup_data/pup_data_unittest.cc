@@ -8,6 +8,7 @@
 
 #include <algorithm>
 #include <deque>
+#include <map>
 #include <string>
 
 #include "base/files/file_path.h"
@@ -16,11 +17,15 @@
 #include "base/path_service.h"
 #include "base/stl_util.h"
 #include "base/strings/string16.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/test_reg_util_win.h"
+#include "chrome/chrome_cleaner/os/file_path_sanitization.h"
 #include "chrome/chrome_cleaner/proto/shared_pup_enums.pb.h"
+#include "chrome/chrome_cleaner/pup_data/pup_data.h"
 #include "chrome/chrome_cleaner/test/test_file_util.h"
 #include "chrome/chrome_cleaner/test/test_pup_data.h"
 #include "chrome/chrome_cleaner/test/test_registry_util.h"
+#include "chrome/chrome_cleaner/test/test_uws_catalog.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -625,7 +630,6 @@ TEST_F(PUPDataTest, GetAllPUPs) {
                      nullptr,
                      PUPData::kMaxFilesToRemoveSmallUwS);
 
-  PUPData::InitializePUPData({});
   const PUPData::PUPDataMap* pup_map = test_data().GetAllPUPs();
   EXPECT_EQ(pup_map->size(), 2UL);
 
@@ -652,46 +656,63 @@ TEST_F(PUPDataTest, GetUwSIds) {
                      nullptr,
                      PUPData::kMaxFilesToRemoveSmallUwS);
 
-  PUPData::InitializePUPData({});
   const std::vector<UwSId>* pup_ids = PUPData::GetUwSIds();
   EXPECT_EQ(pup_ids->size(), 2UL);
-  EXPECT_TRUE(base::ContainsValue(*pup_ids, k24ID));
-  EXPECT_TRUE(base::ContainsValue(*pup_ids, k42ID));
-  EXPECT_FALSE(base::ContainsValue(*pup_ids, k12ID));
-}
-
-TEST_F(PUPDataTest, GetFilesDetectedInServices) {
-  test_data().AddPUP(k12ID,
-                     PUPData::FLAGS_ACTION_REMOVE,
-                     nullptr,
-                     PUPData::kMaxFilesToRemoveSmallUwS);
-  pup_data().GetPUP(k12ID)->AddDiskFootprintTraceLocation(
-      base::FilePath(k12DiskPath), UwS::FOUND_IN_SERVICE);
-
-  test_data().AddPUP(k24ID,
-                     PUPData::FLAGS_ACTION_REMOVE,
-                     nullptr,
-                     PUPData::kMaxFilesToRemoveSmallUwS);
-  pup_data().GetPUP(k24ID)->AddDiskFootprintTraceLocation(
-      base::FilePath(k42AbsoluteDiskPath), UwS::FOUND_IN_MEMORY);
-
-  FilePathSet expected_files_from_services = {k12DiskPath};
-  FilePathSet files_from_services =
-      PUPData::GetFilesDetectedInServices({k12ID, k24ID});
-  EXPECT_EQ(expected_files_from_services, files_from_services);
+  EXPECT_TRUE(base::Contains(*pup_ids, k24ID));
+  EXPECT_TRUE(base::Contains(*pup_ids, k42ID));
+  EXPECT_FALSE(base::Contains(*pup_ids, k12ID));
 }
 
 TEST_F(PUPDataTest, InitializeTest) {
   PUPData::InitializePUPData({});
   EXPECT_EQ(PUPData::GetUwSIds()->size(), 0UL);
 
-  test_data().AddPUP(k24ID,
-                     PUPData::FLAGS_ACTION_REMOVE,
-                     nullptr,
-                     PUPData::kMaxFilesToRemoveSmallUwS);
+  PUPData::InitializePUPData({&TestUwSCatalog::GetInstance()});
+  EXPECT_EQ(PUPData::GetUwSIds()->size(),
+            TestUwSCatalog::GetInstance().GetUwSIds().size());
+}
 
-  PUPData::InitializePUPData({});
-  EXPECT_EQ(PUPData::GetUwSIds()->size(), 1UL);
+// Verify that SanitizePath is written to handle all the CSIDL values used in
+// the PuP data.
+TEST(SanitizePathVsRawPupDataCsidlTest, TestAllCsidlValues) {
+  using chrome_cleaner::PUPData;
+  using chrome_cleaner::sanitization_internal::PATH_CSIDL_END;
+  using chrome_cleaner::sanitization_internal::PATH_CSIDL_START;
+
+  // Get set containing the distinct CSIDL values used in rewrite_rules[].
+  std::set<int> csidl_list;
+  for (const auto& entry : chrome_cleaner::PathKeyToSanitizeString()) {
+    int id = entry.first;
+    // Exclude non-CSIDL replacements.
+    if (id < PATH_CSIDL_START || id > PATH_CSIDL_END) {
+      continue;
+    }
+
+    // id represents a key used by PathService to lookup a FilePath. A
+    // PathService Provider was registered to handle the CSIDL values with an
+    // offset of PATH_CSIDL_START to avoid collisions with other PathService
+    // Providers.
+    int csidl = id - PATH_CSIDL_START;
+    csidl_list.insert(csidl);
+  }
+
+  // Report any unchecked CSIDLs as unsanitized.
+  for (const auto& pup_id : *PUPData::GetUwSIds()) {
+    const PUPData::UwSSignature& signature =
+        PUPData::GetPUP(pup_id)->signature();
+    for (const PUPData::StaticDiskFootprint* disk_footprint =
+             signature.disk_footprints;
+         disk_footprint->path != nullptr;
+         ++disk_footprint) {
+      int csidl = disk_footprint->csidl;
+      if (csidl != PUPData::kInvalidCsidl &&
+          csidl_list.find(csidl) == csidl_list.end()) {
+        ADD_FAILURE() << "CSIDL " << csidl << " is not sanitized in "
+                      << signature.name << " with footprint "
+                      << disk_footprint->path;
+      }
+    }
+  }
 }
 
 }  // namespace chrome_cleaner

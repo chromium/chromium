@@ -1,0 +1,53 @@
+# List of OWNERS files that can be used together with "set noparent". See
+# docs/code_reviews.md#owners-file-details for more details.
+
+# Overall project governance.
+file://ENG_REVIEW_OWNERS
+
+# Third-party dependency review, see //docs/adding_to_third_party.md
+file://third_party/OWNERS
+
+# Security reviews
+file://chromeos/SECURITY_OWNERS
+file://content/browser/SITE_ISOLATION_OWNERS
+file://ipc/SECURITY_OWNERS
+file://net/base/SECURITY_OWNERS
+file://sandbox/linux/OWNERS
+file://sandbox/mac/OWNERS
+file://sandbox/OWNERS
+file://sandbox/win/OWNERS
+file://third_party/blink/SECURITY_OWNERS
+
+# Privacy reviews
+file://tools/traffic_annotation/summary/TRAFFIC_ANNOTATION_OWNERS
+file://tools/metrics/ukm/PRIVACY_OWNERS
+file://base/metrics/OWNERS
+
+# Blink API owners are responsible for decisions about what APIs Blink should
+# expose to the open web.
+file://third_party/blink/API_OWNERS
+
+# Extension related files.
+file://chrome/browser/extensions/component_extensions_whitelist/EXTENSION_WHITELIST_OWNERS
+file://extensions/common/api/API_OWNERS
+
+# This restriction is in place to avoid accidential addition to our top level
+# layout files, such as add duplicated assets, or introducing new colors when
+# we don't want them.
+file://ui/android/java/res/LAYOUT_OWNERS
+
+# Updating policy_templates.json can have drastic effects for systems depending
+# on policy definitions (for example, Google's cloud management tools for
+# Chrome and Chrome OS).
+# The rules are documented at:
+# https://sites.google.com/a/chromium.org/dev/developers/how-tos/enterprise/adding-new-policies
+file://components/policy/resources/ENTERPRISE_POLICY_OWNERS
+
+# This restriction is in place due to the complicated compliance regulations
+# around this code.
+file://chrome/android/java/src/org/chromium/chrome/browser/searchwidget/COMPLIANCE_OWNERS
+
+# Notification channels appear in system UI and are persisted forever by
+# Android, so should not be added or removed lightly, and the proper
+# deprecation and versioning steps must be taken when doing so.
+file://chrome/android/java/src/org/chromium/chrome/browser/notifications/channels/NOTIFICATION_CHANNEL_OWNERS

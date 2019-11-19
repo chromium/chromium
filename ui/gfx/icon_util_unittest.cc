@@ -175,21 +175,21 @@ TEST_F(IconUtilTest, TestBitmapToIconInvalidParameters) {
   std::unique_ptr<SkBitmap> bitmap;
 
   // Wrong bitmap format.
-  bitmap.reset(new SkBitmap);
+  bitmap = std::make_unique<SkBitmap>();
   ASSERT_NE(bitmap.get(), static_cast<SkBitmap*>(NULL));
   bitmap->setInfo(SkImageInfo::MakeA8(kSmallIconWidth, kSmallIconHeight));
   icon = IconUtil::CreateHICONFromSkBitmap(*bitmap);
   EXPECT_FALSE(icon.is_valid());
 
   // Invalid bitmap size.
-  bitmap.reset(new SkBitmap);
+  bitmap = std::make_unique<SkBitmap>();
   ASSERT_NE(bitmap.get(), static_cast<SkBitmap*>(NULL));
   bitmap->setInfo(SkImageInfo::MakeN32Premul(0, 0));
   icon = IconUtil::CreateHICONFromSkBitmap(*bitmap);
   EXPECT_FALSE(icon.is_valid());
 
   // Valid bitmap configuration but no pixels allocated.
-  bitmap.reset(new SkBitmap);
+  bitmap = std::make_unique<SkBitmap>();
   ASSERT_NE(bitmap.get(), static_cast<SkBitmap*>(NULL));
   bitmap->setInfo(SkImageInfo::MakeN32Premul(kSmallIconWidth,
                                              kSmallIconHeight));
@@ -208,7 +208,7 @@ TEST_F(IconUtilTest, TestCreateIconFileInvalidParameters) {
       temp_directory_.GetPath().AppendASCII("<>?.ico");
 
   // Wrong bitmap format.
-  bitmap.reset(new SkBitmap);
+  bitmap = std::make_unique<SkBitmap>();
   ASSERT_NE(bitmap.get(), static_cast<SkBitmap*>(NULL));
   // Must allocate pixels or else ImageSkia will ignore the bitmap and just
   // return an empty image.
@@ -221,7 +221,7 @@ TEST_F(IconUtilTest, TestCreateIconFileInvalidParameters) {
 
   // Invalid bitmap size.
   image_family.clear();
-  bitmap.reset(new SkBitmap);
+  bitmap = std::make_unique<SkBitmap>();
   ASSERT_NE(bitmap.get(), static_cast<SkBitmap*>(NULL));
   bitmap->allocPixels(SkImageInfo::MakeN32Premul(0, 0));
   image_family.Add(gfx::Image::CreateFrom1xBitmap(*bitmap));
@@ -231,7 +231,7 @@ TEST_F(IconUtilTest, TestCreateIconFileInvalidParameters) {
 
   // Bitmap with no allocated pixels.
   image_family.clear();
-  bitmap.reset(new SkBitmap);
+  bitmap = std::make_unique<SkBitmap>();
   ASSERT_NE(bitmap.get(), static_cast<SkBitmap*>(NULL));
   bitmap->setInfo(SkImageInfo::MakeN32Premul(kSmallIconWidth,
                                              kSmallIconHeight));

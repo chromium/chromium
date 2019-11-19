@@ -34,10 +34,9 @@
 #include <unicode/udat.h>
 #include <unicode/unum.h>
 #include <memory>
-#include "third_party/blink/renderer/platform/date_components.h"
+#include "third_party/blink/renderer/platform/text/date_components.h"
 #include "third_party/blink/renderer/platform/text/platform_locale.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
-#include "third_party/blink/renderer/platform/wtf/text/cstring.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -46,7 +45,7 @@ namespace blink {
 // LocalizedDateICU.cpp, and LocalizedNumberICUTest.cpp.
 class PLATFORM_EXPORT LocaleICU : public Locale {
  public:
-  static std::unique_ptr<LocaleICU> Create(const char* locale_string);
+  explicit LocaleICU(const std::string&);
   ~LocaleICU() override;
 
   const Vector<String>& WeekDayShortLabels() override;
@@ -66,7 +65,6 @@ class PLATFORM_EXPORT LocaleICU : public Locale {
   const Vector<String>& TimeAMPMLabels() override;
 
  private:
-  explicit LocaleICU(const char*);
   String DecimalSymbol(UNumberFormatSymbol);
   String DecimalTextAttribute(UNumberFormatTextAttribute);
   void InitializeLocaleData() override;
@@ -90,7 +88,7 @@ class PLATFORM_EXPORT LocaleICU : public Locale {
                                                     int32_t size);
   void InitializeDateTimeFormat();
 
-  CString locale_;
+  std::string locale_;
   UNumberFormat* number_format_;
   UDateFormat* short_date_format_;
   bool did_create_decimal_format_;

@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <script src="../resources/testharness.js"></script>
 <script src="../resources/testharnessreport.js"></script>
-<script src="../resources/run-after-layout-and-paint.js"></script>
 
 <div id="main">
   <a id="anchor1" href="#emptyAnchor">Empty anchor</a>
@@ -20,7 +19,7 @@
 </div>
 
 <script>
-test_after_layout_and_paint(function() {
+test(function() {
   var anchor = accessibilityController.accessibleElementById('anchor1');
   assert_not_equals(anchor, undefined);
   var target = anchor.inPageLinkTarget;
@@ -31,7 +30,7 @@ test_after_layout_and_paint(function() {
   assert_equals(target.name, '');
 }, 'Test finding the target when it is an empty anchor.');
 
-test_after_layout_and_paint(function() {
+test(function() {
   var anchor = accessibilityController.accessibleElementById('anchor2');
   assert_not_equals(anchor, undefined);
   var target = anchor.inPageLinkTarget;
@@ -42,7 +41,7 @@ test_after_layout_and_paint(function() {
   assert_equals(target.name, 'Anchor with content');
 }, 'Test finding the target when it is an anchor with content.');
 
-test_after_layout_and_paint(function() {
+test(function() {
   var anchor = accessibilityController.accessibleElementById('anchor3');
   assert_not_equals(anchor, undefined);
   var target = anchor.inPageLinkTarget;
@@ -53,7 +52,7 @@ test_after_layout_and_paint(function() {
   assert_equals(target.name, 'Anchor with ID');
 }, 'Test finding the target when it is an anchor with ID.');
 
-test_after_layout_and_paint(function() {
+test(function() {
   var anchor = accessibilityController.accessibleElementById('anchor4');
   assert_not_equals(anchor, undefined);
   var target = anchor.inPageLinkTarget;
@@ -62,7 +61,7 @@ test_after_layout_and_paint(function() {
   assert_equals(target.name, '');
 }, 'Test finding the target when it is an empty span.');
 
-test_after_layout_and_paint(function() {
+test(function() {
   var anchor = accessibilityController.accessibleElementById('anchor5');
   assert_not_equals(anchor, undefined);
   var target = anchor.inPageLinkTarget;
@@ -74,7 +73,7 @@ test_after_layout_and_paint(function() {
   assert_equals(child.name, 'Span with content');
 }, 'Test finding the target when it is a span with content.');
 
-test_after_layout_and_paint(function() {
+test(function() {
   var anchor = accessibilityController.accessibleElementById('anchor6');
   assert_not_equals(anchor, undefined);
   var target = anchor.inPageLinkTarget;

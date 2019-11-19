@@ -37,11 +37,6 @@ class Element;
 
 class CORE_EXPORT FormatBlockCommand final : public ApplyBlockElementCommand {
  public:
-  static FormatBlockCommand* Create(Document& document,
-                                    const QualifiedName& tag_name) {
-    return MakeGarbageCollected<FormatBlockCommand>(document, tag_name);
-  }
-
   FormatBlockCommand(Document&, const QualifiedName& tag_name);
 
   bool PreservesTypingStyle() const override { return true; }

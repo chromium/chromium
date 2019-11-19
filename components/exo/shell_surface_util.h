@@ -20,6 +20,7 @@ class LocatedEvent;
 namespace exo {
 
 class Surface;
+class ShellSurfaceBase;
 
 // Sets the application ID for the window. The application ID identifies the
 // general class of applications to which the window belongs.
@@ -39,6 +40,10 @@ void SetShellMainSurface(aura::Window* window, Surface* surface);
 // Returns the main Surface instance or nullptr if it is not set.
 // |window| must not be nullptr.
 Surface* GetShellMainSurface(const aura::Window* window);
+
+// Returns the ShellSurfaceBase for the given |window|, or nullptr if no such
+// surface exists.
+ShellSurfaceBase* GetShellSurfaceBaseForWindow(aura::Window* window);
 
 // Returns the target surface for the located event |event|.  If an
 // event handling is grabbed by an window, it'll first examine that

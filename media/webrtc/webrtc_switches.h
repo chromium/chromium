@@ -12,7 +12,6 @@
 
 namespace switches {
 
-COMPONENT_EXPORT(MEDIA_WEBRTC) extern const char kAecRefinedAdaptiveFilter[];
 COMPONENT_EXPORT(MEDIA_WEBRTC) extern const char kAgcStartupMinVolume[];
 
 }  // namespace switches
@@ -21,9 +20,24 @@ namespace features {
 
 COMPONENT_EXPORT(MEDIA_WEBRTC)
 extern const base::Feature kWebRtcApmInAudioService;
+
+COMPONENT_EXPORT(MEDIA_WEBRTC)
+extern const base::Feature kWebRtcEnableMultiChannelApm;
+
 COMPONENT_EXPORT(MEDIA_WEBRTC)
 extern const base::Feature kWebRtcHybridAgc;
 
 }  // namespace features
+
+namespace switches {
+COMPONENT_EXPORT(MEDIA_WEBRTC)
+extern const char kForceDisableWebRtcApmInAudioService[];
+}  // namespace switches
+
+namespace media {
+
+COMPONENT_EXPORT(MEDIA_WEBRTC) bool IsWebRtcApmInAudioServiceEnabled();
+
+}  // namespace media
 
 #endif  // MEDIA_WEBRTC_WEBRTC_SWITCHES_H_

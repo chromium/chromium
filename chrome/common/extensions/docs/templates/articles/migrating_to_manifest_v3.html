@@ -1,0 +1,521 @@
+<h1 id="title">
+  Migrating to Manifest V3
+</h1>
+
+<p>
+  This is a living document. It will receive regular updates from Chromium
+  contributors as implementation work on manifest version 3 (MV3) progresses.
+</p>
+
+<h2 id="legend" style="clear:both;">
+  Legend
+</h2>
+
+<table>
+  <thead>
+    <tr>
+      <th>
+        Term
+      </th>
+      <th>
+        Description
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>
+        NYI
+      </td>
+      <td>
+        Not Yet Implemented – Work has either not yet begun or is not
+        substantial enough for the feature to be considered ready for
+        experimentation.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        In Preview
+      </td>
+      <td>
+        The implementation has progressed far enough that the team is looking
+        for developer feedback. The feature may continue to evolve during this
+        stage.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        Stable
+      </td>
+      <td>
+        The feature is complete. The API should be considered stable and safe
+        to implement against.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        TBD
+      </td>
+      <td>
+        To Be Determined &mdash; Has not yet been scheduled.
+      </td>
+    </tr>
+    <tr>
+      <td>
+        MV#
+      </td>
+      <td>
+        Manifest Version &lt;Number>&mdash; Indicates that the associated item
+        applies to either the current (MV2) or future (MV3) version of the
+        Chrome Extension platform.
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<h2 id="timeline">
+  Timeline
+</h2>
+
+<p>
+  The following timeline provides a very rough estimate. Dates associated with
+  the below milestones represent the earliest expected point at which the
+  milestone may land and are subject to change.
+</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>
+        Milestone
+      </th>
+      <th>
+        (Estimated) Release Date
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>
+        MV3 Preview/Alpha
+      </td>
+      <td>
+        October 31st, 2019
+      </td>
+    </tr>
+    <tr>
+      <td>
+        MV3 Stable Release
+      </td>
+      <td>
+        2020
+      </td>
+    </tr>
+    <tr>
+      <td>
+        MV2 End of Life
+      </td>
+      <td>
+        TBD
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<p>
+  We have not decided on a final end of life date for MV2. We will continue
+  evaluating necessary features in Manifest V3 and we don't have a firm timeline
+  as dates are heavily dependent on implementation progress and implementation
+  based on developer feedback.
+</p>
+
+<h2 id="release-channels">
+  Release Channels
+</h2>
+
+<p>
+  MV3 is in active development. Developers that wish to experiment with the
+  latest extension platform changes should install <a
+  href="https://www.google.com/chrome/canary/">Chrome Canary</a>. For additional
+  information, see the Chromium project's documentation on <a
+  href="https://www.chromium.org/getting-involved/dev-channel">Chrome Release
+  Channels</a> and <a
+  href="https://www.chromium.org/developers/tech-talk-videos/release-process">Release
+  Process</a>.
+</p>
+
+<h2 id="api_checklist">
+  API Checklist
+</h2>
+
+<ul>
+  <li>
+    Do you have host permissions in your <code>permissions</code> or
+    <code>optional_permissions</code> arrays in manifest.json?
+    <ul>
+      <li>
+        Move host permissions into the <code>host_permissions</code>
+        field in manifest.json.
+      </li>
+    </ul>
+  </li>
+  <li>
+    Are you using background pages?
+    <ul>
+      <li>
+        Replace <code>background.page</code> or <code>background.scripts</code>
+        with <code>background.service_worker</code> in manifest.json. Note that
+        the <code> service_worker </code> field takes a string, not an array of
+        strings.
+      </li>
+      <li>
+        Remove <code>background.persistent</code> from manifest.json.
+      </li>
+      <li>
+        Update background scripts to adapt to the service worker execution
+        context.
+      </li>
+    </ul>
+  </li>
+  <li>
+    Are you using the <code>browser_action</code> or <code>page_action</code>
+    property in manifest.json?
+    <ul>
+      <li>
+        Replace with <code>action</code>.
+      </li>
+    </ul>
+  </li>
+  <li>
+    Are you using the <code>chrome.browserAction</code> or
+    <code>chrome.pageAction</code> JavaScript API?
+    <ul>
+      <li>
+        Migrate to <code>chrome.action</code>.
+      </li>
+    </ul>
+  </li>
+  <li>
+    Are you currently using the blocking version of
+    <code>chrome.webRequest</code> in a consumer-facing extension? (Does not
+    apply to extensions only distributed using <a
+    href="https://cloud.google.com/docs/chrome-enterprise/policies/?policy=ExtensionInstallForcelist">ExtensionInstallForcelist</a>)?
+    <ul>
+      <li>
+        Migrate request modification logic to
+        <code>chrome.declarativeNetRequest</code> rules.
+      </li>
+      <li>
+        Replace the <code>webRequestBlocking</code> permission with
+        <code>declarativeNetRequest</code>.
+      </li>
+      <li>
+        Remove the <code>webRequest</code> permissions if you no longer need to
+        observe network requests.
+      </li>
+      <li>
+        Remove unnecessary host permissions; blocking a request or upgrading a
+        request's protocol doesn't require host permissions with
+        <code>declarativeNetRequest</code>.
+      </li>
+    </ul>
+  </li>
+  <li>
+    Are you currently using <code>chrome.tabs.executeScript({code: '...'})</code>,
+    <code>eval()</code>, or <code>new Function()</code> in background contexts
+    or content scripts?
+    <ul>
+      <li>
+        Move all external code (JS, Wasm, CSS) into your extension bundle.
+      </li>
+      <li>
+        Update script and style references to load resources from the extension
+        bundle.
+      </li>
+      <li>
+        Use <code>chrome.runtime.getURL()</code> to build resource URLs at
+        runtime.
+      </li>
+    </ul>
+  </li>
+  <li>
+    Are you currently using <code>chrome.runtime.getBackgroundPage()</code>,
+    <code>chrome.extension.getBackgroundPage()</code>,
+    <code>chrome.extension.getExtensionTabs()</code>, or
+    <code>chrome.extension.getViews()</code>?
+    <ul>
+      <li>
+        Migrate to passing messages between other contexts and the background
+        service worker.
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="security_checklist">
+  Security Checklist
+</h2>
+
+<ul>
+  <li>
+    Are you making CORS requests in content scripts?
+    <ul>
+      <li>
+        Move these requests to the background service worker.
+      </li>
+    </ul>
+  </li>
+  <li>
+    Are you using a custom <code>content_security_policy</code>
+    in
+    manifest.json?
+    <ul>
+      <li>
+        Replace <code>content_security_policy</code>
+        with
+        <code>content_security_policy.extension_pages</code>,
+        <code>content_security_policy.isolated_world</code>
+        (NYI), or
+        <code>content_security_policy.sandbox</code>
+        as appropriate.
+      </li>
+      <li>
+        Remove references to external domains in <code>script-src</code>,
+        <code>worker-src</code>, <code>object-src</code>, and
+        <code>style-src</code> directives if present.
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="api_changes">
+  API Changes
+</h2>
+
+<h3 id="service_workers">
+  Background Service Workers (In Preview)
+</h3>
+
+<p>
+  Background service workers are available to MV3 extensions in Canary as of
+  October 31, 2019. Once this feature stabilizes, it will be available to MV2
+  extensions in Stable.
+</p>
+
+<ul>
+  <li>
+    The <code>background</code> field remains in manifest.json
+  </li>
+  <li>
+    <code>background.page</code>, <code>background.scripts</code>, and
+    <code>background.persistent</code> fields in manifest.json are not supported
+    in MV3.
+  </li>
+  <li>
+    <code>background.service_worker</code> has been added. It takes a string
+    specifying the relative path of the extension's root service worker.
+    Additional scoped service workers can be registered from the root service
+    worker, but they will not have access to Chrome APIs and cannot be
+    registered for the root ('/') scope.
+  </li>
+  <li>
+    Additional guidance on migrating to service workers can be found in <a
+    href="/migrating_to_service_workers">Migrating from Background Pages to
+    Service Workers</a>.
+  </li>
+</ul>
+
+<h3 id="actions">
+  Extension Actions (In Preview)
+</h3>
+
+<p>
+  The <a href="/pageAction">page action</a> and <a href="/browserAction">browser
+  action</a> APIs have been consolidated into a single API called action. Once
+  this feature stabilizes, it will be available to MV2 extensions in Stable.
+</p>
+
+<ul>
+  <li>
+    <code>page_action</code> and <code>browser_action</code> fields in
+    manifest.json have been replaced with the <code>action</code> property.
+  </li>
+  <li>
+    <code>chrome.browserAction</code> and <code>chrome.pageAction</code> APIs
+    have been replaced by the <code>chrome.action</code> API.
+  </li>
+  <li>
+    <code>chrome.action</code> should behave the same as
+    <code>chrome.browserAction</code>. This API is subject to change.
+  </li>
+</ul>
+
+<h3 id="api_removals">
+  Removals
+</h3>
+
+<ul>
+  <li>
+    <code>chrome.runtime.getBackgroundPage()</code>,
+    <code>chrome.extension.getBackgroundPage()</code>,
+    <code>chrome.extension.getExtensionTabs()</code>, and
+    <code>chrome.extension.getViews()</code> are not exposed in service workers.
+    <ul>
+      <li>
+        Due to the asynchronous design of workers, we currently do not plan on
+        exposing any API that allows synchronous DOM access to other pages.
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="promises">
+  Promise-based APIs (NYI)
+</h3>
+
+<p class="note">
+  NOTE: This feature is still in early development.
+</p>
+
+<h2 id="security_changes">
+  Security Changes
+</h2>
+
+<h3 id="cors_changes">
+  Cross Origin Requests in Content Scripts (MV2-3)
+</h3>
+
+<p class="note">
+  Note: This change took place in MV2 around the same time as early MV3 work. It
+  is included here for the sake of completeness.
+</p>
+
+<p>
+  Content scripts now have similar privileges to the host page they're injected
+  into. Consequently, fetches initiated by a content scripts share the page's
+  origin and content scripts can only execute cross-origin requests that the
+  host page could make. In order to perform a cross-origin request to a resource
+  the page is not allowed to access, extension authors should adapt by executing
+  the request from their background context and passing the response to a
+  content script. See <a
+  href="https://www.chromium.org/Home/chromium-security/extension-content-script-fetches">Changes
+  to Cross-Origin Requests in Chrome Extension Content Scripts</a> for
+  additional guidance on how to safely execute cross-origin requests in an
+  extension.
+</p>
+
+<h3 id="csp_changes">
+  Extension Content Security Policy (NYI)
+</h3>
+
+<p>
+  The way Chrome handles content security policy (CSP) customization is changing
+  slightly in MV3. In MV2, Chrome enforced a default CSP and developers could
+  override it by providing a custom <code>content_security_policy</code>
+  in their manifest.json. In MV3, developers provide CSP overrides for specific
+  execution environments rather than a single override. Additionally, Chrome now
+  disallows specific directives in CSP overrides in order to prevent the
+  extension from loading code that isn't distributed in its bundle.
+</p>
+
+<ul>
+  <li>
+    <code>content_security_policy</code> in manifest.json will take an object
+    rather than a string. Properties of this object define CSPs for various
+    environments.
+  </li>
+
+  <li>
+    MV3 extensions that specify a <code>content_security_policy</code> string
+    will throw an error on load.
+  </li>
+  <li>
+    <code>content_security_policy.extension_pages</code> is a string that
+    defines the CSP for the extension's service worker(s), popup, extension
+    pages, etc.
+  </li>
+  <li>
+    <code>content_security_policy.isolated_world</code> is a string that defines
+    the CSP used by content scripts. This can be used to protect against
+    attackers that attempt to gain privileged access to your extension's content
+    scripts. (NYI)
+  </li>
+  <li>
+    <code>content_security_policy.sandbox</code> is a string that defines the
+    CSP for sandboxed pages. Note that sandbox pages can still use remotely
+    hosted code. See also <a href="/sandboxingEval">Using eval in Chrome
+    Extensions. Safely.</a>
+  </li>
+  <li>
+    Developers can no longer use CSP directives that enable remotely hosted code
+    (code that is not bundled with the extension). Manifests that include such
+    directives will error at parse time.
+    <ul>
+      <li>
+        <code>script-src</code>, <code>worker-src</code>,
+        <code>object-src</code>, and <code>style-src</code> with non-local
+        values are disallowed.
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="known_issues">
+  Known Issues
+</h2>
+
+<ul>
+  <li>
+    <code>chrome.action.setIcon()</code>,
+    <code>chrome.browserAction.setIcon()</code>, and
+    <code>chrome.pageAction.setIcon()</code> do not currently accept a path
+    property in service workers (<a
+    href="https://bugs.chromium.org/p/chromium/issues/detail?id=1015136">1015136</a>).
+  </li>
+  <li>
+    <ul>
+      The following APIs are not currently exposed in service workers
+      <li>
+        <code>chrome.enterprise.platformKeys</code>
+      </li>
+      <li>
+        <code>chrome.fileBrowserHandler</code>
+      </li>
+      <li>
+        <code>chrome.fileSystem</code>
+      </li>
+      <li>
+        <code>chrome.fileSystemProvider</code>
+      </li>
+      <li>
+        <code>chrome.i18n</code>, except <code>getAcceptLanguages()</code>
+      </li>
+      <li>
+        <code>chrome.login</code>
+      </li>
+      <li>
+        <code>chrome.tabCapture</code>
+      </li>
+      <li>
+        <code>chrome.pageCapture</code>
+      </li>
+      <li>
+        <code>chrome.printerProvider</code>
+      </li>
+      <li>
+        <code>chrome.platformKeys</code>
+      </li>
+      <li>
+        <code>chrome.system.display</code>
+      </li>
+    </ul>
+  </li>
+  <li>
+    The following APIs are exposed but do not function as expected
+    <ul>
+      <li>
+        <code>chrome.tabs.captureVisibleTab()</code> will error
+      </li>
+    </ul>
+  </li>
+</ul>

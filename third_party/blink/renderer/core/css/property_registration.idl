@@ -7,5 +7,5 @@
     ImplementedAs=PropertyRegistration
 ] partial interface CSS {
     [RuntimeEnabled=CSSVariables2, MeasureAs=CSSRegisterProperty, CallWith=ExecutionContext, RaisesException]
-        static void registerProperty(PropertyDescriptor descriptor);
+        static void registerProperty(PropertyDefinition definition);
 };

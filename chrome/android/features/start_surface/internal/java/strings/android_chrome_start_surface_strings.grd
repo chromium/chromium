@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- android_chrome_strings.grd contains strings for Start Surface DFM of Chrome for Android. -->
+<grit current_release="1" latest_public_release="0" output_all_resource_defines="false">
+  <outputs>
+    <output filename="values-am/android_chrome_start_surface_strings.xml" lang="am" type="android" />
+    <output filename="values-ar/android_chrome_start_surface_strings.xml" lang="ar" type="android" />
+    <output filename="values-bg/android_chrome_start_surface_strings.xml" lang="bg" type="android" />
+    <output filename="values-bn/android_chrome_start_surface_strings.xml" lang="bn" type="android" />
+    <output filename="values-ca/android_chrome_start_surface_strings.xml" lang="ca" type="android" />
+    <output filename="values-cs/android_chrome_start_surface_strings.xml" lang="cs" type="android" />
+    <output filename="values-da/android_chrome_start_surface_strings.xml" lang="da" type="android" />
+    <output filename="values-de/android_chrome_start_surface_strings.xml" lang="de" type="android" />
+    <output filename="values-el/android_chrome_start_surface_strings.xml" lang="el" type="android" />
+    <output filename="values/android_chrome_start_surface_strings.xml" lang="en" type="android" />
+    <output filename="values-en-rGB/android_chrome_start_surface_strings.xml" lang="en-GB" type="android" />
+    <output filename="values-es/android_chrome_start_surface_strings.xml" lang="es" type="android" />
+    <output filename="values-es-rUS/android_chrome_start_surface_strings.xml" lang="es-419" type="android" />
+    <output filename="values-et/android_chrome_start_surface_strings.xml" lang="et" type="android" />
+    <output filename="values-fa/android_chrome_start_surface_strings.xml" lang="fa" type="android" />
+    <output filename="values-fi/android_chrome_start_surface_strings.xml" lang="fi" type="android" />
+    <output filename="values-gu/android_chrome_start_surface_strings.xml" lang="fi" type="android" />
+    <output filename="values-tl/android_chrome_start_surface_strings.xml" lang="fil" type="android" />
+    <output filename="values-fr/android_chrome_start_surface_strings.xml" lang="fr" type="android" />
+    <output filename="values-hi/android_chrome_start_surface_strings.xml" lang="hi" type="android" />
+    <output filename="values-hr/android_chrome_start_surface_strings.xml" lang="hr" type="android" />
+    <output filename="values-hu/android_chrome_start_surface_strings.xml" lang="hu" type="android" />
+    <output filename="values-in/android_chrome_start_surface_strings.xml" lang="id" type="android" />
+    <output filename="values-it/android_chrome_start_surface_strings.xml" lang="it" type="android" />
+    <output filename="values-iw/android_chrome_start_surface_strings.xml" lang="iw" type="android" />
+    <output filename="values-ja/android_chrome_start_surface_strings.xml" lang="ja" type="android" />
+    <output filename="values-kn/android_chrome_start_surface_strings.xml" lang="kn" type="android" />
+    <output filename="values-ko/android_chrome_start_surface_strings.xml" lang="ko" type="android" />
+    <output filename="values-lt/android_chrome_start_surface_strings.xml" lang="lt" type="android" />
+    <output filename="values-lv/android_chrome_start_surface_strings.xml" lang="lv" type="android" />
+    <output filename="values-ml/android_chrome_start_surface_strings.xml" lang="ml" type="android" />
+    <output filename="values-mr/android_chrome_start_surface_strings.xml" lang="mr" type="android" />
+    <output filename="values-ms/android_chrome_start_surface_strings.xml" lang="ms" type="android" />
+    <output filename="values-nl/android_chrome_start_surface_strings.xml" lang="nl" type="android" />
+    <output filename="values-nb/android_chrome_start_surface_strings.xml" lang="no" type="android" />
+    <output filename="values-pl/android_chrome_start_surface_strings.xml" lang="pl" type="android" />
+    <output filename="values-pt-rBR/android_chrome_start_surface_strings.xml" lang="pt-BR" type="android" />
+    <output filename="values-pt-rPT/android_chrome_start_surface_strings.xml" lang="pt-PT" type="android" />
+    <output filename="values-ro/android_chrome_start_surface_strings.xml" lang="ro" type="android" />
+    <output filename="values-ru/android_chrome_start_surface_strings.xml" lang="ru" type="android" />
+    <output filename="values-sk/android_chrome_start_surface_strings.xml" lang="sk" type="android" />
+    <output filename="values-sl/android_chrome_start_surface_strings.xml" lang="sl" type="android" />
+    <output filename="values-sr/android_chrome_start_surface_strings.xml" lang="sr" type="android" />
+    <output filename="values-sv/android_chrome_start_surface_strings.xml" lang="sv" type="android" />
+    <output filename="values-sw/android_chrome_start_surface_strings.xml" lang="sw" type="android" />
+    <output filename="values-ta/android_chrome_start_surface_strings.xml" lang="ta" type="android" />
+    <output filename="values-te/android_chrome_start_surface_strings.xml" lang="te" type="android" />
+    <output filename="values-th/android_chrome_start_surface_strings.xml" lang="th" type="android" />
+    <output filename="values-tr/android_chrome_start_surface_strings.xml" lang="tr" type="android" />
+    <output filename="values-uk/android_chrome_start_surface_strings.xml" lang="uk" type="android" />
+    <output filename="values-vi/android_chrome_start_surface_strings.xml" lang="vi" type="android" />
+    <output filename="values-zh-rCN/android_chrome_start_surface_strings.xml" lang="zh-CN" type="android" />
+    <output filename="values-zh-rTW/android_chrome_start_surface_strings.xml" lang="zh-TW" type="android" />
+  </outputs>
+  <translations>
+    <file lang="am" path="translations/android_chrome_start_surface_strings_am.xtb" />
+    <file lang="ar" path="translations/android_chrome_start_surface_strings_ar.xtb" />
+    <file lang="bg" path="translations/android_chrome_start_surface_strings_bg.xtb" />
+    <file lang="bn" path="translations/android_chrome_start_surface_strings_bn.xtb" />
+    <file lang="ca" path="translations/android_chrome_start_surface_strings_ca.xtb" />
+    <file lang="cs" path="translations/android_chrome_start_surface_strings_cs.xtb" />
+    <file lang="da" path="translations/android_chrome_start_surface_strings_da.xtb" />
+    <file lang="de" path="translations/android_chrome_start_surface_strings_de.xtb" />
+    <file lang="el" path="translations/android_chrome_start_surface_strings_el.xtb" />
+    <file lang="en-GB" path="translations/android_chrome_start_surface_strings_en-GB.xtb" />
+    <file lang="es" path="translations/android_chrome_start_surface_strings_es.xtb" />
+    <file lang="es-419" path="translations/android_chrome_start_surface_strings_es-419.xtb" />
+    <file lang="et" path="translations/android_chrome_start_surface_strings_et.xtb" />
+    <file lang="fa" path="translations/android_chrome_start_surface_strings_fa.xtb" />
+    <file lang="fi" path="translations/android_chrome_start_surface_strings_fi.xtb" />
+    <file lang="fil" path="translations/android_chrome_start_surface_strings_fil.xtb" />
+    <file lang="fr" path="translations/android_chrome_start_surface_strings_fr.xtb" />
+    <file lang="gu" path="translations/android_chrome_start_surface_strings_gu.xtb" />
+    <file lang="hi" path="translations/android_chrome_start_surface_strings_hi.xtb" />
+    <file lang="hr" path="translations/android_chrome_start_surface_strings_hr.xtb" />
+    <file lang="hu" path="translations/android_chrome_start_surface_strings_hu.xtb" />
+    <file lang="id" path="translations/android_chrome_start_surface_strings_id.xtb" />
+    <file lang="it" path="translations/android_chrome_start_surface_strings_it.xtb" />
+    <file lang="iw" path="translations/android_chrome_start_surface_strings_iw.xtb" />
+    <file lang="ja" path="translations/android_chrome_start_surface_strings_ja.xtb" />
+    <file lang="ko" path="translations/android_chrome_start_surface_strings_ko.xtb" />
+    <file lang="kn" path="translations/android_chrome_start_surface_strings_kn.xtb" />
+    <file lang="lt" path="translations/android_chrome_start_surface_strings_lt.xtb" />
+    <file lang="lv" path="translations/android_chrome_start_surface_strings_lv.xtb" />
+    <file lang="ml" path="translations/android_chrome_start_surface_strings_ml.xtb" />
+    <file lang="mr" path="translations/android_chrome_start_surface_strings_mr.xtb" />
+    <file lang="ms" path="translations/android_chrome_start_surface_strings_ms.xtb" />
+    <file lang="nl" path="translations/android_chrome_start_surface_strings_nl.xtb" />
+    <file lang="no" path="translations/android_chrome_start_surface_strings_no.xtb" />
+    <file lang="pl" path="translations/android_chrome_start_surface_strings_pl.xtb" />
+    <file lang="pt-BR" path="translations/android_chrome_start_surface_strings_pt-BR.xtb" />
+    <file lang="pt-PT" path="translations/android_chrome_start_surface_strings_pt-PT.xtb" />
+    <file lang="ro" path="translations/android_chrome_start_surface_strings_ro.xtb" />
+    <file lang="ru" path="translations/android_chrome_start_surface_strings_ru.xtb" />
+    <file lang="sk" path="translations/android_chrome_start_surface_strings_sk.xtb" />
+    <file lang="sl" path="translations/android_chrome_start_surface_strings_sl.xtb" />
+    <file lang="sr" path="translations/android_chrome_start_surface_strings_sr.xtb" />
+    <file lang="sv" path="translations/android_chrome_start_surface_strings_sv.xtb" />
+    <file lang="sw" path="translations/android_chrome_start_surface_strings_sw.xtb" />
+    <file lang="ta" path="translations/android_chrome_start_surface_strings_ta.xtb" />
+    <file lang="te" path="translations/android_chrome_start_surface_strings_te.xtb" />
+    <file lang="th" path="translations/android_chrome_start_surface_strings_th.xtb" />
+    <file lang="tr" path="translations/android_chrome_start_surface_strings_tr.xtb" />
+    <file lang="uk" path="translations/android_chrome_start_surface_strings_uk.xtb" />
+    <file lang="vi" path="translations/android_chrome_start_surface_strings_vi.xtb" />
+    <file lang="zh-CN" path="translations/android_chrome_start_surface_strings_zh-CN.xtb" />
+    <file lang="zh-TW" path="translations/android_chrome_start_surface_strings_zh-TW.xtb" />
+  </translations>
+  <release allow_pseudo="false" seq="1">
+    <messages fallback_to_english="true">
+        <message name="IDS_ACCESSIBILITY_START_SURFACE_BOTTOM_HOME_BUTTON" desc="Description for start surface home button to switch back to home surface.">
+          Home
+        </message>
+        <message name="IDS_ACCESSIBILITY_START_SURFACE_BOTTOM_EXPLORE_BUTTON" desc="Description for start surface explore button to switch to explore surface.">
+          Explore
+        </message>
+    </messages>
+  </release>
+</grit>

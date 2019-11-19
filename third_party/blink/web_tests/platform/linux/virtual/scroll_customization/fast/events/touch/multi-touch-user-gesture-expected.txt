@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL Test user gesture behavior during multi-finger touch events. assert_equals: expected "touchstart@target1(false), touchstart@target2(false), touchmove@target1(false), touchmove@target2(false), touchend@target1(true), touchend@target2(true)" but got "touchstart@target1(false), touchstart@target2(false), touchmove@target2(false), touchmove@target1(false), touchend@target1(true), touchend@target2(true)"
+Harness: the test ran to completion.
+

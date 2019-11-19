@@ -1,0 +1,5 @@
+[document web] offset=0 language=es-ES offset=1 language=fr-FR
+++[paragraph] offset=0 language=es-ES
+++++[static] name='Espanyol' offset=0 language=es-ES
+++[static] name='Comment allez-vous?' offset=0 language=fr-FR
+

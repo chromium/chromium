@@ -1,2 +1,0 @@
-CONSOLE ERROR: line 4: The XSS Auditor refused to execute a script in 'http://localhost:8000/security/xssAuditor/resources/echo-intertag.pl?q=%3csvg%3e%3cscript%20XLinK:href=%27data:text/html,alert(0)%27%3e%3c/script%3e%3c/svg%3e' because its source code was found within the request. The server sent an 'X-XSS-Protection' header requesting this behavior.
-

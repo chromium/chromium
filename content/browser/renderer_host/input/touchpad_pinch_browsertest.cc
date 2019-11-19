@@ -78,7 +78,7 @@ class TouchpadPinchBrowserTest : public ContentBrowserTest,
  protected:
   void LoadURL() {
     const GURL data_url(kTouchpadPinchDataURL);
-    NavigateToURL(shell(), data_url);
+    EXPECT_TRUE(NavigateToURL(shell(), data_url));
     HitTestRegionObserver observer(GetRenderWidgetHost()->GetFrameSinkId());
     observer.WaitForHitTestData();
   }
@@ -116,7 +116,7 @@ IN_PROC_BROWSER_TEST_P(TouchpadPinchBrowserTest,
   const gfx::Point pinch_position(contents_rect.width() / 2,
                                   contents_rect.height() / 2);
   SimulateGesturePinchSequence(shell()->web_contents(), pinch_position, 1.23,
-                               blink::kWebGestureDeviceTouchpad);
+                               blink::WebGestureDevice::kTouchpad);
 
   scale_observer.WaitForPageScaleUpdate();
 }
@@ -135,7 +135,7 @@ IN_PROC_BROWSER_TEST_P(TouchpadPinchBrowserTest, WheelListenerAllowingPinch) {
   const gfx::Point pinch_position(contents_rect.width() / 2,
                                   contents_rect.height() / 2);
   SimulateGesturePinchSequence(shell()->web_contents(), pinch_position, 1.23,
-                               blink::kWebGestureDeviceTouchpad);
+                               blink::WebGestureDevice::kTouchpad);
 
   // Ensure that the page saw the synthetic wheel.
   bool default_prevented = false;
@@ -164,7 +164,7 @@ void TouchpadPinchBrowserTest::EnsureNoScaleChangeWhenCanceled(
   const gfx::Point pinch_position(contents_rect.width() / 2,
                                   contents_rect.height() / 2);
   SimulateGesturePinchSequence(shell()->web_contents(), pinch_position, 1.23,
-                               blink::kWebGestureDeviceTouchpad);
+                               blink::WebGestureDevice::kTouchpad);
   const float starting_scale_factor =
       starting_scale_observer.WaitForPageScaleUpdate();
   ASSERT_GT(starting_scale_factor, 0.f);
@@ -194,7 +194,7 @@ void TouchpadPinchBrowserTest::EnsureNoScaleChangeWhenCanceled(
 
   content::TestPageScaleObserver scale_observer(shell()->web_contents());
   SimulateGesturePinchSequence(shell()->web_contents(), pinch_position, 2.0,
-                               blink::kWebGestureDeviceTouchpad);
+                               blink::WebGestureDevice::kTouchpad);
   ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
       shell()->web_contents(),
       "handlerPromise.then(function(e) {"
@@ -215,14 +215,14 @@ IN_PROC_BROWSER_TEST_P(TouchpadPinchBrowserTest, WheelListenerPreventingPinch) {
   EnsureNoScaleChangeWhenCanceled(
       base::BindOnce([](WebContents* web_contents, gfx::Point position) {
         SimulateGesturePinchSequence(web_contents, position, 1.5,
-                                     blink::kWebGestureDeviceTouchpad);
+                                     blink::WebGestureDevice::kTouchpad);
       }));
 }
 
 // If the synthetic wheel event for a touchpad double tap is canceled, we
 // should not change the page scale.
 IN_PROC_BROWSER_TEST_P(TouchpadPinchBrowserTest,
-                       WheelListenerPreventingDoubleTap) {
+                       DISABLED_WheelListenerPreventingDoubleTap) {
   LoadURL();
 
   WebPreferences prefs =
@@ -236,7 +236,7 @@ IN_PROC_BROWSER_TEST_P(TouchpadPinchBrowserTest,
             blink::WebInputEvent::kGestureDoubleTap,
             blink::WebInputEvent::kNoModifiers,
             blink::WebInputEvent::GetStaticTimeStampForTests(),
-            blink::kWebGestureDeviceTouchpad);
+            blink::WebGestureDevice::kTouchpad);
         double_tap_zoom.SetPositionInWidget(gfx::PointF(position));
         double_tap_zoom.SetPositionInScreen(gfx::PointF(position));
         double_tap_zoom.data.tap.tap_count = 1;

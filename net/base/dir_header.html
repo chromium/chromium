@@ -123,6 +123,25 @@ function sortTable(column) {
     tbody.appendChild(list[i]);
   }
 }
+
+// Add event handlers to column headers.
+function addHandlers(element, column) {
+  element.onclick = (e) => sortTable(column);
+  element.onkeydown = (e) => {
+    if (e.key == 'Enter' || e.key == ' ') {
+      sortTable(column);
+      e.preventDefault();
+    }
+  };
+}
+
+function onLoad() {
+  addHandlers(document.getElementById('nameColumnHeader'), 0);
+  addHandlers(document.getElementById('sizeColumnHeader'), 1);
+  addHandlers(document.getElementById('dateColumnHeader'), 2);
+}
+
+window.addEventListener('DOMContentLoaded', onLoad);
 </script>
 
 <style>
@@ -205,11 +224,11 @@ function sortTable(column) {
 <table>
   <thead>
     <tr class="header" id="theader">
-      <th onclick="javascript:sortTable(0);">$i18n{headerName}</th>
-      <th class="detailsColumn" onclick="javascript:sortTable(1);">
+      <th id="nameColumnHeader" tabindex=0 role="button">$i18n{headerName}</th>
+      <th id="sizeColumnHeader" class="detailsColumn" tabindex=0 role="button">
         $i18n{headerSize}
       </th>
-      <th class="detailsColumn" onclick="javascript:sortTable(2);">
+      <th id="dateColumnHeader" class="detailsColumn" tabindex=0 role="button">
         $i18n{headerDateModified}
       </th>
     </tr>

@@ -1,1 +1,4 @@
-file://third_party/blink/common/feature_policy/OWNERS
+# TEAM: feature-control@chromium.org
+# COMPONENT: Blink>FeaturePolicy
+# WPT-NOTIFY: true
+iclelland@chromium.org

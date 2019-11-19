@@ -25,13 +25,15 @@
         outline: none;
       }
 
-      :host-context([dark]) {
-        --cr-radio-button-checked-color: var(--google-blue-refresh-300);
-        --cr-radio-button-checked-ripple-color:
-            rgba(var(--google-blue-refresh-300-rgb), .4);
-        --cr-radio-button-unchecked-color: var(--google-grey-refresh-500);
-        --cr-radio-button-unchecked-ripple-color:
-            rgba(var(--google-grey-refresh-300-rgb), .4);
+      @media (prefers-color-scheme: dark) {
+        :host {
+          --cr-radio-button-checked-color: var(--google-blue-refresh-300);
+          --cr-radio-button-checked-ripple-color:
+              rgba(var(--google-blue-refresh-300-rgb), .4);
+          --cr-radio-button-unchecked-color: var(--google-grey-refresh-500);
+          --cr-radio-button-unchecked-ripple-color:
+              rgba(var(--google-grey-refresh-300-rgb), .4);
+        }
       }
 
       :host([disabled]) {
@@ -48,8 +50,6 @@
       #labelWrapper {
         flex: 1;
         margin-inline-start: var(--cr-radio-button-label-spacing, 20px);
-
-        @apply --cr-radio-button-label;
       }
 
       #label {
@@ -65,10 +65,9 @@
 
       .disc-wrapper {
         height: var(--cr-radio-button-size);
+        margin-block-start: var(--cr-radio-button-disc-margin-block-start, 0);
         position: relative;
         width: var(--cr-radio-button-size);
-
-        @apply --cr-radio-button-disc;
       }
 
       .disc-border,
@@ -84,6 +83,10 @@
 
       :host([checked]) .disc-border {
         border-color: var(--cr-radio-button-checked-color);
+      }
+
+      #button:focus {
+        outline: none;
       }
 
       .disc {

@@ -18,9 +18,10 @@
     Boston, MA 02110-1301, USA.
 */
 
-// https://html.spec.whatwg.org/C/#plugins-2
+// https://html.spec.whatwg.org/multipage/system-state.html#dom-plugin
 
 [
+    Exposed=Window,
     ImplementedAs=DOMPlugin,
     LegacyUnenumerableNamedProperties
 ] interface Plugin {

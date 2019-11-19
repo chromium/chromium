@@ -92,13 +92,6 @@ typedef DOMString MyString;
 typedef object MyObject;
 
 /** TREE
- *Typedef(MyDate)
- *  Type()
- *    PrimitiveType(Date)
- */
-typedef Date MyDate;
-
-/** TREE
  *Typedef(MyFloat)
  *  Type()
  *    PrimitiveType(float)
@@ -180,3 +173,10 @@ typedef record<double, ByteString> MyInvalidRecord;
  *          ExtAttribute(Clamp)
  */
 typedef ([TreatNullAs=EmptyString] DOMString or [Clamp] long) MyAnnotationInUnion;
+
+/** TREE
+ *Typedef(Date)
+ *  Type()
+ *    PrimitiveType(double)
+ */
+typedef double Date;

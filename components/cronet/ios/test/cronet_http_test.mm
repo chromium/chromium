@@ -503,6 +503,39 @@ TEST_F(HttpTest, PostRequest) {
   ASSERT_TRUE(block_used);
 }
 
+TEST_F(HttpTest, PostRequestWithLargeBody) {
+  // Create request body.
+  std::string request_body(kLargeRequestBodyBufferLength, 'z');
+  NSData* post_data = [NSData dataWithBytes:request_body.c_str()
+                                     length:request_body.length()];
+
+  // Prepare the request.
+  NSURL* url = net::NSURLWithGURL(GURL(TestServer::GetEchoRequestBodyURL()));
+  NSMutableURLRequest* request = [[NSMutableURLRequest alloc] initWithURL:url];
+  request.HTTPMethod = @"POST";
+  request.HTTPBody = post_data;
+
+  // Set the request filter to check that the request was handled by the Cronet
+  // stack.
+  __block BOOL block_used = NO;
+  [Cronet setRequestFilterBlock:^(NSURLRequest* req) {
+    block_used = YES;
+    EXPECT_EQ([req URL], url);
+    return YES;
+  }];
+
+  // Send the request and wait for the response.
+  NSURLSessionDataTask* data_task = [session_ dataTaskWithRequest:request];
+  StartDataTaskAndWaitForCompletion(data_task);
+
+  // Verify that the response from the server matches the request body.
+  NSString* response_body = [delegate_ responseBody];
+  ASSERT_EQ(nil, [delegate_ error]);
+  ASSERT_STREQ(request_body.c_str(),
+               base::SysNSStringToUTF8(response_body).c_str());
+  ASSERT_TRUE(block_used);
+}
+
 // Verify the chunked request body upload function.
 TEST_F(HttpTest, PostRequestWithBodyStream) {
   // Create request body stream.

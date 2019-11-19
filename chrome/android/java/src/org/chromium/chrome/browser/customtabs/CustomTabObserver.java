@@ -10,13 +10,15 @@ import android.content.Context;
 import android.graphics.Rect;
 import android.net.Uri;
 import android.os.SystemClock;
-import android.support.annotation.IntDef;
-import android.support.customtabs.CustomTabsSessionToken;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
 
+import androidx.annotation.IntDef;
+import androidx.browser.customtabs.CustomTabsSessionToken;
+
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.browserservices.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
 import org.chromium.chrome.browser.prerender.ExternalPrerenderHandler;
 import org.chromium.chrome.browser.share.ShareHelper;
@@ -63,7 +65,7 @@ public class CustomTabObserver extends EmptyTabObserver {
 
     @Inject
     public CustomTabObserver(@Named(APP_CONTEXT) Context appContext,
-            CustomTabIntentDataProvider intentDataProvider, CustomTabsConnection connection) {
+            BrowserServicesIntentDataProvider intentDataProvider, CustomTabsConnection connection) {
         mOpenedByChrome = intentDataProvider.isOpenedByChrome();
         mCustomTabsConnection = mOpenedByChrome ? null : connection;
         mSession = intentDataProvider.getSession();

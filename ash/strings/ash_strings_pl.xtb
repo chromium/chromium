@@ -7,54 +7,68 @@
 <translation id="1037492556044956303">Dodano urządzenie <ph name="DEVICE_NAME" /></translation>
 <translation id="1056775291175587022">Brak sieci</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
+<translation id="108486256082349153">Sieć komórkowa: <ph name="ADDRESS" /></translation>
 <translation id="109942774857561566">Nudzi mi się</translation>
 <translation id="1104084341931202936">Pokaż ustawienia ułatwień dostępu</translation>
 <translation id="1104621072296271835">Razem Twoje urządzenia mogą jeszcze więcej</translation>
 <translation id="112308213915226829">Autoukrywanie półki</translation>
 <translation id="1153356358378277386">Sparowane urządzenia</translation>
+<translation id="1175572348579024023">Przewijanie</translation>
+<translation id="1178581264944972037">Wstrzymaj</translation>
 <translation id="1195412055398077112">nadmiarowość obrazu</translation>
 <translation id="119944043368869598">Wyczyść wszystko</translation>
-<translation id="123828989343052515">Nowy pulpit</translation>
 <translation id="1247372569136754018">Mikrofon (wewnętrzny)</translation>
+<translation id="1249456112629248620"><ph name="FEATURE_NAME" /> – o tym ustawieniu decyduje administrator.</translation>
 <translation id="1252999807265626933">Trwa ładowanie z: <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">Jaka jest pogoda?</translation>
 <translation id="1267032506238418139">Zmiana skrótu klawiszowego</translation>
 <translation id="1270290102613614947">Klawiatura ekranowa wyłączona</translation>
 <translation id="1272079795634619415">Zatrzymaj</translation>
+<translation id="1275285675049378717">Zasilanie przez <ph name="POWER_SOURCE" /></translation>
 <translation id="1279938420744323401"><ph name="DISPLAY_NAME" /> (<ph name="ANNOTATION" />)</translation>
+<translation id="1287638800910363800"><ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, siła sygnału <ph name="SIGNAL_STRENGTH" />, zarządzana przez administratora</translation>
 <translation id="1289185460362160437">Możesz wrócić w: <ph name="COME_BACK_DAY_OF_WEEK" /> o <ph name="COME_BACK_TIME" />.</translation>
 <translation id="1290331692326790741">słaby sygnał</translation>
 <translation id="1293264513303784526">Urządzenie USB-C (lewy port)</translation>
 <translation id="1294929383540927798">Zmień ustawienia powiadomień na ekranie blokady</translation>
+<translation id="1301069673413256657">GSM</translation>
 <translation id="1302880136325416935">Pokaż ustawienia Bluetooth. <ph name="STATE_TEXT" /></translation>
 <translation id="1316069254387866896">Zawsze pokazuj półkę</translation>
+<translation id="1331336659607007576"><ph name="PHONE_NAME" />, siła sygnału <ph name="SIGNAL_STRENGTH" />, bateria telefonu <ph name="BATTERY_STATUS" /></translation>
+<translation id="1341651618736211726">Rozwiń menu</translation>
 <translation id="1346748346194534595">W prawo</translation>
 <translation id="1351937230027495976">Zwiń menu</translation>
 <translation id="1383876407941801731">Szukaj</translation>
 <translation id="1419738280318246476">Odblokuj urządzenie, by zareagować na powiadomienie</translation>
+<translation id="1420408895951708260">Włącz lub wyłącz Podświetlenie nocne. <ph name="STATE_TEXT" /></translation>
+<translation id="1426410128494586442">Tak</translation>
 <translation id="1455242230282523554">Pokaż ustawienia języka</translation>
+<translation id="1460620680449458626">Dźwięk jest wyciszony.</translation>
 <translation id="1467432559032391204">W lewo</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
+<translation id="1516740043221086139">Tryb Nie przeszkadzać jest włączony.</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Pokaż ustawienia powiadomień. Jedna aplikacja ma wyłączone powiadomienia.}few{Pokaż ustawienia powiadomień. # aplikacje mają wyłączone powiadomienia.}many{Pokaż ustawienia powiadomień. # aplikacji ma wyłączone powiadomienia.}other{Pokaż ustawienia powiadomień. # aplikacji ma wyłączone powiadomienia.}}</translation>
 <translation id="1525508553941733066">ZAMKNIJ</translation>
-<translation id="1537254971476575106">Lupa pełnego ekranu</translation>
 <translation id="15373452373711364">Duży kursor myszy</translation>
+<translation id="1546492247443594934">Biurko 2</translation>
 <translation id="1550523713251050646">Kliknij, by wyświetlić więcej opcji</translation>
 <translation id="1570871743947603115">Włącz lub wyłącz Bluetooth. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">uzyskiwać dostęp do całej Twojej aktywności w tej sesji;</translation>
 <translation id="1608626060424371292">Usuń tego użytkownika</translation>
-<translation id="1621499497873603021">Czas pozostały do wyczerpania baterii: <ph name="TIME_LEFT" /></translation>
 <translation id="1654477262762802994">Rozpocznij zapytanie głosowe</translation>
 <translation id="1658406695958299976">Nadal nie można zweryfikować Twojego hasła. Uwaga: jeśli ostatnio hasło było zmieniane, nowe hasło zostanie zastosowane, gdy się wylogujesz. Tu podaj stare hasło.</translation>
+<translation id="1661469207525701666"><ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, zarządzana przez administratora</translation>
 <translation id="1677472565718498478">Pozostało <ph name="TIME" /></translation>
 <translation id="1698760176351776263">Adres IPv6: <ph name="ADDRESS" /></translation>
 <translation id="1743570585616704562">Nie rozpoznano</translation>
 <translation id="1746730358044914197">Metody wprowadzania zostały skonfigurowane przez administratora.</translation>
 <translation id="1747827819627189109">Klawiatura ekranowa włączona</translation>
 <translation id="1761222317188459878">Włącz lub wyłącz połączenie sieciowe. <ph name="STATE_TEXT" /></translation>
+<translation id="1771761307086386028">Przewiń w prawo</translation>
 <translation id="1812997170047690955">Co widać na moim ekranie?</translation>
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
 <translation id="1836215606488044471">Asystent (ładuję…)</translation>
+<translation id="1838895407229022812">Podświetlenie nocne jest wyłączone.</translation>
 <translation id="1850504506766569011">Wi-Fi wyłączone.</translation>
 <translation id="1864454756846565995">Urządzenie USB-C (tylny port)</translation>
 <translation id="1882897271359938046">Kopia na <ph name="DISPLAY_NAME" /></translation>
@@ -62,28 +76,35 @@
 <translation id="1919743966458266018">Zmieniliśmy skrót, który otwiera menedżera zadań. Zamiast <ph name="OLD_SHORTCUT" /> używaj teraz <ph name="NEW_SHORTCUT" />.</translation>
 <translation id="1923539912171292317">Automatyczne kliknięcia</translation>
 <translation id="1928739107511554905">Aby pobrać aktualizację, użyj ekranu dotykowego, by uruchomić Chromebooka ponownie z podłączoną klawiaturą.</translation>
-<translation id="1942830294380034169">Przycisk akcji</translation>
 <translation id="1951012854035635156">Asystent</translation>
 <translation id="1957803754585243749">0°</translation>
 <translation id="1957958912175573503">Ustaw język</translation>
+<translation id="1962969542251276847">Zablokuj ekran</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
+<translation id="1972950159383891558">Cześć <ph name="USERNAME" />,</translation>
+<translation id="1978498689038657292">Wprowadzanie tekstu</translation>
 <translation id="1993072747612765854">Więcej informacji o najnowszej aktualizacji <ph name="SYSTEM_APP_NAME" /></translation>
 <translation id="1995660704900986789">Wyłącz</translation>
-<translation id="1999763610967697511">Przeciąganie i upuszczanie</translation>
 <translation id="2012624427112548395">Ctrl+Search+H</translation>
 <translation id="2016340657076538683">Wpisz wiadomość</translation>
 <translation id="2050339315714019657">Pionowo</translation>
+<translation id="2053685863250070766"><ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, siła sygnału <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="2067602449040652523">Jasność klawiatury</translation>
 <translation id="209965399369889474">Brak połączenia z siecią</translation>
+<translation id="2126242104232412123">Nowy pulpit</translation>
 <translation id="2127372758936585790">Ładowarka o małej mocy</translation>
 <translation id="2135456203358955318">Lupa zadokowana</translation>
 <translation id="2144487987174258011">Uruchom ponownie, by zaktualizować Adobe Flash Playera</translation>
+<translation id="2148902151539191989">WSTECZ</translation>
 <translation id="2208323208084708176">Tryb ujednoliconego pulpitu</translation>
 <translation id="2220572644011485463">Kod PIN lub hasło</translation>
+<translation id="2222338659135520253">Musisz się zalogować</translation>
 <translation id="225680501294068881">Skanowanie w poszukiwaniu urządzeń...</translation>
 <translation id="2268130516524549846">Bluetooth wyłączony</translation>
 <translation id="2268813581635650749">Wyloguj wszystkich</translation>
+<translation id="2277103315734023688">Przewiń do przodu</translation>
 <translation id="2292698582925480719">Skala wyświetlania</translation>
+<translation id="2298170939937364391">Lupa pełnego ekranu została włączona. Aby ją wyłączyć, naciśnij ponownie Ctrl+Search+M.</translation>
 <translation id="2302092602801625023">To konto jest zarządzane przez Family Link</translation>
 <translation id="2303600792989757991">Przełącz widok ogólny okna</translation>
 <translation id="2339073806695260576">Kliknij przycisk rysika na półce, by zrobić notatkę lub zrzut ekranu albo użyć wskaźnika laserowego bądź lupy.</translation>
@@ -93,28 +114,27 @@
 <translation id="2359808026110333948">Dalej</translation>
 <translation id="2365393535144473978">Wraz z mobilną transmisją danych zostanie włączony Bluetooth.</translation>
 <translation id="2391579633712104609">180°</translation>
-<translation id="239188844683466770">Włącz lub wyłącz tryb Nie przeszkadzać</translation>
 <translation id="2412593942846481727">Dostępna aktualizacja</translation>
 <translation id="2413728805700750528"><ph name="DISPLAY_NAME" /> jest sesją zarządzaną, którą zarządza <ph name="DOMAIN" /></translation>
-<translation id="2416346634399901812">Połączono z siecią <ph name="NETWORK_NAME" /></translation>
 <translation id="2427507373259914951">Kliknięcie lewym przyciskiem</translation>
 <translation id="2429753432712299108">Urządzenie Bluetooth „<ph name="DEVICE_NAME" />” chce się sparować. Zanim to zaakceptujesz, sprawdź, czy na tym urządzeniu wyświetla się klucz: <ph name="PASSKEY" /></translation>
 <translation id="2482878487686419369">Powiadomienia</translation>
 <translation id="2484513351006226581">Naciśnij <ph name="KEYBOARD_SHORTCUT" />, by przełączyć układ klawiatury.</translation>
 <translation id="2501920221385095727">Klawisze trwałe</translation>
 <translation id="2509468283778169019">CAPS LOCK jest włączony.</translation>
-<translation id="2532589005999780174">Tryb wysokiego kontrastu</translation>
+<translation id="2542089167727451762">Kliknij swoje zdjęcie profilowe</translation>
 <translation id="255671100581129685">Asystent Google jest niedostępny w sesji publicznej.</translation>
+<translation id="256712445991462162">Lupa zadokowana</translation>
 <translation id="2575685495496069081">Wielokrotne logowanie jest wyłączone</translation>
 <translation id="2582112259361606227">Uruchom ponownie, by zaktualizować</translation>
-<translation id="2597972630681408282">Podświetlenie nocne: <ph name="NIGHT_LIGHT_STATUS" /></translation>
 <translation id="2617342710774726426">Karta SIM jest zablokowana</translation>
+<translation id="2621713457727696555">Zabezpieczono</translation>
 <translation id="2653659639078652383">Prześlij</translation>
+<translation id="2658778018866295321">Kliknij i przeciągnij</translation>
 <translation id="2700493154570097719">Ustaw klawiaturę</translation>
 <translation id="2718395828230677721">Podświetlenie nocne</translation>
 <translation id="2727977024730340865">Podłączono ładowarkę o małej mocy. Ładowanie baterii może być nieprawidłowe.</translation>
 <translation id="2761704814324807722">Pasek stanu, godzina <ph name="TIME" />, <ph name="BATTERY" /></translation>
-<translation id="277257480934873581">Ponownie łączę z: <ph name="NAME" /></translation>
 <translation id="2792498699870441125">Alt+Szukaj</translation>
 <translation id="2803734122639935495">Aby odblokować, wprowadź swoje hasło</translation>
 <translation id="2819276065543622893">Zostaniesz teraz wylogowany.</translation>
@@ -124,18 +144,17 @@
 <translation id="2872961005593481000">Wyłącz</translation>
 <translation id="2878884018241093801">Brak ostatnich elementów</translation>
 <translation id="2903844815300039659">Połączono z siecią <ph name="NAME" />, <ph name="STRENGTH" /></translation>
-<translation id="2911940648265863620">Udostępniasz ekran</translation>
 <translation id="2942350706960889382">Lupa zadokowana</translation>
 <translation id="2942516765047364088">Pozycja półki</translation>
 <translation id="2946119680249604491">Dodaj połączenie</translation>
 <translation id="2961963223658824723">Coś poszło nie tak. Spróbuj ponownie za kilka sekund.</translation>
 <translation id="2963773877003373896">mod3</translation>
 <translation id="2970920913501714344">instalować aplikacje, rozszerzenia i motywy;</translation>
+<translation id="2977598380246111477">Następny numer</translation>
 <translation id="2995447421581609334">Pokaż urządzenia przesyłające.</translation>
 <translation id="2996462380875591307">Lupa zadokowana została włączona. Aby ją wyłączyć, naciśnij ponownie Ctrl+Search+D.</translation>
 <translation id="3000461861112256445">Dźwięk mono</translation>
 <translation id="3009178788565917040">Urządzenie wyjściowe</translation>
-<translation id="3019353588588144572">Czas pozostały do pełnego naładowania baterii: <ph name="TIME_REMAINING" /></translation>
 <translation id="3051128274746680507">Profil nadzorowanego przez Ciebie użytkownika zostanie wkrótce usunięty. Zaloguj się, by dowiedzieć się więcej.</translation>
 <translation id="3055162170959710888">Urządzenie było dziś przez Ciebie używane przez <ph name="USED_TIME" /></translation>
 <translation id="3077734595579995578">shift</translation>
@@ -143,14 +162,18 @@
 <translation id="3087734570205094154">Na dół</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="3126069444801937830">Uruchom ponownie i zaktualizuj</translation>
-<translation id="315116470104423982">Komórkowa transmisja danych</translation>
+<translation id="3139942575505304791">Biurko 1</translation>
+<translation id="315116470104423982">Mobilna transmisja danych</translation>
 <translation id="3151786313568798007">Orientacja</translation>
 <translation id="3153444934357957346">W wielokrotnym logowaniu nie możesz mieć więcej kont niż <ph name="MULTI_PROFILE_USER_LIMIT" />.</translation>
 <translation id="3154351730702813399">Administrator urządzenia może monitorować Twoją aktywność związaną z przeglądaniem.</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Połączono z urządzeniem}few{Połączono z # urządzeniami}many{Połączono z # urządzeniami}other{Połączono z # urządzenia}}</translation>
 <translation id="3226991577105957773">i jeszcze <ph name="COUNT" /></translation>
 <translation id="3236488194889173876">Brak dostępnych sieci komórkowych</translation>
+<translation id="3249513730522716925">Okno <ph name="WINDOW_TITLE" /> zostało przeniesione z biurka <ph name="ACTIVE_DESK" /> na biurko <ph name="TARGET_DESK" /></translation>
 <translation id="3255483164551725916">Co potrafisz?</translation>
+<translation id="3277674767125718685">Dźwięk jest włączony.</translation>
+<translation id="3290356915286466215">Niezabezpieczone</translation>
 <translation id="3294437725009624529">Gość</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> nadal może się później zalogować.</translation>
 <translation id="3321628682574733415">Nieprawidłowy kod rodzica</translation>
@@ -159,8 +182,10 @@
 <translation id="3364721542077212959">Narzędzia rysika</translation>
 <translation id="3368922792935385530">Połączone</translation>
 <translation id="3371140690572404006">Urządzenie USB-C (przedni port na prawym boku)</translation>
+<translation id="3386978599540877378">Lupa pełnoekranowa</translation>
 <translation id="3400357268283240774">Ustawienia dodatkowe</translation>
 <translation id="3413817803639110246">Na razie nie ma nic do pokazania</translation>
+<translation id="343571671045587506">Edytuj przypomnienie</translation>
 <translation id="3445925074670675829">Urządzenie USB-C</translation>
 <translation id="3454224730401036106">Połączenie zostało przełączone na bezpieczniejszą sieć</translation>
 <translation id="3465223694362104965">Od czasu Twojego ostatniego logowania do tego urządzenia podłączono inną klawiaturę. Zanim jej użyjesz, upewnij się, że masz do niej zaufanie.</translation>
@@ -168,7 +193,10 @@
 <translation id="3510164367642747937">Podświetlaj wskaźnik myszy</translation>
 <translation id="3513798432020909783">Kontem zarządza <ph name="MANAGER_EMAIL" /></translation>
 <translation id="3573179567135747900">Zmień z powrotem na „<ph name="FROM_LOCALE" />” (wymaga ponownego uruchomienia)</translation>
+<translation id="3576141592585647168">Zmień strefę czasową</translation>
+<translation id="3593646759913489391"><ph name="NETWORK_NAME" />, zarządzana przez administratora</translation>
 <translation id="3595596368722241419">Bateria naładowana</translation>
+<translation id="3604801046548457007">Utworzono biurko <ph name="DESK_TITILE" /></translation>
 <translation id="3606978283550408104">Podłączono monitor brajlowski.</translation>
 <translation id="3621202678540785336">Urządzenie wejściowe</translation>
 <translation id="3626281679859535460">Jasność</translation>
@@ -193,82 +221,104 @@
 <translation id="3900355044994618856">Sesja kończy się za <ph name="SESSION_TIME_REMAINING" /></translation>
 <translation id="3901991538546252627">Łączę z: <ph name="NAME" /></translation>
 <translation id="394485226368336402">Ustawienia dźwięku</translation>
+<translation id="3962859241508114581">Poprzedni utwór</translation>
 <translation id="397105322502079400">Obliczanie...</translation>
+<translation id="3977512764614765090">Naładowanie baterii: <ph name="PERCENTAGE" />%. Trwa ładowanie.</translation>
 <translation id="3995138139523574647">Urządzenie USB-C (tylny port na prawym boku)</translation>
 <translation id="4017989525502048489">Wskaźnik laserowy</translation>
+<translation id="4021716437419160885">Przewiń w dół</translation>
+<translation id="4042660782729322247">Udostępniasz ekran</translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{Wyłączono w przypadku jednej aplikacji}few{Wyłączono w przypadku # aplikacji}many{Wyłączono w przypadku # aplikacji}other{Wyłączono w przypadku # aplikacji}}</translation>
 <translation id="4072264167173457037">średni sygnał</translation>
+<translation id="4112140312785995938">Przewiń do tyłu</translation>
 <translation id="4129129681837227511">Aby wyświetlać powiadomienia na ekranie blokady, odblokuj ekran i zmień ustawienie</translation>
 <translation id="4146833061457621061">Włącz muzykę</translation>
 <translation id="4181841719683918333">Języki</translation>
 <translation id="4195877955194704651">Automatyczne klikanie przycisku</translation>
 <translation id="4217571870635786043">Dyktowanie</translation>
+<translation id="421885205185866088">PIN karty elektronicznej dla <ph name="USER_EMAIL_ADDRESS" /></translation>
+<translation id="4239069858505860023">GPRS</translation>
 <translation id="4261870227682513959">Pokaż ustawienia powiadomień. Powiadomienia są wyłączone.</translation>
 <translation id="4269883910223712419">Administrator tego urządzenia może:</translation>
 <translation id="4279490309300973883">Odbicie lustrzane</translation>
-<translation id="4281007048406351813">Dodaj minutę do minutnika</translation>
-<translation id="4292681942966152062">Włączam: <ph name="NETWORK_NAME" /></translation>
+<translation id="4296136865091727875">Wyczyść wszystkie powiadomienia (<ph name="COUNT" />)</translation>
+<translation id="4303223480529385476">Rozwiń pasek stanu</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4321776623976362024">Naciśnięto skrót klawiszowy wysokiego kontrastu. Czy chcesz go włączyć?</translation>
-<translation id="4331809312908958774">Chrome OS
-</translation>
+<translation id="4331809312908958774">Chrome OS</translation>
 <translation id="4338109981321384717">Lupa</translation>
 <translation id="4351433414020964307">Trwa ładowanie Asystenta…</translation>
-<translation id="435527878592612277">Wybierz swoje zdjęcie</translation>
+<translation id="4356930093361201197">Tryb wysokiego kontrastu</translation>
 <translation id="4378551569595875038">Łączę...</translation>
 <translation id="4379531060876907730">To są Twoje narzędzia rysika</translation>
+<translation id="4383956581743965695">-<ph name="TIME_SINCE_EXPIRATION" /></translation>
 <translation id="4389184120735010762">Naciśnięto skrót klawiszowy lupy zadokowanej. Czy chcesz ją włączyć?</translation>
 <translation id="4421231901400348175">Udostępnianie sterowania ekranem użytkownikowi <ph name="HELPER_NAME" /> przy użyciu pomocy zdalnej.</translation>
 <translation id="4430019312045809116">Głośność</translation>
 <translation id="4450893287417543264">Nie pokazuj ponownie</translation>
+<translation id="4477350412780666475">Następny utwór</translation>
+<translation id="4477892968187500306">Na tym urządzeniu mogą być zainstalowane aplikacje niezweryfikowane przez Google.</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4481530544597605423">Niesparowane urządzenia</translation>
-<translation id="4508225577814909926"><ph name="NAME" />: łączę...</translation>
+<translation id="4505050298327493054">Aktywny pulpit.</translation>
 <translation id="4513946894732546136">Twoja opinia</translation>
 <translation id="4527045527269911712">Urządzenie Bluetooth „<ph name="DEVICE_NAME" />” chce się sparować.</translation>
 <translation id="453661520163887813"><ph name="TIME" /> do pełnego naładowania</translation>
 <translation id="4544944664594876241">Zmieniliśmy skrót, który blokuje ekran. Zamiast <ph name="OLD_SHORTCUT" /> używaj teraz <ph name="NEW_SHORTCUT" />.</translation>
+<translation id="4561267230861221837">3G</translation>
 <translation id="4570957409596482333">Przycisk Przeczytaj na głos</translation>
 <translation id="4585337515783392668">Zakończ przesyłanie do nieznanego odbiornika</translation>
 <translation id="4628757576491864469">Urządzenia</translation>
 <translation id="4659419629803378708">Włączono ChromeVox</translation>
+<translation id="4665114317261903604">Włącz lub wyłącz tryb Nie przeszkadzać. <ph name="STATE_TEXT" /></translation>
 <translation id="4696813013609194136">Odblokuj urządzenie kodem rodzica</translation>
+<translation id="4731797938093519117">Dostęp rodzica</translation>
 <translation id="4734965478015604180">Orientacja pozioma</translation>
 <translation id="4774338217796918551">Możesz wrócić jutro o <ph name="COME_BACK_TIME" />.</translation>
 <translation id="4776917500594043016">Hasło dla <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4778095205580009397">Asystent Google jest niedostępny w sesji demonstracyjnej.</translation>
 <translation id="479989351350248267">search</translation>
 <translation id="4804818685124855865">Rozłącz</translation>
+<translation id="4814539958450445987">Ekran logowania</translation>
+<translation id="4831034276697007977">Czy na pewno chcesz wyłączyć automatyczne kliknięcia?</translation>
 <translation id="4849058404725798627">Podświetlaj obiekt wybrany za pomocą klawiatury</translation>
 <translation id="485592688953820832">Brak działania (wstrzymaj)</translation>
+<translation id="4868492592575313542">aktywna</translation>
 <translation id="4872237917498892622">Alt+Szukaj lub Shift</translation>
 <translation id="4890187583552566966">Asystenta Google wyłączył administrator.</translation>
 <translation id="4895488851634969361">Bateria jest pełna.</translation>
 <translation id="490375751687810070">Orientacja pionowa</translation>
 <translation id="4905614135390995787">Zmieniliśmy skrót, który włącza i wyłącza tryb wysokiego kontrastu. Użyj <ph name="NEW_SHORTCUT" /> zamiast <ph name="OLD_SHORTCUT" />.</translation>
+<translation id="490788395437447240">Bateria: <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="4917385247580444890">Silny</translation>
 <translation id="4918086044614829423">Akceptuj</translation>
 <translation id="4924411785043111640">Uruchom ponownie i zresetuj</translation>
+<translation id="4943005740606146647"><ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, siła sygnału <ph name="SIGNAL_STRENGTH" /></translation>
+<translation id="495046168593986294">Przewiń w górę</translation>
 <translation id="4961318399572185831">Przesyłanie ekranu</translation>
 <translation id="5030687792513154421">Czas minął</translation>
 <translation id="5035236842988137213">Urządzenie <ph name="DEVICE_NAME" /> zostało połączone z nowym telefonem</translation>
-<translation id="5083553833479578423">Odblokuj więcej funkcji Asystenta.</translation>
+<translation id="5083553833479578423">Poznaj więcej funkcji Asystenta.</translation>
 <translation id="5136175204352732067">Podłączono inną klawiaturę</translation>
+<translation id="5164328133545158294"><ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, siła sygnału <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="5168181903108465623">Dostępne są urządzenia przesyłające</translation>
 <translation id="5207949376430453814">Podświetlaj kursor tekstu</translation>
 <translation id="5222676887888702881">Wyloguj się</translation>
 <translation id="523505283826916779">Ustawienia ułatwień dostępu</translation>
+<translation id="5260676007519551770">Biurko 4</translation>
 <translation id="5283198616748585639">Dodaj 1 min</translation>
 <translation id="5302048478445481009">Język</translation>
 <translation id="5313326810920013265">Ustawienia Bluetooth</translation>
 <translation id="5331975486040154427">Urządzenie USB-C (tylny port na lewym boku)</translation>
 <translation id="5379115545237091094">Zbyt wiele prób</translation>
+<translation id="5388865552779376172"><ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" /></translation>
 <translation id="5397578532367286026">Działania i historia tego użytkownika mogą być sprawdzane przez menedżera (<ph name="MANAGER_EMAIL" />) na chrome.com.</translation>
 <translation id="5430931332414098647">Instant Tethering</translation>
 <translation id="5431825016875453137">OpenVPN / L2TP</translation>
 <translation id="544691375626129091">Wszyscy dostępni użytkownicy zostali już dodani do tej sesji.</translation>
 <translation id="5465662442746197494">Potrzebujesz pomocy?</translation>
 <translation id="5496819745535887422">Administrator przywraca wcześniejszą wersję oprogramowania na urządzeniu. Po ponownym uruchomieniu urządzenia wszystkie dane zostaną usunięte.</translation>
+<translation id="5519195206574732858">LTE</translation>
 <translation id="553675580533261935">Zamykanie sesji</translation>
 <translation id="5537725057119320332">Przesyłaj</translation>
 <translation id="5548285847212963613">Rozszerzenie „<ph name="EXTENSION_NAME" />” może ułatwić połączenie z tą siecią.</translation>
@@ -276,16 +326,19 @@
 <translation id="5571066253365925590">Bluetooth włączony</translation>
 <translation id="5597451508971090205"><ph name="SHORT_WEEKDAY" />, <ph name="DATE" /></translation>
 <translation id="5600837773213129531">Naciśnij Ctrl + Alt + Z, by wyłączyć komunikaty głosowe.</translation>
+<translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">Gniazdo mikrofonu</translation>
 <translation id="5669267381087807207">Aktywowanie</translation>
 <translation id="5673434351075758678">Z języka: „<ph name="FROM_LOCALE" />” na „<ph name="TO_LOCALE" />” po zsynchronizowaniu ustawień.</translation>
+<translation id="5682642926269496722">Asystent Google jest niedostępny na tym koncie użytkownika.</translation>
 <translation id="5691772641933328258">Nie rozpoznano odcisku palca</translation>
 <translation id="5710450975648804523">Tryb Nie przeszkadzać włączony</translation>
+<translation id="573413375004481890">To urządzenie nie może obsługiwać wszystkich Twoich wyświetlaczy, dlatego jeden z nich został odłączony</translation>
 <translation id="574392208103952083">Średni</translation>
 <translation id="5744083938413354016">Przeciąganie dotykiem</translation>
 <translation id="5750765938512549687">Bluetooth jest wyłączony</translation>
+<translation id="576453121877257266">Podświetlenie nocne jest włączone.</translation>
 <translation id="5777841717266010279">Zakończyć udostępnianie ekranu?</translation>
-<translation id="57838592816432529">Wycisz</translation>
 <translation id="5820394555380036790">System operacyjny Chromium</translation>
 <translation id="5837036133683224804">Zatrzymaj usługę <ph name="ROUTE_TITLE" /> na urządzeniu <ph name="RECEIVER_NAME" /></translation>
 <translation id="5860033963881614850">Wyłączone</translation>
@@ -303,23 +356,28 @@
 <translation id="598882571027504733">Aby pobrać aktualizację, uruchom Chromebooka ponownie z podłączoną klawiaturą.</translation>
 <translation id="5992218262414051481">Tryb wysokiego kontrastu został włączony. Aby go wyłączyć, naciśnij ponownie Ctrl+Search+H.</translation>
 <translation id="6018164090099858612">Wyłączam tryb odbicia lustrzanego</translation>
+<translation id="602001110135236999">Przewiń w lewo</translation>
+<translation id="6040143037577758943">Zamknij</translation>
 <translation id="6043212731627905357">Ten monitor nie działa z Twoim urządzeniem <ph name="DEVICE_TYPE" /> (nie jest obsługiwany).</translation>
 <translation id="6043994281159824495">Wyloguj się teraz</translation>
 <translation id="6047696787498798094">Gdy zmienisz użytkownika, udostępnianie ekranu zostanie zakończone. Chcesz kontynuować?</translation>
+<translation id="6054305421211936131">Zaloguj się, używając karty elektronicznej</translation>
 <translation id="6062360702481658777">Zostaniesz automatycznie wylogowany za <ph name="LOGOUT_TIME_LEFT" />.</translation>
 <translation id="6064337552080329342">Nie udało się zweryfikować Twojego hasła. Spróbuj ponownie.</translation>
 <translation id="607652042414456612">Twój komputer jest wykrywalny na urządzenia Bluetooth znajdujących się w pobliżu. Będzie prezentowany jako „<ph name="NAME" />” z adresem <ph name="ADDRESS" /></translation>
-<translation id="6106745654298855237">Ładowanie: <ph name="POWER_SOURCE" /></translation>
+<translation id="6120841317807235082"><ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, siła sygnału <ph name="SIGNAL_STRENGTH" />, zarządzana przez administratora</translation>
+<translation id="612734058257491180">Asystent Google jest niedostępny w sesji gościa.</translation>
 <translation id="615957422585914272">Pokaż klawiaturę ekranową</translation>
 <translation id="6164005077879661055">W chwili usunięcia użytkownika nadzorowanego wszystkie powiązane z nim pliki i dane lokalne zostaną trwale usunięte. Lista stron, na które wszedł ten użytkownik, oraz jego ustawienia mogą być wciąż widoczne dla menedżera na <ph name="MANAGEMENT_URL" />.</translation>
 <translation id="6165508094623778733">Więcej informacji</translation>
+<translation id="6237231532760393653">1X</translation>
 <translation id="6254629735336163724">Zablokowano w orientacji poziomej</translation>
 <translation id="6259254695169772643">Zaznacz rysikiem</translation>
 <translation id="6267036997247669271"><ph name="NAME" />: aktywuję...</translation>
+<translation id="6283712521836204486">Tryb Nie przeszkadzać jest wyłączony.</translation>
 <translation id="6284232397434400372">Rozdzielczość została zmieniona</translation>
 <translation id="6297287540776456956">Zaznacz obszar rysikiem</translation>
 <translation id="6310121235600822547">Wyświetlacz <ph name="DISPLAY_NAME" /> został obrócony na <ph name="ROTATION" /></translation>
-<translation id="6344698853700675736">Włącz lub wyłącz Podświetlenie nocne</translation>
 <translation id="6376931439017688372">Bluetooth jest włączony</translation>
 <translation id="639644700271529076">CAPS LOCK jest wyłączony</translation>
 <translation id="6406704438230478924">altgr</translation>
@@ -331,6 +389,7 @@
 <translation id="6459472438155181876">Rozszerzanie ekranu na <ph name="DISPLAY_NAME" /></translation>
 <translation id="6482559668224714696">Lupa pełnoekranowa</translation>
 <translation id="6490471652906364588">Urządzenie USB-C (prawy port)</translation>
+<translation id="649452524636452238">Kod PIN karty elektronicznej</translation>
 <translation id="6501401484702599040">Przesyłam ekran do: <ph name="RECEIVER_NAME" /></translation>
 <translation id="6521655319214113338">Pismo odręczne</translation>
 <translation id="6528179044667508675">Nie przeszkadzać</translation>
@@ -339,48 +398,59 @@
 <translation id="6559976592393364813">Poproś administratora</translation>
 <translation id="6585808820553845416">Sesja kończy się za <ph name="SESSION_TIME_REMAINING" />.</translation>
 <translation id="6627638273713273709">Szukaj + Shift + K</translation>
+<translation id="6637729079642709226">Zmień czas</translation>
 <translation id="6650933572246256093">Urządzenie Bluetooth „<ph name="DEVICE_NAME" />” chce się sparować. Wpisz na nim ten klucz: <ph name="PASSKEY" /></translation>
 <translation id="6657585470893396449">Hasło</translation>
 <translation id="6665545700722362599">przyznawać stronom internetowym, aplikacjom i rozszerzeniom dostęp do usług lokalizacyjnych, mikrofonu bądź aparatu na urządzeniu lub do innych funkcji;</translation>
+<translation id="6670153871843998651">Biurko 3</translation>
+<translation id="6676604402165549692"><ph name="NETWORK_NAME" />, siła sygnału <ph name="SIGNAL_STRENGTH" />, zarządzana przez administratora</translation>
 <translation id="6691659475504239918">Search+Shift+H</translation>
 <translation id="6696025732084565524">Odłączana klawiatura wymaga krytycznej aktualizacji</translation>
 <translation id="6700713906295497288">Przycisk menu IME</translation>
 <translation id="6713285437468012787">Urządzenie Bluetooth „<ph name="DEVICE_NAME" />” zostało sparowane i jest teraz dostępne dla wszystkich użytkowników. Możesz usunąć to sparowanie w Ustawieniach.</translation>
 <translation id="6715542151869432661">Nie znaleziono urządzeń mobilnych.</translation>
-<translation id="671928215901716392">Zablokuj ekran</translation>
 <translation id="6723839937902243910">Zasilanie</translation>
+<translation id="6727969043791803658">Połączono, bateria: <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="6751826523481687655">Śledzenie wydajności jest włączone</translation>
-<translation id="6785414152754474415">Naładowanie baterii: <ph name="PERCENTAGE" />%. Trwa ładowanie.</translation>
+<translation id="6752912906630585008">Biurko <ph name="REMOVED_DESK" /> zostało usunięte i połączone z biurkiem <ph name="RECEIVE_DESK" /></translation>
+<translation id="6777216307882431711">Zasilanie podłączonych urządzeń USB-C</translation>
+<translation id="6780359977073194850"><ph name="NETWORK_NAME" />, siła sygnału <ph name="SIGNAL_STRENGTH" /></translation>
+<translation id="6790428901817661496">Odtwórz</translation>
 <translation id="6803622936009808957">Nie można wyświetlić odbicia lustrzanego, ponieważ nie znaleziono obsługiwanych rozdzielczości. Zamiast tego został włączony pulpit rozszerzony.</translation>
 <translation id="6820676911989879663">Zrób sobie przerwę</translation>
 <translation id="683971173229319003">Szukaj+L</translation>
 <translation id="6857811139397017780">Aktywuj sieć <ph name="NETWORKSERVICE" /></translation>
+<translation id="6878400149835617132">Skrót wyłączony</translation>
 <translation id="6910714959251846841">Ta aktualizacja wymaga usunięcia wszystkich danych z urządzenia za pomocą funkcji Powerwash. Dowiedz się więcej o najnowszej aktualizacji <ph name="SYSTEM_APP_NAME" />.</translation>
 <translation id="6911468394164995108">Połącz z inną...</translation>
+<translation id="6919251195245069855">Nie udało się rozpoznać karty elektronicznej. Spróbuj ponownie.</translation>
 <translation id="6972754398087986839">Rozpocznij</translation>
 <translation id="6981982820502123353">Ułatwienia dostępu</translation>
 <translation id="698231206551913481">Usunięcie tego użytkownika spowoduje trwałe usunięcie wszystkich związanych z nim plików i danych lokalnych.</translation>
 <translation id="7015766095477679451">Możesz wrócić o <ph name="COME_BACK_TIME" />.</translation>
 <translation id="7025533177575372252">Połącz urządzenie <ph name="DEVICE_NAME" /> z telefonem</translation>
 <translation id="7029814467594812963">Zakończ sesję</translation>
+<translation id="7042322267639375032">Zwiń pasek stanu</translation>
 <translation id="7066646422045619941">Ta sieć została wyłączona przez administratora.</translation>
 <translation id="7067196344162293536">Obracanie automatyczne</translation>
 <translation id="7068360136237591149">Otwórz pliki</translation>
 <translation id="7076293881109082629">Loguję</translation>
+<translation id="7088960765736518739">Switch Access</translation>
 <translation id="7092922358121866860">Pokaż ustawienia Podświetlenia nocnego</translation>
 <translation id="7098389117866926363">Urządzenie USB-C (lewy port z tyłu)</translation>
 <translation id="7131634465328662194">Nastąpi automatyczne wylogowanie.</translation>
 <translation id="7143207342074048698">Łączenie</translation>
 <translation id="7165278925115064263">Alt + Shift + K</translation>
 <translation id="7168224885072002358">Powrót do wcześniejszej rozdzielczości za <ph name="TIMEOUT_SECONDS" /></translation>
-<translation id="7222902781030499995">Zatrzymaj licznik</translation>
 <translation id="7256634071279256947">Tylny mikrofon</translation>
 <translation id="726276584504105859">Przeciągnij tutaj, by podzielić ekran</translation>
+<translation id="7262906531272962081">Utwórz przypomnienie</translation>
 <translation id="7303365578352795231">Odpowiem na innym urządzeniu.</translation>
+<translation id="7305884605064981971">EDGE</translation>
 <translation id="7348093485538360975">Klawiatura ekranowa</translation>
 <translation id="735745346212279324">VPN odłączona</translation>
 <translation id="7377169924702866686">Caps Lock jest włączony.</translation>
-<translation id="7384299914270925461"><ph name="SIGN" /><ph name="MINUTES_REMAINING" />:<ph name="SECONDS_REMAINING" /> s</translation>
+<translation id="7378594059915113390">Sterowanie multimediami</translation>
 <translation id="7398254312354928459">Przełączono połączenie sieciowe</translation>
 <translation id="7405710164030118432">Aby odblokować urządzenie, wpisz kod dostępu Family Link rodzica</translation>
 <translation id="742594950370306541">Aparat jest używany.</translation>
@@ -390,18 +460,21 @@
 <translation id="7526573455193969409">Sieć może być monitorowana</translation>
 <translation id="7536035074519304529">Adres IP: <ph name="ADDRESS" /></translation>
 <translation id="7548434653388805669">Czas iść spać</translation>
+<translation id="75510698954995432"><ph name="PHONE_NAME" />, <ph name="CONNECTION_STATUS" />, siła sygnału <ph name="SIGNAL_STRENGTH" />, bateria telefonu <ph name="BATTERY_STATUS" /></translation>
 <translation id="7561014039265304140"><ph name="DISPLAY_NAME" /> nie obsługuje <ph name="SPECIFIED_RESOLUTION" />. Zmieniono rozdzielczość na <ph name="FALLBACK_RESOLUTION" /></translation>
 <translation id="7562368315689366235">Paleta emotikonów</translation>
 <translation id="7564874036684306347">Przenoszenie okien na inny pulpit może spowodować nieoczekiwane zachowanie. Kolejne powiadomienia, okna i okna dialogowe mogą pojawiać się na różnych pulpitach.</translation>
+<translation id="7568294522609223312">Wyłączanie automatycznych kliknięć</translation>
 <translation id="7569509451529460200">Włączono Braille'a i ChromeVox</translation>
 <translation id="7593891976182323525">Szukaj lub Shift</translation>
+<translation id="7600875258240007829">Zobacz wszystkie powiadomienia</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (właściciel)</translation>
 <translation id="7647488630410863958">Odblokuj urządzenie, by zobaczyć swoje powiadomienia</translation>
 <translation id="7649070708921625228">Pomoc</translation>
 <translation id="7654687942625752712">Naciśnij i przytrzymaj przez pięć sekund oba klawisze głośności, by wyłączyć komunikaty głosowe.</translation>
-<translation id="7692480393933218409">Ładowanie urządzeń podłączonych do portu USB-C</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 powiadomienie}few{# powiadomienia}many{# powiadomień}other{# powiadomienia}}</translation>
+<translation id="7749443890790263709">Osiągnięto maksymalną liczbę biurek.</translation>
 <translation id="776344839111254542">Kliknij, by wyświetlić szczegóły aktualizacji</translation>
 <translation id="7780159184141939021">Obróć ekran</translation>
 <translation id="7796353162336583443">Kliknij przycisk rysika na półce, by zrobić notatkę lub zrzut ekranu, skorzystać z Asystenta Google albo użyć wskaźnika laserowego lub lupy.</translation>
@@ -409,7 +482,6 @@
 <translation id="7814236020522506259"><ph name="HOUR" /> i <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">silny sygnał</translation>
 <translation id="7837740436429729974">Czas minął</translation>
-<translation id="7842211907556571265">Łączę z siecią <ph name="NETWORK_NAME" /></translation>
 <translation id="7842569679327885685">Ostrzeżenie: funkcja eksperymentalna</translation>
 <translation id="7846634333498149051">Klawiatura</translation>
 <translation id="7868900307798234037">Odblokowano odciskiem palca</translation>
@@ -420,12 +492,12 @@
 <translation id="7904094684485781019">Administrator tego konta zablokował możliwość wielokrotnego logowania.</translation>
 <translation id="7933084174919150729">Asystent Google jest dostępny tylko na profilu głównym.</translation>
 <translation id="79341161159229895">Kontem zarządzają <ph name="FIRST_PARENT_EMAIL" /> i <ph name="SECOND_PARENT_EMAIL" /></translation>
+<translation id="7955885781510802139">Tryb wysokiego kontrastu</translation>
 <translation id="7977927628060636163">Szukam sieci komórkowych…</translation>
 <translation id="7982789257301363584">Sieć</translation>
 <translation id="7984197416080286869">Zbyt wiele prób odblokowania odciskiem palca</translation>
 <translation id="7994370417837006925">Wielokrotne logowanie</translation>
 <translation id="8000066093800657092">Brak sieci</translation>
-<translation id="8029241286966751120">Lupa pełnego ekranu została włączona. Aby ją wyłączyć, naciśnij ponownie Ctrl+Search+M.</translation>
 <translation id="8030169304546394654">Rozłączone</translation>
 <translation id="8054466585765276473">Obliczanie czasu pracy na baterii.</translation>
 <translation id="8061464966246066292">Wysoki kontrast</translation>
@@ -435,29 +507,32 @@
 <translation id="813913629614996137">Inicjuję…</translation>
 <translation id="8142441511840089262">Dwukrotne kliknięcie</translation>
 <translation id="8142699993796781067">Sieć prywatna</translation>
+<translation id="8152092012181020186">Aby zamknąć, naciśnij CTRL + W.</translation>
 <translation id="8167567890448493835">W użyciu jest: <ph name="LOCALE_NAME" /></translation>
 <translation id="8190698733819146287">Dostosuj języki i metody wprowadzania...</translation>
 <translation id="8192202700944119416">Powiadomienia są ukryte.</translation>
 <translation id="8203795194971602413">Kliknięcie prawym przyciskiem</translation>
 <translation id="8236042855478648955">Czas na przerwę</translation>
+<translation id="826107067893790409">Naciśnij Enter, by odblokować dla: <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8261506727792406068">Usuń</translation>
 <translation id="8297006494302853456">Słaby</translation>
 <translation id="8308637677604853869">Poprzednie menu</translation>
-<translation id="8332664326438198339">Wróć do menu z aplikacjami</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" /> <ph name="GET_STARTED" /></translation>
 <translation id="8351131234907093545">Utwórz notatkę</translation>
 <translation id="8375916635258623388">To urządzenie <ph name="DEVICE_NAME" /> i Twój telefon będą się łączyć automatycznie</translation>
+<translation id="8388750414311082622">Ostatniego biurka nie można usunąć.</translation>
 <translation id="8392451568018454956">Menu opcji dla <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8394567579869570560">Twój rodzic zablokował urządzenie</translation>
-<translation id="8406981827175133772">Lupa pełnego ekranu</translation>
 <translation id="8425213833346101688">Zmień</translation>
 <translation id="8427213022735114808">Dyktowanie wysyła Twój głos do Google, by umożliwić pisanie głosowe w dowolnym polu tekstowym.</translation>
 <translation id="8428213095426709021">Ustawienia</translation>
 <translation id="8433186206711564395">Ustawienia sieci</translation>
 <translation id="8433977262951327081">Zmieniliśmy skrót, który pokazuje dymek menu opcji wejścia na półce. Zamiast <ph name="OLD_SHORTCUT" /> używaj teraz <ph name="NEW_SHORTCUT" />.</translation>
+<translation id="8444246603146515890">Aktywowano biurko <ph name="DESK_TITILE" /></translation>
 <translation id="8452135315243592079">Brak karty SIM</translation>
 <translation id="8454013096329229812">Wi-Fi włączone.</translation>
 <translation id="847056008324733326">Ustawienia skali wyświetlania</translation>
+<translation id="8473301994082929012">Funkcja <ph name="FEATURE_NAME" /> w organizacji <ph name="ORGANIZATION_NAME" /> jest <ph name="FEATURE_STATE" />.</translation>
 <translation id="8477270416194247200">Aby anulować, naciśnij Alt + Szukaj lub Shift.</translation>
 <translation id="8513108775083588393">Autoobracanie</translation>
 <translation id="8517041960877371778"><ph name="DEVICE_TYPE" /> nie może się ładować, gdy jest włączony.</translation>
@@ -470,6 +545,7 @@
 <translation id="8673028979667498656">270°</translation>
 <translation id="8676770494376880701">Podłączono ładowarkę o małej mocy</translation>
 <translation id="8683506306463609433">Śledzenie wydajności jest aktywne</translation>
+<translation id="8721053961083920564">Przełącz głośność. <ph name="STATE_TEXT" /></translation>
 <translation id="8734991477317290293">Klawiatura może próbować przechwycić naciskane klawisze</translation>
 <translation id="8735953464173050365">Pokaż ustawienia klawiatury. Wybrana jest: <ph name="KEYBOARD_NAME" />.</translation>
 <translation id="875593634123171288">Pokaż ustawienia VPN</translation>
@@ -482,30 +558,40 @@
 <translation id="8877788021141246043">Ustaw przypomnienie</translation>
 <translation id="8878886163241303700">Rozszerzony ekran</translation>
 <translation id="890616557918890486">Zmień źródło</translation>
+<translation id="8909138438987180327">Poziom naładowania baterii: <ph name="PERCENTAGE" />.</translation>
+<translation id="8921554779039049422">H+</translation>
 <translation id="8921624153894383499">Asystent Google nie mówi w tym języku.</translation>
+<translation id="8936501819958976551">dezaktywowana</translation>
 <translation id="8938800817013097409">Urządzenie USB-C (prawy port z tyłu)</translation>
 <translation id="8940956008527784070">Niski stan baterii (<ph name="PERCENTAGE" />%)</translation>
+<translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590">W użyciu jest <ph name="IME_NAME" /></translation>
 <translation id="899350903320462459">Odblokuj urządzenie jako <ph name="LOGIN_ID" />, by zareagować na powiadomienie</translation>
 <translation id="8995603266996330174">Zarządzane przez <ph name="DOMAIN" /></translation>
+<translation id="9017320285115481645">Wpisz kod dostępu rodzica w Family Link.</translation>
 <translation id="9029474291399787231">Dostępna jest aktualizacja Adobe Flash Playera</translation>
 <translation id="9056839673611986238">Na urządzeniu zostanie przywrócona wcześniejsza wersja oprogramowania</translation>
 <translation id="9070640332319875144">Ustawienia Asystenta</translation>
+<translation id="9072519059834302790">Czas pozostały do całkowitego rozładowania baterii: <ph name="TIME_LEFT" />.</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9079731690316798640">Wi-Fi: <ph name="ADDRESS" /></translation>
 <translation id="9080206825613744995">Mikrofon jest używany.</translation>
+<translation id="9084606467167974638">Zmień położenie menu</translation>
 <translation id="9089416786594320554">Wprowadzanie tekstu</translation>
 <translation id="9091626656156419976">Wyświetlacz <ph name="DISPLAY_NAME" /> został usunięty</translation>
+<translation id="9092415813919137737"><ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, siła sygnału <ph name="SIGNAL_STRENGTH" />, zarządzana przez administratora</translation>
 <translation id="9151726767154816831">Uruchom ponownie i wykonaj Powerwash, by zaktualizować</translation>
 <translation id="9179259655489829027">Ta funkcja umożliwia szybki dostęp do każdego konta zalogowanego użytkownika bez konieczności podawania hasła. Używaj jej tylko w przypadku kont, którym ufasz.</translation>
+<translation id="9183456764293710005">Lupa pełnego ekranu</translation>
 <translation id="9193626018745640770">Przesyłam do nieznanego odbiornika</translation>
 <translation id="9194617393863864469">Zaloguj innego użytkownika...</translation>
-<translation id="9201131092683066720">Naładowanie baterii: <ph name="PERCENTAGE" />%.</translation>
 <translation id="9210037371811586452">Wyłączam tryb ujednoliconego pulpitu</translation>
+<translation id="9211681782751733685">Czas pozostały do pełnego naładowania baterii: <ph name="TIME_REMAINING" />.</translation>
 <translation id="9215934040295798075">Ustaw tapetę</translation>
 <translation id="921989828232331238">Twój rodzic zablokował urządzenie na cały dzień</translation>
 <translation id="923686485342484400">Naciśnij dwukrotnie Control Shift Q, by się wylogować.</translation>
 <translation id="938963181863597773">Co mam w kalendarzu?</translation>
 <translation id="945522503751344254">Wyślij zgłoszenie</translation>
 <translation id="98515147261107953">Poziomo</translation>
+<translation id="990277280839877440">Okno <ph name="WINDOW_TITILE" /> zostało zamknięte.</translation>
 </translationbundle>

@@ -10,9 +10,9 @@
 #include "base/mac/bundle_locations.h"
 #include "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
-#import "ios/web/public/web_state/js/crw_js_injection_manager.h"
-#import "ios/web/public/web_state/js/crw_js_injection_receiver.h"
-#import "ios/web/web_state/js/page_script_util.h"
+#import "ios/web/js_messaging/page_script_util.h"
+#import "ios/web/public/deprecated/crw_js_injection_manager.h"
+#import "ios/web/public/deprecated/crw_js_injection_receiver.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

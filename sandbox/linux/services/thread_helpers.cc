@@ -71,7 +71,8 @@ bool IsNotThreadPresentInProcFS(int proc_fd,
 // Debug builds (2s on Release builds).
 // This is guaranteed to not sleep more than twice as much as the bare minimum
 // amount of time.
-void RunWhileTrue(const base::Callback<bool(void)>& cb, const char* message) {
+void RunWhileTrue(const base::RepeatingCallback<bool(void)>& cb,
+                  const char* message) {
 #if defined(NDEBUG)
   // In Release mode, crash after 30 iterations, which means having spent
   // roughly 2s in
@@ -117,7 +118,7 @@ bool ChangeThreadStateAndWatchProcFS(
   DCHECK(thread);
   DCHECK(action == ThreadAction::Start || action == ThreadAction::Stop);
 
-  base::Callback<bool(void)> cb;
+  base::RepeatingCallback<bool(void)> cb;
   const char* message;
 
   if (action == ThreadAction::Start) {
@@ -140,10 +141,12 @@ bool ChangeThreadStateAndWatchProcFS(
   // /proc. Start() above or following Stop(), the thread is started or joined,
   // but entries in /proc may not have been updated.
   if (action == ThreadAction::Start) {
-    cb = base::Bind(&IsNotThreadPresentInProcFS, proc_fd, thread_id_dir_str);
+    cb = base::BindRepeating(&IsNotThreadPresentInProcFS, proc_fd,
+                             thread_id_dir_str);
     message = kAssertThreadDoesNotAppearInProcFS;
   } else {
-    cb = base::Bind(&IsThreadPresentInProcFS, proc_fd, thread_id_dir_str);
+    cb = base::BindRepeating(&IsThreadPresentInProcFS, proc_fd,
+                             thread_id_dir_str);
     message = kAssertThreadDoesNotDisappearInProcFS;
   }
   RunWhileTrue(cb, message);
@@ -171,7 +174,8 @@ bool ThreadHelpers::IsSingleThreaded() {
 // static
 void ThreadHelpers::AssertSingleThreaded(int proc_fd) {
   DCHECK_LE(0, proc_fd);
-  const base::Callback<bool(void)> cb = base::Bind(&IsMultiThreaded, proc_fd);
+  const base::RepeatingCallback<bool(void)> cb =
+      base::BindRepeating(&IsMultiThreaded, proc_fd);
   RunWhileTrue(cb, kAssertSingleThreadedError);
 }
 

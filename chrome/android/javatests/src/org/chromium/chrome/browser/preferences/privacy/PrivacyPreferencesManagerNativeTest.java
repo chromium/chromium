@@ -22,7 +22,7 @@ import org.chromium.base.test.util.AdvancedMockContext;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.preferences.PrefServiceBridge;
-import org.chromium.chrome.browser.test.ChromeBrowserTestRule;
+import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 
 /**
@@ -38,7 +38,7 @@ public class PrivacyPreferencesManagerNativeTest {
     @SmallTest
     @UiThreadTest
     @Feature({"Android-AppBase"})
-    public void testSyncUsageAndCrashReporting() throws Throwable {
+    public void testSyncUsageAndCrashReporting() {
         PermissionContext context =
                 new PermissionContext(InstrumentationRegistry.getTargetContext());
         PrefServiceBridge prefBridge = PrefServiceBridge.getInstance();
@@ -46,12 +46,12 @@ public class PrivacyPreferencesManagerNativeTest {
         PrivacyPreferencesManager preferenceManager = new PrivacyPreferencesManager(context);
 
         // Setup prefs to be out of sync.
-        prefBridge.setMetricsReportingEnabled(false);
+        PrivacyPreferencesManager.getInstance().setMetricsReportingEnabled(false);
         pref.edit().putBoolean(PrivacyPreferencesManager.PREF_METRICS_REPORTING, true).apply();
 
         preferenceManager.syncUsageAndCrashReportingPrefs();
-        Assert.assertTrue(
-                "Native preference should be True ", prefBridge.isMetricsReportingEnabled());
+        Assert.assertTrue("Native preference should be True ",
+                PrivacyPreferencesManager.getInstance().isMetricsReportingEnabled());
     }
 
     @Test
@@ -59,7 +59,7 @@ public class PrivacyPreferencesManagerNativeTest {
     @Feature({"Android-AppBase"})
     @UiThreadTest
     @DisabledTest(message = "crbug.com/700500")
-    public void testSetUsageAndCrashReporting() throws Throwable {
+    public void testSetUsageAndCrashReporting() {
         PermissionContext context =
                 new PermissionContext(InstrumentationRegistry.getTargetContext());
         PrefServiceBridge prefBridge = PrefServiceBridge.getInstance();
@@ -68,14 +68,14 @@ public class PrivacyPreferencesManagerNativeTest {
 
         preferenceManager.setUsageAndCrashReporting(true);
         Assert.assertTrue(pref.getBoolean(PrivacyPreferencesManager.PREF_METRICS_REPORTING, false));
-        Assert.assertTrue(
-                "Native preference should be True ", prefBridge.isMetricsReportingEnabled());
+        Assert.assertTrue("Native preference should be True ",
+                PrivacyPreferencesManager.getInstance().isMetricsReportingEnabled());
 
         preferenceManager.setUsageAndCrashReporting(false);
         Assert.assertFalse(
                 pref.getBoolean(PrivacyPreferencesManager.PREF_METRICS_REPORTING, false));
-        Assert.assertFalse(
-                "Native preference should be False ", prefBridge.isMetricsReportingEnabled());
+        Assert.assertFalse("Native preference should be False ",
+                PrivacyPreferencesManager.getInstance().isMetricsReportingEnabled());
     }
 
     private static class PermissionContext extends AdvancedMockContext {

@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/unsafe_shared_memory_region.h"
 #include "components/viz/service/viz_service_export.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -44,9 +45,10 @@ class VIZ_SERVICE_EXPORT OutputDeviceBacking {
   void ClientResized();
 
   // Requests a SharedMemory segment large enough to fit |viewport_size|. Will
-  // return null if |viewport_size| is too large to safely allocate SharedMemory
-  // for.
-  base::SharedMemory* GetSharedMemory(const gfx::Size& viewport_size);
+  // return null if |viewport_size| is too large to safely allocate
+  // a shared memory region.
+  base::UnsafeSharedMemoryRegion* GetSharedMemoryRegion(
+      const gfx::Size& viewport_size);
 
   // Returns the maximum size in bytes needed for the largest viewport from
   // registered clients.
@@ -54,7 +56,7 @@ class VIZ_SERVICE_EXPORT OutputDeviceBacking {
 
  private:
   std::vector<Client*> clients_;
-  std::unique_ptr<base::SharedMemory> shm_;
+  base::UnsafeSharedMemoryRegion region_;
   size_t created_shm_bytes_ = 0;
 
   DISALLOW_COPY_AND_ASSIGN(OutputDeviceBacking);

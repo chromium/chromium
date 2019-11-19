@@ -3,11 +3,11 @@ android.webkit.WebView focusable focused scrollable
 ++++android.widget.RadioButton role_description='radio button' checkable clickable focusable
 ++++android.view.View name='Radio1'
 ++++android.view.View name='<newline>'
-++++android.widget.RadioButton role_description='radio button' checkable clickable focusable
+++++android.widget.RadioButton role_description='radio button' checkable clickable focusable item_index=1 row_index=1
 ++++android.view.View name='Radio2'
 ++android.view.View
 ++++android.widget.RadioButton role_description='radio button' checkable clickable focusable name='Radio3'
-++++android.widget.RadioButton role_description='radio button' checkable checked clickable focusable name='Radio4'
+++++android.widget.RadioButton role_description='radio button' checkable checked clickable focusable name='Radio4' item_index=1 row_index=1
 ++android.view.View
 ++++android.widget.RadioButton role_description='radio button' checkable clickable focusable name='Radio5'
-++++android.widget.RadioButton role_description='radio button' checkable checked clickable focusable name='Radio6'
+++++android.widget.RadioButton role_description='radio button' checkable checked clickable focusable name='Radio6' item_index=1 row_index=1

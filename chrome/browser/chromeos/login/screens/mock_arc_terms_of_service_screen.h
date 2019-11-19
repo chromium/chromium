@@ -6,19 +6,21 @@
 #define CHROME_BROWSER_CHROMEOS_LOGIN_SCREENS_MOCK_ARC_TERMS_OF_SERVICE_SCREEN_H_
 
 #include "chrome/browser/chromeos/login/screens/arc_terms_of_service_screen.h"
-#include "chrome/browser/chromeos/login/screens/arc_terms_of_service_screen_view.h"
+#include "chrome/browser/ui/webui/chromeos/login/arc_terms_of_service_screen_handler.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace chromeos {
 
 class MockArcTermsOfServiceScreen : public ArcTermsOfServiceScreen {
  public:
-  MockArcTermsOfServiceScreen(BaseScreenDelegate* base_screen_delegate,
-                              ArcTermsOfServiceScreenView* view);
+  MockArcTermsOfServiceScreen(ArcTermsOfServiceScreenView* view,
+                              const ScreenExitCallback& exit_callback);
   ~MockArcTermsOfServiceScreen() override;
 
   MOCK_METHOD0(Show, void());
   MOCK_METHOD0(Hide, void());
+
+  void ExitScreen(Result result);
 };
 
 class MockArcTermsOfServiceScreenView : public ArcTermsOfServiceScreenView {

@@ -19,7 +19,6 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/location.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
-#include "third_party/blink/renderer/core/frame/use_counter.h"
 #include "third_party/blink/renderer/core/frame/user_activation.h"
 #include "third_party/blink/renderer/core/frame/window_post_message_options.h"
 #include "third_party/blink/renderer/core/input/input_device_capabilities.h"
@@ -29,6 +28,7 @@
 #include "third_party/blink/renderer/core/page/focus_controller.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 
@@ -72,7 +72,7 @@ bool DOMWindow::IsWindowOrWorkerGlobalScope() const {
 
 Location* DOMWindow::location() const {
   if (!location_)
-    location_ = Location::Create(const_cast<DOMWindow*>(this));
+    location_ = MakeGarbageCollected<Location>(const_cast<DOMWindow*>(this));
   return location_.Get();
 }
 
@@ -118,7 +118,7 @@ DOMWindow* DOMWindow::top() const {
 void DOMWindow::postMessage(v8::Isolate* isolate,
                             const ScriptValue& message,
                             const String& target_origin,
-                            Vector<ScriptValue>& transfer,
+                            HeapVector<ScriptValue>& transfer,
                             ExceptionState& exception_state) {
   WindowPostMessageOptions* options = WindowPostMessageOptions::Create();
   options->setTargetOrigin(target_origin);
@@ -132,7 +132,7 @@ void DOMWindow::postMessage(v8::Isolate* isolate,
                             const WindowPostMessageOptions* options,
                             ExceptionState& exception_state) {
   LocalDOMWindow* incumbent_window = IncumbentDOMWindow(isolate);
-  UseCounter::Count(incumbent_window->GetFrame(),
+  UseCounter::Count(incumbent_window->document(),
                     WebFeature::kWindowPostMessage);
 
   Transferables transferables;
@@ -160,33 +160,6 @@ bool DOMWindow::IsCurrentlyDisplayedInFrame() const {
   return GetFrame() && GetFrame()->GetPage();
 }
 
-bool DOMWindow::IsInsecureScriptAccess(LocalDOMWindow& accessing_window,
-                                       const KURL& url) {
-  if (!url.ProtocolIsJavaScript())
-    return false;
-
-  // If this DOMWindow isn't currently active in the Frame, then there's no
-  // way we should allow the access.
-  if (IsCurrentlyDisplayedInFrame()) {
-    // FIXME: Is there some way to eliminate the need for a separate
-    // "accessing_window == this" check?
-    if (&accessing_window == this)
-      return false;
-
-    // FIXME: The name canAccess seems to be a roundabout way to ask "can
-    // execute script".  Can we name the SecurityOrigin function better to make
-    // this more clear?
-    if (accessing_window.document()->GetSecurityOrigin()->CanAccess(
-            GetFrame()->GetSecurityContext()->GetSecurityOrigin())) {
-      return false;
-    }
-  }
-
-  accessing_window.PrintErrorMessage(
-      CrossDomainAccessErrorMessage(&accessing_window));
-  return true;
-}
-
 // FIXME: Once we're throwing exceptions for cross-origin access violations, we
 // will always sanitize the target frame details, so we can safely combine
 // 'crossDomainAccessErrorMessage' with this method after considering exactly
@@ -194,7 +167,8 @@ bool DOMWindow::IsInsecureScriptAccess(LocalDOMWindow& accessing_window,
 //
 // http://crbug.com/17325
 String DOMWindow::SanitizedCrossDomainAccessErrorMessage(
-    const LocalDOMWindow* accessing_window) const {
+    const LocalDOMWindow* accessing_window,
+    CrossDocumentAccessFeaturePolicy cross_document_access) const {
   if (!accessing_window || !accessing_window->document() || !GetFrame())
     return String();
 
@@ -204,9 +178,14 @@ String DOMWindow::SanitizedCrossDomainAccessErrorMessage(
 
   const SecurityOrigin* active_origin =
       accessing_window->document()->GetSecurityOrigin();
-  String message = "Blocked a frame with origin \"" +
-                   active_origin->ToString() +
-                   "\" from accessing a cross-origin frame.";
+  String message;
+  if (cross_document_access == CrossDocumentAccessFeaturePolicy::kDisallowed) {
+    message = "Blocked a restricted frame with origin \"" +
+              active_origin->ToString() + "\" from accessing another frame.";
+  } else {
+    message = "Blocked a frame with origin \"" + active_origin->ToString() +
+              "\" from accessing a cross-origin frame.";
+  }
 
   // FIXME: Evaluate which details from 'crossDomainAccessErrorMessage' may
   // safely be reported to JavaScript.
@@ -215,7 +194,8 @@ String DOMWindow::SanitizedCrossDomainAccessErrorMessage(
 }
 
 String DOMWindow::CrossDomainAccessErrorMessage(
-    const LocalDOMWindow* accessing_window) const {
+    const LocalDOMWindow* accessing_window,
+    CrossDocumentAccessFeaturePolicy cross_document_access) const {
   if (!accessing_window || !accessing_window->document() || !GetFrame())
     return String();
 
@@ -229,11 +209,14 @@ String DOMWindow::CrossDomainAccessErrorMessage(
       accessing_window->document()->GetSecurityOrigin();
   const SecurityOrigin* target_origin =
       GetFrame()->GetSecurityContext()->GetSecurityOrigin();
+  auto* local_dom_window = DynamicTo<LocalDOMWindow>(this);
   // It's possible for a remote frame to be same origin with respect to a
   // local frame, but it must still be treated as a disallowed cross-domain
   // access. See https://crbug.com/601629.
   DCHECK(GetFrame()->IsRemoteFrame() ||
-         !active_origin->CanAccess(target_origin));
+         !active_origin->CanAccess(target_origin) ||
+         (local_dom_window && accessing_window->document()->GetAgent() !=
+                                  local_dom_window->document()->GetAgent()));
 
   String message = "Blocked a frame with origin \"" +
                    active_origin->ToString() +
@@ -247,22 +230,22 @@ String DOMWindow::CrossDomainAccessErrorMessage(
   // aren't replicated.  For now, construct the URL using the replicated
   // origin for RemoteFrames. If the target frame is remote and sandboxed,
   // there isn't anything else to show other than "null" for its origin.
-  auto* local_dom_window = DynamicTo<LocalDOMWindow>(this);
   KURL target_url = local_dom_window
                         ? local_dom_window->document()->Url()
                         : KURL(NullURL(), target_origin->ToString());
-  if (GetFrame()->GetSecurityContext()->IsSandboxed(kSandboxOrigin) ||
-      accessing_window->document()->IsSandboxed(kSandboxOrigin)) {
+  if (GetFrame()->GetSecurityContext()->IsSandboxed(WebSandboxFlags::kOrigin) ||
+      accessing_window->document()->IsSandboxed(WebSandboxFlags::kOrigin)) {
     message = "Blocked a frame at \"" +
               SecurityOrigin::Create(active_url)->ToString() +
               "\" from accessing a frame at \"" +
               SecurityOrigin::Create(target_url)->ToString() + "\". ";
-    if (GetFrame()->GetSecurityContext()->IsSandboxed(kSandboxOrigin) &&
-        accessing_window->document()->IsSandboxed(kSandboxOrigin))
+    if (GetFrame()->GetSecurityContext()->IsSandboxed(
+            WebSandboxFlags::kOrigin) &&
+        accessing_window->document()->IsSandboxed(WebSandboxFlags::kOrigin))
       return "Sandbox access violation: " + message +
              " Both frames are sandboxed and lack the \"allow-same-origin\" "
              "flag.";
-    if (GetFrame()->GetSecurityContext()->IsSandboxed(kSandboxOrigin))
+    if (GetFrame()->GetSecurityContext()->IsSandboxed(WebSandboxFlags::kOrigin))
       return "Sandbox access violation: " + message +
              " The frame being accessed is sandboxed and lacks the "
              "\"allow-same-origin\" flag.";
@@ -299,6 +282,8 @@ String DOMWindow::CrossDomainAccessErrorMessage(
            target_origin->Domain() +
            "\", but the frame requesting access did not. Both must set "
            "\"document.domain\" to the same value to allow access.";
+  if (cross_document_access == CrossDocumentAccessFeaturePolicy::kDisallowed)
+    return message + "The document-access policy denied access.";
 
   // Default.
   return message + "Protocols, domains, and ports must match.";
@@ -333,7 +318,8 @@ void DOMWindow::Close(LocalDOMWindow* incumbent_window) {
       !allow_scripts_to_close_windows) {
     active_document->domWindow()->GetFrameConsole()->AddMessage(
         ConsoleMessage::Create(
-            kJSMessageSource, mojom::ConsoleMessageLevel::kWarning,
+            mojom::ConsoleMessageSource::kJavaScript,
+            mojom::ConsoleMessageLevel::kWarning,
             "Scripts may close only the windows that were opened by it."));
     return;
   }
@@ -375,6 +361,8 @@ void DOMWindow::focus(v8::Isolate* isolate) {
   ExecutionContext* incumbent_execution_context =
       incumbent_window->GetExecutionContext();
 
+  // TODO(mustaq): Use of |allow_focus| and consuming the activation here seems
+  // suspicious (https://crbug.com/959815).
   bool allow_focus = incumbent_execution_context->IsWindowInteractionAllowed();
   if (allow_focus) {
     incumbent_execution_context->ConsumeWindowInteraction();
@@ -386,8 +374,17 @@ void DOMWindow::focus(v8::Isolate* isolate) {
   }
 
   // If we're a top level window, bring the window to the front.
-  if (GetFrame()->IsMainFrame() && allow_focus)
+  if (GetFrame()->IsMainFrame() && allow_focus) {
     page->GetChromeClient().Focus(incumbent_window->GetFrame());
+  } else if (auto* local_frame = DynamicTo<LocalFrame>(GetFrame())) {
+    // We are depending on user activation twice since IsFocusAllowed() will
+    // check for activation. This should be addressed in
+    // https://crbug.com/959815.
+    if (local_frame->GetDocument() &&
+        !local_frame->GetDocument()->IsFocusAllowed()) {
+      return;
+    }
+  }
 
   page->GetFocusController().FocusDocumentView(GetFrame(),
                                                true /* notifyEmbedder */);
@@ -422,36 +419,22 @@ void DOMWindow::DoPostMessage(scoped_refptr<SerializedScriptValue> message,
 
   Document* source_document = source->document();
 
-  const String& target_origin = options->targetOrigin();
+  // Capture the source of the message.  We need to do this synchronously
+  // in order to capture the source of the message correctly.
+  if (!source_document)
+    return;
 
   // Compute the target origin.  We need to do this synchronously in order
   // to generate the SyntaxError exception correctly.
-  scoped_refptr<const SecurityOrigin> target;
-  if (target_origin == "/") {
-    if (!source_document)
-      return;
-    target = source_document->GetSecurityOrigin();
-  } else if (target_origin != "*") {
-    target = SecurityOrigin::CreateFromString(target_origin);
-    // It doesn't make sense target a postMessage at a unique origin
-    // because there's no way to represent a unique origin in a string.
-    if (target->IsOpaque()) {
-      exception_state.ThrowDOMException(DOMExceptionCode::kSyntaxError,
-                                        "Invalid target origin '" +
-                                            target_origin +
-                                            "' in a call to 'postMessage'.");
-      return;
-    }
-  }
+  scoped_refptr<const SecurityOrigin> target =
+      PostMessageHelper::GetTargetOrigin(options, *source_document,
+                                         exception_state);
+  if (exception_state.HadException())
+    return;
 
   auto channels = MessagePort::DisentanglePorts(GetExecutionContext(), ports,
                                                 exception_state);
   if (exception_state.HadException())
-    return;
-
-  // Capture the source of the message.  We need to do this synchronously
-  // in order to capture the source of the message correctly.
-  if (!source_document)
     return;
 
   const SecurityOrigin* security_origin = source_document->GetSecurityOrigin();
@@ -493,9 +476,43 @@ void DOMWindow::DoPostMessage(scoped_refptr<SerializedScriptValue> message,
   if (options->includeUserActivation())
     user_activation = UserActivation::CreateSnapshot(source);
 
-  MessageEvent* event =
-      MessageEvent::Create(std::move(channels), std::move(message),
-                           source_origin, String(), source, user_activation);
+  LocalFrame* source_frame = source->GetFrame();
+
+  bool allow_autoplay = false;
+  if (RuntimeEnabledFeatures::ExperimentalAutoplayDynamicDelegationEnabled(
+          GetExecutionContext()) &&
+      LocalFrame::HasTransientUserActivation(source_frame) &&
+      options->hasAllow()) {
+    Vector<String> policy_entry_list;
+    options->allow().Split(' ', policy_entry_list);
+    allow_autoplay = policy_entry_list.Contains("autoplay");
+  }
+
+  MessageEvent* event = MessageEvent::Create(
+      std::move(channels), std::move(message), source_origin, String(), source,
+      user_activation, options->transferUserActivation(), allow_autoplay);
+
+  // Transfer user activation state in the source's renderer when
+  // |transferUserActivation| is true. We are making an expriment with
+  // dynamic delegation of "autoplay" capability using this post message
+  // approach to transfer user activation.
+  // TODO(lanwei): we should execute the below code after the post task fires
+  // (for both local and remote posting messages).
+  bool should_transfer_user_activation =
+      RuntimeEnabledFeatures::UserActivationPostMessageTransferEnabled() &&
+      options->transferUserActivation();
+  should_transfer_user_activation =
+      should_transfer_user_activation || allow_autoplay;
+  if (should_transfer_user_activation &&
+      LocalFrame::HasTransientUserActivation(source_frame)) {
+    GetFrame()->TransferUserActivationFrom(source_frame);
+
+    // When the source and target frames are in the same process, we need to
+    // update the user activation state in the browser process. For the cross
+    // process case, it is handled in RemoteDOMWindow.
+    if (IsLocalDOMWindow())
+      GetFrame()->Client()->TransferUserActivationFrom(source->GetFrame());
+  }
 
   SchedulePostMessage(event, std::move(target), source_document);
 }

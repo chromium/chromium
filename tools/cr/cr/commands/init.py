@@ -4,6 +4,8 @@
 
 """A module for the init command."""
 
+from __future__ import print_function
+
 import os
 
 import cr
@@ -67,16 +69,17 @@ class InitCommand(cr.Command):
       # We need to deduce other settings from it's name
       base, buildtype = os.path.split(out)
       if not (base and buildtype):
-        print 'Specified output directory must be two levels'
+        print('Specified output directory must be two levels')
         exit(1)
       if not cr.BuildType.FindPlugin(buildtype):
-        print 'Specified build type', buildtype, 'is not valid'
-        print 'Must be one of', ','.join(p.name for p in cr.BuildType.Plugins())
+        print('Specified build type', buildtype, 'is not valid')
+        print('Must be one of',
+              ','.join(p.name for p in cr.BuildType.Plugins()))
         exit(1)
       if (cr.context.args.CR_BUILDTYPE and
           cr.context.args.CR_BUILDTYPE != buildtype):
-        print 'If --type and --out are both specified, they must match'
-        print 'Got', cr.context.args.CR_BUILDTYPE, 'and', buildtype
+        print('If --type and --out are both specified, they must match')
+        print('Got', cr.context.args.CR_BUILDTYPE, 'and', buildtype)
         exit(1)
       platform = cr.context.args.CR_PLATFORM
       if not platform:
@@ -88,10 +91,10 @@ class InitCommand(cr.Command):
         platform = max(matches, key=len)
         all_matches_are_substrings = all(p in platform for p in matches)
         if not all_matches_are_substrings or not matches:
-          print 'Platform is not set, and could not be guessed from', base
-          print 'Should be one of', ','.join(platforms)
+          print('Platform is not set, and could not be guessed from', base)
+          print('Should be one of', ','.join(platforms))
           if len(matches) > 1:
-            print 'Matched all of', ','.join(matches)
+            print('Matched all of', ','.join(matches))
           exit(1)
       generator = cr.context.args.CR_GENERATOR
       if not generator:
@@ -113,7 +116,7 @@ class InitCommand(cr.Command):
     """Overridden from cr.Command."""
     src_path = cr.context.Get('CR_SRC')
     if not os.path.isdir(src_path):
-      print cr.context.Substitute('Path {CR_SRC} is not a valid client')
+      print(cr.context.Substitute('Path {CR_SRC} is not a valid client'))
       exit(1)
 
     # Ensure we have an output directory override ready to fill in

@@ -1,0 +1,56 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//testing/test.gni")
+
+if (!is_ios) {
+  static_library("renderer") {
+    sources = [
+      "paint_preview_recorder_impl.cc",
+      "paint_preview_recorder_impl.h",
+      "paint_preview_recorder_utils.cc",
+      "paint_preview_recorder_utils.h",
+    ]
+
+    deps = [
+      "//base",
+      "//cc/paint",
+      "//content/public/renderer",
+      "//mojo/public/cpp/base",
+      "//third_party/blink/public:blink_headers",
+      "//third_party/blink/public/common",
+    ]
+
+    public_deps = [
+      "//components/paint_preview/common",
+      "//components/paint_preview/common/mojom",
+    ]
+  }
+
+  source_set("unit_tests") {
+    testonly = true
+
+    sources = [
+      "paint_preview_recorder_utils_unittest.cc",
+    ]
+
+    deps = [
+      ":renderer",
+      "//base",
+      "//base/test:test_support",
+      "//cc/paint",
+      "//testing/gmock",
+      "//testing/gtest",
+    ]
+  }
+
+  test("paint_preview_renderer_unit_tests") {
+    deps = [
+      ":unit_tests",
+      "//base",
+      "//base/test:test_support",
+      "//components/test:run_all_unittests",
+    ]
+  }
+}

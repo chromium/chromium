@@ -37,7 +37,7 @@ namespace {
 // Current version number. We write databases at the "current" version number,
 // but any previous version that can read the "compatible" one can make do with
 // our database without *too* many bad effects.
-const int kCurrentVersionNumber = 41;
+const int kCurrentVersionNumber = 42;
 const int kCompatibleVersionNumber = 16;
 const char kEarlyExpirationThresholdKey[] = "early_expiration_threshold";
 
@@ -129,7 +129,6 @@ sql::InitStatus HistoryDatabase::Init(const base::FilePath& history_name) {
       !InitSegmentTables() || !InitSyncTable())
     return LogInitFailure(InitStep::CREATE_TABLES);
   CreateMainURLIndex();
-  CreateKeywordSearchTermsIndices();
 
   // TODO(benjhayden) Remove at some point.
   meta_table_.DeleteKey("next_download_id");
@@ -295,7 +294,6 @@ bool HistoryDatabase::RecreateAllTablesButURL() {
   if (!InitSegmentTables())
     return false;
 
-  CreateKeywordSearchTermsIndices();
   return true;
 }
 
@@ -333,7 +331,7 @@ SegmentID HistoryDatabase::GetSegmentID(VisitID visit_id) {
       "SELECT segment_id FROM visits WHERE id = ?"));
   s.BindInt64(0, visit_id);
 
-  if (!s.Step() || s.ColumnType(0) == sql::COLUMN_TYPE_NULL)
+  if (!s.Step() || s.GetColumnType(0) == sql::ColumnType::kNull)
     return 0;
   return s.ColumnInt64(0);
 }
@@ -582,6 +580,13 @@ sql::InitStatus HistoryDatabase::EnsureCurrentVersion() {
             visited_url_rowids_sorted)) {
       return LogMigrationFailure(40);
     }
+    cur_version++;
+    meta_table_.SetVersionNumber(cur_version);
+  }
+
+  if (cur_version == 41) {
+    if (!MigrateKeywordsSearchTermsLowerTermColumn())
+      return LogMigrationFailure(41);
     cur_version++;
     meta_table_.SetVersionNumber(cur_version);
   }

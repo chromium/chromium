@@ -1,0 +1,8 @@
+document Name='Table example - th rowheader'
+++grid Grid.ColumnCount=2 Grid.RowCount=2 Table.RowOrColumnMajor='RowMajor'
+++++row
+++++++rowheader Name='Firstname' GridItem.Column=0 GridItem.ColumnSpan=1 GridItem.Row=0 GridItem.RowSpan=1
+++++++gridcell Name='Jill' GridItem.Column=1 GridItem.ColumnSpan=1 GridItem.Row=0 GridItem.RowSpan=1
+++++row
+++++++rowheader Name='Lastname' GridItem.Column=0 GridItem.ColumnSpan=1 GridItem.Row=1 GridItem.RowSpan=1
+++++++gridcell Name='Smith' GridItem.Column=1 GridItem.ColumnSpan=1 GridItem.Row=1 GridItem.RowSpan=1

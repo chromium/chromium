@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/buildflag_header.gni")
+import("//components/gwp_asan/buildflags/buildflags.gni")
 
 declare_args() {
   # If set to true, this will stub out and disable the entire crash key system.
@@ -23,12 +24,29 @@ group("common") {
 use_crashpad_annotation =
     (is_mac || is_win || is_android) && !use_crash_key_stubs
 
+# Causes both Crashpad and Breakpad crash keys to be used. Both key
+# implementations will be instantiated and set, doubling the storage
+# used for keys. This is intended to be used temporarily to test Crashpad
+# integrations without disabling Breakpad.
+use_combined_annotations = is_linux
+
 buildflag_header("crash_buildflags") {
   header = "crash_buildflags.h"
   flags = [
     "USE_CRASHPAD_ANNOTATION=$use_crashpad_annotation",
+    "USE_COMBINED_ANNOTATIONS=$use_combined_annotations",
     "USE_CRASH_KEY_STUBS=$use_crash_key_stubs",
   ]
+}
+
+group("crash_key") {
+  public_deps = [
+    ":crash_key_lib",
+  ]
+
+  if (use_combined_annotations) {
+    public_deps += [ "//third_party/crashpad/crashpad/client" ]
+  }
 }
 
 # Crashpad's annotation system can store data on a per-module basis (i.e.,
@@ -41,7 +59,7 @@ if (use_crash_key_stubs || use_crashpad_annotation) {
 } else {
   crash_key_target_type = "component"
 }
-target(crash_key_target_type, "crash_key") {
+target(crash_key_target_type, "crash_key_lib") {
   sources = [
     "crash_export.h",
     "crash_key.cc",
@@ -93,6 +111,9 @@ target(crash_key_target_type, "crash_key") {
     }
 
     deps += [ "//third_party/breakpad:client" ]
+    if (use_combined_annotations) {
+      public_deps += [ "//third_party/crashpad/crashpad/client" ]
+    }
   }
 }
 
@@ -124,7 +145,12 @@ if (is_mac || is_ios) {
     deps = [
       ":crash_key",
       "//base",
+      "//components/gwp_asan/buildflags",
     ]
+
+    if (enable_gwp_asan_malloc) {
+      deps += [ "//components/gwp_asan/client" ]
+    }
 
     libs = [ "Foundation.framework" ]
   }
@@ -147,7 +173,7 @@ source_set("unit_tests") {
     sources += [ "objc_zombie_unittest.mm" ]
   }
 
-  if (!is_mac && !is_win && !is_fuchsia && !is_android) {
+  if (!is_mac && !is_ios && !is_win && !is_fuchsia && !is_android) {
     include_dirs = [ "//third_party/breakpad/breakpad/src/" ]
     sources += [ "crash_key_breakpad_unittest.cc" ]
   }

@@ -2,7 +2,7 @@
 <head>
 <style>
 .composited {
-  transform: translatez(0);
+  will-change: transform;
 }
 
 .box {
@@ -43,7 +43,7 @@
 }
 
 .clipper {
-  transform: translatez(0);
+  will-change: transform;
   width: 400px;
   height: 400px;
   background-color: gray;

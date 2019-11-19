@@ -14,16 +14,16 @@
 #include "chrome/browser/search/one_google_bar/one_google_bar_service_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
 
-namespace identity {
+namespace signin {
 class IdentityManager;
-}  // namespace identity
+}  // namespace signin
 
 // A service that downloads, caches, and hands out OneGoogleBarData. It never
 // initiates a download automatically, only when Refresh is called. When the
 // user signs in or out, the cached value is cleared.
 class OneGoogleBarService : public KeyedService {
  public:
-  OneGoogleBarService(identity::IdentityManager* identity_manager,
+  OneGoogleBarService(signin::IdentityManager* identity_manager,
                       std::unique_ptr<OneGoogleBarLoader> loader);
   ~OneGoogleBarService() override;
 
@@ -46,6 +46,11 @@ class OneGoogleBarService : public KeyedService {
 
   OneGoogleBarLoader* loader_for_testing() { return loader_.get(); }
 
+  std::string language_code() { return language_code_; }
+
+  // Used for testing.
+  void SetLanguageCodeForTesting(const std::string& language_code);
+
  private:
   class SigninObserver;
 
@@ -63,6 +68,8 @@ class OneGoogleBarService : public KeyedService {
   base::ObserverList<OneGoogleBarServiceObserver, true>::Unchecked observers_;
 
   base::Optional<OneGoogleBarData> one_google_bar_data_;
+
+  std::string language_code_;
 };
 
 #endif  // CHROME_BROWSER_SEARCH_ONE_GOOGLE_BAR_ONE_GOOGLE_BAR_SERVICE_H_

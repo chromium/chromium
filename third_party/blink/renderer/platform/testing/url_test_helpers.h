@@ -33,6 +33,7 @@
 
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_url.h"
+#include "third_party/blink/public/platform/web_url_loader_mock_factory.h"
 #include "third_party/blink/public/platform/web_url_response.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 
@@ -84,6 +85,12 @@ void RegisterMockedURLLoadWithCustomResponse(const WebURL& full_url,
 
 // Registers a mock URL that returns a 404 error.
 void RegisterMockedErrorURLLoad(const WebURL& full_url);
+
+void UnregisterAllURLsAndClearMemoryCache();
+
+void SetLoaderDelegate(WebURLLoaderTestDelegate* delegate);
+
+void ServeAsynchronousRequests();
 
 }  // namespace url_test_helpers
 }  // namespace blink

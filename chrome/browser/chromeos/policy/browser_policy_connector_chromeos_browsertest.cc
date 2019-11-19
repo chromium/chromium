@@ -41,6 +41,11 @@ void WaitUntilPolicyLoaded() {
 }
 
 class BrowserPolicyConnectorChromeOSTest : public DevicePolicyCrosBrowserTest {
+ public:
+  BrowserPolicyConnectorChromeOSTest() {
+    device_state_.set_skip_initial_policy_setup(true);
+  }
+  ~BrowserPolicyConnectorChromeOSTest() override = default;
 };
 
 // Test that GetEnterpriseEnrollmentDomain and GetEnterpriseDisplayDomain work

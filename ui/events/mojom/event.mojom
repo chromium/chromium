@@ -1,0 +1,113 @@
+// Copyright 2014 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module ui.mojom;
+
+import "mojo/public/mojom/base/time.mojom";
+import "ui/events/mojom/event_constants.mojom";
+import "ui/events/mojom/keyboard_codes.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
+import "ui/latency/mojom/latency_info.mojom";
+
+// The values here correspond to the values defined in ui::KeyEvent.
+struct KeyData {
+  // The VKEY value of the key.
+  int32 key_code;
+
+  // The ui::DomCode value.
+  uint32 dom_code;
+
+  // The ui::DomKey value.
+  int32 dom_key;
+
+  // True if this is a character event, false if this is a keystroke event.
+  bool is_char;
+};
+
+struct LocationData {
+  // |relative_location| is in the coordinate system of the target and in DIPs.
+  gfx.mojom.PointF relative_location;
+  // |root_location| is relative to the client's root and in dips.
+  gfx.mojom.PointF root_location;
+};
+
+// Data to support gesture events.
+// TODO(crbug.com/767087): Expand GestureEvent and GestureEventDetails support.
+struct GestureData {
+  LocationData location;
+  GestureDeviceType device_type;
+  // The scale of pinch update events.
+  float scale;
+};
+
+// Data to support scroll events.
+struct ScrollData {
+  LocationData location;
+
+  // Potential accelerated offsets.
+  float x_offset;
+  float y_offset;
+  // Unaccelerated offsets.
+  float x_offset_ordinal;
+  float y_offset_ordinal;
+  // Number of fingers on the pad.
+  int32 finger_count;
+
+  // For non-fling events, provides momentum information (e.g. for the case
+  // where the device provides continuous event updates during a fling).
+  EventMomentumPhase momentum_phase;
+
+  // Provides phase information if device can provide.
+  ScrollEventPhase scroll_event_phase;
+};
+
+// This mirrors the C++ class of the same name, see it for details.
+struct PointerDetails {
+  PointerKind pointer_type;
+  float radius_x;
+  float radius_y;
+  float force;
+  float tilt_x;
+  float tilt_y;
+  float tangential_pressure;
+  float twist;
+  int32 id;
+  int32 offset_x;
+  int32 offset_y;
+};
+
+struct MouseData {
+  int32 changed_button_flags;
+  LocationData location;
+  PointerDetails pointer_details;
+  // Only used for mouse wheel.
+  gfx.mojom.Vector2d wheel_offset;
+};
+
+// This is used for TouchEvents.
+struct TouchData {
+  bool may_cause_scrolling;
+  bool hovering;
+  LocationData location;
+  PointerDetails pointer_details;
+};
+
+struct Event {
+  // TODO(sky): rename to type.
+  EventType action;
+  // A bitfield of kEventFlag* and kMouseEventFlag* values in
+  // input_event_constants.mojom.
+  int32 flags;
+  // This value accurately orders events w.r.t. to each other but does not
+  // position them at an absolute time since the TimeTicks origin is only
+  // guaranteed to be fixed during one instance of the application.
+  mojo_base.mojom.TimeTicks time_stamp;
+  LatencyInfo latency;
+  KeyData? key_data;
+  GestureData? gesture_data;
+  ScrollData? scroll_data;
+  TouchData? touch_data;
+  MouseData? mouse_data;
+  map<string, array<uint8>>? properties;
+};

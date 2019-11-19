@@ -5,7 +5,7 @@
 #ifndef SKIA_EXT_TRACE_EVENT_H_
 #define SKIA_EXT_TRACE_EVENT_H_
 
-#include "SkPreConfig.h"
+#include "include/core/SkTypes.h"
 
 SK_API void InitSkiaEventTracer();
 

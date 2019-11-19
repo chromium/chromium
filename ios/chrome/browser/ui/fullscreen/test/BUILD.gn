@@ -28,3 +28,54 @@ source_set("test") {
     "//testing/gtest",
   ]
 }
+
+source_set("eg_test_support") {
+  defines = [ "CHROME_EARL_GREY_1" ]
+  configs += [ "//build/config/compiler:enable_arc" ]
+  testonly = true
+  sources = [
+    "fullscreen_app_interface.h",
+    "fullscreen_app_interface.mm",
+  ]
+  deps = [
+    "//ios/chrome/browser/browser_state",
+    "//ios/chrome/browser/ui/fullscreen",
+    "//ios/chrome/test/app:test_support",
+    "//ios/public/provider/chrome/browser",
+    "//ios/public/provider/chrome/browser/ui",
+  ]
+}
+
+source_set("eg_app_support+eg2") {
+  defines = [ "CHROME_EARL_GREY_2" ]
+  configs += [ "//build/config/compiler:enable_arc" ]
+  testonly = true
+  sources = [
+    "fullscreen_app_interface.h",
+    "fullscreen_app_interface.mm",
+  ]
+  deps = [
+    "//ios/chrome/browser/browser_state",
+    "//ios/chrome/browser/ui/fullscreen",
+    "//ios/chrome/test/app:test_support",
+    "//ios/public/provider/chrome/browser",
+    "//ios/public/provider/chrome/browser/ui",
+  ]
+}
+
+source_set("eg_test_support+eg2") {
+  defines = [ "CHROME_EARL_GREY_2" ]
+  configs += [
+    "//build/config/compiler:enable_arc",
+    "//build/config/ios:xctest_config",
+  ]
+  testonly = true
+  sources = [
+    "fullscreen_app_interface.h",
+    "fullscreen_app_interface_stub.mm",
+  ]
+  deps = [
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//ios/third_party/earl_grey2:test_lib",
+  ]
+}

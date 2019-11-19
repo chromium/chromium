@@ -48,8 +48,7 @@ HttpCacheDataRemover::HttpCacheDataRemover(
     : delete_begin_(delete_begin),
       delete_end_(delete_end),
       done_callback_(std::move(done_callback)),
-      backend_(nullptr),
-      weak_factory_(this) {
+      backend_(nullptr) {
   DCHECK(!done_callback_.is_null());
 
   if (!url_filter)

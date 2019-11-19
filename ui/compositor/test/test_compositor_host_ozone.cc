@@ -18,7 +18,7 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/ozone/public/ozone_platform.h"
-#include "ui/platform_window/platform_window.h"
+#include "ui/platform_window/platform_window_base.h"
 #include "ui/platform_window/platform_window_delegate.h"
 #include "ui/platform_window/platform_window_init_properties.h"
 
@@ -50,6 +50,7 @@ class StubPlatformWindowDelegate : public PlatformWindowDelegate {
     widget_ = gfx::kNullAcceleratedWidget;
   }
   void OnActivationChanged(bool active) override {}
+  void OnMouseEnter() override {}
 
  private:
   gfx::AcceleratedWidget widget_ = gfx::kNullAcceleratedWidget;
@@ -71,7 +72,7 @@ class TestCompositorHostOzone : public TestCompositorHost {
 
   gfx::Rect bounds_;
   ui::Compositor compositor_;
-  std::unique_ptr<PlatformWindow> window_;
+  std::unique_ptr<PlatformWindowBase> window_;
   StubPlatformWindowDelegate window_delegate_;
   viz::ParentLocalSurfaceIdAllocator allocator_;
 

@@ -451,4 +451,31 @@ TEST_F(TransientWindowManagerTest, TransientWindowObserverNotified) {
       ->RemoveObserver(&test_observer);
 }
 
+TEST_F(TransientWindowManagerTest, ChangeParent) {
+  std::unique_ptr<Window> container_1(CreateTestWindowWithId(0, root_window()));
+  std::unique_ptr<Window> container_2(CreateTestWindowWithId(1, root_window()));
+  std::unique_ptr<Window> container_3(CreateTestWindowWithId(2, root_window()));
+  std::unique_ptr<Window> parent(CreateTestWindowWithId(3, container_1.get()));
+  std::unique_ptr<Window> child_1(CreateTestWindowWithId(4, container_1.get()));
+  std::unique_ptr<Window> child_2(CreateTestWindowWithId(5, container_1.get()));
+  std::unique_ptr<Window> child_3(CreateTestWindowWithId(6, container_1.get()));
+  std::unique_ptr<Window> child_4(CreateTestWindowWithId(7, container_3.get()));
+  std::unique_ptr<Window> child_5(CreateTestWindowWithId(8, container_1.get()));
+
+  AddTransientChild(parent.get(), child_1.get());
+  AddTransientChild(child_1.get(), child_2.get());
+  AddTransientChild(parent.get(), child_4.get());
+  AddTransientChild(parent.get(), child_5.get());
+
+  container_2->AddChild(parent.get());
+  // Transient children on the old container should be reparented to the new
+  // container.
+  EXPECT_EQ(child_1->parent(), container_2.get());
+  EXPECT_EQ(child_2->parent(), container_2.get());
+  EXPECT_EQ(child_5->parent(), container_2.get());
+  // child_3 and child_4 should remain unaffected.
+  EXPECT_EQ(child_3->parent(), container_1.get());
+  EXPECT_EQ(child_4->parent(), container_3.get());
+}
+
 }  // namespace wm

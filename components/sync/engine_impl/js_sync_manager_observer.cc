@@ -65,19 +65,14 @@ void JsSyncManagerObserver::OnMigrationRequested(ModelTypeSet types) {}
 void JsSyncManagerObserver::OnInitializationComplete(
     const WeakHandle<JsBackend>& js_backend,
     const WeakHandle<DataTypeDebugInfoListener>& debug_info_listener,
-    bool success,
-    ModelTypeSet restored_types) {
+    bool success) {
   if (!event_handler_.IsInitialized()) {
     return;
   }
   // Ignore the |js_backend| argument; it's not really convertible to
   // JSON anyway.
 
-  base::DictionaryValue details;
-  details.Set("restoredTypes", ModelTypeSetToValue(restored_types));
-
-  HandleJsEvent(FROM_HERE, "onInitializationComplete",
-                JsEventDetails(&details));
+  HandleJsEvent(FROM_HERE, "onInitializationComplete", JsEventDetails());
 }
 
 void JsSyncManagerObserver::HandleJsEvent(const base::Location& from_here,

@@ -148,9 +148,8 @@ class PolicyLoaderMacTest : public PolicyTestBase {
 
   void SetUp() override {
     PolicyTestBase::SetUp();
-    std::unique_ptr<AsyncPolicyLoader> loader(
-        new PolicyLoaderMac(scoped_task_environment_.GetMainThreadTaskRunner(),
-                            base::FilePath(), prefs_));
+    std::unique_ptr<AsyncPolicyLoader> loader(new PolicyLoaderMac(
+        task_environment_.GetMainThreadTaskRunner(), base::FilePath(), prefs_));
     provider_.reset(
         new AsyncPolicyProvider(&schema_registry_, std::move(loader)));
     provider_->Init(&schema_registry_);
@@ -178,7 +177,7 @@ TEST_F(PolicyLoaderMacTest, Invalid) {
 
   // Make the provider read the updated |prefs_|.
   provider_->RefreshPolicies();
-  scoped_task_environment_.RunUntilIdle();
+  task_environment_.RunUntilIdle();
   const PolicyBundle kEmptyBundle;
   EXPECT_TRUE(provider_->policies().Equals(kEmptyBundle));
 }
@@ -193,7 +192,7 @@ TEST_F(PolicyLoaderMacTest, TestNonForcedValue) {
 
   // Make the provider read the updated |prefs_|.
   provider_->RefreshPolicies();
-  scoped_task_environment_.RunUntilIdle();
+  task_environment_.RunUntilIdle();
   PolicyBundle expected_bundle;
   expected_bundle.Get(PolicyNamespace(POLICY_DOMAIN_CHROME, std::string()))
       .Set(test_keys::kKeyString, POLICY_LEVEL_RECOMMENDED,

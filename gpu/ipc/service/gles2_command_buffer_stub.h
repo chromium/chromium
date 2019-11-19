@@ -39,6 +39,9 @@ class GPU_IPC_SERVICE_EXPORT GLES2CommandBufferStub
       base::UnsafeSharedMemoryRegion shared_state_shm) override;
   MemoryTracker* GetMemoryTracker() const override;
 
+  // DecoderClient implementation.
+  void OnGpuSwitched(gl::GpuPreference active_gpu_heuristic) override;
+
 // ImageTransportSurfaceDelegate implementation:
 #if defined(OS_WIN)
   void DidCreateAcceleratedSurfaceChildWindow(
@@ -49,9 +52,8 @@ class GPU_IPC_SERVICE_EXPORT GLES2CommandBufferStub
   const gles2::FeatureInfo* GetFeatureInfo() const override;
   const GpuPreferences& GetGpuPreferences() const override;
   void BufferPresented(const gfx::PresentationFeedback& feedback) override;
-
-  void AddFilter(IPC::MessageFilter* message_filter) override;
-  int32_t GetRouteID() const override;
+  viz::GpuVSyncCallback GetGpuVSyncCallback() override;
+  base::TimeDelta GetGpuBlockedTimeSinceLastSwap() override;
 
  private:
   bool HandleMessage(const IPC::Message& message) override;
@@ -62,9 +64,6 @@ class GPU_IPC_SERVICE_EXPORT GLES2CommandBufferStub
   void OnGetGpuFenceHandle(uint32_t gpu_fence_id);
   void OnCreateImage(GpuCommandBufferMsg_CreateImage_Params params);
   void OnDestroyImage(int32_t id);
-  void OnCreateStreamTexture(uint32_t texture_id,
-                             int32_t stream_id,
-                             bool* succeeded);
 
   void OnSwapBuffers(uint64_t swap_id, uint32_t flags) override;
 
@@ -84,7 +83,7 @@ class GPU_IPC_SERVICE_EXPORT GLES2CommandBufferStub
   base::circular_deque<SwapBufferParams> pending_presented_params_;
   base::circular_deque<SwapBufferParams> pending_swap_completed_params_;
 
-  base::WeakPtrFactory<GLES2CommandBufferStub> weak_ptr_factory_;
+  base::WeakPtrFactory<GLES2CommandBufferStub> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(GLES2CommandBufferStub);
 };

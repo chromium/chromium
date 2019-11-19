@@ -1,0 +1,97 @@
+Tests Application Panel's handling of storages in iframes.
+
+Initial tree...
+
+Application
+ Manifest
+ Service Workers
+ Clear storage
+Storage
+ Local Storage
+  http://127.0.0.1:8000
+  http://localhost:8000
+ Session Storage
+  http://127.0.0.1:8000
+  http://localhost:8000
+ IndexedDB
+  Database-iframe - http://localhost:8000
+   Database-iframe
+  Database-main-frame - http://127.0.0.1:8000
+ Web SQL
+ Cookies
+  http://127.0.0.1:8000
+  http://localhost:8000
+Cache
+ Cache Storage
+ Application Cache
+Background Services
+ Background Fetch
+ Background Sync
+ Notifications
+ Payment Handler
+ Push Messaging
+Frames
+ top
+
+Remove iframe from page...
+
+Application
+ Manifest
+ Service Workers
+ Clear storage
+Storage
+ Local Storage
+  http://127.0.0.1:8000
+ Session Storage
+  http://127.0.0.1:8000
+ IndexedDB
+  Database-main-frame - http://127.0.0.1:8000
+ Web SQL
+ Cookies
+  http://127.0.0.1:8000
+  http://localhost:8000
+Cache
+ Cache Storage
+ Application Cache
+Background Services
+ Background Fetch
+ Background Sync
+ Notifications
+ Payment Handler
+ Push Messaging
+Frames
+ top
+
+Add iframe to page again...
+
+Application
+ Manifest
+ Service Workers
+ Clear storage
+Storage
+ Local Storage
+  http://127.0.0.1:8000
+  http://localhost:8000
+ Session Storage
+  http://127.0.0.1:8000
+  http://localhost:8000
+ IndexedDB
+  Database-main-frame - http://127.0.0.1:8000
+  Database-iframe - http://localhost:8000
+   Database-iframe
+ Web SQL
+ Cookies
+  http://127.0.0.1:8000
+  http://localhost:8000
+Cache
+ Cache Storage
+ Application Cache
+Background Services
+ Background Fetch
+ Background Sync
+ Notifications
+ Payment Handler
+ Push Messaging
+Frames
+ top
+

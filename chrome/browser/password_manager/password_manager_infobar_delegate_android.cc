@@ -16,7 +16,6 @@ PasswordManagerInfoBarDelegate::~PasswordManagerInfoBarDelegate() {}
 
 PasswordManagerInfoBarDelegate::PasswordManagerInfoBarDelegate()
     : ConfirmInfoBarDelegate(),
-      message_link_range_(gfx::Range()),
       details_message_(base::string16()) {}
 
 base::string16 PasswordManagerInfoBarDelegate::GetDetailsMessageText() const {
@@ -53,11 +52,6 @@ bool PasswordManagerInfoBarDelegate::LinkClicked(
 
 void PasswordManagerInfoBarDelegate::SetMessage(const base::string16& message) {
   message_ = message;
-}
-
-void PasswordManagerInfoBarDelegate::SetMessageLinkRange(
-    const gfx::Range& message_link_range) {
-  message_link_range_ = message_link_range;
 }
 
 void PasswordManagerInfoBarDelegate::SetDetailsMessage(

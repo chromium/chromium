@@ -1,7 +1,6 @@
 <!DOCTYPE HTML>
 <script src="../resources/testharness.js"></script>
 <script src="../resources/testharnessreport.js"></script>
-<script src="../resources/run-after-layout-and-paint.js"></script>
 
 <div role="listbox" id="listbox" tabindex="0" aria-activedescendant="opt3">
     <div id="opt1" role="option">Option 1</div>
@@ -25,13 +24,13 @@ function axElementById(id) {
     return accessibilityController.accessibleElementById(id);
 }
 
-test_after_layout_and_paint(function(t) {
+test(function(t) {
     listbox.focus();
     var axOption1 = axElementById("opt1");
     assert_equals(axOption1.isSelectable, true);
 }, "Descendant widgets are selectable in a single selection container");
 
-test_after_layout_and_paint(function(t) {
+test(function(t) {
     listbox.focus();
     listbox.setAttribute("aria-activedescendant", "opt1");
     var axOption1 = axElementById("opt1");
@@ -39,32 +38,32 @@ test_after_layout_and_paint(function(t) {
 }, "Selection follows activedescendant in a single selection container");
 
 
-test_after_layout_and_paint(function(t) {
+test(function(t) {
   var axOption = axElementById("opt2.1");
   assert_equals(axOption.isSelectable, true);
 }, "Options are selectable even if it is not clear they can be from markup");
 
-test_after_layout_and_paint(function(t) {
+test(function(t) {
     listbox.focus();
     listbox.setAttribute("aria-activedescendant", "opt2");
     var axOption2 = axElementById("opt2");
     assert_equals(axOption2.isSelected, false);
 }, "Selection doesn't follow activedescendant when aria-selected=false");
 
-test_after_layout_and_paint(function(t) {
+test(function(t) {
     listbox.focus();
     listbox.setAttribute("aria-activedescendant", "opt2");
     var axOption1 = axElementById("opt1");
     assert_equals(axOption1.isSelected, false);
 }, "Only focused item is marked as selected in a single selection container");
 
-test_after_layout_and_paint(function(t) {
+test(function(t) {
     document.getElementById('treeitem1').focus();
     var treeitem1 = axElementById("treeitem1");
     assert_equals(treeitem1.isSelected, true);
 }, "Selection follows tabindex focus in a single selection container");
 
-test_after_layout_and_paint(function(t) {
+test(function(t) {
     document.getElementById('treeitem2').focus();
     var treeitem2 = axElementById("treeitem2");
     assert_equals(treeitem2.isSelected, false);

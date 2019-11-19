@@ -22,7 +22,7 @@
 #include "chrome/grit/browser_resources.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/prefs/pref_service.h"
-#include "components/signin/core/browser/signin_pref_names.h"
+#include "components/signin/public/base/signin_pref_names.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -66,10 +66,11 @@ void SigninErrorUI::Initialize(Browser* browser, bool is_system_profile) {
 
   content::WebUIDataSource* source =
       content::WebUIDataSource::Create(chrome::kChromeUISigninErrorHost);
-  source->SetJsonPath("strings.js");
+  source->UseStringsJs();
   source->SetDefaultResource(IDR_SIGNIN_ERROR_HTML);
   source->AddResourcePath("signin_error.js", IDR_SIGNIN_ERROR_JS);
-  source->AddResourcePath("signin_shared_css.html", IDR_SIGNIN_SHARED_CSS_HTML);
+  source->AddResourcePath("signin_shared_old_css.html",
+                          IDR_SIGNIN_SHARED_OLD_CSS_HTML);
   source->AddBoolean("isSystemProfile", is_system_profile);
 
   // Retrieve the last signin error message and email used.
@@ -132,6 +133,9 @@ void SigninErrorUI::Initialize(Browser* browser, bool is_system_profile) {
               .GetAllProfilesAttributes();
       DCHECK(!email.empty());
       for (const ProfileAttributesEntry* entry : entries) {
+        if (!entry->IsAuthenticated())
+          continue;
+
         if (gaia::AreEmailsSame(base::UTF16ToUTF8(email),
                                 base::UTF16ToUTF8(entry->GetUserName()))) {
           handler->set_duplicate_profile_path(entry->GetPath());

@@ -6,11 +6,11 @@ include_rules = [
     "+base/bind.h",
     "+base/bind_helpers.h",
     "+base/bit_cast.h",
+    "+base/command_line.h",
     "+base/compiler_specific.h",
     "+base/cpu.h",
     "+base/feature_list.h",
     "+base/files",
-    "+base/containers/adapters.h",
     "+base/containers/flat_map.h",
     "+base/guid.h",
     "+base/json",
@@ -47,24 +47,25 @@ include_rules = [
     "+base/unguessable_token.h",
     "+base/values.h",
     "+base/lazy_instance.h",
-    "+cc/paint/text_holder.h",
     "+net/base/filename_util.h",
     "+net/http/http_util.h",
     "+net/http/http_request_headers.h",
     "+net/http/http_response_headers.h",
     "+device",
     "+gpu/GLES2",
+    "+gpu/command_buffer/common/sync_token.h",
     "+mojo/public",
     "+mozilla",
     "+services/metrics/public/cpp/ukm_entry_builder.h",
     "+services/metrics/public/cpp/ukm_recorder.h",
-    "+services/viz/public/interfaces/compositing/compositor_frame_sink.mojom-blink.h",
+    "+services/viz/public/mojom/compositing/compositor_frame_sink.mojom-blink.h",
     "+skia/ext",
     #TODO(nverne): remove this
     "+third_party/blink/public/web/blink.h",
     "+third_party/ced/src/compact_enc_det/compact_enc_det.h",
     "+third_party/khronos",
     "+third_party/skia",
+    "+ui/base/resource/scale_factor.h",
     "+ui/gfx",
     "+url",
     "+webp",
@@ -76,14 +77,14 @@ include_rules = [
 ]
 
 specific_include_rules = {
+    "crypto\.(cc|h)": [
+        "+crypto",
+        "+third_party/boringssl/src/include",
+    ],
     "web_url_error\.cc": [
         "+net/base/net_errors.h"
     ],
     "ukm_time_aggregator_test.cc" : [
         "+components/ukm/test_ukm_recorder.h"
-    ],
-    "data_resource_helper.cc" : [
-        "+third_party/zlib/google/compression_utils.h",
-        "+ui/base/resource",
     ],
 }

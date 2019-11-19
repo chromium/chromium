@@ -4,11 +4,12 @@
 
 module content.mojom;
 
-import "content/public/common/load_timing_info.mojom";
 import "content/public/common/resource_type.mojom";
 import "services/network/public/mojom/ip_address.mojom";
 import "services/network/public/mojom/ip_endpoint.mojom";
+import "services/network/public/mojom/load_timing_info.mojom";
 import "services/network/public/mojom/network_param.mojom";
+import "services/network/public/mojom/url_loader.mojom";
 import "url/mojom/url.mojom";
 
 // Network related information reported for loads and redirects.
@@ -55,6 +56,9 @@ struct ResourceLoadInfo {
   // The resource type.
   ResourceType resource_type;
 
+  // Loading priority of the corresponding request.
+  network.mojom.RequestPriority request_priority;
+
   // The mime type.
   string mime_type;
 
@@ -68,7 +72,7 @@ struct ResourceLoadInfo {
   int32 net_error;
 
   // The timing info.
-  content.mojom.LoadTimingInfo load_timing_info;
+  network.mojom.LoadTimingInfo load_timing_info;
 
   // The size of the response body before removing any content encodings.
   // Does not include redirects or sub-requests issued at lower levels (range

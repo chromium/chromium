@@ -1,0 +1,39 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//testing/test.gni")
+
+config("one_euro_filter_config") {
+  include_dirs = [ "src" ]
+}
+
+static_library("one_euro_filter") {
+  sources = [
+    "src/low_pass_filter.cc",
+    "src/low_pass_filter.h",
+    "src/one_euro_filter.cc",
+    "src/one_euro_filter.h",
+  ]
+
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+
+  public_configs = [ ":one_euro_filter_config" ]
+}
+
+test("one_euro_filter_unittests") {
+  include_dirs = [ "tests" ]
+
+  sources = [
+    "tests/gtest_main.cc",
+    "tests/one_euro_filter_unittest.cc",
+  ]
+
+  deps = [
+    ":one_euro_filter",
+    "//testing/gtest",
+  ]
+
+  public_configs = [ ":one_euro_filter_config" ]
+}

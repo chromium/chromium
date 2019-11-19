@@ -111,7 +111,7 @@ XmppReturnStatus XmppClient::Connect(
   // For other servers, we leave the strings empty, which causes the jid's
   // domain to be used.  We do the same for gmail.com and googlemail.com as the
   // returned CN matches the account domain in those cases.
-  std::string server_name = settings.server().ToString();
+  std::string server_name = settings.server().host();
   if (server_name == jingle_xmpp::STR_TALK_GOOGLE_COM ||
       server_name == jingle_xmpp::STR_TALKX_L_GOOGLE_COM ||
       server_name == jingle_xmpp::STR_XMPP_GOOGLE_COM ||

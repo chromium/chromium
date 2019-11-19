@@ -12,8 +12,8 @@
 #include "chrome/browser/sync/test/integration/performance/sync_timing_helper.h"
 #include "chrome/browser/sync/test/integration/profile_sync_service_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
-#include "components/autofill/core/browser/autofill_profile.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
+#include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/webdata/autofill_entry.h"
 #include "components/sync/driver/sync_driver_switches.h"
 
@@ -44,32 +44,14 @@ std::string IntToName(int n) {
 }
 
 void ForceSync(int profile) {
-  static int id = 0;
+  static size_t id = 0;
   ++id;
   EXPECT_TRUE(bookmarks_helper::AddURL(
                   profile, 0, bookmarks_helper::IndexedURLTitle(id),
                   GURL(bookmarks_helper::IndexedURL(id))) != nullptr);
 }
 
-// Class that enables or disables USS based on test parameter. Must be the first
-// base class of the test fixture.
-class UssSwitchToggler : public testing::WithParamInterface<bool> {
- public:
-  UssSwitchToggler() {
-    if (GetParam()) {
-      override_features_.InitAndEnableFeature(
-          switches::kSyncUSSAutofillProfile);
-    } else {
-      override_features_.InitAndDisableFeature(
-          switches::kSyncUSSAutofillProfile);
-    }
-  }
-
- private:
-  base::test::ScopedFeatureList override_features_;
-};
-
-class AutofillProfileSyncPerfTest : public UssSwitchToggler, public SyncTest {
+class AutofillProfileSyncPerfTest : public SyncTest {
  public:
   AutofillProfileSyncPerfTest()
       : SyncTest(TWO_CLIENT), guid_number_(0), name_number_(0) {}
@@ -151,7 +133,7 @@ const std::string AutofillProfileSyncPerfTest::NextName() {
   return IntToName(name_number_++);
 }
 
-IN_PROC_BROWSER_TEST_P(AutofillProfileSyncPerfTest, P0) {
+IN_PROC_BROWSER_TEST_F(AutofillProfileSyncPerfTest, P0) {
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
 
   AddProfiles(0, kNumProfiles);
@@ -169,12 +151,6 @@ IN_PROC_BROWSER_TEST_P(AutofillProfileSyncPerfTest, P0) {
   ASSERT_EQ(0U, GetProfileCount(1));
   PrintResult("autofill", "delete_autofill_profiles", dt);
 }
-
-// Only parametrize the test above that tests autofill_profile, the test below
-// addresses autocomplete and thus does not need parametrizing.
-INSTANTIATE_TEST_SUITE_P(USS,
-                         AutofillProfileSyncPerfTest,
-                         ::testing::Values(false, true));
 
 class AutocompleteSyncPerfTest : public SyncTest {
  public:

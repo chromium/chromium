@@ -65,6 +65,10 @@ class FormDataParser {
     kAllIgnored = 4,
   };
 
+  // The parser will give up on parsing any FormData with more than
+  // |kMaxParseableFields| fields.
+  static const size_t kMaxParseableFields = 10000;
+
   FormDataParser();
 
   ~FormDataParser();

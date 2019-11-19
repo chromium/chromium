@@ -39,33 +39,33 @@ class BluetoothTestBlueZ : public BluetoothTestBase {
   void SimulateLocalGattCharacteristicValueReadRequest(
       BluetoothDevice* from_device,
       BluetoothLocalGattCharacteristic* characteristic,
-      const BluetoothLocalGattService::Delegate::ValueCallback& value_callback,
-      const base::Closure& error_callback) override;
+      BluetoothLocalGattService::Delegate::ValueCallback value_callback,
+      base::OnceClosure error_callback) override;
   void SimulateLocalGattCharacteristicValueWriteRequest(
       BluetoothDevice* from_device,
       BluetoothLocalGattCharacteristic* characteristic,
       const std::vector<uint8_t>& value_to_write,
-      const base::Closure& success_callback,
-      const base::Closure& error_callback) override;
+      base::OnceClosure success_callback,
+      base::OnceClosure error_callback) override;
   void SimulateLocalGattCharacteristicValuePrepareWriteRequest(
       BluetoothDevice* from_device,
       BluetoothLocalGattCharacteristic* characteristic,
       const std::vector<uint8_t>& value_to_write,
       int offset,
       bool has_subsequent_write,
-      const base::Closure& success_callback,
-      const base::Closure& error_callback) override;
+      base::OnceClosure success_callback,
+      base::OnceClosure error_callback) override;
   void SimulateLocalGattDescriptorValueReadRequest(
       BluetoothDevice* from_device,
       BluetoothLocalGattDescriptor* descriptor,
-      const BluetoothLocalGattService::Delegate::ValueCallback& value_callback,
-      const base::Closure& error_callback) override;
+      BluetoothLocalGattService::Delegate::ValueCallback value_callback,
+      base::OnceClosure error_callback) override;
   void SimulateLocalGattDescriptorValueWriteRequest(
       BluetoothDevice* from_device,
       BluetoothLocalGattDescriptor* descriptor,
       const std::vector<uint8_t>& value_to_write,
-      const base::Closure& success_callback,
-      const base::Closure& error_callback) override;
+      base::OnceClosure success_callback,
+      base::OnceClosure error_callback) override;
   bool SimulateLocalGattCharacteristicNotificationsRequest(
       BluetoothLocalGattCharacteristic* characteristic,
       bool start) override;

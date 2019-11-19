@@ -18,8 +18,10 @@
  */
 
 // https://html.spec.whatwg.org/C/#the-base-element
-[HTMLConstructor]
-interface HTMLBaseElement : HTMLElement {
-    [CEReactions, RaisesException=Setter] attribute URLString href;
+[
+    Exposed=Window,
+    HTMLConstructor
+] interface HTMLBaseElement : HTMLElement {
+    [CEReactions] attribute USVString href;
     [CEReactions, Reflect] attribute DOMString target;
 };

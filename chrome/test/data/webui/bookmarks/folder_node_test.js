@@ -2,6 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {TestCommandManager} from 'chrome://test/bookmarks/test_command_manager.js';
+import {TestStore} from 'chrome://test/bookmarks/test_store.js';
+import {selectFolder} from 'chrome://bookmarks/bookmarks.js';
+import {createFolder, createItem, findFolderNode, getAllFoldersOpenState, replaceBody, testTree} from 'chrome://test/bookmarks/test_util.js';
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
 suite('<bookmarks-folder-node>', function() {
   let rootNode;
   let store;
@@ -24,7 +30,7 @@ suite('<bookmarks-folder-node>', function() {
               createItem('5'),
             ]),
         createFolder('7', []));
-    store = new bookmarks.TestStore({
+    store = new TestStore({
       nodes: nodes,
       folderOpenState: getAllFoldersOpenState(nodes),
       selectedFolder: '1',
@@ -35,7 +41,7 @@ suite('<bookmarks-folder-node>', function() {
     rootNode.itemId = '0';
     rootNode.depth = -1;
     replaceBody(rootNode);
-    Polymer.dom.flush();
+    flush();
   });
 
   test('selecting and deselecting folders dispatches action', function() {
@@ -46,12 +52,12 @@ suite('<bookmarks-folder-node>', function() {
         firstGen[0].$['descendants'].querySelectorAll('bookmarks-folder-node');
 
     // Select nested folder.
-    MockInteractions.tap(secondGen[0].$['folder-label']);
+    secondGen[0].$['container'].click();
     assertEquals('select-folder', store.lastAction.name);
     assertEquals(secondGen[0].itemId, store.lastAction.id);
 
     // Select folder in a separate subtree.
-    MockInteractions.tap(rootFolders[1].$['folder-label']);
+    rootFolders[1].$['container'].click();
     assertEquals('select-folder', store.lastAction.name);
     assertEquals(rootFolders[1].itemId, store.lastAction.id);
 
@@ -60,7 +66,7 @@ suite('<bookmarks-folder-node>', function() {
     store.notifyObservers();
     store.resetLastAction();
 
-    MockInteractions.tap(rootFolders[1].$['folder-label']);
+    rootFolders[1].$['container'].click();
     assertEquals(null, store.lastAction);
   });
 
@@ -151,13 +157,13 @@ suite('<bookmarks-folder-node>', function() {
   });
 
   test('right click opens context menu', function() {
-    const commandManager = new TestCommandManager();
-    document.body.appendChild(commandManager);
+    const testCommandManager = new TestCommandManager();
+    document.body.appendChild(testCommandManager.getCommandManager());
 
     const node = getFolderNode('2');
     node.$.container.dispatchEvent(new MouseEvent('contextmenu'));
 
-    assertDeepEquals(bookmarks.actions.selectFolder('2'), store.lastAction);
-    commandManager.assertMenuOpenForIds(['2']);
+    assertDeepEquals(selectFolder('2'), store.lastAction);
+    testCommandManager.assertMenuOpenForIds(['2']);
   });
 });

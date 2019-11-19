@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test_utils.h"
 #include "extensions/common/manifest_handlers/options_page_info.h"
@@ -48,7 +49,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabUtilBrowserTest,
   ASSERT_TRUE(OptionsPageInfo::HasOptionsPage(options_in_view));
 
   // Start at the new tab page, and then open the extension options page.
-  ui_test_utils::NavigateToURL(browser(), GURL("chrome://newtab"));
+  ui_test_utils::NavigateToURL(browser(), GURL(chrome::kChromeUINewTabURL));
   EXPECT_EQ(1, browser()->tab_strip_model()->count());
   GURL options_url = OptionsPageInfo::GetOptionsPage(options_in_tab);
   EXPECT_TRUE(ExtensionTabUtil::OpenOptionsPage(options_in_tab, browser()));
@@ -103,7 +104,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabUtilBrowserTest,
   // chrome://extensions.
   // Triggering OpenOptionsPage() should create a new tab, since there are none
   // to override.
-  options_url = GURL("chrome://extensions/?options=" + options_in_view->id());
+  options_url = GURL(std::string(chrome::kChromeUIExtensionsURL) +
+                     "?options=" + options_in_view->id());
   EXPECT_TRUE(ExtensionTabUtil::OpenOptionsPage(options_in_view, browser()));
   EXPECT_EQ(5, browser()->tab_strip_model()->count());
   EXPECT_TRUE(content::WaitForLoadStop(
@@ -120,7 +122,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabUtilBrowserTest,
 
   // Navigate to chrome://extensions (no options). Calling OpenOptionsPage()
   // should override that tab rather than opening a new tab. crbug.com/595253.
-  ui_test_utils::NavigateToURL(browser(), GURL("chrome://extensions"));
+  ui_test_utils::NavigateToURL(browser(), GURL(chrome::kChromeUIExtensionsURL));
   EXPECT_TRUE(ExtensionTabUtil::OpenOptionsPage(options_in_view, browser()));
   EXPECT_EQ(5, browser()->tab_strip_model()->count());
   EXPECT_TRUE(content::WaitForLoadStop(
@@ -151,7 +153,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabUtilBrowserTest,
 
   // In the regular browser window, start at the new tab page, and then open the
   // extension options page.
-  ui_test_utils::NavigateToURL(browser(), GURL("chrome://newtab"));
+  ui_test_utils::NavigateToURL(browser(), GURL(chrome::kChromeUINewTabURL));
   EXPECT_EQ(1, browser()->tab_strip_model()->count());
   EXPECT_TRUE(
       ExtensionTabUtil::OpenOptionsPage(options_split_extension, browser()));
@@ -167,7 +169,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabUtilBrowserTest,
   // OpenOptionsPage() from an incognito window should not refocus to the
   // options page in the regular window, but instead open the options page in
   // the incognito window.
-  ui_test_utils::NavigateToURL(incognito, GURL("chrome://newtab"));
+  ui_test_utils::NavigateToURL(incognito, GURL(chrome::kChromeUINewTabURL));
   EXPECT_EQ(1, incognito->tab_strip_model()->count());
   EXPECT_TRUE(ExtensionTabUtil::OpenOptionsPageFromAPI(options_split_extension,
                                                        incognito->profile()));
@@ -191,7 +193,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabUtilBrowserTest,
 
   // In the incognito browser, start at the new tab page, and then open the
   // extension options page.
-  ui_test_utils::NavigateToURL(incognito, GURL("chrome://newtab"));
+  ui_test_utils::NavigateToURL(incognito, GURL(chrome::kChromeUINewTabURL));
   EXPECT_EQ(1, incognito->tab_strip_model()->count());
   EXPECT_TRUE(ExtensionTabUtil::OpenOptionsPageFromAPI(options_split_extension,
                                                        incognito->profile()));
@@ -252,7 +254,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabUtilBrowserTest,
   // a regular window, calling OpenOptionsPage() from an incognito window should
   // refocus to the options page in the regular window.
   Browser* incognito = CreateIncognitoBrowser();
-  ui_test_utils::NavigateToURL(incognito, GURL("chrome://newtab"));
+  ui_test_utils::NavigateToURL(incognito, GURL(chrome::kChromeUINewTabURL));
   EXPECT_EQ(1, incognito->tab_strip_model()->count());
   EXPECT_TRUE(ExtensionTabUtil::OpenOptionsPageFromAPI(
       options_spanning_extension, profile()));
@@ -271,7 +273,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabUtilBrowserTest,
   EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
 
   // Start at the new tab page in incognito and open the extension options page.
-  ui_test_utils::NavigateToURL(incognito, GURL("chrome://newtab"));
+  ui_test_utils::NavigateToURL(incognito, GURL(chrome::kChromeUINewTabURL));
   EXPECT_EQ(1, incognito->tab_strip_model()->count());
   EXPECT_TRUE(ExtensionTabUtil::OpenOptionsPageFromAPI(
       options_spanning_extension, profile()));
@@ -295,7 +297,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabUtilBrowserTest,
   // Right-clicking on an extension action icon in the toolbar and selecting
   // options should open the options page in a regular window. In this case, the
   // profile is an OTR profile instead of a non-OTR profile, as described above.
-  ui_test_utils::NavigateToURL(incognito, GURL("chrome://newtab"));
+  ui_test_utils::NavigateToURL(incognito, GURL(chrome::kChromeUINewTabURL));
   EXPECT_EQ(1, incognito->tab_strip_model()->count());
   // Because the OpenOptionsPage() call originates from an OTR window via, e.g.
   // the action menu, instead of initiated by the extension, the

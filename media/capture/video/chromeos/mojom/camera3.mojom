@@ -1,0 +1,307 @@
+// Copyright 2017 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Next min version: 3
+
+module cros.mojom;
+
+import "media/capture/video/chromeos/mojom/camera_metadata.mojom";
+
+// These usages flags are defined in gralloc.h. They determine the nature of
+// the buffers allocated by gralloc. Read more on:
+// https://source.android.com/devices/graphics/arch-bq-gralloc#gralloc_HAL
+const uint32 GRALLOC_USAGE_SW_READ_NEVER = 0x00000000;
+const uint32 GRALLOC_USAGE_SW_READ_OFTEN = 0x00000003;
+const uint32 GRALLOC_USAGE_SW_WRITE_NEVER = 0x00000000;
+const uint32 GRALLOC_USAGE_SW_WRITE_OFTEN = 0x00000030;
+const uint32 GRALLOC_USAGE_HW_COMPOSER = 0x00000800;
+const uint32 GRALLOC_USAGE_HW_CAMERA_WRITE = 0x00020000;
+const uint32 GRALLOC_USAGE_HW_CAMERA_READ = 0x00040000;
+// A private gralloc usage flag to force allocation of YUV420 buffer.  This
+// usage flag is only valid when allocating HAL_PIXEL_FORMAT_YCbCr_420_888
+// flexible YUV buffers.
+const uint32 GRALLOC_USAGE_FORCE_I420 = 0x10000000;
+// Setting this flag means this stream is intended for still capture. We're
+// using the usage flag as an indicator for an output stream that can be split
+// into a new HAL request for Zero-Shutter Lag (ZSL). See crrev.com/c/1877636
+// for the CL that does the aforementioned things.
+const uint32 GRALLOC_USAGE_STILL_CAPTURE = 0x20000000;
+
+[Extensible]
+enum HalPixelFormat {
+  HAL_PIXEL_FORMAT_RGBA_8888 = 0x1,
+  HAL_PIXEL_FORMAT_RGBX_8888 = 0x2,
+  HAL_PIXEL_FORMAT_BGRA_8888 = 0x5,
+  HAL_PIXEL_FORMAT_YCrCb_420_SP = 0x11,
+  HAL_PIXEL_FORMAT_YCbCr_422_I = 0x14,
+  HAL_PIXEL_FORMAT_BLOB = 0x21,
+  HAL_PIXEL_FORMAT_IMPLEMENTATION_DEFINED = 0x22,
+  HAL_PIXEL_FORMAT_YCbCr_420_888 = 0x23,
+  HAL_PIXEL_FORMAT_YV12 = 0x32315659,
+};
+
+// We wrap |crop_rotate_scale_degrees| into a struct because it's a newly added
+// field in Camera3Stream. Therefore it needs to be nullable to be
+// backward-compatible. Primitive types, like enum, are not nullable.
+struct CropRotateScaleInfo {
+  Camera3StreamRotation crop_rotate_scale_degrees;
+};
+
+// The following enums are from Android's camera HAL v3 API header
+// (https://goo.gl/jciSjC).
+
+enum Camera3StreamType {
+  CAMERA3_STREAM_OUTPUT = 0,
+  CAMERA3_STREAM_INPUT = 1,
+  CAMERA3_STREAM_BIDIRECTIONAL = 2,
+  CAMERA3_NUM_STREAM_TYPES,
+};
+
+enum Camera3StreamRotation {
+  CAMERA3_STREAM_ROTATION_0 = 0,
+  CAMERA3_STREAM_ROTATION_90 = 1,
+  CAMERA3_STREAM_ROTATION_180 = 2,
+  CAMERA3_STREAM_ROTATION_270 = 3,
+};
+
+enum Camera3StreamConfigurationMode {
+  CAMERA3_STREAM_CONFIGURATION_NORMAL_MODE = 0,
+  CAMERA3_STREAM_CONFIGURATION_CONSTRAINED_HIGH_SPEED_MODE =1,
+};
+
+struct Camera3Stream {
+  uint64 id;
+  Camera3StreamType stream_type;
+  uint32 width;
+  uint32 height;
+  HalPixelFormat format;
+  // usage stores the gralloc usage flags for this stream and determines the
+  // nature of it. The value is used by Chrome VCD, Android framework and camera
+  // HAL. Read more on:
+  // https://source.android.com/devices/graphics/arch-bq-gralloc#gralloc_HAL
+  uint32 usage;
+  uint32 max_buffers;
+  uint32 data_space;
+  Camera3StreamRotation rotation;
+  [MinVersion=1] CropRotateScaleInfo? crop_rotate_scale_info;
+};
+
+struct Camera3StreamConfiguration {
+  array<Camera3Stream> streams;
+  Camera3StreamConfigurationMode operation_mode;
+};
+
+enum Camera3BufferStatus {
+  CAMERA3_BUFFER_STATUS_OK = 0,
+  CAMERA3_BUFFER_STATUS_ERROR = 1,
+};
+
+// Structure that contains needed information about a camera buffer.
+struct CameraBufferHandle {
+  uint64 buffer_id;
+  array<handle> fds;
+  uint32 drm_format;
+  HalPixelFormat hal_pixel_format;
+  uint32 width;
+  uint32 height;
+  array<uint32> strides;
+  array<uint32> offsets;
+};
+
+struct Camera3StreamBuffer {
+  uint64 stream_id;
+  uint64 buffer_id;
+  Camera3BufferStatus status;
+  handle? acquire_fence;
+  handle? release_fence;
+  [MinVersion=2] CameraBufferHandle? buffer_handle;
+};
+
+enum Camera3MsgType {
+  CAMERA3_MSG_ERROR = 1,
+  CAMERA3_MSG_SHUTTER = 2,
+  CAMERA3_NUM_MESSAGES,
+};
+
+enum Camera3ErrorMsgCode {
+  CAMERA3_MSG_ERROR_DEVICE = 1,
+  CAMERA3_MSG_ERROR_REQUEST = 2,
+  CAMERA3_MSG_ERROR_RESULT = 3,
+  CAMERA3_MSG_ERROR_BUFFER = 4,
+  CAMERA3_MSG_NUM_ERRORS,
+};
+
+struct Camera3ErrorMsg {
+  uint32 frame_number;
+  uint64 error_stream_id;
+  Camera3ErrorMsgCode error_code;
+};
+
+struct Camera3ShutterMsg {
+  uint32 frame_number;
+  uint64 timestamp;
+};
+
+union Camera3NotifyMsgMessage {
+  Camera3ErrorMsg error;
+  Camera3ShutterMsg shutter;
+  array<uint8> generic;
+};
+
+struct Camera3NotifyMsg {
+  Camera3MsgType type;
+  Camera3NotifyMsgMessage message;
+};
+
+enum Camera3RequestTemplate {
+  CAMERA3_TEMPLATE_PREVIEW = 1,
+  CAMERA3_TEMPLATE_STILL_CAPTURE = 2,
+  CAMERA3_TEMPLATE_VIDEO_RECORD = 3,
+  CAMERA3_TEMPLATE_VIDEO_SNAPSHOT = 4,
+  CAMERA3_TEMPLATE_ZERO_SHUTTER_LAG = 5,
+  CAMERA3_TEMPLATE_MANUAL = 6,
+  CAMERA3_TEMPLATE_COUNT,
+};
+
+struct Camera3CaptureRequest {
+  uint32 frame_number;
+  CameraMetadata settings;
+  Camera3StreamBuffer? input_buffer;
+  array<Camera3StreamBuffer> output_buffers;
+};
+
+struct Camera3CaptureResult {
+  uint32 frame_number;
+  CameraMetadata result;
+  array<Camera3StreamBuffer>? output_buffers;
+  Camera3StreamBuffer? input_buffer;
+  uint32 partial_result;
+};
+
+// Camera3CallbackOps is a translation of the camera3_callback_ops_t API
+// in Android camera HAL v3.  For the work flow of the functions in
+// Camera3CallbackOps, see the comments about Camera3DeviceOps above.
+//
+// Next method ID: 2
+interface Camera3CallbackOps {
+  // ProcessCaptureResult() is called by the camera HAL to send result metadata
+  // and filled buffer to the client.
+  ProcessCaptureResult@0(Camera3CaptureResult result);
+
+  // Notify() is called by the camera HAL to notify the client of the start of
+  // each capture, and of errors encountered.
+  Notify@1(Camera3NotifyMsg msg);
+};
+
+// Camera3DeviceOps is mostly a translation of the camera3_device_ops_t API from
+// Android camera HAL v3.  This is the interface to interact with a camera
+// device in the camera HAL.
+//
+// The work flow of the Camera3DeviceOps is:
+//
+//   1. Call Initialize() to register the Camera3CallbackOps interface with the
+//      camera HAL.
+//
+//   2. Call ConfigureStreams() to negotiate the set of usable video streams
+//      with the camera HAL.
+//
+//   3. After the video streams are successfully configured, call
+//      ConstructDefaultRequestSettings() to get the capture settings for each
+//      stream.  The capture settings of a stream will be associated with the
+//      capture requests of the stream.
+//
+//   4. Start the capture loop. The capture loop is composed of a series of
+//      capture requests and results.
+//
+//      The capture loop shall call ProcessCaptureRequest() to request capturing
+//      each frame.  A request may contain multiple streams and the camera HAL
+//      would fill the buffers of each streams per requirements specified in
+//      ConfigureStreams().  For example, the camera HAL may fill a frame to a
+//      still capture buffer with the native capture resolution, and down-scale
+//      the same frame to a lower resolution for the preview buffer.
+//
+//      The client may continue calling ProcessCaptureRequest() up to the
+//      pipe-line depth configured in ConfigureStreams().
+//
+//      When the camera HAL is done with a capture request, the capture result
+//      is sent back to the client through the callbacks in Camera3CallbackOps.
+//
+//      For each capture result:
+//        a. The camera HAL notifies the client through Notify() of the shutter
+//           time of the captured frame.  If an error happens while capturing a
+//           frame or filling a buffer, the camera HAL notifies the client
+//           through Notify() of the error.
+//        b. The camera HAL returns the capture result with various result
+//           metadata and the filled buffers to the client in
+//           ProcessCaptureResult().  The result metadata may be sent partially
+//           in multiple stages, and the client must wait until all the partial
+//           metadata are received before handing the capture result to upper
+//           layer.
+//
+//    5. Dump() can be used to dump various information of the camera HAL for
+//       debug purpose.
+//
+//    6. Flush() tells the camera HAL to finish processing or discard the
+//       current on-going capture requests and return to the state where
+//       ConfigureStreams() can be called again to set up new streams.
+//
+//    7. Close() closes the camera device.
+//
+// Next method ID: 8
+interface Camera3DeviceOps {
+  // Initialize() is called once after the camera device is opened to register
+  // the Camera3CallbackOps handle.
+  Initialize@0(pending_remote<Camera3CallbackOps> callback_ops)
+      => (int32 result);
+
+  // ConfigureStreams() is called every time the client needs to set up new set
+  // of streams.
+  ConfigureStreams@1(Camera3StreamConfiguration config) =>
+      (int32 result, Camera3StreamConfiguration? updated_config);
+
+  // ConstructDefaultRequestSettings() is called to get the request settings for
+  // common use cases, e.g. preview, still capture, video recording...etc.
+  ConstructDefaultRequestSettings@2(Camera3RequestTemplate type) =>
+      (CameraMetadata? settings);
+
+  // ProcessCaptureRequest() is the core method and is called for every captured
+  // frame to provide the camera HAL with the capture settings and the
+  // associated buffers to fill.
+  ProcessCaptureRequest@3(Camera3CaptureRequest request) => (int32 result);
+
+  // Dump() is called to gather various states and information about the camera
+  // HAL; it is mainly for debug purpose.
+  Dump@4(handle fd);
+
+  // Flush() is called to clear out any in-progress captures and return the
+  // camera HAL to idle state.
+  Flush@5() => (int32 result);
+
+  // [Deprecated in version 2]
+  //
+  // The type of buffers the CrOS camera service currently supports.
+  // GRALLOC is for the platform-specific gralloc buffer allocated by Android.
+  // SHM is for the shared memory buffer allocated by Chrome.
+  enum BufferType {
+    GRALLOC = 0,  // gralloc buffer. Needs to be imported through GBM.
+    SHM = 1,      // shared memory buffer. Can be mmapped directly.
+    // Add DMABUF when needed.
+  };
+
+  // [Deprecated in version 2]
+  //
+  // RegisterBuffer() is called to register a buffer with the camera HAL.  The
+  // registered buffer can then be specified in ProcessCaptureRequest() for the
+  // camera HAL to fill captured frame.  RegisterBuffer() is not part of the
+  // Android camera HAL v3 API; it is added for CrOS camera service to pass
+  // buffer handles across different processes.
+  RegisterBuffer@6(uint64 buffer_id, BufferType type, array<handle> fds,
+                   uint32 drm_format, HalPixelFormat hal_pixel_format,
+                   uint32 width, uint32 height, array<uint32> strides,
+                   array<uint32> offsets) =>
+      (int32 result);
+
+  // Close() is called to close the camera device.
+  Close@7() => (int32 result);
+};

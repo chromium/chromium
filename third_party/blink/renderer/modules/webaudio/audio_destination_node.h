@@ -105,6 +105,11 @@ class AudioDestinationNode : public AudioNode {
   // AudioNode::Handler().
   AudioDestinationHandler& GetAudioDestinationHandler() const;
 
+  // InspectorHelperMixin: Note that this node belongs to BaseAudioContext,
+  // so these methods are invoked by the parent context.
+  void ReportDidCreate() final;
+  void ReportWillBeDestroyed() final;
+
  protected:
   AudioDestinationNode(BaseAudioContext&);
 };

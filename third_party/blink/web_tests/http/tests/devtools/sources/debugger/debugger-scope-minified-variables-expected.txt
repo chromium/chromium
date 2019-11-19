@@ -7,10 +7,10 @@ Scope variables sidebar pane:
 Catch
     error: "boom!"
 Local
-    longMap: Map(1) {100 => "hello"}
-    longObject: {}
     parameter1: 100
     parameter2: "hello"
+    longObject: {}
+    longMap: Map(1) {100 => "hello"}
     this: Window
 WindowGlobal
     <section collapsed>

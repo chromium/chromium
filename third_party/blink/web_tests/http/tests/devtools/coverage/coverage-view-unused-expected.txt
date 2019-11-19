@@ -1,0 +1,27 @@
+Test if coverage view also shows completly uncovered css files
+
+Make sure all files are shown even when not covered so far
+.../devtools/coverage/resources/not-initially-used.css CSS used: 0 unused: 24 total: 24
+.../devtools/coverage/resources/unused.css CSS used: 0 unused: 22 total: 22
+.../devtools/coverage/resources/used.css CSS used: 24 unused: 0 total: 24
+.../devtools/coverage/resources/empty.css CSS used: 0 unused: 0 total: 0
+Make sure files are added as they are loaded on reload
+Page reloaded.
+.../devtools/coverage/resources/unused-css-coverage.html JS (per block) used: 7 unused: 275 total: 282
+.../devtools/coverage/resources/not-initially-used.css CSS used: 0 unused: 24 total: 24
+.../devtools/coverage/resources/unused.css CSS used: 0 unused: 22 total: 22
+.../devtools/coverage/resources/used.css CSS used: 24 unused: 0 total: 24
+.../devtools/coverage/resources/empty.css CSS used: 0 unused: 0 total: 0
+Make sure files are added when they are not part of the initial load
+.../devtools/coverage/resources/unused-css-coverage.html JS (per block) used: 143 unused: 139 total: 282
+.../devtools/coverage/resources/not-initially-used.css CSS used: 0 unused: 24 total: 24
+.../devtools/coverage/resources/unused.css CSS used: 0 unused: 22 total: 22
+.../devtools/coverage/resources/used.css CSS used: 24 unused: 0 total: 24
+.../devtools/coverage/resources/empty.css CSS used: 0 unused: 0 total: 0
+Make sure coverage gets updated if anything changes
+.../devtools/coverage/resources/unused.css CSS used: 0 unused: 22 total: 22
+.../devtools/coverage/resources/used.css CSS used: 24 unused: 0 total: 24
+.../devtools/coverage/resources/unused-css-coverage.html JS (per block) used: 282 unused: 0 total: 282
+.../devtools/coverage/resources/not-initially-used.css CSS used: 24 unused: 0 total: 24
+.../devtools/coverage/resources/empty.css CSS used: 0 unused: 0 total: 0
+

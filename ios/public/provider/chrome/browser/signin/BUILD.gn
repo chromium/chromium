@@ -19,6 +19,7 @@ source_set("signin") {
   ]
   deps = [
     "//base",
+    "//google_apis",
   ]
 }
 
@@ -38,6 +39,7 @@ source_set("test_support") {
   deps = [
     ":signin",
     "//base",
+    "//components/signin/public/identity_manager",
     "//google_apis",
     "//ios/public/provider/chrome/browser",
     "//ui/base:test_support",

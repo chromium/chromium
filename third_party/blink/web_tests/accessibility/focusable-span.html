@@ -1,12 +1,11 @@
 <!DOCTYPE html>
 <script src="../resources/testharness.js"></script>
 <script src="../resources/testharnessreport.js"></script>
-<script src="../resources/run-after-layout-and-paint.js"></script>
 
 <p id="p"><span tabindex="0">hello</span>there</p>
 
 <script>
-test_after_layout_and_paint(() => {
+test(() => {
   let axParagraph = accessibilityController.accessibleElementById('p');
   assert_not_equals(axParagraph, null);
   let axSpan = axParagraph.childAtIndex(0);

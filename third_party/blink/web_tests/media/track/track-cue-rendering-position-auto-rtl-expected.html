@@ -32,17 +32,18 @@ var mediaFile = '../content/test.ogv';
     background: green;
     color: green;
     font-size: 50px;
+    padding: 2px;
 }
 </style>
 <div class="container">
-  <video><script>document.currentScript.parentNode.src = mediaFile;</script></video>
+  <video preload="auto"><script>document.currentScript.parentNode.src = mediaFile;</script></video>
   <div class=video><div class="cue start"><span>&#x5d0;&#x5d1;&#x5d2;</span></div></div>
 </div>
 <div class="container">
-  <video><script>document.currentScript.parentNode.src = mediaFile;</script></video>
+  <video preload="auto"><script>document.currentScript.parentNode.src = mediaFile;</script></video>
   <div class=video><div class="cue middle"><span>&#x5d0;&#x5d1;&#x5d2;</span></div></div>
 </div>
 <div class="container">
-  <video><script>document.currentScript.parentNode.src = mediaFile;</script></video>
+  <video preload="auto"><script>document.currentScript.parentNode.src = mediaFile;</script></video>
   <div class=video><div class="cue end"><span>&#x5d0;&#x5d1;&#x5d2;</span></div></div>
 </div>

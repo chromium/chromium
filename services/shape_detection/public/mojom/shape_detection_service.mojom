@@ -1,0 +1,22 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module shape_detection.mojom;
+
+import "services/shape_detection/public/mojom/barcodedetection_provider.mojom";
+import "services/shape_detection/public/mojom/facedetection_provider.mojom";
+import "services/shape_detection/public/mojom/textdetection.mojom";
+
+// The main interface to the Shape Detection service.
+interface ShapeDetectionService {
+  // Binds an endpoint which can be used to detect barcodes in images.
+  BindBarcodeDetectionProvider(
+      pending_receiver<BarcodeDetectionProvider> receiver);
+
+  // Binds an endpoint which can be used to detect faces in images.
+  BindFaceDetectionProvider(pending_receiver<FaceDetectionProvider> receiver);
+
+  // Binds an endpoint which can be used to detect text in images.
+  BindTextDetection(pending_receiver<TextDetection> receiver);
+};

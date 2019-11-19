@@ -1,33 +1,10 @@
 {
   "layers": [
     {
-      "name": "Root Transform Layer",
-      "drawsContent": false
-    },
-    {
-      "name": "Inner Viewport Container Layer",
-      "bounds": [800, 600],
-      "drawsContent": false
-    },
-    {
-      "name": "Page Scale Layer",
-      "drawsContent": false
-    },
-    {
-      "name": "Inner Viewport Scroll Layer",
-      "bounds": [800, 600],
-      "drawsContent": false
-    },
-    {
       "name": "LayoutView #document",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
-    },
-    {
-      "name": "Scrolling Layer",
-      "bounds": [785, 600],
-      "drawsContent": false
     },
     {
       "name": "Scrolling Contents Layer",
@@ -36,16 +13,10 @@
       "transform": 1
     },
     {
-      "name": "Overflow Controls Host Layer",
-      "bounds": [800, 600],
-      "drawsContent": false
-    },
-    {
-      "name": "Vertical Scrollbar Layer",
+      "name": "ContentsLayer for Vertical Scrollbar Layer",
       "position": [785, 0],
       "bounds": [15, 600],
-      "contentsOpaque": true,
-      "drawsContent": false
+      "contentsOpaque": true
     }
   ],
   "transforms": [
@@ -56,8 +27,7 @@
         [0, 1, 0, 0],
         [0, 0, 1, 0],
         [0, -200, 0, 1]
-      ],
-      "flattenInheritedTransform": false
+      ]
     }
   ]
 }

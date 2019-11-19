@@ -8,6 +8,7 @@
 #include <string>
 
 #include "content/common/content_export.h"
+#include "services/network/public/mojom/content_security_policy.mojom-forward.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -31,6 +32,7 @@ struct CONTENT_EXPORT CSPSource {
             int port,
             bool is_port_wildcard,
             const std::string& path);
+  explicit CSPSource(const network::mojom::CSPSource& csp_source);
   CSPSource(const CSPSource& source);
   ~CSPSource();
 

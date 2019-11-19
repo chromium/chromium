@@ -1,6 +1,7 @@
-# COMPONENT: Services>SignIn
+# COMPONENT: Internals>Services>Identity
 
 blundell@chromium.org
 droger@chromium.org
 msarda@chromium.org
 sdefresne@chromium.org
+# TEAM: identity-service-dev@chromium.org

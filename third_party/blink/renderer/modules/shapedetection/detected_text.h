@@ -5,8 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_SHAPEDETECTION_DETECTED_TEXT_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_SHAPEDETECTION_DETECTED_TEXT_H_
 
-#include "third_party/blink/renderer/bindings/core/v8/script_value.h"
-#include "third_party/blink/renderer/modules/imagecapture/point_2d.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -14,23 +12,20 @@
 namespace blink {
 
 class DOMRectReadOnly;
+class Point2D;
 
 class MODULES_EXPORT DetectedText final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static DetectedText* Create();
-  static DetectedText* Create(String,
-                              DOMRectReadOnly*,
-                              HeapVector<Member<Point2D>>);
-
   DetectedText(String, DOMRectReadOnly*, HeapVector<Member<Point2D>>);
 
-  const String& rawValue() const;
-  DOMRectReadOnly* boundingBox() const;
-  const HeapVector<Member<Point2D>>& cornerPoints() const;
+  const String& rawValue() const { return raw_value_; }
+  DOMRectReadOnly* boundingBox() const { return bounding_box_; }
+  const HeapVector<Member<Point2D>>& cornerPoints() const {
+    return corner_points_;
+  }
 
-  ScriptValue toJSONForBinding(ScriptState*) const;
   void Trace(blink::Visitor*) override;
 
  private:

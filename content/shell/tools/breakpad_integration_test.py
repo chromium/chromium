@@ -20,47 +20,83 @@ import sys
 import tempfile
 import time
 
+TOP_SRC_DIR = os.path.join(os.path.dirname(__file__), '..', '..', '..')
+
+try:
+  sys.path.append(os.path.join(TOP_SRC_DIR, 'build', 'android'))
+  import devil_chromium
+  devil_chromium.Initialize()
+
+  from pylib.constants import host_paths
+  if host_paths.DEVIL_PATH not in sys.path:
+    sys.path.append(host_paths.DEVIL_PATH)
+
+  from devil.android import apk_helper
+  from devil.android import device_utils
+  from devil.android import flag_changer
+  from devil.android.sdk import intent
+except:
+  pass
+
 
 CONCURRENT_TASKS=4
 BREAKPAD_TOOLS_DIR = os.path.join(
-  os.path.dirname(__file__), '..', '..', '..',
-  'components', 'crash', 'content', 'tools')
-ANDROID_CRASH_DIR = '/data/local/tmp/crashes'
+  TOP_SRC_DIR, 'components', 'crash', 'content', 'tools')
+ANDROID_CRASH_DIR = '/data/data/org.chromium.content_shell_apk/cache'
 
-def build_is_android(build_dir):
-  return os.path.isfile(os.path.join(build_dir, 'bin', 'content_shell_apk'))
 
-def android_crash_dir_exists():
-  proc = subprocess.Popen(['adb', 'shell', 'ls', ANDROID_CRASH_DIR],
-                          stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-  [stdout, stderr] = proc.communicate()
-  not_found = 'No such file or directory'
-  return not_found not in stdout and not_found not in stderr
+def GetDevice():
+  if hasattr(GetDevice, 'device'):
+    return GetDevice.device
+
+  devices = device_utils.DeviceUtils.HealthyDevices()
+  assert len(devices) == 1
+  GetDevice.device = devices[0]
+  return GetDevice.device
+
+
+def clear_android_dumps(options, device):
+  try:
+    print '# Deleting stale crash dumps'
+    pending = os.path.join(ANDROID_CRASH_DIR, 'pending')
+    files = device.RunShellCommand(['ls', pending], as_root=True)
+    for f in files:
+      if f.endswith('.dmp'):
+        dump = os.path.join(pending, f)
+        try:
+          if options.verbose:
+            print ' deleting %s' % dump
+          device.RunShellCommand(['rm', dump], check_return=True, as_root=True)
+        except:
+          print 'Failed to delete %s' % dump
+
+  except:
+    print 'Failed to list dumps in android crash dir %s' % pending
+
 
 def get_android_dump(crash_dir):
   global failure
 
-  pending = ANDROID_CRASH_DIR + '/pending/'
+  pending = os.path.join(ANDROID_CRASH_DIR, 'pending')
+  device = GetDevice()
 
   for attempts in range(5):
-    proc = subprocess.Popen(
-        ['adb', 'shell', 'ls', pending + '*.dmp'],
-    stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    files = device.RunShellCommand(['ls', pending], as_root=True)
 
-    dumps = [f for f in map(str.strip, proc.communicate()[0].split('\n'))
-             if f.endswith('.dmp')]
+    dumps = [f for f in files if f.endswith('.dmp')]
     if len(dumps) > 0:
       break
     # Crashpad may still be writing the dump. Sleep and try again.
-    time.sleep(1)
+    time.sleep(5)
 
   if len(dumps) != 1:
     failure = 'Expected 1 crash dump, found %d.' % len(dumps)
     print dumps
     raise Exception(failure)
 
-  subprocess.check_call(['adb', 'pull', dumps[0], crash_dir])
-  subprocess.check_call(['adb', 'shell', 'rm', pending + '*'])
+  device.PullFile(os.path.join(pending, dumps[0]), crash_dir, as_root=True)
+  device.RunShellCommand(['rm', os.path.join(pending, dumps[0])],
+                         check_return=True, as_root=True)
 
   return os.path.join(crash_dir, os.path.basename(dumps[0]))
 
@@ -70,11 +106,27 @@ def run_test(options, crash_dir, symbols_dir, platform,
 
   print '# Run content_shell and make it crash.'
   if platform == 'android':
-    cmd = [os.path.join(options.build_dir, 'bin', 'content_shell_apk'),
-           'launch',
-           'chrome://crash',
-           '--args=--enable-crash-reporter --crash-dumps-dir=%s ' %
-           ANDROID_CRASH_DIR + ' '.join(additional_arguments)]
+    device = GetDevice()
+
+    failure = None
+    clear_android_dumps(options, device)
+
+    apk_path = os.path.join(options.build_dir, 'apks', 'ContentShell.apk')
+    apk = apk_helper.ApkHelper(apk_path)
+    view_activity = apk.GetViewActivityName()
+    package_name = apk.GetPackageName()
+
+    device.RunShellCommand(['am', 'set-debug-app', '--persistent',
+                            package_name])
+
+    changer = flag_changer.FlagChanger(device, 'content-shell-command-line')
+    changer.ReplaceFlags(['--enable-crash-reporter',
+                          '--crash-dumps-dir=%s' % ANDROID_CRASH_DIR])
+
+    launch_intent = intent.Intent(action='android.intent.action.VIEW',
+                                  activity=view_activity, data='chrome://crash',
+                                  package=package_name)
+    device.StartActivity(launch_intent)
   else:
     cmd = [options.binary,
            '--run-web-tests',
@@ -83,16 +135,16 @@ def run_test(options, crash_dir, symbols_dir, platform,
            '--crash-dumps-dir=%s' % crash_dir]
     cmd += additional_arguments
 
-  if options.verbose:
-    print ' '.join(cmd)
-  failure = 'Failed to run content_shell.'
-  if options.verbose:
-    subprocess.check_call(cmd)
-  else:
-    # On Windows, using os.devnull can cause check_call to never return,
-    # so use a temporary file for the output.
-    with tempfile.TemporaryFile() as tmpfile:
-      subprocess.check_call(cmd, stdout=tmpfile, stderr=tmpfile)
+    if options.verbose:
+      print ' '.join(cmd)
+    failure = 'Failed to run content_shell.'
+    if options.verbose:
+      subprocess.check_call(cmd)
+    else:
+      # On Windows, using os.devnull can cause check_call to never return,
+      # so use a temporary file for the output.
+      with tempfile.TemporaryFile() as tmpfile:
+        subprocess.check_call(cmd, stdout=tmpfile, stderr=tmpfile)
 
   print '# Retrieve crash dump.'
   if platform == 'android':
@@ -184,6 +236,8 @@ def main():
                     help='Print verbose status output.')
   parser.add_option('', '--json', default='',
                     help='Path to JSON output.')
+  parser.add_option('', '--platform', default=sys.platform,
+                    help='Platform to run the test on.')
 
   (options, _) = parser.parse_args()
 
@@ -201,17 +255,6 @@ def main():
 
   failure = ''
 
-  if build_is_android(options.build_dir):
-    platform = 'android'
-    if android_crash_dir_exists():
-      print 'Android crash dir exists %s' % ANDROID_CRASH_DIR
-      return 1
-
-    subprocess.check_call(['adb', 'shell', 'mkdir', ANDROID_CRASH_DIR])
-
-  else:
-    platform = sys.platform
-
   # Create a temporary directory to store the crash dumps and symbols in.
   crash_dir = tempfile.mkdtemp()
   symbols_dir = os.path.join(crash_dir, 'symbols')
@@ -219,7 +262,14 @@ def main():
   crash_service = None
 
   try:
-    if platform != 'win32':
+    if options.platform == 'android':
+      device = GetDevice()
+
+      print '# Install ContentShell.apk'
+      apk_path = os.path.join(options.build_dir, 'apks', 'ContentShell.apk')
+      device.Install(apk_path, reinstall=False, allow_downgrade=True)
+
+    if options.platform != 'win32':
       print '# Generate symbols.'
       bins = [options.binary]
       if options.additional_binary:
@@ -231,21 +281,19 @@ def main():
                '--build-dir=%s' % options.build_dir,
                '--binary=%s' % binary,
                '--symbols-dir=%s' % symbols_dir,
-               '--jobs=%d' % options.jobs]
+               '--jobs=%d' % options.jobs,
+               '--platform=%s' % options.platform]
         if options.verbose:
           cmd.append('--verbose')
           print ' '.join(cmd)
         failure = 'Failed to run generate_breakpad_symbols.py.'
         subprocess.check_call(cmd)
 
-    print '# Running test without trap handler.'
-    run_test(options, crash_dir, symbols_dir, platform)
-    print '# Running test with trap handler.'
-    run_test(options, crash_dir, symbols_dir, platform,
-             additional_arguments =
-               ['--enable-features=WebAssemblyTrapHandler'])
+    run_test(options, crash_dir, symbols_dir, options.platform)
 
   except:
+    if failure == '':
+        failure = '%s: %s' % sys.exc_info()[:2]
     print 'FAIL: %s' % failure
     if options.json:
       with open(options.json, 'w') as json_file:
@@ -268,11 +316,8 @@ def main():
       shutil.rmtree(crash_dir)
     except:
       print 'Failed to delete temp directory "%s".' % crash_dir
-    if platform == 'android':
-      try:
-        subprocess.check_call(['adb', 'shell', 'rm', '-rf', ANDROID_CRASH_DIR])
-      except:
-        print 'Failed to delete android crash dir %s' % ANDROID_CRASH_DIR
+    if options.platform == 'android':
+      clear_android_dumps(options, GetDevice())
 
 
 if '__main__' == __name__:

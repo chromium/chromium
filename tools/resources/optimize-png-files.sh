@@ -534,7 +534,7 @@ if [ $PROCESSED_FILE != 0 ]; then
   let diff=$TOTAL_OLD_BYTES-$TOTAL_NEW_BYTES
   let percent=$diff*100/$TOTAL_OLD_BYTES
   echo "Result: $TOTAL_OLD_BYTES => $TOTAL_NEW_BYTES bytes" \
-       "($diff bytes: $percent\%)"
+       "($diff bytes: $percent%)"
 fi
 if [ $CORRUPTED_FILE != 0 ]; then
   echo "Warning: corrupted files found: $CORRUPTED_FILE"

@@ -12,23 +12,33 @@
 
 namespace blink {
 
-WorkerModuleTreeClient::WorkerModuleTreeClient(Modulator* modulator)
-    : modulator_(modulator) {}
+WorkerModuleTreeClient::WorkerModuleTreeClient(ScriptState* script_state)
+    : script_state_(script_state) {}
 
 // A partial implementation of the "Processing model" algorithm in the HTML
 // WebWorker spec:
 // https://html.spec.whatwg.org/C/#worker-processing-model
 void WorkerModuleTreeClient::NotifyModuleTreeLoadFinished(
     ModuleScript* module_script) {
-  auto* execution_context =
-      ExecutionContext::From(modulator_->GetScriptState());
+  auto* worker_global_scope =
+      To<WorkerGlobalScope>(ExecutionContext::From(script_state_));
   blink::WorkerReportingProxy& worker_reporting_proxy =
-      To<WorkerGlobalScope>(execution_context)->ReportingProxy();
+      worker_global_scope->ReportingProxy();
 
+  // Step 12. "If the algorithm asynchronously completes with null, then:"
   if (!module_script) {
-    // Step 12: "If the algorithm asynchronously completes with null, queue
-    // a task to fire an event named error at worker, and return."
+    // Step 12.1. "Queue a task to fire an event named error at worker."
+    // DidFailToFetchModuleScript() will asynchronously fire the event.
     worker_reporting_proxy.DidFailToFetchModuleScript();
+
+    // Step 12.2. "Run the environment discarding steps for inside settings."
+    // Do nothing because the HTML spec doesn't define these steps for web
+    // workers.
+
+    // Schedule worker termination.
+    worker_global_scope->close();
+
+    // Step 12.3. "Return."
     return;
   }
   worker_reporting_proxy.DidFetchScript();
@@ -36,17 +46,12 @@ void WorkerModuleTreeClient::NotifyModuleTreeLoadFinished(
   // Step 12: "Otherwise, continue the rest of these steps after the algorithm's
   // asynchronous completion, with script being the asynchronous completion
   // value."
-  worker_reporting_proxy.WillEvaluateModuleScript();
-  // This |error| is always null because the second argument is |kReport|.
-  // TODO(nhiroki): Catch an error when an evaluation error happens.
-  // (https://crbug.com/680046)
-  ScriptValue error = modulator_->ExecuteModule(
-      module_script, Modulator::CaptureEvalErrorFlag::kReport);
-  worker_reporting_proxy.DidEvaluateModuleScript(error.IsEmpty());
+  worker_global_scope->WorkerScriptFetchFinished(
+      *module_script, base::nullopt /* v8_inspector::V8StackTraceId */);
 }
 
 void WorkerModuleTreeClient::Trace(blink::Visitor* visitor) {
-  visitor->Trace(modulator_);
+  visitor->Trace(script_state_);
   ModuleTreeClient::Trace(visitor);
 }
 

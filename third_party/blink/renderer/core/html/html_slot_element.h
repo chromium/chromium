@@ -42,7 +42,6 @@ class CORE_EXPORT HTMLSlotElement final : public HTMLElement {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static HTMLSlotElement* Create(Document&);
   static HTMLSlotElement* CreateUserAgentDefaultSlot(Document&);
   static HTMLSlotElement* CreateUserAgentCustomAssignSlot(Document&);
 
@@ -74,25 +73,22 @@ class CORE_EXPORT HTMLSlotElement final : public HTMLElement {
 
   void WillRecalcAssignedNodes() { ClearAssignedNodes(); }
   void DidRecalcAssignedNodes() {
-    if (RuntimeEnabledFeatures::FastFlatTreeTraversalEnabled())
-      UpdateFlatTreeNodeDataForAssignedNodes();
+    UpdateFlatTreeNodeDataForAssignedNodes();
     RecalcFlatTreeChildren();
   }
 
   void AttachLayoutTree(AttachContext&) final;
-  void DetachLayoutTree(const AttachContext& = AttachContext()) final;
+  void DetachLayoutTree(bool performing_reattach) final;
   void RebuildDistributedChildrenLayoutTrees(WhitespaceAttacher&);
 
   void AttributeChanged(const AttributeModificationParams&) final;
 
-  int tabIndex() const override;
   AtomicString GetName() const;
 
   // This method can be slow because this has to traverse the children of a
   // shadow host.  This method should be used only when |assigned_nodes_| is
   // dirty.  e.g. To detect a slotchange event in DOM mutations.
   bool HasAssignedNodesSlow() const;
-  bool FindHostChildWithSameSlotName() const;
 
   bool SupportsAssignment() const { return IsInV1ShadowTree(); }
 
@@ -106,6 +102,8 @@ class CORE_EXPORT HTMLSlotElement final : public HTMLElement {
   void ClearSlotChangeEventEnqueued() { slotchange_event_enqueued_ = false; }
 
   static AtomicString NormalizeSlotName(const AtomicString&);
+
+  void RecalcStyleForSlotChildren(const StyleRecalcChange);
 
   // For User-Agent Shadow DOM
   static const AtomicString& UserAgentCustomAssignSlotName();
@@ -132,27 +130,33 @@ class CORE_EXPORT HTMLSlotElement final : public HTMLElement {
       const HeapVector<Member<Node>>& old_slotted,
       const HeapVector<Member<Node>>& new_slotted);
   static void NotifySlottedNodesOfFlatTreeChangeNaive(
-      const HeapVector<Member<Node>>& new_slotted);
+      const HeapVector<Member<Node>>& old_assigned_nodes,
+      const HeapVector<Member<Node>>& new_assigned_nodes);
   static void NotifySlottedNodesOfFlatTreeChangeByDynamicProgramming(
       const HeapVector<Member<Node>>& old_slotted,
       const HeapVector<Member<Node>>& new_slotted);
 
   void SetNeedsDistributionRecalcWillBeSetNeedsAssignmentRecalc();
 
-  const HeapVector<Member<Node>>& GetDistributedNodes();
-
   void RecalcFlatTreeChildren();
   void UpdateFlatTreeNodeDataForAssignedNodes();
   void ClearAssignedNodesAndFlatTreeChildren();
 
   HeapVector<Member<Node>> assigned_nodes_;
-  HeapHashMap<Member<const Node>, unsigned> assigned_nodes_index_;
   HeapVector<Member<Node>> flat_tree_children_;
 
   bool slotchange_event_enqueued_ = false;
 
   // For imperative Shadow DOM distribution APIs
   HeapHashSet<Member<Node>> assigned_nodes_candidates_;
+
+  template <typename T, wtf_size_t S>
+  struct LCSArray {
+    LCSArray() : values(S) {}
+    T& operator[](wtf_size_t i) { return values[i]; }
+    wtf_size_t size() { return values.size(); }
+    Vector<T, S> values;
+  };
 
   // TODO(hayato): Move this to more appropriate directory (e.g. platform/wtf)
   // if there are more than one usages.
@@ -192,11 +196,12 @@ class CORE_EXPORT HTMLSlotElement final : public HTMLElement {
   }
 
   friend class HTMLSlotElementTest;
+  friend class HTMLSlotElementInDocumentTest;
 };
 
 inline const HTMLSlotElement* ToHTMLSlotElementIfSupportsAssignmentOrNull(
     const Node& node) {
-  if (auto* slot = ToHTMLSlotElementOrNull(node)) {
+  if (auto* slot = DynamicTo<HTMLSlotElement>(node)) {
     if (slot->SupportsAssignment())
       return slot;
   }

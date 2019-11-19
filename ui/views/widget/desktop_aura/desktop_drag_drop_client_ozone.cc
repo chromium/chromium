@@ -53,7 +53,7 @@ DesktopDragDropClientOzone::~DesktopDragDropClientOzone() {
 }
 
 int DesktopDragDropClientOzone::StartDragAndDrop(
-    const ui::OSExchangeData& data,
+    std::unique_ptr<ui::OSExchangeData> data,
     aura::Window* root_window,
     aura::Window* source_window,
     const gfx::Point& root_location,
@@ -81,7 +81,7 @@ int DesktopDragDropClientOzone::StartDragAndDrop(
       cursor_manager_->GetInitializedCursor(ui::CursorType::kGrabbing));
 
   drag_handler_->StartDrag(
-      data, operation, cursor_client->GetCursor(),
+      *data.get(), operation, cursor_client->GetCursor(),
       base::BindOnce(&DesktopDragDropClientOzone::OnDragSessionClosed,
                      base::Unretained(this)));
   in_move_loop_ = true;
@@ -234,7 +234,8 @@ void DesktopDragDropClientOzone::PerformDrop() {
   std::unique_ptr<ui::DropTargetEvent> event =
       CreateDropTargetEvent(last_drag_point_);
   if (drag_drop_delegate_ && event)
-    drag_operation_ = drag_drop_delegate_->OnPerformDrop(*event);
+    drag_operation_ = drag_drop_delegate_->OnPerformDrop(
+        *event, std::move(os_exchange_data_));
   DragDropSessionCompleted();
 }
 

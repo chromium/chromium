@@ -18,18 +18,39 @@ namespace content {
 namespace {
 
 bool IsWhitelistedPermissionType(PermissionType permission) {
-  return permission == PermissionType::GEOLOCATION ||
-         permission == PermissionType::MIDI ||
-         permission == PermissionType::SENSORS ||
-         permission == PermissionType::PAYMENT_HANDLER ||
-         permission == PermissionType::IDLE_DETECTION ||
-         // Background Sync and Background Fetch browser tests require
-         // permission to be granted by default.
-         // TODO(nsatragno): add a command line flag so that it's only granted
-         // for tests.
-         permission == PermissionType::BACKGROUND_SYNC ||
-         permission == PermissionType::BACKGROUND_FETCH ||
-         permission == PermissionType::ACCESSIBILITY_EVENTS;
+  switch (permission) {
+    case PermissionType::GEOLOCATION:
+    case PermissionType::MIDI:
+    case PermissionType::SENSORS:
+    case PermissionType::ACCESSIBILITY_EVENTS:
+    case PermissionType::PAYMENT_HANDLER:
+    case PermissionType::WAKE_LOCK_SCREEN:
+
+    // Background Sync and Background Fetch browser tests require
+    // permission to be granted by default.
+    case PermissionType::BACKGROUND_SYNC:
+    case PermissionType::BACKGROUND_FETCH:
+    case PermissionType::PERIODIC_BACKGROUND_SYNC:
+
+    case PermissionType::IDLE_DETECTION:
+      return true;
+    case PermissionType::MIDI_SYSEX:
+    case PermissionType::NOTIFICATIONS:
+    case PermissionType::PROTECTED_MEDIA_IDENTIFIER:
+    case PermissionType::DURABLE_STORAGE:
+    case PermissionType::AUDIO_CAPTURE:
+    case PermissionType::VIDEO_CAPTURE:
+    case PermissionType::FLASH:
+    case PermissionType::CLIPBOARD_READ:
+    case PermissionType::CLIPBOARD_WRITE:
+    case PermissionType::NUM:
+    case PermissionType::WAKE_LOCK_SYSTEM:
+    case PermissionType::NFC:
+      return false;
+  }
+
+  NOTREACHED();
+  return false;
 }
 
 }  // namespace
@@ -44,10 +65,10 @@ int ShellPermissionManager::RequestPermission(
     RenderFrameHost* render_frame_host,
     const GURL& requesting_origin,
     bool user_gesture,
-    const base::Callback<void(blink::mojom::PermissionStatus)>& callback) {
-  callback.Run(IsWhitelistedPermissionType(permission)
-                   ? blink::mojom::PermissionStatus::GRANTED
-                   : blink::mojom::PermissionStatus::DENIED);
+    base::OnceCallback<void(blink::mojom::PermissionStatus)> callback) {
+  std::move(callback).Run(IsWhitelistedPermissionType(permission)
+                              ? blink::mojom::PermissionStatus::GRANTED
+                              : blink::mojom::PermissionStatus::DENIED);
   return PermissionController::kNoPendingOperation;
 }
 
@@ -56,15 +77,15 @@ int ShellPermissionManager::RequestPermissions(
     content::RenderFrameHost* render_frame_host,
     const GURL& requesting_origin,
     bool user_gesture,
-    const base::Callback<
-        void(const std::vector<blink::mojom::PermissionStatus>&)>& callback) {
+    base::OnceCallback<void(const std::vector<blink::mojom::PermissionStatus>&)>
+        callback) {
   std::vector<blink::mojom::PermissionStatus> result;
   for (const auto& permission : permissions) {
     result.push_back(IsWhitelistedPermissionType(permission)
                          ? blink::mojom::PermissionStatus::GRANTED
                          : blink::mojom::PermissionStatus::DENIED);
   }
-  callback.Run(result);
+  std::move(callback).Run(result);
   return PermissionController::kNoPendingOperation;
 }
 
@@ -107,7 +128,7 @@ int ShellPermissionManager::SubscribePermissionStatusChange(
     PermissionType permission,
     RenderFrameHost* render_frame_host,
     const GURL& requesting_origin,
-    const base::Callback<void(blink::mojom::PermissionStatus)>& callback) {
+    base::RepeatingCallback<void(blink::mojom::PermissionStatus)> callback) {
   return PermissionController::kNoPendingOperation;
 }
 

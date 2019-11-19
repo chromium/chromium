@@ -23,25 +23,40 @@
  */
 
 #include "third_party/blink/renderer/modules/mediastream/user_media_controller.h"
+#include "third_party/blink/renderer/core/dom/document.h"
 
 namespace blink {
 
 const char UserMediaController::kSupplementName[] = "UserMediaController";
 
-UserMediaController::UserMediaController(
-    LocalFrame& frame,
-    std::unique_ptr<UserMediaClient> client)
-    : Supplement<LocalFrame>(frame), client_(std::move(client)) {}
+UserMediaController::UserMediaController(LocalFrame& frame)
+    : Supplement<LocalFrame>(frame),
+      ContextLifecycleObserver(frame.GetDocument()) {}
 
 void UserMediaController::Trace(blink::Visitor* visitor) {
   Supplement<LocalFrame>::Trace(visitor);
+  ContextLifecycleObserver::Trace(visitor);
+  visitor->Trace(client_);
 }
 
-void ProvideUserMediaTo(LocalFrame& frame,
-                        std::unique_ptr<UserMediaClient> client) {
+UserMediaClient* UserMediaController::Client() {
+  if (!client_) {
+    client_ = MakeGarbageCollected<UserMediaClient>(
+        GetFrame(), GetFrame()->GetTaskRunner(TaskType::kInternalMedia));
+  }
+
+  return client_;
+}
+
+void UserMediaController::ContextDestroyed(ExecutionContext*) {
+  if (!client_)
+    return;
+  client_->ContextDestroyed();
+}
+
+void ProvideUserMediaTo(LocalFrame& frame) {
   UserMediaController::ProvideTo(
-      frame,
-      MakeGarbageCollected<UserMediaController>(frame, std::move(client)));
+      frame, MakeGarbageCollected<UserMediaController>(frame));
 }
 
 }  // namespace blink

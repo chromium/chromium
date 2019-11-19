@@ -6,7 +6,6 @@
 #include <string>
 
 #include "base/memory/free_deleter.h"
-#include "base/strings/string16.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/scoped_process_information.h"
@@ -23,8 +22,8 @@ namespace {
 
 // Creates a process with the |exe| and |command| parameter using the
 // unicode and ascii version of the api.
-sandbox::SboxTestResult CreateProcessHelper(const base::string16& exe,
-                                            const base::string16& command) {
+sandbox::SboxTestResult CreateProcessHelper(const std::wstring& exe,
+                                            const std::wstring& command) {
   base::win::ScopedProcessInformation pi;
   STARTUPINFOW si = {sizeof(si)};
   const wchar_t* exe_name = nullptr;
@@ -94,10 +93,10 @@ SBOX_TESTS_COMMAND int Process_RunApp1(int argc, wchar_t** argv) {
     return SBOX_TEST_FAILED_TO_EXECUTE_COMMAND;
   if (!argv || !argv[0])
     return SBOX_TEST_FAILED_TO_EXECUTE_COMMAND;
-  base::string16 path = MakePathToSys(argv[0], false);
+  std::wstring path = MakePathToSys(argv[0], false);
 
   // TEST 1: Try with the path in the app_name.
-  return CreateProcessHelper(path, base::string16());
+  return CreateProcessHelper(path, std::wstring());
 }
 
 SBOX_TESTS_COMMAND int Process_RunApp2(int argc, wchar_t** argv) {
@@ -105,13 +104,13 @@ SBOX_TESTS_COMMAND int Process_RunApp2(int argc, wchar_t** argv) {
     return SBOX_TEST_FAILED_TO_EXECUTE_COMMAND;
   if (!argv || !argv[0])
     return SBOX_TEST_FAILED_TO_EXECUTE_COMMAND;
-  base::string16 path = MakePathToSys(argv[0], false);
+  std::wstring path = MakePathToSys(argv[0], false);
 
   // TEST 2: Try with the path in the cmd_line.
-  base::string16 cmd_line = L"\"";
+  std::wstring cmd_line = L"\"";
   cmd_line += path;
   cmd_line += L"\"";
-  return CreateProcessHelper(base::string16(), cmd_line);
+  return CreateProcessHelper(std::wstring(), cmd_line);
 }
 
 SBOX_TESTS_COMMAND int Process_RunApp3(int argc, wchar_t** argv) {
@@ -120,7 +119,7 @@ SBOX_TESTS_COMMAND int Process_RunApp3(int argc, wchar_t** argv) {
   if (!argv || !argv[0])
     return SBOX_TEST_FAILED_TO_EXECUTE_COMMAND;
   // TEST 3: Try file name in the cmd_line.
-  return CreateProcessHelper(base::string16(), argv[0]);
+  return CreateProcessHelper(std::wstring(), argv[0]);
 }
 
 SBOX_TESTS_COMMAND int Process_RunApp4(int argc, wchar_t** argv) {
@@ -130,7 +129,7 @@ SBOX_TESTS_COMMAND int Process_RunApp4(int argc, wchar_t** argv) {
     return SBOX_TEST_FAILED_TO_EXECUTE_COMMAND;
 
   // TEST 4: Try file name in the app_name and current directory sets correctly.
-  base::string16 system32 = MakePathToSys(L"", false);
+  std::wstring system32 = MakePathToSys(L"", false);
   wchar_t current_directory[MAX_PATH + 1];
   DWORD ret = ::GetCurrentDirectory(MAX_PATH, current_directory);
   if (!ret)
@@ -143,7 +142,7 @@ SBOX_TESTS_COMMAND int Process_RunApp4(int argc, wchar_t** argv) {
   if (!::SetCurrentDirectory(system32.c_str()))
     return SBOX_TEST_SECOND_ERROR;
 
-  const int result4 = CreateProcessHelper(argv[0], base::string16());
+  const int result4 = CreateProcessHelper(argv[0], std::wstring());
   return ::SetCurrentDirectory(current_directory) ? result4 : SBOX_TEST_FAILED;
 }
 
@@ -152,13 +151,13 @@ SBOX_TESTS_COMMAND int Process_RunApp5(int argc, wchar_t** argv) {
     return SBOX_TEST_FAILED_TO_EXECUTE_COMMAND;
   if (!argv || !argv[0])
     return SBOX_TEST_FAILED_TO_EXECUTE_COMMAND;
-  base::string16 path = MakePathToSys(argv[0], false);
+  std::wstring path = MakePathToSys(argv[0], false);
 
   // TEST 5: Try with the path in the cmd_line and arguments.
-  base::string16 cmd_line = L"\"";
+  std::wstring cmd_line = L"\"";
   cmd_line += path;
   cmd_line += L"\" /I";
-  return CreateProcessHelper(base::string16(), cmd_line);
+  return CreateProcessHelper(std::wstring(), cmd_line);
 }
 
 SBOX_TESTS_COMMAND int Process_RunApp6(int argc, wchar_t** argv) {
@@ -168,9 +167,9 @@ SBOX_TESTS_COMMAND int Process_RunApp6(int argc, wchar_t** argv) {
     return SBOX_TEST_FAILED_TO_EXECUTE_COMMAND;
 
   // TEST 6: Try with the file_name in the cmd_line and arguments.
-  base::string16 cmd_line = argv[0];
+  std::wstring cmd_line = argv[0];
   cmd_line += L" /I";
-  return CreateProcessHelper(base::string16(), cmd_line);
+  return CreateProcessHelper(std::wstring(), cmd_line);
 }
 
 // Creates a process and checks if it's possible to get a handle to it's token.
@@ -181,7 +180,7 @@ SBOX_TESTS_COMMAND int Process_GetChildProcessToken(int argc, wchar_t** argv) {
   if (!argv || !argv[0])
     return SBOX_TEST_FAILED_TO_EXECUTE_COMMAND;
 
-  base::string16 path = MakePathToSys(argv[0], false);
+  std::wstring path = MakePathToSys(argv[0], false);
 
   STARTUPINFOW si = {sizeof(si)};
 
@@ -222,7 +221,7 @@ SBOX_TESTS_COMMAND int Process_CreateProcessA(int argc, wchar_t** argv) {
 
   STARTUPINFOA si = {sizeof(si)};
 
-  base::string16 path = MakePathToSys(argv[0], false);
+  std::wstring path = MakePathToSys(argv[0], false);
 
   PROCESS_INFORMATION temp_process_info = {};
   // Create suspended to avoid popping calc.
@@ -323,9 +322,9 @@ SBOX_TESTS_COMMAND int Process_CheckExitCode(int argc, wchar_t** argv) {
   if (!argv || !argv[0] || !argv[1] || !argv[2])
     return SBOX_TEST_FAILED_TO_EXECUTE_COMMAND;
 
-  base::string16 path = MakePathToSys(argv[0], false);
-  base::string16 cmdline = argv[1];
-  base::string16 cwd = argv[2];
+  std::wstring path = MakePathToSys(argv[0], false);
+  std::wstring cmdline = argv[1];
+  std::wstring cwd = argv[2];
 
   STARTUPINFOW si = {sizeof(si)};
 
@@ -372,8 +371,8 @@ TEST(ProcessPolicyTest, TestAllAccess) {
 
 TEST(ProcessPolicyTest, CreateProcessAW) {
   TestRunner runner;
-  base::string16 maybe_virtual_exe_path = MakePathToSys(L"findstr.exe", false);
-  base::string16 non_virtual_exe_path = MakePathToSys32(L"findstr.exe", false);
+  std::wstring maybe_virtual_exe_path = MakePathToSys(L"findstr.exe", false);
+  std::wstring non_virtual_exe_path = MakePathToSys32(L"findstr.exe", false);
   ASSERT_TRUE(!maybe_virtual_exe_path.empty());
 
   EXPECT_TRUE(runner.AddRule(TargetPolicy::SUBSYS_PROCESS,
@@ -434,19 +433,19 @@ TEST(ProcessPolicyTest, MAYBE_CreateProcessCrashy) {
 
 TEST(ProcessPolicyTest, CreateProcessWithCWD) {
   TestRunner runner;
-  base::string16 sys_path = MakePathToSys(L"", false);
+  std::wstring sys_path = MakePathToSys(L"", false);
   while (!sys_path.empty() && sys_path.back() == L'\\')
     sys_path.erase(sys_path.length() - 1);
 
-  base::string16 exe_path = MakePathToSys(L"cmd.exe", false);
-  base::string16 cmd_line =
+  std::wstring exe_path = MakePathToSys(L"cmd.exe", false);
+  std::wstring cmd_line =
       L"\"/c if \\\"%CD%\\\" NEQ \\\"" + sys_path + L"\\\" exit 1\"";
 
   ASSERT_TRUE(!exe_path.empty());
   EXPECT_TRUE(runner.AddRule(TargetPolicy::SUBSYS_PROCESS,
                              TargetPolicy::PROCESS_MIN_EXEC, exe_path.c_str()));
 
-  base::string16 command =
+  std::wstring command =
       L"Process_CheckExitCode cmd.exe " + cmd_line + L" " + sys_path;
   EXPECT_EQ(SBOX_TEST_SUCCEEDED, runner.RunTest(command.c_str()));
 }
@@ -458,7 +457,7 @@ TEST(ProcessPolicyTest, OpenToken) {
 
 TEST(ProcessPolicyTest, TestGetProcessTokenMinAccess) {
   TestRunner runner;
-  base::string16 exe_path = MakePathToSys(L"findstr.exe", false);
+  std::wstring exe_path = MakePathToSys(L"findstr.exe", false);
   ASSERT_TRUE(!exe_path.empty());
   EXPECT_TRUE(runner.AddRule(TargetPolicy::SUBSYS_PROCESS,
                              TargetPolicy::PROCESS_MIN_EXEC, exe_path.c_str()));
@@ -469,7 +468,7 @@ TEST(ProcessPolicyTest, TestGetProcessTokenMinAccess) {
 
 TEST(ProcessPolicyTest, TestGetProcessTokenMaxAccess) {
   TestRunner runner(JOB_UNPROTECTED, USER_INTERACTIVE, USER_INTERACTIVE);
-  base::string16 exe_path = MakePathToSys(L"findstr.exe", false);
+  std::wstring exe_path = MakePathToSys(L"findstr.exe", false);
   ASSERT_TRUE(!exe_path.empty());
   EXPECT_TRUE(runner.AddRule(TargetPolicy::SUBSYS_PROCESS,
                              TargetPolicy::PROCESS_ALL_EXEC, exe_path.c_str()));
@@ -480,7 +479,7 @@ TEST(ProcessPolicyTest, TestGetProcessTokenMaxAccess) {
 
 TEST(ProcessPolicyTest, TestGetProcessTokenMinAccessNoJob) {
   TestRunner runner(JOB_NONE, USER_RESTRICTED_SAME_ACCESS, USER_LOCKDOWN);
-  base::string16 exe_path = MakePathToSys(L"findstr.exe", false);
+  std::wstring exe_path = MakePathToSys(L"findstr.exe", false);
   ASSERT_TRUE(!exe_path.empty());
   EXPECT_TRUE(runner.AddRule(TargetPolicy::SUBSYS_PROCESS,
                              TargetPolicy::PROCESS_MIN_EXEC, exe_path.c_str()));
@@ -491,7 +490,7 @@ TEST(ProcessPolicyTest, TestGetProcessTokenMinAccessNoJob) {
 
 TEST(ProcessPolicyTest, TestGetProcessTokenMaxAccessNoJob) {
   TestRunner runner(JOB_NONE, USER_INTERACTIVE, USER_INTERACTIVE);
-  base::string16 exe_path = MakePathToSys(L"findstr.exe", false);
+  std::wstring exe_path = MakePathToSys(L"findstr.exe", false);
   ASSERT_TRUE(!exe_path.empty());
   EXPECT_TRUE(runner.AddRule(TargetPolicy::SUBSYS_PROCESS,
                              TargetPolicy::PROCESS_ALL_EXEC, exe_path.c_str()));
@@ -505,7 +504,7 @@ TEST(ProcessPolicyTest, TestCreateProcessA) {
   sandbox::TargetPolicy* policy = runner.GetPolicy();
   policy->SetJobLevel(JOB_NONE, 0);
   policy->SetTokenLevel(USER_UNPROTECTED, USER_UNPROTECTED);
-  base::string16 exe_path = MakePathToSys(L"calc.exe", false);
+  std::wstring exe_path = MakePathToSys(L"calc.exe", false);
   ASSERT_TRUE(!exe_path.empty());
   EXPECT_TRUE(runner.AddRule(TargetPolicy::SUBSYS_PROCESS,
                              TargetPolicy::PROCESS_ALL_EXEC, exe_path.c_str()));

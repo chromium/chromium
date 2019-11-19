@@ -53,10 +53,14 @@ class MEDIA_EXPORT MimeUtil {
   // runtime.  Also used by tests to simulate platform differences.
   struct PlatformInfo {
     bool has_platform_decoders = false;
-
     bool has_platform_vp8_decoder = false;
     bool has_platform_vp9_decoder = false;
-    bool supports_opus = false;
+    bool has_platform_vp9_2_decoder = false;
+    bool has_platform_vp9_3_decoder = false;
+#if BUILDFLAG(ENABLE_PLATFORM_HEVC)
+    bool has_platform_hevc_decoder = false;
+#endif
+    bool has_platform_opus_decoder = false;
   };
 
   struct ParsedCodecResult {
@@ -70,19 +74,19 @@ class MEDIA_EXPORT MimeUtil {
   // See mime_util.h for more information on these methods.
   bool IsSupportedMediaMimeType(const std::string& mime_type) const;
   void SplitCodecs(const std::string& codecs,
-                   std::vector<std::string>* codecs_out);
-  void StripCodecs(std::vector<std::string>* codecs);
+                   std::vector<std::string>* codecs_out) const;
+  void StripCodecs(std::vector<std::string>* codecs) const;
   bool ParseVideoCodecString(const std::string& mime_type,
                              const std::string& codec_id,
                              bool* out_is_ambiguous,
                              VideoCodec* out_codec,
                              VideoCodecProfile* out_profile,
                              uint8_t* out_level,
-                             VideoColorSpace* out_color_space);
+                             VideoColorSpace* out_color_space) const;
   bool ParseAudioCodecString(const std::string& mime_type,
                              const std::string& codec_id,
                              bool* out_is_ambiguous,
-                             AudioCodec* out_codec);
+                             AudioCodec* out_codec) const;
   SupportsType IsSupportedMediaFormat(const std::string& mime_type,
                                       const std::vector<std::string>& codecs,
                                       bool is_encrypted) const;
@@ -95,6 +99,7 @@ class MEDIA_EXPORT MimeUtil {
   static bool IsCodecSupportedOnAndroid(Codec codec,
                                         const std::string& mime_type_lower_case,
                                         bool is_encrypted,
+                                        VideoCodecProfile video_profile,
                                         const PlatformInfo& platform_info);
 
  private:

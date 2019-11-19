@@ -81,6 +81,10 @@ std::string ModuleSnapshotSanitized::DebugFileName() const {
   return snapshot_->DebugFileName();
 }
 
+std::vector<uint8_t> ModuleSnapshotSanitized::BuildID() const {
+  return snapshot_->BuildID();
+}
+
 std::vector<std::string> ModuleSnapshotSanitized::AnnotationsVector() const {
   // TODO(jperaza): If/when AnnotationsVector() begins to be used, determine
   // whether and how the content should be sanitized.

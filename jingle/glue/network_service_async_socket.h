@@ -18,7 +18,9 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "jingle/glue/network_service_config.h"
-#include "mojo/public/cpp/bindings/binding.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "mojo/public/cpp/system/simple_watcher.h"
 #include "net/base/host_port_pair.h"
@@ -165,13 +167,13 @@ class NetworkServiceAsyncSocket : public jingle_xmpp::AsyncSocket,
   void OnWriteError(int32_t net_error) override;
 
   // Connection functions.
-  void ProcessConnectDone(
-      network::mojom::SocketObserverRequest socket_observer_request,
-      int status,
-      const base::Optional<net::IPEndPoint>& local_addr,
-      const base::Optional<net::IPEndPoint>& peer_addr,
-      mojo::ScopedDataPipeConsumerHandle receive_stream,
-      mojo::ScopedDataPipeProducerHandle send_stream);
+  void ProcessConnectDone(mojo::PendingReceiver<network::mojom::SocketObserver>
+                              socket_observer_receiver,
+                          int status,
+                          const base::Optional<net::IPEndPoint>& local_addr,
+                          const base::Optional<net::IPEndPoint>& peer_addr,
+                          mojo::ScopedDataPipeConsumerHandle receive_stream,
+                          mojo::ScopedDataPipeProducerHandle send_stream);
 
   // Read loop functions.
   void WatchForReadReady();
@@ -188,7 +190,8 @@ class NetworkServiceAsyncSocket : public jingle_xmpp::AsyncSocket,
 
   // SSL/TLS connection functions.
   void ProcessSSLConnectDone(
-      network::mojom::SocketObserverRequest socket_observer_request,
+      mojo::PendingReceiver<network::mojom::SocketObserver>
+          socket_observer_receiver,
       int status,
       mojo::ScopedDataPipeConsumerHandle receive_stream,
       mojo::ScopedDataPipeProducerHandle send_stream);
@@ -198,21 +201,22 @@ class NetworkServiceAsyncSocket : public jingle_xmpp::AsyncSocket,
 
   void ConnectPipes(mojo::ScopedDataPipeConsumerHandle receive_stream,
                     mojo::ScopedDataPipeProducerHandle send_stream);
-  void BindSocketObserver(
-      network::mojom::SocketObserverRequest socket_observer_request);
+  void BindSocketObserver(mojo::PendingReceiver<network::mojom::SocketObserver>
+                              socket_observer_receiver);
 
   // |socket_factory_| is recreated every time via |get_socket_factory_callback|
   // to handle network service restarts after crashes.
   GetProxyResolvingSocketFactoryCallback get_socket_factory_callback_;
-  network::mojom::ProxyResolvingSocketFactoryPtr socket_factory_;
+  mojo::Remote<network::mojom::ProxyResolvingSocketFactory> socket_factory_;
   // The handle to the proxy resolving socket for the current connection, if one
   // exists.
-  network::mojom::ProxyResolvingSocketPtr socket_;
+  mojo::Remote<network::mojom::ProxyResolvingSocket> socket_;
   // TLS socket, if StartTls has been called.
-  network::mojom::TLSClientSocketPtr tls_socket_;
+  mojo::Remote<network::mojom::TLSClientSocket> tls_socket_;
 
   // Used to route error notifications here.
-  mojo::Binding<network::mojom::SocketObserver> socket_observer_binding_;
+  mojo::Receiver<network::mojom::SocketObserver> socket_observer_receiver_{
+      this};
 
   bool use_fake_tls_handshake_;
 
@@ -231,7 +235,7 @@ class NetworkServiceAsyncSocket : public jingle_xmpp::AsyncSocket,
   std::unique_ptr<mojo::SimpleWatcher> read_watcher_;
 
   // Handling read errors is a bit tricky since the status is reported via
-  // |socket_observer_binding_|, which is unordered compared to |read_pipe_|,
+  // |socket_observer_receiver_|, which is unordered compared to |read_pipe_|,
   // so it's possible to see an end of file (or an error) there while there is
   // still useful data pending.  As a result, the code waits to see both happen
   // before reporting error statuses (including EOF). Likewise for write pipes.

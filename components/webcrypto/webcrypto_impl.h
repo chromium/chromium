@@ -108,13 +108,6 @@ class WebCryptoImpl : public blink::WebCrypto {
       blink::WebCryptoResult result,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner) override;
 
-  // This method returns a digestor object that can be used to synchronously
-  // compute a digest one chunk at a time. Thus, the consume does not need to
-  // hold onto a large buffer with all the data to digest. Chunks can be given
-  // one at a time and the digest will be computed piecemeal.
-  std::unique_ptr<blink::WebCryptoDigestor> CreateDigestor(
-      blink::WebCryptoAlgorithmId algorithm_id) override;
-
   bool DeserializeKeyForClone(const blink::WebCryptoKeyAlgorithm& algorithm,
                               blink::WebCryptoKeyType type,
                               bool extractable,

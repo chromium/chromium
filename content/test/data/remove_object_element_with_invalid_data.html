@@ -1,0 +1,17 @@
+<html>
+<head>
+<script>
+
+function DoLoad() {
+  let test_div = document.getElementById("test_div");
+  document.body.removeChild(test_div);
+}
+
+</script>
+</head>
+<body onload="DoLoad();">
+<div id="test_div">
+  <object data="INVALID"></object>
+</div>
+</body>
+</html>

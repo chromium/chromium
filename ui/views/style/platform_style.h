@@ -18,21 +18,17 @@ class Range;
 namespace views {
 
 class Border;
-class Label;
 class LabelButton;
 class ScrollBar;
 
 // Cross-platform API for providing platform-specific styling for toolkit-views.
 class VIEWS_EXPORT PlatformStyle {
  public:
-  // Type used by LabelButton to map button states to text colors.
-  using ButtonColorByState = SkColor[Button::STATE_COUNT];
-
   // Whether the ok button is in the leading position (left in LTR) in a
   // typical Cancel/OK button group.
   static const bool kIsOkButtonLeading;
 
-  // Minimum size for platform-styled buttons (Button::STYLE_BUTTON).
+  // Minimum size for platform-styled buttons.
   static const int kMinLabelButtonWidth;
   static const int kMinLabelButtonHeight;
 
@@ -44,9 +40,6 @@ class VIEWS_EXPORT PlatformStyle {
 
   // Whether right clicking inside an unfocused text view selects all the text.
   static const bool kSelectAllOnRightClickWhenUnfocused;
-
-  // The menu button's action to show the menu.
-  static const Button::NotifyAction kMenuNotifyActivationAction;
 
   // Whether the Space key clicks a button on key press or key release.
   static const Button::KeyClickAction kKeyClickActionOnSpace;
@@ -89,12 +82,6 @@ class VIEWS_EXPORT PlatformStyle {
 
   // Creates the default scrollbar for the given orientation.
   static std::unique_ptr<ScrollBar> CreateScrollBar(bool is_horizontal);
-
-  // Applies platform styles to |label| and fills |color_by_state| with the text
-  // colors for normal, pressed, hovered, and disabled states, if the colors for
-  // Button::STYLE_BUTTON buttons differ from those provided by ui::NativeTheme.
-  static void ApplyLabelButtonTextStyle(Label* label,
-                                        ButtonColorByState* color_by_state);
 
   // Applies the current system theme to the default border created by |button|.
   static std::unique_ptr<Border> CreateThemedLabelButtonBorder(

@@ -5,31 +5,49 @@
 if (is_android) {
   import("//build/config/android/rules.gni")
 
+  _jni_java_files = [ "javatests/src/org/chromium/chrome/browser/metrics/util/UkmUtilsForTest.java" ]
+
   static_library("ukm_utils_for_test") {
     testonly = true
     sources = [
       "ukm_utils_for_test.cc",
     ]
     deps = [
-      "//chrome/browser:browser",
+      "//chrome/browser",
       "//chrome/browser/android/metrics:jni_headers",
       "//components/metrics_services_manager:metrics_services_manager",
-      "//components/ukm:ukm",
+      "//components/ukm",
     ]
   }
 
   generate_jni("jni_headers") {
-    sources = [
-      "../../../android/java/src/org/chromium/chrome/browser/metrics/UkmUtilsForTest.java",
-    ]
-    jni_package = "chrome"
+    testonly = true
+    sources = _jni_java_files
   }
 
-  android_library("ukm_utils_java") {
+  android_library("ukm_java_test_support") {
     testonly = true
-    java_files = [ "../../../android/java/src/org/chromium/chrome/browser/metrics/UkmUtilsForTest.java" ]
+    java_files = _jni_java_files
     deps = [
       "//base:base_java",
+    ]
+  }
+
+  android_library("ukm_javatests") {
+    testonly = true
+    java_files =
+        [ "javatests/src/org/chromium/chrome/browser/metrics/UkmTest.java" ]
+
+    deps = [
+      ":ukm_java_test_support",
+      "//base:base_java_test_support",
+      "//chrome/android:chrome_java",
+      "//chrome/test/android:chrome_java_test_support",
+      "//components/metrics:metrics_java",
+      "//content/public/test/android:content_java_test_support",
+      "//third_party/android_support_test_runner:rules_java",
+      "//third_party/android_support_test_runner:runner_java",
+      "//third_party/junit",
     ]
   }
 }

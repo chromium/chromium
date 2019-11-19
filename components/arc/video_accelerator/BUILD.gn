@@ -4,8 +4,6 @@
 
 static_library("video_accelerator") {
   sources = [
-    "arc_video_accelerator_util.cc",
-    "arc_video_accelerator_util.h",
     "gpu_arc_video_decode_accelerator.cc",
     "gpu_arc_video_decode_accelerator.h",
     "gpu_arc_video_encode_accelerator.cc",
@@ -19,8 +17,27 @@ static_library("video_accelerator") {
   ]
 
   deps = [
-    "//components/arc/common:media",
+    ":common",
+    "//components/arc/mojom:media",
+    "//gpu/ipc/common:common",
     "//media",
     "//ui/ozone",
+  ]
+}
+
+source_set("common") {
+  sources = [
+    "arc_video_accelerator_util.cc",
+    "arc_video_accelerator_util.h",
+    "decoder_buffer.cc",
+    "decoder_buffer.h",
+    "video_frame_plane.h",
+  ]
+
+  deps = [
+    "//media",
+    "//media/gpu:common",
+    "//mojo/public/cpp/system:system",
+    "//ui/gfx:memory_buffer",
   ]
 }

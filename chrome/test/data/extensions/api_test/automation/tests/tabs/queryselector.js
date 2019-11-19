@@ -5,7 +5,7 @@
 var allTests = [
   // Basic query from root node.
   function testQuerySelector() {
-    var cancelButton = rootNode.children[3];
+    var cancelButton = rootNode.children[4];
     function assertCorrectResult(queryResult) {
       assertEq(queryResult, cancelButton);
       chrome.test.succeed();
@@ -38,10 +38,19 @@ var allTests = [
 
   // Demonstrates that a query for an element which is ignored for accessibility
   // returns its nearest ancestor.
-  function testQuerySelectorForSpanInsideButtonReturnsButton() {
-    var okButton = rootNode.children[2];
+  function testQuerySelectorForSpanInsideImageReturnsImage() {
+    var img = rootNode.children[2];
     function assertCorrectResult(queryResult) {
-      assertEq(queryResult, okButton);
+      assertEq(queryResult, img);
+      chrome.test.succeed();
+    }
+    rootNode.domQuerySelector('#span-in-img', assertCorrectResult);
+  },
+
+  function testQuerySelectorForSpanInsideButton() {
+    var span = rootNode.children[3].children[0];
+    function assertCorrectResult(queryResult) {
+      assertEq(queryResult, span);
       chrome.test.succeed();
     }
     rootNode.domQuerySelector('#span-in-button', assertCorrectResult);

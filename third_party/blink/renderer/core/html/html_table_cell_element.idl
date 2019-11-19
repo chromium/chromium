@@ -19,8 +19,10 @@
  */
 
 // https://html.spec.whatwg.org/C/#attributes-common-to-td-and-th-elements
-[HTMLConstructor]
-interface HTMLTableCellElement : HTMLElement {
+[
+    Exposed=Window,
+    HTMLConstructor
+] interface HTMLTableCellElement : HTMLElement {
     [CEReactions] attribute unsigned long colSpan;
     [CEReactions] attribute unsigned long rowSpan;
     // TODO(foolip): headers should be a [PutForwards=value] readonly attribute

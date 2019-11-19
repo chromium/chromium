@@ -39,7 +39,6 @@ class CdmWrapper;
 class MEDIA_EXPORT CdmAdapter : public ContentDecryptionModule,
                                 public CdmContext,
                                 public Decryptor,
-                                public cdm::Host_9,
                                 public cdm::Host_10,
                                 public cdm::Host_11 {
  public:
@@ -115,10 +114,11 @@ class MEDIA_EXPORT CdmAdapter : public ContentDecryptionModule,
   void ResetDecoder(StreamType stream_type) final;
   void DeinitializeDecoder(StreamType stream_type) final;
 
-  // cdm::Host_9 implementation.
+  // Common cdm::Host_10 and cdm::Host_11 implementation.
   cdm::Buffer* Allocate(uint32_t capacity) override;
   void SetTimer(int64_t delay_ms, void* context) override;
   cdm::Time GetCurrentWallTime() override;
+  void OnInitialized(bool success) override;
   void OnResolveKeyStatusPromise(uint32_t promise_id,
                                  cdm::KeyStatus key_status) override;
   void OnResolveNewSessionPromise(uint32_t promise_id,
@@ -155,9 +155,6 @@ class MEDIA_EXPORT CdmAdapter : public ContentDecryptionModule,
                                     cdm::Status decoder_status) override;
   cdm::FileIO* CreateFileIO(cdm::FileIOClient* client) override;
   void RequestStorageId(uint32_t version) override;
-
-  // cdm::Host_10 specific implementation.
-  void OnInitialized(bool success) override;
 
   // cdm::Host_11 specific implementation.
   cdm::CdmProxy* RequestCdmProxy(cdm::CdmProxyClient* client) override;
@@ -273,7 +270,7 @@ class MEDIA_EXPORT CdmAdapter : public ContentDecryptionModule,
   std::unique_ptr<CdmWrapper> cdm_;
 
   // NOTE: Weak pointers must be invalidated before all other member variables.
-  base::WeakPtrFactory<CdmAdapter> weak_factory_;
+  base::WeakPtrFactory<CdmAdapter> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(CdmAdapter);
 };

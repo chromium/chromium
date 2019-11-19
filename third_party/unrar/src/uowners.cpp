@@ -1,4 +1,4 @@
-namespace third_party_unrar {
+
 
 void ExtractUnixOwner20(Archive &Arc,const wchar *FileName)
 {
@@ -139,5 +139,3 @@ void SetUnixOwner(Archive &Arc,const wchar *FileName)
     ErrHandler.SetErrorCode(RARX_CREATE);
   }
 }
-
-}  // namespace third_party_unrar

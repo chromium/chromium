@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<fieldset id="fieldset" style="width:200px;">
+  <div style="float:left;"></div>
+  <legend></legend>
+</fieldset>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<script>
+  test(()=> {
+      document.body.offsetTop;
+      fieldset.style.width = "100px";
+  }, "no crash or DCHECK failure");
+</script>

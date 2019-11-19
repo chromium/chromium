@@ -7,7 +7,6 @@
 #include "base/bind.h"
 #include "content/public/app/content_jni_onload.h"
 #include "content/public/app/content_main.h"
-#include "content/public/browser/android/compositor.h"
 #include "content/shell/android/linker_test_apk/linker_test_jni_registration.h"
 #include "content/shell/app/shell_main_delegate.h"
 
@@ -19,7 +18,6 @@ JNI_EXPORT jint JNI_OnLoad(JavaVM* vm, void* reserved) {
       !content::android::OnJNIOnLoadInit()) {
     return -1;
   }
-  content::Compositor::Initialize();
   content::SetContentMainDelegate(new content::ShellMainDelegate());
   return JNI_VERSION_1_4;
 }

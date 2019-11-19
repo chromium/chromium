@@ -1,0 +1,9 @@
+include_rules = [
+  "+base/memory",
+  "+components/security_interstitials/content",
+  "+components/security_interstitials/core",
+  "+content/public/renderer",
+  "+gin",
+  "+mojo/public/cpp/bindings",
+  "+third_party/blink/public/web",
+]

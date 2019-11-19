@@ -108,6 +108,7 @@ TEST_F(SearchTest, ShouldAssignURLToInstantRenderer) {
   // Only NTPs (both local and remote) should be assigned to Instant renderers.
   const SearchTestCase kTestCases[] = {
       {chrome::kChromeSearchLocalNtpUrl, true, "Local NTP"},
+      {"chrome-search://local-ntp/local-ntp.html?bar=abc", true, "Local NTP"},
       {"https://foo.com/newtab", true, "Remote NTP"},
       {"https://foo.com/instant", false, "Instant support was removed"},
       {"https://foo.com/url", false, "Instant support was removed"},
@@ -266,6 +267,8 @@ const SearchTestCase kInstantNTPTestCases[] = {
     {"chrome-search://foo", false, "Chrome-search scheme"},
     {"https://bar.com/instant", false, "Random non-search page"},
     {chrome::kChromeSearchLocalNtpUrl, true, "Local new tab page"},
+    {"chrome-search://local-ntp/local-ntp.html?bar=abc", true,
+     "Local new tab page"},
     {"https://foo.com/newtab", true, "New tab URL"},
     {"http://foo.com/newtab", false, "Insecure New tab URL"},
 };
@@ -290,7 +293,7 @@ TEST_F(SearchTest, InstantNTPCustomNavigationEntry) {
     content::NavigationController& controller = contents->GetController();
     controller.SetTransientEntry(
         content::NavigationController::CreateNavigationEntry(
-            GURL("chrome://blank"), content::Referrer(),
+            GURL("chrome://blank"), content::Referrer(), base::nullopt,
             ui::PAGE_TRANSITION_LINK, false, std::string(),
             contents->GetBrowserContext(),
             nullptr /* blob_url_loader_factory */));
@@ -384,31 +387,55 @@ TEST_F(SearchTest, UseLocalNTPIfNTPURLIsBlockedForSupervisedUser) {
 }
 #endif
 
-TEST_F(SearchTest, IsNTPURL) {
+TEST_F(SearchTest, IsNTPOrRelatedURL) {
   GURL invalid_url;
   GURL ntp_url(chrome::kChromeUINewTabURL);
   GURL local_ntp_url(chrome::kChromeSearchLocalNtpUrl);
+  GURL local_ntp_url_with_param(
+      "chrome-search://local-ntp/local-ntp.html?bar=abc");
 
-  EXPECT_FALSE(IsNTPURL(invalid_url, profile()));
+  EXPECT_FALSE(IsNTPOrRelatedURL(invalid_url, profile()));
 
   GURL remote_ntp_url(GetNewTabPageURL(profile()));
   GURL remote_ntp_service_worker_url("https://foo.com/newtab-serviceworker.js");
   GURL search_url_with_search_terms("https://foo.com/url?bar=abc");
   GURL search_url_without_search_terms("https://foo.com/url?bar");
 
-  EXPECT_FALSE(IsNTPURL(ntp_url, profile()));
-  EXPECT_TRUE(IsNTPURL(local_ntp_url, profile()));
-  EXPECT_TRUE(IsNTPURL(remote_ntp_url, profile()));
-  EXPECT_TRUE(IsNTPURL(remote_ntp_service_worker_url, profile()));
-  EXPECT_FALSE(IsNTPURL(search_url_with_search_terms, profile()));
-  EXPECT_FALSE(IsNTPURL(search_url_without_search_terms, profile()));
+  EXPECT_FALSE(IsNTPOrRelatedURL(ntp_url, profile()));
+  EXPECT_TRUE(IsNTPOrRelatedURL(local_ntp_url, profile()));
+  EXPECT_TRUE(IsNTPOrRelatedURL(local_ntp_url_with_param, profile()));
+  EXPECT_TRUE(IsNTPOrRelatedURL(remote_ntp_url, profile()));
+  EXPECT_TRUE(IsNTPOrRelatedURL(remote_ntp_service_worker_url, profile()));
+  EXPECT_FALSE(IsNTPOrRelatedURL(search_url_with_search_terms, profile()));
+  EXPECT_FALSE(IsNTPOrRelatedURL(search_url_without_search_terms, profile()));
 
-  EXPECT_FALSE(IsNTPURL(ntp_url, NULL));
-  EXPECT_FALSE(IsNTPURL(local_ntp_url, NULL));
-  EXPECT_FALSE(IsNTPURL(remote_ntp_url, NULL));
-  EXPECT_FALSE(IsNTPURL(remote_ntp_service_worker_url, NULL));
-  EXPECT_FALSE(IsNTPURL(search_url_with_search_terms, NULL));
-  EXPECT_FALSE(IsNTPURL(search_url_without_search_terms, NULL));
+  EXPECT_FALSE(IsNTPOrRelatedURL(ntp_url, NULL));
+  EXPECT_FALSE(IsNTPOrRelatedURL(local_ntp_url, NULL));
+  EXPECT_FALSE(IsNTPOrRelatedURL(remote_ntp_url, NULL));
+  EXPECT_FALSE(IsNTPOrRelatedURL(remote_ntp_service_worker_url, NULL));
+  EXPECT_FALSE(IsNTPOrRelatedURL(search_url_with_search_terms, NULL));
+  EXPECT_FALSE(IsNTPOrRelatedURL(search_url_without_search_terms, NULL));
+}
+
+// Tests whether a |url| corresponds to a New Tab page.
+// See search::IsNTPURL(const GURL& url);
+TEST_F(SearchTest, IsNTPURL) {
+  const SearchTestCase kTestCases[] = {
+      {"chrome-search://local-ntp", true, "Local NTP URL"},
+      {"chrome-search://local-ntp/local-ntp.html?bar=abc", true,
+       "Local NTP URL with params"},
+      {"chrome-search://remote-ntp", true, "Remote NTP URL"},
+      {"invalid-scheme://local-ntp", false, "Invalid Local NTP URL"},
+      {"invalid-scheme://remote-ntp", false, "Invalid Remote NTP URL"},
+      {"chrome-search://most-visited/", false, "Most visited URL"},
+      {"", false, "Invalid URL"},
+  };
+
+  for (size_t i = 0; i < base::size(kTestCases); ++i) {
+    const SearchTestCase& test = kTestCases[i];
+    EXPECT_EQ(test.expected_result, IsNTPURL(GURL(test.url)))
+        << test.url << " " << test.comment;
+  }
 }
 
 // Regression test for https://crbug.com/605720: Set up a search provider backed

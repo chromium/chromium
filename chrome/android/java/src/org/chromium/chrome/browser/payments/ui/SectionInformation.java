@@ -4,10 +4,11 @@
 
 package org.chromium.chrome.browser.payments.ui;
 
-import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
-import org.chromium.base.VisibleForTesting;
+import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.widget.prefeditor.EditableOption;
 
@@ -103,6 +104,7 @@ public class SectionInformation {
      * @param position The index of the item to return.
      * @return The item in the given position or null.
      */
+    @Nullable
     public EditableOption getItem(int position) {
         if (mItems == null || mItems.isEmpty() || position < 0 || position >= mItems.size()) {
             return null;
@@ -152,6 +154,7 @@ public class SectionInformation {
      *
      * @return The selected item or null if none selected.
      */
+    @Nullable
     public EditableOption getSelectedItem() {
         return getItem(getSelectedItemIndex());
     }

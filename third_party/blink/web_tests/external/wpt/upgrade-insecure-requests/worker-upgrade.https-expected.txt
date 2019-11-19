@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-PASS secure/same-origin worker
-FAIL insecure/same-origin worker promise_test: Unhandled rejection with value: object "SecurityError: Failed to construct 'Worker': Script at 'http://web-platform.test:8444/upgrade-insecure-requests/support/worker.js' cannot be accessed from origin 'https://web-platform.test:8444'."
-Harness: the test ran to completion.
-

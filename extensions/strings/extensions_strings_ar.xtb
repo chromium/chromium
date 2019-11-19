@@ -12,7 +12,6 @@
 <translation id="2159915644201199628">تعذر فك تشفير الصورة: '<ph name="IMAGE_NAME" />'</translation>
 <translation id="2350172092385603347">‏تم استخدام التعريب، ولكن لم يتم تحديد default_locale في البيان.</translation>
 <translation id="2576842806987913196">‏هناك ملف CRX بهذا الاسم فعلاً.</translation>
-<translation id="2753617847762399167">مسار غير قانوني (أساسي أو منتسب مع '..'): '<ph name="IMAGE_PATH" />'</translation>
 <translation id="2785530881066938471">‏تعذر تحميل الملف '<ph name="RELATIVE_PATH" />' للنص البرمجي للمحتوى. لأنه ليس بتشفير UTF-8.</translation>
 <translation id="2903070246402204397">تم حظر <ph name="EXTENSION_NAME" /> (معرف الإضافة "<ph name="EXTENSION_ID" />") من قِبل المشرف. <ph name="ADMIN_INFO" /></translation>
 <translation id="2988488679308982380">تعذر تثبيت الحزمة: "<ph name="ERROR_CODE" />"</translation>
@@ -38,8 +37,6 @@
 <translation id="5436430103864390185">النوافذ ذات الأشكال غير متوافقة.</translation>
 <translation id="5456409301717116725">تتضمن هذه الإضافة ملف المفتاح '<ph name="KEY_PATH" />'. ربما لا تريد إجراء ذلك.</translation>
 <translation id="5486326529110362464">يجب أن تكون قيمة الإدخال للمفتاح الخاص موجودة.</translation>
-<translation id="5627523580512561598">الإضافة <ph name="EXTENSION_NAME" /></translation>
-<translation id="5960890139610307736">ExtensionView: <ph name="EXTENSIONVIEW_TAG_NAME" /></translation>
 <translation id="5972529113578162692">يتطلب مشرف هذا الجهاز تثبيت <ph name="EXTENSION_NAME" />. لا يمكن إلغاء تثبيته.</translation>
 <translation id="6027032947578871493">المنتج غير معروف <ph name="PRODUCT_ID" /> من <ph name="VENDOR_NAME" /> (الرقم التسلسلي <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="6068932090455285721"><ph name="PRODUCT_NAME" /> من المورّد <ph name="VENDOR_ID" /></translation>
@@ -51,7 +48,6 @@
 <translation id="6542618148162044354">يطلب تطبيق "<ph name="APP_NAME" />" الدخول إلى جهاز أو أكثر من أجهزتك:</translation>
 <translation id="657064425229075395">تعذر تحميل النص البرمجي للخلفية '<ph name="BACKGROUND_SCRIPT" />'.</translation>
 <translation id="6580950983454333167"><ph name="PRODUCT_NAME" /> من <ph name="VENDOR_NAME" /> (الرقم التسلسلي <ph name="SERIAL_NUMBER" />)</translation>
-<translation id="6731255991101203740">تعذر إنشاء دليل لفك ضغط: '<ph name="DIRECTORY_PATH" />'</translation>
 <translation id="677806580227005219">‏معالج Mime: <ph name="MIMEHANDLERVIEW_TAG_NAME" /></translation>
 <translation id="6840444547062817500">تعيد هذه الإضافة تحميل نفسها باستمرار.</translation>
 <translation id="7003844668372540529">المنتج غير معروف <ph name="PRODUCT_ID" /> من <ph name="VENDOR_NAME" /></translation>

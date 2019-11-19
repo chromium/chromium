@@ -1,0 +1,7 @@
+include_rules = [
+  "+chrome/browser/ui/android/widget",
+  "+components/autofill/android/java/src/org/chromium/components/autofill",
+  "+components/feature_engagement/public",
+  "-content/public/android",
+  "+content/public/android/java/src/org/chromium/content_public",
+]

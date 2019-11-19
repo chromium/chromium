@@ -80,7 +80,7 @@ class CORE_EXPORT MainThreadDebugger final : public ThreadDebugger {
 
  private:
   void ReportConsoleMessage(ExecutionContext*,
-                            MessageSource,
+                            mojom::ConsoleMessageSource,
                             mojom::ConsoleMessageLevel,
                             const String& message,
                             SourceLocation*) override;

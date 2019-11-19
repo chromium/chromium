@@ -10,9 +10,8 @@
 #include "base/bind.h"
 #include "base/bind_helpers.h"
 #include "base/memory/ptr_util.h"
-#include "base/message_loop/message_loop.h"
 #include "base/run_loop.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "net/base/network_change_notifier.h"
 #include "remoting/base/auto_thread_task_runner.h"
@@ -29,7 +28,6 @@
 #include "remoting/protocol/session_config.h"
 #include "remoting/protocol/transport_context.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "testing/gmock_mutant.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using ::remoting::protocol::MockClientStub;
@@ -65,7 +63,7 @@ class ChromotingHostTest : public testing::Test {
   ChromotingHostTest() = default;
 
   void SetUp() override {
-    network_change_notifier_.reset(net::NetworkChangeNotifier::Create());
+    network_change_notifier_ = net::NetworkChangeNotifier::CreateIfNeeded();
 
     task_runner_ = new AutoThreadTaskRunner(base::ThreadTaskRunnerHandle::Get(),
                                             base::DoNothing());
@@ -210,7 +208,7 @@ class ChromotingHostTest : public testing::Test {
   }
 
  protected:
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_;
   std::unique_ptr<net::NetworkChangeNotifier> network_change_notifier_;
   scoped_refptr<AutoThreadTaskRunner> task_runner_;
   MockConnectionToClientEventHandler handler_;

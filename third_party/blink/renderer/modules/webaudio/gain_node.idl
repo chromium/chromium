@@ -25,6 +25,7 @@
 
 // See https://webaudio.github.io/web-audio-api/#gainnode
 [
+    Exposed=Window,
     Constructor(BaseAudioContext context, optional GainOptions options),
     RaisesException=Constructor,
     Measure

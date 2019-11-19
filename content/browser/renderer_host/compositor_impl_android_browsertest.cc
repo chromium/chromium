@@ -25,6 +25,7 @@
 #include "gpu/command_buffer/client/gles2_interface.h"
 #include "gpu/config/gpu_finch_features.h"
 #include "gpu/ipc/client/gpu_channel_host.h"
+#include "media/base/media_switches.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "ui/android/window_android.h"
 #include "url/gurl.h"
@@ -35,8 +36,7 @@ namespace {
 
 enum class CompositorImplMode {
   kNormal,
-  kViz,
-  kVizSkDDL,
+  kSkiaRenderer,
 };
 
 class CompositorImplBrowserTest
@@ -46,31 +46,32 @@ class CompositorImplBrowserTest
   CompositorImplBrowserTest() {}
 
   void SetUp() override {
+    std::vector<base::Feature> features;
+
     switch (GetParam()) {
       case CompositorImplMode::kNormal:
         break;
-      case CompositorImplMode::kViz:
-        scoped_feature_list_.InitAndEnableFeature(
-            features::kVizDisplayCompositor);
-        break;
-      case CompositorImplMode::kVizSkDDL:
-        scoped_feature_list_.InitWithFeatures(
-            {features::kVizDisplayCompositor, features::kUseSkiaRenderer,
-             features::kDefaultEnableOopRasterization},
-            {});
+      case CompositorImplMode::kSkiaRenderer:
+        features = std::vector<base::Feature>({features::kUseSkiaRenderer});
         break;
     }
 
+    AppendFeatures(&features);
+    scoped_feature_list_.InitWithFeatures(features, {});
+
     ContentBrowserTest::SetUp();
   }
+
+  virtual std::string GetTestUrl() { return "/title1.html"; }
+  virtual void AppendFeatures(std::vector<base::Feature>* features) {}
 
  protected:
   void SetUpOnMainThread() override {
     ASSERT_TRUE(embedded_test_server()->Start());
     net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
-    https_server.ServeFilesFromSourceDirectory("content/test/data");
+    https_server.ServeFilesFromSourceDirectory(GetTestDataFilePath());
     ASSERT_TRUE(https_server.Start());
-    GURL http_url(embedded_test_server()->GetURL("/title1.html"));
+    GURL http_url(embedded_test_server()->GetURL(GetTestUrl()));
     ASSERT_TRUE(NavigateToURL(shell(), http_url));
   }
 
@@ -91,7 +92,6 @@ class CompositorImplBrowserTest
         web_contents()->GetRenderWidgetHostView());
   }
 
- private:
   base::test::ScopedFeatureList scoped_feature_list_;
 
   DISALLOW_COPY_AND_ASSIGN(CompositorImplBrowserTest);
@@ -100,8 +100,7 @@ class CompositorImplBrowserTest
 INSTANTIATE_TEST_SUITE_P(P,
                          CompositorImplBrowserTest,
                          ::testing::Values(CompositorImplMode::kNormal,
-                                           CompositorImplMode::kViz,
-                                           CompositorImplMode::kVizSkDDL));
+                                           CompositorImplMode::kSkiaRenderer));
 
 class CompositorImplLowEndBrowserTest : public CompositorImplBrowserTest {
  public:
@@ -112,9 +111,6 @@ class CompositorImplLowEndBrowserTest : public CompositorImplBrowserTest {
   }
 };
 
-// Viz on android is not yet compatible with in-process GPU. Only run in
-// kNormal mode.
-// TODO(ericrk): Make this work everywhere. https://crbug.com/851643
 INSTANTIATE_TEST_SUITE_P(P,
                          CompositorImplLowEndBrowserTest,
                          ::testing::Values(CompositorImplMode::kNormal));
@@ -158,78 +154,6 @@ class ContextLostRunLoop : public viz::ContextLostObserver {
   DISALLOW_COPY_AND_ASSIGN(ContextLostRunLoop);
 };
 
-// RunLoop implementation that runs until it observes a compositor frame.
-class CompositorFrameRunLoop : public ui::WindowAndroidObserver {
- public:
-  CompositorFrameRunLoop(ui::WindowAndroid* window) : window_(window) {
-    window_->AddObserver(this);
-  }
-  ~CompositorFrameRunLoop() override { window_->RemoveObserver(this); }
-
-  void RunUntilFrame() { run_loop_.Run(); }
-
- private:
-  // ui::WindowAndroidObserver:
-  void OnCompositingDidCommit() override { run_loop_.Quit(); }
-  void OnRootWindowVisibilityChanged(bool visible) override {}
-  void OnAttachCompositor() override {}
-  void OnDetachCompositor() override {}
-  void OnActivityStopped() override {}
-  void OnActivityStarted() override {}
-
-  ui::WindowAndroid* const window_;
-  base::RunLoop run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(CompositorFrameRunLoop);
-};
-
-IN_PROC_BROWSER_TEST_P(CompositorImplLowEndBrowserTest,
-                       CompositorImplDropsResourcesOnBackground) {
-  // This test makes invalid assumptions when surface synchronization is
-  // enabled. The compositor lock is obsolete, and inspecting frames
-  // from the CompositorImpl does not guarantee renderer CompositorFrames
-  // are ready.
-  if (features::IsSurfaceSynchronizationEnabled())
-    return;
-
-  auto* rwhva = render_widget_host_view_android();
-  auto* compositor = compositor_impl();
-  auto context = GpuBrowsertestCreateContext(
-      GpuBrowsertestEstablishGpuChannelSyncRunLoop());
-  context->BindToCurrentThread();
-
-  CompositorFrameRunLoop(window()).RunUntilFrame();
-  EXPECT_TRUE(rwhva->HasValidFrame());
-
-  ContextLostRunLoop run_loop(context.get());
-  compositor->SetVisibleForTesting(false);
-  base::android::ApplicationStatusListener::NotifyApplicationStateChange(
-      base::android::APPLICATION_STATE_HAS_STOPPED_ACTIVITIES);
-  rwhva->OnRootWindowVisibilityChanged(false);
-  rwhva->Hide();
-
-  // Ensure that context is eventually dropped and at that point we do not have
-  // a valid frame.
-  run_loop.RunUntilContextLost();
-  EXPECT_FALSE(rwhva->HasValidFrame());
-
-  // Become visible again:
-  compositor->SetVisibleForTesting(true);
-  base::android::ApplicationStatusListener::NotifyApplicationStateChange(
-      base::android::APPLICATION_STATE_HAS_RUNNING_ACTIVITIES);
-  rwhva->Show();
-  rwhva->OnRootWindowVisibilityChanged(true);
-
-  // We should have taken the compositor lock on resume.
-  EXPECT_TRUE(compositor->IsLockedForTesting());
-  EXPECT_FALSE(rwhva->HasValidFrame());
-
-  // The compositor should eventually be unlocked and produce a frame.
-  CompositorFrameRunLoop(window()).RunUntilFrame();
-  EXPECT_FALSE(compositor->IsLockedForTesting());
-  EXPECT_TRUE(rwhva->HasValidFrame());
-}
-
 // RunLoop implementation that runs until it observes a swap with size.
 class CompositorSwapRunLoop {
  public:
@@ -255,17 +179,88 @@ class CompositorSwapRunLoop {
   DISALLOW_COPY_AND_ASSIGN(CompositorSwapRunLoop);
 };
 
+IN_PROC_BROWSER_TEST_P(CompositorImplLowEndBrowserTest,
+                       CompositorImplDropsResourcesOnBackground) {
+  auto* rwhva = render_widget_host_view_android();
+  auto* compositor = compositor_impl();
+  auto context = GpuBrowsertestCreateContext(
+      GpuBrowsertestEstablishGpuChannelSyncRunLoop());
+  context->BindToCurrentThread();
+
+  // Run until we've swapped once. At this point we should have a valid frame.
+  CompositorSwapRunLoop(compositor_impl()).RunUntilSwap();
+  EXPECT_TRUE(rwhva->HasValidFrame());
+
+  ContextLostRunLoop run_loop(context.get());
+  compositor->SetVisibleForTesting(false);
+  base::android::ApplicationStatusListener::NotifyApplicationStateChange(
+      base::android::APPLICATION_STATE_HAS_STOPPED_ACTIVITIES);
+  rwhva->OnRootWindowVisibilityChanged(false);
+  rwhva->Hide();
+
+  // Ensure that context is eventually dropped and at that point we do not have
+  // a valid frame.
+  run_loop.RunUntilContextLost();
+  EXPECT_FALSE(rwhva->HasValidFrame());
+
+  // Become visible again:
+  compositor->SetVisibleForTesting(true);
+  base::android::ApplicationStatusListener::NotifyApplicationStateChange(
+      base::android::APPLICATION_STATE_HAS_RUNNING_ACTIVITIES);
+  rwhva->Show();
+  rwhva->OnRootWindowVisibilityChanged(true);
+
+  // Wait for a swap after becoming visible.
+  CompositorSwapRunLoop(compositor_impl()).RunUntilSwap();
+  EXPECT_TRUE(rwhva->HasValidFrame());
+}
+
 IN_PROC_BROWSER_TEST_P(CompositorImplBrowserTest,
                        CompositorImplReceivesSwapCallbacks) {
   // OOP-R is required for this test to succeed with SkDDL, but is disabled on
   // Android L and lower.
-  if (GetParam() == CompositorImplMode::kVizSkDDL &&
+  if (GetParam() == CompositorImplMode::kSkiaRenderer &&
       base::android::BuildInfo::GetInstance()->sdk_int() <
           base::android::SDK_VERSION_MARSHMALLOW) {
     return;
   }
   CompositorSwapRunLoop(compositor_impl()).RunUntilSwap();
 }
+
+class CompositorImplBrowserTestRefreshRate
+    : public CompositorImplBrowserTest,
+      public ui::WindowAndroid::TestHooks {
+ public:
+  std::string GetTestUrl() override { return "/media/tulip2.webm"; }
+  void AppendFeatures(std::vector<base::Feature>* features) override {
+    features->push_back(media::kUseSurfaceLayerForVideo);
+  }
+
+  // WindowAndroid::TestHooks impl.
+  std::vector<float> GetSupportedRates() override {
+    return {120.f, 90.f, 60.f};
+  }
+  void SetPreferredRate(float refresh_rate) override {
+    if (fabs(refresh_rate - expected_refresh_rate_) < 2.f)
+      run_loop_->Quit();
+  }
+
+  float expected_refresh_rate_ = 0.f;
+  std::unique_ptr<base::RunLoop> run_loop_;
+};
+
+IN_PROC_BROWSER_TEST_P(CompositorImplBrowserTestRefreshRate, VideoPreference) {
+  window()->SetTestHooks(this);
+  expected_refresh_rate_ = 60.f;
+  run_loop_ = std::make_unique<base::RunLoop>();
+  run_loop_->Run();
+  run_loop_.reset();
+  window()->SetTestHooks(nullptr);
+}
+
+INSTANTIATE_TEST_SUITE_P(P,
+                         CompositorImplBrowserTestRefreshRate,
+                         ::testing::Values(CompositorImplMode::kNormal));
 
 }  // namespace
 }  // namespace content

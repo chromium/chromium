@@ -12,6 +12,7 @@
 #include "base/run_loop.h"
 #include "base/values.h"
 #include "chrome/browser/chromeos/app_mode/arc/arc_kiosk_app_manager.h"
+#include "chrome/browser/chromeos/app_mode/kiosk_app_manager_observer.h"
 #include "chrome/browser/chromeos/ownership/fake_owner_settings_service.h"
 #include "chrome/browser/chromeos/policy/device_local_account.h"
 #include "chrome/browser/chromeos/settings/scoped_cros_settings_test_helper.h"
@@ -27,8 +28,7 @@ namespace chromeos {
 namespace {
 
 // The purpose of this waiter - wait for being notified some amount of times.
-class NotificationWaiter
-    : public ArcKioskAppManager::ArcKioskAppManagerObserver {
+class NotificationWaiter : public KioskAppManagerObserver {
  public:
   // In constructor we provide instance of ArcKioskAppManager and subscribe for
   // notifications from it, and minimum amount of times we expect to get the
@@ -51,8 +51,8 @@ class NotificationWaiter
   bool was_notified() const { return notification_received_; }
 
  private:
-  // ArcKioskAppManagerObserver:
-  void OnArcKioskAppsChanged() override {
+  // KioskAppManagerObserver:
+  void OnKioskAppsSettingsChanged() override {
     --expected_notifications_;
     if (expected_notifications_ > 0)
       return;
@@ -92,6 +92,7 @@ class ArcKioskAppManagerTest : public InProcessBrowserTest {
   }
 
   void TearDownOnMainThread() override {
+    owner_settings_service_.reset();
     settings_helper_.RestoreRealDeviceSettingsProvider();
   }
 
@@ -130,6 +131,10 @@ class ArcKioskAppManagerTest : public InProcessBrowserTest {
                                  device_local_accounts);
   }
 
+  void GetApps(std::vector<const ArcKioskAppData*>* apps) const {
+    manager()->GetAppsForTesting(apps);
+  }
+
   ArcKioskAppManager* manager() const { return ArcKioskAppManager::Get(); }
 
  protected:
@@ -154,8 +159,8 @@ IN_PROC_BROWSER_TEST_F(ArcKioskAppManagerTest, Basic) {
     waiter.Wait();
     EXPECT_TRUE(waiter.was_notified());
 
-    ArcKioskAppManager::Apps apps;
-    manager()->GetAllApps(&apps);
+    std::vector<const ArcKioskAppData*> apps;
+    GetApps(&apps);
     ASSERT_EQ(2u, apps.size());
     ASSERT_EQ(app1.package_name(), apps[0]->package_name());
     ASSERT_EQ(app2.package_name(), apps[1]->package_name());
@@ -177,8 +182,8 @@ IN_PROC_BROWSER_TEST_F(ArcKioskAppManagerTest, Basic) {
 
     EXPECT_TRUE(manager()->GetAutoLaunchAccountId().is_valid());
 
-    ArcKioskAppManager::Apps apps;
-    manager()->GetAllApps(&apps);
+    std::vector<const ArcKioskAppData*> apps;
+    GetApps(&apps);
     ASSERT_EQ(2u, apps.size());
     ASSERT_EQ(app1.package_name(), apps[0]->package_name());
     ASSERT_EQ(app2.package_name(), apps[1]->package_name());
@@ -200,8 +205,8 @@ IN_PROC_BROWSER_TEST_F(ArcKioskAppManagerTest, Basic) {
     waiter.Wait();
     EXPECT_TRUE(waiter.was_notified());
 
-    ArcKioskAppManager::Apps apps;
-    manager()->GetAllApps(&apps);
+    std::vector<const ArcKioskAppData*> apps;
+    GetApps(&apps);
     ASSERT_EQ(2u, apps.size());
     ASSERT_EQ(app1.package_name(), apps[0]->package_name());
     ASSERT_EQ(app3.package_name(), apps[1]->package_name());
@@ -220,8 +225,8 @@ IN_PROC_BROWSER_TEST_F(ArcKioskAppManagerTest, Basic) {
     waiter.Wait();
     EXPECT_TRUE(waiter.was_notified());
 
-    ArcKioskAppManager::Apps apps;
-    manager()->GetAllApps(&apps);
+    std::vector<const ArcKioskAppData*> apps;
+    GetApps(&apps);
     ASSERT_EQ(0u, apps.size());
     EXPECT_FALSE(manager()->GetAutoLaunchAccountId().is_valid());
   }

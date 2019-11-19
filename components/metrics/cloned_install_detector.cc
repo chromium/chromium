@@ -48,15 +48,15 @@ void LogMachineIdState(MachineIdState state) {
 
 }  // namespace
 
-ClonedInstallDetector::ClonedInstallDetector() : weak_ptr_factory_(this) {}
+ClonedInstallDetector::ClonedInstallDetector() {}
 
 ClonedInstallDetector::~ClonedInstallDetector() {
 }
 
 void ClonedInstallDetector::CheckForClonedInstall(PrefService* local_state) {
-  base::PostTaskWithTraitsAndReplyWithResult(
+  base::PostTaskAndReplyWithResult(
       FROM_HERE,
-      {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+      {base::ThreadPool(), base::MayBlock(), base::TaskPriority::BEST_EFFORT,
        base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
       base::Bind(&MachineIdProvider::GetMachineId),
       base::Bind(&ClonedInstallDetector::SaveMachineId,

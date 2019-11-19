@@ -23,7 +23,6 @@
 #include "skia/ext/platform_canvas.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_canvas.h"
-#include "third_party/blink/renderer/platform/mac/theme_mac.h"
 #include "third_party/skia/include/core/SkRegion.h"
 
 namespace blink {
@@ -59,7 +58,7 @@ LocalCurrentGraphicsContext::LocalCurrentGraphicsContext(
     float device_scale_factor,
     const IntRect& dirty_rect)
     : did_set_graphics_context_(false),
-      inflated_dirty_rect_(ThemeMac::InflateRectForAA(dirty_rect)),
+      inflated_dirty_rect_(InflateRectForAA(dirty_rect)),
       graphics_context_canvas_(
           canvas,
           LocalToClampedDeviceRect(canvas, inflated_dirty_rect_),
@@ -96,5 +95,11 @@ CGContextRef LocalCurrentGraphicsContext::CgContext() {
   CGContextRef cg_context = graphics_context_canvas_.CgContext();
 
   return cg_context;
+}
+
+IntRect LocalCurrentGraphicsContext::InflateRectForAA(const IntRect& rect) {
+  const int kMargin = 2;
+  return IntRect(rect.X() - kMargin, rect.Y() - kMargin,
+                 rect.Width() + 2 * kMargin, rect.Height() + 2 * kMargin);
 }
 }

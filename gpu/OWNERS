@@ -1,13 +1,22 @@
 backer@chromium.org
 ericrk@chromium.org
 kbr@chromium.org
-piman@chromium.org
 vmiura@chromium.org
 zmo@chromium.org
 sunnyps@chromium.org
+penghuang@chromium.org
 
 # GPU memory buffer implementations.
 per-file *gpu_memory_buffer*=reveman@chromium.org
 per-file *gpu_memory_buffer*=dcastagna@chromium.org
+
+# Passthrough command decoder
+per-file *passthrough*=geofflang@chromium.org
+
+# Shared Image and Media on Android
+per-file *shared_image_video*=vikassoni@chromium.org
+per-file *android*=vikassoni@chromium.org
+per-file *image_reader*=vikassoni@chromium.org
+per-file *hardwarebuffer*=vikassoni@chromium.org
 
 # COMPONENT: Internals>GPU>Internals

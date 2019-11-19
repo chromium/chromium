@@ -1,0 +1,6 @@
+AriaProperties changed on role=option, name=Li1
+AriaProperties changed on role=option, name=Li2
+AriaProperties changed on role=option, name=Li3
+SizeOfSet changed on role=option, name=Li1
+SizeOfSet changed on role=option, name=Li2
+SizeOfSet changed on role=option, name=Li3

@@ -1,10 +1,10 @@
 <link rel="import" href="chrome://resources/html/polymer.html">
 
+<link rel="import" href="chrome://resources/cr_elements/cr_button/cr_button.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_icon_button/cr_icon_button.html">
 <link rel="import" href="chrome://resources/cr_elements/cr_link_row/cr_link_row.html">
 <link rel="import" href="chrome://resources/cr_elements/policy/cr_policy_pref_indicator.html">
 <link rel="import" href="chrome://resources/html/i18n_behavior.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/paper-button/paper-button.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/paper-icon-button/paper-icon-button-light.html">
 <link rel="import" href="../i18n_setup.html">
 <link rel="import" href="../prefs/prefs_behavior.html">
 <link rel="import" href="../settings_page/settings_animated_pages.html">
@@ -12,6 +12,11 @@
 <link rel="import" href="../settings_shared_css.html">
 <link rel="import" href="android_apps_browser_proxy.html">
 <link rel="import" href="android_apps_subpage.html">
+
+<!-- Changes to this file should be reflected in
+    ../chromeos/os_apps_page/os_apps_page.html.
+    TODO(crbug.com/1006152): This file should be deleted once the split-settings
+    flag has been removed. -->
 
 <dom-module id="settings-android-apps-page">
   <template>
@@ -21,10 +26,10 @@
         focus-config="[[focusConfig_]]">
       <div route-path="default">
         <template is="dom-if" if="[[havePlayStoreApp]]" restamp>
-          <div id="android-apps" class="settings-box two-line first"
+          <div id="android-apps" class="settings-box first"
               actionable$="[[androidAppsInfo.playStoreEnabled]]"
               on-click="onSubpageTap_">
-            <div class="start">
+            <div class="start settings-box-text">
               $i18n{androidAppsPageLabel}
               <div class="secondary" id="secondaryText"
                   inner-h-t-m-l="[[i18nAdvanced('androidAppsSubtext')]]">
@@ -34,28 +39,25 @@
                 icon-aria-label="$i18n{androidAppsPageTitle}">
             </cr-policy-pref-indicator>
             <template is="dom-if" if="[[androidAppsInfo.playStoreEnabled]]">
-              <paper-icon-button-light class="subpage-arrow">
-                <button aria-label="$i18n{androidAppsPageTitle}"
-                    aria-describedby="secondaryText">
-                </button>
-              </paper-icon-button-light>
+              <cr-icon-button class="subpage-arrow"
+                  aria-label="$i18n{androidAppsPageTitle}"
+                  aria-describedby="secondaryText"></cr-icon-button>
             </template>
             <template is="dom-if" if="[[!androidAppsInfo.playStoreEnabled]]">
               <div class="separator"></div>
-              <paper-button id="enable" class="secondary-button"
+              <cr-button id="enable"
                   disabled="[[isEnforced_(prefs.arc.enabled)]]"
                   on-click="onEnableTap_"
                   aria-label="$i18n{androidAppsPageTitle}"
                   aria-describedby="secondaryText">
                 $i18n{androidAppsEnable}
-              </paper-button>
+              </cr-button>
             </template>
           </div>
         </template>
         <template is="dom-if" if="[[!havePlayStoreApp]]" restamp>
-          <cr-link-row id="manageApps" icon-class="icon-external"
-              label="$i18n{androidAppsManageApps}"
-              on-click="onManageAndroidAppsTap_">
+          <cr-link-row id="manageApps" label="$i18n{androidAppsManageApps}"
+              on-click="onManageAndroidAppsTap_" external>
           </cr-link-row>
         </template>
       </div>

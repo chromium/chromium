@@ -17,9 +17,13 @@
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "services/device/public/mojom/bluetooth_system.mojom.h"
 
+namespace base {
+class Time;
+}  // namespace base
+
 namespace device {
 class BluetoothDiscoverySession;
-}
+}  // namespace device
 
 namespace ash {
 
@@ -71,8 +75,13 @@ class ASH_EXPORT TrayBluetoothHelperLegacy
   device::mojom::BluetoothSystem::State last_state_ =
       device::mojom::BluetoothSystem::State::kUnavailable;
 
+  // The time at which discovery started, effectively when the user opened the
+  // System Tray Bluetooth options with Bluetooth on, or when Bluetooth turned
+  // on while the Bluetooth options were open.
+  base::Time discovery_start_timestamp_;
+
   // Object could be deleted during a prolonged Bluetooth operation.
-  base::WeakPtrFactory<TrayBluetoothHelperLegacy> weak_ptr_factory_;
+  base::WeakPtrFactory<TrayBluetoothHelperLegacy> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(TrayBluetoothHelperLegacy);
 };

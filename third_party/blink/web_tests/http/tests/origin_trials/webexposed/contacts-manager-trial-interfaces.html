@@ -10,6 +10,6 @@ generate_token.py http://127.0.0.1:8000 ContactsManager --expire-timestamp=20000
 <script src="/resources/origin-trials-helper.js"></script>
 <script>
 test(() => {
-  OriginTrialsHelper.check_properties(this, { 'ContactsManager': ['select'] });
+  OriginTrialsHelper.check_properties_exist(this, { 'ContactsManager': ['select'] });
 }, 'Contact API interfaces and properties in Origin-Trial enabled document.');
 </script>

@@ -33,7 +33,7 @@ UIEvent::UIEvent(const AtomicString& event_type,
                  Bubbles bubbles,
                  Cancelable cancelable,
                  ComposedMode composed_mode,
-                 TimeTicks platform_time_stamp,
+                 base::TimeTicks platform_time_stamp,
                  AbstractView* view_arg,
                  int detail_arg,
                  InputDeviceCapabilities* source_capabilities_arg)
@@ -48,7 +48,7 @@ UIEvent::UIEvent(const AtomicString& event_type,
 
 UIEvent::UIEvent(const AtomicString& event_type,
                  const UIEventInit* initializer,
-                 TimeTicks platform_time_stamp)
+                 base::TimeTicks platform_time_stamp)
     : Event(event_type, initializer, platform_time_stamp),
       view_(initializer->view()),
       detail_(initializer->detail()),

@@ -35,6 +35,16 @@ struct COMPONENT_EXPORT(RESOURCE_COORDINATOR_PUBLIC_MOJOM)
 
 template <>
 struct COMPONENT_EXPORT(RESOURCE_COORDINATOR_PUBLIC_MOJOM)
+    EnumTraits<memory_instrumentation::mojom::Determinism,
+               base::trace_event::MemoryDumpDeterminism> {
+  static memory_instrumentation::mojom::Determinism ToMojom(
+      base::trace_event::MemoryDumpDeterminism determinism);
+  static bool FromMojom(memory_instrumentation::mojom::Determinism input,
+                        base::trace_event::MemoryDumpDeterminism* out);
+};
+
+template <>
+struct COMPONENT_EXPORT(RESOURCE_COORDINATOR_PUBLIC_MOJOM)
     StructTraits<memory_instrumentation::mojom::RequestArgsDataView,
                  base::trace_event::MemoryDumpRequestArgs> {
   static uint64_t dump_guid(
@@ -48,6 +58,10 @@ struct COMPONENT_EXPORT(RESOURCE_COORDINATOR_PUBLIC_MOJOM)
   static base::trace_event::MemoryDumpLevelOfDetail level_of_detail(
       const base::trace_event::MemoryDumpRequestArgs& args) {
     return args.level_of_detail;
+  }
+  static base::trace_event::MemoryDumpDeterminism determinism(
+      const base::trace_event::MemoryDumpRequestArgs& args) {
+    return args.determinism;
   }
   static bool Read(memory_instrumentation::mojom::RequestArgsDataView input,
                    base::trace_event::MemoryDumpRequestArgs* out);
@@ -190,6 +204,10 @@ struct COMPONENT_EXPORT(RESOURCE_COORDINATOR_PUBLIC_MOJOM)
   static base::trace_event::MemoryDumpLevelOfDetail level_of_detail(
       const std::unique_ptr<base::trace_event::ProcessMemoryDump>& pmd) {
     return pmd->dump_args().level_of_detail;
+  }
+  static base::trace_event::MemoryDumpDeterminism determinism(
+      const std::unique_ptr<base::trace_event::ProcessMemoryDump>& pmd) {
+    return pmd->dump_args().determinism;
   }
 
   static void SetToNull(

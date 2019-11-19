@@ -22,8 +22,8 @@ class AnimationInterpolableValueTest : public testing::Test {
     // the compositor (as z-index isn't compositor-compatible).
     PropertyHandle property_handle(GetCSSPropertyZIndex());
     CSSNumberInterpolationType interpolation_type(property_handle);
-    InterpolationValue start(InterpolableNumber::Create(a));
-    InterpolationValue end(InterpolableNumber::Create(b));
+    InterpolationValue start(std::make_unique<InterpolableNumber>(a));
+    InterpolationValue end(std::make_unique<InterpolableNumber>(b));
     TransitionInterpolation* i = TransitionInterpolation::Create(
         property_handle, interpolation_type, std::move(start), std::move(end),
         nullptr, nullptr);
@@ -42,22 +42,13 @@ class AnimationInterpolableValueTest : public testing::Test {
     base.ScaleAndAdd(scale, add);
   }
 
-  std::unique_ptr<TypedInterpolationValue> InterpolateLists(
-      std::unique_ptr<InterpolableList> list_a,
-      std::unique_ptr<InterpolableList> list_b,
+  std::unique_ptr<InterpolableValue> InterpolateLists(
+      std::unique_ptr<InterpolableValue> list_a,
+      std::unique_ptr<InterpolableValue> list_b,
       double progress) {
-    // We require a property that maps to CSSLengthInterpolationType. 'left'
-    // suffices for this, and also means we can ignore the AnimatableValues for
-    // the compositor (as left isn't compositor-compatible).
-    PropertyHandle property_handle(GetCSSPropertyLeft());
-    CSSLengthInterpolationType interpolation_type(property_handle);
-    InterpolationValue start(std::move(list_a));
-    InterpolationValue end(std::move(list_b));
-    TransitionInterpolation* i = TransitionInterpolation::Create(
-        property_handle, interpolation_type, std::move(start), std::move(end),
-        nullptr, nullptr);
-    i->Interpolate(0, progress);
-    return i->GetInterpolatedValue();
+    std::unique_ptr<InterpolableValue> result = list_a->CloneAndZero();
+    list_a->Interpolate(*list_b, progress, *result);
+    return result;
   }
 };
 
@@ -71,20 +62,19 @@ TEST_F(AnimationInterpolableValueTest, InterpolateNumbers) {
 }
 
 TEST_F(AnimationInterpolableValueTest, SimpleList) {
-  std::unique_ptr<InterpolableList> list_a = InterpolableList::Create(3);
-  list_a->Set(0, InterpolableNumber::Create(0));
-  list_a->Set(1, InterpolableNumber::Create(42));
-  list_a->Set(2, InterpolableNumber::Create(20.5));
+  auto list_a = std::make_unique<InterpolableList>(3);
+  list_a->Set(0, std::make_unique<InterpolableNumber>(0));
+  list_a->Set(1, std::make_unique<InterpolableNumber>(42));
+  list_a->Set(2, std::make_unique<InterpolableNumber>(20.5));
 
-  std::unique_ptr<InterpolableList> list_b = InterpolableList::Create(3);
-  list_b->Set(0, InterpolableNumber::Create(100));
-  list_b->Set(1, InterpolableNumber::Create(-200));
-  list_b->Set(2, InterpolableNumber::Create(300));
+  auto list_b = std::make_unique<InterpolableList>(3);
+  list_b->Set(0, std::make_unique<InterpolableNumber>(100));
+  list_b->Set(1, std::make_unique<InterpolableNumber>(-200));
+  list_b->Set(2, std::make_unique<InterpolableNumber>(300));
 
-  std::unique_ptr<TypedInterpolationValue> interpolated_value =
+  std::unique_ptr<InterpolableValue> interpolated_value =
       InterpolateLists(std::move(list_a), std::move(list_b), 0.3);
-  const InterpolableList& out_list =
-      ToInterpolableList(interpolated_value->GetInterpolableValue());
+  const InterpolableList& out_list = ToInterpolableList(*interpolated_value);
 
   EXPECT_FLOAT_EQ(30, ToInterpolableNumber(out_list.Get(0))->Value());
   EXPECT_FLOAT_EQ(-30.6f, ToInterpolableNumber(out_list.Get(1))->Value());
@@ -92,24 +82,23 @@ TEST_F(AnimationInterpolableValueTest, SimpleList) {
 }
 
 TEST_F(AnimationInterpolableValueTest, NestedList) {
-  std::unique_ptr<InterpolableList> list_a = InterpolableList::Create(3);
-  list_a->Set(0, InterpolableNumber::Create(0));
-  std::unique_ptr<InterpolableList> sub_list_a = InterpolableList::Create(1);
-  sub_list_a->Set(0, InterpolableNumber::Create(100));
+  auto list_a = std::make_unique<InterpolableList>(3);
+  list_a->Set(0, std::make_unique<InterpolableNumber>(0));
+  auto sub_list_a = std::make_unique<InterpolableList>(1);
+  sub_list_a->Set(0, std::make_unique<InterpolableNumber>(100));
   list_a->Set(1, std::move(sub_list_a));
-  list_a->Set(2, InterpolableNumber::Create(0));
+  list_a->Set(2, std::make_unique<InterpolableNumber>(0));
 
-  std::unique_ptr<InterpolableList> list_b = InterpolableList::Create(3);
-  list_b->Set(0, InterpolableNumber::Create(100));
-  std::unique_ptr<InterpolableList> sub_list_b = InterpolableList::Create(1);
-  sub_list_b->Set(0, InterpolableNumber::Create(50));
+  auto list_b = std::make_unique<InterpolableList>(3);
+  list_b->Set(0, std::make_unique<InterpolableNumber>(100));
+  auto sub_list_b = std::make_unique<InterpolableList>(1);
+  sub_list_b->Set(0, std::make_unique<InterpolableNumber>(50));
   list_b->Set(1, std::move(sub_list_b));
-  list_b->Set(2, InterpolableNumber::Create(1));
+  list_b->Set(2, std::make_unique<InterpolableNumber>(1));
 
-  std::unique_ptr<TypedInterpolationValue> interpolated_value =
+  std::unique_ptr<InterpolableValue> interpolated_value =
       InterpolateLists(std::move(list_a), std::move(list_b), 0.5);
-  const InterpolableList& out_list =
-      ToInterpolableList(interpolated_value->GetInterpolableValue());
+  const InterpolableList& out_list = ToInterpolableList(*interpolated_value);
 
   EXPECT_FLOAT_EQ(50, ToInterpolableNumber(out_list.Get(0))->Value());
   EXPECT_FLOAT_EQ(
@@ -119,28 +108,29 @@ TEST_F(AnimationInterpolableValueTest, NestedList) {
 }
 
 TEST_F(AnimationInterpolableValueTest, ScaleAndAddNumbers) {
-  std::unique_ptr<InterpolableNumber> base = InterpolableNumber::Create(10);
-  ScaleAndAdd(*base, 2, *InterpolableNumber::Create(1));
+  std::unique_ptr<InterpolableNumber> base =
+      std::make_unique<InterpolableNumber>(10);
+  ScaleAndAdd(*base, 2, *std::make_unique<InterpolableNumber>(1));
   EXPECT_FLOAT_EQ(21, base->Value());
 
-  base = InterpolableNumber::Create(10);
-  ScaleAndAdd(*base, 0, *InterpolableNumber::Create(5));
+  base = std::make_unique<InterpolableNumber>(10);
+  ScaleAndAdd(*base, 0, *std::make_unique<InterpolableNumber>(5));
   EXPECT_FLOAT_EQ(5, base->Value());
 
-  base = InterpolableNumber::Create(10);
-  ScaleAndAdd(*base, -1, *InterpolableNumber::Create(8));
+  base = std::make_unique<InterpolableNumber>(10);
+  ScaleAndAdd(*base, -1, *std::make_unique<InterpolableNumber>(8));
   EXPECT_FLOAT_EQ(-2, base->Value());
 }
 
 TEST_F(AnimationInterpolableValueTest, ScaleAndAddLists) {
-  std::unique_ptr<InterpolableList> base_list = InterpolableList::Create(3);
-  base_list->Set(0, InterpolableNumber::Create(5));
-  base_list->Set(1, InterpolableNumber::Create(10));
-  base_list->Set(2, InterpolableNumber::Create(15));
-  std::unique_ptr<InterpolableList> add_list = InterpolableList::Create(3);
-  add_list->Set(0, InterpolableNumber::Create(1));
-  add_list->Set(1, InterpolableNumber::Create(2));
-  add_list->Set(2, InterpolableNumber::Create(3));
+  auto base_list = std::make_unique<InterpolableList>(3);
+  base_list->Set(0, std::make_unique<InterpolableNumber>(5));
+  base_list->Set(1, std::make_unique<InterpolableNumber>(10));
+  base_list->Set(2, std::make_unique<InterpolableNumber>(15));
+  auto add_list = std::make_unique<InterpolableList>(3);
+  add_list->Set(0, std::make_unique<InterpolableNumber>(1));
+  add_list->Set(1, std::make_unique<InterpolableNumber>(2));
+  add_list->Set(2, std::make_unique<InterpolableNumber>(3));
   ScaleAndAdd(*base_list, 2, *add_list);
   EXPECT_FLOAT_EQ(11, ToInterpolableNumber(base_list->Get(0))->Value());
   EXPECT_FLOAT_EQ(22, ToInterpolableNumber(base_list->Get(1))->Value());

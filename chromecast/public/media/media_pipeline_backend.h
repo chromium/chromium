@@ -173,6 +173,34 @@ class MediaPipelineBackend {
       uint64_t dropped_frames;  // Reported as webkitDroppedFrames.
     };
 
+    // FrameDisplayInfoDelegate methods must be called on the main CMA thread.
+    class FrameDisplayInfoDelegate {
+     public:
+      // OnFrameDisplayed is called either when the frame is displayed
+      // successfully (with valid |display_time|), or when the frame is dropped
+      // but it's meant to displayed(with |display_time|==INT64_MIN).
+      // If a pushed frame is repeated on screen, OnFrameDisplayed() is called
+      // only once.
+      // For this API to work properly, the pts fields in CastDecoderBuffer must
+      // be unique.
+      virtual void OnFrameDisplayed(
+          int64_t push_time,     // Time when the frame is pushed to backend,
+                                 // in microseconds, relative to
+                                 // CLOCK_MONOTONIC or CLOCK_MONOTONIC_RAW.
+                                 // When it's not available it's INT64_MIN.
+          int64_t display_time,  // Time when the frame is displayed on screen,
+                                 // in microseconds, relative to
+                                 // CLOCK_MONOTONIC or CLOCK_MONOTONIC_RAW.
+                                 // If it's INT64_MIN, the frame is not
+                                 // displayed but dropped.
+          int64_t pts  // The |timestamp| within the CastDecoderBuffer that's
+                       // pushed to backend, in microseconds.
+          ) = 0;
+
+     protected:
+      virtual ~FrameDisplayInfoDelegate() = default;
+    };
+
     // Provides the video configuration. Called once with the configuration for
     // the primary stream before the backend is initialized, and the
     // configuration may contain a pointer to additional configuration for a
@@ -186,6 +214,14 @@ class MediaPipelineBackend {
     // Returns the playback statistics since last call to backend Start.  Only
     // called when playing or paused.
     virtual void GetStatistics(Statistics* statistics) = 0;
+
+    // Register |frame_display_info_delegate| on |video_decoder| to receive
+    // OnFrameDisplayed.
+    // TODO(guohuideng): make this a virtual method on VideoDecoder at next API
+    // update.
+    CHROMECAST_EXPORT static void SetFrameDisplayInfoDelegate(
+        FrameDisplayInfoDelegate* frame_display_info_delegate,
+        VideoDecoder* video_decoder) __attribute__((weak));
 
    protected:
     ~VideoDecoder() override {}
@@ -283,7 +319,8 @@ class MediaPipelineBackend {
   virtual bool Resume() = 0;
 
   // Gets the current playback timestamp in microseconds. Only called when in
-  // the "playing" or "paused" states.
+  // the "playing" or "paused" states. Returns INT64_MIN if the PTS is not
+  // available.
   virtual int64_t GetCurrentPts() = 0;
 
   // Sets the playback rate.  |rate| > 0.  If this is not called, a default rate
@@ -299,7 +336,7 @@ class MediaPipelineBackend {
   // object. Platforms which support standard CDM decryption APIs do not need to
   // implement this function.
   CHROMECAST_EXPORT static AudioDecryptor* CreateAudioDecryptor(
-      const EncryptionScheme& scheme,
+      EncryptionScheme scheme,
       TaskRunner* task_runner) __attribute__((weak));
 };
 

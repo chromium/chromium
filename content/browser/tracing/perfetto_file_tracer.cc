@@ -9,16 +9,23 @@
 #include "base/command_line.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/task/post_task.h"
 #include "base/threading/scoped_blocking_call.h"
+#include "build/build_config.h"
 #include "components/tracing/common/trace_startup_config.h"
 #include "components/tracing/common/tracing_switches.h"
-#include "content/public/common/service_manager_connection.h"
+#include "content/public/browser/system_connector.h"
 #include "mojo/public/cpp/system/data_pipe_drainer.h"
 #include "services/service_manager/public/cpp/connector.h"
+#include "services/tracing/public/cpp/perfetto/perfetto_config.h"
 #include "services/tracing/public/mojom/constants.mojom.h"
 #include "third_party/perfetto/include/perfetto/tracing/core/trace_config.h"
 #include "third_party/perfetto/protos/perfetto/config/trace_config.pb.h"
+
+#if defined(OS_ANDROID)
+#include "content/browser/android/tracing_controller_android.h"
+#endif
 
 namespace content {
 
@@ -33,6 +40,14 @@ class BackgroundDrainer : public mojo::DataPipeDrainer::Client {
     base::FilePath output_file =
         base::CommandLine::ForCurrentProcess()->GetSwitchValuePath(
             switches::kPerfettoOutputFile);
+
+#if defined(OS_ANDROID)
+    if (output_file.empty()) {
+      TracingControllerAndroid::GenerateTracingFilePath(&output_file);
+      VLOG(0) << "Writing to output file: " << output_file.value();
+    }
+#endif
+
     file_.Initialize(output_file,
                      base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE);
     if (!file_.IsValid()) {
@@ -80,58 +95,49 @@ bool PerfettoFileTracer::ShouldEnable() {
 }
 
 PerfettoFileTracer::PerfettoFileTracer()
-    : background_task_runner_(base::CreateSequencedTaskRunnerWithTraits(
-          {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+    : background_task_runner_(base::CreateSequencedTaskRunner(
+          {base::ThreadPool(), base::MayBlock(),
+           base::TaskPriority::BEST_EFFORT,
            base::TaskShutdownBehavior::BLOCK_SHUTDOWN})),
-      background_drainer_(background_task_runner_),
-      binding_(this),
-      weak_factory_(this) {
-  ServiceManagerConnection::GetForProcess()->GetConnector()->BindInterface(
-      tracing::mojom::kServiceName, &consumer_host_);
+      background_drainer_(background_task_runner_) {
+  GetSystemConnector()->BindInterface(tracing::mojom::kServiceName,
+                                      &consumer_host_);
 
-  perfetto::TraceConfig trace_config;
+  const auto& chrome_config =
+      tracing::TraceStartupConfig::GetInstance()->GetTraceConfig();
+  // The output is always proto based. So, enable privacy filtering if argument
+  // filter is enabled.
+  bool privacy_filtering = chrome_config.IsArgumentFilterEnabled();
+  perfetto::TraceConfig trace_config =
+      tracing::GetDefaultPerfettoConfig(chrome_config, privacy_filtering);
+
   int duration_in_seconds =
       tracing::TraceStartupConfig::GetInstance()->GetStartupDuration();
   trace_config.set_duration_ms(duration_in_seconds * 1000);
 
   // We just need a single global trace buffer, for our data.
-  trace_config.add_buffers()->set_size_kb(32 * 1024);
+  trace_config.mutable_buffers()->front().set_size_kb(32 * 1024);
 
-  // We need data from two different sources to get the complete trace
-  // we're interested in both, written into the single buffer we
-  // configure above.
-
-  // This source is the actual trace events themselves coming
-  // from the base::TraceLog
-  auto* trace_event_config = trace_config.add_data_sources()->mutable_config();
-  trace_event_config->set_name(tracing::mojom::kTraceEventDataSourceName);
-  trace_event_config->set_target_buffer(0);
-  auto* chrome_config = trace_event_config->mutable_chrome_config();
-
-  // The Chrome config string is passed straight through to base::TraceLog
-  // and defines which tracing categories should be enabled.
-  auto chrome_raw_config =
-      tracing::TraceStartupConfig::GetInstance()->GetTraceConfig().ToString();
-  chrome_config->set_trace_config(chrome_raw_config);
-
-  // The second data source we're interested in is the global metadata.
-  auto* trace_metadata_config =
-      trace_config.add_data_sources()->mutable_config();
-  trace_metadata_config->set_name(tracing::mojom::kMetaDataSourceName);
-  trace_metadata_config->set_target_buffer(0);
-
-  tracing::mojom::TracingSessionPtr tracing_session;
-  binding_.Bind(mojo::MakeRequest(&tracing_session));
+  mojo::PendingRemote<tracing::mojom::TracingSessionClient>
+      tracing_session_client;
+  binding_.Bind(tracing_session_client.InitWithNewPipeAndPassReceiver());
   binding_.set_connection_error_handler(base::BindOnce(
       &PerfettoFileTracer::OnTracingSessionEnded, base::Unretained(this)));
 
-  consumer_host_->EnableTracing(std::move(tracing_session),
-                                std::move(trace_config));
-
+  consumer_host_->EnableTracing(
+      mojo::MakeRequest(&tracing_session_host_),
+      std::move(tracing_session_client), std::move(trace_config),
+      tracing::mojom::TracingClientPriority::kBackground);
   ReadBuffers();
 }
 
 PerfettoFileTracer::~PerfettoFileTracer() = default;
+
+void PerfettoFileTracer::OnTracingEnabled() {}
+
+void PerfettoFileTracer::OnTracingDisabled() {
+  has_been_disabled_ = true;
+}
 
 void PerfettoFileTracer::OnNoMorePackets(bool queued_after_disable) {
   DCHECK(consumer_host_);
@@ -156,7 +162,7 @@ void PerfettoFileTracer::ReadBuffers() {
   DCHECK(consumer_host_);
 
   mojo::DataPipe data_pipe;
-  consumer_host_->ReadBuffers(
+  tracing_session_host_->ReadBuffers(
       std::move(data_pipe.producer_handle),
       base::BindOnce(
           [](PerfettoFileTracer* file_tracing, bool queued_after_disable) {
@@ -169,7 +175,8 @@ void PerfettoFileTracer::ReadBuffers() {
 }
 
 void PerfettoFileTracer::OnTracingSessionEnded() {
-  has_been_disabled_ = true;
+  binding_.Close();
+  tracing_session_host_.reset();
 }
 
 }  // namespace content

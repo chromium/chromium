@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/web/public/web_state/web_state_delegate_bridge.h"
+#import "ios/web/public/web_state_delegate_bridge.h"
 
 #include "base/logging.h"
-#import "ios/web/public/web_state/context_menu_params.h"
+#import "ios/web/public/ui/context_menu_params.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

@@ -1,0 +1,57 @@
+<html>
+  <script>
+async function registerCredential(options = {}) {
+  options = Object.assign({
+    authenticatorSelection: {
+      requireResidentKey: false,
+    },
+    rp: {
+      id: "chromedriver.test",
+      name: "ChromeDriver Test",
+    },
+    challenge: Uint8Array.from("challenge"),
+    pubKeyCredParams: [
+      {type: "public-key", alg: -7},
+    ],
+    user: {
+      name: "name",
+      displayName: "displayName",
+      id: Uint8Array.from([1]),
+    },
+  }, options);
+
+  try {
+    const credential = await navigator.credentials.create({publicKey: options});
+    return {
+      status: "OK",
+      credential: {
+        id: credential.id,
+        rawId: Array.from(new Uint8Array(credential.rawId)),
+        transports: credential.response.getTransports(),
+      }
+    };
+  } catch (error) {
+    return {status: error.toString()};
+  }
+}
+
+async function getCredential(credential, options = {}) {
+  options = Object.assign({
+    challenge: Uint8Array.from("Winter is Coming"),
+    rpId: "chromedriver.test",
+    allowCredentials: [credential],
+    userVerification: "preferred",
+  }, options);
+
+  try {
+    const attestation = await navigator.credentials.get({publicKey: options});
+    return {
+      status: "OK",
+      attestation,
+    };
+  } catch (error) {
+    return {status: error.toString()};
+  }
+}
+  </script>
+</html>

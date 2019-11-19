@@ -14,7 +14,7 @@
 #include "base/time/clock.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "chromeos/dbus/power_manager_client.h"
+#include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/dbus/system_clock/system_clock_client.h"
 #include "chromeos/policy/weekly_time/weekly_time_interval.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
@@ -136,8 +136,10 @@ class DeviceOffHoursController : public chromeos::SystemClockClient::Observer,
   // base::DefaultClock.
   base::Clock* clock_;
 
-  // Value is false until the system time is synchronized with network time.
-  bool network_synchronized_ = false;
+  // Value is true if the system time is synchronized with network time, and
+  // false when synchronization failed. Value is not set until the response from
+  // the D-Bus call is not arrived.
+  base::Optional<bool> network_synchronized_;
 
   // Current "OffHours" time intervals.
   std::vector<WeeklyTimeInterval> off_hours_intervals_;

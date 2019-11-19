@@ -43,7 +43,8 @@ static bool FloatsEqualWithinTolerance(const float* a,
 }  // namespace
 
 // static
-int ColorSpace::kInvalidId = -1;
+constexpr int ColorSpace::kInvalidId;
+constexpr float ColorSpace::kDefaultSDRWhiteLevel;
 
 ColorSpace::ColorSpace(PrimaryID primaries,
                        TransferID transfer)
@@ -65,14 +66,29 @@ ColorSpace::ColorSpace(const SkColorSpace& sk_color_space)
                  TransferID::INVALID,
                  MatrixID::RGB,
                  RangeID::FULL) {
+  // Special case the HDR transfer functions since they're not numerical
+  auto transfer_eq = [](skcms_TransferFunction x, skcms_TransferFunction y) {
+    return x.g == y.g && x.a == y.a && x.b == y.b && x.c == y.c && x.d == y.d &&
+           x.e == y.e && x.f == y.f;
+  };
+
   skcms_TransferFunction fn;
-  skcms_Matrix3x3 to_XYZD50;
-  if (!sk_color_space.isNumericalTransferFn(&fn) ||
-      !sk_color_space.toXYZD50(&to_XYZD50)) {
+  if (sk_color_space.isNumericalTransferFn(&fn)) {
+    SetCustomTransferFunction(fn);
+  } else if (transfer_eq(fn, SkNamedTransferFn::kHLG)) {
+    transfer_ = TransferID::ARIB_STD_B67;
+  } else if (transfer_eq(fn, SkNamedTransferFn::kPQ)) {
+    transfer_ = TransferID::SMPTEST2084;
+  } else {
     // Construct an invalid result: Unable to extract necessary parameters
     return;
   }
-  SetCustomTransferFunction(fn);
+
+  skcms_Matrix3x3 to_XYZD50;
+  if (!sk_color_space.toXYZD50(&to_XYZD50)) {
+    // Construct an invalid result: Unable to extract necessary parameters
+    return;
+  }
   SetCustomPrimaries(to_XYZD50);
 }
 
@@ -89,6 +105,15 @@ ColorSpace ColorSpace::CreateCustom(const skcms_Matrix3x3& to_XYZD50,
                     ColorSpace::RangeID::FULL);
   result.SetCustomPrimaries(to_XYZD50);
   result.SetCustomTransferFunction(fn);
+  return result;
+}
+
+// static
+ColorSpace ColorSpace::CreateCustom(const skcms_Matrix3x3& to_XYZD50,
+                                    TransferID transfer) {
+  ColorSpace result(ColorSpace::PrimaryID::CUSTOM, transfer,
+                    ColorSpace::MatrixID::RGB, ColorSpace::RangeID::FULL);
+  result.SetCustomPrimaries(to_XYZD50);
   return result;
 }
 
@@ -160,9 +185,9 @@ int ColorSpace::GetNextId() {
 
 bool ColorSpace::operator==(const ColorSpace& other) const {
   if (primaries_ != other.primaries_ || transfer_ != other.transfer_ ||
-      matrix_ != other.matrix_ || range_ != other.range_ ||
-      icc_profile_id_ != other.icc_profile_id_)
+      matrix_ != other.matrix_ || range_ != other.range_) {
     return false;
+  }
   if (primaries_ == PrimaryID::CUSTOM) {
     if (memcmp(custom_primary_matrix_, other.custom_primary_matrix_,
                sizeof(custom_primary_matrix_))) {
@@ -192,16 +217,6 @@ bool ColorSpace::FullRangeEncodedValues() const {
          transfer_ == TransferID::IEC61966_2_4;
 }
 
-bool ColorSpace::IsParametricAccurate() const {
-  return icc_profile_id_ == 0;
-}
-
-ColorSpace ColorSpace::GetParametricApproximation() const {
-  ColorSpace result = *this;
-  result.icc_profile_id_ = 0;
-  return result;
-}
-
 bool ColorSpace::operator!=(const ColorSpace& other) const {
   return !(*this == other);
 }
@@ -222,10 +237,6 @@ bool ColorSpace::operator<(const ColorSpace& other) const {
   if (range_ < other.range_)
     return true;
   if (range_ > other.range_)
-    return false;
-  if (icc_profile_id_ < other.icc_profile_id_)
-    return true;
-  if (icc_profile_id_ > other.icc_profile_id_)
     return false;
   if (primaries_ == PrimaryID::CUSTOM) {
     int primary_result =
@@ -369,9 +380,6 @@ std::string ColorSpace::ToString() const {
     PRINT_ENUM_CASE(RangeID, FULL)
     PRINT_ENUM_CASE(RangeID, DERIVED)
   }
-  if (icc_profile_id_) {
-    ss << ", icc_profile_id:" << icc_profile_id_;
-  }
   ss << "}";
   return ss.str();
 }
@@ -408,14 +416,10 @@ ColorSpace ColorSpace::GetScaledColorSpace(float factor) const {
 }
 
 ColorSpace ColorSpace::GetRasterColorSpace() const {
-  // Rasterization can only be done into parametric color spaces.
-  if (icc_profile_id_)
-    return GetParametricApproximation();
-
   // Rasterization doesn't support more than 8 bit unorm values. If the output
   // space has an extended range, use Display P3 for the rasterization space,
   // to get a somewhat wider color gamut.
-  if (HasExtendedSkTransferFn())
+  if (IsHDR())
     return CreateDisplayP3D65();
 
   return *this;
@@ -424,9 +428,20 @@ ColorSpace ColorSpace::GetRasterColorSpace() const {
 ColorSpace ColorSpace::GetBlendingColorSpace() const {
   // HDR output on windows requires output have a linear transfer function.
   // Linear blending breaks the web, so use extended-sRGB for blending.
-  if (transfer_ == TransferID::LINEAR_HDR)
+  if (IsHDR())
     return CreateExtendedSRGB();
   return *this;
+}
+
+ColorSpace ColorSpace::GetWithMatrixAndRange(MatrixID matrix,
+                                             RangeID range) const {
+  ColorSpace result(*this);
+  if (!IsValid())
+    return result;
+
+  result.matrix_ = matrix;
+  result.range_ = range;
+  return result;
 }
 
 sk_sp<SkColorSpace> ColorSpace::ToSkColorSpace() const {
@@ -444,19 +459,6 @@ sk_sp<SkColorSpace> ColorSpace::ToSkColorSpace() const {
     return nullptr;
   }
 
-  // If we got a specific SkColorSpace from the ICCProfile that this color space
-  // was created from, use that.
-  if (icc_profile_id_) {
-    sk_sp<SkColorSpace> result =
-        ICCProfile::GetSkColorSpaceFromId(icc_profile_id_);
-    if (result)
-      return result;
-
-    // This will fall through to creating a parametric approximation. The
-    // result will be that we will use an inaccurate transfer function.
-    DLOG(ERROR) << "Unable to find ICCProfile for SkColorSpace.";
-  }
-
   // Use the named SRGB and linear-SRGB instead of the generic constructors.
   if (primaries_ == PrimaryID::BT709) {
     if (transfer_ == TransferID::IEC61966_2_1)
@@ -472,6 +474,12 @@ sk_sp<SkColorSpace> ColorSpace::ToSkColorSpace() const {
     case TransferID::LINEAR:
     case TransferID::LINEAR_HDR:
       transfer_fn = SkNamedTransferFn::kLinear;
+      break;
+    case TransferID::ARIB_STD_B67:
+      transfer_fn = SkNamedTransferFn::kHLG;
+      break;
+    case TransferID::SMPTEST2084:
+      transfer_fn = SkNamedTransferFn::kPQ;
       break;
     default:
       if (!GetTransferFunction(&transfer_fn)) {
@@ -893,6 +901,26 @@ void ColorSpace::GetRangeAdjustMatrix(SkMatrix44* matrix) const {
     case RangeID::LIMITED:
       break;
   }
+
+  // Note: The values below assume an 8-bit range and aren't entirely correct
+  // for higher bit depths. They are close enough though (with a relative error
+  // of ~2.9% for 10-bit and ~3.7% for 12-bit) that it's not worth adding a
+  // |bit_depth| field to gfx::ColorSpace yet.
+  //
+  // The limited ranges are [64,940] and [256, 3760] for 10 and 12 bit content
+  // respectively. So the final values end up being:
+  //
+  //   16 /  255 = 0.06274509803921569
+  //   64 / 1023 = 0.06256109481915934
+  //  256 / 4095 = 0.06251526251526252
+  //
+  //  235 /  255 = 0.9215686274509803
+  //  940 / 1023 = 0.9188660801564027
+  // 3760 / 4095 = 0.9181929181929182
+  //
+  // Relative error (same for min/max):
+  //   10 bit: abs(16/235 - 64/1023)/(64/1023)   = 0.0029411764705882222
+  //   12 bit: abs(16/235 - 256/4095)/(256/4095) = 0.003676470588235281
   switch (matrix_) {
     case MatrixID::RGB:
     case MatrixID::GBR:
@@ -918,6 +946,7 @@ void ColorSpace::GetRangeAdjustMatrix(SkMatrix44* matrix) const {
 
 bool ColorSpace::ToSkYUVColorSpace(SkYUVColorSpace* out) const {
   if (range_ == RangeID::FULL) {
+    // TODO(dalecurtis): This is probably not right for BT.2020.
     *out = kJPEG_SkYUVColorSpace;
     return true;
   }
@@ -930,6 +959,10 @@ bool ColorSpace::ToSkYUVColorSpace(SkYUVColorSpace* out) const {
     case MatrixID::SMPTE170M:
     case MatrixID::SMPTE240M:
       *out = kRec601_SkYUVColorSpace;
+      return true;
+
+    case MatrixID::BT2020_NCL:
+      *out = kBT2020_SkYUVColorSpace;
       return true;
 
     default:

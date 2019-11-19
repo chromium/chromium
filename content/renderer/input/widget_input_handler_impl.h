@@ -8,8 +8,8 @@
 #include "base/memory/weak_ptr.h"
 #include "base/single_thread_task_runner.h"
 #include "content/common/input/input_handler.mojom.h"
-#include "mojo/public/cpp/bindings/associated_binding.h"
-#include "mojo/public/cpp/bindings/binding.h"
+#include "mojo/public/cpp/bindings/associated_receiver.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 
 namespace content {
 class MainThreadEventQueue;
@@ -29,15 +29,18 @@ class WidgetInputHandlerImpl : public mojom::WidgetInputHandler {
       base::WeakPtr<RenderWidget> render_widget);
   ~WidgetInputHandlerImpl() override;
 
-  void SetAssociatedBinding(
-      mojom::WidgetInputHandlerAssociatedRequest interface_request);
-  void SetBinding(mojom::WidgetInputHandlerRequest interface_request);
+  void SetAssociatedReceiver(
+      mojo::PendingAssociatedReceiver<mojom::WidgetInputHandler>
+          interface_receiver);
+  void SetReceiver(
+      mojo::PendingReceiver<mojom::WidgetInputHandler> interface_receiver);
 
   void SetFocus(bool focused) override;
   void MouseCaptureLost() override;
   void SetEditCommandsForNextKeyEvent(
       const std::vector<EditCommand>& commands) override;
   void CursorVisibilityChanged(bool visible) override;
+  void FallbackCursorModeToggled(bool is_on) override;
   void ImeSetComposition(const base::string16& text,
                          const std::vector<ui::ImeTextSpan>& ime_text_spans,
                          const gfx::Range& range,
@@ -57,10 +60,10 @@ class WidgetInputHandlerImpl : public mojom::WidgetInputHandler {
   void DispatchNonBlockingEvent(std::unique_ptr<content::InputEvent>) override;
   void WaitForInputProcessed(WaitForInputProcessedCallback callback) override;
   void AttachSynchronousCompositor(
-      mojom::SynchronousCompositorControlHostPtr control_host,
-      mojom::SynchronousCompositorHostAssociatedPtrInfo host,
-      mojom::SynchronousCompositorAssociatedRequest compositor_request)
-      override;
+      mojo::PendingRemote<mojom::SynchronousCompositorControlHost> control_host,
+      mojo::PendingAssociatedRemote<mojom::SynchronousCompositorHost> host,
+      mojo::PendingAssociatedReceiver<mojom::SynchronousCompositor>
+          compositor_receiver) override;
   void InputWasProcessed();
 
  private:
@@ -78,8 +81,9 @@ class WidgetInputHandlerImpl : public mojom::WidgetInputHandler {
   // killed before we actually fully process the input.
   WaitForInputProcessedCallback input_processed_ack_;
 
-  mojo::Binding<mojom::WidgetInputHandler> binding_{this};
-  mojo::AssociatedBinding<mojom::WidgetInputHandler> associated_binding_{this};
+  mojo::Receiver<mojom::WidgetInputHandler> receiver_{this};
+  mojo::AssociatedReceiver<mojom::WidgetInputHandler> associated_receiver_{
+      this};
 
   base::WeakPtrFactory<WidgetInputHandlerImpl> weak_ptr_factory_{this};
 

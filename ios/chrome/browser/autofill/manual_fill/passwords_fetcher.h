@@ -29,7 +29,7 @@ class GURL;
 // Saved passwords has been fetched or updated.
 - (void)passwordFetcher:(PasswordFetcher*)passwordFetcher
       didFetchPasswords:
-          (std::vector<std::unique_ptr<autofill::PasswordForm>>&)passwords;
+          (std::vector<std::unique_ptr<autofill::PasswordForm>>)passwords;
 
 @end
 

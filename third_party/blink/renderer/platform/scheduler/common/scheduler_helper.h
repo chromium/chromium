@@ -9,22 +9,29 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/message_loop/message_loop.h"
 #include "base/task/sequence_manager/sequence_manager.h"
+#include "base/task/simple_task_executor.h"
 #include "base/time/tick_clock.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
+#include "third_party/blink/renderer/platform/scheduler/common/ukm_task_sampler.h"
+
+namespace base {
+class TaskObserver;
+}
 
 namespace blink {
 namespace scheduler {
 
 // Common scheduler functionality for default tasks.
+// TODO(carlscab): This class is not really needed and should be removed
 class PLATFORM_EXPORT SchedulerHelper
     : public base::sequence_manager::SequenceManager::Observer {
  public:
+  // |sequence_manager| must remain valid until Shutdown() is called or the
+  // object is destroyed.
   explicit SchedulerHelper(
-      std::unique_ptr<base::sequence_manager::SequenceManager>
-          sequence_manager);
+      base::sequence_manager::SequenceManager* sequence_manager);
   ~SchedulerHelper() override;
 
   // SequenceManager::Observer implementation:
@@ -51,8 +58,8 @@ class PLATFORM_EXPORT SchedulerHelper
   // Adds or removes a task observer from the scheduler. The observer will be
   // notified before and after every executed task. These functions can only be
   // called on the thread this class was created on.
-  void AddTaskObserver(base::MessageLoop::TaskObserver* task_observer);
-  void RemoveTaskObserver(base::MessageLoop::TaskObserver* task_observer);
+  void AddTaskObserver(base::TaskObserver* task_observer);
+  void RemoveTaskObserver(base::TaskObserver* task_observer);
 
   void AddTaskTimeObserver(
       base::sequence_manager::TaskTimeObserver* task_time_observer);
@@ -65,7 +72,7 @@ class PLATFORM_EXPORT SchedulerHelper
   void Shutdown();
 
   // Returns true if Shutdown() has been called. Otherwise returns false.
-  bool IsShutdown() const { return !sequence_manager_.get(); }
+  bool IsShutdown() const { return !sequence_manager_; }
 
   inline void CheckOnValidThread() const {
     DCHECK(thread_checker_.CalledOnValidThread());
@@ -99,8 +106,15 @@ class PLATFORM_EXPORT SchedulerHelper
   double GetSamplingRateForRecordingCPUTime() const;
   bool HasCPUTimingForEachTask() const;
 
+  bool ShouldRecordTaskUkm(bool task_has_thread_time) {
+    return ukm_task_sampler_.ShouldRecordTaskUkm(task_has_thread_time);
+  }
+
   // Test helpers.
   void SetWorkBatchSizeForTesting(int work_batch_size);
+  void SetUkmTaskSamplingRateForTest(double rate) {
+    ukm_task_sampler_.SetUkmTaskSamplingRate(rate);
+  }
 
  protected:
   void InitDefaultQueues(
@@ -108,15 +122,37 @@ class PLATFORM_EXPORT SchedulerHelper
       scoped_refptr<base::sequence_manager::TaskQueue> control_task_queue,
       TaskType default_task_type);
 
+  virtual void ShutdownAllQueues() {}
+
   base::ThreadChecker thread_checker_;
-  std::unique_ptr<base::sequence_manager::SequenceManager> sequence_manager_;
+  base::sequence_manager::SequenceManager* sequence_manager_;  // NOT OWNED
 
  private:
   friend class SchedulerHelperTest;
 
+  // Like SimpleTaskExecutor except it knows how to get the current task runner
+  // from the SequenceManager to implement GetContinuationTaskRunner.
+  class BlinkTaskExecutor : public base::SimpleTaskExecutor {
+   public:
+    BlinkTaskExecutor(
+        scoped_refptr<base::SingleThreadTaskRunner> default_task_queue,
+        base::sequence_manager::SequenceManager* sequence_manager);
+
+    ~BlinkTaskExecutor() override;
+
+    // base::TaskExecutor implementation.
+    const scoped_refptr<base::SequencedTaskRunner>& GetContinuationTaskRunner()
+        override;
+
+   private:
+    base::sequence_manager::SequenceManager* sequence_manager_;  // NOT OWNED
+  };
   scoped_refptr<base::SingleThreadTaskRunner> default_task_runner_;
 
   Observer* observer_;  // NOT OWNED
+
+  UkmTaskSampler ukm_task_sampler_;
+  base::Optional<BlinkTaskExecutor> blink_task_executor_;
 
   DISALLOW_COPY_AND_ASSIGN(SchedulerHelper);
 };

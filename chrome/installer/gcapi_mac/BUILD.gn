@@ -32,6 +32,8 @@ static_library("gcapi_lib") {
   # Don't use runtime_library, to be able to pick a custom mmacosx-version-min.
   configs -= [ "//build/config/compiler:runtime_library" ]
   configs += [ ":gcapi_config" ]
+
+  # no_default_deps has no effect in static_libraries, so set it only below.
 }
 
 executable("gcapi_example") {
@@ -46,4 +48,12 @@ executable("gcapi_example") {
   # Don't use runtime_library, to be able to pick a custom mmacosx-version-min.
   configs -= [ "//build/config/compiler:runtime_library" ]
   configs += [ ":gcapi_config" ]
+
+  # Every executable by default links to a hermetic libc++, so that we can
+  # guarantee the capability of the standard library. Neither gcapi_lib
+  # not gcapi_example contain any significant use of the standard library
+  # and gcapi_lib is supposed to be redistributable to partners who don't
+  # want to link our hermetic libc++, so set no_default_deps to not link to
+  # our hermetic libc++.
+  no_default_deps = true
 }

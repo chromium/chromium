@@ -123,7 +123,7 @@ class FakeDriveService : public DriveServiceInterface {
   }
 
   // DriveServiceInterface Overrides
-  void Initialize(const std::string& account_id) override;
+  void Initialize(const CoreAccountId& account_id) override;
   void AddObserver(DriveServiceObserver* observer) override;
   void RemoveObserver(DriveServiceObserver* observer) override;
   bool CanSendRequest() const override;
@@ -433,7 +433,7 @@ class FakeDriveService : public DriveServiceInterface {
 
   base::ObserverList<ChangeObserver>::Unchecked change_observers_;
 
-  base::WeakPtrFactory<FakeDriveService> weak_ptr_factory_;
+  base::WeakPtrFactory<FakeDriveService> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(FakeDriveService);
 };

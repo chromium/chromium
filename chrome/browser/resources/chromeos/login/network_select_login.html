@@ -1,6 +1,7 @@
 <link rel="import" href="chrome://resources/html/polymer.html">
-<link rel="import" href="chrome://resources/cr_elements/chromeos/network/cr_network_select.html">
-<link rel="import" href="chrome://resources/cr_elements/chromeos/network/cr_onc_types.html">
+<link rel="import" href="chrome://resources/cr_components/chromeos/network/network_select.html">
+<link rel="import" href="chrome://resources/cr_elements/chromeos/network/cr_onc_strings.html">
+<link rel="import" href="chrome://resources/html/chromeos/onc_mojo.html">
 
 <dom-module id="network-select-login">
   <style>
@@ -14,7 +15,8 @@
     }
   </style>
   <template>
-    <cr-network-select id="networkSelect" class="focus-on-show"
+    <network-select id="networkSelect" class="focus-on-show"
+        show-scan-progress
         custom-items="[[getNetworkCustomItems_(isConnected)]]"
         on-default-network-changed="onDefaultNetworkChanged_"
         on-network-connect-changed="onNetworkConnectChanged_"
@@ -23,6 +25,6 @@
         on-custom-item-selected="onNetworkListCustomItemSelected_"
         no-bottom-scroll-border="[[noBottomScrollBorder]]"
         show-technology-badge="[[showTechnologyBadge_]]">
-    </cr-network-select>
+    </network-select>
   </template>
 </dom-module>

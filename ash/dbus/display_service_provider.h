@@ -55,7 +55,7 @@ class DisplayServiceProvider
                   bool success);
 
   std::unique_ptr<Impl> impl_;
-  base::WeakPtrFactory<DisplayServiceProvider> weak_ptr_factory_;
+  base::WeakPtrFactory<DisplayServiceProvider> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(DisplayServiceProvider);
 };

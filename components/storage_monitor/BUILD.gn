@@ -6,16 +6,8 @@ import("//build/config/features.gni")
 
 static_library("storage_monitor") {
   sources = [
-    "image_capture_device.h",
-    "image_capture_device.mm",
-    "image_capture_device_manager.h",
-    "image_capture_device_manager.mm",
     "media_storage_util.cc",
     "media_storage_util.h",
-    "mtab_watcher_linux.cc",
-    "mtab_watcher_linux.h",
-    "portable_device_watcher_win.cc",
-    "portable_device_watcher_win.h",
     "removable_device_constants.cc",
     "removable_device_constants.h",
     "removable_storage_observer.h",
@@ -23,20 +15,8 @@ static_library("storage_monitor") {
     "storage_info.h",
     "storage_monitor.cc",
     "storage_monitor.h",
-    "storage_monitor_chromeos.cc",
-    "storage_monitor_chromeos.h",
-    "storage_monitor_linux.cc",
-    "storage_monitor_linux.h",
-    "storage_monitor_mac.h",
-    "storage_monitor_mac.mm",
-    "storage_monitor_win.cc",
-    "storage_monitor_win.h",
     "transient_device_ids.cc",
     "transient_device_ids.h",
-    "udev_util_linux.cc",
-    "udev_util_linux.h",
-    "volume_mount_watcher_win.cc",
-    "volume_mount_watcher_win.h",
   ]
 
   deps = [
@@ -47,44 +27,70 @@ static_library("storage_monitor") {
     "//ui/base",
   ]
 
-  if (is_mac) {
+  if (is_win) {
+    sources += [
+      "portable_device_watcher_win.cc",
+      "portable_device_watcher_win.h",
+      "storage_monitor_win.cc",
+      "storage_monitor_win.h",
+      "volume_mount_watcher_win.cc",
+      "volume_mount_watcher_win.h",
+    ]
+  } else if (is_mac) {
+    sources += [
+      "image_capture_device.h",
+      "image_capture_device.mm",
+      "image_capture_device_manager.h",
+      "image_capture_device_manager.mm",
+      "storage_monitor_mac.h",
+      "storage_monitor_mac.mm",
+    ]
     libs = [
       "DiskArbitration.framework",
       "Foundation.framework",
       "ImageCaptureCore.framework",
     ]
-  }
-
-  if (is_chromeos && use_dbus) {
-    deps += [ "//services/device/public/mojom" ]
+  } else if (is_chromeos) {
+    # For Chrome OS, |is_linux| is also true. Put this in an else-if block above
+    # the |is_linux| else-if block, so they do not clash.
     sources += [
-      "mtp_manager_client_chromeos.cc",
-      "mtp_manager_client_chromeos.h",
-      "storage_info_utils.cc",
-      "storage_info_utils.h",
+      "storage_monitor_chromeos.cc",
+      "storage_monitor_chromeos.h",
     ]
+    deps += [ "//chromeos/disks" ]
+
+    if (use_dbus) {
+      sources += [
+        "mtp_manager_client_chromeos.cc",
+        "mtp_manager_client_chromeos.h",
+        "storage_info_utils.cc",
+        "storage_info_utils.h",
+      ]
+      deps += [ "//services/device/public/mojom" ]
+    }
+  } else if (is_linux) {
+    if (use_udev) {
+      sources += [
+        "mtab_watcher_linux.cc",
+        "mtab_watcher_linux.h",
+        "storage_monitor_linux.cc",
+        "storage_monitor_linux.h",
+      ]
+    } else {
+      sources += [ "storage_monitor_dummy.cc" ]
+    }
   }
 
   if (use_udev) {
-    deps += [ "//device/udev_linux" ]
-  } else if (is_linux) {
-    # These were already removed for non-Linux.
-    sources -= [
-      "storage_monitor_linux.cc",
-      "storage_monitor_linux.h",
+    sources += [
       "udev_util_linux.cc",
       "udev_util_linux.h",
     ]
+    deps += [ "//device/udev_linux" ]
   }
 
-  if (is_chromeos) {
-    sources -= [
-      "mtab_watcher_linux.cc",
-      "mtab_watcher_linux.h",
-      "storage_monitor_linux.cc",
-      "storage_monitor_linux.h",
-    ]
-    deps += [ "//chromeos/disks" ]
+  if (is_fuchsia) {
+    sources += [ "storage_monitor_fuchsia.cc" ]
   }
 }
 

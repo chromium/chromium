@@ -39,7 +39,7 @@ class MEDIA_EXPORT SincResampler {
   // Callback type for providing more data into the resampler.  Expects |frames|
   // of data to be rendered into |destination|; zero padded if not enough frames
   // are available to satisfy the request.
-  typedef base::Callback<void(int frames, float* destination)> ReadCB;
+  typedef base::RepeatingCallback<void(int frames, float* destination)> ReadCB;
 
   // Constructs a SincResampler with the specified |read_cb|, which is used to
   // acquire audio data for resampling.  |io_sample_rate_ratio| is the ratio
@@ -49,7 +49,7 @@ class MEDIA_EXPORT SincResampler {
   // request size constraints.
   SincResampler(double io_sample_rate_ratio,
                 int request_frames,
-                const ReadCB& read_cb);
+                const ReadCB read_cb);
   ~SincResampler();
 
   // Resample |frames| of data from |read_cb_| into |destination|.

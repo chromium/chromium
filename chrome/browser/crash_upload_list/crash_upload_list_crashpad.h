@@ -8,6 +8,10 @@
 #include "base/macros.h"
 #include "components/upload_list/upload_list.h"
 
+namespace base {
+class Time;
+}
+
 // An UploadList that retrieves the list of crash reports from the
 // Crashpad database.
 class CrashUploadListCrashpad : public UploadList {
@@ -17,8 +21,8 @@ class CrashUploadListCrashpad : public UploadList {
  protected:
   ~CrashUploadListCrashpad() override;
 
-  base::TaskTraits LoadingTaskTraits() override;
   std::vector<UploadInfo> LoadUploadList() override;
+  void ClearUploadList(const base::Time& begin, const base::Time& end) override;
   void RequestSingleUpload(const std::string& local_id) override;
 
   DISALLOW_COPY_AND_ASSIGN(CrashUploadListCrashpad);

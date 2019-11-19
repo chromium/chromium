@@ -1,0 +1,190 @@
+Before:
+{
+  "layers": [
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [785, 802],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF"
+    },
+    {
+      "name": "LayoutBlockFlow (relative positioned) DIV id='to-animate1' class='box animating1'",
+      "bounds": [100, 100],
+      "contentsOpaque": true,
+      "backgroundColor": "#0000FF",
+      "transform": 2
+    },
+    {
+      "name": "LayoutBlockFlow (relative positioned) DIV class='container'",
+      "position": [-11, 0],
+      "bounds": [144, 452],
+      "backgroundColor": "#FFFFFF",
+      "transform": 3
+    },
+    {
+      "name": "LayoutBlockFlow (relative positioned) DIV class='box gray force-layer'",
+      "bounds": [100, 100],
+      "contentsOpaque": true,
+      "backgroundColor": "#808080",
+      "transform": 5
+    },
+    {
+      "name": "Squashing Layer (first squashed layer: LayoutBlockFlow (relative positioned) DIV class='box yellow')",
+      "position": [-51, 451],
+      "bounds": [100, 100],
+      "transform": 4
+    },
+    {
+      "name": "ContentsLayer for Vertical Scrollbar Layer",
+      "position": [785, 0],
+      "bounds": [15, 600],
+      "contentsOpaque": true
+    }
+  ],
+  "transforms": [
+    {
+      "id": 1,
+      "transform": [
+        [...],
+        [...],
+        [...],
+        [...]
+      ]
+    },
+    {
+      "id": 2,
+      "parent": 1,
+      "transform": [
+        [...],
+        [...],
+        [...],
+        [...]
+      ]
+    },
+    {
+      "id": 3,
+      "transform": [
+        [...],
+        [...],
+        [...],
+        [...]
+      ]
+    },
+    {
+      "id": 4,
+      "parent": 3,
+      "transform": [
+        [...],
+        [...],
+        [...],
+        [...]
+      ]
+    },
+    {
+      "id": 5,
+      "parent": 4,
+      "transform": [
+        [...],
+        [...],
+        [...],
+        [...]
+      ]
+    }
+  ]
+}
+
+After:
+{
+  "layers": [
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [785, 802],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF"
+    },
+    {
+      "name": "LayoutBlockFlow (relative positioned) DIV id='to-animate1' class='box animating1'",
+      "bounds": [100, 100],
+      "contentsOpaque": true,
+      "backgroundColor": "#0000FF",
+      "transform": 2
+    },
+    {
+      "name": "LayoutBlockFlow (relative positioned) DIV class='container'",
+      "bounds": [122, 452],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF",
+      "transform": 3
+    },
+    {
+      "name": "LayoutBlockFlow (relative positioned) DIV class='box gray force-layer'",
+      "bounds": [100, 100],
+      "contentsOpaque": true,
+      "backgroundColor": "#808080",
+      "transform": 5
+    },
+    {
+      "name": "Squashing Layer (first squashed layer: LayoutBlockFlow (relative positioned) DIV id='first-green-box' class='box green rotate-45deg')",
+      "position": [-51, 87],
+      "bounds": [174, 464],
+      "transform": 4
+    },
+    {
+      "name": "ContentsLayer for Vertical Scrollbar Layer",
+      "position": [785, 0],
+      "bounds": [15, 600],
+      "contentsOpaque": true
+    }
+  ],
+  "transforms": [
+    {
+      "id": 1,
+      "transform": [
+        [...],
+        [...],
+        [...],
+        [...]
+      ]
+    },
+    {
+      "id": 2,
+      "parent": 1,
+      "transform": [
+        [...],
+        [...],
+        [...],
+        [...]
+      ]
+    },
+    {
+      "id": 3,
+      "transform": [
+        [...],
+        [...],
+        [...],
+        [...]
+      ]
+    },
+    {
+      "id": 4,
+      "parent": 3,
+      "transform": [
+        [...],
+        [...],
+        [...],
+        [...]
+      ]
+    },
+    {
+      "id": 5,
+      "parent": 4,
+      "transform": [
+        [...],
+        [...],
+        [...],
+        [...]
+      ]
+    }
+  ]
+}
+

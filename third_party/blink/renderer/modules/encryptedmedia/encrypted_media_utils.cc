@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/encryptedmedia/encrypted_media_utils.h"
 
+#include "media/base/eme_constants.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
@@ -16,31 +17,29 @@ const char kPersistentUsageRecord[] = "persistent-usage-record";
 
 }  // namespace
 
-// static
-WebEncryptedMediaInitDataType EncryptedMediaUtils::ConvertToInitDataType(
+media::EmeInitDataType EncryptedMediaUtils::ConvertToInitDataType(
     const String& init_data_type) {
   if (init_data_type == "cenc")
-    return WebEncryptedMediaInitDataType::kCenc;
+    return media::EmeInitDataType::CENC;
   if (init_data_type == "keyids")
-    return WebEncryptedMediaInitDataType::kKeyids;
+    return media::EmeInitDataType::KEYIDS;
   if (init_data_type == "webm")
-    return WebEncryptedMediaInitDataType::kWebm;
+    return media::EmeInitDataType::WEBM;
 
   // |initDataType| is not restricted in the idl, so anything is possible.
-  return WebEncryptedMediaInitDataType::kUnknown;
+  return media::EmeInitDataType::UNKNOWN;
 }
 
-// static
 String EncryptedMediaUtils::ConvertFromInitDataType(
-    WebEncryptedMediaInitDataType init_data_type) {
+    media::EmeInitDataType init_data_type) {
   switch (init_data_type) {
-    case WebEncryptedMediaInitDataType::kCenc:
+    case media::EmeInitDataType::CENC:
       return "cenc";
-    case WebEncryptedMediaInitDataType::kKeyids:
+    case media::EmeInitDataType::KEYIDS:
       return "keyids";
-    case WebEncryptedMediaInitDataType::kWebm:
+    case media::EmeInitDataType::WEBM:
       return "webm";
-    case WebEncryptedMediaInitDataType::kUnknown:
+    case media::EmeInitDataType::UNKNOWN:
       // Chromium should not use Unknown, but we use it in Blink when the
       // actual value has been blocked for non-same-origin or mixed content.
       return String();

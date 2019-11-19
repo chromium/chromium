@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<grit latest_public_release="0" current_release="1" output_all_resource_defines="false">
+  <outputs>
+    <output filename="grit/os_settings_resources.h" type="rc_header">
+      <emit emit_type='prepend'></emit>
+    </output>
+    <output filename="grit/os_settings_resources_map.cc"
+            type="resource_map_source" />
+    <output filename="grit/os_settings_resources_map.h"
+            type="resource_map_header" />
+    <output filename="os_settings_resources.pak" type="data_package" />
+  </outputs>
+  <release seq="1">
+    <includes>
+      <include name="IDR_OS_SETTINGS_VULCANIZED_HTML"
+               file="${root_gen_dir}\chrome\browser\resources\settings\chromeos\vulcanized.html"
+               use_base_dir="false"
+               flattenhtml="true"
+               allowexternalscript="true"
+               type="BINDATA"
+               compress="gzip" />
+      <include name="IDR_OS_SETTINGS_CRISPER_JS"
+               file="${root_gen_dir}\chrome\browser\resources\settings\chromeos\crisper.js"
+               use_base_dir="false"
+               flattenhtml="true"
+               type="BINDATA"
+               compress="gzip" />
+      <include name="IDR_OS_SETTINGS_LAZY_LOAD_VULCANIZED_HTML"
+               file="${root_gen_dir}\chrome\browser\resources\settings\chromeos\lazy_load.vulcanized.html"
+               use_base_dir="false"
+               flattenhtml="true"
+               allowexternalscript="true"
+               type="BINDATA"
+               compress="gzip" />
+      <include name="IDR_OS_SETTINGS_LAZY_LOAD_CRISPER_JS"
+               file="${root_gen_dir}\chrome\browser\resources\settings\chromeos\lazy_load.crisper.js"
+               use_base_dir="false"
+               flattenhtml="true"
+               type="BINDATA"
+               compress="gzip" />
+      <include name="IDR_OS_SETTINGS_MANIFEST"
+               file="os_settings_manifest.json"
+               type="BINDATA"
+               compress="gzip" />
+    </includes>
+  </release>
+</grit>

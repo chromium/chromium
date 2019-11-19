@@ -14,6 +14,7 @@
 #include "net/cert/x509_certificate.h"
 #include "net/cert/x509_util_nss.h"
 
+using chromeos::onc::CertificateScope;
 using chromeos::onc::OncParsedCertificates;
 
 namespace policy {
@@ -24,17 +25,35 @@ namespace {
 using ServerOrAuthorityCertPredicate = base::RepeatingCallback<bool(
     const OncParsedCertificates::ServerOrAuthorityCertificate& cert)>;
 
+// Returns a filtered copy of |sever_or_authority_certificates|. The filtered
+// copy will contain  a certificate from the input iff it matches |scope| and
+// executing |predicate| on it returned true.
 net::CertificateList GetFilteredCertificateListFromOnc(
     const std::vector<OncParsedCertificates::ServerOrAuthorityCertificate>&
         server_or_authority_certificates,
+    const CertificateScope& scope,
     ServerOrAuthorityCertPredicate predicate) {
   net::CertificateList certificates;
   for (const auto& server_or_authority_cert :
        server_or_authority_certificates) {
-    if (predicate.Run(server_or_authority_cert))
+    if (server_or_authority_cert.scope() == scope &&
+        predicate.Run(server_or_authority_cert))
       certificates.push_back(server_or_authority_cert.certificate());
   }
   return certificates;
+}
+
+// Returns all extension IDs that were used in a Scope of a one of the
+// |server_or_authority_certificates|.
+std::set<std::string> CollectExtensionIds(
+    const std::vector<OncParsedCertificates::ServerOrAuthorityCertificate>&
+        server_or_authority_certificates) {
+  std::set<std::string> extension_ids;
+  for (const auto& cert : server_or_authority_certificates) {
+    if (cert.scope().is_extension_scoped())
+      extension_ids.insert(cert.scope().extension_id());
+  }
+  return extension_ids;
 }
 
 }  // namespace
@@ -72,21 +91,22 @@ void NetworkConfigurationUpdater::RemovePolicyProvidedCertsObserver(
 }
 
 net::CertificateList
-NetworkConfigurationUpdater::GetAllServerAndAuthorityCertificates() const {
+NetworkConfigurationUpdater::GetAllServerAndAuthorityCertificates(
+    const CertificateScope& scope) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return GetFilteredCertificateListFromOnc(
-      certs_->server_or_authority_certificates(),
+      certs_->server_or_authority_certificates(), scope,
       base::BindRepeating(
           [](const OncParsedCertificates::ServerOrAuthorityCertificate& cert) {
             return true;
           }));
 }
 
-net::CertificateList NetworkConfigurationUpdater::GetAllAuthorityCertificates()
-    const {
+net::CertificateList NetworkConfigurationUpdater::GetAllAuthorityCertificates(
+    const CertificateScope& scope) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return GetFilteredCertificateListFromOnc(
-      certs_->server_or_authority_certificates(),
+      certs_->server_or_authority_certificates(), scope,
       base::BindRepeating(
           [](const OncParsedCertificates::ServerOrAuthorityCertificate& cert) {
             return cert.type() ==
@@ -95,14 +115,11 @@ net::CertificateList NetworkConfigurationUpdater::GetAllAuthorityCertificates()
           }));
 }
 
-net::CertificateList NetworkConfigurationUpdater::GetWebTrustedCertificates()
-    const {
+net::CertificateList NetworkConfigurationUpdater::GetWebTrustedCertificates(
+    const CertificateScope& scope) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!allow_trusted_certificates_from_policy_)
-    return net::CertificateList();
-
   return GetFilteredCertificateListFromOnc(
-      certs_->server_or_authority_certificates(),
+      certs_->server_or_authority_certificates(), scope,
       base::BindRepeating(
           [](const OncParsedCertificates::ServerOrAuthorityCertificate& cert) {
             return cert.web_trust_requested();
@@ -110,29 +127,30 @@ net::CertificateList NetworkConfigurationUpdater::GetWebTrustedCertificates()
 }
 
 net::CertificateList
-NetworkConfigurationUpdater::GetCertificatesWithoutWebTrust() const {
+NetworkConfigurationUpdater::GetCertificatesWithoutWebTrust(
+    const CertificateScope& scope) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!allow_trusted_certificates_from_policy_)
-    return GetAllServerAndAuthorityCertificates();
-
   return GetFilteredCertificateListFromOnc(
-      certs_->server_or_authority_certificates(),
+      certs_->server_or_authority_certificates(), scope,
       base::BindRepeating(
           [](const OncParsedCertificates::ServerOrAuthorityCertificate& cert) {
             return !cert.web_trust_requested();
           }));
 }
 
+const std::set<std::string>&
+NetworkConfigurationUpdater::GetExtensionIdsWithPolicyCertificates() const {
+  return extension_ids_with_policy_certificates_;
+}
+
 NetworkConfigurationUpdater::NetworkConfigurationUpdater(
     onc::ONCSource onc_source,
     std::string policy_key,
-    bool allow_trusted_certs_from_policy,
     PolicyService* policy_service,
     chromeos::ManagedNetworkConfigurationHandler* network_config_handler)
     : onc_source_(onc_source),
       network_config_handler_(network_config_handler),
       policy_key_(policy_key),
-      allow_trusted_certificates_from_policy_(allow_trusted_certs_from_policy),
       policy_change_registrar_(
           policy_service,
           PolicyNamespace(POLICY_DOMAIN_CHROME, std::string())),
@@ -170,6 +188,35 @@ void NetworkConfigurationUpdater::ParseCurrentPolicy(
   chromeos::onc::ParseAndValidateOncForImport(
       onc_blob, onc_source_, std::string() /* no passphrase */, network_configs,
       global_network_config, certificates);
+}
+
+// static
+bool NetworkConfigurationUpdater::PolicyHasWebTrustedAuthorityCertificate(
+    const PolicyMap& policy_map,
+    onc::ONCSource onc_source,
+    const std::string& policy_key) {
+  const base::Value* policy_value = policy_map.GetValue(policy_key);
+
+  if (!policy_value || policy_value->type() != base::Value::Type::STRING)
+    return false;
+
+  base::ListValue certificates_value;
+  chromeos::onc::ParseAndValidateOncForImport(
+      policy_value->GetString(), onc_source, /*passphrase=*/std::string(),
+      /*network_configs=*/nullptr, /*global_network_config=*/nullptr,
+      &certificates_value);
+  chromeos::onc::OncParsedCertificates onc_parsed_certificates(
+      certificates_value);
+  for (const auto& server_or_authority_cert :
+       onc_parsed_certificates.server_or_authority_certificates()) {
+    if (server_or_authority_cert.type() ==
+            OncParsedCertificates::ServerOrAuthorityCertificate::Type::
+                kAuthority &&
+        server_or_authority_cert.web_trust_requested()) {
+      return true;
+    }
+  }
+  return false;
 }
 
 const std::vector<OncParsedCertificates::ClientCertificate>&
@@ -243,7 +290,7 @@ void NetworkConfigurationUpdater::SetRecommended(
   DCHECK(onc_value->is_dict());
   base::Value recommended_list(base::Value::Type::LIST);
   for (const auto& recommended_field_name : recommended_field_names) {
-    recommended_list.GetList().push_back(base::Value(recommended_field_name));
+    recommended_list.Append(base::Value(recommended_field_name));
   }
   onc_value->SetKey(::onc::kRecommended, std::move(recommended_list));
 }
@@ -267,6 +314,8 @@ void NetworkConfigurationUpdater::ImportCertificates(
     return;
 
   certs_ = std::move(incoming_certs);
+  extension_ids_with_policy_certificates_ =
+      CollectExtensionIds(certs_->server_or_authority_certificates());
 
   if (client_certs_changed)
     ImportClientCertificates();
@@ -276,14 +325,8 @@ void NetworkConfigurationUpdater::ImportCertificates(
 }
 
 void NetworkConfigurationUpdater::NotifyPolicyProvidedCertsChanged() {
-  net::CertificateList all_server_and_authority_certs =
-      GetAllServerAndAuthorityCertificates();
-  net::CertificateList trust_anchors = GetWebTrustedCertificates();
-
-  for (auto& observer : observer_list_) {
-    observer.OnPolicyProvidedCertsChanged(all_server_and_authority_certs,
-                                          trust_anchors);
-  }
+  for (auto& observer : observer_list_)
+    observer.OnPolicyProvidedCertsChanged();
 }
 
 }  // namespace policy

@@ -1,0 +1,13 @@
+This is a testharness.js-based test.
+PASS default display on <input type="reset">
+PASS default box-sizing on <input type="reset">
+PASS default display on <input type="button">
+PASS default box-sizing on <input type="button">
+PASS default display on <input type="submit">
+PASS default box-sizing on <input type="submit">
+PASS default display on <input type="color">
+FAIL default box-sizing on <input type="color"> assert_equals: expected "border-box" but got "content-box"
+PASS default display on <button></button>
+PASS default box-sizing on <button></button>
+Harness: the test ran to completion.
+

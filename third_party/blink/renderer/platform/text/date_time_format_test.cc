@@ -26,7 +26,6 @@
 #include "third_party/blink/renderer/platform/text/date_time_format.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/renderer/platform/wtf/text/cstring.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
@@ -192,7 +191,7 @@ class DateTimeFormatTest : public testing::Test {
 
 std::ostream& operator<<(std::ostream& os,
                          const DateTimeFormatTest::Tokens& tokens) {
-  return os << tokens.ToString().Ascii().data();
+  return os << tokens.ToString();
 }
 
 TEST_F(DateTimeFormatTest, CommonPattern) {

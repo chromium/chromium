@@ -7,10 +7,6 @@
 
 #include "base/macros.h"
 
-namespace gfx {
-class Size;
-}
-
 namespace views {
 class BubbleFrameView;
 }
@@ -22,13 +18,6 @@ class OverflowBubbleViewTestAPI {
  public:
   explicit OverflowBubbleViewTestAPI(OverflowBubbleView* bubble_view);
   ~OverflowBubbleViewTestAPI();
-
-  // Returns the total width of items included in ShelfView.
-  gfx::Size GetContentsSize();
-
-  // Emulates scroll operations on OverflowBubble to make invisible last item
-  // visible.
-  void ScrollByXOffset(int x_offset);
 
   // Returns the NonClientFrameView for the bubble.
   views::BubbleFrameView* GetBubbleFrameView();

@@ -5,6 +5,8 @@
 #include "chrome/browser/offline_pages/android/downloads/offline_page_download_bridge.h"
 
 #include <memory>
+#include <string>
+#include <utility>
 #include <vector>
 
 #include "base/android/jni_string.h"
@@ -13,8 +15,11 @@
 #include "base/guid.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
-#include "chrome/browser/android/download/download_controller_base.h"
+#include "chrome/android/chrome_jni_headers/OfflinePageDownloadBridge_jni.h"
+#include "chrome/browser/android/profile_key_util.h"
 #include "chrome/browser/android/tab_android.h"
+#include "chrome/browser/download/android/download_controller_base.h"
+#include "chrome/browser/image_fetcher/image_decoder_impl.h"
 #include "chrome/browser/offline_items_collection/offline_content_aggregator_factory.h"
 #include "chrome/browser/offline_pages/android/downloads/offline_page_infobar_delegate.h"
 #include "chrome/browser/offline_pages/android/downloads/offline_page_share_helper.h"
@@ -23,18 +28,19 @@
 #include "chrome/browser/offline_pages/offline_page_utils.h"
 #include "chrome/browser/offline_pages/recent_tab_helper.h"
 #include "chrome/browser/offline_pages/request_coordinator_factory.h"
-#include "chrome/browser/offline_pages/thumbnail_decoder_impl.h"
+#include "chrome/browser/offline_pages/visuals_decoder_impl.h"
 #include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_android.h"
-#include "chrome/browser/search/suggestions/image_decoder_impl.h"
+#include "chrome/browser/profiles/profile_key.h"
+#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/transition_manager/full_browser_transition_manager.h"
 #include "components/download/public/common/download_url_parameters.h"
 #include "components/offline_items_collection/core/offline_content_aggregator.h"
 #include "components/offline_items_collection/core/offline_content_provider.h"
 #include "components/offline_pages/core/background/request_coordinator.h"
 #include "components/offline_pages/core/client_namespace_constants.h"
-#include "components/offline_pages/core/client_policy_controller.h"
 #include "components/offline_pages/core/downloads/download_ui_adapter.h"
+#include "components/offline_pages/core/offline_page_client_policy.h"
 #include "components/offline_pages/core/offline_page_feature.h"
 #include "components/offline_pages/core/offline_page_item_utils.h"
 #include "components/offline_pages/core/offline_page_model.h"
@@ -45,7 +51,6 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
-#include "jni/OfflinePageDownloadBridge_jni.h"
 #include "net/base/filename_util.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "url/gurl.h"
@@ -107,7 +112,7 @@ DownloadUIAdapterDelegate::DownloadUIAdapterDelegate(OfflinePageModel* model)
 
 bool DownloadUIAdapterDelegate::IsVisibleInUI(const ClientId& client_id) {
   const std::string& name_space = client_id.name_space;
-  return model_->GetPolicyController()->IsSupportedByDownload(name_space) &&
+  return GetPolicy(name_space).is_supported_by_download &&
          base::IsValidGUID(client_id.id);
 }
 
@@ -175,28 +180,25 @@ void SavePageIfNotNavigatedAway(const GURL& url,
   client_id.id = base::GenerateGUID();
   int64_t request_id = OfflinePageModel::kInvalidOfflineId;
 
-  if (offline_pages::IsBackgroundLoaderForDownloadsEnabled()) {
-    // Post disabled request before passing the download task to the tab helper.
-    // This will keep the request persisted in case Chrome is evicted from RAM
-    // or closed by the user.
-    // Note: the 'disabled' status is not persisted (stored in memory) so it
-    // automatically resets if Chrome is re-started.
-    offline_pages::RequestCoordinator* request_coordinator =
-        offline_pages::RequestCoordinatorFactory::GetForBrowserContext(
-            web_contents->GetBrowserContext());
-    if (request_coordinator) {
-      offline_pages::RequestCoordinator::SavePageLaterParams params;
-      params.url = current_url;
-      params.client_id = client_id;
-      params.availability =
-          RequestCoordinator::RequestAvailability::DISABLED_FOR_OFFLINER;
-      params.original_url = original_url;
-      params.request_origin = origin;
-      request_id =
-          request_coordinator->SavePageLater(params, base::DoNothing());
-    } else {
-      DVLOG(1) << "SavePageIfNotNavigatedAway has no valid coordinator.";
-    }
+  // Post disabled request before passing the download task to the tab helper.
+  // This will keep the request persisted in case Chrome is evicted from RAM
+  // or closed by the user.
+  // Note: the 'disabled' status is not persisted (stored in memory) so it
+  // automatically resets if Chrome is re-started.
+  offline_pages::RequestCoordinator* request_coordinator =
+      offline_pages::RequestCoordinatorFactory::GetForBrowserContext(
+          web_contents->GetBrowserContext());
+  if (request_coordinator) {
+    offline_pages::RequestCoordinator::SavePageLaterParams params;
+    params.url = current_url;
+    params.client_id = client_id;
+    params.availability =
+        RequestCoordinator::RequestAvailability::DISABLED_FOR_OFFLINER;
+    params.original_url = original_url;
+    params.request_origin = origin;
+    request_id = request_coordinator->SavePageLater(params, base::DoNothing());
+  } else {
+    DVLOG(1) << "SavePageIfNotNavigatedAway has no valid coordinator.";
   }
 
   // Pass request_id to the current tab's helper to attempt download right from
@@ -254,9 +256,9 @@ content::WebContents* GetWebContentsByFrameID(int render_process_id,
   return content::WebContents::FromRenderFrameHost(render_frame_host);
 }
 
-content::ResourceRequestInfo::WebContentsGetter GetWebContentsGetter(
+content::WebContents::Getter GetWebContentsGetter(
     content::WebContents* web_contents) {
-  // PlzNavigate: The FrameTreeNode ID should be used to access the WebContents.
+  // The FrameTreeNode ID should be used to access the WebContents.
   int frame_tree_node_id = web_contents->GetMainFrame()->GetFrameTreeNodeId();
   if (frame_tree_node_id != -1) {
     return base::Bind(content::WebContents::FromFrameTreeNodeId,
@@ -294,7 +296,7 @@ void DownloadAsFile(content::WebContents* web_contents, const GURL& url) {
 }
 
 void OnOfflinePageAcquireFileAccessPermissionDone(
-    const content::ResourceRequestInfo::WebContentsGetter& web_contents_getter,
+    const content::WebContents::Getter& web_contents_getter,
     const ScopedJavaGlobalRef<jobject>& j_tab_ref,
     const std::string& origin,
     bool granted) {
@@ -325,6 +327,34 @@ void OnOfflinePageAcquireFileAccessPermissionDone(
           web_contents->GetBrowserContext()),
       url,
       base::Bind(&DuplicateCheckDone, url, original_url, j_tab_ref, origin));
+}
+
+void InitializeBackendOnProfileCreated(Profile* profile) {
+  // Even if |profile| is incognito, use the regular one since downloads are
+  // shared between them.
+  profile = profile->GetOriginalProfile();
+  OfflinePageModel* offline_page_model =
+      OfflinePageModelFactory::GetForBrowserContext(profile);
+  DCHECK(offline_page_model);
+
+  DownloadUIAdapter* adapter =
+      DownloadUIAdapter::FromOfflinePageModel(offline_page_model);
+
+  if (!adapter) {
+    RequestCoordinator* request_coordinator =
+        RequestCoordinatorFactory::GetForBrowserContext(profile);
+    DCHECK(request_coordinator);
+    offline_items_collection::OfflineContentAggregator* aggregator =
+        OfflineContentAggregatorFactory::GetForKey(profile->GetProfileKey());
+    DCHECK(aggregator);
+    adapter = new DownloadUIAdapter(
+        aggregator, offline_page_model, request_coordinator,
+        std::make_unique<VisualsDecoderImpl>(
+            std::make_unique<ImageDecoderImpl>()),
+        std::make_unique<DownloadUIAdapterDelegate>(offline_page_model));
+    DownloadUIAdapter::AttachToOfflinePageModel(base::WrapUnique(adapter),
+                                                offline_page_model);
+  }
 }
 
 }  // namespace
@@ -358,7 +388,7 @@ void JNI_OfflinePageDownloadBridge_StartDownload(
 
   // Ensure that the storage permission is granted since the target file
   // is going to be placed in the public directory.
-  content::ResourceRequestInfo::WebContentsGetter web_contents_getter =
+  content::WebContents::Getter web_contents_getter =
       GetWebContentsGetter(web_contents);
   DownloadControllerBase::Get()->AcquireFileAccessPermission(
       web_contents_getter,
@@ -368,33 +398,10 @@ void JNI_OfflinePageDownloadBridge_StartDownload(
 
 static jlong JNI_OfflinePageDownloadBridge_Init(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
-    const JavaParamRef<jobject>& j_profile) {
-  content::BrowserContext* browser_context =
-      ProfileAndroid::FromProfileAndroid(j_profile);
-
-  OfflinePageModel* offline_page_model =
-      OfflinePageModelFactory::GetForBrowserContext(browser_context);
-  DCHECK(offline_page_model);
-
-  DownloadUIAdapter* adapter =
-      DownloadUIAdapter::FromOfflinePageModel(offline_page_model);
-
-  if (!adapter) {
-    RequestCoordinator* request_coordinator =
-        RequestCoordinatorFactory::GetForBrowserContext(browser_context);
-    DCHECK(request_coordinator);
-    offline_items_collection::OfflineContentAggregator* aggregator =
-        OfflineContentAggregatorFactory::GetForBrowserContext(browser_context);
-    DCHECK(aggregator);
-    adapter = new DownloadUIAdapter(
-        aggregator, offline_page_model, request_coordinator,
-        std::make_unique<ThumbnailDecoderImpl>(
-            std::make_unique<suggestions::ImageDecoderImpl>()),
-        std::make_unique<DownloadUIAdapterDelegate>(offline_page_model));
-    DownloadUIAdapter::AttachToOfflinePageModel(base::WrapUnique(adapter),
-                                                offline_page_model);
-  }
+    const JavaParamRef<jobject>& obj) {
+  ProfileKey* key = ::android::GetLastUsedProfileKey();
+  FullBrowserTransitionManager::Get()->RegisterCallbackOnProfileCreation(
+      key, base::BindOnce(&InitializeBackendOnProfileCreated));
 
   return reinterpret_cast<jlong>(new OfflinePageDownloadBridge(env, obj));
 }

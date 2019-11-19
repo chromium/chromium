@@ -18,14 +18,12 @@ bool PathProvider(int key, base::FilePath* result) {
     case DIR_CRASH_DUMPS:
       if (!base::android::GetCacheDirectory(&cur))
         return false;
-      cur = cur.Append(FILE_PATH_LITERAL("WebView"))
-                .Append(FILE_PATH_LITERAL("Crashpad"));
+      cur = cur.Append(FILE_PATH_LITERAL("Crashpad"));
       break;
     case DIR_SAFE_BROWSING:
       if (!base::android::GetCacheDirectory(&cur))
         return false;
-      cur = cur.Append(FILE_PATH_LITERAL("WebView"))
-                .Append(FILE_PATH_LITERAL("SafeBrowsing"));
+      cur = cur.Append(FILE_PATH_LITERAL("SafeBrowsing"));
       break;
     default:
       return false;

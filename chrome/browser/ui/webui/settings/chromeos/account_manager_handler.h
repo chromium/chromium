@@ -12,20 +12,20 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observer.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
-#include "chromeos/account_manager/account_manager.h"
-#include "services/identity/public/cpp/identity_manager.h"
+#include "chromeos/components/account_manager/account_manager.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 
 namespace chromeos {
 namespace settings {
 
 class AccountManagerUIHandler : public ::settings::SettingsPageUIHandler,
                                 public AccountManager::Observer,
-                                public identity::IdentityManager::Observer {
+                                public signin::IdentityManager::Observer {
  public:
   // Accepts non-owning pointers to |AccountManager|, |AccountTrackerService|
   // and |IdentityManager|. Both of these must outlive |this| instance.
   AccountManagerUIHandler(AccountManager* account_manager,
-                          identity::IdentityManager* identity_manager);
+                          signin::IdentityManager* identity_manager);
   ~AccountManagerUIHandler() override;
 
   // WebUIMessageHandler implementation.
@@ -39,7 +39,7 @@ class AccountManagerUIHandler : public ::settings::SettingsPageUIHandler,
   void OnTokenUpserted(const AccountManager::Account& account) override;
   void OnAccountRemoved(const AccountManager::Account& account) override;
 
-  // |identity::IdentityManager::Observer| overrides.
+  // |signin::IdentityManager::Observer| overrides.
   void OnExtendedAccountInfoUpdated(const AccountInfo& info) override;
 
  private:
@@ -51,6 +51,9 @@ class AccountManagerUIHandler : public ::settings::SettingsPageUIHandler,
 
   // WebUI "reauthenticateAccount" message callback.
   void HandleReauthenticateAccount(const base::ListValue* args);
+
+  // WebUI "migrateAccount" message callback.
+  void HandleMigrateAccount(const base::ListValue* args);
 
   // WebUI "removeAccount" message callback.
   void HandleRemoveAccount(const base::ListValue* args);
@@ -70,19 +73,19 @@ class AccountManagerUIHandler : public ::settings::SettingsPageUIHandler,
   AccountManager* const account_manager_;
 
   // A non-owning pointer to |IdentityManager|.
-  identity::IdentityManager* const identity_manager_;
+  signin::IdentityManager* const identity_manager_;
 
   // An observer for |AccountManager|. Automatically deregisters when |this| is
   // destructed.
   ScopedObserver<AccountManager, AccountManager::Observer>
       account_manager_observer_;
 
-  // An observer for |identity::IdentityManager|. Automatically deregisters when
+  // An observer for |signin::IdentityManager|. Automatically deregisters when
   // |this| is destructed.
-  ScopedObserver<identity::IdentityManager, identity::IdentityManager::Observer>
+  ScopedObserver<signin::IdentityManager, signin::IdentityManager::Observer>
       identity_manager_observer_;
 
-  base::WeakPtrFactory<AccountManagerUIHandler> weak_factory_;
+  base::WeakPtrFactory<AccountManagerUIHandler> weak_factory_{this};
   DISALLOW_COPY_AND_ASSIGN(AccountManagerUIHandler);
 };
 

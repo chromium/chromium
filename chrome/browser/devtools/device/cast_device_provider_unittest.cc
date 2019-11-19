@@ -40,24 +40,25 @@ TEST(CastDeviceProviderTest, ServiceDiscovery) {
   scoped_refptr<CastDeviceProvider> device_provider_ = new CastDeviceProvider();
 
   // Create a cast service.
-  const std::string cast_service_display_name = "FakeCast1337";
+  const std::string cast_display_name = "FakeCast1337";
   const std::string cast_service_type = "_googlecast._tcp.local";
+  const std::string cast_service_name = "abcdefgh";
   const std::string cast_service_model = "Fake Cast Device";
 
   ServiceDescription cast_service;
-  cast_service.service_name =
-      cast_service_display_name + "." + cast_service_type;
+  cast_service.service_name = cast_service_name + "." + cast_service_type;
   cast_service.address = net::HostPortPair("192.168.1.101", 8009);
   cast_service.metadata.push_back("id=0123456789abcdef0123456789abcdef");
   cast_service.metadata.push_back("ve=00");
   cast_service.metadata.push_back("md=" + cast_service_model);
+  cast_service.metadata.push_back("fn=" + cast_display_name);
   ASSERT_TRUE(cast_service.ip_address.AssignFromIPLiteral("192.168.1.101"));
 
   device_provider_->OnDeviceChanged(cast_service_type, true, cast_service);
 
   BrowserInfo exp_browser_info;
   exp_browser_info.socket_name = "9222";
-  exp_browser_info.display_name = cast_service_display_name;
+  exp_browser_info.display_name = cast_display_name;  // From metadata::fn
   exp_browser_info.type = BrowserInfo::kTypeChrome;
 
   DeviceInfo expected;

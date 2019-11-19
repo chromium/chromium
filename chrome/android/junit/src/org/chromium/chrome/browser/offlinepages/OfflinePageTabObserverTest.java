@@ -71,7 +71,7 @@ public class OfflinePageTabObserverTest {
     }
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         MockitoAnnotations.initMocks(this);
 
         // Setting up a mock tab. These are the values common to most tests, but individual

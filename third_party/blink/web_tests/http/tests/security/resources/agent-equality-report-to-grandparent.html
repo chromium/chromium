@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Agent ID reporter frame</title>
+</head>
+<body>
+<script>
+window.parent.parent.postMessage(internals.getDocumentAgentId(document), '*');
+</script>
+</body>
+</html>

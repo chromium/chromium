@@ -4,6 +4,7 @@
 
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
 
+#import "ios/web/public/web_state.h"
 #include "net/http/http_response_headers.h"
 #include "ui/base/page_transition_types.h"
 #include "url/gurl.h"

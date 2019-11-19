@@ -15,16 +15,15 @@
 #import "components/autofill/ios/form_util/form_activity_observer_bridge.h"
 #include "components/autofill/ios/form_util/form_activity_params.h"
 #include "components/autofill/ios/form_util/test_form_activity_tab_helper.h"
-#import "ios/chrome/browser/autofill/form_input_accessory_consumer.h"
 #import "ios/chrome/browser/autofill/form_suggestion_view.h"
-#import "ios/chrome/browser/ui/autofill/form_input_accessory_mediator.h"
+#import "ios/chrome/browser/ui/autofill/form_input_accessory/form_input_accessory_consumer.h"
+#import "ios/chrome/browser/ui/autofill/form_input_accessory/form_input_accessory_mediator.h"
 #include "ios/chrome/browser/ui/util/ui_util.h"
-#import "ios/web/public/navigation_manager.h"
+#import "ios/web/public/navigation/navigation_manager.h"
 #include "ios/web/public/test/fakes/fake_web_frame.h"
 #import "ios/web/public/test/fakes/test_web_state.h"
-#include "ios/web/public/test/test_web_thread_bundle.h"
-#import "ios/web/public/web_state/ui/crw_web_view_proxy.h"
-#import "ios/web/public/web_state/web_state.h"
+#include "ios/web/public/test/web_task_environment.h"
+#import "ios/web/public/ui/crw_web_view_proxy.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
@@ -186,8 +185,7 @@ class FormSuggestionControllerTest : public PlatformTest {
     };
     [[[mock_consumer_ stub] andDo:mockShow]
         showAccessorySuggestions:[OCMArg any]
-                suggestionClient:[OCMArg any]
-              isHardwareKeyboard:NO];
+                suggestionClient:[OCMArg any]];
 
     // Mock restore keyboard to verify cleanup.
     void (^mockRestore)(NSInvocation*) = ^(NSInvocation* invocation) {
@@ -197,12 +195,13 @@ class FormSuggestionControllerTest : public PlatformTest {
 
     accessory_mediator_ =
         [[FormInputAccessoryMediator alloc] initWithConsumer:mock_consumer_
+                                                    delegate:nil
                                                 webStateList:NULL
                                          personalDataManager:NULL
-                                               passwordStore:NULL];
+                                               passwordStore:nullptr];
 
     [accessory_mediator_ injectWebState:&test_web_state_];
-    [accessory_mediator_ injectProviders:@[ suggestion_controller_ ]];
+    [accessory_mediator_ injectProvider:suggestion_controller_];
     [accessory_mediator_ injectSuggestionManager:mock_js_suggestion_manager_];
   }
 
@@ -222,7 +221,7 @@ class FormSuggestionControllerTest : public PlatformTest {
   FormInputAccessoryMediator* accessory_mediator_;
 
   // The associated test Web Threads.
-  web::TestWebThreadBundle thread_bundle_;
+  web::WebTaskEnvironment task_environment_;
 
   // The fake WebState to simulate navigation and JavaScript events.
   web::TestWebState test_web_state_;

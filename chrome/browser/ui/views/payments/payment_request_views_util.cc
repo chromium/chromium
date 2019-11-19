@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/payments/payment_request_views_util.h"
 
+#include <utility>
 #include <vector>
 
 #include "base/macros.h"
@@ -14,11 +15,12 @@
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/theme_resources.h"
 #include "components/autofill/core/browser/autofill_data_util.h"
-#include "components/autofill/core/browser/autofill_profile.h"
 #include "components/autofill/core/browser/autofill_type.h"
-#include "components/autofill/core/browser/credit_card.h"
+#include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/field_types.h"
-#include "components/autofill/core/browser/phone_number_i18n.h"
+#include "components/autofill/core/browser/geo/phone_number_i18n.h"
+#include "components/payments/content/icon/icon_size.h"
 #include "components/payments/core/payment_options_provider.h"
 #include "components/payments/core/payment_request_data_util.h"
 #include "components/payments/core/payments_profile_comparator.h"
@@ -67,9 +69,9 @@ std::unique_ptr<views::View> GetBaseProfileLabel(
   DCHECK(accessible_content);
   std::unique_ptr<views::View> container = std::make_unique<views::View>();
   std::unique_ptr<views::BoxLayout> layout = std::make_unique<views::BoxLayout>(
-      views::BoxLayout::kVertical, gfx::Insets(), 0);
+      views::BoxLayout::Orientation::kVertical, gfx::Insets(), 0);
   layout->set_cross_axis_alignment(
-      views::BoxLayout::CROSS_AXIS_ALIGNMENT_START);
+      views::BoxLayout::CrossAxisAlignment::kStart);
   container->SetLayoutManager(std::move(layout));
 
   if (!s1.empty()) {
@@ -78,35 +80,35 @@ std::unique_ptr<views::View> GetBaseProfileLabel(
                                : static_cast<int>(views::style::STYLE_PRIMARY);
     std::unique_ptr<views::Label> label = std::make_unique<views::Label>(
         s1, views::style::CONTEXT_LABEL, text_style);
-    label->set_id(static_cast<int>(DialogViewID::PROFILE_LABEL_LINE_1));
+    label->SetID(static_cast<int>(DialogViewID::PROFILE_LABEL_LINE_1));
     label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
     if (!enabled) {
       label->SetEnabledColor(label->GetNativeTheme()->GetSystemColor(
           ui::NativeTheme::kColorId_LabelDisabledColor));
     }
-    container->AddChildView(label.release());
+    container->AddChildView(std::move(label));
   }
 
   if (!s2.empty()) {
     std::unique_ptr<views::Label> label = std::make_unique<views::Label>(s2);
-    label->set_id(static_cast<int>(DialogViewID::PROFILE_LABEL_LINE_2));
+    label->SetID(static_cast<int>(DialogViewID::PROFILE_LABEL_LINE_2));
     label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
     if (!enabled) {
       label->SetEnabledColor(label->GetNativeTheme()->GetSystemColor(
           ui::NativeTheme::kColorId_LabelDisabledColor));
     }
-    container->AddChildView(label.release());
+    container->AddChildView(std::move(label));
   }
 
   if (!s3.empty()) {
     std::unique_ptr<views::Label> label = std::make_unique<views::Label>(s3);
-    label->set_id(static_cast<int>(DialogViewID::PROFILE_LABEL_LINE_3));
+    label->SetID(static_cast<int>(DialogViewID::PROFILE_LABEL_LINE_3));
     label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
     if (!enabled) {
       label->SetEnabledColor(label->GetNativeTheme()->GetSystemColor(
           ui::NativeTheme::kColorId_LabelDisabledColor));
     }
-    container->AddChildView(label.release());
+    container->AddChildView(std::move(label));
   }
 
   *accessible_content = l10n_util::GetStringFUTF16(
@@ -140,7 +142,7 @@ std::unique_ptr<views::Label> GetLabelForMissingInformation(
     const base::string16& missing_info) {
   std::unique_ptr<views::Label> label =
       std::make_unique<views::Label>(missing_info, CONTEXT_BODY_TEXT_SMALL);
-  label->set_id(static_cast<int>(DialogViewID::PROFILE_LABEL_ERROR));
+  label->SetID(static_cast<int>(DialogViewID::PROFILE_LABEL_ERROR));
   // Missing information typically has a nice shade of blue.
   label->SetEnabledColor(label->GetNativeTheme()->GetSystemColor(
       ui::NativeTheme::kColorId_LinkEnabled));
@@ -188,8 +190,8 @@ void PopulateSheetHeaderView(bool show_back_arrow,
                              std::unique_ptr<views::Background> background) {
   SkColor background_color = background->get_color();
   container->SetBackground(std::move(background));
-  views::GridLayout* layout = container->SetLayoutManager(
-      std::make_unique<views::GridLayout>(container));
+  views::GridLayout* layout =
+      container->SetLayoutManager(std::make_unique<views::GridLayout>());
 
   constexpr int kVerticalInset = 14;
   constexpr int kHeaderHorizontalInset = 16;
@@ -216,35 +218,43 @@ void PopulateSheetHeaderView(bool show_back_arrow,
   if (!show_back_arrow) {
     layout->SkipColumns(1);
   } else {
-    views::ImageButton* back_arrow = views::CreateVectorImageButton(listener);
+    auto back_arrow = views::CreateVectorImageButton(listener);
     views::SetImageFromVectorIcon(
-        back_arrow, vector_icons::kBackArrowIcon,
+        back_arrow.get(), vector_icons::kBackArrowIcon,
         color_utils::GetColorWithMaxContrast(background_color));
     constexpr int kBackArrowSize = 16;
     back_arrow->SetSize(gfx::Size(kBackArrowSize, kBackArrowSize));
     back_arrow->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
     back_arrow->set_tag(
         static_cast<int>(PaymentRequestCommonTags::BACK_BUTTON_TAG));
-    back_arrow->set_id(static_cast<int>(DialogViewID::BACK_BUTTON));
+    back_arrow->SetID(static_cast<int>(DialogViewID::BACK_BUTTON));
     back_arrow->SetAccessibleName(l10n_util::GetStringUTF16(IDS_PAYMENTS_BACK));
-    layout->AddView(back_arrow);
+    layout->AddView(std::move(back_arrow));
   }
 
-  layout->AddView(header_content_view.release());
+  layout->AddView(std::move(header_content_view));
 }
 
-std::unique_ptr<views::ImageView> CreateInstrumentIconView(
+std::unique_ptr<views::ImageView> CreateAppIconView(
     int icon_resource_id,
-    const gfx::ImageSkia* img,
+    gfx::ImageSkia img,
     const base::string16& tooltip_text,
     float opacity) {
   std::unique_ptr<views::ImageView> icon_view =
       std::make_unique<views::ImageView>();
   icon_view->set_can_process_events_within_subtree(false);
-  if (img) {
-    icon_view->SetImage(*img);
-    // We support max 32x32 for other instrument icons.
-    icon_view->SetImageSize(gfx::Size(32, 32));
+  if (!img.isNull() || !icon_resource_id) {
+    icon_view->SetImage(img);
+    float width = base::checked_cast<float>(img.width());
+    float height = base::checked_cast<float>(img.height());
+    float ratio = 1;
+    if (width && height)
+      ratio = width / height;
+    // We should set image size in density indepent pixels here, since
+    // views::ImageView objects are rastered at the device scale factor.
+    icon_view->SetImageSize(gfx::Size(
+        ratio * IconSizeCalculator::kPaymentAppDeviceIndependentIdealIconHeight,
+        IconSizeCalculator::kPaymentAppDeviceIndependentIdealIconHeight));
   } else {
     icon_view->SetImage(ui::ResourceBundle::GetSharedInstance()
                             .GetImageNamed(icon_resource_id)
@@ -263,10 +273,10 @@ std::unique_ptr<views::View> CreateProductLogoFooterView() {
   std::unique_ptr<views::View> content_view = std::make_unique<views::View>();
 
   auto layout = std::make_unique<views::BoxLayout>(
-      views::BoxLayout::kHorizontal, gfx::Insets(), 0);
-  layout->set_main_axis_alignment(views::BoxLayout::MAIN_AXIS_ALIGNMENT_START);
+      views::BoxLayout::Orientation::kHorizontal, gfx::Insets(), 0);
+  layout->set_main_axis_alignment(views::BoxLayout::MainAxisAlignment::kStart);
   layout->set_cross_axis_alignment(
-      views::BoxLayout::CROSS_AXIS_ALIGNMENT_START);
+      views::BoxLayout::CrossAxisAlignment::kStart);
   content_view->SetLayoutManager(std::move(layout));
 
   // Adds the Chrome logo image.
@@ -277,7 +287,7 @@ std::unique_ptr<views::View> CreateProductLogoFooterView() {
                             .GetImageNamed(IDR_PRODUCT_LOGO_NAME_22)
                             .AsImageSkia());
   chrome_logo->set_tooltip_text(l10n_util::GetStringUTF16(IDS_PRODUCT_NAME));
-  content_view->AddChildView(chrome_logo.release());
+  content_view->AddChildView(std::move(chrome_logo));
 
   return content_view;
 }
@@ -295,7 +305,7 @@ std::unique_ptr<views::View> GetShippingAddressLabelWithMissingInfo(
 
   base::string16 missing = comp.GetStringForMissingShippingFields(profile);
   if (!missing.empty()) {
-    base_label->AddChildView(GetLabelForMissingInformation(missing).release());
+    base_label->AddChildView(GetLabelForMissingInformation(missing));
     *accessible_content = l10n_util::GetStringFUTF16(
         IDS_PAYMENTS_ACCESSIBLE_LABEL_WITH_ERROR, *accessible_content, missing);
   }
@@ -330,7 +340,7 @@ std::unique_ptr<views::View> GetContactInfoLabel(
 
   base::string16 missing = comp.GetStringForMissingContactFields(profile);
   if (!missing.empty()) {
-    base_label->AddChildView(GetLabelForMissingInformation(missing).release());
+    base_label->AddChildView(GetLabelForMissingInformation(missing));
     *accessible_content = l10n_util::GetStringFUTF16(
         IDS_PAYMENTS_ACCESSIBLE_LABEL_WITH_ERROR, *accessible_content, missing);
   }
@@ -378,10 +388,10 @@ std::unique_ptr<views::View> CreateShippingOptionLabel(
   DCHECK(accessible_content);
   std::unique_ptr<views::View> container = std::make_unique<views::View>();
 
-  auto layout = std::make_unique<views::BoxLayout>(views::BoxLayout::kVertical,
-                                                   gfx::Insets(), 0);
+  auto layout = std::make_unique<views::BoxLayout>(
+      views::BoxLayout::Orientation::kVertical, gfx::Insets(), 0);
   layout->set_cross_axis_alignment(
-      views::BoxLayout::CROSS_AXIS_ALIGNMENT_START);
+      views::BoxLayout::CrossAxisAlignment::kStart);
   container->SetLayoutManager(std::move(layout));
 
   if (shipping_option) {
@@ -394,16 +404,15 @@ std::unique_ptr<views::View> CreateShippingOptionLabel(
     // example, in "he" labels being right-aligned in a browser that's using
     // "en" locale.
     shipping_label->SetHorizontalAlignment(gfx::ALIGN_TO_HEAD);
-    shipping_label->set_id(
+    shipping_label->SetID(
         static_cast<int>(DialogViewID::SHIPPING_OPTION_DESCRIPTION));
-    container->AddChildView(shipping_label.release());
+    container->AddChildView(std::move(shipping_label));
 
     std::unique_ptr<views::Label> amount_label =
         std::make_unique<views::Label>(formatted_amount);
     amount_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-    amount_label->set_id(
-        static_cast<int>(DialogViewID::SHIPPING_OPTION_AMOUNT));
-    container->AddChildView(amount_label.release());
+    amount_label->SetID(static_cast<int>(DialogViewID::SHIPPING_OPTION_AMOUNT));
+    container->AddChildView(std::move(amount_label));
 
     *accessible_content = l10n_util::GetStringFUTF16(
         IDS_PAYMENTS_PROFILE_LABELS_ACCESSIBLE_FORMAT, text, formatted_amount,
@@ -411,6 +420,45 @@ std::unique_ptr<views::View> CreateShippingOptionLabel(
   }
 
   return container;
+}
+
+std::unique_ptr<views::View> CreateWarningView(const base::string16& message,
+                                               bool show_icon) {
+  auto header_view = std::make_unique<views::View>();
+  // 8 pixels between the warning icon view (if present) and the text.
+  constexpr int kRowHorizontalSpacing = 8;
+  auto layout = std::make_unique<views::BoxLayout>(
+      views::BoxLayout::Orientation::kHorizontal,
+      gfx::Insets(0, kPaymentRequestRowHorizontalInsets),
+      kRowHorizontalSpacing);
+  layout->set_main_axis_alignment(views::BoxLayout::MainAxisAlignment::kStart);
+  layout->set_cross_axis_alignment(
+      views::BoxLayout::CrossAxisAlignment::kStretch);
+  header_view->SetLayoutManager(std::move(layout));
+
+  auto label = std::make_unique<views::Label>(message);
+  // If the warning message comes from the websites, then align label
+  // according to the language of the website's text.
+  label->SetHorizontalAlignment(message.empty() ? gfx::ALIGN_LEFT
+                                                : gfx::ALIGN_TO_HEAD);
+  label->SetID(static_cast<int>(DialogViewID::WARNING_LABEL));
+  label->SetMultiLine(true);
+  label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+
+  if (show_icon) {
+    auto warning_icon = std::make_unique<views::ImageView>();
+    warning_icon->set_can_process_events_within_subtree(false);
+    warning_icon->SetImage(gfx::CreateVectorIcon(
+        vector_icons::kWarningIcon, 16,
+        warning_icon->GetNativeTheme()->GetSystemColor(
+            ui::NativeTheme::kColorId_AlertSeverityHigh)));
+    header_view->AddChildView(std::move(warning_icon));
+    label->SetEnabledColor(label->GetNativeTheme()->GetSystemColor(
+        ui::NativeTheme::kColorId_AlertSeverityHigh));
+  }
+
+  header_view->AddChildView(std::move(label));
+  return header_view;
 }
 
 }  // namespace payments

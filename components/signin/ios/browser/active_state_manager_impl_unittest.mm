@@ -7,7 +7,7 @@
 #include "components/signin/ios/browser/active_state_manager.h"
 #include "ios/web/public/browser_state.h"
 #include "ios/web/public/test/fakes/test_browser_state.h"
-#include "ios/web/public/test/test_web_thread_bundle.h"
+#include "ios/web/public/test/web_task_environment.h"
 #include "ios/web/public/test/web_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"

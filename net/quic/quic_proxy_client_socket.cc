@@ -12,6 +12,7 @@
 #include "base/callback_helpers.h"
 #include "base/values.h"
 #include "net/http/http_auth_controller.h"
+#include "net/http/http_log_util.h"
 #include "net/http/http_response_headers.h"
 #include "net/log/net_log_source.h"
 #include "net/log/net_log_source_type.h"
@@ -36,17 +37,16 @@ QuicProxyClientSocket::QuicProxyClientSocket(
       endpoint_(endpoint),
       auth_(auth_controller),
       user_agent_(user_agent),
-      net_log_(net_log),
-      weak_factory_(this) {
+      net_log_(net_log) {
   DCHECK(stream_->IsOpen());
 
   request_.method = "CONNECT";
   request_.url = GURL("https://" + endpoint.ToString());
 
-  net_log_.BeginEvent(NetLogEventType::SOCKET_ALIVE,
-                      net_log_.source().ToEventParametersCallback());
-  net_log_.AddEvent(NetLogEventType::HTTP2_PROXY_CLIENT_SESSION,
-                    stream_->net_log().source().ToEventParametersCallback());
+  net_log_.BeginEventReferencingSource(NetLogEventType::SOCKET_ALIVE,
+                                       net_log_.source());
+  net_log_.AddEventReferencingSource(
+      NetLogEventType::HTTP2_PROXY_CLIENT_SESSION, stream_->net_log().source());
 }
 
 QuicProxyClientSocket::~QuicProxyClientSocket() {
@@ -79,9 +79,13 @@ NextProto QuicProxyClientSocket::GetProxyNegotiatedProtocol() const {
   return kProtoQUIC;
 }
 
-void QuicProxyClientSocket::SetStreamPriority(RequestPriority priority) {
-  stream_->SetPriority(ConvertRequestPriorityToQuicPriority(priority));
-}
+// Ignore priority changes, just use priority of initial request. Since multiple
+// requests are pooled on the QuicProxyClientSocket, reprioritization doesn't
+// really work.
+//
+// TODO(mmenke):  Use a single priority value for all QuicProxyClientSockets,
+// regardless of what priority they're created with.
+void QuicProxyClientSocket::SetStreamPriority(RequestPriority priority) {}
 
 // Sends a HEADERS frame to the proxy with a CONNECT request
 // for the specified endpoint.  Waits for the server to send back
@@ -153,8 +157,14 @@ int64_t QuicProxyClientSocket::GetTotalReceivedBytes() const {
 }
 
 void QuicProxyClientSocket::ApplySocketTag(const SocketTag& tag) {
-  // |session_| can be tagged, but |stream_| cannot.
-  CHECK(false);
+  // In the case of a connection to the proxy using HTTP/2 or HTTP/3 where the
+  // underlying socket may multiplex multiple streams, applying this request's
+  // socket tag to the multiplexed session would incorrectly apply the socket
+  // tag to all mutliplexed streams. Fortunately socket tagging is only
+  // supported on Android without the data reduction proxy, so only simple HTTP
+  // proxies are supported, so proxies won't be using HTTP/2 or HTTP/3. Enforce
+  // that a specific (non-default) tag isn't being applied.
+  CHECK(tag == SocketTag());
 }
 
 int QuicProxyClientSocket::Read(IOBuffer* buf,
@@ -171,9 +181,10 @@ int QuicProxyClientSocket::Read(IOBuffer* buf,
     return 0;
   }
 
-  int rv = stream_->ReadBody(buf, buf_len,
-                             base::Bind(&QuicProxyClientSocket::OnReadComplete,
-                                        weak_factory_.GetWeakPtr()));
+  int rv =
+      stream_->ReadBody(buf, buf_len,
+                        base::BindOnce(&QuicProxyClientSocket::OnReadComplete,
+                                       weak_factory_.GetWeakPtr()));
 
   if (rv == ERR_IO_PENDING) {
     read_callback_ = std::move(callback);
@@ -219,8 +230,8 @@ int QuicProxyClientSocket::Write(
 
   int rv = stream_->WriteStreamData(
       quic::QuicStringPiece(buf->data(), buf_len), false,
-      base::Bind(&QuicProxyClientSocket::OnWriteComplete,
-                 weak_factory_.GetWeakPtr()));
+      base::BindOnce(&QuicProxyClientSocket::OnWriteComplete,
+                     weak_factory_.GetWeakPtr()));
   if (rv == OK)
     return buf_len;
 
@@ -316,8 +327,8 @@ int QuicProxyClientSocket::DoGenerateAuthToken() {
   next_state_ = STATE_GENERATE_AUTH_TOKEN_COMPLETE;
   return auth_->MaybeGenerateAuthToken(
       &request_,
-      base::Bind(&QuicProxyClientSocket::OnIOComplete,
-                 weak_factory_.GetWeakPtr()),
+      base::BindOnce(&QuicProxyClientSocket::OnIOComplete,
+                     weak_factory_.GetWeakPtr()),
       net_log_);
 }
 
@@ -341,10 +352,9 @@ int QuicProxyClientSocket::DoSendRequest() {
   BuildTunnelRequest(endpoint_, authorization_headers, user_agent_,
                      &request_line, &request_.extra_headers);
 
-  net_log_.AddEvent(
-      NetLogEventType::HTTP_TRANSACTION_SEND_TUNNEL_HEADERS,
-      base::Bind(&HttpRequestHeaders::NetLogCallback,
-                 base::Unretained(&request_.extra_headers), &request_line));
+  NetLogRequestHeaders(net_log_,
+                       NetLogEventType::HTTP_TRANSACTION_SEND_TUNNEL_HEADERS,
+                       request_line, &request_.extra_headers);
 
   spdy::SpdyHeaderBlock headers;
   CreateSpdyHeadersFromHttpRequest(request_, request_.extra_headers, &headers);
@@ -372,8 +382,8 @@ int QuicProxyClientSocket::DoReadReply() {
 
   int rv = stream_->ReadInitialHeaders(
       &response_header_block_,
-      base::Bind(&QuicProxyClientSocket::OnReadResponseHeadersComplete,
-                 weak_factory_.GetWeakPtr()));
+      base::BindOnce(&QuicProxyClientSocket::OnReadResponseHeadersComplete,
+                     weak_factory_.GetWeakPtr()));
   if (rv == ERR_IO_PENDING)
     return ERR_IO_PENDING;
   if (rv < 0)
@@ -390,22 +400,14 @@ int QuicProxyClientSocket::DoReadReplyComplete(int result) {
   if (response_.headers->GetHttpVersion() < HttpVersion(1, 0))
     return ERR_TUNNEL_CONNECTION_FAILED;
 
-  net_log_.AddEvent(
-      NetLogEventType::HTTP_TRANSACTION_READ_TUNNEL_RESPONSE_HEADERS,
-      base::Bind(&HttpResponseHeaders::NetLogCallback, response_.headers));
+  NetLogResponseHeaders(
+      net_log_, NetLogEventType::HTTP_TRANSACTION_READ_TUNNEL_RESPONSE_HEADERS,
+      response_.headers.get());
 
   switch (response_.headers->response_code()) {
     case 200:  // OK
       next_state_ = STATE_CONNECT_COMPLETE;
       return OK;
-
-    case 302:  // Found / Moved Temporarily
-      // Try to return a sanitized response so we can follow auth redirects.
-      // If we can't, fail the tunnel connection.
-      if (!SanitizeProxyRedirect(&response_))
-        return ERR_TUNNEL_CONNECTION_FAILED;
-      next_state_ = STATE_DISCONNECTED;
-      return ERR_HTTPS_PROXY_TUNNEL_RESPONSE_REDIRECT;
 
     case 407:  // Proxy Authentication Required
       next_state_ = STATE_CONNECT_COMPLETE;

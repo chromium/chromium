@@ -2,14 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/logging.h"
+#include <sstream>
+
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/compiler_specific.h"
+#include "base/files/file_util.h"
+#include "base/files/scoped_temp_dir.h"
+#include "base/logging.h"
 #include "base/macros.h"
+#include "base/run_loop.h"
 #include "base/sanitizer_buildflags.h"
 #include "base/strings/string_piece.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
 #include "build/build_config.h"
 
 #include "testing/gmock/include/gmock/gmock.h"
@@ -26,22 +32,29 @@
 #endif
 
 #if defined(OS_WIN)
-#include <excpt.h>
 #include <windows.h>
+#include <excpt.h>
 #endif  // OS_WIN
 
 #if defined(OS_FUCHSIA)
+#include <fuchsia/logger/cpp/fidl.h>
+#include <fuchsia/logger/cpp/fidl_test_base.h>
+#include <lib/fidl/cpp/binding.h>
+#include <lib/sys/cpp/component_context.h>
+#include <lib/zx/channel.h>
 #include <lib/zx/event.h>
-#include <lib/zx/port.h>
+#include <lib/zx/exception.h>
 #include <lib/zx/process.h>
 #include <lib/zx/thread.h>
 #include <lib/zx/time.h>
 #include <zircon/process.h>
 #include <zircon/syscalls/debug.h>
-#include <zircon/syscalls/port.h>
+#include <zircon/syscalls/exception.h>
 #include <zircon/types.h>
+
+#include "base/fuchsia/default_context.h"
 #include "base/fuchsia/fuchsia_logging.h"
-#endif
+#endif  // OS_FUCHSIA
 
 namespace logging {
 
@@ -81,6 +94,8 @@ class LogStateSaver {
 
 class LoggingTest : public testing::Test {
  private:
+  base::test::SingleThreadTaskEnvironment task_environment_{
+      base::test::SingleThreadTaskEnvironment::MainThreadType::IO};
   LogStateSaver log_state_saver_;
 };
 
@@ -211,6 +226,155 @@ TEST_F(LoggingTest, LoggingIsLazyByDestination) {
   LOG(ERROR) << mock_log_source_error.Log();
 }
 
+// Check that logging to stderr is gated on LOG_TO_STDERR.
+TEST_F(LoggingTest, LogToStdErrFlag) {
+  LoggingSettings settings;
+  settings.logging_dest = LOG_NONE;
+  InitLogging(settings);
+  MockLogSource mock_log_source;
+  EXPECT_CALL(mock_log_source, Log()).Times(0);
+  LOG(INFO) << mock_log_source.Log();
+
+  settings.logging_dest = LOG_TO_STDERR;
+  MockLogSource mock_log_source_stderr;
+  InitLogging(settings);
+  EXPECT_CALL(mock_log_source_stderr, Log()).Times(1).WillOnce(Return("foo"));
+  LOG(INFO) << mock_log_source_stderr.Log();
+}
+
+// Check that messages with severity ERROR or higher are always logged to
+// stderr if no log-destinations are set, other than LOG_TO_FILE.
+// This test is currently only POSIX-compatible.
+#if defined(OS_POSIX) || defined(OS_FUCHSIA)
+namespace {
+void TestForLogToStderr(int log_destinations,
+                        bool* did_log_info,
+                        bool* did_log_error) {
+  const char kInfoLogMessage[] = "This is an INFO level message";
+  const char kErrorLogMessage[] = "Here we have a message of level ERROR";
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+
+  // Set up logging.
+  LoggingSettings settings;
+  settings.logging_dest = log_destinations;
+  base::FilePath file_logs_path;
+  if (log_destinations & LOG_TO_FILE) {
+    file_logs_path = temp_dir.GetPath().Append("file.log");
+    settings.log_file_path = file_logs_path.value().c_str();
+  }
+  InitLogging(settings);
+
+  // Create a file and change stderr to write to that file, to easily check
+  // contents.
+  base::FilePath stderr_logs_path = temp_dir.GetPath().Append("stderr.log");
+  base::File stderr_logs = base::File(
+      stderr_logs_path,
+      base::File::FLAG_CREATE | base::File::FLAG_WRITE | base::File::FLAG_READ);
+  base::ScopedFD stderr_backup = base::ScopedFD(dup(STDERR_FILENO));
+  int dup_result = dup2(stderr_logs.GetPlatformFile(), STDERR_FILENO);
+  ASSERT_EQ(dup_result, STDERR_FILENO);
+
+  LOG(INFO) << kInfoLogMessage;
+  LOG(ERROR) << kErrorLogMessage;
+
+  // Restore the original stderr logging destination.
+  dup_result = dup2(stderr_backup.get(), STDERR_FILENO);
+  ASSERT_EQ(dup_result, STDERR_FILENO);
+
+  // Check which of the messages were written to stderr.
+  std::string written_logs;
+  ASSERT_TRUE(base::ReadFileToString(stderr_logs_path, &written_logs));
+  *did_log_info = written_logs.find(kInfoLogMessage) != std::string::npos;
+  *did_log_error = written_logs.find(kErrorLogMessage) != std::string::npos;
+}
+}  // namespace
+
+TEST_F(LoggingTest, AlwaysLogErrorsToStderr) {
+  bool did_log_info = false;
+  bool did_log_error = false;
+
+  // When no destinations are specified, ERRORs should still log to stderr.
+  TestForLogToStderr(LOG_NONE, &did_log_info, &did_log_error);
+  EXPECT_FALSE(did_log_info);
+  EXPECT_TRUE(did_log_error);
+
+  // Logging only to a file should also log ERRORs to stderr as well.
+  TestForLogToStderr(LOG_TO_FILE, &did_log_info, &did_log_error);
+  EXPECT_FALSE(did_log_info);
+  EXPECT_TRUE(did_log_error);
+
+  // ERRORs should not be logged to stderr if any destination besides FILE is
+  // set.
+  TestForLogToStderr(LOG_TO_SYSTEM_DEBUG_LOG, &did_log_info, &did_log_error);
+  EXPECT_FALSE(did_log_info);
+  EXPECT_FALSE(did_log_error);
+
+  // Both ERRORs and INFO should be logged if LOG_TO_STDERR is set.
+  TestForLogToStderr(LOG_TO_STDERR, &did_log_info, &did_log_error);
+  EXPECT_TRUE(did_log_info);
+  EXPECT_TRUE(did_log_error);
+}
+#endif
+
+#if defined(OS_CHROMEOS)
+TEST_F(LoggingTest, InitWithFileDescriptor) {
+  const char kErrorLogMessage[] = "something bad happened";
+
+  // Open a file to pass to the InitLogging.
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  base::FilePath file_log_path = temp_dir.GetPath().Append("file.log");
+  FILE* log_file = fopen(file_log_path.value().c_str(), "w");
+  CHECK(log_file);
+
+  // Set up logging.
+  LoggingSettings settings;
+  settings.logging_dest = LOG_TO_FILE;
+  settings.log_file = log_file;
+  InitLogging(settings);
+
+  LOG(ERROR) << kErrorLogMessage;
+
+  // Check the message was written to the log file.
+  std::string written_logs;
+  ASSERT_TRUE(base::ReadFileToString(file_log_path, &written_logs));
+  ASSERT_NE(written_logs.find(kErrorLogMessage), std::string::npos);
+}
+
+TEST_F(LoggingTest, DuplicateLogFile) {
+  const char kErrorLogMessage1[] = "something really bad happened";
+  const char kErrorLogMessage2[] = "some other bad thing happened";
+
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  base::FilePath file_log_path = temp_dir.GetPath().Append("file.log");
+
+  // Set up logging.
+  LoggingSettings settings;
+  settings.logging_dest = LOG_TO_FILE;
+  settings.log_file_path = file_log_path.value().c_str();
+  InitLogging(settings);
+
+  LOG(ERROR) << kErrorLogMessage1;
+
+  // Duplicate the log FILE, close the original (to make sure we actually
+  // duplicated it), and write to the duplicate.
+  FILE* log_file_dup = DuplicateLogFILE();
+  CHECK(log_file_dup);
+  CloseLogFile();
+  fprintf(log_file_dup, "%s\n", kErrorLogMessage2);
+  fflush(log_file_dup);
+
+  // Check the messages were written to the log file.
+  std::string written_logs;
+  ASSERT_TRUE(base::ReadFileToString(file_log_path, &written_logs));
+  ASSERT_NE(written_logs.find(kErrorLogMessage1), std::string::npos);
+  ASSERT_NE(written_logs.find(kErrorLogMessage2), std::string::npos);
+  fclose(log_file_dup);
+}
+#endif  // defined(OS_CHROMEOS)
+
 // Official builds have CHECKs directly call BreakDebugger.
 #if !defined(OFFICIAL_BUILD)
 
@@ -226,7 +390,7 @@ TEST_F(LoggingTest, MAYBE_CheckStreamsAreLazy) {
       WillRepeatedly(Return("check message"));
   EXPECT_CALL(uncalled_mock_log_source, Log()).Times(0);
 
-  ScopedLogAssertHandler scoped_assert_handler(base::Bind(LogSink));
+  ScopedLogAssertHandler scoped_assert_handler(base::BindRepeating(LogSink));
 
   CHECK(mock_log_source.Log()) << uncalled_mock_log_source.Log();
   PCHECK(!mock_log_source.Log()) << mock_log_source.Log();
@@ -307,31 +471,33 @@ TEST_F(LoggingTest, CheckCausesDistinctBreakpoints) {
   }
 #endif
 
-static const unsigned int kExceptionPortKey = 1u;
-static const unsigned int kThreadEndedPortKey = 2u;
-
 struct thread_data_t {
   // For signaling the thread ended properly.
-  zx::unowned_event event;
-  // For registering thread termination.
-  zx::unowned_port port;
+  zx::event event;
+  // For catching thread exceptions. Created by the crashing thread.
+  zx::channel channel;
   // Location where the thread is expected to crash.
   int death_location;
 };
 
-void* CrashThread(void* arg) {
-  zx_status_t status;
+// Indicates the exception channel has been created successfully.
+constexpr zx_signals_t kChannelReadySignal = ZX_USER_SIGNAL_0;
 
+// Indicates an error setting up the crash thread.
+constexpr zx_signals_t kCrashThreadErrorSignal = ZX_USER_SIGNAL_1;
+
+void* CrashThread(void* arg) {
   thread_data_t* data = (thread_data_t*)arg;
   int death_location = data->death_location;
 
-  // Register the exception handler on the port.
-  status = zx::thread::self()->bind_exception_port(*data->port,
-                                                   kExceptionPortKey, 0);
+  // Register the exception handler.
+  zx_status_t status =
+      zx::thread::self()->create_exception_channel(0, &data->channel);
   if (status != ZX_OK) {
-    data->event->signal(0, ZX_USER_SIGNAL_0);
+    data->event.signal(0, kCrashThreadErrorSignal);
     return nullptr;
   }
+  data->event.signal(0, kChannelReadySignal);
 
   DO_CHECK(death_location != 1);
   DO_CHECK(death_location != 2);
@@ -339,44 +505,48 @@ void* CrashThread(void* arg) {
 
   // We should never reach this point, signal the thread incorrectly ended
   // properly.
-  data->event->signal(0, ZX_USER_SIGNAL_0);
+  data->event.signal(0, kCrashThreadErrorSignal);
   return nullptr;
 }
 
 // Runs the CrashThread function in a separate thread.
 void SpawnCrashThread(int death_location, uintptr_t* child_crash_addr) {
-  zx::port port;
   zx::event event;
-  zx_status_t status;
-
-  status = zx::port::create(0, &port);
-  ASSERT_EQ(status, ZX_OK);
-  status = zx::event::create(0, &event);
-  ASSERT_EQ(status, ZX_OK);
-
-  // Register the thread ended event on the port.
-  status = event.wait_async(port, kThreadEndedPortKey, ZX_USER_SIGNAL_0,
-                            ZX_WAIT_ASYNC_ONCE);
+  zx_status_t status = zx::event::create(0, &event);
   ASSERT_EQ(status, ZX_OK);
 
   // Run the thread.
-  thread_data_t thread_data = {zx::unowned_event(event), zx::unowned_port(port),
-                               death_location};
+  thread_data_t thread_data = {std::move(event), zx::channel(), death_location};
   pthread_t thread;
   int ret = pthread_create(&thread, nullptr, CrashThread, &thread_data);
   ASSERT_EQ(ret, 0);
 
-  // Wait on the port.
-  zx_port_packet_t packet;
-  status = port.wait(zx::time::infinite(), &packet);
+  // Wait for the thread to set up its exception channel.
+  zx_signals_t signals = 0;
+  status =
+      thread_data.event.wait_one(kChannelReadySignal | kCrashThreadErrorSignal,
+                                 zx::time::infinite(), &signals);
+  ASSERT_EQ(status, ZX_OK);
+  ASSERT_EQ(signals, kChannelReadySignal);
+
+  // Wait for the exception and read it out of the channel.
+  status =
+      thread_data.channel.wait_one(ZX_CHANNEL_READABLE | ZX_CHANNEL_PEER_CLOSED,
+                                   zx::time::infinite(), &signals);
   ASSERT_EQ(status, ZX_OK);
   // Check the thread did crash and not terminate.
-  ASSERT_EQ(packet.key, kExceptionPortKey);
+  ASSERT_FALSE(signals & ZX_CHANNEL_PEER_CLOSED);
+
+  zx_exception_info_t exception_info;
+  zx::exception exception;
+  status = thread_data.channel.read(
+      0, &exception_info, exception.reset_and_get_address(),
+      sizeof(exception_info), 1, nullptr, nullptr);
+  ASSERT_EQ(status, ZX_OK);
 
   // Get the crash address.
   zx::thread zircon_thread;
-  status = zx::process::self()->get_child(packet.exception.tid,
-                                          ZX_RIGHT_SAME_RIGHTS, &zircon_thread);
+  status = exception.get_thread(&zircon_thread);
   ASSERT_EQ(status, ZX_OK);
   zx_thread_state_general_regs_t buffer;
   status = zircon_thread.read_state(ZX_THREAD_STATE_GENERAL_REGS, &buffer,
@@ -575,12 +745,12 @@ TEST_F(LoggingTest, MAYBE_Dcheck) {
   EXPECT_FALSE(DLOG_IS_ON(DCHECK));
 #elif defined(NDEBUG) && defined(DCHECK_ALWAYS_ON)
   // Release build with real DCHECKS.
-  ScopedLogAssertHandler scoped_assert_handler(base::Bind(LogSink));
+  ScopedLogAssertHandler scoped_assert_handler(base::BindRepeating(LogSink));
   EXPECT_TRUE(DCHECK_IS_ON());
   EXPECT_TRUE(DLOG_IS_ON(DCHECK));
 #else
   // Debug build.
-  ScopedLogAssertHandler scoped_assert_handler(base::Bind(LogSink));
+  ScopedLogAssertHandler scoped_assert_handler(base::BindRepeating(LogSink));
   EXPECT_TRUE(DCHECK_IS_ON());
   EXPECT_TRUE(DLOG_IS_ON(DCHECK));
 #endif
@@ -693,7 +863,7 @@ TEST_F(LoggingTest, NestedLogAssertHandlers) {
           base::StringPiece("Last assert must be caught by handler_a again"),
           _));
 
-  logging::ScopedLogAssertHandler scoped_handler_a(base::Bind(
+  logging::ScopedLogAssertHandler scoped_handler_a(base::BindRepeating(
       &MockLogAssertHandler::HandleLogAssert, base::Unretained(&handler_a)));
 
   // Using LOG(FATAL) rather than CHECK(false) here since log messages aren't
@@ -701,7 +871,7 @@ TEST_F(LoggingTest, NestedLogAssertHandlers) {
   LOG(FATAL) << "First assert must be caught by handler_a";
 
   {
-    logging::ScopedLogAssertHandler scoped_handler_b(base::Bind(
+    logging::ScopedLogAssertHandler scoped_handler_b(base::BindRepeating(
         &MockLogAssertHandler::HandleLogAssert, base::Unretained(&handler_b)));
     LOG(FATAL) << "Second assert must be caught by handler_b";
   }
@@ -747,7 +917,7 @@ TEST_F(LoggingTest, ConfigurableDCheck) {
   ::testing::StrictMock<MockLogAssertHandler> handler;
   EXPECT_CALL(handler, HandleLogAssert(_, _, _, _)).Times(2);
   {
-    logging::ScopedLogAssertHandler scoped_handler_b(base::Bind(
+    logging::ScopedLogAssertHandler scoped_handler_b(base::BindRepeating(
         &MockLogAssertHandler::HandleLogAssert, base::Unretained(&handler)));
     DCHECK(false);
     DCHECK_EQ(1, 2);
@@ -781,6 +951,80 @@ TEST_F(LoggingTest, ConfigurableDCheckFeature) {
 #endif  // defined(DCHECK_IS_CONFIGURABLE)
 
 #if defined(OS_FUCHSIA)
+
+class TestLogListener : public fuchsia::logger::testing::LogListener_TestBase {
+ public:
+  TestLogListener() = default;
+  ~TestLogListener() override = default;
+
+  void RunUntilDone() {
+    base::RunLoop loop;
+    dump_logs_done_quit_closure_ = loop.QuitClosure();
+    loop.Run();
+  }
+
+  bool DidReceiveString(base::StringPiece message,
+                        fuchsia::logger::LogMessage* logged_message) {
+    for (const auto& log_message : log_messages_) {
+      if (log_message.msg.find(message.as_string()) != std::string::npos) {
+        *logged_message = log_message;
+        return true;
+      }
+    }
+    return false;
+  }
+
+  // LogListener implementation.
+  void LogMany(std::vector<fuchsia::logger::LogMessage> messages) override {
+    log_messages_.insert(log_messages_.end(),
+                         std::make_move_iterator(messages.begin()),
+                         std::make_move_iterator(messages.end()));
+  }
+
+  void Done() override { std::move(dump_logs_done_quit_closure_).Run(); }
+
+  void NotImplemented_(const std::string& name) override {
+    NOTIMPLEMENTED() << name;
+  }
+
+ private:
+  fuchsia::logger::LogListenerPtr log_listener_;
+  std::vector<fuchsia::logger::LogMessage> log_messages_;
+  base::OnceClosure dump_logs_done_quit_closure_;
+
+  DISALLOW_COPY_AND_ASSIGN(TestLogListener);
+};
+
+// Verifies that calling the log macro goes to the Fuchsia system logs.
+TEST_F(LoggingTest, FuchsiaSystemLogging) {
+  const char kLogMessage[] = "system log!";
+  LOG(ERROR) << kLogMessage;
+
+  TestLogListener listener;
+  fidl::Binding<fuchsia::logger::LogListener> binding(&listener);
+
+  fuchsia::logger::LogMessage logged_message;
+  do {
+    std::unique_ptr<fuchsia::logger::LogFilterOptions> options =
+        std::make_unique<fuchsia::logger::LogFilterOptions>();
+    options->tags = {"base_unittests__exec"};
+    fuchsia::logger::LogPtr logger =
+        base::fuchsia::ComponentContextForCurrentProcess()
+            ->svc()
+            ->Connect<fuchsia::logger::Log>();
+    logger->DumpLogs(binding.NewBinding(), std::move(options));
+    listener.RunUntilDone();
+  } while (!listener.DidReceiveString(kLogMessage, &logged_message));
+
+  EXPECT_EQ(logged_message.severity,
+            static_cast<int32_t>(fuchsia::logger::LogLevelFilter::ERROR));
+  ASSERT_EQ(logged_message.tags.size(), 1u);
+  EXPECT_EQ(logged_message.tags[0], base::CommandLine::ForCurrentProcess()
+                                        ->GetProgram()
+                                        .BaseName()
+                                        .AsUTF8Unsafe());
+}
+
 TEST_F(LoggingTest, FuchsiaLogging) {
   MockLogSource mock_log_source;
   EXPECT_CALL(mock_log_source, Log())
@@ -880,6 +1124,46 @@ TEST_F(LoggingTest, LogMessageMarkersOnStack) {
   LOG(FATAL) << kTestMessage;
 }
 #endif  // !defined(ADDRESS_SANITIZER)
+
+const char* kToStringResult = "to_string";
+const char* kOstreamResult = "ostream";
+
+struct StructWithOstream {};
+
+std::ostream& operator<<(std::ostream& out, const StructWithOstream&) {
+  return out << kOstreamResult;
+}
+
+TEST(MakeCheckOpValueStringTest, HasOnlyOstream) {
+  std::ostringstream oss;
+  logging::MakeCheckOpValueString(&oss, StructWithOstream());
+  EXPECT_EQ(kOstreamResult, oss.str());
+}
+
+struct StructWithToString {
+  std::string ToString() const { return kToStringResult; }
+};
+
+TEST(MakeCheckOpValueStringTest, HasOnlyToString) {
+  std::ostringstream oss;
+  logging::MakeCheckOpValueString(&oss, StructWithToString());
+  EXPECT_EQ(kToStringResult, oss.str());
+}
+
+struct StructWithToStringAndOstream {
+  std::string ToString() const { return kToStringResult; }
+};
+
+std::ostream& operator<<(std::ostream& out,
+                         const StructWithToStringAndOstream&) {
+  return out << kOstreamResult;
+}
+
+TEST(MakeCheckOpValueStringTest, HasOstreamAndToString) {
+  std::ostringstream oss;
+  logging::MakeCheckOpValueString(&oss, StructWithToStringAndOstream());
+  EXPECT_EQ(kOstreamResult, oss.str());
+}
 
 }  // namespace
 

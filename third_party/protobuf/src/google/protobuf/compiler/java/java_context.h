@@ -40,18 +40,20 @@
 
 namespace google {
 namespace protobuf {
-  class FileDescriptor;
-  class FieldDescriptor;
-  class OneofDescriptor;
-  class Descriptor;
-  class EnumDescriptor;
-  namespace compiler {
-    namespace java {
-      class ClassNameResolver;  // name_resolver.h
-    }
-  }
+class FileDescriptor;
+class FieldDescriptor;
+class OneofDescriptor;
+class Descriptor;
+class EnumDescriptor;
+namespace compiler {
+namespace java {
+class ClassNameResolver;  // name_resolver.h
+}
+}  // namespace compiler
 }  // namespace protobuf
+}  // namespace google
 
+namespace google {
 namespace protobuf {
 namespace compiler {
 namespace java {
@@ -106,6 +108,6 @@ class Context {
 }  // namespace java
 }  // namespace compiler
 }  // namespace protobuf
-
 }  // namespace google
+
 #endif  // GOOGLE_PROTOBUF_COMPILER_JAVA_CONTEXT_H__

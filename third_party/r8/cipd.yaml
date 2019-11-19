@@ -5,13 +5,12 @@
 # Example for updating r8 in the current dir:
 #   Run:
 #     cd <r8 code directory>
-#     tools/gradle.py d8 r8 # Building R8
+#     tools/gradle.py r8 # Building R8
 #     cd -
 #
 #     cipd auth-login
-#     rm lib/r8.jar lib/d8.jar
+#     rm lib/r8.jar
 #     cp <r8 code directory>/build/libs/r8.jar lib/r8.jar
-#     cp <r8 code directory>/build/libs/d8.jar lib/d8.jar
 #     java -jar lib/r8.jar --version
 #     cipd create --pkg-def cipd.yaml # Make note of the instance ID
 #   Manually update:
@@ -20,8 +19,6 @@
 
 package: chromium/third_party/r8
 description: >
-  D8 is a dexer that converts java byte code to dex code (part of the R8 repo).
   R8 is a proguard-like optimizer that also has the option to dex.
 data:
-  - file: lib/d8.jar
   - file: lib/r8.jar

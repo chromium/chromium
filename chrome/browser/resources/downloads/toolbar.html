@@ -1,25 +1,6 @@
-<link rel="import" href="chrome://resources/html/polymer.html">
-
-<link rel="import" href="chrome://downloads/search_service.html">
-<link rel="import" href="chrome://downloads/browser_proxy.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_action_menu/cr_action_menu.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_toolbar/cr_toolbar.html">
-<link rel="import" href="chrome://resources/cr_elements/hidden_style_css.html">
-<link rel="import" href="chrome://resources/cr_elements/icons.html">
-<link rel="import" href="chrome://resources/cr_elements/shared_vars_css.html">
-<link rel="import" href="chrome://resources/html/assert.html">
-<link rel="import" href="chrome://resources/html/cr.html">
-<link rel="import" href="chrome://resources/html/util.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/paper-icon-button/paper-icon-button-light.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/paper-styles/color.html">
-
-<dom-module id="downloads-toolbar">
-  <template>
     <style include="cr-hidden-style">
       :host {
         align-items: center;
-        background: var(--md-toolbar-color);
         display: flex;
         min-height: 56px;
       }
@@ -28,36 +9,31 @@
         flex: 1;
       }
 
-      #moreActionsContainer {
-        --iron-icon-height: 20px;
-        --iron-icon-width: 20px;
-        height: 32px;
-        padding: 6px 0;
-        width: 32px;
+      cr-icon-button {
+        --cr-icon-button-fill-color-focus: var(--cr-toolbar-background-color);
+        justify-content: flex-end;
+        margin: 4px;
+      }
+
+      @media (prefers-color-scheme: light) {
+        cr-icon-button {
+          --cr-icon-button-color: currentColor;
+        }
       }
     </style>
     <cr-toolbar id="toolbar" page-name="$i18n{title}"
         search-prompt="$i18n{search}" clear-label="$i18n{clearSearch}"
         spinner-active="{{spinnerActive}}" on-search-changed="onSearchChanged_">
-      <paper-icon-button-light id="moreActionsContainer"
-          class="dropdown-trigger">
-        <button id="moreActions" title="$i18n{moreActions}"
-            on-click="onMoreActionsTap_" aria-haspopup="menu">
-          <iron-icon icon="cr:more-vert"></iron-icon>
-        </button>
-      </paper-icon-button-light>
+      <cr-icon-button id="moreActions" iron-icon="cr:more-vert"
+          class="dropdown-trigger" title="$i18n{moreActions}"
+          on-click="onMoreActionsTap_" aria-haspopup="menu"></cr-icon-button>
     </cr-toolbar>
     <cr-action-menu id="moreActionsMenu"
-        aria-label="$i18n{actionMenuDescription}">
-      <button class="dropdown-item clear-all"
-          on-click="onClearAllTap_">
+        role-description="$i18n{actionMenuDescription}">
+      <button class="dropdown-item clear-all" on-click="onClearAllTap_">
         $i18n{clearAll}
       </button>
-      <button class="dropdown-item"
-          on-click="onOpenDownloadsFolderTap_">
+      <button class="dropdown-item" on-click="onOpenDownloadsFolderTap_">
         $i18n{openDownloadsFolder}
       </button>
     </cr-action-menu>
-  </template>
-  <script src="chrome://downloads/toolbar.js"></script>
-</dom-module>

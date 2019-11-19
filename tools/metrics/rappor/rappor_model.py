@@ -20,16 +20,16 @@ _SUMMARY_TYPE = models.TextNodeType('summary')
 _NOISE_VALUES_TYPE = models.ObjectNodeType(
     'noise-values',
     attributes=[
-        ('fake-prob', float),
-        ('fake-one-prob', float),
-        ('one-coin-prob', float),
-        ('zero-coin-prob', float),
+        ('fake-prob', float, None),
+        ('fake-one-prob', float, None),
+        ('one-coin-prob', float, None),
+        ('zero-coin-prob', float, None),
     ])
 
 _NOISE_LEVEL_TYPE = models.ObjectNodeType(
     'noise-level',
     extra_newlines=(1, 1, 1),
-    attributes=[('name', unicode)],
+    attributes=[('name', unicode, None)],
     children=[
         models.ChildType('summary', _SUMMARY_TYPE, False),
         models.ChildType('values', _NOISE_VALUES_TYPE, False),
@@ -46,17 +46,17 @@ _NOISE_LEVELS_TYPE = models.ObjectNodeType(
 _PARAMETERS_TYPE = models.ObjectNodeType(
     'parameters',
     attributes=[
-        ('num-cohorts', int),
-        ('bytes', int),
-        ('hash-functions', int),
-        ('reporting-level', unicode),
-        ('noise-level', unicode),
+        ('num-cohorts', int, None),
+        ('bytes', int, None),
+        ('hash-functions', int, None),
+        ('reporting-level', unicode, None),
+        ('noise-level', unicode, None),
     ])
 
 _RAPPOR_PARAMETERS_TYPE = models.ObjectNodeType(
     'rappor-parameters',
     extra_newlines=(1, 1, 1),
-    attributes=[('name', unicode)],
+    attributes=[('name', unicode, None)],
     children=[
         models.ChildType('summary', _SUMMARY_TYPE, False),
         models.ChildType('parameters', _PARAMETERS_TYPE, False),
@@ -73,21 +73,21 @@ _RAPPOR_PARAMETERS_TYPES_TYPE = models.ObjectNodeType(
 _STRING_FIELD_TYPE = models.ObjectNodeType(
     'string-field',
     extra_newlines=(1, 1, 0),
-    attributes=[('name', unicode)],
+    attributes=[('name', unicode, None)],
     children=[
         models.ChildType('summary', _SUMMARY_TYPE, False),
     ])
 
 _FLAG_TYPE = models.ObjectNodeType(
     'flag',
-    attributes=[('bit', int), ('label', unicode)],
+    attributes=[('bit', int, None), ('label', unicode, None)],
     text_attribute='summary',
     single_line=True)
 
 _FLAGS_FIELD_TYPE = models.ObjectNodeType(
     'flags-field',
     extra_newlines=(1, 1, 0),
-    attributes=[('name', unicode), ('noise-level', unicode)],
+    attributes=[('name', unicode, None), ('noise-level', unicode, None)],
     children=[
         models.ChildType('flags', _FLAG_TYPE, True),
         models.ChildType('summary', _SUMMARY_TYPE, False),
@@ -96,7 +96,7 @@ _FLAGS_FIELD_TYPE = models.ObjectNodeType(
 _UINT64_FIELD_TYPE = models.ObjectNodeType(
     'uint64-field',
     extra_newlines=(1, 1, 0),
-    attributes=[('name', unicode), ('noise-level', unicode)],
+    attributes=[('name', unicode, None), ('noise-level', unicode, None)],
     children=[
         models.ChildType('summary', _SUMMARY_TYPE, False),
     ])
@@ -104,7 +104,7 @@ _UINT64_FIELD_TYPE = models.ObjectNodeType(
 _RAPPOR_METRIC_TYPE = models.ObjectNodeType(
     'rappor-metric',
     extra_newlines=(1, 1, 1),
-    attributes=[('name', unicode), ('type', unicode)],
+    attributes=[('name', unicode, None), ('type', unicode, None)],
     children=[
         models.ChildType('obsolete', _OBSOLETE_TYPE, False),
         models.ChildType('owners', _OWNER_TYPE, True),
@@ -170,7 +170,8 @@ def _CheckAllAttributes(obj, label, node_type):
   Returns:
     True iff the object contains all of the attributes.
   """
-  return _CheckRequired(obj, label, (attr for attr, _ in node_type.attributes))
+  return _CheckRequired(obj, label,
+                        (attr for attr, _, _ in node_type.attributes))
 
 
 def _IsValidNoiseLevel(noise_level):

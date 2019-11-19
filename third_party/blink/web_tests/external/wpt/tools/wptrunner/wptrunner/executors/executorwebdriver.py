@@ -1,6 +1,7 @@
 import json
 import os
 import socket
+import sys
 import threading
 import time
 import traceback
@@ -21,7 +22,8 @@ from .protocol import (BaseProtocolPart,
                        SendKeysProtocolPart,
                        ActionSequenceProtocolPart,
                        TestDriverProtocolPart,
-                       GenerateTestReportProtocolPart)
+                       GenerateTestReportProtocolPart,
+                       VirtualAuthenticatorProtocolPart)
 from ..testrunner import Stop
 
 import webdriver as client
@@ -33,8 +35,8 @@ class WebDriverBaseProtocolPart(BaseProtocolPart):
     def setup(self):
         self.webdriver = self.parent.webdriver
 
-    def execute_script(self, script, async=False):
-        method = self.webdriver.execute_async_script if async else self.webdriver.execute_script
+    def execute_script(self, script, asynchronous=False):
+        method = self.webdriver.execute_async_script if asynchronous else self.webdriver.execute_script
         return method(script)
 
     def set_timeout(self, timeout):
@@ -86,6 +88,7 @@ class WebDriverTestharnessProtocolPart(TestharnessProtocolPart):
         self.parent.base.execute_script(self.runner_script % format_map)
 
     def close_old_windows(self):
+        self.webdriver.actions.release()
         handles = [item for item in self.webdriver.handles if item != self.runner_handle]
         for handle in handles:
             try:
@@ -121,7 +124,7 @@ class WebDriverTestharnessProtocolPart(TestharnessProtocolPart):
             if test_window is None:
                 after = self.webdriver.handles
                 if len(after) == 2:
-                    test_window = next(iter(set(after) - set([parent])))
+                    test_window = next(iter(set(after) - {parent}))
                 elif after[0] == parent and len(after) > 2:
                     # Hope the first one here is the test window
                     test_window = after[1]
@@ -141,6 +144,9 @@ class WebDriverSelectorProtocolPart(SelectorProtocolPart):
 
     def elements_by_selector(self, selector):
         return self.webdriver.find.css(selector)
+
+    def elements_by_selector_and_frame(self, element_selector, frame):
+        return self.webdriver.find.css(element_selector, frame=frame)
 
 
 class WebDriverClickProtocolPart(ClickProtocolPart):
@@ -197,6 +203,31 @@ class WebDriverGenerateTestReportProtocolPart(GenerateTestReportProtocolPart):
         json_message = {"message": message}
         self.webdriver.send_session_command("POST", "reporting/generate_test_report", json_message)
 
+class WebDriverVirtualAuthenticatorProtocolPart(VirtualAuthenticatorProtocolPart):
+    def setup(self):
+        self.webdriver = self.parent.webdriver
+
+    def add_virtual_authenticator(self, config):
+        return self.webdriver.send_session_command("POST", "webauthn/authenticator", config)
+
+    def remove_virtual_authenticator(self, authenticator_id):
+        return self.webdriver.send_session_command("DELETE", "webauthn/authenticator/%s" % authenticator_id)
+
+    def add_credential(self, authenticator_id, credential):
+        return self.webdriver.send_session_command("POST", "webauthn/authenticator/%s/credential" % authenticator_id, credential)
+
+    def get_credentials(self, authenticator_id):
+        return self.webdriver.send_session_command("GET", "webauthn/authenticator/%s/credentials" % authenticator_id)
+
+    def remove_credential(self, authenticator_id, credential_id):
+        return self.webdriver.send_session_command("DELETE", "webauthn/authenticator/%s/credentials/%s" % (authenticator_id, credential_id))
+
+    def remove_all_credentials(self, authenticator_id):
+        return self.webdriver.send_session_command("DELETE", "webauthn/authenticator/%s/credentials" % authenticator_id)
+
+    def set_user_verified(self, authenticator_id, uv):
+        return self.webdriver.send_session_command("POST", "webauthn/authenticator/%s/uv" % authenticator_id, uv)
+
 
 class WebDriverProtocol(Protocol):
     implements = [WebDriverBaseProtocolPart,
@@ -206,7 +237,8 @@ class WebDriverProtocol(Protocol):
                   WebDriverSendKeysProtocolPart,
                   WebDriverActionSequenceProtocolPart,
                   WebDriverTestDriverProtocolPart,
-                  WebDriverGenerateTestReportProtocolPart]
+                  WebDriverGenerateTestReportProtocolPart,
+                  WebDriverVirtualAuthenticatorProtocolPart]
 
     def __init__(self, executor, browser, capabilities, **kwargs):
         super(WebDriverProtocol, self).__init__(executor, browser)
@@ -228,10 +260,14 @@ class WebDriverProtocol(Protocol):
     def teardown(self):
         self.logger.debug("Hanging up on WebDriver session")
         try:
-            self.webdriver.quit()
-        except Exception:
-            pass
-        del self.webdriver
+            self.webdriver.end()
+        except Exception as e:
+            message = str(getattr(e, "message", ""))
+            if message:
+                message += "\n"
+            message += traceback.format_exc(e)
+            self.logger.debug(message)
+        self.webdriver = None
 
     def is_alive(self):
         try:
@@ -258,7 +294,7 @@ class WebDriverRun(object):
         timeout = self.timeout
 
         try:
-            self.protocol.base.set_timeout((timeout + extra_timeout))
+            self.protocol.base.set_timeout(timeout + extra_timeout)
         except client.UnknownErrorException:
             self.logger.error("Lost WebDriver connection")
             return Stop
@@ -273,7 +309,10 @@ class WebDriverRun(object):
                 # it can if self._run fails to set self.result due to raising
                 self.result = False, ("INTERNAL-ERROR", "self._run didn't set a result")
             else:
-                self.result = False, ("EXTERNAL-TIMEOUT", None)
+                message = "Waiting on browser:\n"
+                # get a traceback for the current stack of the executor thread
+                message += "".join(traceback.format_stack(sys._current_frames()[executor.ident]))
+                self.result = False, ("EXTERNAL-TIMEOUT", message)
 
         return self.result
 
@@ -355,7 +394,21 @@ class WebDriverTestharnessExecutor(TestharnessExecutor):
 
         while True:
             result = protocol.base.execute_script(
-                self.script_resume % format_map, async=True)
+                self.script_resume % format_map, asynchronous=True)
+
+            # As of 2019-03-29, WebDriver does not define expected behavior for
+            # cases where the browser crashes during script execution:
+            #
+            # https://github.com/w3c/webdriver/issues/1308
+            if not isinstance(result, list) or len(result) != 2:
+                try:
+                    is_alive = self.is_alive()
+                except client.WebDriverException:
+                    is_alive = False
+
+                if not is_alive:
+                    raise Exception("Browser crashed during script execution.")
+
             done, rv = handler(result)
             if done:
                 break
@@ -375,7 +428,7 @@ if (location.href === "about:blank") {
   callback(true);
 } else {
   document.addEventListener("readystatechange", () => {if (document.readyState !== "loading") {callback(true)}});
-}""", async=True)
+}""", asynchronous=True)
             except client.JavascriptErrorException:
                 # We can get an error here if the script runs in the initial about:blank
                 # document before it has navigated, with the driver returning an error
@@ -416,7 +469,11 @@ class WebDriverRefTestExecutor(RefTestExecutor):
             """return [window.outerWidth - window.innerWidth,
                        window.outerHeight - window.innerHeight];"""
         )
-        self.protocol.webdriver.window.position = (0, 0)
+        try:
+            self.protocol.webdriver.window.position = (0, 0)
+        except client.InvalidArgumentException:
+            # Safari 12 throws with 0 or 1, treating them as bools; fixed in STP
+            self.protocol.webdriver.window.position = (2, 2)
         self.protocol.webdriver.window.size = (800 + width_offset, 600 + height_offset)
 
         result = self.implementation.run_test(test)
@@ -424,7 +481,7 @@ class WebDriverRefTestExecutor(RefTestExecutor):
         return self.convert_result(test, result)
 
     def screenshot(self, test, viewport_size, dpi):
-        # https://github.com/w3c/wptrunner/issues/166
+        # https://github.com/web-platform-tests/wpt/issues/7135
         assert viewport_size is None
         assert dpi is None
 

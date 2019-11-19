@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "chromeos/services/device_sync/cryptauth_key_bundle.h"
+
+#include "chromeos/services/device_sync/cryptauth_enrollment_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace chromeos {
@@ -20,14 +22,14 @@ const char kFakePrivateKey[] = "fake-private-key";
 }  // namespace
 
 TEST(DeviceSyncCryptAuthKeyBundleTest, CreateKeyBundle) {
-  CryptAuthKeyBundle bundle(CryptAuthKeyBundle::Name::kUserKeyPair);
-  EXPECT_EQ(bundle.name(), CryptAuthKeyBundle::Name::kUserKeyPair);
+  CryptAuthKeyBundle bundle(CryptAuthKeyBundle::Name::kLegacyMasterKey);
+  EXPECT_EQ(bundle.name(), CryptAuthKeyBundle::Name::kLegacyMasterKey);
   EXPECT_TRUE(bundle.handle_to_key_map().empty());
   EXPECT_FALSE(bundle.key_directive());
 }
 
 TEST(DeviceSyncCryptAuthKeyBundleTest, SetKeyDirective) {
-  CryptAuthKeyBundle bundle(CryptAuthKeyBundle::Name::kUserKeyPair);
+  CryptAuthKeyBundle bundle(CryptAuthKeyBundle::Name::kLegacyMasterKey);
   cryptauthv2::KeyDirective key_directive;
   bundle.set_key_directive(key_directive);
   ASSERT_TRUE(bundle.key_directive());
@@ -36,20 +38,35 @@ TEST(DeviceSyncCryptAuthKeyBundleTest, SetKeyDirective) {
 }
 
 TEST(DeviceSyncCryptAuthKeyBundleTest, AddKey) {
-  CryptAuthKeyBundle bundle(CryptAuthKeyBundle::Name::kUserKeyPair);
-  CryptAuthKey key(kFakeSymmetricKey, CryptAuthKey::Status::kActive,
-                   cryptauthv2::KeyType::RAW256, kFakeSymmetricKeyHandle);
-  bundle.AddKey(key);
-  EXPECT_TRUE(bundle.handle_to_key_map().size() == 1);
+  CryptAuthKeyBundle bundle_legacy(CryptAuthKeyBundle::Name::kLegacyMasterKey);
+  CryptAuthKey sym_key(kFakeSymmetricKey, CryptAuthKey::Status::kActive,
+                       cryptauthv2::KeyType::RAW256, kFakeSymmetricKeyHandle);
+  bundle_legacy.AddKey(sym_key);
+  EXPECT_TRUE(bundle_legacy.handle_to_key_map().size() == 1);
+  const auto& legacy_it =
+      bundle_legacy.handle_to_key_map().find(kFakeSymmetricKeyHandle);
+  ASSERT_TRUE(legacy_it != bundle_legacy.handle_to_key_map().end());
+  EXPECT_EQ(legacy_it->first, sym_key.handle());
+  EXPECT_EQ(legacy_it->second, sym_key);
 
-  const auto& it = bundle.handle_to_key_map().find(kFakeSymmetricKeyHandle);
-  ASSERT_TRUE(it != bundle.handle_to_key_map().end());
-  EXPECT_EQ(it->first, key.handle());
-  EXPECT_EQ(it->second, key);
+  // Note: Handles for kUserKeyPair must be kCryptAuthFixedUserKeyPairHandle.
+  CryptAuthKeyBundle bundle_user_key_pair(
+      CryptAuthKeyBundle::Name::kUserKeyPair);
+  CryptAuthKey asym_key(
+      kFakePublicKey, kFakePrivateKey, CryptAuthKey::Status::kActive,
+      cryptauthv2::KeyType::P256, kCryptAuthFixedUserKeyPairHandle);
+  bundle_user_key_pair.AddKey(asym_key);
+  EXPECT_TRUE(bundle_user_key_pair.handle_to_key_map().size() == 1);
+  const auto& user_key_pair_it = bundle_user_key_pair.handle_to_key_map().find(
+      kCryptAuthFixedUserKeyPairHandle);
+  ASSERT_TRUE(user_key_pair_it !=
+              bundle_user_key_pair.handle_to_key_map().end());
+  EXPECT_EQ(user_key_pair_it->first, asym_key.handle());
+  EXPECT_EQ(user_key_pair_it->second, asym_key);
 }
 
 TEST(DeviceSyncCryptAuthKeyBundleTest, AddKey_Inactive) {
-  CryptAuthKeyBundle bundle(CryptAuthKeyBundle::Name::kUserKeyPair);
+  CryptAuthKeyBundle bundle(CryptAuthKeyBundle::Name::kLegacyMasterKey);
   CryptAuthKey symmetric_key(kFakeSymmetricKey, CryptAuthKey::Status::kActive,
                              cryptauthv2::KeyType::RAW256,
                              kFakeSymmetricKeyHandle);
@@ -72,7 +89,7 @@ TEST(DeviceSyncCryptAuthKeyBundleTest, AddKey_Inactive) {
 }
 
 TEST(DeviceSyncCryptAuthKeyBundleTest, AddKey_ActiveKeyDeactivatesOthers) {
-  CryptAuthKeyBundle bundle(CryptAuthKeyBundle::Name::kUserKeyPair);
+  CryptAuthKeyBundle bundle(CryptAuthKeyBundle::Name::kLegacyMasterKey);
   CryptAuthKey symmetric_key(kFakeSymmetricKey, CryptAuthKey::Status::kActive,
                              cryptauthv2::KeyType::RAW256,
                              kFakeSymmetricKeyHandle);
@@ -95,7 +112,7 @@ TEST(DeviceSyncCryptAuthKeyBundleTest, AddKey_ActiveKeyDeactivatesOthers) {
 }
 
 TEST(DeviceSyncCryptAuthKeyBundleTest, AddKey_ReplaceKeyWithSameHandle) {
-  CryptAuthKeyBundle bundle(CryptAuthKeyBundle::Name::kUserKeyPair);
+  CryptAuthKeyBundle bundle(CryptAuthKeyBundle::Name::kLegacyMasterKey);
   CryptAuthKey symmetric_key(kFakeSymmetricKey, CryptAuthKey::Status::kActive,
                              cryptauthv2::KeyType::RAW256, "same-handle");
   bundle.AddKey(symmetric_key);
@@ -111,7 +128,7 @@ TEST(DeviceSyncCryptAuthKeyBundleTest, AddKey_ReplaceKeyWithSameHandle) {
 }
 
 TEST(DeviceSyncCryptAuthKeyBundleTest, GetActiveKey_DoesNotExist) {
-  CryptAuthKeyBundle bundle(CryptAuthKeyBundle::Name::kUserKeyPair);
+  CryptAuthKeyBundle bundle(CryptAuthKeyBundle::Name::kLegacyMasterKey);
   EXPECT_FALSE(bundle.GetActiveKey());
 
   CryptAuthKey symmetric_key(kFakeSymmetricKey, CryptAuthKey::Status::kInactive,
@@ -122,7 +139,7 @@ TEST(DeviceSyncCryptAuthKeyBundleTest, GetActiveKey_DoesNotExist) {
 }
 
 TEST(DeviceSyncCryptAuthKeyBundleTest, GetActiveKey_Exists) {
-  CryptAuthKeyBundle bundle(CryptAuthKeyBundle::Name::kUserKeyPair);
+  CryptAuthKeyBundle bundle(CryptAuthKeyBundle::Name::kLegacyMasterKey);
   CryptAuthKey symmetric_key(kFakeSymmetricKey, CryptAuthKey::Status::kInactive,
                              cryptauthv2::KeyType::RAW256,
                              kFakeSymmetricKeyHandle);
@@ -137,7 +154,7 @@ TEST(DeviceSyncCryptAuthKeyBundleTest, GetActiveKey_Exists) {
 }
 
 TEST(DeviceSyncCryptAuthKeyBundleTest, SetActiveKey_InactiveToActive) {
-  CryptAuthKeyBundle bundle(CryptAuthKeyBundle::Name::kUserKeyPair);
+  CryptAuthKeyBundle bundle(CryptAuthKeyBundle::Name::kLegacyMasterKey);
   CryptAuthKey symmetric_key(kFakeSymmetricKey, CryptAuthKey::Status::kInactive,
                              cryptauthv2::KeyType::RAW256,
                              kFakeSymmetricKeyHandle);
@@ -159,7 +176,7 @@ TEST(DeviceSyncCryptAuthKeyBundleTest, SetActiveKey_InactiveToActive) {
 }
 
 TEST(DeviceSyncCryptAuthKeyBundleTest, SetActiveKey_ActiveToActive) {
-  CryptAuthKeyBundle bundle(CryptAuthKeyBundle::Name::kUserKeyPair);
+  CryptAuthKeyBundle bundle(CryptAuthKeyBundle::Name::kLegacyMasterKey);
   CryptAuthKey symmetric_key(kFakeSymmetricKey, CryptAuthKey::Status::kInactive,
                              cryptauthv2::KeyType::RAW256,
                              kFakeSymmetricKeyHandle);
@@ -181,7 +198,7 @@ TEST(DeviceSyncCryptAuthKeyBundleTest, SetActiveKey_ActiveToActive) {
 }
 
 TEST(DeviceSyncCryptAuthKeyBundleTest, DeactivateKeys) {
-  CryptAuthKeyBundle bundle(CryptAuthKeyBundle::Name::kUserKeyPair);
+  CryptAuthKeyBundle bundle(CryptAuthKeyBundle::Name::kLegacyMasterKey);
   CryptAuthKey symmetric_key(kFakeSymmetricKey, CryptAuthKey::Status::kInactive,
                              cryptauthv2::KeyType::RAW256,
                              kFakeSymmetricKeyHandle);
@@ -203,7 +220,7 @@ TEST(DeviceSyncCryptAuthKeyBundleTest, DeactivateKeys) {
 }
 
 TEST(DeviceSyncCryptAuthKeyBundleTest, DeleteKey) {
-  CryptAuthKeyBundle bundle(CryptAuthKeyBundle::Name::kUserKeyPair);
+  CryptAuthKeyBundle bundle(CryptAuthKeyBundle::Name::kLegacyMasterKey);
   CryptAuthKey symmetric_key(kFakeSymmetricKey, CryptAuthKey::Status::kInactive,
                              cryptauthv2::KeyType::RAW256,
                              kFakeSymmetricKeyHandle);
@@ -215,7 +232,7 @@ TEST(DeviceSyncCryptAuthKeyBundleTest, DeleteKey) {
 }
 
 TEST(DeviceSyncCryptAuthKeyBundleTest, ToAndFromDictionary_Trivial) {
-  CryptAuthKeyBundle bundle(CryptAuthKeyBundle::Name::kUserKeyPair);
+  CryptAuthKeyBundle bundle(CryptAuthKeyBundle::Name::kLegacyMasterKey);
   base::Optional<CryptAuthKeyBundle> bundle_from_dict =
       CryptAuthKeyBundle::FromDictionary(bundle.AsDictionary());
   ASSERT_TRUE(bundle_from_dict);
@@ -223,7 +240,7 @@ TEST(DeviceSyncCryptAuthKeyBundleTest, ToAndFromDictionary_Trivial) {
 }
 
 TEST(DeviceSyncCryptAuthKeyBundleTest, ToAndFromDictionary) {
-  CryptAuthKeyBundle bundle(CryptAuthKeyBundle::Name::kUserKeyPair);
+  CryptAuthKeyBundle bundle(CryptAuthKeyBundle::Name::kLegacyMasterKey);
   CryptAuthKey symmetric_key(kFakeSymmetricKey, CryptAuthKey::Status::kInactive,
                              cryptauthv2::KeyType::RAW256,
                              kFakeSymmetricKeyHandle);

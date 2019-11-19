@@ -9,8 +9,8 @@
 #include <string>
 
 #include "base/macros.h"
-#include "chrome/browser/chromeos/login/mixin_based_in_process_browser_test.h"
 #include "chrome/browser/chromeos/login/test/https_forwarder.h"
+#include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "google_apis/gaia/fake_gaia.h"
 
 namespace base {
@@ -25,7 +25,13 @@ class FakeGaiaMixin : public InProcessBrowserTestMixin {
   static const char kFakeUserEmail[];
   static const char kFakeUserPassword[];
   static const char kFakeUserGaiaId[];
+  static const char kFakeAuthCode[];
+  static const char kFakeRefreshToken[];
   static const char kEmptyUserServices[];
+  static const char kFakeAllScopeAccessToken[];
+
+  // How many seconds until the fake access tokens expire.
+  static const int kFakeAccessTokenExpiration;
 
   // FakeGaia is configured to return these cookies for kFakeUserEmail.
   static const char kFakeSIDCookie[];
@@ -61,6 +67,18 @@ class FakeGaiaMixin : public InProcessBrowserTestMixin {
   void SetupFakeGaiaForLogin(const std::string& user_email,
                              const std::string& gaia_id,
                              const std::string& refresh_token);
+  // Sets up fake gaia to serve access tokens for a child user.
+  // *   Maps |user_email| to |gaia_id|. If |gaia_id| is empty, |user_email|
+  //     will be mapped to kDefaultGaiaId in FakeGaia.
+  // *   Issues user info token scoped for device management service.
+  // *   If |issue_any_scope_token|, issues a special all-access token
+  //     associated with the test refresh token (as it's done in
+  //     SetupFakeGaiaForLogin()).
+  // *   Initializes fake merge session as needed.
+  void SetupFakeGaiaForChildUser(const std::string& user_email,
+                                 const std::string& gaia_id,
+                                 const std::string& refresh_token,
+                                 bool issue_any_scope_token);
   void SetupFakeGaiaForLoginManager();
 
   bool initialize_fake_merge_session() {
@@ -77,6 +95,7 @@ class FakeGaiaMixin : public InProcessBrowserTestMixin {
   void SetUp() override;
   void SetUpCommandLine(base::CommandLine* command_line) override;
   void SetUpOnMainThread() override;
+  void TearDownOnMainThread() override;
 
  private:
   net::EmbeddedTestServer* embedded_test_server_;

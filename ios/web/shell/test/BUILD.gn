@@ -10,39 +10,34 @@ group("all_tests") {
   testonly = true
   deps = [
     ":ios_web_shell_eg2tests",
+    ":ios_web_shell_eg2tests_module",
     ":ios_web_shell_egtests",
-    ":ios_web_shell_test_app_host",
   ]
 }
 
 ios_eg_test("ios_web_shell_egtests") {
+  defines = [ "CHROME_EARL_GREY_1" ]
   info_plist = "//ios/web/shell/Info.plist"
   sources = [
     "context_menu_egtest.mm",
     "page_state_egtest.mm",
-    "service_manager_egtest.mm",
   ]
 
   deps = [
     ":earl_grey_test_support",
     "//base",
     "//base/test:test_support",
+    "//ios/testing:http_server_bundle_data",
     "//ios/testing/earl_grey:earl_grey_support",
     "//ios/web",
     "//ios/web:earl_grey_test_support",
     "//ios/web/public/test",
+    "//ios/web/public/test:element_selector",
     "//ios/web/public/test/fakes",
-    "//ios/web/public/test/http_server",
     "//ios/web/shell",
-    "//ios/web/shell:shell_interfaces",
-    "//net",
-    "//services/service_manager/public/cpp",
-    "//services/test/echo/public/mojom",
-    "//services/test/user_id/public/mojom",
+    "//net:test_support",
     "//url",
   ]
-
-  bundle_deps = [ ":bundle" ]
 
   configs += [ "//build/config/compiler:enable_arc" ]
 
@@ -56,13 +51,15 @@ source_set("earl_grey_test_support") {
   deps = [
     "//base",
     "//base/test:test_support",
+    "//ios/testing:nserror_support",
     "//ios/testing/earl_grey:earl_grey_support",
     "//ios/third_party/earl_grey:earl_grey+link",
     "//ios/web",
     "//ios/web:earl_grey_test_support",
     "//ios/web/public/test",
-    "//ios/web/public/test/http_server",
+    "//ios/web/public/test:element_selector",
     "//ios/web/shell",
+    "//ios/web/shell:shell_interfaces",
     "//testing/gtest:gtest",
     "//url",
   ]
@@ -80,12 +77,16 @@ source_set("earl_grey_test_support") {
     "app/web_view_interaction_test_util.mm",
     "earl_grey/shell_actions.h",
     "earl_grey/shell_actions.mm",
+    "earl_grey/shell_actions_app_interface.h",
+    "earl_grey/shell_actions_app_interface.mm",
     "earl_grey/shell_earl_grey.h",
     "earl_grey/shell_earl_grey.mm",
+    "earl_grey/shell_earl_grey_app_interface.h",
+    "earl_grey/shell_earl_grey_app_interface.mm",
     "earl_grey/shell_matchers.h",
     "earl_grey/shell_matchers.mm",
-    "earl_grey/shell_matchers_shorthand.h",
-    "earl_grey/shell_matchers_shorthand.mm",
+    "earl_grey/shell_matchers_app_interface.h",
+    "earl_grey/shell_matchers_app_interface.mm",
     "earl_grey/web_shell_test_case.h",
     "earl_grey/web_shell_test_case.mm",
   ]
@@ -93,22 +94,46 @@ source_set("earl_grey_test_support") {
   configs += [ "//build/config/compiler:enable_arc" ]
 }
 
-bundle_data("bundle") {
-  visibility = [ ":*" ]
-  sources = [
-    "http_server_files/tall_page.html",
-  ]
-  outputs = [
-    "{{bundle_resources_dir}}/{{source_root_relative_dir}}/" +
-        "{{source_file_part}}",
-  ]
-}
-
 ################################
 # EG2 targets.
 
-group("eg_app_support+eg2") {
+source_set("eg_app_support+eg2") {
+  defines = [ "CHROME_EARL_GREY_2" ]
+  configs += [
+    "//build/config/compiler:enable_arc",
+    "//build/config/ios:xctest_config",
+  ]
   testonly = true
+
+  sources = [
+    "app/navigation_test_util.h",
+    "app/navigation_test_util.mm",
+    "app/web_shell_test_util.h",
+    "app/web_shell_test_util.mm",
+    "app/web_view_interaction_test_util.h",
+    "app/web_view_interaction_test_util.mm",
+    "earl_grey/shell_actions_app_interface.h",
+    "earl_grey/shell_actions_app_interface.mm",
+    "earl_grey/shell_earl_grey_app_interface.h",
+    "earl_grey/shell_earl_grey_app_interface.mm",
+    "earl_grey/shell_matchers_app_interface.h",
+    "earl_grey/shell_matchers_app_interface.mm",
+  ]
+
+  deps = [
+    "//base",
+    "//base/test:test_support",
+    "//ios/testing:nserror_support",
+    "//ios/testing/earl_grey:eg_app_support+eg2",
+    "//ios/third_party/earl_grey2:app_framework+link",
+    "//ios/web",
+    "//ios/web:eg_app_support+eg2",
+    "//ios/web/public/test",
+    "//ios/web/public/test/http_server",
+    "//ios/web/shell",
+    "//ios/web/shell:shell_interfaces",
+    "//url",
+  ]
 }
 
 source_set("eg_test_support+eg2") {
@@ -120,20 +145,34 @@ source_set("eg_test_support+eg2") {
   testonly = true
 
   sources = [
+    "earl_grey/shell_actions.h",
+    "earl_grey/shell_actions.mm",
+    "earl_grey/shell_actions_app_interface.h",
+    "earl_grey/shell_earl_grey.h",
+    "earl_grey/shell_earl_grey.mm",
+    "earl_grey/shell_earl_grey_app_interface.h",
+    "earl_grey/shell_matchers.h",
+    "earl_grey/shell_matchers.mm",
+    "earl_grey/shell_matchers_app_interface.h",
     "earl_grey/web_shell_test_case.h",
     "earl_grey/web_shell_test_case.mm",
   ]
 
-  include_dirs = [ "//ios/third_party/edo/src" ]
-
   deps = [
+    "//base",
+    "//base/test:test_support",
+    "//ios/testing:http_server_bundle_data",
+    "//ios/testing:nserror_support",
     "//ios/testing/earl_grey:eg_test_support+eg2",
     "//ios/third_party/earl_grey2:test_lib",
-    "//ios/web/public/test/http_server",
+    "//ios/web/public/test:element_selector",
+    "//ios/web/shell:shell_interfaces",
+    "//url",
   ]
 }
 
 source_set("eg_tests+eg2") {
+  defines = [ "CHROME_EARL_GREY_2" ]
   configs += [
     "//build/config/compiler:enable_arc",
     "//build/config/ios:xctest_config",
@@ -141,20 +180,24 @@ source_set("eg_tests+eg2") {
   testonly = true
 
   sources = [
-    "web_shell_sample_egtest.mm",
+    "context_menu_egtest.mm",
+    "page_state_egtest.mm",
   ]
-
-  include_dirs = [ "//ios/third_party/edo/src" ]
 
   deps = [
     ":eg_test_support+eg2",
+    "//base",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
     "//ios/third_party/earl_grey2:test_lib",
+    "//ios/web/public/test:element_selector",
+    "//ios/web/public/test/http_server",
+    "//net:test_support",
   ]
 
   libs = [ "UIKit.framework" ]
 }
 
-ios_eg2_test_app_host("ios_web_shell_test_app_host") {
+ios_eg2_test_app_host("ios_web_shell_eg2tests") {
   info_plist = "//ios/web/shell/Info.plist"
 
   deps = [
@@ -166,13 +209,11 @@ ios_eg2_test_app_host("ios_web_shell_test_app_host") {
   ]
 }
 
-ios_eg2_test("ios_web_shell_eg2tests") {
-  xcode_test_application_name = "ios_web_shell_test_app_host"
+ios_eg2_test("ios_web_shell_eg2tests_module") {
+  xcode_test_application_name = "ios_web_shell_eg2tests"
 
   deps = [
     # Test support libraries.
     ":eg_tests+eg2",
   ]
-
-  bundle_deps = [ ":bundle" ]
 }

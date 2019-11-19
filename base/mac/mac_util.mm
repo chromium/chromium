@@ -420,13 +420,12 @@ int MacOSXMinorVersionInternal() {
   // version for Darwin versions beginning with 6, corresponding to Mac OS X
   // 10.2. Since this correspondence may change in the future, warn when
   // encountering a version higher than anything seen before. Older Darwin
-  // versions, or versions that can't be determined, result in
-  // immediate death.
+  // versions, or versions that can't be determined, result in immediate death.
   CHECK(darwin_major_version >= 6);
   int mac_os_x_minor_version = darwin_major_version - 4;
-  DLOG_IF(WARNING, darwin_major_version > 18)
-      << "Assuming Darwin " << base::IntToString(darwin_major_version)
-      << " is macOS 10." << base::IntToString(mac_os_x_minor_version);
+  DLOG_IF(WARNING, darwin_major_version > 19)
+      << "Assuming Darwin " << base::NumberToString(darwin_major_version)
+      << " is macOS 10." << base::NumberToString(mac_os_x_minor_version);
 
   return mac_os_x_minor_version;
 }
@@ -481,6 +480,17 @@ bool ParseModelIdentifier(const std::string& ident,
   *major = major_tmp;
   *minor = minor_tmp;
   return true;
+}
+
+std::string GetOSDisplayName() {
+  std::string os_name;
+  if (IsAtMostOS10_11())
+    os_name = "OS X";
+  else
+    os_name = "macOS";
+  std::string version_string = base::SysNSStringToUTF8(
+      [[NSProcessInfo processInfo] operatingSystemVersionString]);
+  return os_name + " " + version_string;
 }
 
 }  // namespace mac

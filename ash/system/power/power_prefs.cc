@@ -5,16 +5,18 @@
 #include "ash/system/power/power_prefs.h"
 
 #include <string>
+#include <vector>
 
 #include "ash/public/cpp/ash_pref_names.h"
-#include "ash/session/session_controller.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/time/default_tick_clock.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "chromeos/dbus/power/power_policy_controller.h"
 #include "chromeos/dbus/power_manager/idle.pb.h"
-#include "chromeos/dbus/power_policy_controller.h"
+#include "chromeos/dbus/power_manager/policy.pb.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_registry.h"
@@ -23,6 +25,12 @@
 namespace ash {
 
 namespace {
+
+using PeakShiftDayConfig =
+    power_manager::PowerManagementPolicy::PeakShiftDayConfig;
+
+using AdvancedBatteryChargeModeDayConfig =
+    power_manager::PowerManagementPolicy::AdvancedBatteryChargeModeDayConfig;
 
 chromeos::PowerPolicyController::Action GetPowerPolicyAction(
     const PrefService* prefs,
@@ -55,90 +63,73 @@ chromeos::PowerPolicyController::Action GetPowerPolicyAction(
 // used: if more-restrictive power-related prefs are set by policy, it's most
 // likely to be on this profile.
 PrefService* GetPrefService() {
-  ash::SessionController* controller = Shell::Get()->session_controller();
+  ash::SessionControllerImpl* controller = Shell::Get()->session_controller();
   PrefService* prefs = controller->GetPrimaryUserPrefService();
   return prefs ? prefs : controller->GetActivePrefService();
 }
 
 // Registers power prefs whose default values are the same in user prefs and
 // signin prefs.
-void RegisterProfilePrefs(PrefRegistrySimple* registry, bool for_test) {
-  registry->RegisterIntegerPref(prefs::kPowerAcScreenBrightnessPercent, -1,
-                                PrefRegistry::PUBLIC);
-  registry->RegisterIntegerPref(prefs::kPowerAcScreenDimDelayMs, 420000,
-                                PrefRegistry::PUBLIC);
-  registry->RegisterIntegerPref(prefs::kPowerAcScreenOffDelayMs, 450000,
-                                PrefRegistry::PUBLIC);
-  registry->RegisterIntegerPref(prefs::kPowerAcScreenLockDelayMs, 0,
-                                PrefRegistry::PUBLIC);
-  registry->RegisterIntegerPref(prefs::kPowerAcIdleWarningDelayMs, 0,
-                                PrefRegistry::PUBLIC);
-  registry->RegisterIntegerPref(prefs::kPowerAcIdleDelayMs, 510000,
-                                PrefRegistry::PUBLIC);
-  registry->RegisterIntegerPref(prefs::kPowerBatteryScreenBrightnessPercent, -1,
-                                PrefRegistry::PUBLIC);
-  registry->RegisterIntegerPref(prefs::kPowerBatteryScreenDimDelayMs, 300000,
-                                PrefRegistry::PUBLIC);
-  registry->RegisterIntegerPref(prefs::kPowerBatteryScreenOffDelayMs, 330000,
-                                PrefRegistry::PUBLIC);
-  registry->RegisterIntegerPref(prefs::kPowerBatteryScreenLockDelayMs, 0,
-                                PrefRegistry::PUBLIC);
-  registry->RegisterIntegerPref(prefs::kPowerBatteryIdleWarningDelayMs, 0,
-                                PrefRegistry::PUBLIC);
-  registry->RegisterIntegerPref(prefs::kPowerBatteryIdleDelayMs, 390000,
-                                PrefRegistry::PUBLIC);
-  registry->RegisterIntegerPref(prefs::kPowerLockScreenDimDelayMs, 30000,
-                                PrefRegistry::PUBLIC);
-  registry->RegisterIntegerPref(prefs::kPowerLockScreenOffDelayMs, 40000,
-                                PrefRegistry::PUBLIC);
-  registry->RegisterIntegerPref(prefs::kPowerAcIdleAction,
-                                chromeos::PowerPolicyController::ACTION_SUSPEND,
-                                PrefRegistry::PUBLIC);
-  registry->RegisterBooleanPref(prefs::kPowerUseAudioActivity, true,
-                                PrefRegistry::PUBLIC);
-  registry->RegisterBooleanPref(prefs::kPowerUseVideoActivity, true,
-                                PrefRegistry::PUBLIC);
-  registry->RegisterBooleanPref(prefs::kPowerAllowWakeLocks, true,
-                                PrefRegistry::PUBLIC);
-  registry->RegisterBooleanPref(prefs::kPowerAllowScreenWakeLocks, true,
-                                PrefRegistry::PUBLIC);
+void RegisterProfilePrefs(PrefRegistrySimple* registry) {
+  registry->RegisterIntegerPref(prefs::kPowerAcScreenBrightnessPercent, -1);
+  registry->RegisterIntegerPref(prefs::kPowerAcScreenDimDelayMs, 420000);
+  registry->RegisterIntegerPref(prefs::kPowerAcScreenOffDelayMs, 450000);
+  registry->RegisterIntegerPref(prefs::kPowerAcScreenLockDelayMs, 0);
+  registry->RegisterIntegerPref(prefs::kPowerAcIdleWarningDelayMs, 0);
+  registry->RegisterIntegerPref(prefs::kPowerAcIdleDelayMs, 510000);
+  registry->RegisterIntegerPref(prefs::kPowerBatteryScreenBrightnessPercent,
+                                -1);
+  registry->RegisterIntegerPref(prefs::kPowerBatteryScreenDimDelayMs, 300000);
+  registry->RegisterIntegerPref(prefs::kPowerBatteryScreenOffDelayMs, 330000);
+  registry->RegisterIntegerPref(prefs::kPowerBatteryScreenLockDelayMs, 0);
+  registry->RegisterIntegerPref(prefs::kPowerBatteryIdleWarningDelayMs, 0);
+  registry->RegisterIntegerPref(prefs::kPowerBatteryIdleDelayMs, 390000);
+  registry->RegisterIntegerPref(prefs::kPowerLockScreenDimDelayMs, 30000);
+  registry->RegisterIntegerPref(prefs::kPowerLockScreenOffDelayMs, 40000);
+  registry->RegisterIntegerPref(
+      prefs::kPowerAcIdleAction,
+      chromeos::PowerPolicyController::ACTION_SUSPEND);
+  registry->RegisterBooleanPref(prefs::kPowerUseAudioActivity, true);
+  registry->RegisterBooleanPref(prefs::kPowerUseVideoActivity, true);
+  registry->RegisterBooleanPref(prefs::kPowerAllowWakeLocks, true);
+  registry->RegisterBooleanPref(prefs::kPowerAllowScreenWakeLocks, true);
   registry->RegisterDoublePref(prefs::kPowerPresentationScreenDimDelayFactor,
-                               2.0, PrefRegistry::PUBLIC);
+                               2.0);
   registry->RegisterDoublePref(prefs::kPowerUserActivityScreenDimDelayFactor,
-                               2.0, PrefRegistry::PUBLIC);
-  registry->RegisterBooleanPref(prefs::kPowerWaitForInitialUserActivity, false,
-                                PrefRegistry::PUBLIC);
+                               2.0);
+  registry->RegisterBooleanPref(prefs::kPowerWaitForInitialUserActivity, false);
   registry->RegisterBooleanPref(
-      prefs::kPowerForceNonzeroBrightnessForUserActivity, true,
-      PrefRegistry::PUBLIC);
-  registry->RegisterBooleanPref(prefs::kPowerSmartDimEnabled, true,
-                                PrefRegistry::PUBLIC);
+      prefs::kPowerForceNonzeroBrightnessForUserActivity, true);
+  registry->RegisterBooleanPref(prefs::kPowerFastSuspendWhenBacklightsForcedOff,
+                                true);
+  registry->RegisterBooleanPref(prefs::kPowerSmartDimEnabled, true);
+  registry->RegisterBooleanPref(prefs::kPowerAlsLoggingEnabled, false);
 
-  if (for_test) {
-    registry->RegisterBooleanPref(prefs::kAllowScreenLock, true,
-                                  PrefRegistry::PUBLIC);
-    registry->RegisterBooleanPref(
-        prefs::kEnableAutoScreenLock, false,
-        user_prefs::PrefRegistrySyncable::SYNCABLE_PREF | PrefRegistry::PUBLIC);
-  } else {
-    registry->RegisterForeignPref(prefs::kAllowScreenLock);
-    registry->RegisterForeignPref(prefs::kEnableAutoScreenLock);
-  }
+  registry->RegisterBooleanPref(prefs::kAllowScreenLock, true);
+  registry->RegisterBooleanPref(
+      prefs::kEnableAutoScreenLock, false,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
 }
 
 }  // namespace
 
 PowerPrefs::PowerPrefs(chromeos::PowerPolicyController* power_policy_controller,
-                       chromeos::PowerManagerClient* power_manager_client)
+                       chromeos::PowerManagerClient* power_manager_client,
+                       PrefService* local_state)
     : power_policy_controller_(power_policy_controller),
       power_manager_client_observer_(this),
-      tick_clock_(base::DefaultTickClock::GetInstance()) {
+      tick_clock_(base::DefaultTickClock::GetInstance()),
+      local_state_(local_state) {
   DCHECK(power_manager_client);
   DCHECK(power_policy_controller_);
   DCHECK(tick_clock_);
 
   power_manager_client_observer_.Add(power_manager_client);
   Shell::Get()->session_controller()->AddObserver(this);
+
+  // |local_state_| could be null in tests.
+  if (local_state_)
+    ObserveLocalStatePrefs(local_state_);
 }
 
 PowerPrefs::~PowerPrefs() {
@@ -146,29 +137,46 @@ PowerPrefs::~PowerPrefs() {
 }
 
 // static
-void PowerPrefs::RegisterSigninProfilePrefs(PrefRegistrySimple* registry,
-                                            bool for_test) {
-  RegisterProfilePrefs(registry, for_test);
+void PowerPrefs::RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
+  registry->RegisterBooleanPref(prefs::kPowerPeakShiftEnabled, false);
+  registry->RegisterIntegerPref(prefs::kPowerPeakShiftBatteryThreshold, -1);
+  registry->RegisterDictionaryPref(prefs::kPowerPeakShiftDayConfig);
 
-  registry->RegisterIntegerPref(
-      prefs::kPowerBatteryIdleAction,
-      chromeos::PowerPolicyController::ACTION_SHUT_DOWN, PrefRegistry::PUBLIC);
-  registry->RegisterIntegerPref(
-      prefs::kPowerLidClosedAction,
-      chromeos::PowerPolicyController::ACTION_SHUT_DOWN, PrefRegistry::PUBLIC);
+  registry->RegisterBooleanPref(prefs::kBootOnAcEnabled, false);
+
+  registry->RegisterBooleanPref(prefs::kAdvancedBatteryChargeModeEnabled,
+                                false);
+  registry->RegisterDictionaryPref(prefs::kAdvancedBatteryChargeModeDayConfig);
+
+  registry->RegisterIntegerPref(prefs::kBatteryChargeMode, -1);
+  registry->RegisterIntegerPref(prefs::kBatteryChargeCustomStartCharging, -1);
+  registry->RegisterIntegerPref(prefs::kBatteryChargeCustomStopCharging, -1);
+
+  registry->RegisterBooleanPref(prefs::kUsbPowerShareEnabled, true);
 }
 
 // static
-void PowerPrefs::RegisterUserProfilePrefs(PrefRegistrySimple* registry,
-                                          bool for_test) {
-  RegisterProfilePrefs(registry, for_test);
+void PowerPrefs::RegisterSigninProfilePrefs(PrefRegistrySimple* registry) {
+  RegisterProfilePrefs(registry);
 
-  registry->RegisterIntegerPref(prefs::kPowerBatteryIdleAction,
-                                chromeos::PowerPolicyController::ACTION_SUSPEND,
-                                PrefRegistry::PUBLIC);
-  registry->RegisterIntegerPref(prefs::kPowerLidClosedAction,
-                                chromeos::PowerPolicyController::ACTION_SUSPEND,
-                                PrefRegistry::PUBLIC);
+  registry->RegisterIntegerPref(
+      prefs::kPowerBatteryIdleAction,
+      chromeos::PowerPolicyController::ACTION_SHUT_DOWN);
+  registry->RegisterIntegerPref(
+      prefs::kPowerLidClosedAction,
+      chromeos::PowerPolicyController::ACTION_SHUT_DOWN);
+}
+
+// static
+void PowerPrefs::RegisterUserProfilePrefs(PrefRegistrySimple* registry) {
+  RegisterProfilePrefs(registry);
+
+  registry->RegisterIntegerPref(
+      prefs::kPowerBatteryIdleAction,
+      chromeos::PowerPolicyController::ACTION_SUSPEND);
+  registry->RegisterIntegerPref(
+      prefs::kPowerLidClosedAction,
+      chromeos::PowerPolicyController::ACTION_SUSPEND);
 }
 
 void PowerPrefs::ScreenIdleStateChanged(
@@ -207,7 +215,8 @@ void PowerPrefs::OnActiveUserPrefServiceChanged(PrefService* prefs) {
 
 void PowerPrefs::UpdatePowerPolicyFromPrefs() {
   PrefService* prefs = GetPrefService();
-  DCHECK(prefs);
+  if (!prefs || !local_state_)
+    return;
 
   // It's possible to end up in a situation where a shortened lock-screen idle
   // delay would cause the system to suspend immediately as soon as the screen
@@ -220,6 +229,7 @@ void PowerPrefs::UpdatePowerPolicyFromPrefs() {
                           screen_idle_off_time_ > screen_lock_time_);
 
   chromeos::PowerPolicyController::PrefValues values;
+
   values.ac_brightness_percent =
       prefs->GetInteger(prefs::kPowerAcScreenBrightnessPercent);
   values.ac_screen_dim_delay_ms =
@@ -280,60 +290,159 @@ void PowerPrefs::UpdatePowerPolicyFromPrefs() {
       prefs->GetBoolean(prefs::kPowerWaitForInitialUserActivity);
   values.force_nonzero_brightness_for_user_activity =
       prefs->GetBoolean(prefs::kPowerForceNonzeroBrightnessForUserActivity);
+  values.fast_suspend_when_backlights_forced_off =
+      prefs->GetBoolean(prefs::kPowerFastSuspendWhenBacklightsForcedOff);
+
+  if (local_state_->GetBoolean(prefs::kPowerPeakShiftEnabled) &&
+      local_state_->IsManagedPreference(prefs::kPowerPeakShiftEnabled) &&
+      local_state_->IsManagedPreference(
+          prefs::kPowerPeakShiftBatteryThreshold) &&
+      local_state_->IsManagedPreference(prefs::kPowerPeakShiftDayConfig)) {
+    const base::DictionaryValue* configs_value =
+        local_state_->GetDictionary(prefs::kPowerPeakShiftDayConfig);
+    DCHECK(configs_value);
+    std::vector<PeakShiftDayConfig> configs;
+    if (chromeos::PowerPolicyController::GetPeakShiftDayConfigs(*configs_value,
+                                                                &configs)) {
+      values.peak_shift_enabled = true;
+      values.peak_shift_battery_threshold =
+          local_state_->GetInteger(prefs::kPowerPeakShiftBatteryThreshold);
+      values.peak_shift_day_configs = std::move(configs);
+    } else {
+      LOG(WARNING) << "Invalid Peak Shift day configs format: "
+                   << *configs_value;
+    }
+  }
+
+  if (local_state_->GetBoolean(prefs::kAdvancedBatteryChargeModeEnabled) &&
+      local_state_->IsManagedPreference(
+          prefs::kAdvancedBatteryChargeModeEnabled) &&
+      local_state_->IsManagedPreference(
+          prefs::kAdvancedBatteryChargeModeDayConfig)) {
+    const base::DictionaryValue* configs_value =
+        local_state_->GetDictionary(prefs::kAdvancedBatteryChargeModeDayConfig);
+    DCHECK(configs_value);
+    std::vector<AdvancedBatteryChargeModeDayConfig> configs;
+    if (chromeos::PowerPolicyController::GetAdvancedBatteryChargeModeDayConfigs(
+            *configs_value, &configs)) {
+      values.advanced_battery_charge_mode_enabled = true;
+      values.advanced_battery_charge_mode_day_configs = std::move(configs);
+    } else {
+      LOG(WARNING)
+          << "Invalid Advanced Battery Charge Mode day configs format: "
+          << *configs_value;
+    }
+  }
+
+  if (local_state_->IsManagedPreference(prefs::kBatteryChargeMode)) {
+    if (chromeos::PowerPolicyController::GetBatteryChargeModeFromInteger(
+            local_state_->GetInteger(prefs::kBatteryChargeMode),
+            &values.battery_charge_mode)) {
+      if (local_state_->IsManagedPreference(
+              prefs::kBatteryChargeCustomStartCharging) &&
+          local_state_->IsManagedPreference(
+              prefs::kBatteryChargeCustomStopCharging)) {
+        values.custom_charge_start =
+            local_state_->GetInteger(prefs::kBatteryChargeCustomStartCharging);
+        values.custom_charge_stop =
+            local_state_->GetInteger(prefs::kBatteryChargeCustomStopCharging);
+      }
+    } else {
+      LOG(WARNING) << "Invalid Battery Charge Mode value: "
+                   << local_state_->GetInteger(prefs::kBatteryChargeMode);
+    }
+  }
+
+  if (local_state_->IsManagedPreference(prefs::kBootOnAcEnabled)) {
+    values.boot_on_ac = local_state_->GetBoolean(prefs::kBootOnAcEnabled);
+  }
+
+  if (local_state_->IsManagedPreference(prefs::kUsbPowerShareEnabled)) {
+    values.usb_power_share =
+        local_state_->GetBoolean(prefs::kUsbPowerShareEnabled);
+  }
 
   power_policy_controller_->ApplyPrefs(values);
 }
 
 void PowerPrefs::ObservePrefs(PrefService* prefs) {
+  // Observe pref updates from policy.
+  base::RepeatingClosure update_callback(base::BindRepeating(
+      &PowerPrefs::UpdatePowerPolicyFromPrefs, base::Unretained(this)));
+
+  profile_registrar_ = std::make_unique<PrefChangeRegistrar>();
+  profile_registrar_->Init(prefs);
+  profile_registrar_->Add(prefs::kPowerAcScreenBrightnessPercent,
+                          update_callback);
+  profile_registrar_->Add(prefs::kPowerAcScreenDimDelayMs, update_callback);
+  profile_registrar_->Add(prefs::kPowerAcScreenOffDelayMs, update_callback);
+  profile_registrar_->Add(prefs::kPowerAcScreenLockDelayMs, update_callback);
+  profile_registrar_->Add(prefs::kPowerAcIdleWarningDelayMs, update_callback);
+  profile_registrar_->Add(prefs::kPowerAcIdleDelayMs, update_callback);
+  profile_registrar_->Add(prefs::kPowerBatteryScreenBrightnessPercent,
+                          update_callback);
+  profile_registrar_->Add(prefs::kPowerBatteryScreenDimDelayMs,
+                          update_callback);
+  profile_registrar_->Add(prefs::kPowerBatteryScreenOffDelayMs,
+                          update_callback);
+  profile_registrar_->Add(prefs::kPowerBatteryScreenLockDelayMs,
+                          update_callback);
+  profile_registrar_->Add(prefs::kPowerBatteryIdleWarningDelayMs,
+                          update_callback);
+  profile_registrar_->Add(prefs::kPowerBatteryIdleDelayMs, update_callback);
+  profile_registrar_->Add(prefs::kPowerLockScreenDimDelayMs, update_callback);
+  profile_registrar_->Add(prefs::kPowerLockScreenOffDelayMs, update_callback);
+  profile_registrar_->Add(prefs::kPowerAcIdleAction, update_callback);
+  profile_registrar_->Add(prefs::kPowerBatteryIdleAction, update_callback);
+  profile_registrar_->Add(prefs::kPowerLidClosedAction, update_callback);
+  profile_registrar_->Add(prefs::kPowerUseAudioActivity, update_callback);
+  profile_registrar_->Add(prefs::kPowerUseVideoActivity, update_callback);
+  profile_registrar_->Add(prefs::kPowerAllowWakeLocks, update_callback);
+  profile_registrar_->Add(prefs::kPowerAllowScreenWakeLocks, update_callback);
+  profile_registrar_->Add(prefs::kEnableAutoScreenLock, update_callback);
+  profile_registrar_->Add(prefs::kPowerPresentationScreenDimDelayFactor,
+                          update_callback);
+  profile_registrar_->Add(prefs::kPowerUserActivityScreenDimDelayFactor,
+                          update_callback);
+  profile_registrar_->Add(prefs::kPowerWaitForInitialUserActivity,
+                          update_callback);
+  profile_registrar_->Add(prefs::kPowerForceNonzeroBrightnessForUserActivity,
+                          update_callback);
+  profile_registrar_->Add(prefs::kAllowScreenLock, update_callback);
+  profile_registrar_->Add(prefs::kPowerSmartDimEnabled, update_callback);
+  profile_registrar_->Add(prefs::kPowerFastSuspendWhenBacklightsForcedOff,
+                          update_callback);
+  profile_registrar_->Add(prefs::kPowerAlsLoggingEnabled, update_callback);
+
+  UpdatePowerPolicyFromPrefs();
+}
+
+void PowerPrefs::ObserveLocalStatePrefs(PrefService* prefs) {
   // Observe pref updates from locked state change and policy.
   base::RepeatingClosure update_callback(base::BindRepeating(
       &PowerPrefs::UpdatePowerPolicyFromPrefs, base::Unretained(this)));
 
-  pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
-  pref_change_registrar_->Init(prefs);
-  pref_change_registrar_->Add(prefs::kPowerAcScreenBrightnessPercent,
+  local_state_registrar_ = std::make_unique<PrefChangeRegistrar>();
+  local_state_registrar_->Init(prefs);
+  local_state_registrar_->Add(prefs::kPowerPeakShiftEnabled, update_callback);
+  local_state_registrar_->Add(prefs::kPowerPeakShiftBatteryThreshold,
                               update_callback);
-  pref_change_registrar_->Add(prefs::kPowerAcScreenDimDelayMs, update_callback);
-  pref_change_registrar_->Add(prefs::kPowerAcScreenOffDelayMs, update_callback);
-  pref_change_registrar_->Add(prefs::kPowerAcScreenLockDelayMs,
+  local_state_registrar_->Add(prefs::kPowerPeakShiftDayConfig, update_callback);
+
+  local_state_registrar_->Add(prefs::kAdvancedBatteryChargeModeEnabled,
                               update_callback);
-  pref_change_registrar_->Add(prefs::kPowerAcIdleWarningDelayMs,
+  local_state_registrar_->Add(prefs::kAdvancedBatteryChargeModeDayConfig,
                               update_callback);
-  pref_change_registrar_->Add(prefs::kPowerAcIdleDelayMs, update_callback);
-  pref_change_registrar_->Add(prefs::kPowerBatteryScreenBrightnessPercent,
+
+  local_state_registrar_->Add(prefs::kBatteryChargeMode, update_callback);
+  local_state_registrar_->Add(prefs::kBatteryChargeCustomStartCharging,
                               update_callback);
-  pref_change_registrar_->Add(prefs::kPowerBatteryScreenDimDelayMs,
+  local_state_registrar_->Add(prefs::kBatteryChargeCustomStopCharging,
                               update_callback);
-  pref_change_registrar_->Add(prefs::kPowerBatteryScreenOffDelayMs,
-                              update_callback);
-  pref_change_registrar_->Add(prefs::kPowerBatteryScreenLockDelayMs,
-                              update_callback);
-  pref_change_registrar_->Add(prefs::kPowerBatteryIdleWarningDelayMs,
-                              update_callback);
-  pref_change_registrar_->Add(prefs::kPowerBatteryIdleDelayMs, update_callback);
-  pref_change_registrar_->Add(prefs::kPowerLockScreenDimDelayMs,
-                              update_callback);
-  pref_change_registrar_->Add(prefs::kPowerLockScreenOffDelayMs,
-                              update_callback);
-  pref_change_registrar_->Add(prefs::kPowerAcIdleAction, update_callback);
-  pref_change_registrar_->Add(prefs::kPowerBatteryIdleAction, update_callback);
-  pref_change_registrar_->Add(prefs::kPowerLidClosedAction, update_callback);
-  pref_change_registrar_->Add(prefs::kPowerUseAudioActivity, update_callback);
-  pref_change_registrar_->Add(prefs::kPowerUseVideoActivity, update_callback);
-  pref_change_registrar_->Add(prefs::kPowerAllowWakeLocks, update_callback);
-  pref_change_registrar_->Add(prefs::kPowerAllowScreenWakeLocks,
-                              update_callback);
-  pref_change_registrar_->Add(prefs::kEnableAutoScreenLock, update_callback);
-  pref_change_registrar_->Add(prefs::kPowerPresentationScreenDimDelayFactor,
-                              update_callback);
-  pref_change_registrar_->Add(prefs::kPowerUserActivityScreenDimDelayFactor,
-                              update_callback);
-  pref_change_registrar_->Add(prefs::kPowerWaitForInitialUserActivity,
-                              update_callback);
-  pref_change_registrar_->Add(
-      prefs::kPowerForceNonzeroBrightnessForUserActivity, update_callback);
-  pref_change_registrar_->Add(prefs::kAllowScreenLock, update_callback);
-  pref_change_registrar_->Add(prefs::kPowerSmartDimEnabled, update_callback);
+
+  local_state_registrar_->Add(prefs::kBootOnAcEnabled, update_callback);
+
+  local_state_registrar_->Add(prefs::kUsbPowerShareEnabled, update_callback);
 
   UpdatePowerPolicyFromPrefs();
 }

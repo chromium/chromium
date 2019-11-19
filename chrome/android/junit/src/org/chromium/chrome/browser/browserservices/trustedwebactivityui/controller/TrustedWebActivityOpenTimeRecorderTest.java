@@ -8,7 +8,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -25,11 +24,10 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.ActivityTabProvider;
-import org.chromium.chrome.browser.browserservices.Origin;
 import org.chromium.chrome.browser.browserservices.TrustedWebActivityUmaRecorder;
-import org.chromium.chrome.browser.browserservices.trustedwebactivityui.controller.TrustedWebActivityVerifier.VerificationState;
-import org.chromium.chrome.browser.browserservices.trustedwebactivityui.controller.TrustedWebActivityVerifier.VerificationStatus;
-import org.chromium.chrome.browser.init.ActivityLifecycleDispatcher;
+import org.chromium.chrome.browser.browserservices.trustedwebactivityui.controller.CurrentPageVerifier.VerificationState;
+import org.chromium.chrome.browser.browserservices.trustedwebactivityui.controller.CurrentPageVerifier.VerificationStatus;
+import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 
 import java.util.concurrent.TimeUnit;
 
@@ -41,7 +39,8 @@ import java.util.concurrent.TimeUnit;
 public class TrustedWebActivityOpenTimeRecorderTest {
 
     @Mock ActivityLifecycleDispatcher mLifecycleDispatcher;
-    @Mock TrustedWebActivityVerifier mVerifier;
+    @Mock
+    CurrentPageVerifier mCurrentPageVerifier;
     @Mock TrustedWebActivityUmaRecorder mUmaRecorder;
     @Mock ActivityTabProvider mTabProvider;
     @Captor ArgumentCaptor<Runnable> mVerificationObserverCaptor;
@@ -51,9 +50,10 @@ public class TrustedWebActivityOpenTimeRecorderTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        doNothing().when(mVerifier).addVerificationObserver(mVerificationObserverCaptor.capture());
+        doNothing().when(mCurrentPageVerifier)
+                .addVerificationObserver(mVerificationObserverCaptor.capture());
         mRecorder = new TrustedWebActivityOpenTimeRecorder(
-                mLifecycleDispatcher, mVerifier, mUmaRecorder, mTabProvider);
+                mLifecycleDispatcher, mCurrentPageVerifier, mUmaRecorder, mTabProvider);
     }
 
     @Test
@@ -203,8 +203,8 @@ public class TrustedWebActivityOpenTimeRecorderTest {
     }
 
     private void setVerificationStatus(@VerificationStatus int status) {
-        VerificationState newState = new VerificationState(mock(Origin.class), status);
-        when(mVerifier.getState()).thenReturn(newState);
+        VerificationState newState = new VerificationState("www.example.com", status);
+        when(mCurrentPageVerifier.getState()).thenReturn(newState);
         for (Runnable observer : mVerificationObserverCaptor.getAllValues()) {
             observer.run();
         }

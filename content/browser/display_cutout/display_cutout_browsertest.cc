@@ -22,6 +22,7 @@
 #include "content/public/test/test_utils.h"
 #include "content/shell/browser/shell.h"
 #include "content/test/content_browser_test_utils_internal.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
@@ -83,21 +84,20 @@ class TestWebContentsObserver : public WebContentsObserver {
   DISALLOW_COPY_AND_ASSIGN(TestWebContentsObserver);
 };
 
-// Used for forcing a specific |blink::WebDisplayMode| during a test.
+// Used for forcing a specific |blink::mojom::DisplayMode| during a test.
 class DisplayCutoutWebContentsDelegate : public WebContentsDelegate {
  public:
-  blink::WebDisplayMode GetDisplayMode(
-      const WebContents* web_contents) const override {
+  blink::mojom::DisplayMode GetDisplayMode(
+      const WebContents* web_contents) override {
     return display_mode_;
   }
 
-  void SetDisplayMode(blink::WebDisplayMode display_mode) {
+  void SetDisplayMode(blink::mojom::DisplayMode display_mode) {
     display_mode_ = display_mode;
   }
 
  private:
-  blink::WebDisplayMode display_mode_ =
-      blink::WebDisplayMode::kWebDisplayModeBrowser;
+  blink::mojom::DisplayMode display_mode_ = blink::mojom::DisplayMode::kBrowser;
 };
 
 const char kTestHTML[] =
@@ -159,8 +159,9 @@ class DisplayCutoutBrowserTest : public ContentBrowserTest {
   }
 
   void SendSafeAreaToFrame(int top, int left, int bottom, int right) {
-    blink::mojom::DisplayCutoutClientAssociatedPtr client;
-    MainFrame()->GetRemoteAssociatedInterfaces()->GetInterface(&client);
+    mojo::AssociatedRemote<blink::mojom::DisplayCutoutClient> client;
+    MainFrame()->GetRemoteAssociatedInterfaces()->GetInterface(
+        client.BindNewEndpointAndPassReceiver());
     client->SetSafeArea(
         blink::mojom::DisplayCutoutSafeArea::New(top, left, bottom, right));
   }
@@ -433,7 +434,7 @@ IN_PROC_BROWSER_TEST_F(DisplayCutoutBrowserTest, WebDisplayMode_Fullscreen) {
   // Inject the custom delegate used for this test.
   std::unique_ptr<DisplayCutoutWebContentsDelegate> delegate(
       new DisplayCutoutWebContentsDelegate());
-  delegate->SetDisplayMode(blink::WebDisplayMode::kWebDisplayModeFullscreen);
+  delegate->SetDisplayMode(blink::mojom::DisplayMode::kFullscreen);
   web_contents_impl()->SetDelegate(delegate.get());
   EXPECT_EQ(delegate.get(), web_contents_impl()->GetDelegate());
 
@@ -448,7 +449,7 @@ IN_PROC_BROWSER_TEST_F(DisplayCutoutBrowserTest, WebDisplayMode_Standalone) {
   // Inject the custom delegate used for this test.
   std::unique_ptr<DisplayCutoutWebContentsDelegate> delegate(
       new DisplayCutoutWebContentsDelegate());
-  delegate->SetDisplayMode(blink::WebDisplayMode::kWebDisplayModeStandalone);
+  delegate->SetDisplayMode(blink::mojom::DisplayMode::kStandalone);
   web_contents_impl()->SetDelegate(delegate.get());
   EXPECT_EQ(delegate.get(), web_contents_impl()->GetDelegate());
 

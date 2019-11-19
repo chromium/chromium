@@ -1,0 +1,39 @@
+{
+  "layers": [
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [785, 836],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF",
+      "paintInvalidations": [
+        {
+          "object": "Scrolling background of LayoutView #document",
+          "rect": [0, 742, 785, 94],
+          "reason": "incremental"
+        },
+        {
+          "object": "LayoutBlockFlow HTML",
+          "rect": [8, 92, 732, 94],
+          "reason": "chunk appeared"
+        },
+        {
+          "object": "LayoutImage IMG",
+          "rect": [58, 236, 489, 537],
+          "reason": "geometry"
+        },
+        {
+          "object": "LayoutImage IMG",
+          "rect": [58, 142, 489, 537],
+          "reason": "geometry"
+        }
+      ]
+    },
+    {
+      "name": "ContentsLayer for Vertical Scrollbar Layer",
+      "position": [785, 0],
+      "bounds": [15, 600],
+      "contentsOpaque": true
+    }
+  ]
+}
+

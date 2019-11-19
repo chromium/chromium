@@ -20,8 +20,9 @@ interface MtpManager {
   // client for incoming storage change events. It is designed to reduce
   // async calls and eliminate a potential race condition between
   // the client being set and storage updates being made.
-  EnumerateStoragesAndSetClient(associated MtpManagerClient client) =>
-    (array<MtpStorageInfo> storages);
+  EnumerateStoragesAndSetClient(
+      pending_associated_remote<MtpManagerClient> client) =>
+          (array<MtpStorageInfo> storages);
 
   // Gets storage metadata for |storage_name|.
   GetStorageInfo(string storage_name) =>

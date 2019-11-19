@@ -5,6 +5,8 @@
 #ifndef PPAPI_PROXY_PDF_RESOURCE_H_
 #define PPAPI_PROXY_PDF_RESOURCE_H_
 
+#include <string>
+
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "ppapi/c/pp_instance.h"
@@ -52,18 +54,17 @@ class PPAPI_PROXY_EXPORT PDFResource
   PP_Bool IsFeatureEnabled(PP_PDFFeature feature) override;
   void SetSelectedText(const char* selected_text) override;
   void SetLinkUnderCursor(const char* url) override;
-  void GetV8ExternalSnapshotData(const char** natives_data_out,
-                                 int* natives_size_out,
-                                 const char** snapshot_data_out,
+  void GetV8ExternalSnapshotData(const char** snapshot_data_out,
                                  int* snapshot_size_out) override;
   void SetAccessibilityViewportInfo(
-      PP_PrivateAccessibilityViewportInfo* viewport_info) override;
+      const PP_PrivateAccessibilityViewportInfo* viewport_info) override;
   void SetAccessibilityDocInfo(
-      PP_PrivateAccessibilityDocInfo* doc_info) override;
+      const PP_PrivateAccessibilityDocInfo* doc_info) override;
   void SetAccessibilityPageInfo(
-      PP_PrivateAccessibilityPageInfo* page_info,
-      PP_PrivateAccessibilityTextRunInfo text_runs[],
-      PP_PrivateAccessibilityCharInfo chars[]) override;
+      const PP_PrivateAccessibilityPageInfo* page_info,
+      const PP_PrivateAccessibilityTextRunInfo text_runs[],
+      const PP_PrivateAccessibilityCharInfo chars[],
+      const PP_PrivateAccessibilityPageObjects* page_objects) override;
   void SetCrashData(const char* pdf_url, const char* top_level_url) override;
   void SelectionChanged(const PP_FloatPoint& left,
                         int32_t left_height,

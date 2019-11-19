@@ -7,7 +7,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
 #include "base/sequenced_task_runner.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/service/service_process_prefs.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -27,7 +27,7 @@ class ServiceProcessPrefsTest : public testing::Test {
 
   // The path to temporary directory used to contain the test operations.
   base::ScopedTempDir temp_dir_;
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
   std::unique_ptr<ServiceProcessPrefs> prefs_;
 };
 

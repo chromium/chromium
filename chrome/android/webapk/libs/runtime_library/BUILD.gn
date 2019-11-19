@@ -30,12 +30,12 @@ android_library("webapk_service_aidl_java") {
 # runtime_library_from_assets_java cannot be used as a dependency of another
 # library because the dx tool expects files ending in .dex.jar
 android_library("runtime_library_for_assets_java") {
-  emma_never_instrument = true
+  jacoco_never_instrument = true
   java_files =
       [ "src/org/chromium/webapk/lib/runtime_library/WebApkServiceImpl.java" ]
   srcjar_deps = [ ":webapk_service_aidl" ]
   deps = [
-    "//third_party/android_deps:android_support_compat_java",
+    "//third_party/android_deps:com_android_support_support_compat_java",
   ]
 }
 
@@ -45,7 +45,7 @@ android_library("runtime_library_for_tests_java") {
       [ "src/org/chromium/webapk/lib/runtime_library/WebApkServiceImpl.java" ]
   deps = [
     ":webapk_service_aidl_java",
-    "//third_party/android_deps:android_support_compat_java",
+    "//third_party/android_deps:com_android_support_support_compat_java",
   ]
 }
 
@@ -58,15 +58,15 @@ proguarded_dist_dex("webapk_runtime_library") {
     "//base/android/proguard/chromium_code.flags",
     "//base/android/proguard/chromium_apk.flags",
   ]
-  output = "$target_gen_dir/$runtime_library_dex_asset_name"
+  output = "$target_out_dir/$runtime_library_dex_asset_name"
 }
 
 android_assets("runtime_library_assets") {
   write_file("$target_gen_dir/webapk_dex_version.txt", runtime_library_version)
 
   sources = [
-    "$target_gen_dir/$runtime_library_dex_asset_name",
     "$target_gen_dir/webapk_dex_version.txt",
+    "$target_out_dir/$runtime_library_dex_asset_name",
   ]
 
   deps = [

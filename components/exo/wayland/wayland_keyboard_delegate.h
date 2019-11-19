@@ -31,6 +31,7 @@ struct wl_resource;
 
 namespace exo {
 namespace wayland {
+class SerialTracker;
 
 // Keyboard delegate class that accepts events for surfaces owned by the same
 // client as a keyboard resource.
@@ -44,7 +45,8 @@ class WaylandKeyboardDelegate : public WaylandInputDelegate,
 {
 #if BUILDFLAG(USE_XKBCOMMON)
  public:
-  explicit WaylandKeyboardDelegate(wl_resource* keyboard_resource);
+  explicit WaylandKeyboardDelegate(wl_resource* keyboard_resource,
+                                   SerialTracker* serial_tracker);
 
 #if defined(OS_CHROMEOS)
   ~WaylandKeyboardDelegate() override;
@@ -72,8 +74,11 @@ class WaylandKeyboardDelegate : public WaylandInputDelegate,
   // Returns the corresponding key given a dom code.
   uint32_t DomCodeToKey(ui::DomCode code) const;
 
-  // Returns a set of Xkb modififers given a set of modifier flags.
-  uint32_t ModifierFlagsToXkbModifiers(int modifier_flags);
+  // Returns a set of Xkb modififers given the current |modifier_flags_|.
+  uint32_t ModifierFlagsToXkbModifiers();
+
+  // Sends the current |modifier_flags_| to the client.
+  void SendKeyboardModifiers();
 
 #if defined(OS_CHROMEOS)
   // Send the named keyboard layout to the client.
@@ -86,9 +91,6 @@ class WaylandKeyboardDelegate : public WaylandInputDelegate,
   // The client who own this keyboard instance.
   wl_client* client() const;
 
-  // Returns the next serial to use for keyboard events.
-  uint32_t next_serial() const;
-
   // The keyboard resource associated with the keyboard.
   wl_resource* const keyboard_resource_;
 
@@ -96,6 +98,13 @@ class WaylandKeyboardDelegate : public WaylandInputDelegate,
   std::unique_ptr<xkb_context, ui::XkbContextDeleter> xkb_context_;
   std::unique_ptr<xkb_keymap, ui::XkbKeymapDeleter> xkb_keymap_;
   std::unique_ptr<xkb_state, ui::XkbStateDeleter> xkb_state_;
+
+  // The delegate will keep its clients updated with these modifiers. For CrOS
+  // we treat numlock as always on.
+  int modifier_flags_ = ui::EF_NUM_LOCK_ON;
+
+  // Owned by Server, which always outlives this delegate.
+  SerialTracker* const serial_tracker_;
 
   DISALLOW_COPY_AND_ASSIGN(WaylandKeyboardDelegate);
 #endif

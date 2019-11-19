@@ -69,16 +69,23 @@ void SetGravity(struct wl_client* client,
   GetUserDataAs<TestPositioner>(resource)->set_gravity(gravity);
 }
 
+void SetConstraintAdjustment(struct wl_client* client,
+                             struct wl_resource* resource,
+                             uint32_t constraint_adjustment) {
+  GetUserDataAs<TestPositioner>(resource)->set_constraint_adjustment(
+      constraint_adjustment);
+}
+
 }  // namespace
 
 const struct zxdg_positioner_v6_interface kTestZxdgPositionerV6Impl = {
-    &DestroyResource,  // destroy
-    &SetSize,          // set_size
-    &SetAnchorRect,    // set_anchor_rect
-    &SetAnchor,        // set_anchor
-    &SetGravity,       // set_gravity
-    nullptr,           // set_constraint_adjustment
-    nullptr,           // set_offset
+    &DestroyResource,          // destroy
+    &SetSize,                  // set_size
+    &SetAnchorRect,            // set_anchor_rect
+    &SetAnchor,                // set_anchor
+    &SetGravity,               // set_gravity
+    &SetConstraintAdjustment,  // set_constraint_adjustment
+    nullptr,                   // set_offset
 };
 
 TestPositioner::TestPositioner(wl_resource* resource)

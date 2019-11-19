@@ -27,6 +27,7 @@
  */
 
 // See https://webaudio.github.io/web-audio-api/#audiolistener
+[Exposed=Window]
 interface AudioListener {
     [RaisesException, MeasureAs=AudioListenerSetPosition] void setPosition(float x, float y, float z);
     [RaisesException, MeasureAs=AudioListenerSetOrientation] void setOrientation(float x, float y, float z, float xUp, float yUp, float zUp);

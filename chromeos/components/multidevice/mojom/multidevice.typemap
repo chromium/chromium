@@ -24,7 +24,7 @@ public_deps = [
 ]
 
 type_mappings = [
-  "chromeos.multidevice.mojom.BeaconSeed=chromeos::multidevice::BeaconSeed",
-  "chromeos.multidevice.mojom.RemoteDevice=chromeos::multidevice::RemoteDevice",
-  "chromeos.multidevice.mojom.SoftwareFeature=chromeos::multidevice::SoftwareFeature",
+  "chromeos.multidevice.mojom.BeaconSeed=::chromeos::multidevice::BeaconSeed",
+  "chromeos.multidevice.mojom.RemoteDevice=::chromeos::multidevice::RemoteDevice",
+  "chromeos.multidevice.mojom.SoftwareFeature=::chromeos::multidevice::SoftwareFeature",
 ]

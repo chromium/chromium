@@ -42,7 +42,7 @@ class MediaSuspendTest : public MediaBrowserTest {
       const base::string16 kLoaded = base::ASCIIToUTF16("LOADED");
       TitleWatcher title_watcher(shell()->web_contents(), kLoaded);
       title_watcher.AlsoWaitForTitle(kError);
-      NavigateToURL(shell(), gurl);
+      EXPECT_TRUE(NavigateToURL(shell(), gurl));
       ASSERT_EQ(kLoaded, title_watcher.WaitAndGetTitle());
     }
 

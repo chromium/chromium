@@ -6,12 +6,13 @@
 <org.chromium.chrome.browser.ntp.IncognitoNewTabPageView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/ntp_content"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:focusable="true"
     android:focusableInTouchMode="true"
-    android:contentDescription="@string/accessibility_new_incognito_tab_page" >
+    android:contentDescription="@string/accessibility_new_incognito_tab_page">
 
     <org.chromium.chrome.browser.ntp.NewTabPageScrollView
         android:id="@+id/ntp_scrollview"
@@ -35,7 +36,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 tools:ignore="ContentDescription"
-                android:src="@drawable/incognito_splash" />
+                android:src="@drawable/incognito_splash"
+                app:tint="@color/default_icon_color_white" />
 
             <TextView
                 android:id="@+id/new_tab_incognito_title"

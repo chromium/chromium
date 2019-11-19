@@ -1,0 +1,16 @@
+<!doctype html>
+<style>
+  body {margin: 0;}
+  #top-of-root {background: green; width: 100%; height: 20px;}
+</style>
+
+<div id="top-of-root" class="top" tabindex="0"></div>
+
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="resources/snav-testharness.js"></script>
+<script>
+  snav.assertFocusMoves([["Down", "top-of-root"]]);
+</script>
+
+<p><em>Manual test instruction: Ensure the div is reachable even though it sits at the very top of the document.</em></p>

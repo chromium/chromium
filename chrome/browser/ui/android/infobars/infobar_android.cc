@@ -9,11 +9,11 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/strings/string_util.h"
+#include "chrome/android/chrome_jni_headers/InfoBar_jni.h"
 #include "chrome/browser/android/resource_mapper.h"
 #include "chrome/browser/infobars/infobar_service.h"
 #include "components/infobars/core/infobar.h"
 #include "components/infobars/core/infobar_delegate.h"
-#include "jni/InfoBar_jni.h"
 
 using base::android::JavaParamRef;
 using base::android::JavaRef;
@@ -79,6 +79,7 @@ void InfoBarAndroid::CloseJavaInfoBar() {
   if (!java_info_bar_.is_null()) {
     JNIEnv* env = base::android::AttachCurrentThread();
     Java_InfoBar_closeInfoBar(env, java_info_bar_);
+    java_info_bar_.Reset(nullptr);
   }
 }
 

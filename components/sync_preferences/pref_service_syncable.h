@@ -13,12 +13,12 @@
 
 #include "base/callback_forward.h"
 #include "base/macros.h"
+#include "base/observer_list.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
-#include "components/prefs/pref_value_store.h"
 #include "components/sync_preferences/pref_model_associator.h"
-#include "components/sync_preferences/synced_pref_observer.h"
-#include "components/sync_preferences/unknown_user_pref_accessor.h"
+
+class PrefValueStore;
 
 namespace syncer {
 class SyncableService;
@@ -28,6 +28,7 @@ namespace sync_preferences {
 
 class PrefModelAssociatorClient;
 class PrefServiceSyncableObserver;
+class SyncedPrefObserver;
 
 // A PrefService that can be synced. Users are forced to declare
 // whether preferences are syncable or not when registering them to
@@ -71,14 +72,8 @@ class PrefServiceSyncable : public PrefService {
   // priority preferences.
   bool IsPrioritySyncing();
 
-  // Returns true if the pref under the given name is pulled down from sync.
-  // Note this does not refer to SYNCABLE_PREF.
-  bool IsPrefSynced(const std::string& name) const;
-
   void AddObserver(PrefServiceSyncableObserver* observer);
   void RemoveObserver(PrefServiceSyncableObserver* observer);
-
-  void RegisterMergeDataFinishedCallback(const base::Closure& callback);
 
   // TODO(zea): Have PrefServiceSyncable implement
   // syncer::SyncableService directly.
@@ -108,9 +103,15 @@ class PrefServiceSyncable : public PrefService {
   // "forked" PrefService.
   bool pref_service_forked_;
 
-  UnknownUserPrefAccessor unknown_pref_accessor_;
   PrefModelAssociator pref_sync_associator_;
   PrefModelAssociator priority_pref_sync_associator_;
+
+#if defined(OS_CHROMEOS)
+  // Associators for Chrome OS system preferences.
+  PrefModelAssociator os_pref_sync_associator_;
+  PrefModelAssociator os_priority_pref_sync_associator_;
+#endif
+
   const scoped_refptr<user_prefs::PrefRegistrySyncable> pref_registry_;
 
   base::ObserverList<PrefServiceSyncableObserver>::Unchecked observer_list_;

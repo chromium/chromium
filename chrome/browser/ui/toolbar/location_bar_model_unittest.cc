@@ -15,12 +15,14 @@
 #include "chrome/browser/autocomplete/autocomplete_classifier_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
-#include "components/omnibox/browser/omnibox_field_trial.h"
+#include "components/omnibox/common/omnibox_features.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/ssl_status.h"
 #include "content/public/common/content_constants.h"
 #include "content/public/common/url_constants.h"
+#include "content/public/test/test_utils.h"
 #include "ui/gfx/text_elider.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -33,23 +35,35 @@
 
 namespace {
 
+GURL GetViewSourceURL(const char* path) {
+  GURL::Replacements replace_path;
+  replace_path.SetPathStr(path);
+  return GURL("view-source:").ReplaceComponents(replace_path);
+}
+
 struct TestItem {
   GURL url;
-  const char* expected_formatted_full_url;
-  const char* expected_elided_url_for_display = expected_formatted_full_url;
+  const std::string expected_formatted_full_url;
+  const std::string expected_elided_url_for_display =
+      expected_formatted_full_url;
 } test_items[] = {
     {
-        GURL("view-source:http://www.google.com"), "view-source:www.google.com",
-        "view-source:google.com",
+        GetViewSourceURL("http://www.google.com"),
+        "view-source:www.google.com",
+        "view-source:www.google.com",
     },
     {
-        GURL("chrome://newtab/"), "",
+        GURL(chrome::kChromeUINewTabURL),
+        "",
     },
     {
-        GURL("view-source:chrome://newtab/"), "view-source:chrome://newtab",
+        GetViewSourceURL(chrome::kChromeUINewTabURL),
+        "view-source:" +
+            content::GetWebUIURLString(chrome::kChromeUINewTabHost),
     },
     {
-        GURL("chrome-search://local-ntp/local-ntp.html"), "",
+        GURL("chrome-search://local-ntp/local-ntp.html"),
+        "",
     },
     {
         GURL("view-source:chrome-search://local-ntp/local-ntp.html"),
@@ -60,7 +74,8 @@ struct TestItem {
         "chrome-extension://fooooooooooooooooooooooooooooooo/bar.html",
     },
     {
-        GURL(url::kAboutBlankURL), url::kAboutBlankURL,
+        GURL(url::kAboutBlankURL),
+        url::kAboutBlankURL,
     },
     {
         GURL("http://searchurl/?q=tractor+supply"),

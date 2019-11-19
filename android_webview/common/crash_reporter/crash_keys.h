@@ -22,6 +22,8 @@ extern const char kAppPackageVersionCode[];
 
 extern const char kAndroidSdkInt[];
 
+extern const char kSupportLibraryWebkitVersion[];
+
 }  // namespace crash_keys
 }  // namespace android_webview
 

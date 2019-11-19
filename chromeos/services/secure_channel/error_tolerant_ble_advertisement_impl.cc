@@ -63,8 +63,7 @@ ErrorTolerantBleAdvertisementImpl::ErrorTolerantBleAdvertisementImpl(
     BleSynchronizerBase* ble_synchronizer)
     : ErrorTolerantBleAdvertisement(device_id_pair),
       advertisement_data_(std::move(advertisement_data)),
-      ble_synchronizer_(ble_synchronizer),
-      weak_ptr_factory_(this) {
+      ble_synchronizer_(ble_synchronizer) {
   UpdateRegistrationStatus();
 }
 

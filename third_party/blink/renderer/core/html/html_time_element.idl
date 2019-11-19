@@ -4,7 +4,9 @@
 
 // https://html.spec.whatwg.org/C/#the-time-element
 
-[HTMLConstructor]
-interface HTMLTimeElement : HTMLElement {
+[
+    Exposed=Window,
+    HTMLConstructor
+] interface HTMLTimeElement : HTMLElement {
     [CEReactions, Reflect] attribute DOMString dateTime;
 };

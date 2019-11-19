@@ -3,14 +3,21 @@
 (function() {
 
 function assert_initial(property, initial) {
+  let initialDesc = initial;
+  if (Array.isArray(initial))
+    initialDesc = '[' + initial.map(e => "'" + e + "'").join(' or ') + ']';
+
   test(() => {
     const target = document.getElementById('target');
-    if (!getComputedStyle(target)[property])
-      return;
+    assert_true(property in getComputedStyle(target), property + " doesn't seem to be supported in the computed style");
     target.style[property] = 'initial';
-    assert_equals(getComputedStyle(target)[property], initial);
+    if (Array.isArray(initial)) {
+      assert_in_array(getComputedStyle(target)[property], initial);
+    } else {
+      assert_equals(getComputedStyle(target)[property], initial);
+    }
     target.style[property] = '';
-  }, 'Property ' + property + ' has initial value ' + initial);
+  }, 'Property ' + property + ' has initial value ' + initialDesc);
 }
 
 /**
@@ -18,19 +25,21 @@ function assert_initial(property, initial) {
  *
  * The current document must have an element #target within element #container.
  *
- * @param {string} property  The name of the CSS property being tested.
- * @param {string} initial   The computed value for 'initial'.
- * @param {string} other     An arbitrary value for the property that round
- *                           trips and is distinct from the initial value.
+ * @param {string}        property  The name of the CSS property being tested.
+ * @param {string|array}  initial   The computed value for 'initial' or a list
+ *                                  of acceptable computed value serializations.
+ * @param {string}        other     An arbitrary value for the property that
+ *                                  round trips and is distinct from the initial
+ *                                  value.
  */
 function assert_inherited(property, initial, other) {
-  assert_initial(property, initial);
+  if (initial)
+    assert_initial(property, initial);
 
   test(() => {
     const container = document.getElementById('container');
     const target = document.getElementById('target');
-    if (!getComputedStyle(target)[property])
-      return;
+    assert_true(property in getComputedStyle(target), property + " doesn't seem to be supported in the computed style");
     container.style[property] = 'initial';
     target.style[property] = 'unset';
     assert_not_equals(getComputedStyle(container)[property], other);
@@ -54,10 +63,12 @@ function assert_inherited(property, initial, other) {
  *
  * The current document must have an element #target within element #container.
  *
- * @param {string} property  The name of the CSS property being tested.
- * @param {string} initial   The computed value for 'initial'.
- * @param {string} other     An arbitrary value for the property that round
- *                           trips and is distinct from the initial value.
+ * @param {string}        property  The name of the CSS property being tested.
+ * @param {string|array}  initial   The computed value for 'initial' or a list
+ *                                  of acceptable computed value serializations.
+ * @param {string}        other     An arbitrary value for the property that
+ *                                  round trips and is distinct from the initial
+ *                                  value.
  */
 function assert_not_inherited(property, initial, other) {
   assert_initial(property, initial);
@@ -65,8 +76,7 @@ function assert_not_inherited(property, initial, other) {
   test(() => {
     const container = document.getElementById('container');
     const target = document.getElementById('target');
-    if (!getComputedStyle(target)[property])
-      return;
+    assert_true(property in getComputedStyle(target));
     container.style[property] = 'initial';
     target.style[property] = 'unset';
     assert_not_equals(getComputedStyle(container)[property], other);

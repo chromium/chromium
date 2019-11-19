@@ -17,6 +17,14 @@
     name2
   };
 
+  enum EnumTypeWithNoDocValue {
+    name1,
+    // comment2
+    [nodoc] name2,
+    // comment3
+    name3
+  };
+
   dictionary MyType1 {
     // This comment tests "double-quotes".
     [legalValues=(1,2)] long x;
@@ -102,8 +110,6 @@
     static idl_other_namespace.SomeType[] function30();
 
     [nodefine] static void function31(long switch);
-
-    [forIOThread] static void function32();
   };
 
   interface Events {

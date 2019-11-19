@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_DOM_DISTILLER_CONTENT_RENDERER_DISTILLER_PAGE_NOTIFIER_SERVICE_IMPL_H_
 #define COMPONENTS_DOM_DISTILLER_CONTENT_RENDERER_DISTILLER_PAGE_NOTIFIER_SERVICE_IMPL_H_
 
-#include "components/dom_distiller/content/common/distiller_page_notifier_service.mojom.h"
+#include "components/dom_distiller/content/common/mojom/distiller_page_notifier_service.mojom.h"
 #include "components/dom_distiller/content/renderer/distiller_js_render_frame_observer.h"
 #include "components/dom_distiller/content/renderer/distiller_native_javascript.h"
 

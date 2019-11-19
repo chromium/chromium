@@ -7,7 +7,7 @@
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/run_loop.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "mojo/public/cpp/bindings/binding_set.h"
 #include "mojo/public/cpp/bindings/strong_binding.h"
 #include "services/service_manager/public/cpp/binder_registry.h"
@@ -109,7 +109,7 @@ constexpr char kServiceCName[] = "ServiceC";
 }  // namespace
 
 TEST(ServiceManagerTestSupport, TestConnectorFactoryUniqueService) {
-  base::test::ScopedTaskEnvironment task_environment;
+  base::test::TaskEnvironment task_environment;
 
   TestConnectorFactory factory;
   TestCServiceImpl c_service(factory.RegisterInstance(kServiceCName));
@@ -123,7 +123,7 @@ TEST(ServiceManagerTestSupport, TestConnectorFactoryUniqueService) {
 }
 
 TEST(ServiceManagerTestSupport, TestConnectorFactoryMultipleServices) {
-  base::test::ScopedTaskEnvironment task_environment;
+  base::test::TaskEnvironment task_environment;
 
   TestConnectorFactory factory;
   TestBServiceImpl b_service(factory.RegisterInstance(kServiceBName));

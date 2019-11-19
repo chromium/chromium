@@ -7,4 +7,4 @@
 // bug where we were taking shallow copies of rules when generating
 // rules for subdirectories, so all rule objects were getting the same
 // dictionary for specific rules.
-#include "checkdeps/testdata/disallowed/temp_allowed_for_tests.h"
+#include "buildtools/checkdeps/testdata/disallowed/temp_allowed_for_tests.h"

@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/views/media_router/web_contents_display_observer_view.h"
+
 #include <memory>
 #include <utility>
-
-#include "chrome/browser/ui/views/media_router/web_contents_display_observer_view.h"
 
 #include "chrome/browser/ui/browser_list.h"
 #include "content/public/browser/web_contents.h"
@@ -34,13 +34,13 @@ WebContentsDisplayObserverView::WebContentsDisplayObserverView(
     display_ = GetDisplayNearestWidget();
     widget_->AddObserver(this);
   }
-  BrowserList::GetInstance()->AddObserver(this);
+  BrowserList::AddObserver(this);
 }
 
 WebContentsDisplayObserverView::~WebContentsDisplayObserverView() {
   if (widget_)
     widget_->RemoveObserver(this);
-  BrowserList::GetInstance()->RemoveObserver(this);
+  BrowserList::RemoveObserver(this);
 }
 
 void WebContentsDisplayObserverView::OnBrowserSetLastActive(Browser* browser) {

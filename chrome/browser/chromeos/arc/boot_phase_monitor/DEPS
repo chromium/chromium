@@ -1,7 +1,0 @@
-specific_include_rules = {
-  "arc_instance_throttle\.cc": [
-    # TODO(mash): Fix. https://crbug.com/826386.
-    "+ash/shell.h",
-    "+ash/wm/window_util.h",
-  ],
-}

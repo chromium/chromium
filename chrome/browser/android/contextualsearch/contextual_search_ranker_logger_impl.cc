@@ -8,6 +8,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
+#include "chrome/android/chrome_jni_headers/ContextualSearchRankerLoggerImpl_jni.h"
 #include "chrome/browser/android/chrome_feature_list.h"
 #include "chrome/browser/assist_ranker/assist_ranker_service_factory.h"
 #include "chrome/browser/browser_process.h"
@@ -18,7 +19,6 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/ukm/content/source_url_recorder.h"
 #include "content/public/browser/web_contents.h"
-#include "jni/ContextualSearchRankerLoggerImpl_jni.h"
 
 namespace content {
 class BrowserContext;

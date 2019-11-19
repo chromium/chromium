@@ -72,8 +72,8 @@ TEST(GroupCoordinatorTest, RegistersMembersInSameGroup) {
   const std::vector<MockGroupMember*>& members =
       coordinator.GetCurrentMembers(group_id);
   EXPECT_EQ(2u, members.size());
-  EXPECT_TRUE(base::ContainsValue(members, &member1));
-  EXPECT_TRUE(base::ContainsValue(members, &member2));
+  EXPECT_TRUE(base::Contains(members, &member1));
+  EXPECT_TRUE(base::Contains(members, &member2));
   EXPECT_TRUE(
       coordinator.GetCurrentMembers(UnguessableToken::Create()).empty());
 
@@ -120,8 +120,8 @@ TEST(GroupCoordinatorTest, RegistersMembersInDifferentGroups) {
   const std::vector<MockGroupMember*>& members_a =
       coordinator.GetCurrentMembers(group_id_a);
   EXPECT_EQ(2u, members_a.size());
-  EXPECT_TRUE(base::ContainsValue(members_a, &member_a_1));
-  EXPECT_TRUE(base::ContainsValue(members_a, &member_a_2));
+  EXPECT_TRUE(base::Contains(members_a, &member_a_1));
+  EXPECT_TRUE(base::Contains(members_a, &member_a_2));
   EXPECT_EQ(std::vector<MockGroupMember*>({&member_b_1}),
             coordinator.GetCurrentMembers(group_id_b));
   EXPECT_TRUE(
@@ -155,8 +155,8 @@ TEST(GroupCoordinatorTest, TracksMembersWithoutAnObserverPresent) {
   const std::vector<MockGroupMember*>& members =
       coordinator.GetCurrentMembers(group_id);
   EXPECT_EQ(2u, members.size());
-  EXPECT_TRUE(base::ContainsValue(members, &member1));
-  EXPECT_TRUE(base::ContainsValue(members, &member2));
+  EXPECT_TRUE(base::Contains(members, &member1));
+  EXPECT_TRUE(base::Contains(members, &member2));
   EXPECT_TRUE(
       coordinator.GetCurrentMembers(UnguessableToken::Create()).empty());
 
@@ -191,8 +191,8 @@ TEST(GroupCoordinatorTest, NotifiesOnlyWhileObserving) {
   const std::vector<MockGroupMember*>& members =
       coordinator.GetCurrentMembers(group_id);
   EXPECT_EQ(2u, members.size());
-  EXPECT_TRUE(base::ContainsValue(members, &member1));
-  EXPECT_TRUE(base::ContainsValue(members, &member2));
+  EXPECT_TRUE(base::Contains(members, &member1));
+  EXPECT_TRUE(base::Contains(members, &member2));
 
   coordinator.UnregisterMember(group_id, &member1);
   EXPECT_EQ(std::vector<MockGroupMember*>({&member2}),

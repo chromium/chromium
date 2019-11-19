@@ -70,7 +70,7 @@ Polymer({
 
   /** @return {!CrToolbarSearchFieldElement} */
   getSearchField: function() {
-    return this.$.search;
+    return /** @type {!CrToolbarSearchFieldElement} */ (this.$.search);
   },
 
   /** @private */
@@ -87,12 +87,13 @@ Polymer({
   possiblyShowMenuPromo_: function() {
     Polymer.RenderStatus.afterNextRender(this, function() {
       if (this.showMenu && this.showMenuPromo && !this.showingSearch_) {
+        // The call to animate can have 2 methods of passing the keyframes,
+        // however as of the current closure version, only one of them is
+        // supported. See https://crbug.com/987842 for more info.
         this.$$('#menuPromo')
             .animate(
-                {
-                  opacity: [0, .9],
-                },
-                /** @type {!KeyframeEffectOptions} */ ({
+                [{opacity: 0}, {opacity: 0.9}],
+                /** @type {!KeyframeAnimationOptions} */ ({
                   duration: 500,
                   fill: 'forwards'
                 }));

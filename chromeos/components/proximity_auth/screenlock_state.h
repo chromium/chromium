@@ -46,6 +46,9 @@ enum class ScreenlockState {
   // The user must reauthenticate using their password because a sufficient time
   // has elapsed since their last password entry.
   PASSWORD_REAUTH,
+  // The primary user profile is either in the background or this user is a
+  // secondary user profile.
+  PRIMARY_USER_ABSENT,
 };
 
 std::ostream& operator<<(std::ostream& stream, const ScreenlockState& state);

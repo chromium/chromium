@@ -54,7 +54,7 @@ static inline InlineFlowBox* FlowBoxForLayoutObject(
   if (layout_object->IsLayoutBlock()) {
     // If we're given a block element, it has to be a LayoutSVGText.
     DCHECK(layout_object->IsSVGText());
-    LayoutBlockFlow* layout_block_flow = ToLayoutBlockFlow(layout_object);
+    auto* layout_block_flow = To<LayoutBlockFlow>(layout_object);
 
     // LayoutSVGText only ever contains a single line box.
     InlineFlowBox* flow_box = layout_block_flow->FirstLineBox();

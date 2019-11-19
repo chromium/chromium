@@ -11,6 +11,7 @@
 #include <utility>
 
 #include "base/base64.h"
+#include "base/guid.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_number_conversions.h"
@@ -35,6 +36,7 @@ const char BookmarkCodec::kChecksumKey[] = "checksum";
 const char BookmarkCodec::kIdKey[] = "id";
 const char BookmarkCodec::kTypeKey[] = "type";
 const char BookmarkCodec::kNameKey[] = "name";
+const char BookmarkCodec::kGuidKey[] = "guid";
 const char BookmarkCodec::kDateAddedKey[] = "date_added";
 const char BookmarkCodec::kURLKey[] = "url";
 const char BookmarkCodec::kDateModifiedKey[] = "date_modified";
@@ -51,11 +53,11 @@ static const int kCurrentVersion = 1;
 
 BookmarkCodec::BookmarkCodec()
     : ids_reassigned_(false),
+      guids_reassigned_(false),
       ids_valid_(true),
       maximum_id_(0),
       model_sync_transaction_version_(
-          BookmarkNode::kInvalidSyncTransactionVersion) {
-}
+          BookmarkNode::kInvalidSyncTransactionVersion) {}
 
 BookmarkCodec::~BookmarkCodec() = default;
 
@@ -76,6 +78,7 @@ std::unique_ptr<base::Value> BookmarkCodec::Encode(
     int64_t sync_transaction_version,
     const std::string& sync_metadata_str) {
   ids_reassigned_ = false;
+  guids_reassigned_ = false;
   InitializeChecksum();
   auto roots = std::make_unique<base::DictionaryValue>();
   roots->Set(kRootFolderNameKey, EncodeNode(bookmark_bar_node));
@@ -112,7 +115,12 @@ bool BookmarkCodec::Decode(const base::Value& value,
                            int64_t* max_id,
                            std::string* sync_metadata_str) {
   ids_.clear();
+  guids_ = {BookmarkNode::kRootNodeGuid, BookmarkNode::kBookmarkBarNodeGuid,
+            BookmarkNode::kOtherBookmarksNodeGuid,
+            BookmarkNode::kMobileBookmarksNodeGuid,
+            BookmarkNode::kManagedNodeGuid};
   ids_reassigned_ = false;
+  guids_reassigned_ = false;
   ids_valid_ = true;
   maximum_id_ = 0;
   stored_checksum_.clear();
@@ -135,6 +143,8 @@ std::unique_ptr<base::Value> BookmarkCodec::EncodeNode(
   value->SetString(kIdKey, id);
   const base::string16& title = node->GetTitle();
   value->SetString(kNameKey, title);
+  const std::string& guid = node->guid();
+  value->SetString(kGuidKey, guid);
   value->SetString(kDateAddedKey,
                    base::NumberToString(node->date_added().ToInternalValue()));
   if (node->is_url()) {
@@ -150,8 +160,8 @@ std::unique_ptr<base::Value> BookmarkCodec::EncodeNode(
     UpdateChecksumWithFolderNode(id, title);
 
     auto child_values = std::make_unique<base::ListValue>();
-    for (int i = 0; i < node->child_count(); ++i)
-      child_values->Append(EncodeNode(node->GetChild(i)));
+    for (const auto& child : node->children())
+      child_values->Append(EncodeNode(child.get()));
     value->Set(kChildrenKey, std::move(child_values));
   }
   const BookmarkNode::MetaInfoMap* meta_info_map = node->GetMetaInfoMap();
@@ -251,12 +261,8 @@ bool BookmarkCodec::DecodeHelper(BookmarkNode* bb_node,
     base::Base64Decode(sync_metadata_str_base64, sync_metadata_str);
   }
 
-  // Need to reset the type as decoding resets the type to FOLDER. Similarly
-  // we need to reset the title as the title is persisted and restored from
+  // Need to reset the title as the title is persisted and restored from
   // the file.
-  bb_node->set_type(BookmarkNode::BOOKMARK_BAR);
-  other_folder_node->set_type(BookmarkNode::OTHER_NODE);
-  mobile_folder_node->set_type(BookmarkNode::MOBILE);
   bb_node->SetTitle(l10n_util::GetStringUTF16(IDS_BOOKMARK_BAR_FOLDER_NAME));
   other_folder_node->SetTitle(
       l10n_util::GetStringUTF16(IDS_BOOKMARK_BAR_OTHER_FOLDER_NAME));
@@ -314,6 +320,22 @@ bool BookmarkCodec::DecodeNode(const base::DictionaryValue& value,
   base::string16 title;
   value.GetString(kNameKey, &title);
 
+  std::string guid;
+  // |node| is only passed in for bookmarks of type BookmarkPermanentNode, in
+  // which case we do not need to check for GUID validity as their GUIDs are
+  // hard-coded and not read from the persisted file.
+  if (!node) {
+    // GUIDs can be empty for bookmarks that were created before GUIDs were
+    // required. When encountering one such bookmark we thus assign to it a new
+    // GUID. The same applies if the stored GUID is invalid or a duplicate.
+    if (!value.GetString(kGuidKey, &guid) || guid.empty() ||
+        !base::IsValidGUID(guid) || guids_.count(guid) != 0) {
+      guid = base::GenerateGUID();
+      guids_reassigned_ = true;
+    }
+    guids_.insert(guid);
+  }
+
   std::string date_added_string;
   if (!value.GetString(kDateAddedKey, &date_added_string))
     date_added_string = base::NumberToString(Time::Now().ToInternalValue());
@@ -334,13 +356,12 @@ bool BookmarkCodec::DecodeNode(const base::DictionaryValue& value,
 
     GURL url = GURL(url_string);
     if (!node && url.is_valid())
-      node = new BookmarkNode(id, url);
+      node = new BookmarkNode(id, guid, url);
     else
       return false;  // Node invalid.
 
     if (parent)
-      parent->Add(base::WrapUnique(node), parent->child_count());
-    node->set_type(BookmarkNode::URL);
+      parent->Add(base::WrapUnique(node));
     UpdateChecksumWithUrlNode(id_string, title, url_string);
   } else {
     std::string last_modified_date;
@@ -355,19 +376,18 @@ bool BookmarkCodec::DecodeNode(const base::DictionaryValue& value,
       return false;
 
     if (!node) {
-      node = new BookmarkNode(id, GURL());
+      node = new BookmarkNode(id, guid, GURL());
     } else {
       // If a new node is not created, explicitly assign ID to the existing one.
       node->set_id(id);
     }
 
-    node->set_type(BookmarkNode::FOLDER);
     int64_t internal_time;
     base::StringToInt64(last_modified_date, &internal_time);
     node->set_date_folder_modified(Time::FromInternalValue(internal_time));
 
     if (parent)
-      parent->Add(base::WrapUnique(node), parent->child_count());
+      parent->Add(base::WrapUnique(node));
 
     UpdateChecksumWithFolderNode(id_string, title);
 
@@ -478,8 +498,8 @@ void BookmarkCodec::ReassignIDs(BookmarkNode* bb_node,
 void BookmarkCodec::ReassignIDsHelper(BookmarkNode* node) {
   DCHECK(node);
   node->set_id(++maximum_id_);
-  for (int i = 0; i < node->child_count(); ++i)
-    ReassignIDsHelper(node->GetChild(i));
+  for (const auto& child : node->children())
+    ReassignIDsHelper(child.get());
 }
 
 void BookmarkCodec::UpdateChecksum(const std::string& str) {

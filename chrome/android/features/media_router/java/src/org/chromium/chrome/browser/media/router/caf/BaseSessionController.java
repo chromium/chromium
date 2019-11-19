@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.media.router.caf;
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import com.google.android.gms.cast.CastDevice;
 import com.google.android.gms.cast.framework.CastSession;
@@ -22,9 +22,7 @@ import org.chromium.chrome.browser.media.router.FlingingController;
 import org.chromium.chrome.browser.media.router.MediaSink;
 import org.chromium.chrome.browser.media.router.MediaSource;
 
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
@@ -57,7 +55,7 @@ public abstract class BaseSessionController {
     private final CafBaseMediaRouteProvider mProvider;
     private CreateRouteRequestInfo mRouteCreationInfo;
     private final RemoteMediaClient.Callback mRemoteMediaClientCallback;
-    private final List<WeakReference<Callback>> mCallbacks = new ArrayList<>();
+    private final List<Callback> mCallbacks = new ArrayList<>();
 
     public BaseSessionController(CafBaseMediaRouteProvider provider) {
         mProvider = provider;
@@ -65,17 +63,11 @@ public abstract class BaseSessionController {
     }
 
     public void addCallback(Callback callback) {
-        mCallbacks.add(new WeakReference<>(callback));
+        mCallbacks.add(callback);
     }
 
     public void removeCallback(Callback callback) {
-        Iterator<WeakReference<Callback>> iterator = mCallbacks.iterator();
-
-        while (iterator.hasNext()) {
-            if (iterator.next().get() == callback) {
-                iterator.remove();
-            }
-        }
+        mCallbacks.remove(callback);
     }
 
     public void requestSessionLaunch() {
@@ -266,15 +258,8 @@ public abstract class BaseSessionController {
     }
 
     private void notifyCallback(NotifyCallbackAction action) {
-        Iterator<WeakReference<Callback>> iterator = mCallbacks.iterator();
-
-        while (iterator.hasNext()) {
-            Callback callback = iterator.next().get();
-            if (callback == null) {
-                iterator.remove();
-            } else {
-                action.notify(callback);
-            }
+        for (Callback callback : mCallbacks) {
+            action.notify(callback);
         }
     }
 

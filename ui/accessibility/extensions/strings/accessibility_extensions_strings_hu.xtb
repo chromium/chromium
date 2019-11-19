@@ -31,6 +31,7 @@
 <translation id="4769065380738716500">A képeket lecserélte a rendszer az ALT szövegükre.</translation>
 <translation id="4896660567607030658">Nincs visszajelzés, csak a kurzor látható.</translation>
 <translation id="4937901943818762779">Az animált képek engedélyezése, de csak egyszer.</translation>
+<translation id="4949131196216960195">Nyomja meg a &lt;span class='key'&gt;Keresés&lt;/span&gt; + &lt;img src='increase_brightness.png'&gt; (Fényerő növelése vagy F7) billentyűparancsot a Caret Browsing bekapcsolásához. A kikapcsoláshoz nyomja meg még egyszer.</translation>
 <translation id="4954450790315188152">Amikor a Caret Browsing aktiválva van:</translation>
 <translation id="5041932793799765940">Színbeállítás</translation>
 <translation id="5094574508723441140">Megnövelt kontraszt</translation>
@@ -60,7 +61,6 @@
 <translation id="7658239707568436148">Mégse</translation>
 <translation id="786423340267544509">Szegély hozzáadása az aria-describedat és a longdesc attribútumokkal rendelkező elemekhez.</translation>
 <translation id="7942349550061667556">Piros</translation>
-<translation id="8254860724243898966">Nyomja meg az &lt;span class='key'&gt;Alt&lt;/span&gt; + &lt;img src='increase_brightness.png'&gt; (Billentyűfényerő növelése vagy F7) billentyűkódot a Caret Browsing bekapcsolásához. Nyomja meg újra a kikapcsoláshoz.</translation>
 <translation id="8260673944985561857">Caret Browsing – beállítások</translation>
 <translation id="8321034316479930120">Animációra vonatkozó irányelv</translation>
 <translation id="8480209185614411573">High Contrast</translation>

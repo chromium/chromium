@@ -19,6 +19,7 @@ struct AXTreeData {
   string title;
   string url;
   int32 focus_id;
+  bool sel_is_backward;
   int32 sel_anchor_object_id;
   int32 sel_anchor_offset;
   ax.mojom.TextAffinity sel_anchor_affinity;

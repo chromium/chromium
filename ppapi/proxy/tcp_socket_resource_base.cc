@@ -308,7 +308,7 @@ void TCPSocketResourceBase::CloseImpl() {
   PostAbortIfNecessary(&accept_callback_);
   read_buffer_ = NULL;
   bytes_to_read_ = -1;
-  server_certificate_ = NULL;
+  server_certificate_.reset();
   accepted_tcp_socket_ = NULL;
 }
 

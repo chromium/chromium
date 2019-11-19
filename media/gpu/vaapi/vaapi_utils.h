@@ -8,6 +8,8 @@
 #include "base/bind_helpers.h"
 #include "base/callback_forward.h"
 #include "base/macros.h"
+#include "base/thread_annotations.h"
+#include "ui/gfx/geometry/size.h"
 
 // Forward declarations taken verbatim from <va/va.h>
 typedef unsigned int VABufferID;
@@ -21,14 +23,13 @@ namespace base {
 class Lock;
 }
 
-namespace gfx {
-class Size;
-}
-
 namespace media {
 class VaapiWrapper;
 class Vp8ReferenceFrameVector;
+struct VAContextAndScopedVASurfaceDeleter;
 struct Vp8FrameHeader;
+
+constexpr uint32_t kInvalidVaFourcc = 0u;
 
 // Class to map a given VABuffer, identified by |buffer_id|, for its lifetime.
 // This class must operate under |lock_| acquired.
@@ -84,21 +85,44 @@ class ScopedVAImage {
 
  private:
   base::Lock* lock_;
-  const VADisplay va_display_;
+  const VADisplay va_display_ GUARDED_BY(lock_);
   std::unique_ptr<VAImage> image_;
   std::unique_ptr<ScopedVABufferMapping> va_buffer_;
 
   DISALLOW_COPY_AND_ASSIGN(ScopedVAImage);
 };
 
-// Adapts |frame_header| to the Vaapi data types, sending it to |vaapi_wrapper|
-// for consumption.
-bool FillVP8DataStructuresAndPassToVaapiWrapper(
-    const scoped_refptr<VaapiWrapper>& vaapi_wrapper,
-    VASurfaceID va_surface_id,
-    const Vp8FrameHeader& frame_header,
-    const Vp8ReferenceFrameVector& reference_frames);
+// A VA-API-specific surface used by video/image codec accelerators to work on.
+// As the name suggests, this class is self-cleaning.
+class ScopedVASurface {
+ public:
+  ScopedVASurface(scoped_refptr<VaapiWrapper> vaapi_wrapper,
+                  VASurfaceID va_surface_id,
+                  const gfx::Size& size,
+                  unsigned int va_rt_format);
+  ~ScopedVASurface();
 
+  bool IsValid() const;
+  VASurfaceID id() const { return va_surface_id_; }
+  const gfx::Size& size() const { return size_; }
+  unsigned int format() const { return va_rt_format_; }
+
+ private:
+  friend struct VAContextAndScopedVASurfaceDeleter;
+  const scoped_refptr<VaapiWrapper> vaapi_wrapper_;
+  const VASurfaceID va_surface_id_;
+  const gfx::Size size_;
+  const unsigned int va_rt_format_;
+
+  DISALLOW_COPY_AND_ASSIGN(ScopedVASurface);
+};
+
+// Adapts |frame_header| to the Vaapi data types, prepping it for consumption by
+// |vaapi_wrapper|
+bool FillVP8DataStructures(const scoped_refptr<VaapiWrapper>& vaapi_wrapper,
+                           VASurfaceID va_surface_id,
+                           const Vp8FrameHeader& frame_header,
+                           const Vp8ReferenceFrameVector& reference_frames);
 }  // namespace media
 
 #endif  // MEDIA_GPU_VAAPI_VAAPI_UTILS_H_

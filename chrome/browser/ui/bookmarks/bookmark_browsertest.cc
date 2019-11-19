@@ -3,10 +3,10 @@
 // found in the LICENSE file.
 
 #include "base/bind.h"
-#include "base/feature_list.h"
 #include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind_test_util.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
@@ -22,7 +22,6 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/bookmarks/browser/bookmark_model.h"
@@ -35,6 +34,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
 #include "ui/gfx/image/image_skia.h"
 
@@ -46,22 +46,12 @@ namespace {
 const char kPersistBookmarkURL[] = "http://www.cnn.com/";
 const char kPersistBookmarkTitle[] = "CNN";
 
-bool AreCommittedInterstitialsEnabled() {
-  return base::FeatureList::IsEnabled(features::kSSLCommittedInterstitials);
-}
-
 bool IsShowingInterstitial(content::WebContents* tab) {
-  if (AreCommittedInterstitialsEnabled()) {
-    security_interstitials::SecurityInterstitialTabHelper* helper =
-        security_interstitials::SecurityInterstitialTabHelper::FromWebContents(
-            tab);
-    if (!helper) {
-      return false;
-    }
-    return helper->GetBlockingPageForCurrentlyCommittedNavigationForTesting() !=
-           nullptr;
-  }
-  return tab->GetInterstitialPage() != nullptr;
+  security_interstitials::SecurityInterstitialTabHelper* helper =
+      security_interstitials::SecurityInterstitialTabHelper::FromWebContents(
+          tab);
+  return helper &&
+         helper->GetBlockingPageForCurrentlyCommittedNavigationForTesting();
 }
 
 }  // namespace
@@ -115,7 +105,13 @@ class BookmarkBrowsertest : public InProcessBrowserTest {
     return bookmark_model;
   }
 
+  base::HistogramTester* histogram_tester() { return &histogram_tester_; }
+
  private:
+  // We make the histogram tester a member field to make sure it starts
+  // recording as early as possible.
+  base::HistogramTester histogram_tester_;
+
   DISALLOW_COPY_AND_ASSIGN(BookmarkBrowsertest);
 };
 
@@ -168,10 +164,9 @@ IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest, DISABLED_MultiProfile) {
 
   BookmarkModel* bookmark_model1 = WaitForBookmarkModel(browser()->profile());
 
-  ui_test_utils::BrowserAddedObserver observer;
   g_browser_process->profile_manager()->CreateMultiProfileAsync(
       base::string16(), std::string(), ProfileManager::CreateCallback());
-  Browser* browser2 = observer.WaitForSingleNewBrowser();
+  Browser* browser2 = ui_test_utils::WaitForBrowserToOpen();
   BookmarkModel* bookmark_model2 = WaitForBookmarkModel(browser2->profile());
 
   bookmarks::AddIfNotBookmarked(bookmark_model1, GURL(kPersistBookmarkURL),
@@ -190,7 +185,7 @@ IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest,
   // Start an HTTPS server with a certificate error.
   net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
   https_server.SetSSLConfig(net::EmbeddedTestServer::CERT_MISMATCHED_NAME);
-  https_server.ServeFilesFromSourceDirectory("chrome/test/data");
+  https_server.ServeFilesFromSourceDirectory(GetChromeTestDataDir());
   ASSERT_TRUE(https_server.Start());
   ASSERT_TRUE(embedded_test_server()->Start());
 
@@ -215,8 +210,6 @@ IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest,
   GURL error_url = https_server.GetURL("/");
   ui_test_utils::NavigateToURL(browser(), error_url);
   web_contents = browser()->tab_strip_model()->GetActiveWebContents();
-  if (!AreCommittedInterstitialsEnabled())
-    content::WaitForInterstitialAttach(web_contents);
   EXPECT_TRUE(IsShowingInterstitial(web_contents));
   EXPECT_FALSE(bookmark_observer.is_starred());
 
@@ -231,16 +224,19 @@ IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest, DragSingleBookmark) {
   const GURL page_url("http://www.google.com");
   const BookmarkNode* root = model->bookmark_bar_node();
   const BookmarkNode* node = model->AddURL(root, 0, page_title, page_url);
+  const gfx::Point expected_point(100, 100);
 
   auto run_loop = std::make_unique<base::RunLoop>();
 
   chrome::DoBookmarkDragCallback cb = base::BindLambdaForTesting(
-      [&run_loop, page_title, page_url](
-          const ui::OSExchangeData& drag_data, gfx::NativeView native_view,
-          ui::DragDropTypes::DragEventSource source, int operation) {
+      [&run_loop, page_title, page_url, expected_point](
+          std::unique_ptr<ui::OSExchangeData> drag_data,
+          gfx::NativeView native_view,
+          ui::DragDropTypes::DragEventSource source, gfx::Point point,
+          int operation) {
         GURL url;
         base::string16 title;
-        EXPECT_TRUE(drag_data.provider().GetURLAndTitle(
+        EXPECT_TRUE(drag_data->provider().GetURLAndTitle(
             ui::OSExchangeData::FilenameToURLPolicy::DO_NOT_CONVERT_FILENAMES,
             &url, &title));
         EXPECT_EQ(page_url, url);
@@ -250,8 +246,9 @@ IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest, DragSingleBookmark) {
         // implementation of OSExchangeData just sets the drag image on the OS
         // API.
         // See https://crbug.com/893388.
-        EXPECT_FALSE(drag_data.provider().GetDragImage().isNull());
+        EXPECT_FALSE(drag_data->provider().GetDragImage().isNull());
 #endif
+        EXPECT_EQ(expected_point, point);
         run_loop->Quit();
       });
 
@@ -261,7 +258,8 @@ IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest, DragSingleBookmark) {
       {{node},
        kDragNodeIndex,
        platform_util::GetViewForWindow(browser()->window()->GetNativeWindow()),
-       ui::DragDropTypes::DRAG_EVENT_SOURCE_MOUSE},
+       ui::DragDropTypes::DRAG_EVENT_SOURCE_MOUSE,
+       expected_point},
       std::move(cb));
 
   run_loop->Run();
@@ -276,19 +274,21 @@ IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest, DragMultipleBookmarks) {
   const BookmarkNode* root = model->bookmark_bar_node();
   const BookmarkNode* node1 = model->AddURL(root, 0, page_title, page_url);
   const BookmarkNode* node2 = model->AddFolder(root, 0, page_title);
+  const gfx::Point expected_point(100, 100);
 
   auto run_loop = std::make_unique<base::RunLoop>();
 
   chrome::DoBookmarkDragCallback cb = base::BindLambdaForTesting(
-      [&run_loop](const ui::OSExchangeData& drag_data,
-                  gfx::NativeView native_view,
-                  ui::DragDropTypes::DragEventSource source, int operation) {
+      [&run_loop, expected_point](std::unique_ptr<ui::OSExchangeData> drag_data,
+                                  gfx::NativeView native_view,
+                                  ui::DragDropTypes::DragEventSource source,
+                                  gfx::Point point, int operation) {
 #if !defined(OS_MACOSX)
         GURL url;
         base::string16 title;
         // On Mac 10.11 and 10.12, this returns true, even though we set no url.
         // See https://crbug.com/893432.
-        EXPECT_FALSE(drag_data.provider().GetURLAndTitle(
+        EXPECT_FALSE(drag_data->provider().GetURLAndTitle(
             ui::OSExchangeData::FilenameToURLPolicy::DO_NOT_CONVERT_FILENAMES,
             &url, &title));
 #endif
@@ -297,8 +297,9 @@ IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest, DragMultipleBookmarks) {
         // implementation of OSExchangeData just sets the drag image on the OS
         // API.
         // See https://crbug.com/893388.
-        EXPECT_FALSE(drag_data.provider().GetDragImage().isNull());
+        EXPECT_FALSE(drag_data->provider().GetDragImage().isNull());
 #endif
+        EXPECT_EQ(expected_point, point);
         run_loop->Quit();
       });
 
@@ -310,8 +311,79 @@ IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest, DragMultipleBookmarks) {
                                    platform_util::GetViewForWindow(
                                        browser()->window()->GetNativeWindow()),
                                    ui::DragDropTypes::DRAG_EVENT_SOURCE_MOUSE,
+                                   expected_point,
                                },
                                std::move(cb));
 
   run_loop->Run();
 }
+
+// ChromeOS initializes two profiles (Default and test-user) and it's impossible
+// to distinguish UMA samples separately.
+#if !defined(OS_CHROMEOS)
+
+IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest, PRE_EmitUmaForDuplicates) {
+  BookmarkModel* bookmark_model = WaitForBookmarkModel(browser()->profile());
+  const BookmarkNode* parent = bookmarks::GetParentForNewNodes(bookmark_model);
+  // Add one bookmark with a unique URL, two other bookmarks with a shared URL,
+  // and three more with another shared URL.
+  bookmark_model->AddURL(parent, parent->children().size(),
+                         base::ASCIIToUTF16("title1"), GURL("http://a.com"));
+  bookmark_model->AddURL(parent, parent->children().size(),
+                         base::ASCIIToUTF16("title2"), GURL("http://b.com"));
+  bookmark_model->AddURL(parent, parent->children().size(),
+                         base::ASCIIToUTF16("title3"), GURL("http://b.com"));
+  bookmark_model->AddURL(parent, parent->children().size(),
+                         base::ASCIIToUTF16("title4"), GURL("http://c.com"));
+  bookmark_model->AddURL(parent, parent->children().size(),
+                         base::ASCIIToUTF16("title5"), GURL("http://c.com"));
+  bookmark_model->AddURL(parent, parent->children().size(),
+                         base::ASCIIToUTF16("title6"), GURL("http://c.com"));
+}
+
+IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest, EmitUmaForDuplicates) {
+  WaitForBookmarkModel(browser()->profile());
+
+  ASSERT_THAT(
+      histogram_tester()->GetAllSamples("Bookmarks.Count.OnProfileLoad"),
+      testing::ElementsAre(base::Bucket(/*min=*/6, /*count=*/1)));
+  EXPECT_THAT(histogram_tester()->GetAllSamples(
+                  "Bookmarks.Count.OnProfileLoad.DuplicateUrl"),
+              testing::ElementsAre(base::Bucket(/*min=*/5, /*count=*/1)));
+}
+
+IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest, PRE_EmitUmaForEmptyTitles) {
+  BookmarkModel* bookmark_model = WaitForBookmarkModel(browser()->profile());
+  const BookmarkNode* parent = bookmarks::GetParentForNewNodes(bookmark_model);
+  // Add two bookmarks with a non-empty title and three with an empty one.
+  bookmark_model->AddURL(parent, parent->children().size(),
+                         base::ASCIIToUTF16("title1"), GURL("http://a.com"));
+  bookmark_model->AddURL(parent, parent->children().size(),
+                         base::ASCIIToUTF16("title2"), GURL("http://b.com"));
+  bookmark_model->AddURL(parent, parent->children().size(), base::string16(),
+                         GURL("http://c.com"));
+  bookmark_model->AddURL(parent, parent->children().size(), base::string16(),
+                         GURL("http://d.com"));
+  bookmark_model->AddURL(parent, parent->children().size(), base::string16(),
+                         GURL("http://e.com"));
+}
+
+// TODO(crbug.com/1017731): Flaky on Windows
+#if defined(OS_WIN)
+#define MAYBE_EmitUmaForEmptyTitles DISABLED_EmitUmaForEmptyTitles
+#else
+#define MAYBE_EmitUmaForEmptyTitles EmitUmaForEmptyTitles
+#endif
+
+IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest, MAYBE_EmitUmaForEmptyTitles) {
+  WaitForBookmarkModel(browser()->profile());
+
+  ASSERT_THAT(
+      histogram_tester()->GetAllSamples("Bookmarks.Count.OnProfileLoad"),
+      testing::ElementsAre(base::Bucket(/*min=*/5, /*count=*/1)));
+  EXPECT_THAT(histogram_tester()->GetAllSamples(
+                  "Bookmarks.Count.OnProfileLoad.EmptyTitle"),
+              testing::ElementsAre(base::Bucket(/*min=*/3, /*count=*/1)));
+}
+
+#endif  // !defined(OS_CHROMEOS)

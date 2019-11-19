@@ -209,50 +209,6 @@ runTests([
     );
   },
 
-  function testEditResponseCookies() {
-    // TODO(crbug.com/827582): Editing response cookies through
-    // declarativeWebRequest is not supported with the network service.
-    if (networkServiceState == 'enabled') {
-      chrome.test.succeed();
-      return;
-    }
-
-    ignoreUnexpected = true;
-    expect();
-    onRequest.addRules(
-      [ {conditions: [new RequestMatcher({})],
-         actions: [
-           new AddResponseCookie({cookie: {name: "addedCookie", value: "Foo"}}),
-           new EditResponseCookie({filter: {name: "editedCookie"},
-                                   modification: {value: "bar"}}),
-           new RemoveResponseCookie({filter: {name: "deletedCookie"}})
-         ]}
-      ],
-      function() {
-        navigateAndWait(getURLSetCookie2(), function() {
-          chrome.test.listenOnce(chrome.extension.onRequest, function(request) {
-            chrome.test.assertTrue(request.pass, "Invalid cookies. " +
-                JSON.stringify(request.cookies));
-          });
-          chrome.tabs.executeScript(tabId, {code:
-              "var cookies = document.cookie.split('; ');" +
-              "var cookieMap = {};" +
-              "for (var i = 0; i < cookies.length; ++i) {" +
-              "  var cookieParts = cookies[i].split('=');" +
-              "  cookieMap[cookieParts[0]] = cookieParts[1];" +
-              "}" +
-              "var result = {};" +
-              "result.cookies = cookieMap;" +
-              "result.pass = (cookieMap.passedCookie === 'Foo') &&" +
-              "              (cookieMap.addedCookie === 'Foo') &&" +
-              "              (cookieMap.editedCookie === 'bar') &&" +
-              "              !cookieMap.hasOwnProperty('deletedCookie');" +
-              "chrome.extension.sendRequest(result);"});
-        });
-      }
-    );
-  },
-
   function testRequestHeaders() {
     ignoreUnexpected = true;
     expect(

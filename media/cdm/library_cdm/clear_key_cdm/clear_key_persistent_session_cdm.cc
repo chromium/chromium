@@ -93,9 +93,7 @@ ClearKeyPersistentSessionCdm::ClearKeyPersistentSessionCdm(
     const SessionClosedCB& session_closed_cb,
     const SessionKeysChangeCB& session_keys_change_cb,
     const SessionExpirationUpdateCB& session_expiration_update_cb)
-    : cdm_host_proxy_(cdm_host_proxy),
-      session_closed_cb_(session_closed_cb),
-      weak_factory_(this) {
+    : cdm_host_proxy_(cdm_host_proxy), session_closed_cb_(session_closed_cb) {
   cdm_ = base::MakeRefCounted<AesDecryptor>(
       session_message_cb,
       base::Bind(&ClearKeyPersistentSessionCdm::OnSessionClosed,

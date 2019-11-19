@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<style>
+::-webkit-scrollbar { display: none; }
+body {
+    background: blue;
+    background-attachment: fixed;
+}
+</style>
+<script src="../resources/text-based-repaint.js" type="text/javascript"></script>
+<script>
+if (window.testRunner)
+    internals.settings.setPreferCompositingToLCDTextEnabled(false);
+
+function repaintTest() {
+    window.scrollTo(0, 1000);
+}
+
+window.onload = function() {
+    runRepaintAndPixelTest();
+};
+</script>
+<div style="height: 5000px">
+Tests that scrolling a frame with background-attachment: fixed and solid color background should not invalidate.
+</div>

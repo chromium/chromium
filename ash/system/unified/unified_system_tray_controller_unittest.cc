@@ -5,15 +5,14 @@
 #include "ash/system/unified/unified_system_tray_controller.h"
 
 #include "ash/public/cpp/ash_features.h"
-#include "ash/public/interfaces/session_controller.mojom.h"
-#include "ash/session/session_controller.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/system/message_center/ash_message_center_lock_screen_controller.h"
 #include "ash/system/unified/notification_hidden_view.h"
 #include "ash/system/unified/unified_system_tray_model.h"
 #include "ash/system/unified/unified_system_tray_view.h"
 #include "ash/test/ash_test_base.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
+#include "chromeos/dbus/shill/shill_clients.h"
 #include "chromeos/network/network_handler.h"
 #include "components/prefs/testing_pref_service.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
@@ -25,10 +24,9 @@ namespace ash {
 namespace {
 
 void SetSessionState(const session_manager::SessionState& state) {
-  mojom::SessionInfoPtr info_ptr = mojom::SessionInfo::New();
-  info_ptr->state = state;
-  SessionController* session_controller = Shell::Get()->session_controller();
-  session_controller->SetSessionInfo(std::move(info_ptr));
+  SessionInfo info;
+  info.state = state;
+  Shell::Get()->session_controller()->SetSessionInfo(info);
 }
 
 }  // anonymous namespace
@@ -41,7 +39,7 @@ class UnifiedSystemTrayControllerTest : public AshTestBase,
 
   // testing::Test:
   void SetUp() override {
-    chromeos::DBusThreadManager::Initialize();
+    chromeos::shill_clients::InitializeFakes();
     // Initializing NetworkHandler before ash is more like production.
     chromeos::NetworkHandler::Initialize();
     AshTestBase::SetUp();
@@ -50,7 +48,7 @@ class UnifiedSystemTrayControllerTest : public AshTestBase,
     // Networking stubs may have asynchronous initialization.
     base::RunLoop().RunUntilIdle();
 
-    model_ = std::make_unique<UnifiedSystemTrayModel>();
+    model_ = std::make_unique<UnifiedSystemTrayModel>(nullptr);
     controller_ = std::make_unique<UnifiedSystemTrayController>(model());
   }
 
@@ -67,7 +65,7 @@ class UnifiedSystemTrayControllerTest : public AshTestBase,
     chromeos::NetworkHandler::Get()->ShutdownPrefServices();
     AshTestBase::TearDown();
     chromeos::NetworkHandler::Shutdown();
-    chromeos::DBusThreadManager::Shutdown();
+    chromeos::shill_clients::Shutdown();
   }
 
   // views::ViewObserver:
@@ -125,6 +123,22 @@ TEST_F(UnifiedSystemTrayControllerTest, ToggleExpanded) {
   const int collapsed_height = view()->GetPreferredSize().height();
   EXPECT_LT(collapsed_height, expanded_height);
   EXPECT_FALSE(model()->IsExpandedOnOpen());
+
+  EXPECT_EQ(expanded_height, view()->GetExpandedSystemTrayHeight());
+}
+
+TEST_F(UnifiedSystemTrayControllerTest, EnsureExpanded_UserChooserShown) {
+  InitializeView();
+  EXPECT_FALSE(view()->detailed_view_for_testing()->GetVisible());
+
+  // Show the user chooser view.
+  controller()->ShowUserChooserView();
+  EXPECT_TRUE(view()->detailed_view_for_testing()->GetVisible());
+
+  // Calling EnsureExpanded() should hide the detailed view (e.g. this can
+  // happen when changing the brightness or volume).
+  controller()->EnsureExpanded();
+  EXPECT_FALSE(view()->detailed_view_for_testing()->GetVisible());
 }
 
 TEST_F(UnifiedSystemTrayControllerTest, PreferredSizeChanged) {
@@ -150,7 +164,7 @@ TEST_F(UnifiedSystemTrayControllerTest, NotificationHiddenView_ModeShow) {
 
   EXPECT_TRUE(AshMessageCenterLockScreenController::IsAllowed());
   EXPECT_TRUE(AshMessageCenterLockScreenController::IsEnabled());
-  EXPECT_FALSE(view()->notification_hidden_view_for_testing()->visible());
+  EXPECT_FALSE(view()->notification_hidden_view_for_testing()->GetVisible());
 }
 
 TEST_F(UnifiedSystemTrayControllerTest, NotificationHiddenView_ModeHide) {
@@ -161,7 +175,7 @@ TEST_F(UnifiedSystemTrayControllerTest, NotificationHiddenView_ModeHide) {
 
   EXPECT_TRUE(AshMessageCenterLockScreenController::IsAllowed());
   EXPECT_FALSE(AshMessageCenterLockScreenController::IsEnabled());
-  EXPECT_TRUE(view()->notification_hidden_view_for_testing()->visible());
+  EXPECT_TRUE(view()->notification_hidden_view_for_testing()->GetVisible());
   EXPECT_NE(nullptr, view()
                          ->notification_hidden_view_for_testing()
                          ->change_button_for_testing());
@@ -176,7 +190,7 @@ TEST_F(UnifiedSystemTrayControllerTest,
 
   EXPECT_TRUE(AshMessageCenterLockScreenController::IsAllowed());
   EXPECT_TRUE(AshMessageCenterLockScreenController::IsEnabled());
-  EXPECT_FALSE(view()->notification_hidden_view_for_testing()->visible());
+  EXPECT_FALSE(view()->notification_hidden_view_for_testing()->GetVisible());
 }
 
 TEST_F(UnifiedSystemTrayControllerTest, NotificationHiddenView_ModeProhibited) {
@@ -187,7 +201,7 @@ TEST_F(UnifiedSystemTrayControllerTest, NotificationHiddenView_ModeProhibited) {
 
   EXPECT_FALSE(AshMessageCenterLockScreenController::IsAllowed());
   EXPECT_FALSE(AshMessageCenterLockScreenController::IsEnabled());
-  EXPECT_TRUE(view()->notification_hidden_view_for_testing()->visible());
+  EXPECT_TRUE(view()->notification_hidden_view_for_testing()->GetVisible());
   EXPECT_EQ(nullptr, view()
                          ->notification_hidden_view_for_testing()
                          ->change_button_for_testing());

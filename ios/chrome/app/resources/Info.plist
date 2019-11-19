@@ -2,6 +2,8 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>UIFileSharingEnabled</key>
+	<true/>
 	<key>UIApplicationShortcutWidget</key>
 	<string>${IOS_BUNDLE_ID_PREFIX}.${CONTENT_WIDGET_EXTENSION_BUNDLE_ID}</string>
 	<key>CFBundleDevelopmentRegion</key>
@@ -92,19 +94,19 @@
 	<array>
 		<dict>
 			<key>UIApplicationShortcutItemIconFile</key>
-			<string>quick_action_new_tab</string>
+			<string>quick_action_new_search</string>
 			<key>UIApplicationShortcutItemTitle</key>
-			<string>IDS_IOS_APPLICATION_SHORTCUT_NEWTAB_TITLE</string>
+			<string>IDS_IOS_APPLICATION_SHORTCUT_NEWSEARCH_TITLE</string>
 			<key>UIApplicationShortcutItemType</key>
-			<string>OpenNewTab</string>
+			<string>OpenNewSearch</string>
 		</dict>
 		<dict>
 			<key>UIApplicationShortcutItemIconFile</key>
-			<string>quick_action_new_incognito_tab</string>
+			<string>quick_action_incognito_search</string>
 			<key>UIApplicationShortcutItemTitle</key>
-			<string>IDS_IOS_APPLICATION_SHORTCUT_NEWINCOGNITOTAB_TITLE</string>
+			<string>IDS_IOS_APPLICATION_SHORTCUT_INCOGNITOSEARCH_TITLE</string>
 			<key>UIApplicationShortcutItemType</key>
-			<string>OpenIncognitoTab</string>
+			<string>OpenIncognitoSearch</string>
 		</dict>
 		<dict>
 			<key>UIApplicationShortcutItemIconFile</key>
@@ -196,5 +198,7 @@
 	<string>IDS_IOS_BLUETOOTH_USAGE_DESCRIPTION</string>
 	<key>NSFaceIDUsageDescription</key>
 	<string>IDS_IOS_FACE_ID_USAGE_DESCRIPTION</string>
+	<key>FirebaseScreenReportingEnabled</key>
+	<false/>
 </dict>
 </plist>

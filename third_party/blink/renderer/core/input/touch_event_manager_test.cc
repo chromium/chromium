@@ -37,10 +37,6 @@ class TouchEventManagerTest : public SimTest {
 
 class CheckEventListenerCallback final : public NativeEventListener {
  public:
-  static CheckEventListenerCallback* Create() {
-    return MakeGarbageCollected<CheckEventListenerCallback>();
-  }
-
   void Invoke(ExecutionContext*, Event* event) override {
     event_received_ = true;
   }
@@ -60,7 +56,7 @@ TEST_F(TouchEventManagerTest, LostTouchDueToInnerIframeRemove) {
     <iframe id='target' style='width: 200px; height: 200px;'></iframe>
     </body>
   )HTML");
-  CheckEventListenerCallback* callback = CheckEventListenerCallback::Create();
+  auto* callback = MakeGarbageCollected<CheckEventListenerCallback>();
   GetDocument().body()->addEventListener(event_type_names::kTouchstart,
                                          callback);
 

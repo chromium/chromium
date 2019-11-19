@@ -5,8 +5,8 @@
 #include "third_party/blink/renderer/core/animation/svg_path_interpolation_type.h"
 
 #include "third_party/blink/renderer/core/animation/path_interpolation_functions.h"
-
 #include "third_party/blink/renderer/core/svg/svg_path.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
 
 namespace blink {
 
@@ -46,9 +46,10 @@ void SVGPathInterpolationType::Composite(
 SVGPropertyBase* SVGPathInterpolationType::AppliedSVGValue(
     const InterpolableValue& interpolable_value,
     const NonInterpolableValue* non_interpolable_value) const {
-  return SVGPath::Create(
-      cssvalue::CSSPathValue::Create(PathInterpolationFunctions::AppliedValue(
-          interpolable_value, non_interpolable_value)));
+  return MakeGarbageCollected<SVGPath>(
+      MakeGarbageCollected<cssvalue::CSSPathValue>(
+          PathInterpolationFunctions::AppliedValue(interpolable_value,
+                                                   non_interpolable_value)));
 }
 
 }  // namespace blink

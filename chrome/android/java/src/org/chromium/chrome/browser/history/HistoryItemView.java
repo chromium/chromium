@@ -6,8 +6,7 @@ package org.chromium.chrome.browser.history;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
-import android.support.annotation.VisibleForTesting;
+import android.graphics.drawable.Drawable;
 import android.support.graphics.drawable.VectorDrawableCompat;
 import android.support.v4.view.ViewCompat;
 import android.support.v7.content.res.AppCompatResources;
@@ -15,15 +14,17 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.widget.ImageButton;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.favicon.FaviconHelper.DefaultFaviconHelper;
+import org.chromium.chrome.browser.favicon.FaviconUtils;
 import org.chromium.chrome.browser.favicon.IconType;
 import org.chromium.chrome.browser.favicon.LargeIconBridge.LargeIconCallback;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.preferences.PrefServiceBridge;
-import org.chromium.chrome.browser.util.ViewUtils;
-import org.chromium.chrome.browser.widget.RoundedIconGenerator;
+import org.chromium.chrome.browser.ui.widget.RoundedIconGenerator;
 import org.chromium.chrome.browser.widget.selection.SelectableItemView;
 
 /**
@@ -50,11 +51,12 @@ public class HistoryItemView extends SelectableItemView<HistoryItem> implements 
 
         mMinIconSize = getResources().getDimensionPixelSize(R.dimen.default_favicon_min_size);
         mDisplayedIconSize = getResources().getDimensionPixelSize(R.dimen.default_favicon_size);
-        mIconGenerator = ViewUtils.createDefaultRoundedIconGenerator(getResources(), true);
+        mIconGenerator = FaviconUtils.createCircularIconGenerator(getResources());
         mEndPadding = context.getResources().getDimensionPixelSize(
                 R.dimen.selectable_list_layout_row_padding);
 
-        mIconColorList = AppCompatResources.getColorStateList(context, R.color.white_mode_tint);
+        mIconColorList =
+                AppCompatResources.getColorStateList(context, R.color.default_icon_color_inverse);
     }
 
     @Override
@@ -91,10 +93,10 @@ public class HistoryItemView extends SelectableItemView<HistoryItem> implements 
             }
             setIconDrawable(mBlockedVisitDrawable);
             mTitleView.setTextColor(
-                    ApiCompatibilityUtils.getColor(getResources(), R.color.google_red_700));
+                    ApiCompatibilityUtils.getColor(getResources(), R.color.default_red));
         } else {
-            setIconDrawable(
-                    mFaviconHelper.getDefaultFaviconDrawable(getContext(), item.getUrl(), true));
+            setIconDrawable(mFaviconHelper.getDefaultFaviconDrawable(
+                    getContext().getResources(), item.getUrl(), true));
             if (mHistoryManager != null) requestIcon();
 
             mTitleView.setTextColor(
@@ -145,8 +147,9 @@ public class HistoryItemView extends SelectableItemView<HistoryItem> implements 
      */
     public void setRemoveButtonVisible(boolean visible) {
         mRemoveButtonVisible = visible;
-        if (!PrefServiceBridge.getInstance().getBoolean(Pref.ALLOW_DELETING_BROWSER_HISTORY))
+        if (!PrefServiceBridge.getInstance().getBoolean(Pref.ALLOW_DELETING_BROWSER_HISTORY)) {
             return;
+        }
 
         mRemoveButton.setVisibility(visible ? View.VISIBLE : View.INVISIBLE);
     }
@@ -160,16 +163,9 @@ public class HistoryItemView extends SelectableItemView<HistoryItem> implements 
     @Override
     public void onLargeIconAvailable(Bitmap icon, int fallbackColor, boolean isFallbackColorDefault,
             @IconType int iconType) {
-        // TODO(twellington): move this somewhere that can be shared with bookmarks.
-        if (icon == null) {
-            mIconGenerator.setBackgroundColor(fallbackColor);
-            icon = mIconGenerator.generateIconForUrl(getItem().getUrl());
-            setIconDrawable(new BitmapDrawable(getResources(), icon));
-        } else {
-            setIconDrawable(ViewUtils.createRoundedBitmapDrawable(
-                    Bitmap.createScaledBitmap(icon, mDisplayedIconSize, mDisplayedIconSize, false),
-                    ViewUtils.DEFAULT_FAVICON_CORNER_RADIUS));
-        }
+        Drawable drawable = FaviconUtils.getIconDrawableWithoutFilter(icon, getItem().getUrl(),
+                fallbackColor, mIconGenerator, getResources(), mDisplayedIconSize);
+        setIconDrawable(drawable);
     }
 
     private void requestIcon() {

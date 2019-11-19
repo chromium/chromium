@@ -75,8 +75,6 @@ class ASH_EXPORT WindowCycleController {
   // Non-null while actively cycling.
   std::unique_ptr<WindowCycleEventFilter> event_filter_;
 
-  base::Time cycle_start_time_;
-
   DISALLOW_COPY_AND_ASSIGN(WindowCycleController);
 };
 

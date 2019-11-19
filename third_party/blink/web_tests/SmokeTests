@@ -11,7 +11,6 @@ compositing/animation/animated-composited-inside-hidden.html
 compositing/animation/animation-compositing.html
 compositing/animation/computed-style-during-delay.html
 compositing/backing/no-backing-foreground-layer.html
-compositing/columns/geometry-map-paginated-assert.html
 compositing/contents-opaque/body-background-painted.html
 compositing/contents-opaque/layer-transform.html
 compositing/contents-opaque/visibility-hidden.html
@@ -23,7 +22,6 @@ compositing/filters/sw-shadow-overlaps-hw-shadow.html
 compositing/force-compositing-mode/force-composite-empty.html
 compositing/geometry/bounds-ignores-hidden.html
 compositing/geometry/limit-layer-bounds-positioned-transition.html
-compositing/gestures/gesture-tapHighlight-no-graphics-layer-region-based-multicol.html
 compositing/iframes/visibility-hidden-transformed-content.html
 compositing/images/clip-on-directly-composited-image.html
 compositing/layer-creation/fixed-position-out-of-view-dynamic.html
@@ -277,9 +275,9 @@ external/wpt/orientation-event/devicemotionevent-init.html
 external/wpt/pointerevents/pointerevent_touch-action-illegal.html
 external/wpt/preload/avoid-delaying-onload-link-preload.html
 external/wpt/referrer-policy/generic/subresource-test/attr-referrer-invalid-value.html
-external/wpt/referrer-policy/no-referrer-when-downgrade/http-rp/cross-origin/http-http/fetch-request/no-redirect/insecure-protocol.http.html
-external/wpt/referrer-policy/origin/meta-referrer/cross-origin/http-http/xhr-request/no-redirect/generic.http.html
-external/wpt/referrer-policy/origin-when-cross-origin/meta-referrer/cross-origin/http-http/xhr-request/no-redirect/cross-origin.http.html
+external/wpt/referrer-policy/gen/top.http-rp/no-referrer-when-downgrade/fetch/cross-http.no-redirect.http.html
+external/wpt/referrer-policy/gen/top.meta/origin/xhr/cross-http.no-redirect.http.html
+external/wpt/referrer-policy/gen/top.meta/origin-when-cross-origin/xhr/cross-http.no-redirect.http.html
 external/wpt/selection/Document-open.html
 external/wpt/service-workers/service-worker/rejections.https.html
 external/wpt/shadow-dom/Element-interface-shadowRoot-attribute.html
@@ -441,6 +439,7 @@ fast/css/first-letter-hover.html
 fast/css/first-letter-visibility.html
 fast/css/first-letter-wbr.html
 fast/css/focus-ring-multiline.html
+fast/css/font-face-default-font.html
 fast/css-generated-content/bug-106384.html
 fast/css-generated-content/table-with-scrollbar-corner.html
 fast/css/getComputedStyle/getComputedStyle-margin-percentage.html
@@ -704,8 +703,6 @@ fast/overflow/generated-content-crash.html
 fast/overflow/position-fixed-transform-clipping.html
 fast/overflow/scroll-vertical-not-horizontal.html
 fast/overflow/setting-scrollTop-after-hide-show.html
-fast/pagination/first-letter-inherit-all-crash.html
-fast/pagination/very-tall-auto-height-crash.html
 fast/parser/broken-comment-4.html
 fast/peerconnection/RTCIceCandidate.html
 fast/plugins/keypress-event.html
@@ -750,16 +747,17 @@ fast/table/columngroup-inside-columngroup.html
 fast/table/crash-anonymous-table-computeLogicalWidth.html
 fast/table/crash-beforeBorder-dirty-section.html
 fast/table/crash-table-cell-change-height.html
-fast/text/bidi-isolate-nextlinebreak-failure.html
-fast/text/international/001.html
-fast/text/international/003.html
-fast/text/international/bidi-LDB-2-formatting-characters.html
-fast/text/international/bidi-LDB-2-HTML.html
-fast/text/international/bidi-neutral-directionality-paragraph-start.html
-fast/text/international/rtl-mark.html
-fast/text/stroking-decorations.html
-fast/text/vertical-spacing-crash.html
-fast/text/whitespace/whitespace-and-margin-wrap-after-list-marker-crash.html
+virtual/text-antialias/bidi-isolate-nextlinebreak-failure.html
+virtual/text-antialias/international/001.html
+virtual/text-antialias/international/003.html
+virtual/text-antialias/international/bidi-LDB-2-formatting-characters.html
+virtual/text-antialias/international/bidi-LDB-2-HTML.html
+virtual/text-antialias/international/bidi-neutral-directionality-paragraph-start.html
+virtual/text-antialias/international/rtl-mark.html
+virtual/text-antialias/small-caps-aat.html
+virtual/text-antialias/stroking-decorations.html
+virtual/text-antialias/vertical-spacing-crash.html
+virtual/text-antialias/whitespace/whitespace-and-margin-wrap-after-list-marker-crash.html
 fast/tokenizer/entities-04.html
 fast/tokenizer/external-script-document-open.html
 fast/url/invalid-urls-utf8.html
@@ -769,7 +767,6 @@ fast/workers/worker-sharedarraybuffer-transfer.html
 fast/writing-mode/english-lr-text.html
 fast/writing-mode/flipped-blocks-outline-crash.html
 fast/writing-mode/percentage-padding.html
-fast/xmlhttprequest/xmlhttprequest-missing-file-exception.html
 fast/xmlhttprequest/xmlhttprequest-responseXML-invalid-xml.html
 fast/xmlhttprequest/xmlhttprequest-responseXML-xml-text-responsetype.html
 fast/xpath/nodeset-duplicates.html
@@ -815,6 +812,7 @@ http/tests/htmlimports/csp-not-block-import-in-import.html
 http/tests/linkHeader/link-header-no-crash-space-invalid.php
 http/tests/loading/remove-child-triggers-parser.html
 http/tests/local/formdata/send-form-data-with-null-string.html
+http/tests/mojo/shared-buffer.html
 http/tests/plugins/navigator-plugins-in-cross-origin-frame.html
 http/tests/pointer-lock/iframe-sandboxed.html
 http/tests/preload/avoid_delaying_onload_link_preload.html
@@ -843,10 +841,8 @@ images/text-content-crash.html
 media/video-error-does-not-exist.html
 media/W3C/video/preload/preload_reflects_none.html
 mhtml/mhtml_in_iframe.html
-mojo/shared-buffer.html
 navigator_language/navigator_language.html
 netinfo/type-change-no-listener.html
-nfc/idl-NavigatorNFC.html
 paint/float/float-text-clip.html
 paint/invalidation/button-inner-no-repaint.html
 paint/invalidation/compositing/should-not-repaint-composited-opacity.html
@@ -878,8 +874,6 @@ scrollbars/scrollbar-scrollbarparts-repaint-crash.html
 scrollbars/scrollbar-visibility-hidden.html
 security/lazy-event-listener.html
 security/set-form-autocomplete-attribute.html
-sensor/idl-AbsoluteOrientationSensor.html
-sensor/idl-Magnetometer.html
 shadow-dom/crashes/slots-nested-in-document-tree-crash.html
 shadow-dom/css-cascade-outer-scope2.html
 shadow-dom/slotted-pseudo-element-in-v0-tree-crash.html
@@ -971,9 +965,6 @@ vibration/vibration-page-visibility.html
 virtual/gpu/fast/canvas/canvas-filter-frameless-document.html
 virtual/gpu/fast/canvas/feimage-with-foreignobject-taint-canvas-2.html
 virtual/gpu-rasterization/images/drag-image-descendant-painting-sibling.html
-virtual/layout_ng/fast/block/float/floats-not-cleared-crash.html
-virtual/layout_ng/fast/block/float/positioned-float-crash.html
-virtual/layout_ng/fast/block/margin-collapse/019.html
 
 # Include //media/OWNERS on review of changes to media-gpu-accelerated SmokeTests coverage.
 virtual/media-gpu-accelerated/media/video-autoplay.html
@@ -997,10 +988,8 @@ virtual/stable/http/tests/navigation/replacestate-base-legal.html
 virtual/stable/http/tests/navigation/useragent.php
 virtual/stable/web-animations-api/additive-animations-unsupported.html
 virtual/stable/webexposed/internal-properties-should-not-be-exposed.html
-virtual/threaded/animations/stability/pseudo-element-animation-with-marker-crash.html
+virtual/threaded-no-composited-antialiasing/animations/stability/pseudo-element-animation-with-marker-crash.html
 virtual/threaded/printing/page-and-element-geometry-match.html
-wake_lock/wakelock-api.html
-wake_lock/wakelock-in-nested-frame.html
 webaudio/AudioParam/audioparam-setValueCurve-duration.html
 webaudio/codec-tests/flac/flac-decode.html
 webaudio/codec-tests/vorbis/vbr-128kbps-44khz.html

@@ -42,9 +42,7 @@ class Document;
 class HTMLLinkElement;
 class LocalFrame;
 
-class CORE_EXPORT LinkResource
-    : public GarbageCollectedFinalized<LinkResource> {
-
+class CORE_EXPORT LinkResource : public GarbageCollected<LinkResource> {
  public:
   enum LinkResourceType { kStyle, kImport, kManifest, kOther };
 

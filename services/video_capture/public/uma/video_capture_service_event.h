@@ -6,6 +6,7 @@
 #define SERVICES_VIDEO_CAPTURE_VIDEO_CAPTURE_SERVICE_EVENT_H_
 
 #include "base/time/time.h"
+#include "build/build_config.h"
 
 namespace video_capture {
 namespace uma {
@@ -28,6 +29,28 @@ enum VideoCaptureServiceEvent {
   NUM_VIDEO_CAPTURE_SERVICE_EVENT
 };
 
+#if defined(OS_MACOSX)
+enum MacbookRetryGetDeviceInfosEvent {
+  PROVIDER_RECEIVED_ZERO_INFOS_STOPPING_SERVICE = 0,
+  PROVIDER_SERVICE_STOPPED_ISSUING_RETRY = 1,
+  PROVIDER_RECEIVED_ZERO_INFOS_FROM_RETRY_GIVING_UP = 2,
+  PROVIDER_RECEIVED_NONZERO_INFOS_FROM_RETRY = 3,
+  PROVIDER_NOT_ATTEMPTING_RETRY_BECAUSE_ALREADY_PENDING = 4,
+  AVF_RECEIVED_ZERO_INFOS_FIRST_TRY_FIRST_ATTEMPT = 5,
+  AVF_RECEIVED_NONZERO_INFOS_FIRST_TRY_FIRST_ATTEMPT = 6,
+  AVF_RECEIVED_ZERO_INFOS_FIRST_TRY_NONFIRST_ATTEMPT = 7,
+  AVF_RECEIVED_NONZERO_INFOS_FIRST_TRY_NONFIRST_ATTEMPT = 8,
+  AVF_RECEIVED_ZERO_INFOS_RETRY = 9,
+  AVF_RECEIVED_NONZERO_INFOS_RETRY = 10,
+  AVF_DEVICE_COUNT_CHANGED_FROM_ZERO_TO_POSITIVE = 11,
+  AVF_DEVICE_COUNT_CHANGED_FROM_POSITIVE_TO_ZERO = 12,
+  AVF_DROPPED_DESCRIPTORS_AT_FACTORY = 13,
+  SERVICE_DROPPED_DEVICE_INFOS_REQUEST_ON_FIRST_TRY = 14,
+  SERVICE_DROPPED_DEVICE_INFOS_REQUEST_ON_RETRY = 15,
+  NUM_RETRY_GET_DEVICE_INFOS_EVENT
+};
+#endif
+
 void LogVideoCaptureServiceEvent(VideoCaptureServiceEvent event);
 
 void LogDurationFromLastConnectToClosingConnectionAfterEnumerationOnly(
@@ -37,6 +60,10 @@ void LogDurationFromLastConnectToClosingConnectionAfterCapture(
 void LogDurationFromLastConnectToConnectionLost(base::TimeDelta duration);
 void LogDurationUntilReconnectAfterEnumerationOnly(base::TimeDelta duration);
 void LogDurationUntilReconnectAfterCapture(base::TimeDelta duration);
+
+#if defined(OS_MACOSX)
+void LogMacbookRetryGetDeviceInfosEvent(MacbookRetryGetDeviceInfosEvent event);
+#endif
 
 }  // namespace uma
 }  // namespace video_capture

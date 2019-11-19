@@ -1,2 +1,6 @@
 <script src="common.js"></script>
-<script src="../../resources/dummy.js" defer onload="reportPriority(this.src)" onerror="reportFailure()"></script>
+<script>
+  observeAndReportResourceLoadPriority(new URL('../../resources/dummy.js', location));
+</script>
+
+<script src="../../resources/dummy.js" defer onload="reportLoaded()" onerror="reportFailure()"></script>

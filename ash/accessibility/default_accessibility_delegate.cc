@@ -6,7 +6,7 @@
 
 #include <limits>
 
-#include "ash/accessibility/accessibility_controller.h"
+#include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/shell.h"
 
 namespace ash {
@@ -24,7 +24,7 @@ bool DefaultAccessibilityDelegate::IsMagnifierEnabled() const {
 }
 
 bool DefaultAccessibilityDelegate::ShouldShowAccessibilityMenu() const {
-  AccessibilityController* controller =
+  AccessibilityControllerImpl* controller =
       Shell::Get()->accessibility_controller();
   return controller->spoken_feedback_enabled() || screen_magnifier_enabled_ ||
          controller->autoclick_enabled() ||

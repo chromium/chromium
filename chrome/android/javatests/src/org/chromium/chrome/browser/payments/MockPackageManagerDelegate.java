@@ -13,7 +13,8 @@ import android.content.pm.ServiceInfo;
 import android.content.pm.Signature;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
+
+import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
 import java.util.HashMap;

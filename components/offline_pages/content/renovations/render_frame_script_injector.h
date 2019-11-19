@@ -22,14 +22,14 @@ class RenderFrameScriptInjector : public ScriptInjector {
   // The |render_frame_host| is expected to outlive this
   // RenderFrameScriptInjector instance.
   RenderFrameScriptInjector(content::RenderFrameHost* render_frame_host,
-                            int isolated_world_id);
+                            int32_t isolated_world_id);
 
   // ScriptInjector implementation.
   void Inject(base::string16 script, ResultCallback callback) override;
 
  private:
   content::RenderFrameHost* render_frame_host_;
-  int isolated_world_id_;
+  int32_t isolated_world_id_;
 };
 
 }  // namespace offline_pages

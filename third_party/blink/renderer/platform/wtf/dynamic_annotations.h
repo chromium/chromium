@@ -48,39 +48,16 @@
  * See http://code.google.com/p/data-race-test/wiki/DynamicAnnotations for more
  * information.
  */
+#include <cstddef>
 
 #include "third_party/blink/renderer/platform/wtf/wtf_export.h"
 
-#if defined(WTF_USE_DYNAMIC_ANNOTATIONS)
+#if defined(DYNAMIC_ANNOTATIONS_ENABLED)
 /* Tell data race detector that we're not interested in reports on the given
  * address range. */
-#define WTF_ANNOTATE_BENIGN_RACE_SIZED(address, size, description) \
-  WTFAnnotateBenignRaceSized(__FILE__, __LINE__, address, size, description)
 #define WTF_ANNOTATE_BENIGN_RACE(pointer, description)                        \
   WTFAnnotateBenignRaceSized(__FILE__, __LINE__, pointer, sizeof(*(pointer)), \
                              description)
-
-/* Annotations for user-defined synchronization mechanisms.
- * These annotations can be used to define happens-before arcs in user-defined
- * synchronization mechanisms: the race detector will infer an arc from
- * the former to the latter when they share the same argument pointer.
- *
- * The most common case requiring annotations is atomic reference counting:
- * bool deref() {
- *     ANNOTATE_HAPPENS_BEFORE(&ref_count_);
- *     if (!atomicDecrement(&ref_count_)) {
- *         // ref_count_ is now 0
- *         ANNOTATE_HAPPENS_AFTER(&ref_count_);
- *         // "return true; happens-after each atomicDecrement of ref_count_"
- *         return true;
- *     }
- *     return false;
- * }
- */
-#define WTF_ANNOTATE_HAPPENS_BEFORE(address) \
-  WTFAnnotateHappensBefore(__FILE__, __LINE__, address)
-#define WTF_ANNOTATE_HAPPENS_AFTER(address) \
-  WTFAnnotateHappensAfter(__FILE__, __LINE__, address)
 
 #ifdef __cplusplus
 extern "C" {
@@ -89,25 +66,16 @@ extern "C" {
 WTF_EXPORT void WTFAnnotateBenignRaceSized(const char* file,
                                            int line,
                                            const volatile void* memory,
-                                           long size,
+                                           size_t size,
                                            const char* description);
-WTF_EXPORT void WTFAnnotateHappensBefore(const char* file,
-                                         int line,
-                                         const volatile void* address);
-WTF_EXPORT void WTFAnnotateHappensAfter(const char* file,
-                                        int line,
-                                        const volatile void* address);
 #ifdef __cplusplus
 }  // extern "C"
 #endif
 
-#else  // defined(WTF_USE_DYNAMIC_ANNOTATIONS)
+#else  // defined(DYNAMIC_ANNOTATIONS_ENABLED)
 /* These macros are empty when dynamic annotations are not enabled so you can
  * use them without affecting the performance of release binaries. */
-#define WTF_ANNOTATE_BENIGN_RACE_SIZED(address, size, description)
 #define WTF_ANNOTATE_BENIGN_RACE(pointer, description)
-#define WTF_ANNOTATE_HAPPENS_BEFORE(address)
-#define WTF_ANNOTATE_HAPPENS_AFTER(address)
-#endif  // defined(WTF_USE_DYNAMIC_ANNOTATIONS)
+#endif  // defined(DYNAMIC_ANNOTATIONS_ENABLED)
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_DYNAMIC_ANNOTATIONS_H_

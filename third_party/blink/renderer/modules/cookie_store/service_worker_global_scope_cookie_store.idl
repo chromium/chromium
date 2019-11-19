@@ -5,7 +5,7 @@
 // https://github.com/WICG/async-cookies-api/blob/gh-pages/explainer.md
 
 [
-    OriginTrialEnabled=CookieStore,
+    RuntimeEnabled=CookieStore,
     ImplementedAs=ServiceWorkerGlobalScopeCookieStore
 ] partial interface ServiceWorkerGlobalScope {
   [Replaceable, SameObject] readonly attribute CookieStore cookieStore;

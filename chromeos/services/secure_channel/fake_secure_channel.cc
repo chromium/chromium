@@ -19,8 +19,8 @@ void FakeSecureChannel::ListenForConnectionFromDevice(
     const multidevice::RemoteDevice& local_device,
     const std::string& feature,
     ConnectionPriority connection_priority,
-    mojom::ConnectionDelegatePtr delegate) {
-  delegate_from_last_listen_call_ = std::move(delegate);
+    mojo::PendingRemote<mojom::ConnectionDelegate> delegate) {
+  delegate_from_last_listen_call_.Bind(std::move(delegate));
 }
 
 void FakeSecureChannel::InitiateConnectionToDevice(
@@ -28,8 +28,8 @@ void FakeSecureChannel::InitiateConnectionToDevice(
     const multidevice::RemoteDevice& local_device,
     const std::string& feature,
     ConnectionPriority connection_priority,
-    mojom::ConnectionDelegatePtr delegate) {
-  delegate_from_last_initiate_call_ = std::move(delegate);
+    mojo::PendingRemote<mojom::ConnectionDelegate> delegate) {
+  delegate_from_last_initiate_call_.Bind(std::move(delegate));
 }
 
 }  // namespace secure_channel

@@ -1,0 +1,6 @@
+Tests invalid timezone override handling.
+{
+    code : -32602
+    message : Invalid timezone id
+}
+

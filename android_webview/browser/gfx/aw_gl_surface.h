@@ -31,10 +31,14 @@ class AwGLSurface : public gl::GLSurface {
               ColorSpace color_space,
               bool has_alpha) override;
 
+  void SetSize(const gfx::Size& size);
+  void MaybeDidPresent(gfx::PresentationFeedback feedback);
+
  protected:
   ~AwGLSurface() override;
 
  private:
+  PresentationCallback pending_presentation_callback_;
   gfx::Size size_;
   DISALLOW_COPY_AND_ASSIGN(AwGLSurface);
 };

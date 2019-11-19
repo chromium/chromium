@@ -16,9 +16,12 @@ AXWebArea
 ++++AXGroup
 ++++++AXStaticText AXValue='File: '
 ++++++AXButton AXTitle='File:'
+++++++++AXButton AXTitle='Choose File'
 ++++AXGroup
 ++++++AXStaticText AXValue='Image: '
 ++++++AXButton AXTitle='Image:'
+++++++++AXImage
+++++++++AXStaticText AXValue='Submit'
 ++++AXGroup
 ++++++AXStaticText AXValue='Number: '
 ++++++AXIncrementor AXTitle='Number:'

@@ -71,7 +71,10 @@ def main(argv):
         return argument_parser.exit_status
 
     args = runner.args
-    args.top_level_dir = path_finder.get_bindings_scripts_dir()
+    args.top_level_dirs = [
+        path_finder.get_bindings_scripts_dir(),
+        path_finder.get_build_scripts_dir(),
+    ]
     if not args.skip_unit_tests:
         return_code, _, _ = runner.run()
         if return_code != 0:

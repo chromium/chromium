@@ -6,7 +6,7 @@ Message: console-log-before-frame-navigation.html:8 Message received
 Message: console-log-frame-after-navigation.html:4 Cross-process frame loaded
 Message: console-log-frame-after-navigation.html:5 Sending message to parent
 Message: console-log-frame-before-navigation.html:4 Frame loaded
-Message: console-log-frame-before-navigation.html:5 Console message (C) %d with element
+Message: console-log-frame-before-navigation.html:5 Console message (C) %d with element 2010 [object HTMLHtmlElement]
 Message: console-log-frame-before-navigation.html:8 Navigating frame cross-process
 TEST COMPLETE.
 

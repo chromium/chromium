@@ -3,7 +3,6 @@
 <body>
 <script src="../resources/testharness.js"></script>
 <script src="../resources/testharnessreport.js"></script>
-<script src="../resources/run-after-layout-and-paint.js"></script>
 
 <div id="container">
   <div>
@@ -42,7 +41,7 @@
 </div>
 
 <script>
-async_test_after_layout_and_paint((t) => {
+async_test((t) => {
     function hasTitleUIElement(axElement) {
         var label1 = accessibilityController.accessibleElementById("label1");
         var titleUIElement = axElement.nameElementAtIndex(0);

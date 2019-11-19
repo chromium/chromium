@@ -44,15 +44,7 @@ RendererWebMediaPlayerDelegate::RendererWebMediaPlayerDelegate(
   idle_cleanup_interval_ = base::TimeDelta::FromSeconds(5);
   idle_timeout_ = base::TimeDelta::FromSeconds(15);
 
-  is_jelly_bean_ = false;
-
-#if defined(OS_ANDROID)
-  // On Android, due to the instability of the OS level media components, we
-  // consider all pre-KitKat devices to be potentially buggy.
-  is_jelly_bean_ |= base::android::BuildInfo::GetInstance()->sdk_int() <=
-                    base::android::SDK_VERSION_JELLY_BEAN_MR2;
-#endif
-
+  is_low_end_ = base::SysInfo::IsLowEndDevice();
   idle_cleanup_timer_.SetTaskRunner(
       render_frame->GetTaskRunner(blink::TaskType::kInternalMedia));
 }
@@ -117,6 +109,13 @@ void RendererWebMediaPlayerDelegate::DidPlayerMutedStatusChange(int delegate_id,
                                                                 bool muted) {
   Send(new MediaPlayerDelegateHostMsg_OnMutedStatusChanged(routing_id(),
                                                            delegate_id, muted));
+}
+
+void RendererWebMediaPlayerDelegate::DidPlayerMediaPositionStateChange(
+    int delegate_id,
+    const media_session::MediaPosition& position) {
+  Send(new MediaPlayerDelegateHostMsg_OnMediaPositionStateChanged(
+      routing_id(), delegate_id, position));
 }
 
 void RendererWebMediaPlayerDelegate::DidPause(int player_id) {
@@ -238,8 +237,6 @@ bool RendererWebMediaPlayerDelegate::OnMessageReceived(
                         OnMediaDelegateVolumeMultiplierUpdate)
     IPC_MESSAGE_HANDLER(MediaPlayerDelegateMsg_BecamePersistentVideo,
                         OnMediaDelegateBecamePersistentVideo)
-    IPC_MESSAGE_HANDLER(MediaPlayerDelegateMsg_EndPictureInPictureMode,
-                        OnPictureInPictureModeEnded)
     IPC_MESSAGE_UNHANDLED(return false)
   IPC_END_MESSAGE_MAP()
   return true;
@@ -249,11 +246,11 @@ void RendererWebMediaPlayerDelegate::SetIdleCleanupParamsForTesting(
     base::TimeDelta idle_timeout,
     base::TimeDelta idle_cleanup_interval,
     const base::TickClock* tick_clock,
-    bool is_jelly_bean) {
+    bool is_low_end) {
   idle_cleanup_interval_ = idle_cleanup_interval;
   idle_timeout_ = idle_timeout;
   tick_clock_ = tick_clock;
-  is_jelly_bean_ = is_jelly_bean;
+  is_low_end_ = is_low_end;
 }
 
 bool RendererWebMediaPlayerDelegate::IsIdleCleanupTimerRunningForTesting()
@@ -270,17 +267,21 @@ void RendererWebMediaPlayerDelegate::SetFrameHiddenForTesting(bool is_hidden) {
   ScheduleUpdateTask();
 }
 
-void RendererWebMediaPlayerDelegate::OnMediaDelegatePause(int player_id) {
+void RendererWebMediaPlayerDelegate::OnMediaDelegatePause(
+    int player_id,
+    bool triggered_by_user) {
   RecordAction(base::UserMetricsAction("Media.Controls.RemotePause"));
 
   Observer* observer = id_map_.Lookup(player_id);
   if (observer) {
-    // TODO(avayvod): remove when default play/pause is handled via
-    // the MediaSession code path.
-    std::unique_ptr<blink::WebScopedUserGesture> gesture(
-        render_frame()
-            ? new blink::WebScopedUserGesture(render_frame()->GetWebFrame())
-            : nullptr);
+    if (triggered_by_user) {
+      // TODO(avayvod): remove when default play/pause is handled via
+      // the MediaSession code path.
+      std::unique_ptr<blink::WebScopedUserGesture> gesture(
+          render_frame()
+              ? new blink::WebScopedUserGesture(render_frame()->GetWebFrame())
+              : nullptr);
+    }
     observer->OnPause();
   }
 }
@@ -351,13 +352,6 @@ void RendererWebMediaPlayerDelegate::OnMediaDelegateBecamePersistentVideo(
     observer->OnBecamePersistentVideo(value);
 }
 
-void RendererWebMediaPlayerDelegate::OnPictureInPictureModeEnded(
-    int player_id) {
-  Observer* observer = id_map_.Lookup(player_id);
-  if (observer)
-    observer->OnPictureInPictureModeEnded();
-}
-
 void RendererWebMediaPlayerDelegate::ScheduleUpdateTask() {
   if (!pending_update_task_) {
     base::ThreadTaskRunnerHandle::Get()->PostTask(
@@ -389,12 +383,12 @@ void RendererWebMediaPlayerDelegate::UpdateTask() {
   // When we reach the maximum number of idle players, clean them up
   // aggressively. Values chosen after testing on a Galaxy Nexus device for
   // http://crbug.com/612909.
-  if (idle_player_map_.size() > (is_jelly_bean_ ? 2u : 8u))
+  if (idle_player_map_.size() > (is_low_end_ ? 2u : 8u))
     aggressive_cleanup = true;
 
   // When a player plays on a buggy old device, clean up idle players
   // aggressively.
-  if (has_played_video_since_last_update_task && is_jelly_bean_)
+  if (has_played_video_since_last_update_task && is_low_end_)
     aggressive_cleanup = true;
 
   CleanUpIdlePlayers(aggressive_cleanup ? base::TimeDelta() : idle_timeout_);

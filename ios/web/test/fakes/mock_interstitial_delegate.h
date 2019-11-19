@@ -5,7 +5,7 @@
 #ifndef IOS_WEB_TEST_FAKES_MOCK_INTERSTITIAL_DELEGATE_H_
 #define IOS_WEB_TEST_FAKES_MOCK_INTERSTITIAL_DELEGATE_H_
 
-#import "ios/web/public/interstitials/web_interstitial_delegate.h"
+#import "ios/web/public/security/web_interstitial_delegate.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 // A mock html web interstitial delegate.

@@ -14,7 +14,8 @@
 #include "components/autofill/core/common/form_data.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_view.h"
-#include "mojo/public/cpp/bindings/associated_binding_set.h"
+#include "mojo/public/cpp/bindings/associated_receiver_set.h"
+#include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/web/web_document.h"
@@ -30,6 +31,8 @@ using blink::WebString;
 
 namespace autofill {
 
+using mojom::SubmissionSource;
+
 namespace {
 
 class FakeContentAutofillDriver : public mojom::AutofillDriver {
@@ -38,8 +41,9 @@ class FakeContentAutofillDriver : public mojom::AutofillDriver {
 
   ~FakeContentAutofillDriver() override {}
 
-  void BindRequest(mojom::AutofillDriverAssociatedRequest request) {
-    bindings_.AddBinding(this, std::move(request));
+  void BindReceiver(
+      mojo::PendingAssociatedReceiver<mojom::AutofillDriver> receiver) {
+    receivers_.Add(this, std::move(receiver));
   }
 
   bool did_unfocus_form() const { return did_unfocus_form_; }
@@ -120,7 +124,7 @@ class FakeContentAutofillDriver : public mojom::AutofillDriver {
 
   std::unique_ptr<FormFieldData> select_control_changed_;
 
-  mojo::AssociatedBindingSet<mojom::AutofillDriver> bindings_;
+  mojo::AssociatedReceiverSet<mojom::AutofillDriver> receivers_;
 };
 
 // Helper function to verify the form-related messages received from the
@@ -184,7 +188,7 @@ void SimulateOnFillForm(autofill::AutofillAgent* autofill_agent,
 
   FormData data;
   data.name = base::ASCIIToUTF16("name");
-  data.origin = GURL("http://example.com/");
+  data.url = GURL("http://example.com/");
   data.action = GURL("http://example.com/blade.php");
   data.is_form_tag = true;  // Default value.
 
@@ -224,8 +228,9 @@ class FormAutocompleteTest : public ChromeRenderViewTest {
   }
 
   void BindAutofillDriver(mojo::ScopedInterfaceEndpointHandle handle) {
-    fake_driver_.BindRequest(
-        mojom::AutofillDriverAssociatedRequest(std::move(handle)));
+    fake_driver_.BindReceiver(
+        mojo::PendingAssociatedReceiver<mojom::AutofillDriver>(
+            std::move(handle)));
   }
 
   void SimulateUserInput(const blink::WebString& id, const std::string& value) {
@@ -352,7 +357,7 @@ TEST_F(FormAutocompleteTest,
 // compare field data within the forms.
 // TODO(kolos) Re-enable when the implementation of IsFormVisible is on-par
 // for these platforms.
-#if defined(OS_MACOSX) || defined(OS_ANDROID)
+#if defined(OS_MACOSX)
 #define MAYBE_NoLongerVisibleBothNoActions DISABLED_NoLongerVisibleBothNoActions
 #else
 #define MAYBE_NoLongerVisibleBothNoActions NoLongerVisibleBothNoActions

@@ -34,9 +34,8 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/active_style_sheets.h"
 #include "third_party/blink/renderer/platform/bindings/name_client.h"
-#include "third_party/blink/renderer/platform/bindings/trace_wrapper_member.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
@@ -50,17 +49,13 @@ class CORE_EXPORT StyleSheetCollection
   friend class ActiveDocumentStyleSheetCollector;
   friend class ImportedDocumentStyleSheetCollector;
 
-  static StyleSheetCollection* Create() {
-    return MakeGarbageCollected<StyleSheetCollection>();
-  }
-
   StyleSheetCollection();
+  virtual ~StyleSheetCollection() = default;
 
   const ActiveStyleSheetVector& ActiveAuthorStyleSheets() const {
     return active_author_style_sheets_;
   }
-  const HeapVector<TraceWrapperMember<StyleSheet>>&
-  StyleSheetsForStyleSheetList() const {
+  const HeapVector<Member<StyleSheet>>& StyleSheetsForStyleSheetList() const {
     return style_sheets_for_style_sheet_list_;
   }
 
@@ -78,7 +73,7 @@ class CORE_EXPORT StyleSheetCollection
   void Dispose();
 
  protected:
-  HeapVector<TraceWrapperMember<StyleSheet>> style_sheets_for_style_sheet_list_;
+  HeapVector<Member<StyleSheet>> style_sheets_for_style_sheet_list_;
   ActiveStyleSheetVector active_author_style_sheets_;
   bool sheet_list_dirty_ = true;
 

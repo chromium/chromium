@@ -13,6 +13,7 @@
 #include "base/command_line.h"
 #include "base/path_service.h"
 #include "base/task/post_task.h"
+#include "build/branding_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/policy/configuration_policy_handler_list_factory.h"
 #include "chrome/browser/policy/device_management_service_configuration.h"
@@ -47,7 +48,7 @@
 #endif
 
 #if !defined(OS_ANDROID) && !defined(OS_CHROMEOS)
-#include "chrome/browser/policy/machine_level_user_cloud_policy_controller.h"
+#include "chrome/browser/policy/chrome_browser_cloud_management_controller.h"
 #include "components/policy/core/common/cloud/machine_level_user_cloud_policy_manager.h"
 #endif
 
@@ -81,8 +82,8 @@ bool ProviderHasPolicies(const ConfigurationPolicyProvider* provider) {
 ChromeBrowserPolicyConnector::ChromeBrowserPolicyConnector()
     : BrowserPolicyConnector(base::Bind(&BuildHandlerList)) {
 #if !defined(OS_ANDROID) && !defined(OS_CHROMEOS)
-  machine_level_user_cloud_policy_controller_ =
-      std::make_unique<MachineLevelUserCloudPolicyController>();
+  chrome_browser_cloud_management_controller_ =
+      std::make_unique<ChromeBrowserCloudManagementController>();
 #endif
 }
 
@@ -97,18 +98,14 @@ void ChromeBrowserPolicyConnector::Init(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
   std::unique_ptr<DeviceManagementService::Configuration> configuration(
       new DeviceManagementServiceConfiguration(
-          BrowserPolicyConnector::GetDeviceManagementUrl()));
+          BrowserPolicyConnector::GetDeviceManagementUrl(),
+          BrowserPolicyConnector::GetRealtimeReportingUrl()));
   std::unique_ptr<DeviceManagementService> device_management_service(
       new DeviceManagementService(std::move(configuration)));
   device_management_service->ScheduleInitialization(
       kServiceInitializationStartupDelay);
 
   InitInternal(local_state, std::move(device_management_service));
-
-#if !defined(OS_ANDROID) && !defined(OS_CHROMEOS)
-  machine_level_user_cloud_policy_controller_->Init(local_state,
-                                                    url_loader_factory);
-#endif
 }
 
 bool ChromeBrowserPolicyConnector::IsEnterpriseManaged() const {
@@ -130,7 +127,7 @@ void ChromeBrowserPolicyConnector::Shutdown() {
 #if !defined(OS_ANDROID) && !defined(OS_CHROMEOS)
   // Reset the controller before calling base class so that
   // shutdown occurs in correct sequence.
-  machine_level_user_cloud_policy_controller_.reset();
+  chrome_browser_cloud_management_controller_.reset();
 #endif
 
   BrowserPolicyConnector::Shutdown();
@@ -158,7 +155,8 @@ ChromeBrowserPolicyConnector::CreatePolicyProviders() {
 #if !defined(OS_ANDROID) && !defined(OS_CHROMEOS)
   std::unique_ptr<MachineLevelUserCloudPolicyManager>
       machine_level_user_cloud_policy_manager =
-          MachineLevelUserCloudPolicyController::CreatePolicyManager();
+          ChromeBrowserCloudManagementController::CreatePolicyManager(
+              platform_provider_);
   if (machine_level_user_cloud_policy_manager) {
     AddMigrators(machine_level_user_cloud_policy_manager.get());
     machine_level_user_cloud_policy_manager_ =
@@ -174,13 +172,13 @@ std::unique_ptr<ConfigurationPolicyProvider>
 ChromeBrowserPolicyConnector::CreatePlatformProvider() {
 #if defined(OS_WIN)
   std::unique_ptr<AsyncPolicyLoader> loader(PolicyLoaderWin::Create(
-      base::CreateSequencedTaskRunnerWithTraits(
-          {base::MayBlock(), base::TaskPriority::BEST_EFFORT}),
+      base::CreateSequencedTaskRunner({base::ThreadPool(), base::MayBlock(),
+                                       base::TaskPriority::BEST_EFFORT}),
       kRegistryChromePolicyKey));
   return std::make_unique<AsyncPolicyProvider>(GetSchemaRegistry(),
                                                std::move(loader));
 #elif defined(OS_MACOSX)
-#if defined(GOOGLE_CHROME_BUILD)
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   // Explicitly watch the "com.google.Chrome" bundle ID, no matter what this
   // app's bundle ID actually is. All channels of Chrome should obey the same
   // policies.
@@ -190,8 +188,8 @@ ChromeBrowserPolicyConnector::CreatePlatformProvider() {
       base::SysUTF8ToCFStringRef(base::mac::BaseBundleID()));
 #endif
   auto loader = std::make_unique<PolicyLoaderMac>(
-      base::CreateSequencedTaskRunnerWithTraits(
-          {base::MayBlock(), base::TaskPriority::BEST_EFFORT}),
+      base::CreateSequencedTaskRunner({base::ThreadPool(), base::MayBlock(),
+                                       base::TaskPriority::BEST_EFFORT}),
       policy::PolicyLoaderMac::GetManagedPolicyPath(bundle_id),
       new MacPreferences(), bundle_id);
   return std::make_unique<AsyncPolicyProvider>(GetSchemaRegistry(),
@@ -200,8 +198,8 @@ ChromeBrowserPolicyConnector::CreatePlatformProvider() {
   base::FilePath config_dir_path;
   if (base::PathService::Get(chrome::DIR_POLICY_FILES, &config_dir_path)) {
     std::unique_ptr<AsyncPolicyLoader> loader(new ConfigDirPolicyLoader(
-        base::CreateSequencedTaskRunnerWithTraits(
-            {base::MayBlock(), base::TaskPriority::BEST_EFFORT}),
+        base::CreateSequencedTaskRunner({base::ThreadPool(), base::MayBlock(),
+                                         base::TaskPriority::BEST_EFFORT}),
         config_dir_path, POLICY_SCOPE_MACHINE));
     return std::make_unique<AsyncPolicyProvider>(GetSchemaRegistry(),
                                                  std::move(loader));

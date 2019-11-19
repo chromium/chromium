@@ -7,8 +7,9 @@
 namespace media {
 
 AudioSinkParameters::AudioSinkParameters() = default;
-AudioSinkParameters::AudioSinkParameters(int session_id,
-                                         const std::string& device_id)
+AudioSinkParameters::AudioSinkParameters(
+    const base::UnguessableToken& session_id,
+    const std::string& device_id)
     : session_id(session_id), device_id(device_id) {}
 AudioSinkParameters::AudioSinkParameters(const AudioSinkParameters& params) =
     default;

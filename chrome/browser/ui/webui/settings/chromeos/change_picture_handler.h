@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_WEBUI_SETTINGS_CHROMEOS_CHANGE_PICTURE_HANDLER_H_
 
 #include "base/macros.h"
+#include "base/memory/weak_ptr.h"
 #include "base/scoped_observer.h"
 #include "chrome/browser/chromeos/camera_presence_notifier.h"
 #include "chrome/browser/image_decoder.h"
@@ -60,11 +61,14 @@ class ChangePictureHandler : public ::settings::SettingsPageUIHandler,
   // if any, on the page. Shouldn't be called before |SendProfileImage|.
   void UpdateProfileImage();
 
+  // Sends the previous user image to the page.
+  void SendOldImage(std::string&& image_url);
+
   // Sends the previous user image to the page. Also sends |image_index| which
   // is either the index of the previous user image (if it was from an older
   // default image set) or -1 otherwise. This allows the WebUI to show credits
   // for older default images.
-  void SendOldImage(const std::string& image_url, int image_index);
+  void SendOldImageWithIndex(std::string&& image_url, int image_index);
 
   // Starts camera presence check.
   void CheckCameraPresence();
@@ -135,9 +139,12 @@ class ChangePictureHandler : public ::settings::SettingsPageUIHandler,
   // Data for |user_photo_|.
   scoped_refptr<base::RefCountedBytes> user_photo_data_;
 
-  ScopedObserver<user_manager::UserManager, ChangePictureHandler>
-      user_manager_observer_;
-  ScopedObserver<CameraPresenceNotifier, ChangePictureHandler> camera_observer_;
+  ScopedObserver<user_manager::UserManager, user_manager::UserManager::Observer>
+      user_manager_observer_{this};
+  ScopedObserver<CameraPresenceNotifier, CameraPresenceNotifier::Observer>
+      camera_observer_{this};
+
+  base::WeakPtrFactory<ChangePictureHandler> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ChangePictureHandler);
 };

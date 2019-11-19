@@ -1,0 +1,49 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module media.mojom;
+
+import "media/mojo/mojom/media_types.mojom";
+import "mojo/public/mojom/base/time.mojom";
+import "mojo/public/mojom/base/unguessable_token.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
+
+// Extension of the mojo::RendererClient communication layer for HLS and Android
+// software rendering fallback paths.
+// This allows the Browser side to call
+// back into the Renderer side. Concretely, the MediaPlayerRenderer uses these
+// methods to propagate events it raises to the MediaPlayerRendererClient, which
+// lives in the Renderer process.
+interface MediaPlayerRendererClientExtension {
+  // Called when the first time the metadata is updated, and whenever the
+  // metadata changes.
+  OnVideoSizeChange(gfx.mojom.Size size);
+  OnDurationChange(mojo_base.mojom.TimeDelta duration);
+};
+
+// Extension of the mojo::RendererClient communication layer for HLS and Android
+// software rendering fallback paths.
+// This allows the Renderer side to call into the Browser side.
+// Concretely, the MediaPlayerRendererClient uses these methods to send commands
+// to MediaPlayerRenderer, which lives in the Browser process.
+interface MediaPlayerRendererExtension {
+  // Registers a new request in the ScopedSurfaceRequestManager, and returns
+  // its token.
+  // Called once, during media::Renderer initialization, as part of
+  // StreamTexture's set-up.
+  InitiateScopedSurfaceRequest()
+      => (mojo_base.mojom.UnguessableToken request_token);
+};
+
+// Extension of the mojo::RendererClient communication layer for media flinging,
+// a.k.a RemotePlayback, when playing media on a remote Cast device.
+// This allows the Browser side to call back into the Renderer side.
+// Concretely, the FlingingRenderer uses these methods to propagate events it
+// raises to the FlingingRendererClient, which lives in the Renderer process.
+interface FlingingRendererClientExtension {
+  // Called when the play state of a casted device goes out of sync with WMPI's
+  // play state (e.g. when another phone play/pauses a cast device on the same
+  // network).
+  OnRemotePlayStateChange(MediaStatusState state);
+};

@@ -18,9 +18,8 @@ class FakeBotTestExpectations(object):
 
 
 class FakeBotTestExpectationsFactory(object):
-    FAILURE_MAP = {'A': 'AUDIO', 'C': 'CRASH', 'F': 'TEXT', 'I': 'IMAGE', 'O': 'MISSING',
-                   'N': 'NO DATA', 'P': 'PASS', 'T': 'TIMEOUT', 'Y': 'NOTRUN', 'X': 'SKIP',
-                   'Z': 'IMAGE+TEXT', 'K': 'LEAK'}
+    FAILURE_MAP = {'C': 'CRASH', 'F': 'FAIL', 'N': 'NO DATA', 'P': 'PASS', 'T': 'TIMEOUT',
+                   'Y': 'NOTRUN', 'X': 'SKIP', 'K': 'LEAK'}
 
     def __init__(self, builders):
         self.builders = builders
@@ -67,7 +66,7 @@ class FlakyTestsTest(CommandsTest):
 
         lines = command._collect_expectation_lines(['foo-builder', 'bar-builder'], factory)
         self.assertEqual(len(lines), 1)
-        self.assertEqual(lines[0].expectations, ['TEXT', 'TIMEOUT', 'PASS'])
+        self.assertEqual(lines[0].expectations, ['FAIL', 'TIMEOUT', 'PASS'])
         self.assertEqual(lines[0].specifiers, ['Mac', 'Linux'])
 
     def test_integration(self):

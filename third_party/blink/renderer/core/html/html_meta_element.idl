@@ -18,8 +18,10 @@
  */
 
 // https://html.spec.whatwg.org/C/#the-meta-element
-[HTMLConstructor]
-interface HTMLMetaElement : HTMLElement {
+[
+    Exposed=Window,
+    HTMLConstructor
+] interface HTMLMetaElement : HTMLElement {
     [CEReactions, Reflect] attribute DOMString name;
     [CEReactions, Reflect=http_equiv] attribute DOMString httpEquiv;
     [CEReactions, Reflect] attribute DOMString content;

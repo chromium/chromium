@@ -61,9 +61,6 @@ class CC_EXPORT RasterBufferProvider {
   // Returns the format to use for the tiles.
   virtual viz::ResourceFormat GetResourceFormat() const = 0;
 
-  // Determine if the resource requires swizzling.
-  virtual bool IsResourceSwizzleRequired() const = 0;
-
   // Determines if the resource is premultiplied.
   virtual bool IsResourcePremultiplied() const = 0;
 

@@ -1,12 +1,11 @@
 <!DOCTYPE HTML>
 <script src="../resources/testharness.js"></script>
 <script src="../resources/testharnessreport.js"></script>
-<script src="../resources/run-after-layout-and-paint.js"></script>
 
 <input id="input">
 
 <script>
-async_test_after_layout_and_paint(function(t) {
+async_test(function(t) {
   var input = document.getElementById("input");
   input.addEventListener("focus", function() {
     t.done();
@@ -19,7 +18,7 @@ async_test_after_layout_and_paint(function(t) {
 <textarea id="textarea"></textarea>
 
 <script>
-async_test_after_layout_and_paint(function(t) {
+async_test(function(t) {
   var textarea = document.getElementById("textarea");
   textarea.addEventListener("focus", function() {
     t.done();
@@ -32,7 +31,7 @@ async_test_after_layout_and_paint(function(t) {
 <div id="contenteditable" contenteditable></div>
 
 <script>
-async_test_after_layout_and_paint(function(t) {
+async_test(function(t) {
   var contenteditable = document.getElementById("contenteditable");
   contenteditable.addEventListener("focus", function() {
     t.done();

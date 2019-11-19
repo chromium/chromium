@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+FAIL Property quotes has initial value auto assert_equals: expected "auto" but got ""
+PASS Property quotes inherits
+FAIL Property bookmark-level has initial value none assert_true: bookmark-level doesn't seem to be supported in the computed style expected true got false
+FAIL Property bookmark-level does not inherit assert_true: expected true got false
+FAIL Property bookmark-state has initial value open assert_true: bookmark-state doesn't seem to be supported in the computed style expected true got false
+FAIL Property bookmark-state does not inherit assert_true: expected true got false
+Harness: the test ran to completion.
+

@@ -94,6 +94,26 @@ namespace mediaPerceptionPrivate {
     FAILED_TO_INSTALL
   };
 
+  // Error code associated with a failure to install the media analytics
+  // component.
+  enum ComponentInstallationError {
+    // Component requested does not exist.
+    UNKNOWN_COMPONENT,
+
+    // The update engine fails to install component.
+    INSTALL_FAILURE,
+
+    // Component can not be mounted.
+    MOUNT_FAILURE,
+
+    // The component is not compatible with the device.
+    COMPATIBILITY_CHECK_FAILED,
+
+    // The component was not found - reported for load requests with kSkip
+    // update policy.
+    NOT_FOUND
+  };
+
   dictionary Component {
     ComponentType type;
   };
@@ -104,6 +124,10 @@ namespace mediaPerceptionPrivate {
 
     // The version string for the current component.
     DOMString? version;
+
+    // If the component installation failed, the encountered installation
+    // error. Not set if the component installation succeeded.
+    ComponentInstallationError? installationErrorCode;
   };
 
   // ------------------- Start of process management definitions. ------------

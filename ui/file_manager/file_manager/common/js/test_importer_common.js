@@ -20,50 +20,51 @@ importer.setupTestLogger = () => {
 /**
  * A {@code importer.Logger} for testing.  Just sends output to the console.
  *
- * @constructor
  * @implements {importer.Logger}
- * @struct
  * @final
  */
-importer.TestLogger = function() {
-  /** @public {!TestCallRecorder} */
-  this.errorRecorder = new TestCallRecorder();
+importer.TestLogger = class {
+  constructor() {
+    /** @public {!TestCallRecorder} */
+    this.errorRecorder = new TestCallRecorder();
 
-  /** @type {boolean} Should we print stuff to console */
-  this.quiet_ = false;
-};
-
-/**
- * Causes logger to stop printing anything to console.
- * This can be useful when errors are expected in tests.
- */
-importer.TestLogger.prototype.quiet = function() {
-  this.quiet_ = true;
-};
-
-/** @override */
-importer.TestLogger.prototype.info = function(content) {
-  if (!this.quiet_) {
-    console.log(content);
+    /** @type {boolean} Should we print stuff to console */
+    this.quiet_ = false;
   }
-};
 
-/** @override */
-importer.TestLogger.prototype.error = function(content) {
-  this.errorRecorder.callback(content);
-  if (!this.quiet_) {
-    console.error(content);
-    console.error(new Error('Error stack').stack);
+  /**
+   * Causes logger to stop printing anything to console.
+   * This can be useful when errors are expected in tests.
+   */
+  quiet() {
+    this.quiet_ = true;
   }
-};
 
-/** @override */
-importer.TestLogger.prototype.catcher = function(context) {
-  return error => {
-    this.error('Caught promise error. Context: ' + context +
-        ' Error: ' + error.message);
+  /** @override */
+  info(content) {
     if (!this.quiet_) {
-      console.error(error.stack);
+      console.log(content);
     }
-  };
+  }
+
+  /** @override */
+  error(content) {
+    this.errorRecorder.callback(content);
+    if (!this.quiet_) {
+      console.error(content);
+      console.error(new Error('Error stack').stack);
+    }
+  }
+
+  /** @override */
+  catcher(context) {
+    return error => {
+      this.error(
+          'Caught promise error. Context: ' + context +
+          ' Error: ' + error.message);
+      if (!this.quiet_) {
+        console.error(error.stack);
+      }
+    };
+  }
 };

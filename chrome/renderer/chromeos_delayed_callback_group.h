@@ -6,6 +6,7 @@
 #define CHROME_RENDERER_CHROMEOS_DELAYED_CALLBACK_GROUP_H_
 
 #include <functional>
+#include <list>
 #include <queue>
 
 #include "base/cancelable_callback.h"
@@ -81,7 +82,8 @@ class DelayedCallbackGroup
   // Call all remaining callbacks with the RunReason::TIMEOUT parameter value.
   void ExpireAllCallbacks() EXCLUSIVE_LOCKS_REQUIRED(callbacks_lock_);
 
-  std::queue<CallbackEntry> callbacks_ GUARDED_BY(callbacks_lock_);
+  std::queue<CallbackEntry, std::list<CallbackEntry>> callbacks_
+      GUARDED_BY(callbacks_lock_);
   base::TimeDelta expiration_delay_ GUARDED_BY(callbacks_lock_);
   base::CancelableOnceClosure expiration_timeout_;
   mutable base::Lock callbacks_lock_;

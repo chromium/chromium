@@ -5,9 +5,14 @@
 #include "net/cookies/cookie_constants.h"
 
 #include "base/logging.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"
 
 namespace net {
+
+const base::TimeDelta kLaxAllowUnsafeMaxAge = base::TimeDelta::FromMinutes(2);
+const base::TimeDelta kShortLaxAllowUnsafeMaxAge =
+    base::TimeDelta::FromSeconds(10);
 
 namespace {
 
@@ -17,7 +22,9 @@ const char kPriorityHigh[] = "high";
 
 const char kSameSiteLax[] = "lax";
 const char kSameSiteStrict[] = "strict";
-const char kSameSiteDefault[] = "default";
+const char kSameSiteNone[] = "none";
+const char kSameSiteExtended[] = "extended";
+const char kSameSiteUnspecified[] = "unspecified";
 
 }  // namespace
 
@@ -54,18 +61,44 @@ std::string CookieSameSiteToString(CookieSameSite same_site) {
       return kSameSiteLax;
     case CookieSameSite::STRICT_MODE:
       return kSameSiteStrict;
-    case CookieSameSite::DEFAULT_MODE:
-      return kSameSiteDefault;
+    case CookieSameSite::NO_RESTRICTION:
+      return kSameSiteNone;
+    case CookieSameSite::UNSPECIFIED:
+      return kSameSiteUnspecified;
   }
-  return "INVALID";
 }
 
-CookieSameSite StringToCookieSameSite(const std::string& same_site) {
-  if (base::EqualsCaseInsensitiveASCII(same_site, kSameSiteLax))
-    return CookieSameSite::LAX_MODE;
-  if (base::EqualsCaseInsensitiveASCII(same_site, kSameSiteStrict))
-    return CookieSameSite::STRICT_MODE;
-  return CookieSameSite::DEFAULT_MODE;
+CookieSameSite StringToCookieSameSite(const std::string& same_site,
+                                      CookieSameSiteString* samesite_string) {
+  // Put a value on the stack so that we can assign to |*samesite_string|
+  // instead of having to null-check it all the time.
+  CookieSameSiteString ignored = CookieSameSiteString::kUnspecified;
+  if (!samesite_string)
+    samesite_string = &ignored;
+
+  *samesite_string = CookieSameSiteString::kUnrecognized;
+  CookieSameSite samesite = CookieSameSite::UNSPECIFIED;
+
+  if (base::EqualsCaseInsensitiveASCII(same_site, kSameSiteNone)) {
+    samesite = CookieSameSite::NO_RESTRICTION;
+    *samesite_string = CookieSameSiteString::kNone;
+  } else if (base::EqualsCaseInsensitiveASCII(same_site, kSameSiteLax)) {
+    samesite = CookieSameSite::LAX_MODE;
+    *samesite_string = CookieSameSiteString::kLax;
+  } else if (base::EqualsCaseInsensitiveASCII(same_site, kSameSiteStrict)) {
+    samesite = CookieSameSite::STRICT_MODE;
+    *samesite_string = CookieSameSiteString::kStrict;
+  } else if (base::EqualsCaseInsensitiveASCII(same_site, kSameSiteExtended)) {
+    // Extended isn't supported anymore -- we just parse it for UMA stats.
+    *samesite_string = CookieSameSiteString::kExtended;
+  } else if (same_site == "") {
+    *samesite_string = CookieSameSiteString::kEmptyString;
+  }
+  return samesite;
+}
+
+void RecordCookieSameSiteAttributeValueHistogram(CookieSameSiteString value) {
+  UMA_HISTOGRAM_ENUMERATION("Cookie.SameSiteAttributeValue", value);
 }
 
 }  // namespace net

@@ -311,25 +311,22 @@ The `BlobStorageContext` is the hub of the blob storage system. It is
 responsible for creating & managing all the state of constructing blobs, as
 well as all blob handle generation and general blob status access.
 
-When a `BlobDataBuilder` is given to the context, whether from the
-`BlobTransportHost` or from elsewhere, the context will do the following:
+When a `BlobDataBuilder` is given to the context, it will do the following:
 
 1. Find all dependent blobs in the new blob (any blob reference in the blob
 item list), and create a 'slice' of their items for the new blob.
 2. Create the final blob item list representation, which creates a new blob
 item list which inserts these 'slice' items into the blob reference spots. This
 is 'flattening' the blob.
-3. Ask the `BlobMemoryManager` for file or memory quota for the transportation
-if necessary
-  * When the quota request is granted, notify the `BlobTransportHost` that to
-  begin transporting the data.
-4. Ask the `BlobMemoryManager` for memory quota for any copies necessary for
+3. Ask the `BlobMemoryController` for file or memory quota for the
+transportation if necessary.
+4. Ask the `BlobMemoryController` for memory quota for any copies necessary for
 blob slicing.
 5. Adds completion callbacks to any blobs our blob depends on.
 
 When all of the following conditions are met:
 
-1. The `BlobTransportHost` tells us it has transported all the data (or we
+1. The `BlobRegistry` tells us it has transported all the data (or we
 don't need to transport data),
 2. The `BlobMemoryManager` approves our memory quota for slice copies (or we
 don't need slice copies), and

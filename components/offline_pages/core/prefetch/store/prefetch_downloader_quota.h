@@ -25,7 +25,7 @@ class PrefetchDownloaderQuota {
   // Public for unit tests.
   static const int64_t kDefaultMaxDailyQuotaBytes;
 
-  PrefetchDownloaderQuota(sql::Database* db, base::Clock* clock);
+  PrefetchDownloaderQuota(sql::Database* db, const base::Clock* clock);
   ~PrefetchDownloaderQuota();
 
   // Gets the max daily quota from Finch.
@@ -44,7 +44,7 @@ class PrefetchDownloaderQuota {
   sql::Database* db_;
 
   // Clock used for time related calculation and quota updates in DB. Not owned.
-  base::Clock* clock_;
+  const base::Clock* clock_;
 
   DISALLOW_COPY_AND_ASSIGN(PrefetchDownloaderQuota);
 };

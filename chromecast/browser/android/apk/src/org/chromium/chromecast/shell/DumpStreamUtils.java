@@ -18,7 +18,7 @@ import java.nio.charset.UnsupportedCharsetException;
  *
  */
 public final class DumpStreamUtils {
-    private static final String TAG = "cr_DumpStreamUtils";
+    private static final String TAG = "DumpStreamUtils";
 
     /**
      * Gets the first line from an input stream

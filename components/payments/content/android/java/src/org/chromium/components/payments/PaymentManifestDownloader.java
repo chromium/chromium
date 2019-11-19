@@ -7,6 +7,7 @@ package org.chromium.components.payments;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
+import org.chromium.base.annotations.NativeMethods;
 import org.chromium.content_public.browser.WebContents;
 
 import java.net.URI;
@@ -35,9 +36,13 @@ public class PaymentManifestDownloader {
         @CalledByNative("ManifestDownloadCallback")
         void onWebAppManifestDownloadSuccess(String content);
 
-        /** Called on failed download. */
+        /**
+         * Called on failed download.
+         *
+         * @param errorMessage The error message, which could be empty or null.
+         */
         @CalledByNative("ManifestDownloadCallback")
-        void onManifestDownloadFailure();
+        void onManifestDownloadFailure(String errorMessage);
     }
 
     private long mNativeObject;
@@ -51,7 +56,7 @@ public class PaymentManifestDownloader {
     public void initialize(WebContents webContents) {
         ThreadUtils.assertOnUiThread();
         assert mNativeObject == 0;
-        mNativeObject = nativeInit(webContents);
+        mNativeObject = PaymentManifestDownloaderJni.get().init(webContents);
     }
 
     /** @return Whether the native downloader is initialized. */
@@ -69,7 +74,8 @@ public class PaymentManifestDownloader {
     public void downloadPaymentMethodManifest(URI methodName, ManifestDownloadCallback callback) {
         ThreadUtils.assertOnUiThread();
         assert mNativeObject != 0;
-        nativeDownloadPaymentMethodManifest(mNativeObject, methodName, callback);
+        PaymentManifestDownloaderJni.get().downloadPaymentMethodManifest(
+                mNativeObject, PaymentManifestDownloader.this, methodName, callback);
     }
 
     /**
@@ -81,14 +87,15 @@ public class PaymentManifestDownloader {
     public void downloadWebAppManifest(URI webAppManifestUri, ManifestDownloadCallback callback) {
         ThreadUtils.assertOnUiThread();
         assert mNativeObject != 0;
-        nativeDownloadWebAppManifest(mNativeObject, webAppManifestUri, callback);
+        PaymentManifestDownloaderJni.get().downloadWebAppManifest(
+                mNativeObject, PaymentManifestDownloader.this, webAppManifestUri, callback);
     }
 
     /** Destroys the native downloader. */
     public void destroy() {
         ThreadUtils.assertOnUiThread();
         assert mNativeObject != 0;
-        nativeDestroy(mNativeObject);
+        PaymentManifestDownloaderJni.get().destroy(mNativeObject, PaymentManifestDownloader.this);
         mNativeObject = 0;
     }
 
@@ -97,11 +104,15 @@ public class PaymentManifestDownloader {
         return methodName.toString();
     }
 
-    private static native long nativeInit(WebContents webContents);
-    private native void nativeDownloadPaymentMethodManifest(
-            long nativePaymentManifestDownloaderAndroid, URI methodName,
-            ManifestDownloadCallback callback);
-    private native void nativeDownloadWebAppManifest(long nativePaymentManifestDownloaderAndroid,
-            URI webAppManifestUri, ManifestDownloadCallback callback);
-    private native void nativeDestroy(long nativePaymentManifestDownloaderAndroid);
+    @NativeMethods
+    interface Natives {
+        long init(WebContents webContents);
+        void downloadPaymentMethodManifest(long nativePaymentManifestDownloaderAndroid,
+                PaymentManifestDownloader caller, URI methodName,
+                ManifestDownloadCallback callback);
+        void downloadWebAppManifest(long nativePaymentManifestDownloaderAndroid,
+                PaymentManifestDownloader caller, URI webAppManifestUri,
+                ManifestDownloadCallback callback);
+        void destroy(long nativePaymentManifestDownloaderAndroid, PaymentManifestDownloader caller);
+    }
 }

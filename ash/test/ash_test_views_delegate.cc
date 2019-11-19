@@ -5,7 +5,6 @@
 #include "ash/test/ash_test_views_delegate.h"
 
 #include "ash/shell.h"
-#include "ui/base/ui_base_features.h"
 
 namespace ash {
 
@@ -16,21 +15,8 @@ AshTestViewsDelegate::~AshTestViewsDelegate() = default;
 void AshTestViewsDelegate::OnBeforeWidgetInit(
     views::Widget::InitParams* params,
     views::internal::NativeWidgetDelegate* delegate) {
-  if (running_outside_ash_) {
-    // With Mash, MusClient::CreateNativeWidget uses a DesktopNativeWidgetAura,
-    // which doesn't need a context.
-    if (!features::IsUsingWindowService()) {
-      DCHECK(ash::Shell::HasInstance());
-      if (!params->parent && !params->context)
-        params->context = Shell::GetRootWindowForNewWindows();
-    }
-  } else {
-    CHECK(params->native_widget || params->context || params->parent)
-        << "Widgets must be created with a context or parent. In tests use "
-        << "CurrentContext(). In non-test code you likely want to use the "
-        << "parent the Widget will be added to, or possibly "
-        << "Shell::GetRootWindowForNewWindows().";
-  }
+  if (!params->parent && !params->context)
+    params->context = Shell::GetRootWindowForNewWindows();
 
   TestViewsDelegate::OnBeforeWidgetInit(params, delegate);
 }

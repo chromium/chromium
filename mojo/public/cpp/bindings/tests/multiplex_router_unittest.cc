@@ -9,8 +9,8 @@
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
-#include "base/message_loop/message_loop.h"
 #include "base/run_loop.h"
+#include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "mojo/public/cpp/bindings/interface_endpoint_client.h"
 #include "mojo/public/cpp/bindings/message.h"
@@ -22,6 +22,8 @@
 namespace mojo {
 namespace test {
 namespace {
+
+const char kTestInterfaceName[] = "TestInterface";
 
 using mojo::internal::MultiplexRouter;
 
@@ -59,17 +61,17 @@ class MultiplexRouterTest : public testing::Test {
   ScopedInterfaceEndpointHandle endpoint1_;
 
  private:
-  base::MessageLoop loop_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
 };
 
 TEST_F(MultiplexRouterTest, BasicRequestResponse) {
-  InterfaceEndpointClient client0(std::move(endpoint0_), nullptr,
-                                  std::make_unique<PassThroughFilter>(), false,
-                                  base::ThreadTaskRunnerHandle::Get(), 0u);
+  InterfaceEndpointClient client0(
+      std::move(endpoint0_), nullptr, std::make_unique<PassThroughFilter>(),
+      false, base::ThreadTaskRunnerHandle::Get(), 0u, kTestInterfaceName);
   ResponseGenerator generator;
-  InterfaceEndpointClient client1(std::move(endpoint1_), &generator,
-                                  std::make_unique<PassThroughFilter>(), false,
-                                  base::ThreadTaskRunnerHandle::Get(), 0u);
+  InterfaceEndpointClient client1(
+      std::move(endpoint1_), &generator, std::make_unique<PassThroughFilter>(),
+      false, base::ThreadTaskRunnerHandle::Get(), 0u, kTestInterfaceName);
 
   Message request;
   AllocRequestMessage(1, "hello", &request);
@@ -110,13 +112,13 @@ TEST_F(MultiplexRouterTest, BasicRequestResponse) {
 }
 
 TEST_F(MultiplexRouterTest, BasicRequestResponse_Synchronous) {
-  InterfaceEndpointClient client0(std::move(endpoint0_), nullptr,
-                                  std::make_unique<PassThroughFilter>(), false,
-                                  base::ThreadTaskRunnerHandle::Get(), 0u);
+  InterfaceEndpointClient client0(
+      std::move(endpoint0_), nullptr, std::make_unique<PassThroughFilter>(),
+      false, base::ThreadTaskRunnerHandle::Get(), 0u, kTestInterfaceName);
   ResponseGenerator generator;
-  InterfaceEndpointClient client1(std::move(endpoint1_), &generator,
-                                  std::make_unique<PassThroughFilter>(), false,
-                                  base::ThreadTaskRunnerHandle::Get(), 0u);
+  InterfaceEndpointClient client1(
+      std::move(endpoint1_), &generator, std::make_unique<PassThroughFilter>(),
+      false, base::ThreadTaskRunnerHandle::Get(), 0u, kTestInterfaceName);
 
   Message request;
   AllocRequestMessage(1, "hello", &request);
@@ -159,13 +161,13 @@ TEST_F(MultiplexRouterTest, BasicRequestResponse_Synchronous) {
 TEST_F(MultiplexRouterTest, LazyResponses) {
   InterfaceEndpointClient client0(
       std::move(endpoint0_), nullptr, base::WrapUnique(new PassThroughFilter()),
-      false, base::ThreadTaskRunnerHandle::Get(), 0u);
+      false, base::ThreadTaskRunnerHandle::Get(), 0u, kTestInterfaceName);
   base::RunLoop run_loop;
   LazyResponseGenerator generator(run_loop.QuitClosure());
   InterfaceEndpointClient client1(std::move(endpoint1_), &generator,
                                   base::WrapUnique(new PassThroughFilter()),
                                   false, base::ThreadTaskRunnerHandle::Get(),
-                                  0u);
+                                  0u, kTestInterfaceName);
 
   Message request;
   AllocRequestMessage(1, "hello", &request);
@@ -219,9 +221,9 @@ TEST_F(MultiplexRouterTest, LazyResponses) {
             std::string(reinterpret_cast<const char*>(response.payload())));
 }
 
-void ForwardErrorHandler(bool* called, const base::Closure& callback) {
+void ForwardErrorHandler(bool* called, base::OnceClosure callback) {
   *called = true;
-  callback.Run();
+  std::move(callback).Run();
 }
 
 // Tests that if the receiving application destroys the responder_ without
@@ -231,22 +233,20 @@ TEST_F(MultiplexRouterTest, MissingResponses) {
   base::RunLoop run_loop0, run_loop1;
   InterfaceEndpointClient client0(
       std::move(endpoint0_), nullptr, base::WrapUnique(new PassThroughFilter()),
-      false, base::ThreadTaskRunnerHandle::Get(), 0u);
+      false, base::ThreadTaskRunnerHandle::Get(), 0u, kTestInterfaceName);
   bool error_handler_called0 = false;
-  client0.set_connection_error_handler(
-      base::Bind(&ForwardErrorHandler, &error_handler_called0,
-                 run_loop0.QuitClosure()));
+  client0.set_connection_error_handler(base::BindOnce(
+      &ForwardErrorHandler, &error_handler_called0, run_loop0.QuitClosure()));
 
   base::RunLoop run_loop3;
   LazyResponseGenerator generator(run_loop3.QuitClosure());
   InterfaceEndpointClient client1(std::move(endpoint1_), &generator,
                                   base::WrapUnique(new PassThroughFilter()),
                                   false, base::ThreadTaskRunnerHandle::Get(),
-                                  0u);
+                                  0u, kTestInterfaceName);
   bool error_handler_called1 = false;
-  client1.set_connection_error_handler(
-      base::Bind(&ForwardErrorHandler, &error_handler_called1,
-                 run_loop1.QuitClosure()));
+  client1.set_connection_error_handler(base::BindOnce(
+      &ForwardErrorHandler, &error_handler_called1, run_loop1.QuitClosure()));
 
   Message request;
   AllocRequestMessage(1, "hello", &request);
@@ -290,11 +290,11 @@ TEST_F(MultiplexRouterTest, LateResponse) {
   {
     InterfaceEndpointClient client0(
         std::move(endpoint0_), nullptr, std::make_unique<PassThroughFilter>(),
-        false, base::ThreadTaskRunnerHandle::Get(), 0u);
+        false, base::ThreadTaskRunnerHandle::Get(), 0u, kTestInterfaceName);
     InterfaceEndpointClient client1(std::move(endpoint1_), &generator,
                                     std::make_unique<PassThroughFilter>(),
                                     false, base::ThreadTaskRunnerHandle::Get(),
-                                    0u);
+                                    0u, kTestInterfaceName);
 
     Message request;
     AllocRequestMessage(1, "hello", &request);

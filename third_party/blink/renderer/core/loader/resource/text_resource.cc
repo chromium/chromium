@@ -6,7 +6,7 @@
 
 #include "third_party/blink/renderer/core/html/parser/text_resource_decoder.h"
 #include "third_party/blink/renderer/platform/loader/fetch/text_resource_decoder_options.h"
-#include "third_party/blink/renderer/platform/shared_buffer.h"
+#include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
@@ -16,7 +16,7 @@ TextResource::TextResource(const ResourceRequest& resource_request,
                            const ResourceLoaderOptions& options,
                            const TextResourceDecoderOptions& decoder_options)
     : Resource(resource_request, type, options),
-      decoder_(TextResourceDecoder::Create(decoder_options)) {}
+      decoder_(std::make_unique<TextResourceDecoder>(decoder_options)) {}
 
 TextResource::~TextResource() = default;
 

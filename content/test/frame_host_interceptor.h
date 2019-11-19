@@ -11,37 +11,26 @@
 #include "base/macros.h"
 #include "content/common/frame.mojom.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "mojo/public/cpp/bindings/pending_associated_remote.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 
 namespace content {
 
 class RenderFrameHost;
 
-// Allows intercepting calls to mojom::FrameHost (e.g. DidCommitProvisionalLoad
-// or BeginNavigation) just before they are dispatched to the implementation.
-// This enables unit/browser tests to scrutinize/alter the parameters, or
-// simulate race conditions by triggering other calls just before dispatching
-// the original call.
+// Allows intercepting calls to mojom::FrameHost (e.g. BeginNavigation) just
+// before they are dispatched to the implementation. This enables unit/browser
+// tests to scrutinize/alter the parameters, or simulate race conditions by
+// triggering other calls just before dispatching the original call.
+//
+// NOTE: DidCommitProvisionalLoad is handled separately, because it is in a
+// transient state right now, and is soon going away from mojom::FrameHost.
 class FrameHostInterceptor : public WebContentsObserver {
  public:
   // Constructs an instance that will intercept FrameHost calls in any frame of
   // the |web_contents| while the instance is in scope.
   explicit FrameHostInterceptor(WebContents* web_contents);
   ~FrameHostInterceptor() override;
-
-  // Called just before DidCommitProvisionalLoad with |params| and
-  // |interface_params| would be dispatched to |render_frame_host|.
-  //
-  // Return false to cancel the dispatching of this message.
-  //
-  // Return true (and/or modify |params| and |interface_params| as needed) to
-  // dispatch this message to the original implementation.
-  //
-  // By default this method returns true (e.g. doesn't do anything to the
-  // original messages and just forwards them to the original implementation).
-  virtual bool WillDispatchDidCommitProvisionalLoad(
-      RenderFrameHost* render_frame_host,
-      ::FrameHostMsg_DidCommitProvisionalLoad_Params* params,
-      mojom::DidCommitProvisionalLoadInterfaceParamsPtr* interface_params);
 
   // Called just before BeginNavigation IPC would be dispatched to
   // |render_frame_host|.
@@ -55,11 +44,12 @@ class FrameHostInterceptor : public WebContentsObserver {
   // original messages and just forwards them to the original implementation).
   virtual bool WillDispatchBeginNavigation(
       RenderFrameHost* render_frame_host,
-      CommonNavigationParams* common_params,
+      mojom::CommonNavigationParamsPtr* common_params,
       mojom::BeginNavigationParamsPtr* begin_params,
-      blink::mojom::BlobURLTokenPtr* blob_url_token,
-      mojom::NavigationClientAssociatedPtrInfo* navigation_client,
-      blink::mojom::NavigationInitiatorPtr* navigation_initiator);
+      mojo::PendingRemote<blink::mojom::BlobURLToken>* blob_url_token,
+      mojo::PendingAssociatedRemote<mojom::NavigationClient>* navigation_client,
+      mojo::PendingRemote<blink::mojom::NavigationInitiator>*
+          navigation_initiator);
 
  private:
   class FrameAgent;

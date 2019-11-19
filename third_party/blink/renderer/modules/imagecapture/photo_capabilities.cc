@@ -6,11 +6,6 @@
 
 namespace blink {
 
-// static
-PhotoCapabilities* PhotoCapabilities::Create() {
-  return MakeGarbageCollected<PhotoCapabilities>();
-}
-
 Vector<String> PhotoCapabilities::fillLightMode() const {
   Vector<String> fill_light_modes;
   for (const auto& mode : fill_light_modes_) {

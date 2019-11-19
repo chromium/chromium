@@ -66,7 +66,7 @@ class CONTENT_EXPORT ChildConnection {
   service_manager::Identity child_identity_;
   std::string service_token_;
 
-  base::WeakPtrFactory<ChildConnection> weak_factory_;
+  base::WeakPtrFactory<ChildConnection> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ChildConnection);
 };

@@ -31,7 +31,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_EVENTS_NAVIGATOR_EVENTS_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_EVENTS_NAVIGATOR_EVENTS_H_
 
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
 

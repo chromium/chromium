@@ -1,14 +1,13 @@
 <!DOCTYPE HTML>
 <script src="../resources/testharness.js"></script>
 <script src="../resources/testharnessreport.js"></script>
-<script src="../resources/run-after-layout-and-paint.js"></script>
 
 <div class="container">
   <img id="img1" src="resources/cake.png">
 </div>
 
 <script>
-test_after_layout_and_paint(function(t) {
+test(function(t) {
     var axImg1 = accessibilityController.accessibleElementById("img1");
     assert_equals(axImg1.name, "");
 }, "img element without alt");
@@ -19,7 +18,7 @@ test_after_layout_and_paint(function(t) {
 </div>
 
 <script>
-test_after_layout_and_paint(function(t) {
+test(function(t) {
     var axImg2 = accessibilityController.accessibleElementById("img2");
     assert_equals(axImg2.name, "img2-title");
     assert_equals(axImg2.nameFrom, "title");
@@ -31,7 +30,7 @@ test_after_layout_and_paint(function(t) {
 </div>
 
 <script>
-test_after_layout_and_paint(function(t) {
+test(function(t) {
     var axImg3 = accessibilityController.accessibleElementById("img3");
     assert_equals(axImg3.name, "img3-alt");
     assert_equals(axImg3.nameFrom, "attribute");
@@ -43,7 +42,7 @@ test_after_layout_and_paint(function(t) {
 </div>
 
 <script>
-test_after_layout_and_paint(function(t) {
+test(function(t) {
     var axImg4 = accessibilityController.accessibleElementById("img4");
     assert_equals(axImg4.name, "img4-aria-label");
     assert_equals(axImg4.nameFrom, "attribute");
@@ -56,7 +55,7 @@ test_after_layout_and_paint(function(t) {
 </div>
 
 <script>
-test_after_layout_and_paint(function(t) {
+test(function(t) {
     var axImg5 = accessibilityController.accessibleElementById("img5");
     assert_equals(axImg5.name, "img5-aria-labelledby");
     assert_equals(axImg5.nameFrom, "relatedElement");

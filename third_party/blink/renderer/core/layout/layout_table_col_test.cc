@@ -20,12 +20,9 @@ TEST_F(LayoutTableColTest, LocalVisualRect) {
     </table>
   )HTML");
 
-  EXPECT_EQ(LayoutRect(),
-            GetLayoutObjectByElementId("col1")->LocalVisualRect());
-  EXPECT_EQ(LayoutRect(),
-            GetLayoutObjectByElementId("col2")->LocalVisualRect());
-  EXPECT_EQ(LayoutRect(),
-            GetLayoutObjectByElementId("col3")->LocalVisualRect());
+  EXPECT_TRUE(GetLayoutObjectByElementId("col1")->LocalVisualRect().IsEmpty());
+  EXPECT_TRUE(GetLayoutObjectByElementId("col2")->LocalVisualRect().IsEmpty());
+  EXPECT_TRUE(GetLayoutObjectByElementId("col3")->LocalVisualRect().IsEmpty());
 }
 
 }  // namespace blink

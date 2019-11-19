@@ -13,6 +13,7 @@ sys.path.append(os.path.abspath(os.path.dirname(os.path.abspath(__file__))
     + '/../../../..'))
 from PRESUBMIT_test_mocks import MockFile, MockInputApi, MockOutputApi
 
+
 class CheckNotificationConstructors(unittest.TestCase):
   """Test the _CheckNotificationConstructors presubmit check."""
 
@@ -20,40 +21,41 @@ class CheckNotificationConstructors(unittest.TestCase):
     """Examples of when Notification.Builder use is correctly flagged."""
     mock_input = MockInputApi()
     mock_input.files = [
-      MockFile('path/One.java', ['new Notification.Builder()']),
-      MockFile('path/Two.java', ['new NotificationCompat.Builder()']),
+        MockFile('path/One.java', ['new Notification.Builder()']),
+        MockFile('path/Two.java', ['new NotificationCompat.Builder()']),
     ]
     errors = PRESUBMIT._CheckNotificationConstructors(
         mock_input, MockOutputApi())
     self.assertEqual(1, len(errors))
     self.assertEqual(2, len(errors[0].items))
-    self.assertTrue('One.java' in errors[0].items[0])
-    self.assertTrue('Two.java' in errors[0].items[1])
+    self.assertIn('One.java', errors[0].items[0])
+    self.assertIn('Two.java', errors[0].items[1])
 
   def testFalsePositives(self):
     """Examples of when Notification.Builder should not be flagged."""
     mock_input = MockInputApi()
     mock_input.files = [
-      MockFile(
-          'chrome/android/java/src/org/chromium/chrome/browser/notifications/'
-              'NotificationBuilder.java',
-          ['new Notification.Builder()']),
-      MockFile(
-          'chrome/android/java/src/org/chromium/chrome/browser/notifications/'
-              'NotificationCompatBuilder.java',
-          ['new NotificationCompat.Builder()']),
-      MockFile('path/One.java', ['Notification.Builder']),
-      MockFile('path/Two.java', ['// do not: new Notification.Builder()']),
-      MockFile('path/Three.java', [
-          '/** ChromeNotificationBuilder',
-          ' * replaces: new Notification.Builder()']),
-      MockFile('path/PRESUBMIT.py', ['new Notification.Builder()']),
-      MockFile('path/Four.java', ['new NotificationCompat.Builder()'],
-          action='D'),
+        MockFile(
+            'chrome/android/java/src/org/chromium/chrome/browser/notifications/'
+            'NotificationBuilder.java',
+            ['new Notification.Builder()']),
+        MockFile(
+            'chrome/android/java/src/org/chromium/chrome/browser/notifications/'
+            'NotificationCompatBuilder.java',
+            ['new NotificationCompat.Builder()']),
+        MockFile('path/One.java', ['Notification.Builder']),
+        MockFile('path/Two.java', ['// do not: new Notification.Builder()']),
+        MockFile('path/Three.java',
+                 ['/** ChromeNotificationBuilder',
+                  ' * replaces: new Notification.Builder()']),
+        MockFile('path/PRESUBMIT.py', ['new Notification.Builder()']),
+        MockFile('path/Four.java', ['new NotificationCompat.Builder()'],
+                 action='D'),
     ]
     errors = PRESUBMIT._CheckNotificationConstructors(
         mock_input, MockOutputApi())
     self.assertEqual(0, len(errors))
+
 
 class CheckAlertDialogBuilder(unittest.TestCase):
   """Test the _CheckAlertDialogBuilder presubmit check."""
@@ -62,40 +64,118 @@ class CheckAlertDialogBuilder(unittest.TestCase):
     """Examples of when AlertDialog.Builder use is correctly flagged."""
     mock_input = MockInputApi()
     mock_input.files = [
-      MockFile('path/One.java', ['new AlertDialog.Builder()']),
-      MockFile('path/Two.java', ['new AlertDialog.Builder(context);']),
+        MockFile('path/One.java', ['new AlertDialog.Builder()']),
+        MockFile('path/Two.java', ['new AlertDialog.Builder(context);']),
     ]
-    errors = PRESUBMIT._CheckAlertDialogBuilder(
-        mock_input, MockOutputApi())
+    errors = PRESUBMIT._CheckAlertDialogBuilder(mock_input, MockOutputApi())
     self.assertEqual(1, len(errors))
     self.assertEqual(2, len(errors[0].items))
-    self.assertTrue('One.java' in errors[0].items[0])
-    self.assertTrue('Two.java' in errors[0].items[1])
+    self.assertIn('One.java', errors[0].items[0])
+    self.assertIn('Two.java', errors[0].items[1])
 
   def testFalsePositives(self):
     """Examples of when AlertDialog.Builder should not be flagged."""
     mock_input = MockInputApi()
     mock_input.files = [
-      MockFile(
-          'chrome/android/java/src/org/chromium/chrome/browser/permissions/'
-              'PermissionDialogView.java',
-          ['new AlertDialog.Builder()']),
-      MockFile(
-          'chrome/android/java/src/org/chromium/chrome/browser/payments/'
-              'AndroidPaymentApp.java',
-          ['new AlertDialog.Builder()']),
-      MockFile('path/One.java', ['AlertDialog.Builder']),
-      MockFile('path/Two.java', ['// do not: new AlertDialog.Builder()']),
-      MockFile('path/Three.java', [
-          '/** ChromeAlertDialogBuilder',
-          ' * replaces: new AlertDialog.Builder()']),
-      MockFile('path/PRESUBMIT.py', ['new AlertDialog.Builder()']),
-      MockFile('path/Four.java', ['new AlertDialog.Builder()'],
-          action='D'),
+        MockFile('path/One.java', ['AlertDialog.Builder']),
+        MockFile('path/Two.java', ['// do not: new AlertDialog.Builder()']),
+        MockFile('path/Three.java',
+                 ['/** ChromeAlertDialogBuilder',
+                  ' * replaces: new AlertDialog.Builder()']),
+        MockFile('path/PRESUBMIT.py', ['new AlertDialog.Builder()']),
+        MockFile('path/Four.java', ['new AlertDialog.Builder()'],
+                 action='D'),
     ]
     errors = PRESUBMIT._CheckAlertDialogBuilder(
         mock_input, MockOutputApi())
     self.assertEqual(0, len(errors))
+
+  def testFailure_WrongBuilderCheck(self):
+    """Use of AppCompat AlertDialog.Builder is correctly flagged."""
+    mock_input = MockInputApi()
+    mock_input.files = [
+        MockFile('path/One.java',
+                 ['import android.support.v7.app.AlertDialog;',
+                  'new AlertDialog.Builder()']),
+        MockFile('path/Two.java',
+                 ['import android.app.AlertDialog;',
+                  'new AlertDialog.Builder(context);']),
+    ]
+    errors = PRESUBMIT._CheckAlertDialogBuilder(
+        mock_input, MockOutputApi())
+    self.assertEqual(2, len(errors))
+    self.assertEqual(1, len(errors[1].items))
+    self.assertIn('One.java', errors[1].items[0])
+
+  def testSucess_WrongBuilderCheck(self):
+    """Use of OS-dependent AlertDialog should not be flagged."""
+    mock_input = MockInputApi()
+    mock_input.files = [
+        MockFile('path/One.java',
+                 ['import android.app.AlertDialog;',
+                  'new AlertDialog.Builder()']),
+        MockFile('path/Two.java',
+                 ['import android.app.AlertDialog;',
+                  'new AlertDialog.Builder(context);']),
+    ]
+    errors = PRESUBMIT._CheckAlertDialogBuilder(mock_input, MockOutputApi())
+    self.assertEqual(1, len(errors))
+    self.assertEqual(2, len(errors[0].items))
+
+
+class CheckCompatibleAlertDialogBuilder(unittest.TestCase):
+  """Test the _CheckCompatibleAlertDialogBuilder presubmit check."""
+
+  def testFailure(self):
+    """Use of CompatibleAlertDialogBuilder use is correctly flagged."""
+    mock_input = MockInputApi()
+    mock_input.files = [
+        MockFile('path/One.java',
+                 ['import '
+                  'org.chromium.ui.UiUtils.CompatibleAlertDialogBuilder;',
+                  'new CompatibleAlertDialogBuilder()',
+                  'A new line to make sure there is no duplicate error.']),
+        MockFile('path/Two.java',
+                 ['new UiUtils.CompatibleAlertDialogBuilder()']),
+        MockFile('path/Three.java',
+                 ['new UiUtils',
+                  '.CompatibleAlertDialogBuilder(context)']),
+        MockFile('path/Four.java',
+                 ['new UiUtils',
+                  '   .CompatibleAlertDialogBuilder()']),
+    ]
+    errors = PRESUBMIT._CheckCompatibleAlertDialogBuilder(
+        mock_input, MockOutputApi())
+    self.assertEqual(1, len(errors))
+    self.assertEqual(4, len(errors[0].items))
+    self.assertIn('One.java', errors[0].items[0])
+    self.assertIn('Two.java', errors[0].items[1])
+    self.assertIn('Three.java', errors[0].items[2])
+    self.assertIn('Four.java', errors[0].items[3])
+
+  def testSucess(self):
+    """Examples of when AlertDialog.Builder should not be flagged."""
+    mock_input = MockInputApi()
+    mock_input.files = [
+        MockFile('chrome/android/java/src/org/chromium/chrome/browser/payments/'
+                 'AndroidPaymentApp.java',
+                 ['new UiUtils.CompatibleAlertDialogBuilder()']),
+        MockFile('path/One.java', ['UiUtils.CompatibleAlertDialogBuilder']),
+        MockFile('path/Two.java',
+                 ['// do not: new UiUtils.CompatibleAlertDialogBuilder']),
+        MockFile('path/Three.java',
+                 ['/** ChromeAlertDialogBuilder',
+                  ' * replaces: new UiUtils.CompatibleAlertDialogBuilder()']),
+        MockFile('path/PRESUBMIT.py',
+                 ['new UiUtils.CompatibleAlertDialogBuilder()']),
+        MockFile('path/Four.java',
+                 ['new UiUtils.CompatibleAlertDialogBuilder()'],
+                 action='D'),
+    ]
+    errors = PRESUBMIT._CheckCompatibleAlertDialogBuilder(
+        mock_input, MockOutputApi())
+    self.assertEqual(0, len(errors))
+
 
 if __name__ == '__main__':
   unittest.main()

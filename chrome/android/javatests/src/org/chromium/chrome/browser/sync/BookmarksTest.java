@@ -15,7 +15,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.ChromeSwitches;
@@ -29,6 +28,7 @@ import org.chromium.components.sync.ModelType;
 import org.chromium.components.sync.protocol.BookmarkSpecifics;
 import org.chromium.components.sync.protocol.SyncEntity;
 import org.chromium.content_public.browser.test.util.Criteria;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -89,14 +89,11 @@ public class BookmarksTest {
 
     @Before
     public void setUp() throws Exception {
-        ThreadUtils.runOnUiThreadBlocking(new Runnable() {
-            @Override
-            public void run() {
-                mBookmarkBridge = new BookmarkBridge(Profile.getLastUsedProfile());
-                // The BookmarkBridge needs to know how to handle partner bookmarks.
-                // Without this call to fake that knowledge for testing, it crashes.
-                mBookmarkBridge.loadEmptyPartnerBookmarkShimForTesting();
-            }
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mBookmarkBridge = new BookmarkBridge(Profile.getLastUsedProfile());
+            // The BookmarkBridge needs to know how to handle partner bookmarks.
+            // Without this call to fake that knowledge for testing, it crashes.
+            mBookmarkBridge.loadEmptyPartnerBookmarkShimForTesting();
         });
         mSyncTestRule.setUpTestAccountAndSignIn();
         // Make sure initial state is clean.
@@ -275,7 +272,7 @@ public class BookmarksTest {
     @Test
     @LargeTest
     @Feature({"Sync"})
-    public void testUploadBookmark() throws Exception {
+    public void testUploadBookmark() {
         addClientBookmark(TITLE, URL);
         waitForClientBookmarkCount(1);
         waitForServerBookmarkCountWithName(1, TITLE);
@@ -285,7 +282,7 @@ public class BookmarksTest {
     @Test
     @LargeTest
     @Feature({"Sync"})
-    public void testUploadBookmarkModification() throws Exception {
+    public void testUploadBookmarkModification() {
         // Add the entity to test modifying.
         BookmarkId bookmarkId = addClientBookmark(TITLE, URL);
         waitForClientBookmarkCount(1);
@@ -300,7 +297,7 @@ public class BookmarksTest {
     @Test
     @LargeTest
     @Feature({"Sync"})
-    public void testUploadBookmarkTombstone() throws Exception {
+    public void testUploadBookmarkTombstone() {
         // Add the entity to test deleting.
         BookmarkId bookmarkId = addClientBookmark(TITLE, URL);
         waitForClientBookmarkCount(1);
@@ -347,7 +344,7 @@ public class BookmarksTest {
     @Test
     @LargeTest
     @Feature({"Sync"})
-    public void testUploadBookmarkFolder() throws Exception {
+    public void testUploadBookmarkFolder() {
         addClientBookmarkFolder(TITLE);
         waitForClientBookmarkCount(1);
         waitForServerBookmarkCountWithName(1, TITLE);
@@ -357,7 +354,7 @@ public class BookmarksTest {
     @Test
     @LargeTest
     @Feature({"Sync"})
-    public void testUploadBookmarkFolderModification() throws Exception {
+    public void testUploadBookmarkFolderModification() {
         // Add the entity to test modifying.
         BookmarkId bookmarkId = addClientBookmarkFolder(TITLE);
         waitForClientBookmarkCount(1);
@@ -372,7 +369,7 @@ public class BookmarksTest {
     @Test
     @LargeTest
     @Feature({"Sync"})
-    public void testUploadBookmarkFolderTombstone() throws Exception {
+    public void testUploadBookmarkFolderTombstone() {
         // Add the entity to test deleting.
         BookmarkId bookmarkId = addClientBookmarkFolder(TITLE);
         waitForClientBookmarkCount(1);
@@ -398,7 +395,7 @@ public class BookmarksTest {
     @Test
     @LargeTest
     @Feature({"Sync"})
-    public void testDisabledNoUploadBookmark() throws Exception {
+    public void testDisabledNoUploadBookmark() {
         mSyncTestRule.disableDataType(ModelType.BOOKMARKS);
         addClientBookmark(TITLE, URL);
         SyncTestUtil.triggerSyncAndWaitForCompletion();
@@ -406,35 +403,37 @@ public class BookmarksTest {
     }
 
     private BookmarkId addClientBookmark(final String title, final String url) {
-        BookmarkId id = ThreadUtils.runOnUiThreadBlockingNoException(new Callable<BookmarkId>() {
-            @Override
-            public BookmarkId call() throws Exception {
-                BookmarkId parentId = mBookmarkBridge.getMobileFolderId();
-                return mBookmarkBridge.addBookmark(parentId, 0, title, url);
-            }
-        });
+        BookmarkId id =
+                TestThreadUtils.runOnUiThreadBlockingNoException(new Callable<BookmarkId>() {
+                    @Override
+                    public BookmarkId call() {
+                        BookmarkId parentId = mBookmarkBridge.getMobileFolderId();
+                        return mBookmarkBridge.addBookmark(parentId, 0, title, url);
+                    }
+                });
         Assert.assertNotNull("Failed to create bookmark.", id);
         return id;
     }
 
     private BookmarkId addClientBookmarkFolder(final String title) {
-        BookmarkId id = ThreadUtils.runOnUiThreadBlockingNoException(new Callable<BookmarkId>() {
-            @Override
-            public BookmarkId call() throws Exception {
-                BookmarkId parentId = mBookmarkBridge.getMobileFolderId();
-                return mBookmarkBridge.addFolder(parentId, 0, title);
-            }
-        });
+        BookmarkId id =
+                TestThreadUtils.runOnUiThreadBlockingNoException(new Callable<BookmarkId>() {
+                    @Override
+                    public BookmarkId call() {
+                        BookmarkId parentId = mBookmarkBridge.getMobileFolderId();
+                        return mBookmarkBridge.addFolder(parentId, 0, title);
+                    }
+                });
         Assert.assertNotNull("Failed to create bookmark folder.", id);
         return id;
     }
 
-    private void addServerBookmark(String title, String url) throws InterruptedException {
+    private void addServerBookmark(String title, String url) {
         mSyncTestRule.getFakeServerHelper().injectBookmarkEntity(
                 title, url, mSyncTestRule.getFakeServerHelper().getBookmarkBarFolderId());
     }
 
-    private void addServerBookmarkFolder(String title) throws InterruptedException {
+    private void addServerBookmarkFolder(String title) {
         mSyncTestRule.getFakeServerHelper().injectBookmarkFolderEntity(
                 title, mSyncTestRule.getFakeServerHelper().getBookmarkBarFolderId());
     }
@@ -450,30 +449,17 @@ public class BookmarksTest {
     }
 
     private void deleteClientBookmark(final BookmarkId id) {
-        ThreadUtils.runOnUiThreadBlocking(new Runnable() {
-            @Override
-            public void run() {
-                mBookmarkBridge.deleteBookmark(id);
-            }
-        });
+        TestThreadUtils.runOnUiThreadBlocking(() -> { mBookmarkBridge.deleteBookmark(id); });
     }
 
     private void setClientBookmarkTitle(final BookmarkId id, final String title) {
-        ThreadUtils.runOnUiThreadBlocking(new Runnable() {
-            @Override
-            public void run() {
-                mBookmarkBridge.setBookmarkTitle(id, title);
-            }
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { mBookmarkBridge.setBookmarkTitle(id, title); });
     }
 
     private void moveClientBookmark(final BookmarkId id, final BookmarkId newParentId) {
-        ThreadUtils.runOnUiThreadBlocking(new Runnable() {
-            @Override
-            public void run() {
-                mBookmarkBridge.moveBookmark(id, newParentId, 0 /* new index */);
-            }
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { mBookmarkBridge.moveBookmark(id, newParentId, 0 /* new index */); });
     }
 
     private List<Bookmark> getClientBookmarks() throws JSONException {
@@ -515,7 +501,7 @@ public class BookmarksTest {
                         count, ModelType.BOOKMARKS, name));
     }
 
-    private void waitForClientBookmarkCount(int n) throws InterruptedException {
+    private void waitForClientBookmarkCount(int n) {
         mSyncTestRule.pollInstrumentationThread(Criteria.equals(n, new Callable<Integer>() {
             @Override
             public Integer call() throws Exception {
@@ -526,8 +512,7 @@ public class BookmarksTest {
         }));
     }
 
-    private void waitForServerBookmarkCountWithName(final int count, final String name)
-            throws InterruptedException {
+    private void waitForServerBookmarkCountWithName(final int count, final String name) {
         mSyncTestRule.pollInstrumentationThread(new Criteria(
                 "Expected " + count + " remote bookmarks with name " + name + ".") {
             @Override

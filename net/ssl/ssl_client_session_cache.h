@@ -15,10 +15,14 @@
 #include "base/containers/mru_cache.h"
 #include "base/macros.h"
 #include "base/memory/memory_pressure_monitor.h"
+#include "base/optional.h"
 #include "base/time/time.h"
 #include "base/trace_event/memory_dump_provider.h"
+#include "net/base/host_port_pair.h"
+#include "net/base/ip_address.h"
 #include "net/base/net_export.h"
-#include "net/cert/cert_database.h"
+#include "net/base/network_isolation_key.h"
+#include "net/base/privacy_mode.h"
 #include "third_party/boringssl/src/include/openssl/base.h"
 
 namespace base {
@@ -30,7 +34,7 @@ class ProcessMemoryDump;
 
 namespace net {
 
-class NET_EXPORT SSLClientSessionCache : public CertDatabase::Observer {
+class NET_EXPORT SSLClientSessionCache {
  public:
   struct Config {
     // The maximum number of entries in the cache.
@@ -39,10 +43,25 @@ class NET_EXPORT SSLClientSessionCache : public CertDatabase::Observer {
     size_t expiration_check_count = 256;
   };
 
-  explicit SSLClientSessionCache(const Config& config);
-  ~SSLClientSessionCache() override;
+  struct NET_EXPORT Key {
+    Key();
+    Key(const Key& other);
+    Key(Key&& other);
+    ~Key();
+    Key& operator=(const Key& other);
+    Key& operator=(Key&& other);
 
-  void OnCertDBChanged() override;
+    bool operator==(const Key& other) const;
+    bool operator<(const Key& other) const;
+
+    HostPortPair server;
+    base::Optional<IPAddress> dest_ip_addr;
+    NetworkIsolationKey network_isolation_key;
+    PrivacyMode privacy_mode = PRIVACY_MODE_DISABLED;
+  };
+
+  explicit SSLClientSessionCache(const Config& config);
+  ~SSLClientSessionCache();
 
   // Returns true if |entry| is expired as of |now|.
   static bool IsExpired(SSL_SESSION* session, time_t now);
@@ -51,17 +70,15 @@ class NET_EXPORT SSLClientSessionCache : public CertDatabase::Observer {
 
   // Returns the session associated with |cache_key| and moves it to the front
   // of the MRU list. Returns nullptr if there is none.
-  bssl::UniquePtr<SSL_SESSION> Lookup(const std::string& cache_key);
-
-  // Resets the count returned by Lookup to 0 for the session associated with
-  // |cache_key|.
-  void ResetLookupCount(const std::string& cache_key);
+  bssl::UniquePtr<SSL_SESSION> Lookup(const Key& cache_key);
 
   // Inserts |session| into the cache at |cache_key|. If there is an existing
   // one, it is released. Every |expiration_check_count| calls, the cache is
   // checked for stale entries.
-  void Insert(const std::string& cache_key,
-              bssl::UniquePtr<SSL_SESSION> session);
+  void Insert(const Key& cache_key, bssl::UniquePtr<SSL_SESSION> session);
+
+  // Removes all entries associated with |server|.
+  void FlushForServer(const HostPortPair& server);
 
   // Removes all entries from the cache.
   void Flush();
@@ -103,7 +120,7 @@ class NET_EXPORT SSLClientSessionCache : public CertDatabase::Observer {
 
   base::Clock* clock_;
   Config config_;
-  base::HashingMRUCache<std::string, Entry> cache_;
+  base::MRUCache<Key, Entry> cache_;
   size_t lookups_since_flush_;
   std::unique_ptr<base::MemoryPressureListener> memory_pressure_listener_;
 

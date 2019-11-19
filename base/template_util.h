@@ -72,6 +72,12 @@ struct SupportsOstreamOperator<T,
                                              << std::declval<T>()))>
     : std::true_type {};
 
+template <typename T, typename = void>
+struct SupportsToString : std::false_type {};
+template <typename T>
+struct SupportsToString<T, decltype(void(std::declval<T>().ToString()))>
+    : std::true_type {};
+
 // Used to detech whether the given type is an iterator.  This is normally used
 // with std::enable_if to provide disambiguation for functions that take
 // templatzed iterators as input.

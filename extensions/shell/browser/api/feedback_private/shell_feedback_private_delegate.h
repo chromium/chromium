@@ -5,7 +5,7 @@
 #ifndef EXTENSIONS_SHELL_BROWSER_API_FEEDBACK_PRIVATE_SHELL_FEEDBACK_PRIVATE_DELEGATE_H_
 #define EXTENSIONS_SHELL_BROWSER_API_FEEDBACK_PRIVATE_SHELL_FEEDBACK_PRIVATE_DELEGATE_H_
 
-#include "components/feedback/feedback_common.h"
+#include "components/feedback/feedback_data.h"
 #include "extensions/browser/api/feedback_private/feedback_private_delegate.h"
 
 #include "base/macros.h"
@@ -26,10 +26,11 @@ class ShellFeedbackPrivateDelegate : public FeedbackPrivateDelegate {
 #if defined(OS_CHROMEOS)
   std::unique_ptr<system_logs::SystemLogsSource> CreateSingleLogSource(
       api::feedback_private::LogSource source_type) const override;
-  void FetchAndMergeIwlwifiDumpLogsIfPresent(
-      std::unique_ptr<FeedbackCommon::SystemLogsMap> original_sys_logs,
-      content::BrowserContext* context,
-      system_logs::SysLogsFetcherCallback callback) const override;
+  void FetchExtraLogs(scoped_refptr<feedback::FeedbackData> feedback_data,
+                      FetchExtraLogsCallback callback) const override;
+  void UnloadFeedbackExtension(content::BrowserContext* context) const override;
+  api::feedback_private::LandingPageType GetLandingPageType(
+      const feedback::FeedbackData& feedback_data) const override;
 #endif  // defined(OS_CHROMEOS)
   std::string GetSignedInUserEmail(
       content::BrowserContext* context) const override;

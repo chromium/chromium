@@ -1,0 +1,18 @@
+Name: Mako Templates for Python
+Short Name: python-mako
+URL: https://www.makotemplates.org
+Version: 1.0.14
+Date: July 21, 2019
+License: MIT
+License File: NOT_SHIPPED
+Security Critical: no
+
+Description:
+Template engine in Python, used for code generation in Blink.
+
+Source: https://files.pythonhosted.org/packages/1b/a5/023aba3d69aacef6bfc13797bdc3dd03c6fb4ae2dcd2fde7dffc37233924/Mako-1.0.14.tar.gz
+SHA-512: e9a4840f4dddd77d55ad6d3b8724f0326937c04aa9c8c578ec385c70f897419b13ffc234cc673a316de2fa8cd7060fc837cf12f2317658181f8d2eb7dd4ac88f
+SHA-256: f5a642d8c5699269ab62a68b296ff990767eb120f51e2e8f3d6afb16bdb57f4b
+
+Local Modifications:
+There is no modification except for adding OWNERS, README.chromium, and .gitattributes files.

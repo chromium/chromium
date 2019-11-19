@@ -45,10 +45,6 @@ public_app_shared_deps = [
   "//services/service_manager/public/cpp",
 ]
 
-if (enable_mus) {
-  public_app_shared_deps += [ "//ui/aura" ]
-}
-
 if (is_component_build) {
   source_set("both_sources") {
     # Only the main content shared library can pull this in.
@@ -190,7 +186,6 @@ source_set("content_browser_manifest") {
     "//base",
     "//content/public/common:service_names",
     "//services/content/public/cpp:manifest",
-    "//services/file/public/cpp:manifest",
   ]
 
   public_deps = [
@@ -212,48 +207,6 @@ source_set("content_gpu_manifest") {
   public_deps = [
     "//services/service_manager/public/cpp",
   ]
-}
-
-source_set("content_packaged_services_manifest") {
-  sources = [
-    "content_packaged_services_manifest.cc",
-    "content_packaged_services_manifest.h",
-  ]
-
-  deps = [
-    "//base",
-    "//components/services/heap_profiling/public/cpp:manifest",
-    "//content/public/common:service_names",
-    "//media/mojo/services:cdm_manifest",
-    "//media/mojo/services:media_manifest",
-    "//services/audio/public/cpp:manifest",
-    "//services/data_decoder/public/cpp:manifest",
-    "//services/device/public/cpp:manifest",
-    "//services/media_session/public/cpp:manifest",
-    "//services/metrics/public/cpp:manifest",
-    "//services/network/public/cpp:manifest",
-    "//services/resource_coordinator/public/cpp:manifest",
-    "//services/shape_detection/public/cpp:manifest",
-    "//services/tracing:manifest",
-    "//services/video_capture/public/cpp:manifest",
-    "//services/viz/public/cpp:manifest",
-  ]
-
-  public_deps = [
-    "//services/service_manager/public/cpp",
-  ]
-
-  if (is_linux) {
-    deps += [ "//components/services/font/public/cpp:manifest" ]
-  }
-
-  if (is_chromeos) {
-    deps += [ "//chromeos/assistant:buildflags" ]
-    if (enable_cros_libassistant) {
-      deps +=
-          [ "//chromeos/services/assistant/public/cpp:audio_decoder_manifest" ]
-    }
-  }
 }
 
 source_set("content_plugin_manifest") {
@@ -328,7 +281,6 @@ group("service_manifests") {
   public_deps = [
     ":content_browser_manifest",
     ":content_gpu_manifest",
-    ":content_packaged_services_manifest",
     ":content_plugin_manifest",
     ":content_renderer_manifest",
     ":content_utility_manifest",

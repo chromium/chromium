@@ -4,15 +4,19 @@
 
 #include "chrome/browser/ui/views/desktop_capture/desktop_media_picker_views.h"
 
+#include <string>
+#include <utility>
+
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/task/post_task.h"
+#include "build/build_config.h"
 #include "chrome/browser/media/webrtc/desktop_media_list.h"
+#include "chrome/browser/media/webrtc/desktop_media_picker_manager.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
-#include "chrome/browser/ui/views/desktop_capture/desktop_media_list_view.h"
 #include "chrome/browser/ui/views/desktop_capture/desktop_media_source_view.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
@@ -23,7 +27,6 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents_delegate.h"
-#include "ui/aura/window_tree_host.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/canvas.h"
@@ -34,13 +37,16 @@
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/dialog_client_view.h"
-#include "ui/wm/core/shadow_types.h"
+
+#if defined(USE_AURA)
+#include "ui/aura/window_tree_host.h"
+#endif
 
 using content::DesktopMediaID;
 
 namespace {
 
-#if !defined(OS_CHROMEOS)
+#if !defined(OS_CHROMEOS) && defined(USE_AURA)
 DesktopMediaID::Id AcceleratedWidgetToDesktopMediaId(
     gfx::AcceleratedWidget accelerated_widget) {
 #if defined(OS_WIN)
@@ -57,21 +63,32 @@ DesktopMediaPickerDialogView::DesktopMediaPickerDialogView(
     const DesktopMediaPicker::Params& params,
     DesktopMediaPickerViews* parent,
     std::vector<std::unique_ptr<DesktopMediaList>> source_lists)
-    : parent_(parent),
-      modality_(params.modality),
-      description_label_(new views::Label()),
-      audio_share_checkbox_(nullptr),
-      pane_(new views::TabbedPane()) {
+    : parent_(parent), modality_(params.modality) {
+  DialogDelegate::set_button_label(
+      ui::DIALOG_BUTTON_OK,
+      l10n_util::GetStringUTF16(IDS_DESKTOP_MEDIA_PICKER_SHARE));
   const ChromeLayoutProvider* provider = ChromeLayoutProvider::Get();
 
+  std::unique_ptr<views::Checkbox> audio_share_checkbox;
+  if (params.request_audio) {
+    audio_share_checkbox = std::make_unique<views::Checkbox>(
+        l10n_util::GetStringUTF16(IDS_DESKTOP_MEDIA_PICKER_AUDIO_SHARE));
+    audio_share_checkbox->SetChecked(params.approve_audio_by_default);
+    audio_share_checkbox_ =
+        DialogDelegate::SetExtraView(std::move(audio_share_checkbox));
+  }
+
   SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::kVertical,
+      views::BoxLayout::Orientation::kVertical,
       provider->GetDialogInsetsForContentType(views::TEXT, views::CONTROL),
       provider->GetDistanceMetric(DISTANCE_RELATED_CONTROL_VERTICAL_SMALL)));
 
-  description_label_->SetMultiLine(true);
-  description_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  AddChildView(description_label_);
+  auto description_label = std::make_unique<views::Label>();
+  description_label->SetMultiLine(true);
+  description_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  description_label_ = AddChildView(std::move(description_label));
+
+  std::vector<std::pair<base::string16, std::unique_ptr<View>>> panes;
 
   for (auto& source_list : source_lists) {
     switch (source_list->GetMediaListType()) {
@@ -89,7 +106,6 @@ DesktopMediaPickerDialogView::DesktopMediaPickerDialogView(
             gfx::Rect(),                             // label_rect
             gfx::HorizontalAlignment::ALIGN_CENTER,  // text_alignment
             gfx::Rect(20, 20, 320, 240),             // image_rect
-            4,   // selection_border_thickness
             5);  // focus_rectangle_inset
 
         const DesktopMediaSourceViewStyle kGenericScreenStyle(
@@ -99,25 +115,25 @@ DesktopMediaPickerDialogView::DesktopMediaPickerDialogView(
             gfx::Rect(15, 165, 240, 40),             // label_rect
             gfx::HorizontalAlignment::ALIGN_CENTER,  // text_alignment
             gfx::Rect(15, 15, 240, 150),             // image_rect
-            2,   // selection_border_thickness
             5);  // focus_rectangle_inset
 
-        views::ScrollView* screen_scroll_view =
+        std::unique_ptr<views::ScrollView> screen_scroll_view =
             views::ScrollView::CreateScrollViewWithBorder();
         base::string16 screen_title_text = l10n_util::GetStringUTF16(
             IDS_DESKTOP_MEDIA_PICKER_SOURCE_TYPE_SCREEN);
-        list_views_.push_back(new DesktopMediaListView(
-            this, std::move(source_list), kGenericScreenStyle,
-            kSingleScreenStyle, screen_title_text));
+        auto list_controller = std::make_unique<DesktopMediaListController>(
+            this, std::move(source_list));
+        screen_scroll_view->SetContents(list_controller->CreateView(
+            kGenericScreenStyle, kSingleScreenStyle, screen_title_text));
+        list_controllers_.push_back(std::move(list_controller));
 
-        screen_scroll_view->SetContents(list_views_.back());
         screen_scroll_view->ClipHeightTo(
             kGenericScreenStyle.item_size.height(),
             kGenericScreenStyle.item_size.height() * 2);
-        screen_scroll_view->set_hide_horizontal_scrollbar(true);
+        screen_scroll_view->SetHideHorizontalScrollBar(true);
 
-        pane_->AddTab(screen_title_text, screen_scroll_view);
-        pane_->set_listener(this);
+        panes.push_back(
+            std::make_pair(screen_title_text, std::move(screen_scroll_view)));
         break;
       }
       case DesktopMediaID::TYPE_WINDOW: {
@@ -130,56 +146,51 @@ DesktopMediaPickerDialogView::DesktopMediaPickerDialogView(
             gfx::Rect(32, 110, 138, 40),           // label_rect
             gfx::HorizontalAlignment::ALIGN_LEFT,  // text_alignment
             gfx::Rect(8, 8, 164, 104),             // image_rect
-            2,                                     // selection_border_thickness
             5);                                    // focus_rectangle_inset
 
-        views::ScrollView* window_scroll_view =
+        std::unique_ptr<views::ScrollView> window_scroll_view =
             views::ScrollView::CreateScrollViewWithBorder();
         base::string16 window_title_text = l10n_util::GetStringUTF16(
             IDS_DESKTOP_MEDIA_PICKER_SOURCE_TYPE_WINDOW);
-        list_views_.push_back(
-            new DesktopMediaListView(this, std::move(source_list), kWindowStyle,
-                                     kWindowStyle, window_title_text));
-        window_scroll_view->SetContents(list_views_.back());
+        auto list_controller = std::make_unique<DesktopMediaListController>(
+            this, std::move(source_list));
+        window_scroll_view->SetContents(list_controller->CreateView(
+            kWindowStyle, kWindowStyle, window_title_text));
+        list_controllers_.push_back(std::move(list_controller));
+
         window_scroll_view->ClipHeightTo(kWindowStyle.item_size.height(),
                                          kWindowStyle.item_size.height() * 2);
-        window_scroll_view->set_hide_horizontal_scrollbar(true);
+        window_scroll_view->SetHideHorizontalScrollBar(true);
 
-        pane_->AddTab(window_title_text, window_scroll_view);
-        pane_->set_listener(this);
+        panes.push_back(
+            std::make_pair(window_title_text, std::move(window_scroll_view)));
         break;
       }
       case DesktopMediaID::TYPE_WEB_CONTENTS: {
         source_types_.push_back(DesktopMediaID::TYPE_WEB_CONTENTS);
 
-        const DesktopMediaSourceViewStyle kTabStyle(
-            1,                                     // columns
-            gfx::Size(600, 30),                    // item_size
-            gfx::Rect(),                           // icon_rect
-            gfx::Rect(46, 0, 490, 30),             // label_rect
-            gfx::HorizontalAlignment::ALIGN_LEFT,  // text_alignment
-            gfx::Rect(10, 2, 26, 26),              // image_rect
-            1,                                     // selection_border_thickness
-            0);                                    // focus_rectangle_inset
-
-        views::ScrollView* tab_scroll_view =
-            views::ScrollView::CreateScrollViewWithBorder();
-        base::string16 tab_title_text =
+        base::string16 title =
             l10n_util::GetStringUTF16(IDS_DESKTOP_MEDIA_PICKER_SOURCE_TYPE_TAB);
-        list_views_.push_back(
-            new DesktopMediaListView(this, std::move(source_list), kTabStyle,
-                                     kTabStyle, tab_title_text));
+        auto list_controller = std::make_unique<DesktopMediaListController>(
+            this, std::move(source_list));
+        panes.push_back(
+            std::make_pair(title, list_controller->CreateTabListView(title)));
+        list_controllers_.push_back(std::move(list_controller));
 
-        tab_scroll_view->SetContents(list_views_.back());
-        tab_scroll_view->ClipHeightTo(kTabStyle.item_size.height() * 10,
-                                      kTabStyle.item_size.height() * 10);
-        tab_scroll_view->set_hide_horizontal_scrollbar(true);
-
-        pane_->AddTab(tab_title_text, tab_scroll_view);
-        pane_->set_listener(this);
         break;
       }
     }
+  }
+
+  if (panes.size() > 1) {
+    auto tabbed_pane = std::make_unique<views::TabbedPane>();
+    for (auto& pane : panes)
+      tabbed_pane->AddTab(pane.first, std::move(pane.second));
+    tabbed_pane->set_listener(this);
+    tabbed_pane->SetFocusBehavior(views::View::FocusBehavior::NEVER);
+    tabbed_pane_ = AddChildView(std::move(tabbed_pane));
+  } else {
+    AddChildView(std::move(panes.front().second));
   }
 
   if (params.app_name == params.target_name) {
@@ -192,14 +203,6 @@ DesktopMediaPickerDialogView::DesktopMediaPickerDialogView(
   }
 
   DCHECK(!source_types_.empty());
-  pane_->SetFocusBehavior(views::View::FocusBehavior::NEVER);
-  AddChildView(pane_);
-
-  if (params.request_audio) {
-    audio_share_checkbox_ = new views::Checkbox(
-        l10n_util::GetStringUTF16(IDS_DESKTOP_MEDIA_PICKER_AUDIO_SHARE));
-    audio_share_checkbox_->SetChecked(params.approve_audio_by_default);
-  }
 
   // Focus on the first non-null media_list.
   OnSourceTypeSwitched(0);
@@ -215,36 +218,52 @@ DesktopMediaPickerDialogView::DesktopMediaPickerDialogView(
     widget =
         constrained_window::ShowWebModalDialogViews(this, params.web_contents);
   } else {
+#if defined(OS_MACOSX)
+    // On Mac, MODAL_TYPE_CHILD with a null parent isn't allowed - fall back to
+    // MODAL_TYPE_WINDOW.
+    modality_ = ui::MODAL_TYPE_WINDOW;
+#endif
     widget = DialogDelegate::CreateDialogWidget(this, params.context, nullptr);
     widget->Show();
   }
   chrome::RecordDialogCreation(chrome::DialogIdentifier::DESKTOP_MEDIA_PICKER);
 
-  // If the picker is not modal to the calling web contents then it is displayed
-  // in its own top-level window, so in that case it needs to be filtered out of
-  // the list of top-level windows available for capture, and to achieve that
-  // the Id is passed to DesktopMediaList.
+#if defined(OS_MACOSX)
+  // On Mac, even modals are shown using separate native windows.
+  bool is_separate_native_window = true;
+#else
+  bool is_separate_native_window = !modal_dialog;
+#endif
+
+  // If the picker is a separate native window, it should not be shown in the
+  // source list, so its id is passed into NativeDesktopMediaList to be ignored.
   DesktopMediaID dialog_window_id;
-  if (!modal_dialog) {
+  if (is_separate_native_window) {
     dialog_window_id = DesktopMediaID::RegisterNativeWindow(
         DesktopMediaID::TYPE_WINDOW, widget->GetNativeWindow());
 
+#if !defined(OS_CHROMEOS) && defined(USE_AURA)
     // Set native window ID if the windows is outside Ash.
-#if !defined(OS_CHROMEOS)
     dialog_window_id.id = AcceleratedWidgetToDesktopMediaId(
         widget->GetNativeWindow()->GetHost()->GetAcceleratedWidget());
+#elif defined(OS_MACOSX)
+    // On Mac, the window_id in DesktopMediaID is the same as the actual native
+    // window ID. Note that assuming this is a bit of a layering violation; the
+    // fact that this code makes that assumption is documented at the code that
+    // causes it to hold, so hopefully nobody changes that :)
+    dialog_window_id.id = dialog_window_id.window_id;
 #endif
   }
 
-  for (auto* list_view : list_views_)
-    list_view->StartUpdating(dialog_window_id);
+  for (const auto& list_controller : list_controllers_)
+    list_controller->StartUpdating(dialog_window_id);
 }
 
 DesktopMediaPickerDialogView::~DesktopMediaPickerDialogView() {}
 
 void DesktopMediaPickerDialogView::TabSelectedAt(int index) {
   OnSourceTypeSwitched(index);
-  list_views_[index]->RequestFocus();
+  list_controllers_[index]->FocusView();
   DialogModelChanged();
 }
 
@@ -272,6 +291,18 @@ void DesktopMediaPickerDialogView::OnSourceTypeSwitched(int index) {
   }
 }
 
+const DesktopMediaListController*
+DesktopMediaPickerDialogView::GetSelectedController() const {
+  int index = tabbed_pane_ ? tabbed_pane_->GetSelectedTabIndex() : 0;
+  return list_controllers_[index].get();
+}
+
+DesktopMediaListController*
+DesktopMediaPickerDialogView::GetSelectedController() {
+  int index = tabbed_pane_ ? tabbed_pane_->GetSelectedTabIndex() : 0;
+  return list_controllers_[index].get();
+}
+
 void DesktopMediaPickerDialogView::DetachParent() {
   parent_ = nullptr;
 }
@@ -281,52 +312,55 @@ gfx::Size DesktopMediaPickerDialogView::CalculatePreferredSize() const {
   return gfx::Size(kDialogViewWidth, GetHeightForWidth(kDialogViewWidth));
 }
 
+const char* DesktopMediaPickerDialogView::GetClassName() const {
+  return "DesktopMediaPickerDialogView";
+}
+
 ui::ModalType DesktopMediaPickerDialogView::GetModalType() const {
   return modality_;
 }
 
 base::string16 DesktopMediaPickerDialogView::GetWindowTitle() const {
-  return l10n_util::GetStringUTF16(IDS_DESKTOP_MEDIA_PICKER_TITLE);
+  int title_id = IDS_DESKTOP_MEDIA_PICKER_TITLE;
+
+  if (!tabbed_pane_) {
+    switch (source_types_.front()) {
+      case DesktopMediaID::TYPE_SCREEN:
+        title_id = IDS_DESKTOP_MEDIA_PICKER_TITLE_SCREEN_ONLY;
+        break;
+      case DesktopMediaID::TYPE_WINDOW:
+        title_id = IDS_DESKTOP_MEDIA_PICKER_TITLE_WINDOW_ONLY;
+        break;
+      case DesktopMediaID::TYPE_WEB_CONTENTS:
+        title_id = IDS_DESKTOP_MEDIA_PICKER_TITLE_WEB_CONTENTS_ONLY;
+        break;
+      default:
+        break;
+    }
+  }
+
+  return l10n_util::GetStringUTF16(title_id);
 }
 
 bool DesktopMediaPickerDialogView::IsDialogButtonEnabled(
     ui::DialogButton button) const {
-  if (button == ui::DIALOG_BUTTON_OK)
-    return list_views_[pane_->GetSelectedTabIndex()]->GetSelection() != nullptr;
-  return true;
+  return button != ui::DIALOG_BUTTON_OK ||
+         GetSelectedController()->GetSelection().has_value();
 }
 
 views::View* DesktopMediaPickerDialogView::GetInitiallyFocusedView() {
-  return list_views_[0];
-}
-
-int DesktopMediaPickerDialogView::GetDefaultDialogButton() const {
-  // To prevent permissions being accepted accidentally, permission prompts
-  // should not be accepted as the default action.
-  return ui::DIALOG_BUTTON_CANCEL;
-}
-
-base::string16 DesktopMediaPickerDialogView::GetDialogButtonLabel(
-    ui::DialogButton button) const {
-  return l10n_util::GetStringUTF16(button == ui::DIALOG_BUTTON_OK
-                                       ? IDS_DESKTOP_MEDIA_PICKER_SHARE
-                                       : IDS_CANCEL);
-}
-
-views::View* DesktopMediaPickerDialogView::CreateExtraView() {
-  return audio_share_checkbox_;
+  return GetDialogClientView()->cancel_button();
 }
 
 bool DesktopMediaPickerDialogView::Accept() {
-  DesktopMediaSourceView* selection =
-      list_views_[pane_->GetSelectedTabIndex()]->GetSelection();
-
   // Ok button should only be enabled when a source is selected.
-  DCHECK(selection);
-  DesktopMediaID source = selection->source_id();
+  base::Optional<DesktopMediaID> source_optional =
+      accepted_source_.has_value() ? accepted_source_
+                                   : GetSelectedController()->GetSelection();
+  DesktopMediaID source = source_optional.value();
   source.audio_share = audio_share_checkbox_ &&
-                       audio_share_checkbox_->visible() &&
-                       audio_share_checkbox_->checked();
+                       audio_share_checkbox_->GetVisible() &&
+                       audio_share_checkbox_->GetChecked();
 
   if (source.type == DesktopMediaID::TYPE_WEB_CONTENTS) {
     // Activate the selected tab and bring the browser window for the selected
@@ -372,22 +406,30 @@ void DesktopMediaPickerDialogView::OnSelectionChanged() {
   DialogModelChanged();
 }
 
-void DesktopMediaPickerDialogView::OnDoubleClick() {
+void DesktopMediaPickerDialogView::AcceptSource() {
   // This will call Accept() and close the dialog.
   GetDialogClientView()->AcceptWindow();
 }
 
+void DesktopMediaPickerDialogView::AcceptSpecificSource(DesktopMediaID source) {
+  accepted_source_ = base::Optional<DesktopMediaID>(source);
+  AcceptSource();
+}
+
 void DesktopMediaPickerDialogView::SelectTab(
     content::DesktopMediaID::Type source_type) {
+  if (!tabbed_pane_)
+    return;
+
   for (size_t i = 0; i < source_types_.size(); i++) {
     if (source_types_[i] == source_type) {
-      pane_->SelectTabAt(i);
+      tabbed_pane_->SelectTabAt(i);
       return;
     }
   }
 }
 
-void DesktopMediaPickerDialogView::OnMediaListRowsChanged() {
+void DesktopMediaPickerDialogView::OnSourceListLayoutChanged() {
   PreferredSizeChanged();
   // TODO(pbos): Ideally this would use shared logic similar to
   // BubbleDialogDelegateView::SizeToContents() instead of implementing sizing
@@ -407,37 +449,6 @@ void DesktopMediaPickerDialogView::OnMediaListRowsChanged() {
   GetWidget()->CenterWindow(new_size);
 }
 
-DesktopMediaListView* DesktopMediaPickerDialogView::GetMediaListViewForTesting()
-    const {
-  return list_views_[pane_->GetSelectedTabIndex()];
-}
-
-DesktopMediaSourceView*
-DesktopMediaPickerDialogView::GetMediaSourceViewForTesting(int index) const {
-  if (list_views_[pane_->GetSelectedTabIndex()]->child_count() <= index)
-    return nullptr;
-
-  return reinterpret_cast<DesktopMediaSourceView*>(
-      list_views_[pane_->GetSelectedTabIndex()]->child_at(index));
-}
-
-views::Checkbox* DesktopMediaPickerDialogView::GetCheckboxForTesting() const {
-  return audio_share_checkbox_;
-}
-
-int DesktopMediaPickerDialogView::GetIndexOfSourceTypeForTesting(
-    DesktopMediaID::Type source_type) const {
-  for (size_t i = 0; i < source_types_.size(); i++) {
-    if (source_types_[i] == source_type)
-      return i;
-  }
-  return -1;
-}
-
-views::TabbedPane* DesktopMediaPickerDialogView::GetPaneForTesting() const {
-  return pane_;
-}
-
 DesktopMediaPickerViews::DesktopMediaPickerViews() : dialog_(nullptr) {}
 
 DesktopMediaPickerViews::~DesktopMediaPickerViews() {
@@ -450,8 +461,10 @@ DesktopMediaPickerViews::~DesktopMediaPickerViews() {
 void DesktopMediaPickerViews::Show(
     const DesktopMediaPicker::Params& params,
     std::vector<std::unique_ptr<DesktopMediaList>> source_lists,
-    const DoneCallback& done_callback) {
-  callback_ = done_callback;
+    DoneCallback done_callback) {
+  DesktopMediaPickerManager::Get()->OnShowDialog();
+
+  callback_ = std::move(done_callback);
   dialog_ =
       new DesktopMediaPickerDialogView(params, this, std::move(source_lists));
 }
@@ -461,14 +474,15 @@ void DesktopMediaPickerViews::NotifyDialogResult(DesktopMediaID source) {
   dialog_->DetachParent();
   dialog_ = nullptr;
 
+  DesktopMediaPickerManager::Get()->OnHideDialog();
+
   if (callback_.is_null())
     return;
 
   // Notify the |callback_| asynchronously because it may need to destroy
   // DesktopMediaPicker.
-  base::PostTaskWithTraits(FROM_HERE, {content::BrowserThread::UI},
-                           base::BindOnce(callback_, source));
-  callback_.Reset();
+  base::PostTask(FROM_HERE, {content::BrowserThread::UI},
+                 base::BindOnce(std::move(callback_), source));
 }
 
 // static

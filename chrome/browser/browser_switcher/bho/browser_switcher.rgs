@@ -1,0 +1,8 @@
+HKCR {
+  NoRemove AppID {
+    '%APPID%' = s 'browser_switcher_bho'
+    'browser_switcher_bho.dll' {
+      val AppID = s '%APPID%'
+    }
+  }
+}

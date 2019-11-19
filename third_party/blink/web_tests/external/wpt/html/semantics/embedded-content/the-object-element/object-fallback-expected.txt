@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-FAIL the typemustmatch attribute is specified assert_true: typeMustMatch is not supported. expected true got false
-PASS the typemustmatch attribute is not specified
-Harness: the test ran to completion.
-

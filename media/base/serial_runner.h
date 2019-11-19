@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "base/containers/queue.h"
+#include "base/containers/circular_deque.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
@@ -21,33 +21,37 @@ class SingleThreadTaskRunner;
 
 namespace media {
 
-// Runs a series of bound functions accepting Closures or PipelineStatusCB.
-// SerialRunner doesn't use regular Closure/PipelineStatusCBs as it late binds
-// the completion callback as the series progresses.
+// Runs a series of bound functions accepting Closures or
+// PipelineStatusCallback. SerialRunner doesn't use regular
+// OnceClosure/PipelineStatusCallbacks as it late binds the completion callback
+// as the series progresses.
 class MEDIA_EXPORT SerialRunner {
  public:
-  // TODO(dalecurtis): Change SerialRunner to use OnceCallback.
-  typedef base::Callback<void(const base::Closure&)> BoundClosure;
-  typedef base::Callback<void(const PipelineStatusCB&)> BoundPipelineStatusCB;
+  typedef base::OnceCallback<void(base::OnceClosure)> BoundClosure;
+  typedef base::OnceCallback<void(PipelineStatusCallback)>
+      BoundPipelineStatusCallback;
 
   // Serial queue of bound functions to run.
   class MEDIA_EXPORT Queue {
    public:
     Queue();
-    Queue(const Queue& other);
+    Queue(Queue&& other);
     ~Queue();
 
-    void Push(const base::Closure& closure);
-    void Push(const BoundClosure& bound_fn);
-    void Push(const BoundPipelineStatusCB& bound_fn);
+    void Push(base::OnceClosure closure);
+    void Push(BoundClosure bound_fn);
+    void Push(BoundPipelineStatusCallback bound_fn);
 
    private:
+    Queue(const Queue&) = delete;
+    Queue& operator=(const Queue&) = delete;
+
     friend class SerialRunner;
 
-    BoundPipelineStatusCB Pop();
+    BoundPipelineStatusCallback Pop();
     bool empty();
 
-    base::queue<BoundPipelineStatusCB> bound_fns_;
+    base::circular_deque<BoundPipelineStatusCallback> bound_fns_;
   };
 
   // Executes the bound functions in series, executing |done_cb| when finished.
@@ -64,23 +68,23 @@ class MEDIA_EXPORT SerialRunner {
   //
   // Deleting the object will prevent execution of any unstarted bound
   // functions, including |done_cb|.
-  static std::unique_ptr<SerialRunner> Run(const Queue& bound_fns,
-                                           const PipelineStatusCB& done_cb);
+  static std::unique_ptr<SerialRunner> Run(Queue&& bound_fns,
+                                           PipelineStatusCallback done_cb);
 
  private:
   friend std::default_delete<SerialRunner>;
 
-  SerialRunner(const Queue& bound_fns, const PipelineStatusCB& done_cb);
+  SerialRunner(Queue&& bound_fns, PipelineStatusCallback done_cb);
   ~SerialRunner();
 
   void RunNextInSeries(PipelineStatus last_status);
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   Queue bound_fns_;
-  PipelineStatusCB done_cb_;
+  PipelineStatusCallback done_cb_;
 
   // NOTE: Weak pointers must be invalidated before all other member variables.
-  base::WeakPtrFactory<SerialRunner> weak_factory_;
+  base::WeakPtrFactory<SerialRunner> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(SerialRunner);
 };

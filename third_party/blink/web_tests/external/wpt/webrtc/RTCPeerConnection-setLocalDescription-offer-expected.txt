@@ -4,5 +4,7 @@ PASS setLocalDescription with type offer and null sdp should use lastOffer gener
 PASS setLocalDescription() with offer not created by own createOffer() should reject with InvalidModificationError
 FAIL Set created offer other than last offer should reject with InvalidModificationError assert_unreached: Should have rejected: undefined Reached unreachable code
 PASS Creating and setting offer multiple times should succeed
+PASS Setting previously generated offer after a call to createAnswer should work
+PASS Negotiation works when there has been a repeated setLocalDescription(offer)
 Harness: the test ran to completion.
 

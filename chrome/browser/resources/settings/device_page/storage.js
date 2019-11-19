@@ -37,14 +37,10 @@ Polymer({
   behaviors: [settings.RouteObserverBehavior, WebUIListenerBehavior],
 
   properties: {
-    /** @private */
-    driveEnabled_: {
-      type: Boolean,
-      value: false,
-    },
+    androidEnabled: Boolean,
 
     /** @private */
-    androidEnabled_: {
+    androidRunning_: {
       type: Boolean,
       value: false,
     },
@@ -64,12 +60,6 @@ Polymer({
       value: function() {
         return loadTimeData.getBoolean('isGuest');
       }
-    },
-
-    /** @private */
-    hasDriveCache_: {
-      type: Boolean,
-      value: false,
     },
 
     /** @private {settings.StorageSizeStat} */
@@ -92,9 +82,6 @@ Polymer({
         'storage-downloads-size-changed',
         this.handleDownloadsSizeChanged_.bind(this));
     this.addWebUIListener(
-        'storage-drive-cache-size-changed',
-        this.handleDriveCacheSizeChanged_.bind(this));
-    this.addWebUIListener(
         'storage-browsing-data-size-changed',
         this.handleBrowsingDataSizeChanged_.bind(this));
     this.addWebUIListener(
@@ -109,11 +96,8 @@ Polymer({
           this.handleOtherUsersSizeChanged_.bind(this));
     }
     this.addWebUIListener(
-        'storage-drive-enabled-changed',
-        this.handleDriveEnabledChanged_.bind(this));
-    this.addWebUIListener(
-        'storage-android-enabled-changed',
-        this.handleAndroidEnabledChanged_.bind(this));
+        'storage-android-running-changed',
+        this.handleAndroidRunningChanged_.bind(this));
   },
 
   /**
@@ -144,23 +128,11 @@ Polymer({
   },
 
   /**
-   * Handler for tapping the "Offline files" item.
-   * @param {!Event} e
-   * @private
-   */
-  onDriveCacheTap_: function(e) {
-    e.preventDefault();
-    if (this.hasDriveCache_) {
-      this.$.storageDriveCache.open();
-    }
-  },
-
-  /**
    * Handler for tapping the "Browsing data" item.
    * @private
    */
   onBrowsingDataTap_: function() {
-    settings.navigateTo(settings.routes.CLEAR_BROWSER_DATA);
+    window.open('chrome://settings/clearBrowserData');
   },
 
   /**
@@ -176,7 +148,9 @@ Polymer({
    * @private
    */
   onCrostiniTap_: function() {
-    settings.navigateTo(settings.routes.CROSTINI_DETAILS);
+    settings.navigateTo(
+        settings.routes.CROSTINI_DETAILS, /* dynamicParams */ null,
+        /* removeSearch */ true);
   },
 
   /**
@@ -184,7 +158,17 @@ Polymer({
    * @private
    */
   onOtherUsersTap_: function() {
-    settings.navigateTo(settings.routes.ACCOUNTS);
+    settings.navigateTo(
+        settings.routes.ACCOUNTS,
+        /* dynamicParams */ null, /* removeSearch */ true);
+  },
+
+  /**
+   * Handler for tapping the "External storage preferences" item.
+   * @private
+   */
+  onExternalStoragePreferencesTap_: function() {
+    settings.navigateTo(settings.routes.EXTERNAL_STORAGE_PREFERENCES);
   },
 
   /**
@@ -203,20 +187,7 @@ Polymer({
    * @private
    */
   handleDownloadsSizeChanged_: function(size) {
-    this.$.downloadsSize.textContent = size;
-  },
-
-  /**
-   * @param {string} size Formatted string representing the size of Offline
-   *     files.
-   * @param {boolean} hasCache True if the device has at least one offline file.
-   * @private
-   */
-  handleDriveCacheSizeChanged_: function(size, hasCache) {
-    if (this.driveEnabled_) {
-      this.$$('#driveCacheSize').textContent = size;
-      this.hasDriveCache_ = hasCache;
-    }
+    this.$.downloadsSize.subLabel = size;
   },
 
   /**
@@ -225,7 +196,7 @@ Polymer({
    * @private
    */
   handleBrowsingDataSizeChanged_: function(size) {
-    this.$.browsingDataSize.textContent = size;
+    this.$.browsingDataSize.subLabel = size;
   },
 
   /**
@@ -234,8 +205,8 @@ Polymer({
    * @private
    */
   handleAndroidSizeChanged_: function(size) {
-    if (this.androidEnabled_) {
-      this.$$('#androidSize').textContent = size;
+    if (this.androidRunning_) {
+      this.$$('#androidSize').subLabel = size;
     }
   },
 
@@ -246,7 +217,7 @@ Polymer({
    */
   handleCrostiniSizeChanged_: function(size) {
     if (this.showCrostiniStorage_) {
-      this.$$('#crostiniSize').textContent = size;
+      this.$$('#crostiniSize').subLabel = size;
     }
   },
 
@@ -256,24 +227,16 @@ Polymer({
    */
   handleOtherUsersSizeChanged_: function(size) {
     if (!this.isGuest_) {
-      this.$$('#otherUsersSize').textContent = size;
+      this.$$('#otherUsersSize').subLabel = size;
     }
   },
 
   /**
-   * @param {boolean} enabled True if Google Drive is enabled.
+   * @param {boolean} running True if Android (ARC) is running.
    * @private
    */
-  handleDriveEnabledChanged_: function(enabled) {
-    this.driveEnabled_ = enabled;
-  },
-
-  /**
-   * @param {boolean} enabled True if Android Play Store is enabled.
-   * @private
-   */
-  handleAndroidEnabledChanged_: function(enabled) {
-    this.androidEnabled_ = enabled;
+  handleAndroidRunningChanged_: function(running) {
+    this.androidRunning_ = running;
   },
 
   /**
@@ -347,10 +310,5 @@ Polymer({
       default:
         return '';
     }
-  },
-
-  /** @private */
-  onCloseDriveCacheDialog_: function() {
-    cr.ui.focusWithoutInk(assert(this.$$('#deleteButton')));
   },
 });

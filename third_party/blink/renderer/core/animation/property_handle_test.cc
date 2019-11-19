@@ -111,18 +111,18 @@ TEST_F(PropertyHandleTest, Accessors) {
   EXPECT_FALSE(PropertyHandle(kAmplitudeAttr).IsCSSCustomProperty());
 
   EXPECT_EQ(
-      CSSPropertyOpacity,
+      CSSPropertyID::kOpacity,
       PropertyHandle(GetCSSPropertyOpacity()).GetCSSProperty().PropertyID());
-  EXPECT_EQ(CSSPropertyVariable,
+  EXPECT_EQ(CSSPropertyID::kVariable,
             PropertyHandle(name).GetCSSProperty().PropertyID());
   EXPECT_EQ(name, PropertyHandle(name).CustomPropertyName());
   EXPECT_EQ(kAmplitudeAttr, PropertyHandle(kAmplitudeAttr).SvgAttribute());
 
   EXPECT_EQ(name, PropertyHandle(name).GetCSSPropertyName().ToAtomicString());
-  EXPECT_EQ(CSSPropertyOpacity,
+  EXPECT_EQ(CSSPropertyID::kOpacity,
             PropertyHandle(GetCSSPropertyOpacity()).GetCSSPropertyName().Id());
   EXPECT_EQ(
-      CSSPropertyColor,
+      CSSPropertyID::kColor,
       PropertyHandle(GetCSSPropertyColor(), true).GetCSSPropertyName().Id());
 }
 

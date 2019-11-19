@@ -13,6 +13,7 @@
 #include "base/callback_forward.h"
 #include "base/component_export.h"
 #include "base/files/file_path.h"
+#include "base/observer_list_types.h"
 #include "chromeos/dbus/cros_disks_client.h"
 
 namespace chromeos {
@@ -25,6 +26,17 @@ enum MountCondition {
   MOUNT_CONDITION_NONE,
   MOUNT_CONDITION_UNKNOWN_FILESYSTEM,
   MOUNT_CONDITION_UNSUPPORTED_FILESYSTEM,
+};
+
+// Possible filesystem types that can be passed to FormatMountedDevice.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class FormatFileSystemType {
+  kUnknown = 0,
+  kVfat = 1,
+  kExfat = 2,
+  kNtfs = 3,
+  kMaxValue = kNtfs,
 };
 
 // This class handles the interaction with cros-disks.
@@ -96,10 +108,8 @@ class COMPONENT_EXPORT(CHROMEOS_DISKS) DiskMountManager {
       EnsureMountInfoRefreshedCallback;
 
   // Implement this interface to be notified about disk/mount related events.
-  class Observer {
+  class Observer : public base::CheckedObserver {
    public:
-    virtual ~Observer() {}
-
     // Called when auto-mountable disk mount status is changed.
     virtual void OnAutoMountableDiskEvent(DiskEvent event, const Disk& disk) {}
     // Called when fixed storage disk status is changed.
@@ -119,6 +129,9 @@ class COMPONENT_EXPORT(CHROMEOS_DISKS) DiskMountManager {
     virtual void OnRenameEvent(RenameEvent event,
                                RenameError error_code,
                                const std::string& device_path) {}
+
+   protected:
+    ~Observer() override;
   };
 
   virtual ~DiskMountManager() {}
@@ -162,22 +175,25 @@ class COMPONENT_EXPORT(CHROMEOS_DISKS) DiskMountManager {
                          MountAccessMode access_mode) = 0;
 
   // Unmounts a mounted disk.
-  // |UnmountOptions| enum defined in chromeos/dbus/cros_disks_client.h.
   // When the method is complete, |callback| will be called and observers'
   // |OnMountEvent| will be raised.
   //
   // |callback| may be empty, in which case it gets ignored.
   virtual void UnmountPath(const std::string& mount_path,
-                           UnmountOptions options,
                            UnmountPathCallback callback) = 0;
 
   // Remounts mounted removable devices to change the read-only mount option.
   // Devices that can be mounted only in its read-only mode will be ignored.
   virtual void RemountAllRemovableDrives(chromeos::MountAccessMode mode) = 0;
 
-  // Formats Device given its mount path. Unmounts the device.
+  // Formats device mounted at |mount_path| with the given filesystem and label.
+  // Also unmounts the device before formatting.
   // Example: mount_path: /media/VOLUME_LABEL
-  virtual void FormatMountedDevice(const std::string& mount_path) = 0;
+  //          filesystem: FormatFileSystemType::kNtfs
+  //          label: MYUSB
+  virtual void FormatMountedDevice(const std::string& mount_path,
+                                   FormatFileSystemType filesystem,
+                                   const std::string& label) = 0;
 
   // Renames Device given its mount path.
   // Example: mount_path: /media/VOLUME_LABEL

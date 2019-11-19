@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Skip-level same-origin test</title>
+</head>
+<body>
+<iframe src="http://localhost:8000/security/resources/agent-equality-skip-level-same-origin-b.html">
+</iframe>
+<script>
+// This file should be loaded as an iframe hosted on 127.0.0.1:8000.
+
+// This test creates the following frame tree (note that 127.0.0.1 and localhost
+// are cross-origin):
+//
+// A: 127.0.0.1:8000 (this file)
+// |
+// +-- B: localhost:8000
+//     |
+//     +-- C: 127.0.0.1:8000
+//
+// This page posts a message to the parent window, containing two strings
+// which correspond to the agent IDs of A and C, respectively.
+//
+// Success condition: A's agent is the same as C's.
+
+function onMessage(evt) {
+  let agentIdC = evt.data;
+  let message = [
+    'skip-level same-origin test',
+    internals.getDocumentAgentId(document),
+    agentIdC
+  ];
+  window.parent.postMessage(message, '*');
+}
+
+window.addEventListener('message', onMessage, {'once': true});
+</script>
+</body>
+</html>

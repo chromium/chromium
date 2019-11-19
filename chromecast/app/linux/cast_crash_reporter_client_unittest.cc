@@ -131,7 +131,7 @@ TEST_F(CastCrashReporterClientTest, EndToEndTestOnIORestrictedThread) {
   // Handle a "crash" on an IO restricted thread.
   base::ThreadRestrictions::SetIOAllowed(false);
   CastCrashReporterClient client;
-  ASSERT_TRUE(client.HandleCrashDump(minidump_path().value().c_str()));
+  ASSERT_TRUE(client.HandleCrashDump(minidump_path().value().c_str(), 0));
 
   // Assert that the thread is IO restricted when the function exits.
   // Note that SetIOAllowed returns the previous value.
@@ -143,7 +143,7 @@ TEST_F(CastCrashReporterClientTest, EndToEndTestOnNonIORestrictedThread) {
   // Handle a crash on a non-IO restricted thread.
   base::ThreadRestrictions::SetIOAllowed(true);
   CastCrashReporterClient client;
-  ASSERT_TRUE(client.HandleCrashDump(minidump_path().value().c_str()));
+  ASSERT_TRUE(client.HandleCrashDump(minidump_path().value().c_str(), 0));
 
   // Assert that the thread is not IO restricted when the function exits.
   // Note that SetIOAllowed returns the previous value.

@@ -6,6 +6,8 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_URI_VALUE_H_
 
 #include "third_party/blink/renderer/core/css/css_value.h"
+#include "third_party/blink/renderer/platform/wtf/casting.h"
+#include "third_party/blink/renderer/platform/wtf/text/text_encoding.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -14,7 +16,9 @@ class Document;
 class KURL;
 class SVGResource;
 
-class CSSURIValue : public CSSValue {
+namespace cssvalue {
+
+class CORE_EXPORT CSSURIValue : public CSSValue {
  public:
   static CSSURIValue* Create(const String& relative_url, const KURL& url) {
     return MakeGarbageCollected<CSSURIValue>(AtomicString(relative_url), url);
@@ -42,6 +46,9 @@ class CSSURIValue : public CSSValue {
 
   bool Equals(const CSSURIValue&) const;
 
+  CSSURIValue* ValueWithURLMadeAbsolute(const KURL& base_url,
+                                        const WTF::TextEncoding&) const;
+
   void TraceAfterDispatch(blink::Visitor*);
 
  private:
@@ -54,7 +61,12 @@ class CSSURIValue : public CSSValue {
   mutable AtomicString absolute_url_;
 };
 
-DEFINE_CSS_VALUE_TYPE_CASTS(CSSURIValue, IsURIValue());
+}  // namespace cssvalue
+
+template <>
+struct DowncastTraits<cssvalue::CSSURIValue> {
+  static bool AllowFrom(const CSSValue& value) { return value.IsURIValue(); }
+};
 
 }  // namespace blink
 

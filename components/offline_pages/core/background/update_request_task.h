@@ -56,7 +56,7 @@ class UpdateRequestTask : public Task {
   // Callback to complete the task.
   RequestQueueStore::UpdateCallback callback_;
 
-  base::WeakPtrFactory<UpdateRequestTask> weak_ptr_factory_;
+  base::WeakPtrFactory<UpdateRequestTask> weak_ptr_factory_{this};
   DISALLOW_COPY_AND_ASSIGN(UpdateRequestTask);
 };
 

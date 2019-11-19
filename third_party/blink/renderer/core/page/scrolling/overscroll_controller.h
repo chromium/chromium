@@ -23,12 +23,6 @@ class VisualViewport;
 // as soon as a gesture ends.
 class OverscrollController : public GarbageCollected<OverscrollController> {
  public:
-  static OverscrollController* Create(const VisualViewport& visual_viewport,
-                                      ChromeClient& chrome_client) {
-    return MakeGarbageCollected<OverscrollController>(visual_viewport,
-                                                      chrome_client);
-  }
-
   OverscrollController(const VisualViewport&, ChromeClient&);
 
   void ResetAccumulated(bool reset_x, bool reset_y);
@@ -42,8 +36,6 @@ class OverscrollController : public GarbageCollected<OverscrollController> {
                         const FloatPoint& position_in_root_frame,
                         const FloatSize& velocity_in_root_frame);
 
-  void SetOverscrollBehavior(const cc::OverscrollBehavior&);
-
   void Trace(blink::Visitor*);
 
  private:
@@ -51,8 +43,6 @@ class OverscrollController : public GarbageCollected<OverscrollController> {
   WeakMember<ChromeClient> chrome_client_;
 
   FloatSize accumulated_root_overscroll_;
-
-  cc::OverscrollBehavior overscroll_behavior_;
 };
 
 }  // namespace blink

@@ -5,14 +5,16 @@
 package org.chromium.chrome.browser.tab;
 
 import android.content.ComponentName;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ResolveInfo;
 import android.os.SystemClock;
 import android.provider.Browser;
-import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
+import androidx.annotation.Nullable;
+
+import org.chromium.base.ContextUtils;
+import org.chromium.base.PackageManagerUtils;
 import org.chromium.base.UserData;
 import org.chromium.base.UserDataHost;
 import org.chromium.chrome.browser.ChromeFeatureList;
@@ -57,8 +59,6 @@ public class TabRedirectHandler extends EmptyTabObserver implements UserData {
 
     private boolean mShouldNotOverrideUrlLoadingUntilNewUrlLoading;
 
-    private final Context mContext;
-
     /**
      * Returns {@link TabRedirectHandler} that hangs on to a given {@link Tab}.
      * If not present, creates a new instance and associate it with the {@link UserDataHost}
@@ -70,7 +70,7 @@ public class TabRedirectHandler extends EmptyTabObserver implements UserData {
         UserDataHost host = tab.getUserDataHost();
         TabRedirectHandler handler = host.getUserData(USER_DATA_KEY);
         if (handler == null) {
-            handler = new TabRedirectHandler(tab.getThemedApplicationContext());
+            handler = new TabRedirectHandler();
             host.setUserData(USER_DATA_KEY, handler);
             tab.addObserver(handler);
         }
@@ -101,13 +101,11 @@ public class TabRedirectHandler extends EmptyTabObserver implements UserData {
         return oldHandler;
     }
 
-    public static TabRedirectHandler create(Context context) {
-        return new TabRedirectHandler(context);
+    public static TabRedirectHandler create() {
+        return new TabRedirectHandler();
     }
 
-    protected TabRedirectHandler(Context context) {
-        mContext = context;
-    }
+    protected TabRedirectHandler() {}
 
     @Override
     public void onHidden(Tab tab, @TabHidingType int type) {
@@ -125,7 +123,7 @@ public class TabRedirectHandler extends EmptyTabObserver implements UserData {
     public void updateIntent(Intent intent) {
         clear();
 
-        if (mContext == null || intent == null || !Intent.ACTION_VIEW.equals(intent.getAction())) {
+        if (intent == null || !Intent.ACTION_VIEW.equals(intent.getAction())) {
             return;
         }
 
@@ -141,7 +139,7 @@ public class TabRedirectHandler extends EmptyTabObserver implements UserData {
                     && ChromeFeatureList.isEnabled(ChromeFeatureList.CCT_EXTERNAL_LINK_HANDLING));
         }
 
-        if (checkIsToChrome) mIsInitialIntentHeadingToChrome = isIntentToChrome(mContext, intent);
+        if (checkIsToChrome) mIsInitialIntentHeadingToChrome = isIntentToChrome(intent);
 
         // A copy of the intent with component cleared to find resolvers.
         mInitialIntent = new Intent(intent).setComponent(null);
@@ -149,8 +147,8 @@ public class TabRedirectHandler extends EmptyTabObserver implements UserData {
         if (selector != null) selector.setComponent(null);
     }
 
-    private static boolean isIntentToChrome(Context context, Intent intent) {
-        String chromePackageName = context.getPackageName();
+    private static boolean isIntentToChrome(Intent intent) {
+        String chromePackageName = ContextUtils.getApplicationContext().getPackageName();
         return TextUtils.equals(chromePackageName, intent.getPackage())
                 || TextUtils.equals(chromePackageName, IntentUtils.safeGetStringExtra(intent,
                         Browser.EXTRA_APPLICATION_ID));
@@ -266,6 +264,8 @@ public class TabRedirectHandler extends EmptyTabObserver implements UserData {
      */
     public boolean shouldStayInChrome(boolean hasExternalProtocol,
             boolean isForTrustedCallingApp) {
+        // http://crbug/424029 : Need to stay in Chrome for an intent heading explicitly to Chrome.
+        // http://crbug/881740 : Relax stay in Chrome restriction for Custom Tabs.
         return (mIsInitialIntentHeadingToChrome && !hasExternalProtocol)
                 || shouldNavigationTypeStayInChrome(isForTrustedCallingApp);
     }
@@ -278,7 +278,7 @@ public class TabRedirectHandler extends EmptyTabObserver implements UserData {
     }
 
     private boolean shouldNavigationTypeStayInChrome(boolean isForTrustedCallingApp) {
-        // Never leave Chrome from a refresh.
+        // http://crbug.com/162106: Never leave Chrome from a refresh.
         if (mInitialNavigationType == NAVIGATION_TYPE_FROM_RELOAD) return true;
 
         // If the app we would navigate to is trusted and what launched Chrome, allow the
@@ -324,8 +324,8 @@ public class TabRedirectHandler extends EmptyTabObserver implements UserData {
         return mLastCommittedEntryIndexBeforeStartingNavigation;
     }
 
-    private static List<ComponentName> getIntentHandlers(Context context, Intent intent) {
-        List<ResolveInfo> list = context.getPackageManager().queryIntentActivities(intent, 0);
+    private static List<ComponentName> getIntentHandlers(Intent intent) {
+        List<ResolveInfo> list = PackageManagerUtils.queryIntentActivities(intent, 0);
         List<ComponentName> nameList = new ArrayList<ComponentName>();
         for (ResolveInfo r : list) {
             nameList.add(new ComponentName(r.activityInfo.packageName, r.activityInfo.name));
@@ -343,9 +343,9 @@ public class TabRedirectHandler extends EmptyTabObserver implements UserData {
             return false;
         }
 
-        List<ComponentName> newList = getIntentHandlers(mContext, intent);
+        List<ComponentName> newList = getIntentHandlers(intent);
         if (mCachedResolvers.isEmpty()) {
-            mCachedResolvers.addAll(getIntentHandlers(mContext, mInitialIntent));
+            mCachedResolvers.addAll(getIntentHandlers(mInitialIntent));
         }
         for (ComponentName name : newList) {
             if (!mCachedResolvers.contains(name)) {

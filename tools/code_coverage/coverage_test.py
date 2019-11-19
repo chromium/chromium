@@ -8,8 +8,16 @@ import os
 import re
 import shutil
 import subprocess
+import sys
 import unittest
 
+# Appends third_party/ so that coverage_utils can import jinja2 from
+# third_party/, note that this is not done inside coverage_utils because
+# coverage_utils is also used outside of Chromium source tree.
+sys.path.append(
+    os.path.join(
+        os.path.dirname(__file__), os.path.pardir, os.path.pardir,
+        'third_party'))
 import coverage_utils
 
 

@@ -49,11 +49,6 @@ extern NSString* const
 @property(nonatomic, weak) id<ContentSuggestionsMetricsRecording>
     metricsRecorder;
 
-// TODO(crbug.com/761817): Remove this code once the transition to the new
-// architecture is completed.
-// Whether this collection contains a toolbar.
-@property(nonatomic, assign) BOOL containsToolbar;
-
 - (void)setDataSource:(id<ContentSuggestionsDataSource>)dataSource;
 - (void)setDispatcher:(id<SnackbarCommands>)dispatcher;
 
@@ -78,9 +73,6 @@ extern NSString* const
 // Sets the collection contentOffset to |offset|, or caches the value and
 // applies it after the first layout.
 - (void)setContentOffset:(CGFloat)offset;
-
-// Returns the accessibility identifier of the collection.
-+ (NSString*)collectionAccessibilityIdentifier;
 
 @end
 

@@ -9,6 +9,11 @@ namespace prerender {
 
 // Origin indicates what caused the prerender.
 // NOTE: New values need to be appended, since they are used in histograms.
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused. The values should remain
+// synchronized with the enum PrerenderOrigin in
+// //tools/metrics/histograms/enums.xml.
 enum Origin {
   // Obsolete: ORIGIN_LINK_REL_PRERENDER = 0,
   // Obsolete: ORIGIN_OMNIBOX_ORIGINAL = 1,
@@ -25,7 +30,8 @@ enum Origin {
   ORIGIN_LINK_REL_NEXT = 12,
   ORIGIN_EXTERNAL_REQUEST_FORCED_PRERENDER = 13,
   // Obsolete: ORIGIN_OFFLINE = 14,
-  ORIGIN_MAX = 15,
+  ORIGIN_NAVIGATION_PREDICTOR = 15,
+  ORIGIN_MAX = 16,
 };
 
 // Return a human-readable name for |origin|.

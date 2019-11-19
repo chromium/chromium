@@ -23,11 +23,13 @@ void LatencyInfoSwapPromise::WillSwap(viz::CompositorFrameMetadata* metadata) {
 
 void LatencyInfoSwapPromise::DidSwap() {}
 
-void LatencyInfoSwapPromise::DidNotSwap(DidNotSwapReason reason) {
+SwapPromise::DidNotSwapAction LatencyInfoSwapPromise::DidNotSwap(
+    DidNotSwapReason reason) {
   latency_.Terminate();
   // TODO(miletus): Turn this back on once per-event LatencyInfo tracking
   // is enabled in GPU side.
   // DCHECK(latency_.terminated);
+  return DidNotSwapAction::BREAK_PROMISE;
 }
 
 int64_t LatencyInfoSwapPromise::TraceId() const {

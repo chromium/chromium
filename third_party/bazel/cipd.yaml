@@ -5,3 +5,4 @@
 package: chromium/third_party/bazel
 data:
   - file: desugar/Desugar.jar
+  - file: desugar/Desugar_runtime.jar

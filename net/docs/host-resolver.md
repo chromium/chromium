@@ -38,7 +38,7 @@ Data collected at this layer:
 ### Task
 
 The entry point for the system resolver is HostResolverImpl::ProcTask. The task
-runs almost entirely on TaskScheduler. Its main implementation is in
+runs almost entirely on ThreadPool. Its main implementation is in
 SystemHostResolverProc. Other implementations of HostResolverProc can be swapped
 in for testing.
 
@@ -50,7 +50,7 @@ Data collected at this layer:
 ### Attempt
 
 Attempts in the system resolver are not a separate class. They're implemented as
-separate tasks posted to TaskScheduler.
+separate tasks posted to ThreadPool.
 
 Data collected at this layer:
 * "DNS.AttemptFirstSuccess"

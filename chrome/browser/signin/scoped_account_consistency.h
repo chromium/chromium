@@ -9,7 +9,7 @@
 
 #include "base/macros.h"
 #include "base/test/scoped_feature_list.h"
-#include "components/signin/core/browser/account_consistency_method.h"
+#include "components/signin/public/base/account_consistency_method.h"
 
 // Changes the account consistency method while it is in scope. Useful for
 // tests.

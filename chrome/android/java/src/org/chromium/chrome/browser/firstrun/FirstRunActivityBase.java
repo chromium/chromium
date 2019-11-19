@@ -116,6 +116,8 @@ public abstract class FirstRunActivityBase extends AsyncInitializationActivity {
             // Use the PendingIntent to send the intent that originally launched Chrome. The intent
             // will go back to the ChromeLauncherActivity, which will route it accordingly.
             pendingIntent.send(Activity.RESULT_OK, onFinished, null);
+            // Use fade-out animation for the transition from this activity so the original intent.
+            overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
             return true;
         } catch (CanceledException e) {
             Log.e(TAG, "Unable to send PendingIntent.", e);

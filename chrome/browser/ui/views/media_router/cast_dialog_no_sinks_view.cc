@@ -12,8 +12,9 @@
 #include "base/task/post_task.h"
 #include "base/time/time.h"
 #include "chrome/app/vector_icons/vector_icons.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_tabstrip.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser_navigator.h"
+#include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/views/hover_button.h"
 #include "chrome/browser/ui/views/media_router/cast_dialog_helper.h"
 #include "chrome/common/url_constants.h"
@@ -34,19 +35,17 @@
 
 namespace media_router {
 
-CastDialogNoSinksView::CastDialogNoSinksView(Browser* browser)
-    : browser_(browser), weak_factory_(this) {
-  SetLayoutManager(
-      std::make_unique<views::BoxLayout>(views::BoxLayout::kVertical));
+CastDialogNoSinksView::CastDialogNoSinksView(Profile* profile)
+    : profile_(profile) {
+  SetLayoutManager(std::make_unique<views::BoxLayout>(
+      views::BoxLayout::Orientation::kVertical));
   looking_for_sinks_view_ = CreateLookingForSinksView();
   AddChildView(looking_for_sinks_view_);
 
-  constexpr int kThrobberDurationInSeconds = 3;
-  base::PostDelayedTaskWithTraits(
-      FROM_HERE, {content::BrowserThread::UI},
-      base::BindOnce(&CastDialogNoSinksView::ShowHelpIconView,
-                     weak_factory_.GetWeakPtr()),
-      base::TimeDelta::FromSeconds(kThrobberDurationInSeconds));
+  base::PostDelayedTask(FROM_HERE, {content::BrowserThread::UI},
+                        base::BindOnce(&CastDialogNoSinksView::ShowHelpIconView,
+                                       weak_factory_.GetWeakPtr()),
+                        base::TimeDelta::FromSeconds(3));
 }
 
 CastDialogNoSinksView::~CastDialogNoSinksView() = default;
@@ -67,7 +66,8 @@ void CastDialogNoSinksView::ShowHelpIconView() {
 
 void CastDialogNoSinksView::ShowHelpCenterArticle() {
   const GURL url = GURL(chrome::kCastNoDestinationFoundURL);
-  chrome::AddSelectedTabWithURL(browser_, url, ui::PAGE_TRANSITION_LINK);
+  NavigateParams params(profile_, url, ui::PAGE_TRANSITION_LINK);
+  Navigate(&params);
 }
 
 views::View* CastDialogNoSinksView::CreateLookingForSinksView() {
@@ -91,8 +91,7 @@ views::View* CastDialogNoSinksView::CreateHelpIconView() {
                       gfx::CreateVectorIcon(::vector_icons::kHelpOutlineIcon,
                                             kPrimaryIconSize, icon_color));
   help_icon->SetFocusForPlatform();
-  help_icon->SetBorder(
-      views::CreateEmptyBorder(gfx::Insets(kPrimaryIconBorderWidth)));
+  help_icon->SetBorder(views::CreateEmptyBorder(kPrimaryIconBorder));
   help_icon->SetAccessibleName(
       l10n_util::GetStringUTF16(IDS_MEDIA_ROUTER_NO_DEVICES_FOUND_BUTTON));
   HoverButton* view =

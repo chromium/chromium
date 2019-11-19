@@ -11,7 +11,6 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
-#include "content/common/dom_storage/dom_storage_types.h"
 #include "content/common/frame_messages.h"
 #include "content/common/render_message_filter.mojom.h"
 #include "content/common/view_messages.h"
@@ -21,7 +20,7 @@
 #include "ipc/ipc_message_utils.h"
 #include "ipc/ipc_sync_message.h"
 #include "ipc/message_filter.h"
-#include "services/service_manager/public/cpp/connector.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/dom_storage/session_storage_namespace_id.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
@@ -50,14 +49,14 @@ class MockRenderMessageFilterImpl : public mojom::RenderMessageFilter {
   }
 
   void CreateNewWidget(int32_t opener_id,
-                       mojom::WidgetPtr widget,
+                       mojo::PendingRemote<mojom::Widget> widget,
                        CreateNewWidgetCallback callback) override {
     // See comment in CreateNewWindow().
     NOTREACHED();
   }
 
   bool CreateNewWidget(int32_t opener_id,
-                       mojom::WidgetPtr widget,
+                       mojo::PendingRemote<mojom::Widget> widget,
                        int32_t* route_id) override {
     thread_->OnCreateWidget(opener_id, route_id);
     return true;
@@ -65,7 +64,7 @@ class MockRenderMessageFilterImpl : public mojom::RenderMessageFilter {
 
   void CreateFullscreenWidget(
       int opener_id,
-      mojom::WidgetPtr widget,
+      mojo::PendingRemote<mojom::Widget> widget,
       CreateFullscreenWidgetCallback callback) override {
     NOTREACHED();
   }
@@ -145,6 +144,9 @@ MockRenderThread::GetIOTaskRunner() {
   return scoped_refptr<base::SingleThreadTaskRunner>();
 }
 
+void MockRenderThread::BindHostReceiver(mojo::GenericPendingReceiver receiver) {
+}
+
 void MockRenderThread::AddRoute(int32_t routing_id, IPC::Listener* listener) {}
 
 void MockRenderThread::RemoveRoute(int32_t routing_id) {}
@@ -191,17 +193,6 @@ void MockRenderThread::RecordAction(const base::UserMetricsAction& action) {
 void MockRenderThread::RecordComputedAction(const std::string& action) {
 }
 
-std::unique_ptr<base::SharedMemory>
-MockRenderThread::HostAllocateSharedMemoryBuffer(size_t buffer_size) {
-  std::unique_ptr<base::SharedMemory> shared_buf(new base::SharedMemory);
-  if (!shared_buf->CreateAnonymous(buffer_size)) {
-    NOTREACHED() << "Cannot map shared memory buffer";
-    return std::unique_ptr<base::SharedMemory>();
-  }
-
-  return std::unique_ptr<base::SharedMemory>(shared_buf.release());
-}
-
 void MockRenderThread::RegisterExtension(
     std::unique_ptr<v8::Extension> extension) {
   blink::WebScriptController::RegisterExtension(std::move(extension));
@@ -246,18 +237,6 @@ void MockRenderThread::ReleaseCachedFonts() {
 }
 #endif
 
-ServiceManagerConnection* MockRenderThread::GetServiceManagerConnection() {
-  return nullptr;
-}
-
-service_manager::Connector* MockRenderThread::GetConnector() {
-  if (!connector_) {
-    connector_ =
-        service_manager::Connector::Create(&pending_connector_request_);
-  }
-  return connector_.get();
-}
-
 void MockRenderThread::SetFieldTrialGroup(const std::string& trial_name,
                                           const std::string& group_name) {}
 
@@ -283,16 +262,16 @@ MockRenderThread::TakeInitialInterfaceProviderRequestForFrame(
   return interface_provider_request;
 }
 
-blink::mojom::DocumentInterfaceBrokerRequest
-MockRenderThread::TakeInitialDocumentInterfaceBrokerRequestForFrame(
+mojo::PendingReceiver<blink::mojom::BrowserInterfaceBroker>
+MockRenderThread::TakeInitialBrowserInterfaceBrokerReceiverForFrame(
     int32_t routing_id) {
   auto it =
-      frame_routing_id_to_initial_document_broker_requests_.find(routing_id);
-  if (it == frame_routing_id_to_initial_document_broker_requests_.end())
-    return nullptr;
-  auto document_broker_request = std::move(it->second);
-  frame_routing_id_to_initial_document_broker_requests_.erase(it);
-  return document_broker_request;
+      frame_routing_id_to_initial_browser_broker_receivers_.find(routing_id);
+  if (it == frame_routing_id_to_initial_browser_broker_receivers_.end())
+    return mojo::NullReceiver();
+  auto browser_broker_receiver = std::move(it->second);
+  frame_routing_id_to_initial_browser_broker_receivers_.erase(it);
+  return browser_broker_receiver;
 }
 
 void MockRenderThread::PassInitialInterfaceProviderRequestForFrame(
@@ -317,17 +296,13 @@ void MockRenderThread::OnCreateChildFrame(
   params_reply->new_interface_provider =
       interface_provider.PassInterface().PassHandle().release();
 
-  blink::mojom::DocumentInterfaceBrokerPtr document_interface_broker;
-  frame_routing_id_to_initial_document_broker_requests_.emplace(
+  mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker>
+      browser_interface_broker;
+  frame_routing_id_to_initial_browser_broker_receivers_.emplace(
       params_reply->child_routing_id,
-      mojo::MakeRequest(&document_interface_broker));
-  params_reply->document_interface_broker_content_handle =
-      document_interface_broker.PassInterface().PassHandle().release();
-
-  blink::mojom::DocumentInterfaceBrokerPtr document_interface_broker_blink;
-  mojo::MakeRequest(&document_interface_broker_blink);
-  params_reply->document_interface_broker_blink_handle =
-      document_interface_broker_blink.PassInterface().PassHandle().release();
+      browser_interface_broker.InitWithNewPipeAndPassReceiver());
+  params_reply->browser_interface_broker_handle =
+      browser_interface_broker.PassPipe().release();
 
   params_reply->devtools_frame_token = base::UnguessableToken::Create();
 }
@@ -352,16 +327,6 @@ bool MockRenderThread::OnMessageReceived(const IPC::Message& msg) {
   return handled;
 }
 
-#if defined(OS_WIN)
-void MockRenderThread::OnDuplicateSection(
-    base::SharedMemoryHandle renderer_handle,
-    base::SharedMemoryHandle* browser_handle) {
-  // We don't have to duplicate the input handles since RenderViewTest does not
-  // separate a browser process from a renderer process.
-  *browser_handle = renderer_handle;
-}
-#endif  // defined(OS_WIN)
-
 // The View expects to be returned a valid route_id different from its own.
 void MockRenderThread::OnCreateWindow(
     const mojom::CreateNewWindowParams& params,
@@ -374,17 +339,14 @@ void MockRenderThread::OnCreateWindow(
       reply->main_frame_route_id,
       mojo::MakeRequest(
           &reply->main_frame_interface_bundle->interface_provider));
-
-  blink::mojom::DocumentInterfaceBrokerPtrInfo document_interface_broker;
-  frame_routing_id_to_initial_document_broker_requests_.emplace(
+  mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker>
+      browser_interface_broker;
+  frame_routing_id_to_initial_browser_broker_receivers_.emplace(
       reply->main_frame_route_id,
-      mojo::MakeRequest(&document_interface_broker));
-  reply->main_frame_interface_bundle->document_interface_broker_content =
-      std::move(document_interface_broker);
+      browser_interface_broker.InitWithNewPipeAndPassReceiver());
+  reply->main_frame_interface_bundle->browser_interface_broker =
+      std::move(browser_interface_broker);
 
-  mojo::MakeRequest(&document_interface_broker);
-  reply->main_frame_interface_bundle->document_interface_broker_blink =
-      std::move(document_interface_broker);
   reply->main_frame_widget_route_id = GetNextRoutingID();
   reply->cloned_session_storage_namespace_id =
       blink::AllocateSessionStorageNamespaceId();

@@ -20,8 +20,7 @@ ShellNavigationUIData::ShellNavigationUIData(
 
 ShellNavigationUIData::~ShellNavigationUIData() {}
 
-std::unique_ptr<content::NavigationUIData> ShellNavigationUIData::Clone()
-    const {
+std::unique_ptr<content::NavigationUIData> ShellNavigationUIData::Clone() {
   std::unique_ptr<ShellNavigationUIData> copy =
       std::make_unique<ShellNavigationUIData>();
 

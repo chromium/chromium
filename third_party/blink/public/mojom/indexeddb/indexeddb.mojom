@@ -33,17 +33,43 @@ enum IDBDataLoss {
 };
 
 // In order of the least to the highest precedent in terms of sort order.
-// These values are written to logs. New enum values can be added, but
-// existing enums must never be renumbered or deleted and reused.
 enum IDBKeyType {
+  // Invalid is used in blink bindings code. When converting a V8 value that
+  // is not a valid key, key of this type is returned. Outside of testing
+  // it should only be used in blink code.
   Invalid,
+
+  // The following indicate the type of a valid key, per the standard:
+  // https://w3c.github.io/IndexedDB/#key-construct
   Array,
   Binary,
   String,
   Date,
   Number,
-  Null,
+
+  // None is used to represent the lack of a key, e.g. when a key range
+  // has no upper/lower bound.
+  // TODO(jsbell): Consider using Optional<> instead.
+  None,
+
+  // Min is used to encode the lower bound of a construct in leveldb, e.g.
+  // all entries in a store are in [{id, min}, {id+1, min}). It should
+  // only appear in browser code.
   Min,
+};
+
+// Durability guarantees during a transaction.  This maps to whether or not
+// the writes to disk are explicitly flushed or not.
+enum IDBTransactionDurability {
+  // Unspecified by caller, and so is implementation defined.
+  // May map to either Strict or Relaxed.
+  Default,
+
+  // Always flush to disk after a write.
+  Strict,
+
+  // Do not flush to disk.  This is much faster.
+  Relaxed,
 };
 
 union IDBKeyData {
@@ -52,10 +78,8 @@ union IDBKeyData {
   mojo_base.mojom.String16 string;
   double date;
   double number;
-  // TODO(jsbell): These types should be cleaned up end-to-end, leaving only the
-  // dataful options above.
-  bool other_invalid;
-  bool other_null;
+  // TODO(jsbell): Consider using Optional<> instead.
+  bool other_none;
 };
 
 // Defined as a structure so that it can by typemapped with StructTraits.
@@ -123,6 +147,19 @@ enum IDBStatus {
   IOError,
 };
 
+// These values need to match core/dom/exception_code.h
+enum IDBException {
+  kNoError = 0,
+  kUnknownError = 28,
+  kConstraintError = 29,
+  kDataError = 30,
+  kVersionError = 33,
+  kAbortError = 20,
+  kIgnorableAbortError = 11,
+  kQuotaError = 22,
+  kTimeoutError = 23,
+};
+
 struct IDBIndexMetadata {
   int64 id;
   mojo_base.mojom.String16 name;
@@ -146,6 +183,7 @@ struct IDBDatabaseMetadata {
   int64 version;
   int64 max_object_store_id;
   map<int64, IDBObjectStoreMetadata> object_stores;
+  bool was_cold_open;
 };
 
 struct IDBNameAndVersion {
@@ -165,7 +203,7 @@ struct IDBFileInfo {
 };
 
 struct IDBBlobInfo {
-  blink.mojom.Blob blob;
+  pending_remote<blink.mojom.Blob> blob;
   string uuid;
   mojo_base.mojom.String16 mime_type;
   int64 size;
@@ -208,7 +246,7 @@ struct IDBObserverChanges {
 // TODO(https://crbug.com/627484): Many of these could be replaced with
 // replies associated with particular messages.
 interface IDBCallbacks {
-  Error(int32 code, mojo_base.mojom.String16 message);
+  Error(IDBException code, mojo_base.mojom.String16 message);
 
   // Factory::GetDatabaseInfo
   SuccessNamesAndVersionsList(array<IDBNameAndVersion> value);
@@ -220,34 +258,13 @@ interface IDBCallbacks {
   Blocked(int64 existing_version);
 
   // Factory::Open
-  UpgradeNeeded(associated IDBDatabase database, int64 old_version,
-                IDBDataLoss data_loss, string data_loss_message,
-                IDBDatabaseMetadata db_metadata);
-  SuccessDatabase(associated IDBDatabase? database,
+  UpgradeNeeded(pending_associated_remote<IDBDatabase> pending_database,
+                int64 old_version, IDBDataLoss data_loss,
+                string data_loss_message, IDBDatabaseMetadata db_metadata);
+
+  // Factory::Open
+  SuccessDatabase(pending_associated_remote<IDBDatabase>? pending_database,
                   IDBDatabaseMetadata metadata);
-
-  // Database::OpenCursor
-  SuccessCursor(associated IDBCursor cursor,
-                IDBKey key,
-                IDBKey primary_key,
-                IDBValue? value);
-
-  // Database::Get / Cursor::Advance
-  SuccessValue(IDBReturnValue? value);
-
-  // Cursor::Continue / Advance
-  SuccessCursorContinue(IDBKey key, IDBKey primary_key, IDBValue? value);
-
-  // Cursor::Prefetch
-  SuccessCursorPrefetch(array<IDBKey> keys,
-                        array<IDBKey> primary_keys,
-                        array<IDBValue> values);
-
-  // Database::GetAll
-  SuccessArray(array<IDBReturnValue> values);
-
-  // Database::Put / Cursor::Update
-  SuccessKey(IDBKey key);
 
   // Database::Count / DeleteRange
   // Factory::DeleteDatabase
@@ -263,55 +280,97 @@ interface IDBCallbacks {
 interface IDBDatabaseCallbacks {
   ForcedClose();
   VersionChange(int64 old_version, int64 new_version);
-  Abort(int64 transaction_id, int32 code,
+  Abort(int64 transaction_id, IDBException code,
         mojo_base.mojom.String16 message);
   Complete(int64 transaction_id);
   Changes(IDBObserverChanges changes);
 };
 
 struct IDBError {
-  int32 error_code;
+  IDBException error_code;
   mojo_base.mojom.String16 error_message;
 };
 
 struct IDBCursorValue {
-  IDBKey key;
-  IDBKey primary_key;
-  IDBValue value;
+  array<IDBKey> keys;
+  array<IDBKey> primary_keys;
+  array<IDBValue> values;
 };
 
-interface IDBCursor {
-  // Advance() can call its return callback in one of 3 ways:
-  // * with |error| set and |value| unset, if an error occurs
-  // * with |error| unset and |value| set, under normal operation
-  // * with |error| unset and |value| unset, under normal operation when the end
-  //   of the source being iterated is reached
-  Advance(uint32 count) => (IDBError? error, IDBCursorValue? value);
+union IDBCursorResult {
+  IDBError error_result;  // |error| is reserved, so call this |error_result|.
+  bool empty;  // False values are not allowed.
+  IDBCursorValue values;
+};
 
-  // Avoid calling the following function "Continue" since the Mojo
-  // Java bindings generate incorrect Java as a result.  We've named
-  // the following function "CursorContinue" as a workaround.
-  CursorContinue(IDBKey key,
-                 IDBKey primary_key,
-                 associated IDBCallbacks callbacks);
-  Prefetch(int32 count, associated IDBCallbacks callbacks);
+// Advance(), CursorContinue(), and Prefetch() can call its return callback in
+// one of 3 ways:
+// * with |error| set and |value| unset, if an error occurs
+// * with |error| unset and |value| set, under normal operation
+// * with |error| unset and |value| unset, under normal operation when the end
+//   of the source being iterated is reached
+interface IDBCursor {
+  Advance(uint32 count) => (IDBCursorResult result);
+  CursorContinue(IDBKey key, IDBKey primary_key) => (IDBCursorResult result);
+  Prefetch(int32 count) => (IDBCursorResult result);
   PrefetchReset(int32 used_prefetches, int32 unused_prefetches);
 };
 
-interface IDBDatabase {
-  CreateObjectStore(int64 transaction_id,
-                    int64 object_store_id,
+union IDBTransactionPutResult {
+  IDBError error_result;  // |error| is reserved, so call this |error_result|.
+  IDBKey key;
+};
+
+interface IDBTransaction {
+  CreateObjectStore(int64 object_store_id,
                     mojo_base.mojom.String16 name,
                     IDBKeyPath key_path,
                     bool auto_increment);
-  DeleteObjectStore(int64 transaction_id,
-                    int64 object_store_id);
+  DeleteObjectStore(int64 object_store_id);
+  Put(int64 object_store_id,
+      IDBValue value,
+      IDBKey key,
+      IDBPutMode mode,
+      array<IDBIndexKeys> index_keys)
+    => (IDBTransactionPutResult result);
+  Commit(int64 num_errors_handled);
+};
+
+union IDBDatabaseGetResult {
+  IDBError error_result;  // |error| is reserved, so call this |error_result|.
+  bool empty;  // False values are not allowed.
+  IDBKey key;
+  IDBReturnValue value;
+};
+
+union IDBDatabaseGetAllResult {
+  IDBError error_result;  // |error| is reserved, so call this |error_result|.
+  IDBKey key;
+  array<IDBReturnValue> values;
+};
+
+struct IDBDatabaseOpenCursorValue {
+  pending_associated_remote<IDBCursor> cursor;
+  IDBKey key;
+  IDBKey primary_key;
+  IDBValue? value;
+};
+
+union IDBDatabaseOpenCursorResult {
+  IDBError error_result;  // |error| is reserved, so call this |error_result|.
+  bool empty;  // Only true values are allowed.
+  IDBDatabaseOpenCursorValue value;
+};
+
+interface IDBDatabase {
   RenameObjectStore(int64 transaction_id,
                     int64 object_store_id,
                     mojo_base.mojom.String16 new_name);
-  CreateTransaction(int64 transaction_id,
+  CreateTransaction(pending_associated_receiver<IDBTransaction> transaction_receiver,
+                    int64 transaction_id,
                     array<int64> object_store_ids,
-                    IDBTransactionMode mode);
+                    IDBTransactionMode mode,
+                    IDBTransactionDurability durability);
   Close();
   VersionChangeIgnored();
   AddObserver(int64 transaction_id,
@@ -325,22 +384,15 @@ interface IDBDatabase {
       int64 object_store_id,
       int64 index_id,
       IDBKeyRange key_range,
-      bool key_only,
-      associated IDBCallbacks callbacks);
+      bool key_only)
+    => (IDBDatabaseGetResult result);
   GetAll(int64 transaction_id,
          int64 object_store_id,
          int64 index_id,
          IDBKeyRange key_range,
          bool key_only,
-         int64 max_count,
-         associated IDBCallbacks callbacks);
-  Put(int64 transaction_id,
-      int64 object_store_id,
-      IDBValue value,
-      IDBKey key,
-      IDBPutMode mode,
-      array<IDBIndexKeys> index_keys,
-      associated IDBCallbacks callbacks);
+         int64 max_count)
+    => (IDBDatabaseGetAllResult result);
   SetIndexKeys(int64 transaction_id,
                int64 object_store_id,
                IDBKey primary_key,
@@ -354,26 +406,26 @@ interface IDBDatabase {
              IDBKeyRange key_range,
              IDBCursorDirection direction,
              bool key_only,
-             IDBTaskType task_type,
-             associated IDBCallbacks callbacks);
+             IDBTaskType task_type)
+    => (IDBDatabaseOpenCursorResult result);
   Count(int64 transaction_id,
         int64 object_store_id,
         int64 index_id,
         IDBKeyRange key_range,
-        associated IDBCallbacks callbacks);
+        pending_associated_remote<IDBCallbacks> pending_callbacks);
   DeleteRange(int64 transaction_id,
               int64 object_store_id,
               IDBKeyRange key_range,
-              associated IDBCallbacks callbacks);
+              pending_associated_remote<IDBCallbacks> pending_callbacks);
   // Gets the current number of an IndexedDB ObjectStore's key generator. It
   // is implemented in the browser (more priviledged) and handles requests in
   // the renderer process: WebIDBDatabaseImpl::GetKeyGeneratorCurrentNumber()
   GetKeyGeneratorCurrentNumber(int64 transaction_id,
                                int64 object_store_id,
-                               associated IDBCallbacks callbacks);
+                               pending_associated_remote<IDBCallbacks> pending_callbacks);
   Clear(int64 transaction_id,
         int64 object_store_id,
-        associated IDBCallbacks callbacks);
+        pending_associated_remote<IDBCallbacks> pending_callbacks);
   CreateIndex(int64 transaction_id,
               int64 object_store_id,
               int64 index_id,
@@ -389,20 +441,36 @@ interface IDBDatabase {
               int64 index_id,
               mojo_base.mojom.String16 new_name);
   Abort(int64 transaction_id);
-  Commit(int64 transaction_id,
-         int64 num_errors_handled);
 };
 
 interface IDBFactory {
-  GetDatabaseInfo(associated IDBCallbacks callbacks);
-  GetDatabaseNames(associated IDBCallbacks callbacks);
-  Open(associated IDBCallbacks callbacks,
-       associated IDBDatabaseCallbacks database_callbacks,
+  // Gets high level info about databases that exist in the frame's
+  // origin. Posts results to |pending_callbacks|.
+  GetDatabaseInfo(pending_associated_remote<IDBCallbacks> pending_callbacks);
+
+  // Gets a list of database names that exist in the frame's
+  // origin. Posts results to |pending_callbacks|.
+  GetDatabaseNames(pending_associated_remote<IDBCallbacks> pending_callbacks);
+
+  // Opens a database |name| in the frame's origin at version |version|.
+  // |version_change_transaction_receiver| will have version change
+  // transaction operations posted to it. |transaction_id| corresponds
+  // to the transaction number for this connection's context.
+  // Posts request events and results to |pending_callbacks| and database-level
+  // events and results to |database_callbacks|.
+  Open(pending_associated_remote<IDBCallbacks> pending_callbacks,
+       pending_associated_remote<IDBDatabaseCallbacks> database_callbacks,
        mojo_base.mojom.String16 name,
        int64 version,
+       pending_associated_receiver<IDBTransaction> version_change_transaction_receiver,
        int64 transaction_id);
-  DeleteDatabase(associated IDBCallbacks callbacks,
+
+  // Deletes a database |name| in the frame's origin. If |force_close|
+  // is true, any existing connections to that database will be closed
+  // immediately.
+  DeleteDatabase(pending_associated_remote<IDBCallbacks> pending_callbacks,
                  mojo_base.mojom.String16 name, bool force_close);
+
   AbortTransactionsAndCompactDatabase() => (IDBStatus status);
   AbortTransactionsForDatabase() => (IDBStatus status);
 };

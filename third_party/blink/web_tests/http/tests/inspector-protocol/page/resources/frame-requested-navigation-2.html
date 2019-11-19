@@ -1,0 +1,30 @@
+<html>
+  <head>
+  <script>
+  function nextStep() {
+    const step = new URLSearchParams(window.location.search).get("step");
+    switch (step) {
+    case "1":
+      document.forms[0].submit();
+      break;
+    case "2":
+      document.forms[1].submit();
+      break;
+    case "3":
+      window.location.reload();
+      break;
+    default:
+      window.location.href = "frame-requested-navigation-2.html?step=1"
+    }
+  }
+  </script>
+  </head>
+  <body onload="nextStep();">
+    <form method="POST" action="frame-requested-navigation-2.html?step=2">
+      <input type="hidden" name="step">
+    </form>
+    <form method="GET" action="frame-requested-navigation-2.html">
+      <input type="hidden" name="step" value="3">
+    </form>
+  </body>
+</html>

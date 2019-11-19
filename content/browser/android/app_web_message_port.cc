@@ -9,7 +9,8 @@
 #include "base/android/jni_string.h"
 #include "base/bind.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "jni/AppWebMessagePort_jni.h"
+#include "content/public/android/content_jni_headers/AppWebMessagePort_jni.h"
+#include "mojo/public/cpp/system/message_pipe.h"
 #include "third_party/blink/public/common/messaging/string_message_codec.h"
 
 using blink::MessagePortChannel;
@@ -22,10 +23,7 @@ std::vector<blink::MessagePortChannel> AppWebMessagePort::UnwrapJavaArray(
     const base::android::JavaRef<jobjectArray>& jports) {
   std::vector<blink::MessagePortChannel> channels;
   if (!jports.is_null()) {
-    jsize num_ports = env->GetArrayLength(jports.obj());
-    for (jsize i = 0; i < num_ports; ++i) {
-      base::android::ScopedJavaLocalRef<jobject> jport(
-          env, env->GetObjectArrayElement(jports.obj(), i));
+    for (auto jport : jports.ReadElements<jobject>()) {
       jint native_port = Java_AppWebMessagePort_releaseNativeHandle(env, jport);
       channels.push_back(blink::MessagePortChannel(
           mojo::ScopedMessagePipeHandle(mojo::MessagePipeHandle(native_port))));

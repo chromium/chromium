@@ -37,9 +37,6 @@ Polymer({
     /** @private Whether to show Caps Lock options. */
     showCapsLock_: Boolean,
 
-    /** @private Whether to show diamond key options. */
-    showDiamondKey_: Boolean,
-
     /** @private Whether this device has an internal keyboard. */
     hasInternalKeyboard_: Boolean,
 
@@ -147,7 +144,6 @@ Polymer({
     this.hasInternalKeyboard_ = keyboardParams['hasInternalKeyboard'];
     this.hasAssistantKey_ = keyboardParams['hasAssistantKey'];
     this.showCapsLock_ = keyboardParams['showCapsLock'];
-    this.showDiamondKey_ = keyboardParams['showDiamondKey'];
     this.showExternalMetaKey_ = keyboardParams['showExternalMetaKey'];
     this.showAppleCommandKey_ = keyboardParams['showAppleCommandKey'];
   },
@@ -158,7 +154,9 @@ Polymer({
   },
 
   onShowLanguageInputTap_: function() {
-    settings.navigateTo(settings.routes.LANGUAGES);
+    settings.navigateTo(
+        settings.routes.LANGUAGES_DETAILS,
+        /* dynamicParams */ null, /* removeSearch */ true);
   },
 
   getExternalMetaKeyLabel_: function(hasInternalKeyboard) {

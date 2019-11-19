@@ -8,6 +8,7 @@
 
 #include <memory>
 #include <string>
+#include <utility>
 
 #include "base/bind.h"
 #include "base/command_line.h"
@@ -28,8 +29,9 @@
 #include "components/prefs/testing_pref_service.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/test/test_browser_thread_bundle.h"
-#include "mojo/public/cpp/bindings/binding_set.h"
+#include "content/public/test/browser_task_environment.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -92,8 +94,9 @@ void MockServiceProcessControl::SetConnectSuccessMockExpectations() {
 
 class MockCloudPrintProxy : public cloud_print::mojom::CloudPrint {
  public:
-  void AddBinding(cloud_print::mojom::CloudPrintRequest request) {
-    bindings_.AddBinding(this, std::move(request));
+  void AddReceiver(
+      mojo::PendingReceiver<cloud_print::mojom::CloudPrint> receiver) {
+    receivers_.Add(this, std::move(receiver));
   }
 
   void ReturnDisabledInfo() {
@@ -109,11 +112,11 @@ class MockCloudPrintProxy : public cloud_print::mojom::CloudPrint {
   }
 
   bool has_been_enabled() {
-    bindings_.FlushForTesting();
+    receivers_.FlushForTesting();
     return enabled_;
   }
   bool has_been_disabled() {
-    bindings_.FlushForTesting();
+    receivers_.FlushForTesting();
     return disabled_;
   }
 
@@ -134,7 +137,7 @@ class MockCloudPrintProxy : public cloud_print::mojom::CloudPrint {
     enabled_ = true;
   }
 
-  mojo::BindingSet<cloud_print::mojom::CloudPrint> bindings_;
+  mojo::ReceiverSet<cloud_print::mojom::CloudPrint> receivers_;
 
   bool cloud_proxy_info_expectation_set_ = false;
   cloud_print::CloudPrintProxyInfo cloud_proxy_info_;
@@ -151,8 +154,9 @@ class TestCloudPrintProxyService : public CloudPrintProxyService {
         &process_control_.remote_interfaces());
     test_api.SetBinderForName(
         "cloud_print.mojom.CloudPrint",
-        base::Bind(&TestCloudPrintProxyService::HandleCloudPrintProxyRequest,
-                   base::Unretained(this)));
+        base::BindRepeating(
+            &TestCloudPrintProxyService::HandleCloudPrintProxyRequest,
+            base::Unretained(this)));
     service_manager::mojom::InterfaceProviderPtr handle;
     mojo::MakeRequest(&handle);
     process_control_.SetMojoHandle(std::move(handle));
@@ -192,8 +196,9 @@ class TestCloudPrintProxyService : public CloudPrintProxyService {
 
  private:
   void HandleCloudPrintProxyRequest(mojo::ScopedMessagePipeHandle handle) {
-    mock_proxy_.AddBinding(
-        cloud_print::mojom::CloudPrintRequest(std::move(handle)));
+    mock_proxy_.AddReceiver(
+        mojo::PendingReceiver<cloud_print::mojom::CloudPrint>(
+            std::move(handle)));
   }
 
   MockServiceProcessControl process_control_;
@@ -212,7 +217,7 @@ class CloudPrintProxyPolicyTest : public ::testing::Test {
   }
 
  protected:
-  content::TestBrowserThreadBundle test_browser_thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
 };
 

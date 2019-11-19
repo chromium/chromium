@@ -11,7 +11,7 @@
 
 #include "base/macros.h"
 #include "chrome/browser/chromeos/arc/input_method_manager/arc_input_method_manager_bridge.h"
-#include "components/arc/common/input_method_manager.mojom.h"
+#include "components/arc/mojom/input_method_manager.mojom.h"
 
 namespace arc {
 

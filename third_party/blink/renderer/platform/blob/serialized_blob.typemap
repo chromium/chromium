@@ -5,10 +5,10 @@
 mojom = "//third_party/blink/public/mojom/blob/serialized_blob.mojom"
 public_headers = [ "//third_party/blink/renderer/platform/blob/blob_data.h" ]
 traits_headers = [
-  "//third_party/blink/renderer/platform/blob/serialized_blob_struct_traits.h",
+  "//third_party/blink/renderer/platform/blob/serialized_blob_mojom_traits.h",
 ]
 
 deps = [
   "//mojo/public/cpp/bindings",
 ]
-type_mappings = [ "blink.mojom.SerializedBlob=scoped_refptr<::blink::BlobDataHandle>[nullable_is_same_type]" ]
+type_mappings = [ "blink.mojom.SerializedBlob=::scoped_refptr<::blink::BlobDataHandle>[nullable_is_same_type]" ]

@@ -9,9 +9,11 @@
 #include <string>
 #include <vector>
 
+#include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/scoped_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
 #include "extensions/browser/warning_set.h"
 
@@ -22,8 +24,6 @@ class BrowserContext;
 }
 
 namespace extensions {
-
-class ExtensionRegistry;
 
 // Manages a set of warnings caused by extensions. These warnings (e.g.
 // conflicting modifications of network requests by extensions, slow extensions,
@@ -85,9 +85,11 @@ class WarningService : public KeyedService, public ExtensionRegistryObserver {
 
   // Listen to extension unloaded notifications.
   ScopedObserver<ExtensionRegistry, ExtensionRegistryObserver>
-      extension_registry_observer_;
+      extension_registry_observer_{this};
 
   base::ObserverList<Observer>::Unchecked observer_list_;
+
+  DISALLOW_COPY_AND_ASSIGN(WarningService);
 };
 
 }  // namespace extensions

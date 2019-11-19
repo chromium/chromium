@@ -12,6 +12,9 @@ window['chrome'] = window['chrome'] || {};
  * @param {Array=} args optional.
  */
 window['chrome']['send'] = function(message, args) {
-  __gCrWeb.message.invokeOnHost(
-      {'command': 'chrome.send', 'message': message, 'arguments': args || []});
+  __gCrWeb.message.invokeOnHost({
+    'command': 'webui.chromeSend',
+    'message': message,
+    'arguments': args || []
+  });
 };

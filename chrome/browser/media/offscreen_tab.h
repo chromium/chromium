@@ -90,7 +90,7 @@ class OffscreenTab : protected content::WebContentsDelegate,
   bool ShouldFocusPageAfterCrash() final;
   void CanDownload(const GURL& url,
                    const std::string& request_method,
-                   const base::RepeatingCallback<void(bool)>& callback) final;
+                   base::OnceCallback<void(bool)> callback) final;
   bool HandleContextMenu(content::RenderFrameHost* render_frame_host,
                          const content::ContextMenuParams& params) final;
   content::KeyboardEventProcessingResult PreHandleKeyboardEvent(
@@ -101,36 +101,28 @@ class OffscreenTab : protected content::WebContentsDelegate,
   bool CanDragEnter(content::WebContents* source,
                     const content::DropData& data,
                     blink::WebDragOperationsMask operations_allowed) final;
-  bool ShouldCreateWebContents(
-      content::WebContents* web_contents,
-      content::RenderFrameHost* opener,
+  bool IsWebContentsCreationOverridden(
       content::SiteInstance* source_site_instance,
-      int32_t route_id,
-      int32_t main_frame_route_id,
-      int32_t main_frame_widget_route_id,
       content::mojom::WindowContainerType window_container_type,
       const GURL& opener_url,
       const std::string& frame_name,
-      const GURL& target_url,
-      const std::string& partition_id,
-      content::SessionStorageNamespace* session_storage_namespace) final;
-  bool EmbedsFullscreenWidget() const final;
+      const GURL& target_url) final;
+  bool EmbedsFullscreenWidget() final;
   void EnterFullscreenModeForTab(
       content::WebContents* contents,
       const GURL& origin,
-      const blink::WebFullscreenOptions& options) final;
+      const blink::mojom::FullscreenOptions& options) final;
   void ExitFullscreenModeForTab(content::WebContents* contents) final;
-  bool IsFullscreenForTabOrPending(
-      const content::WebContents* contents) const final;
-  blink::WebDisplayMode GetDisplayMode(
-      const content::WebContents* contents) const final;
+  bool IsFullscreenForTabOrPending(const content::WebContents* contents) final;
+  blink::mojom::DisplayMode GetDisplayMode(
+      const content::WebContents* contents) final;
   void RequestMediaAccessPermission(
       content::WebContents* contents,
       const content::MediaStreamRequest& request,
       content::MediaResponseCallback callback) final;
   bool CheckMediaAccessPermission(content::RenderFrameHost* render_frame_host,
                                   const GURL& security_origin,
-                                  blink::MediaStreamType type) final;
+                                  blink::mojom::MediaStreamType type) final;
 
   // content::WebContentsObserver overrides
   void DidShowFullscreenWidget() final;

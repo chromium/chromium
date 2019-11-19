@@ -67,6 +67,11 @@ X11CursorOzone::X11CursorOzone(const std::vector<SkBitmap>& bitmaps,
   XcursorImagesDestroy(images);
 }
 
+X11CursorOzone::X11CursorOzone(const char* name) {
+  xcursor_ = XcursorLibraryLoadCursor(gfx::GetXDisplay(), name);
+}
+
+// static
 scoped_refptr<X11CursorOzone> X11CursorOzone::CreateInvisible() {
   scoped_refptr<X11CursorOzone> invisible_ = new X11CursorOzone();
   invisible_->xcursor_ = CreateInvisibleCursor();

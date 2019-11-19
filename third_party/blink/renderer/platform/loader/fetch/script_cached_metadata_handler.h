@@ -52,7 +52,7 @@ class PLATFORM_EXPORT ScriptCachedMetadataHandler final
                     const String& dump_prefix) const override;
 
   // Sets the serialized metadata retrieved from the platform's cache.
-  void SetSerializedCachedMetadata(const uint8_t*, size_t);
+  void SetSerializedCachedMetadata(mojo_base::BigBuffer data);
   size_t GetCodeCacheSize() const override;
 
  private:

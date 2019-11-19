@@ -57,7 +57,7 @@ struct GlDesktop::GlDesktopTextureContainer {
   webrtc::DesktopRect rect;
 };
 
-GlDesktop::GlDesktop() : weak_factory_(this) {}
+GlDesktop::GlDesktop() {}
 
 GlDesktop::~GlDesktop() {
   DCHECK(thread_checker_.CalledOnValidThread());

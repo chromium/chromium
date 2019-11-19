@@ -29,10 +29,10 @@
 #include "chrome/common/extensions/api/file_system_provider_capabilities/file_system_provider_capabilities_handler.h"
 #include "chrome/common/extensions/api/file_system_provider_internal.h"
 #include "chrome/test/base/testing_profile.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/common/extension_id.h"
-#include "storage/browser/fileapi/watcher_manager.h"
+#include "storage/browser/file_system/watcher_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace chromeos {
@@ -267,7 +267,7 @@ class FileSystemProviderProvidedFileSystemTest : public testing::Test {
         base::WrapUnique(new StubNotificationManager));
   }
 
-  content::TestBrowserThreadBundle thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<FakeEventRouter> event_router_;
   std::unique_ptr<ProvidedFileSystemInfo> file_system_info_;

@@ -5,8 +5,8 @@
 #include <jni.h>
 
 #include "base/android/scoped_java_ref.h"
+#include "content/public/android/content_jni_headers/UseZoomForDSFPolicy_jni.h"
 #include "content/public/common/use_zoom_for_dsf_policy.h"
-#include "jni/UseZoomForDSFPolicy_jni.h"
 
 using base::android::JavaParamRef;
 

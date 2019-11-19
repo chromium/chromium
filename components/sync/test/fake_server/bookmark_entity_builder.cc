@@ -41,6 +41,10 @@ BookmarkEntityBuilder::BookmarkEntityBuilder(
 
 BookmarkEntityBuilder::~BookmarkEntityBuilder() {}
 
+void BookmarkEntityBuilder::SetId(const std::string& id) {
+  id_ = id;
+}
+
 void BookmarkEntityBuilder::SetParentId(const std::string& parent_id) {
   parent_id_ = parent_id;
 }
@@ -50,28 +54,36 @@ void BookmarkEntityBuilder::SetIndex(int index) {
 }
 
 std::unique_ptr<LoopbackServerEntity> BookmarkEntityBuilder::BuildBookmark(
-    const GURL& url) {
+    const GURL& url,
+    bool is_legacy) {
   if (!url.is_valid()) {
     return base::WrapUnique<LoopbackServerEntity>(nullptr);
   }
 
-  sync_pb::EntitySpecifics entity_specifics = CreateBaseEntitySpecifics();
+  sync_pb::EntitySpecifics entity_specifics =
+      CreateBaseEntitySpecifics(is_legacy);
   entity_specifics.mutable_bookmark()->set_url(url.spec());
   const bool kIsNotFolder = false;
   return Build(entity_specifics, kIsNotFolder);
 }
 
-std::unique_ptr<LoopbackServerEntity> BookmarkEntityBuilder::BuildFolder() {
+std::unique_ptr<LoopbackServerEntity> BookmarkEntityBuilder::BuildFolder(
+    bool is_legacy) {
   const bool kIsFolder = true;
-  return Build(CreateBaseEntitySpecifics(), kIsFolder);
+  return Build(CreateBaseEntitySpecifics(is_legacy), kIsFolder);
 }
 
-sync_pb::EntitySpecifics BookmarkEntityBuilder::CreateBaseEntitySpecifics()
-    const {
+sync_pb::EntitySpecifics BookmarkEntityBuilder::CreateBaseEntitySpecifics(
+    bool is_legacy) const {
   sync_pb::EntitySpecifics entity_specifics;
   sync_pb::BookmarkSpecifics* bookmark_specifics =
       entity_specifics.mutable_bookmark();
-  bookmark_specifics->set_title(title_);
+  if (!is_legacy) {
+    bookmark_specifics->set_title(title_);
+    // TODO(crbug.com/516866): Use originator_client_item_id here instead of a
+    // new GUID, ensuring the value is of valid GUID format.
+    bookmark_specifics->set_guid(base::GenerateGUID());
+  }
 
   return entity_specifics;
 }
@@ -89,12 +101,14 @@ std::unique_ptr<LoopbackServerEntity> BookmarkEntityBuilder::Build(
         LoopbackServerEntity::CreateId(syncer::BOOKMARKS, "bookmark_bar");
   }
 
-  const string id =
-      LoopbackServerEntity::CreateId(syncer::BOOKMARKS, base::GenerateGUID());
+  if (id_.empty()) {
+    id_ =
+        LoopbackServerEntity::CreateId(syncer::BOOKMARKS, base::GenerateGUID());
+  }
 
   return base::WrapUnique<LoopbackServerEntity>(
       new syncer::PersistentBookmarkEntity(
-          id, kUnusedVersion, title_, originator_cache_guid_,
+          id_, kUnusedVersion, title_, originator_cache_guid_,
           originator_client_item_id_, unique_position, entity_specifics,
           is_folder, parent_id_, kDefaultTime, kDefaultTime));
 }

@@ -62,17 +62,17 @@ std::unique_ptr<GLFence> GLFence::Create() {
           g_current_gl_version->is_es3 ||
           g_current_gl_version->is_desktop_core_profile) {
     // Prefer ARB_sync which supports server-side wait.
-    fence.reset(new GLFenceARB);
+    fence = std::make_unique<GLFenceARB>();
 #if defined(OS_MACOSX)
   } else if (g_current_gl_driver->ext.b_GL_APPLE_fence) {
-    fence.reset(new GLFenceAPPLE);
+    fence = std::make_unique<GLFenceAPPLE>();
 #else
   } else if (g_driver_egl.ext.b_EGL_KHR_fence_sync) {
     fence = GLFenceEGL::Create();
     DCHECK(fence);
 #endif
   } else if (g_current_gl_driver->ext.b_GL_NV_fence) {
-    fence.reset(new GLFenceNV);
+    fence = std::make_unique<GLFenceNV>();
   }
 
   DCHECK_EQ(!!fence.get(), GLFence::IsSupported());

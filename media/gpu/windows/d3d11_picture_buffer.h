@@ -6,24 +6,29 @@
 #define MEDIA_GPU_WINDOWS_D3D11_PICTURE_BUFFER_H_
 
 #include <d3d11.h>
-#include <dxva.h>
 #include <wrl/client.h>
 
+#include <memory>
 #include <vector>
 
 #include "base/memory/ref_counted.h"
 
+#include "gpu/command_buffer/service/mailbox_manager.h"
 #include "gpu/command_buffer/service/texture_manager.h"
 #include "gpu/ipc/service/command_buffer_stub.h"
+#include "media/base/media_log.h"
 #include "media/base/video_frame.h"
 #include "media/gpu/command_buffer_helper.h"
 #include "media/gpu/media_gpu_export.h"
+#include "media/gpu/windows/d3d11_texture_wrapper.h"
 #include "media/video/picture.h"
 #include "third_party/angle/include/EGL/egl.h"
 #include "third_party/angle/include/EGL/eglext.h"
 #include "ui/gl/gl_image.h"
 
 namespace media {
+
+class Texture2DWrapper;
 
 // PictureBuffer that owns Chrome Textures to display it, and keep a reference
 // to the D3D texture that backs the image.
@@ -41,20 +46,24 @@ namespace media {
 class MEDIA_GPU_EXPORT D3D11PictureBuffer
     : public base::RefCountedThreadSafe<D3D11PictureBuffer> {
  public:
-  using MailboxHolderArray = gpu::MailboxHolder[VideoFrame::kMaxPlanes];
+  // |texture_wrapper| is responsible for controlling mailbox access to
+  // the ID3D11Texture2D,
+  // |level| is the picturebuffer index inside the Array-type ID3D11Texture2D.
+  D3D11PictureBuffer(std::unique_ptr<Texture2DWrapper> texture_wrapper,
+                     gfx::Size size,
+                     size_t level);
 
-  D3D11PictureBuffer(GLenum target, gfx::Size size, size_t level);
-
-  bool Init(base::RepeatingCallback<scoped_refptr<CommandBufferHelper>()>
-                get_helper_cb,
-            Microsoft::WRL::ComPtr<ID3D11VideoDevice> video_device,
-            Microsoft::WRL::ComPtr<ID3D11Texture2D> texture,
+  bool Init(GetCommandBufferHelperCB get_helper_cb,
+            ComD3D11VideoDevice video_device,
             const GUID& decoder_guid,
-            int textures_per_picture);
+            std::unique_ptr<MediaLog> media_log);
+
+  // Set the contents of a mailbox holder array, return true if successful.
+  bool ProcessTexture(MailboxHolderArray* mailbox_dest);
+  ComD3D11Texture2D Texture() const;
 
   const gfx::Size& size() const { return size_; }
   size_t level() const { return level_; }
-  Microsoft::WRL::ComPtr<ID3D11Texture2D> texture() const { return texture_; }
 
   // Is this PictureBuffer backing a VideoFrame right now?
   bool in_client_use() const { return in_client_use_; }
@@ -65,13 +74,9 @@ class MEDIA_GPU_EXPORT D3D11PictureBuffer
   void set_in_client_use(bool use) { in_client_use_ = use; }
   void set_in_picture_use(bool use) { in_picture_use_ = use; }
 
-  const Microsoft::WRL::ComPtr<ID3D11VideoDecoderOutputView>& output_view()
-      const {
+  const ComD3D11VideoDecoderOutputView& output_view() const {
     return output_view_;
   }
-
-  // Return the mailbox holders that can be used to create a VideoFrame for us.
-  const MailboxHolderArray& mailbox_holders() const { return mailbox_holders_; }
 
   // Shouldn't be here, but simpler for now.
   base::TimeDelta timestamp_;
@@ -80,47 +85,13 @@ class MEDIA_GPU_EXPORT D3D11PictureBuffer
   ~D3D11PictureBuffer();
   friend class base::RefCountedThreadSafe<D3D11PictureBuffer>;
 
-  GLenum target_;
+  std::unique_ptr<Texture2DWrapper> texture_wrapper_;
   gfx::Size size_;
   bool in_picture_use_ = false;
   bool in_client_use_ = false;
   size_t level_;
 
-  // TODO(liberato): I don't think that we need to remember |texture_|.  The
-  // GLImage will do so, so it will last long enough for any VideoFrames that
-  // reference it.
-  Microsoft::WRL::ComPtr<ID3D11Texture2D> texture_;
-  Microsoft::WRL::ComPtr<ID3D11VideoDecoderOutputView> output_view_;
-
-  MailboxHolderArray mailbox_holders_;
-
-  // Things that are to be accessed / freed only on the main thread.  In
-  // addition to setting up the textures to render from a D3D11 texture,
-  // these also hold the chrome GL Texture objects so that the client
-  // can use the mailbox.
-  class GpuResources {
-   public:
-    GpuResources();
-    ~GpuResources();
-
-    bool Init(base::RepeatingCallback<scoped_refptr<CommandBufferHelper>()>
-                  get_helper_cb,
-              int level,
-              const std::vector<gpu::Mailbox> mailboxes,
-              GLenum target,
-              gfx::Size size,
-              Microsoft::WRL::ComPtr<ID3D11Texture2D> angle_texture,
-              int textures_per_picture);
-
-    std::vector<uint32_t> service_ids_;
-
-   private:
-    scoped_refptr<CommandBufferHelper> helper_;
-
-    DISALLOW_COPY_AND_ASSIGN(GpuResources);
-  };
-
-  std::unique_ptr<GpuResources> gpu_resources_;
+  ComD3D11VideoDecoderOutputView output_view_;
 
   DISALLOW_COPY_AND_ASSIGN(D3D11PictureBuffer);
 };

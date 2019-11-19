@@ -19,11 +19,10 @@ class CSSPropertyNamesWriter(json5_generator.Writer):
         self._css_properties = css_properties.CSSProperties(json5_file_path)
 
     def _enum_declaration(self, property_):
-        return "    %(property_id)s = %(enum_value)s," % property_
+        return "    %(enum_key)s = %(enum_value)s," % property_
 
     def _array_item(self, property_):
-        return "    static_cast<CSSPropertyID>(%(enum_value)s), " \
-            "// %(property_id)s" % property_
+        return "    CSSPropertyID::%(enum_key)s," % property_
 
     @template_expander.use_jinja('core/css/templates/css_property_names.h.tmpl')
     def generate_header(self):
@@ -63,12 +62,19 @@ class CSSPropertyNamesWriter(json5_generator.Writer):
                 current_offset += len(name) + 1
 
         css_name_and_enum_pairs = [
-            (property_['name'].original, property_['property_id'])
+            (property_['name'].original,
+             'static_cast<int>(CSSPropertyID::' + property_['enum_key'] + ')')
             for property_ in self._css_properties.properties_including_aliases]
+
+        property_keys = [
+            property_['enum_key']
+            for property_ in self._css_properties.properties_including_aliases
+        ]
 
         return {
             'class_name': 'CSSPropertyNames',
             'file_basename': self.file_basename,
+            'property_keys': property_keys,
             'property_names': property_names,
             'property_offsets': property_offsets,
             'property_to_enum_map':

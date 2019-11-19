@@ -28,6 +28,7 @@ class ECPrivateKey;
 namespace gcm {
 
 enum class GCMDecryptionResult;
+enum class GCMEncryptionResult;
 class GCMKeyStore;
 struct IncomingMessage;
 
@@ -37,14 +38,20 @@ class GCMEncryptionProvider {
  public:
   // Callback to be invoked when the public key and auth secret are available.
   using EncryptionInfoCallback =
-      base::OnceCallback<void(const std::string& p256dh,
-                              const std::string& auth_secret)>;
+      base::OnceCallback<void(std::string p256dh, std::string auth_secret)>;
 
   // Callback to be invoked when a message may have been decrypted, as indicated
   // by the |result|. The |message| contains the dispatchable message in success
   // cases, or will be initialized to an empty, default state for failure.
-  using MessageCallback = base::Callback<void(GCMDecryptionResult result,
-                                              const IncomingMessage& message)>;
+  using DecryptMessageCallback =
+      base::Callback<void(GCMDecryptionResult result,
+                          const IncomingMessage& message)>;
+
+  // Callback to be invoked when a message may have been encrypted, as indicated
+  // by the |result|. The |message| contains the dispatchable message in success
+  // cases, or will be initialized to an empty, default state for failure.
+  using EncryptMessageCallback =
+      base::OnceCallback<void(GCMEncryptionResult result, std::string message)>;
 
   GCMEncryptionProvider();
   ~GCMEncryptionProvider();
@@ -70,7 +77,7 @@ class GCMEncryptionProvider {
   // all InstanceID tokens, or "" for non-InstanceID GCM registrations.
   void RemoveEncryptionInfo(const std::string& app_id,
                             const std::string& authorized_entity,
-                            const base::Closure& callback);
+                            base::OnceClosure callback);
 
   // Determines whether |message| contains encrypted content.
   bool IsEncryptedMessage(const IncomingMessage& message) const;
@@ -81,7 +88,18 @@ class GCMEncryptionProvider {
   // will be used in case of success, an empty message in case of failure.
   void DecryptMessage(const std::string& app_id,
                       const IncomingMessage& message,
-                      const MessageCallback& callback);
+                      const DecryptMessageCallback& callback);
+
+  // Attempts to encrypt the |message| using draft-ietf-webpush-encryption-08
+  // scheme. |callback| will be called asynchronously when |message| has been
+  // encrypted. A dispatchable message will be used in case of success, an empty
+  // message in case of failure.
+  void EncryptMessage(const std::string& app_id,
+                      const std::string& authorized_entity,
+                      const std::string& p256dh,
+                      const std::string& auth_secret,
+                      const std::string& message,
+                      EncryptMessageCallback callback);
 
  private:
   friend class GCMEncryptionProviderTest;
@@ -100,20 +118,30 @@ class GCMEncryptionProvider {
                                std::unique_ptr<crypto::ECPrivateKey> key,
                                const std::string& auth_secret);
 
-  void DecryptMessageWithKey(const std::string& collapse_key,
+  void DecryptMessageWithKey(const std::string& message_id,
+                             const std::string& collapse_key,
                              const std::string& sender_id,
                              const std::string& salt,
                              const std::string& public_key,
                              uint32_t record_size,
                              const std::string& ciphertext,
                              GCMMessageCryptographer::Version version,
-                             const MessageCallback& callback,
+                             const DecryptMessageCallback& callback,
                              std::unique_ptr<crypto::ECPrivateKey> key,
                              const std::string& auth_secret);
 
+  void EncryptMessageWithKey(const std::string& app_id,
+                             const std::string& authorized_entity,
+                             const std::string& p256dh,
+                             const std::string& auth_secret,
+                             const std::string& message,
+                             EncryptMessageCallback callback,
+                             std::unique_ptr<crypto::ECPrivateKey> key,
+                             const std::string& sender_auth_secret);
+
   std::unique_ptr<GCMKeyStore> key_store_;
 
-  base::WeakPtrFactory<GCMEncryptionProvider> weak_ptr_factory_;
+  base::WeakPtrFactory<GCMEncryptionProvider> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(GCMEncryptionProvider);
 };

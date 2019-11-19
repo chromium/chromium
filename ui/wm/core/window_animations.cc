@@ -90,7 +90,7 @@ class HidingWindowAnimationObserverBase : public aura::WindowObserver {
       DCHECK(iter != window_->parent()->children().end());
       aura::Window* topmost_transient_child = NULL;
       for (++iter; iter != window_->parent()->children().end(); ++iter) {
-        if (base::ContainsValue(transient_children, *iter))
+        if (base::Contains(transient_children, *iter))
           topmost_transient_child = *iter;
       }
       if (topmost_transient_child) {
@@ -491,6 +491,8 @@ void AddLayerAnimationsForRotate(aura::Window* window, bool show) {
     observer->SetLastSequence(last_sequence);
     observer->DetachAndRecreateLayers();
   }
+
+  window->layer()->SetVisible(show);
 }
 
 void AnimateShowWindow_Rotate(aura::Window* window) {

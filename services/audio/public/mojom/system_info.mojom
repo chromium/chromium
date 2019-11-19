@@ -4,7 +4,7 @@
 
 module audio.mojom;
 
-import "media/mojo/interfaces/audio_parameters.mojom";
+import "media/mojo/mojom/audio_parameters.mojom";
 import "services/audio/public/mojom/audio_device_description.mojom";
 
 // Provides information about audio system.

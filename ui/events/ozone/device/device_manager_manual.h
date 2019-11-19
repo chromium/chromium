@@ -50,7 +50,7 @@ class DeviceManagerManual : public DeviceManager {
   const scoped_refptr<base::SequencedTaskRunner> blocking_task_runner_;
   std::unique_ptr<base::FilePathWatcher, base::OnTaskRunnerDeleter> watcher_;
 
-  base::WeakPtrFactory<DeviceManagerManual> weak_ptr_factory_;
+  base::WeakPtrFactory<DeviceManagerManual> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(DeviceManagerManual);
 };

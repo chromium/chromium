@@ -6,10 +6,10 @@
 #define ASH_SYSTEM_OVERVIEW_OVERVIEW_BUTTON_TRAY_H_
 
 #include "ash/ash_export.h"
+#include "ash/public/cpp/tablet_mode_observer.h"
 #include "ash/session/session_observer.h"
 #include "ash/system/tray/tray_background_view.h"
 #include "ash/wm/overview/overview_observer.h"
-#include "ash/wm/tablet_mode/tablet_mode_observer.h"
 #include "base/macros.h"
 #include "ui/events/event_constants.h"
 
@@ -53,6 +53,8 @@ class ASH_EXPORT OverviewButtonTray : public TrayBackgroundView,
 
   // ActionableView:
   bool PerformAction(const ui::Event& event) override;
+  void HandlePerformActionResult(bool action_performed,
+                                 const ui::Event& event) override;
 
   // SessionObserver:
   void OnSessionStateChanged(session_manager::SessionState state) override;
@@ -68,6 +70,9 @@ class ASH_EXPORT OverviewButtonTray : public TrayBackgroundView,
   void ClickedOutsideBubble() override;
   base::string16 GetAccessibleNameForTray() override;
   void HideBubbleWithView(const TrayBubbleView* bubble_view) override;
+
+  // views::View:
+  const char* GetClassName() const override;
 
  private:
   friend class OverviewButtonTrayTest;

@@ -8,7 +8,8 @@
 #include <map>
 
 #include "base/macros.h"
-#include "services/service_manager/public/cpp/binder_registry.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "services/service_manager/public/cpp/binder_map.h"
 #include "services/service_manager/public/cpp/service.h"
 #include "services/service_manager/public/cpp/service_binding.h"
 #include "services/service_manager/public/mojom/service.mojom.h"
@@ -29,8 +30,9 @@ class NavigableContentsImpl;
 class Service : public service_manager::Service {
  public:
   // |delegate| is not owned and must outlive |this|.
-  explicit Service(ServiceDelegate* delegate,
-                   service_manager::mojom::ServiceRequest request);
+  explicit Service(
+      ServiceDelegate* delegate,
+      mojo::PendingReceiver<service_manager::mojom::Service> receiver);
   ~Service() override;
 
   ServiceDelegate* delegate() const { return delegate_; }
@@ -52,13 +54,13 @@ class Service : public service_manager::Service {
   void RemoveNavigableContents(NavigableContentsImpl* contents);
 
   // service_manager::Service:
-  void OnBindInterface(const service_manager::BindSourceInfo& source,
-                       const std::string& interface_name,
-                       mojo::ScopedMessagePipeHandle pipe) override;
+  void OnConnect(const service_manager::ConnectSourceInfo& source,
+                 const std::string& interface_name,
+                 mojo::ScopedMessagePipeHandle pipe) override;
 
   ServiceDelegate* const delegate_;
   service_manager::ServiceBinding service_binding_;
-  service_manager::BinderRegistry binders_;
+  service_manager::BinderMap binders_;
 
   std::map<NavigableContentsFactoryImpl*,
            std::unique_ptr<NavigableContentsFactoryImpl>>

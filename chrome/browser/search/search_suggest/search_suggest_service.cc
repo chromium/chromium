@@ -8,29 +8,32 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/feature_list.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/search.h"
 #include "chrome/browser/search/search_suggest/search_suggest_loader.h"
 #include "chrome/common/pref_names.h"
+#include "components/omnibox/browser/omnibox_field_trial.h"
+#include "components/omnibox/common/omnibox_features.h"
 #include "components/prefs/scoped_user_pref_update.h"
-#include "services/identity/public/cpp/identity_manager.h"
+#include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "third_party/re2/src/re2/re2.h"
 
 namespace {
 
-constexpr char kSuggestionHashRegex[] = "[a-z0-9]{1,4}";
+constexpr char kSuggestionHashRegex[] = "[a-z0-9]{4}";
 
-std::string* ValidateHash(const uint8_t hash[4]) {
-  const std::string hash_string = reinterpret_cast<const char*>(hash);
+bool ValidateHash(const uint8_t hash[4], std::string& result) {
+  if (!hash)
+    return false;
 
-  std::string* trimmed_string = new std::string("");
-  // The uint8_t array received via IPC ends in an EOT byte (\4), remove it.
-  base::TrimString(hash_string, "\4", trimmed_string);
+  const std::string hash_string(reinterpret_cast<const char*>(hash), 0, 4);
+  result = hash_string;
 
-  if (!re2::RE2::FullMatch(*trimmed_string, kSuggestionHashRegex))
-    return nullptr;
-  return trimmed_string;
+  return re2::RE2::FullMatch(hash_string, kSuggestionHashRegex);
 }
 
 const char kFirstShownTimeMs[] = "first_shown_time_ms";
@@ -59,11 +62,11 @@ base::Value ImpressionDictDefaults() {
 }  // namespace
 
 class SearchSuggestService::SigninObserver
-    : public identity::IdentityManager::Observer {
+    : public signin::IdentityManager::Observer {
  public:
   using SigninStatusChangedCallback = base::RepeatingClosure;
 
-  SigninObserver(identity::IdentityManager* identity_manager,
+  SigninObserver(signin::IdentityManager* identity_manager,
                  const SigninStatusChangedCallback& callback)
       : identity_manager_(identity_manager), callback_(callback) {
     if (identity_manager_)
@@ -83,26 +86,42 @@ class SearchSuggestService::SigninObserver
  private:
   // IdentityManager::Observer implementation.
   void OnAccountsInCookieUpdated(
-      const identity::AccountsInCookieJarInfo& accounts_in_cookie_jar_info,
+      const signin::AccountsInCookieJarInfo& accounts_in_cookie_jar_info,
       const GoogleServiceAuthError& error) override {
     callback_.Run();
   }
 
   // May be nullptr in tests.
-  identity::IdentityManager* const identity_manager_;
+  signin::IdentityManager* const identity_manager_;
   SigninStatusChangedCallback callback_;
 };
 
+// static
+bool SearchSuggestService::IsEnabled() {
+  return !base::FeatureList::IsEnabled(omnibox::kZeroSuggestionsOnNTP) &&
+         !base::FeatureList::IsEnabled(omnibox::kZeroSuggestionsOnNTPRealbox) &&
+         !(base::FeatureList::IsEnabled(omnibox::kOnFocusSuggestions) &&
+           (!OmniboxFieldTrial::GetZeroSuggestVariants(
+                 metrics::OmniboxEventProto::NTP_REALBOX)
+                 .empty() ||
+            !OmniboxFieldTrial::GetZeroSuggestVariants(
+                 metrics::OmniboxEventProto::
+                     INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS)
+                 .empty()));
+}
+
 SearchSuggestService::SearchSuggestService(
     Profile* profile,
-    identity::IdentityManager* identity_manager,
+    signin::IdentityManager* identity_manager,
     std::unique_ptr<SearchSuggestLoader> loader)
     : loader_(std::move(loader)),
       signin_observer_(std::make_unique<SigninObserver>(
           identity_manager,
           base::BindRepeating(&SearchSuggestService::SigninStatusChanged,
                               base::Unretained(this)))),
-      profile_(profile) {}
+      profile_(profile),
+      search_suggest_data_(base::nullopt),
+      search_suggest_status_(SearchSuggestLoader::Status::FATAL_ERROR) {}
 
 SearchSuggestService::~SearchSuggestService() = default;
 
@@ -118,6 +137,11 @@ void SearchSuggestService::Shutdown() {
 const base::Optional<SearchSuggestData>&
 SearchSuggestService::search_suggest_data() const {
   return search_suggest_data_;
+}
+
+const SearchSuggestLoader::Status& SearchSuggestService::search_suggest_status()
+    const {
+  return search_suggest_status_;
 }
 
 void SearchSuggestService::Refresh() {
@@ -175,13 +199,16 @@ void SearchSuggestService::SearchSuggestDataLoaded(
     DictionaryPrefUpdate update(profile_->GetPrefs(),
                                 prefs::kNtpSearchSuggestionsImpressions);
 
-    if (data.has_value()) {
+    if (status == SearchSuggestLoader::Status::OK_WITH_SUGGESTIONS ||
+        status == SearchSuggestLoader::Status::OK_WITHOUT_SUGGESTIONS) {
       base::DictionaryValue* dict = update.Get();
       dict->SetInteger(kMaxImpressions, data->max_impressions);
       dict->SetInteger(kImpressionCapExpireTimeMs,
                        data->impression_cap_expire_time_ms);
       dict->SetInteger(kRequestFreezeTimeMs, data->request_freeze_time_ms);
-    } else if (status == SearchSuggestLoader::Status::FATAL_ERROR) {
+    }
+
+    if (status == SearchSuggestLoader::Status::OK_WITHOUT_SUGGESTIONS) {
       base::DictionaryValue* dict = update.Get();
       dict->SetBoolean(kIsRequestFrozen, true);
       dict->SetInteger(kRequestFrozenTimeMs, base::Time::Now().ToTimeT());
@@ -257,7 +284,7 @@ void SearchSuggestService::BlocklistSearchSuggestion(int task_version,
     return;
 
   std::string task_version_id =
-      std::to_string(task_version) + "_" + std::to_string(task_id);
+      base::NumberToString(task_version) + "_" + base::NumberToString(task_id);
   DictionaryPrefUpdate update(profile_->GetPrefs(),
                               prefs::kNtpSearchSuggestionsBlocklist);
   base::DictionaryValue* blocklist = update.Get();
@@ -274,13 +301,12 @@ void SearchSuggestService::BlocklistSearchSuggestionWithHash(
   if (!search::DefaultSearchProviderIsGoogle(profile_))
     return;
 
-  std::string* hash_string = ValidateHash(hash);
-
-  if (!hash_string)
+  std::string hash_string;
+  if (!ValidateHash(hash, hash_string))
     return;
 
   std::string task_version_id =
-      std::to_string(task_version) + "_" + std::to_string(task_id);
+      base::NumberToString(task_version) + "_" + base::NumberToString(task_id);
 
   DictionaryPrefUpdate update(profile_->GetPrefs(),
                               prefs::kNtpSearchSuggestionsBlocklist);
@@ -288,7 +314,7 @@ void SearchSuggestService::BlocklistSearchSuggestionWithHash(
   base::Value* value = blocklist->FindKey(task_version_id);
   if (!value)
     value = blocklist->SetKey(task_version_id, base::ListValue());
-  value->GetList().emplace_back(base::Value(*hash_string));
+  value->Append(base::Value(hash_string));
 
   search_suggest_data_ = base::nullopt;
   Refresh();
@@ -300,13 +326,13 @@ void SearchSuggestService::SearchSuggestionSelected(int task_version,
   if (!search::DefaultSearchProviderIsGoogle(profile_))
     return;
 
-  std::string* hash_string = ValidateHash(hash);
-
-  if (!hash_string)
+  std::string hash_string;
+  if (!ValidateHash(hash, hash_string))
     return;
 
-  std::string blocklist_item = std::to_string(task_version) + "_" +
-                               std::to_string(task_id) + ":" + *hash_string;
+  std::string blocklist_item = base::NumberToString(task_version) + "_" +
+                               base::NumberToString(task_id) + ":" +
+                               hash_string;
 
   std::string blocklist = GetBlocklistAsString();
   if (!blocklist.empty())

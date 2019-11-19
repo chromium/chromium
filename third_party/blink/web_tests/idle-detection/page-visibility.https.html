@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<link rel="help" href="https://github.com/samuelgoto/idle-detection">
+<title>Tests the Idle Detection API</title>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+<script src="file:///gen/layout_test_data/mojo/public/js/mojo_bindings.js"></script>
+<script src="file:///gen/mojo/public/mojom/base/string16.mojom.js"></script>
+<script src="file:///gen/mojo/public/mojom/base/time.mojom.js"></script>
+<script src="file:///gen/third_party/blink/public/mojom/idle/idle_manager.mojom.js"></script>
+<script src="../external/wpt/idle-detection/mock.js"></script>
+<script>
+'use strict';
+
+promise_test(async t => {
+  let monitor;
+
+  expect(addMonitor).andReturn((threshold, monitorPtr) => {
+      monitor = monitorPtr;
+      return Promise.resolve({
+        state: {
+          user: UserIdleState.ACTIVE,
+          screen: ScreenIdleState.UNLOCKED
+        }
+      });
+    });
+
+
+  let detector = new IdleDetector({threshold: 60});
+
+  let watcher = new EventWatcher(t, detector, ["change"]);
+
+  await detector.start();
+
+  // Waits for the first event.
+  await watcher.wait_for("change");
+
+  assert_equals(detector.state.user, "active");
+
+  testRunner.setPageVisibility("hidden");
+
+  monitor.update({
+    user: UserIdleState.IDLE,
+    screen: ScreenIdleState.UNLOCKED
+  });
+
+  // Assert that the detector works while the page is not visible.
+  await watcher.wait_for("change");
+  assert_equals(detector.state.user, "idle");
+
+  testRunner.setPageVisibility("visible");
+
+  monitor.update({
+    user: UserIdleState.ACTIVE,
+    screen: ScreenIdleState.UNLOCKED
+  });
+
+  await watcher.wait_for("change");
+  assert_equals(detector.state.user, "active");
+
+  detector.stop();
+
+}, 'Page visibility.');
+
+</script>

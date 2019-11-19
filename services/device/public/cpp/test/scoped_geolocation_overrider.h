@@ -6,12 +6,7 @@
 #define SERVICES_DEVICE_PUBLIC_CPP_TEST_SCOPED_GEOLOCATION_OVERRIDER_H_
 
 #include "base/bind.h"
-#include "mojo/public/cpp/bindings/binding.h"
-#include "mojo/public/cpp/bindings/binding_set.h"
-#include "services/device/public/mojom/geolocation.mojom.h"
-#include "services/device/public/mojom/geolocation_context.mojom.h"
 #include "services/device/public/mojom/geoposition.mojom.h"
-#include "services/service_manager/public/cpp/bind_source_info.h"
 
 namespace device {
 
@@ -29,6 +24,25 @@ class ScopedGeolocationOverrider {
   void OverrideGeolocation(const mojom::Geoposition& position);
   void UpdateLocation(const mojom::Geoposition& position);
   void UpdateLocation(double latitude, double longitude);
+
+  // Pause resolving Geolocation queries to keep request inflight.
+  // After |Pause()| call, Geolocation::QueryNextPosition does not respond,
+  // allowing us to test behavior in the middle of the request.
+  void Pause();
+
+  // Resume resolving Geolocation queries.
+  // Send the paused Geolocation::QueryNextPosition response.
+  void Resume();
+
+  // Count number of active FakeGeolocation instances, which is equal to the
+  // number of active consumer Remote<Geolocation>s.
+  // This is used to verify if consumers properly close the connections when
+  // they should no longer be listening.
+  size_t GetGeolocationInstanceCount() const;
+
+  // Register callback to be notified when a Remote<Geolocation> is cleared and
+  // the corresponding fake Geolocation instance is disposed.
+  void SetGeolocationCloseCallback(base::RepeatingClosure closure);
 
  private:
   class FakeGeolocation;

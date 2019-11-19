@@ -1,0 +1,12 @@
+This is a testharness.js-based test.
+FAIL "require-corp" top-level: navigating a frame to "none" should fail assert_equals: expected null but got Document node with 1 child
+FAIL "require-corp" top-level: navigating a frame from "require-corp" to "none" should fail assert_equals: expected null but got Document node with 1 child
+PASS "require-corp" top-level: creating a noopener "none" popup should succeed
+PASS "require-corp" top-level: creating a "none" popup should succeed.
+PASS "require-corp" top-level (as popup): navigating to "none" should succeed
+PASS "require-corp" top-level (as noopener popup): navigating to "none" should succeed
+PASS "require-corp" top-level (as popup with opener set to null): navigating to "none" should succeed
+PASS "require-corp" top-level: fetch() to CORP: cross-origin response should succeed
+FAIL "require-corp" top-level: fetch() to response without CORP should fail assert_unreached: Should have rejected: undefined Reached unreachable code
+Harness: the test ran to completion.
+

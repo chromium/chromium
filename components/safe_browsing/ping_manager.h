@@ -12,6 +12,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/unique_ptr_adapters.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
@@ -63,7 +64,8 @@ class PingManager {
 
   const V4ProtocolConfig config_;
 
-  typedef std::set<std::unique_ptr<network::SimpleURLLoader>> Reports;
+  using Reports = std::set<std::unique_ptr<network::SimpleURLLoader>,
+                           base::UniquePtrComparator>;
 
   // Generates URL for reporting safe browsing hits.
   GURL SafeBrowsingHitUrl(const safe_browsing::HitReport& hit_report) const;

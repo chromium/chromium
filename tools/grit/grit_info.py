@@ -6,6 +6,8 @@
 '''Tool to determine inputs and outputs of a grit file.
 '''
 
+from __future__ import print_function
+
 import optparse
 import os
 import posixpath
@@ -34,20 +36,6 @@ def Outputs(filename, defines, ids_file, target_platform=None):
       path, filename = os.path.split(path)
     if output.attrs['lang']:
       lang_folders[output.attrs['lang']] = os.path.dirname(path)
-
-  # Add all generated files, once for each output language.
-  for node in grd:
-    if node.name == 'structure':
-      with node:
-        # TODO(joi) Should remove the "if sconsdep is true" thing as it is a
-        # hack - see grit/node/structure.py
-        if node.HasFileForLanguage() and node.attrs['sconsdep'] == 'true':
-          for lang in lang_folders:
-            path = node.FileForLanguage(lang, lang_folders[lang],
-                                        create_file=False,
-                                        return_if_not_generated=False)
-            if path:
-              target.append(path)
 
   return [t.replace('\\', '/') for t in target]
 
@@ -104,9 +92,9 @@ def Inputs(filename, defines, ids_file, target_platform=None):
 
 
 def PrintUsage():
-  print 'USAGE: ./grit_info.py --inputs [-D foo] [-f resource_ids] <grd-file>'
-  print ('       ./grit_info.py --outputs [-D foo] [-f resource_ids] ' +
-      '<out-prefix> <grd-file>')
+  print('USAGE: ./grit_info.py --inputs [-D foo] [-f resource_ids] <grd-file>')
+  print('       ./grit_info.py --outputs [-D foo] [-f resource_ids] ' +
+        '<out-prefix> <grd-file>')
 
 
 def DoMain(argv):
@@ -173,11 +161,11 @@ def DoMain(argv):
 def main(argv):
   try:
     result = DoMain(argv[1:])
-  except WrongNumberOfArguments, e:
+  except WrongNumberOfArguments as e:
     PrintUsage()
-    print e
+    print(e)
     return 1
-  print result
+  print(result)
   return 0
 
 

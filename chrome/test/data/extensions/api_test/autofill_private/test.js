@@ -97,8 +97,8 @@ var availableTests = [
           // Setup the callback that verifies that the address was correctly
           // added.
           chrome.test.listenOnce(
-              chrome.autofillPrivate.onAddressListChanged,
-              chrome.test.callbackPass(function(addressList) {
+              chrome.autofillPrivate.onPersonalDataChanged,
+              chrome.test.callbackPass(function(addressList, cardList) {
                 chrome.test.assertEq(
                     [{
                       fullNames: [NAME],
@@ -154,8 +154,8 @@ var availableTests = [
           // Setup the callback that verifies that the address was correctly
           // updated.
           chrome.test.listenOnce(
-              chrome.autofillPrivate.onAddressListChanged,
-              chrome.test.callbackPass(function(addressList) {
+              chrome.autofillPrivate.onPersonalDataChanged,
+              chrome.test.callbackPass(function(addressList, cardList) {
                 chrome.test.assertEq(
                     [{
                       guid: addressGuid,
@@ -199,8 +199,8 @@ var availableTests = [
 
           // Setup the callback that verifies that the card was correctly added.
           chrome.test.listenOnce(
-              chrome.autofillPrivate.onCreditCardListChanged,
-              chrome.test.callbackPass(function(cardList) {
+              chrome.autofillPrivate.onPersonalDataChanged,
+              chrome.test.callbackPass(function(addressList, cardList) {
                 chrome.test.assertEq(
                     [{
                       name: CARD_NAME,
@@ -244,8 +244,8 @@ var availableTests = [
           // Setup the callback that verifies that the address was correctly
           // updated.
           chrome.test.listenOnce(
-              chrome.autofillPrivate.onCreditCardListChanged,
-              chrome.test.callbackPass(function(cardList) {
+              chrome.autofillPrivate.onPersonalDataChanged,
+              chrome.test.callbackPass(function(addressList, cardList) {
                 chrome.test.assertEq(
                     [{
                       guid: cardGuid,
@@ -289,7 +289,7 @@ var availableTests = [
       }
     }
 
-    chrome.autofillPrivate.onCreditCardListChanged.addListener(handler);
+    chrome.autofillPrivate.onPersonalDataChanged.addListener(handler);
     chrome.autofillPrivate.getCreditCardList(handler);
     chrome.autofillPrivate.saveCreditCard({name: NAME});
   },

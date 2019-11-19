@@ -1,24 +1,19 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright 2015 The Chromium Authors. All rights reserved.
-     Use of this source code is governed by a BSD-style license that can be
-     found in the LICENSE file. -->
+{% extends "chrome/android/java/AndroidManifest_monochrome.xml" %}
 
-<!-- package name must be unique. -->
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          package="{{test_manifest_package}}">
+# Copyright 2015 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
 
-    <uses-sdk android:minSdkVersion="{{min_sdk_version}}" android:targetSdkVersion="{{target_sdk_version}}" />
+{% block application_label %}MonochromePublicTest{% endblock %}
+
+{% block extra_uses_permissions %}
     <uses-permission android:name="android.permission.ACCESS_MOCK_LOCATION" />
     <uses-permission android:name="android.permission.READ_LOGS"/>
-    <uses-permission android:name="android.permission.WAKE_LOCK" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.SET_ANIMATION_SCALE"/>
+{% endblock %}
 
-    <application android:label="MonochromePublicTest">
-        <uses-library android:name="android.test.runner" />
-    </application>
-
+{% block extra_root_definitions %}
     <instrumentation android:name="org.chromium.base.test.BaseChromiumAndroidJUnitRunner"
         android:targetPackage="{{manifest_package}}"
         android:label="Tests for {{manifest_package}}"/>
-</manifest>
+{% endblock %}

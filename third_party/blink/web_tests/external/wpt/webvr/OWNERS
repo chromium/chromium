@@ -1,5 +1,0 @@
-file://third_party/blink/renderer/modules/vr/OWNERS
-
-# TEAM: xr-dev@chromium.org
-# COMPONENT: Blink>WebXR>VR
-# WPT-NOTIFY: true

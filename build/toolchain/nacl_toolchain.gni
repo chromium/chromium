@@ -32,7 +32,6 @@ template("nacl_toolchain") {
                              "cc",
                              "cxx",
                              "deps",
-                             "is_clang_analysis_supported",
                              "ld",
                              "link_outputs",
                              "nm",
@@ -51,6 +50,7 @@ template("nacl_toolchain") {
 
       # We do not support tcmalloc in the NaCl toolchains.
       use_allocator = "none"
+      use_allocator_shim = false
 
       # We do not support clang code coverage in the NaCl toolchains.
       use_clang_coverage = false

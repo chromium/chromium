@@ -12,7 +12,6 @@
 #import "ios/chrome/browser/ui/collection_view/cells/collection_view_footer_item.h"
 #import "ios/chrome/browser/ui/collection_view/cells/collection_view_item.h"
 #import "ios/chrome/browser/ui/collection_view/collection_view_model.h"
-#import "ios/chrome/browser/ui/colors/MDCPalette+CrAdditions.h"
 #import "ios/chrome/browser/ui/list_model/list_item+Controller.h"
 #import "ios/chrome/browser/ui/payments/cells/page_info_item.h"
 #import "ios/chrome/browser/ui/payments/cells/payments_text_item.h"
@@ -20,6 +19,7 @@
 #import "ios/chrome/browser/ui/payments/payment_request_view_controller_actions.h"
 #include "ios/chrome/browser/ui/util/rtl_geometry.h"
 #include "ios/chrome/browser/ui/util/uikit_ui_util.h"
+#import "ios/chrome/common/colors/semantic_color_names.h"
 #include "ios/chrome/grit/ios_strings.h"
 #import "ios/third_party/material_components_ios/src/components/Buttons/src/MaterialButtons.h"
 #import "ios/third_party/material_components_ios/src/components/Typography/src/MaterialTypography.h"
@@ -94,7 +94,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
                target:nil
                action:@selector(onCancel)];
     [_cancelButton setTitleTextAttributes:@{
-      NSForegroundColorAttributeName : [UIColor lightGrayColor]
+      NSForegroundColorAttributeName : [UIColor colorNamed:kDisabledTintColor]
     }
                                  forState:UIControlStateDisabled];
     [_cancelButton
@@ -105,12 +105,12 @@ typedef NS_ENUM(NSInteger, ItemType) {
     _payButton = [[MDCButton alloc] init];
     [_payButton setTitle:l10n_util::GetNSString(IDS_PAYMENTS_PAY_BUTTON)
                 forState:UIControlStateNormal];
-    [_payButton setBackgroundColor:[[MDCPalette cr_bluePalette] tint500]];
-    [_payButton setTitleColor:[UIColor whiteColor]
+    [_payButton setBackgroundColor:[UIColor colorNamed:kBlueColor]];
+    [_payButton setTitleColor:[UIColor colorNamed:kSolidButtonTextColor]
                      forState:UIControlStateNormal];
-    [_payButton setTitleColor:[UIColor whiteColor]
+    [_payButton setTitleColor:[UIColor colorNamed:kSolidButtonTextColor]
                      forState:UIControlStateDisabled];
-    [_payButton setInkColor:[UIColor colorWithWhite:1 alpha:0.2]];
+    [_payButton setInkColor:[UIColor colorNamed:kMDCInkColor]];
     [_payButton addTarget:self
                    action:@selector(onConfirm)
          forControlEvents:UIControlEventTouchUpInside];
@@ -202,7 +202,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
     PaymentsTextItem* shippingSectionHeaderItem =
         [_dataSource shippingSectionHeaderItem];
-    [shippingSectionHeaderItem setTextColor:[[MDCPalette greyPalette] tint500]];
+    [shippingSectionHeaderItem
+        setTextColor:[UIColor colorNamed:kTextSecondaryColor]];
     [shippingSectionHeaderItem setType:ItemTypeShippingHeader];
     [model setHeader:shippingSectionHeaderItem
         forSectionWithIdentifier:SectionIdentifierShipping];
@@ -238,6 +239,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   self.styler.cellStyle = MDCCollectionViewCellStyleCard;
   self.styler.separatorInset =
       UIEdgeInsetsMake(0, kSeparatorEdgeInset, 0, kSeparatorEdgeInset);
+  self.styler.separatorColor = [UIColor colorNamed:kSeparatorColor];
 }
 
 - (void)updatePaymentSummaryItem {
@@ -329,7 +331,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
         // Style call to action cells.
         if (paymentsTextCell.cellType == PaymentsTextCellTypeCallToAction) {
           paymentsTextCell.textLabel.textColor =
-              [[MDCPalette cr_bluePalette] tint500];
+              [UIColor colorNamed:kBlueColor];
         }
       }
       break;
@@ -338,7 +340,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
       CollectionViewFooterCell* footerCell =
           base::mac::ObjCCastStrict<CollectionViewFooterCell>(cell);
       SetUILabelScaledFont(footerCell.textLabel, [MDCTypography body2Font]);
-      footerCell.textLabel.textColor = [[MDCPalette greyPalette] tint600];
+      footerCell.textLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
       footerCell.textLabel.shadowColor = nil;  // No shadow.
       footerCell.horizontalPadding = kFooterCellHorizontalPadding;
       break;
@@ -503,7 +505,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   if (paymentMethodSectionHeaderItem) {
     [paymentMethodSectionHeaderItem setType:ItemTypePaymentHeader];
     [paymentMethodSectionHeaderItem
-        setTextColor:[[MDCPalette greyPalette] tint500]];
+        setTextColor:[UIColor colorNamed:kTextSecondaryColor]];
     [model setHeader:paymentMethodSectionHeaderItem
         forSectionWithIdentifier:SectionIdentifierPayment];
   }
@@ -529,7 +531,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   if (contactInfoSectionHeaderItem) {
     [contactInfoSectionHeaderItem setType:ItemTypeContactInfoHeader];
     [contactInfoSectionHeaderItem
-        setTextColor:[[MDCPalette greyPalette] tint500]];
+        setTextColor:[UIColor colorNamed:kTextSecondaryColor]];
     [model setHeader:contactInfoSectionHeaderItem
         forSectionWithIdentifier:SectionIdentifierContactInfo];
   }

@@ -4,7 +4,7 @@
 
 #include "base/bind.h"
 #include "base/macros.h"
-#include "base/message_loop/message_loop.h"
+#include "base/message_loop/message_pump_type.h"
 #include "base/run_loop.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/test/test_message_loop.h"
@@ -39,7 +39,7 @@ ACTION_P3(MaybeSignalEvent, counter, signal_at_count, event) {
 class AUHALStreamTest : public testing::Test {
  public:
   AUHALStreamTest()
-      : message_loop_(base::MessageLoop::TYPE_UI),
+      : message_loop_(base::MessagePumpType::UI),
         manager_(AudioManager::CreateForTesting(
             std::make_unique<TestAudioThread>())),
         manager_device_info_(manager_.get()) {

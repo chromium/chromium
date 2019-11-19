@@ -12,7 +12,7 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/single_thread_task_runner.h"
-#include "storage/common/blob_storage/blob_storage_constants.h"
+#include "storage/browser/blob/blob_storage_constants.h"
 
 namespace storage {
 class BlobDataHandle;
@@ -65,7 +65,7 @@ class BlobTaskProxy {
   std::unique_ptr<storage::BlobDataHandle> blob_data_handle_;
 
   // Bounded to IO thread task runner.
-  base::WeakPtrFactory<BlobTaskProxy> weak_ptr_factory_;
+  base::WeakPtrFactory<BlobTaskProxy> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(BlobTaskProxy);
 };

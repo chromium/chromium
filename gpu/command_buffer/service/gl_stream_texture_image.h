@@ -22,6 +22,8 @@ class GPU_GLES2_EXPORT GLStreamTextureImage : public gl::GLImage {
   // UV=(0,0) corresponds to the top left corner of the image.
   virtual void GetTextureMatrix(float matrix[16]) = 0;
 
+  // TODO(weiliangc): When Overlay is moved off command buffer and we use
+  // SharedImage in all cases, this API should be deleted.
   virtual void NotifyPromotionHint(bool promotion_hint,
                                    int display_x,
                                    int display_y,

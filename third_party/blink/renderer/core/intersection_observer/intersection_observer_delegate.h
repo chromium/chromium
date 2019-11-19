@@ -16,7 +16,7 @@ class IntersectionObserver;
 class IntersectionObserverEntry;
 
 class IntersectionObserverDelegate
-    : public GarbageCollectedFinalized<IntersectionObserverDelegate>,
+    : public GarbageCollected<IntersectionObserverDelegate>,
       public NameClient {
  public:
   virtual ~IntersectionObserverDelegate() = default;

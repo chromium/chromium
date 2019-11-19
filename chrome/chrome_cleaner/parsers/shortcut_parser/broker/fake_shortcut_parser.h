@@ -6,7 +6,7 @@
 #define CHROME_CHROME_CLEANER_PARSERS_SHORTCUT_PARSER_BROKER_FAKE_SHORTCUT_PARSER_H_
 
 #include "base/win/scoped_handle.h"
-#include "chrome/chrome_cleaner/interfaces/parser_interface.mojom.h"
+#include "chrome/chrome_cleaner/mojom/parser_interface.mojom.h"
 #include "chrome/chrome_cleaner/parsers/shortcut_parser/broker/shortcut_parser_api.h"
 #include "testing/gmock/include/gmock/gmock.h"
 

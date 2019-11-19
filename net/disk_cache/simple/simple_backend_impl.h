@@ -25,6 +25,7 @@
 #include "net/base/cache_type.h"
 #include "net/base/net_export.h"
 #include "net/disk_cache/disk_cache.h"
+#include "net/disk_cache/simple/post_doom_waiter.h"
 #include "net/disk_cache/simple/simple_entry_impl.h"
 #include "net/disk_cache/simple/simple_index_delegate.h"
 
@@ -41,15 +42,17 @@ namespace disk_cache {
 
 // SimpleBackendImpl is a new cache backend that stores entries in individual
 // files.
-// See http://www.chromium.org/developers/design-documents/network-stack/disk-cache/very-simple-backend
+// See
+// http://www.chromium.org/developers/design-documents/network-stack/disk-cache/very-simple-backend
 //
 // The SimpleBackendImpl provides safe iteration; mutating entries during
 // iteration cannot cause a crash. It is undefined whether entries created or
 // destroyed during the iteration will be included in any pre-existing
 // iterations.
 //
-// The non-static functions below must be called on the IO thread unless
-// otherwise stated.
+// The non-static functions below must be called on the source creation sequence
+// unless otherwise stated.  Historically the source creation sequence has been
+// the IO thread, but the simple backend may now be used from other sequences.
 
 class BackendCleanupTracker;
 class SimpleEntryImpl;
@@ -74,7 +77,6 @@ class NET_EXPORT_PRIVATE SimpleBackendImpl : public Backend,
 
   ~SimpleBackendImpl() override;
 
-  net::CacheType cache_type() const { return cache_type_; }
   SimpleIndex* index() { return index_.get(); }
 
   void SetWorkerPoolForTesting(scoped_refptr<base::TaskRunner> task_runner);
@@ -92,32 +94,25 @@ class NET_EXPORT_PRIVATE SimpleBackendImpl : public Backend,
 
   // The entry for |entry_hash| is being doomed; the backend will not attempt
   // run new operations for this |entry_hash| until the Doom is completed.
-  void OnDoomStart(uint64_t entry_hash);
-
-  // The entry for |entry_hash| has been successfully doomed, we can now allow
-  // operations on this entry, and we can run any operations enqueued while the
-  // doom completed.
-  void OnDoomComplete(uint64_t entry_hash);
+  //
+  // The return value should be used to call OnDoomComplete.
+  scoped_refptr<SimplePostDoomWaiterTable> OnDoomStart(uint64_t entry_hash);
 
   // SimpleIndexDelegate:
   void DoomEntries(std::vector<uint64_t>* entry_hashes,
                    CompletionOnceCallback callback) override;
 
   // Backend:
-  net::CacheType GetCacheType() const override;
   int32_t GetEntryCount() const override;
-  net::Error OpenEntry(const std::string& key,
-                       net::RequestPriority request_priority,
-                       Entry** entry,
-                       CompletionOnceCallback callback) override;
-  net::Error CreateEntry(const std::string& key,
-                         net::RequestPriority request_priority,
-                         Entry** entry,
-                         CompletionOnceCallback callback) override;
-  net::Error OpenOrCreateEntry(const std::string& key,
-                               net::RequestPriority priority,
-                               EntryWithOpened* entry_struct,
-                               CompletionOnceCallback callback) override;
+  EntryResult OpenEntry(const std::string& key,
+                        net::RequestPriority request_priority,
+                        EntryResultCallback callback) override;
+  EntryResult CreateEntry(const std::string& key,
+                          net::RequestPriority request_priority,
+                          EntryResultCallback callback) override;
+  EntryResult OpenOrCreateEntry(const std::string& key,
+                                net::RequestPriority priority,
+                                EntryResultCallback callback) override;
   net::Error DoomEntry(const std::string& key,
                        net::RequestPriority priority,
                        CompletionOnceCallback callback) override;
@@ -173,18 +168,6 @@ class NET_EXPORT_PRIVATE SimpleBackendImpl : public Backend,
     int net_error;
   };
 
-  struct PostDoomWaiter {
-    PostDoomWaiter();
-    // Also initializes |time_queued|.
-    explicit PostDoomWaiter(base::OnceClosure to_run_post_doom);
-    explicit PostDoomWaiter(PostDoomWaiter&& other);
-    ~PostDoomWaiter();
-    PostDoomWaiter& operator=(PostDoomWaiter&& other);
-
-    base::TimeTicks time_queued;
-    base::OnceClosure run_post_doom;
-  };
-
   void InitializeIndex(CompletionOnceCallback callback,
                        const DiskStatResult& result);
 
@@ -206,8 +189,8 @@ class NET_EXPORT_PRIVATE SimpleBackendImpl : public Backend,
                                            Int64CompletionOnceCallback callback,
                                            int result);
 
-  // Try to create the directory if it doesn't exist. This must run on the IO
-  // thread.
+  // Try to create the directory if it doesn't exist. This must run on the
+  // source creation sequence.
   static DiskStatResult InitCacheStructureOnDisk(const base::FilePath& path,
                                                  uint64_t suggested_max_size,
                                                  net::CacheType cache_type);
@@ -222,7 +205,7 @@ class NET_EXPORT_PRIVATE SimpleBackendImpl : public Backend,
       uint64_t entry_hash,
       const std::string& key,
       net::RequestPriority request_priority,
-      std::vector<PostDoomWaiter>** post_doom);
+      std::vector<SimplePostDoomWaiter>** post_doom);
 
   // If post-doom and settings indicates that optimistically succeeding a create
   // due to being immediately after a doom is possible, sets up an entry for
@@ -234,15 +217,14 @@ class NET_EXPORT_PRIVATE SimpleBackendImpl : public Backend,
       uint64_t entry_hash,
       const std::string& key,
       net::RequestPriority request_priority,
-      std::vector<PostDoomWaiter>* post_doom);
+      std::vector<SimplePostDoomWaiter>* post_doom);
 
   // Given a hash, will try to open the corresponding Entry. If we have an Entry
   // corresponding to |hash| in the map of active entries, opens it. Otherwise,
   // a new empty Entry will be created, opened and filled with information from
   // the disk.
-  net::Error OpenEntryFromHash(uint64_t entry_hash,
-                               Entry** entry,
-                               CompletionOnceCallback callback);
+  EntryResult OpenEntryFromHash(uint64_t entry_hash,
+                                EntryResultCallback callback);
 
   // Doom the entry corresponding to |entry_hash|, if it's active or currently
   // pending doom. This function does not block if there is an active entry,
@@ -255,10 +237,9 @@ class NET_EXPORT_PRIVATE SimpleBackendImpl : public Backend,
   // hash alone - this checks that a duplicate active entry was not created
   // using a key in the meantime.
   void OnEntryOpenedFromHash(uint64_t hash,
-                             Entry** entry,
                              const scoped_refptr<SimpleEntryImpl>& simple_entry,
-                             CompletionOnceCallback callback,
-                             int error_code);
+                             EntryResultCallback callback,
+                             EntryResult result);
 
   // Called when we tried to open an entry from key. When the entry has been
   // opened, a check for key mismatch is performed.
@@ -283,7 +264,6 @@ class NET_EXPORT_PRIVATE SimpleBackendImpl : public Backend,
   SimpleFileTracker* const file_tracker_;
 
   const base::FilePath path_;
-  const net::CacheType cache_type_;
   std::unique_ptr<SimpleIndex> index_;
 
   // This is only used for initial open (including potential format upgrade)
@@ -300,10 +280,10 @@ class NET_EXPORT_PRIVATE SimpleBackendImpl : public Backend,
 
   // The set of all entries which are currently being doomed. To avoid races,
   // these entries cannot have Doom/Create/Open operations run until the doom
-  // is complete. The base::Closure |PostDoomWaiter::run_post_doom| field is
-  // used to store deferred operations to be run at the completion of the Doom.
-  std::unordered_map<uint64_t, std::vector<PostDoomWaiter>>
-      entries_pending_doom_;
+  // is complete. The base::Closure |SimplePostDoomWaiter::run_post_doom| field
+  // is used to store deferred operations to be run at the completion of the
+  // Doom.
+  scoped_refptr<SimplePostDoomWaiterTable> post_doom_waiting_;
 
   net::NetLog* const net_log_;
 

@@ -41,11 +41,13 @@ class MatchRequest {
   MatchRequest(RuleSet* rule_set,
                const ContainerNode* scope = nullptr,
                const CSSStyleSheet* css_sheet = nullptr,
-               unsigned style_sheet_index = 0)
+               unsigned style_sheet_index = 0,
+               bool is_from_vtt = false)
       : rule_set(rule_set),
         scope(scope),
         style_sheet(css_sheet),
-        style_sheet_index(style_sheet_index) {
+        style_sheet_index(style_sheet_index),
+        is_from_vtt(is_from_vtt) {
     // Now that we're about to read from the RuleSet, we're done adding more
     // rules to the set and we should make sure it's compacted.
     rule_set->CompactRulesIfNeeded();
@@ -55,6 +57,7 @@ class MatchRequest {
   Member<const ContainerNode> scope;
   Member<const CSSStyleSheet> style_sheet;
   const unsigned style_sheet_index;
+  bool is_from_vtt;
 };
 
 }  // namespace blink

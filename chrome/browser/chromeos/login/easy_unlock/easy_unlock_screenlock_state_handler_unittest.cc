@@ -18,6 +18,7 @@
 #include "chrome/browser/chromeos/login/easy_unlock/easy_unlock_metrics.h"
 #include "chrome/browser/chromeos/login/easy_unlock/easy_unlock_service.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/components/proximity_auth/proximity_auth_pref_manager.h"
 #include "chromeos/components/proximity_auth/screenlock_bridge.h"
 #include "chromeos/components/proximity_auth/screenlock_state.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -35,6 +36,45 @@ const char kLockedToBeActivatedIconId[] = "locked-to-be-activated";
 const char kUnlockedIconId[] = "unlocked";
 const char kSpinnerIconId[] = "spinner";
 const char kHardlockedIconId[] = "hardlocked";
+
+class FakeProximityAuthPrefManager
+    : public proximity_auth::ProximityAuthPrefManager {
+ public:
+  FakeProximityAuthPrefManager() = default;
+  ~FakeProximityAuthPrefManager() override = default;
+
+  // proximity_auth::ProximityAuthPrefManager:
+  bool IsEasyUnlockAllowed() const override { return true; }
+
+  bool IsEasyUnlockEnabled() const override { return true; }
+  void SetIsEasyUnlockEnabled(bool is_easy_unlock_enabled) const override {}
+
+  bool IsEasyUnlockEnabledStateSet() const override { return true; }
+  void SetEasyUnlockEnabledStateSet() const override {}
+
+  bool IsChromeOSLoginAllowed() const override { return true; }
+
+  bool IsChromeOSLoginEnabled() const override { return true; }
+  void SetIsChromeOSLoginEnabled(bool is_enabled) override {}
+
+  int64_t GetLastPromotionCheckTimestampMs() const override { return 0; }
+  void SetLastPromotionCheckTimestampMs(int64_t timestamp_ms) override {}
+
+  int GetPromotionShownCount() const override { return 0; }
+  void SetPromotionShownCount(int count) override {}
+
+  bool HasShownLoginDisabledMessage() const override {
+    return has_shown_login_disabled_message_;
+  }
+  void SetHasShownLoginDisabledMessage(bool has_shown) override {
+    has_shown_login_disabled_message_ = has_shown;
+  }
+
+ private:
+  bool has_shown_login_disabled_message_ = false;
+
+  DISALLOW_COPY_AND_ASSIGN(FakeProximityAuthPrefManager);
+};
 
 // Checks if |input| string has any unreplaced placeholders.
 bool StringHasPlaceholders(const base::string16& input) {
@@ -221,11 +261,12 @@ class EasyUnlockScreenlockStateHandlerTest : public testing::Test {
     proximity_auth::ScreenlockBridge* screenlock_bridge =
         proximity_auth::ScreenlockBridge::Get();
     screenlock_bridge->SetLockHandler(lock_handler_.get());
+    fake_pref_manager_ = std::make_unique<FakeProximityAuthPrefManager>();
 
     // Create the screenlock state handler object that will be tested.
     state_handler_.reset(new EasyUnlockScreenlockStateHandler(
         account_id_, EasyUnlockScreenlockStateHandler::NO_HARDLOCK,
-        screenlock_bridge));
+        screenlock_bridge, fake_pref_manager_.get()));
   }
 
   void TearDown() override {
@@ -240,6 +281,8 @@ class EasyUnlockScreenlockStateHandlerTest : public testing::Test {
 
   // The user associated with |state_handler_|.
   const AccountId account_id_ = AccountId::FromUserEmail("test_user@gmail.com");
+
+  std::unique_ptr<FakeProximityAuthPrefManager> fake_pref_manager_;
 
   // Faked lock handler given to proximity_auth::ScreenlockBridge during the
   // test. Abstracts the screen lock UI.
@@ -311,6 +354,46 @@ TEST_F(EasyUnlockScreenlockStateHandlerTest, HardlockedState) {
 
   EXPECT_EQ(0u, lock_handler_->GetAndResetShowIconCount());
   ASSERT_TRUE(lock_handler_->HasCustomIcon());
+}
+
+TEST_F(EasyUnlockScreenlockStateHandlerTest,
+       LoginDisabled_HasNotYetShownMessage) {
+  fake_pref_manager_->SetHasShownLoginDisabledMessage(false);
+
+  state_handler_->ChangeState(ScreenlockState::NO_PHONE);
+  state_handler_->SetHardlockState(
+      EasyUnlockScreenlockStateHandler::LOGIN_DISABLED);
+
+  EXPECT_EQ(2u, lock_handler_->GetAndResetShowIconCount());
+  EXPECT_EQ(proximity_auth::mojom::AuthType::OFFLINE_PASSWORD,
+            lock_handler_->GetAuthType(account_id_));
+
+  ASSERT_TRUE(lock_handler_->HasCustomIcon());
+  EXPECT_EQ(kHardlockedIconId, lock_handler_->GetCustomIconId());
+  EXPECT_TRUE(lock_handler_->CustomIconHasTooltip());
+  EXPECT_FALSE(lock_handler_->CustomIconHardlocksOnClick());
+
+  EXPECT_TRUE(lock_handler_->IsCustomIconTooltipAutoshown());
+}
+
+TEST_F(EasyUnlockScreenlockStateHandlerTest,
+       LoginDisabled_HasAlreadyShownMessage) {
+  fake_pref_manager_->SetHasShownLoginDisabledMessage(true);
+
+  state_handler_->ChangeState(ScreenlockState::NO_PHONE);
+  state_handler_->SetHardlockState(
+      EasyUnlockScreenlockStateHandler::LOGIN_DISABLED);
+
+  EXPECT_EQ(2u, lock_handler_->GetAndResetShowIconCount());
+  EXPECT_EQ(proximity_auth::mojom::AuthType::OFFLINE_PASSWORD,
+            lock_handler_->GetAuthType(account_id_));
+
+  ASSERT_TRUE(lock_handler_->HasCustomIcon());
+  EXPECT_EQ(kHardlockedIconId, lock_handler_->GetCustomIconId());
+  EXPECT_TRUE(lock_handler_->CustomIconHasTooltip());
+  EXPECT_FALSE(lock_handler_->CustomIconHardlocksOnClick());
+
+  EXPECT_FALSE(lock_handler_->IsCustomIconTooltipAutoshown());
 }
 
 TEST_F(EasyUnlockScreenlockStateHandlerTest, HardlockedStateNoPairing) {
@@ -585,6 +668,14 @@ TEST_F(EasyUnlockScreenlockStateHandlerTest, HardlockStatePersistsOverUnlocks) {
   EXPECT_TRUE(lock_handler_->HasCustomIcon());
   EXPECT_EQ(proximity_auth::mojom::AuthType::OFFLINE_PASSWORD,
             lock_handler_->GetAuthType(account_id_));
+}
+
+TEST_F(EasyUnlockScreenlockStateHandlerTest, PrimaryUserAbsent) {
+  state_handler_->ChangeState(ScreenlockState::PRIMARY_USER_ABSENT);
+
+  EXPECT_EQ(1u, lock_handler_->GetAndResetShowIconCount());
+  ASSERT_TRUE(lock_handler_->HasCustomIcon());
+  EXPECT_EQ(kLockedIconId, lock_handler_->GetCustomIconId());
 }
 
 TEST_F(EasyUnlockScreenlockStateHandlerTest, NoOverrideOnlineSignin) {

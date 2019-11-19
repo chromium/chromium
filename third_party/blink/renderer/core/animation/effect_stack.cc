@@ -48,19 +48,25 @@ void CopyToActiveInterpolationsMap(
     PropertyHandle property = interpolation->GetProperty();
     if (property_handle_filter && !property_handle_filter(property))
       continue;
+
     ActiveInterpolationsMap::AddResult entry =
-        target.insert(property, ActiveInterpolations(1));
+        target.insert(property, ActiveInterpolations());
     ActiveInterpolations& active_interpolations = entry.stored_value->value;
-    if (!entry.is_new_entry &&
-        (RuntimeEnabledFeatures::StackedCSSPropertyAnimationsEnabled() ||
-         !property.IsCSSProperty() || property.IsPresentationAttribute()) &&
+
+    // Assuming stacked effects are enabled, interpolations that depend on
+    // underlying values (e.g. have a non-replace composite mode) should be
+    // added onto the 'stack' of active interpolations. However any 'replace'
+    // effect erases everything that came before it, so we must clear the stack
+    // when that happens.
+    const bool allow_stacked_effects =
+        RuntimeEnabledFeatures::StackedCSSPropertyAnimationsEnabled() ||
+        !property.IsCSSProperty() || property.IsPresentationAttribute();
+    const bool effect_depends_on_underlying_value =
         interpolation->IsInvalidatableInterpolation() &&
-        ToInvalidatableInterpolation(*interpolation)
-            .DependsOnUnderlyingValue()) {
-      active_interpolations.push_back(interpolation);
-    } else {
-      active_interpolations.at(0) = interpolation;
-    }
+        ToInvalidatableInterpolation(*interpolation).DependsOnUnderlyingValue();
+    if (!allow_stacked_effects || !effect_depends_on_underlying_value)
+      active_interpolations.clear();
+    active_interpolations.push_back(interpolation);
   }
 }
 

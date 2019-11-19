@@ -13,7 +13,7 @@
 <body id="registration">
 
 <form name="storeLocatorForm" method="get" action="http://www.officedepot.com/setStoreZip.do">
-<span style="display:none"><input type="hidden" name="fkey" value="ZBOQ8Sp5mFecc34vd2jp8wl"></span>							
+<span style="display:none"><input type="hidden" name="fkey" value="ZBOQ8Sp5mFecc34vd2jp8wl"></span>
 											<input type="text" name="zip" maxlength="7" size="7" autocomplete="" value="" id="zip"><input type="hidden" name="requestor" value="header" id="requestor"><input type="hidden" name="switchDeliveryToPickup" value="false"><input type="hidden" name="inventoryLocationUpdatable" value="true"><span class="search"><input type="submit" name="find" id="find" class="button" value="Go"></span>
 											<div class="clear"></div>
 </form>
@@ -24,7 +24,7 @@
 
 
 
-<form name="storeLocatorForm" method="post" action="http://www.officedepot.com/account/deliveryPickupModeSet.do" autocomplete="off">
+<form name="storeLocatorForm" method="post" action="http://www.officedepot.com/account/deliveryPickupModeSet.do">
 <span style="display:none"><input type="hidden" name="fkey" value="ZBOQ8Sp5mFecc34vd2jp8wl"></span>
 	        	        	<input type="hidden" name="inventoryLocationUpdatable" value="true"><input type="hidden" name="switchDeliveryToPickup" value="true"><input type="hidden" name="requestor" value="/home.do"><ul>
 <li class="radio">
@@ -45,23 +45,23 @@
 
 
 <form name="refinementForm" method="get" action="http://www.officedepot.com/catalog/search.do" autocomplete="false">
-<span style="display:none"><input type="hidden" name="fkey" value="ZBOQ8Sp5mFecc34vd2jp8wl"></span>    	
-    
+<span style="display:none"><input type="hidden" name="fkey" value="ZBOQ8Sp5mFecc34vd2jp8wl"></span>
+
 		<div id="suggestSearchOn"></div>
-	
+
 	    	<table id="searchBox" cellspacing="0"><tr>
 <th><label for="searchField">Search</label></th>
 					<td id="sfInput">
 						<div id="predictSearchFlyout" class="overlayContainer">
-							<input type="text" name="Ntt" id="mainSearchField" maxlength="100" tabindex="1" class="input focus" autocomplete="off" value=""><div class="overlayObj">
+							<input type="text" name="Ntt" id="mainSearchField" maxlength="100" tabindex="1" class="input focus" value=""><div class="overlayObj">
 								<div id="predictSearchList">
 									<div class="loading-light"></div>
 									<table class="predictsearchresults"><tr>
 <td class="suggestions"><p class="note">Search Suggestions</p></td>
 										</tr></table>
 </div>
-							</div>	
-						</div>	
+							</div>
+						</div>
 					</td>
 					<td><div class="search"><input type="submit" tabindex="2" value="Go" class="button" title="Search"></div></td>
 				</tr></table>
@@ -77,16 +77,16 @@
 
 
 
-<form name="registrationForm" method="post" action="/account/registrationRouter.do" autocomplete="off">
+<form name="registrationForm" method="post" action="/account/registrationRouter.do">
 <span style="display:none"><input type="hidden" name="fkey" value="ZBOQ8Sp5mFecc34vd2jp8wl"></span>
 <div id="m02">
-	
-	
+
+
 	<div id="registrationBody">
-		 
-	                  
+
+
 				<div id="registrationMessage">
-					
+
 
 
 
@@ -95,10 +95,10 @@
 		<h2 class="modStyle1">Before you begin...</h2>
 		<div class="moduleStructContent">
 	    	<p class="intro">
-	    		Please note that if you can answer "yes" to any of the following questions, you may not need to fill out this registration form. Simply click on the link that applies and you'll be taken to the appropriate page. If none of these links seem relevant, we can still search for a previous account set up for you. Please enter your primary email address and we'll email your existing login information. 
-			</p>     
-			                                           
-			        
+	    		Please note that if you can answer "yes" to any of the following questions, you may not need to fill out this registration form. Simply click on the link that applies and you'll be taken to the appropriate page. If none of these links seem relevant, we can still search for a previous account set up for you. Please enter your primary email address and we'll email your existing login information.
+			</p>
+
+
 				<ul class="listOfLinks splitLinks">
 <li class=""><a href="/account/existingUSANonExemptDisplay.do">Do you shop with us by phone or fax?</a></li>
 <li><a href="/account/existingUSAExemptDisplay.do">Do you already have an account number?</a></li>
@@ -111,15 +111,15 @@
 
 
 
-				</div>   
-			     
-		
-		
-			
-            
+				</div>
+
+
+
+
+
     <div class="section">
 			<div class="oCol1of2 first">
-						
+
 
 
 
@@ -131,41 +131,41 @@
 
 <div id="reg_billingInfo" class="moduleStruct">
 	<h2 class="modStyle1">Billing Information</h2>
-	
+
     <div class="moduleStructContent">
-      
-        
+
+
         <p class="required">
 			<label>
-				
+
 				<em>*</em> Indicates required field
 			</label>
 		</p>
-		
-		
+
+
        <p class="note">
-      	      	        
-	   </p>          
-		
-		
+
+	   </p>
+
+
 			<p class="note">
-				  
+
 			          Please provide your billing address exactly as it appears on your credit card.
-			      
-				  
+
+
 		        </p>
-    
-	        
-		
-			
-	        
-       
-	<div id="billing_addr">     
-        
-       
-		  
-		          
-	        
+
+
+
+
+
+
+	<div id="billing_addr">
+
+
+
+
+
 				<div class="address editable">
 	         		<ol class="column1">
 <li class="firstName required">
@@ -262,54 +262,46 @@
 </ol>
 <input type="hidden" name="addrsForm[0].country" value="USA" id="country-0">
 </div>
-			 
-		        
-		       
+
+
+
 	</div>
 
-          
-      
-	                      
-			  
 
 
 
 
 
-	
-	
+
+
+
+
+
+
 	    <input type="hidden" name="billingEmailPreferences.emailHtml" value="true"><div class="prefs tight">
-	
-		
-	    
+
+
+
 	    	<input type="hidden" name="billingEmailPreferences.optInSelected" value="false">
 </div>
-      
 
-	       
+
+
 	</div>
 </div>
 
 
-					 
-						
 
 
 
 
 
-             
+
+
+
 	<div id="reg_paymentInfo" class="moduleStruct">
 				<h2 class="modStyle1">Payment Info (optional)</h2>
 					<div class="moduleStructContent">
-						
-
-
-
-
-
-
-    
 
 
 
@@ -319,10 +311,18 @@
 
 
 
-   
-   
-   
-   
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -330,44 +330,42 @@
 
 
 	<div id="billto_PaymentInfo">
-		
-		
-			
-				
+
+
+
+
 					<p class="note">
 						Expedite your checkout process for future orders by allowing us to validate the credit card details below. Rest assured we will never save your CID.<br><br></p>
-				
-			
-		
 
-	
 
-			
+
+
+
+
+
 	    	<table class="form" cellspacing="0">
 <thead><tr class="paymentSectionHeader first">
 <td class="radio">
-						
-						
-						        
+
+
+
 									<input type="hidden" name="paymentFormInfo.tenderType" value="CR">
 </td>
 					<th colspan="2">
-						
+
 							<label for="tenderRadioCR" class="gen_vkg_cclabel">
 								<b>Credit Card</b>
 							</label>
-							
-	           			
+
+
 	           		</th>
 	             </tr></thead>
 <tr class="tenderInfoCR paymentOptionContent">
 <td></td>
 		        <td colspan="2">
-		        
-				
+
+
 				<div id="noPreauthedCard">
-					
-						
 
 
 
@@ -376,21 +374,23 @@
 
 
 
-   
-   
-   
-   
 
-	
+
+
+
+
+
+
+
 	<ul id="creditCardFields">
 <li class="SelectCreditCard">
-					         
-					         
+
+
 					            <label>
 					                <span>Credit Card Type:</span>
 					            </label>
-					         
-					         
+
+
 					            <span id="creditCardList">
 					                <select name="paymentFormInfo.creditCardType"><option value=" " selected>(Select your card type)</option>
 <option value="AM">American Express</option>
@@ -400,68 +400,68 @@
 <option value="SR">Office Depot Credit Card</option>
 <option value="WV">Worklife Rewards Visa</option></select></span>
 					        </li>
-			       
-			        
-			      	
+
+
+
 				        <li>
-				     		
-            				
+
+
 	         					<label>
 					               <span>
 					               	   Credit Card Number:
-					               	
-					               	
+
+
 					               	</span>
 					            </label>
-					        
 
-				            
-				            
+
+
+
 				                <span>
-					            	
-									
+
+
 						                <input type="text" name="paymentFormInfo.creditCardNumber" maxlength="20" size="20" autocomplete="" value=""></span>
-				            
-				            
-				            
-				             
+
+
+
+
 					            	<input type="hidden" name="paymentFormInfo.creditCardIsPreauthed" value="false">
 </li>
-				        
+
 					        <li class="ccMessage">
 					        	<label><span></span></label>
 				        		<span class="note">
 				                    Please enter your credit card # without spaces or dashes (i.e. 00000000000)
 				                </span>
 					        </li>
-						
-					  
-			        
+
+
+
 			        <li class="payOptDates">
 						<ul>
 <li class="poStartDate">
-								
+
 								<span class="pppExpDate">
-									
+
 								</span>
 							</li>
-							
+
 							<li class="poExpDate">
-								
-									
+
+
 										<label class="ccExpDateTitle">
-											
+
 					               				<span>Expiration Date:</span>
-						 	              	
-					        		       	
-										</label>		
-										
-								
-								
+
+
+										</label>
+
+
+
 								<span class="pppExpDate">
-									
-										
-											
+
+
+
 												<select name="paymentFormInfo.creditCardExpMonth"><option value=" " selected>--</option>
 <option value="01">01</option>
 <option value="02">02</option>
@@ -475,7 +475,7 @@
 <option value="10">10</option>
 <option value="11">11</option>
 <option value="12">12</option></select><span>/</span>
-												
+
 												<select name="paymentFormInfo.creditCardExpYear"><option value="-1" selected>--</option>
 <option value="11">2011</option>
 <option value="12">2012</option>
@@ -499,61 +499,61 @@
 <option value="30">2030</option></select><span>
 												    (mm/yyyy)
 												</span>
-												     
-											          
-											      
-										    
-									
+
+
+
+
+
 				               	 </span>
 							</li>
-			
-							<li class="poIssueDate">			
-								
-								
-	
+
+							<li class="poIssueDate">
+
+
+
 								<span class="poDateFields">
-					            
-									
+
+
 				           	 	</span>
 			            	</li>
-			            	
+
 			             </ul>
 </li>
-			             
-							
-					
+
+
+
 					<input type="hidden" name="paymentFormInfo.cidPreAuthFeature" value="true"><li class="secNumTitle">
 			            	<label class="cvv">
 			            		<span>CID<br></span>
 			            	</label>
 			            	<span>
-								<input type="text" name="paymentFormInfo.creditCardCvv" maxlength="4" size="4" autocomplete="off" value=""></span>
-							
+								<input type="text" name="paymentFormInfo.creditCardCvv" maxlength="4" size="4" value=""></span>
+
 						</li>
-					
-							
-					
-							
+
+
+
+
 			        <!---->
-						
-						
-			        
-				        
-			        
-			        
-			        						
-						
-						
-						
-						
-						
-						
-						
-						
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 		</ul>
 </div>
-<!-- end credit card entry form (noPreath) -->				
-		       
+<!-- end credit card entry form (noPreath) -->
+
 			</td>
 			</tr>
 </table>
@@ -562,7 +562,7 @@
 </table>
 <div id="loadingCards" class="loading hidden"></div>
 	 </div>
- 
+
 
 
 
@@ -572,13 +572,13 @@
 					</div>
 	</div>
 
-					
+
 			</div>
-			
-		
+
+
 			<div class="oCol1of2">
-				 
-					
+
+
 
 
 
@@ -598,14 +598,14 @@
 	<h2 class="modStyle1">Shipping Information</h2>
         <div class="moduleStructContent">
 		        <p id="checkSameAs">
-		            
+
 						<input type="checkbox" name="sameAsBilling" value="on" checked id="sameAsBilling1" class="input1"><label>
 			            Same as Billing
 			          </label>
-			          
-				</p>   
-              
-		
+
+				</p>
+
+
 			<div class="intro">
 	          <p class="note">
 		          Currently Office Depot is unable to process orders online for delivery to APO/FPO, PO Box, and export addresses. Please
@@ -613,17 +613,17 @@
 		          for additional ordering options
 		        </p>
 			</div>
-			        
-      
-	 
+
+
+
 	      <div class="address editable shipToAddressHideShow">
 				<p class="required">
 					<label>
-						
+
 						<em>*</em> Indicates required field
 					</label>
-				</p>	      
-          	
+				</p>
+
 	        <ol class="column1">
 <li class="firstName required">
 <label for="firstName-2"><span><em class="star">*</em>First Name:</span></label><span><input type="text" name="addrsForm[2].firstName" maxlength="30" size="30" autocomplete="" value="" id="firstName-2"></span>
@@ -716,42 +716,42 @@
 </ol>
 <input type="hidden" name="addrsForm[2].country" value="USA" id="country-2">
 </div>
-	 
 
-	
-	
-             
-      
-      
+
+
+
+
+
+
       	<input type="hidden" name="shippingEmailPreferences.emailHtml" value="true"><p class="prefs tight">
-        
-        	
-        	
+
+
+
         		<input type="hidden" name="shippingEmailPreferences.optInSelected" value="true"></p>
 
-    
-	  	
-	    
-	
+
+
+
+
 </div>
 </div>
 
 
-				
-				
-				
 
 
 
 
 
 
-							
 
-				
-				
-            	 
-					
+
+
+
+
+
+
+
+
 
 
 
@@ -763,55 +763,55 @@
 <h2 class="modStyle1">Create Your Login and Password</h2>
 
         <div class="moduleStructContent">
-        
+
 			<p class="required">
 				<label>
 				<em>*</em> Indicates required field
 				</label>
 			</p>
-			
+
         <table id="createLogin" class="form" cellspacing="0">
 <tr>
 <td class="label">
             	<label class="required">
-            		
-            		
+
+
             			<em class="star">*</em>Login Name:
-            			
-            			
-            		
-            		
+
+
+
+
             	</label>
             </td>
             <td class="input required">
-            
+
 	            <input type="text" name="loginForm.loginName" maxlength="100" size="30" autocomplete="" value="" class="textfield"><img class="star" src="#"><span class="note">We recommend you use your email address.</span>
-	            
-	      	
-	      	
+
+
+
           	</td>
             </tr>
 <tr>
 <td class="label"><label class="required">
-            
-				
-				
+
+
+
 					<em class="star">*</em>Password:
-					
-					
-            	
+
+
+
             </label></td>
             <td class="input required">
 <input type="password" name="loginForm.password" maxlength="10" size="30" value="" class="textfield"><img class="star" src="#"><span class="note">must be at least 6 characters</span>
              </td>
-                 
+
         </tr>
 <tr>
 <td class="label"><label class="required">
-            
+
             <em class="star">*</em>Password Confirm:
-            
-            
+
+
             </label></td>
             <td class="input required">
 <input type="password" name="loginForm.passwordConfirm" maxlength="10" size="30" value="" class="textfield"><img class="star" src="#"><span class="note">retype your password</span>
@@ -822,57 +822,57 @@
 	            <td class="check" colspan="2">
 <input type="checkbox" name="loginForm.autoLogin" value="on" class="checkboxfield"><label>Log me in automatically<br><span class="note">(Cookies&#160;must&#160;be&#160;enabled)</span></label>
 </td>
-	        
+
 	        </tr>
 </table>
 </div>
-     
+
 </div>
 
 
-	            
+
 			</div>
-		
+
 	</div>
-			
-		    
 
 
 
 
 
 
-			
-			
-            
-             
-              
-             
-                       
-             
-            
+
+
+
+
+
+
+
+
+
+
+
 
 <div class="actions section">
    <ul class="buttonwrapper">
 <li>
-	                                                   
-	                     
-	                     <div class="b1">				       
+
+
+	                     <div class="b1">
 	     							<input type="submit" value=" Create Account" name="cmd_registration" class="button" title=" Create Account">
 </div>
-	                         
-	                     
-	                            
-	                 
-	                 
+
+
+
+
+
 	</li>
 	</ul>
 </div>
 
 	<input type="hidden" name="displayedForm" value="true"><input type="hidden" name="linked" value="false"><input type="hidden" name="billToID" value=""><input type="hidden" name="requestFromPage" value="true"><input type="hidden" name="fromShoppingCartPage" value="false"><input type="hidden" name="registrationExceptionInfo.billToId" value=""><input type="hidden" name="registrationExceptionInfo.shipToSeq" value=""><input type="hidden" name="registrationExceptionInfo.lastUser" value=""><input type="hidden" name="registrationExceptionInfo.billingEmailCreated" value="false"><input type="hidden" name="registrationExceptionInfo.shippingEmailCreated" value="false"><input type="hidden" name="registrationExceptionInfo.userCreated" value="false"><input type="hidden" name="registrationExceptionInfo.contactId" value=""><input type="hidden" name="customLabelsPermissionsForm.requestor" value="_registrationRequestor_">
 </div>
-</div>   
-</form> 
+</div>
+</form>
 
 
 

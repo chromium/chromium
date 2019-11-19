@@ -5,10 +5,11 @@
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client_test_helper.h"
 
 #include <set>
+#include <utility>
+#include <vector>
 
-#include "ash/keyboard/ash_keyboard_controller.h"
-#include "ash/public/interfaces/constants.mojom.h"
-#include "ash/public/interfaces/keyboard_controller.mojom.h"
+#include "ash/public/cpp/keyboard/keyboard_controller.h"
+#include "ash/public/mojom/constants.mojom.h"
 #include "ash/shell.h"
 #include "base/bind.h"
 #include "base/callback.h"
@@ -16,48 +17,39 @@
 #include "services/service_manager/public/cpp/connector.h"
 
 class ChromeKeyboardControllerClientTestHelper::FakeKeyboardController
-    : public ash::mojom::KeyboardController {
+    : public ash::KeyboardController {
  public:
   FakeKeyboardController() = default;
   ~FakeKeyboardController() override = default;
 
-  void BindRequest(ash::mojom::KeyboardControllerRequest request) {
-    bindings_.AddBinding(this, std::move(request));
-  }
-
-  // ash::mojom::KeyboardController:
-  void KeyboardContentsLoaded(const base::UnguessableToken& token,
-                              const gfx::Size& size) override {}
-  void GetKeyboardConfig(GetKeyboardConfigCallback callback) override {
-    std::move(callback).Run(
-        keyboard::mojom::KeyboardConfig::New(keyboard_config_));
+  // ash::KeyboardController:
+  keyboard::KeyboardConfig GetKeyboardConfig() override {
+    return keyboard_config_;
   }
   void SetKeyboardConfig(
-      keyboard::mojom::KeyboardConfigPtr keyboard_config) override {
-    keyboard_config_ = *keyboard_config;
+      const keyboard::KeyboardConfig& keyboard_config) override {
+    keyboard_config_ = keyboard_config;
   }
-  void IsKeyboardEnabled(IsKeyboardEnabledCallback callback) override {
-    std::move(callback).Run(enabled_);
-  }
-  void SetEnableFlag(keyboard::mojom::KeyboardEnableFlag flag) override {
+  bool IsKeyboardEnabled() override { return enabled_; }
+  void SetEnableFlag(keyboard::KeyboardEnableFlag flag) override {
     keyboard_enable_flags_.insert(flag);
+    for (auto& observer : observers_)
+      observer.OnKeyboardEnableFlagsChanged(keyboard_enable_flags_);
   }
-  void ClearEnableFlag(keyboard::mojom::KeyboardEnableFlag flag) override {
+  void ClearEnableFlag(keyboard::KeyboardEnableFlag flag) override {
     keyboard_enable_flags_.erase(flag);
+    for (auto& observer : observers_)
+      observer.OnKeyboardEnableFlagsChanged(keyboard_enable_flags_);
   }
-  void GetEnableFlags(GetEnableFlagsCallback callback) override {
-    std::move(callback).Run(std::vector<keyboard::mojom::KeyboardEnableFlag>());
+  const std::set<keyboard::KeyboardEnableFlag>& GetEnableFlags() override {
+    return keyboard_enable_flags_;
   }
   void ReloadKeyboardIfNeeded() override {}
   void RebuildKeyboardIfEnabled() override {}
-  void IsKeyboardVisible(IsKeyboardVisibleCallback callback) override {
-    std::move(callback).Run(visible_);
-  }
+  bool IsKeyboardVisible() override { return visible_; }
   void ShowKeyboard() override { visible_ = true; }
-  void HideKeyboard(ash::mojom::HideReason reason) override {
-    visible_ = false;
-  }
-  void SetContainerType(keyboard::mojom::ContainerType container_type,
+  void HideKeyboard(ash::HideReason reason) override { visible_ = false; }
+  void SetContainerType(keyboard::ContainerType container_type,
                         const base::Optional<gfx::Rect>& target_bounds,
                         SetContainerTypeCallback callback) override {
     std::move(callback).Run(true);
@@ -66,15 +58,22 @@ class ChromeKeyboardControllerClientTestHelper::FakeKeyboardController
   void SetOccludedBounds(const std::vector<gfx::Rect>& bounds) override {}
   void SetHitTestBounds(const std::vector<gfx::Rect>& bounds) override {}
   void SetDraggableArea(const gfx::Rect& bounds) override {}
-  void AddObserver(ash::mojom::KeyboardControllerObserverAssociatedPtrInfo
-                       observer) override {}
+  bool SetAreaToRemainOnScreen(const gfx::Rect& bounds) override {
+    return false;
+  }
+  void AddObserver(ash::KeyboardControllerObserver* observer) override {
+    observers_.AddObserver(observer);
+  }
+  void RemoveObserver(ash::KeyboardControllerObserver* observer) override {
+    observers_.RemoveObserver(observer);
+  }
 
  private:
-  mojo::BindingSet<ash::mojom::KeyboardController> bindings_;
-  keyboard::mojom::KeyboardConfig keyboard_config_;
-  std::set<keyboard::mojom::KeyboardEnableFlag> keyboard_enable_flags_;
+  keyboard::KeyboardConfig keyboard_config_;
+  std::set<keyboard::KeyboardEnableFlag> keyboard_enable_flags_;
   bool enabled_ = false;
   bool visible_ = false;
+  base::ObserverList<ash::KeyboardControllerObserver>::Unchecked observers_;
 
   DISALLOW_COPY_AND_ASSIGN(FakeKeyboardController);
 };
@@ -83,10 +82,7 @@ class ChromeKeyboardControllerClientTestHelper::FakeKeyboardController
 std::unique_ptr<ChromeKeyboardControllerClientTestHelper>
 ChromeKeyboardControllerClientTestHelper::InitializeForAsh() {
   auto helper = std::make_unique<ChromeKeyboardControllerClientTestHelper>();
-  helper->Initialize(
-      base::BindRepeating(&ChromeKeyboardControllerClientTestHelper::
-                              AddKeyboardControllerBindingForAsh,
-                          base::Unretained(helper.get())));
+  helper->Initialize(ash::KeyboardController::Get());
   return helper;
 }
 
@@ -94,27 +90,16 @@ ChromeKeyboardControllerClientTestHelper::InitializeForAsh() {
 std::unique_ptr<ChromeKeyboardControllerClientTestHelper>
 ChromeKeyboardControllerClientTestHelper::InitializeWithFake() {
   auto helper = std::make_unique<ChromeKeyboardControllerClientTestHelper>();
-  helper->Initialize(
-      base::BindRepeating(&ChromeKeyboardControllerClientTestHelper::
-                              AddKeyboardControllerBindingForFake,
-                          base::Unretained(helper.get())));
+  helper->fake_controller_ = std::make_unique<FakeKeyboardController>();
+  helper->Initialize(helper->fake_controller_.get());
   return helper;
 }
 
 void ChromeKeyboardControllerClientTestHelper::Initialize(
-    base::RepeatingCallback<void(mojo::ScopedMessagePipeHandle)>
-        bind_callback) {
-  // Create a local service manager connector to handle requests to
-  // ash::mojom::KeyboardController and bind to AshKeyboardController.
-  service_manager::mojom::ConnectorRequest request;
-  connector_ = service_manager::Connector::Create(&request);
-  connector_->OverrideBinderForTesting(
-      service_manager::ServiceFilter::ByName(ash::mojom::kServiceName),
-      ash::mojom::KeyboardController::Name_, bind_callback);
-
-  // Provide the local connector to ChromeKeyboardControllerClient.
+    ash::KeyboardController* keyboard_controller) {
   chrome_keyboard_controller_client_ =
-      ChromeKeyboardControllerClient::CreateForTest(connector_.get());
+      ChromeKeyboardControllerClient::CreateForTest();
+  chrome_keyboard_controller_client_->Init(keyboard_controller);
 }
 
 ChromeKeyboardControllerClientTestHelper::
@@ -123,22 +108,8 @@ ChromeKeyboardControllerClientTestHelper::
 ChromeKeyboardControllerClientTestHelper::
     ~ChromeKeyboardControllerClientTestHelper() {
   chrome_keyboard_controller_client_.reset();
-  connector_.reset();
 }
 
 void ChromeKeyboardControllerClientTestHelper::SetProfile(Profile* profile) {
   chrome_keyboard_controller_client_->set_profile_for_test(profile);
-}
-
-void ChromeKeyboardControllerClientTestHelper::
-    AddKeyboardControllerBindingForAsh(mojo::ScopedMessagePipeHandle handle) {
-  ash::Shell::Get()->ash_keyboard_controller()->BindRequest(
-      ash::mojom::KeyboardControllerRequest(std::move(handle)));
-}
-
-void ChromeKeyboardControllerClientTestHelper::
-    AddKeyboardControllerBindingForFake(mojo::ScopedMessagePipeHandle handle) {
-  fake_controller_ = std::make_unique<FakeKeyboardController>();
-  fake_controller_->BindRequest(
-      ash::mojom::KeyboardControllerRequest(std::move(handle)));
 }

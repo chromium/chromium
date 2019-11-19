@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL Test scroll-animations IDL implementation promise_test: Unhandled rejection with value: "CSSPseudoElement includes Animatable, but CSSPseudoElement is undefined."
-Harness: the test ran to completion.
-

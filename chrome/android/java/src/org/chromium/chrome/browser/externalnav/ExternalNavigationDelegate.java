@@ -7,6 +7,9 @@ package org.chromium.chrome.browser.externalnav;
 import android.content.Intent;
 import android.content.pm.ResolveInfo;
 
+import androidx.annotation.NonNull;
+
+import org.chromium.base.PackageManagerUtils;
 import org.chromium.chrome.browser.externalnav.ExternalNavigationHandler.OverrideUrlLoadingResult;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.webapps.WebappScopePolicy;
@@ -19,9 +22,9 @@ import java.util.List;
  */
 interface ExternalNavigationDelegate {
     /**
-     * Get the list of component name of activities which can resolve |intent|.  If the request
-     * fails, null will be returned.
+     * See {@link PackageManagerUtils#queryIntentActivities(Intent, int)}
      */
+    @NonNull
     List<ResolveInfo> queryIntentActivities(Intent intent);
 
     /**
@@ -43,13 +46,6 @@ interface ExternalNavigationDelegate {
      * handlers are intent handlers which handle only a few URLs (e.g. google maps or youtube).
      */
     int countSpecializedHandlers(List<ResolveInfo> infos);
-
-    /**
-     * Returns the package name of the first valid WebAPK in {@link infos}.
-     * @param infos ResolveInfos to search.
-     * @return The package name of the first valid WebAPK. Null if no valid WebAPK was found.
-     */
-    String findFirstWebApkPackageName(List<ResolveInfo> infos);
 
     /**
      * Start an activity for the intent. Used for intents that must be handled externally.
@@ -160,4 +156,17 @@ interface ExternalNavigationDelegate {
      * @return Whether the Intent points to an app that we trust and that launched Chrome.
      */
     boolean isIntentForTrustedCallingApp(Intent intent);
+
+    /**
+     * @param packageName The package to check.
+     * @return Whether the package is a valid WebAPK package.
+     */
+    boolean isValidWebApk(String packageName);
+
+    /**
+     * @return Whether the current tab is custom tab or not.
+     */
+    default boolean isOnCustomTab() {
+        return false;
+    }
 }

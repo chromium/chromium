@@ -1,4 +1,4 @@
 include_rules = [
+  "+components/remote_cocoa",
   "+ui/accelerated_widget_mac",
-  "+ui/views_bridge_mac",
 ]

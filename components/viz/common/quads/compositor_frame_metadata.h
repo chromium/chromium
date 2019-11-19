@@ -60,7 +60,8 @@ class VIZ_COMMON_EXPORT CompositorFrameMetadata {
 
   CompositorFrameMetadata Clone() const;
 
-  // The device scale factor used to generate this compositor frame.
+  // The device scale factor used to generate this compositor frame. Must be
+  // greater than zero.
   float device_scale_factor = 0.f;
 
   // Scroll offset and scale of the root layer. This can be used for tasks
@@ -85,26 +86,23 @@ class VIZ_COMMON_EXPORT CompositorFrameMetadata {
 
   std::vector<ui::LatencyInfo> latency_info;
 
-  // This is the set of Surfaces that are referenced by this frame.
-  // Note: this includes occluded and clipped surfaces and surfaces that may
-  // be accessed by this CompositorFrame in the future.
-  // TODO(fsamuel): In the future, a generalized frame eviction system will
-  // determine which surfaces to retain and which to evict. It will likely
-  // be unnecessary for the embedder to explicitly specify which surfaces to
-  // retain. Thus, this field will likely go away.
+  // This is the set of surfaces that the client wants to keep alive. It is
+  // guaranteed that the last activated surface in every SurfaceRange will be
+  // kept alive as long as the surface containing this CompositorFrame is alive.
+  // Note: Not every surface in this list might have a corresponding
+  // SurfaceDrawQuad, as this list also includes occluded and clipped surfaces
+  // and surfaces that may be accessed by this CompositorFrame in the future.
+  // However, every SurfaceDrawQuad MUST have a corresponding entry in this
+  // list.
   std::vector<SurfaceRange> referenced_surfaces;
 
   // This is the set of dependent SurfaceIds that should be active in the
-  // display compositor before this CompositorFrame can be activated. Note
-  // that if |can_activate_before_dependencies| then the display compositor
-  // can choose to activate a CompositorFrame before all dependencies are
-  // available.
-  // Note: |activation_dependencies| and |referenced_surfaces| are disjoint
-  //       sets of surface IDs. If a surface ID is known to exist and can be
-  //       used without additional synchronization, then it is placed in
-  //       |referenced_surfaces|. |activation_dependencies| is the set of
-  //       surface IDs that this frame would like to block on until they
-  //       become available or a deadline hits.
+  // display compositor before this CompositorFrame can be activated.
+  // Note: |activation_dependencies| MUST be a subset of |referenced_surfaces|.
+  // TODO(samans): Rather than having a separate list for activation
+  // dependencies, each member of referenced_surfaces can have a boolean flag
+  // that determines whether activation of this particular SurfaceId blocks the
+  // activation of the CompositorFrame. https://crbug.com/938946
   std::vector<SurfaceId> activation_dependencies;
 
   // This specifies a deadline for this CompositorFrame to synchronize with its
@@ -112,12 +110,6 @@ class VIZ_COMMON_EXPORT CompositorFrameMetadata {
   // should be forcibly activated. This deadline may be lower-bounded by the
   // default synchronization deadline specified by the system.
   FrameDeadline deadline;
-
-  // This is a value that allows the browser to associate compositor frames
-  // with the content that they represent -- typically top-level page loads.
-  // TODO(kenrb, fsamuel): This should eventually by SurfaceID, when they
-  // become available in all renderer processes. See https://crbug.com/695579.
-  uint32_t content_source_id = 0;
 
   // BeginFrameAck for the BeginFrame that this CompositorFrame answers.
   BeginFrameAck begin_frame_ack;
@@ -146,24 +138,18 @@ class VIZ_COMMON_EXPORT CompositorFrameMetadata {
   float top_controls_height = 0.f;
   float top_controls_shown_ratio = 0.f;
 
-  // The time at which the LocalSurfaceId used to submit this CompositorFrame
-  // was allocated.
-  base::TimeTicks local_surface_id_allocation_time;
-
 #if defined(OS_ANDROID)
-  float max_page_scale_factor = 0.f;
-  gfx::SizeF root_layer_size;
-  bool root_overflow_y_hidden = false;
-
   // Used to position Android bottom bar, whose position is computed by the
   // renderer compositor.
   float bottom_controls_height = 0.f;
   float bottom_controls_shown_ratio = 0.f;
+#endif
 
-  // Provides selection region updates relative to the current viewport. If the
-  // selection is empty or otherwise unused, the bound types will indicate such.
-  Selection<gfx::SelectionBound> selection;
-#endif  // defined(OS_ANDROID)
+  // The time at which the LocalSurfaceId used to submit this CompositorFrame
+  // was allocated.
+  base::TimeTicks local_surface_id_allocation_time;
+
+  base::Optional<base::TimeDelta> preferred_frame_interval;
 
  private:
   CompositorFrameMetadata(const CompositorFrameMetadata& other);

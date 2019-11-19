@@ -73,11 +73,6 @@ class AppBannerSettingsHelper {
     APP_BANNER_EVENT_NUM_EVENTS,
   };
 
-  enum AppBannerRapporMetric {
-    WEB,
-    NATIVE,
-  };
-
   static const char kInstantAppsKey[];
 
   // The content setting basically records a simplified subset of history.
@@ -90,14 +85,12 @@ class AppBannerSettingsHelper {
   // Record a banner installation event, for either a WEB or NATIVE app.
   static void RecordBannerInstallEvent(
       content::WebContents* web_contents,
-      const std::string& package_name_or_start_url,
-      AppBannerRapporMetric rappor_metric);
+      const std::string& package_name_or_start_url);
 
   // Record a banner dismissal event, for either a WEB or NATIVE app.
   static void RecordBannerDismissEvent(
       content::WebContents* web_contents,
-      const std::string& package_name_or_start_url,
-      AppBannerRapporMetric rappor_metric);
+      const std::string& package_name_or_start_url);
 
   // Record a banner event specified by |event|.
   static void RecordBannerEvent(content::WebContents* web_contents,
@@ -176,6 +169,17 @@ class AppBannerSettingsHelper {
   // Queries variations to determine which language option should be used for
   // app banners and add to homescreen.
   static LanguageOption GetHomescreenLanguageOption();
+
+  // Returns whether we are out of |scope|'s animation suppression period and
+  // can show an animation.
+  static bool CanShowInstallTextAnimation(content::WebContents* web_contents,
+                                          const GURL& scope);
+
+  // Records the fact that we've shown an animation for |scope| and updates its
+  // animation suppression period.
+  static void RecordInstallTextAnimationShown(
+      content::WebContents* web_contents,
+      const GURL& scope);
 
   // Utility class for testing, which sets how long the banner should be
   // suppressed after it is dismissed or ignored. The previous configuration

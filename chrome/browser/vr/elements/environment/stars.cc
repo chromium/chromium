@@ -5,6 +5,7 @@
 #include "chrome/browser/vr/elements/environment/stars.h"
 
 #include "base/numerics/math_constants.h"
+#include "base/numerics/ranges.h"
 #include "base/rand_util.h"
 #include "base/stl_util.h"
 #include "chrome/browser/vr/ui_element_renderer.h"
@@ -155,8 +156,7 @@ void Stars::Renderer::CreateBuffers() {
 
     float opacity_noise = (base::RandDouble() - 0.5);
     opacity_noise *= opacity_noise * opacity_noise * kOpacityNoiseScale;
-    opacity += opacity_noise;
-    opacity = std::min(1.0f, std::max(0.0f, opacity));
+    opacity = base::ClampToRange(opacity + opacity_noise, 0.0f, 1.0f);
 
     gfx::Transform local;
     local.RotateAboutYAxis(x_rot);

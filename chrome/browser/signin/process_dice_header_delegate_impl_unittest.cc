@@ -10,12 +10,12 @@
 
 #include "base/bind.h"
 #include "base/bind_helpers.h"
-#include "chrome/common/webui_url_constants.h"
+#include "chrome/common/url_constants.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
-#include "components/signin/core/browser/account_consistency_method.h"
+#include "components/signin/public/base/account_consistency_method.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "content/public/browser/web_contents.h"
-#include "services/identity/public/cpp/identity_manager.h"
-#include "services/identity/public/cpp/identity_test_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -54,7 +54,7 @@ class ProcessDiceHeaderDelegateImplTest
 
   // Callback for the ProcessDiceHeaderDelegateImpl.
   void StartSyncCallback(content::WebContents* contents,
-                         const std::string& account_id) {
+                         const CoreAccountId& account_id) {
     EXPECT_EQ(web_contents(), contents);
     EXPECT_EQ(account_id_, account_id);
     enable_sync_called_ = true;
@@ -70,11 +70,11 @@ class ProcessDiceHeaderDelegateImplTest
     show_error_called_ = true;
   }
 
-  identity::IdentityTestEnvironment identity_test_environment_;
+  signin::IdentityTestEnvironment identity_test_environment_;
 
   bool enable_sync_called_;
   bool show_error_called_;
-  std::string account_id_;
+  CoreAccountId account_id_;
   std::string email_;
   GoogleServiceAuthError auth_error_;
 };
@@ -161,7 +161,7 @@ TEST_P(ProcessDiceHeaderDelegateImplTestEnableSync, EnableSync) {
   delegate->EnableSync(account_id_);
   EXPECT_EQ(GetParam().callback_called, enable_sync_called_);
   GURL expected_url =
-      GetParam().show_ntp ? GURL(chrome::kChromeUINewTabURL) : kSigninURL;
+      GetParam().show_ntp ? GURL(chrome::kChromeSearchLocalNtpUrl) : kSigninURL;
   EXPECT_EQ(expected_url, web_contents()->GetVisibleURL());
   EXPECT_FALSE(show_error_called_);
 }
@@ -206,7 +206,7 @@ TEST_P(ProcessDiceHeaderDelegateImplTestHandleTokenExchangeFailure,
   EXPECT_FALSE(enable_sync_called_);
   EXPECT_EQ(GetParam().callback_called, show_error_called_);
   GURL expected_url =
-      GetParam().show_ntp ? GURL(chrome::kChromeUINewTabURL) : kSigninURL;
+      GetParam().show_ntp ? GURL(chrome::kChromeSearchLocalNtpUrl) : kSigninURL;
   EXPECT_EQ(expected_url, web_contents()->GetVisibleURL());
 }
 

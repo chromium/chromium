@@ -1,0 +1,24 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+import "mojo/public/mojom/base/big_buffer.mojom";
+
+// This struct represents PerformanceMark and PerformanceMeasure.
+// https://w3c.github.io/user-timing/#performancemark
+// https://w3c.github.io/user-timing/#performancemeasure
+struct PerformanceMarkOrMeasure {
+  enum EntryType{
+    kMark,
+    kMeasure,
+  };
+  string name;
+  EntryType entry_type;
+  double start_time;
+  double duration;
+  // Nullable because PerformanceMark and PerformanceMeasure might not have a
+  // detail.
+  mojo_base.mojom.BigBuffer? detail;
+};

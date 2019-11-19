@@ -63,7 +63,7 @@ def env_options():
 
 
 def update_properties():
-    return ["debug", "os", "version", "processor", "bits"], None
+    return (["debug", "os", "processor"], {"os": ["version"], "processor": ["bits"]})
 
 
 def write_hosts_file(config):
@@ -72,9 +72,7 @@ def write_hosts_file(config):
         f.write(make_hosts_file(config, "127.0.0.1"))
     return hosts_path
 
-
 class ServoWebDriverBrowser(Browser):
-    used_ports = set()
     init_timeout = 300  # Large timeout for cases where we're booting an Android emulator
 
     def __init__(self, logger, binary, debug_info=None, webdriver_host="127.0.0.1",
@@ -94,8 +92,7 @@ class ServoWebDriverBrowser(Browser):
         self.ca_certificate_path = server_config.ssl_config["ca_cert_path"]
 
     def start(self, **kwargs):
-        self.webdriver_port = get_free_port(4444, exclude=self.used_ports)
-        self.used_ports.add(self.webdriver_port)
+        self.webdriver_port = get_free_port()
 
         env = os.environ.copy()
         env["HOST_FILE"] = self.hosts_path

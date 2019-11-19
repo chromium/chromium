@@ -31,16 +31,6 @@ class RootFrameViewport;
 // ScrollableArea to use.
 class ViewportScrollCallback : public ScrollStateCallback {
  public:
-  // The BrowserControls and OverscrollController are given to the
-  // ViewportScrollCallback but are not owned or kept alive by it.
-  static ViewportScrollCallback* Create(
-      BrowserControls* browser_controls,
-      OverscrollController* overscroll_controller,
-      RootFrameViewport& root_frame_viewport) {
-    return MakeGarbageCollected<ViewportScrollCallback>(
-        browser_controls, overscroll_controller, root_frame_viewport);
-  }
-
   // ViewportScrollCallback does not assume ownership of BrowserControls or of
   // OverscrollController.
   ViewportScrollCallback(BrowserControls*,

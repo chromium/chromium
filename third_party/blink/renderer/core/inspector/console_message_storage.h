@@ -20,7 +20,12 @@ class CORE_EXPORT ConsoleMessageStorage
  public:
   ConsoleMessageStorage();
 
-  void AddConsoleMessage(ExecutionContext*, ConsoleMessage*);
+  // If |discard_duplicates| is set, the message will only be added if no
+  // console message with the same text has exists in |messages_|. Returns
+  // whether the given message was actually added.
+  bool AddConsoleMessage(ExecutionContext*,
+                         ConsoleMessage*,
+                         bool discard_duplicates = false);
   void Clear();
   wtf_size_t size() const;
   ConsoleMessage* at(wtf_size_t index) const;

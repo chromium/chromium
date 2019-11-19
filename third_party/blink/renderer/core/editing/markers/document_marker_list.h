@@ -19,7 +19,7 @@ class DocumentMarker;
 // MarkerTypes with different insertion/retrieval patterns, or to provide
 // different behavior for certain MarkerTypes).
 class CORE_EXPORT DocumentMarkerList
-    : public GarbageCollectedFinalized<DocumentMarkerList> {
+    : public GarbageCollected<DocumentMarkerList> {
  public:
   virtual ~DocumentMarkerList();
 

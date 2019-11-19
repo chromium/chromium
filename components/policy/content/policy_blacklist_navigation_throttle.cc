@@ -23,7 +23,7 @@ using SafeSitesFilterBehavior = policy::SafeSitesFilterBehavior;
 PolicyBlacklistNavigationThrottle::PolicyBlacklistNavigationThrottle(
     content::NavigationHandle* navigation_handle,
     content::BrowserContext* context)
-    : NavigationThrottle(navigation_handle), weak_ptr_factory_(this) {
+    : NavigationThrottle(navigation_handle) {
   blacklist_service_ = PolicyBlacklistFactory::GetForBrowserContext(context);
   prefs_ = user_prefs::UserPrefs::Get(context);
   DCHECK(prefs_);
@@ -35,8 +35,8 @@ content::NavigationThrottle::ThrottleCheckResult
 PolicyBlacklistNavigationThrottle::WillStartRequest() {
   GURL url = navigation_handle()->GetURL();
 
-  // Ignore blob scheme because PlzNavigate may use it to deliver navigation
-  // responses to the renderer process.
+  // Ignore blob scheme because we may use it to deliver navigation responses
+  // to the renderer process.
   if (url.SchemeIs(url::kBlobScheme))
     return PROCEED;
 

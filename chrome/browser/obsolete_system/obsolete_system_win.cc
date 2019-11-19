@@ -11,7 +11,7 @@
 
 // static
 bool ObsoleteSystem::IsObsoleteNowOrSoon() {
-  return base::win::GetVersion() < base::win::VERSION_WIN7;
+  return base::win::GetVersion() < base::win::Version::WIN7;
 }
 
 // static

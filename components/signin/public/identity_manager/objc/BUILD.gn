@@ -1,0 +1,15 @@
+# Copyright 2018 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("objc") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "identity_manager_observer_bridge.h",
+    "identity_manager_observer_bridge.mm",
+  ]
+
+  public_deps = [
+    "//components/signin/public/identity_manager",
+  ]
+}

@@ -4,7 +4,7 @@
 
 #include "base/command_line.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "media/base/media_switches.h"
 #include "services/audio/public/cpp/manifest.h"
 #include "services/audio/public/mojom/constants.mojom.h"
@@ -20,11 +20,18 @@ namespace audio {
 
 const char kTestServiceName[] = "audio_unittests";
 
+service_manager::Manifest MakeAudioManifestForUnsandboxedExecutable() {
+  service_manager::Manifest manifest(GetManifest(
+      service_manager::Manifest::ExecutionMode::kStandaloneExecutable));
+  manifest.options.sandbox_type = "none";
+  return manifest;
+}
+
 class StandaloneAudioServiceTest : public testing::Test {
  public:
   StandaloneAudioServiceTest()
       : test_service_manager_(
-            {GetManifest(),
+            {MakeAudioManifestForUnsandboxedExecutable(),
              service_manager::ManifestBuilder()
                  .WithServiceName(kTestServiceName)
                  .RequireCapability(mojom::kServiceName, "info")
@@ -44,7 +51,7 @@ class StandaloneAudioServiceTest : public testing::Test {
   }
 
  private:
-  base::test::ScopedTaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_;
   service_manager::TestServiceManager test_service_manager_;
   service_manager::TestService test_service_;
 

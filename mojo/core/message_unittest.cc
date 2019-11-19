@@ -100,11 +100,11 @@ class TestMessageBase {
 class NeverSerializedMessage : public TestMessageBase {
  public:
   NeverSerializedMessage(
-      const base::Closure& destruction_callback = base::Closure())
-      : destruction_callback_(destruction_callback) {}
+      base::OnceClosure destruction_callback = base::OnceClosure())
+      : destruction_callback_(std::move(destruction_callback)) {}
   ~NeverSerializedMessage() override {
     if (destruction_callback_)
-      destruction_callback_.Run();
+      std::move(destruction_callback_).Run();
   }
 
  private:
@@ -115,7 +115,7 @@ class NeverSerializedMessage : public TestMessageBase {
   void SerializeHandles(MojoHandle* handles) override { NOTREACHED(); }
   void SerializePayload(void* buffer) override { NOTREACHED(); }
 
-  const base::Closure destruction_callback_;
+  base::OnceClosure destruction_callback_;
 
   DISALLOW_COPY_AND_ASSIGN(NeverSerializedMessage);
 };
@@ -123,12 +123,13 @@ class NeverSerializedMessage : public TestMessageBase {
 class SimpleMessage : public TestMessageBase {
  public:
   SimpleMessage(const std::string& contents,
-                const base::Closure& destruction_callback = base::Closure())
-      : contents_(contents), destruction_callback_(destruction_callback) {}
+                base::OnceClosure destruction_callback = base::OnceClosure())
+      : contents_(contents),
+        destruction_callback_(std::move(destruction_callback)) {}
 
   ~SimpleMessage() override {
     if (destruction_callback_)
-      destruction_callback_.Run();
+      std::move(destruction_callback_).Run();
   }
 
   void AddMessagePipe(mojo::ScopedMessagePipeHandle handle) {
@@ -156,7 +157,7 @@ class SimpleMessage : public TestMessageBase {
   }
 
   const std::string contents_;
-  const base::Closure destruction_callback_;
+  base::OnceClosure destruction_callback_;
   std::vector<mojo::ScopedMessagePipeHandle> handles_;
 
   DISALLOW_COPY_AND_ASSIGN(SimpleMessage);
@@ -212,8 +213,8 @@ TEST_F(MessageTest, SendLocalMessageWithContext) {
 TEST_F(MessageTest, DestroyMessageWithContext) {
   // Tests that |MojoDestroyMessage()| destroys any attached context.
   bool was_deleted = false;
-  auto message = std::make_unique<NeverSerializedMessage>(
-      base::Bind([](bool* was_deleted) { *was_deleted = true; }, &was_deleted));
+  auto message = std::make_unique<NeverSerializedMessage>(base::BindOnce(
+      [](bool* was_deleted) { *was_deleted = true; }, &was_deleted));
   MojoMessageHandle handle =
       TestMessageBase::MakeMessageHandle(std::move(message));
   EXPECT_FALSE(was_deleted);
@@ -371,8 +372,8 @@ TEST_F(MessageTest, DropUnreadLocalMessageWithContext) {
   bool message_was_destroyed = false;
   auto message = std::make_unique<SimpleMessage>(
       kTestMessageWithContext1,
-      base::Bind([](bool* was_destroyed) { *was_destroyed = true; },
-                 &message_was_destroyed));
+      base::BindOnce([](bool* was_destroyed) { *was_destroyed = true; },
+                     &message_was_destroyed));
 
   mojo::MessagePipe pipe;
   message->AddMessagePipe(std::move(pipe.handle0));
@@ -441,8 +442,8 @@ TEST_F(MessageTest, ReadMessageWithContextAsSerializedMessage) {
   bool message_was_destroyed = false;
   std::unique_ptr<TestMessageBase> message =
       std::make_unique<NeverSerializedMessage>(
-          base::Bind([](bool* was_destroyed) { *was_destroyed = true; },
-                     &message_was_destroyed));
+          base::BindOnce([](bool* was_destroyed) { *was_destroyed = true; },
+                         &message_was_destroyed));
 
   MojoHandle a, b;
   CreateMessagePipe(&a, &b);
@@ -493,8 +494,8 @@ TEST_F(MessageTest, ForceSerializeMessageWithContext) {
   bool message_was_destroyed = false;
   auto message = std::make_unique<SimpleMessage>(
       kTestMessageWithContext1,
-      base::Bind([](bool* was_destroyed) { *was_destroyed = true; },
-                 &message_was_destroyed));
+      base::BindOnce([](bool* was_destroyed) { *was_destroyed = true; },
+                     &message_was_destroyed));
   auto message_handle = TestMessageBase::MakeMessageHandle(std::move(message));
   EXPECT_EQ(MOJO_RESULT_OK, MojoSerializeMessage(message_handle, nullptr));
   EXPECT_TRUE(message_was_destroyed);
@@ -505,8 +506,8 @@ TEST_F(MessageTest, ForceSerializeMessageWithContext) {
   message_was_destroyed = false;
   message = std::make_unique<SimpleMessage>(
       kTestMessageWithContext1,
-      base::Bind([](bool* was_destroyed) { *was_destroyed = true; },
-                 &message_was_destroyed));
+      base::BindOnce([](bool* was_destroyed) { *was_destroyed = true; },
+                     &message_was_destroyed));
   MessagePipe pipe1;
   message->AddMessagePipe(std::move(pipe1.handle0));
   message_handle = TestMessageBase::MakeMessageHandle(std::move(message));
@@ -520,8 +521,8 @@ TEST_F(MessageTest, ForceSerializeMessageWithContext) {
   message_was_destroyed = false;
   message = std::make_unique<SimpleMessage>(
       kTestMessageWithContext1,
-      base::Bind([](bool* was_destroyed) { *was_destroyed = true; },
-                 &message_was_destroyed));
+      base::BindOnce([](bool* was_destroyed) { *was_destroyed = true; },
+                     &message_was_destroyed));
   MessagePipe pipe2;
   message->AddMessagePipe(std::move(pipe2.handle0));
   message_handle = TestMessageBase::MakeMessageHandle(std::move(message));
@@ -557,8 +558,8 @@ TEST_F(MessageTest, DoubleSerialize) {
   bool message_was_destroyed = false;
   auto message = std::make_unique<SimpleMessage>(
       kTestMessageWithContext1,
-      base::Bind([](bool* was_destroyed) { *was_destroyed = true; },
-                 &message_was_destroyed));
+      base::BindOnce([](bool* was_destroyed) { *was_destroyed = true; },
+                     &message_was_destroyed));
   auto message_handle = TestMessageBase::MakeMessageHandle(std::move(message));
 
   // Ensure we can safely call |MojoSerializeMessage()| twice on the same

@@ -10,13 +10,15 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.os.Build;
 import android.text.TextUtils;
 
 import org.chromium.webapk.lib.common.WebApkMetaDataKeys;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Contains methods for getting information about host browser.
@@ -26,15 +28,22 @@ public class HostBrowserUtils {
 
     private static final int MINIMUM_REQUIRED_INTENT_HELPER_VERSION = 2;
 
+    // Lowest version of Chromium which supports ShellAPK showing the splash screen.
+    public static final int MINIMUM_REQUIRED_CHROMIUM_VERSION_NEW_SPLASH = 78;
+
+    private static final String VERSION_NAME_DEVELOPER_BUILD = "Developer Build";
+
     private static final String TAG = "cr_HostBrowserUtils";
+
+    public static String ARC_INTENT_HELPER_BROWSER = "org.chromium.arc.intent_helper";
 
     /**
      * The package names of the browsers that support WebAPKs. The most preferred one comes first.
      */
-    private static List<String> sBrowsersSupportingWebApk =
-            new ArrayList<String>(Arrays.asList("com.google.android.apps.chrome",
+    private static Set<String> sBrowsersSupportingWebApk =
+            new HashSet<String>(Arrays.asList("com.google.android.apps.chrome",
                     "com.android.chrome", "com.chrome.beta", "com.chrome.dev", "com.chrome.canary",
-                    "org.chromium.chrome", "org.chromium.arc.intent_helper"));
+                    "org.chromium.chrome", "org.chromium.chrome.tests", ARC_INTENT_HELPER_BROWSER));
 
     /** Caches the package name of the host browser. */
     private static String sHostPackage;
@@ -44,12 +53,9 @@ public class HostBrowserUtils {
         sHostPackage = null;
     }
 
-    /**
-     * Returns a list of browsers that support WebAPKs. TODO(hanxi): Replace this function once we
-     * figure out a better way to know which browser supports WebAPKs.
-     */
-    public static List<String> getBrowsersSupportingWebApk() {
-        return sBrowsersSupportingWebApk;
+    /** Returns whether the passed-in browser package name supports WebAPKs. */
+    public static boolean doesBrowserSupportWebApks(String browserPackageName) {
+        return sBrowsersSupportingWebApk.contains(browserPackageName);
     }
 
     /**
@@ -110,6 +116,10 @@ public class HostBrowserUtils {
     /** Queries the given host browser's major version. */
     public static int queryHostBrowserMajorChromiumVersion(
             Context context, String hostBrowserPackageName) {
+        if (!doesBrowserSupportWebApks(hostBrowserPackageName)) {
+            return -1;
+        }
+
         PackageInfo info;
         try {
             info = context.getPackageManager().getPackageInfo(hostBrowserPackageName, 0);
@@ -117,6 +127,11 @@ public class HostBrowserUtils {
             return -1;
         }
         String versionName = info.versionName;
+
+        if (TextUtils.equals(versionName, VERSION_NAME_DEVELOPER_BUILD)) {
+            return Integer.MAX_VALUE;
+        }
+
         int dotIndex = versionName.indexOf(".");
         if (dotIndex < 0) {
             return -1;
@@ -129,17 +144,29 @@ public class HostBrowserUtils {
     }
 
     /** Returns whether a WebAPK should be launched as a tab. See crbug.com/772398. */
-    public static boolean shouldLaunchInTab(
-            String hostBrowserPackageName, int hostBrowserChromiumMajorVersion) {
-        if (!sBrowsersSupportingWebApk.contains(hostBrowserPackageName)) {
+    public static boolean shouldLaunchInTab(HostBrowserLauncherParams params) {
+        String hostBrowserPackageName = params.getHostBrowserPackageName();
+        int hostBrowserMajorChromiumVersion = params.getHostBrowserMajorChromiumVersion();
+        if (!doesBrowserSupportWebApks(hostBrowserPackageName)) {
             return true;
         }
 
-        if (TextUtils.equals(hostBrowserPackageName, "org.chromium.arc.intent_helper")) {
-            return hostBrowserChromiumMajorVersion < MINIMUM_REQUIRED_INTENT_HELPER_VERSION;
+        if (TextUtils.equals(hostBrowserPackageName, ARC_INTENT_HELPER_BROWSER)) {
+            return hostBrowserMajorChromiumVersion < MINIMUM_REQUIRED_INTENT_HELPER_VERSION;
         }
 
-        return hostBrowserChromiumMajorVersion < MINIMUM_REQUIRED_CHROME_VERSION;
+        return hostBrowserMajorChromiumVersion < MINIMUM_REQUIRED_CHROME_VERSION;
+    }
+
+    /**
+     * Returns whether intents (android.intent.action.MAIN, android.intent.action.SEND ...) should
+     * launch {@link SplashActivity} for the given host browser params.
+     */
+    public static boolean shouldIntentLaunchSplashActivity(HostBrowserLauncherParams params) {
+        return !params.getHostBrowserPackageName().equals(ARC_INTENT_HELPER_BROWSER)
+                && params.getHostBrowserMajorChromiumVersion()
+                >= MINIMUM_REQUIRED_CHROMIUM_VERSION_NEW_SPLASH
+                && Build.VERSION.SDK_INT >= Build.VERSION_CODES.N;
     }
 
     /**
@@ -168,25 +195,35 @@ public class HostBrowserUtils {
 
         // Gets the package name of the default browser on the Android device.
         // TODO(hanxi): Investigate the best way to know which browser supports WebAPKs.
-        String defaultBrowser = getDefaultBrowserPackageName(context.getPackageManager());
-        if (!TextUtils.isEmpty(defaultBrowser) && sBrowsersSupportingWebApk.contains(defaultBrowser)
+        String defaultBrowser = getDefaultBrowserPackageName(packageManager);
+        if (!TextUtils.isEmpty(defaultBrowser) && doesBrowserSupportWebApks(defaultBrowser)
                 && WebApkUtils.isInstalled(packageManager, defaultBrowser)) {
             return defaultBrowser;
         }
 
+        Map<String, ResolveInfo> installedBrowsers =
+                WebApkUtils.getInstalledBrowserResolveInfos(packageManager);
+        if (installedBrowsers.size() == 1) {
+            return installedBrowsers.keySet().iterator().next();
+        }
+
         // If there is only one browser supporting WebAPK, and we can't decide which browser to use
         // by looking up cache, metadata and default browser, open with that browser.
-        int availableBrowserCounter = 0;
+        int numSupportedBrowsersInstalled = 0;
         String lastSupportedBrowser = null;
-        for (String packageName : sBrowsersSupportingWebApk) {
-            if (availableBrowserCounter > 1) break;
-            if (WebApkUtils.isInstalled(packageManager, packageName)) {
-                availableBrowserCounter++;
-                lastSupportedBrowser = packageName;
+        for (String browserPackageName : installedBrowsers.keySet()) {
+            if (numSupportedBrowsersInstalled > 1) break;
+            if (doesBrowserSupportWebApks(browserPackageName)) {
+                numSupportedBrowsersInstalled++;
+                lastSupportedBrowser = browserPackageName;
             }
         }
-        if (availableBrowserCounter == 1) {
+        if (numSupportedBrowsersInstalled == 1) {
             return lastSupportedBrowser;
+        }
+
+        if (numSupportedBrowsersInstalled == 0 && installedBrowsers.containsKey(defaultBrowser)) {
+            return defaultBrowser;
         }
         return null;
     }
@@ -202,9 +239,7 @@ public class HostBrowserUtils {
         Intent browserIntent = WebApkUtils.getQueryInstalledBrowsersIntent();
         ResolveInfo resolveInfo =
                 packageManager.resolveActivity(browserIntent, PackageManager.MATCH_DEFAULT_ONLY);
-        if (resolveInfo == null || resolveInfo.activityInfo == null) return null;
-
-        return resolveInfo.activityInfo.packageName;
+        return WebApkUtils.getPackageNameFromResolveInfo(resolveInfo);
     }
 
     /** Deletes the internal storage for the given context. */

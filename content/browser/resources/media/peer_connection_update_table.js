@@ -89,7 +89,9 @@ var PeerConnectionUpdateTable = (function() {
         onRenegotiationNeeded: 'negotiationneeded',
         signalingStateChange: 'signalingstatechange',
         iceGatheringStateChange: 'icegatheringstatechange',
+        legacyIceConnectionStateChange: 'iceconnectionstatechange (legacy)',
         iceConnectionStateChange: 'iceconnectionstatechange',
+        connectionStateChange: 'connectionstatechange',
         onIceCandidate: 'icecandidate',
         stop: 'close'
       }[update.type] ||

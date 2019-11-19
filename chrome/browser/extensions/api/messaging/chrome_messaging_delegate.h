@@ -31,6 +31,7 @@ class ChromeMessagingDelegate : public MessagingDelegate {
       content::WebContents* receiver_contents,
       int receiver_frame_id) override;
   std::unique_ptr<MessagePort> CreateReceiverForNativeApp(
+      content::BrowserContext* browser_context,
       base::WeakPtr<MessagePort::ChannelDelegate> channel_delegate,
       content::RenderFrameHost* source,
       const std::string& extension_id,

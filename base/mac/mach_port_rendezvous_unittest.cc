@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/at_exit.h"
+#include "base/mac/foundation_util.h"
 #include "base/mac/mach_logging.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/multiprocess_test.h"
@@ -204,6 +205,27 @@ TEST_F(MachPortRendezvousServerTest, DestroyRight) {
     ASSERT_EQ(kr, KERN_SUCCESS);
     EXPECT_EQ(refs, test.send_rights);
   }
+}
+
+MULTIPROCESS_TEST_MAIN(FailToRendezvous) {
+  // The rendezvous system uses the BaseBundleID to construct the bootstrap
+  // server name, so changing it will result in a failure to look it up.
+  base::mac::SetBaseBundleID("org.chromium.totallyfake");
+  CHECK_EQ(nullptr, base::MachPortRendezvousClient::GetInstance());
+  return 0;
+}
+
+TEST_F(MachPortRendezvousServerTest, FailToRendezvous) {
+  auto* server = MachPortRendezvousServer::GetInstance();
+  ASSERT_TRUE(server);
+
+  Process child = SpawnChild("FailToRendezvous");
+
+  int exit_code;
+  ASSERT_TRUE(WaitForMultiprocessTestChildExit(
+      child, TestTimeouts::action_timeout(), &exit_code));
+
+  EXPECT_EQ(0, exit_code);
 }
 
 }  // namespace base

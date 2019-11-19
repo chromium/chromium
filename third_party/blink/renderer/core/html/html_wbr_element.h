@@ -39,12 +39,10 @@ namespace blink {
 // so HTMLElement's createLayoutObject doesn't need to know about it.
 class HTMLWBRElement final : public HTMLElement {
  public:
-  DECLARE_NODE_FACTORY(HTMLWBRElement);
-
   explicit HTMLWBRElement(Document&);
 
  private:
-  LayoutObject* CreateLayoutObject(const ComputedStyle&) override;
+  LayoutObject* CreateLayoutObject(const ComputedStyle&, LegacyLayout) override;
 };
 
 }  // namespace blink

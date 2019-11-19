@@ -4,9 +4,9 @@
 
 #include "ash/system/message_center/inactive_user_notification_blocker.h"
 
+#include "ash/public/cpp/test/shell_test_api.h"
 #include "ash/session/test_session_controller_client.h"
 #include "ash/shell.h"
-#include "ash/shell_test_api.h"
 #include "ash/system/message_center/message_center_controller.h"
 #include "ash/test/ash_test_base.h"
 #include "base/macros.h"

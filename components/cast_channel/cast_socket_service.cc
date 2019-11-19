@@ -23,8 +23,8 @@ CastSocketService::CastSocketService()
       // (1) ChromeURLRequestContextGetter::GetURLRequestContext, which is
       // called by CastMediaSinkServiceImpl, must run on IO thread. (2) Parts of
       // CastChannel extension API functions run on IO thread.
-      task_runner_(base::CreateSingleThreadTaskRunnerWithTraits(
-          {content::BrowserThread::IO})) {}
+      task_runner_(
+          base::CreateSingleThreadTaskRunner({content::BrowserThread::IO})) {}
 
 // This is a leaky singleton and the dtor won't be called.
 CastSocketService::~CastSocketService() = default;

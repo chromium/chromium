@@ -43,9 +43,7 @@ class MockDeviceSettingsObserver : public DeviceSettingsService::Observer {
 
 class DeviceSettingsServiceTest : public DeviceSettingsTestBase {
  public:
-  void SetOperationCompleted() {
-    operation_completed_ = true;
-  }
+  void SetOperationCompleted() { operation_completed_ = true; }
 
   void SetOwnershipStatus(
       DeviceSettingsService::OwnershipStatus ownership_status) {
@@ -155,7 +153,7 @@ TEST_F(DeviceSettingsServiceTest, StoreFailure) {
   EXPECT_EQ(DeviceSettingsService::STORE_KEY_UNAVAILABLE,
             device_settings_service_->status());
 
-  session_manager_client_.set_store_policy_success(false);
+  session_manager_client_.ForceStorePolicyFailure(true);
   device_settings_service_->Store(
       device_policy_->GetCopy(),
       base::Bind(&DeviceSettingsServiceTest::SetOperationCompleted,

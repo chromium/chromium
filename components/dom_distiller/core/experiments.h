@@ -16,6 +16,6 @@ enum class DistillerHeuristicsType {
 };
 
 DistillerHeuristicsType GetDistillerHeuristicsType();
-}
+}  // namespace dom_distiller
 
 #endif  // COMPONENTS_DOM_DISTILLER_CORE_EXPERIMENTS_H_

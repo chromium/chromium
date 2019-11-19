@@ -13,7 +13,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.browser.ChromeFeatureList;
 import org.chromium.chrome.browser.ChromeSwitches;
@@ -24,6 +23,7 @@ import org.chromium.components.background_task_scheduler.BackgroundTaskScheduler
 import org.chromium.components.background_task_scheduler.BackgroundTaskSchedulerFactory;
 import org.chromium.components.background_task_scheduler.TaskIds;
 import org.chromium.components.background_task_scheduler.TaskInfo;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -82,7 +82,7 @@ public class FeedRefreshTaskTest {
         // The FeedSchedulerHost might create a task during initialization. Clear out any tasks
         // created before the test case starts.
         mActivityTestRule.startMainActivityOnBlankPage();
-        ThreadUtils.runOnUiThreadBlocking(() -> {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
             // Accessing the bridge will create if needed, and may run initialization logic.
             FeedProcessScopeFactory.getFeedScheduler();
             mTaskScheduler.getTaskInfoList().clear();
@@ -92,7 +92,7 @@ public class FeedRefreshTaskTest {
     @Test
     @SmallTest
     public void testSchedule() {
-        ThreadUtils.runOnUiThreadBlocking(() -> {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
             Assert.assertEquals(0, mTaskScheduler.getTaskInfoList().size());
             FeedRefreshTask.scheduleWakeUp(/*thresholdMs=*/1234);
             Assert.assertEquals(1, mTaskScheduler.getTaskInfoList().size());
@@ -113,7 +113,7 @@ public class FeedRefreshTaskTest {
     @Test
     @SmallTest
     public void testCancelWakeUp() {
-        ThreadUtils.runOnUiThreadBlocking(() -> {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
             int initialCanceledTasks = mTaskScheduler.getCanceledTaskIds().size();
             FeedRefreshTask.cancelWakeUp();
             Assert.assertEquals(
@@ -124,7 +124,7 @@ public class FeedRefreshTaskTest {
     @Test
     @SmallTest
     public void testReschedule() {
-        ThreadUtils.runOnUiThreadBlocking(() -> {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
             Assert.assertEquals(0, mTaskScheduler.getTaskInfoList().size());
             new FeedRefreshTask().reschedule(mActivityTestRule.getActivity());
             Assert.assertEquals(1, mTaskScheduler.getTaskInfoList().size());

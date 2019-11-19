@@ -28,9 +28,9 @@ interface IDBOpenDBRequest : IDBRequest {
   attribute EventHandler onupgradeneeded;
 };
 
-[Exposed=(Window,Worker),
- Constructor(DOMString type, optional IDBVersionChangeEventInit eventInitDict)]
+[Exposed=(Window,Worker)]
 interface IDBVersionChangeEvent : Event {
+  constructor(DOMString type, optional IDBVersionChangeEventInit eventInitDict = {});
   readonly attribute unsigned long long oldVersion;
   readonly attribute unsigned long long? newVersion;
 };
@@ -70,8 +70,9 @@ interface IDBDatabase : EventTarget {
                                          optional IDBTransactionMode mode = "readonly");
   void close();
 
-  [NewObject] IDBObjectStore createObjectStore(DOMString name,
-                                               optional IDBObjectStoreParameters options);
+  [NewObject] IDBObjectStore createObjectStore(
+    DOMString name,
+    optional IDBObjectStoreParameters options = {});
   void deleteObjectStore(DOMString name);
 
   // Event handlers:
@@ -115,7 +116,7 @@ interface IDBObjectStore {
 
   [NewObject] IDBIndex createIndex(DOMString name,
                                    (DOMString or sequence<DOMString>) keyPath,
-                                   optional IDBIndexParameters options);
+                                   optional IDBIndexParameters options = {});
   void deleteIndex(DOMString name);
 };
 
@@ -162,7 +163,7 @@ interface IDBKeyRange {
                                        optional boolean lowerOpen = false,
                                        optional boolean upperOpen = false);
 
-  boolean _includes(any key);
+  boolean includes(any key);
 };
 
 [Exposed=(Window,Worker)]
@@ -171,6 +172,7 @@ interface IDBCursor {
   readonly attribute IDBCursorDirection direction;
   readonly attribute any key;
   readonly attribute any primaryKey;
+  [SameObject] readonly attribute IDBRequest request;
 
   void advance([EnforceRange] unsigned long count);
   void continue(optional any key);

@@ -25,7 +25,8 @@
 JNI_GENERATOR_EXPORT void
     Java_org_chromium_base_natives_GEN_1JNI_org_1chromium_1example_1SampleProxyJni_1foo(
     JNIEnv* env,
-    jclass jcaller);
+    jclass jcaller,
+    jlong nativePtr);
 JNI_GENERATOR_EXPORT jint
     Java_org_chromium_base_natives_GEN_1JNI_org_1chromium_1example_1SampleProxyJni_1bar(
     JNIEnv* env,
@@ -44,7 +45,7 @@ JNI_GENERATOR_EXPORT jstring
 
 
 static const JNINativeMethod kMethods_org_chromium_base_natives_GEN_1JNI[] = {
-    { "org_chromium_example_SampleProxyJni_foo", "()V",
+    { "org_chromium_example_SampleProxyJni_foo", "(J)V",
         reinterpret_cast<void*>(Java_org_chromium_base_natives_GEN_1JNI_org_1chromium_1example_1SampleProxyJni_1foo)
         },
     { "org_chromium_example_SampleProxyJni_bar", "(II)I",
@@ -57,10 +58,13 @@ static const JNINativeMethod kMethods_org_chromium_base_natives_GEN_1JNI[] = {
 
 };
 
+namespace {
+
 JNI_REGISTRATION_EXPORT bool RegisterNative_org_chromium_base_natives_GEN_1JNI(JNIEnv* env) {
   const int number_of_methods = base::size(kMethods_org_chromium_base_natives_GEN_1JNI);
 
-  base::android::ScopedJavaLocalRef<jclass> native_clazz = base::android::GetClass(env, "org/chromium/base/natives/GEN_JNI");
+  base::android::ScopedJavaLocalRef<jclass> native_clazz =
+      base::android::GetClass(env, "org/chromium/base/natives/GEN_JNI");
   if (env->RegisterNatives(
       native_clazz.obj(),
       kMethods_org_chromium_base_natives_GEN_1JNI,
@@ -72,6 +76,8 @@ JNI_REGISTRATION_EXPORT bool RegisterNative_org_chromium_base_natives_GEN_1JNI(J
 
   return true;
 }
+
+}  // namespace
 
 
 // Step 4: Main dex and non-main dex registration functions.

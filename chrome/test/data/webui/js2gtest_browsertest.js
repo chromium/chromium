@@ -35,11 +35,14 @@ JSToGtestBrowserTest.prototype = {
   },
 
   /** @override */
-  featureList: ['kTestFeature', ''],
+  featureList: {enabled: ['kTestFeature']},
 
   /** @override */
   featuresWithParameters: [
-    ['kTestFeatureWithParam', [['count', '5']]],
+    {
+      featureName: 'kTestFeatureWithParam',
+      parameters: [{name: 'count', value: 5}],
+    },
   ],
 };
 

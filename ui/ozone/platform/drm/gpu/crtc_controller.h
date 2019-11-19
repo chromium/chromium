@@ -75,6 +75,8 @@ class CrtcController {
   // TODO(dnicoara) Add support for hardware mirroring (multiple connectors).
   const uint32_t connector_;
 
+  const std::vector<uint64_t> internal_diplay_only_modifiers_;
+
   drmModeModeInfo mode_ = {};
 
   scoped_refptr<DrmFramebuffer> modeset_framebuffer_;

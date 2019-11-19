@@ -13,4 +13,4 @@ sources = [
 public_deps = [
   "//base",
 ]
-type_mappings = [ "mojo_base.mojom.MemoryPressureLevel=base::MemoryPressureListener::MemoryPressureLevel" ]
+type_mappings = [ "mojo_base.mojom.MemoryPressureLevel=::base::MemoryPressureListener::MemoryPressureLevel" ]

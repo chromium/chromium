@@ -64,6 +64,10 @@ class MouseLockController : public ExclusiveAccessControllerBase {
     bubble_hide_callback_for_test_ = std::move(callback_for_test);
   }
 
+  void set_lock_state_callback_for_test(base::OnceClosure callback) {
+    lock_state_callback_for_test_ = std::move(callback);
+  }
+
  private:
   enum MouseLockState {
     MOUSELOCK_UNLOCKED,
@@ -72,8 +76,6 @@ class MouseLockController : public ExclusiveAccessControllerBase {
     // Mouse has been locked silently, with no notification to user.
     MOUSELOCK_LOCKED_SILENTLY
   };
-
-  void NotifyMouseLockChange();
 
   void ExitExclusiveAccessIfNecessary() override;
   void NotifyTabExclusiveAccessLost() override;
@@ -93,7 +95,10 @@ class MouseLockController : public ExclusiveAccessControllerBase {
   bool fake_mouse_lock_for_test_;
   ExclusiveAccessBubbleHideCallbackForTest bubble_hide_callback_for_test_;
 
-  base::WeakPtrFactory<MouseLockController> weak_ptr_factory_;
+  // Called when the page requests (successfully or not) or loses mouse lock.
+  base::OnceClosure lock_state_callback_for_test_;
+
+  base::WeakPtrFactory<MouseLockController> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(MouseLockController);
 };

@@ -11,11 +11,6 @@ Polymer({
   ],
 
   properties: {
-    actionButton: {
-      type: Boolean,
-      value: false,
-    },
-
     endJustified: {
       type: Boolean,
       value: false,
@@ -31,11 +26,29 @@ Polymer({
     },
 
     /** @private */
+    actionClass_: {
+      type: String,
+      value: ''
+    },
+
+    /** @private */
     enforced_: {
       type: Boolean,
       computed: 'isPrefEnforced(pref.*)',
       reflectToAttribute: true,
     },
+  },
+
+  /** @override */
+  attached: function() {
+    if (this.classList.contains('action-button')) {
+      this.actionClass_ = 'action-button';
+    }
+  },
+
+  /** Focus on the inner cr-button. */
+  focus: function() {
+    this.$$('cr-button').focus();
   },
 
   /**
@@ -46,15 +59,6 @@ Polymer({
     // Disallow <controlled-button on-click="..."> when controlled.
     e.preventDefault();
     e.stopPropagation();
-  },
-
-  /**
-   * @param {!boolean} actionButton
-   * @return {string} Class of the paper-button.
-   * @private
-   */
-  getClass_: function(actionButton) {
-    return actionButton ? "action-button" : "";
   },
 
   /**

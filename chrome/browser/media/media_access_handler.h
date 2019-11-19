@@ -28,7 +28,7 @@ class MediaAccessHandler {
 
   // Check if the media stream type is supported by MediaAccessHandler.
   virtual bool SupportsStreamType(content::WebContents* web_contents,
-                                  const blink::MediaStreamType type,
+                                  const blink::mojom::MediaStreamType type,
                                   const extensions::Extension* extension) = 0;
 
   // Check media access permission. |extension| is set to NULL if request was
@@ -36,7 +36,7 @@ class MediaAccessHandler {
   virtual bool CheckMediaAccessPermission(
       content::RenderFrameHost* render_frame_host,
       const GURL& security_origin,
-      blink::MediaStreamType type,
+      blink::mojom::MediaStreamType type,
       const extensions::Extension* extension) = 0;
 
   // Process media access requests. |extension| is set to NULL if request was
@@ -47,11 +47,12 @@ class MediaAccessHandler {
                              const extensions::Extension* extension) = 0;
 
   // Update media request state. Called on UI thread.
-  virtual void UpdateMediaRequestState(int render_process_id,
-                                       int render_frame_id,
-                                       int page_request_id,
-                                       blink::MediaStreamType stream_type,
-                                       content::MediaRequestState state) {}
+  virtual void UpdateMediaRequestState(
+      int render_process_id,
+      int render_frame_id,
+      int page_request_id,
+      blink::mojom::MediaStreamType stream_type,
+      content::MediaRequestState state) {}
 
   // Return true if there is any ongoing insecured capturing. The capturing is
   // deemed secure if all connected video sinks are reported secure and the

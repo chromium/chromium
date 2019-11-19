@@ -21,7 +21,6 @@ class SequencedTaskRunner;
 }  // namespace base
 
 namespace net {
-class HttpServerPropertiesManager;
 class HostCache;
 class NetLog;
 class NetworkQualitiesPrefsManager;
@@ -63,11 +62,6 @@ class CronetPrefsManager {
   // |host_cache_persistence_manager_|.
   std::unique_ptr<PrefService> pref_service_;
   scoped_refptr<JsonPrefStore> json_pref_store_;
-
-  // The ownership of this object is assumed by |net::URLRequestContextBuilder|
-  // in this class constructor. The ownership is later passed to
-  // |net::URLRequestContext|, which should outlive this class.
-  net::HttpServerPropertiesManager* http_server_properties_manager_;
 
   // Manages the writing and reading of the network quality prefs.
   std::unique_ptr<net::NetworkQualitiesPrefsManager>

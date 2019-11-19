@@ -63,7 +63,7 @@ WorkerPerformance* WorkerGlobalScopePerformance::performance(
 WorkerPerformance* WorkerGlobalScopePerformance::performance(
     WorkerGlobalScope* worker_global_scope) {
   if (!performance_)
-    performance_ = WorkerPerformance::Create(worker_global_scope);
+    performance_ = MakeGarbageCollected<WorkerPerformance>(worker_global_scope);
   return performance_.Get();
 }
 

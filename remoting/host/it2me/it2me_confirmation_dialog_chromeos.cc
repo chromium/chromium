@@ -4,10 +4,10 @@
 
 #include <memory>
 #include <string>
+#include <utility>
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/callback_helpers.h"
 #include "base/i18n/message_formatter.h"
 #include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
@@ -60,8 +60,8 @@ void It2MeConfirmationDialogChromeOS::Show(const std::string& remote_user_email,
 
 void It2MeConfirmationDialogChromeOS::OnMessageBoxResult(
     MessageBox::Result result) {
-  base::ResetAndReturn(&callback_).Run(result == MessageBox::OK ?
-                                       Result::OK : Result::CANCEL);
+  std::move(callback_).Run(result == MessageBox::OK ? Result::OK
+                                                    : Result::CANCEL);
 }
 
 std::unique_ptr<It2MeConfirmationDialog>

@@ -1,6 +1,7 @@
 <link rel="import" href="chrome://resources/html/polymer.html">
 
 <link rel="import" href="chrome://resources/cr_elements/cr_radio_button/cr_radio_button.html">
+<link rel="import" href="chrome://resources/cr_elements/shared_vars_css.html">
 <link rel="import" href="../controls/settings_radio_group.html">
 <link rel="import" href="../controls/settings_slider.html">
 <link rel="import" href="../controls/settings_toggle_button.html">
@@ -11,18 +12,18 @@
   <template>
     <style include="settings-shared">
       h2 {
-        padding-inline-start: var(--settings-box-row-padding);
+        padding-inline-start: var(--cr-section-padding);
       }
 
       .subsection {
-        padding-inline-end: var(--settings-box-row-padding);
-        padding-inline-start: var(--settings-box-row-indent);
+        padding-inline-end: var(--cr-section-padding);
+        padding-inline-start: var(--cr-section-indent-padding);
       }
 
       .subsection > settings-toggle-button,
       .subsection > .settings-box  {
-        padding-left: 0;
-        padding-right: 0;
+        padding-inline-end: 0;
+        padding-inline-start: 0;
       }
     </style>
     <div id="mouse" hidden$="[[!hasMouse]]">
@@ -42,6 +43,12 @@
             pref="{{prefs.settings.mouse.reverse_scroll}}"
             label="$i18n{mouseReverseScroll}">
         </settings-toggle-button>
+        <template is="dom-if" if="[[allowDisableAcceleration_]]">
+          <settings-toggle-button id="mouseAcceleration"
+              pref="{{prefs.settings.mouse.acceleration}}"
+              label="$i18n{mouseAccelerationLabel}">
+          </settings-toggle-button>
+        </template>
         <div class="settings-box">
           <div class="start" id="mouseSpeedLabel">$i18n{mouseSpeed}</div>
           <settings-slider pref="{{prefs.settings.mouse.sensitivity2}}"
@@ -65,6 +72,12 @@
             pref="{{prefs.settings.touchpad.enable_tap_dragging}}"
             label="$i18n{tapDraggingLabel}">
         </settings-toggle-button>
+        <template is="dom-if" if="[[allowDisableAcceleration_]]">
+          <settings-toggle-button id="touchpadAcceleration"
+              pref="{{prefs.settings.touchpad.acceleration}}"
+              label="$i18n{touchpadAccelerationLabel}">
+          </settings-toggle-button>
+        </template>
         <div class="settings-box">
           <div class="start" id="touchpadSpeedLabel">$i18n{touchpadSpeed}</div>
             <settings-slider id="touchpadSensitivity"

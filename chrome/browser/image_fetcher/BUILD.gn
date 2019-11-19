@@ -1,0 +1,33 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+
+android_library("java") {
+  deps = [
+    "//base:base_java",
+    "//base:jni_java",
+    "//chrome/android/public/profiles:java",
+    "//chrome/browser/util:java",
+    "//content/public/android:content_java",
+    "//third_party/gif_player:gif_player_java",
+  ]
+  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+  java_files = [
+    "android/java/src/org/chromium/chrome/browser/image_fetcher/CachedImageFetcher.java",
+    "android/java/src/org/chromium/chrome/browser/image_fetcher/ImageFetcherBridge.java",
+    "android/java/src/org/chromium/chrome/browser/image_fetcher/ImageFetcherFactory.java",
+    "android/java/src/org/chromium/chrome/browser/image_fetcher/ImageFetcher.java",
+    "android/java/src/org/chromium/chrome/browser/image_fetcher/InMemoryCachedImageFetcher.java",
+    "android/java/src/org/chromium/chrome/browser/image_fetcher/NetworkImageFetcher.java",
+  ]
+
+  srcjar_deps = [ "//components/image_fetcher/core:java_enums_srcjar" ]
+}
+
+generate_jni("jni_headers") {
+  sources = [
+    "android/java/src/org/chromium/chrome/browser/image_fetcher/ImageFetcherBridge.java",
+  ]
+}

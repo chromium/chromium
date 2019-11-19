@@ -1,0 +1,3 @@
+dictionary PointerLockOptions {
+    [RuntimeEnabled=PointerLockOptions]boolean unadjustedMovement = false;
+};

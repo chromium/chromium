@@ -5,6 +5,7 @@
 #include "chrome/browser/chromeos/android_sms/android_sms_pairing_state_tracker_impl.h"
 
 #include <utility>
+#include <vector>
 
 #include "base/bind.h"
 #include "base/logging.h"
@@ -29,10 +30,7 @@ namespace android_sms {
 AndroidSmsPairingStateTrackerImpl::AndroidSmsPairingStateTrackerImpl(
     Profile* profile,
     AndroidSmsAppManager* android_sms_app_manager)
-    : profile_(profile),
-      android_sms_app_manager_(android_sms_app_manager),
-      cookie_listener_binding_(this),
-      weak_ptr_factory_(this) {
+    : profile_(profile), android_sms_app_manager_(android_sms_app_manager) {
   android_sms_app_manager_->AddObserver(this);
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
@@ -51,15 +49,17 @@ bool AndroidSmsPairingStateTrackerImpl::IsAndroidSmsPairingComplete() {
 
 void AndroidSmsPairingStateTrackerImpl::AttemptFetchMessagesPairingState() {
   GetCookieManager()->GetCookieList(
-      GetPairingUrl(), net::CookieOptions(),
+      GetPairingUrl(), net::CookieOptions::MakeAllInclusive(),
       base::BindOnce(&AndroidSmsPairingStateTrackerImpl::OnCookiesRetrieved,
                      base::Unretained(this)));
 }
 
 void AndroidSmsPairingStateTrackerImpl::OnCookiesRetrieved(
-    const std::vector<net::CanonicalCookie>& cookies) {
+    const net::CookieStatusList& cookies,
+    const net::CookieStatusList& excluded_cookies) {
   bool was_previously_paired = was_paired_on_last_update_;
-  for (const auto& cookie : cookies) {
+  for (const auto& cookie_with_status : cookies) {
+    const net::CanonicalCookie& cookie = cookie_with_status.cookie;
     if (cookie.Name() == kMessagesPairStateCookieName) {
       PA_LOG(VERBOSE) << "Cookie says Messages paired: " << cookie.Value();
       was_paired_on_last_update_ = cookie.Value() == kPairedCookieValue;
@@ -75,10 +75,9 @@ void AndroidSmsPairingStateTrackerImpl::OnCookiesRetrieved(
 }
 
 void AndroidSmsPairingStateTrackerImpl::OnCookieChange(
-    const net::CanonicalCookie& cookie,
-    network::mojom::CookieChangeCause cause) {
-  DCHECK_EQ(kMessagesPairStateCookieName, cookie.Name());
-  DCHECK(cookie.IsDomainMatch(GetPairingUrl().host()));
+    const net::CookieChangeInfo& change) {
+  DCHECK_EQ(kMessagesPairStateCookieName, change.cookie.Name());
+  DCHECK(change.cookie.IsDomainMatch(GetPairingUrl().host()));
 
   // NOTE: cookie.Value() cannot be trusted in this callback. The cookie may
   // have expired or been removed and the Value() does not get updated. It's
@@ -89,7 +88,7 @@ void AndroidSmsPairingStateTrackerImpl::OnCookieChange(
 void AndroidSmsPairingStateTrackerImpl::OnInstalledAppUrlChanged() {
   // If the app URL changed, stop any ongoing cookie monitoring and attempt to
   // add a new change listener.
-  cookie_listener_binding_.Close();
+  cookie_listener_receiver_.reset();
   AddCookieChangeListener();
 }
 
@@ -112,11 +111,9 @@ AndroidSmsPairingStateTrackerImpl::GetCookieManager() {
 void AndroidSmsPairingStateTrackerImpl::AddCookieChangeListener() {
   // Trigger the first fetch of the sms cookie and start listening for changes.
   AttemptFetchMessagesPairingState();
-  network::mojom::CookieChangeListenerPtr listener_ptr;
-  cookie_listener_binding_.Bind(mojo::MakeRequest(&listener_ptr));
-
   GetCookieManager()->AddCookieChangeListener(
-      GetPairingUrl(), kMessagesPairStateCookieName, std::move(listener_ptr));
+      GetPairingUrl(), kMessagesPairStateCookieName,
+      cookie_listener_receiver_.BindNewPipeAndPassRemote());
 }
 
 }  // namespace android_sms

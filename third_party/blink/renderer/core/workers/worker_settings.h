@@ -8,7 +8,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/platform/fonts/generic_font_family_settings.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
 
@@ -17,6 +17,14 @@ class CORE_EXPORT WorkerSettings {
 
  public:
   explicit WorkerSettings(Settings*);
+  // TODO(bashi): Consider creating a builder class or introducing an
+  // initialization struct when adding more parameters for this ctor.
+  WorkerSettings(bool disable_reading_from_canvas,
+                 bool strict_mixed_content_checking,
+                 bool allow_running_of_insecure_content,
+                 bool strictly_block_blockable_mixed_content,
+                 const GenericFontFamilySettings& generic_font_family_settings);
+
   static std::unique_ptr<WorkerSettings> Copy(WorkerSettings*);
 
   bool DisableReadingFromCanvas() const { return disable_reading_from_canvas_; }
@@ -41,10 +49,10 @@ class CORE_EXPORT WorkerSettings {
  private:
   void CopyFlagValuesFromSettings(Settings*);
 
-  // The settings that are to be copied from main thread to worker thread
-  // These setting's flag values must remain unchanged throughout the document
-  // lifecycle.
-  // We hard-code the flags as there're very few flags at this moment.
+  // These flags are a subset of Settings. We hard-code the flags as there're
+  // very few flags at this moment.
+  // For dedicated workers these flag values must remain unchanged throughout
+  // the parent document lifecycle.
   bool disable_reading_from_canvas_ = false;
   bool strict_mixed_content_checking_ = false;
   bool allow_running_of_insecure_content_ = false;

@@ -4,10 +4,9 @@
 
 #include "chrome/browser/chromeos/first_run/first_run_controller.h"
 
+#include "ash/public/cpp/first_run_helper.h"
 #include "ash/public/cpp/shelf_prefs.h"
 #include "ash/public/cpp/shell_window_ids.h"
-#include "ash/public/interfaces/constants.mojom.h"
-#include "ash/public/interfaces/first_run_helper.mojom.h"
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -22,8 +21,6 @@
 #include "chrome/browser/ui/ash/ash_util.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "components/user_manager/user_manager.h"
-#include "content/public/common/service_manager_connection.h"
-#include "services/service_manager/public/cpp/connector.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/views/widget/widget.h"
@@ -52,7 +49,7 @@ std::unique_ptr<views::Widget> CreateFirstRunWidget() {
   params.opacity = views::Widget::InitParams::TRANSLUCENT_WINDOW;
   ash_util::SetupWidgetInitParamsForContainer(
       &params, ash::kShellWindowId_OverlayContainer);
-  widget->Init(params);
+  widget->Init(std::move(params));
   return widget;
 }
 
@@ -115,12 +112,8 @@ void FirstRunController::Init() {
   user_profile_ = ProfileHelper::Get()->GetProfileByUserUnsafe(
       user_manager->GetActiveUser());
 
-  content::ServiceManagerConnection::GetForProcess()
-      ->GetConnector()
-      ->BindInterface(ash::mojom::kServiceName, &first_run_helper_ptr_);
-  ash::mojom::FirstRunHelperClientPtr client_ptr;
-  binding_.Bind(mojo::MakeRequest(&client_ptr));
-  first_run_helper_ptr_->Start(std::move(client_ptr));
+  first_run_helper_ = ash::FirstRunHelper::Start(
+      base::BindOnce(&FirstRunController::OnCancelled, base::Unretained(this)));
 
   widget_ = CreateFirstRunWidget();
   FirstRunView* view = new FirstRunView();
@@ -150,7 +143,7 @@ void FirstRunController::Finalize() {
   if (actor_)
     actor_->set_delegate(NULL);
   actor_ = NULL;
-  first_run_helper_ptr_->Stop();
+  first_run_helper_.reset();
   // Close the widget.
   widget_.reset();
 }
@@ -232,4 +225,3 @@ first_run::Step* FirstRunController::GetCurrentStep() const {
 }
 
 }  // namespace chromeos
-

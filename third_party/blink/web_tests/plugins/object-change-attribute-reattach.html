@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+<object id="target"></object>
+<script>
+  // Trigger layout now to create LayoutEmbeddedObject
+  document.body.offsetTop;
+
+  // Changing it to an image should trigger a re-attach as LayoutImage. This is
+  // the bugfix. Previously this didn't happen.
+  target.type = "image/gif";
+
+  // Change some style that would trigger re-layout (also without the fix), and
+  // creation of a Frame object.
+  target.style.width = "100px";
+  document.body.offsetTop;
+
+  // Without the bugfix, the OBJECT would still be LayoutEmbeddedObject at this
+  // point, but changing the display type, would trigger reattachment, and
+  // *then* it would become a LayoutImage (and it would attempt to re-use
+  // the Frame, because nobody told it not to).
+  target.style.display = "block";
+  document.body.offsetTop;
+
+  test(()=> { }, "No crash or DCHECK failure");
+</script>

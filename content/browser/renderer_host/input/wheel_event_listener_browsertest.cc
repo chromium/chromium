@@ -64,7 +64,7 @@ class WheelEventListenerBrowserTest : public ContentBrowserTest {
 
   void LoadURL(const std::string& page_data) {
     const GURL data_url("data:text/html," + page_data);
-    NavigateToURL(shell(), data_url);
+    EXPECT_TRUE(NavigateToURL(shell(), data_url));
 
     RenderWidgetHostImpl* host = GetWidgetHost();
     host->GetView()->SetSize(gfx::Size(400, 400));
@@ -84,8 +84,9 @@ class WheelEventListenerBrowserTest : public ContentBrowserTest {
     double x = 10;
     double y = 10;
     blink::WebMouseWheelEvent wheel_event =
-        SyntheticWebMouseWheelEventBuilder::Build(x, y, x, y, -20, -20, 0,
-                                                  true);
+        SyntheticWebMouseWheelEventBuilder::Build(
+            x, y, x, y, -20, -20, 0,
+            ui::input_types::ScrollGranularity::kScrollByPrecisePixel);
     wheel_event.phase = blink::WebMouseWheelEvent::kPhaseBegan;
     GetWidgetHost()->ForwardWheelEvent(wheel_event);
     EXPECT_EQ(INPUT_EVENT_ACK_STATE_SET_NON_BLOCKING,

@@ -41,7 +41,7 @@
 
             var body = document.getElementById("body");
             body.focus();
-            var table = accessibilityController.focusedElement.childAtIndex(0);
+            var table = accessibilityController.focusedElement.childAtIndex(0).childAtIndex(0);
 
             var cell = table.cellForColumnAndRow(0,0); 
             result.innerText += "----------------------\n";

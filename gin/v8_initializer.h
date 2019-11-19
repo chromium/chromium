@@ -25,11 +25,8 @@ class GIN_EXPORT V8Initializer {
   // Get address and size information for currently loaded snapshot.
   // If no snapshot is loaded, the return values are null for addresses
   // and 0 for sizes.
-  static void GetV8ExternalSnapshotData(v8::StartupData* natives,
-                                        v8::StartupData* snapshot);
-  static void GetV8ExternalSnapshotData(const char** natives_data_out,
-                                        int* natives_size_out,
-                                        const char** snapshot_data_out,
+  static void GetV8ExternalSnapshotData(v8::StartupData* snapshot);
+  static void GetV8ExternalSnapshotData(const char** snapshot_data_out,
                                         int* snapshot_size_out);
 
 #if defined(V8_USE_EXTERNAL_STARTUP_DATA)
@@ -45,9 +42,6 @@ class GIN_EXPORT V8Initializer {
   // Load V8 snapshot from default resources, if they are available.
   static void LoadV8Snapshot(
       V8SnapshotFileType snapshot_file_type = V8SnapshotFileType::kDefault);
-  // Load V8 natives source from default resources. Contains asserts
-  // so that it will not return if natives cannot be loaded.
-  static void LoadV8Natives();
 
   // Load V8 snapshot from user provided file.
   // The region argument, if non-zero, specifies the portions
@@ -57,15 +51,8 @@ class GIN_EXPORT V8Initializer {
       base::File snapshot_file,
       base::MemoryMappedFile::Region* snapshot_file_region,
       V8SnapshotFileType snapshot_file_type);
-  // Similar to LoadV8SnapshotFromFile, but for the source of the natives.
-  // Without the natives we cannot continue, so this function contains
-  // release mode asserts and won't return if it fails.
-  static void LoadV8NativesFromFile(
-      base::File natives_file,
-      base::MemoryMappedFile::Region* natives_file_region);
 
 #if defined(OS_ANDROID)
-  static base::FilePath GetNativesFilePath();
   static base::FilePath GetSnapshotFilePath(
       bool abi_32_bit,
       V8SnapshotFileType snapshot_file_type);

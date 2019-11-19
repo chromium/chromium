@@ -8,11 +8,19 @@
 // for the main thread / worker thread.
 
 #include "third_party/blink/renderer/modules/peerconnection/rtc_quic_transport_test.h"
-
+#include "base/containers/span.h"
+#include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_array_buffer.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_quic_transport_stats.h"
 #include "third_party/blink/renderer/core/dom/dom_high_res_time_stamp.h"
+#include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
+#include "third_party/blink/renderer/modules/peerconnection/adapters/p2p_quic_transport.h"
+#include "third_party/blink/renderer/modules/peerconnection/adapters/p2p_quic_transport_stats.h"
 #include "third_party/blink/renderer/modules/peerconnection/adapters/test/mock_p2p_quic_packet_transport.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_ice_gather_options.h"
+#include "third_party/blink/renderer/modules/peerconnection/rtc_ice_transport.h"
+#include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/webrtc/rtc_base/rtc_certificate_generator.h"
 
 namespace blink {
@@ -40,6 +48,10 @@ constexpr char kRemoteFingerprintValue1[] =
 const size_t kKeyLength = 16;
 const uint8_t kKey[kKeyLength] = {0, 1, 2,  3,  4,  5,  6,  7,
                                   8, 9, 10, 11, 12, 13, 14, 15};
+// Arbitrary datagram.
+const size_t kDatagramLength = 4;
+const uint8_t kDatagram[kDatagramLength] = {0, 1, 2, 3};
+const uint16_t kMaxDatagramLengthBytes = 1000;
 
 RTCDtlsFingerprint* CreateRemoteFingerprint1() {
   RTCDtlsFingerprint* dtls_fingerprint = RTCDtlsFingerprint::Create();
@@ -54,6 +66,20 @@ RTCQuicParameters* CreateRemoteRTCQuicParameters1() {
   RTCQuicParameters* quic_parameters = RTCQuicParameters::Create();
   quic_parameters->setFingerprints(fingerprints);
   return quic_parameters;
+}
+
+// Sends datagrams without getting callbacks that they have been sent on the
+// network until the buffer becomes full.
+void FillDatagramBuffer(RTCQuicTransport* transport) {
+  for (size_t i = 0; i < kMaxBufferedSendDatagrams; ++i) {
+    transport->sendDatagram(DOMArrayBuffer::Create(kDatagram, kDatagramLength),
+                            ASSERT_NO_EXCEPTION);
+  }
+}
+
+static base::span<uint8_t> SpanFromDOMArrayBuffer(DOMArrayBuffer* buffer) {
+  return base::span<uint8_t>(static_cast<uint8_t*>(buffer->Data()),
+                             buffer->ByteLengthAsSizeT());
 }
 
 }  // namespace
@@ -100,7 +126,9 @@ RTCQuicTransport* RTCQuicTransportTest::CreateConnectedQuicTransport(
   quic_transport->start(CreateRemoteRTCQuicParameters1(), ASSERT_NO_EXCEPTION);
   RunUntilIdle();
   DCHECK(delegate);
-  delegate->OnConnected();
+  P2PQuicNegotiatedParams params;
+  params.set_max_datagram_length(kMaxDatagramLengthBytes);
+  delegate->OnConnected(params);
   RunUntilIdle();
   DCHECK_EQ("connected", quic_transport->state());
   if (delegate_out) {
@@ -416,7 +444,7 @@ TEST_F(RTCQuicTransportTest, ConnectPassesPreSharedKey) {
       CreateQuicTransport(scope, ice_transport, {}, std::move(mock_transport));
   DOMArrayBuffer* key = quic_transport->getKey();
   std::string pre_shared_key(static_cast<const char*>(key->Data()),
-                             key->ByteLength());
+                             key->ByteLengthAsSizeT());
 
   EXPECT_CALL(*mock_transport_ptr, MockStart(_))
       .WillOnce(
@@ -631,7 +659,7 @@ TEST_F(RTCQuicTransportTest, GetKeyReturnsValidKey) {
       CreateQuicTransport(scope, ice_transport, {}, std::move(mock_transport));
   auto* key = quic_transport->getKey();
 
-  EXPECT_GE(key->ByteLength(), 16u);
+  EXPECT_GE(key->ByteLengthAsSizeT(), 16u);
 }
 
 // Test that stats are converted correctly to the RTCQuicTransportStats
@@ -671,6 +699,7 @@ TEST_F(RTCQuicTransportTest, OnStatsConvertsRTCStatsDictionary) {
   stats.blocked_frames_received = 20;
   stats.blocked_frames_sent = 21;
   stats.connectivity_probing_packets_received = 22;
+  stats.num_datagrams_lost = 23;
   EXPECT_CALL(*mock_transport_ptr, GetStats()).WillOnce(Return(stats));
   ScriptPromise stats_promise =
       quic_transport->getStats(scope.GetScriptState(), ASSERT_NO_EXCEPTION);
@@ -742,6 +771,8 @@ TEST_F(RTCQuicTransportTest, OnStatsConvertsRTCStatsDictionary) {
   ASSERT_TRUE(rtc_quic_stats->hasConnectivityProbingPacketsReceived());
   EXPECT_EQ(stats.connectivity_probing_packets_received,
             rtc_quic_stats->connectivityProbingPacketsReceived());
+  ASSERT_TRUE(rtc_quic_stats->hasNumDatagramsLost());
+  EXPECT_EQ(stats.num_datagrams_lost, rtc_quic_stats->numDatagramsLost());
 }
 
 // Test that all promises are rejected if the connection closes before
@@ -812,4 +843,328 @@ TEST_F(RTCQuicTransportTest, FailedStateGetStatsRaisesInvalidStateError) {
   EXPECT_EQ(DOMExceptionCode::kInvalidStateError,
             scope.GetExceptionState().CodeAs<DOMExceptionCode>());
 }
+
+// Test that the max datagram length is updated properly when the transport
+// becomes connected.
+TEST_F(RTCQuicTransportTest, MaxDatagramLengthComesFromNegotiatedParams) {
+  V8TestingScope scope;
+  Persistent<RTCIceTransport> ice_transport = CreateIceTransport(scope);
+  ice_transport->start(CreateRemoteRTCIceParameters1(), "controlling",
+                       ASSERT_NO_EXCEPTION);
+  P2PQuicTransport::Delegate* delegate = nullptr;
+  auto mock_transport = std::make_unique<MockP2PQuicTransport>();
+  Persistent<RTCQuicTransport> quic_transport =
+      CreateQuicTransport(scope, ice_transport, GenerateLocalRTCCertificates(),
+                          std::move(mock_transport), &delegate);
+  quic_transport->start(CreateRemoteRTCQuicParameters1(), ASSERT_NO_EXCEPTION);
+  RunUntilIdle();
+  P2PQuicNegotiatedParams params;
+  uint16_t max_datagram_length = 10;
+  params.set_max_datagram_length(max_datagram_length);
+  delegate->OnConnected(params);
+  RunUntilIdle();
+  ASSERT_EQ("connected", quic_transport->state());
+  bool is_null;
+  EXPECT_EQ(max_datagram_length, quic_transport->maxDatagramLength(is_null));
+  EXPECT_FALSE(is_null);
+}
+
+// Test that sending a datagram after the buffer is full will raise a
+// kInvalidStateError.
+TEST_F(RTCQuicTransportTest, SendingWhenNotReadyRaisesInvalidStateError) {
+  V8TestingScope scope;
+
+  P2PQuicTransport::Delegate* delegate = nullptr;
+  Persistent<RTCQuicTransport> quic_transport =
+      CreateConnectedQuicTransport(scope, &delegate);
+  DCHECK(delegate);
+
+  FillDatagramBuffer(quic_transport);
+  RunUntilIdle();
+
+  quic_transport->sendDatagram(
+      DOMArrayBuffer::Create(kDatagram, kDatagramLength),
+      scope.GetExceptionState());
+  EXPECT_EQ(DOMExceptionCode::kInvalidStateError,
+            scope.GetExceptionState().CodeAs<DOMExceptionCode>());
+}
+
+// Test that calling readyToSend before the last promise has resolved raises a
+// kInvalidStateError.
+TEST_F(RTCQuicTransportTest, ReadyToSendTwiceRaisesInvalidStateError) {
+  V8TestingScope scope;
+
+  P2PQuicTransport::Delegate* delegate = nullptr;
+  Persistent<RTCQuicTransport> quic_transport =
+      CreateConnectedQuicTransport(scope, &delegate);
+  DCHECK(delegate);
+
+  FillDatagramBuffer(quic_transport);
+  RunUntilIdle();
+
+  quic_transport->readyToSendDatagram(scope.GetScriptState(),
+                                      ASSERT_NO_EXCEPTION);
+  quic_transport->readyToSendDatagram(scope.GetScriptState(),
+                                      scope.GetExceptionState());
+  EXPECT_EQ(DOMExceptionCode::kInvalidStateError,
+            scope.GetExceptionState().CodeAs<DOMExceptionCode>());
+}
+
+// Test that readyToSend promise will be pending until transport is no longer
+// congestion control blocked.
+TEST_F(RTCQuicTransportTest, ReadyToSendPromiseResolvesWhenReady) {
+  V8TestingScope scope;
+
+  P2PQuicTransport::Delegate* delegate = nullptr;
+  Persistent<RTCQuicTransport> quic_transport =
+      CreateConnectedQuicTransport(scope, &delegate);
+  DCHECK(delegate);
+  FillDatagramBuffer(quic_transport);
+  RunUntilIdle();
+
+  ScriptPromise promise = quic_transport->readyToSendDatagram(
+      scope.GetScriptState(), ASSERT_NO_EXCEPTION);
+  EXPECT_EQ(v8::Promise::kPending,
+            promise.V8Value().As<v8::Promise>()->State());
+
+  delegate->OnDatagramSent();
+  RunUntilIdle();
+  EXPECT_EQ(v8::Promise::kFulfilled,
+            promise.V8Value().As<v8::Promise>()->State());
+}
+
+// Test that the pending readyToSend proimise will be rejected if stop() is
+// called.
+TEST_F(RTCQuicTransportTest, ReadyToSendPromiseRejectedWithStop) {
+  V8TestingScope scope;
+
+  P2PQuicTransport::Delegate* delegate = nullptr;
+  Persistent<RTCQuicTransport> quic_transport =
+      CreateConnectedQuicTransport(scope, &delegate);
+  DCHECK(delegate);
+  FillDatagramBuffer(quic_transport);
+  RunUntilIdle();
+
+  ScriptPromise promise = quic_transport->readyToSendDatagram(
+      scope.GetScriptState(), ASSERT_NO_EXCEPTION);
+  EXPECT_EQ(v8::Promise::kPending,
+            promise.V8Value().As<v8::Promise>()->State());
+  quic_transport->stop();
+  RunUntilIdle();
+
+  EXPECT_EQ(v8::Promise::kRejected,
+            promise.V8Value().As<v8::Promise>()->State());
+}
+
+// Test that the pending readyToSend proimise will be rejected if stop() is
+// called on the RTCIceTransport.
+TEST_F(RTCQuicTransportTest, ReadyToSendPromiseRejectedWithIceStop) {
+  V8TestingScope scope;
+
+  P2PQuicTransport::Delegate* delegate = nullptr;
+  Persistent<RTCQuicTransport> quic_transport =
+      CreateConnectedQuicTransport(scope, &delegate);
+  DCHECK(delegate);
+  FillDatagramBuffer(quic_transport);
+  RunUntilIdle();
+
+  ScriptPromise promise = quic_transport->readyToSendDatagram(
+      scope.GetScriptState(), ASSERT_NO_EXCEPTION);
+  EXPECT_EQ(v8::Promise::kPending,
+            promise.V8Value().As<v8::Promise>()->State());
+  quic_transport->transport()->stop();
+  RunUntilIdle();
+
+  EXPECT_EQ(v8::Promise::kRejected,
+            promise.V8Value().As<v8::Promise>()->State());
+}
+
+// Test that the pending readyToSend proimise will be rejected if connection
+// fails.
+TEST_F(RTCQuicTransportTest, ReadyToSendPromiseRejectedWithFailedConnection) {
+  V8TestingScope scope;
+
+  P2PQuicTransport::Delegate* delegate = nullptr;
+  Persistent<RTCQuicTransport> quic_transport =
+      CreateConnectedQuicTransport(scope, &delegate);
+  DCHECK(delegate);
+  FillDatagramBuffer(quic_transport);
+  RunUntilIdle();
+
+  ScriptPromise promise = quic_transport->readyToSendDatagram(
+      scope.GetScriptState(), ASSERT_NO_EXCEPTION);
+  EXPECT_EQ(v8::Promise::kPending,
+            promise.V8Value().As<v8::Promise>()->State());
+  delegate->OnConnectionFailed("test_failure", /*from_remote=*/false);
+  RunUntilIdle();
+
+  EXPECT_EQ(v8::Promise::kRejected,
+            promise.V8Value().As<v8::Promise>()->State());
+}
+
+// Test that the pending readyToSend proimise will be rejected if the remote
+// side stops.
+TEST_F(RTCQuicTransportTest, ReadyToSendPromiseRejectedWithRemoteStop) {
+  V8TestingScope scope;
+
+  P2PQuicTransport::Delegate* delegate = nullptr;
+  Persistent<RTCQuicTransport> quic_transport =
+      CreateConnectedQuicTransport(scope, &delegate);
+  DCHECK(delegate);
+  FillDatagramBuffer(quic_transport);
+  RunUntilIdle();
+
+  ScriptPromise promise = quic_transport->readyToSendDatagram(
+      scope.GetScriptState(), ASSERT_NO_EXCEPTION);
+  EXPECT_EQ(v8::Promise::kPending,
+            promise.V8Value().As<v8::Promise>()->State());
+  delegate->OnRemoteStopped();
+  RunUntilIdle();
+
+  EXPECT_EQ(v8::Promise::kRejected,
+            promise.V8Value().As<v8::Promise>()->State());
+}
+
+// Test that the pending receiveDatagrams proimise will be rejected if
+// connection fails.
+TEST_F(RTCQuicTransportTest,
+       ReceiveDatagramsPromiseRejectedWithFailedConnection) {
+  V8TestingScope scope;
+
+  P2PQuicTransport::Delegate* delegate = nullptr;
+  Persistent<RTCQuicTransport> quic_transport =
+      CreateConnectedQuicTransport(scope, &delegate);
+  DCHECK(delegate);
+  ScriptPromise promise = quic_transport->receiveDatagrams(
+      scope.GetScriptState(), ASSERT_NO_EXCEPTION);
+  EXPECT_EQ(v8::Promise::kPending,
+            promise.V8Value().As<v8::Promise>()->State());
+  delegate->OnConnectionFailed("test_failure", /*from_remote=*/false);
+  RunUntilIdle();
+
+  EXPECT_EQ(v8::Promise::kRejected,
+            promise.V8Value().As<v8::Promise>()->State());
+}
+
+// Test that the pending receiveDatagrams proimise will be rejected if
+// connection fails.
+TEST_F(RTCQuicTransportTest, ReceiveDatagramsPromiseRejectedWithRemoteStop) {
+  V8TestingScope scope;
+
+  P2PQuicTransport::Delegate* delegate = nullptr;
+  Persistent<RTCQuicTransport> quic_transport =
+      CreateConnectedQuicTransport(scope, &delegate);
+  DCHECK(delegate);
+
+  ScriptPromise promise = quic_transport->receiveDatagrams(
+      scope.GetScriptState(), ASSERT_NO_EXCEPTION);
+  EXPECT_EQ(v8::Promise::kPending,
+            promise.V8Value().As<v8::Promise>()->State());
+  delegate->OnRemoteStopped();
+  RunUntilIdle();
+
+  EXPECT_EQ(v8::Promise::kRejected,
+            promise.V8Value().As<v8::Promise>()->State());
+}
+
+// Test that calling receiveDatagrams before the last promise has resolved
+// raises a kInvalidStateError.
+TEST_F(RTCQuicTransportTest, ReceiveDatagramsTwiceRaisesInvalidStateError) {
+  V8TestingScope scope;
+
+  P2PQuicTransport::Delegate* delegate = nullptr;
+  Persistent<RTCQuicTransport> quic_transport =
+      CreateConnectedQuicTransport(scope, &delegate);
+  DCHECK(delegate);
+
+  quic_transport->receiveDatagrams(scope.GetScriptState(), ASSERT_NO_EXCEPTION);
+  quic_transport->receiveDatagrams(scope.GetScriptState(),
+                                   scope.GetExceptionState());
+  EXPECT_EQ(DOMExceptionCode::kInvalidStateError,
+            scope.GetExceptionState().CodeAs<DOMExceptionCode>());
+}
+
+// Test that if datagrams are buffered before asking for a receiveDatagrams
+// promise, that calling receiveDatagrams will return a promise immediately
+// resolved with buffered datagrams.
+TEST_F(RTCQuicTransportTest, ReceiveBufferedDatagrams) {
+  V8TestingScope scope;
+
+  P2PQuicTransport::Delegate* delegate = nullptr;
+  Persistent<RTCQuicTransport> quic_transport =
+      CreateConnectedQuicTransport(scope, &delegate);
+  DCHECK(delegate);
+
+  delegate->OnDatagramReceived({1, 2, 3});
+  delegate->OnDatagramReceived({4, 5, 6});
+  delegate->OnDatagramReceived({7, 8, 9});
+  RunUntilIdle();
+
+  ScriptPromise promise = quic_transport->receiveDatagrams(
+      scope.GetScriptState(), ASSERT_NO_EXCEPTION);
+  EXPECT_EQ(v8::Promise::kFulfilled,
+            promise.V8Value().As<v8::Promise>()->State());
+  HeapVector<Member<DOMArrayBuffer>> received_datagrams =
+      NativeValueTraits<IDLSequence<DOMArrayBuffer>>::NativeValue(
+          scope.GetIsolate(), promise.V8Value().As<v8::Promise>()->Result(),
+          ASSERT_NO_EXCEPTION);
+
+  ASSERT_EQ(3u, received_datagrams.size());
+  EXPECT_THAT(SpanFromDOMArrayBuffer(received_datagrams[0]),
+              ElementsAre(1, 2, 3));
+  EXPECT_THAT(SpanFromDOMArrayBuffer(received_datagrams[1]),
+              ElementsAre(4, 5, 6));
+  EXPECT_THAT(SpanFromDOMArrayBuffer(received_datagrams[2]),
+              ElementsAre(7, 8, 9));
+}
+
+// Test that if datagrams are dropped once we have buffered the max amount.
+TEST_F(RTCQuicTransportTest, ReceiveBufferedDatagramsLost) {
+  V8TestingScope scope;
+
+  auto mock_transport = std::make_unique<MockP2PQuicTransport>();
+  MockP2PQuicTransport* mock_transport_ptr = mock_transport.get();
+  P2PQuicTransport::Delegate* delegate = nullptr;
+  Persistent<RTCQuicTransport> quic_transport =
+      CreateConnectedQuicTransport(scope, std::move(mock_transport), &delegate);
+  DCHECK(delegate);
+
+  size_t num_dropped_datagrams = 5;
+  size_t num_received_datagrams =
+      kMaxBufferedRecvDatagrams + num_dropped_datagrams;
+  for (size_t i = 0; i < num_received_datagrams; ++i) {
+    delegate->OnDatagramReceived({1});
+  }
+  RunUntilIdle();
+
+  ScriptPromise received_datagrams_promise = quic_transport->receiveDatagrams(
+      scope.GetScriptState(), ASSERT_NO_EXCEPTION);
+  ASSERT_EQ(v8::Promise::kFulfilled,
+            received_datagrams_promise.V8Value().As<v8::Promise>()->State());
+  HeapVector<Member<DOMArrayBuffer>> received_datagrams =
+      NativeValueTraits<IDLSequence<DOMArrayBuffer>>::NativeValue(
+          scope.GetIsolate(),
+          received_datagrams_promise.V8Value().As<v8::Promise>()->Result(),
+          ASSERT_NO_EXCEPTION);
+
+  EXPECT_CALL(*mock_transport_ptr, GetStats())
+      .WillOnce(Return(P2PQuicTransportStats()));
+  ScriptPromise stats_promise =
+      quic_transport->getStats(scope.GetScriptState(), ASSERT_NO_EXCEPTION);
+  RunUntilIdle();
+  ASSERT_EQ(v8::Promise::kFulfilled,
+            stats_promise.V8Value().As<v8::Promise>()->State());
+
+  RTCQuicTransportStats* rtc_quic_stats =
+      NativeValueTraits<RTCQuicTransportStats>::NativeValue(
+          scope.GetIsolate(),
+          stats_promise.V8Value().As<v8::Promise>()->Result(),
+          ASSERT_NO_EXCEPTION);
+
+  EXPECT_EQ(kMaxBufferedRecvDatagrams, received_datagrams.size());
+  ASSERT_TRUE(rtc_quic_stats->hasNumReceivedDatagramsDropped());
+  EXPECT_EQ(num_dropped_datagrams,
+            rtc_quic_stats->numReceivedDatagramsDropped());
+}
+
 }  // namespace blink

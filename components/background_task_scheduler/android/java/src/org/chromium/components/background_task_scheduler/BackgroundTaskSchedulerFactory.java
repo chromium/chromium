@@ -6,14 +6,16 @@ package org.chromium.components.background_task_scheduler;
 
 import android.os.Build;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.VisibleForTesting;
 
 /**
  * A factory for {@link BackgroundTaskScheduler} that ensures there is only ever a single instance.
  */
 public final class BackgroundTaskSchedulerFactory {
-    private static BackgroundTaskScheduler sInstance;
+    private static BackgroundTaskScheduler sBackgroundTaskScheduler;
+    private static BackgroundTaskFactory sBackgroundTaskFactory;
 
     static BackgroundTaskSchedulerDelegate getSchedulerDelegateForSdk(int sdkInt) {
         if (sdkInt >= Build.VERSION_CODES.M) {
@@ -29,16 +31,35 @@ public final class BackgroundTaskSchedulerFactory {
      */
     public static BackgroundTaskScheduler getScheduler() {
         ThreadUtils.assertOnUiThread();
-        if (sInstance == null) {
-            sInstance = new BackgroundTaskSchedulerImpl(
-                    getSchedulerDelegateForSdk(Build.VERSION.SDK_INT));
+        if (sBackgroundTaskScheduler == null) {
+            sBackgroundTaskScheduler = new BackgroundTaskSchedulerImpl(
+                    getSchedulerDelegateForSdk(Build.VERSION.SDK_INT),
+                    new BackgroundTaskSchedulerAlarmManager());
         }
-        return sInstance;
+        return sBackgroundTaskScheduler;
     }
 
     @VisibleForTesting
-    public static void setSchedulerForTesting(BackgroundTaskScheduler scheduler) {
-        sInstance = scheduler;
+    public static void setSchedulerForTesting(BackgroundTaskScheduler backgroundTaskScheduler) {
+        sBackgroundTaskScheduler = backgroundTaskScheduler;
+    }
+
+    /**
+     * @param taskId id of the scheduled task.
+     * @return instance of the {@link BackgroundTask} that implements the functionality for the
+     * task id.
+     */
+    public static BackgroundTask getBackgroundTaskFromTaskId(int taskId) {
+        assert sBackgroundTaskFactory != null;
+        return sBackgroundTaskFactory.getBackgroundTaskFromTaskId(taskId);
+    }
+
+    /**
+     * @param backgroundTaskFactory specific implementation of {@link BackgroundTaskFactory} of
+     * the caller.
+     */
+    public static void setBackgroundTaskFactory(BackgroundTaskFactory backgroundTaskFactory) {
+        sBackgroundTaskFactory = backgroundTaskFactory;
     }
 
     // Do not instantiate.

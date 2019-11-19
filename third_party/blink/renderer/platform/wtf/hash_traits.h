@@ -27,7 +27,7 @@
 #include <memory>
 #include <type_traits>
 #include <utility>
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/hash_functions.h"
 #include "third_party/blink/renderer/platform/wtf/hash_table_deleted_value_type.h"
@@ -57,7 +57,10 @@ struct GenericHashTraitsBase<false, T> {
 
 // The starting table size. Can be overridden when we know beforehand that a
 // hash table will have at least N entries.
-#if defined(MEMORY_SANITIZER_INITIAL_SIZE)
+#if defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
+  // The allocation pool for nodes is one big chunk that ASAN has no insight
+  // into, so it can cloak errors. Make it as small as possible to force nodes
+  // to be allocated individually where ASAN can see them.
   static const unsigned kMinimumTableSize = 1;
 #else
   static const unsigned kMinimumTableSize = 8;
@@ -83,10 +86,13 @@ struct GenericHashTraitsBase<false, T> {
     static const bool value = !std::is_pod<T>::value;
   };
 
-  static const WeakHandlingFlag kWeakHandlingFlag =
-      IsWeak<T>::value ? kWeakHandling : kNoWeakHandling;
-
   static constexpr bool kCanHaveDeletedValue = true;
+
+  // The kHasMovingCallback value is only used for HashTable backing stores.
+  // Currently it is needed for LinkedHashSet to register moving callback on
+  // write barrier. Users of this value have to provide RegisterMovingCallback
+  // function.
+  static constexpr bool kHasMovingCallback = false;
 };
 
 // Default integer traits disallow both 0 and -1 as keys (max value instead of
@@ -397,6 +403,10 @@ struct KeyValuePair {
   ValueTypeArg value;
 };
 
+template <typename K, typename V>
+struct IsWeak<KeyValuePair<K, V>>
+    : std::integral_constant<bool, IsWeak<K>::value || IsWeak<V>::value> {};
+
 template <typename KeyTraitsArg, typename ValueTraitsArg>
 struct KeyValuePairHashTraits
     : GenericHashTraits<KeyValuePair<typename KeyTraitsArg::TraitType,
@@ -430,12 +440,6 @@ struct KeyValuePairHashTraits
         KeyTraits::template NeedsToForbidGCOnMove<>::value ||
         ValueTraits::template NeedsToForbidGCOnMove<>::value;
   };
-
-  static const WeakHandlingFlag kWeakHandlingFlag =
-      (KeyTraits::kWeakHandlingFlag == kWeakHandling ||
-       ValueTraits::kWeakHandlingFlag == kWeakHandling)
-          ? kWeakHandling
-          : kNoWeakHandling;
 
   static const unsigned kMinimumTableSize = KeyTraits::kMinimumTableSize;
 

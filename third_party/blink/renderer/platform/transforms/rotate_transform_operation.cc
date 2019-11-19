@@ -24,6 +24,20 @@
 #include "third_party/blink/renderer/platform/geometry/blend.h"
 
 namespace blink {
+namespace {
+TransformOperation::OperationType GetTypeForRotation(const Rotation& rotation) {
+  float x = rotation.axis.X();
+  float y = rotation.axis.Y();
+  float z = rotation.axis.Z();
+  if (x && !y && !z)
+    return TransformOperation::kRotateX;
+  if (y && !x && !z)
+    return TransformOperation::kRotateY;
+  if (z && !x && !y)
+    return TransformOperation::kRotateZ;
+  return TransformOperation::kRotate3D;
+}
+}  // namespace
 
 bool RotateTransformOperation::operator==(
     const TransformOperation& other) const {
@@ -42,6 +56,15 @@ bool RotateTransformOperation::GetCommonAxis(const RotateTransformOperation* a,
   return Rotation::GetCommonAxis(a ? a->rotation_ : Rotation(),
                                  b ? b->rotation_ : Rotation(), result_axis,
                                  result_angle_a, result_angle_b);
+}
+
+scoped_refptr<TransformOperation> RotateTransformOperation::Accumulate(
+    const TransformOperation& other) {
+  DCHECK(IsMatchingOperationType(other.GetType()));
+  Rotation new_rotation =
+      Rotation::Add(rotation_, ToRotateTransformOperation(other).rotation_);
+  return RotateTransformOperation::Create(new_rotation,
+                                          GetTypeForRotation(new_rotation));
 }
 
 scoped_refptr<TransformOperation> RotateTransformOperation::Blend(

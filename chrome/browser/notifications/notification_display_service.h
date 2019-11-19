@@ -48,7 +48,7 @@ class NotificationDisplayService : public KeyedService {
   virtual void Display(
       NotificationHandler::Type notification_type,
       const message_center::Notification& notification,
-      std::unique_ptr<NotificationCommon::Metadata> metadata = nullptr) = 0;
+      std::unique_ptr<NotificationCommon::Metadata> metadata) = 0;
 
   // Closes the notification having |notification_id| of |notification_type|.
   virtual void Close(NotificationHandler::Type notification_type,

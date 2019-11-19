@@ -11,9 +11,7 @@
 #include "base/macros.h"
 #include "net/socket/client_socket_factory.h"
 
-namespace base {
 class FuzzedDataProvider;
-}
 
 namespace net {
 
@@ -33,7 +31,7 @@ class FuzzedSocketFactory : public ClientSocketFactory {
   // creates. Other objects can also continue to consume |data_provider|, as
   // long as their calls into it are made on the CLientSocketFactory's thread
   // and the calls are deterministic.
-  explicit FuzzedSocketFactory(base::FuzzedDataProvider* data_provider);
+  explicit FuzzedSocketFactory(FuzzedDataProvider* data_provider);
   ~FuzzedSocketFactory() override;
 
   std::unique_ptr<DatagramClientSocket> CreateDatagramClientSocket(
@@ -48,10 +46,10 @@ class FuzzedSocketFactory : public ClientSocketFactory {
       const NetLogSource& source) override;
 
   std::unique_ptr<SSLClientSocket> CreateSSLClientSocket(
+      SSLClientContext* context,
       std::unique_ptr<StreamSocket> stream_socket,
       const HostPortPair& host_and_port,
-      const SSLConfig& ssl_config,
-      const SSLClientSocketContext& context) override;
+      const SSLConfig& ssl_config) override;
 
   std::unique_ptr<ProxyClientSocket> CreateProxyClientSocket(
       std::unique_ptr<StreamSocket> stream_socket,
@@ -63,7 +61,6 @@ class FuzzedSocketFactory : public ClientSocketFactory {
       bool using_spdy,
       NextProto negotiated_protocol,
       ProxyDelegate* proxy_delegate,
-      bool is_https_proxy,
       const NetworkTrafficAnnotationTag& traffic_annotation) override;
 
   // Sets whether Connect()ions on returned sockets can be asynchronously
@@ -71,7 +68,7 @@ class FuzzedSocketFactory : public ClientSocketFactory {
   void set_fuzz_connect_result(bool v) { fuzz_connect_result_ = v; }
 
  private:
-  base::FuzzedDataProvider* data_provider_;
+  FuzzedDataProvider* data_provider_;
   bool fuzz_connect_result_;
 
   DISALLOW_COPY_AND_ASSIGN(FuzzedSocketFactory);

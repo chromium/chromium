@@ -47,12 +47,10 @@ class DestinationEnumerator {
   void store_dest(cups_dest_t* dest) { dests_.emplace_back(dest); }
 
   // Returns the collected destinations.
-  std::vector<std::unique_ptr<cups_dest_t, DestinationDeleter>>& get_dests() {
-    return dests_;
-  }
+  std::vector<ScopedDestination>& get_dests() { return dests_; }
 
  private:
-  std::vector<std::unique_ptr<cups_dest_t, DestinationDeleter>> dests_;
+  std::vector<ScopedDestination> dests_;
 
   DISALLOW_COPY_AND_ASSIGN(DestinationEnumerator);
 };
@@ -124,7 +122,7 @@ std::vector<CupsPrinter> CupsConnection::GetDests() {
   auto dests = std::move(enumerator.get_dests());
   std::vector<CupsPrinter> printers;
   for (auto& dest : dests) {
-    printers.emplace_back(cups_http_.get(), std::move(dest), nullptr);
+    printers.emplace_back(cups_http_.get(), std::move(dest));
   }
 
   return printers;
@@ -139,10 +137,8 @@ std::unique_ptr<CupsPrinter> CupsConnection::GetPrinter(
   if (!dest)
     return nullptr;
 
-  cups_dinfo_t* info = cupsCopyDestInfo(cups_http_.get(), dest);
-  return std::make_unique<CupsPrinter>(
-      cups_http_.get(), std::unique_ptr<cups_dest_t, DestinationDeleter>(dest),
-      std::unique_ptr<cups_dinfo_t, DestInfoDeleter>(info));
+  return std::make_unique<CupsPrinter>(cups_http_.get(),
+                                       ScopedDestination(dest));
 }
 
 bool CupsConnection::GetJobs(const std::vector<std::string>& printer_ids,
@@ -159,8 +155,8 @@ bool CupsConnection::GetJobs(const std::vector<std::string>& printer_ids,
     temp_queues.emplace_back();
     QueueStatus* queue_status = &temp_queues.back();
 
-    if (!GetPrinterStatus(cups_http_.get(), id,
-                          &queue_status->printer_status)) {
+    if (!printing::GetPrinterStatus(cups_http_.get(), id,
+                                    &queue_status->printer_status)) {
       LOG(WARNING) << "Could not retrieve printer status for " << id;
       return false;
     }
@@ -180,6 +176,16 @@ bool CupsConnection::GetJobs(const std::vector<std::string>& printer_ids,
   queues->insert(queues->end(), temp_queues.begin(), temp_queues.end());
 
   return true;
+}
+
+bool CupsConnection::GetPrinterStatus(const std::string& printer_id,
+                                      PrinterStatus* printer_status) {
+  if (!Connect()) {
+    LOG(ERROR) << "Could not establish connection to CUPS";
+    return false;
+  }
+  return printing::GetPrinterStatus(cups_http_.get(), printer_id,
+                                    printer_status);
 }
 
 std::string CupsConnection::server_name() const {

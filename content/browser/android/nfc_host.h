@@ -7,6 +7,8 @@
 
 #include "base/android/jni_android.h"
 #include "content/public/browser/web_contents.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "services/device/public/mojom/nfc_provider.mojom.h"
 
 namespace content {
@@ -19,7 +21,7 @@ class NFCHost {
   explicit NFCHost(WebContents* web_contents);
   ~NFCHost();
 
-  void GetNFC(device::mojom::NFCRequest request);
+  void GetNFC(mojo::PendingReceiver<device::mojom::NFC> receiver);
 
  private:
   // This instance's ID (passed to the NFC implementation via |nfc_provider_|
@@ -29,9 +31,7 @@ class NFCHost {
   // The WebContents that owns this instance.
   WebContents* web_contents_;
 
-  device::mojom::NFCProviderPtr nfc_provider_;
-
-  base::android::ScopedJavaGlobalRef<jobject> java_nfc_host_;
+  mojo::Remote<device::mojom::NFCProvider> nfc_provider_;
 
   DISALLOW_COPY_AND_ASSIGN(NFCHost);
 };

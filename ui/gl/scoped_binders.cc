@@ -164,6 +164,9 @@ ScopedBufferBinder::ScopedBufferBinder(unsigned int target, unsigned int id)
       case GL_ARRAY_BUFFER:
         target_getter = GL_ARRAY_BUFFER_BINDING;
         break;
+      case GL_PIXEL_UNPACK_BUFFER:
+        target_getter = GL_PIXEL_UNPACK_BUFFER_BINDING;
+        break;
       default:
         NOTIMPLEMENTED() << " Target not supported.";
     }

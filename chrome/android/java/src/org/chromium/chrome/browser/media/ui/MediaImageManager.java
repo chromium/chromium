@@ -8,13 +8,13 @@ import android.graphics.Bitmap;
 import android.graphics.Rect;
 import android.text.TextUtils;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.FileUtils;
-import org.chromium.base.VisibleForTesting;
 import org.chromium.content_public.browser.ImageDownloadCallback;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.services.media_session.MediaImage;
 
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
@@ -57,13 +57,6 @@ public class MediaImageManager implements ImageDownloadCallback {
     @VisibleForTesting
     static final int MAX_BITMAP_SIZE_FOR_DOWNLOAD = 2048;
 
-    private static final Object LOCK = new Object();
-
-    // Map from file extension to type score.
-    private static HashMap<String, Double> sFileExtentionScores;
-    // Map from MIME type to type score.
-    private static HashMap<String, Double> sMIMETypeScores;
-
     private WebContents mWebContents;
     // The minimum image size. Images that are smaller than |mMinimumSize| will be ignored.
     final int mMinimumSize;
@@ -88,26 +81,6 @@ public class MediaImageManager implements ImageDownloadCallback {
      * @param idealSize The ideal size of images to download.
      */
     public MediaImageManager(int minimumSize, int idealSize) {
-        synchronized (LOCK) {
-            if (sFileExtentionScores == null) {
-                sFileExtentionScores = new HashMap<String, Double>();
-                sFileExtentionScores.put("bmp", TYPE_SCORE_BMP);
-                sFileExtentionScores.put("gif", TYPE_SCORE_GIF);
-                sFileExtentionScores.put("icon", TYPE_SCORE_XICON);
-                sFileExtentionScores.put("jpeg", TYPE_SCORE_JPEG);
-                sFileExtentionScores.put("jpg", TYPE_SCORE_JPEG);
-                sFileExtentionScores.put("png", TYPE_SCORE_PNG);
-            }
-            if (sMIMETypeScores == null) {
-                sMIMETypeScores = new HashMap<String, Double>();
-                sMIMETypeScores.put("image/bmp", TYPE_SCORE_BMP);
-                sMIMETypeScores.put("image/gif", TYPE_SCORE_GIF);
-                sMIMETypeScores.put("image/jpeg", TYPE_SCORE_JPEG);
-                sMIMETypeScores.put("image/png", TYPE_SCORE_PNG);
-                sMIMETypeScores.put("image/x-icon", TYPE_SCORE_XICON);
-            }
-        }
-
         mMinimumSize = minimumSize;
         mIdealSize = idealSize;
         clearRequests();
@@ -246,11 +219,18 @@ public class MediaImageManager implements ImageDownloadCallback {
     private double getImageTypeScore(String url, String type) {
         String extension = FileUtils.getExtension(url);
 
-        if (sFileExtentionScores.containsKey(extension)) {
-            return sFileExtentionScores.get(extension);
+        if ("bmp".equals(extension) || "image/bmp".equals(type)) {
+            return TYPE_SCORE_BMP;
+        } else if ("gif".equals(extension) || "image/gif".equals(type)) {
+            return TYPE_SCORE_GIF;
+        } else if ("icon".equals(extension) || "image/x-icon".equals(type)) {
+            return TYPE_SCORE_XICON;
+        } else if ("png".equals(extension) || "image/png".equals(type)) {
+            return TYPE_SCORE_PNG;
+        } else if ("jpeg".equals(extension) || "jpg".equals(extension)
+                || "image/jpeg".equals(type)) {
+            return TYPE_SCORE_JPEG;
         }
-        if (sMIMETypeScores.containsKey(type)) return sMIMETypeScores.get(type);
-
         return TYPE_SCORE_DEFAULT;
     }
 }

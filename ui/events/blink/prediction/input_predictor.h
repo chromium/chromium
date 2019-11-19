@@ -23,6 +23,14 @@ class InputPredictor {
   struct InputData {
     gfx::PointF pos;
     base::TimeTicks time_stamp;
+    InputData() {
+      pos = gfx::PointF();
+      time_stamp = base::TimeTicks();
+    }
+    InputData(const gfx::PointF& event_pos, const base::TimeTicks& event_time) {
+      pos = event_pos;
+      time_stamp = event_time;
+    }
   };
 
   // Returns the name of the predictor.
@@ -38,19 +46,37 @@ class InputPredictor {
   virtual bool HasPrediction() const = 0;
 
   // Generate the prediction based on current points.
-  virtual bool GeneratePrediction(base::TimeTicks predict_time,
-                                  bool is_resampling,
-                                  InputData* result) const = 0;
+  virtual std::unique_ptr<InputData> GeneratePrediction(
+      base::TimeTicks predict_time) const = 0;
+
+  // Returns the maximum of prediction available for resampling
+  // before having side effects (jitter, wrong orientation, etc..)
+  const base::TimeDelta MaxResampleTime() const { return kMaxResampleTime; }
+
+  // Returns the maximum prediction time available for the predictor
+  // before having side effects (jitter, wrong orientation, etc..)
+  const base::TimeDelta MaxPredictionTime() const { return kMaxPredictionTime; }
+
+  // Return the time interval based on current points.
+  virtual base::TimeDelta TimeInterval() const = 0;
 
  protected:
   static constexpr base::TimeDelta kMaxTimeDelta =
       base::TimeDelta::FromMilliseconds(20);
-  // When event is jammed in OS or browser, we might have events with invalid
-  // timestamp. To avoid getting inaccurate result, limit the resampling time
-  // delta to 20 ms. This value might change if we have better timestamp or
-  // do better in predicting.
+
+  // Default time interval between events.
+  static constexpr base::TimeDelta kTimeInterval =
+      base::TimeDelta::FromMilliseconds(8);
+  // Minimum time interval between events.
+  static constexpr base::TimeDelta kMinTimeInterval =
+      base::TimeDelta::FromMillisecondsD(2.5);
+
+  // Maximum amount of prediction when resampling.
   static constexpr base::TimeDelta kMaxResampleTime =
       base::TimeDelta::FromMilliseconds(20);
+  // Maximum time delta for prediction.
+  static constexpr base::TimeDelta kMaxPredictionTime =
+      base::TimeDelta::FromMilliseconds(25);
 };
 
 }  // namespace ui

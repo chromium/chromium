@@ -9,6 +9,7 @@ import android.content.res.Configuration;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.annotations.CalledByNative;
+import org.chromium.base.annotations.NativeMethods;
 
 /**
  * Android part of NearOomMonitor. This collects Java memory pressure signals
@@ -32,11 +33,14 @@ class NearOomMonitor implements ComponentCallbacks2 {
 
     @Override
     public void onLowMemory() {
-        nativeOnLowMemory(mNearOomMonitor);
+        NearOomMonitorJni.get().onLowMemory(mNearOomMonitor, NearOomMonitor.this);
     }
 
     @Override
     public void onConfigurationChanged(Configuration config) {}
 
-    private native void nativeOnLowMemory(long nativeNearOomMonitor);
+    @NativeMethods
+    interface Natives {
+        void onLowMemory(long nativeNearOomMonitor, NearOomMonitor caller);
+    }
 }

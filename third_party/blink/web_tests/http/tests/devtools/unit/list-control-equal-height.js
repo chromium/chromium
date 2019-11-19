@@ -118,7 +118,7 @@
   dumpList();
 
   TestRunner.addResult('Resizing');
-  list.element.style.height = '84px';
+  list.element.style.height = '83px';
   list.viewportResized();
   dumpList();
 

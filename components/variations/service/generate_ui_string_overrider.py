@@ -33,7 +33,7 @@ class HashCollisionError(Error):
 Resource = collections.namedtuple("Resource", ['hash', 'name', 'index'])
 
 
-def _HashName(name):
+def HashName(name):
   """Returns the hash id for a name.
 
   Args:
@@ -76,7 +76,7 @@ def _GetResourceListFromString(resources_content):
   Returns:
     A sorted list of |Resource| objects.
   """
-  resources = [Resource(_HashName(name), name, index) for name, index in
+  resources = [Resource(HashName(name), name, index) for name, index in
                _GetNameIndexPairsIter(resources_content)]
 
   # Deduplicate resources. Some name-index pairs appear in both chromium_ and

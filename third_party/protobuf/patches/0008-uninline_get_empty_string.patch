@@ -1,31 +1,28 @@
-diff --git a/src/google/protobuf/message_lite.cc b/src/google/protobuf/message_lite.cc
-index 123b142d..329b475c 100644
---- a/src/google/protobuf/message_lite.cc
-+++ b/src/google/protobuf/message_lite.cc
-@@ -400,6 +400,10 @@ void SetProto3PreserveUnknownsDefault(bool preserve) {
-   proto3_preserve_unknown_ = preserve;
+--- a/src/google/protobuf/generated_message_util.cc
++++ b/src/google/protobuf/generated_message_util.cc
+@@ -83,6 +83,11 @@ void InitProtobufDefaults() {
+   (void)is_inited;
  }
  
-+const ::std::string& GetEmptyString() {
-+  ::google::protobuf::GoogleOnceInit(&empty_string_once_init_, &InitEmptyString);
++const std::string& GetEmptyString() {
++  InitProtobufDefaults();
 +  return GetEmptyStringAlreadyInited();
 +}
++
+ size_t StringSpaceUsedExcludingSelfLong(const std::string& str) {
+   const void* start = &str;
+   const void* end = &str + 1;
+--- a/src/google/protobuf/generated_message_util.h
++++ b/src/google/protobuf/generated_message_util.h
+@@ -84,10 +84,7 @@ inline To DownCast(From& f) {
+ PROTOBUF_EXPORT void InitProtobufDefaults();
  
- }  // namespace internal
- 
-diff --git a/src/google/protobuf/message_lite.h b/src/google/protobuf/message_lite.h
-index 4cbec330..e9dda7e7 100644
---- a/src/google/protobuf/message_lite.h
-+++ b/src/google/protobuf/message_lite.h
-@@ -137,10 +137,7 @@ LIBPROTOBUF_EXPORT inline const ::std::string& GetEmptyStringAlreadyInited() {
-   return fixed_address_empty_string.get();
- }
- 
--LIBPROTOBUF_EXPORT inline const ::std::string& GetEmptyString() {
--  ::google::protobuf::GoogleOnceInit(&empty_string_once_init_, &InitEmptyString);
+ // This used by proto1
+-PROTOBUF_EXPORT inline const std::string& GetEmptyString() {
+-  InitProtobufDefaults();
 -  return GetEmptyStringAlreadyInited();
 -}
-+LIBPROTOBUF_EXPORT const ::std::string& GetEmptyString();
++PROTOBUF_EXPORT const ::std::string& GetEmptyString();
  
- LIBPROTOBUF_EXPORT size_t StringSpaceUsedExcludingSelfLong(const string& str);
- #endif  // SWIG
+ 
+ // True if IsInitialized() is true for all elements of t.  Type is expected

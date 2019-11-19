@@ -23,6 +23,10 @@ if (current_cpu == "arm" || current_cpu == "arm64") {
   import("//build/config/arm.gni")
 }
 
+if (is_mac) {
+  import("//build/config/mac/symbols.gni")
+}
+
 declare_args() {
   # How many symbols to include in the build. This affects the performance of
   # the build since the symbols are large and dealing with them is slow.
@@ -59,6 +63,10 @@ declare_args() {
   # also http://blog.llvm.org/2016/06/thinlto-scalable-and-incremental-lto.html
   use_thin_lto = is_cfi || (is_android && is_official_build)
 
+  # Limit the number of jobs (threads/processes) the linker is allowed
+  # to use (for linkers that support this).
+  max_jobs_per_link = 8
+
   # Tell VS to create a PDB that references information in .obj files rather
   # than copying it all. This should improve linker performance. mspdbcmf.exe
   # can be used to convert a fastlink pdb to a normal one.
@@ -74,6 +82,11 @@ declare_args() {
   # It's currently not possible to collect AFDO profiles on anything but
   # x86{,_64}.
   using_mismatched_sample_profile = current_cpu != "x64" && current_cpu != "x86"
+
+  # Whether an error should be raised on attempts to make debug builds with
+  # is_component_build=false. Very large debug symbols can have unwanted side
+  # effects so this is enforced by default for chromium.
+  forbid_non_component_debug_builds = build_with_chromium
 }
 
 assert(!is_cfi || use_thin_lto, "CFI requires ThinLTO")
@@ -84,8 +97,8 @@ assert(!is_cfi || use_thin_lto, "CFI requires ThinLTO")
 # which doesn't use Crashpad, crbug.com/479283) builds it's useful to be able
 # to unwind at runtime.
 exclude_unwind_tables =
-    (is_chrome_branded && is_official_build) ||
-    (is_chromecast && !is_cast_desktop_build && !is_debug && !is_fuchsia)
+    is_official_build || (is_chromecast && !is_cast_desktop_build &&
+                          !is_debug && !cast_is_debug && !is_fuchsia)
 
 # If true, optimize for size. Does not affect windows builds.
 # Linux & Mac favor speed over size.
@@ -128,7 +141,10 @@ if (is_mac || is_ios || is_linux) {
       # but overall shrinks binaries considerably by avoiding huge unwind
       # tables.
       (current_cpu == "x86" && !exclude_unwind_tables && optimize_for_size) ||
-      using_sanitizer
+      using_sanitizer ||
+      # For caller-callee instrumentation version which needs frame pointers to
+      # get the caller address.
+      use_call_graph
 } else {
   # Explicitly ask for frame pointers, otherwise:
   # * Stacks may be missing for sanitizer and profiling builds.
@@ -170,12 +186,7 @@ declare_args() {
 
 declare_args() {
   # Set to true to use lld, the LLVM linker.
-  # https://crbug.com/911658 for using lld on 32-bit linux.
-  # https://crbug.com/917504 for arm chromeos
-  use_lld = is_clang &&
-            (is_win || is_fuchsia || is_android ||
-             (is_linux && target_os != "chromeos" && current_cpu != "x86") ||
-             (target_os == "chromeos" && current_cpu != "arm"))
+  use_lld = is_clang && (!is_ios && !is_mac)
 }
 
 declare_args() {
@@ -188,6 +199,19 @@ declare_args() {
                      current_cpu == "mipsel" || current_cpu == "mips64el")) ||
        (is_android && (current_cpu == "x86" || current_cpu == "x64" ||
                        current_cpu == "arm" || current_cpu == "arm64")))
+
+  # Use relative paths for debug info. This is important to make the build
+  # results independent of the checkout and build directory names, which
+  # in turn is important for goma compile hit rate.
+  # Setting this to true may make it harder to debug binaries on Linux, see
+  # https://chromium.googlesource.com/chromium/src/+/master/docs/linux_debugging.md#Source-level-debug-with-fdebug_compilation_dir
+  # It's not clear if the crash server will correctly handle dSYMs with relative
+  # paths, so we disable this feature for official benefit. The main benefit is
+  # deterministic builds to reduce compile times, so this is less relevant for
+  # official builders.
+  strip_absolute_paths_from_debug_symbols =
+      is_android || is_fuchsia || is_nacl || (is_win && use_lld) || is_linux ||
+      (is_mac && !enable_dsyms)
 }
 
 # If it wasn't manually set, set to an appropriate default.
@@ -198,31 +222,29 @@ if (symbol_level == -1) {
     # Reduce symbol level when it will cause invalid elf files to be created
     # (due to file size). https://crbug.com/648948.
     symbol_level = 1
-  } else if (is_win && use_goma && !is_clang) {
-    # goma doesn't support PDB files, so we disable symbols during goma
-    # compilation because otherwise the redundant debug information generated
-    # by visual studio (repeated in every .obj file) makes linker
-    # memory consumption and link times unsustainable (crbug.com/630074).
-    # Clang on windows does not have this issue.
-    # If you use is_win_fastlink = true or lld or clang then you can set
-    # symbol_level = 2 when using goma.
-    symbol_level = 1
   } else if (is_cros_chrome_sdk) {
     # Use lower symbol level in Simple Chrome build for faster link time.
     # For Simple Chrome, this should take precedence over is_official_build,
     # turned on by --internal.
-    symbol_level = 1
-  } else if ((!is_nacl && !is_linux && !is_fuchsia) || is_debug ||
-             is_official_build || is_chromecast) {
-    # Linux builds slower by having symbols as part of the target binary,
-    # whereas Mac and Windows have them separate, so in Release Linux, default
-    # them off, but keep them on for Official builds and Chromecast builds.
-    symbol_level = 2
+    if ((target_cpu == "x64" || target_cpu == "x86") && !is_debug) {
+      # For release x86/x64 build, specify symbol_level=0 for faster link time.
+      # x86/x64 shows backtraces with symbol_level=0 (arm requires
+      # symbol_level=1).
+      symbol_level = 0
+    } else {
+      symbol_level = 1
+    }
   } else if (using_sanitizer) {
     # Sanitizers need line table info for stack traces. They don't need type
     # info or variable info, so we can leave that out to speed up the build.
     # Sanitizers also require symbols for filename suppressions to work.
     symbol_level = 1
+  } else if ((!is_nacl && !is_linux && !is_fuchsia && current_os != "aix") ||
+             is_debug || is_official_build || is_chromecast) {
+    # Linux builds slower by having symbols as part of the target binary,
+    # whereas Mac and Windows have them separate, so in Release Linux, default
+    # them off, but keep them on for Official builds and Chromecast builds.
+    symbol_level = 2
   } else {
     symbol_level = 0
   }
@@ -233,6 +255,18 @@ if (symbol_level == -1) {
            "VC++ goma builds that use symbol_level 2 must use " +
                "is_win_fastlink or use_lld.")
   }
+}
+
+# Non-component debug builds with symbol_level = 2 are an undesirable (very slow
+# build times) and unsupported (some test binaries will fail with > 4 GB PDBs)
+# combination. This is only checked when current_toolchain == default_toolchain
+# because the is_component_build flag is set to false in various components of
+# the build (like nacl) and we don't want to assert on those.
+# iOS does not support component builds so add an exception for this platform.
+if (forbid_non_component_debug_builds) {
+  assert(symbol_level != 2 || current_toolchain != default_toolchain ||
+             is_component_build || !is_debug || is_ios,
+         "Can't do non-component debug builds at symbol_level=2")
 }
 
 # Assert that the configuration isn't going to hit https://crbug.com/648948.

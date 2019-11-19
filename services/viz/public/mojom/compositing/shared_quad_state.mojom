@@ -1,0 +1,46 @@
+// Copyright 2016 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module viz.mojom;
+
+import "ui/gfx/geometry/mojom/geometry.mojom";
+import "ui/gfx/mojom/rrect_f.mojom";
+import "ui/gfx/mojom/transform.mojom";
+
+// See viz::SharedQuadState.
+struct SharedQuadState {
+  // gfx.mojom.Transforms quad rects into the target content space.
+  gfx.mojom.Transform quad_to_target_transform;
+
+  // The rect of the quads' originating layer in the space of the quad rects.
+  gfx.mojom.Rect quad_layer_rect;
+
+  // The size of the visible area in the quads' originating layer, in the space
+  // of the quad rects.
+  gfx.mojom.Rect visible_quad_layer_rect;
+
+  // This rect lives in the target content space. It defines the corner radius
+  // to clip the quads with.
+  gfx.mojom.RRectF rounded_corner_bounds;
+
+  // This rect lives in the target content space.
+  gfx.mojom.Rect clip_rect;
+
+  bool is_clipped;
+
+  // Indicates whether the quads share this sqs contains opaque content.
+  bool are_contents_opaque;
+
+  float opacity;
+  // TODO(fsamuel): Change this to an SkXfermode enum once native enums are
+  // supported.
+  uint32 blend_mode;
+  int32 sorting_context_id;
+
+  bool is_fast_rounded_corner;
+
+  // The y offset by which to skew quads in this layer. For experimental
+  // de-jelly effect.
+  float de_jelly_delta_y;
+};

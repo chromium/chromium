@@ -13,7 +13,7 @@
 #include "base/observer_list.h"
 #include "base/optional.h"
 #include "base/scoped_observer.h"
-#include "chromeos/dbus/power_manager_client.h"
+#include "chromeos/dbus/power/power_manager_client.h"
 
 namespace ash {
 
@@ -118,7 +118,7 @@ class ASH_EXPORT BacklightsForcedOffSetter
                  chromeos::PowerManagerClient::Observer>
       power_manager_observer_;
 
-  base::WeakPtrFactory<BacklightsForcedOffSetter> weak_ptr_factory_;
+  base::WeakPtrFactory<BacklightsForcedOffSetter> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(BacklightsForcedOffSetter);
 };

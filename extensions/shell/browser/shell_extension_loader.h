@@ -77,7 +77,7 @@ class ShellExtensionLoader : public ExtensionRegistrar::Delegate {
   // LoadExtensionForReload().
   bool did_schedule_reload_ = false;
 
-  base::WeakPtrFactory<ShellExtensionLoader> weak_factory_;
+  base::WeakPtrFactory<ShellExtensionLoader> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ShellExtensionLoader);
 };

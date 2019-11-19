@@ -6,33 +6,27 @@
 #define CHROMECAST_MEDIA_AUDIO_CAST_AUDIO_OUTPUT_STREAM_H_
 
 #include <memory>
+#include <string>
 
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/single_thread_task_runner.h"
 #include "base/threading/thread_checker.h"
 #include "base/timer/timer.h"
+#include "build/build_config.h"
 #include "chromecast/base/task_runner_impl.h"
 #include "chromecast/common/mojom/multiroom.mojom.h"
-#include "chromecast/media/cma/backend/cma_backend.h"
-#include "chromecast/media/cma/base/decoder_buffer_adapter.h"
 #include "media/audio/audio_io.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/audio_timestamp_helper.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "services/service_manager/public/cpp/connector.h"
 
 namespace chromecast {
 namespace media {
 
-enum AudioOutputState {
-  kClosed = 0,
-  kOpened = 1,
-  kStarted = 2,
-  kPendingClose = 3,
-};
-
+class CmaAudioOutputStream;
 class CastAudioManager;
-class MixerServiceConnectionFactory;
 
 // Chromecast implementation of AudioOutputStream.
 // This class forwards to MixerService if valid
@@ -89,11 +83,11 @@ class MixerServiceConnectionFactory;
 //
 // When MixerService is used in place of CMA backend, the state transition is
 // similar but a little simpler.
-// MixerServiceWrapper creates a new MixerServiceConnection at Start() and
-// destroys the MixerServiceConnection at Stop(). When the volume is adjusted
-// between a Stop() and the next Start(), the volume is recorded and then
-// applied to MixerServiceConnection after the MixerServiceConnection is
-// established on the Start() call.
+// MixerServiceWrapper creates a new mixer service connection at Start() and
+// destroys the connection at Stop(). When the volume is adjusted between a
+// Stop() and the next Start(), the volume is recorded and then applied to the
+// mixer service connection after the connection is established on the Start()
+// call.
 
 // TODO(b/117980762): CastAudioOutputStream should be refactored
 // to be more unit test friendly. And the unit tests can be improved.
@@ -109,12 +103,11 @@ class CastAudioOutputStream : public ::media::AudioOutputStream {
   // the |device_id_| is set to kDefaultDeviceId. Valid device_id's are either
   // ::media::AudioDeviceDescription::kDefaultDeviceId or
   // ::media::AudioDeviceDescription::kCommunicationsId.
-  CastAudioOutputStream(
-      CastAudioManager* audio_manager,
-      service_manager::Connector* connector,
-      const ::media::AudioParameters& audio_params,
-      const std::string& device_id_or_group_id,
-      MixerServiceConnectionFactory* mixer_service_connection_factory);
+  CastAudioOutputStream(CastAudioManager* audio_manager,
+                        service_manager::Connector* connector,
+                        const ::media::AudioParameters& audio_params,
+                        const std::string& device_id_or_group_id,
+                        bool use_mixer_service);
   ~CastAudioOutputStream() override;
 
   // ::media::AudioOutputStream implementation.
@@ -124,16 +117,21 @@ class CastAudioOutputStream : public ::media::AudioOutputStream {
   void Stop() override;
   void SetVolume(double volume) override;
   void GetVolume(double* volume) override;
+  void Flush() override;
 
  private:
-  class CmaWrapper;
+  enum class AudioOutputState {
+    kClosed,
+    kOpened,
+    kStarted,
+    kPendingClose,
+  };
+
   class MixerServiceWrapper;
 
   void FinishClose();
   void OnGetMultiroomInfo(const std::string& application_session_id,
                           chromecast::mojom::MultiroomInfoPtr multiroom_info);
-  void InitializeCmaBackend(const std::string& application_session_id,
-                            chromecast::mojom::MultiroomInfoPtr multiroom_info);
 
   double volume_;
   AudioOutputState audio_thread_state_;
@@ -145,9 +143,9 @@ class CastAudioOutputStream : public ::media::AudioOutputStream {
   // |group_id_|s are uuids mapped to session_ids for multizone. Should be an
   // empty string if group_id is unused.
   const std::string group_id_;
-  MixerServiceConnectionFactory* mixer_service_connection_factory_;
-  chromecast::mojom::MultiroomManagerPtr multiroom_manager_;
-  std::unique_ptr<CmaWrapper> cma_wrapper_;
+  const bool use_mixer_service_;
+  mojo::Remote<chromecast::mojom::MultiroomManager> multiroom_manager_;
+  std::unique_ptr<CmaAudioOutputStream> cma_wrapper_;
   std::unique_ptr<MixerServiceWrapper> mixer_service_wrapper_;
 
   // Hold bindings to Start and SetVolume if they were called before Open
@@ -157,6 +155,7 @@ class CastAudioOutputStream : public ::media::AudioOutputStream {
   base::OnceCallback<void()> pending_volume_;
 
   THREAD_CHECKER(audio_thread_checker_);
+  base::WeakPtr<CastAudioOutputStream> audio_weak_this_;
   base::WeakPtrFactory<CastAudioOutputStream> audio_weak_factory_;
 
   DISALLOW_COPY_AND_ASSIGN(CastAudioOutputStream);

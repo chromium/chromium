@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "cc/animation/animation_curve.h"
 #include "cc/animation/animation_export.h"
@@ -19,6 +18,9 @@ namespace cc {
 
 class CC_ANIMATION_EXPORT Keyframe {
  public:
+  Keyframe(const Keyframe&) = delete;
+  Keyframe& operator=(const Keyframe&) = delete;
+
   base::TimeDelta Time() const;
   const TimingFunction* timing_function() const {
     return timing_function_.get();
@@ -32,8 +34,6 @@ class CC_ANIMATION_EXPORT Keyframe {
  private:
   base::TimeDelta time_;
   std::unique_ptr<TimingFunction> timing_function_;
-
-  DISALLOW_COPY_AND_ASSIGN(Keyframe);
 };
 
 class CC_ANIMATION_EXPORT ColorKeyframe : public Keyframe {
@@ -142,7 +142,11 @@ class CC_ANIMATION_EXPORT KeyframedColorAnimationCurve
   // It is required that the keyframes be sorted by time.
   static std::unique_ptr<KeyframedColorAnimationCurve> Create();
 
+  KeyframedColorAnimationCurve(const KeyframedColorAnimationCurve&) = delete;
   ~KeyframedColorAnimationCurve() override;
+
+  KeyframedColorAnimationCurve& operator=(const KeyframedColorAnimationCurve&) =
+      delete;
 
   void AddKeyframe(std::unique_ptr<ColorKeyframe> keyframe);
   void SetTimingFunction(std::unique_ptr<TimingFunction> timing_function) {
@@ -160,16 +164,17 @@ class CC_ANIMATION_EXPORT KeyframedColorAnimationCurve
   // BackgrounColorAnimationCurve implementation
   SkColor GetValue(base::TimeDelta t) const override;
 
+  using Keyframes = std::vector<std::unique_ptr<ColorKeyframe>>;
+  const Keyframes& keyframes_for_testing() const { return keyframes_; }
+
  private:
   KeyframedColorAnimationCurve();
 
   // Always sorted in order of increasing time. No two keyframes have the
   // same time.
-  std::vector<std::unique_ptr<ColorKeyframe>> keyframes_;
+  Keyframes keyframes_;
   std::unique_ptr<TimingFunction> timing_function_;
   double scaled_duration_;
-
-  DISALLOW_COPY_AND_ASSIGN(KeyframedColorAnimationCurve);
 };
 
 class CC_ANIMATION_EXPORT KeyframedFloatAnimationCurve
@@ -178,7 +183,11 @@ class CC_ANIMATION_EXPORT KeyframedFloatAnimationCurve
   // It is required that the keyframes be sorted by time.
   static std::unique_ptr<KeyframedFloatAnimationCurve> Create();
 
+  KeyframedFloatAnimationCurve(const KeyframedFloatAnimationCurve&) = delete;
   ~KeyframedFloatAnimationCurve() override;
+
+  KeyframedFloatAnimationCurve& operator=(const KeyframedFloatAnimationCurve&) =
+      delete;
 
   void AddKeyframe(std::unique_ptr<FloatKeyframe> keyframe);
 
@@ -211,8 +220,6 @@ class CC_ANIMATION_EXPORT KeyframedFloatAnimationCurve
   Keyframes keyframes_;
   std::unique_ptr<TimingFunction> timing_function_;
   double scaled_duration_;
-
-  DISALLOW_COPY_AND_ASSIGN(KeyframedFloatAnimationCurve);
 };
 
 class CC_ANIMATION_EXPORT KeyframedTransformAnimationCurve
@@ -221,7 +228,12 @@ class CC_ANIMATION_EXPORT KeyframedTransformAnimationCurve
   // It is required that the keyframes be sorted by time.
   static std::unique_ptr<KeyframedTransformAnimationCurve> Create();
 
+  KeyframedTransformAnimationCurve(const KeyframedTransformAnimationCurve&) =
+      delete;
   ~KeyframedTransformAnimationCurve() override;
+
+  KeyframedTransformAnimationCurve& operator=(
+      const KeyframedTransformAnimationCurve&) = delete;
 
   void AddKeyframe(std::unique_ptr<TransformKeyframe> keyframe);
   void SetTimingFunction(std::unique_ptr<TimingFunction> timing_function) {
@@ -253,8 +265,6 @@ class CC_ANIMATION_EXPORT KeyframedTransformAnimationCurve
   std::vector<std::unique_ptr<TransformKeyframe>> keyframes_;
   std::unique_ptr<TimingFunction> timing_function_;
   double scaled_duration_;
-
-  DISALLOW_COPY_AND_ASSIGN(KeyframedTransformAnimationCurve);
 };
 
 class CC_ANIMATION_EXPORT KeyframedFilterAnimationCurve
@@ -263,7 +273,11 @@ class CC_ANIMATION_EXPORT KeyframedFilterAnimationCurve
   // It is required that the keyframes be sorted by time.
   static std::unique_ptr<KeyframedFilterAnimationCurve> Create();
 
+  KeyframedFilterAnimationCurve(const KeyframedFilterAnimationCurve&) = delete;
   ~KeyframedFilterAnimationCurve() override;
+
+  KeyframedFilterAnimationCurve& operator=(
+      const KeyframedFilterAnimationCurve&) = delete;
 
   void AddKeyframe(std::unique_ptr<FilterKeyframe> keyframe);
   void SetTimingFunction(std::unique_ptr<TimingFunction> timing_function) {
@@ -290,8 +304,6 @@ class CC_ANIMATION_EXPORT KeyframedFilterAnimationCurve
   std::vector<std::unique_ptr<FilterKeyframe>> keyframes_;
   std::unique_ptr<TimingFunction> timing_function_;
   double scaled_duration_;
-
-  DISALLOW_COPY_AND_ASSIGN(KeyframedFilterAnimationCurve);
 };
 
 class CC_ANIMATION_EXPORT KeyframedSizeAnimationCurve
@@ -300,7 +312,11 @@ class CC_ANIMATION_EXPORT KeyframedSizeAnimationCurve
   // It is required that the keyframes be sorted by time.
   static std::unique_ptr<KeyframedSizeAnimationCurve> Create();
 
+  KeyframedSizeAnimationCurve(const KeyframedSizeAnimationCurve&) = delete;
   ~KeyframedSizeAnimationCurve() override;
+
+  KeyframedSizeAnimationCurve& operator=(const KeyframedSizeAnimationCurve&) =
+      delete;
 
   void AddKeyframe(std::unique_ptr<SizeKeyframe> keyframe);
   void SetTimingFunction(std::unique_ptr<TimingFunction> timing_function) {
@@ -326,8 +342,6 @@ class CC_ANIMATION_EXPORT KeyframedSizeAnimationCurve
   std::vector<std::unique_ptr<SizeKeyframe>> keyframes_;
   std::unique_ptr<TimingFunction> timing_function_;
   double scaled_duration_;
-
-  DISALLOW_COPY_AND_ASSIGN(KeyframedSizeAnimationCurve);
 };
 
 }  // namespace cc

@@ -5,6 +5,8 @@
 '''The 'grit resize' tool.
 '''
 
+from __future__ import print_function
+
 import getopt
 import os
 import sys
@@ -48,7 +50,7 @@ PROJECT_TEMPLATE = '''\
       Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx"
       UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}">
       <File
-        RelativePath=".\[[DIALOG_NAME]].rc">
+        RelativePath=".\\[[DIALOG_NAME]].rc">
       </File>
     </Filter>
   </Files>
@@ -245,6 +247,7 @@ near the top of the file, before you open it in Visual Studio.
     # If this fails then we're not on Windows (or you don't have the required
     # win32all Python libraries installed), so what are you doing mucking
     # about with RC files anyway? :)
+    # pylint: disable=import-error
     import pythoncom
 
     # Create the .vcproj file
@@ -253,7 +256,7 @@ near the top of the file, before you open it in Visual Studio.
       ).replace('[[DIALOG_NAME]]', project_name)
     fname = os.path.join(dir_path, '%s.vcproj' % project_name)
     self.WriteFile(fname, project_text)
-    print "Wrote %s" % fname
+    print("Wrote %s" % fname)
 
     # Create the .rc file
     # Output all <include> nodes since the dialogs might depend on them (e.g.
@@ -277,14 +280,14 @@ near the top of the file, before you open it in Visual Studio.
 
     fname = os.path.join(dir_path, '%s.rc' % project_name)
     self.WriteFile(fname, rc_text, self.GetEncoding())
-    print "Wrote %s" % fname
+    print("Wrote %s" % fname)
 
     # Create the resource.h file
     header_defines = ''.join(rc_header.FormatDefines(grd))
     header_text = HEADER_TEMPLATE.replace('[[DEFINES]]', header_defines)
     fname = os.path.join(dir_path, 'resource.h')
     self.WriteFile(fname, header_text)
-    print "Wrote %s" % fname
+    print("Wrote %s" % fname)
 
   def WriteFile(self, filename, contents, encoding='cp1252'):
     with open(filename, 'wb') as f:

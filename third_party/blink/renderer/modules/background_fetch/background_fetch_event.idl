@@ -7,7 +7,7 @@
 [
     Constructor(DOMString type, BackgroundFetchEventInit init),
     Exposed=ServiceWorker,
-    OriginTrialEnabled=BackgroundFetch
+    RuntimeEnabled=BackgroundFetch
 ] interface BackgroundFetchEvent : ExtendableEvent {
     readonly attribute BackgroundFetchRegistration registration;
 };

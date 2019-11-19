@@ -1414,6 +1414,13 @@ TEST_F(WriteIntoTest, WriteInto) {
   WritesCorrectly(2);
   WritesCorrectly(5000);
 
+  // Validate that WriteInto handles 0-length strings
+  std::string empty;
+  const char kOriginal[] = "original";
+  strncpy(WriteInto(&empty, 1), kOriginal, 0);
+  EXPECT_STREQ("", empty.c_str());
+  EXPECT_EQ(0u, empty.size());
+
   // Validate that WriteInto doesn't modify other strings
   // when using a Copy-on-Write implementation.
   const char kLive[] = "live";

@@ -24,7 +24,7 @@ namespace protocol {
 
 static const int kReadBufferSize = 4096;
 
-MessageReader::MessageReader() : weak_factory_(this) {}
+MessageReader::MessageReader() {}
 MessageReader::~MessageReader() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }

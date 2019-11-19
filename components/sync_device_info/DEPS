@@ -1,0 +1,14 @@
+include_rules = [
+  "+chromeos",
+  "+components/keyed_service",
+  "+components/metrics",
+  "+components/prefs",
+  "+components/sync/base",
+  "+components/sync/driver",
+  "+components/sync/model",
+  "+components/sync/model_impl",
+  "+components/sync/protocol",
+  "+components/sync/test",
+  "+components/version_info",
+  "+ui/base",
+]

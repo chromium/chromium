@@ -12,7 +12,6 @@
 <translation id="2159915644201199628">Tidak dapat menyahkod imej: ' <ph name="IMAGE_NAME" /> '</translation>
 <translation id="2350172092385603347">Penempatan digunakan, tetapi default_locale tidak dinyatakan dalam ketara.</translation>
 <translation id="2576842806987913196">Fail CRX dengan nama ini telah wujud.</translation>
-<translation id="2753617847762399167">Laluan tidak sah (mutlak atau berkaitan dengan '..'): '<ph name="IMAGE_PATH" />'</translation>
 <translation id="2785530881066938471">Tidak dapat memuatkan fail '<ph name="RELATIVE_PATH" />' untuk skrip kandungan. Ia tidak terkod UTF-8.</translation>
 <translation id="2903070246402204397"><ph name="EXTENSION_NAME" /> (ID sambungan "<ph name="EXTENSION_ID" />") disekat oleh pentadbir. <ph name="ADMIN_INFO" /></translation>
 <translation id="2988488679308982380">Tidak dapat memasang pakej: '<ph name="ERROR_CODE" />'</translation>
@@ -38,8 +37,6 @@
 <translation id="5436430103864390185">Tetingkap berbentuk tidak disokong.</translation>
 <translation id="5456409301717116725">Sambungan ini merangkumi fail utama ' <ph name="KEY_PATH" /> '. Anda mungkin tidak mahu melakukannya.</translation>
 <translation id="5486326529110362464">Nilai input untuk kekunci peribadi  mesti wujud.</translation>
-<translation id="5627523580512561598">sambungan <ph name="EXTENSION_NAME" /></translation>
-<translation id="5960890139610307736">ExtensionView: <ph name="EXTENSIONVIEW_TAG_NAME" /></translation>
 <translation id="5972529113578162692">Pentadbir mesin ini memerlukan <ph name="EXTENSION_NAME" /> dipasang. Sambungan ini tidak boleh dinyahpasang.</translation>
 <translation id="6027032947578871493">Produk <ph name="PRODUCT_ID" /> daripada <ph name="VENDOR_NAME" /> tidak diketahui (nombor siri <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="6068932090455285721"><ph name="PRODUCT_NAME" /> daripada vendor <ph name="VENDOR_ID" /></translation>
@@ -51,7 +48,6 @@
 <translation id="6542618148162044354">"<ph name="APP_NAME" />" meminta akses kepada satu atau beberapa peranti anda.</translation>
 <translation id="657064425229075395">Tidak dapat memuatkan skrip latar belakang '<ph name="BACKGROUND_SCRIPT" />'.</translation>
 <translation id="6580950983454333167"><ph name="PRODUCT_NAME" /> daripada <ph name="VENDOR_NAME" /> (nombor siri <ph name="SERIAL_NUMBER" />)</translation>
-<translation id="6731255991101203740">Tidak dapat mencipta direktori untuk menyahzip: '<ph name="DIRECTORY_PATH" />'</translation>
 <translation id="677806580227005219">Mimehandler: <ph name="MIMEHANDLERVIEW_TAG_NAME" /></translation>
 <translation id="6840444547062817500">Sambungan ini terlalu kerap memuat semula sendiri.</translation>
 <translation id="7003844668372540529">Produk <ph name="PRODUCT_ID" /> daripada <ph name="VENDOR_NAME" /> tidak diketahui</translation>

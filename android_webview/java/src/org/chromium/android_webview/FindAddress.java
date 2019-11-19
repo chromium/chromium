@@ -4,7 +4,7 @@
 
 package org.chromium.android_webview;
 
-import org.chromium.base.VisibleForTesting;
+import androidx.annotation.VisibleForTesting;
 
 import java.util.Locale;
 import java.util.regex.MatchResult;
@@ -250,8 +250,9 @@ public class FindAddress {
     private static boolean checkHouseNumber(String houseNumber) {
         // Make sure that there are at most 5 digits.
         int digitCount = 0;
-        for (int i = 0; i < houseNumber.length(); ++i)
+        for (int i = 0; i < houseNumber.length(); ++i) {
             if (Character.isDigit(houseNumber.charAt(i))) ++digitCount;
+        }
         if (digitCount > 5) return false;
 
         // Make sure that any ordinals are valid.
@@ -324,8 +325,9 @@ public class FindAddress {
         if (stateMatch == null) return false;
         // Work out the index of the state, based on which group matched.
         int stateIndex = stateMatch.groupCount();
-        while (stateIndex > 0)
+        while (stateIndex > 0) {
             if (stateMatch.group(stateIndex--) != null) break;
+        }
         return sZipCodeRe.matcher(zipCode).matches()
                 && sStateZipCodeRanges[stateIndex].matches(zipCode);
     }

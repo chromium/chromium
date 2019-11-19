@@ -27,18 +27,15 @@ MediaRemoter::MediaRemoter(
     : client_(client),
       sink_metadata_(sink_metadata),
       message_dispatcher_(message_dispatcher),
-      binding_(this),
       cast_environment_(nullptr),
       transport_(nullptr),
-      state_(MIRRORING),
-      weak_factory_(this) {
+      state_(MIRRORING) {
   DCHECK(client_);
   DCHECK(message_dispatcher_);
 
-  media::mojom::RemoterPtr remoter;
-  binding_.Bind(mojo::MakeRequest(&remoter));
-  client_->ConnectToRemotingSource(std::move(remoter),
-                                   mojo::MakeRequest(&remoting_source_));
+  client_->ConnectToRemotingSource(
+      receiver_.BindNewPipeAndPassRemote(),
+      remoting_source_.BindNewPipeAndPassReceiver());
   remoting_source_->OnSinkAvailable(sink_metadata_.Clone());
 }
 
@@ -94,9 +91,8 @@ void MediaRemoter::OnMirroringResumed() {
 void MediaRemoter::OnRemotingFailed() {
   DCHECK(state_ == STARTING_REMOTING || state_ == REMOTING_STARTED);
   if (state_ == STARTING_REMOTING) {
-    // TODO(xjz): Rename SERVICE_NOT_CONNECTED to INVALID_ANSWER_MESSAGE.
     remoting_source_->OnStartFailed(
-        media::mojom::RemotingStartFailReason::SERVICE_NOT_CONNECTED);
+        media::mojom::RemotingStartFailReason::INVALID_ANSWER_MESSAGE);
   }
   state_ = REMOTING_DISABLED;
   remoting_source_->OnSinkGone();
@@ -136,8 +132,10 @@ void MediaRemoter::Start() {
 void MediaRemoter::StartDataStreams(
     mojo::ScopedDataPipeConsumerHandle audio_pipe,
     mojo::ScopedDataPipeConsumerHandle video_pipe,
-    media::mojom::RemotingDataStreamSenderRequest audio_sender_request,
-    media::mojom::RemotingDataStreamSenderRequest video_sender_request) {
+    mojo::PendingReceiver<media::mojom::RemotingDataStreamSender>
+        audio_sender_receiver,
+    mojo::PendingReceiver<media::mojom::RemotingDataStreamSender>
+        video_sender_receiver) {
   if (state_ != REMOTING_STARTED)
     return;  // Stop() was called before.
   DCHECK(cast_environment_);
@@ -146,7 +144,7 @@ void MediaRemoter::StartDataStreams(
       audio_config_.codec == Codec::CODEC_AUDIO_REMOTE) {
     audio_sender_ = std::make_unique<RemotingSender>(
         cast_environment_, transport_, audio_config_, std::move(audio_pipe),
-        std::move(audio_sender_request),
+        std::move(audio_sender_receiver),
         base::BindOnce(&MediaRemoter::OnRemotingDataStreamError,
                        base::Unretained(this)));
   }
@@ -154,7 +152,7 @@ void MediaRemoter::StartDataStreams(
       video_config_.codec == Codec::CODEC_VIDEO_REMOTE) {
     video_sender_ = std::make_unique<RemotingSender>(
         cast_environment_, transport_, video_config_, std::move(video_pipe),
-        std::move(video_sender_request),
+        std::move(video_sender_receiver),
         base::BindOnce(&MediaRemoter::OnRemotingDataStreamError,
                        base::Unretained(this)));
   }

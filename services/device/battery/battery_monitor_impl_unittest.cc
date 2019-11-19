@@ -10,6 +10,7 @@
 #include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "services/device/battery/battery_status_manager.h"
 #include "services/device/battery/battery_status_service.h"
 #include "services/device/device_service_test_base.h"
@@ -96,7 +97,8 @@ class BatteryMonitorImplTest : public DeviceServiceTestBase {
     battery_manager_ = battery_manager.get();
     battery_service->SetBatteryManagerForTesting(std::move(battery_manager));
 
-    connector()->BindInterface(mojom::kServiceName, &battery_monitor_);
+    connector()->Connect(mojom::kServiceName,
+                         battery_monitor_.BindNewPipeAndPassReceiver());
   }
 
   void TearDown() override {
@@ -110,7 +112,7 @@ class BatteryMonitorImplTest : public DeviceServiceTestBase {
 
   FakeBatteryStatusManager* battery_manager() { return battery_manager_; }
 
-  mojom::BatteryMonitorPtr battery_monitor_;
+  mojo::Remote<mojom::BatteryMonitor> battery_monitor_;
 
  private:
   FakeBatteryStatusManager* battery_manager_;

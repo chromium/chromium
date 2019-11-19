@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<script src="../resources/text-based-repaint.js"></script>
+<script src="../../../resources/run-after-layout-and-paint.js"></script>
+<svg>
+  <marker id="marker" markerUnits="userSpaceOnUse" overflow="visible">
+    <text y="20">PASS if not underlined</text>
+  </marker>
+  <path d="M0,0" marker-end="url(#marker)" fill="none"/>
+</svg>
+<script>
+testIsAsync = true;
+
+onload = runRepaintAndPixelTest;
+
+function repaintTest() {
+  runAfterLayoutAndPaint(() => {
+    document.getElementById("marker").style = "text-decoration: underline";
+
+    runAfterLayoutAndPaint(() => {
+      document.getElementById("marker").style = "";
+      finishRepaintTest();
+    });
+  });
+}
+</script>

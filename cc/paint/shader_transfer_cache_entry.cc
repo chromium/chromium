@@ -8,10 +8,8 @@ namespace cc {
 
 ServiceShaderTransferCacheEntry::ServiceShaderTransferCacheEntry(
     sk_sp<PaintShader> shader,
-    uint32_t raster_color_space_id,
     size_t size)
     : shader_(std::move(shader)),
-      raster_color_space_id_(raster_color_space_id),
       size_(size) {}
 
 ServiceShaderTransferCacheEntry::~ServiceShaderTransferCacheEntry() = default;

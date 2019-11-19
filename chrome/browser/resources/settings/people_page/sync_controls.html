@@ -7,13 +7,12 @@
 <link rel="import" href="sync_browser_proxy.html">
 <link rel="import" href="../route.html">
 <link rel="import" href="../settings_shared_css.html">
-<link rel="import" href="../settings_vars_css.html">
 
 <dom-module id="settings-sync-controls">
   <template>
     <style include="settings-shared">
       #sync-data-types .list-item:not([hidden]) ~ .list-item:not([hidden]) {
-        border-top: var(--settings-separator-line);
+        border-top: var(--cr-separator-line);
       }
 
       .list-item {
@@ -135,6 +134,22 @@
             aria-labelledby="passwordsCheckboxLabel">
         </cr-toggle>
       </div>
+
+<if expr="chromeos">
+      <div class="list-item"
+           hidden="[[!syncPrefs.wifiConfigurationsRegistered]]">
+        <div id="wifiConfigurationsCheckboxLabel">
+          $i18n{wifiConfigurationsCheckboxLabel}
+        </div>
+        <cr-toggle checked="{{syncPrefs.wifiConfigurationsSynced}}"
+            on-change="onSingleSyncDataTypeChanged_"
+            disabled="[[shouldSyncCheckboxBeDisabled_(
+                syncPrefs.syncAllDataTypes,
+                syncPrefs.wifiConfigurationsEnforced)]]"
+            aria-labelledby="wifiConfigurationsCheckboxLabel">
+        </cr-toggle>
+      </div>
+</if>
 
       <div class="list-item" hidden="[[!syncPrefs.autofillRegistered]]">
         <div id="autofillCheckboxLabel">

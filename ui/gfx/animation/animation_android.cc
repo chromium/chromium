@@ -5,7 +5,7 @@
 #include "ui/gfx/animation/animation.h"
 
 #include "base/android/jni_android.h"
-#include "jni/Animation_jni.h"
+#include "ui/gfx/gfx_jni_headers/Animation_jni.h"
 
 using base::android::AttachCurrentThread;
 

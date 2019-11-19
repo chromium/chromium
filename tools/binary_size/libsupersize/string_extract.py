@@ -10,6 +10,9 @@ LookupElfRodataInfo():
 ReadFileChunks():
   Reads raw data from a file, given a list of ranges in the file.
 
+ReadStringLiterals():
+  Reads the ELF file to find the string contents of a list of string literals.
+
 ResolveStringPiecesIndirect():
   BulkForkAndCall() target: Given {path: [string addresses]} and
   [raw_string_data for each string_section]:
@@ -290,3 +293,29 @@ def ResolveStringPieces(encoded_strings_by_path, string_data):
 
   ret = _AnnotateStringData(string_data, GeneratePathAndValues())
   return [concurrent.EncodeDictOfLists(x) for x in ret]
+
+
+def ReadStringLiterals(symbols, elf_path, tool_prefix, all_rodata=False):
+  """Returns an iterable of (symbol, string) for all string literal symbols.
+
+  Args:
+    symbols: An iterable of Symbols
+    elf_path: Path to the executable containing the symbols.
+    all_rodata: Assume every symbol within .rodata that ends with a \0 is a
+         string literal.
+  """
+  address, offset, _ = LookupElfRodataInfo(elf_path, tool_prefix)
+  adjust = offset - address
+  with open(elf_path, 'rb') as f:
+    for symbol in symbols:
+      if symbol.section != 'r':
+        continue
+      f.seek(symbol.address + adjust)
+      data = f.read(symbol.size_without_padding)
+      # As of Oct 2017, there are ~90 symbols name .L.str(.##). These appear
+      # in the linker map file explicitly, and there doesn't seem to be a
+      # pattern as to which variables lose their kConstant name (the more
+      # common case), or which string literals don't get moved to
+      # ** merge strings (less common).
+      if symbol.IsStringLiteral() or (all_rodata and data and data[-1] == '\0'):
+        yield ((symbol, data))

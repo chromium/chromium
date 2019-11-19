@@ -5,6 +5,9 @@
 #include "services/audio/test/mock_log.h"
 
 namespace audio {
-MockLog::MockLog() : binding_(this) {}
+
+MockLog::MockLog() : receiver_(this) {}
+
 MockLog::~MockLog() = default;
+
 }  // namespace audio

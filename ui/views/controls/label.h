@@ -12,7 +12,9 @@
 #include "base/macros.h"
 #include "ui/base/models/simple_menu_model.h"
 #include "ui/gfx/render_text.h"
+#include "ui/gfx/text_constants.h"
 #include "ui/views/context_menu_controller.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/selection_controller_delegate.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/view.h"
@@ -30,8 +32,7 @@ class VIEWS_EXPORT Label : public View,
                            public SelectionControllerDelegate,
                            public ui::SimpleMenuModel::Delegate {
  public:
-  // Internal class name.
-  static const char kViewClassName[];
+  METADATA_HEADER(Label);
 
   // Helper to construct a Label that doesn't use the views typography spec.
   // Using this causes Label to obtain colors from ui::NativeTheme and line
@@ -54,9 +55,13 @@ class VIEWS_EXPORT Label : public View,
 
   // Construct a Label in the given |text_context|. The |text_style| can change
   // later, so provide a default. The |text_context| is fixed.
+  // By default text directionality will be derived from the label text, however
+  // it can be overriden with |directionality_mode|.
   Label(const base::string16& text,
         int text_context,
-        int text_style = style::STYLE_PRIMARY);
+        int text_style = style::STYLE_PRIMARY,
+        gfx::DirectionalityMode directionality_mode =
+            gfx::DirectionalityMode::DIRECTIONALITY_FROM_TEXT);
 
   // Construct a Label with the given |font| description.
   Label(const base::string16& text, const CustomFont& font);
@@ -72,98 +77,116 @@ class VIEWS_EXPORT Label : public View,
   virtual void SetFontList(const gfx::FontList& font_list);
 
   // Get or set the label text.
-  const base::string16& text() const { return full_text_->text(); }
+  const base::string16& GetText() const;
   virtual void SetText(const base::string16& text);
 
   // Where the label appears in the UI. Passed in from the constructor. This is
   // a value from views::style::TextContext or an enum that extends it.
-  int text_context() const { return text_context_; }
+  int GetTextContext() const;
 
   // Enables or disables auto-color-readability (enabled by default).  If this
   // is enabled, then calls to set any foreground or background color will
-  // trigger an automatic mapper that uses
-  // color_utils::GetColorWithMinimumContrast() to ensure that the foreground
-  // colors are readable over the background color.
+  // trigger an automatic mapper that uses color_utils::BlendForMinContrast()
+  // to ensure that the foreground colors are readable over the background
+  // color.
+  bool GetAutoColorReadabilityEnabled() const;
   void SetAutoColorReadabilityEnabled(bool enabled);
 
-  // Sets the color.  This will automatically force the color to be readable
-  // over the current background color, if auto color readability is enabled.
+  // Gets/Sets the color.  This will automatically force the color to be
+  // readable over the current background color, if auto color readability is
+  // enabled.
+  SkColor GetEnabledColor() const;
   virtual void SetEnabledColor(SkColor color);
 
-  SkColor enabled_color() const { return actual_enabled_color_; }
-
-  // Sets the background color. This won't be explicitly drawn, but the label
-  // will force the text color to be readable over it.
+  // Gets/Sets the background color. This won't be explicitly drawn, but the
+  // label will force the text color to be readable over it.
+  SkColor GetBackgroundColor() const;
   void SetBackgroundColor(SkColor color);
-  SkColor background_color() const { return background_color_; }
 
-  // Sets the selection text color. This will automatically force the color to
-  // be readable over the selection background color, if auto color readability
-  // is enabled. Initialized with system default.
+  // Gets/Sets the selection text color. This will automatically force the color
+  // to be readable over the selection background color, if auto color
+  // readability is enabled. Initialized with system default.
+  SkColor GetSelectionTextColor() const;
   void SetSelectionTextColor(SkColor color);
-  SkColor selection_text_color() const { return actual_selection_text_color_; }
 
-  // Sets the selection background color. Initialized with system default.
+  // Gets/Sets the selection background color. Initialized with system default.
+  SkColor GetSelectionBackgroundColor() const;
   void SetSelectionBackgroundColor(SkColor color);
-  SkColor selection_background_color() const {
-    return selection_background_color_;
-  }
 
-  // Set drop shadows underneath the text.
+  // Get/Set drop shadows underneath the text.
+  const gfx::ShadowValues& GetShadows() const;
   void SetShadows(const gfx::ShadowValues& shadows);
-  const gfx::ShadowValues& shadows() const { return full_text_->shadows(); }
 
-  // Sets whether subpixel rendering is used; the default is true, but this
+  // Gets/Sets whether subpixel rendering is used; the default is true, but this
   // feature also requires an opaque background color.
   // TODO(mukai): rename this as SetSubpixelRenderingSuppressed() to keep the
   // consistency with RenderText field name.
+  bool GetSubpixelRenderingEnabled() const;
   void SetSubpixelRenderingEnabled(bool subpixel_rendering_enabled);
 
-  // Sets the horizontal alignment; the argument value is mirrored in RTL UI.
+  // Gets/Sets the horizontal alignment; the argument value is mirrored in RTL
+  // UI.
+  gfx::HorizontalAlignment GetHorizontalAlignment() const;
   void SetHorizontalAlignment(gfx::HorizontalAlignment alignment);
-  gfx::HorizontalAlignment horizontal_alignment() const {
-    return full_text_->horizontal_alignment();
-  }
+
+  // Gets/Sets the vertical alignment. Affects how whitespace is distributed
+  // vertically around the label text, or if the label is not tall enough to
+  // render all of the text, what gets cut off. ALIGN_MIDDLE is default and is
+  // strongly suggested for single-line labels because it produces a consistent
+  // baseline even when rendering with mixed fonts.
+  gfx::VerticalAlignment GetVerticalAlignment() const;
+  void SetVerticalAlignment(gfx::VerticalAlignment alignment);
 
   // Get or set the distance in pixels between baselines of multi-line text.
   // Default is 0, indicating the distance between lines should be the standard
   // one for the label's text, font list, and platform.
-  int line_height() const { return full_text_->min_line_height(); }
+  int GetLineHeight() const;
   void SetLineHeight(int height);
 
   // Get or set if the label text can wrap on multiple lines; default is false.
-  bool multi_line() const { return multi_line_; }
+  bool GetMultiLine() const;
   void SetMultiLine(bool multi_line);
 
   // If multi-line, a non-zero value will cap the number of lines rendered, and
   // elide the rest (currently only ELIDE_TAIL supported). See gfx::RenderText.
-  int max_lines() const { return max_lines_; }
+  int GetMaxLines() const;
   void SetMaxLines(int max_lines);
+
+  // Returns the number of lines required to render all text. The actual number
+  // of rendered lines might be limited by |max_lines_| which elides the rest.
+  size_t GetRequiredLines() const;
 
   // Get or set if the label text should be obscured before rendering (e.g.
   // should "Password!" display as "*********"); default is false.
-  bool obscured() const { return full_text_->obscured(); }
+  bool GetObscured() const;
   void SetObscured(bool obscured);
 
-  // Sets whether multi-line text can wrap mid-word; the default is false.
+  // Returns true if some portion of the text is not displayed, either because
+  // of eliding or clipping.
+  bool IsDisplayTextTruncated() const;
+
+  // Gets/Sets whether multi-line text can wrap mid-word; the default is false.
   // TODO(mukai): allow specifying WordWrapBehavior.
+  bool GetAllowCharacterBreak() const;
   void SetAllowCharacterBreak(bool allow_character_break);
 
-  // Sets the eliding or fading behavior, applied as necessary. The default is
-  // to elide at the end. Eliding is not well-supported for multi-line labels.
+  // Gets/Sets the eliding or fading behavior, applied as necessary. The default
+  // is to elide at the end. Eliding is not well-supported for multi-line
+  // labels.
+  gfx::ElideBehavior GetElideBehavior() const;
   void SetElideBehavior(gfx::ElideBehavior elide_behavior);
-  gfx::ElideBehavior elide_behavior() const { return elide_behavior_; }
 
-  // Sets the tooltip text.  Default behavior for a label (single-line) is to
-  // show the full text if it is wider than its bounds.  Calling this overrides
-  // the default behavior and lets you set a custom tooltip.  To revert to
-  // default behavior, call this with an empty string.
+  // Gets/Sets the tooltip text.  Default behavior for a label (single-line) is
+  // to show the full text if it is wider than its bounds.  Calling this
+  // overrides the default behavior and lets you set a custom tooltip.  To
+  // revert to default behavior, call this with an empty string.
+  base::string16 GetTooltipText() const;
   void SetTooltipText(const base::string16& tooltip_text);
 
   // Get or set whether this label can act as a tooltip handler; the default is
   // true.  Set to false whenever an ancestor view should handle tooltips
   // instead.
-  bool handles_tooltips() const { return handles_tooltips_; }
+  bool GetHandlesTooltips() const;
   void SetHandlesTooltips(bool enabled);
 
   // Resizes the label so its width is set to the fixed width and its height
@@ -176,13 +199,19 @@ class VIEWS_EXPORT Label : public View,
   void SizeToFit(int fixed_width);
 
   // Like SizeToFit, but uses a smaller width if possible.
+  int GetMaximumWidth() const;
   void SetMaximumWidth(int max_width);
 
-  // Sets whether the preferred size is empty when the label is not visible.
-  void set_collapse_when_hidden(bool value) { collapse_when_hidden_ = value; }
+  // Gets/Sets whether the preferred size is empty when the label is not
+  // visible.
+  bool GetCollapseWhenHidden() const;
+  void SetCollapseWhenHidden(bool value);
 
   // Get the text as displayed to the user, respecting the obscured flag.
   base::string16 GetDisplayTextForTesting();
+
+  // Get the text direction, as displayed to the user.
+  base::i18n::TextDirection GetTextDirectionForTesting();
 
   // Returns true if the label can be made selectable. For example, links do not
   // support text selection.
@@ -192,7 +221,7 @@ class VIEWS_EXPORT Label : public View,
   virtual bool IsSelectionSupported() const;
 
   // Returns true if the label is selectable. Default is false.
-  bool selectable() const { return !!selection_controller_; }
+  bool GetSelectable() const;
 
   // Sets whether the label is selectable. False is returned if the call fails,
   // i.e. when selection is not supported but |selectable| is true. For example,
@@ -217,14 +246,12 @@ class VIEWS_EXPORT Label : public View,
   gfx::Size CalculatePreferredSize() const override;
   gfx::Size GetMinimumSize() const override;
   int GetHeightForWidth(int w) const override;
-  void Layout() override;
-  const char* GetClassName() const override;
   View* GetTooltipHandlerForPoint(const gfx::Point& point) override;
   bool CanProcessEventsWithinSubtree() const override;
   WordLookupClient* GetWordLookupClient() override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
-  bool GetTooltipText(const gfx::Point& p,
-                      base::string16* tooltip) const override;
+  base::string16 GetTooltipText(const gfx::Point& p) const override;
+  void OnHandlePropertyChangeEffects(PropertyEffects property_effects) override;
 
  protected:
   // Create a single RenderText instance to actually be painted.
@@ -245,7 +272,7 @@ class VIEWS_EXPORT Label : public View,
   void OnPaint(gfx::Canvas* canvas) override;
   void OnDeviceScaleFactorChanged(float old_device_scale_factor,
                                   float new_device_scale_factor) override;
-  void OnNativeThemeChanged(const ui::NativeTheme* theme) override;
+  void OnThemeChanged() override;
   gfx::NativeCursor GetCursor(const ui::MouseEvent& event) override;
   void OnFocus() override;
   void OnBlur() override;
@@ -264,12 +291,13 @@ class VIEWS_EXPORT Label : public View,
   FRIEND_TEST_ALL_PREFIXES(LabelTest, EmptyLabel);
   FRIEND_TEST_ALL_PREFIXES(LabelTest, FocusBounds);
   FRIEND_TEST_ALL_PREFIXES(LabelTest, MultiLineSizingWithElide);
+  FRIEND_TEST_ALL_PREFIXES(LabelTest, IsDisplayTextTruncated);
   friend class LabelSelectionTest;
 
   // ContextMenuController overrides:
-  void ShowContextMenuForView(View* source,
-                              const gfx::Point& point,
-                              ui::MenuSourceType source_type) override;
+  void ShowContextMenuForViewImpl(View* source,
+                                  const gfx::Point& point,
+                                  ui::MenuSourceType source_type) override;
 
   // WordLookupClient overrides:
   bool GetWordLookupDataAtPoint(const gfx::Point& point,
@@ -302,7 +330,9 @@ class VIEWS_EXPORT Label : public View,
 
   const gfx::RenderText* GetRenderTextForSelectionController() const;
 
-  void Init(const base::string16& text, const gfx::FontList& font_list);
+  void Init(const base::string16& text,
+            const gfx::FontList& font_list,
+            gfx::DirectionalityMode directionality_mode);
 
   void ResetLayout();
 
@@ -323,7 +353,7 @@ class VIEWS_EXPORT Label : public View,
   void ApplyTextColors() const;
 
   // Updates any colors that have not been explicitly set from the theme.
-  void UpdateColorsFromTheme(const ui::NativeTheme* theme);
+  void UpdateColorsFromTheme();
 
   bool ShouldShowDefaultTooltip() const;
 
@@ -368,7 +398,7 @@ class VIEWS_EXPORT Label : public View,
   gfx::ElideBehavior elide_behavior_;
 
   bool subpixel_rendering_enabled_;
-  bool auto_color_readability_;
+  bool auto_color_readability_enabled_;
   // TODO(mukai): remove |multi_line_| when all RenderText can render multiline.
   bool multi_line_;
   int max_lines_;

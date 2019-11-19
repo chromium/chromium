@@ -6,8 +6,8 @@
 
 #include <stddef.h>
 
+#include "base/hash/sha1.h"
 #include "base/metrics/histogram.h"
-#include "base/sha1.h"
 #include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -117,11 +117,11 @@ bool PepperUMAHost::IsHistogramAllowed(const std::string& histogram) {
   }
 
   if (IsPluginWhitelisted() &&
-      base::ContainsKey(allowed_histogram_prefixes_, HashPrefix(histogram))) {
+      base::Contains(allowed_histogram_prefixes_, HashPrefix(histogram))) {
     return true;
   }
 
-  if (base::ContainsKey(allowed_plugin_base_names_, plugin_base_name_.value()))
+  if (base::Contains(allowed_plugin_base_names_, plugin_base_name_.value()))
     return true;
 
   LOG(ERROR) << "Host or histogram name is not allowed to use the UMA API.";

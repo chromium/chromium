@@ -25,6 +25,7 @@
 
 // https://svgwg.org/svg2-draft/shapes.html#InterfaceSVGPolygonElement
 
+[Exposed=Window]
 interface SVGPolygonElement : SVGGeometryElement {
     // TODO(foolip): points and animatedPoints be on the SVGAnimatedPoints
     // interface which SVGPolygonElement should implement:

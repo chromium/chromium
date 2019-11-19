@@ -15,7 +15,6 @@
       "build/fuchsia/.*py",
       "build/get_landmines.py",
       "build/gn_helpers.py",
-      "build/gyp_chromium",
       "build/mac_toolchain.py",
       "build/toolchain/get_concurrent_links.py",
       "build/toolchain/mac/.*py",
@@ -25,10 +24,11 @@
       "DEPS",
       "testing/buildbot/.*json",
       "testing/buildbot/.*pyl",
+      "testing/merge_scripts/.*",
       "testing/scripts/.*",
       "testing/test_env.py",
       "third_party/android_platform/development/scripts/.*",
-      "tools/clang/blink_gc_plugin/CMakeLists.txt"
+      "tools/clang/scripts/process_crashreports.py"
     ],
     "ignores": [
       "infra/config/recipes.cfg",

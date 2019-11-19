@@ -21,6 +21,7 @@
 #include "chromecast/media/cma/base/demuxer_stream_adapter.h"
 #include "chromecast/media/cma/pipeline/media_pipeline_impl.h"
 #include "chromecast/media/cma/pipeline/video_pipeline_client.h"
+#include "chromecast/media/service/video_geometry_setter_service.h"
 #include "chromecast/public/media/media_pipeline_backend.h"
 #include "chromecast/public/media/media_pipeline_device_params.h"
 #include "chromecast/public/volume_control.h"
@@ -58,26 +59,23 @@ void VideoModeSwitchCompletionCb(const ::media::PipelineStatusCB& init_cb,
 CastRenderer::CastRenderer(
     CmaBackendFactory* backend_factory,
     const scoped_refptr<base::SingleThreadTaskRunner>& task_runner,
-    const std::string& audio_device_id,
     VideoModeSwitcher* video_mode_switcher,
     VideoResolutionPolicy* video_resolution_policy,
-    MediaResourceTracker* media_resource_tracker,
+    const base::UnguessableToken& overlay_plane_id,
     service_manager::Connector* connector,
     service_manager::mojom::InterfaceProvider* host_interfaces)
     : backend_factory_(backend_factory),
       task_runner_(task_runner),
-      audio_device_id_(audio_device_id.empty()
-                           ? ::media::AudioDeviceDescription::kDefaultDeviceId
-                           : audio_device_id),
       video_mode_switcher_(video_mode_switcher),
       video_resolution_policy_(video_resolution_policy),
-      media_resource_tracker_(media_resource_tracker),
+      overlay_plane_id_(overlay_plane_id),
       connector_(connector),
       host_interfaces_(host_interfaces),
       client_(nullptr),
       cast_cdm_context_(nullptr),
       media_task_runner_factory_(
           new BalancedMediaTaskRunnerFactory(kMaxDeltaFetcher)),
+      video_geometry_setter_service_(nullptr),
       weak_factory_(this) {
   DCHECK(backend_factory_);
   LOG(INFO) << __FUNCTION__ << ": " << this;
@@ -94,76 +92,105 @@ CastRenderer::~CastRenderer() {
     video_resolution_policy_->RemoveObserver(this);
 }
 
+void CastRenderer::SetVideoGeometrySetterService(
+    VideoGeometrySetterService* video_geometry_setter_service) {
+  video_geometry_setter_service_ = video_geometry_setter_service;
+}
+
 void CastRenderer::Initialize(::media::MediaResource* media_resource,
                               ::media::RendererClient* client,
-                              const ::media::PipelineStatusCB& init_cb) {
+                              ::media::PipelineStatusCallback init_cb) {
   LOG(INFO) << __FUNCTION__ << ": " << this;
   DCHECK(task_runner_->BelongsToCurrentThread());
-  DCHECK(!application_session_id_manager_ptr_);
 
-  // Retrieve application_session_id if it is available via
-  // ApplicationSessionIdManager.
+  init_cb_ = std::move(init_cb);
 
-  // If a CastRenderer is created for a purpose other than a web application,
-  // the ApplicationSessionIdManager interface is not available, and application
-  // session ID will be an empty string.
+  if (video_geometry_setter_service_) {
+    video_geometry_setter_service_->GetVideoGeometryChangeSubscriber(
+        video_geometry_change_subcriber_remote_.BindNewPipeAndPassReceiver());
+    DCHECK(video_geometry_change_subcriber_remote_);
 
-  if (host_interfaces_) {
-    service_manager::GetInterface<::media::mojom::ApplicationSessionIdManager>(
-        host_interfaces_, &application_session_id_manager_ptr_);
-  }
-
-  if (application_session_id_manager_ptr_) {
-    application_session_id_manager_ptr_->GetApplicationSessionId(base::BindOnce(
-        &CastRenderer::OnApplicationSessionIdReceived,
-        weak_factory_.GetWeakPtr(), media_resource, client, init_cb));
+    video_geometry_change_subcriber_remote_->SubscribeToVideoGeometryChange(
+        overlay_plane_id_,
+        video_geometry_change_client_receiver_.BindNewPipeAndPassRemote(),
+        base::BindOnce(&CastRenderer::OnSubscribeToVideoGeometryChange,
+                       base::Unretained(this), media_resource, client));
   } else {
-    OnApplicationSessionIdReceived(media_resource, client, init_cb,
-                                   std::string());
+    OnSubscribeToVideoGeometryChange(media_resource, client);
   }
 }
 
-void CastRenderer::OnApplicationSessionIdReceived(
+void CastRenderer::OnSubscribeToVideoGeometryChange(
+    ::media::MediaResource* media_resource,
+    ::media::RendererClient* client) {
+  DCHECK(task_runner_->BelongsToCurrentThread());
+  DCHECK(!application_media_info_manager_remote_);
+
+  // Retrieve application_media_info_manager_remote_ if it is available via
+  // CastApplicationMediaInfoManager.
+
+  if (host_interfaces_) {
+    host_interfaces_->GetInterface(
+        ::media::mojom::CastApplicationMediaInfoManager::Name_,
+        application_media_info_manager_remote_.BindNewPipeAndPassReceiver()
+            .PassPipe());
+  }
+
+  if (application_media_info_manager_remote_) {
+    application_media_info_manager_remote_->GetCastApplicationMediaInfo(
+        base::BindOnce(&CastRenderer::OnApplicationMediaInfoReceived,
+                       weak_factory_.GetWeakPtr(), media_resource, client));
+  } else {
+    // If a CastRenderer is created for a purpose other than a web application,
+    // the CastApplicationMediaInfoManager interface is not available, and
+    // default CastApplicationMediaInfo value below will be used.
+    OnApplicationMediaInfoReceived(
+        media_resource, client,
+        ::media::mojom::CastApplicationMediaInfo::New(std::string(), true));
+  }
+}
+
+void CastRenderer::OnApplicationMediaInfoReceived(
     ::media::MediaResource* media_resource,
     ::media::RendererClient* client,
-    const ::media::PipelineStatusCB& init_cb,
-    const std::string& application_session_id) {
+    ::media::mojom::CastApplicationMediaInfoPtr application_media_info) {
   DCHECK(task_runner_->BelongsToCurrentThread());
-  if (application_session_id.empty()) {
-    OnGetMultiroomInfo(media_resource, client, init_cb, application_session_id,
+  if (application_media_info->application_session_id.empty()) {
+    OnGetMultiroomInfo(media_resource, client,
+                       std::move(application_media_info),
                        chromecast::mojom::MultiroomInfo::New());
     return;
   }
-  connector_->BindInterface(chromecast::mojom::kChromecastServiceName,
-                            &multiroom_manager_);
-  multiroom_manager_.set_connection_error_handler(
+  connector_->Connect(chromecast::mojom::kChromecastServiceName,
+                      multiroom_manager_.BindNewPipeAndPassReceiver());
+  multiroom_manager_.set_disconnect_handler(
       base::BindOnce(&CastRenderer::OnGetMultiroomInfo, base::Unretained(this),
-                     media_resource, client, init_cb, application_session_id,
+                     media_resource, client, application_media_info.Clone(),
                      chromecast::mojom::MultiroomInfo::New()));
+  std::string session_id = application_media_info->application_session_id;
   multiroom_manager_->GetMultiroomInfo(
-      application_session_id,
-      base::BindOnce(&CastRenderer::OnGetMultiroomInfo, base::Unretained(this),
-                     media_resource, client, init_cb, application_session_id));
+      session_id, base::BindOnce(&CastRenderer::OnGetMultiroomInfo,
+                                 base::Unretained(this), media_resource, client,
+                                 std::move(application_media_info)));
 }
 
 void CastRenderer::OnGetMultiroomInfo(
     ::media::MediaResource* media_resource,
     ::media::RendererClient* client,
-    const ::media::PipelineStatusCB& init_cb,
-    const std::string& application_session_id,
+    ::media::mojom::CastApplicationMediaInfoPtr application_media_info,
     chromecast::mojom::MultiroomInfoPtr multiroom_info) {
   DCHECK(task_runner_->BelongsToCurrentThread());
   DCHECK(multiroom_info);
   LOG(INFO) << __FUNCTION__ << ": " << this
-            << " session_id=" << application_session_id
+            << " session_id=" << application_media_info->application_session_id
+            << ", mixer_audio_enabled="
+            << application_media_info->mixer_audio_enabled
             << ", multiroom=" << multiroom_info->multiroom
             << ", audio_channel=" << multiroom_info->audio_channel;
   // Close the MultiroomManager message pipe so that a connection error does not
   // trigger a second call to this function.
   multiroom_manager_.reset();
   // Create pipeline backend.
-  media_resource_usage_.reset(
-      new MediaResourceTracker::ScopedUsage(media_resource_tracker_));
   backend_task_runner_.reset(new TaskRunnerImpl());
   // TODO(erickung): crbug.com/443956. Need to provide right LoadType.
   LoadType load_type = kLoadTypeMediaSource;
@@ -172,31 +199,16 @@ void CastRenderer::OnGetMultiroomInfo(
           ? MediaPipelineDeviceParams::kModeIgnorePts
           : MediaPipelineDeviceParams::kModeSyncPts;
 
-  AudioContentType content_type;
-  if (audio_device_id_ == kAlarmAudioDeviceId) {
-    content_type = AudioContentType::kAlarm;
-  } else if (audio_device_id_ == kTtsAudioDeviceId ||
-             audio_device_id_ ==
-                 ::media::AudioDeviceDescription::kCommunicationsDeviceId) {
-    content_type = AudioContentType::kCommunication;
-  } else {
-    content_type = AudioContentType::kMedia;
-  }
-  MediaPipelineDeviceParams params(sync_type, backend_task_runner_.get(),
-                                   content_type, audio_device_id_);
+  MediaPipelineDeviceParams params(
+      sync_type, backend_task_runner_.get(), AudioContentType::kMedia,
+      ::media::AudioDeviceDescription::kDefaultDeviceId);
   params.connector = connector_;
-  params.session_id = application_session_id;
+  params.session_id = application_media_info->application_session_id;
   params.multiroom = multiroom_info->multiroom;
   params.audio_channel = multiroom_info->audio_channel;
   params.output_delay_us = multiroom_info->output_delay.InMicroseconds();
-
-  if (audio_device_id_ == kTtsAudioDeviceId ||
-      audio_device_id_ ==
-          ::media::AudioDeviceDescription::kCommunicationsDeviceId) {
-    load_type = kLoadTypeCommunication;
-  } else if (audio_device_id_ == kPlatformAudioDeviceId) {
-    load_type = kLoadTypeMediaStream;
-  }
+  params.pass_through_audio_support_desired =
+      !application_media_info->mixer_audio_enabled;
 
   auto backend = backend_factory_->CreateBackend(params);
 
@@ -235,7 +247,7 @@ void CastRenderer::OnGetMultiroomInfo(
         pipeline_->InitializeAudio(audio_stream->audio_decoder_config(),
                                    audio_client, std::move(frame_provider));
     if (status != ::media::PIPELINE_OK) {
-      init_cb.Run(status);
+      RunInitCallback(status);
       return;
     }
     audio_stream->EnableBitstreamConverter();
@@ -264,7 +276,7 @@ void CastRenderer::OnGetMultiroomInfo(
     ::media::PipelineStatus status = pipeline_->InitializeVideo(
         video_configs, video_client, std::move(frame_provider));
     if (status != ::media::PIPELINE_OK) {
-      init_cb.Run(status);
+      RunInitCallback(status);
       return;
     }
     video_stream->EnableBitstreamConverter();
@@ -282,22 +294,26 @@ void CastRenderer::OnGetMultiroomInfo(
     video_configs.push_back(video_stream->video_decoder_config());
     auto mode_switch_completion_cb =
         base::Bind(&CastRenderer::OnVideoInitializationFinished,
-                   weak_factory_.GetWeakPtr(), init_cb);
+                   weak_factory_.GetWeakPtr());
     video_mode_switcher_->SwitchMode(
         video_configs, base::BindOnce(&VideoModeSwitchCompletionCb,
                                       mode_switch_completion_cb));
   } else if (video_stream) {
     // No mode switch needed.
-    OnVideoInitializationFinished(init_cb, ::media::PIPELINE_OK);
+    OnVideoInitializationFinished(::media::PIPELINE_OK);
   } else {
-    init_cb.Run(::media::PIPELINE_OK);
+    RunInitCallback(::media::PIPELINE_OK);
   }
 }
 
+void CastRenderer::RunInitCallback(::media::PipelineStatus status) {
+  if (init_cb_)
+    std::move(init_cb_).Run(status);
+}
+
 void CastRenderer::OnVideoInitializationFinished(
-    const ::media::PipelineStatusCB& init_cb,
     ::media::PipelineStatus status) {
-  init_cb.Run(status);
+  RunInitCallback(status);
   if (status == ::media::PIPELINE_OK) {
     // Force compositor to treat video as opaque (needed for overlay codepath).
     OnVideoOpacityChange(true);
@@ -305,7 +321,7 @@ void CastRenderer::OnVideoInitializationFinished(
 }
 
 void CastRenderer::SetCdm(::media::CdmContext* cdm_context,
-                          const ::media::CdmAttachedCB& cdm_attached_cb) {
+                          ::media::CdmAttachedCB cdm_attached_cb) {
   DCHECK(task_runner_->BelongsToCurrentThread());
   DCHECK(cdm_context);
 
@@ -319,12 +335,12 @@ void CastRenderer::SetCdm(::media::CdmContext* cdm_context,
     pipeline_->SetCdm(cast_cdm_context);
   }
 
-  cdm_attached_cb.Run(true);
+  std::move(cdm_attached_cb).Run(true);
 }
 
-void CastRenderer::Flush(const base::Closure& flush_cb) {
+void CastRenderer::Flush(base::OnceClosure flush_cb) {
   DCHECK(task_runner_->BelongsToCurrentThread());
-  pipeline_->Flush(flush_cb);
+  pipeline_->Flush(std::move(flush_cb));
 }
 
 void CastRenderer::StartPlayingFrom(base::TimeDelta time) {
@@ -359,6 +375,11 @@ void CastRenderer::OnVideoResolutionPolicyChanged() {
     OnError(::media::PIPELINE_ERROR_DECODE);
 }
 
+void CastRenderer::OnVideoGeometryChange(const gfx::RectF& rect_f,
+                                         gfx::OverlayTransform transform) {
+  GetOverlayCompositedCallback().Run(rect_f, transform);
+}
+
 void CastRenderer::OnError(::media::PipelineStatus status) {
   DCHECK(task_runner_->BelongsToCurrentThread());
   client_->OnError(status);
@@ -380,13 +401,11 @@ void CastRenderer::OnStatisticsUpdate(
   client_->OnStatisticsUpdate(stats);
 }
 
-void CastRenderer::OnBufferingStateChange(::media::BufferingState state) {
+void CastRenderer::OnBufferingStateChange(
+    ::media::BufferingState state,
+    ::media::BufferingStateChangeReason reason) {
   DCHECK(task_runner_->BelongsToCurrentThread());
-  // TODO(alokp): WebMediaPlayerImpl currently only handles HAVE_ENOUGH.
-  // See WebMediaPlayerImpl::OnPipelineBufferingStateChanged,
-  // http://crbug.com/144683.
-  if (state == ::media::BUFFERING_HAVE_ENOUGH)
-    client_->OnBufferingStateChange(state);
+  client_->OnBufferingStateChange(state, reason);
 }
 
 void CastRenderer::OnWaiting(::media::WaitingReason reason) {
@@ -406,6 +425,12 @@ void CastRenderer::OnVideoOpacityChange(bool opaque) {
   DCHECK(task_runner_->BelongsToCurrentThread());
   DCHECK(opaque);
   client_->OnVideoOpacityChange(opaque);
+}
+
+// static
+void CastRenderer::SetOverlayCompositedCallback(
+    const OverlayCompositedCallback& cb) {
+  GetOverlayCompositedCallback() = cb;
 }
 
 }  // namespace media

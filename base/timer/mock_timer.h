@@ -14,7 +14,7 @@ class TestSimpleTaskRunner;
 
 // A mock implementation of base::OneShotTimer which requires being explicitly
 // Fire()'d.
-// Prefer using ScopedTaskEnvironment::MOCK_TIME + FastForward*() to this when
+// Prefer using TaskEnvironment::MOCK_TIME + FastForward*() to this when
 // possible.
 class MockOneShotTimer : public OneShotTimer {
  public:
@@ -34,7 +34,7 @@ class MockOneShotTimer : public OneShotTimer {
 };
 
 // See MockOneShotTimer's comment. Prefer using
-// ScopedTaskEnvironment::MOCK_TIME.
+// TaskEnvironment::MOCK_TIME.
 class MockRepeatingTimer : public RepeatingTimer {
  public:
   MockRepeatingTimer();
@@ -53,7 +53,7 @@ class MockRepeatingTimer : public RepeatingTimer {
 };
 
 // See MockOneShotTimer's comment. Prefer using
-// ScopedTaskEnvironment::MOCK_TIME.
+// TaskEnvironment::MOCK_TIME.
 class MockRetainingOneShotTimer : public RetainingOneShotTimer {
  public:
   MockRetainingOneShotTimer();

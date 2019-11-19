@@ -22,6 +22,8 @@ Line 3
             textarea.focus();
             window.textareaAccessible =
                 accessibilityController.accessibleElementById('textarea');
+            window.emptyTextareaAccessible =
+                accessibilityController.accessibleElementById('textarea-empty');
 
             for (let i = 0; i < 3; ++i) {
                 for (let j = 0; j < 7; ++j) {
@@ -39,14 +41,21 @@ Line 3
 
             let emptyTextarea = document.getElementById('textarea-empty');
             emptyTextarea.focus();
-            // Each textarea has its own independent caret.
+            // Each textarea remembers its own independent selection but
+            // textareas that are not focused don't expose their selection
+            // visually.
+            shouldBe("emptyTextareaAccessible", "textareaAccessible.selectionAnchorObject");
+            shouldBeEqualToNumber("textareaAccessible.selectionAnchorOffset", 0);
+            shouldBe("emptyTextareaAccessible", "textareaAccessible.selectionFocusObject");
+            shouldBeEqualToNumber("textareaAccessible.selectionFocusOffset", 0);
+
+            textarea.focus();
             shouldBe("textareaAccessible", "textareaAccessible.selectionAnchorObject");
             shouldBeEqualToNumber("textareaAccessible.selectionAnchorOffset", 20);
             shouldBe("textareaAccessible", "textareaAccessible.selectionFocusObject");
             shouldBeEqualToNumber("textareaAccessible.selectionFocusOffset", 20);
 
-            window.emptyTextareaAccessible =
-                accessibilityController.accessibleElementById('textarea-empty');
+            emptyTextarea.focus();
             shouldBe("emptyTextareaAccessible", "emptyTextareaAccessible.selectionAnchorObject");
             shouldBeZero("emptyTextareaAccessible.selectionAnchorOffset");
             shouldBe("emptyTextareaAccessible", "emptyTextareaAccessible.selectionFocusObject");

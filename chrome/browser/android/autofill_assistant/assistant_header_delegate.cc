@@ -1,11 +1,11 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/android/autofill_assistant/assistant_header_delegate.h"
 
+#include "chrome/android/features/autofill_assistant/jni_headers/AssistantHeaderDelegate_jni.h"
 #include "chrome/browser/android/autofill_assistant/ui_controller_android.h"
-#include "jni/AssistantHeaderDelegate_jni.h"
 
 using base::android::AttachCurrentThread;
 

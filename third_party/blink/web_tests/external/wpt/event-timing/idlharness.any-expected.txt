@@ -1,7 +1,10 @@
 This is a testharness.js-based test.
 PASS idl_test setup
+PASS idl_test validation
 PASS Partial interface Performance: original interface defined
 PASS Partial interface Performance: valid exposure set
+PASS Partial interface Performance: member names are unique
+PASS Partial interface Performance[2]: member names are unique
 PASS PerformanceEventTiming interface: existence and properties of interface object
 PASS PerformanceEventTiming interface object length
 PASS PerformanceEventTiming interface object name
@@ -11,6 +14,7 @@ PASS PerformanceEventTiming interface: existence and properties of interface pro
 PASS PerformanceEventTiming interface: attribute processingStart
 PASS PerformanceEventTiming interface: attribute processingEnd
 PASS PerformanceEventTiming interface: attribute cancelable
+PASS PerformanceEventTiming interface: operation toJSON()
 FAIL EventCounts interface: existence and properties of interface object assert_own_property: self does not have own property "EventCounts" expected property "EventCounts" missing
 FAIL EventCounts interface object length assert_own_property: self does not have own property "EventCounts" expected property "EventCounts" missing
 FAIL EventCounts interface object name assert_own_property: self does not have own property "EventCounts" expected property "EventCounts" missing

@@ -9,7 +9,7 @@
 namespace offline_pages {
 
 TestScopedOfflineClockOverride::TestScopedOfflineClockOverride(
-    base::Clock* clock) {
+    const base::Clock* clock) {
   SetOfflineClockForTesting(clock);
 }
 

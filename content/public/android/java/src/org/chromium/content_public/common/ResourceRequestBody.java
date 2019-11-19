@@ -6,6 +6,7 @@ package org.chromium.content_public.common;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
+import org.chromium.base.annotations.NativeMethods;
 
 /**
  * Wrapper around the native content::ResourceRequestBody.
@@ -53,17 +54,21 @@ public final class ResourceRequestBody {
      * @param body the HTTP body
      */
     public static ResourceRequestBody createFromBytes(byte[] httpBody) {
-        byte[] encodedNativeForm = nativeCreateResourceRequestBodyFromBytes(httpBody);
+        byte[] encodedNativeForm =
+                ResourceRequestBodyJni.get().createResourceRequestBodyFromBytes(httpBody);
         return createFromEncodedNativeForm(encodedNativeForm);
     }
 
-    /**
-     * Equivalent of the native content::ResourceRequestBody::CreateFromBytes.
-     *
-     * @param body the HTTP body
-     *
-     * @return result of a call to EncodeResourceRequestBody on
-     * ResourceRequestBody created from |httpBody|.
-     */
-    private static native byte[] nativeCreateResourceRequestBodyFromBytes(byte[] httpBody);
+    @NativeMethods
+    interface Natives {
+        /**
+         * Equivalent of the native content::ResourceRequestBody::CreateFromBytes.
+         *
+         * @param body the HTTP body
+         *
+         * @return result of a call to EncodeResourceRequestBody on
+         * ResourceRequestBody created from |httpBody|.
+         */
+        byte[] createResourceRequestBodyFromBytes(byte[] httpBody);
+    }
 }

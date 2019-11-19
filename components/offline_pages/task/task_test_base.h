@@ -5,12 +5,9 @@
 #ifndef COMPONENTS_OFFLINE_PAGES_TASK_TASK_TEST_BASE_H_
 #define COMPONENTS_OFFLINE_PAGES_TASK_TASK_TEST_BASE_H_
 
-#include "testing/gtest/include/gtest/gtest.h"
-
-#include "base/message_loop/message_loop.h"
-#include "base/test/test_mock_time_task_runner.h"
+#include "base/test/task_environment.h"
 #include "components/offline_pages/task/task.h"
-#include "components/offline_pages/task/test_task_runner.h"
+#include "testing/gtest/include/gtest/gtest.h"
 
 namespace offline_pages {
 
@@ -30,15 +27,16 @@ class TaskTestBase : public testing::Test {
   // Task is not cleaned up after completing.
   void RunTask(Task* task);
   void RunUntilIdle();
+  void FastForwardBy(base::TimeDelta delta);
 
-  scoped_refptr<base::TestMockTimeTaskRunner> task_runner() {
-    return task_runner_;
+  scoped_refptr<base::SingleThreadTaskRunner> task_runner() {
+    return task_environment_.GetMainThreadTaskRunner();
   }
 
  private:
-  base::MessageLoopForIO message_loop_;
-  scoped_refptr<base::TestMockTimeTaskRunner> task_runner_;
-  TestTaskRunner test_task_runner_;
+  base::test::SingleThreadTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::MainThreadType::IO,
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 };
 
 }  // namespace offline_pages

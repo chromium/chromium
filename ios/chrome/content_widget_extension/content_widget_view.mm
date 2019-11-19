@@ -193,7 +193,7 @@ const int kRows = 2;
         // Something bad happened when saving the icon. Switch to best effort to
         // show something to the user.
         // kDefaultTextColor = SK_ColorWHITE;
-        site.fallbackTextColor = [UIColor whiteColor];
+        site.fallbackTextColor = UIColor.whiteColor;
         // kDefaultBackgroundColor = SkColorSetRGB(0x78, 0x78, 0x78);
         site.fallbackBackgroundColor = [UIColor colorWithRed:0x78 / 255.0f
                                                        green:0x78 / 255.0f

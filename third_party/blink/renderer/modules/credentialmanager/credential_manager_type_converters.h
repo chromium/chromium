@@ -5,8 +5,10 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_CREDENTIALMANAGER_CREDENTIAL_MANAGER_TYPE_CONVERTERS_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_CREDENTIALMANAGER_CREDENTIAL_MANAGER_TYPE_CONVERTERS_H_
 
-#include "third_party/blink/public/platform/modules/credentialmanager/credential_manager.mojom-blink.h"
-#include "third_party/blink/public/platform/modules/webauthn/authenticator.mojom-blink.h"
+#include "base/optional.h"
+
+#include "third_party/blink/public/mojom/credentialmanager/credential_manager.mojom-blink.h"
+#include "third_party/blink/public/mojom/webauthn/authenticator.mojom-blink-forward.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -61,8 +63,11 @@ struct TypeConverter<blink::mojom::blink::PublicKeyCredentialType, String> {
 };
 
 template <>
-struct TypeConverter<blink::mojom::blink::AuthenticatorTransport, String> {
-  static blink::mojom::blink::AuthenticatorTransport Convert(const String&);
+struct TypeConverter<
+    base::Optional<blink::mojom::blink::AuthenticatorTransport>,
+    String> {
+  static base::Optional<blink::mojom::blink::AuthenticatorTransport> Convert(
+      const String&);
 };
 
 template <>

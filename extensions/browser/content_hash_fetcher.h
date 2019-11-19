@@ -46,11 +46,10 @@ class ContentHashFetcher {
   // A callback for when fetch is complete.
   // The response contents is passed through std::unique_ptr<std::string>.
   using HashFetcherCallback =
-      base::OnceCallback<void(const ContentHash::ExtensionKey&,
+      base::OnceCallback<void(ContentHash::FetchKey,
                               std::unique_ptr<std::string>)>;
 
-  ContentHashFetcher(const ContentHash::ExtensionKey& extension_key,
-                     ContentHash::FetchParams fetch_params);
+  ContentHashFetcher(ContentHash::FetchKey fetch_key);
 
   // Note: |this| is deleted once OnSimpleLoaderComplete() completes.
   void Start(HashFetcherCallback hash_fetcher_callback);
@@ -62,8 +61,7 @@ class ContentHashFetcher {
 
   void OnSimpleLoaderComplete(std::unique_ptr<std::string> response_body);
 
-  ContentHash::ExtensionKey extension_key_;
-  ContentHash::FetchParams fetch_params_;
+  ContentHash::FetchKey fetch_key_;
 
   HashFetcherCallback hash_fetcher_callback_;
 

@@ -3,7 +3,7 @@
   "manifest_version": 2,
   "name": "__MSG_app_name__",
   "description": "__MSG_app_description__",
-  "version": "0.3",
+  "version": "0.4",
   "minimum_chrome_version": "28",
   "default_locale": "en",
   "incognito" : "split",
@@ -36,6 +36,7 @@
     "https://*.ytimg.com/*",
     "https://www.google.com/*",
     "https://support.google.com/*",
+    "https://scone-pa.clients6.google.com/*",
     "https://commondatastorage.googleapis.com/*",
     "https://storage.googleapis.com/*",
     "https://www.google-analytics.com/"

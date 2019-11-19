@@ -15,10 +15,12 @@ namespace blink {
 
 class CanvasContextCreationAttributesCore;
 class EXTColorBufferFloat;
+class EXTFloatBlend;
 class EXTTextureFilterAnisotropic;
 class OESTextureFloatLinear;
 class WebGLDebugRendererInfo;
 class WebGLLoseContext;
+class WebGLVideoTexture;
 
 class WebGL2ComputeRenderingContext : public WebGL2ComputeRenderingContextBase {
   DEFINE_WRAPPERTYPEINFO();
@@ -63,6 +65,7 @@ class WebGL2ComputeRenderingContext : public WebGL2ComputeRenderingContextBase {
  protected:
   Member<EXTColorBufferFloat> ext_color_buffer_float_;
   Member<EXTDisjointTimerQueryWebGL2> ext_disjoint_timer_query_web_gl2_;
+  Member<EXTFloatBlend> ext_float_blend_;
   Member<EXTTextureFilterAnisotropic> ext_texture_filter_anisotropic_;
   Member<OESTextureFloatLinear> oes_texture_float_linear_;
   Member<WebGLCompressedTextureASTC> webgl_compressed_texture_astc_;
@@ -74,6 +77,7 @@ class WebGL2ComputeRenderingContext : public WebGL2ComputeRenderingContextBase {
   Member<WebGLDebugRendererInfo> webgl_debug_renderer_info_;
   Member<WebGLDebugShaders> webgl_debug_shaders_;
   Member<WebGLLoseContext> webgl_lose_context_;
+  Member<WebGLVideoTexture> webgl_video_texture_;
 };
 
 DEFINE_TYPE_CASTS(WebGL2ComputeRenderingContext,

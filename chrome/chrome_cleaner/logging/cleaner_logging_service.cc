@@ -300,7 +300,7 @@ void CleanerLoggingService::Initialize(RegistryLogger* registry_logger) {
     // Set invariant environment / machine data.
     ChromeCleanerReport_EnvironmentData* env_data =
         chrome_cleaner_report_.mutable_environment();
-    env_data->set_windows_version(base::win::GetVersion());
+    env_data->set_windows_version(static_cast<int>(base::win::GetVersion()));
     env_data->set_cleaner_version(CHROME_CLEANER_VERSION_UTF8_STRING);
     if (languages.size() > 0)
       env_data->set_default_locale(base::WideToUTF8(languages[0]));
@@ -681,8 +681,7 @@ bool CleanerLoggingService::AllExpectedRemovalsConfirmed() const {
       if (removal_status != REMOVAL_STATUS_REMOVED &&
           removal_status != REMOVAL_STATUS_SCHEDULED_FOR_REMOVAL &&
           removal_status != REMOVAL_STATUS_NOT_FOUND &&
-          removal_status != REMOVAL_STATUS_SCHEDULED_FOR_REMOVAL_FALLBACK &&
-          removal_status != REMOVAL_STATUS_NOT_REMOVED_INACTIVE_EXTENSION) {
+          removal_status != REMOVAL_STATUS_SCHEDULED_FOR_REMOVAL_FALLBACK) {
         return false;
       }
     }

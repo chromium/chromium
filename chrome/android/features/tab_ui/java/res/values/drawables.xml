@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2019 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<resources>
+    <drawable name="fake_search_box_bg_incognito">@drawable/fake_search_box_text_box_bg_incognito</drawable>
+</resources>

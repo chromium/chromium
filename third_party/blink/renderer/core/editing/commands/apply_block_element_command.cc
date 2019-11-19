@@ -39,10 +39,9 @@
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
 
 namespace blink {
-
-using namespace html_names;
 
 ApplyBlockElementCommand::ApplyBlockElementCommand(
     Document& document,
@@ -108,7 +107,7 @@ void ApplyBlockElementCommand::DoApply(EditingState* editing_state) {
   if (editing_state->IsAborted())
     return;
 
-  GetDocument().UpdateStyleAndLayoutIgnorePendingStylesheets();
+  GetDocument().UpdateStyleAndLayout();
 
   DCHECK_EQ(start_scope, end_scope);
   DCHECK_GE(start_index, 0);
@@ -146,7 +145,7 @@ void ApplyBlockElementCommand::FormatSelection(
     InsertNodeAt(blockquote, caret_position, editing_state);
     if (editing_state->IsAborted())
       return;
-    HTMLBRElement* placeholder = HTMLBRElement::Create(GetDocument());
+    auto* placeholder = MakeGarbageCollected<HTMLBRElement>(GetDocument());
     AppendNode(placeholder, blockquote, editing_state);
     if (editing_state->IsAborted())
       return;
@@ -212,21 +211,21 @@ void ApplyBlockElementCommand::FormatSelection(
         !end_of_next_paragraph.IsConnected())
       return;
 
-    GetDocument().UpdateStyleAndLayoutIgnorePendingStylesheets();
+    GetDocument().UpdateStyleAndLayout();
     end_of_current_paragraph = CreateVisiblePosition(end_of_next_paragraph);
   }
 }
 
 static bool IsNewLineAtPosition(const Position& position) {
-  Node* text_node = position.ComputeContainerNode();
+  auto* text_node = DynamicTo<Text>(position.ComputeContainerNode());
   int offset = position.OffsetInContainerNode();
-  if (!text_node || !text_node->IsTextNode() || offset < 0 ||
-      offset >= static_cast<int>(ToText(text_node)->length()))
+  if (!text_node || offset < 0 ||
+      offset >= static_cast<int>(text_node->length()))
     return false;
 
   DummyExceptionStateForTesting exception_state;
   String text_at_position =
-      ToText(text_node)->substringData(offset, 1, exception_state);
+      text_node->substringData(offset, 1, exception_state);
   if (exception_state.HadException())
     return false;
 
@@ -275,7 +274,7 @@ void ApplyBlockElementCommand::RangeForParagraphSplittingTextNodesIfNeeded(
     if (!start_style->CollapseWhiteSpace() &&
         start.OffsetInContainerNode() > 0) {
       int start_offset = start.OffsetInContainerNode();
-      Text* start_text = ToText(start.ComputeContainerNode());
+      auto* start_text = To<Text>(start.ComputeContainerNode());
       SplitTextNode(start_text, start_offset);
       GetDocument().UpdateStyleAndLayoutTree();
 
@@ -300,7 +299,7 @@ void ApplyBlockElementCommand::RangeForParagraphSplittingTextNodesIfNeeded(
     // Include \n at the end of line if we're at an empty paragraph
     if (end_style->PreserveNewline() && start == end &&
         end.OffsetInContainerNode() <
-            static_cast<int>(ToText(end.ComputeContainerNode())->length())) {
+            static_cast<int>(To<Text>(end.ComputeContainerNode())->length())) {
       int end_offset = end.OffsetInContainerNode();
       // TODO(yosin) We should use |PositionMoveType::CodePoint| for
       // |previousPositionOf()|.
@@ -318,8 +317,8 @@ void ApplyBlockElementCommand::RangeForParagraphSplittingTextNodesIfNeeded(
     if (end_style->UserModify() != EUserModify::kReadOnly &&
         !end_style->CollapseWhiteSpace() && end.OffsetInContainerNode() &&
         end.OffsetInContainerNode() <
-            static_cast<int>(ToText(end.ComputeContainerNode())->length())) {
-      Text* end_container = ToText(end.ComputeContainerNode());
+            static_cast<int>(To<Text>(end.ComputeContainerNode())->length())) {
+      auto* end_container = To<Text>(end.ComputeContainerNode());
       SplitTextNode(end_container, end.OffsetInContainerNode());
       GetDocument().UpdateStyleAndLayoutTree();
 
@@ -360,8 +359,8 @@ ApplyBlockElementCommand::EndOfNextParagrahSplittingTextNodesIfNeeded(
   if (!style)
     return end_of_next_paragraph;
 
-  Text* const end_of_next_paragraph_text =
-      ToText(end_of_next_paragraph_position.ComputeContainerNode());
+  auto* const end_of_next_paragraph_text =
+      To<Text>(end_of_next_paragraph_position.ComputeContainerNode());
   if (!style->PreserveNewline() ||
       !end_of_next_paragraph_position.OffsetInContainerNode() ||
       !IsNewLineAtPosition(
@@ -373,12 +372,9 @@ ApplyBlockElementCommand::EndOfNextParagrahSplittingTextNodesIfNeeded(
   // pointing at this same text node, endOfNextParagraph will be shifted by one
   // paragraph. Avoid this by splitting "\n"
   SplitTextNode(end_of_next_paragraph_text, 1);
-  GetDocument().UpdateStyleAndLayoutIgnorePendingStylesheets();
+  GetDocument().UpdateStyleAndLayout();
   Text* const previous_text =
-      end_of_next_paragraph_text->previousSibling() &&
-              end_of_next_paragraph_text->previousSibling()->IsTextNode()
-          ? ToText(end_of_next_paragraph_text->previousSibling())
-          : nullptr;
+      DynamicTo<Text>(end_of_next_paragraph_text->previousSibling());
   if (end_of_next_paragraph_text == start.ComputeContainerNode() &&
       previous_text) {
     DCHECK_LT(start.OffsetInContainerNode(),
@@ -418,7 +414,7 @@ ApplyBlockElementCommand::EndOfNextParagrahSplittingTextNodesIfNeeded(
 HTMLElement* ApplyBlockElementCommand::CreateBlockElement() const {
   HTMLElement* element = CreateHTMLElement(GetDocument(), tag_name_);
   if (inline_style_.length())
-    element->setAttribute(kStyleAttr, inline_style_);
+    element->setAttribute(html_names::kStyleAttr, inline_style_);
   return element;
 }
 

@@ -1,7 +1,4 @@
-altimin@chromium.org
-alexclarke@chromium.org
-rmcilroy@chromium.org
-skyostil@chromium.org
+file://third_party/blink/renderer/platform/scheduler/OWNERS
 
 # TEAM: scheduler-dev@chromium.org
 # COMPONENT: Blink>Scheduling

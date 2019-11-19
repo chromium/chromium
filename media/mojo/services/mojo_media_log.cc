@@ -10,11 +10,11 @@
 
 namespace media {
 
-MojoMediaLog::MojoMediaLog(mojom::MediaLogAssociatedPtrInfo remote_media_log,
-                           scoped_refptr<base::SequencedTaskRunner> task_runner)
+MojoMediaLog::MojoMediaLog(
+    mojo::PendingAssociatedRemote<mojom::MediaLog> remote_media_log,
+    scoped_refptr<base::SequencedTaskRunner> task_runner)
     : remote_media_log_(std::move(remote_media_log)),
-      task_runner_(std::move(task_runner)),
-      weak_ptr_factory_(this) {
+      task_runner_(std::move(task_runner)) {
   weak_this_ = weak_ptr_factory_.GetWeakPtr();
   DVLOG(1) << __func__;
 }

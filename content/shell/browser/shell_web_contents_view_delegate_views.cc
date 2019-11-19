@@ -93,7 +93,7 @@ void ShellWebContentsViewDelegate::ShowContextMenu(
       web_contents_->GetTopLevelNativeWindow());
   context_menu_runner_->RunMenuAt(
       widget, nullptr, gfx::Rect(screen_point, gfx::Size()),
-      views::MENU_ANCHOR_TOPRIGHT, ui::MENU_SOURCE_NONE);
+      views::MenuAnchorPosition::kTopRight, ui::MENU_SOURCE_NONE);
 }
 
 }  // namespace content

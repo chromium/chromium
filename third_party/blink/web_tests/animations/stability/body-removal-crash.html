@@ -22,7 +22,10 @@
 </body>
 </html>
 
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
 <script>
+var test = async_test("Tests if there is no crash when body is removed and added to a different location.");
 
 var element;
 
@@ -33,19 +36,11 @@ function crash() {
     element = document.body;
     element.parentNode.removeChild(element);
     document.getElementById("a").parentNode.insertBefore(element, document.getElementById("a").nextSibling);
-    setTimeout(cleanup, 0);
+    test.step_timeout(test.step_func_done(cleanup), 0);
 }
 
 function cleanup() {
   document.getElementById("b").parentNode.insertBefore(element, document.getElementById("b").nextSibling);
-  
-  if (window.testRunner)
-      testRunner.notifyDone();
-}
-
-if (window.testRunner) {
-    testRunner.dumpAsText();
-    testRunner.waitUntilDone();
 }
 
 crash();

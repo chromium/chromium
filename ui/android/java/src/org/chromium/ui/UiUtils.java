@@ -5,6 +5,7 @@
 package org.chromium.ui;
 
 import android.content.Context;
+import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Typeface;
@@ -12,9 +13,9 @@ import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Environment;
 import android.os.StrictMode;
-import android.support.annotation.ColorRes;
-import android.support.annotation.DrawableRes;
 import android.support.v4.graphics.drawable.DrawableCompat;
+import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatDelegate;
 import android.support.v7.content.res.AppCompatResources;
 import android.text.TextUtils;
 import android.view.SurfaceView;
@@ -26,6 +27,10 @@ import android.view.inputmethod.InputMethodManager;
 import android.view.inputmethod.InputMethodSubtype;
 import android.widget.AbsListView;
 import android.widget.ListAdapter;
+
+import androidx.annotation.ColorRes;
+import androidx.annotation.DrawableRes;
+import androidx.annotation.NonNull;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Log;
@@ -93,12 +98,15 @@ public class UiUtils {
          * @param includeNames Whether to include names of the contacts shared.
          * @param includeEmails Whether to include emails of the contacts shared.
          * @param includeTel Whether to include telephone numbers of the contacts shared.
+         * @param includeAddresses Whether to include addresses of the contacts shared.
+         * @param includeIcons Whether to include addresses of the contacts shared.
          * @param formattedOrigin The origin the data will be shared with, formatted for display
          *                        with the scheme omitted.
          */
         void showContactsPicker(Context context, ContactsPickerListener listener,
                 boolean allowMultiple, boolean includeNames, boolean includeEmails,
-                boolean includeTel, String formattedOrigin);
+                boolean includeTel, boolean includeAddresses, boolean includeIcons,
+                String formattedOrigin);
 
         /**
          * Called when the contacts picker dialog has been dismissed.
@@ -125,6 +133,11 @@ public class UiUtils {
          * Called when the photo picker dialog has been dismissed.
          */
         void onPhotoPickerDismissed();
+
+        /**
+         * Returns whether video decoding support is supported in the photo picker.
+         */
+        boolean supportsVideos();
     }
 
     // ContactsPickerDelegate:
@@ -138,13 +151,6 @@ public class UiUtils {
     }
 
     /**
-     * Returns whether a contacts picker should be called.
-     */
-    public static boolean shouldShowContactsPicker() {
-        return sContactsPickerDelegate != null;
-    }
-
-    /**
      * Called to display the contacts picker.
      * @param context  The context to use.
      * @param listener The listener that will be notified of the action the user took in the
@@ -153,14 +159,16 @@ public class UiUtils {
      * @param includeNames Whether to include names in the contact data returned.
      * @param includeEmails Whether to include emails in the contact data returned.
      * @param includeTel Whether to include telephone numbers in the contact data returned.
+     * @param includeAddresses Whether to include addresses of the contacts shared.
+     * @param includeIcons Whether to include icons of the contacts shared.
      * @param formattedOrigin The origin the data will be shared with.
      */
     public static boolean showContactsPicker(Context context, ContactsPickerListener listener,
             boolean allowMultiple, boolean includeNames, boolean includeEmails, boolean includeTel,
-            String formattedOrigin) {
+            boolean includeAddresses, boolean includeIcons, String formattedOrigin) {
         if (sContactsPickerDelegate == null) return false;
         sContactsPickerDelegate.showContactsPicker(context, listener, allowMultiple, includeNames,
-                includeEmails, includeTel, formattedOrigin);
+                includeEmails, includeTel, includeAddresses, includeIcons, formattedOrigin);
         return true;
     }
 
@@ -187,6 +195,15 @@ public class UiUtils {
      */
     public static boolean shouldShowPhotoPicker() {
         return sPhotoPickerDelegate != null;
+    }
+
+    /**
+     * Returns whether the photo picker supports showing videos.
+     */
+    public static boolean photoPickerSupportsVideo() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) return false;
+        if (!shouldShowPhotoPicker()) return false;
+        return sPhotoPickerDelegate.supportsVideos();
     }
 
     /**
@@ -496,5 +513,62 @@ public class UiUtils {
             }
         }
         return sSystemUiThemingDisabled;
+    }
+
+    /**
+     * Sets the navigation bar icons to dark or light. Note that this is only valid for Android
+     * O+.
+     * @param rootView The root view used to request updates to the system UI theme.
+     * @param useDarkIcons Whether the navigation bar icons should be dark.
+     */
+    public static void setNavigationBarIconColor(View rootView, boolean useDarkIcons) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return;
+
+        int systemUiVisibility = rootView.getSystemUiVisibility();
+        if (useDarkIcons) {
+            systemUiVisibility |= View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR;
+        } else {
+            systemUiVisibility &= ~View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR;
+        }
+        rootView.setSystemUiVisibility(systemUiVisibility);
+    }
+
+    /**
+     * Extends {@link AlertDialog.Builder} to work around issues in support library. Note that
+     * any AlertDialogs shown in CustomTabActivity should be created from this class.
+     */
+    public static class CompatibleAlertDialogBuilder extends AlertDialog.Builder {
+        private final boolean mIsInNightMode;
+
+        public CompatibleAlertDialogBuilder(@NonNull Context context) {
+            super(context);
+            mIsInNightMode = isInNightMode(context);
+        }
+
+        public CompatibleAlertDialogBuilder(@NonNull Context context, int themeResId) {
+            super(context, themeResId);
+            mIsInNightMode = isInNightMode(context);
+        }
+
+        @Override
+        public AlertDialog create() {
+            AlertDialog dialog = super.create();
+            // Sets local night mode state to reflect the night mode state of the owner activity.
+            // This is to work around an issue in the support library that the dialog night mode
+            // state is not inheriting the night mode state of the owner activity, and also resets
+            // the night mode state of the owner activity. See https://crbug.com/966002 for details.
+            // TODO(https://crbug.com/966101): Remove this class once support library is updated to
+            // AndroidX.
+            dialog.getDelegate().setLocalNightMode(mIsInNightMode
+                            ? AppCompatDelegate.MODE_NIGHT_YES
+                            : AppCompatDelegate.MODE_NIGHT_NO);
+            return dialog;
+        }
+
+        private static boolean isInNightMode(Context context) {
+            return (context.getResources().getConfiguration().uiMode
+                           & Configuration.UI_MODE_NIGHT_MASK)
+                    == Configuration.UI_MODE_NIGHT_YES;
+        }
     }
 }

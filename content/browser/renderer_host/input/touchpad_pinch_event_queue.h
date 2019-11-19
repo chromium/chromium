@@ -15,10 +15,6 @@
 #include "content/public/common/input_event_ack_state.h"
 #include "third_party/blink/public/platform/web_input_event.h"
 
-namespace ui {
-class LatencyInfo;
-}  // namespace ui
-
 namespace content {
 
 class QueuedTouchpadPinchEvent;
@@ -57,9 +53,13 @@ class CONTENT_EXPORT TouchpadPinchEventQueue {
   // by the renderer.
   void ProcessMouseWheelAck(InputEventAckSource ack_source,
                             InputEventAckState ack_result,
-                            const ui::LatencyInfo& latency_info);
+                            const MouseWheelEventWithLatencyInfo& ack_event);
 
   bool has_pending() const WARN_UNUSED_RESULT;
+
+  blink::WebMouseWheelEvent get_wheel_event_awaiting_ack_for_testing() {
+    return wheel_event_awaiting_ack_.value();
+  }
 
  private:
   void TryForwardNextEventToRenderer();
@@ -69,6 +69,7 @@ class CONTENT_EXPORT TouchpadPinchEventQueue {
 
   base::circular_deque<std::unique_ptr<QueuedTouchpadPinchEvent>> pinch_queue_;
   std::unique_ptr<QueuedTouchpadPinchEvent> pinch_event_awaiting_ack_;
+  base::Optional<blink::WebMouseWheelEvent> wheel_event_awaiting_ack_;
   base::Optional<bool> first_event_prevented_;
 
   DISALLOW_COPY_AND_ASSIGN(TouchpadPinchEventQueue);

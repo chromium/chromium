@@ -49,6 +49,7 @@ const AtomicString& PickerIndicator();
 const AtomicString& Placeholder();
 const AtomicString& SearchClearButton();
 const AtomicString& SearchDecoration();
+const AtomicString& PasswordRevealButton();
 CORE_EXPORT const AtomicString& SliderThumb();
 const AtomicString& SliderTrack();
 const AtomicString& TextFieldContainer();

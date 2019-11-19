@@ -16,4 +16,8 @@ void LayerDelegate::OnLayerOpacityChanged(PropertyChangeReason reason) {}
 
 void LayerDelegate::OnLayerAlphaShapeChanged() {}
 
+void LayerDelegate::OnLayerFillsBoundsOpaquelyChanged() {}
+
+void LayerDelegate::UpdateVisualState() {}
+
 }  // namespace ui

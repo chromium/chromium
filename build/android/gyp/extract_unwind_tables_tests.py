@@ -87,8 +87,8 @@ STACK CFI 3b93218 .cfa: r7 16 + .ra: .cfa -4 + ^
 
       # First value is size of unw_index table.
       unw_index_size = actual_output[1] << 16 | actual_output[0]
-      # Each function index is 6 bytes data.
-      self.assertEqual(expected_function_count * 6, unw_index_size)
+      # |unw_index_size| should match entry count.
+      self.assertEqual(expected_function_count, unw_index_size)
       # |actual_output| is in blocks of 2 bytes. Skip first 4 bytes representing
       # size.
       unw_index_start = 2

@@ -18,13 +18,12 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
-#include "components/data_use_measurement/core/data_use_user_data.h"
 #include "components/google/core/common/google_util.h"
 #include "components/pref_registry/pref_registry_syncable.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
 #include "components/suggestions/blacklist_store.h"
-#include "components/suggestions/features.h"
 #include "components/suggestions/suggestions_store.h"
-#include "components/sync/driver/sync_service.h"
 #include "components/variations/net/variations_http_headers.h"
 #include "google_apis/gaia/gaia_constants.h"
 #include "net/base/escape.h"
@@ -37,8 +36,6 @@
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "net/url_request/url_fetcher.h"
 #include "net/url_request/url_request_status.h"
-#include "services/identity/public/cpp/identity_manager.h"
-#include "services/identity/public/cpp/primary_account_access_token_fetcher.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/resource_response.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -93,10 +90,6 @@ const char kSuggestionsBlacklistClearURLFormat[] =
 
 const char kSuggestionsBlacklistURLParam[] = "url";
 const char kSuggestionsDeviceParam[] = "t=%s";
-const char kSuggestionsMinParam[] = "num=%i";
-
-const char kSuggestionsMinVariationName[] = "min_suggestions";
-const int kSuggestionsMinVariationDefault = 0;
 
 #if defined(OS_ANDROID) || defined(OS_IOS)
 const char kDeviceType[] = "2";
@@ -110,16 +103,10 @@ const char kFaviconURL[] =
 // The default expiry timeout is 168 hours.
 const int64_t kDefaultExpiryUsec = 168 * base::Time::kMicrosecondsPerHour;
 
-int GetMinimumSuggestionsCount() {
-  return base::GetFieldTrialParamByFeatureAsInt(
-      kUseSuggestionsEvenIfFewFeature, kSuggestionsMinVariationName,
-      kSuggestionsMinVariationDefault);
-}
-
 }  // namespace
 
 SuggestionsServiceImpl::SuggestionsServiceImpl(
-    identity::IdentityManager* identity_manager,
+    signin::IdentityManager* identity_manager,
     syncer::SyncService* sync_service,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     std::unique_ptr<SuggestionsStore> suggestions_store,
@@ -127,15 +114,13 @@ SuggestionsServiceImpl::SuggestionsServiceImpl(
     const base::TickClock* tick_clock)
     : identity_manager_(identity_manager),
       sync_service_(sync_service),
-      sync_service_observer_(this),
       history_sync_state_(syncer::UploadState::INITIALIZING),
       url_loader_factory_(url_loader_factory),
       suggestions_store_(std::move(suggestions_store)),
       blacklist_store_(std::move(blacklist_store)),
       tick_clock_(tick_clock),
       blacklist_upload_backoff_(&kBlacklistBackoffPolicy, tick_clock_),
-      blacklist_upload_timer_(tick_clock_),
-      weak_ptr_factory_(this) {
+      blacklist_upload_timer_(tick_clock_) {
   // |sync_service_| is null if switches::kDisableSync is set (tests use that).
   if (sync_service_)
     sync_service_observer_.Add(sync_service_);
@@ -257,14 +242,7 @@ void SuggestionsServiceImpl::RegisterProfilePrefs(
 
 // static
 GURL SuggestionsServiceImpl::BuildSuggestionsURL() {
-  std::string device = base::StringPrintf(kSuggestionsDeviceParam, kDeviceType);
-  std::string query = device;
-  if (base::FeatureList::IsEnabled(kUseSuggestionsEvenIfFewFeature)) {
-    std::string min_suggestions =
-        base::StringPrintf(kSuggestionsMinParam, GetMinimumSuggestionsCount());
-    query =
-        base::StringPrintf("%s&%s", device.c_str(), min_suggestions.c_str());
-  }
+  std::string query = base::StringPrintf(kSuggestionsDeviceParam, kDeviceType);
   return GURL(base::StringPrintf(
       kSuggestionsURLFormat, GetGoogleBaseURL().spec().c_str(), query.c_str()));
 }
@@ -362,17 +340,17 @@ void SuggestionsServiceImpl::IssueRequestIfNoneOngoing(const GURL& url) {
     return;
 
   identity::ScopeSet scopes{GaiaConstants::kChromeSyncOAuth2Scope};
-  token_fetcher_ = std::make_unique<identity::PrimaryAccountAccessTokenFetcher>(
+  token_fetcher_ = std::make_unique<signin::PrimaryAccountAccessTokenFetcher>(
       "suggestions_service", identity_manager_, scopes,
       base::BindOnce(&SuggestionsServiceImpl::AccessTokenAvailable,
                      base::Unretained(this), url),
-      identity::PrimaryAccountAccessTokenFetcher::Mode::kWaitUntilAvailable);
+      signin::PrimaryAccountAccessTokenFetcher::Mode::kWaitUntilAvailable);
 }
 
 void SuggestionsServiceImpl::AccessTokenAvailable(
     const GURL& url,
     GoogleServiceAuthError error,
-    identity::AccessTokenInfo access_token_info) {
+    signin::AccessTokenInfo access_token_info) {
   DCHECK(token_fetcher_);
   token_fetcher_.reset();
 
@@ -439,9 +417,8 @@ SuggestionsServiceImpl::CreateSuggestionsRequest(
   auto resource_request = std::make_unique<network::ResourceRequest>();
   resource_request->url = url;
   resource_request->method = "GET";
-  resource_request->load_flags = net::LOAD_DISABLE_CACHE |
-                                 net::LOAD_DO_NOT_SEND_COOKIES |
-                                 net::LOAD_DO_NOT_SAVE_COOKIES;
+  resource_request->load_flags = net::LOAD_DISABLE_CACHE;
+  resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
   // Add Chrome experiment state to the request headers.
   // TODO: We should call AppendVariationHeaders with explicit
   // variations::SignedIn::kNo If the access_token is empty
@@ -452,9 +429,6 @@ SuggestionsServiceImpl::CreateSuggestionsRequest(
         "Authorization", base::StrCat({"Bearer ", access_token}));
   }
 
-  // TODO(https://crbug.com/808498): re-add data use measurement once
-  // SimpleURLLoader supports it.
-  // ID=data_use_measurement::DataUseUserData::SUGGESTIONS
   auto loader = network::SimpleURLLoader::Create(std::move(resource_request),
                                                  traffic_annotation);
 

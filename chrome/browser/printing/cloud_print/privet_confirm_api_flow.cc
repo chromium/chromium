@@ -14,28 +14,31 @@
 
 namespace cloud_print {
 
-PrivetConfirmApiCallFlow::PrivetConfirmApiCallFlow(
-    const std::string& token,
-    const ResponseCallback& callback)
-    : callback_(callback), token_(token) {
-}
+PrivetConfirmApiCallFlow::PrivetConfirmApiCallFlow(const std::string& token,
+                                                   ResponseCallback callback)
+    : callback_(std::move(callback)), token_(token) {}
 
 PrivetConfirmApiCallFlow::~PrivetConfirmApiCallFlow() {
 }
 
 void PrivetConfirmApiCallFlow::OnGCDApiFlowError(GCDApiFlow::Status status) {
-  callback_.Run(status);
+  if (callback_)
+    std::move(callback_).Run(status);
 }
 
 void PrivetConfirmApiCallFlow::OnGCDApiFlowComplete(
     const base::DictionaryValue& value) {
+  if (!callback_)
+    return;
+
   bool success = false;
   if (!value.GetBoolean(cloud_print::kSuccessValue, &success)) {
-    callback_.Run(GCDApiFlow::ERROR_MALFORMED_RESPONSE);
+    std::move(callback_).Run(GCDApiFlow::ERROR_MALFORMED_RESPONSE);
     return;
   }
 
-  callback_.Run(success ? GCDApiFlow::SUCCESS : GCDApiFlow::ERROR_FROM_SERVER);
+  std::move(callback_).Run(success ? GCDApiFlow::SUCCESS
+                                   : GCDApiFlow::ERROR_FROM_SERVER);
 }
 
 GURL PrivetConfirmApiCallFlow::GetURL() {

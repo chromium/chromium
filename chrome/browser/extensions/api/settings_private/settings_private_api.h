@@ -13,7 +13,7 @@
 namespace extensions {
 
 // Implements the chrome.settingsPrivate.setPref method.
-class SettingsPrivateSetPrefFunction : public UIThreadExtensionFunction {
+class SettingsPrivateSetPrefFunction : public ExtensionFunction {
  public:
   SettingsPrivateSetPrefFunction() {}
   DECLARE_EXTENSION_FUNCTION("settingsPrivate.setPref", SETTINGSPRIVATE_SETPREF)
@@ -21,14 +21,14 @@ class SettingsPrivateSetPrefFunction : public UIThreadExtensionFunction {
  protected:
   ~SettingsPrivateSetPrefFunction() override;
 
-  // UIThreadExtensionFunction overrides.
+  // ExtensionFunction overrides.
   ResponseAction Run() override;
 
   DISALLOW_COPY_AND_ASSIGN(SettingsPrivateSetPrefFunction);
 };
 
 // Implements the chrome.settingsPrivate.getAllPrefs method.
-class SettingsPrivateGetAllPrefsFunction : public UIThreadExtensionFunction {
+class SettingsPrivateGetAllPrefsFunction : public ExtensionFunction {
  public:
   SettingsPrivateGetAllPrefsFunction() {}
   DECLARE_EXTENSION_FUNCTION("settingsPrivate.getAllPrefs",
@@ -37,14 +37,14 @@ class SettingsPrivateGetAllPrefsFunction : public UIThreadExtensionFunction {
  protected:
   ~SettingsPrivateGetAllPrefsFunction() override;
 
-  // UIThreadExtensionFunction overrides.
+  // ExtensionFunction overrides.
   ResponseAction Run() override;
 
   DISALLOW_COPY_AND_ASSIGN(SettingsPrivateGetAllPrefsFunction);
 };
 
 // Implements the chrome.settingsPrivate.getPref method.
-class SettingsPrivateGetPrefFunction : public UIThreadExtensionFunction {
+class SettingsPrivateGetPrefFunction : public ExtensionFunction {
  public:
   SettingsPrivateGetPrefFunction() {}
   DECLARE_EXTENSION_FUNCTION("settingsPrivate.getPref", SETTINGSPRIVATE_GETPREF)
@@ -52,15 +52,14 @@ class SettingsPrivateGetPrefFunction : public UIThreadExtensionFunction {
  protected:
   ~SettingsPrivateGetPrefFunction() override;
 
-  // UIThreadExtensionFunction overrides.
+  // ExtensionFunction overrides.
   ResponseAction Run() override;
 
   DISALLOW_COPY_AND_ASSIGN(SettingsPrivateGetPrefFunction);
 };
 
 // Implements the chrome.settingsPrivate.getDefaultZoom method.
-class SettingsPrivateGetDefaultZoomFunction
-    : public UIThreadExtensionFunction {
+class SettingsPrivateGetDefaultZoomFunction : public ExtensionFunction {
  public:
   SettingsPrivateGetDefaultZoomFunction() {}
   DECLARE_EXTENSION_FUNCTION("settingsPrivate.getDefaultZoom",
@@ -69,15 +68,14 @@ class SettingsPrivateGetDefaultZoomFunction
  protected:
   ~SettingsPrivateGetDefaultZoomFunction() override;
 
-  // UIThreadExtensionFunction overrides.
+  // ExtensionFunction overrides.
   ResponseAction Run() override;
 
   DISALLOW_COPY_AND_ASSIGN(SettingsPrivateGetDefaultZoomFunction);
 };
 
 // Implements the chrome.settingsPrivate.setDefaultZoom method.
-class SettingsPrivateSetDefaultZoomFunction
-    : public UIThreadExtensionFunction {
+class SettingsPrivateSetDefaultZoomFunction : public ExtensionFunction {
  public:
   SettingsPrivateSetDefaultZoomFunction() {}
   DECLARE_EXTENSION_FUNCTION("settingsPrivate.setDefaultZoom",
@@ -86,7 +84,7 @@ class SettingsPrivateSetDefaultZoomFunction
  protected:
   ~SettingsPrivateSetDefaultZoomFunction() override;
 
-  // UIThreadExtensionFunction overrides.
+  // ExtensionFunction overrides.
   ResponseAction Run() override;
 
   DISALLOW_COPY_AND_ASSIGN(SettingsPrivateSetDefaultZoomFunction);

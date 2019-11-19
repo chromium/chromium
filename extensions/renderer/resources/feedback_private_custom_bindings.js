@@ -4,11 +4,9 @@
 
 // Custom bindings for the feedbackPrivate API.
 
-var binding = apiBridge || require('binding').Binding.create('feedbackPrivate');
-
 var blobNatives = requireNative('blob_natives');
 
-binding.registerCustomHook(function(bindingsAPI) {
+apiBridge.registerCustomHook(function(bindingsAPI) {
   var apiFunctions = bindingsAPI.apiFunctions;
   apiFunctions.setUpdateArgumentsPostValidate(
       "sendFeedback", function(feedbackInfo, callback) {
@@ -28,6 +26,3 @@ binding.registerCustomHook(function(bindingsAPI) {
     return [feedbackInfo, callback];
   });
 });
-
-if (!apiBridge)
-  exports.$set('binding', binding.generate());

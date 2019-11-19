@@ -8,12 +8,16 @@ blink_modules_sources("wake_lock") {
   sources = [
     "navigator_wake_lock.cc",
     "navigator_wake_lock.h",
-    "screen_wake_lock.cc",
-    "screen_wake_lock.h",
     "wake_lock.cc",
     "wake_lock.h",
-    "wake_lock_request.cc",
-    "wake_lock_request.h",
+    "wake_lock_manager.cc",
+    "wake_lock_manager.h",
+    "wake_lock_sentinel.cc",
+    "wake_lock_sentinel.h",
+    "wake_lock_type.cc",
+    "wake_lock_type.h",
+    "worker_navigator_wake_lock.cc",
+    "worker_navigator_wake_lock.h",
   ]
   deps = [
     "//mojo/public/cpp/bindings",

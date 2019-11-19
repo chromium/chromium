@@ -49,7 +49,7 @@ class NotificationOverflowImageView
                                 const std::string& notification_id)
       : message_center::ProportionalImageView(gfx::Size(kIconSize, kIconSize)),
         notification_id_(notification_id) {
-    set_id(kNotificationOverflowIconId);
+    SetID(kNotificationOverflowIconId);
     set_owned_by_client();
     SetImage(image, gfx::Size(kIconSize, kIconSize));
   }
@@ -92,7 +92,7 @@ void NotificationOverflowView::AddIcon(
           views::kOptionsIcon, kIconSize, kOverflowIconColor));
       overflow_icon_ = std::make_unique<message_center::ProportionalImageView>(
           gfx::Size(kIconSize, kIconSize));
-      overflow_icon_->set_id(kOverflowIconId);
+      overflow_icon_->SetID(kOverflowIconId);
       overflow_icon_->set_owned_by_client();
       overflow_icon_->SetImage(icon.AsImageSkia(),
                                gfx::Size(kIconSize, kIconSize));

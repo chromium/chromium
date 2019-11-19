@@ -1,3 +1,0 @@
-CONSOLE ERROR: line 4: The XSS Auditor refused to execute a script in 'http://localhost:8000/security/xssAuditor/resources/echo-intertag.pl?q=%3Cform%3E%3Cinput%20formaction=%27http://example.com/%27%3E&notifyDone=1&showFormaction=1' because its source code was found within the request. The server sent an 'X-XSS-Protection' header requesting this behavior.
-ALERT: formaction present on INPUT with value of data:,
-

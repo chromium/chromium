@@ -16,7 +16,7 @@
 #include "base/macros.h"
 #include "device/bluetooth/bluetooth_remote_gatt_characteristic.h"
 #include "device/bluetooth/bluetooth_remote_gatt_descriptor.h"
-#include "device/bluetooth/bluetooth_uuid.h"
+#include "device/bluetooth/public/cpp/bluetooth_uuid.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace device {
@@ -51,26 +51,48 @@ class MockBluetoothGattCharacteristic
                      BluetoothRemoteGattDescriptor*(const std::string&));
   MOCK_METHOD1(UpdateValue, bool(const std::vector<uint8_t>&));
 #if defined(OS_CHROMEOS)
-  MOCK_METHOD3(StartNotifySession,
-               void(NotificationType,
-                    const NotifySessionCallback&,
-                    const ErrorCallback&));
+  void StartNotifySession(NotificationType t,
+                          NotifySessionCallback c,
+                          ErrorCallback ec) override {
+    StartNotifySession_(t, c, ec);
+  }
+  MOCK_METHOD3(StartNotifySession_,
+               void(NotificationType, NotifySessionCallback&, ErrorCallback&));
 #endif
-  MOCK_METHOD2(StartNotifySession,
-               void(const NotifySessionCallback&, const ErrorCallback&));
-  MOCK_METHOD2(StopNotifySession,
-               void(BluetoothGattNotifySession*, const base::Closure&));
-  MOCK_METHOD2(ReadRemoteCharacteristic,
-               void(const ValueCallback&, const ErrorCallback&));
-  MOCK_METHOD3(WriteRemoteCharacteristic,
+  void StartNotifySession(NotifySessionCallback c, ErrorCallback ec) override {
+    StartNotifySession_(c, ec);
+  }
+  MOCK_METHOD2(StartNotifySession_,
+               void(NotifySessionCallback&, ErrorCallback&));
+  void StopNotifySession(BluetoothGattNotifySession* s,
+                         base::OnceClosure c) override {
+    StopNotifySession_(s, c);
+  }
+  MOCK_METHOD2(StopNotifySession_,
+               void(BluetoothGattNotifySession*, base::OnceClosure&));
+  void ReadRemoteCharacteristic(ValueCallback c, ErrorCallback ec) override {
+    ReadRemoteCharacteristic_(c, ec);
+  }
+  MOCK_METHOD2(ReadRemoteCharacteristic_, void(ValueCallback&, ErrorCallback&));
+  void WriteRemoteCharacteristic(const std::vector<uint8_t>& v,
+                                 base::OnceClosure c,
+                                 ErrorCallback ec) override {
+    WriteRemoteCharacteristic_(v, c, ec);
+  }
+  MOCK_METHOD3(WriteRemoteCharacteristic_,
                void(const std::vector<uint8_t>&,
-                    const base::Closure&,
-                    const ErrorCallback&));
+                    base::OnceClosure&,
+                    ErrorCallback&));
 #if defined(OS_CHROMEOS)
-  MOCK_METHOD3(PrepareWriteRemoteCharacteristic,
+  void PrepareWriteRemoteCharacteristic(const std::vector<uint8_t>& v,
+                                        base::OnceClosure c,
+                                        ErrorCallback ec) override {
+    PrepareWriteRemoteCharacteristic_(v, c, ec);
+  }
+  MOCK_METHOD3(PrepareWriteRemoteCharacteristic_,
                void(const std::vector<uint8_t>&,
-                    const base::Closure&,
-                    const ErrorCallback&));
+                    base::OnceClosure&,
+                    ErrorCallback&));
 #endif
   MOCK_METHOD1(WriteWithoutResponse, bool(base::span<const uint8_t>));
 
@@ -79,21 +101,37 @@ class MockBluetoothGattCharacteristic
 
  protected:
 #if defined(OS_CHROMEOS)
-  MOCK_METHOD4(SubscribeToNotifications,
+  void SubscribeToNotifications(BluetoothRemoteGattDescriptor* d,
+                                NotificationType t,
+                                base::OnceClosure c,
+                                ErrorCallback ec) override {
+    SubscribeToNotifications_(d, t, c, ec);
+  }
+  MOCK_METHOD4(SubscribeToNotifications_,
                void(BluetoothRemoteGattDescriptor*,
                     NotificationType,
-                    const base::Closure&,
-                    const ErrorCallback&));
+                    base::OnceClosure&,
+                    ErrorCallback&));
 #else
-  MOCK_METHOD3(SubscribeToNotifications,
+  void SubscribeToNotifications(BluetoothRemoteGattDescriptor* d,
+                                base::OnceClosure c,
+                                ErrorCallback ec) override {
+    SubscribeToNotifications_(d, c, ec);
+  }
+  MOCK_METHOD3(SubscribeToNotifications_,
                void(BluetoothRemoteGattDescriptor*,
-                    const base::Closure&,
-                    const ErrorCallback&));
+                    base::OnceClosure&,
+                    ErrorCallback&));
 #endif
-  MOCK_METHOD3(UnsubscribeFromNotifications,
+  void UnsubscribeFromNotifications(BluetoothRemoteGattDescriptor* d,
+                                    base::OnceClosure c,
+                                    ErrorCallback ec) override {
+    UnsubscribeFromNotifications_(d, c, ec);
+  }
+  MOCK_METHOD3(UnsubscribeFromNotifications_,
                void(BluetoothRemoteGattDescriptor*,
-                    const base::Closure&,
-                    const ErrorCallback&));
+                    base::OnceClosure&,
+                    ErrorCallback&));
 
  private:
   DISALLOW_COPY_AND_ASSIGN(MockBluetoothGattCharacteristic);

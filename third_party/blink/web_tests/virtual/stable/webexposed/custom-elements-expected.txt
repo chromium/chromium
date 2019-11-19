@@ -1,0 +1,29 @@
+Tests basic web-exposure of Custom Elements
+
+On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
+
+Document.prototype.hasOwnProperty("registerElement")
+false
+
+
+typeof Document.prototype.registerElement
+undefined
+
+
+document.createElement("x-a") instanceof HTMLUnknownElement
+false
+
+
+document.querySelector(":unresolved")
+FAIL document.querySelector(":unresolved") threw exception SyntaxError: Failed to execute 'querySelector' on 'Document': ':unresolved' is not a valid selector.
+undefined
+
+
+span.getAttribute("is")
+
+
+PASS window.customElements.define("a-a", A, {extends: "b"}) did not throw exception.
+PASS successfullyParsed is true
+
+TEST COMPLETE
+

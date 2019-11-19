@@ -1,0 +1,29 @@
+# Copyright 2017 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+mojom = "//components/chromeos_camera/common/mjpeg_decode_accelerator.mojom"
+
+public_headers = [
+  "//components/chromeos_camera/mjpeg_decode_accelerator.h",
+  "//media/base/bitstream_buffer.h",
+]
+
+traits_headers = [
+  "//components/chromeos_camera/common/mjpeg_decode_accelerator_mojom_traits.h",
+]
+
+sources = [
+  "//components/chromeos_camera/common/mjpeg_decode_accelerator_mojom_traits.cc",
+]
+
+deps = [
+  "//base",
+  "//media",
+  "//media/base/ipc",
+]
+
+type_mappings = [
+  "chromeos_camera.mojom.BitstreamBuffer=::media::BitstreamBuffer[move_only]",
+  "chromeos_camera.mojom.DecodeError=::chromeos_camera::MjpegDecodeAccelerator::Error",
+]

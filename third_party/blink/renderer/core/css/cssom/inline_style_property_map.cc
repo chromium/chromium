@@ -49,11 +49,12 @@ void InlineStylePropertyMap::SetCustomProperty(
     const AtomicString& property_name,
     const CSSValue& value) {
   DCHECK(value.IsVariableReferenceValue());
-  CSSVariableData* variable_data =
-      ToCSSVariableReferenceValue(value).VariableDataValue();
+  auto* variable_data =
+      To<CSSVariableReferenceValue>(value).VariableDataValue();
   owner_element_->SetInlineStyleProperty(
-      CSSPropertyVariable,
-      *CSSCustomPropertyDeclaration::Create(property_name, variable_data));
+      CSSPropertyID::kVariable,
+      *MakeGarbageCollected<CSSCustomPropertyDeclaration>(property_name,
+                                                          variable_data));
 }
 
 void InlineStylePropertyMap::RemoveProperty(CSSPropertyID property_id) {

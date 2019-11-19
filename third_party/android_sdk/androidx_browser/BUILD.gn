@@ -1,0 +1,53 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+
+android_library("androidx_browser_java") {
+  java_files = [
+    "./src/browser/src/main/java/androidx/browser/customtabs/CustomTabsIntent.java",
+    "./src/browser/src/main/java/androidx/browser/customtabs/CustomTabColorSchemeParams.java",
+    "./src/browser/src/main/java/androidx/browser/customtabs/CustomTabsSessionToken.java",
+    "./src/browser/src/main/java/androidx/browser/customtabs/PostMessageService.java",
+    "./src/browser/src/main/java/androidx/browser/customtabs/PostMessageServiceConnection.java",
+    "./src/browser/src/main/java/androidx/browser/customtabs/CustomTabsServiceConnection.java",
+    "./src/browser/src/main/java/androidx/browser/customtabs/CustomTabsCallback.java",
+    "./src/browser/src/main/java/androidx/browser/customtabs/CustomTabsSession.java",
+    "./src/browser/src/main/java/androidx/browser/customtabs/PostMessageBackend.java",
+    "./src/browser/src/main/java/androidx/browser/customtabs/CustomTabsService.java",
+    "./src/browser/src/main/java/androidx/browser/customtabs/CustomTabsClient.java",
+    "./src/browser/src/main/java/androidx/browser/customtabs/TrustedWebUtils.java",
+    "./src/browser/src/main/java/androidx/browser/trusted/NotificationApiHelperForM.java",
+    "./src/browser/src/main/java/androidx/browser/trusted/NotificationApiHelperForO.java",
+    "./src/browser/src/main/java/androidx/browser/trusted/TrustedWebActivityServiceWrapper.java",
+    "./src/browser/src/main/java/androidx/browser/trusted/TrustedWebActivityServiceConnectionManager.java",
+    "./src/browser/src/main/java/androidx/browser/trusted/TrustedWebActivityService.java",
+    "./src/browser/src/main/java/androidx/browser/trusted/TrustedWebActivityIntent.java",
+    "./src/browser/src/main/java/androidx/browser/trusted/TrustedWebActivityIntentBuilder.java",
+    "./src/browser/src/main/java/androidx/browser/trusted/sharing/ShareData.java",
+    "./src/browser/src/main/java/androidx/browser/trusted/sharing/ShareTarget.java",
+    "./src/browser/src/main/java/androidx/browser/trusted/splashscreens/SplashScreenParamKey.java",
+  ]
+  deps = [
+    "//third_party/android_deps:android_support_v7_appcompat_java",
+    "//third_party/android_deps:androidx_annotation_annotation_java",
+    "//third_party/android_deps:com_android_support_collections_java",
+    "//third_party/android_deps:com_android_support_support_annotations_java",
+    "//third_party/android_deps:com_android_support_support_compat_java",
+  ]
+  srcjar_deps = [ ":androidx_browser_service_aidl" ]
+  android_manifest_for_lint = "src/browser/src/main/AndroidManifest.xml"
+  chromium_code = false
+}
+
+android_aidl("androidx_browser_service_aidl") {
+  interface_file = "common.aidl"
+
+  sources = [
+    "./src/browser/src/main/aidl/android/support/customtabs/ICustomTabsCallback.aidl",
+    "./src/browser/src/main/aidl/android/support/customtabs/ICustomTabsService.aidl",
+    "./src/browser/src/main/aidl/android/support/customtabs/IPostMessageService.aidl",
+    "./src/browser/src/main/aidl/android/support/customtabs/trusted/ITrustedWebActivityService.aidl",
+  ]
+}

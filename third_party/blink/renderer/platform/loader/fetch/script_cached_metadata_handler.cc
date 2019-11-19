@@ -47,13 +47,12 @@ scoped_refptr<CachedMetadata> ScriptCachedMetadataHandler::GetCachedMetadata(
 }
 
 void ScriptCachedMetadataHandler::SetSerializedCachedMetadata(
-    const uint8_t* data,
-    size_t size) {
+    mojo_base::BigBuffer data) {
   // We only expect to receive cached metadata from the platform once. If this
   // triggers, it indicates an efficiency problem which is most likely
   // unexpected in code designed to improve performance.
   DCHECK(!cached_metadata_);
-  cached_metadata_ = CachedMetadata::CreateFromSerializedData(data, size);
+  cached_metadata_ = CachedMetadata::CreateFromSerializedData(std::move(data));
 }
 
 String ScriptCachedMetadataHandler::Encoding() const {
@@ -82,7 +81,8 @@ size_t ScriptCachedMetadataHandler::GetCodeCacheSize() const {
 
 void ScriptCachedMetadataHandler::SendToPlatform() {
   if (cached_metadata_) {
-    const Vector<uint8_t>& serialized_data = cached_metadata_->SerializedData();
+    base::span<const uint8_t> serialized_data =
+        cached_metadata_->SerializedData();
     sender_->Send(serialized_data.data(), serialized_data.size());
   } else {
     sender_->Send(nullptr, 0);

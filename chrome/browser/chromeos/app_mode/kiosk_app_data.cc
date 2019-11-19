@@ -16,7 +16,6 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_app_data_delegate.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_app_manager.h"
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/webstore_data_fetcher.h"
 #include "chrome/browser/extensions/webstore_install_helper.h"
@@ -26,8 +25,7 @@
 #include "components/prefs/scoped_user_pref_update.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/common/service_manager_connection.h"
-#include "extensions/browser/extension_system.h"
+#include "extensions/browser/extension_registry.h"
 #include "extensions/browser/image_loader.h"
 #include "extensions/browser/sandboxed_unpacker.h"
 #include "extensions/common/constants.h"
@@ -38,7 +36,6 @@
 #include "extensions/common/manifest_handlers/kiosk_mode_info.h"
 #include "extensions/common/verifier_formats.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
-#include "services/service_manager/public/cpp/connector.h"
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/image/image.h"
 
@@ -53,6 +50,8 @@ constexpr char kKeyRequiredPlatformVersion[] = "required_platform_version";
 
 constexpr char kInvalidWebstoreResponseError[] =
     "Invalid Chrome Web Store reponse";
+
+bool ignore_kiosk_app_data_load_failures_for_testing = false;
 
 // Returns true for valid kiosk app manifest.
 bool IsValidKioskAppManifest(const extensions::Manifest& manifest) {
@@ -84,17 +83,14 @@ class KioskAppData::CrxLoader : public extensions::SandboxedUnpackerClient {
       : client_(client),
         crx_file_(crx_file),
         success_(false),
-        task_runner_(base::CreateSequencedTaskRunnerWithTraits(
-            {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+        task_runner_(base::CreateSequencedTaskRunner(
+            {base::ThreadPool(), base::MayBlock(),
+             base::TaskPriority::BEST_EFFORT,
              base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})) {}
 
   void Start() {
-    auto connector = content::ServiceManagerConnection::GetForProcess()
-                         ->GetConnector()
-                         ->Clone();
     task_runner_->PostTask(FROM_HERE,
-                           base::BindOnce(&CrxLoader::StartInThreadPool, this,
-                                          std::move(connector)));
+                           base::BindOnce(&CrxLoader::StartInThreadPool, this));
   }
 
   bool success() const { return success_; }
@@ -106,7 +102,7 @@ class KioskAppData::CrxLoader : public extensions::SandboxedUnpackerClient {
   }
 
  private:
-  ~CrxLoader() override {}
+  ~CrxLoader() override = default;
 
   // extensions::SandboxedUnpackerClient
   void OnUnpackSuccess(
@@ -138,8 +134,7 @@ class KioskAppData::CrxLoader : public extensions::SandboxedUnpackerClient {
     NotifyFinishedInThreadPool();
   }
 
-  void StartInThreadPool(
-      std::unique_ptr<service_manager::Connector> connector) {
+  void StartInThreadPool() {
     DCHECK(task_runner_->RunsTasksInCurrentSequence());
 
     if (!temp_dir_.CreateUniqueTempDir()) {
@@ -149,11 +144,10 @@ class KioskAppData::CrxLoader : public extensions::SandboxedUnpackerClient {
     }
 
     auto unpacker = base::MakeRefCounted<extensions::SandboxedUnpacker>(
-        std::move(connector), extensions::Manifest::INTERNAL,
-        extensions::Extension::NO_FLAGS, temp_dir_.GetPath(),
-        task_runner_.get(), this);
+        extensions::Manifest::INTERNAL, extensions::Extension::NO_FLAGS,
+        temp_dir_.GetPath(), task_runner_.get(), this);
     unpacker->StartWithCrx(extensions::CRXFileInfo(
-        crx_file_, extensions::GetWebstoreVerifierFormat()));
+        crx_file_, extensions::GetPolicyVerifierFormat()));
   }
 
   void NotifyFinishedInThreadPool() {
@@ -164,9 +158,8 @@ class KioskAppData::CrxLoader : public extensions::SandboxedUnpackerClient {
                    << temp_dir_.GetPath().value();
     }
 
-    base::PostTaskWithTraits(
-        FROM_HERE, {BrowserThread::UI},
-        base::BindOnce(&CrxLoader::NotifyFinishedOnUIThread, this));
+    base::PostTask(FROM_HERE, {BrowserThread::UI},
+                   base::BindOnce(&CrxLoader::NotifyFinishedOnUIThread, this));
   }
 
   void NotifyFinishedOnUIThread() {
@@ -213,7 +206,7 @@ class KioskAppData::WebstoreDataParser
  private:
   friend class base::RefCounted<WebstoreDataParser>;
 
-  ~WebstoreDataParser() override {}
+  ~WebstoreDataParser() override = default;
 
   void ReportFailure() {
     if (client_)
@@ -276,10 +269,14 @@ KioskAppData::KioskAppData(KioskAppDataDelegate* delegate,
       delegate_(delegate),
       status_(STATUS_INIT),
       update_url_(update_url),
-      crx_file_(cached_crx),
-      weak_factory_(this) {}
+      crx_file_(cached_crx) {
+  if (ignore_kiosk_app_data_load_failures_for_testing) {
+    LOG(WARNING) << "Force KioskAppData loaded for testing.";
+    SetStatus(STATUS_LOADED);
+  }
+}
 
-KioskAppData::~KioskAppData() {}
+KioskAppData::~KioskAppData() = default;
 
 void KioskAppData::Load() {
   SetStatus(STATUS_LOADING);
@@ -295,9 +292,8 @@ void KioskAppData::LoadFromInstalledApp(Profile* profile,
   SetStatus(STATUS_LOADING);
 
   if (!app) {
-    app = extensions::ExtensionSystem::Get(profile)
-              ->extension_service()
-              ->GetInstalledExtension(app_id());
+    app = extensions::ExtensionRegistry::Get(profile)->GetInstalledExtension(
+        app_id());
   }
 
   DCHECK_EQ(app_id(), app->id());
@@ -351,6 +347,12 @@ std::unique_ptr<KioskAppData> KioskAppData::CreateForTest(
 }
 
 void KioskAppData::SetStatus(Status status) {
+  if (status == STATUS_ERROR &&
+      ignore_kiosk_app_data_load_failures_for_testing) {
+    LOG(WARNING) << "Ignoring KioskAppData error for testing. Force OK.";
+    status = STATUS_LOADED;
+  }
+
   if (status_ == status)
     return;
 
@@ -443,6 +445,11 @@ void KioskAppData::OnIconLoadFailure() {
   kiosk_app_icon_loader_.reset();
   // Re-fetch data from web store when failed to load cached data.
   StartFetch();
+}
+
+// static
+void KioskAppData::SetIgnoreKioskAppDataLoadFailuresForTesting(bool value) {
+  ignore_kiosk_app_data_load_failures_for_testing = value;
 }
 
 void KioskAppData::OnWebstoreParseSuccess(

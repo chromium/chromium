@@ -29,6 +29,8 @@ class TestLifecycleUnit : public LifecycleUnitBase {
     last_focused_time_ = last_focused_time;
   }
 
+  void SetSortKey(LifecycleUnit::SortKey sort_key) { sort_key_ = sort_key; }
+
   void SetTitle(base::StringPiece16 title) { title_ = title.as_string(); }
 
   // LifecycleUnit:
@@ -41,7 +43,6 @@ class TestLifecycleUnit : public LifecycleUnitBase {
   LifecycleUnitLoadingState GetLoadingState() const override;
   bool Load() override;
   int GetEstimatedMemoryFreedOnDiscardKB() const override;
-  bool CanPurge() const override;
   bool CanFreeze(DecisionDetails* decision_details) const override;
   bool CanDiscard(LifecycleUnitDiscardReason reason,
                   DecisionDetails* decision_details) const override;
@@ -54,6 +55,7 @@ class TestLifecycleUnit : public LifecycleUnitBase {
   base::string16 title_;
   base::TimeTicks last_focused_time_;
   base::ProcessHandle process_handle_;
+  LifecycleUnit::SortKey sort_key_;
   bool can_discard_ = true;
 
   DISALLOW_COPY_AND_ASSIGN(TestLifecycleUnit);

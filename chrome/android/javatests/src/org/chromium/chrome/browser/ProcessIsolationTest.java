@@ -40,14 +40,13 @@ public class ProcessIsolationTest {
     /**
      * Verifies that process isolation works, i.e., that the browser and
      * renderer processes use different user IDs.
-     * @throws InterruptedException
      */
     @Test
     @MediumTest
     @DisableIf.Build(sdk_is_greater_than = 22, message = "crbug.com/517611")
     @Feature({"Browser", "Security"})
     @RetryOnFailure
-    public void testProcessIsolationForRenderers() throws InterruptedException, IOException {
+    public void testProcessIsolationForRenderers() throws IOException {
         int tabsCount = mActivityTestRule.getActivity().getCurrentTabModel().getCount();
         // The ActivityManager can be used to retrieve the current processes, but the reported UID
         // in the RunningAppProcessInfo for isolated processes is the same as the parent process
@@ -124,7 +123,7 @@ public class ProcessIsolationTest {
     }
 
     @Before
-    public void setUp() throws InterruptedException {
+    public void setUp() {
         mActivityTestRule.startMainActivityFromLauncher();
     }
 }

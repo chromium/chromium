@@ -6,13 +6,8 @@
 #define NET_TEST_EMBEDDED_TEST_SERVER_SIMPLE_CONNECTION_LISTENER_H_
 
 #include "base/macros.h"
-#include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "net/test/embedded_test_server/embedded_test_server_connection_listener.h"
-
-namespace base {
-class SequencedTaskRunner;
-}
 
 namespace net {
 
@@ -53,8 +48,6 @@ class SimpleConnectionListener : public EmbeddedTestServerConnectionListener {
 
   const int expected_connections_;
   const AllowAdditionalConnections allow_additional_connections_;
-
-  const scoped_refptr<base::SequencedTaskRunner> run_loop_task_runner_;
 
   base::RunLoop run_loop_;
 

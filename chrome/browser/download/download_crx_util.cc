@@ -55,13 +55,19 @@ std::unique_ptr<ExtensionInstallPrompt> CreateExtensionInstallPrompt(
       Browser* browser = chrome::FindLastActiveWithProfile(profile);
       if (!browser) {
         browser = new Browser(
-            Browser::CreateParams(Browser::TYPE_TABBED, profile, true));
+            Browser::CreateParams(Browser::TYPE_NORMAL, profile, true));
       }
       web_contents = browser->tab_strip_model()->GetActiveWebContents();
     }
     return std::unique_ptr<ExtensionInstallPrompt>(
         new ExtensionInstallPrompt(web_contents));
   }
+}
+
+bool OffStoreInstallAllowedByPrefs(Profile* profile, const DownloadItem& item) {
+  return g_allow_offstore_install_for_testing ||
+         extensions::ExtensionManagementFactory::GetForBrowserContext(profile)
+             ->IsOffstoreInstallAllowed(item.GetURL(), item.GetReferrerUrl());
 }
 
 }  // namespace
@@ -134,13 +140,9 @@ bool IsExtensionDownload(const DownloadItem& download_item) {
   }
 }
 
-bool OffStoreInstallAllowedByPrefs(Profile* profile, const DownloadItem& item) {
-  // TODO(aa): RefererURL is cleared in some cases, for example when going
-  // between secure and non-secure URLs. It would be better if DownloadItem
-  // tracked the initiating page explicitly.
-  return g_allow_offstore_install_for_testing ||
-         extensions::ExtensionManagementFactory::GetForBrowserContext(profile)
-             ->IsOffstoreInstallAllowed(item.GetURL(), item.GetReferrerUrl());
+bool IsTrustedExtensionDownload(Profile* profile, const DownloadItem& item) {
+  return IsExtensionDownload(item) &&
+         OffStoreInstallAllowedByPrefs(profile, item);
 }
 
 std::unique_ptr<base::AutoReset<bool>> OverrideOffstoreInstallAllowedForTesting(

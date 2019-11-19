@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<body>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+<script>
+'use strict';
+
+self.testRunner.setPermission('wake-lock-screen', 'granted', location.origin, location.origin);
+
+promise_test(t => {
+  window.testRunner.setPageVisibility('hidden');
+  assert_true(document.hidden);
+  return promise_rejects(t, "NotAllowedError", navigator.wakeLock.request('screen'));
+}, "navigator.wakeLock.request('screen') fails when the document is hidden");
+
+// This test currently checks for Chromium-specific behavior: WakeLock::request()
+// performs an asynchronous permission request, which is why it is possible to
+// call navigator.wakeLock.request(), change page visibility later and still get
+// a NotAllowedError.
+// A more interoperable test would allow both |screenLock| to reject with
+// NotAllowedError as well as it resolving to a WakeLockSentinel that would fire
+// a "release" event upon page vsibility change.
+promise_test(t => {
+  window.testRunner.setPageVisibility('visible');
+
+  const screenLock = navigator.wakeLock.request('screen');
+  window.testRunner.setPageVisibility('hidden');
+  assert_true(document.hidden);
+  return promise_rejects(t, "NotAllowedError", screenLock);
+}, "navigator.wakeLock.request('screen') aborts when the page is hidden");
+
+promise_test(async t => {
+  window.testRunner.setPageVisibility('visible');
+
+  const screenLock1 = await navigator.wakeLock.request('screen');
+  const screenLock2 = await navigator.wakeLock.request('screen');
+
+  const wait1 = new EventWatcher(t, screenLock1, 'release').wait_for('release');
+  const wait2 = new EventWatcher(t, screenLock2, 'release').wait_for('release');
+
+  window.testRunner.setPageVisibility('hidden');
+
+  return Promise.all([wait1, wait2]);
+}, "Screen wake locks are released when the document the page is hidden");
+</script>
+</body>
+</html>

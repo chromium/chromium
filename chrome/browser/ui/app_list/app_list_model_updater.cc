@@ -6,7 +6,17 @@
 #include <algorithm>
 
 #include "ash/public/cpp/app_list/app_list_config.h"
+#include "ash/public/cpp/app_list/app_list_types.h"
 #include "chrome/browser/ui/app_list/chrome_app_list_item.h"
+
+namespace {
+
+int g_next_unique_model_id = ash::kAppListProfileIdStartFrom;
+
+}  // namespace
+
+AppListModelUpdater::AppListModelUpdater()
+    : model_id_(g_next_unique_model_id++) {}
 
 // static
 syncer::StringOrdinal AppListModelUpdater::GetFirstAvailablePositionInternal(
@@ -32,7 +42,7 @@ syncer::StringOrdinal AppListModelUpdater::GetFirstAvailablePositionInternal(
     // There may be multiple "page break" items at the end of page while empty
     // pages will not be shown in app list, so skip them.
     const int max_items_in_page =
-        app_list::AppListConfig::instance().GetMaxNumOfItemsPerPage(page);
+        ash::AppListConfig::instance().GetMaxNumOfItemsPerPage(page);
     if (items_in_page > 0 && items_in_page < max_items_in_page) {
       // Sometimes two continuous items may have the same position, so skip to
       // the next available position.

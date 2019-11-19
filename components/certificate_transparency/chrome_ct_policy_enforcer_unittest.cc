@@ -7,9 +7,12 @@
 #include <memory>
 #include <string>
 
+#include "base/build_time.h"
 #include "base/stl_util.h"
+#include "base/test/simple_test_clock.h"
 #include "base/time/time.h"
 #include "base/version.h"
+#include "components/certificate_transparency/ct_known_logs.h"
 #include "crypto/rsa_private_key.h"
 #include "crypto/sha2.h"
 #include "net/cert/ct_policy_status.h"
@@ -42,7 +45,10 @@ static_assert(base::size(kGoogleAviatorLogID) - 1 == crypto::kSHA256Length,
 class ChromeCTPolicyEnforcerTest : public ::testing::Test {
  public:
   void SetUp() override {
-    policy_enforcer_.reset(new ChromeCTPolicyEnforcer);
+    auto enforcer = std::make_unique<ChromeCTPolicyEnforcer>(
+        base::GetBuildTime(), GetDisqualifiedLogs(), GetLogsOperatedByGoogle());
+    enforcer->SetClockForTesting(&clock_);
+    policy_enforcer_.reset(enforcer.release());
 
     std::string der_test_cert(net::ct::GetDerEncodedX509Cert());
     chain_ = X509Certificate::CreateFromBytes(der_test_cert.data(),
@@ -50,6 +56,7 @@ class ChromeCTPolicyEnforcerTest : public ::testing::Test {
     ASSERT_TRUE(chain_.get());
     google_log_id_ = std::string(kGoogleAviatorLogID, crypto::kSHA256Length);
     non_google_log_id_.assign(crypto::kSHA256Length, 1);
+    clock_.SetNow(base::Time::Now());
   }
 
   void FillListWithSCTsOfOrigin(
@@ -122,6 +129,7 @@ class ChromeCTPolicyEnforcerTest : public ::testing::Test {
   }
 
  protected:
+  base::SimpleTestClock clock_;
   std::unique_ptr<net::CTPolicyEnforcer> policy_enforcer_;
   scoped_refptr<X509Certificate> chain_;
   std::string google_log_id_;
@@ -175,6 +183,22 @@ TEST_F(ChromeCTPolicyEnforcerTest, ConformsToCTPolicyWithNonEmbeddedSCTs) {
                            2, &scts);
 
   EXPECT_EQ(CTPolicyCompliance::CT_POLICY_COMPLIES_VIA_SCTS,
+            policy_enforcer_->CheckCompliance(chain_.get(), scts,
+                                              NetLogWithSource()));
+}
+
+TEST_F(ChromeCTPolicyEnforcerTest, EnforcementDisabledByBinaryAge) {
+  SCTList scts;
+  FillListWithSCTsOfOrigin(SignedCertificateTimestamp::SCT_FROM_TLS_EXTENSION,
+                           2, &scts);
+
+  EXPECT_EQ(CTPolicyCompliance::CT_POLICY_COMPLIES_VIA_SCTS,
+            policy_enforcer_->CheckCompliance(chain_.get(), scts,
+                                              NetLogWithSource()));
+
+  clock_.Advance(base::TimeDelta::FromDays(71));
+
+  EXPECT_EQ(CTPolicyCompliance::CT_POLICY_BUILD_NOT_TIMELY,
             policy_enforcer_->CheckCompliance(chain_.get(), scts,
                                               NetLogWithSource()));
 }

@@ -11,8 +11,7 @@
 
 namespace offline_pages {
 
-LoadTerminationListenerImpl::LoadTerminationListenerImpl()
-    : weak_ptr_factory_(this) {
+LoadTerminationListenerImpl::LoadTerminationListenerImpl() {
   if (base::SysInfo::IsLowEndDevice())
     app_listener_ =
         base::android::ApplicationStatusListener::New(base::BindRepeating(

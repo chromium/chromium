@@ -1,0 +1,42 @@
+<!doctype html>
+<title>Scheduling API: Tasks Run in Priority Order</title>
+<link rel="author" title="Scott Haseley" href="mailto:shaseley@chromium.org">
+<link rel="help" href="https://github.com/WICG/main-thread-scheduling">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<script>
+'use strict';
+
+async_test(t => {
+  let result = '';
+
+  function report(id) {
+    result = result === '' ? id : result + ' ' + id;
+  }
+
+  function scheduleReportTask(id, priority) {
+    scheduler.postTask(() => {
+      report(id);
+    }, { priority });
+  }
+
+  // Post tasks in reverse priority order and expect they are run from highest
+  // to lowest priority.
+  scheduleReportTask('E1', 'idle');
+  scheduleReportTask('E2', 'idle');
+  scheduleReportTask('L1', 'low');
+  scheduleReportTask('L2', 'low');
+  scheduleReportTask('D1', 'default');
+  scheduleReportTask('D2', 'default');
+  scheduleReportTask('H1', 'high');
+  scheduleReportTask('H2', 'high');
+  scheduleReportTask('I1', 'immediate');
+  scheduleReportTask('I2', 'immediate');
+
+  scheduler.postTask(t.step_func_done(() => {
+    assert_equals(result, 'I1 I2 H1 H2 D1 D2 L1 L2 E1 E2');
+  }), { priority: 'idle' });
+}, 'Test scheduler.postTask task run in priority order');
+
+</script>

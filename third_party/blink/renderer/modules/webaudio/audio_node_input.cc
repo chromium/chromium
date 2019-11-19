@@ -46,10 +46,6 @@ AudioNodeInput::~AudioNodeInput() {
   AudioNodeWiring::WillBeDestroyed(*this);
 }
 
-std::unique_ptr<AudioNodeInput> AudioNodeInput::Create(AudioHandler& handler) {
-  return base::WrapUnique(new AudioNodeInput(handler));
-}
-
 void AudioNodeInput::DidUpdate() {
   Handler().CheckNumberOfChannelsForInput(this);
 }
@@ -118,8 +114,6 @@ void AudioNodeInput::SumAllConnections(AudioBus* summing_bus,
   //        handler().internalChannelCountMode() != AudioHandler::Max);
 
   DCHECK(summing_bus);
-  if (!summing_bus)
-    return;
 
   summing_bus->Zero();
 

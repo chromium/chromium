@@ -92,4 +92,11 @@ void AudioOutputProxy::Close() {
   delete this;
 }
 
+void AudioOutputProxy::Flush() {
+  DCHECK(state_ != kPlaying);
+
+  if (dispatcher_)
+    dispatcher_->FlushStream(this);
+}
+
 }  // namespace media

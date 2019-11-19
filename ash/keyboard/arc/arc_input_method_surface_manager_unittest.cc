@@ -4,14 +4,12 @@
 
 #include "ash/keyboard/arc/arc_input_method_surface_manager.h"
 
-#include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "base/macros.h"
 #include "components/exo/input_method_surface.h"
 #include "components/exo/surface.h"
 #include "components/exo/wm_helper.h"
 #include "components/exo/wm_helper_chromeos.h"
-#include "ui/aura/env.h"
 
 namespace ash {
 namespace {
@@ -43,8 +41,7 @@ class ArcInputMethodSurfaceManagerTest : public AshTestBase {
 
   void SetUp() override {
     AshTestBase::SetUp();
-    wm_helper_ =
-        std::make_unique<exo::WMHelperChromeOS>(Shell::Get()->aura_env());
+    wm_helper_ = std::make_unique<exo::WMHelperChromeOS>();
     exo::WMHelper::SetInstance(wm_helper_.get());
   }
 

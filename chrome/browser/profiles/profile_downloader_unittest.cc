@@ -7,15 +7,17 @@
 #include "base/bind.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/task_environment.h"
 #include "chrome/browser/profiles/profile_downloader_delegate.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/signin/test_signin_client_builder.h"
 #include "chrome/test/base/testing_profile.h"
-#include "components/signin/core/browser/account_info.h"
-#include "components/signin/core/browser/test_signin_client.h"
-#include "content/public/test/test_browser_thread_bundle.h"
-#include "net/url_request/test_url_fetcher_factory.h"
-#include "services/identity/public/cpp/identity_manager.h"
+#include "components/signin/public/base/test_signin_client.h"
+#include "components/signin/public/identity_manager/account_info.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -33,37 +35,24 @@ const char kTestInvalidPictureURL[] = "invalid_picture_url";
 class ProfileDownloaderTest
     : public testing::Test,
       public ProfileDownloaderDelegate,
-      public identity::IdentityManager::DiagnosticsObserver {
+      public signin::IdentityManager::DiagnosticsObserver {
  protected:
-  ProfileDownloaderTest()
-    : thread_bundle_(content::TestBrowserThreadBundle::IO_MAINLOOP) {}
-  ~ProfileDownloaderTest() override {}
-
-  void SetUp() override {
-    TestingProfile::Builder builder;
-
-    profile_ = IdentityTestEnvironmentProfileAdaptor::
-        CreateProfileForIdentityTestEnvironment(builder);
-
-    profile_downloader_.reset(new ProfileDownloader(this));
-
-    identity_test_env_profile_adaptor_ =
-        std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile_.get());
-    identity_test_env_ =
-        identity_test_env_profile_adaptor_->identity_test_env();
-    DCHECK(identity_test_env_);
-
-    identity_test_env_->identity_manager()->AddDiagnosticsObserver(this);
+  ProfileDownloaderTest() : profile_downloader_(this) {
+    identity_test_env_.identity_manager()->AddDiagnosticsObserver(this);
   }
-
-  void TearDown() override {
-    identity_test_env_->identity_manager()->RemoveDiagnosticsObserver(this);
+  ~ProfileDownloaderTest() override {
+    identity_test_env_.identity_manager()->RemoveDiagnosticsObserver(this);
   }
 
   bool NeedsProfilePicture() const override { return true; }
   int GetDesiredImageSideLength() const override { return 128; }
-  std::string GetCachedPictureURL() const override { return ""; }
-  Profile* GetBrowserProfile() override { return profile_.get(); }
+  std::string GetCachedPictureURL() const override { return std::string(); }
+  signin::IdentityManager* GetIdentityManager() override {
+    return identity_test_env_.identity_manager();
+  }
+  network::mojom::URLLoaderFactory* GetURLLoaderFactory() override {
+    return &test_url_loader_factory_;
+  }
   bool IsPreSignin() const override { return false; }
   void OnProfileDownloadSuccess(ProfileDownloader* downloader) override {
 
@@ -74,14 +63,14 @@ class ProfileDownloaderTest
 
   void SimulateUserInfoSuccess(const std::string& picture_url,
                                const AccountInfo& account_info) {
-    identity_test_env_->SimulateSuccessfulFetchOfAccountInfo(
+    identity_test_env_.SimulateSuccessfulFetchOfAccountInfo(
         account_info.account_id, account_info.email, account_info.gaia,
         kTestHostedDomain, kTestFullName, kTestGivenName, kTestLocale,
         picture_url);
   }
 
   // IdentityManager::DiagnosticsObserver:
-  void OnAccessTokenRequested(const std::string& account_id,
+  void OnAccessTokenRequested(const CoreAccountId& account_id,
                               const std::string& consumer_id,
                               const identity::ScopeSet& scopes) override {
     // This flow should be invoked only when a test has explicitly set up
@@ -97,24 +86,23 @@ class ProfileDownloaderTest
     on_access_token_request_callback_ = std::move(callback);
   }
 
-  content::TestBrowserThreadBundle thread_bundle_;
-  std::unique_ptr<Profile> profile_;
-  std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
-      identity_test_env_profile_adaptor_;
-  identity::IdentityTestEnvironment* identity_test_env_;
+  base::test::TaskEnvironment task_environment_;
+  network::TestURLLoaderFactory test_url_loader_factory_;
+  signin::IdentityTestEnvironment identity_test_env_;
+  ProfileDownloader profile_downloader_;
+
   base::OnceClosure on_access_token_request_callback_;
-  std::string account_id_for_access_token_request_;
-  std::unique_ptr<ProfileDownloader> profile_downloader_;
+  CoreAccountId account_id_for_access_token_request_;
 };
 
 TEST_F(ProfileDownloaderTest, FetchAccessToken) {
   AccountInfo account_info =
-      identity_test_env_->MakeAccountAvailable(kTestEmail);
-  identity_test_env_->SetRefreshTokenForAccount(account_info.account_id);
+      identity_test_env_.MakeAccountAvailable(kTestEmail);
+  identity_test_env_.SetRefreshTokenForAccount(account_info.account_id);
 
   base::RunLoop run_loop;
   set_on_access_token_requested_callback(run_loop.QuitClosure());
-  profile_downloader_->StartForAccount(account_info.account_id);
+  profile_downloader_.StartForAccount(account_info.account_id);
   run_loop.Run();
 
   EXPECT_EQ(account_info.account_id, account_id_for_access_token_request_);
@@ -122,63 +110,63 @@ TEST_F(ProfileDownloaderTest, FetchAccessToken) {
 
 TEST_F(ProfileDownloaderTest, AccountInfoReady) {
   AccountInfo account_info =
-      identity_test_env_->MakeAccountAvailable(kTestEmail);
+      identity_test_env_.MakeAccountAvailable(kTestEmail);
   SimulateUserInfoSuccess(kTestValidPictureURL, account_info);
 
   ASSERT_EQ(ProfileDownloader::PICTURE_FAILED,
-            profile_downloader_->GetProfilePictureStatus());
+            profile_downloader_.GetProfilePictureStatus());
   base::RunLoop run_loop;
   set_on_access_token_requested_callback(run_loop.QuitClosure());
-  profile_downloader_->StartForAccount(account_info.account_id);
+  profile_downloader_.StartForAccount(account_info.account_id);
   run_loop.Run();
-  profile_downloader_->StartFetchingImage();
-  ASSERT_EQ(kTestValidPictureURL, profile_downloader_->GetProfilePictureURL());
+  profile_downloader_.StartFetchingImage();
+  ASSERT_EQ(kTestValidPictureURL, profile_downloader_.GetProfilePictureURL());
 }
 
 TEST_F(ProfileDownloaderTest, AccountInfoNotReady) {
   AccountInfo account_info =
-      identity_test_env_->MakeAccountAvailable(kTestEmail);
+      identity_test_env_.MakeAccountAvailable(kTestEmail);
   ASSERT_EQ(ProfileDownloader::PICTURE_FAILED,
-            profile_downloader_->GetProfilePictureStatus());
+            profile_downloader_.GetProfilePictureStatus());
   base::RunLoop run_loop;
   set_on_access_token_requested_callback(run_loop.QuitClosure());
-  profile_downloader_->StartForAccount(account_info.account_id);
+  profile_downloader_.StartForAccount(account_info.account_id);
   run_loop.Run();
-  profile_downloader_->StartFetchingImage();
+  profile_downloader_.StartFetchingImage();
   SimulateUserInfoSuccess(kTestValidPictureURL, account_info);
-  ASSERT_EQ(kTestValidPictureURL, profile_downloader_->GetProfilePictureURL());
+  ASSERT_EQ(kTestValidPictureURL, profile_downloader_.GetProfilePictureURL());
 }
 
 // Regression test for http://crbug.com/854907
 TEST_F(ProfileDownloaderTest, AccountInfoNoPictureDoesNotCrash) {
   AccountInfo account_info =
-      identity_test_env_->MakeAccountAvailable(kTestEmail);
+      identity_test_env_.MakeAccountAvailable(kTestEmail);
   SimulateUserInfoSuccess(kNoPictureURLFound, account_info);
 
   base::RunLoop run_loop;
   set_on_access_token_requested_callback(run_loop.QuitClosure());
-  profile_downloader_->StartForAccount(account_info.account_id);
+  profile_downloader_.StartForAccount(account_info.account_id);
   run_loop.Run();
-  profile_downloader_->StartFetchingImage();
+  profile_downloader_.StartFetchingImage();
 
-  EXPECT_TRUE(profile_downloader_->GetProfilePictureURL().empty());
+  EXPECT_TRUE(profile_downloader_.GetProfilePictureURL().empty());
   ASSERT_EQ(ProfileDownloader::PICTURE_DEFAULT,
-            profile_downloader_->GetProfilePictureStatus());
+            profile_downloader_.GetProfilePictureStatus());
 }
 
 // Regression test for http://crbug.com/854907
 TEST_F(ProfileDownloaderTest, AccountInfoInvalidPictureURLDoesNotCrash) {
   AccountInfo account_info =
-      identity_test_env_->MakeAccountAvailable(kTestEmail);
+      identity_test_env_.MakeAccountAvailable(kTestEmail);
   SimulateUserInfoSuccess(kTestInvalidPictureURL, account_info);
 
   base::RunLoop run_loop;
   set_on_access_token_requested_callback(run_loop.QuitClosure());
-  profile_downloader_->StartForAccount(account_info.account_id);
+  profile_downloader_.StartForAccount(account_info.account_id);
   run_loop.Run();
-  profile_downloader_->StartFetchingImage();
+  profile_downloader_.StartFetchingImage();
 
-  EXPECT_TRUE(profile_downloader_->GetProfilePictureURL().empty());
+  EXPECT_TRUE(profile_downloader_.GetProfilePictureURL().empty());
   ASSERT_EQ(ProfileDownloader::PICTURE_FAILED,
-            profile_downloader_->GetProfilePictureStatus());
+            profile_downloader_.GetProfilePictureStatus());
 }

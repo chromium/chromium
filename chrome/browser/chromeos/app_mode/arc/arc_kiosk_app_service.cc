@@ -9,6 +9,7 @@
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "base/bind.h"
 #include "base/time/time.h"
+#include "chrome/browser/chromeos/app_mode/arc/arc_kiosk_app_manager.h"
 #include "chrome/browser/chromeos/app_mode/arc/arc_kiosk_app_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -72,7 +73,7 @@ void ArcKioskAppService::OnPackageListInitialRefreshed() {
   PreconditionsChanged();
 }
 
-void ArcKioskAppService::OnArcKioskAppsChanged() {
+void ArcKioskAppService::OnKioskAppsSettingsChanged() {
   PreconditionsChanged();
 }
 
@@ -188,8 +189,8 @@ void ArcKioskAppService::RequestNameAndIconUpdate() {
   if (!app_info_ || !app_info_->ready || app_icon_)
     return;
   app_icon_ = std::make_unique<ArcAppIcon>(
-      profile_, app_id_,
-      app_list::AppListConfig::instance().grid_icon_dimension(), this);
+      profile_, app_id_, ash::AppListConfig::instance().grid_icon_dimension(),
+      this);
   app_icon_->image_skia().GetRepresentation(ui::GetSupportedScaleFactor(
       display::Screen::GetScreen()->GetPrimaryDisplay().device_scale_factor()));
   // Apply default image now and in case icon is updated then OnIconUpdated()

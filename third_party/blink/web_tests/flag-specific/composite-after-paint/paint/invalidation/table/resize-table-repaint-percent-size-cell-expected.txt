@@ -1,0 +1,48 @@
+{
+  "layers": [
+    {
+      "name": "Scrolling background of LayoutView #document",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF",
+      "paintInvalidations": [
+        {
+          "object": "LayoutTableRow TR",
+          "rect": [0, 52, 106, 238],
+          "reason": "geometry"
+        },
+        {
+          "object": "LayoutTableRow TR",
+          "rect": [0, 292, 106, 236],
+          "reason": "geometry"
+        },
+        {
+          "object": "LayoutTableRow TR",
+          "rect": [0, 102, 106, 46],
+          "reason": "geometry"
+        },
+        {
+          "object": "NGPhysicalTextFragment 'ROW2'",
+          "rect": [3, 400, 46, 19],
+          "reason": "geometry"
+        },
+        {
+          "object": "NGPhysicalTextFragment 'ROW1'",
+          "rect": [3, 161, 46, 19],
+          "reason": "geometry"
+        },
+        {
+          "object": "NGPhysicalTextFragment 'ROW2'",
+          "rect": [3, 115, 46, 19],
+          "reason": "geometry"
+        },
+        {
+          "object": "NGPhysicalTextFragment 'ROW1'",
+          "rect": [3, 66, 46, 19],
+          "reason": "geometry"
+        }
+      ]
+    }
+  ]
+}
+

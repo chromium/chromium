@@ -30,35 +30,26 @@
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
 #include "third_party/blink/renderer/core/html/parser/html_parser_options.h"
 #include "third_party/blink/renderer/core/html/parser/html_token.h"
-#include "third_party/blink/renderer/core/html/parser/xss_auditor_delegate.h"
 
 namespace blink {
 
 HTMLViewSourceParser::HTMLViewSourceParser(HTMLViewSourceDocument& document,
                                            const String& mime_type)
     : DecodedDataDocumentParser(document),
-      tokenizer_(HTMLTokenizer::Create(HTMLParserOptions(&document))) {
+      tokenizer_(
+          std::make_unique<HTMLTokenizer>(HTMLParserOptions(&document))) {
   if (mime_type != "text/html" && !DOMImplementation::IsXMLMIMEType(mime_type))
     tokenizer_->SetState(HTMLTokenizer::kPLAINTEXTState);
 }
 
 void HTMLViewSourceParser::PumpTokenizer() {
-  xss_auditor_.Init(GetDocument(), nullptr);
-
   while (true) {
     source_tracker_.Start(input_.Current(), tokenizer_.get(), token_);
     if (!tokenizer_->NextToken(input_.Current(), token_))
       return;
     source_tracker_.end(input_.Current(), tokenizer_.get(), token_);
 
-    std::unique_ptr<XSSInfo> xss_info =
-        xss_auditor_.FilterToken(FilterTokenRequest(
-            token_, source_tracker_, tokenizer_->ShouldAllowCDATA()));
-    HTMLViewSourceDocument::SourceAnnotation annotation =
-        xss_info ? HTMLViewSourceDocument::kAnnotateSourceAsXSS
-                 : HTMLViewSourceDocument::kAnnotateSourceAsSafe;
-    GetDocument()->AddSource(source_tracker_.SourceForToken(token_), token_,
-                             annotation);
+    GetDocument()->AddSource(source_tracker_.SourceForToken(token_), token_);
 
     // FIXME: The tokenizer should do this work for us.
     if (token_.GetType() == HTMLToken::kStartTag)

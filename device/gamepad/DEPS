@@ -1,3 +1,5 @@
 include_rules = [
-  "+jni",
+  "+chromeos/dbus/permission_broker/permission_broker_client.h",
+  "+device/gamepad/jni_headers",
+  "+services/device",
 ]

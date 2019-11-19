@@ -53,6 +53,11 @@ COMPONENT_EXPORT(CHROMEOS_CRYPTOHOME)
 AuthorizationRequest CreateAuthorizationRequest(const std::string& label,
                                                 const std::string& secret);
 
+// Creates an AuthorizationRequest from the given key definition.
+COMPONENT_EXPORT(CHROMEOS_CRYPTOHOME)
+AuthorizationRequest CreateAuthorizationRequestFromKeyDef(
+    const KeyDefinition& key_def);
+
 // Converts the given KeyDefinition to a Key.
 COMPONENT_EXPORT(CHROMEOS_CRYPTOHOME)
 void KeyDefinitionToKey(const KeyDefinition& key_def, Key* key);

@@ -6,14 +6,8 @@ import("//build/config/features.gni")
 
 static_library("sync_bookmarks") {
   sources = [
-    "bookmark_change_processor.cc",
-    "bookmark_change_processor.h",
-    "bookmark_data_type_controller.cc",
-    "bookmark_data_type_controller.h",
     "bookmark_local_changes_builder.cc",
     "bookmark_local_changes_builder.h",
-    "bookmark_model_associator.cc",
-    "bookmark_model_associator.h",
     "bookmark_model_merger.cc",
     "bookmark_model_merger.h",
     "bookmark_model_observer_impl.cc",
@@ -47,7 +41,6 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
-    "bookmark_data_type_controller_unittest.cc",
     "bookmark_model_merger_unittest.cc",
     "bookmark_model_observer_impl_unittest.cc",
     "bookmark_model_type_processor_unittest.cc",
@@ -65,10 +58,7 @@ source_set("unit_tests") {
     "//components/favicon/core/test:test_support",
     "//components/history/core/browser",
     "//components/prefs:test_support",
-    "//components/sync",
-    "//components/sync:test_support_driver",
-    "//components/sync:test_support_engine",
-    "//components/sync:test_support_model",
+    "//components/sync:test_support",
     "//components/undo",
     "//testing/gmock",
     "//testing/gtest",

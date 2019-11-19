@@ -21,8 +21,21 @@ struct RemoteDevice {
   // Generates the device ID for a device given its public key.
   static std::string GenerateDeviceId(const std::string& public_key);
 
+  // Derives the public key that was used to generate the given device ID;
+  // returns empty string if |device_id| is not a valid device ID.
+  static std::string DerivePublicKey(const std::string& device_id);
+
   std::string user_id;
+
+  // The Instance ID is the primary identifier for devices using CryptAuth v2,
+  // but the Instance ID is not present in CryptAuth v1. This string is empty
+  // for devices not using CryptAuth v2 Enrollment and v2 DeviceSync.
+  // TODO(https://crbug.com/1019206): Remove comments when v1 DeviceSync is
+  // deprecated.
+  std::string instance_id;
+
   std::string name;
+  std::string pii_free_name;
   std::string public_key;
   std::string persistent_symmetric_key;
   int64_t last_update_time_millis;
@@ -32,7 +45,9 @@ struct RemoteDevice {
   RemoteDevice();
   RemoteDevice(
       const std::string& user_id,
+      const std::string& instance_id,
       const std::string& name,
+      const std::string& pii_free_name,
       const std::string& public_key,
       const std::string& persistent_symmetric_key,
       int64_t last_update_time_millis,

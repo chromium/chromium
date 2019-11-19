@@ -100,16 +100,16 @@ TEST_F(FidoBlePairingDelegateTest, ChangeStoredDeviceAddress) {
   pairing_delegate()->StoreBlePinCodeForDevice(kTestFidoBleDeviceId,
                                                kTestPinCode);
   EXPECT_TRUE(
-      base::ContainsKey(pairing_delegate_pincode_map(), kTestFidoBleDeviceId));
-  EXPECT_FALSE(base::ContainsKey(pairing_delegate_pincode_map(),
-                                 kTestNewBleDeviceAddress));
+      base::Contains(pairing_delegate_pincode_map(), kTestFidoBleDeviceId));
+  EXPECT_FALSE(
+      base::Contains(pairing_delegate_pincode_map(), kTestNewBleDeviceAddress));
 
   pairing_delegate()->ChangeStoredDeviceAddress(kTestFidoBleDeviceId,
                                                 kTestNewBleDeviceAddress);
   EXPECT_FALSE(
-      base::ContainsKey(pairing_delegate_pincode_map(), kTestFidoBleDeviceId));
-  EXPECT_TRUE(base::ContainsKey(pairing_delegate_pincode_map(),
-                                kTestNewBleDeviceAddress));
+      base::Contains(pairing_delegate_pincode_map(), kTestFidoBleDeviceId));
+  EXPECT_TRUE(
+      base::Contains(pairing_delegate_pincode_map(), kTestNewBleDeviceAddress));
 }
 
 }  // namespace device

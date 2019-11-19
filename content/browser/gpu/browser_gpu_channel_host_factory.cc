@@ -37,7 +37,6 @@
 #include "gpu/ipc/common/gpu_client_ids.h"
 #include "gpu/ipc/in_process_command_buffer.h"
 #include "services/resource_coordinator/public/mojom/memory_instrumentation/constants.mojom.h"
-#include "ui/base/ui_base_features.h"
 
 #if defined(OS_MACOSX)
 #include "ui/accelerated_widget_mac/window_resize_helper_mac.h"
@@ -102,7 +101,7 @@ BrowserGpuChannelHostFactory::EstablishRequest::Create(
   scoped_refptr<EstablishRequest> establish_request =
       new EstablishRequest(gpu_client_id, gpu_client_tracing_id);
   // PostTask outside the constructor to ensure at least one reference exists.
-  base::PostTaskWithTraits(
+  base::PostTask(
       FROM_HERE, {BrowserThread::IO},
       base::BindOnce(
           &BrowserGpuChannelHostFactory::EstablishRequest::EstablishOnIO,
@@ -166,7 +165,7 @@ void BrowserGpuChannelHostFactory::EstablishRequest::OnEstablishedOnIO(
         base::BindOnce(
             &BrowserGpuChannelHostFactory::EstablishRequest::RestartTimeout,
             this));
-    base::PostTaskWithTraits(
+    base::PostTask(
         FROM_HERE, {BrowserThread::IO},
         base::BindOnce(
             &BrowserGpuChannelHostFactory::EstablishRequest::EstablishOnIO,
@@ -267,22 +266,21 @@ BrowserGpuChannelHostFactory::BrowserGpuChannelHostFactory()
     base::FilePath cache_dir =
         GetContentClient()->browser()->GetShaderDiskCacheDirectory();
     if (!cache_dir.empty()) {
-      base::PostTaskWithTraits(
+      base::PostTask(
           FROM_HERE, {BrowserThread::IO},
           base::BindOnce(
               &BrowserGpuChannelHostFactory::InitializeShaderDiskCacheOnIO,
               gpu_client_id_, cache_dir));
     }
 
-    bool use_gr_shader_cache =
-        base::FeatureList::IsEnabled(
-            features::kDefaultEnableOopRasterization) ||
-        base::FeatureList::IsEnabled(features::kUseSkiaRenderer);
+    bool use_gr_shader_cache = base::FeatureList::IsEnabled(
+                                   features::kDefaultEnableOopRasterization) ||
+                               features::IsUsingSkiaRenderer();
     if (use_gr_shader_cache) {
       base::FilePath gr_cache_dir =
           GetContentClient()->browser()->GetGrShaderDiskCacheDirectory();
       if (!gr_cache_dir.empty()) {
-        base::PostTaskWithTraits(
+        base::PostTask(
             FROM_HERE, {BrowserThread::IO},
             base::BindOnce(
                 &BrowserGpuChannelHostFactory::InitializeGrShaderDiskCacheOnIO,
@@ -304,9 +302,6 @@ BrowserGpuChannelHostFactory::~BrowserGpuChannelHostFactory() {
 
 void BrowserGpuChannelHostFactory::EstablishGpuChannel(
     gpu::GpuChannelEstablishedCallback callback) {
-#if defined(USE_AURA)
-  DCHECK(!features::IsMultiProcessMash());
-#endif
   DCHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
   if (gpu_channel_.get() && gpu_channel_->IsLost()) {
     DCHECK(!pending_request_.get());

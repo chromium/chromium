@@ -59,6 +59,10 @@ class ConstantSourceNode final : public AudioScheduledSourceNode {
 
   ConstantSourceHandler& GetConstantSourceHandler() const;
 
+  // InspectorHelperMixin
+  void ReportDidCreate() final;
+  void ReportWillBeDestroyed() final;
+
  private:
   Member<AudioParam> offset_;
 };

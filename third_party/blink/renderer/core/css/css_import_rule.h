@@ -35,10 +35,6 @@ class CSSImportRule final : public CSSRule {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static CSSImportRule* Create(StyleRuleImport* rule, CSSStyleSheet* sheet) {
-    return MakeGarbageCollected<CSSImportRule>(rule, sheet);
-  }
-
   CSSImportRule(StyleRuleImport*, CSSStyleSheet*);
   ~CSSImportRule() override;
 

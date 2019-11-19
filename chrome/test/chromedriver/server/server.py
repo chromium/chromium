@@ -6,8 +6,22 @@ import atexit
 import os
 import socket
 import subprocess
+import threading
 import time
 import urllib2
+
+def terminate_process(proc):
+  """Terminates the process.
+
+  If an error occurs ignore it, just print out a message.
+
+  Args:
+    proc: A subprocess.
+  """
+  try:
+    proc.terminate()
+  except OSError as ex:
+    print 'Error while killing a process: %s' % ex
 
 
 class Server(object):
@@ -34,6 +48,7 @@ class Server(object):
     if log_path:
       chromedriver_args.extend(['--log-path=%s' % log_path])
       chromedriver_args.extend(['--append-log'])
+      chromedriver_args.extend(['--readable-timestamp'])
       if verbose:
         chromedriver_args.extend(['--verbose',
                                   '--vmodule=*/chrome/test/chromedriver/*=3'])
@@ -99,5 +114,8 @@ class Server(object):
       urllib2.urlopen(self.GetUrl() + '/shutdown', timeout=10).close()
     except:
       self._process.terminate()
+    timer = threading.Timer(5, terminate_process, [self._process])
+    timer.start()
     self._process.wait()
+    timer.cancel()
     self._process = None

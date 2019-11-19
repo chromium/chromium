@@ -5,8 +5,8 @@
 #include "ui/gl/android/scoped_java_surface.h"
 
 #include "base/logging.h"
-#include "jni/Surface_jni.h"
 #include "ui/gl/android/surface_texture.h"
+#include "ui/gl/surface_jni_headers/Surface_jni.h"
 
 using base::android::ScopedJavaLocalRef;
 

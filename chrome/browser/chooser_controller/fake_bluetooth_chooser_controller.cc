@@ -36,6 +36,10 @@ base::string16 FakeBluetoothChooserController::GetOkButtonLabel() const {
       IDS_BLUETOOTH_DEVICE_CHOOSER_PAIR_BUTTON_TEXT);
 }
 
+bool FakeBluetoothChooserController::TableViewAlwaysDisabled() const {
+  return table_view_always_disabled_;
+}
+
 size_t FakeBluetoothChooserController::NumOptions() const {
   return devices_.size();
 }

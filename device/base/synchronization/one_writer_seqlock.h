@@ -28,10 +28,18 @@ namespace device {
 // garbage, or indices could be out of range. Probably the only suitable thing
 // to do during the read loop is to make a copy of the data, and operate on it
 // only after the read was found to be consistent.
+//
+// Accesses to data protected by this SeqLock is recommended to be atomic.
+// See:
+//   https://www.hpl.hp.com/techreports/2012/HPL-2012-68.pdf
+//   http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2019/p1478r1.html
 class OneWriterSeqLock {
  public:
   OneWriterSeqLock();
-  base::subtle::Atomic32 ReadBegin() const;
+  // ReadBegin returns |sequence_| when it is even, or when it has retried
+  // |max_retries| times. Omitting |max_retries| results in ReadBegin not
+  // returning until |sequence_| is even.
+  base::subtle::Atomic32 ReadBegin(uint32_t max_retries = UINT32_MAX) const;
   bool ReadRetry(base::subtle::Atomic32 version) const;
   void WriteBegin();
   void WriteEnd();

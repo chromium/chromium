@@ -204,7 +204,7 @@ bool BuildUnifiedDesktopMatrix(const DisplayIdList& ids_list,
                                const DisplayLayout& layout,
                                UnifiedDesktopLayoutMatrix* out_matrix) {
   // The primary display should be in the IDs list.
-  if (!base::ContainsValue(ids_list, layout.primary_id)) {
+  if (!base::Contains(ids_list, layout.primary_id)) {
     LOG(ERROR) << "The primary ID: " << layout.primary_id
                << " is not in the IDs list.";
     return false;
@@ -259,13 +259,13 @@ bool BuildUnifiedDesktopMatrix(const DisplayIdList& ids_list,
       LOG(ERROR) << "display_id must not be the same as parent_display_id";
       return false;
     }
-    if (!base::ContainsValue(ids_list, placement.display_id)) {
+    if (!base::Contains(ids_list, placement.display_id)) {
       LOG(ERROR) << "display_id: " << placement.display_id
                  << " is not in the id list: " << placement.ToString();
       return false;
     }
 
-    if (!base::ContainsValue(ids_list, placement.parent_display_id)) {
+    if (!base::Contains(ids_list, placement.parent_display_id)) {
       LOG(ERROR) << "parent_display_id: " << placement.parent_display_id
                  << " is not in the id list: " << placement.ToString();
       return false;

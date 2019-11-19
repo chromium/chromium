@@ -1,7 +1,0 @@
-CONSOLE ERROR: line 5: The XSS Auditor refused to execute a script in 'http://localhost:8000/security/xssAuditor/resources/echo-intertag.pl?q=%3Ca%3Cimg/src/onerror=alert(1)//%3C' because its source code was found within the request. The server sent an 'X-XSS-Protection' header requesting this behavior.
-
-
---------
-Frame: '<!--framePath //<!--frame0-->-->'
---------
-

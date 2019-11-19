@@ -27,12 +27,13 @@ namespace {
 const size_t kPrefixLength = sizeof(kPushMessagingAppIdentifierPrefix) - 1;
 const size_t kGuidSuffixLength = sizeof(kInstanceIDGuidSuffix) - 1;
 
-const char kSeparator = '#';    // Ok as only the origin of the url is used.
+// Ok to use '#' as separator since only the origin of the url is used.
+const char kOriginSWRIdSeparator = '#';
 const size_t kGuidLength = 36;  // "%08X-%04X-%04X-%04X-%012llX"
 
 std::string MakePrefValue(const GURL& origin,
                           int64_t service_worker_registration_id) {
-  return origin.spec() + kSeparator +
+  return origin.spec() + kOriginSWRIdSeparator +
          base::NumberToString(service_worker_registration_id);
 }
 
@@ -40,7 +41,7 @@ bool GetOriginAndSWRFromPrefValue(const std::string& pref_value,
                                   GURL* origin,
                                   int64_t* service_worker_registration_id) {
   std::vector<std::string> parts =
-      base::SplitString(pref_value, std::string(1, kSeparator),
+      base::SplitString(pref_value, std::string(1, kOriginSWRIdSeparator),
                         base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
   if (parts.size() != 2)
     return false;
@@ -100,8 +101,8 @@ PushMessagingAppIdentifier PushMessagingAppIdentifier::GenerateInternal(
                  kInstanceIDGuidSuffix);
   }
   CHECK(!guid.empty());
-  std::string app_id =
-      kPushMessagingAppIdentifierPrefix + origin.spec() + kSeparator + guid;
+  std::string app_id = kPushMessagingAppIdentifierPrefix + origin.spec() +
+                       kOriginSWRIdSeparator + guid;
 
   PushMessagingAppIdentifier app_identifier(app_id, origin,
                                             service_worker_registration_id);
@@ -246,12 +247,12 @@ void PushMessagingAppIdentifier::DCheckValid() const {
 
   // Optional (origin.spec() + '#')
   if (app_id_.size() != kPrefixLength + kGuidLength) {
-    const size_t suffix_length = 1 /* kSeparator */ + kGuidLength;
+    const size_t suffix_length = 1 /* kOriginSWRIdSeparator */ + kGuidLength;
     DCHECK_GT(app_id_.size(), kPrefixLength + suffix_length);
     DCHECK_EQ(origin_, GURL(app_id_.substr(
                            kPrefixLength,
                            app_id_.size() - kPrefixLength - suffix_length)));
-    DCHECK_EQ(std::string(1, kSeparator),
+    DCHECK_EQ(std::string(1, kOriginSWRIdSeparator),
               app_id_.substr(app_id_.size() - suffix_length, 1));
   }
 

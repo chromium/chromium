@@ -7,26 +7,19 @@
 
 #include "base/memory/weak_ptr.h"
 #include "components/download/public/common/download_export.h"
-#include "components/download/public/common/download_request_handle_interface.h"
 #include "components/download/public/common/url_download_handler.h"
 
 namespace download {
 
 // Implementation of the DownloadRequestHandleInterface to handle url download.
-class COMPONENTS_DOWNLOAD_EXPORT UrlDownloadRequestHandle
-    : public DownloadRequestHandleInterface {
+class COMPONENTS_DOWNLOAD_EXPORT UrlDownloadRequestHandle {
  public:
   UrlDownloadRequestHandle(
       base::WeakPtr<UrlDownloadHandler> downloader,
       scoped_refptr<base::SequencedTaskRunner> downloader_task_runner);
   UrlDownloadRequestHandle(UrlDownloadRequestHandle&& other);
   UrlDownloadRequestHandle& operator=(UrlDownloadRequestHandle&& other);
-  ~UrlDownloadRequestHandle() override;
-
-  // DownloadRequestHandleInterface
-  void PauseRequest() override;
-  void ResumeRequest() override;
-  void CancelRequest(bool user_cancel) override;
+  ~UrlDownloadRequestHandle();
 
  private:
   base::WeakPtr<UrlDownloadHandler> downloader_;

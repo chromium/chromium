@@ -54,7 +54,7 @@ void PopupTimersController::StartTimer(const std::string& id,
   std::unique_ptr<PopupTimer> timer(new PopupTimer(id, timeout, AsWeakPtr()));
 
   timer->Start();
-  popup_timers_.insert(std::make_pair(id, std::move(timer)));
+  popup_timers_.emplace(id, std::move(timer));
 }
 
 void PopupTimersController::StartAll() {
@@ -76,7 +76,7 @@ void PopupTimersController::CancelAll() {
 }
 
 void PopupTimersController::TimerFinished(const std::string& id) {
-  if (!base::ContainsKey(popup_timers_, id))
+  if (!base::Contains(popup_timers_, id))
     return;
 
   CancelTimer(id);

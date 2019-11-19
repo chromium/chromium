@@ -16,7 +16,7 @@ namespace {
 constexpr int kLiveValuesLimit = 42;
 }
 
-FakeRuntimeProbeClient::FakeRuntimeProbeClient() : weak_ptr_factory_(this) {}
+FakeRuntimeProbeClient::FakeRuntimeProbeClient() {}
 
 FakeRuntimeProbeClient::~FakeRuntimeProbeClient() = default;
 

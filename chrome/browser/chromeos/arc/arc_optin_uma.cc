@@ -21,25 +21,6 @@ namespace arc {
 
 namespace {
 
-// Adds a suffix to the name based on the account type.
-std::string GetHistogramName(const std::string& base_name,
-                             const Profile* profile) {
-  if (IsRobotOrOfflineDemoAccountMode()) {
-    chromeos::DemoSession* demo_session = chromeos::DemoSession::Get();
-    if (demo_session && demo_session->started()) {
-      return demo_session->offline_enrolled() ? base_name + "OfflineDemoMode"
-                                              : base_name + "DemoMode";
-    }
-    return base_name + "RobotAccount";
-  }
-  if (profile->IsChild())
-    return base_name + "Child";
-  if (IsActiveDirectoryUserForProfile(profile))
-    return base_name + "ActiveDirectory";
-  return base_name +
-         (policy_util::IsAccountManaged(profile) ? "Managed" : "Unmanaged");
-}
-
 ArcEnabledState ComputeEnabledState(bool enabled, const Profile* profile) {
   if (!IsArcAllowedForProfile(profile)) {
     return enabled ? ArcEnabledState::ENABLED_NOT_ALLOWED
@@ -64,24 +45,18 @@ ArcEnabledState ComputeEnabledState(bool enabled, const Profile* profile) {
 
 void UpdateEnabledStateByUserTypeUMA() {
   const Profile* profile = ProfileManager::GetPrimaryUserProfile();
-  // Don't record UMA for the set of cases:
-  // * No primary profile is set at this moment.
-  // * Primary profile matches the built-in profile used for signing in or the
-  //   lock screen.
-  // * Primary profile matches guest session.
-  // * Primary profile is in incognito mode.
-  if (!profile || chromeos::ProfileHelper::IsSigninProfile(profile) ||
-      chromeos::ProfileHelper::IsLockScreenAppProfile(profile) ||
-      profile->IsOffTheRecord() || profile->IsGuestSession()) {
+
+  // Don't record UMA if current primary user profile should be ignored in the
+  // first place, or we're currently in guest session.
+  if (!IsRealUserProfile(profile) || profile->IsGuestSession())
     return;
-  }
 
   base::Optional<bool> enabled_state;
   if (auto* stability_metrics_manager = StabilityMetricsManager::Get())
     enabled_state = stability_metrics_manager->GetArcEnabledState();
 
   base::UmaHistogramEnumeration(
-      GetHistogramName("Arc.StateByUserType.", profile),
+      GetHistogramNameByUserType("Arc.StateByUserType", profile),
       ComputeEnabledState(enabled_state.value_or(false), profile));
 }
 
@@ -101,7 +76,7 @@ void UpdateProvisioningResultUMA(ProvisioningResult result,
                                  const Profile* profile) {
   DCHECK_NE(result, ProvisioningResult::CHROME_SERVER_COMMUNICATION_ERROR);
   base::UmaHistogramEnumeration(
-      GetHistogramName("Arc.Provisioning.Result.", profile), result);
+      GetHistogramNameByUserType("Arc.Provisioning.Result", profile), result);
 }
 
 void UpdateSecondarySigninResultUMA(ProvisioningResult result) {
@@ -111,41 +86,61 @@ void UpdateSecondarySigninResultUMA(ProvisioningResult result) {
 void UpdateProvisioningTiming(const base::TimeDelta& elapsed_time,
                               bool success,
                               const Profile* profile) {
-  std::string histogram_name = "Arc.Provisioning.TimeDelta.";
-  histogram_name += success ? "Success." : "Failure.";
+  std::string histogram_name = "Arc.Provisioning.TimeDelta";
+  histogram_name += success ? ".Success" : ".Failure";
   // The macro UMA_HISTOGRAM_CUSTOM_TIMES expects a constant string, but since
   // this measurement happens very infrequently, we do not need to use a macro
   // here.
-  base::UmaHistogramCustomTimes(GetHistogramName(histogram_name, profile),
-                                elapsed_time, base::TimeDelta::FromSeconds(1),
-                                base::TimeDelta::FromMinutes(6), 50);
+  base::UmaHistogramCustomTimes(
+      GetHistogramNameByUserType(histogram_name, profile), elapsed_time,
+      base::TimeDelta::FromSeconds(1), base::TimeDelta::FromMinutes(6), 50);
 }
 
 void UpdateReauthorizationResultUMA(ProvisioningResult result,
                                     const Profile* profile) {
   base::UmaHistogramEnumeration(
-      GetHistogramName("Arc.Reauthorization.Result.", profile), result);
+      GetHistogramNameByUserType("Arc.Reauthorization.Result", profile),
+      result);
 }
 
 void UpdatePlayAutoInstallRequestState(mojom::PaiFlowState state,
                                        const Profile* profile) {
   base::UmaHistogramEnumeration(
-      GetHistogramName("Arc.PlayAutoInstallRequest.State.", profile), state);
+      GetHistogramNameByUserType("Arc.PlayAutoInstallRequest.State", profile),
+      state);
 }
 
 void UpdatePlayAutoInstallRequestTime(const base::TimeDelta& elapsed_time,
                                       const Profile* profile) {
   base::UmaHistogramCustomTimes(
-      GetHistogramName("Arc.PlayAutoInstallRequest.TimeDelta.", profile),
+      GetHistogramNameByUserType("Arc.PlayAutoInstallRequest.TimeDelta",
+                                 profile),
       elapsed_time, base::TimeDelta::FromSeconds(1),
       base::TimeDelta::FromMinutes(10), 50);
 }
 
-void UpdatePlayStoreShowTime(const base::TimeDelta& elapsed_time,
-                             const Profile* profile) {
+void UpdateArcUiAvailableTime(const base::TimeDelta& elapsed_time,
+                              const std::string& mode,
+                              const Profile* profile) {
   base::UmaHistogramCustomTimes(
-      GetHistogramName("Arc.PlayStoreShown.TimeDelta.", profile), elapsed_time,
-      base::TimeDelta::FromSeconds(1), base::TimeDelta::FromMinutes(10), 50);
+      GetHistogramNameByUserType("Arc.UiAvailable." + mode + ".TimeDelta",
+                                 profile),
+      elapsed_time, base::TimeDelta::FromSeconds(1),
+      base::TimeDelta::FromMinutes(5), 50);
+}
+
+void UpdatePlayStoreLaunchTime(const base::TimeDelta& elapsed_time) {
+  base::UmaHistogramCustomTimes("Arc.PlayStoreLaunch.TimeDelta", elapsed_time,
+                                base::TimeDelta::FromMilliseconds(10),
+                                base::TimeDelta::FromSeconds(20), 50);
+}
+
+void UpdatePlayStoreShownTimeDeprecated(const base::TimeDelta& elapsed_time,
+                                        const Profile* profile) {
+  base::UmaHistogramCustomTimes(
+      GetHistogramNameByUserType("Arc.PlayStoreShown.TimeDelta", profile),
+      elapsed_time, base::TimeDelta::FromSeconds(1),
+      base::TimeDelta::FromMinutes(10), 50);
 }
 
 void UpdateAuthTiming(const char* histogram_name,
@@ -165,6 +160,16 @@ void UpdateAuthAccountCheckStatus(mojom::AccountCheckStatus status) {
   UMA_HISTOGRAM_ENUMERATION(
       "ArcAuth.AccountCheckStatus", static_cast<int>(status),
       static_cast<int>(mojom::AccountCheckStatus::CHECK_FAILED) + 1);
+}
+
+void UpdateMainAccountResolutionStatus(
+    const Profile* profile,
+    mojom::MainAccountResolutionStatus status) {
+  DCHECK(mojom::IsKnownEnumValue(status));
+  base::UmaHistogramEnumeration(
+      GetHistogramNameByUserType("ArcAuth.MainAccountResolutionStatus",
+                                 profile),
+      status);
 }
 
 void UpdateSilentAuthCodeUMA(OptInSilentAuthCode state) {
@@ -215,6 +220,7 @@ std::ostream& operator<<(std::ostream& os, const ProvisioningResult& result) {
     MAP_PROVISIONING_RESULT(ARC_DISABLED);
     MAP_PROVISIONING_RESULT(SUCCESS_ALREADY_PROVISIONED);
     MAP_PROVISIONING_RESULT(UNSUPPORTED_ACCOUNT_TYPE);
+    MAP_PROVISIONING_RESULT(CHROME_ACCOUNT_NOT_FOUND);
   }
 
 #undef MAP_PROVISIONING_RESULT

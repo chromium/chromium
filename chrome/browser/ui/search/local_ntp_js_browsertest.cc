@@ -4,8 +4,10 @@
 
 #include <string>
 
+#include "build/build_config.h"
 #include "chrome/browser/search/search.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/search/instant_test_utils.h"
 #include "chrome/browser/ui/search/local_ntp_test_utils.h"
 #include "chrome/common/url_constants.h"
@@ -61,17 +63,82 @@ IN_PROC_BROWSER_TEST_F(LocalNTPJavascriptTest, LocalNTPTests) {
   EXPECT_TRUE(success);
 }
 
-// This runs a bunch of pure JS-side tests for custom backgrounds, i.e. those
-// that don't require any interaction from the native side.
+// This runs a bunch of pure JS-side tests for the original custom backgrounds
+// menu (i.e. before the richer picker).
 IN_PROC_BROWSER_TEST_F(LocalNTPJavascriptTest, CustomBackgroundsTests) {
   content::WebContents* active_tab = local_ntp_test_utils::OpenNewTab(
       browser(), GURL(chrome::kChromeUINewTabURL));
   ASSERT_TRUE(search::IsInstantNTP(active_tab));
 
+  // Ensure the window is big enough the the customize button is visible.
+  browser()->window()->SetBounds(gfx::Rect(0, 0, 1000, 1000));
+
   // Run the tests.
   bool success = false;
   ASSERT_TRUE(instant_test_utils::GetBoolFromJS(
       active_tab, "!!runSimpleTests('customBackgrounds')", &success));
+  EXPECT_TRUE(success);
+}
+
+// This runs a bunch of pure JS-side tests for the richer picker.
+IN_PROC_BROWSER_TEST_F(LocalNTPJavascriptTest, CustomizeMenuTests) {
+  content::WebContents* active_tab = local_ntp_test_utils::OpenNewTab(
+      browser(), GURL(chrome::kChromeUINewTabURL));
+  ASSERT_TRUE(search::IsInstantNTP(active_tab));
+
+  // Ensure the window is big enough the the customize button is visible.
+  browser()->window()->SetBounds(gfx::Rect(0, 0, 1000, 1000));
+
+  // Run the tests.
+  bool success = false;
+  ASSERT_TRUE(instant_test_utils::GetBoolFromJS(
+      active_tab, "!!runSimpleTests('customizeMenu')", &success));
+  EXPECT_TRUE(success);
+}
+
+#if !(defined(LEAK_SANITIZER) || defined(ADDRESS_SANITIZER))
+IN_PROC_BROWSER_TEST_F(LocalNTPJavascriptTest, Realbox1Tests) {
+  content::WebContents* active_tab = local_ntp_test_utils::OpenNewTab(
+      browser(), GURL(chrome::kChromeUINewTabURL));
+  ASSERT_TRUE(search::IsInstantNTP(active_tab));
+
+  bool success = false;
+  ASSERT_TRUE(instant_test_utils::GetBoolFromJS(
+      active_tab, "!!runSimpleTests('realbox1')", &success));
+  EXPECT_TRUE(success);
+}
+
+IN_PROC_BROWSER_TEST_F(LocalNTPJavascriptTest, Realbox2Tests) {
+  content::WebContents* active_tab = local_ntp_test_utils::OpenNewTab(
+      browser(), GURL(chrome::kChromeUINewTabURL));
+  ASSERT_TRUE(search::IsInstantNTP(active_tab));
+
+  bool success = false;
+  ASSERT_TRUE(instant_test_utils::GetBoolFromJS(
+      active_tab, "!!runSimpleTests('realbox2')", &success));
+  EXPECT_TRUE(success);
+}
+#endif
+
+// A test class that sets up most_visited_browsertest.html as the NTP URL. It's
+// mostly a copy of the real most_visited_single.html, but it adds some testing
+// JS.
+class LocalNTPMostVisitedJavascriptTest : public LocalNTPJavascriptTestBase {
+ public:
+  LocalNTPMostVisitedJavascriptTest()
+      : LocalNTPJavascriptTestBase("/most_visited_browsertest.html") {}
+};
+
+// This runs a bunch of pure JS-side tests for the most visited iframe, i.e.
+// those that don't require any interaction from the native side.
+IN_PROC_BROWSER_TEST_F(LocalNTPMostVisitedJavascriptTest, MostVistedTests) {
+  content::WebContents* active_tab = local_ntp_test_utils::OpenNewTab(
+      browser(), GURL(chrome::kChromeUINewTabURL));
+
+  // Run the tests.
+  bool success = false;
+  ASSERT_TRUE(instant_test_utils::GetBoolFromJS(
+      active_tab, "!!runSimpleTests('mostVisited')", &success));
   EXPECT_TRUE(success);
 }
 

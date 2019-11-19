@@ -15,19 +15,15 @@ namespace blink {
 
 constexpr uint64_t BlobUtils::kUnknownSize;
 
-// static
-bool BlobUtils::MojoBlobURLsEnabled() {
-  return base::FeatureList::IsEnabled(network::features::kNetworkService) ||
-         base::FeatureList::IsEnabled(blink::features::kMojoBlobURLs);
-}
-
 namespace {
 
 const base::Feature kBlobDataPipeTuningFeature{
     "BlobDataPipeTuning", base::FEATURE_DISABLED_BY_DEFAULT};
 
 constexpr int kBlobMinDataPipeCapacity = 1024;
-constexpr int kBlobDefaultDataPipeCapacity = 512 * 1024;
+
+// The 2MB limit was selected via a finch trial.
+constexpr int kBlobDefaultDataPipeCapacity = 2 * 1024 * 1024;
 
 constexpr base::FeatureParam<int> kBlobDataPipeCapacity{
     &kBlobDataPipeTuningFeature, "capacity_bytes",

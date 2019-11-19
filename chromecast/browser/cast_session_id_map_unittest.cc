@@ -9,7 +9,6 @@
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_simple_task_runner.h"
-#include "content/public/common/content_features.h"
 #include "content/public/test/test_content_client_initializer.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
@@ -28,11 +27,6 @@ class CastSessionIdMapTest : public content::RenderViewHostTestHarness {
   CastSessionIdMapTest() : task_runner_(new base::TestSimpleTaskRunner) {}
 
   void SetUp() override {
-    // CastSessionIdMap only maps when AudioStreams are enabled in the audio
-    // service.
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kAudioServiceAudioStreams);
-
     // Required for creating TestWebContents.
     gl::GLSurfaceTestSupport::InitializeOneOff();
     initializer_ = std::make_unique<content::TestContentClientInitializer>();
@@ -43,7 +37,6 @@ class CastSessionIdMapTest : public content::RenderViewHostTestHarness {
   }
 
  protected:
-  base::test::ScopedFeatureList scoped_feature_list_;
   scoped_refptr<base::TestSimpleTaskRunner> task_runner_;
   std::unique_ptr<content::TestContentClientInitializer> initializer_;
 

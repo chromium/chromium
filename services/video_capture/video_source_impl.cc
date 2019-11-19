@@ -18,32 +18,33 @@ VideoSourceImpl::VideoSourceImpl(
       device_id_(device_id),
       on_last_binding_closed_cb_(std::move(on_last_binding_closed_cb)),
       device_status_(DeviceStatus::kNotStarted),
-      restart_device_once_when_stop_complete_(false),
-      weak_factory_(this) {
-  // Unretained(this) is safe because |this| owns |bindings_|.
-  bindings_.set_connection_error_handler(base::BindRepeating(
+      restart_device_once_when_stop_complete_(false) {
+  // Unretained(this) is safe because |this| owns |receivers_|.
+  receivers_.set_disconnect_handler(base::BindRepeating(
       &VideoSourceImpl::OnClientDisconnected, base::Unretained(this)));
 }
 
 VideoSourceImpl::~VideoSourceImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  bindings_.set_connection_error_handler(base::DoNothing());
+  receivers_.set_disconnect_handler(base::DoNothing());
 }
 
-void VideoSourceImpl::AddToBindingSet(mojom::VideoSourceRequest request) {
+void VideoSourceImpl::AddToReceiverSet(
+    mojo::PendingReceiver<VideoSource> receiver) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  bindings_.AddBinding(this, std::move(request));
+  receivers_.Add(this, std::move(receiver));
 }
 
 void VideoSourceImpl::CreatePushSubscription(
-    mojom::ReceiverPtr subscriber,
+    mojo::PendingRemote<mojom::VideoFrameHandler> subscriber,
     const media::VideoCaptureParams& requested_settings,
     bool force_reopen_with_new_settings,
-    mojom::PushVideoStreamSubscriptionRequest subscription_request,
+    mojo::PendingReceiver<mojom::PushVideoStreamSubscription>
+        subscription_receiver,
     CreatePushSubscriptionCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto subscription = std::make_unique<PushVideoStreamSubscriptionImpl>(
-      std::move(subscription_request), std::move(subscriber),
+      std::move(subscription_receiver), std::move(subscriber),
       requested_settings, std::move(callback), &broadcaster_, &device_);
   subscription->SetOnClosedHandler(base::BindOnce(
       &VideoSourceImpl::OnPushSubscriptionClosedOrDisconnectedOrDiscarded,
@@ -81,7 +82,7 @@ void VideoSourceImpl::CreatePushSubscription(
 
 void VideoSourceImpl::OnClientDisconnected() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (bindings_.empty()) {
+  if (receivers_.empty()) {
     // Note: Invoking this callback may synchronously trigger the destruction of
     // |this|, so no more member access should be done after it.
     on_last_binding_closed_cb_.Run();
@@ -94,7 +95,7 @@ void VideoSourceImpl::StartDeviceWithSettings(
   device_start_settings_ = requested_settings;
   device_status_ = DeviceStatus::kStartingAsynchronously;
   device_factory_->CreateDevice(
-      device_id_, mojo::MakeRequest(&device_),
+      device_id_, device_.BindNewPipeAndPassReceiver(),
       base::BindOnce(&VideoSourceImpl::OnCreateDeviceResponse,
                      weak_factory_.GetWeakPtr()));
 }
@@ -104,11 +105,10 @@ void VideoSourceImpl::OnCreateDeviceResponse(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   switch (result_code) {
     case mojom::DeviceAccessResultCode::SUCCESS: {
-      mojom::ReceiverPtr broadcaster_as_receiver;
-      broadcaster_binding_ = std::make_unique<mojo::Binding<mojom::Receiver>>(
-          &broadcaster_, mojo::MakeRequest(&broadcaster_as_receiver));
-      device_->Start(device_start_settings_,
-                     std::move(broadcaster_as_receiver));
+      broadcaster_video_frame_handler_.reset();
+      device_->Start(
+          device_start_settings_,
+          broadcaster_video_frame_handler_.BindNewPipeAndPassRemote());
       device_status_ = DeviceStatus::kStarted;
       if (push_subscriptions_.empty()) {
         StopDeviceAsynchronously();

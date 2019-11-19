@@ -12,8 +12,6 @@ namespace syncer {
 // TODO(mastiz): Unify with SyncStopDataFate.
 enum SyncStopMetadataFate { KEEP_METADATA, CLEAR_METADATA };
 
-const char* SyncStopMetadataFateToString(SyncStopMetadataFate metadata_fate);
-
 }  // namespace syncer
 
 #endif  // COMPONENTS_SYNC_BASE_SYNC_STOP_METADATA_FATE_H_

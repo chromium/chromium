@@ -4,6 +4,7 @@
 
 #import "ios/chrome/app/main_application_delegate.h"
 
+#include "base/ios/ios_util.h"
 #include "base/mac/foundation_util.h"
 #import "ios/chrome/app/application_delegate/app_navigation.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
@@ -18,6 +19,9 @@
 #import "ios/chrome/app/chrome_overlay_window.h"
 #import "ios/chrome/app/main_application_delegate_testing.h"
 #import "ios/chrome/app/main_controller.h"
+#import "ios/chrome/browser/ui/main/scene_controller.h"
+#import "ios/chrome/browser/ui/main/scene_state.h"
+#include "ios/chrome/browser/ui/util/multi_window_support.h"
 #include "ios/public/provider/chrome/browser/chrome_browser_provider.h"
 #include "ios/public/provider/chrome/browser/signin/chrome_identity_service.h"
 #import "ios/testing/perf/startupLoggers.h"
@@ -47,6 +51,14 @@
   id<TabSwitching> _tabSwitcherProtocol;
 }
 
+// The state representing the only "scene" on iOS 12. On iOS 13, only created
+// temporarily before multiwindow is fully implemented to also represent the
+// only scene.
+@property(nonatomic, strong) SceneState* sceneState;
+
+// The controller for |sceneState|.
+@property(nonatomic, strong) SceneController* sceneController;
+
 @end
 
 @implementation MainApplicationDelegate
@@ -66,19 +78,29 @@
     _tabSwitcherProtocol = _mainController;
     _appNavigation = _mainController;
     [_mainController setAppState:_appState];
+
+    if (!IsMultiwindowSupported()) {
+      // When multiwindow is not supported, this object holds a "scene" state
+      // and a "scene" controller. This allows the rest of the app to be mostly
+      // multiwindow-agnostic.
+      _sceneState = [[SceneState alloc] init];
+      _sceneController =
+          [[SceneController alloc] initWithSceneState:_sceneState];
+
+      // This is temporary plumbing that's not supposed to be here.
+      _sceneController.mainController = (id<MainControllerGuts>)_mainController;
+      _mainController.sceneController = _sceneController;
+    }
   }
   return self;
 }
 
 - (UIWindow*)window {
-  return [_mainController window];
+  return self.sceneState.window;
 }
 
 - (void)setWindow:(UIWindow*)newWindow {
-  DCHECK(newWindow);
-  [_mainController setWindow:newWindow];
-  // self.window has been set by this time. _appState window can now be set.
-  [_appState setWindow:newWindow];
+  NOTREACHED() << "Should not be called, use [SceneState window] instead";
 }
 
 #pragma mark - UIApplicationDelegate methods -
@@ -92,17 +114,28 @@
 - (BOOL)application:(UIApplication*)application
     didFinishLaunchingWithOptions:(NSDictionary*)launchOptions {
   startup_loggers::RegisterAppDidFinishLaunchingTime();
-  // Main window must be ChromeOverlayWindow or a subclass of it.
-  self.window = [[ChromeOverlayWindow alloc]
-      initWithFrame:[[UIScreen mainScreen] bounds]];
+
+  _mainController.window = self.window;
+  // self.window has been set by this time. _appState window can now be set.
+  _appState.window = self.window;
 
   BOOL inBackground =
       [application applicationState] == UIApplicationStateBackground;
-  return [_appState requiresHandlingAfterLaunchWithOptions:launchOptions
-                                           stateBackground:inBackground];
+  BOOL requiresHandling =
+      [_appState requiresHandlingAfterLaunchWithOptions:launchOptions
+                                        stateBackground:inBackground];
+  if (!IsMultiwindowSupported()) {
+    self.sceneState.activationLevel = SceneActivationLevelForegroundInactive;
+  }
+
+  return requiresHandling;
 }
 
 - (void)applicationDidBecomeActive:(UIApplication*)application {
+  if (!IsMultiwindowSupported()) {
+    self.sceneState.activationLevel = SceneActivationLevelForegroundActive;
+  }
+
   startup_loggers::RegisterAppDidBecomeActiveTime();
   if ([_appState isInSafeMode])
     return;
@@ -112,6 +145,10 @@
 }
 
 - (void)applicationWillResignActive:(UIApplication*)application {
+  if (!IsMultiwindowSupported()) {
+    self.sceneState.activationLevel = SceneActivationLevelForegroundInactive;
+  }
+
   if ([_appState isInSafeMode])
     return;
 
@@ -121,14 +158,22 @@
 // Called when going into the background. iOS already broadcasts, so
 // stakeholders can register for it directly.
 - (void)applicationDidEnterBackground:(UIApplication*)application {
-  [_appState
-      applicationDidEnterBackground:application
-                       memoryHelper:_memoryHelper
-            incognitoContentVisible:_mainController.incognitoContentVisible];
+  if (!IsMultiwindowSupported()) {
+    self.sceneState.activationLevel = SceneActivationLevelBackground;
+  }
+
+  [_appState applicationDidEnterBackground:application
+                              memoryHelper:_memoryHelper
+                   incognitoContentVisible:self.sceneController
+                                               .incognitoContentVisible];
 }
 
 // Called when returning to the foreground.
 - (void)applicationWillEnterForeground:(UIApplication*)application {
+  if (!IsMultiwindowSupported()) {
+    self.sceneState.activationLevel = SceneActivationLevelForegroundInactive;
+  }
+
   [_appState applicationWillEnterForeground:application
                             metricsMediator:_metricsMediator
                                memoryHelper:_memoryHelper
@@ -173,6 +218,10 @@
   if ([_appState isInSafeMode])
     return NO;
 
+  // Enusre Chrome is fuilly started up in case it had launched to the
+  // background.
+  [_browserLauncher startUpBrowserToStage:INITIALIZATION_STAGE_FOREGROUND];
+
   return
       [UserActivityHandler willContinueUserActivityWithType:userActivityType];
 }
@@ -183,6 +232,10 @@
           (void (^)(NSArray<id<UIUserActivityRestoring>>*))restorationHandler {
   if ([_appState isInSafeMode])
     return NO;
+
+  // Enusre Chrome is fuilly started up in case it had launched to the
+  // background.
+  [_browserLauncher startUpBrowserToStage:INITIALIZATION_STAGE_FOREGROUND];
 
   BOOL applicationIsActive =
       [application applicationState] == UIApplicationStateActive;
@@ -198,6 +251,10 @@
                completionHandler:(void (^)(BOOL succeeded))completionHandler {
   if ([_appState isInSafeMode])
     return;
+
+  // Enusre Chrome is fuilly started up in case it had launched to the
+  // background.
+  [_browserLauncher startUpBrowserToStage:INITIALIZATION_STAGE_FOREGROUND];
 
   [UserActivityHandler
       performActionForShortcutItem:shortcutItem
@@ -218,6 +275,13 @@
             options:(NSDictionary<NSString*, id>*)options {
   if ([_appState isInSafeMode])
     return NO;
+
+  // The various URL handling mechanisms require that the application has
+  // fully started up; there are some cases (crbug.com/658420) where a
+  // launch via this method crashes because some services (specifically,
+  // CommandLine) aren't initialized yet. So: before anything further is
+  // done, make sure that Chrome is fully started up.
+  [_browserLauncher startUpBrowserToStage:INITIALIZATION_STAGE_FOREGROUND];
 
   if (ios::GetChromeBrowserProvider()
           ->GetChromeIdentityService()

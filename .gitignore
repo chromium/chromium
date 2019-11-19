@@ -32,10 +32,12 @@
 !Android.mk
 .*.sw?
 .DS_Store
+.android
 .cipd
-.clang-coverage
 .classpath
+.code-coverage
 .cproject
+.emulator_sdk
 .gdb_history
 .gdbinit
 .landmines
@@ -54,15 +56,18 @@ tags
 Thumbs.db
 v8.log
 vs-chromium-project.txt
+/.clangd/
 /.clangd-index/
 # Settings directories for eclipse
 /.externalToolBuilders/
 /.settings/
 /.vs/
 # Visual Studio Code
-/.vscode/
+.vscode/
 /_out
 /android_emulator_sdk
+/android_webview/tools/webview_log_verbosifier/.gradle/
+/android_webview/tools/webview_log_verbosifier/.settings/
 /ash/ash_unittests_run.xml
 /base/base_unittests_run.xml
 # See build/.gitignore for entries covering src/build.
@@ -74,6 +79,7 @@ vs-chromium-project.txt
 /chrome/android/profiles/afdo.prof
 /chrome/android/profiles/local.txt
 /chrome/angle_unittests_run.xml
+/chrome/app/vector_icons/google_chrome/
 /chrome/build/chrome.x64.orderfile
 /chrome/build/chrome.x86.orderfile
 /chrome/build/chrome_child.x64.orderfile
@@ -85,7 +91,6 @@ vs-chromium-project.txt
 /chrome/app/theme/default_100_percent/google_chrome
 /chrome/app/theme/default_200_percent/google_chrome
 /chrome/app/theme/google_chrome
-/chrome/browser/autofill/internal
 /chrome/browser/chromeos/arc/voice_interaction/internal
 /chrome/browser/chromeos/assistant/internal
 /chrome/browser/chromeos/login/screenshot_testing/golden_screenshots/*.png
@@ -95,6 +100,7 @@ vs-chromium-project.txt
 /chrome/browser/google/linkdoctor_internal
 /chrome/browser/internal
 /chrome/browser/media/engagement_internal
+/chrome/browser/media/kaleidoscope/internal
 /chrome/browser/performance_monitor/performance_monitor.xml
 /chrome/browser/protector/internal
 /chrome/browser/resources/chromeos/quickoffice
@@ -109,6 +115,7 @@ vs-chromium-project.txt
 /chrome/browser/spellchecker/internal
 /chrome/browser/ui/media_router/internal
 /chrome/browser_tests_run.xml
+/chrome/chrome_cleaner/internal
 /chrome/chrome_run.xml
 /chrome/chrome_user32_delay_imports.xml
 /chrome/chrome_version_resources.xml
@@ -127,6 +134,7 @@ vs-chromium-project.txt
 /chrome/setup_unittests.xml
 /chrome/sync_integration_tests_run.xml
 /chrome/test/android/telemetry_tests/browser_tests/*.wpr
+/chrome/test/chromedriver/third_party/
 /chrome/test/chromeos/autotest/files/client/deps/chrome_test/test_src/
 /chrome/test/chromeos/autotest/files/client/deps/page_cycler_dep/test_src/
 /chrome/test/chromeos/autotest/files/client/deps/perf_data_dep/test_src/
@@ -141,6 +149,7 @@ vs-chromium-project.txt
 /chrome/test/data/gpu/vectortown_endurance/
 /chrome/test/data/gpu/vt/
 /chrome/test/data/layout_tests
+/chrome/test/data/password/captured_sites
 /chrome/test/data/pdf_private
 /chrome/test/data/perf/canvas_bench
 /chrome/test/data/perf/frame_rate/content
@@ -151,16 +160,18 @@ vs-chromium-project.txt
 /chrome/test/data/vr/
 /chrome/test/data/webrtc/resources
 /chrome/test/data/xr/webvr_info/
-/chrome/test/data/xr/webxr_samples/
 /chrome/test/media_router/internal
 /chrome/test/python_tests/
 /chrome/tools/memory
 /chrome/tools/test/reference_build
 /chrome/unit_tests_run.xml
 /chrome/web_ui_mojo_bindings.xml
-/chrome_elf/chrome_elf_resources.xml
 /chromecast/internal
 /chromeos/assistant/internal
+/chromeos/components/media_app_ui/resources/app
+/chromeos/profiles/chromeos.orderfile.txt
+/chromeos/profiles/*.local.txt
+/chromeos/profiles/*.afdo.prof
 /cipd_cache/
 /clank
 /cloud_print/cloud_print_version_resources.xml
@@ -172,8 +183,8 @@ vs-chromium-project.txt
 /components/rappor.xml
 /components/resources/default_100_percent/google_chrome
 /components/resources/default_200_percent/google_chrome
+/components/resources/default_300_percent/google_chrome
 /components/search_engines/prepopulated_engines.xml
-/components/test/data/language/
 /components/suggestions.xml
 /components/variations.xml
 /components/zucchini/testdata/*.exe
@@ -227,7 +238,8 @@ vs-chromium-project.txt
 /net/net_unittests_run.xml
 /net/Release
 /net/testserver.log
-/net/third_party/quiche
+/net/third_party/quiche/src
+/orderfiles
 /out*/
 /ppapi/native_client/nacl_irt.xml
 /ppapi/native_client/ppapi_lib.xml
@@ -259,7 +271,6 @@ vs-chromium-project.txt
 /skia/tools/clusterfuzz-data/
 /sql/sql_unittests_run.xml
 /sync/sync.xml
-/sync_testserver.log
 /testing/libfuzzer/fuzzer_corpus_for_bots/
 /testserver.log
 # See third_party/.gitignore for entries covering src/third_party.
@@ -296,3 +307,6 @@ vs-chromium-project.txt
 
 # Ignore IntelliJ files.
 .idea/
+
+# Ignore the default results output directory for tools/run-swarmed.py
+/results

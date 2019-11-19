@@ -391,6 +391,13 @@ virtual void MultiDrawArraysInstancedWEBGL(GLenum mode,
                                            const GLsizei* counts,
                                            const GLsizei* instance_counts,
                                            GLsizei drawcount) = 0;
+virtual void MultiDrawArraysInstancedBaseInstanceWEBGL(
+    GLenum mode,
+    const GLint* firsts,
+    const GLsizei* counts,
+    const GLsizei* instance_counts,
+    const GLuint* baseinstances,
+    GLsizei drawcount) = 0;
 virtual void MultiDrawElementsWEBGL(GLenum mode,
                                     const GLsizei* counts,
                                     GLenum type,
@@ -402,6 +409,15 @@ virtual void MultiDrawElementsInstancedWEBGL(GLenum mode,
                                              const GLsizei* offsets,
                                              const GLsizei* instance_counts,
                                              GLsizei drawcount) = 0;
+virtual void MultiDrawElementsInstancedBaseVertexBaseInstanceWEBGL(
+    GLenum mode,
+    const GLsizei* counts,
+    GLenum type,
+    const GLsizei* offsets,
+    const GLsizei* instance_counts,
+    const GLint* basevertices,
+    const GLuint* baseinstances,
+    GLsizei drawcount) = 0;
 virtual void StencilFunc(GLenum func, GLint ref, GLuint mask) = 0;
 virtual void StencilFuncSeparate(GLenum face,
                                  GLenum func,
@@ -656,6 +672,11 @@ virtual void BindImageTexture(GLuint unit,
 virtual void DispatchCompute(GLuint num_groups_x,
                              GLuint num_groups_y,
                              GLuint num_groups_z) = 0;
+virtual void DispatchComputeIndirect(GLintptr offset) = 0;
+virtual void DrawArraysIndirect(GLenum mode, const void* offset) = 0;
+virtual void DrawElementsIndirect(GLenum mode,
+                                  GLenum type,
+                                  const void* offset) = 0;
 virtual void GetProgramInterfaceiv(GLuint program,
                                    GLenum program_interface,
                                    GLenum pname,
@@ -780,11 +801,24 @@ virtual void DrawArraysInstancedANGLE(GLenum mode,
                                       GLint first,
                                       GLsizei count,
                                       GLsizei primcount) = 0;
+virtual void DrawArraysInstancedBaseInstanceANGLE(GLenum mode,
+                                                  GLint first,
+                                                  GLsizei count,
+                                                  GLsizei primcount,
+                                                  GLuint baseinstance) = 0;
 virtual void DrawElementsInstancedANGLE(GLenum mode,
                                         GLsizei count,
                                         GLenum type,
                                         const void* indices,
                                         GLsizei primcount) = 0;
+virtual void DrawElementsInstancedBaseVertexBaseInstanceANGLE(
+    GLenum mode,
+    GLsizei count,
+    GLenum type,
+    const void* indices,
+    GLsizei primcount,
+    GLint basevertex,
+    GLuint baseinstance) = 0;
 virtual void VertexAttribDivisorANGLE(GLuint index, GLuint divisor) = 0;
 virtual void ProduceTextureDirectCHROMIUM(GLuint texture, GLbyte* mailbox) = 0;
 virtual GLuint CreateAndConsumeTextureCHROMIUM(const GLbyte* mailbox) = 0;
@@ -803,10 +837,6 @@ virtual void DiscardFramebufferEXT(GLenum target,
                                    GLsizei count,
                                    const GLenum* attachments) = 0;
 virtual void LoseContextCHROMIUM(GLenum current, GLenum other) = 0;
-virtual void GenSyncTokenCHROMIUM(GLbyte* sync_token) = 0;
-virtual void GenUnverifiedSyncTokenCHROMIUM(GLbyte* sync_token) = 0;
-virtual void VerifySyncTokensCHROMIUM(GLbyte** sync_tokens, GLsizei count) = 0;
-virtual void WaitSyncTokenCHROMIUM(const GLbyte* sync_token) = 0;
 virtual void UnpremultiplyAndDitherCopyCHROMIUM(GLuint source_id,
                                                 GLuint dest_id,
                                                 GLint x,
@@ -828,11 +858,13 @@ virtual void ScheduleOverlayPlaneCHROMIUM(GLint plane_z_order,
                                           GLfloat uv_height,
                                           GLboolean enable_blend,
                                           GLuint gpu_fence_id) = 0;
-virtual void ScheduleCALayerSharedStateCHROMIUM(GLfloat opacity,
-                                                GLboolean is_clipped,
-                                                const GLfloat* clip_rect,
-                                                GLint sorting_context_id,
-                                                const GLfloat* transform) = 0;
+virtual void ScheduleCALayerSharedStateCHROMIUM(
+    GLfloat opacity,
+    GLboolean is_clipped,
+    const GLfloat* clip_rect,
+    const GLfloat* rounded_corner_bounds,
+    GLint sorting_context_id,
+    const GLfloat* transform) = 0;
 virtual void ScheduleCALayerCHROMIUM(GLuint contents_texture_id,
                                      const GLfloat* contents_rect,
                                      GLuint background_color,
@@ -845,8 +877,8 @@ virtual void CommitOverlayPlanesCHROMIUM(GLuint64 swap_id,
                                          GLbitfield flags = 0) = 0;
 virtual void FlushDriverCachesCHROMIUM() = 0;
 virtual GLuint GetLastFlushIdCHROMIUM() = 0;
-virtual void ScheduleDCLayerCHROMIUM(GLuint y_texture_id,
-                                     GLuint uv_texture_id,
+virtual void ScheduleDCLayerCHROMIUM(GLuint texture_0,
+                                     GLuint texture_1,
                                      GLint z_order,
                                      GLint content_x,
                                      GLint content_y,
@@ -962,10 +994,10 @@ virtual void ProgramPathFragmentInputGenCHROMIUM(GLuint program,
                                                  GLenum genMode,
                                                  GLint components,
                                                  const GLfloat* coeffs) = 0;
+virtual void ContextVisibilityHintCHROMIUM(GLboolean visibility) = 0;
 virtual void CoverageModulationCHROMIUM(GLenum components) = 0;
 virtual GLenum GetGraphicsResetStatusKHR() = 0;
 virtual void BlendBarrierKHR() = 0;
-virtual void ApplyScreenSpaceAntialiasingCHROMIUM() = 0;
 virtual void BindFragDataLocationIndexedEXT(GLuint program,
                                             GLuint colorNumber,
                                             GLuint index,
@@ -1011,12 +1043,12 @@ virtual GLuint CreateClientGpuFenceCHROMIUM(ClientGpuFence source) = 0;
 virtual void WaitGpuFenceCHROMIUM(GLuint gpu_fence_id) = 0;
 virtual void DestroyGpuFenceCHROMIUM(GLuint gpu_fence_id) = 0;
 virtual void InvalidateReadbackBufferShadowDataCHROMIUM(GLuint buffer_id) = 0;
-virtual void FramebufferTextureMultiviewLayeredANGLE(GLenum target,
-                                                     GLenum attachment,
-                                                     GLuint texture,
-                                                     GLint level,
-                                                     GLint baseViewIndex,
-                                                     GLsizei numViews) = 0;
+virtual void FramebufferTextureMultiviewOVR(GLenum target,
+                                            GLenum attachment,
+                                            GLuint texture,
+                                            GLint level,
+                                            GLint baseViewIndex,
+                                            GLsizei numViews) = 0;
 virtual void MaxShaderCompilerThreadsKHR(GLuint count) = 0;
 virtual GLuint CreateAndTexStorage2DSharedImageCHROMIUM(
     const GLbyte* mailbox) = 0;

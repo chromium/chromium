@@ -12,6 +12,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/common/form_field_data.h"
+#include "components/autofill/core/common/logging/log_buffer.h"
 
 namespace autofill {
 
@@ -68,27 +69,22 @@ void LogDeserializationError(int version) {
 
 }  // namespace
 
-FormData::FormData() : is_form_tag(true), is_formless_checkout(false) {}
+FormData::FormData() = default;
 
-FormData::FormData(const FormData& data)
-    : name(data.name),
-      button_titles(data.button_titles),
-      origin(data.origin),
-      action(data.action),
-      main_frame_origin(data.main_frame_origin),
-      is_form_tag(data.is_form_tag),
-      is_formless_checkout(data.is_formless_checkout),
-      unique_renderer_id(data.unique_renderer_id),
-      submission_event(data.submission_event),
-      fields(data.fields),
-      username_predictions(data.username_predictions) {}
+FormData::FormData(const FormData&) = default;
 
-FormData::~FormData() {
-}
+FormData& FormData::operator=(const FormData&) = default;
+
+FormData::FormData(FormData&&) = default;
+
+FormData& FormData::operator=(FormData&&) = default;
+
+FormData::~FormData() = default;
 
 bool FormData::SameFormAs(const FormData& form) const {
-  if (name != form.name || origin != form.origin || action != form.action ||
-      is_form_tag != form.is_form_tag ||
+  if (name != form.name || id_attribute != form.id_attribute ||
+      name_attribute != form.name_attribute || url != form.url ||
+      action != form.action || is_form_tag != form.is_form_tag ||
       is_formless_checkout != form.is_formless_checkout ||
       fields.size() != form.fields.size())
     return false;
@@ -100,11 +96,14 @@ bool FormData::SameFormAs(const FormData& form) const {
 }
 
 bool FormData::SimilarFormAs(const FormData& form) const {
-  if (name != form.name || origin != form.origin || action != form.action ||
+  if (name != form.name || id_attribute != form.id_attribute ||
+      name_attribute != form.name_attribute || url != form.url ||
+      action != form.action || is_action_empty != form.is_action_empty ||
       is_form_tag != form.is_form_tag ||
       is_formless_checkout != form.is_formless_checkout ||
-      fields.size() != form.fields.size())
+      fields.size() != form.fields.size()) {
     return false;
+  }
   for (size_t i = 0; i < fields.size(); ++i) {
     if (!fields[i].SimilarFieldAs(form.fields[i]))
       return false;
@@ -113,7 +112,9 @@ bool FormData::SimilarFormAs(const FormData& form) const {
 }
 
 bool FormData::DynamicallySameFormAs(const FormData& form) const {
-  if (name != form.name || fields.size() != form.fields.size())
+  if (name != form.name || id_attribute != form.id_attribute ||
+      name_attribute != form.name_attribute ||
+      fields.size() != form.fields.size())
     return false;
   for (size_t i = 0; i < fields.size(); ++i) {
     if (!fields[i].DynamicallySameFieldAs(form.fields[i]))
@@ -122,29 +123,27 @@ bool FormData::DynamicallySameFormAs(const FormData& form) const {
   return true;
 }
 
-bool FormData::operator==(const FormData& form) const {
-  return name == form.name && origin == form.origin && action == form.action &&
-         unique_renderer_id == form.unique_renderer_id &&
-         submission_event == form.submission_event &&
-         is_form_tag == form.is_form_tag &&
-         is_formless_checkout == form.is_formless_checkout &&
-         fields == form.fields &&
-         username_predictions == form.username_predictions;
-}
-
-bool FormData::operator!=(const FormData& form) const {
-  return !(*this == form);
-}
-
-bool FormData::operator<(const FormData& form) const {
-  return std::tie(name, origin, action, is_form_tag, is_formless_checkout,
-                  fields) < std::tie(form.name, form.origin, form.action,
-                                     form.is_form_tag,
-                                     form.is_formless_checkout, form.fields);
+bool FormData::IdentityComparator::operator()(const FormData& a,
+                                              const FormData& b) const {
+  // |unique_renderer_id| uniquely identifies the form, if and only if it is
+  // set; the other members compared below together uniquely identify the form
+  // as well.
+  auto tie = [](const FormData& f) {
+    return std::tie(f.unique_renderer_id, f.name, f.id_attribute,
+                    f.name_attribute, f.url, f.action, f.is_form_tag,
+                    f.is_formless_checkout);
+  };
+  if (tie(a) < tie(b))
+    return true;
+  if (tie(b) < tie(a))
+    return false;
+  return std::lexicographical_compare(a.fields.begin(), a.fields.end(),
+                                      b.fields.begin(), b.fields.end(),
+                                      FormFieldData::IdentityComparator());
 }
 
 std::ostream& operator<<(std::ostream& os, const FormData& form) {
-  os << base::UTF16ToUTF8(form.name) << " " << form.origin << " " << form.action
+  os << base::UTF16ToUTF8(form.name) << " " << form.url << " " << form.action
      << " " << form.main_frame_origin << " " << form.is_form_tag << " "
      << form.is_formless_checkout << " "
      << "Fields:";
@@ -157,21 +156,12 @@ std::ostream& operator<<(std::ostream& os, const FormData& form) {
 void SerializeFormData(const FormData& form_data, base::Pickle* pickle) {
   pickle->WriteInt(kFormDataPickleVersion);
   pickle->WriteString16(form_data.name);
-  pickle->WriteString(form_data.origin.spec());
+  pickle->WriteString(form_data.url.spec());
   pickle->WriteString(form_data.action.spec());
   SerializeFormFieldDataVector(form_data.fields, pickle);
   pickle->WriteBool(form_data.is_form_tag);
   pickle->WriteBool(form_data.is_formless_checkout);
   pickle->WriteString(form_data.main_frame_origin.Serialize());
-}
-
-void SerializeFormDataToBase64String(const FormData& form_data,
-                                     std::string* output) {
-  base::Pickle pickle;
-  SerializeFormData(form_data, &pickle);
-  Base64Encode(
-      base::StringPiece(static_cast<const char*>(pickle.data()), pickle.size()),
-      output);
 }
 
 bool DeserializeFormData(base::PickleIterator* iter, FormData* form_data) {
@@ -201,7 +191,7 @@ bool DeserializeFormData(base::PickleIterator* iter, FormData* form_data) {
   }
 
   bool unused_user_submitted;
-  if (!ReadGURL(iter, &temp_form_data.origin) ||
+  if (!ReadGURL(iter, &temp_form_data.url) ||
       !ReadGURL(iter, &temp_form_data.action) ||
       // user_submitted was removed/no longer serialized in version 4.
       (version < 4 && !iter->ReadBool(&unused_user_submitted)) ||
@@ -237,15 +227,26 @@ bool DeserializeFormData(base::PickleIterator* iter, FormData* form_data) {
   return true;
 }
 
-bool DeserializeFormDataFromBase64String(const base::StringPiece& input,
-                                         FormData* form_data) {
-  if (input.empty())
-    return false;
-  std::string pickle_data;
-  Base64Decode(input, &pickle_data);
-  base::Pickle pickle(pickle_data.data(), static_cast<int>(pickle_data.size()));
-  base::PickleIterator iter(pickle);
-  return DeserializeFormData(&iter, form_data);
+LogBuffer& operator<<(LogBuffer& buffer, const FormData& form) {
+  buffer << Tag{"div"} << Attrib{"class", "form"};
+  buffer << Tag{"table"};
+  buffer << Tr{} << "Form name:" << form.name;
+  buffer << Tr{} << "Unique renderer Id:" << form.unique_renderer_id;
+  buffer << Tr{} << "URL:" << form.url;
+  buffer << Tr{} << "Action:" << form.action;
+  buffer << Tr{} << "Is action empty:" << form.is_action_empty;
+  buffer << Tr{} << "Is <form> tag:" << form.is_form_tag;
+  for (size_t i = 0; i < form.fields.size(); ++i) {
+    buffer << Tag{"tr"};
+    buffer << Tag{"td"} << "Field " << i << ": " << CTag{};
+    buffer << Tag{"td"};
+    buffer << Tag{"table"} << form.fields.at(i) << CTag{"table"};
+    buffer << CTag{"td"};
+    buffer << CTag{"tr"};
+  }
+  buffer << CTag{"table"};
+  buffer << CTag{"div"};
+  return buffer;
 }
 
 }  // namespace autofill

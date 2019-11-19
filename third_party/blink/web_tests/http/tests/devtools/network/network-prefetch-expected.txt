@@ -1,0 +1,5 @@
+fromPrefetchCache flag must be set for prefetched resousces.
+
+http://127.0.0.1:8000/devtools/network/resources/network-prefetch-target.html
+fromPrefetchCache: true
+

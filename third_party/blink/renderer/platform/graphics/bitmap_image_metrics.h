@@ -7,10 +7,8 @@
 
 #include "third_party/blink/renderer/platform/graphics/image_orientation.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
-
-struct skcms_ICCProfile;
 
 namespace blink {
 
@@ -75,15 +73,13 @@ class PLATFORM_EXPORT BitmapImageMetrics {
   static void CountDecodedImageType(const String& type);
   static void CountImageOrientation(const ImageOrientationEnum);
   // Report the JPEG compression density in 0.01 bits per pixel for an image
-  // with a smallest side (width or length) of |image_min_side|.
+  // with a smallest side (width or length) of |image_min_side| and total size
+  // in bytes |image_size_bytes|.
   static void CountImageJpegDensity(int image_min_side,
-                                    uint64_t density_centi_bpp);
-  static void CountImageGammaAndGamut(const skcms_ICCProfile*);
+                                    uint64_t density_centi_bpp,
+                                    size_t image_size_bytes);
   static void CountJpegArea(const IntSize& size);
   static void CountJpegColorSpace(JpegColorSpace color_space);
-
- private:
-  static Gamma GetColorSpaceGamma(const skcms_ICCProfile*);
 };
 
 }  // namespace blink

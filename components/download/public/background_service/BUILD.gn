@@ -9,6 +9,8 @@ if (is_android) {
 
 source_set("public") {
   sources = [
+    "blob_context_getter_factory.h",
+    "client.cc",
     "client.h",
     "clients.h",
     "download_metadata.cc",

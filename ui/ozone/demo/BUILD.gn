@@ -4,7 +4,7 @@
 
 import("//gpu/vulkan/features.gni")
 if (is_fuchsia) {
-  import("//build/config/fuchsia/rules.gni")
+  import("//build/config/fuchsia/generate_runner_scripts.gni")
 }
 
 group("demo") {
@@ -60,6 +60,7 @@ executable("ozone_demo") {
     ":ozone_demo_lib",
     "//components/tracing:startup_tracing",
     "//gpu/vulkan:buildflags",
+    "//mojo/core/embedder",
     "//ui/events/ozone:events_ozone_layout",
     "//ui/gl",
     "//ui/gl/init",
@@ -91,6 +92,7 @@ executable("skia_demo") {
   deps = [
     ":ozone_demo_lib",
     "//components/tracing:startup_tracing",
+    "//mojo/core/embedder",
     "//skia",
     "//ui/events/ozone:events_ozone_layout",
     "//ui/gl",

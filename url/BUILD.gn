@@ -97,6 +97,19 @@ component("url") {
 }
 
 if (is_android) {
+  static_library("origin_android") {
+    sources = [
+      "android/origin_android.cc",
+    ]
+
+    deps = [
+      ":url",
+      ":url_jni_headers",
+      "//base",
+      "//url/mojom:url_mojom_origin",
+    ]
+  }
+
   android_library("url_java") {
     java_files = [ "android/java/src/org/chromium/url/IDNStringUtil.java" ]
     deps = [
@@ -104,11 +117,19 @@ if (is_android) {
     ]
   }
 
+  android_library("origin_java") {
+    java_files = [ "android/java/src/org/chromium/url/Origin.java" ]
+    deps = [
+      "//base:base_java",
+      "//url/mojom:url_mojom_origin_java",
+    ]
+  }
+
   generate_jni("url_jni_headers") {
     sources = [
       "android/java/src/org/chromium/url/IDNStringUtil.java",
+      "android/java/src/org/chromium/url/Origin.java",
     ]
-    jni_package = "url"
   }
 }
 

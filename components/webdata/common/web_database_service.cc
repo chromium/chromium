@@ -45,8 +45,7 @@ WebDatabaseService::WebDatabaseService(
     : base::RefCountedDeleteOnSequence<WebDatabaseService>(ui_task_runner),
       path_(path),
       db_loaded_(false),
-      db_task_runner_(db_task_runner),
-      weak_ptr_factory_(this) {
+      db_task_runner_(db_task_runner) {
   DCHECK(ui_task_runner->RunsTasksInCurrentSequence());
   DCHECK(db_task_runner_);
 }

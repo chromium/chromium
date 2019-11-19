@@ -1,7 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ja">
-<translation id="130631256467250065">変更内容は、次回の端末の起動時に反映されます。</translation>
+<translation id="130631256467250065">変更内容は、次回のデバイスの起動時に反映されます。</translation>
 <translation id="1838412507805038478">このウェブサイトの証明書が <ph name="ISSUER" /> 発行のものであることが Chromium で確認されました。</translation>
 <translation id="275588974610408078">Chromium では、障害レポートをご利用いただけません。</translation>
 <translation id="3064346599913645280">保護された Chromium ページを表示しています</translation>

@@ -29,6 +29,8 @@ class VIZ_COMMON_EXPORT SkiaHelper {
                                          bool flush);
 
   static sk_sp<SkColorFilter> MakeOverdrawColorFilter();
+
+  static sk_sp<SkImageFilter> BuildOpacityFilter(float opacity);
 };
 
 }  // namespace viz

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="../../resources/js-test.js"></script>
+</head>
+<body>
+    <iframe></iframe>
+    <script>
+        description('Should not crash if iframe\'s document element\'s focusout event handler removes the iframe in the parent document and the selection is moved.');
+
+        function run() {
+            var iframe = document.getElementsByTagName('iframe')[0];
+            iframe.contentDocument.documentElement.contentEditable = true;
+            iframe.contentDocument.documentElement.addEventListener('focusout', function () {
+                iframe.parentNode.removeChild(iframe);
+            }, false);
+            iframe.contentDocument.documentElement.focus();
+
+            if (window.eventSender)
+                eventSender.keyDown('ArrowDown');
+
+            testPassed('Did not crash.');
+            window.finishJSTest();
+        }
+
+        document.addEventListener('DOMContentLoaded', run);
+    </script>
+</body>
+</html>

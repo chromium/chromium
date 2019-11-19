@@ -4,7 +4,7 @@
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//      http://www.apache.org/licenses/LICENSE-2.0
+//      https://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -333,7 +333,7 @@ static absl::base_internal::SpinLock tid_lock(
 // We set a bit per thread in this array to indicate that an ID is in
 // use. ID 0 is unused because it is the default value returned by
 // pthread_getspecific().
-static std::vector<uint32_t>* tid_array GUARDED_BY(tid_lock) = nullptr;
+static std::vector<uint32_t>* tid_array ABSL_GUARDED_BY(tid_lock) = nullptr;
 static constexpr int kBitsPerWord = 32;  // tid_array is uint32_t.
 
 // Returns the TID to tid_array.

@@ -2,15 +2,26 @@ include_rules = [
   "+base/metrics/single_sample_metrics.h",
   "+cc",
   "+components/viz/common",
-  "+services/resource_coordinator/public/cpp/resource_coordinator_features.h",
 ]
 
 specific_include_rules = {
+  "auto_advancing_virtual_time_domain.h": [
+    "+base/task/task_observer.h",
+  ],
+  "idle_time_estimator.h": [
+    "+base/task/task_observer.h",
+  ],
   "main_thread_task_queue.h": [
     "+base/task/sequence_manager/task_queue_impl.h",
     "+net/base/request_priority.h"
   ],
+  "frame_interference_recorder.h": [
+    "+base/task/sequence_manager/enqueue_order.h"
+  ],
   "frame_scheduler_impl.h": [
     "+net/base/request_priority.h"
-  ]
+  ],
+  "main_thread_unittest.cc": [
+    "+base/message_loop/message_pump_type.h",
+  ],
 }

@@ -21,7 +21,6 @@ PASS event.ports contains two ports when two ports re-sent after error
 PASS Sending host object has thrown DataCloneError: Failed to execute 'postMessage' on 'MessagePort': MessageChannel object could not be cloned.
 PASS Sending host object has thrown DataCloneError: Failed to execute 'postMessage' on 'MessagePort': Navigator object could not be cloned.
 PASS Sending Function object has thrown DataCloneError: Failed to execute 'postMessage' on 'MessagePort': function() {} could not be cloned.
-PASS Sending Error object has thrown DataCloneError: Failed to execute 'postMessage' on 'MessagePort': Error could not be cloned.
 PASS send-port: transferred one port
 PASS send-port-twice: transferred one port twice
 PASS send-two-ports: transferred two ports

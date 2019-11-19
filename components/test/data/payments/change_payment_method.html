@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<!--
+Copyright 2019 The Chromium Authors. All rights reserved.
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1">
+    <title>Test For PaymentRequestEvent.changePaymentMethod()</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="stylesheet" type="text/css" href="style.css">
+  </head>
+  <body>
+    <div>
+      <button onclick="install()" id="install">Install Service Worker</button>
+    </div>
+    <div>
+      <button onclick="testNoHandler()" id="testNoHandler">
+        Test No Handler
+      </button>
+    </div>
+    <div>
+      <button onclick="testReject()" id="testReject">Test Rejection</button>
+    </div>
+    <div>
+      <button onclick="testThrow()" id="testThrow">Test Throw</button>
+    </div>
+    <div>
+      <button onclick="testDetails()" id="testDetails">Test Details</button>
+    </div>
+    <div>
+      <button onclick="basicCardMethodName()" id="basicCardMethodName">
+        Use Basic Card
+      </button>
+    </div>
+    <pre id="result"></pre>
+    <script src="util.js"></script>
+    <script src="change_payment_method.js"></script>
+  </body>
+</html>

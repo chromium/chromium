@@ -8,7 +8,8 @@ import android.app.ApplicationErrorReport;
 import android.os.Build;
 import android.os.Looper;
 import android.os.StrictMode;
-import android.support.annotation.UiThread;
+
+import androidx.annotation.UiThread;
 
 import org.chromium.base.BuildConfig;
 import org.chromium.base.CommandLine;

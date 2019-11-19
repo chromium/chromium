@@ -5,8 +5,8 @@
 #ifndef CHROME_TEST_CHROMEDRIVER_CHROME_BROWSER_INFO_H_
 #define CHROME_TEST_CHROMEDRIVER_CHROME_BROWSER_INFO_H_
 
+#include "chrome/test/chromedriver/chrome/devtools_endpoint.h"
 #include "chrome/test/chromedriver/chrome/status.h"
-#include "chrome/test/chromedriver/net/net_util.h"
 
 // Content Shell and WebView have an empty product version and a fake user
 // agent. There's no way to detect the actual version, so unless specified we
@@ -24,11 +24,12 @@ struct BrowserInfo {
   std::string browser_name;
   std::string browser_version;
   std::string web_socket_url;
-  NetAddress debugger_address;
+  DevToolsEndpoint debugger_endpoint;
   int major_version;
   int build_no;
   int blink_revision;
   bool is_android;
+  bool is_headless;
 };
 
 Status ParseBrowserInfo(const std::string& data,

@@ -25,4 +25,9 @@
   "untranslated_grds": {
     "not_translated.grd": "Not translated"
   },
+  # Grd files that should not be processed, since they might contain parts not
+  # available publicly.
+  "internal_grds": [
+    "internal.grd",
+  ],
 }

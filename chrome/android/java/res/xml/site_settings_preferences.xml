@@ -76,12 +76,6 @@
     <org.chromium.chrome.browser.preferences.website.SiteSettingsPreference
         android:fragment="org.chromium.chrome.browser.preferences.website.SingleCategoryPreferences"
         android:key="sound" />
-    <!-- Google Translate -->
-    <Preference
-        android:fragment="org.chromium.chrome.browser.preferences.website.TranslatePreferences"
-        android:key="translate"
-        android:title="@string/google_translate"
-        android:icon="@drawable/settings_translate" />
     <!-- Storage -->
     <!-- TODO(finnur): Move this over to the new Usage screen, once it exists. -->
     <org.chromium.chrome.browser.preferences.website.SiteSettingsPreference
@@ -90,6 +84,10 @@
         android:title="@string/website_settings_storage"
         android:icon="@drawable/settings_storage"
         app:iconTint="@color/default_icon_color" />
+    <!-- NFC -->
+    <org.chromium.chrome.browser.preferences.website.SiteSettingsPreference
+        android:fragment="org.chromium.chrome.browser.preferences.website.SingleCategoryPreferences"
+        android:key="nfc" />
     <!-- USB -->
     <org.chromium.chrome.browser.preferences.website.SiteSettingsPreference
         android:fragment="org.chromium.chrome.browser.preferences.website.SingleCategoryPreferences"
@@ -98,4 +96,8 @@
     <org.chromium.chrome.browser.preferences.website.SiteSettingsPreference
         android:fragment="org.chromium.chrome.browser.preferences.website.SingleCategoryPreferences"
         android:key="clipboard" />
+    <!-- Bluetooth Scanning -->
+    <org.chromium.chrome.browser.preferences.website.SiteSettingsPreference
+        android:fragment="org.chromium.chrome.browser.preferences.website.SingleCategoryPreferences"
+        android:key="bluetooth_scanning" />
 </PreferenceScreen>

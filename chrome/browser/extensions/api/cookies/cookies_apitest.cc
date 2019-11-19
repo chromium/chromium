@@ -5,11 +5,17 @@
 #include "base/command_line.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "net/cookies/cookie_util.h"
 
 namespace extensions {
 
 IN_PROC_BROWSER_TEST_F(ExtensionApiTest, Cookies) {
-  ASSERT_TRUE(RunExtensionTest("cookies/api")) << message_;
+  ASSERT_TRUE(RunExtensionTestWithArg(
+      "cookies/api",
+      net::cookie_util::IsCookiesWithoutSameSiteMustBeSecureEnabled()
+          ? "true"
+          : "false"))
+      << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionApiTest, CookiesEvents) {

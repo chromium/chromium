@@ -6,15 +6,19 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_ANIMATION_SVG_NUMBER_INTERPOLATION_TYPE_H_
 
 #include "third_party/blink/renderer/core/animation/svg_interpolation_type.h"
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/svg_names.h"
 
 namespace blink {
 
-class SVGNumberInterpolationType : public SVGInterpolationType {
+class CORE_EXPORT SVGNumberInterpolationType : public SVGInterpolationType {
  public:
   SVGNumberInterpolationType(const QualifiedName& attribute)
       : SVGInterpolationType(attribute),
         is_non_negative_(attribute == svg_names::kPathLengthAttr) {}
+
+  SVGPropertyBase* AppliedSVGValueForTesting(const InterpolableValue&,
+                                             const NonInterpolableValue*) const;
 
  private:
   InterpolationValue MaybeConvertNeutral(const InterpolationValue& underlying,

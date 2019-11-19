@@ -21,7 +21,7 @@
 #include "components/policy/core/common/cloud/mock_device_management_service.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/testing_pref_service.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "crypto/sha2.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -46,15 +46,19 @@ const char kInitialEnrollmentIdHash[] = "\x30\x18\xb7\x0f\x76\x09\xc5\xc7";
 
 const int kInitialEnrollmentIdHashLength = 8;
 
+const bool kNotWithLicense = false;
+const bool kWithLicense = true;
+
 // This is modulus power value used in initial enrollment to detect that the
 // server is outdated and does not support initial enrollment. See the
 // |DetectOutdatedServer| test case.
 const int kInitialEnrollmentModulusPowerOutdatedServer = 14;
 
+using ::testing::_;
+using ::testing::DoAll;
 using ::testing::InSequence;
 using ::testing::Mock;
 using ::testing::SaveArg;
-using ::testing::_;
 
 enum class AutoEnrollmentProtocol { kFRE, kInitialEnrollment };
 
@@ -81,8 +85,9 @@ class AutoEnrollmentClientImplTest
   void CreateClient(int power_initial, int power_limit) {
     state_ = AUTO_ENROLLMENT_STATE_PENDING;
     service_.reset(new MockDeviceManagementService());
-    EXPECT_CALL(*service_, StartJob(_, _, _, _, _, _, _))
-        .WillRepeatedly(SaveArg<6>(&last_request_));
+    service_->ScheduleInitialization(0);
+    base::RunLoop().RunUntilIdle();
+
     auto progress_callback =
         base::BindRepeating(&AutoEnrollmentClientImplTest::ProgressCallback,
                             base::Unretained(this));
@@ -105,11 +110,14 @@ class AutoEnrollmentClientImplTest
 
   void ProgressCallback(AutoEnrollmentState state) { state_ = state; }
 
-  void ServerWillFail(DeviceManagementStatus error) {
+  void ServerWillFail(int net_error, int response_code) {
     em::DeviceManagementResponse dummy_response;
-    EXPECT_CALL(*service_,
-                CreateJob(DeviceManagementRequestJob::TYPE_AUTO_ENROLLMENT, _))
-        .WillOnce(service_->FailJob(error));
+    EXPECT_CALL(*service_, StartJob(_))
+        .WillOnce(DoAll(
+            service_->CaptureJobType(&failed_job_type_),
+            service_->CaptureRequest(&last_request_),
+            service_->StartJobAsync(net_error, response_code, dummy_response)))
+        .RetiresOnSaturation();
   }
 
   void ServerWillReply(int64_t modulus, bool with_hashes, bool with_id_hash) {
@@ -138,9 +146,14 @@ class AutoEnrollmentClientImplTest
             kInitialEnrollmentIdHash, kInitialEnrollmentIdHashLength);
       }
     }
-    EXPECT_CALL(*service_,
-                CreateJob(DeviceManagementRequestJob::TYPE_AUTO_ENROLLMENT, _))
-        .WillOnce(service_->SucceedJob(response));
+
+    EXPECT_CALL(*service_, StartJob(_))
+        .WillOnce(
+            DoAll(service_->CaptureJobType(&auto_enrollment_job_type_),
+                  service_->CaptureRequest(&last_request_),
+                  service_->StartJobAsync(
+                      net::OK, DeviceManagementService::kSuccess, response)))
+        .RetiresOnSaturation();
   }
 
   em::DeviceInitialEnrollmentStateResponse::InitialEnrollmentMode
@@ -179,21 +192,24 @@ class AutoEnrollmentClientImplTest
   void ServerWillSendState(
       const std::string& management_domain,
       em::DeviceStateRetrievalResponse::RestoreMode restore_mode,
-      const std::string& device_disabled_message) {
+      const std::string& device_disabled_message,
+      bool is_license_packaged_with_device) {
     if (GetParam() == AutoEnrollmentProtocol::kFRE) {
       ServerWillSendFREState(management_domain, restore_mode,
                              device_disabled_message);
     } else {
       ServerWillSendInitialEnrollmentState(
-          management_domain,
+          management_domain, is_license_packaged_with_device,
           MapRestoreModeToInitialEnrollmentMode(restore_mode));
     }
   }
 
-  DeviceManagementRequestJob::JobType GetStateRetrievalJobType() {
+  DeviceManagementService::JobConfiguration::JobType
+  GetStateRetrievalJobType() {
     return GetParam() == AutoEnrollmentProtocol::kFRE
-               ? DeviceManagementRequestJob::TYPE_DEVICE_STATE_RETRIEVAL
-               : DeviceManagementRequestJob::
+               ? DeviceManagementService::JobConfiguration::
+                     TYPE_DEVICE_STATE_RETRIEVAL
+               : DeviceManagementService::JobConfiguration::
                      TYPE_INITIAL_ENROLLMENT_STATE_RETRIEVAL;
   }
 
@@ -208,12 +224,19 @@ class AutoEnrollmentClientImplTest
     state_response->set_management_domain(management_domain);
     state_response->mutable_disabled_state()->set_message(
         device_disabled_message);
-    EXPECT_CALL(*service_, CreateJob(GetStateRetrievalJobType(), _))
-        .WillOnce(service_->SucceedJob(response));
+
+    EXPECT_CALL(*service_, StartJob(_))
+        .WillOnce(
+            DoAll(service_->CaptureJobType(&state_retrieval_job_type_),
+                  service_->CaptureRequest(&last_request_),
+                  service_->StartJobAsync(
+                      net::OK, DeviceManagementService::kSuccess, response)))
+        .RetiresOnSaturation();
   }
 
   void ServerWillSendInitialEnrollmentState(
       const std::string& management_domain,
+      bool is_license_packaged_with_device,
       em::DeviceInitialEnrollmentStateResponse::InitialEnrollmentMode
           initial_enrollment_mode) {
     em::DeviceManagementResponse response;
@@ -221,14 +244,29 @@ class AutoEnrollmentClientImplTest
         response.mutable_device_initial_enrollment_state_response();
     state_response->set_initial_enrollment_mode(initial_enrollment_mode);
     state_response->set_management_domain(management_domain);
-    EXPECT_CALL(*service_, CreateJob(GetStateRetrievalJobType(), _))
-        .WillOnce(service_->SucceedJob(response));
+    state_response->set_is_license_packaged_with_device(
+        is_license_packaged_with_device);
+    EXPECT_CALL(*service_, StartJob(_))
+        .WillOnce(
+            DoAll(service_->CaptureJobType(&state_retrieval_job_type_),
+                  service_->CaptureRequest(&last_request_),
+                  service_->StartJobAsync(
+                      net::OK, DeviceManagementService::kSuccess, response)))
+        .RetiresOnSaturation();
   }
 
-  void ServerWillReplyAsync(MockDeviceManagementJob** job) {
-    EXPECT_CALL(*service_,
-                CreateJob(DeviceManagementRequestJob::TYPE_AUTO_ENROLLMENT, _))
-        .WillOnce(service_->CreateAsyncJob(job));
+  DeviceManagementService::JobConfiguration::JobType
+  GetExpectedStateRetrievalJobType() {
+    return GetParam() == AutoEnrollmentProtocol::kFRE
+               ? DeviceManagementService::JobConfiguration::
+                     TYPE_DEVICE_STATE_RETRIEVAL
+               : DeviceManagementService::JobConfiguration::
+                     TYPE_INITIAL_ENROLLMENT_STATE_RETRIEVAL;
+  }
+
+  void ServerWillReplyAsync(DeviceManagementService::JobControl** job) {
+    EXPECT_CALL(*service_, StartJob(_))
+        .WillOnce(service_->StartJobFullControl(job));
   }
 
   bool HasCachedDecision() {
@@ -250,7 +288,8 @@ class AutoEnrollmentClientImplTest
 
   void VerifyServerBackedState(const std::string& expected_management_domain,
                                const std::string& expected_restore_mode,
-                               const std::string& expected_disabled_message) {
+                               const std::string& expected_disabled_message,
+                               bool expected_is_license_packaged_with_device) {
     const base::Value* state =
         local_state_->GetUserPref(prefs::kServerBackedDeviceState);
     ASSERT_TRUE(state);
@@ -284,6 +323,17 @@ class AutoEnrollmentClientImplTest
       EXPECT_FALSE(state_dict->GetString(kDeviceStateDisabledMessage,
                                          &actual_disabled_message));
     }
+
+    if (GetParam() == AutoEnrollmentProtocol::kFRE) {
+      EXPECT_FALSE(state_dict->FindBoolPath(kDeviceStatePackagedLicense));
+    } else {
+      base::Optional<bool> actual_is_license_packaged_with_device;
+      actual_is_license_packaged_with_device =
+          state_dict->FindBoolPath(kDeviceStatePackagedLicense);
+      EXPECT_TRUE(actual_is_license_packaged_with_device.has_value());
+      EXPECT_EQ(expected_is_license_packaged_with_device,
+                actual_is_license_packaged_with_device.value());
+    }
   }
 
   const em::DeviceAutoEnrollmentRequest& auto_enrollment_request() {
@@ -303,12 +353,18 @@ class AutoEnrollmentClientImplTest
     return static_cast<AutoEnrollmentClientImpl*>(client_.release());
   }
 
-  content::TestBrowserThreadBundle browser_threads_;
+  content::BrowserTaskEnvironment task_environment_;
   ScopedTestingLocalState scoped_testing_local_state_;
   TestingPrefServiceSimple* local_state_;
   std::unique_ptr<MockDeviceManagementService> service_;
   em::DeviceManagementRequest last_request_;
   AutoEnrollmentState state_;
+  DeviceManagementService::JobConfiguration::JobType failed_job_type_ =
+      DeviceManagementService::JobConfiguration::TYPE_INVALID;
+  DeviceManagementService::JobConfiguration::JobType auto_enrollment_job_type_ =
+      DeviceManagementService::JobConfiguration::TYPE_INVALID;
+  DeviceManagementService::JobConfiguration::JobType state_retrieval_job_type_ =
+      DeviceManagementService::JobConfiguration::TYPE_INVALID;
 
  private:
   network::TestURLLoaderFactory url_loader_factory_;
@@ -318,8 +374,11 @@ class AutoEnrollmentClientImplTest
 };
 
 TEST_P(AutoEnrollmentClientImplTest, NetworkFailure) {
-  ServerWillFail(DM_STATUS_TEMPORARY_UNAVAILABLE);
+  ServerWillFail(net::OK, DeviceManagementService::kServiceUnavailable);
   client()->Start();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_AUTO_ENROLLMENT,
+            failed_job_type_);
   EXPECT_EQ(AUTO_ENROLLMENT_STATE_SERVER_ERROR, state_);
   EXPECT_FALSE(HasCachedDecision());
   EXPECT_FALSE(HasServerBackedState());
@@ -328,6 +387,9 @@ TEST_P(AutoEnrollmentClientImplTest, NetworkFailure) {
 TEST_P(AutoEnrollmentClientImplTest, EmptyReply) {
   ServerWillReply(-1, false, false);
   client()->Start();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_AUTO_ENROLLMENT,
+            auto_enrollment_job_type_);
   EXPECT_EQ(AUTO_ENROLLMENT_STATE_NO_ENROLLMENT, state_);
   VerifyCachedResult(false, 8);
   EXPECT_FALSE(HasServerBackedState());
@@ -336,6 +398,9 @@ TEST_P(AutoEnrollmentClientImplTest, EmptyReply) {
 TEST_P(AutoEnrollmentClientImplTest, ClientUploadsRightBits) {
   ServerWillReply(-1, false, false);
   client()->Start();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_AUTO_ENROLLMENT,
+            auto_enrollment_job_type_);
   EXPECT_EQ(AUTO_ENROLLMENT_STATE_NO_ENROLLMENT, state_);
 
   EXPECT_TRUE(auto_enrollment_request().has_remainder());
@@ -354,8 +419,13 @@ TEST_P(AutoEnrollmentClientImplTest, ClientUploadsRightBits) {
 TEST_P(AutoEnrollmentClientImplTest, AskForMoreThenFail) {
   InSequence sequence;
   ServerWillReply(32, false, false);
-  ServerWillFail(DM_STATUS_TEMPORARY_UNAVAILABLE);
+  ServerWillFail(net::OK, DeviceManagementService::kServiceUnavailable);
   client()->Start();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_AUTO_ENROLLMENT,
+            auto_enrollment_job_type_);
+  EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_AUTO_ENROLLMENT,
+            failed_job_type_);
   EXPECT_EQ(AUTO_ENROLLMENT_STATE_SERVER_ERROR, state_);
   EXPECT_FALSE(HasCachedDecision());
   EXPECT_FALSE(HasServerBackedState());
@@ -366,6 +436,9 @@ TEST_P(AutoEnrollmentClientImplTest, AskForMoreThenEvenMore) {
   ServerWillReply(32, false, false);
   ServerWillReply(64, false, false);
   client()->Start();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_AUTO_ENROLLMENT,
+            auto_enrollment_job_type_);
   EXPECT_EQ(AUTO_ENROLLMENT_STATE_SERVER_ERROR, state_);
   EXPECT_FALSE(HasCachedDecision());
   EXPECT_FALSE(HasServerBackedState());
@@ -378,13 +451,17 @@ TEST_P(AutoEnrollmentClientImplTest, AskForLess) {
   ServerWillSendState(
       "example.com",
       em::DeviceStateRetrievalResponse::RESTORE_MODE_REENROLLMENT_ENFORCED,
-      kDisabledMessage);
+      kDisabledMessage, kWithLicense);
   client()->Start();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_AUTO_ENROLLMENT,
+            auto_enrollment_job_type_);
+  EXPECT_EQ(GetExpectedStateRetrievalJobType(), state_retrieval_job_type_);
   EXPECT_EQ(AUTO_ENROLLMENT_STATE_TRIGGER_ENROLLMENT, state_);
   VerifyCachedResult(true, 8);
   VerifyServerBackedState("example.com",
                           kDeviceStateRestoreModeReEnrollmentEnforced,
-                          kDisabledMessage);
+                          kDisabledMessage, kWithLicense);
 }
 
 TEST_P(AutoEnrollmentClientImplTest, AskForSame) {
@@ -394,13 +471,17 @@ TEST_P(AutoEnrollmentClientImplTest, AskForSame) {
   ServerWillSendState(
       "example.com",
       em::DeviceStateRetrievalResponse::RESTORE_MODE_REENROLLMENT_ENFORCED,
-      kDisabledMessage);
+      kDisabledMessage, kNotWithLicense);
   client()->Start();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_AUTO_ENROLLMENT,
+            auto_enrollment_job_type_);
+  EXPECT_EQ(GetExpectedStateRetrievalJobType(), state_retrieval_job_type_);
   EXPECT_EQ(AUTO_ENROLLMENT_STATE_TRIGGER_ENROLLMENT, state_);
   VerifyCachedResult(true, 8);
   VerifyServerBackedState("example.com",
                           kDeviceStateRestoreModeReEnrollmentEnforced,
-                          kDisabledMessage);
+                          kDisabledMessage, kNotWithLicense);
 }
 
 TEST_P(AutoEnrollmentClientImplTest, AskForSameTwice) {
@@ -408,6 +489,9 @@ TEST_P(AutoEnrollmentClientImplTest, AskForSameTwice) {
   ServerWillReply(16, false, false);
   ServerWillReply(16, false, false);
   client()->Start();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_AUTO_ENROLLMENT,
+            auto_enrollment_job_type_);
   EXPECT_EQ(AUTO_ENROLLMENT_STATE_SERVER_ERROR, state_);
   EXPECT_FALSE(HasCachedDecision());
   EXPECT_FALSE(HasServerBackedState());
@@ -416,6 +500,9 @@ TEST_P(AutoEnrollmentClientImplTest, AskForSameTwice) {
 TEST_P(AutoEnrollmentClientImplTest, AskForTooMuch) {
   ServerWillReply(512, false, false);
   client()->Start();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_AUTO_ENROLLMENT,
+            auto_enrollment_job_type_);
   EXPECT_EQ(AUTO_ENROLLMENT_STATE_SERVER_ERROR, state_);
   EXPECT_FALSE(HasCachedDecision());
   EXPECT_FALSE(HasServerBackedState());
@@ -432,6 +519,9 @@ TEST_P(AutoEnrollmentClientImplTest, DetectOutdatedServer) {
     // |kInitialEnrollmentModulusPowerOutdatedServer| means that the client will
     // detect the server as outdated and will skip enrollment.
     client()->Start();
+    base::RunLoop().RunUntilIdle();
+    EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_AUTO_ENROLLMENT,
+              auto_enrollment_job_type_);
     EXPECT_EQ(AUTO_ENROLLMENT_STATE_NO_ENROLLMENT, state_);
     EXPECT_TRUE(HasCachedDecision());
     EXPECT_FALSE(HasServerBackedState());
@@ -440,6 +530,9 @@ TEST_P(AutoEnrollmentClientImplTest, DetectOutdatedServer) {
     // round and upload bits of its device identifier hash.
     ServerWillReply(-1, false, false);
     client()->Start();
+    base::RunLoop().RunUntilIdle();
+    EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_AUTO_ENROLLMENT,
+              auto_enrollment_job_type_);
     EXPECT_EQ(AUTO_ENROLLMENT_STATE_NO_ENROLLMENT, state_);
     EXPECT_TRUE(HasCachedDecision());
     EXPECT_FALSE(HasServerBackedState());
@@ -451,6 +544,9 @@ TEST_P(AutoEnrollmentClientImplTest, AskNonPowerOf2) {
   ServerWillReply(100, false, false);
   ServerWillReply(-1, false, false);
   client()->Start();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_AUTO_ENROLLMENT,
+            auto_enrollment_job_type_);
   EXPECT_EQ(AUTO_ENROLLMENT_STATE_NO_ENROLLMENT, state_);
   EXPECT_TRUE(auto_enrollment_request().has_remainder());
   EXPECT_TRUE(auto_enrollment_request().has_modulus());
@@ -468,6 +564,9 @@ TEST_P(AutoEnrollmentClientImplTest, AskNonPowerOf2) {
 TEST_P(AutoEnrollmentClientImplTest, ConsumerDevice) {
   ServerWillReply(-1, true, false);
   client()->Start();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_AUTO_ENROLLMENT,
+            auto_enrollment_job_type_);
   EXPECT_EQ(AUTO_ENROLLMENT_STATE_NO_ENROLLMENT, state_);
   VerifyCachedResult(false, 8);
   EXPECT_FALSE(HasServerBackedState());
@@ -480,17 +579,22 @@ TEST_P(AutoEnrollmentClientImplTest, ConsumerDevice) {
 }
 
 TEST_P(AutoEnrollmentClientImplTest, ForcedReEnrollment) {
+  InSequence sequence;
   ServerWillReply(-1, true, true);
   ServerWillSendState(
       "example.com",
       em::DeviceStateRetrievalResponse::RESTORE_MODE_REENROLLMENT_ENFORCED,
-      kDisabledMessage);
+      kDisabledMessage, kNotWithLicense);
   client()->Start();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_AUTO_ENROLLMENT,
+            auto_enrollment_job_type_);
+  EXPECT_EQ(GetExpectedStateRetrievalJobType(), state_retrieval_job_type_);
   EXPECT_EQ(AUTO_ENROLLMENT_STATE_TRIGGER_ENROLLMENT, state_);
   VerifyCachedResult(true, 8);
   VerifyServerBackedState("example.com",
                           kDeviceStateRestoreModeReEnrollmentEnforced,
-                          kDisabledMessage);
+                          kDisabledMessage, kNotWithLicense);
 
   // Network changes don't trigger retries after obtaining a response from
   // the server.
@@ -500,17 +604,22 @@ TEST_P(AutoEnrollmentClientImplTest, ForcedReEnrollment) {
 }
 
 TEST_P(AutoEnrollmentClientImplTest, ForcedEnrollmentZeroTouch) {
+  InSequence sequence;
   ServerWillReply(-1, true, true);
   ServerWillSendState(
       "example.com",
       em::DeviceStateRetrievalResponse::RESTORE_MODE_REENROLLMENT_ZERO_TOUCH,
-      kDisabledMessage);
+      kDisabledMessage, kNotWithLicense);
   client()->Start();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_AUTO_ENROLLMENT,
+            auto_enrollment_job_type_);
+  EXPECT_EQ(GetExpectedStateRetrievalJobType(), state_retrieval_job_type_);
   EXPECT_EQ(AUTO_ENROLLMENT_STATE_TRIGGER_ZERO_TOUCH, state_);
   VerifyCachedResult(true, 8);
   VerifyServerBackedState("example.com",
                           kDeviceStateRestoreModeReEnrollmentZeroTouch,
-                          kDisabledMessage);
+                          kDisabledMessage, kNotWithLicense);
 
   // Network changes don't trigger retries after obtaining a response from
   // the server.
@@ -525,17 +634,22 @@ TEST_P(AutoEnrollmentClientImplTest, RequestedReEnrollment) {
   if (GetParam() == AutoEnrollmentProtocol::kInitialEnrollment)
     return;
 
+  InSequence sequence;
   ServerWillReply(-1, true, true);
   ServerWillSendState(
       "example.com",
       em::DeviceStateRetrievalResponse::RESTORE_MODE_REENROLLMENT_REQUESTED,
-      kDisabledMessage);
+      kDisabledMessage, kNotWithLicense);
   client()->Start();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_AUTO_ENROLLMENT,
+            auto_enrollment_job_type_);
+  EXPECT_EQ(GetExpectedStateRetrievalJobType(), state_retrieval_job_type_);
   EXPECT_EQ(AUTO_ENROLLMENT_STATE_TRIGGER_ENROLLMENT, state_);
   VerifyCachedResult(true, 8);
   VerifyServerBackedState("example.com",
                           kDeviceStateRestoreModeReEnrollmentRequested,
-                          kDisabledMessage);
+                          kDisabledMessage, kNotWithLicense);
 }
 
 TEST_P(AutoEnrollmentClientImplTest, DeviceDisabled) {
@@ -543,21 +657,29 @@ TEST_P(AutoEnrollmentClientImplTest, DeviceDisabled) {
   if (GetParam() == AutoEnrollmentProtocol::kInitialEnrollment)
     return;
 
+  InSequence sequence;
   ServerWillReply(-1, true, true);
   ServerWillSendState("example.com",
                       em::DeviceStateRetrievalResponse::RESTORE_MODE_DISABLED,
-                      kDisabledMessage);
+                      kDisabledMessage, kNotWithLicense);
   client()->Start();
-  EXPECT_EQ(AUTO_ENROLLMENT_STATE_NO_ENROLLMENT, state_);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_AUTO_ENROLLMENT,
+            auto_enrollment_job_type_);
+  EXPECT_EQ(GetExpectedStateRetrievalJobType(), state_retrieval_job_type_);
+  EXPECT_EQ(AUTO_ENROLLMENT_STATE_DISABLED, state_);
   VerifyCachedResult(true, 8);
   VerifyServerBackedState("example.com", kDeviceStateRestoreModeDisabled,
-                          kDisabledMessage);
+                          kDisabledMessage, kNotWithLicense);
 }
 
 TEST_P(AutoEnrollmentClientImplTest, NoBitsUploaded) {
   CreateClient(0, 0);
   ServerWillReply(-1, false, false);
   client()->Start();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_AUTO_ENROLLMENT,
+            auto_enrollment_job_type_);
   EXPECT_EQ(AUTO_ENROLLMENT_STATE_NO_ENROLLMENT, state_);
   EXPECT_TRUE(auto_enrollment_request().has_remainder());
   EXPECT_TRUE(auto_enrollment_request().has_modulus());
@@ -575,6 +697,9 @@ TEST_P(AutoEnrollmentClientImplTest, ManyBitsUploaded) {
     CreateClient(i, i);
     ServerWillReply(-1, false, false);
     client()->Start();
+    base::RunLoop().RunUntilIdle();
+    EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_AUTO_ENROLLMENT,
+              auto_enrollment_job_type_);
     EXPECT_EQ(AUTO_ENROLLMENT_STATE_NO_ENROLLMENT, state_);
     EXPECT_TRUE(auto_enrollment_request().has_remainder());
     EXPECT_TRUE(auto_enrollment_request().has_modulus());
@@ -600,20 +725,22 @@ TEST_P(AutoEnrollmentClientImplTest, MoreThan32BitsUploaded) {
   ServerWillSendState(
       "example.com",
       em::DeviceStateRetrievalResponse::RESTORE_MODE_REENROLLMENT_ENFORCED,
-      kDisabledMessage);
+      kDisabledMessage, kNotWithLicense);
   client()->Start();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_AUTO_ENROLLMENT,
+            auto_enrollment_job_type_);
+  EXPECT_EQ(GetExpectedStateRetrievalJobType(), state_retrieval_job_type_);
   EXPECT_EQ(AUTO_ENROLLMENT_STATE_TRIGGER_ENROLLMENT, state_);
   VerifyCachedResult(true, 37);
   VerifyServerBackedState("example.com",
                           kDeviceStateRestoreModeReEnrollmentEnforced,
-                          kDisabledMessage);
+                          kDisabledMessage, kNotWithLicense);
 }
 
 TEST_P(AutoEnrollmentClientImplTest, ReuseCachedDecision) {
   // No bucket download requests should be issued.
-  EXPECT_CALL(*service_,
-              CreateJob(DeviceManagementRequestJob::TYPE_AUTO_ENROLLMENT, _))
-      .Times(0);
+  EXPECT_CALL(*service_, StartJob(_)).Times(0);
   local_state_->SetUserPref(prefs::kShouldAutoEnroll,
                             std::make_unique<base::Value>(true));
   local_state_->SetUserPref(prefs::kAutoEnrollmentPowerLimit,
@@ -625,13 +752,15 @@ TEST_P(AutoEnrollmentClientImplTest, ReuseCachedDecision) {
   ServerWillSendState(
       "example.com",
       em::DeviceStateRetrievalResponse::RESTORE_MODE_REENROLLMENT_ENFORCED,
-      kDisabledMessage);
+      kDisabledMessage, kNotWithLicense);
 
   client()->Start();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(GetExpectedStateRetrievalJobType(), state_retrieval_job_type_);
   EXPECT_EQ(AUTO_ENROLLMENT_STATE_TRIGGER_ENROLLMENT, state_);
   VerifyServerBackedState("example.com",
                           kDeviceStateRestoreModeReEnrollmentEnforced,
-                          kDisabledMessage);
+                          kDisabledMessage, kNotWithLicense);
 }
 
 TEST_P(AutoEnrollmentClientImplTest, RetryIfPowerLargerThanCached) {
@@ -640,22 +769,31 @@ TEST_P(AutoEnrollmentClientImplTest, RetryIfPowerLargerThanCached) {
   local_state_->SetUserPref(prefs::kAutoEnrollmentPowerLimit,
                             std::make_unique<base::Value>(8));
   CreateClient(5, 10);
+
+  InSequence sequence;
   ServerWillReply(-1, true, true);
   ServerWillSendState(
       "example.com",
       em::DeviceStateRetrievalResponse::RESTORE_MODE_REENROLLMENT_ENFORCED,
-      kDisabledMessage);
+      kDisabledMessage, kNotWithLicense);
   client()->Start();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_AUTO_ENROLLMENT,
+            auto_enrollment_job_type_);
+  EXPECT_EQ(GetExpectedStateRetrievalJobType(), state_retrieval_job_type_);
   EXPECT_EQ(AUTO_ENROLLMENT_STATE_TRIGGER_ENROLLMENT, state_);
   VerifyServerBackedState("example.com",
                           kDeviceStateRestoreModeReEnrollmentEnforced,
-                          kDisabledMessage);
+                          kDisabledMessage, kNotWithLicense);
 }
 
 TEST_P(AutoEnrollmentClientImplTest, NetworkChangeRetryAfterErrors) {
-  ServerWillFail(DM_STATUS_TEMPORARY_UNAVAILABLE);
+  ServerWillFail(net::OK, DeviceManagementService::kServiceUnavailable);
   client()->Start();
+  base::RunLoop().RunUntilIdle();
   // Don't invoke the callback if there was a network failure.
+  EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_AUTO_ENROLLMENT,
+            failed_job_type_);
   EXPECT_EQ(AUTO_ENROLLMENT_STATE_SERVER_ERROR, state_);
   EXPECT_FALSE(HasCachedDecision());
   EXPECT_FALSE(HasServerBackedState());
@@ -663,41 +801,50 @@ TEST_P(AutoEnrollmentClientImplTest, NetworkChangeRetryAfterErrors) {
   // The client doesn't retry if no new connection became available.
   client()->OnConnectionChanged(
       network::mojom::ConnectionType::CONNECTION_NONE);
+  base::RunLoop().RunUntilIdle();
   EXPECT_EQ(AUTO_ENROLLMENT_STATE_SERVER_ERROR, state_);
   EXPECT_FALSE(HasCachedDecision());
   EXPECT_FALSE(HasServerBackedState());
 
   // Retry once the network is back.
+  InSequence sequence;
   ServerWillReply(-1, true, true);
   ServerWillSendState(
       "example.com",
       em::DeviceStateRetrievalResponse::RESTORE_MODE_REENROLLMENT_ENFORCED,
-      kDisabledMessage);
+      kDisabledMessage, kNotWithLicense);
   client()->OnConnectionChanged(
       network::mojom::ConnectionType::CONNECTION_ETHERNET);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_AUTO_ENROLLMENT,
+            auto_enrollment_job_type_);
+  EXPECT_EQ(GetExpectedStateRetrievalJobType(), state_retrieval_job_type_);
   EXPECT_EQ(AUTO_ENROLLMENT_STATE_TRIGGER_ENROLLMENT, state_);
   EXPECT_TRUE(HasCachedDecision());
   VerifyServerBackedState("example.com",
                           kDeviceStateRestoreModeReEnrollmentEnforced,
-                          kDisabledMessage);
+                          kDisabledMessage, kNotWithLicense);
 
   // Subsequent network changes don't trigger retries.
   client()->OnConnectionChanged(
       network::mojom::ConnectionType::CONNECTION_NONE);
+  base::RunLoop().RunUntilIdle();
   client()->OnConnectionChanged(
       network::mojom::ConnectionType::CONNECTION_ETHERNET);
+  base::RunLoop().RunUntilIdle();
   EXPECT_EQ(AUTO_ENROLLMENT_STATE_TRIGGER_ENROLLMENT, state_);
   EXPECT_TRUE(HasCachedDecision());
   VerifyServerBackedState("example.com",
                           kDeviceStateRestoreModeReEnrollmentEnforced,
-                          kDisabledMessage);
+                          kDisabledMessage, kNotWithLicense);
 }
 
 TEST_P(AutoEnrollmentClientImplTest, CancelAndDeleteSoonWithPendingRequest) {
-  MockDeviceManagementJob* job = NULL;
+  DeviceManagementService::JobControl* job = nullptr;
   ServerWillReplyAsync(&job);
   EXPECT_FALSE(job);
   client()->Start();
+  base::RunLoop().RunUntilIdle();
   ASSERT_TRUE(job);
   EXPECT_EQ(AUTO_ENROLLMENT_STATE_PENDING, state_);
 
@@ -707,18 +854,21 @@ TEST_P(AutoEnrollmentClientImplTest, CancelAndDeleteSoonWithPendingRequest) {
   EXPECT_TRUE(base::MessageLoopCurrent::Get()->IsIdleForTesting());
 
   // The client cleans itself up once a reply is received.
-  job->SendResponse(DM_STATUS_TEMPORARY_UNAVAILABLE,
-                    em::DeviceManagementResponse());
+  service_->DoURLCompletion(&job, net::OK,
+                            DeviceManagementService::kServiceUnavailable,
+                            em::DeviceManagementResponse());
+  EXPECT_EQ(nullptr, job);
   // The DeleteSoon task has been posted:
   EXPECT_FALSE(base::MessageLoopCurrent::Get()->IsIdleForTesting());
   EXPECT_EQ(AUTO_ENROLLMENT_STATE_PENDING, state_);
 }
 
 TEST_P(AutoEnrollmentClientImplTest, NetworkChangedAfterCancelAndDeleteSoon) {
-  MockDeviceManagementJob* job = NULL;
+  DeviceManagementService::JobControl* job = nullptr;
   ServerWillReplyAsync(&job);
   EXPECT_FALSE(job);
   client()->Start();
+  base::RunLoop().RunUntilIdle();
   ASSERT_TRUE(job);
   EXPECT_EQ(AUTO_ENROLLMENT_STATE_PENDING, state_);
 
@@ -731,11 +881,14 @@ TEST_P(AutoEnrollmentClientImplTest, NetworkChangedAfterCancelAndDeleteSoon) {
   // Network change events are ignored while a request is pending.
   client->OnConnectionChanged(
       network::mojom::ConnectionType::CONNECTION_ETHERNET);
+  base::RunLoop().RunUntilIdle();
   EXPECT_EQ(AUTO_ENROLLMENT_STATE_PENDING, state_);
 
   // The client cleans itself up once a reply is received.
-  job->SendResponse(DM_STATUS_TEMPORARY_UNAVAILABLE,
-                    em::DeviceManagementResponse());
+  service_->DoURLCompletion(&job, net::OK,
+                            DeviceManagementService::kServiceUnavailable,
+                            em::DeviceManagementResponse());
+  EXPECT_EQ(nullptr, job);
   // The DeleteSoon task has been posted:
   EXPECT_FALSE(base::MessageLoopCurrent::Get()->IsIdleForTesting());
   EXPECT_EQ(AUTO_ENROLLMENT_STATE_PENDING, state_);
@@ -743,37 +896,48 @@ TEST_P(AutoEnrollmentClientImplTest, NetworkChangedAfterCancelAndDeleteSoon) {
   // Network changes that have been posted before are also ignored:
   client->OnConnectionChanged(
       network::mojom::ConnectionType::CONNECTION_ETHERNET);
+  base::RunLoop().RunUntilIdle();
   EXPECT_EQ(AUTO_ENROLLMENT_STATE_PENDING, state_);
 }
 
 TEST_P(AutoEnrollmentClientImplTest, CancelAndDeleteSoonAfterCompletion) {
+  InSequence sequence;
   ServerWillReply(-1, true, true);
   ServerWillSendState(
       "example.com",
       em::DeviceStateRetrievalResponse::RESTORE_MODE_REENROLLMENT_ENFORCED,
-      kDisabledMessage);
+      kDisabledMessage, kNotWithLicense);
   client()->Start();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_AUTO_ENROLLMENT,
+            auto_enrollment_job_type_);
+  EXPECT_EQ(GetExpectedStateRetrievalJobType(), state_retrieval_job_type_);
   EXPECT_EQ(AUTO_ENROLLMENT_STATE_TRIGGER_ENROLLMENT, state_);
   VerifyServerBackedState("example.com",
                           kDeviceStateRestoreModeReEnrollmentEnforced,
-                          kDisabledMessage);
+                          kDisabledMessage, kNotWithLicense);
 
   // The client will delete itself immediately if there are no pending
   // requests.
   EXPECT_TRUE(base::MessageLoopCurrent::Get()->IsIdleForTesting());
   release_client()->CancelAndDeleteSoon();
+  base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(base::MessageLoopCurrent::Get()->IsIdleForTesting());
 }
 
 TEST_P(AutoEnrollmentClientImplTest, CancelAndDeleteSoonAfterNetworkFailure) {
-  ServerWillFail(DM_STATUS_TEMPORARY_UNAVAILABLE);
+  ServerWillFail(net::OK, DeviceManagementService::kServiceUnavailable);
   client()->Start();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_AUTO_ENROLLMENT,
+            failed_job_type_);
   EXPECT_EQ(AUTO_ENROLLMENT_STATE_SERVER_ERROR, state_);
 
   // The client will delete itself immediately if there are no pending
   // requests.
   EXPECT_TRUE(base::MessageLoopCurrent::Get()->IsIdleForTesting());
   release_client()->CancelAndDeleteSoon();
+  base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(base::MessageLoopCurrent::Get()->IsIdleForTesting());
 }
 
@@ -782,9 +946,12 @@ TEST_P(AutoEnrollmentClientImplTest, NetworkFailureThenRequireUpdatedModulus) {
   // problem then the second request will correctly handle an updated
   // modulus request from the server.
 
-  ServerWillFail(DM_STATUS_REQUEST_FAILED);
+  ServerWillFail(net::ERR_FAILED, DeviceManagementService::kSuccess);
   client()->Start();
+  base::RunLoop().RunUntilIdle();
   // Callback should signal the connection error.
+  EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_AUTO_ENROLLMENT,
+            failed_job_type_);
   EXPECT_EQ(AUTO_ENROLLMENT_STATE_CONNECTION_ERROR, state_);
   EXPECT_FALSE(HasCachedDecision());
   EXPECT_FALSE(HasServerBackedState());
@@ -793,26 +960,27 @@ TEST_P(AutoEnrollmentClientImplTest, NetworkFailureThenRequireUpdatedModulus) {
   InSequence sequence;
   // The default client uploads 4 bits. Make the server ask for 5.
   ServerWillReply(1 << 5, false, false);
-  EXPECT_CALL(*service_, StartJob(_, _, _, _, _, _, _));
   // Then reply with a valid response and include the hash.
   ServerWillReply(-1, true, true);
-  EXPECT_CALL(*service_, StartJob(_, _, _, _, _, _, _));
   // State download triggers.
   ServerWillSendState(
       "example.com",
       em::DeviceStateRetrievalResponse::RESTORE_MODE_REENROLLMENT_ENFORCED,
-      kDisabledMessage);
-  EXPECT_CALL(*service_, StartJob(_, _, _, _, _, _, _));
+      kDisabledMessage, kNotWithLicense);
 
   // Trigger a network change event.
   client()->OnConnectionChanged(
       network::mojom::ConnectionType::CONNECTION_ETHERNET);
+  base::RunLoop().RunUntilIdle();
   EXPECT_EQ(AUTO_ENROLLMENT_STATE_TRIGGER_ENROLLMENT, state_);
   EXPECT_TRUE(HasCachedDecision());
   VerifyServerBackedState("example.com",
                           kDeviceStateRestoreModeReEnrollmentEnforced,
-                          kDisabledMessage);
+                          kDisabledMessage, kNotWithLicense);
   Mock::VerifyAndClearExpectations(service_.get());
+  EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_AUTO_ENROLLMENT,
+            auto_enrollment_job_type_);
+  EXPECT_EQ(GetExpectedStateRetrievalJobType(), state_retrieval_job_type_);
 }
 
 INSTANTIATE_TEST_SUITE_P(FRE,

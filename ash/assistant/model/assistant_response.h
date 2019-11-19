@@ -11,7 +11,9 @@
 
 #include "base/component_export.h"
 #include "base/macros.h"
-#include "chromeos/services/assistant/public/mojom/assistant.mojom.h"
+#include "base/memory/ref_counted.h"
+#include "chromeos/services/assistant/public/mojom/assistant.mojom-forward.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "services/content/public/cpp/navigable_contents.h"
 
 namespace ash {
@@ -19,7 +21,10 @@ namespace ash {
 class AssistantUiElement;
 
 // Models a renderable Assistant response.
-class COMPONENT_EXPORT(ASSISTANT_MODEL) AssistantResponse {
+// It is refcounted so that views that display the response can safely
+// reference the data inside this response.
+class COMPONENT_EXPORT(ASSISTANT_MODEL) AssistantResponse
+    : public base::RefCounted<AssistantResponse> {
  public:
   using AssistantSuggestion = chromeos::assistant::mojom::AssistantSuggestion;
   using AssistantSuggestionPtr =
@@ -34,7 +39,6 @@ class COMPONENT_EXPORT(ASSISTANT_MODEL) AssistantResponse {
   };
 
   AssistantResponse();
-  ~AssistantResponse();
 
   // Adds the specified |ui_element| that should be rendered for the
   // interaction.
@@ -66,16 +70,21 @@ class COMPONENT_EXPORT(ASSISTANT_MODEL) AssistantResponse {
 
   // Invoke to begin processing the response. Upon completion, |callback| will
   // be run to indicate success or failure.
-  void Process(content::mojom::NavigableContentsFactoryPtr contents_factory,
-               ProcessingCallback callback);
+  void Process(
+      mojo::Remote<content::mojom::NavigableContentsFactory> contents_factory,
+      ProcessingCallback callback);
 
  private:
+  friend class base::RefCounted<AssistantResponse>;
+  ~AssistantResponse();
+
   // Handles processing for an AssistantResponse.
   class Processor {
    public:
-    Processor(AssistantResponse& response,
-              content::mojom::NavigableContentsFactoryPtr contents_factory,
-              ProcessingCallback callback);
+    Processor(
+        AssistantResponse& response,
+        mojo::Remote<content::mojom::NavigableContentsFactory> contents_factory,
+        ProcessingCallback callback);
     ~Processor();
 
     // Invoke to begin processing.
@@ -92,7 +101,7 @@ class COMPONENT_EXPORT(ASSISTANT_MODEL) AssistantResponse {
     void TryFinishing();
 
     AssistantResponse& response_;
-    content::mojom::NavigableContentsFactoryPtr contents_factory_;
+    mojo::Remote<content::mojom::NavigableContentsFactory> contents_factory_;
     ProcessingCallback callback_;
 
     int processing_count_ = 0;

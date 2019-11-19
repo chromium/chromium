@@ -25,10 +25,10 @@
 
 #include "third_party/blink/renderer/platform/graphics/filters/fe_turbulence.h"
 
-#include "SkPaintImageFilter.h"
-#include "SkPerlinNoiseShader.h"
 #include "third_party/blink/renderer/platform/graphics/filters/filter.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_stream.h"
+#include "third_party/skia/include/effects/SkPaintImageFilter.h"
+#include "third_party/skia/include/effects/SkPerlinNoiseShader.h"
 
 namespace blink {
 
@@ -46,18 +46,6 @@ FETurbulence::FETurbulence(Filter* filter,
       num_octaves_(num_octaves),
       seed_(seed),
       stitch_tiles_(stitch_tiles) {}
-
-FETurbulence* FETurbulence::Create(Filter* filter,
-                                   TurbulenceType type,
-                                   float base_frequency_x,
-                                   float base_frequency_y,
-                                   int num_octaves,
-                                   float seed,
-                                   bool stitch_tiles) {
-  return MakeGarbageCollected<FETurbulence>(filter, type, base_frequency_x,
-                                            base_frequency_y, num_octaves, seed,
-                                            stitch_tiles);
-}
 
 TurbulenceType FETurbulence::GetType() const {
   return type_;

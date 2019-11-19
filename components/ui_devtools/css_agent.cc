@@ -6,12 +6,16 @@
 
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
+#include "components/ui_devtools/agent_util.h"
 #include "components/ui_devtools/ui_element.h"
 
 namespace ui_devtools {
-namespace {
 
-using namespace ui_devtools::protocol;
+namespace CSS = protocol::CSS;
+using protocol::Array;
+using protocol::Response;
+
+namespace {
 
 const char kHeight[] = "height";
 const char kWidth[] = "width";
@@ -19,7 +23,7 @@ const char kX[] = "x";
 const char kY[] = "y";
 const char kVisibility[] = "visibility";
 
-std::unique_ptr<CSS::SourceRange> BuildDefaultSourceRange() {
+std::unique_ptr<CSS::SourceRange> BuildDefaultPropertySourceRange() {
   // These tell the frontend where in the stylesheet a certain style
   // is located. Since we don't have stylesheets, this is all 0.
   // We need this because CSS fields are not editable unless
@@ -32,56 +36,113 @@ std::unique_ptr<CSS::SourceRange> BuildDefaultSourceRange() {
       .build();
 }
 
-std::unique_ptr<CSS::CSSProperty> BuildCSSProperty(const std::string& name,
-                                                   int value) {
-  return CSS::CSSProperty::create()
-      .setRange(BuildDefaultSourceRange())
-      .setName(name)
-      .setValue(base::NumberToString(value))
+std::unique_ptr<CSS::SourceRange> BuildDefaultSelectorSourceRange() {
+  // This is a different source range from BuildDefaultPropertySourceRange()
+  // used for the Selectors, so the frontend correctly handles property edits.
+  return CSS::SourceRange::create()
+      .setStartLine(1)
+      .setEndLine(0)
+      .setStartColumn(0)
+      .setEndColumn(0)
       .build();
+}
+
+std::unique_ptr<Array<int>> BuildDefaultMatchingSelectors() {
+  auto matching_selectors = std::make_unique<Array<int>>();
+
+  // Add index 0 to matching delectors array, so frontend uses the class mame
+  // from the selectors array as the header for the properties section
+  matching_selectors->emplace_back(0);
+  return matching_selectors;
 }
 
 std::unique_ptr<CSS::CSSProperty> BuildCSSProperty(const std::string& name,
                                                    const std::string& value) {
   return CSS::CSSProperty::create()
-      .setRange(BuildDefaultSourceRange())
+      .setRange(BuildDefaultPropertySourceRange())
       .setName(name)
       .setValue(value)
       .build();
 }
 
-std::unique_ptr<Array<CSS::CSSProperty>> BuildCSSPropertyArray(
-    const gfx::Rect& bounds,
-    const bool visible) {
-  auto cssProperties = Array<CSS::CSSProperty>::create();
-  cssProperties->addItem(BuildCSSProperty(kHeight, bounds.height()));
-  cssProperties->addItem(BuildCSSProperty(kWidth, bounds.width()));
-  cssProperties->addItem(BuildCSSProperty(kX, bounds.x()));
-  cssProperties->addItem(BuildCSSProperty(kY, bounds.y()));
-  cssProperties->addItem(BuildCSSProperty(kVisibility, visible));
-  return cssProperties;
+std::unique_ptr<Array<CSS::CSSProperty>> BuildCSSProperties(
+    const std::vector<UIElement::UIProperty>& properties_vector) {
+  auto css_properties = std::make_unique<Array<CSS::CSSProperty>>();
+  for (const auto& property : properties_vector) {
+    css_properties->emplace_back(
+        BuildCSSProperty(property.name_, property.value_));
+  }
+  return css_properties;
 }
 
-std::unique_ptr<CSS::CSSStyle> BuildCSSStyle(UIElement* ui_element) {
-  gfx::Rect bounds;
-  bool visible;
-  ui_element->GetBounds(&bounds);
-  ui_element->GetVisible(&visible);
-
-  std::unique_ptr<Array<CSS::CSSProperty>> css_properties(
-      BuildCSSPropertyArray(bounds, visible));
-  const std::vector<std::pair<std::string, std::string>> properties(
-      ui_element->GetCustomProperties());
-
-  for (const auto& it : properties)
-    css_properties->addItem(BuildCSSProperty(it.first, it.second));
-
+std::unique_ptr<CSS::CSSStyle> BuildCSSStyle(
+    std::string stylesheet_uid,
+    const std::vector<UIElement::UIProperty>& properties) {
   return CSS::CSSStyle::create()
-      .setRange(BuildDefaultSourceRange())
-      .setStyleSheetId(base::NumberToString(ui_element->node_id()))
-      .setCssProperties(std::move(css_properties))
-      .setShorthandEntries(Array<protocol::CSS::ShorthandEntry>::create())
+      .setRange(BuildDefaultPropertySourceRange())
+      .setCssProperties(BuildCSSProperties(properties))
+      .setShorthandEntries(std::make_unique<Array<CSS::ShorthandEntry>>())
+      .setStyleSheetId(stylesheet_uid)
       .build();
+}
+
+std::unique_ptr<Array<CSS::Value>> BuildSelectors(const std::string& name) {
+  auto selectors = std::make_unique<Array<CSS::Value>>();
+  selectors->emplace_back(CSS::Value::create()
+                              .setText(name)
+                              .setRange(BuildDefaultSelectorSourceRange())
+                              .build());
+  return selectors;
+}
+
+std::unique_ptr<CSS::SelectorList> BuildSelectorList(const std::string& name) {
+  return CSS::SelectorList::create().setSelectors(BuildSelectors(name)).build();
+}
+
+std::unique_ptr<CSS::CSSRule> BuildCSSRule(
+    std::string stylesheet_uid,
+    const UIElement::ClassProperties& class_properties) {
+  return CSS::CSSRule::create()
+      .setStyleSheetId(stylesheet_uid)
+      .setSelectorList(BuildSelectorList(class_properties.class_name_))
+      .setStyle(BuildCSSStyle(stylesheet_uid, class_properties.properties_))
+      .build();
+}
+
+std::vector<UIElement::ClassProperties> GetClassPropertiesWithBounds(
+    UIElement* ui_element) {
+  std::vector<UIElement::ClassProperties> properties_vector =
+      ui_element->GetCustomPropertiesForMatchedStyle();
+
+  // If GetCustomPropertiesForMatchedStyle not overridden to return custom
+  // properties, populate vector with bounds properties.
+  if (properties_vector.empty()) {
+    gfx::Rect bounds;
+    ui_element->GetBounds(&bounds);
+    std::vector<UIElement::UIProperty> bound_properties;
+    bound_properties.emplace_back(kX, base::NumberToString(bounds.x()));
+    bound_properties.emplace_back(kY, base::NumberToString(bounds.y()));
+    bound_properties.emplace_back(kWidth, base::NumberToString(bounds.width()));
+    bound_properties.emplace_back(kHeight,
+                                  base::NumberToString(bounds.height()));
+    if (ui_element->type() != VIEW) {
+      bool visible;
+      ui_element->GetVisible(&visible);
+      bound_properties.emplace_back(kVisibility, visible ? "true" : "false");
+    }
+    properties_vector.emplace_back(ui_element->GetTypeName(), bound_properties);
+  }
+
+  // Set base stylesheet ID to the last index in the vector, so when bounds
+  // properties are modified, CSSAgent can update and return the right
+  // properties section
+  ui_element->SetBaseStylesheetId(properties_vector.size() - 1);
+  return properties_vector;
+}
+
+std::string BuildStylesheetUId(int node_id, int stylesheet_id) {
+  return base::NumberToString(node_id) + "_" +
+         base::NumberToString(stylesheet_id);
 }
 
 Response NodeNotFoundError(int node_id) {
@@ -94,11 +155,16 @@ Response ParseProperties(const std::string& style_text,
                          bool* visible) {
   std::vector<std::string> tokens = base::SplitString(
       style_text, ":;", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+
+  if (tokens.size() < 2 || tokens.size() % 2 != 0)
+    return Response::Error("Need both a property name and value.");
+
   for (size_t i = 0; i < tokens.size() - 1; i += 2) {
     const std::string& property = tokens.at(i);
     int value;
-    if (!base::StringToInt(tokens.at(i + 1), &value))
+    if (!base::StringToInt(tokens.at(i + 1), &value)) {
       return Response::Error("Unable to parse value for property=" + property);
+    }
 
     if (property == kHeight)
       bounds->set_height(std::max(0, value));
@@ -114,6 +180,21 @@ Response ParseProperties(const std::string& style_text,
       return Response::Error("Unsupported property=" + property);
   }
   return Response::OK();
+}
+
+std::unique_ptr<CSS::CSSStyleSheetHeader> BuildObjectForStyleSheetInfo(
+    std::string stylesheet_uid,
+    std::string url_path,
+    int line) {
+  std::unique_ptr<CSS::CSSStyleSheetHeader> result =
+      CSS::CSSStyleSheetHeader::create()
+          .setStyleSheetId(stylesheet_uid)
+          .setSourceURL(kChromiumCodeSearchSrcURL + url_path +
+                        "?l=" + base::NumberToString(line))
+          .setStartLine(line)
+          .setStartColumn(0)
+          .build();
+  return result;
 }
 
 }  // namespace
@@ -136,27 +217,62 @@ Response CSSAgent::disable() {
   return Response::OK();
 }
 
-Response CSSAgent::getMatchedStylesForNode(int node_id,
-                                           Maybe<CSS::CSSStyle>* inline_style) {
+Response CSSAgent::getMatchedStylesForNode(
+    int node_id,
+    protocol::Maybe<Array<CSS::RuleMatch>>* matched_css_rules) {
   UIElement* ui_element = dom_agent_->GetElementFromNodeId(node_id);
-  *inline_style = GetStylesForUIElement(ui_element);
-  if (!inline_style)
+  if (!ui_element)
     return NodeNotFoundError(node_id);
+  *matched_css_rules = BuildMatchedStyles(ui_element);
   return Response::OK();
+}
+
+Response CSSAgent::getStyleSheetText(const protocol::String& style_sheet_id,
+                                     protocol::String* result) {
+  int node_id;
+  int stylesheet_id;
+  std::vector<std::string> ids = base::SplitString(
+      style_sheet_id, "_", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+  if (ids.size() < 2 || !base::StringToInt(ids[0], &node_id) ||
+      !base::StringToInt(ids[1], &stylesheet_id))
+    return Response::Error("Invalid stylesheet id");
+
+  UIElement* ui_element = dom_agent_->GetElementFromNodeId(node_id);
+  if (!ui_element)
+    return Response::Error("Node id not found");
+
+  auto sources = ui_element->GetSources();
+  if (static_cast<int>(sources.size()) <= stylesheet_id)
+    return Response::Error("Stylesheet id not found");
+
+  if (GetSourceCode(sources[stylesheet_id].path_, result))
+    return Response::OK();
+  return Response::Error("Could not read source file");
 }
 
 Response CSSAgent::setStyleTexts(
     std::unique_ptr<Array<CSS::StyleDeclarationEdit>> edits,
     std::unique_ptr<Array<CSS::CSSStyle>>* result) {
-  std::unique_ptr<Array<CSS::CSSStyle>> updated_styles =
-      Array<CSS::CSSStyle>::create();
-  for (size_t i = 0; i < edits->length(); i++) {
-    auto* edit = edits->get(i);
+  auto updated_styles = std::make_unique<Array<CSS::CSSStyle>>();
+  for (const auto& edit : *edits) {
     int node_id;
-    if (!base::StringToInt(edit->getStyleSheetId(), &node_id))
-      return Response::Error("Invalid node id");
+    int stylesheet_id;
+
+    std::vector<std::string> ids =
+        base::SplitString(edit->getStyleSheetId(), "_", base::TRIM_WHITESPACE,
+                          base::SPLIT_WANT_NONEMPTY);
+    if (ids.size() < 2 || !base::StringToInt(ids[0], &node_id) ||
+        !base::StringToInt(ids[1], &stylesheet_id))
+      return Response::Error("Invalid stylesheet id");
 
     UIElement* ui_element = dom_agent_->GetElementFromNodeId(node_id);
+
+    if (!ui_element)
+      return Response::Error("Node id not found");
+    // Handle setting properties from metadata for View.
+    if (ui_element->type() == VIEW)
+      ui_element->SetPropertiesFromString(edit->getText());
+
     gfx::Rect updated_bounds;
     bool visible = false;
     if (!GetPropertiesForUIElement(ui_element, &updated_bounds, &visible))
@@ -170,7 +286,10 @@ Response CSSAgent::setStyleTexts(
     if (!SetPropertiesForUIElement(ui_element, updated_bounds, visible))
       return NodeNotFoundError(node_id);
 
-    updated_styles->addItem(BuildCSSStyle(ui_element));
+    updated_styles->emplace_back(BuildCSSStyle(
+        edit->getStyleSheetId(), GetClassPropertiesWithBounds(ui_element)
+                                     .at(stylesheet_id)
+                                     .properties_));
   }
   *result = std::move(updated_styles);
   return Response::OK();
@@ -180,18 +299,11 @@ void CSSAgent::OnElementBoundsChanged(UIElement* ui_element) {
   InvalidateStyleSheet(ui_element);
 }
 
-std::unique_ptr<CSS::CSSStyle> CSSAgent::GetStylesForUIElement(
-    UIElement* ui_element) {
-  gfx::Rect bounds;
-  bool visible = false;
-  return GetPropertiesForUIElement(ui_element, &bounds, &visible)
-             ? BuildCSSStyle(ui_element)
-             : nullptr;
-}
-
 void CSSAgent::InvalidateStyleSheet(UIElement* ui_element) {
-  // The stylesheetId for each node is equivalent to its node_id (as a string).
-  frontend()->styleSheetChanged(base::NumberToString(ui_element->node_id()));
+  // The stylesheetId for each node is equivalent to a string of its
+  // node_id + "_" + index of CSS::RuleMatch in vector.
+  frontend()->styleSheetChanged(BuildStylesheetUId(
+      ui_element->node_id(), ui_element->GetBaseStylesheetId()));
 }
 
 bool CSSAgent::GetPropertiesForUIElement(UIElement* ui_element,
@@ -199,7 +311,8 @@ bool CSSAgent::GetPropertiesForUIElement(UIElement* ui_element,
                                          bool* visible) {
   if (ui_element) {
     ui_element->GetBounds(bounds);
-    ui_element->GetVisible(visible);
+    if (ui_element->type() != VIEW)
+      ui_element->GetVisible(visible);
     return true;
   }
   return false;
@@ -214,6 +327,36 @@ bool CSSAgent::SetPropertiesForUIElement(UIElement* ui_element,
     return true;
   }
   return false;
+}
+
+std::unique_ptr<Array<CSS::RuleMatch>> CSSAgent::BuildMatchedStyles(
+    UIElement* ui_element) {
+  auto result = std::make_unique<Array<CSS::RuleMatch>>();
+  std::vector<UIElement::ClassProperties> properties_vector =
+      GetClassPropertiesWithBounds(ui_element);
+
+  for (size_t i = 0; i < properties_vector.size(); i++) {
+    result->emplace_back(
+        CSS::RuleMatch::create()
+            .setRule(BuildCSSRule(BuildStylesheetUId(ui_element->node_id(), i),
+                                  properties_vector[i]))
+            .setMatchingSelectors(BuildDefaultMatchingSelectors())
+            .build());
+  }
+  if (!ui_element->header_sent()) {
+    InitStylesheetHeaders(ui_element);
+  }
+  return result;
+}
+
+void CSSAgent::InitStylesheetHeaders(UIElement* ui_element) {
+  std::vector<UIElement::Source> sources = ui_element->GetSources();
+  for (size_t i = 0; i < sources.size(); i++) {
+    frontend()->styleSheetAdded(BuildObjectForStyleSheetInfo(
+        BuildStylesheetUId(ui_element->node_id(), i), sources[i].path_,
+        sources[i].line_));
+  }
+  ui_element->set_header_sent();
 }
 
 }  // namespace ui_devtools

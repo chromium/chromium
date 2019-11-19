@@ -29,12 +29,13 @@
     <style
         include="shared-style iron-flex iron-flex-alignment iron-positioning">
     </style>
+    <link rel="stylesheet" href="oobe_dialog_host.css">
     <link rel="stylesheet" href="oobe_iron_flex_layout_fix.css">
 
     <oobe-dialog id="license-selection-prompt-card" has-buttons>
       <hd-iron-icon slot="oobe-icon"
-                    icon1x="oobe-enrollment-32:briefcase"
-                    icon2x="oobe-enrollment-64:briefcase"></hd-iron-icon>
+          icon1x="oobe-32:briefcase" icon2x="oobe-64:briefcase">
+      </hd-iron-icon>
       <h1 slot="title" i18n-content="oauthEnrollScreenTitle"></h1>
       <div slot="subtitle">
         [[i18nDynamic(locale, 'licenseSelectionCardExplanation')]]
@@ -44,7 +45,8 @@
           <template is="dom-repeat" items="[[licenses]]" id="repeatTemplate">
             <cr-radio-button class="license-radio-button"
                 disabled="[[or_(item.disabled, disabled)]]"
-                hidden$="[[item.hidden]]" name="[[item.id]]">
+                hidden$="[[item.hidden]]" name="[[item.id]]"
+                id="license-option-[[item.id]]">
               [[formatTitle_(item)]]
             </cr-radio-button>
           </template>
@@ -52,7 +54,7 @@
       </div>
       <div slot="bottom-buttons" class="flex layout horizontal end-justified">
         <oobe-next-button disabled="[[disabled]]" on-tap="buttonClicked_"
-            class="focus-on-show"></oobe-next-button>
+                          id="next" class="focus-on-show"></oobe-next-button>
       </div>
     </oobe-dialog>
   </template>

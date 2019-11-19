@@ -1,0 +1,138 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+import("//ui/android/features.gni")
+
+android_library("java") {
+  java_files = [
+    "java/src/org/chromium/chrome/browser/ui/widget/AlwaysDismissedDialog.java",
+    "java/src/org/chromium/chrome/browser/ui/widget/BoundedLinearLayout.java",
+    "java/src/org/chromium/chrome/browser/ui/widget/ClipDrawableProgressBar.java",
+    "java/src/org/chromium/chrome/browser/ui/widget/CompositeTouchDelegate.java",
+    "java/src/org/chromium/chrome/browser/ui/widget/ContextMenuDialog.java",
+    "java/src/org/chromium/chrome/browser/ui/widget/DualControlLayout.java",
+    "java/src/org/chromium/chrome/browser/ui/widget/FadingShadow.java",
+    "java/src/org/chromium/chrome/browser/ui/widget/FadingShadowView.java",
+    "java/src/org/chromium/chrome/browser/ui/widget/FadingEdgeScrollView.java",
+    "java/src/org/chromium/chrome/browser/ui/widget/ListMenuButton.java",
+    "java/src/org/chromium/chrome/browser/ui/widget/LoadingView.java",
+    "java/src/org/chromium/chrome/browser/ui/widget/PaddedFrameLayout.java",
+    "java/src/org/chromium/chrome/browser/ui/widget/PromoDialog.java",
+    "java/src/org/chromium/chrome/browser/ui/widget/PromoDialogLayout.java",
+    "java/src/org/chromium/chrome/browser/ui/widget/MaterialProgressBar.java",
+    "java/src/org/chromium/chrome/browser/ui/widget/MoreProgressButton.java",
+    "java/src/org/chromium/chrome/browser/ui/widget/RadioButtonLayout.java",
+    "java/src/org/chromium/chrome/browser/ui/widget/RadioButtonWithDescription.java",
+    "java/src/org/chromium/chrome/browser/ui/widget/RadioButtonWithDescriptionLayout.java",
+    "java/src/org/chromium/chrome/browser/ui/widget/RoundedCornerImageView.java",
+    "java/src/org/chromium/chrome/browser/ui/widget/RoundedIconGenerator.java",
+    "java/src/org/chromium/chrome/browser/ui/widget/TintedDrawable.java",
+    "java/src/org/chromium/chrome/browser/ui/widget/ViewResourceFrameLayout.java",
+    "java/src/org/chromium/chrome/browser/ui/widget/WrappingLayout.java",
+    "java/src/org/chromium/chrome/browser/ui/widget/animation/AnimatorProperties.java",
+    "java/src/org/chromium/chrome/browser/ui/widget/animation/CancelAwareAnimatorListener.java",
+    "java/src/org/chromium/chrome/browser/ui/widget/animation/FocusAnimator.java",
+    "java/src/org/chromium/chrome/browser/ui/widget/animation/Interpolators.java",
+    "java/src/org/chromium/chrome/browser/ui/widget/displaystyle/DisplayStyleObserver.java",
+    "java/src/org/chromium/chrome/browser/ui/widget/displaystyle/DisplayStyleObserverAdapter.java",
+    "java/src/org/chromium/chrome/browser/ui/widget/displaystyle/HorizontalDisplayStyle.java",
+    "java/src/org/chromium/chrome/browser/ui/widget/displaystyle/UiConfig.java",
+    "java/src/org/chromium/chrome/browser/ui/widget/displaystyle/VerticalDisplayStyle.java",
+    "java/src/org/chromium/chrome/browser/ui/widget/displaystyle/ViewResizer.java",
+    "java/src/org/chromium/chrome/browser/ui/widget/dragreorder/DragReorderableListAdapter.java",
+    "java/src/org/chromium/chrome/browser/ui/widget/dragreorder/DragStateDelegate.java",
+    "java/src/org/chromium/chrome/browser/ui/widget/highlight/PulseDrawable.java",
+    "java/src/org/chromium/chrome/browser/ui/widget/highlight/PulseInterpolator.java",
+    "java/src/org/chromium/chrome/browser/ui/widget/highlight/ViewHighlighter.java",
+    "java/src/org/chromium/chrome/browser/ui/widget/text/AccessibleTextView.java",
+    "java/src/org/chromium/chrome/browser/ui/widget/text/AlertDialogEditText.java",
+    "java/src/org/chromium/chrome/browser/ui/widget/text/TextViewWithCompoundDrawables.java",
+    "java/src/org/chromium/chrome/browser/ui/widget/text/VerticallyFixedEditText.java",
+    "java/src/org/chromium/chrome/browser/ui/widget/textbubble/ArrowBubbleDrawable.java",
+    "java/src/org/chromium/chrome/browser/ui/widget/textbubble/ImageTextBubble.java",
+    "java/src/org/chromium/chrome/browser/ui/widget/textbubble/TextBubble.java",
+  ]
+
+  deps = [
+    ":ui_widget_java_resources",
+    "//base:base_java",
+    "//chrome/browser/util:java",
+    "//third_party/android_deps:android_support_v4_java",
+    "//third_party/android_deps:android_support_v7_appcompat_java",
+    "//third_party/android_deps:com_android_support_design_java",
+    "//third_party/android_deps:com_android_support_interpolator_java",
+    "//third_party/android_deps:com_android_support_recyclerview_v7_java",
+    "//ui/android:ui_java",
+  ]
+}
+
+android_resources("ui_widget_java_resources") {
+  custom_package = "org.chromium.chrome.browser.ui.widget"
+  resource_dirs = [ "java/res" ]
+  deps = [
+    "//chrome/browser/ui/android/strings:ui_strings_grd",
+    "//chrome/browser/ui/android/styles:java_resources",
+    "//third_party/android_deps:com_android_support_design_java",
+    "//ui/android:ui_java_resources",
+  ]
+}
+
+android_library("test_support_java") {
+  testonly = true
+
+  java_files = [ "test/java/src/org/chromium/chrome/browser/ui/widget/highlight/ViewHighlighterTestUtils.java" ]
+  deps = [
+    ":java",
+    "//content/public/test/android:content_java_test_support",
+  ]
+}
+
+android_library("ui_widget_java_tests") {
+  testonly = true
+
+  java_files = [
+    "java/src/org/chromium/chrome/browser/ui/widget/DualControlLayoutTest.java",
+    "java/src/org/chromium/chrome/browser/ui/widget/PromoDialogTest.java",
+    "java/src/org/chromium/chrome/browser/ui/widget/RadioButtonLayoutTest.java",
+    "java/src/org/chromium/chrome/browser/ui/widget/RadioButtonWithDescriptionLayoutTest.java",
+    "java/src/org/chromium/chrome/browser/ui/widget/RoundedIconGeneratorTest.java",
+    "java/src/org/chromium/chrome/browser/ui/widget/highlight/ViewHighlighterTest.java",
+    "java/src/org/chromium/chrome/browser/ui/widget/MoreProgressButtonTest.java",
+  ]
+  deps = [
+    ":java",
+    ":test_support_java",
+    ":ui_widget_java_resources",
+    ":ui_widget_java_test_resources",
+    "//base:base_java_test_support",
+    "//chrome/test/android:chrome_java_test_support",
+    "//content/public/test/android:content_java_test_support",
+    "//third_party/android_deps:com_android_support_support_compat_java",
+    "//third_party/android_support_test_runner:rules_java",
+    "//third_party/android_support_test_runner:runner_java",
+    "//third_party/junit",
+  ]
+}
+
+android_resources("ui_widget_java_test_resources") {
+  custom_package = "org.chromium.chrome.browser.ui.widget.test"
+  resource_dirs = [ "test/java/res" ]
+  deps = [
+    ":ui_widget_java_resources",
+    "//chrome/browser/ui/android/strings:ui_strings_grd",
+    "//ui/android:ui_java_resources",
+  ]
+}
+
+junit_binary("ui_widget_junit_tests") {
+  java_files = [ "java/src/org/chromium/chrome/browser/ui/widget/CompositeTouchDelegateUnitTest.java" ]
+  deps = [
+    ":java",
+    "//base:base_java",
+    "//base:base_java_test_support",
+    "//base:base_junit_test_support",
+    "//base/test:test_support_java",
+  ]
+}

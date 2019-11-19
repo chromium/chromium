@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+promise_test(async () => {
+  // Demonstrate that the object was in fact cloned, and is not the original
+  // object leaking between worlds.
+  const detail = { foo: 1 };
+  performance.mark("m", { detail });
+  const mark = performance.getEntriesByName("m")[0];
+  assert_equals(mark.detail, mark.detail, "each access should produce the same object");
+  assert_not_equals(mark.detail, detail, "the object should be a clone, not the original");
+  assert_equals(Object.getPrototypeOf(mark.detail), Object.prototype,
+    "main world object should have the right prototype");
+
+  testRunner.evaluateScriptInIsolatedWorld(1,
+    `const mark = performance.getEntriesByName("m")[0];
+     mark.detail.foo = 2;
+     performance.mark("m2", { detail: {
+       hasRightPrototype: Object.getPrototypeOf(mark.detail) === Object.prototype
+     } });`);
+  assert_equals(detail.foo, 1, "original object shouldn't be mutated through a clone");
+  assert_equals(mark.detail.foo, 1, "main world clone shouldn't be mutated through isolated clone");
+  assert_true(performance.getEntriesByName("m2")[0].detail.hasRightPrototype,
+    "isolated world object should have the right prototype");
+}, "A clone should be used in an isolated world, but only one clone");
+</script>

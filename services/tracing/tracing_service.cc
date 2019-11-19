@@ -5,79 +5,80 @@
 #include "services/tracing/tracing_service.h"
 
 #include <map>
+#include <set>
 #include <utility>
 #include <vector>
 
 #include "base/bind.h"
+#include "base/stl_util.h"
 #include "base/timer/timer.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "services/service_manager/public/mojom/service_manager.mojom.h"
-#include "services/tracing/agent_registry.h"
-#include "services/tracing/coordinator.h"
 #include "services/tracing/perfetto/consumer_host.h"
 #include "services/tracing/perfetto/perfetto_service.h"
-#include "services/tracing/perfetto/perfetto_tracing_coordinator.h"
 #include "services/tracing/public/cpp/tracing_features.h"
 #include "services/tracing/public/mojom/traced_process.mojom.h"
 
 namespace tracing {
 
-// Listener used to connect to every other service and
-// pass them the needed interface pointers to connect
-// back and register with the tracing service.
+// Listener used to connect to every other service and pass them the needed
+// interface pointers to connect back and register with the tracing service.
 class ServiceListener : public service_manager::mojom::ServiceManagerListener {
  public:
-  ServiceListener(service_manager::Connector* connector,
-                  AgentRegistry* agent_registry,
-                  Coordinator* coordinator)
-      : binding_(this),
-        connector_(connector),
-        agent_registry_(agent_registry),
-        coordinator_(coordinator) {
-    service_manager::mojom::ServiceManagerPtr service_manager;
-    connector_->BindInterface(service_manager::mojom::kServiceName,
-                              &service_manager);
-    service_manager::mojom::ServiceManagerListenerPtr listener;
-    service_manager::mojom::ServiceManagerListenerRequest request(
-        mojo::MakeRequest(&listener));
+  explicit ServiceListener(service_manager::Connector* connector)
+      : connector_(connector) {
+    mojo::Remote<service_manager::mojom::ServiceManager> service_manager;
+    connector_->Connect(service_manager::mojom::kServiceName,
+                        service_manager.BindNewPipeAndPassReceiver());
+    mojo::PendingRemote<service_manager::mojom::ServiceManagerListener>
+        listener;
+    mojo::PendingReceiver<service_manager::mojom::ServiceManagerListener>
+        request(listener.InitWithNewPipeAndPassReceiver());
     service_manager->AddListener(std::move(listener));
-    binding_.Bind(std::move(request));
+    receiver_.Bind(std::move(request));
   }
 
   size_t CountServicesWithPID(uint32_t pid) {
     return std::count_if(service_pid_map_.begin(), service_pid_map_.end(),
-                         [pid](decltype(service_pid_map_)::value_type p) {
-                           return p.second == pid;
-                         });
+                         [pid](const auto& p) { return p.second == pid; });
   }
 
   void ServiceAddedWithPID(const service_manager::Identity& identity,
                            uint32_t pid) {
     service_pid_map_[identity] = pid;
-    // Not the first service added, so we're already sent it a connection
-    // request.
-    if (CountServicesWithPID(pid) > 1) {
+
+    // Not the first service added for this PID, and the process has already
+    // accepted a connection request.
+    if (base::Contains(connected_pids_, pid))
       return;
-    }
 
-    // Let the Coordinator know it should be expecting a connection
-    // from this process.
-    coordinator_->AddExpectedPID(pid);
+    // Let the Perfetto service know it should be expecting a connection from
+    // this process.
+    PerfettoService::GetInstance()->AddActiveServicePid(pid);
 
-    mojom::TracedProcessPtr traced_process;
-    connector_->BindInterface(
+    // NOTE: If multiple service instances are running in the same process, we
+    // may send multiple ConnectToTracingService calls to the same process in
+    // the time it takes the first call to be received and acknowledged. This is
+    // OK, because any given client process will only bind a single
+    // TracedProcess endpoint as long as this instance of the tracing service
+    // remains alive. Subsequent TracedProcess endpoints will be dropped and
+    // their calls will never be processed.
+
+    mojo::Remote<mojom::TracedProcess> traced_process;
+    connector_->Connect(
         service_manager::ServiceFilter::ForExactIdentity(identity),
-        mojo::MakeRequest(&traced_process),
+        traced_process.BindNewPipeAndPassReceiver(),
         service_manager::mojom::BindInterfacePriority::kBestEffort);
 
     auto new_connection_request = mojom::ConnectToTracingRequest::New();
-
-    PerfettoService::GetInstance()->BindRequest(
-        mojo::MakeRequest(&new_connection_request->perfetto_service), pid);
-
-    agent_registry_->BindAgentRegistryRequest(
-        mojo::MakeRequest(&new_connection_request->agent_registry));
-
-    traced_process->ConnectToTracingService(std::move(new_connection_request));
+    auto service_request =
+        mojo::MakeRequest(&new_connection_request->perfetto_service);
+    mojom::TracedProcess* raw_traced_process = traced_process.get();
+    raw_traced_process->ConnectToTracingService(
+        std::move(new_connection_request),
+        base::BindOnce(&ServiceListener::OnProcessConnected,
+                       base::Unretained(this), std::move(traced_process), pid,
+                       std::move(service_request)));
   }
 
   void ServiceRemoved(const service_manager::Identity& identity) {
@@ -88,7 +89,8 @@ class ServiceListener : public service_manager::mojom::ServiceManagerListener {
       // Last entry with this PID removed; stop expecting it
       // to connect to the tracing service.
       if (CountServicesWithPID(pid) == 0) {
-        coordinator_->RemoveExpectedPID(pid);
+        PerfettoService::GetInstance()->RemoveActiveServicePid(pid);
+        connected_pids_.erase(pid);
       }
     }
   }
@@ -102,7 +104,7 @@ class ServiceListener : public service_manager::mojom::ServiceManagerListener {
       }
     }
 
-    coordinator_->FinishedReceivingRunningPIDs();
+    PerfettoService::GetInstance()->SetActiveServicePidsInitialized();
   }
 
   void OnServicePIDReceived(const service_manager::Identity& identity,
@@ -127,11 +129,28 @@ class ServiceListener : public service_manager::mojom::ServiceManagerListener {
       service_manager::mojom::RunningServiceInfoPtr service) override {}
 
  private:
-  mojo::Binding<service_manager::mojom::ServiceManagerListener> binding_;
-  service_manager::Connector* connector_;
-  AgentRegistry* agent_registry_;
-  Coordinator* coordinator_;
+  void OnProcessConnected(
+      mojo::Remote<mojom::TracedProcess> traced_process,
+      uint32_t pid,
+      mojo::PendingReceiver<mojom::PerfettoService> service_receiver) {
+    auto result = connected_pids_.insert(pid);
+    if (!result.second) {
+      // The PID was already connected. Nothing more to do.
+      return;
+    }
+
+    connected_pids_.insert(pid);
+    PerfettoService::GetInstance()->BindReceiver(std::move(service_receiver),
+                                                 pid);
+  }
+
+  mojo::Receiver<service_manager::mojom::ServiceManagerListener> receiver_{
+      this};
+  service_manager::Connector* const connector_;
   std::map<service_manager::Identity, uint32_t> service_pid_map_;
+  std::set<uint32_t> connected_pids_;
+
+  DISALLOW_COPY_AND_ASSIGN(ServiceListener);
 };
 
 TracingService::TracingService(service_manager::mojom::ServiceRequest request)
@@ -140,39 +159,16 @@ TracingService::TracingService(service_manager::mojom::ServiceRequest request)
 TracingService::~TracingService() = default;
 
 void TracingService::OnDisconnected() {
-  CloseAgentConnectionsAndTerminate();
+  Terminate();
 }
 
 void TracingService::OnStart() {
-  tracing_agent_registry_ = std::make_unique<AgentRegistry>();
-
-  if (TracingUsesPerfettoBackend()) {
-    auto perfetto_coordinator = std::make_unique<PerfettoTracingCoordinator>(
-        tracing_agent_registry_.get(),
-        base::BindRepeating(&TracingService::OnCoordinatorConnectionClosed,
-                            base::Unretained(this)));
-    registry_.AddInterface(
-        base::BindRepeating(&PerfettoTracingCoordinator::BindCoordinatorRequest,
-                            base::Unretained(perfetto_coordinator.get())));
-    tracing_coordinator_ = std::move(perfetto_coordinator);
-  } else {
-    auto tracing_coordinator = std::make_unique<Coordinator>(
-        tracing_agent_registry_.get(),
-        base::BindRepeating(&TracingService::OnCoordinatorConnectionClosed,
-                            base::Unretained(this)));
-    registry_.AddInterface(
-        base::BindRepeating(&Coordinator::BindCoordinatorRequest,
-                            base::Unretained(tracing_coordinator.get())));
-    tracing_coordinator_ = std::move(tracing_coordinator);
-  }
-
   registry_.AddInterface(
-      base::BindRepeating(&ConsumerHost::BindConsumerRequest,
+      base::BindRepeating(&ConsumerHost::BindConsumerReceiver,
                           base::Unretained(PerfettoService::GetInstance())));
 
-  service_listener_ = std::make_unique<ServiceListener>(
-      service_binding_.GetConnector(), tracing_agent_registry_.get(),
-      tracing_coordinator_.get());
+  service_listener_ =
+      std::make_unique<ServiceListener>(service_binding_.GetConnector());
 }
 
 void TracingService::OnBindInterface(
@@ -181,15 +177,6 @@ void TracingService::OnBindInterface(
     mojo::ScopedMessagePipeHandle interface_pipe) {
   registry_.BindInterface(interface_name, std::move(interface_pipe),
                           source_info);
-}
-
-void TracingService::OnCoordinatorConnectionClosed() {
-  service_binding_.RequestClose();
-}
-
-void TracingService::CloseAgentConnectionsAndTerminate() {
-  tracing_agent_registry_->DisconnectAllAgents();
-  Terminate();
 }
 
 }  // namespace tracing

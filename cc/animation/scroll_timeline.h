@@ -9,7 +9,7 @@
 #include "base/time/time.h"
 #include "cc/animation/animation_export.h"
 #include "cc/animation/keyframe_model.h"
-#include "cc/trees/element_id.h"
+#include "cc/paint/element_id.h"
 
 namespace cc {
 
@@ -40,6 +40,11 @@ class CC_ANIMATION_EXPORT ScrollTimeline {
   // Create a copy of this ScrollTimeline intended for the impl thread in the
   // compositor.
   std::unique_ptr<ScrollTimeline> CreateImplInstance() const;
+
+  // ScrollTimeline is active if the scroll node exists in active or pending
+  // scroll tree.
+  virtual bool IsActive(const ScrollTree& scroll_tree,
+                        bool is_active_tree) const;
 
   // Calculate the current time of the ScrollTimeline. This is either a
   // base::TimeTicks value or base::nullopt if the current time is unresolved.

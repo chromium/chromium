@@ -4,6 +4,8 @@
 
 #include "remoting/host/chromeos/message_box.h"
 
+#include <utility>
+
 #include "base/macros.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/controls/message_box_view.h"
@@ -99,14 +101,14 @@ void MessageBox::Core::Hide() {
 
 bool MessageBox::Core::Accept() {
   if (!result_callback_.is_null()) {
-    base::ResetAndReturn(&result_callback_).Run(OK);
+    std::move(result_callback_).Run(OK);
   }
   return true /* close the window*/;
 }
 
 bool MessageBox::Core::Cancel() {
   if (!result_callback_.is_null()) {
-    base::ResetAndReturn(&result_callback_).Run(CANCEL);
+    std::move(result_callback_).Run(CANCEL);
   }
   return true /* close the window*/;
 }

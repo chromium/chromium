@@ -9,10 +9,9 @@
 
 #include "base/callback_forward.h"
 #include "base/callback_list.h"
+#include "base/macros.h"
 #include "components/keyed_service/core/dependency_manager.h"
 #include "components/keyed_service/core/keyed_service_export.h"
-
-class BrowserContextKeyedBaseFactory;
 
 namespace base {
 template <typename T>
@@ -28,7 +27,7 @@ class PrefRegistrySyncable;
 }
 
 // A singleton that listens for context destruction notifications and
-// rebroadcasts them to each BrowserContextKeyedBaseFactory in a safe order
+// rebroadcasts them to each BrowserContextKeyedServiceFactory in a safe order
 // based on the stated dependencies by each service.
 class KEYED_SERVICE_EXPORT BrowserContextDependencyManager
     : public DependencyManager {
@@ -38,20 +37,19 @@ class KEYED_SERVICE_EXPORT BrowserContextDependencyManager
   // a key to prevent multiple registrations on the same BrowserContext in
   // tests.
   void RegisterProfilePrefsForServices(
-      content::BrowserContext* context,
       user_prefs::PrefRegistrySyncable* registry);
 
   // Called by each BrowserContext to alert us of its creation. Several
   // services want to be started when a context is created. If you want your
   // KeyedService to be started with the BrowserContext, override
-  // BrowserContextKeyedBaseFactory::ServiceIsCreatedWithBrowserContext() to
+  // BrowserContextKeyedServiceFactory::ServiceIsCreatedWithBrowserContext() to
   // return true. This method also registers any service-related preferences
   // for non-incognito profiles.
   void CreateBrowserContextServices(content::BrowserContext* context);
 
   // Similar to CreateBrowserContextServices(), except this is used for creating
   // test BrowserContexts - these contexts will not create services for any
-  // BrowserContextKeyedBaseFactories that return true from
+  // BrowserContextKeyedServiceFactory that returns true from
   // ServiceIsNULLWhileTesting().
   void CreateBrowserContextServicesForTest(content::BrowserContext* context);
 
@@ -103,6 +101,8 @@ class KEYED_SERVICE_EXPORT BrowserContextDependencyManager
   // CreateBrowserContextServices() or CreateBrowserContextServicesForTest().
   base::CallbackList<void(content::BrowserContext*)>
       will_create_browser_context_services_callbacks_;
+
+  DISALLOW_COPY_AND_ASSIGN(BrowserContextDependencyManager);
 };
 
 #endif  // COMPONENTS_KEYED_SERVICE_CONTENT_BROWSER_CONTEXT_DEPENDENCY_MANAGER_H_

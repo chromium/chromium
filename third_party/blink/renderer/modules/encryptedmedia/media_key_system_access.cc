@@ -8,6 +8,7 @@
 
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
+#include "media/base/eme_constants.h"
 #include "third_party/blink/public/platform/web_content_decryption_module.h"
 #include "third_party/blink/public/platform/web_encrypted_media_types.h"
 #include "third_party/blink/public/platform/web_media_key_system_configuration.h"
@@ -55,7 +56,7 @@ class NewCdmResultPromise : public ContentDecryptionModuleResultPromise {
       return;
 
     // 2.9. Let media keys be a new MediaKeys object.
-    MediaKeys* media_keys = MediaKeys::Create(
+    auto* media_keys = MakeGarbageCollected<MediaKeys>(
         GetExecutionContext(), supported_session_types_, base::WrapUnique(cdm));
 
     // 2.10. Resolve promise with media keys.
@@ -71,7 +72,7 @@ class NewCdmResultPromise : public ContentDecryptionModuleResultPromise {
 // These methods are the inverses of those with the same names in
 // NavigatorRequestMediaKeySystemAccess.
 static Vector<String> ConvertInitDataTypes(
-    const WebVector<WebEncryptedMediaInitDataType>& init_data_types) {
+    const WebVector<media::EmeInitDataType>& init_data_types) {
   Vector<String> result(SafeCast<wtf_size_t>(init_data_types.size()));
   for (wtf_size_t i = 0; i < result.size(); i++)
     result[i] =

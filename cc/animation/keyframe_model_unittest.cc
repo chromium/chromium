@@ -1384,5 +1384,19 @@ TEST(KeyframeModelTest, ToString) {
       keyframe_model->ToString());
 }
 
+TEST(KeyframeModelTest, CustomPropertyKeyframe) {
+  std::unique_ptr<KeyframeModel> keyframe_model =
+      KeyframeModel::Create(std::make_unique<FakeFloatAnimationCurve>(1), 1, 1,
+                            TargetProperty::CSS_CUSTOM_PROPERTY, "foo");
+  EXPECT_EQ(keyframe_model->custom_property_name(), "foo");
+}
+
+TEST(KeyframeModelTest, NonCustomPropertyKeyframe) {
+  std::unique_ptr<KeyframeModel> keyframe_model =
+      KeyframeModel::Create(std::make_unique<FakeFloatAnimationCurve>(1), 1, 1,
+                            TargetProperty::TRANSFORM);
+  EXPECT_EQ(keyframe_model->custom_property_name(), "");
+}
+
 }  // namespace
 }  // namespace cc

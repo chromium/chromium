@@ -1,13 +1,3 @@
-In file included from trace_collections.cpp:5:
-./trace_collections.h:12:1: warning: [blink-gc] Class 'HeapObject' requires finalization.
-class HeapObject : public GarbageCollected<HeapObject> {
-^
-./trace_collections.h:17:5: note: [blink-gc] Field 'm_wtfVector' requiring finalization declared here:
-    Vector<Member<HeapObject>, 0, HeapAllocator> m_wtfVector;
-    ^
-./trace_collections.h:20:5: note: [blink-gc] Field 'm_wtfDeque' requiring finalization declared here:
-    Deque<Member<HeapObject>, 0, HeapAllocator> m_wtfDeque;
-    ^
 trace_collections.cpp:9:1: warning: [blink-gc] Class 'HeapObject' has untraced fields that require tracing.
 void HeapObject::Trace(Visitor* visitor)
 ^
@@ -59,4 +49,4 @@ void HeapObject::Trace(Visitor* visitor)
 ./trace_collections.h:38:5: note: [blink-gc] Untraced field 'm_wtfMapVal' declared here:
     HashMap<Member<HeapObject>, int, void, void, void, HeapAllocator>
     ^
-2 warnings generated.
+1 warning generated.

@@ -81,8 +81,7 @@ class ScriptInjectionManager : public UserScriptSetManager::Observer {
   // Try to inject and store injection if it has not finished.
   void TryToInject(std::unique_ptr<ScriptInjection> injection,
                    UserScript::RunLocation run_location,
-                   ScriptsRunInfo* scripts_run_info,
-                   scoped_refptr<AsyncScriptsRunInfo> async_run_info);
+                   ScriptsRunInfo* scripts_run_info);
 
   // Handle the ExecuteCode extension message.
   void HandleExecuteCode(const ExtensionMsg_ExecuteCode_Params& params,

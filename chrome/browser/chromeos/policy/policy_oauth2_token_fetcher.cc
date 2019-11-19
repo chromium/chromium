@@ -117,13 +117,12 @@ class PolicyOAuth2TokenFetcherImpl : public PolicyOAuth2TokenFetcher,
   // The callback to invoke when done.
   TokenCallback callback_;
 
-  base::WeakPtrFactory<PolicyOAuth2TokenFetcherImpl> weak_ptr_factory_;
+  base::WeakPtrFactory<PolicyOAuth2TokenFetcherImpl> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(PolicyOAuth2TokenFetcherImpl);
 };
 
-PolicyOAuth2TokenFetcherImpl::PolicyOAuth2TokenFetcherImpl()
-    : weak_ptr_factory_(this) {}
+PolicyOAuth2TokenFetcherImpl::PolicyOAuth2TokenFetcherImpl() {}
 
 PolicyOAuth2TokenFetcherImpl::~PolicyOAuth2TokenFetcherImpl() {}
 
@@ -220,7 +219,7 @@ void PolicyOAuth2TokenFetcherImpl::RetryOnError(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (error.IsTransientError() && retry_count_ < kMaxRequestAttemptCount) {
     retry_count_++;
-    base::PostDelayedTaskWithTraits(
+    base::PostDelayedTask(
         FROM_HERE, {BrowserThread::UI}, task,
         base::TimeDelta::FromMilliseconds(kRequestRestartDelay));
     return;

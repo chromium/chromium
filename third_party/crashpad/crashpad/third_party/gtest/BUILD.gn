@@ -97,7 +97,7 @@ if (crashpad_is_in_chromium) {
     configs += [ ":gtest_private_config" ]
     if (crashpad_is_fuchsia) {
       deps = [
-        "../fuchsia:zx",
+        "../fuchsia",
       ]
     }
   }

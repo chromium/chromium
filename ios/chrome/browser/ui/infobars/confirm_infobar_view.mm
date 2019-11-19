@@ -15,13 +15,13 @@
 #include "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/ui/colors/MDCPalette+CrAdditions.h"
 #import "ios/chrome/browser/ui/infobars/infobar_constants.h"
+#import "ios/chrome/browser/ui/toolbar/public/toolbar_constants.h"
 #import "ios/chrome/browser/ui/util/label_link_controller.h"
 #import "ios/chrome/browser/ui/util/named_guide.h"
-#include "ios/chrome/browser/ui/util/ui_util.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
+#import "ios/chrome/common/colors/semantic_color_names.h"
 #include "ios/chrome/grit/ios_theme_resources.h"
 #import "ios/third_party/material_components_ios/src/components/Buttons/src/MaterialButtons.h"
-#import "ios/third_party/material_components_ios/src/components/Typography/src/MaterialTypography.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #import "ui/gfx/ios/NSString+CrStringDrawing.h"
@@ -79,30 +79,42 @@ const LayoutMetrics kLayoutMetrics = {
     16.0   // horizontal_space_between_icon_and_text
 };
 
-// Color in RGB to be used as background of secondary actions button.
-const int kButton2TitleColor = 0x4285f4;
 // Corner radius for action buttons.
 const CGFloat kButtonCornerRadius = 8.0;
-// Color in RGB to be used as tint color on the InfoBar's icon on the left.
-const CGFloat kLeftIconTintColor = 0x1A73E8;
 
 enum InfoBarButtonPosition { ON_FIRST_LINE, CENTER, LEFT, RIGHT };
 
 // Returns the font for the Infobar's main body text.
 UIFont* InfoBarLabelFont() {
-  return [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
+  // Due to https://crbug.com/989761, disable dynamic type. Once migration to
+  // Messages is complete, this class will be deleted.
+  if (@available(iOS 13, *)) {
+    return [UIFont systemFontOfSize:17];
+  } else {
+    return [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
+  }
 }
 
 // Returns the font for the Infobar's toggle switch's (if one exists) body text.
-// This text label is usually of a slightly smaller font size relative to
-// InfoBarLabelFont().
 UIFont* InfoBarSwitchLabelFont() {
-  return [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
+  // Due to https://crbug.com/989761, disable dynamic type. Once migration to
+  // Messages is complete, this class will be deleted.
+  if (@available(iOS 13, *)) {
+    return [UIFont systemFontOfSize:17];
+  } else {
+    return [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
+  }
 }
 
 // Returns the font for the label on Infobar's action buttons.
 UIFont* InfoBarButtonLabelFont() {
-  return [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline];
+  // Due to https://crbug.com/989761, disable dynamic type. Once migration to
+  // Messages is complete, this class will be deleted.
+  if (@available(iOS 13, *)) {
+    return [UIFont systemFontOfSize:17 weight:UIFontWeightSemibold];
+  } else {
+    return [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline];
+  }
 }
 
 UIImage* InfoBarCloseImage() {
@@ -140,8 +152,8 @@ UIImage* InfoBarCloseImage() {
   label.textAlignment = NSTextAlignmentNatural;
   label.font = InfoBarSwitchLabelFont();
   label.text = labelText;
-  label.textColor = [UIColor darkGrayColor];
-  label.backgroundColor = [UIColor clearColor];
+  label.textColor = [UIColor colorNamed:kTextSecondaryColor];
+  label.backgroundColor = UIColor.clearColor;
   label.lineBreakMode = NSLineBreakByWordWrapping;
   label.numberOfLines = 0;
   label.adjustsFontSizeToFitWidth = NO;
@@ -213,11 +225,11 @@ UIImage* InfoBarCloseImage() {
   if (!self)
     return nil;
 
-  self.label.textColor = [UIColor blackColor];
+  self.label.textColor = [UIColor colorNamed:kTextPrimaryColor];
   _switch = [[UISwitch alloc] initWithFrame:CGRectZero];
   _switch.exclusiveTouch = YES;
   _switch.accessibilityLabel = labelText;
-  _switch.onTintColor = [[MDCPalette cr_bluePalette] tint500];
+  _switch.onTintColor = [UIColor colorNamed:kBlueColor];
   _switch.on = isOn;
 
   // Computes the size and initializes the view.
@@ -333,6 +345,9 @@ UIImage* InfoBarCloseImage() {
 // animation).
 @property(nonatomic, assign) CGFloat visibleHeight;
 
+// Separator above the view separating it from the web content.
+@property(nonatomic, strong) UIView* separator;
+
 @end
 
 @implementation ConfirmInfoBarView {
@@ -372,6 +387,11 @@ UIImage* InfoBarCloseImage() {
   if (self) {
     metrics_ = &kLayoutMetrics;
     [self setAccessibilityViewIsModal:YES];
+
+    // Add a separator above the view separating it from the web content.
+    _separator = [[UIView alloc] init];
+    _separator.translatesAutoresizingMaskIntoConstraints = NO;
+    _separator.backgroundColor = [UIColor colorNamed:kToolbarShadowColor];
   }
   return self;
 }
@@ -759,6 +779,20 @@ UIImage* InfoBarCloseImage() {
 }
 
 - (void)layoutSubviews {
+  // Add the separator if it's not already added.
+  if (self.separator.superview != self) {
+    [self addSubview:self.separator];
+    CGFloat separatorHeight =
+        ui::AlignValueToUpperPixel(kToolbarSeparatorHeight);
+    [NSLayoutConstraint activateConstraints:@[
+      [self.separator.heightAnchor constraintEqualToConstant:separatorHeight],
+      [self.leadingAnchor constraintEqualToAnchor:self.separator.leadingAnchor],
+      [self.trailingAnchor
+          constraintEqualToAnchor:self.separator.trailingAnchor],
+      [self.topAnchor constraintEqualToAnchor:self.separator.bottomAnchor],
+    ]];
+  }
+
   // Lays out the position of the icon.
   [imageView_ setFrame:[self frameOfIcon]];
   self.visibleHeight = [self computeRequiredHeightAndLayoutSubviews:YES];
@@ -771,11 +805,7 @@ UIImage* InfoBarCloseImage() {
 }
 
 - (void)resetBackground {
-  if (IsUIRefreshPhase1Enabled()) {
-    self.backgroundColor = UIColorFromRGB(kInfobarBackgroundColor);
-  } else {
-    self.backgroundColor = [UIColor whiteColor];
-  }
+  self.backgroundColor = [UIColor colorNamed:kBackgroundColor];
   CGFloat shadowY = 0;
   shadowY = -[shadow_ image].size.height;  // Shadow above the infobar.
   [shadow_ setFrame:CGRectMake(0, shadowY, self.bounds.size.width,
@@ -796,8 +826,7 @@ UIImage* InfoBarCloseImage() {
          forControlEvents:UIControlEventTouchUpInside];
   [closeButton_ setTag:tag];
   [closeButton_ setAccessibilityLabel:l10n_util::GetNSString(IDS_CLOSE)];
-  closeButton_.tintColor = [UIColor blackColor];
-  closeButton_.alpha = 0.20;
+  closeButton_.tintColor = [UIColor colorNamed:kToolbarButtonColor];
   [self addSubview:closeButton_];
 }
 
@@ -821,8 +850,9 @@ UIImage* InfoBarCloseImage() {
   if (imageView_) {
     [imageView_ removeFromSuperview];
   }
-  imageView_ = [[UIImageView alloc] initWithImage:image];
-  imageView_.tintColor = UIColorFromRGB(kLeftIconTintColor);
+  UIImage* templateImage =
+      [image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+  imageView_ = [[UIImageView alloc] initWithImage:templateImage];
   [self addSubview:imageView_];
 }
 
@@ -884,7 +914,7 @@ UIImage* InfoBarCloseImage() {
   }
 
   label_ = [[UILabel alloc] initWithFrame:CGRectZero];
-  [label_ setBackgroundColor:[UIColor clearColor]];
+  label_.textColor = [UIColor colorNamed:kTextPrimaryColor];
 
   NSMutableParagraphStyle* paragraphStyle =
       [[NSMutableParagraphStyle alloc] init];
@@ -916,7 +946,7 @@ UIImage* InfoBarCloseImage() {
              }];
 
   [labelLinkController_ setLinkUnderlineStyle:NSUnderlineStyleSingle];
-  [labelLinkController_ setLinkColor:[UIColor blackColor]];
+  [labelLinkController_ setLinkColor:[UIColor colorNamed:kTextPrimaryColor]];
 
   std::vector<std::pair<NSUInteger, NSRange>>::const_iterator it;
   for (it = linkRanges_.begin(); it != linkRanges_.end(); ++it) {
@@ -935,8 +965,8 @@ UIImage* InfoBarCloseImage() {
             target:(id)target
             action:(SEL)action {
   button1_ = [self infoBarButton:title1
-                         palette:[MDCPalette cr_bluePalette]
-                customTitleColor:[UIColor whiteColor]
+                 backgroundColor:[UIColor colorNamed:kBlueColor]
+                customTitleColor:[UIColor colorNamed:kSolidButtonTextColor]
                              tag:tag1
                           target:target
                           action:action];
@@ -945,8 +975,8 @@ UIImage* InfoBarCloseImage() {
   [self addSubview:button1_];
 
   button2_ = [self infoBarButton:title2
-                         palette:nil
-                customTitleColor:UIColorFromRGB(kButton2TitleColor)
+                 backgroundColor:nil
+                customTitleColor:[UIColor colorNamed:kBlueColor]
                              tag:tag2
                           target:target
                           action:action];
@@ -962,8 +992,8 @@ UIImage* InfoBarCloseImage() {
   if (![title length])
     return;
   button1_ = [self infoBarButton:title
-                         palette:[MDCPalette cr_bluePalette]
-                customTitleColor:[UIColor whiteColor]
+                 backgroundColor:[UIColor colorNamed:kBlueColor]
+                customTitleColor:[UIColor colorNamed:kSolidButtonTextColor]
                              tag:tag
                           target:target
                           action:action];
@@ -973,7 +1003,7 @@ UIImage* InfoBarCloseImage() {
 // Initializes and returns a button for the infobar, with the specified
 // |message| and colors.
 - (UIButton*)infoBarButton:(NSString*)message
-                   palette:(MDCPalette*)palette
+           backgroundColor:(UIColor*)backgroundColor
           customTitleColor:(UIColor*)customTitleColor
                        tag:(NSInteger)tag
                     target:(id)target
@@ -982,11 +1012,11 @@ UIImage* InfoBarCloseImage() {
   button.uppercaseTitle = NO;
   button.layer.cornerRadius = kButtonCornerRadius;
   [button setTitleFont:InfoBarButtonLabelFont() forState:UIControlStateNormal];
-  button.inkColor = [[palette tint300] colorWithAlphaComponent:0.5f];
-  [button setBackgroundColor:[palette tint500] forState:UIControlStateNormal];
-  [button setBackgroundColor:[UIColor colorWithWhite:0.8f alpha:1.0f]
+  button.inkColor = [UIColor colorNamed:kMDCInkColor];
+  [button setBackgroundColor:backgroundColor forState:UIControlStateNormal];
+  [button setBackgroundColor:[UIColor colorNamed:kDisabledTintColor]
                     forState:UIControlStateDisabled];
-  if (palette)
+  if (backgroundColor)
     button.hasOpaqueBackground = YES;
   if (customTitleColor) {
     button.tintAdjustmentMode = UIViewTintAdjustmentModeNormal;

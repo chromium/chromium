@@ -294,12 +294,13 @@ class BetterSessionRestoreTest : public InProcessBrowserTest {
     helper.SetForceBrowserNotAliveWithNoWindows(true);
     helper.ReleaseService();
 
-    // Create a new window, which should trigger session restore.
-    ui_test_utils::BrowserAddedObserver window_observer;
+    // Create a new window, which may trigger session restore.
+    size_t count = BrowserList::GetInstance()->size();
     chrome::NewEmptyWindow(profile);
-    Browser* new_browser = window_observer.WaitForSingleNewBrowser();
+    if (count == BrowserList::GetInstance()->size())
+      return ui_test_utils::WaitForBrowserToOpen();
 
-    return new_browser;
+    return BrowserList::GetInstance()->get(count);
   }
 
   std::string fake_server_address() {
@@ -453,22 +454,6 @@ IN_PROC_BROWSER_TEST_F(ContinueWhereILeftOffTest, SessionCookiesBrowserClose) {
   // Set the startup preference to "continue where I left off" and visit a page
   // which stores a session cookie.
   StoreDataWithPage("session_cookies.html");
-  Browser* new_browser = QuitBrowserAndRestore(browser(), false);
-  // The browsing session will be continued; just wait for the page to reload
-  // and check the stored data.
-  CheckReloadedPageRestored(new_browser);
-}
-
-// Test that leaving a popup open will not prevent session restore.
-IN_PROC_BROWSER_TEST_F(ContinueWhereILeftOffTest,
-                       SessionCookiesBrowserCloseWithPopupOpen) {
-  // Set the startup preference to "continue where I left off" and visit a page
-  // which stores a session cookie.
-  StoreDataWithPage("session_cookies.html");
-  Browser* popup = new Browser(
-      Browser::CreateParams(Browser::TYPE_POPUP, browser()->profile(), true));
-  popup->window()->Show();
-
   Browser* new_browser = QuitBrowserAndRestore(browser(), false);
   // The browsing session will be continued; just wait for the page to reload
   // and check the stored data.

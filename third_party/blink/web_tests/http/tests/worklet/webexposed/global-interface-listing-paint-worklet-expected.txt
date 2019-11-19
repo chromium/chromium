@@ -1,7 +1,8 @@
 CONSOLE MESSAGE: line 10: This test logs exposed APIs once from each PaintWorkletGlobalScope
 CONSOLE MESSAGE: line 153: interface ByteLengthQueuingStrategy
+CONSOLE MESSAGE: line 153:     getter highWaterMark
+CONSOLE MESSAGE: line 153:     getter size
 CONSOLE MESSAGE: line 153:     method constructor
-CONSOLE MESSAGE: line 153:     method size
 CONSOLE MESSAGE: line 153: interface CSSImageValue : CSSStyleValue
 CONSOLE MESSAGE: line 153:     method constructor
 CONSOLE MESSAGE: line 153: interface CSSKeywordValue : CSSStyleValue
@@ -138,8 +139,9 @@ CONSOLE MESSAGE: line 153:     getter variable
 CONSOLE MESSAGE: line 153:     method constructor
 CONSOLE MESSAGE: line 153:     setter variable
 CONSOLE MESSAGE: line 153: interface CountQueuingStrategy
+CONSOLE MESSAGE: line 153:     getter highWaterMark
+CONSOLE MESSAGE: line 153:     getter size
 CONSOLE MESSAGE: line 153:     method constructor
-CONSOLE MESSAGE: line 153:     method size
 CONSOLE MESSAGE: line 153: interface PaintRenderingContext2D
 CONSOLE MESSAGE: line 153:     getter fillStyle
 CONSOLE MESSAGE: line 153:     getter filter
@@ -233,6 +235,12 @@ CONSOLE MESSAGE: line 153:     method getReader
 CONSOLE MESSAGE: line 153:     method pipeThrough
 CONSOLE MESSAGE: line 153:     method pipeTo
 CONSOLE MESSAGE: line 153:     method tee
+CONSOLE MESSAGE: line 153: interface ReadableStreamDefaultReader
+CONSOLE MESSAGE: line 153:     getter closed
+CONSOLE MESSAGE: line 153:     method cancel
+CONSOLE MESSAGE: line 153:     method constructor
+CONSOLE MESSAGE: line 153:     method read
+CONSOLE MESSAGE: line 153:     method releaseLock
 CONSOLE MESSAGE: line 153: interface StylePropertyMapReadOnly
 CONSOLE MESSAGE: line 153:     getter size
 CONSOLE MESSAGE: line 153:     method constructor
@@ -254,6 +262,15 @@ CONSOLE MESSAGE: line 153:     getter locked
 CONSOLE MESSAGE: line 153:     method abort
 CONSOLE MESSAGE: line 153:     method constructor
 CONSOLE MESSAGE: line 153:     method getWriter
+CONSOLE MESSAGE: line 153: interface WritableStreamDefaultWriter
+CONSOLE MESSAGE: line 153:     getter closed
+CONSOLE MESSAGE: line 153:     getter desiredSize
+CONSOLE MESSAGE: line 153:     getter ready
+CONSOLE MESSAGE: line 153:     method abort
+CONSOLE MESSAGE: line 153:     method close
+CONSOLE MESSAGE: line 153:     method constructor
+CONSOLE MESSAGE: line 153:     method releaseLock
+CONSOLE MESSAGE: line 153:     method write
 CONSOLE MESSAGE: line 153: global object
 CONSOLE MESSAGE: line 153:     attribute console
 CONSOLE MESSAGE: line 153:     attribute globalThis
@@ -261,8 +278,9 @@ CONSOLE MESSAGE: line 153:     getter devicePixelRatio
 CONSOLE MESSAGE: line 153:     method gc
 CONSOLE MESSAGE: line 153:     method registerPaint
 CONSOLE MESSAGE: line 153: interface ByteLengthQueuingStrategy
+CONSOLE MESSAGE: line 153:     getter highWaterMark
+CONSOLE MESSAGE: line 153:     getter size
 CONSOLE MESSAGE: line 153:     method constructor
-CONSOLE MESSAGE: line 153:     method size
 CONSOLE MESSAGE: line 153: interface CSSImageValue : CSSStyleValue
 CONSOLE MESSAGE: line 153:     method constructor
 CONSOLE MESSAGE: line 153: interface CSSKeywordValue : CSSStyleValue
@@ -399,8 +417,9 @@ CONSOLE MESSAGE: line 153:     getter variable
 CONSOLE MESSAGE: line 153:     method constructor
 CONSOLE MESSAGE: line 153:     setter variable
 CONSOLE MESSAGE: line 153: interface CountQueuingStrategy
+CONSOLE MESSAGE: line 153:     getter highWaterMark
+CONSOLE MESSAGE: line 153:     getter size
 CONSOLE MESSAGE: line 153:     method constructor
-CONSOLE MESSAGE: line 153:     method size
 CONSOLE MESSAGE: line 153: interface PaintRenderingContext2D
 CONSOLE MESSAGE: line 153:     getter fillStyle
 CONSOLE MESSAGE: line 153:     getter filter
@@ -494,6 +513,12 @@ CONSOLE MESSAGE: line 153:     method getReader
 CONSOLE MESSAGE: line 153:     method pipeThrough
 CONSOLE MESSAGE: line 153:     method pipeTo
 CONSOLE MESSAGE: line 153:     method tee
+CONSOLE MESSAGE: line 153: interface ReadableStreamDefaultReader
+CONSOLE MESSAGE: line 153:     getter closed
+CONSOLE MESSAGE: line 153:     method cancel
+CONSOLE MESSAGE: line 153:     method constructor
+CONSOLE MESSAGE: line 153:     method read
+CONSOLE MESSAGE: line 153:     method releaseLock
 CONSOLE MESSAGE: line 153: interface StylePropertyMapReadOnly
 CONSOLE MESSAGE: line 153:     getter size
 CONSOLE MESSAGE: line 153:     method constructor
@@ -515,6 +540,15 @@ CONSOLE MESSAGE: line 153:     getter locked
 CONSOLE MESSAGE: line 153:     method abort
 CONSOLE MESSAGE: line 153:     method constructor
 CONSOLE MESSAGE: line 153:     method getWriter
+CONSOLE MESSAGE: line 153: interface WritableStreamDefaultWriter
+CONSOLE MESSAGE: line 153:     getter closed
+CONSOLE MESSAGE: line 153:     getter desiredSize
+CONSOLE MESSAGE: line 153:     getter ready
+CONSOLE MESSAGE: line 153:     method abort
+CONSOLE MESSAGE: line 153:     method close
+CONSOLE MESSAGE: line 153:     method constructor
+CONSOLE MESSAGE: line 153:     method releaseLock
+CONSOLE MESSAGE: line 153:     method write
 CONSOLE MESSAGE: line 153: global object
 CONSOLE MESSAGE: line 153:     attribute console
 CONSOLE MESSAGE: line 153:     attribute globalThis

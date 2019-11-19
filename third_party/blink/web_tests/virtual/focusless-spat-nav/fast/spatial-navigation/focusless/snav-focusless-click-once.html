@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<script src="../../../../../resources/testharness.js"></script>
+<script src="../../../../../resources/testharnessreport.js"></script>
+<script src="file:///gen/layout_test_data/mojo/public/js/mojo_bindings.js"></script>
+<script src="file:///gen/third_party/blink/public/mojom/page/spatial_navigation.mojom.js"></script>
+<script src="../../../../../fast/spatial-navigation/resources/mock-snav-service.js"></script>
+<script src="../../../../../fast/spatial-navigation/resources/snav-testharness.js"></script>
+
+<button type="button" id="button" autofocus> button </button>
+
+<svg height="100" width="100" id="svg" tabindex="0">
+  <circle cx="50" cy="50" r="40" stroke="black" stroke-width="3" fill="red" />
+</svg>
+
+<img src="" height="100" width="100" id="img" tabindex="1" />
+
+<script>
+  let button = document.getElementById("button");
+  let svg = document.getElementById("svg");
+  let img = document.getElementById("img");
+  let buttonClicked = 0;
+  let svgClicked = 0;
+  let imgClicked = 0;
+
+  button.addEventListener('click', function() {
+    console.log('wtf');
+    buttonClicked++;
+  })
+
+  svg.addEventListener('click', function() {
+    svgClicked++;
+  })
+
+  img.addEventListener('keydown', function(e) {
+    e.preventDefault();
+  })
+  img.addEventListener('click', function() {
+    imgClicked++;
+  })
+
+  promise_test(async () => {
+    await snav.rAF();
+    await snav.rAF();
+    eventSender.keyDown('Enter');
+    await snav.rAF();
+    assert_equals(buttonClicked,
+                  1,
+                  "button should have been clicked once.");
+
+    svg.focus();
+    eventSender.keyDown('Enter');
+    await snav.rAF();
+    assert_equals(svgClicked,
+                  1,
+                  "svg should have been clicked once.");
+
+    img.focus();
+    eventSender.keyDown('Enter');
+    await snav.rAF();
+    assert_equals(imgClicked,
+                  0,
+                  "img should not have been clicked.");
+  }, 'Spat Nav doesn\'t click multiple times.');
+</script>

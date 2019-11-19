@@ -7,9 +7,11 @@
 #import <AppKit/AppKit.h>
 
 #include "base/files/file_path.h"
+#include "base/logging.h"
 #include "base/mac/foundation_util.h"
 #include "base/mac/scoped_cftyperef.h"
 #include "base/mac/scoped_nsobject.h"
+#include "base/no_destructor.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "printing/units.h"
@@ -21,9 +23,18 @@ namespace {
 // On macOS, the custom paper size UI limits the value to 99999.
 constexpr int kMacPaperDimensionLimit = 99999 * kPointsPerInch;
 
+PrinterSemanticCapsAndDefaults::Papers& GetTestPapers() {
+  static base::NoDestructor<PrinterSemanticCapsAndDefaults::Papers> test_papers;
+  return *test_papers;
+}
+
 }  // namespace
 
 PrinterSemanticCapsAndDefaults::Papers GetMacCustomPaperSizes() {
+  if (!GetTestPapers().empty()) {
+    return GetTestPapers();
+  }
+
   base::FilePath local_library;
   bool success =
       base::mac::GetUserDirectory(NSLibraryDirectory, &local_library);
@@ -32,6 +43,14 @@ PrinterSemanticCapsAndDefaults::Papers GetMacCustomPaperSizes() {
   base::FilePath plist = local_library.Append("Preferences")
                              .Append("com.apple.print.custompapers.plist");
   return internal::GetMacCustomPaperSizesFromFile(plist);
+}
+
+void SetMacCustomPaperSizesForTesting(
+    const PrinterSemanticCapsAndDefaults::Papers& papers) {
+  for (const PrinterSemanticCapsAndDefaults::Paper& paper : papers)
+    DCHECK_EQ("", paper.vendor_id);
+
+  GetTestPapers() = papers;
 }
 
 namespace internal {

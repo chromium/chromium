@@ -12,7 +12,6 @@
 <translation id="2159915644201199628">የዚህ ምስል ስውሩን መግለጥ አልተቻለም፦ «<ph name="IMAGE_NAME" />»</translation>
 <translation id="2350172092385603347">አካባቢያዊነት ተጠቅሟል ነገር ግን በማኒፌስት ወስጥ default_locale አልተገለጸም።</translation>
 <translation id="2576842806987913196">ይህን ስም የያዘ የCRX ፋይል አስቀድሞ ነበር።</translation>
-<translation id="2753617847762399167">ህገወጥ ዱካ (በ«..» ፍጹማዊ ወይም አንጻራዊ)፦ «<ph name="IMAGE_PATH" />»</translation>
 <translation id="2785530881066938471">ፋይል «<ph name="RELATIVE_PATH" />»ን ለይዘት ስክሪፕት መጫን አልተቻለም። በUTF-8 ኮድ የተቀመጠ አይደለም።</translation>
 <translation id="2903070246402204397"><ph name="EXTENSION_NAME" /> (የቅጥያ መታወቂያ «<ph name="EXTENSION_ID" />») በአስተዳዳሪው ታግዷል። <ph name="ADMIN_INFO" /></translation>
 <translation id="2988488679308982380">ጥቅል መጫን አልተቻለም፦ «<ph name="ERROR_CODE" />»</translation>
@@ -38,8 +37,6 @@
 <translation id="5436430103864390185">ቅርጽ ያላቸው መስኮቶች አይደገፉም።</translation>
 <translation id="5456409301717116725">ይህ ቅጥያ የቁልፍ ፋይል «<ph name="KEY_PATH" />»ን ያካትታል። ይህንን ማድረግ ላይፈልጉ ይችላሉ።</translation>
 <translation id="5486326529110362464">ለግላዊ ቁልፍ የሚገባ እሴት መኖር አለበት።</translation>
-<translation id="5627523580512561598">ቅጥያ <ph name="EXTENSION_NAME" /></translation>
-<translation id="5960890139610307736">ExtensionView፦ <ph name="EXTENSIONVIEW_TAG_NAME" /></translation>
 <translation id="5972529113578162692">የዚህ ማሽን አስተዳዳሪ <ph name="EXTENSION_NAME" /> እንዲጫን ይፈልጋል። ከተጫነ በኋላ ሊራገፍ አይችልም።</translation>
 <translation id="6027032947578871493">ያልታወቀ ምርት <ph name="PRODUCT_ID" /> ከ<ph name="VENDOR_NAME" /> (ተከታታይ ቁጥር <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="6068932090455285721"><ph name="PRODUCT_NAME" /> ከ<ph name="VENDOR_ID" /> ሻጭ</translation>
@@ -51,7 +48,6 @@
 <translation id="6542618148162044354">«<ph name="APP_NAME" />» የአንድ ወይም ተጨማሪ መሣሪያዎችዎ መዳረሻ እየጠየቁ ነው።</translation>
 <translation id="657064425229075395">የጀርባ ስክሪፕት «<ph name="BACKGROUND_SCRIPT" />» መጫን አልተቻለም።</translation>
 <translation id="6580950983454333167"><ph name="PRODUCT_NAME" /> ከ<ph name="VENDOR_NAME" /> (የመለያ ቁጥር <ph name="SERIAL_NUMBER" />)</translation>
-<translation id="6731255991101203740">ይሄ የሚበተንበት አቃፊ መፍጠር አልተቻለም፦ «<ph name="DIRECTORY_PATH" />»</translation>
 <translation id="677806580227005219">የሚሜ ተቆጣጣሪ፦ <ph name="MIMEHANDLERVIEW_TAG_NAME" /></translation>
 <translation id="6840444547062817500">ይህ ቅጥያ ብዙ ጊዜ እራሱን ዳግም ጭኗል።</translation>
 <translation id="7003844668372540529">ያልታወቀ ምርት <ph name="PRODUCT_ID" /> ከ<ph name="VENDOR_NAME" /></translation>

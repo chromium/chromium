@@ -13,7 +13,7 @@
 #include "base/strings/string16.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/test/test_reg_util_win.h"
 #include "base/win/registry.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -65,7 +65,7 @@ class WatcherMetricsProviderWinTest : public testing::Test {
   }
 
  protected:
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_;
   registry_util::RegistryOverrideManager override_manager_;
   base::HistogramTester histogram_tester_;
 };
@@ -138,7 +138,7 @@ TEST_F(WatcherMetricsProviderWinTest, DeletesExitcodeKeyWhenNotReporting) {
   provider.OnRecordingDisabled();
 
   // Flush the task(s).
-  scoped_task_environment_.RunUntilIdle();
+  task_environment_.RunUntilIdle();
 
   // Make sure the subkey for the pseudo process has been deleted on reporting.
   ASSERT_EQ(ERROR_FILE_NOT_FOUND,

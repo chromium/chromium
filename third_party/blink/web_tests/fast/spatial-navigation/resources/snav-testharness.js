@@ -59,7 +59,10 @@
     return elem;
   }
 
+  let step = 0;
+  let failureTimer = 0;
   function stepAndAssertMoves(expectedMoves) {
+    step++;
     if (expectedMoves.length == 0) {
       if (gPostAssertsFunc)
         gAsyncTest.step(gPostAssertsFunc);
@@ -73,8 +76,10 @@
     let wanted = findElement(expectedId);
     let receivingDoc = wanted.ownerDocument;
     let verifyAndAdvance = gAsyncTest.step_func(function() {
+      clearTimeout(failureTimer);
       let focused = window.internals.interestedElement;
-      assert_equals(focused, wanted);
+      assert_equals(focused, wanted,
+                    'step ' + step + ': expected focus ' + expectedId + ', actual focus ' + focused.id);
       // Kick off another async test step.
       stepAndAssertMoves(expectedMoves);
     });
@@ -85,6 +90,12 @@
     // the succeeding keyup-event, it's safe to assert activeElement.
     // The keyup-event targets the, perhaps newly, focused document.
     receivingDoc.addEventListener('keyup', verifyAndAdvance, {once: true});
+    // Start a timer to catch the failure of missing keyup event.
+    failureTimer = setTimeout(gAsyncTest.step_func(function() {
+      assert_unreached('step ' + step + ': timeout when waiting for focus on ' + expectedId +
+                       ', actual focus on ' + window.internals.interestedElement.id);
+      gAsyncTest.done();
+    }), 1000);
     triggerMove(direction);
   }
 
@@ -119,6 +130,12 @@
       window.addEventListener('load', gAsyncTest.step_func(() => {
         stepAndAssertMoves(expectedMoves);
       }));
+    },
+
+    rAF: function() {
+      return new Promise((resolve) => {
+        window.requestAnimationFrame(resolve);
+      });
     }
   }
 })();

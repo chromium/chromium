@@ -27,10 +27,8 @@ body {
 </div>
 
 <script>
-if (window.internals) {
-  internals.settings.setMockScrollbarsEnabled(true)
+if (window.internals)
   internals.settings.setScrollAnimatorEnabled(false);
-}
 
 var receivedMousedownEvent = false;
 document.addEventListener('mousedown', function(e) {

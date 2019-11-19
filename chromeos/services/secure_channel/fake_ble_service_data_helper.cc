@@ -37,7 +37,7 @@ void FakeBleServiceDataHelper::SetIdentifiedDevice(
 std::unique_ptr<DataWithTimestamp>
 FakeBleServiceDataHelper::GenerateForegroundAdvertisement(
     const DeviceIdPair& device_id_pair) {
-  if (!base::ContainsKey(device_id_pair_to_service_data_map_, device_id_pair))
+  if (!base::Contains(device_id_pair_to_service_data_map_, device_id_pair))
     return nullptr;
 
   return std::make_unique<DataWithTimestamp>(
@@ -48,8 +48,8 @@ base::Optional<BleServiceDataHelper::DeviceWithBackgroundBool>
 FakeBleServiceDataHelper::PerformIdentifyRemoteDevice(
     const std::string& service_data,
     const DeviceIdPairSet& device_id_pair_set) {
-  if (!base::ContainsKey(service_data_to_device_with_background_bool_map_,
-                         service_data)) {
+  if (!base::Contains(service_data_to_device_with_background_bool_map_,
+                      service_data)) {
     return base::nullopt;
   }
 

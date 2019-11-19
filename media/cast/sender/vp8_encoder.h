@@ -32,7 +32,7 @@ class Vp8Encoder : public SoftwareVideoEncoder {
 
   // SoftwareVideoEncoder implementations.
   void Initialize() final;
-  void Encode(const scoped_refptr<media::VideoFrame>& video_frame,
+  void Encode(scoped_refptr<media::VideoFrame> video_frame,
               const base::TimeTicks& reference_time,
               SenderEncodedFrame* encoded_frame) final;
   void UpdateRates(uint32_t new_bitrate) final;

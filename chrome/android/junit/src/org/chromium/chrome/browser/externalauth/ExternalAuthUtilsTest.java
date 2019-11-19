@@ -62,7 +62,6 @@ public class ExternalAuthUtilsTest {
         // methods, which subclasses are expected to be able to override.
         InOrder inOrder = inOrder(mExternalAuthUtils);
         inOrder.verify(mExternalAuthUtils).checkGooglePlayServicesAvailable(mContext);
-        inOrder.verify(mExternalAuthUtils).recordConnectionResult(ConnectionResult.SUCCESS);
         inOrder.verify(mExternalAuthUtils, never()).isUserRecoverableError(anyInt());
         inOrder.verify(mExternalAuthUtils, never()).describeError(anyInt());
     }
@@ -82,7 +81,6 @@ public class ExternalAuthUtilsTest {
         // methods, which subclasses are expected to be able to override.
         InOrder inOrder = inOrder(mExternalAuthUtils);
         inOrder.verify(mExternalAuthUtils).checkGooglePlayServicesAvailable(mContext);
-        inOrder.verify(mExternalAuthUtils).recordConnectionResult(ERR);
         inOrder.verify(mExternalAuthUtils).isUserRecoverableError(ERR);
     }
 
@@ -102,7 +100,6 @@ public class ExternalAuthUtilsTest {
         // methods, which subclasses are expected to be able to override.
         InOrder inOrder = inOrder(mExternalAuthUtils, mUserRecoverableErrorHandler);
         inOrder.verify(mExternalAuthUtils).checkGooglePlayServicesAvailable(mContext);
-        inOrder.verify(mExternalAuthUtils).recordConnectionResult(ERR);
         inOrder.verify(mExternalAuthUtils).isUserRecoverableError(ERR);
         inOrder.verify(mUserRecoverableErrorHandler).handleError(mContext, ERR);
     }

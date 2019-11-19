@@ -1,0 +1,119 @@
+<style include="cr-hidden-style">
+  :host {
+    --border-bottom-height: 1px;
+    --button-row-height: calc(2 * var(--padding-top-bottom) +
+        var(--cr-button-height));
+    --drawer-transition: 0.3s cubic-bezier(.25, .1, .25, 1);
+    --padding-top-bottom: 10px;
+  }
+
+  /* This toggle needs special styling because it's on blue background. */
+  @media (prefers-color-scheme: light) {
+    cr-toolbar cr-toggle {
+      --cr-toggle-checked-bar-color: var(--google-grey-refresh-100);
+      --cr-toggle-checked-button-color: white;
+      --cr-toggle-checked-ink-color: white;
+      --cr-toggle-unchecked-bar-color: var(--google-grey-600);
+      --cr-toggle-unchecked-ink-color: white;
+    }
+  }
+
+  cr-tooltip-icon {
+    margin-inline-end: 20px;
+  }
+
+  #devDrawer[expanded] #buttonStrip {
+    top: 0;
+  }
+
+  #devDrawer {
+    background: #fff;
+    border-bottom: 1px solid var(--google-grey-300);
+    height: 0;
+    overflow-x: hidden;
+    overflow-y: auto;
+    position: relative;
+    transition: height var(--drawer-transition);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    #devDrawer {
+      background: none;
+      border-bottom-color: var(--cr-separator-color);
+    }
+  }
+
+  #devDrawer[expanded] {
+    height: calc(var(--button-row-height) + var(--border-bottom-height));
+  }
+
+  #buttonStrip {
+    margin-inline-end: auto;
+    margin-inline-start: 24px;
+    padding: var(--padding-top-bottom) 0;
+    position: absolute;
+    top: calc(var(--button-row-height) * -1);
+    transition: top var(--drawer-transition);
+    /* Prevent selection of the blank space between buttons. */
+    user-select: none;
+    width: 100%;
+  }
+
+  #buttonStrip cr-button {
+    margin-inline-end: 16px;
+  }
+
+  .more-actions {
+    align-items: center;
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  .more-actions span {
+    margin-inline-end: 16px;
+  }
+</style>
+<cr-toolbar page-name="$i18n{toolbarTitle}" search-prompt="$i18n{search}"
+    clear-label="$i18n{clearSearch}" menu-label="$i18n{mainMenu}" show-menu
+    narrow-threshold="1000">
+  <div class="more-actions">
+    <span id="devModeLabel">$i18n{toolbarDevMode}</span>
+    <cr-tooltip-icon hidden="[[!shouldDisableDevMode_(
+        devModeControlledByPolicy, isSupervised)]]"
+        tooltip-text="[[getTooltipText_(isSupervised)]]"
+        icon-class="[[getIcon_(isSupervised)]]"
+        icon-aria-label="[[getTooltipText_(isSupervised)]]">
+    </cr-tooltip-icon>
+    <cr-toggle id="devMode" on-change="onDevModeToggleChange_"
+        disabled="[[shouldDisableDevMode_(
+            devModeControlledByPolicy, isSupervised)]]"
+        checked="[[inDevMode]]" aria-labelledby="devModeLabel">
+    </cr-toggle>
+  </div>
+</cr-toolbar>
+<template is="dom-if" if="[[showPackDialog_]]" restamp>
+  <extensions-pack-dialog delegate="[[delegate]]"
+      on-close="onPackDialogClose_">
+  </extensions-pack-dialog>
+</template>
+<div id="devDrawer" expanded$="[[expanded_]]">
+  <div id="buttonStrip">
+    <cr-button hidden$="[[!canLoadUnpacked]]" id="loadUnpacked"
+        on-click="onLoadUnpackedTap_">
+      $i18n{toolbarLoadUnpacked}
+    </cr-button>
+    <cr-button id="packExtensions" on-click="onPackTap_">
+      $i18n{toolbarPack}
+    </cr-button>
+    <cr-button id="updateNow" on-click="onUpdateNowTap_"
+        title="$i18n{toolbarUpdateNowTooltip}">
+      $i18n{toolbarUpdateNow}
+    </cr-button>
+<if expr="chromeos">
+    <cr-button id="kioskExtensions" on-click="onKioskTap_"
+        hidden$="[[!kioskEnabled]]">
+      $i18n{manageKioskApp}
+    </cr-button>
+</if>
+  </div>
+</div>

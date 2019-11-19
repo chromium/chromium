@@ -9,10 +9,13 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/shell/browser/shell.h"
+#include "content/shell/common/shell_switches.h"
+#include "media/audio/audio_features.h"
 #include "media/base/media_switches.h"
 #include "media/base/test_data_util.h"
 #include "media/media_buildflags.h"
@@ -30,9 +33,22 @@ void MediaBrowserTest::SetUpCommandLine(base::CommandLine* command_line) {
   command_line->AppendSwitchASCII(
       switches::kAutoplayPolicy,
       switches::autoplay::kNoUserGestureRequiredPolicy);
-  // Disable fallback after decode error to avoid unexpected test pass on the
-  // fallback path.
-  scoped_feature_list_.InitAndDisableFeature(media::kFallbackAfterDecodeError);
+  command_line->AppendSwitch(switches::kExposeInternalsForTesting);
+
+  std::vector<base::Feature> disabled_features = {
+    // Disable fallback after decode error to avoid unexpected test pass on
+    // the fallback path.
+    media::kFallbackAfterDecodeError,
+
+#if defined(OS_LINUX)
+    // Disable out of process audio on Linux due to process spawn
+    // failures. http://crbug.com/986021
+    features::kAudioServiceOutOfProcess,
+#endif
+  };
+
+  scoped_feature_list_.InitWithFeatures({/* enabled_features */},
+                                        disabled_features);
 }
 
 void MediaBrowserTest::RunMediaTestPage(const std::string& html_page,
@@ -61,7 +77,7 @@ std::string MediaBrowserTest::RunTest(const GURL& gurl,
   TitleWatcher title_watcher(shell()->web_contents(),
                              base::ASCIIToUTF16(expected_title));
   AddTitlesToAwait(&title_watcher);
-  NavigateToURL(shell(), gurl);
+  EXPECT_TRUE(NavigateToURL(shell(), gurl));
   base::string16 result = title_watcher.WaitAndGetTitle();
 
   CleanupTest();
@@ -76,7 +92,7 @@ void MediaBrowserTest::CleanupTest() {
   TitleWatcher clean_title_watcher(shell()->web_contents(), cleaner_title);
   GURL cleaner_url = content::GetFileUrlWithQuery(
       media::GetTestDataFilePath("cleaner.html"), "");
-  NavigateToURL(shell(), cleaner_url);
+  EXPECT_TRUE(NavigateToURL(shell(), cleaner_url));
   base::string16 cleaner_result = clean_title_watcher.WaitAndGetTitle();
   EXPECT_EQ(cleaner_result, cleaner_title);
 #endif
@@ -324,7 +340,7 @@ IN_PROC_BROWSER_TEST_P(MediaTest, VideoErrorNoSupportedStreams) {
 // Covers tear-down when navigating away as opposed to browser exiting.
 IN_PROC_BROWSER_TEST_F(MediaTest, Navigate) {
   PlayVideo("bear.webm", false);
-  NavigateToURL(shell(), GURL(url::kAboutBlankURL));
+  EXPECT_TRUE(NavigateToURL(shell(), GURL(url::kAboutBlankURL)));
   EXPECT_FALSE(shell()->web_contents()->IsCrashed());
 }
 

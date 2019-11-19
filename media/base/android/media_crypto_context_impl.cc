@@ -25,8 +25,8 @@ void MediaCryptoContextImpl::UnregisterPlayer(int registration_id) {
 }
 
 void MediaCryptoContextImpl::SetMediaCryptoReadyCB(
-    const MediaCryptoReadyCB& media_crypto_ready_cb) {
-  media_drm_bridge_->SetMediaCryptoReadyCB(media_crypto_ready_cb);
+    MediaCryptoReadyCB media_crypto_ready_cb) {
+  media_drm_bridge_->SetMediaCryptoReadyCB(std::move(media_crypto_ready_cb));
 }
 
 }  // namespace media

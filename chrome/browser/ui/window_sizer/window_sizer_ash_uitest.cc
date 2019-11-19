@@ -2,16 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ash/public/cpp/shelf_config.h"
 #include "ash/shelf/shelf.h"
-#include "ash/shelf/shelf_constants.h"
-#include "ash/shelf/shelf_controller.h"
 #include "ash/shelf/shelf_view.h"
 #include "ash/shelf/shelf_view_test_api.h"
 #include "ash/shell.h"
 #include "base/command_line.h"
 #include "base/macros.h"
 #include "base/run_loop.h"
-#include "chrome/browser/ui/ash/launcher/chrome_launcher_controller.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -33,8 +31,8 @@ gfx::Rect GetChromeIconBoundsInScreen(aura::Window* root) {
   ash::ShelfView* shelf_view =
       ash::Shelf::ForWindow(root)->GetShelfViewForTesting();
   const views::ViewModel* view_model = shelf_view->view_model_for_test();
-  EXPECT_EQ(3, view_model->view_size());
-  gfx::Rect bounds = view_model->view_at(2)->GetBoundsInScreen();
+  EXPECT_EQ(1, view_model->view_size());
+  gfx::Rect bounds = view_model->view_at(0)->GetBoundsInScreen();
   return bounds;
 }
 
@@ -53,10 +51,6 @@ void OpenBrowserUsingShelfOnRootWindow(aura::Window* root) {
   gfx::Point center = GetChromeIconBoundsInScreen(root).CenterPoint();
   generator.MoveMouseTo(center);
   generator.ClickLeftButton();
-  // Ash notifies Chrome that the browser shortcut item was selected.
-  ash::Shell::Get()->shelf_controller()->FlushForTesting();
-  // Chrome replies to Ash that a new window was opened.
-  ChromeLauncherController::instance()->FlushForTesting();
 }
 
 // Launch a new browser window by clicking the "New window" context menu item.
@@ -66,26 +60,18 @@ void OpenBrowserUsingContextMenuOnRootWindow(aura::Window* root) {
   generator.MoveMouseTo(chrome_icon);
   generator.PressRightButton();
 
-  // Ash notifies Chrome that the browser shortcut item was right-clicked.
-  ash::Shell::Get()->shelf_controller()->FlushForTesting();
-  // Chrome replies to Ash with the context menu items to display.
-  ChromeLauncherController::instance()->FlushForTesting();
-
   // Move the cursor up to the "New window" menu option - assumes menu content.
   const int offset =
       // Top half of the button we just clicked on.
-      ash::ShelfConstants::button_size() / 2 +
+      ash::ShelfConfig::Get()->button_size() / 2 +
       // Space between shelf top and menu bottom. Here we get this menu with
       // a right-click but long-pressing yields the same result. All menus
       // here use a touchable layout.
       views::MenuConfig::instance().touchable_anchor_offset +
-      // 2 menu items we don't want, and go over part of the one we want.
-      2.2 * views::MenuConfig::instance().touchable_menu_height;
+      // 3 menu items we don't want, and go over part of the one we want.
+      3.2 * views::MenuConfig::instance().touchable_menu_height;
   generator.MoveMouseBy(0, -offset);
   generator.ReleaseRightButton();
-
-  // Ash notifies Chrome's ShelfItemDelegate that the menu item was selected.
-  ash::Shell::Get()->shelf_controller()->FlushForTesting();
 }
 
 class WindowSizerTest : public InProcessBrowserTest {

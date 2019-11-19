@@ -7,7 +7,7 @@
 
 namespace switches {
 
-// Specifies the domain of the APISID cookie. The default value is
+// Specifies the domain of the SAPISID cookie. The default value is
 // "http://.google.com".
 extern const char kGoogleUrl[];
 

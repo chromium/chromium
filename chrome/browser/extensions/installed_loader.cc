@@ -24,6 +24,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/extensions/chrome_manifest_url_handlers.h"
+#include "chrome/common/extensions/manifest_handlers/settings_overrides_handler.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/common/url_constants.h"
@@ -352,6 +353,10 @@ void InstalledLoader::RecordExtensionsMetrics() {
   int no_action_count = 0;
   int disabled_for_permissions_count = 0;
   int non_webstore_ntp_override_count = 0;
+  int ntp_override_count = 0;
+  int homepage_override_count = 0;
+  int search_engine_override_count = 0;
+  int startup_pages_override_count = 0;
   int incognito_allowed_count = 0;
   int incognito_not_allowed_count = 0;
   int file_access_allowed_count = 0;
@@ -427,11 +432,24 @@ void InstalledLoader::RecordExtensionsMetrics() {
     if (Manifest::IsComponentLocation(location))
       continue;
 
-    // Histogram for non-webstore extensions overriding new tab page should
-    // include unpacked extensions.
-    if (!extension->from_webstore() &&
-        URLOverrides::GetChromeURLOverrides(extension).count("newtab")) {
-      ++non_webstore_ntp_override_count;
+    // Histogram for extensions overriding the new tab page should include
+    // unpacked extensions.
+    if (URLOverrides::GetChromeURLOverrides(extension).count("newtab")) {
+      ++ntp_override_count;
+      if (!extension->from_webstore()) {
+        ++non_webstore_ntp_override_count;
+      }
+    }
+
+    // Histogram for extensions with settings overrides.
+    const SettingsOverrides* settings = SettingsOverrides::Get(extension);
+    if (settings) {
+      if (settings->search_engine)
+        ++search_engine_override_count;
+      if (!settings->startup_pages.empty())
+        ++startup_pages_override_count;
+      if (settings->homepage)
+        ++homepage_override_count;
     }
 
     // Don't count unpacked extensions anymore, either.
@@ -622,54 +640,63 @@ void InstalledLoader::RecordExtensionsMetrics() {
     }
   }
 
-  UMA_HISTOGRAM_COUNTS_100("Extensions.LoadApp",
-                           app_user_count + app_external_count);
-  UMA_HISTOGRAM_COUNTS_100("Extensions.LoadAppUser", app_user_count);
-  UMA_HISTOGRAM_COUNTS_100("Extensions.LoadAppExternal", app_external_count);
-  UMA_HISTOGRAM_COUNTS_100("Extensions.LoadHostedApp", hosted_app_count);
-  UMA_HISTOGRAM_COUNTS_100("Extensions.LoadPackagedApp",
-                           legacy_packaged_app_count);
-  UMA_HISTOGRAM_COUNTS_100("Extensions.LoadPlatformApp", platform_app_count);
-  UMA_HISTOGRAM_COUNTS_100("Extensions.LoadExtension",
-                           extension_user_count + extension_external_count);
-  UMA_HISTOGRAM_COUNTS_100("Extensions.LoadExtensionUser",
-                           extension_user_count);
-  UMA_HISTOGRAM_COUNTS_100("Extensions.LoadExtensionExternal",
-                           extension_external_count);
-  UMA_HISTOGRAM_COUNTS_100("Extensions.LoadUserScript", user_script_count);
-  UMA_HISTOGRAM_COUNTS_100("Extensions.LoadTheme", theme_count);
+  base::UmaHistogramCounts100("Extensions.LoadApp",
+                              app_user_count + app_external_count);
+  base::UmaHistogramCounts100("Extensions.LoadAppUser", app_user_count);
+  base::UmaHistogramCounts100("Extensions.LoadAppExternal", app_external_count);
+  base::UmaHistogramCounts100("Extensions.LoadHostedApp", hosted_app_count);
+  base::UmaHistogramCounts100("Extensions.LoadPackagedApp",
+                              legacy_packaged_app_count);
+  base::UmaHistogramCounts100("Extensions.LoadPlatformApp", platform_app_count);
+  base::UmaHistogramCounts100("Extensions.LoadExtension",
+                              extension_user_count + extension_external_count);
+  base::UmaHistogramCounts100("Extensions.LoadExtensionUser",
+                              extension_user_count);
+  base::UmaHistogramCounts100("Extensions.LoadExtensionExternal",
+                              extension_external_count);
+  base::UmaHistogramCounts100("Extensions.LoadUserScript", user_script_count);
+  base::UmaHistogramCounts100("Extensions.LoadTheme", theme_count);
   // Histogram name different for legacy reasons.
-  UMA_HISTOGRAM_COUNTS_100("PageActionController.ExtensionsWithPageActions",
-                           page_action_count);
-  UMA_HISTOGRAM_COUNTS_100("Extensions.LoadBrowserAction",
-                           browser_action_count);
-  UMA_HISTOGRAM_COUNTS_100("Extensions.LoadNoExtensionAction",
-                           no_action_count);
-  UMA_HISTOGRAM_COUNTS_100("Extensions.DisabledForPermissions",
-                           disabled_for_permissions_count);
-  UMA_HISTOGRAM_COUNTS_100("Extensions.NonWebStoreNewTabPageOverrides",
-                           non_webstore_ntp_override_count);
+  base::UmaHistogramCounts100("PageActionController.ExtensionsWithPageActions",
+                              page_action_count);
+  base::UmaHistogramCounts100("Extensions.LoadBrowserAction",
+                              browser_action_count);
+  base::UmaHistogramCounts100("Extensions.LoadNoExtensionAction",
+                              no_action_count);
+  base::UmaHistogramCounts100("Extensions.DisabledForPermissions",
+                              disabled_for_permissions_count);
+  // TODO(kelvinjiang): Remove this histogram if it's not used anymore.
+  base::UmaHistogramCounts100("Extensions.NonWebStoreNewTabPageOverrides",
+                              non_webstore_ntp_override_count);
+  base::UmaHistogramCounts100("Extensions.NewTabPageOverrides",
+                              ntp_override_count);
+  base::UmaHistogramCounts100("Extensions.SearchEngineOverrides",
+                              search_engine_override_count);
+  base::UmaHistogramCounts100("Extensions.StartupPagesOverrides",
+                              startup_pages_override_count);
+  base::UmaHistogramCounts100("Extensions.HomepageOverrides",
+                              homepage_override_count);
   if (incognito_allowed_count + incognito_not_allowed_count > 0) {
-    UMA_HISTOGRAM_COUNTS_100("Extensions.IncognitoAllowed",
-                             incognito_allowed_count);
-    UMA_HISTOGRAM_COUNTS_100("Extensions.IncognitoNotAllowed",
-                             incognito_not_allowed_count);
+    base::UmaHistogramCounts100("Extensions.IncognitoAllowed",
+                                incognito_allowed_count);
+    base::UmaHistogramCounts100("Extensions.IncognitoNotAllowed",
+                                incognito_not_allowed_count);
   }
   if (file_access_allowed_count + file_access_not_allowed_count > 0) {
-    UMA_HISTOGRAM_COUNTS_100("Extensions.FileAccessAllowed",
-                             file_access_allowed_count);
-    UMA_HISTOGRAM_COUNTS_100("Extensions.FileAccessNotAllowed",
-                             file_access_not_allowed_count);
+    base::UmaHistogramCounts100("Extensions.FileAccessAllowed",
+                                file_access_allowed_count);
+    base::UmaHistogramCounts100("Extensions.FileAccessNotAllowed",
+                                file_access_not_allowed_count);
   }
-  UMA_HISTOGRAM_COUNTS_100("Extensions.CorruptExtensionTotalDisables",
-                           extension_prefs_->GetCorruptedDisableCount());
-  UMA_HISTOGRAM_COUNTS_100("Extensions.EventlessEventPages",
-                           eventless_event_pages_count);
-  UMA_HISTOGRAM_COUNTS_100("Extensions.LoadOffStoreItems",
-                           off_store_item_count);
-  UMA_HISTOGRAM_COUNTS_100("Extensions.WebRequestBlockingCount",
-                           web_request_blocking_count);
-  UMA_HISTOGRAM_COUNTS_100("Extensions.WebRequestCount", web_request_count);
+  base::UmaHistogramCounts100("Extensions.CorruptExtensionTotalDisables",
+                              extension_prefs_->GetCorruptedDisableCount());
+  base::UmaHistogramCounts100("Extensions.EventlessEventPages",
+                              eventless_event_pages_count);
+  base::UmaHistogramCounts100("Extensions.LoadOffStoreItems",
+                              off_store_item_count);
+  base::UmaHistogramCounts100("Extensions.WebRequestBlockingCount",
+                              web_request_blocking_count);
+  base::UmaHistogramCounts100("Extensions.WebRequestCount", web_request_count);
 }
 
 int InstalledLoader::GetCreationFlags(const ExtensionInfo* info) {

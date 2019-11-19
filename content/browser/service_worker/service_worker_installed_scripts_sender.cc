@@ -6,6 +6,7 @@
 
 #include "base/memory/ref_counted.h"
 #include "base/trace_event/trace_event.h"
+#include "content/browser/service_worker/service_worker_consts.h"
 #include "content/browser/service_worker/service_worker_context_core.h"
 #include "content/browser/service_worker/service_worker_disk_cache.h"
 #include "content/browser/service_worker/service_worker_script_cache_map.h"
@@ -20,12 +21,12 @@ ServiceWorkerInstalledScriptsSender::ServiceWorkerInstalledScriptsSender(
       main_script_id_(
           owner_->script_cache_map()->LookupResourceId(main_script_url_)),
       sent_main_script_(false),
-      binding_(this),
       state_(State::kNotStarted),
       last_finished_reason_(
           ServiceWorkerInstalledScriptReader::FinishedReason::kNotFinished) {
   DCHECK(ServiceWorkerVersion::IsInstalled(owner_->status()));
-  DCHECK_NE(kInvalidServiceWorkerResourceId, main_script_id_);
+  DCHECK_NE(ServiceWorkerConsts::kInvalidServiceWorkerResourceId,
+            main_script_id_);
 }
 
 ServiceWorkerInstalledScriptsSender::~ServiceWorkerInstalledScriptsSender() {}
@@ -47,15 +48,16 @@ ServiceWorkerInstalledScriptsSender::CreateInfoAndBind() {
       << "At least the main script should be installed.";
 
   auto info = blink::mojom::ServiceWorkerInstalledScriptsInfo::New();
-  info->manager_request = mojo::MakeRequest(&manager_);
+  info->manager_receiver = manager_.BindNewPipeAndPassReceiver();
   info->installed_urls = std::move(installed_urls);
-  binding_.Bind(mojo::MakeRequest(&info->manager_host_ptr));
+  receiver_.Bind(info->manager_host_remote.InitWithNewPipeAndPassReceiver());
   return info;
 }
 
 void ServiceWorkerInstalledScriptsSender::Start() {
   DCHECK_EQ(State::kNotStarted, state_);
-  DCHECK_NE(kInvalidServiceWorkerResourceId, main_script_id_);
+  DCHECK_NE(ServiceWorkerConsts::kInvalidServiceWorkerResourceId,
+            main_script_id_);
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN1("ServiceWorker",
                                     "ServiceWorkerInstalledScriptsSender", this,
                                     "main_script_url", main_script_url_.spec());
@@ -168,13 +170,21 @@ void ServiceWorkerInstalledScriptsSender::Abort(
         kResponseReaderError:
       owner_->SetStartWorkerStatusCode(
           blink::ServiceWorkerStatusCode::kErrorDiskCache);
-      // Abort the worker by deleting from the registration since the data was
-      // corrupted.
+
+      // Break the Mojo connection with the renderer so the service worker knows
+      // to stop waiting for the script data to arrive and terminate. Note that
+      // DeleteVersion() below sends the Stop IPC, but without breaking the
+      // connection here, the service worker would be blocked waiting for the
+      // script data and won't respond to Stop.
+      manager_.reset();
+      receiver_.reset();
+
+      // Delete the registration data since the data was corrupted.
       if (owner_->context()) {
         ServiceWorkerRegistration* registration =
             owner_->context()->GetLiveRegistration(owner_->registration_id());
-        // This ends up with destructing |this|.
-        registration->DeleteVersion(owner_);
+        // This can destruct |this|.
+        registration->ForceDelete();
       }
       return;
     case ServiceWorkerInstalledScriptReader::FinishedReason::
@@ -182,11 +192,11 @@ void ServiceWorkerInstalledScriptsSender::Abort(
     case ServiceWorkerInstalledScriptReader::FinishedReason::kConnectionError:
     case ServiceWorkerInstalledScriptReader::FinishedReason::
         kMetaDataSenderError:
-      // Notify the renderer that a connection failure happened. Usually the
-      // failure means the renderer gets killed, and the error handler of
-      // EmbeddedWorkerInstance is invoked soon.
+      // Break the Mojo connection with the renderer. This usually causes the
+      // service worker to stop, and the error handler of EmbeddedWorkerInstance
+      // is invoked soon.
       manager_.reset();
-      binding_.Close();
+      receiver_.reset();
       return;
   }
 }
@@ -209,7 +219,7 @@ void ServiceWorkerInstalledScriptsSender::RequestInstalledScript(
   int64_t resource_id =
       owner_->script_cache_map()->LookupResourceId(script_url);
 
-  if (resource_id == kInvalidServiceWorkerResourceId) {
+  if (resource_id == ServiceWorkerConsts::kInvalidServiceWorkerResourceId) {
     mojo::ReportBadMessage("Requested script was not installed.");
     return;
   }

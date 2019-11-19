@@ -16,13 +16,12 @@
 #include "base/strings/string_util.h"
 #include "components/google/core/common/google_util.h"
 #include "components/variations/variations_http_header_provider.h"
-#include "net/http/http_request_headers.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "net/url_request/redirect_info.h"
-#include "net/url_request/url_request.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/resource_response.h"
 #include "services/network/public/cpp/simple_url_loader.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 #include "url/gurl.h"
 
 namespace variations {
@@ -74,26 +73,19 @@ bool ShouldAppendVariationsHeader(const GURL& url) {
   return true;
 }
 
-constexpr network::ResourceRequest* null_resource_request = nullptr;
-constexpr net::URLRequest* null_url_request = nullptr;
-
 class VariationsHeaderHelper {
  public:
   // Note: It's OK to pass SignedIn::kNo if it's unknown, as it does not affect
   // transmission of experiments coming from the variations server.
   VariationsHeaderHelper(network::ResourceRequest* request,
                          SignedIn signed_in = SignedIn::kNo)
-      : VariationsHeaderHelper(request,
-                               null_url_request,
-                               CreateVariationsHeader(signed_in)) {}
-  VariationsHeaderHelper(net::URLRequest* request,
-                         SignedIn signed_in = SignedIn::kNo)
-      : VariationsHeaderHelper(null_resource_request,
-                               request,
-                               CreateVariationsHeader(signed_in)) {}
-  VariationsHeaderHelper(network::ResourceRequest* request,
-                         const std::string& variations_header)
-      : VariationsHeaderHelper(request, null_url_request, variations_header) {}
+      : VariationsHeaderHelper(request, CreateVariationsHeader(signed_in)) {}
+  VariationsHeaderHelper(network::ResourceRequest* resource_request,
+                         std::string variations_header)
+      : resource_request_(resource_request) {
+    DCHECK(resource_request_);
+    variations_header_ = std::move(variations_header);
+  }
 
   bool AppendHeaderIfNeeded(const GURL& url, InIncognito incognito) {
     // Note the criteria for attaching client experiment headers:
@@ -111,18 +103,10 @@ class VariationsHeaderHelper {
     if (variations_header_.empty())
       return false;
 
-    if (resource_request_) {
-      // Set the variations header to cors_exempt_headers rather than headers
-      // to be exempted from CORS checks.
-      resource_request_->cors_exempt_headers.SetHeaderIfMissing(
-          kClientDataHeader, variations_header_);
-    } else if (url_request_) {
-      url_request_->SetExtraRequestHeaderByName(kClientDataHeader,
-                                                variations_header_, false);
-    } else {
-      NOTREACHED();
-      return false;
-    }
+    // Set the variations header to cors_exempt_headers rather than headers
+    // to be exempted from CORS checks.
+    resource_request_->cors_exempt_headers.SetHeaderIfMissing(
+        kClientDataHeader, variations_header_);
     return true;
   }
 
@@ -132,16 +116,7 @@ class VariationsHeaderHelper {
         signed_in == SignedIn::kYes);
   }
 
-  VariationsHeaderHelper(network::ResourceRequest* resource_request,
-                         net::URLRequest* url_request,
-                         std::string variations_header)
-      : resource_request_(resource_request), url_request_(url_request) {
-    DCHECK(resource_request_ || url_request_);
-    variations_header_ = std::move(variations_header);
-  }
-
   network::ResourceRequest* resource_request_;
-  net::URLRequest* url_request_;
   std::string variations_header_;
 
   DISALLOW_COPY_AND_ASSIGN(VariationsHeaderHelper);
@@ -153,14 +128,6 @@ bool AppendVariationsHeader(const GURL& url,
                             InIncognito incognito,
                             SignedIn signed_in,
                             network::ResourceRequest* request) {
-  return VariationsHeaderHelper(request, signed_in)
-      .AppendHeaderIfNeeded(url, incognito);
-}
-
-bool AppendVariationsHeader(const GURL& url,
-                            InIncognito incognito,
-                            SignedIn signed_in,
-                            net::URLRequest* request) {
   return VariationsHeaderHelper(request, signed_in)
       .AppendHeaderIfNeeded(url, incognito);
 }
@@ -179,24 +146,12 @@ bool AppendVariationsHeaderUnknownSignedIn(const GURL& url,
   return VariationsHeaderHelper(request).AppendHeaderIfNeeded(url, incognito);
 }
 
-bool AppendVariationsHeaderUnknownSignedIn(const GURL& url,
-                                           InIncognito incognito,
-                                           net::URLRequest* request) {
-  return VariationsHeaderHelper(request).AppendHeaderIfNeeded(url, incognito);
-}
-
 void RemoveVariationsHeaderIfNeeded(
     const net::RedirectInfo& redirect_info,
-    const network::ResourceResponseHead& response_head,
+    const network::mojom::URLResponseHead& response_head,
     std::vector<std::string>* to_be_removed_headers) {
   if (!ShouldAppendVariationsHeader(redirect_info.new_url))
     to_be_removed_headers->push_back(kClientDataHeader);
-}
-
-void StripVariationsHeaderIfNeeded(const GURL& new_location,
-                                   net::URLRequest* request) {
-  if (!ShouldAppendVariationsHeader(new_location))
-    request->RemoveRequestHeaderByName(kClientDataHeader);
 }
 
 std::unique_ptr<network::SimpleURLLoader>

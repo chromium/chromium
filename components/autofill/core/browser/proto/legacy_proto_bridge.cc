@@ -56,6 +56,7 @@ AutofillQueryResponseContents::Field CreateLegacyFieldFromApiField(
 AutofillPageQueryRequest CreateApiRequestFromLegacyRequest(
     const AutofillQueryContents& legacy_request) {
   AutofillPageQueryRequest api_request;
+  *api_request.mutable_experiments() = legacy_request.experiments();
   api_request.set_client_version(legacy_request.client_version());
   for (const auto& legacy_form : legacy_request.form()) {
     *api_request.add_forms() = CreateApiFormFromLegacyForm(legacy_form);

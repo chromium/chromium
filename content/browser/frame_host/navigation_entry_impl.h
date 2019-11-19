@@ -7,20 +7,21 @@
 
 #include <stdint.h>
 
-#include <map>
 #include <memory>
 #include <string>
 #include <vector>
 
+#include "base/containers/flat_map.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/optional.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "content/browser/frame_host/back_forward_cache_metrics.h"
 #include "content/browser/frame_host/frame_navigation_entry.h"
 #include "content/browser/frame_host/frame_tree_node.h"
 #include "content/browser/site_instance_impl.h"
-#include "content/common/frame_message_enums.h"
+#include "content/common/navigation_params.mojom.h"
 #include "content/public/browser/favicon_status.h"
 #include "content/public/browser/global_request_id.h"
 #include "content/public/browser/navigation_entry.h"
@@ -30,18 +31,18 @@
 #include "content/public/browser/ssl_status.h"
 #include "content/public/common/page_state.h"
 #include "content/public/common/previews_state.h"
+#include "url/origin.h"
 
 namespace content {
-struct CommonNavigationParams;
-struct CommitNavigationParams;
+
+class BundledExchangesNavigationInfo;
 
 class CONTENT_EXPORT NavigationEntryImpl : public NavigationEntry {
  public:
   // Represents a tree of FrameNavigationEntries that make up this joint session
-  // history item.  The tree currently only tracks the main frame by default,
-  // and is populated with subframe nodes in --site-per-process mode.
+  // history item.
   struct TreeNode {
-    TreeNode(TreeNode* parent, FrameNavigationEntry* frame_entry);
+    TreeNode(TreeNode* parent, scoped_refptr<FrameNavigationEntry> frame_entry);
     ~TreeNode();
 
     // Returns whether this TreeNode corresponds to |frame_tree_node|.  If this
@@ -58,7 +59,7 @@ class CONTENT_EXPORT NavigationEntryImpl : public NavigationEntry {
     // TODO(creis): For --site-per-process, share FrameNavigationEntries between
     // NavigationEntries of the same tab.
     std::unique_ptr<TreeNode> CloneAndReplace(
-        FrameNavigationEntry* frame_navigation_entry,
+        scoped_refptr<FrameNavigationEntry> frame_navigation_entry,
         bool clone_children_of_target,
         FrameTreeNode* target_frame_tree_node,
         FrameTreeNode* current_frame_tree_node,
@@ -89,6 +90,7 @@ class CONTENT_EXPORT NavigationEntryImpl : public NavigationEntry {
       scoped_refptr<SiteInstanceImpl> instance,
       const GURL& url,
       const Referrer& referrer,
+      const base::Optional<url::Origin>& initiator_origin,
       const base::string16& title,
       ui::PageTransition transition_type,
       bool is_renderer_initiated,
@@ -138,10 +140,6 @@ class CONTENT_EXPORT NavigationEntryImpl : public NavigationEntry {
   base::Time GetTimestamp() override;
   void SetCanLoadLocalResources(bool allow) override;
   bool GetCanLoadLocalResources() override;
-  void SetExtraData(const std::string& key,
-                    const base::string16& data) override;
-  bool GetExtraData(const std::string& key, base::string16* data) override;
-  void ClearExtraData(const std::string& key) override;
   void SetHttpStatusCode(int http_status_code) override;
   int GetHttpStatusCode() override;
   void SetRedirectChain(const std::vector<GURL>& redirects) override;
@@ -151,6 +149,7 @@ class CONTENT_EXPORT NavigationEntryImpl : public NavigationEntry {
   bool IsRestored() override;
   std::string GetExtraHeaders() override;
   void AddExtraHeaders(const std::string& extra_headers) override;
+  int64_t GetMainFrameDocumentSequenceNumber() override;
 
   // Creates a copy of this NavigationEntryImpl that can be modified
   // independently from the original.  Does not copy any value that would be
@@ -170,29 +169,29 @@ class CONTENT_EXPORT NavigationEntryImpl : public NavigationEntry {
   // that shares the existing FrameNavigationEntries (for use within the same
   // tab) and one that draws them from a different pool (for use in a new tab).
   std::unique_ptr<NavigationEntryImpl> CloneAndReplace(
-      FrameNavigationEntry* frame_entry,
+      scoped_refptr<FrameNavigationEntry> frame_entry,
       bool clone_children_of_target,
       FrameTreeNode* target_frame_tree_node,
       FrameTreeNode* root_frame_tree_node) const;
 
   // Helper functions to construct NavigationParameters for a navigation to this
   // NavigationEntry.
-  CommonNavigationParams ConstructCommonNavigationParams(
+  mojom::CommonNavigationParamsPtr ConstructCommonNavigationParams(
       const FrameNavigationEntry& frame_entry,
       const scoped_refptr<network::ResourceRequestBody>& post_body,
       const GURL& dest_url,
-      const Referrer& dest_referrer,
-      FrameMsg_Navigate_Type::Value navigation_type,
+      blink::mojom::ReferrerPtr dest_referrer,
+      mojom::NavigationType navigation_type,
       PreviewsState previews_state,
       base::TimeTicks navigation_start,
-      base::TimeTicks input_start);
-  CommitNavigationParams ConstructCommitNavigationParams(
+      base::TimeTicks input_start,
+      const blink::FramePolicy& frame_policy);
+  mojom::CommitNavigationParamsPtr ConstructCommitNavigationParams(
       const FrameNavigationEntry& frame_entry,
       const GURL& original_url,
       const base::Optional<url::Origin>& origin_to_commit,
       const std::string& original_method,
-      bool is_history_navigation_in_new_child,
-      const std::map<std::string, bool>& subframe_unique_names,
+      const base::flat_map<std::string, bool>& subframe_unique_names,
       bool intended_as_new_entry,
       int pending_offset_to_send,
       int current_offset_to_send,
@@ -209,9 +208,7 @@ class CONTENT_EXPORT NavigationEntryImpl : public NavigationEntry {
   // In default Chrome, this tree only has a root node with an unshared
   // FrameNavigationEntry.  Subframes are only added to the tree if the
   // --site-per-process flag is passed.
-  TreeNode* root_node() const {
-    return frame_tree_.get();
-  }
+  TreeNode* root_node() const { return frame_tree_.get(); }
 
   // Finds the TreeNode associated with |frame_tree_node|, if any.
   NavigationEntryImpl::TreeNode* GetTreeNode(
@@ -232,6 +229,7 @@ class CONTENT_EXPORT NavigationEntryImpl : public NavigationEntry {
       const GURL& url,
       const base::Optional<url::Origin>& origin,
       const Referrer& referrer,
+      const base::Optional<url::Origin>& initiator_origin,
       const std::vector<GURL>& redirect_chain,
       const PageState& page_state,
       const std::string& method,
@@ -253,7 +251,7 @@ class CONTENT_EXPORT NavigationEntryImpl : public NavigationEntry {
   // same-process PageStates for the whole subtree, so that the renderer process
   // only needs to ask the browser process to handle the cross-process cases.
   // See https://crbug.com/639842.
-  std::map<std::string, bool> GetSubframeUniqueNames(
+  base::flat_map<std::string, bool> GetSubframeUniqueNames(
       FrameTreeNode* frame_tree_node) const;
 
   // Removes any subframe FrameNavigationEntries that match the unique name of
@@ -267,9 +265,7 @@ class CONTENT_EXPORT NavigationEntryImpl : public NavigationEntry {
   void RemoveEntryForFrame(FrameTreeNode* frame_tree_node,
                            bool only_if_different_position);
 
-  void set_unique_id(int unique_id) {
-    unique_id_ = unique_id;
-  }
+  void set_unique_id(int unique_id) { unique_id_ = unique_id; }
 
   void set_started_from_context_menu(bool started_from_context_menu) {
     started_from_context_menu_ = started_from_context_menu;
@@ -303,17 +299,11 @@ class CONTENT_EXPORT NavigationEntryImpl : public NavigationEntry {
   // of commit, to ensure that we do not grant it additional bindings if we
   // navigate back to it in the future.  This can only be changed once.
   void SetBindings(int bindings);
-  int bindings() const {
-    return bindings_;
-  }
+  int bindings() const { return bindings_; }
 
-  void set_page_type(PageType page_type) {
-    page_type_ = page_type;
-  }
+  void set_page_type(PageType page_type) { page_type_ = page_type; }
 
-  bool has_virtual_url() const {
-    return !virtual_url_.is_empty();
-  }
+  bool has_virtual_url() const { return !virtual_url_.is_empty(); }
 
   bool update_virtual_url_with_url() const {
     return update_virtual_url_with_url_;
@@ -326,18 +316,14 @@ class CONTENT_EXPORT NavigationEntryImpl : public NavigationEntry {
   void set_extra_headers(const std::string& extra_headers) {
     extra_headers_ = extra_headers;
   }
-  const std::string& extra_headers() const {
-    return extra_headers_;
-  }
+  const std::string& extra_headers() const { return extra_headers_; }
 
   // Whether this (pending) navigation is renderer-initiated.  Resets to false
   // for all types of navigations after commit.
   void set_is_renderer_initiated(bool is_renderer_initiated) {
     is_renderer_initiated_ = is_renderer_initiated;
   }
-  bool is_renderer_initiated() const {
-    return is_renderer_initiated_;
-  }
+  bool is_renderer_initiated() const { return is_renderer_initiated_; }
 
   void set_user_typed_url(const GURL& user_typed_url) {
     user_typed_url_ = user_typed_url;
@@ -345,12 +331,8 @@ class CONTENT_EXPORT NavigationEntryImpl : public NavigationEntry {
 
   // The RestoreType for this entry. This is set if the entry was retored. This
   // is set to RestoreType::NONE once the entry is loaded.
-  void set_restore_type(RestoreType type) {
-    restore_type_ = type;
-  }
-  RestoreType restore_type() const {
-    return restore_type_;
-  }
+  void set_restore_type(RestoreType type) { restore_type_ = type; }
+  RestoreType restore_type() const { return restore_type_; }
 
   // The ReloadType for this entry.  This is set when a reload is requested.
   // This is set to ReloadType::NONE if the entry isn't for a reload, or once
@@ -360,9 +342,7 @@ class CONTENT_EXPORT NavigationEntryImpl : public NavigationEntry {
 
   // Whether this (pending) navigation needs to replace current entry.
   // Resets to false after commit.
-  bool should_replace_entry() const {
-    return should_replace_entry_;
-  }
+  bool should_replace_entry() const { return should_replace_entry_; }
 
   void set_should_replace_entry(bool should_replace_entry) {
     should_replace_entry_ = should_replace_entry;
@@ -370,18 +350,14 @@ class CONTENT_EXPORT NavigationEntryImpl : public NavigationEntry {
 
   // Whether this (pending) navigation should clear the session history. Resets
   // to false after commit.
-  bool should_clear_history_list() const {
-    return should_clear_history_list_;
-  }
+  bool should_clear_history_list() const { return should_clear_history_list_; }
   void set_should_clear_history_list(bool should_clear_history_list) {
     should_clear_history_list_ = should_clear_history_list;
   }
 
   // Indicates which FrameTreeNode to navigate.  Currently only used if the
   // --site-per-process flag is passed.
-  int frame_tree_node_id() const {
-    return frame_tree_node_id_;
-  }
+  int frame_tree_node_id() const { return frame_tree_node_id_; }
   void set_frame_tree_node_id(int frame_tree_node_id) {
     frame_tree_node_id_ = frame_tree_node_id;
   }
@@ -394,12 +370,20 @@ class CONTENT_EXPORT NavigationEntryImpl : public NavigationEntry {
   void set_ssl_error(bool error) { ssl_error_ = error; }
   bool ssl_error() const { return ssl_error_; }
 
-  bool has_user_gesture() const {
-    return has_user_gesture_;
-  }
+  bool has_user_gesture() const { return has_user_gesture_; }
 
   void set_has_user_gesture(bool has_user_gesture) {
     has_user_gesture_ = has_user_gesture;
+  }
+
+  void set_network_isolation_key(
+      const net::NetworkIsolationKey& network_isolation_key) {
+    network_isolation_key_ = network_isolation_key;
+  }
+
+  const base::Optional<net::NetworkIsolationKey>& network_isolation_key()
+      const {
+    return network_isolation_key_;
   }
 
   // Stores a record of the what was committed in this NavigationEntry's main
@@ -416,6 +400,22 @@ class CONTENT_EXPORT NavigationEntryImpl : public NavigationEntry {
   void set_should_skip_on_back_forward_ui(bool should_skip) {
     should_skip_on_back_forward_ui_ = should_skip;
   }
+
+  BackForwardCacheMetrics* back_forward_cache_metrics() {
+    return back_forward_cache_metrics_.get();
+  }
+
+  void set_back_forward_cache_metrics(
+      scoped_refptr<BackForwardCacheMetrics> metrics) {
+    DCHECK(metrics);
+    DCHECK(!back_forward_cache_metrics_);
+    back_forward_cache_metrics_ = metrics;
+  }
+
+  void set_bundled_exchanges_navigation_info(
+      std::unique_ptr<BundledExchangesNavigationInfo>
+          bundled_exchanges_navigation_info);
+  BundledExchangesNavigationInfo* bundled_exchanges_navigation_info() const;
 
  private:
   // WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING
@@ -519,14 +519,15 @@ class CONTENT_EXPORT NavigationEntryImpl : public NavigationEntry {
   // Determine if the navigation was started within a context menu.
   bool started_from_context_menu_;
 
-  // Used to store extra data to support browser features. This member is not
-  // persisted, unless specific data is taken out/put back in at save/restore
-  // time (see TabNavigation for an example of this).
-  std::map<std::string, base::string16> extra_data_;
-
   // Set to true if the navigation controller gets notified about a SSL error
   // for a pending navigation. Defaults to false.
   bool ssl_error_;
+
+  // The network isolation key for this NavigationEntry. If provided, this
+  // determines the network isolation key to be used when navigating to this
+  // NavigationEntry; otherwise, the key is determined based on the navigating
+  // frame and top frame origins.  For example, this is used for view-source.
+  base::Optional<net::NetworkIsolationKey> network_isolation_key_;
 
   // Stores information about the entry prior to being replaced (e.g.
   // history.replaceState()). It is preserved after commit (session sync for
@@ -546,6 +547,21 @@ class CONTENT_EXPORT NavigationEntryImpl : public NavigationEntry {
   // navigations.
   // TODO(shivanisha): Persist this field once the intervention is stable.
   bool should_skip_on_back_forward_ui_;
+
+  // TODO(altimin, crbug.com/933147): Remove this logic after we are done
+  // with implement back-forward cache.
+  // It is preserved at commit but not persisted.
+  scoped_refptr<BackForwardCacheMetrics> back_forward_cache_metrics_;
+
+  // Keeps the bundled exchanges related information when |this| is for a
+  // navigation within a bundled exchanges file. Used when
+  // BundledHTTPExchanges feature is enabled or
+  // TrustableBundledExchangesFileUrl switch is set.
+  // TODO(995177): Support Session/Tab restore.
+  // TODO(995177): Consider if this should be here or in FrameNavigationEntry
+  // for a correct iframe support.
+  std::unique_ptr<BundledExchangesNavigationInfo>
+      bundled_exchanges_navigation_info_;
 
   DISALLOW_COPY_AND_ASSIGN(NavigationEntryImpl);
 };

@@ -2,7 +2,6 @@
 <script src="../resources/gc.js"></script>
 <script src="../resources/testharness.js"></script>
 <script src="../resources/testharnessreport.js"></script>
-<script src="../resources/run-after-layout-and-paint.js"></script>
 <script src="../http/tests/resources/permissions-helper.js"></script>
 <script src="resources/aom-helper.js"></script>
 
@@ -14,7 +13,7 @@ Spec: https://wicg.github.io/aom/spec/
 
 -->
 <script>
-test_after_layout_and_paint(function(t) {
+test(function(t) {
     assert_true(internals.runtimeFlags.accessibilityObjectModelEnabled);
 }, "Make sure that Accessibility Object Model is enabled");
 </script>
@@ -22,7 +21,7 @@ test_after_layout_and_paint(function(t) {
 <input id="scroll_target" style="margin-top: 1000px;">
 
 <script>
-async_test_after_layout_and_paint(function(t) {
+async_test(function(t) {
   enableAccessibilityEventsPermission().then(function() {
     var target = document.getElementById("scroll_target");
     var axTarget = accessibilityController.accessibleElementById("scroll_target");

@@ -3,27 +3,30 @@
 # found in the LICENSE file.
 
 import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/polymer/polymer.gni")
 
 js_type_check("closure_compile") {
+  is_polymer3 = true
   deps = [
     ":database_tab",
     ":discards",
+    ":discards_main",
     ":discards_tab",
     ":graph_doc",
-    ":graph_tab",
-  ]
-}
-
-js_library("sorted_table_behavior") {
-  deps = [
-    "//ui/webui/resources/js:assert",
+    ":graph_tab_template",
+    ":mojo_api",
   ]
 }
 
 js_library("discards") {
   deps = [
-    "//ui/webui/resources/js:assert",
-    "//ui/webui/resources/js:cr",
+    "//chrome/browser/ui/webui/discards:mojo_bindings_js_library_for_compile",
+  ]
+}
+
+js_library("discards_main") {
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
 }
 
@@ -32,8 +35,8 @@ js_library("database_tab") {
     ":discards",
     ":sorted_table_behavior",
     "//chrome/browser/ui/webui/discards:mojo_bindings_js_library_for_compile",
-    "//ui/webui/resources/js:assert",
-    "//ui/webui/resources/js:cr",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/js:assert.m",
   ]
 }
 
@@ -42,27 +45,31 @@ js_library("discards_tab") {
     ":discards",
     ":sorted_table_behavior",
     "//chrome/browser/ui/webui/discards:mojo_bindings_js_library_for_compile",
-    "//ui/webui/resources/js:assert",
-    "//ui/webui/resources/js:icon",
-    "//ui/webui/resources/js:util",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:icon.m",
   ]
 }
 
-js_library("graph_tab") {
+js_library("graph_tab_template") {
   deps = [
     "//chrome/browser/ui/webui/discards:mojo_bindings_js_library_for_compile",
-    "//services/resource_coordinator/public/mojom:mojom_js_library_for_compile",
-    "//ui/webui/resources/js:assert",
-    "//ui/webui/resources/js:cr",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
 }
 
 js_library("graph_doc") {
   deps = [
-    "//services/resource_coordinator/public/mojom:mojom_js_library_for_compile",
+    "//chrome/browser/ui/webui/discards:mojo_bindings_js_library_for_compile",
   ]
 
   externs_list = [ "../../../../third_party/d3/src/externs.js" ]
+}
+
+js_library("mojo_api") {
+}
+
+js_library("sorted_table_behavior") {
 }
 
 # This action merges the graph tab script into the graph_doc HTML template.
@@ -76,19 +83,63 @@ action("generate_graph_tab") {
     "graph_tab_template.html",
   ]
   outputs = [
-    "$target_gen_dir/graph_tab.html",
+    "$target_gen_dir/graph_tab.js",
   ]
 
   args = rebase_path(outputs) + rebase_path([
                                               "graph_doc_template.html",
                                               "graph_doc.js",
-                                              "graph_tab_template.html",
-                                            ])
+                                            ]) +
+         rebase_path([ "$target_gen_dir/graph_tab_template.js" ])
+  deps = [
+    ":graph_tab_module",
+  ]
 }
 
 # Action with a transparent name.
 group("discards_resources_gen") {
   deps = [
     ":generate_graph_tab",
+    ":polymer3_elements",
   ]
+}
+
+group("polymer3_elements") {
+  deps = [
+    ":database_tab_module",
+    ":discards_main_module",
+    ":discards_tab_module",
+    ":graph_doc_module",
+    ":graph_tab_module",
+  ]
+}
+
+polymer_modulizer("database_tab") {
+  html_file = "database_tab.html"
+  js_file = "database_tab.js"
+  html_type = "v3-ready"
+}
+
+polymer_modulizer("discards_main") {
+  html_file = "discards_main.html"
+  js_file = "discards_main.js"
+  html_type = "v3-ready"
+}
+
+polymer_modulizer("discards_tab") {
+  html_file = "discards_tab.html"
+  js_file = "discards_tab.js"
+  html_type = "v3-ready"
+}
+
+polymer_modulizer("graph_doc") {
+  html_file = "graph_doc_template.html"
+  js_file = "graph_doc.js"
+  html_type = "v3-ready"
+}
+
+polymer_modulizer("graph_tab") {
+  html_file = "graph_tab_template.html"
+  js_file = "graph_tab_template.js"
+  html_type = "v3-ready"
 }

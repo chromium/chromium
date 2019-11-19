@@ -11,15 +11,18 @@
 #import "base/mac/foundation_util.h"
 #include "base/macros.h"
 #include "base/strings/sys_string_conversions.h"
+#include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/google/core/common/google_util.h"
 #include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
-#include "components/signin/core/browser/account_consistency_method.h"
 #include "components/signin/core/browser/account_reconcilor.h"
 #include "components/signin/core/browser/signin_header_helper.h"
+#include "components/signin/public/base/account_consistency_method.h"
+#include "components/signin/public/identity_manager/accounts_cookie_mutator.h"
+#include "ios/web/common/web_view_creation_util.h"
 #include "ios/web/public/browser_state.h"
-#include "ios/web/public/web_state/web_state_policy_decider.h"
-#include "ios/web/public/web_view_creation_util.h"
+#import "ios/web/public/navigation/web_state_policy_decider.h"
 #include "net/base/mac/url_conversions.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "url/gurl.h"
@@ -42,7 +45,8 @@ NSString* const kChromeConnectedCookieTemplate =
      "document.cookie=\"X-CHROME-CONNECTED=; path=/; domain=\" + domain + \";"
      " expires=Thu, 01-Jan-1970 00:00:01 GMT\";"
      "document.cookie=\"CHROME_CONNECTED=%@; path=/; domain=\" + domain + \";"
-     " expires=\" + new Date(%f).toGMTString() + \"; secure;\"</script></html>";
+     " expires=\" + new Date(%f).toGMTString() + \"; secure;"
+     " samesite=lax;\"</script></html>";
 
 // WebStatePolicyDecider that monitors the HTTP headers on Gaia responses,
 // reacting on the X-Chrome-Manage-Accounts header and notifying its delegate.
@@ -122,7 +126,6 @@ bool AccountConsistencyHandler::ShouldAllowResponse(NSURLResponse* response,
       [delegate_ onAddAccount];
       break;
     case signin::GAIA_SERVICE_TYPE_SIGNOUT:
-    case signin::GAIA_SERVICE_TYPE_REAUTH:
     case signin::GAIA_SERVICE_TYPE_DEFAULT:
       [delegate_ onManageAccounts];
       break;
@@ -220,7 +223,7 @@ AccountConsistencyService::AccountConsistencyService(
     PrefService* prefs,
     AccountReconcilor* account_reconcilor,
     scoped_refptr<content_settings::CookieSettings> cookie_settings,
-    identity::IdentityManager* identity_manager)
+    signin::IdentityManager* identity_manager)
     : browser_state_(browser_state),
       prefs_(prefs),
       account_reconcilor_(account_reconcilor),
@@ -368,7 +371,7 @@ void AccountConsistencyService::ApplyCookieRequests() {
         FinishedApplyingCookieRequest(false);
         return;
       }
-      // Create expiration date of Now+2y to roughly follow the APISID cookie.
+      // Create expiration date of Now+2y to roughly follow the SAPISID cookie.
       expiration_date =
           (base::Time::Now() + base::TimeDelta::FromDays(730)).ToJsTime();
       break;
@@ -468,10 +471,10 @@ void AccountConsistencyService::OnBrowsingDataRemoved() {
   base::DictionaryValue dict;
   prefs_->Set(kDomainsWithCookiePref, dict);
 
-  // APISID cookie has been removed, notify the GCMS.
+  // SAPISID cookie has been removed, notify the GCMS.
   // TODO(https://crbug.com/930582) : Remove the need to expose this method
   // or move it to the network::CookieManager.
-  identity_manager_->ForceTriggerOnCookieChange();
+  identity_manager_->GetAccountsCookieMutator()->ForceTriggerOnCookieChange();
 }
 
 void AccountConsistencyService::OnPrimaryAccountSet(
@@ -487,7 +490,7 @@ void AccountConsistencyService::OnPrimaryAccountCleared(
 }
 
 void AccountConsistencyService::OnAccountsInCookieUpdated(
-    const identity::AccountsInCookieJarInfo& accounts_in_cookie_jar_info,
+    const signin::AccountsInCookieJarInfo& accounts_in_cookie_jar_info,
     const GoogleServiceAuthError& error) {
   AddChromeConnectedCookies();
 }

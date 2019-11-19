@@ -21,7 +21,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/test/integration/sync_datatype_helper.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
-#include "components/browser_sync/profile_sync_service.h"
 #include "components/history/core/browser/history_backend.h"
 #include "components/history/core/browser/history_backend_observer.h"
 #include "components/history/core/browser/history_database.h"
@@ -388,19 +387,22 @@ void ExpireHistoryBetween(int index,
 }
 
 void DeleteUrlFromHistory(int index, const GURL& url) {
-  GetHistoryServiceFromClient(index)->DeleteURL(url);
+  GetHistoryServiceFromClient(index)->DeleteURLs({url});
+
   if (test()->use_verifier())
-    HistoryServiceFactory::GetForProfile(
-        test()->verifier(), ServiceAccessType::IMPLICIT_ACCESS)->DeleteURL(url);
+    HistoryServiceFactory::GetForProfile(test()->verifier(),
+                                         ServiceAccessType::IMPLICIT_ACCESS)
+        ->DeleteURLs({url});
+
   WaitForHistoryDBThread(index);
 }
 
 void DeleteUrlsFromHistory(int index, const std::vector<GURL>& urls) {
-  GetHistoryServiceFromClient(index)->DeleteURLsForTest(urls);
+  GetHistoryServiceFromClient(index)->DeleteURLs(urls);
   if (test()->use_verifier())
     HistoryServiceFactory::GetForProfile(test()->verifier(),
                                          ServiceAccessType::IMPLICIT_ACCESS)
-        ->DeleteURLsForTest(urls);
+        ->DeleteURLs(urls);
   WaitForHistoryDBThread(index);
 }
 
@@ -557,12 +559,10 @@ ProfilesHaveSameTypedURLsChecker::ProfilesHaveSameTypedURLsChecker()
     : MultiClientStatusChangeChecker(
           sync_datatype_helper::test()->GetSyncServices()) {}
 
-bool ProfilesHaveSameTypedURLsChecker::IsExitConditionSatisfied() {
+bool ProfilesHaveSameTypedURLsChecker::IsExitConditionSatisfied(
+    std::ostream* os) {
+  *os << "Waiting for matching typed urls profiles";
   return typed_urls_helper::CheckAllProfilesHaveSameTypedURLs();
-}
-
-std::string ProfilesHaveSameTypedURLsChecker::GetDebugMessage() const {
-  return "Waiting for matching typed urls profiles";
 }
 
 TypedURLChecker::TypedURLChecker(int index, const std::string& url)
@@ -573,7 +573,9 @@ TypedURLChecker::TypedURLChecker(int index, const std::string& url)
 
 TypedURLChecker::~TypedURLChecker() {}
 
-bool TypedURLChecker::IsExitConditionSatisfied() {
+bool TypedURLChecker::IsExitConditionSatisfied(std::ostream* os) {
+  *os << "Waiting for data for url '" << url_ << "' to be populated.";
+
   history::URLRows rows = typed_urls_helper::GetTypedUrlsFromClient(index_);
 
   for (auto row : rows) {
@@ -581,8 +583,4 @@ bool TypedURLChecker::IsExitConditionSatisfied() {
       return true;
   }
   return false;
-}
-
-std::string TypedURLChecker::GetDebugMessage() const {
-  return "Waiting for data for url '" + url_ + "' to be populated.";
 }

@@ -3,53 +3,56 @@
 // found in the LICENSE file.
 
 #include "chromeos/services/assistant/platform/network_provider_impl.h"
-#include "base/bind.h"
 
-using assistant_client::NetworkProvider;
+#include <algorithm>
+
+#include "base/bind.h"
+#include "chromeos/services/network_config/public/mojom/constants.mojom.h"
+#include "chromeos/services/network_config/public/mojom/cros_network_config.mojom-forward.h"
+
 using ConnectionStatus = assistant_client::NetworkProvider::ConnectionStatus;
+using NetworkStatePropertiesPtr =
+    chromeos::network_config::mojom::NetworkStatePropertiesPtr;
+using ConnectionStateType =
+    chromeos::network_config::mojom::ConnectionStateType;
 
 namespace chromeos {
 namespace assistant {
 
-NetworkProviderImpl::NetworkProviderImpl(
-    network::NetworkConnectionTracker* network_connection_tracker)
-    : network_connection_tracker_(network_connection_tracker),
-      weak_factory_(this) {
-  if (network_connection_tracker_) {
-    network_connection_tracker_->AddNetworkConnectionObserver(this);
-    network_connection_tracker_->GetConnectionType(
-        &connection_type_,
-        base::BindOnce(&NetworkProviderImpl::OnConnectionChanged,
-                       weak_factory_.GetWeakPtr()));
-  }
+NetworkProviderImpl::NetworkProviderImpl(mojom::Client* client)
+    : connection_status_(ConnectionStatus::UNKNOWN) {
+  if (!client)
+    return;
+  client->RequestNetworkConfig(
+      cros_network_config_remote_.BindNewPipeAndPassReceiver());
+  cros_network_config_remote_->AddObserver(
+      receiver_.BindNewPipeAndPassRemote());
+  cros_network_config_remote_->GetNetworkStateList(
+      network_config::mojom::NetworkFilter::New(
+          network_config::mojom::FilterType::kActive,
+          network_config::mojom::NetworkType::kAll,
+          network_config::mojom::kNoLimit),
+      base::BindOnce(&NetworkProviderImpl::OnActiveNetworksChanged,
+                     base::Unretained(this)));
 }
 
-NetworkProviderImpl::~NetworkProviderImpl() {
-  if (network_connection_tracker_)
-    network_connection_tracker_->RemoveNetworkConnectionObserver(this);
-}
+NetworkProviderImpl::~NetworkProviderImpl() = default;
 
-void NetworkProviderImpl::OnConnectionChanged(
-    network::mojom::ConnectionType type) {
-  connection_type_ = type;
+void NetworkProviderImpl::OnActiveNetworksChanged(
+    std::vector<network_config::mojom::NetworkStatePropertiesPtr> networks) {
+  const bool is_any_network_online =
+      std::any_of(networks.begin(), networks.end(), [](const auto& network) {
+        return network->connection_state == ConnectionStateType::kOnline;
+      });
+
+  if (is_any_network_online)
+    connection_status_ = ConnectionStatus::CONNECTED;
+  else
+    connection_status_ = ConnectionStatus::DISCONNECTED_FROM_INTERNET;
 }
 
 ConnectionStatus NetworkProviderImpl::GetConnectionStatus() {
-  // TODO(updowndota): Check actual internect connectivity in addition to the
-  // physical connectivity.
-  switch (connection_type_) {
-    case network::mojom::ConnectionType::CONNECTION_UNKNOWN:
-      return ConnectionStatus::UNKNOWN;
-    case network::mojom::ConnectionType::CONNECTION_ETHERNET:
-    case network::mojom::ConnectionType::CONNECTION_WIFI:
-    case network::mojom::ConnectionType::CONNECTION_2G:
-    case network::mojom::ConnectionType::CONNECTION_3G:
-    case network::mojom::ConnectionType::CONNECTION_4G:
-    case network::mojom::ConnectionType::CONNECTION_BLUETOOTH:
-      return ConnectionStatus::CONNECTED;
-    case network::mojom::ConnectionType::CONNECTION_NONE:
-      return ConnectionStatus::DISCONNECTED_FROM_INTERNET;
-  }
+  return connection_status_;
 }
 
 // Mdns responder is not supported in ChromeOS.

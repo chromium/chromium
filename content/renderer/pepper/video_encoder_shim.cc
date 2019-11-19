@@ -98,18 +98,15 @@ class VideoEncoderShim::EncoderImpl {
   ~EncoderImpl();
 
   void Initialize(const media::VideoEncodeAccelerator::Config& config);
-  void Encode(const scoped_refptr<media::VideoFrame>& frame,
-              bool force_keyframe);
-  void UseOutputBitstreamBuffer(const media::BitstreamBuffer& buffer,
-                                uint8_t* mem);
+  void Encode(scoped_refptr<media::VideoFrame> frame, bool force_keyframe);
+  void UseOutputBitstreamBuffer(media::BitstreamBuffer buffer, uint8_t* mem);
   void RequestEncodingParametersChange(uint32_t bitrate, uint32_t framerate);
   void Stop();
 
  private:
   struct PendingEncode {
-    PendingEncode(const scoped_refptr<media::VideoFrame>& frame,
-                  bool force_keyframe)
-        : frame(frame), force_keyframe(force_keyframe) {}
+    PendingEncode(scoped_refptr<media::VideoFrame> frame, bool force_keyframe)
+        : frame(std::move(frame)), force_keyframe(force_keyframe) {}
     ~PendingEncode() {}
 
     scoped_refptr<media::VideoFrame> frame;
@@ -117,8 +114,9 @@ class VideoEncoderShim::EncoderImpl {
   };
 
   struct BitstreamBuffer {
-    BitstreamBuffer(const media::BitstreamBuffer buffer, uint8_t* mem)
-        : buffer(buffer), mem(mem) {}
+    BitstreamBuffer(media::BitstreamBuffer buffer, uint8_t* mem)
+        : buffer(std::move(buffer)), mem(mem) {}
+    BitstreamBuffer(BitstreamBuffer&&) = default;
     ~BitstreamBuffer() {}
 
     media::BitstreamBuffer buffer;
@@ -238,16 +236,16 @@ void VideoEncoderShim::EncoderImpl::Initialize(const Config& config) {
 }
 
 void VideoEncoderShim::EncoderImpl::Encode(
-    const scoped_refptr<media::VideoFrame>& frame,
+    scoped_refptr<media::VideoFrame> frame,
     bool force_keyframe) {
-  frames_.push_back(PendingEncode(frame, force_keyframe));
+  frames_.push_back(PendingEncode(std::move(frame), force_keyframe));
   DoEncode();
 }
 
 void VideoEncoderShim::EncoderImpl::UseOutputBitstreamBuffer(
-    const media::BitstreamBuffer& buffer,
+    media::BitstreamBuffer buffer,
     uint8_t* mem) {
-  buffers_.push_back(BitstreamBuffer(buffer, mem));
+  buffers_.emplace_back(std::move(buffer), mem);
   DoEncode();
 }
 
@@ -322,7 +320,7 @@ void VideoEncoderShim::EncoderImpl::DoEncode() {
       if (packet->kind != VPX_CODEC_CX_FRAME_PKT)
         continue;
 
-      BitstreamBuffer buffer = buffers_.front();
+      BitstreamBuffer buffer = std::move(buffers_.front());
       buffers_.pop_front();
 
       CHECK(buffer.buffer.size() >= packet->data.frame.sz);
@@ -352,8 +350,7 @@ void VideoEncoderShim::EncoderImpl::NotifyError(
 VideoEncoderShim::VideoEncoderShim(PepperVideoEncoderHost* host)
     : host_(host),
       media_task_runner_(
-          RenderThreadImpl::current()->GetMediaThreadTaskRunner()),
-      weak_ptr_factory_(this) {
+          RenderThreadImpl::current()->GetMediaThreadTaskRunner()) {
   encoder_impl_.reset(new EncoderImpl(weak_ptr_factory_.GetWeakPtr()));
 }
 
@@ -417,24 +414,23 @@ bool VideoEncoderShim::Initialize(
   return true;
 }
 
-void VideoEncoderShim::Encode(const scoped_refptr<media::VideoFrame>& frame,
+void VideoEncoderShim::Encode(scoped_refptr<media::VideoFrame> frame,
                               bool force_keyframe) {
   DCHECK(RenderThreadImpl::current());
 
   media_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&VideoEncoderShim::EncoderImpl::Encode,
-                                base::Unretained(encoder_impl_.get()), frame,
-                                force_keyframe));
+                                base::Unretained(encoder_impl_.get()),
+                                std::move(frame), force_keyframe));
 }
 
-void VideoEncoderShim::UseOutputBitstreamBuffer(
-    const media::BitstreamBuffer& buffer) {
+void VideoEncoderShim::UseOutputBitstreamBuffer(media::BitstreamBuffer buffer) {
   DCHECK(RenderThreadImpl::current());
 
   media_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&VideoEncoderShim::EncoderImpl::UseOutputBitstreamBuffer,
-                     base::Unretained(encoder_impl_.get()), buffer,
+                     base::Unretained(encoder_impl_.get()), std::move(buffer),
                      host_->ShmHandleToAddress(buffer.id())));
 }
 

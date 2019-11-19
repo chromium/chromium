@@ -29,6 +29,7 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/document_encoding_data.h"
 #include "third_party/blink/renderer/core/html/parser/text_resource_decoder.h"
+#include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 
 namespace blink {
 
@@ -55,6 +56,7 @@ std::unique_ptr<TextResourceDecoder> DecodedDataDocumentParser::TakeDecoder() {
 }
 
 void DecodedDataDocumentParser::AppendBytes(const char* data, size_t length) {
+  TRACE_EVENT0("loading", "DecodedDataDocumentParser::AppendBytes");
   if (!length)
     return;
 

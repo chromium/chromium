@@ -9,9 +9,7 @@
 
 #include "base/macros.h"
 #include "base/single_thread_task_runner.h"
-#include "third_party/blink/renderer/platform/bindings/trace_wrapper_member.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
-#include "third_party/blink/renderer/platform/wtf/time.h"
 
 namespace blink {
 
@@ -33,7 +31,7 @@ class DOMTimerCoordinator {
   // Creates and installs a new timer. Returns the assigned ID.
   int InstallNewTimeout(ExecutionContext*,
                         ScheduledAction*,
-                        TimeDelta timeout,
+                        base::TimeDelta timeout,
                         bool single_shot);
 
   // Removes and disposes the timer with the specified ID, if any. This may
@@ -60,7 +58,7 @@ class DOMTimerCoordinator {
  private:
   int NextID();
 
-  using TimeoutMap = HeapHashMap<int, TraceWrapperMember<DOMTimer>>;
+  using TimeoutMap = HeapHashMap<int, Member<DOMTimer>>;
   TimeoutMap timers_;
 
   int circular_sequential_id_;

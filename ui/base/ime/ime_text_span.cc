@@ -9,17 +9,6 @@
 
 namespace ui {
 
-ImeTextSpan::ImeTextSpan() : ImeTextSpan(0, 0, Thickness::kThin) {}
-
-ImeTextSpan::ImeTextSpan(uint32_t start_offset,
-                         uint32_t end_offset,
-                         Thickness thickness)
-    : ImeTextSpan(Type::kComposition,
-                  start_offset,
-                  end_offset,
-                  thickness,
-                  SK_ColorTRANSPARENT) {}
-
 ImeTextSpan::ImeTextSpan(Type type,
                          uint32_t start_offset,
                          uint32_t end_offset,

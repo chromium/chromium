@@ -4,13 +4,19 @@
 
 #include "ash/shelf/shelf_widget.h"
 
+#include "ash/keyboard/ui/keyboard_ui_controller.h"
+#include "ash/keyboard/ui/keyboard_util.h"
+#include "ash/keyboard/ui/test/keyboard_test_util.h"
 #include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/ash_switches.h"
+#include "ash/public/cpp/keyboard/keyboard_switches.h"
+#include "ash/public/cpp/shelf_config.h"
 #include "ash/root_window_controller.h"
+#include "ash/screen_util.h"
 #include "ash/shelf/login_shelf_view.h"
 #include "ash/shelf/shelf.h"
-#include "ash/shelf/shelf_constants.h"
 #include "ash/shelf/shelf_layout_manager.h"
+#include "ash/shelf/shelf_navigation_widget.h"
 #include "ash/shelf/shelf_view.h"
 #include "ash/shelf/shelf_view_test_api.h"
 #include "ash/shell.h"
@@ -26,10 +32,6 @@
 #include "ui/display/display.h"
 #include "ui/events/event_utils.h"
 #include "ui/events/test/event_generator.h"
-#include "ui/keyboard/keyboard_controller.h"
-#include "ui/keyboard/keyboard_util.h"
-#include "ui/keyboard/public/keyboard_switches.h"
-#include "ui/keyboard/test/keyboard_test_util.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 
@@ -59,7 +61,7 @@ using ShelfWidgetTest = AshTestBase;
 
 TEST_F(ShelfWidgetTest, TestAlignment) {
   UpdateDisplay("400x400");
-  const int bottom_inset = 400 - ShelfConstants::shelf_size();
+  const int bottom_inset = 400 - ShelfConfig::Get()->shelf_size();
   {
     SCOPED_TRACE("Single Bottom");
     TestLauncherAlignment(Shell::GetPrimaryRootWindow(), SHELF_ALIGNMENT_BOTTOM,
@@ -80,14 +82,14 @@ TEST_F(ShelfWidgetTest, TestAlignment) {
     SCOPED_TRACE("Single Left");
     TestLauncherAlignment(
         Shell::GetPrimaryRootWindow(), SHELF_ALIGNMENT_LEFT,
-        gfx::Rect(ShelfConstants::shelf_size(), 0, bottom_inset, 400));
+        gfx::Rect(ShelfConfig::Get()->shelf_size(), 0, bottom_inset, 400));
   }
 }
 
 TEST_F(ShelfWidgetTest, TestAlignmentForMultipleDisplays) {
   UpdateDisplay("300x300,500x500");
-  const int shelf_inset_first = 300 - ShelfConstants::shelf_size();
-  const int shelf_inset_second = 500 - ShelfConstants::shelf_size();
+  const int shelf_inset_first = 300 - ShelfConfig::Get()->shelf_size();
+  const int shelf_inset_second = 500 - ShelfConfig::Get()->shelf_size();
   aura::Window::Windows root_windows = Shell::GetAllRootWindows();
   {
     SCOPED_TRACE("Primary Bottom");
@@ -108,7 +110,7 @@ TEST_F(ShelfWidgetTest, TestAlignmentForMultipleDisplays) {
     SCOPED_TRACE("Primary Left");
     TestLauncherAlignment(
         root_windows[0], SHELF_ALIGNMENT_LEFT,
-        gfx::Rect(ShelfConstants::shelf_size(), 0, shelf_inset_first, 300));
+        gfx::Rect(ShelfConfig::Get()->shelf_size(), 0, shelf_inset_first, 300));
   }
   {
     SCOPED_TRACE("Secondary Bottom");
@@ -128,7 +130,7 @@ TEST_F(ShelfWidgetTest, TestAlignmentForMultipleDisplays) {
   {
     SCOPED_TRACE("Secondary Left");
     TestLauncherAlignment(root_windows[1], SHELF_ALIGNMENT_LEFT,
-                          gfx::Rect(300 + ShelfConstants::shelf_size(), 0,
+                          gfx::Rect(300 + ShelfConfig::Get()->shelf_size(), 0,
                                     shelf_inset_second, 500));
   }
 }
@@ -143,9 +145,17 @@ TEST_F(ShelfWidgetTest, LauncherInitiallySized) {
       shelf_widget->status_area_widget()->GetWindowBoundsInScreen().width();
   // Test only makes sense if the status is > 0, which it better be.
   EXPECT_GT(status_width, 0);
-  EXPECT_EQ(status_width,
-            shelf_widget->GetContentsView()->width() -
-                GetPrimaryShelf()->GetShelfViewForTesting()->width());
+
+  const int total_width =
+      screen_util::GetDisplayBoundsWithShelf(shelf_widget->GetNativeWindow())
+          .width();
+  const int nav_width =
+      shelf_widget->navigation_widget()->GetWindowBoundsInScreen().width();
+  const int hotseat_width =
+      shelf_widget->hotseat_widget()->GetWindowBoundsInScreen().width();
+  const int margins = ShelfConfig::Get()->home_button_edge_spacing() +
+                      ShelfConfig::Get()->app_icon_group_margin();
+  EXPECT_EQ(status_width, total_width - nav_width - hotseat_width - margins);
 }
 
 // Verifies when the shell is deleted with a full screen window we don't crash.
@@ -155,7 +165,7 @@ TEST_F(ShelfWidgetTest, DontReferenceShelfAfterDeletion) {
   params.bounds = gfx::Rect(0, 0, 200, 200);
   params.context = CurrentContext();
   // Widget is now owned by the parent window.
-  widget->Init(params);
+  widget->Init(std::move(params));
   widget->SetFullscreen(true);
 }
 
@@ -182,18 +192,36 @@ TEST_F(ShelfWidgetTest, ShelfInitiallySizedAfterLogin) {
   // Simulate login.
   CreateUserSessions(1);
 
+  const int total_width1 =
+      screen_util::GetDisplayBoundsWithShelf(shelf_widget1->GetNativeWindow())
+          .width();
+  const int nav_width1 =
+      shelf_widget1->navigation_widget()->GetWindowBoundsInScreen().width();
+  const int hotseat_width1 =
+      shelf_widget1->hotseat_widget()->GetWindowBoundsInScreen().width();
+  const int margins = ShelfConfig::Get()->home_button_edge_spacing() +
+                      ShelfConfig::Get()->app_icon_group_margin();
+
+  const int total_width2 =
+      screen_util::GetDisplayBoundsWithShelf(shelf_widget2->GetNativeWindow())
+          .width();
+  const int nav_width2 =
+      shelf_widget2->navigation_widget()->GetWindowBoundsInScreen().width();
+  const int hotseat_width2 =
+      shelf_widget2->hotseat_widget()->GetWindowBoundsInScreen().width();
+
   // The shelf view and status area horizontally fill the shelf widget.
   const int status_width1 =
       shelf_widget1->status_area_widget()->GetWindowBoundsInScreen().width();
   EXPECT_GT(status_width1, 0);
-  EXPECT_EQ(shelf_widget1->GetContentsView()->width(),
-            shelf1->GetShelfViewForTesting()->width() + status_width1);
+  EXPECT_EQ(total_width1,
+            nav_width1 + hotseat_width1 + margins + status_width1);
 
   const int status_width2 =
       shelf_widget2->status_area_widget()->GetWindowBoundsInScreen().width();
   EXPECT_GT(status_width2, 0);
-  EXPECT_EQ(shelf_widget2->GetContentsView()->width(),
-            shelf2->GetShelfViewForTesting()->width() + status_width2);
+  EXPECT_EQ(total_width2,
+            nav_width2 + hotseat_width2 + margins + status_width2);
 }
 
 // Tests that the shelf lets mouse-events close to the edge fall through to the
@@ -221,7 +249,7 @@ TEST_F(ShelfWidgetTest, ShelfEdgeOverlappingWindowHitTestMouse) {
                             kWindowWidth, kWindowHeight);
   params.context = CurrentContext();
   // Widget is now owned by the parent window.
-  widget->Init(params);
+  widget->Init(std::move(params));
   // Explicitly set the bounds which will allow the widget to overlap the shelf.
   widget->SetBounds(params.bounds);
   widget->Show();
@@ -302,7 +330,7 @@ TEST_F(ShelfWidgetTest, HiddenShelfHitTestTouch) {
   params.bounds = gfx::Rect(0, 0, 200, 200);
   params.context = CurrentContext();
   // Widget is now owned by the parent window.
-  widget->Init(params);
+  widget->Init(std::move(params));
   widget->Show();
 
   aura::Window* root = shelf_widget->GetNativeWindow()->GetRootWindow();
@@ -450,17 +478,18 @@ class ShelfWidgetViewsVisibilityTest : public AshTestBase {
               !primary_shelf_widget_->IsVisible());
     if (primary_shelf_visibility != kNone) {
       EXPECT_EQ(primary_shelf_visibility == kLoginShelf,
-                primary_shelf_widget_->login_shelf_view()->visible());
+                primary_shelf_widget_->login_shelf_view()->GetVisible());
       EXPECT_EQ(primary_shelf_visibility == kShelf,
-                primary_shelf_widget_->shelf_view_for_testing()->visible());
+                primary_shelf_widget_->shelf_view_for_testing()->GetVisible());
     }
     EXPECT_EQ(secondary_shelf_visibility == kNone,
               !secondary_shelf_widget_->IsVisible());
     if (secondary_shelf_visibility != kNone) {
       EXPECT_EQ(secondary_shelf_visibility == kLoginShelf,
-                secondary_shelf_widget_->login_shelf_view()->visible());
-      EXPECT_EQ(secondary_shelf_visibility == kShelf,
-                secondary_shelf_widget_->shelf_view_for_testing()->visible());
+                secondary_shelf_widget_->login_shelf_view()->GetVisible());
+      EXPECT_EQ(
+          secondary_shelf_visibility == kShelf,
+          secondary_shelf_widget_->shelf_view_for_testing()->GetVisible());
     }
   }
 
@@ -526,18 +555,17 @@ class ShelfWidgetVirtualKeyboardTest : public AshTestBase {
     // These tests only apply to the floating virtual keyboard, as it is the
     // only case where both the virtual keyboard and the shelf are visible.
     const gfx::Rect keyboard_bounds(0, 0, 1, 1);
-    keyboard_controller()->SetContainerType(
-        keyboard::mojom::ContainerType::kFloating, keyboard_bounds,
-        base::DoNothing());
+    keyboard_ui_controller()->SetContainerType(
+        keyboard::ContainerType::kFloating, keyboard_bounds, base::DoNothing());
   }
 
-  keyboard::KeyboardController* keyboard_controller() {
-    return keyboard::KeyboardController::Get();
+  keyboard::KeyboardUIController* keyboard_ui_controller() {
+    return keyboard::KeyboardUIController::Get();
   }
 };
 
 TEST_F(ShelfWidgetVirtualKeyboardTest, ClickingHidesVirtualKeyboard) {
-  keyboard_controller()->ShowKeyboard(false /* locked */);
+  keyboard_ui_controller()->ShowKeyboard(false /* locked */);
   ASSERT_TRUE(keyboard::WaitUntilShown());
 
   ui::test::EventGenerator* generator = GetEventGenerator();
@@ -550,7 +578,7 @@ TEST_F(ShelfWidgetVirtualKeyboardTest, ClickingHidesVirtualKeyboard) {
 }
 
 TEST_F(ShelfWidgetVirtualKeyboardTest, TappingHidesVirtualKeyboard) {
-  keyboard_controller()->ShowKeyboard(false /* locked */);
+  keyboard_ui_controller()->ShowKeyboard(false /* locked */);
   ASSERT_TRUE(keyboard::WaitUntilShown());
 
   ui::test::EventGenerator* generator = GetEventGenerator();
@@ -563,7 +591,7 @@ TEST_F(ShelfWidgetVirtualKeyboardTest, TappingHidesVirtualKeyboard) {
 }
 
 TEST_F(ShelfWidgetVirtualKeyboardTest, DoesNotHideLockedVirtualKeyboard) {
-  keyboard_controller()->ShowKeyboard(true /* locked */);
+  keyboard_ui_controller()->ShowKeyboard(true /* locked */);
   ASSERT_TRUE(keyboard::WaitUntilShown());
 
   ui::test::EventGenerator* generator = GetEventGenerator();

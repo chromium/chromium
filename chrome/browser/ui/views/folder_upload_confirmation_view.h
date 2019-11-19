@@ -51,7 +51,6 @@ class FolderUploadConfirmationView : public views::DialogDelegateView {
   // when a user presses enter without looking as we're looking for explicit
   // approval to share this many files with the site.
   views::View* GetInitiallyFocusedView() override;
-  base::string16 GetDialogButtonLabel(ui::DialogButton button) const override;
 
   bool ShouldShowCloseButton() const override;
 

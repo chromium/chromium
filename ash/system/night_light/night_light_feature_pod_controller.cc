@@ -4,12 +4,13 @@
 
 #include "ash/system/night_light/night_light_feature_pod_controller.h"
 
+#include "ash/public/cpp/system_tray_client.h"
 #include "ash/resources/vector_icons/vector_icons.h"
-#include "ash/session/session_controller.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/model/system_tray_model.h"
-#include "ash/system/night_light/night_light_controller.h"
+#include "ash/system/night_light/night_light_controller_impl.h"
 #include "ash/system/tray/tray_popup_utils.h"
 #include "ash/system/unified/feature_pod_button.h"
 #include "ash/system/unified/unified_system_tray_controller.h"
@@ -35,8 +36,6 @@ FeaturePodButton* NightLightFeaturePodController::CreateButton() {
       Shell::Get()->session_controller()->ShouldEnableSettings());
   button_->SetLabel(
       l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_NIGHT_LIGHT_BUTTON_LABEL));
-  button_->SetIconTooltip(l10n_util::GetStringUTF16(
-      IDS_ASH_STATUS_TRAY_NIGHT_LIGHT_TOGGLE_TOOLTIP));
   button_->SetLabelTooltip(l10n_util::GetStringUTF16(
       IDS_ASH_STATUS_TRAY_NIGHT_LIGHT_SETTINGS_TOOLTIP));
   UpdateButton();
@@ -60,8 +59,8 @@ void NightLightFeaturePodController::OnLabelPressed() {
   if (TrayPopupUtils::CanOpenWebUISettings()) {
     base::RecordAction(
         base::UserMetricsAction("StatusArea_NightLight_Settings"));
-    Shell::Get()->system_tray_model()->client_ptr()->ShowDisplaySettings();
-    tray_controller_->CloseBubble();
+    tray_controller_->CloseBubble();  // Deletes |this|.
+    Shell::Get()->system_tray_model()->client()->ShowDisplaySettings();
   }
 }
 
@@ -75,6 +74,12 @@ void NightLightFeaturePodController::UpdateButton() {
   button_->SetSubLabel(l10n_util::GetStringUTF16(
       is_enabled ? IDS_ASH_STATUS_TRAY_NIGHT_LIGHT_ON_STATE
                  : IDS_ASH_STATUS_TRAY_NIGHT_LIGHT_OFF_STATE));
+
+  base::string16 tooltip_state = l10n_util::GetStringUTF16(
+      is_enabled ? IDS_ASH_STATUS_TRAY_NIGHT_LIGHT_ENABLED_STATE_TOOLTIP
+                 : IDS_ASH_STATUS_TRAY_NIGHT_LIGHT_DISABLED_STATE_TOOLTIP);
+  button_->SetIconTooltip(l10n_util::GetStringFUTF16(
+      IDS_ASH_STATUS_TRAY_NIGHT_LIGHT_TOGGLE_TOOLTIP, tooltip_state));
 }
 
 }  // namespace ash

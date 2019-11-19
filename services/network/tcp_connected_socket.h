@@ -10,6 +10,8 @@
 #include "base/component_export.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "net/base/address_family.h"
 #include "net/base/ip_endpoint.h"
@@ -43,13 +45,13 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) TCPConnectedSocket
   // If |client_socket_factory| is nullptr, consumers must use
   // ConnectWithSocket() instead of Connect().
   TCPConnectedSocket(
-      mojom::SocketObserverPtr observer,
+      mojo::PendingRemote<mojom::SocketObserver> observer,
       net::NetLog* net_log,
       TLSSocketFactory* tls_socket_factory,
       net::ClientSocketFactory* client_socket_factory,
       const net::NetworkTrafficAnnotationTag& traffic_annotation);
   TCPConnectedSocket(
-      mojom::SocketObserverPtr observer,
+      mojo::PendingRemote<mojom::SocketObserver> observer,
       std::unique_ptr<net::TransportClientSocket> socket,
       mojo::ScopedDataPipeProducerHandle receive_pipe_handle,
       mojo::ScopedDataPipeConsumerHandle send_pipe_handle,
@@ -75,8 +77,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) TCPConnectedSocket
       const net::HostPortPair& host_port_pair,
       mojom::TLSClientSocketOptionsPtr socket_options,
       const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
-      mojom::TLSClientSocketRequest request,
-      mojom::SocketObserverPtr observer,
+      mojo::PendingReceiver<mojom::TLSClientSocket> receiver,
+      mojo::PendingRemote<mojom::SocketObserver> observer,
       mojom::TCPConnectedSocket::UpgradeToTLSCallback callback) override;
   void SetSendBufferSize(int send_buffer_size,
                          SetSendBufferSizeCallback callback) override;
@@ -100,7 +102,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) TCPConnectedSocket
   const net::StreamSocket* BorrowSocket() override;
   std::unique_ptr<net::StreamSocket> TakeSocket() override;
 
-  const mojom::SocketObserverPtr observer_;
+  const mojo::Remote<mojom::SocketObserver> observer_;
 
   net::NetLog* const net_log_;
   net::ClientSocketFactory* const client_socket_factory_;

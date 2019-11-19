@@ -46,7 +46,7 @@ class ReenableAfterBypass(IntegrationTest):
       responses = test_driver.GetHTTPResponses()
       self.assertNotEqual(0, len(responses))
       for response in responses:
-        self.assertHasChromeProxyViaHeader(response)
+        self.assertHasProxyHeaders(response)
 
   # Verify that when the Data Reduction Proxy responds with the "block=0"
   # directive, Chrome bypasses all proxies for the next 1-5 minutes.
@@ -78,7 +78,7 @@ class ReenableAfterBypass(IntegrationTest):
       responses = test_driver.GetHTTPResponses()
       self.assertNotEqual(0, len(responses))
       for response in responses:
-        self.assertHasChromeProxyViaHeader(response)
+        self.assertHasProxyHeaders(response)
 
 
 if __name__ == '__main__':

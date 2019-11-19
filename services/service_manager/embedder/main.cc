@@ -13,14 +13,15 @@
 #include "base/debug/stack_trace.h"
 #include "base/i18n/icu_util.h"
 #include "base/logging.h"
-#include "base/message_loop/message_loop.h"
+#include "base/message_loop/message_pump_type.h"
 #include "base/optional.h"
 #include "base/process/launch.h"
 #include "base/process/memory.h"
 #include "base/process/process.h"
 #include "base/run_loop.h"
 #include "base/stl_util.h"
-#include "base/task/task_scheduler/task_scheduler.h"
+#include "base/task/single_thread_task_executor.h"
+#include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/threading/thread.h"
 #include "base/trace_event/trace_config.h"
 #include "base/trace_event/trace_log.h"
@@ -46,6 +47,7 @@
 #include <windows.h>
 
 #include "base/win/process_startup_helper.h"
+#include "base/win/win_util.h"
 #include "ui/base/win/atl_module.h"
 #endif
 
@@ -132,20 +134,11 @@ void CommonSubprocessInit() {
   // HACK: Let Windows know that we have started.  This is needed to suppress
   // the IDC_APPSTARTING cursor from being displayed for a prolonged period
   // while a subprocess is starting.
-  PostThreadMessage(GetCurrentThreadId(), WM_NULL, 0, 0);
-  MSG msg;
-  PeekMessage(&msg, NULL, 0, 0, PM_REMOVE);
-#endif
-#if defined(OS_POSIX) && !defined(OS_ANDROID)
-  // Various things break when you're using a locale where the decimal
-  // separator isn't a period.  See e.g. bugs 22782 and 39964.  For
-  // all processes except the browser process (where we call system
-  // APIs that may rely on the correct locale for formatting numbers
-  // when presenting them to the user), reset the locale for numeric
-  // formatting.
-  // Note that this is not correct for plugin processes -- they can
-  // surface UI -- but it's likely they get this wrong too so why not.
-  setlocale(LC_NUMERIC, "C");
+  if (base::win::IsUser32AndGdi32Available()) {
+    PostThreadMessage(GetCurrentThreadId(), WM_NULL, 0, 0);
+    MSG msg;
+    PeekMessage(&msg, NULL, 0, 0, PM_REMOVE);
+  }
 #endif
 
 #if !defined(OFFICIAL_BUILD) && defined(OS_WIN)
@@ -156,7 +149,8 @@ void CommonSubprocessInit() {
 
 void NonEmbedderProcessInit() {
   logging::LoggingSettings settings;
-  settings.logging_dest = logging::LOG_TO_SYSTEM_DEBUG_LOG;
+  settings.logging_dest =
+      logging::LOG_TO_SYSTEM_DEBUG_LOG | logging::LOG_TO_STDERR;
   logging::InitLogging(settings);
   // To view log output with IDs and timestamps use "adb logcat -v threadtime".
   logging::SetLogItems(true,   // Process ID
@@ -175,17 +169,19 @@ void NonEmbedderProcessInit() {
   }
 #endif
 
-  base::TaskScheduler::CreateAndStartWithDefaultParams("ServiceManagerProcess");
+  base::ThreadPoolInstance::CreateAndStartWithDefaultParams(
+      "ServiceManagerProcess");
 }
 
 int RunServiceManager(MainDelegate* delegate) {
   NonEmbedderProcessInit();
 
-  base::MessageLoop message_loop(base::MessageLoop::TYPE_UI);
+  base::SingleThreadTaskExecutor main_thread_task_executor(
+      base::MessagePumpType::UI);
 
   base::Thread ipc_thread("IPC thread");
   ipc_thread.StartWithOptions(
-      base::Thread::Options(base::MessageLoop::TYPE_IO, 0));
+      base::Thread::Options(base::MessagePumpType::IO, 0));
   mojo::core::ScopedIPCSupport ipc_support(
       ipc_thread.task_runner(),
       mojo::core::ScopedIPCSupport::ShutdownPolicy::FAST);
@@ -199,7 +195,7 @@ int RunServiceManager(MainDelegate* delegate) {
   run_loop.Run();
 
   ipc_thread.Stop();
-  base::TaskScheduler::GetInstance()->Shutdown();
+  base::ThreadPoolInstance::Get()->Shutdown();
 
   return 0;
 }
@@ -221,7 +217,8 @@ int RunService(MainDelegate* delegate) {
 
   service_manager::ServiceExecutableEnvironment environment;
 
-  base::MessageLoop message_loop(base::MessageLoop::TYPE_UI);
+  base::SingleThreadTaskExecutor main_thread_task_executor(
+      base::MessagePumpType::UI);
   base::RunLoop run_loop;
 
   std::string service_name =
@@ -319,9 +316,19 @@ int Main(const MainParams& params) {
 // On Android setlocale() is not supported, and we don't override the signal
 // handlers so we can get a stack trace when crashing.
 #if defined(OS_POSIX) && !defined(OS_ANDROID)
-    // Set C library locale to make sure CommandLine can parse argument values
-    // in the correct encoding.
+    // Set C library locale to make sure CommandLine can parse
+    // argument values in the correct encoding and to make sure
+    // generated file names (think downloads) are in the file system's
+    // encoding.
     setlocale(LC_ALL, "");
+    // For numbers we never want the C library's locale sensitive
+    // conversion from number to string because the only thing it
+    // changes is the decimal separator which is not good enough for
+    // the UI and can be harmful elsewhere. User interface number
+    // conversions need to go through ICU. Other conversions need to
+    // be locale insensitive so we force the number locale back to the
+    // default, "C", locale.
+    setlocale(LC_NUMERIC, "C");
 
     SetupSignalHandlers();
 #endif

@@ -90,7 +90,7 @@ class PrinterProviderInternalAPI : public BrowserContextKeyedAPI {
 };
 
 class PrinterProviderInternalReportPrintResultFunction
-    : public UIThreadExtensionFunction {
+    : public ExtensionFunction {
  public:
   PrinterProviderInternalReportPrintResultFunction();
 
@@ -107,7 +107,7 @@ class PrinterProviderInternalReportPrintResultFunction
 };
 
 class PrinterProviderInternalReportPrinterCapabilityFunction
-    : public UIThreadExtensionFunction {
+    : public ExtensionFunction {
  public:
   PrinterProviderInternalReportPrinterCapabilityFunction();
 
@@ -124,8 +124,7 @@ class PrinterProviderInternalReportPrinterCapabilityFunction
       PrinterProviderInternalReportPrinterCapabilityFunction);
 };
 
-class PrinterProviderInternalReportPrintersFunction
-    : public UIThreadExtensionFunction {
+class PrinterProviderInternalReportPrintersFunction : public ExtensionFunction {
  public:
   PrinterProviderInternalReportPrintersFunction();
 
@@ -140,8 +139,7 @@ class PrinterProviderInternalReportPrintersFunction
   DISALLOW_COPY_AND_ASSIGN(PrinterProviderInternalReportPrintersFunction);
 };
 
-class PrinterProviderInternalGetPrintDataFunction
-    : public UIThreadExtensionFunction {
+class PrinterProviderInternalGetPrintDataFunction : public ExtensionFunction {
  public:
   PrinterProviderInternalGetPrintDataFunction();
 
@@ -161,7 +159,7 @@ class PrinterProviderInternalGetPrintDataFunction
 };
 
 class PrinterProviderInternalReportUsbPrinterInfoFunction
-    : public UIThreadExtensionFunction {
+    : public ExtensionFunction {
  public:
   PrinterProviderInternalReportUsbPrinterInfoFunction();
 

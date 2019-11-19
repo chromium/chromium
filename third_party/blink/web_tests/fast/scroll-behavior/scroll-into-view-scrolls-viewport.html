@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script>
+  // All of the rects in this test are in document/page coordinates.
+  function rectFromElement(element) {
+    var rect = {};
+    rect.left = element.getBoundingClientRect().left + window.scrollX;
+    rect.top = element.getBoundingClientRect().top + window.scrollY;
+    rect.right = element.getBoundingClientRect().right + window.scrollX;
+    rect.bottom = element.getBoundingClientRect().bottom + window.scrollY;
+    return rect;
+  }
+
+  function visualViewportRect() {
+    var rect = {};
+    rect.left = window.visualViewport.pageLeft;
+    rect.top = window.visualViewport.pageTop;
+    rect.right = window.visualViewport.pageLeft + window.visualViewport.width;
+    rect.bottom = window.visualViewport.pageTop + window.visualViewport.height;
+    return rect;
+  }
+
+  function layoutViewportRect() {
+    var rect = {};
+    rect.left = window.scrollX;
+    rect.top = window.scrollY;
+    rect.right = window.scrollX + window.innerWidth;
+    rect.bottom = window.scrollY + window.innerHeight;
+    return rect;
+  }
+
+  function isContainedBy(rect1, rect2) {
+    return rect1.left >= rect2.left && rect1.top >= rect2.top &&
+           rect1.right <= rect2.right && rect1.bottom <= rect2.bottom;
+  }
+
+  function runTest() {
+    test( () => {
+      assert_true(typeof(window.internals) !== 'undefined',
+                  "This test requires window.internals");
+
+      internals.setPageScaleFactor(2.0);
+      const target = document.getElementById("box");
+
+      window.scrollTo(0, 0);
+      internals.setVisualViewportOffset(0, 0);
+      assert_false(isContainedBy(rectFromElement(target),
+                                 visualViewportRect()));
+      assert_false(isContainedBy(rectFromElement(target),
+                                 layoutViewportRect()));
+
+      target.scrollIntoView();
+      assert_true(isContainedBy(rectFromElement(target), visualViewportRect()));
+      assert_true(isContainedBy(rectFromElement(target), layoutViewportRect()));
+    }, "Test that element.scrollIntoView() scrolls the layout viewport and visual viewport.");
+
+    test( () => {
+      assert_true(typeof(window.internals) !== 'undefined',
+                  "This test requires window.internals");
+
+      internals.setPageScaleFactor(2.0);
+      const target = document.getElementById("box");
+
+      window.scrollTo(0, 0);
+      internals.setVisualViewportOffset(0, 0);
+      assert_false(isContainedBy(rectFromElement(target),
+                                 visualViewportRect()));
+      assert_false(isContainedBy(rectFromElement(target),
+                                 layoutViewportRect()));
+
+      target.scrollIntoViewIfNeeded();
+      assert_true(isContainedBy(rectFromElement(target), visualViewportRect()));
+      assert_true(isContainedBy(rectFromElement(target), layoutViewportRect()));
+    }, "Test that element.scrollIntoViewIfNeeded() scrolls the layout viewport and visual viewport.");
+  }
+
+  onload = runTest;
+</script>
+
+<style>
+  body {
+    height: 800px;
+    width: 800px;
+  }
+  #box {
+    background-color: black;
+    top: 700px;
+    left: 100px;
+    height: 40px;
+    width: 40px;
+    position: absolute;
+  }
+</style>
+
+<div id="box"></div>

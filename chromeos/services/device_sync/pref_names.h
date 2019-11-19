@@ -11,6 +11,7 @@ namespace device_sync {
 
 namespace prefs {
 
+// Prefs for CryptAuth v1:
 extern const char kCryptAuthDeviceSyncLastSyncTimeSeconds[];
 extern const char kCryptAuthDeviceSyncIsRecoveringFromFailure[];
 extern const char kCryptAuthDeviceSyncReason[];
@@ -18,14 +19,24 @@ extern const char kCryptAuthDeviceSyncUnlockKeys[];
 extern const char kCryptAuthEnrollmentIsRecoveringFromFailure[];
 extern const char kCryptAuthEnrollmentLastEnrollmentTimeSeconds[];
 extern const char kCryptAuthEnrollmentReason[];
-extern const char kCryptAuthEnrollmentSchedulerClientDirective[];
-extern const char kCryptAuthEnrollmentSchedulerLastEnrollmentAttemptTime[];
-extern const char kCryptAuthEnrollmentSchedulerLastSuccessfulEnrollmentTime[];
-extern const char kCryptAuthEnrollmentSchedulerNumConsecutiveFailures[];
+
+// Prefs for CryptAuth v1 (and during migration to v2):
 extern const char kCryptAuthEnrollmentUserPublicKey[];
 extern const char kCryptAuthEnrollmentUserPrivateKey[];
+
+// Prefs for CryptAuth v1 and v2:
 extern const char kCryptAuthGCMRegistrationId[];
+
+// Prefs for CryptAuth v2:
+extern const char kCryptAuthDeviceRegistry[];
 extern const char kCryptAuthKeyRegistry[];
+extern const char kCryptAuthSchedulerClientDirective[];
+extern const char kCryptAuthSchedulerNextEnrollmentRequestClientMetadata[];
+extern const char kCryptAuthSchedulerNextDeviceSyncRequestClientMetadata[];
+extern const char kCryptAuthSchedulerLastEnrollmentAttemptTime[];
+extern const char kCryptAuthSchedulerLastDeviceSyncAttemptTime[];
+extern const char kCryptAuthSchedulerLastSuccessfulEnrollmentTime[];
+extern const char kCryptAuthSchedulerLastSuccessfulDeviceSyncTime[];
 
 }  // namespace prefs
 

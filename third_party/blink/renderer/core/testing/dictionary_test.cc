@@ -297,8 +297,11 @@ void DictionaryTest::GetDerivedDerivedInternals(
 void DictionaryTest::Trace(blink::Visitor* visitor) {
   visitor->Trace(element_member_);
   visitor->Trace(element_or_null_member_);
+  visitor->Trace(object_member_);
+  visitor->Trace(object_or_null_member_with_default_);
   visitor->Trace(double_or_string_sequence_member_);
   visitor->Trace(event_target_or_null_member_);
+  visitor->Trace(any_member_);
   visitor->Trace(callback_function_member_);
   ScriptWrappable::Trace(visitor);
 }

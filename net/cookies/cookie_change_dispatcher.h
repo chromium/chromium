@@ -38,6 +38,23 @@ enum class CookieChangeCause {
   EXPIRED_OVERWRITE
 };
 
+struct NET_EXPORT CookieChangeInfo {
+  CookieChangeInfo();
+  CookieChangeInfo(const CanonicalCookie& cookie,
+                   CookieAccessSemantics access_semantics,
+                   CookieChangeCause cause);
+  ~CookieChangeInfo();
+
+  // The cookie that changed.
+  CanonicalCookie cookie;
+
+  // The access semantics of the cookie at the time of the change.
+  CookieAccessSemantics access_semantics = CookieAccessSemantics::UNKNOWN;
+
+  // The reason for the change.
+  CookieChangeCause cause = CookieChangeCause::EXPLICIT;
+};
+
 // Return a string corresponding to the change cause.  For debugging/logging.
 NET_EXPORT const char* CookieChangeCauseToString(CookieChangeCause cause);
 
@@ -48,6 +65,7 @@ NET_EXPORT bool CookieChangeCauseIsDeletion(CookieChangeCause cause);
 // Called when a cookie is changed in a CookieStore.
 //
 // Receives the CanonicalCookie which was added to or removed from the store,
+// the CookieAccessSemantics of the cookie at the time of the change event,
 // and a CookieStore::ChangeCause indicating if the cookie was added, updated,
 // or removed.
 //
@@ -58,8 +76,7 @@ NET_EXPORT bool CookieChangeCauseIsDeletion(CookieChangeCause cause);
 // The callback must not synchronously modify any cookie in the CookieStore
 // whose change it is observing.
 using CookieChangeCallback =
-    base::RepeatingCallback<void(const CanonicalCookie& cookie,
-                                 CookieChangeCause cause)>;
+    base::RepeatingCallback<void(const CookieChangeInfo&)>;
 
 // Records a listener's interest in CookieStore changes.
 //

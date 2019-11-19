@@ -10,9 +10,9 @@
 #include "base/at_exit.h"
 #include "base/i18n/icu_util.h"
 #include "components/autofill/core/common/password_form.h"
+#include "components/password_manager/core/browser/form_parsing/form_parser.h"
 #include "components/password_manager/core/browser/form_parsing/fuzzer/data_accessor.h"
 #include "components/password_manager/core/browser/form_parsing/fuzzer/form_data_producer.h"
-#include "components/password_manager/core/browser/form_parsing/ios_form_parser.h"
 
 namespace password_manager {
 
@@ -27,11 +27,21 @@ IcuEnvironment* env = new IcuEnvironment();
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   DataAccessor accessor(data, size);
-  FormParsingMode mode = accessor.ConsumeBit() ? FormParsingMode::FILLING
-                                               : FormParsingMode::SAVING;
-  autofill::FormData form_data = GenerateWithDataAccessor(&accessor);
+  FormDataParser::Mode mode = accessor.ConsumeBit()
+                                  ? FormDataParser::Mode::kFilling
+                                  : FormDataParser::Mode::kSaving;
+
+  bool use_predictions = accessor.ConsumeBit();
+  FormPredictions predictions;
+  autofill::FormData form_data = GenerateWithDataAccessor(
+      &accessor, use_predictions ? &predictions : nullptr);
+
+  FormDataParser parser;
+  if (use_predictions)
+    parser.set_predictions(predictions);
+
   std::unique_ptr<autofill::PasswordForm> result =
-      ParseFormData(form_data, mode);
+      parser.Parse(form_data, mode);
   if (result) {
     // Create a copy of the result -- running the copy-constructor might
     // discover some invalid data in |result|.

@@ -35,7 +35,6 @@
 
 #include <string>
 
-#include <google/protobuf/stubs/common.h>
 namespace google {
 namespace protobuf {
 namespace compiler {
@@ -43,41 +42,35 @@ class AccessInfoMap;
 
 namespace cpp {
 
+enum class EnforceOptimizeMode {
+  kNoEnforcement,  // Use the runtime specified by the file specific options.
+  kSpeed,          // This is the full runtime.
+  kLiteRuntime,
+};
+
 // Generator options (see generator.cc for a description of each):
 struct Options {
-  Options()
-      : safe_boundary_check(false),
-        proto_h(false),
-        transitive_pb_h(true),
-        annotate_headers(false),
-        enforce_lite(false),
-        table_driven_parsing(false),
-        table_driven_serialization(false),
-        lite_implicit_weak_fields(false),
-        bootstrap(false),
-        num_cc_files(0),
-        access_info_map(NULL) {}
-
-  string dllexport_decl;
-  bool safe_boundary_check;
-  bool proto_h;
-  bool transitive_pb_h;
-  bool annotate_headers;
-  bool enforce_lite;
-  bool table_driven_parsing;
-  bool table_driven_serialization;
-  bool lite_implicit_weak_fields;
-  bool bootstrap;
-  int num_cc_files;
-  string annotation_pragma_name;
-  string annotation_guard_name;
-  const AccessInfoMap* access_info_map;
+  std::string dllexport_decl;
+  bool safe_boundary_check = false;
+  bool proto_h = false;
+  bool transitive_pb_h = true;
+  bool annotate_headers = false;
+  EnforceOptimizeMode enforce_mode = EnforceOptimizeMode::kNoEnforcement;
+  bool table_driven_parsing = false;
+  bool table_driven_serialization = false;
+  bool lite_implicit_weak_fields = false;
+  bool bootstrap = false;
+  bool opensource_runtime = false;
+  std::string runtime_include_base;
+  int num_cc_files = 0;
+  std::string annotation_pragma_name;
+  std::string annotation_guard_name;
+  const AccessInfoMap* access_info_map = nullptr;
 };
 
 }  // namespace cpp
 }  // namespace compiler
 }  // namespace protobuf
-
-
 }  // namespace google
+
 #endif  // GOOGLE_PROTOBUF_COMPILER_CPP_OPTIONS_H__

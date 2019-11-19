@@ -11,7 +11,7 @@ namespace blink {
 class CompositorElementIdTest : public testing::Test {};
 
 uint64_t IdFromCompositorElementId(CompositorElementId element_id) {
-  return element_id.GetInternalValue() >> kCompositorNamespaceBitCount;
+  return element_id.GetStableId() >> kCompositorNamespaceBitCount;
 }
 
 TEST_F(CompositorElementIdTest, EncodeDecode) {

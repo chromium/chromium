@@ -5,7 +5,8 @@
 package org.chromium.chrome.browser.suggestions;
 
 import android.os.SystemClock;
-import android.support.annotation.Nullable;
+
+import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
@@ -81,7 +82,7 @@ public class NavigationRecorder extends EmptyTabObserver {
 
     @Override
     public void onDestroyed(Tab tab) {
-        endRecording(null, null);
+        endRecording(tab, null);
     }
 
     @Override
@@ -90,7 +91,7 @@ public class NavigationRecorder extends EmptyTabObserver {
         // the omnibox. This doesn't cover the navigate-back case so we also need to observe
         // changes to WebContent's navigation entries.
         int transitionTypeMask = PageTransition.FROM_ADDRESS_BAR | PageTransition.HOME_PAGE
-                | PageTransition.CHAIN_START | PageTransition.CHAIN_END;
+                | PageTransition.CHAIN_START | PageTransition.CHAIN_END | PageTransition.FROM_API;
 
         if ((params.getTransitionType() & transitionTypeMask) != 0) endRecording(tab, null);
     }

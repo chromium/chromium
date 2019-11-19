@@ -43,8 +43,7 @@ namespace blink {
 
 class LocalFrame;
 
-class CORE_EXPORT InspectorAgent
-    : public GarbageCollectedFinalized<InspectorAgent> {
+class CORE_EXPORT InspectorAgent : public GarbageCollected<InspectorAgent> {
  public:
   InspectorAgent() = default;
   virtual ~InspectorAgent() = default;

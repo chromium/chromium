@@ -40,6 +40,7 @@ namespace api_cp = extensions::api::certificate_provider;
 class DefaultDelegate : public CertificateProviderService::Delegate,
                         public extensions::ExtensionRegistryObserver {
  public:
+  // |event_router| may be null in tests.
   DefaultDelegate(CertificateProviderService* service,
                   extensions::ExtensionRegistry* registry,
                   extensions::EventRouter* event_router);
@@ -73,7 +74,6 @@ DefaultDelegate::DefaultDelegate(CertificateProviderService* service,
                                  extensions::EventRouter* event_router)
     : service_(service), registry_(registry), event_router_(event_router) {
   DCHECK(service_);
-  DCHECK(event_router_);
   registry_->AddObserver(this);
 }
 
@@ -112,7 +112,6 @@ bool DefaultDelegate::DispatchSignRequestToExtension(
     return false;
 
   api_cp::SignRequest request;
-  service_->pin_dialog_manager()->AddSignRequestId(extension_id, request_id);
   request.sign_request_id = request_id;
   switch (algorithm) {
     case SSL_SIGN_RSA_PKCS1_MD5_SHA1:

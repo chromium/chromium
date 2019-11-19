@@ -220,9 +220,9 @@ base::FilePath PathForCameraItem(ICCameraItem* item) {
   // Shared result value from file-copy closure to tell-listener closure.
   // This is worth blocking shutdown, as otherwise a file that has been
   // downloaded will be incorrectly named.
-  base::PostTaskWithTraitsAndReplyWithResult(
+  base::PostTaskAndReplyWithResult(
       FROM_HERE,
-      {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+      {base::ThreadPool(), base::MayBlock(), base::TaskPriority::BEST_EFFORT,
        base::TaskShutdownBehavior::BLOCK_SHUTDOWN},
       base::Bind(&storage_monitor::RenameFile, savedPath, saveAsPath),
       base::Bind(&storage_monitor::ReturnRenameResultToListener, listener_,
@@ -260,6 +260,38 @@ base::FilePath PathForCameraItem(ICCameraItem* item) {
 
 - (void)cameraDevice:(ICCameraDevice*)camera
     didReceivePTPEvent:(NSData*)eventData {
+  NOTIMPLEMENTED();
+}
+
+// Mac 10.15 SDK methods, not yet implemented (https://crbug.com/849689)
+
+- (void)cameraDevice:(ICCameraDevice*)camera didRemoveItems:(NSArray*)items {
+  NOTIMPLEMENTED();
+}
+
+- (void)cameraDevice:(ICCameraDevice*)camera
+    didReceiveThumbnail:(CGImageRef)thumbnail
+                forItem:(ICCameraItem*)item
+                  error:(NSError*)error {
+  NOTIMPLEMENTED();
+}
+
+- (void)cameraDevice:(ICCameraDevice*)camera
+    didReceiveMetadata:(NSDictionary*)metadata
+               forItem:(ICCameraItem*)item
+                 error:(NSError*)error {
+  NOTIMPLEMENTED();
+}
+
+- (void)cameraDeviceDidEnableAccessRestriction:(ICDevice*)device {
+  NOTIMPLEMENTED();
+}
+
+- (void)cameraDeviceDidRemoveAccessRestriction:(ICDevice*)device {
+  NOTIMPLEMENTED();
+}
+
+- (void)device:(ICDevice*)device didCloseSessionWithError:(NSError*)error {
   NOTIMPLEMENTED();
 }
 

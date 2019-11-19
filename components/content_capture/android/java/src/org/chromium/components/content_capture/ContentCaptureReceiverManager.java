@@ -4,11 +4,9 @@
 
 package org.chromium.components.content_capture;
 
-import android.view.ViewGroup;
-
-import org.chromium.base.CommandLine;
 import org.chromium.base.Log;
 import org.chromium.base.annotations.CalledByNative;
+import org.chromium.base.annotations.NativeMethods;
 import org.chromium.content_public.browser.WebContents;
 
 import java.util.Arrays;
@@ -18,25 +16,17 @@ import java.util.Arrays;
  */
 public class ContentCaptureReceiverManager {
     private static final String TAG = "ContentCapture";
-    private static final String FLAG = "dump-captured-content-to-logcat-for-testing";
     private static Boolean sDump;
 
     private ContentCaptureConsumer mContentCaptureConsumer;
 
-    public static ContentCaptureReceiverManager create(WebContents webContents) {
-        ContentCaptureReceiverManager manager = new ContentCaptureReceiverManager();
-        manager.nativeInit(webContents);
-        return manager;
+    public static ContentCaptureReceiverManager createOrGet(WebContents webContents) {
+        return ContentCaptureReceiverManagerJni.get().createOrGet(webContents);
     }
 
-    public ContentCaptureReceiverManager() {
-        if (sDump == null) sDump = CommandLine.getInstance().hasSwitch(FLAG);
-    }
-
-    public void onContainerViewChanged(ViewGroup containerView) {
-        // Reset current consumer, the new consumer that associates with contanerView shall be set
-        // from setContentCaptureConsumer().
-        mContentCaptureConsumer = null;
+    @CalledByNative
+    private ContentCaptureReceiverManager() {
+        if (sDump == null) sDump = ContentCaptureFeatures.isDumpForTestingEnabled();
     }
 
     public void setContentCaptureConsumer(ContentCaptureConsumer consumer) {
@@ -52,10 +42,19 @@ public class ContentCaptureReceiverManager {
     }
 
     @CalledByNative
+    private void didUpdateContent(Object[] session, ContentCaptureData data) {
+        if (mContentCaptureConsumer != null) {
+            mContentCaptureConsumer.onContentUpdated(toFrameSession(session), data);
+        }
+        if (sDump.booleanValue()) Log.i(TAG, "Updated Content: %s", data);
+    }
+
+    @CalledByNative
     private void didRemoveContent(Object[] session, long[] data) {
         FrameSession frameSession = toFrameSession(session);
-        if (mContentCaptureConsumer != null)
+        if (mContentCaptureConsumer != null) {
             mContentCaptureConsumer.onContentRemoved(frameSession, data);
+        }
         if (sDump.booleanValue()) {
             Log.i(TAG, "Removed Content: %s", frameSession.get(0) + " " + Arrays.toString(data));
         }
@@ -74,5 +73,8 @@ public class ContentCaptureReceiverManager {
         return frameSession;
     }
 
-    private native void nativeInit(WebContents webContents);
+    @NativeMethods
+    interface Natives {
+        ContentCaptureReceiverManager createOrGet(WebContents webContents);
+    }
 }

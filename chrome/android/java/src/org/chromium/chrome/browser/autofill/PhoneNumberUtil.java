@@ -4,11 +4,13 @@
 
 package org.chromium.chrome.browser.autofill;
 
-import android.support.annotation.Nullable;
 import android.text.Editable;
 import android.text.TextWatcher;
 
+import androidx.annotation.Nullable;
+
 import org.chromium.base.annotations.JNINamespace;
+import org.chromium.base.annotations.NativeMethods;
 
 /**
  * Android wrapper of i18n::phonenumbers::PhoneNumberUtil which provides convenient methods to
@@ -70,7 +72,7 @@ public class PhoneNumberUtil {
      * @return Formatted phone number.
      */
     public static String formatForDisplay(String phoneNumber, @Nullable String countryCode) {
-        return nativeFormatForDisplay(phoneNumber, countryCode);
+        return PhoneNumberUtilJni.get().formatForDisplay(phoneNumber, countryCode);
     }
 
     /**
@@ -84,7 +86,7 @@ public class PhoneNumberUtil {
      * @return Formatted phone number.
      */
     public static String formatForResponse(String phoneNumber) {
-        return nativeFormatForResponse(phoneNumber);
+        return PhoneNumberUtilJni.get().formatForResponse(phoneNumber);
     }
 
     /**
@@ -100,10 +102,13 @@ public class PhoneNumberUtil {
      * @return True if the given number is a possible number, otherwise return false.
      */
     public static boolean isPossibleNumber(String phoneNumber, @Nullable String countryCode) {
-        return nativeIsPossibleNumber(phoneNumber, countryCode);
+        return PhoneNumberUtilJni.get().isPossibleNumber(phoneNumber, countryCode);
     }
 
-    private static native String nativeFormatForDisplay(String phoneNumber, String countryCode);
-    private static native String nativeFormatForResponse(String phoneNumber);
-    private static native boolean nativeIsPossibleNumber(String phoneNumber, String countryCode);
+    @NativeMethods
+    interface Natives {
+        String formatForDisplay(String phoneNumber, String countryCode);
+        String formatForResponse(String phoneNumber);
+        boolean isPossibleNumber(String phoneNumber, String countryCode);
+    }
 }

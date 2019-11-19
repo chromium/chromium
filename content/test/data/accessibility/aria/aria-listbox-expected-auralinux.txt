@@ -1,0 +1,7 @@
+[document web]
+++[list box]
+++++[list item] name='Item 1' selectable
+++++[list item] name='Item 2' selectable
+++++[separator] horizontal
+++++[list item] name='Second group item 1' selectable
+++++[list item] name='Second group item 2' selectable

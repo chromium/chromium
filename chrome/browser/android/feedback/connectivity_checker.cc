@@ -11,11 +11,10 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "chrome/android/chrome_jni_headers/ConnectivityChecker_jni.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_android.h"
-#include "components/data_use_measurement/core/data_use_user_data.h"
 #include "content/public/browser/storage_partition.h"
-#include "jni/ConnectivityChecker_jni.h"
 #include "net/base/load_flags.h"
 #include "net/http/http_status_code.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -132,11 +131,8 @@ ConnectivityChecker::ConnectivityChecker(
 void ConnectivityChecker::StartAsyncCheck() {
   auto request = std::make_unique<network::ResourceRequest>();
   request->url = url_;
-  request->allow_credentials = false;
+  request->credentials_mode = network::mojom::CredentialsMode::kOmit;
   request->load_flags = net::LOAD_BYPASS_CACHE | net::LOAD_DISABLE_CACHE;
-  // TODO(https://crbug.com/808498): Re-add data use measurement once
-  // SimpleURLLoader supports it.
-  // ID=data_use_measurement::DataUseUserData::FEEDBACK_UPLOADER
   url_loader_ = network::SimpleURLLoader::Create(std::move(request),
                                                  NO_TRAFFIC_ANNOTATION_YET);
   url_loader_->DownloadHeadersOnly(

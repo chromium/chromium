@@ -114,7 +114,7 @@ void TCPSocketEventDispatcher::StartRead(const ReadParams& params) {
   if (buffer_size <= 0)
     buffer_size = kDefaultBufferSize;
   socket->Read(buffer_size,
-               base::Bind(&TCPSocketEventDispatcher::ReadCallback, params));
+               base::BindOnce(&TCPSocketEventDispatcher::ReadCallback, params));
 }
 
 // static
@@ -147,7 +147,7 @@ void TCPSocketEventDispatcher::ReadCallback(
 
     // Post a task to delay the read until the socket is available, as
     // calling StartReceive at this point would error with ERR_IO_PENDING.
-    base::PostTaskWithTraits(
+    base::PostTask(
         FROM_HERE, {params.thread_id},
         base::BindOnce(&TCPSocketEventDispatcher::StartRead, params));
   } else if (bytes_read == net::ERR_IO_PENDING) {
@@ -183,10 +183,9 @@ void TCPSocketEventDispatcher::PostEvent(const ReadParams& params,
                                          std::unique_ptr<Event> event) {
   DCHECK_CURRENTLY_ON(params.thread_id);
 
-  base::PostTaskWithTraits(
-      FROM_HERE, {BrowserThread::UI},
-      base::BindOnce(&DispatchEvent, params.browser_context_id,
-                     params.extension_id, std::move(event)));
+  base::PostTask(FROM_HERE, {BrowserThread::UI},
+                 base::BindOnce(&DispatchEvent, params.browser_context_id,
+                                params.extension_id, std::move(event)));
 }
 
 // static

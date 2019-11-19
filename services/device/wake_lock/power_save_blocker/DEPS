@@ -1,7 +1,6 @@
 include_rules = [
   "+chromeos/dbus",
   "+dbus",
-  "+jni",
   "+services/device/public",
   "+ui/android",
   "+ui/gfx",

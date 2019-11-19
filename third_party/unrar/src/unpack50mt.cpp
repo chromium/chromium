@@ -1,5 +1,3 @@
-namespace third_party_unrar {
-
 #define UNP_READ_SIZE_MT        0x400000
 #define UNP_BLOCKS_PER_THREAD          2
 
@@ -136,7 +134,7 @@ void Unpack::Unpack5MT(bool Solid)
         {
           CurData->HeaderRead=true;
           if (!ReadBlockHeader(CurData->Inp,CurData->BlockHeader) ||
-              (!CurData->BlockHeader.TablePresent && !TablesRead5))
+              !CurData->BlockHeader.TablePresent && !TablesRead5)
           {
             Done=true;
             break;
@@ -206,8 +204,8 @@ void Unpack::Unpack5MT(bool Solid)
       for (uint Block=0;Block<BlockNumber;Block++)
       {
         UnpackThreadData *CurData=UnpThreadData+Block;
-        if ((!CurData->LargeBlock && !ProcessDecoded(*CurData)) ||
-            (CurData->LargeBlock && !UnpackLargeBlock(*CurData)) ||
+        if (!CurData->LargeBlock && !ProcessDecoded(*CurData) ||
+            CurData->LargeBlock && !UnpackLargeBlock(*CurData) ||
             CurData->DamagedData)
         {
           Done=true;
@@ -317,14 +315,14 @@ void Unpack::UnpackDecode(UnpackThreadData &D)
   {
     if (D.Inp.InAddr>=ReadBorder)
     {
-      if (D.Inp.InAddr>BlockBorder || (D.Inp.InAddr==BlockBorder &&
-          D.Inp.InBit>=D.BlockHeader.BlockBitSize))
+      if (D.Inp.InAddr>BlockBorder || D.Inp.InAddr==BlockBorder && 
+          D.Inp.InBit>=D.BlockHeader.BlockBitSize)
         break;
 
       // If we do not have any more data in file to read, we must process
       // what we have until last byte. Otherwise we can return and append
       // more data to unprocessed few bytes.
-      if ((D.Inp.InAddr>=DataBorder && !D.NoDataLeft) || D.Inp.InAddr>=D.DataSize)
+      if ((D.Inp.InAddr>=DataBorder) && !D.NoDataLeft || D.Inp.InAddr>=D.DataSize)
       {
         D.Incomplete=true;
         break;
@@ -548,14 +546,14 @@ bool Unpack::UnpackLargeBlock(UnpackThreadData &D)
     UnpPtr&=MaxWinMask;
     if (D.Inp.InAddr>=ReadBorder)
     {
-      if (D.Inp.InAddr>BlockBorder || (D.Inp.InAddr==BlockBorder &&
-          D.Inp.InBit>=D.BlockHeader.BlockBitSize))
+      if (D.Inp.InAddr>BlockBorder || D.Inp.InAddr==BlockBorder && 
+          D.Inp.InBit>=D.BlockHeader.BlockBitSize)
         break;
 
       // If we do not have any more data in file to read, we must process
       // what we have until last byte. Otherwise we can return and append
       // more data to unprocessed few bytes.
-      if ((D.Inp.InAddr>=DataBorder && !D.NoDataLeft) || D.Inp.InAddr>=D.DataSize)
+      if ((D.Inp.InAddr>=DataBorder) && !D.NoDataLeft || D.Inp.InAddr>=D.DataSize)
       {
         D.Incomplete=true;
         break;
@@ -655,5 +653,3 @@ bool Unpack::UnpackLargeBlock(UnpackThreadData &D)
   }
   return true;
 }
-
-}  // namespace third_party_unrar

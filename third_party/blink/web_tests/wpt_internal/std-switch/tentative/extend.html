@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<body>
+<script type="module">
+import { StdSwitchElement } from 'std:elements/switch';
+
+setup({allow_uncaught_exception:true});
+
+test(()=> {
+  class MySwitchElement extends StdSwitchElement {
+  }
+  customElements.define('my-switch', MySwitchElement);
+  let uncaughtError = null;
+  window.addEventListener('error', e => {
+    uncaughtError = e.error;
+  }, {once: true});
+  document.createElement('my-switch');
+  assert_true(uncaughtError instanceof TypeError);
+}, 'Should not be able to create an autonomous custom element extending StdSwitchElement');
+
+test(()=> {
+  class MySwitchElement2 extends StdSwitchElement {
+  }
+  assert_throws('NotSupportedError', () => {
+    customElements.define('my-switch2', MySwitchElement2, {extends: 'std-switch'});
+  });
+}, 'Should not be able to define a customized built-in element for std-switch');
+</script>
+</body>

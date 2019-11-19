@@ -16,7 +16,7 @@
 #include "base/json/json_reader.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/version.h"
 #include "components/update_client/component.h"
@@ -54,32 +54,27 @@ class PingManagerTest : public testing::Test,
   scoped_refptr<TestConfigurator> config_;
   scoped_refptr<PingManager> ping_manager_;
 
-  bool use_JSON_ = false;
-
   int error_ = -1;
   std::string response_;
 
  private:
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_;
   base::OnceClosure quit_closure_;
 };
 
 PingManagerTest::PingManagerTest()
-    : scoped_task_environment_(
-          base::test::ScopedTaskEnvironment::MainThreadType::IO) {
+    : task_environment_(base::test::TaskEnvironment::MainThreadType::IO) {
   config_ = base::MakeRefCounted<TestConfigurator>();
 }
 
 void PingManagerTest::SetUp() {
-  use_JSON_ = GetParam();
-  config_->SetUseJSON(use_JSON_);
   ping_manager_ = base::MakeRefCounted<PingManager>(config_);
 }
 
 void PingManagerTest::TearDown() {
   // Run the threads until they are idle to allow the clean up
   // of the network interceptors on the IO thread.
-  scoped_task_environment_.RunUntilIdle();
+  task_environment_.RunUntilIdle();
   ping_manager_ = nullptr;
 }
 
@@ -138,7 +133,6 @@ TEST_P(PingManagerTest, SendPing) {
 
     EXPECT_EQ(1, interceptor->GetCount()) << interceptor->GetRequestsAsString();
     const auto msg = interceptor->GetRequestBody(0);
-    if (use_JSON_) {
       const auto root = base::JSONReader::Read(msg);
       ASSERT_TRUE(root);
       const auto* request = root->FindKey("request");
@@ -174,25 +168,6 @@ TEST_P(PingManagerTest, SendPing) {
       EXPECT_EQ(3, event.FindKey("eventtype")->GetInt());
       EXPECT_EQ("2.0", event.FindKey("nextversion")->GetString());
       EXPECT_EQ("1.0", event.FindKey("previousversion")->GetString());
-    } else {
-      constexpr char regex[] =
-          R"(<\?xml version="1\.0" encoding="UTF-8"\?>)"
-          R"(<request protocol="3\.1" )"
-          R"(dedup="cr" acceptformat="crx2,crx3" extra="foo" )"
-          R"(sessionid="{[-\w]{36}}" requestid="{[-\w]{36}}" )"
-          R"(updater="fake_prodid" updaterversion="30\.0" prodversion="30\.0" )"
-          R"(lang="fake_lang" os="\w+" arch="\w+" nacl_arch="[-\w]+" )"
-          R"((wow64="1" )?)"
-          R"(updaterchannel="fake_channel_string" )"
-          R"(prodchannel="fake_channel_string">)"
-          R"(<hw physmemory="[0-9]+"/>)"
-          R"(<os platform="Fake Operating System" arch="[,-.\w]+" )"
-          R"(version="[-.\w]+"( sp="[\s\w]+")?/>)"
-          R"(<app appid="abc" version="1\.0">)"
-          R"(<event eventresult="1" eventtype="3" )"
-          R"(nextversion="2\.0" previousversion="1\.0"/></app></request>)";
-      EXPECT_TRUE(RE2::FullMatch(msg, regex)) << msg;
-    }
 
     // Check the ping request does not carry the specific extra request headers.
     const auto headers = std::get<1>(interceptor->GetRequests()[0]);
@@ -219,7 +194,6 @@ TEST_P(PingManagerTest, SendPing) {
 
     EXPECT_EQ(1, interceptor->GetCount()) << interceptor->GetRequestsAsString();
     const auto msg = interceptor->GetRequestBody(0);
-    if (use_JSON_) {
       const auto root = base::JSONReader::Read(msg);
       ASSERT_TRUE(root);
       const auto* request = root->FindKey("request");
@@ -231,13 +205,6 @@ TEST_P(PingManagerTest, SendPing) {
       EXPECT_EQ(3, event.FindKey("eventtype")->GetInt());
       EXPECT_EQ("2.0", event.FindKey("nextversion")->GetString());
       EXPECT_EQ("1.0", event.FindKey("previousversion")->GetString());
-    } else {
-      constexpr char regex[] =
-          R"(<app appid="abc" version="1\.0">)"
-          R"(<event eventresult="0" eventtype="3" )"
-          R"(nextversion="2\.0" previousversion="1\.0"/></app>)";
-      EXPECT_TRUE(RE2::PartialMatch(msg, regex)) << msg;
-    }
     interceptor->Reset();
   }
 
@@ -267,7 +234,6 @@ TEST_P(PingManagerTest, SendPing) {
 
     EXPECT_EQ(1, interceptor->GetCount()) << interceptor->GetRequestsAsString();
     const auto msg = interceptor->GetRequestBody(0);
-    if (use_JSON_) {
       const auto root = base::JSONReader::Read(msg);
       ASSERT_TRUE(root);
       const auto* request = root->FindKey("request");
@@ -288,16 +254,6 @@ TEST_P(PingManagerTest, SendPing) {
       EXPECT_EQ(-1, event.FindKey("extracode1")->GetInt());
       EXPECT_EQ("next fp", event.FindKey("nextfp")->GetString());
       EXPECT_EQ("prev fp", event.FindKey("previousfp")->GetString());
-    } else {
-      constexpr char regex[] =
-          R"(<app appid="abc" version="1\.0">)"
-          R"(<event differrorcat="4" differrorcode="20" )"
-          R"(diffextracode1="-10" diffresult="0" errorcat="1" errorcode="2" )"
-          R"(eventresult="0" eventtype="3" extracode1="-1" nextfp="next fp" )"
-          R"(nextversion="2\.0" previousfp="prev fp" previousversion="1\.0"/>)"
-          R"(</app>)";
-      EXPECT_TRUE(RE2::PartialMatch(msg, regex)) << msg;
-    }
     interceptor->Reset();
   }
 
@@ -318,7 +274,6 @@ TEST_P(PingManagerTest, SendPing) {
 
     EXPECT_EQ(1, interceptor->GetCount()) << interceptor->GetRequestsAsString();
     const auto msg = interceptor->GetRequestBody(0);
-    if (use_JSON_) {
       const auto root = base::JSONReader::Read(msg);
       ASSERT_TRUE(root);
       const auto* request = root->FindKey("request");
@@ -329,13 +284,6 @@ TEST_P(PingManagerTest, SendPing) {
       EXPECT_EQ(0, event.FindKey("eventresult")->GetInt());
       EXPECT_EQ(3, event.FindKey("eventtype")->GetInt());
       EXPECT_EQ("1.0", event.FindKey("previousversion")->GetString());
-    } else {
-      constexpr char regex[] =
-          R"(<app appid="abc" version="1\.0">)"
-          R"(<event eventresult="0" eventtype="3" previousversion="1\.0"/>)"
-          R"(</app>)";
-      EXPECT_TRUE(RE2::PartialMatch(msg, regex)) << msg;
-    }
     interceptor->Reset();
   }
 
@@ -353,7 +301,6 @@ TEST_P(PingManagerTest, SendPing) {
 
     EXPECT_EQ(1, interceptor->GetCount()) << interceptor->GetRequestsAsString();
     const auto msg = interceptor->GetRequestBody(0);
-    if (use_JSON_) {
       const auto root = base::JSONReader::Read(msg);
       ASSERT_TRUE(root);
       const auto* request = root->FindKey("request");
@@ -365,13 +312,6 @@ TEST_P(PingManagerTest, SendPing) {
       EXPECT_EQ(4, event.FindKey("eventtype")->GetInt());
       EXPECT_EQ("1.2.3.4", event.FindKey("previousversion")->GetString());
       EXPECT_EQ("0", event.FindKey("nextversion")->GetString());
-    } else {
-      constexpr char regex[] =
-          R"(<app appid="abc" version="1\.2\.3\.4">)"
-          R"(<event eventresult="1" eventtype="4" )"
-          R"(nextversion="0" previousversion="1\.2\.3\.4"/></app>)";
-      EXPECT_TRUE(RE2::PartialMatch(msg, regex)) << msg;
-    }
     interceptor->Reset();
   }
 
@@ -418,7 +358,6 @@ TEST_P(PingManagerTest, SendPing) {
 
     EXPECT_EQ(1, interceptor->GetCount()) << interceptor->GetRequestsAsString();
     const auto msg = interceptor->GetRequestBody(0);
-    if (use_JSON_) {
       const auto root = base::JSONReader::Read(msg);
       ASSERT_TRUE(root);
       const auto* request = root->FindKey("request");
@@ -471,27 +410,6 @@ TEST_P(PingManagerTest, SendPing) {
         EXPECT_EQ(9007199254740991, event.FindKey("total")->GetDouble());
         EXPECT_EQ("http://host3/path3", event.FindKey("url")->GetString());
       }
-    } else {
-      constexpr char regex[] =
-          R"(<app appid="abc" version="1\.0">)"
-          R"(<event eventresult="1" eventtype="3" )"
-          R"(nextversion="2\.0" previousversion="1\.0"/>)"
-          R"(<event download_time_ms="987" )"
-          R"(downloaded="123" downloader="direct" )"
-          R"(errorcode="-1" eventresult="0" eventtype="14" )"
-          R"(nextversion="2\.0" previousversion="1\.0" total="456" )"
-          R"(url="http://host1/path1"/>)"
-          R"(<event download_time_ms="9870" downloaded="1230" )"
-          R"(downloader="bits" )"
-          R"(eventresult="1" eventtype="14" nextversion="2\.0" )"
-          R"(previousversion="1\.0" total="4560" url="http://host2/path2"/>)"
-          R"(<event download_time_ms="9007199254740990" )"
-          R"(downloaded="9007199254740992" downloader="bits" )"
-          R"(eventresult="1" eventtype="14" nextversion="2.0" )"
-          R"(previousversion="1.0" total="9007199254740991" )"
-          R"(url="http://host3/path3"/></app>)";
-      EXPECT_TRUE(RE2::PartialMatch(msg, regex)) << msg;
-    }
     interceptor->Reset();
   }
 }

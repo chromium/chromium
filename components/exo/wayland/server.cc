@@ -7,7 +7,6 @@
 #include <alpha-compositing-unstable-v1-server-protocol.h>
 #include <aura-shell-server-protocol.h>
 #include <cursor-shapes-unstable-v1-server-protocol.h>
-#include <gaming-input-unstable-v1-server-protocol.h>
 #include <gaming-input-unstable-v2-server-protocol.h>
 #include <grp.h>
 #include <input-timestamps-unstable-v1-server-protocol.h>
@@ -15,6 +14,7 @@
 #include <keyboard-extension-unstable-v1-server-protocol.h>
 #include <linux-explicit-synchronization-unstable-v1-server-protocol.h>
 #include <notification-shell-unstable-v1-server-protocol.h>
+#include <pointer-constraints-unstable-v1-server-protocol.h>
 #include <pointer-gestures-unstable-v1-server-protocol.h>
 #include <presentation-time-server-protocol.h>
 #include <relative-pointer-unstable-v1-server-protocol.h>
@@ -36,6 +36,7 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "components/exo/display.h"
+#include "components/exo/wayland/serial_tracker.h"
 #include "components/exo/wayland/wayland_display_output.h"
 #include "components/exo/wayland/wl_compositor.h"
 #include "components/exo/wayland/wl_data_device_manager.h"
@@ -45,16 +46,17 @@
 #include "components/exo/wayland/wl_subcompositor.h"
 #include "components/exo/wayland/wp_presentation.h"
 #include "components/exo/wayland/wp_viewporter.h"
+#include "components/exo/wayland/zaura_shell.h"
 #include "components/exo/wayland/zcr_alpha_compositing.h"
 #include "components/exo/wayland/zcr_secure_output.h"
 #include "components/exo/wayland/zcr_stylus.h"
 #include "components/exo/wayland/zcr_vsync_feedback.h"
+#include "components/exo/wayland/zwp_linux_explicit_synchronization.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 
 #if defined(OS_CHROMEOS)
 #include "components/exo/wayland/wl_shell.h"
-#include "components/exo/wayland/zaura_shell.h"
 #include "components/exo/wayland/zcr_cursor_shapes.h"
 #include "components/exo/wayland/zcr_gaming_input.h"
 #include "components/exo/wayland/zcr_keyboard_configuration.h"
@@ -63,7 +65,7 @@
 #include "components/exo/wayland/zcr_remote_shell.h"
 #include "components/exo/wayland/zcr_stylus_tools.h"
 #include "components/exo/wayland/zwp_input_timestamps_manager.h"
-#include "components/exo/wayland/zwp_linux_explicit_synchronization.h"
+#include "components/exo/wayland/zwp_pointer_constraints.h"
 #include "components/exo/wayland/zwp_pointer_gestures.h"
 #include "components/exo/wayland/zwp_relative_pointer_manager.h"
 #include "components/exo/wayland/zwp_text_input_manager.h"
@@ -104,7 +106,9 @@ const char kWaylandSocketGroup[] = "wayland";
 // Server, public:
 
 Server::Server(Display* display)
-    : display_(display), wl_display_(wl_display_create()) {
+    : display_(display),
+      wl_display_(wl_display_create()),
+      serial_tracker_(std::make_unique<SerialTracker>(wl_display_.get())) {
   wl_global_create(wl_display_.get(), &wl_compositor_interface,
                    kWlCompositorVersion, display_, bind_compositor);
   wl_global_create(wl_display_.get(), &wl_shm_interface, 1, display_, bind_shm);
@@ -119,9 +123,13 @@ Server::Server(Display* display)
     OnDisplayAdded(display);
   wl_global_create(wl_display_.get(), &zcr_vsync_feedback_v1_interface, 1,
                    display_, bind_vsync_feedback);
+
+  data_device_manager_data_ = std::make_unique<WaylandDataDeviceManager>(
+      display_, serial_tracker_.get());
   wl_global_create(wl_display_.get(), &wl_data_device_manager_interface,
-                   kWlDataDeviceManagerVersion, display_,
+                   kWlDataDeviceManagerVersion, data_device_manager_data_.get(),
                    bind_data_device_manager);
+
   wl_global_create(wl_display_.get(), &wp_viewporter_interface, 1, display_,
                    bind_viewporter);
   wl_global_create(wl_display_.get(), &wp_presentation_interface, 1, display_,
@@ -132,13 +140,20 @@ Server::Server(Display* display)
                    display_, bind_alpha_compositing);
   wl_global_create(wl_display_.get(), &zcr_stylus_v2_interface, 1, display_,
                    bind_stylus_v2);
+
+  seat_data_ =
+      std::make_unique<WaylandSeat>(display_->seat(), serial_tracker_.get());
   wl_global_create(wl_display_.get(), &wl_seat_interface, kWlSeatVersion,
-                   display_->seat(), bind_seat);
+                   seat_data_.get(), bind_seat);
+
+  wl_global_create(wl_display_.get(),
+                   &zwp_linux_explicit_synchronization_v1_interface, 1,
+                   display_, bind_linux_explicit_synchronization);
+  wl_global_create(wl_display_.get(), &zaura_shell_interface,
+                   kZAuraShellVersion, display_, bind_aura_shell);
 #if defined(OS_CHROMEOS)
   wl_global_create(wl_display_.get(), &wl_shell_interface, 1, display_,
                    bind_shell);
-  wl_global_create(wl_display_.get(), &zaura_shell_interface,
-                   kZAuraShellVersion, display_, bind_aura_shell);
   wl_global_create(wl_display_.get(), &zcr_cursor_shapes_v1_interface, 1,
                    display_, bind_cursor_shapes);
   wl_global_create(wl_display_.get(), &zcr_gaming_input_v2_interface, 1,
@@ -159,16 +174,21 @@ Server::Server(Display* display)
                    bind_input_timestamps_manager);
   wl_global_create(wl_display_.get(), &zwp_pointer_gestures_v1_interface, 1,
                    display_, bind_pointer_gestures);
+  wl_global_create(wl_display_.get(), &zwp_pointer_constraints_v1_interface, 1,
+                   display_, bind_pointer_constraints);
   wl_global_create(wl_display_.get(),
                    &zwp_relative_pointer_manager_v1_interface, 1, display_,
                    bind_relative_pointer_manager);
+
+  zwp_text_manager_data_ =
+      std::make_unique<WaylandTextInputManager>(serial_tracker_.get());
   wl_global_create(wl_display_.get(), &zwp_text_input_manager_v1_interface, 1,
-                   display_, bind_text_input_manager);
-  wl_global_create(wl_display_.get(), &zxdg_shell_v6_interface, 1, display_,
-                   bind_xdg_shell_v6);
-  wl_global_create(wl_display_.get(),
-                   &zwp_linux_explicit_synchronization_v1_interface, 1,
-                   display_, bind_linux_explicit_synchronization);
+                   zwp_text_manager_data_.get(), bind_text_input_manager);
+
+  xdg_shell_data_ =
+      std::make_unique<WaylandXdgShell>(display_, serial_tracker_.get());
+  wl_global_create(wl_display_.get(), &zxdg_shell_v6_interface, 1,
+                   xdg_shell_data_.get(), bind_xdg_shell_v6);
 #endif
 
 #if defined(USE_FULLSCREEN_SHELL)

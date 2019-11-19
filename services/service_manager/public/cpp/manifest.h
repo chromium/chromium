@@ -12,6 +12,7 @@
 
 #include "base/component_export.h"
 #include "base/files/file_path.h"
+#include "base/strings/string16.h"
 
 namespace service_manager {
 
@@ -40,15 +41,20 @@ struct COMPONENT_EXPORT(SERVICE_MANAGER_CPP) Manifest {
   using RequiredCapabilityMap = std::map<ServiceName, CapabilityNameSet>;
 
   // Represents the display name of this service (in e.g. a task manager).
-  //
-  // TODO(https://crbug.com/915806): Extend this to support resource IDs in
-  // addition to raw strings.
   struct COMPONENT_EXPORT(SERVICE_MANAGER_CPP) DisplayName {
-    DisplayName() = default;
-    explicit DisplayName(const std::string& raw_string)
-        : raw_string(raw_string) {}
+    enum class Type { kDefault, kRawString, kResourceId };
 
-    std::string raw_string;
+    DisplayName() : type(Type::kDefault) {}
+    explicit DisplayName(const char* raw_string)
+        : type(Type::kRawString), raw_string(raw_string) {}
+    explicit DisplayName(int resource_id)
+        : type(Type::kResourceId), resource_id(resource_id) {}
+
+    Type type;
+    union {
+      const char* raw_string;
+      int resource_id;
+    };
   };
 
   enum class InstanceSharingPolicy {
@@ -66,6 +72,40 @@ struct COMPONENT_EXPORT(SERVICE_MANAGER_CPP) Manifest {
     // i.e., instance group is effectively ignored when locating an instance of
     // the service on behalf of a client.
     kSharedAcrossGroups,
+  };
+
+  // Indicates how instances of this service are launched. Ignored if this
+  // manifest is packaged within another manifest, as launch is always delegated
+  // to some instance of the packaging service in that case. See
+  // |packaged_services| below for more information about packaged service
+  // manifests.
+  enum class ExecutionMode {
+    // The service implementation is built into the Service Manager embedder's
+    // binary (for example Chromium, or any Content embedder), and the embedder
+    // handles requests for new instances of the service in-process via
+    // ServiceManager::Delegate::RunBuiltinServiceInstanceInCurrentProcess().
+    //
+    // If a service uses this ExecutionMode in Chromium for example, that means
+    // the service always runs in the browser process.
+    kInProcessBuiltin,
+
+    // The service implementation is built into the Service Manager embedder's
+    // binary (for example Chromium, or any Content embedder), and the embedder
+    // handles requests for new instances of the service via
+    // ServiceProcess::Delegate::RunService(). The service will always run in
+    // a child process sandboxed according to SandboxType (see Options below).
+    kOutOfProcessBuiltin,
+
+    // The service is launched out-of-process from a standalone service
+    // executable on disk within the running application's directory. The name
+    // of the executable is expected to be "${service_name}.service" (or
+    // "${service_name}.service.exe" on Windows).
+    //
+    // Proper sandboxing is currently not supported for standalone service
+    // executables, so SandboxType (see Options below) is ignored. This renders
+    // standalone service executables generally unsuitable for production
+    // environments.
+    kStandaloneExecutable,
   };
 
   // Miscellanous options which control how the service is launched and how it
@@ -103,7 +143,13 @@ struct COMPONENT_EXPORT(SERVICE_MANAGER_CPP) Manifest {
     // intended for those services.
     bool can_register_other_service_instances = false;
 
-    // The type of sandboxing required by instances of this service.
+    // Indicates how instances of this service are launched. Ignored iff this
+    // manifest is packaged within another service's manifest.
+    ExecutionMode execution_mode = ExecutionMode::kInProcessBuiltin;
+
+    // The type of sandboxing required by instances of this service. Only used
+    // if |execution_mode| is |kOutOfProcessBuiltin| or
+    // |kStandaloneExecutable|.
     //
     // TODO(https://crbug.com/915806): Make this field a SandboxType enum.
     std::string sandbox_type{"utility"};
@@ -197,6 +243,14 @@ struct COMPONENT_EXPORT(SERVICE_MANAGER_CPP) Manifest {
   std::map<FilterName, RequiredCapabilityMap>
       required_interface_filter_capabilities;
 
+  // A list of manifests for services "packaged" by this service. For a service
+  // Y to be packaged within a service X means that the Service Manager will
+  // always delegate creation of Y instances to an instance of X via calls to
+  // |Service::CreatePackagedServiceInstance()|.
+  //
+  // See
+  // https://chromium.googlesource.com/chromium/src/+/master/services/service_manager/README.md#Packaging
+  // for more information.
   std::vector<Manifest> packaged_services;
   std::vector<PreloadedFileInfo> preloaded_files;
 

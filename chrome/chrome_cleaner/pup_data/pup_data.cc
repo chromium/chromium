@@ -11,6 +11,7 @@
 #include "base/stl_util.h"
 #include "base/strings/string_piece.h"
 #include "chrome/chrome_cleaner/proto/shared_pup_enums.pb.h"
+#include "chrome/chrome_cleaner/pup_data/test_uws.h"
 #include "chrome/chrome_cleaner/pup_data/uws_catalog.h"
 
 namespace chrome_cleaner {
@@ -21,9 +22,6 @@ namespace {
 const wchar_t kGroupPolicyPath[] = L"%SystemRoot%\\system32\\GroupPolicy";
 const wchar_t kMachinePolicyFolder[] = L"Machine";
 const wchar_t kUserPolicyFolder[] = L"User";
-
-// This UwSId is used to distinguish Urza PUPs from external engines' PUPs.
-const UwSId kMaxValidUrzaUwSId = 9999;
 
 }  // namespace
 
@@ -40,10 +38,6 @@ const size_t PUPData::kCommonDelimitersLength =
 const wchar_t PUPData::kRegistryPatternEscapeCharacter = L'\uFFFF';
 // TODO(csharp): Find a way to add a compile assert making sure that the \uFFFF
 // used here is the same as the one used in ESCAPE_REGISTRY_STR(str).
-
-// static
-const char PUPData::kRemovedPUPNamePrefix[] = "Removed/";
-const char PUPData::kObservedPUPNamePrefix[] = "Observed/";
 
 // static
 PUPData::PUPDataMap* PUPData::cached_pup_map_ = nullptr;
@@ -141,11 +135,7 @@ void PUPData::PUP::MergeFrom(const PUPData::PUP& other) {
   }
 }
 
-PUPData::PUPData() : has_filter_(false) {
-  DCHECK(kPUPs);
-  DCHECK(kObservedPUPs);
-  DCHECK(kRemovedPUPs);
-}
+PUPData::PUPData() = default;
 
 PUPData::~PUPData() = default;
 
@@ -173,12 +163,10 @@ PUPData::PUP* PUPData::GetPUP(UwSId uws_id) {
 void PUPData::InitializePUPData(const UwSCatalogs& uws_catalogs) {
   // Reinitialize the caches if they already exist.
   delete cached_pup_map_;
-  cached_pup_map_ = nullptr;
+  cached_pup_map_ = new PUPDataMap();
 
   delete cached_uws_ids_;
-  cached_uws_ids_ = nullptr;
-
-  UpdateCachedUwS();
+  cached_uws_ids_ = new std::vector<UwSId>;
 
   if (!last_uws_catalogs_)
     last_uws_catalogs_ = new UwSCatalogs();
@@ -266,24 +254,6 @@ bool PUPData::HasFlaggedPUP(const std::vector<UwSId>& input_pup_list,
       return true;
   }
   return false;
-}
-
-// static
-FilePathSet PUPData::GetFilesDetectedInServices(
-    const std::vector<UwSId>& uws_list) {
-  FilePathSet detected_in_services;
-  for (chrome_cleaner::UwSId uws_id : uws_list) {
-    const PUP* uws = GetPUP(uws_id);
-    for (auto path_location_it = uws->disk_footprints_info.map().begin();
-         path_location_it != uws->disk_footprints_info.map().end();
-         ++path_location_it) {
-      const std::set<UwS::TraceLocation>& found_in =
-          path_location_it->second.found_in;
-      if (found_in.find(UwS::FOUND_IN_SERVICE) != found_in.end())
-        detected_in_services.Insert(path_location_it->first);
-    }
-  }
-  return detected_in_services;
 }
 
 // static
@@ -391,20 +361,27 @@ const PUPData::PUPDataMap* PUPData::GetAllPUPs() {
 }
 
 // static
-void PUPData::UpdateCachedUwS() {
-  if (!cached_pup_map_)
-    cached_pup_map_ = new PUPDataMap();
-  if (!cached_uws_ids_)
-    cached_uws_ids_ = new std::vector<UwSId>;
+void PUPData::UpdateCachedUwSForTesting() {
+  DCHECK(cached_pup_map_);
+  DCHECK(cached_uws_ids_);
+  DCHECK(last_uws_catalogs_);
 
-  PUPData::AddUwSSignaturesToMap(kPUPs);
-  PUPData::AddUwSSignaturesToMap(kObservedPUPs);
-  PUPData::AddUwSSignaturesToMap(kRemovedPUPs);
-
-  // TODO(joenotcharles): This does not handle changes to UwS loaded from
-  // catalogs. Right now that works because UpdateCachedUwS is only called from
-  // InitializePUPData (which adds UwS from the catalogs after this returns)
-  // and TestPUPData, which does not deal with catalogs.
+  // For each signature in each catalog, create a PUPData::PUP object and add
+  // it to cached_pup_map_ if none exists for that ID, or update the existing
+  // PUP object for that ID to point to the signature.
+  for (const UwSCatalog* catalog : *last_uws_catalogs_) {
+    for (const UwSId id : catalog->GetUwSIds()) {
+      std::unique_ptr<PUPData::PUP> pup = catalog->CreatePUPForId(id);
+      auto cached_pup_iter = cached_pup_map_->find(id);
+      if (cached_pup_iter == cached_pup_map_->end()) {
+        AddPUPToMap(std::move(pup));
+      } else {
+        // Copy the signature into the existing PUP, then throw away the newly
+        // created object.
+        cached_pup_iter->second->signature_ = pup->signature_;
+      }
+    }
+  }
 }
 
 // static
@@ -416,25 +393,18 @@ void PUPData::AddPUPToMap(std::unique_ptr<PUPData::PUP> pup) {
 }
 
 // static
-void PUPData::AddUwSSignaturesToMap(
-    const PUPData::UwSSignature* signature_array) {
-  const PUPData::UwSSignature* signature = signature_array;
-  while (signature->id != kInvalidUwSId) {
-    auto cached_pup_iter = cached_pup_map_->find(signature->id);
-    if (cached_pup_iter == cached_pup_map_->end())
-      AddPUPToMap(std::make_unique<PUPData::PUP>(signature));
-    else
-      cached_pup_iter->second->signature_ = signature;
-    ++signature;
-  }
-}
-
-// static
 Engine::Name PUPData::GetEngine(UwSId id) {
-  if (id <= kMaxValidUrzaUwSId)
-    return Engine::URZA;
-  else
-    return Engine::ESET;
-}
+  // These values were used by the deprecated Urza engine and shouldn't be used
+  // anymore.
+  if ((0 <= id && id <= 340) || id == 9001 || id == 9002) {
+    NOTREACHED() << "Deprecated ID from Urza engine used";
+    return Engine::DEPRECATED_URZA;
+  }
+  if (id == kGoogleTestAUwSID || id == kGoogleTestBUwSID ||
+      id == kGoogleTestCUwSID) {
+    return Engine::TEST_ONLY;
+  }
 
+  return Engine::ESET;
+}
 }  // namespace chrome_cleaner

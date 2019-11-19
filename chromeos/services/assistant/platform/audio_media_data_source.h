@@ -8,10 +8,12 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/single_thread_task_runner.h"
 #include "chromeos/services/assistant/public/mojom/assistant_audio_decoder.mojom.h"
 #include "libassistant/shared/public/platform_audio_output.h"
-#include "mojo/public/cpp/bindings/binding.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 
 namespace chromeos {
 namespace assistant {
@@ -20,8 +22,9 @@ namespace assistant {
 // Internally it will read media data from |delegate_|.
 class AudioMediaDataSource : public mojom::AssistantMediaDataSource {
  public:
-  AudioMediaDataSource(mojom::AssistantMediaDataSourcePtr* interface_ptr,
-                       scoped_refptr<base::SequencedTaskRunner> task_runner);
+  AudioMediaDataSource(
+      mojo::PendingReceiver<mojom::AssistantMediaDataSource> receiver,
+      scoped_refptr<base::SequencedTaskRunner> task_runner);
   ~AudioMediaDataSource() override;
 
   // mojom::MediaDataSource implementation.
@@ -40,7 +43,7 @@ class AudioMediaDataSource : public mojom::AssistantMediaDataSource {
   void OnFillBuffer(mojom::AssistantMediaDataSource::ReadCallback callback,
                     int bytes_filled);
 
-  mojo::Binding<mojom::AssistantMediaDataSource> binding_;
+  mojo::Receiver<mojom::AssistantMediaDataSource> receiver_;
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 

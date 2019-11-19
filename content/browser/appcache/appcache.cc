@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <algorithm>
+#include <vector>
 
 #include "base/logging.h"
 #include "base/stl_util.h"
@@ -25,6 +26,7 @@ AppCache::AppCache(AppCacheStorage* storage, int64_t cache_id)
       online_whitelist_all_(false),
       is_complete_(false),
       cache_size_(0),
+      padding_size_(0),
       storage_(storage) {
   storage_->working_set()->AddCache(this);
 }
@@ -47,6 +49,7 @@ void AppCache::AddEntry(const GURL& url, const AppCacheEntry& entry) {
   DCHECK(entries_.find(url) == entries_.end());
   entries_.insert(EntryMap::value_type(url, entry));
   cache_size_ += entry.response_size();
+  padding_size_ += entry.padding_size();
 }
 
 bool AppCache::AddOrModifyEntry(const GURL& url, const AppCacheEntry& entry) {
@@ -54,17 +57,22 @@ bool AppCache::AddOrModifyEntry(const GURL& url, const AppCacheEntry& entry) {
       entries_.insert(EntryMap::value_type(url, entry));
 
   // Entry already exists.  Merge the types of the new and existing entries.
-  if (!ret.second)
+  if (!ret.second) {
     ret.first->second.add_types(entry.types());
-  else
+  } else {
     cache_size_ += entry.response_size();  // New entry. Add to cache size.
+    padding_size_ += entry.padding_size();
+  }
   return ret.second;
 }
 
 void AppCache::RemoveEntry(const GURL& url) {
   auto found = entries_.find(url);
   DCHECK(found != entries_.end());
+  DCHECK_GE(cache_size_, found->second.response_size());
+  DCHECK_GE(padding_size_, found->second.padding_size());
   cache_size_ -= found->second.response_size();
+  padding_size_ -= found->second.padding_size();
   entries_.erase(found);
 }
 
@@ -126,16 +134,17 @@ void AppCache::InitializeWithDatabaseRecords(
     const std::vector<AppCacheDatabase::NamespaceRecord>& intercepts,
     const std::vector<AppCacheDatabase::NamespaceRecord>& fallbacks,
     const std::vector<AppCacheDatabase::OnlineWhiteListRecord>& whitelists) {
-  DCHECK(cache_id_ == cache_record.cache_id);
+  DCHECK_EQ(cache_id_, cache_record.cache_id);
   online_whitelist_all_ = cache_record.online_wildcard;
   update_time_ = cache_record.update_time;
 
   for (size_t i = 0; i < entries.size(); ++i) {
     const AppCacheDatabase::EntryRecord& entry = entries.at(i);
     AddEntry(entry.url, AppCacheEntry(entry.flags, entry.response_id,
-                                      entry.response_size));
+                                      entry.response_size, entry.padding_size));
   }
-  DCHECK(cache_size_ == cache_record.cache_size);
+  DCHECK_EQ(cache_size_, cache_record.cache_size);
+  DCHECK_EQ(padding_size_, cache_record.padding_size);
 
   for (size_t i = 0; i < intercepts.size(); ++i)
     intercept_namespaces_.push_back(intercepts.at(i).namespace_);
@@ -174,7 +183,8 @@ void AppCache::ToDatabaseRecords(
   cache_record->group_id = group->group_id();
   cache_record->online_wildcard = online_whitelist_all_;
   cache_record->update_time = update_time_;
-  cache_record->cache_size = 0;
+  cache_record->cache_size = cache_size_;
+  cache_record->padding_size = padding_size_;
 
   for (const auto& pair : entries_) {
     entries->push_back(AppCacheDatabase::EntryRecord());
@@ -184,7 +194,7 @@ void AppCache::ToDatabaseRecords(
     record.flags = pair.second.types();
     record.response_id = pair.second.response_id();
     record.response_size = pair.second.response_size();
-    cache_record->cache_size += record.response_size;
+    record.padding_size = pair.second.padding_size();
   }
 
   const url::Origin origin = url::Origin::Create(group->manifest_url());
@@ -277,7 +287,8 @@ void AppCache::ToResourceInfoVector(
     info.is_fallback = pair.second.IsFallback();
     info.is_foreign = pair.second.IsForeign();
     info.is_explicit = pair.second.IsExplicit();
-    info.size = pair.second.response_size();
+    info.response_size = pair.second.response_size();
+    info.padding_size = pair.second.padding_size();
     info.response_id = pair.second.response_id();
   }
 }

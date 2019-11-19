@@ -8,59 +8,13 @@
 #import <UIKit/UIKit.h>
 
 #import "ios/chrome/browser/ui/autofill/autofill_ui_type.h"
-#import "ios/chrome/browser/ui/table_view/cells/table_view_item.h"
+#import "ios/chrome/browser/ui/table_view/cells/table_view_text_edit_item.h"
 
-// Item to represent and configure an AutofillEditItem. It features a label and
-// a text field.
-@interface AutofillEditItem : TableViewItem
-
-// The name of the text field.
-@property(nonatomic, copy) NSString* textFieldName;
-
-// The value of the text field.
-@property(nonatomic, copy) NSString* textFieldValue;
-
-// An icon identifying the text field or its current value, if any.
-@property(nonatomic, copy) UIImage* identifyingIcon;
+// Item to represent and configure an AutofillEditItem.
+@interface AutofillEditItem : TableViewTextEditItem
 
 // The field type this item is describing.
 @property(nonatomic, assign) AutofillUIType autofillUIType;
-
-// Whether this field is required. If YES, an "*" is appended to the name of the
-// text field to indicate that the field is required. It is also used for
-// validation purposes.
-@property(nonatomic, getter=isRequired) BOOL required;
-
-// Whether the text field is enabled for editing.
-@property(nonatomic, getter=isTextFieldEnabled) BOOL textFieldEnabled;
-
-// Controls the display of the return key when the keyboard is displaying.
-@property(nonatomic, assign) UIReturnKeyType returnKeyType;
-
-// Keyboard type to be displayed when the text field becomes first responder.
-@property(nonatomic, assign) UIKeyboardType keyboardType;
-
-// Controls autocapitalization behavior of the text field.
-@property(nonatomic, assign)
-    UITextAutocapitalizationType autoCapitalizationType;
-
-@end
-
-// AutofillEditCell implements an TableViewCell subclass containing a label
-// and a text field.
-@interface AutofillEditCell : TableViewCell
-
-// Label at the leading edge of the cell. It displays the item's textFieldName.
-@property(nonatomic, strong) UILabel* textLabel;
-
-// Text field at the trailing edge of the cell. It displays the item's
-// |textFieldValue|.
-@property(nonatomic, readonly, strong) UITextField* textField;
-
-// Whether the icon showing that the cell is editable should be displayed.
-@property(nonatomic, assign) BOOL editIconDisplayed;
-
-- (void)setIdentifyingIcon:(UIImage*)icon;
 
 @end
 

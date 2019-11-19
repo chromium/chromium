@@ -186,9 +186,9 @@ class TaskRunnerWithCap : public base::TaskRunner {
   }
 
   const scoped_refptr<base::TaskRunner> task_runner_ =
-      base::CreateTaskRunnerWithTraits(
-          {base::MayBlock(), base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN,
-           base::TaskPriority::USER_VISIBLE});
+      base::CreateTaskRunner({base::ThreadPool(), base::MayBlock(),
+                              base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN,
+                              base::TaskPriority::USER_VISIBLE});
 
   // Synchronizes access to members below.
   base::Lock lock_;
@@ -202,69 +202,53 @@ class TaskRunnerWithCap : public base::TaskRunner {
   DISALLOW_COPY_AND_ASSIGN(TaskRunnerWithCap);
 };
 
-// Helper to set an integer value into a base::DictionaryValue. Because of
-// C++'s implicit narrowing casts to |int|, this can be called with int64_t and
-// ULONG too.
-void SetInt(base::StringPiece key, int value, base::DictionaryValue* dict) {
-  dict->SetKey(key, base::Value(value));
-}
-
-std::unique_ptr<base::Value> NetLogGetAdaptersDoneCallback(
-    DhcpAdapterNamesLoggingInfo* info,
-    NetLogCaptureMode /* capture_mode */) {
-  std::unique_ptr<base::DictionaryValue> result =
-      std::make_unique<base::DictionaryValue>();
+base::Value NetLogGetAdaptersDoneParams(DhcpAdapterNamesLoggingInfo* info) {
+  base::Value result(base::Value::Type::DICTIONARY);
 
   // Add information on each of the adapters enumerated (including those that
   // were subsequently skipped).
-  base::ListValue adapters_value;
+  base::Value adapters_value(base::Value::Type::LIST);
   for (IP_ADAPTER_ADDRESSES* adapter = info->adapters.get(); adapter;
        adapter = adapter->Next) {
-    base::DictionaryValue adapter_value;
+    base::Value adapter_value(base::Value::Type::DICTIONARY);
 
-    adapter_value.SetKey("AdapterName", base::Value(adapter->AdapterName));
-    SetInt("IfType", adapter->IfType, &adapter_value);
-    SetInt("Flags", adapter->Flags, &adapter_value);
-    SetInt("OperStatus", adapter->OperStatus, &adapter_value);
-    SetInt("TunnelType", adapter->TunnelType, &adapter_value);
+    adapter_value.SetStringKey("AdapterName", adapter->AdapterName);
+    adapter_value.SetIntKey("IfType", adapter->IfType);
+    adapter_value.SetIntKey("Flags", adapter->Flags);
+    adapter_value.SetIntKey("OperStatus", adapter->OperStatus);
+    adapter_value.SetIntKey("TunnelType", adapter->TunnelType);
 
     // "skipped" means the adapter was not ultimately chosen as a candidate for
     // testing WPAD.
     bool skipped = !IsDhcpCapableAdapter(adapter);
     adapter_value.SetKey("skipped", base::Value(skipped));
 
-    adapters_value.GetList().push_back(std::move(adapter_value));
+    adapters_value.Append(std::move(adapter_value));
   }
-  result->SetKey("adapters", std::move(adapters_value));
+  result.SetKey("adapters", std::move(adapters_value));
 
-  SetInt("origin_to_worker_thread_hop_dt",
-         (info->worker_thread_start_time - info->origin_thread_start_time)
-             .InMilliseconds(),
-         result.get());
-  SetInt("worker_to_origin_thread_hop_dt",
-         (info->origin_thread_end_time - info->worker_thread_end_time)
-             .InMilliseconds(),
-         result.get());
-  SetInt("worker_dt",
-         (info->worker_thread_end_time - info->worker_thread_start_time)
-             .InMilliseconds(),
-         result.get());
+  result.SetIntKey(
+      "origin_to_worker_thread_hop_dt",
+      (info->worker_thread_start_time - info->origin_thread_start_time)
+          .InMilliseconds());
+  result.SetIntKey("worker_to_origin_thread_hop_dt",
+                   (info->origin_thread_end_time - info->worker_thread_end_time)
+                       .InMilliseconds());
+  result.SetIntKey("worker_dt", (info->worker_thread_end_time -
+                                 info->worker_thread_start_time)
+                                    .InMilliseconds());
 
   if (info->error != ERROR_SUCCESS)
-    SetInt("error", info->error, result.get());
+    result.SetIntKey("error", info->error);
 
   return result;
 }
 
-std::unique_ptr<base::Value> NetLogFetcherDoneCallback(
-    int fetcher_index,
-    int net_error,
-    NetLogCaptureMode /* capture_mode */) {
-  std::unique_ptr<base::DictionaryValue> result =
-      std::make_unique<base::DictionaryValue>();
+base::Value NetLogFetcherDoneParams(int fetcher_index, int net_error) {
+  base::Value result(base::Value::Type::DICTIONARY);
 
-  result->SetKey("fetcher_index", base::Value(fetcher_index));
-  result->SetKey("net_error", base::Value(net_error));
+  result.SetIntKey("fetcher_index", fetcher_index);
+  result.SetIntKey("net_error", net_error);
 
   return result;
 }
@@ -275,7 +259,7 @@ DhcpPacFileFetcherWin::DhcpPacFileFetcherWin(
     URLRequestContext* url_request_context)
     : state_(STATE_START),
       num_pending_fetchers_(0),
-      destination_string_(NULL),
+      destination_string_(nullptr),
       url_request_context_(url_request_context),
       task_runner_(base::MakeRefCounted<TaskRunnerWithCap>()) {
   DCHECK(url_request_context_);
@@ -335,18 +319,11 @@ void DhcpPacFileFetcherWin::Cancel() {
 void DhcpPacFileFetcherWin::OnShutdown() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-  // Back up callback, if there is one, as CancelImpl() will destroy it.
-  net::CompletionOnceCallback callback = std::move(callback_);
-
   // Cancel current request, if there is one.
   CancelImpl();
 
   // Prevent future network requests.
   url_request_context_ = nullptr;
-
-  // Invoke callback with error, if present.
-  if (callback)
-    std::move(callback).Run(ERR_CONTEXT_SHUT_DOWN);
 }
 
 void DhcpPacFileFetcherWin::CancelImpl() {
@@ -376,14 +353,13 @@ void DhcpPacFileFetcherWin::OnGetCandidateAdapterNamesDone(
   // and a previous query was cancelled before it completed.
   if (query.get() != last_query_.get())
     return;
-  last_query_ = NULL;
+  last_query_ = nullptr;
 
   DhcpAdapterNamesLoggingInfo* logging_info = query->logging_info();
   logging_info->origin_thread_end_time = base::TimeTicks::Now();
 
   net_log_.EndEvent(NetLogEventType::WPAD_DHCP_WIN_GET_ADAPTERS,
-                    base::Bind(&NetLogGetAdaptersDoneCallback,
-                               base::Unretained(logging_info)));
+                    [&] { return NetLogGetAdaptersDoneParams(logging_info); });
 
   // Enable unit tests to wait for this to happen; in production this function
   // call is a no-op.
@@ -431,9 +407,9 @@ void DhcpPacFileFetcherWin::OnFetcherDone(size_t fetcher_index,
                                           int result) {
   DCHECK(state_ == STATE_NO_RESULTS || state_ == STATE_SOME_RESULTS);
 
-  net_log_.AddEvent(
-      NetLogEventType::WPAD_DHCP_WIN_ON_FETCHER_DONE,
-      base::Bind(&NetLogFetcherDoneCallback, fetcher_index, result));
+  net_log_.AddEvent(NetLogEventType::WPAD_DHCP_WIN_ON_FETCHER_DONE, [&] {
+    return NetLogFetcherDoneParams(fetcher_index, result);
+  });
 
   if (--num_pending_fetchers_ == 0) {
     TransitionToDone();
@@ -514,9 +490,9 @@ void DhcpPacFileFetcherWin::TransitionToDone() {
   DCHECK_EQ(state_, STATE_DONE);
   DCHECK(fetchers_.empty());
 
-  net_log_.EndEvent(
-      NetLogEventType::WPAD_DHCP_WIN_FETCH,
-      base::Bind(&NetLogFetcherDoneCallback, used_fetcher_index, result));
+  net_log_.EndEvent(NetLogEventType::WPAD_DHCP_WIN_FETCH, [&] {
+    return NetLogFetcherDoneParams(used_fetcher_index, result);
+  });
 
   // We may be deleted re-entrantly within this outcall.
   std::move(callback).Run(result);
@@ -565,14 +541,11 @@ bool DhcpPacFileFetcherWin::GetCandidateAdapterNames(
     // Return only unicast addresses, and skip information we do not need.
     base::ScopedBlockingCall scoped_blocking_call(
         FROM_HERE, base::BlockingType::MAY_BLOCK);
-    error = GetAdaptersAddresses(AF_UNSPEC,
-                                 GAA_FLAG_SKIP_ANYCAST |
-                                 GAA_FLAG_SKIP_MULTICAST |
-                                 GAA_FLAG_SKIP_DNS_SERVER |
-                                 GAA_FLAG_SKIP_FRIENDLY_NAME,
-                                 NULL,
-                                 adapters.get(),
-                                 &adapters_size);
+    error = GetAdaptersAddresses(
+        AF_UNSPEC,
+        GAA_FLAG_SKIP_ANYCAST | GAA_FLAG_SKIP_MULTICAST |
+            GAA_FLAG_SKIP_DNS_SERVER | GAA_FLAG_SKIP_FRIENDLY_NAME,
+        nullptr, adapters.get(), &adapters_size);
     ++num_tries;
   } while (error == ERROR_BUFFER_OVERFLOW && num_tries <= 3);
 
@@ -589,7 +562,7 @@ bool DhcpPacFileFetcherWin::GetCandidateAdapterNames(
     return false;
   }
 
-  IP_ADAPTER_ADDRESSES* adapter = NULL;
+  IP_ADAPTER_ADDRESSES* adapter = nullptr;
   for (adapter = adapters.get(); adapter; adapter = adapter->Next) {
     if (IsDhcpCapableAdapter(adapter)) {
       DCHECK(adapter->AdapterName);

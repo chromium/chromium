@@ -1,8 +1,9 @@
 rootWebArea
-++group
-++++link name='Group Link1'
-++++++staticText name='Group Link1'
-++++++++inlineTextBox name='Group Link1'
-++++link name='Group Link2'
-++++++staticText name='Group Link2'
-++++++++inlineTextBox name='Group Link2'
+++genericContainer ignored
+++++group
+++++++link name='Group Link1'
+++++++++staticText name='Group Link1'
+++++++++++inlineTextBox name='Group Link1'
+++++++link name='Group Link2'
+++++++++staticText name='Group Link2'
+++++++++++inlineTextBox name='Group Link2'

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "jni/X509Util_jni.h"
 #include "net/cert/cert_database.h"
+#include "net/net_jni_headers/X509Util_jni.h"
 
 using base::android::JavaParamRef;
 

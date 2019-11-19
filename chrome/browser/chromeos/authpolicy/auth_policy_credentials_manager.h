@@ -10,12 +10,12 @@
 
 #include "base/cancelable_callback.h"
 #include "base/memory/weak_ptr.h"
-#include "chromeos/dbus/authpolicy/active_directory_info.pb.h"
+#include "chrome/browser/chromeos/authpolicy/kerberos_files_handler.h"
+#include "chromeos/dbus/auth_policy/active_directory_info.pb.h"
 #include "chromeos/network/network_state_handler_observer.h"
 #include "components/account_id/account_id.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/prefs/pref_member.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
 class Profile;
@@ -35,11 +35,6 @@ class Signal;
 
 namespace chromeos {
 
-// Kerberos defaults for canonicalization SPN. (see
-// https://web.mit.edu/kerberos/krb5-1.12/doc/admin/conf_files/krb5_conf.html)
-// Exported for browsertests.
-extern const char* kKrb5CnameSettings;
-
 // A service responsible for tracking user credential status. Created for each
 // Active Directory user profile.
 class AuthPolicyCredentialsManager
@@ -57,6 +52,8 @@ class AuthPolicyCredentialsManager
   void NetworkConnectionStateChanged(
       const chromeos::NetworkState* network) override;
   void OnShuttingDown() override;
+
+  KerberosFilesHandler* GetKerberosFilesHandlerForTesting();
 
  private:
   friend class AuthPolicyCredentialsManagerTest;
@@ -103,9 +100,6 @@ class AuthPolicyCredentialsManager
                                  const std::string& signal_name,
                                  bool success);
 
-  // Called whenever prefs::kDisableAuthNegotiateCnameLookup is changed.
-  void OnDisabledAuthNegotiateCnameLookupChanged();
-
   Profile* const profile_;
   AccountId account_id_;
   std::string display_name_;
@@ -113,13 +107,13 @@ class AuthPolicyCredentialsManager
   bool is_get_status_in_progress_ = false;
   bool rerun_get_status_on_error_ = false;
   bool is_observing_network_ = false;
+  KerberosFilesHandler kerberos_files_handler_;
 
   // Stores message ids of shown notifications. Each notification is shown at
   // most once.
   std::set<int> shown_notifications_;
   authpolicy::ErrorType last_error_ = authpolicy::ERROR_NONE;
   base::CancelableClosure scheduled_get_user_status_call_;
-  PrefMember<bool> negotiate_disable_cname_lookup_;
 
   base::WeakPtrFactory<AuthPolicyCredentialsManager> weak_factory_{this};
   DISALLOW_COPY_AND_ASSIGN(AuthPolicyCredentialsManager);
@@ -136,6 +130,7 @@ class AuthPolicyCredentialsManagerFactory
   friend struct base::DefaultSingletonTraits<
       AuthPolicyCredentialsManagerFactory>;
   friend class AuthPolicyCredentialsManagerTest;
+  friend class ExistingUserControllerActiveDirectoryTest;
 
   AuthPolicyCredentialsManagerFactory();
   ~AuthPolicyCredentialsManagerFactory() override;

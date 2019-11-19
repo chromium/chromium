@@ -10,7 +10,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/optional.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/test/test_simple_task_runner.h"
 #include "chromeos/services/secure_channel/device_id_pair.h"
 #include "chromeos/services/secure_channel/fake_authenticated_channel.h"
@@ -148,7 +148,7 @@ class SecureChannelConnectToDeviceOperationBaseTest : public testing::Test {
     last_failure_detail_ = failure_detail;
   }
 
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_;
   const DeviceIdPair test_device_id_pair_;
 
   std::unique_ptr<AuthenticatedChannel> last_authenticated_channel_;

@@ -57,6 +57,11 @@ class list_set {
     list_.erase(it);
   }
 
+  void clear() {
+    set_.clear();
+    list_.clear();
+  }
+
   size_t count(const T& elem) const {
     return set_.find(elem) == set_.end() ? 0 : 1;
   }

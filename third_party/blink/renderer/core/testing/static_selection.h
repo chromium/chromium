@@ -17,14 +17,17 @@ class StaticSelection final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
+  static StaticSelection* FromSelectionInDOMTree(const SelectionInDOMTree&);
   static StaticSelection* FromSelectionInFlatTree(const SelectionInFlatTree&);
 
   explicit StaticSelection(const SelectionInFlatTree&);
+  explicit StaticSelection(const SelectionInDOMTree&);
 
   Node* anchorNode() const { return anchor_node_; }
   unsigned anchorOffset() const { return anchor_offset_; }
   Node* focusNode() const { return focus_node_; }
   unsigned focusOffset() const { return focus_offset_; }
+  bool isCollapsed() const;
 
   void Trace(blink::Visitor*) override;
 

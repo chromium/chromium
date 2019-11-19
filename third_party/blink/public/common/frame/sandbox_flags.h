@@ -10,8 +10,7 @@
 namespace blink {
 
 // See http://www.whatwg.org/specs/web-apps/current-work/#attr-iframe-sandbox
-// for a list of the sandbox flags.  This enum should be kept in sync with
-// Source/core/frame/SandboxFlags.h, as enforced in SandboxFlags.cpp.
+// for a list of the sandbox flags.
 enum class WebSandboxFlags : int {
   kNone = 0,
   kNavigation = 1,
@@ -20,17 +19,25 @@ enum class WebSandboxFlags : int {
   kForms = 1 << 3,
   kScripts = 1 << 4,
   kTopNavigation = 1 << 5,
+  // See https://www.w3.org/Bugs/Public/show_bug.cgi?id=12393
   kPopups = 1 << 6,
   kAutomaticFeatures = 1 << 7,
   kPointerLock = 1 << 8,
   kDocumentDomain = 1 << 9,
+  // See
+  // https://w3c.github.io/screen-orientation/#dfn-sandboxed-orientation-lock-browsing-context-flag.
   kOrientationLock = 1 << 10,
   kPropagatesToAuxiliaryBrowsingContexts = 1 << 11,
   kModals = 1 << 12,
+  // See
+  // https://w3c.github.io/presentation-api/#sandboxing-and-the-allow-presentation-keyword
   kPresentationController = 1 << 13,
+  // See https://github.com/WICG/interventions/issues/42.
   kTopNavigationByUserActivation = 1 << 14,
+  // See https://crbug.com/539938
   kDownloads = 1 << 15,
-  kAll = -1
+  kStorageAccessByUserActivation = 1 << 16,
+  kAll = -1  // Mask with all bits set to 1.
 };
 
 inline constexpr WebSandboxFlags operator&(WebSandboxFlags a,

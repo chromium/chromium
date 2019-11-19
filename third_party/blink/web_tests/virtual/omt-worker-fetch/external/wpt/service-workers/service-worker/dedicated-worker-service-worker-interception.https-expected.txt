@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+PASS Top-level module loading should be intercepted by a service worker.
+PASS Static import should be intercepted by a service worker.
+PASS Dynamic import should be intercepted by a service worker.
+Harness: the test ran to completion.
+

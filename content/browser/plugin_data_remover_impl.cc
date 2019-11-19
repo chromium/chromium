@@ -75,13 +75,11 @@ class PluginDataRemoverImpl::Context
   }
 
   void Init(const std::string& mime_type) {
-    base::PostTaskWithTraits(
-        FROM_HERE, {BrowserThread::IO},
-        base::BindOnce(&Context::InitOnIOThread, this, mime_type));
-    base::PostDelayedTaskWithTraits(
-        FROM_HERE, {BrowserThread::IO},
-        base::BindOnce(&Context::OnTimeout, this),
-        base::TimeDelta::FromMilliseconds(kRemovalTimeoutMs));
+    base::PostTask(FROM_HERE, {BrowserThread::IO},
+                   base::BindOnce(&Context::InitOnIOThread, this, mime_type));
+    base::PostDelayedTask(FROM_HERE, {BrowserThread::IO},
+                          base::BindOnce(&Context::OnTimeout, this),
+                          base::TimeDelta::FromMilliseconds(kRemovalTimeoutMs));
   }
 
   void InitOnIOThread(const std::string& mime_type) {

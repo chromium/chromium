@@ -6,6 +6,7 @@
 
 #import <UIKit/UIKit.h>
 
+#include "testing/gtest_mac.h"
 #include "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #include "third_party/ocmock/gtest_support.h"
@@ -16,85 +17,66 @@
 
 // Test fixture for DynamicTypeUtil class.
 class DynamicTypeUtilTest : public PlatformTest {
- public:
+ protected:
   DynamicTypeUtilTest() {}
   ~DynamicTypeUtilTest() override {}
 
-  void SetPreferredContentSizeCategory(UILabel* testLabel,
-                                       UIViewController* viewController,
-                                       UIContentSizeCategory category) {
-    UITraitCollection* overrideTraitCollection = [UITraitCollection
-        traitCollectionWithPreferredContentSizeCategory:category];
-    [viewController.parentViewController
-        setOverrideTraitCollection:overrideTraitCollection
-            forChildViewController:viewController];
-    [testLabel removeFromSuperview];
-    [viewController.view addSubview:testLabel];
+  UIFont* PreferredFontForTextStyleAndSizeCategory(
+      UIFontTextStyle style,
+      UIContentSizeCategory category) {
+    return
+        [UIFont preferredFontForTextStyle:style
+            compatibleWithTraitCollection:
+                [UITraitCollection
+                    traitCollectionWithPreferredContentSizeCategory:category]];
   }
 };
 
 // Checks that the font sizes associated with the "body"
 // preferredContentSizeCategory aren't changing in new iOS releases.
 TEST_F(DynamicTypeUtilTest, TestFontSize) {
-  UIViewController* parentViewController = [[UIViewController alloc] init];
-  UIViewController* viewController = [[UIViewController alloc] init];
-  [parentViewController addChildViewController:viewController];
-  [parentViewController.view addSubview:viewController.view];
-  [viewController didMoveToParentViewController:parentViewController];
-
-  UILabel* testLabel = [[UILabel alloc] init];
-  testLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
-  testLabel.adjustsFontForContentSizeCategory = YES;
-
-  SetPreferredContentSizeCategory(testLabel, viewController,
-                                  UIContentSizeCategoryExtraSmall);
-  EXPECT_EQ(14.f, testLabel.font.pointSize);
-
-  SetPreferredContentSizeCategory(testLabel, viewController,
-                                  UIContentSizeCategorySmall);
-  EXPECT_EQ(15.f, testLabel.font.pointSize);
-
-  SetPreferredContentSizeCategory(testLabel, viewController,
-                                  UIContentSizeCategoryMedium);
-  EXPECT_EQ(16.f, testLabel.font.pointSize);
-
-  SetPreferredContentSizeCategory(testLabel, viewController,
-                                  UIContentSizeCategoryLarge);
-  EXPECT_EQ(17.f, testLabel.font.pointSize);
-
-  SetPreferredContentSizeCategory(testLabel, viewController,
-                                  UIContentSizeCategoryExtraLarge);
-  EXPECT_EQ(19.f, testLabel.font.pointSize);
-
-  SetPreferredContentSizeCategory(testLabel, viewController,
-                                  UIContentSizeCategoryExtraExtraLarge);
-  EXPECT_EQ(21.f, testLabel.font.pointSize);
-
-  SetPreferredContentSizeCategory(testLabel, viewController,
-                                  UIContentSizeCategoryExtraExtraExtraLarge);
-  EXPECT_EQ(23.f, testLabel.font.pointSize);
-
-  SetPreferredContentSizeCategory(testLabel, viewController,
-                                  UIContentSizeCategoryAccessibilityMedium);
-  EXPECT_EQ(28.f, testLabel.font.pointSize);
-
-  SetPreferredContentSizeCategory(testLabel, viewController,
-                                  UIContentSizeCategoryAccessibilityLarge);
-  EXPECT_EQ(33.f, testLabel.font.pointSize);
-
-  SetPreferredContentSizeCategory(testLabel, viewController,
-                                  UIContentSizeCategoryAccessibilityExtraLarge);
-  EXPECT_EQ(40.f, testLabel.font.pointSize);
-
-  SetPreferredContentSizeCategory(
-      testLabel, viewController,
-      UIContentSizeCategoryAccessibilityExtraExtraLarge);
-  EXPECT_EQ(47.f, testLabel.font.pointSize);
-
-  SetPreferredContentSizeCategory(
-      testLabel, viewController,
-      UIContentSizeCategoryAccessibilityExtraExtraExtraLarge);
-  EXPECT_EQ(53.f, testLabel.font.pointSize);
+  EXPECT_EQ(14.f, PreferredFontForTextStyleAndSizeCategory(
+                      UIFontTextStyleBody, UIContentSizeCategoryExtraSmall)
+                      .pointSize);
+  EXPECT_EQ(15.f, PreferredFontForTextStyleAndSizeCategory(
+                      UIFontTextStyleBody, UIContentSizeCategorySmall)
+                      .pointSize);
+  EXPECT_EQ(16.f, PreferredFontForTextStyleAndSizeCategory(
+                      UIFontTextStyleBody, UIContentSizeCategoryMedium)
+                      .pointSize);
+  EXPECT_EQ(17.f, PreferredFontForTextStyleAndSizeCategory(
+                      UIFontTextStyleBody, UIContentSizeCategoryLarge)
+                      .pointSize);
+  EXPECT_EQ(19.f, PreferredFontForTextStyleAndSizeCategory(
+                      UIFontTextStyleBody, UIContentSizeCategoryExtraLarge)
+                      .pointSize);
+  EXPECT_EQ(21.f, PreferredFontForTextStyleAndSizeCategory(
+                      UIFontTextStyleBody, UIContentSizeCategoryExtraExtraLarge)
+                      .pointSize);
+  EXPECT_EQ(23.f,
+            PreferredFontForTextStyleAndSizeCategory(
+                UIFontTextStyleBody, UIContentSizeCategoryExtraExtraExtraLarge)
+                .pointSize);
+  EXPECT_EQ(28.f,
+            PreferredFontForTextStyleAndSizeCategory(
+                UIFontTextStyleBody, UIContentSizeCategoryAccessibilityMedium)
+                .pointSize);
+  EXPECT_EQ(33.f,
+            PreferredFontForTextStyleAndSizeCategory(
+                UIFontTextStyleBody, UIContentSizeCategoryAccessibilityLarge)
+                .pointSize);
+  EXPECT_EQ(40.f, PreferredFontForTextStyleAndSizeCategory(
+                      UIFontTextStyleBody,
+                      UIContentSizeCategoryAccessibilityExtraLarge)
+                      .pointSize);
+  EXPECT_EQ(47.f, PreferredFontForTextStyleAndSizeCategory(
+                      UIFontTextStyleBody,
+                      UIContentSizeCategoryAccessibilityExtraExtraLarge)
+                      .pointSize);
+  EXPECT_EQ(53.f, PreferredFontForTextStyleAndSizeCategory(
+                      UIFontTextStyleBody,
+                      UIContentSizeCategoryAccessibilityExtraExtraExtraLarge)
+                      .pointSize);
 }
 
 // Tests that the clamped version of the font size multipler is working.
@@ -135,4 +117,59 @@ TEST_F(DynamicTypeUtilTest, TestClampedFontSize) {
   EXPECT_EQ(
       SystemSuggestedFontSizeMultiplier(UIContentSizeCategoryExtraExtraLarge),
       multiplier);
+}
+
+// Tests that |PreferredFontForTextStyleWithMaxCategory| works well with various
+// input scenarios.
+TEST_F(DynamicTypeUtilTest, PreferredFontSize) {
+  // Use normal category as maxmium category.
+  EXPECT_NSEQ(PreferredFontForTextStyleAndSizeCategory(
+                  UIFontTextStyleBody, UIContentSizeCategoryExtraSmall),
+              PreferredFontForTextStyleWithMaxCategory(
+                  UIFontTextStyleBody, UIContentSizeCategoryExtraSmall,
+                  UIContentSizeCategoryMedium));
+
+  EXPECT_NSEQ(PreferredFontForTextStyleAndSizeCategory(
+                  UIFontTextStyleBody, UIContentSizeCategoryMedium),
+              PreferredFontForTextStyleWithMaxCategory(
+                  UIFontTextStyleBody, UIContentSizeCategoryMedium,
+                  UIContentSizeCategoryMedium));
+
+  EXPECT_NSEQ(PreferredFontForTextStyleAndSizeCategory(
+                  UIFontTextStyleBody, UIContentSizeCategoryMedium),
+              PreferredFontForTextStyleWithMaxCategory(
+                  UIFontTextStyleBody, UIContentSizeCategoryExtraExtraLarge,
+                  UIContentSizeCategoryMedium));
+
+  EXPECT_NSEQ(PreferredFontForTextStyleAndSizeCategory(
+                  UIFontTextStyleBody, UIContentSizeCategoryMedium),
+              PreferredFontForTextStyleWithMaxCategory(
+                  UIFontTextStyleBody, UIContentSizeCategoryAccessibilityLarge,
+                  UIContentSizeCategoryMedium));
+
+  // Use accessibility category as maxmium category.
+  EXPECT_NSEQ(PreferredFontForTextStyleAndSizeCategory(
+                  UIFontTextStyleBody, UIContentSizeCategoryExtraSmall),
+              PreferredFontForTextStyleWithMaxCategory(
+                  UIFontTextStyleBody, UIContentSizeCategoryExtraSmall,
+                  UIContentSizeCategoryAccessibilityLarge));
+
+  EXPECT_NSEQ(PreferredFontForTextStyleAndSizeCategory(
+                  UIFontTextStyleBody, UIContentSizeCategoryMedium),
+              PreferredFontForTextStyleWithMaxCategory(
+                  UIFontTextStyleBody, UIContentSizeCategoryMedium,
+                  UIContentSizeCategoryAccessibilityLarge));
+
+  EXPECT_NSEQ(PreferredFontForTextStyleAndSizeCategory(
+                  UIFontTextStyleBody, UIContentSizeCategoryAccessibilityLarge),
+              PreferredFontForTextStyleWithMaxCategory(
+                  UIFontTextStyleBody, UIContentSizeCategoryAccessibilityLarge,
+                  UIContentSizeCategoryAccessibilityLarge));
+
+  EXPECT_NSEQ(PreferredFontForTextStyleAndSizeCategory(
+                  UIFontTextStyleBody, UIContentSizeCategoryAccessibilityLarge),
+              PreferredFontForTextStyleWithMaxCategory(
+                  UIFontTextStyleBody,
+                  UIContentSizeCategoryAccessibilityExtraExtraLarge,
+                  UIContentSizeCategoryAccessibilityLarge));
 }

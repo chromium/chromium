@@ -1,9 +1,9 @@
 <link rel="import" href="chrome://resources/html/polymer.html">
 
+<link rel="import" href="chrome://resources/cr_elements/cr_button/cr_button.html">
 <link rel="import" href="chrome://resources/cr_elements/cr_link_row/cr_link_row.html">
 <link rel="import" href="chrome://resources/html/i18n_behavior.html">
-<link rel="import" href="chrome://resources/html/md_select_css.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/paper-button/paper-button.html">
+<link rel="import" href="chrome://resources/cr_elements/md_select_css.html">
 <link rel="import" href="appearance_browser_proxy.html">
 <link rel="import" href="../controls/controlled_radio_button.html">
 <link rel="import" href="../controls/extension_controlled_indicator.html">
@@ -18,23 +18,26 @@
 <link rel="import" href="appearance_fonts_page.html">
 <link rel="import" href="home_url_input.html">
 
+<if expr="chromeos">
+<link rel="import" href="../appearance_page/wallpaper_browser_proxy.html">
+</if>
+
 <dom-module id="settings-appearance-page">
   <template>
     <style include="settings-shared md-select iron-flex">
       /* Lines up with cr-input. */
       #custom-input {
-        --cr-radio-button-disc: {
-          /* (cr-input line-height + cr-input top/bottom padding) / 2 -
-             cr-radio disc-wrapper height / 2 */
-          margin-top: calc((1.54em + 12px) / 2 - 8px);
-        }
+        /* (cr-input line-height + cr-input top/bottom padding) / 2 -
+           cr-radio disc-wrapper height / 2 */
+        --cr-radio-button-disc-margin-block-start: calc(
+            (1.54em + 12px) / 2 - 8px);
         align-items: start;
       }
 
-      /* The theme mixes a link and a paper-button divided by a separator with
+      /* The theme mixes a link and a cr-button divided by a separator with
        * grit expressions and dom-if templates. That leads to a tricky thing
        * to style correctly, these are a workaround. */
-      #themeRow paper-button {
+      #themeRow cr-button {
         margin-inline-end: 20px;
       }
 
@@ -67,31 +70,28 @@
 <if expr="not is_linux or chromeos">
           <template is="dom-if" if="[[prefs.extensions.theme.id.value]]">
             <div class="separator"></div>
-            <paper-button id="useDefault" on-click="onUseDefaultTap_"
-                class="secondary-button">
+            <cr-button id="useDefault" on-click="onUseDefaultTap_">
               $i18n{resetToDefaultTheme}
-            </paper-button>
+            </cr-button>
           </template>
 </if>
 <if expr="is_linux and not chromeos">
           <div class="settings-row continuation"
               hidden="[[!showThemesSecondary_(
-              prefs.extensions.theme.id.value, useSystemTheme_)]]"
+                  prefs.extensions.theme.id.value, useSystemTheme_)]]"
               id="themesSecondaryActions">
             <div class="separator"></div>
             <template is="dom-if" if="[[showUseClassic_(
                 prefs.extensions.theme.id.value, useSystemTheme_)]]" restamp>
-              <paper-button id="useDefault" on-click="onUseDefaultTap_"
-                  class="secondary-button">
+              <cr-button id="useDefault" on-click="onUseDefaultTap_">
                 $i18n{useClassicTheme}
-              </paper-button>
+              </cr-button>
             </template>
             <template is="dom-if" if="[[showUseSystem_(
                 prefs.extensions.theme.id.value, useSystemTheme_)]]" restamp>
-              <paper-button id="useSystem" on-click="onUseSystemTap_"
-                  class="secondary-button">
+              <cr-button id="useSystem" on-click="onUseSystemTap_">
                 $i18n{useSystemTheme}
-              </paper-button>
+              </cr-button>
             </template>
           </div>
 </if>
@@ -147,17 +147,20 @@
         </settings-toggle-button>
 </if>
         <div class="settings-box">
-          <div class="start">$i18n{fontSize}</div>
+          <div class="start settings-box-text">$i18n{fontSize}</div>
           <settings-dropdown-menu id="defaultFontSize" label="$i18n{fontSize}"
               pref="{{prefs.webkit.webprefs.default_font_size}}"
               menu-options="[[fontSizeOptions_]]">
           </settings-dropdown-menu>
         </div>
         <cr-link-row class="hr" id="customize-fonts-subpage-trigger"
-            label="$i18n{customizeFonts}" on-click="onCustomizeFontsTap_">
+            label="$i18n{customizeFonts}" on-click="onCustomizeFontsTap_"
+            role-description="$i18n{subpageArrowRoleDescription}">
         </cr-link-row>
         <div class="settings-box" hidden="[[!pageVisibility.pageZoom]]">
-          <div id="pageZoom" class="start">$i18n{pageZoom}</div>
+          <div id="pageZoom" class="start settings-box-text">
+            $i18n{pageZoom}
+          </div>
           <select id="zoomLevel" class="md-select" aria-labelledby="pageZoom"
               on-change="onZoomLevelChange_">
             <template is="dom-repeat" items="[[pageZoomLevels_]]">

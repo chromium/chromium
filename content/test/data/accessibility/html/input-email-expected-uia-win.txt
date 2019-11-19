@@ -1,0 +1,3 @@
+document LocalizedControlType='document'
+++group LocalizedControlType='group'
+++++textbox LocalizedControlType='email' Value.Value='someone@example.com'

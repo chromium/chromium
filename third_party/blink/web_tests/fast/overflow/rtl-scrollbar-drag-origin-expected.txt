@@ -1,5 +1,5 @@
-PASS container.scrollLeft is 0
-PASS container.scrollLeft is 350
+PASS container.scrollLeft is -715
+PASS container.scrollLeft is -365
 PASS successfullyParsed is true
 
 TEST COMPLETE

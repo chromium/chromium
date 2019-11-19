@@ -17,12 +17,10 @@ void DebuggingClient::OnServiceInitialized(
 
 void DebuggingClient::OnServiceUnavailable() {}
 
-Client::ShouldDownload DebuggingClient::OnDownloadStarted(
+void DebuggingClient::OnDownloadStarted(
     const std::string& guid,
     const std::vector<GURL>& url_chain,
-    const scoped_refptr<const net::HttpResponseHeaders>& headers) {
-  return Client::ShouldDownload::CONTINUE;
-}
+    const scoped_refptr<const net::HttpResponseHeaders>& headers) {}
 
 void DebuggingClient::OnDownloadUpdated(const std::string& guid,
                                         uint64_t bytes_uploaded,

@@ -31,9 +31,7 @@ class FirstRunDialog : public views::DialogDelegateView,
   void Done();
 
   // views::DialogDelegate:
-  views::View* CreateExtraView() override;
   bool Accept() override;
-  int GetDialogButtons() const override;
 
   // views::WidgetDelegate:
   void WindowClosing() override;
@@ -42,8 +40,8 @@ class FirstRunDialog : public views::DialogDelegateView,
   void LinkClicked(views::Link* source, int event_flags) override;
 
   Profile* profile_;
-  views::Checkbox* make_default_;
-  views::Checkbox* report_crashes_;
+  views::Checkbox* make_default_ = nullptr;
+  views::Checkbox* report_crashes_ = nullptr;
   base::Closure quit_runloop_;
 
   DISALLOW_COPY_AND_ASSIGN(FirstRunDialog);

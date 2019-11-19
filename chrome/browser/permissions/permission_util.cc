@@ -20,40 +20,48 @@ using content::PermissionType;
 std::string PermissionUtil::GetPermissionString(
     ContentSettingsType content_type) {
   switch (content_type) {
-    case CONTENT_SETTINGS_TYPE_GEOLOCATION:
+    case ContentSettingsType::GEOLOCATION:
       return "Geolocation";
-    case CONTENT_SETTINGS_TYPE_NOTIFICATIONS:
+    case ContentSettingsType::NOTIFICATIONS:
       return "Notifications";
-    case CONTENT_SETTINGS_TYPE_MIDI_SYSEX:
+    case ContentSettingsType::MIDI_SYSEX:
       return "MidiSysEx";
-    case CONTENT_SETTINGS_TYPE_DURABLE_STORAGE:
+    case ContentSettingsType::DURABLE_STORAGE:
       return "DurableStorage";
-    case CONTENT_SETTINGS_TYPE_PROTECTED_MEDIA_IDENTIFIER:
+    case ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER:
       return "ProtectedMediaIdentifier";
-    case CONTENT_SETTINGS_TYPE_MEDIASTREAM_MIC:
+    case ContentSettingsType::MEDIASTREAM_MIC:
       return "AudioCapture";
-    case CONTENT_SETTINGS_TYPE_MEDIASTREAM_CAMERA:
+    case ContentSettingsType::MEDIASTREAM_CAMERA:
       return "VideoCapture";
-    case CONTENT_SETTINGS_TYPE_MIDI:
+    case ContentSettingsType::MIDI:
       return "Midi";
-    case CONTENT_SETTINGS_TYPE_BACKGROUND_SYNC:
+    case ContentSettingsType::BACKGROUND_SYNC:
       return "BackgroundSync";
-    case CONTENT_SETTINGS_TYPE_PLUGINS:
+    case ContentSettingsType::PLUGINS:
       return "Flash";
-    case CONTENT_SETTINGS_TYPE_SENSORS:
+    case ContentSettingsType::SENSORS:
       return "Sensors";
-    case CONTENT_SETTINGS_TYPE_ACCESSIBILITY_EVENTS:
+    case ContentSettingsType::ACCESSIBILITY_EVENTS:
       return "AccessibilityEvents";
-    case CONTENT_SETTINGS_TYPE_CLIPBOARD_READ:
+    case ContentSettingsType::CLIPBOARD_READ:
       return "ClipboardRead";
-    case CONTENT_SETTINGS_TYPE_CLIPBOARD_WRITE:
+    case ContentSettingsType::CLIPBOARD_WRITE:
       return "ClipboardWrite";
-    case CONTENT_SETTINGS_TYPE_PAYMENT_HANDLER:
+    case ContentSettingsType::PAYMENT_HANDLER:
       return "PaymentHandler";
-    case CONTENT_SETTINGS_TYPE_BACKGROUND_FETCH:
+    case ContentSettingsType::BACKGROUND_FETCH:
       return "BackgroundFetch";
-    case CONTENT_SETTINGS_TYPE_IDLE_DETECTION:
+    case ContentSettingsType::IDLE_DETECTION:
       return "IdleDetection";
+    case ContentSettingsType::PERIODIC_BACKGROUND_SYNC:
+      return "PeriodicBackgroundSync";
+    case ContentSettingsType::WAKE_LOCK_SCREEN:
+      return "WakeLockScreen";
+    case ContentSettingsType::WAKE_LOCK_SYSTEM:
+      return "WakeLockSystem";
+    case ContentSettingsType::NFC:
+      return "NFC";
     default:
       break;
   }
@@ -63,25 +71,25 @@ std::string PermissionUtil::GetPermissionString(
 
 PermissionRequestType PermissionUtil::GetRequestType(ContentSettingsType type) {
   switch (type) {
-    case CONTENT_SETTINGS_TYPE_GEOLOCATION:
+    case ContentSettingsType::GEOLOCATION:
       return PermissionRequestType::PERMISSION_GEOLOCATION;
-    case CONTENT_SETTINGS_TYPE_NOTIFICATIONS:
+    case ContentSettingsType::NOTIFICATIONS:
       return PermissionRequestType::PERMISSION_NOTIFICATIONS;
-    case CONTENT_SETTINGS_TYPE_MIDI_SYSEX:
+    case ContentSettingsType::MIDI_SYSEX:
       return PermissionRequestType::PERMISSION_MIDI_SYSEX;
-    case CONTENT_SETTINGS_TYPE_PROTECTED_MEDIA_IDENTIFIER:
+    case ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER:
       return PermissionRequestType::PERMISSION_PROTECTED_MEDIA_IDENTIFIER;
-    case CONTENT_SETTINGS_TYPE_PLUGINS:
+    case ContentSettingsType::PLUGINS:
       return PermissionRequestType::PERMISSION_FLASH;
-    case CONTENT_SETTINGS_TYPE_MEDIASTREAM_MIC:
+    case ContentSettingsType::MEDIASTREAM_MIC:
       return PermissionRequestType::PERMISSION_MEDIASTREAM_MIC;
-    case CONTENT_SETTINGS_TYPE_MEDIASTREAM_CAMERA:
+    case ContentSettingsType::MEDIASTREAM_CAMERA:
       return PermissionRequestType::PERMISSION_MEDIASTREAM_CAMERA;
-    case CONTENT_SETTINGS_TYPE_ACCESSIBILITY_EVENTS:
+    case ContentSettingsType::ACCESSIBILITY_EVENTS:
       return PermissionRequestType::PERMISSION_ACCESSIBILITY_EVENTS;
-    case CONTENT_SETTINGS_TYPE_CLIPBOARD_READ:
+    case ContentSettingsType::CLIPBOARD_READ:
       return PermissionRequestType::PERMISSION_CLIPBOARD_READ;
-    case CONTENT_SETTINGS_TYPE_PAYMENT_HANDLER:
+    case ContentSettingsType::PAYMENT_HANDLER:
       return PermissionRequestType::PERMISSION_PAYMENT_HANDLER;
     default:
       NOTREACHED();
@@ -96,38 +104,46 @@ PermissionRequestGestureType PermissionUtil::GetGestureType(bool user_gesture) {
 
 bool PermissionUtil::GetPermissionType(ContentSettingsType type,
                                        PermissionType* out) {
-  if (type == CONTENT_SETTINGS_TYPE_GEOLOCATION) {
+  if (type == ContentSettingsType::GEOLOCATION) {
     *out = PermissionType::GEOLOCATION;
-  } else if (type == CONTENT_SETTINGS_TYPE_NOTIFICATIONS) {
+  } else if (type == ContentSettingsType::NOTIFICATIONS) {
     *out = PermissionType::NOTIFICATIONS;
-  } else if (type == CONTENT_SETTINGS_TYPE_MIDI) {
+  } else if (type == ContentSettingsType::MIDI) {
     *out = PermissionType::MIDI;
-  } else if (type == CONTENT_SETTINGS_TYPE_MIDI_SYSEX) {
+  } else if (type == ContentSettingsType::MIDI_SYSEX) {
     *out = PermissionType::MIDI_SYSEX;
-  } else if (type == CONTENT_SETTINGS_TYPE_DURABLE_STORAGE) {
+  } else if (type == ContentSettingsType::DURABLE_STORAGE) {
     *out = PermissionType::DURABLE_STORAGE;
-  } else if (type == CONTENT_SETTINGS_TYPE_MEDIASTREAM_CAMERA) {
+  } else if (type == ContentSettingsType::MEDIASTREAM_CAMERA) {
     *out = PermissionType::VIDEO_CAPTURE;
-  } else if (type == CONTENT_SETTINGS_TYPE_MEDIASTREAM_MIC) {
+  } else if (type == ContentSettingsType::MEDIASTREAM_MIC) {
     *out = PermissionType::AUDIO_CAPTURE;
-  } else if (type == CONTENT_SETTINGS_TYPE_BACKGROUND_SYNC) {
+  } else if (type == ContentSettingsType::BACKGROUND_SYNC) {
     *out = PermissionType::BACKGROUND_SYNC;
-  } else if (type == CONTENT_SETTINGS_TYPE_PLUGINS) {
+  } else if (type == ContentSettingsType::PLUGINS) {
     *out = PermissionType::FLASH;
 #if defined(OS_ANDROID) || defined(OS_CHROMEOS)
-  } else if (type == CONTENT_SETTINGS_TYPE_PROTECTED_MEDIA_IDENTIFIER) {
+  } else if (type == ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER) {
     *out = PermissionType::PROTECTED_MEDIA_IDENTIFIER;
 #endif
-  } else if (type == CONTENT_SETTINGS_TYPE_SENSORS) {
+  } else if (type == ContentSettingsType::SENSORS) {
     *out = PermissionType::SENSORS;
-  } else if (type == CONTENT_SETTINGS_TYPE_ACCESSIBILITY_EVENTS) {
+  } else if (type == ContentSettingsType::ACCESSIBILITY_EVENTS) {
     *out = PermissionType::ACCESSIBILITY_EVENTS;
-  } else if (type == CONTENT_SETTINGS_TYPE_CLIPBOARD_READ) {
+  } else if (type == ContentSettingsType::CLIPBOARD_READ) {
     *out = PermissionType::CLIPBOARD_READ;
-  } else if (type == CONTENT_SETTINGS_TYPE_PAYMENT_HANDLER) {
+  } else if (type == ContentSettingsType::PAYMENT_HANDLER) {
     *out = PermissionType::PAYMENT_HANDLER;
-  } else if (type == CONTENT_SETTINGS_TYPE_BACKGROUND_FETCH) {
+  } else if (type == ContentSettingsType::BACKGROUND_FETCH) {
     *out = PermissionType::BACKGROUND_FETCH;
+  } else if (type == ContentSettingsType::PERIODIC_BACKGROUND_SYNC) {
+    *out = PermissionType::PERIODIC_BACKGROUND_SYNC;
+  } else if (type == ContentSettingsType::WAKE_LOCK_SCREEN) {
+    *out = PermissionType::WAKE_LOCK_SCREEN;
+  } else if (type == ContentSettingsType::WAKE_LOCK_SYSTEM) {
+    *out = PermissionType::WAKE_LOCK_SYSTEM;
+  } else if (type == ContentSettingsType::NFC) {
+    *out = PermissionType::NFC;
   } else {
     return false;
   }
@@ -136,22 +152,28 @@ bool PermissionUtil::GetPermissionType(ContentSettingsType type,
 
 bool PermissionUtil::IsPermission(ContentSettingsType type) {
   switch (type) {
-    case CONTENT_SETTINGS_TYPE_GEOLOCATION:
-    case CONTENT_SETTINGS_TYPE_NOTIFICATIONS:
-    case CONTENT_SETTINGS_TYPE_MIDI_SYSEX:
-    case CONTENT_SETTINGS_TYPE_DURABLE_STORAGE:
-    case CONTENT_SETTINGS_TYPE_MEDIASTREAM_CAMERA:
-    case CONTENT_SETTINGS_TYPE_MEDIASTREAM_MIC:
-    case CONTENT_SETTINGS_TYPE_BACKGROUND_SYNC:
-    case CONTENT_SETTINGS_TYPE_PLUGINS:
+    case ContentSettingsType::GEOLOCATION:
+    case ContentSettingsType::NOTIFICATIONS:
+    case ContentSettingsType::MIDI_SYSEX:
+    case ContentSettingsType::DURABLE_STORAGE:
+    case ContentSettingsType::MEDIASTREAM_CAMERA:
+    case ContentSettingsType::MEDIASTREAM_MIC:
+    case ContentSettingsType::BACKGROUND_SYNC:
+    case ContentSettingsType::PLUGINS:
 #if defined(OS_ANDROID) || defined(OS_CHROMEOS)
-    case CONTENT_SETTINGS_TYPE_PROTECTED_MEDIA_IDENTIFIER:
+    case ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER:
 #endif
-    case CONTENT_SETTINGS_TYPE_SENSORS:
-    case CONTENT_SETTINGS_TYPE_ACCESSIBILITY_EVENTS:
-    case CONTENT_SETTINGS_TYPE_CLIPBOARD_READ:
-    case CONTENT_SETTINGS_TYPE_PAYMENT_HANDLER:
-    case CONTENT_SETTINGS_TYPE_BACKGROUND_FETCH:
+    case ContentSettingsType::SENSORS:
+    case ContentSettingsType::ACCESSIBILITY_EVENTS:
+    case ContentSettingsType::CLIPBOARD_READ:
+    case ContentSettingsType::PAYMENT_HANDLER:
+    case ContentSettingsType::BACKGROUND_FETCH:
+    case ContentSettingsType::PERIODIC_BACKGROUND_SYNC:
+    case ContentSettingsType::WAKE_LOCK_SCREEN:
+    case ContentSettingsType::WAKE_LOCK_SYSTEM:
+#if defined(OS_ANDROID)
+    case ContentSettingsType::NFC:
+#endif
       return true;
     default:
       return false;

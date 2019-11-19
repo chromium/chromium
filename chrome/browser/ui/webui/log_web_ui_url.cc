@@ -6,7 +6,7 @@
 
 #include <stdint.h>
 
-#include "base/hash.h"
+#include "base/hash/hash.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/common/url_constants.h"
 #include "content/public/common/url_constants.h"

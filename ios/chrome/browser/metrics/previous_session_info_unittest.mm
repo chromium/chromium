@@ -45,6 +45,7 @@ TEST_F(PreviousSessionInfoTest, InitializationWithEmptyDefaults) {
   EXPECT_FALSE([sharedInstance didSeeMemoryWarningShortlyBeforeTerminating]);
   EXPECT_TRUE([sharedInstance isFirstSessionAfterUpgrade]);
   EXPECT_TRUE([sharedInstance isFirstSessionAfterLanguageChange]);
+  EXPECT_FALSE([sharedInstance previousSessionVersion]);
 }
 
 TEST_F(PreviousSessionInfoTest, InitializationWithSameLanguage) {
@@ -96,6 +97,7 @@ TEST_F(PreviousSessionInfoTest, InitializationWithSameVersionNoMemoryWarning) {
   // Checks the values.
   EXPECT_FALSE([sharedInstance didSeeMemoryWarningShortlyBeforeTerminating]);
   EXPECT_FALSE([sharedInstance isFirstSessionAfterUpgrade]);
+  EXPECT_NSEQ(currentVersion, [sharedInstance previousSessionVersion]);
 }
 
 TEST_F(PreviousSessionInfoTest, InitializationWithSameVersionMemoryWarning) {
@@ -118,6 +120,7 @@ TEST_F(PreviousSessionInfoTest, InitializationWithSameVersionMemoryWarning) {
   // Checks the values.
   EXPECT_TRUE([sharedInstance didSeeMemoryWarningShortlyBeforeTerminating]);
   EXPECT_FALSE([sharedInstance isFirstSessionAfterUpgrade]);
+  EXPECT_NSEQ(currentVersion, [sharedInstance previousSessionVersion]);
 }
 
 TEST_F(PreviousSessionInfoTest, InitializationDifferentVersionNoMemoryWarning) {
@@ -135,6 +138,7 @@ TEST_F(PreviousSessionInfoTest, InitializationDifferentVersionNoMemoryWarning) {
   // Checks the values.
   EXPECT_FALSE([sharedInstance didSeeMemoryWarningShortlyBeforeTerminating]);
   EXPECT_TRUE([sharedInstance isFirstSessionAfterUpgrade]);
+  EXPECT_NSEQ(@"Fake Version", [sharedInstance previousSessionVersion]);
 }
 
 TEST_F(PreviousSessionInfoTest, InitializationDifferentVersionMemoryWarning) {
@@ -155,6 +159,53 @@ TEST_F(PreviousSessionInfoTest, InitializationDifferentVersionMemoryWarning) {
   // Checks the values.
   EXPECT_TRUE([sharedInstance didSeeMemoryWarningShortlyBeforeTerminating]);
   EXPECT_TRUE([sharedInstance isFirstSessionAfterUpgrade]);
+  EXPECT_NSEQ(@"Fake Version", [sharedInstance previousSessionVersion]);
+}
+
+// Creates conditions that exist on the first app run and tests
+// OSRestartedAfterPreviousSession property.
+TEST_F(PreviousSessionInfoTest, InitializationWithoutSystemStartTime) {
+  [PreviousSessionInfo resetSharedInstanceForTesting];
+  [[NSUserDefaults standardUserDefaults]
+      removeObjectForKey:previous_session_info_constants::kOSStartTime];
+
+  EXPECT_FALSE(
+      [[PreviousSessionInfo sharedInstance] OSRestartedAfterPreviousSession]);
+}
+
+// Creates conditions that exist when OS was restarted after the previous app
+// run and tests OSRestartedAfterPreviousSession property.
+TEST_F(PreviousSessionInfoTest, InitializationAfterOSRestart) {
+  [PreviousSessionInfo resetSharedInstanceForTesting];
+
+  // For the previous session OS started 60 seconds before OS has started for
+  // this session.
+  NSTimeInterval current_system_start_time =
+      NSDate.timeIntervalSinceReferenceDate -
+      NSProcessInfo.processInfo.systemUptime;
+  [[NSUserDefaults standardUserDefaults]
+      setDouble:current_system_start_time - 60
+         forKey:previous_session_info_constants::kOSStartTime];
+
+  EXPECT_TRUE(
+      [[PreviousSessionInfo sharedInstance] OSRestartedAfterPreviousSession]);
+}
+
+// Creates conditions that exist when OS was not restarted after the previous
+// app run and tests OSRestartedAfterPreviousSession property.
+TEST_F(PreviousSessionInfoTest, InitializationForSecondSessionAfterOSRestart) {
+  [PreviousSessionInfo resetSharedInstanceForTesting];
+
+  // OS startup time is the same for this and previous session.
+  NSTimeInterval current_system_start_time =
+      NSDate.timeIntervalSinceReferenceDate -
+      NSProcessInfo.processInfo.systemUptime;
+  [[NSUserDefaults standardUserDefaults]
+      setDouble:current_system_start_time
+         forKey:previous_session_info_constants::kOSStartTime];
+
+  EXPECT_FALSE(
+      [[PreviousSessionInfo sharedInstance] OSRestartedAfterPreviousSession]);
 }
 
 TEST_F(PreviousSessionInfoTest, BeginRecordingCurrentSession) {

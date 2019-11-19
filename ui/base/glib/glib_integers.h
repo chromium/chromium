@@ -5,6 +5,8 @@
 #ifndef UI_BASE_GLIB_GLIB_INTEGERS_H_
 #define UI_BASE_GLIB_GLIB_INTEGERS_H_
 
+#include <cstdint>
+
 // GLib/GObject/Gtk all use their own integer typedefs. They are copied here
 // for forward declaration reasons so we don't pull in all of glib/gtypes.h
 // when we just need a gpointer.
@@ -17,9 +19,9 @@ typedef unsigned char guchar;
 typedef unsigned short gushort;
 typedef unsigned long gulong;
 typedef unsigned int guint;
+typedef double gdouble;
 
-typedef unsigned short guint16;
-typedef unsigned int guint32;
+typedef int64_t gint64;
 
 typedef void* gpointer;
 typedef const void *gconstpointer;

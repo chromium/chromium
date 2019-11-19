@@ -20,6 +20,10 @@
 #include "net/cert/cert_verify_proc_android.h"
 #endif
 
+#if defined(OS_MACOSX)
+#include "net/cert/internal/trust_store_mac.h"
+#endif
+
 #include "net/cert/cert_verify_result.h"
 
 using network_time::NetworkTimeTracker;
@@ -74,6 +78,7 @@ void AddCertStatusToReportStatus(
 #undef COPY_CERT_STATUS
 }
 
+#if BUILDFLAG(TRIAL_COMPARISON_CERT_VERIFIER_SUPPORTED)
 void AddVerifyFlagsToReport(
     bool enable_rev_checking,
     bool require_rev_checking_local_anchors,
@@ -97,6 +102,51 @@ void AddVerifyFlagsToReport(
                           VERIFY_DISABLE_SYMANTEC_ENFORCEMENT);
   }
 }
+
+#if defined(OS_MACOSX)
+void AddMacTrustFlagsToReport(
+    int mac_trust_flags,
+    ::google::protobuf::RepeatedField<int>* report_flags) {
+#define COPY_TRUST_FLAGS(flag)                            \
+  if (mac_trust_flags & net::TrustStoreMac::TRUST_##flag) \
+    report_flags->Add(                                    \
+        chrome_browser_ssl::TrialVerificationInfo::MAC_TRUST_##flag);
+
+  COPY_TRUST_FLAGS(SETTINGS_ARRAY_EMPTY);
+  COPY_TRUST_FLAGS(SETTINGS_DICT_EMPTY);
+  COPY_TRUST_FLAGS(SETTINGS_DICT_UNKNOWN_KEY);
+  COPY_TRUST_FLAGS(SETTINGS_DICT_CONTAINS_POLICY);
+  COPY_TRUST_FLAGS(SETTINGS_DICT_INVALID_POLICY_TYPE);
+  COPY_TRUST_FLAGS(SETTINGS_DICT_CONTAINS_APPLICATION);
+  COPY_TRUST_FLAGS(SETTINGS_DICT_CONTAINS_POLICY_STRING);
+  COPY_TRUST_FLAGS(SETTINGS_DICT_CONTAINS_KEY_USAGE);
+  COPY_TRUST_FLAGS(SETTINGS_DICT_CONTAINS_RESULT);
+  COPY_TRUST_FLAGS(SETTINGS_DICT_INVALID_RESULT_TYPE);
+  COPY_TRUST_FLAGS(SETTINGS_DICT_CONTAINS_ALLOWED_ERROR);
+
+#undef COPY_TRUST_FLAGS
+}
+
+void AddMacPlatformDebugInfoToReport(
+    const network::mojom::MacPlatformVerifierDebugInfoPtr&
+        mac_platform_debug_info,
+    chrome_browser_ssl::TrialVerificationInfo* trial_report) {
+  if (!mac_platform_debug_info)
+    return;
+  chrome_browser_ssl::MacPlatformDebugInfo* report_info =
+      trial_report->mutable_mac_platform_debug_info();
+  report_info->set_trust_result(mac_platform_debug_info->trust_result);
+  report_info->set_result_code(mac_platform_debug_info->result_code);
+  for (const auto& cert_info : mac_platform_debug_info->status_chain) {
+    chrome_browser_ssl::MacCertEvidenceInfo* report_cert_info =
+        report_info->add_status_chain();
+    report_cert_info->set_status_bits(cert_info->status_bits);
+    for (auto code : cert_info->status_codes)
+      report_cert_info->add_status_codes(code);
+  }
+}
+#endif  // defined(OS_MACOSX)
+#endif  // BUILDFLAG(TRIAL_COMPARISON_CERT_VERIFIER_SUPPORTED)
 
 bool CertificateChainToString(const net::X509Certificate& cert,
                               std::string* result) {
@@ -123,6 +173,7 @@ CertificateErrorReport::CertificateErrorReport(const std::string& hostname,
   cert_report_->add_pin(ssl_info.pinning_failure_log);
 }
 
+#if BUILDFLAG(TRIAL_COMPARISON_CERT_VERIFIER_SUPPORTED)
 CertificateErrorReport::CertificateErrorReport(
     const std::string& hostname,
     const net::X509Certificate& unverified_cert,
@@ -131,7 +182,8 @@ CertificateErrorReport::CertificateErrorReport(
     bool enable_sha1_local_anchors,
     bool disable_symantec_enforcement,
     const net::CertVerifyResult& primary_result,
-    const net::CertVerifyResult& trial_result)
+    const net::CertVerifyResult& trial_result,
+    network::mojom::CertVerifierDebugInfoPtr debug_info)
     : CertificateErrorReport(hostname,
                              *primary_result.verified_cert,
                              &unverified_cert,
@@ -155,7 +207,24 @@ CertificateErrorReport::CertificateErrorReport(
       enable_rev_checking, require_rev_checking_local_anchors,
       enable_sha1_local_anchors, disable_symantec_enforcement,
       trial_report->mutable_verify_flags());
+#if defined(OS_MACOSX)
+  AddMacPlatformDebugInfoToReport(debug_info->mac_platform_debug_info,
+                                  trial_report);
+  AddMacTrustFlagsToReport(
+      debug_info->mac_combined_trust_debug_info,
+      trial_report->mutable_mac_combined_trust_debug_info());
+#endif
+  if (!debug_info->trial_verification_time.is_null()) {
+    trial_report->set_trial_verification_time_usec(
+        debug_info->trial_verification_time.ToDeltaSinceWindowsEpoch()
+            .InMicroseconds());
+  }
+  if (!debug_info->trial_der_verification_time.empty()) {
+    trial_report->set_trial_der_verification_time(
+        debug_info->trial_der_verification_time);
+  }
 }
+#endif  // BUILDFLAG(TRIAL_COMPARISON_CERT_VERIFIER_SUPPORTED)
 
 CertificateErrorReport::~CertificateErrorReport() {}
 
@@ -200,12 +269,17 @@ void CertificateErrorReport::SetInterstitialInfo(
           chrome_browser_ssl::CertLoggerInterstitialInfo::
               INTERSTITIAL_MITM_SOFTWARE);
       break;
+    case INTERSTITIAL_BLOCKED_INTERCEPTION:
+      interstitial_info->set_interstitial_reason(
+          chrome_browser_ssl::CertLoggerInterstitialInfo::
+              INTERSTITIAL_BLOCKED_INTERCEPTION);
+      break;
   }
 
   interstitial_info->set_user_proceeded(proceed_decision == USER_PROCEEDED);
   interstitial_info->set_overridable(overridable == INTERSTITIAL_OVERRIDABLE);
   interstitial_info->set_interstitial_created_time_usec(
-      interstitial_time.ToInternalValue());
+      interstitial_time.ToDeltaSinceWindowsEpoch().InMicroseconds());
 }
 
 void CertificateErrorReport::AddNetworkTimeInfo(
@@ -308,7 +382,7 @@ CertificateErrorReport::CertificateErrorReport(
     net::CertStatus cert_status)
     : cert_report_(new chrome_browser_ssl::CertLoggerRequest()) {
   base::Time now = base::Time::Now();
-  cert_report_->set_time_usec(now.ToInternalValue());
+  cert_report_->set_time_usec(now.ToDeltaSinceWindowsEpoch().InMicroseconds());
   cert_report_->set_hostname(hostname);
 
   if (!CertificateChainToString(cert, cert_report_->mutable_cert_chain())) {

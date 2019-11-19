@@ -127,6 +127,10 @@ void TestDownloadService::SetIsReady(bool is_ready) {
     ProcessDownload();
 }
 
+void TestDownloadService::SetHash256(const std::string& hash256) {
+  hash256_ = hash256;
+}
+
 void TestDownloadService::ProcessDownload() {
   DCHECK(!fail_at_start_);
   if (!is_ready_ || downloads_.empty())
@@ -142,6 +146,7 @@ void TestDownloadService::ProcessDownload() {
   } else {
     CompletionInfo completion_info(base::FilePath(), file_size_,
                                    {params.request_params.url}, nullptr);
+    completion_info.hash256 = hash256_;
     OnDownloadSucceeded(params.guid, completion_info);
   }
 }

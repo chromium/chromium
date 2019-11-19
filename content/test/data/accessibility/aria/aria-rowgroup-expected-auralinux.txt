@@ -1,0 +1,4 @@
+[document web]
+++[table] cols=0 headers=(NONE); rows=0 headers=(NONE); caption=false; spans=(all: 1x1)
+++++[table row] selectable
+++++[table row] selectable

@@ -5,7 +5,6 @@
 #ifndef CC_LAYERS_VIDEO_FRAME_PROVIDER_CLIENT_IMPL_H_
 #define CC_LAYERS_VIDEO_FRAME_PROVIDER_CLIENT_IMPL_H_
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/thread_checker.h"
@@ -32,6 +31,10 @@ class CC_EXPORT VideoFrameProviderClientImpl
   static scoped_refptr<VideoFrameProviderClientImpl> Create(
       VideoFrameProvider* provider,
       VideoFrameControllerClient* client);
+
+  VideoFrameProviderClientImpl(const VideoFrameProviderClientImpl&) = delete;
+  VideoFrameProviderClientImpl& operator=(const VideoFrameProviderClientImpl&) =
+      delete;
 
   VideoLayerImpl* ActiveVideoLayer() const;
   void SetActiveVideoLayer(VideoLayerImpl* video_layer);
@@ -82,8 +85,6 @@ class CC_EXPORT VideoFrameProviderClientImpl
   // from returning until the frame controller is done using the frame.
   base::Lock provider_lock_;
   base::ThreadChecker thread_checker_;
-
-  DISALLOW_COPY_AND_ASSIGN(VideoFrameProviderClientImpl);
 };
 
 }  // namespace cc

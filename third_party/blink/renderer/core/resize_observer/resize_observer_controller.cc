@@ -27,6 +27,14 @@ size_t ResizeObserverController::GatherObservations(size_t deeper_than) {
   return shallowest;
 }
 
+void ResizeObserverController::SetNeedsForcedResizeObservations() {
+  for (auto& observer : observers_) {
+    // Set ElementSizeChanged as a way of forcing the observer to check all
+    // observations.
+    observer->ElementSizeChanged();
+  }
+}
+
 bool ResizeObserverController::SkippedObservations() {
   for (auto& observer : observers_) {
     if (observer->SkippedObservations())

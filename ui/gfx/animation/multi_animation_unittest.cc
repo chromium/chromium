@@ -12,10 +12,12 @@ namespace gfx {
 TEST(MultiAnimationTest, Basic) {
   // Create a MultiAnimation with two parts.
   MultiAnimation::Parts parts;
-  parts.push_back(MultiAnimation::Part(100, Tween::LINEAR));
-  parts.push_back(MultiAnimation::Part(100, Tween::EASE_OUT));
+  parts.push_back(MultiAnimation::Part(base::TimeDelta::FromMilliseconds(100),
+                                       Tween::LINEAR));
+  parts.push_back(MultiAnimation::Part(base::TimeDelta::FromMilliseconds(100),
+                                       Tween::EASE_OUT));
 
-  MultiAnimation animation(parts, MultiAnimation::GetDefaultTimerInterval());
+  MultiAnimation animation(parts, MultiAnimation::kDefaultTimerInterval);
   AnimationContainerElement* as_element =
       static_cast<AnimationContainerElement*>(&animation);
   as_element->SetStartTime(base::TimeTicks());
@@ -40,9 +42,12 @@ TEST(MultiAnimationTest, Basic) {
 TEST(MultiAnimationTest, DifferingStartAndEnd) {
   // Create a MultiAnimation with two parts.
   MultiAnimation::Parts parts;
-  parts.push_back(MultiAnimation::Part(200, 100, 400, Tween::LINEAR));
+  parts.push_back(MultiAnimation::Part(base::TimeDelta::FromMilliseconds(200),
+                                       base::TimeDelta::FromMilliseconds(100),
+                                       base::TimeDelta::FromMilliseconds(400),
+                                       Tween::LINEAR));
 
-  MultiAnimation animation(parts, MultiAnimation::GetDefaultTimerInterval());
+  MultiAnimation animation(parts, MultiAnimation::kDefaultTimerInterval);
   AnimationContainerElement* as_element =
       static_cast<AnimationContainerElement*>(&animation);
   as_element->SetStartTime(base::TimeTicks());
@@ -60,8 +65,9 @@ TEST(MultiAnimationTest, DifferingStartAndEnd) {
 // Makes sure multi-animation stops if cycles is false.
 TEST(MultiAnimationTest, DontCycle) {
   MultiAnimation::Parts parts;
-  parts.push_back(MultiAnimation::Part(200, Tween::LINEAR));
-  MultiAnimation animation(parts, MultiAnimation::GetDefaultTimerInterval());
+  parts.push_back(MultiAnimation::Part(base::TimeDelta::FromMilliseconds(200),
+                                       Tween::LINEAR));
+  MultiAnimation animation(parts, MultiAnimation::kDefaultTimerInterval);
   AnimationContainerElement* as_element =
       static_cast<AnimationContainerElement*>(&animation);
   as_element->SetStartTime(base::TimeTicks());
@@ -76,8 +82,9 @@ TEST(MultiAnimationTest, DontCycle) {
 // Makes sure multi-animation cycles correctly.
 TEST(MultiAnimationTest, Cycle) {
   MultiAnimation::Parts parts;
-  parts.push_back(MultiAnimation::Part(200, Tween::LINEAR));
-  MultiAnimation animation(parts, MultiAnimation::GetDefaultTimerInterval());
+  parts.push_back(MultiAnimation::Part(base::TimeDelta::FromMilliseconds(200),
+                                       Tween::LINEAR));
+  MultiAnimation animation(parts, MultiAnimation::kDefaultTimerInterval);
   AnimationContainerElement* as_element =
       static_cast<AnimationContainerElement*>(&animation);
   as_element->SetStartTime(base::TimeTicks());

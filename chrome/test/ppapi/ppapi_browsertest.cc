@@ -14,13 +14,13 @@
 #include "base/test/test_timeouts.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
+#include "chrome/browser/apps/app_service/app_launch_params.h"
+#include "chrome/browser/apps/launch_service/launch_service.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
-#include "chrome/browser/ui/extensions/app_launch_params.h"
-#include "chrome/browser/ui/extensions/application_launch.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -30,11 +30,10 @@
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/nacl/common/buildflags.h"
 #include "components/nacl/common/nacl_switches.h"
+#include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/network_service_util.h"
-#include "content/public/common/service_manager_connection.h"
-#include "content/public/common/service_names.mojom.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/javascript_test_observer.h"
@@ -43,13 +42,15 @@
 #include "extensions/common/constants.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "mojo/public/cpp/bindings/binding.h"
-#include "mojo/public/cpp/bindings/interface_request.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "net/base/net_errors.h"
 #include "net/ssl/ssl_info.h"
 #include "ppapi/shared_impl/test_utils.h"
 #include "rlz/buildflags/buildflags.h"
-#include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/host_resolver.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/network_service_test.mojom.h"
@@ -57,7 +58,6 @@
 #include "services/network/public/mojom/tls_socket.mojom.h"
 #include "services/network/public/mojom/udp_socket.mojom.h"
 #include "services/network/test/test_network_context.h"
-#include "services/service_manager/public/cpp/connector.h"
 
 #if defined(OS_MACOSX)
 #include "base/mac/mac_util.h"
@@ -199,7 +199,7 @@ IN_PROC_BROWSER_TEST_F(PPAPIBrokerInfoBarTest, Accept) {
       HostContentSettingsMapFactory::GetForProfile(browser()->profile());
   EXPECT_EQ(CONTENT_SETTING_ALLOW,
             content_settings->GetContentSetting(
-                url, url, CONTENT_SETTINGS_TYPE_PPAPI_BROKER, std::string()));
+                url, url, ContentSettingsType::PPAPI_BROKER, std::string()));
 }
 
 IN_PROC_BROWSER_TEST_F(PPAPIBrokerInfoBarTest, Deny) {
@@ -219,13 +219,13 @@ IN_PROC_BROWSER_TEST_F(PPAPIBrokerInfoBarTest, Deny) {
       HostContentSettingsMapFactory::GetForProfile(browser()->profile());
   EXPECT_EQ(CONTENT_SETTING_BLOCK,
             content_settings->GetContentSetting(
-                url, url, CONTENT_SETTINGS_TYPE_PPAPI_BROKER, std::string()));
+                url, url, ContentSettingsType::PPAPI_BROKER, std::string()));
 }
 
 IN_PROC_BROWSER_TEST_F(PPAPIBrokerInfoBarTest, Blocked) {
   // Block access to the PPAPI broker.
   HostContentSettingsMapFactory::GetForProfile(browser()->profile())
-      ->SetDefaultContentSetting(CONTENT_SETTINGS_TYPE_PPAPI_BROKER,
+      ->SetDefaultContentSetting(ContentSettingsType::PPAPI_BROKER,
                                  CONTENT_SETTING_BLOCK);
 
   // We shouldn't see an infobar.
@@ -238,7 +238,7 @@ IN_PROC_BROWSER_TEST_F(PPAPIBrokerInfoBarTest, Blocked) {
 IN_PROC_BROWSER_TEST_F(PPAPIBrokerInfoBarTest, Allowed) {
   // Always allow access to the PPAPI broker.
   HostContentSettingsMapFactory::GetForProfile(browser()->profile())
-      ->SetDefaultContentSetting(CONTENT_SETTINGS_TYPE_PPAPI_BROKER,
+      ->SetDefaultContentSetting(ContentSettingsType::PPAPI_BROKER,
                                  CONTENT_SETTING_ALLOW);
 
   // We shouldn't see an infobar.
@@ -359,15 +359,12 @@ TEST_PPAPI_NACL_WITH_SSL_SERVER(TCPSocketPrivate_LargeRead)
 TEST_PPAPI_OUT_OF_PROCESS_WITH_SSL_SERVER(TCPSocketPrivateTrusted)
 
 IN_PROC_BROWSER_TEST_F(OutOfProcessPPAPITest, TCPSocketPrivateCrash_Resolve) {
-  if (!base::FeatureList::IsEnabled(network::features::kNetworkService) ||
-      content::IsInProcessNetworkService())
+  if (content::IsInProcessNetworkService())
     return;
 
-  network::mojom::NetworkServiceTestPtr network_service_test;
-  content::ServiceManagerConnection::GetForProcess()
-      ->GetConnector()
-      ->BindInterface(content::mojom::kNetworkServiceName,
-                      &network_service_test);
+  mojo::Remote<network::mojom::NetworkServiceTest> network_service_test;
+  content::GetNetworkService()->BindTestInterface(
+      network_service_test.BindNewPipeAndPassReceiver());
   network_service_test->CrashOnResolveHost("crash.com");
 
   RunTestViaHTTP(STRIP_PREFIXES(TCPSocketPrivateCrash_Resolve));
@@ -437,13 +434,12 @@ class MockTCPConnectedSocket : public network::mojom::TCPConnectedSocket,
  public:
   MockTCPConnectedSocket(
       TCPFailureType tcp_failure_type,
-      network::mojom::TCPConnectedSocketRequest request,
-      network::mojom::SocketObserverPtr observer,
+      mojo::PendingReceiver<network::mojom::TCPConnectedSocket> receiver,
+      mojo::PendingRemote<network::mojom::SocketObserver> observer,
       network::mojom::NetworkContext::CreateTCPConnectedSocketCallback callback)
       : tcp_failure_type_(tcp_failure_type),
         observer_(std::move(observer)),
-        binding_(this, std::move(request)),
-        tls_client_socket_binding_(this) {
+        receiver_(this, std::move(receiver)) {
     if (tcp_failure_type_ == TCPFailureType::kConnectError) {
       std::move(callback).Run(
           net::ERR_FAILED, base::nullopt /* local_addr */,
@@ -472,16 +468,15 @@ class MockTCPConnectedSocket : public network::mojom::TCPConnectedSocket,
 
   MockTCPConnectedSocket(
       TCPFailureType tcp_failure_type,
-      network::mojom::SocketObserverPtr observer,
+      mojo::PendingRemote<network::mojom::SocketObserver> observer,
       network::mojom::TCPServerSocket::AcceptCallback callback)
       : tcp_failure_type_(tcp_failure_type),
         observer_(std::move(observer)),
-        binding_(this),
-        tls_client_socket_binding_(this) {
+        receiver_(this) {
     if (tcp_failure_type_ == TCPFailureType::kAcceptError) {
       std::move(callback).Run(
           net::ERR_FAILED, base::nullopt /* remote_addr */,
-          nullptr /* connected_socket */,
+          mojo::NullRemote() /* connected_socket */,
           mojo::ScopedDataPipeConsumerHandle() /* receive_stream */,
           mojo::ScopedDataPipeProducerHandle() /* send_stream */);
       return;
@@ -498,10 +493,8 @@ class MockTCPConnectedSocket : public network::mojom::TCPConnectedSocket,
     receive_pipe_handle_ = std::move(receive_pipe.producer_handle);
     send_pipe_handle_ = std::move(send_pipe.consumer_handle);
 
-    network::mojom::TCPConnectedSocketPtr connected_socket;
-    binding_.Bind(mojo::MakeRequest(&connected_socket));
     std::move(callback).Run(net::OK, RemoteAddress(),
-                            std::move(connected_socket),
+                            receiver_.BindNewPipeAndPassRemote(),
                             std::move(receive_pipe.consumer_handle),
                             std::move(send_pipe.producer_handle));
     ClosePipeIfNeeded();
@@ -515,17 +508,19 @@ class MockTCPConnectedSocket : public network::mojom::TCPConnectedSocket,
       const net::HostPortPair& host_port_pair,
       network::mojom::TLSClientSocketOptionsPtr socket_options,
       const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
-      network::mojom::TLSClientSocketRequest request,
-      network::mojom::SocketObserverPtr observer,
+      mojo::PendingReceiver<network::mojom::TLSClientSocket> receiver,
+      mojo::PendingRemote<network::mojom::SocketObserver> observer,
       network::mojom::TCPConnectedSocket::UpgradeToTLSCallback callback)
       override {
+    observer_.reset();
+
     // Succeed or fail, keep these pipes open (Their state shouldn't matter when
     // checking for failures).
-    observer_ = std::move(observer);
-    tls_client_socket_binding_.Bind(std::move(request));
+    observer_.Bind(std::move(observer));
+    tls_client_socket_receiver_.Bind(std::move(receiver));
 
     if (tcp_failure_type_ == TCPFailureType::kUpgradeToTLSClosePipe) {
-      binding_.Close();
+      receiver_.reset();
       return;
     }
     if (tcp_failure_type_ == TCPFailureType::kUpgradeToTLSError) {
@@ -571,7 +566,7 @@ class MockTCPConnectedSocket : public network::mojom::TCPConnectedSocket,
   void SetSendBufferSize(int send_buffer_size,
                          SetSendBufferSizeCallback callback) override {
     if (tcp_failure_type_ == TCPFailureType::kSetOptionsClosePipe) {
-      binding_.Close();
+      receiver_.reset();
       return;
     }
     DCHECK_EQ(tcp_failure_type_, TCPFailureType::kSetOptionsError);
@@ -581,7 +576,7 @@ class MockTCPConnectedSocket : public network::mojom::TCPConnectedSocket,
   void SetReceiveBufferSize(int send_buffer_size,
                             SetSendBufferSizeCallback callback) override {
     if (tcp_failure_type_ == TCPFailureType::kSetOptionsClosePipe) {
-      binding_.Close();
+      receiver_.reset();
       return;
     }
     DCHECK_EQ(tcp_failure_type_, TCPFailureType::kSetOptionsError);
@@ -590,7 +585,7 @@ class MockTCPConnectedSocket : public network::mojom::TCPConnectedSocket,
 
   void SetNoDelay(bool no_delay, SetNoDelayCallback callback) override {
     if (tcp_failure_type_ == TCPFailureType::kSetOptionsClosePipe) {
-      binding_.Close();
+      receiver_.reset();
       return;
     }
     DCHECK_EQ(tcp_failure_type_, TCPFailureType::kSetOptionsError);
@@ -622,7 +617,7 @@ class MockTCPConnectedSocket : public network::mojom::TCPConnectedSocket,
 
   const TCPFailureType tcp_failure_type_;
 
-  network::mojom::SocketObserverPtr observer_;
+  mojo::Remote<network::mojom::SocketObserver> observer_;
 
   // Callbacks held onto when simulating a hang.
   network::mojom::NetworkContext::CreateTCPConnectedSocketCallback
@@ -634,8 +629,9 @@ class MockTCPConnectedSocket : public network::mojom::TCPConnectedSocket,
   mojo::ScopedDataPipeProducerHandle receive_pipe_handle_;
   mojo::ScopedDataPipeConsumerHandle send_pipe_handle_;
 
-  mojo::Binding<network::mojom::TCPConnectedSocket> binding_;
-  mojo::Binding<network::mojom::TLSClientSocket> tls_client_socket_binding_;
+  mojo::Receiver<network::mojom::TCPConnectedSocket> receiver_;
+  mojo::Receiver<network::mojom::TLSClientSocket> tls_client_socket_receiver_{
+      this};
 
   DISALLOW_COPY_AND_ASSIGN(MockTCPConnectedSocket);
 };
@@ -645,10 +641,10 @@ class MockTCPServerSocket : public network::mojom::TCPServerSocket {
   // CreateTCPServerSocket constructor.
   MockTCPServerSocket(
       TCPFailureType tcp_failure_type,
-      network::mojom::TCPServerSocketRequest request,
+      mojo::PendingReceiver<network::mojom::TCPServerSocket> receiver,
       network::mojom::NetworkContext::CreateTCPServerSocketCallback callback)
-      : tcp_failure_type_(tcp_failure_type), binding_(this) {
-    binding_.Bind(std::move(request));
+      : tcp_failure_type_(tcp_failure_type),
+        receiver_(this, std::move(receiver)) {
     if (tcp_failure_type_ == TCPFailureType::kCreateTCPServerSocketError) {
       std::move(callback).Run(net::ERR_FAILED, base::nullopt /* local_addr */);
       return;
@@ -661,11 +657,12 @@ class MockTCPServerSocket : public network::mojom::TCPServerSocket {
   }
 
   // TCPBoundSocket::Listen constructor.
-  MockTCPServerSocket(TCPFailureType tcp_failure_type,
-                      network::mojom::TCPServerSocketRequest request,
-                      network::mojom::TCPBoundSocket::ListenCallback callback)
-      : tcp_failure_type_(tcp_failure_type), binding_(this) {
-    binding_.Bind(std::move(request));
+  MockTCPServerSocket(
+      TCPFailureType tcp_failure_type,
+      mojo::PendingReceiver<network::mojom::TCPServerSocket> receiver,
+      network::mojom::TCPBoundSocket::ListenCallback callback)
+      : tcp_failure_type_(tcp_failure_type),
+        receiver_(this, std::move(receiver)) {
     if (tcp_failure_type_ == TCPFailureType::kCreateTCPServerSocketError) {
       std::move(callback).Run(net::ERR_FAILED);
       return;
@@ -680,11 +677,11 @@ class MockTCPServerSocket : public network::mojom::TCPServerSocket {
   ~MockTCPServerSocket() override {}
 
   // TCPServerSocket implementation:
-  void Accept(network::mojom::SocketObserverPtr observer,
+  void Accept(mojo::PendingRemote<network::mojom::SocketObserver> observer,
               AcceptCallback callback) override {
     // This falls through just to keep the observer alive.
     if (tcp_failure_type_ == TCPFailureType::kAcceptDropPipe)
-      binding_.Close();
+      receiver_.reset();
     connected_socket_ = std::make_unique<MockTCPConnectedSocket>(
         tcp_failure_type_, std::move(observer), std::move(callback));
   }
@@ -699,7 +696,7 @@ class MockTCPServerSocket : public network::mojom::TCPServerSocket {
       create_server_socket_callback_;
   network::mojom::TCPBoundSocket::ListenCallback listen_callback_;
 
-  mojo::Binding<network::mojom::TCPServerSocket> binding_;
+  mojo::Receiver<network::mojom::TCPServerSocket> receiver_;
 
   DISALLOW_COPY_AND_ASSIGN(MockTCPServerSocket);
 };
@@ -708,10 +705,10 @@ class MockTCPBoundSocket : public network::mojom::TCPBoundSocket {
  public:
   MockTCPBoundSocket(
       TCPFailureType tcp_failure_type,
-      network::mojom::TCPBoundSocketRequest request,
+      mojo::PendingReceiver<network::mojom::TCPBoundSocket> receiver,
       network::mojom::NetworkContext::CreateTCPBoundSocketCallback callback)
-      : tcp_failure_type_(tcp_failure_type), binding_(this) {
-    binding_.Bind(std::move(request));
+      : tcp_failure_type_(tcp_failure_type),
+        receiver_(this, std::move(receiver)) {
     if (tcp_failure_type_ == TCPFailureType::kBindError) {
       std::move(callback).Run(net::ERR_FAILED, base::nullopt /* local_addr */);
       return;
@@ -727,52 +724,53 @@ class MockTCPBoundSocket : public network::mojom::TCPBoundSocket {
 
   // mojom::TCPBoundSocket implementation:
   void Listen(uint32_t backlog,
-              network::mojom::TCPServerSocketRequest request,
+              mojo::PendingReceiver<network::mojom::TCPServerSocket> receiver,
               ListenCallback callback) override {
-    // If closing the pipe, create ServerSocket anyways, to keep |request|
+    // If closing the pipe, create ServerSocket anyways, to keep |receiver|
     // alive. The callback invocation will have no effect, since it uses the
     // TCPBoundSocket's pipe, which was just closed.
     if (tcp_failure_type_ == TCPFailureType::kCreateTCPServerSocketClosePipe)
-      binding_.Close();
+      receiver_.reset();
     server_socket_ = std::make_unique<MockTCPServerSocket>(
-        tcp_failure_type_, std::move(request), std::move(callback));
+        tcp_failure_type_, std::move(receiver), std::move(callback));
   }
 
   void Connect(
       const net::AddressList& remote_addr,
       network::mojom::TCPConnectedSocketOptionsPtr tcp_connected_socket_options,
-      network::mojom::TCPConnectedSocketRequest request,
-      network::mojom::SocketObserverPtr observer,
+      mojo::PendingReceiver<network::mojom::TCPConnectedSocket> receiver,
+      mojo::PendingRemote<network::mojom::SocketObserver> observer,
       ConnectCallback callback) override {
     if (tcp_failure_type_ == TCPFailureType::kConnectClosePipe)
-      binding_.Close();
+      receiver_.reset();
     connected_socket_ = std::make_unique<MockTCPConnectedSocket>(
-        tcp_failure_type_, std::move(request), std::move(observer),
+        tcp_failure_type_, std::move(receiver), std::move(observer),
         std::move(callback));
   }
 
  private:
   const TCPFailureType tcp_failure_type_;
 
-  // Needs to be destroyed after |binding_|, as it may be holding onto a
-  // callback bound to the Binding.
+  // Needs to be destroyed after |receiver_|, as it may be holding onto a
+  // callback bound to the Receiver.
   std::unique_ptr<MockTCPServerSocket> server_socket_;
   std::unique_ptr<MockTCPConnectedSocket> connected_socket_;
 
   // Callback held onto when simulating a hang.
   network::mojom::NetworkContext::CreateTCPBoundSocketCallback callback_;
 
-  mojo::Binding<network::mojom::TCPBoundSocket> binding_;
+  mojo::Receiver<network::mojom::TCPBoundSocket> receiver_;
 
   DISALLOW_COPY_AND_ASSIGN(MockTCPBoundSocket);
 };
 
 class MockNetworkContext : public network::TestNetworkContext {
  public:
-  explicit MockNetworkContext(TCPFailureType tcp_failure_type,
-                              network::mojom::NetworkContextRequest request)
+  explicit MockNetworkContext(
+      TCPFailureType tcp_failure_type,
+      mojo::PendingReceiver<network::mojom::NetworkContext> receiver)
       : tcp_failure_type_(tcp_failure_type),
-        binding_(this, std::move(request)) {}
+        receiver_(this, std::move(receiver)) {}
 
   ~MockNetworkContext() override {}
 
@@ -782,15 +780,15 @@ class MockNetworkContext : public network::TestNetworkContext {
       const net::IPEndPoint& local_addr,
       uint32_t backlog,
       const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
-      network::mojom::TCPServerSocketRequest request,
+      mojo::PendingReceiver<network::mojom::TCPServerSocket> receiver,
       CreateTCPServerSocketCallback callback) override {
-    // If closing the pipe, create ServerSocket anyways, to keep |request|
+    // If closing the pipe, create ServerSocket anyways, to keep |receiver|
     // alive. The callback invocation will have no effect, since it uses the
     // TCPBoundSocket's pipe, which was just closed.
     if (tcp_failure_type_ == TCPFailureType::kCreateTCPServerSocketClosePipe)
-      binding_.Close();
+      receiver_.reset();
     server_sockets_.emplace_back(std::make_unique<MockTCPServerSocket>(
-        tcp_failure_type_, std::move(request), std::move(callback)));
+        tcp_failure_type_, std::move(receiver), std::move(callback)));
   }
 
   void CreateTCPConnectedSocket(
@@ -798,11 +796,11 @@ class MockNetworkContext : public network::TestNetworkContext {
       const net::AddressList& remote_addr_list,
       network::mojom::TCPConnectedSocketOptionsPtr tcp_connected_socket_options,
       const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
-      network::mojom::TCPConnectedSocketRequest socket,
-      network::mojom::SocketObserverPtr observer,
+      mojo::PendingReceiver<network::mojom::TCPConnectedSocket> socket,
+      mojo::PendingRemote<network::mojom::SocketObserver> observer,
       CreateTCPConnectedSocketCallback callback) override {
     if (tcp_failure_type_ == TCPFailureType::kConnectClosePipe)
-      binding_.Close();
+      receiver_.reset();
     connected_sockets_.emplace_back(std::make_unique<MockTCPConnectedSocket>(
         tcp_failure_type_, std::move(socket), std::move(observer),
         std::move(callback)));
@@ -811,19 +809,21 @@ class MockNetworkContext : public network::TestNetworkContext {
   void CreateTCPBoundSocket(
       const net::IPEndPoint& local_addr,
       const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
-      network::mojom::TCPBoundSocketRequest request,
+      mojo::PendingReceiver<network::mojom::TCPBoundSocket> receiver,
       CreateTCPBoundSocketCallback callback) override {
     if (tcp_failure_type_ == TCPFailureType::kBindClosePipe)
-      binding_.Close();
+      receiver_.reset();
     // These tests only create at most one object of a given type at a time.
     bound_sockets_.emplace_back(std::make_unique<MockTCPBoundSocket>(
-        tcp_failure_type_, std::move(request), std::move(callback)));
+        tcp_failure_type_, std::move(receiver), std::move(callback)));
   }
 
-  void ResolveHost(
-      const net::HostPortPair& host,
-      network::mojom::ResolveHostParametersPtr optional_parameters,
-      network::mojom::ResolveHostClientPtr response_client) override {
+  void ResolveHost(const net::HostPortPair& host,
+                   network::mojom::ResolveHostParametersPtr optional_parameters,
+                   mojo::PendingRemote<network::mojom::ResolveHostClient>
+                       pending_response_client) override {
+    mojo::Remote<network::mojom::ResolveHostClient> response_client(
+        std::move(pending_response_client));
     response_client->OnComplete(net::OK, net::AddressList(LocalAddress()));
   }
 
@@ -834,7 +834,7 @@ class MockNetworkContext : public network::TestNetworkContext {
   std::vector<std::unique_ptr<MockTCPBoundSocket>> bound_sockets_;
   std::vector<std::unique_ptr<MockTCPConnectedSocket>> connected_sockets_;
 
-  mojo::Binding<network::mojom::NetworkContext> binding_;
+  mojo::Receiver<network::mojom::NetworkContext> receiver_;
 
   DISALLOW_COPY_AND_ASSIGN(MockNetworkContext);
 };
@@ -843,9 +843,9 @@ class MockNetworkContext : public network::TestNetworkContext {
 // pipe makes sure that everything happens asynchronously through a pipe.
 #define RUN_TCP_FAILURE_TEST(test_name, failure_type)                         \
   do {                                                                        \
-    network::mojom::NetworkContextPtr network_context_proxy;                  \
+    mojo::Remote<network::mojom::NetworkContext> network_context_proxy;       \
     MockNetworkContext network_context(                                       \
-        failure_type, mojo::MakeRequest(&network_context_proxy));             \
+        failure_type, network_context_proxy.BindNewPipeAndPassReceiver());    \
     ppapi::SetPepperTCPNetworkContextForTesting(network_context_proxy.get()); \
     RunTestViaHTTP(LIST_TEST(test_name));                                     \
     ppapi::SetPepperTCPNetworkContextForTesting(nullptr);                     \
@@ -926,7 +926,8 @@ TCP_SOCKET_FAILURE_TEST(TCPSocket_BindError,
 TCP_SOCKET_FAILURE_TEST(TCPSocket_BindHangs,
                         TCPSocket_BindHangs,
                         TCPFailureType::kBindHangs)
-TCP_SOCKET_FAILURE_TEST(TCPSocket_ListenClosePipe,
+// https://crbug.com/997840. Flaky.
+TCP_SOCKET_FAILURE_TEST(DISABLED_TCPSocket_ListenClosePipe,
                         TCPSocket_ListenFails,
                         TCPFailureType::kCreateTCPServerSocketClosePipe)
 TCP_SOCKET_FAILURE_TEST(TCPSocket_ListenError,
@@ -950,7 +951,8 @@ TCP_SOCKET_FAILURE_TEST(TCPSocket_AcceptedSocketWriteClosePipe,
 TCP_SOCKET_FAILURE_TEST(TCPSocket_AcceptedSocketWriteError,
                         TCPSocket_AcceptedSocketWriteFails,
                         TCPFailureType::kWriteError)
-TCP_SOCKET_FAILURE_TEST(TCPSocket_AcceptedSocketReadClosePipe,
+// https://crbug.com/997840. Flaky.
+TCP_SOCKET_FAILURE_TEST(DISABLED_TCPSocket_AcceptedSocketReadClosePipe,
                         TCPSocket_AcceptedSocketReadFails,
                         TCPFailureType::kReadClosePipe)
 TCP_SOCKET_FAILURE_TEST(TCPSocket_AcceptedSocketReadError,
@@ -1047,23 +1049,26 @@ class WrappedUDPSocket : public network::mojom::UDPSocket {
     kBroadcastDropPipe,
     kSendToDropPipe,
     kSendToError,
-    kDropReceiverPipeOnConstruction,
-    kDropReceiverPipeOnReceiveMore,
+    kDropListenerPipeOnConstruction,
+    kDropListenerPipeOnReceiveMore,
     kReadError,
   };
-  WrappedUDPSocket(FailureType failure_type,
-                   network::mojom::NetworkContext* network_context,
-                   network::mojom::UDPSocketRequest socket_request,
-                   network::mojom::UDPSocketReceiverPtr socket_receiver)
-      : failure_type_(failure_type), binding_(this, std::move(socket_request)) {
-    if (failure_type == FailureType::kDropReceiverPipeOnConstruction)
-      socket_receiver.reset();
-    socket_receiver_ = std::move(socket_receiver);
-    network_context->CreateUDPSocket(mojo::MakeRequest(&wrapped_socket_),
-                                     nullptr);
-    binding_.set_connection_error_handler(
+  WrappedUDPSocket(
+      FailureType failure_type,
+      network::mojom::NetworkContext* network_context,
+      mojo::PendingReceiver<network::mojom::UDPSocket> socket_receiver,
+      mojo::PendingRemote<network::mojom::UDPSocketListener> socket_listener)
+      : failure_type_(failure_type),
+        receiver_(this, std::move(socket_receiver)) {
+    if (failure_type == FailureType::kDropListenerPipeOnConstruction)
+      socket_listener.reset();
+    else
+      socket_listener_.Bind(std::move(socket_listener));
+    network_context->CreateUDPSocket(
+        wrapped_socket_.BindNewPipeAndPassReceiver(), mojo::NullRemote());
+    receiver_.set_disconnect_handler(
         base::BindOnce(&WrappedUDPSocket::Close, base::Unretained(this)));
-    wrapped_socket_.set_connection_error_handler(
+    wrapped_socket_.set_disconnect_handler(
         base::BindOnce(&WrappedUDPSocket::Close, base::Unretained(this)));
   }
 
@@ -1115,13 +1120,13 @@ class WrappedUDPSocket : public network::mojom::UDPSocket {
     wrapped_socket_->LeaveGroup(group_address, std::move(callback));
   }
   void ReceiveMore(uint32_t num_additional_datagrams) override {
-    if (failure_type_ == FailureType::kDropReceiverPipeOnReceiveMore) {
-      socket_receiver_.reset();
+    if (failure_type_ == FailureType::kDropListenerPipeOnReceiveMore) {
+      socket_listener_.reset();
       return;
     }
     if (failure_type_ == FailureType::kReadError) {
       for (uint32_t i = 0; i < num_additional_datagrams; ++i) {
-        socket_receiver_->OnReceived(net::ERR_FAILED, base::nullopt,
+        socket_listener_->OnReceived(net::ERR_FAILED, base::nullopt,
                                      base::nullopt);
       }
       return;
@@ -1157,18 +1162,18 @@ class WrappedUDPSocket : public network::mojom::UDPSocket {
   void Close() override {
     // Deleting |this| before closing the bindings can cause Mojo to DCHECK if
     // there's a pending callback.
-    binding_.Close();
-    socket_receiver_.reset();
+    receiver_.reset();
+    socket_listener_.reset();
     delete this;
   }
 
  private:
   const FailureType failure_type_;
-  mojo::Binding<network::mojom::UDPSocket> binding_;
-  network::mojom::UDPSocketPtr wrapped_socket_;
+  mojo::Receiver<network::mojom::UDPSocket> receiver_;
+  mojo::Remote<network::mojom::UDPSocket> wrapped_socket_;
 
   // Only populated on certain read FailureTypes.
-  network::mojom::UDPSocketReceiverPtr socket_receiver_;
+  mojo::Remote<network::mojom::UDPSocketListener> socket_listener_;
 
   DISALLOW_COPY_AND_ASSIGN(WrappedUDPSocket);
 };
@@ -1176,11 +1181,11 @@ class WrappedUDPSocket : public network::mojom::UDPSocket {
 void TestCreateUDPSocketCallback(
     WrappedUDPSocket::FailureType failure_type,
     network::mojom::NetworkContext* network_context,
-    network::mojom::UDPSocketRequest socket_request,
-    network::mojom::UDPSocketReceiverPtr socket_receiver) {
+    mojo::PendingReceiver<network::mojom::UDPSocket> socket_receiver,
+    mojo::PendingRemote<network::mojom::UDPSocketListener> socket_listener) {
   // This will delete itself when one of its Mojo pipes is closed.
-  new WrappedUDPSocket(failure_type, network_context, std::move(socket_request),
-                       std::move(socket_receiver));
+  new WrappedUDPSocket(failure_type, network_context,
+                       std::move(socket_receiver), std::move(socket_listener));
 }
 
 #define RUN_UDP_FAILURE_TEST(test_name, failure_type)                    \
@@ -1233,17 +1238,20 @@ UDPSOCKET_FAILURE_TEST(UDPSocket_SendToBeforeDropPipeFails,
 UDPSOCKET_FAILURE_TEST(UDPSocket_DropPipeAfterBindSendToFails,
                        UDPSocket_SendToFails,
                        WrappedUDPSocket::FailureType::kSendToError)
-UDPSOCKET_FAILURE_TEST(UDPSocket_ReadError,
+// https://crbug.com/997840. Flaky.
+UDPSOCKET_FAILURE_TEST(DISABLED_UDPSocket_ReadError,
                        UDPSocket_ReadFails,
                        WrappedUDPSocket::FailureType::kReadError)
+// https://crbug.com/997840. Flaky.
 UDPSOCKET_FAILURE_TEST(
-    UDPSocket_DropReceiverPipeOnConstruction,
+    DISABLED_UDPSocket_DropListenerPipeOnConstruction,
     UDPSocket_ReadFails,
-    WrappedUDPSocket::FailureType::kDropReceiverPipeOnConstruction)
+    WrappedUDPSocket::FailureType::kDropListenerPipeOnConstruction)
+// Flaky on all platforms. http://crbug.com/997785.
 UDPSOCKET_FAILURE_TEST(
-    UDPSocket_DropReceiverPipeOnReceiveMore,
+    DISABLED_UDPSocket_DropListenerPipeOnReceiveMore,
     UDPSocket_ReadFails,
-    WrappedUDPSocket::FailureType::kDropReceiverPipeOnReceiveMore)
+    WrappedUDPSocket::FailureType::kDropListenerPipeOnReceiveMore)
 
 // Disallowed socket tests.
 TEST_PPAPI_NACL_DISALLOWED_SOCKETS(HostResolverPrivateDisallowed)
@@ -1260,15 +1268,12 @@ TEST_PPAPI_NACL_DISALLOWED_SOCKETS(UDPSocketPrivateDisallowed)
   )
 
 IN_PROC_BROWSER_TEST_F(OutOfProcessPPAPITest, HostResolverCrash_Basic) {
-  if (!base::FeatureList::IsEnabled(network::features::kNetworkService) ||
-      content::IsInProcessNetworkService())
+  if (content::IsInProcessNetworkService())
     return;
 
-  network::mojom::NetworkServiceTestPtr network_service_test;
-  content::ServiceManagerConnection::GetForProcess()
-      ->GetConnector()
-      ->BindInterface(content::mojom::kNetworkServiceName,
-                      &network_service_test);
+  mojo::Remote<network::mojom::NetworkServiceTest> network_service_test;
+  content::GetNetworkService()->BindTestInterface(
+      network_service_test.BindNewPipeAndPassReceiver());
   network_service_test->CrashOnResolveHost("crash.com");
 
   RunTestViaHTTP(STRIP_PREFIXES(HostResolverCrash_Basic));
@@ -1757,7 +1762,8 @@ IN_PROC_BROWSER_TEST_F(PPAPINaClPNaClNonSfiTest,
 IN_PROC_BROWSER_TEST_F(OutOfProcessPPAPITest, NetworkMonitor) {
   RUN_NETWORK_MONITOR_SUBTESTS;
 }
-IN_PROC_BROWSER_TEST_F(PPAPINaClNewlibTest, MAYBE_PPAPI_NACL(NetworkMonitor)) {
+// https://crbug.com/997840. Universally flaky.
+IN_PROC_BROWSER_TEST_F(PPAPINaClNewlibTest, DISABLED_NetworkMonitor) {
   RUN_NETWORK_MONITOR_SUBTESTS;
 }
 IN_PROC_BROWSER_TEST_F(PPAPINaClPNaClTest, MAYBE_PPAPI_PNACL(NetworkMonitor)) {
@@ -2121,7 +2127,13 @@ TEST_PPAPI_NACL(MAYBE_TrueTypeFont)
 #endif
 TEST_PPAPI_NACL(MAYBE_VideoDecoder)
 
-TEST_PPAPI_NACL(VideoEncoder)
+// https://crbug.com/997840.
+#if defined(OS_LINUX) || defined(OS_WIN) || defined(OS_CHROMEOS)
+#define MAYBE_VideoEncoder DISABLED_VideoEncoder
+#else
+#define MAYBE_VideoEncoder VideoEncoder
+#endif
+TEST_PPAPI_NACL(MAYBE_VideoEncoder)
 
 // Printing doesn't work in content_browsertests.
 TEST_PPAPI_OUT_OF_PROCESS(Printing)
@@ -2146,7 +2158,9 @@ TEST_PPAPI_OUT_OF_PROCESS(FlashFile)
 // aura: http://crbug.com/104384
 // cros: http://crbug.com/396502
 // windows: http://crbug.com/899893
-#if defined(OS_MACOSX) || defined(OS_CHROMEOS) || defined(OS_WIN)
+// linux: http://crbug.com/899893
+#if defined(OS_MACOSX) || defined(OS_CHROMEOS) || defined(OS_WIN) || \
+    defined(OS_LINUX)
 #define MAYBE_FlashFullscreen DISABLED_FlashFullscreen
 #else
 #define MAYBE_FlashFullscreen FlashFullscreen
@@ -2186,11 +2200,12 @@ class PackagedAppTest : public extensions::ExtensionBrowserTest {
     const extensions::Extension* extension = LoadExtension(app_dir);
     ASSERT_TRUE(extension);
 
-    AppLaunchParams params(
-        browser()->profile(), extension, extensions::LAUNCH_CONTAINER_NONE,
-        WindowOpenDisposition::NEW_WINDOW, extensions::SOURCE_TEST);
+    apps::AppLaunchParams params(
+        extension->id(), apps::mojom::LaunchContainer::kLaunchContainerNone,
+        WindowOpenDisposition::NEW_WINDOW,
+        apps::mojom::AppLaunchSource::kSourceTest);
     params.command_line = *base::CommandLine::ForCurrentProcess();
-    OpenApplication(params);
+    apps::LaunchService::Get(browser()->profile())->OpenApplication(params);
   }
 
   void RunTests(const std::string& extension_dirname) {

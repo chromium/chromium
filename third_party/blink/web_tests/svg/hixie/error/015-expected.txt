@@ -1,7 +1,0 @@
-CONSOLE ERROR: line 6: Error: Invalid value for <rect> attribute width=" 300"
-layer at (0,0) size 800x600
-  LayoutView at (0,0) size 800x600
-layer at (0,0) size 300x200
-  LayoutSVGRoot {svg} at (0,0) size 300x200
-    LayoutSVGRect {rect} at (0,0) size 300x200 [fill={[type=SOLID] [color=#008000]}] [x=0.00] [y=0.00] [width=300.00] [height=200.00]
-    LayoutSVGRect {rect} at (0,0) size 0x0 [fill={[type=SOLID] [color=#FF0000]}] [x=0.00] [y=0.00] [width=0.00] [height=200.00]

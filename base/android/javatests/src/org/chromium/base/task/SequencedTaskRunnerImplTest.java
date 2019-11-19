@@ -24,14 +24,14 @@ import java.util.List;
  * Note due to layering concerns we can't test post native functionality in a
  * base javatest. Instead see:
  * content/public/android/javatests/src/org/chromium/content/browser/scheduler/
- * TaskSchedulerTest.java
+ * NativePostTaskTest.java
  */
 @RunWith(BaseJUnit4ClassRunner.class)
 public class SequencedTaskRunnerImplTest {
     @Test
     @SmallTest
     public void testPreNativeTasksRunInOrder() {
-        TaskRunner taskQueue = new SequencedTaskRunnerImpl(new TaskTraits());
+        TaskRunner taskQueue = new SequencedTaskRunnerImpl(TaskTraits.USER_BLOCKING);
         List<Integer> orderList = new ArrayList<>();
         try {
             SchedulerTestHelpers.postRecordOrderTask(taskQueue, orderList, 1);

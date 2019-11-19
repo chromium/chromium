@@ -1,0 +1,42 @@
+syntax = "proto2";
+
+package remoting.apis.v1;
+
+option optimize_for = LITE_RUNTIME;
+
+message Duration {
+  optional int64 seconds = 1;
+  optional int32 nanos = 2;
+}
+
+// Requests ICE Server configuration for establishing a P2P connection.
+message GetIceConfigRequest {}
+
+// Returns ICE Server configuration for establishing a P2P connection.
+message GetIceConfigResponse {
+  // The length of time the ICE server connection info will remain valid.
+  optional Duration lifetime_duration = 1;
+
+  // The set of ICE Servers which contain STUN/TURN connection info.
+  repeated IceServer servers = 2;
+}
+
+// ICE Server configuration based on the RTCIceServer type (WebRTC w3c
+// specification)[http://www.w3.org/TR/webrtc/#rtciceserver-type].
+message IceServer {
+  // STUN / TURN URI(s) as defined in [rfc7064] / [rfc7065] or another URI type.
+  repeated string urls = 1;
+
+  // If this IceServer object represents a TURN server, then this attribute
+  // specifies the credential to use with that TURN server.
+  optional string username = 2;
+
+  // If this IceServer object represents a TURN server, then this attribute
+  // specifies the credential to use with that TURN server.
+  optional string credential = 3;
+
+  // Maximum rate in kilobits per second (kilo = 1000).
+  // Can be used as a hint to the bandwidth estimator to improve media quality.
+  // If less than or equal to zero, the maximum send rate is not specified.
+  optional int64 max_rate_kbps = 4;
+}

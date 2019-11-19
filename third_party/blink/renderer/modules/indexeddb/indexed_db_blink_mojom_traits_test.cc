@@ -67,8 +67,8 @@ TEST(IDBMojomTraitsTest, IDBValue) {
   ASSERT_EQ(input_vector.size(), test_data_size);
 
   // Create IDBValue mojom message.
-  std::unique_ptr<IDBValue> input =
-      IDBValue::Create(std::move(input_data), Vector<WebBlobInfo>());
+  auto input =
+      std::make_unique<IDBValue>(std::move(input_data), Vector<WebBlobInfo>());
   mojo::Message mojo_message =
       mojom::blink::IDBValue::SerializeAsMessage(&input);
 

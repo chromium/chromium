@@ -14,7 +14,7 @@
     iframe.contentDocument.rootScroller = iframe.contentDocument.getElementById("scroller");
 
     if (window.internals)
-      internals.setBrowserControlsShownRatio(1);
+      internals.setBrowserControlsShownRatio(1, 1);
 
     runAfterLayoutAndPaint(() => { testRunner.notifyDone(); }, true);
   });

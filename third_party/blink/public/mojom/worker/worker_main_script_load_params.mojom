@@ -4,6 +4,7 @@
 
 module blink.mojom;
 
+import "services/network/public/mojom/url_response_head.mojom";
 import "services/network/public/mojom/url_loader.mojom";
 
 // NetworkService (PlzWorker):
@@ -12,6 +13,9 @@ import "services/network/public/mojom/url_loader.mojom";
 struct WorkerMainScriptLoadParams {
   // Used for loading the pre-requested main script in the renderer process.
   network.mojom.URLResponseHead response_head;
+
+  handle<data_pipe_consumer> response_body;
+
   network.mojom.URLLoaderClientEndpoints? url_loader_client_endpoints;
 
   // The list of redirects that led to this script load. Empty if there were no

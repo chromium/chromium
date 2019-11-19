@@ -5,6 +5,7 @@
 #include "components/autofill/core/browser/autofill_data_util.h"
 
 #include <algorithm>
+#include <iterator>
 #include <vector>
 
 #include "base/i18n/char_iterator.h"
@@ -13,10 +14,12 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "components/autofill/core/browser/autofill_country.h"
-#include "components/autofill/core/browser/autofill_profile.h"
-#include "components/autofill/core/browser/credit_card.h"
+#include "build/branding_buildflags.h"
+#include "components/autofill/core/browser/autofill_type.h"
+#include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/geo/autofill_country.h"
 #include "components/autofill/core/browser/webdata/autofill_table.h"
 #include "components/grit/components_scaled_resources.h"
 #include "components/strings/grit/components_strings.h"
@@ -26,7 +29,13 @@
 namespace autofill {
 namespace data_util {
 
+using bit_field_type_groups::kAddress;
+using bit_field_type_groups::kEmail;
+using bit_field_type_groups::kName;
+using bit_field_type_groups::kPhone;
+
 namespace {
+
 // Mappings from Chrome card networks to Payment Request API basic card payment
 // spec networks and icons. Note that "generic" is not in the spec.
 // https://w3c.github.io/webpayments-methods-card/#method-id
@@ -46,10 +55,6 @@ const PaymentRequestData kPaymentRequestData[]{
      IDS_AUTOFILL_CC_UNION_PAY},
     {autofill::kVisaCard, "visa", IDR_AUTOFILL_CC_VISA, IDS_AUTOFILL_CC_VISA},
 };
-
-const PaymentRequestData kGooglePayBrandingRequestData = {
-    "googlePay", "googlePay", IDR_AUTOFILL_GOOGLE_PAY,
-    IDS_AUTOFILL_CC_GOOGLE_PAY};
 
 const PaymentRequestData kGenericPaymentRequestData = {
     autofill::kGenericCard, "generic", IDR_AUTOFILL_CC_GENERIC,
@@ -242,6 +247,77 @@ bool SplitCJKName(const std::vector<base::StringPiece16>& name_tokens,
 
 }  // namespace
 
+bool ContainsName(uint32_t groups) {
+  return groups & kName;
+}
+
+bool ContainsAddress(uint32_t groups) {
+  return groups & kAddress;
+}
+
+bool ContainsEmail(uint32_t groups) {
+  return groups & kEmail;
+}
+
+bool ContainsPhone(uint32_t groups) {
+  return groups & kPhone;
+}
+
+uint32_t DetermineGroups(const std::vector<ServerFieldType>& types) {
+  uint32_t group_bitmask = 0;
+  for (const ServerFieldType& type : types) {
+    const FieldTypeGroup group =
+        AutofillType(AutofillType(type).GetStorableType()).group();
+    switch (group) {
+      case autofill::NAME:
+        group_bitmask |= kName;
+        break;
+      case autofill::ADDRESS_HOME:
+        group_bitmask |= kAddress;
+        break;
+      case autofill::EMAIL:
+        group_bitmask |= kEmail;
+        break;
+      case autofill::PHONE_HOME:
+        group_bitmask |= kPhone;
+        break;
+      default:
+        break;
+    }
+  }
+  return group_bitmask;
+}
+
+bool IsSupportedFormType(uint32_t groups) {
+  return ContainsAddress(groups) ||
+         ContainsName(groups) + ContainsEmail(groups) + ContainsPhone(groups) >=
+             2;
+}
+
+std::string GetSuffixForProfileFormType(uint32_t bitmask) {
+  switch (bitmask) {
+    case kAddress | kEmail | kPhone:
+    case kName | kAddress | kEmail | kPhone:
+      return ".AddressPlusEmailPlusPhone";
+    case kAddress | kPhone:
+    case kName | kAddress | kPhone:
+      return ".AddressPlusPhone";
+    case kAddress | kEmail:
+    case kName | kAddress | kEmail:
+      return ".AddressPlusEmail";
+    case kAddress:
+    case kName | kAddress:
+      return ".AddressOnly";
+    case kEmail | kPhone:
+    case kName | kEmail | kPhone:
+    case kName | kEmail:
+    case kName | kPhone:
+      return ".ContactOnly";
+    default:
+      return ".Other";
+  }
+}
+
 std::string TruncateUTF8(const std::string& data) {
   std::string trimmed_value;
   base::TruncateUTF8ToByteSize(data, AutofillTable::kMaxDataLength,
@@ -383,67 +459,11 @@ base::string16 JoinNameParts(base::StringPiece16 given,
   return base::JoinString(full_name, base::ASCIIToUTF16(separator));
 }
 
-bool ProfileMatchesFullName(base::StringPiece16 full_name,
-                            const autofill::AutofillProfile& profile) {
-  const base::string16 kSpace = base::ASCIIToUTF16(" ");
-  const base::string16 kPeriodSpace = base::ASCIIToUTF16(". ");
-
-  // First Last
-  base::string16 candidate = profile.GetRawInfo(autofill::NAME_FIRST) + kSpace +
-                             profile.GetRawInfo(autofill::NAME_LAST);
-  if (!full_name.compare(candidate)) {
-    return true;
-  }
-
-  // First Middle Last
-  candidate = profile.GetRawInfo(autofill::NAME_FIRST) + kSpace +
-              profile.GetRawInfo(autofill::NAME_MIDDLE) + kSpace +
-              profile.GetRawInfo(autofill::NAME_LAST);
-  if (!full_name.compare(candidate)) {
-    return true;
-  }
-
-  // First M Last
-  candidate = profile.GetRawInfo(autofill::NAME_FIRST) + kSpace +
-              profile.GetRawInfo(autofill::NAME_MIDDLE_INITIAL) + kSpace +
-              profile.GetRawInfo(autofill::NAME_LAST);
-  if (!full_name.compare(candidate)) {
-    return true;
-  }
-
-  // First M. Last
-  candidate = profile.GetRawInfo(autofill::NAME_FIRST) + kSpace +
-              profile.GetRawInfo(autofill::NAME_MIDDLE_INITIAL) + kPeriodSpace +
-              profile.GetRawInfo(autofill::NAME_LAST);
-  if (!full_name.compare(candidate)) {
-    return true;
-  }
-
-  // Last First
-  candidate = profile.GetRawInfo(autofill::NAME_LAST) + kSpace +
-              profile.GetRawInfo(autofill::NAME_FIRST);
-  if (!full_name.compare(candidate)) {
-    return true;
-  }
-
-  // LastFirst
-  candidate = profile.GetRawInfo(autofill::NAME_LAST) +
-              profile.GetRawInfo(autofill::NAME_FIRST);
-  if (!full_name.compare(candidate)) {
-    return true;
-  }
-
-  return false;
-}
-
 const PaymentRequestData& GetPaymentRequestData(
     const std::string& issuer_network) {
   for (const PaymentRequestData& data : kPaymentRequestData) {
     if (issuer_network == data.issuer_network)
       return data;
-  }
-  if (issuer_network == kGooglePayBrandingRequestData.issuer_network) {
-    return kGooglePayBrandingRequestData;
   }
   return kGenericPaymentRequestData;
 }
@@ -456,6 +476,16 @@ const char* GetIssuerNetworkForBasicCardIssuerNetwork(
     }
   }
   return kGenericPaymentRequestData.issuer_network;
+}
+
+bool IsValidBasicCardIssuerNetwork(
+    const std::string& basic_card_issuer_network) {
+  auto* it = std::find_if(
+      std::begin(kPaymentRequestData), std::end(kPaymentRequestData),
+      [basic_card_issuer_network](const auto& data) {
+        return data.basic_card_issuer_network == basic_card_issuer_network;
+      });
+  return it != std::end(kPaymentRequestData);
 }
 
 bool IsValidCountryCode(const std::string& country_code) {

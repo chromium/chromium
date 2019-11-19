@@ -5,7 +5,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/callback_helpers.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
@@ -60,7 +59,7 @@ class ThirdPartyAuthenticatorTest : public AuthenticatorTestBase {
     void OnTokenFetched(const std::string& token,
                         const std::string& shared_secret) {
       ASSERT_FALSE(on_token_fetched_.is_null());
-      base::ResetAndReturn(&on_token_fetched_).Run(token, shared_secret);
+      std::move(on_token_fetched_).Run(token, shared_secret);
     }
 
    private:
@@ -84,7 +83,7 @@ class ThirdPartyAuthenticatorTest : public AuthenticatorTestBase {
 
     void OnTokenValidated(const std::string& shared_secret) {
       ASSERT_FALSE(on_token_validated_.is_null());
-      base::ResetAndReturn(&on_token_validated_).Run(shared_secret);
+      std::move(on_token_validated_).Run(shared_secret);
     }
 
     const GURL& token_url() const override { return token_url_; }
@@ -140,8 +139,9 @@ TEST_F(ThirdPartyAuthenticatorTest, SuccessfulAuth) {
   StreamConnectionTester tester(host_socket_.get(), client_socket_.get(),
                                 kMessageSize, kMessages);
 
-  tester.Start();
-  base::RunLoop().Run();
+  base::RunLoop run_loop;
+  tester.Start(run_loop.QuitClosure());
+  run_loop.Run();
   tester.CheckResults();
 }
 

@@ -271,13 +271,7 @@ TEST_F(ProcessTest, WaitForExitWithTimeout) {
 // backgrounding and restoring.
 // Note: a platform may not be willing or able to lower the priority of
 // a process. The calls to SetProcessBackground should be noops then.
-// Flaky on Windows: https://crbug.com/931721.
-#if defined(OS_WIN)
-#define MAYBE_SetProcessBackgrounded DISABLED_SetProcessBackgrounded
-#else
-#define MAYBE_SetProcessBackgrounded SetProcessBackgrounded
-#endif
-TEST_F(ProcessTest, MAYBE_SetProcessBackgrounded) {
+TEST_F(ProcessTest, SetProcessBackgrounded) {
   if (!Process::CanBackgroundProcesses())
     return;
   Process process(SpawnChild("SimpleChildProcess"));
@@ -305,15 +299,9 @@ TEST_F(ProcessTest, MAYBE_SetProcessBackgrounded) {
   EXPECT_EQ(old_priority, new_priority);
 }
 
-// Flaky on Windows: https://crbug.com/931721.
-#if defined(OS_WIN)
-#define MAYBE_SetProcessBackgroundedSelf DISABLED_SetProcessBackgroundedSelf
-#else
-#define MAYBE_SetProcessBackgroundedSelf SetProcessBackgroundedSelf
-#endif
 // Same as SetProcessBackgrounded but to this very process. It uses
 // a different code path at least for Windows.
-TEST_F(ProcessTest, MAYBE_SetProcessBackgroundedSelf) {
+TEST_F(ProcessTest, SetProcessBackgroundedSelf) {
   if (!Process::CanBackgroundProcesses())
     return;
   Process process = Process::Current();

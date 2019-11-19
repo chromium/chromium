@@ -1,0 +1,6 @@
+Tests that animating layer transparency produces correct pixels
+requested url: http://example.com/
+Screenshot size: 800 x 600
+rgba @(25,25) before animaion started: 255,255,255,255
+Screenshot size: 800 x 600
+rgba @(25,25) after animation started: 1,128,1,255

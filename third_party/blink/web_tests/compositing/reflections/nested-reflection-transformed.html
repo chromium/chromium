@@ -9,6 +9,8 @@
     margin: 20px;
     border: 1px solid black;
     -webkit-box-reflect: right 10px;
+    will-change: transform;
+    transform: translateZ(0);
   }
   
   .inner {
@@ -19,9 +21,6 @@
     text-align: center;
     font-size: 50pt;
     -webkit-box-reflect: below 10px;
-  }
-  
-  .composited {
     transform: translateZ(0);
   }
   </style>
@@ -35,8 +34,8 @@
   </head>
 <body>
   <p>Test transform change on reflected elements. Left and right side should be symmetrical.</p>
-  <div class="outer composited">
-    <div id="inner" class="inner composited">
+  <div class="outer">
+    <div id="inner" class="inner">
       1
     </div>
   </div>

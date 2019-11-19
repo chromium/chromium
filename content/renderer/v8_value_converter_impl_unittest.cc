@@ -12,7 +12,7 @@
 
 #include "base/macros.h"
 #include "base/stl_util.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/test/values_test_util.h"
 #include "base/values.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -240,7 +240,7 @@ class V8ValueConverterImplTest : public testing::Test {
         .As<T>();
   }
 
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_;
 
   v8::Isolate* isolate_;
 
@@ -1084,15 +1084,13 @@ class V8ValueConverterOverridingStrategyForTesting
       : reference_value_(NewReferenceValue()) {}
   bool FromV8Object(v8::Local<v8::Object> value,
                     std::unique_ptr<base::Value>* out,
-                    v8::Isolate* isolate,
-                    const FromV8ValueCallback& callback) override {
+                    v8::Isolate* isolate) override {
     *out = NewReferenceValue();
     return true;
   }
   bool FromV8Array(v8::Local<v8::Array> value,
                    std::unique_ptr<base::Value>* out,
-                   v8::Isolate* isolate,
-                   const FromV8ValueCallback& callback) override {
+                   v8::Isolate* isolate) override {
     *out = NewReferenceValue();
     return true;
   }
@@ -1173,14 +1171,12 @@ class V8ValueConverterBypassStrategyForTesting
  public:
   bool FromV8Object(v8::Local<v8::Object> value,
                     std::unique_ptr<base::Value>* out,
-                    v8::Isolate* isolate,
-                    const FromV8ValueCallback& callback) override {
+                    v8::Isolate* isolate) override {
     return false;
   }
   bool FromV8Array(v8::Local<v8::Array> value,
                    std::unique_ptr<base::Value>* out,
-                   v8::Isolate* isolate,
-                   const FromV8ValueCallback& callback) override {
+                   v8::Isolate* isolate) override {
     return false;
   }
   bool FromV8ArrayBuffer(v8::Local<v8::Object> value,

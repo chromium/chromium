@@ -9,7 +9,7 @@
 #import "ios/chrome/browser/ui/colors/MDCPalette+CrAdditions.h"
 #include "ios/chrome/browser/ui/util/ui_util.h"
 #include "ios/chrome/browser/ui/util/uikit_ui_util.h"
-#import "ios/third_party/material_components_ios/src/components/Typography/src/MaterialTypography.h"
+#import "ios/chrome/common/colors/semantic_color_names.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -17,10 +17,9 @@
 
 
 namespace {
-const int kBubbleColor = 0x4285F4;
 // The color of the bubble (both circular background and arrow).
 UIColor* BubbleColor() {
-  return UIColorFromRGB(kBubbleColor);
+  return [UIColor colorNamed:kBlueColor];
 }
 
 // The corner radius of the bubble's background, which causes the ends of the
@@ -63,6 +62,8 @@ const CGFloat kControlPointEnd = 0.514375;
 @property(nonatomic, strong, readonly) UIView* background;
 // Triangular arrow that points to the target UI element.
 @property(nonatomic, strong, readonly) UIView* arrow;
+// Triangular shape, the backing layer for the arrow.
+@property(nonatomic, weak) CAShapeLayer* arrowLayer;
 @property(nonatomic, assign, readonly) BubbleArrowDirection direction;
 @property(nonatomic, assign, readonly) BubbleAlignment alignment;
 // Indicate whether view properties need to be added as subviews of the bubble.
@@ -150,6 +151,7 @@ const CGFloat kControlPointEnd = 0.514375;
     [layer setPath:path.CGPath];
     [layer setFillColor:BubbleColor().CGColor];
     [arrow.layer addSublayer:layer];
+    _arrowLayer = layer;
     [arrow setTranslatesAutoresizingMaskIntoConstraints:NO];
     _arrow = arrow;
   }
@@ -164,7 +166,7 @@ const CGFloat kControlPointEnd = 0.514375;
   UILabel* label = [[UILabel alloc] initWithFrame:CGRectZero];
   [label setText:text];
   [label setFont:[UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline]];
-  [label setTextColor:[UIColor whiteColor]];
+  [label setTextColor:[UIColor colorNamed:kSolidButtonTextColor]];
   [label setTextAlignment:NSTextAlignmentCenter];
   [label setNumberOfLines:0];
   [label setLineBreakMode:NSLineBreakByWordWrapping];
@@ -345,6 +347,17 @@ const CGFloat kControlPointEnd = 0.514375;
   CGSize optimalSize =
       CGSizeMake(optimalWidth, labelSize.height + labelVerticalInset);
   return optimalSize;
+}
+
+- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
+  [super traitCollectionDidChange:previousTraitCollection];
+  if (@available(iOS 13, *)) {
+    if ([self.traitCollection
+            hasDifferentColorAppearanceComparedToTraitCollection:
+                previousTraitCollection]) {
+      self.arrowLayer.fillColor = BubbleColor().CGColor;
+    }
+  }
 }
 
 #pragma mark - Private sizes

@@ -12,6 +12,7 @@ specific_include_rules = {
   ],
   "desktop_media_list_ash\.cc": [
     "+ash/shell.h",
+    "+ash/wm/desks/desks_util.h",
   ],
   # TODO(mash): Fix. https://crbug.com/855147
   "media_capture_devices_dispatcher\.cc": [

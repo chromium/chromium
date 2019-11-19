@@ -71,7 +71,7 @@ class NativeWidgetMacInteractiveUITest::Observer : public TestWidgetObserver {
 // Test that showing a window causes it to attain global keyWindow status.
 TEST_P(NativeWidgetMacInteractiveUITest, ShowAttainsKeyStatus) {
   Widget* widget = MakeWidget();
-  observer_.reset(new Observer(this, widget));
+  observer_ = std::make_unique<Observer>(this, widget);
 
   EXPECT_FALSE(widget->IsActive());
   EXPECT_EQ(0, activation_count_);
@@ -116,6 +116,7 @@ TEST_P(NativeWidgetMacInteractiveUITest, ShowAttainsKeyStatus) {
 
 // Test that ShowInactive does not take keyWindow status.
 TEST_P(NativeWidgetMacInteractiveUITest, ShowInactiveIgnoresKeyStatus) {
+  WidgetTest::WaitForSystemAppActivation();
   Widget* widget = MakeWidget();
   NSWindow* widget_window = widget->GetNativeWindow().GetNativeNSWindow();
 
@@ -201,7 +202,7 @@ TEST_F(NativeWidgetMacInteractiveUITest, ParentWindowTrafficLights) {
 
   // Pop open a bubble on the parent Widget. When the visibility of Bubbles with
   // an anchor View changes, BubbleDialogDelegateView::HandleVisibilityChanged()
-  // updates Widget::SetAlwaysRenderAsActive(..) accordingly.
+  // updates Widget::ShouldPaintAsActive() accordingly.
   ShowKeyWindow(BubbleDialogDelegateView::CreateBubble(
       new TestBubbleView(parent_widget)));
 
@@ -219,7 +220,7 @@ TEST_F(NativeWidgetMacInteractiveUITest, ParentWindowTrafficLights) {
 
   // Verify that activating some other random window does change the button.
   // When the bubble loses activation, it will dismiss itself and update
-  // Widget::SetAlwaysRenderAsActive().
+  // Widget::ShouldPaintAsActive().
   Widget* other_widget = CreateTopLevelPlatformWidget();
   other_widget->SetBounds(gfx::Rect(200, 200, 100, 100));
   ShowKeyWindow(other_widget);

@@ -116,6 +116,8 @@ grit("resources") {
 
   outputs = [
     "grit/content_resources.h",
+    "grit/content_resources_map.cc",
+    "grit/content_resources_map.h",
     "content_resources.pak",
   ]
   grit_flags = [
@@ -124,6 +126,8 @@ grit("resources") {
   ]
   deps = [
     "//content/browser/process_internals:mojo_bindings_js",
+    "//gpu/ipc/common:vulkan_interface_js",
+    "//url/mojom:url_mojom_origin_js",
   ]
 }
 

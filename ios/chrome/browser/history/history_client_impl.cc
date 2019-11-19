@@ -73,7 +73,7 @@ void HistoryClientImpl::BookmarkModelBeingDeleted(
 void HistoryClientImpl::BookmarkNodeRemoved(
     bookmarks::BookmarkModel* model,
     const bookmarks::BookmarkNode* parent,
-    int old_index,
+    size_t old_index,
     const bookmarks::BookmarkNode* node,
     const std::set<GURL>& no_longer_bookmarked) {
   if (on_bookmarks_removed_)

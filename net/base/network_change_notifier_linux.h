@@ -10,8 +10,14 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/memory/scoped_refptr.h"
 #include "net/base/net_export.h"
 #include "net/base/network_change_notifier.h"
+
+namespace base {
+class SequencedTaskRunner;
+struct OnTaskRunnerDeleter;
+}  // namespace base
 
 namespace net {
 
@@ -27,10 +33,11 @@ class NET_EXPORT_PRIVATE NetworkChangeNotifierLinux
   explicit NetworkChangeNotifierLinux(
       const std::unordered_set<std::string>& ignored_interfaces);
 
- private:
-  class Thread;
-
   ~NetworkChangeNotifierLinux() override;
+
+ private:
+  class BlockingThreadObjects;
+
   static NetworkChangeCalculatorParams NetworkChangeCalculatorParamsLinux();
 
   // NetworkChangeNotifier:
@@ -39,11 +46,14 @@ class NET_EXPORT_PRIVATE NetworkChangeNotifierLinux
   const internal::AddressTrackerLinux* GetAddressTrackerInternal()
       const override;
 
-  // The thread used to listen for notifications.  This relays the notification
-  // to the registered observers without posting back to the thread the object
-  // was created on.
-  // Also used for DnsConfigService which requires TYPE_IO message loop.
-  std::unique_ptr<Thread> notifier_thread_;
+  // |blocking_thread_objects_| will live on this runner.
+  scoped_refptr<base::SequencedTaskRunner> blocking_thread_runner_;
+  // A collection of objects that must live on blocking sequences. These objects
+  // listen for notifications and relay the notifications to the registered
+  // observers without posting back to the thread the object was created on.
+  // Also used for DnsConfigService which also must live on blocking sequences.
+  std::unique_ptr<BlockingThreadObjects, base::OnTaskRunnerDeleter>
+      blocking_thread_objects_;
 
   DISALLOW_COPY_AND_ASSIGN(NetworkChangeNotifierLinux);
 };

@@ -14,12 +14,10 @@ ValidatingCombobox::ValidatingCombobox(
     std::unique_ptr<ui::ComboboxModel> model,
     std::unique_ptr<ValidationDelegate> delegate)
     : Combobox(std::move(model)), delegate_(std::move(delegate)) {
-  // No need to remove observer on owned model.
-  this->model()->AddObserver(this);
   SetFocusBehavior(FocusBehavior::ALWAYS);
 }
 
-ValidatingCombobox::~ValidatingCombobox() {}
+ValidatingCombobox::~ValidatingCombobox() = default;
 
 void ValidatingCombobox::OnBlur() {
   Combobox::OnBlur();
@@ -32,7 +30,7 @@ void ValidatingCombobox::OnBlur() {
 }
 
 void ValidatingCombobox::ViewHierarchyChanged(
-    const ViewHierarchyChangedDetails& details) {
+    const views::ViewHierarchyChangedDetails& details) {
   if (details.child == this && !details.is_add)
     being_removed_ = true;
 }
@@ -41,9 +39,8 @@ void ValidatingCombobox::OnContentsChanged() {
   Validate();
 }
 
-void ValidatingCombobox::OnComboboxModelChanged(
-    ui::ComboboxModel* unused_model) {
-  ModelChanged();
+void ValidatingCombobox::OnComboboxModelChanged(ui::ComboboxModel* model) {
+  views::Combobox::OnComboboxModelChanged(model);
   delegate_->ComboboxModelChanged(this);
 }
 

@@ -53,10 +53,7 @@ bool FakeSyncScheduler::IsAnyThrottleOrBackoff() {
   return false;
 }
 
-void FakeSyncScheduler::OnReceivedShortPollIntervalUpdate(
-    const base::TimeDelta& new_interval) {}
-
-void FakeSyncScheduler::OnReceivedLongPollIntervalUpdate(
+void FakeSyncScheduler::OnReceivedPollIntervalUpdate(
     const base::TimeDelta& new_interval) {}
 
 void FakeSyncScheduler::OnReceivedCustomNudgeDelays(

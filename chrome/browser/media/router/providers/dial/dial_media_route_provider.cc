@@ -13,8 +13,7 @@
 #include "base/stl_util.h"
 #include "chrome/browser/media/router/data_decoder_util.h"
 #include "chrome/browser/media/router/providers/dial/dial_media_route_provider_metrics.h"
-#include "chrome/common/media_router/media_source_helper.h"
-#include "services/service_manager/public/cpp/connector.h"
+#include "chrome/common/media_router/media_source.h"
 #include "url/origin.h"
 
 namespace media_router {
@@ -37,31 +36,28 @@ static constexpr int kMaxPendingDialLaunches = 10;
 }  // namespace
 
 DialMediaRouteProvider::DialMediaRouteProvider(
-    mojom::MediaRouteProviderRequest request,
-    mojom::MediaRouterPtrInfo media_router,
+    mojo::PendingReceiver<mojom::MediaRouteProvider> receiver,
+    mojo::PendingRemote<mojom::MediaRouter> media_router,
     DialMediaSinkServiceImpl* media_sink_service,
-    service_manager::Connector* connector,
     const std::string& hash_token,
     const scoped_refptr<base::SequencedTaskRunner>& task_runner)
-    : binding_(this),
-      media_sink_service_(media_sink_service),
-      data_decoder_(std::make_unique<DataDecoder>(connector)),
-      internal_message_util_(hash_token),
-      weak_ptr_factory_(this) {
+    : media_sink_service_(media_sink_service),
+      internal_message_util_(hash_token) {
   DETACH_FROM_SEQUENCE(sequence_checker_);
   DCHECK(media_sink_service_);
 
   task_runner->PostTask(
       FROM_HERE,
       base::BindOnce(&DialMediaRouteProvider::Init, base::Unretained(this),
-                     std::move(request), std::move(media_router)));
+                     std::move(receiver), std::move(media_router)));
 }
 
-void DialMediaRouteProvider::Init(mojom::MediaRouteProviderRequest request,
-                                  mojom::MediaRouterPtrInfo media_router) {
+void DialMediaRouteProvider::Init(
+    mojo::PendingReceiver<mojom::MediaRouteProvider> receiver,
+    mojo::PendingRemote<mojom::MediaRouter> media_router) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  binding_.Bind(std::move(request));
+  receiver_.Bind(std::move(receiver));
   media_router_.Bind(std::move(media_router));
   media_sink_service_->AddObserver(this);
 
@@ -204,20 +200,23 @@ void DialMediaRouteProvider::TerminateRoute(const std::string& route_id,
 void DialMediaRouteProvider::SendRouteMessage(const std::string& media_route_id,
                                               const std::string& message) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  data_decoder_->ParseJson(
+  GetDataDecoder().ParseJson(
       message,
       base::BindRepeating(&DialMediaRouteProvider::HandleParsedRouteMessage,
-                          weak_ptr_factory_.GetWeakPtr(), media_route_id),
-      base::BindRepeating(&ReportParseError,
-                          DialParseMessageResult::kParseError));
+                          weak_ptr_factory_.GetWeakPtr(), media_route_id));
 }
 
 void DialMediaRouteProvider::HandleParsedRouteMessage(
     const MediaRoute::Id& route_id,
-    std::unique_ptr<base::Value> message) {
+    data_decoder::DataDecoder::ValueOrError result) {
+  if (!result.value) {
+    ReportParseError(DialParseMessageResult::kParseError, *result.error);
+    return;
+  }
+
   std::string error;
   std::unique_ptr<DialInternalMessage> internal_message =
-      DialInternalMessage::From(std::move(*message), &error);
+      DialInternalMessage::From(std::move(*result.value), &error);
   if (!internal_message) {
     ReportParseError(DialParseMessageResult::kInvalidMessage, error);
     return;
@@ -249,7 +248,7 @@ void DialMediaRouteProvider::HandleParsedRouteMessage(
   } else if (internal_message->type ==
              DialInternalMessageType::kCustomDialLaunch) {
     HandleCustomDialLaunchResponse(*activity, *internal_message);
-  } else if (internal_message_util_.IsStopSessionMessage(*internal_message)) {
+  } else if (DialInternalMessageUtil::IsStopSessionMessage(*internal_message)) {
     DoTerminateRoute(*activity, *sink, base::DoNothing());
   }
 }
@@ -345,14 +344,21 @@ void DialMediaRouteProvider::DoTerminateRoute(const DialActivity& activity,
                                               TerminateRouteCallback callback) {
   const MediaRoute::Id& route_id = activity.route.media_route_id();
   DVLOG(2) << "Terminating route " << route_id;
-  std::vector<mojom::RouteMessagePtr> messages;
-  messages.emplace_back(internal_message_util_.CreateReceiverActionStopMessage(
-      activity.launch_info, sink));
-  message_sender_->SendMessages(route_id, std::move(messages));
-  activity_manager_->StopApp(
-      route_id,
-      base::BindOnce(&DialMediaRouteProvider::HandleStopAppResult,
-                     base::Unretained(this), route_id, std::move(callback)));
+  std::pair<base::Optional<std::string>, RouteRequestResult::ResultCode>
+      can_stop_app = activity_manager_->CanStopApp(route_id);
+  if (can_stop_app.second == RouteRequestResult::OK) {
+    std::vector<mojom::RouteMessagePtr> messages;
+    messages.emplace_back(
+        internal_message_util_.CreateReceiverActionStopMessage(
+            activity.launch_info, sink));
+    message_sender_->SendMessages(route_id, std::move(messages));
+    activity_manager_->StopApp(
+        route_id,
+        base::BindOnce(&DialMediaRouteProvider::HandleStopAppResult,
+                       base::Unretained(this), route_id, std::move(callback)));
+  } else {
+    std::move(callback).Run(can_stop_app.first, can_stop_app.second);
+  }
 }
 
 void DialMediaRouteProvider::HandleStopAppResult(
@@ -408,10 +414,10 @@ void DialMediaRouteProvider::StartObservingMediaSinks(
   }
 
   MediaSource dial_source(media_source);
-  if (!IsDialMediaSource(dial_source))
+  if (!dial_source.IsDialSource())
     return;
 
-  std::string app_name = AppNameFromDialMediaSource(dial_source);
+  std::string app_name = dial_source.AppNameFromDialSource();
   if (app_name.empty())
     return;
 
@@ -437,7 +443,7 @@ void DialMediaRouteProvider::StopObservingMediaSinks(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   MediaSource dial_source(media_source);
-  std::string app_name = AppNameFromDialMediaSource(dial_source);
+  std::string app_name = dial_source.AppNameFromDialSource();
   if (!dial_source.id().empty() && app_name.empty())
     return;
 
@@ -504,8 +510,8 @@ void DialMediaRouteProvider::ProvideSinks(
 
 void DialMediaRouteProvider::CreateMediaRouteController(
     const std::string& route_id,
-    mojom::MediaControllerRequest media_controller,
-    mojom::MediaStatusObserverPtr observer,
+    mojo::PendingReceiver<mojom::MediaController> media_controller,
+    mojo::PendingRemote<mojom::MediaStatusObserver> observer,
     CreateMediaRouteControllerCallback callback) {
   NOTIMPLEMENTED();
   std::move(callback).Run(false);

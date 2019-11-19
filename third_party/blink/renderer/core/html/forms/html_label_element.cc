@@ -32,28 +32,23 @@
 #include "third_party/blink/renderer/core/editing/visible_selection.h"
 #include "third_party/blink/renderer/core/events/mouse_event.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
-#include "third_party/blink/renderer/core/frame/use_counter.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/custom/element_internals.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_control_element.h"
 #include "third_party/blink/renderer/core/html/forms/listed_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/input/event_handler.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 
 namespace blink {
 
-using namespace html_names;
-
-inline HTMLLabelElement::HTMLLabelElement(Document& document)
-    : HTMLElement(kLabelTag, document), processing_click_(false) {}
-
-HTMLLabelElement* HTMLLabelElement::Create(Document& document) {
-  return MakeGarbageCollected<HTMLLabelElement>(document);
-}
+HTMLLabelElement::HTMLLabelElement(Document& document)
+    : HTMLElement(html_names::kLabelTag, document), processing_click_(false) {}
 
 HTMLElement* HTMLLabelElement::control() const {
   // https://html.spec.whatwg.org/C/#labeled-control
-  const AtomicString& control_id = getAttribute(kForAttr);
+  const AtomicString& control_id = FastGetAttribute(html_names::kForAttr);
   if (control_id.IsNull()) {
     // "If the for attribute is not specified, but the label element has a
     // labelable element descendant, then the first such descendant in tree
@@ -75,7 +70,7 @@ HTMLElement* HTMLLabelElement::control() const {
     return nullptr;
 
   if (Element* element = GetTreeScope().getElementById(control_id)) {
-    if (auto* html_element = ToHTMLElementOrNull(*element)) {
+    if (auto* html_element = DynamicTo<HTMLElement>(*element)) {
       if (html_element->IsLabelable()) {
         if (!html_element->IsFormControlElement()) {
           UseCounter::Count(
@@ -100,10 +95,10 @@ HTMLFormElement* HTMLLabelElement::form() const {
   return nullptr;
 }
 
-void HTMLLabelElement::SetActive(bool down) {
-  if (down != IsActive()) {
+void HTMLLabelElement::SetActive(bool active) {
+  if (active != IsActive()) {
     // Update our status first.
-    HTMLElement::SetActive(down);
+    HTMLElement::SetActive(active);
   }
 
   // Also update our corresponding control.
@@ -112,10 +107,10 @@ void HTMLLabelElement::SetActive(bool down) {
     control_element->SetActive(IsActive());
 }
 
-void HTMLLabelElement::SetHovered(bool over) {
-  if (over != IsHovered()) {
+void HTMLLabelElement::SetHovered(bool hovered) {
+  if (hovered != IsHovered()) {
     // Update our status first.
-    HTMLElement::SetHovered(over);
+    HTMLElement::SetHovered(hovered);
   }
 
   // Also update our corresponding control.
@@ -129,10 +124,11 @@ bool HTMLLabelElement::IsInteractiveContent() const {
 }
 
 bool HTMLLabelElement::IsInInteractiveContent(Node* node) const {
-  if (!IsShadowIncludingInclusiveAncestorOf(node))
+  if (!node || !IsShadowIncludingInclusiveAncestorOf(*node))
     return false;
   while (node && this != node) {
-    if (node->IsHTMLElement() && ToHTMLElement(node)->IsInteractiveContent())
+    auto* html_element = DynamicTo<HTMLElement>(node);
+    if (html_element && html_element->IsInteractiveContent())
       return true;
     node = node->ParentOrShadowHostNode();
   }
@@ -145,13 +141,17 @@ void HTMLLabelElement::DefaultEventHandler(Event& evt) {
 
     // If we can't find a control or if the control received the click
     // event, then there's no need for us to do anything.
-    if (!element ||
-        (evt.target() &&
-         element->IsShadowIncludingInclusiveAncestorOf(evt.target()->ToNode())))
+    if (!element)
       return;
+    if (evt.target()) {
+      Node* target_node = evt.target()->ToNode();
+      if (target_node &&
+          element->IsShadowIncludingInclusiveAncestorOf(*target_node))
+        return;
 
-    if (evt.target() && IsInInteractiveContent(evt.target()->ToNode()))
-      return;
+      if (IsInInteractiveContent(target_node))
+        return;
+    }
 
     //   Behaviour of label element is as follows:
     //     - If there is double click, two clicks will be passed to control
@@ -195,7 +195,7 @@ void HTMLLabelElement::DefaultEventHandler(Event& evt) {
 
     processing_click_ = true;
 
-    GetDocument().UpdateStyleAndLayoutIgnorePendingStylesheets();
+    GetDocument().UpdateStyleAndLayout();
     if (element->IsMouseFocusable()) {
       // If the label is *not* selected, or if the click happened on
       // selection of label, only then focus the control element.
@@ -235,6 +235,10 @@ void HTMLLabelElement::focus(const FocusParams& params) {
     HTMLElement::focus(params);
     return;
   }
+
+  if (params.type == blink::kWebFocusTypeAccessKey)
+    return;
+
   // To match other browsers, always restore previous selection.
   if (HTMLElement* element = control()) {
     element->focus(FocusParams(SelectionBehaviorOnFocus::kRestore, params.type,

@@ -8,15 +8,14 @@
 #include <utility>
 
 #include "base/android/jni_array.h"
-#include "base/callback_helpers.h"
-#include "chrome/browser/android/preferences/pref_service_bridge.h"
+#include "chrome/android/chrome_jni_headers/PermissionUpdateInfoBarDelegate_jni.h"
 #include "chrome/browser/android/android_theme_resources.h"
+#include "chrome/browser/android/preferences/website_preference_bridge.h"
 #include "chrome/browser/infobars/infobar_service.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/infobars/core/infobar.h"
 #include "content/public/browser/web_contents.h"
-#include "jni/PermissionUpdateInfoBarDelegate_jni.h"
 #include "ui/android/window_android.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -39,7 +38,7 @@ infobars::InfoBar* PermissionUpdateInfoBarDelegate::Create(
 
   for (ContentSettingsType content_settings_type : content_settings_types) {
     int previous_size = permissions.size();
-    PrefServiceBridge::GetAndroidPermissionsForContentSetting(
+    WebsitePreferenceBridge::GetAndroidPermissionsForContentSetting(
         content_settings_type, &permissions);
 
     bool has_all_permissions = true;
@@ -50,23 +49,23 @@ infobars::InfoBar* PermissionUpdateInfoBarDelegate::Create(
 
     if (!has_all_permissions) {
       if (message_id == -1) {
-        if (content_settings_type == CONTENT_SETTINGS_TYPE_GEOLOCATION) {
+        if (content_settings_type == ContentSettingsType::GEOLOCATION) {
           message_id = IDS_INFOBAR_MISSING_LOCATION_PERMISSION_TEXT;
         } else if (content_settings_type ==
-                   CONTENT_SETTINGS_TYPE_MEDIASTREAM_MIC) {
+                   ContentSettingsType::MEDIASTREAM_MIC) {
           message_id = IDS_INFOBAR_MISSING_MICROPHONE_PERMISSION_TEXT;
         } else if (content_settings_type ==
-                   CONTENT_SETTINGS_TYPE_MEDIASTREAM_CAMERA) {
+                   ContentSettingsType::MEDIASTREAM_CAMERA) {
           message_id = IDS_INFOBAR_MISSING_CAMERA_PERMISSION_TEXT;
         } else {
           NOTREACHED();
         }
       } else if (message_id == IDS_INFOBAR_MISSING_CAMERA_PERMISSION_TEXT) {
-        DCHECK(content_settings_type == CONTENT_SETTINGS_TYPE_MEDIASTREAM_MIC);
+        DCHECK(content_settings_type == ContentSettingsType::MEDIASTREAM_MIC);
         message_id = IDS_INFOBAR_MISSING_MICROPHONE_CAMERA_PERMISSIONS_TEXT;
       } else if (message_id == IDS_INFOBAR_MISSING_MICROPHONE_PERMISSION_TEXT) {
         DCHECK(content_settings_type ==
-               CONTENT_SETTINGS_TYPE_MEDIASTREAM_CAMERA);
+               ContentSettingsType::MEDIASTREAM_CAMERA);
         message_id = IDS_INFOBAR_MISSING_MICROPHONE_CAMERA_PERMISSIONS_TEXT;
       } else {
         NOTREACHED();
@@ -112,7 +111,7 @@ PermissionUpdateInfoBarDelegate::ShouldShowPermissionInfoBar(
 
   for (ContentSettingsType content_settings_type : content_settings_types) {
     std::vector<std::string> android_permissions;
-    PrefServiceBridge::GetAndroidPermissionsForContentSetting(
+    WebsitePreferenceBridge::GetAndroidPermissionsForContentSetting(
         content_settings_type, &android_permissions);
 
     for (const auto& android_permission : android_permissions) {
@@ -182,10 +181,10 @@ bool PermissionUpdateInfoBarDelegate::Accept() {
 }
 
 bool PermissionUpdateInfoBarDelegate::Cancel() {
-  base::ResetAndReturn(&callback_).Run(false);
+  std::move(callback_).Run(false);
   return true;
 }
 
 void PermissionUpdateInfoBarDelegate::InfoBarDismissed() {
-  base::ResetAndReturn(&callback_).Run(false);
+  std::move(callback_).Run(false);
 }

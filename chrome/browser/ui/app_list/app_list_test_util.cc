@@ -37,6 +37,9 @@ void AppListTestBase::SetUp() {
   InitializeInstalledExtensionService(pref_path, source_install_dir);
   service_->Init();
 
+  // Let any async services complete their set-up.
+  base::RunLoop().RunUntilIdle();
+
   // There should be 4 extensions in the test profile.
   ASSERT_EQ(4U, registry()->enabled_extensions().size());
 }

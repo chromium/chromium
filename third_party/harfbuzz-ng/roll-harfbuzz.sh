@@ -27,9 +27,11 @@ check_added_deleted_files() {
   previousrev &&
   ADDED_FILES=$(git -C third_party/harfbuzz-ng/src/ diff --diff-filter=A --name-only ${PREVIOUS_HARFBUZZ_REV} -- src/ | paste -s -d, -) &&
   DELETED_FILES=$(git -C third_party/harfbuzz-ng/src/ diff --diff-filter=D --name-only ${PREVIOUS_HARFBUZZ_REV} -- src/ | paste -s -d, -) &&
+  RENAMED_FILES=$(git -C third_party/harfbuzz-ng/src/ diff --diff-filter=R --name-only ${PREVIOUS_HARFBUZZ_REV} -- src/ | paste -s -d, -) &&
   if [ -n "$ADDED_FILES" ]; then echo "Added files detected: " $ADDED_FILES; fi &&
   if [ -n "$DELETED_FILES" ]; then echo "Deleted files detected" $DELETED_FILES; fi &&
-  if [ -n "$ADDED_FILES" ] || [ -n "$DELETED_FILES" ]; then echo -e "\nPlease update src/third_party/harfbuzz-ng/BUILD.gn before continuing."; fi
+  if [ -n "$RENAMED_FILES" ]; then echo "Renamed files detected" $RENAMED_FILES; fi &&
+  if [ -n "$ADDED_FILES" ] || [ -n "$DELETED_FILES" ] || [ -n "$RENAMED_FILES" ]; then echo -e "\nPlease update src/third_party/harfbuzz-ng/BUILD.gn before continuing."; fi
 }
 
 commit() {

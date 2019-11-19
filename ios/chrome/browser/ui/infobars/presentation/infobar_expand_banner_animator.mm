@@ -54,9 +54,9 @@
     presentedViewFinalFrame =
         [transitionContext finalFrameForViewController:presentedViewController];
 
-    CGRect initialFrame = [presentingViewController.view
-        convertRect:presentingViewController.view.frame
-             toView:nil];
+    CGRect bannerFrame = presentingViewController.view.frame;
+    CGRect initialFrame = presentedView.frame;
+    initialFrame.size.height = bannerFrame.size.height;
     presentedView.frame = initialFrame;
   }
 

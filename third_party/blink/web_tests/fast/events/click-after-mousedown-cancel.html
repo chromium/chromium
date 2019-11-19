@@ -19,6 +19,8 @@ window.onload = function() {
     // Mousedown on the iframe, but no mouseup.
     eventSender.mouseMoveTo(iframe.offsetLeft + iframe.offsetWidth / 2, iframe.offsetTop + iframe.offsetHeight / 2);
     eventSender.mouseDown(1);
+    // Reset eventSender's internal button state.
+    eventSender.setMouseButtonState(-1, []);
     // Click on the button in the main document.
     eventSender.mouseMoveTo(button.offsetLeft + button.offsetWidth / 2, button.offsetTop + button.offsetHeight / 2);
     eventSender.mouseDown(0);

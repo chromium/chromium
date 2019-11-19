@@ -6,14 +6,12 @@
 
 #include "base/mac/scoped_nsobject.h"
 #include "base/strings/sys_string_conversions.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #import "chrome/browser/ui/cocoa/applescript/bookmark_applescript_utils_test.h"
 #import "chrome/browser/ui/cocoa/applescript/error_applescript.h"
 #import "chrome/browser/ui/cocoa/applescript/tab_applescript.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/prefs/pref_service.h"
@@ -46,40 +44,12 @@ IN_PROC_BROWSER_TEST_F(TabAppleScriptTest, Creation) {
   EXPECT_TRUE(tab_applescript);
 }
 
-// Tests the Execute Javascript command when the "Allow Javascript in Apple
-// Events" feature is disabled. The command should not return an error.
-IN_PROC_BROWSER_TEST_F(TabAppleScriptTest, ExecuteJavascriptFeatureDisabled) {
+IN_PROC_BROWSER_TEST_F(TabAppleScriptTest, ExecuteJavascript) {
   Profile* profile = browser()->profile();
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   base::scoped_nsobject<TabAppleScript> tab_applescript(
       [[TabAppleScript alloc] initWithWebContents:web_contents]);
-
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      features::kAppleScriptExecuteJavaScriptMenuItem);
-
-  PrefService* prefs = profile->GetPrefs();
-  prefs->SetBoolean(prefs::kAllowJavascriptAppleEvents, false);
-  EXPECT_EQ(0, ExecuteJavascriptCommand(tab_applescript.get()));
-
-  prefs->SetBoolean(prefs::kAllowJavascriptAppleEvents, true);
-  EXPECT_EQ(0, ExecuteJavascriptCommand(tab_applescript.get()));
-}
-
-// Tests the Execute Javascript command when the "Allow Javascript in Apple
-// Events" feature is disabled. The command should return an error if the menu
-// item is turned off.
-IN_PROC_BROWSER_TEST_F(TabAppleScriptTest, ExecuteJavascriptFeatureEnabled) {
-  Profile* profile = browser()->profile();
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  base::scoped_nsobject<TabAppleScript> tab_applescript(
-      [[TabAppleScript alloc] initWithWebContents:web_contents]);
-
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      features::kAppleScriptExecuteJavaScriptMenuItem);
 
   PrefService* prefs = profile->GetPrefs();
   prefs->SetBoolean(prefs::kAllowJavascriptAppleEvents, false);

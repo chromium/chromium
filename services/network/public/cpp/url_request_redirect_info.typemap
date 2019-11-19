@@ -8,4 +8,4 @@ traits_headers = [ "//services/network/public/cpp/network_ipc_param_traits.h" ]
 public_deps = [
   "//net:net",
 ]
-type_mappings = [ "network.mojom.URLRequestRedirectInfo=net::RedirectInfo" ]
+type_mappings = [ "network.mojom.URLRequestRedirectInfo=::net::RedirectInfo" ]

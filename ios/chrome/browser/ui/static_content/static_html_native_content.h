@@ -7,8 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/web/public/navigation_manager.h"
-#import "ios/web/public/web_state/ui/crw_native_content.h"
+#import "ios/web/public/deprecated/crw_native_content.h"
+#import "ios/web/public/navigation/navigation_manager.h"
 #include "ui/base/page_transition_types.h"
 
 class GURL;

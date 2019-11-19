@@ -1,0 +1,30 @@
+# Copyright 2017 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+mojom = "//media/mojo/mojom/video_decoder.mojom"
+
+public_headers = [
+  "//media/base/overlay_info.h",
+  "//media/video/supported_video_decoder_config.h",
+]
+
+traits_headers = [
+  "//media/base/ipc/media_param_traits_macros.h",
+  "//media/mojo/mojom/supported_video_decoder_config_mojom_traits.h",
+]
+
+sources = [
+  "supported_video_decoder_config_mojom_traits.cc",
+  "supported_video_decoder_config_mojom_traits.h",
+]
+
+deps = [
+  "//media/gpu/ipc/common",
+]
+
+type_mappings = [
+  "media.mojom.OverlayInfo=::media::OverlayInfo",
+  "media.mojom.SupportedVideoDecoderConfig=::media::SupportedVideoDecoderConfig",
+  "media.mojom.VideoDecoderImplementation=::media::VideoDecoderImplementation",
+]

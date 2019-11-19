@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.widget;
 
-import android.support.annotation.IntDef;
-import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.RecyclerView.Adapter;
 import android.support.v7.widget.RecyclerView.ViewHolder;
@@ -14,6 +12,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
+import androidx.annotation.IntDef;
+import androidx.annotation.Nullable;
 
 import org.chromium.base.Log;
 import org.chromium.base.task.AsyncTask;
@@ -140,6 +141,21 @@ public abstract class DateDividedAdapter extends Adapter<RecyclerView.ViewHolder
          */
         public View getView() {
             return mView;
+        }
+    }
+
+    /**
+     * Contains information of a single footer that this adapter uses to manage footers.
+     * Share most of the same funcionality as a Header class.
+     */
+    public static class FooterItem extends HeaderItem {
+        public FooterItem(int position, View view) {
+            super(position, view);
+        }
+
+        @Override
+        public long getTimestamp() {
+            return Long.MIN_VALUE;
         }
     }
 
@@ -349,21 +365,6 @@ public abstract class DateDividedAdapter extends Adapter<RecyclerView.ViewHolder
 
     /** An item group representing the list footer(s). */
     public static class FooterItemGroup extends ItemGroup {
-        public FooterItemGroup() {
-            super();
-            addItem(new TimedItem() {
-                @Override
-                public long getTimestamp() {
-                    return Long.MIN_VALUE;
-                }
-
-                @Override
-                public long getStableId() {
-                    return getTimestamp();
-                }
-            });
-        }
-
         @Override
         public @GroupPriority int priority() {
             return GroupPriority.FOOTER;
@@ -498,6 +499,18 @@ public abstract class DateDividedAdapter extends Adapter<RecyclerView.ViewHolder
     protected void bindViewHolderForHeaderItem(ViewHolder viewHolder, HeaderItem headerItem) {
         BasicViewHolder basicViewHolder = (BasicViewHolder) viewHolder;
         View v = headerItem.getView();
+        ((ViewGroup) basicViewHolder.itemView).removeAllViews();
+        if (v.getParent() != null) ((ViewGroup) v.getParent()).removeView(v);
+        ((ViewGroup) basicViewHolder.itemView).addView(v);
+    }
+
+    /**
+     * Binds the {@link BasicViewHolder} with the given {@link FooterItem}.
+     * @see #onBindViewHolder(ViewHolder, int)
+     */
+    protected void bindViewHolderForFooterItem(ViewHolder viewHolder, FooterItem footerItem) {
+        BasicViewHolder basicViewHolder = (BasicViewHolder) viewHolder;
+        View v = footerItem.getView();
         ((ViewGroup) basicViewHolder.itemView).removeAllViews();
         if (v.getParent() != null) ((ViewGroup) v.getParent()).removeView(v);
         ((ViewGroup) basicViewHolder.itemView).addView(v);
@@ -713,7 +726,7 @@ public abstract class DateDividedAdapter extends Adapter<RecyclerView.ViewHolder
                 bindViewHolderForHeaderItem(holder, (HeaderItem) pair.second);
                 break;
             case ItemViewType.FOOTER:
-                // Do nothing.
+                bindViewHolderForFooterItem(holder, (FooterItem) pair.second);
                 break;
             case ItemViewType.SUBSECTION_HEADER:
                 bindViewHolderForSubsectionHeader((SubsectionHeaderViewHolder) holder, pair.second);

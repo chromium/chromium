@@ -18,6 +18,7 @@ class MockTabModalConfirmDialogDelegate : public TabModalConfirmDialogDelegate {
     virtual void OnAccepted() = 0;
     virtual void OnCanceled() = 0;
     virtual void OnClosed() = 0;
+
    protected:
     virtual ~Delegate() {}
   };

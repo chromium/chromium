@@ -7,7 +7,7 @@
 #include <memory>
 #include <vector>
 
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "chromeos/components/tether/device_id_tether_network_guid_map.h"
 #include "chromeos/components/tether/fake_host_scan_cache.h"
 #include "chromeos/components/tether/host_scan_test_util.h"
@@ -82,8 +82,8 @@ class NetworkHostScanCacheTest : public testing::Test {
   }
 
   bool HasConnectedToHost(const std::string& tether_network_guid) {
-    return base::ContainsValue(has_connected_to_host_device_ids_,
-                               tether_network_guid);
+    return base::Contains(has_connected_to_host_device_ids_,
+                          tether_network_guid);
   }
 
   // Verifies that the information present in |expected_cache_| and
@@ -105,7 +105,7 @@ class NetworkHostScanCacheTest : public testing::Test {
               tether_network_guid);
       ASSERT_TRUE(tether_network_state);
       EXPECT_EQ(entry.device_name, tether_network_state->name());
-      EXPECT_EQ(entry.carrier, tether_network_state->carrier());
+      EXPECT_EQ(entry.carrier, tether_network_state->tether_carrier());
       EXPECT_EQ(entry.battery_percentage,
                 tether_network_state->battery_percentage());
       EXPECT_EQ(entry.signal_strength, tether_network_state->signal_strength());
@@ -114,7 +114,7 @@ class NetworkHostScanCacheTest : public testing::Test {
     }
   }
 
-  const base::test::ScopedTaskEnvironment scoped_task_environment_;
+  const base::test::TaskEnvironment task_environment_;
   NetworkStateTestHelper helper_{true /* use_default_devices_and_services */};
   const std::unordered_map<std::string, HostScanCacheEntry> test_entries_;
 

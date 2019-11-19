@@ -21,8 +21,7 @@ MockIMEEngineHandler::MockIMEEngineHandler()
       last_set_surrounding_cursor_pos_(0),
       last_set_surrounding_anchor_pos_(0) {}
 
-MockIMEEngineHandler::~MockIMEEngineHandler() {
-}
+MockIMEEngineHandler::~MockIMEEngineHandler() = default;
 
 void MockIMEEngineHandler::FocusIn(const InputContext& input_context) {
   last_text_input_context_ = input_context;
@@ -46,14 +45,10 @@ void MockIMEEngineHandler::Reset() {
   ++reset_call_count_;
 }
 
-bool MockIMEEngineHandler::IsInterestedInKeyEvent() const {
-  return true;
-}
-
 void MockIMEEngineHandler::ProcessKeyEvent(const ui::KeyEvent& key_event,
                                            KeyEventDoneCallback callback) {
   ++process_key_event_call_count_;
-  last_processed_key_event_.reset(new ui::KeyEvent(key_event));
+  last_processed_key_event_ = std::make_unique<ui::KeyEvent>(key_event);
   last_passed_callback_ = std::move(callback);
 }
 

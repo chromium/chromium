@@ -1,0 +1,24 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//ios/build/config.gni")
+
+source_set("webui") {
+  deps = [
+    "//base",
+    "//ios/third_party/webkit",
+    "//net",
+  ]
+
+  sources = [
+    "url_data_source_ios.h",
+    "web_ui_ios.h",
+    "web_ui_ios_controller.h",
+    "web_ui_ios_controller_factory.h",
+    "web_ui_ios_data_source.h",
+    "web_ui_ios_message_handler.h",
+  ]
+
+  configs += [ "//build/config/compiler:enable_arc" ]
+}

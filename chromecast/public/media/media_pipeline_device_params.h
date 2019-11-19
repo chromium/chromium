@@ -54,6 +54,8 @@ struct MediaPipelineDeviceParams {
     kAudioStreamSoundEffects = 1,
   };
 
+  // TODO(guohuideng): Get rid of these excessive number of constructors, using
+  // default arguments.
   MediaPipelineDeviceParams(TaskRunner* task_runner_in,
                             AudioContentType content_type_in,
                             const std::string& device_id_in);
@@ -74,6 +76,13 @@ struct MediaPipelineDeviceParams {
 
   MediaSyncType sync_type;
   const AudioStreamType audio_type;
+
+  // This flag matters only when the implementation of
+  // CastMediaShlib::CreateMediaPipelineBackend(...) can return multiple kinds
+  // of CastMediaShlib::MediaPipelineBackend. When this flag is true,
+  // CastMediaShlib::CreateMediaPipelineBackend(...) should return a backend
+  // that supports pass-through audio if it is possible.
+  bool pass_through_audio_support_desired;
 
   // task_runner allows backend implementations to post tasks to the media
   // thread.  Since all calls from cast_shell into the backend are made on
@@ -130,6 +139,7 @@ inline MediaPipelineDeviceParams::MediaPipelineDeviceParams(
     const std::string& device_id_in)
     : sync_type(sync_type_in),
       audio_type(audio_type_in),
+      pass_through_audio_support_desired(false),
       task_runner(task_runner_in),
       connector(nullptr),
       content_type(content_type_in),

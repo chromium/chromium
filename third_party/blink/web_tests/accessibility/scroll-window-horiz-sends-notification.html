@@ -1,7 +1,8 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-<script src="../resources/js-test.js"></script>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
 <style>
 .bigbutton {
     display:block;
@@ -16,31 +17,28 @@
 <button class="bigbutton">Two</button>
 <button class="bigbutton">Three</button>
 
-<div id="console"></div>
 <script>
 
-description("This test ensures that scrolling the window sends a notification.");
-window.jsTestIsAsync = true;
+async_test((t) => {
+  window.scrollTo(0, 0);
+  assert_equals(window.pageXOffset, 0);
 
-if (window.testRunner && window.accessibilityController) {
-    testRunner.dumpAsText();
+  accessibilityController.addNotificationListener(t.step_func((target, notification) => {
+    if (target.role == 'AXRole: AXWebArea' && notification == 'ScrollPositionChanged') {
+      console.log('Got notification on web area');
+      accessibilityController.removeNotificationListener();
+      assert_equals(window.pageXOffset, 500);
+      t.done();
+    }
+  }));
 
-    window.scrollTo(0, 0);
-    shouldBe("window.pageXOffset", "0");
-
-    accessibilityController.addNotificationListener(function (target, notification) {
-        if (target.role == 'AXRole: AXWebArea' && notification == 'ScrollPositionChanged') {
-            debug('Got notification on web area');
-            accessibilityController.removeNotificationListener();
-            shouldBe("window.pageXOffset", "500");
-            finishJSTest();
-        }
-    });
-
-    window.setTimeout(function() {
-        window.scrollTo(500, 0);
-    }, 0);
-}
+  window.setTimeout(function() {
+    window.scrollTo(500, 0);
+  }, 0);
+  window.setTimeout(t.step_func_done(() => {
+    assert_unreached();
+  }), 200);
+}, "This test ensures that scrolling the window sends a notification.");
 
 </script>
 

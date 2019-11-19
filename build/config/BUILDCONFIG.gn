@@ -239,11 +239,8 @@ if (target_os == "android") {
   assert(host_os == "mac", "Mac cross-compiles are unsupported.")
   _default_toolchain = host_toolchain
 } else if (target_os == "win") {
-  # On Windows we use the same toolchain for host and target by default.
+  # On Windows, we use the same toolchain for host and target by default.
   # Beware, win cross builds have some caveats, see docs/win_cross.md
-  # TODO(thakis): See if we want to make 32-bit builds on mac hosts work.
-  assert(host_os != "mac" || target_cpu == "x64",
-         "Mac hosts can only build 64-bit chrome/win, https://crbug.com/794838")
   if (is_clang) {
     _default_toolchain = "//build/toolchain/win:win_clang_$target_cpu"
   } else {
@@ -425,7 +422,6 @@ default_compiler_configs = [
   "//build/config:feature_flags",
   "//build/config/compiler:afdo",
   "//build/config/compiler:afdo_optimize_size",
-  "//build/config/compiler:assembler_debug_dir",
   "//build/config/compiler:compiler",
   "//build/config/compiler:compiler_arm_fpu",
   "//build/config/compiler:compiler_arm_thumb",
@@ -439,6 +435,7 @@ default_compiler_configs = [
   "//build/config/compiler:no_rtti",
   "//build/config/compiler:runtime_library",
   "//build/config/compiler:thin_archive",
+  "//build/config/compiler:default_init_stack_vars",
   "//build/config/coverage:default_coverage",
   "//build/config/sanitizers:default_sanitizer_flags",
 ]
@@ -450,7 +447,6 @@ if (is_win) {
     "//build/config/win:nominmax",
     "//build/config/win:unicode",
     "//build/config/win:winver",
-    "//build/config/win:vs_code_analysis",
   ]
 }
 
@@ -520,6 +516,13 @@ default_executable_configs = default_compiler_configs + [
                                "//build/config:default_libs",
                                "//build/config:executable_config",
                              ] + _linker_configs
+
+if (is_win) {
+  # Currently only turn on linker CFI for executables, and position it so it can
+  # be removed when needed.
+  default_executable_configs += [ "//build/config/win:cfi_linker" ]
+}
+
 set_defaults("executable") {
   configs = default_executable_configs
 }
@@ -552,6 +555,9 @@ set_defaults("loadable_module") {
 #
 # Variables
 #   no_default_deps: If true, no standard dependencies will be added.
+#       Targets that set this usually also want to remove
+#       "//build/config/compiler:runtime_library" from configs (to remove
+#       its subconfig "//build/config/c++:runtime_library").
 foreach(_target_type,
         [
           "executable",
@@ -559,13 +565,54 @@ foreach(_target_type,
           "shared_library",
         ]) {
   template(_target_type) {
-    target(_target_type, target_name) {
+    _target_name = target_name
+    target(_target_type, _target_name) {
       forward_variables_from(invoker, "*", [ "no_default_deps" ])
       if (!defined(deps)) {
         deps = []
       }
       if (!defined(invoker.no_default_deps) || !invoker.no_default_deps) {
+        # This pulls in one of:
+        # //build/config:executable_deps
+        # //build/config:loadable_module_deps
+        # //build/config:shared_library_deps
+        # (This explicit list is so that grepping for these configs finds where
+        # they are used.)
         deps += [ "//build/config:${_target_type}_deps" ]
+      }
+
+      # On Android, write shared library output file to metadata. We will use
+      # this information to, for instance, collect all shared libraries that
+      # should be packaged into an APK.
+      if (!defined(invoker.metadata) && is_android && (_target_type ==
+                                                       "shared_library" ||
+                                                       _target_type ==
+                                                       "loadable_module")) {
+        _output_name = _target_name
+        if (defined(invoker.output_name)) {
+          _output_name = invoker.output_name
+        }
+
+        # Remove 'lib' prefix from output name if it exists.
+        _magic_prefix = "$0x01$0x01"
+        _output_name = string_replace("${_magic_prefix}${_output_name}",
+                                      "${_magic_prefix}lib",
+                                      _magic_prefix,
+                                      1)
+        _output_name = string_replace(_output_name, _magic_prefix, "", 1)
+
+        if (defined(output_extension)) {
+          _shlib_extension = ".$output_extension"
+        } else if (is_component_build && _target_type != "loadable_module") {
+          _shlib_extension = ".cr.so"
+        } else {
+          _shlib_extension = ".so"
+        }
+
+        metadata = {
+          shared_libraries =
+              [ "$root_out_dir/lib${_output_name}${_shlib_extension}" ]
+        }
       }
     }
   }

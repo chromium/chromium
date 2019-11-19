@@ -1,0 +1,33 @@
+// Copyright 2017 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module display.mojom;
+
+// Corresponding to display::DisplayConnectionType.
+enum DisplayConnectionType {
+  DISPLAY_CONNECTION_TYPE_NONE = 0,
+  DISPLAY_CONNECTION_TYPE_UNKNOWN = 1,
+  DISPLAY_CONNECTION_TYPE_INTERNAL = 2,
+  DISPLAY_CONNECTION_TYPE_VGA = 4,
+  DISPLAY_CONNECTION_TYPE_HDMI = 8,
+  DISPLAY_CONNECTION_TYPE_DVI = 16,
+  DISPLAY_CONNECTION_TYPE_DISPLAYPORT = 32,
+  DISPLAY_CONNECTION_TYPE_NETWORK = 64,
+};
+
+// Corresponding to display::HDCPState.
+enum HDCPState {
+  HDCP_STATE_UNDESIRED,
+  HDCP_STATE_DESIRED,
+  HDCP_STATE_ENABLED,
+};
+
+// Corresponds to display::PanelOrientation.
+enum PanelOrientation {
+  NORMAL = 0,
+  BOTTOM_UP = 1,
+  LEFT_UP = 2,
+  RIGHT_UP = 3
+};
+

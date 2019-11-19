@@ -1,7 +1,6 @@
 <!DOCTYPE HTML>
 <script src="../resources/testharness.js"></script>
 <script src="../resources/testharnessreport.js"></script>
-<script src="../resources/run-after-layout-and-paint.js"></script>
 <pre id="pre" style="word-wrap: break-word; white-space: pre-wrap;"><script>
 for (let count = 1; count <= 250; count ++)
   document.write('' + count + '. The quick brown fox jumps over the lazy dog. ');
@@ -9,7 +8,7 @@ for (let count = 1; count <= 250; count ++)
 </body>
 
 <script>
-test_after_layout_and_paint(function(t) {
+test(function(t) {
     var axPre = accessibilityController.accessibleElementById("pre");
     var axStaticText = axPre.childAtIndex(0);
     console.log(axStaticText.name);

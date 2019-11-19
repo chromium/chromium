@@ -10,9 +10,13 @@ static_library("common") {
     "header_util.h",
   ]
 
-  deps = [
+  public_deps = [
     "//components/data_reduction_proxy/core/common",
     "//content/public/common",
+    "//mojo/public/cpp/bindings",
+  ]
+
+  deps = [
     "//net",
   ]
 }
@@ -29,6 +33,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//components/data_reduction_proxy/core/common",
     "//content/public/common",
+    "//mojo/public/cpp/bindings",
     "//net",
     "//testing/gtest",
   ]

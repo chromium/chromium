@@ -23,7 +23,7 @@
 
 namespace windows_util {
 
-bool GetBrowserFromWindowID(UIThreadExtensionFunction* function,
+bool GetBrowserFromWindowID(ExtensionFunction* function,
                             int window_id,
                             extensions::WindowController::TypeFilter filter,
                             Browser** browser,
@@ -68,7 +68,7 @@ bool GetBrowserFromWindowID(UIThreadExtensionFunction* function,
   return true;
 }
 
-bool CanOperateOnWindow(const UIThreadExtensionFunction* function,
+bool CanOperateOnWindow(const ExtensionFunction* function,
                         const extensions::WindowController* controller,
                         extensions::WindowController::TypeFilter filter) {
   if (filter && !controller->MatchesFilter(filter))

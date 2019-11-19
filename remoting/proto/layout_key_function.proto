@@ -1,0 +1,103 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+
+package remoting.protocol;
+
+// List of key functions to identify functional (non-character-generating) keys
+// in the keyboard layout. This list is not meant to be exhaustive, but is meant
+// to include functions typically assigned to the standard keyboard keys on
+// common keyboard layouts.
+
+// Next ID: 61
+enum LayoutKeyFunction {
+  // The key action is a function whose type is not recognized.
+  UNKNOWN = 0;
+
+  // Modifier keys
+  CONTROL = 1;
+  ALT = 2;
+  SHIFT = 3;
+  // Windows key on Windows, command on Mac, super on Linux.
+  META = 4;
+  // Level 3 shift. Commonly labeled AltGr.
+  ALT_GR = 5;
+  // Level 5 shift. Used on some Linux layouts. (Level 4 is AltGr + Shift.)
+  MOD5 = 6;
+  // On Linux, this defaults to Shift + AltGr (which is distinct from AltGr +
+  // Shift, which accesses level 4), but it can also be assigned to
+  // a distinct key.
+  COMPOSE = 7;
+
+  // Locks
+  NUM_LOCK = 8;
+  CAPS_LOCK = 9;
+  SCROLL_LOCK = 10;
+
+  // Editing and navigation keys
+  BACKSPACE = 11;
+  ENTER = 12;
+  TAB = 13;
+  INSERT = 14;
+  DELETE_ = 15;
+  HOME = 16;
+  END = 17;
+  PAGE_UP = 18;
+  PAGE_DOWN = 19;
+  CLEAR = 20;
+  ARROW_UP = 21;
+  ARROW_DOWN = 22;
+  ARROW_LEFT = 23;
+  ARROW_RIGHT = 24;
+
+  // Function keys
+  F1 = 25;
+  F2 = 26;
+  F3 = 27;
+  F4 = 28;
+  F5 = 29;
+  F6 = 30;
+  F7 = 31;
+  F8 = 32;
+  F9 = 33;
+  F10 = 34;
+  F11 = 35;
+  F12 = 36;
+  F13 = 37;
+  F14 = 38;
+  F15 = 39;
+  F16 = 40;
+  F17 = 41;
+  F18 = 42;
+  F19 = 43;
+  F20 = 44;
+  F21 = 45;
+  F22 = 46;
+  F23 = 47;
+  F24 = 48;
+
+  // Other common functional keys
+  ESCAPE = 49;
+  CONTEXT_MENU = 50;
+  PAUSE = 51;
+  PRINT_SCREEN = 52;
+
+  // Language-specific keys
+  // Japanese
+  HANKAKU_ZENKAKU_KANJI = 53;     // Backquote
+  HENKAN = 54;                    // Convert
+  MUHENKAN = 55;                  // NonConvert
+  KATAKANA_HIRAGANA_ROMAJI = 56;  // KanaMode
+  KANA = 57;                      // Lang1 (Mac keyboard)
+  // Note: Windows only identifies the key as "Caps Lock", so the Windows host
+  // currently sends the CAPS_LOCK function even for shift level 1 (unshifted)
+  // and doesn't use this function.
+  EISU = 58;  // Unshifted CapsLock (Windows), Lang2 (Mac keyboard)
+  // Korean
+  HAN_YEONG = 59;  // Lang1
+  HANJA = 60;      // Lang2
+}

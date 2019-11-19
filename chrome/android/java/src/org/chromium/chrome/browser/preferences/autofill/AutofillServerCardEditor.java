@@ -12,6 +12,7 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.TextView;
 
+import org.chromium.base.annotations.UsedByReflection;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeStringConstants;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
@@ -25,6 +26,9 @@ import org.chromium.chrome.browser.payments.SettingsAutofillAndPaymentsObserver;
 public class AutofillServerCardEditor extends AutofillCreditCardEditor {
     private View mLocalCopyLabel;
     private View mClearLocalCopy;
+
+    @UsedByReflection("AutofillPaymentMethodsFragment.java")
+    public AutofillServerCardEditor() {}
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,

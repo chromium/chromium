@@ -50,7 +50,7 @@ class SubresourceFilterObserver {
       const mojom::ActivationState& activation_state) {}
 
   // Called before navigation commit, either at the WillStartRequest stage or
-  // WillRedirectRequest stage. |is_ad_frame| is true if |load_policy| is
+  // WillRedirectRequest stage. |is_ad_subframe| is true if |load_policy| is
   // ALLOW or WOULD_DISALLOW or if ad tagging has determined that the frame is
   // an ad.
   virtual void OnSubframeNavigationEvaluated(
@@ -58,6 +58,11 @@ class SubresourceFilterObserver {
       LoadPolicy load_policy,
       bool is_ad_subframe) {}
 
+  // Use this to detect ad frames that never navigate beyond about:blank (e.g.,
+  // doc.written frames). Called when a frame is first created and navigated to
+  // about:blank and its already known that the frame is an ad. E.g., because
+  // the script that created the frame is ad script or the frame is a child of
+  // an ad frame.
   virtual void OnAdSubframeDetected(
       content::RenderFrameHost* render_frame_host) {}
 };

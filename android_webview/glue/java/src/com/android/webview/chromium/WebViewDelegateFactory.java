@@ -218,7 +218,7 @@ class WebViewDelegateFactory {
 
         @Override
         public void drawWebViewFunctor(Canvas canvas, int functor) {
-            throw new RuntimeException();
+            mDelegate.drawWebViewFunctor(canvas, functor);
         }
     }
 

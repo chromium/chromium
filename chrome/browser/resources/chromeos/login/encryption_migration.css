@@ -2,14 +2,6 @@
  * Use of this source code is governed by a BSD-style license that can be
  * found in the LICENSE file. */
 
-oobe-dialog {
-  height: 640px;
-  max-height: calc(100vh - 47px);  /* Subtracting #login-header-bar's height. */
-  max-width: 100vw;
-  min-height: 0 !important;  /* Making <oobe-dialog> shrinkable. */
-  min-width: 0 !important;  /* Making <oobe-dialog> shrinkable. */
-  width: 768px;
-}
 
 oobe-dialog div {
   line-height: 1.54;  /* 20px height for 13px font. */
@@ -20,10 +12,6 @@ paper-progress {
   height: 3px;
   margin-bottom: 28px;
   width: 100%;
-}
-
-[slot='bottom-buttons'] {
-  padding-inline-end: 16px;
 }
 
 oobe-text-button {
@@ -45,10 +33,6 @@ oobe-dialog > iron-icon.warning {
   -webkit-mask-repeat: no-repeat;
   -webkit-mask-size: 100%;
   background-color: var(--google-red-500);
-}
-
-[slot='footer'] {
-  overflow: hidden;
 }
 
 [slot='footer'] div {

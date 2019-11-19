@@ -55,7 +55,42 @@
                         }
                     ],
                     "experimental": true
+                },
+                {
+                    "name": "performSearch",
+                    "parameters": [
+                        { "name": "query", "type": "string", "description": "Plain text or query selector or XPath search query." },
+                        { "name": "includeUserAgentShadowDOM", "type": "boolean", "optional": true, "description": "True to search in user agent shadow DOM." }
+                    ],
+                    "returns": [
+                        { "name": "searchId", "type": "string", "description": "Unique search session identifier." },
+                        { "name": "resultCount", "type": "integer", "description": "Number of search results." }
+                    ],
+                    "description": "Searches for a given string in the DOM tree. Use <code>getSearchResults</code> to access search results or <code>cancelSearch</code> to end this search session.",
+                    "experimental": true
+                },
+                {
+                    "name": "getSearchResults",
+                    "parameters": [
+                        { "name": "searchId", "type": "string", "description": "Unique search session identifier." },
+                        { "name": "fromIndex", "type": "integer", "description": "Start index of the search result to be returned." },
+                        { "name": "toIndex", "type": "integer", "description": "End index of the search result to be returned." }
+                    ],
+                    "returns": [
+                        { "name": "nodeIds", "type": "array", "items": { "$ref": "NodeId" }, "description": "Ids of the search result nodes." }
+                    ],
+                    "description": "Returns search results from given <code>fromIndex</code> to given <code>toIndex</code> from the search with the given identifier.",
+                    "experimental": true
+                },
+                {
+                    "name": "discardSearchResults",
+                    "parameters": [
+                        { "name": "searchId", "type": "string", "description": "Unique search session identifier." }
+                    ],
+                    "description": "Discards search results from the session with the given id. <code>getSearchResults</code> should no longer be called for that search.",
+                    "experimental": true
                 }
+
             ],
             "description": "This domain exposes DOM read/write operations. Each DOM Node is represented with its mirror object\nthat has an `id`. This `id` can be used to get additional information on the Node, resolve it into\nthe JavaScript object wrapper, etc. It is important that client receives DOM events only for the\nnodes that are known to the client. Backend keeps track of the nodes that were sent to the client\nand never sends the same node twice. It is client's responsibility to collect information about\nthe nodes that were sent to the client.<p>Note that `iframe` owner elements will return\ncorresponding document elements as their child nodes.</p>",
             "domain": "DOM",
@@ -226,12 +261,32 @@
                     ],
                     "returns": [
                         {
-                            "name": "inlineStyle",
-                            "$ref": "CSSStyle",
+                            "name": "matchedCSSRules",
+                            "type": "array",
+                            "items": {
+                                "$ref": "RuleMatch"
+                            },
                             "optional": true,
-                            "description": "Inline style for the specified DOM node."
+                            "description": "CSS rules matching this node, from all applicable stylesheets."
                         }
                     ]
+                },
+                {
+                    "name": "getStyleSheetText",
+                    "parameters": [
+                        {
+                            "name": "styleSheetId",
+                            "$ref": "StyleSheetId"
+                        }
+                    ],
+                    "returns": [
+                        {
+                            "name": "text",
+                            "type": "string",
+                            "description": "The stylesheet text."
+                        }
+                    ],
+                    "description": "Returns the current source content for a stylesheet."
                 },
                 {
                     "name": "setStyleTexts",
@@ -273,6 +328,17 @@
                             "$ref": "StyleSheetId"
                         }
                     ]
+                },
+                {
+                    "name": "styleSheetAdded",
+                    "parameters": [
+                        {
+                            "name": "header",
+                            "$ref": "CSSStyleSheetHeader",
+                            "description": "Added stylesheet metainfo."
+                        }
+                    ],
+                    "description": "Fired whenever an active document stylesheet is added."
                 }
             ],
             "types": [
@@ -384,6 +450,109 @@
                             "$ref": "SourceRange",
                             "optional": true,
                             "description": "The entire property range in the enclosing style declaration (if available)."
+                        }
+                    ]
+                },
+                {
+                    "id": "RuleMatch",
+                    "description": "Match data for a CSS rule.",
+                    "type": "object",
+                    "properties": [
+                        {
+                            "name": "rule",
+                            "$ref": "CSSRule",
+                            "description": "CSS rule in the match."
+                        },
+                        {
+                            "name": "matchingSelectors",
+                            "type": "array",
+                            "items": {
+                                "type": "integer"
+                            },
+                            "description": "Matching selector indices in the rule's selectorList selectors (0-based)."
+                        }
+                    ]
+                },
+                {
+                    "id": "Value",
+                    "type": "object",
+                    "properties": [
+                        {
+                            "name": "text",
+                            "type": "string",
+                            "description": "Value text."
+                        },
+                        {
+                            "name": "range",
+                            "$ref": "SourceRange",
+                            "optional": true,
+                            "description": "Value range in the underlying resource (if available)."
+                        }
+                    ],
+                    "description": "Data for a simple selector (these are delimited by commas in a selector list)."
+                },
+                {
+                    "id": "SelectorList",
+                    "type": "object",
+                    "properties": [
+                        {
+                            "name": "selectors",
+                            "type": "array",
+                            "items": {
+                                "$ref": "Value"
+                            },
+                            "description": "Selectors in the list."
+                        }
+                    ],
+                    "description": "Selector list data."
+                },
+                {
+                    "id": "CSSStyleSheetHeader",
+                    "type": "object",
+                    "properties": [
+                        {
+                            "name": "styleSheetId",
+                            "$ref": "StyleSheetId",
+                            "description": "The stylesheet identifier."
+                        },
+                        {
+                            "name": "sourceURL",
+                            "type": "string",
+                            "description": "Stylesheet resource URL."
+                        },
+                        {
+                            "name": "startLine",
+                            "type": "number",
+                            "description": "Line offset of the stylesheet within the resource (zero based)."
+                        },
+                        {
+                            "name": "startColumn",
+                            "type": "number",
+                            "description": "Column offset of the stylesheet within the resource (zero based)."
+                        }
+                    ],
+                    "description": "CSS stylesheet metainformation."
+                },
+                {
+                    "id": "CSSRule",
+                    "description": "CSS rule representation.",
+                    "type": "object",
+                    "properties": [
+                        {
+                            "name": "styleSheetId",
+                            "$ref": "StyleSheetId",
+                            "optional": true,
+                            "description": "The css style sheet identifier (absent for user agent stylesheet and user-specified stylesheet rules) this rule came from."
+                        },
+                        {
+                            "name": "selectorList",
+                            "$ref": "SelectorList",
+                            "description": "Rule selector data."
+                        },
+                        {
+                            "name": "style",
+                            "$ref": "CSSStyle",
+                            "description": "Associated style declaration."
                         }
                     ]
                 },
@@ -577,6 +746,208 @@
                         "searchForNode",
                         "searchForUAShadowDOM",
                         "none"
+                    ]
+                }
+            ]
+        },
+        {
+            "commands" : [
+                {
+                    "name": "disable",
+                    "description": "Disables domain notifications."
+                },
+                {
+                    "name": "enable",
+                    "description": "Enables domain notifications."
+                },
+                {
+                    "name": "reload",
+                    "parameters": [
+                        {
+                            "name":"ignoreCache",
+                            "type": "boolean",
+                             "optional": true,
+                            "description": "If true, browser cache is ignored (as if the user pressed Shift+refresh)."
+                        }
+                    ],
+                    "description": "Called on Ctrl+R with |ignoreCache|=false, which is used to toggle debug bounds rectangles and Ctrl+Shift+R with |ignoreCache|=true, which is used to toggle bubble locking."
+                },
+                {
+                    "name": "getResourceTree",
+                    "description": "Called when UI DevTools first loads. Used to populate sources panel.",
+                    "returns": [
+                        {
+                            "name": "frameTree",
+                            "$ref": "FrameResourceTree",
+                            "description": "Present frame / resource tree structure."
+                        }
+                    ],
+                    "experimental": true
+                },
+                {
+                    "name": "getResourceContent",
+                    "async": true,
+                    "description": "Returns source file content of the given resource.",
+                    "parameters": [
+                        {
+                            "name": "frameId",
+                            "type": "string",
+                            "description": "Frame id to get resource for."
+                        },
+                        {
+                            "name": "url",
+                            "type": "string",
+                            "description": "URL of the resource to get content for."
+                        }
+                    ],
+                    "returns": [
+                        {
+                            "name": "content",
+                            "type": "string",
+                            "description": "Resource content."
+                        },
+                        {
+                            "name": "base64Encoded",
+                            "type": "boolean",
+                            "description": "True, if content was served as base64."
+                        }
+                    ],
+                    "experimental": true
+                }
+            ],
+            "description": "Actions and events related to the inspected page belong to the page domain.",
+            "domain": "Page",
+            "dependencies": [
+                "DOM"
+            ],
+            "types": [
+                {
+                    "id": "ResourceType",
+                    "type": "string",
+                    "enum": ["Document", "Stylesheet", "Image", "Media", "Font", "Script", "TextTrack", "XHR", "Fetch", "EventSource", "WebSocket", "Manifest", "Other"],
+                    "description": "Resource type as it was perceived by the rendering engine."
+                },
+                {
+                    "id": "Frame",
+                    "type": "object",
+                    "description": "Information about the Frame on the page.",
+                    "properties": [
+                        {
+                            "name": "id",
+                            "type": "string",
+                            "description": "Frame unique identifier."
+                        },
+                        {
+                            "name": "url",
+                            "type": "string",
+                            "description": "Frame document's URL."
+                        }
+                   ]
+                },
+                {
+                    "id": "FrameResource",
+                    "type": "object",
+                    "description": "Information about the Resource on the page.",
+                    "properties": [
+                        {
+                            "name": "url",
+                            "type": "string",
+                            "description": "Resource URL."
+                        },
+                        {
+                            "name": "type",
+                            "$ref": "ResourceType",
+                            "description": "Type of this resource."
+                        },
+                        {
+                            "name": "mimeType",
+                            "type": "string",
+                            "description": "Resource mimeType as determined by the browser."
+                        }
+                    ],
+                    "experimental": true
+                },
+                {
+                    "id": "FrameResourceTree",
+                    "type": "object",
+                    "description": "Information about the Frame hierarchy along with their cached resources.",
+                    "properties": [
+                        {
+                            "name": "frame",
+                            "$ref": "Frame",
+                            "description": "Frame information for this tree item."
+                        },
+                        {
+                            "name": "childFrames",
+                            "type": "array",
+                            "optional": true,
+                            "items":
+                                {
+                                    "$ref": "FrameResourceTree"
+                                },
+                            "description": "Child frames."
+                        },
+                        {
+                            "name": "resources",
+                            "type": "array",
+                            "items":
+                                {
+                                    "$ref": "FrameResource"
+                                },
+                            "description": "Information about frame resources."
+                        }
+                    ],
+                    "experimental": true
+                }
+            ]
+        },
+        {
+            "domain": "Tracing",
+            "experimental": true,
+            "commands": [
+                {
+                    "name": "start",
+                    "description": "Start trace events collection.",
+                    "parameters": [
+                        { "name": "categories", "type": "string", "optional": true, "deprecated": true, "description": "Category/tag filter" },
+                        { "name": "options", "type": "string", "optional": true, "deprecated": true, "description": "Tracing options" },
+                        { "name": "bufferUsageReportingInterval", "type": "number", "optional": true, "description": "If set, the agent will issue bufferUsage events at this interval, specified in milliseconds" }
+                    ]
+                },
+                {
+                    "name": "end",
+                    "description": "Stop trace events collection."
+                },
+                {
+                    "name": "disable",
+                    "description": "Disables Tracing agent for the given page."
+                },
+                {
+                    "name": "enable",
+                    "description": "Enables Tracing agent for the given page."
+                }
+            ],
+            "events": [
+                {
+                    "name": "dataCollected",
+                    "parameters": [
+                        { "name": "value", "type": "array", "items": { "type": "object" } }
+                    ],
+                    "description": "Contains an bucket of collected trace events. When tracing is stopped collected events will be send as a sequence of dataCollected events followed by tracingComplete event."
+                },
+                {
+                    "name": "tracingComplete",
+                    "description": "Signals that tracing is stopped and there is no trace buffers pending flush, all data were delivered via dataCollected events.",
+                    "parameters": [
+                        { "name": "dataLossOccurred", "type": "boolean", "optional": true, "description": "A handle of the stream that holds resulting trace data." }
+                    ]
+                },
+                {
+                    "name": "bufferUsage",
+                    "parameters": [
+                        { "name": "percentFull", "type": "number", "optional": true, "description": "A number in range [0..1] that indicates the used size of event buffer as a fraction of its total size." },
+                        { "name": "eventCount", "type": "number", "optional": true, "description": "An approximate number of events in the trace log." },
+                        { "name": "value", "type": "number", "optional": true, "description": "A number in range [0..1] that indicates the used size of event buffer as a fraction of its total size." }
                     ]
                 }
             ]

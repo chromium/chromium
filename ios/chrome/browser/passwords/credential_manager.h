@@ -6,10 +6,11 @@
 #define IOS_CHROME_BROWSER_PASSWORDS_CREDENTIAL_MANAGER_H_
 
 #include "components/password_manager/core/browser/credential_manager_impl.h"
+#include "components/password_manager/core/browser/leak_detection/leak_detection_check_factory.h"
+#import "ios/web/public/web_state.h"
 
 namespace web {
 class WebFrame;
-class WebState;
 }
 
 // Owned by PasswordController. It is responsible for registering and handling
@@ -31,13 +32,19 @@ class CredentialManager {
                     web::WebState* web_state);
   ~CredentialManager();
 
+#if defined(UNIT_TEST)
+  void set_leak_factory(
+      std::unique_ptr<password_manager::LeakDetectionCheckFactory> factory) {
+    impl_.set_leak_factory(std::move(factory));
+  }
+#endif  // defined(UNIT_TEST)
+
  private:
   // HandleScriptCommand parses JSON message and invokes Get, Store or
   // PreventSilentAccess on CredentialManagerImpl.
-  bool HandleScriptCommand(const base::DictionaryValue& json,
+  void HandleScriptCommand(const base::DictionaryValue& json,
                            const GURL& origin_url,
                            bool user_is_interacting,
-                           bool is_main_frame,
                            web::WebFrame* sender_frame);
 
   // Passed as callback to CredentialManagerImpl::Get.
@@ -49,6 +56,9 @@ class CredentialManager {
   void SendPreventSilentAccessResponse(int promise_id);
   // Passed as callback to CredentialManagerImpl::Store.
   void SendStoreResponse(int promise_id);
+
+  // Subscription for JS message.
+  std::unique_ptr<web::WebState::ScriptCommandSubscription> subscription_;
 
   password_manager::CredentialManagerImpl impl_;
   web::WebState* web_state_;

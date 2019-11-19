@@ -87,8 +87,6 @@ class RendererPpapiHostImpl : public RendererPpapiHost {
   IPC::PlatformFileForTransit ShareHandleWithRemote(
       base::PlatformFile handle,
       bool should_close_source) override;
-  base::SharedMemoryHandle ShareSharedMemoryHandleWithRemote(
-      const base::SharedMemoryHandle& handle) override;
   base::UnsafeSharedMemoryRegion ShareUnsafeSharedMemoryRegionWithRemote(
       const base::UnsafeSharedMemoryRegion& region) override;
   base::ReadOnlySharedMemoryRegion ShareReadOnlySharedMemoryRegionWithRemote(

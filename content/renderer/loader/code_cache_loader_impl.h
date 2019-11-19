@@ -5,6 +5,7 @@
 #ifndef CONTENT_RENDERER_LOADER_CODE_CACHE_LOADER_IMPL_H_
 #define CONTENT_RENDERER_LOADER_CODE_CACHE_LOADER_IMPL_H_
 
+#include "base/containers/span.h"
 #include "base/memory/weak_ptr.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/synchronization/waitable_event_watcher.h"
@@ -29,7 +30,7 @@ class CodeCacheLoaderImpl : public blink::CodeCacheLoader {
   // cannot be nullptrs. This only fetches from the Javascript cache.
   void FetchFromCodeCacheSynchronously(const GURL& url,
                                        base::Time* response_time_out,
-                                       std::vector<uint8_t>* data_out) override;
+                                       mojo_base::BigBuffer* data_out) override;
 
   void FetchFromCodeCache(blink::mojom::CodeCacheType cache_type,
                           const GURL& url,
@@ -44,18 +45,18 @@ class CodeCacheLoaderImpl : public blink::CodeCacheLoader {
   void OnReceiveCachedCode(FetchCodeCacheCallback callback,
                            base::WaitableEvent* event,
                            base::Time response_time,
-                           const std::vector<uint8_t>& data);
-  void ReceiveDataForSynchronousFetch(const base::Time& response_time,
-                                      const std::vector<uint8_t>& data);
+                           mojo_base::BigBuffer data);
+  void ReceiveDataForSynchronousFetch(base::Time response_time,
+                                      mojo_base::BigBuffer data);
   void OnTerminate(base::WaitableEvent* fetch_event,
                    base::WaitableEvent* terminate_event);
 
   base::Time response_time_for_sync_load_;
-  std::vector<uint8_t> data_for_sync_load_;
+  mojo_base::BigBuffer data_for_sync_load_;
   bool terminated_ = false;
   base::WaitableEventWatcher terminate_watcher_;
   base::WaitableEvent* terminate_sync_load_event_ = nullptr;
-  base::WeakPtrFactory<CodeCacheLoaderImpl> weak_ptr_factory_;
+  base::WeakPtrFactory<CodeCacheLoaderImpl> weak_ptr_factory_{this};
 };
 
 }  // namespace content

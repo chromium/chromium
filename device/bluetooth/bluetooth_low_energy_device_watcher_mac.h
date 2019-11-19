@@ -76,8 +76,9 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothLowEnergyDeviceWatcherMac
 
   // Thread runner to watch, read, and parse bluetooth property list file.
   scoped_refptr<base::SequencedTaskRunner> file_thread_task_runner_ =
-      base::CreateSequencedTaskRunnerWithTraits(
-          {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+      base::CreateSequencedTaskRunner(
+          {base::ThreadPool(), base::MayBlock(),
+           base::TaskPriority::BEST_EFFORT,
            base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN});
   scoped_refptr<base::SequencedTaskRunner> ui_thread_task_runner_;
   LowEnergyDeviceListUpdatedCallback low_energy_device_list_updated_callback_;

@@ -6,7 +6,7 @@
 #define UI_OZONE_PLATFORM_DRM_GPU_SCREEN_MANAGER_H_
 
 #include <stdint.h>
-
+#include <memory>
 #include <unordered_map>
 
 #include "base/macros.h"

@@ -82,6 +82,7 @@ class JniClient : public ChromotingSession::Delegate {
                const base::android::JavaParamRef<jstring>& username,
                const base::android::JavaParamRef<jstring>& auth_token,
                const base::android::JavaParamRef<jstring>& host_jid,
+               const base::android::JavaParamRef<jstring>& host_ftl_id,
                const base::android::JavaParamRef<jstring>& host_id,
                const base::android::JavaParamRef<jstring>& host_pubkey,
                const base::android::JavaParamRef<jstring>& pair_id,
@@ -177,7 +178,7 @@ class JniClient : public ChromotingSession::Delegate {
 
   // Holds pointer for the UI thread.
   base::WeakPtr<JniClient> weak_ptr_;
-  base::WeakPtrFactory<JniClient> weak_factory_;
+  base::WeakPtrFactory<JniClient> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(JniClient);
 };

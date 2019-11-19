@@ -17,9 +17,8 @@
 #include "ui/aura/window.h"
 
 namespace ash {
-namespace wm {
 
-BaseState::BaseState(mojom::WindowStateType initial_state_type)
+BaseState::BaseState(WindowStateType initial_state_type)
     : state_type_(initial_state_type) {}
 BaseState::~BaseState() = default;
 
@@ -49,34 +48,33 @@ void BaseState::OnWMEvent(WindowState* window_state, const WMEvent* event) {
   HandleTransitionEvents(window_state, event);
 }
 
-mojom::WindowStateType BaseState::GetType() const {
+WindowStateType BaseState::GetType() const {
   return state_type_;
 }
 
 // static
-mojom::WindowStateType BaseState::GetStateForTransitionEvent(
-    const WMEvent* event) {
+WindowStateType BaseState::GetStateForTransitionEvent(const WMEvent* event) {
   switch (event->type()) {
     case WM_EVENT_NORMAL:
-      return mojom::WindowStateType::NORMAL;
+      return WindowStateType::kNormal;
     case WM_EVENT_MAXIMIZE:
-      return mojom::WindowStateType::MAXIMIZED;
+      return WindowStateType::kMaximized;
     case WM_EVENT_MINIMIZE:
-      return mojom::WindowStateType::MINIMIZED;
+      return WindowStateType::kMinimized;
     case WM_EVENT_FULLSCREEN:
-      return mojom::WindowStateType::FULLSCREEN;
+      return WindowStateType::kFullscreen;
     case WM_EVENT_SNAP_LEFT:
-      return mojom::WindowStateType::LEFT_SNAPPED;
+      return WindowStateType::kLeftSnapped;
     case WM_EVENT_SNAP_RIGHT:
-      return mojom::WindowStateType::RIGHT_SNAPPED;
+      return WindowStateType::kRightSnapped;
     case WM_EVENT_SHOW_INACTIVE:
-      return mojom::WindowStateType::INACTIVE;
+      return WindowStateType::kInactive;
     case WM_EVENT_PIN:
-      return mojom::WindowStateType::PINNED;
+      return WindowStateType::kPinned;
     case WM_EVENT_PIP:
-      return mojom::WindowStateType::PIP;
+      return WindowStateType::kPip;
     case WM_EVENT_TRUSTED_PIN:
-      return mojom::WindowStateType::TRUSTED_PINNED;
+      return WindowStateType::kTrustedPinned;
     default:
       break;
   }
@@ -88,7 +86,7 @@ mojom::WindowStateType BaseState::GetStateForTransitionEvent(
   if (event->IsBoundsEvent())
     NOTREACHED() << "Can't get the state for Bounds event:" << event->type();
 #endif
-  return mojom::WindowStateType::NORMAL;
+  return WindowStateType::kNormal;
 }
 
 // static
@@ -110,8 +108,8 @@ void BaseState::CenterWindow(WindowState* window_state) {
     gfx::Rect center_in_parent =
         screen_util::GetDisplayWorkAreaBoundsInParent(window);
     center_in_parent.ClampToCenteredSize(window->bounds().size());
-    const wm::SetBoundsEvent event(wm::WM_EVENT_SET_BOUNDS, center_in_parent,
-                                   /*animate=*/true);
+    const SetBoundsWMEvent event(center_in_parent,
+                                 /*animate=*/true);
     window_state->OnWMEvent(&event);
   }
   // Centering window is treated as if a user moved and resized the window.
@@ -120,16 +118,15 @@ void BaseState::CenterWindow(WindowState* window_state) {
 
 // static
 void BaseState::CycleSnap(WindowState* window_state, WMEventType event) {
-  mojom::WindowStateType desired_snap_state =
-      event == WM_EVENT_CYCLE_SNAP_LEFT ? mojom::WindowStateType::LEFT_SNAPPED
-                                        : mojom::WindowStateType::RIGHT_SNAPPED;
+  WindowStateType desired_snap_state = event == WM_EVENT_CYCLE_SNAP_LEFT
+                                           ? WindowStateType::kLeftSnapped
+                                           : WindowStateType::kRightSnapped;
 
   if (window_state->CanSnap() &&
       window_state->GetStateType() != desired_snap_state) {
-    const wm::WMEvent event(desired_snap_state ==
-                                    mojom::WindowStateType::LEFT_SNAPPED
-                                ? wm::WM_EVENT_SNAP_LEFT
-                                : wm::WM_EVENT_SNAP_RIGHT);
+    const WMEvent event(desired_snap_state == WindowStateType::kLeftSnapped
+                            ? WM_EVENT_SNAP_LEFT
+                            : WM_EVENT_SNAP_RIGHT);
     window_state->OnWMEvent(&event);
     return;
   }
@@ -142,26 +139,29 @@ void BaseState::CycleSnap(WindowState* window_state, WMEventType event) {
                       ::wm::WINDOW_ANIMATION_TYPE_BOUNCE);
 }
 
-void BaseState::UpdateMinimizedState(
-    WindowState* window_state,
-    mojom::WindowStateType previous_state_type) {
+void BaseState::UpdateMinimizedState(WindowState* window_state,
+                                     WindowStateType previous_state_type) {
   aura::Window* window = window_state->window();
   if (window_state->IsMinimized()) {
     // Save the previous show state when it is not minimized so that we can
     // correctly restore it after exiting the minimized mode.
     if (!IsMinimizedWindowStateType(previous_state_type)) {
-      window->SetProperty(
-          aura::client::kPreMinimizedShowStateKey,
-          ToWindowShowState(
-              previous_state_type == mojom::WindowStateType::PIP
-                  ? window->GetProperty(ash::kPrePipWindowStateTypeKey)
-                  : previous_state_type));
+      // We must not save PIP to |kPreMinimizedShowStateKey|.
+      if (previous_state_type != WindowStateType::kPip)
+        window->SetProperty(aura::client::kPreMinimizedShowStateKey,
+                            ToWindowShowState(previous_state_type));
+      // We must not save MINIMIZED to |kPreMinimizedShowStateKey|.
+      else if (window->GetProperty(ash::kPrePipWindowStateTypeKey) !=
+               WindowStateType::kMinimized)
+        window->SetProperty(aura::client::kPreMinimizedShowStateKey,
+                            ToWindowShowState(window->GetProperty(
+                                ash::kPrePipWindowStateTypeKey)));
     }
     // Count minimizing a PIP window as dismissing it. Android apps in PIP mode
     // don't exit when they are dismissed, they just go back to being a regular
     // app, but minimized.
     ::wm::SetWindowVisibilityAnimationType(
-        window, previous_state_type == mojom::WindowStateType::PIP
+        window, previous_state_type == WindowStateType::kPip
                     ? WINDOW_VISIBILITY_ANIMATION_TYPE_FADE_IN_SLIDE_OUT
                     : WINDOW_VISIBILITY_ANIMATION_TYPE_MINIMIZE);
 
@@ -183,21 +183,21 @@ void BaseState::UpdateMinimizedState(
 
 gfx::Rect BaseState::GetSnappedWindowBoundsInParent(
     aura::Window* window,
-    const mojom::WindowStateType state_type) {
+    const WindowStateType state_type) {
   gfx::Rect bounds_in_parent;
   if (ShouldAllowSplitView()) {
     bounds_in_parent =
-        Shell::Get()->split_view_controller()->GetSnappedWindowBoundsInParent(
-            window, (state_type == mojom::WindowStateType::LEFT_SNAPPED)
-                        ? SplitViewController::LEFT
-                        : SplitViewController::RIGHT);
+        SplitViewController::Get(window)->GetSnappedWindowBoundsInParent(
+            (state_type == WindowStateType::kLeftSnapped)
+                ? SplitViewController::LEFT
+                : SplitViewController::RIGHT,
+            window);
   } else {
-    bounds_in_parent = (state_type == mojom::WindowStateType::LEFT_SNAPPED)
+    bounds_in_parent = (state_type == WindowStateType::kLeftSnapped)
                            ? GetDefaultLeftSnappedWindowBoundsInParent(window)
                            : GetDefaultRightSnappedWindowBoundsInParent(window);
   }
   return bounds_in_parent;
 }
 
-}  // namespace wm
 }  // namespace ash

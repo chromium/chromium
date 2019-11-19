@@ -17,8 +17,11 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
+#include "mojo/public/cpp/base/big_buffer.h"
+#include "mojo/public/cpp/system/data_pipe.h"
 #include "net/base/completion_once_callback.h"
-#include "storage/common/blob_storage/blob_storage_constants.h"
+#include "services/network/public/cpp/data_pipe_to_source_stream.h"
+#include "storage/browser/blob/blob_storage_constants.h"
 
 class GURL;
 
@@ -31,7 +34,6 @@ class Time;
 namespace net {
 class DrainableIOBuffer;
 class IOBuffer;
-class IOBufferWithSize;
 }
 
 namespace storage {
@@ -48,7 +50,7 @@ class FileStreamReader;
 // Use a BlobDataHandle to create an instance.
 //
 // For more information on how to read Blobs in your specific situation, see:
-// https://chromium.googlesource.com/chromium/src/+/HEAD/storage/browser/blob/README.md#accessing-reading
+// https://chromium.googlesource.com/chromium/src/+/HEAD/storage/browser/blob/README.md#how-to-use-blobs-browser_side-accessing-reading
 class COMPONENT_EXPORT(STORAGE_BROWSER) BlobReader {
  public:
   class COMPONENT_EXPORT(STORAGE_BROWSER) FileStreamReaderProvider {
@@ -82,26 +84,25 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobReader {
   Status CalculateSize(net::CompletionOnceCallback done);
 
   // Returns true when the blob has side data. CalculateSize must be called
-  // beforehand. Currently side data is supported only for single DiskCache
-  // entry blob. So it returns false when the blob has more than single data
-  // item. This side data is used to pass the V8 code cache which is stored
-  // as a side stream in the CacheStorage to the renderer. (crbug.com/581613)
+  // beforehand. Currently side data is supported only for single readable
+  // DataHandle entry blob. So it returns false when the blob has more than
+  // single data item. This side data is used to pass the V8 code cache which is
+  // stored as a side stream in the CacheStorage to the renderer.
+  // (crbug.com/581613).  This will still return true even after TakeSideData
+  // has been called.
   bool has_side_data() const;
 
   // Reads the side data of the blob. CalculateSize must be called beforehand.
-  // * If the side data is read immediately, returns Status::DONE.
-  // * If an error happens or the blob doesn't have side data, returns
-  //   Status::NET_ERROR and the net error code is set.
-  // * If this function returns Status::IO_PENDING, the done callback will be
-  //   called with Status::DONE or Status::NET_ERROR.
-  // Currently side data is supported only for single DiskCache entry blob.
-  Status ReadSideData(StatusCallback done);
+  // * Always calls the StatusCallback when the side data has been read.
+  // * This may be done synchronously or asynchronously.
+  // * The done callback will be called with Status::DONE or Status::NET_ERROR.
+  // * If the callback returns NET_ERROR, net_error() will have the value.
+  // Currently side data is supported only for single readable DataHandle entry
+  // blob.
+  void ReadSideData(StatusCallback done);
 
-  // Returns the side data which has been already read with ReadSideData().
-  net::IOBufferWithSize* side_data() const {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    return side_data_.get();
-  }
+  // Passes the side data (if any) from ReadSideData() to the caller.
+  base::Optional<mojo_base::BigBuffer> TakeSideData();
 
   // Used to set the read position.
   // * This should be called after CalculateSize and before Read.
@@ -120,6 +121,13 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobReader {
               size_t dest_size,
               int* bytes_read,
               net::CompletionOnceCallback done);
+
+  // Returns if this reader contains a single MojoDataItem.  If so,
+  // ReadSingleMojoDataItem can be called instead of multiple Reads as an
+  // optimized path.  This can only be called after CalculateSize.
+  bool IsSingleMojoDataItem() const;
+  void ReadSingleMojoDataItem(mojo::ScopedDataPipeProducerHandle producer,
+                              net::CompletionOnceCallback done);
 
   // Kills reading and invalidates all callbacks. The reader cannot be used
   // after this call.
@@ -198,18 +206,19 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobReader {
   void ReadBytesItem(const BlobDataItem& item, int bytes_to_read);
   BlobReader::Status ReadFileItem(FileStreamReader* reader, int bytes_to_read);
   void DidReadFile(int result);
-  void DeleteCurrentFileReader();
-  Status ReadDiskCacheEntryItem(const BlobDataItem& item, int bytes_to_read);
-  void DidReadDiskCacheEntry(int result);
+  void DeleteItemReaders();
+  Status ReadReadableDataHandle(const BlobDataItem& item, int bytes_to_read);
+  void DidReadReadableDataHandle(int result);
   void DidReadItem(int result);
-  void DidReadDiskCacheEntrySideData(StatusCallback done,
-                                     int expected_size,
-                                     int result);
+  void DidReadSideData(StatusCallback done,
+                       int expected_size,
+                       int result,
+                       mojo_base::BigBuffer data);
   int ComputeBytesToRead() const;
   int BytesReadCompleted();
 
   // Returns a FileStreamReader for a blob item at |index|.
-  // If the item at |index| is not of file this returns nullptr.
+  // If the item at |index| is not of type kFile this returns nullptr.
   FileStreamReader* GetOrCreateFileReaderAtIndex(size_t index);
   // If the reader is null, then this basically performs a delete operation.
   void SetFileReaderAtIndex(size_t index,
@@ -218,12 +227,24 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobReader {
   std::unique_ptr<FileStreamReader> CreateFileStreamReader(
       const BlobDataItem& item,
       uint64_t additional_offset);
+  // Returns a DataPipeToSourceStream for a blob item at |Index|.
+  // If the item at |index| is not of type kReadableDataHandle this returns
+  // nullptr.
+  network::DataPipeToSourceStream* GetOrCreateDataPipeAtIndex(size_t index);
+  void SetDataPipeAtIndex(
+      size_t index,
+      std::unique_ptr<network::DataPipeToSourceStream> pipe);
+  std::unique_ptr<network::DataPipeToSourceStream> CreateDataPipe(
+      const BlobDataItem& item,
+      uint64_t additional_offset);
+
+  void RecordBytesReadFromDataHandle(int item_index, int result);
 
   std::unique_ptr<BlobDataHandle> blob_handle_;
   std::unique_ptr<BlobDataSnapshot> blob_data_;
   std::unique_ptr<FileStreamReaderProvider> file_stream_provider_for_testing_;
   scoped_refptr<base::TaskRunner> file_task_runner_;
-  scoped_refptr<net::IOBufferWithSize> side_data_;
+  base::Optional<mojo_base::BigBuffer> side_data_;
 
   int net_error_;
   bool item_list_populated_ = false;
@@ -236,6 +257,8 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobReader {
   uint64_t remaining_bytes_ = 0;
   size_t pending_get_file_info_count_ = 0;
   std::map<size_t, std::unique_ptr<FileStreamReader>> index_to_reader_;
+  std::map<size_t, std::unique_ptr<network::DataPipeToSourceStream>>
+      index_to_pipe_;
   size_t current_item_index_ = 0;
   uint64_t current_item_offset_ = 0;
 
@@ -246,7 +269,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobReader {
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  base::WeakPtrFactory<BlobReader> weak_factory_;
+  base::WeakPtrFactory<BlobReader> weak_factory_{this};
   DISALLOW_COPY_AND_ASSIGN(BlobReader);
 };
 

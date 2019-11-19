@@ -38,11 +38,6 @@ class ChromeUserManager : public user_manager::UserManagerBase,
   // yet initialized.
   static ChromeUserManager* Get();
 
-  // Helper method for sorting out of user list only users that can create
-  // supervised users.
-  static user_manager::UserList GetUsersAllowedAsSupervisedUserManagers(
-      const user_manager::UserList& user_list);
-
   // Sets affiliation status for the user identified with |account_id|
   // judging by |user_affiliation_ids| and device affiliation IDs.
   virtual void SetUserAffiliation(

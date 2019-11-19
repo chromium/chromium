@@ -5,11 +5,11 @@
 package org.chromium.chrome.browser.customtabs.dynamicmodule;
 
 import android.os.SystemClock;
-import android.support.annotation.IntDef;
-import android.support.annotation.StringDef;
+
+import androidx.annotation.IntDef;
+import androidx.annotation.StringDef;
 
 import org.chromium.base.Log;
-import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.metrics.UmaSessionStats;
 
@@ -19,7 +19,6 @@ import java.lang.annotation.RetentionPolicy;
 /**
  * Records metrics related to custom tabs dynamic modules.
  */
-@JNINamespace("customtabs")
 public final class ModuleMetrics {
     private ModuleMetrics() {}
 
@@ -166,14 +165,4 @@ public final class ModuleMetrics {
     public static void registerLifecycleState(@LifecycleState String state) {
         UmaSessionStats.registerSyntheticFieldTrial(LIFECYCLE_STATE_TRIAL_NAME, state);
     }
-
-    /**
-     * Records the size of the memory occupied by a custom tabs dynamic module's code.
-     * @param packageName package name of the module for which the memory footprint is recorded.
-     */
-    public static void recordCodeMemoryFootprint(String packageName) {
-        nativeRecordCodeMemoryFootprint(packageName);
-    }
-
-    private static native void nativeRecordCodeMemoryFootprint(String packageName);
 }

@@ -5,9 +5,15 @@
 #include "base/bind.h"
 #include "base/test/launcher/unit_test_launcher.h"
 #include "components/viz/test/viz_test_suite.h"
+#include "mojo/core/embedder/embedder.h"
+#include "skia/ext/event_tracer_impl.h"
 
 int main(int argc, char** argv) {
   viz::VizTestSuite test_suite(argc, argv);
+
+  mojo::core::Init();
+
+  InitSkiaEventTracer();
 
   // Always run the perf tests serially, to avoid distorting
   // perf measurements with randomness resulting from running

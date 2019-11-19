@@ -6,7 +6,7 @@
 
 #include "third_party/blink/public/platform/web_content_security_policy_struct.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
-#include "third_party/blink/renderer/core/frame/use_counter.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/weborigin/known_ports.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
@@ -168,7 +168,7 @@ CSPSource::PortMatchingResult CSPSource::PortMatches(
   is_scheme_http = scheme_.IsEmpty() ? policy_->ProtocolEqualsSelf("http")
                                      : EqualIgnoringASCIICase("http", scheme_);
 
-  if ((port_ == 80 || (port_ == 0 && is_scheme_http)) &&
+  if ((port_ == 80 || ((port_ == 0 || port_ == 443) && is_scheme_http)) &&
       (port == 443 || (port == 0 && DefaultPortForProtocol(protocol) == 443)))
     return PortMatchingResult::kMatchingUpgrade;
 

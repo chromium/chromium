@@ -16,22 +16,22 @@ namespace blink {
 bool CSSOMKeywords::ValidKeywordForProperty(CSSPropertyID id,
                                             const CSSKeywordValue& keyword) {
   CSSValueID valueID = keyword.KeywordValueID();
-  if (valueID == CSSValueInvalid) {
+  if (!IsValidCSSValueID(valueID)) {
     return false;
   }
 
-  if (valueID == CSSValueInherit || valueID == CSSValueInitial ||
-      valueID == CSSValueUnset) {
+  if (valueID == CSSValueID::kInherit || valueID == CSSValueID::kInitial ||
+      valueID == CSSValueID::kUnset) {
     // These are css-wide keywords that are valid for all properties.
     return true;
   }
 
   switch (id) {
   {% for property in properties if property.keywordIDs and 'Keyword' in property.typedom_types %}
-  case {{property.property_id}}: {
+  case CSSPropertyID::{{property.enum_key}}: {
     switch (valueID) {
     {% for keywordValueID in property.keywordIDs %}
-    case {{keywordValueID}}:
+    case CSSValueID::{{keywordValueID}}:
     {% endfor %}
       return true;
     default:

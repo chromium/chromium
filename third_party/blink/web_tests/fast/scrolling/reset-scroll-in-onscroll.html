@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+  <link rel="match" href="reset-scroll-in-onscroll-expected.html">
+  <script src='../../resources/gesture-util.js'></script>
+  <head>
+    <style>
+      body, html {
+        margin: 0;
+      }
+
+      #scroller {
+        position: absolute;
+        clip: rect(0, 1000px, 1000px, 0);
+        width: 300px;
+        height: 300px;
+        overflow: auto;
+      }
+
+      #spacer {
+        height: 1000px;
+      }
+
+      #topbox {
+        height: 5px;
+        width: 100%;
+        background-color: green;
+      }
+    </style>
+    <script>
+      window.onload = async () => {
+        if (window.testRunner)
+          window.testRunner.waitUntilDone();
+
+        await waitForCompositorCommit();
+
+        const scroller = document.getElementById('scroller');
+        scroller.addEventListener('scroll', () => {
+          scroller.scrollTop = 0;
+          if (window.testRunner)
+            window.testRunner.notifyDone();
+        });
+
+        // Scroll the scroller an arbitrary amount. The scroll should be reset
+        // as soon as the scroll handler is run. The reftest will ensure the
+        // value gets correctly pushed through compositing and the output
+        // appears correctly to the user.
+        const delta = 400;
+        const location = elementCenter(scroller);
+        await smoothScroll(delta,
+                           location.x,
+                           location.y,
+                           GestureSourceType.TOUCH_INPUT,
+                           'down',
+                           SPEED_INSTANT);
+      };
+    </script>
+  </head>
+  <body>
+    <div id="scroller">
+      <div id="topbox"></div>
+      <div id="spacer"></div>
+    </div>
+  </body>
+</html>

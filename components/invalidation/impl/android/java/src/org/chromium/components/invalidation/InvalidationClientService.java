@@ -14,7 +14,9 @@ import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
+
+import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import com.google.ipc.invalidation.external.client.InvalidationListener.RegistrationState;
 import com.google.ipc.invalidation.external.client.contrib.AndroidListener;
@@ -28,9 +30,9 @@ import org.chromium.base.CollectionUtil;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.VisibleForTesting;
+import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.ChromeSigninController;
-import org.chromium.components.signin.OAuth2TokenService;
+import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.sync.AndroidSyncSettings;
 import org.chromium.components.sync.ModelTypeHelper;
 import org.chromium.components.sync.SyncConstants;
@@ -68,7 +70,7 @@ public class InvalidationClientService extends AndroidListener {
     @VisibleForTesting
     static final int CLIENT_TYPE = ClientType.CHROME_SYNC_ANDROID;
 
-    private static final String TAG = "cr_invalidation";
+    private static final String TAG = "invalidation";
     private static final String CLIENT_SERVICE_KEY = "ipc.invalidation.ticl.listener_service_class";
 
     protected static boolean sShouldCreateService = true;
@@ -257,9 +259,9 @@ public class InvalidationClientService extends AndroidListener {
         ThreadUtils.runOnUiThread(() -> {
             // Attempt to retrieve a token for the user. This method will also invalidate
             // invalidAuthToken if it is non-null.
-            OAuth2TokenService.getNewAccessToken(account, invalidAuthToken,
-                    SyncConstants.CHROME_SYNC_OAUTH2_SCOPE,
-                    new OAuth2TokenService.GetAccessTokenCallback() {
+            IdentityManager.getNewAccessTokenWithFacade(AccountManagerFacade.get(), account,
+                    invalidAuthToken, SyncConstants.CHROME_SYNC_OAUTH2_SCOPE,
+                    new IdentityManager.GetAccessTokenCallback() {
                         @Override
                         public void onGetTokenSuccess(String token) {
                             setAuthToken(InvalidationClientService.this.getApplicationContext(),

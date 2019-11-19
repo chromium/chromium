@@ -34,6 +34,7 @@
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/parkable_string_manager.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
 
@@ -102,10 +103,15 @@ void CharacterData::insertData(unsigned offset,
     return;
   }
 
-  String new_str = this->data();
-  new_str.insert(data, offset);
+  String current_data = this->data();
+  StringBuilder new_str;
+  new_str.ReserveCapacity(data.length() + current_data.length());
+  new_str.Append(StringView(current_data, 0, offset));
+  new_str.Append(data);
+  new_str.Append(StringView(current_data, offset));
 
-  SetDataAndUpdate(new_str, offset, 0, data.length(), kUpdateFromNonParser);
+  SetDataAndUpdate(new_str.ToString(), offset, 0, data.length(),
+                   kUpdateFromNonParser);
 
   GetDocument().DidInsertText(*this, offset, data.length());
 }
@@ -143,10 +149,13 @@ void CharacterData::deleteData(unsigned offset,
                            exception_state))
     return;
 
-  String new_str = data();
-  new_str.Remove(offset, real_count);
-
-  SetDataAndUpdate(new_str, offset, real_count, 0, kUpdateFromNonParser);
+  String current_data = this->data();
+  StringBuilder new_str;
+  new_str.ReserveCapacity(current_data.length() - real_count);
+  new_str.Append(StringView(current_data, 0, offset));
+  new_str.Append(StringView(current_data, offset + real_count));
+  SetDataAndUpdate(new_str.ToString(), offset, real_count, 0,
+                   kUpdateFromNonParser);
 
   GetDocument().DidRemoveText(*this, offset, real_count);
 }
@@ -160,11 +169,14 @@ void CharacterData::replaceData(unsigned offset,
                            exception_state))
     return;
 
-  String new_str = this->data();
-  new_str.Remove(offset, real_count);
-  new_str.insert(data, offset);
+  String current_data = this->data();
+  StringBuilder new_str;
+  new_str.ReserveCapacity(data.length() + current_data.length() - real_count);
+  new_str.Append(StringView(current_data, 0, offset));
+  new_str.Append(data);
+  new_str.Append(StringView(current_data, offset + real_count));
 
-  SetDataAndUpdate(new_str, offset, real_count, data.length(),
+  SetDataAndUpdate(new_str.ToString(), offset, real_count, data.length(),
                    kUpdateFromNonParser);
 
   // update DOM ranges
@@ -197,12 +209,13 @@ void CharacterData::SetDataAndUpdate(const String& new_data,
   data_ = new_data;
 
   DCHECK(!GetLayoutObject() || IsTextNode());
-  if (IsTextNode())
-    ToText(this)->UpdateTextLayoutObject(offset_of_replaced_data, old_length);
+  if (auto* text_node = DynamicTo<Text>(this))
+    text_node->UpdateTextLayoutObject(offset_of_replaced_data, old_length);
 
   if (source != kUpdateFromParser) {
-    if (getNodeType() == kProcessingInstructionNode)
-      ToProcessingInstruction(this)->DidAttributeChanged();
+    if (auto* processing_instruction_node =
+            DynamicTo<ProcessingInstruction>(this))
+      processing_instruction_node->DidAttributeChanged();
 
     GetDocument().NotifyUpdateCharacterData(this, offset_of_replaced_data,
                                             old_length, new_length);

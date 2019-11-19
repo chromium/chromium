@@ -224,9 +224,6 @@ INSTANTIATE_TEST_SUITE_P(
         OncParams("translation_of_shill_cellular_with_state.onc",
                   &kNetworkWithStateSignature,
                   false),
-        OncParams("translation_of_shill_wimax_with_state.onc",
-                  &kNetworkWithStateSignature,
-                  false),
         OncParams("valid_openvpn_with_cert_pems.onc",
                   &kNetworkConfigurationSignature,
                   false),
@@ -237,7 +234,11 @@ INSTANTIATE_TEST_SUITE_P(
                   &kNetworkConfigurationSignature,
                   false),
         OncParams("arc_vpn.onc", &kNetworkConfigurationSignature, false),
-        OncParams("tether.onc", &kNetworkWithStateSignature, false)));
+        OncParams("tether.onc", &kNetworkWithStateSignature, false),
+        OncParams("cert_with_valid_scope.onc", &kCertificateSignature, false),
+        OncParams("cert_with_explicit_default_scope.onc",
+                  &kCertificateSignature,
+                  false)));
 
 namespace {
 
@@ -578,7 +579,28 @@ INSTANTIATE_TEST_SUITE_P(
         std::make_pair(OncParams("tether-signal-strength-over-100",
                                  &kNetworkWithStateSignature,
                                  true),
-                       ExpectBothNotValid("", ""))));
+                       ExpectBothNotValid("", "")),
+        std::make_pair(
+            OncParams("invalid-scope-due-to-type", &kScopeSignature, true),
+            ExpectBothNotValid("", "")),
+        std::make_pair(OncParams("invalid-scope-due-to-missing-id",
+                                 &kScopeSignature,
+                                 true),
+                       ExpectBothNotValid("",
+                                          "invalid-scope-due-to-missing-id")),
+        std::make_pair(OncParams("invalid-scope-due-to-invalid-id-length",
+                                 &kScopeSignature,
+                                 true),
+                       ExpectBothNotValid("", "")),
+        std::make_pair(OncParams("invalid-scope-due-to-invalid-id-character",
+                                 &kScopeSignature,
+                                 true),
+                       ExpectBothNotValid("", "")),
+        std::make_pair(
+            OncParams("invalid-scope-due-to-missing-type",
+                      &kScopeSignature,
+                      true),
+            ExpectBothNotValid("", "invalid-scope-due-to-missing-type"))));
 
 }  // namespace onc
 }  // namespace chromeos

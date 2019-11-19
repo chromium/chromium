@@ -1,20 +1,24 @@
 include_rules = [
+  "+chromeos/components/account_manager",
   "+components/content_settings",
   "+components/google/core",
+  "+components/image_fetcher/core",
   "+components/keyed_service/core",
   "+components/os_crypt",
   "+components/prefs",
   "+components/sync_preferences",
+  # Subdirectories of //components/signin must explicitly allow deps on each
+  # other based on the conceptual deps structure.
+  "-components/signin",
+  "+components/user_manager",
   "+components/webdata/common",
   "+crypto",
   "+google_apis/gaia",
   "+grit",  # For generated headers
   "+net",
+  "+services/identity/public",
+  "+services/network/public",
+  "+services/network/test",
   "+sql",
+  "+ui/gfx",
 ]
-
-specific_include_rules = {
-  "test_signin_client\.h": [
-    "+services/network/test"
-  ]
-}

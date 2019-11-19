@@ -70,6 +70,10 @@ class ChannelMergerNode final : public AudioNode {
                                    ExceptionState&);
 
   ChannelMergerNode(BaseAudioContext&, unsigned number_of_inputs);
+
+  // InspectorHelperMixin
+  void ReportDidCreate() final;
+  void ReportWillBeDestroyed() final;
 };
 
 }  // namespace blink

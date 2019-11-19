@@ -23,6 +23,8 @@
 #include "build/build_config.h"
 #include "chromeos/disks/disk_mount_manager.h"
 #include "components/storage_monitor/storage_monitor.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "services/device/public/mojom/mtp_manager.mojom.h"
 
 namespace storage_monitor {
@@ -43,7 +45,7 @@ class StorageMonitorCros : public StorageMonitor,
 
  protected:
   void SetMediaTransferProtocolManagerForTest(
-      device::mojom::MtpManagerPtr test_manager);
+      mojo::PendingRemote<device::mojom::MtpManager> test_manager);
 
   // chromeos::disks::DiskMountManager::Observer implementation.
   void OnBootDeviceDiskEvent(chromeos::disks::DiskMountManager::DiskEvent event,
@@ -86,11 +88,11 @@ class StorageMonitorCros : public StorageMonitor,
   // Mapping of relevant mount points and their corresponding mount devices.
   MountMap mount_map_;
 
-  device::mojom::MtpManagerPtr mtp_device_manager_;
+  mojo::Remote<device::mojom::MtpManager> mtp_device_manager_;
 
   std::unique_ptr<MtpManagerClientChromeOS> mtp_manager_client_;
 
-  base::WeakPtrFactory<StorageMonitorCros> weak_ptr_factory_;
+  base::WeakPtrFactory<StorageMonitorCros> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(StorageMonitorCros);
 };

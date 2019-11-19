@@ -3,12 +3,11 @@ main frame - ReadyToCommitNavigation
 main frame - didCommitLoadForFrame
 main frame - didReceiveTitle: 
 main frame - didFinishDocumentLoadForFrame
-main frame - didHandleOnloadEventsForFrame
+main frame - BeginNavigation request to 'http://127.0.0.1:8000/loading/resources/post-to-303-target.php', http method POST
 main frame - didFinishLoadForFrame
 main frame - DidStartNavigation
-http://127.0.0.1:8000/loading/resources/post-to-303-target.php - willSendRequest <NSURLRequest URL http://127.0.0.1:8000/loading/resources/post-to-303-target.php, main document URL http://127.0.0.1:8000/loading/resources/post-to-303-target.php, http method POST>
+main frame - didHandleOnloadEventsForFrame
 main frame - ReadyToCommitNavigation
-http://127.0.0.1:8000/loading/resources/307-post-output-target.php - didReceiveResponse <NSURLResponse http://127.0.0.1:8000/loading/resources/307-post-output-target.php, http status code 200>
 main frame - didCommitLoadForFrame
 main frame - didReceiveTitle: 
 main frame - didFinishDocumentLoadForFrame

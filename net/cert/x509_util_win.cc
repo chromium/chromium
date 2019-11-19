@@ -71,7 +71,7 @@ ScopedPCCERT_CONTEXT CreateCertContextWithChain(
   // PCCERT_CONTEXT, and will not be freed until the PCCERT_CONTEXT is freed.
   ScopedHCERTSTORE store(
       CertOpenStore(CERT_STORE_PROV_MEMORY, 0, NULL,
-                    CERT_STORE_DEFER_CLOSE_UNTIL_LAST_FREE_FLAG, NULL));
+                    CERT_STORE_DEFER_CLOSE_UNTIL_LAST_FREE_FLAG, nullptr));
   if (!store.get())
     return nullptr;
 
@@ -89,7 +89,7 @@ ScopedPCCERT_CONTEXT CreateCertContextWithChain(
     ok = CertAddEncodedCertificateToStore(
         store.get(), X509_ASN_ENCODING, CRYPTO_BUFFER_data(intermediate.get()),
         base::checked_cast<DWORD>(CRYPTO_BUFFER_len(intermediate.get())),
-        CERT_STORE_ADD_ALWAYS, NULL);
+        CERT_STORE_ADD_ALWAYS, nullptr);
     if (!ok) {
       if (invalid_intermediate_behavior == InvalidIntermediateBehavior::kFail)
         return nullptr;
@@ -103,7 +103,7 @@ ScopedPCCERT_CONTEXT CreateCertContextWithChain(
 }
 
 SHA256HashValue CalculateFingerprint256(PCCERT_CONTEXT cert) {
-  DCHECK(NULL != cert->pbCertEncoded);
+  DCHECK(nullptr != cert->pbCertEncoded);
   DCHECK_NE(0u, cert->cbCertEncoded);
 
   SHA256HashValue sha256;
@@ -123,7 +123,8 @@ bool IsSelfSigned(PCCERT_CONTEXT cert_handle) {
       NULL, X509_ASN_ENCODING, CRYPT_VERIFY_CERT_SIGN_SUBJECT_CERT,
       reinterpret_cast<void*>(const_cast<PCERT_CONTEXT>(cert_handle)),
       CRYPT_VERIFY_CERT_SIGN_ISSUER_CERT,
-      reinterpret_cast<void*>(const_cast<PCERT_CONTEXT>(cert_handle)), 0, NULL);
+      reinterpret_cast<void*>(const_cast<PCERT_CONTEXT>(cert_handle)), 0,
+      nullptr);
   if (!valid_signature)
     return false;
   return !!CertCompareCertificateName(X509_ASN_ENCODING,

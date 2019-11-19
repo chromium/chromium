@@ -7,7 +7,8 @@
 
 #include <string>
 
-#include "mojo/public/cpp/bindings/binding.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "services/service_manager/public/mojom/service_manager.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -19,7 +20,8 @@ class ServiceObserverMock
  public:
   ServiceObserverMock(
       const std::string& service_name,
-      service_manager::mojom::ServiceManagerListenerRequest request);
+      mojo::PendingReceiver<service_manager::mojom::ServiceManagerListener>
+          receiver);
   ~ServiceObserverMock() override;
 
   MOCK_METHOD0(Initialized, void(void));
@@ -41,7 +43,7 @@ class ServiceObserverMock
 
  private:
   const std::string service_name_;
-  mojo::Binding<service_manager::mojom::ServiceManagerListener> binding_;
+  mojo::Receiver<service_manager::mojom::ServiceManagerListener> receiver_;
 };
 
 }  // namespace audio

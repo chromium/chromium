@@ -268,10 +268,6 @@ class ModuleSystem : public ObjectBackedNativeHandler {
   // The set of modules that we've attempted to load.
   std::set<std::string> loaded_modules_;
 
-  // Whether to lazily initialize native handlers on first access. We do this
-  // when native bindings are enabled.
-  bool lazily_initialize_handlers_;
-
   DISALLOW_COPY_AND_ASSIGN(ModuleSystem);
 };
 

@@ -6,18 +6,21 @@
 
 #include "base/logging.h"
 #import "base/mac/foundation_util.h"
-#import "ios/chrome/browser/ui/autofill/autofill_edit_accessory_view.h"
 #import "ios/chrome/browser/ui/autofill/cells/autofill_edit_item.h"
+#import "ios/chrome/browser/ui/autofill/form_input_accessory/form_input_accessory_view.h"
 #import "ios/chrome/browser/ui/settings/autofill/autofill_edit_table_view_controller+protected.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
-@interface AutofillEditTableViewController () <AutofillEditAccessoryDelegate> {
-  AutofillEditCell* _currentEditingCell;
-  AutofillEditAccessoryView* _accessoryView;
+@interface AutofillEditTableViewController () <FormInputAccessoryViewDelegate> {
+  TableViewTextEditCell* _currentEditingCell;
 }
+
+// The accessory view when editing any of text fields.
+@property(nonatomic, strong) FormInputAccessoryView* formInputAccessoryView;
+
 @end
 
 @implementation AutofillEditTableViewController
@@ -30,14 +33,17 @@
     return nil;
   }
 
-  _accessoryView = [[AutofillEditAccessoryView alloc] initWithDelegate:self];
+  _formInputAccessoryView = [[FormInputAccessoryView alloc] init];
   return self;
 }
 
 - (void)viewDidLoad {
   [super viewDidLoad];
+
+  [self.formInputAccessoryView setUpWithLeadingView:nil
+                                 navigationDelegate:self];
   [self setShouldHideDoneButton:YES];
-  [self updateEditButton];
+  [self updateUIForEditState];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -67,17 +73,24 @@
   return YES;
 }
 
+#pragma mark - UIAdaptivePresentationControllerDelegate
+
+- (BOOL)presentationControllerShouldDismiss:
+    (UIPresentationController*)presentationController {
+  return !self.tableView.editing;
+}
+
 #pragma mark - UITextFieldDelegate
 
 - (void)textFieldDidBeginEditing:(UITextField*)textField {
-  AutofillEditCell* cell = [self autofillEditCellForTextField:textField];
+  TableViewTextEditCell* cell = [self autofillEditCellForTextField:textField];
   _currentEditingCell = cell;
-  [textField setInputAccessoryView:_accessoryView];
+  [textField setInputAccessoryView:self.formInputAccessoryView];
   [self updateAccessoryViewButtonState];
 }
 
 - (void)textFieldDidEndEditing:(UITextField*)textField {
-  AutofillEditCell* cell = [self autofillEditCellForTextField:textField];
+  TableViewTextEditCell* cell = [self autofillEditCellForTextField:textField];
   DCHECK(_currentEditingCell == cell);
   [textField setInputAccessoryView:nil];
   _currentEditingCell = nil;
@@ -85,31 +98,34 @@
 
 - (BOOL)textFieldShouldReturn:(UITextField*)textField {
   DCHECK([_currentEditingCell textField] == textField);
-  [self nextPressed];
+  [self moveToAnotherCellWithOffset:1];
   return NO;
 }
 
-#pragma mark - AutofillEditAccessoryDelegate
+#pragma mark - FormInputAccessoryViewDelegate
 
-- (void)nextPressed {
+- (void)formInputAccessoryViewDidTapNextButton:(FormInputAccessoryView*)sender {
   [self moveToAnotherCellWithOffset:1];
 }
 
-- (void)previousPressed {
+- (void)formInputAccessoryViewDidTapPreviousButton:
+    (FormInputAccessoryView*)sender {
   [self moveToAnotherCellWithOffset:-1];
 }
 
-- (void)closePressed {
+- (void)formInputAccessoryViewDidTapCloseButton:
+    (FormInputAccessoryView*)sender {
   [[_currentEditingCell textField] resignFirstResponder];
 }
 
 #pragma mark - Helper methods
 
 // Returns the cell containing |textField|.
-- (AutofillEditCell*)autofillEditCellForTextField:(UITextField*)textField {
-  AutofillEditCell* settingsCell = nil;
+- (TableViewTextEditCell*)autofillEditCellForTextField:(UITextField*)textField {
+  TableViewTextEditCell* settingsCell = nil;
   for (UIView* view = textField; view; view = [view superview]) {
-    AutofillEditCell* cell = base::mac::ObjCCast<AutofillEditCell>(view);
+    TableViewTextEditCell* cell =
+        base::mac::ObjCCast<TableViewTextEditCell>(view);
     if (cell) {
       settingsCell = cell;
       break;
@@ -155,8 +171,9 @@
   if (!nextCellPath) {
     [[_currentEditingCell textField] resignFirstResponder];
   } else {
-    AutofillEditCell* nextCell = base::mac::ObjCCastStrict<AutofillEditCell>(
-        [self.tableView cellForRowAtIndexPath:nextCellPath]);
+    TableViewTextEditCell* nextCell =
+        base::mac::ObjCCastStrict<TableViewTextEditCell>(
+            [self.tableView cellForRowAtIndexPath:nextCellPath]);
     [nextCell.textField becomeFirstResponder];
   }
 }
@@ -168,8 +185,15 @@
   NSIndexPath* previousPath = [self indexForCellPathWithOffset:-1
                                                       fromPath:currentPath];
 
-  [[_accessoryView previousButton] setEnabled:previousPath != nil];
-  [[_accessoryView nextButton] setEnabled:nextPath != nil];
+  BOOL isValidPreviousPath =
+      previousPath && [[self.tableView cellForRowAtIndexPath:previousPath]
+                          isKindOfClass:TableViewTextEditCell.class];
+  self.formInputAccessoryView.previousButton.enabled = isValidPreviousPath;
+
+  BOOL isValidNextPath =
+      nextPath && [[self.tableView cellForRowAtIndexPath:nextPath]
+                      isKindOfClass:TableViewTextEditCell.class];
+  self.formInputAccessoryView.nextButton.enabled = isValidNextPath;
 }
 
 #pragma mark - Keyboard handling

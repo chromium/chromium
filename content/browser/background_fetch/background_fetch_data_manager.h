@@ -32,7 +32,7 @@
 namespace storage {
 class BlobDataHandle;
 class QuotaManagerProxy;
-}
+}  // namespace storage
 
 namespace content {
 
@@ -49,10 +49,11 @@ class ServiceWorkerContextWrapper;
 // for Background Fetch.
 //
 // There must only be a single instance of this class per StoragePartition, and
-// it must only be used on the IO thread, since it relies on there being no
-// other code concurrently reading/writing the Background Fetch keys of the same
-// Service Worker database (except for deletions, e.g. it's safe for the Service
-// Worker code to remove a ServiceWorkerRegistration and all its keys).
+// it must only be used on the service worker core thread, since it relies on
+// there being no other code concurrently reading/writing the Background Fetch
+// keys of the same Service Worker database (except for deletions, e.g. it's
+// safe for the Service Worker code to remove a ServiceWorkerRegistration and
+// all its keys).
 //
 // Storage schema is documented in storage/README.md
 class CONTENT_EXPORT BackgroundFetchDataManager
@@ -64,9 +65,13 @@ class CONTENT_EXPORT BackgroundFetchDataManager
   using SettledFetchesCallback = base::OnceCallback<void(
       blink::mojom::BackgroundFetchError,
       std::vector<blink::mojom::BackgroundFetchSettledFetchPtr>)>;
-  using GetRegistrationCallback =
-      base::OnceCallback<void(blink::mojom::BackgroundFetchError,
-                              blink::mojom::BackgroundFetchRegistrationPtr)>;
+  using CreateRegistrationCallback = base::OnceCallback<void(
+      blink::mojom::BackgroundFetchError,
+      blink::mojom::BackgroundFetchRegistrationDataPtr)>;
+  using GetRegistrationCallback = base::OnceCallback<void(
+      blink::mojom::BackgroundFetchError,
+      BackgroundFetchRegistrationId,
+      blink::mojom::BackgroundFetchRegistrationDataPtr)>;
   using MarkRegistrationForDeletionCallback =
       base::OnceCallback<void(blink::mojom::BackgroundFetchError,
                               blink::mojom::BackgroundFetchFailureReason)>;
@@ -88,7 +93,7 @@ class CONTENT_EXPORT BackgroundFetchDataManager
   ~BackgroundFetchDataManager() override;
 
   // Grabs a reference to CacheStorageManager.
-  virtual void InitializeOnIOThread();
+  virtual void InitializeOnCoreThread();
 
   // Adds or removes the given |observer| to this data manager instance.
   void AddObserver(BackgroundFetchDataManagerObserver* observer);
@@ -96,7 +101,7 @@ class CONTENT_EXPORT BackgroundFetchDataManager
 
   // Gets the required data to initialize BackgroundFetchContext with the
   // appropriate JobControllers. This will be called when BackgroundFetchContext
-  // is being intialized on the IO thread.
+  // is being initialized on the service worker core thread.
   void GetInitializationData(GetInitializationDataCallback callback);
 
   // Creates and stores a new registration with the given properties. Will
@@ -108,7 +113,7 @@ class CONTENT_EXPORT BackgroundFetchDataManager
       blink::mojom::BackgroundFetchOptionsPtr options,
       const SkBitmap& icon,
       bool start_paused,
-      GetRegistrationCallback callback);
+      CreateRegistrationCallback callback);
 
   // Get the BackgroundFetchRegistration.
   void GetRegistration(int64_t service_worker_registration_id,
@@ -180,7 +185,7 @@ class CONTENT_EXPORT BackgroundFetchDataManager
     return observers_;
   }
 
-  void ShutdownOnIO();
+  void ShutdownOnCoreThread();
 
  private:
   FRIEND_TEST_ALL_PREFIXES(BackgroundFetchDataManagerTest, Cleanup);
@@ -261,7 +266,7 @@ class CONTENT_EXPORT BackgroundFetchDataManager
   // TODO(crbug.com/711354): Possibly update key when CORS support is added.
   std::map<std::string, CacheStorageHandle> cache_storage_handle_map_;
 
-  base::WeakPtrFactory<BackgroundFetchDataManager> weak_ptr_factory_;
+  base::WeakPtrFactory<BackgroundFetchDataManager> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(BackgroundFetchDataManager);
 };

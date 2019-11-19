@@ -10,7 +10,7 @@
 #include "base/stl_util.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
-#include "cc/base/lap_timer.h"
+#include "base/timer/lap_timer.h"
 #include "cc/raster/raster_buffer.h"
 #include "cc/test/fake_impl_task_runner_provider.h"
 #include "cc/test/fake_layer_tree_frame_sink.h"
@@ -21,6 +21,7 @@
 #include "cc/test/fake_tile_manager.h"
 #include "cc/test/fake_tile_manager_client.h"
 #include "cc/test/fake_tile_task_manager.h"
+#include "cc/test/layer_test_common.h"
 #include "cc/test/test_layer_tree_host_base.h"
 #include "cc/test/test_task_graph_runner.h"
 #include "cc/test/test_tile_priorities.h"
@@ -28,9 +29,8 @@
 #include "cc/tiles/tile_priority.h"
 #include "cc/trees/layer_tree_impl.h"
 #include "components/viz/test/begin_frame_args_test.h"
-
 #include "testing/gtest/include/gtest/gtest.h"
-#include "testing/perf/perf_test.h"
+#include "testing/perf/perf_result_reporter.h"
 
 namespace cc {
 namespace {
@@ -65,6 +65,18 @@ class TileManagerPerfTest : public TestLayerTreeHostBase {
     SetupPendingTree(std::move(pending_raster_source), tile_size, Region());
   }
 
+  perf_test::PerfResultReporter SetUpReporter(const std::string& story_name) {
+    perf_test::PerfResultReporter reporter("tile_manager", story_name);
+    reporter.RegisterImportantMetric("_raster_tile_queue_construct", "runs/s");
+    reporter.RegisterImportantMetric("_raster_tile_queue_construct_and_iterate",
+                                     "runs/s");
+    reporter.RegisterImportantMetric("_eviction_tile_queue_construct",
+                                     "runs/s");
+    reporter.RegisterImportantMetric(
+        "_eviction_tile_queue_construct_and_iterate", "runs/s");
+    return reporter;
+  }
+
   void RunRasterQueueConstructTest(const std::string& test_name,
                                    int layer_count) {
     TreePriority priorities[] = {SAME_PRIORITY_FOR_BOTH_TREES,
@@ -85,12 +97,8 @@ class TileManagerPerfTest : public TestLayerTreeHostBase {
       timer_.NextLap();
     } while (!timer_.HasTimeLimitExpired());
 
-    perf_test::PrintResult("tile_manager_raster_tile_queue_construct",
-                           "",
-                           test_name,
-                           timer_.LapsPerSecond(),
-                           "runs/s",
-                           true);
+    perf_test::PerfResultReporter reporter = SetUpReporter(test_name);
+    reporter.AddResult("_raster_tile_queue_construct", timer_.LapsPerSecond());
   }
 
   void RunRasterQueueConstructAndIterateTest(const std::string& test_name,
@@ -120,13 +128,9 @@ class TileManagerPerfTest : public TestLayerTreeHostBase {
       timer_.NextLap();
     } while (!timer_.HasTimeLimitExpired());
 
-    perf_test::PrintResult(
-        "tile_manager_raster_tile_queue_construct_and_iterate",
-        "",
-        test_name,
-        timer_.LapsPerSecond(),
-        "runs/s",
-        true);
+    perf_test::PerfResultReporter reporter = SetUpReporter(test_name);
+    reporter.AddResult("_raster_tile_queue_construct_and_iterate",
+                       timer_.LapsPerSecond());
   }
 
   void RunEvictionQueueConstructTest(const std::string& test_name,
@@ -153,12 +157,9 @@ class TileManagerPerfTest : public TestLayerTreeHostBase {
       timer_.NextLap();
     } while (!timer_.HasTimeLimitExpired());
 
-    perf_test::PrintResult("tile_manager_eviction_tile_queue_construct",
-                           "",
-                           test_name,
-                           timer_.LapsPerSecond(),
-                           "runs/s",
-                           true);
+    perf_test::PerfResultReporter reporter = SetUpReporter(test_name);
+    reporter.AddResult("_eviction_tile_queue_construct",
+                       timer_.LapsPerSecond());
   }
 
   void RunEvictionQueueConstructAndIterateTest(const std::string& test_name,
@@ -193,13 +194,9 @@ class TileManagerPerfTest : public TestLayerTreeHostBase {
       timer_.NextLap();
     } while (!timer_.HasTimeLimitExpired());
 
-    perf_test::PrintResult(
-        "tile_manager_eviction_tile_queue_construct_and_iterate",
-        "",
-        test_name,
-        timer_.LapsPerSecond(),
-        "runs/s",
-        true);
+    perf_test::PerfResultReporter reporter = SetUpReporter(test_name);
+    reporter.AddResult("_eviction_tile_queue_construct_and_iterate",
+                       timer_.LapsPerSecond());
   }
 
   std::vector<FakePictureLayerImpl*> CreateLayers(int layer_count,
@@ -211,16 +208,16 @@ class TileManagerPerfTest : public TestLayerTreeHostBase {
 
     // Adjust the width and height to account for the fact that tiles
     // are bigger than 1x1.
-    LayerTreeSettings settings;
+    LayerListSettings settings;
     width *= settings.default_tile_size.width();
     height *= settings.default_tile_size.height();
 
     // Ensure that we start with blank trees and no tiles.
-    host_impl()->ResetTreesForTesting();
+    ResetTrees();
 
     gfx::Size layer_bounds(width, height);
-    gfx::Size viewport(width / 5, height / 5);
-    host_impl()->active_tree()->SetDeviceViewportSize(viewport);
+    gfx::Rect viewport(width / 5, height / 5);
+    host_impl()->active_tree()->SetDeviceViewportRect(viewport);
     SetupDefaultTreesWithFixedTileSize(layer_bounds,
                                        settings.default_tile_size);
 
@@ -228,26 +225,22 @@ class TileManagerPerfTest : public TestLayerTreeHostBase {
 
     // Pending layer counts as one layer.
     layers.push_back(pending_layer());
-    int next_id = layer_id() + 1;
 
     // Create the rest of the layers as children of the root layer.
     scoped_refptr<FakeRasterSource> raster_source =
         FakeRasterSource::CreateFilledWithImages(layer_bounds);
     while (static_cast<int>(layers.size()) < layer_count) {
-      std::unique_ptr<FakePictureLayerImpl> child_layer =
-          FakePictureLayerImpl::CreateWithRasterSource(
-              host_impl()->pending_tree(), next_id, raster_source);
+      auto* child_layer = AddLayer<FakePictureLayerImpl>(
+          host_impl()->pending_tree(), raster_source);
       child_layer->SetBounds(layer_bounds);
       child_layer->SetDrawsContent(true);
-      layers.push_back(child_layer.get());
-      pending_layer()->test_properties()->AddChild(std::move(child_layer));
-      ++next_id;
+      layers.push_back(child_layer);
+      CopyProperties(pending_layer(), child_layer);
     }
 
     // Property trees need to be rebuilt because layers were added above.
-    host_impl()->pending_tree()->property_trees()->needs_rebuild = true;
-    host_impl()->pending_tree()->BuildLayerListAndPropertyTreesForTesting();
-    host_impl()->pending_tree()->UpdateDrawProperties();
+    host_impl()->pending_tree()->set_needs_update_draw_properties();
+    UpdateDrawProperties(host_impl()->pending_tree());
     for (FakePictureLayerImpl* layer : layers)
       layer->CreateAllTiles();
 
@@ -285,14 +278,15 @@ class TileManagerPerfTest : public TestLayerTreeHostBase {
       timer_.NextLap();
     } while (!timer_.HasTimeLimitExpired());
 
-    perf_test::PrintResult("prepare_tiles", "", test_name,
-                           timer_.LapsPerSecond(), "runs/s", true);
+    perf_test::PerfResultReporter reporter("prepare_tiles", test_name);
+    reporter.RegisterImportantMetric("", "runs/s");
+    reporter.AddResult("", timer_.LapsPerSecond());
   }
 
   TileManager* tile_manager() { return host_impl()->tile_manager(); }
 
  protected:
-  LapTimer timer_;
+  base::LapTimer timer_;
 };
 
 // Failing.  https://crbug.com/792995

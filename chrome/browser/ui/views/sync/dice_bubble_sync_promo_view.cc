@@ -37,7 +37,7 @@ DiceBubbleSyncPromoView::DiceBubbleSyncPromoView(
   const int title_resource_id = accounts_promo_message_resource_id;
 
   std::unique_ptr<views::BoxLayout> layout = std::make_unique<views::BoxLayout>(
-      views::BoxLayout::kVertical, gfx::Insets(),
+      views::BoxLayout::Orientation::kVertical, gfx::Insets(),
       ChromeLayoutProvider::Get()
           ->GetDialogInsetsForContentType(views::TEXT, views::TEXT)
           .bottom());
@@ -61,9 +61,9 @@ DiceBubbleSyncPromoView::DiceBubbleSyncPromoView(
       account_icon = ui::ResourceBundle::GetSharedInstance().GetImageNamed(
           profiles::GetPlaceholderAvatarIconResourceID());
     }
-    signin_button_view_ = new DiceSigninButtonView(
-        accounts[0], account_icon, this, /*show_drop_down_arrow=*/false,
-        /*use_account_name_as_title=*/true);
+    signin_button_view_ =
+        new DiceSigninButtonView(accounts[0], account_icon, this,
+                                 /*use_account_name_as_title=*/true);
 
     // Store account information for submenu.
     accounts_for_submenu_.assign(accounts.begin() + 1, accounts.end());
@@ -83,21 +83,6 @@ void DiceBubbleSyncPromoView::ButtonPressed(views::Button* sender,
                signin_button_view_->account());
     return;
   }
-
-  if (sender == signin_button_view_->drop_down_arrow()) {
-    // Display a submenu listing the GAIA web accounts (except the first one).
-    // Using base::Unretained(this) is safe here because |dice_accounts_menu_|
-    // is owned by |DiceBubbleSyncPromoView|, i.e. |this|.
-    dice_accounts_menu_ = std::make_unique<DiceAccountsMenu>(
-        accounts_for_submenu_,
-        base::BindOnce(&DiceBubbleSyncPromoView::EnableSync,
-                       base::Unretained(this),
-                       false /* is_default_promo_account */));
-    dice_accounts_menu_->Show(signin_button_view_,
-                              signin_button_view_->drop_down_arrow());
-    return;
-  }
-
   NOTREACHED();
 }
 

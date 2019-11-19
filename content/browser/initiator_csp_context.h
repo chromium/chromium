@@ -8,6 +8,8 @@
 #include "content/browser/frame_host/render_frame_host_impl.h"
 #include "content/common/content_security_policy/csp_context.h"
 #include "content/common/navigation_params.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 namespace content {
 
@@ -20,10 +22,10 @@ namespace content {
 // `navigate-to` and `form-action` (in the case of form submissions).
 class InitiatorCSPContext : public CSPContext {
  public:
-  InitiatorCSPContext(
-      const std::vector<ContentSecurityPolicy>& policies,
-      base::Optional<CSPSource>& self_source,
-      blink::mojom::NavigationInitiatorPtr navigation_initiator);
+  InitiatorCSPContext(const std::vector<ContentSecurityPolicy>& policies,
+                      base::Optional<CSPSource>& self_source,
+                      mojo::PendingRemote<blink::mojom::NavigationInitiator>
+                          navigation_initiator);
   ~InitiatorCSPContext() override;
 
   void ReportContentSecurityPolicyViolation(
@@ -38,7 +40,7 @@ class InitiatorCSPContext : public CSPContext {
 
  private:
   RenderFrameHostImpl* reporting_render_frame_host_impl_;
-  blink::mojom::NavigationInitiatorPtr initiator_ptr;
+  mojo::Remote<blink::mojom::NavigationInitiator> initiator;
 
   DISALLOW_COPY_AND_ASSIGN(InitiatorCSPContext);
 };

@@ -25,12 +25,12 @@ namespace internal {
 class VIEWS_EXPORT MenuRunnerImplCocoa : public MenuRunnerImplInterface {
  public:
   MenuRunnerImplCocoa(ui::MenuModel* menu,
-                      const base::Closure& on_menu_closed_callback);
+                      base::RepeatingClosure on_menu_closed_callback);
 
   bool IsRunning() const override;
   void Release() override;
   void RunMenuAt(Widget* parent,
-                 MenuButton* button,
+                 MenuButtonController* button_controller,
                  const gfx::Rect& bounds,
                  MenuAnchorPosition anchor,
                  int32_t run_types) override;
@@ -55,7 +55,7 @@ class VIEWS_EXPORT MenuRunnerImplCocoa : public MenuRunnerImplInterface {
   base::TimeTicks closing_event_time_;
 
   // Invoked before RunMenuAt() returns, except upon a Release().
-  base::Closure on_menu_closed_callback_;
+  base::RepeatingClosure on_menu_closed_callback_;
 
   DISALLOW_COPY_AND_ASSIGN(MenuRunnerImplCocoa);
 };

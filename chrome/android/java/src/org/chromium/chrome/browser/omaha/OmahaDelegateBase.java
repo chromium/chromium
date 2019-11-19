@@ -47,7 +47,7 @@ public abstract class OmahaDelegateBase extends OmahaDelegate {
     @Override
     boolean isChromeBeingUsed() {
         boolean isChromeVisible = ApplicationStatus.hasVisibleActivities();
-        boolean isScreenOn = ApiCompatibilityUtils.isInteractive(getContext());
+        boolean isScreenOn = ApiCompatibilityUtils.isInteractive();
         return isChromeVisible && isScreenOn;
     }
 

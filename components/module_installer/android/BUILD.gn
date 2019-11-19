@@ -3,53 +3,102 @@
 # found in the LICENSE file.
 
 import("//build/config/android/rules.gni")
+import("//chrome/android/modules/buildflags.gni")
 
-# Contains code necessary to compile the rest of Chrome. Doesn't contain actual
-# implementations. To get implementations either depend on
-# |module_installer_impl_java| or |module_installer_stub_java| depending on your
-# build.
 android_library("module_installer_java") {
   java_files = [
-    "java/src-stub/org/chromium/components/module_installer/ModuleInstaller.java",
-    "java/src-common/org/chromium/components/module_installer/OnModuleInstallFinishedListener.java",
+    "java/src/org/chromium/components/module_installer/builder/Module.java",
+    "java/src/org/chromium/components/module_installer/builder/ModuleDescriptor.java",
+    "java/src/org/chromium/components/module_installer/builder/ModuleEngine.java",
+    "java/src/org/chromium/components/module_installer/engine/ApkEngine.java",
+    "java/src/org/chromium/components/module_installer/engine/EngineFactory.java",
+    "java/src/org/chromium/components/module_installer/engine/FakeEngine.java",
+    "java/src/org/chromium/components/module_installer/engine/InstallEngine.java",
+    "java/src/org/chromium/components/module_installer/engine/InstallListener.java",
+    "java/src/org/chromium/components/module_installer/engine/SplitCompatEngine.java",
+    "java/src/org/chromium/components/module_installer/engine/SplitCompatEngineFacade.java",
+    "java/src/org/chromium/components/module_installer/logger/Logger.java",
+    "java/src/org/chromium/components/module_installer/logger/PlayCoreLogger.java",
+    "java/src/org/chromium/components/module_installer/logger/SplitAvailabilityLogger.java",
+    "java/src/org/chromium/components/module_installer/logger/SplitInstallFailureLogger.java",
+    "java/src/org/chromium/components/module_installer/logger/SplitInstallStatusLogger.java",
+    "java/src/org/chromium/components/module_installer/observer/ActivityObserver.java",
+    "java/src/org/chromium/components/module_installer/observer/ActivityObserverFacade.java",
+    "java/src/org/chromium/components/module_installer/observer/InstallerObserver.java",
+    "java/src/org/chromium/components/module_installer/util/CrashKeyRecorder.java",
+    "java/src/org/chromium/components/module_installer/util/ModuleUtil.java",
+    "java/src/org/chromium/components/module_installer/util/SplitCompatInitializer.java",
+    "java/src/org/chromium/components/module_installer/util/Timer.java",
   ]
-  jar_excluded_patterns = [ "*/ModuleInstaller.class" ]
-  deps = [
-    "//base:base_java",
-  ]
-}
 
-# Contains stub implementation to be used for builds not supporting modules
-# (e.g. APKs).
-android_library("module_installer_stub_java") {
-  java_files = [ "java/src-stub/org/chromium/components/module_installer/ModuleInstaller.java" ]
   deps = [
-    ":module_installer_java",
     "//base:base_java",
-  ]
-}
-
-# Contains real implementation to be used for builds supporting modules (e.g.
-# bundles).
-android_library("module_installer_impl_java") {
-  java_files = [
-    "java/src-impl/org/chromium/components/module_installer/ModuleInstaller.java",
-    "java/src-impl/org/chromium/components/module_installer/ModuleInstallerBackend.java",
-    "java/src-impl/org/chromium/components/module_installer/FakeModuleInstallerBackend.java",
-    "java/src-impl/org/chromium/components/module_installer/PlayCoreModuleInstallerBackend.java",
-  ]
-  deps = [
-    ":module_installer_java",
-    "//base:base_java",
+    "//base:jni_java",
     "//components/crash/android:java",
     "//third_party/google_android_play_core:com_google_android_play_core_java",
   ]
+
+  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 }
 
-android_library("module_installer_test_java") {
-  java_files = [ "java/src-test/org/chromium/components/module_installer/ModuleInstaller.java" ]
+junit_binary("module_installer_junit_tests") {
+  java_files = [
+    "junit/src/org/chromium/components/module_installer/builder/ModuleEngineTest.java",
+    "junit/src/org/chromium/components/module_installer/builder/ModuleTest.java",
+    "junit/src/org/chromium/components/module_installer/engine/ApkEngineTest.java",
+    "junit/src/org/chromium/components/module_installer/engine/SplitCompatEngineTest.java",
+    "junit/src/org/chromium/components/module_installer/logger/LoggerTestUtil.java",
+    "junit/src/org/chromium/components/module_installer/logger/PlayCoreLoggerTest.java",
+    "junit/src/org/chromium/components/module_installer/logger/SplitInstallFailureLoggerTest.java",
+    "junit/src/org/chromium/components/module_installer/logger/SplitInstallStatusLoggerTest.java",
+    "junit/src/org/chromium/components/module_installer/observer/ActivityObserverTest.java",
+  ]
   deps = [
     ":module_installer_java",
     "//base:base_java",
+    "//base:base_java_test_support",
+    "//base:base_junit_test_support",
+  ]
+}
+
+java_library("module_interface_java") {
+  supports_android = true
+  java_files = [ "java/src/org/chromium/components/module_installer/builder/ModuleInterface.java" ]
+}
+
+java_annotation_processor("module_interface_processor") {
+  java_files = [ "java/src/org/chromium/components/module_installer/builder/ModuleInterfaceProcessor.java" ]
+  main_class = "org.chromium.components.module_installer.builder.ModuleInterfaceProcessor"
+  annotation_processor_deps =
+      [ "//third_party/android_deps:auto_service_processor" ]
+  deps = [
+    ":module_interface_java",
+    "//third_party/android_deps:com_google_auto_service_auto_service_annotations_java",
+    "//third_party/android_deps:com_google_guava_guava_java",
+    "//third_party/android_deps:com_squareup_javapoet_java",
+    "//third_party/android_deps:javax_annotation_jsr250_api_java",
+  ]
+}
+
+source_set("native") {
+  sources = [
+    "module.cc",
+  ]
+  deps = [
+    ":jni_headers",
+    "//base",
+    "//ui/base",
+  ]
+
+  # The method used to load and register JNI for native libraries depends
+  # on build type.
+  if (use_native_partitions) {
+    defines = [ "LOAD_FROM_PARTITIONS" ]
+  }
+}
+
+generate_jni("jni_headers") {
+  sources = [
+    "java/src/org/chromium/components/module_installer/builder/Module.java",
   ]
 }

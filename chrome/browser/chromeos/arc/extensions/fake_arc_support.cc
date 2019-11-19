@@ -12,6 +12,7 @@
 #include "base/logging.h"
 #include "base/values.h"
 #include "chrome/browser/chromeos/arc/extensions/arc_support_message_host.h"
+#include "chrome/browser/profiles/profile.h"
 
 namespace {
 
@@ -31,7 +32,7 @@ void SerializeAndSend(extensions::NativeMessageHost* native_message_host,
 namespace arc {
 
 FakeArcSupport::FakeArcSupport(ArcSupportHost* support_host)
-    : support_host_(support_host), weak_ptr_factory_(this) {
+    : support_host_(support_host) {
   DCHECK(support_host_);
   support_host_->SetRequestOpenAppCallbackForTesting(
       base::Bind(&FakeArcSupport::Open, weak_ptr_factory_.GetWeakPtr()));
@@ -46,7 +47,7 @@ FakeArcSupport::~FakeArcSupport() {
 
 void FakeArcSupport::Open(Profile* profile) {
   DCHECK(!native_message_host_);
-  native_message_host_ = ArcSupportMessageHost::Create();
+  native_message_host_ = ArcSupportMessageHost::Create(profile);
   native_message_host_->Start(this);
   support_host_->SetMessageHost(
       static_cast<ArcSupportMessageHost*>(native_message_host_.get()));

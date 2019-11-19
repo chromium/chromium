@@ -4,12 +4,14 @@
 
 #include "components/sync_sessions/favicon_cache.h"
 
-#include "base/memory/ptr_util.h"
+#include <memory>
+#include <utility>
+
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "components/favicon/core/test/mock_favicon_service.h"
 #include "components/sync/model/sync_change_processor_wrapper_for_test.h"
@@ -297,10 +299,10 @@ class SyncFaviconCacheTest : public testing::Test {
       const std::string& icon_bytes,
       base::Time last_visit_time = base::Time::Now());
 
-  void RunUntilIdle() { scoped_task_environment_.RunUntilIdle(); }
+  void RunUntilIdle() { task_environment_.RunUntilIdle(); }
 
  private:
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
   testing::NiceMock<favicon::MockFaviconService> mock_favicon_service_;
   FaviconCache cache_;
 
@@ -311,8 +313,8 @@ class SyncFaviconCacheTest : public testing::Test {
 };
 
 SyncFaviconCacheTest::SyncFaviconCacheTest()
-    : scoped_task_environment_(
-          base::test::ScopedTaskEnvironment::MainThreadType::UI),
+    : task_environment_(
+          base::test::SingleThreadTaskEnvironment::MainThreadType::UI),
       cache_(&mock_favicon_service_, nullptr, kMaxSyncFavicons),
       sync_processor_(new TestChangeProcessor),
       sync_processor_wrapper_(new syncer::SyncChangeProcessorWrapperForTest(
@@ -345,13 +347,14 @@ testing::AssertionResult SyncFaviconCacheTest::ExpectFaviconEquals(
     const std::string& page_url,
     const std::string& bytes) const {
   GURL gurl(page_url);
-  scoped_refptr<base::RefCountedMemory> favicon;
-  if (!cache_.GetSyncedFaviconForPageURL(gurl, &favicon))
+  favicon_base::FaviconRawBitmapResult favicon =
+      cache_.GetSyncedFaviconForPageURL(gurl);
+  if (!favicon.is_valid())
     return testing::AssertionFailure() << "Favicon is missing.";
-  if (favicon->size() != bytes.size())
+  if (favicon.bitmap_data->size() != bytes.size())
     return testing::AssertionFailure() << "Favicon sizes don't match.";
-  for (size_t i = 0; i < favicon->size(); ++i) {
-    if (bytes[i] != *(favicon->front() + i))
+  for (size_t i = 0; i < favicon.bitmap_data->size(); ++i) {
+    if (bytes[i] != *(favicon.bitmap_data->front() + i))
       return testing::AssertionFailure() << "Favicon data doesn't match.";
   }
   return testing::AssertionSuccess();
@@ -416,7 +419,7 @@ SyncFaviconCacheTest::CreateAndPassProcessor() {
 
 std::unique_ptr<syncer::SyncErrorFactory>
 SyncFaviconCacheTest::CreateAndPassSyncErrorFactory() {
-  return base::WrapUnique(new syncer::SyncErrorFactoryMock);
+  return std::make_unique<syncer::SyncErrorFactoryMock>();
 }
 
 void SyncFaviconCacheTest::PopulateFaviconService(
@@ -455,7 +458,13 @@ void SyncFaviconCacheTest::PopulateFaviconService(
 
   ON_CALL(mock_favicon_service_,
           GetFaviconForPageURL(test_data.page_url, _, _, _, _))
-      .WillByDefault(favicon::PostReply<5>(bitmap_results));
+      .WillByDefault([=](auto, auto, auto,
+                         favicon_base::FaviconResultsCallback callback,
+                         base::CancelableTaskTracker* tracker) {
+        return tracker->PostTask(
+            base::ThreadTaskRunnerHandle::Get().get(), FROM_HERE,
+            base::BindOnce(std::move(callback), bitmap_results));
+      });
 }
 
 void SyncFaviconCacheTest::TriggerSyncFaviconReceived(
@@ -468,14 +477,20 @@ void SyncFaviconCacheTest::TriggerSyncFaviconReceived(
         new base::RefCountedString());
     temp_string->data() = icon_bytes;
 
-    std::vector<favicon_base::FaviconRawBitmapResult> result;
-    result.push_back(favicon_base::FaviconRawBitmapResult());
-    result.back().icon_url = icon_url;
-    result.back().bitmap_data = temp_string;
-    result.back().pixel_size = gfx::Size(16, 16);
+    std::vector<favicon_base::FaviconRawBitmapResult> bitmap_results;
+    bitmap_results.push_back(favicon_base::FaviconRawBitmapResult());
+    bitmap_results.back().icon_url = icon_url;
+    bitmap_results.back().bitmap_data = temp_string;
+    bitmap_results.back().pixel_size = gfx::Size(16, 16);
 
     ON_CALL(mock_favicon_service_, GetFaviconForPageURL(page_url, _, _, _, _))
-        .WillByDefault(favicon::PostReply<5>(result));
+        .WillByDefault([=](auto, auto, auto,
+                           favicon_base::FaviconResultsCallback callback,
+                           base::CancelableTaskTracker* tracker) {
+          return tracker->PostTask(
+              base::ThreadTaskRunnerHandle::Get().get(), FROM_HERE,
+              base::BindOnce(std::move(callback), bitmap_results));
+        });
 
     // Mimic the icon itself having been cached long time ago.
     cache()->OnPageFaviconUpdated(page_url, base::Time::UnixEpoch());

@@ -3,10 +3,10 @@ properties-special.js:11 Boolean
     __proto__: Boolean
     [[PrimitiveValue]]: true
 properties-special.js:12 ƒ anonymous(a,b)
-    arguments: null
-    caller: null
     length: 2
     name: ""
+    arguments: null
+    caller: null
     prototype: {constructor: ƒ}
     __proto__: ƒ ()
     [[FunctionLocation]]: properties-special.js:12

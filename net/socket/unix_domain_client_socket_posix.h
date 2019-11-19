@@ -11,7 +11,7 @@
 #include <string>
 
 #include "base/macros.h"
-#include "net/base/completion_callback.h"
+#include "net/base/completion_once_callback.h"
 #include "net/base/net_export.h"
 #include "net/log/net_log_with_source.h"
 #include "net/socket/socket_descriptor.h"

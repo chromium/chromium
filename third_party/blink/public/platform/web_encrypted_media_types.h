@@ -7,15 +7,6 @@
 
 namespace blink {
 
-// From
-// https://w3c.github.io/encrypted-media/initdata-format-registry.html#registry
-enum class WebEncryptedMediaInitDataType {
-  kUnknown,
-  kCenc,
-  kKeyids,
-  kWebm,
-};
-
 // From https://w3c.github.io/encrypted-media/#idl-def-MediaKeySessionType
 enum class WebEncryptedMediaSessionType {
   kUnknown,

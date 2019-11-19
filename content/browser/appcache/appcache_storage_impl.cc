@@ -14,16 +14,14 @@
 
 #include "base/bind.h"
 #include "base/bind_helpers.h"
-#include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/single_thread_task_runner.h"
 #include "base/stl_util.h"
-#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/task/post_task.h"
 #include "base/threading/sequenced_task_runner_handle.h"
-#include "base/trace_event/trace_event.h"
 #include "content/browser/appcache/appcache.h"
 #include "content/browser/appcache/appcache_database.h"
 #include "content/browser/appcache/appcache_entry.h"
@@ -32,7 +30,7 @@
 #include "content/browser/appcache/appcache_quota_client.h"
 #include "content/browser/appcache/appcache_response.h"
 #include "content/browser/appcache/appcache_service_impl.h"
-#include "content/public/common/content_switches.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "net/base/cache_type.h"
 #include "net/base/net_errors.h"
 #include "sql/database.h"
@@ -51,9 +49,6 @@ constexpr const int kMB = 1024 * 1024;
 
 // Hard coded default when not using quota management.
 constexpr const int kDefaultQuota = 5 * kMB;
-
-constexpr const int kMaxAppCacheDiskCacheSize = 250 * kMB;
-constexpr const int kMaxAppCacheMemDiskCacheSize = 10 * kMB;
 
 constexpr base::FilePath::CharType kDiskCacheDirectoryName[] =
     FILE_PATH_LITERAL("Cache");
@@ -86,14 +81,11 @@ bool DeleteGroupAndRelatedRecords(
 
 }  // namespace
 
-// Destroys |database|. If there is appcache data to be deleted
-// (|force_keep_session_state| is false), deletes session-only appcache data.
+// static
 void AppCacheStorageImpl::ClearSessionOnlyOrigins(
-    AppCacheDatabase* database,
+    std::unique_ptr<AppCacheDatabase> database,
     scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy,
     bool force_keep_session_state) {
-  std::unique_ptr<AppCacheDatabase> database_to_delete(database);
-
   // If saving session state, only delete the database.
   if (force_keep_session_state)
     return;
@@ -132,8 +124,8 @@ void AppCacheStorageImpl::ClearSessionOnlyOrigins(
         return;
       }
       std::vector<int64_t> deletable_response_ids;
-      bool success = DeleteGroupAndRelatedRecords(database, group.group_id,
-                                                  &deletable_response_ids);
+      bool success = DeleteGroupAndRelatedRecords(
+          database.get(), group.group_id, &deletable_response_ids);
       success = success && transaction.Commit();
       DCHECK(success);
     }  // for each group
@@ -147,7 +139,7 @@ class AppCacheStorageImpl::DatabaseTask
  public:
   explicit DatabaseTask(AppCacheStorageImpl* storage)
       : storage_(storage),
-        database_(storage->database_),
+        database_(storage->database_.get()),
         io_thread_(base::SequencedTaskRunnerHandle::Get()) {
     DCHECK(io_thread_.get());
   }
@@ -181,15 +173,15 @@ class AppCacheStorageImpl::DatabaseTask
   virtual ~DatabaseTask() {}
 
   AppCacheStorageImpl* storage_;
-  AppCacheDatabase* database_;
-  DelegateReferenceVector delegates_;
+  AppCacheDatabase* const database_;
+  std::vector<scoped_refptr<DelegateReference>> delegates_;
 
  private:
-  void CallRun(base::TimeTicks schedule_time);
-  void CallRunCompleted(base::TimeTicks schedule_time);
+  void CallRun();
+  void CallRunCompleted();
   void OnFatalError();
 
-  scoped_refptr<base::SequencedTaskRunner> io_thread_;
+  const scoped_refptr<base::SequencedTaskRunner> io_thread_;
 };
 
 void AppCacheStorageImpl::DatabaseTask::Schedule() {
@@ -199,8 +191,7 @@ void AppCacheStorageImpl::DatabaseTask::Schedule() {
     return;
 
   if (storage_->db_task_runner_->PostTask(
-          FROM_HERE, base::BindOnce(&DatabaseTask::CallRun, this,
-                                    base::TimeTicks::Now()))) {
+          FROM_HERE, base::BindOnce(&DatabaseTask::CallRun, this))) {
     storage_->scheduled_database_tasks_.push_back(this);
   } else {
     NOTREACHED() << "Thread for database tasks is not running.";
@@ -213,18 +204,10 @@ void AppCacheStorageImpl::DatabaseTask::CancelCompletion() {
   storage_ = nullptr;
 }
 
-void AppCacheStorageImpl::DatabaseTask::CallRun(
-    base::TimeTicks schedule_time) {
-  AppCacheHistograms::AddTaskQueueTimeSample(
-      base::TimeTicks::Now() - schedule_time);
+void AppCacheStorageImpl::DatabaseTask::CallRun() {
   if (!database_->is_disabled()) {
-    base::TimeTicks run_time = base::TimeTicks::Now();
     Run();
-    AppCacheHistograms::AddTaskRunTimeSample(
-        base::TimeTicks::Now() - run_time);
-
     if (database_->was_corruption_detected()) {
-      AppCacheHistograms::CountCorruptionDetected();
       database_->Disable();
     }
     if (database_->is_disabled()) {
@@ -233,22 +216,15 @@ void AppCacheStorageImpl::DatabaseTask::CallRun(
     }
   }
   io_thread_->PostTask(FROM_HERE,
-                       base::BindOnce(&DatabaseTask::CallRunCompleted, this,
-                                      base::TimeTicks::Now()));
+                       base::BindOnce(&DatabaseTask::CallRunCompleted, this));
 }
 
-void AppCacheStorageImpl::DatabaseTask::CallRunCompleted(
-    base::TimeTicks schedule_time) {
-  AppCacheHistograms::AddCompletionQueueTimeSample(
-      base::TimeTicks::Now() - schedule_time);
+void AppCacheStorageImpl::DatabaseTask::CallRunCompleted() {
   if (storage_) {
     DCHECK(io_thread_->RunsTasksInCurrentSequence());
     DCHECK(storage_->scheduled_database_tasks_.front() == this);
     storage_->scheduled_database_tasks_.pop_front();
-    base::TimeTicks run_time = base::TimeTicks::Now();
     RunCompleted();
-    AppCacheHistograms::AddCompletionRunTimeSample(
-        base::TimeTicks::Now() - run_time);
     delegates_.clear();
   }
 }
@@ -329,8 +305,11 @@ void AppCacheStorageImpl::InitTask::RunCompleted() {
         kDelay);
   }
 
-  if (storage_->service()->quota_client())
-    storage_->service()->quota_client()->NotifyAppCacheReady();
+  if (storage_->service()->quota_manager_proxy()) {
+    base::PostTask(FROM_HERE, {BrowserThread::IO},
+                   base::BindOnce(&AppCacheQuotaClient::NotifyAppCacheReady,
+                                  storage_->service()->quota_client()));
+  }
 }
 
 // DisableDatabaseTask -------
@@ -353,8 +332,7 @@ class AppCacheStorageImpl::GetAllInfoTask : public DatabaseTask {
  public:
   explicit GetAllInfoTask(AppCacheStorageImpl* storage)
       : DatabaseTask(storage),
-        info_collection_(new AppCacheInfoCollection()) {
-  }
+        info_collection_(base::MakeRefCounted<AppCacheInfoCollection>()) {}
 
   // DatabaseTask:
   void Run() override;
@@ -381,7 +359,8 @@ void AppCacheStorageImpl::GetAllInfoTask::Run() {
       blink::mojom::AppCacheInfo info;
       info.manifest_url = group.manifest_url;
       info.creation_time = group.creation_time;
-      info.size = cache_record.cache_size;
+      info.response_sizes = cache_record.cache_size;
+      info.padding_sizes = cache_record.padding_size;
       info.last_access_time = group.last_access_time;
       info.last_update_time = cache_record.update_time;
       info.cache_id = cache_record.cache_id;
@@ -394,7 +373,10 @@ void AppCacheStorageImpl::GetAllInfoTask::Run() {
 
 void AppCacheStorageImpl::GetAllInfoTask::RunCompleted() {
   DCHECK_EQ(1U, delegates_.size());
-  FOR_EACH_DELEGATE(delegates_, OnAllInfo(info_collection_.get()));
+  AppCacheStorage::ForEachDelegate(
+      delegates_, [&](AppCacheStorage::Delegate* delegate) {
+        delegate->OnAllInfo(info_collection_.get());
+      });
 }
 
 // StoreOrLoadTask -------
@@ -440,17 +422,15 @@ void AppCacheStorageImpl::StoreOrLoadTask::CreateCacheAndGroupFromRecords(
     DCHECK(group->get());
     DCHECK_EQ(group_record_.group_id, group->get()->group_id());
 
-    // TODO(michaeln): histogram is fishing for clues to crbug/95101
-    if (!cache->get()->GetEntry(group_record_.manifest_url)) {
-      AppCacheHistograms::AddMissingManifestDetectedAtCallsite(
-          AppCacheHistograms::CALLSITE_0);
-    }
-
+    // TODO(pwnall): A removed histogram shows that, very rarely,
+    //               cache->get()->GetEntry(group_record_.manifest_url))
+    //               return null here. This was supposed to help investigate
+    //               https://crbug.com/95101
     storage_->NotifyStorageAccessed(group_record_.origin);
     return;
   }
 
-  (*cache) = new AppCache(storage_, cache_record_.cache_id);
+  *cache = base::MakeRefCounted<AppCache>(storage_, cache_record_.cache_id);
   cache->get()->InitializeWithDatabaseRecords(
       cache_record_, entry_records_,
       intercept_namespace_records_,
@@ -458,20 +438,13 @@ void AppCacheStorageImpl::StoreOrLoadTask::CreateCacheAndGroupFromRecords(
       online_whitelist_records_);
   cache->get()->set_complete(true);
 
-  (*group) = storage_->working_set_.GetGroup(group_record_.manifest_url);
+  *group = storage_->working_set_.GetGroup(group_record_.manifest_url);
   if (group->get()) {
     DCHECK(group_record_.group_id == group->get()->group_id());
     group->get()->AddCache(cache->get());
-
-    // TODO(michaeln): histogram is fishing for clues to crbug/95101
-    if (!cache->get()->GetEntry(group_record_.manifest_url)) {
-      AppCacheHistograms::AddMissingManifestDetectedAtCallsite(
-          AppCacheHistograms::CALLSITE_1);
-    }
   } else {
-    (*group) = new AppCacheGroup(
-        storage_, group_record_.manifest_url,
-        group_record_.group_id);
+    *group = base::MakeRefCounted<AppCacheGroup>(
+        storage_, group_record_.manifest_url, group_record_.group_id);
     group->get()->set_creation_time(group_record_.creation_time);
     group->get()->set_last_full_update_check_time(
         group_record_.last_full_update_check_time);
@@ -479,11 +452,10 @@ void AppCacheStorageImpl::StoreOrLoadTask::CreateCacheAndGroupFromRecords(
         group_record_.first_evictable_error_time);
     group->get()->AddCache(cache->get());
 
-    // TODO(michaeln): histogram is fishing for clues to crbug/95101
-    if (!cache->get()->GetEntry(group_record_.manifest_url)) {
-      AppCacheHistograms::AddMissingManifestDetectedAtCallsite(
-          AppCacheHistograms::CALLSITE_2);
-    }
+    // TODO(pwnall): A removed histogram shows that, very rarely,
+    //               cache->get()->GetEntry(group_record_.manifest_url))
+    //               return null here. This was supposed to help investigate
+    //               https://crbug.com/95101
   }
   DCHECK(group->get()->newest_complete_cache() == cache->get());
 
@@ -550,7 +522,10 @@ void AppCacheStorageImpl::CacheLoadTask::RunCompleted() {
     DCHECK(cache_record_.cache_id == cache_id_);
     CreateCacheAndGroupFromRecords(&cache, &group);
   }
-  FOR_EACH_DELEGATE(delegates_, OnCacheLoaded(cache.get(), cache_id_));
+  AppCacheStorage::ForEachDelegate(
+      delegates_, [&](AppCacheStorage::Delegate* delegate) {
+        delegate->OnCacheLoaded(cache.get(), cache_id_);
+      });
 }
 
 // GroupLoadTask -------
@@ -579,9 +554,10 @@ void AppCacheStorageImpl::GroupLoadTask::Run() {
       database_->FindCacheForGroup(group_record_.group_id, &cache_record_) &&
       FindRelatedCacheRecords(cache_record_.cache_id);
 
-  if (success_)
+  if (success_) {
     database_->LazyUpdateLastAccessTime(group_record_.group_id,
                                         base::Time::Now());
+  }
 }
 
 void AppCacheStorageImpl::GroupLoadTask::RunCompleted() {
@@ -596,12 +572,15 @@ void AppCacheStorageImpl::GroupLoadTask::RunCompleted() {
     } else {
       group = storage_->working_set_.GetGroup(manifest_url_);
       if (!group.get()) {
-        group =
-            new AppCacheGroup(storage_, manifest_url_, storage_->NewGroupId());
+        group = base::MakeRefCounted<AppCacheGroup>(storage_, manifest_url_,
+                                                    storage_->NewGroupId());
       }
     }
   }
-  FOR_EACH_DELEGATE(delegates_, OnGroupLoaded(group.get(), manifest_url_));
+  AppCacheStorage::ForEachDelegate(
+      delegates_, [&](AppCacheStorage::Delegate* delegate) {
+        delegate->OnGroupLoaded(group.get(), manifest_url_);
+      });
 }
 
 // StoreGroupAndCacheTask -------
@@ -631,7 +610,6 @@ class AppCacheStorageImpl::StoreGroupAndCacheTask : public StoreOrLoadTask {
   bool would_exceed_quota_;
   int64_t space_available_;
   int64_t new_origin_usage_;
-  int64_t max_appcache_origin_cache_size_;
   std::vector<int64_t> newly_deletable_response_ids_;
 };
 
@@ -645,10 +623,7 @@ AppCacheStorageImpl::StoreGroupAndCacheTask::StoreGroupAndCacheTask(
       success_(false),
       would_exceed_quota_(false),
       space_available_(-1),
-      new_origin_usage_(-1),
-      // TODO(crbug.com/895825): Remove max_appcache_origin_cache_size_ in Feb
-      // 2019.
-      max_appcache_origin_cache_size_(kDefaultQuota) {
+      new_origin_usage_(-1) {
   group_record_.group_id = group->group_id();
   group_record_.manifest_url = group->manifest_url();
   group_record_.origin = url::Origin::Create(group_record_.manifest_url);
@@ -662,25 +637,10 @@ AppCacheStorageImpl::StoreGroupAndCacheTask::StoreGroupAndCacheTask(
       &intercept_namespace_records_,
       &fallback_namespace_records_,
       &online_whitelist_records_);
-
-  base::CommandLine& command_line = *base::CommandLine::ForCurrentProcess();
-  if (command_line.HasSwitch(switches::kMaxAppCacheOriginCacheSizeMb)) {
-    if (base::StringToInt64(command_line.GetSwitchValueASCII(
-                                switches::kMaxAppCacheOriginCacheSizeMb),
-                            &max_appcache_origin_cache_size_)) {
-      max_appcache_origin_cache_size_ *= kMB;
-    }
-  }
 }
 
 void AppCacheStorageImpl::StoreGroupAndCacheTask::GetQuotaThenSchedule() {
-  storage::QuotaManager* quota_manager = nullptr;
-  if (storage_->service()->quota_manager_proxy()) {
-    quota_manager =
-        storage_->service()->quota_manager_proxy()->quota_manager();
-  }
-
-  if (!quota_manager) {
+  if (!storage_->service()->quota_manager_proxy()) {
     if (storage_->service()->special_storage_policy() &&
         storage_->service()->special_storage_policy()->IsStorageUnlimited(
             group_record_.origin.GetURL()))
@@ -689,15 +649,11 @@ void AppCacheStorageImpl::StoreGroupAndCacheTask::GetQuotaThenSchedule() {
     return;
   }
 
-  // crbug.com/349708
-  TRACE_EVENT0(
-      "io",
-      "AppCacheStorageImpl::StoreGroupAndCacheTask::GetQuotaThenSchedule");
-
   // We have to ask the quota manager for the value.
   storage_->pending_quota_queries_.insert(this);
-  quota_manager->GetUsageAndQuota(
-      group_record_.origin, blink::mojom::StorageType::kTemporary,
+  storage_->service()->quota_manager_proxy()->GetUsageAndQuota(
+      base::ThreadTaskRunnerHandle::Get().get(), group_record_.origin,
+      blink::mojom::StorageType::kTemporary,
       base::BindOnce(&StoreGroupAndCacheTask::OnQuotaCallback, this));
 }
 
@@ -717,7 +673,7 @@ void AppCacheStorageImpl::StoreGroupAndCacheTask::OnQuotaCallback(
 
 void AppCacheStorageImpl::StoreGroupAndCacheTask::Run() {
   DCHECK(!success_);
-  sql::Database* connection = database_->db_connection();
+  sql::Database* const connection = database_->db_connection();
   if (!connection)
     return;
 
@@ -792,10 +748,9 @@ void AppCacheStorageImpl::StoreGroupAndCacheTask::Run() {
     return;
   }
 
-  // Use the value in --max-appcache-disk-cache-size-mb (or a hard-coded
-  // default) when no QuotaManager is wired in.
+  // Use a simple hard-coded value when not using quota management.
   if (space_available_ == -1) {
-    if (new_origin_usage_ > max_appcache_origin_cache_size_) {
+    if (new_origin_usage_ > kDefaultQuota) {
       would_exceed_quota_ = true;
       success_ = false;
       return;
@@ -828,10 +783,11 @@ void AppCacheStorageImpl::StoreGroupAndCacheTask::RunCompleted() {
       group_->set_creation_time(group_record_.creation_time);
     group_->AddNewlyDeletableResponseIds(&newly_deletable_response_ids_);
   }
-  FOR_EACH_DELEGATE(
-      delegates_,
-      OnGroupAndNewestCacheStored(
-          group_.get(), cache_.get(), success_, would_exceed_quota_));
+  AppCacheStorage::ForEachDelegate(
+      delegates_, [&](AppCacheStorage::Delegate* delegate) {
+        delegate->OnGroupAndNewestCacheStored(group_.get(), cache_.get(),
+                                              success_, would_exceed_quota_);
+      });
   group_ = nullptr;
   cache_ = nullptr;
 
@@ -914,7 +870,7 @@ class NetworkNamespaceHelper {
   // Key is cache id
   using WhiteListMap = std::map<int64_t, std::vector<AppCacheNamespace>>;
   WhiteListMap namespaces_map_;
-  AppCacheDatabase* database_;
+  AppCacheDatabase* const database_;
 };
 
 }  // namespace
@@ -1241,8 +1197,11 @@ void AppCacheStorageImpl::MakeGroupObsoleteTask::RunCompleted() {
       storage_->working_set()->RemoveGroup(group_.get());
     }
   }
-  FOR_EACH_DELEGATE(
-      delegates_, OnGroupMadeObsolete(group_.get(), success_, response_code_));
+
+  AppCacheStorage::ForEachDelegate(
+      delegates_, [&](AppCacheStorage::Delegate* delegate) {
+        delegate->OnGroupMadeObsolete(group_.get(), success_, response_code_);
+      });
   group_ = nullptr;
 }
 
@@ -1416,8 +1375,7 @@ AppCacheStorageImpl::AppCacheStorageImpl(AppCacheServiceImpl* service)
       database_(nullptr),
       is_disabled_(false),
       delete_and_start_over_pending_(false),
-      expecting_cleanup_complete_on_disable_(false),
-      weak_factory_(this) {}
+      expecting_cleanup_complete_on_disable_(false) {}
 
 AppCacheStorageImpl::~AppCacheStorageImpl() {
   for (StoreGroupAndCacheTask* task : pending_quota_queries_)
@@ -1427,13 +1385,12 @@ AppCacheStorageImpl::~AppCacheStorageImpl() {
 
   if (database_ &&
       !db_task_runner_->PostTask(
-          FROM_HERE, base::BindOnce(&ClearSessionOnlyOrigins, database_,
-                                    base::WrapRefCounted(
-                                        service_->special_storage_policy()),
-                                    service()->force_keep_session_state()))) {
-    delete database_;
+          FROM_HERE,
+          base::BindOnce(
+              &ClearSessionOnlyOrigins, std::move(database_),
+              base::WrapRefCounted(service_->special_storage_policy()),
+              service()->force_keep_session_state()))) {
   }
-  database_ = nullptr;  // So no further database tasks can be scheduled.
 }
 
 void AppCacheStorageImpl::Initialize(
@@ -1445,11 +1402,11 @@ void AppCacheStorageImpl::Initialize(
   base::FilePath db_file_path;
   if (!is_incognito_)
     db_file_path = cache_directory_.Append(kAppCacheDatabaseName);
-  database_ = new AppCacheDatabase(db_file_path);
+  database_ = std::make_unique<AppCacheDatabase>(db_file_path);
 
   db_task_runner_ = db_task_runner;
 
-  scoped_refptr<InitTask> task(new InitTask(this));
+  auto task = base::MakeRefCounted<InitTask>(this);
   task->Schedule();
 }
 
@@ -1462,13 +1419,13 @@ void AppCacheStorageImpl::Disable() {
   working_set()->Disable();
   if (disk_cache_)
     disk_cache_->Disable();
-  scoped_refptr<DisableDatabaseTask> task(new DisableDatabaseTask(this));
+  auto task = base::MakeRefCounted<DisableDatabaseTask>(this);
   task->Schedule();
 }
 
 void AppCacheStorageImpl::GetAllInfo(Delegate* delegate) {
   DCHECK(delegate);
-  scoped_refptr<GetAllInfoTask> task(new GetAllInfoTask(this));
+  auto task = base::MakeRefCounted<GetAllInfoTask>(this);
   task->AddDelegate(GetOrCreateDelegateReference(delegate));
   task->Schedule();
 }
@@ -1484,9 +1441,8 @@ void AppCacheStorageImpl::LoadCache(int64_t id, Delegate* delegate) {
   if (cache) {
     delegate->OnCacheLoaded(cache, id);
     if (cache->owning_group()) {
-      scoped_refptr<DatabaseTask> update_task(
-          new LazyUpdateLastAccessTimeTask(
-              this, cache->owning_group(), base::Time::Now()));
+      auto update_task = base::MakeRefCounted<LazyUpdateLastAccessTimeTask>(
+          this, cache->owning_group(), base::Time::Now());
       update_task->Schedule();
     }
     return;
@@ -1496,7 +1452,7 @@ void AppCacheStorageImpl::LoadCache(int64_t id, Delegate* delegate) {
     task->AddDelegate(GetOrCreateDelegateReference(delegate));
     return;
   }
-  task = new CacheLoadTask(id, this);
+  task = base::MakeRefCounted<CacheLoadTask>(id, this);
   task->AddDelegate(GetOrCreateDelegateReference(delegate));
   task->Schedule();
   pending_cache_loads_[id] = task.get();
@@ -1513,9 +1469,8 @@ void AppCacheStorageImpl::LoadOrCreateGroup(
   AppCacheGroup* group = working_set_.GetGroup(manifest_url);
   if (group) {
     delegate->OnGroupLoaded(group, manifest_url);
-    scoped_refptr<DatabaseTask> update_task(
-        new LazyUpdateLastAccessTimeTask(
-            this, group, base::Time::Now()));
+    auto update_task = base::MakeRefCounted<LazyUpdateLastAccessTimeTask>(
+        this, group, base::Time::Now());
     update_task->Schedule();
     return;
   }
@@ -1528,13 +1483,13 @@ void AppCacheStorageImpl::LoadOrCreateGroup(
 
   if (usage_map_.find(url::Origin::Create(manifest_url)) == usage_map_.end()) {
     // No need to query the database, return a new group immediately.
-    scoped_refptr<AppCacheGroup> new_group(
-        new AppCacheGroup(this, manifest_url, NewGroupId()));
+    auto new_group =
+        base::MakeRefCounted<AppCacheGroup>(this, manifest_url, NewGroupId());
     delegate->OnGroupLoaded(new_group.get(), manifest_url);
     return;
   }
 
-  task = new GroupLoadTask(manifest_url, this);
+  task = base::MakeRefCounted<GroupLoadTask>(manifest_url, this);
   task->AddDelegate(GetOrCreateDelegateReference(delegate));
   task->Schedule();
   pending_group_loads_[manifest_url] = task.get();
@@ -1548,16 +1503,10 @@ void AppCacheStorageImpl::StoreGroupAndNewestCache(
   // the simple update case in a very heavy weight way (delete all and
   // the reinsert all over again).
   DCHECK(group && delegate && newest_cache);
-  scoped_refptr<StoreGroupAndCacheTask> task(
-      new StoreGroupAndCacheTask(this, group, newest_cache));
+  auto task =
+      base::MakeRefCounted<StoreGroupAndCacheTask>(this, group, newest_cache);
   task->AddDelegate(GetOrCreateDelegateReference(delegate));
   task->GetQuotaThenSchedule();
-
-  // TODO(michaeln): histogram is fishing for clues to crbug/95101
-  if (!newest_cache->GetEntry(group->manifest_url())) {
-    AppCacheHistograms::AddMissingManifestDetectedAtCallsite(
-        AppCacheHistograms::CALLSITE_3);
-  }
 }
 
 void AppCacheStorageImpl::FindResponseForMainRequest(
@@ -1611,9 +1560,8 @@ void AppCacheStorageImpl::FindResponseForMainRequest(
   }
 
   // We have to query the database, schedule a database task to do so.
-  scoped_refptr<FindMainResponseTask> task(
-      new FindMainResponseTask(this, *url_ptr, preferred_manifest_url,
-                               groups_in_use));
+  auto task = base::MakeRefCounted<FindMainResponseTask>(
+      this, *url_ptr, preferred_manifest_url, groups_in_use);
   task->AddDelegate(GetOrCreateDelegateReference(delegate));
   task->Schedule();
 }
@@ -1643,7 +1591,7 @@ void AppCacheStorageImpl::DeliverShortCircuitedFindMainResponse(
     scoped_refptr<AppCache> cache,
     scoped_refptr<DelegateReference> delegate_ref) {
   if (delegate_ref->delegate) {
-    DelegateReferenceVector delegates(1, delegate_ref);
+    std::vector<scoped_refptr<DelegateReference>> delegates(1, delegate_ref);
     CallOnMainResponseFound(
         &delegates, url, found_entry, GURL(), AppCacheEntry(),
         cache.get() ? cache->cache_id() : blink::mojom::kAppCacheNoCacheId,
@@ -1653,7 +1601,7 @@ void AppCacheStorageImpl::DeliverShortCircuitedFindMainResponse(
 }
 
 void AppCacheStorageImpl::CallOnMainResponseFound(
-    DelegateReferenceVector* delegates,
+    std::vector<scoped_refptr<DelegateReference>>* delegates,
     const GURL& url,
     const AppCacheEntry& entry,
     const GURL& namespace_entry_url,
@@ -1661,11 +1609,12 @@ void AppCacheStorageImpl::CallOnMainResponseFound(
     int64_t cache_id,
     int64_t group_id,
     const GURL& manifest_url) {
-  FOR_EACH_DELEGATE(
-      (*delegates),
-      OnMainResponseFound(url, entry,
-                          namespace_entry_url, fallback_entry,
-                          cache_id, group_id, manifest_url));
+  AppCacheStorage::ForEachDelegate(
+      *delegates, [&](AppCacheStorage::Delegate* delegate) {
+        delegate->OnMainResponseFound(url, entry, namespace_entry_url,
+                                      fallback_entry, cache_id, group_id,
+                                      manifest_url);
+      });
 }
 
 void AppCacheStorageImpl::FindResponseForSubRequest(
@@ -1700,8 +1649,8 @@ void AppCacheStorageImpl::MarkEntryAsForeign(const GURL& entry_url,
     if (entry)
       entry->add_types(AppCacheEntry::FOREIGN);
   }
-  scoped_refptr<MarkEntryAsForeignTask> task(
-      new MarkEntryAsForeignTask(this, entry_url, cache_id));
+  auto task =
+      base::MakeRefCounted<MarkEntryAsForeignTask>(this, entry_url, cache_id);
   task->Schedule();
   pending_foreign_markings_.push_back(std::make_pair(entry_url, cache_id));
 }
@@ -1710,38 +1659,34 @@ void AppCacheStorageImpl::MakeGroupObsolete(AppCacheGroup* group,
                                             Delegate* delegate,
                                             int response_code) {
   DCHECK(group && delegate);
-  scoped_refptr<MakeGroupObsoleteTask> task(
-      new MakeGroupObsoleteTask(this, group, response_code));
+  auto task =
+      base::MakeRefCounted<MakeGroupObsoleteTask>(this, group, response_code);
   task->AddDelegate(GetOrCreateDelegateReference(delegate));
   task->Schedule();
 }
 
 void AppCacheStorageImpl::StoreEvictionTimes(AppCacheGroup* group) {
-  scoped_refptr<UpdateEvictionTimesTask> task(
-      new UpdateEvictionTimesTask(this, group));
+  auto task = base::MakeRefCounted<UpdateEvictionTimesTask>(this, group);
   task->Schedule();
 }
 
 std::unique_ptr<AppCacheResponseReader>
 AppCacheStorageImpl::CreateResponseReader(const GURL& manifest_url,
                                           int64_t response_id) {
-  // base::WrapUnique needed due to non-public constructor.
-  return base::WrapUnique(new AppCacheResponseReader(
-      response_id, is_disabled_ ? nullptr : disk_cache()->GetWeakPtr()));
+  return std::make_unique<AppCacheResponseReader>(
+      response_id, is_disabled_ ? nullptr : disk_cache()->GetWeakPtr());
 }
 
 std::unique_ptr<AppCacheResponseWriter>
 AppCacheStorageImpl::CreateResponseWriter(const GURL& manifest_url) {
-  // base::WrapUnique needed due to non-public constructor.
-  return base::WrapUnique(new AppCacheResponseWriter(
-      NewResponseId(), is_disabled_ ? nullptr : disk_cache()->GetWeakPtr()));
+  return std::make_unique<AppCacheResponseWriter>(
+      NewResponseId(), is_disabled_ ? nullptr : disk_cache()->GetWeakPtr());
 }
 
 std::unique_ptr<AppCacheResponseMetadataWriter>
 AppCacheStorageImpl::CreateResponseMetadataWriter(int64_t response_id) {
-  // base::WrapUnique needed due to non-public constructor.
-  return base::WrapUnique(new AppCacheResponseMetadataWriter(
-      response_id, is_disabled_ ? nullptr : disk_cache()->GetWeakPtr()));
+  return std::make_unique<AppCacheResponseMetadataWriter>(
+      response_id, is_disabled_ ? nullptr : disk_cache()->GetWeakPtr());
 }
 
 void AppCacheStorageImpl::DoomResponses(
@@ -1758,8 +1703,7 @@ void AppCacheStorageImpl::DoomResponses(
   // TODO(michaeln): There is a race here. If the browser crashes
   // prior to committing these rows to the database and prior to us
   // having deleted them from the disk cache, we'll never delete them.
-  scoped_refptr<InsertDeletableResponseIdsTask> task(
-      new InsertDeletableResponseIdsTask(this));
+  auto task = base::MakeRefCounted<InsertDeletableResponseIdsTask>(this);
   task->response_ids_ = response_ids;
   task->Schedule();
 }
@@ -1779,8 +1723,8 @@ bool AppCacheStorageImpl::IsInitialized() {
 void AppCacheStorageImpl::DelayedStartDeletingUnusedResponses() {
   // Only if we haven't already begun.
   if (!did_start_deleting_responses_) {
-    scoped_refptr<GetDeletableResponseIdsTask> task(
-        new GetDeletableResponseIdsTask(this, last_deletable_response_rowid_));
+    auto task = base::MakeRefCounted<GetDeletableResponseIdsTask>(
+        this, last_deletable_response_rowid_);
     task->Schedule();
   }
 }
@@ -1840,15 +1784,14 @@ void AppCacheStorageImpl::OnDeletedOneResponse(int rv) {
   const size_t kBatchSize = 50U;
   if (deleted_response_ids_.size() >= kBatchSize ||
       deletable_response_ids_.empty()) {
-    scoped_refptr<DeleteDeletableResponseIdsTask> task(
-        new DeleteDeletableResponseIdsTask(this));
+    auto task = base::MakeRefCounted<DeleteDeletableResponseIdsTask>(this);
     task->response_ids_.swap(deleted_response_ids_);
     task->Schedule();
   }
 
   if (deletable_response_ids_.empty()) {
-    scoped_refptr<GetDeletableResponseIdsTask> task(
-        new GetDeletableResponseIdsTask(this, last_deletable_response_rowid_));
+    auto task = base::MakeRefCounted<GetDeletableResponseIdsTask>(
+        this, last_deletable_response_rowid_);
     task->Schedule();
     return;
   }
@@ -1902,29 +1845,16 @@ AppCacheDiskCache* AppCacheStorageImpl::disk_cache() {
 
   if (!disk_cache_) {
     int rv = net::OK;
-    disk_cache_.reset(new AppCacheDiskCache);
+    disk_cache_ = std::make_unique<AppCacheDiskCache>();
     if (is_incognito_) {
       rv = disk_cache_->InitWithMemBackend(
-          kMaxAppCacheMemDiskCacheSize,
-          base::BindOnce(&AppCacheStorageImpl::OnDiskCacheInitialized,
-                         base::Unretained(this)));
+          0, base::BindOnce(&AppCacheStorageImpl::OnDiskCacheInitialized,
+                            base::Unretained(this)));
     } else {
       expecting_cleanup_complete_on_disable_ = true;
 
-      const base::CommandLine& command_line =
-          *base::CommandLine::ForCurrentProcess();
-      int64_t max_appcache_disk_cache_size = kMaxAppCacheDiskCacheSize;
-      if (command_line.HasSwitch(switches::kMaxAppCacheDiskCacheSizeMb)) {
-        if (base::StringToInt64(command_line.GetSwitchValueASCII(
-                                    switches::kMaxAppCacheDiskCacheSizeMb),
-                                &max_appcache_disk_cache_size)) {
-          max_appcache_disk_cache_size *= kMB;
-        }
-      }
-
       rv = disk_cache_->InitWithDiskBackend(
-          cache_directory_.Append(kDiskCacheDirectoryName),
-          max_appcache_disk_cache_size, false,
+          cache_directory_.Append(kDiskCacheDirectoryName), false,
           base::BindOnce(&AppCacheStorageImpl::OnDiskCacheCleanupComplete,
                          weak_factory_.GetWeakPtr()),
           base::BindOnce(&AppCacheStorageImpl::OnDiskCacheInitialized,
@@ -1939,9 +1869,6 @@ AppCacheDiskCache* AppCacheStorageImpl::disk_cache() {
 
 void AppCacheStorageImpl::OnDiskCacheInitialized(int rv) {
   if (rv != net::OK) {
-    LOG(ERROR) << "Failed to open the appcache diskcache.";
-    AppCacheHistograms::CountInitResult(AppCacheHistograms::DISK_CACHE_ERROR);
-
     // We're unable to open the disk cache, this is a fatal error that we can't
     // really recover from. We handle it by temporarily disabling the appcache
     // deleting the directory on disk and reinitializing the appcache system.
@@ -2001,7 +1928,7 @@ void AppCacheStorageImpl::OnLazyCommitTimer() {
   lazy_commit_timer_.Stop();
   if (is_disabled())
     return;
-  scoped_refptr<DatabaseTask> task(new CommitLastAccessTimesTask(this));
+  auto task = base::MakeRefCounted<CommitLastAccessTimesTask>(this);
   task->Schedule();
 }
 

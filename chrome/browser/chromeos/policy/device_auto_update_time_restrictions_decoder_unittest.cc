@@ -101,7 +101,7 @@ class WeeklyTimeIntervalListDecoderTest
       base::DictionaryValue time_dict;
       time_dict.SetKey("start", std::move(start));
       time_dict.SetKey("end", std::move(end));
-      list_val.GetList().push_back(std::move(time_dict));
+      list_val.Append(std::move(time_dict));
     }
     return list_val;
   }

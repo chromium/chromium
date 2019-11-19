@@ -27,8 +27,8 @@ SamplerState::SamplerState()
       compare_func(GL_LEQUAL),
       compare_mode(GL_NONE),
       max_lod(1000.0f),
-      min_lod(-1000.0f) {
-}
+      min_lod(-1000.0f),
+      max_anisotropy_ext(1.0f) {}
 
 Sampler::Sampler(SamplerManager* manager, GLuint client_id, GLuint service_id)
     : manager_(manager),
@@ -120,6 +120,9 @@ GLenum Sampler::SetParameterf(
       break;
     case GL_TEXTURE_MAX_LOD:
       sampler_state_.max_lod = param;
+      break;
+    case GL_TEXTURE_MAX_ANISOTROPY_EXT:
+      sampler_state_.max_anisotropy_ext = param;
       break;
     default:
       return GL_INVALID_ENUM;

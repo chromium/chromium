@@ -8,6 +8,6 @@ Test the media interface: http://dev.w3.org/csswg/cssom-view/#the-media-interfac
 "(color" evaluates to true: PASS
 "color" evaluates to false: PASS
 "garbage" evaluates to false: PASS
-"(min-device-width: 100px)" evaluates to true: PASS
+"(min-device-width: 1px)" evaluates to true: PASS
 "(min-device-width: 50000px)" evaluates to false: PASS
 

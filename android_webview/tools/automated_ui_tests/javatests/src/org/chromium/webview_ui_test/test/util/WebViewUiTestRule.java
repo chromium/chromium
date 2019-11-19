@@ -15,6 +15,8 @@ import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.Matchers.endsWith;
 import static org.hamcrest.Matchers.hasItem;
 
+import static org.chromium.base.test.util.ScalableTimeout.scaleTimeout;
+
 import android.content.Intent;
 import android.os.Build;
 import android.support.test.espresso.BaseLayerComponent;
@@ -22,12 +24,13 @@ import android.support.test.espresso.DaggerBaseLayerComponent;
 import android.support.test.rule.ActivityTestRule;
 import android.webkit.WebView;
 
-import org.junit.Assert;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 
 import org.chromium.webview_ui_test.R;
 import org.chromium.webview_ui_test.WebViewUiTestActivity;
+
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * WebViewUiTestRule provides ways to synchronously loads file URL or javascript.
@@ -36,6 +39,8 @@ import org.chromium.webview_ui_test.WebViewUiTestActivity;
  *
  */
 public class WebViewUiTestRule extends ActivityTestRule<WebViewUiTestActivity> {
+    private static final long ACTION_BAR_POPUP_TIMEOUT = scaleTimeout(5000L);
+    private static final long ACTION_BAR_CHECK_INTERVAL = 200L;
 
     private WebViewSyncWrapper mSyncWrapper;
     private String mLayout;
@@ -74,30 +79,54 @@ public class WebViewUiTestRule extends ActivityTestRule<WebViewUiTestActivity> {
 
     public void loadDataSync(
             String data, String mimeType, String encoding, boolean confirmByJavaScript) {
-        try {
-            mSyncWrapper.loadDataSync(data, mimeType, encoding, confirmByJavaScript);
-        } catch (InterruptedException e) {
-            Assert.fail(e.getMessage());
-        }
+        mSyncWrapper.loadDataSync(data, mimeType, encoding, confirmByJavaScript);
     }
 
     public void loadJavaScriptSync(String js, boolean appendConfirmationJavascript) {
-        try {
-            mSyncWrapper.loadJavaScriptSync(js, appendConfirmationJavascript);
-        } catch (InterruptedException e) {
-            Assert.fail(e.getMessage());
-        }
+        mSyncWrapper.loadJavaScriptSync(js, appendConfirmationJavascript);
     }
 
     public void loadFileSync(String html, boolean confirmByJavaScript) {
-        try {
-            mSyncWrapper.loadFileSync(html, confirmByJavaScript);
-        } catch (InterruptedException e) {
-            Assert.fail(e.getMessage());
+        mSyncWrapper.loadFileSync(html, confirmByJavaScript);
+    }
+
+    /**
+     * Wait until the action bar is detected, or timeout occurs
+     *
+     * Using polling instead of idling resource because on L, the "Paste" option
+     * will disappear after a few seconds, too short for the idling resource
+     * check interval of 5 seconds to work reliably.
+     */
+    public boolean waitForActionBarPopup() {
+        long startTime = System.currentTimeMillis();
+        while (System.currentTimeMillis() - startTime < ACTION_BAR_POPUP_TIMEOUT) {
+            if (isActionBarDisplayed()) {
+                sleep(ACTION_BAR_CHECK_INTERVAL);
+                if (isActionBarDisplayed()) {
+                    return true;
+                }
+            }
+            sleep(ACTION_BAR_CHECK_INTERVAL);
         }
+        return false;
     }
 
     public boolean isActionBarDisplayed() {
+        final AtomicBoolean isDisplayed = new AtomicBoolean(false);
+        try {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    isDisplayed.set(isActionBarDisplayedFunc());
+                }
+            });
+        } catch (Throwable e) {
+            throw new RuntimeException("Exception while checking action bar", e);
+        }
+        return isDisplayed.get();
+    }
+
+    private boolean isActionBarDisplayedFunc() {
         if (mBaseLayerComponent == null) mBaseLayerComponent = DaggerBaseLayerComponent.create();
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -126,5 +155,12 @@ public class WebViewUiTestRule extends ActivityTestRule<WebViewUiTestActivity> {
 
 
         return false;
+    }
+
+    private void sleep(long ms) {
+        try {
+            Thread.sleep(ms);
+        } catch (InterruptedException e) {
+        }
     }
 }

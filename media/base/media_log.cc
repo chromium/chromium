@@ -91,38 +91,6 @@ std::string MediaLog::EventTypeToString(MediaLogEvent::Type type) {
   return NULL;
 }
 
-std::string MediaLog::PipelineStatusToString(PipelineStatus status) {
-#define STRINGIFY_STATUS_CASE(status) \
-  case status:                        \
-    return #status
-
-  switch (status) {
-    STRINGIFY_STATUS_CASE(PIPELINE_OK);
-    STRINGIFY_STATUS_CASE(PIPELINE_ERROR_NETWORK);
-    STRINGIFY_STATUS_CASE(PIPELINE_ERROR_DECODE);
-    STRINGIFY_STATUS_CASE(PIPELINE_ERROR_ABORT);
-    STRINGIFY_STATUS_CASE(PIPELINE_ERROR_INITIALIZATION_FAILED);
-    STRINGIFY_STATUS_CASE(PIPELINE_ERROR_COULD_NOT_RENDER);
-    STRINGIFY_STATUS_CASE(PIPELINE_ERROR_EXTERNAL_RENDERER_FAILED);
-    STRINGIFY_STATUS_CASE(PIPELINE_ERROR_READ);
-    STRINGIFY_STATUS_CASE(PIPELINE_ERROR_INVALID_STATE);
-    STRINGIFY_STATUS_CASE(DEMUXER_ERROR_COULD_NOT_OPEN);
-    STRINGIFY_STATUS_CASE(DEMUXER_ERROR_COULD_NOT_PARSE);
-    STRINGIFY_STATUS_CASE(DEMUXER_ERROR_NO_SUPPORTED_STREAMS);
-    STRINGIFY_STATUS_CASE(DEMUXER_ERROR_DETECTED_HLS);
-    STRINGIFY_STATUS_CASE(DECODER_ERROR_NOT_SUPPORTED);
-    STRINGIFY_STATUS_CASE(CHUNK_DEMUXER_ERROR_APPEND_FAILED);
-    STRINGIFY_STATUS_CASE(CHUNK_DEMUXER_ERROR_EOS_STATUS_DECODE_ERROR);
-    STRINGIFY_STATUS_CASE(CHUNK_DEMUXER_ERROR_EOS_STATUS_NETWORK_ERROR);
-    STRINGIFY_STATUS_CASE(AUDIO_RENDERER_ERROR);
-  }
-
-#undef STRINGIFY_STATUS_CASE
-
-  NOTREACHED();
-  return NULL;
-}
-
 std::string MediaLog::MediaEventToLogString(const MediaLogEvent& event) {
   // Special case for PIPELINE_ERROR, since that's by far the most useful
   // event for figuring out media pipeline failures, and just reporting
@@ -160,15 +128,27 @@ std::string MediaLog::MediaEventToMessageString(const MediaLogEvent& event) {
   }
 }
 
-std::string MediaLog::BufferingStateToString(BufferingState state) {
-  switch (state) {
-    case BUFFERING_HAVE_NOTHING:
-      return "BUFFERING_HAVE_NOTHING";
-    case BUFFERING_HAVE_ENOUGH:
-      return "BUFFERING_HAVE_ENOUGH";
-  }
-  NOTREACHED();
-  return "";
+std::string MediaLog::BufferingStateToString(
+    BufferingState state,
+    BufferingStateChangeReason reason) {
+  DCHECK(state == BUFFERING_HAVE_NOTHING || state == BUFFERING_HAVE_ENOUGH);
+  DCHECK(reason == BUFFERING_CHANGE_REASON_UNKNOWN ||
+         reason == DEMUXER_UNDERFLOW || reason == DECODER_UNDERFLOW ||
+         reason == REMOTING_NETWORK_CONGESTION);
+
+  std::string state_string = state == BUFFERING_HAVE_NOTHING
+                                 ? "BUFFERING_HAVE_NOTHING"
+                                 : "BUFFERING_HAVE_ENOUGH";
+
+  std::vector<std::string> flag_strings;
+  if (reason == DEMUXER_UNDERFLOW)
+    state_string += " (DEMUXER_UNDERFLOW)";
+  else if (reason == DECODER_UNDERFLOW)
+    state_string += " (DECODER_UNDERFLOW)";
+  else if (reason == REMOTING_NETWORK_CONGESTION)
+    state_string += " (REMOTING_NETWORK_CONGESTION)";
+
+  return state_string;
 }
 
 MediaLog::MediaLog() : MediaLog(new ParentLogRecord(this)) {}
@@ -193,6 +173,16 @@ MediaLog::~MediaLog() {
     InvalidateLog();
 }
 
+void MediaLog::OnWebMediaPlayerDestroyed() {
+  AddEvent(CreateEvent(MediaLogEvent::WEBMEDIAPLAYER_DESTROYED));
+  base::AutoLock auto_lock(parent_log_record_->lock);
+  // Forward to the parent log's implementation.
+  if (parent_log_record_->media_log)
+    parent_log_record_->media_log->OnWebMediaPlayerDestroyedLocked();
+}
+
+void MediaLog::OnWebMediaPlayerDestroyedLocked() {}
+
 void MediaLog::AddEvent(std::unique_ptr<MediaLogEvent> event) {
   base::AutoLock auto_lock(parent_log_record_->lock);
   // Forward to the parent log's implementation.
@@ -213,17 +203,6 @@ std::string MediaLog::GetErrorMessage() {
 
 std::string MediaLog::GetErrorMessageLocked() {
   return "";
-}
-
-void MediaLog::RecordRapporWithSecurityOrigin(const std::string& metric) {
-  base::AutoLock auto_lock(parent_log_record_->lock);
-  // Forward to the parent log's implementation.
-  if (parent_log_record_->media_log)
-    parent_log_record_->media_log->RecordRapporWithSecurityOriginLocked(metric);
-}
-
-void MediaLog::RecordRapporWithSecurityOriginLocked(const std::string& metric) {
-  DVLOG(1) << "Default MediaLog doesn't support rappor reporting.";
 }
 
 std::unique_ptr<MediaLogEvent> MediaLog::CreateCreatedEvent(
@@ -315,9 +294,10 @@ std::unique_ptr<MediaLogEvent> MediaLog::CreateVideoSizeSetEvent(
 
 std::unique_ptr<MediaLogEvent> MediaLog::CreateBufferingStateChangedEvent(
     const std::string& property,
-    BufferingState state) {
+    BufferingState state,
+    BufferingStateChangeReason reason) {
   return CreateStringEvent(MediaLogEvent::PROPERTY_CHANGE, property,
-                           BufferingStateToString(state));
+                           BufferingStateToString(state, reason));
 }
 
 void MediaLog::AddLogEvent(MediaLogLevel level, const std::string& message) {

@@ -15,10 +15,10 @@
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/url_constants.h"
+#include "content/public/test/accessibility_notification_waiter.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/shell/browser/shell.h"
-#include "content/test/accessibility_browser_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace content {
@@ -36,13 +36,13 @@ class AndroidGranularityMovementBrowserTest : public ContentBrowserTest {
   ~AndroidGranularityMovementBrowserTest() override {}
 
   BrowserAccessibility* LoadUrlAndGetAccessibilityRoot(const GURL& url) {
-    NavigateToURL(shell(), GURL(url::kAboutBlankURL));
+    EXPECT_TRUE(NavigateToURL(shell(), GURL(url::kAboutBlankURL)));
 
     // Load the page.
     AccessibilityNotificationWaiter waiter(shell()->web_contents(),
                                            ui::kAXModeComplete,
                                            ax::mojom::Event::kLoadComplete);
-    NavigateToURL(shell(), url);
+    EXPECT_TRUE(NavigateToURL(shell(), url));
     waiter.WaitForNotification();
 
     // Get the BrowserAccessibilityManager.
@@ -80,7 +80,7 @@ class AndroidGranularityMovementBrowserTest : public ContentBrowserTest {
         static_cast<BrowserAccessibilityAndroid*>(node);
     BrowserAccessibilityManagerAndroid* manager =
         static_cast<BrowserAccessibilityManagerAndroid*>(node->manager());
-    base::string16 text = android_node->GetText();
+    base::string16 text = android_node->GetInnerText();
     base::string16 concatenated;
     int previous_end_index = -1;
     while (manager->NextAtGranularity(granularity, end_index, android_node,

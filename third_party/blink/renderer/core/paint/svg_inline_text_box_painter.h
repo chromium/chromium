@@ -7,7 +7,7 @@
 
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_resource_paint_server.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
 
@@ -20,7 +20,7 @@ class LayoutSVGInlineText;
 class ComputedStyle;
 class SVGInlineTextBox;
 struct SVGTextFragment;
-class TextMatchMarker;
+class TextMarkerBase;
 class TextRun;
 
 struct SVGTextFragmentWithRange {
@@ -43,16 +43,16 @@ class SVGInlineTextBoxPainter {
       : svg_inline_text_box_(svg_inline_text_box) {}
   void Paint(const PaintInfo&, const LayoutPoint& paint_offset);
   void PaintSelectionBackground(const PaintInfo&);
-  void PaintTextMatchMarkerForeground(const PaintInfo&,
-                                      const LayoutPoint&,
-                                      const TextMatchMarker&,
-                                      const ComputedStyle&,
-                                      const Font&);
-  void PaintTextMatchMarkerBackground(const PaintInfo&,
-                                      const LayoutPoint&,
-                                      const TextMatchMarker&,
-                                      const ComputedStyle&,
-                                      const Font&);
+  void PaintTextMarkerForeground(const PaintInfo&,
+                                 const LayoutPoint&,
+                                 const TextMarkerBase&,
+                                 const ComputedStyle&,
+                                 const Font&);
+  void PaintTextMarkerBackground(const PaintInfo&,
+                                 const LayoutPoint&,
+                                 const TextMarkerBase&,
+                                 const ComputedStyle&,
+                                 const Font&);
 
  private:
   bool ShouldPaintSelection(const PaintInfo&) const;

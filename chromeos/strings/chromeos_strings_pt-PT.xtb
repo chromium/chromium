@@ -1,22 +1,41 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="pt-PT">
+<translation id="1482734542997480527">O domínio <ph name="ENROLLMENT_DOMAIN" /> gere este dispositivo e pode conseguir monitorizar a sua atividade.</translation>
 <translation id="1510238584712386396">Iniciador</translation>
 <translation id="1734367976349034509">Este dispositivo é gerido pela empresa</translation>
+<translation id="1930797645656624981">Serviço do método de introdução do Chrome OS</translation>
+<translation id="1979103255016296513">Alteração da palavra-passe vencida</translation>
 <translation id="2049639323467105390">Este aparelho é gerido por <ph name="DOMAIN" />.</translation>
 <translation id="2083960536266308407">Não foi encontrado nada no ecrã.</translation>
 <translation id="2338501278241028356">Ativar o Bluetooth para detetar dispositivos próximos</translation>
 <translation id="2805756323405976993">Aplicações</translation>
 <translation id="2872961005593481000">Encerrar</translation>
-<translation id="3147142846278915599">Launcher (a sincronizar aplicações...)</translation>
+<translation id="3008341117444806826">ATUALIZAR</translation>
+<translation id="3838338534323494292">Nova palavra-passe</translation>
+<translation id="4003259559679196451">O domínio <ph name="ENROLLMENT_DOMAIN" /> gere este dispositivo e tem acesso a todas as atividades do utilizador, incluindo páginas Web visitadas, palavras-passe e emails.</translation>
+<translation id="4227825898293920515">A palavra-passe expira daqui a <ph name="TIME" /></translation>
+<translation id="4429881212383817840">A permissão Kerberos expira em breve</translation>
+<translation id="445059817448385655">Palavra-passe antiga</translation>
+<translation id="467510802200863975">As palavras-passe não correspondem.</translation>
 <translation id="4731797938093519117">Acesso parental</translation>
+<translation id="4890353053343094602">Escolha uma nova de imediato</translation>
 <translation id="5212543919916444558">Não consigo encontrar nada no ecrã com que possa ajudar.
 Experimente tocar no microfone para me perguntar o que quiser.</translation>
 <translation id="5222676887888702881">Terminar sessão</translation>
+<translation id="5317780077021120954">Guardar</translation>
+<translation id="5332948983412042822">Escolha uma nova agora.</translation>
 <translation id="5457599981699367932">Navegar como convidado</translation>
 <translation id="54609108002486618">Geridos</translation>
 <translation id="5832805196449965646">Adicionar pessoa</translation>
 <translation id="5895138241574237353">Reiniciar</translation>
+<translation id="6058625436358447366">Para terminar, introduza a palavra-passe antiga e a nova</translation>
+<translation id="6106186594183574873">Para terminar, introduza a palavra-passe antiga</translation>
+<translation id="6146993107019042706">Para terminar, introduza a nova palavra-passe.</translation>
 <translation id="7658239707568436148">Cancelar</translation>
+<translation id="7690294790491645610">Confirmar a nova palavra-passe</translation>
+<translation id="808894953321890993">Alterar palavra-passe</translation>
+<translation id="8747900814994928677">Confirme a alteração</translation>
+<translation id="910415269708673980">Atualize a permissão para <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9111102763498581341">Desbloquear</translation>
 </translationbundle>

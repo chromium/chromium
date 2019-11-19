@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include <memory>
 #include <string>
 
 #include "base/callback_forward.h"
@@ -28,7 +29,7 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) ArcObbMounterClient : public DBusClient {
 
   // Factory function, creates a new instance and returns ownership.
   // For normal usage, access the singleton via DBusThreadManager::Get().
-  static ArcObbMounterClient* Create();
+  static std::unique_ptr<ArcObbMounterClient> Create();
 
   // Mounts the specified OBB at the specified mount path, with the owner GID
   // set to the given value.

@@ -372,12 +372,12 @@ void ScopedInterfaceEndpointHandle::ResetInternal(
   state_.swap(new_state);
 }
 
-base::Callback<AssociatedGroupController*()>
+base::RepeatingCallback<AssociatedGroupController*()>
 ScopedInterfaceEndpointHandle::CreateGroupControllerGetter() const {
   // We allow this callback to be run on any sequence. If this handle is created
   // in non-pending state, we don't have a lock but it should still be safe
   // because the group controller never changes.
-  return base::Bind(&State::group_controller, state_);
+  return base::BindRepeating(&State::group_controller, state_);
 }
 
 }  // namespace mojo

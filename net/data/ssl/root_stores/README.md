@@ -68,7 +68,7 @@ had changed were included for consideration.
 
 Additional restrictions upon trusted CAs are maintained both within the code
 of Security.framework and through additional plist expressions, such as for
-whitelisted certificates. However, these were not consulted, as they're not
+allowlisted certificates. However, these were not consulted, as they're not
 applicable to this use case.
 
 ### Mozilla NSS

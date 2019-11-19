@@ -49,7 +49,7 @@ String DisplayItemClient::SafeDebugName(bool known_to_be_safe) const {
 
 String DisplayItemClient::ToString() const {
 #if DCHECK_IS_ON()
-  return String::Format("%p:%s", this, SafeDebugName().Utf8().data());
+  return String::Format("%p:%s", this, SafeDebugName().Utf8().c_str());
 #else
   return String::Format("%p", this);
 #endif

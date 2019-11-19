@@ -4,13 +4,11 @@
 
 package org.chromium.components.minidump_uploader;
 
-import android.content.SharedPreferences;
-import android.support.annotation.IntDef;
+import androidx.annotation.IntDef;
+import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.StreamUtil;
-import org.chromium.base.VisibleForTesting;
 import org.chromium.components.minidump_uploader.util.CrashReportingPermissionManager;
 import org.chromium.components.minidump_uploader.util.HttpURLConnectionFactory;
 import org.chromium.components.minidump_uploader.util.HttpURLConnectionFactoryImpl;
@@ -40,11 +38,9 @@ import java.util.zip.GZIPOutputStream;
 public class MinidumpUploadCallable implements Callable<Integer> {
     private static final String TAG = "MDUploadCallable";
 
-    // These preferences are obsolete and are kept only for removing from user preferences.
-    protected static final String PREF_DAY_UPLOAD_COUNT = "crash_day_dump_upload_count";
-    protected static final String PREF_LAST_UPLOAD_DAY = "crash_dump_last_upload_day";
-    protected static final String PREF_LAST_UPLOAD_WEEK = "crash_dump_last_upload_week";
-    protected static final String PREF_WEEK_UPLOAD_SIZE = "crash_dump_week_upload_size";
+    // "crash_day_dump_upload_count", "crash_dump_last_upload_day", "crash_dump_last_upload_week",
+    // "crash_dump_week_upload_size" - Deprecated prefs used for limiting crash report uploads over
+    // cellular network. Last used in M47, removed in M78.
 
     @VisibleForTesting
     protected static final String CRASH_URL_STRING = "https://clients2.google.com/cr/report";
@@ -70,7 +66,6 @@ public class MinidumpUploadCallable implements Callable<Integer> {
     public MinidumpUploadCallable(
             File fileToUpload, File logfile, CrashReportingPermissionManager permissionManager) {
         this(fileToUpload, logfile, new HttpURLConnectionFactoryImpl(), permissionManager);
-        removeOutdatedPrefs(ContextUtils.getAppSharedPreferences());
     }
 
     public MinidumpUploadCallable(File fileToUpload, File logfile,
@@ -174,8 +169,9 @@ public class MinidumpUploadCallable implements Callable<Integer> {
         if (isSuccessful(responseCode)) {
             String responseContent = getResponseContentAsString(connection);
             // The crash server returns the crash ID.
-            String id = responseContent != null ? responseContent : "unknown";
-            Log.i(TAG, "Minidump " + mFileToUpload.getName() + " uploaded successfully, id: " + id);
+            String uploadId = responseContent != null ? responseContent : "unknown";
+            String crashFileName = mFileToUpload.getName();
+            Log.i(TAG, "Minidump " + crashFileName + " uploaded successfully, id: " + uploadId);
 
             // TODO(acleung): MinidumpUploadService is in charge of renaming while this class is
             // in charge of deleting. We should move all the file system operations into
@@ -183,7 +179,8 @@ public class MinidumpUploadCallable implements Callable<Integer> {
             CrashFileManager.markUploadSuccess(mFileToUpload);
 
             try {
-                appendUploadedEntryToLog(id);
+                String localId = CrashFileManager.getCrashLocalIdFromFileName(crashFileName);
+                appendUploadedEntryToLog(localId, uploadId);
             } catch (IOException ioe) {
                 Log.e(TAG, "Fail to write uploaded entry to log file");
             }
@@ -205,9 +202,10 @@ public class MinidumpUploadCallable implements Callable<Integer> {
      * Records the upload entry to a log file
      * similar to what is done in chrome/app/breakpad_linux.cc
      *
-     * @param id The crash ID return from the server.
+     * @param localId The local ID when crash happened.
+     * @param uploadId The crash ID return from the server.
      */
-    private void appendUploadedEntryToLog(String id) throws IOException {
+    private void appendUploadedEntryToLog(String localId, String uploadId) throws IOException {
         FileWriter writer = new FileWriter(mLogfile, /* Appending */ true);
 
         // The log entries are formated like so:
@@ -215,7 +213,11 @@ public class MinidumpUploadCallable implements Callable<Integer> {
         StringBuilder sb = new StringBuilder();
         sb.append(System.currentTimeMillis() / 1000);
         sb.append(",");
-        sb.append(id);
+        sb.append(uploadId);
+        if (localId != null) {
+            sb.append(",");
+            sb.append(localId);
+        }
         sb.append('\n');
 
         try {
@@ -304,15 +306,5 @@ public class MinidumpUploadCallable implements Callable<Integer> {
         }
         inStream.close();
         outStream.close();
-    }
-
-    // TODO(gayane): Remove this function and unused prefs in M51. crbug.com/555022
-    private void removeOutdatedPrefs(SharedPreferences sharedPreferences) {
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.remove(PREF_DAY_UPLOAD_COUNT)
-                .remove(PREF_LAST_UPLOAD_DAY)
-                .remove(PREF_LAST_UPLOAD_WEEK)
-                .remove(PREF_WEEK_UPLOAD_SIZE)
-                .apply();
     }
 }

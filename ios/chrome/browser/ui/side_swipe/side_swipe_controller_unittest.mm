@@ -3,17 +3,19 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/side_swipe/side_swipe_controller.h"
+
 #include "base/test/scoped_feature_list.h"
 #include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #include "ios/chrome/browser/chrome_url_constants.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_list_delegate.h"
 #import "ios/chrome/browser/web_state_list/web_state_opener.h"
-#include "ios/web/public/features.h"
-#import "ios/web/public/navigation_item.h"
+#include "ios/web/common/features.h"
+#import "ios/web/public/navigation/navigation_item.h"
+#import "ios/web/public/test/fakes/fake_navigation_context.h"
 #import "ios/web/public/test/fakes/test_navigation_manager.h"
 #import "ios/web/public/test/fakes/test_web_state.h"
-#include "ios/web/public/test/test_web_thread_bundle.h"
+#include "ios/web/public/test/web_task_environment.h"
 #include "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
@@ -65,7 +67,7 @@ class SideSwipeControllerTest : public PlatformTest {
     [side_swipe_controller_ addHorizontalGesturesToView:view_];
   }
 
-  web::TestWebThreadBundle thread_bundle_;
+  web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   TestWebStateListDelegate web_state_list_delegate_;
   std::unique_ptr<WebStateList> web_state_list_;
@@ -143,6 +145,42 @@ TEST_F(SideSwipeControllerTest, TestEdgeNavigationEnabled) {
   [side_swipe_controller_ updateNavigationEdgeSwipeForWebState:nil];
   EXPECT_TRUE(side_swipe_controller_.leadingEdgeNavigationEnabled);
   EXPECT_TRUE(side_swipe_controller_.trailingEdgeNavigationEnabled);
+}
+
+// Tests that when the active webState is changed or when the active webState
+// finishes navigation, the edge state will be updated accordingly.
+TEST_F(SideSwipeControllerTest, ObserversTriggerStateUpdate) {
+  feature_list_.InitAndEnableFeature(web::features::kSlimNavigationManager);
+
+  ASSERT_FALSE(side_swipe_controller_.leadingEdgeNavigationEnabled);
+  ASSERT_FALSE(side_swipe_controller_.trailingEdgeNavigationEnabled);
+
+  auto testWebState = std::make_unique<web::TestWebState>();
+  web::TestWebState* testWebStatePtr = testWebState.get();
+  auto testNavigationManager = std::make_unique<web::TestNavigationManager>();
+  std::unique_ptr<web::NavigationItem> item = web::NavigationItem::Create();
+  testNavigationManager->SetVisibleItem(item.get());
+  testNavigationManager->SetLastCommittedItem(item.get());
+  testWebState->SetNavigationManager(std::move(testNavigationManager));
+
+  // The NTP and chrome://crash should use native swipe.
+  item->SetURL(GURL(kChromeUINewTabURL));
+  // Insert the WebState and make sure it's active. This should trigger
+  // didChangeActiveWebState and update edge navigation state.
+  web_state_list_->InsertWebState(1, std::move(testWebState),
+                                  WebStateList::INSERT_ACTIVATE,
+                                  WebStateOpener());
+  EXPECT_TRUE(side_swipe_controller_.leadingEdgeNavigationEnabled);
+  EXPECT_TRUE(side_swipe_controller_.trailingEdgeNavigationEnabled);
+
+  // Non native URL should have shouldn't be handled by SideSwipeController.
+  item->SetURL(GURL("http://wwww.test.test"));
+  web::FakeNavigationContext context;
+  context.SetHasCommitted(true);
+  // Navigation finish should also update the edge navigation state.
+  testWebStatePtr->OnNavigationFinished(&context);
+  EXPECT_FALSE(side_swipe_controller_.leadingEdgeNavigationEnabled);
+  EXPECT_FALSE(side_swipe_controller_.trailingEdgeNavigationEnabled);
 }
 
 }  // anonymous namespace

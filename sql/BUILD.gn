@@ -18,6 +18,24 @@ component("sql") {
     "internal_api_token.h",
     "meta_table.cc",
     "meta_table.h",
+    "recover_module/btree.cc",
+    "recover_module/btree.h",
+    "recover_module/cursor.cc",
+    "recover_module/cursor.h",
+    "recover_module/integers.cc",
+    "recover_module/integers.h",
+    "recover_module/module.cc",
+    "recover_module/module.h",
+    "recover_module/pager.cc",
+    "recover_module/pager.h",
+    "recover_module/parsing.cc",
+    "recover_module/parsing.h",
+    "recover_module/payload.cc",
+    "recover_module/payload.h",
+    "recover_module/record.cc",
+    "recover_module/record.h",
+    "recover_module/table.cc",
+    "recover_module/table.h",
     "recovery.cc",
     "recovery.h",
     "sql_features.cc",
@@ -47,6 +65,13 @@ component("sql") {
     libs = [
       "CoreFoundation.framework",
       "CoreServices.framework",
+    ]
+  }
+
+  if (is_fuchsia) {
+    sources += [
+      "vfs_wrapper_fuchsia.cc",
+      "vfs_wrapper_fuchsia.h",
     ]
   }
 }
@@ -87,11 +112,14 @@ test("sql_unittests") {
   sources = [
     "database_unittest.cc",
     "meta_table_unittest.cc",
+    "recover_module/module_unittest.cc",
     "recovery_unittest.cc",
     "sql_memory_dump_provider_unittest.cc",
     "sqlite_features_unittest.cc",
     "statement_id_unittest.cc",
     "statement_unittest.cc",
+    "test/database_test_peer.cc",
+    "test/database_test_peer.h",
     "test/paths.cc",
     "test/paths.h",
     "test/run_all_unittests.cc",

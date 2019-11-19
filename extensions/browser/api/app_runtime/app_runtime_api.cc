@@ -76,41 +76,41 @@ void DispatchOnLaunchedEventImpl(
       ->SetLastLaunchTime(extension_id, base::Time::Now());
 }
 
-#define ASSERT_ENUM_EQUAL(Name) ASSERT_ENUM_EQUAL_FULL(Name, Name)
-
-#define ASSERT_ENUM_EQUAL_FULL(Name, Name2)                        \
-  static_assert(static_cast<int>(extensions::Name) ==              \
-                    static_cast<int>(app_runtime::LAUNCH_##Name2), \
-                "The value of extensions::" #Name                  \
+#define ASSERT_ENUM_EQUAL(Name, Name2)                                 \
+  static_assert(static_cast<int>(extensions::AppLaunchSource::Name) == \
+                    static_cast<int>(app_runtime::LAUNCH_##Name2),     \
+                "The value of extensions::" #Name                      \
                 " and app_runtime::LAUNCH_" #Name2 " should be the same");
 
 app_runtime::LaunchSource GetLaunchSourceEnum(
     extensions::AppLaunchSource source) {
-  ASSERT_ENUM_EQUAL(SOURCE_NONE);
-  ASSERT_ENUM_EQUAL(SOURCE_UNTRACKED);
-  ASSERT_ENUM_EQUAL(SOURCE_APP_LAUNCHER);
-  ASSERT_ENUM_EQUAL(SOURCE_NEW_TAB_PAGE);
-  ASSERT_ENUM_EQUAL(SOURCE_RELOAD);
-  ASSERT_ENUM_EQUAL(SOURCE_RESTART);
-  ASSERT_ENUM_EQUAL(SOURCE_LOAD_AND_LAUNCH);
-  ASSERT_ENUM_EQUAL(SOURCE_COMMAND_LINE);
-  ASSERT_ENUM_EQUAL(SOURCE_FILE_HANDLER);
-  ASSERT_ENUM_EQUAL(SOURCE_URL_HANDLER);
-  ASSERT_ENUM_EQUAL(SOURCE_SYSTEM_TRAY);
-  ASSERT_ENUM_EQUAL(SOURCE_ABOUT_PAGE);
-  ASSERT_ENUM_EQUAL(SOURCE_KEYBOARD);
-  ASSERT_ENUM_EQUAL(SOURCE_EXTENSIONS_PAGE);
-  ASSERT_ENUM_EQUAL(SOURCE_MANAGEMENT_API);
-  ASSERT_ENUM_EQUAL_FULL(SOURCE_EPHEMERAL_APP_DEPRECATED, SOURCE_EPHEMERAL_APP);
-  ASSERT_ENUM_EQUAL(SOURCE_BACKGROUND);
-  ASSERT_ENUM_EQUAL(SOURCE_KIOSK);
-  ASSERT_ENUM_EQUAL(SOURCE_CHROME_INTERNAL);
-  ASSERT_ENUM_EQUAL(SOURCE_TEST);
-  ASSERT_ENUM_EQUAL(SOURCE_INSTALLED_NOTIFICATION);
-  ASSERT_ENUM_EQUAL(SOURCE_CONTEXT_MENU);
-  ASSERT_ENUM_EQUAL(SOURCE_ARC);
-  static_assert(extensions::NUM_APP_LAUNCH_SOURCES ==
-                    app_runtime::LaunchSource::LAUNCH_SOURCE_LAST + 1,
+  ASSERT_ENUM_EQUAL(kSourceNone, SOURCE_NONE);
+  ASSERT_ENUM_EQUAL(kSourceUntracked, SOURCE_UNTRACKED);
+  ASSERT_ENUM_EQUAL(kSourceAppLauncher, SOURCE_APP_LAUNCHER);
+  ASSERT_ENUM_EQUAL(kSourceNewTabPage, SOURCE_NEW_TAB_PAGE);
+  ASSERT_ENUM_EQUAL(kSourceReload, SOURCE_RELOAD);
+  ASSERT_ENUM_EQUAL(kSourceRestart, SOURCE_RESTART);
+  ASSERT_ENUM_EQUAL(kSourceLoadAndLaunch, SOURCE_LOAD_AND_LAUNCH);
+  ASSERT_ENUM_EQUAL(kSourceCommandLine, SOURCE_COMMAND_LINE);
+  ASSERT_ENUM_EQUAL(kSourceFileHandler, SOURCE_FILE_HANDLER);
+  ASSERT_ENUM_EQUAL(kSourceUrlHandler, SOURCE_URL_HANDLER);
+  ASSERT_ENUM_EQUAL(kSourceSystemTray, SOURCE_SYSTEM_TRAY);
+  ASSERT_ENUM_EQUAL(kSourceAboutPage, SOURCE_ABOUT_PAGE);
+  ASSERT_ENUM_EQUAL(kSourceKeyboard, SOURCE_KEYBOARD);
+  ASSERT_ENUM_EQUAL(kSourceExtensionsPage, SOURCE_EXTENSIONS_PAGE);
+  ASSERT_ENUM_EQUAL(kSourceManagementApi, SOURCE_MANAGEMENT_API);
+  ASSERT_ENUM_EQUAL(kSourceEphemeralAppDeprecated, SOURCE_EPHEMERAL_APP);
+  ASSERT_ENUM_EQUAL(kSourceBackground, SOURCE_BACKGROUND);
+  ASSERT_ENUM_EQUAL(kSourceKiosk, SOURCE_KIOSK);
+  ASSERT_ENUM_EQUAL(kSourceChromeInternal, SOURCE_CHROME_INTERNAL);
+  ASSERT_ENUM_EQUAL(kSourceTest, SOURCE_TEST);
+  ASSERT_ENUM_EQUAL(kSourceInstalledNotification,
+                    SOURCE_INSTALLED_NOTIFICATION);
+  ASSERT_ENUM_EQUAL(kSourceContextMenu, SOURCE_CONTEXT_MENU);
+  ASSERT_ENUM_EQUAL(kSourceArc, SOURCE_ARC);
+  ASSERT_ENUM_EQUAL(kSourceIntentUrl, SOURCE_INTENT_URL);
+  static_assert(static_cast<int>(extensions::AppLaunchSource::kMaxValue) ==
+                    app_runtime::LaunchSource::LAUNCH_SOURCE_LAST,
                 "");
 
   return static_cast<app_runtime::LaunchSource>(source);

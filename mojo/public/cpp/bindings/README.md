@@ -10,7 +10,7 @@ set of primitives for communicating over Mojo message pipes. Combined with
 generated code from the
 [Mojom IDL and bindings generator](/mojo/public/tools/bindings/README.md), users
 can easily connect interface clients and implementations across arbitrary intra-
-and inter-process bounaries.
+and inter-process boundaries.
 
 This document provides a detailed guide to bindings API usage with example code
 snippets. For a detailed API references please consult the headers in
@@ -113,7 +113,7 @@ interface Logger {
 };
 ```
 
-Running this through the bindings generator will produce a `logging.mojom.h`
+Running this through the bindings generator will produce a `logger.mojom.h`
 with the following definitions (modulo unimportant details):
 
 ``` cpp
@@ -126,34 +126,25 @@ class Logger {
   virtual void Log(const std::string& message) = 0;
 };
 
-using LoggerPtr = mojo::InterfacePtr<Logger>;
-using LoggerRequest = mojo::InterfaceRequest<Logger>;
-
 }  // namespace mojom
 }  // namespace sample
 ```
 
-Makes sense. Let's take a closer look at those type aliases at the end.
-
-### InterfacePtr and InterfaceRequest
-
-You will notice the type aliases for `LoggerPtr` and
-`LoggerRequest` are using two of the most fundamental template types in the C++
-bindings library: **`InterfacePtr<T>`** and **`InterfaceRequest<T>`**.
+### Remote and PendingReceiver
 
 In the world of Mojo bindings libraries these are effectively strongly-typed
-message pipe endpoints. If an `InterfacePtr<T>` is bound to a message pipe
+message pipe endpoints. If a `Remote<T>` is bound to a message pipe
 endpoint, it can be dereferenced to make calls on an opaque `T` interface. These
 calls immediately serialize their arguments (using generated code) and write a
 corresponding message to the pipe.
 
-An `InterfaceRequest<T>` is essentially just a typed container to hold the other
-end of an `InterfacePtr<T>`'s pipe -- the receiving end -- until it can be
-routed to some implementation which will **bind** it. The `InterfaceRequest<T>`
+A `PendingReceiver<T>` is essentially just a typed container to hold the other
+end of a `Remote<T>`'s pipe -- the receiving end -- until it can be
+routed to some implementation which will **bind** it. The `PendingReceiver<T>`
 doesn't actually *do* anything other than hold onto a pipe endpoint and carry
 useful compile-time type information.
 
-![Diagram illustrating InterfacePtr and InterfaceRequest on either end of a message pipe](/docs/images/mojo_pipe.png)
+![Diagram illustrating Remote and PendingReceiver on either end of a message pipe](/docs/images/mojo_pipe.png)
 
 So how do we create a strongly-typed message pipe?
 
@@ -166,41 +157,41 @@ strongly-typed object:
 #include "sample/logger.mojom.h"
 
 mojo::MessagePipe pipe;
-sample::mojom::LoggerPtr logger(
-    sample::mojom::LoggerPtrInfo(std::move(pipe.handle0), 0));
-sample::mojom::LoggerRequest request(std::move(pipe.handle1));
+mojo::Remote<sample::mojom::Logger> logger(
+    mojo::PendingRemote<sample::mojom::Logger>(std::move(pipe.handle0), 0));
+mojo::PendingReceiver<sample::mojom::Logger> receiver(std::move(pipe.handle1));
 ```
 
 That's pretty verbose, but the C++ Bindings library provides a more convenient
-way to accomplish the same thing. [interface_request.h](https://cs.chromium.org/chromium/src/mojo/public/cpp/bindings/interface_request.h)
-defines a `MakeRequest` function:
+way to accomplish the same thing. [remote.h](https://cs.chromium.org/chromium/src/mojo/public/cpp/bindings/remote.h)
+defines a `BindNewPipeAndPassReceiver` method:
 
 ``` cpp
-sample::mojom::LoggerPtr logger;
-auto request = mojo::MakeRequest(&logger);
+mojo::Remote<sample::mojom::Logger> logger;
+auto receiver = logger.BindNewPipeAndPassReceiver());
 ```
 
 This second snippet is equivalent to the first one.
 
 *** note
-**NOTE:** In the first example above you may notice usage of the `LoggerPtrInfo`
-type, which is a generated alias for `mojo::InterfacePtrInfo<Logger>`. This is
-similar to an `InterfaceRequest<T>` in that it merely holds onto a pipe handle
-and cannot actually read or write messages on the pipe. Both this type and
-`InterfaceRequest<T>` are safe to move freely from sequence to sequence, whereas
-a bound `InterfacePtr<T>` is bound to a single sequence.
+**NOTE:** In the first example above you may notice usage of the
+`mojo::PendingRemote<Logger>`. This is similar to a `PendingReceiver<T>`
+in that it merely holds onto a pipe handle and cannot actually read or
+write messages on the pipe. Both this type and `PendingReceiver<T>` are safe
+to move freely from sequence to sequence, whereas a bound `Remote<T>` is bound
+to a single sequence.
 
-An `InterfacePtr<T>` may be unbound by calling its `PassInterface()` method,
-which returns a new `InterfacePtrInfo<T>`. Conversely, an `InterfacePtr<T>` may
-bind (and thus take ownership of) an `InterfacePtrInfo<T>` so that interface
+A `Remote<T>` may be unbound by calling its `Unbind()` method,
+which returns a new `PendingRemote<T>`. Conversely, an `Remote<T>` may
+bind (and thus take ownership of) an `PendingRemote<T>` so that interface
 calls can be made on the pipe.
 
-The sequence-bound nature of `InterfacePtr<T>` is necessary to support safe
+The sequence-bound nature of `Remote<T>` is necessary to support safe
 dispatch of its [message responses](#Receiving-Responses) and
 [connection error notifications](#Connection-Errors).
 ***
 
-Once the `LoggerPtr` is bound we can immediately begin calling `Logger`
+Once the `PendingRemote<Logger>` is bound we can immediately begin calling `Logger`
 interface methods on it, which will immediately write messages into the pipe.
 These messages will stay queued on the receiving end of the pipe until someone
 binds to it and starts reading them.
@@ -211,26 +202,26 @@ logger->Log("Hello!");
 
 This actually writes a `Log` message to the pipe.
 
-![Diagram illustrating a message traveling on a pipe from LoggerPtr to LoggerRequest](/docs/images/mojo_message.png)
+![Diagram illustrating a message traveling on a pipe from Remote<Logger> to PendingReceiver<Logger>](/docs/images/mojo_message.png)
 
-But as mentioned above, `InterfaceRequest` *doesn't actually do anything*, so
+But as mentioned above, `PendingReceiver` *doesn't actually do anything*, so
 that message will just sit on the pipe forever. We need a way to read messages
 off the other end of the pipe and dispatch them. We have to
-**bind the interface request**.
+**bind the pending receiver**.
 
-### Binding an Interface Request
+### Binding a Pending Receiver
 
 There are many different helper classes in the bindings library for binding the
-receiving end of a message pipe. The most primitive among them is the aptly
-named `mojo::Binding<T>`. A `mojo::Binding<T>` bridges an implementation of `T`
-with a single bound message pipe endpoint (via a `mojo::InterfaceRequest<T>`),
+receiving end of a message pipe. The most primitive among them is `mojo::Receiver<T>`.
+A `mojo::Receiver<T>` bridges an implementation of `T`
+with a single bound message pipe endpoint (via a `mojo::PendingReceiver<T>`),
 which it continuously watches for readability.
 
-Any time the bound pipe becomes readable, the `Binding` will schedule a task to
+Any time the bound pipe becomes readable, the `Receiver` will schedule a task to
 read, deserialize (using generated code), and dispatch all available messages to
 the bound `T` implementation. Below is a sample implementation of the `Logger`
-interface. Notice that the implementation itself owns a `mojo::Binding`. This is
-a common pattern, since a bound implementation must outlive any `mojo::Binding`
+interface. Notice that the implementation itself owns a `mojo::Receiver`. This is
+a common pattern, since a bound implementation must outlive any `mojo::Receiver`
 which binds it.
 
 ``` cpp
@@ -241,10 +232,10 @@ which binds it.
 class LoggerImpl : public sample::mojom::Logger {
  public:
   // NOTE: A common pattern for interface implementations which have one
-  // instance per client is to take an InterfaceRequest in the constructor.
+  // instance per client is to take a PendingReceiver in the constructor.
 
-  explicit LoggerImpl(sample::mojom::LoggerRequest request)
-      : binding_(this, std::move(request)) {}
+  explicit LoggerImpl(mojo::PendingReceiver<sample::mojom::Logger> receiver)
+      : receiver_(this, std::move(receiver)) {}
   ~Logger() override {}
 
   // sample::mojom::Logger:
@@ -253,39 +244,39 @@ class LoggerImpl : public sample::mojom::Logger {
   }
 
  private:
-  mojo::Binding<sample::mojom::Logger> binding_;
+  mojo::Receiver<sample::mojom::Logger> receiver_;
 
   DISALLOW_COPY_AND_ASSIGN(LoggerImpl);
 };
 ```
 
-Now we can construct a `LoggerImpl` over our pending `LoggerRequest`, and the
+Now we can construct a `LoggerImpl` over our `PendingReceiver<Logger>`, and the
 previously queued `Log` message will be dispatched ASAP on the `LoggerImpl`'s
 sequence:
 
 ``` cpp
-LoggerImpl impl(std::move(request));
+LoggerImpl impl(std::move(receiver));
 ```
 
 The diagram below illustrates the following sequence of events, all set in
 motion by the above line of code:
 
-1. The `LoggerImpl` constructor is called, passing the `LoggerRequest` along
-   to the `Binding`.
-2. The `Binding` takes ownership of the `LoggerRequest`'s pipe endpoint and
+1. The `LoggerImpl` constructor is called, passing the `PendingReceiver<Logger>` along
+   to the `Receiver`.
+2. The `Receiver` takes ownership of the `PendingReceiver<Logger>`'s pipe endpoint and
    begins watching it for readability. The pipe is readable immediately, so a
    task is scheduled to read the pending `Log` message from the pipe ASAP.
-3. The `Log` message is read and deserialized, causing the `Binding` to invoke
+3. The `Log` message is read and deserialized, causing the `Receiver` to invoke
    the `Logger::Log` implementation on its bound `LoggerImpl`.
 
-![Diagram illustrating the progression of binding a request, reading a pending message, and dispatching it](/docs/images/mojo_binding_and_dispatch.png)
+![Diagram illustrating the progression of binding a pending receiver, reading a pending message, and dispatching it](/docs/images/mojo_receiver_and_dispatch.png)
 
 As a result, our implementation will eventually log the client's `"Hello!"`
 message via `LOG(ERROR)`.
 
 *** note
 **NOTE:** Messages will only be read and dispatched from a pipe as long as the
-object which binds it (*i.e.* the `mojo::Binding` in the above example) remains
+object which binds it (*i.e.* the `mojo::Receiver` in the above example) remains
 alive.
 ***
 
@@ -335,10 +326,10 @@ is bound). Here's an updated implementation:
 class LoggerImpl : public sample::mojom::Logger {
  public:
   // NOTE: A common pattern for interface implementations which have one
-  // instance per client is to take an InterfaceRequest in the constructor.
+  // instance per client is to take a PendingReceiver in the constructor.
 
-  explicit LoggerImpl(sample::mojom::LoggerRequest request)
-      : binding_(this, std::move(request)) {}
+  explicit LoggerImpl(mojo::PendingReceiver<sample::mojom::Logger> receiver)
+      : receiver_(this, std::move(receiver)) {}
   ~Logger() override {}
 
   // sample::mojom::Logger:
@@ -352,7 +343,7 @@ class LoggerImpl : public sample::mojom::Logger {
   }
 
  private:
-  mojo::Binding<sample::mojom::Logger> binding_;
+  mojo::Receiver<sample::mojom::Logger> receiver_;
   std::vector<std::string> lines_;
 
   DISALLOW_COPY_AND_ASSIGN(LoggerImpl);
@@ -384,48 +375,33 @@ which case that endpoint won't get such a notification). If there are remaining
 incoming messages for an endpoint on disconnection, the connection error won't
 be triggered until the messages are drained.
 
-Pipe disconnecition may be caused by:
+Pipe disconnection may be caused by:
 * Mojo system-level causes: process terminated, resource exhausted, etc.
 * The bindings close the pipe due to a validation error when processing a
   received message.
 * The peer endpoint is closed. For example, the remote side is a bound
-  `mojo::InterfacePtr<T>` and it is destroyed.
+  `mojo::Remote<T>` and it is destroyed.
 
 Regardless of the underlying cause, when a connection error is encountered on
-a binding endpoint, that endpoint's **connection error handler** (if set) is
-invoked. This handler is a simple `base::Closure` and may only be invoked
+a receiver endpoint, that endpoint's **disconnect handler** (if set) is
+invoked. This handler is a simple `base::OnceClosure` and may only be invoked
 *once* as long as the endpoint is bound to the same pipe. Typically clients and
 implementations use this handler to do some kind of cleanup or -- particuarly if
 the error was unexpected -- create a new pipe and attempt to establish a new
 connection with it.
 
-All message pipe-binding C++ objects (*e.g.*, `mojo::Binding<T>`,
-`mojo::InterfacePtr<T>`, *etc.*) support setting their connection error handler
-via a `set_connection_error_handler` method.
+All message pipe-binding C++ objects (*e.g.*, `mojo::Receiver<T>`,
+`mojo::Remote<T>`, *etc.*) support setting their disconnect handler
+via a `set_disconnect_handler` method.
 
-We can set up another end-to-end `Logger` example to demonstrate error handler
-invocation:
-
-``` cpp
-sample::mojom::LoggerPtr logger;
-LoggerImpl impl(mojo::MakeRequest(&logger));
-impl.set_connection_error_handler(base::BindOnce([] { LOG(ERROR) << "Bye."; }));
-logger->Log("OK cool");
-logger.reset();  // Closes the client end.
-```
-
-As long as `impl` stays alive here, it will eventually receive the `Log` message
-followed immediately by an invocation of the bound callback which outputs
-`"Bye."`. Like all other bindings callbacks, a connection error handler will
-**never** be invoked once its corresponding binding object has been destroyed.
-
-In fact, suppose instead that `LoggerImpl` had set up the following error
+We can set up another end-to-end `Logger` example to demonstrate disconnect handler
+invocation. Suppose that `LoggerImpl` had set up the following disconnect
 handler within its constructor:
 
 ``` cpp
-LoggerImpl::LoggerImpl(sample::mojom::LoggerRequest request)
-    : binding_(this, std::move(request)) {
-  binding_.set_connection_error_handler(
+LoggerImpl::LoggerImpl(mojo::PendingReceiver<sample::mojom::Logger> receiver)
+    : receiver_(this, std::move(receiver)) {
+  receiver_.set_disconnect_handler(
       base::BindOnce(&LoggerImpl::OnError, base::Unretained(this)));
 }
 
@@ -433,17 +409,28 @@ void LoggerImpl::OnError() {
   LOG(ERROR) << "Client disconnected! Purging log lines.";
   lines_.clear();
 }
+
+mojo::Remote<sample::mojom::Logger> logger;
+LoggerImpl impl(logger.BindNewPipeAndPassReceiver());
+logger->Log("OK cool");
+logger.reset();  // Closes the client end.
+
 ```
 
+As long as `impl` stays alive here, it will eventually receive the `Log` message
+followed immediately by an invocation of the bound callback which outputs
+`"Client disconnected! Purging log lines."`. Like all other receiver callbacks, a disconnect handler will
+**never** be invoked once its corresponding receiver object has been destroyed.
+
 The use of `base::Unretained` is *safe* because the error handler will never be
-invoked beyond the lifetime of `binding_`, and `this` owns `binding_`.
+invoked beyond the lifetime of `receiver_`, and `this` owns `receiver_`.
 
 ### A Note About Endpoint Lifetime and Callbacks
-Once a `mojo::InterfacePtr<T>` is destroyed, it is guaranteed that pending
+Once a `mojo::Remote<T>` is destroyed, it is guaranteed that pending
 callbacks as well as the connection error handler (if registered) won't be
 called.
 
-Once a `mojo::Binding<T>` is destroyed, it is guaranteed that no more method
+Once a `mojo::Receiver<T>` is destroyed, it is guaranteed that no more method
 calls are dispatched to the implementation and the connection error handler (if
 registered) won't be called.
 
@@ -452,10 +439,10 @@ A common situation when calling mojo interface methods that take a callback is
 that the caller wants to know if the other endpoint is torn down (e.g. because
 of a crash). In that case, the consumer usually wants to know if the response
 callback won't be run. There are different solutions for this problem, depending
-on how the `InterfacePtr<T>` is held:
-1. The consumer owns the `InterfacePtr<T>`: `set_connection_error_handler`
+on how the `Remote<T>` is held:
+1. The consumer owns the `Remote<T>`: `set_disconnect_handler`
    should be used.
-2. The consumer doesn't own the `InterfacePtr<T>`: there are two helpers
+2. The consumer doesn't own the `Remote<T>`: there are two helpers
    depending on the behavior that the caller wants. If the caller wants to
    ensure that an error handler is run, then
    [**`mojo::WrapCallbackWithDropHandler`**](https://cs.chromium.org/chromium/src/mojo/public/cpp/bindings/callback_helpers.h?l=46)
@@ -463,13 +450,13 @@ on how the `InterfacePtr<T>` is held:
    [**`mojo::WrapCallbackWithDefaultInvokeIfNotRun`**](https://cs.chromium.org/chromium/src/mojo/public/cpp/bindings/callback_helpers.h?l=40)
    helper should be used. With both of these helpers, usual callback care should
    be followed to ensure that the callbacks don't run after the consumer is
-   destructed (e.g. because the owner of the `InterfacePtr<T>` outlives the
+   destructed (e.g. because the owner of the `Remote<T>` outlives the
    consumer). This includes using
    [**`base::WeakPtr`**](https://cs.chromium.org/chromium/src/base/memory/weak_ptr.h?l=5)
    or
    [**`base::RefCounted`**](https://cs.chromium.org/chromium/src/base/memory/ref_counted.h?l=246).
    It should also be noted that with these helpers, the callbacks could be run
-   synchronously while the InterfacePtr<T> is reset or destroyed.
+   synchronously while the Remote<T> is reset or destroyed.
 
 ### A Note About Ordering
 
@@ -481,17 +468,22 @@ message) on the pipe.
 This means that it's safe to write something contrived like:
 
 ``` cpp
-void GoBindALogger(sample::mojom::LoggerRequest request) {
-  LoggerImpl impl(std::move(request));
+LoggerImpl::LoggerImpl(mojo::PendingReceiver<sample::mojom::Logger> receiver,
+      base::OnceClosure disconnect_handler)
+    : receiver_(this, std::move(receiver)) {
+  receiver_.set_disconnect_handler(std::move(disconnect_handler));
+}
+
+void GoBindALogger(mojo::PendingReceiver<sample::mojom::Logger> receiver) {
   base::RunLoop loop;
-  impl.set_connection_error_handler(loop.QuitClosure());
+  LoggerImpl impl(std::move(receiver), loop.QuitClosure());
   loop.Run();
 }
 
 void LogSomething() {
-  sample::mojom::LoggerPtr logger;
+  mojo::Remote<sample::mojom::Logger> logger;
   bg_thread->task_runner()->PostTask(
-      FROM_HERE, base::BindOnce(&GoBindALogger, mojo::MakeRequest(&logger)));
+      FROM_HERE, base::BindOnce(&GoBindALogger, logger.BindNewPipeAndPassReceiver()));
   logger->Log("OK Computer");
 }
 ```
@@ -603,7 +595,7 @@ roughly equivalent to a `std::unique_ptr` with some additional utility methods.
 This allows struct values to be nullable and struct types to be potentially
 self-referential.
 
-Every genereated struct class has a static `New()` method which returns a new
+Every generated struct class has a static `New()` method which returns a new
 `mojo::StructPtr<T>` wrapping a new instance of the class constructed by
 forwarding the arguments from `New`. For example:
 
@@ -657,7 +649,7 @@ Similarly to [structs](#Structs), tagged unions generate an identically named,
 representative C++ class which is typically wrapped in a `mojo::StructPtr<T>`.
 
 Unlike structs, all generated union fields are private and must be retrieved and
-manipulated using accessors. A field `foo` is accessible by `foo()` and
+manipulated using accessors. A field `foo` is accessible by `get_foo()` and
 settable by `set_foo()`. There is also a boolean `is_foo()` for each field which
 indicates whether the union is currently taking on the value of field `foo` in
 exclusion to all other union fields.
@@ -724,12 +716,12 @@ LOG(INFO) << "Value is " << value->string_value();  // DCHECK!
 
 ### Sending Interfaces Over Interfaces
 
-We know how to create interface pipes and use their Ptr and Request endpoints
+We know how to create interface pipes and use their Remote and PendingReceiver endpoints
 in some interesting ways. This still doesn't add up to interesting IPC! The
 bread and butter of Mojo IPC is the ability to transfer interface endpoints
 across other interfaces, so let's take a look at how to accomplish that.
 
-#### Sending Interface Requests
+#### Sending Pending Receivers
 
 Consider a new example Mojom in `//sample/db.mojom`:
 
@@ -741,14 +733,14 @@ interface Table {
 };
 
 interface Database {
-  AddTable(Table& table);
+  AddTable(pending_receiver<Table> table);
 };
 ```
 
 As noted in the
-[Mojom IDL documentation](/mojo/public/tools/bindings/README.md#Primitive-Types),
-the `Table&` syntax denotes a `Table` interface request. This corresponds
-precisely to the `InterfaceRequest<T>` type discussed in the sections above, and
+[Mojom IDL documentation](/mojo/public/tools/bindings/README.md#Primitive-Types), // need to update this page too!
+the `pending_receiver<Table>` syntax corresponds
+precisely to the `PendingReceiver<T>` type discussed in the sections above, and
 in fact the generated code for these interfaces is approximately:
 
 ``` cpp
@@ -762,18 +754,12 @@ class Table {
   virtual void AddRow(int32_t key, const std::string& data) = 0;
 }
 
-using TablePtr = mojo::InterfacePtr<Table>;
-using TableRequest = mojo::InterfaceRequest<Table>;
-
 class Database {
  public:
   virtual ~Database() {}
 
-  virtual void AddTable(TableRequest table);
+  virtual void AddTable(mojo::PendingReceiver<Table> table);
 };
-
-using DatabasePtr = mojo::InterfacePtr<Database>;
-using DatabaseRequest = mojo::InterfaceRequest<Database>;
 
 }  // namespace mojom
 }  // namespace db
@@ -787,8 +773,8 @@ We can put this all together now with an implementation of `Table` and
 
 class TableImpl : public db::mojom:Table {
  public:
-  explicit TableImpl(db::mojom::TableRequest request)
-      : binding_(this, std::move(request)) {}
+  explicit TableImpl(mojo::PendingReceiver<db::mojom::Table> receiver)
+      : receiver_(this, std::move(receiver)) {}
   ~TableImpl() override {}
 
   // db::mojom::Table:
@@ -797,53 +783,52 @@ class TableImpl : public db::mojom:Table {
   }
 
  private:
-  mojo::Binding<db::mojom::Table> binding_;
+  mojo::Receiver<db::mojom::Table> receiver_;
   std::map<int32_t, std::string> rows_;
 };
 
 class DatabaseImpl : public db::mojom::Database {
  public:
-  explicit DatabaseImpl(db::mojom::DatabaseRequest request)
-      : binding_(this, std::move(request)) {}
+  explicit DatabaseImpl(mojo::PendingReceiver<db::mojom::Database> receiver)
+      : receiver_(this, std::move(receiver)) {}
   ~DatabaseImpl() override {}
 
   // db::mojom::Database:
-  void AddTable(db::mojom::TableRequest table) {
+  void AddTable(mojo::PendingReceiver<db::mojom::Table> table) {
     tables_.emplace_back(std::make_unique<TableImpl>(std::move(table)));
   }
 
  private:
-  mojo::Binding<db::mojom::Database> binding_;
+  mojo::Receiver<db::mojom::Database> receiver_;
   std::vector<std::unique_ptr<TableImpl>> tables_;
 };
 ```
 
-Pretty straightforward. The `Table&` Mojom paramter to `AddTable` translates to
-a C++ `db::mojom::TableRequest`, aliased from
-`mojo::InterfaceRequest<db::mojom::Table>`, which we know is just a
+Pretty straightforward. The `pending_receiver<Table>` Mojom parameter to `AddTable` translates to
+a C++ `mojo::PendingReceiver<db::mojom::Table>`, which we know is just a
 strongly-typed message pipe handle. When `DatabaseImpl` gets an `AddTable` call,
-it constructs a new `TableImpl` and binds it to the received `TableRequest`.
+it constructs a new `TableImpl` and binds it to the received `mojo::PendingReceiver<db::mojom::Table>`.
 
 Let's see how this can be used.
 
 ``` cpp
-db::mojom::DatabasePtr database;
-DatabaseImpl db_impl(mojo::MakeRequest(&database));
+mojo::Remote<db::mojom::Database> database;
+DatabaseImpl db_impl(database.BindNewPipeAndPassReceiver());
 
-db::mojom::TablePtr table1, table2;
-database->AddTable(mojo::MakeRequest(&table1));
-database->AddTable(mojo::MakeRequest(&table2));
+mojo::Remote<db::mojom::Table> table1, table2;
+database->AddTable(table1.BindNewPipeAndPassReceiver());
+database->AddTable(table2.BindNewPipeAndPassReceiver());
 
 table1->AddRow(1, "hiiiiiiii");
 table2->AddRow(2, "heyyyyyy");
 ```
 
 Notice that we can again start using the new `Table` pipes immediately, even
-while their `TableRequest` endpoints are still in transit.
+while their `mojo::PendingReceiver<db::mojom::Table>` endpoints are still in transit.
 
-#### Sending InterfacePtrs
+#### Sending Remotes
 
-Of course we can also send `InterfacePtr`s:
+Of course we can also send `Remote`s:
 
 ``` cpp
 interface TableListener {
@@ -853,39 +838,39 @@ interface TableListener {
 interface Table {
   AddRow(int32 key, string data);
 
-  AddListener(TableListener listener);
+  AddListener(pending_remote<TableListener> listener);
 };
 ```
 
 This would generate a `Table::AddListener` signature like so:
 
 ``` cpp
-  virtual void AddListener(TableListenerPtr listener) = 0;
+  virtual void AddListener(mojo::PendingRemote<TableListener> listener) = 0;
 ```
 
 and this could be used like so:
 
 ``` cpp
-db::mojom::TableListenerPtr listener;
-TableListenerImpl impl(mojo::MakeRequest(&listener));
+mojo::PendingRemote<db::mojom::TableListener> listener;
+TableListenerImpl impl(listener.InitWithNewPipeAndPassReceiver());
 table->AddListener(std::move(listener));
 ```
 
 ## Other Interface Binding Types
 
 The [Interfaces](#Interfaces) section above covers basic usage of the most
-common bindings object types: `InterfacePtr`, `InterfaceRequest`, and `Binding`.
+common bindings object types: `Remote`, `PendingReceiver`, and `Receiver`.
 While these types are probably the most commonly used in practice, there are
 several other ways of binding both client- and implementation-side interface
 pipes.
 
-### Strong Bindings
+### Self-owned Receivers
 
-A **strong binding** exists as a standalone object which owns its interface
+A **self-owned receiver** exists as a standalone object which owns its interface
 implementation and automatically cleans itself up when its bound interface
 endpoint detects an error. The
-[**`MakeStrongBinding`**](https://cs.chromium.org/chromium/src/mojo/public/cpp/bindings/strong_binding.h)
-function is used to create such a binding.
+[**`MakeSelfOwnedReceiver`**](https://cs.chromium.org/chromium/src/mojo/public/cpp/bindings/self_owned_receiver.h)
+function is used to create such a receiver.
 .
 
 ``` cpp
@@ -900,12 +885,12 @@ class LoggerImpl : public sample::mojom::Logger {
   }
 
  private:
-  // NOTE: This doesn't own any Binding object!
+  // NOTE: This doesn't own any Receiver object!
 };
 
-db::mojom::LoggerPtr logger;
-mojo::MakeStrongBinding(std::make_unique<LoggerImpl>(),
-                        mojo::MakeRequest(&logger));
+mojo::Remote<db::mojom::Logger> logger;
+mojo::MakeSelfOwnedReceiver(std::make_unique<LoggerImpl>(),
+                        logger.BindNewPipeAndPassReceiver());
 
 logger->Log("NOM NOM NOM MESSAGES");
 ```
@@ -913,10 +898,10 @@ logger->Log("NOM NOM NOM MESSAGES");
 Now as long as `logger` remains open somewhere in the system, the bound
 `LoggerImpl` on the other end will remain alive.
 
-### Binding Sets
+### Receiver Sets
 
 Sometimes it's useful to share a single implementation instance with multiple
-clients. [**`BindingSet`**](https://cs.chromium.org/chromium/src/mojo/public/cpp/bindings/binding_set.h)
+clients. [**`ReceiverSet`**](https://cs.chromium.org/chromium/src/mojo/public/cpp/bindings/receiver_set.h)
 makes this easy. Consider the Mojom:
 
 ``` cpp
@@ -931,20 +916,20 @@ interface LoggerProvider {
 };
 ```
 
-We can use `BindingSet` to bind multiple `Logger` requests to a single
+We can use `ReceiverSet` to bind multiple `Logger` pending receivers to a single
 implementation instance:
 
 ``` cpp
 class LogManager : public system::mojom::LoggerProvider,
                    public system::mojom::Logger {
  public:
-  explicit LogManager(system::mojom::LoggerProviderRequest request)
-      : provider_binding_(this, std::move(request)) {}
+  explicit LogManager(mojo::PendingReceiver<system::mojom::LoggerProvider> receiver)
+      : provider_receiver_(this, std::move(receiver)) {}
   ~LogManager() {}
 
   // system::mojom::LoggerProvider:
-  void GetLogger(LoggerRequest request) override {
-    logger_bindings_.AddBinding(this, std::move(request));
+  void GetLogger(mojo::PendingReceiver<Logger> receiver) override {
+    logger_receivers_.Add(this, std::move(receiver));
   }
 
   // system::mojom::Logger:
@@ -953,18 +938,18 @@ class LogManager : public system::mojom::LoggerProvider,
   }
 
  private:
-  mojo::Binding<system::mojom::LoggerProvider> provider_binding_;
-  mojo::BindingSet<system::mojom::Logger> logger_bindings_;
+  mojo::Receiver<system::mojom::LoggerProvider> provider_receiver_;
+  mojo::ReceiverSet<system::mojom::Logger> logger_receivers_;
 };
 
 ```
 
 
-### InterfacePtr Sets
+### Remote Sets
 
-Similar to the `BindingSet` above, sometimes it's useful to maintain a set of
-`InterfacePtr`s for *e.g.* a set of clients observing some event.
-[**`InterfacePtrSet`**](https://cs.chromium.org/chromium/src/mojo/public/cpp/bindings/interface_ptr_set.h)
+Similar to the `ReceiverSet` above, sometimes it's useful to maintain a set of
+`Remote`s for *e.g.* a set of clients observing some event.
+[**`RemoteSet`**](https://cs.chromium.org/chromium/src/mojo/public/cpp/bindings/remote_set.h)
 is here to help. Take the Mojom:
 
 ``` cpp
@@ -976,7 +961,7 @@ interface TableListener {
 
 interface Table {
   AddRow(int32 key, string data);
-  AddListener(TableListener listener);
+  AddListener(pending_remote<TableListener> listener);
 };
 ```
 
@@ -996,12 +981,12 @@ class TableImpl : public db::mojom::Table {
     });
   }
 
-  void AddListener(db::mojom::TableListenerPtr listener) {
-    listeners_.AddPtr(std::move(listener));
+  void AddListener(mojo::PendingRemote<db::mojom::TableListener> listener) {
+    listeners_.Add(std::move(listener));
   }
 
  private:
-  mojo::InterfacePtrSet<db::mojom::Table> listeners_;
+  mojo::RemoteSet<db::mojom::Table> listeners_;
   std::map<int32_t, std::string> rows_;
 };
 ```
@@ -1012,102 +997,98 @@ Associated interfaces are interfaces which:
 
 * enable running multiple interfaces over a single message pipe while
   preserving message ordering.
-* make it possible for the bindings to access a single message pipe from
+* make it possible for the receiver to access a single message pipe from
   multiple sequences.
 
 ### Mojom
 
-A new keyword `associated` is introduced for interface pointer/request
+A new keyword `associated` is introduced for remote/receiver
 fields. For example:
 
 ``` cpp
 interface Bar {};
 
 struct Qux {
-  associated Bar bar3;
+  pending_associated_remote<Bar> bar3;
 };
 
 interface Foo {
-  // Uses associated interface pointer.
-  SetBar(associated Bar bar1);
-  // Uses associated interface request.
-  GetBar(associated Bar& bar2);
+  // Uses associated remote.
+  SetBar(pending_associated_remote<Bar> bar1);
+  // Uses associated receiver.
+  GetBar(pending_associated_receiver<Bar> bar2);
   // Passes a struct with associated interface pointer.
   PassQux(Qux qux);
   // Uses associated interface pointer in callback.
-  AsyncGetBar() => (associated Bar bar4);
+  AsyncGetBar() => (pending_associated_remote<Bar> bar4);
 };
 ```
 
 It means the interface impl/client will communicate using the same
-message pipe over which the associated interface pointer/request is
+message pipe over which the associated remote/receiver is
 passed.
 
 ### Using associated interfaces in C++
 
-When generating C++ bindings, the associated interface pointer of `Bar` is
-mapped to `BarAssociatedPtrInfo` (which is an alias of
-`mojo::AssociatedInterfacePtrInfo<Bar>`); associated interface request to
-`BarAssociatedRequest` (which is an alias of
-`mojo::AssociatedInterfaceRequest<Bar>`).
+When generating C++ bindings, the pending_associated_remote of `Bar` is
+mapped to `mojo::PendingAssociatedRemote<Bar>`; pending_associated_receiver to
+`mojo::PendingAssociatedReceiver<Bar>`.
 
 ``` cpp
 // In mojom:
 interface Foo {
   ...
-  SetBar(associated Bar bar1);
-  GetBar(associated Bar& bar2);
+  SetBar(pending_associated_remote<Bar> bar1);
+  GetBar(pending_associated_receiver<Bar> bar2);
   ...
 };
 
 // In C++:
 class Foo {
   ...
-  virtual void SetBar(BarAssociatedPtrInfo bar1) = 0;
-  virtual void GetBar(BarAssociatedRequest bar2) = 0;
+  virtual void SetBar(mojo::PendingAssociatedRemote<Bar> bar1) = 0;
+  virtual void GetBar(mojo::PendingAssociatedReceiver<Bar> bar2) = 0;
   ...
 };
 ```
 
-#### Passing associated interface requests
+#### Passing pending associated receivers
 
-Assume you have already got an `InterfacePtr<Foo> foo_ptr`, and you would like
+Assume you have already got an `Remote<Foo> foo`, and you would like
 to call `GetBar()` on it. You can do:
 
 ``` cpp
-BarAssociatedPtrInfo bar_ptr_info;
-BarAssociatedRequest bar_request = MakeRequest(&bar_ptr_info);
-foo_ptr->GetBar(std::move(bar_request));
+mojo::PendingAssociatedRemote<Bar> pending_bar;
+mojo::PendingAssociatedReceiver<Bar> bar_receiver = pending_bar.InitWithNewEndpointAndPassReceiver();
+foo->GetBar(std::move(bar_receiver));
 
-// BarAssociatedPtr is an alias of AssociatedInterfacePtr<Bar>.
-BarAssociatedPtr bar_ptr;
-bar_ptr.Bind(std::move(bar_ptr_info));
-bar_ptr->DoSomething();
+mojo::AssociatedRemote<Bar> bar;
+bar.Bind(std::move(pending_bar));
+bar->DoSomething();
 ```
 
 First, the code creates an associated interface of type `Bar`. It looks very
 similar to what you would do to setup a non-associated interface. An
 important difference is that one of the two associated endpoints (either
-`bar_request` or `bar_ptr_info`) must be sent over another interface. That is
+`bar_receiver` or `pending_bar`) must be sent over another interface. That is
 how the interface is associated with an existing message pipe.
 
-It should be noted that you cannot call `bar_ptr->DoSomething()` before passing
-`bar_request`. This is required by the FIFO-ness guarantee: at the receiver
+It should be noted that you cannot call `bar->DoSomething()` before passing
+`bar_receiver`. This is required by the FIFO-ness guarantee: at the receiver
 side, when the message of `DoSomething` call arrives, we want to dispatch it to
-the corresponding `AssociatedBinding<Bar>` before processing any subsequent
-messages. If `bar_request` is in a subsequent message, message dispatching gets
-into a deadlock. On the other hand, as soon as `bar_request` is sent, `bar_ptr`
-is usable. There is no need to wait until `bar_request` is bound to an
+the corresponding `AssociatedReceiver<Bar>` before processing any subsequent
+messages. If `bar_receiver` is in a subsequent message, message dispatching gets
+into a deadlock. On the other hand, as soon as `bar_receiver` is sent, `bar`
+is usable. There is no need to wait until `bar_receiver` is bound to an
 implementation at the remote side.
 
-A `MakeRequest` overload which takes an `AssociatedInterfacePtr` pointer
-(instead of an `AssociatedInterfacePtrInfo` pointer) is provided to make the
-code a little shorter. The following code achieves the same purpose:
+`AssociatedRemote` provides a `BindNewEndpointAndPassReceiver` method
+to make the code a little shorter. The following code achieves the same purpose:
 
 ``` cpp
-BarAssociatedPtr bar_ptr;
-foo_ptr->GetBar(MakeRequest(&bar_ptr));
-bar_ptr->DoSomething();
+mojo::AssociatedRemote<Bar> bar;
+foo->GetBar(bar.BindNewEndpointAndPassReceiver());
+bar->DoSomething();
 ```
 
 The implementation of `Foo` looks like this:
@@ -1115,45 +1096,45 @@ The implementation of `Foo` looks like this:
 ``` cpp
 class FooImpl : public Foo {
   ...
-  void GetBar(BarAssociatedRequest bar2) override {
-    bar_binding_.Bind(std::move(bar2));
+  void GetBar(mojo::AssociatedReceiver<Bar> bar2) override {
+    bar_receiver_.Bind(std::move(bar2));
     ...
   }
   ...
 
-  Binding<Foo> foo_binding_;
-  AssociatedBinding<Bar> bar_binding_;
+  Receiver<Foo> foo_receiver_;
+  AssociatedReceiver<Bar> bar_receiver_;
 };
 ```
 
-In this example, `bar_binding_`'s lifespan is tied to that of `FooImpl`. But you
+In this example, `bar_receiver_`'s lifespan is tied to that of `FooImpl`. But you
 don't have to do that. You can, for example, pass `bar2` to another sequence to
-bind to an `AssociatedBinding<Bar>` there.
+bind to an `AssociatedReceiver<Bar>` there.
 
-When the underlying message pipe is disconnected (e.g., `foo_ptr` or
-`foo_binding_` is destroyed), all associated interface endpoints (e.g.,
-`bar_ptr` and `bar_binding_`) will receive a connection error.
+When the underlying message pipe is disconnected (e.g., `foo` or
+`foo_receiver_` is destroyed), all associated interface endpoints (e.g.,
+`bar` and `bar_receiver_`) will receive a disconnect error.
 
-#### Passing associated interface pointers
+#### Passing associated remotes
 
-Similarly, assume you have already got an `InterfacePtr<Foo> foo_ptr`, and you
+Similarly, assume you have already got an `Remote<Foo> foo`, and you
 would like to call `SetBar()` on it. You can do:
 
 ``` cpp
-AssociatedBinding<Bar> bar_binding(some_bar_impl);
-BarAssociatedPtrInfo bar_ptr_info;
-BarAssociatedRequest bar_request = MakeRequest(&bar_ptr_info);
-foo_ptr->SetBar(std::move(bar_ptr_info));
-bar_binding.Bind(std::move(bar_request));
+mojo::AssociatedReceiver<Bar> bar_receiver(some_bar_impl);
+mojo::PendingAssociatedRemote<Bar> bar;
+mojo::PendingAssociatedReceiver<Bar> bar_pending_receiver = bar.InitWithNewEndpointAndPassReceiver();
+foo->SetBar(std::move(bar));
+bar_receiver.Bind(std::move(bar_pending_receiver));
 ```
 
 The following code achieves the same purpose:
 
 ``` cpp
-AssociatedBinding<Bar> bar_binding(some_bar_impl);
-BarAssociatedPtrInfo bar_ptr_info;
-bar_binding.Bind(&bar_ptr_info);
-foo_ptr->SetBar(std::move(bar_ptr_info));
+mojo::AssociatedReceiver<Bar> bar_receiver(some_bar_impl);
+mojo::PendingAssociatedRemote<Bar> bar;
+bar_receiver.Bind(bar.InitWithNewPipeAndPassReceiver());
+foo->SetBar(std::move(bar));
 ```
 
 ### Performance considerations
@@ -1177,8 +1158,8 @@ over one end of the master interface, or over one end of another associated
 interface which itself already has a master interface.
 
 If you want to test an associated interface endpoint without first
-associating it, you can use `mojo::MakeRequestAssociatedWithDedicatedPipe`. This
-will create working associated interface endpoints which are not actually
+associating it, you can use `AssociatedRemote::BindNewEndpointAndPassDedicatedReceiverForTesting`.
+This will create working associated interface endpoints which are not actually
 associated with anything else.
 
 ### Read more
@@ -1402,7 +1383,6 @@ And in `//ui/gfx/geometry/mojo/geometry_mojom_traits.cc`:
 namespace mojo {
 
 // static
-template <>
 bool StructTraits<gfx::mojom::RectDataView, gfx::Rect>::Read(
     gfx::mojom::RectDataView data,
   gfx::Rect* out_rect) {
@@ -1472,7 +1452,7 @@ sources = [
 ]
 public_deps = [ "//ui/gfx/geometry" ]
 type_mappings = [
-  "gfx.mojom.Rect=gfx::Rect",
+  "gfx.mojom.Rect=::gfx::Rect",
 ]
 ```
 
@@ -1512,8 +1492,7 @@ Let's look at each of the variables above:
       `base::Optional<CppType>`. If this attribute is set, the `base::Optional`
       wrapper is omitted for nullable `MojomType?` values, but the
       `StructTraits` definition for this type mapping must define additional
-      `IsNull` and `SetToNull` methods. See
-      [Specializing Nullability](#Specializing-Nullability) below.
+      `IsNull` and `SetToNull` methods.
     * `force_serialize`: The typemap is incompatible with lazy serialization
       (e.g. consider a typemap to a `base::StringPiece`, where retaining a
       copy is unsafe). Any messages carrying the type will be forced down the
@@ -1567,16 +1546,17 @@ to valid getter return types:
 | `handle<data_pipe_consumer>` | `mojo::ScopedDataPipeConsumerHandle`
 | `handle<data_pipe_producer>` | `mojo::ScopedDataPipeProducerHandle`
 | `handle<shared_buffer>`      | `mojo::ScopedSharedBufferHandle`
-| `FooInterface`               | `FooInterfacePtr`
-| `FooInterface&`              | `FooInterfaceRequest`
-| `associated FooInterface`    | `FooAssociatedInterfacePtr`
-| `associated FooInterface&`   | `FooAssociatedInterfaceRequest`
+| `pending_remote<Foo>`        | `mojo::PendingRemote<Foo>`
+| `pending_receiver<Foo>`      | `mojo::PendingReceiver<Foo>`
+| `pending_associated_remote<Foo>`    | `mojo::PendingAssociatedRemote<Foo>`
+| `pending_associated_receiver<Foo>`    | `mojo::PendingAssociatedReceiver<Foo>`
 | `string`                     | Value or reference to any type `T` that has a `mojo::StringTraits` specialization defined. By default this includes `std::string`, `base::StringPiece`, and `WTF::String` (Blink).
 | `array<T>`                   | Value or reference to any type `T` that has a `mojo::ArrayTraits` specialization defined. By default this includes `std::vector<T>`, `mojo::CArray<T>`, and `WTF::Vector<T>` (Blink).
 | `map<K, V>`                  | Value or reference to any type `T` that has a `mojo::MapTraits` specialization defined. By default this includes `std::map<T>`, `mojo::unordered_map<T>`, and `WTF::HashMap<T>` (Blink).
 | `FooEnum`                    | Value of any type that has an appropriate `EnumTraits` specialization defined. By default this inlcudes only the generated `FooEnum` type.
 | `FooStruct`                  | Value or reference to any type that has an appropriate `StructTraits` specialization defined. By default this includes only the generated `FooStructPtr` type.
 | `FooUnion`                   | Value of reference to any type that has an appropriate `UnionTraits` specialization defined. By default this includes only the generated `FooUnionPtr` type.
+| `Foo?`                       | `base::Optional<CppType>`, where `CppType` is the value type defined by the appropriate traits class specialization (e.g. `StructTraits`, `mojo::MapTraits`, etc.). This may be customized by the [typemapping](#Enabling-a-New-Type-Mapping).
 
 ### Using Generated DataView Types
 
@@ -1593,7 +1573,7 @@ struct field:
   correspond exactly to the mappings listed in the table above, under
   [StructTraits Reference](#StructTraits-Reference).
 
-* For handle and interface types (*e.g* `handle` or `FooInterface&`) these
+* For handle and interface types (*e.g* `handle` or `pending_remote<Foo>`) these
   are named `TakeFieldName` (for a field named `field_name`) and they return an
   appropriate move-only handle type by value. The return types correspond
   exactly to the mappings listed in the table above, under
@@ -1742,23 +1722,23 @@ depend on `"//sample:mojom_blink"`.
 ## Versioning Considerations
 
 For general documentation of versioning in the Mojom IDL see
-[Versioning](/mojo/public/tools/bindings/README.md#Versiwoning).
+[Versioning](/mojo/public/tools/bindings/README.md#Versioning).
 
 This section briefly discusses some C++-specific considerations relevant to
 versioned Mojom types.
 
 ### Querying Interface Versions
 
-`InterfacePtr` defines the following methods to query or assert remote interface
+`Remote` defines the following methods to query or assert remote interface
 version:
 
 ```cpp
-void QueryVersion(const base::Callback<void(uint32_t)>& callback);
+void QueryVersion(base::OnceCallback<void(uint32_t)> callback);
 ```
 
 This queries the remote endpoint for the version number of its binding. When a
 response is received `callback` is invoked with the remote version number. Note
-that this value is cached by the `InterfacePtr` instance to avoid redundant
+that this value is cached by the `Remote` instance to avoid redundant
 queries.
 
 ```cpp
@@ -1793,10 +1773,10 @@ inline bool IsKnownEnumValue(Department value);
 
 ### Using Mojo Bindings in Chrome
 
-See [Converting Legacy Chrome IPC To Mojo](/ipc/README.md).
+See [Converting Legacy Chrome IPC To Mojo](/docs/mojo_ipc_conversion.md).
 
 ### Additional Documentation
 
-[Calling Mojo From Blink](https://www.chromium.org/developers/design-documents/mojo/calling-mojo-from-blink)
-:    A brief overview of what it looks like to use Mojom C++ bindings from
-     within Blink code.
+[Calling Mojo From Blink](/docs/mojo_ipc_conversion.md#Blink_Specific-Advice):
+A brief overview of what it looks like to use Mojom C++ bindings from
+within Blink code.

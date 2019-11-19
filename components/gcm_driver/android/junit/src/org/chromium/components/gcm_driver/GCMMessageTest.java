@@ -52,10 +52,12 @@ public class GCMMessageTest {
             assertArrayEquals(new String[] {}, message.getDataKeysAndValuesArray());
         }
 
-        // Add the optional fields: collapse key, raw binary data and a custom property.
+        // Add the optional fields: collapse key, raw binary data, a custom property and an original
+        // priority.
         extras.putString("collapse_key", "MyCollapseKey");
         extras.putByteArray("rawData", new byte[] {0x00, 0x15, 0x30, 0x45});
         extras.putString("property", "value");
+        extras.putString("google.original_priority", "normal");
 
         {
             GCMMessage message = new GCMMessage("MySenderId", extras);
@@ -65,6 +67,7 @@ public class GCMMessageTest {
             assertEquals("MyCollapseKey", message.getCollapseKey());
             assertArrayEquals(
                     new String[] {"property", "value"}, message.getDataKeysAndValuesArray());
+            assertEquals(GCMMessage.Priority.NORMAL, message.getOriginalPriority());
         }
     }
 
@@ -122,6 +125,7 @@ public class GCMMessageTest {
         // Add the optional fields: collapse key, raw binary data and a custom property.
         extras.putString("collapse_key", "MyCollapseKey");
         extras.putString("property", "value");
+        extras.putString("google.original_priority", "normal");
 
         {
             GCMMessage message = new GCMMessage("MySenderId", extras);
@@ -199,6 +203,7 @@ public class GCMMessageTest {
         // Add the optional fields: collapse key, raw binary data and a custom property.
         extras.putString("collapse_key", "MyCollapseKey");
         extras.putString("property", "value");
+        extras.putString("google.original_priority", "normal");
 
         {
             GCMMessage message = new GCMMessage("MySenderId", extras);
@@ -214,7 +219,7 @@ public class GCMMessageTest {
      * filled byte array when data has been provided.
      */
     @Test
-    public void testRawDataSerializationToJSON() throws JSONException {
+    public void testRawDataSerializationToJSON() {
         Bundle extras = new Bundle();
         extras.putString("subtype", "MyAppId");
 
@@ -248,5 +253,19 @@ public class GCMMessageTest {
             assertArrayEquals(rawData, message.getRawData());
             assertArrayEquals(rawData, copiedMessage.getRawData());
         }
+    }
+
+    /**
+     * Tests that getOriginalPriority returns Priority.NONE if it was not set in the bundle.
+     */
+    @Test
+    public void testNullOriginalPriority() {
+        Bundle extras = new Bundle();
+
+        // Compose a simple message that lacks all optional fields.
+        extras.putString("subtype", "MyAppId");
+        GCMMessage message = new GCMMessage("MySenderId", extras);
+
+        assertEquals(GCMMessage.Priority.NONE, message.getOriginalPriority());
     }
 }

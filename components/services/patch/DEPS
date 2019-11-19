@@ -1,6 +1,5 @@
 include_rules = [
   "+components/update_client",
   "+courgette",
-  "+mojo",  # By definition.
-  "+services/service_manager/public",  # Every service talks to Service Manager.
+  "+mojo/public",
 ]

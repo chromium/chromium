@@ -7,8 +7,8 @@
 #include "base/bind.h"
 #include "base/callback_forward.h"
 #include "base/run_loop.h"
-#include "content/public/test/test_browser_thread_bundle.h"
-#include "gpu/ipc/common/android/surface_owner_android.h"
+#include "content/public/test/browser_task_environment.h"
+#include "gpu/command_buffer/service/mock_texture_owner.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gl/android/scoped_java_surface.h"
 #include "ui/gl/android/surface_texture.h"
@@ -27,13 +27,18 @@ class ScopedSurfaceRequestManagerUnitTest : public testing::Test {
     last_received_request_ = 0;
     dummy_token_ = base::UnguessableToken::Deserialize(123, 456);
 
-    surface_owner = gpu::SurfaceOwner::Create(0);
-    dummy_request_ =
-        base::Bind(&ScopedSurfaceRequestManagerUnitTest::DummyCallback,
-                   base::Unretained(this));
-    specific_logging_request_ =
-        base::Bind(&ScopedSurfaceRequestManagerUnitTest::LoggingCallback,
-                   base::Unretained(this), kSpecificCallbackId);
+    mock_texture_owner = base::MakeRefCounted<NiceMock<gpu::MockTextureOwner>>(
+        0, nullptr, nullptr);
+  }
+
+  ScopedSurfaceRequestManager::ScopedSurfaceRequestCB CreateNoopCallback() {
+    return base::BindOnce(&ScopedSurfaceRequestManagerUnitTest::DummyCallback,
+                          base::Unretained(this));
+  }
+
+  ScopedSurfaceRequestManager::ScopedSurfaceRequestCB CreateLoggingCallback() {
+    return base::BindOnce(&ScopedSurfaceRequestManagerUnitTest::LoggingCallback,
+                          base::Unretained(this), kSpecificCallbackId);
   }
 
   // No-op callback.
@@ -45,9 +50,7 @@ class ScopedSurfaceRequestManagerUnitTest : public testing::Test {
     last_received_request_ = request_id;
   }
 
-  ScopedSurfaceRequestManager::ScopedSurfaceRequestCB dummy_request_;
-  ScopedSurfaceRequestManager::ScopedSurfaceRequestCB specific_logging_request_;
-  std::unique_ptr<gpu::SurfaceOwner> surface_owner;
+  scoped_refptr<NiceMock<gpu::MockTextureOwner>> mock_texture_owner;
 
   int last_received_request_;
   const int kSpecificCallbackId = 1357;
@@ -55,7 +58,7 @@ class ScopedSurfaceRequestManagerUnitTest : public testing::Test {
 
   ScopedSurfaceRequestManager* manager_;
 
-  content::TestBrowserThreadBundle thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
 
   DISALLOW_COPY_AND_ASSIGN(ScopedSurfaceRequestManagerUnitTest);
 };
@@ -65,7 +68,7 @@ TEST_F(ScopedSurfaceRequestManagerUnitTest, RegisterRequest_ShouldSucceed) {
   EXPECT_EQ(0, manager_->request_count_for_testing());
 
   base::UnguessableToken token =
-      manager_->RegisterScopedSurfaceRequest(dummy_request_);
+      manager_->RegisterScopedSurfaceRequest(CreateNoopCallback());
 
   EXPECT_EQ(1, manager_->request_count_for_testing());
   EXPECT_FALSE(token.is_empty());
@@ -76,9 +79,9 @@ TEST_F(ScopedSurfaceRequestManagerUnitTest, RegisterRequest_ShouldSucceed) {
 TEST_F(ScopedSurfaceRequestManagerUnitTest,
        RegisterMultipleRequests_ShouldSucceed) {
   base::UnguessableToken token1 =
-      manager_->RegisterScopedSurfaceRequest(dummy_request_);
+      manager_->RegisterScopedSurfaceRequest(CreateNoopCallback());
   base::UnguessableToken token2 =
-      manager_->RegisterScopedSurfaceRequest(dummy_request_);
+      manager_->RegisterScopedSurfaceRequest(CreateNoopCallback());
 
   EXPECT_EQ(2, manager_->request_count_for_testing());
   EXPECT_NE(token1, token2);
@@ -93,7 +96,7 @@ TEST_F(ScopedSurfaceRequestManagerUnitTest, VerifySingleton_ShouldSucceed) {
 TEST_F(ScopedSurfaceRequestManagerUnitTest,
        GetRegisteredRequest_ShouldSucceed) {
   base::UnguessableToken token =
-      manager_->RegisterScopedSurfaceRequest(dummy_request_);
+      manager_->RegisterScopedSurfaceRequest(CreateNoopCallback());
   EXPECT_EQ(1, manager_->request_count_for_testing());
 
   manager_->UnregisterScopedSurfaceRequest(token);
@@ -105,8 +108,8 @@ TEST_F(ScopedSurfaceRequestManagerUnitTest,
 TEST_F(ScopedSurfaceRequestManagerUnitTest,
        GetRegisteredRequestFromMultipleRequests_ShouldSucceed) {
   base::UnguessableToken token =
-      manager_->RegisterScopedSurfaceRequest(dummy_request_);
-  manager_->RegisterScopedSurfaceRequest(dummy_request_);
+      manager_->RegisterScopedSurfaceRequest(CreateNoopCallback());
+  manager_->RegisterScopedSurfaceRequest(CreateNoopCallback());
   EXPECT_EQ(2, manager_->request_count_for_testing());
 
   manager_->UnregisterScopedSurfaceRequest(token);
@@ -127,7 +130,7 @@ TEST_F(ScopedSurfaceRequestManagerUnitTest,
 // other registered callbacks.
 TEST_F(ScopedSurfaceRequestManagerUnitTest,
        GetUnregisteredRequestFromMultipleRequests_ShouldReturnNullCallback) {
-  manager_->RegisterScopedSurfaceRequest(dummy_request_);
+  manager_->RegisterScopedSurfaceRequest(CreateNoopCallback());
 
   manager_->UnregisterScopedSurfaceRequest(dummy_token_);
 
@@ -138,10 +141,10 @@ TEST_F(ScopedSurfaceRequestManagerUnitTest,
 // does nothing, and does not affect other callbacks.
 TEST_F(ScopedSurfaceRequestManagerUnitTest,
        FulfillUnregisteredRequest_ShouldDoNothing) {
-  manager_->RegisterScopedSurfaceRequest(specific_logging_request_);
+  manager_->RegisterScopedSurfaceRequest(CreateLoggingCallback());
 
-  manager_->FulfillScopedSurfaceRequest(dummy_token_,
-                                        surface_owner->CreateJavaSurface());
+  manager_->FulfillScopedSurfaceRequest(
+      dummy_token_, mock_texture_owner->CreateJavaSurface());
 
   EXPECT_EQ(1, manager_->request_count_for_testing());
   EXPECT_NE(kSpecificCallbackId, last_received_request_);
@@ -152,15 +155,15 @@ TEST_F(ScopedSurfaceRequestManagerUnitTest,
 TEST_F(ScopedSurfaceRequestManagerUnitTest,
        FulfillRegisteredRequest_ShouldSucceed) {
   base::UnguessableToken specific_token =
-      manager_->RegisterScopedSurfaceRequest(specific_logging_request_);
+      manager_->RegisterScopedSurfaceRequest(CreateLoggingCallback());
 
   const uint64_t kOtherCallbackId = 5678;
   manager_->RegisterScopedSurfaceRequest(
-      base::Bind(&ScopedSurfaceRequestManagerUnitTest::LoggingCallback,
-                 base::Unretained(this), kOtherCallbackId));
+      base::BindOnce(&ScopedSurfaceRequestManagerUnitTest::LoggingCallback,
+                     base::Unretained(this), kOtherCallbackId));
 
-  manager_->FulfillScopedSurfaceRequest(specific_token,
-                                        surface_owner->CreateJavaSurface());
+  manager_->FulfillScopedSurfaceRequest(
+      specific_token, mock_texture_owner->CreateJavaSurface());
 
   base::RunLoop().RunUntilIdle();
 
@@ -173,9 +176,10 @@ TEST_F(ScopedSurfaceRequestManagerUnitTest,
 TEST_F(ScopedSurfaceRequestManagerUnitTest,
        ForwardSurfaceOwner_ShouldFulfillRequest) {
   base::UnguessableToken token =
-      manager_->RegisterScopedSurfaceRequest(specific_logging_request_);
+      manager_->RegisterScopedSurfaceRequest(CreateLoggingCallback());
 
-  manager_->ForwardSurfaceOwnerForSurfaceRequest(token, surface_owner.get());
+  manager_->ForwardSurfaceOwnerForSurfaceRequest(token,
+                                                 mock_texture_owner.get());
 
   base::RunLoop().RunUntilIdle();
 

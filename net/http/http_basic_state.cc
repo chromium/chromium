@@ -19,14 +19,10 @@
 namespace net {
 
 HttpBasicState::HttpBasicState(std::unique_ptr<ClientSocketHandle> connection,
-                               bool using_proxy,
-                               bool http_09_on_non_default_ports_enabled)
+                               bool using_proxy)
     : read_buf_(base::MakeRefCounted<GrowableIOBuffer>()),
       connection_(std::move(connection)),
-      using_proxy_(using_proxy),
-      can_send_early_(false),
-      http_09_on_non_default_ports_enabled_(
-          http_09_on_non_default_ports_enabled) {
+      using_proxy_(using_proxy) {
   CHECK(connection_) << "ClientSocketHandle passed to HttpBasicState must "
                         "not be NULL. See crbug.com/790776";
 }
@@ -34,7 +30,6 @@ HttpBasicState::HttpBasicState(std::unique_ptr<ClientSocketHandle> connection,
 HttpBasicState::~HttpBasicState() = default;
 
 void HttpBasicState::Initialize(const HttpRequestInfo* request_info,
-                                bool can_send_early,
                                 RequestPriority priority,
                                 const NetLogWithSource& net_log) {
   DCHECK(!parser_.get());
@@ -44,9 +39,6 @@ void HttpBasicState::Initialize(const HttpRequestInfo* request_info,
   parser_ = std::make_unique<HttpStreamParser>(
       connection_->socket(), connection_->is_reused(), request_info,
       read_buf_.get(), net_log);
-  parser_->set_http_09_on_non_default_ports_enabled(
-      http_09_on_non_default_ports_enabled_);
-  can_send_early_ = can_send_early;
 }
 
 std::unique_ptr<ClientSocketHandle> HttpBasicState::ReleaseConnection() {

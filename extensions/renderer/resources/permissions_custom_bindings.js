@@ -4,12 +4,6 @@
 
 // Custom binding for the Permissions API.
 
-var binding = apiBridge || require('binding').Binding.create('permissions');
-
-var registerArgumentMassager = bindingUtil ?
-    $Function.bind(bindingUtil.registerEventArgumentMassager, bindingUtil) :
-    require('event_bindings').registerArgumentMassager;
-
 function maybeConvertToObject(str) {
   var parts = $String.split(str, '|');
   if (parts.length != 2)
@@ -27,8 +21,8 @@ function massager(args, dispatch) {
   dispatch(args);
 }
 
-registerArgumentMassager('permissions.onAdded', massager);
-registerArgumentMassager('permissions.onRemoved', massager);
+bindingUtil.registerEventArgumentMassager('permissions.onAdded', massager);
+bindingUtil.registerEventArgumentMassager('permissions.onRemoved', massager);
 
 // These custom binding are only necessary because it is not currently
 // possible to have a union of types as the type of the items in an array.
@@ -37,7 +31,7 @@ registerArgumentMassager('permissions.onRemoved', massager);
 // https://code.google.com/p/chromium/issues/detail?id=162044
 // https://code.google.com/p/chromium/issues/detail?id=162042
 // TODO(bryeung): delete this file.
-binding.registerCustomHook(function(api) {
+apiBridge.registerCustomHook(function(api) {
   var apiFunctions = api.apiFunctions;
   var permissions = api.compiledApi;
 
@@ -87,6 +81,3 @@ binding.registerCustomHook(function(api) {
           callback(response);
       });
 });
-
-if (!apiBridge)
-  exports.$set('binding', binding.generate());

@@ -8,25 +8,58 @@ This file is copied to the build directory as part of toolchain setup and
 is used to set up calls to tools used by the build that need wrappers.
 """
 
+from __future__ import print_function
+
 import os
 import re
 import shutil
 import subprocess
 import stat
-import string
 import sys
 
-# tool_wrapper.py doesn't get invoked through python.bat so the Python bin
-# directory doesn't get added to the path. The Python module search logic
-# handles this fine and finds win32file.pyd. However the Windows module
-# search logic then looks for pywintypes27.dll and other DLLs in the path and
-# if it finds versions with a different bitness first then win32file.pyd will
-# fail to load with a cryptic error:
-#     ImportError: DLL load failed: %1 is not a valid Win32 application.
-if sys.platform == 'win32':
-  os.environ['PATH'] = os.path.dirname(sys.executable) + \
-                       os.pathsep + os.environ['PATH']
-  import win32file    # pylint: disable=import-error
+# Embedded vpython spec to provide `win32file` when this is invoked with
+# vpython on windows.
+#
+# [VPYTHON:BEGIN]
+# wheel: <
+#   name: "infra/python/wheels/pypiwin32/${vpython_platform}"
+#   version: "version:219"
+#   match_tag: < platform: "win32" >
+#   match_tag: < platform: "win_amd64" >
+# >
+# [VPYTHON:END]
+
+if sys.platform == "win32":
+  try:
+    # First, try the normal way. This will work for python installations which
+    # have win32file already, or for vpython invocations of this script.
+    import win32file
+  except ImportError:
+    # Otherwise, do a hack to locate the depot_tools specific version of
+    # win32file.
+    #
+    # tool_wrapper.py doesn't get invoked through python.bat so the Python bin
+    # directory doesn't get added to the path. The Python module search logic
+    # handles this fine and finds win32file.pyd. However the Windows module
+    # search logic then looks for pywintypes27.dll and other DLLs in the path
+    # and if it finds versions with a different bitness first then win32file.pyd
+    # will fail to load with a cryptic error:
+    #     ImportError: DLL load failed: %1 is not a valid Win32 application.
+    if sys.platform == 'win32':
+      os.environ['PATH'] = os.path.dirname(sys.executable) + \
+                           os.pathsep + os.environ['PATH']
+      import win32file    # pylint: disable=import-error
+
+  def superflush(pe_name):
+    # Flush the file buffers to try to work around a Windows 10 kernel bug,
+    # https://crbug.com/644525
+    output_handle = win32file.CreateFile(pe_name, win32file.GENERIC_WRITE,
+                                    0, None, win32file.OPEN_EXISTING, 0, 0)
+    win32file.FlushFileBuffers(output_handle)
+    output_handle.Close()
+else:
+  def superflush(pe_name):
+    return None
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -154,15 +187,10 @@ class WinTool(object):
       if (not line.startswith('   Creating library ') and
           not line.startswith('Generating code') and
           not line.startswith('Finished generating code')):
-        print line,
+        print(line)
     result = link.wait()
     if result == 0 and sys.platform == 'win32':
-      # Flush the file buffers to try to work around a Windows 10 kernel bug,
-      # https://crbug.com/644525
-      output_handle = win32file.CreateFile(pe_name, win32file.GENERIC_WRITE,
-                                      0, None, win32file.OPEN_EXISTING, 0, 0)
-      win32file.FlushFileBuffers(output_handle)
-      output_handle.Close()
+      superflush(pe_name)
     return result
 
   def ExecAsmWrapper(self, arch, *args):
@@ -178,50 +206,17 @@ class WinTool(object):
     out, _ = popen.communicate()
     for line in out.splitlines():
       if not line.startswith(' Assembling: '):
-        print line
+        print(line)
     return popen.returncode
 
   def ExecRcWrapper(self, arch, *args):
     """Converts .rc files to .res files."""
     env = self._GetEnv(arch)
-
-    # We run two resource compilers:
-    # 1. A custom one at build/toolchain/win/rc/rc.py which can run on
-    #    non-Windows, and which has /showIncludes support so we can track
-    #    dependencies (e.g. on .ico files) of .rc files.
-    # 2. On Windows, regular Microsoft rc.exe, to make sure rc.py produces
-    #    bitwise identical output.
-
-    # 1. Run our rc.py.
-    # Also pass /showIncludes to track dependencies of .rc files.
     args = list(args)
     rcpy_args = args[:]
     rcpy_args[0:1] = [sys.executable, os.path.join(BASE_DIR, 'rc', 'rc.py')]
-    rcpy_res_output = rcpy_args[-2]
-    assert rcpy_res_output.startswith('/fo')
-    assert rcpy_res_output.endswith('.res')
-    rc_res_output = rcpy_res_output + '_ms_rc'
-    args[-2] = rc_res_output
     rcpy_args.append('/showIncludes')
-    rc_exe_exit_code = subprocess.call(rcpy_args, env=env)
-    if rc_exe_exit_code == 0:
-      # Since tool("rc") can't have deps, add deps on this script and on rc.py
-      # and its deps here, so that rc edges become dirty if rc.py changes.
-      print 'Note: including file: ../../build/toolchain/win/tool_wrapper.py'
-      print 'Note: including file: ../../build/toolchain/win/rc/rc.py'
-      print 'Note: including file: ../../build/toolchain/win/rc/linux64/rc.sha1'
-      print 'Note: including file: ../../build/toolchain/win/rc/mac/rc.sha1'
-      print 'Note: including file: ../../build/toolchain/win/rc/win/rc.exe.sha1'
-
-    # 2. Run Microsoft rc.exe.
-    if sys.platform == 'win32' and rc_exe_exit_code == 0:
-      rc_exe_exit_code = subprocess.call(args, shell=True, env=env)
-      # Assert Microsoft rc.exe and rc.py produced identical .res files.
-      if rc_exe_exit_code == 0:
-        import filecmp
-        # Strip "/fo" prefix.
-        assert filecmp.cmp(rc_res_output[3:], rcpy_res_output[3:])
-    return rc_exe_exit_code
+    return subprocess.call(rcpy_args, env=env)
 
   def ExecActionWrapper(self, arch, rspfile, *dirname):
     """Runs an action command line from a response file using the environment
@@ -229,7 +224,7 @@ class WinTool(object):
     env = self._GetEnv(arch)
     # TODO(scottmg): This is a temporary hack to get some specific variables
     # through to actions that are set after GN-time. http://crbug.com/333738.
-    for k, v in os.environ.iteritems():
+    for k, v in os.environ.items():
       if k not in env:
         env[k] = v
     args = open(rspfile).read()

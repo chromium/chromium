@@ -39,11 +39,11 @@ static const char* extension(GLenum format) {
   switch(format) {
     case GL_COMPRESSED_RGB_S3TC_DXT1_EXT:
     case GL_COMPRESSED_RGBA_S3TC_DXT1_EXT:
-      return "GL_EXT_texture_compression_dxt1";
+      return "GL_ANGLE_texture_compression_dxt1";
     case GL_COMPRESSED_RGBA_S3TC_DXT3_EXT:
-      return "GL_CHROMIUM_texture_compression_dxt3";
+      return "GL_ANGLE_texture_compression_dxt3";
     case GL_COMPRESSED_RGBA_S3TC_DXT5_EXT:
-      return "GL_CHROMIUM_texture_compression_dxt5";
+      return "GL_ANGLE_texture_compression_dxt5";
     default:
       NOTREACHED();
   }

@@ -5,87 +5,94 @@
 #ifndef CONTENT_BROWSER_APPCACHE_APPCACHE_REQUEST_H_
 #define CONTENT_BROWSER_APPCACHE_APPCACHE_REQUEST_H_
 
-#include "base/logging.h"
+#include <string>
+
+#include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
-#include "base/strings/string16.h"
 #include "content/common/content_export.h"
+#include "services/network/public/cpp/resource_request.h"
+#include "services/network/public/cpp/resource_response.h"
 #include "url/gurl.h"
 
 namespace net {
-class URLRequest;
-}
+struct RedirectInfo;
+class HttpRequestHeaders;
+}  // namespace net
 
 namespace network {
 struct ResourceRequest;
 }
 
 namespace content {
-class AppCacheURLLoaderRequest;
-class AppCacheURLRequest;
 
 // Interface for an AppCache request. Subclasses implement this interface to
 // wrap custom request objects like URLRequest, etc to ensure that these
 // dependencies stay out of the AppCache code.
 class CONTENT_EXPORT AppCacheRequest {
  public:
-  virtual ~AppCacheRequest();
+  explicit AppCacheRequest(const network::ResourceRequest& request);
+  ~AppCacheRequest();
 
   // The URL for this request.
-  virtual const GURL& GetURL() const = 0;
+  const GURL& GetURL() const { return request_.url; }
 
   // The method for this request
-  virtual const std::string& GetMethod() const = 0;
+  const std::string& GetMethod() const { return request_.method; }
 
   // Used for cookie policy.
-  virtual const GURL& GetSiteForCookies() const = 0;
+  const GURL& GetSiteForCookies() const { return request_.site_for_cookies; }
 
   // The referrer for this request.
-  virtual const GURL GetReferrer() const = 0;
+  const GURL GetReferrer() const { return request_.referrer; }
+
+  // The HTTP headers of this request.
+  const net::HttpRequestHeaders& GetHeaders() const { return request_.headers; }
+
+  // The resource type of this request.
+  int GetResourceType() const { return request_.resource_type; }
 
   // Returns true if the request was successful.
-  virtual bool IsSuccess() const = 0;
+  bool IsSuccess() const;
 
   // Returns true if the request was cancelled.
-  virtual bool IsCancelled() const = 0;
+  bool IsCancelled() const { return false; }
 
   // Returns true if the request had an error.
-  virtual bool IsError() const = 0;
+  bool IsError() const { return false; }
 
   // Returns the HTTP response code.
-  virtual int GetResponseCode() const = 0;
+  int GetResponseCode() const;
 
   // Get response header(s) by name. Returns an empty string if the header
   // wasn't found,
-  virtual std::string GetResponseHeaderByName(
-      const std::string& name) const = 0;
+  std::string GetResponseHeaderByName(const std::string& name) const;
+
+  void UpdateWithRedirectInfo(const net::RedirectInfo& redirect_info);
+
+  void set_request(const network::ResourceRequest& request);
+  void set_response(const network::ResourceResponseHead& response);
+
+  base::WeakPtr<AppCacheRequest> GetWeakPtr();
 
   // Returns true if the scheme and method are supported for AppCache.
   static bool IsSchemeAndMethodSupportedForAppCache(
       const AppCacheRequest* request);
 
-  // Returns the underlying AppCacheURLRequest if any. This only applies to
-  // AppCache requests loaded via the URLRequest mechanism
-  virtual AppCacheURLRequest* AsURLRequest();
-
-  // Returns the underlying AppCacheURLLoaderRequest if any. This only applies
-  // to AppCache requests loaded via the URLLoader mechanism.
-  virtual AppCacheURLLoaderRequest* AsURLLoaderRequest();
-
  protected:
   friend class AppCacheRequestHandler;
-  // Enables the AppCacheJob to call GetURLRequest() and GetResourceRequest().
+  // Enables the AppCacheJob to call GetResourceRequest().
   friend class AppCacheJob;
 
-  AppCacheRequest() {}
+  // Returns the underlying ResourceRequest.
+  network::ResourceRequest* GetResourceRequest() { return &request_; }
 
-  // Getters for the request types we currently support.
-  virtual net::URLRequest* GetURLRequest();
-
-  // Returns the underlying ResourceRequest. Please note that only one of
-  // GetURLRequest() and GetResourceRequest() should return valid results.
-  virtual network::ResourceRequest* GetResourceRequest();
+ private:
+  network::ResourceRequest request_;
+  network::ResourceResponseHead response_;
 
   SEQUENCE_CHECKER(sequence_checker_);
+
+  base::WeakPtrFactory<AppCacheRequest> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(AppCacheRequest);
 };

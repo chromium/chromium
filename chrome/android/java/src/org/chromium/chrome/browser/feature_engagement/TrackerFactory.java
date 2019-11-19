@@ -4,9 +4,10 @@
 
 package org.chromium.chrome.browser.feature_engagement;
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.VisibleForTesting;
+import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.feature_engagement.Tracker;
 
@@ -29,7 +30,7 @@ public final class TrackerFactory {
     public static Tracker getTrackerForProfile(Profile profile) {
         if (sTestTracker != null) return sTestTracker;
 
-        return nativeGetTrackerForProfile(profile);
+        return TrackerFactoryJni.get().getTrackerForProfile(profile);
     }
 
     /**
@@ -44,5 +45,8 @@ public final class TrackerFactory {
         sTestTracker = testTracker;
     }
 
-    private static native Tracker nativeGetTrackerForProfile(Profile profile);
+    @NativeMethods
+    interface Natives {
+        Tracker getTrackerForProfile(Profile profile);
+    }
 }

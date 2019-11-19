@@ -11,6 +11,7 @@
 #include "ios/chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/feature_engagement/tracker_factory.h"
+#import "ios/chrome/browser/overlays/public/overlay_presenter.h"
 #include "ios/chrome/browser/reading_list/reading_list_model_factory.h"
 #import "ios/chrome/browser/search_engines/template_url_service_factory.h"
 #import "ios/chrome/browser/ui/bubble/bubble_presenter.h"
@@ -25,6 +26,7 @@
 #import "ios/chrome/browser/ui/popup_menu/public/popup_menu_presenter_delegate.h"
 #import "ios/chrome/browser/ui/popup_menu/public/popup_menu_table_view_controller.h"
 #import "ios/chrome/browser/ui/presenters/contained_presenter_delegate.h"
+#import "ios/chrome/browser/ui/toolbar/public/features.h"
 #import "ios/chrome/browser/ui/util/layout_guide_names.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -121,7 +123,11 @@ PopupMenuCommandType CommandTypeFromPopupType(PopupMenuType type) {
 }
 
 - (void)showSearchButtonPopup {
-  base::RecordAction(base::UserMetricsAction("MobileToolbarShowSearchMenu"));
+  if (base::FeatureList::IsEnabled(kToolbarNewTabButton)) {
+    base::RecordAction(base::UserMetricsAction("MobileToolbarShowNewTabMenu"));
+  } else {
+    base::RecordAction(base::UserMetricsAction("MobileToolbarShowSearchMenu"));
+  }
   [self presentPopupOfType:PopupMenuTypeSearch
             fromNamedGuide:kSearchButtonGuide];
 }
@@ -237,6 +243,8 @@ PopupMenuCommandType CommandTypeFromPopupType(PopupMenuType type) {
   self.mediator.templateURLService =
       ios::TemplateURLServiceFactory::GetForBrowserState(self.browserState);
   self.mediator.popupMenu = tableViewController;
+  self.mediator.webContentAreaOverlayPresenter = OverlayPresenter::FromBrowser(
+      self.browser, OverlayModality::kWebContentArea);
 
   self.actionHandler = [[PopupMenuActionHandler alloc] init];
   self.actionHandler.baseViewController = self.baseViewController;

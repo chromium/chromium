@@ -1,4 +1,4 @@
 # TEAM: layout-dev@chromium.org
 # COMPONENT: Blink>Layout
 # WPT-NOTIFY: true
-file://third_party/blink/renderer/core/layout/custom/OWNERS
+file://third_party/blink/renderer/core/layout/ng/custom/OWNERS

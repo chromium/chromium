@@ -17,12 +17,12 @@
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chromeos/cryptohome/cryptohome_parameters.h"
-#include "chromeos/dbus/fake_cryptohome_client.h"
-#include "chromeos/dbus/fake_session_manager_client.h"
-#include "chromeos/dbus/util/account_identifier_operators.h"
+#include "chromeos/dbus/cryptohome/account_identifier_operators.h"
+#include "chromeos/dbus/cryptohome/fake_cryptohome_client.h"
+#include "chromeos/dbus/session_manager/fake_session_manager_client.h"
 #include "chromeos/network/onc/onc_test_utils.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_store.h"
@@ -81,7 +81,7 @@ bool StoreUserPolicyKey(const base::FilePath& user_policy_dir,
 class FakeSessionManagerClient : public chromeos::FakeSessionManagerClient {
  public:
   explicit FakeSessionManagerClient(const base::FilePath& user_policy_dir)
-      : user_policy_dir_(user_policy_dir), weak_ptr_factory_(this) {}
+      : user_policy_dir_(user_policy_dir) {}
 
   // SessionManagerClient override:
   void StorePolicyForUser(const cryptohome::AccountIdentifier& cryptohome_id,
@@ -114,15 +114,15 @@ class FakeSessionManagerClient : public chromeos::FakeSessionManagerClient {
   const base::FilePath user_policy_dir_;
   std::map<cryptohome::AccountIdentifier, std::string> public_key_map_;
 
-  base::WeakPtrFactory<FakeSessionManagerClient> weak_ptr_factory_;
+  base::WeakPtrFactory<FakeSessionManagerClient> weak_ptr_factory_{this};
   DISALLOW_COPY_AND_ASSIGN(FakeSessionManagerClient);
 };
 
 class UserCloudPolicyStoreChromeOSTest : public testing::Test {
  protected:
   UserCloudPolicyStoreChromeOSTest()
-      : scoped_task_environment_(
-            base::test::ScopedTaskEnvironment::MainThreadType::UI) {}
+      : task_environment_(
+            base::test::SingleThreadTaskEnvironment::MainThreadType::UI) {}
 
   void SetUp() override {
     ASSERT_TRUE(tmp_dir_.CreateUniqueTempDir());
@@ -238,7 +238,7 @@ class UserCloudPolicyStoreChromeOSTest : public testing::Test {
     return GetUserPolicyKeyFile(user_policy_dir(), cryptohome_id_);
   }
 
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
   chromeos::FakeCryptohomeClient cryptohome_client_;
   std::unique_ptr<FakeSessionManagerClient> session_manager_client_;
   UserPolicyBuilder policy_;
@@ -347,7 +347,7 @@ TEST_F(UserCloudPolicyStoreChromeOSTest, StoreWithRotationValidationError) {
 
 TEST_F(UserCloudPolicyStoreChromeOSTest, StoreFail) {
   // Let store policy fail.
-  session_manager_client_->set_store_policy_success(false);
+  session_manager_client_->ForceStorePolicyFailure(true);
 
   store_->Store(policy_.policy());
   RunLoopAndExpectError(CloudPolicyStore::STATUS_STORE_ERROR);

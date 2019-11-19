@@ -17,7 +17,7 @@ class TcHelperTest(unittest.TestCase):
 
   def test_get_translatable_grds(self):
     grds = translation_helper.get_translatable_grds(
-        testdata_path, ['test.grd', 'not_translated.grd'],
+        testdata_path, ['test.grd', 'not_translated.grd', 'internal.grd'],
         os.path.join(testdata_path, 'translation_expectations.pyl'))
     self.assertEqual(1, len(grds))
 
@@ -43,12 +43,27 @@ class TcHelperTest(unittest.TestCase):
                                             'translation_expectations.pyl')
     with self.assertRaises(Exception) as context:
       translation_helper.get_translatable_grds(
-          testdata_path, ['test.grd'], TRANSLATION_EXPECTATIONS)
+          testdata_path, ['test.grd', 'internal.grd'], TRANSLATION_EXPECTATIONS)
     self.assertEqual(
         '%s needs to be updated. Please fix these issues:\n'
         ' - not_translated.grd is listed in the translation expectations, '
         'but this grd file does not exist.' % TRANSLATION_EXPECTATIONS,
         context.exception.message)
+
+  # The expectations list an internal file (internal.grd), but the grd list
+  # doesn't contain it.
+  def test_missing_internal(self):
+    TRANSLATION_EXPECTATIONS = os.path.join(testdata_path,
+                                            'translation_expectations.pyl')
+    with self.assertRaises(Exception) as context:
+      translation_helper.get_translatable_grds(
+          testdata_path, ['test.grd', 'not_translated.grd'],
+          TRANSLATION_EXPECTATIONS)
+    self.assertEqual(
+        '%s needs to be updated. Please fix these issues:\n'
+        ' - internal.grd is listed in translation expectations as an internal '
+        'file to be ignored, but this grd file does not exist.' %
+        TRANSLATION_EXPECTATIONS, context.exception.message)
 
   # The expectations list a translatable file (test.grd), but the grd list
   # doesn't contain it.
@@ -57,7 +72,8 @@ class TcHelperTest(unittest.TestCase):
                                             'translation_expectations.pyl')
     with self.assertRaises(Exception) as context:
       translation_helper.get_translatable_grds(
-          testdata_path, ['not_translated.grd'], TRANSLATION_EXPECTATIONS)
+          testdata_path, ['not_translated.grd', 'internal.grd'],
+          TRANSLATION_EXPECTATIONS)
     self.assertEqual(
         '%s needs to be updated. Please fix these issues:\n'
         ' - test.grd is listed in the translation expectations, but this grd '
@@ -71,7 +87,8 @@ class TcHelperTest(unittest.TestCase):
                                             'translation_expectations.pyl')
     with self.assertRaises(Exception) as context:
       translation_helper.get_translatable_grds(
-          testdata_path, ['test.grd', 'part.grdp', 'not_translated.grd'],
+          testdata_path,
+          ['test.grd', 'part.grdp', 'not_translated.grd', 'internal.grd'],
           TRANSLATION_EXPECTATIONS)
     self.assertEqual(
         '%s needs to be updated. Please fix these issues:\n'

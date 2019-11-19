@@ -20,8 +20,8 @@
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/history/history_service_factory.h"
 #include "ios/chrome/browser/undo/bookmark_undo_service_factory.h"
-#include "ios/web/public/web_task_traits.h"
-#include "ios/web/public/web_thread.h"
+#include "ios/web/public/thread/web_task_traits.h"
+#include "ios/web/public/thread/web_thread.h"
 
 namespace ios {
 
@@ -72,7 +72,7 @@ std::unique_ptr<KeyedService> BookmarkModelFactory::BuildServiceInstanceFor(
       browser_state->GetPrefs(), browser_state->GetStatePath(),
       ios::StartupTaskRunnerServiceFactory::GetForBrowserState(browser_state)
           ->GetBookmarkTaskRunner(),
-      base::CreateSingleThreadTaskRunnerWithTraits({web::WebThread::UI}));
+      base::CreateSingleThreadTaskRunner({web::WebThread::UI}));
   ios::BookmarkUndoServiceFactory::GetForBrowserState(browser_state)
       ->Start(bookmark_model.get());
   return bookmark_model;

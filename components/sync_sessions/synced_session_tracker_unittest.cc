@@ -38,7 +38,6 @@ const sync_pb::SyncEnums::DeviceType kDeviceType =
 const char kTag[] = "tag";
 const char kTag2[] = "tag2";
 const char kTag3[] = "tag3";
-const char kTitle[] = "title";
 const int kTabNode1 = 0;
 const int kTabNode2 = 1;
 const int kTabNode3 = 2;
@@ -203,8 +202,7 @@ TEST_F(SyncedSessionTrackerTest, LookupAllSessions) {
   sessions::SessionTab* tab = tracker_.GetTab(kTag, kTab1);
   ASSERT_TRUE(tab);
   tab->navigations.push_back(
-      sessions::SerializedNavigationEntryTestHelper::CreateNavigation(kValidUrl,
-                                                                      kTitle));
+      sessions::SerializedNavigationEntryTestHelper::CreateNavigationForTest());
   EXPECT_THAT(tracker_.LookupAllSessions(SyncedSessionTracker::PRESENTABLE),
               ElementsAre(HasSessionTag(kTag)));
 
@@ -215,8 +213,7 @@ TEST_F(SyncedSessionTrackerTest, LookupAllSessions) {
   sessions::SessionTab* tab2 = tracker_.GetTab(kTag2, kTab2);
   ASSERT_TRUE(tab2);
   tab2->navigations.push_back(
-      sessions::SerializedNavigationEntryTestHelper::CreateNavigation(kValidUrl,
-                                                                      kTitle));
+      sessions::SerializedNavigationEntryTestHelper::CreateNavigationForTest());
   EXPECT_THAT(tracker_.LookupAllSessions(SyncedSessionTracker::PRESENTABLE),
               ElementsAre(HasSessionTag(kTag), HasSessionTag(kTag2)));
 }
@@ -235,8 +232,8 @@ TEST_F(SyncedSessionTrackerTest, LookupAllForeignSessions) {
   sessions::SessionTab* tab = tracker_.GetTab(kTag, kTab1);
   ASSERT_TRUE(tab);
   tab->navigations.push_back(
-      sessions::SerializedNavigationEntryTestHelper::CreateNavigation(kValidUrl,
-                                                                      kTitle));
+      sessions::SerializedNavigationEntryTestHelper::CreateNavigationForTest());
+  tab->navigations.back().set_virtual_url(GURL(kValidUrl));
   tracker_.GetSession(kTag2);
   tracker_.GetSession(kTag3);
   tracker_.PutWindowInSession(kTag3, kWindow1);
@@ -244,8 +241,8 @@ TEST_F(SyncedSessionTrackerTest, LookupAllForeignSessions) {
   tab = tracker_.GetTab(kTag3, kTab1);
   ASSERT_TRUE(tab);
   tab->navigations.push_back(
-      sessions::SerializedNavigationEntryTestHelper::CreateNavigation(
-          kInvalidUrl, kTitle));
+      sessions::SerializedNavigationEntryTestHelper::CreateNavigationForTest());
+  tab->navigations.back().set_virtual_url(GURL(kInvalidUrl));
   // Only the session with a valid window and tab gets returned.
   EXPECT_THAT(
       tracker_.LookupAllForeignSessions(SyncedSessionTracker::PRESENTABLE),
@@ -400,20 +397,6 @@ TEST_F(SyncedSessionTrackerTest, LookupTabNodeIds) {
   EXPECT_THAT(tracker_.LookupTabNodeIds(kTag2), IsEmpty());
 }
 
-TEST_F(SyncedSessionTrackerTest, LookupUnmappedTabs) {
-  EXPECT_THAT(tracker_.LookupUnmappedTabs(kTag), IsEmpty());
-
-  sessions::SessionTab* tab = tracker_.GetTab(kTag, kTab1);
-  ASSERT_THAT(tab, NotNull());
-
-  EXPECT_THAT(tracker_.LookupUnmappedTabs(kTag), ElementsAre(tab));
-  EXPECT_THAT(tracker_.LookupUnmappedTabs(kTag2), IsEmpty());
-
-  tracker_.PutWindowInSession(kTag, kWindow1);
-  tracker_.PutTabInWindow(kTag, kWindow1, kTab1);
-  EXPECT_THAT(tracker_.LookupUnmappedTabs(kTag), IsEmpty());
-}
-
 TEST_F(SyncedSessionTrackerTest, SessionTracking) {
   ASSERT_TRUE(tracker_.Empty());
 
@@ -494,7 +477,13 @@ TEST_F(SyncedSessionTrackerTest, DeleteForeignTab) {
   ASSERT_TRUE(VerifyTabIntegrity(kTag));
 }
 
-TEST_F(SyncedSessionTrackerTest, CleanupLocalTabs) {
+TEST_F(SyncedSessionTrackerTest, CleanupLocalTabsWithoutDeferredRecycling) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{},
+      /*disabled_features=*/{kDeferRecyclingOfSyncTabNodesIfUnsynced,
+                             kTabNodePoolImmediateDeletion});
+
   tracker_.InitLocalSession(kTag, kSessionName, kDeviceType);
 
   // Start with two restored tab nodes.
@@ -537,7 +526,7 @@ TEST_F(SyncedSessionTrackerTest, CleanupLocalTabs) {
   ASSERT_TRUE(VerifyTabIntegrity(kTag));
 }
 
-TEST_F(SyncedSessionTrackerTest, CleanupLocalTabsWithDeferredRecycling) {
+TEST_F(SyncedSessionTrackerTest, CleanupLocalTabs) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(kDeferRecyclingOfSyncTabNodesIfUnsynced);
 
@@ -570,8 +559,8 @@ TEST_F(SyncedSessionTrackerTest, CleanupLocalTabsWithDeferredRecycling) {
   // During cleanup, only two tabs should be freed:
   // - |kTabNode3| because of its age, although it's unsynced.
   // - |kTabNode4| because it's synced.
-  EXPECT_TRUE(
-      tracker_.CleanupLocalTabs(is_tab_node_unsynced_cb_.Get()).empty());
+  EXPECT_THAT(tracker_.CleanupLocalTabs(is_tab_node_unsynced_cb_.Get()),
+              ElementsAre(kTabNode3, kTabNode4));
   ASSERT_EQ(kTabNode1, tracker_.LookupTabNodeFromTabId(kTag, kTab1));
   EXPECT_EQ(kTabNode2, tracker_.LookupTabNodeFromTabId(kTag, kTab2));
   EXPECT_EQ(TabNodePool::kInvalidTabNodeID,
@@ -582,8 +571,8 @@ TEST_F(SyncedSessionTrackerTest, CleanupLocalTabsWithDeferredRecycling) {
   // |kTabNode2| now becomes synced (commit succeeded), which means it should be
   // freed during cleanup.
   EXPECT_CALL(is_tab_node_unsynced_cb_, Run(kTabNode2)).WillOnce(Return(false));
-  EXPECT_TRUE(
-      tracker_.CleanupLocalTabs(is_tab_node_unsynced_cb_.Get()).empty());
+  EXPECT_THAT(tracker_.CleanupLocalTabs(is_tab_node_unsynced_cb_.Get()),
+              ElementsAre(kTabNode2));
   EXPECT_EQ(TabNodePool::kInvalidTabNodeID,
             tracker_.LookupTabNodeFromTabId(kTag, kTab2));
   EXPECT_EQ(kTabNode2, tracker_.AssociateLocalTabWithFreeTabNode(kTab5));
@@ -745,8 +734,7 @@ TEST_F(SyncedSessionTrackerTest, ReassociateTabOldUnmappedNewMapped) {
   EXPECT_TRUE(IsLocalTabNodeAssociated(kTabNode1));
   tracker_.PutWindowInSession(kTag, kWindow1);
   tracker_.PutTabInWindow(kTag, kWindow1, kTab2);
-  EXPECT_TRUE(
-      tracker_.CleanupLocalTabs(is_tab_node_unsynced_cb_.Get()).empty());
+  tracker_.CleanupLocalTabs(is_tab_node_unsynced_cb_.Get());
   ASSERT_TRUE(VerifyTabIntegrity(kTag));
   EXPECT_FALSE(tracker_.IsTabUnmappedForTesting(kTab1));
   EXPECT_FALSE(tracker_.IsTabUnmappedForTesting(kTab2));

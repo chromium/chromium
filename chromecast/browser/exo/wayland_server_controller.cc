@@ -4,7 +4,7 @@
 
 #include "chromecast/browser/exo/wayland_server_controller.h"
 
-#include "chromecast/browser/exo/wm_helper_cast_shell.h"
+#include "chromecast/browser/exo/cast_wm_helper.h"
 #include "chromecast/graphics/cast_screen.h"
 #include "components/exo/display.h"
 #include "components/exo/wayland/server.h"
@@ -15,9 +15,8 @@ namespace chromecast {
 
 WaylandServerController::WaylandServerController(
     CastWindowManagerAura* window_manager) {
-  wm_helper_ = std::make_unique<exo::WMHelperCastShell>(
-      aura::Env::GetInstance(), window_manager,
-      static_cast<CastScreen*>(CastScreen::GetScreen()));
+  wm_helper_ = std::make_unique<exo::CastWMHelper>(
+      window_manager, static_cast<CastScreen*>(CastScreen::GetScreen()));
   exo::WMHelper::SetInstance(wm_helper_.get());
   display_ = std::make_unique<exo::Display>();
   wayland_server_ = exo::wayland::Server::Create(display_.get());

@@ -35,25 +35,22 @@ uint64_t CrashUtil::GetCurrentTimeMs() {
 // static
 bool CrashUtil::RequestUploadCrashDump(
     const std::string& existing_minidump_path,
-    const std::string& crashed_process_name,
+    uint64_t crashed_pid,
     uint64_t crashed_process_start_time_ms) {
   // Remove IO restrictions from this thread. Chromium IO functions must be used
   // to access the file system and upload information to the crash server.
   const bool io_allowed = base::ThreadRestrictions::SetIOAllowed(true);
 
   LOG(INFO) << "Request to upload crash dump " << existing_minidump_path
-            << " for process " << crashed_process_name;
+            << " for process " << crashed_pid;
 
   uint64_t uptime_ms = GetCurrentTimeMs() - crashed_process_start_time_ms;
-  MinidumpParams params(crashed_process_name,
-                        uptime_ms,
-                        "",  // suffix
-                        AppStateTracker::GetPreviousApp(),
-                        AppStateTracker::GetCurrentApp(),
-                        AppStateTracker::GetLastLaunchedApp(),
-                        CAST_BUILD_RELEASE,
-                        CAST_BUILD_INCREMENTAL,
-                        ""  /* reason */);
+  MinidumpParams params(
+      uptime_ms,
+      "",  // suffix
+      AppStateTracker::GetPreviousApp(), AppStateTracker::GetCurrentApp(),
+      AppStateTracker::GetLastLaunchedApp(), CAST_BUILD_RELEASE,
+      CAST_BUILD_INCREMENTAL, "" /* reason */);
   DummyMinidumpGenerator minidump_generator(existing_minidump_path);
 
   base::FilePath filename = base::FilePath(existing_minidump_path).BaseName();

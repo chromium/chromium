@@ -5,13 +5,14 @@
 #ifndef CHROME_BROWSER_CONTENT_SETTINGS_MOCK_SETTINGS_OBSERVER_H_
 #define CHROME_BROWSER_CONTENT_SETTINGS_MOCK_SETTINGS_OBSERVER_H_
 
+#include "base/macros.h"
 #include "base/scoped_observer.h"
 #include "components/content_settings/core/browser/content_settings_observer.h"
+#include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 class ContentSettingsPattern;
-class HostContentSettingsMap;
 
 class MockSettingsObserver : public content_settings::Observer {
  public:
@@ -35,8 +36,10 @@ class MockSettingsObserver : public content_settings::Observer {
   // The map that this Observer is watching.
   HostContentSettingsMap* map_;
 
-  // Observer to watch for content settings changes.
-  ScopedObserver<HostContentSettingsMap, content_settings::Observer> observer_;
+  ScopedObserver<HostContentSettingsMap, content_settings::Observer> observer_{
+      this};
+
+  DISALLOW_COPY_AND_ASSIGN(MockSettingsObserver);
 };
 
 #endif  // CHROME_BROWSER_CONTENT_SETTINGS_MOCK_SETTINGS_OBSERVER_H_

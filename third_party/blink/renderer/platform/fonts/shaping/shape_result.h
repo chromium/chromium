@@ -32,6 +32,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_SHAPING_SHAPE_RESULT_H_
 
 #include <memory>
+#include "base/containers/span.h"
 #include "third_party/blink/renderer/platform/fonts/canvas_rotation_in_vertical.h"
 #include "third_party/blink/renderer/platform/fonts/glyph.h"
 #include "third_party/blink/renderer/platform/fonts/simple_font_data.h"
@@ -39,7 +40,7 @@
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/text/text_direction.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/ref_counted.h"
@@ -111,13 +112,15 @@ class PLATFORM_EXPORT ShapeResult : public RefCounted<ShapeResult> {
 
  public:
   static scoped_refptr<ShapeResult> Create(const Font* font,
-                                    unsigned num_characters,
-                                    TextDirection direction) {
-    return base::AdoptRef(new ShapeResult(font, num_characters, direction));
+                                           unsigned start_index,
+                                           unsigned num_characters,
+                                           TextDirection direction) {
+    return base::AdoptRef(
+        new ShapeResult(font, start_index, num_characters, direction));
   }
   static scoped_refptr<ShapeResult> CreateEmpty(const ShapeResult& other) {
     return base::AdoptRef(
-        new ShapeResult(other.primary_font_, 0, other.Direction()));
+        new ShapeResult(other.primary_font_, 0, 0, other.Direction()));
   }
   static scoped_refptr<ShapeResult> Create(const ShapeResult& other) {
     return base::AdoptRef(new ShapeResult(other));
@@ -134,6 +137,11 @@ class PLATFORM_EXPORT ShapeResult : public RefCounted<ShapeResult> {
       float position,
       unsigned start_index,
       unsigned length);
+  static scoped_refptr<ShapeResult> CreateForSpaces(const Font* font,
+                                                    TextDirection direction,
+                                                    unsigned start_index,
+                                                    unsigned length,
+                                                    float width);
   ~ShapeResult();
 
   // Returns a mutable unique instance. If |this| has more than 1 ref count,
@@ -143,14 +151,9 @@ class PLATFORM_EXPORT ShapeResult : public RefCounted<ShapeResult> {
   // The logical width of this result.
   float Width() const { return width_; }
   LayoutUnit SnappedWidth() const { return LayoutUnit::FromFloatCeil(width_); }
-  // The glyph bounding box, in logical coordinates, using alphabetic baseline
-  // even when the result is in vertical flow.
-  const FloatRect& Bounds() const { return glyph_bounding_box_; }
   unsigned NumCharacters() const { return num_characters_; }
   unsigned NumGlyphs() const { return num_glyphs_; }
-  CharacterRange GetCharacterRange(const StringView& text,
-                                   unsigned from,
-                                   unsigned to) const;
+
   // TODO(eae): Remove start_x and return value once ShapeResultBuffer has been
   // removed.
   float IndividualCharacterRanges(Vector<CharacterRange>* ranges,
@@ -227,6 +230,9 @@ class PLATFORM_EXPORT ShapeResult : public RefCounted<ShapeResult> {
   // Computes and caches a position data object as needed.
   void EnsurePositionData() const;
 
+  // Discards cached position data, freeing up memory.
+  void DiscardPositionData() const;
+
   // Fast versions of OffsetForPosition and PositionForOffset that operates on
   // a cache (that needs to be pre-computed using EnsurePositionData) and that
   // does not take partial glyphs into account.
@@ -257,8 +263,9 @@ class PLATFORM_EXPORT ShapeResult : public RefCounted<ShapeResult> {
   void CopyRange(unsigned start, unsigned end, ShapeResult*) const;
 
   struct ShapeRange {
-    // ShapeRange(unsigned start, unsigned end, ShapeResult* target)
-    //    : start(start), end(end), target(target){};
+    ShapeRange(unsigned start, unsigned end, ShapeResult* target)
+        : start(start), end(end), target(target) {}
+
     unsigned start;
     unsigned end;
     ShapeResult* target;
@@ -315,9 +322,19 @@ class PLATFORM_EXPORT ShapeResult : public RefCounted<ShapeResult> {
                                 GraphemeClusterCallback,
                                 void* context) const;
 
+  // Computes and returns the ink bounds (or visual overflow rect). This is
+  // quite expensive and involves measuring each glyph accumulating the bounds.
+  FloatRect ComputeInkBounds() const;
+
+  // Only used by CachingWordShapeIterator
+  // TODO(eae): Remove once LayoutNG lands. https://crbug.com/591099
+  void SetDeprecatedInkBounds(FloatRect r) const { deprecated_ink_bounds_ = r; }
+  FloatRect DeprecatedInkBounds() const { return deprecated_ink_bounds_; }
+
   String ToString() const;
   void ToString(StringBuilder*) const;
 
+  class GlyphOffset;
   struct RunInfo;
   RunInfo* InsertRunForTesting(unsigned start_index,
                                unsigned num_characters,
@@ -329,24 +346,28 @@ class PLATFORM_EXPORT ShapeResult : public RefCounted<ShapeResult> {
 
  protected:
   ShapeResult(scoped_refptr<const SimpleFontData>,
+              unsigned start_index,
               unsigned num_characters,
               TextDirection);
-  ShapeResult(const Font*, unsigned num_characters, TextDirection);
+  ShapeResult(const Font*,
+              unsigned start_index,
+              unsigned num_characters,
+              TextDirection);
   ShapeResult(const ShapeResult&);
 
   static scoped_refptr<ShapeResult> Create(const SimpleFontData* font_data,
+                                           unsigned start_index,
                                            unsigned num_characters,
                                            TextDirection direction) {
     return base::AdoptRef(
-        new ShapeResult(font_data, num_characters, direction));
+        new ShapeResult(font_data, start_index, num_characters, direction));
   }
 
   // Ensure |grapheme_| is computed. |BreakGlyphs| is valid only when
   // |grapheme_| is computed.
   void EnsureGraphemes(const StringView& text) const;
 
-  static unsigned CountGraphemesInCluster(const UChar*,
-                                          unsigned str_length,
+  static unsigned CountGraphemesInCluster(base::span<const UChar>,
                                           uint16_t start_index,
                                           uint16_t end_index);
 
@@ -435,18 +456,23 @@ class PLATFORM_EXPORT ShapeResult : public RefCounted<ShapeResult> {
                  hb_buffer_t*);
   void InsertRun(scoped_refptr<ShapeResult::RunInfo>);
   void ReorderRtlRuns(unsigned run_size_before);
-  unsigned ComputeStartIndex() const;
-  void UpdateStartIndex();
 
-  float LineLeftBounds() const;
-  float LineRightBounds() const;
+  template <bool is_horizontal_run, bool has_non_zero_glyph_offsets>
+  void ComputeRunInkBounds(const ShapeResult::RunInfo&,
+                           float run_advance,
+                           FloatRect* ink_bounds) const;
 
   // Common signatures with ShapeResultView, to templatize algorithms.
   const Vector<scoped_refptr<RunInfo>>& RunsOrParts() const { return runs_; }
   unsigned StartIndexOffsetForRun() const { return 0; }
 
   float width_;
-  FloatRect glyph_bounding_box_;
+
+  // Only used by CachingWordShapeIterator and stored here for memory reduction
+  // reasons. See https://crbug.com/955776
+  // TODO(eae): Remove once LayoutNG lands. https://crbug.com/591099
+  mutable FloatRect deprecated_ink_bounds_;
+
   Vector<scoped_refptr<RunInfo>> runs_;
   scoped_refptr<const SimpleFontData> primary_font_;
   mutable std::unique_ptr<CharacterPositionData> character_position_;
@@ -463,11 +489,27 @@ class PLATFORM_EXPORT ShapeResult : public RefCounted<ShapeResult> {
   // Tracks whether any runs contain glyphs with a y-offset != 0.
   unsigned has_vertical_offsets_ : 1;
 
+ private:
   friend class HarfBuzzShaper;
   friend class ShapeResultBuffer;
   friend class ShapeResultBloberizer;
   friend class ShapeResultView;
   friend class ShapeResultTest;
+
+  template <bool has_non_zero_glyph_offsets>
+  float ForEachGlyphImpl(float initial_advance,
+                         GlyphCallback,
+                         void* context,
+                         const RunInfo& run) const;
+
+  template <bool has_non_zero_glyph_offsets>
+  float ForEachGlyphImpl(float initial_advance,
+                         unsigned from,
+                         unsigned to,
+                         unsigned index_offset,
+                         GlyphCallback,
+                         void* context,
+                         const RunInfo& run) const;
 };
 
 PLATFORM_EXPORT std::ostream& operator<<(std::ostream&, const ShapeResult&);

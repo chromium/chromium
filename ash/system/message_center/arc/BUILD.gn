@@ -35,7 +35,7 @@ static_library("arc") {
     "//components/account_id",
     "//components/arc:arc_metrics_constants",
     "//components/arc:connection_holder",
-    "//components/arc/common:notifications",
+    "//components/arc/mojom:notifications",
     "//components/exo",
     "//mojo/public/cpp/system",
     "//skia",

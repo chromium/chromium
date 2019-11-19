@@ -1,7 +1,0 @@
-include_rules = [
-  "+chromeos",
-  "+dbus",
-  "+jni",
-
-  "+third_party/libusb",
-]

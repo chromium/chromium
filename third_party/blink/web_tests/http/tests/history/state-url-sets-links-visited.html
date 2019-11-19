@@ -1,0 +1,43 @@
+<html>
+<head>
+<script src="/js-test-resources/js-test.js"></script>
+<script>
+jsTestIsAsync = true;
+
+if (window.testRunner)
+    testRunner.keepWebHistory();
+
+function loaded()
+{
+    description('Verify that changes done by history.replaceState and history.pushState update visitedLinks.');
+
+    window.history.replaceState(null, "Title", "replacedURL.html");
+    window.history.pushState(null, "Title", "pushedURL.html");
+
+    if (window.internals) {
+        style1 = internals.computedStyleIncludingVisitedInfo(document.getElementById('link1'));
+        style2 = internals.computedStyleIncludingVisitedInfo(document.getElementById('link2'));
+
+        // The style is not necessarily updated synchronously in response to history.replaceState and history.pushState.
+        shouldBecomeEqualToString("style1.color", "rgb(255, 165, 0)", function() {
+            shouldBecomeEqualToString("style2.color", "rgb(255, 165, 0)", finishJSTest);
+        });
+    }
+}
+
+</script>
+
+<style>
+:link { color: rgb(0, 255, 0); background-color: white }
+:visited { color: rgb(255, 165, 0); background-color: black }
+</style>
+</head>
+<body onload="loaded();">
+<p id=description></p>
+<a id="link1" href="replacedURL.html">This link should get colored visited as a result of replaceState() setting it as the current URL</a><br>
+<a id="link2" href="pushedURL.html">This link should get colored visited as a result of pushState() adding it to the forward list</a><br>
+If you're running in a browser, the link should be orange-on-black and you should see "replacedURL.html" in your global history.<br>
+If you're running in DRT, the test will also append "PASS" or "FAIL".<br>
+<div id=console></div>
+</body>
+</html>

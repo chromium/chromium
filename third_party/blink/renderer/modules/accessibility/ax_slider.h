@@ -40,8 +40,6 @@ class HTMLInputElement;
 
 class AXSlider : public AXLayoutObject {
  public:
-  static AXSlider* Create(LayoutObject*, AXObjectCacheImpl&);
-
   AXSlider(LayoutObject*, AXObjectCacheImpl&);
   ~AXSlider() override = default;
 
@@ -63,8 +61,6 @@ class AXSlider : public AXLayoutObject {
 
 class AXSliderThumb final : public AXMockObject {
  public:
-  static AXSliderThumb* Create(AXObjectCacheImpl&);
-
   explicit AXSliderThumb(AXObjectCacheImpl&);
   ~AXSliderThumb() override = default;
 

@@ -1,38 +1,16 @@
 <link rel="import" href="chrome://resources/html/i18n_behavior.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/paper-styles/color.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/iron-iconset-svg/iron-iconset-svg.html">
-
-<iron-iconset-svg name="demo-preferences-32" size="32">
-  <svg>
-    <defs>
-      <g id="gear" fill="none" fill-rule="evenodd">
-        <path d="M-3-3h32v32H-3z"></path>
-        <path fill="#1A73E8" fill-rule="nonzero" d="M22.52 14.248c.048-.4.08-.816.08-1.248 0-.432-.032-.848-.096-1.248l2.704-2.112a.661.661 0 0 0 .16-.816l-2.56-4.432a.65.65 0 0 0-.784-.288l-3.184 1.28a9.374 9.374 0 0 0-2.16-1.248L16.2.744A.639.639 0 0 0 15.56.2h-5.12a.623.623 0 0 0-.624.544l-.48 3.392a9.625 9.625 0 0 0-2.16 1.248l-3.184-1.28a.633.633 0 0 0-.784.288L.648 8.824a.62.62 0 0 0 .16.816l2.704 2.112c-.064.4-.112.832-.112 1.248 0 .416.032.848.096 1.248L.792 16.36a.661.661 0 0 0-.16.816l2.56 4.432a.65.65 0 0 0 .784.288l3.184-1.28a9.374 9.374 0 0 0 2.16 1.248l.48 3.392a.65.65 0 0 0 .64.544h5.12c.32 0 .592-.224.624-.544l.48-3.392a9.625 9.625 0 0 0 2.16-1.248l3.184 1.28c.288.112.624 0 .784-.288l2.56-4.432a.62.62 0 0 0-.16-.816l-2.672-2.112zM13 17.8c-2.64 0-4.8-2.16-4.8-4.8 0-2.64 2.16-4.8 4.8-4.8 2.64 0 4.8 2.16 4.8 4.8 0 2.64-2.16 4.8-4.8 4.8z"></path>
-      </g>
-    </defs>
-  </svg>
-</iron-iconset-svg>
-
-<iron-iconset-svg name="demo-preferences-64" size="64">
-  <svg>
-    <defs>
-      <g id="gear" fill="none" fill-rule="evenodd">
-        <path d="M0 0h64v64H0z"></path>
-        <path fill="#1A73E8" fill-rule="nonzero" d="M51.04 34.496c.096-.8.16-1.632.16-2.496 0-.864-.064-1.696-.192-2.496l5.408-4.224c.48-.384.608-1.088.32-1.632l-5.12-8.864c-.32-.576-.992-.768-1.568-.576l-6.368 2.56c-1.344-1.024-2.752-1.856-4.32-2.496l-.96-6.784A1.277 1.277 0 0 0 37.12 6.4H26.88c-.64 0-1.152.448-1.248 1.088l-.96 6.784c-1.568.64-3.008 1.504-4.32 2.496l-6.368-2.56a1.265 1.265 0 0 0-1.568.576l-5.12 8.864c-.32.576-.192 1.248.32 1.632l5.408 4.224c-.128.8-.224 1.664-.224 2.496 0 .832.064 1.696.192 2.496L7.584 38.72c-.48.384-.608 1.088-.32 1.632l5.12 8.864c.32.576.992.768 1.568.576l6.368-2.56c1.344 1.024 2.752 1.856 4.32 2.496l.96 6.784c.128.64.64 1.088 1.28 1.088h10.24c.64 0 1.184-.448 1.248-1.088l.96-6.784c1.568-.64 3.008-1.504 4.32-2.496l6.368 2.56c.576.224 1.248 0 1.568-.576l5.12-8.864c.32-.576.192-1.248-.32-1.632l-5.344-4.224zM32 41.6c-5.28 0-9.6-4.32-9.6-9.6 0-5.28 4.32-9.6 9.6-9.6 5.28 0 9.6 4.32 9.6 9.6 0 5.28-4.32 9.6-9.6 9.6z"></path>
-      </g>
-    </defs>
-  </svg>
-</iron-iconset-svg>
 
 <dom-module id="demo-preferences-md">
   <template>
+    <link rel="stylesheet" href="oobe_dialog_host.css">
     <link rel="stylesheet" href="demo_preferences.css">
     <link rel="stylesheet" href="oobe_flex_layout.css">
     <oobe-dialog role="dialog" has-buttons
         aria-label$="[[i18nDynamic(locale, 'demoPreferencesScreenTitle')]]">
       <hd-iron-icon slot="oobe-icon"
-          icon1x="demo-preferences-32:gear" icon2x="demo-preferences-64:gear">
+          icon1x="oobe-32:gear" icon2x="oobe-64:gear">
       </hd-iron-icon>
       <h1 slot="title">
         [[i18nDynamic(locale, 'demoPreferencesScreenTitle')]]
@@ -73,7 +51,7 @@
         </div>
       </div>
       <div slot="bottom-buttons" class="layout horizontal justified">
-        <oobe-back-button on-tap="onBackClicked_"></oobe-back-button>
+        <oobe-back-button on-click="onBackClicked_"></oobe-back-button>
         <oobe-text-button inverse on-tap="onNextClicked_">
           <div>
             [[i18nDynamic(locale, 'demoPreferencesNextButtonLabel')]]

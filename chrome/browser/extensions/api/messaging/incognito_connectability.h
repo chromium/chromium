@@ -126,7 +126,7 @@ class IncognitoConnectability : public BrowserContextKeyedAPI {
   // the query is resolved.
   PendingOriginMap pending_origins_;
 
-  base::WeakPtrFactory<IncognitoConnectability> weak_factory_;
+  base::WeakPtrFactory<IncognitoConnectability> weak_factory_{this};
 };
 
 }  // namespace extensions

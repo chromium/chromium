@@ -7,8 +7,8 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
+#include "chrome/android/chrome_jni_headers/InstantAppsInfoBar_jni.h"
 #include "chrome/browser/android/instantapps/instant_apps_infobar_delegate.h"
-#include "jni/InstantAppsInfoBar_jni.h"
 
 InstantAppsInfoBar::InstantAppsInfoBar(
     std::unique_ptr<InstantAppsInfoBarDelegate> delegate)

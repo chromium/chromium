@@ -105,6 +105,7 @@ bool PaymentsValidators::IsValidPaymentValidationErrorsFormat(
     const mojom::PaymentValidationErrorsPtr& errors,
     std::string* optional_error_message) {
   return errors &&
+         IsValidErrorMsgFormat(errors->error, optional_error_message) &&
          IsValidAddressErrorsFormat(errors->shipping_address,
                                     optional_error_message) &&
          IsValidPayerErrorsFormat(errors->payer, optional_error_message);

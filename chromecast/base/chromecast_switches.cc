@@ -113,6 +113,11 @@ const char kAudioOutputSampleRate[] = "audio-output-sample-rate";
 // Calibrated max output volume dBa for voice content at 1 meter, if known.
 const char kMaxOutputVolumeDba1m[] = "max-output-volume-dba1m";
 
+// Enable dynamically changing the channel count in the mixer depending on the
+// input streams.
+const char kMixerEnableDynamicChannelCount[] =
+    "mixer-enable-dynamic-channel-count";
+
 // Specify the start threshold frames for audio output when using our mixer.
 // This is mostly used to override the default value to a larger value, for
 // platforms that can't handle the default start threshold without running into

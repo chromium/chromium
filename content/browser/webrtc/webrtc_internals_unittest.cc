@@ -11,24 +11,26 @@
 #include "base/run_loop.h"
 #include "base/task/post_task.h"
 #include "base/values.h"
+#include "content/browser/webrtc/webrtc_internals_connections_observer.h"
 #include "content/browser/webrtc/webrtc_internals_ui_observer.h"
 #include "content/public/browser/browser_task_traits.h"
+#include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_thread.h"
-#include "content/public/test/test_browser_thread_bundle.h"
-#include "mojo/public/cpp/bindings/binding.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace content {
 
 namespace {
 
-static const char kContraints[] = "c";
-static const char kRtcConfiguration[] = "r";
-static const char kUrl[] = "u";
-static const char* kWakeLockConnectingValues[] = {"checking", "connected",
-                                                  "completed"};
-static const char* kWakeLockDisconnectingValues[] = {"disconnected", "closed",
-                                                     "failed", "new"};
+const char kContraints[] = "c";
+const char kRtcConfiguration[] = "r";
+const char kUrl[] = "u";
+const char* const kWakeLockConnectingValues[] = {"checking", "connected",
+                                                 "completed"};
+const char* const kWakeLockDisconnectingValues[] = {"disconnected", "closed",
+                                                    "failed", "new"};
 
 class MockWebRtcInternalsProxy : public WebRTCInternalsUIObserver {
  public:
@@ -54,14 +56,15 @@ class MockWebRtcInternalsProxy : public WebRTCInternalsUIObserver {
 
 class MockWakeLock : public device::mojom::WakeLock {
  public:
-  explicit MockWakeLock(device::mojom::WakeLockRequest request)
-      : binding_(this, std::move(request)), has_wakelock_(false) {}
+  explicit MockWakeLock(mojo::PendingReceiver<device::mojom::WakeLock> receiver)
+      : receiver_(this, std::move(receiver)), has_wakelock_(false) {}
   ~MockWakeLock() override {}
 
   // Implement device::mojom::WakeLock:
   void RequestWakeLock() override { has_wakelock_ = true; }
   void CancelWakeLock() override { has_wakelock_ = false; }
-  void AddClient(device::mojom::WakeLockRequest request) override {}
+  void AddClient(
+      mojo::PendingReceiver<device::mojom::WakeLock> receiver) override {}
   void ChangeType(device::mojom::WakeLockType type,
                   ChangeTypeCallback callback) override {}
   void HasWakeLockForTests(HasWakeLockForTestsCallback callback) override {}
@@ -72,8 +75,28 @@ class MockWakeLock : public device::mojom::WakeLock {
   }
 
  private:
-  mojo::Binding<device::mojom::WakeLock> binding_;
+  mojo::Receiver<device::mojom::WakeLock> receiver_;
   bool has_wakelock_;
+};
+
+class TestWebRtcConnectionsObserver
+    : public WebRtcInternalsConnectionsObserver {
+ public:
+  TestWebRtcConnectionsObserver() = default;
+
+  ~TestWebRtcConnectionsObserver() override = default;
+
+  uint32_t latest_connections_count() const {
+    return latest_connections_count_;
+  }
+
+ private:
+  // content::WebRtcInternalsConnectionsObserver:
+  void OnConnectionsCountChange(uint32_t count) override {
+    latest_connections_count_ = count;
+  }
+
+  uint32_t latest_connections_count_ = 0u;
 };
 
 }  // namespace
@@ -85,7 +108,7 @@ class WebRTCInternalsForTest : public WebRTCInternals {
  public:
   WebRTCInternalsForTest()
       : WebRTCInternals(1, true),
-        mock_wake_lock_(mojo::MakeRequest(&wake_lock_)) {}
+        mock_wake_lock_(wake_lock_.BindNewPipeAndPassReceiver()) {}
 
   ~WebRTCInternalsForTest() override {}
 
@@ -113,11 +136,13 @@ class WebRtcInternalsTest : public testing::Test {
     EXPECT_EQ(expected, actual);
   }
 
-  void VerifyList(const base::DictionaryValue* dict,
-                  const std::string& key,
-                  const base::ListValue& expected) {
-    const base::ListValue* actual = nullptr;
-    EXPECT_TRUE(dict->GetList(key, &actual));
+  void VerifyList(const base::Value& dict,
+                  base::StringPiece key,
+                  const base::Value& expected) {
+    ASSERT_TRUE(dict.is_dict());
+    ASSERT_TRUE(expected.is_list());
+    const base::Value* actual = dict.FindListKey(key);
+    ASSERT_TRUE(actual);
     EXPECT_TRUE(expected.Equals(actual));
   }
 
@@ -137,7 +162,7 @@ class WebRtcInternalsTest : public testing::Test {
     VerifyString(dict, "video", video);
   }
 
-  TestBrowserThreadBundle test_browser_thread_bundle_;
+  BrowserTaskEnvironment task_environment_;
 };
 
 TEST_F(WebRtcInternalsTest, AddRemoveObserver) {
@@ -151,7 +176,7 @@ TEST_F(WebRtcInternalsTest, AddRemoveObserver) {
   webrtc_internals.OnAddPeerConnection(0, 3, 4, kUrl, kRtcConfiguration,
                                        kContraints);
 
-  base::PostTaskWithTraits(FROM_HERE, {BrowserThread::UI}, loop.QuitClosure());
+  base::PostTask(FROM_HERE, {BrowserThread::UI}, loop.QuitClosure());
   loop.Run();
 
   EXPECT_EQ("", observer.command());
@@ -167,7 +192,7 @@ TEST_F(WebRtcInternalsTest, EnsureNoLogWhenNoObserver) {
   webrtc_internals.OnAddPeerConnection(0, 3, 4, kUrl, kRtcConfiguration,
                                        kContraints);
   webrtc_internals.OnUpdatePeerConnection(3, 4, "update_type", "update_value");
-  base::PostTaskWithTraits(FROM_HERE, {BrowserThread::UI}, loop.QuitClosure());
+  base::PostTask(FROM_HERE, {BrowserThread::UI}, loop.QuitClosure());
   loop.Run();
 
   // Make sure we don't have a log entry since there was no observer.
@@ -196,7 +221,7 @@ TEST_F(WebRtcInternalsTest, EnsureLogIsRemovedWhenObserverIsRemoved) {
   webrtc_internals.OnAddPeerConnection(0, 3, 4, kUrl, kRtcConfiguration,
                                        kContraints);
   webrtc_internals.OnUpdatePeerConnection(3, 4, "update_type", "update_value");
-  base::PostTaskWithTraits(FROM_HERE, {BrowserThread::UI}, loop.QuitClosure());
+  base::PostTask(FROM_HERE, {BrowserThread::UI}, loop.QuitClosure());
   loop.Run();
 
   // Make sure we have a log entry since there was an observer.
@@ -407,8 +432,10 @@ TEST_F(WebRtcInternalsTest, SendAllUpdatesWithPeerConnectionUpdate) {
   base::RunLoop().RunUntilIdle();
 }
 
-TEST_F(WebRtcInternalsTest, OnAddStats) {
-  const int rid = 0, pid = 1, lid = 2;
+TEST_F(WebRtcInternalsTest, OnAddStandardStats) {
+  const int rid = 0;
+  const int pid = 1;
+  const int lid = 2;
   base::RunLoop loop;
   MockWebRtcInternalsProxy observer(&loop);
   WebRTCInternalsForTest webrtc_internals;
@@ -416,14 +443,14 @@ TEST_F(WebRtcInternalsTest, OnAddStats) {
   webrtc_internals.OnAddPeerConnection(rid, pid, lid, kUrl, kRtcConfiguration,
                                        kContraints);
 
-  base::ListValue list;
-  list.AppendString("xxx");
-  list.AppendString("yyy");
-  webrtc_internals.OnAddStats(pid, lid, list);
+  base::Value list(base::Value::Type::LIST);
+  list.Append("xxx");
+  list.Append("yyy");
+  webrtc_internals.OnAddStandardStats(pid, lid, list.Clone());
 
   loop.Run();
 
-  EXPECT_EQ("addStats", observer.command());
+  EXPECT_EQ("addStandardStats", observer.command());
   ASSERT_TRUE(observer.value());
 
   base::DictionaryValue* dict = nullptr;
@@ -431,7 +458,38 @@ TEST_F(WebRtcInternalsTest, OnAddStats) {
 
   VerifyInt(dict, "pid", pid);
   VerifyInt(dict, "lid", lid);
-  VerifyList(dict, "reports", list);
+  VerifyList(*dict, "reports", list);
+
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(WebRtcInternalsTest, OnAddLegacyStats) {
+  const int rid = 0;
+  const int pid = 1;
+  const int lid = 2;
+  base::RunLoop loop;
+  MockWebRtcInternalsProxy observer(&loop);
+  WebRTCInternalsForTest webrtc_internals;
+  webrtc_internals.AddObserver(&observer);
+  webrtc_internals.OnAddPeerConnection(rid, pid, lid, kUrl, kRtcConfiguration,
+                                       kContraints);
+
+  base::Value list(base::Value::Type::LIST);
+  list.Append("xxx");
+  list.Append("yyy");
+  webrtc_internals.OnAddLegacyStats(pid, lid, list.Clone());
+
+  loop.Run();
+
+  EXPECT_EQ("addLegacyStats", observer.command());
+  ASSERT_TRUE(observer.value());
+
+  base::DictionaryValue* dict = nullptr;
+  EXPECT_TRUE(observer.value()->GetAsDictionary(&dict));
+
+  VerifyInt(dict, "pid", pid);
+  VerifyInt(dict, "lid", lid);
+  VerifyList(*dict, "reports", list);
 
   base::RunLoop().RunUntilIdle();
 }
@@ -695,6 +753,45 @@ TEST_F(WebRtcInternalsTest, WakeLockMultplePeerConnections) {
   webrtc_internals.OnRemovePeerConnection(kPid, kLids[2]);
   EXPECT_EQ(webrtc_internals.num_connected_connections(), 0);
   EXPECT_FALSE(webrtc_internals.HasWakeLock());
+
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(WebRtcInternalsTest, TestWebRtcConnectionsObserver) {
+  const int kRenderProcessId = 1;
+  const int kPid = 1;
+  const int kLid = 1;
+
+  TestWebRtcConnectionsObserver observer;
+
+  WebRTCInternalsForTest webrtc_internals;
+  webrtc_internals.AddConnectionsObserver(&observer);
+  EXPECT_EQ(0u, observer.latest_connections_count());
+  EXPECT_EQ(webrtc_internals.num_connected_connections(), 0);
+
+  webrtc_internals.OnAddPeerConnection(kRenderProcessId, kPid, kLid, kUrl,
+                                       kRtcConfiguration, kContraints);
+  EXPECT_EQ(webrtc_internals.num_connected_connections(), 0);
+  EXPECT_EQ(0u, observer.latest_connections_count());
+
+  webrtc_internals.OnUpdatePeerConnection(
+      kPid, kLid, "iceConnectionStateChange", "connected");
+  EXPECT_EQ(webrtc_internals.num_connected_connections(), 1);
+  EXPECT_EQ(1u, observer.latest_connections_count());
+
+  webrtc_internals.OnUpdatePeerConnection(
+      kPid, kLid, "iceConnectionStateChange", "disconnected");
+  EXPECT_EQ(webrtc_internals.num_connected_connections(), 0);
+  EXPECT_EQ(0u, observer.latest_connections_count());
+
+  webrtc_internals.OnUpdatePeerConnection(
+      kPid, kLid, "iceConnectionStateChange", "connected");
+  EXPECT_EQ(webrtc_internals.num_connected_connections(), 1);
+  EXPECT_EQ(1u, observer.latest_connections_count());
+
+  webrtc_internals.OnRemovePeerConnection(kPid, kLid);
+  EXPECT_EQ(webrtc_internals.num_connected_connections(), 0);
+  EXPECT_EQ(0u, observer.latest_connections_count());
 
   base::RunLoop().RunUntilIdle();
 }

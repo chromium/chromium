@@ -5,6 +5,7 @@
 #ifndef UI_OZONE_DEMO_WINDOW_MANAGER_H_
 #define UI_OZONE_DEMO_WINDOW_MANAGER_H_
 
+#include <memory>
 #include <vector>
 
 #include "base/callback.h"

@@ -206,6 +206,7 @@ if (someConditional)
 This is the order of the import groups:
 
 1. android
+1. androidx
 1. com (except com.google.android.apps.chrome)
 1. dalvik
 1. junit
@@ -214,10 +215,6 @@ This is the order of the import groups:
 1. org.chromium
 1. java
 1. javax
-
-This is enforced by the
-[Chromium Checkstyle configuration](../../tools/android/checkstyle/chromium-style-5.0.xml)
-under the ImportOrder module.
 
 ## Location
 "Top level directories" are defined as directories with a GN file, such as

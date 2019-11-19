@@ -8,8 +8,11 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.text.TextUtils;
 
+import androidx.annotation.Nullable;
+
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.services.media_session.MediaMetadata;
+import org.chromium.services.media_session.MediaPosition;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -60,6 +63,7 @@ public class MediaNotificationInfo {
         private Intent mContentIntent;
         private MediaNotificationListener mListener;
         private Set<Integer> mMediaSessionActions;
+        private @Nullable MediaPosition mMediaPosition;
 
         /**
          * Initializes the builder with the default values.
@@ -72,21 +76,10 @@ public class MediaNotificationInfo {
             assert mOrigin != null;
             assert mListener != null;
 
-            return new MediaNotificationInfo(
-                mMetadata,
-                mIsPaused,
-                mOrigin,
-                mTabId,
-                mIsPrivate,
-                mNotificationSmallIcon,
-                mNotificationLargeIcon,
-                mDefaultNotificationLargeIcon,
-                mMediaSessionImage,
-                mActions,
-                mId,
-                mContentIntent,
-                mListener,
-                mMediaSessionActions);
+            return new MediaNotificationInfo(mMetadata, mIsPaused, mOrigin, mTabId, mIsPrivate,
+                    mNotificationSmallIcon, mNotificationLargeIcon, mDefaultNotificationLargeIcon,
+                    mMediaSessionImage, mActions, mId, mContentIntent, mListener,
+                    mMediaSessionActions, mMediaPosition);
         }
 
         public Builder setMetadata(MediaMetadata metadata) {
@@ -156,6 +149,11 @@ public class MediaNotificationInfo {
 
         public Builder setMediaSessionActions(Set<Integer> actions) {
             mMediaSessionActions = actions;
+            return this;
+        }
+
+        public Builder setMediaPosition(@Nullable MediaPosition position) {
+            mMediaPosition = position;
             return this;
         }
     }
@@ -232,6 +230,11 @@ public class MediaNotificationInfo {
     public final Set<Integer> mediaSessionActions;
 
     /**
+     * The current position of the media session.
+     */
+    public final @Nullable MediaPosition mediaPosition;
+
+    /**
      * @return if play/pause actions are supported by this notification.
      */
     public boolean supportsPlayPause() {
@@ -270,12 +273,13 @@ public class MediaNotificationInfo {
      * @param contentIntent The intent to send when the notification is selected.
      * @param listener The listener for the control events.
      * @param mediaSessionActions The actions supported by the page.
+     * @param mediaPosition The current position of the media.
      */
     private MediaNotificationInfo(MediaMetadata metadata, boolean isPaused, String origin,
             int tabId, boolean isPrivate, int notificationSmallIcon, Bitmap notificationLargeIcon,
             int defaultNotificationLargeIcon, Bitmap mediaSessionImage, int actions, int id,
             Intent contentIntent, MediaNotificationListener listener,
-            Set<Integer> mediaSessionActions) {
+            Set<Integer> mediaSessionActions, @Nullable MediaPosition mediaPosition) {
         this.metadata = metadata;
         this.isPaused = isPaused;
         this.origin = origin;
@@ -292,6 +296,7 @@ public class MediaNotificationInfo {
         this.mediaSessionActions = (mediaSessionActions != null)
                 ? new HashSet<Integer>(mediaSessionActions)
                 : new HashSet<Integer>();
+        this.mediaPosition = mediaPosition;
     }
 
     @Override
@@ -307,19 +312,19 @@ public class MediaNotificationInfo {
                         || (notificationLargeIcon != null
                                 && notificationLargeIcon.sameAs(other.notificationLargeIcon)))
                 && defaultNotificationLargeIcon == other.defaultNotificationLargeIcon
-                && mediaSessionImage == other.mediaSessionImage
-                && mActions == other.mActions
+                && mediaSessionImage == other.mediaSessionImage && mActions == other.mActions
                 && id == other.id
                 && (metadata == other.metadata
-                           || (metadata != null && metadata.equals(other.metadata)))
+                        || (metadata != null && metadata.equals(other.metadata)))
                 && TextUtils.equals(origin, other.origin)
                 && (contentIntent == other.contentIntent
-                           || (contentIntent != null && contentIntent.equals(other.contentIntent)))
+                        || (contentIntent != null && contentIntent.equals(other.contentIntent)))
                 && (listener == other.listener
-                           || (listener != null && listener.equals(other.listener)))
+                        || (listener != null && listener.equals(other.listener)))
                 && (mediaSessionActions == other.mediaSessionActions
-                           || (mediaSessionActions != null
-                                      && mediaSessionActions.equals(other.mediaSessionActions)));
+                        || (mediaSessionActions != null
+                                && mediaSessionActions.equals(other.mediaSessionActions)))
+                && mediaPosition == other.mediaPosition;
     }
 
     @Override
@@ -339,6 +344,7 @@ public class MediaNotificationInfo {
         result = 31 * result + id;
         result = 31 * result + listener.hashCode();
         result = 31 * result + mediaSessionActions.hashCode();
+        result = 31 * result + mediaPosition.hashCode();
         return result;
     }
 }

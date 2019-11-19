@@ -38,7 +38,9 @@ GinJavaBridgeObject* GinJavaBridgeObject::InjectNamed(
   if (controller.IsEmpty())
     return NULL;
 
-  global->Set(gin::StringToV8(isolate, object_name), controller.ToV8());
+  global->Set(context, gin::StringToV8(isolate, object_name), controller.ToV8())
+      .Check();
+
   return object;
 }
 
@@ -114,9 +116,10 @@ v8::Local<v8::FunctionTemplate> GinJavaBridgeObject::GetFunctionTemplate(
   if (!function_template.IsEmpty())
     return function_template;
   function_template = gin::CreateFunctionTemplate(
-      isolate, base::Bind(&GinJavaFunctionInvocationHelper::Invoke,
-                          base::Owned(new GinJavaFunctionInvocationHelper(
-                              name, dispatcher_))));
+      isolate,
+      base::BindRepeating(
+          &GinJavaFunctionInvocationHelper::Invoke,
+          base::Owned(new GinJavaFunctionInvocationHelper(name, dispatcher_))));
   template_cache_.Set(name, function_template);
   return function_template;
 }

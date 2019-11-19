@@ -8,7 +8,6 @@
 
 #include "base/bind.h"
 #include "base/format_macros.h"
-#include "base/macros.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -17,7 +16,6 @@
 #include "cc/base/histograms.h"
 #include "cc/raster/tile_task.h"
 #include "cc/tiles/mipmap_util.h"
-#include "ui/gfx/color_space.h"
 #include "ui/gfx/skia_util.h"
 
 using base::trace_event::MemoryAllocatorDump;
@@ -64,17 +62,31 @@ class SoftwareImageDecodeTaskImpl : public TileTask {
         paint_image_(paint_image),
         task_type_(task_type),
         tracing_info_(tracing_info) {}
+  SoftwareImageDecodeTaskImpl(const SoftwareImageDecodeTaskImpl&) = delete;
+
+  SoftwareImageDecodeTaskImpl& operator=(const SoftwareImageDecodeTaskImpl&) =
+      delete;
 
   // Overridden from Task:
   void RunOnWorkerThread() override {
     TRACE_EVENT2("cc", "SoftwareImageDecodeTaskImpl::RunOnWorkerThread", "mode",
                  "software", "source_prepare_tiles_id",
                  tracing_info_.prepare_tiles_id);
+
+    const auto* image_metadata = paint_image_.GetImageHeaderMetadata();
+    const ImageType image_type =
+        image_metadata ? image_metadata->image_type : ImageType::kInvalid;
     devtools_instrumentation::ScopedImageDecodeTask image_decode_task(
         paint_image_.GetSkImage().get(),
         devtools_instrumentation::ScopedImageDecodeTask::kSoftware,
-        ImageDecodeCache::ToScopedTaskType(tracing_info_.task_type));
-    cache_->DecodeImageInTask(image_key_, paint_image_, task_type_);
+        ImageDecodeCache::ToScopedTaskType(tracing_info_.task_type),
+        ImageDecodeCache::ToScopedImageType(image_type));
+    SoftwareImageDecodeCache::TaskProcessingResult result =
+        cache_->DecodeImageInTask(image_key_, paint_image_, task_type_);
+
+    // Do not log timing UMAs if we did not perform a full decode.
+    if (result != SoftwareImageDecodeCache::TaskProcessingResult::kFullDecode)
+      image_decode_task.SuppressMetrics();
   }
 
   // Overridden from TileTask:
@@ -91,8 +103,6 @@ class SoftwareImageDecodeTaskImpl : public TileTask {
   PaintImage paint_image_;
   SoftwareImageDecodeCache::DecodeTaskType task_type_;
   const ImageDecodeCache::TracingInfo tracing_info_;
-
-  DISALLOW_COPY_AND_ASSIGN(SoftwareImageDecodeTaskImpl);
 };
 
 SkSize GetScaleAdjustment(const SoftwareImageDecodeCache::CacheKey& key) {
@@ -142,10 +152,8 @@ void RecordLockExistingCachedImageHistogram(TilePriority::PriorityBin bin,
 SoftwareImageDecodeCache::SoftwareImageDecodeCache(
     SkColorType color_type,
     size_t locked_memory_limit_bytes,
-    PaintImage::GeneratorClientId generator_client_id,
-    sk_sp<SkColorSpace> target_color_space)
+    PaintImage::GeneratorClientId generator_client_id)
     : decoded_images_(ImageMRUCache::NO_AUTO_EVICT),
-      target_color_space_(std::move(target_color_space)),
       locked_images_budget_(locked_memory_limit_bytes),
       color_type_(color_type),
       generator_client_id_(generator_client_id),
@@ -166,16 +174,6 @@ SoftwareImageDecodeCache::~SoftwareImageDecodeCache() {
   // It is safe to unregister, even if we didn't register in the constructor.
   base::trace_event::MemoryDumpManager::GetInstance()->UnregisterDumpProvider(
       this);
-  // TODO(vmpstr): If we don't have a client name, it may cause problems in
-  // unittests, since most tests don't set the name but some do. The UMA system
-  // expects the name to be always the same. This assertion is violated in the
-  // tests that do set the name.
-  if (GetClientNameForMetrics()) {
-    UMA_HISTOGRAM_CUSTOM_COUNTS(
-        base::StringPrintf("Compositing.%s.CachedImagesCount.Software",
-                           GetClientNameForMetrics()),
-        lifetime_max_items_in_cache_, 1, 1000, 20);
-  }
 }
 
 ImageDecodeCache::TaskResult SoftwareImageDecodeCache::GetTaskForImageAndRef(
@@ -312,11 +310,12 @@ void SoftwareImageDecodeCache::UnrefImage(const CacheKey& key) {
   }
 }
 
-void SoftwareImageDecodeCache::DecodeImageInTask(const CacheKey& key,
-                                                 const PaintImage& paint_image,
-                                                 DecodeTaskType task_type) {
-  TRACE_EVENT1("cc", "SoftwareImageDecodeCache::DecodeImageInTask", "key",
-               key.ToString());
+SoftwareImageDecodeCache::TaskProcessingResult
+SoftwareImageDecodeCache::DecodeImageInTask(const CacheKey& key,
+                                            const PaintImage& paint_image,
+                                            DecodeTaskType task_type) {
+  TRACE_EVENT1("cc,benchmark", "SoftwareImageDecodeCache::DecodeImageInTask",
+               "key", key.ToString());
   base::AutoLock lock(lock_);
 
   auto image_it = decoded_images_.Peek(key);
@@ -328,16 +327,16 @@ void SoftwareImageDecodeCache::DecodeImageInTask(const CacheKey& key,
   DCHECK_GT(cache_entry->ref_count, 0);
   DCHECK(cache_entry->is_budgeted);
 
-  DecodeImageIfNecessary(key, paint_image, cache_entry);
+  TaskProcessingResult result =
+      DecodeImageIfNecessary(key, paint_image, cache_entry);
   DCHECK(cache_entry->decode_failed || cache_entry->is_locked);
-  RecordImageMipLevelUMA(
-      MipMapUtil::GetLevelForSize(key.src_rect().size(), key.target_size()));
+  return result;
 }
 
-void SoftwareImageDecodeCache::DecodeImageIfNecessary(
-    const CacheKey& key,
-    const PaintImage& paint_image,
-    CacheEntry* entry) {
+SoftwareImageDecodeCache::TaskProcessingResult
+SoftwareImageDecodeCache::DecodeImageIfNecessary(const CacheKey& key,
+                                                 const PaintImage& paint_image,
+                                                 CacheEntry* entry) {
   TRACE_EVENT1(TRACE_DISABLED_BY_DEFAULT("cc.debug"),
                "SoftwareImageDecodeCache::DecodeImageIfNecessary", "key",
                key.ToString());
@@ -348,27 +347,26 @@ void SoftwareImageDecodeCache::DecodeImageIfNecessary(
     entry->decode_failed = true;
 
   if (entry->decode_failed)
-    return;
+    return TaskProcessingResult::kCancelled;
 
   if (entry->memory) {
     if (entry->is_locked)
-      return;
+      return TaskProcessingResult::kLockOnly;
 
     bool lock_succeeded = entry->Lock();
     // TODO(vmpstr): Deprecate the prepaint split, since it doesn't matter.
     RecordLockExistingCachedImageHistogram(TilePriority::NOW, lock_succeeded);
 
     if (lock_succeeded)
-      return;
+      return TaskProcessingResult::kLockOnly;
   }
 
   std::unique_ptr<CacheEntry> local_cache_entry;
   // If we can use the original decode, we'll definitely need a decode.
   if (key.type() == CacheKey::kOriginal) {
     base::AutoUnlock release(lock_);
-    local_cache_entry =
-        Utils::DoDecodeImage(key, paint_image, color_type_, target_color_space_,
-                             generator_client_id_);
+    local_cache_entry = Utils::DoDecodeImage(key, paint_image, color_type_,
+                                             generator_client_id_);
   } else {
     // Attempt to find a cached decode to generate a scaled/subrected decode
     // from.
@@ -395,9 +393,8 @@ void SoftwareImageDecodeCache::DecodeImageIfNecessary(
     DCHECK(!should_decode_to_scale || !key.is_nearest_neighbor());
     if (should_decode_to_scale) {
       base::AutoUnlock release(lock_);
-      local_cache_entry =
-          Utils::DoDecodeImage(key, paint_image, color_type_,
-                               target_color_space_, generator_client_id_);
+      local_cache_entry = Utils::DoDecodeImage(key, paint_image, color_type_,
+                                               generator_client_id_);
     }
 
     // Couldn't decode to scale or find a cached candidate. Create the
@@ -422,9 +419,9 @@ void SoftwareImageDecodeCache::DecodeImageIfNecessary(
           key.type() == CacheKey::kSubrectOriginal
               ? SkIRect::MakeWH(paint_image.width(), paint_image.height())
               : gfx::RectToSkIRect(key.src_rect());
-      DrawImage candidate_draw_image(paint_image, src_rect,
-                                     kNone_SkFilterQuality, SkMatrix::I(),
-                                     key.frame_key().frame_index());
+      DrawImage candidate_draw_image(
+          paint_image, src_rect, kNone_SkFilterQuality, SkMatrix::I(),
+          key.frame_key().frame_index(), key.target_color_space());
       candidate_key.emplace(
           CacheKey::FromDrawImage(candidate_draw_image, color_type_));
     }
@@ -453,7 +450,7 @@ void SoftwareImageDecodeCache::DecodeImageIfNecessary(
 
   if (!local_cache_entry) {
     entry->decode_failed = true;
-    return;
+    return TaskProcessingResult::kCancelled;
   }
 
   // Just in case someone else did this already, just unlock our work.
@@ -471,6 +468,8 @@ void SoftwareImageDecodeCache::DecodeImageIfNecessary(
     local_cache_entry->MoveImageMemoryTo(entry);
     DCHECK(entry->is_locked);
   }
+
+  return TaskProcessingResult::kFullDecode;
 }
 
 base::Optional<SoftwareImageDecodeCache::CacheKey>
@@ -525,7 +524,9 @@ bool SoftwareImageDecodeCache::UseCacheForDrawImage(
   // Cache images that need to be converted to a non-sRGB color space.
   // TODO(ccameron): Consider caching when any color conversion is required.
   // https://crbug.com/791828
-  if (target_color_space_ && !target_color_space_->isSRGB()) {
+  const gfx::ColorSpace& dst_color_space = draw_image.target_color_space();
+  if (dst_color_space.IsValid() &&
+      dst_color_space != gfx::ColorSpace::CreateSRGB()) {
     return true;
   }
 
@@ -586,8 +587,6 @@ void SoftwareImageDecodeCache::DrawWithImageFinished(
 void SoftwareImageDecodeCache::ReduceCacheUsageUntilWithinLimit(size_t limit) {
   TRACE_EVENT0("cc",
                "SoftwareImageDecodeCache::ReduceCacheUsageUntilWithinLimit");
-  lifetime_max_items_in_cache_ =
-      std::max(lifetime_max_items_in_cache_, decoded_images_.size());
   for (auto it = decoded_images_.rbegin();
        decoded_images_.size() > limit && it != decoded_images_.rend();) {
     if (it->second->ref_count != 0) {

@@ -3,11 +3,15 @@
 // found in the LICENSE file.
 
 #include <string>
+#include <utility>
 
 #include "base/bind.h"
+#include "base/task/post_task.h"
+#include "base/task/task_traits.h"
 #include "build/build_config.h"
 #include "net/base/network_change_notifier_posix.h"
 #include "net/dns/dns_config_service_posix.h"
+#include "net/dns/system_dns_config_change_notifier.h"
 
 #if defined(OS_ANDROID)
 #include "net/android/network_change_notifier_android.h"
@@ -15,80 +19,30 @@
 
 namespace net {
 
-// DNS config services on Chrome OS and Android are signalled by the network
-// state handler rather than relying on watching files in /etc.
-class NetworkChangeNotifierPosix::DnsConfigService
-    : public net::internal::DnsConfigServicePosix {
- public:
-  DnsConfigService() = default;
-  ~DnsConfigService() override = default;
-
-  // net::internal::DnsConfigService() overrides.
-  bool StartWatching() override {
-    // DNS config changes are handled and notified by the network
-    // state handlers.
-    return true;
-  }
-
-  void OnNetworkChange() {
-    InvalidateConfig();
-    InvalidateHosts();
-    ReadNow();
-  }
-};
-
-NetworkChangeNotifierPosix::NotifierThread::NotifierThread()
-    : base::Thread("NetworkChangeNotifier") {
-  DETACH_FROM_SEQUENCE(sequence_checker_);
-}
-
-NetworkChangeNotifierPosix::NotifierThread::~NotifierThread() {
-  DCHECK(!Thread::IsRunning());
-}
-
-void NetworkChangeNotifierPosix::NotifierThread::OnNetworkChange() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  dns_config_service_->OnNetworkChange();
-}
-
-void NetworkChangeNotifierPosix::NotifierThread::Init() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  dns_config_service_.reset(new DnsConfigService());
-  dns_config_service_->WatchConfig(
-      base::BindRepeating(&NetworkChangeNotifier::SetDnsConfig));
-  dns_config_service_->OnNetworkChange();
-}
-
-void NetworkChangeNotifierPosix::NotifierThread::CleanUp() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  dns_config_service_.reset();
-}
-
 NetworkChangeNotifierPosix::NetworkChangeNotifierPosix(
     NetworkChangeNotifier::ConnectionType initial_connection_type,
     NetworkChangeNotifier::ConnectionSubtype initial_connection_subtype)
-    : NetworkChangeNotifier(NetworkChangeCalculatorParamsPosix()),
+    : NetworkChangeNotifierPosix(initial_connection_type,
+                                 initial_connection_subtype,
+                                 /*system_dns_config_notifier=*/nullptr) {}
+
+NetworkChangeNotifierPosix::NetworkChangeNotifierPosix(
+    NetworkChangeNotifier::ConnectionType initial_connection_type,
+    NetworkChangeNotifier::ConnectionSubtype initial_connection_subtype,
+    SystemDnsConfigChangeNotifier* system_dns_config_notifier)
+    : NetworkChangeNotifier(NetworkChangeCalculatorParamsPosix(),
+                            system_dns_config_notifier),
       connection_type_(initial_connection_type),
       max_bandwidth_mbps_(
           NetworkChangeNotifier::GetMaxBandwidthMbpsForConnectionSubtype(
-              initial_connection_subtype)) {
-  notifier_thread_.StartWithOptions(
-      base::Thread::Options(base::MessageLoop::TYPE_IO, 0));
-}
+              initial_connection_subtype)) {}
 
 NetworkChangeNotifierPosix::~NetworkChangeNotifierPosix() {
-  notifier_thread_.Stop();
+  ClearGlobalPointer();
 }
 
 void NetworkChangeNotifierPosix::OnDNSChanged() {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  // The Unretained thread pointer is ok here because if the thread gets
-  // deleted, the callback won't be called.
-  notifier_thread_.task_runner()->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          &NetworkChangeNotifierPosix::NotifierThread::OnNetworkChange,
-          base::Unretained(&notifier_thread_)));
+  GetCurrentSystemDnsConfigNotifier()->RefreshConfig();
 }
 
 void NetworkChangeNotifierPosix::OnIPAddressChanged() {

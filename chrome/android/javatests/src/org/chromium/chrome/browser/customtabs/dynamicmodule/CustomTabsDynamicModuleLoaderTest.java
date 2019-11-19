@@ -13,7 +13,7 @@ import static org.junit.Assert.assertTrue;
 import static org.chromium.base.ThreadUtils.runOnUiThreadBlocking;
 import static org.chromium.chrome.browser.customtabs.dynamicmodule.CustomTabsDynamicModuleTestUtils.FAKE_CLASS_LOADER_PROVIDER;
 import static org.chromium.chrome.browser.customtabs.dynamicmodule.CustomTabsDynamicModuleTestUtils.FAKE_MODULE_COMPONENT_NAME;
-import static org.chromium.chrome.browser.customtabs.dynamicmodule.CustomTabsDynamicModuleTestUtils.FAKE_MODULE_DEX_RESOURCE_ID;
+import static org.chromium.chrome.browser.customtabs.dynamicmodule.CustomTabsDynamicModuleTestUtils.FAKE_MODULE_DEX_ASSET_NAME;
 
 import android.support.test.filters.SmallTest;
 
@@ -29,7 +29,7 @@ import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.library_loader.LibraryProcessType;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.chrome.browser.customtabs.dynamicmodule.CustomTabsDynamicModuleTestUtils.FakeDexInputStreamProvider;
-import org.chromium.chrome.browser.test.ChromeBrowserTestRule;
+import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 
 import java.util.ArrayList;
@@ -50,15 +50,15 @@ public class CustomTabsDynamicModuleLoaderTest {
     private ModuleLoader mModuleLoaderFromDex2;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         LibraryLoader.getInstance().ensureInitialized(LibraryProcessType.PROCESS_BROWSER);
         mDexInputStreamProvider = new FakeDexInputStreamProvider();
-        mModuleLoaderFromApk = new ModuleLoader(FAKE_MODULE_COMPONENT_NAME, /* dexResourceId = */ 0,
-                mDexInputStreamProvider, FAKE_CLASS_LOADER_PROVIDER);
+        mModuleLoaderFromApk = new ModuleLoader(FAKE_MODULE_COMPONENT_NAME,
+                /* dexAssetName = */ null, mDexInputStreamProvider, FAKE_CLASS_LOADER_PROVIDER);
         mModuleLoaderFromDex = new ModuleLoader(FAKE_MODULE_COMPONENT_NAME,
-                FAKE_MODULE_DEX_RESOURCE_ID, mDexInputStreamProvider, FAKE_CLASS_LOADER_PROVIDER);
+                FAKE_MODULE_DEX_ASSET_NAME, mDexInputStreamProvider, FAKE_CLASS_LOADER_PROVIDER);
         mModuleLoaderFromDex2 = new ModuleLoader(FAKE_MODULE_COMPONENT_NAME,
-                FAKE_MODULE_DEX_RESOURCE_ID, mDexInputStreamProvider, FAKE_CLASS_LOADER_PROVIDER);
+                FAKE_MODULE_DEX_ASSET_NAME, mDexInputStreamProvider, FAKE_CLASS_LOADER_PROVIDER);
     }
 
     @After
@@ -73,8 +73,7 @@ public class CustomTabsDynamicModuleLoaderTest {
      */
     @Test
     @SmallTest
-    public void testModuleLoadingFromApk_loadsModuleEntryPoint()
-            throws TimeoutException, InterruptedException {
+    public void testModuleLoadingFromApk_loadsModuleEntryPoint() throws TimeoutException {
         CallbackHelper onLoaded = new CallbackHelper();
 
         runOnUiThreadBlocking(() -> {
@@ -86,7 +85,7 @@ public class CustomTabsDynamicModuleLoaderTest {
             });
         });
 
-        onLoaded.waitForCallback();
+        onLoaded.waitForFirst();
     }
 
     /**
@@ -94,8 +93,7 @@ public class CustomTabsDynamicModuleLoaderTest {
      */
     @Test
     @SmallTest
-    public void testModuleLoadingFromApk_doesNotCopyDexToDisk()
-            throws TimeoutException, InterruptedException {
+    public void testModuleLoadingFromApk_doesNotCopyDexToDisk() throws TimeoutException {
         CallbackHelper onLoaded = new CallbackHelper();
 
         runOnUiThreadBlocking(() -> {
@@ -107,7 +105,7 @@ public class CustomTabsDynamicModuleLoaderTest {
             });
         });
 
-        onLoaded.waitForCallback();
+        onLoaded.waitForFirst();
 
         assertEquals(0, mDexInputStreamProvider.getCallCount());
         assertEquals(0, mModuleLoaderFromApk.getDexDirectory().listFiles().length);
@@ -119,8 +117,7 @@ public class CustomTabsDynamicModuleLoaderTest {
      */
     @Test
     @SmallTest
-    public void testModuleLoadingFromDex_loadsModuleEntryPoint()
-            throws TimeoutException, InterruptedException {
+    public void testModuleLoadingFromDex_loadsModuleEntryPoint() throws TimeoutException {
         CallbackHelper onLoaded = new CallbackHelper();
 
         runOnUiThreadBlocking(() -> {
@@ -132,13 +129,12 @@ public class CustomTabsDynamicModuleLoaderTest {
             });
         });
 
-        onLoaded.waitForCallback();
+        onLoaded.waitForFirst();
     }
 
     @Test
     @SmallTest
-    public void testModuleLoadingFromDex_hasNoLocalDex_copiesDexToDisk()
-            throws TimeoutException, InterruptedException {
+    public void testModuleLoadingFromDex_hasNoLocalDex_copiesDexToDisk() throws TimeoutException {
         CallbackHelper onLoaded = new CallbackHelper();
 
         runOnUiThreadBlocking(() -> {
@@ -150,7 +146,7 @@ public class CustomTabsDynamicModuleLoaderTest {
             });
         });
 
-        onLoaded.waitForCallback();
+        onLoaded.waitForFirst();
 
         assertEquals(1, mDexInputStreamProvider.getCallCount());
 
@@ -165,7 +161,7 @@ public class CustomTabsDynamicModuleLoaderTest {
     @Test
     @SmallTest
     public void testModuleLoadingFromDex_localDexHasSameUpdateTime_doesNotCopyDexToDisk()
-            throws TimeoutException, InterruptedException {
+            throws TimeoutException {
         CallbackHelper onLoaded1 = new CallbackHelper();
 
         runOnUiThreadBlocking(() -> {
@@ -175,7 +171,7 @@ public class CustomTabsDynamicModuleLoaderTest {
                     result -> onLoaded1.notifyCalled());
         });
 
-        onLoaded1.waitForCallback();
+        onLoaded1.waitForFirst();
 
         CallbackHelper onLoaded2 = new CallbackHelper();
 
@@ -186,7 +182,7 @@ public class CustomTabsDynamicModuleLoaderTest {
                     result -> onLoaded2.notifyCalled());
         });
 
-        onLoaded2.waitForCallback();
+        onLoaded2.waitForFirst();
 
         assertEquals(1, mDexInputStreamProvider.getCallCount());
 
@@ -201,7 +197,7 @@ public class CustomTabsDynamicModuleLoaderTest {
     @Test
     @SmallTest
     public void testModuleLoadingFromDex_localDexHasDifferentUpdateTime_copiesDexToDisk()
-            throws TimeoutException, InterruptedException {
+            throws TimeoutException {
         CallbackHelper onLoaded = new CallbackHelper();
 
         runOnUiThreadBlocking(() -> {
@@ -213,7 +209,7 @@ public class CustomTabsDynamicModuleLoaderTest {
             });
         });
 
-        onLoaded.waitForCallback();
+        onLoaded.waitForFirst();
 
         assertEquals(1, mDexInputStreamProvider.getCallCount());
 
@@ -228,7 +224,7 @@ public class CustomTabsDynamicModuleLoaderTest {
     @Test
     @SmallTest
     public void testModuleLoadingFromDex_reloadingWithoutDex_cleansUpLocalDex()
-            throws TimeoutException, InterruptedException {
+            throws TimeoutException {
         CallbackHelper onLoadedWithDex = new CallbackHelper();
 
         runOnUiThreadBlocking(() -> {
@@ -238,7 +234,7 @@ public class CustomTabsDynamicModuleLoaderTest {
                     result -> onLoadedWithDex.notifyCalled());
         });
 
-        onLoadedWithDex.waitForCallback();
+        onLoadedWithDex.waitForFirst();
         CallbackHelper onLoadedWithoutDex = new CallbackHelper();
 
         runOnUiThreadBlocking(() -> {
@@ -248,7 +244,7 @@ public class CustomTabsDynamicModuleLoaderTest {
                     result -> onLoadedWithoutDex.notifyCalled());
         });
 
-        onLoadedWithoutDex.waitForCallback();
+        onLoadedWithoutDex.waitForFirst();
 
         assertEquals(1, mDexInputStreamProvider.getCallCount());
         assertFalse(ContextUtils.getAppSharedPreferences().contains(
@@ -262,7 +258,7 @@ public class CustomTabsDynamicModuleLoaderTest {
      */
     @Test
     @SmallTest
-    public void testModuleUseCounter() throws TimeoutException, InterruptedException {
+    public void testModuleUseCounter() throws TimeoutException {
         final int callbacksNumber = 3;
         CallbackHelper onLoaded = new CallbackHelper();
         List<Callback<ModuleEntryPoint>> unusedCallbacks = new ArrayList<>();

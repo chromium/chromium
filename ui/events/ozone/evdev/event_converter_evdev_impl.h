@@ -66,7 +66,7 @@ class EVENTS_OZONE_EVDEV_EXPORT EventConverterEvdevImpl
   void FlushEvents(const input_event& input);
 
   // Input device file descriptor.
-  base::ScopedFD input_device_fd_;
+  const base::ScopedFD input_device_fd_;
 
   // Input modalities for this device.
   bool has_keyboard_;
@@ -95,10 +95,10 @@ class EVENTS_OZONE_EVDEV_EXPORT EventConverterEvdevImpl
   std::bitset<kMouseButtonCount> mouse_button_state_;
 
   // Shared cursor state.
-  CursorDelegateEvdev* cursor_;
+  CursorDelegateEvdev* const cursor_;
 
   // Callbacks for dispatching events.
-  DeviceEventDispatcherEvdev* dispatcher_;
+  DeviceEventDispatcherEvdev* const dispatcher_;
 
   DISALLOW_COPY_AND_ASSIGN(EventConverterEvdevImpl);
 };

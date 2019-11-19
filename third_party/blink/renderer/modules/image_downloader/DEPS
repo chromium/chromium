@@ -1,0 +1,4 @@
+include_rules = [
+    "+skia/ext/image_operations.h",
+    "+ui/gfx/geometry/size.h",
+]

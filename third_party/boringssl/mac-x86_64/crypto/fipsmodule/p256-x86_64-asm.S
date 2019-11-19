@@ -2772,14 +2772,21 @@ L$point_addq_body:
 	orq	%r8,%r12
 	orq	%r9,%r12
 
-.byte	0x3e
-	jnz	L$add_proceedq
 .byte	102,73,15,126,208
 .byte	102,73,15,126,217
-	testq	%r8,%r8
+	orq	%r8,%r12
+.byte	0x3e
 	jnz	L$add_proceedq
+
+
+
 	testq	%r9,%r9
 	jz	L$add_doubleq
+
+
+
+
+
 
 .byte	102,72,15,126,199
 	pxor	%xmm0,%xmm0
@@ -3875,14 +3882,21 @@ L$point_addx_body:
 	orq	%r8,%r12
 	orq	%r9,%r12
 
-.byte	0x3e
-	jnz	L$add_proceedx
 .byte	102,73,15,126,208
 .byte	102,73,15,126,217
-	testq	%r8,%r8
+	orq	%r8,%r12
+.byte	0x3e
 	jnz	L$add_proceedx
+
+
+
 	testq	%r9,%r9
 	jz	L$add_doublex
+
+
+
+
+
 
 .byte	102,72,15,126,199
 	pxor	%xmm0,%xmm0

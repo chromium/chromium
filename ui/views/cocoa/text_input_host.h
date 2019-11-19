@@ -6,9 +6,10 @@
 #define UI_VIEWS_COCOA_TEXT_INPUT_HOST_H_
 
 #include "base/macros.h"
-#include "mojo/public/cpp/bindings/associated_binding.h"
+#include "components/remote_cocoa/common/text_input_host.mojom.h"
+#include "mojo/public/cpp/bindings/associated_receiver.h"
+#include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "ui/views/views_export.h"
-#include "ui/views_bridge_mac/mojo/text_input_host.mojom.h"
 
 namespace ui {
 class TextInputClient;
@@ -16,15 +17,15 @@ class TextInputClient;
 
 namespace views {
 
-class BridgedNativeWidgetHostImpl;
+class NativeWidgetMacNSWindowHost;
 
-class VIEWS_EXPORT TextInputHost
-    : public views_bridge_mac::mojom::TextInputHost {
+class VIEWS_EXPORT TextInputHost : public remote_cocoa::mojom::TextInputHost {
  public:
-  TextInputHost(BridgedNativeWidgetHostImpl* host_impl);
+  explicit TextInputHost(NativeWidgetMacNSWindowHost* host_impl);
   ~TextInputHost() override;
-  void BindRequest(
-      views_bridge_mac::mojom::TextInputHostAssociatedRequest request);
+  void BindReceiver(
+      mojo::PendingAssociatedReceiver<remote_cocoa::mojom::TextInputHost>
+          receiver);
 
   // Set the current TextInputClient.
   void SetTextInputClient(ui::TextInputClient* new_text_input_client);
@@ -34,7 +35,7 @@ class VIEWS_EXPORT TextInputHost
   ui::TextInputClient* GetTextInputClient() const;
 
  private:
-  // views_bridge_mac::mojom::TextInputHost:
+  // remote_cocoa::mojom::TextInputHost:
   bool HasClient(bool* out_has_client) override;
   bool HasInputContext(bool* out_has_input_context) override;
   bool IsRTL(bool* out_is_rtl) override;
@@ -55,7 +56,7 @@ class VIEWS_EXPORT TextInputHost
                             gfx::Rect* out_rect,
                             gfx::Range* out_actual_range) override;
 
-  // views_bridge_mac::mojom::TextInputHost synchronous methods:
+  // remote_cocoa::mojom::TextInputHost synchronous methods:
   void HasClient(HasClientCallback callback) override;
   void HasInputContext(HasInputContextCallback callback) override;
   void IsRTL(IsRTLCallback callback) override;
@@ -80,9 +81,10 @@ class VIEWS_EXPORT TextInputHost
   // IME requests using the old |text_input_client_|.
   ui::TextInputClient* pending_text_input_client_ = nullptr;
 
-  BridgedNativeWidgetHostImpl* const host_impl_;
+  NativeWidgetMacNSWindowHost* const host_impl_;
 
-  mojo::AssociatedBinding<views_bridge_mac::mojom::TextInputHost> mojo_binding_;
+  mojo::AssociatedReceiver<remote_cocoa::mojom::TextInputHost> mojo_receiver_{
+      this};
   DISALLOW_COPY_AND_ASSIGN(TextInputHost);
 };
 

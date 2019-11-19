@@ -10,8 +10,8 @@
 #include "base/values.h"
 #include "components/autofill/ios/form_util/form_activity_observer.h"
 #include "components/autofill/ios/form_util/form_activity_params.h"
-#include "ios/web/public/features.h"
-#include "ios/web/public/web_state/web_frame.h"
+#include "ios/web/public/js_messaging/web_frame.h"
+#import "ios/web/public/ui/crw_web_view_proxy.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -40,7 +40,7 @@ FormActivityTabHelper* FormActivityTabHelper::GetOrCreateForWebState(
 FormActivityTabHelper::FormActivityTabHelper(web::WebState* web_state)
     : web_state_(web_state) {
   web_state_->AddObserver(this);
-  web_state_->AddScriptCommandCallback(
+  subscription_ = web_state_->AddScriptCommandCallback(
       base::BindRepeating(&FormActivityTabHelper::OnFormCommand,
                           base::Unretained(this)),
       kCommandPrefix);
@@ -49,7 +49,6 @@ FormActivityTabHelper::FormActivityTabHelper(web::WebState* web_state)
 FormActivityTabHelper::~FormActivityTabHelper() {
   if (web_state_) {
     web_state_->RemoveObserver(this);
-    web_state_->RemoveScriptCommandCallback(kCommandPrefix);
     web_state_ = nullptr;
   }
 }
@@ -62,25 +61,20 @@ void FormActivityTabHelper::RemoveObserver(FormActivityObserver* observer) {
   observers_.RemoveObserver(observer);
 }
 
-bool FormActivityTabHelper::OnFormCommand(const base::DictionaryValue& message,
+void FormActivityTabHelper::OnFormCommand(const base::DictionaryValue& message,
                                           const GURL& url,
-                                          bool has_user_gesture,
-                                          bool form_in_main_frame,
+                                          bool user_is_interacting,
                                           web::WebFrame* sender_frame) {
   std::string command;
   if (!message.GetString("command", &command)) {
     DLOG(WARNING) << "JS message parameter not found: command";
-    return NO;
+  } else if (command == "form.submit") {
+    FormSubmissionHandler(message, user_is_interacting,
+                          sender_frame->IsMainFrame(), sender_frame);
+  } else if (command == "form.activity") {
+    HandleFormActivity(message, user_is_interacting,
+                       sender_frame->IsMainFrame(), sender_frame);
   }
-  if (command == "form.submit") {
-    return FormSubmissionHandler(message, has_user_gesture, form_in_main_frame,
-                                 sender_frame);
-  }
-  if (command == "form.activity") {
-    return HandleFormActivity(message, has_user_gesture, form_in_main_frame,
-                              sender_frame);
-  }
-  return false;
 }
 
 bool FormActivityTabHelper::HandleFormActivity(
@@ -99,13 +93,10 @@ bool FormActivityTabHelper::HandleFormActivity(
   }
 
   params.is_main_frame = form_in_main_frame;
-  if (!sender_frame &&
-      base::FeatureList::IsEnabled(web::features::kWebFrameMessaging)) {
+  if (!sender_frame) {
     return false;
   }
-  if (sender_frame) {
-    params.frame_id = sender_frame->GetFrameId();
-  }
+  params.frame_id = sender_frame->GetFrameId();
   for (auto& observer : observers_)
     observer.FormActivityRegistered(web_state_, sender_frame, params);
   return true;
@@ -140,7 +131,6 @@ bool FormActivityTabHelper::FormSubmissionHandler(
 
 void FormActivityTabHelper::WebStateDestroyed(web::WebState* web_state) {
   DCHECK_EQ(web_state_, web_state);
-  web_state_->RemoveScriptCommandCallback(kCommandPrefix);
   web_state_->RemoveObserver(this);
   web_state_ = nullptr;
 }

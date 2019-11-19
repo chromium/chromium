@@ -9,6 +9,7 @@
 #include "base/observer_list_types.h"
 #include "net/http/http_response_headers.h"
 #include "ui/base/window_open_disposition.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "url/gurl.h"
 
@@ -27,6 +28,9 @@ class COMPONENT_EXPORT(CONTENT_SERVICE_CPP) NavigableContentsObserver
   virtual void DidSuppressNavigation(const GURL& url,
                                      WindowOpenDisposition disposition,
                                      bool from_user_gesture) {}
+  virtual void UpdateCanGoBack(bool can_go_back) {}
+  virtual void FocusedNodeChanged(bool is_editable_node,
+                                  const gfx::Rect& node_bounds_in_screen) {}
 };
 
 }  // namespace content

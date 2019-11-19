@@ -12,6 +12,7 @@
 #include "base/containers/queue.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
+#include "gpu/command_buffer/common/mailbox_holder.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/transform.h"
 
@@ -22,7 +23,6 @@ class GLImageEGL;
 
 namespace gpu {
 class GpuMemoryBufferImplAndroidHardwareBuffer;
-struct MailboxHolder;
 }  // namespace gpu
 
 namespace vr {
@@ -79,9 +79,7 @@ struct WebXrSharedBuffer {
   std::unique_ptr<gpu::GpuMemoryBufferImplAndroidHardwareBuffer> gmb;
 
   // Resources in the remote GPU process command buffer context
-  std::unique_ptr<gpu::MailboxHolder> mailbox_holder;
-  uint32_t remote_texture = 0;
-  uint32_t remote_image = 0;
+  gpu::MailboxHolder mailbox_holder;
 
   // Resources in the local GL context
   uint32_t local_texture = 0;
@@ -177,6 +175,11 @@ class WebXrPresentationState {
 
   bool mailbox_bridge_ready() { return mailbox_bridge_ready_; }
   void NotifyMailboxBridgeReady() { mailbox_bridge_ready_ = true; }
+
+  // Extracts the shared buffers from all frames, resetting said frames to an
+  // invalid state.
+  // This is intended for resource cleanup, after EndPresentation was called.
+  std::vector<std::unique_ptr<WebXrSharedBuffer>> TakeSharedBuffers();
 
   // Used by WebVrCanAnimateFrame() to detect when ui_->CanSendWebVrVSync()
   // transitions from false to true, as part of starting the incoming frame

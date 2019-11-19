@@ -65,6 +65,12 @@ class SystemTrustStore {
 // inspected by testing whether UsesSystemTrustStore() returns false.
 NET_EXPORT std::unique_ptr<SystemTrustStore> CreateSslSystemTrustStore();
 
+// Creates an instance of SystemTrustStore that initially does not have any
+// trust roots. (This is the same trust store implementation that will be
+// returned by CreateSslSystemTrustStore() on platforms where system trust
+// store integration is not supported.)
+NET_EXPORT std::unique_ptr<SystemTrustStore> CreateEmptySystemTrustStore();
+
 }  // namespace net
 
 #endif  // NET_CERT_INTERNAL_SYSTEM_TRUST_STORE_H_

@@ -43,8 +43,12 @@ class UserFeedbackProvider {
   // Returns true if user feedback is enabled.
   virtual bool IsUserFeedbackEnabled();
   // Returns view controller to present to the user to collect their feedback.
+  // |data_source| provides the information to initialize the view controller
+  // and |dispatcher| is an object from the embedder that can perform operations
+  // on behalf of the UserFeedbackProvider.
   virtual UIViewController* CreateViewController(
-      id<UserFeedbackDataSource> data_source);
+      id<UserFeedbackDataSource> data_source,
+      id<ApplicationCommands> dispatcher);
   // Uploads collected feedback reports.
   virtual void Synchronize();
 

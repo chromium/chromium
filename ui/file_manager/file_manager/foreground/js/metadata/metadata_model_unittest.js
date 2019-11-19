@@ -2,65 +2,56 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-/**
- * TestMetadataProvider
- * @constructor
- * @extends {MetadataProvider}
- */
-function TestMetadataProvider() {
-  MetadataProvider.call(this, ['property', 'propertyA', 'propertyB']);
-  this.requestCount = 0;
+/** @final */
+class TestMetadataProvider extends MetadataProvider {
+  constructor() {
+    super(['property', 'propertyA', 'propertyB']);
+    this.requestCount = 0;
+  }
+
+  /** @override */
+  get(requests) {
+    this.requestCount++;
+    return Promise.resolve(requests.map(request => {
+      const entry = request.entry;
+      const names = request.names;
+      const result = {};
+      for (let i = 0; i < names.length; i++) {
+        result[names[i]] = entry.toURL() + ':' + names[i];
+      }
+      return result;
+    }));
+  }
 }
 
-TestMetadataProvider.prototype.__proto__ = MetadataProvider.prototype;
+/** @final */
+class TestEmptyMetadataProvider extends MetadataProvider {
+  constructor() {
+    super(['property']);
+  }
 
-TestMetadataProvider.prototype.get = function(requests) {
-  this.requestCount++;
-  return Promise.resolve(requests.map(request => {
-    const entry = request.entry;
-    const names = request.names;
-    const result = {};
-    for (let i = 0; i < names.length; i++) {
-      result[names[i]] = entry.toURL() + ':' + names[i];
-    }
-    return result;
-  }));
-};
-
-/**
- * TestEmptyMetadataProvider
- * @constructor
- * @extends {MetadataProvider}
- */
-function TestEmptyMetadataProvider() {
-  MetadataProvider.call(this, ['property']);
+  /** @override */
+  get(requests) {
+    return Promise.resolve(requests.map(() => {
+      return {};
+    }));
+  }
 }
 
-TestEmptyMetadataProvider.prototype.__proto__ = MetadataProvider.prototype;
+/** @final */
+class ManualTestMetadataProvider extends MetadataProvider {
+  constructor() {
+    super(['propertyA', 'propertyB', 'propertyC']);
+    this.callback = [];
+  }
 
-TestEmptyMetadataProvider.prototype.get = requests => {
-  return Promise.resolve(requests.map(() => {
-    return {};
-  }));
-};
-
-/**
- * ManualTestMetadataProvider
- * @constructor
- * @extends {MetadataProvider}
- */
-function ManualTestMetadataProvider() {
-  MetadataProvider.call(this, ['propertyA', 'propertyB', 'propertyC']);
-  this.callback = [];
+  /** @override */
+  get(requests) {
+    return new Promise(fulfill => {
+      this.callback.push(fulfill);
+    });
+  }
 }
-
-ManualTestMetadataProvider.prototype.__proto__ = MetadataProvider.prototype;
-
-ManualTestMetadataProvider.prototype.get = function(requests) {
-  return new Promise(fulfill => {
-    this.callback.push(fulfill);
-  });
-};
 
 /** @type {!Entry} */
 const entryA = /** @type {!Entry} */ ({
@@ -212,21 +203,27 @@ function testMetadataModelNotUpdateCachedResultAfterRequest(callback) {
   provider = /** @type {!ManualTestMetadataProvider} */ (model.getProvider());
   provider.callback[0]([{propertyA: 'valueA1'}]);
 
-  reportPromise(promise.then(() => {
-    // 'propertyA' is cached here.
-    const promise1 = model.get([entryA], ['propertyA', 'propertyB']);
-    const promise2 = model.get([entryA], ['propertyC']);
-    // Returns propertyC.
-    provider = /** @type {!ManualTestMetadataProvider} */ (model.getProvider());
-    provider.callback[2]([{propertyA: 'valueA2', propertyC: 'valueC'}]);
-    provider.callback[1]([{propertyB: 'valueB'}]);
-    return Promise.all([promise1, promise2]);
-  }).then(results => {
-    // The result should be cached value at the time when get was called.
-    assertEquals('valueA1', getProperty(results[0][0], 'propertyA'));
-    assertEquals('valueB', getProperty(results[0][0], 'propertyB'));
-    assertEquals('valueC', getProperty(results[1][0], 'propertyC'));
-  }), callback);
+  reportPromise(
+      promise
+          .then(() => {
+            // 'propertyA' is cached here.
+            const promise1 = model.get([entryA], ['propertyA', 'propertyB']);
+            const promise2 = model.get([entryA], ['propertyC']);
+            // Returns propertyC.
+            provider = /** @type {!ManualTestMetadataProvider} */ (
+                model.getProvider());
+            provider.callback[2]([{propertyA: 'valueA2', propertyC: 'valueC'}]);
+            provider.callback[1]([{propertyB: 'valueB'}]);
+            return Promise.all([promise1, promise2]);
+          })
+          .then(results => {
+            // The result should be cached value at the time when get was
+            // called.
+            assertEquals('valueA1', getProperty(results[0][0], 'propertyA'));
+            assertEquals('valueB', getProperty(results[0][0], 'propertyB'));
+            assertEquals('valueC', getProperty(results[1][0], 'propertyC'));
+          }),
+      callback);
 }
 
 function testMetadataModelGetCache(callback) {
@@ -237,12 +234,15 @@ function testMetadataModelGetCache(callback) {
   const cache = model.getCache([entryA], ['property']);
   assertEquals(null, getProperty(cache[0], 'property'));
 
-  reportPromise(promise.then(() => {
-    const cache = model.getCache([entryA], ['property']);
-    provider = /** @type {!TestMetadataProvider} */ (model.getProvider());
-    assertEquals(1, provider.requestCount);
-    assertEquals('filesystem://A:property', getProperty(cache[0], 'property'));
-  }), callback);
+  reportPromise(
+      promise.then(() => {
+        const cache = model.getCache([entryA], ['property']);
+        provider = /** @type {!TestMetadataProvider} */ (model.getProvider());
+        assertEquals(1, provider.requestCount);
+        assertEquals(
+            'filesystem://A:property', getProperty(cache[0], 'property'));
+      }),
+      callback);
 }
 
 function testMetadataModelUnknownProperty() {

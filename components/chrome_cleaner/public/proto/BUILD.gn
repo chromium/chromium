@@ -1,0 +1,19 @@
+# Copyright 2019 The Chromium Authors. All Rights Reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/protobuf/proto_library.gni")
+
+proto_library("proto") {
+  sources = [
+    "chrome_prompt.proto",
+  ]
+}
+
+proto_library("test_only_proto") {
+  testonly = true
+  generate_python = false
+  sources = [
+    "chrome_prompt_for_tests.proto",
+  ]
+}

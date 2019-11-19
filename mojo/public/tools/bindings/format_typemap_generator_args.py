@@ -3,6 +3,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+from __future__ import print_function
+
 import sys
 
 # This utility converts mojom dependencies into their corresponding typemap
@@ -26,8 +28,8 @@ def FormatTypemap(typemap_filename):
 
 def main():
   typemaps = sys.argv[1:]
-  print ' '.join('--start-typemap %s' % ' '.join(FormatTypemap(typemap))
-                 for typemap in typemaps)
+  print(' '.join('--start-typemap %s' % ' '.join(FormatTypemap(typemap))
+                 for typemap in typemaps))
 
 
 if __name__ == '__main__':

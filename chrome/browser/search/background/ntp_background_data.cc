@@ -82,7 +82,8 @@ CollectionImage CollectionImage::CreateFromProto(
       image.image_url() + ((image.image_url().find('=') == std::string::npos)
                                ? kThumbnailImageOptions
                                : std::string("")));
-  // TODO(ramyan): Request resolution from service, instead of setting it here.
+  // TODO(crbug.com/874339): Request resolution from service, instead of
+  // setting it here.
   collection_image.image_url = GURL(
       image.image_url() + ((image.image_url().find('=') == std::string::npos)
                                ? default_image_options

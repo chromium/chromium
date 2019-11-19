@@ -1,22 +1,25 @@
 <meta charset="koi8-r">
-<body onload="test()">
+<body>
 <script>
-if (window.testRunner)
+if (window.testRunner) {
     testRunner.dumpAsText();
-
-function result(i) {
-    return window.frames[i].document.documentElement.getAttribute("test");
+    testRunner.waitUntilDone();
 }
 
-function test() {
-    document.getElementById("result").innerHTML = "1. " + (result(0) == "Проверка" ? "SUCCESS" : "FAILURE: " + result(0)) + ".\r";
-    document.getElementById("result").innerHTML += "2. " + (result(1) == "Проверка" ? "SUCCESS" : "FAILURE: " + result(1)) + ".\r";
-    document.getElementById("result").innerHTML += "3. " + (result(2) == "Проверка" ? "SUCCESS" : "FAILURE: " + result(2)) + ".\r";
-}
+var count = 0;
+window.addEventListener('message', e => {
+    document.getElementById("result" + e.data.frame).innerHTML = e.data.frame + ". " + (e.data.value == "Проверка" ? "SUCCESS" : "FAILURE: " + e.data.value) + ".";
+    count++;
+    if (window.testRunner && count == 3)
+        testRunner.notifyDone();
+});
+
 </script>
 <p>Test that non-ASCII data: URLs are handled correctly.</p>
-<pre id=result></pre>
-<iframe src="data:image/svg+xml;charset=utf-8,<svg xmlns=%22http://www.w3.org/2000/svg%22 test='Проверка'></svg>"></iframe>
-<iframe src="data:image/svg+xml;charset=utf-8,<svg xmlns=%22http://www.w3.org/2000/svg%22 foo='%23' test='Проверка'></svg>"></iframe>
-<iframe src="data:image/svg+xml;charset=utf-8,<svg xmlns=%22http://www.w3.org/2000/svg%22 foo='%23' test='%D0%9F%D1%80%D0%BE%D0%B2%D0%B5%D1%80%D0%BA%D0%B0'></svg>"></iframe>
+<pre id=result1></pre>
+<pre id=result2></pre>
+<pre id=result3></pre><br>
+<iframe src="data:image/svg+xml;charset=utf-8,<svg xmlns=%22http://www.w3.org/2000/svg%22 test='Проверка'><script>window.parent.postMessage({frame: 1, value: document.documentElement.getAttribute('test')}, '*');</script></svg>"></iframe>
+<iframe src="data:image/svg+xml;charset=utf-8,<svg xmlns=%22http://www.w3.org/2000/svg%22 foo='%23' test='Проверка'><script>window.parent.postMessage({frame: 2, value: document.documentElement.getAttribute('test')}, '*');</script></svg>"></iframe>
+<iframe src="data:image/svg+xml;charset=utf-8,<svg xmlns=%22http://www.w3.org/2000/svg%22 foo='%23' test='%D0%9F%D1%80%D0%BE%D0%B2%D0%B5%D1%80%D0%BA%D0%B0'><script>window.parent.postMessage({frame: 3, value: document.documentElement.getAttribute('test')}, '*');</script></svg>"></iframe>
 </body>

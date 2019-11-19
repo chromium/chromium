@@ -35,6 +35,7 @@ class FakeAudioRendererSink : public AudioRendererSink {
                   RenderCallback* callback) override;
   void Start() override;
   void Stop() override;
+  void Flush() override;
   void Pause() override;
   void Play() override;
   bool SetVolume(double volume) override;

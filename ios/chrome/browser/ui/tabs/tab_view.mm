@@ -8,22 +8,21 @@
 #include "base/i18n/rtl.h"
 #include "base/logging.h"
 
+#include "base/ios/ios_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "ios/chrome/browser/drag_and_drop/drag_and_drop_flag.h"
 #include "ios/chrome/browser/drag_and_drop/drop_and_navigate_delegate.h"
 #include "ios/chrome/browser/drag_and_drop/drop_and_navigate_interaction.h"
 #include "ios/chrome/browser/system_flags.h"
-#import "ios/chrome/browser/ui/colors/MDCPalette+CrAdditions.h"
+#import "ios/chrome/browser/ui/elements/fade_truncating_label.h"
 #import "ios/chrome/browser/ui/image_util/image_util.h"
 #include "ios/chrome/browser/ui/util/rtl_geometry.h"
-#include "ios/chrome/browser/ui/util/ui_util.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
+#import "ios/chrome/common/colors/semantic_color_names.h"
 #import "ios/chrome/common/highlight_button.h"
 #import "ios/chrome/common/ui_util/constraints_ui_util.h"
 #include "ios/chrome/grit/ios_strings.h"
 #import "ios/third_party/material_components_ios/src/components/ActivityIndicator/src/MaterialActivityIndicator.h"
-#import "ios/third_party/material_components_ios/src/components/Typography/src/MaterialTypography.h"
-#include "third_party/google_toolbox_for_mac/src/iPhone/GTMFadeTruncatingLabel.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/l10n/l10n_util_mac.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -42,7 +41,7 @@ const CGFloat kTabCloseTopInset = -1.0;
 const CGFloat kTabCloseLeftInset = 0.0;
 const CGFloat kTabCloseBottomInset = 0.0;
 const CGFloat kTabCloseRightInset = 0.0;
-const CGFloat kTabBackgroundLeftCapInset = 24.0;
+const CGFloat kTabBackgroundLeftCapInset = 34.0;
 const CGFloat kFaviconLeftInset = 23.5;
 const CGFloat kFaviconVerticalOffset = 2.0;
 const CGFloat kTabStripLineMargin = 2.5;
@@ -55,8 +54,13 @@ const CGFloat kTitleRightMargin = 0.0;
 const CGFloat kCloseButtonSize = 24.0;
 const CGFloat kFaviconSize = 16.0;
 
-const int kTabCloseTint = 0x3C4043;
-const int kTabCloseTintIncognito = 0xFFFFFF;
+const CGFloat kFontSize = 14.0;
+
+// Returns a default favicon with |UIImageRenderingModeAlwaysTemplate|.
+UIImage* DefaultFaviconImage() {
+  return [[UIImage imageNamed:@"default_world_favicon"]
+      imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+}
 }
 
 @interface TabView ()<DropAndNavigateDelegate> {
@@ -66,13 +70,10 @@ const int kTabCloseTintIncognito = 0xFFFFFF;
   UIButton* _closeButton;
 
   // View that draws the tab title.
-  GTMFadeTruncatingLabel* _titleLabel;
+  FadeTruncatingLabel* _titleLabel;
 
   // Background image for this tab.
   UIImageView* _backgroundImageView;
-  // This view is used to draw a separator line at the bottom of the tab view.
-  // This view is hidden when the tab view is in a selected state.
-  UIView* _lineSeparator;
   BOOL _incognitoStyle;
 
   // Set to YES when the layout constraints have been initialized.
@@ -95,18 +96,6 @@ const int kTabCloseTintIncognito = 0xFFFFFF;
 // Creates the close button, favicon button, and title.
 - (void)createButtonsAndLabel;
 
-// Updates this tab's line separator color based on the current incognito style.
-- (void)updateLineSeparator;
-
-// Updates this tab's background image based on the value of |selected|.
-- (void)updateBackgroundImage:(BOOL)selected;
-
-// Updates this tab's close button image based on the current incognito style.
-- (void)updateCloseButtonImages;
-
-// Return the default favicon image based on the current incognito style.
-- (UIImage*)defaultFaviconImage;
-
 // Returns the rect in which to draw the favicon.
 - (CGRect)faviconRectForBounds:(CGRect)bounds;
 
@@ -120,24 +109,20 @@ const int kTabCloseTintIncognito = 0xFFFFFF;
 
 @implementation TabView
 
-@synthesize delegate = _delegate;
-@synthesize titleLabel = _titleLabel;
-@synthesize collapsed = _collapsed;
-@synthesize background = background_;
-@synthesize incognitoStyle = _incognitoStyle;
-
 - (id)initWithEmptyView:(BOOL)emptyView selected:(BOOL)selected {
   if ((self = [super initWithFrame:CGRectZero])) {
     [self setOpaque:NO];
     [self createCommonViews];
-    // -setSelected only calls -updateBackgroundImage if the selected state
-    // changes.  |isSelected| defaults to NO, so if |selected| is also NO,
-    // -updateBackgroundImage needs to be called explicitly.
-    [self setSelected:selected];
-    [self updateLineSeparator];
-    [self updateBackgroundImage:selected];
     if (!emptyView)
       [self createButtonsAndLabel];
+
+    // -setSelected only calls -updateStyleForSelected if the selected state
+    // changes.  |isSelected| defaults to NO, so if |selected| is also NO,
+    // -updateStyleForSelected needs to be called explicitly.
+    [self setSelected:selected];
+    if (!selected) {
+      [self updateStyleForSelected:selected];
+    }
 
     [self addTarget:self
                   action:@selector(tabWasTapped)
@@ -153,19 +138,11 @@ const int kTabCloseTintIncognito = 0xFFFFFF;
 }
 
 - (void)setSelected:(BOOL)selected {
-  BOOL wasSelected = [self isSelected];
+  if ([super isSelected] == selected) {
+    return;
+  }
   [super setSelected:selected];
-
-  [_lineSeparator setHidden:selected];
-
-  if (selected != wasSelected)
-    [self updateBackgroundImage:selected];
-
-  // It would make more sense to set active/inactive on tab_view itself, but
-  // tab_view is not an an accessible element, and making it one would add
-  // several complicated layers to UIA.  Instead, simply set active/inactive
-  // here to be used by UIA.
-  [_titleLabel setAccessibilityValue:(selected ? @"active" : @"inactive")];
+  [self updateStyleForSelected:selected];
 }
 
 - (void)setCollapsed:(BOOL)collapsed {
@@ -180,9 +157,9 @@ const int kTabCloseTintIncognito = 0xFFFFFF;
     return;
   if (base::i18n::GetStringDirection(base::SysNSStringToUTF16(title)) ==
       base::i18n::RIGHT_TO_LEFT) {
-    [_titleLabel setTruncateMode:GTMFadeTruncatingHead];
+    _titleLabel.truncateMode = FadeTruncatingHead;
   } else {
-    [_titleLabel setTruncateMode:GTMFadeTruncatingTail];
+    _titleLabel.truncateMode = FadeTruncatingTail;
   }
   _titleLabel.text = title;
   [_closeButton setAccessibilityValue:title];
@@ -194,18 +171,26 @@ const int kTabCloseTintIncognito = 0xFFFFFF;
 
 - (void)setFavicon:(UIImage*)favicon {
   if (!favicon)
-    favicon = [self defaultFaviconImage];
+    favicon = DefaultFaviconImage();
   [_faviconView setImage:favicon];
 }
 
 - (void)setIncognitoStyle:(BOOL)incognitoStyle {
+  if (_incognitoStyle == incognitoStyle) {
+    return;
+  }
   _incognitoStyle = incognitoStyle;
-  _titleLabel.textColor =
-      incognitoStyle ? [UIColor whiteColor] : [UIColor blackColor];
-  [_faviconView setImage:[self defaultFaviconImage]];
-  [self updateLineSeparator];
-  [self updateCloseButtonImages];
-  [self updateBackgroundImage:[self isSelected]];
+
+  if (@available(iOS 13, *)) {
+    // When iOS 12 is dropped, only the next line is needed for styling.
+    // Every other check for |incognitoStyle| can be removed, as well as the
+    // incognito specific assets.
+    self.overrideUserInterfaceStyle = _incognitoStyle
+                                          ? UIUserInterfaceStyleDark
+                                          : UIUserInterfaceStyleUnspecified;
+    return;
+  }
+  [self updateStyleForSelected:self.selected];
 }
 
 - (void)startProgressSpinner {
@@ -256,28 +241,37 @@ const int kTabCloseTintIncognito = 0xFFFFFF;
   return CGRectContainsPoint(CGRectInset([self bounds], inset, 0), point);
 }
 
+- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
+  [super traitCollectionDidChange:previousTraitCollection];
+
+  if (@available(iOS 13, *)) {
+    // As of iOS 13 Beta 4, resizable images are flaky for dark mode.
+    // This triggers the styling again, where the image is resolved instead of
+    // relying in the system's magic. Radar filled:
+    // b/137942721.hasDifferentColorAppearanceComparedToTraitCollection
+    if ([self.traitCollection
+            hasDifferentColorAppearanceComparedToTraitCollection:
+                previousTraitCollection]) {
+      [self updateStyleForSelected:self.selected];
+    }
+  }
+}
+
 #pragma mark - Private
 
 - (void)createCommonViews {
   _backgroundImageView = [[UIImageView alloc] init];
   [_backgroundImageView setTranslatesAutoresizingMaskIntoConstraints:NO];
   [self addSubview:_backgroundImageView];
-
-  _lineSeparator = [[UIView alloc] initWithFrame:CGRectZero];
-  [_lineSeparator setTranslatesAutoresizingMaskIntoConstraints:NO];
-  [self addSubview:_lineSeparator];
 }
 
 - (void)addCommonConstraints {
   NSDictionary* commonViewsDictionary = @{
     @"backgroundImageView" : _backgroundImageView,
-    @"lineSeparator" : _lineSeparator
   };
   NSArray* commonConstraints = @[
     @"H:|-0-[backgroundImageView]-0-|",
     @"V:|-0-[backgroundImageView]-0-|",
-    @"H:|-tabStripLineMargin-[lineSeparator]-tabStripLineMargin-|",
-    @"V:[lineSeparator(==tabStripLineHeight)]-0-|",
   ];
   NSDictionary* commonMetrics = @{
     @"tabStripLineMargin" : @(kTabStripLineMargin),
@@ -294,6 +288,10 @@ const int kTabCloseTintIncognito = 0xFFFFFF;
                                                       kTabCloseLeftInset,
                                                       kTabCloseBottomInset,
                                                       kTabCloseRightInset)];
+  [_closeButton
+      setImage:[[UIImage imageNamed:@"grid_cell_close_button"]
+                   imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate]
+      forState:UIControlStateNormal];
   [_closeButton setAccessibilityLabel:l10n_util::GetNSString(
                                           IDS_IOS_TOOLS_MENU_CLOSE_TAB)];
   [_closeButton addTarget:self
@@ -303,15 +301,8 @@ const int kTabCloseTintIncognito = 0xFFFFFF;
   [self addSubview:_closeButton];
 
   // Add fade truncating label.
-  _titleLabel = [[GTMFadeTruncatingLabel alloc] initWithFrame:CGRectZero];
+  _titleLabel = [[FadeTruncatingLabel alloc] initWithFrame:CGRectZero];
   [_titleLabel setTranslatesAutoresizingMaskIntoConstraints:NO];
-  [_titleLabel setFont:[MDCTypography body1Font]];
-  // Setting NSLineBreakByCharWrapping fixes an issue where the beginning of the
-  // text is truncated for RTL text writing direction. Anyway since the label is
-  // only one line and the end of the text is faded behind a gradient mask, it
-  // is visually almost equivalent to NSLineBreakByClipping.
-  [_titleLabel setLineBreakMode:NSLineBreakByCharWrapping];
-
   [_titleLabel setTextAlignment:NSTextAlignmentNatural];
   [self addSubview:_titleLabel];
 
@@ -319,15 +310,14 @@ const int kTabCloseTintIncognito = 0xFFFFFF;
   _faviconView = [[UIImageView alloc] initWithFrame:faviconFrame];
   [_faviconView setTranslatesAutoresizingMaskIntoConstraints:NO];
   [_faviconView setContentMode:UIViewContentModeScaleAspectFit];
-  [_faviconView setImage:[self defaultFaviconImage]];
+  [_faviconView setImage:DefaultFaviconImage()];
   [_faviconView setAccessibilityIdentifier:@"Favicon"];
   [self addSubview:_faviconView];
 
   _activityIndicator =
       [[MDCActivityIndicator alloc] initWithFrame:faviconFrame];
   [_activityIndicator setTranslatesAutoresizingMaskIntoConstraints:NO];
-  [_activityIndicator
-      setCycleColors:@[ [[MDCPalette cr_bluePalette] tint500] ]];
+  [_activityIndicator setCycleColors:@[ [UIColor colorNamed:kBlueColor] ]];
   [_activityIndicator setRadius:ui::AlignValueToUpperPixel(kFaviconSize / 2)];
   [self addSubview:_activityIndicator];
 }
@@ -367,50 +357,59 @@ const int kTabCloseTintIncognito = 0xFFFFFF;
   AddSameCenterYConstraint(self, _faviconView, _titleLabel);
 }
 
-- (void)updateLineSeparator {
-  UIColor* separatorColor =
-      _incognitoStyle ? [UIColor colorWithWhite:36 / 255.0 alpha:1.0]
-                      : [UIColor colorWithWhite:185 / 255.0 alpha:1.0];
-  [_lineSeparator setBackgroundColor:separatorColor];
-}
+// Updates this tab's style based on the value of |selected| and the current
+// incognito style.
+- (void)updateStyleForSelected:(BOOL)selected {
+  // On iOS 13 there is no need to pick custom incognito assets because
+  // |overrideUserInterfaceStyle| is set to dark mode when in incognito.
+  using base::ios::IsRunningOnIOS13OrLater;
+  BOOL useIncognitoFallback = self.incognitoStyle && !IsRunningOnIOS13OrLater();
 
-- (void)updateBackgroundImage:(BOOL)selected {
+  // Style the background image first.
   NSString* state = (selected ? @"foreground" : @"background");
-  NSString* incognito = _incognitoStyle ? @"incognito_" : @"";
+  NSString* incognito = useIncognitoFallback ? @"incognito_" : @"";
   NSString* imageName =
       [NSString stringWithFormat:@"tabstrip_%@%@_tab", incognito, state];
   CGFloat leftInset = kTabBackgroundLeftCapInset;
+  // As of iOS 13 Beta 4, resizable images are flaky for dark mode.
+  // Radar filled: b/137942721.
+  UIImage* resolvedImage = [UIImage imageNamed:imageName
+                                      inBundle:nil
+                 compatibleWithTraitCollection:self.traitCollection];
   UIImage* backgroundImage =
-      StretchableImageFromUIImage([UIImage imageNamed:imageName], leftInset, 0);
-  [_backgroundImageView setImage:backgroundImage];
-}
+      StretchableImageFromUIImage(resolvedImage, leftInset, 0);
+  _backgroundImageView.image = backgroundImage;
 
-- (void)updateCloseButtonImages {
-  if (IsUIRefreshPhase1Enabled()) {
-    [_closeButton
-        setImage:[[UIImage imageNamed:@"grid_cell_close_button"]
-                     imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate]
-        forState:UIControlStateNormal];
-    _closeButton.tintColor = _incognitoStyle
-                                 ? UIColorFromRGB(kTabCloseTintIncognito)
-                                 : UIColorFromRGB(kTabCloseTint);
+  // Style the close button tint color.
+  NSString* closeButtonColorName;
+  if (selected) {
+    closeButtonColorName = useIncognitoFallback ? @"close_button_dark_color"
+                                                : @"close_button_color";
   } else {
-    NSString* incognito = self.incognitoStyle ? @"_incognito" : @"";
-    UIImage* normalImage = [UIImage
-        imageNamed:[NSString stringWithFormat:@"tabstrip_tab_close%@_legacy",
-                                              incognito]];
-    UIImage* pressedImage = [UIImage
-        imageNamed:[NSString
-                       stringWithFormat:@"tabstrip_tab_close%@_pressed_legacy",
-                                        incognito]];
-    [_closeButton setImage:normalImage forState:UIControlStateNormal];
-    [_closeButton setImage:pressedImage forState:UIControlStateHighlighted];
+    closeButtonColorName = @"tabstrip_inactive_tab_close_button_color";
   }
-}
+  _closeButton.tintColor = [UIColor colorNamed:closeButtonColorName];
 
-- (UIImage*)defaultFaviconImage {
-  return self.incognitoStyle ? [UIImage imageNamed:@"default_favicon_incognito"]
-                             : [UIImage imageNamed:@"default_favicon"];
+  // Style the favicon tint color and the title label.
+  NSString* faviconColorName;
+  if (selected) {
+    faviconColorName =
+        useIncognitoFallback ? kTextPrimaryDarkColor : kTextPrimaryColor;
+  } else {
+    faviconColorName = @"tabstrip_inactive_tab_text_color";
+  }
+  _faviconView.tintColor = [UIColor colorNamed:faviconColorName];
+  _titleLabel.textColor = _faviconView.tintColor;
+
+  // Update font weight and accessibility label.
+  UIFontWeight fontWeight =
+      selected ? UIFontWeightSemibold : UIFontWeightMedium;
+  _titleLabel.font = [UIFont systemFontOfSize:kFontSize weight:fontWeight];
+  // It would make more sense to set active/inactive on tab_view itself, but
+  // tab_view is not an an accessible element, and making it one would add
+  // several complicated layers to UIA.  Instead, simply set active/inactive
+  // here to be used by UIA.
+  [_titleLabel setAccessibilityValue:(selected ? @"active" : @"inactive")];
 }
 
 #pragma mark - DropAndNavigateDelegate
@@ -427,6 +426,12 @@ const int kTabCloseTintIncognito = 0xFFFFFF;
 
 - (void)tabWasTapped {
   [_delegate tabViewTapped:self];
+}
+
+#pragma mark - Properties
+
+- (UILabel*)titleLabel {
+  return _titleLabel;
 }
 
 @end

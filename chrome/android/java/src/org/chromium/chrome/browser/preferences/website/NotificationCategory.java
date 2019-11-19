@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.preferences.website;
 
 import android.content.Context;
-import android.os.Build;
 import android.support.v4.app.NotificationManagerCompat;
 
 import org.chromium.chrome.browser.ChromeFeatureList;
@@ -24,9 +23,7 @@ public class NotificationCategory extends SiteSettingsCategory {
 
     @Override
     protected boolean enabledForChrome(Context context) {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT
-                || !ChromeFeatureList.isEnabled(
-                           ChromeFeatureList.APP_NOTIFICATION_STATUS_MESSAGING)) {
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.APP_NOTIFICATION_STATUS_MESSAGING)) {
             return super.enabledForChrome(context);
         }
         NotificationManagerCompat manager = NotificationManagerCompat.from(context);

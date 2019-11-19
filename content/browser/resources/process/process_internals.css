@@ -81,6 +81,16 @@ body {
   z-index: 1;
 }
 
+@media(forced-colors) {
+  .content-header {
+    background: none;
+  }
+}
+
 .tree-label {
   user-select: text;
+}
+
+#isolated-origins-container {
+  margin-top: 15px;
 }

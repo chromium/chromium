@@ -153,6 +153,43 @@ bool StructTraits<device::mojom::GamepadPoseDataView, device::GamepadPose>::
 }
 
 // static
+device::mojom::GamepadMapping
+EnumTraits<device::mojom::GamepadMapping, device::GamepadMapping>::ToMojom(
+    device::GamepadMapping input) {
+  switch (input) {
+    case device::GamepadMapping::kNone:
+      return device::mojom::GamepadMapping::GamepadMappingNone;
+    case device::GamepadMapping::kStandard:
+      return device::mojom::GamepadMapping::GamepadMappingStandard;
+    case device::GamepadMapping::kXrStandard:
+      return device::mojom::GamepadMapping::GamepadMappingXRStandard;
+  }
+
+  NOTREACHED();
+  return device::mojom::GamepadMapping::GamepadMappingNone;
+}
+
+// static
+bool EnumTraits<device::mojom::GamepadMapping, device::GamepadMapping>::
+    FromMojom(device::mojom::GamepadMapping input,
+              device::GamepadMapping* output) {
+  switch (input) {
+    case device::mojom::GamepadMapping::GamepadMappingNone:
+      *output = device::GamepadMapping::kNone;
+      return true;
+    case device::mojom::GamepadMapping::GamepadMappingStandard:
+      *output = device::GamepadMapping::kStandard;
+      return true;
+    case device::mojom::GamepadMapping::GamepadMappingXRStandard:
+      *output = device::GamepadMapping::kXrStandard;
+      return true;
+  }
+
+  NOTREACHED();
+  return false;
+}
+
+// static
 device::mojom::GamepadHand
 EnumTraits<device::mojom::GamepadHand, device::GamepadHand>::ToMojom(
     device::GamepadHand input) {
@@ -201,19 +238,6 @@ StructTraits<device::mojom::GamepadDataView, device::Gamepad>::id(
 }
 
 // static
-base::span<const uint16_t>
-StructTraits<device::mojom::GamepadDataView, device::Gamepad>::mapping(
-    const device::Gamepad& r) {
-  size_t mapping_length = 0;
-  while (mapping_length < device::Gamepad::kMappingLengthCap &&
-         r.mapping[mapping_length] != 0) {
-    mapping_length++;
-  }
-  return base::make_span(reinterpret_cast<const uint16_t*>(r.mapping),
-                         mapping_length);
-}
-
-// static
 bool StructTraits<device::mojom::GamepadDataView, device::Gamepad>::Read(
     device::mojom::GamepadDataView data,
     device::Gamepad* out) {
@@ -245,10 +269,7 @@ bool StructTraits<device::mojom::GamepadDataView, device::Gamepad>::Read(
   if (!data.ReadVibrationActuator(&out->vibration_actuator))
     return false;
 
-  memset(out->mapping, 0, sizeof(out->mapping));
-  base::span<uint16_t> mapping(reinterpret_cast<uint16_t*>(out->mapping),
-                               device::Gamepad::kMappingLengthCap);
-  if (!data.ReadMapping(&mapping)) {
+  if (!data.ReadMapping(&out->mapping)) {
     return false;
   }
 

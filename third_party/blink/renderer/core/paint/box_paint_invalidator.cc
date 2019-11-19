@@ -108,11 +108,11 @@ static bool ShouldFullyInvalidateFillLayersOnHeightChange(
 
 // old_size and new_size are the old and new sizes of the positioning area.
 bool ShouldFullyInvalidateFillLayersOnSizeChange(const FillLayer& layer,
-                                                 const LayoutSize& old_size,
-                                                 const LayoutSize& new_size) {
-  return (old_size.Width() != new_size.Width() &&
+                                                 const PhysicalSize& old_size,
+                                                 const PhysicalSize& new_size) {
+  return (old_size.width != new_size.width &&
           ShouldFullyInvalidateFillLayersOnWidthChange(layer)) ||
-         (old_size.Height() != new_size.Height() &&
+         (old_size.height != new_size.height &&
           ShouldFullyInvalidateFillLayersOnHeightChange(layer));
 }
 
@@ -140,10 +140,10 @@ PaintInvalidationReason BoxPaintInvalidator::ComputePaintInvalidationReason() {
   // - pixel snapping, or not snapping e.g. for some visual overflowing effects,
   // - scale, rotate, skew etc. transforms,
   // - visual (ink) overflows.
-  if (context_.old_visual_rect !=
-          LayoutRect(context_.old_paint_offset, box_.PreviousSize()) ||
-      context_.fragment_data->VisualRect() !=
-          LayoutRect(context_.fragment_data->PaintOffset(), box_.Size())) {
+  if (PhysicalRect(context_.old_visual_rect) !=
+          PhysicalRect(context_.old_paint_offset, box_.PreviousSize()) ||
+      PhysicalRect(context_.fragment_data->VisualRect()) !=
+          PhysicalRect(context_.fragment_data->PaintOffset(), box_.Size())) {
     return PaintInvalidationReason::kGeometry;
   }
 
@@ -155,7 +155,7 @@ PaintInvalidationReason BoxPaintInvalidator::ComputePaintInvalidationReason() {
   if (box_.BorderRight() || box_.BorderBottom())
     return PaintInvalidationReason::kGeometry;
 
-  if (style.HasVisualOverflowingEffect() || style.HasAppearance() ||
+  if (style.HasVisualOverflowingEffect() || style.HasEffectiveAppearance() ||
       style.HasFilterInducingProperty() || style.HasMask() || style.ClipPath())
     return PaintInvalidationReason::kGeometry;
 
@@ -208,8 +208,8 @@ bool BoxPaintInvalidator::BackgroundPaintsOntoMainGraphicsLayer() {
 }
 
 bool BoxPaintInvalidator::ShouldFullyInvalidateBackgroundOnLayoutOverflowChange(
-    const LayoutRect& old_layout_overflow,
-    const LayoutRect& new_layout_overflow) {
+    const PhysicalRect& old_layout_overflow,
+    const PhysicalRect& new_layout_overflow) {
   if (new_layout_overflow == old_layout_overflow)
     return false;
 
@@ -217,12 +217,12 @@ bool BoxPaintInvalidator::ShouldFullyInvalidateBackgroundOnLayoutOverflowChange(
     return false;
 
   // The background should invalidate on most location changes.
-  if (new_layout_overflow.Location() != old_layout_overflow.Location())
+  if (new_layout_overflow.offset != old_layout_overflow.offset)
     return true;
 
   return ShouldFullyInvalidateFillLayersOnSizeChange(
-      box_.StyleRef().BackgroundLayers(), old_layout_overflow.Size(),
-      new_layout_overflow.Size());
+      box_.StyleRef().BackgroundLayers(), old_layout_overflow.size,
+      new_layout_overflow.size);
 }
 
 BoxPaintInvalidator::BackgroundInvalidationType
@@ -237,9 +237,9 @@ BoxPaintInvalidator::ComputeViewBackgroundInvalidation() {
   // BackgroundRect is the positioning area of all fixed attachment backgrounds,
   // including the LayoutView's and descendants'.
   bool background_location_changed =
-      new_background_rect.Location() != old_background_rect.Location();
+      new_background_rect.offset != old_background_rect.offset;
   bool background_size_changed =
-      new_background_rect.Size() != old_background_rect.Size();
+      new_background_rect.size != old_background_rect.size;
   if (background_location_changed || background_size_changed) {
     for (auto* object :
          layout_view.GetFrameView()->BackgroundAttachmentFixedObjects())
@@ -298,7 +298,8 @@ BoxPaintInvalidator::ComputeBackgroundInvalidation(
   const auto& background_layers = box_.StyleRef().BackgroundLayers();
   if (background_layers.AnyLayerHasDefaultAttachmentImage() &&
       ShouldFullyInvalidateFillLayersOnSizeChange(
-          background_layers, box_.PreviousSize(), box_.Size()))
+          background_layers, PhysicalSizeToBeNoop(box_.PreviousSize()),
+          PhysicalSizeToBeNoop(box_.Size())))
     return BackgroundInvalidationType::kFull;
 
   if (background_layers.AnyLayerUsesContentBox() &&
@@ -312,16 +313,15 @@ BoxPaintInvalidator::ComputeBackgroundInvalidation(
   if (!layout_overflow_change_causes_invalidation)
     return BackgroundInvalidationType::kNone;
 
-  const LayoutRect& old_layout_overflow =
-      box_.PreviousPhysicalLayoutOverflowRect();
-  LayoutRect new_layout_overflow = box_.PhysicalLayoutOverflowRect();
+  const auto& old_layout_overflow = box_.PreviousPhysicalLayoutOverflowRect();
+  auto new_layout_overflow = box_.PhysicalLayoutOverflowRect();
   if (ShouldFullyInvalidateBackgroundOnLayoutOverflowChange(
           old_layout_overflow, new_layout_overflow))
     return BackgroundInvalidationType::kFull;
 
   if (new_layout_overflow != old_layout_overflow) {
     // Do incremental invalidation if possible.
-    if (old_layout_overflow.Location() == new_layout_overflow.Location())
+    if (old_layout_overflow.offset == new_layout_overflow.offset)
       return BackgroundInvalidationType::kIncremental;
     return BackgroundInvalidationType::kFull;
   }

@@ -9,8 +9,9 @@
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/logging.h"
-#include "jni/AndroidNetworkLibrary_jni.h"
 #include "net/dns/public/dns_protocol.h"
+#include "net/net_jni_headers/AndroidNetworkLibrary_jni.h"
+#include "net/net_jni_headers/DnsStatus_jni.h"
 
 using base::android::AttachCurrentThread;
 using base::android::ConvertJavaStringToUTF8;
@@ -123,16 +124,33 @@ std::string GetWifiSSID() {
           base::android::AttachCurrentThread()));
 }
 
+base::Optional<int32_t> GetWifiSignalLevel() {
+  const int count_buckets = 5;
+  int signal_strength = Java_AndroidNetworkLibrary_getWifiSignalLevel(
+      base::android::AttachCurrentThread(), count_buckets);
+  if (signal_strength < 0)
+    return base::nullopt;
+  DCHECK_LE(0, signal_strength);
+  DCHECK_GE(count_buckets - 1, signal_strength);
+
+  return signal_strength;
+}
+
 internal::ConfigParsePosixResult GetDnsServers(
-    std::vector<IPEndPoint>* dns_servers) {
+    std::vector<IPEndPoint>* dns_servers,
+    bool* dns_over_tls_active,
+    std::string* dns_over_tls_hostname) {
   JNIEnv* env = AttachCurrentThread();
+  // Get the DNS status for the active network.
+  ScopedJavaLocalRef<jobject> result =
+      Java_AndroidNetworkLibrary_getDnsStatus(env, nullptr /* network */);
+  if (result.is_null())
+    return internal::CONFIG_PARSE_POSIX_NO_NAMESERVERS;
+
+  // Parse the DNS servers.
   std::vector<std::string> dns_servers_strings;
   base::android::JavaArrayOfByteArrayToStringVector(
-      env, Java_AndroidNetworkLibrary_getDnsServers(env), &dns_servers_strings);
-  if (dns_servers_strings.size() == 0)
-    return internal::CONFIG_PARSE_POSIX_NO_NAMESERVERS;
-  if (dns_servers_strings.size() == 1 && dns_servers_strings[0].size() == 1)
-    return internal::CONFIG_PARSE_POSIX_PRIVATE_DNS_ACTIVE;
+      env, Java_DnsStatus_getDnsServers(env, result), &dns_servers_strings);
   for (const std::string& dns_address_string : dns_servers_strings) {
     IPAddress dns_address(
         reinterpret_cast<const uint8_t*>(dns_address_string.c_str()),
@@ -140,7 +158,13 @@ internal::ConfigParsePosixResult GetDnsServers(
     IPEndPoint dns_server(dns_address, dns_protocol::kDefaultPort);
     dns_servers->push_back(dns_server);
   }
-  return internal::CONFIG_PARSE_POSIX_OK;
+
+  *dns_over_tls_active = Java_DnsStatus_getPrivateDnsActive(env, result);
+  *dns_over_tls_hostname = base::android::ConvertJavaStringToUTF8(
+      Java_DnsStatus_getPrivateDnsServerName(env, result));
+
+  return dns_servers->size() ? internal::CONFIG_PARSE_POSIX_OK
+                             : internal::CONFIG_PARSE_POSIX_NO_NAMESERVERS;
 }
 
 void TagSocket(SocketDescriptor socket, uid_t uid, int32_t tag) {

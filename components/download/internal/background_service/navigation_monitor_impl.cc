@@ -11,9 +11,7 @@
 namespace download {
 
 NavigationMonitorImpl::NavigationMonitorImpl()
-    : observer_(nullptr),
-      current_navigation_count_(0),
-      weak_ptr_factory_(this) {}
+    : observer_(nullptr), current_navigation_count_(0) {}
 
 NavigationMonitorImpl::~NavigationMonitorImpl() = default;
 

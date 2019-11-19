@@ -52,12 +52,12 @@ void RarVM::Prepare(byte *Code,uint CodeSize,VM_PreparedProgram *Prg)
     uint CRC;
     VM_StandardFilters Type;
   } static StdList[]={
-    {53, 0xad576887, VMSF_E8},
-    {57, 0x3cd7e57e, VMSF_E8E9},
-   {120, 0x3769893f, VMSF_ITANIUM},
-    {29, 0x0e06077d, VMSF_DELTA},
-   {149, 0x1c2c5dc8, VMSF_RGB},
-   {216, 0xbc85e701, VMSF_AUDIO}
+    53, 0xad576887, VMSF_E8,
+    57, 0x3cd7e57e, VMSF_E8E9,
+   120, 0x3769893f, VMSF_ITANIUM,
+    29, 0x0e06077d, VMSF_DELTA,
+   149, 0x1c2c5dc8, VMSF_RGB,
+   216, 0xbc85e701, VMSF_AUDIO
   };
   uint CodeCRC=CRC32(0xffffffff,Code,CodeSize)^0xffffffff;
   for (uint I=0;I<ASIZE(StdList);I++)
@@ -326,8 +326,6 @@ bool RarVM::ExecuteStandardFilter(VM_StandardFilters FilterType)
           }
         }
       }
-      break;
-    case VMSF_NONE:
       break;
   }
   return true;

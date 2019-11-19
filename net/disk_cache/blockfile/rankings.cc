@@ -48,7 +48,7 @@ enum Operation {
 // data on the file header) can be used to finish the operation.
 class Transaction {
  public:
-  // addr is the cache addres of the node being inserted or removed. We want to
+  // addr is the cache address of the node being inserted or removed. We want to
   // avoid having the compiler doing optimizations on when to read or write
   // from user_data because it is the basis of the crash detection. Maybe
   // volatile is not enough for that, but it should be a good hint.
@@ -192,7 +192,7 @@ void UpdateTimes(disk_cache::CacheRankingsBlock* node, bool modified) {
 
 namespace disk_cache {
 
-Rankings::ScopedRankingsBlock::ScopedRankingsBlock() : rankings_(NULL) {}
+Rankings::ScopedRankingsBlock::ScopedRankingsBlock() : rankings_(nullptr) {}
 
 Rankings::ScopedRankingsBlock::ScopedRankingsBlock(Rankings* rankings)
     : rankings_(rankings) {}
@@ -242,7 +242,7 @@ void Rankings::Reset() {
     heads_[i].set_value(0);
     tails_[i].set_value(0);
   }
-  control_data_ = NULL;
+  control_data_ = nullptr;
 }
 
 void Rankings::Insert(CacheRankingsBlock* node, bool modified, List list) {
@@ -320,8 +320,6 @@ void Rankings::Remove(CacheRankingsBlock* node, List list, bool strict) {
   Trace("Remove 0x%x (0x%x 0x%x) l %d", node->address().value(),
         node->Data()->next, node->Data()->prev, list);
   DCHECK(node->HasData());
-  if (strict)
-    InvalidateIterators(node);
 
   Addr next_addr(node->Data()->next);
   Addr prev_addr(node->Data()->prev);
@@ -392,6 +390,9 @@ void Rankings::Remove(CacheRankingsBlock* node, List list, bool strict) {
   GenerateCrash(ON_REMOVE_8);
   node->Store();
   DecrementCounter(list);
+  if (strict)
+    UpdateIteratorsForRemoved(node_value, &next);
+
   UpdateIterators(&next);
   UpdateIterators(&prev);
   backend_->FlushIndex();
@@ -420,30 +421,30 @@ CacheRankingsBlock* Rankings::GetNext(CacheRankingsBlock* node, List list) {
   if (!node) {
     Addr& my_head = heads_[list];
     if (!my_head.is_initialized())
-      return NULL;
+      return nullptr;
     next.reset(new CacheRankingsBlock(backend_->File(my_head), my_head));
   } else {
     if (!node->HasData())
       node->Load();
     Addr& my_tail = tails_[list];
     if (!my_tail.is_initialized())
-      return NULL;
+      return nullptr;
     if (my_tail.value() == node->address().value())
-      return NULL;
+      return nullptr;
     Addr address(node->Data()->next);
     if (address.value() == node->address().value())
-      return NULL;  // Another tail? fail it.
+      return nullptr;  // Another tail? fail it.
     next.reset(new CacheRankingsBlock(backend_->File(address), address));
   }
 
   TrackRankingsBlock(next.get(), true);
 
   if (!GetRanking(next.get()))
-    return NULL;
+    return nullptr;
 
   ConvertToLongLived(next.get());
   if (node && !CheckSingleLink(node, next.get()))
-    return NULL;
+    return nullptr;
 
   return next.release();
 }
@@ -453,30 +454,30 @@ CacheRankingsBlock* Rankings::GetPrev(CacheRankingsBlock* node, List list) {
   if (!node) {
     Addr& my_tail = tails_[list];
     if (!my_tail.is_initialized())
-      return NULL;
+      return nullptr;
     prev.reset(new CacheRankingsBlock(backend_->File(my_tail), my_tail));
   } else {
     if (!node->HasData())
       node->Load();
     Addr& my_head = heads_[list];
     if (!my_head.is_initialized())
-      return NULL;
+      return nullptr;
     if (my_head.value() == node->address().value())
-      return NULL;
+      return nullptr;
     Addr address(node->Data()->prev);
     if (address.value() == node->address().value())
-      return NULL;  // Another head? fail it.
+      return nullptr;  // Another head? fail it.
     prev.reset(new CacheRankingsBlock(backend_->File(address), address));
   }
 
   TrackRankingsBlock(prev.get(), true);
 
   if (!GetRanking(prev.get()))
-    return NULL;
+    return nullptr;
 
   ConvertToLongLived(prev.get());
   if (node && !CheckSingleLink(prev.get(), node))
-    return NULL;
+    return nullptr;
 
   return prev.release();
 }
@@ -627,7 +628,7 @@ void Rankings::ConvertToLongLived(CacheRankingsBlock* rankings) {
   // We cannot return a shared node because we are not keeping a reference
   // to the entry that owns the buffer. Make this node a copy of the one that
   // we have, and let the iterator logic update it when the entry changes.
-  CacheRankingsBlock temp(NULL, Addr(0));
+  CacheRankingsBlock temp(nullptr, Addr(0));
   *temp.Data() = *rankings->Data();
   rankings->StopSharingData();
   *rankings->Data() = *temp.Data();
@@ -893,11 +894,14 @@ void Rankings::UpdateIterators(CacheRankingsBlock* node) {
   }
 }
 
-void Rankings::InvalidateIterators(CacheRankingsBlock* node) {
-  CacheAddr address = node->address().value();
+void Rankings::UpdateIteratorsForRemoved(CacheAddr address,
+                                         CacheRankingsBlock* next) {
+  CacheAddr next_addr = next->address().value();
   for (auto it = iterators_.begin(); it != iterators_.end(); ++it) {
-    if (it->first == address)
-      it->second->Discard();
+    if (it->first == address) {
+      it->first = next_addr;
+      it->second->CopyFrom(next);
+    }
   }
 }
 

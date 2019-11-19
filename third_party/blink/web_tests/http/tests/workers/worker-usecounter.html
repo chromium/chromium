@@ -1,0 +1,49 @@
+i<!DOCTYPE html>
+<title>Dedicated Worker: UseCounter</title>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<body>
+</body>
+<script>
+
+// From web_feature.mojom
+const kFeatureWorkerStart = 4;
+const kFeatureNestedDedicatedWorker = 2499;
+const kFeatureClassicDedicatedWorker = 3084;
+const kFeatureModuleDedicatedWorker = 3085;
+
+function isUseCounted(feature) {
+  return internals.isUseCounted(document, feature);
+}
+
+function observeUseCounter(feature) {
+  return internals.observeUseCounter(document, feature);
+}
+
+promise_test(async t => {
+  // Start a dedicated worker using classic scripts.
+  assert_false(isUseCounted(kFeatureWorkerStart));
+  assert_false(isUseCounted(kFeatureClassicDedicatedWorker));
+  const classic_worker = new Worker('resources/empty.js');
+  await Promise.all([
+      observeUseCounter(kFeatureWorkerStart),
+      observeUseCounter(kFeatureClassicDedicatedWorker)
+  ]);
+  assert_true(isUseCounted(kFeatureWorkerStart));
+  assert_true(isUseCounted(kFeatureClassicDedicatedWorker));
+
+  // Start a dedicated worker using module scripts.
+  assert_false(isUseCounted(kFeatureModuleDedicatedWorker));
+  const module_worker = new Worker('resources/empty.js', { type: 'module' });
+  await observeUseCounter(kFeatureModuleDedicatedWorker);
+  assert_true(isUseCounted(kFeatureModuleDedicatedWorker));
+
+  // Start a nested dedicated worker.
+  assert_false(isUseCounted(kFeatureNestedDedicatedWorker));
+  const nested_worker = new Worker('resources/nested-worker.js');
+  await observeUseCounter(kFeatureNestedDedicatedWorker);
+  assert_true(isUseCounted(kFeatureNestedDedicatedWorker));
+}, 'UseCounter on dedicated workers');
+
+</script>
+</html>

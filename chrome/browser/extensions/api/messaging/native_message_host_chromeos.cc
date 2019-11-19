@@ -20,12 +20,12 @@
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/arc/extensions/arc_support_message_host.h"
-#include "chrome/browser/chromeos/diagnosticsd/diagnosticsd_messaging.h"
+#include "chrome/browser/chromeos/drive/drivefs_native_message_host.h"
+#include "chrome/browser/chromeos/wilco_dtc_supportd/wilco_dtc_supportd_messaging.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/url_pattern.h"
-#include "net/url_request/url_request_context_getter.h"
 #include "remoting/host/it2me/it2me_native_messaging_host_chromeos.h"
 #include "ui/gfx/native_widget_types.h"
 #include "url/gurl.h"
@@ -44,7 +44,8 @@ const char* const kEchoHostOrigins[] = {
 
 class EchoHost : public NativeMessageHost {
  public:
-  static std::unique_ptr<NativeMessageHost> Create() {
+  static std::unique_ptr<NativeMessageHost> Create(
+      content::BrowserContext* browser_context) {
     return std::unique_ptr<NativeMessageHost>(new EchoHost());
   }
 
@@ -91,16 +92,15 @@ struct BuiltInHost {
   const char* const name;
   const char* const* const allowed_origins;
   int allowed_origins_count;
-  std::unique_ptr<NativeMessageHost> (*create_function)();
+  std::unique_ptr<NativeMessageHost> (*create_function)(
+      content::BrowserContext*);
 };
 
-std::unique_ptr<NativeMessageHost> CreateIt2MeHost() {
+std::unique_ptr<NativeMessageHost> CreateIt2MeHost(
+    content::BrowserContext* browser_context) {
   return remoting::CreateIt2MeNativeMessagingHostForChromeOS(
-      g_browser_process->system_request_context(),
-      base::CreateSingleThreadTaskRunnerWithTraits(
-          {content::BrowserThread::IO}),
-      base::CreateSingleThreadTaskRunnerWithTraits(
-          {content::BrowserThread::UI}),
+      base::CreateSingleThreadTaskRunner({content::BrowserThread::IO}),
+      base::CreateSingleThreadTaskRunner({content::BrowserThread::UI}),
       g_browser_process->policy_service());
 }
 
@@ -129,8 +129,14 @@ static const BuiltInHost kBuiltInHost[] = {
     {arc::ArcSupportMessageHost::kHostName,
      arc::ArcSupportMessageHost::kHostOrigin, 1,
      &arc::ArcSupportMessageHost::Create},
-    {chromeos::kDiagnosticsdUiMessageHost, nullptr, 0,
-     &chromeos::CreateExtensionOwnedDiagnosticsdMessageHost},
+    {chromeos::kWilcoDtcSupportdUiMessageHost,
+     chromeos::kWilcoDtcSupportdHostOrigins,
+     chromeos::kWilcoDtcSupportdHostOriginsSize,
+     &chromeos::CreateExtensionOwnedWilcoDtcSupportdMessageHost},
+    {drive::kDriveFsNativeMessageHostName,
+     drive::kDriveFsNativeMessageHostOrigins,
+     drive::kDriveFsNativeMessageHostOriginsSize,
+     &drive::CreateDriveFsNativeMessageHost},
 };
 
 bool MatchesSecurityOrigin(const BuiltInHost& host,
@@ -148,6 +154,7 @@ bool MatchesSecurityOrigin(const BuiltInHost& host,
 }  // namespace
 
 std::unique_ptr<NativeMessageHost> NativeMessageHost::Create(
+    content::BrowserContext* browser_context,
     gfx::NativeView native_view,
     const std::string& source_extension_id,
     const std::string& native_host_name,
@@ -158,7 +165,7 @@ std::unique_ptr<NativeMessageHost> NativeMessageHost::Create(
     std::string name(host.name);
     if (name == native_host_name) {
       if (MatchesSecurityOrigin(host, source_extension_id)) {
-        return (*host.create_function)();
+        return (*host.create_function)(browser_context);
       }
       *error = kForbiddenError;
       return nullptr;

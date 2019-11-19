@@ -7,6 +7,7 @@
 
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/optional.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 
@@ -23,17 +24,19 @@ namespace chromeos {
 // Schedules warning notifications for screen time usage or bed time limits.
 class TimeLimitNotifier {
  public:
-  // The types of time limits to notify for. kScreenTime is used when the
-  // the screen time limit is about to be used up, and kBedTime is used when
-  // the bed time is approaching.
-  enum class LimitType { kScreenTime, kBedTime };
+  // The types of time limits to notify for.
+  enum class LimitType { kScreenTime, kBedTime, kOverride };
 
   explicit TimeLimitNotifier(content::BrowserContext* context);
   ~TimeLimitNotifier();
 
   // Schedules warning and/or exit notifications based on the time remaining.
-  void MaybeScheduleNotifications(LimitType limit_type,
-                                  base::TimeDelta remaining_time);
+  void MaybeScheduleLockNotifications(LimitType limit_type,
+                                      base::TimeDelta remaining_time);
+
+  // Shows a notification informing that the provided limit was updated.
+  void ShowPolicyUpdateNotification(LimitType limit_type,
+                                    base::Optional<base::Time> lock_time);
 
   // Cancels any scheduled notification timers.
   void UnscheduleNotifications();

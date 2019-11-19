@@ -15,7 +15,6 @@
 #include "components/sessions/core/session_types.h"
 #include "components/sync_sessions/local_session_event_router.h"
 #include "components/sync_sessions/synced_session.h"
-#include "components/sync_sessions/task_tracker.h"
 
 namespace sync_pb {
 class SessionSpecifics;
@@ -26,6 +25,7 @@ namespace sync_sessions {
 
 class SyncedSessionTracker;
 class SyncedTabDelegate;
+class SyncSessionsClient;
 
 // Class responsible for propagating local session changes to the sessions
 // model including SyncedSessionTracker (in-memory representation) as well as
@@ -95,20 +95,14 @@ class LocalSessionEventHandlerImpl : public LocalSessionEventHandler {
   sync_pb::SessionTab GetTabSpecificsFromDelegate(
       const SyncedTabDelegate& tab_delegate) const;
 
-  // Updates task tracker with the navigations of |tab_delegate|.
-  void UpdateTaskTracker(SyncedTabDelegate* const tab_delegate);
-
   // Update |tab_specifics| with the corresponding task ids.
-  void WriteTasksIntoSpecifics(sync_pb::SessionTab* tab_specifics);
+  static void WriteTasksIntoSpecifics(sync_pb::SessionTab* tab_specifics,
+                                      SyncedTabDelegate* tab_delegate);
 
   // Injected dependencies (not owned).
   Delegate* const delegate_;
   SyncSessionsClient* const sessions_client_;
   SyncedSessionTracker* const session_tracker_;
-
-  // Tracks Chrome Tasks, which associates navigations, with tab and navigation
-  // changes of current session.
-  TaskTracker task_tracker_;
 
   std::string current_session_tag_;
 

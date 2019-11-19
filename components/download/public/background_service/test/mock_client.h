@@ -22,11 +22,10 @@ class MockClient : public Client {
   MOCK_METHOD2(OnServiceInitialized,
                void(bool, const std::vector<DownloadMetaData>&));
   MOCK_METHOD0(OnServiceUnavailable, void());
-  MOCK_METHOD3(
-      OnDownloadStarted,
-      ShouldDownload(const std::string&,
-                     const std::vector<GURL>&,
-                     const scoped_refptr<const net::HttpResponseHeaders>&));
+  MOCK_METHOD3(OnDownloadStarted,
+               void(const std::string&,
+                    const std::vector<GURL>&,
+                    const scoped_refptr<const net::HttpResponseHeaders>&));
   MOCK_METHOD3(OnDownloadUpdated, void(const std::string&, uint64_t, uint64_t));
   MOCK_METHOD3(OnDownloadFailed,
                void(const std::string&, const CompletionInfo&, FailureReason));

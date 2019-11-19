@@ -16,13 +16,17 @@
 #include "base/optional.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/common/buildflags.h"
 #include "components/domain_reliability/clear_mode.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "components/keyed_service/core/simple_factory_key.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/buildflags/buildflags.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
+#include "net/cookies/cookie_store.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/network_service.mojom.h"
+#include "services/service_manager/public/mojom/service.mojom.h"
 
 #if defined(OS_CHROMEOS)
 #include "chrome/browser/chromeos/settings/scoped_cros_settings_test_helper.h"
@@ -39,17 +43,18 @@ class SSLHostStateDelegate;
 #if !defined(OS_ANDROID)
 class ZoomLevelDelegate;
 #endif  // !defined(OS_ANDROID)
-}
+}  // namespace content
 
 namespace net {
-class URLRequestContextGetter;
+class CookieStore;
 }
 
 namespace policy {
 class PolicyService;
 class ProfilePolicyConnector;
 class SchemaRegistryService;
-}
+class UserCloudPolicyManager;
+}  // namespace policy
 
 namespace storage {
 class SpecialStoragePolicy;
@@ -58,7 +63,7 @@ class SpecialStoragePolicy;
 namespace sync_preferences {
 class PrefServiceSyncable;
 class TestingPrefServiceSyncable;
-}
+}  // namespace sync_preferences
 
 class TestingProfile : public Profile {
  public:
@@ -99,6 +104,10 @@ class TestingProfile : public Profile {
         BrowserContextKeyedServiceFactory* service_factory,
         BrowserContextKeyedServiceFactory::TestingFactory testing_factory);
 
+    // Add multiple testing factories to the TestingProfile. These testing
+    // factories are applied before the ProfileKeyedServices are created.
+    void AddTestingFactories(const TestingFactories& testing_factories);
+
 #if BUILDFLAG(ENABLE_EXTENSIONS)
     // Sets the ExtensionSpecialStoragePolicy to be returned by
     // GetExtensionSpecialStoragePolicy().
@@ -127,12 +136,18 @@ class TestingProfile : public Profile {
     // a non-empty string, the profile is supervised.
     void SetSupervisedUserId(const std::string& supervised_user_id);
 
+    void SetUserCloudPolicyManager(
+        std::unique_ptr<policy::UserCloudPolicyManager>
+            user_cloud_policy_manager);
+
     // Sets the PolicyService to be used by this profile.
     void SetPolicyService(
         std::unique_ptr<policy::PolicyService> policy_service);
 
     // Sets the UserProfileName to be used by this profile.
     void SetProfileName(const std::string& profile_name);
+
+    void OverridePolicyConnectorIsManagedForTesting(bool is_managed);
 
     // Creates the TestingProfile using previously-set settings.
     std::unique_ptr<TestingProfile> Build();
@@ -157,9 +172,11 @@ class TestingProfile : public Profile {
     bool allows_browser_windows_;
     base::Optional<bool> is_new_profile_;
     std::string supervised_user_id_;
+    std::unique_ptr<policy::UserCloudPolicyManager> user_cloud_policy_manager_;
     std::unique_ptr<policy::PolicyService> policy_service_;
     TestingFactories testing_factories_;
     std::string profile_name_;
+    base::Optional<bool> override_policy_connector_is_managed_;
 
     DISALLOW_COPY_AND_ASSIGN(Builder);
   };
@@ -190,9 +207,11 @@ class TestingProfile : public Profile {
                  bool allows_browser_windows,
                  base::Optional<bool> is_new_profile,
                  const std::string& supervised_user_id,
+                 std::unique_ptr<policy::UserCloudPolicyManager> policy_manager,
                  std::unique_ptr<policy::PolicyService> policy_service,
                  TestingFactories testing_factories,
-                 const std::string& profile_name);
+                 const std::string& profile_name,
+                 base::Optional<bool> override_policy_connector_is_managed);
 
   ~TestingProfile() override;
 
@@ -231,6 +250,11 @@ class TestingProfile : public Profile {
   // This is NOT invoked from CreateHistoryService.
   void BlockUntilHistoryIndexIsRefreshed();
 
+  // Blocks until the HistoryBackend is completely destroyed. This is mostly
+  // useful to ensure the destruction tasks do not outlive this class on which
+  // they depend.
+  void BlockUntilHistoryBackendDestroyed();
+
   // Allow setting a profile as Guest after-the-fact to simplify some tests.
   void SetGuestSession(bool guest);
 
@@ -238,6 +262,10 @@ class TestingProfile : public Profile {
   void SetIsNewProfile(bool is_new_profile);
 
   sync_preferences::TestingPrefServiceSyncable* GetTestingPrefService();
+
+  // Sets the Profile's NetworkContext.
+  void SetNetworkContext(
+      std::unique_ptr<network::mojom::NetworkContext> network_context);
 
   // Called on the parent of an incognito |profile|. Usually called from the
   // constructor of an incognito TestingProfile, but can also be used by tests
@@ -247,7 +275,9 @@ class TestingProfile : public Profile {
   void SetSupervisedUserId(const std::string& id);
 
   // content::BrowserContext
+  base::FilePath GetPath() override;
   base::FilePath GetPath() const override;
+  base::Time GetCreationTime() const override;
 #if !defined(OS_ANDROID)
   std::unique_ptr<content::ZoomLevelDelegate> CreateZoomLevelDelegate(
       const base::FilePath& partition_path) override;
@@ -255,12 +285,14 @@ class TestingProfile : public Profile {
   scoped_refptr<base::SequencedTaskRunner> GetIOTaskRunner() override;
   // Do not override IsOffTheRecord to turn a normal profile into an incognito
   // profile dynamically.
+  bool IsOffTheRecord() final;
   bool IsOffTheRecord() const final;
   content::DownloadManagerDelegate* GetDownloadManagerDelegate() override;
   content::ResourceContext* GetResourceContext() override;
   content::BrowserPluginGuestManager* GetGuestManager() override;
   storage::SpecialStoragePolicy* GetSpecialStoragePolicy() override;
   content::PushMessagingService* GetPushMessagingService() override;
+  content::StorageNotificationService* GetStorageNotificationService() override;
   content::SSLHostStateDelegate* GetSSLHostStateDelegate() override;
   content::PermissionControllerDelegate* GetPermissionControllerDelegate()
       override;
@@ -270,18 +302,6 @@ class TestingProfile : public Profile {
   content::BackgroundSyncController* GetBackgroundSyncController() override;
   content::BrowsingDataRemoverDelegate* GetBrowsingDataRemoverDelegate()
       override;
-  net::URLRequestContextGetter* CreateRequestContext(
-      content::ProtocolHandlerMap* protocol_handlers,
-      content::URLRequestInterceptorScopedVector request_interceptors) override;
-  net::URLRequestContextGetter* CreateRequestContextForStoragePartition(
-      const base::FilePath& partition_path,
-      bool in_memory,
-      content::ProtocolHandlerMap* protocol_handlers,
-      content::URLRequestInterceptorScopedVector request_interceptors) override;
-  net::URLRequestContextGetter* CreateMediaRequestContext() override;
-  net::URLRequestContextGetter* CreateMediaRequestContextForStoragePartition(
-      const base::FilePath& partition_path,
-      bool in_memory) override;
   void SetCorsOriginAccessListForOrigin(
       const url::Origin& source_origin,
       std::vector<network::mojom::CorsOriginPatternPtr> allow_patterns,
@@ -295,13 +315,14 @@ class TestingProfile : public Profile {
   ProfileType GetProfileType() const override;
 
   Profile* GetOffTheRecordProfile() override;
-  void DestroyOffTheRecordProfile() override {}
+  void DestroyOffTheRecordProfile() override;
   bool HasOffTheRecordProfile() override;
   Profile* GetOriginalProfile() override;
   const Profile* GetOriginalProfile() const override;
   bool IsSupervised() const override;
   bool IsChild() const override;
   bool IsLegacySupervised() const override;
+  bool IsIndependentOffTheRecordProfile() override;
   bool AllowsBrowserWindows() const override;
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   void SetExtensionSpecialStoragePolicy(
@@ -314,9 +335,6 @@ class TestingProfile : public Profile {
 #if !defined(OS_ANDROID)
   ChromeZoomLevelPrefs* GetZoomLevelPrefs() override;
 #endif  // !defined(OS_ANDROID)
-  net::URLRequestContextGetter* GetRequestContext() override;
-  base::OnceCallback<net::CookieStore*()> GetExtensionsCookieStoreGetter()
-      override;
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory() override;
 
   void set_last_session_exited_cleanly(bool value) {
@@ -324,8 +342,19 @@ class TestingProfile : public Profile {
   }
   bool IsSameProfile(Profile* profile) override;
   base::Time GetStartTime() const override;
-  SimpleFactoryKey* GetOriginalKey() const override;
-  SimpleFactoryKey* GetOffTheRecordKey() const override;
+  ProfileKey* GetProfileKey() const override;
+  policy::SchemaRegistryService* GetPolicySchemaRegistryService() override;
+#if defined(OS_CHROMEOS)
+  policy::UserCloudPolicyManagerChromeOS* GetUserCloudPolicyManagerChromeOS()
+      override;
+  policy::ActiveDirectoryPolicyManager* GetActiveDirectoryPolicyManager()
+      override;
+#else
+  policy::UserCloudPolicyManager* GetUserCloudPolicyManager() override;
+#endif  // defined(OS_CHROMEOS)
+  policy::ProfilePolicyConnector* GetProfilePolicyConnector() override;
+  const policy::ProfilePolicyConnector* GetProfilePolicyConnector()
+      const override;
   base::FilePath last_selected_directory() override;
   void set_last_selected_directory(const base::FilePath& path) override;
   bool WasCreatedByVersionOrLater(const std::string& version) override;
@@ -333,7 +362,7 @@ class TestingProfile : public Profile {
   bool IsNewProfile() override;
   void SetExitType(ExitType exit_type) override {}
   ExitType GetLastSessionExitType() override;
-  network::mojom::NetworkContextPtr CreateNetworkContext(
+  mojo::Remote<network::mojom::NetworkContext> CreateNetworkContext(
       bool in_memory,
       const base::FilePath& relative_partition_path) override;
 
@@ -353,6 +382,9 @@ class TestingProfile : public Profile {
 
   GURL GetHomePage() override;
 
+  void SetCreationTimeForTesting(base::Time creation_time) override;
+  bool ShouldEnableOutOfBlinkCors() override;
+
   PrefService* GetOffTheRecordPrefs() override;
 
   void set_profile_name(const std::string& profile_name) {
@@ -369,6 +401,11 @@ class TestingProfile : public Profile {
 
  protected:
   base::Time start_time_;
+
+  // The key to index KeyedService instances created by
+  // SimpleKeyedServiceFactory.
+  std::unique_ptr<ProfileKey> key_;
+
   std::unique_ptr<sync_preferences::PrefServiceSyncable> prefs_;
   // ref only for right type, lifecycle is managed by prefs_
   sync_preferences::TestingPrefServiceSyncable* testing_prefs_;
@@ -386,24 +423,24 @@ class TestingProfile : public Profile {
   // Creates a TestingPrefService and associates it with the TestingProfile.
   void CreateTestingPrefService();
 
+#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
   // Creates a pref service that uses SupervisedUserPrefStore and associates
   // it with the TestingProfile.
   void CreatePrefServiceForSupervisedUser();
+#endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
 
   // Initializes |prefs_| for an incognito profile, derived from
   // |original_profile_|.
   void CreateIncognitoPrefService();
 
-  // Creates a ProfilePolicyConnector that the ProfilePolicyConnectorFactory
-  // maps to this profile.
+  // Creates a ProfilePolicyConnector.
   void CreateProfilePolicyConnector();
 
   std::unique_ptr<net::CookieStore, content::BrowserThread::DeleteOnIOThread>
       extensions_cookie_store_;
 
-  // Holds a dummy network context request to avoid triggering connection error
-  // handler.
-  network::mojom::NetworkContextRequest network_context_request_;
+  std::unique_ptr<network::mojom::NetworkContext> network_context_;
+  mojo::ReceiverSet<network::mojom::NetworkContext> network_context_receivers_;
 
   std::unique_ptr<Profile> incognito_profile_;
   TestingProfile* original_profile_;
@@ -445,12 +482,15 @@ class TestingProfile : public Profile {
   content::MockResourceContext* resource_context_;
 
   std::unique_ptr<policy::SchemaRegistryService> schema_registry_service_;
+  std::unique_ptr<policy::UserCloudPolicyManager> user_cloud_policy_manager_;
   std::unique_ptr<policy::ProfilePolicyConnector> profile_policy_connector_;
 
   // Weak pointer to a delegate for indicating that a profile was created.
   Delegate* delegate_;
 
   std::string profile_name_;
+
+  base::Optional<bool> override_policy_connector_is_managed_;
 
 #if defined(OS_CHROMEOS)
   std::unique_ptr<chromeos::ScopedCrosSettingsTestHelper>
@@ -460,14 +500,6 @@ class TestingProfile : public Profile {
 #endif  // defined(OS_CHROMEOS)
 
   std::unique_ptr<policy::PolicyService> policy_service_;
-
-  // The keys to index KeyedService instances created by
-  // SimpleKeyedServiceFactory if this is an original profile.
-  std::unique_ptr<SimpleFactoryKey> owned_key_;
-  std::unique_ptr<SimpleFactoryKey> owned_off_the_record_key_;
-  // The key to index KeyedService instances created by
-  // SimpleKeyedServiceFactory if this is an incognito profile.
-  SimpleFactoryKey* off_the_record_key_ = nullptr;
 };
 
 #endif  // CHROME_TEST_BASE_TESTING_PROFILE_H_

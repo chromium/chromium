@@ -13,7 +13,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeActivityTestRule;
@@ -23,6 +22,7 @@ import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.Criteria;
 import org.chromium.content_public.browser.test.util.CriteriaHelper;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.base.PageTransition;
 
@@ -49,7 +49,11 @@ public final class SafeBrowsingTest {
         CriteriaHelper.pollUiThread(Criteria.equals(shouldBeShown, new Callable<Boolean>() {
             @Override
             public Boolean call() {
-                return getWebContents().isShowingInterstitialPage();
+                // TODO(carlosil): For now, we check the presence of an interstitial through the
+                // title since isShowingInterstitialPage does not work with committed interstitials.
+                // Once we fully migrate to committed interstitials, this should be changed to a
+                // more robust check.
+                return getWebContents().getTitle().equals("Security error");
             }
         }));
     }
@@ -64,12 +68,12 @@ public final class SafeBrowsingTest {
      */
     private void loadUrlNonBlocking(String url) {
         Tab tab = mActivityTestRule.getActivity().getActivityTab();
-        ThreadUtils.runOnUiThreadBlocking(
+        TestThreadUtils.runOnUiThreadBlocking(
                 (Runnable) () -> tab.loadUrl(new LoadUrlParams(url, PageTransition.TYPED)));
     }
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         // Create a new temporary instance to ensure the Class is loaded. Otherwise we will get a
         // ClassNotFoundException when trying to instantiate during startup.
         SafeBrowsingApiBridge.setSafeBrowsingHandlerType(
@@ -77,7 +81,7 @@ public final class SafeBrowsingTest {
     }
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
         if (mTestServer != null) {
             mTestServer.stopAndDestroyServer();
         }

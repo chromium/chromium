@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<body>
+<input id="input0" aria-label="input0" role="textbox">
+<input id="input1" aria-label="input1" role="textbox" aria-multiline="true">
+<input id="input2" aria-label="input2" role="textbox" aria-multiline="true">
+<input id="input3" aria-label="input3" role="textbox">
+<script>
+  function go() {
+    // Set aria-multiline from default false->false; should not fire an event.
+    document.getElementById('input0').setAttribute('aria-multiline', 'false');
+
+    // Set aria-multiline from true->false; should fire an event.
+    document.getElementById('input1').setAttribute('aria-multiline', 'false');
+
+    // Set aria-multiline from true->[removed]; should fire an event.
+    document.getElementById('input2').removeAttribute('aria-multiline');
+
+    // Set aria-multiline from false->true; should fire an event.
+    document.getElementById('input3').setAttribute('aria-multiline', 'true');
+  }
+</script>
+</body>
+</html>

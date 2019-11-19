@@ -10,6 +10,17 @@
 
 #include "base/bind.h"
 #include "base/task/post_task.h"
+#include "base/task/task_traits.h"
+
+namespace {
+
+// USER_VISIBLE because loading uploads blocks chrome://crashes,
+// chrome://webrtc-logs and the feedback UI. See https://crbug.com/972526.
+constexpr base::TaskTraits kLoadingTaskTraits = {
+    base::ThreadPool(), base::MayBlock(), base::TaskPriority::USER_BLOCKING,
+    base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN};
+
+}  // namespace
 
 UploadList::UploadInfo::UploadInfo(const std::string& upload_id,
                                    const base::Time& upload_time,
@@ -51,21 +62,32 @@ UploadList::~UploadList() = default;
 
 void UploadList::Load(base::OnceClosure callback) {
   DCHECK(sequence_checker_.CalledOnValidSequence());
-  callback_ = std::move(callback);
-  base::PostTaskWithTraitsAndReplyWithResult(
-      FROM_HERE, LoadingTaskTraits(),
+  load_callback_ = std::move(callback);
+  base::PostTaskAndReplyWithResult(
+      FROM_HERE, kLoadingTaskTraits,
       base::Bind(&UploadList::LoadUploadList, this),
       base::Bind(&UploadList::OnLoadComplete, this));
 }
 
-void UploadList::CancelCallback() {
-  callback_.Reset();
+void UploadList::Clear(const base::Time& begin,
+                       const base::Time& end,
+                       base::OnceClosure callback) {
+  DCHECK(sequence_checker_.CalledOnValidSequence());
+  clear_callback_ = std::move(callback);
+  base::PostTaskAndReply(
+      FROM_HERE, kLoadingTaskTraits,
+      base::BindOnce(&UploadList::ClearUploadList, this, begin, end),
+      base::BindOnce(&UploadList::OnClearComplete, this));
+}
+
+void UploadList::CancelLoadCallback() {
+  load_callback_.Reset();
 }
 
 void UploadList::RequestSingleUploadAsync(const std::string& local_id) {
   DCHECK(sequence_checker_.CalledOnValidSequence());
-  base::PostTaskWithTraits(
-      FROM_HERE, LoadingTaskTraits(),
+  base::PostTask(
+      FROM_HERE, kLoadingTaskTraits,
       base::BindOnce(&UploadList::RequestSingleUpload, this, local_id));
 }
 
@@ -85,6 +107,11 @@ void UploadList::RequestSingleUpload(const std::string& local_id) {
 
 void UploadList::OnLoadComplete(const std::vector<UploadInfo>& uploads) {
   uploads_ = uploads;
-  if (!callback_.is_null())
-    std::move(callback_).Run();
+  if (!load_callback_.is_null())
+    std::move(load_callback_).Run();
+}
+
+void UploadList::OnClearComplete() {
+  if (!clear_callback_.is_null())
+    std::move(clear_callback_).Run();
 }

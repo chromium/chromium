@@ -15,7 +15,7 @@ namespace network {
 
 namespace test {
 
-UDPSocketTestHelper::UDPSocketTestHelper(mojom::UDPSocketPtr* socket)
+UDPSocketTestHelper::UDPSocketTestHelper(mojo::Remote<mojom::UDPSocket>* socket)
     : socket_(socket) {}
 
 UDPSocketTestHelper::~UDPSocketTestHelper() {}
@@ -147,7 +147,7 @@ int UDPSocketTestHelper::LeaveGroupSync(const net::IPAddress& group_address) {
   return net_error;
 }
 
-UDPSocketReceiverImpl::ReceivedResult::ReceivedResult(
+UDPSocketListenerImpl::ReceivedResult::ReceivedResult(
     int net_error_arg,
     const base::Optional<net::IPEndPoint>& src_addr_arg,
     base::Optional<std::vector<uint8_t>> data_arg)
@@ -155,18 +155,18 @@ UDPSocketReceiverImpl::ReceivedResult::ReceivedResult(
       src_addr(src_addr_arg),
       data(std::move(data_arg)) {}
 
-UDPSocketReceiverImpl::ReceivedResult::ReceivedResult(
+UDPSocketListenerImpl::ReceivedResult::ReceivedResult(
     const ReceivedResult& other) = default;
 
-UDPSocketReceiverImpl::ReceivedResult::~ReceivedResult() {}
+UDPSocketListenerImpl::ReceivedResult::~ReceivedResult() {}
 
-UDPSocketReceiverImpl::UDPSocketReceiverImpl()
+UDPSocketListenerImpl::UDPSocketListenerImpl()
     : run_loop_(std::make_unique<base::RunLoop>()),
       expected_receive_count_(0) {}
 
-UDPSocketReceiverImpl::~UDPSocketReceiverImpl() {}
+UDPSocketListenerImpl::~UDPSocketListenerImpl() {}
 
-void UDPSocketReceiverImpl::WaitForReceivedResults(size_t count) {
+void UDPSocketListenerImpl::WaitForReceivedResults(size_t count) {
   DCHECK_LE(results_.size(), count);
   DCHECK_EQ(0u, expected_receive_count_);
 
@@ -178,7 +178,7 @@ void UDPSocketReceiverImpl::WaitForReceivedResults(size_t count) {
   run_loop_ = std::make_unique<base::RunLoop>();
 }
 
-void UDPSocketReceiverImpl::OnReceived(
+void UDPSocketListenerImpl::OnReceived(
     int32_t result,
     const base::Optional<net::IPEndPoint>& src_addr,
     base::Optional<base::span<const uint8_t>> data) {

@@ -34,16 +34,19 @@
 #include <memory>
 
 #include "base/time/time.h"
+#include "services/network/public/mojom/ip_address_space.mojom-shared.h"
 #include "services/network/public/mojom/referrer_policy.mojom-shared.h"
 #include "third_party/blink/public/platform/web_archive_info.h"
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_source_location.h"
+#include "third_party/blink/public/platform/web_url_request.h"
 #include "third_party/blink/public/web/web_navigation_type.h"
 #include "third_party/blink/public/web/web_text_direction.h"
 
 namespace blink {
 
 class WebDocumentSubresourceFilter;
+struct WebLoadingHintsProvider;
 class WebServiceWorkerNetworkProvider;
 class WebURL;
 class WebURLResponse;
@@ -123,6 +126,13 @@ class BLINK_EXPORT WebDocumentLoader {
   // datasource is destroyed or when a new filter is set.
   virtual void SetSubresourceFilter(WebDocumentSubresourceFilter*) = 0;
 
+  // Allows the embedder to inject a loading hints provider that will be
+  // consulted to determine which subresources to load. The passed-in
+  // object is deleted when the datasource is destroyed or when a new filter
+  // is set.
+  virtual void SetLoadingHintsProvider(
+      std::unique_ptr<blink::WebLoadingHintsProvider>) = 0;
+
   // Allows the embedder to set and return the service worker provider
   // associated with the data source. The provider may provide the service
   // worker that controls the resource loading from this data source.
@@ -142,6 +152,9 @@ class BLINK_EXPORT WebDocumentLoader {
   // loading was successful, more information about the archive. Note that this
   // can return true even if archive loading ended up failing.
   virtual bool HasBeenLoadedAsWebArchive() const = 0;
+
+  // Returns the previews state for the document.
+  virtual WebURLRequest::PreviewsState GetPreviewsState() const = 0;
 
   // Returns archive info for the archive.
   virtual WebArchiveInfo GetArchiveInfo() const = 0;

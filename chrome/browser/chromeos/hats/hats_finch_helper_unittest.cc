@@ -14,37 +14,26 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/prefs/pref_service.h"
-#include "components/variations/variations_associated_data.h"
-#include "components/variations/variations_params_manager.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace chromeos {
 
-namespace {
-
-const std::string kFeatureAndTrialName(features::kHappinessTrackingSystem.name);
-
-}  // namespace
-
 class HatsFinchHelperTest : public testing::Test {
  public:
-  using ParamMap = std::map<std::string, std::string>;
-
   HatsFinchHelperTest() {}
 
-  void SetFinchSeedParams(ParamMap params) {
-    params_manager_.SetVariationParamsWithFeatureAssociations(
-        kFeatureAndTrialName /* trial name */, params,
-        std::set<std::string>{kFeatureAndTrialName} /*features to switch on */);
+  void SetFeatureParams(const base::FieldTrialParams& params) {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        features::kHappinessTrackingSystem, params);
   }
 
-  ParamMap CreateParamMap(std::string prob,
-                          std::string cycle_length,
-                          std::string start_date,
-                          std::string reset_survey,
-                          std::string reset) {
-    ParamMap params;
+  base::FieldTrialParams CreateParamMap(std::string prob,
+                                        std::string cycle_length,
+                                        std::string start_date,
+                                        std::string reset_survey,
+                                        std::string reset) {
+    base::FieldTrialParams params;
     params[HatsFinchHelper::kProbabilityParam] = prob;
     params[HatsFinchHelper::kSurveyCycleLengthParam] = cycle_length;
     params[HatsFinchHelper::kSurveyStartDateMsParam] = start_date;
@@ -55,21 +44,21 @@ class HatsFinchHelperTest : public testing::Test {
 
  private:
   // Must outlive |profile_|.
-  content::TestBrowserThreadBundle thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
 
  protected:
   TestingProfile profile_;
 
  private:
-  variations::testing::VariationParamsManager params_manager_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 
   DISALLOW_COPY_AND_ASSIGN(HatsFinchHelperTest);
 };
 
 TEST_F(HatsFinchHelperTest, InitFinchSeed_ValidValues) {
-  ParamMap params =
+  base::FieldTrialParams params =
       CreateParamMap("1.0", "7", "1475613895337", "false", "false");
-  SetFinchSeedParams(params);
+  SetFeatureParams(params);
 
   HatsFinchHelper hats_finch_helper(&profile_);
 
@@ -82,8 +71,9 @@ TEST_F(HatsFinchHelperTest, InitFinchSeed_ValidValues) {
 }
 
 TEST_F(HatsFinchHelperTest, InitFinchSeed_Invalidalues) {
-  ParamMap params = CreateParamMap("-0.1", "-1", "-1000", "false", "false");
-  SetFinchSeedParams(params);
+  base::FieldTrialParams params =
+      CreateParamMap("-0.1", "-1", "-1000", "false", "false");
+  SetFeatureParams(params);
 
   base::Time current_time = base::Time::Now();
   HatsFinchHelper hats_finch_helper(&profile_);
@@ -95,11 +85,12 @@ TEST_F(HatsFinchHelperTest, InitFinchSeed_Invalidalues) {
 }
 
 TEST_F(HatsFinchHelperTest, TestComputeNextDate) {
-  ParamMap params = CreateParamMap("0",
-                                   "7",  // 7 Days survey cycle length
-                                   "0", "false", "false");
+  base::FieldTrialParams params =
+      CreateParamMap("0",
+                     "7",  // 7 Days survey cycle length
+                     "0", "false", "false");
 
-  SetFinchSeedParams(params);
+  SetFeatureParams(params);
 
   base::Time current_time = base::Time::Now();
 
@@ -124,8 +115,9 @@ TEST_F(HatsFinchHelperTest, TestComputeNextDate) {
 }
 
 TEST_F(HatsFinchHelperTest, ResetSurveyCycle) {
-  ParamMap params = CreateParamMap("0.5", "7", "1475613895337", "TruE", "0");
-  SetFinchSeedParams(params);
+  base::FieldTrialParams params =
+      CreateParamMap("0.5", "7", "1475613895337", "true", "0");
+  SetFeatureParams(params);
 
   int64_t initial_timestamp = base::Time::Now().ToInternalValue();
   PrefService* pref_service = profile_.GetPrefs();
@@ -147,8 +139,9 @@ TEST_F(HatsFinchHelperTest, ResetSurveyCycle) {
 }
 
 TEST_F(HatsFinchHelperTest, ResetHats) {
-  ParamMap params = CreateParamMap("0.5", "7", "1475613895337", "0", "TrUe");
-  SetFinchSeedParams(params);
+  base::FieldTrialParams params =
+      CreateParamMap("0.5", "7", "1475613895337", "0", "true");
+  SetFeatureParams(params);
 
   int64_t initial_timestamp = base::Time::Now().ToInternalValue();
   PrefService* pref_service = profile_.GetPrefs();

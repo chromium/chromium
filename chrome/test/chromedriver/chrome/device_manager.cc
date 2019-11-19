@@ -218,7 +218,7 @@ Status DeviceManager::AcquireSpecificDevice(const std::string& device_serial,
   if (status.IsError())
     return status;
 
-  if (!base::ContainsValue(devices, device_serial))
+  if (!base::Contains(devices, device_serial))
     return Status(kUnknownError,
         "Device " + device_serial + " is not online");
 
@@ -246,5 +246,5 @@ Device* DeviceManager::LockDevice(const std::string& device_serial) {
 }
 
 bool DeviceManager::IsDeviceLocked(const std::string& device_serial) {
-  return base::ContainsValue(active_devices_, device_serial);
+  return base::Contains(active_devices_, device_serial);
 }

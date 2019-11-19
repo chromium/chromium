@@ -12,7 +12,7 @@
 #include "third_party/blink/renderer/modules/peerconnection/adapters/ice_transport_adapter.h"
 #include "third_party/blink/renderer/modules/peerconnection/adapters/ice_transport_adapter_cross_thread_factory.h"
 #include "third_party/blink/renderer/platform/scheduler/public/frame_scheduler.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/webrtc/p2p/base/p2p_transport_channel.h"
 
 namespace rtc {
@@ -75,14 +75,13 @@ class IceTransportProxy final {
   scoped_refptr<base::SingleThreadTaskRunner> host_thread() const;
 
   // These methods are proxied to an IceTransportAdapter instance.
-  void StartGathering(
-      const cricket::IceParameters& local_parameters,
-      const cricket::ServerAddresses& stun_servers,
-      const std::vector<cricket::RelayServerConfig>& turn_servers,
-      IceTransportPolicy policy);
+  void StartGathering(const cricket::IceParameters& local_parameters,
+                      const cricket::ServerAddresses& stun_servers,
+                      const WebVector<cricket::RelayServerConfig>& turn_servers,
+                      IceTransportPolicy policy);
   void Start(const cricket::IceParameters& remote_parameters,
              cricket::IceRole role,
-             const std::vector<cricket::Candidate>& initial_remote_candidates);
+             const Vector<cricket::Candidate>& initial_remote_candidates);
   void HandleRemoteRestart(const cricket::IceParameters& new_remote_parameters);
   void AddRemoteCandidate(const cricket::Candidate& candidate);
 
@@ -116,13 +115,13 @@ class IceTransportProxy final {
   // This handle notifies scheduler about an active connection associated
   // with a frame. Handle should be destroyed when connection is closed.
   // This should have the same lifetime as |proxy_|.
-  std::unique_ptr<FrameScheduler::ActiveConnectionHandle>
-      connection_handle_for_scheduler_;
+  FrameScheduler::SchedulingAffectingFeatureHandle
+      feature_handle_for_scheduler_;
 
   THREAD_CHECKER(thread_checker_);
 
   // Must be the last member.
-  base::WeakPtrFactory<IceTransportProxy> weak_ptr_factory_;
+  base::WeakPtrFactory<IceTransportProxy> weak_ptr_factory_{this};
 };
 
 }  // namespace blink

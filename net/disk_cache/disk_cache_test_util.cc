@@ -64,7 +64,8 @@ bool CheckCacheIntegrity(const base::FilePath& path,
                          int max_size,
                          uint32_t mask) {
   std::unique_ptr<disk_cache::BackendImpl> cache(new disk_cache::BackendImpl(
-      path, mask, base::ThreadTaskRunnerHandle::Get(), NULL));
+      path, mask, base::ThreadTaskRunnerHandle::Get(), net::DISK_CACHE,
+      nullptr));
   if (max_size)
     cache->SetMaxSize(max_size);
   if (!cache.get())
@@ -75,6 +76,20 @@ bool CheckCacheIntegrity(const base::FilePath& path,
   if (cache->SyncInit() != net::OK)
     return false;
   return cache->SelfCheck() >= 0;
+}
+
+// -----------------------------------------------------------------------
+
+TestEntryResultCompletionCallback::TestEntryResultCompletionCallback() =
+    default;
+
+TestEntryResultCompletionCallback::~TestEntryResultCompletionCallback() =
+    default;
+
+disk_cache::Backend::EntryResultCallback
+TestEntryResultCompletionCallback::callback() {
+  return base::BindOnce(&TestEntryResultCompletionCallback::SetResult,
+                        base::Unretained(this));
 }
 
 // -----------------------------------------------------------------------
@@ -146,4 +161,9 @@ void CallbackTest::Run(int result) {
   }
 
   helper_->CallbackWasCalled();
+}
+
+void CallbackTest::RunWithEntry(disk_cache::EntryResult result) {
+  last_entry_result_ = std::move(result);
+  Run(last_entry_result_.net_error());
 }

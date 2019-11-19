@@ -149,6 +149,9 @@ enum MouseEventFlags {
   EF_SCROLL_BY_PAGE = 1 << 22,       // Indicates this mouse event is generated
                                      // when users is requesting to scroll by
                                      // pages.
+  EF_UNADJUSTED_MOUSE = 1 << 23,     // Indicates this mouse event is unadjusted
+                                  // mouse events that has unadjusted movement
+                                  // delta, i.e. is from WM_INPUT on Windows.
 };
 
 // Result of dispatching an event.
@@ -220,6 +223,13 @@ enum class EventMomentumPhase {
   // for events that are not a "stream", but indicate both the start and end of
   // the event (e.g. a mouse wheel tick).
   END,
+
+  // EventMomentumPhase can only be BLOCKED when ScrollEventPhase is kEnd. Event
+  // marks the end of the current event stream, when there will be no inertia
+  // scrolling after the user gesture. ScrollEventPhase must simultaneously be
+  // kEnd because that is when it is determined if an event stream that results
+  // in momentum will begin or not. This phase is only used on Windows.
+  BLOCKED,
 };
 
 // Device ID for Touch and Key Events.

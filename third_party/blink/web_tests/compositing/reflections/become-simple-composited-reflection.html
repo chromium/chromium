@@ -24,20 +24,13 @@
       -webkit-box-reflect: below 0;
     }
   </style>
+  <script src="../../resources/run-after-layout-and-paint.js"></script>
   <script>
-    
-    if (window.testRunner) {
-      testRunner.dumpAsTextWithPixelResults();
-      testRunner.waitUntilDone();
-    }
-    
     function doTest()
     {
-      window.setTimeout(function() {
+      runAfterLayoutAndPaint(function() {
         document.getElementById('test').style.backgroundColor = 'transparent';
-        if (window.testRunner)
-          testRunner.notifyDone();
-      }, 0);
+      }, true);
     }
     window.addEventListener('load', doTest, false);
   </script>

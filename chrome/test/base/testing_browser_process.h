@@ -25,7 +25,6 @@
 #include "printing/buildflags/buildflags.h"
 
 class BackgroundModeManager;
-class IOThread;
 class NotificationPlatformBridge;
 class NotificationUIManager;
 class PrefService;
@@ -45,8 +44,8 @@ class GCMDriver;
 }
 
 namespace network {
-class NetworkQualityTracker;
 class TestNetworkConnectionTracker;
+class TestNetworkQualityTracker;
 }
 
 namespace policy {
@@ -69,14 +68,12 @@ class TestingBrowserProcess : public BrowserProcess {
   static TestingBrowserProcess* GetGlobal();
 
   // BrowserProcess overrides:
-  void ResourceDispatcherHostCreated() override;
   void EndSession() override;
   void FlushLocalStateAndReply(base::OnceClosure reply) override;
   metrics_services_manager::MetricsServicesManager* GetMetricsServicesManager()
       override;
   metrics::MetricsService* metrics_service() override;
   rappor::RapporServiceImpl* rappor_service() override;
-  IOThread* io_thread() override;
   SystemNetworkContextManager* system_network_context_manager() override;
   scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory()
       override;
@@ -100,7 +97,6 @@ class TestingBrowserProcess : public BrowserProcess {
       override;
   optimization_guide::OptimizationGuideService* optimization_guide_service()
       override;
-  net::URLRequestContextGetter* system_request_context() override;
   BrowserProcessPlatformPart* platform_part() override;
 
   extensions::EventRouterForwarder* extension_event_router_forwarder() override;
@@ -118,15 +114,17 @@ class TestingBrowserProcess : public BrowserProcess {
   void SetApplicationLocale(const std::string& actual_locale) override;
   DownloadStatusUpdater* download_status_updater() override;
   DownloadRequestLimiter* download_request_limiter() override;
+  StartupData* startup_data() override;
 
 #if (defined(OS_WIN) || defined(OS_LINUX)) && !defined(OS_CHROMEOS)
   void StartAutoupdateTimer() override {}
 #endif
 
-  net_log::ChromeNetLog* net_log() override;
   component_updater::ComponentUpdateService* component_updater() override;
+#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
   component_updater::SupervisedUserWhitelistInstaller*
   supervised_user_whitelist_installer() override;
+#endif
   MediaFileSystemRegistry* media_file_system_registry() override;
 
   WebRtcLogUploader* webrtc_log_uploader() override;
@@ -137,22 +135,17 @@ class TestingBrowserProcess : public BrowserProcess {
   resource_coordinator::TabManager* GetTabManager() override;
   resource_coordinator::ResourceCoordinatorParts* resource_coordinator_parts()
       override;
-  shell_integration::DefaultWebClientState CachedDefaultWebClientState()
-      override;
-  prefs::InProcessPrefServiceFactory* pref_service_factory() const override;
 
   // Set the local state for tests. Consumer is responsible for cleaning it up
   // afterwards (using ScopedTestingLocalState, for example).
   void SetLocalState(PrefService* local_state);
   void SetProfileManager(ProfileManager* profile_manager);
-  void SetIOThread(IOThread* io_thread);
   void SetSafeBrowsingService(safe_browsing::SafeBrowsingService* sb_service);
   void SetRulesetService(
       std::unique_ptr<subresource_filter::RulesetService> ruleset_service);
   void SetOptimizationGuideService(
       std::unique_ptr<optimization_guide::OptimizationGuideService>
           optimization_guide_service);
-  void SetSystemRequestContext(net::URLRequestContextGetter* context_getter);
   void SetSharedURLLoaderFactory(
       scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory);
   void SetNotificationUIManager(
@@ -170,14 +163,17 @@ class TestingBrowserProcess : public BrowserProcess {
   TestingBrowserProcess();
   ~TestingBrowserProcess() override;
 
+  void Init();
+
   std::unique_ptr<content::NotificationService> notification_service_;
   std::string app_locale_;
-  bool is_shutting_down_;
+  bool is_shutting_down_ = false;
 
   std::unique_ptr<policy::ChromeBrowserPolicyConnector>
       browser_policy_connector_;
   bool created_browser_policy_connector_ = false;
-  std::unique_ptr<network::NetworkQualityTracker> network_quality_tracker_;
+  std::unique_ptr<network::TestNetworkQualityTracker>
+      test_network_quality_tracker_;
   std::unique_ptr<ProfileManager> profile_manager_;
   std::unique_ptr<NotificationUIManager> notification_ui_manager_;
   std::unique_ptr<NotificationPlatformBridge> notification_platform_bridge_;
@@ -204,11 +200,9 @@ class TestingBrowserProcess : public BrowserProcess {
   std::unique_ptr<network_time::NetworkTimeTracker> network_time_tracker_;
 
   // The following objects are not owned by TestingBrowserProcess:
-  PrefService* local_state_;
-  IOThread* io_thread_;
-  net::URLRequestContextGetter* system_request_context_;
+  PrefService* local_state_ = nullptr;
   scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory_;
-  rappor::RapporServiceImpl* rappor_service_;
+  rappor::RapporServiceImpl* rappor_service_ = nullptr;
 
   std::unique_ptr<BrowserProcessPlatformPart> platform_part_;
   std::unique_ptr<network::TestNetworkConnectionTracker>

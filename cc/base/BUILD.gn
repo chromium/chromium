@@ -4,7 +4,7 @@
 
 import("//cc/cc.gni")
 
-component("base") {
+cc_component("base") {
   output_name = "cc_base"
   sources = [
     "base_export.h",
@@ -20,8 +20,6 @@ component("base") {
     "index_rect.h",
     "invalidation_region.cc",
     "invalidation_region.h",
-    "lap_timer.cc",
-    "lap_timer.h",
     "list_container.h",
     "list_container_helper.cc",
     "list_container_helper.h",

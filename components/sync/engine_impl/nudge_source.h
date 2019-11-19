@@ -17,8 +17,6 @@ enum NudgeSource {
   NUDGE_SOURCE_LOCAL_REFRESH,
 };
 
-const char* GetNudgeSourceString(NudgeSource nudge_source);
-
 }  // namespace syncer
 
 #endif  // COMPONENTS_SYNC_ENGINE_IMPL_NUDGE_SOURCE_H_

@@ -170,7 +170,7 @@ void SetuidSandboxHost::SetupLaunchOptions(
 
   // Launching a setuid binary requires PR_SET_NO_NEW_PRIVS to not be used.
   options->allow_new_privs = true;
-  UnsetExpectedEnvironmentVariables(&options->environ);
+  UnsetExpectedEnvironmentVariables(&options->environment);
 
   // Set dummy_fd to the reading end of a closed pipe.
   int pipe_fds[2];

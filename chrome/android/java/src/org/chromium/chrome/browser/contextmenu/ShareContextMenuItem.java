@@ -6,22 +6,17 @@ package org.chromium.chrome.browser.contextmenu;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
-import android.support.annotation.DrawableRes;
-import android.support.annotation.IdRes;
-import android.support.annotation.StringRes;
 import android.util.Pair;
 
-import org.chromium.base.Callback;
-import org.chromium.chrome.R;
+import androidx.annotation.IdRes;
+import androidx.annotation.StringRes;
+
 import org.chromium.chrome.browser.share.ShareHelper;
-import org.chromium.chrome.browser.widget.TintedDrawable;
 
 /**
  * List of all predefined Context Menu Items for share in Chrome.
  */
 public class ShareContextMenuItem implements ContextMenuItem {
-    @DrawableRes
-    private final int mIconId;
     @StringRes
     private final int mStringId;
     @IdRes
@@ -32,14 +27,11 @@ public class ShareContextMenuItem implements ContextMenuItem {
     /**
      * A representation of a Context Menu Item. Each item should have a string and an id associated
      * with it.
-     * @param iconId The icon that appears in {@link TabularContextMenuUi} to represent each item.
      * @param stringId The string that describes the action of the item.
      * @param menuId The id found in ids.xml.
      * @param isShareLink Whether the menu is for sharing a link.
      */
-    public ShareContextMenuItem(@DrawableRes int iconId, @StringRes int stringId, @IdRes int menuId,
-            boolean isShareLink) {
-        mIconId = iconId;
+    public ShareContextMenuItem(@StringRes int stringId, @IdRes int menuId, boolean isShareLink) {
         mStringId = stringId;
         mMenuId = menuId;
         mIsShareLink = isShareLink;
@@ -55,13 +47,6 @@ public class ShareContextMenuItem implements ContextMenuItem {
     @Override
     public String getTitle(Context context) {
         return context.getString(mStringId);
-    }
-
-    @Override
-    public void getDrawableAsync(Context context, Callback<Drawable> callback) {
-        Drawable drawable = TintedDrawable.constructTintedDrawable(
-                context, mIconId, R.color.standard_mode_tint);
-        callback.onResult(drawable);
     }
 
     @Override

@@ -1,0 +1,2 @@
+Tests that virtual time does not hang when a fetch is cancelled due to exceeded size of pending keepalive data.
+Request to https://test.com/index.html, type: Document

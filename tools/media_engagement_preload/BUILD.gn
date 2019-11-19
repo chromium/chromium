@@ -39,6 +39,7 @@ generator_sources = [
   "../../third_party/protobuf/python/google/protobuf/internal/decoder.py",
   "../../third_party/protobuf/python/google/protobuf/internal/api_implementation.cc",
   "../../third_party/protobuf/python/google/protobuf/internal/python_message.py",
+  "../../third_party/protobuf/python/google/protobuf/internal/extension_dict.py",
   "../../third_party/protobuf/python/google/protobuf/internal/message_set_extensions.proto",
   "../../third_party/protobuf/python/google/protobuf/internal/python_protobuf.cc",
   "../../third_party/protobuf/python/google/protobuf/internal/more_extensions_dynamic.proto",

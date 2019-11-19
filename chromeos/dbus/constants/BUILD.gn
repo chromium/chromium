@@ -11,6 +11,10 @@ component("constants") {
     "//base",
   ]
   sources = [
+    "attestation_constants.cc",
+    "attestation_constants.h",
+    "cryptohome_key_delegate_constants.cc",
+    "cryptohome_key_delegate_constants.h",
     "dbus_paths.cc",
     "dbus_paths.h",
     "dbus_switches.cc",

@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <script src="../resources/testharness.js"></script>
 <script src="../resources/testharnessreport.js"></script>
-<script src="../resources/run-after-layout-and-paint.js"></script>
 
 <!-- The default document base color is white. -->
 <div id="default">Document base color.</div>
@@ -27,35 +26,35 @@
 </div>
 
 <script>
-test_after_layout_and_paint(function()
+test(function()
 {
     var axDefault = accessibilityController.accessibleElementById('default');
     assert_equals(axDefault.backgroundColor, 0xffffffff);  // White
     document.getElementById('default').style.display = 'none';
 }, 'Ensures that the document base color is exposed.');
 
-test_after_layout_and_paint(function()
+test(function()
 {
     var axTransparent = accessibilityController.accessibleElementById('transparent');
     assert_equals(axTransparent.backgroundColor, 0xff0000ff);  // Blue
     document.getElementById('transparent').style.display = 'none';
 }, 'Ensures that the color of the parent is exposed if the text background is transparent.');
 
-test_after_layout_and_paint(function()
+test(function()
 {
     var axObscuring = accessibilityController.accessibleElementById('obscuring-background');
     assert_equals(axObscuring.backgroundColor, 0xff008000);  // Green
     document.getElementById('obscuring-background').style.display = 'none';
 }, 'Ensures that the color of the parent is the only one exposed if it is not transparent.');
 
-test_after_layout_and_paint(function()
+test(function()
 {
     var axBlended = accessibilityController.accessibleElementById('blended-default');
     assert_equals(axBlended.backgroundColor, 0xffbfbfbf);  // Lite gray
     document.getElementById('blended-default').style.display = 'none';
 }, 'Ensures that semi-transparent text background color is blended with document base color.');
 
-test_after_layout_and_paint(function()
+test(function()
 {
     var axBlended = accessibilityController.accessibleElementById('blended-background');
     assert_equals(axBlended.backgroundColor, 0xff9f9f9f);  // Medium gray

@@ -25,3 +25,7 @@ void PersistentPrefStore::CommitPendingWrite(
                                                      std::move(reply_callback));
   }
 }
+
+bool PersistentPrefStore::IsInMemoryPrefStore() const {
+  return false;
+}

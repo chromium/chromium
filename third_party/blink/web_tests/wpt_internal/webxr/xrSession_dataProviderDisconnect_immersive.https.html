@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>let additionalChromiumResources = ["resources/xr-internal-device-mocking.js"];</script>
+<script src="/webxr/resources/webxr_util.js"></script>
+<script src="/webxr/resources/webxr_test_constants.js"></script>
+<canvas />
+
+<script>
+// This test manipulates mojo directly to simulate some behavior, and as such is
+// chromium specific.
+let testName = "Immersive session ends if data provider disconnects.";
+let fakeDeviceInitParams = TRACKED_IMMERSIVE_DEVICE;
+
+let testFunction = function(session, fakeDeviceController, t) {
+  return new Promise((resolve) => {
+    session.addEventListener('end', () => resolve());
+
+    // Request an animation frame to ensure that everything has time to get
+    // initialized/connected and avoid a race-condition failure with the data
+    // binding not being able to get closed.
+    session.requestAnimationFrame(() => {
+      fakeDeviceController.closeDataProvider();
+      session.requestAnimationFrame(() => {});
+    });
+  });
+}
+
+xr_session_promise_test(
+  testName, testFunction, fakeDeviceInitParams, 'immersive-vr');
+
+</script>

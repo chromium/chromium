@@ -1,8 +1,6 @@
 #ifndef _RAR_STRFN_
 #define _RAR_STRFN_
 
-namespace third_party_unrar {
-
 const char* NullToEmpty(const char *Str);
 const wchar* NullToEmpty(const wchar *Str);
 void IntToExt(const char *Src,char *Dest,size_t DestSize);
@@ -18,10 +16,10 @@ wchar* RemoveLF(wchar *Str);
 unsigned char loctolower(unsigned char ch);
 unsigned char loctoupper(unsigned char ch);
 
-char* strncpyz(char *dest, const char *src, size_t maxlen);
-wchar* wcsncpyz(wchar *dest, const wchar *src, size_t maxlen);
-char* strncatz(char* dest, const char* src, size_t maxlen);
-wchar* wcsncatz(wchar* dest, const wchar* src, size_t maxlen);
+void strncpyz(char *dest, const char *src, size_t maxlen);
+void wcsncpyz(wchar *dest, const wchar *src, size_t maxlen);
+void strncatz(char* dest, const char* src, size_t maxlen);
+void wcsncatz(wchar* dest, const wchar* src, size_t maxlen);
 
 unsigned char etoupper(unsigned char ch);
 wchar etoupperw(wchar ch);
@@ -49,7 +47,5 @@ const wchar* GetCmdParam(const wchar *CmdLine,wchar *Param,size_t MaxSize);
 #ifndef RARDLL
 void PrintfPrepareFmt(const wchar *Org,wchar *Cvt,size_t MaxSize);
 #endif
-
-}  // namespace third_party_unrar
 
 #endif

@@ -18,13 +18,14 @@
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/webui/localized_string.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/browser_resources.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
 #include "components/update_client/crx_update_item.h"
+#include "content/public/browser/notification_registrar.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "content/public/browser/web_ui_message_handler.h"
@@ -45,14 +46,17 @@ content::WebUIDataSource* CreateComponentsUIHTMLSource(Profile* profile) {
 
   source->OverrideContentSecurityPolicyScriptSrc(
       "script-src chrome://resources 'self' 'unsafe-eval';");
-  source->AddLocalizedString("componentsTitle", IDS_COMPONENTS_TITLE);
-  source->AddLocalizedString("componentsNoneInstalled",
-                             IDS_COMPONENTS_NONE_INSTALLED);
-  source->AddLocalizedString("componentVersion", IDS_COMPONENTS_VERSION);
-  source->AddLocalizedString("checkUpdate", IDS_COMPONENTS_CHECK_FOR_UPDATE);
-  source->AddLocalizedString("noComponents", IDS_COMPONENTS_NO_COMPONENTS);
-  source->AddLocalizedString("statusLabel", IDS_COMPONENTS_STATUS_LABEL);
-  source->AddLocalizedString("checkingLabel", IDS_COMPONENTS_CHECKING_LABEL);
+
+  static constexpr LocalizedString kStrings[] = {
+      {"componentsTitle", IDS_COMPONENTS_TITLE},
+      {"componentsNoneInstalled", IDS_COMPONENTS_NONE_INSTALLED},
+      {"componentVersion", IDS_COMPONENTS_VERSION},
+      {"checkUpdate", IDS_COMPONENTS_CHECK_FOR_UPDATE},
+      {"noComponents", IDS_COMPONENTS_NO_COMPONENTS},
+      {"statusLabel", IDS_COMPONENTS_STATUS_LABEL},
+      {"checkingLabel", IDS_COMPONENTS_CHECKING_LABEL},
+  };
+  AddLocalizedStringsBulk(source, kStrings, base::size(kStrings));
 
   source->AddBoolean(
       "isGuest",
@@ -63,10 +67,9 @@ content::WebUIDataSource* CreateComponentsUIHTMLSource(Profile* profile) {
       profile->IsOffTheRecord()
 #endif
   );
-  source->SetJsonPath("strings.js");
+  source->UseStringsJs();
   source->AddResourcePath("components.js", IDR_COMPONENTS_JS);
   source->SetDefaultResource(IDR_COMPONENTS_HTML);
-  source->UseGzip();
   return source;
 }
 

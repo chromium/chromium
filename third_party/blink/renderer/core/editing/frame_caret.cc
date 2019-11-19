@@ -30,6 +30,7 @@
 #include "third_party/blink/renderer/core/editing/caret_display_item_client.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
+#include "third_party/blink/renderer/core/editing/local_caret_rect.h"
 #include "third_party/blink/renderer/core/editing/position_with_affinity.h"
 #include "third_party/blink/renderer/core/editing/selection_editor.h"
 #include "third_party/blink/renderer/core/editing/visible_position.h"
@@ -115,7 +116,7 @@ void FrameCaret::StartBlinkCaret() {
   if (caret_blink_timer_->IsActive())
     return;
 
-  TimeDelta blink_interval = LayoutTheme::GetTheme().CaretBlinkInterval();
+  base::TimeDelta blink_interval = LayoutTheme::GetTheme().CaretBlinkInterval();
   if (!blink_interval.is_zero())
     caret_blink_timer_->StartRepeating(blink_interval, FROM_HERE);
 
@@ -149,8 +150,9 @@ void FrameCaret::UpdateStyleAndLayoutIfNeeded() {
   bool should_paint_caret =
       should_paint_caret_ && IsActive() &&
       caret_visibility_ == CaretVisibility::kVisible &&
-      IsEditablePosition(
-          selection_editor_->ComputeVisibleSelectionInDOMTree().Start());
+      (IsEditablePosition(
+           selection_editor_->ComputeVisibleSelectionInDOMTree().Start()) ||
+       frame_->IsCaretBrowsingEnabled());
 
   display_item_client_->UpdateStyleAndLayoutIfNeeded(
       should_paint_caret ? CaretPosition() : PositionWithAffinity());
@@ -161,16 +163,6 @@ void FrameCaret::InvalidatePaint(const LayoutBlock& block,
   display_item_client_->InvalidatePaint(block, context);
 }
 
-static IntRect AbsoluteBoundsForLocalRect(Node* node, const LayoutRect& rect) {
-  LayoutBlock* caret_painter = CaretDisplayItemClient::CaretLayoutBlock(node);
-  if (!caret_painter)
-    return IntRect();
-
-  LayoutRect local_rect(rect);
-  return caret_painter->LocalToAbsoluteQuad(FloatRect(local_rect))
-      .EnclosingBoundingBox();
-}
-
 IntRect FrameCaret::AbsoluteCaretBounds() const {
   DCHECK_NE(frame_->GetDocument()->Lifecycle().GetState(),
             DocumentLifecycle::kInPrePaint);
@@ -178,11 +170,7 @@ IntRect FrameCaret::AbsoluteCaretBounds() const {
   DocumentLifecycle::DisallowTransitionScope disallow_transition(
       frame_->GetDocument()->Lifecycle());
 
-  Node* const caret_node = CaretPosition().AnchorNode();
-  if (!IsActive())
-    return AbsoluteBoundsForLocalRect(caret_node, LayoutRect());
-  return AbsoluteBoundsForLocalRect(
-      caret_node, CaretDisplayItemClient::ComputeCaretRect(CaretPosition()));
+  return AbsoluteCaretBoundsOf(CaretPosition());
 }
 
 void FrameCaret::SetShouldShowBlockCursor(bool should_show_block_cursor) {
@@ -195,22 +183,30 @@ bool FrameCaret::ShouldPaintCaret(const LayoutBlock& block) const {
 }
 
 void FrameCaret::PaintCaret(GraphicsContext& context,
-                            const LayoutPoint& paint_offset) const {
+                            const PhysicalOffset& paint_offset) const {
   display_item_client_->PaintCaret(context, paint_offset, DisplayItem::kCaret);
 }
 
 bool FrameCaret::ShouldBlinkCaret() const {
+  // Don't blink the caret if it isn't visible or positioned.
   if (caret_visibility_ != CaretVisibility::kVisible || !IsActive())
     return false;
 
   Element* root = RootEditableElementOf(CaretPosition().GetPosition());
-  if (!root)
-    return false;
+  if (root) {
+    // Caret is contained in editable content. If there is no focused element,
+    // don't blink the caret.
+    Element* focused_element = root->GetDocument().FocusedElement();
+    if (!focused_element)
+      return false;
+  } else {
+    // Caret is not contained in editable content--see if caret browsing is
+    // enabled. If it isn't, don't blink the caret.
+    if (!frame_->IsCaretBrowsingEnabled())
+      return false;
+  }
 
-  Element* focused_element = root->GetDocument().FocusedElement();
-  if (!focused_element)
-    return false;
-
+  // Only blink the caret if the selection has focus.
   return frame_->Selection().SelectionHasFocus();
 }
 

@@ -57,8 +57,7 @@ ProxyConfigServiceImpl::ProxyConfigServiceImpl(
           profile_prefs ? profile_prefs : local_state_prefs,
           io_task_runner),
       profile_prefs_(profile_prefs),
-      local_state_prefs_(local_state_prefs),
-      pointer_factory_(this) {
+      local_state_prefs_(local_state_prefs) {
   const base::Closure proxy_change_callback = base::Bind(
       &ProxyConfigServiceImpl::OnProxyPrefChanged, base::Unretained(this));
 
@@ -73,11 +72,13 @@ ProxyConfigServiceImpl::ProxyConfigServiceImpl(
   local_state_pref_registrar_.Add(::onc::prefs::kDeviceOpenNetworkConfiguration,
                                   proxy_change_callback);
 
-  // Register for changes to the default network.
-  NetworkStateHandler* state_handler =
-      NetworkHandler::Get()->network_state_handler();
-  state_handler->AddObserver(this, FROM_HERE);
-  DefaultNetworkChanged(state_handler->DefaultNetwork());
+  if (NetworkHandler::IsInitialized()) {  // null in unit tests.
+    // Register for changes to the default network.
+    NetworkStateHandler* state_handler =
+        NetworkHandler::Get()->network_state_handler();
+    state_handler->AddObserver(this, FROM_HERE);
+    DefaultNetworkChanged(state_handler->DefaultNetwork());
+  }
 }
 
 ProxyConfigServiceImpl::~ProxyConfigServiceImpl() {
@@ -271,11 +272,10 @@ void ProxyConfigServiceImpl::DetermineEffectiveConfigFromDefaultNetwork() {
   PrefProxyConfigTrackerImpl::OnProxyConfigChanged(effective_config_state,
                                                    effective_config);
   if (VLOG_IS_ON(1)) {
-    std::unique_ptr<base::DictionaryValue> config_dict(
-        effective_config.value().ToValue());
+    base::Value config_dict = effective_config.value().ToValue();
     VLOG(1) << this << ": Proxy changed: "
             << ProxyPrefs::ConfigStateToDebugString(effective_config_state)
-            << ", " << *config_dict;
+            << ", " << config_dict;
   }
 }
 

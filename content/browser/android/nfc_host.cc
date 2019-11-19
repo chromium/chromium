@@ -7,8 +7,8 @@
 #include <utility>
 
 #include "base/atomic_sequence_num.h"
-#include "content/public/common/service_manager_connection.h"
-#include "jni/NfcHost_jni.h"
+#include "content/public/android/content_jni_headers/NfcHost_jni.h"
+#include "content/public/browser/system_connector.h"
 #include "services/device/public/mojom/constants.mojom.h"
 #include "services/device/public/mojom/nfc.mojom.h"
 #include "services/service_manager/public/cpp/connector.h"
@@ -27,20 +27,19 @@ NFCHost::NFCHost(WebContents* web_contents)
 
   JNIEnv* env = base::android::AttachCurrentThread();
 
-  java_nfc_host_.Reset(
-      Java_NfcHost_create(env, web_contents_->GetJavaWebContents(), id_));
+  // The created instance's reference is kept inside a map in Java world.
+  Java_NfcHost_create(env, web_contents_->GetJavaWebContents(), id_);
 
-  if (ServiceManagerConnection::GetForProcess()) {
-    service_manager::Connector* connector =
-        ServiceManagerConnection::GetForProcess()->GetConnector();
-    connector->BindInterface(device::mojom::kServiceName,
-                             mojo::MakeRequest(&nfc_provider_));
+  service_manager::Connector* connector = content::GetSystemConnector();
+  if (connector) {
+    connector->Connect(device::mojom::kServiceName,
+                       nfc_provider_.BindNewPipeAndPassReceiver());
   }
 }
 
-void NFCHost::GetNFC(device::mojom::NFCRequest request) {
+void NFCHost::GetNFC(mojo::PendingReceiver<device::mojom::NFC> receiver) {
   // Connect to an NFC object, associating it with |id_|.
-  nfc_provider_->GetNFCForHost(id_, std::move(request));
+  nfc_provider_->GetNFCForHost(id_, std::move(receiver));
 }
 
 NFCHost::~NFCHost() {}

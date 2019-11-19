@@ -7,25 +7,21 @@
 
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
+#include "chrome/common/content_settings_manager.mojom.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/platform/web_content_settings_client.h"
 #include "url/gurl.h"
-
-namespace IPC {
-class SyncMessageFilter;
-}
+#include "url/origin.h"
 
 namespace content {
 class RenderFrame;
-}
-
-namespace blink {
-class WebSecurityOrigin;
-}
+}  // namespace content
 
 struct RendererContentSettingRules;
 
 // This client is created on the main renderer thread then passed onto the
-// blink's worker thread.
+// blink's worker thread. For workers created from other workers, Clone()
+// is called on the "parent" worker's thread.
 class WorkerContentSettingsClient : public blink::WebContentSettingsClient {
  public:
   explicit WorkerContentSettingsClient(content::RenderFrame* render_frame);
@@ -34,9 +30,10 @@ class WorkerContentSettingsClient : public blink::WebContentSettingsClient {
   // WebContentSettingsClient overrides.
   std::unique_ptr<blink::WebContentSettingsClient> Clone() override;
   bool RequestFileSystemAccessSync() override;
-  bool AllowIndexedDB(const blink::WebSecurityOrigin&) override;
+  bool AllowIndexedDB() override;
+  bool AllowCacheStorage() override;
+  bool AllowWebLocks() override;
   bool AllowRunningInsecureContent(bool allowed_per_settings,
-                                   const blink::WebSecurityOrigin& context,
                                    const blink::WebURL& url) override;
   bool AllowScriptFromSource(bool enabled_per_settings,
                              const blink::WebURL& script_url) override;
@@ -44,15 +41,27 @@ class WorkerContentSettingsClient : public blink::WebContentSettingsClient {
  private:
   explicit WorkerContentSettingsClient(
       const WorkerContentSettingsClient& other);
+  bool AllowStorageAccess(
+      chrome::mojom::ContentSettingsManager::StorageType storage_type);
+  void EnsureContentSettingsManager() const;
 
   // Loading document context for this worker.
-  const int routing_id_;
-  bool is_unique_origin_;
-  GURL document_origin_url_;
-  GURL top_frame_origin_url_;
+  bool is_unique_origin_ = false;
+  url::Origin document_origin_;
+  GURL site_for_cookies_;
+  url::Origin top_frame_origin_;
   bool allow_running_insecure_content_;
-  scoped_refptr<IPC::SyncMessageFilter> sync_message_filter_;
   const RendererContentSettingRules* content_setting_rules_;
+
+  // Because instances of this class are created on the parent's thread (i.e,
+  // on the renderer main thread or on the thread of the parent worker), it is
+  // necessary to lazily bind the |content_settings_manager_| remote. The
+  // pending remote is initialized on the parent thread and then the remote is
+  // bound when needed on the worker's thread.
+  mutable mojo::PendingRemote<chrome::mojom::ContentSettingsManager>
+      pending_content_settings_manager_;
+  mutable mojo::Remote<chrome::mojom::ContentSettingsManager>
+      content_settings_manager_;
 
   DISALLOW_ASSIGN(WorkerContentSettingsClient);
 };

@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.test.util;
 
+import org.chromium.chrome.browser.compositor.layouts.EmptyOverviewModeObserver;
 import org.chromium.chrome.browser.compositor.layouts.OverviewModeBehavior;
 import org.chromium.chrome.browser.compositor.layouts.OverviewModeBehavior.OverviewModeObserver;
 import org.chromium.content_public.browser.test.util.Criteria;
@@ -13,8 +14,9 @@ import org.chromium.content_public.browser.test.util.CriteriaHelper;
  * Checks and waits for certain overview mode events to happen.  Can be used to block test threads
  * until certain overview mode state criteria are met.
  */
-public class OverviewModeBehaviorWatcher implements OverviewModeObserver {
+public class OverviewModeBehaviorWatcher {
     private final OverviewModeBehavior mOverviewModeBehavior;
+    private final OverviewModeObserver mOverviewModeObserver;
     private boolean mWaitingForShow;
     private boolean mWaitingForHide;
 
@@ -46,26 +48,22 @@ public class OverviewModeBehaviorWatcher implements OverviewModeObserver {
     public OverviewModeBehaviorWatcher(OverviewModeBehavior behavior, boolean waitForShow,
             boolean waitForHide) {
         mOverviewModeBehavior = behavior;
-        mOverviewModeBehavior.addOverviewModeObserver(this);
+        mOverviewModeObserver = new EmptyOverviewModeObserver() {
+            @Override
+            public void onOverviewModeFinishedShowing() {
+                mWaitingForShow = false;
+            }
+
+            @Override
+            public void onOverviewModeFinishedHiding() {
+                mWaitingForHide = false;
+            }
+        };
+
+        mOverviewModeBehavior.addOverviewModeObserver(mOverviewModeObserver);
 
         mWaitingForShow = waitForShow;
         mWaitingForHide = waitForHide;
-    }
-
-    @Override
-    public void onOverviewModeStartedShowing(boolean showToolbar) { }
-
-    @Override
-    public void onOverviewModeFinishedShowing() {
-        mWaitingForShow = false;
-    }
-
-    @Override
-    public void onOverviewModeStartedHiding(boolean showToolbar, boolean delayAnimation) { }
-
-    @Override
-    public void onOverviewModeFinishedHiding() {
-        mWaitingForHide = false;
     }
 
     /**
@@ -76,7 +74,7 @@ public class OverviewModeBehaviorWatcher implements OverviewModeObserver {
         try {
             CriteriaHelper.pollUiThread(mCriteria);
         } finally {
-            mOverviewModeBehavior.removeOverviewModeObserver(this);
+            mOverviewModeBehavior.removeOverviewModeObserver(mOverviewModeObserver);
         }
     }
 }

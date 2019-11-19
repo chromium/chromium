@@ -16,11 +16,11 @@ namespace {
 class TestInterceptablePrefFilter : public InterceptablePrefFilter {
  public:
   void FinalizeFilterOnLoad(
-      const PostFilterOnLoadCallback& post_filter_on_load_callback,
+      PostFilterOnLoadCallback post_filter_on_load_callback,
       std::unique_ptr<base::DictionaryValue> pref_store_contents,
       bool prefs_altered) override {
-    post_filter_on_load_callback.Run(std::move(pref_store_contents),
-                                     prefs_altered);
+    std::move(post_filter_on_load_callback)
+        .Run(std::move(pref_store_contents), prefs_altered);
   }
 
   void FilterUpdate(const std::string& path) override {}
@@ -31,10 +31,10 @@ class TestInterceptablePrefFilter : public InterceptablePrefFilter {
   }
 };
 
-void NoOpIntercept(const InterceptablePrefFilter::FinalizeFilterOnLoadCallback&
+void NoOpIntercept(InterceptablePrefFilter::FinalizeFilterOnLoadCallback
                        finalize_filter_on_load,
                    std::unique_ptr<base::DictionaryValue> prefs) {
-  finalize_filter_on_load.Run(std::move(prefs), false);
+  std::move(finalize_filter_on_load).Run(std::move(prefs), false);
 }
 
 void DeleteFilter(std::unique_ptr<TestInterceptablePrefFilter>* filter,
@@ -45,8 +45,8 @@ void DeleteFilter(std::unique_ptr<TestInterceptablePrefFilter>* filter,
 
 TEST(InterceptablePrefFilterTest, CallbackDeletes) {
   auto filter = std::make_unique<TestInterceptablePrefFilter>();
-  filter->InterceptNextFilterOnLoad(base::Bind(&NoOpIntercept));
-  filter->FilterOnLoad(base::Bind(&DeleteFilter, &filter),
+  filter->InterceptNextFilterOnLoad(base::BindOnce(&NoOpIntercept));
+  filter->FilterOnLoad(base::BindOnce(&DeleteFilter, &filter),
                        std::make_unique<base::DictionaryValue>());
   EXPECT_FALSE(filter);
 }

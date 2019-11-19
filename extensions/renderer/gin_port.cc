@@ -39,7 +39,7 @@ GinPort::GinPort(v8::Local<v8::Context> context,
       name_(name),
       event_handler_(event_handler),
       delegate_(delegate),
-      weak_factory_(this) {
+      accessed_sender_(false) {
   context_invalidation_listener_.emplace(
       context, base::BindOnce(&GinPort::OnContextInvalidated,
                               weak_factory_.GetWeakPtr()));
@@ -54,10 +54,10 @@ gin::ObjectTemplateBuilder GinPort::GetObjectTemplateBuilder(
   return Wrappable<GinPort>::GetObjectTemplateBuilder(isolate)
       .SetMethod("disconnect", &GinPort::DisconnectHandler)
       .SetMethod("postMessage", &GinPort::PostMessageHandler)
-      .SetProperty("name", &GinPort::GetName)
-      .SetProperty("onDisconnect", &GinPort::GetOnDisconnectEvent)
-      .SetProperty("onMessage", &GinPort::GetOnMessageEvent)
-      .SetProperty("sender", &GinPort::GetSender);
+      .SetLazyDataProperty("name", &GinPort::GetName)
+      .SetLazyDataProperty("onDisconnect", &GinPort::GetOnDisconnectEvent)
+      .SetLazyDataProperty("onMessage", &GinPort::GetOnMessageEvent)
+      .SetLazyDataProperty("sender", &GinPort::GetSender);
 }
 
 const char* GinPort::GetTypeName() {
@@ -108,6 +108,8 @@ void GinPort::DispatchOnDisconnect(v8::Local<v8::Context> context) {
 void GinPort::SetSender(v8::Local<v8::Context> context,
                         v8::Local<v8::Value> sender) {
   DCHECK_EQ(kActive, state_);
+  DCHECK(!accessed_sender_)
+      << "|sender| can only be set before its first access.";
 
   v8::Isolate* isolate = context->GetIsolate();
   v8::HandleScope handle_scope(isolate);
@@ -179,6 +181,7 @@ v8::Local<v8::Value> GinPort::GetOnMessageEvent(gin::Arguments* arguments) {
 }
 
 v8::Local<v8::Value> GinPort::GetSender(gin::Arguments* arguments) {
+  accessed_sender_ = true;
   v8::Isolate* isolate = arguments->isolate();
   v8::Local<v8::Object> wrapper = GetWrapper(isolate).ToLocalChecked();
   v8::Local<v8::Private> key =

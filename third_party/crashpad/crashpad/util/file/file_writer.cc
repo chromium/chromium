@@ -171,6 +171,23 @@ bool FileWriter::Open(const base::FilePath& path,
   return true;
 }
 
+#if defined(OS_LINUX)
+bool FileWriter::OpenMemfd(const base::FilePath& path) {
+  CHECK(!file_.is_valid());
+  file_.reset(LoggingOpenMemFileForWrite(path));
+  if (!file_.is_valid()) {
+    return false;
+  }
+
+  weak_file_handle_file_writer_.set_file_handle(file_.get());
+  return true;
+}
+
+int FileWriter::fd() {
+  return file_.get();
+}
+#endif
+
 void FileWriter::Close() {
   CHECK(file_.is_valid());
 

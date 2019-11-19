@@ -22,6 +22,7 @@
 using offline_pages::TaskTestBase;
 
 namespace explore_sites {
+using InitializationStatus = ExploreSitesStore::InitializationStatus;
 
 class ExploreSitesGetImagesTaskTest : public TaskTestBase {
  public:
@@ -42,6 +43,9 @@ class ExploreSitesGetImagesTaskTest : public TaskTestBase {
   }
 
   void PopulateTestingCatalog();
+  void UpdateCatalogVersions(std::string current_version,
+                             std::string downloading_version);
+  void PopulateInvalidRowsInCatalog();
 
   void ExpectEmptyImageList(EncodedImageList images) {
     EXPECT_EQ(0U, images.size());
@@ -50,6 +54,15 @@ class ExploreSitesGetImagesTaskTest : public TaskTestBase {
   EncodedImageListCallback StoreResult() {
     return base::BindLambdaForTesting(
         [&](EncodedImageList result) { last_result = std::move(result); });
+  }
+
+  void ExpectSummaryBitmapsInOrder() {
+    std::vector<std::string> ordered_bitmaps = {"bytes1", "bytes3", "bytes2"};
+    EXPECT_EQ(3U, last_result.size());
+    for (int i = 0; i < 3; i++) {
+      std::vector<uint8_t>& result = *last_result[i];
+      EXPECT_EQ(ordered_bitmaps[i], std::string(result.begin(), result.end()));
+    }
   }
 
   EncodedImageList last_result;
@@ -88,8 +101,49 @@ VALUES
   }));
 }
 
+void ExploreSitesGetImagesTaskTest::UpdateCatalogVersions(
+    std::string current_version,
+    std::string downloading_version) {
+  ExecuteSync(base::BindLambdaForTesting([&](sql::Database* db) {
+    sql::MetaTable meta_table;
+    ExploreSitesSchema::InitMetaTable(db, &meta_table);
+    meta_table.SetValue(ExploreSitesSchema::kDownloadingCatalogKey,
+                        downloading_version);
+    meta_table.SetValue(ExploreSitesSchema::kCurrentCatalogKey,
+                        current_version);
+    return true;
+  }));
+}
+
+void ExploreSitesGetImagesTaskTest::PopulateInvalidRowsInCatalog() {
+  ExecuteSync(base::BindLambdaForTesting([](sql::Database* db) {
+    sql::MetaTable meta_table;
+    ExploreSitesSchema::InitMetaTable(db, &meta_table);
+    meta_table.SetValue(ExploreSitesSchema::kDownloadingCatalogKey, "5678");
+    meta_table.DeleteKey(ExploreSitesSchema::kCurrentCatalogKey);
+    sql::Statement insert(db->GetUniqueStatement(R"(
+INSERT INTO categories
+(category_id, version_token, type, label)
+VALUES
+(1, "XXXX", 1, "bad_1"),
+(2, "XXXX", 2, "bad_2");)"));
+    if (!insert.Run())
+      return false;
+
+    sql::Statement insert_sites(db->GetUniqueStatement(R"(
+INSERT INTO sites
+(site_id, url, category_id, title, favicon)
+VALUES
+(5, "https://www.bad.com/1", 1, "bad", "bad - used unknown version"),
+(6, "https://www.bad.com/2", 2, "bad", "bad - used unknown version");
+    )"));
+    return insert_sites.Run();
+  }));
+}
+
 TEST_F(ExploreSitesGetImagesTaskTest, StoreFailure) {
-  store()->SetInitializationStatusForTest(InitializationStatus::FAILURE);
+  store()->SetInitializationStatusForTesting(InitializationStatus::kFailure,
+                                             false);
 
   GetImagesTask task(store(), 1, StoreResult());
   RunTask(&task);
@@ -195,6 +249,37 @@ VALUES
   EXPECT_EQ(3U, last_result.size());
   std::vector<uint8_t>& result3 = *last_result[2];
   EXPECT_EQ("bytes7", std::string(result3.begin(), result3.end()));
+}
+
+TEST_F(ExploreSitesGetImagesTaskTest, SummaryImage) {
+  PopulateTestingCatalog();
+  PopulateInvalidRowsInCatalog();
+  UpdateCatalogVersions("5678", "XXXX");
+  GetImagesTask task(store(), GetImagesTask::DataType::kSummary, 3,
+                     StoreResult());
+  RunTask(&task);
+  ExpectSummaryBitmapsInOrder();
+}
+
+TEST_F(ExploreSitesGetImagesTaskTest,
+       SummaryImageUsesDownloadingCatalogIfNecessary) {
+  PopulateTestingCatalog();
+  PopulateInvalidRowsInCatalog();
+  UpdateCatalogVersions("", "5678");
+  GetImagesTask task(store(), GetImagesTask::DataType::kSummary, 3,
+                     StoreResult());
+  RunTask(&task);
+  ExpectSummaryBitmapsInOrder();
+}
+
+TEST_F(ExploreSitesGetImagesTaskTest, SummaryImageNoResultsIfNoCatalogVersion) {
+  PopulateTestingCatalog();
+  PopulateInvalidRowsInCatalog();
+  UpdateCatalogVersions("", "");
+  GetImagesTask task(store(), GetImagesTask::DataType::kSummary, 3,
+                     StoreResult());
+  RunTask(&task);
+  EXPECT_EQ(0U, last_result.size());
 }
 
 }  // namespace explore_sites

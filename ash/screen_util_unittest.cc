@@ -6,12 +6,13 @@
 
 #include <memory>
 
-#include "ash/magnifier/docked_magnifier_controller.h"
+#include "ash/magnifier/docked_magnifier_controller_impl.h"
+#include "ash/public/cpp/shelf_config.h"
 #include "ash/root_window_controller.h"
 #include "ash/shelf/shelf.h"
-#include "ash/shelf/shelf_constants.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/wm/desks/desks_util.h"
 #include "ash/wm/window_util.h"
 #include "ash/wm/wm_event.h"
 #include "ui/aura/env.h"
@@ -37,8 +38,8 @@ TEST_F(ScreenUtilTest, Bounds) {
   secondary->Show();
 
   // Maximized bounds.
-  const int bottom_inset_first = 600 - ShelfConstants::shelf_size();
-  const int bottom_inset_second = 500 - ShelfConstants::shelf_size();
+  const int bottom_inset_first = 600 - ShelfConfig::Get()->shelf_size();
+  const int bottom_inset_second = 500 - ShelfConfig::Get()->shelf_size();
   EXPECT_EQ(
       gfx::Rect(0, 0, 600, bottom_inset_first).ToString(),
       screen_util::GetMaximizedWindowBoundsInParent(primary->GetNativeView())
@@ -222,6 +223,13 @@ TEST_F(ScreenUtilTest, SnapBoundsToDisplayEdge) {
   bounds = gfx::Rect(0, 552, 800, 48);
   snapped_bounds = screen_util::SnapBoundsToDisplayEdge(bounds, window);
   EXPECT_EQ(snapped_bounds, gfx::Rect(0, 552, 800, 48));
+
+  UpdateDisplay("2400x1800*1.8/r");
+  EXPECT_EQ(gfx::Size(1000, 1333),
+            display::Screen::GetScreen()->GetPrimaryDisplay().size());
+  bounds = gfx::Rect(950, 0, 50, 1333);
+  snapped_bounds = screen_util::SnapBoundsToDisplayEdge(bounds, window);
+  EXPECT_EQ(snapped_bounds, gfx::Rect(950, 0, 50, 1334));
 }
 
 // Tests that making a window fullscreen while the Docked Magnifier is enabled
@@ -231,14 +239,14 @@ TEST_F(ScreenUtilTest, FullscreenWindowBoundsWithDockedMagnifier) {
   UpdateDisplay("1366x768");
 
   std::unique_ptr<aura::Window> window = CreateToplevelTestWindow(
-      gfx::Rect(300, 300, 200, 150), kShellWindowId_DefaultContainer);
+      gfx::Rect(300, 300, 200, 150), desks_util::GetActiveDeskContainerId());
 
   auto* docked_magnifier_controller =
       Shell::Get()->docked_magnifier_controller();
   docked_magnifier_controller->SetEnabled(true);
 
-  const wm::WMEvent event(wm::WM_EVENT_TOGGLE_FULLSCREEN);
-  wm::GetWindowState(window.get())->OnWMEvent(&event);
+  const WMEvent event(WM_EVENT_TOGGLE_FULLSCREEN);
+  WindowState::Get(window.get())->OnWMEvent(&event);
 
   constexpr gfx::Rect kDisplayBounds{1366, 768};
   EXPECT_NE(window->bounds(), kDisplayBounds);

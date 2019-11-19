@@ -24,5 +24,5 @@ interface DownloadStreamClient {
 
 struct DownloadStreamHandle {
   handle<data_pipe_consumer> stream;
-  DownloadStreamClient& client_request;
+  pending_receiver<DownloadStreamClient> client_receiver;
 };

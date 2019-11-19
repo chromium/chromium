@@ -58,7 +58,7 @@ class CastSenderImpl : public CastSender {
   CastTransport* const transport_sender_;
 
   // NOTE: Weak pointers must be invalidated before all other member variables.
-  base::WeakPtrFactory<CastSenderImpl> weak_factory_;
+  base::WeakPtrFactory<CastSenderImpl> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(CastSenderImpl);
 };

@@ -22,20 +22,19 @@
 @interface HandoffManager ()
 
 // The active user activity.
-@property(nonatomic, retain)
-    NSUserActivity* userActivity API_AVAILABLE(macos(10.10));
+@property(nonatomic, retain) NSUserActivity* userActivity;
 
 // Whether the URL of the current tab should be exposed for Handoff.
 - (BOOL)shouldUseActiveURL;
 
 // Updates the active NSUserActivity.
-- (void)updateUserActivity API_AVAILABLE(macos(10.10));
+- (void)updateUserActivity;
 
 @end
 
 @implementation HandoffManager {
   GURL _activeURL;
-  NSUserActivity* _userActivity API_AVAILABLE(macos(10.10));
+  NSUserActivity* _userActivity;
   handoff::Origin _origin;
 }
 
@@ -69,11 +68,6 @@
 }
 
 - (void)updateActiveURL:(const GURL&)url {
-#if defined(OS_MACOSX) && !defined(OS_IOS)
-  // Handoff is only available on OSX 10.10+.
-  DCHECK(base::mac::IsAtLeastOS10_10());
-#endif
-
   _activeURL = url;
   [self updateUserActivity];
 }

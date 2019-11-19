@@ -1,0 +1,22 @@
+<link rel="import" href="../html/polymer.html">
+
+<link rel="import" href="shared_vars_css.html">
+
+<!--
+  Common CSS properties for WebUI pages, such as an entire page or a standalone
+  dialog. The CSS here is in its own file so that the properties can be imported
+  independently and applied directly to the :host element without having to
+  import other shared CSS.
+-->
+<dom-module id="cr-page-host-style">
+  <template>
+    <style>
+      :host {
+        color: var(--cr-primary-text-color);
+        line-height: 154%; /* Apply 20px default line-height to all text. */
+        overflow: hidden; /* Prevent double scroll bar bugs. */
+        user-select: text;
+      }
+    </style>
+  </template>
+</dom-module>

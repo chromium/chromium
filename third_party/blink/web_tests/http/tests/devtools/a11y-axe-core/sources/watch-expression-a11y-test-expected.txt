@@ -1,0 +1,9 @@
+Adding watch expression.
+Running the axe-core linter on the empty watch pane.
+aXe violations: []
+
+Watch expression text content: 2 + 2 === 5: false
+Running the axe-core linter on the watch expression.
+aXe violations: []
+
+

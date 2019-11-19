@@ -28,6 +28,8 @@
 
 // https://html.spec.whatwg.org/C/#barprop
 
-interface BarProp {
+[
+    Exposed=Window
+] interface BarProp {
     readonly attribute boolean visible;
 };

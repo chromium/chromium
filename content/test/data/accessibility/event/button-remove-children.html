@@ -1,0 +1,23 @@
+<!--
+@WIN-DENY:EVENT_OBJECT_LOCATIONCHANGE*
+@WIN-DENY:IA2_EVENT_TEXT_REMOVED*
+
+This test is for crbug.com/1020187.
+By removing 'checkbox' first then 'ignored_content', we should not cause AXTree
+to crash during AXTree unserialization.
+-->
+<!DOCTYPE html>
+<html>
+<body>
+<button>
+  <input id="checkbox" type="checkbox">
+  <div id="ignored_content" aria-hidden="true">text content ignored</div>
+</button>
+<script>
+  function go() {
+    document.getElementById('checkbox').remove();
+    document.getElementById('ignored_content').remove();
+  }
+</script>
+</body>
+</html>

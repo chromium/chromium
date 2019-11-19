@@ -29,16 +29,12 @@ class NewTabButton : public views::ImageButton,
                      public views::MaskedTargeterDelegate,
                      public views::WidgetObserver {
  public:
+  static constexpr char kClassName[] = "NewTabButton";
+
   static const gfx::Size kButtonSize;
 
   NewTabButton(TabStrip* tab_strip, views::ButtonListener* listener);
   ~NewTabButton() override;
-
-  // Set the background X offset used to match the background image to the frame
-  // image.
-  void set_background_offset(int offset) {
-    background_offset_ = offset;
-  }
 
   // Retrieves the last active BrowserView instance to display the NewTabPromo.
   static void ShowPromoForLastActiveBrowser();
@@ -63,24 +59,26 @@ class NewTabButton : public views::ImageButton,
 
   FeaturePromoBubbleView* new_tab_promo() { return new_tab_promo_; }
 
+  // views::View:
+  const char* GetClassName() const override;
+  void AddLayerBeneathView(ui::Layer* new_layer) override;
+  void RemoveLayerBeneathView(ui::Layer* old_layer) override;
+
+ protected:
+  // views::View:
+  void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
+
  private:
+  class HighlightPathGenerator;
+
 // views::ImageButton:
 #if defined(OS_WIN)
   void OnMouseReleased(const ui::MouseEvent& event) override;
 #endif
   void OnGestureEvent(ui::GestureEvent* event) override;
-  void AddInkDropLayer(ui::Layer* ink_drop_layer) override;
-  void RemoveInkDropLayer(ui::Layer* ink_drop_layer) override;
-  std::unique_ptr<views::InkDropRipple> CreateInkDropRipple() const override;
-  std::unique_ptr<views::InkDropHighlight> CreateInkDropHighlight()
-      const override;
   void NotifyClick(const ui::Event& event) override;
-  std::unique_ptr<views::InkDrop> CreateInkDrop() override;
-  std::unique_ptr<views::InkDropMask> CreateInkDropMask() const override;
   void PaintButtonContents(gfx::Canvas* canvas) override;
-  void Layout() override;
   gfx::Size CalculatePreferredSize() const override;
-  void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
 
   // views::MaskedTargeterDelegate:
   bool GetHitTestMask(SkPath* mask) const override;
@@ -110,17 +108,12 @@ class NewTabButton : public views::ImageButton,
   // Tab strip that contains this button.
   TabStrip* tab_strip_;
 
+  // Contains our ink drop layer so it can paint above our background.
+  views::InkDropContainerView* ink_drop_container_;
+
   // Promotional UI that appears next to the NewTabButton and encourages its
   // use. Owned by its NativeWidget.
   FeaturePromoBubbleView* new_tab_promo_ = nullptr;
-
-  // The offset used to paint the background image.
-  int background_offset_;
-
-  // In touch-optimized UI, this view holds the ink drop layer so that it's
-  // shifted down to the correct top offset of the button, since the actual
-  // button's y-coordinate is 0 due to Fitt's Law needs.
-  views::InkDropContainerView* ink_drop_container_ = nullptr;
 
   // were we destroyed?
   bool* destroyed_ = nullptr;

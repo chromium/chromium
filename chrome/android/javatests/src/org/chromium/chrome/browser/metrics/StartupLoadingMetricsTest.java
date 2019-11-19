@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.metrics;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.filters.LargeTest;
 
@@ -16,11 +17,14 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.ThreadUtils;
+import org.chromium.base.Log;
+import org.chromium.base.compat.ApiHelperForM;
+import org.chromium.base.library_loader.LibraryLoader;
+import org.chromium.base.library_loader.LoadStatusRecorder.LoadLibraryStatus;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.RetryOnFailure;
-import org.chromium.base.test.util.ScalableTimeout;
 import org.chromium.chrome.browser.ChromeSwitches;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.ShortcutHelper;
@@ -28,10 +32,12 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.webapps.WebApkActivity;
 import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ApplicationTestUtils;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.content_public.browser.test.util.Criteria;
 import org.chromium.content_public.browser.test.util.CriteriaHelper;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.webapk.lib.common.WebApkConstants;
 
@@ -41,6 +47,7 @@ import org.chromium.webapk.lib.common.WebApkConstants;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
 public class StartupLoadingMetricsTest {
+    private static final String TAG = "StartupLoadingTest";
     private static final String TEST_PAGE = "/chrome/test/data/android/google.html";
     private static final String TEST_PAGE_2 = "/chrome/test/data/android/test.html";
     private static final String ERROR_PAGE = "/close-socket";
@@ -49,13 +56,15 @@ public class StartupLoadingMetricsTest {
             "Startup.Android.Cold.TimeToFirstNavigationCommit";
     private static final String FIRST_CONTENTFUL_PAINT_HISTOGRAM =
             "Startup.Android.Cold.TimeToFirstContentfulPaint";
+    private static final String LOAD_LIBRARY_STATUS_HISTOGRAM =
+            "ChromiumAndroidLinker.LoadLibraryStatus";
 
     private static final String TABBED_SUFFIX = ChromeTabbedActivity.STARTUP_UMA_HISTOGRAM_SUFFIX;
     private static final String WEBAPK_SUFFIX = WebApkActivity.STARTUP_UMA_HISTOGRAM_SUFFIX;
 
     @Rule
-    public ChromeActivityTestRule<ChromeTabbedActivity> mTabbedActivityTestRule =
-            new ChromeActivityTestRule<>(ChromeTabbedActivity.class);
+    public ChromeTabbedActivityTestRule mTabbedActivityTestRule =
+            new ChromeTabbedActivityTestRule();
     @Rule
     public ChromeActivityTestRule<WebApkActivity> mWebApkActivityTestRule =
             new ChromeActivityTestRule<>(WebApkActivity.class);
@@ -67,7 +76,7 @@ public class StartupLoadingMetricsTest {
     private EmbeddedTestServer mTestServer;
 
     @Before
-    public void setUp() throws InterruptedException {
+    public void setUp() {
         Context appContext = InstrumentationRegistry.getInstrumentation()
                                      .getTargetContext()
                                      .getApplicationContext();
@@ -88,13 +97,13 @@ public class StartupLoadingMetricsTest {
     private void runAndWaitForPageLoadMetricsRecorded(CheckedRunnable runnable) throws Exception {
         PageLoadMetricsTest.PageLoadMetricsTestObserver testObserver =
                 new PageLoadMetricsTest.PageLoadMetricsTestObserver();
-        ThreadUtils.runOnUiThreadBlockingNoException(
+        TestThreadUtils.runOnUiThreadBlockingNoException(
                 () -> PageLoadMetrics.addObserver(testObserver));
         runnable.run();
         // First Contentful Paint may be recorded asynchronously after a page load is finished, we
         // have to wait the event to occur.
         testObserver.waitForFirstContentfulPaintEvent();
-        ThreadUtils.runOnUiThreadBlockingNoException(
+        TestThreadUtils.runOnUiThreadBlockingNoException(
                 () -> PageLoadMetrics.removeObserver(testObserver));
     }
 
@@ -112,10 +121,10 @@ public class StartupLoadingMetricsTest {
                         FIRST_CONTENTFUL_PAINT_HISTOGRAM + histogramSuffix));
     }
 
-    private void startWebApkActivity(final String startUrl) throws InterruptedException {
+    private void startWebApkActivity(final String startUrl) {
         Intent intent =
                 new Intent(InstrumentationRegistry.getTargetContext(), WebApkActivity.class);
-        intent.putExtra(WebApkConstants.EXTRA_WEBAPK_PACKAGE_NAME, "org.chromium.webapk");
+        intent.putExtra(WebApkConstants.EXTRA_WEBAPK_PACKAGE_NAME, "org.chromium.webapk.test");
         intent.putExtra(ShortcutHelper.EXTRA_URL, startUrl);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
@@ -130,23 +139,66 @@ public class StartupLoadingMetricsTest {
             public boolean isSatisfied() {
                 return mWebApkActivityTestRule.getActivity().getActivityTab() != null;
             }
-        }, ScalableTimeout.scaleTimeout(10000), CriteriaHelper.DEFAULT_POLLING_INTERVAL);
+        }, 10000L, CriteriaHelper.DEFAULT_POLLING_INTERVAL);
         ChromeTabUtils.waitForTabPageLoaded(
                 mWebApkActivityTestRule.getActivity().getActivityTab(), startUrl);
     }
 
     /**
-     * Tests that the startup loading histograms are recorded only once on startup.
+     * Tests that the startup loading histograms are recorded only once on startup. In addition
+     * tests that library loading histograms were recorded at startup.
      */
     @Test
     @LargeTest
     @RetryOnFailure
+    @DisableIf.Build(sdk_is_greater_than = Build.VERSION_CODES.N_MR1,
+            message = "https://crbug.com/1023433")
     public void testStartWithURLRecorded() throws Exception {
         runAndWaitForPageLoadMetricsRecorded(
                 () -> mTabbedActivityTestRule.startMainActivityWithURL(mTestPage));
         assertHistogramsRecorded(1, TABBED_SUFFIX);
         loadUrlAndWaitForPageLoadMetricsRecorded(mTabbedActivityTestRule, mTestPage2);
         assertHistogramsRecorded(1, TABBED_SUFFIX);
+
+        // LibraryLoader checks.
+        if (!LibraryLoader.getInstance().useChromiumLinker()) {
+            Log.w(TAG, "Skipping test because not using ChromiumLinker.");
+            return;
+        }
+        // TODO(pasko): Make the checks stricter once renderer-side histograms become available for
+        // testing. Once fixed, the http://crbug.com/987288 should help with it.
+        Assert.assertTrue("At least the browser process should record a sample.",
+                1 <= RecordHistogram.getHistogramTotalCountForTesting(
+                        LOAD_LIBRARY_STATUS_HISTOGRAM));
+
+        // The specific values are explained in LoadLibraryStatus in
+        // tools/metrics/histograms/enums.xml.
+        final int browserQuickSuccess = 15;
+        Assert.assertEquals(browserQuickSuccess,
+                LoadLibraryStatus.WAS_SUCCESSFUL | LoadLibraryStatus.IS_BROWSER
+                        | LoadLibraryStatus.AT_FIXED_ADDRESS | LoadLibraryStatus.FIRST_ATTEMPT);
+        if (Build.VERSION.SDK_INT == Build.VERSION_CODES.KITKAT) {
+            // On KitKat it is likely to fall back to loading without fixed address.
+            if (0 == getLibraryStatusHistogramValueCount(browserQuickSuccess)) {
+                final int browserNoFixedSuccess = 13;
+                Assert.assertEquals(browserNoFixedSuccess,
+                        browserQuickSuccess & ~LoadLibraryStatus.AT_FIXED_ADDRESS);
+                Assert.assertEquals("Browser-side fallback to no-fixed address should happen", 1,
+                        getLibraryStatusHistogramValueCount(browserNoFixedSuccess));
+            }
+        } else if (Build.VERSION.SDK_INT != Build.VERSION_CODES.M
+                || !ApiHelperForM.isProcess64Bit()) {
+            // Skip the check on M 64 bit. It fails rarely in the field, while one of 64bit M bots
+            // fails with RELRO start address mismatch for unknown reasons.
+            // See http://crbug.com/990551.
+            Assert.assertEquals("Browser-side sample should be present.", 1,
+                    getLibraryStatusHistogramValueCount(browserQuickSuccess));
+        }
+    }
+
+    private static int getLibraryStatusHistogramValueCount(int value) {
+        return RecordHistogram.getHistogramValueCountForTesting(
+                LOAD_LIBRARY_STATUS_HISTOGRAM, value);
     }
 
     /**
@@ -169,6 +221,8 @@ public class StartupLoadingMetricsTest {
     @Test
     @LargeTest
     @RetryOnFailure
+    @DisableIf.Build(sdk_is_greater_than = Build.VERSION_CODES.N_MR1,
+            message = "https://crbug.com/1023433")
     public void testFromExternalAppRecorded() throws Exception {
         runAndWaitForPageLoadMetricsRecorded(
                 () -> mTabbedActivityTestRule.startMainActivityFromExternalApp(mTestPage, null));

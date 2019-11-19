@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/referrer_script_info.h"
 
+#include "mojo/public/cpp/bindings/enum_utils.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "v8/include/v8.h"
 
@@ -32,31 +33,38 @@ ReferrerScriptInfo ReferrerScriptInfo::FromV8HostDefinedOptions(
   v8::Isolate* isolate = context->GetIsolate();
   v8::Local<v8::Primitive> base_url_value =
       host_defined_options->Get(isolate, kBaseURL);
+  SECURITY_CHECK(base_url_value->IsString());
   String base_url_string =
-      ToCoreStringWithNullCheck(v8::Local<v8::String>::Cast(base_url_value));
+      ToCoreString(v8::Local<v8::String>::Cast(base_url_value));
   KURL base_url = base_url_string.IsEmpty() ? KURL() : KURL(base_url_string);
   DCHECK(base_url.IsNull() || base_url.IsValid());
 
   v8::Local<v8::Primitive> credentials_mode_value =
       host_defined_options->Get(isolate, kCredentialsMode);
-  auto credentials_mode = static_cast<network::mojom::FetchCredentialsMode>(
+  SECURITY_CHECK(credentials_mode_value->IsUint32());
+  auto credentials_mode = static_cast<network::mojom::CredentialsMode>(
       credentials_mode_value->IntegerValue(context).ToChecked());
 
   v8::Local<v8::Primitive> nonce_value =
       host_defined_options->Get(isolate, kNonce);
-  String nonce =
-      ToCoreStringWithNullCheck(v8::Local<v8::String>::Cast(nonce_value));
+  SECURITY_CHECK(nonce_value->IsString());
+  String nonce = ToCoreString(v8::Local<v8::String>::Cast(nonce_value));
 
   v8::Local<v8::Primitive> parser_state_value =
       host_defined_options->Get(isolate, kParserState);
+  SECURITY_CHECK(parser_state_value->IsUint32());
   ParserDisposition parser_state = static_cast<ParserDisposition>(
       parser_state_value->IntegerValue(context).ToChecked());
 
   v8::Local<v8::Primitive> referrer_policy_value =
       host_defined_options->Get(isolate, kReferrerPolicy);
+  SECURITY_CHECK(referrer_policy_value->IsUint32());
+  int32_t referrer_policy_int32 = base::saturated_cast<int32_t>(
+      referrer_policy_value->IntegerValue(context).ToChecked());
   network::mojom::ReferrerPolicy referrer_policy =
-      static_cast<network::mojom::ReferrerPolicy>(
-          referrer_policy_value->IntegerValue(context).ToChecked());
+      mojo::ConvertIntToMojoEnum<network::mojom::ReferrerPolicy>(
+          referrer_policy_int32)
+          .value_or(network::mojom::ReferrerPolicy::kDefault);
 
   return ReferrerScriptInfo(base_url, credentials_mode, nonce, parser_state,
                             referrer_policy);

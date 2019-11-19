@@ -51,34 +51,29 @@ FieldComparator::~FieldComparator() {}
 DefaultFieldComparator::DefaultFieldComparator()
     : float_comparison_(EXACT),
       treat_nan_as_equal_(false),
-      has_default_tolerance_(false) {
-}
+      has_default_tolerance_(false) {}
 
 DefaultFieldComparator::~DefaultFieldComparator() {}
 
 FieldComparator::ComparisonResult DefaultFieldComparator::Compare(
-      const google::protobuf::Message& message_1,
-      const google::protobuf::Message& message_2,
-      const google::protobuf::FieldDescriptor* field,
-      int index_1, int index_2,
-      const google::protobuf::util::FieldContext* field_context) {
+    const Message& message_1, const Message& message_2,
+    const FieldDescriptor* field, int index_1, int index_2,
+    const util::FieldContext* field_context) {
   const Reflection* reflection_1 = message_1.GetReflection();
   const Reflection* reflection_2 = message_2.GetReflection();
 
   switch (field->cpp_type()) {
-#define COMPARE_FIELD(METHOD)                                              \
-    if (field->is_repeated()) {                                            \
-      return ResultFromBoolean(Compare##METHOD(                            \
-          *field,                                                          \
-          reflection_1->GetRepeated##METHOD(message_1, field, index_1),    \
-          reflection_2->GetRepeated##METHOD(message_2, field, index_2)));  \
-    } else {                                                               \
-      return ResultFromBoolean(Compare##METHOD(                            \
-          *field,                                                          \
-          reflection_1->Get##METHOD(message_1, field),                     \
-          reflection_2->Get##METHOD(message_2, field)));                   \
-    }                                                                      \
-    break;  // Make sure no fall-through is introduced.
+#define COMPARE_FIELD(METHOD)                                                 \
+  if (field->is_repeated()) {                                                 \
+    return ResultFromBoolean(Compare##METHOD(                                 \
+        *field, reflection_1->GetRepeated##METHOD(message_1, field, index_1), \
+        reflection_2->GetRepeated##METHOD(message_2, field, index_2)));       \
+  } else {                                                                    \
+    return ResultFromBoolean(                                                 \
+        Compare##METHOD(*field, reflection_1->Get##METHOD(message_1, field),  \
+                        reflection_2->Get##METHOD(message_2, field)));        \
+  }                                                                           \
+  break;  // Make sure no fall-through is introduced.
 
     case FieldDescriptor::CPPTYPE_BOOL:
       COMPARE_FIELD(Bool);
@@ -96,18 +91,19 @@ FieldComparator::ComparisonResult DefaultFieldComparator::Compare(
       if (field->is_repeated()) {
         // Allocate scratch strings to store the result if a conversion is
         // needed.
-        string scratch1;
-        string scratch2;
+        std::string scratch1;
+        std::string scratch2;
         return ResultFromBoolean(
-            CompareString(*field, reflection_1->GetRepeatedStringReference(
-                                      message_1, field, index_1, &scratch1),
+            CompareString(*field,
+                          reflection_1->GetRepeatedStringReference(
+                              message_1, field, index_1, &scratch1),
                           reflection_2->GetRepeatedStringReference(
                               message_2, field, index_2, &scratch2)));
       } else {
         // Allocate scratch strings to store the result if a conversion is
         // needed.
-        string scratch1;
-        string scratch2;
+        std::string scratch1;
+        std::string scratch2;
         return ResultFromBoolean(CompareString(
             *field,
             reflection_1->GetStringReference(message_1, field, &scratch1),
@@ -131,13 +127,12 @@ FieldComparator::ComparisonResult DefaultFieldComparator::Compare(
   }
 }
 
-bool DefaultFieldComparator::Compare(
-    MessageDifferencer* differencer,
-    const Message& message1,
-    const Message& message2,
-    const google::protobuf::util::FieldContext* field_context) {
-  return differencer->Compare(
-      message1, message2, field_context->parent_fields());
+bool DefaultFieldComparator::Compare(MessageDifferencer* differencer,
+                                     const Message& message1,
+                                     const Message& message2,
+                                     const util::FieldContext* field_context) {
+  return differencer->Compare(message1, message2,
+                              field_context->parent_fields());
 }
 
 void DefaultFieldComparator::SetDefaultFractionAndMargin(double fraction,
@@ -172,7 +167,7 @@ bool DefaultFieldComparator::CompareFloat(const FieldDescriptor& field,
   return CompareDoubleOrFloat(field, value_1, value_2);
 }
 
-template<typename T>
+template <typename T>
 bool DefaultFieldComparator::CompareDoubleOrFloat(const FieldDescriptor& field,
                                                   T value_1, T value_2) {
   if (value_1 == value_2) {
@@ -180,14 +175,14 @@ bool DefaultFieldComparator::CompareDoubleOrFloat(const FieldDescriptor& field,
     // themselves), and is a shortcut for finite values.
     return true;
   } else if (float_comparison_ == EXACT) {
-    if (treat_nan_as_equal_ &&
-        MathLimits<T>::IsNaN(value_1) && MathLimits<T>::IsNaN(value_2)) {
+    if (treat_nan_as_equal_ && MathLimits<T>::IsNaN(value_1) &&
+        MathLimits<T>::IsNaN(value_2)) {
       return true;
     }
     return false;
   } else {
-    if (treat_nan_as_equal_ &&
-        MathLimits<T>::IsNaN(value_1) && MathLimits<T>::IsNaN(value_2)) {
+    if (treat_nan_as_equal_ && MathLimits<T>::IsNaN(value_1) &&
+        MathLimits<T>::IsNaN(value_2)) {
       return true;
     }
     // float_comparison_ == APPROXIMATE covers two use cases.

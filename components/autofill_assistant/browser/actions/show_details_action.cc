@@ -17,20 +17,52 @@
 
 namespace autofill_assistant {
 
-ShowDetailsAction::ShowDetailsAction(const ActionProto& proto) : Action(proto) {
+ShowDetailsAction::ShowDetailsAction(ActionDelegate* delegate,
+                                     const ActionProto& proto)
+    : Action(delegate, proto) {
   DCHECK(proto_.has_show_details());
 }
 
 ShowDetailsAction::~ShowDetailsAction() {}
 
-void ShowDetailsAction::InternalProcessAction(ActionDelegate* delegate,
-                                              ProcessActionCallback callback) {
-  if (!proto_.show_details().has_details()) {
-    delegate->ClearDetails();
-  } else {
-    delegate->SetDetails(Details(proto_.show_details()));
+void ShowDetailsAction::InternalProcessAction(ProcessActionCallback callback) {
+  std::unique_ptr<Details> details = nullptr;
+  bool details_valid = true;
+
+  switch (proto_.show_details().data_to_show_case()) {
+    case ShowDetailsProto::DataToShowCase::kDetails:
+      details = std::make_unique<Details>();
+      details_valid =
+          Details::UpdateFromProto(proto_.show_details(), details.get());
+      break;
+    case ShowDetailsProto::DataToShowCase::kContactDetails:
+      details = std::make_unique<Details>();
+      details_valid = Details::UpdateFromContactDetails(
+          proto_.show_details(), delegate_->GetClientMemory(), details.get());
+      break;
+    case ShowDetailsProto::DataToShowCase::kShippingAddress:
+      details = std::make_unique<Details>();
+      details_valid = Details::UpdateFromShippingAddress(
+          proto_.show_details(), delegate_->GetClientMemory(), details.get());
+      break;
+    case ShowDetailsProto::DataToShowCase::kCreditCard:
+      details = std::make_unique<Details>();
+      details_valid = Details::UpdateFromSelectedCreditCard(
+          proto_.show_details(), delegate_->GetClientMemory(), details.get());
+      break;
+    case ShowDetailsProto::DataToShowCase::DATA_TO_SHOW_NOT_SET:
+      // Clear Details. Calling SetDetails with nullptr clears the details.
+      break;
   }
-  UpdateProcessedAction(ACTION_APPLIED);
+
+  if (!details_valid) {
+    DVLOG(1) << "Failed to fill the details";
+    UpdateProcessedAction(INVALID_ACTION);
+  } else {
+    delegate_->SetDetails(std::move(details));
+    UpdateProcessedAction(ACTION_APPLIED);
+  }
+
   std::move(callback).Run(std::move(processed_action_proto_));
 }
 }  // namespace autofill_assistant

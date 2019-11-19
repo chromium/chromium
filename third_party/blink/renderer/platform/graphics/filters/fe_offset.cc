@@ -24,19 +24,15 @@
 
 #include "third_party/blink/renderer/platform/graphics/filters/fe_offset.h"
 
-#include "SkOffsetImageFilter.h"
 #include "third_party/blink/renderer/platform/graphics/filters/filter.h"
 #include "third_party/blink/renderer/platform/graphics/filters/paint_filter_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_stream.h"
+#include "third_party/skia/include/effects/SkOffsetImageFilter.h"
 
 namespace blink {
 
 FEOffset::FEOffset(Filter* filter, float dx, float dy)
     : FilterEffect(filter), dx_(dx), dy_(dy) {}
-
-FEOffset* FEOffset::Create(Filter* filter, float dx, float dy) {
-  return MakeGarbageCollected<FEOffset>(filter, dx, dy);
-}
 
 float FEOffset::Dx() const {
   return dx_;

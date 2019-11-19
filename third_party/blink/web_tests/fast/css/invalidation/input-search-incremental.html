@@ -19,9 +19,6 @@ searchInput.offsetTop;
 getComputedStyle(searchInput); // Force recalc.
 searchInput.setAttribute("incremental", "");
 
-// Ideally, the expected value below should be "0", but the search control
-// button has its opacity changed unconditionally through inline style on
-// every attribute change on the input element.
-shouldBe("internals.updateStyleAndReturnAffectedElementCount()", "1");
+shouldBe("internals.updateStyleAndReturnAffectedElementCount()", "0");
 
 </script>

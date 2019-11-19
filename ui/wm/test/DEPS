@@ -1,7 +1,4 @@
 include_rules = [
-  "+services/service_manager/public",
-  "+services/ws/public",
-  "+services/ws/test_ws",
   "+ui/aura",
   "+ui/base/resource/resource_bundle.h",
   "+ui/base/ui_base_paths.h",

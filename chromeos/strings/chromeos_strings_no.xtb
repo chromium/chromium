@@ -1,22 +1,41 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="no">
-<translation id="1510238584712386396">Appvelger</translation>
+<translation id="1482734542997480527"><ph name="ENROLLMENT_DOMAIN" /> administrerer denne enheten og kan muligens overvåke aktiviteten din.</translation>
+<translation id="1510238584712386396">Appoversikt</translation>
 <translation id="1734367976349034509">Denne enheten er administrert av en bedrift</translation>
+<translation id="1930797645656624981">Tjeneste for Chrome OS-inndatametode</translation>
+<translation id="1979103255016296513">Det er på høy tid å endre passordet</translation>
 <translation id="2049639323467105390">Denne enheten administreres av <ph name="DOMAIN" />.</translation>
 <translation id="2083960536266308407">Fant ingenting på skjermen</translation>
 <translation id="2338501278241028356">Slå på Bluetooth for å finne enheter i nærheten</translation>
 <translation id="2805756323405976993">Apper</translation>
 <translation id="2872961005593481000">Slå av</translation>
-<translation id="3147142846278915599">Appoversikt (synkroniserer apper ...)</translation>
+<translation id="3008341117444806826">OPPDATER</translation>
+<translation id="3838338534323494292">Nytt passord</translation>
+<translation id="4003259559679196451"><ph name="ENROLLMENT_DOMAIN" /> administrerer denne enheten og har tilgang til all brukeraktivitet, blant annet nettsteder som besøkes, passord og e-post.</translation>
+<translation id="4227825898293920515">Passordet utløper om <ph name="TIME" /></translation>
+<translation id="4429881212383817840">Kerberos-saken utløper snart</translation>
+<translation id="445059817448385655">Gammelt passord</translation>
+<translation id="467510802200863975">Passordene er ikke like</translation>
 <translation id="4731797938093519117">Foreldretilgang</translation>
+<translation id="4890353053343094602">Velg et nytt passord umiddelbart</translation>
 <translation id="5212543919916444558">Jeg finner ikke noe på skjermen jeg kan hjelpe deg med. 
 Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="5222676887888702881">Logg av</translation>
+<translation id="5317780077021120954">Lagre</translation>
+<translation id="5332948983412042822">Velg et nytt passord nå</translation>
 <translation id="5457599981699367932">Surf som gjest</translation>
 <translation id="54609108002486618">Administrert</translation>
 <translation id="5832805196449965646">Legg til person</translation>
 <translation id="5895138241574237353">Start på nytt</translation>
+<translation id="6058625436358447366">For å fullføre passordendringen, skriv inn det gamle og det nye passordet</translation>
+<translation id="6106186594183574873">For å fullføre passordendringen, skriv inn det gamle passordet</translation>
+<translation id="6146993107019042706">For å fullføre passordendringen, skriv inn det nye passordet</translation>
 <translation id="7658239707568436148">Avbryt</translation>
+<translation id="7690294790491645610">Bekreft det nye passordet</translation>
+<translation id="808894953321890993">Endre passord</translation>
+<translation id="8747900814994928677">Bekreft endringen</translation>
+<translation id="910415269708673980">Oppdater saken for <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9111102763498581341">Lås opp</translation>
 </translationbundle>

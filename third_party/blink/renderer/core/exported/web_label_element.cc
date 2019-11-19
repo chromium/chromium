@@ -43,7 +43,7 @@ WebElement WebLabelElement::CorrespondingControl() {
 WebLabelElement::WebLabelElement(HTMLLabelElement* elem) : WebElement(elem) {}
 
 DEFINE_WEB_NODE_TYPE_CASTS(WebLabelElement,
-                           IsHTMLLabelElement(ConstUnwrap<Node>()))
+                           IsA<HTMLLabelElement>(ConstUnwrap<Node>()))
 
 WebLabelElement& WebLabelElement::operator=(HTMLLabelElement* elem) {
   private_ = elem;
@@ -51,7 +51,7 @@ WebLabelElement& WebLabelElement::operator=(HTMLLabelElement* elem) {
 }
 
 WebLabelElement::operator HTMLLabelElement*() const {
-  return ToHTMLLabelElement(private_.Get());
+  return blink::To<HTMLLabelElement>(private_.Get());
 }
 
 }  // namespace blink

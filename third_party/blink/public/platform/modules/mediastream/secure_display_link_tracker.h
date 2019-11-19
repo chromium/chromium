@@ -5,10 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_PLATFORM_MODULES_MEDIASTREAM_SECURE_DISPLAY_LINK_TRACKER_H_
 #define THIRD_PARTY_BLINK_PUBLIC_PLATFORM_MODULES_MEDIASTREAM_SECURE_DISPLAY_LINK_TRACKER_H_
 
-#include <algorithm>
-#include <vector>
-
-#include "base/stl_util.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
 
@@ -23,18 +20,18 @@ class SecureDisplayLinkTracker {
   void Add(T* link, bool is_link_secure);
   void Remove(T* link);
   void Update(T* link, bool is_link_secure);
-  bool is_capturing_secure() const { return insecure_links_.empty(); }
+  bool is_capturing_secure() const { return insecure_links_.IsEmpty(); }
 
  private:
   // Record every insecure links.
-  std::vector<T*> insecure_links_;
+  Vector<T*> insecure_links_;
 
   DISALLOW_COPY_AND_ASSIGN(SecureDisplayLinkTracker);
 };
 
 template <typename T>
 void SecureDisplayLinkTracker<T>::Add(T* link, bool is_link_secure) {
-  DCHECK(!base::ContainsValue(insecure_links_, link));
+  DCHECK(!insecure_links_.Contains(link));
 
   if (!is_link_secure)
     insecure_links_.push_back(link);
@@ -42,17 +39,17 @@ void SecureDisplayLinkTracker<T>::Add(T* link, bool is_link_secure) {
 
 template <typename T>
 void SecureDisplayLinkTracker<T>::Remove(T* link) {
-  auto it = std::find(insecure_links_.begin(), insecure_links_.end(), link);
-  if (it != insecure_links_.end())
-    insecure_links_.erase(it);
+  auto it = insecure_links_.Find(link);
+  if (it != kNotFound)
+    insecure_links_.EraseAt(it);
 }
 
 template <typename T>
 void SecureDisplayLinkTracker<T>::Update(T* link, bool is_link_secure) {
-  auto it = std::find(insecure_links_.begin(), insecure_links_.end(), link);
-  if (it != insecure_links_.end()) {
+  auto it = insecure_links_.Find(link);
+  if (it != kNotFound) {
     if (is_link_secure)
-      insecure_links_.erase(it);
+      insecure_links_.EraseAt(it);
     return;
   }
   Add(link, is_link_secure);

@@ -13,7 +13,7 @@
 #include "chrome/browser/sync_file_system/conflict_resolution_policy.h"
 #include "chrome/browser/sync_file_system/sync_file_status.h"
 #include "chrome/browser/sync_file_system/sync_status_code.h"
-#include "storage/browser/fileapi/file_system_url.h"
+#include "storage/browser/file_system/file_system_url.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom.h"
 
 namespace storage {
@@ -122,7 +122,7 @@ class SyncFileSystemRequestFileSystemFunction
 };
 
 class SyncFileSystemSetConflictResolutionPolicyFunction
-    : public UIThreadExtensionFunction {
+    : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("syncFileSystem.setConflictResolutionPolicy",
                              SYNCFILESYSTEM_SETCONFLICTRESOLUTIONPOLICY)
@@ -133,7 +133,7 @@ class SyncFileSystemSetConflictResolutionPolicyFunction
 };
 
 class SyncFileSystemGetConflictResolutionPolicyFunction
-    : public UIThreadExtensionFunction {
+    : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("syncFileSystem.getConflictResolutionPolicy",
                              SYNCFILESYSTEM_GETCONFLICTRESOLUTIONPOLICY)
@@ -143,8 +143,7 @@ class SyncFileSystemGetConflictResolutionPolicyFunction
   ResponseAction Run() override;
 };
 
-class SyncFileSystemGetServiceStatusFunction
-    : public UIThreadExtensionFunction {
+class SyncFileSystemGetServiceStatusFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("syncFileSystem.getServiceStatus",
                              SYNCFILESYSTEM_GETSERVICESTATUS)

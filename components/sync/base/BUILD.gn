@@ -1,0 +1,131 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/features.gni")
+import("//build/config/jumbo.gni")
+
+jumbo_static_library("base") {
+  sources = [
+    "bind_to_task_runner.h",
+    "cancelation_observer.cc",
+    "cancelation_observer.h",
+    "cancelation_signal.cc",
+    "cancelation_signal.h",
+    "client_tag_hash.cc",
+    "client_tag_hash.h",
+    "data_type_histogram.cc",
+    "data_type_histogram.h",
+    "encryptor.h",
+    "enum_set.h",
+    "extensions_activity.cc",
+    "extensions_activity.h",
+    "hash_util.cc",
+    "hash_util.h",
+    "immutable.h",
+    "invalidation_adapter.cc",
+    "invalidation_adapter.h",
+    "invalidation_helper.cc",
+    "invalidation_helper.h",
+    "invalidation_interface.cc",
+    "invalidation_interface.h",
+    "logging.cc",
+    "logging.h",
+    "model_type.cc",
+    "model_type.h",
+    "node_ordinal.cc",
+    "node_ordinal.h",
+    "ordinal.h",
+    "passphrase_enums.cc",
+    "passphrase_enums.h",
+    "pref_names.cc",
+    "pref_names.h",
+    "progress_marker_map.cc",
+    "progress_marker_map.h",
+    "report_unrecoverable_error.cc",
+    "report_unrecoverable_error.h",
+    "stop_source.h",
+    "sync_base_switches.cc",
+    "sync_base_switches.h",
+    "sync_mode.h",
+    "sync_prefs.cc",
+    "sync_prefs.h",
+    "sync_stop_metadata_fate.h",
+    "syncer_error.cc",
+    "syncer_error.h",
+    "system_encryptor.cc",
+    "system_encryptor.h",
+    "time.cc",
+    "time.h",
+    "unique_position.cc",
+    "unique_position.h",
+    "unrecoverable_error_handler.h",
+    "unrecoverable_error_info.cc",
+    "unrecoverable_error_info.h",
+    "user_demographics.cc",
+    "user_demographics.h",
+    "user_selectable_type.cc",
+    "user_selectable_type.h",
+    "weak_handle.cc",
+    "weak_handle.h",
+  ]
+
+  configs += [ "//build/config:precompiled_headers" ]
+
+  public_deps = [
+    "//base",
+    "//components/invalidation/public",
+    "//components/sync/protocol",
+    "//third_party/metrics_proto",
+  ]
+  deps = [
+    "//base:i18n",
+    "//components/os_crypt",
+    "//components/pref_registry",
+    "//components/prefs",
+    "//components/version_info",
+    "//crypto",
+    "//net",
+    "//third_party/zlib",
+  ]
+
+  if (is_chromeos) {
+    deps += [ "//chromeos/constants" ]
+  }
+}
+
+static_library("test_support") {
+  testonly = true
+  sources = [
+    "../test/callback_counter.h",
+    "../test/mock_invalidation.cc",
+    "../test/mock_invalidation.h",
+    "../test/mock_invalidation_tracker.cc",
+    "../test/mock_invalidation_tracker.h",
+    "../test/test_matchers.h",
+    "../test/trackable_mock_invalidation.cc",
+    "../test/trackable_mock_invalidation.h",
+    "fake_encryptor.cc",
+    "fake_encryptor.h",
+    "mock_unrecoverable_error_handler.cc",
+    "mock_unrecoverable_error_handler.h",
+    "model_type_test_util.cc",
+    "model_type_test_util.h",
+    "test_unrecoverable_error_handler.cc",
+    "test_unrecoverable_error_handler.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//components/sync/base",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+
+  deps = [
+    # For test_matchers.h, which should probably be split up.
+    "//components/sync:rest_of_sync",
+  ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+}

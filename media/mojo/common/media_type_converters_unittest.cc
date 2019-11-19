@@ -30,30 +30,30 @@ void CompareBytes(uint8_t* original_data, uint8_t* result_data, size_t length) {
 }
 
 void CompareAudioBuffers(SampleFormat sample_format,
-                         const scoped_refptr<AudioBuffer>& original,
-                         const scoped_refptr<AudioBuffer>& result) {
-  EXPECT_EQ(original->frame_count(), result->frame_count());
-  EXPECT_EQ(original->timestamp(), result->timestamp());
-  EXPECT_EQ(original->duration(), result->duration());
-  EXPECT_EQ(original->sample_rate(), result->sample_rate());
-  EXPECT_EQ(original->channel_count(), result->channel_count());
-  EXPECT_EQ(original->channel_layout(), result->channel_layout());
-  EXPECT_EQ(original->end_of_stream(), result->end_of_stream());
+                         const AudioBuffer& original,
+                         const AudioBuffer& result) {
+  EXPECT_EQ(original.frame_count(), result.frame_count());
+  EXPECT_EQ(original.timestamp(), result.timestamp());
+  EXPECT_EQ(original.duration(), result.duration());
+  EXPECT_EQ(original.sample_rate(), result.sample_rate());
+  EXPECT_EQ(original.channel_count(), result.channel_count());
+  EXPECT_EQ(original.channel_layout(), result.channel_layout());
+  EXPECT_EQ(original.end_of_stream(), result.end_of_stream());
 
   // Compare bytes in buffer.
   int bytes_per_channel =
-      original->frame_count() * SampleFormatToBytesPerChannel(sample_format);
+      original.frame_count() * SampleFormatToBytesPerChannel(sample_format);
   if (IsPlanar(sample_format)) {
-    for (int i = 0; i < original->channel_count(); ++i) {
-      CompareBytes(original->channel_data()[i], result->channel_data()[i],
+    for (int i = 0; i < original.channel_count(); ++i) {
+      CompareBytes(original.channel_data()[i], result.channel_data()[i],
                    bytes_per_channel);
     }
     return;
   }
 
   DCHECK(IsInterleaved(sample_format)) << sample_format;
-  CompareBytes(original->channel_data()[0], result->channel_data()[0],
-               bytes_per_channel * original->channel_count());
+  CompareBytes(original.channel_data()[0], result.channel_data()[0],
+               bytes_per_channel * original.channel_count());
 }
 
 }  // namespace
@@ -206,7 +206,7 @@ TEST(MediaTypeConvertersTest, ConvertAudioBuffer_EOS) {
   scoped_refptr<AudioBuffer> buffer(AudioBuffer::CreateEOSBuffer());
 
   // Convert to and back.
-  mojom::AudioBufferPtr ptr(mojom::AudioBuffer::From(buffer));
+  mojom::AudioBufferPtr ptr(mojom::AudioBuffer::From(*buffer));
   scoped_refptr<AudioBuffer> result(ptr.To<scoped_refptr<AudioBuffer>>());
 
   // Compare.
@@ -223,11 +223,11 @@ TEST(MediaTypeConvertersTest, ConvertAudioBuffer_MONO) {
       kSampleRate / 100, base::TimeDelta());
 
   // Convert to and back.
-  mojom::AudioBufferPtr ptr(mojom::AudioBuffer::From(buffer));
+  mojom::AudioBufferPtr ptr(mojom::AudioBuffer::From(*buffer));
   scoped_refptr<AudioBuffer> result(ptr.To<scoped_refptr<AudioBuffer>>());
 
   // Compare.
-  CompareAudioBuffers(kSampleFormatU8, buffer, result);
+  CompareAudioBuffers(kSampleFormatU8, *buffer, *result);
 }
 
 TEST(MediaTypeConvertersTest, ConvertAudioBuffer_FLOAT) {
@@ -240,11 +240,11 @@ TEST(MediaTypeConvertersTest, ConvertAudioBuffer_FLOAT) {
       ChannelLayoutToChannelCount(kChannelLayout), kSampleRate, 0.0f, 1.0f,
       kSampleRate / 10, start_time);
   // Convert to and back.
-  mojom::AudioBufferPtr ptr(mojom::AudioBuffer::From(buffer));
+  mojom::AudioBufferPtr ptr(mojom::AudioBuffer::From(*buffer));
   scoped_refptr<AudioBuffer> result(ptr.To<scoped_refptr<AudioBuffer>>());
 
   // Compare.
-  CompareAudioBuffers(kSampleFormatPlanarF32, buffer, result);
+  CompareAudioBuffers(kSampleFormatPlanarF32, *buffer, *result);
 }
 
 }  // namespace media

@@ -1,5 +1,6 @@
 rootWebArea
-++listBox activedescendantId=listBoxOption
-++++listBoxOption name='1' selected=false
-++++listBoxOption name='2' selected=false
-++++listBoxOption name='3' selected=true
+++genericContainer ignored
+++++listBox activedescendantId=listBoxOption
+++++++listBoxOption name='1' selected=false
+++++++listBoxOption name='2' selected=false
+++++++listBoxOption name='3' selected=true

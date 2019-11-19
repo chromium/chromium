@@ -8,7 +8,7 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
-#include "jni/MediaImage_jni.h"
+#include "services/media_session/public/cpp/android/media_session_jni_headers/MediaImage_jni.h"
 
 using base::android::ScopedJavaLocalRef;
 

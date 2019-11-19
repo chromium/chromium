@@ -10,7 +10,6 @@ import("//mojo/public/tools/bindings/mojom.gni")
 template("common_tmpl") {
   static_library(target_name) {
     sources = [
-      "data_reduction_proxy_bypass_action_list.h",
       "data_reduction_proxy_bypass_protocol.cc",
       "data_reduction_proxy_bypass_protocol.h",
       "data_reduction_proxy_bypass_type_list.h",
@@ -30,9 +29,6 @@ template("common_tmpl") {
       "data_reduction_proxy_throttle_manager.cc",
       "data_reduction_proxy_throttle_manager.h",
       "data_reduction_proxy_type_info.h",
-      "lofi_decider.h",
-      "lofi_ui_service.h",
-      "resource_type_provider.h",
       "uma_util.cc",
       "uma_util.h",
     ]

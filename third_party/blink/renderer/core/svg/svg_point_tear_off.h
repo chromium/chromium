@@ -42,16 +42,6 @@ class SVGPointTearOff : public SVGPropertyTearOff<SVGPoint> {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static SVGPointTearOff* Create(SVGPoint* target,
-                                 SVGAnimatedPropertyBase* binding,
-                                 PropertyIsAnimValType property_is_anim_val) {
-    return MakeGarbageCollected<SVGPointTearOff>(target, binding,
-                                                 property_is_anim_val);
-  }
-  static SVGPointTearOff* Create(SVGPoint* target,
-                                 SVGElement* context_element) {
-    return MakeGarbageCollected<SVGPointTearOff>(target, context_element);
-  }
   static SVGPointTearOff* CreateDetached(const FloatPoint&);
 
   SVGPointTearOff(SVGPoint*,

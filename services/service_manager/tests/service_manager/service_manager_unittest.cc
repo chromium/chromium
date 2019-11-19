@@ -14,16 +14,17 @@
 #include "base/command_line.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
-#include "base/message_loop/message_loop_current.h"
 #include "base/path_service.h"
 #include "base/process/process.h"
 #include "base/process/process_handle.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "base/token.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/binding_set.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/platform/platform_channel.h"
 #include "mojo/public/cpp/platform/platform_handle.h"
 #include "mojo/public/cpp/system/invitation.h"
@@ -44,28 +45,28 @@ namespace {
 
 void OnServiceStartedCallback(int* start_count,
                               std::string* service_name,
-                              const base::Closure& continuation,
+                              base::OnceClosure continuation,
                               const service_manager::Identity& identity) {
   (*start_count)++;
   *service_name = identity.name();
-  continuation.Run();
+  std::move(continuation).Run();
 }
 
 void OnServiceFailedToStartCallback(bool* run,
-                                    const base::Closure& continuation,
+                                    base::OnceClosure continuation,
                                     const service_manager::Identity& identity) {
   *run = true;
-  continuation.Run();
+  std::move(continuation).Run();
 }
 
 void OnServicePIDReceivedCallback(std::string* service_name,
-                                  uint32_t* serivce_pid,
-                                  const base::Closure& continuation,
+                                  uint32_t* service_pid,
+                                  base::OnceClosure continuation,
                                   const service_manager::Identity& identity,
                                   uint32_t pid) {
   *service_name = identity.name();
-  *serivce_pid = pid;
-  continuation.Run();
+  *service_pid = pid;
+  std::move(continuation).Run();
 }
 
 class TestService : public Service, public test::mojom::CreateInstanceTest {
@@ -168,12 +169,12 @@ class ServiceManagerTest : public testing::Test,
   Connector* connector() { return test_service_.connector(); }
 
   void AddListenerAndWaitForApplications() {
-    mojom::ServiceManagerPtr service_manager;
-    connector()->BindInterface(service_manager::mojom::kServiceName,
-                               &service_manager);
+    mojo::Remote<mojom::ServiceManager> service_manager;
+    connector()->Connect(service_manager::mojom::kServiceName,
+                         service_manager.BindNewPipeAndPassReceiver());
 
-    mojom::ServiceManagerListenerPtr listener;
-    binding_.Bind(mojo::MakeRequest(&listener));
+    mojo::PendingRemote<mojom::ServiceManagerListener> listener;
+    binding_.Bind(listener.InitWithNewPipeAndPassReceiver());
     service_manager->AddListener(std::move(listener));
 
     wait_for_instances_loop_ = std::make_unique<base::RunLoop>();
@@ -209,14 +210,15 @@ class ServiceManagerTest : public testing::Test,
   }
 
   using ServiceFailedToStartCallback =
-      base::Callback<void(const service_manager::Identity&)>;
+      base::RepeatingCallback<void(const service_manager::Identity&)>;
   void set_service_failed_to_start_callback(
       const ServiceFailedToStartCallback& callback) {
     service_failed_to_start_callback_ = callback;
   }
 
   using ServicePIDReceivedCallback =
-      base::Callback<void(const service_manager::Identity&, uint32_t pid)>;
+      base::RepeatingCallback<void(const service_manager::Identity&,
+                                   uint32_t pid)>;
   void set_service_pid_received_callback(
       const ServicePIDReceivedCallback& callback) {
     service_pid_received_callback_ = callback;
@@ -267,16 +269,16 @@ class ServiceManagerTest : public testing::Test,
     service_manager::mojom::ServicePtr client =
         ServiceProcessLauncher::PassServiceRequestOnCommandLine(
             &invitation, &child_command_line);
-    service_manager::mojom::PIDReceiverPtr receiver;
+    mojo::Remote<service_manager::mojom::ProcessMetadata> metadata;
     connector()->RegisterServiceInstance(
         service_manager::Identity(kTestTargetName, kSystemInstanceGroup,
                                   base::Token{}, base::Token::CreateRandom()),
-        std::move(client), mojo::MakeRequest(&receiver));
+        client.PassInterface(), metadata.BindNewPipeAndPassReceiver());
 
     target_ = base::LaunchProcess(child_command_line, options);
     DCHECK(target_.IsValid());
     channel.RemoteProcessLaunchAttempted();
-    receiver->SetPID(target_.Pid());
+    metadata->SetPID(target_.Pid());
     mojo::OutgoingInvitation::Send(std::move(invitation), target_.Handle(),
                                    channel.TakeLocalEndpoint());
   }
@@ -314,7 +316,7 @@ class ServiceManagerTest : public testing::Test,
     connector()->WarmService(filter);
     if (!expect_service_started) {
       // Wait briefly and test no new service was created.
-      base::MessageLoopCurrent::Get()->task_runner()->PostDelayedTask(
+      base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
           FROM_HERE, loop.QuitClosure(), base::TimeDelta::FromSeconds(1));
     }
 
@@ -379,7 +381,7 @@ class ServiceManagerTest : public testing::Test,
       service_pid_received_callback_.Run(identity, pid);
   }
 
-  base::test::ScopedTaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_;
   TestServiceManager test_service_manager_;
   TestService test_service_;
 
@@ -535,11 +537,11 @@ TEST_F(ServiceManagerTest, ClientProcessCapabilityEnforced) {
   // |can_create_other_service_instances| set to |true| in its manifest.
   mojom::ServicePtr test_service_proxy1;
   SimpleService test_service1(mojo::MakeRequest(&test_service_proxy1));
-  mojom::PIDReceiverPtr pid_receiver1;
+  mojo::Remote<mojom::ProcessMetadata> metadata1;
   connector()->RegisterServiceInstance(kInstance1Id,
-                                       std::move(test_service_proxy1),
-                                       mojo::MakeRequest(&pid_receiver1));
-  pid_receiver1->SetPID(42);
+                                       test_service_proxy1.PassInterface(),
+                                       metadata1.BindNewPipeAndPassReceiver());
+  metadata1->SetPID(42);
   WaitForInstanceToStart(kInstance1Id);
   EXPECT_EQ(1u, instances().size());
   EXPECT_TRUE(ContainsInstanceWithName(kTestTargetName));
@@ -548,11 +550,11 @@ TEST_F(ServiceManagerTest, ClientProcessCapabilityEnforced) {
   // to attempt introduction of yet another instance. This should fail.
   mojom::ServicePtr test_service_proxy2;
   SimpleService test_service2(mojo::MakeRequest(&test_service_proxy2));
-  mojom::PIDReceiverPtr pid_receiver2;
+  mojo::Remote<mojom::ProcessMetadata> metadata2;
   test_service1.connector()->RegisterServiceInstance(
-      kInstance2Id, std::move(test_service_proxy2),
-      mojo::MakeRequest(&pid_receiver2));
-  pid_receiver2->SetPID(43);
+      kInstance2Id, test_service_proxy2.PassInterface(),
+      metadata2.BindNewPipeAndPassReceiver());
+  metadata2->SetPID(43);
 
   // The new service should be disconnected immediately.
   test_service2.WaitForDisconnect();
@@ -562,7 +564,7 @@ TEST_F(ServiceManagerTest, ClientProcessCapabilityEnforced) {
 }
 
 TEST_F(ServiceManagerTest, ClonesDisconnectedConnectors) {
-  Connector connector((mojom::ConnectorPtrInfo()));
+  Connector connector((mojo::PendingRemote<mojom::Connector>()));
   EXPECT_TRUE(connector.Clone());
 }
 

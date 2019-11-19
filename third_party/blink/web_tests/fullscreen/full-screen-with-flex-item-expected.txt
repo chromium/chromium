@@ -1,6 +1,6 @@
 Enter Fullscreen
 EVENT(webkitfullscreenchange)
 EVENT(webkitfullscreenchange)
-EXPECTED (584 == '584') OK
+EXPECTED (600 == '600') OK
 END OF TEST
 

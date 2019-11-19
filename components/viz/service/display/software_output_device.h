@@ -66,11 +66,14 @@ class VIZ_SERVICE_EXPORT SoftwareOutputDevice {
   // hardware vsync. Return null if a provider doesn't exist.
   virtual gfx::VSyncProvider* GetVSyncProvider();
 
+  using SwapBuffersCallback = base::OnceCallback<void(const gfx::Size&)>;
   // Called from OutputSurface::SwapBuffers(). The default implementation will
   // immediately run |swap_ack_callback| via PostTask. If swap isn't synchronous
   // this can be overriden so that |swap_ack_callback| is run after swap
   // completes.
-  virtual void OnSwapBuffers(base::OnceClosure swap_ack_callback);
+  virtual void OnSwapBuffers(SwapBuffersCallback swap_ack_callback);
+
+  virtual int MaxFramesPending() const;
 
  protected:
   scoped_refptr<base::SequencedTaskRunner> task_runner_;

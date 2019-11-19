@@ -6,7 +6,7 @@
 
 #include <string>
 
-#include "ash/public/cpp/ash_features.h"
+#include "ash/public/cpp/ash_pref_names.h"
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
@@ -16,6 +16,7 @@
 #include "base/path_service.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
+#include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/component_extensions_whitelist/whitelist.h"
 #include "chrome/browser/extensions/data_deleter.h"
@@ -47,22 +48,23 @@
 #include "ui/base/resource/resource_bundle.h"
 
 #if defined(OS_CHROMEOS)
+#include "ash/keyboard/ui/grit/keyboard_resources.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/constants/chromeos_switches.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/storage_partition.h"
 #include "extensions/browser/extensions_browser_client.h"
-#include "storage/browser/fileapi/file_system_context.h"
+#include "storage/browser/file_system/file_system_context.h"
 #include "ui/chromeos/devicetype_utils.h"
 #include "ui/file_manager/grit/file_manager_resources.h"
-#include "ui/keyboard/grit/keyboard_resources.h"
 #endif
 
 #if BUILDFLAG(ENABLE_PDF)
 #include "chrome/browser/pdf/pdf_extension_util.h"
 #endif
 
-#if defined(GOOGLE_CHROME_BUILD)
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #include "chrome/browser/defaults.h"
 #endif
 
@@ -101,8 +103,13 @@ std::unique_ptr<base::DictionaryValue> LoadManifestOnFileThread(
   }
 
   if (localize_manifest) {
+    // This is only called for Chrome OS component extensions which are loaded
+    // from a read-only rootfs partition, so it is safe to set
+    // |gzip_permission| to kAllowForTrustedSource.
     bool localized = extension_l10n_util::LocalizeExtension(
-        root_directory, manifest.get(), &error);
+        root_directory, manifest.get(),
+        extension_l10n_util::GzippedMessagesPermission::kAllowForTrustedSource,
+        &error);
     CHECK(localized) << error;
   }
 
@@ -148,15 +155,10 @@ ComponentLoader::ComponentExtensionInfo::operator=(
 ComponentLoader::ComponentExtensionInfo::~ComponentExtensionInfo() {}
 
 ComponentLoader::ComponentLoader(ExtensionServiceInterface* extension_service,
-                                 PrefService* profile_prefs,
-                                 PrefService* local_state,
                                  Profile* profile)
-    : profile_prefs_(profile_prefs),
-      local_state_(local_state),
-      profile_(profile),
+    : profile_(profile),
       extension_service_(extension_service),
-      ignore_whitelist_for_testing_(false),
-      weak_factory_(this) {}
+      ignore_whitelist_for_testing_(false) {}
 
 ComponentLoader::~ComponentLoader() {
 }
@@ -331,15 +333,6 @@ void ComponentLoader::AddWithNameAndDescription(
   }
 }
 
-#if BUILDFLAG(ENABLE_APP_LIST)
-void ComponentLoader::AddChromeApp() {
-  AddWithNameAndDescription(
-      IDR_CHROME_APP_MANIFEST, base::FilePath(FILE_PATH_LITERAL("chrome_app")),
-      l10n_util::GetStringUTF8(IDS_SHORT_PRODUCT_NAME),
-      l10n_util::GetStringUTF8(IDS_CHROME_SHORTCUT_DESCRIPTION));
-}
-#endif  // BUILDFLAG(ENABLE_APP_LIST)
-
 void ComponentLoader::AddWebStoreApp() {
 #if defined(OS_CHROMEOS)
   if (!IsNormalSession())
@@ -353,6 +346,13 @@ void ComponentLoader::AddWebStoreApp() {
 }
 
 #if defined(OS_CHROMEOS)
+void ComponentLoader::AddChromeApp() {
+  AddWithNameAndDescription(
+      IDR_CHROME_APP_MANIFEST, base::FilePath(FILE_PATH_LITERAL("chrome_app")),
+      l10n_util::GetStringUTF8(IDS_SHORT_PRODUCT_NAME),
+      l10n_util::GetStringUTF8(IDS_CHROME_SHORTCUT_DESCRIPTION));
+}
+
 void ComponentLoader::AddFileManagerExtension() {
   AddWithNameAndDescription(
       IDR_FILEMANAGER_MANIFEST,
@@ -431,12 +431,12 @@ void ComponentLoader::AddDefaultComponentExtensions(
   Add(IDR_MOBILE_MANIFEST,
       base::FilePath(FILE_PATH_LITERAL("/usr/share/chromeos-assets/mobile")));
 
-#if defined(GOOGLE_CHROME_BUILD)
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   if (browser_defaults::enable_help_app) {
     Add(IDR_HELP_MANIFEST, base::FilePath(FILE_PATH_LITERAL(
                                "/usr/share/chromeos-assets/helpapp")));
   }
-#endif  // defined(GOOGLE_CHROME_BUILD)
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
   // Skip all other extensions that require user session presence.
   if (!skip_session_components) {
@@ -456,9 +456,9 @@ void ComponentLoader::AddDefaultComponentExtensions(
 
   if (!skip_session_components) {
     AddWebStoreApp();
-#if BUILDFLAG(ENABLE_APP_LIST)
+#if defined(OS_CHROMEOS)
     AddChromeApp();
-#endif  // BUILDFLAG(ENABLE_APP_LIST)
+#endif  // defined(OS_CHROMEOS)
   }
 
   AddDefaultComponentExtensionsWithBackgroundPages(skip_session_components);
@@ -508,18 +508,31 @@ void ComponentLoader::AddDefaultComponentExtensionsWithBackgroundPages(
     return;
   }
 
-#if defined(OS_CHROMEOS) && defined(GOOGLE_CHROME_BUILD)
-  // Since this is a v2 app it has a background page.
-  AddWithNameAndDescription(
-      IDR_GENIUS_APP_MANIFEST,
-      base::FilePath(
-          FILE_PATH_LITERAL("/usr/share/chromeos-assets/genius_app")),
-      l10n_util::GetStringUTF8(IDS_GENIUS_APP_NAME),
-      l10n_util::GetStringFUTF8(IDS_GENIUS_APP_DESCRIPTION,
-                                ui::GetChromeOSDeviceName()));
+#if defined(OS_CHROMEOS) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  if (!base::FeatureList::IsEnabled(chromeos::features::kHelpAppV2)) {
+    // Since this is a v2 Chrome app it has a background page.
+    AddWithNameAndDescription(
+        IDR_GENIUS_APP_MANIFEST,
+        base::FilePath(
+            FILE_PATH_LITERAL("/usr/share/chromeos-assets/genius_app")),
+        l10n_util::GetStringUTF8(IDS_GENIUS_APP_NAME),
+        l10n_util::GetStringFUTF8(IDS_GENIUS_APP_DESCRIPTION,
+                                  ui::GetChromeOSDeviceName()));
+  }
 #endif
 
   if (!skip_session_components) {
+#if BUILDFLAG(ENABLE_HANGOUT_SERVICES_EXTENSION)
+    AddHangoutServicesExtension();
+#endif  // BUILDFLAG(ENABLE_HANGOUT_SERVICES_EXTENSION)
+
+    bool install_feedback = enable_background_extensions_during_testing;
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+    install_feedback = true;
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+    if (install_feedback)
+      Add(IDR_FEEDBACK_MANIFEST, base::FilePath(FILE_PATH_LITERAL("feedback")));
+
 #if defined(OS_CHROMEOS)
     AddChromeCameraApp();
     AddVideoPlayerExtension();
@@ -531,34 +544,20 @@ void ComponentLoader::AddDefaultComponentExtensionsWithBackgroundPages(
 #if BUILDFLAG(ENABLE_NACL)
     AddZipArchiverExtension();
 #endif  // BUILDFLAG(ENABLE_NACL)
-#endif  // defined(OS_CHROMEOS)
 
-#if BUILDFLAG(ENABLE_HANGOUT_SERVICES_EXTENSION)
-    AddHangoutServicesExtension();
-#endif  // BUILDFLAG(ENABLE_HANGOUT_SERVICES_EXTENSION)
-    bool install_feedback = enable_background_extensions_during_testing;
-#if defined(GOOGLE_CHROME_BUILD)
-    install_feedback = true;
-#endif  // defined(GOOGLE_CHROME_BUILD)
-    if (install_feedback)
-      Add(IDR_FEEDBACK_MANIFEST, base::FilePath(FILE_PATH_LITERAL("feedback")));
-  }
-
-#if defined(OS_CHROMEOS)
-  if (!skip_session_components) {
-#if defined(GOOGLE_CHROME_BUILD)
-    if (!command_line->HasSwitch(
-            chromeos::switches::kDisableOfficeEditingComponentApp)) {
-      std::string id = Add(IDR_QUICKOFFICE_MANIFEST, base::FilePath(
-          FILE_PATH_LITERAL("/usr/share/chromeos-assets/quickoffice")));
-      EnableFileSystemInGuestMode(id);
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+    if (!base::FeatureList::IsEnabled(
+            chromeos::features::kDisableOfficeEditingComponentApp)) {
+      Add(IDR_QUICKOFFICE_MANIFEST,
+          base::FilePath(
+              FILE_PATH_LITERAL("/usr/share/chromeos-assets/quickoffice")));
     }
 
-    if (base::FeatureList::IsEnabled(ash::features::kKioskNextShell)) {
-      Add(IDR_CONTAINED_HOME_MANIFEST,
-          base::FilePath(FILE_PATH_LITERAL("chromeos/contained_home")));
-    }
-#endif  // defined(GOOGLE_CHROME_BUILD)
+    // TODO(https://crbug.com/1005083): Force the off the record profile to be
+    // created to allow the virtual keyboard to work in guest mode.
+    if (!IsNormalSession())
+      ExtensionsBrowserClient::Get()->GetOffTheRecordContext(profile_);
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
     Add(IDR_ECHO_MANIFEST,
         base::FilePath(FILE_PATH_LITERAL("/usr/share/chromeos-assets/echo")));
@@ -578,15 +577,15 @@ void ComponentLoader::AddDefaultComponentExtensionsWithBackgroundPages(
 
     Add(IDR_ARC_SUPPORT_MANIFEST,
         base::FilePath(FILE_PATH_LITERAL("chromeos/arc_support")));
-  }
 #endif  // defined(OS_CHROMEOS)
+  }
 
-#if defined(GOOGLE_CHROME_BUILD)
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #if !defined(OS_CHROMEOS)  // http://crbug.com/314799
   AddNetworkSpeechSynthesisExtension();
 #endif
 
-#endif  // defined(GOOGLE_CHROME_BUILD)
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
   Add(IDR_CRYPTOTOKEN_MANIFEST,
       base::FilePath(FILE_PATH_LITERAL("cryptotoken")));
@@ -656,32 +655,16 @@ void ComponentLoader::AddChromeOsSpeechSynthesisExtensions() {
   AddComponentFromDir(
       base::FilePath(extension_misc::kGoogleSpeechSynthesisExtensionPath),
       extension_misc::kGoogleSpeechSynthesisExtensionId,
-      base::BindRepeating(&ComponentLoader::EnableFileSystemInGuestMode,
+      base::BindRepeating(&ComponentLoader::FinishLoadSpeechSynthesisExtension,
                           weak_factory_.GetWeakPtr(),
                           extension_misc::kGoogleSpeechSynthesisExtensionId));
 
   AddComponentFromDir(
       base::FilePath(extension_misc::kEspeakSpeechSynthesisExtensionPath),
       extension_misc::kEspeakSpeechSynthesisExtensionId,
-      base::RepeatingClosure());
-}
-
-void ComponentLoader::EnableFileSystemInGuestMode(const std::string& id) {
-  if (!IsNormalSession()) {
-    // TODO(dpolukhin): Hack to enable HTML5 temporary file system for
-    // the extension. Some component extensions don't work without temporary
-    // file system access. Make sure temporary file system is enabled in the off
-    // the record browser context (as that is the one used in guest session).
-    content::BrowserContext* off_the_record_context =
-        ExtensionsBrowserClient::Get()->GetOffTheRecordContext(profile_);
-    GURL site = content::SiteInstance::GetSiteForURL(
-        off_the_record_context, Extension::GetBaseURLFromExtensionId(id));
-    storage::FileSystemContext* file_system_context =
-        content::BrowserContext::GetStoragePartitionForSite(
-            off_the_record_context, site)
-            ->GetFileSystemContext();
-    file_system_context->EnableTemporaryFileSystemInIncognito();
-  }
+      base::BindRepeating(&ComponentLoader::FinishLoadSpeechSynthesisExtension,
+                          weak_factory_.GetWeakPtr(),
+                          extension_misc::kEspeakSpeechSynthesisExtensionId));
 }
 
 void ComponentLoader::FinishAddComponentFromDir(
@@ -708,6 +691,14 @@ void ComponentLoader::FinishAddComponentFromDir(
   CHECK_EQ(extension_id, actual_extension_id);
   if (!done_cb.is_null())
     done_cb.Run();
+}
+
+void ComponentLoader::FinishLoadSpeechSynthesisExtension(
+    const char* extension_id) {
+  // TODO(https://crbug.com/947305): mitigation for extension not awake after
+  // load.
+  extensions::ProcessManager::Get(profile_)->WakeEventPage(extension_id,
+                                                           base::DoNothing());
 }
 #endif
 

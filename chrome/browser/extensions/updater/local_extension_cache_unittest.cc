@@ -19,7 +19,7 @@
 #include "base/task/post_task.h"
 #include "base/values.h"
 #include "chrome/common/extensions/extension_constants.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
 #include "crypto/secure_hash.h"
 #include "crypto/sha2.h"
@@ -105,7 +105,7 @@ class LocalExtensionCacheTest : public testing::Test {
   }
 
  private:
-  content::TestBrowserThreadBundle thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
 
   base::ScopedTempDir cache_dir_;
   base::ScopedTempDir temp_dir_;
@@ -122,7 +122,7 @@ TEST_F(LocalExtensionCacheTest, Basic) {
 
   LocalExtensionCache cache(
       cache_dir, 1000, base::TimeDelta::FromDays(30),
-      base::CreateSequencedTaskRunnerWithTraits({base::MayBlock()}));
+      base::CreateSequencedTaskRunner({base::ThreadPool(), base::MayBlock()}));
   cache.SetCacheStatusPollingDelayForTests(base::TimeDelta());
 
   bool initialized = false;
@@ -170,7 +170,7 @@ TEST_F(LocalExtensionCacheTest, KeepHashed) {
 
   LocalExtensionCache cache(
       cache_dir, 1000, base::TimeDelta::FromDays(30),
-      base::CreateSequencedTaskRunnerWithTraits({base::MayBlock()}));
+      base::CreateSequencedTaskRunner({base::ThreadPool(), base::MayBlock()}));
   cache.SetCacheStatusPollingDelayForTests(base::TimeDelta());
 
   bool initialized = false;
@@ -207,7 +207,7 @@ TEST_F(LocalExtensionCacheTest, KeepLatest) {
 
   LocalExtensionCache cache(
       cache_dir, 1000, base::TimeDelta::FromDays(30),
-      base::CreateSequencedTaskRunnerWithTraits({base::MayBlock()}));
+      base::CreateSequencedTaskRunner({base::ThreadPool(), base::MayBlock()}));
   cache.SetCacheStatusPollingDelayForTests(base::TimeDelta());
 
   bool initialized = false;
@@ -243,7 +243,7 @@ TEST_F(LocalExtensionCacheTest, Complex) {
 
   LocalExtensionCache cache(
       cache_dir, 1000, base::TimeDelta::FromDays(30),
-      base::CreateSequencedTaskRunnerWithTraits({base::MayBlock()}));
+      base::CreateSequencedTaskRunner({base::ThreadPool(), base::MayBlock()}));
   cache.SetCacheStatusPollingDelayForTests(base::TimeDelta());
 
   bool initialized = false;
@@ -310,7 +310,7 @@ TEST_F(LocalExtensionCacheTest, PutExtensionCases) {
 
   LocalExtensionCache cache(
       cache_dir, 1000, base::TimeDelta::FromDays(30),
-      base::CreateSequencedTaskRunnerWithTraits({base::MayBlock()}));
+      base::CreateSequencedTaskRunner({base::ThreadPool(), base::MayBlock()}));
   cache.SetCacheStatusPollingDelayForTests(base::TimeDelta());
 
   bool initialized = false;

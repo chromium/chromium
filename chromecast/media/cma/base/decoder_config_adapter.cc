@@ -74,19 +74,6 @@ SampleFormat ToSampleFormat(const ::media::SampleFormat sample_format) {
   return kUnknownSampleFormat;
 }
 
-::media::ChannelLayout ToMediaChannelLayout(int channel_number) {
-  switch (channel_number) {
-    case 1:
-      return ::media::ChannelLayout::CHANNEL_LAYOUT_MONO;
-    case 2:
-      return ::media::ChannelLayout::CHANNEL_LAYOUT_STEREO;
-    case 6:
-      return ::media::ChannelLayout::CHANNEL_LAYOUT_5_1;
-    default:
-      return ::media::ChannelLayout::CHANNEL_LAYOUT_UNSUPPORTED;
-  }
-}
-
 ::media::SampleFormat ToMediaSampleFormat(const SampleFormat sample_format) {
   switch (sample_format) {
     case kUnknownSampleFormat:
@@ -143,63 +130,78 @@ SampleFormat ToSampleFormat(const ::media::SampleFormat sample_format) {
   }
 }
 
-::media::EncryptionScheme::CipherMode ToMediaCipherMode(
-    EncryptionScheme::CipherMode mode) {
-  switch (mode) {
-    case EncryptionScheme::CIPHER_MODE_UNENCRYPTED:
-      return ::media::EncryptionScheme::CIPHER_MODE_UNENCRYPTED;
-    case EncryptionScheme::CIPHER_MODE_AES_CTR:
-      return ::media::EncryptionScheme::CIPHER_MODE_AES_CTR;
-    case EncryptionScheme::CIPHER_MODE_AES_CBC:
-      return ::media::EncryptionScheme::CIPHER_MODE_AES_CBC;
+EncryptionScheme ToEncryptionScheme(::media::EncryptionScheme scheme) {
+  switch (scheme) {
+    case ::media::EncryptionScheme::kUnencrypted:
+      return EncryptionScheme::kUnencrypted;
+    case ::media::EncryptionScheme::kCenc:
+      return EncryptionScheme::kAesCtr;
+    case ::media::EncryptionScheme::kCbcs:
+      return EncryptionScheme::kAesCbc;
     default:
       NOTREACHED();
-      return ::media::EncryptionScheme::CIPHER_MODE_UNENCRYPTED;
+      return EncryptionScheme::kUnencrypted;
   }
 }
 
-EncryptionScheme::CipherMode ToCipherMode(
-    ::media::EncryptionScheme::CipherMode mode) {
-  switch (mode) {
-    case ::media::EncryptionScheme::CIPHER_MODE_UNENCRYPTED:
-      return EncryptionScheme::CIPHER_MODE_UNENCRYPTED;
-    case ::media::EncryptionScheme::CIPHER_MODE_AES_CTR:
-      return EncryptionScheme::CIPHER_MODE_AES_CTR;
-    case ::media::EncryptionScheme::CIPHER_MODE_AES_CBC:
-      return EncryptionScheme::CIPHER_MODE_AES_CBC;
+::media::EncryptionScheme ToMediaEncryptionScheme(EncryptionScheme scheme) {
+  switch (scheme) {
+    case EncryptionScheme::kUnencrypted:
+      return ::media::EncryptionScheme::kUnencrypted;
+    case EncryptionScheme::kAesCtr:
+      return ::media::EncryptionScheme::kCenc;
+    case EncryptionScheme::kAesCbc:
+      return ::media::EncryptionScheme::kCbcs;
     default:
       NOTREACHED();
-      return EncryptionScheme::CIPHER_MODE_UNENCRYPTED;
+      return ::media::EncryptionScheme::kUnencrypted;
   }
-}
-
-EncryptionScheme::Pattern ToPatternSpec(
-    const ::media::EncryptionPattern& pattern) {
-  return EncryptionScheme::Pattern(pattern.crypt_byte_block(),
-                                   pattern.skip_byte_block());
-}
-
-::media::EncryptionPattern ToMediaPatternSpec(
-    const EncryptionScheme::Pattern& pattern) {
-  return ::media::EncryptionPattern(pattern.encrypt_blocks,
-                                    pattern.skip_blocks);
-}
-
-EncryptionScheme ToEncryptionScheme(
-    const ::media::EncryptionScheme& scheme) {
-  return EncryptionScheme(
-    ToCipherMode(scheme.mode()),
-    ToPatternSpec(scheme.pattern()));
-}
-
-::media::EncryptionScheme ToMediaEncryptionScheme(
-    const EncryptionScheme& scheme) {
-  return ::media::EncryptionScheme(
-    ToMediaCipherMode(scheme.mode),
-    ToMediaPatternSpec(scheme.pattern));
 }
 
 }  // namespace
+
+// static
+ChannelLayout DecoderConfigAdapter::ToChannelLayout(
+    ::media::ChannelLayout channel_layout) {
+  switch (channel_layout) {
+    case ::media::ChannelLayout::CHANNEL_LAYOUT_UNSUPPORTED:
+      return ChannelLayout::UNSUPPORTED;
+    case ::media::ChannelLayout::CHANNEL_LAYOUT_MONO:
+      return ChannelLayout::MONO;
+    case ::media::ChannelLayout::CHANNEL_LAYOUT_STEREO:
+      return ChannelLayout::STEREO;
+    case ::media::ChannelLayout::CHANNEL_LAYOUT_5_1:
+    case ::media::ChannelLayout::CHANNEL_LAYOUT_5_1_BACK:
+      return ChannelLayout::SURROUND_5_1;
+    case ::media::ChannelLayout::CHANNEL_LAYOUT_BITSTREAM:
+      return ChannelLayout::BITSTREAM;
+
+    default:
+      NOTREACHED();
+      return ChannelLayout::UNSUPPORTED;
+  }
+}
+
+// static
+::media::ChannelLayout DecoderConfigAdapter::ToMediaChannelLayout(
+    ChannelLayout channel_layout) {
+  switch (channel_layout) {
+    case ChannelLayout::UNSUPPORTED:
+      return ::media::ChannelLayout::CHANNEL_LAYOUT_UNSUPPORTED;
+    case ChannelLayout::MONO:
+      return ::media::ChannelLayout::CHANNEL_LAYOUT_MONO;
+    case ChannelLayout::STEREO:
+      return ::media::ChannelLayout::CHANNEL_LAYOUT_STEREO;
+    case ChannelLayout::SURROUND_5_1:
+      return ::media::ChannelLayout::CHANNEL_LAYOUT_5_1;
+    case ChannelLayout::BITSTREAM:
+      return ::media::ChannelLayout::CHANNEL_LAYOUT_BITSTREAM;
+
+    default:
+      NOTREACHED();
+      return ::media::ChannelLayout::CHANNEL_LAYOUT_UNSUPPORTED;
+  }
+}
 
 // static
 AudioConfig DecoderConfigAdapter::ToCastAudioConfig(
@@ -213,12 +215,13 @@ AudioConfig DecoderConfigAdapter::ToCastAudioConfig(
   audio_config.codec = ToAudioCodec(config.codec());
   audio_config.sample_format = ToSampleFormat(config.sample_format());
   audio_config.bytes_per_channel = config.bytes_per_channel();
+  audio_config.channel_layout = ToChannelLayout(config.channel_layout());
   audio_config.channel_number =
       ::media::ChannelLayoutToChannelCount(config.channel_layout()),
   audio_config.samples_per_second = config.samples_per_second();
   audio_config.extra_data = config.extra_data();
-  audio_config.encryption_scheme = ToEncryptionScheme(
-      config.encryption_scheme());
+  audio_config.encryption_scheme =
+      ToEncryptionScheme(config.encryption_scheme());
 
 #if defined(OS_ANDROID)
   // On Android, Chromium's mp4 parser adds extra data for AAC, but we don't
@@ -236,9 +239,8 @@ AudioConfig DecoderConfigAdapter::ToCastAudioConfig(
   return ::media::AudioDecoderConfig(
       ToMediaAudioCodec(config.codec),
       ToMediaSampleFormat(config.sample_format),
-      ToMediaChannelLayout(config.channel_number), config.samples_per_second,
-      config.extra_data,
-      ToMediaEncryptionScheme(config.encryption_scheme));
+      ToMediaChannelLayout(config.channel_layout), config.samples_per_second,
+      config.extra_data, ToMediaEncryptionScheme(config.encryption_scheme));
 }
 
 // static

@@ -1,0 +1,15 @@
+<body></body>
+<script>
+function iframe_srcdoc_download() {
+  iframe = document.createElement("iframe");
+  iframe.srcdoc = `<body><iframe src='tiny_binary.bin'></iframe></body>`;
+  iframe.sandbox = "allow-scripts allow-downloads-without-user-activation";
+  iframe.height = "0";
+  iframe.width = "0";
+  iframe.scrolling = "no";
+  document.body.appendChild(iframe);
+}
+iframe_srcdoc_download();
+iframe_srcdoc_download();
+iframe_srcdoc_download();
+</script>

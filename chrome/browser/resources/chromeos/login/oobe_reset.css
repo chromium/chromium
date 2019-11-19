@@ -19,7 +19,6 @@ a {
 }
 
 #tpmFirmwareUpdate {
-  font: 13px Roboto, sans-serif;
   margin-bottom: 20px;
   margin-inline-start: 20px;
   margin-top: 23px; /* = 36 - font size */

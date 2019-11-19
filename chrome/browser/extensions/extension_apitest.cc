@@ -16,12 +16,12 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
+#include "chrome/browser/apps/app_service/app_launch_params.h"
+#include "chrome/browser/apps/launch_service/launch_service.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/unpacked_installer.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/extensions/app_launch_params.h"
-#include "chrome/browser/ui/extensions/application_launch.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/common/content_switches.h"
 #include "extensions/browser/api/test/test_api.h"
@@ -29,7 +29,6 @@
 #include "extensions/browser/extension_system.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
-#include "extensions/common/extension_features.h"
 #include "extensions/common/extension_paths.h"
 #include "extensions/common/extension_set.h"
 #include "extensions/common/feature_switch.h"
@@ -53,7 +52,6 @@ const char kTestDataDirectory[] = "testDataDirectory";
 const char kTestWebSocketPort[] = "testWebSocketPort";
 const char kFtpServerPort[] = "ftpServer.port";
 const char kEmbeddedTestServerPort[] = "testServer.port";
-const char kNativeCrxBindingsEnabled[] = "nativeCrxBindingsEnabled";
 
 }  // namespace
 
@@ -76,9 +74,7 @@ void ExtensionApiTest::SetUpOnMainThread() {
     test_config_->SetInteger(kEmbeddedTestServerPort,
                              embedded_test_server()->port());
   }
-  test_config_->SetBoolean(
-      kNativeCrxBindingsEnabled,
-      base::FeatureList::IsEnabled(extensions_features::kNativeCrxBindings));
+
   TestGetConfigFunction::set_test_config_state(test_config_.get());
 }
 
@@ -263,6 +259,13 @@ bool ExtensionApiTest::RunExtensionTestImpl(const std::string& extension_name,
         browser_test_flags |=
             ExtensionBrowserTest::kFlagAllowOldManifestVersions;
       }
+      if (flags & kFlagLoadForLoginScreen)
+        browser_test_flags |= ExtensionBrowserTest::kFlagLoadForLoginScreen;
+      if (flags & kFlagRunAsServiceWorkerBasedExtension) {
+        browser_test_flags |=
+            ExtensionBrowserTest::kFlagRunAsServiceWorkerBasedExtension;
+      }
+
       extension = LoadExtensionWithFlags(extension_path, browser_test_flags);
     }
     if (!extension) {
@@ -290,11 +293,11 @@ bool ExtensionApiTest::RunExtensionTestImpl(const std::string& extension_name,
     else
       ui_test_utils::NavigateToURL(browser(), url);
   } else if (launch_platform_app) {
-    AppLaunchParams params(browser()->profile(), extension,
-                           LAUNCH_CONTAINER_NONE,
-                           WindowOpenDisposition::NEW_WINDOW, SOURCE_TEST);
+    apps::AppLaunchParams params(
+        extension->id(), LaunchContainer::kLaunchContainerNone,
+        WindowOpenDisposition::NEW_WINDOW, AppLaunchSource::kSourceTest);
     params.command_line = *base::CommandLine::ForCurrentProcess();
-    OpenApplication(params);
+    apps::LaunchService::Get(browser()->profile())->OpenApplication(params);
   }
 
   if (!catcher.GetNextResult()) {

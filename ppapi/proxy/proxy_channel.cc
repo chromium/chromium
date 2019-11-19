@@ -71,15 +71,6 @@ IPC::PlatformFileForTransit ProxyChannel::ShareHandleWithRemote(
                                           should_close_source);
 }
 
-base::SharedMemoryHandle ProxyChannel::ShareSharedMemoryHandleWithRemote(
-    const base::SharedMemoryHandle& handle) {
-  if (!channel_.get())
-    return base::SharedMemoryHandle();
-
-  DCHECK(peer_pid_ != base::kNullProcessId);
-  return delegate_->ShareSharedMemoryHandleWithRemote(handle, peer_pid_);
-}
-
 base::UnsafeSharedMemoryRegion
 ProxyChannel::ShareUnsafeSharedMemoryRegionWithRemote(
     const base::UnsafeSharedMemoryRegion& region) {

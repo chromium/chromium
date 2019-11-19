@@ -19,6 +19,7 @@
 #include <sys/types.h>
 
 #include "base/macros.h"
+#include "base/numerics/safe_math.h"
 #include "snapshot/memory_snapshot.h"
 #include "util/misc/address_types.h"
 #include "util/misc/initialization_state_dcheck.h"
@@ -30,7 +31,6 @@ namespace internal {
 //! \brief A MemorySnapshot of a memory region in a process on the running
 //!     system. Used on Mac, Linux, Android, and Fuchsia, templated on the
 //!     platform-specific ProcessReader type.
-template <class ProcessReaderType>
 class MemorySnapshotGeneric final : public MemorySnapshot {
  public:
   MemorySnapshotGeneric() = default;
@@ -42,25 +42,25 @@ class MemorySnapshotGeneric final : public MemorySnapshot {
   //! until Read() is called, and the memory snapshot data is discared when
   //! Read() returns.
   //!
-  //! \param[in] process_reader A reader for the process being snapshotted.
+  //! \param[in] process_memory A reader for the process being snapshotted.
   //! \param[in] address The base address of the memory region to snapshot, in
   //!     the snapshot process’ address space.
   //! \param[in] size The size of the memory region to snapshot.
-  void Initialize(ProcessReaderType* process_reader,
+  void Initialize(const ProcessMemory* process_memory,
                   VMAddress address,
                   VMSize size) {
     INITIALIZATION_STATE_SET_INITIALIZING(initialized_);
-    process_reader_ = process_reader;
+    process_memory_ = process_memory;
     address_ = address;
-    size_ = size;
+    size_ = base::checked_cast<size_t>(size);
     INITIALIZATION_STATE_SET_VALID(initialized_);
   }
 
   // MemorySnapshot:
 
   uint64_t Address() const override {
-  INITIALIZATION_STATE_DCHECK_VALID(initialized_);
-  return address_;
+    INITIALIZATION_STATE_DCHECK_VALID(initialized_);
+    return address_;
   }
 
   size_t Size() const override {
@@ -76,7 +76,7 @@ class MemorySnapshotGeneric final : public MemorySnapshot {
     }
 
     std::unique_ptr<uint8_t[]> buffer(new uint8_t[size_]);
-    if (!process_reader_->Memory()->Read(address_, size_, buffer.get())) {
+    if (!process_memory_->Read(address_, size_, buffer.get())) {
       return false;
     }
     return delegate->MemorySnapshotDelegateRead(buffer.get(), size_);
@@ -84,7 +84,19 @@ class MemorySnapshotGeneric final : public MemorySnapshot {
 
   const MemorySnapshot* MergeWithOtherSnapshot(
       const MemorySnapshot* other) const override {
-    return MergeWithOtherSnapshotImpl(this, other);
+    const MemorySnapshotGeneric* other_as_memory_snapshot_concrete =
+        reinterpret_cast<const MemorySnapshotGeneric*>(other);
+    if (process_memory_ != other_as_memory_snapshot_concrete->process_memory_) {
+      LOG(ERROR) << "different process_memory_ for snapshots";
+      return nullptr;
+    }
+    CheckedRange<uint64_t, size_t> merged(0, 0);
+    if (!LoggingDetermineMergedRange(this, other, &merged))
+      return nullptr;
+
+    auto result = std::make_unique<MemorySnapshotGeneric>();
+    result->Initialize(process_memory_, merged.base(), merged.size());
+    return result.release();
   }
 
  private:
@@ -93,9 +105,9 @@ class MemorySnapshotGeneric final : public MemorySnapshot {
       const T* self,
       const MemorySnapshot* other);
 
-  ProcessReaderType* process_reader_;  // weak
-  uint64_t address_;
-  uint64_t size_;
+  const ProcessMemory* process_memory_;  // weak
+  VMAddress address_;
+  size_t size_;
   InitializationStateDcheck initialized_;
 
   DISALLOW_COPY_AND_ASSIGN(MemorySnapshotGeneric);

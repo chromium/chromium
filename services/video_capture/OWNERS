@@ -1,6 +1,8 @@
-# TEAM: media-capture-and-streams@grotations.appspotmail.com
-# COMPONENT: Blink>GetUserMedia
+guidou@chromium.org
 
+# Original (legacy) owners.
 chfremer@chromium.org
-emircan@chromium.org
-mcasas@chromium.org
+per-file *video*=mcasas@chromium.org
+
+# COMPONENT: Blink>GetUserMedia
+# TEAM: webrtc-dev@chromium.org

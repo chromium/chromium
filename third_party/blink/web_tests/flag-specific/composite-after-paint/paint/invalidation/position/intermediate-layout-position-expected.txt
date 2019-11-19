@@ -1,0 +1,23 @@
+{
+  "layers": [
+    {
+      "name": "Scrolling background of LayoutView #document",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF",
+      "paintInvalidations": [
+        {
+          "object": "LayoutTable TABLE",
+          "rect": [8, 172, 46, 20],
+          "reason": "incremental"
+        },
+        {
+          "object": "LayoutNGBlockFlow DIV",
+          "rect": [8, 74, 46, 20],
+          "reason": "incremental"
+        }
+      ]
+    }
+  ]
+}
+

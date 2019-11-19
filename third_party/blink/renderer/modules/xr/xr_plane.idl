@@ -1,0 +1,24 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+enum XRPlaneOrientation {
+    "horizontal",
+    "vertical"
+};
+
+// More details about the plane detection API can be found here:
+// https://github.com/immersive-web/real-world-geometry/blob/master/plane-detection-explainer.md
+[
+    SecureContext,
+    Exposed=Window,
+    RuntimeEnabled=WebXRPlaneDetection
+]
+interface XRPlane {
+    readonly attribute XRSpace planeSpace;
+    readonly attribute FrozenArray<DOMPointReadOnly> polygon;
+    readonly attribute XRPlaneOrientation? orientation;
+    readonly attribute DOMHighResTimeStamp lastChangedTime;
+
+    [RuntimeEnabled=WebXRAnchors, CallWith=ScriptState, RaisesException] Promise<XRAnchor> createAnchor(XRRigidTransform initial_pose, XRSpace space);
+};

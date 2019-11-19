@@ -7,6 +7,10 @@
 
 #include "services/media_session/public/mojom/audio_focus.mojom.h"
 
+namespace base {
+class UnguessableToken;
+}  // namespace base
+
 namespace content {
 
 class MediaSessionImpl;
@@ -38,6 +42,9 @@ class AudioFocusDelegate {
   // |MediaSession| should call this when it's state changes.
   virtual void MediaSessionInfoChanged(
       media_session::mojom::MediaSessionInfoPtr) = 0;
+
+  // Retrieves the current request ID for the associated |MediaSession|.
+  virtual const base::UnguessableToken& request_id() const = 0;
 };
 
 }  // namespace content

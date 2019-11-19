@@ -10,8 +10,6 @@ component("base") {
 
   sources = [
     "device_base_export.h",
-    "device_client.cc",
-    "device_client.h",
     "device_info_query_win.cc",
     "device_info_query_win.h",
     "device_monitor_win.cc",
@@ -42,18 +40,4 @@ component("base") {
   if (is_win) {
     libs = [ "setupapi.lib" ]
   }
-}
-
-source_set("mocks") {
-  testonly = true
-
-  sources = [
-    "mock_device_client.cc",
-    "mock_device_client.h",
-  ]
-
-  deps = [
-    ":base",
-    "//device/usb:test_support",
-  ]
 }

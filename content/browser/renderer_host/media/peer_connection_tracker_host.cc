@@ -4,95 +4,56 @@
 
 #include "content/browser/renderer_host/media/peer_connection_tracker_host.h"
 
+#include <utility>
+
 #include "base/bind.h"
 #include "base/power_monitor/power_monitor.h"
 #include "base/task/post_task.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/browser/webrtc/webrtc_internals.h"
-#include "content/common/media/peer_connection_tracker_messages.h"
-#include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/webrtc_event_logger.h"
 
 namespace content {
 
-PeerConnectionTrackerHost::PeerConnectionTrackerHost(int render_process_id)
-    : BrowserMessageFilter(PeerConnectionTrackerMsgStart),
-      BrowserAssociatedInterface<mojom::PeerConnectionTrackerHost>(this, this),
-      render_process_id_(render_process_id) {}
-
-bool PeerConnectionTrackerHost::OnMessageReceived(const IPC::Message& message) {
-  bool handled = true;
-
-  IPC_BEGIN_MESSAGE_MAP(PeerConnectionTrackerHost, message)
-    IPC_MESSAGE_HANDLER(PeerConnectionTrackerHost_AddPeerConnection,
-                        OnAddPeerConnection)
-    IPC_MESSAGE_HANDLER(PeerConnectionTrackerHost_AddStats, OnAddStats)
-    IPC_MESSAGE_UNHANDLED(handled = false)
-  IPC_END_MESSAGE_MAP()
-  return handled;
-}
-
-void PeerConnectionTrackerHost::OverrideThreadForMessage(
-    const IPC::Message& message, BrowserThread::ID* thread) {
-  if (IPC_MESSAGE_CLASS(message) == PeerConnectionTrackerMsgStart)
-    *thread = BrowserThread::UI;
+PeerConnectionTrackerHost::PeerConnectionTrackerHost(RenderProcessHost* rph)
+    : render_process_id_(rph->GetID()), peer_pid_(rph->GetProcess().Pid()) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  base::PowerMonitor::AddObserver(this);
+  rph->BindReceiver(tracker_.BindNewPipeAndPassReceiver());
 }
 
 PeerConnectionTrackerHost::~PeerConnectionTrackerHost() {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  base::PowerMonitor::RemoveObserver(this);
 }
 
-void PeerConnectionTrackerHost::OnChannelConnected(int32_t peer_pid) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  // Add PowerMonitor when connected to channel rather than in constructor due
-  // to thread safety concerns. Observers of PowerMonitor must be added and
-  // removed on the same thread. BrowserMessageFilter is created on the UI
-  // thread but can be destructed on the UI or IO thread because they are
-  // referenced by RenderProcessHostImpl on the UI thread and ChannelProxy on
-  // the IO thread. Using OnChannelConnected and OnChannelClosing guarantees
-  // execution on the IO thread.
-  base::PowerMonitor* power_monitor = base::PowerMonitor::Get();
-  if (power_monitor)
-    power_monitor->AddObserver(this);
-}
-
-void PeerConnectionTrackerHost::OnChannelClosing() {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  base::PowerMonitor* power_monitor = base::PowerMonitor::Get();
-  if (power_monitor)
-    power_monitor->RemoveObserver(this);
-}
-
-void PeerConnectionTrackerHost::OnAddPeerConnection(
-    const PeerConnectionInfo& info) {
+void PeerConnectionTrackerHost::AddPeerConnection(
+    blink::mojom::PeerConnectionInfoPtr info) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   WebRTCInternals* webrtc_internals = WebRTCInternals::GetInstance();
   if (webrtc_internals) {
     webrtc_internals->OnAddPeerConnection(
-        render_process_id_, peer_pid(), info.lid, info.url,
-        info.rtc_configuration, info.constraints);
+        render_process_id_, peer_pid_, info->lid, info->url,
+        info->rtc_configuration, info->constraints);
   }
 
-  WebRtcEventLogger* const logger = WebRtcEventLogger::Get();
+  WebRtcEventLogger* logger = WebRtcEventLogger::Get();
   if (logger) {
-    logger->PeerConnectionAdded(render_process_id_, info.lid,
+    logger->PeerConnectionAdded(render_process_id_, info->lid,
                                 base::OnceCallback<void(bool)>());
   }
 }
 
 void PeerConnectionTrackerHost::RemovePeerConnection(int lid) {
-  if (!BrowserThread::CurrentlyOn(BrowserThread::UI)) {
-    base::PostTaskWithTraits(
-        FROM_HERE, {BrowserThread::UI},
-        base::BindOnce(&PeerConnectionTrackerHost::RemovePeerConnection, this,
-                       lid));
-    return;
-  }
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
   WebRTCInternals* webrtc_internals = WebRTCInternals::GetInstance();
   if (webrtc_internals) {
-    webrtc_internals->OnRemovePeerConnection(peer_pid(), lid);
+    webrtc_internals->OnRemovePeerConnection(peer_pid_, lid);
   }
-  WebRtcEventLogger* const logger = WebRtcEventLogger::Get();
+  WebRtcEventLogger* logger = WebRtcEventLogger::Get();
   if (logger) {
     logger->PeerConnectionRemoved(render_process_id_, lid,
                                   base::OnceCallback<void(bool)>());
@@ -102,16 +63,11 @@ void PeerConnectionTrackerHost::RemovePeerConnection(int lid) {
 void PeerConnectionTrackerHost::UpdatePeerConnection(int lid,
                                                      const std::string& type,
                                                      const std::string& value) {
-  if (!BrowserThread::CurrentlyOn(BrowserThread::UI)) {
-    base::PostTaskWithTraits(
-        FROM_HERE, {BrowserThread::UI},
-        base::BindOnce(&PeerConnectionTrackerHost::UpdatePeerConnection, this,
-                       lid, type, value));
-    return;
-  }
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
   // TODO(eladalon): Get rid of magic value. https://crbug.com/810383
   if (type == "stop") {
-    WebRtcEventLogger* const logger = WebRtcEventLogger::Get();
+    WebRtcEventLogger* logger = WebRtcEventLogger::Get();
     if (logger) {
       logger->PeerConnectionStopped(render_process_id_, lid,
                                     base::OnceCallback<void(bool)>());
@@ -120,35 +76,36 @@ void PeerConnectionTrackerHost::UpdatePeerConnection(int lid,
 
   WebRTCInternals* webrtc_internals = WebRTCInternals::GetInstance();
   if (webrtc_internals) {
-    webrtc_internals->OnUpdatePeerConnection(peer_pid(), lid, type, value);
+    webrtc_internals->OnUpdatePeerConnection(peer_pid_, lid, type, value);
   }
 }
 
 void PeerConnectionTrackerHost::OnPeerConnectionSessionIdSet(
     int lid,
     const std::string& session_id) {
-  if (!BrowserThread::CurrentlyOn(BrowserThread::UI)) {
-    base::PostTaskWithTraits(
-        FROM_HERE, {BrowserThread::UI},
-        base::BindOnce(&PeerConnectionTrackerHost::OnPeerConnectionSessionIdSet,
-                       this, lid, session_id));
-    return;
-  }
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  WebRtcEventLogger* const logger = WebRtcEventLogger::Get();
-  if (!logger) {
-    return;
+  WebRtcEventLogger* logger = WebRtcEventLogger::Get();
+  if (logger) {
+    logger->PeerConnectionSessionIdSet(render_process_id_, lid, session_id,
+                                       base::OnceCallback<void(bool)>());
   }
-  logger->PeerConnectionSessionIdSet(render_process_id_, lid, session_id,
-                                     base::OnceCallback<void(bool)>());
 }
 
-void PeerConnectionTrackerHost::OnAddStats(int lid,
-                                           const base::ListValue& value) {
+void PeerConnectionTrackerHost::AddStandardStats(int lid, base::Value value) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
   WebRTCInternals* webrtc_internals = WebRTCInternals::GetInstance();
-  if (webrtc_internals) {
-    webrtc_internals->OnAddStats(peer_pid(), lid, value);
-  }
+  if (webrtc_internals)
+    webrtc_internals->OnAddStandardStats(peer_pid_, lid, std::move(value));
+}
+
+void PeerConnectionTrackerHost::AddLegacyStats(int lid, base::Value value) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  WebRTCInternals* webrtc_internals = WebRTCInternals::GetInstance();
+  if (webrtc_internals)
+    webrtc_internals->OnAddLegacyStats(peer_pid_, lid, std::move(value));
 }
 
 void PeerConnectionTrackerHost::GetUserMedia(
@@ -157,16 +114,11 @@ void PeerConnectionTrackerHost::GetUserMedia(
     bool video,
     const std::string& audio_constraints,
     const std::string& video_constraints) {
-  if (!BrowserThread::CurrentlyOn(BrowserThread::UI)) {
-    base::PostTaskWithTraits(
-        FROM_HERE, {BrowserThread::UI},
-        base::BindOnce(&PeerConnectionTrackerHost::GetUserMedia, this, origin,
-                       audio, video, audio_constraints, video_constraints));
-    return;
-  }
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
   WebRTCInternals* webrtc_internals = WebRTCInternals::GetInstance();
   if (webrtc_internals) {
-    webrtc_internals->OnGetUserMedia(render_process_id_, peer_pid(), origin,
+    webrtc_internals->OnGetUserMedia(render_process_id_, peer_pid_, origin,
                                      audio, video, audio_constraints,
                                      video_constraints);
   }
@@ -174,14 +126,9 @@ void PeerConnectionTrackerHost::GetUserMedia(
 
 void PeerConnectionTrackerHost::WebRtcEventLogWrite(int lid,
                                                     const std::string& output) {
-  if (!BrowserThread::CurrentlyOn(BrowserThread::UI)) {
-    base::PostTaskWithTraits(
-        FROM_HERE, {BrowserThread::UI},
-        base::BindOnce(&PeerConnectionTrackerHost::WebRtcEventLogWrite, this,
-                       lid, output));
-    return;
-  }
-  WebRtcEventLogger* const logger = WebRtcEventLogger::Get();
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  WebRtcEventLogger* logger = WebRtcEventLogger::Get();
   if (logger) {
     logger->OnWebRtcEventLogWrite(
         render_process_id_, lid, output,
@@ -190,18 +137,36 @@ void PeerConnectionTrackerHost::WebRtcEventLogWrite(int lid,
 }
 
 void PeerConnectionTrackerHost::OnSuspend() {
-  base::PostTaskWithTraits(
-      FROM_HERE, {BrowserThread::UI},
-      base::BindOnce(&PeerConnectionTrackerHost::SendOnSuspendOnUIThread,
-                     this));
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  tracker_->OnSuspend();
 }
 
-void PeerConnectionTrackerHost::SendOnSuspendOnUIThread() {
+void PeerConnectionTrackerHost::StartEventLog(int lid, int output_period_ms) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  content::RenderProcessHost* host =
-      content::RenderProcessHost::FromID(render_process_id_);
-  if (host)
-    host->Send(new PeerConnectionTracker_OnSuspend());
+  tracker_->StartEventLog(lid, output_period_ms);
+}
+
+void PeerConnectionTrackerHost::StopEventLog(int lid) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  tracker_->StopEventLog(lid);
+}
+
+void PeerConnectionTrackerHost::GetStandardStats() {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  tracker_->GetStandardStats();
+}
+
+void PeerConnectionTrackerHost::GetLegacyStats() {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  tracker_->GetLegacyStats();
+}
+
+void PeerConnectionTrackerHost::BindReceiver(
+    mojo::PendingReceiver<blink::mojom::PeerConnectionTrackerHost>
+        pending_receiver) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  receiver_.reset();
+  receiver_.Bind(std::move(pending_receiver));
 }
 
 }  // namespace content

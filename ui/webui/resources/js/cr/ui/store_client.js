@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// #import {assertNotReached} from '../../assert.m.js';
+// #import {Action, DeferredAction} from './store.m.js';
+
 cr.define('cr.ui', function() {
   /**
    * StoreClient is a Polymer behavior which ties front-end elements to
@@ -22,7 +25,7 @@ cr.define('cr.ui', function() {
    *
    * @polymerBehavior
    */
-  const StoreClient = {
+  /* #export */ const StoreClient = {
     created: function() {
       /**
        * @type {!Array<{
@@ -79,7 +82,7 @@ cr.define('cr.ui', function() {
       this.getStore().dispatchAsync(action);
     },
 
-    /** @param {string} newState */
+    /** @param {Object} newState */
     onStateChanged: function(newState) {
       this.watches_.forEach((watch) => {
         const oldValue = this[watch.localProperty];
@@ -131,6 +134,7 @@ cr.define('cr.ui', function() {
     },
   };
 
+  // #cr_define_end
   return {
     StoreClient: StoreClient,
   };

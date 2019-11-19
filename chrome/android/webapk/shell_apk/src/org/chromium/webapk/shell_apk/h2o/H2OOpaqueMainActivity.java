@@ -9,6 +9,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.os.SystemClock;
 
 /**
  * Launches {@link SplashActivity}. SplashActivity does not handle android.intent.action.MAIN
@@ -23,16 +24,19 @@ public class H2OOpaqueMainActivity extends Activity {
         PackageManager pm = context.getPackageManager();
         ComponentName component = new ComponentName(context, H2OOpaqueMainActivity.class);
         int enabledSetting = pm.getComponentEnabledSetting(component);
-        // Component is disabled by default.
-        return enabledSetting == PackageManager.COMPONENT_ENABLED_STATE_ENABLED;
+        // Component is enabled by default.
+        return enabledSetting == PackageManager.COMPONENT_ENABLED_STATE_ENABLED
+                || enabledSetting == PackageManager.COMPONENT_ENABLED_STATE_DEFAULT;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        final long launchTimeMs = SystemClock.elapsedRealtime();
         super.onCreate(savedInstanceState);
         Context appContext = getApplicationContext();
         overridePendingTransition(0, 0);
-        H2OLauncher.copyIntentExtrasAndLaunch(
-                appContext, getIntent(), null, new ComponentName(appContext, SplashActivity.class));
+        H2OLauncher.copyIntentExtrasAndLaunch(appContext, getIntent(), null, launchTimeMs,
+                new ComponentName(appContext, SplashActivity.class));
+        finish();
     }
 }

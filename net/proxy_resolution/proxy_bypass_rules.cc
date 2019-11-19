@@ -39,10 +39,9 @@ const char kBypassSimpleHostnames[] = "<local>";
 
 bool IsLinkLocalIP(const GURL& url) {
   // Quick fail if definitely not link-local, to avoid doing unnecessary work in
-  // common case. The |url| should be canonicalized, which for IPv6 literals
-  // means lowercase.
+  // common case.
   if (!(url.host_piece().starts_with("169.254.") ||
-        url.host_piece().starts_with("[fe"))) {
+        url.host_piece().starts_with("["))) {
     return false;
   }
 
@@ -51,6 +50,26 @@ bool IsLinkLocalIP(const GURL& url) {
     return false;
 
   return ip_address.IsLinkLocal();
+}
+
+// Returns true if the URL's host is an IPv6 literal in the range
+// [::ffff:127.0.0.1]/104.
+//
+// Note that net::IsLocalhost() does not currently return true for such
+// addresses. However for proxy resolving such URLs should bypass the use
+// of a PAC script, since the destination is local.
+bool IsIPv4MappedLoopback(const GURL& url) {
+  if (!url.host_piece().starts_with("[::ffff"))
+    return false;
+
+  IPAddress ip_address;
+  if (!ip_address.AssignFromIPLiteral(url.HostNoBracketsPiece()))
+    return false;
+
+  if (!ip_address.IsIPv4MappedIPv6())
+    return false;
+
+  return ip_address.bytes()[12] == 127;
 }
 
 class HostnamePatternRule : public ProxyBypassRules::Rule {
@@ -270,6 +289,8 @@ std::unique_ptr<ProxyBypassRules::Rule> ParseRule(
 
 }  // namespace
 
+constexpr char net::ProxyBypassRules::kBypassListDelimeter[];
+
 ProxyBypassRules::Rule::Rule() = default;
 
 ProxyBypassRules::Rule::~Rule() = default;
@@ -403,7 +424,7 @@ std::string ProxyBypassRules::ToString() const {
   std::string result;
   for (auto rule(rules_.begin()); rule != rules_.end(); ++rule) {
     result += (*rule)->ToString();
-    result += ";";
+    result += kBypassListDelimeter;
   }
   return result;
 }
@@ -442,7 +463,7 @@ bool ProxyBypassRules::MatchesImplicitRules(const GURL& url) {
   //     127.0.0.1/8
   //     169.254/16
   //     [FE80::]/10
-  return net::IsLocalhost(url) ||
+  return IsLocalhost(url) || IsIPv4MappedLoopback(url) ||
          IsLinkLocalIP(url)
 #if defined(OS_WIN)
          // See http://crbug.com/904889

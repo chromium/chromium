@@ -19,7 +19,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "google_apis/drive/task_util.h"
 #include "storage/browser/blob/shareable_file_reference.h"
-#include "storage/browser/fileapi/file_system_context.h"
+#include "storage/browser/file_system/file_system_context.h"
 #include "third_party/cros_system_api/constants/cryptohome.h"
 
 namespace file_manager {
@@ -53,8 +53,9 @@ void ComputeSpaceNeedToBeFreedAfterGetMetadata(
     return;
   }
 
-  base::PostTaskWithTraitsAndReplyWithResult(
-      FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_BLOCKING},
+  base::PostTaskAndReplyWithResult(
+      FROM_HERE,
+      {base::ThreadPool(), base::MayBlock(), base::TaskPriority::USER_BLOCKING},
       base::BindOnce(&ComputeSpaceNeedToBeFreedAfterGetMetadataAsync, path,
                      file_info.size),
       std::move(callback));
@@ -81,7 +82,7 @@ void ComputeSpaceNeedToBeFreed(
     const storage::FileSystemURL& url,
     GetNecessaryFreeSpaceCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  base::PostTaskWithTraits(
+  base::PostTask(
       FROM_HERE, {content::BrowserThread::IO},
       base::BindOnce(&GetMetadataOnIOThread, profile->GetPath(), context, url,
                      google_apis::CreateRelayCallback(std::move(callback))));
@@ -183,9 +184,7 @@ void SnapshotManager::FileRefsHolder::OnCreateSnapshotFile(
 }
 
 SnapshotManager::SnapshotManager(Profile* profile)
-    : profile_(profile),
-      holder_(base::MakeRefCounted<FileRefsHolder>()),
-      weak_ptr_factory_(this) {}
+    : profile_(profile), holder_(base::MakeRefCounted<FileRefsHolder>()) {}
 
 SnapshotManager::~SnapshotManager() = default;
 
@@ -222,7 +221,7 @@ void SnapshotManager::CreateManagedSnapshotAfterSpaceComputed(
   DCHECK(context.get());
 
   // Free up space if needed and start creating the snapshot.
-  base::PostTaskWithTraits(
+  base::PostTask(
       FROM_HERE, {content::BrowserThread::IO},
       base::BindOnce(&FileRefsHolder::FreeSpaceAndCreateSnapshotFile, holder_,
                      context, filesystem_url, needed_space,

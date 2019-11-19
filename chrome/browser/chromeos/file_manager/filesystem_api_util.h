@@ -14,7 +14,7 @@
 
 #include "base/callback_forward.h"
 #include "base/optional.h"
-#include "storage/common/fileapi/file_system_types.h"
+#include "storage/common/file_system/file_system_types.h"
 
 class Profile;
 

@@ -1,0 +1,14 @@
+document
+++button Name='Button1'
+++button Name='Button2' Toggle.ToggleState='On'
+++button Name='Button3' Toggle.ToggleState='Off'
+++menu Name='Button4' ExpandCollapse.ExpandCollapseState='Collapsed'
+++button Name='Button5'
+++button Name='Complex button '
+++++textbox
+++button Name='Complex toggle button ' Toggle.ToggleState='On'
+++++description Name='Complex toggle button '
+++++textbox
+++menu Name='Complex pop up button ' ExpandCollapse.ExpandCollapseState='Collapsed'
+++++description Name='Complex pop up button '
+++++textbox

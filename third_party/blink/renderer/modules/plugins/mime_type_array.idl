@@ -18,7 +18,10 @@
     Boston, MA 02110-1301, USA.
 */
 
+// https://html.spec.whatwg.org/multipage/system-state.html#mimetypearray
+
 [
+    Exposed=Window,
     ImplementedAs=DOMMimeTypeArray,
     LegacyUnenumerableNamedProperties
 ] interface MimeTypeArray {

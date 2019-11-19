@@ -7,15 +7,13 @@
 #include <memory>
 
 #include "base/command_line.h"
-#include "base/feature_list.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/crash_keys.h"
 #include "chrome/grit/renderer_resources.h"
-#include "chrome/renderer/extensions/app_bindings.h"
+#include "chrome/renderer/extensions/accessibility_private_hooks_delegate.h"
 #include "chrome/renderer/extensions/app_hooks_delegate.h"
-#include "chrome/renderer/extensions/automation_internal_custom_bindings.h"
 #include "chrome/renderer/extensions/cast_streaming_native_handler.h"
 #include "chrome/renderer/extensions/extension_hooks_delegate.h"
 #include "chrome/renderer/extensions/media_galleries_custom_bindings.h"
@@ -29,15 +27,12 @@
 #include "content/public/renderer/render_view.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
-#include "extensions/common/extension_features.h"
 #include "extensions/common/features/feature_channel.h"
 #include "extensions/common/permissions/manifest_permission_set.h"
 #include "extensions/common/permissions/permission_set.h"
 #include "extensions/common/switches.h"
 #include "extensions/renderer/bindings/api_bindings_system.h"
-#include "extensions/renderer/css_native_handler.h"
 #include "extensions/renderer/dispatcher.h"
-#include "extensions/renderer/i18n_custom_bindings.h"
 #include "extensions/renderer/lazy_background_page_native_handler.h"
 #include "extensions/renderer/native_extension_bindings_system.h"
 #include "extensions/renderer/native_handler.h"
@@ -56,20 +51,15 @@
 
 using extensions::NativeHandler;
 
-ChromeExtensionsDispatcherDelegate::ChromeExtensionsDispatcherDelegate() {
-}
+ChromeExtensionsDispatcherDelegate::ChromeExtensionsDispatcherDelegate() {}
 
-ChromeExtensionsDispatcherDelegate::~ChromeExtensionsDispatcherDelegate() {
-}
+ChromeExtensionsDispatcherDelegate::~ChromeExtensionsDispatcherDelegate() {}
 
 void ChromeExtensionsDispatcherDelegate::RegisterNativeHandlers(
     extensions::Dispatcher* dispatcher,
     extensions::ModuleSystem* module_system,
-    extensions::ExtensionBindingsSystem* bindings_system,
+    extensions::NativeExtensionBindingsSystem* bindings_system,
     extensions::ScriptContext* context) {
-  module_system->RegisterNativeHandler(
-      "app", std::unique_ptr<NativeHandler>(
-                 new extensions::AppBindings(dispatcher, context)));
   module_system->RegisterNativeHandler(
       "sync_file_system",
       std::unique_ptr<NativeHandler>(
@@ -103,10 +93,6 @@ void ChromeExtensionsDispatcherDelegate::RegisterNativeHandlers(
       "cast_streaming_natives",
       std::make_unique<extensions::CastStreamingNativeHandler>(
           context, bindings_system));
-  module_system->RegisterNativeHandler(
-      "automationInternal",
-      std::make_unique<extensions::AutomationInternalCustomBindings>(
-          context, bindings_system));
 
   // The following are native handlers that are defined in //extensions, but
   // are only used for APIs defined in Chrome.
@@ -114,23 +100,15 @@ void ChromeExtensionsDispatcherDelegate::RegisterNativeHandlers(
   // there's no reason to have its native handlers residing and being compiled
   // in //extensions.
   module_system->RegisterNativeHandler(
-      "i18n", std::unique_ptr<NativeHandler>(
-                  new extensions::I18NCustomBindings(context)));
-  module_system->RegisterNativeHandler(
       "lazy_background_page",
       std::unique_ptr<NativeHandler>(
           new extensions::LazyBackgroundPageNativeHandler(context)));
-  module_system->RegisterNativeHandler(
-      "css_natives", std::unique_ptr<NativeHandler>(
-                         new extensions::CssNativeHandler(context)));
 }
 
 void ChromeExtensionsDispatcherDelegate::PopulateSourceMap(
     extensions::ResourceBundleSourceMap* source_map) {
   // Custom bindings.
-  source_map->RegisterSource("automation", IDR_AUTOMATION_CUSTOM_BINDINGS_JS);
-  source_map->RegisterSource("automationEvent", IDR_AUTOMATION_EVENT_JS);
-  source_map->RegisterSource("automationNode", IDR_AUTOMATION_NODE_JS);
+  source_map->RegisterSource("action", IDR_ACTION_CUSTOM_BINDINGS_JS);
   source_map->RegisterSource("browserAction",
                              IDR_BROWSER_ACTION_CUSTOM_BINDINGS_JS);
   source_map->RegisterSource("declarativeContent",
@@ -223,13 +201,13 @@ void ChromeExtensionsDispatcherDelegate::PopulateSourceMap(
 
   // Media router.
   source_map->RegisterSource(
-      "chrome/common/media_router/mojo/media_controller.mojom",
+      "chrome/common/media_router/mojom/media_controller.mojom",
       IDR_MEDIA_CONTROLLER_MOJOM_JS);
   source_map->RegisterSource(
-      "chrome/common/media_router/mojo/media_router.mojom",
+      "chrome/common/media_router/mojom/media_router.mojom",
       IDR_MEDIA_ROUTER_MOJOM_JS);
   source_map->RegisterSource(
-      "chrome/common/media_router/mojo/media_status.mojom",
+      "chrome/common/media_router/mojom/media_status.mojom",
       IDR_MEDIA_STATUS_MOJOM_JS);
   source_map->RegisterSource("media_router_bindings",
                              IDR_MEDIA_ROUTER_BINDINGS_JS);
@@ -243,10 +221,10 @@ void ChromeExtensionsDispatcherDelegate::PopulateSourceMap(
                              IDR_MOJO_IP_ENDPOINT_MOJOM_JS);
   source_map->RegisterSource("url/mojom/origin.mojom", IDR_ORIGIN_MOJOM_JS);
   source_map->RegisterSource("url/mojom/url.mojom", IDR_MOJO_URL_MOJOM_JS);
-  source_map->RegisterSource("media/mojo/interfaces/remoting_common.mojom",
+  source_map->RegisterSource("media/mojo/mojom/remoting_common.mojom",
                              IDR_REMOTING_COMMON_JS);
   source_map->RegisterSource(
-      "media/mojo/interfaces/mirror_service_remoting.mojom",
+      "media/mojo/mojom/mirror_service_remoting.mojom",
       IDR_MEDIA_REMOTING_JS);
   source_map->RegisterSource(
       "components/mirroring/mojom/mirroring_service_host.mojom",
@@ -260,18 +238,6 @@ void ChromeExtensionsDispatcherDelegate::PopulateSourceMap(
   source_map->RegisterSource(
       "components/mirroring/mojom/session_parameters.mojom",
       IDR_MIRRORING_SESSION_PARAMETERS_JS);
-
-  // These bindings are unnecessary with native bindings enabled.
-  if (!base::FeatureList::IsEnabled(extensions_features::kNativeCrxBindings)) {
-    source_map->RegisterSource("app", IDR_APP_CUSTOM_BINDINGS_JS);
-    source_map->RegisterSource("tabs", IDR_TABS_CUSTOM_BINDINGS_JS);
-
-    // Custom types sources.
-    source_map->RegisterSource("ChromeSetting", IDR_CHROME_SETTING_JS);
-    source_map->RegisterSource("ContentSetting", IDR_CONTENT_SETTING_JS);
-    source_map->RegisterSource("EasyUnlockProximityRequired",
-                               IDR_EASY_UNLOCK_PROXIMITY_REQUIRED_JS);
-  }
 }
 
 void ChromeExtensionsDispatcherDelegate::RequireWebViewModules(
@@ -292,7 +258,6 @@ void ChromeExtensionsDispatcherDelegate::OnActiveExtensionsUpdated(
 void ChromeExtensionsDispatcherDelegate::InitializeBindingsSystem(
     extensions::Dispatcher* dispatcher,
     extensions::NativeExtensionBindingsSystem* bindings_system) {
-  DCHECK(base::FeatureList::IsEnabled(extensions_features::kNativeCrxBindings));
   extensions::APIBindingsSystem* bindings = bindings_system->api_system();
   bindings->GetHooksForAPI("app")->SetDelegate(
       std::make_unique<extensions::AppHooksDelegate>(
@@ -303,4 +268,7 @@ void ChromeExtensionsDispatcherDelegate::InitializeBindingsSystem(
   bindings->GetHooksForAPI("tabs")->SetDelegate(
       std::make_unique<extensions::TabsHooksDelegate>(
           bindings_system->messaging_service()));
+  bindings->GetHooksForAPI("accessibilityPrivate")
+      ->SetDelegate(
+          std::make_unique<extensions::AccessibilityPrivateHooksDelegate>());
 }

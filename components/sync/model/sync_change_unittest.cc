@@ -6,7 +6,7 @@
 
 #include <memory>
 
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/sync/protocol/preference_specifics.pb.h"
@@ -23,7 +23,7 @@ namespace {
 
 class SyncChangeTest : public testing::Test {
  private:
-  base::test::ScopedTaskEnvironment task_environment_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
 };
 
 TEST_F(SyncChangeTest, LocalDelete) {

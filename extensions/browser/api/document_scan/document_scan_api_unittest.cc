@@ -5,26 +5,24 @@
 #include "extensions/browser/api/document_scan/document_scan_api.h"
 
 #include <string>
-#include <tuple>
 #include <vector>
 
-#include "extensions/browser/api/document_scan/mock_document_scan_interface.h"
+#include "base/memory/ref_counted.h"
+#include "extensions/browser/api/document_scan/fake_document_scan_interface.h"
 #include "extensions/browser/api_test_utils.h"
 #include "extensions/browser/api_unittest.h"
+#include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using testing::_;
-
 namespace extensions {
-
 namespace api {
 
 // Tests of networking_private_crypto support for Networking Private API.
 class DocumentScanScanFunctionTest : public ApiUnitTest {
  public:
   DocumentScanScanFunctionTest()
-      : function_(new DocumentScanScanFunction()),
-        document_scan_interface_(new MockDocumentScanInterface()) {}
+      : function_(base::MakeRefCounted<DocumentScanScanFunction>()),
+        document_scan_interface_(new FakeDocumentScanInterface()) {}
   ~DocumentScanScanFunctionTest() override {}
 
   void SetUp() override {
@@ -37,21 +35,13 @@ class DocumentScanScanFunctionTest : public ApiUnitTest {
   std::string RunFunctionAndReturnError(const std::string& args) {
     function_->set_extension(extension());
     std::string error = api_test_utils::RunFunctionAndReturnError(
-        function_, args, browser_context(), api_test_utils::NONE);
+        function_.get(), args, browser_context(), api_test_utils::NONE);
     return error;
   }
 
-  DocumentScanScanFunction* function_;
-  MockDocumentScanInterface* document_scan_interface_;  // Owned by function_.
+  scoped_refptr<DocumentScanScanFunction> function_;
+  FakeDocumentScanInterface* document_scan_interface_;  // Owned by function_.
 };
-
-ACTION_P2(InvokeListScannersCallback, scanner_list, error) {
-  std::get<0>(args).Run(scanner_list, error);
-}
-
-ACTION_P3(InvokeScanCallback, data, mime_type, error) {
-  std::get<3>(args).Run(data, mime_type, error);
-}
 
 TEST_F(DocumentScanScanFunctionTest, GestureRequired) {
   EXPECT_EQ("User gesture required to perform scan",
@@ -60,9 +50,7 @@ TEST_F(DocumentScanScanFunctionTest, GestureRequired) {
 
 TEST_F(DocumentScanScanFunctionTest, NoScanners) {
   function_->set_user_gesture(true);
-  EXPECT_CALL(*document_scan_interface_, ListScanners(_))
-      .WillOnce(InvokeListScannersCallback(
-          std::vector<DocumentScanInterface::ScannerDescription>(), ""));
+  document_scan_interface_->SetListScannersResult({}, "");
   EXPECT_EQ("Scanner not available", RunFunctionAndReturnError("[{}]"));
 }
 
@@ -72,8 +60,7 @@ TEST_F(DocumentScanScanFunctionTest, NoMatchingScanners) {
   DocumentScanInterface::ScannerDescription scanner;
   scanner.image_mime_type = "img/fresco";
   scanner_list.push_back(scanner);
-  EXPECT_CALL(*document_scan_interface_, ListScanners(_))
-      .WillOnce(InvokeListScannersCallback(scanner_list, ""));
+  document_scan_interface_->SetListScannersResult(scanner_list, "");
   EXPECT_EQ(
       "Scanner not available",
       RunFunctionAndReturnError("[{\"mimeTypes\": [\"img/silverpoint\"]}]"));
@@ -88,11 +75,9 @@ TEST_F(DocumentScanScanFunctionTest, ScanFailure) {
   scanner.name = kScannerName;
   scanner.image_mime_type = kMimeType;
   scanner_list.push_back(scanner);
-  EXPECT_CALL(*document_scan_interface_, ListScanners(_))
-      .WillOnce(InvokeListScannersCallback(scanner_list, ""));
+  document_scan_interface_->SetListScannersResult(scanner_list, "");
   const char kScanError[] = "Someone ate all the eggs";
-  EXPECT_CALL(*document_scan_interface_, Scan(kScannerName, _, _, _))
-      .WillOnce(InvokeScanCallback("", "", kScanError));
+  document_scan_interface_->SetScanResult("", "", kScanError);
   EXPECT_EQ(kScanError,
             RunFunctionAndReturnError("[{\"mimeTypes\": [\"img/tempera\"]}]"));
 }
@@ -100,15 +85,13 @@ TEST_F(DocumentScanScanFunctionTest, ScanFailure) {
 TEST_F(DocumentScanScanFunctionTest, Success) {
   std::vector<DocumentScanInterface::ScannerDescription> scanner_list;
   scanner_list.push_back(DocumentScanInterface::ScannerDescription());
-  EXPECT_CALL(*document_scan_interface_, ListScanners(_))
-      .WillOnce(InvokeListScannersCallback(scanner_list, ""));
+  document_scan_interface_->SetListScannersResult(scanner_list, "");
   const char kScanData[] = "A beautiful picture";
   const char kMimeType[] = "img/encaustic";
-  EXPECT_CALL(*document_scan_interface_, Scan(_, _, _, _))
-      .WillOnce(InvokeScanCallback(kScanData, kMimeType, ""));
+  document_scan_interface_->SetScanResult(kScanData, kMimeType, "");
   function_->set_user_gesture(true);
   std::unique_ptr<base::DictionaryValue> result(
-      RunFunctionAndReturnDictionary(function_, "[{}]"));
+      RunFunctionAndReturnDictionary(function_.get(), "[{}]"));
   ASSERT_NE(nullptr, result.get());
   document_scan::ScanResults scan_results;
   EXPECT_TRUE(document_scan::ScanResults::Populate(*result, &scan_results));
@@ -117,5 +100,4 @@ TEST_F(DocumentScanScanFunctionTest, Success) {
 }
 
 }  // namespace api
-
 }  // namespace extensions

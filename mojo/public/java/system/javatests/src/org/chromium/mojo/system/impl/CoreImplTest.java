@@ -4,7 +4,7 @@
 
 package org.chromium.mojo.system.impl;
 
-import android.support.test.filters.SmallTest;
+import androidx.test.filters.SmallTest;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -57,7 +57,7 @@ public class CoreImplTest {
      * @see MojoTestCase#tearDown()
      */
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
         MojoException toThrow = null;
         for (Handle handle : mHandlesToClose) {
             try {

@@ -88,35 +88,56 @@ bool ExportsCallback(const PEImage& image,
   return true;
 }
 
+base::FilePath GetPEImageTestPath() {
+  base::FilePath pe_image_test_path;
+  EXPECT_TRUE(PathService::Get(DIR_TEST_DATA, &pe_image_test_path));
+  pe_image_test_path = pe_image_test_path.Append(FILE_PATH_LITERAL("pe_image"));
+#if defined(ARCH_CPU_ARM64)
+  pe_image_test_path =
+      pe_image_test_path.Append(FILE_PATH_LITERAL("pe_image_test_arm64.dll"));
+#elif defined(ARCH_CPU_X86_64)
+  pe_image_test_path =
+      pe_image_test_path.Append(FILE_PATH_LITERAL("pe_image_test_64.dll"));
+#elif defined(ARCH_CPU_X86)
+  pe_image_test_path =
+      pe_image_test_path.Append(FILE_PATH_LITERAL("pe_image_test_32.dll"));
+#else
+#error This platform is not supported.
+#endif
+  return pe_image_test_path;
+}
+
 }  // namespace
 
 // Tests that we are able to enumerate stuff from a PE file, and that
 // the actual number of items found matches an expected value.
 TEST(PEImageTest, EnumeratesPE) {
-  base::FilePath pe_image_test_path;
-  ASSERT_TRUE(PathService::Get(DIR_TEST_DATA, &pe_image_test_path));
-  pe_image_test_path = pe_image_test_path.Append(FILE_PATH_LITERAL("pe_image"));
+  base::FilePath pe_image_test_path = GetPEImageTestPath();
 
-#if defined(ARCH_CPU_64_BITS)
-  pe_image_test_path =
-      pe_image_test_path.Append(FILE_PATH_LITERAL("pe_image_test_64.dll"));
-  const int sections = 6;
-  const int imports_dlls = 2;
-  const int delay_dlls = 2;
-  const int exports = 3;
-  const int imports = 70;
-  const int delay_imports = 2;
-  const int relocs = 976;
+#if defined(ARCH_CPU_ARM64)
+  const int kSections = 7;
+  const int kImportsDlls = 3;
+  const int kDelayDlls = 2;
+  const int kExports = 3;
+  const int kImports = 72;
+  const int kDelayImports = 2;
+  const int kRelocs = 740;
+#elif defined(ARCH_CPU_64_BITS)
+  const int kSections = 6;
+  const int kImportsDlls = 2;
+  const int kDelayDlls = 2;
+  const int kExports = 3;
+  const int kImports = 70;
+  const int kDelayImports = 2;
+  const int kRelocs = 976;
 #else
-  pe_image_test_path =
-      pe_image_test_path.Append(FILE_PATH_LITERAL("pe_image_test_32.dll"));
-  const int sections = 5;
-  const int imports_dlls = 2;
-  const int delay_dlls = 2;
-  const int exports = 3;
-  const int imports = 66;
-  const int delay_imports = 2;
-  const int relocs = 2114;
+  const int kSections = 5;
+  const int kImportsDlls = 2;
+  const int kDelayDlls = 2;
+  const int kExports = 3;
+  const int kImports = 66;
+  const int kDelayImports = 2;
+  const int kRelocs = 2114;
 #endif
 
   ScopedNativeLibrary module(pe_image_test_path);
@@ -127,31 +148,90 @@ TEST(PEImageTest, EnumeratesPE) {
   EXPECT_TRUE(pe.VerifyMagic());
 
   pe.EnumSections(SectionsCallback, &count);
-  EXPECT_EQ(sections, count);
+  EXPECT_EQ(kSections, count);
 
   count = 0;
-  pe.EnumImportChunks(ImportChunksCallback, &count);
-  EXPECT_EQ(imports_dlls, count);
+  pe.EnumImportChunks(ImportChunksCallback, &count, nullptr);
+  EXPECT_EQ(kImportsDlls, count);
 
   count = 0;
-  pe.EnumDelayImportChunks(DelayImportChunksCallback, &count);
-  EXPECT_EQ(delay_dlls, count);
+  pe.EnumDelayImportChunks(DelayImportChunksCallback, &count, nullptr);
+  EXPECT_EQ(kDelayDlls, count);
 
   count = 0;
   pe.EnumExports(ExportsCallback, &count);
-  EXPECT_EQ(exports, count);
+  EXPECT_EQ(kExports, count);
 
   count = 0;
-  pe.EnumAllImports(ImportsCallback, &count);
-  EXPECT_EQ(imports, count);
+  pe.EnumAllImports(ImportsCallback, &count, nullptr);
+  EXPECT_EQ(kImports, count);
 
   count = 0;
-  pe.EnumAllDelayImports(ImportsCallback, &count);
-  EXPECT_EQ(delay_imports, count);
+  pe.EnumAllDelayImports(ImportsCallback, &count, nullptr);
+  EXPECT_EQ(kDelayImports, count);
 
   count = 0;
   pe.EnumRelocs(RelocsCallback, &count);
-  EXPECT_EQ(relocs, count);
+  EXPECT_EQ(kRelocs, count);
+}
+
+// Tests that we are able to enumerate stuff from a PE file, and that
+// the actual number of items found matches an expected value.
+TEST(PEImageTest, EnumeratesPEWithTargetModule) {
+  base::FilePath pe_image_test_path = GetPEImageTestPath();
+  const char kTargetModuleStatic[] = "user32.dll";
+  const char kTargetModuleDelay[] = "cfgmgr32.dll";
+
+  const int kImportsDlls = 1;
+  const int kDelayDlls = 1;
+  const int kExports = 3;
+  const int kImports = 2;
+  const int kDelayImports = 1;
+#if defined(ARCH_CPU_ARM64)
+  const int kSections = 7;
+  const int kRelocs = 740;
+#elif defined(ARCH_CPU_64_BITS)
+  const int kSections = 6;
+  const int kRelocs = 976;
+#else
+  const int kSections = 5;
+  const int kRelocs = 2114;
+#endif
+
+  ScopedNativeLibrary module(pe_image_test_path);
+  ASSERT_TRUE(module.is_valid());
+
+  PEImage pe(module.get());
+  int count = 0;
+  EXPECT_TRUE(pe.VerifyMagic());
+
+  pe.EnumSections(SectionsCallback, &count);
+  EXPECT_EQ(kSections, count);
+
+  count = 0;
+  pe.EnumImportChunks(ImportChunksCallback, &count, kTargetModuleStatic);
+  EXPECT_EQ(kImportsDlls, count);
+
+  count = 0;
+  pe.EnumDelayImportChunks(DelayImportChunksCallback, &count,
+                           kTargetModuleDelay);
+  EXPECT_EQ(kDelayDlls, count);
+
+  count = 0;
+  pe.EnumExports(ExportsCallback, &count);
+  EXPECT_EQ(kExports, count);
+
+  count = 0;
+  pe.EnumAllImports(ImportsCallback, &count, kTargetModuleStatic);
+  EXPECT_EQ(kImports, count);
+
+  count = 0;
+  pe.EnumAllDelayImports(ImportsCallback, &count, kTargetModuleDelay);
+  EXPECT_EQ(kDelayImports, count);
+
+  count = 0;
+  pe.EnumRelocs(RelocsCallback, &count);
+  EXPECT_EQ(kRelocs, count);
 }
 
 // Tests that we can locate an specific exported symbol, by name and by ordinal.
@@ -173,17 +253,7 @@ TEST(PEImageTest, RetrievesExports) {
 
 // Tests that we can locate a forwarded export.
 TEST(PEImageTest, ForwardedExport) {
-  base::FilePath pe_image_test_path;
-  ASSERT_TRUE(PathService::Get(DIR_TEST_DATA, &pe_image_test_path));
-  pe_image_test_path = pe_image_test_path.Append(FILE_PATH_LITERAL("pe_image"));
-
-#if defined(ARCH_CPU_64_BITS)
-  pe_image_test_path =
-      pe_image_test_path.Append(FILE_PATH_LITERAL("pe_image_test_64.dll"));
-#else
-  pe_image_test_path =
-      pe_image_test_path.Append(FILE_PATH_LITERAL("pe_image_test_32.dll"));
-#endif
+  base::FilePath pe_image_test_path = GetPEImageTestPath();
 
   ScopedNativeLibrary module(pe_image_test_path);
 

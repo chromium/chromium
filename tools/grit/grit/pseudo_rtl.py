@@ -7,6 +7,8 @@ Unicode RTL overrides.
 More info at https://sites.google.com/a/chromium.org/dev/Home/fake-bidi
 '''
 
+from __future__ import print_function
+
 import re
 
 from grit import lazy_re

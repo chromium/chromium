@@ -48,6 +48,9 @@ class AXTreeSource {
   // node object representing the null pointer.
   virtual bool IsValid(AXNodeSource node) const = 0;
 
+  // Returns true if |node| is an ignored node
+  virtual bool IsIgnored(AXNodeSource node) const = 0;
+
   // Returns true if two nodes are equal.
   virtual bool IsEqual(AXNodeSource node1,
                        AXNodeSource node2) const = 0;

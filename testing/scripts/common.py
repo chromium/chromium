@@ -164,6 +164,29 @@ def parse_common_test_results(json_results, test_separator='/'):
   return results
 
 
+def write_interrupted_test_results_to(filepath, test_start_time):
+  """Writes a test results JSON file* to filepath.
+
+  This JSON file is formatted to explain that something went wrong.
+
+  *src/docs/testing/json_test_results_format.md
+
+  Args:
+    filepath: A path to a file to write the output to.
+    test_start_time: The start time of the test run expressed as a
+      floating-point offset in seconds from the UNIX epoch.
+  """
+  with open(filepath, 'w') as fh:
+    output = {
+        'interrupted': True,
+        'num_failures_by_type': {},
+        'seconds_since_epoch': test_start_time,
+        'tests': {},
+        'version': 3,
+    }
+    json.dump(output, fh)
+
+
 def get_gtest_summary_passes(output):
   """Returns a mapping of test to boolean indicating if the test passed.
 
@@ -276,7 +299,7 @@ class BaseIsolatedScriptArgsAdapter(object):
     raise RuntimeError('this method is not yet implemented')
 
   def generate_isolated_script_cmd(self):
-    isolated_script_cmd = [sys.executable] + self._rest_args
+    isolated_script_cmd = [sys.executable] + self.rest_args
 
     isolated_script_cmd += self.generate_test_output_args(
         self.options.isolated_script_test_output)

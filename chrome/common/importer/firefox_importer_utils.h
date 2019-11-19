@@ -38,13 +38,17 @@ base::FilePath GetFirefoxInstallPathFromRegistry();
 base::FilePath GetFirefoxDylibPath();
 #endif  // OS_MACOSX
 
-// Returns the path to the Firefox profile.
-base::FilePath GetFirefoxProfilePath();
+// Returns the path to the default profile of the Firefox installation with id
+// |firefox_install_id|.
+base::FilePath GetFirefoxProfilePath(const std::string& firefox_install_id);
 
 // Returns the path to the Firefox profile, using a custom dictionary.
+// If |firefox_install_id| is not empty returns the default profile associated
+// with that id.
 // Exposed for testing.
 base::FilePath GetFirefoxProfilePathFromDictionary(
-    const base::DictionaryValue& root);
+    const base::DictionaryValue& root,
+    const std::string& firefox_install_id);
 
 // Detects version of Firefox and installation path for the given Firefox
 // profile.

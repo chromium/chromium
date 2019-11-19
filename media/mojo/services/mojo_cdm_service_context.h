@@ -33,14 +33,14 @@ class MEDIA_MOJO_EXPORT MojoCdmServiceContext {
   // Unregisters the CDM. Must be called before the CDM is destroyed.
   void UnregisterCdm(int cdm_id);
 
-#if BUILDFLAG(ENABLE_LIBRARY_CDMS)
+#if BUILDFLAG(ENABLE_CDM_PROXY)
   // Registers the |cdm_proxy_service| and returns a unique (per-process) CDM
   // ID.
   int RegisterCdmProxy(MojoCdmProxyService* cdm_proxy_service);
 
   // Unregisters the CdmProxy. Must be called before the CdmProxy is destroyed.
   void UnregisterCdmProxy(int cdm_id);
-#endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
+#endif  // BUILDFLAG(ENABLE_CDM_PROXY)
 
   // Returns the CdmContextRef associated with |cdm_id|.
   std::unique_ptr<CdmContextRef> GetCdmContextRef(int cdm_id);
@@ -49,10 +49,10 @@ class MEDIA_MOJO_EXPORT MojoCdmServiceContext {
   // A map between CDM ID and MojoCdmService.
   std::map<int, MojoCdmService*> cdm_services_;
 
-#if BUILDFLAG(ENABLE_LIBRARY_CDMS)
+#if BUILDFLAG(ENABLE_CDM_PROXY)
   // A map between CDM ID and MojoCdmProxyService.
   std::map<int, MojoCdmProxyService*> cdm_proxy_services_;
-#endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
+#endif  // BUILDFLAG(ENABLE_CDM_PROXY)
 
   DISALLOW_COPY_AND_ASSIGN(MojoCdmServiceContext);
 };

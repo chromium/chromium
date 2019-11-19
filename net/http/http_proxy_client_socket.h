@@ -12,7 +12,6 @@
 
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "net/base/completion_callback.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/completion_repeating_callback.h"
 #include "net/base/host_port_pair.h"
@@ -38,7 +37,7 @@ class StreamSocket;
 class NET_EXPORT_PRIVATE HttpProxyClientSocket : public ProxyClientSocket {
  public:
   // Takes ownership of |socket|, which should already be connected by the time
-  // Connect() is called. |socket| is assumed to be a freash socket. If tunnel
+  // Connect() is called. |socket| is assumed to be a fresh socket. If tunnel
   // is true then on Connect() this socket will establish an Http tunnel.
   HttpProxyClientSocket(std::unique_ptr<StreamSocket> socket,
                         const std::string& user_agent,
@@ -49,7 +48,6 @@ class NET_EXPORT_PRIVATE HttpProxyClientSocket : public ProxyClientSocket {
                         bool using_spdy,
                         NextProto negotiated_protocol,
                         ProxyDelegate* proxy_delegate,
-                        bool is_https_proxy,
                         const NetworkTrafficAnnotationTag& traffic_annotation);
 
   // On destruction Disconnect() is called.
@@ -161,8 +159,6 @@ class NET_EXPORT_PRIVATE HttpProxyClientSocket : public ProxyClientSocket {
   const bool using_spdy_;
   // Protocol negotiated with the server.
   NextProto negotiated_protocol_;
-  // If true, then SSL is used to communicate with this proxy
-  const bool is_https_proxy_;
 
   std::string request_line_;
   HttpRequestHeaders request_headers_;

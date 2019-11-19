@@ -58,33 +58,6 @@ void SystemSettingsProvider::Init() {
       new base::Value(FineGrainedTimeZoneDetectionEnabled()));
 }
 
-void SystemSettingsProvider::DoSet(const std::string& path,
-                                   const base::Value& in_value) {
-  // TODO(olsen): crbug.com/433840 - separate read path and write path.
-  // The write path which goes through CrosSettings and SystemSettingsProvider,
-  // should more simply go straight through TimezoneUtil.
-
-  // Guest, public, or child accounts cannot change the time zone.
-  // TODO(olsen): This logic is duplicated in TimezoneUtil::CanSetSystemTimezone
-  // and can be removed once the write path goes through there.
-  if (!LoginState::Get()->IsUserLoggedIn() ||
-      LoginState::Get()->IsGuestSessionUser() ||
-      LoginState::Get()->IsPublicSessionUser() ||
-      LoginState::Get()->IsChildUser()) {
-    return;
-  }
-
-  if (path == kSystemTimezone) {
-    base::string16 timezone_id;
-    if (!in_value.GetAsString(&timezone_id))
-      return;
-    // This will call TimezoneChanged.
-    system::TimezoneSettings::GetInstance()->SetTimezoneFromID(timezone_id);
-  }
-  // kPerUserTimezoneEnabled is read-only.
-  // kFineGrainedTimeZoneResolveEnabled is read-only.
-}
-
 const base::Value* SystemSettingsProvider::Get(const std::string& path) const {
   if (path == kSystemTimezone)
     return timezone_value_.get();

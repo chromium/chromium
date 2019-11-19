@@ -12,7 +12,7 @@ var request2;
 /**
  * Show a Payment Request.
  */
-function buy() {  // eslint-disable-line no-unused-vars
+function buy() { // eslint-disable-line no-unused-vars
   try {
     request = new PaymentRequest(
         [
@@ -44,7 +44,7 @@ function buy() {  // eslint-disable-line no-unused-vars
 /**
  * Try to re-show an existing Payment Request.
  */
-function showAgain() {  // eslint-disable-line no-unused-vars
+function showAgain() { // eslint-disable-line no-unused-vars
   try {
     request.show()
         .then(function(resp) {
@@ -67,7 +67,7 @@ function showAgain() {  // eslint-disable-line no-unused-vars
 /**
  * Show a second Payment Request.
  */
-function showSecondRequest() {  // eslint-disable-line no-unused-vars
+function showSecondRequest() { // eslint-disable-line no-unused-vars
   try {
     request2 = new PaymentRequest(
         [

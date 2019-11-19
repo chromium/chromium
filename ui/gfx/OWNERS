@@ -12,9 +12,6 @@ per-file color_utils*=pkasting@chromium.org
 per-file display*=oshima@chromium.org
 per-file screen*=oshima@chromium.org
 
-# Font-rendering configuration.
-per-file font_render_params*=derat@chromium.org
-
 # Canvas painting.
 per-file canvas*=danakj@chromium.org
 
@@ -41,6 +38,7 @@ per-file buffer_format*=reveman@chromium.org
 per-file buffer_format*=dcastagna@chromium.org
 per-file buffer_format*=rjkroege@chromium.org
 per-file buffer_format*=spang@chromium.org
+per-file buffer_usage*=rjkroege@chromium.org
 per-file *buffer_types.*=reveman@chromium.org
 per-file *buffer_types.*=dcastagna@chromium.org
 per-file *buffer_types.*=rjkroege@chromium.org
@@ -55,3 +53,4 @@ per-file *vector_icon*=estade@chromium.org
 per-file BUILD.gn=*
 
 # COMPONENT: UI>GFX
+# TEAM: graphics-dev@chromium.org

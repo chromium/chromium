@@ -4,8 +4,7 @@
 
 var newTabUrls = [
   'chrome://newtab/',
-  // The tab URL will be redirected to the Local New Tab Page if
-  // features::kUseGoogleLocalNtp is not enabled.
+  // The tab URL for the Local New Tab Page.
   'chrome-search://local-ntp/local-ntp.html',
 ];
 

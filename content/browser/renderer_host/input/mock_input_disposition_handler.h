@@ -35,7 +35,6 @@ class MockInputDispositionHandler : public InputDispositionHandler {
   void OnGestureEventAck(const GestureEventWithLatencyInfo& event,
                          InputEventAckSource ack_source,
                          InputEventAckState ack_result) override;
-  void OnUnexpectedEventAck(UnexpectedEventAckType type) override;
 
   size_t GetAndResetAckCount();
 
@@ -53,9 +52,6 @@ class MockInputDispositionHandler : public InputDispositionHandler {
     touch_followup_event_ = std::move(event);
   }
 
-  bool unexpected_event_ack_called() const {
-    return unexpected_event_ack_called_;
-  }
   InputEventAckState ack_state() const { return ack_state_; }
 
   InputEventAckState acked_wheel_event_state() const {
@@ -91,7 +87,6 @@ class MockInputDispositionHandler : public InputDispositionHandler {
   InputRouter* input_router_;
 
   size_t ack_count_;
-  bool unexpected_event_ack_called_;
   blink::WebInputEvent::Type ack_event_type_;
   InputEventAckState ack_state_;
   InputEventAckState acked_wheel_event_state_;

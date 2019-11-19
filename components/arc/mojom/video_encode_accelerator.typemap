@@ -1,0 +1,24 @@
+# Copyright 2017 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+mojom = "//components/arc/mojom/video_encode_accelerator.mojom"
+public_headers = [ "//media/video/video_encode_accelerator.h" ]
+public_deps = [
+  "//base",
+  "//media/gpu",
+]
+traits_headers =
+    [ "//components/arc/mojom/video_encode_accelerator_mojom_traits.h" ]
+sources = [
+  "//components/arc/mojom/video_encode_accelerator_mojom_traits.cc",
+]
+deps = [
+  "//base",
+]
+type_mappings = [
+  "arc.mojom.VideoFrameStorageType=::media::VideoEncodeAccelerator::Config::StorageType",
+  "arc.mojom.VideoEncodeAccelerator.Error=::media::VideoEncodeAccelerator::Error",
+  "arc.mojom.VideoEncodeProfile=::media::VideoEncodeAccelerator::SupportedProfile",
+  "arc.mojom.VideoEncodeAcceleratorConfig=::media::VideoEncodeAccelerator::Config",
+]

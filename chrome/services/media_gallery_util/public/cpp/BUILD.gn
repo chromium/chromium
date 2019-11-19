@@ -15,9 +15,10 @@ source_set("cpp") {
   ]
 
   deps = [
+    "//chrome/app:generated_resources",
+    "//content/public/browser",
     "//media:media_buildflags",
     "//net:buildflags",
-    "//services/service_manager/public/cpp",
     "//third_party/boringssl",
     "//third_party/libyuv",
   ]
@@ -32,19 +33,6 @@ source_set("cpp") {
       "//third_party/ffmpeg:ffmpeg_features",
     ]
   }
-}
-
-source_set("manifest") {
-  sources = [
-    "manifest.cc",
-    "manifest.h",
-  ]
-
-  deps = [
-    "//base",
-    "//chrome/services/media_gallery_util/public/mojom",
-    "//services/service_manager/public/cpp",
-  ]
 }
 
 source_set("browser_tests") {

@@ -4,7 +4,11 @@
 
 package org.chromium.chrome.browser.init;
 
+import android.util.Pair;
+
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 
 import java.util.LinkedList;
 
@@ -18,15 +22,16 @@ import java.util.LinkedList;
  * - {@link cancel()} must be called from the UI thread.
  */
 public class ChainedTasks {
-    private LinkedList<Runnable> mTasks = new LinkedList<>();
+    private LinkedList<Pair<TaskTraits, Runnable>> mTasks = new LinkedList<>();
     private volatile boolean mFinalized;
 
     private final Runnable mRunAndPost = new Runnable() {
         @Override
         public void run() {
             if (mTasks.isEmpty()) return;
-            mTasks.pop().run();
-            ThreadUtils.postOnUiThread(this);
+            Pair<TaskTraits, Runnable> pair = mTasks.pop();
+            pair.second.run();
+            if (!mTasks.isEmpty()) PostTask.postTask(mTasks.peek().first, this);
         }
     };
 
@@ -34,9 +39,9 @@ public class ChainedTasks {
      * Adds a task to the list of tasks to run. Cannot be called once {@link start()} has been
      * called.
      */
-    public void add(Runnable task) {
+    public void add(TaskTraits traits, Runnable task) {
         if (mFinalized) throw new IllegalStateException("Must not call add() after start()");
-        mTasks.add(task);
+        mTasks.add(new Pair<>(traits, task));
     }
 
     /**
@@ -59,16 +64,17 @@ public class ChainedTasks {
     public void start(final boolean coalesceTasks) {
         if (mFinalized) throw new IllegalStateException("Cannot call start() several times");
         mFinalized = true;
+        if (mTasks.isEmpty()) return;
         if (coalesceTasks) {
-            ThreadUtils.runOnUiThread(new Runnable() {
+            PostTask.runOrPostTask(mTasks.peek().first, new Runnable() {
                 @Override
                 public void run() {
-                    for (Runnable task : mTasks) task.run();
+                    for (Pair<TaskTraits, Runnable> pair : mTasks) pair.second.run();
                     mTasks.clear();
                 }
             });
         } else {
-            ThreadUtils.postOnUiThread(mRunAndPost);
+            PostTask.postTask(mTasks.peek().first, mRunAndPost);
         }
     }
 }

@@ -39,5 +39,5 @@
     readonly attribute DOMString filename;
     readonly attribute unsigned long lineno;
     readonly attribute unsigned long colno;
-    [Custom=Getter] readonly attribute any error;
+    [CallWith=ScriptState] readonly attribute any error;
 };

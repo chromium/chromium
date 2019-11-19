@@ -1,0 +1,48 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/config.gni")
+import("//build/config/android/rules.gni")
+
+instrumentation_test_apk("weblayer_instrumentation_test_apk") {
+  apk_name = "WebLayerInstrumentationTest"
+  apk_under_test = "//weblayer/shell/android:weblayer_shell_apk"
+  android_manifest = "AndroidManifest.xml"
+  min_sdk_version = 21
+  deps = [
+    "//base:base_java_test_support",
+    "//content/public/test/android:content_java_test_support",
+    "//net/android:net_java_test_support",
+    "//third_party/android_support_test_runner:runner_java",
+    "//weblayer/public/javatests:weblayer_public_javatests",
+  ]
+  java_files = [
+    "src/org/chromium/weblayer/test/BrowserFragmentLifecycleTest.java",
+    "src/org/chromium/weblayer/test/DataClearingTest.java",
+    "src/org/chromium/weblayer/test/DownloadCallbackTest.java",
+    "src/org/chromium/weblayer/test/ErrorPageCallbackTest.java",
+    "src/org/chromium/weblayer/test/EventUtils.java",
+    "src/org/chromium/weblayer/test/ExecuteScriptTest.java",
+    "src/org/chromium/weblayer/test/FullscreenCallbackTest.java",
+    "src/org/chromium/weblayer/test/InputTypesTest.java",
+    "src/org/chromium/weblayer/test/InstrumentationActivityTestRule.java",
+    "src/org/chromium/weblayer/test/NavigationTest.java",
+    "src/org/chromium/weblayer/test/NavigationWaiter.java",
+    "src/org/chromium/weblayer/test/NewTabCallbackImpl.java",
+    "src/org/chromium/weblayer/test/NewTabCallbackTest.java",
+    "src/org/chromium/weblayer/test/ProfileTest.java",
+    "src/org/chromium/weblayer/test/RenderingTest.java",
+    "src/org/chromium/weblayer/test/SmokeTest.java",
+    "src/org/chromium/weblayer/test/TabCallbackTest.java",
+    "src/org/chromium/weblayer/test/TabListCallbackTest.java",
+    "src/org/chromium/weblayer/test/TopControlsTest.java",
+  ]
+  additional_apks = [
+    "//weblayer/shell/android:weblayer_support_apk",
+    "//net/android:net_test_support_apk",
+  ]
+  data = [
+    "//weblayer/test/data/",
+  ]
+}

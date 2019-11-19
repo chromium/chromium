@@ -1,0 +1,93 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+{
+  metadata: {
+    namespace: "keywords",
+    export: "CORE_EXPORT",
+  },
+
+  data: [
+    // as attribute / Potential destination
+    // https://fetch.spec.whatwg.org/#concept-potential-destination
+    "script",
+    "style",
+    "image",
+    "track",
+    "font",
+    "fetch",
+
+    // autocomplete attribute of <form>.
+    // https://html.spec.whatwg.org/C/#attr-form-autocomplete
+    "on",
+    "off",
+
+    // crossorigin attribute / CORS setting attribute
+    // https://html.spec.whatwg.org/C/#cors-settings-attribute
+    "anonymous",
+    "use-credentials",
+
+    // decoding attribute / Image decoding hint
+    // https://html.spec.whatwg.org/C/#image-decoding-hint
+    "async",
+    "sync",
+    "auto",
+
+    // enterkeyhint attribute
+    // https://html.spec.whatwg.org/C/#attr-enterkeyhint
+    "enter",
+    "done",
+    "go",
+    "next",
+    "previous",
+    "search",
+    "send",
+
+    // importance attribute / Priority Hints
+    // https://wicg.github.io/priority-hints/#solution-0
+    "high",
+    "low",
+    // "auto",
+
+    // inputmode attribute
+    // https://html.spec.whatwg.org/C/#attr-inputmode
+    "none",
+    "text",
+    "tel",
+    "url",
+    "email",
+    "numeric",
+    "decimal",
+    // "search",
+
+    // invisible attribute
+    // https://github.com/rakina/searchable-invisible-dom
+    "static",
+    "invisible",
+
+    // loading attribute
+    // https://github.com/scott-little/lazyload#ways-the-loading-attribute-can-be-used
+    "lazy",
+    "eager",
+    // "auto",
+
+    // referrerpolicy attribute
+    // https://w3c.github.io/webappsec-referrer-policy/#referrer-policies
+    "no-referrer",
+    "no-referrer-when-downgrade",
+    "same-origin",
+    "origin",
+    "strict-origin",
+    "origin-when-cross-origin",
+    "strict-origin-when-cross-origin",
+    "unsafe-url",
+
+    // scope attribute
+    // https://html.spec.whatwg.org/C/#attr-th-scope
+    "row",
+    "col",
+    "rowgroup",
+    "colgroup",
+  ],
+}

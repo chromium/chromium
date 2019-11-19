@@ -22,10 +22,10 @@ void PrepareEmptyTestData(base::Pickle* pickle) {
 }
 
 void PrepareTestData(base::Pickle* pickle) {
-  std::unordered_map<base::string16, base::string16> data;
-  data.insert(std::make_pair(ASCIIToUTF16("abc"), base::string16()));
-  data.insert(std::make_pair(ASCIIToUTF16("de"), ASCIIToUTF16("1")));
-  data.insert(std::make_pair(ASCIIToUTF16("f"), ASCIIToUTF16("23")));
+  std::unordered_map<base::string16, base::string16> data = {
+      {ASCIIToUTF16("abc"), base::string16()},
+      {ASCIIToUTF16("de"), ASCIIToUTF16("1")},
+      {ASCIIToUTF16("f"), ASCIIToUTF16("23")}};
   WriteCustomDataToPickle(data, pickle);
 }
 
@@ -66,10 +66,8 @@ TEST(CustomDataHelperTest, ReadTypes) {
   std::vector<base::string16> types;
   ReadCustomDataTypes(pickle.data(), pickle.size(), &types);
 
-  std::vector<base::string16> expected;
-  expected.push_back(ASCIIToUTF16("abc"));
-  expected.push_back(ASCIIToUTF16("de"));
-  expected.push_back(ASCIIToUTF16("f"));
+  std::vector<base::string16> expected = {
+      ASCIIToUTF16("abc"), ASCIIToUTF16("de"), ASCIIToUTF16("f")};
   // We need to sort to compare equality, as the underlying custom data is
   // unordered
   std::sort(types.begin(), types.end());
@@ -108,20 +106,18 @@ TEST(CustomDataHelperTest, ReadMap) {
   std::unordered_map<base::string16, base::string16> result;
   ReadCustomDataIntoMap(pickle.data(), pickle.size(), &result);
 
-  std::unordered_map<base::string16, base::string16> expected;
-  expected.insert(std::make_pair(ASCIIToUTF16("abc"), base::string16()));
-  expected.insert(std::make_pair(ASCIIToUTF16("de"), ASCIIToUTF16("1")));
-  expected.insert(std::make_pair(ASCIIToUTF16("f"), ASCIIToUTF16("23")));
+  std::unordered_map<base::string16, base::string16> expected = {
+      {ASCIIToUTF16("abc"), base::string16()},
+      {ASCIIToUTF16("de"), ASCIIToUTF16("1")},
+      {ASCIIToUTF16("f"), ASCIIToUTF16("23")}};
   EXPECT_EQ(expected, result);
 }
 
 TEST(CustomDataHelperTest, BadReadTypes) {
   // ReadCustomDataTypes makes the additional guarantee that the contents of the
   // result vector will not change if the input is malformed.
-  std::vector<base::string16> expected;
-  expected.push_back(ASCIIToUTF16("abc"));
-  expected.push_back(ASCIIToUTF16("de"));
-  expected.push_back(ASCIIToUTF16("f"));
+  std::vector<base::string16> expected = {
+      ASCIIToUTF16("abc"), ASCIIToUTF16("de"), ASCIIToUTF16("f")};
 
   base::Pickle malformed;
   malformed.WriteUInt32(1000);

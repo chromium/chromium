@@ -19,6 +19,7 @@ source_set("ntp_snippets") {
     "//components/ntp_snippets",
     "//components/pref_registry",
     "//components/reading_list/core",
+    "//components/signin/public/identity_manager",
     "//components/version_info",
     "//google_apis",
     "//ios/chrome/app:tests_hook",
@@ -27,12 +28,12 @@ source_set("ntp_snippets") {
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/favicon",
     "//ios/chrome/browser/history",
+    "//ios/chrome/browser/json_parser",
     "//ios/chrome/browser/reading_list",
     "//ios/chrome/browser/signin",
     "//ios/chrome/browser/ui/util",
     "//ios/chrome/common",
     "//ios/web",
     "//net",
-    "//services/identity/public/cpp",
   ]
 }

@@ -7,10 +7,23 @@
 
 #include <stdint.h>
 
+#include "base/macros.h"
+
 struct wl_client;
 
 namespace exo {
 namespace wayland {
+class SerialTracker;
+
+struct WaylandTextInputManager {
+  WaylandTextInputManager(SerialTracker* serial_tracker)
+      : serial_tracker(serial_tracker) {}
+
+  // Owned by Server, which always outlives zwp_text_input_manager.
+  SerialTracker* const serial_tracker;
+
+  DISALLOW_COPY_AND_ASSIGN(WaylandTextInputManager);
+};
 
 void bind_text_input_manager(wl_client* client,
                              void* data,

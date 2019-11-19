@@ -12,7 +12,7 @@
 
 #include "base/containers/flat_set.h"
 #include "ui/base/accelerators/accelerator.h"
-#include "ui/base/accelerators/remote_command_media_keys_listener_mac.h"
+#include "ui/base/accelerators/system_media_controls_media_keys_listener.h"
 
 namespace ui {
 
@@ -45,6 +45,7 @@ class MediaKeysListenerImpl : public MediaKeysListener {
   // MediaKeysListener:
   bool StartWatchingMediaKey(KeyboardCode key_code) override;
   void StopWatchingMediaKey(KeyboardCode key_code) override;
+  void SetIsMediaPlaying(bool is_playing) override {}
 
  private:
   // Callback on media key event.
@@ -220,14 +221,13 @@ std::unique_ptr<MediaKeysListener> MediaKeysListener::Create(
     MediaKeysListener::Delegate* delegate,
     MediaKeysListener::Scope scope) {
   // For Mac OS 10.12.2 or later, we want to use MPRemoteCommandCenter for
-  // getting media keys globally.
-  if (@available(macOS 10.12.2, *)) {
-    if (scope == Scope::kGlobal) {
-      auto listener =
-          std::make_unique<RemoteCommandMediaKeysListenerMac>(delegate);
-      listener->Initialize();
-      return std::move(listener);
-    }
+  // getting media keys globally if there is a RemoteCommandCenterDelegate
+  // available.
+  if (scope == Scope::kGlobal) {
+    auto listener =
+        std::make_unique<SystemMediaControlsMediaKeysListener>(delegate);
+    if (listener->Initialize())
+      return listener;
   }
 
   return std::make_unique<MediaKeysListenerImpl>(delegate, scope);

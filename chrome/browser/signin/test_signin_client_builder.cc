@@ -5,7 +5,7 @@
 #include "chrome/browser/signin/test_signin_client_builder.h"
 
 #include "chrome/browser/profiles/profile.h"
-#include "components/signin/core/browser/test_signin_client.h"
+#include "components/signin/public/base/test_signin_client.h"
 
 namespace signin {
 

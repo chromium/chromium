@@ -7,18 +7,24 @@ module gpu.mojom;
 
 import "gpu/ipc/common/dx_diag_node.mojom";
 import "mojo/public/mojom/base/time.mojom";
-import "ui/gfx/geometry/mojo/geometry.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
+
+[EnableIf=supports_vulkan]
+import "gpu/ipc/common/vulkan_info.mojom";
 
 // gpu::GPUInfo::GPUDevice
 struct GpuDevice {
   uint32 vendor_id;
   uint32 device_id;
+  [EnableIf=is_win]
+  uint32 sub_sys_id;
+  [EnableIf=is_win]
+  uint32 revision;
   bool active;
   string vendor_string;
   string device_string;
   string driver_vendor;
   string driver_version;
-  string driver_date;
   int32 cuda_compute_capability_major;
 };
 
@@ -52,6 +58,8 @@ enum VideoCodecProfile {
   AV1PROFILE_PROFILE_MAIN,
   AV1PROFILE_PROFILE_HIGH,
   AV1PROFILE_PROFILE_PRO,
+  DOLBYVISION_PROFILE8,
+  DOLBYVISION_PROFILE9,
 };
 
 // gpu::VideoDecodeAcceleratorSupportedProfile
@@ -71,6 +79,7 @@ struct VideoDecodeAcceleratorCapabilities {
 // gpu::VideoEncodeAcceleratorSupportedProfile
 struct VideoEncodeAcceleratorSupportedProfile {
   VideoCodecProfile profile;
+  gfx.mojom.Size min_resolution;
   gfx.mojom.Size max_resolution;
   uint32 max_framerate_numerator;
   uint32 max_framerate_denominator;
@@ -79,6 +88,7 @@ struct VideoEncodeAcceleratorSupportedProfile {
 // gpu::ImageDecodeAcceleratorType
 enum ImageDecodeAcceleratorType {
   kJpeg,
+  kWebP,
   kUnknown,
 };
 
@@ -86,6 +96,7 @@ enum ImageDecodeAcceleratorType {
 enum ImageDecodeAcceleratorSubsampling {
   k420,
   k422,
+  k444,
 };
 
 // gpu::ImageDecodeAcceleratorSupportedProfile
@@ -96,19 +107,12 @@ struct ImageDecodeAcceleratorSupportedProfile {
   array<ImageDecodeAcceleratorSubsampling> subsamplings;
 };
 
-// gpu::OverlayFormat
+// gpu::OverlaySupport
 [EnableIf=is_win]
-enum OverlayFormat {
-  BGRA,
-  YUY2,
-  NV12,
-};
-
-// gpu::OverlayCapability
-[EnableIf=is_win]
-struct OverlayCapability {
-  OverlayFormat format;
-  bool is_scaling_supported;
+enum OverlaySupport {
+  NONE,
+  DIRECT,
+  SCALING,
 };
 
 // gpu::Dx12VulkanVersionInfo
@@ -141,7 +145,7 @@ struct GpuInfo {
   string gl_ws_extensions;
   uint32 gl_reset_notification_strategy;
   bool software_rendering;
-  bool direct_rendering;
+  string direct_rendering_version;
   bool sandboxed;
   bool in_process_gpu;
   bool passthrough_cmd_decoder;
@@ -152,7 +156,9 @@ struct GpuInfo {
   [EnableIf=is_win]
   bool supports_overlays;
   [EnableIf=is_win]
-  array<OverlayCapability> overlay_capabilities;
+  OverlaySupport yuy2_overlay_support;
+  [EnableIf=is_win]
+  OverlaySupport nv12_overlay_support;
   [EnableIf=is_win]
   DxDiagNode dx_diagnostics;
   [EnableIf=is_win]
@@ -169,4 +175,8 @@ struct GpuInfo {
   uint64 system_visual;
   uint64 rgba_visual;
   bool oop_rasterization_supported;
+  bool subpixel_font_rendering;
+
+  [EnableIf=supports_vulkan]
+  VulkanInfo? vulkan_info;
 };

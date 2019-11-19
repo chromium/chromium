@@ -7,6 +7,8 @@
 GRIT tools.
 """
 
+from __future__ import print_function
+
 import os
 import sys
 if __name__ == '__main__':
@@ -64,6 +66,12 @@ def ToolFactoryUnit():
   import grit.tool.unit
   return grit.tool.unit.UnitTestTool()
 
+
+def ToolFactoryUpdateResourceIds():
+  import grit.tool.update_resource_ids
+  return grit.tool.update_resource_ids.UpdateResourceIds()
+
+
 def ToolFactoryXmb():
   import grit.tool.xmb
   return grit.tool.xmb.OutputXmb()
@@ -80,38 +88,84 @@ _HIDDEN = 3  # optional key - presence indicates tool is hidden
 # Maps tool names to the tool's module.  Done as a list of (key, value) tuples
 # instead of a map to preserve ordering.
 _TOOLS = [
-  ['android2grd', {
-      _FACTORY: ToolAndroid2Grd,
-      _REQUIRES_INPUT : False }],
-  ['build', { _FACTORY : ToolFactoryBuild, _REQUIRES_INPUT : True }],
-  ['buildinfo', { _FACTORY : ToolFactoryBuildInfo, _REQUIRES_INPUT : True }],
-  ['count', { _FACTORY : ToolFactoryCount, _REQUIRES_INPUT : True }],
-  ['menufromparts', {
-      _FACTORY: ToolFactoryMenuTranslationsFromParts,
-      _REQUIRES_INPUT : True, _HIDDEN : True }],
-  ['newgrd', { _FACTORY  : ToolFactoryNewGrd, _REQUIRES_INPUT : False }],
-  ['rc2grd', { _FACTORY : ToolFactoryRc2Grd, _REQUIRES_INPUT : False }],
-  ['resize', {
-      _FACTORY : ToolFactoryResizeDialog, _REQUIRES_INPUT : True }],
-  ['sdiff', { _FACTORY : ToolFactoryDiffStructures,
-              _REQUIRES_INPUT : False }],
-  ['test', {
-      _FACTORY: ToolFactoryTest, _REQUIRES_INPUT : True,
-      _HIDDEN : True }],
-  ['transl2tc', { _FACTORY : ToolFactoryTranslationToTc,
-                  _REQUIRES_INPUT : False }],
-  ['unit', { _FACTORY : ToolFactoryUnit, _REQUIRES_INPUT : False }],
-  ['xmb', { _FACTORY : ToolFactoryXmb, _REQUIRES_INPUT : True }],
+    ['android2grd', {
+        _FACTORY: ToolAndroid2Grd,
+        _REQUIRES_INPUT: False
+    }],
+    ['build', {
+        _FACTORY: ToolFactoryBuild,
+        _REQUIRES_INPUT: True
+    }],
+    ['buildinfo', {
+        _FACTORY: ToolFactoryBuildInfo,
+        _REQUIRES_INPUT: True
+    }],
+    ['count', {
+        _FACTORY: ToolFactoryCount,
+        _REQUIRES_INPUT: True
+    }],
+    [
+        'menufromparts',
+        {
+            _FACTORY: ToolFactoryMenuTranslationsFromParts,
+            _REQUIRES_INPUT: True,
+            _HIDDEN: True
+        }
+    ],
+    ['newgrd', {
+        _FACTORY: ToolFactoryNewGrd,
+        _REQUIRES_INPUT: False
+    }],
+    ['rc2grd', {
+        _FACTORY: ToolFactoryRc2Grd,
+        _REQUIRES_INPUT: False
+    }],
+    ['resize', {
+        _FACTORY: ToolFactoryResizeDialog,
+        _REQUIRES_INPUT: True
+    }],
+    ['sdiff', {
+        _FACTORY: ToolFactoryDiffStructures,
+        _REQUIRES_INPUT: False
+    }],
+    ['test', {
+        _FACTORY: ToolFactoryTest,
+        _REQUIRES_INPUT: True,
+        _HIDDEN: True
+    }],
+    [
+        'transl2tc',
+        {
+            _FACTORY: ToolFactoryTranslationToTc,
+            _REQUIRES_INPUT: False
+        }
+    ],
+    ['unit', {
+        _FACTORY: ToolFactoryUnit,
+        _REQUIRES_INPUT: False
+    }],
+    [
+        'update_resource_ids',
+        {
+            _FACTORY: ToolFactoryUpdateResourceIds,
+            _REQUIRES_INPUT: False
+        }
+    ],
+    ['xmb', {
+        _FACTORY: ToolFactoryXmb,
+        _REQUIRES_INPUT: True
+    }],
 ]
 
 
 def PrintUsage():
   tool_list = ''
   for (tool, info) in _TOOLS:
-    if not _HIDDEN in info.keys():
-      tool_list += '    %-12s %s\n' % (tool, info[_FACTORY]().ShortDescription())
+    if not _HIDDEN in info:
+      tool_list += '    %-12s %s\n' % (
+          tool, info[_FACTORY]().ShortDescription())
 
-  print """GRIT - the Google Resource and Internationalization Tool
+  print("""GRIT - the Google Resource and Internationalization Tool
 
 Usage: grit [GLOBALOPTIONS] TOOL [args to tool]
 
@@ -139,7 +193,7 @@ Tools:
 %s
   For more information on how to use a particular tool, and the specific
   arguments you can send to that tool, execute 'grit help TOOL'
-""" % (tool_list)
+""" % (tool_list))
 
 
 class Options(object):
@@ -203,11 +257,11 @@ def Main(args):
   try:
     args = options.ReadOptions(args)  # args may be shorter after this
   except getopt.GetoptError as e:
-    print "grit:", str(e)
-    print "Try running 'grit help' for valid options."
+    print("grit:", str(e))
+    print("Try running 'grit help' for valid options.")
     return 1
   if not args:
-    print "No tool provided.  Try running 'grit help' for a list of tools."
+    print("No tool provided.  Try running 'grit help' for a list of tools.")
     return 2
 
   tool = args[0]
@@ -218,29 +272,29 @@ def Main(args):
     else:
       tool = args[1]
       if not _GetToolInfo(tool):
-        print "No such tool.  Try running 'grit help' for a list of tools."
+        print("No such tool.  Try running 'grit help' for a list of tools.")
         return 2
 
-      print ("Help for 'grit %s' (for general help, run 'grit help'):\n"
-             % (tool))
+      print("Help for 'grit %s' (for general help, run 'grit help'):\n" %
+            (tool,))
       _GetToolInfo(tool)[_FACTORY]().ShowUsage()
       return 0
   if not _GetToolInfo(tool):
-    print "No such tool.  Try running 'grit help' for a list of tools."
+    print("No such tool.  Try running 'grit help' for a list of tools.")
     return 2
 
   try:
     if _GetToolInfo(tool)[_REQUIRES_INPUT]:
       os.stat(options.input)
   except OSError:
-    print ('Input file %s not found.\n'
-           'To specify a different input file:\n'
-           '  1. Use the GRIT_INPUT environment variable.\n'
-           '  2. Use the -i command-line option.  This overrides '
-           'GRIT_INPUT.\n'
-           '  3. Specify neither GRIT_INPUT or -i and GRIT will try to load '
-           "'resource.grd'\n"
-           '     from the current directory.' % options.input)
+    print('Input file %s not found.\n'
+          'To specify a different input file:\n'
+          '  1. Use the GRIT_INPUT environment variable.\n'
+          '  2. Use the -i command-line option.  This overrides '
+          'GRIT_INPUT.\n'
+          '  3. Specify neither GRIT_INPUT or -i and GRIT will try to load '
+          "'resource.grd'\n"
+          '     from the current directory.' % options.input)
     return 2
 
   if options.hash:
@@ -255,10 +309,15 @@ def Main(args):
     else:
       return toolobject.Run(options, args[1:])
   except getopt.GetoptError as e:
-    print "grit: %s: %s" % (tool, str(e))
-    print "Try running 'grit help %s' for valid options." % (tool,)
+    print("grit: %s: %s" % (tool, str(e)))
+    print("Try running 'grit help %s' for valid options." % (tool,))
     return 1
 
 
 if __name__ == '__main__':
-  sys.exit(Main(sys.argv[1:]))
+  sys.path.append(os.path.abspath(
+      os.path.join(os.path.dirname(__file__), '..', '..', 'diagnosis')))
+  import crbug_1001171
+
+  with crbug_1001171.DumpStateOnLookupError():
+    sys.exit(Main(sys.argv[1:]))

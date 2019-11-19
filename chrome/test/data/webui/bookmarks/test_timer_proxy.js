@@ -2,10 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-suiteSetup(function() {
-  cr.define('bookmarks', function() {
     // TODO(calamity): Remove TestTimerProxy in favor of MockTimer.
-    class TestTimerProxy {
+    export class TestTimerProxy {
       constructor() {
         this.immediatelyResolveTimeouts = true;
 
@@ -60,9 +58,3 @@ suiteSetup(function() {
         return this.activeTimeouts_.has(id);
       }
     }
-
-    return {
-      TestTimerProxy: TestTimerProxy,
-    };
-  });
-});

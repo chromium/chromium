@@ -277,7 +277,7 @@ class ControllerImpl : public Controller,
   base::CancelableClosure cancel_uploads_callback_;
 
   // Only used to post tasks on the same thread.
-  base::WeakPtrFactory<ControllerImpl> weak_ptr_factory_;
+  base::WeakPtrFactory<ControllerImpl> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ControllerImpl);
 };

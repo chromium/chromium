@@ -5,9 +5,9 @@
 #ifndef COMPONENTS_VIZ_CLIENT_SHARED_BITMAP_REPORTER_H_
 #define COMPONENTS_VIZ_CLIENT_SHARED_BITMAP_REPORTER_H_
 
+#include "base/memory/read_only_shared_memory_region.h"
 #include "components/viz/client/viz_client_export.h"
 #include "components/viz/common/resources/shared_bitmap.h"
-#include "mojo/public/cpp/system/buffer.h"
 
 namespace viz {
 
@@ -19,7 +19,7 @@ namespace viz {
 class VIZ_CLIENT_EXPORT SharedBitmapReporter {
  public:
   // Associates a SharedBitmapId with a shared buffer handle.
-  virtual void DidAllocateSharedBitmap(mojo::ScopedSharedBufferHandle buffer,
+  virtual void DidAllocateSharedBitmap(base::ReadOnlySharedMemoryRegion region,
                                        const SharedBitmapId& id) = 0;
 
   // Disassociates a SharedBitmapId previously passed to

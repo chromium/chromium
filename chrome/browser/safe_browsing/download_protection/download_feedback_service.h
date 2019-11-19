@@ -94,7 +94,7 @@ class DownloadFeedbackService {
   // items are pending.
   base::queue<std::unique_ptr<DownloadFeedback>> active_feedback_;
 
-  base::WeakPtrFactory<DownloadFeedbackService> weak_ptr_factory_;
+  base::WeakPtrFactory<DownloadFeedbackService> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(DownloadFeedbackService);
 };

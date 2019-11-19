@@ -37,9 +37,7 @@ class RemoteDeviceImpl : public RemoteDevice {
 
   // RemoteDevice implementation
   void Connect(StatusCallback cb) override;
-  bool ConnectSync() override;
   void Disconnect(StatusCallback cb) override;
-  bool DisconnectSync() override;
   void CreateBond(StatusCallback cb) override;
   void RemoveBond(StatusCallback cb) override;
   void ReadRemoteRssi(RssiCallback cb) override;

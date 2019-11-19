@@ -12,8 +12,10 @@
 #include "base/compiler_specific.h"
 #include "base/mac/scoped_cftyperef.h"
 #include "base/macros.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/synchronization/condition_variable.h"
 #include "base/synchronization/lock.h"
+#include "build/build_config.h"
 #include "net/base/network_change_notifier.h"
 #include "net/base/network_config_watcher_mac.h"
 
@@ -46,8 +48,6 @@ class NetworkChangeNotifierMac: public NetworkChangeNotifier {
   };
 
  private:
-  class DnsConfigServiceThread;
-
   // Called on the main thread on startup, afterwards on the notifier thread.
   static ConnectionType CalculateConnectionType(SCNetworkConnectionFlags flags);
 
@@ -75,8 +75,6 @@ class NetworkChangeNotifierMac: public NetworkChangeNotifier {
 
   Forwarder forwarder_;
   std::unique_ptr<const NetworkConfigWatcherMac> config_watcher_;
-
-  std::unique_ptr<DnsConfigServiceThread> dns_config_service_thread_;
 
   DISALLOW_COPY_AND_ASSIGN(NetworkChangeNotifierMac);
 };

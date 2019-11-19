@@ -27,7 +27,7 @@ class IMEFeaturePodControllerTest : public NoSessionAshTestBase {
   void SetUp() override {
     NoSessionAshTestBase::SetUp();
 
-    tray_model_ = std::make_unique<UnifiedSystemTrayModel>();
+    tray_model_ = std::make_unique<UnifiedSystemTrayModel>(nullptr);
     tray_controller_ =
         std::make_unique<UnifiedSystemTrayController>(tray_model_.get());
   }
@@ -94,11 +94,11 @@ TEST_F(IMEFeaturePodControllerTest, ButtonVisibilityIMECount) {
   SetUpButton();
 
   SetActiveIMECount(0);
-  EXPECT_FALSE(button()->visible());
+  EXPECT_FALSE(button()->GetVisible());
   SetActiveIMECount(1);
-  EXPECT_FALSE(button()->visible());
+  EXPECT_FALSE(button()->GetVisible());
   SetActiveIMECount(2);
-  EXPECT_TRUE(button()->visible());
+  EXPECT_TRUE(button()->GetVisible());
 }
 
 TEST_F(IMEFeaturePodControllerTest, ButtonVisibilityImeMenuActive) {
@@ -106,11 +106,11 @@ TEST_F(IMEFeaturePodControllerTest, ButtonVisibilityImeMenuActive) {
   Shell::Get()->ime_controller()->ShowImeMenuOnShelf(true);
 
   SetActiveIMECount(0);
-  EXPECT_FALSE(button()->visible());
+  EXPECT_FALSE(button()->GetVisible());
   SetActiveIMECount(1);
-  EXPECT_FALSE(button()->visible());
+  EXPECT_FALSE(button()->GetVisible());
   SetActiveIMECount(2);
-  EXPECT_FALSE(button()->visible());
+  EXPECT_FALSE(button()->GetVisible());
 }
 
 TEST_F(IMEFeaturePodControllerTest, ButtonVisibilityPolicy) {
@@ -119,11 +119,11 @@ TEST_F(IMEFeaturePodControllerTest, ButtonVisibilityPolicy) {
   Shell::Get()->ime_controller()->SetImesManagedByPolicy(true);
 
   SetActiveIMECount(0);
-  EXPECT_TRUE(button()->visible());
+  EXPECT_TRUE(button()->GetVisible());
   SetActiveIMECount(1);
-  EXPECT_TRUE(button()->visible());
+  EXPECT_TRUE(button()->GetVisible());
   SetActiveIMECount(2);
-  EXPECT_TRUE(button()->visible());
+  EXPECT_TRUE(button()->GetVisible());
 }
 
 }  // namespace ash

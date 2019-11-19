@@ -101,7 +101,7 @@ class SearchEnginesHandler : public SettingsPageUIHandler,
   KeywordEditorController list_controller_;
   std::unique_ptr<EditSearchEngineController> edit_controller_;
   PrefChangeRegistrar pref_change_registrar_;
-  base::WeakPtrFactory<SearchEnginesHandler> weak_ptr_factory_;
+  base::WeakPtrFactory<SearchEnginesHandler> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(SearchEnginesHandler);
 };

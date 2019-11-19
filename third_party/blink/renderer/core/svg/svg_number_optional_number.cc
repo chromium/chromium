@@ -30,8 +30,8 @@
 
 #include "third_party/blink/renderer/core/svg/svg_number_optional_number.h"
 
-#include "third_party/blink/renderer/core/svg/svg_animation_element.h"
 #include "third_party/blink/renderer/core/svg/svg_parser_utilities.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
 
 namespace blink {
 
@@ -46,8 +46,8 @@ void SVGNumberOptionalNumber::Trace(blink::Visitor* visitor) {
 }
 
 SVGNumberOptionalNumber* SVGNumberOptionalNumber::Clone() const {
-  return SVGNumberOptionalNumber::Create(first_number_->Clone(),
-                                         second_number_->Clone());
+  return MakeGarbageCollected<SVGNumberOptionalNumber>(first_number_->Clone(),
+                                                       second_number_->Clone());
 }
 
 SVGPropertyBase* SVGNumberOptionalNumber::CloneForAnimation(
@@ -57,8 +57,8 @@ SVGPropertyBase* SVGNumberOptionalNumber::CloneForAnimation(
     x = y = 0;
   }
 
-  return SVGNumberOptionalNumber::Create(SVGNumber::Create(x),
-                                         SVGNumber::Create(y));
+  return MakeGarbageCollected<SVGNumberOptionalNumber>(
+      MakeGarbageCollected<SVGNumber>(x), MakeGarbageCollected<SVGNumber>(y));
 }
 
 String SVGNumberOptionalNumber::ValueAsString() const {
@@ -89,44 +89,36 @@ void SVGNumberOptionalNumber::SetInitial(unsigned value) {
   second_number_->SetInitial(value);
 }
 
-void SVGNumberOptionalNumber::Add(SVGPropertyBase* other, SVGElement*) {
-  SVGNumberOptionalNumber* other_number_optional_number =
-      ToSVGNumberOptionalNumber(other);
-
-  first_number_->SetValue(first_number_->Value() +
-                          other_number_optional_number->first_number_->Value());
-  second_number_->SetValue(
-      second_number_->Value() +
-      other_number_optional_number->second_number_->Value());
+void SVGNumberOptionalNumber::Add(SVGPropertyBase* other,
+                                  SVGElement* context_element) {
+  auto* other_number_optional_number = ToSVGNumberOptionalNumber(other);
+  first_number_->Add(other_number_optional_number->FirstNumber(),
+                     context_element);
+  second_number_->Add(other_number_optional_number->SecondNumber(),
+                      context_element);
 }
 
 void SVGNumberOptionalNumber::CalculateAnimatedValue(
-    SVGAnimationElement* animation_element,
+    const SVGAnimateElement& animation_element,
     float percentage,
     unsigned repeat_count,
     SVGPropertyBase* from,
     SVGPropertyBase* to,
     SVGPropertyBase* to_at_end_of_duration,
-    SVGElement*) {
-  DCHECK(animation_element);
-
-  SVGNumberOptionalNumber* from_number = ToSVGNumberOptionalNumber(from);
-  SVGNumberOptionalNumber* to_number = ToSVGNumberOptionalNumber(to);
-  SVGNumberOptionalNumber* to_at_end_of_duration_number =
+    SVGElement* context_element) {
+  auto* from_number = ToSVGNumberOptionalNumber(from);
+  auto* to_number = ToSVGNumberOptionalNumber(to);
+  auto* to_at_end_of_duration_number =
       ToSVGNumberOptionalNumber(to_at_end_of_duration);
 
-  float x = first_number_->Value();
-  float y = second_number_->Value();
-  animation_element->AnimateAdditiveNumber(
-      percentage, repeat_count, from_number->FirstNumber()->Value(),
-      to_number->FirstNumber()->Value(),
-      to_at_end_of_duration_number->FirstNumber()->Value(), x);
-  animation_element->AnimateAdditiveNumber(
-      percentage, repeat_count, from_number->SecondNumber()->Value(),
-      to_number->SecondNumber()->Value(),
-      to_at_end_of_duration_number->SecondNumber()->Value(), y);
-  first_number_->SetValue(x);
-  second_number_->SetValue(y);
+  first_number_->CalculateAnimatedValue(
+      animation_element, percentage, repeat_count, from_number->FirstNumber(),
+      to_number->FirstNumber(), to_at_end_of_duration_number->FirstNumber(),
+      context_element);
+  second_number_->CalculateAnimatedValue(
+      animation_element, percentage, repeat_count, from_number->SecondNumber(),
+      to_number->SecondNumber(), to_at_end_of_duration_number->SecondNumber(),
+      context_element);
 }
 
 float SVGNumberOptionalNumber::CalculateDistance(SVGPropertyBase* other,

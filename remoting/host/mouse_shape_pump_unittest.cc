@@ -8,9 +8,9 @@
 
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
-#include "base/message_loop/message_loop.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
+#include "base/test/task_environment.h"
 #include "remoting/host/host_mock_objects.h"
 #include "remoting/proto/video.pb.h"
 #include "remoting/protocol/protocol_mock_objects.h"
@@ -66,7 +66,7 @@ class MouseShapePumpTest : public testing::Test {
   void SetCursorShape(const protocol::CursorShapeInfo& cursor_shape);
 
  protected:
-  base::MessageLoop message_loop_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
   base::RunLoop run_loop_;
   std::unique_ptr<MouseShapePump> pump_;
 

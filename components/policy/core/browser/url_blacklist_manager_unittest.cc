@@ -13,7 +13,7 @@
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/run_loop.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
 #include "components/policy/core/common/policy_pref_names.h"
@@ -70,82 +70,19 @@ class URLBlacklistManagerTest : public testing::Test {
     pref_service_.registry()->RegisterListPref(policy_prefs::kUrlBlacklist);
     pref_service_.registry()->RegisterListPref(policy_prefs::kUrlWhitelist);
     blacklist_manager_.reset(new TestingURLBlacklistManager(&pref_service_));
-    scoped_task_environment_.RunUntilIdle();
+    task_environment_.RunUntilIdle();
   }
 
   void TearDown() override {
     if (blacklist_manager_)
-      scoped_task_environment_.RunUntilIdle();
+      task_environment_.RunUntilIdle();
     blacklist_manager_.reset();
   }
 
   TestingPrefServiceSimple pref_service_;
   std::unique_ptr<TestingURLBlacklistManager> blacklist_manager_;
 
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
-};
-
-// Parameters for the FilterToComponents test.
-struct FilterTestParams {
- public:
-  FilterTestParams(const std::string& filter,
-                   const std::string& scheme,
-                   const std::string& host,
-                   bool match_subdomains,
-                   uint16_t port,
-                   const std::string& path)
-      : filter_(filter),
-        scheme_(scheme),
-        host_(host),
-        match_subdomains_(match_subdomains),
-        port_(port),
-        path_(path) {}
-
-  FilterTestParams(const FilterTestParams& params)
-      : filter_(params.filter_), scheme_(params.scheme_), host_(params.host_),
-        match_subdomains_(params.match_subdomains_), port_(params.port_),
-        path_(params.path_) {}
-
-  const FilterTestParams& operator=(const FilterTestParams& params) {
-    filter_ = params.filter_;
-    scheme_ = params.scheme_;
-    host_ = params.host_;
-    match_subdomains_ = params.match_subdomains_;
-    port_ = params.port_;
-    path_ = params.path_;
-    return *this;
-  }
-
-  const std::string& filter() const { return filter_; }
-  const std::string& scheme() const { return scheme_; }
-  const std::string& host() const { return host_; }
-  bool match_subdomains() const { return match_subdomains_; }
-  uint16_t port() const { return port_; }
-  const std::string& path() const { return path_; }
-
- private:
-  std::string filter_;
-  std::string scheme_;
-  std::string host_;
-  bool match_subdomains_;
-  uint16_t port_;
-  std::string path_;
-};
-
-// Make Valgrind happy. Without this function, a generic one will print the
-// raw bytes in FilterTestParams, which due to some likely padding will access
-// uninitialized memory.
-void PrintTo(const FilterTestParams& params, std::ostream* os) {
-  *os << params.filter();
-}
-
-class URLBlacklistFilterToComponentsTest
-    : public testing::TestWithParam<FilterTestParams> {
- public:
-  URLBlacklistFilterToComponentsTest() {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(URLBlacklistFilterToComponentsTest);
+  base::test::TaskEnvironment task_environment_;
 };
 
 }  // namespace
@@ -182,34 +119,12 @@ policy::URLBlacklist::URLBlacklistState GetMatch(const std::string& pattern,
   return blacklist.GetURLBlacklistState(GURL(url));
 }
 
-TEST_P(URLBlacklistFilterToComponentsTest, FilterToComponents) {
-  std::string scheme;
-  std::string host;
-  bool match_subdomains = true;
-  uint16_t port = 42;
-  std::string path;
-  std::string query;
-
-  URLBlacklist::FilterToComponents(GetParam().filter(),
-                                   &scheme,
-                                   &host,
-                                   &match_subdomains,
-                                   &port,
-                                   &path,
-                                   &query);
-  EXPECT_EQ(GetParam().scheme(), scheme);
-  EXPECT_EQ(GetParam().host(), host);
-  EXPECT_EQ(GetParam().match_subdomains(), match_subdomains);
-  EXPECT_EQ(GetParam().port(), port);
-  EXPECT_EQ(GetParam().path(), path);
-}
-
 TEST_F(URLBlacklistManagerTest, LoadBlacklistOnCreate) {
   auto list = std::make_unique<base::ListValue>();
   list->AppendString("example.com");
   pref_service_.SetManagedPref(policy_prefs::kUrlBlacklist, std::move(list));
   auto manager = std::make_unique<URLBlacklistManager>(&pref_service_);
-  scoped_task_environment_.RunUntilIdle();
+  task_environment_.RunUntilIdle();
   EXPECT_EQ(URLBlacklist::URL_IN_BLACKLIST,
             manager->GetURLBlacklistState(GURL("http://example.com")));
 }
@@ -219,7 +134,7 @@ TEST_F(URLBlacklistManagerTest, LoadWhitelistOnCreate) {
   list->AppendString("example.com");
   pref_service_.SetManagedPref(policy_prefs::kUrlWhitelist, std::move(list));
   auto manager = std::make_unique<URLBlacklistManager>(&pref_service_);
-  scoped_task_environment_.RunUntilIdle();
+  task_environment_.RunUntilIdle();
   EXPECT_EQ(URLBlacklist::URL_IN_WHITELIST,
             manager->GetURLBlacklistState(GURL("http://example.com")));
 }
@@ -233,93 +148,10 @@ TEST_F(URLBlacklistManagerTest, SingleUpdateForTwoPrefChanges) {
                                std::move(blacklist));
   pref_service_.SetManagedPref(policy_prefs::kUrlBlacklist,
                                std::move(whitelist));
-  scoped_task_environment_.RunUntilIdle();
+  task_environment_.RunUntilIdle();
 
   EXPECT_EQ(1, blacklist_manager_->update_called());
 }
-
-INSTANTIATE_TEST_SUITE_P(
-    URLBlacklistFilterToComponentsTestInstance,
-    URLBlacklistFilterToComponentsTest,
-    testing::Values(
-        FilterTestParams("google.com",
-                         std::string(),
-                         ".google.com",
-                         true,
-                         0u,
-                         std::string()),
-        FilterTestParams(".google.com",
-                         std::string(),
-                         "google.com",
-                         false,
-                         0u,
-                         std::string()),
-        FilterTestParams("http://google.com",
-                         "http",
-                         ".google.com",
-                         true,
-                         0u,
-                         std::string()),
-        FilterTestParams("google.com/",
-                         std::string(),
-                         ".google.com",
-                         true,
-                         0u,
-                         "/"),
-        FilterTestParams("http://google.com:8080/whatever",
-                         "http",
-                         ".google.com",
-                         true,
-                         8080u,
-                         "/whatever"),
-        FilterTestParams("http://user:pass@google.com:8080/whatever",
-                         "http",
-                         ".google.com",
-                         true,
-                         8080u,
-                         "/whatever"),
-        FilterTestParams("123.123.123.123",
-                         std::string(),
-                         "123.123.123.123",
-                         false,
-                         0u,
-                         std::string()),
-        FilterTestParams("https://123.123.123.123",
-                         "https",
-                         "123.123.123.123",
-                         false,
-                         0u,
-                         std::string()),
-        FilterTestParams("123.123.123.123/",
-                         std::string(),
-                         "123.123.123.123",
-                         false,
-                         0u,
-                         "/"),
-        FilterTestParams("http://123.123.123.123:123/whatever",
-                         "http",
-                         "123.123.123.123",
-                         false,
-                         123u,
-                         "/whatever"),
-        FilterTestParams("*",
-                         std::string(),
-                         std::string(),
-                         true,
-                         0u,
-                         std::string()),
-        FilterTestParams("ftp://*",
-                         "ftp",
-                         std::string(),
-                         true,
-                         0u,
-                         std::string()),
-        FilterTestParams("http://*/whatever",
-                         "http",
-                         std::string(),
-                         true,
-                         0u,
-                         "/whatever")));
 
 TEST_F(URLBlacklistManagerTest, Filtering) {
   URLBlacklist blacklist;
@@ -455,6 +287,25 @@ TEST_F(URLBlacklistManagerTest, Filtering) {
   allowed->AppendString("example.com");
   blacklist.Allow(allowed.get());
   EXPECT_FALSE(blacklist.IsURLBlocked(GURL("http://example.com")));
+
+  // Treats chrome-devtools and devtools schemes the same way.
+  blocked.reset(new base::ListValue);
+  blocked->AppendString("*");
+  blacklist.Block(blocked.get());
+  allowed.reset(new base::ListValue);
+  allowed->AppendString("chrome-devtools://*");
+  blacklist.Allow(allowed.get());
+  EXPECT_FALSE(blacklist.IsURLBlocked(GURL("devtools://something.com")));
+  EXPECT_TRUE(blacklist.IsURLBlocked(GURL("https://something.com")));
+
+  blocked.reset(new base::ListValue);
+  blocked->AppendString("*");
+  blacklist.Block(blocked.get());
+  allowed.reset(new base::ListValue);
+  allowed->AppendString("devtools://*");
+  blacklist.Allow(allowed.get());
+  EXPECT_FALSE(blacklist.IsURLBlocked(GURL("devtools://something.com")));
+  EXPECT_TRUE(blacklist.IsURLBlocked(GURL("https://something.com")));
 }
 
 TEST_F(URLBlacklistManagerTest, QueryParameters) {
@@ -679,7 +530,6 @@ TEST_F(URLBlacklistManagerTest, BlacklistBasicCoverage) {
   EXPECT_TRUE(IsMatch("example.com", "ftp://example.com"));
   EXPECT_TRUE(IsMatch("example.com", "http://example.com"));
   EXPECT_TRUE(IsMatch("example.com", "https://example.com"));
-  EXPECT_TRUE(IsMatch("example.com", "gopher://example.com"));
   EXPECT_TRUE(IsMatch("example.com", "ws://example.com"));
   EXPECT_TRUE(IsMatch("example.com", "wss://example.com"));
 
@@ -689,6 +539,7 @@ TEST_F(URLBlacklistManagerTest, BlacklistBasicCoverage) {
   EXPECT_FALSE(IsMatch("example.com/*", "filesystem:///something"));
   EXPECT_FALSE(IsMatch("example.com", "custom://example.com"));
   EXPECT_FALSE(IsMatch("example", "custom://example"));
+  EXPECT_FALSE(IsMatch("example.com", "gopher://example.com"));
 
   // An optional '.' (dot) can prefix the host field to disable subdomain
   // matching, see below for details.

@@ -53,18 +53,17 @@ PrefHashFilter::PrefHashFilter(
     StoreContentsPair external_validation_hash_store_pair,
     const std::vector<prefs::mojom::TrackedPreferenceMetadataPtr>&
         tracked_preferences,
-    prefs::mojom::ResetOnLoadObserverPtr reset_on_load_observer,
+    mojo::PendingRemote<prefs::mojom::ResetOnLoadObserver>
+        reset_on_load_observer,
     prefs::mojom::TrackedPreferenceValidationDelegate* delegate,
-    size_t reporting_ids_count,
-    bool report_super_mac_validity)
+    size_t reporting_ids_count)
     : pref_hash_store_(std::move(pref_hash_store)),
       external_validation_hash_store_pair_(
           external_validation_hash_store_pair.first
               ? base::make_optional(
                     std::move(external_validation_hash_store_pair))
               : base::nullopt),
-      reset_on_load_observer_(std::move(reset_on_load_observer)),
-      report_super_mac_validity_(report_super_mac_validity) {
+      reset_on_load_observer_(std::move(reset_on_load_observer)) {
   DCHECK(pref_hash_store_);
   DCHECK_GE(reporting_ids_count, tracked_preferences.size());
   // Verify that, if |external_validation_hash_store_pair_| is present, both its
@@ -211,7 +210,7 @@ void PrefHashFilter::OnStoreDeletionFromDisk() {
 }
 
 void PrefHashFilter::FinalizeFilterOnLoad(
-    const PostFilterOnLoadCallback& post_filter_on_load_callback,
+    PostFilterOnLoadCallback post_filter_on_load_callback,
     std::unique_ptr<base::DictionaryValue> pref_store_contents,
     bool prefs_altered) {
   DCHECK(pref_store_contents);
@@ -233,11 +232,6 @@ void PrefHashFilter::FinalizeFilterOnLoad(
 
     CleanupDeprecatedTrackedPreferences(pref_store_contents.get(),
                                         hash_store_transaction.get());
-
-    if (report_super_mac_validity_) {
-      UMA_HISTOGRAM_BOOLEAN("Settings.HashesDictionaryTrusted",
-                            hash_store_transaction->IsSuperMACValid());
-    }
 
     for (auto it = tracked_paths_.begin(); it != tracked_paths_.end(); ++it) {
       if (it->second->EnforceAndReport(
@@ -265,8 +259,8 @@ void PrefHashFilter::FinalizeFilterOnLoad(
   UMA_HISTOGRAM_TIMES("Settings.FilterOnLoadTime",
                       base::TimeTicks::Now() - checkpoint);
 
-  post_filter_on_load_callback.Run(std::move(pref_store_contents),
-                                   prefs_altered);
+  std::move(post_filter_on_load_callback)
+      .Run(std::move(pref_store_contents), prefs_altered);
 }
 
 // static

@@ -15,6 +15,12 @@ declare_args() {
 
   enable_windows_mr = is_win
 
+  # To build with OpenXR support, the OpenXR Loader needs to be pulled to
+  # third_party/openxr.
+  # TODO (crbug.com/998160): there's an issue affecting the __preload macro
+  # used in DirectXMathVector.inl on Windows on Arm.
+  enable_openxr = checkout_openxr && (is_win && current_cpu != "arm64")
+
   # To build with Oculus support, the Oculus SDK for Windows will need to be
   # installed in third_party/libovr/src.  See
   # third_party/libovr/README.chromium for details.
@@ -27,7 +33,7 @@ declare_args() {
   # the binary size impact is small and allows many VR tests to run on Linux
   enable_vr =
       enable_gvr_services || enable_openvr || enable_oculus_vr ||
-      enable_windows_mr ||
+      enable_windows_mr || enable_openxr ||
       (is_desktop_linux && (current_cpu == "x64" || current_cpu == "x86"))
 
   # Whether to include VR extras like test APKs in non-VR-specific targets
@@ -35,39 +41,10 @@ declare_args() {
 }
 
 declare_args() {
-  # Controls whether the ARCore SDK is packaged into the APK.
-  # It is not used for bundle builds.
-  # TODO(crbug.com/920424): Remove this variable once it is no longer necessary.
-  # TODO(crbug.com/843374): AR should not depend on |enable_vr|.
-  package_arcore = enable_vr && is_android && !is_chromecast &&
-                   (current_cpu == "arm" || current_cpu == "arm64") &&
-                   (android_channel == "default" ||
-                    android_channel == "canary" || android_channel == "dev")
-
   # Controls inclusion of code for ARCore that must be identical across configs.
   # Once crbug.com/920424 is resolved, this will exactly control whether ARCore
   # is supported.
   # TODO(crbug.com/843374): AR should not depend on |enable_vr|.
   enable_arcore = enable_vr && is_android && !is_chromecast &&
                   (current_cpu == "arm" || current_cpu == "arm64")
-
-  # When enabled, host Desktop VR devices (OpenVR and Oculus) in a separate
-  # process.  When disabled, and Oculus/OpenVR are enabled, they are hosted
-  # in the browser process.
-  enable_isolated_xr_service =
-      enable_oculus_vr || enable_openvr || enable_windows_mr
-}
-
-declare_args() {
-  # Whether to create a VR/AR module when building bundles. If false, VR/AR code
-  # will become part of the base module.
-  modularize_vr = enable_vr
-  modularize_ar = enable_arcore
-
-  # When true, portions of VR's native code are included in the VR DFM.
-  modularize_vr_native = false
-}
-
-if (modularize_vr_native) {
-  assert(modularize_vr)
 }

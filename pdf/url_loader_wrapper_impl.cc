@@ -73,7 +73,7 @@ bool GetByteRangeFromStr(const std::string& content_range_str,
 bool GetByteRangeFromHeaders(const std::string& headers, int* start, int* end) {
   net::HttpUtil::HeadersIterator it(headers.begin(), headers.end(), "\n");
   while (it.GetNext()) {
-    if (base::LowerCaseEqualsASCII(it.name(), "content-range")) {
+    if (base::LowerCaseEqualsASCII(it.name_piece(), "content-range")) {
       if (GetByteRangeFromStr(it.values().c_str(), start, end))
         return true;
     }
@@ -219,13 +219,14 @@ void URLLoaderWrapperImpl::ParseHeaders() {
   net::HttpUtil::HeadersIterator it(response_headers_.begin(),
                                     response_headers_.end(), "\n");
   while (it.GetNext()) {
-    if (base::LowerCaseEqualsASCII(it.name(), "content-length")) {
+    base::StringPiece name = it.name_piece();
+    if (base::LowerCaseEqualsASCII(name, "content-length")) {
       content_length_ = atoi(it.values().c_str());
-    } else if (base::LowerCaseEqualsASCII(it.name(), "accept-ranges")) {
+    } else if (base::LowerCaseEqualsASCII(name, "accept-ranges")) {
       accept_ranges_bytes_ = base::LowerCaseEqualsASCII(it.values(), "bytes");
-    } else if (base::LowerCaseEqualsASCII(it.name(), "content-encoding")) {
+    } else if (base::LowerCaseEqualsASCII(name, "content-encoding")) {
       content_encoded_ = true;
-    } else if (base::LowerCaseEqualsASCII(it.name(), "content-type")) {
+    } else if (base::LowerCaseEqualsASCII(name, "content-type")) {
       content_type_ = it.values();
       size_t semi_colon_pos = content_type_.find(';');
       if (semi_colon_pos != std::string::npos) {
@@ -233,7 +234,7 @@ void URLLoaderWrapperImpl::ParseHeaders() {
       }
       base::TrimWhitespaceASCII(content_type_, base::TRIM_ALL, &content_type_);
       // multipart boundary.
-      std::string type = base::ToLowerASCII(it.values());
+      std::string type = base::ToLowerASCII(it.values_piece());
       if (base::StartsWith(type, "multipart/", base::CompareCase::SENSITIVE)) {
         const char* boundary = strstr(type.c_str(), "boundary=");
         DCHECK(boundary);
@@ -242,9 +243,9 @@ void URLLoaderWrapperImpl::ParseHeaders() {
           is_multipart_ = !multipart_boundary_.empty();
         }
       }
-    } else if (base::LowerCaseEqualsASCII(it.name(), "content-disposition")) {
+    } else if (base::LowerCaseEqualsASCII(name, "content-disposition")) {
       content_disposition_ = it.values();
-    } else if (base::LowerCaseEqualsASCII(it.name(), "content-range")) {
+    } else if (base::LowerCaseEqualsASCII(name, "content-range")) {
       int start = 0;
       int end = 0;
       if (GetByteRangeFromStr(it.values().c_str(), &start, &end)) {

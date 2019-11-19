@@ -1,0 +1,24 @@
+853 objects, 458256384 bytes
+188 unbound objects, 56565760 bytes
+659 bound objects, 386105344 bytes
+159 purgeable objects, 51441664 bytes
+25 mapped objects, 1945600 bytes
+1 display objects (pinned), 15360000 bytes
+4294967296 [268435456] gtt total
+
+[k]contexts: 46 objects, 2297856 bytes (0 active, 2297856 inactive, 2297856 global, 0 shared, 0 unbound)
+frecon: 3 objects, 46080000 bytes (0 active, 46080000 inactive, 46080000 global, 0 shared, 0 unbound)
+chrome: 5 objects, 46604288 bytes (0 active, 46604288 inactive, 46604288 global, 46080000 shared, 0 unbound)
+chrome: 494 objects, 204873728 bytes (0 active, 296136704 inactive, 46080000 global, 46080000 shared, 876544 unbound)
+surfaceflinger: 29 objects, 46206976 bytes (0 active, 44929024 inactive, 14475264 global, 45400064 shared, 15753216 unbound)
+RenderThread: 22 objects, 401408 bytes (0 active, 180224 inactive, 0 global, 4096 shared, 221184 unbound)
+Binder:12_3: 11 objects, 30973952 bytes (0 active, 0 inactive, 0 global, 30973952 shared, 30965760 unbound)
+RenderThread: 1 objects, 4096 bytes (0 active, 0 inactive, 0 global, 4096 shared, 0 unbound)
+RenderThread: 33 objects, 716800 bytes (0 active, 581632 inactive, 0 global, 4096 shared, 135168 unbound)
+RenderThread: 2 objects, 8192 bytes (0 active, 0 inactive, 0 global, 8192 shared, 4096 unbound)
+RenderThread: 33 objects, 8388608 bytes (0 active, 8253440 inactive, 0 global, 0 shared, 135168 unbound)
+android.display: 3 objects, 30736384 bytes (0 active, 0 inactive, 0 global, 30736384 shared, 30736384 unbound)
+Binder:730_1: 2 objects, 30720000 bytes (0 active, 0 inactive, 0 global, 30720000 shared, 15360000 unbound)
+RenderThread: 148 objects, 51597312 bytes (0 active, 27537408 inactive, 0 global, 0 shared, 24059904 unbound)
+RenderThread: 26 objects, 50978816 bytes (0 active, 50769920 inactive, 0 global, 0 shared, 208896 unbound)
+

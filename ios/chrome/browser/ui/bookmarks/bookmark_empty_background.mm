@@ -5,6 +5,7 @@
 #include "ios/chrome/browser/ui/bookmarks/bookmark_empty_background.h"
 
 #import "ios/chrome/browser/ui/bookmarks/bookmark_ui_constants.h"
+#import "ios/chrome/common/colors/semantic_color_names.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -30,19 +31,19 @@ const CGFloat kStackViewMargin = 24.0;
 @end
 
 @implementation BookmarkEmptyBackground
-@synthesize stackView = _stackView;
-@synthesize textLabel = _textLabel;
 
 - (instancetype)initWithFrame:(CGRect)frame {
   self = [super initWithFrame:frame];
   if (self) {
     // The "star" image.
-    UIImageView* imageView = [[UIImageView alloc]
-        initWithImage:[UIImage imageNamed:@"bookmark_empty_star"]];
+    UIImage* image = [[UIImage imageNamed:@"bookmark_empty_star"]
+        imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+    UIImageView* imageView = [[UIImageView alloc] initWithImage:image];
+    imageView.tintColor = [UIColor colorNamed:kPlaceholderImageTintColor];
 
     // The explanatory text label.
     self.textLabel = [[UILabel alloc] init];
-    self.textLabel.backgroundColor = [UIColor clearColor];
+    self.textLabel.backgroundColor = UIColor.clearColor;
     self.textLabel.accessibilityIdentifier =
         kBookmarkEmptyStateExplanatoryLabelIdentifier;
     self.textLabel.textAlignment = NSTextAlignmentCenter;
@@ -50,7 +51,7 @@ const CGFloat kStackViewMargin = 24.0;
     self.textLabel.font =
         [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
     self.textLabel.adjustsFontForContentSizeCategory = YES;
-    self.textLabel.textColor = [UIColor colorWithWhite:0 alpha:100.0 / 255];
+    self.textLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
 
     // Vertical stack view that centers its contents.
     _stackView = [[UIStackView alloc]

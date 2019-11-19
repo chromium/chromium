@@ -35,6 +35,7 @@ TraceEvent::TraceEvent() = default;
 TraceEvent::TraceEvent(int thread_id,
                        TimeTicks timestamp,
                        ThreadTicks thread_timestamp,
+                       ThreadInstructionCount thread_instruction_count,
                        char phase,
                        const unsigned char* category_group_enabled,
                        const char* name,
@@ -45,6 +46,7 @@ TraceEvent::TraceEvent(int thread_id,
                        unsigned int flags)
     : timestamp_(timestamp),
       thread_timestamp_(thread_timestamp),
+      thread_instruction_count_(thread_instruction_count),
       scope_(scope),
       id_(id),
       category_group_enabled_(category_group_enabled),
@@ -65,6 +67,7 @@ void TraceEvent::Reset() {
   // Only reset fields that won't be initialized in Reset(int, ...), or that may
   // hold references to other objects.
   duration_ = TimeDelta::FromInternalValue(-1);
+  thread_instruction_delta_ = ThreadInstructionDelta();
   args_.Reset();
   parameter_copy_storage_.Reset();
 }
@@ -72,6 +75,7 @@ void TraceEvent::Reset() {
 void TraceEvent::Reset(int thread_id,
                        TimeTicks timestamp,
                        ThreadTicks thread_timestamp,
+                       ThreadInstructionCount thread_instruction_count,
                        char phase,
                        const unsigned char* category_group_enabled,
                        const char* name,
@@ -90,6 +94,7 @@ void TraceEvent::Reset(int thread_id,
   thread_id_ = thread_id;
   flags_ = flags;
   bind_id_ = bind_id;
+  thread_instruction_count_ = thread_instruction_count;
   phase_ = phase;
 
   InitArgs(args);
@@ -103,7 +108,8 @@ void TraceEvent::InitArgs(TraceArguments* args) {
 }
 
 void TraceEvent::UpdateDuration(const TimeTicks& now,
-                                const ThreadTicks& thread_now) {
+                                const ThreadTicks& thread_now,
+                                ThreadInstructionCount thread_instruction_now) {
   DCHECK_EQ(duration_.ToInternalValue(), -1);
   duration_ = now - timestamp_;
 
@@ -111,6 +117,11 @@ void TraceEvent::UpdateDuration(const TimeTicks& now,
   // initialized when it was recorded.
   if (thread_timestamp_ != ThreadTicks())
     thread_duration_ = thread_now - thread_timestamp_;
+
+  if (!thread_instruction_count_.is_null()) {
+    thread_instruction_delta_ =
+        thread_instruction_now - thread_instruction_count_;
+  }
 }
 
 void TraceEvent::EstimateTraceMemoryOverhead(
@@ -191,12 +202,22 @@ void TraceEvent::AppendAsJSON(
       if (thread_duration != -1)
         StringAppendF(out, ",\"tdur\":%" PRId64, thread_duration);
     }
+    if (!thread_instruction_count_.is_null()) {
+      int64_t thread_instructions = thread_instruction_delta_.ToInternalValue();
+      StringAppendF(out, ",\"tidelta\":%" PRId64, thread_instructions);
+    }
   }
 
   // Output tts if thread_timestamp is valid.
   if (!thread_timestamp_.is_null()) {
     int64_t thread_time_int64 = thread_timestamp_.ToInternalValue();
     StringAppendF(out, ",\"tts\":%" PRId64, thread_time_int64);
+  }
+
+  // Output ticount if thread_instruction_count is valid.
+  if (!thread_instruction_count_.is_null()) {
+    int64_t thread_instructions = thread_instruction_count_.ToInternalValue();
+    StringAppendF(out, ",\"ticount\":%" PRId64, thread_instructions);
   }
 
   // Output async tts marker field if flag is set.

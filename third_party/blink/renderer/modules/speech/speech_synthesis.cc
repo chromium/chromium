@@ -25,10 +25,13 @@
 
 #include "third_party/blink/renderer/modules/speech/speech_synthesis.h"
 
+#include "build/build_config.h"
+#include "third_party/blink/public/common/browser_interface_broker_proxy.h"
+#include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
+#include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/deprecation.h"
-#include "third_party/blink/renderer/core/frame/use_counter.h"
 #include "third_party/blink/renderer/core/html/media/autoplay_policy.h"
 #include "third_party/blink/renderer/core/timing/dom_window_performance.h"
 #include "third_party/blink/renderer/core/timing/performance.h"
@@ -36,43 +39,47 @@
 #include "third_party/blink/renderer/modules/speech/speech_synthesis_error_event_init.h"
 #include "third_party/blink/renderer/modules/speech/speech_synthesis_event.h"
 #include "third_party/blink/renderer/modules/speech/speech_synthesis_event_init.h"
-#include "third_party/blink/renderer/platform/speech/platform_speech_synthesis_voice.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 
 namespace blink {
 
 SpeechSynthesis* SpeechSynthesis::Create(ExecutionContext* context) {
-  return MakeGarbageCollected<SpeechSynthesis>(context);
+  SpeechSynthesis* synthesis = MakeGarbageCollected<SpeechSynthesis>(context);
+#if defined(OS_ANDROID)
+  // On Android devices we lazily initialize |mojom_synthesis_| to avoid
+  // needlessly binding to the TTS service, see https://crbug.com/811929.
+  // TODO(crbug/811929): Consider moving this logic into the Android-
+  // specific backend implementation.
+#else
+  synthesis->InitializeMojomSynthesis();
+#endif
+  return synthesis;
+}
+
+SpeechSynthesis* SpeechSynthesis::CreateForTesting(
+    ExecutionContext* context,
+    mojo::PendingRemote<mojom::blink::SpeechSynthesis> mojom_synthesis) {
+  SpeechSynthesis* synthesis = MakeGarbageCollected<SpeechSynthesis>(context);
+  synthesis->SetMojomSynthesisForTesting(std::move(mojom_synthesis));
+  return synthesis;
 }
 
 SpeechSynthesis::SpeechSynthesis(ExecutionContext* context)
-    : ContextClient(context),
-      platform_speech_synthesizer_(PlatformSpeechSynthesizer::Create(this)),
-      is_paused_(false) {
+    : ContextClient(context) {
   DCHECK(!GetExecutionContext() || GetExecutionContext()->IsDocument());
 }
 
-void SpeechSynthesis::SetPlatformSynthesizer(
-    PlatformSpeechSynthesizer* synthesizer) {
-  platform_speech_synthesizer_ = synthesizer;
-}
-
-void SpeechSynthesis::VoicesDidChange() {
+void SpeechSynthesis::OnSetVoiceList(
+    Vector<mojom::blink::SpeechSynthesisVoicePtr> mojom_voices) {
   voice_list_.clear();
-  if (GetExecutionContext())
-    DispatchEvent(*Event::Create(event_type_names::kVoiceschanged));
+  for (auto& mojom_voice : mojom_voices)
+    voice_list_.push_back(SpeechSynthesisVoice::Create(std::move(mojom_voice)));
+  VoicesDidChange();
 }
 
 const HeapVector<Member<SpeechSynthesisVoice>>& SpeechSynthesis::getVoices() {
-  if (voice_list_.size())
-    return voice_list_;
-
-  // If the voiceList is empty, that's the cue to get the voices from the
-  // platform again.
-  const Vector<scoped_refptr<PlatformSpeechSynthesisVoice>>& platform_voices =
-      platform_speech_synthesizer_->GetVoiceList();
-  for (auto voice : platform_voices)
-    voice_list_.push_back(SpeechSynthesisVoice::Create(voice));
-
+  // Kick off initialization here to ensure voice list gets populated.
+  InitializeMojomSynthesisIfNeeded();
   return voice_list_;
 }
 
@@ -93,19 +100,6 @@ bool SpeechSynthesis::paused() const {
   return is_paused_;
 }
 
-void SpeechSynthesis::StartSpeakingImmediately() {
-  SpeechSynthesisUtterance* utterance = CurrentSpeechUtterance();
-  DCHECK(utterance);
-
-  double millis;
-  if (!GetElapsedTimeMillis(&millis))
-    return;
-
-  utterance->SetStartTime(millis / 1000.0);
-  is_paused_ = false;
-  platform_speech_synthesizer_->Speak(utterance->PlatformUtterance());
-}
-
 void SpeechSynthesis::speak(SpeechSynthesisUtterance* utterance) {
   DCHECK(utterance);
   Document* document = To<Document>(GetExecutionContext());
@@ -115,8 +109,8 @@ void SpeechSynthesis::speak(SpeechSynthesisUtterance* utterance) {
   // Note: Non-UseCounter based TTS metrics are of the form TextToSpeech.* and
   // are generally global, whereas these are scoped to a single page load.
   UseCounter::Count(document, WebFeature::kTextToSpeech_Speak);
-  UseCounter::CountCrossOriginIframe(
-      *document, WebFeature::kTextToSpeech_SpeakCrossOrigin);
+  document->CountUseOnlyInCrossOriginIframe(
+      WebFeature::kTextToSpeech_SpeakCrossOrigin);
   if (!IsAllowedToStartByAutoplay()) {
     Deprecation::CountDeprecation(
         document, WebFeature::kTextToSpeech_SpeakDisallowedByAutoplay);
@@ -136,50 +130,86 @@ void SpeechSynthesis::cancel() {
   // may still have references to some of these utterances and may
   // fire events on them asynchronously.
   utterance_queue_.clear();
-  platform_speech_synthesizer_->Cancel();
+
+  InitializeMojomSynthesisIfNeeded();
+  mojom_synthesis_->Cancel();
 }
 
 void SpeechSynthesis::pause() {
-  if (!is_paused_)
-    platform_speech_synthesizer_->Pause();
+  if (is_paused_)
+    return;
+
+  InitializeMojomSynthesisIfNeeded();
+  mojom_synthesis_->Pause();
 }
 
 void SpeechSynthesis::resume() {
   if (!CurrentSpeechUtterance())
     return;
-  platform_speech_synthesizer_->Resume();
+
+  InitializeMojomSynthesisIfNeeded();
+  mojom_synthesis_->Resume();
 }
 
-void SpeechSynthesis::FireEvent(const AtomicString& type,
-                                SpeechSynthesisUtterance* utterance,
-                                uint32_t char_index,
-                                const String& name) {
+void SpeechSynthesis::DidStartSpeaking(SpeechSynthesisUtterance* utterance) {
+  FireEvent(event_type_names::kStart, utterance, 0, 0, String());
+}
+
+void SpeechSynthesis::DidPauseSpeaking(SpeechSynthesisUtterance* utterance) {
+  is_paused_ = true;
+  FireEvent(event_type_names::kPause, utterance, 0, 0, String());
+}
+
+void SpeechSynthesis::DidResumeSpeaking(SpeechSynthesisUtterance* utterance) {
+  is_paused_ = false;
+  FireEvent(event_type_names::kResume, utterance, 0, 0, String());
+}
+
+void SpeechSynthesis::DidFinishSpeaking(SpeechSynthesisUtterance* utterance) {
+  HandleSpeakingCompleted(utterance, false);
+}
+
+void SpeechSynthesis::SpeakingErrorOccurred(
+    SpeechSynthesisUtterance* utterance) {
+  HandleSpeakingCompleted(utterance, true);
+}
+
+void SpeechSynthesis::WordBoundaryEventOccurred(
+    SpeechSynthesisUtterance* utterance,
+    unsigned char_index,
+    unsigned char_length) {
+  DEFINE_STATIC_LOCAL(const String, word_boundary_string, ("word"));
+  FireEvent(event_type_names::kBoundary, utterance, char_index, char_length,
+            word_boundary_string);
+}
+
+void SpeechSynthesis::SentenceBoundaryEventOccurred(
+    SpeechSynthesisUtterance* utterance,
+    unsigned char_index,
+    unsigned char_length) {
+  DEFINE_STATIC_LOCAL(const String, sentence_boundary_string, ("sentence"));
+  FireEvent(event_type_names::kBoundary, utterance, char_index, char_length,
+            sentence_boundary_string);
+}
+
+void SpeechSynthesis::VoicesDidChange() {
+  if (GetExecutionContext())
+    DispatchEvent(*Event::Create(event_type_names::kVoiceschanged));
+}
+
+void SpeechSynthesis::StartSpeakingImmediately() {
+  SpeechSynthesisUtterance* utterance = CurrentSpeechUtterance();
+  DCHECK(utterance);
+
   double millis;
   if (!GetElapsedTimeMillis(&millis))
     return;
 
-  SpeechSynthesisEventInit* init = SpeechSynthesisEventInit::Create();
-  init->setUtterance(utterance);
-  init->setCharIndex(char_index);
-  init->setElapsedTime(millis - (utterance->StartTime() * 1000.0));
-  init->setName(name);
-  utterance->DispatchEvent(*SpeechSynthesisEvent::Create(type, init));
-}
+  utterance->SetStartTime(millis / 1000.0);
+  is_paused_ = false;
 
-void SpeechSynthesis::FireErrorEvent(SpeechSynthesisUtterance* utterance,
-                                     uint32_t char_index,
-                                     const String& error) {
-  double millis;
-  if (!GetElapsedTimeMillis(&millis))
-    return;
-
-  SpeechSynthesisErrorEventInit* init = SpeechSynthesisErrorEventInit::Create();
-  init->setUtterance(utterance);
-  init->setCharIndex(char_index);
-  init->setElapsedTime(millis - (utterance->StartTime() * 1000.0));
-  init->setError(error);
-  utterance->DispatchEvent(
-      *SpeechSynthesisErrorEvent::Create(event_type_names::kError, init));
+  InitializeMojomSynthesisIfNeeded();
+  utterance->Start(this);
 }
 
 void SpeechSynthesis::HandleSpeakingCompleted(
@@ -204,7 +234,7 @@ void SpeechSynthesis::HandleSpeakingCompleted(
     // generic error.
     FireErrorEvent(utterance, 0, "synthesis-failed");
   } else {
-    FireEvent(event_type_names::kEnd, utterance, 0, String());
+    FireEvent(event_type_names::kEnd, utterance, 0, 0, String());
   }
 
   // Start the next utterance if we just finished one and one was pending.
@@ -212,67 +242,38 @@ void SpeechSynthesis::HandleSpeakingCompleted(
     StartSpeakingImmediately();
 }
 
-void SpeechSynthesis::BoundaryEventOccurred(
-    PlatformSpeechSynthesisUtterance* utterance,
-    SpeechBoundary boundary,
-    unsigned char_index) {
-  DEFINE_STATIC_LOCAL(const String, word_boundary_string, ("word"));
-  DEFINE_STATIC_LOCAL(const String, sentence_boundary_string, ("sentence"));
+void SpeechSynthesis::FireEvent(const AtomicString& type,
+                                SpeechSynthesisUtterance* utterance,
+                                uint32_t char_index,
+                                uint32_t char_length,
+                                const String& name) {
+  double millis;
+  if (!GetElapsedTimeMillis(&millis))
+    return;
 
-  switch (boundary) {
-    case kSpeechWordBoundary:
-      FireEvent(event_type_names::kBoundary,
-                static_cast<SpeechSynthesisUtterance*>(utterance->Client()),
-                char_index, word_boundary_string);
-      break;
-    case kSpeechSentenceBoundary:
-      FireEvent(event_type_names::kBoundary,
-                static_cast<SpeechSynthesisUtterance*>(utterance->Client()),
-                char_index, sentence_boundary_string);
-      break;
-    default:
-      NOTREACHED();
-  }
+  SpeechSynthesisEventInit* init = SpeechSynthesisEventInit::Create();
+  init->setUtterance(utterance);
+  init->setCharIndex(char_index);
+  init->setCharLength(char_length);
+  init->setElapsedTime(millis - (utterance->StartTime() * 1000.0));
+  init->setName(name);
+  utterance->DispatchEvent(*SpeechSynthesisEvent::Create(type, init));
 }
 
-void SpeechSynthesis::DidStartSpeaking(
-    PlatformSpeechSynthesisUtterance* utterance) {
-  if (utterance->Client())
-    FireEvent(event_type_names::kStart,
-              static_cast<SpeechSynthesisUtterance*>(utterance->Client()), 0,
-              String());
-}
+void SpeechSynthesis::FireErrorEvent(SpeechSynthesisUtterance* utterance,
+                                     uint32_t char_index,
+                                     const String& error) {
+  double millis;
+  if (!GetElapsedTimeMillis(&millis))
+    return;
 
-void SpeechSynthesis::DidPauseSpeaking(
-    PlatformSpeechSynthesisUtterance* utterance) {
-  is_paused_ = true;
-  if (utterance->Client())
-    FireEvent(event_type_names::kPause,
-              static_cast<SpeechSynthesisUtterance*>(utterance->Client()), 0,
-              String());
-}
-
-void SpeechSynthesis::DidResumeSpeaking(
-    PlatformSpeechSynthesisUtterance* utterance) {
-  is_paused_ = false;
-  if (utterance->Client())
-    FireEvent(event_type_names::kResume,
-              static_cast<SpeechSynthesisUtterance*>(utterance->Client()), 0,
-              String());
-}
-
-void SpeechSynthesis::DidFinishSpeaking(
-    PlatformSpeechSynthesisUtterance* utterance) {
-  if (utterance->Client())
-    HandleSpeakingCompleted(
-        static_cast<SpeechSynthesisUtterance*>(utterance->Client()), false);
-}
-
-void SpeechSynthesis::SpeakingErrorOccurred(
-    PlatformSpeechSynthesisUtterance* utterance) {
-  if (utterance->Client())
-    HandleSpeakingCompleted(
-        static_cast<SpeechSynthesisUtterance*>(utterance->Client()), true);
+  SpeechSynthesisErrorEventInit* init = SpeechSynthesisErrorEventInit::Create();
+  init->setUtterance(utterance);
+  init->setCharIndex(char_index);
+  init->setElapsedTime(millis - (utterance->StartTime() * 1000.0));
+  init->setError(error);
+  utterance->DispatchEvent(
+      *SpeechSynthesisErrorEvent::Create(event_type_names::kError, init));
 }
 
 SpeechSynthesisUtterance* SpeechSynthesis::CurrentSpeechUtterance() const {
@@ -282,15 +283,9 @@ SpeechSynthesisUtterance* SpeechSynthesis::CurrentSpeechUtterance() const {
   return utterance_queue_.front();
 }
 
-const AtomicString& SpeechSynthesis::InterfaceName() const {
-  return event_target_names::kSpeechSynthesis;
-}
-
 void SpeechSynthesis::Trace(blink::Visitor* visitor) {
-  visitor->Trace(platform_speech_synthesizer_);
   visitor->Trace(voice_list_);
   visitor->Trace(utterance_queue_);
-  PlatformSpeechSynthesizerClient::Trace(visitor);
   ContextClient::Trace(visitor);
   EventTargetWithInlineData::Trace(visitor);
 }
@@ -320,6 +315,38 @@ bool SpeechSynthesis::IsAllowedToStartByAutoplay() const {
     return true;
   }
   return AutoplayPolicy::IsDocumentAllowedToPlay(*document);
+}
+
+void SpeechSynthesis::SetMojomSynthesisForTesting(
+    mojo::PendingRemote<mojom::blink::SpeechSynthesis> mojom_synthesis) {
+  mojom_synthesis_.Bind(std::move(mojom_synthesis));
+  receiver_.reset();
+  mojom_synthesis_->AddVoiceListObserver(receiver_.BindNewPipeAndPassRemote());
+}
+
+void SpeechSynthesis::InitializeMojomSynthesis() {
+  DCHECK(!mojom_synthesis_);
+
+  auto receiver = mojom_synthesis_.BindNewPipeAndPassReceiver();
+
+  // The frame could be detached. In that case, calls on mojom_synthesis_ will
+  // just get dropped. That's okay and is simpler than having to null-check
+  // mojom_synthesis_ before each use.
+  ExecutionContext* context = GetExecutionContext();
+  if (context) {
+    context->GetBrowserInterfaceBroker().GetInterface(std::move(receiver));
+  }
+
+  mojom_synthesis_->AddVoiceListObserver(receiver_.BindNewPipeAndPassRemote());
+}
+
+void SpeechSynthesis::InitializeMojomSynthesisIfNeeded() {
+  if (!mojom_synthesis_)
+    InitializeMojomSynthesis();
+}
+
+const AtomicString& SpeechSynthesis::InterfaceName() const {
+  return event_target_names::kSpeechSynthesis;
 }
 
 }  // namespace blink

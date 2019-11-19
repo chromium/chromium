@@ -26,6 +26,7 @@
 // A linear convolution effect
 // See https://webaudio.github.io/web-audio-api/#ConvolverNode
 [
+    Exposed=Window,
     Constructor(BaseAudioContext context, optional ConvolverOptions options),
     RaisesException=Constructor,
     Measure

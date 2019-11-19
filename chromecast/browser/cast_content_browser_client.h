@@ -16,12 +16,23 @@
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "chromecast/chromecast_buildflags.h"
+#include "chromecast/metrics/cast_metrics_service_client.h"
 #include "content/public/browser/certificate_request_result_type.h"
 #include "content/public/browser/content_browser_client.h"
+#include "media/mojo/buildflags.h"
+#include "media/mojo/mojom/renderer.mojom.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "net/url_request/url_request_context.h"
 #include "services/service_manager/public/cpp/binder_registry.h"
 #include "services/service_manager/public/mojom/interface_provider.mojom-forward.h"
+#include "services/service_manager/public/mojom/service.mojom-forward.h"
+#include "storage/browser/quota/quota_settings.h"
 
 class PrefService;
+
+namespace base {
+struct OnTaskRunnerDeleter;
+}
 
 namespace breakpad {
 class CrashHandlerHostLinux;
@@ -41,14 +52,15 @@ class MetricsService;
 
 namespace net {
 class SSLPrivateKey;
-class URLRequestContextGetter;
 class X509Certificate;
 }
 
 namespace chromecast {
 class CastService;
+class CastSystemMemoryPressureEvaluatorAdjuster;
 class CastWindowManager;
 class CastFeatureListCreator;
+class GeneralAudienceBrowsingService;
 class MemoryPressureControllerImpl;
 
 namespace media {
@@ -56,6 +68,7 @@ class MediaCapsImpl;
 class CmaBackendFactory;
 class MediaPipelineBackendManager;
 class MediaResourceTracker;
+class VideoGeometrySetterService;
 class VideoPlaneController;
 class VideoModeSwitcher;
 class VideoResolutionPolicy;
@@ -64,34 +77,40 @@ class VideoResolutionPolicy;
 namespace shell {
 class CastBrowserMainParts;
 class CastNetworkContexts;
-class CastResourceDispatcherHostDelegate;
 class URLRequestContextFactory;
 
-class CastContentBrowserClient : public content::ContentBrowserClient {
+class CastContentBrowserClient
+    : public content::ContentBrowserClient,
+      public chromecast::metrics::CastMetricsServiceDelegate {
  public:
   // Creates an implementation of CastContentBrowserClient. Platform should
   // link in an implementation as needed.
   static std::unique_ptr<CastContentBrowserClient> Create(
       CastFeatureListCreator* cast_feature_list_creator);
 
+  // Returns a list of headers that will be exempt from CORS preflight checks.
+  // This is needed since currently servers don't have the correct response to
+  // preflight checks.
+  static std::vector<std::string> GetCorsExemptHeadersList();
+
   ~CastContentBrowserClient() override;
 
   // Creates and returns the CastService instance for the current process.
-  // Note: |request_context_getter| might be different than the main request
-  // getter accessible via CastBrowserProcess.
   virtual std::unique_ptr<CastService> CreateCastService(
       content::BrowserContext* browser_context,
+      CastSystemMemoryPressureEvaluatorAdjuster*
+          cast_system_memory_pressure_evaluator_adjuster,
       PrefService* pref_service,
-      net::URLRequestContextGetter* request_context_getter,
       media::VideoPlaneController* video_plane_controller,
       CastWindowManager* window_manager);
 
   virtual media::VideoModeSwitcher* GetVideoModeSwitcher();
 
+  virtual void InitializeURLLoaderThrottleDelegate();
+
   // Returns the task runner that must be used for media IO.
   scoped_refptr<base::SingleThreadTaskRunner> GetMediaTaskRunner();
 
-#if BUILDFLAG(IS_CAST_USING_CMA_BACKEND)
   // Gets object for enforcing video resolution policy restrictions.
   virtual media::VideoResolutionPolicy* GetVideoResolutionPolicy();
 
@@ -107,7 +126,6 @@ class CastContentBrowserClient : public content::ContentBrowserClient {
   std::unique_ptr<::media::AudioManager> CreateAudioManager(
       ::media::AudioLogFactory* audio_log_factory) override;
   bool OverridesAudioManager() override;
-#endif  // BUILDFLAG(IS_CAST_USING_CMA_BACKEND)
   media::MediaCapsImpl* media_caps();
 
 #if !defined(OS_ANDROID) && !defined(OS_FUCHSIA)
@@ -118,12 +136,10 @@ class CastContentBrowserClient : public content::ContentBrowserClient {
   virtual base::WeakPtr<device::BluetoothAdapterCast> CreateBluetoothAdapter();
 #endif  // !defined(OS_ANDROID) && !defined(OS_FUCHSIA)
 
-  // Invoked when the metrics client ID changes.
-  virtual void SetMetricsClientId(const std::string& client_id);
-
-  // Allows registration of extra metrics providers.
-  virtual void RegisterMetricsProviders(
-      ::metrics::MetricsService* metrics_service);
+  // chromecast::metrics::CastMetricsServiceDelegate implementation:
+  void SetMetricsClientId(const std::string& client_id) override;
+  void RegisterMetricsProviders(
+      ::metrics::MetricsService* metrics_service) override;
 
   // Returns whether or not the remote debugging service should be started
   // on browser startup.
@@ -131,21 +147,20 @@ class CastContentBrowserClient : public content::ContentBrowserClient {
 
   // content::ContentBrowserClient implementation:
   std::vector<std::string> GetStartupServices() override;
-  content::BrowserMainParts* CreateBrowserMainParts(
+  std::unique_ptr<content::BrowserMainParts> CreateBrowserMainParts(
       const content::MainFunctionParams& parameters) override;
-  void RenderProcessWillLaunch(
-      content::RenderProcessHost* host,
-      service_manager::mojom::ServiceRequest* service_request) override;
+  void RenderProcessWillLaunch(content::RenderProcessHost* host) override;
   bool IsHandledURL(const GURL& url) override;
   void SiteInstanceGotProcess(content::SiteInstance* site_instance) override;
   void AppendExtraCommandLineSwitches(base::CommandLine* command_line,
                                       int child_process_id) override;
   std::string GetAcceptLangs(content::BrowserContext* context) override;
+  network::mojom::NetworkContext* GetSystemNetworkContext() override;
   void OverrideWebkitPrefs(content::RenderViewHost* render_view_host,
                            content::WebPreferences* prefs) override;
-  void ResourceDispatcherHostCreated() override;
   std::string GetApplicationLocale() override;
-  content::QuotaPermissionContext* CreateQuotaPermissionContext() override;
+  scoped_refptr<content::QuotaPermissionContext> CreateQuotaPermissionContext()
+      override;
   void GetQuotaSettings(
       content::BrowserContext* context,
       content::StoragePartition* partition,
@@ -155,12 +170,11 @@ class CastContentBrowserClient : public content::ContentBrowserClient {
       int cert_error,
       const net::SSLInfo& ssl_info,
       const GURL& request_url,
-      content::ResourceType resource_type,
+      bool is_main_frame_request,
       bool strict_enforcement,
-      bool expired_previous_decision,
       const base::Callback<void(content::CertificateRequestResultType)>&
           callback) override;
-  void SelectClientCertificate(
+  base::OnceClosure SelectClientCertificate(
       content::WebContents* web_contents,
       net::SSLCertRequestInfo* cert_request_info,
       net::ClientCertIdentityList client_certs,
@@ -178,6 +192,9 @@ class CastContentBrowserClient : public content::ContentBrowserClient {
                        bool user_gesture,
                        bool opener_suppressed,
                        bool* no_javascript_access) override;
+  // New Mojo bindings should be added to
+  // cast_content_browser_client_receiver_bindings.cc, so that they go through
+  // security review.
   void ExposeInterfacesToRenderer(
       service_manager::BinderRegistry* registry,
       blink::AssociatedInterfaceRegistry* associated_registry,
@@ -185,11 +202,13 @@ class CastContentBrowserClient : public content::ContentBrowserClient {
   void ExposeInterfacesToMediaService(
       service_manager::BinderRegistry* registry,
       content::RenderFrameHost* render_frame_host) override;
-  void HandleServiceRequest(
-      const std::string& service_name,
-      service_manager::mojom::ServiceRequest request) override;
+  void RunServiceInstance(
+      const service_manager::Identity& identity,
+      mojo::PendingReceiver<service_manager::mojom::Service>* receiver)
+      override;
   base::Optional<service_manager::Manifest> GetServiceManifestOverlay(
       base::StringPiece service_name) override;
+  std::vector<service_manager::Manifest> GetExtraServiceManifests() override;
   void GetAdditionalMappedFilesForChildProcess(
       const base::CommandLine& command_line,
       int child_process_id,
@@ -211,19 +230,31 @@ class CastContentBrowserClient : public content::ContentBrowserClient {
       NonNetworkURLLoaderFactoryMap* factories) override;
   void OnNetworkServiceCreated(
       network::mojom::NetworkService* network_service) override;
-  network::mojom::NetworkContextPtr CreateNetworkContext(
+  mojo::Remote<network::mojom::NetworkContext> CreateNetworkContext(
       content::BrowserContext* context,
       bool in_memory,
       const base::FilePath& relative_partition_path) override;
-  std::string GetUserAgent() const override;
+  std::string GetUserAgent() override;
+  bool DoesSiteRequireDedicatedProcess(content::BrowserContext* browser_context,
+                                       const GURL& effective_site_url) override;
+  // New Mojo bindings should be added to
+  // cast_content_browser_client_receiver_bindings.cc, so that they go through
+  // security review.
+  void BindHostReceiverForRenderer(
+      content::RenderProcessHost* render_process_host,
+      mojo::GenericPendingReceiver receiver) override;
   CastFeatureListCreator* GetCastFeatureListCreator() {
     return cast_feature_list_creator_;
   }
 
-#if BUILDFLAG(USE_CHROMECAST_CDMS)
+  void CreateGeneralAudienceBrowsingService();
+
   virtual std::unique_ptr<::media::CdmFactory> CreateCdmFactory(
       service_manager::mojom::InterfaceProvider* host_interfaces);
-#endif  // BUILDFLAG(USE_CHROMECAST_CDMS)
+
+#if BUILDFLAG(ENABLE_CAST_RENDERER)
+  void BindGpuHostReceiver(mojo::GenericPendingReceiver receiver) override;
+#endif  // BUILDFLAG(ENABLE_CAST_RENDERER)
 
   CastNetworkContexts* cast_network_contexts() {
     return cast_network_contexts_.get();
@@ -237,13 +268,19 @@ class CastContentBrowserClient : public content::ContentBrowserClient {
     return url_request_context_factory_.get();
   }
 
+  void BindMediaRenderer(
+      mojo::PendingReceiver<::media::mojom::Renderer> receiver);
+
+  // Internal implementation overwrites this function to inject real values.
+  virtual void GetApplicationMediaInfo(
+      std::string* application_session_id,
+      bool* mixer_audio_enabled,
+      content::RenderFrameHost* render_frame_host);
+
  private:
   // Create device cert/key
   virtual scoped_refptr<net::X509Certificate> DeviceCert();
   virtual scoped_refptr<net::SSLPrivateKey> DeviceKey();
-
-  void AddNetworkHintsMessageFilter(int render_process_id,
-                                    net::URLRequestContext* context);
 
   void SelectClientCertificateOnIOThread(
       GURL requesting_url,
@@ -273,21 +310,32 @@ class CastContentBrowserClient : public content::ContentBrowserClient {
 #endif  // !defined(OS_ANDROID)
 #endif  // !defined(OS_FUCHSIA)
 
-#if BUILDFLAG(IS_CAST_USING_CMA_BACKEND)
   // CMA thread used by AudioManager, MojoRenderer, and MediaPipelineBackend.
   std::unique_ptr<base::Thread> media_thread_;
 
   // Tracks usage of media resource by e.g. CMA pipeline, CDM.
   media::MediaResourceTracker* media_resource_tracker_ = nullptr;
-#endif  // BUILDFLAG(IS_CAST_USING_CMA_BACKEND)
+
+#if BUILDFLAG(ENABLE_CAST_RENDERER)
+  void CreateMediaService(service_manager::mojom::ServiceRequest request);
+
+  // VideoGeometrySetterService must be constructed On a sequence, and later
+  // runs and destructs on this sequence.
+  void CreateVideoGeometrySetterServiceOnMediaThread();
+  void BindVideoGeometrySetterServiceOnMediaThread(
+      mojo::GenericPendingReceiver receiver);
+  // video_geometry_setter_service_ lives on media thread.
+  std::unique_ptr<media::VideoGeometrySetterService, base::OnTaskRunnerDeleter>
+      video_geometry_setter_service_;
+#endif
 
   // Created by CastContentBrowserClient but owned by BrowserMainLoop.
   CastBrowserMainParts* cast_browser_main_parts_;
   std::unique_ptr<CastNetworkContexts> cast_network_contexts_;
   std::unique_ptr<URLRequestContextFactory> url_request_context_factory_;
-  std::unique_ptr<CastResourceDispatcherHostDelegate>
-      resource_dispatcher_host_delegate_;
   std::unique_ptr<media::CmaBackendFactory> cma_backend_factory_;
+  std::unique_ptr<GeneralAudienceBrowsingService>
+      general_audience_browsing_service_;
 
   CastFeatureListCreator* cast_feature_list_creator_;
 

@@ -16,7 +16,7 @@
 #include "base/single_thread_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/feature_engagement/internal/availability_model_impl.h"
 #include "components/feature_engagement/internal/display_lock_controller.h"
@@ -415,7 +415,7 @@ class TrackerImplTest : public ::testing::Test {
 
   virtual bool ShouldAvailabilityStoreBeReady() { return true; }
 
-  base::test::ScopedTaskEnvironment task_environment_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
   std::unique_ptr<TrackerImpl> tracker_;
   TestTrackerInMemoryEventStore* event_store_;
   TestTrackerAvailabilityModel* availability_model_;

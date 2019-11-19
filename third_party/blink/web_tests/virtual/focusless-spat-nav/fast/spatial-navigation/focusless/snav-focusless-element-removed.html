@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<script src="../../../../../resources/testharness.js"></script>
+<script src="../../../../../resources/testharnessreport.js"></script>
+<script src="file:///gen/layout_test_data/mojo/public/js/mojo_bindings.js"></script>
+<script src="file:///gen/third_party/blink/public/mojom/page/spatial_navigation.mojom.js"></script>
+<script src="../../../../../fast/spatial-navigation/resources/mock-snav-service.js"></script>
+<script src="../../../../../fast/spatial-navigation/resources/snav-testharness.js"></script>
+
+<style>
+  div {
+    width: 100px;
+    height: 100px;
+    margin: 5px;
+    border: 1px solid black;
+  }
+</style>
+
+<div id="first" tabindex="0">First</div>
+<div id="second" tabindex="0">Second</div>
+<div id="third" tabindex="0">Third</div>
+
+<script>
+  let first = document.getElementById("first")
+  let second = document.getElementById("second")
+  let third = document.getElementById("third")
+
+  test(() => {
+    snav.triggerMove('Down');
+    snav.triggerMove('Down'); // Move interest to 'second'
+
+    assert_equals(window.internals.interestedElement,
+                  second,
+                  "'second' element has interest");
+
+    second.remove();
+
+    // Move interest 'down', since the interested element is disconnected, we
+    // should start the search from the top
+    snav.triggerMove('Down');
+
+    assert_equals(window.internals.interestedElement,
+                  first,
+                  "'first' element has interest");
+  }, "Disconnecting an interested element resets search");
+
+</script>

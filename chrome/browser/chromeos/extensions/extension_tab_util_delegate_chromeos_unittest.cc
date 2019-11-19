@@ -21,9 +21,6 @@ const char kWhitelistedId[] = "cbkkbcmdlboombapidmoeolnmdacpkch";
 // Use an extension ID that will never be whitelisted.
 const char kNonWhitelistedId[] = "bogus";
 
-const char kTestUrl[] = "http://www.foo.bar/baz?key=val";
-const char kFilteredUrl[] = "http://www.foo.bar/";
-
 scoped_refptr<const Extension> CreateExtension(const std::string& id) {
   return ExtensionBuilder("test").SetID(id).Build();
 }
@@ -32,23 +29,16 @@ scoped_refptr<const Extension> CreateExtension(const std::string& id) {
 
 class ExtensionTabUtilDelegateChromeOSTest : public testing::Test {
  protected:
-  void SetUp() override;
-
   ExtensionTabUtilDelegateChromeOS delegate_;
-  api::tabs::Tab tab_;
 };
-
-void ExtensionTabUtilDelegateChromeOSTest::SetUp() {
-  tab_.url.reset(new std::string(kTestUrl));
-}
 
 TEST_F(ExtensionTabUtilDelegateChromeOSTest,
        NoFilteringOutsidePublicSessionForWhitelisted) {
   ASSERT_FALSE(chromeos::LoginState::IsInitialized());
 
   auto extension = CreateExtension(kWhitelistedId);
-  delegate_.ScrubTabForExtension(extension.get(), nullptr, &tab_);
-  EXPECT_EQ(kTestUrl, *tab_.url);
+  EXPECT_EQ(delegate_.GetScrubTabBehavior(extension.get()),
+            ExtensionTabUtil::kDontScrubTab);
 }
 
 TEST_F(ExtensionTabUtilDelegateChromeOSTest,
@@ -56,8 +46,8 @@ TEST_F(ExtensionTabUtilDelegateChromeOSTest,
   ASSERT_FALSE(chromeos::LoginState::IsInitialized());
 
   auto extension = CreateExtension(kNonWhitelistedId);
-  delegate_.ScrubTabForExtension(extension.get(), nullptr, &tab_);
-  EXPECT_EQ(kTestUrl, *tab_.url);
+  EXPECT_EQ(delegate_.GetScrubTabBehavior(extension.get()),
+            ExtensionTabUtil::kDontScrubTab);
 }
 
 TEST_F(ExtensionTabUtilDelegateChromeOSTest,
@@ -65,8 +55,8 @@ TEST_F(ExtensionTabUtilDelegateChromeOSTest,
   chromeos::ScopedTestPublicSessionLoginState state;
 
   auto extension = CreateExtension(kWhitelistedId);
-  delegate_.ScrubTabForExtension(extension.get(), nullptr, &tab_);
-  EXPECT_EQ(kTestUrl, *tab_.url);
+  EXPECT_EQ(delegate_.GetScrubTabBehavior(extension.get()),
+            ExtensionTabUtil::kDontScrubTab);
 }
 
 TEST_F(ExtensionTabUtilDelegateChromeOSTest,
@@ -74,8 +64,8 @@ TEST_F(ExtensionTabUtilDelegateChromeOSTest,
   chromeos::ScopedTestPublicSessionLoginState state;
 
   auto extension = CreateExtension(kNonWhitelistedId);
-  delegate_.ScrubTabForExtension(extension.get(), nullptr, &tab_);
-  EXPECT_EQ(kFilteredUrl, *tab_.url);
+  EXPECT_EQ(delegate_.GetScrubTabBehavior(extension.get()),
+            ExtensionTabUtil::kScrubTabUrlToOrigin);
 }
 
 }  // namespace extensions

@@ -147,7 +147,7 @@ class KioskExternalUpdater : public disks::DiskMountManager::Observer,
 
   std::unique_ptr<KioskExternalUpdateNotification> notification_;
 
-  base::WeakPtrFactory<KioskExternalUpdater> weak_factory_;
+  base::WeakPtrFactory<KioskExternalUpdater> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(KioskExternalUpdater);
 };

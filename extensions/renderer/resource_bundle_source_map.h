@@ -27,22 +27,19 @@ class ResourceBundleSourceMap : public SourceMap {
                                   const std::string& name) const override;
   bool Contains(const std::string& name) const override;
 
-  void RegisterSource(const char* const name,
-                      int resource_id,
-                      bool gzipped = false);
+  void RegisterSource(const char* const name, int resource_id);
 
  private:
   struct ResourceInfo {
     ResourceInfo();
-    ResourceInfo(int in_id, bool in_gzipped);
+    explicit ResourceInfo(int in_id);
     ResourceInfo(ResourceInfo&& other);
     ~ResourceInfo();
 
     ResourceInfo& operator=(ResourceInfo&& other);
 
     int id = 0;
-    bool gzipped = false;
-    // Used to cache the uncompressed contents if |gzipped| is true.
+    // Used to cache the uncompressed contents if the resource is gzipped.
     mutable std::unique_ptr<std::string> cached;
   };
 

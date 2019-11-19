@@ -18,10 +18,10 @@
 
 class Profile;
 
-namespace identity {
+namespace signin {
 class AccessTokenFetcher;
 struct AccessTokenInfo;
-}  // namespace identity
+}  // namespace signin
 
 namespace network {
 class SimpleURLLoader;
@@ -56,7 +56,7 @@ class ArcBackgroundAuthCodeFetcher : public ArcAuthCodeFetcher {
   void OnPrepared(bool success);
 
   void OnAccessTokenFetchComplete(GoogleServiceAuthError error,
-                                  identity::AccessTokenInfo token_info);
+                                  signin::AccessTokenInfo token_info);
 
   void OnSimpleLoaderComplete(std::unique_ptr<std::string> response_body);
 
@@ -69,7 +69,7 @@ class ArcBackgroundAuthCodeFetcher : public ArcAuthCodeFetcher {
   ArcAuthContext context_;
   FetchCallback callback_;
 
-  std::unique_ptr<identity::AccessTokenFetcher> access_token_fetcher_;
+  std::unique_ptr<signin::AccessTokenFetcher> access_token_fetcher_;
   std::unique_ptr<network::SimpleURLLoader> simple_url_loader_;
 
   // Keeps context of account code request. |initial_signin_| is true if request
@@ -80,7 +80,7 @@ class ArcBackgroundAuthCodeFetcher : public ArcAuthCodeFetcher {
   // Account on Chrome OS.
   const bool is_primary_account_;
 
-  base::WeakPtrFactory<ArcBackgroundAuthCodeFetcher> weak_ptr_factory_;
+  base::WeakPtrFactory<ArcBackgroundAuthCodeFetcher> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ArcBackgroundAuthCodeFetcher);
 };

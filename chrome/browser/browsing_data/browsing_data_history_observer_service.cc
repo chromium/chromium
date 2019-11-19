@@ -9,7 +9,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sessions/tab_restore_service_factory.h"
 #include "chrome/common/buildflags.h"
-#include "components/history/core/browser/history_service.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 
 #if BUILDFLAG(ENABLE_SESSION_SERVICE)
@@ -18,7 +17,7 @@
 
 BrowsingDataHistoryObserverService::BrowsingDataHistoryObserverService(
     Profile* profile)
-    : profile_(profile), history_observer_(this) {
+    : profile_(profile) {
   auto* history_service = HistoryServiceFactory::GetForProfile(
       profile, ServiceAccessType::EXPLICIT_ACCESS);
   if (history_service)

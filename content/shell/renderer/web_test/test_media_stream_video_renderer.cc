@@ -17,14 +17,12 @@ TestMediaStreamVideoRenderer::TestMediaStreamVideoRenderer(
     const scoped_refptr<base::SingleThreadTaskRunner>& io_task_runner,
     const gfx::Size& size,
     const base::TimeDelta& frame_duration,
-    const base::Closure& error_cb,
     const blink::WebMediaStreamVideoRenderer::RepaintCB& repaint_cb)
     : task_runner_(blink::scheduler::GetSingleThreadTaskRunnerForTesting()),
       io_task_runner_(io_task_runner),
       size_(size),
       state_(kStopped),
       frame_duration_(frame_duration),
-      error_cb_(error_cb),
       repaint_cb_(repaint_cb) {}
 
 TestMediaStreamVideoRenderer::~TestMediaStreamVideoRenderer() {}

@@ -4,6 +4,8 @@ The test verifies events fire for adding, changing, and removing CSSStyleSheets.
     params : {
         header : {
             disabled : false
+            endColumn : 6
+            endLine : 4
             frameId : <string>
             isInline : false
             length : <number>

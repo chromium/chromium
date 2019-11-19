@@ -87,13 +87,14 @@ void ScreenOrientationControllerImpl::UpdateOrientation() {
   DCHECK(orientation_);
   DCHECK(GetPage());
   ChromeClient& chrome_client = GetPage()->GetChromeClient();
-  WebScreenInfo screen_info = chrome_client.GetScreenInfo();
+  WebScreenInfo screen_info = chrome_client.GetScreenInfo(*GetFrame());
   WebScreenOrientationType orientation_type = screen_info.orientation_type;
   if (orientation_type == kWebScreenOrientationUndefined) {
     // The embedder could not provide us with an orientation, deduce it
     // ourselves.
-    orientation_type = ComputeOrientation(chrome_client.GetScreenInfo().rect,
-                                          screen_info.orientation_angle);
+    orientation_type =
+        ComputeOrientation(chrome_client.GetScreenInfo(*GetFrame()).rect,
+                           screen_info.orientation_angle);
   }
   DCHECK(orientation_type != kWebScreenOrientationUndefined);
 
@@ -122,7 +123,7 @@ void ScreenOrientationControllerImpl::PageVisibilityChanged() {
   // The orientation type and angle are tied in a way that if the angle has
   // changed, the type must have changed.
   uint16_t current_angle =
-      GetPage()->GetChromeClient().GetScreenInfo().orientation_angle;
+      GetPage()->GetChromeClient().GetScreenInfo(*GetFrame()).orientation_angle;
 
   // FIXME: sendOrientationChangeEvent() currently send an event all the
   // children of the frame, so it should only be called on the frame on
@@ -153,9 +154,17 @@ void ScreenOrientationControllerImpl::NotifyOrientationChanged() {
 
   // Notify current orientation object.
   if (IsActive() && orientation_) {
-    ScopedAllowFullscreen allow_fullscreen(
-        ScopedAllowFullscreen::kOrientationChange);
-    orientation_->DispatchEvent(*Event::Create(event_type_names::kChange));
+    GetExecutionContext()
+        ->GetTaskRunner(TaskType::kMiscPlatformAPI)
+        ->PostTask(FROM_HERE,
+                   WTF::Bind(
+                       [](ScreenOrientation* orientation) {
+                         ScopedAllowFullscreen allow_fullscreen(
+                             ScopedAllowFullscreen::kOrientationChange);
+                         orientation->DispatchEvent(
+                             *Event::Create(event_type_names::kChange));
+                       },
+                       WrapPersistent(orientation_.Get())));
   }
 
   // ... and child frames, if they have a ScreenOrientationControllerImpl.
@@ -206,7 +215,7 @@ bool ScreenOrientationControllerImpl::MaybeHasActiveLock() const {
 }
 
 void ScreenOrientationControllerImpl::ContextDestroyed(ExecutionContext*) {
-  screen_orientation_service_ = nullptr;
+  screen_orientation_service_.reset();
   active_lock_ = false;
 }
 
@@ -217,9 +226,11 @@ void ScreenOrientationControllerImpl::Trace(blink::Visitor* visitor) {
   Supplement<LocalFrame>::Trace(visitor);
 }
 
-void ScreenOrientationControllerImpl::SetScreenOrientationAssociatedPtrForTests(
-    ScreenOrientationAssociatedPtr screen_orientation_associated_ptr) {
-  screen_orientation_service_ = std::move(screen_orientation_associated_ptr);
+void ScreenOrientationControllerImpl::
+    SetScreenOrientationAssociatedRemoteForTests(
+        mojo::AssociatedRemote<device::mojom::blink::ScreenOrientation>
+            remote) {
+  screen_orientation_service_ = std::move(remote);
 }
 
 void ScreenOrientationControllerImpl::OnLockOrientationResult(

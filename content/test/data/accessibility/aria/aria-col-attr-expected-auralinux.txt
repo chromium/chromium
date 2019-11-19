@@ -1,0 +1,18 @@
+[document web]
+++[table] colcount:5 cols=4 headers=('cell 2', 'cell 4', 'cell 5'); rows=2 headers=(NONE); caption=false; spans=(cell at 0,3: 0x0)
+++++[table row] selectable
+++++++[column header] name='cell 2' selectable colindex:2 colspan:2 (row=0, col=0, row_span=1, col_span=1, n_row_headers=0, n_col_headers=0)
+++++++++[static] name='cell 2'
+++++++[column header] name='cell 4' selectable colindex:4 (row=0, col=1, row_span=1, col_span=1, n_row_headers=0, n_col_headers=0)
+++++++++[static] name='cell 4'
+++++++[column header] name='cell 5' selectable colindex:5 (row=0, col=2, row_span=1, col_span=1, n_row_headers=0, n_col_headers=0)
+++++++++[static] name='cell 5'
+++++[table row] selectable
+++++++[table cell] name='cell 2' selectable colindex:2 (row=1, col=0, row_span=1, col_span=1, n_row_headers=0, n_col_headers=1)
+++++++++[static] name='cell 2'
+++++++[table cell] name='cell 3' selectable colindex:3 (row=1, col=1, row_span=1, col_span=1, n_row_headers=0, n_col_headers=1)
+++++++++[static] name='cell 3'
+++++++[table cell] name='cell 4' selectable colindex:4 (row=1, col=2, row_span=1, col_span=1, n_row_headers=0, n_col_headers=1)
+++++++++[static] name='cell 4'
+++++++[table cell] name='cell 5' selectable colindex:5 (row=1, col=3, row_span=1, col_span=1, n_row_headers=0, n_col_headers=0)
+++++++++[static] name='cell 5'

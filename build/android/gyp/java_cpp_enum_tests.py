@@ -5,7 +5,7 @@
 
 """Tests for enum_preprocess.py.
 
-This test suite containss various tests for the C++ -> Java enum generator.
+This test suite contains various tests for the C++ -> Java enum generator.
 """
 
 import collections
@@ -13,8 +13,9 @@ from datetime import date
 import unittest
 
 import java_cpp_enum
-from java_cpp_enum import EnumDefinition, GenerateOutput, GetScriptName
+from java_cpp_enum import EnumDefinition, GenerateOutput
 from java_cpp_enum import HeaderParser
+from util import java_cpp_utils
 
 
 class TestPreprocess(unittest.TestCase):
@@ -41,7 +42,7 @@ class TestPreprocess(unittest.TestCase):
 
 package some.package;
 
-import android.support.annotation.IntDef;
+import androidx.annotation.IntDef;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -65,8 +66,8 @@ public @interface ClassName {
     long_comment = ('This is a multiple line comment that is really long. '
                     'This is a multiple line comment that is')
     self.assertEqual(
-            expected % (date.today().year, GetScriptName(), long_comment),
-            output)
+        expected % (date.today().year, java_cpp_utils.GetScriptName(),
+                    long_comment), output)
 
   def testParseSimpleEnum(self):
     test_data = """

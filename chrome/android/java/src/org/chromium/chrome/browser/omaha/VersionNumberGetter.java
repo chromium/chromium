@@ -8,9 +8,10 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Build;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.BuildInfo;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.VisibleForTesting;
 import org.chromium.chrome.browser.ChromeFeatureList;
 
 /**
@@ -53,7 +54,7 @@ public class VersionNumberGetter {
      */
     public String getLatestKnownVersion(Context context) {
         assert !ThreadUtils.runningOnUiThread();
-        SharedPreferences prefs = OmahaBase.getSharedPreferences(context);
+        SharedPreferences prefs = OmahaBase.getSharedPreferences();
         return prefs.getString(OmahaBase.PREF_LATEST_VERSION, "");
     }
 
@@ -122,7 +123,7 @@ public class VersionNumberGetter {
 
         // If the market link is bad, don't show an update to avoid frustrating users trying to
         // hit the "Update" button.
-        if ("".equals(MarketURLGetter.getMarketUrl(context))) {
+        if ("".equals(MarketURLGetter.getMarketUrl())) {
             return false;
         }
 

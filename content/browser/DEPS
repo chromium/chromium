@@ -1,6 +1,9 @@
 include_rules = [
   # Allow inclusion of specific components that we depend on.
   # See comment in content/DEPS for which components are allowed.
+  # *********************************** NOTE ***********************************
+  # If adding a new component dependency, email content/OWNERS first.
+  # ****************************************************************************
   "+components/discardable_memory/common",
   "+components/discardable_memory/public",
   "+components/discardable_memory/service",
@@ -11,8 +14,11 @@ include_rules = [
   "+components/services/font",
   "+components/services/filesystem",
   "+components/services/font/ppapi_fontconfig_matching.h",
-  "+components/services/leveldb",
+  "+components/services/quarantine/test_support.h",
+  "+components/services/quarantine/quarantine.h",
+  "+components/services/storage",
   "+components/session_manager/core",
+  "+components/leveldb_proto/public",
   "+components/link_header_util",
   "+components/metrics",
   "+components/metrics:single_sample_metrics",
@@ -20,18 +26,24 @@ include_rules = [
   "+components/offline_pages/buildflags/buildflags.h",
   "+components/offline_pages/core/request_header",
   "+components/payments",
-  "+components/profile_service",
   "+components/rappor/public",
+  "+components/services/heap_profiling/public",
+  "+components/system_media_controls",
   "+components/tracing",
   "+components/ukm",
   "+components/url_formatter",
   "+components/variations/net/variations_http_headers.h",
   "+components/viz",
   "+components/cbor",
+  "+components/os_crypt/os_crypt_switches.h",
+  # *********************************** NOTE ***********************************
+  # If adding a new component dependency, email content/OWNERS first.
+  # ****************************************************************************
 
   "+content/public/app",
   "+content/public/browser",
   "+device/base/synchronization",
+  "+device/bluetooth",
   "+device/gamepad", # For gamepad API
   "+device/nfc",
   "+device/vr",  # For WebVR API
@@ -80,6 +92,7 @@ include_rules = [
   "+third_party/blink/public/mojom",
   "+third_party/blink/public/platform/resource_request_blocked_reason.h",
   "+third_party/blink/public/platform/WebAddressSpace.h",
+  "+third_party/blink/public/platform/viewport_intersection_state.h",
   "+third_party/blink/public/platform/web_client_hints_type.h",
   "+third_party/blink/public/platform/web_content_security_policy.h",
   "+third_party/blink/public/platform/web_cursor_info.h",
@@ -99,57 +112,26 @@ include_rules = [
   "+third_party/blink/public/platform/web_screen_info.h",
   "+third_party/blink/public/platform/web_scroll_into_view_params.h",
   "+third_party/blink/public/platform/web_scroll_types.h",
-  "+third_party/blink/public/platform/web_security_style.h",
-  "+third_party/blink/public/platform/web_sudden_termination_disabler_type.h",
+  "+third_party/blink/public/platform/web_text_autosizer_page_info.h",
   "+third_party/blink/public/platform/web_touch_event.h",
   "+third_party/blink/public/platform/web_text_input_type.h",
   "+third_party/blink/public/platform/mac/web_scrollbar_theme.h",
-  "+third_party/blink/public/platform/modules/font_unique_name_lookup/font_unique_name_lookup.mojom.h",
-  "+third_party/blink/public/platform/modules/idle/idle_manager.mojom.h",
-  "+third_party/blink/public/platform/modules/indexeddb/web_idb_database_exception.h",
-  "+third_party/blink/public/platform/modules/locks/lock_manager.mojom.h",
-  "+third_party/blink/public/platform/modules/notifications/web_notification_constants.h",
   "+third_party/blink/public/platform/modules/service_worker/web_service_worker_error.h",
+  "+third_party/blink/public/platform/modules/sms/sms_receiver.mojom.h",
   "+third_party/blink/public/public_buildflags.h",
+  "+third_party/blink/public/strings/grit/blink_strings.h",
   "+third_party/blink/public/web/web_ax_enums.h",
   "+third_party/blink/public/web/web_console_message.h",
   "+third_party/blink/public/web/web_context_menu_data.h",
   "+third_party/blink/public/web/web_device_emulation_params.h",
   "+third_party/blink/public/web/web_drag_status.h",
-  "+third_party/blink/public/web/web_fullscreen_options.h",
   "+third_party/blink/public/web/web_ime_text_span.h",
-  "+third_party/blink/public/web/web_media_player_action.h",
-  "+third_party/blink/public/web/web_plugin_action.h",
+  "+third_party/blink/public/common/media/media_player_action.h",
   "+third_party/blink/public/web/web_serialized_script_value_version.h",
   "+third_party/blink/public/web/WebSharedWorkerCreationContextType.h",
   "+third_party/blink/public/web/WebSharedWorkerCreationErrors.h",
   "+third_party/blink/public/web/web_text_direction.h",
   "+third_party/blink/public/web/web_tree_scope_type.h",
-  "+third_party/blink/public/web/web_triggering_event_info.h",
-
-  # Allow mojo generated files in WebKit. These files use STL types and
-  # don't use WTF types.
-  "+third_party/blink/public/platform/modules/background_sync/background_sync.mojom.h",
-  "+third_party/blink/public/platform/modules/bluetooth/web_bluetooth.mojom.h",
-  "+third_party/blink/public/platform/modules/broadcastchannel/broadcast_channel.mojom-test-utils.h",
-  "+third_party/blink/public/platform/modules/broadcastchannel/broadcast_channel.mojom.h",
-  "+third_party/blink/public/platform/modules/cookie_store/cookie_store.mojom.h",
-  "+third_party/blink/public/platform/modules/geolocation/geolocation_service.mojom.h",
-  "+third_party/blink/public/platform/modules/installedapp/installed_app_provider.mojom.h",
-  "+third_party/blink/public/platform/modules/installedapp/related_application.mojom.h",
-  "+third_party/blink/public/platform/modules/keyboard_lock/keyboard_lock.mojom.h",
-  "+third_party/blink/public/platform/modules/mediasession/media_session.mojom.h",
-  "+third_party/blink/public/platform/modules/mediastream/media_devices.mojom.h",
-  "+third_party/blink/public/platform/modules/notifications/notification_service.mojom.h",
-  "+third_party/blink/public/platform/modules/frame_sinks/embedded_frame_sink.mojom.h",
-  "+third_party/blink/public/platform/modules/permissions/permission.mojom.h",
-  "+third_party/blink/public/platform/modules/permissions/permission_status.mojom.h",
-  "+third_party/blink/public/platform/modules/webauthn/authenticator.mojom.h",
-  "+third_party/blink/public/platform/modules/webauthn/virtual_authenticator.mojom.h",
-  "+third_party/blink/public/platform/modules/webdatabase/web_database.mojom.h",
-  "+third_party/blink/public/platform/modules/websockets/websocket.mojom.h",
-  "+third_party/blink/public/web/commit_result.mojom.h",
-  "+third_party/blink/public/web/devtools_frontend.mojom.h",
 
   # DO NOT ADD ANY CHROME OR COMPONENTS INCLUDES HERE!!!
   # See https://sites.google.com/a/chromium.org/dev/developers/content-module
@@ -160,6 +142,5 @@ specific_include_rules = {
   # To share values of UMA enums between product code and tests.
   "cross_site_document_blocking_browsertest.cc": [
     "+services/network/cross_origin_read_blocking.h",
-    "+services/network/initiator_lock_compatibility.h",
   ],
 }

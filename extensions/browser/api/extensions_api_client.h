@@ -15,6 +15,7 @@
 #include "extensions/browser/api/declarative_content/content_rules_registry.h"
 #include "extensions/browser/api/storage/settings_namespace.h"
 #include "extensions/common/api/clipboard.h"
+#include "extensions/common/extension.h"
 #include "extensions/common/extension_id.h"
 
 class GURL;
@@ -35,9 +36,11 @@ class GuestViewManagerDelegate;
 
 namespace extensions {
 
+class AutomationInternalApiDelegate;
 class AppViewGuestDelegate;
 class ContentRulesRegistry;
 class DevicePermissionsPrompt;
+class DisplayInfoProvider;
 class ExtensionOptionsGuest;
 class ExtensionOptionsGuestDelegate;
 class FeedbackPrivateDelegate;
@@ -96,8 +99,9 @@ class ExtensionsAPIClient {
                                         const std::string& header_name) const;
 
   // Returns true if the given |request| should be hidden from extensions. This
-  // should be invoked on the IO thread.
+  // should be invoked on the UI thread.
   virtual bool ShouldHideBrowserNetworkRequest(
+      content::BrowserContext* context,
       const WebRequestInfo& request) const;
 
   // Notifies that an extension failed to act on a network request because the
@@ -105,6 +109,19 @@ class ExtensionsAPIClient {
   virtual void NotifyWebRequestWithheld(int render_process_id,
                                         int render_frame_id,
                                         const ExtensionId& extension_id);
+
+  // Updates an extension's matched action count stored in an ExtensionAction
+  // and optionally clears the extension's explicitly set badge text for the
+  // tab specified by |tab_id|.
+  virtual void UpdateActionCount(content::BrowserContext* context,
+                                 const ExtensionId& extension_id,
+                                 int tab_id,
+                                 int action_count,
+                                 bool clear_badge_text);
+
+  // Clears an extension's matched action count stored in an ExtensionAction.
+  virtual void ClearActionCount(content::BrowserContext* context,
+                                const Extension& extension);
 
   // Creates the AppViewGuestDelegate.
   virtual AppViewGuestDelegate* CreateAppViewGuestDelegate() const;
@@ -150,6 +167,11 @@ class ExtensionsAPIClient {
   // Creates a delegate for handling the management extension api.
   virtual ManagementAPIDelegate* CreateManagementAPIDelegate() const;
 
+  // Creates and returns the DisplayInfoProvider used by the
+  // chrome.system.display extension API.
+  virtual std::unique_ptr<DisplayInfoProvider> CreateDisplayInfoProvider()
+      const;
+
   // If supported by the embedder, returns a delegate for embedder-dependent
   // MetricsPrivateAPI behavior.
   virtual MetricsPrivateDelegate* GetMetricsPrivateDelegate();
@@ -183,6 +205,12 @@ class ExtensionsAPIClient {
       const base::Closure& success_callback,
       const base::Callback<void(const std::string&)>& error_callback);
 #endif
+
+  virtual AutomationInternalApiDelegate* GetAutomationInternalApiDelegate();
+
+  // Gets keyed service factories that are used in the other methods on this
+  // class.
+  virtual std::vector<KeyedServiceBaseFactory*> GetFactoryDependencies();
 
   // NOTE: If this interface gains too many methods (perhaps more than 20) it
   // should be split into one interface per API.

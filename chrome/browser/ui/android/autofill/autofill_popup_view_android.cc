@@ -9,16 +9,17 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/command_line.h"
+#include "chrome/android/chrome_jni_headers/AutofillPopupBridge_jni.h"
 #include "chrome/browser/android/resource_mapper.h"
+#include "chrome/browser/autofill/autofill_keyboard_accessory_adapter.h"
 #include "chrome/browser/ui/android/autofill/autofill_keyboard_accessory_view.h"
 #include "chrome/browser/ui/android/view_android_helper.h"
 #include "chrome/browser/ui/autofill/autofill_popup_controller.h"
 #include "chrome/browser/ui/autofill/autofill_popup_layout_model.h"
-#include "components/autofill/core/browser/popup_item_ids.h"
-#include "components/autofill/core/browser/suggestion.h"
+#include "components/autofill/core/browser/ui/popup_item_ids.h"
+#include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/common/autofill_util.h"
 #include "components/security_state/core/security_state.h"
-#include "jni/AutofillPopupBridge_jni.h"
 #include "ui/android/view_android.h"
 #include "ui/android/window_android.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -103,6 +104,11 @@ void AutofillPopupViewAndroid::OnSuggestionsChanged() {
                                 controller_->IsRTL());
 }
 
+base::Optional<int32_t> AutofillPopupViewAndroid::GetAxUniqueId() {
+  NOTIMPLEMENTED() << "See https://crbug.com/985927";
+  return base::nullopt;
+}
+
 void AutofillPopupViewAndroid::SuggestionSelected(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj,
@@ -176,14 +182,18 @@ bool AutofillPopupViewAndroid::WasSuppressed() {
 
 // static
 AutofillPopupView* AutofillPopupView::Create(
-    AutofillPopupController* controller) {
+    base::WeakPtr<AutofillPopupController> controller) {
   if (IsKeyboardAccessoryEnabled()) {
-    return new AutofillKeyboardAccessoryView(
+    auto adapter = std::make_unique<AutofillKeyboardAccessoryAdapter>(
         controller, GetKeyboardAccessoryAnimationDuration(),
         ShouldLimitKeyboardAccessorySuggestionLabelWidth());
+    adapter->SetAccessoryView(
+        std::make_unique<AutofillKeyboardAccessoryView>(adapter.get()));
+    return adapter.release();
   }
 
-  auto popup_view = std::make_unique<AutofillPopupViewAndroid>(controller);
+  auto popup_view =
+      std::make_unique<AutofillPopupViewAndroid>(controller.get());
   popup_view->Init();
   return popup_view->WasSuppressed() ? nullptr : popup_view.release();
 }

@@ -7,9 +7,11 @@
 
 #include <stdint.h>
 
+#include <string>
+
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "sandbox/win/src/crosscall_server.h"
+#include "sandbox/win/src/ipc_tags.h"
 #include "sandbox/win/src/sandbox_policy_base.h"
 
 namespace sandbox {
@@ -21,7 +23,7 @@ class ThreadProcessDispatcher : public Dispatcher {
   ~ThreadProcessDispatcher() override {}
 
   // Dispatcher interface.
-  bool SetupService(InterceptionManager* manager, int service) override;
+  bool SetupService(InterceptionManager* manager, IpcTag service) override;
 
  private:
   // Processes IPC requests coming from calls to NtOpenThread() in the target.
@@ -45,10 +47,10 @@ class ThreadProcessDispatcher : public Dispatcher {
 
   // Processes IPC requests coming from calls to CreateProcessW() in the target.
   bool CreateProcessW(IPCInfo* ipc,
-                      base::string16* name,
-                      base::string16* cmd_line,
-                      base::string16* cur_dir,
-                      base::string16* target_cur_dir,
+                      std::wstring* name,
+                      std::wstring* cmd_line,
+                      std::wstring* cur_dir,
+                      std::wstring* target_cur_dir,
                       CountedBuffer* info);
 
   // Processes IPC requests coming from calls to CreateThread() in the target.

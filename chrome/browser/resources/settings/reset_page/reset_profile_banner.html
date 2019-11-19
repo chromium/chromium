@@ -1,7 +1,7 @@
 <link rel="import" href="chrome://resources/html/polymer.html">
 
+<link rel="import" href="chrome://resources/cr_elements/cr_button/cr_button.html">
 <link rel="import" href="chrome://resources/cr_elements/cr_dialog/cr_dialog.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/paper-button/paper-button.html">
 <link rel="import" href="reset_browser_proxy.html">
 <link rel="import" href="../route.html">
 
@@ -19,12 +19,12 @@
         </span>
       </div>
       <div slot="button-container">
-        <paper-button class="cancel-button" on-click="onOkTap_" id="ok">
+        <cr-button class="cancel-button" on-click="onOkTap_" id="ok">
           $i18n{ok}
-        </paper-button>
-        <paper-button class="action-button" on-click="onResetTap_" id="reset">
+        </cr-button>
+        <cr-button class="action-button" on-click="onResetTap_" id="reset">
           $i18n{resetProfileBannerButton}
-        </paper-button>
+        </cr-button>
       </div>
     </cr-dialog>
   </template>

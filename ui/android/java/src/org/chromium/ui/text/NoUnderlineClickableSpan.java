@@ -5,10 +5,11 @@
 package org.chromium.ui.text;
 
 import android.content.res.Resources;
-import android.support.annotation.ColorRes;
 import android.text.TextPaint;
 import android.text.style.ClickableSpan;
 import android.view.View;
+
+import androidx.annotation.ColorRes;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Callback;

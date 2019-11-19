@@ -1,0 +1,39 @@
+# Copyright 2017 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//mojo/public/tools/bindings/mojom.gni")
+import("//ui/ozone/ozone.gni")
+
+mojom("compositing") {
+  sources = [
+    "display_private.mojom",
+    "external_begin_frame_controller.mojom",
+    "frame_sink_manager.mojom",
+    "frame_sink_video_capture.mojom",
+    "layered_window_updater.mojom",
+    "overlay_strategy.mojom",
+    "renderer_settings.mojom",
+    "vsync_parameter_observer.mojom",
+  ]
+
+  public_deps = [
+    "//gpu/ipc/common:interfaces",
+    "//media/capture/mojom:video_capture",
+    "//media/mojo/mojom",
+    "//mojo/public/mojom/base",
+    "//services/viz/public/mojom",
+    "//skia/public/mojom",
+    "//ui/gfx/geometry/mojom",
+    "//ui/gfx/mojom",
+    "//ui/latency/mojom",
+  ]
+
+  enabled_features = []
+  if (use_ozone) {
+    enabled_features += [ "use_ozone" ]
+  }
+  if (use_x11) {
+    enabled_features += [ "use_x11" ]
+  }
+}

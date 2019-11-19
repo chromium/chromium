@@ -7,20 +7,16 @@
 #include <sstream>
 
 #include "base/logging.h"
-#include "base/memory/ptr_util.h"
 #include "base/values.h"
 
 namespace explore_sites {
 
 // static
-std::unique_ptr<NTPCatalog> NTPCatalog::create(
-    const base::DictionaryValue* json) {
-  if (!json || !json->is_dict())
+std::unique_ptr<NTPCatalog> NTPCatalog::create(const base::Value& json) {
+  if (!json.is_dict())
     return nullptr;
 
-  const base::ListValue* categories = static_cast<const base::ListValue*>(
-      json->FindKeyOfType("categories", base::Value::Type::LIST));
-
+  const base::Value* categories = json.FindListKey("categories");
   if (!categories)
     return nullptr;
 
@@ -29,27 +25,21 @@ std::unique_ptr<NTPCatalog> NTPCatalog::create(
     if (!category.is_dict()) {
       return nullptr;
     }
-    const base::DictionaryValue* category_dict =
-        static_cast<const base::DictionaryValue*>(&category);
-    const base::Value* id =
-        category_dict->FindKeyOfType("id", base::Value::Type::STRING);
-    const base::Value* title =
-        category_dict->FindKeyOfType("title", base::Value::Type::STRING);
-    const base::Value* icon_url_str =
-        category_dict->FindKeyOfType("icon_url", base::Value::Type::STRING);
+    const std::string* id = category.FindStringKey("id");
+    const std::string* title = category.FindStringKey("title");
+    const std::string* icon_url_str = category.FindStringKey("icon_url");
 
     if (!id || !title || !icon_url_str)
       continue;
 
-    GURL icon_url(icon_url_str->GetString());
+    GURL icon_url(*icon_url_str);
     if (icon_url.is_empty())
       continue;
 
-    catalog_categories.push_back(
-        {id->GetString(), title->GetString(), icon_url});
+    catalog_categories.push_back({*id, *title, icon_url});
   }
 
-  auto catalog = base::WrapUnique(new NTPCatalog(catalog_categories));
+  auto catalog = std::make_unique<NTPCatalog>(catalog_categories);
   DVLOG(1) << "Catalog parsed: " << catalog->ToString();
 
   return catalog;

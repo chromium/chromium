@@ -16,8 +16,8 @@ namespace input_method {
 // Provides access to read/persist Input Method-related properties.
 class InputMethodDelegate {
  public:
-  InputMethodDelegate() {}
-  virtual ~InputMethodDelegate() {}
+  InputMethodDelegate() = default;
+  virtual ~InputMethodDelegate() = default;
 
   // Returns original VPD value.
   virtual std::string GetHardwareKeyboardLayouts() const = 0;

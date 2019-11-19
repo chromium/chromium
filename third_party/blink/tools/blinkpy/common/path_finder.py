@@ -44,6 +44,12 @@ def add_bindings_scripts_dir_to_sys_path():
         sys.path.insert(0, path_to_bindings_scripts)
 
 
+def add_build_scripts_dir_to_sys_path():
+    path_to_build_scripts = get_build_scripts_dir()
+    if path_to_build_scripts not in sys.path:
+        sys.path.insert(0, path_to_build_scripts)
+
+
 def add_blinkpy_thirdparty_dir_to_sys_path():
     path = get_blinkpy_thirdparty_dir()
     if path not in sys.path:
@@ -89,6 +95,10 @@ def get_blink_tools_dir():
     return os.path.join(get_chromium_src_dir(), 'third_party', 'blink', 'tools')
 
 
+def get_build_scripts_dir():
+    return os.path.join(get_source_dir(), 'build', 'scripts')
+
+
 def add_blink_tools_dir_to_sys_path():
     path = get_blink_tools_dir()
     if path not in sys.path:
@@ -124,6 +134,9 @@ class PathFinder(object):
     def perf_tests_dir(self):
         return self.path_from_chromium_base('third_party', 'blink', 'perf_tests')
 
+    def webdriver_prefix(self):
+        return self._filesystem.join('external', 'wpt', 'webdriver', '')
+
     @memoized
     def _blink_base(self):
         """Returns the absolute path to the top of the Blink directory."""
@@ -147,6 +160,20 @@ class PathFinder(object):
 
     def path_from_web_tests(self, *comps):
         return self._filesystem.join(self.web_tests_dir(), *comps)
+
+    def strip_web_tests_path(self, wpt_test_abs_path):
+        web_tests_path = self.path_from_web_tests('')
+        if wpt_test_abs_path.startswith(web_tests_path):
+            return wpt_test_abs_path[len(web_tests_path):]
+        return wpt_test_abs_path
+
+    def strip_webdriver_tests_path(self, wpt_webdriver_test_path):
+        if self.is_webdriver_test_path(wpt_webdriver_test_path):
+            return wpt_webdriver_test_path[len(self.webdriver_prefix()):]
+        return wpt_webdriver_test_path
+
+    def is_webdriver_test_path(self, test_path):
+        return test_path.startswith(self.webdriver_prefix())
 
     @memoized
     def depot_tools_base(self):

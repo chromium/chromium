@@ -1,5 +1,6 @@
 This is a testharness.js-based test.
 PASS idl_test setup
+PASS idl_test validation
 PASS Magnetometer interface: existence and properties of interface object
 PASS Magnetometer interface object length
 PASS Magnetometer interface object name

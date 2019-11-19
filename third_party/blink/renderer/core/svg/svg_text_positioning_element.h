@@ -57,7 +57,13 @@ inline bool IsSVGTextPositioningElement(const SVGElement& element) {
   return element.IsTextPositioning();
 }
 
-DEFINE_SVGELEMENT_TYPE_CASTS_WITH_FUNCTION(SVGTextPositioningElement);
+template <>
+struct DowncastTraits<SVGTextPositioningElement> {
+  static bool AllowFrom(const Node& node) {
+    auto* svg_element = DynamicTo<SVGElement>(node);
+    return svg_element && IsSVGTextPositioningElement(*svg_element);
+  }
+};
 
 }  // namespace blink
 

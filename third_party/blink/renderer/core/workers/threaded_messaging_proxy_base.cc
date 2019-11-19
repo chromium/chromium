@@ -17,7 +17,6 @@
 #include "third_party/blink/renderer/core/workers/global_scope_creation_params.h"
 #include "third_party/blink/renderer/core/workers/worker_global_scope.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
-#include "third_party/blink/renderer/platform/wtf/time.h"
 
 namespace blink {
 
@@ -35,7 +34,11 @@ ThreadedMessagingProxyBase::ThreadedMessagingProxyBase(
       terminate_sync_load_event_(
           base::WaitableEvent::ResetPolicy::MANUAL,
           base::WaitableEvent::InitialState::NOT_SIGNALED),
-      keep_alive_(this) {
+      feature_handle_for_scheduler_(
+          execution_context->GetScheduler()->RegisterFeature(
+              SchedulingPolicy::Feature::kDedicatedWorkerOrWorklet,
+              {SchedulingPolicy::RecordMetricsForBackForwardCache()})),
+      keep_alive_(PERSISTENT_FROM_HERE, this) {
   DCHECK(IsParentContextThread());
   g_live_messaging_proxy_count++;
 }
@@ -72,8 +75,7 @@ void ThreadedMessagingProxyBase::InitializeWorkerThread(
       global_scope_creation_params->global_scope_name.IsolatedCopy());
 
   worker_thread_->Start(std::move(global_scope_creation_params),
-                        thread_startup_data, std::move(devtools_params),
-                        GetParentExecutionContextTaskRunners());
+                        thread_startup_data, std::move(devtools_params));
 
   if (auto* scope = DynamicTo<WorkerGlobalScope>(*execution_context_)) {
     scope->GetThread()->ChildThreadStartedOnWorkerThread(worker_thread_.get());
@@ -91,7 +93,7 @@ void ThreadedMessagingProxyBase::CountDeprecation(WebFeature feature) {
 }
 
 void ThreadedMessagingProxyBase::ReportConsoleMessage(
-    MessageSource source,
+    mojom::ConsoleMessageSource source,
     mojom::ConsoleMessageLevel level,
     const String& message,
     std::unique_ptr<SourceLocation> location) {
@@ -144,6 +146,8 @@ void ThreadedMessagingProxyBase::TerminateGlobalScope() {
   if (asked_to_terminate_)
     return;
   asked_to_terminate_ = true;
+
+  feature_handle_for_scheduler_.reset();
 
   terminate_sync_load_event_.Signal();
 

@@ -8,6 +8,7 @@
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/hash_functions.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/ref_counted.h"
@@ -15,6 +16,8 @@
 namespace WTF {
 
 class DestructCounter {
+  USING_FAST_MALLOC(DestructCounter);
+
  public:
   explicit DestructCounter(int i, int* destruct_number)
       : i_(i), destruct_number_(destruct_number) {}
@@ -28,6 +31,8 @@ class DestructCounter {
 };
 
 class MoveOnly {
+  DISALLOW_NEW();
+
  public:
   explicit MoveOnly(int i = 0) : i_(i) {}
 

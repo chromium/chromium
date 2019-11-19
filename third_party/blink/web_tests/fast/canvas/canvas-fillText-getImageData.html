@@ -1,0 +1,15 @@
+<html>
+<body>
+<canvas id="c" width=50 height=20></canvas>
+<script>
+var c = document.getElementById('c');
+var ctx = c.getContext("2d", {alpha: false});
+ctx.fillStyle = "white";
+ctx.fillRect(0,0,500,500);
+ctx.font = " 20px sans-serif";
+ctx.fillStyle = "black";
+ctx.fillText("Test", 0, 16);
+var imdData = ctx.getImageData(0,0,10,10).data;
+</script>
+</body>
+</html>

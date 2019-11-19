@@ -8,10 +8,10 @@ layer at (0,0) size 800x600
         LayoutText {#text} at (0,0) size 108x18
           text run at (0,0) width 108: "This is a test for "
         LayoutInline {I} at (0,0) size 758x36
-          LayoutInline {A} at (0,0) size 353x18 [color=#0000EE]
+          LayoutInline {A} at (107,0) size 353x18 [color=#0000EE]
             LayoutText {#text} at (107,0) size 353x18
               text run at (107,0) width 353: "http://bugzilla.opendarwin.org/show_bug.cgi?id=9978"
-          LayoutText {#text} at (459,0) size 758x36
+          LayoutText {#text} at (0,0) size 758x36
             text run at (459,0) width 5: " "
             text run at (463,0) width 295: "REGRESSION (r12949-r12988): Clicking the"
             text run at (0,18) width 421: "first letter on a line places the caret at the end of the previous line"

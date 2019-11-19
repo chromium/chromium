@@ -167,12 +167,14 @@ NodeUtils.getLastLeafChild = function(node) {
 NodeUtils.findAllMatching = function(node, rect, nodes) {
   var found = false;
   for (var c = node.firstChild; c; c = c.nextSibling) {
-    if (NodeUtils.findAllMatching(c, rect, nodes))
+    if (NodeUtils.findAllMatching(c, rect, nodes)) {
       found = true;
+    }
   }
 
-  if (found)
+  if (found) {
     return true;
+  }
 
   // Closure needs node.location check here to allow the next few
   // lines to compile.
@@ -205,19 +207,63 @@ NodeUtils.Position;
 /**
  * Finds the deep equivalent node where a selection starts given a node
  * object and selection offset. This is meant to be used in conjunction with
- * the anchorObject/anchorOffset and focusObject/focusOffset of the
- * automation API.
- * @param {AutomationNode} parent The parent node of the selection,
- * similar to chrome.automation.focusObject.
+ * the selectionStartObject/selectionStartOffset and
+ * selectionEndObject/selectionEndOffset of the automation API.
+ * @param {!AutomationNode} parent The parent node of the selection,
+ * similar to chrome.automation.selectionStartObject or selectionEndObject.
  * @param {number} offset The integer offset of the selection. This is
- * similar to chrome.automation.focusOffset.
+ * similar to chrome.automation.selectionStartOffset or selectionEndOffset.
  * @param {boolean} isStart whether this is the start or end of a selection.
  * @return {!NodeUtils.Position} The node matching the selected offset.
  */
 NodeUtils.getDeepEquivalentForSelection = function(parent, offset, isStart) {
-  if (parent.children.length == 0)
+  if (parent.children.length == 0) {
     return {node: parent, offset: offset};
-  // Create a stack of children nodes to search through.
+  }
+
+  // Non-text nodes with children.
+  if (parent.role != RoleType.STATIC_TEXT &&
+      parent.role != RoleType.INLINE_TEXT_BOX && parent.children.length > 0 &&
+      !NodeUtils.isTextField(parent)) {
+    let index = isStart ? offset : offset - 1;
+    if (parent.children.length > index && index >= 0) {
+      let child = parent.children[index];
+      if (child.children.length > 0) {
+        child = isStart ? NodeUtils.getFirstLeafChild(child) :
+                          NodeUtils.getLastLeafChild(child);
+      }
+      return {
+        node: /** @type {!AutomationNode} */ (child),
+        offset: isStart ?
+            0 :
+            NodeUtils.nameLength(/** @type {!AutomationNode} */ (child))
+      };
+    } else if (isStart && !NodeUtils.isTextField(parent)) {
+      // We are off the edge of this parent. Go to the next leaf node that is
+      // not an ancestor of the parent.
+      let lastChild = NodeUtils.getLastLeafChild(parent);
+      if (lastChild) {
+        let nextNode = AutomationUtil.findNextNode(
+            lastChild, constants.Dir.FORWARD, AutomationPredicate.leaf);
+        if (nextNode) {
+          return {node: nextNode, offset: 0};
+        }
+      }
+    } else if (index < 0) {
+      // Otherwise we are before the beginning of this parent. Find the previous
+      // leaf node and use that.
+      let previousNode = AutomationUtil.findNextNode(
+          parent, constants.Dir.BACKWARD, AutomationPredicate.leaf);
+      if (previousNode) {
+        return {node: previousNode, offset: NodeUtils.nameLength(previousNode)};
+      }
+    }
+  }
+
+  // If this is a node without children or a text node, create a stack of
+  // nodes to search through.
+  // TODO(katie): Since we only have non-text nodes or nodes without children,
+  // can this be simplified?
   let nodesToCheck;
   if (NodeUtils.isTextField(parent) && parent.firstChild &&
       parent.firstChild.firstChild) {
@@ -232,26 +278,18 @@ NodeUtils.getDeepEquivalentForSelection = function(parent, offset, isStart) {
   // one at this offset.
   while (nodesToCheck.length > 0) {
     node = nodesToCheck.pop();
-    if (node.state.invisible)
+    if (node.state.invisible) {
       continue;
+    }
     if (node.children.length > 0) {
-      // If the parent is a textField, then the whole text
-      // field is selected. Ignore its contents.
-      // If only part of the text field was selected, the parent type would
-      // have been a text field.
-      if (!NodeUtils.isTextField(node)) {
+      if (node.role != RoleType.STATIC_TEXT) {
+        index += 1;
+      } else {
         nodesToCheck = nodesToCheck.concat(node.children.slice().reverse());
       }
-      if (node.role != RoleType.LINE_BREAK &&
-          (node.parent && node.parent.parent &&
-           !NodeUtils.isTextField(node.parent.parent))) {
-        // If this is inside a textField, or if it is a line break, don't
-        // count the node itself. Otherwise it counts.
-        index += 1;
-      }
     } else {
-      if (node.role == RoleType.STATIC_TEXT ||
-          node.role == RoleType.INLINE_TEXT_BOX) {
+      if (node.parent.role == RoleType.STATIC_TEXT ||
+          node.parent.role == RoleType.INLINE_TEXT_BOX) {
         // How many characters are in the name.
         index += NodeUtils.nameLength(node);
       } else {

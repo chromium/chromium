@@ -5,7 +5,7 @@
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
-#      http://www.apache.org/licenses/LICENSE-2.0
+#      https://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,6 +17,7 @@
 load(
     "//absl:copts/configure_copts.bzl",
     "ABSL_DEFAULT_COPTS",
+    "ABSL_DEFAULT_LINKOPTS",
     "ABSL_TEST_COPTS",
 )
 
@@ -32,6 +33,7 @@ cc_library(
     ],
     hdrs = ["hash.h"],
     copts = ABSL_DEFAULT_COPTS,
+    linkopts = ABSL_DEFAULT_LINKOPTS,
     deps = [
         ":city",
         "//absl/base:core_headers",
@@ -50,6 +52,7 @@ cc_library(
     name = "hash_testing",
     testonly = 1,
     hdrs = ["hash_testing.h"],
+    linkopts = ABSL_DEFAULT_LINKOPTS,
     deps = [
         ":spy_hash_state",
         "//absl/meta:type_traits",
@@ -63,6 +66,7 @@ cc_test(
     name = "hash_test",
     srcs = ["hash_test.cc"],
     copts = ABSL_TEST_COPTS,
+    linkopts = ABSL_DEFAULT_LINKOPTS,
     deps = [
         ":hash",
         ":hash_testing",
@@ -80,6 +84,7 @@ cc_library(
     testonly = 1,
     hdrs = ["internal/spy_hash_state.h"],
     copts = ABSL_DEFAULT_COPTS,
+    linkopts = ABSL_DEFAULT_LINKOPTS,
     visibility = ["//visibility:private"],
     deps = [
         ":hash",
@@ -95,6 +100,7 @@ cc_library(
         "internal/city.h",
     ],
     copts = ABSL_DEFAULT_COPTS,
+    linkopts = ABSL_DEFAULT_LINKOPTS,
     deps = [
         "//absl/base:config",
         "//absl/base:core_headers",
@@ -106,6 +112,7 @@ cc_test(
     name = "city_test",
     srcs = ["internal/city_test.cc"],
     copts = ABSL_TEST_COPTS,
+    linkopts = ABSL_DEFAULT_LINKOPTS,
     deps = [
         ":city",
         "@com_google_googletest//:gtest_main",

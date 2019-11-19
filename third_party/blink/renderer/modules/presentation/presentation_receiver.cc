@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/presentation/presentation_receiver.h"
 
 #include "services/service_manager/public/cpp/interface_provider.h"
+#include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -15,28 +16,28 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
 #include "third_party/blink/renderer/core/frame/navigator.h"
-#include "third_party/blink/renderer/core/frame/use_counter.h"
 #include "third_party/blink/renderer/modules/presentation/navigator_presentation.h"
 #include "third_party/blink/renderer/modules/presentation/presentation.h"
 #include "third_party/blink/renderer/modules/presentation/presentation_connection.h"
 #include "third_party/blink/renderer/modules/presentation/presentation_connection_list.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 
 namespace blink {
 
 PresentationReceiver::PresentationReceiver(LocalFrame* frame)
     : ContextLifecycleObserver(frame->GetDocument()),
       connection_list_(MakeGarbageCollected<PresentationConnectionList>(
-          frame->GetDocument())),
-      receiver_binding_(this) {
-  auto* interface_provider = GetFrame()->Client()->GetInterfaceProvider();
-  interface_provider->GetInterface(mojo::MakeRequest(&presentation_service_));
-
-  mojom::blink::PresentationReceiverPtr receiver_ptr;
+          frame->GetDocument())) {
+  frame->GetBrowserInterfaceBroker().GetInterface(
+      presentation_service_remote_.BindNewPipeAndPassReceiver());
   scoped_refptr<base::SingleThreadTaskRunner> task_runner =
       frame->GetTaskRunner(TaskType::kPresentation);
-  receiver_binding_.Bind(mojo::MakeRequest(&receiver_ptr, task_runner),
-                         task_runner);
-  presentation_service_->SetReceiver(std::move(receiver_ptr));
+
+  // Set the mojo::Remote<T> that remote implementation of PresentationService
+  // will use to interact with the associated PresentationReceiver, in order
+  // to receive updates on new connections becoming available.
+  presentation_service_remote_->SetReceiver(
+      presentation_receiver_receiver_.BindNewPipeAndPassRemote(task_runner));
 }
 
 // static
@@ -85,13 +86,15 @@ void PresentationReceiver::RemoveConnection(
 
 void PresentationReceiver::OnReceiverConnectionAvailable(
     mojom::blink::PresentationInfoPtr info,
-    mojom::blink::PresentationConnectionPtr controller_connection,
-    mojom::blink::PresentationConnectionRequest receiver_connection_request) {
+    mojo::PendingRemote<mojom::blink::PresentationConnection>
+        controller_connection,
+    mojo::PendingReceiver<mojom::blink::PresentationConnection>
+        receiver_connection_receiver) {
   // Take() will call PresentationReceiver::registerConnection()
   // and register the connection.
   auto* connection = ReceiverPresentationConnection::Take(
       this, *info, std::move(controller_connection),
-      std::move(receiver_connection_request));
+      std::move(receiver_connection_receiver));
 
   // Only notify receiver.connectionList property if it has been acccessed
   // previously.
@@ -126,8 +129,8 @@ void PresentationReceiver::RecordOriginTypeAccess(
 }
 
 void PresentationReceiver::ContextDestroyed(ExecutionContext*) {
-  receiver_binding_.Close();
-  presentation_service_.reset();
+  presentation_receiver_receiver_.reset();
+  presentation_service_remote_.reset();
 }
 
 void PresentationReceiver::Trace(blink::Visitor* visitor) {

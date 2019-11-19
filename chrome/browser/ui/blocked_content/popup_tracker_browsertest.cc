@@ -262,7 +262,7 @@ IN_PROC_BROWSER_TEST_F(PopupTrackerBrowserTest, WhitelistedPopup_HasTracker) {
   // Is blocked by the popup blocker.
   ui_test_utils::NavigateToURL(browser(), url);
   EXPECT_TRUE(TabSpecificContentSettings::FromWebContents(web_contents)
-                  ->IsContentBlocked(CONTENT_SETTINGS_TYPE_POPUPS));
+                  ->IsContentBlocked(ContentSettingsType::POPUPS));
 
   // Click through to open the popup.
   content::TestNavigationObserver navigation_observer(nullptr, 1);

@@ -8,30 +8,10 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/common/chrome_paths.h"
+#include "chrome/test/base/js_test_api.h"
 #include "components/nacl/common/buildflags.h"
 #include "content/public/browser/web_ui.h"
 #include "net/base/filename_util.h"
-
-// static
-const base::FilePath::CharType
-    JavaScriptBrowserTest::kA11yAuditLibraryJSPath[] =
-        FILE_PATH_LITERAL("third_party/accessibility-audit/axs_testing.js");
-
-// static
-const base::FilePath::CharType JavaScriptBrowserTest::kChaiJSPath[] =
-    FILE_PATH_LITERAL("third_party/chaijs/chai.js");
-
-// static
-const base::FilePath::CharType JavaScriptBrowserTest::kMockJSPath[] =
-    FILE_PATH_LITERAL("chrome/third_party/mock4js/mock4js.js");
-
-// static
-const base::FilePath::CharType JavaScriptBrowserTest::kWebUILibraryJS[] =
-    FILE_PATH_LITERAL("test_api.js");
-
-// static
-const base::FilePath::CharType JavaScriptBrowserTest::kWebUITestFolder[] =
-    FILE_PATH_LITERAL("webui");
 
 void JavaScriptBrowserTest::AddLibrary(const base::FilePath& library_path) {
   user_libraries_.push_back(library_path);
@@ -44,11 +24,10 @@ JavaScriptBrowserTest::~JavaScriptBrowserTest() {
 }
 
 void JavaScriptBrowserTest::SetUpOnMainThread() {
-  base::FilePath test_data_directory;
-  ASSERT_TRUE(
-      base::PathService::Get(chrome::DIR_TEST_DATA, &test_data_directory));
-  test_data_directory = test_data_directory.Append(kWebUITestFolder);
-  library_search_paths_.push_back(test_data_directory);
+  JsTestApiConfig config;
+  library_search_paths_.push_back(config.search_path);
+  DCHECK(user_libraries_.empty());
+  user_libraries_ = config.default_libraries;
 
 // When the sanitizers (ASAN/MSAN/TSAN) are enabled, the WebUI tests
 // which use this generated directory are disabled in the build.
@@ -69,10 +48,6 @@ void JavaScriptBrowserTest::SetUpOnMainThread() {
   ASSERT_TRUE(
       base::PathService::Get(base::DIR_SOURCE_ROOT, &source_root_directory));
   library_search_paths_.push_back(source_root_directory);
-
-  AddLibrary(base::FilePath(kMockJSPath));
-  AddLibrary(base::FilePath(kChaiJSPath));
-  AddLibrary(base::FilePath(kWebUILibraryJS));
 }
 
 // TODO(dtseng): Make this return bool (success/failure) and remove ASSERt_TRUE

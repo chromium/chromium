@@ -8,7 +8,7 @@
 #include <algorithm>
 #include <array>
 
-#include "ash/accessibility/accessibility_controller.h"
+#include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/window_util.h"
@@ -28,7 +28,7 @@ namespace display_move_window_util {
 namespace {
 
 aura::Window* GetTargetWindow() {
-  aura::Window* window = wm::GetActiveWindow();
+  aura::Window* window = window_util::GetActiveWindow();
   if (!window)
     return nullptr;
 
@@ -56,8 +56,8 @@ bool CanHandleMoveActiveWindowBetweenDisplays() {
     return false;
 
   // The movement target window must be in window cycle list.
-  return base::ContainsValue(
-      Shell::Get()->mru_window_tracker()->BuildWindowForCycleList(),
+  return base::Contains(
+      Shell::Get()->mru_window_tracker()->BuildWindowForCycleList(kActiveDesk),
       GetTargetWindow());
 }
 
@@ -76,9 +76,9 @@ void HandleMoveActiveWindowBetweenDisplays() {
                               origin_display_id, display::CompareDisplayIds);
   int64_t target_display_id =
       itr == display_id_list.end() ? display_id_list[0] : *itr;
-  wm::MoveWindowToDisplay(window, target_display_id);
+  window_util::MoveWindowToDisplay(window, target_display_id);
   Shell::Get()->accessibility_controller()->TriggerAccessibilityAlert(
-      mojom::AccessibilityAlert::WINDOW_MOVED_TO_ANOTHER_DISPLAY);
+      AccessibilityAlert::WINDOW_MOVED_TO_ANOTHER_DISPLAY);
   base::RecordAction(
       base::UserMetricsAction("Accel_Move_Active_Window_Between_Displays"));
 }

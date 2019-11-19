@@ -10,7 +10,7 @@
 #include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
-#include "ui/events/devices/input_device.h"
+#include "ui/events/devices/gamepad_device.h"
 #include "ui/events/ozone/evdev/events_ozone_evdev_export.h"
 #include "ui/events/ozone/gamepad/gamepad_observer.h"
 
@@ -28,7 +28,8 @@ class EVENTS_OZONE_EVDEV_EXPORT GamepadProviderOzone {
 
   // Dispatch GamepadDevicesUpdate event when gamepad device is connected or
   // disconnected. This function must be called on UI thread.
-  void DispatchGamepadDevicesUpdated(std::vector<InputDevice> gamepad_devices);
+  void DispatchGamepadDevicesUpdated(
+      std::vector<GamepadDevice> gamepad_devices);
 
   // Dispatch button event when gamepad event is seen.
   // Code is the index of gamepad button or gamepad axis defined in W3C standard
@@ -46,7 +47,7 @@ class EVENTS_OZONE_EVDEV_EXPORT GamepadProviderOzone {
 
   // Get the list of currently connected gamepad devices. This function must be
   // called on UI thread.
-  std::vector<InputDevice> GetGamepadDevices();
+  std::vector<GamepadDevice> GetGamepadDevices();
 
  private:
   GamepadProviderOzone();
@@ -61,7 +62,7 @@ class EVENTS_OZONE_EVDEV_EXPORT GamepadProviderOzone {
   base::ObserverList<GamepadObserver>::Unchecked observers_;
 
   // List of current connected gamepad events.
-  std::vector<InputDevice> gamepad_devices_;
+  std::vector<GamepadDevice> gamepad_devices_;
 
   DISALLOW_COPY_AND_ASSIGN(GamepadProviderOzone);
 };

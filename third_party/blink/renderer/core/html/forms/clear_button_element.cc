@@ -33,25 +33,15 @@
 
 namespace blink {
 
-using namespace html_names;
-
-inline ClearButtonElement::ClearButtonElement(
-    Document& document,
-    ClearButtonOwner& clear_button_owner)
-    : HTMLDivElement(document), clear_button_owner_(&clear_button_owner) {}
-
-ClearButtonElement* ClearButtonElement::Create(
-    Document& document,
-    ClearButtonOwner& clear_button_owner) {
-  ClearButtonElement* element =
-      MakeGarbageCollected<ClearButtonElement>(document, clear_button_owner);
-  element->SetShadowPseudoId(AtomicString("-webkit-clear-button"));
-  element->setAttribute(kIdAttr, shadow_element_names::ClearButton());
-  return element;
+ClearButtonElement::ClearButtonElement(Document& document,
+                                       ClearButtonOwner& clear_button_owner)
+    : HTMLDivElement(document), clear_button_owner_(&clear_button_owner) {
+  SetShadowPseudoId(AtomicString("-webkit-clear-button"));
+  setAttribute(html_names::kIdAttr, shadow_element_names::ClearButton());
 }
 
-void ClearButtonElement::DetachLayoutTree(const AttachContext& context) {
-  HTMLDivElement::DetachLayoutTree(context);
+void ClearButtonElement::DetachLayoutTree(bool performing_reattach) {
+  HTMLDivElement::DetachLayoutTree(performing_reattach);
 }
 
 void ClearButtonElement::DefaultEventHandler(Event& event) {

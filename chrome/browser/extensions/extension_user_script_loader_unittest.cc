@@ -21,7 +21,7 @@
 #include "content/public/browser/notification_observer.h"
 #include "content/public/browser/notification_registrar.h"
 #include "content/public/browser/notification_service.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/common/host_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -59,17 +59,18 @@ class ExtensionUserScriptLoaderTest : public testing::Test,
                const content::NotificationDetails& details) override {
     DCHECK(type == extensions::NOTIFICATION_USER_SCRIPTS_UPDATED);
 
-    shared_memory_ = content::Details<base::SharedMemory>(details).ptr();
+    shared_memory_ =
+        content::Details<base::ReadOnlySharedMemoryRegion>(details).ptr();
   }
 
   // Directory containing user scripts.
   base::ScopedTempDir temp_dir_;
 
   // Updated to the script shared memory when we get notified.
-  base::SharedMemory* shared_memory_;
+  base::ReadOnlySharedMemoryRegion* shared_memory_;
 
  private:
-  content::TestBrowserThreadBundle thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
   content::NotificationRegistrar registrar_;
 
   DISALLOW_COPY_AND_ASSIGN(ExtensionUserScriptLoaderTest);
@@ -85,7 +86,7 @@ TEST_F(ExtensionUserScriptLoaderTest, NoScripts) {
   loader.StartLoad();
   content::RunAllTasksUntilIdle();
 
-  ASSERT_TRUE(shared_memory_ != NULL);
+  ASSERT_TRUE(shared_memory_ != nullptr && shared_memory_->IsValid());
 }
 
 TEST_F(ExtensionUserScriptLoaderTest, Parse1) {

@@ -15,8 +15,8 @@
 #include "base/command_line.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
-#include "base/message_loop/message_loop.h"
 #include "base/run_loop.h"
+#include "base/test/task_environment.h"
 #include "base/threading/thread_checker.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
@@ -152,7 +152,7 @@ class MultizoneBackendTest : public testing::TestWithParam<TestParams> {
   void OnEndOfStream();
 
  private:
-  base::MessageLoop message_loop_;
+  base::test::TaskEnvironment task_environment_;
   std::vector<std::unique_ptr<BufferFeeder>> effects_feeders_;
   std::unique_ptr<BufferFeeder> audio_feeder_;
 
@@ -318,6 +318,7 @@ void MultizoneBackendTest::Initialize(int sample_rate,
                                       int playback_rate_change_count) {
   AudioConfig config;
   config.codec = kCodecPCM;
+  config.channel_layout = ChannelLayout::STEREO;
   config.sample_format = kSampleFormatPlanarF32;
   config.channel_number = 2;
   config.bytes_per_channel = 4;
@@ -334,6 +335,7 @@ void MultizoneBackendTest::Initialize(int sample_rate,
 void MultizoneBackendTest::AddEffectsStreams() {
   AudioConfig effects_config;
   effects_config.codec = kCodecPCM;
+  effects_config.channel_layout = ChannelLayout::STEREO;
   effects_config.sample_format = kSampleFormatS16;
   effects_config.channel_number = 2;
   effects_config.bytes_per_channel = 2;

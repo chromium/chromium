@@ -14,6 +14,7 @@
 #include "components/history/core/common/pref_names.h"
 #include "components/invalidation/impl/invalidator_registrar_with_memory.h"
 #include "components/invalidation/impl/per_user_topic_registration_manager.h"
+#include "components/language/core/browser/language_prefs.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/network_time/network_time_tracker.h"
@@ -34,12 +35,15 @@
 #include "components/rappor/rappor_service_impl.h"
 #include "components/search_engines/template_url_prepopulate_data.h"
 #include "components/sessions/core/session_id_generator.h"
-#include "components/signin/core/browser/signin_pref_names.h"
+#include "components/signin/public/base/signin_pref_names.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/strings/grit/components_locale_settings.h"
 #include "components/sync/base/sync_prefs.h"
+#include "components/sync_device_info/device_info_prefs.h"
 #include "components/sync_sessions/session_sync_prefs.h"
 #include "components/translate/core/browser/translate_pref_names.h"
 #include "components/translate/core/browser/translate_prefs.h"
+#include "components/ukm/ios/features.h"
 #include "components/unified_consent/unified_consent_service.h"
 #include "components/update_client/update_client.h"
 #include "components/variations/service/variations_service.h"
@@ -57,7 +61,6 @@
 #import "ios/chrome/browser/ui/bookmarks/bookmark_utils_ios.h"
 #include "ios/chrome/browser/voice/voice_search_prefs_registration.h"
 #include "ios/public/provider/chrome/browser/chrome_browser_provider.h"
-#include "services/identity/public/cpp/identity_manager.h"
 #include "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -66,13 +69,19 @@
 
 namespace {
 const char kReverseAutologinEnabled[] = "reverse_autologin.enabled";
+const char kLastKnownGoogleURL[] = "browser.last_known_google_url";
+const char kLastPromptedGoogleURL[] = "browser.last_prompted_google_url";
+
+// Deprecated 9/2019
+const char kGoogleServicesUsername[] = "google.services.username";
+const char kGoogleServicesUserAccountId[] = "google.services.user_account_id";
 }
 
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   BrowserStateInfoCache::RegisterPrefs(registry);
   flags_ui::PrefServiceFlagsStorage::RegisterPrefs(registry);
   gcm::GCMChannelStatusSyncer::RegisterPrefs(registry);
-  identity::IdentityManager::RegisterPrefs(registry);
+  signin::IdentityManager::RegisterLocalStatePrefs(registry);
   IOSChromeMetricsServiceClient::RegisterPrefs(registry);
   network_time::NetworkTimeTracker::RegisterPrefs(registry);
   ios::NotificationPromo::RegisterPrefs(registry);
@@ -100,7 +109,9 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(metrics::prefs::kMetricsReportingEnabled,
                                 false);
   registry->RegisterBooleanPref(prefs::kLastSessionExitedCleanly, true);
-  registry->RegisterBooleanPref(prefs::kMetricsReportingWifiOnly, true);
+  if (!base::FeatureList::IsEnabled(kUmaCellular)) {
+    registry->RegisterBooleanPref(prefs::kMetricsReportingWifiOnly, true);
+  }
 }
 
 void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
@@ -109,6 +120,7 @@ void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
   FirstRun::RegisterProfilePrefs(registry);
   gcm::GCMChannelStatusSyncer::RegisterProfilePrefs(registry);
   HostContentSettingsMap::RegisterProfilePrefs(registry);
+  language::LanguagePrefs::RegisterProfilePrefs(registry);
   ntp_snippets::ClickBasedCategoryRanker::RegisterProfilePrefs(registry);
   ntp_snippets::ContentSuggestionsService::RegisterProfilePrefs(registry);
   ntp_snippets::RemoteSuggestionsProviderImpl::RegisterProfilePrefs(registry);
@@ -123,6 +135,7 @@ void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
   PrefProxyConfigTrackerImpl::RegisterProfilePrefs(registry);
   RegisterVoiceSearchBrowserStatePrefs(registry);
   sync_sessions::SessionSyncPrefs::RegisterProfilePrefs(registry);
+  syncer::DeviceInfoPrefs::RegisterProfilePrefs(registry);
   syncer::SyncPrefs::RegisterProfilePrefs(registry);
   syncer::PerUserTopicRegistrationManager::RegisterProfilePrefs(registry);
   syncer::InvalidatorRegistrarWithMemory::RegisterProfilePrefs(registry);
@@ -144,8 +157,6 @@ void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterBooleanPref(
       prefs::kOfferTranslateEnabled, true,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
-  registry->RegisterStringPref(prefs::kAcceptLanguages,
-                               l10n_util::GetStringUTF8(IDS_ACCEPT_LANGUAGES));
   registry->RegisterStringPref(prefs::kDefaultCharset,
                                l10n_util::GetStringUTF8(IDS_DEFAULT_ENCODING),
                                user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
@@ -171,6 +182,10 @@ void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
   browsing_data::prefs::RegisterBrowserUserPrefs(registry);
 
   registry->RegisterBooleanPref(kReverseAutologinEnabled, true);
+  registry->RegisterStringPref(kLastKnownGoogleURL, std::string());
+  registry->RegisterStringPref(kLastPromptedGoogleURL, std::string());
+  registry->RegisterStringPref(kGoogleServicesUsername, std::string());
+  registry->RegisterStringPref(kGoogleServicesUserAccountId, std::string());
 }
 
 // This method should be periodically pruned of year+ old migrations.
@@ -187,4 +202,23 @@ void MigrateObsoleteBrowserStatePrefs(PrefService* prefs) {
 
   // Added 10/2018.
   prefs->ClearPref(kReverseAutologinEnabled);
+
+  // Added 07/2019.
+  syncer::MigrateSyncSuppressedPref(prefs);
+  syncer::ClearObsoleteMemoryPressurePrefs(prefs);
+  syncer::MigrateSessionsToProxyTabsPrefs(prefs);
+  syncer::ClearObsoleteUserTypePrefs(prefs);
+  syncer::ClearObsoleteClearServerDataPrefs(prefs);
+  syncer::ClearObsoleteAuthErrorPrefs(prefs);
+  syncer::ClearObsoleteFirstSyncTime(prefs);
+  syncer::ClearObsoleteSyncLongPollIntervalSeconds(prefs);
+  prefs->ClearPref(kLastKnownGoogleURL);
+  prefs->ClearPref(kLastPromptedGoogleURL);
+
+  // Added 09/2019
+  prefs->ClearPref(kGoogleServicesUsername);
+  prefs->ClearPref(kGoogleServicesUserAccountId);
+
+  // Added 10/2019.
+  syncer::DeviceInfoPrefs::MigrateRecentLocalCacheGuidsPref(prefs);
 }

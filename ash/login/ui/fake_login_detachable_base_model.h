@@ -45,9 +45,8 @@ class FakeLoginDetachableBaseModel : public LoginDetachableBaseModel {
 
   // LoginDetachableBaseModel:
   DetachableBasePairingStatus GetPairingStatus() override;
-  bool PairedBaseMatchesLastUsedByUser(
-      const mojom::UserInfo& user_info) override;
-  bool SetPairedBaseAsLastUsedByUser(const mojom::UserInfo& user_info) override;
+  bool PairedBaseMatchesLastUsedByUser(const UserInfo& user_info) override;
+  bool SetPairedBaseAsLastUsedByUser(const UserInfo& user_info) override;
 
  private:
   LoginDataDispatcher* data_dispatcher_;

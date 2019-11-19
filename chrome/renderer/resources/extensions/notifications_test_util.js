@@ -5,21 +5,13 @@
 // NotificationsTestUtil contains stubs for the global classes and
 // variables used by notifications_custom_bindings.js that are not
 // available with gtestjs tests.
-var apiBridge = undefined;
+var apiBridge = {
+  registerCustomHook: function() {},
+};
 var bindingUtil = undefined;
 
 var require = function(library) {
   return {
-    binding: {
-      'Binding': {
-        'create': function () {
-          return {
-            registerCustomHook: function () {},
-            generate: function () {}
-          };
-        }
-      }
-    },
     lastError: {
       run: function() {}
     },

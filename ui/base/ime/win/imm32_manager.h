@@ -10,11 +10,11 @@
 #include <string>
 #include <vector>
 
+#include "base/component_export.h"
 #include "base/i18n/rtl.h"
 #include "base/macros.h"
 #include "base/strings/string16.h"
 #include "ui/base/ime/text_input_mode.h"
-#include "ui/base/ime/ui_base_ime_export.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace ui {
@@ -74,7 +74,7 @@ struct CompositionText;
 //   hand, we can NEVER disable either TSF or CUAS in Windows Vista, i.e.
 //   THIS CLASS IS NOT ONLY USED ON THE INPUT CONTEXTS OF EAST-ASIAN
 //   LANGUAGES BUT ALSO USED ON THE INPUT CONTEXTS OF ALL LANGUAGES.
-class UI_BASE_IME_EXPORT IMM32Manager {
+class COMPONENT_EXPORT(UI_BASE_IME_WIN) IMM32Manager {
  public:
   IMM32Manager();
   virtual ~IMM32Manager();
@@ -244,6 +244,8 @@ class UI_BASE_IME_EXPORT IMM32Manager {
                                          BOOL* open,
                                          DWORD* new_conversion_mode);
 
+  // Return true if current active IME is IMM32-bassed.
+  bool IsImm32ImeActive();
 
  protected:
   // Retrieves the composition information.

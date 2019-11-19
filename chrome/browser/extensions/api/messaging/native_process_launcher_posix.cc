@@ -84,6 +84,12 @@ bool NativeProcessLauncher::LaunchNativeProcess(
   options.allow_new_privs = true;
 #endif
 
+#if defined(OS_MACOSX)
+  // This is executing a third-party binary, so do not associate any system
+  // private data requests with Chrome.
+  options.disclaim_responsibility = true;
+#endif
+
   base::Process local_process = base::LaunchProcess(command_line, options);
   if (!local_process.IsValid()) {
     LOG(ERROR) << "Error launching process";

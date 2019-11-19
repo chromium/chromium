@@ -8,8 +8,8 @@
 
 #include "base/compiler_specific.h"
 #import "base/test/ios/wait_util.h"
-#include "components/browser_sync/profile_sync_service_mock.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/sync/driver/mock_sync_service.h"
 #include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/ui/settings/cells/byo_textfield_item.h"
 #import "ios/chrome/browser/ui/settings/cells/passphrase_error_item.h"
@@ -55,7 +55,7 @@ class SyncCreatePassphraseTableViewControllerTest
 TEST_F(SyncCreatePassphraseTableViewControllerTest, TestConstructorDestructor) {
   CreateController();
   CheckController();
-  EXPECT_CALL(*fake_sync_service_->GetUserSettingsMock(),
+  EXPECT_CALL(*fake_sync_service_->GetMockUserSettings(),
               SetEncryptionPassphrase(_))
       .Times(0);
   // Simulate the view appearing.
@@ -95,7 +95,7 @@ TEST_F(SyncCreatePassphraseTableViewControllerTest, TestAllFieldsFilled) {
 
 TEST_F(SyncCreatePassphraseTableViewControllerTest, TestCredentialsOkPressed) {
   SyncCreatePassphraseTableViewController* sync_controller = SyncController();
-  EXPECT_CALL(*fake_sync_service_->GetUserSettingsMock(),
+  EXPECT_CALL(*fake_sync_service_->GetMockUserSettings(),
               SetEncryptionPassphrase(_))
       .Times(0);
   EXPECT_FALSE([[sync_controller navigationItem].rightBarButtonItem isEnabled]);
@@ -108,7 +108,7 @@ TEST_F(SyncCreatePassphraseTableViewControllerTest, TestNextTextField) {
   // With matching text, this should cause an attempt to set the passphrase.
   EXPECT_CALL(*fake_sync_service_, AddObserver(_)).Times(AtLeast(1));
   EXPECT_CALL(*fake_sync_service_, RemoveObserver(_)).Times(AtLeast(1));
-  EXPECT_CALL(*fake_sync_service_->GetUserSettingsMock(),
+  EXPECT_CALL(*fake_sync_service_->GetMockUserSettings(),
               SetEncryptionPassphrase("decodeme"));
   [[sync_controller passphrase] setText:@"decodeme"];
   [sync_controller textFieldDidChange:[sync_controller passphrase]];
@@ -120,7 +120,7 @@ TEST_F(SyncCreatePassphraseTableViewControllerTest, TestNextTextField) {
 
 TEST_F(SyncCreatePassphraseTableViewControllerTest, TestOneTextFieldEmpty) {
   SyncCreatePassphraseTableViewController* sync_controller = SyncController();
-  EXPECT_CALL(*fake_sync_service_->GetUserSettingsMock(),
+  EXPECT_CALL(*fake_sync_service_->GetMockUserSettings(),
               SetEncryptionPassphrase(_))
       .Times(0);
   [[sync_controller passphrase] setText:@"decodeme"];
@@ -138,7 +138,7 @@ TEST_F(SyncCreatePassphraseTableViewControllerTest, TestTextFieldsDoNotMatch) {
   // Mismatching text fields should not get to the point of trying to set the
   // passphrase and adding the sync observer.
   EXPECT_CALL(*fake_sync_service_, AddObserver(_)).Times(0);
-  EXPECT_CALL(*fake_sync_service_->GetUserSettingsMock(),
+  EXPECT_CALL(*fake_sync_service_->GetMockUserSettings(),
               SetEncryptionPassphrase(_))
       .Times(0);
   [[sync_controller passphrase] setText:@"decodeme"];
@@ -169,7 +169,7 @@ TEST_F(SyncCreatePassphraseTableViewControllerTest, TestTextFieldsMatch) {
   // Matching text should cause an attempt to set it and add a sync observer.
   EXPECT_CALL(*fake_sync_service_, AddObserver(_)).Times(AtLeast(1));
   EXPECT_CALL(*fake_sync_service_, RemoveObserver(_)).Times(AtLeast(1));
-  EXPECT_CALL(*fake_sync_service_->GetUserSettingsMock(),
+  EXPECT_CALL(*fake_sync_service_->GetMockUserSettings(),
               SetEncryptionPassphrase("decodeme"));
   [[sync_controller passphrase] setText:@"decodeme"];
   [[sync_controller confirmPassphrase] setText:@"decodeme"];
@@ -183,9 +183,9 @@ TEST_F(SyncCreatePassphraseTableViewControllerTest, TestOnStateChanged) {
   EXPECT_EQ([nav_controller_ topViewController], sync_controller);
 
   // Set up the fake sync service to have accepted the passphrase.
-  ON_CALL(*fake_sync_service_->GetUserSettingsMock(), IsPassphraseRequired())
+  ON_CALL(*fake_sync_service_->GetMockUserSettings(), IsPassphraseRequired())
       .WillByDefault(Return(false));
-  ON_CALL(*fake_sync_service_->GetUserSettingsMock(),
+  ON_CALL(*fake_sync_service_->GetMockUserSettings(),
           IsUsingSecondaryPassphrase())
       .WillByDefault(Return(true));
   [sync_controller onSyncStateChanged];
@@ -215,9 +215,9 @@ TEST_F(SyncCreatePassphraseTableViewControllerTest,
   sync_controller.navigationItem.leftBarButtonItem = leftBarButtonItem;
 
   // Set up the fake sync service to be in a passphrase creation state.
-  ON_CALL(*fake_sync_service_->GetUserSettingsMock(), IsPassphraseRequired())
+  ON_CALL(*fake_sync_service_->GetMockUserSettings(), IsPassphraseRequired())
       .WillByDefault(Return(false));
-  ON_CALL(*fake_sync_service_->GetUserSettingsMock(),
+  ON_CALL(*fake_sync_service_->GetMockUserSettings(),
           IsUsingSecondaryPassphrase())
       .WillByDefault(Return(false));
   [sync_controller onSyncStateChanged];

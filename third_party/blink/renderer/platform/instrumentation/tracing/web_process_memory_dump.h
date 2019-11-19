@@ -5,10 +5,8 @@
 #ifndef WebProcessMemoryDump_h
 #define WebProcessMemoryDump_h
 
-#include <map>
 #include <memory>
 #include <unordered_map>
-#include <vector>
 
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
@@ -16,7 +14,7 @@
 #include "base/trace_event/memory_dump_request_args.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/web_memory_allocator_dump.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -163,8 +161,7 @@ class PLATFORM_EXPORT WebProcessMemoryDump final {
       memory_allocator_dumps_;
 
   // Stores SkTraceMemoryDump for the current ProcessMemoryDump.
-  std::vector<std::unique_ptr<skia::SkiaTraceMemoryDumpImpl>>
-      sk_trace_dump_list_;
+  Vector<std::unique_ptr<skia::SkiaTraceMemoryDumpImpl>> sk_trace_dump_list_;
 
   DISALLOW_COPY_AND_ASSIGN(WebProcessMemoryDump);
 };

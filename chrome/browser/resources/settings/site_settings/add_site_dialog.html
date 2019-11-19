@@ -1,10 +1,10 @@
 <link rel="import" href="chrome://resources/html/polymer.html">
 
+<link rel="import" href="chrome://resources/cr_elements/cr_button/cr_button.html">
 <link rel="import" href="chrome://resources/cr_elements/cr_checkbox/cr_checkbox.html">
 <link rel="import" href="chrome://resources/cr_elements/cr_dialog/cr_dialog.html">
 <link rel="import" href="chrome://resources/cr_elements/cr_input/cr_input.html">
 <link rel="import" href="chrome://resources/html/web_ui_listener_behavior.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/paper-button/paper-button.html">
 <link rel="import" href="../i18n_setup.html">
 <link rel="import" href="../settings_shared_css.html">
 <link rel="import" href="constants.html">
@@ -30,15 +30,19 @@
                 contentSetting)]]">
           $i18n{incognitoSiteOnly}
         </cr-checkbox>
+        <cr-checkbox id="thirdParties"
+            hidden$="[[shouldHideThirdPartyCookieCheckbox_(category)]]">
+          $i18n{siteSettingsCookiesThirdPartyExceptionLabel}
+        </cr-checkbox>
       </div>
       <div slot="button-container">
-        <paper-button class="cancel-button" on-click="onCancelTap_">
+        <cr-button class="cancel-button" on-click="onCancelTap_">
           $i18n{cancel}
-        </paper-button>
-        <paper-button class="action-button" id="add" on-click="onSubmit_"
+        </cr-button>
+        <cr-button class="action-button" id="add" on-click="onSubmit_"
             disabled>
           $i18n{add}
-        </paper-button>
+        </cr-button>
       </div>
     </cr-dialog>
   </template>

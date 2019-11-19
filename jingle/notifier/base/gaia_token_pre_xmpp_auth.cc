@@ -101,8 +101,8 @@ std::string GaiaTokenPreXmppAuth::GetAuthMechanism() const {
 
 std::string GaiaTokenPreXmppAuth::ChooseBestSaslMechanism(
     const std::vector<std::string> & mechanisms, bool encrypted) {
-  return base::ContainsValue(mechanisms, auth_mechanism_) ? auth_mechanism_
-                                                          : std::string();
+  return base::Contains(mechanisms, auth_mechanism_) ? auth_mechanism_
+                                                     : std::string();
 }
 
 jingle_xmpp::SaslMechanism* GaiaTokenPreXmppAuth::CreateSaslMechanism(

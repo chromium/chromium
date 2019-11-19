@@ -6,7 +6,7 @@
 
 #include "base/android/jni_string.h"
 #include "content/browser/android/java/gin_java_bridge_dispatcher_host.h"
-#include "jni/JavascriptInjectorImpl_jni.h"
+#include "content/public/android/content_jni_headers/JavascriptInjectorImpl_jni.h"
 
 using base::android::AttachCurrentThread;
 using base::android::ConvertJavaStringToUTF8;

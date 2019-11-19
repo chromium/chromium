@@ -2,15 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// https://github.com/wicg/event-timing
-[
-    Exposed=Window,
-    OriginTrialEnabled=EventTiming
-] interface PerformanceEventTiming : PerformanceEntry {
+// https://wicg.github.io/event-timing/#sec-performance-event-timing
+[Exposed=Window]
+interface PerformanceEventTiming : PerformanceEntry {
     readonly attribute DOMHighResTimeStamp processingStart;
     readonly attribute DOMHighResTimeStamp processingEnd;
     readonly attribute boolean cancelable;
 
-    // TODO(peria): toJSON is not in spec. https://crbug.com/736332
     [CallWith=ScriptState, ImplementedAs=toJSONForBinding] object toJSON();
 };

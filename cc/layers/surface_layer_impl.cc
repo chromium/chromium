@@ -54,19 +54,6 @@ void SurfaceLayerImpl::SetRange(const viz::SurfaceRange& surface_range,
         "ImplSetSurfaceId", "surface_id", surface_range.end().ToString());
   }
 
-  if (surface_range.start() &&
-      surface_range_.start() != surface_range.start() &&
-      surface_range.start()->local_surface_id().is_valid()) {
-    TRACE_EVENT_WITH_FLOW2(
-        TRACE_DISABLED_BY_DEFAULT("viz.surface_id_flow"),
-        "LocalSurfaceId.Submission.Flow",
-        TRACE_ID_GLOBAL(
-            surface_range.start()->local_surface_id().submission_trace_id()),
-        TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT, "step",
-        "ImplSetOldestAcceptableFallback", "surface_id",
-        surface_range.start()->ToString());
-  }
-
   surface_range_ = surface_range;
   deadline_in_frames_ = deadline_in_frames;
   NoteLayerPropertyChanged();
@@ -96,6 +83,14 @@ void SurfaceLayerImpl::SetHasPointerEventsNone(bool has_pointer_events_none) {
   NoteLayerPropertyChanged();
 }
 
+void SurfaceLayerImpl::SetIsReflection(bool is_reflection) {
+  if (is_reflection_ == is_reflection)
+    return;
+
+  is_reflection_ = is_reflection;
+  NoteLayerPropertyChanged();
+}
+
 void SurfaceLayerImpl::PushPropertiesTo(LayerImpl* layer) {
   LayerImpl::PushPropertiesTo(layer);
   SurfaceLayerImpl* layer_impl = static_cast<SurfaceLayerImpl*>(layer);
@@ -106,6 +101,7 @@ void SurfaceLayerImpl::PushPropertiesTo(LayerImpl* layer) {
   layer_impl->SetStretchContentToFillBounds(stretch_content_to_fill_bounds_);
   layer_impl->SetSurfaceHitTestable(surface_hit_testable_);
   layer_impl->SetHasPointerEventsNone(has_pointer_events_none_);
+  layer_impl->SetIsReflection(is_reflection_);
 }
 
 bool SurfaceLayerImpl::WillDraw(
@@ -121,41 +117,12 @@ bool SurfaceLayerImpl::WillDraw(
       update_submission_state_callback_.Run(will_draw);
   }
 
-  return surface_range_.IsValid() && will_draw;
+  return will_draw;
 }
 
 void SurfaceLayerImpl::AppendQuads(viz::RenderPass* render_pass,
                                    AppendQuadsData* append_quads_data) {
   AppendRainbowDebugBorder(render_pass);
-  if (!surface_range_.IsValid())
-    return;
-
-  auto* primary = CreateSurfaceDrawQuad(render_pass, surface_range_);
-  if (primary && surface_range_.end() != surface_range_.start()) {
-    // Add the primary surface ID as a dependency.
-    append_quads_data->activation_dependencies.push_back(surface_range_.end());
-    if (deadline_in_frames_) {
-      if (!append_quads_data->deadline_in_frames)
-        append_quads_data->deadline_in_frames = 0u;
-      append_quads_data->deadline_in_frames = std::max(
-          *append_quads_data->deadline_in_frames, *deadline_in_frames_);
-    } else {
-      append_quads_data->use_default_lower_bound_deadline = true;
-    }
-  }
-  // Unless the client explicitly specifies otherwise, don't block on
-  // |surface_range_| more than once.
-  deadline_in_frames_ = 0u;
-}
-
-bool SurfaceLayerImpl::is_surface_layer() const {
-  return true;
-}
-
-viz::SurfaceDrawQuad* SurfaceLayerImpl::CreateSurfaceDrawQuad(
-    viz::RenderPass* render_pass,
-    const viz::SurfaceRange& surface_range) {
-  DCHECK(surface_range.end().is_valid());
 
   float device_scale_factor = layer_tree_impl()->device_scale_factor();
 
@@ -170,22 +137,49 @@ viz::SurfaceDrawQuad* SurfaceLayerImpl::CreateSurfaceDrawQuad(
   visible_quad_rect = gfx::IntersectRects(quad_rect, visible_quad_rect);
 
   if (visible_quad_rect.IsEmpty())
-    return nullptr;
+    return;
 
   viz::SharedQuadState* shared_quad_state =
       render_pass->CreateAndAppendSharedQuadState();
 
   PopulateScaledSharedQuadState(shared_quad_state, device_scale_factor,
-                                device_scale_factor, contents_opaque());
+                                contents_opaque());
 
-  auto* surface_draw_quad =
-      render_pass->CreateAndAppendDrawQuad<viz::SurfaceDrawQuad>();
-  surface_draw_quad->SetNew(shared_quad_state, quad_rect, visible_quad_rect,
-                            surface_range, background_color(),
-                            stretch_content_to_fill_bounds_,
-                            has_pointer_events_none_);
+  if (surface_range_.IsValid()) {
+    auto* quad = render_pass->CreateAndAppendDrawQuad<viz::SurfaceDrawQuad>();
+    quad->SetNew(shared_quad_state, quad_rect, visible_quad_rect,
+                 surface_range_, background_color(),
+                 stretch_content_to_fill_bounds_, has_pointer_events_none_);
+    quad->is_reflection = is_reflection_;
+    // Add the primary surface ID as a dependency.
+    append_quads_data->activation_dependencies.push_back(surface_range_.end());
+    if (deadline_in_frames_) {
+      if (!append_quads_data->deadline_in_frames)
+        append_quads_data->deadline_in_frames = 0u;
+      append_quads_data->deadline_in_frames = std::max(
+          *append_quads_data->deadline_in_frames, *deadline_in_frames_);
+    } else {
+      append_quads_data->use_default_lower_bound_deadline = true;
+    }
+  } else {
+    auto* quad =
+        render_pass->CreateAndAppendDrawQuad<viz::SolidColorDrawQuad>();
+    quad->SetNew(shared_quad_state, quad_rect, visible_quad_rect,
+                 background_color(), false /* force_anti_aliasing_off */);
+  }
 
-  return surface_draw_quad;
+  // Unless the client explicitly specifies otherwise, don't block on
+  // |surface_range_| more than once.
+  deadline_in_frames_ = 0u;
+}
+
+bool SurfaceLayerImpl::is_surface_layer() const {
+  return true;
+}
+
+gfx::Rect SurfaceLayerImpl::GetEnclosingRectInTargetSpace() const {
+  return GetScaledEnclosingRectInTargetSpace(
+      layer_tree_impl()->device_scale_factor());
 }
 
 void SurfaceLayerImpl::GetDebugBorderProperties(SkColor* color,

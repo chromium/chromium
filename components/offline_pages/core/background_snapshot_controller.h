@@ -92,7 +92,7 @@ class BackgroundSnapshotController {
   int64_t delay_after_renovations_completed_ms_;
   bool renovations_enabled_;
 
-  base::WeakPtrFactory<BackgroundSnapshotController> weak_ptr_factory_;
+  base::WeakPtrFactory<BackgroundSnapshotController> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(BackgroundSnapshotController);
 };

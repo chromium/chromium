@@ -16,7 +16,7 @@ namespace syncer {
 
 using syncable::ID;
 
-UpdateApplicator::UpdateApplicator(Cryptographer* cryptographer)
+UpdateApplicator::UpdateApplicator(const Cryptographer* cryptographer)
     : cryptographer_(cryptographer),
       updates_applied_(0),
       encryption_conflicts_(0),

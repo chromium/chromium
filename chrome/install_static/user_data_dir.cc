@@ -7,10 +7,10 @@
 #include <windows.h>
 #include <assert.h>
 
+#include "chrome/chrome_elf/nt_registry/nt_registry.h"
 #include "chrome/install_static/install_details.h"
 #include "chrome/install_static/install_util.h"
 #include "chrome/install_static/policy_path_parser.h"
-#include "chrome_elf/nt_registry/nt_registry.h"
 
 namespace install_static {
 

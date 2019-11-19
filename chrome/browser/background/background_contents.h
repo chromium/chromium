@@ -12,8 +12,6 @@
 
 #include "base/macros.h"
 #include "base/observer_list.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_registrar.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -36,8 +34,7 @@ class ExtensionHostDelegate;
 // TODO(atwilson): Unify this with background pages; http://crbug.com/77790
 class BackgroundContents : public extensions::DeferredStartRenderHost,
                            public content::WebContentsDelegate,
-                           public content::WebContentsObserver,
-                           public content::NotificationObserver {
+                           public content::WebContentsObserver {
  public:
   class Delegate {
    public:
@@ -51,6 +48,13 @@ class BackgroundContents : public extensions::DeferredStartRenderHost,
         const gfx::Rect& initial_rect,
         bool* was_blocked) = 0;
 
+    // Informs the delegate of lifetime events.
+    virtual void OnBackgroundContentsNavigated(
+        BackgroundContents* contents) = 0;
+    virtual void OnBackgroundContentsTerminated(
+        BackgroundContents* contents) = 0;
+    virtual void OnBackgroundContentsClosed(BackgroundContents* contents) = 0;
+
    protected:
     virtual ~Delegate() {}
   };
@@ -58,9 +62,7 @@ class BackgroundContents : public extensions::DeferredStartRenderHost,
   BackgroundContents(
       scoped_refptr<content::SiteInstance> site_instance,
       content::RenderFrameHost* opener,
-      int32_t routing_id,
-      int32_t main_frame_routing_id,
-      int32_t main_frame_widget_routing_id,
+      bool is_new_browsing_instance,
       Delegate* delegate,
       const std::string& partition_id,
       content::SessionStorageNamespace* session_storage_namespace);
@@ -89,11 +91,6 @@ class BackgroundContents : public extensions::DeferredStartRenderHost,
   void DidStartLoading() override;
   void DidStopLoading() override;
 
-  // content::NotificationObserver
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override;
-
  protected:
   // Exposed for testing.
   BackgroundContents();
@@ -114,7 +111,6 @@ class BackgroundContents : public extensions::DeferredStartRenderHost,
 
   Profile* profile_;
   std::unique_ptr<content::WebContents> web_contents_;
-  content::NotificationRegistrar registrar_;
   base::ObserverList<extensions::DeferredStartRenderHostObserver>::Unchecked
       deferred_start_render_host_observer_list_;
 

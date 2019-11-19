@@ -11,10 +11,10 @@
 
 #include "base/strings/string16.h"
 #include "ios/web/navigation/error_retry_state_machine.h"
-#include "ios/web/public/favicon_status.h"
-#import "ios/web/public/navigation_item.h"
-#include "ios/web/public/referrer.h"
-#include "ios/web/public/ssl_status.h"
+#include "ios/web/public/favicon/favicon_status.h"
+#import "ios/web/public/navigation/navigation_item.h"
+#include "ios/web/public/navigation/referrer.h"
+#include "ios/web/public/security/ssl_status.h"
 #include "url/gurl.h"
 
 namespace web {
@@ -96,6 +96,11 @@ class NavigationItemImpl : public web::NavigationItem {
   void SetShouldSkipRepostFormConfirmation(bool skip);
   bool ShouldSkipRepostFormConfirmation() const;
 
+  // Whether or not to bypass serializing this item to session storage.  Set to
+  // YES to skip saving this page (and therefore restoring this page).
+  void SetShouldSkipSerialization(bool skip);
+  bool ShouldSkipSerialization() const;
+
   // Data submitted with a POST request, persisted for resubmits.
   void SetPostData(NSData* post_data);
   NSData* GetPostData() const;
@@ -117,6 +122,12 @@ class NavigationItemImpl : public web::NavigationItem {
   // Returns the title string to be used for a page with |url| if that page
   // doesn't specify a title.
   static base::string16 GetDisplayTitleForURL(const GURL& url);
+
+  // Used only by WKBasedNavigationManager.  SetUntrusted() is only used for
+  // Visible or LastCommitted NavigationItems where the |url_| may be incorrect
+  // due to timining problems or bugs in WKWebView.
+  void SetUntrusted();
+  bool IsUntrusted();
 
 #ifndef NDEBUG
   // Returns a human-readable description of the state for debugging purposes.
@@ -147,6 +158,7 @@ class NavigationItemImpl : public web::NavigationItem {
   bool has_state_been_replaced_;
   bool is_created_from_hash_change_;
   bool should_skip_repost_form_confirmation_;
+  bool should_skip_serialization_;
   NSData* post_data_;
   ErrorRetryStateMachine error_retry_state_machine_;
 
@@ -155,8 +167,10 @@ class NavigationItemImpl : public web::NavigationItem {
   // |ResetForCommit| and not persisted.
   web::NavigationInitiationType navigation_initiation_type_;
 
-  // Whether the navigation contains unsafe resources.
-  bool is_unsafe_;
+  // Used only by WKBasedNavigationManager.  |is_untrusted_| is only |true| for
+  // Visible or LastCommitted NavigationItems where the |url_| may be incorrect
+  // due to timining problems or bugs in WKWebView.
+  bool is_untrusted_;
 
   // This is a cached version of the result of GetTitleForDisplay. When the URL,
   // virtual URL, or title is set, this should be cleared to force a refresh.

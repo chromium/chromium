@@ -62,11 +62,9 @@ class INVALIDATION_EXPORT NonBlockingInvalidator
   void RegisterHandler(InvalidationHandler* handler) override;
   bool UpdateRegisteredIds(InvalidationHandler* handler,
                            const ObjectIdSet& ids) override;
-  bool UpdateRegisteredIds(InvalidationHandler* handler,
-                           const TopicSet& ids) override;
   void UnregisterHandler(InvalidationHandler* handler) override;
   InvalidatorState GetInvalidatorState() const override;
-  void UpdateCredentials(const std::string& email,
+  void UpdateCredentials(const CoreAccountId& account_id,
                          const std::string& token) override;
   void RequestDetailedStatus(base::Callback<void(const base::DictionaryValue&)>
                                  callback) const override;
@@ -111,7 +109,7 @@ class INVALIDATION_EXPORT NonBlockingInvalidator
   scoped_refptr<base::SingleThreadTaskRunner> parent_task_runner_;
   scoped_refptr<base::SingleThreadTaskRunner> network_task_runner_;
 
-  base::WeakPtrFactory<NonBlockingInvalidator> weak_ptr_factory_;
+  base::WeakPtrFactory<NonBlockingInvalidator> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(NonBlockingInvalidator);
 };

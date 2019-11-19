@@ -78,7 +78,7 @@ class ValidatingAuthenticator : public Authenticator {
 
   std::unique_ptr<jingle_xmpp::XmlElement> pending_auth_message_;
 
-  base::WeakPtrFactory<ValidatingAuthenticator> weak_factory_;
+  base::WeakPtrFactory<ValidatingAuthenticator> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ValidatingAuthenticator);
 };

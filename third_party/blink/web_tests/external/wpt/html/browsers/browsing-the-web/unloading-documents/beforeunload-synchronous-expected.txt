@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL beforeunload event is emitted synchronously assert_equals: invoked synchronously exactly once expected 1 but got 0
-Harness: the test ran to completion.
-

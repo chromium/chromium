@@ -7,6 +7,7 @@
 
 #include "base/macros.h"
 #include "chrome/browser/ui/webui/bluetooth_internals/bluetooth_internals.mojom.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 
 class BluetoothInternalsHandler;
@@ -19,7 +20,7 @@ class BluetoothInternalsUI : public ui::MojoWebUIController {
 
  private:
   void BindBluetoothInternalsHandler(
-      mojom::BluetoothInternalsHandlerRequest request);
+      mojo::PendingReceiver<mojom::BluetoothInternalsHandler> receiver);
 
   std::unique_ptr<BluetoothInternalsHandler> page_handler_;
 

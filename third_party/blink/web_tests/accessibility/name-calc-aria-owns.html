@@ -1,7 +1,6 @@
 <!DOCTYPE HTML>
 <script src="../resources/testharness.js"></script>
 <script src="../resources/testharnessreport.js"></script>
-<script src="../resources/run-after-layout-and-paint.js"></script>
 
 <div class="container">
     <input id="input1" aria-labelledby="list1">
@@ -13,7 +12,7 @@
 </div>
 
 <script>
-test_after_layout_and_paint(function(t) {
+test(function(t) {
     var axInput1 = accessibilityController.accessibleElementById("input1");
     assert_equals(axInput1.name, "A B C");
 }, "Aria-owns is considered in a name computation");

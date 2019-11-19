@@ -19,6 +19,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/password_manager/core/browser/password_bubble_experiment.h"
 #include "components/password_manager/core/browser/test_password_store.h"
+#include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/common/content_features.h"
@@ -102,6 +103,9 @@ class CredentialManagerBrowserTest : public PasswordManagerBrowserTestBase {
   // the call to store() triggered from the unload handler.
   void TestStoreInUnloadHandlerForSameSiteNavigation(
       bool preestablish_mojo_pipe) {
+    WebContents()->GetController().GetBackForwardCache().DisableForTesting(
+        content::BackForwardCache::TEST_USES_UNLOAD_EVENT);
+
     // Use URLs that differ on subdomains so we can tell which one was used for
     // saving, but they still belong to the same SiteInstance, so they will be
     // renderered in the same RenderFrame (in the same process).
@@ -210,6 +214,9 @@ class CredentialManagerBrowserTest : public PasswordManagerBrowserTestBase {
   // the call to store() triggered from the unload handler.
   void TestStoreInUnloadHandlerForCrossSiteNavigation(
       bool preestablish_mojo_pipe) {
+    WebContents()->GetController().GetBackForwardCache().DisableForTesting(
+        content::BackForwardCache::TEST_USES_UNLOAD_EVENT);
+
     const GURL a_url = https_test_server().GetURL("a.com", "/title1.html");
     const GURL b_url = https_test_server().GetURL("b.com", "/title2.html");
 
@@ -635,8 +642,8 @@ IN_PROC_BROWSER_TEST_F(CredentialManagerBrowserTest,
       password_store->stored_passwords();
   GURL www_url = https_test_server().GetURL("www.example.com", "/");
   EXPECT_EQ(2U, passwords.size());
-  EXPECT_TRUE(base::ContainsKey(passwords, psl_url.spec()));
-  EXPECT_TRUE(base::ContainsKey(passwords, www_url.spec()));
+  EXPECT_TRUE(base::Contains(passwords, psl_url.spec()));
+  EXPECT_TRUE(base::Contains(passwords, www_url.spec()));
 }
 
 IN_PROC_BROWSER_TEST_F(CredentialManagerBrowserTest,
@@ -682,8 +689,8 @@ IN_PROC_BROWSER_TEST_F(CredentialManagerBrowserTest,
       password_store->stored_passwords();
   GURL www_url = https_test_server().GetURL("www.example.com", "/");
   EXPECT_EQ(2U, passwords.size());
-  EXPECT_TRUE(base::ContainsKey(passwords, psl_url.spec()));
-  EXPECT_TRUE(base::ContainsKey(passwords, www_url.spec()));
+  EXPECT_TRUE(base::Contains(passwords, psl_url.spec()));
+  EXPECT_TRUE(base::Contains(passwords, www_url.spec()));
   EXPECT_EQ(base::ASCIIToUTF16("user"),
             passwords[psl_url.spec()].front().username_value);
   EXPECT_EQ(base::ASCIIToUTF16("password"),
@@ -932,6 +939,8 @@ IN_PROC_BROWSER_TEST_F(CredentialManagerBrowserTest, UpdateViaAPIAndAutofill) {
   signin_form.origin = embedded_test_server()->base_url();
   signin_form.skip_zero_click = true;
   signin_form.preferred = true;
+  // Set an old value for the |date_last_used| to make sure it gets updated.
+  signin_form.date_last_used = base::Time::UnixEpoch();
   password_store->AddLogin(signin_form);
 
   NavigateToFile("/password/password_form.html");
@@ -966,6 +975,13 @@ IN_PROC_BROWSER_TEST_F(CredentialManagerBrowserTest, UpdateViaAPIAndAutofill) {
   password_manager::TestPasswordStore::PasswordMap stored =
       password_store->stored_passwords();
   ASSERT_EQ(1u, stored.size());
+  // Upon an update, the |date_last_used| should be updated to the current
+  // timestamp.
+  EXPECT_GT(stored[signin_form.signon_realm][0].date_last_used,
+            signin_form.date_last_used);
+  // Now make them equal to be able to check the equality of other fields.
+  signin_form.date_last_used =
+      stored[signin_form.signon_realm][0].date_last_used;
   EXPECT_EQ(signin_form, stored[signin_form.signon_realm][0]);
 }
 

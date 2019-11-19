@@ -24,15 +24,15 @@ TEST_F(AppLaunchManifestTest, AppLaunchContainer) {
   scoped_refptr<Extension> extension;
 
   extension = LoadAndExpectSuccess("launch_tab.json");
-  EXPECT_EQ(LAUNCH_CONTAINER_TAB,
+  EXPECT_EQ(LaunchContainer::kLaunchContainerTab,
             AppLaunchInfo::GetLaunchContainer(extension.get()));
 
   extension = LoadAndExpectSuccess("launch_panel.json");
-  EXPECT_EQ(LAUNCH_CONTAINER_PANEL_DEPRECATED,
+  EXPECT_EQ(LaunchContainer::kLaunchContainerPanelDeprecated,
             AppLaunchInfo::GetLaunchContainer(extension.get()));
 
   extension = LoadAndExpectSuccess("launch_default.json");
-  EXPECT_EQ(LAUNCH_CONTAINER_TAB,
+  EXPECT_EQ(LaunchContainer::kLaunchContainerTab,
             AppLaunchInfo::GetLaunchContainer(extension.get()));
 
   extension = LoadAndExpectSuccess("launch_width.json");

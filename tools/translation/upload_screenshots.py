@@ -16,6 +16,8 @@ files, so it doesn't know whether an image file corresponds to a message or not.
 It will attempt to upload the image anyways.
 """
 
+from __future__ import print_function
+
 import argparse
 import sys
 import os
@@ -50,7 +52,7 @@ else:
   GIT = 'git'
 
 
-def query_yes_no(question, default='yes'):
+def query_yes_no(question, default='no'):
   """Ask a yes/no question via raw_input() and return their answer.
 
   "question" is a string that is presented to the user.
@@ -71,14 +73,14 @@ def query_yes_no(question, default='yes'):
 
   valid = {'yes': True, 'y': True, 'ye': True, 'no': False, 'n': False}
   while True:
-    print question, prompt
+    print(question, prompt)
     choice = raw_input().lower()
     if default is not None and choice == '':
       return valid[default]
     elif choice in valid:
       return valid[choice]
     else:
-      print "Please respond with 'yes' or 'no' (or 'y' or 'n')."
+      print("Please respond with 'yes' or 'no' (or 'y' or 'n').")
 
 
 def list_grds_in_repository(repo_path):
@@ -134,7 +136,7 @@ def find_screenshots(repo_root, translation_expectations):
       if f in ('OWNERS', 'README.md') or f.endswith('.sha1'):
         continue
       if not f.endswith('.png'):
-        print 'File with unexpected extension: %s in %s' % (f, screenshots_dir)
+        print('File with unexpected extension: %s in %s' % (f, screenshots_dir))
         continue
       screenshots.append(os.path.join(screenshots_dir, f))
   return screenshots
@@ -162,11 +164,13 @@ def main():
            "this script can pick up its screenshot directory.")
     exit(0)
 
-  print 'Found %d updated screenshot(s): ' % len(screenshots)
+  print('Found %d updated screenshot(s): ' % len(screenshots))
   for s in screenshots:
-    print '  %s' % s
-  print
-  if not query_yes_no('Do you want to upload these to Google Cloud Storage?'):
+    print('  %s' % s)
+  print()
+  if not query_yes_no(
+      'Do you want to upload these to Google Cloud Storage?\n\n'
+      'FILES WILL BE PUBLIC, DO NOT UPLOAD ANYTHING CONFIDENTIAL.'):
     exit(0)
 
   # Creating a standard gsutil object, assuming there are depot_tools
@@ -188,24 +192,25 @@ def main():
              '`download_from_google_storage --config`.')
       exit(1)
 
-  print
-  print 'Images are uploaded and their signatures are calculated:'
+  print()
+  print('Images are uploaded and their signatures are calculated:')
 
   signatures = ['%s.sha1' % s for s in screenshots]
   for s in signatures:
-    print '  %s' % s
-  print
+    print('  %s' % s)
+  print()
 
   # Always ask if the .sha1 files should be added to the CL, even if they are
   # already part of the CL. If the files are not modified, adding again is a
   # no-op.
-  if not query_yes_no('Do you want to add these files to your CL?'):
+  if not query_yes_no('Do you want to add these files to your CL?',
+                      default='yes'):
     exit(0)
 
   if not args.dry_run:
     git_add(signatures, src_path)
 
-  print 'DONE.'
+  print('DONE.')
 
 
 if __name__ == '__main__':

@@ -51,8 +51,8 @@ dictionary RTCConfiguration {
     // Nonstandard, added for backward compatibility reasons during a
     // transitional phase. https://crbug.com/908377
     boolean offerExtmapAllowMixed;
-    [OriginTrialEnabled=RtcAudioJitterBufferMaxPackets] long rtcAudioJitterBufferMaxPackets;
-    [OriginTrialEnabled=RtcAudioJitterBufferMaxPackets] boolean rtcAudioJitterBufferFastAccelerate;
-    [OriginTrialEnabled=RtcAudioJitterBufferMaxPackets] long rtcAudioJitterBufferMinDelayMs;
+    [RuntimeEnabled=RtcAudioJitterBufferMaxPackets] long rtcAudioJitterBufferMaxPackets;
+    [RuntimeEnabled=RtcAudioJitterBufferMaxPackets] boolean rtcAudioJitterBufferFastAccelerate;
+    [RuntimeEnabled=RtcAudioJitterBufferMaxPackets] long rtcAudioJitterBufferMinDelayMs;
 };
 

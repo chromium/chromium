@@ -8,36 +8,22 @@
 
 namespace android_webview {
 
-ParentCompositorDrawConstraints::ParentCompositorDrawConstraints()
-    : is_layer(false), surface_rect_empty(true) {}
+ParentCompositorDrawConstraints::ParentCompositorDrawConstraints() = default;
 
 ParentCompositorDrawConstraints::ParentCompositorDrawConstraints(
-    bool is_layer,
-    const gfx::Transform& transform,
-    bool surface_rect_empty)
-    : is_layer(is_layer),
-      transform(transform),
-      surface_rect_empty(surface_rect_empty) {}
+    const gfx::Size& viewport_size,
+    const gfx::Transform& transform)
+    : viewport_size(viewport_size), transform(transform) {}
 
 bool ParentCompositorDrawConstraints::NeedUpdate(
     const ChildFrame& frame) const {
-  if (is_layer != frame.is_layer ||
-      transform != frame.transform_for_tile_priority) {
-    return true;
-  }
-
-  // Viewport for tile priority does not depend on surface rect in this case.
-  if (frame.offscreen_pre_raster || is_layer)
-    return false;
-
-  // Workaround for corner case. See crbug.com/417479.
-  return frame.viewport_rect_for_tile_priority_empty && !surface_rect_empty;
+  return viewport_size != frame.viewport_size_for_tile_priority ||
+         transform != frame.transform_for_tile_priority;
 }
 
 bool ParentCompositorDrawConstraints::operator==(
     const ParentCompositorDrawConstraints& other) const {
-  return is_layer == other.is_layer && transform == other.transform &&
-         surface_rect_empty == other.surface_rect_empty;
+  return viewport_size == other.viewport_size && transform == other.transform;
 }
 
 }  // namespace android_webview

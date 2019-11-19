@@ -1,15 +1,16 @@
 rootWebArea backgroundColor=-1 color=-16777216
-++paragraph backgroundColor=-16776961 color=-65536
-++++staticText name='Red on blue.' backgroundColor=-16776961 color=-65536
-++++++inlineTextBox name='Red on blue.' color=-16777216
-++genericContainer multiline value='Default. Blue background. Green text.' backgroundColor=-1 color=-16777216
-++++staticText name='Default.' backgroundColor=-1 color=-16777216
-++++++inlineTextBox name='Default.' color=-16777216
-++++staticText name=' ' backgroundColor=-1 color=-16777216
-++++++inlineTextBox name=' ' color=-16777216
-++++staticText name='Blue background.' backgroundColor=-16776961 color=-16777216
-++++++inlineTextBox name='Blue background.' color=-16777216
-++++staticText name=' ' backgroundColor=-1 color=-16777216
-++++++inlineTextBox name=' ' color=-16777216
-++++staticText name='Green text.' backgroundColor=-1 color=-16711936
-++++++inlineTextBox name='Green text.' color=-16777216
+++genericContainer ignored backgroundColor=-1 color=-16777216
+++++paragraph backgroundColor=-16776961 color=-65536
+++++++staticText name='Red on blue.' backgroundColor=-16776961 color=-65536
+++++++++inlineTextBox name='Red on blue.' color=-16777216
+++++genericContainer multiline value='Default. Blue background. Green text.' backgroundColor=-1 color=-16777216
+++++++staticText name='Default.' backgroundColor=-1 color=-16777216
+++++++++inlineTextBox name='Default.' color=-16777216
+++++++staticText name=' ' backgroundColor=-1 color=-16777216
+++++++++inlineTextBox name=' ' color=-16777216
+++++++staticText name='Blue background.' backgroundColor=-16776961 color=-16777216
+++++++++inlineTextBox name='Blue background.' color=-16777216
+++++++staticText name=' ' backgroundColor=-1 color=-16777216
+++++++++inlineTextBox name=' ' color=-16777216
+++++++staticText name='Green text.' backgroundColor=-1 color=-16711936
+++++++++inlineTextBox name='Green text.' color=-16777216

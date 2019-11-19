@@ -15,6 +15,7 @@ import android.content.res.Resources;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.StrictMode;
+import android.os.SystemClock;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
@@ -23,9 +24,10 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
-import org.chromium.base.VisibleForTesting;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.R;
@@ -34,8 +36,8 @@ import org.chromium.chrome.browser.init.BrowserParts;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.init.EmptyBrowserParts;
 import org.chromium.chrome.browser.notifications.channels.SiteChannelsManager;
-import org.chromium.chrome.browser.preferences.AboutChromePreferences;
 import org.chromium.chrome.browser.preferences.PreferencesLauncher;
+import org.chromium.chrome.browser.preferences.about.AboutChromePreferences;
 import org.chromium.chrome.browser.preferences.website.Website.StoredDataClearedCallback;
 import org.chromium.chrome.browser.searchwidget.SearchWidgetProvider;
 import org.chromium.chrome.browser.util.ConversionUtils;
@@ -303,12 +305,14 @@ public class ManageSpaceActivity extends AppCompatActivity implements View.OnCli
         // We keep track of the number of sites waiting to be cleared, and when it reaches 0 we can
         // set our testing variable.
         private int mNumSitesClearing;
+        private long mClearStartTime;
 
         /**
          * We fetch all the websites and clear all the non-important data. This happens
          * asynchronously, and at the end we update the UI with the new storage numbers.
          */
         public void clearData() {
+            mClearStartTime = SystemClock.elapsedRealtime();
             WebsitePermissionsFetcher fetcher = new WebsitePermissionsFetcher(true);
             fetcher.fetchPreferencesForCategory(
                     SiteSettingsCategory.createFromType(SiteSettingsCategory.Type.USE_STORAGE),
@@ -318,7 +322,11 @@ public class ManageSpaceActivity extends AppCompatActivity implements View.OnCli
         @Override
         public void onStoredDataCleared() {
             mNumSitesClearing--;
-            if (mNumSitesClearing <= 0) clearUnimportantDataDone();
+            if (mNumSitesClearing <= 0) {
+                RecordHistogram.recordTimesHistogram("Android.ManageSpace.ClearUnimportantTime",
+                        SystemClock.elapsedRealtime() - mClearStartTime);
+                clearUnimportantDataDone();
+            }
         }
 
         @Override

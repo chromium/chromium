@@ -1,0 +1,7 @@
+Tests DidReceiveWebSocketHandshakeResponse probe.
+
+new WebSocket('ws://localhost:8880/binary-frames')
+Set-Cookie: undefined
+Connection: Upgrade
+Upgrade: websocket
+

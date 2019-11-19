@@ -94,7 +94,7 @@ class ConsentSyncBridgeImpl : public ConsentSyncBridge,
   std::vector<std::unique_ptr<sync_pb::UserConsentSpecifics>>
       deferred_consents_while_initializing_;
 
-  base::WeakPtrFactory<ConsentSyncBridgeImpl> weak_ptr_factory_;
+  base::WeakPtrFactory<ConsentSyncBridgeImpl> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ConsentSyncBridgeImpl);
 };

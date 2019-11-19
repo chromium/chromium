@@ -1,0 +1,73 @@
+// Copyright 2016 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module ui.mojom;
+
+import "mojo/public/mojom/base/time.mojom";
+
+enum LatencyComponentType {
+  // ---------------------------BEGIN COMPONENT-------------------------------
+  // BEGIN COMPONENT is when we show the latency begin in chrome://tracing.
+  // Timestamp when the input event is sent from RenderWidgetHost to renderer.
+  INPUT_EVENT_LATENCY_BEGIN_RWH_COMPONENT,
+  // ---------------------------NORMAL COMPONENT-------------------------------
+  // The original timestamp of the touch event which converts to scroll update.
+  INPUT_EVENT_LATENCY_SCROLL_UPDATE_ORIGINAL_COMPONENT,
+  // The original timestamp of the touch event which converts to the *first*
+  // scroll update in a scroll gesture sequence.
+  INPUT_EVENT_LATENCY_FIRST_SCROLL_UPDATE_ORIGINAL_COMPONENT,
+  // Original timestamp for input event (e.g. timestamp from kernel).
+  INPUT_EVENT_LATENCY_ORIGINAL_COMPONENT,
+  // Timestamp when the UI event is created.
+  INPUT_EVENT_LATENCY_UI_COMPONENT,
+  // Timestamp when the event is dispatched on the main thread of the renderer.
+  INPUT_EVENT_LATENCY_RENDERER_MAIN_COMPONENT,
+  // This is special component indicating there is rendering scheduled for
+  // the event associated with this LatencyInfo on main thread.
+  INPUT_EVENT_LATENCY_RENDERING_SCHEDULED_MAIN_COMPONENT,
+  // This is special component indicating there is rendering scheduled for
+  // the event associated with this LatencyInfo on impl thread.
+  INPUT_EVENT_LATENCY_RENDERING_SCHEDULED_IMPL_COMPONENT,
+  // Timestamp for last event that has been coalesced into this one.
+  INPUT_EVENT_LATENCY_SCROLL_UPDATE_LAST_EVENT_COMPONENT,
+  // Timestamp when the event's ack is received by the RWH.
+  INPUT_EVENT_LATENCY_ACK_RWH_COMPONENT,
+  // Timestamp when the frame is swapped in renderer.
+  INPUT_EVENT_LATENCY_RENDERER_SWAP_COMPONENT,
+  // Timestamp of when the display compositor receives a compositor frame.
+  // Display compositor can be either in the browser process or in Mus.
+  DISPLAY_COMPOSITOR_RECEIVED_FRAME_COMPONENT,
+  // Timestamp of when the gpu service began swap buffers, unlike
+  // INPUT_EVENT_LATENCY_FRAME_SWAP_COMPONENT which measures after.
+  INPUT_EVENT_GPU_SWAP_BUFFER_COMPONENT,
+  // Timestamp when the frame is swapped (i.e. when the rendering caused by
+  // input event actually takes effect).
+  INPUT_EVENT_LATENCY_FRAME_SWAP_COMPONENT,
+};
+
+enum SourceEventType {
+  UNKNOWN,
+  WHEEL,
+  MOUSE,
+  TOUCH,
+  INERTIAL,
+  KEY_PRESS,
+  TOUCHPAD,
+  SCROLLBAR,
+  OTHER,
+};
+
+// See ui/latency/latency_info.h
+struct LatencyInfo {
+  string trace_name;
+  map<LatencyComponentType, mojo_base.mojom.TimeTicks> latency_components;
+  int64 trace_id;
+  int64 ukm_source_id;
+  bool coalesced;
+  bool began;
+  bool terminated;
+  SourceEventType source_event_type;
+  float scroll_update_delta;
+  float predicted_scroll_update_delta;
+};

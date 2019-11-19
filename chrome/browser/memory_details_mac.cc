@@ -129,7 +129,7 @@ void MemoryDetails::CollectProcessData(
     CollectProcessDataForChromeProcess(child_info, pid, chrome_processes);
 
   // Finally return to the browser thread.
-  base::PostTaskWithTraits(
+  base::PostTask(
       FROM_HERE, {BrowserThread::UI},
       base::BindOnce(&MemoryDetails::CollectChildInfoOnUIThread, this));
 }

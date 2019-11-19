@@ -9,7 +9,7 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/logging.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/renderer/render_frame.h"
 #include "skia/ext/platform_canvas.h"
@@ -83,7 +83,7 @@ class PluginInstanceThrottlerImplTest
 
   int change_callback_calls_;
 
-  base::test::ScopedTaskEnvironment task_environment_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
 };
 
 TEST_F(PluginInstanceThrottlerImplTest, ThrottleAndUnthrottleByClick) {

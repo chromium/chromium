@@ -13,6 +13,8 @@
 #include "chrome/browser/content_settings/tab_specific_content_settings.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/password_manager/core/browser/password_manager_metrics_util.h"
+#include "components/safe_browsing/buildflags.h"
 #include "components/security_state/core/security_state.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/gfx/vector_icon_types.h"
@@ -37,13 +39,14 @@ class Profile;
 class PageInfoUI;
 class PageInfoBubbleViewBrowserTest;
 
+using password_manager::metrics_util::PasswordType;
+
 // The |PageInfo| provides information about a website's permissions,
 // connection state and its identity. It owns a UI that displays the
 // information and allows users to change the permissions. |PageInfo|
 // objects must be created on the heap. They destroy themselves after the UI is
 // closed.
-class PageInfo : public TabSpecificContentSettings::SiteDataObserver,
-                 public content::WebContentsObserver {
+class PageInfo : public content::WebContentsObserver {
  public:
   // TODO(palmer): Figure out if it is possible to unify SiteConnectionStatus
   // and SiteIdentityStatus.
@@ -61,6 +64,7 @@ class PageInfo : public TabSpecificContentSettings::SiteDataObserver,
     SITE_CONNECTION_STATUS_UNENCRYPTED,      // Connection is not encrypted.
     SITE_CONNECTION_STATUS_ENCRYPTED_ERROR,  // Connection error occurred.
     SITE_CONNECTION_STATUS_INTERNAL_PAGE,    // Internal site.
+    SITE_CONNECTION_STATUS_LEGACY_TLS,  // Connection used a legacy TLS version.
   };
 
   // Validation status of a website's identity.
@@ -71,9 +75,6 @@ class PageInfo : public TabSpecificContentSettings::SiteDataObserver,
     SITE_IDENTITY_STATUS_CERT,
     // The website provided a valid EV certificate.
     SITE_IDENTITY_STATUS_EV_CERT,
-    // The website provided a valid certificate but no revocation check could be
-    // performed.
-    SITE_IDENTITY_STATUS_CERT_REVOCATION_UNKNOWN,
     // Site identity could not be verified because the site did not provide a
     // certificate. This is the expected state for HTTP connections.
     SITE_IDENTITY_STATUS_NO_CERT,
@@ -87,15 +88,22 @@ class PageInfo : public TabSpecificContentSettings::SiteDataObserver,
     // The website provided a valid certificate, but the certificate or chain
     // is using a deprecated signature algorithm.
     SITE_IDENTITY_STATUS_DEPRECATED_SIGNATURE_ALGORITHM,
+  };
+
+  // Safe Browsing status of a website.
+  enum SafeBrowsingStatus {
+    SAFE_BROWSING_STATUS_NONE = 0,
     // The website has been flagged by Safe Browsing as dangerous for
     // containing malware, social engineering, unwanted software, or password
     // reuse on a low reputation site.
-    SITE_IDENTITY_STATUS_MALWARE,
-    SITE_IDENTITY_STATUS_SOCIAL_ENGINEERING,
-    SITE_IDENTITY_STATUS_UNWANTED_SOFTWARE,
-    SITE_IDENTITY_STATUS_SIGN_IN_PASSWORD_REUSE,
-    SITE_IDENTITY_STATUS_ENTERPRISE_PASSWORD_REUSE,
-    SITE_IDENTITY_STATUS_BILLING,
+    SAFE_BROWSING_STATUS_MALWARE,
+    SAFE_BROWSING_STATUS_SOCIAL_ENGINEERING,
+    SAFE_BROWSING_STATUS_UNWANTED_SOFTWARE,
+    SAFE_BROWSING_STATUS_SAVED_PASSWORD_REUSE,
+    SAFE_BROWSING_STATUS_SIGNED_IN_SYNC_PASSWORD_REUSE,
+    SAFE_BROWSING_STATUS_SIGNED_IN_NON_SYNC_PASSWORD_REUSE,
+    SAFE_BROWSING_STATUS_ENTERPRISE_PASSWORD_REUSE,
+    SAFE_BROWSING_STATUS_BILLING,
   };
 
   // Events for UMA. Do not reorder or change! Exposed in header so enum is
@@ -133,7 +141,7 @@ class PageInfo : public TabSpecificContentSettings::SiteDataObserver,
     int description_string_id;
     int allowed_by_policy_description_string_id;
     int delete_tooltip_string_id;
-    const char* ui_name_key;
+    std::string (*get_object_name)(const base::Value&);
   };
 
   // Creates a PageInfo for the passed |url| using the given |ssl| status
@@ -144,8 +152,15 @@ class PageInfo : public TabSpecificContentSettings::SiteDataObserver,
            TabSpecificContentSettings* tab_specific_content_settings,
            content::WebContents* web_contents,
            const GURL& url,
-           const security_state::SecurityInfo& security_info);
+           security_state::SecurityLevel security_level,
+           const security_state::VisibleSecurityState& visible_security_state);
   ~PageInfo() override;
+
+  // This method is called to update the presenter's security state and forwards
+  // that change on to the UI to be redrawn.
+  void UpdateSecurityState(
+      security_state::SecurityLevel security_level,
+      const security_state::VisibleSecurityState& visible_security_state);
 
   void RecordPageInfoAction(PageInfoAction action);
 
@@ -154,10 +169,12 @@ class PageInfo : public TabSpecificContentSettings::SiteDataObserver,
 
   // This method is called whenever access to an object is revoked.
   void OnSiteChosenObjectDeleted(const ChooserUIInfo& ui_info,
-                                 const base::DictionaryValue& object);
+                                 const base::Value& object);
 
   // This method is called by the UI when the UI is closing.
-  void OnUIClosing();
+  // If specified, |reload_prompt| is set to whether closing the UI resulted in
+  // a prompt to the user to reload the page.
+  void OnUIClosing(bool* reload_prompt);
 
   // This method is called when the revoke SSL error bypass button is pressed.
   void OnRevokeSSLErrorBypassButtonPressed();
@@ -173,27 +190,30 @@ class PageInfo : public TabSpecificContentSettings::SiteDataObserver,
       content::WebContents* web_contents);
 
   // Accessors.
-  SiteConnectionStatus site_connection_status() const {
+  const SiteConnectionStatus& site_connection_status() const {
     return site_connection_status_;
   }
 
   const GURL& site_url() const { return site_url_; }
 
-  SiteIdentityStatus site_identity_status() const {
+  const SiteIdentityStatus& site_identity_status() const {
     return site_identity_status_;
   }
 
-  base::string16 organization_name() const { return organization_name_; }
-
-  // SiteDataObserver implementation.
-  void OnSiteDataAccessed() override;
+  const SafeBrowsingStatus& safe_browsing_status() const {
+    return safe_browsing_status_;
+  }
 
  private:
   FRIEND_TEST_ALL_PREFIXES(PageInfoTest,
                            NonFactoryDefaultAndRecentlyChangedPermissionsShown);
   friend class PageInfoBubbleViewBrowserTest;
-  // Initializes the |PageInfo|.
-  void Init(const GURL& url, const security_state::SecurityInfo& security_info);
+  // Populates this object's UI state with provided security context. This
+  // function does not update visible UI-- that's part of Present*().
+  void ComputeUIInputs(
+      const GURL& url,
+      const security_state::SecurityLevel security_level,
+      const security_state::VisibleSecurityState& visible_security_state);
 
   // Sets (presents) the information about the site's permissions in the |ui_|.
   void PresentSitePermissions();
@@ -209,11 +229,18 @@ class PageInfo : public TabSpecificContentSettings::SiteDataObserver,
   // presented in a headset.
   void PresentPageFeatureInfo();
 
-  // Helper function to get the site identification status and details by
-  // malicious content status.
-  void GetSiteIdentityByMaliciousContentStatus(
+#if BUILDFLAG(FULL_SAFE_BROWSING)
+  // Records a password reuse event. If FULL_SAFE_BROWSING is defined, this
+  // function WILL record an event. Callers should check conditions beforehand.
+  void RecordPasswordReuseEvent();
+#endif
+
+  // Helper function to get the Safe Browsing status and details by malicious
+  // content status.
+  // TODO(jdeblasio): Eliminate this and just use MaliciousContentStatus?
+  void GetSafeBrowsingStatusByMaliciousContentStatus(
       security_state::MaliciousContentStatus malicious_content_status,
-      PageInfo::SiteIdentityStatus* status,
+      PageInfo::SafeBrowsingStatus* status,
       base::string16* details);
 
   // Retrieves all the permissions that are shown in Page Info.
@@ -237,6 +264,13 @@ class PageInfo : public TabSpecificContentSettings::SiteDataObserver,
   // Status of the website's identity verification check.
   SiteIdentityStatus site_identity_status_;
 
+  // Safe Browsing status of the website.
+  SafeBrowsingStatus safe_browsing_status_;
+
+  // Safety tip info of the website. Set regardless of whether the feature is
+  // enabled to show the UI.
+  security_state::SafetyTipInfo safety_tip_info_;
+
   // For secure connection |certificate_| is set to the server certificate.
   scoped_refptr<net::X509Certificate> certificate_;
 
@@ -247,10 +281,12 @@ class PageInfo : public TabSpecificContentSettings::SiteDataObserver,
   // strings below to the corresponding UI code, in order to prevent
   // unnecessary UTF-8 string conversions.
 
+#if defined(OS_ANDROID)
   // Details about the website's identity. If the website's identity has been
-  // verified then |site_identity_details_| contains who verified the identity.
-  // This string will be displayed in the UI.
-  base::string16 site_identity_details_;
+  // verified then |identity_status_description_android_| contains who verified
+  // the identity. This string will be displayed in the UI.
+  base::string16 identity_status_description_android_;
+#endif
 
   // Set when the user has explicitly bypassed an SSL error for this host or
   // explicitly denied it (the latter of which is not currently possible in the
@@ -279,13 +315,21 @@ class PageInfo : public TabSpecificContentSettings::SiteDataObserver,
   // decisions by users.
   ChromeSSLHostStateDelegate* chrome_ssl_host_state_delegate_;
 
+  // The TabSpecificContentSettings for this site, used to propagate changes
+  // from the UI back to the model. This is held as a raw pointer because the
+  // lifetime of TabSpecificContentSettings is tightly bound to that of the
+  // observed WebContents.
+  TabSpecificContentSettings* tab_specific_content_settings_;
+
   bool did_revoke_user_ssl_decisions_;
 
   Profile* profile_;
 
   security_state::SecurityLevel security_level_;
 
-#if defined(SAFE_BROWSING_DB_LOCAL)
+  security_state::VisibleSecurityState visible_security_state_for_metrics_;
+
+#if BUILDFLAG(FULL_SAFE_BROWSING)
   // Used to handle changing password, and whitelisting site.
   safe_browsing::ChromePasswordProtectionService* password_protection_service_;
 #endif
@@ -296,7 +340,10 @@ class PageInfo : public TabSpecificContentSettings::SiteDataObserver,
   // whitelist current site.
   bool show_change_password_buttons_;
 
+  // The time the Page Info UI is opened, for measuring total time open.
   base::TimeTicks start_time_;
+
+  // Records whether the user interacted with the bubble beyond opening it.
   bool did_perform_action_;
 
   DISALLOW_COPY_AND_ASSIGN(PageInfo);

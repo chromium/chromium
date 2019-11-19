@@ -6,12 +6,15 @@
 
 #include <string>
 
-#include "base/memory/shared_memory.h"
+#include "base/memory/platform_shared_memory_region.h"
+#include "base/memory/read_only_shared_memory_region.h"
 #include "base/process/process.h"
 #include "base/process/process_handle.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/unguessable_token.h"
+#include "base/win/scoped_handle.h"
 #include "base/win/windows_version.h"
 #include "sandbox/win/src/app_container_profile.h"
 #include "sandbox/win/src/sandbox_factory.h"
@@ -32,12 +35,12 @@ bool IsProcessRunning(HANDLE process) {
 namespace sandbox {
 
 // Constructs a full path to a file inside the system32 folder.
-base::string16 MakePathToSys32(const wchar_t* name, bool is_obj_man_path) {
+std::wstring MakePathToSys32(const wchar_t* name, bool is_obj_man_path) {
   wchar_t windows_path[MAX_PATH] = {0};
   if (0 == ::GetSystemWindowsDirectoryW(windows_path, MAX_PATH))
-    return base::string16();
+    return std::wstring();
 
-  base::string16 full_path(windows_path);
+  std::wstring full_path(windows_path);
   if (full_path.empty())
     return full_path;
 
@@ -50,12 +53,12 @@ base::string16 MakePathToSys32(const wchar_t* name, bool is_obj_man_path) {
 }
 
 // Constructs a full path to a file inside the syswow64 folder.
-base::string16 MakePathToSysWow64(const wchar_t* name, bool is_obj_man_path) {
+std::wstring MakePathToSysWow64(const wchar_t* name, bool is_obj_man_path) {
   wchar_t windows_path[MAX_PATH] = {0};
   if (0 == ::GetSystemWindowsDirectoryW(windows_path, MAX_PATH))
-    return base::string16();
+    return std::wstring();
 
-  base::string16 full_path(windows_path);
+  std::wstring full_path(windows_path);
   if (full_path.empty())
     return full_path;
 
@@ -67,7 +70,7 @@ base::string16 MakePathToSysWow64(const wchar_t* name, bool is_obj_man_path) {
   return full_path;
 }
 
-base::string16 MakePathToSys(const wchar_t* name, bool is_obj_man_path) {
+std::wstring MakePathToSys(const wchar_t* name, bool is_obj_man_path) {
   return (base::win::OSInfo::GetInstance()->wow64_status() ==
       base::win::OSInfo::WOW64_ENABLED) ?
       MakePathToSysWow64(name, is_obj_man_path) :
@@ -101,7 +104,7 @@ TestRunner::TestRunner(JobLevel job_level,
       disable_csrss_(true),
       target_process_id_(0) {
   broker_ = NULL;
-  policy_ = NULL;
+  policy_.reset();
   timeout_ = kDefaultTimeout;
   state_ = AFTER_REVERT;
   is_async_= false;
@@ -148,7 +151,7 @@ bool TestRunner::AddRuleSys32(TargetPolicy::Semantics semantics,
   if (!is_init_)
     return false;
 
-  base::string16 win32_path = MakePathToSys32(pattern, false);
+  std::wstring win32_path = MakePathToSys32(pattern, false);
   if (win32_path.empty())
     return false;
 
@@ -181,7 +184,7 @@ int TestRunner::RunTest(const wchar_t* command) {
   wchar_t state_number[2];
   state_number[0] = static_cast<wchar_t>(L'0' + state_);
   state_number[1] = L'\0';
-  base::string16 full_command(state_number);
+  std::wstring full_command(state_number);
   full_command += L" ";
   full_command += command;
 
@@ -213,7 +216,7 @@ int TestRunner::InternalRunTest(const wchar_t* command) {
   DWORD last_error = ERROR_SUCCESS;
   PROCESS_INFORMATION target = {0};
 
-  base::string16 arguments(L"\"");
+  std::wstring arguments(L"\"");
   arguments += prog_name;
   arguments += L"\" -child";
   arguments += no_sandbox_ ? L"-no-sandbox " : L" ";
@@ -302,16 +305,33 @@ int DispatchCall(int argc, wchar_t **argv) {
   // in read only mode and sleep infinitely if we succeed.
   if (0 == _wcsicmp(argv[3], L"shared_memory_handle")) {
     HANDLE raw_handle = nullptr;
-    base::StringToUint(argv[4], reinterpret_cast<unsigned int*>(&raw_handle));
+    base::StringPiece test_contents = "Hello World";
+    base::StringToUint(base::AsStringPiece16(argv[4]),
+                       reinterpret_cast<unsigned int*>(&raw_handle));
     if (raw_handle == nullptr)
       return SBOX_TEST_INVALID_PARAMETER;
-    base::SharedMemoryHandle shared_handle(raw_handle, 0u,
-                                           base::UnguessableToken::Create());
-    base::SharedMemory read_only_view(shared_handle, true);
-    if (!read_only_view.Map(0))
+    // First extract the handle to the platform-native ScopedHandle.
+    base::win::ScopedHandle scoped_handle(raw_handle);
+    if (!scoped_handle.IsValid())
       return SBOX_TEST_INVALID_PARAMETER;
-    std::string contents(reinterpret_cast<char*>(read_only_view.memory()));
-    if (contents != "Hello World")
+    // Then convert to the low-level chromium region.
+    base::subtle::PlatformSharedMemoryRegion platform_region =
+        base::subtle::PlatformSharedMemoryRegion::Take(
+            std::move(scoped_handle),
+            base::subtle::PlatformSharedMemoryRegion::Mode::kReadOnly,
+            test_contents.size(), base::UnguessableToken::Create());
+    // Finally wrap the low-level region in the shared memory API.
+    base::ReadOnlySharedMemoryRegion region =
+        base::ReadOnlySharedMemoryRegion::Deserialize(
+            std::move(platform_region));
+    if (!region.IsValid())
+      return SBOX_TEST_INVALID_PARAMETER;
+    base::ReadOnlySharedMemoryMapping view = region.Map();
+    if (!view.IsValid())
+      return SBOX_TEST_INVALID_PARAMETER;
+
+    const std::string contents(view.GetMemoryAsSpan<char>().data());
+    if (contents != test_contents)
       return SBOX_TEST_INVALID_PARAMETER;
     Sleep(INFINITE);
     return SBOX_TEST_TIMED_OUT;

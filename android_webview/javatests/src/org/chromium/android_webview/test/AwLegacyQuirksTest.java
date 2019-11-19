@@ -15,11 +15,11 @@ import org.junit.runner.RunWith;
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.AwContentsClient;
 import org.chromium.android_webview.AwSettings;
-import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.RetryOnFailure;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.ui.display.DisplayAndroid;
 
@@ -56,7 +56,7 @@ public class AwLegacyQuirksTest {
 
         settings.setJavaScriptEnabled(true);
 
-        DisplayAndroid displayAndroid = ThreadUtils.runOnUiThreadBlockingNoException(() -> {
+        DisplayAndroid displayAndroid = TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
             return DisplayAndroid.getNonMultiDisplay(
                     InstrumentationRegistry.getInstrumentation().getTargetContext());
         });
@@ -100,7 +100,7 @@ public class AwLegacyQuirksTest {
         settings.setJavaScriptEnabled(true);
         settings.setUseWideViewPort(true);
 
-        DisplayAndroid displayAndroid = ThreadUtils.runOnUiThreadBlockingNoException(() -> {
+        DisplayAndroid displayAndroid = TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
             return DisplayAndroid.getNonMultiDisplay(
                     InstrumentationRegistry.getInstrumentation().getTargetContext());
         });
@@ -133,7 +133,7 @@ public class AwLegacyQuirksTest {
 
         settings.setJavaScriptEnabled(true);
 
-        DisplayAndroid displayAndroid = ThreadUtils.runOnUiThreadBlockingNoException(() -> {
+        DisplayAndroid displayAndroid = TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
             return DisplayAndroid.getNonMultiDisplay(
                     InstrumentationRegistry.getInstrumentation().getTargetContext());
         });
@@ -167,7 +167,7 @@ public class AwLegacyQuirksTest {
         mActivityTestRule.loadUrlSync(
                 awContents, onPageFinishedHelper, ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL);
 
-        DisplayAndroid displayAndroid = ThreadUtils.runOnUiThreadBlockingNoException(() -> {
+        DisplayAndroid displayAndroid = TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
             return DisplayAndroid.getNonMultiDisplay(
                     InstrumentationRegistry.getInstrumentation().getTargetContext());
         });
@@ -377,12 +377,11 @@ public class AwLegacyQuirksTest {
     }
 
     private AwTestContainerView createAwTestContainerViewOnMainSyncInQuirksMode(
-            final AwContentsClient client) throws Exception {
+            final AwContentsClient client) {
         return mActivityTestRule.createAwTestContainerViewOnMainSync(client, true);
     }
 
-    private void ensureScaleBecomes(final float targetScale, final AwContents awContents)
-            throws Throwable {
+    private void ensureScaleBecomes(final float targetScale, final AwContents awContents) {
         AwActivityTestRule.pollInstrumentationThread(
                 () -> targetScale == mActivityTestRule.getScaleOnUiThread(awContents));
     }

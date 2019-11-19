@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "cc/cc_export.h"
 #include "cc/layers/picture_layer_impl.h"
 #include "cc/tiles/tile_priority.h"
@@ -26,6 +25,9 @@ class CC_EXPORT RasterTilePriorityQueue {
       Type type);
 
   virtual ~RasterTilePriorityQueue() {}
+  RasterTilePriorityQueue(const RasterTilePriorityQueue&) = delete;
+
+  RasterTilePriorityQueue& operator=(const RasterTilePriorityQueue&) = delete;
 
   virtual bool IsEmpty() const = 0;
   virtual const PrioritizedTile& Top() const = 0;
@@ -33,9 +35,6 @@ class CC_EXPORT RasterTilePriorityQueue {
 
  protected:
   RasterTilePriorityQueue() {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(RasterTilePriorityQueue);
 };
 
 }  // namespace cc

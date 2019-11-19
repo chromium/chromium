@@ -30,8 +30,6 @@
 
 #include "third_party/blink/renderer/core/svg/svg_boolean.h"
 
-#include "third_party/blink/renderer/core/svg/svg_animation_element.h"
-
 namespace blink {
 
 String SVGBoolean::ValueAsString() const {
@@ -54,21 +52,15 @@ void SVGBoolean::Add(SVGPropertyBase*, SVGElement*) {
   NOTREACHED();
 }
 
-void SVGBoolean::CalculateAnimatedValue(SVGAnimationElement* animation_element,
-                                        float percentage,
-                                        unsigned repeat_count,
-                                        SVGPropertyBase* from,
-                                        SVGPropertyBase* to,
-                                        SVGPropertyBase*,
-                                        SVGElement*) {
-  DCHECK(animation_element);
-  bool from_boolean = animation_element->GetAnimationMode() == kToAnimation
-                          ? value_
-                          : ToSVGBoolean(from)->Value();
-  bool to_boolean = ToSVGBoolean(to)->Value();
-
-  animation_element->AnimateDiscreteType<bool>(percentage, from_boolean,
-                                               to_boolean, value_);
+void SVGBoolean::CalculateAnimatedValue(
+    const SVGAnimateElement& animation_element,
+    float percentage,
+    unsigned repeat_count,
+    SVGPropertyBase* from,
+    SVGPropertyBase* to,
+    SVGPropertyBase*,
+    SVGElement*) {
+  NOTREACHED();
 }
 
 float SVGBoolean::CalculateDistance(SVGPropertyBase*, SVGElement*) {

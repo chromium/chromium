@@ -5,7 +5,12 @@
 #ifndef CONTENT_BROWSER_MEDIA_SESSION_MEDIA_SESSION_PLAYER_OBSERVER_H_
 #define CONTENT_BROWSER_MEDIA_SESSION_MEDIA_SESSION_PLAYER_OBSERVER_H_
 
+#include "base/optional.h"
 #include "base/time/time.h"
+
+namespace media_session {
+struct MediaPosition;
+}  // namespace media_session
 
 namespace content {
 
@@ -32,6 +37,10 @@ class MediaSessionPlayerObserver {
   // the MediaSession.
   virtual void OnSetVolumeMultiplier(int player_id,
                                      double volume_multiplier) = 0;
+
+  // Returns the position for |player_id|.
+  virtual base::Optional<media_session::MediaPosition> GetPosition(
+      int player_id) const = 0;
 
   // Returns the RenderFrameHost this player observer belongs to. Returns
   // nullptr if unavailable.

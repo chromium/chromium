@@ -36,14 +36,9 @@ class RadioNodeList final : public LiveNodeList {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static RadioNodeList* Create(ContainerNode& owner_node,
-                               CollectionType type,
-                               const AtomicString& name) {
-    DCHECK(type == kRadioNodeListType || type == kRadioImgNodeListType);
-    return MakeGarbageCollected<RadioNodeList>(owner_node, name, type);
-  }
-
-  RadioNodeList(ContainerNode&, const AtomicString& name, CollectionType);
+  RadioNodeList(ContainerNode& owner_node,
+                CollectionType type,
+                const AtomicString& name);
   ~RadioNodeList() override;
 
   String value() const;

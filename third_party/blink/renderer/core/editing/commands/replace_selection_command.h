@@ -48,19 +48,10 @@ class CORE_EXPORT ReplaceSelectionCommand final : public CompositeEditCommand {
 
   typedef unsigned CommandOptions;
 
-  static ReplaceSelectionCommand* Create(
-      Document& document,
-      DocumentFragment* fragment,
-      CommandOptions options,
-      InputEvent::InputType input_type = InputEvent::InputType::kNone) {
-    return MakeGarbageCollected<ReplaceSelectionCommand>(document, fragment,
-                                                         options, input_type);
-  }
-
   ReplaceSelectionCommand(Document&,
                           DocumentFragment*,
                           CommandOptions,
-                          InputEvent::InputType);
+                          InputEvent::InputType = InputEvent::InputType::kNone);
 
   EphemeralRange InsertedRange() const;
 
@@ -159,12 +150,6 @@ class CORE_EXPORT ReplaceSelectionCommand final : public CompositeEditCommand {
   Position start_of_inserted_range_;
   Position end_of_inserted_range_;
 };
-
-DEFINE_TYPE_CASTS(ReplaceSelectionCommand,
-                  CompositeEditCommand,
-                  command,
-                  command->IsReplaceSelectionCommand(),
-                  command.IsReplaceSelectionCommand());
 
 }  // namespace blink
 

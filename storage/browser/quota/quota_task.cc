@@ -22,7 +22,7 @@ namespace storage {
 QuotaTask::~QuotaTask() = default;
 
 void QuotaTask::Start() {
-  DCHECK(observer_);
+  DCHECK(observer_ != nullptr);
   observer()->RegisterTask(this);
   Run();
 }
@@ -31,6 +31,7 @@ QuotaTask::QuotaTask(QuotaTaskObserver* observer)
     : observer_(observer),
       original_task_runner_(base::ThreadTaskRunnerHandle::Get()),
       delete_scheduled_(false) {
+  DCHECK(observer != nullptr);
 }
 
 void QuotaTask::CallCompleted() {
@@ -69,7 +70,7 @@ void QuotaTaskObserver::RegisterTask(QuotaTask* task) {
 }
 
 void QuotaTaskObserver::UnregisterTask(QuotaTask* task) {
-  DCHECK(base::ContainsKey(running_quota_tasks_, task));
+  DCHECK(base::Contains(running_quota_tasks_, task));
   running_quota_tasks_.erase(task);
 }
 

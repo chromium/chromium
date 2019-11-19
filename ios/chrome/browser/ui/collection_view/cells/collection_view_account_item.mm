@@ -9,6 +9,8 @@
 #include "ios/chrome/browser/ui/collection_view/cells/collection_view_cell_constants.h"
 #import "ios/chrome/browser/ui/colors/MDCPalette+CrAdditions.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
+#import "ios/chrome/common/colors/UIColor+cr_semantic_colors.h"
+#import "ios/chrome/common/colors/semantic_color_names.h"
 #import "ios/third_party/material_components_ios/src/components/Palettes/src/MaterialPalettes.h"
 #import "ios/third_party/material_components_ios/src/components/Typography/src/MaterialTypography.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -72,11 +74,13 @@ const CGFloat kHorizontalErrorIconFixedSize = 25;
   cell.detailTextLabel.text = self.detailText;
   [cell cr_setAccessoryType:self.accessoryType];
   if (self.shouldDisplayError) {
-    cell.errorIcon.image = [UIImage imageNamed:@"settings_error"];
-    cell.detailTextLabel.textColor = [[MDCPalette cr_redPalette] tint500];
+    cell.errorIcon.image = [[UIImage imageNamed:@"settings_error"]
+        imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+    cell.errorIcon.tintColor = [UIColor colorNamed:kRedColor];
+    cell.detailTextLabel.textColor = [UIColor colorNamed:kRedColor];
   } else {
     cell.errorIcon.image = nil;
-    cell.detailTextLabel.textColor = [[MDCPalette greyPalette] tint500];
+    cell.detailTextLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
   }
 
   if (self.isEnabled) {
@@ -154,15 +158,15 @@ const CGFloat kHorizontalErrorIconFixedSize = 25;
 
   if (cellStyle == CollectionViewCellStyle::kUIKit) {
     _textLabel.font = [UIFont systemFontOfSize:kUIKitMainFontSize];
-    _textLabel.textColor = UIColorFromRGB(kUIKitMainTextColor);
+    _textLabel.textColor = UIColor.cr_labelColor;
     _detailTextLabel.font =
         [UIFont systemFontOfSize:kUIKitMultilineDetailFontSize];
-    _detailTextLabel.textColor = UIColorFromRGB(kUIKitMultilineDetailTextColor);
+    _detailTextLabel.textColor = UIColor.cr_secondaryLabelColor;
   } else {
     _textLabel.font = [[MDCTypography fontLoader] mediumFontOfSize:14];
-    _textLabel.textColor = [[MDCPalette greyPalette] tint900];
+    _textLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
     _detailTextLabel.font = [[MDCTypography fontLoader] regularFontOfSize:14];
-    _detailTextLabel.textColor = [[MDCPalette greyPalette] tint500];
+    _detailTextLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
   }
 }
 
@@ -260,9 +264,10 @@ const CGFloat kHorizontalErrorIconFixedSize = 25;
   self.imageView.image = nil;
   self.textLabel.text = nil;
   self.detailTextLabel.text = nil;
-  self.textLabel.textColor = [[MDCPalette greyPalette] tint900];
-  self.detailTextLabel.textColor = [[MDCPalette greyPalette] tint500];
+  self.textLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
+  self.detailTextLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
   self.errorIcon.image = nil;
+  self.errorIcon.tintColor = nil;
   self.accessoryType = MDCCollectionViewCellAccessoryNone;
   self.userInteractionEnabled = YES;
   self.contentView.alpha = 1;

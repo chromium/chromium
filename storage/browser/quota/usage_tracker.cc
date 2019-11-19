@@ -12,7 +12,6 @@
 #include "base/barrier_closure.h"
 #include "base/bind.h"
 #include "storage/browser/quota/client_usage_tracker.h"
-#include "storage/browser/quota/storage_monitor.h"
 
 namespace storage {
 
@@ -35,13 +34,12 @@ void StripUsageWithBreakdownCallback(
 
 UsageTracker::UsageTracker(const std::vector<QuotaClient*>& clients,
                            blink::mojom::StorageType type,
-                           SpecialStoragePolicy* special_storage_policy,
-                           StorageMonitor* storage_monitor)
-    : type_(type), storage_monitor_(storage_monitor), weak_factory_(this) {
+                           SpecialStoragePolicy* special_storage_policy)
+    : type_(type) {
   for (auto* client : clients) {
     if (client->DoesSupport(type)) {
       client_tracker_map_[client->id()] = std::make_unique<ClientUsageTracker>(
-          this, client, type, special_storage_policy, storage_monitor_);
+          this, client, type, special_storage_policy);
     }
   }
 }
@@ -208,6 +206,7 @@ UsageTracker::AccumulateInfo::~AccumulateInfo() = default;
 
 void UsageTracker::AccumulateClientGlobalLimitedUsage(AccumulateInfo* info,
                                                       int64_t limited_usage) {
+  DCHECK_GT(info->pending_clients, 0U);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   info->usage += limited_usage;
   if (--info->pending_clients)
@@ -224,6 +223,7 @@ void UsageTracker::AccumulateClientGlobalLimitedUsage(AccumulateInfo* info,
 void UsageTracker::AccumulateClientGlobalUsage(AccumulateInfo* info,
                                                int64_t usage,
                                                int64_t unlimited_usage) {
+  DCHECK_GT(info->pending_clients, 0U);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   info->usage += usage;
   info->unlimited_usage += unlimited_usage;

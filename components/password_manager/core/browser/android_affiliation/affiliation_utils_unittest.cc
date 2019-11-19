@@ -8,7 +8,6 @@
 #include "base/metrics/field_trial.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/common/password_form.h"
-#include "components/variations/variations_associated_data.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/url_constants.h"
 

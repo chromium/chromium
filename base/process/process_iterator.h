@@ -17,6 +17,8 @@
 #include "base/files/file_path.h"
 #include "base/macros.h"
 #include "base/process/process.h"
+#include "base/strings/string16.h"
+#include "base/strings/string_util.h"
 #include "build/build_config.h"
 
 #if defined(OS_WIN)
@@ -36,7 +38,7 @@ namespace base {
 struct ProcessEntry : public PROCESSENTRY32 {
   ProcessId pid() const { return th32ProcessID; }
   ProcessId parent_pid() const { return th32ParentProcessID; }
-  const wchar_t* exe_file() const { return szExeFile; }
+  const char16* exe_file() const { return as_u16cstr(szExeFile); }
 };
 #elif defined(OS_POSIX) || defined(OS_FUCHSIA)
 struct BASE_EXPORT ProcessEntry {

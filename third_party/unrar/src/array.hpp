@@ -1,8 +1,6 @@
 #ifndef _RAR_ARRAY_
 #define _RAR_ARRAY_
 
-namespace third_party_unrar {
-
 extern ErrorHandler ErrHandler;
 
 template <class T> class Array
@@ -189,7 +187,5 @@ template <class T> void Array<T>::Append(T *Items,size_t Count)
   Add(Count);
   memcpy(Buffer+CurSize,Items,Count*sizeof(T));
 }
-
-}  // namespace third_party_unrar
 
 #endif

@@ -9,10 +9,11 @@
 #include <cmath>
 
 #include "base/android/jni_android.h"
-#include "jni/MotionEvent_jni.h"
+#include "base/numerics/math_constants.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/event_utils.h"
+#include "ui/events/motionevent_jni_headers/MotionEvent_jni.h"
 
 using base::android::AttachCurrentThread;
 using base::android::ScopedJavaLocalRef;
@@ -51,7 +52,7 @@ MotionEventAndroid::Action FromAndroidAction(int android_action) {
     ACTION_CASE(BUTTON_RELEASE);
     default:
       NOTREACHED() << "Invalid Android MotionEvent action: " << android_action;
-  };
+  }
   return MotionEventAndroid::Action::CANCEL;
 }
 
@@ -70,7 +71,7 @@ int ToAndroidAction(MotionEventAndroid::Action action) {
     ACTION_REVERSE_CASE(BUTTON_RELEASE);
     default:
       NOTREACHED() << "Invalid MotionEvent action: " << action;
-  };
+  }
   return JNI_MotionEvent::ACTION_CANCEL;
 }
 
@@ -84,7 +85,7 @@ MotionEventAndroid::ToolType FromAndroidToolType(int android_tool_type) {
     default:
       NOTREACHED() << "Invalid Android MotionEvent tool type: "
                    << android_tool_type;
-  };
+  }
   return MotionEventAndroid::ToolType::UNKNOWN;
 }
 
@@ -97,7 +98,7 @@ int ToAndroidToolType(MotionEventAndroid::ToolType tool_type) {
     TOOL_TYPE_REVERSE_CASE(ERASER);
     default:
       NOTREACHED() << "Invalid MotionEvent tool type: " << tool_type;
-  };
+  }
   return JNI_MotionEvent::TOOL_TYPE_UNKNOWN;
 }
 
@@ -194,10 +195,10 @@ void ConvertTiltOrientationToTiltXY(float tilt_rad,
                                     float orientation_rad,
                                     float* tilt_x,
                                     float* tilt_y) {
-  float r = sin(tilt_rad);
-  float z = cos(tilt_rad);
-  *tilt_x = atan2(sin(-orientation_rad) * r, z) * 180.f / M_PI;
-  *tilt_y = atan2(cos(-orientation_rad) * r, z) * 180.f / M_PI;
+  float r = sinf(tilt_rad);
+  float z = cosf(tilt_rad);
+  *tilt_x = atan2f(sinf(-orientation_rad) * r, z) * 180.f / base::kPiFloat;
+  *tilt_y = atan2f(cosf(-orientation_rad) * r, z) * 180.f / base::kPiFloat;
 }
 
 }  // namespace

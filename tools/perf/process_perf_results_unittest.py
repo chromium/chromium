@@ -3,23 +3,23 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import json
 import os
 import shutil
-import sys
 import tempfile
-import json
 import unittest
 
 from core import path_util
-sys.path.insert(1, path_util.GetTelemetryDir())
-sys.path.insert(
-    1, os.path.join(path_util.GetTelemetryDir(), 'third_party', 'mock'))
+path_util.AddTelemetryToPath()
 
 from telemetry import decorators
 
 import mock
 
 import process_perf_results as ppr_module
+
+
+UUID_SIZE = 36
 
 
 class _FakeLogdogStream(object):
@@ -65,10 +65,6 @@ class ProcessPerfResultsIntegrationTest(unittest.TestCase):
   def setUp(self):
     self.test_dir = tempfile.mkdtemp()
     self.output_json = os.path.join(self.test_dir, 'output.json')
-    self.service_account_file = os.path.join(
-        self.test_dir, 'fake_service_account.json')
-    with open(self.service_account_file, 'w') as f:
-      json.dump([1,2,3,4], f)
     self.task_output_dir = os.path.join(
         os.path.dirname(__file__), 'testdata', 'task_output_dir')
 
@@ -95,6 +91,7 @@ class ProcessPerfResultsIntegrationTest(unittest.TestCase):
   @decorators.Disabled('chromeos')  # crbug.com/865800
   @decorators.Disabled('win')  # crbug.com/860677, mock doesn't integrate well
                                # with multiprocessing on Windows.
+  @decorators.Disabled('all')  # crbug.com/967125
   def testIntegration(self):
     build_properties = json.dumps({
         'perf_dashboard_machine_group': 'test-builder',
@@ -116,12 +113,64 @@ class ProcessPerfResultsIntegrationTest(unittest.TestCase):
                       "master:master.tryserver.chromium.perf",
                       "user_agent:cq"]}}"""
         })
+
+    output_results_dir = os.path.join(self.test_dir, 'outputresults')
+    os.mkdir(output_results_dir)
+
     return_code, benchmark_upload_result_map = ppr_module.process_perf_results(
         self.output_json, configuration_name='test-builder',
-        service_account_file = self.service_account_file,
         build_properties=build_properties,
         task_output_dir=self.task_output_dir,
-        smoke_test_mode=False)
+        smoke_test_mode=False,
+        output_results_dir=output_results_dir)
+
+    # Output filenames are prefixed with a UUID. Strip it off.
+    output_results = {
+        filename[UUID_SIZE:]: os.stat(os.path.join(
+            output_results_dir, filename)).st_size
+        for filename in os.listdir(output_results_dir)}
+    self.assertEquals(32, len(output_results))
+
+    self.assertLess(10 << 10, output_results["power.desktop.reference"])
+    self.assertLess(10 << 10, output_results["blink_perf.image_decoder"])
+    self.assertLess(10 << 10, output_results["octane.reference"])
+    self.assertLess(10 << 10, output_results["power.desktop"])
+    self.assertLess(10 << 10, output_results["speedometer-future"])
+    self.assertLess(10 << 10, output_results["blink_perf.owp_storage"])
+    self.assertLess(10 << 10, output_results["memory.desktop"])
+    self.assertLess(10 << 10, output_results["wasm"])
+    self.assertLess(10 << 10, output_results[
+      "dummy_benchmark.histogram_benchmark_1"])
+    self.assertLess(10 << 10, output_results[
+      "dummy_benchmark.histogram_benchmark_1.reference"])
+    self.assertLess(10 << 10, output_results["wasm.reference"])
+    self.assertLess(10 << 10, output_results["speedometer"])
+    self.assertLess(10 << 10, output_results[
+      "memory.long_running_idle_gmail_tbmv2"])
+    self.assertLess(10 << 10, output_results["v8.runtime_stats.top_25"])
+    self.assertLess(1 << 10, output_results[
+      "dummy_benchmark.noisy_benchmark_1"])
+    self.assertLess(10 << 10, output_results["blink_perf.svg"])
+    self.assertLess(10 << 10, output_results[
+      "v8.runtime_stats.top_25.reference"])
+    self.assertLess(10 << 10, output_results["jetstream.reference"])
+    self.assertLess(10 << 10, output_results["jetstream"])
+    self.assertLess(10 << 10, output_results["speedometer2-future.reference"])
+    self.assertLess(10 << 10, output_results["blink_perf.svg.reference"])
+    self.assertLess(10 << 10, output_results[
+      "blink_perf.image_decoder.reference"])
+    self.assertLess(10 << 10, output_results["power.idle_platform.reference"])
+    self.assertLess(10 << 10, output_results["power.idle_platform"])
+    self.assertLess(1 << 10, output_results[
+      "dummy_benchmark.noisy_benchmark_1.reference"])
+    self.assertLess(10 << 10, output_results["speedometer-future.reference"])
+    self.assertLess(10 << 10, output_results[
+      "memory.long_running_idle_gmail_tbmv2.reference"])
+    self.assertLess(10 << 10, output_results["memory.desktop.reference"])
+    self.assertLess(10 << 10, output_results[
+      "blink_perf.owp_storage.reference"])
+    self.assertLess(10 << 10, output_results["octane"])
+    self.assertLess(10 << 10, output_results["speedometer.reference"])
 
     self.assertEquals(return_code, 1)
     self.assertEquals(benchmark_upload_result_map,
@@ -162,6 +211,20 @@ class ProcessPerfResultsIntegrationTest(unittest.TestCase):
 
 
 class ProcessPerfResults_HardenedUnittest(unittest.TestCase):
+  def setUp(self):
+    self._logdog_text = mock.patch(
+        'process_perf_results.logdog_helper.text',
+        return_value = 'http://foo.link')
+    self._logdog_text.start()
+    self.addCleanup(self._logdog_text.stop)
+
+    self._logdog_open_text = mock.patch(
+        'process_perf_results.logdog_helper.open_text',
+        return_value=_FakeLogdogStream())
+    self._logdog_open_text.start()
+    self.addCleanup(self._logdog_open_text.stop)
+
+  @decorators.Disabled('chromeos')  # crbug.com/956178
   def test_handle_perf_json_test_results_IOError(self):
     directory_map = {
         'benchmark.example': ['directory_that_does_not_exist']}
@@ -169,11 +232,54 @@ class ProcessPerfResults_HardenedUnittest(unittest.TestCase):
     ppr_module._handle_perf_json_test_results(directory_map, test_results_list)
     self.assertEqual(test_results_list, [])
 
+  @decorators.Disabled('chromeos')  # crbug.com/956178
+  def test_last_shard_has_no_tests(self):
+    benchmark_name = 'benchmark.example'
+    temp_parent_dir = tempfile.mkdtemp(suffix='test_results_outdir')
+    try:
+      shard1_dir = os.path.join(temp_parent_dir, 'shard1')
+      os.mkdir(shard1_dir)
+      shard2_dir = os.path.join(temp_parent_dir, 'shard2')
+      os.mkdir(shard2_dir)
+      with open(os.path.join(shard1_dir, 'test_results.json'), 'w') as fh:
+        fh.write(
+            '{"version": 3, "tests":{"v8.browsing_desktop-future": "blah"}}')
+      with open(os.path.join(shard2_dir, 'test_results.json'), 'w') as fh:
+        fh.write('{"version": 3,"tests":{}}')
+      directory_map = {
+          benchmark_name: [shard1_dir, shard2_dir]}
+      benchmark_enabled_map = ppr_module._handle_perf_json_test_results(
+          directory_map, [])
+      self.assertTrue(benchmark_enabled_map[benchmark_name],
+                      'Regression test for crbug.com/984565')
+    finally:
+      shutil.rmtree(temp_parent_dir)
+
+  @decorators.Disabled('chromeos')  # crbug.com/956178
   def test_merge_perf_results_IOError(self):
     results_filename = None
     directories = ['directory_that_does_not_exist']
     ppr_module._merge_perf_results('benchmark.example', results_filename,
                                    directories)
+
+  @decorators.Disabled('chromeos')  # crbug.com/956178
+  def test_handle_perf_logs_no_log(self):
+    tempdir = tempfile.mkdtemp()
+    try:
+      dir1 = os.path.join(tempdir, '1')
+      dir2 = os.path.join(tempdir, '2')
+      os.makedirs(dir1)
+      os.makedirs(dir2)
+      with open(os.path.join(dir1, 'benchmark_log.txt'), 'w') as logfile:
+        logfile.write('hello world')
+      directory_map = {
+          'benchmark.with.log': [dir1],
+          'benchmark.with.no.log': [dir2],
+      }
+      extra_links = {}
+      ppr_module._handle_perf_logs(directory_map, extra_links)
+    finally:
+      shutil.rmtree(tempdir)
 
 
 if __name__ == '__main__':

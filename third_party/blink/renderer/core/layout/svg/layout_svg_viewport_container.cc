@@ -23,6 +23,7 @@
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_viewport_container.h"
 
 #include "third_party/blink/renderer/core/layout/svg/svg_layout_support.h"
+#include "third_party/blink/renderer/core/layout/svg/transform_helper.h"
 #include "third_party/blink/renderer/core/svg/svg_svg_element.h"
 
 namespace blink {
@@ -77,15 +78,15 @@ SVGTransformChange LayoutSVGViewportContainer::CalculateLocalTransform() {
 
 bool LayoutSVGViewportContainer::NodeAtPoint(
     HitTestResult& result,
-    const HitTestLocation& location_in_parent,
-    const LayoutPoint& accumulated_offset,
+    const HitTestLocation& hit_test_location,
+    const PhysicalOffset& accumulated_offset,
     HitTestAction action) {
   // Respect the viewport clip which is in parent coordinates.
   if (SVGLayoutSupport::IsOverflowHidden(*this)) {
-    if (!location_in_parent.Intersects(viewport_))
+    if (!hit_test_location.Intersects(viewport_))
       return false;
   }
-  return LayoutSVGContainer::NodeAtPoint(result, location_in_parent,
+  return LayoutSVGContainer::NodeAtPoint(result, hit_test_location,
                                          accumulated_offset, action);
 }
 

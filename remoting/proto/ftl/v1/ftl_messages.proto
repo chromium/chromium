@@ -1,0 +1,243 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+option optimize_for = LITE_RUNTIME;
+
+package remoting.ftl;
+
+// Enums
+
+// This is exactly google.protobuf.Duration. The Chromium proto_library
+// template has trouble importing protobuf outside the current directory.
+message Duration {
+  int64 seconds = 1;
+  int32 nanos = 2;
+}
+
+message ApiVersion {
+  enum Value {
+    UNKNOWN = 0;
+    V4 = 4;
+  }
+}
+
+message Platform {
+  // Added the FTL_ prefix because OS names are polluted by Chromium macros.
+  enum Type {
+    UNKNOWN = 0;
+    FTL_ANDROID = 1;
+    FTL_IOS = 2;
+    FTL_TEST = 4;
+    FTL_DESKTOP = 6;
+    FTL_WEB = 7;
+  }
+}
+
+message IdType {
+  enum Type {
+    UNKNOWN = 0;
+    SYSTEM = 7;
+    EMAIL = 16;
+  }
+}
+
+message DeviceIdType {
+  enum Type {
+    UNKNOWN = 0;
+    WEB_UUID = 3;
+    CHROMOTING_HOST_ID = 6;
+    CLIENT_UUID = 7;
+  }
+}
+
+message SignInGaiaMode {
+  enum Value {
+    DEFAULT_CREATE_ACCOUNT = 0;
+    LOOKUP = 1;
+    LOOKUP_AND_SIGN_IN = 2;
+  }
+}
+
+message ChromotingCapability {
+  enum Feature {
+    UNKNOWN = 0;
+    SERIALIZED_XMPP_SIGNALING = 256;
+    WEBRTC_SIGNALING = 257;
+  }
+}
+
+message FtlCapability {
+  enum Feature {
+    UNKNOWN = 0;
+    RECEIVE_CALLS_FROM_GAIA = 86;
+    GAIA_REACHABLE = 87;
+  }
+}
+
+// Messages
+
+message ClientInfo {
+  // Renamed from major, minor, point because they are defined in glibc macros.
+  int32 version_major = 3;
+  int32 version_minor = 4;
+  int32 version_point = 5;
+  ApiVersion.Value api_version = 7;
+  Platform.Type platform_type = 9;
+}
+
+message Id {
+  IdType.Type type = 1;
+  string id = 2;
+  string app = 3;
+}
+
+message RequestHeader {
+  string request_id = 1;
+  string app = 3;
+  bytes auth_token_payload = 6;
+  ClientInfo client_info = 7;
+  Id requester_id = 10;
+}
+
+message ResponseHeader {
+  uint64 rpc_global_id = 2;
+  int64 txn_timestamp_usec = 4;
+}
+
+message ICEServerList {
+  repeated string urls = 1;
+  string username = 2;
+  string credential = 3;
+  string hostname = 5;
+  int64 max_rate_kbps = 10;
+}
+
+message ICEConfiguration {
+  Duration lifetime_duration = 1;
+  repeated ICEServerList ice_servers = 2;
+  string ice_transport_policy = 6;
+}
+
+message DeviceId {
+  DeviceIdType.Type type = 1;
+  string id = 2;
+}
+
+message RegisterData {
+  DeviceId device_id = 1;
+  string locale = 8;
+  repeated int32 caps = 9;
+}
+
+message AuthToken {
+  bytes payload = 1;
+  int64 expires_in = 2;
+}
+
+message InboxMessage {
+  enum MessageType {
+    UNKNOWN = 0;
+    CHROMOTING_MESSAGE = 29;
+  }
+
+  enum MessageClass {
+    USER = 0;    // USER both persists the message and sends a GCM tickle
+    STATUS = 3;  // STATUS persists the message and doesn't send GCM tickle
+  }
+
+  string message_id = 1;
+  MessageType message_type = 2;
+  MessageClass message_class = 5;
+  Id sender_id = 8;
+  bytes sender_registration_id = 17;
+  Id receiver_id = 9;
+  bytes message = 12;
+}
+
+message ReceiverMessage {
+  string message_id = 1;
+  Id receiver_id = 2;
+}
+
+// Requests and responses
+
+message GetICEServerRequest {
+  RequestHeader header = 1;
+  bool unblock_me = 2;
+  string ice_config_preference = 3;
+}
+
+message GetICEServerResponse {
+  ResponseHeader header = 1;
+  ICEConfiguration ice_config = 4;
+}
+
+message SignInGaiaRequest {
+  RequestHeader header = 1;
+  RegisterData register_data = 2;
+  SignInGaiaMode.Value mode = 3;
+  string app = 4;
+}
+
+message SignInGaiaResponse {
+  ResponseHeader header = 1;
+  bytes registration_id = 2;
+  AuthToken auth_token = 4;
+}
+
+message PullMessagesRequest {
+  RequestHeader header = 1;
+}
+
+message PullMessagesResponse {
+  ResponseHeader header = 1;
+  repeated InboxMessage messages = 2;
+  bool pulled_all = 3;
+}
+
+message AckMessagesRequest {
+  RequestHeader header = 1;
+  repeated ReceiverMessage messages = 4;
+}
+
+message AckMessagesResponse {
+  ResponseHeader header = 1;
+}
+
+message ReceiveMessagesRequest {
+  RequestHeader header = 1;
+}
+
+message ReceiveMessagesResponse {
+  message Pong {}
+
+  message StartOfBatch { int32 count = 1; }
+
+  message EndOfBatch {}
+
+  message RefreshResult {}
+
+  oneof body {
+    InboxMessage inbox_message = 2;
+    Pong pong = 3;
+    StartOfBatch start_of_batch = 4;
+    EndOfBatch end_of_batch = 5;
+    RefreshResult refresh_result = 6;
+  }
+}
+
+message InboxSendRequest {
+  Id dest_id = 1;
+  repeated bytes dest_registration_ids = 9;
+  InboxMessage message = 2;
+  RequestHeader header = 3;
+  int64 time_to_live = 5;
+}
+
+message InboxSendResponse {
+  ResponseHeader header = 1;
+  int64 timestamp = 2;
+}

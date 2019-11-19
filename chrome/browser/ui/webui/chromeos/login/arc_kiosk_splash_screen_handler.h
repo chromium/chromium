@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "chrome/browser/chromeos/login/screens/arc_kiosk_splash_screen_view.h"
 #include "chrome/browser/ui/webui/chromeos/login/base_screen_handler.h"
 
 namespace base {
@@ -17,10 +16,42 @@ class DictionaryValue;
 
 namespace chromeos {
 
+class ArcKioskController;
+
+// Interface for UI implementations of the ArcKioskSplashScreen.
+class ArcKioskSplashScreenView {
+ public:
+  enum class ArcKioskState {
+    STARTING_SESSION,
+    WAITING_APP_LAUNCH,
+    WAITING_APP_WINDOW,
+  };
+
+  constexpr static StaticOobeScreenId kScreenId{"arc-kiosk-splash"};
+
+  ArcKioskSplashScreenView() = default;
+
+  virtual ~ArcKioskSplashScreenView() = default;
+
+  // Shows the contents of the screen.
+  virtual void Show() = 0;
+
+  // Set the current ARC kiosk state.
+  virtual void UpdateArcKioskState(ArcKioskState state) = 0;
+
+  // Sets screen this view belongs to.
+  virtual void SetDelegate(ArcKioskController* controller) = 0;
+
+ private:
+  DISALLOW_COPY_AND_ASSIGN(ArcKioskSplashScreenView);
+};
+
 // A class that handles the WebUI hooks for the ARC kiosk splash screen.
 class ArcKioskSplashScreenHandler : public BaseScreenHandler,
                                     public ArcKioskSplashScreenView {
  public:
+  using TView = ArcKioskSplashScreenView;
+
   explicit ArcKioskSplashScreenHandler(JSCallsContainer* js_calls_container);
   ~ArcKioskSplashScreenHandler() override;
 
@@ -36,14 +67,14 @@ class ArcKioskSplashScreenHandler : public BaseScreenHandler,
   // ArcKioskSplashScreenView implementation:
   void Show() override;
   void UpdateArcKioskState(ArcKioskState state) override;
-  void SetDelegate(ArcKioskSplashScreenHandler::Delegate* delegate) override;
+  void SetDelegate(ArcKioskController* controller) override;
 
   void PopulateAppInfo(base::DictionaryValue* out_info);
   void SetLaunchText(const std::string& text);
   int GetProgressMessageFromState(ArcKioskState state);
   void HandleCancelArcKioskLaunch();
 
-  ArcKioskSplashScreenHandler::Delegate* delegate_ = nullptr;
+  ArcKioskController* controller_ = nullptr;
   bool show_on_init_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(ArcKioskSplashScreenHandler);

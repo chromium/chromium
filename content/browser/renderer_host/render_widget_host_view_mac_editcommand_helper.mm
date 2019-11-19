@@ -116,7 +116,7 @@ const char* const kEditCommands[] = {
 // RenderWidgetHostViewMacEditCommandHelper::AddEditingSelectorsToClass().
 //
 // self - the object we're attached to; it must implement the
-// RenderWidgetHostNSViewClientOwner protocol.
+// RenderWidgetHostNSViewHostOwner protocol.
 // _cmd - the selector that fired.
 // sender - the id of the object that sent the message.
 //
@@ -129,8 +129,7 @@ const char* const kEditCommands[] = {
 // The WebFrame is in the Chrome glue layer and forwards the message to WebCore.
 void EditCommandImp(id self, SEL _cmd, id sender) {
   // Make sure |self| is the right type.
-  DCHECK(
-      [self conformsToProtocol:@protocol(RenderWidgetHostNSViewClientOwner)]);
+  DCHECK([self conformsToProtocol:@protocol(RenderWidgetHostNSViewHostOwner)]);
 
   // SEL -> command name string.
   NSString* command_name_ns =
@@ -138,10 +137,10 @@ void EditCommandImp(id self, SEL _cmd, id sender) {
   std::string command([command_name_ns UTF8String]);
 
   // Forward the edit command string down the pipeline.
-  mojom::RenderWidgetHostNSViewClient* client = [(
-      id<RenderWidgetHostNSViewClientOwner>)self renderWidgetHostNSViewClient];
-  DCHECK(client);
-  client->ExecuteEditCommand(command);
+  remote_cocoa::mojom::RenderWidgetHostNSViewHost* host =
+      [(id<RenderWidgetHostNSViewHostOwner>)self renderWidgetHostNSViewHost];
+  DCHECK(host);
+  host->ExecuteEditCommand(command);
 }
 
 }  // namespace
@@ -208,7 +207,7 @@ void RenderWidgetHostViewMacEditCommandHelper::AddEditingSelectorsToClass(
 
 bool RenderWidgetHostViewMacEditCommandHelper::IsMenuItemEnabled(
     SEL item_action,
-    id<RenderWidgetHostNSViewClientOwner> owner) {
+    id<RenderWidgetHostNSViewHostOwner> owner) {
   const char* selector_name = sel_getName(item_action);
   // TODO(jeremy): The final form of this function will check state
   // associated with the Browser.

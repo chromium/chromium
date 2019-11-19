@@ -98,7 +98,7 @@ TEST(SidTest, GetPSID) {
 }
 
 TEST(SidTest, KnownCapability) {
-  if (base::win::GetVersion() < base::win::VERSION_WIN8)
+  if (base::win::GetVersion() < base::win::Version::WIN8)
     return;
 
   Sid sid_invalid_well_known =
@@ -128,7 +128,7 @@ TEST(SidTest, KnownCapability) {
 }
 
 TEST(SidTest, NamedCapability) {
-  if (base::win::GetVersion() < base::win::VERSION_WIN10)
+  if (base::win::GetVersion() < base::win::Version::WIN10)
     return;
 
   Sid sid_nullptr = Sid::FromNamedCapability(nullptr);
@@ -159,7 +159,7 @@ TEST(SidTest, NamedCapability) {
 TEST(SidTest, Sddl) {
   Sid sid_sddl = Sid::FromSddlString(L"S-1-1-0");
   ASSERT_TRUE(sid_sddl.IsValid());
-  base::string16 sddl_str;
+  std::wstring sddl_str;
   ASSERT_TRUE(sid_sddl.ToSddlString(&sddl_str));
   ASSERT_EQ(L"S-1-1-0", sddl_str);
 }

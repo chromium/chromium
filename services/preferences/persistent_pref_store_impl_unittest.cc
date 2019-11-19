@@ -7,8 +7,8 @@
 #include <utility>
 
 #include "base/macros.h"
-#include "base/message_loop/message_loop.h"
 #include "base/run_loop.h"
+#include "base/test/task_environment.h"
 #include "base/values.h"
 #include "components/prefs/in_memory_pref_store.h"
 #include "mojo/public/cpp/bindings/binding_set.h"
@@ -73,7 +73,7 @@ class PersistentPrefStoreImplTest : public testing::Test {
   PersistentPrefStore* pref_store() { return pref_store_.get(); }
 
  private:
-  base::MessageLoop message_loop_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
 
   std::unique_ptr<PersistentPrefStoreImpl> impl_;
 

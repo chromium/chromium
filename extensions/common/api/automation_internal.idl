@@ -1,0 +1,175 @@
+// Copyright 2014 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// This is the implementation layer of the chrome.automation API, and is
+// essentially a translation of the internal accessibility tree update system
+// into an extension API.
+namespace automationInternal {
+  // Data for an accessibility event and/or an atomic change to an accessibility
+  // tree. See ui/accessibility/ax_tree_update.h for an extended explanation of
+  // the tree update format.
+  [nocompile] dictionary AXEventParams {
+    // The tree id of the web contents that this update is for.
+    DOMString treeID;
+
+    // ID of the node that the event applies to.
+    long targetID;
+
+    // The type of event that this update represents.
+    DOMString eventType;
+
+    // The source of this event.
+    DOMString eventFrom;
+
+    // The mouse coordinates when this event fired.
+    double mouseX;
+    double mouseY;
+
+
+    // ID of an action request resulting in this event.
+    long actionRequestID;
+  };
+
+  dictionary AXTextLocationParams {
+    DOMString treeID;
+    long nodeID;
+    boolean result;
+    long left;
+    long top;
+    long width;
+    long height;
+    long requestID;
+  };
+
+  // Actions internally used by automation.
+  enum ActionTypePrivate {
+    resumeMedia,
+    startDuckingMedia,
+    stopDuckingMedia,
+    suspendMedia
+  };
+
+  // Arguments required for all actions supplied to performAction.
+  dictionary PerformActionRequiredParams {
+    DOMString treeID;
+    long automationNodeID;
+
+    // This can be either automation::ActionType or
+    // automation_internal::ActionTypePrivate.
+    DOMString actionType;
+
+    long? requestID;
+  };
+
+  // Arguments for the customAction action. Those args are passed to
+  // performAction as opt_args.
+  dictionary PerformCustomActionParams {
+    long customActionID;
+  };
+
+  // Arguments for the setSelection action supplied to performAction.
+  dictionary SetSelectionParams {
+    // Reuses ActionRequiredParams automationNodeID to mean anchor node id,
+    // and treeID to apply to both anchor and focus node ids.
+    long focusNodeID;
+    long anchorOffset;
+    long focusOffset;
+  };
+
+  // Arguments for the replaceSelectedText action supplied to performAction.
+  dictionary ReplaceSelectedTextParams {
+    DOMString value;
+  };
+
+  // Arguments for the setValue action supplied to performAction.
+  dictionary SetValueParams {
+    DOMString value;
+  };
+
+  // Arguments for the querySelector function.
+  dictionary QuerySelectorRequiredParams {
+    DOMString treeID;
+    long automationNodeID;
+    DOMString selector;
+  };
+
+  // Arguments for the enableTab function.
+  dictionary EnableTabParams {
+    long? tabID;
+  };
+
+  // Arguments for the getImageData action.
+  dictionary GetImageDataParams {
+    long maxWidth;
+    long maxHeight;
+  };
+
+  // Arguments for the hitTest action.
+  dictionary HitTestParams {
+    long x;
+    long y;
+    DOMString eventToFire;
+  };
+
+  // Arguments for getTextLocation action.
+  dictionary GetTextLocationDataParams {
+    long startIndex;
+    long endIndex;
+  };
+
+  // Returns the accessibility tree id of the web contents who's accessibility
+  // was enabled using enableTab().
+  callback EnableTabCallback = void(DOMString tree_id, long tab_id);
+
+  // Callback called when enableDesktop() returns. Returns the accessibility
+  // tree id of the desktop tree.
+  callback EnableDesktopCallback = void(DOMString tree_id);
+
+  // Callback called when querySelector() returns.
+  callback QuerySelectorCallback = void(long resultAutomationNodeID);
+
+  interface Functions {
+    // Enable automation of the tab with the given id, or the active tab if no
+    // tab id is given, and retrieves accessibility tree id for use in
+    // future updates.
+    static void enableTab(EnableTabParams args,
+                          EnableTabCallback callback);
+
+    // Enable automation of the frame with the given tree id.
+    static void enableFrame(DOMString tree_id);
+
+    // Enables desktop automation.
+    static void enableDesktop(EnableDesktopCallback callback);
+
+    // Performs an action on an automation node.
+    static void performAction(PerformActionRequiredParams args,
+                              object opt_args);
+
+    // Performs a query selector query.
+    static void querySelector(QuerySelectorRequiredParams args,
+                              QuerySelectorCallback callback);
+  };
+
+  interface Events {
+    // Fired when an accessibility event occurs
+    static void onAccessibilityEvent(AXEventParams update);
+
+    static void onAccessibilityTreeDestroyed(DOMString treeID);
+
+    static void onGetTextLocationResult(AXTextLocationParams params);
+
+    static void onTreeChange(long observerID,
+                             DOMString treeID,
+                             long nodeID,
+                             DOMString changeType);
+
+    static void onChildTreeID(DOMString treeID);
+
+    static void onNodesRemoved(DOMString treeID, long[] nodeIDs);
+
+    static void onAccessibilityTreeSerializationError(DOMString treeID);
+
+    static void onActionResult(DOMString treeID, long requestID, boolean result);
+  };
+};

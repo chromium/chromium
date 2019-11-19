@@ -29,8 +29,6 @@ class SVGFEFuncRElement final : public SVGComponentTransferFunctionElement {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  DECLARE_NODE_FACTORY(SVGFEFuncRElement);
-
   explicit SVGFEFuncRElement(Document&);
 };
 

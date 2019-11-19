@@ -4,6 +4,7 @@
 
 mojom = "//services/network/public/mojom/host_resolver.mojom"
 public_headers = [
+  "//net/dns/dns_config.h",
   "//net/dns/dns_config_overrides.h",
   "//net/dns/host_resolver.h",
   "//net/dns/host_resolver_source.h",
@@ -18,8 +19,9 @@ public_deps = [
   "//net",
 ]
 type_mappings = [
-  "network.mojom.DnsConfigOverrides=net::DnsConfigOverrides",
-  "network.mojom.DnsQueryType=net::DnsQueryType",
-  "network.mojom.ResolveHostParameters.Source=net::HostResolverSource",
-  "network.mojom.MdnsListenClient.UpdateType=net::HostResolver::MdnsListener::Delegate::UpdateType",
+  "network.mojom.DnsConfigOverrides=::net::DnsConfigOverrides",
+  "network.mojom.DnsQueryType=::net::DnsQueryType",
+  "network.mojom.ResolveHostParameters.Source=::net::HostResolverSource",
+  "network.mojom.MdnsListenClient.UpdateType=::net::HostResolver::MdnsListener::Delegate::UpdateType",
+  "network.mojom.SecureDnsMode=::net::DnsConfig::SecureDnsMode",
 ]

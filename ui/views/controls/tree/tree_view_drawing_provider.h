@@ -44,4 +44,4 @@ class VIEWS_EXPORT TreeViewDrawingProvider {
 
 }  // namespace views
 
-#endif  // UI_VIEWS_CONTROLS_TREE_TREE_VIEW_DISPLAY_PROVIDER_H_
+#endif  // UI_VIEWS_CONTROLS_TREE_TREE_VIEW_DRAWING_PROVIDER_H_

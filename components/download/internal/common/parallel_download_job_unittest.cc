@@ -10,7 +10,7 @@
 #include "base/bind.h"
 #include "base/run_loop.h"
 #include "base/test/mock_callback.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "components/download/internal/common/parallel_download_utils.h"
 #include "components/download/public/common/download_create_info.h"
 #include "components/download/public/common/download_destination_observer.h"
@@ -30,13 +30,6 @@ using ::testing::StrictMock;
 namespace download {
 
 namespace {
-
-class MockDownloadRequestHandle : public DownloadRequestHandleInterface {
- public:
-  MOCK_METHOD0(PauseRequest, void());
-  MOCK_METHOD0(ResumeRequest, void());
-  MOCK_METHOD1(CancelRequest, void(bool));
-};
 
 class MockDownloadDestinationObserver : public DownloadDestinationObserver {
  public:
@@ -60,22 +53,22 @@ class ParallelDownloadJobForTest : public ParallelDownloadJob {
  public:
   ParallelDownloadJobForTest(
       DownloadItem* download_item,
-      std::unique_ptr<DownloadRequestHandleInterface> request_handle,
+      DownloadJob::CancelRequestCallback cancel_request_callback,
       const DownloadCreateInfo& create_info,
       int request_count,
       int64_t min_slice_size,
       int min_remaining_time)
       : ParallelDownloadJob(download_item,
-                            std::move(request_handle),
+                            std::move(cancel_request_callback),
                             create_info,
-                            nullptr,
+                            URLLoaderFactoryProvider::GetNullPtr(),
                             nullptr),
         request_count_(request_count),
         min_slice_size_(min_slice_size),
         min_remaining_time_(min_remaining_time) {}
 
-  void CreateRequest(int64_t offset, int64_t length) override {
-    auto worker = std::make_unique<DownloadWorker>(this, offset, length);
+  void CreateRequest(int64_t offset) override {
+    auto worker = std::make_unique<DownloadWorker>(this, offset);
 
     DCHECK(workers_.find(offset) == workers_.end());
     workers_[offset] = std::move(worker);
@@ -115,8 +108,8 @@ class ParallelDownloadJobTest : public testing::Test {
  public:
   ParallelDownloadJobTest()
       : task_environment_(
-            base::test::ScopedTaskEnvironment::MainThreadType::UI,
-            base::test::ScopedTaskEnvironment::ExecutionMode::QUEUED) {}
+            base::test::TaskEnvironment::MainThreadType::UI,
+            base::test::TaskEnvironment::ThreadPoolExecutionMode::QUEUED) {}
 
   void CreateParallelJob(int64_t initial_request_offset,
                          int64_t content_length,
@@ -136,19 +129,17 @@ class ParallelDownloadJobTest : public testing::Test {
     DownloadCreateInfo info;
     info.offset = initial_request_offset;
     info.total_bytes = content_length;
-    std::unique_ptr<MockDownloadRequestHandle> request_handle =
-        std::make_unique<MockDownloadRequestHandle>();
-    mock_request_handle_ = request_handle.get();
     job_ = std::make_unique<ParallelDownloadJobForTest>(
-        download_item_.get(), std::move(request_handle), info, request_count,
-        min_slice_size, min_remaining_time);
+        download_item_.get(),
+        base::Bind(&ParallelDownloadJobTest::CancelRequest,
+                   base::Unretained(this)),
+        info, request_count, min_slice_size, min_remaining_time);
     file_initialized_ = false;
   }
 
   void DestroyParallelJob() {
     job_.reset();
     download_item_.reset();
-    mock_request_handle_ = nullptr;
   }
 
   void BuildParallelRequests() { job_->BuildParallelRequests(); }
@@ -159,35 +150,22 @@ class ParallelDownloadJobTest : public testing::Test {
 
   bool IsJobCanceled() const { return job_->is_canceled_; }
 
-  void MakeWorkerReady(
-      DownloadWorker* worker,
-      std::unique_ptr<MockDownloadRequestHandle> request_handle) {
-    UrlDownloadHandler::Delegate* delegate =
-        static_cast<UrlDownloadHandler::Delegate*>(worker);
-    std::unique_ptr<DownloadCreateInfo> create_info =
-        std::make_unique<DownloadCreateInfo>();
-    create_info->request_handle = std::move(request_handle);
-    delegate->OnUrlDownloadStarted(std::move(create_info),
-                                   std::make_unique<MockInputStream>(), nullptr,
-                                   DownloadUrlParameters::OnStartedCallback());
-  }
+  void CancelRequest(bool user_cancel) { canceled_ = true; }
 
   void VerifyWorker(int64_t offset, int64_t length) const {
     EXPECT_TRUE(job_->workers_.find(offset) != job_->workers_.end());
     EXPECT_EQ(offset, job_->workers_[offset]->offset());
-    EXPECT_EQ(length, job_->workers_[offset]->length());
   }
 
   void OnFileInitialized(DownloadInterruptReason result, int64_t bytes_wasted) {
     file_initialized_ = true;
   }
 
-  base::test::ScopedTaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_;
   std::unique_ptr<MockDownloadItem> download_item_;
   std::unique_ptr<ParallelDownloadJobForTest> job_;
   bool file_initialized_;
-  // Request handle for the original request.
-  MockDownloadRequestHandle* mock_request_handle_;
+  bool canceled_ = false;
 
   // The received slices used to return in
   // |MockDownloadItemImpl::GetReceivedSlices| mock function.
@@ -403,63 +381,14 @@ TEST_F(ParallelDownloadJobTest, LastReceivedSliceFinished) {
 // built.
 TEST_F(ParallelDownloadJobTest, EarlyCancelBeforeBuildRequests) {
   CreateParallelJob(0, 100, DownloadItem::ReceivedSlices(), 2, 1, 10);
-  EXPECT_CALL(*mock_request_handle_, CancelRequest(_));
 
   // Job is canceled before building parallel requests.
   job_->Cancel(true);
   EXPECT_TRUE(IsJobCanceled());
+  EXPECT_TRUE(canceled_);
 
   BuildParallelRequests();
   EXPECT_TRUE(job_->workers().empty());
-
-  DestroyParallelJob();
-}
-
-// Ensure cancel before adding the byte stream will result in workers being
-// canceled.
-TEST_F(ParallelDownloadJobTest, EarlyCancelBeforeByteStreamReady) {
-  CreateParallelJob(0, 100, DownloadItem::ReceivedSlices(), 2, 1, 10);
-  EXPECT_CALL(*mock_request_handle_, CancelRequest(_));
-
-  BuildParallelRequests();
-  VerifyWorker(50, 0);
-
-  // Job is canceled after building parallel requests and before byte streams
-  // are added to the file sink.
-  job_->Cancel(true);
-  EXPECT_TRUE(IsJobCanceled());
-
-  for (auto& worker : job_->workers()) {
-    std::unique_ptr<MockDownloadRequestHandle> mock_handle =
-        std::make_unique<MockDownloadRequestHandle>();
-    EXPECT_CALL(*mock_handle, CancelRequest(_));
-    MakeWorkerReady(worker.second.get(), std::move(mock_handle));
-  }
-
-  DestroyParallelJob();
-}
-
-// Ensure pause before adding the byte stream will result in workers being
-// paused.
-TEST_F(ParallelDownloadJobTest, EarlyPauseBeforeByteStreamReady) {
-  CreateParallelJob(0, 100, DownloadItem::ReceivedSlices(), 2, 1, 10);
-  EXPECT_CALL(*mock_request_handle_, PauseRequest());
-
-  BuildParallelRequests();
-  VerifyWorker(50, 0);
-
-  // Job is paused after building parallel requests and before adding the byte
-  // stream to the file sink.
-  job_->Pause();
-  EXPECT_TRUE(job_->is_paused());
-
-  for (auto& worker : job_->workers()) {
-    EXPECT_CALL(*job_, CountOnInputStreamReady());
-    std::unique_ptr<MockDownloadRequestHandle> mock_handle =
-        std::make_unique<MockDownloadRequestHandle>();
-    EXPECT_CALL(*mock_handle, PauseRequest());
-    MakeWorkerReady(worker.second.get(), std::move(mock_handle));
-  }
 
   DestroyParallelJob();
 }

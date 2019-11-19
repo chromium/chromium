@@ -40,7 +40,9 @@ runInAnimationWorklet(
   animation.play();
 
   if (window.testRunner) {
-    waitTwoAnimationFrames( _ => {
+    waitForAnimationFrameWithCondition(_ => {
+      return getComputedStyle(target).opacity != '1';
+    }).then(_ => {
       console.log(`opacity of target is ${getComputedStyle(target).opacity}`);
       testRunner.notifyDone();
     });

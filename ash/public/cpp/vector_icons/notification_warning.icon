@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// Similar to warning.icon, but uses a circle in place of a triangle.
 CANVAS_DIMENSIONS, 96,
 MOVE_TO, 48, 8,
 R_CUBIC_TO, 22.08f, 0, 40, 17.92f, 40, 40,

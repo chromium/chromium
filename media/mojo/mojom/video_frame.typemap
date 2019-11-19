@@ -1,0 +1,37 @@
+# Copyright 2017 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+mojom = "//media/mojo/mojom/media_types.mojom"
+
+# Additional headers required by any code which would depend on the mojom
+# definition of media.mojom.VideoFrame now that the typemap is applied. Any
+# headers required for the native target type definition should be listed here.
+public_headers = [
+  "//base/memory/ref_counted.h",
+  "//media/base/video_frame.h",
+]
+
+# Headers which contain the relevant StructTraits specialization(s) for any
+# type mappings described by this file.
+traits_headers = [ "//media/mojo/mojom/video_frame_mojom_traits.h" ]
+
+sources = [
+  "video_frame_mojom_traits.cc",
+]
+
+# Target dependencies exposed by the public_headers and traits_headers.
+public_deps = [
+  "//base",
+  "//media",
+]
+
+deps = [
+  "//gpu/ipc/common:common",
+  "//gpu/ipc/common:mojom_traits",
+  "//media/base/ipc",
+  "//media/mojo/common:mojo_shared_buffer_video_frame",
+  "//ui/gfx/geometry/mojom:mojom_traits",
+]
+
+type_mappings = [ "media.mojom.VideoFrame=::scoped_refptr<::media::VideoFrame>[nullable_is_same_type]" ]

@@ -1,4 +1,4 @@
-CONSOLE ERROR: Refused to send form data to 'http://localhost:8000/' because it violates the following Content Security Policy directive: "form-action 127.0.0.1:8000".
+CONSOLE ERROR: line 16: Refused to send form data to 'http://localhost:8000/' because it violates the following Content Security Policy directive: "form-action 127.0.0.1:8000".
 
  
 

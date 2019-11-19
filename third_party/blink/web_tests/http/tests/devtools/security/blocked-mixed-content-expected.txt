@@ -10,7 +10,7 @@ Blocked mixed content
         <DIV >
 Your page requested non-secure resources that were blocked.
         </DIV>
-        <DIV class=security-mixed-content link >
+        <DIV class=security-mixed-content devtools-link role=link tabindex=0 >
 View 1 request in Network Panel
         </DIV>
     </DIV>

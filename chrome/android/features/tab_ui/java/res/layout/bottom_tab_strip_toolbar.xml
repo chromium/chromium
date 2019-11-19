@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2018 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<org.chromium.chrome.browser.tasks.tab_management.TabGroupUiToolbarView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/modern_primary_color">
+    <LinearLayout
+        android:id="@+id/main_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+        <org.chromium.ui.widget.ChromeImageView
+            android:id="@+id/toolbar_left_button"
+            style="@style/BottomToolbarButton"
+            android:src="@drawable/ic_expand_less_black_24dp"
+            app:tint="@color/standard_mode_tint"
+            android:contentDescription="@string/accessibility_bottom_tab_strip_expand_tab_sheet" />
+        <FrameLayout
+            android:id="@+id/toolbar_container_view"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"/>
+        <org.chromium.ui.widget.ChromeImageView
+            android:id="@+id/toolbar_right_button"
+            style="@style/BottomToolbarButton"
+            app:tint="@color/standard_mode_tint"
+            android:src="@drawable/plus"
+            android:contentDescription="@string/bottom_tab_grid_new_tab" />
+   </LinearLayout>
+</org.chromium.chrome.browser.tasks.tab_management.TabGroupUiToolbarView>

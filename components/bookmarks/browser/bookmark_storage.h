@@ -32,15 +32,11 @@ class BookmarkModel;
 class BookmarkNode;
 class UrlIndex;
 
-// A list of BookmarkPermanentNodes that owns them.
-using BookmarkPermanentNodeList =
-    std::vector<std::unique_ptr<BookmarkPermanentNode>>;
-
-// A callback that generates a BookmarkPermanentNodeList, given a max ID to
-// use. The max ID argument will be updated after any new nodes have been
-// created and assigned IDs.
-using LoadExtraCallback =
-    base::OnceCallback<BookmarkPermanentNodeList(int64_t*)>;
+// A callback that generates a std::unique_ptr<BookmarkPermanentNode>, given a
+// max ID to use. The max ID argument will be updated after if a new node has
+// been created and assigned an ID.
+using LoadManagedNodeCallback =
+    base::OnceCallback<std::unique_ptr<BookmarkPermanentNode>(int64_t*)>;
 
 // BookmarkLoadDetails is used by BookmarkStorage when loading bookmarks.
 // BookmarkModel creates a BookmarkLoadDetails and passes it (including
@@ -55,9 +51,9 @@ class BookmarkLoadDetails {
   explicit BookmarkLoadDetails(BookmarkClient* client);
   ~BookmarkLoadDetails();
 
-  // Loads the extra nodes and adds them to |root_|. Returns true if at least
-  // one node was added that has children.
-  bool LoadExtraNodes();
+  // Loads the managed node and adds it to |root_|. Returns true if the added
+  // node has children.
+  bool LoadManagedNode();
 
   BookmarkNode* root_node() { return root_node_ptr_; }
   BookmarkPermanentNode* bb_node() { return bb_node_; }
@@ -104,6 +100,10 @@ class BookmarkLoadDetails {
   void set_ids_reassigned(bool value) { ids_reassigned_ = value; }
   bool ids_reassigned() const { return ids_reassigned_; }
 
+  // Whether new GUIDs were assigned to Bookmarks that lacked them.
+  void set_guids_reassigned(bool value) { guids_reassigned_ = value; }
+  bool guids_reassigned() const { return guids_reassigned_; }
+
   // Returns the string blob representing the sync metadata in the json file.
   // The string blob is set during decode time upon the call to Bookmark::Load.
   void set_sync_metadata_str(std::string sync_metadata_str) {
@@ -125,7 +125,7 @@ class BookmarkLoadDetails {
   BookmarkPermanentNode* bb_node_ = nullptr;
   BookmarkPermanentNode* other_folder_node_ = nullptr;
   BookmarkPermanentNode* mobile_folder_node_ = nullptr;
-  LoadExtraCallback load_extra_callback_;
+  LoadManagedNodeCallback load_managed_node_callback_;
   std::unique_ptr<TitledUrlIndex> index_;
   BookmarkNode::MetaInfoMap model_meta_info_map_;
   int64_t model_sync_transaction_version_;
@@ -133,6 +133,7 @@ class BookmarkLoadDetails {
   std::string computed_checksum_;
   std::string stored_checksum_;
   bool ids_reassigned_ = false;
+  bool guids_reassigned_ = false;
   scoped_refptr<UrlIndex> url_index_;
   // A string blob represetning the sync metadata stored in the json file.
   std::string sync_metadata_str_;
@@ -141,8 +142,11 @@ class BookmarkLoadDetails {
 };
 
 // Loads the bookmarks. This is intended to be called on the background thread.
-// Updates state in |details| based on the load.
+// Updates state in |details| based on the load. |emit_experimental_uma|
+// determines whether a few newly introduced and experimental UMA metrics should
+// be logged.
 void LoadBookmarks(const base::FilePath& profile_path,
+                   bool emit_experimental_uma,
                    BookmarkLoadDetails* details);
 
 // BookmarkStorage handles reading/write the bookmark bar model. The
@@ -204,7 +208,7 @@ class BookmarkStorage : public base::ImportantFileWriter::DataSerializer {
   // Sequenced task runner where file I/O operations will be performed at.
   scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner_;
 
-  base::WeakPtrFactory<BookmarkStorage> weak_factory_;
+  base::WeakPtrFactory<BookmarkStorage> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(BookmarkStorage);
 };

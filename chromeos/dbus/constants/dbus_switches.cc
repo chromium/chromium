@@ -42,5 +42,10 @@ const char kSmsTestMessages[] = "sms-test-messages";
 // session manager.
 const char kSystemDevMode[] = "system-developer-mode";
 
+// Makes Chrome register the maximum dark suspend delay possible on Chrome OS
+// i.e. give the device the maximum amount of time to do its work in dark
+// resume as is allowed by the power manager.
+const char kRegisterMaxDarkSuspendDelay[] = "register-max-dark-suspend-delay";
+
 }  // namespace switches
 }  // namespace chromeos

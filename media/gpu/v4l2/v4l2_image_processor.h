@@ -19,12 +19,14 @@
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
+#include "base/sequenced_task_runner.h"
+#include "base/single_thread_task_runner.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_checker.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_frame_layout.h"
-#include "media/gpu/image_processor.h"
+#include "media/gpu/chromeos/image_processor.h"
 #include "media/gpu/media_gpu_export.h"
 #include "media/gpu/v4l2/v4l2_device.h"
 #include "ui/gfx/geometry/size.h"
@@ -50,12 +52,14 @@ class MEDIA_GPU_EXPORT V4L2ImageProcessor : public ImageProcessor {
   static std::vector<uint32_t> GetSupportedOutputFormats();
 
   // Gets output allocated size and number of planes required by the device
-  // for conversion from |input_pixelformat| to |output_pixelformat|, for
-  // visible size |size|. Returns true on success. Adjusted coded size will be
-  // stored in |size| and the number of planes will be stored in |num_planes|.
+  // for conversion from |input_pixelformat| with |input_size| to
+  // |output_pixelformat| with expected |output_size|.
+  // On success, returns true with adjusted |output_size| and |num_planes|.
+  // On failure, returns false without touching |output_size| and |num_planes|.
   static bool TryOutputFormat(uint32_t input_pixelformat,
                               uint32_t output_pixelformat,
-                              gfx::Size* size,
+                              const gfx::Size& input_size,
+                              gfx::Size* output_size,
                               size_t* num_planes);
 
   // Factory method to create V4L2ImageProcessor to convert from
@@ -76,63 +80,53 @@ class MEDIA_GPU_EXPORT V4L2ImageProcessor : public ImageProcessor {
       ErrorCB error_cb);
 
  private:
-  // Record for output buffers.
-  struct OutputRecord {
-    OutputRecord();
-    OutputRecord(OutputRecord&&);
-    ~OutputRecord();
-    bool at_device;
-    // The exported FDs of the frame will be stored here if
-    // |output_memory_type_| is V4L2_MEMORY_MMAP
-    std::vector<base::ScopedFD> dmabuf_fds;
-  };
-
-  // Job record. Jobs are processed in a FIFO order. This is separate from
-  // InputRecord, because an InputRecord may be returned before we dequeue
-  // the corresponding output buffer. The processed frame will be stored in
-  // |output_buffer_index| output buffer. If |output_memory_type_| is
-  // V4L2_MEMORY_DMABUF, the processed frame will be stored in
-  // |output_dmabuf_fds|.
+  // Job record. Jobs are processed in a FIFO order. |input_frame| will be
+  // processed and the result written into |output_frame|. Once processing is
+  // complete, |ready_cb| or |legacy_ready_cb| will be called depending on which
+  // Process() method has been used to create that JobRecord.
   struct JobRecord {
     JobRecord();
     ~JobRecord();
     scoped_refptr<VideoFrame> input_frame;
-    int output_buffer_index;
-    std::vector<base::ScopedFD> output_dmabuf_fds;
     FrameReadyCB ready_cb;
     LegacyFrameReadyCB legacy_ready_cb;
+    scoped_refptr<VideoFrame> output_frame;
+    size_t output_buffer_id;
   };
 
-  V4L2ImageProcessor(scoped_refptr<V4L2Device> device,
-                     VideoFrame::StorageType input_storage_type,
-                     VideoFrame::StorageType output_storage_type,
-                     v4l2_memory input_memory_type,
-                     v4l2_memory output_memory_type,
-                     OutputMode output_mode,
-                     const VideoFrameLayout& input_layout,
-                     const VideoFrameLayout& output_layout,
-                     gfx::Size input_visible_size,
-                     gfx::Size output_visible_size,
-                     size_t num_buffers,
-                     ErrorCB error_cb);
+  V4L2ImageProcessor(
+      scoped_refptr<base::SequencedTaskRunner> client_task_runner,
+      scoped_refptr<V4L2Device> device,
+      const ImageProcessor::PortConfig& input_config,
+      const ImageProcessor::PortConfig& output_config,
+      v4l2_memory input_memory_type,
+      v4l2_memory output_memory_type,
+      OutputMode output_mode,
+      size_t num_buffers,
+      ErrorCB error_cb);
 
   bool Initialize();
   void EnqueueInput(const JobRecord* job_record);
-  void EnqueueOutput(const JobRecord* job_record);
+  void EnqueueOutput(JobRecord* job_record);
   void Dequeue();
   bool EnqueueInputRecord(const JobRecord* job_record);
-  bool EnqueueOutputRecord(const JobRecord* job_record);
+  bool EnqueueOutputRecord(JobRecord* job_record);
   bool CreateInputBuffers();
   bool CreateOutputBuffers();
-  void DestroyInputBuffers();
-  void DestroyOutputBuffers();
+
+  // Callback of VideoFrame destruction. Since VideoFrame destruction callback
+  // might be executed on any sequence, we use a thunk to post the task to
+  // |device_task_runner_|.
+  static void V4L2VFRecycleThunk(
+      scoped_refptr<base::SequencedTaskRunner> task_runner,
+      base::Optional<base::WeakPtr<V4L2ImageProcessor>> image_processor,
+      V4L2ReadableBufferRef buf);
+  void V4L2VFRecycleTask(V4L2ReadableBufferRef buf);
 
   void NotifyError();
 
   // ImageProcessor implementation.
   bool ProcessInternal(scoped_refptr<VideoFrame> frame,
-                       int output_buffer_index,
-                       std::vector<base::ScopedFD> output_dmabuf_fds,
                        LegacyFrameReadyCB cb) override;
   bool ProcessInternal(scoped_refptr<VideoFrame> input_frame,
                        scoped_refptr<VideoFrame> output_frame,
@@ -142,45 +136,43 @@ class MEDIA_GPU_EXPORT V4L2ImageProcessor : public ImageProcessor {
   void ProcessJobsTask();
   void ServiceDeviceTask();
 
+  // Call |output_cb| on |client_task_runner_|.
+  void OutputFrameOnClientSequence(base::OnceClosure output_cb);
+
   // Allocate/Destroy the input/output V4L2 buffers.
   void AllocateBuffersTask(bool* result, base::WaitableEvent* done);
-  void DestroyBuffersTask();
-
-  // Attempt to start/stop device_poll_thread_.
-  void StartDevicePoll();
-  void StopDevicePoll();
 
   // Ran on device_poll_thread_ to wait for device events.
   void DevicePollTask(bool poll_device);
 
-  // Stop all processing and clean up. After this method returns no more
-  // callbacks will be invoked.
-  void Destroy();
+  // Stop all processing and clean up on |device_task_runner_|.
+  void DestroyOnDeviceSequence(base::WaitableEvent* event);
+  // Stop all processing on |poll_task_runner_|.
+  void DestroyOnPollSequence(base::WaitableEvent* event);
 
-  // Stores input frame's visible size and v4l2_memory type.
-  const gfx::Size input_visible_size_;
+  // Clean up pending job on |device_task_runner_|, and signal |event| after
+  // reset is finished.
+  void ResetTask(base::WaitableEvent* event);
+
   const v4l2_memory input_memory_type_;
-
-  // Stores output frame's visible size and v4l2_memory type.
-  const gfx::Size output_visible_size_;
   const v4l2_memory output_memory_type_;
 
   // V4L2 device in use.
   scoped_refptr<V4L2Device> device_;
 
-  // Thread to communicate with the device on.
-  base::Thread device_thread_;
+  // Sequence to communicate with the client.
+  scoped_refptr<base::SequencedTaskRunner> client_task_runner_;
+  // Sequence to communicate with the V4L2 device.
+  scoped_refptr<base::SingleThreadTaskRunner> device_task_runner_;
   // Thread used to poll the V4L2 for events only.
-  base::Thread device_poll_thread_;
+  scoped_refptr<base::SingleThreadTaskRunner> poll_task_runner_;
 
-  // CancelableTaskTracker for ProcessTask().
-  // Because ProcessTask is posted from |client_task_runner_|'s thread to
-  // another sequence, |device_thread_|, it is unsafe to cancel the posted tasks
-  // from |client_task_runner_|'s thread using CancelableCallback and WeakPtr
-  // binding. CancelableTaskTracker is designed to deal with this scenario.
+  // It is unsafe to cancel the posted tasks from different sequence using
+  // CancelableCallback and WeakPtr binding. We use CancelableTaskTracker to
+  // safely cancel tasks on |device_task_runner_| from |client_task_runner_|.
   base::CancelableTaskTracker process_task_tracker_;
 
-  // All the below members are to be accessed from device_thread_ only
+  // All the below members are to be accessed from |device_task_runner_| only
   // (if it's running).
   base::queue<std::unique_ptr<JobRecord>> input_job_queue_;
   base::queue<std::unique_ptr<JobRecord>> running_jobs_;
@@ -188,10 +180,6 @@ class MEDIA_GPU_EXPORT V4L2ImageProcessor : public ImageProcessor {
   scoped_refptr<V4L2Queue> input_queue_;
   scoped_refptr<V4L2Queue> output_queue_;
 
-  // Number of output buffers enqueued to the device.
-  int output_buffer_queued_count_;
-  // Mapping of int index to an output buffer record.
-  std::vector<OutputRecord> output_buffer_map_;
   // The number of input or output buffers.
   const size_t num_buffers_;
 
@@ -201,7 +189,19 @@ class MEDIA_GPU_EXPORT V4L2ImageProcessor : public ImageProcessor {
   // Checker for the sequence that creates this V4L2ImageProcessor.
   SEQUENCE_CHECKER(client_sequence_checker_);
   // Checker for the device thread owned by this V4L2ImageProcessor.
-  THREAD_CHECKER(device_thread_checker_);
+  SEQUENCE_CHECKER(device_sequence_checker_);
+  // Checker for the device thread owned by this V4L2ImageProcessor.
+  SEQUENCE_CHECKER(poll_sequence_checker_);
+
+  // WeakPtr bound to |client_task_runner_|.
+  base::WeakPtr<V4L2ImageProcessor> client_weak_this_;
+  // WeakPtr bound to |device_task_runner_|.
+  base::WeakPtr<V4L2ImageProcessor> device_weak_this_;
+  // WeakPtr bound to |poll_task_runner_|.
+  base::WeakPtr<V4L2ImageProcessor> poll_weak_this_;
+  base::WeakPtrFactory<V4L2ImageProcessor> client_weak_this_factory_{this};
+  base::WeakPtrFactory<V4L2ImageProcessor> device_weak_this_factory_{this};
+  base::WeakPtrFactory<V4L2ImageProcessor> poll_weak_this_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(V4L2ImageProcessor);
 };

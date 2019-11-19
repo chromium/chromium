@@ -20,6 +20,8 @@ namespace ash {
 const char kShelfAutoHideBehaviorAlways[] = "Always";
 const char kShelfAutoHideBehaviorNever[] = "Never";
 
+// If any of the following ShelfAlignment values changed, the ShelfAlignment
+// policy should be updated.
 const char kShelfAlignmentBottom[] = "Bottom";
 const char kShelfAlignmentLeft[] = "Left";
 const char kShelfAlignmentRight[] = "Right";

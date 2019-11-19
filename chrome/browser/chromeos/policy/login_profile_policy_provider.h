@@ -43,7 +43,7 @@ class LoginProfilePolicyProvider : public ConfigurationPolicyProvider,
 
   bool waiting_for_device_policy_refresh_;
 
-  base::WeakPtrFactory<LoginProfilePolicyProvider> weak_factory_;
+  base::WeakPtrFactory<LoginProfilePolicyProvider> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(LoginProfilePolicyProvider);
 };

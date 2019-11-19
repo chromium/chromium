@@ -16,7 +16,7 @@ source_set("upgrade") {
     "//components/version_info",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/ui/commands",
-    "//ios/web",
+    "//ios/web/common",
     "//net",
     "//ui/base",
     "//ui/gfx",

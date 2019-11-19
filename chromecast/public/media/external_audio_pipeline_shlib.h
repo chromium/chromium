@@ -6,6 +6,7 @@
 #define CHROMECAST_PUBLIC_MEDIA_EXTERNAL_AUDIO_PIPELINE_SHLIB_H_
 
 #include <memory>
+#include <string>
 
 #include "cast_media_shlib.h"
 #include "chromecast_export.h"
@@ -82,6 +83,40 @@ class CHROMECAST_EXPORT ExternalAudioPipelineShlib {
     virtual ~ExternalMediaMetadataChangeObserver() = default;
   };
 
+  // Observer for audio loopback data.
+  class LoopbackAudioObserver {
+   public:
+    // Called whenever audio data is about to be output. The |timestamp| is the
+    // estimated time in microseconds (relative to CLOCK_MONOTONIC_RAW) that
+    // the audio will actually be output. |length| is the length of the audio
+    // |data| in bytes. The format of the data is given by |sample_format| and
+    // |num_channels|.
+    // This method may be called by any thread, and MUST not block or take very
+    // much time (to avoid audio underruns).
+    virtual void OnLoopbackAudio(int64_t timestamp,
+                                 SampleFormat sample_format,
+                                 int sample_rate,
+                                 int num_channels,
+                                 uint8_t* data,
+                                 int length) = 0;
+
+    // Called if the loopback data is not continuous (ie, does not accurately
+    // represent the actual output) for any reason. For example, if there is an
+    // output underflow, or if output is disabled due to no output streams.
+    // This method could be called from any thread.
+    virtual void OnLoopbackInterrupted() = 0;
+
+    // Called once this observer has been fully removed by a call to
+    // RemoveLoopbackAudioObserver(). After this is called, no more calls to
+    // OnLoopbackAudio() or OnLoopbackInterrupted() will be made for this
+    // observer unless it is added again. This method could be called from any
+    // thread.
+    virtual void OnRemoved() = 0;
+
+   protected:
+    virtual ~LoopbackAudioObserver() {}
+  };
+
   // Returns whether this shlib is supported. If this returns true, it indicates
   // that the platform uses an external audio pipeline that needs to be combined
   // with Cast's media pipeline.
@@ -110,8 +145,7 @@ class CHROMECAST_EXPORT ExternalAudioPipelineShlib {
 
   // Adds a loopback audio observer. An observer will not be added more than
   // once without being removed first.
-  static void AddExternalLoopbackAudioObserver(
-      CastMediaShlib::LoopbackAudioObserver* observer);
+  static void AddExternalLoopbackAudioObserver(LoopbackAudioObserver* observer);
 
   // Removes a loopback audio observer. An observer will not be removed unless
   // it was previously added, and will not be removed more than once without
@@ -124,16 +158,16 @@ class CHROMECAST_EXPORT ExternalAudioPipelineShlib {
   // implementation may call OnRemoved() from any thread.
   // This function is optional to implement.
   static void RemoveExternalLoopbackAudioObserver(
-      CastMediaShlib::LoopbackAudioObserver* observer);
+      LoopbackAudioObserver* observer);
 
   // Adds an external media metadata observer.
   static void AddExternalMediaMetadataChangeObserver(
-      ExternalMediaMetadataChangeObserver* observer) __attribute__((__weak__));
+      ExternalMediaMetadataChangeObserver* observer);
 
   // Removes an external media volume observer. After this is called, the
   // implementation must not call any more methods on the observer.
   static void RemoveExternalMediaMetadataChangeObserver(
-      ExternalMediaMetadataChangeObserver* observer) __attribute__((__weak__));
+      ExternalMediaMetadataChangeObserver* observer);
 
   // Returns an instance of MixerOutputStream from the shared library.
   // Caller will take ownership of the returned pointer.

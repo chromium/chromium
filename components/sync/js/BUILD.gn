@@ -1,0 +1,40 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/features.gni")
+import("//build/config/jumbo.gni")
+
+jumbo_static_library("js") {
+  sources = [
+    "js_backend.h",
+    "js_controller.h",
+    "js_event_details.cc",
+    "js_event_details.h",
+    "js_event_handler.h",
+    "sync_js_controller.cc",
+    "sync_js_controller.h",
+  ]
+
+  public_deps = [
+    "//components/sync/base",
+  ]
+}
+
+static_library("test_support") {
+  testonly = true
+  sources = [
+    "js_test_util.cc",
+    "js_test_util.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//components/sync/base",
+    "//components/sync/js",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+}

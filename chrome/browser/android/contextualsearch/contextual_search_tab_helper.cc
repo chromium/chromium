@@ -8,23 +8,23 @@
 #include "base/android/jni_string.h"
 #include "base/bind.h"
 #include "build/build_config.h"
+#include "chrome/android/chrome_jni_headers/ContextualSearchTabHelper_jni.h"
 #include "chrome/browser/android/contextualsearch/unhandled_tap_web_contents_observer.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_android.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "content/public/browser/web_contents.h"
-#include "jni/ContextualSearchTabHelper_jni.h"
 
 using base::android::JavaParamRef;
 using base::android::ScopedJavaLocalRef;
+using contextual_search::UnhandledTapWebContentsObserver;
 
 ContextualSearchTabHelper::ContextualSearchTabHelper(JNIEnv* env,
                                                      jobject obj,
                                                      Profile* profile)
     : weak_java_ref_(env, obj),
-      pref_change_registrar_(new PrefChangeRegistrar()),
-      weak_factory_(this) {
+      pref_change_registrar_(new PrefChangeRegistrar()) {
   pref_change_registrar_->Init(profile->GetPrefs());
   pref_change_registrar_->Add(
       prefs::kContextualSearchEnabled,
@@ -63,15 +63,21 @@ void ContextualSearchTabHelper::InstallUnhandledTapNotifierIfNeeded(
   content::WebContents* base_web_contents =
       content::WebContents::FromJavaWebContents(j_base_web_contents);
   DCHECK(base_web_contents);
-  if (!unhandled_tap_web_contents_observer_ ||
-      base_web_contents !=
-          unhandled_tap_web_contents_observer_->web_contents()) {
-    unhandled_tap_web_contents_observer_.reset(
-        new contextual_search::UnhandledTapWebContentsObserver(
-            base_web_contents, device_scale_factor,
-            base::BindRepeating(
-                &ContextualSearchTabHelper::OnShowUnhandledTapUIIfNeeded,
-                weak_factory_.GetWeakPtr())));
+
+  if (!UnhandledTapWebContentsObserver::FromWebContents(base_web_contents)) {
+    // Create an UnhandledTapWebContentsObserver owned by |base_web_contents|.
+    UnhandledTapWebContentsObserver::CreateForWebContents(base_web_contents);
+
+    // As per WebContentsUserData::CreateForWebContents(), the constructor of
+    // UnhandledTapWebContentsObserver must only accept one parameter holding a
+    // pointer to the WebContents that will own it (i.e. |base_web_contents|),
+    // forcing us to defer the rest of the initialization to the setters below.
+    auto* utwc_observer =
+        UnhandledTapWebContentsObserver::FromWebContents(base_web_contents);
+    utwc_observer->set_device_scale_factor(device_scale_factor);
+    utwc_observer->set_unhandled_tap_callback(base::BindRepeating(
+        &ContextualSearchTabHelper::OnShowUnhandledTapUIIfNeeded,
+        weak_factory_.GetWeakPtr()));
   }
 }
 

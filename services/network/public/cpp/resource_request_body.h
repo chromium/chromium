@@ -15,9 +15,16 @@
 #include "base/files/file_path.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/network/public/cpp/data_element.h"
 #include "services/network/public/mojom/url_loader.mojom-shared.h"
 #include "url/gurl.h"
+
+namespace blink {
+namespace mojom {
+class FetchAPIRequestBodyDataView;
+}  // namespace mojom
+}  // namespace blink
 
 namespace network {
 
@@ -31,7 +38,7 @@ class COMPONENT_EXPORT(NETWORK_CPP_BASE) ResourceRequestBody
   static scoped_refptr<ResourceRequestBody> CreateFromBytes(const char* bytes,
                                                             size_t length);
 
-  void AppendBytes(std::vector<char> bytes);
+  void AppendBytes(std::vector<uint8_t> bytes);
   void AppendBytes(const char* bytes, int bytes_len);
   void AppendFileRange(const base::FilePath& file_path,
                        uint64_t offset,
@@ -58,7 +65,8 @@ class COMPONENT_EXPORT(NETWORK_CPP_BASE) ResourceRequestBody
   void AppendBlob(const std::string& uuid);
   void AppendBlob(const std::string& uuid, uint64_t length);
 
-  void AppendDataPipe(mojom::DataPipeGetterPtr data_pipe_getter);
+  void AppendDataPipe(
+      mojo::PendingRemote<mojom::DataPipeGetter> data_pipe_getter);
 
   // |chunked_data_pipe_getter| will provide the upload body for a chunked
   // upload. Unlike the other methods, which support concatenating data of
@@ -70,8 +78,8 @@ class COMPONENT_EXPORT(NETWORK_CPP_BASE) ResourceRequestBody
   // no web APIs that send uploads with unknown request body sizes, so this
   // method should only be used when talking to servers that are are known to
   // support chunked uploads.
-  void SetToChunkedDataPipe(
-      mojom::ChunkedDataPipeGetterPtr chunked_data_pipe_getter);
+  void SetToChunkedDataPipe(mojo::PendingRemote<mojom::ChunkedDataPipeGetter>
+                                chunked_data_pipe_getter);
 
   const std::vector<DataElement>* elements() const { return &elements_; }
   std::vector<DataElement>* elements_mutable() { return &elements_; }
@@ -98,6 +106,8 @@ class COMPONENT_EXPORT(NETWORK_CPP_BASE) ResourceRequestBody
 
  private:
   friend class base::RefCountedThreadSafe<ResourceRequestBody>;
+  friend struct mojo::StructTraits<blink::mojom::FetchAPIRequestBodyDataView,
+                                   scoped_refptr<network::ResourceRequestBody>>;
   friend struct mojo::StructTraits<network::mojom::URLRequestBodyDataView,
                                    scoped_refptr<network::ResourceRequestBody>>;
   ~ResourceRequestBody();

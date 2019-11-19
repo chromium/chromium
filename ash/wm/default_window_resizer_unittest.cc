@@ -8,10 +8,12 @@
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/window_factory.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/test/test_window_delegate.h"
 #include "ui/base/hit_test.h"
 #include "ui/base/ui_base_types.h"
+#include "ui/compositor/test/test_utils.h"
 
 namespace ash {
 
@@ -50,6 +52,7 @@ class DefaultWindowResizerTest : public AshTestBase {
 
   aura::test::TestWindowDelegate delegate_;
   std::unique_ptr<aura::Window> aspect_ratio_window_;
+  base::HistogramTester histograms_;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(DefaultWindowResizerTest);
@@ -153,6 +156,42 @@ TEST_F(DefaultWindowResizerTest, WindowDragWithAspectRatioVertical) {
   resizer->CompleteDrag();
   EXPECT_EQ(root_windows[0], aspect_ratio_window_->GetRootWindow());
   EXPECT_EQ("250,250 200x400", aspect_ratio_window_->bounds().ToString());
+}
+
+TEST_F(DefaultWindowResizerTest, NoResizeHistogramOnMove) {
+  std::unique_ptr<aura::Window> window =
+      window_factory::NewWindow(&delegate_, aura::client::WINDOW_TYPE_NORMAL);
+  window->Init(ui::LAYER_NOT_DRAWN);
+  ParentWindowInPrimaryRootWindow(window.get());
+  window->SetBounds(gfx::Rect(0, 0, 50, 50));
+  std::unique_ptr<WindowResizer> resizer(
+      CreateDefaultWindowResizer(window.get(), gfx::Point(), HTCAPTION));
+  ASSERT_TRUE(resizer.get());
+
+  // Move the window. A move should not generate a resize histogram.
+  resizer->Drag(gfx::Point(50, 50), 0);
+  EXPECT_EQ(gfx::Point(50, 50), window->bounds().origin());
+  resizer->CompleteDrag();
+  ui::WaitForNextFrameToBePresented(window->GetHost()->compositor());
+  histograms_.ExpectTotalCount("Ash.InteractiveWindowResize.TimeToPresent", 0);
+}
+
+TEST_F(DefaultWindowResizerTest, ResizeHistogram) {
+  std::unique_ptr<aura::Window> window =
+      window_factory::NewWindow(&delegate_, aura::client::WINDOW_TYPE_NORMAL);
+  window->Init(ui::LAYER_NOT_DRAWN);
+  ParentWindowInPrimaryRootWindow(window.get());
+  window->SetBounds(gfx::Rect(0, 0, 50, 50));
+  std::unique_ptr<WindowResizer> resizer(
+      CreateDefaultWindowResizer(window.get(), gfx::Point(), HTRIGHT));
+  ASSERT_TRUE(resizer.get());
+
+  // Resize the window, which should generate a resize histogram.
+  resizer->Drag(gfx::Point(50, 50), 0);
+  EXPECT_NE(gfx::Size(50, 50), window->bounds().size());
+  resizer->CompleteDrag();
+  ui::WaitForNextFrameToBePresented(window->GetHost()->compositor());
+  histograms_.ExpectTotalCount("Ash.InteractiveWindowResize.TimeToPresent", 1);
 }
 
 }  // namespace ash

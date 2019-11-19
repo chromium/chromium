@@ -25,7 +25,7 @@ sk_sp<SkTypeface> FontUniqueNameLookupLinux::MatchUniqueName(
   Platform::Current()
       ->GetSandboxSupport()
       ->MatchFontByPostscriptNameOrFullFontName(
-          font_unique_name.Utf8(WTF::kStrictUTF8Conversion).data(),
+          font_unique_name.Utf8(WTF::kStrictUTF8Conversion).c_str(),
           &uniquely_matched_font);
   if (!uniquely_matched_font.filename.size())
     return nullptr;

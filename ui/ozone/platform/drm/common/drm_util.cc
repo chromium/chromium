@@ -10,13 +10,16 @@
 #include <sys/mman.h>
 #include <xf86drm.h>
 #include <xf86drmMode.h>
+
 #include <algorithm>
+#include <memory>
 #include <utility>
 
 #include "base/containers/flat_map.h"
-#include "base/metrics/histogram_macros.h"
+#include "base/metrics/histogram_functions.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/display/types/display_mode.h"
+#include "ui/display/util/display_util.h"
 #include "ui/display/util/edid_parser.h"
 
 namespace ui {
@@ -26,18 +29,12 @@ namespace {
 static const size_t kDefaultCursorWidth = 64;
 static const size_t kDefaultCursorHeight = 64;
 
-// Used in the GetColorSpaceFromEdid function to collect data on whether the
-// color space extracted from an EDID blob passed the sanity checks.
-void EmitEdidColorSpaceChecksOutcomeUma(EdidColorSpaceChecksOutcome outcome) {
-  UMA_HISTOGRAM_ENUMERATION("DrmUtil.GetColorSpaceFromEdid.ChecksOutcome",
-                            outcome);
-}
-
-bool IsCrtcInUse(uint32_t crtc,
-                 const HardwareDisplayControllerInfos& displays) {
+bool IsCrtcInUse(
+    uint32_t crtc,
+    const std::vector<std::unique_ptr<HardwareDisplayControllerInfo>>&
+        displays) {
   for (size_t i = 0; i < displays.size(); ++i) {
-    if (displays[i]->has_associated_crtc() &&
-        crtc == displays[i]->crtc()->crtc_id)
+    if (crtc == displays[i]->crtc()->crtc_id)
       return true;
   }
 
@@ -47,10 +44,12 @@ bool IsCrtcInUse(uint32_t crtc,
 // Return a CRTC compatible with |connector| and not already used in |displays|.
 // If there are multiple compatible CRTCs, the one that supports the majority of
 // planes will be returned.
-uint32_t GetCrtc(int fd,
-                 drmModeConnector* connector,
-                 drmModeRes* resources,
-                 const HardwareDisplayControllerInfos& displays) {
+uint32_t GetCrtc(
+    int fd,
+    drmModeConnector* connector,
+    drmModeRes* resources,
+    const std::vector<std::unique_ptr<HardwareDisplayControllerInfo>>&
+        displays) {
   ScopedDrmPlaneResPtr plane_resources(drmModeGetPlaneResources(fd));
   std::vector<ScopedDrmPlanePtr> planes;
   for (uint32_t i = 0; i < plane_resources->count_planes; i++)
@@ -109,28 +108,6 @@ float GetRefreshRate(const drmModeModeInfo& mode) {
   return (clock * 1000.0f) / (htotal * vtotal);
 }
 
-display::DisplayConnectionType GetDisplayType(drmModeConnector* connector) {
-  switch (connector->connector_type) {
-    case DRM_MODE_CONNECTOR_VGA:
-      return display::DISPLAY_CONNECTION_TYPE_VGA;
-    case DRM_MODE_CONNECTOR_DVII:
-    case DRM_MODE_CONNECTOR_DVID:
-    case DRM_MODE_CONNECTOR_DVIA:
-      return display::DISPLAY_CONNECTION_TYPE_DVI;
-    case DRM_MODE_CONNECTOR_LVDS:
-    case DRM_MODE_CONNECTOR_eDP:
-    case DRM_MODE_CONNECTOR_DSI:
-      return display::DISPLAY_CONNECTION_TYPE_INTERNAL;
-    case DRM_MODE_CONNECTOR_DisplayPort:
-      return display::DISPLAY_CONNECTION_TYPE_DISPLAYPORT;
-    case DRM_MODE_CONNECTOR_HDMIA:
-    case DRM_MODE_CONNECTOR_HDMIB:
-      return display::DISPLAY_CONNECTION_TYPE_HDMI;
-    default:
-      return display::DISPLAY_CONNECTION_TYPE_UNKNOWN;
-  }
-}
-
 int GetDrmProperty(int fd,
                    drmModeConnector* connector,
                    const std::string& name,
@@ -182,6 +159,16 @@ bool IsAspectPreserving(int fd, drmModeConnector* connector) {
 
   return (GetNameForEnumValue(property.get(), connector->prop_values[index]) ==
           "Full aspect");
+}
+
+display::PanelOrientation GetPanelOrientation(int fd,
+                                              drmModeConnector* connector) {
+  ScopedDrmPropertyPtr property;
+  int index = GetDrmProperty(fd, connector, "panel orientation", &property);
+  if (index < 0)
+    return display::PanelOrientation::kNormal;
+  DCHECK_LT(connector->prop_values[index], display::PanelOrientation::kLast);
+  return static_cast<display::PanelOrientation>(connector->prop_values[index]);
 }
 
 int ConnectorIndex(int device_index, int display_index) {
@@ -284,15 +271,13 @@ HardwareDisplayControllerInfo::HardwareDisplayControllerInfo(
     size_t index)
     : connector_(std::move(connector)), crtc_(std::move(crtc)), index_(index) {}
 
-HardwareDisplayControllerInfo::~HardwareDisplayControllerInfo() {
-}
+HardwareDisplayControllerInfo::~HardwareDisplayControllerInfo() = default;
 
-HardwareDisplayControllerInfos GetAvailableDisplayControllerInfos(
-    int fd,
-    bool* support_all_connectors) {
+std::vector<std::unique_ptr<HardwareDisplayControllerInfo>>
+GetAvailableDisplayControllerInfos(int fd) {
   ScopedDrmResourcesPtr resources(drmModeGetResources(fd));
   DCHECK(resources) << "Failed to get DRM resources";
-  HardwareDisplayControllerInfos displays;
+  std::vector<std::unique_ptr<HardwareDisplayControllerInfo>> displays;
 
   std::vector<ScopedDrmConnectorPtr> connectors;
   std::vector<drmModeConnector*> available_connectors;
@@ -334,20 +319,12 @@ HardwareDisplayControllerInfos GetAvailableDisplayControllerInfos(
                             c1_crtcs != c2_crtcs;
                    });
 
-  if (support_all_connectors)
-    *support_all_connectors = true;
   for (auto* c : available_connectors) {
     uint32_t crtc_id = GetCrtc(fd, c, resources.get(), displays);
-    ScopedDrmCrtcPtr crtc;
+    if (!crtc_id)
+      continue;
 
-    if (crtc_id) {
-      crtc = ScopedDrmCrtcPtr(drmModeGetCrtc(fd, crtc_id));
-    } else {
-      // No available crtc for this connector.
-      if (support_all_connectors)
-        *support_all_connectors = false;
-    }
-
+    ScopedDrmCrtcPtr crtc(drmModeGetCrtc(fd, crtc_id));
     auto iter = std::find_if(connectors.begin(), connectors.end(),
                              [c](const ScopedDrmConnectorPtr& connector) {
                                return connector.get() == c;
@@ -394,12 +371,17 @@ display::DisplaySnapshot::DisplayModeList ExtractDisplayModes(
     const drmModeModeInfo& mode = info->connector()->modes[i];
     modes.push_back(CreateDisplayMode(mode));
 
-    if (info->has_associated_crtc() && info->crtc()->mode_valid &&
-        SameMode(info->crtc()->mode, mode))
+    if (info->crtc()->mode_valid && SameMode(info->crtc()->mode, mode))
       *out_current_mode = modes.back().get();
 
-    if (mode.type & DRM_MODE_TYPE_PREFERRED)
-      *out_native_mode = modes.back().get();
+    if (mode.type & DRM_MODE_TYPE_PREFERRED) {
+      if (*out_native_mode == nullptr) {
+        *out_native_mode = modes.back().get();
+      } else {
+        LOG(WARNING) << "Found more than one preferred modes. The first one "
+                        "will be used.";
+      }
+    }
   }
 
   // If we couldn't find a preferred mode, then try to find a mode that has the
@@ -421,6 +403,29 @@ display::DisplaySnapshot::DisplayModeList ExtractDisplayModes(
   return modes;
 }
 
+display::DisplayConnectionType GetDisplayType(
+    const drmModeConnector* connector) {
+  switch (connector->connector_type) {
+    case DRM_MODE_CONNECTOR_VGA:
+      return display::DISPLAY_CONNECTION_TYPE_VGA;
+    case DRM_MODE_CONNECTOR_DVII:
+    case DRM_MODE_CONNECTOR_DVID:
+    case DRM_MODE_CONNECTOR_DVIA:
+      return display::DISPLAY_CONNECTION_TYPE_DVI;
+    case DRM_MODE_CONNECTOR_LVDS:
+    case DRM_MODE_CONNECTOR_eDP:
+    case DRM_MODE_CONNECTOR_DSI:
+      return display::DISPLAY_CONNECTION_TYPE_INTERNAL;
+    case DRM_MODE_CONNECTOR_DisplayPort:
+      return display::DISPLAY_CONNECTION_TYPE_DISPLAYPORT;
+    case DRM_MODE_CONNECTOR_HDMIA:
+    case DRM_MODE_CONNECTOR_HDMIB:
+      return display::DISPLAY_CONNECTION_TYPE_HDMI;
+    default:
+      return display::DISPLAY_CONNECTION_TYPE_UNKNOWN;
+  }
+}
+
 std::unique_ptr<display::DisplaySnapshot> CreateDisplaySnapshot(
     HardwareDisplayControllerInfo* info,
     int fd,
@@ -433,10 +438,11 @@ std::unique_ptr<display::DisplaySnapshot> CreateDisplaySnapshot(
   const display::DisplayConnectionType type = GetDisplayType(info->connector());
   const bool is_aspect_preserving_scaling =
       IsAspectPreserving(fd, info->connector());
+  const display::PanelOrientation panel_orientation =
+      GetPanelOrientation(fd, info->connector());
   const bool has_color_correction_matrix =
-      info->has_associated_crtc() &&
-      (HasColorCorrectionMatrix(fd, info->crtc()) ||
-       HasPerPlaneColorCorrectionMatrix(fd, info->crtc()));
+      HasColorCorrectionMatrix(fd, info->crtc()) ||
+      HasPerPlaneColorCorrectionMatrix(fd, info->crtc());
   // On rk3399 we can set a color correction matrix that will be applied in
   // linear space. https://crbug.com/839020 to track if it will be possible to
   // disable the per-plane degamma/gamma.
@@ -450,13 +456,14 @@ std::unique_ptr<display::DisplaySnapshot> CreateDisplaySnapshot(
   int32_t year_of_manufacture = display::kInvalidYearOfManufacture;
   bool has_overscan = false;
   gfx::ColorSpace display_color_space;
+  uint32_t bits_per_channel = 8u;
   // Active pixels size from the first detailed timing descriptor in the EDID.
   gfx::Size active_pixel_size;
 
   ScopedDrmPropertyBlobPtr edid_blob(
       GetDrmPropertyBlob(fd, info->connector(), "EDID"));
-  UMA_HISTOGRAM_BOOLEAN("DrmUtil.CreateDisplaySnapshot.HasEdidBlob",
-                        !!edid_blob);
+  base::UmaHistogramBoolean("DrmUtil.CreateDisplaySnapshot.HasEdidBlob",
+                            !!edid_blob);
   std::vector<uint8_t> edid;
   if (edid_blob) {
     edid.assign(static_cast<uint8_t*>(edid_blob->data),
@@ -470,7 +477,12 @@ std::unique_ptr<display::DisplaySnapshot> CreateDisplaySnapshot(
     year_of_manufacture = edid_parser.year_of_manufacture();
     has_overscan =
         edid_parser.has_overscan_flag() && edid_parser.overscan_flag();
-    display_color_space = GetColorSpaceFromEdid(edid_parser);
+    display_color_space = display::GetColorSpaceFromEdid(edid_parser);
+    base::UmaHistogramBoolean("DrmUtil.CreateDisplaySnapshot.IsHDR",
+                              display_color_space.IsHDR());
+    bits_per_channel = std::max(edid_parser.bits_per_channel(), 0);
+    base::UmaHistogramCounts100("DrmUtil.CreateDisplaySnapshot.BitsPerChannel",
+                                bits_per_channel);
   } else {
     VLOG(1) << "Failed to get EDID blob for connector "
             << info->connector()->connector_id;
@@ -484,9 +496,10 @@ std::unique_ptr<display::DisplaySnapshot> CreateDisplaySnapshot(
   return std::make_unique<display::DisplaySnapshot>(
       display_id, origin, physical_size, type, is_aspect_preserving_scaling,
       has_overscan, has_color_correction_matrix,
-      color_correction_in_linear_space, display_color_space, display_name,
-      sys_path, std::move(modes), edid, current_mode, native_mode, product_code,
-      year_of_manufacture, maximum_cursor_size, info->has_associated_crtc());
+      color_correction_in_linear_space, display_color_space, bits_per_channel,
+      display_name, sys_path, std::move(modes), panel_orientation, edid,
+      current_mode, native_mode, product_code, year_of_manufacture,
+      maximum_cursor_size);
 }
 
 // TODO(rjkroege): Remove in a subsequent CL once Mojo IPC is used everywhere.
@@ -505,6 +518,7 @@ std::vector<DisplaySnapshot_Params> CreateDisplaySnapshotParams(
     p.has_color_correction_matrix = d->has_color_correction_matrix();
     p.color_correction_in_linear_space = d->color_correction_in_linear_space();
     p.color_space = d->color_space();
+    p.bits_per_channel = d->bits_per_channel();
     p.display_name = d->display_name();
     p.sys_path = d->sys_path();
 
@@ -513,6 +527,7 @@ std::vector<DisplaySnapshot_Params> CreateDisplaySnapshotParams(
       mode_params.push_back(GetDisplayModeParams(*m));
     }
     p.modes = mode_params;
+    p.panel_orientation = d->panel_orientation();
     p.edid = d->edid();
 
     p.has_current_mode = d->current_mode();
@@ -526,7 +541,6 @@ std::vector<DisplaySnapshot_Params> CreateDisplaySnapshotParams(
     p.product_code = d->product_code();
     p.year_of_manufacture = d->year_of_manufacture();
     p.maximum_cursor_size = d->maximum_cursor_size();
-    p.has_associated_crtc = d->has_associated_crtc();
 
     params.push_back(p);
   }
@@ -551,10 +565,10 @@ std::unique_ptr<display::DisplaySnapshot> CreateDisplaySnapshot(
       params.is_aspect_preserving_scaling, params.has_overscan,
       params.has_color_correction_matrix,
       params.color_correction_in_linear_space, params.color_space,
-      params.display_name, params.sys_path, std::move(modes), params.edid,
-      current_mode, native_mode, params.product_code,
-      params.year_of_manufacture, params.maximum_cursor_size,
-      params.has_associated_crtc);
+      params.bits_per_channel, params.display_name, params.sys_path,
+      std::move(modes), params.panel_orientation, params.edid, current_mode,
+      native_mode, params.product_code, params.year_of_manufacture,
+      params.maximum_cursor_size);
 }
 
 int GetFourCCFormatForOpaqueFramebuffer(gfx::BufferFormat format) {
@@ -574,8 +588,6 @@ int GetFourCCFormatForOpaqueFramebuffer(gfx::BufferFormat format) {
       return DRM_FORMAT_XBGR2101010;
     case gfx::BufferFormat::BGR_565:
       return DRM_FORMAT_RGB565;
-    case gfx::BufferFormat::UYVY_422:
-      return DRM_FORMAT_UYVY;
     case gfx::BufferFormat::YUV_420_BIPLANAR:
       return DRM_FORMAT_NV12;
     case gfx::BufferFormat::YVU_420:
@@ -596,6 +608,7 @@ OverlaySurfaceCandidateList CreateOverlaySurfaceCandidateListFrom(
     osc.format = p.format;
     osc.display_rect = gfx::RectF(p.display_rect);
     osc.crop_rect = p.crop_rect;
+    osc.is_opaque = p.is_opaque;
     osc.plane_z_order = p.plane_z_order;
     osc.overlay_handled = p.is_overlay_candidate;
     candidates.push_back(osc);
@@ -633,66 +646,6 @@ std::vector<OverlayCheckReturn_Params> CreateParamsFromOverlayStatusList(
     params.push_back(p);
   }
   return params;
-}
-
-gfx::ColorSpace GetColorSpaceFromEdid(const display::EdidParser& edid_parser) {
-  const SkColorSpacePrimaries primaries = edid_parser.primaries();
-
-  // Sanity check: primaries should verify By <= Ry <= Gy, Bx <= Rx and Gx <=
-  // Rx, to guarantee that the R, G and B colors are each in the correct region.
-  if (!(primaries.fBX <= primaries.fRX && primaries.fGX <= primaries.fRX &&
-        primaries.fBY <= primaries.fRY && primaries.fRY <= primaries.fGY)) {
-    EmitEdidColorSpaceChecksOutcomeUma(
-        EdidColorSpaceChecksOutcome::kErrorBadCoordinates);
-    return gfx::ColorSpace();
-  }
-
-  // Sanity check: the area spawned by the primaries' triangle is too small,
-  // i.e. less than half the surface of the triangle spawned by sRGB/BT.709.
-  constexpr double kBT709PrimariesArea = 0.0954;
-  const float primaries_area_twice =
-      (primaries.fRX * primaries.fGY) + (primaries.fBX * primaries.fRY) +
-      (primaries.fGX * primaries.fBY) - (primaries.fBX * primaries.fGY) -
-      (primaries.fGX * primaries.fRY) - (primaries.fRX * primaries.fBY);
-  if (primaries_area_twice < kBT709PrimariesArea) {
-    EmitEdidColorSpaceChecksOutcomeUma(
-        EdidColorSpaceChecksOutcome::kErrorPrimariesAreaTooSmall);
-    return gfx::ColorSpace();
-  }
-
-  // Sanity check: https://crbug.com/809909, the blue primary coordinates should
-  // not be too far left/upwards of the expected location (namely [0.15, 0.06]
-  // for sRGB/ BT.709/ Adobe RGB/ DCI-P3, and [0.131, 0.046] for BT.2020).
-  constexpr float kExpectedBluePrimaryX = 0.15f;
-  constexpr float kBluePrimaryXDelta = 0.02f;
-  constexpr float kExpectedBluePrimaryY = 0.06f;
-  constexpr float kBluePrimaryYDelta = 0.031f;
-  const bool is_blue_primary_broken =
-      (std::abs(primaries.fBX - kExpectedBluePrimaryX) > kBluePrimaryXDelta) ||
-      (std::abs(primaries.fBY - kExpectedBluePrimaryY) > kBluePrimaryYDelta);
-  if (is_blue_primary_broken) {
-    EmitEdidColorSpaceChecksOutcomeUma(
-        EdidColorSpaceChecksOutcome::kErrorBluePrimaryIsBroken);
-    return gfx::ColorSpace();
-  }
-
-  skcms_Matrix3x3 color_space_as_matrix;
-  if (!primaries.toXYZD50(&color_space_as_matrix)) {
-    EmitEdidColorSpaceChecksOutcomeUma(
-        EdidColorSpaceChecksOutcome::kErrorCannotExtractToXYZD50);
-    return gfx::ColorSpace();
-  }
-
-  const double gamma = edid_parser.gamma();
-  if (gamma < 1.0) {
-    EmitEdidColorSpaceChecksOutcomeUma(
-        EdidColorSpaceChecksOutcome::kErrorBadGamma);
-    return gfx::ColorSpace();
-  }
-
-  skcms_TransferFunction transfer = {gamma, 1.f, 0.f, 0.f, 0.f, 0.f, 0.f};
-  EmitEdidColorSpaceChecksOutcomeUma(EdidColorSpaceChecksOutcome::kSuccess);
-  return gfx::ColorSpace::CreateCustom(color_space_as_matrix, transfer);
 }
 
 }  // namespace ui

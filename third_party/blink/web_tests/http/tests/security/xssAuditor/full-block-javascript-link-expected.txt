@@ -1,9 +1,0 @@
-CONSOLE ERROR: line 14: The XSS Auditor blocked access to 'http://127.0.0.1:8000/security/xssAuditor/resources/echo-intertag-click-and-notify.pl?enable-full-block=1&elmid=anchorLink&q=%3Ca+id%3DanchorLink+href%3Djavascript%3Aalert%280%29%3Etest%3C/a%3E' because the source code of a script was found within the request. The server sent an 'X-XSS-Protection' header requesting this behavior.
-CONSOLE MESSAGE: line 31: PASS: "frame" is cross-origin.
-The loading of iframe below should be blocked:
-
---------
-Frame: 'frame'
---------
-Could not load the requested resource.
-Error code: -28 (net::ERR_BLOCKED_BY_XSS_AUDITOR)

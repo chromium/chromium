@@ -38,9 +38,14 @@ std::vector<SkColor> CalculateWallpaperColor(
     const gfx::ImageSkia image,
     const std::vector<color_utils::ColorProfile> color_profiles) {
   base::TimeTicks start_time = base::TimeTicks::Now();
-  const std::vector<SkColor> prominent_colors =
-      color_utils::CalculateProminentColorsOfBitmap(*image.bitmap(),
-                                                    color_profiles);
+  const std::vector<color_utils::Swatch> prominent_swatches =
+      color_utils::CalculateProminentColorsOfBitmap(
+          *image.bitmap(), color_profiles, nullptr /* region */,
+          color_utils::ColorSwatchFilter());
+
+  std::vector<SkColor> prominent_colors(prominent_swatches.size());
+  for (size_t i = 0; i < prominent_swatches.size(); ++i)
+    prominent_colors[i] = prominent_swatches[i].color;
 
   UMA_HISTOGRAM_TIMES("Ash.Wallpaper.ColorExtraction.Durations",
                       base::TimeTicks::Now() - start_time);
@@ -49,6 +54,10 @@ std::vector<SkColor> CalculateWallpaperColor(
     bool is_result_transparent = prominent_colors[i] == SK_ColorTRANSPARENT;
     if (color_profiles[i].saturation == SaturationRange::VIBRANT) {
       switch (color_profiles[i].luma) {
+        case LumaRange::ANY:
+          // There should be no color profiles with the ANY luma range.
+          NOTREACHED();
+          break;
         case LumaRange::DARK:
           result = is_result_transparent ? RESULT_DARK_VIBRANT_TRANSPARENT
                                          : RESULT_DARK_VIBRANT_OPAQUE;
@@ -64,6 +73,10 @@ std::vector<SkColor> CalculateWallpaperColor(
       }
     } else {
       switch (color_profiles[i].luma) {
+        case LumaRange::ANY:
+          // There should be no color profiles with the ANY luma range.
+          NOTREACHED();
+          break;
         case LumaRange::DARK:
           result = is_result_transparent ? RESULT_DARK_MUTED_TRANSPARENT
                                          : RESULT_DARK_MUTED_OPAQUE;
@@ -98,8 +111,7 @@ WallpaperColorCalculator::WallpaperColorCalculator(
     scoped_refptr<base::TaskRunner> task_runner)
     : image_(image),
       color_profiles_(color_profiles),
-      task_runner_(std::move(task_runner)),
-      weak_ptr_factory_(this) {
+      task_runner_(std::move(task_runner)) {
   prominent_colors_ =
       std::vector<SkColor>(color_profiles_.size(), SK_ColorTRANSPARENT);
 }

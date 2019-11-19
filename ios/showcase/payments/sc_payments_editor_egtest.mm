@@ -7,9 +7,10 @@
 #include "base/ios/ios_util.h"
 #import "base/mac/foundation_util.h"
 #include "components/strings/grit/components_strings.h"
-#import "ios/chrome/browser/ui/autofill/autofill_edit_accessory_view.h"
+#import "ios/chrome/browser/ui/autofill/form_input_accessory/form_input_accessory_view.h"
 #include "ios/chrome/browser/ui/util/ui_util.h"
 #include "ios/chrome/grit/ios_strings.h"
+#import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/showcase/test/showcase_eg_utils.h"
 #import "ios/showcase/test/showcase_test_case.h"
@@ -29,26 +30,27 @@ using ::showcase_utils::Close;
 
 // Returns the GREYMatcher for the input accessory view's previus button.
 id<GREYMatcher> InputAccessoryViewPreviousButton() {
-  return grey_allOf(
-      grey_accessibilityLabel(l10n_util::GetNSString(IDS_ACCNAME_PREVIOUS)),
-      grey_accessibilityTrait(UIAccessibilityTraitButton),
-      grey_sufficientlyVisible(), nil);
+  return grey_allOf(grey_accessibilityLabel(l10n_util::GetNSString(
+                        IDS_IOS_AUTOFILL_ACCNAME_PREVIOUS_FIELD)),
+                    grey_accessibilityTrait(UIAccessibilityTraitButton),
+                    grey_sufficientlyVisible(), nil);
 }
 
 // Returns the GREYMatcher for the input accessory view's next button.
 id<GREYMatcher> InputAccessoryViewNextButton() {
   return grey_allOf(
-      grey_accessibilityLabel(l10n_util::GetNSString(IDS_ACCNAME_NEXT)),
+      grey_accessibilityLabel(
+          l10n_util::GetNSString(IDS_IOS_AUTOFILL_ACCNAME_NEXT_FIELD)),
       grey_accessibilityTrait(UIAccessibilityTraitButton),
       grey_kindOfClass([UIButton class]), grey_sufficientlyVisible(), nil);
 }
 
 // Returns the GREYMatcher for the input accessory view's close button.
 id<GREYMatcher> InputAccessoryViewCloseButton() {
-  return grey_allOf(
-      grey_accessibilityLabel(l10n_util::GetNSString(IDS_ACCNAME_CLOSE)),
-      grey_accessibilityTrait(UIAccessibilityTraitButton),
-      grey_sufficientlyVisible(), nil);
+  return grey_allOf(grey_accessibilityLabel(l10n_util::GetNSString(
+                        IDS_IOS_AUTOFILL_ACCNAME_HIDE_KEYBOARD)),
+                    grey_accessibilityTrait(UIAccessibilityTraitButton),
+                    grey_sufficientlyVisible(), nil);
 }
 
 void AssertTextFieldWithAccessibilityIDIsFirstResponder(
@@ -95,16 +97,6 @@ id<GREYMatcher> KeyboardNextKey() {
 @end
 
 @implementation SCPaymentsEditorTestCase
-
-// Per crbug.com/845186, Disable flakey iPad Retina tests that are limited
-// to iOS 10.2.
-+ (NSArray*)testInvocations {
-#if TARGET_IPHONE_SIMULATOR
-  if (IsIPadIdiom() && !base::ios::IsRunningOnOrLater(10, 3, 0))
-    return @[];
-#endif  // TARGET_IPHONE_SIMULATOR
-  return [super testInvocations];
-}
 
 - (void)setUp {
   [super setUp];
@@ -195,7 +187,7 @@ id<GREYMatcher> KeyboardNextKey() {
 // Tests whether tapping the input accessory view's close button dismisses the
 // input accessory view.
 - (void)testInputAccessoryViewCloseButton {
-  if (IsIPadIdiom()) {
+  if ([ChromeEarlGrey isIPadIdiom]) {
     // TODO(crbug.com/602666): Investigate why the close button is hidden on
     // iPad.
     EARL_GREY_TEST_DISABLED(
@@ -205,7 +197,7 @@ id<GREYMatcher> KeyboardNextKey() {
   // Initially, the input ​accessory view is not showing.
   [[EarlGrey
       selectElementWithMatcher:grey_accessibilityID(
-                                   kAutofillEditAccessoryViewAccessibilityID)]
+                                   kFormInputAccessoryViewAccessibilityID)]
       assertWithMatcher:grey_nil()];
 
   // Tap the name textfield.
@@ -219,7 +211,7 @@ id<GREYMatcher> KeyboardNextKey() {
   // Tapping the input accessory view's close button should've dismissed it.
   [[EarlGrey
       selectElementWithMatcher:grey_accessibilityID(
-                                   kAutofillEditAccessoryViewAccessibilityID)]
+                                   kFormInputAccessoryViewAccessibilityID)]
       assertWithMatcher:grey_nil()];
 }
 
@@ -301,7 +293,8 @@ id<GREYMatcher> KeyboardNextKey() {
 // Tests tapping the return key on every textfield causes the next textfield to
 // get focus except for the last textfield in which case causes the focus to go
 // away from the textfield.
-- (void)testNavigationByTappingReturn {
+// TODO(crbug.com/997938): Test is Flaky on iOS13 iPad.
+- (void)FLAKY_testNavigationByTappingReturn {
   // Tap the name textfield.
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(@"Name_textField")]
       performAction:grey_tap()];

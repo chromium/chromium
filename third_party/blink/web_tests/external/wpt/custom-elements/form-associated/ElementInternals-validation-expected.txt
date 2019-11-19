@@ -1,0 +1,10 @@
+This is a testharness.js-based test.
+PASS willValidate
+FAIL validity and setValidity() assert_throws: setValidity() requires the second argument if the first argument contains true function "() => { control.i.setValidity({valueMissing: true}); }" threw object "TypeMismatchError: Failed to execute 'setValidity' on 'ElementInternals': The second argument should not be empty if one or more flags in the first argument are true." ("TypeMismatchError") expected object "TypeError" ("TypeError")
+PASS "anchor" argument of setValidity()
+PASS checkValidity()
+PASS reportValidity()
+PASS Custom control affects validation at the owner form
+PASS Custom control affects :valid :invalid for FORM and FIELDSET
+Harness: the test ran to completion.
+

@@ -23,9 +23,7 @@ struct StringTraits<std::string> {
     output->clear();
   }
 
-  static size_t GetSize(const std::string& input) { return input.size(); }
-
-  static const char* GetData(const std::string& input) { return input.data(); }
+  static const std::string& GetUTF8(const std::string& input) { return input; }
 
   static bool Read(StringDataView input, std::string* output) {
     output->assign(input.storage(), input.size());

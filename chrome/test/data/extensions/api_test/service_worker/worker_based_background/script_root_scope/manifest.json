@@ -1,0 +1,7 @@
+{
+  "name": "Service Worker-based background script",
+  "version": "0.1",
+  "manifest_version": 2,
+  "description": "Test registering a service worker at the root scope.",
+  "background": {"service_worker": "service_worker_background.js"}
+}

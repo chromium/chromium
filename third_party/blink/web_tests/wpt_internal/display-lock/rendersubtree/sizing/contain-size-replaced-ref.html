@@ -1,0 +1,22 @@
+<!doctype HTML>
+<html>
+<meta charset="utf8">
+<title>Display Locking: contain: size replaced layout (reference)</title>
+<link rel="author" title="Vladimir Levin" href="mailto:vmpstr@chromium.org">
+<link rel="help" href="https://github.com/WICG/display-locking">
+
+<style>
+#border {
+  border: 1px solid blue;
+  width: max-content;
+}
+img {
+  contain: style layout size;
+  visibility: hidden;
+}
+</style>
+
+<div id="border">
+  <img src="resources/blue-100.png">
+</div>
+</html>

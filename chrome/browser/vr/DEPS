@@ -3,6 +3,7 @@ include_rules = [
   "+cc/base",
   "+cc/test",
   "+cc/trees",
+  "+chrome/android/features/vr/jni_headers",
   "+device/vr/util",
 ]
 

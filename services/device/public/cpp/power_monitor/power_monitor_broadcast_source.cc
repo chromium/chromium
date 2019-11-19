@@ -8,9 +8,7 @@
 #include "base/location.h"
 #include "base/macros.h"
 #include "base/sequenced_task_runner.h"
-#include "mojo/public/cpp/bindings/binding.h"
-#include "services/device/public/mojom/constants.mojom.h"
-#include "services/service_manager/public/cpp/connector.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 namespace device {
 
@@ -28,45 +26,31 @@ PowerMonitorBroadcastSource::~PowerMonitorBroadcastSource() {
   task_runner_->DeleteSoon(FROM_HERE, client_.release());
 }
 
-void PowerMonitorBroadcastSource::Init(service_manager::Connector* connector) {
-  if (connector) {
+void PowerMonitorBroadcastSource::Init(
+    mojo::PendingRemote<mojom::PowerMonitor> remote_monitor) {
+  if (remote_monitor) {
     task_runner_->PostTask(
         FROM_HERE, base::BindOnce(&PowerMonitorBroadcastSource::Client::Init,
                                   base::Unretained(client_.get()),
-                                  base::Passed(connector->Clone())));
+                                  std::move(remote_monitor)));
   }
-}
-
-void PowerMonitorBroadcastSource::Shutdown() {
-  // When power monitor and source are destroyed, the IO thread could still be
-  // receiving mojo messages that access the monitor and source in
-  // |ProcessPowerEvent|, thus causing a data race. Calling Shutdown() on the
-  // client tells it to ignore future mojo messages; by making this call
-  // *before* the power monitor and source destruction proceed, we  prevent the
-  // data race.
-  client_->Shutdown();
 }
 
 bool PowerMonitorBroadcastSource::IsOnBatteryPowerImpl() {
   return client_->last_reported_on_battery_power_state();
 }
 
-PowerMonitorBroadcastSource::Client::Client() : binding_(this) {}
+PowerMonitorBroadcastSource::Client::Client() = default;
 
 PowerMonitorBroadcastSource::Client::~Client() {}
 
 void PowerMonitorBroadcastSource::Client::Init(
-    std::unique_ptr<service_manager::Connector> connector) {
+    mojo::PendingRemote<mojom::PowerMonitor> remote_monitor) {
   base::AutoLock auto_lock(is_shutdown_lock_);
   if (is_shutdown_)
     return;
-  connector_ = std::move(connector);
-  device::mojom::PowerMonitorPtr power_monitor;
-  connector_->BindInterface(device::mojom::kServiceName,
-                            mojo::MakeRequest(&power_monitor));
-  device::mojom::PowerMonitorClientPtr client;
-  binding_.Bind(mojo::MakeRequest(&client));
-  power_monitor->AddClient(std::move(client));
+  mojo::Remote<mojom::PowerMonitor> power_monitor(std::move(remote_monitor));
+  power_monitor->AddClient(receiver_.BindNewPipeAndPassRemote());
 }
 
 void PowerMonitorBroadcastSource::Client::Shutdown() {

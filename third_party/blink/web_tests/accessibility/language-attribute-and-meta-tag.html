@@ -3,7 +3,6 @@
   <head>
     <script src="../resources/testharness.js"></script>
     <script src="../resources/testharnessreport.js"></script>
-<script src="../resources/run-after-layout-and-paint.js"></script>
     <meta http-equiv="content-language" content="en, es">
   </head>
 
@@ -19,7 +18,7 @@
       window.axSpan = accessibilityController.accessibleElementById('span');
     });
 
-    test_after_layout_and_paint(() => {
+    test(() => {
       assert_equals(window.axBody.language, 'AXLanguage: en',
           'The first language in the meta tag should apply.');
       assert_equals(window.axParagraph.language, 'AXLanguage: pl',
@@ -28,7 +27,7 @@
           'The language in the lang attribute is inherited.');
     }, 'Tests if the content-language meta tag and the lang attribute are picked up by the accessibility component.');
 
-    test_after_layout_and_paint(() => {
+    test(() => {
       assert_equals(window.axBody.language, 'AXLanguage: en',
           'The lang attribute has not been changed yet.');
 

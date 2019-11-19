@@ -1037,27 +1037,6 @@ index 000000000000..949ccce1ba9c
 +    Assert((ulg)s->strstart <= s->window_size - MIN_LOOKAHEAD,
 +           "not enough room for search");
 +}
-diff --git a/names.h b/names.h
-index f18df5684dc5..3436baa4eb57 100644
---- a/names.h
-+++ b/names.h
-@@ -152,4 +152,16 @@
- /* An exported symbol that isn't handled by Z_PREFIX in zconf.h */
- #define z_errmsg Cr_z_z_errmsg
- 
-+/* Symbols added in simd.patch */
-+#define copy_with_crc Cr_z_copy_with_crc
-+#define crc_finalize Cr_z_crc_finalize
-+#define crc_fold_512to32 Cr_z_crc_fold_512to32
-+#define crc_fold_copy Cr_z_crc_fold_copy
-+#define crc_fold_init Cr_z_crc_fold_init
-+#define crc_reset Cr_z_crc_reset
-+#define fill_window_sse Cr_z_fill_window_sse
-+#define deflate_read_buf Cr_z_deflate_read_buf
-+#define x86_check_features Cr_z_x86_check_features
-+#define x86_cpu_enable_simd Cr_z_x86_cpu_enable_simd
-+
- #endif  /* THIRD_PARTY_ZLIB_NAMES_H_ */
 diff --git a/simd_stub.c b/simd_stub.c
 new file mode 100644
 index 000000000000..c6d46051498f

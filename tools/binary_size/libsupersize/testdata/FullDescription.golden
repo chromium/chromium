@@ -3,6 +3,7 @@ Metadata:
     elf_build_id=WhatAnAmazingBuildId
     elf_file_name=elf
     elf_mtime={redacted}
+    elf_relocations_count=394087
     git_revision=abc123
     gn_args=var1=true var2="foo"
     linker_name=gold
@@ -14,12 +15,12 @@ Section Sizes (Total=128.0mb (134218045 bytes)):
     .bss: 1.24mb (1300456 bytes) (not included in totals)
     .data: 99.4kb (101768 bytes) (0.1%)
     .data.rel.ro: 1.02mb (1065224 bytes) (0.8%)
-    .other: 32.4mb (33984171 bytes) (25.3%)
+    .other: 32.3mb (33902635 bytes) (25.3%)
     .rel.dyn: 2.53mb (2655384 bytes) (2.0%)
     .rodata: 5.65mb (5927652 bytes) (4.4%)
     .strtab: 33.2mb (34841854 bytes) (26.0%)
     .symtab: 16.4mb (17166112 bytes) (12.8%)
-    .text: 34.2mb (35900712 bytes) (26.7%)
+    .text: 34.3mb (35982248 bytes) (26.8%)
 
 Other section sizes:
     .ARM.attributes: 60 bytes (60 bytes)
@@ -42,49 +43,78 @@ Other section sizes:
     .rel.plt: 2.75kb (2816 bytes)
     .shstrtab: 436 bytes (436 bytes)
 
-Section .text: has 100.0% of 35900712 bytes accounted for from 22 symbols. 0 bytes are unaccounted for.
-* 16 have source paths assigned (72.7%)
-* Padding accounts for 48 bytes (0.0%)
-* 5 placeholders (symbols that start with **) account for 35830760 bytes (99.8%)
-* Contains 8 aliases, mapped to 3 unique addresses (100 bytes saved)
-* 0 symbols have shared ownership
-Section .rodata: has 100.0% of 5927652 bytes accounted for from 12 symbols. 0 bytes are unaccounted for.
-* 8 have source paths assigned (66.7%)
-* Padding accounts for 675996 bytes (11.4%)
-* 4 placeholders (symbols that start with **) account for 5251503 bytes (88.6%)
-* Contains 3 string literals. Total size=21, padding=0
-* Contains 2 aliases, mapped to 1 unique addresses (5 bytes saved)
-* 0 symbols have shared ownership
-Section .data.rel.ro: has 100.0% of 1065224 bytes accounted for from 4 symbols. 0 bytes are unaccounted for.
-* 3 have source paths assigned (75.0%)
+Section .text: has 0.2% of 83792 bytes accounted for from 21 symbols. 35898456 bytes are unaccounted for.
+* Padding accounts for 13808 bytes (16.5%)
+* 16 have source paths. Accounts for 73986 bytes (88.3%).
+* 16 have a component assigned. Accounts for 73986 bytes (88.3%).
+* 4 placeholders exist (symbols that start with **). Accounts for 13840 bytes (16.5%).
+* 8 aliases exist, mapped to 3 unique addresses (100 bytes saved)
+* 0 symbols have shared ownership.
+* 1 symbols are marked as "unlikely". Accounts for 69124 bytes (82.5%).
+* 4 symbols are marked as "startup". Accounts for 128 bytes (0.2%).
+* 3 symbols are clones. Accounts for 106 bytes (0.1%).
+* 5 symbols are from generated sources. Accounts for 69660 bytes (83.1%).
+Section .rodata: has 44.6% of 2641540 bytes accounted for from 11 symbols. 3286112 bytes are unaccounted for.
+* Padding accounts for 2637946 bytes (99.9%)
+* 8 have source paths. Accounts for 676149 bytes (25.6%).
+* 8 have a component assigned. Accounts for 676149 bytes (25.6%).
+* 3 placeholders exist (symbols that start with **). Accounts for 1965391 bytes (74.4%).
+* 3 string literals exist. Accounts for 21 bytes (0.0%) padding is 0 bytes.
+* 2 aliases exist, mapped to 1 unique addresses (5 bytes saved)
+* 0 symbols have shared ownership.
+* 2 symbols are from generated sources. Accounts for 21 bytes (0.0%).
+Large padding of 675992 between:
+  A) .rodata@284e398(size_without_padding=32,padding=0,full_name=chrome::mojom::FilePatcher::Name_,object_path=third_party/sub/ContiguousContainer.o,source_path=third_party/container/container.c,flags={},num_aliases=1,component=UI>Browser)
+  B) .rodata@28f3450(size_without_padding=48,padding=675992,full_name=kAnimationFrameTimeHistogramClassPath,object_path=third_party/sub/PaintChunker.o,source_path=third_party/paint.cc,flags={anon},num_aliases=1,component=Internal>Android)
+Section .data.rel.ro: has 0.0% of 92 bytes accounted for from 3 symbols. 1065132 bytes are unaccounted for.
 * Padding accounts for 0 bytes (0.0%)
-* 1 placeholders (symbols that start with **) account for 1065132 bytes (100.0%)
-* Contains 0 aliases
-* 0 symbols have shared ownership
-Section .data: has 100.0% of 101768 bytes accounted for from 6 symbols. 0 bytes are unaccounted for.
-* 5 have source paths assigned (83.3%)
+* 3 have source paths. Accounts for 92 bytes (100.0%).
+* 3 have a component assigned. Accounts for 92 bytes (100.0%).
+* 0 symbols have shared ownership.
+Section .data: has 0.2% of 168 bytes accounted for from 5 symbols. 101600 bytes are unaccounted for.
 * Padding accounts for 0 bytes (0.0%)
-* 1 placeholders (symbols that start with **) account for 101600 bytes (99.8%)
-* Contains 0 aliases
-* 0 symbols have shared ownership
+* 5 have source paths. Accounts for 168 bytes (100.0%).
+* 5 have a component assigned. Accounts for 168 bytes (100.0%).
+* 0 symbols have shared ownership.
 Section .bss: has 40.3% of 524520 bytes accounted for from 6 symbols. 775936 bytes are unaccounted for.
-* 6 have source paths assigned (100.0%)
 * Padding accounts for 196 bytes (0.0%)
-* Contains 0 aliases
-* 0 symbols have shared ownership
-Section .other: has 100.0% of 33984171 bytes accounted for from 1 symbols. 0 bytes are unaccounted for.
-* 0 have source paths assigned (0.0%)
-* Padding accounts for 33984171 bytes (100.0%)
-* Contains 0 aliases
-* 0 symbols have shared ownership
+* 6 have source paths. Accounts for 524520 bytes (100.0%).
+* 6 have a component assigned. Accounts for 524520 bytes (100.0%).
+* 0 symbols have shared ownership.
+* 3 symbols are from generated sources. Accounts for 232 bytes (0.0%).
+Section .dex: 0 bytes from 0 symbols.
+* Padding accounts for 0 bytes (0.0%)
+* 0 have source paths. Accounts for 0 bytes (0.0%).
+* 0 have a component assigned. Accounts for 0 bytes (0.0%).
+* 0 symbols have shared ownership.
+Section .dex.method: 0 bytes from 0 symbols.
+* Padding accounts for 0 bytes (0.0%)
+* 0 have source paths. Accounts for 0 bytes (0.0%).
+* 0 have a component assigned. Accounts for 0 bytes (0.0%).
+* 0 symbols have shared ownership.
+Section .pak.translations: 0 bytes from 0 symbols.
+* Padding accounts for 0 bytes (0.0%)
+* 0 have source paths. Accounts for 0 bytes (0.0%).
+* 0 have a component assigned. Accounts for 0 bytes (0.0%).
+* 0 symbols have shared ownership.
+Section .pak.nontranslated: 0 bytes from 0 symbols.
+* Padding accounts for 0 bytes (0.0%)
+* 0 have source paths. Accounts for 0 bytes (0.0%).
+* 0 have a component assigned. Accounts for 0 bytes (0.0%).
+* 0 symbols have shared ownership.
+Section .other: has 100.0% of 33902635 bytes accounted for from 1 symbols. 0 bytes are unaccounted for.
+* Padding accounts for 33902635 bytes (100.0%)
+* 0 have source paths. Accounts for 0 bytes (0.0%).
+* 0 have a component assigned. Accounts for 0 bytes (0.0%).
+* 0 symbols have shared ownership.
 
-Showing 56 symbols (50 unique) with total pss: 77769551 bytes
+Showing 52 symbols (46 unique) with total pss: 37418251 bytes
 Histogram of symbols based on PSS:
-     [2,4): 7    [16,32): 12     [128,256): 2       [4096,8192): 1     [262144,524288): 1     [2097152,4194304): 1
-     [4,8): 6    [32,64): 9      [256,512): 1    [65536,131072): 2    [524288,1048576): 2   [33554432,67108864): 2
-    [8,16): 3   [64,128): 1    [2048,4096): 2   [131072,262144): 2   [1048576,2097152): 2
-Sizes: .text=34.2mb     .rodata=5.65mb     .data.rel.ro=1.02mb     .data=99.4kb     .bss=512kb      .other=32.4mb     total=74.2mb
-Counts: .text=22 .rodata=12 .data.rel.ro=4 .data=6 .bss=6 .other=1
+     [2,4): 7    [16,32): 12     [128,256): 2       [4096,8192): 1     [262144,524288): 1   [33554432,67108864): 1
+     [4,8): 6    [32,64): 9      [256,512): 1    [65536,131072): 1    [524288,1048576): 2
+    [8,16): 3   [64,128): 1    [2048,4096): 2   [131072,262144): 2   [1048576,2097152): 1
+Sizes: .text=81.8kb     .rodata=2.52mb     .data.rel.ro=92 bytes   .data=168 bytes  .bss=512kb      .other=32.3mb     total=35.7mb
+Counts: .text=21 .rodata=11 .data.rel.ro=3 .data=5 .bss=6 .other=1
 Number of unique paths: 9
 
 Section Legend: t=.text, r=.rodata, R=.data.rel.ro, d=.data, b=.bss, o=.other
@@ -105,179 +135,167 @@ Index | Running Total | Section@Address | ...
 4)        168 (0.0%)  d@0x2de70a4  pss=4  padding=0  num_aliases=1
              source_path=third_party/container/container.c 	object_path=third_party/sub/ContiguousContainer.o
              flags={anon,rel.loc}  name=base::android::g_library_version_number
-5)     101768 (0.1%)  d@0x2dffd88  pss=101600  padding=101600  num_aliases=1
-             source_path= 	object_path=
-             flags={}  name=** symbol gap 0 (end of section)
-6)     101824 (0.1%)  R@0x2cd8500  pss=56  padding=0  num_aliases=1
+5)        224 (0.0%)  R@0x2cd8500  pss=56  padding=0  num_aliases=1
              source_path=third_party/paint.cc 	object_path=third_party/sub/PaintChunker.o
              flags={}  name=ChromeMainDelegateAndroid [vtable]
-7)     101848 (0.1%)  R@0x2cd8538  pss=24  padding=0  num_aliases=1
+6)        248 (0.0%)  R@0x2cd8538  pss=24  padding=0  num_aliases=1
              source_path=base/page_allocator.cc 	object_path=base/base/page_allocator.o
              flags={}  name=mojo::MessageReceiver [vtable]
-8)     101860 (0.1%)  R@0x2cd8550  pss=12  padding=0  num_aliases=1
+7)        260 (0.0%)  R@0x2cd8550  pss=12  padding=0  num_aliases=1
              source_path=base/page_allocator.cc 	object_path=base/base/page_allocator.o
              flags={}  name=kMethodsAnimationFrameTimeHistogram
-9)    1166992 (1.5%)  R@0x2ddc608  pss=1065132  padding=1065132  num_aliases=1
-             source_path= 	object_path=
-             flags={}  name=** symbol gap 0 (end of section)
-10)   1167048 (1.5%)  R@0x2c176f0  pss=56  padding=0  num_aliases=1
+8)        316 (0.0%)  R@0x2c176f0  pss=56  padding=0  num_aliases=1
              source_path=third_party/icu/ucnv_ext.c 	object_path=third_party/icu/icuuc/ucnv_ext.o
              flags={gen}  name=ChromeMainDelegate [vtable]
-11)   1167072 (1.5%)  R@0x2c17728  pss=24  padding=0  num_aliases=1
+9)        340 (0.0%)  R@0x2c17728  pss=24  padding=0  num_aliases=1
              source_path=third_party/icu/ucnv_ext.c 	object_path=third_party/icu/icuuc/ucnv_ext.o
              flags={gen}  name=chrome::mojom::FieldTrialRecorder [vtable]
-12)   1956976 (2.5%)  R@0x2c17740  pss=789904  padding=0  num_aliases=1
+10)    790244 (2.1%)  R@0x2c17740  pss=789904  padding=0  num_aliases=1
              source_path=third_party/container/container.c 	object_path=third_party/sub/ContiguousContainer.o
              flags={}  name=chrome::mojom::FieldTrialRecorderProxy [vtable]
-13)   1957008 (2.5%)  R@0x2cd84e0  pss=32  padding=16  num_aliases=1
+11)    790276 (2.1%)  R@0x2cd84e0  pss=32  padding=16  num_aliases=1
              source_path= 	object_path=third_party/gvr-android-sdk/libgvr_shim_static_arm.a/libcontroller_api_impl.a_controller_api_impl.o
              flags={}  name=.Lswitch.table.45
-14)   1957016 (2.5%)  R@0x2cd84f0  pss=8  padding=0  num_aliases=1
+12)    790284 (2.1%)  R@0x2cd84f0  pss=8  padding=0  num_aliases=1
              source_path= 	object_path=third_party/gvr-android-sdk/libgvr_shim_static_arm.a/libport_android_jni.a_jni_utils.o
              flags={anon}  name=kSystemClassPrefixes
-15)  35941187 (46.2%) o@0x0        pss=33984171  padding=33984171  num_aliases=1
+13)  34692919 (92.7%) o@0x0        pss=33902635  padding=33902635  num_aliases=1
              source_path= 	object_path=
              flags={}  name=Overhead: ELF file
-16)  35941189 (46.2%) r@0x266e600  pss=2.5 (size=5)  padding=0  num_aliases=2
+14)  34692921 (92.7%) r@0x266e600  pss=2.5 (size=5)  padding=0  num_aliases=2
              source_path=base/page_allocator.cc 	object_path=base/base/page_allocator.o
-             flags={}  name=string literal
-17)  35941192 (46.2%) r@0x266e600  pss=2.5 (size=5)  padding=0  num_aliases=2
+             flags={}  name="Str1"
+15)  34692924 (92.7%) r@0x266e600  pss=2.5 (size=5)  padding=0  num_aliases=2
              source_path=third_party/icu/ucnv_ext.c 	object_path=third_party/icu/icuuc/ucnv_ext.o
-             flags={gen}  name=string literal
-18)  35941208 (46.2%) r@0x266e605  pss=16  padding=0  num_aliases=1
+             flags={gen}  name="Str1"
+16)  34692940 (92.7%) r@0x266e605  pss=16  padding=0  num_aliases=1
              source_path=third_party/icu/ucnv_ext.c 	object_path=third_party/icu/icuuc/ucnv_ext.o
-             flags={gen}  name=string literal
-19)  35941251 (46.2%) r@0x266e630  pss=43  padding=27  num_aliases=1
+             flags={gen}  name="String literal2"
+17)  34692983 (92.7%) r@0x266e630  pss=43  padding=27  num_aliases=1
              source_path= 	object_path=
              flags={}  name=** merge strings
-20)  37906596 (48.7%) r@0x284d600  pss=1965345  padding=1961920  num_aliases=1
+18)  36658328 (98.0%) r@0x284d600  pss=1965345  padding=1961920  num_aliases=1
              source_path= 	object_path=
              flags={}  name=** merge constants
-21)  37906599 (48.7%) r@0x284e364  pss=3  padding=3  num_aliases=1
+19)  36658331 (98.0%) r@0x284e364  pss=3  padding=3  num_aliases=1
              source_path= 	object_path=
              flags={}  name=** symbol gap 0
-22)  37906607 (48.7%) r@0x284e364  pss=8  padding=0  num_aliases=1
+20)  36658339 (98.0%) r@0x284e364  pss=8  padding=0  num_aliases=1
              source_path=base/page_allocator.cc 	object_path=base/base/page_allocator.o
-23)  37906651 (48.7%) r@0x284e370  pss=44  padding=4  num_aliases=1
+21)  36658383 (98.0%) r@0x284e370  pss=44  padding=4  num_aliases=1
              source_path=base/page_allocator.cc 	object_path=base/base/page_allocator.o
              flags={}  name=Name
-24)  37906683 (48.7%) r@0x284e398  pss=32  padding=0  num_aliases=1
+22)  36658415 (98.0%) r@0x284e398  pss=32  padding=0  num_aliases=1
              source_path=third_party/container/container.c 	object_path=third_party/sub/ContiguousContainer.o
              flags={}  name=chrome::mojom::FilePatcher::Name_
-25)  38582723 (49.6%) r@0x28f3450  pss=676040  padding=675992  num_aliases=1
+23)  37334455 (99.8%) r@0x28f3450  pss=676040  padding=675992  num_aliases=1
              source_path=third_party/paint.cc 	object_path=third_party/sub/PaintChunker.o
              flags={anon}  name=kAnimationFrameTimeHistogramClassPath
-26)  38582727 (49.6%) r@0x28f3480  pss=4  padding=0  num_aliases=1
+24)  37334459 (99.8%) r@0x28f3480  pss=4  padding=0  num_aliases=1
              source_path=third_party/paint.cc 	object_path=third_party/sub/PaintChunker.o
              flags={anon}  name=blink::CSSValueKeywordsHash::findValueImpl::value_word_list
                   full_name=blink::CSSValueKeywordsHash::findValueImpl(char const*, unsigned int)::value_word_list
-27)  41868839 (53.8%) r@0x2c158e4  pss=3286112  padding=3286112  num_aliases=1
-             source_path= 	object_path=
-             flags={}  name=** symbol gap 1 (end of section)
-28)  41868855 (53.8%) t@0x28d900   pss=16  padding=0  num_aliases=1
+25)  37334475 (99.8%) t@0x28d900   pss=16  padding=0  num_aliases=1
              source_path=base/page_allocator.cc 	object_path=base/base/page_allocator.o
              flags={startup}  name=_GLOBAL__sub_I_page_allocator.cc
-29)  41868911 (53.8%) t@0x28d910   pss=56  padding=0  num_aliases=1
+26)  37334531 (99.8%) t@0x28d910   pss=56  padding=0  num_aliases=1
              source_path=base/page_allocator.cc 	object_path=base/base/page_allocator.o
              flags={startup}  name=_GLOBAL__sub_I_bbr_sender.cc
-30)  41868939 (53.8%) t@0x28d948   pss=28  padding=0  num_aliases=1
+27)  37334559 (99.8%) t@0x28d948   pss=28  padding=0  num_aliases=1
              source_path=base/page_allocator.cc 	object_path=base/base/page_allocator.o
              flags={startup}  name=_GLOBAL__sub_I_pacing_sender.cc
-31)  41868977 (53.8%) t@0x28d964   pss=38  padding=0  num_aliases=1
+28)  37334597 (99.8%) t@0x28d964   pss=38  padding=0  num_aliases=1
              source_path=base/page_allocator.cc 	object_path=base/base/page_allocator.o
              flags={}  name=extFromUUseMapping
                   full_name=extFromUUseMapping(signed char, unsigned int, int)
-32)  41869009 (53.8%) t@0x28d98a   pss=32  padding=0  num_aliases=1
+29)  37334629 (99.8%) t@0x28d98a   pss=32  padding=0  num_aliases=1
              source_path=base/page_allocator.cc 	object_path=base/base/page_allocator.o
              flags={}  name=extFromUUseMapping
                   full_name=extFromUUseMapping(aj, int)
-33)  41874727 (53.8%) t@0x28f000   pss=5718  padding=5718  num_aliases=1
+30)  37340347 (99.8%) t@0x28f000   pss=5718  padding=5718  num_aliases=1
              source_path= 	object_path=
              flags={}  name=** symbol gap 0
-34)  41875175 (53.8%) t@0x28f000   pss=448  padding=0  num_aliases=1
+31)  37340795 (99.8%) t@0x28f000   pss=448  padding=0  num_aliases=1
              source_path=third_party/icu/ucnv_ext.c 	object_path=third_party/icu/icuuc/ucnv_ext.o
              flags={gen}  name=ucnv_extMatchFromU
                   full_name=ucnv_extMatchFromU(int const*, int, unsigned short const*, int, unsigned short const*, int, unsigned int*, signed char, signed char)
-35)  41875203 (53.8%) t@0x28f1c8   pss=28  padding=8  num_aliases=1
+32)  37340823 (99.8%) t@0x28f1c8   pss=28  padding=8  num_aliases=1
              source_path=third_party/icu/ucnv_ext.c 	object_path=third_party/icu/icuuc/ucnv_ext.o
              flags={startup,gen}  name=_GLOBAL__sub_I_SkDeviceProfile.cpp
-36)  41944327 (53.9%) t@0x28f1e0   pss=69124  padding=4  num_aliases=1
+33)  37409947 (100.0%) t@0x28f1e0   pss=69124  padding=4  num_aliases=1
              source_path=third_party/icu/ucnv_ext.c 	object_path=third_party/icu/icuuc/ucnv_ext.o
              flags={unlikely,gen}  name=foo_bar
-37)  41944351 (53.9%) t@0x2a0000   pss=24 (size=48)  padding=32  num_aliases=2
+34)  37409971 (100.0%) t@0x2a0000   pss=24 (size=48)  padding=32  num_aliases=2
              source_path=third_party/icu/ucnv_ext.c 	object_path=third_party/icu/icuuc/ucnv_ext.o
              flags={gen}  name=BazAlias
                   full_name=BazAlias(bool)
-38)  41944375 (53.9%) t@0x2a0000   pss=24 (size=48)  padding=32  num_aliases=2
+35)  37409995 (100.0%) t@0x2a0000   pss=24 (size=48)  padding=32  num_aliases=2
              source_path= 	object_path=
              flags={}  name=blink::ContiguousContainerBase::shrinkToFit
                   full_name=blink::ContiguousContainerBase::shrinkToFit()
-39)  41944378 (53.9%) t@0x2a0010   pss=3 (size=12)  padding=0  num_aliases=4
+36)  37409998 (100.0%) t@0x2a0010   pss=3 (size=12)  padding=0  num_aliases=4
              source_path=third_party/fft_float.cc 	object_path=third_party/ffmpeg/libffmpeg_internal.a/fft_float.o
              flags={}  name=BarAlias
                   full_name=BarAlias()
-40)  41944381 (53.9%) t@0x2a0010   pss=3 (size=12)  padding=0  num_aliases=4
+37)  37410001 (100.0%) t@0x2a0010   pss=3 (size=12)  padding=0  num_aliases=4
              source_path=third_party/fft_float.cc 	object_path=third_party/ffmpeg/libffmpeg_internal.a/fft_float.o
              flags={}  name=FooAlias
                   full_name=FooAlias()
-41)  41944384 (53.9%) t@0x2a0010   pss=3 (size=12)  padding=0  num_aliases=4
+38)  37410004 (100.0%) t@0x2a0010   pss=3 (size=12)  padding=0  num_aliases=4
              source_path=third_party/icu/ucnv_ext.c 	object_path=third_party/icu/icuuc/ucnv_ext.o
              flags={gen,clone}  name=blink::ContiguousContainerBase::shrinkToFit
                   full_name=blink::ContiguousContainerBase::shrinkToFit()
-42)  41944387 (53.9%) t@0x2a0010   pss=3 (size=12)  padding=0  num_aliases=4
+39)  37410007 (100.0%) t@0x2a0010   pss=3 (size=12)  padding=0  num_aliases=4
              source_path=third_party/paint.cc 	object_path=third_party/sub/PaintChunker.o
              flags={clone}  name=blink::ContiguousContainerBase::shrinkToFit
                   full_name=blink::ContiguousContainerBase::shrinkToFit()
-43)  41944415 (53.9%) t@0x2a0020   pss=28  padding=4  num_aliases=1
+40)  37410035 (100.0%) t@0x2a0020   pss=28  padding=4  num_aliases=1
              source_path=third_party/container/container.c 	object_path=third_party/sub/ContiguousContainer.o
              flags={}  name=blink::ContiguousContainerBase::ContiguousContainerBase
                   full_name=blink::ContiguousContainerBase::ContiguousContainerBase(blink::ContiguousContainerBase&&)
-44)  41948455 (53.9%) t@0x2a1000   pss=4040  padding=4040  num_aliases=1
+41)  37414075 (100.0%) t@0x2a1000   pss=4040  padding=4040  num_aliases=1
              source_path= 	object_path=
              flags={}  name=** symbol gap 1
-45)  41948549 (53.9%) t@0x2a1000   pss=94  padding=0  num_aliases=1
+42)  37414169 (100.0%) t@0x2a1000   pss=94  padding=0  num_aliases=1
              source_path=third_party/container/container.c 	object_path=third_party/sub/ContiguousContainer.o
              flags={anon,clone}  name=blink::PaintChunker::releasePaintChunks
                   full_name=blink::PaintChunker::releasePaintChunks()
-46)  41952583 (53.9%) t@0x2a2000   pss=4034  padding=4002  num_aliases=1
+43)  37418203 (100.0%) t@0x2a2000   pss=4034  padding=4002  num_aliases=1
              source_path=third_party/container/container.c 	object_path=third_party/sub/ContiguousContainer.o
              flags={}  name=** outlined function
-47)  41952607 (53.9%) t@0x2a2020   pss=24 (size=48)  padding=0  num_aliases=2
+44)  37418227 (100.0%) t@0x2a2020   pss=24 (size=48)  padding=0  num_aliases=2
              source_path= 	object_path=
              flags={}  name=** outlined function * 2
-48)  41952631 (53.9%) t@0x2a2020   pss=24 (size=48)  padding=0  num_aliases=2
+45)  37418251 (100.0%) t@0x2a2020   pss=24 (size=48)  padding=0  num_aliases=2
              source_path= 	object_path=
              flags={}  name=aliasedWithOutlinedFunction
                   full_name=aliasedWithOutlinedFunction()
-49)  77769551 (100.0%) t@0x24ca628  pss=35816920  padding=35816920  num_aliases=1
-             source_path= 	object_path=
-             flags={}  name=** symbol gap 2 (end of section)
-50)  77769551 (100.0%) b@0x0        pss=262144  padding=0  num_aliases=1
+46)  37418251 (100.0%) b@0x0        pss=262144  padding=0  num_aliases=1
              source_path=third_party/fft_float.cc 	object_path=third_party/ffmpeg/libffmpeg_internal.a/fft_float.o
              flags={}  name=ff_cos_131072
-51)  77769551 (100.0%) b@0x0        pss=131072  padding=0  num_aliases=1
+47)  37418251 (100.0%) b@0x0        pss=131072  padding=0  num_aliases=1
              source_path=third_party/fft_fixed.cc 	object_path=third_party/ffmpeg/libffmpeg_internal.a/fft_fixed.o
              flags={}  name=ff_cos_131072_fixed
-52)  77769551 (100.0%) b@0x0        pss=131072  padding=0  num_aliases=1
+48)  37418251 (100.0%) b@0x0        pss=131072  padding=0  num_aliases=1
              source_path=third_party/fft_float.cc 	object_path=third_party/ffmpeg/libffmpeg_internal.a/fft_float.o
              flags={}  name=ff_cos_65536
-53)  77769551 (100.0%) b@0x2dffda0  pss=28  padding=0  num_aliases=1
+49)  37418251 (100.0%) b@0x2dffda0  pss=28  padding=0  num_aliases=1
              source_path=third_party/icu/ucnv_ext.c 	object_path=third_party/icu/icuuc/ucnv_ext.o
              flags={gen}  name=g_chrome_content_browser_client
-54)  77769551 (100.0%) b@0x2dffe80  pss=200  padding=196  num_aliases=1
+50)  37418251 (100.0%) b@0x2dffe80  pss=200  padding=196  num_aliases=1
              source_path=third_party/icu/ucnv_ext.c 	object_path=third_party/icu/icuuc/ucnv_ext.o
              flags={gen}  name=SaveHistogram::atomic_histogram_pointer
                   full_name=SaveHistogram(_JNIEnv*, base::android::JavaParamRef<_jobject*> const&, base::android::JavaParamRef<_jstring*> const&, base::android::JavaParamRef<_jlongArray*> const&, int)::atomic_histogram_pointer
-55)  77769551 (100.0%) b@0x2dffe84  pss=4  padding=0  num_aliases=1
+51)  37418251 (100.0%) b@0x2dffe84  pss=4  padding=0  num_aliases=1
              source_path=third_party/icu/ucnv_ext.c 	object_path=third_party/icu/icuuc/ucnv_ext.o
              flags={anon,gen}  name=g_AnimationFrameTimeHistogram_clazz
-Showing 53 symbols (47 unique) with total pss: 77769551 bytes
+Showing 51 symbols (45 unique) with total pss: 37418251 bytes
 Histogram of symbols based on PSS:
-     [2,4): 6    [16,32): 12     [128,256): 2    [65536,131072): 2    [524288,1048576): 2   [33554432,67108864): 2
-     [4,8): 6    [32,64): 9      [256,512): 1   [131072,262144): 2   [1048576,2097152): 2
-    [8,16): 3   [64,128): 1    [2048,4096): 1   [262144,524288): 1   [2097152,4194304): 1
-Sizes: .text=34.2mb     .rodata=5.65mb     .data.rel.ro=1.02mb     .data=99.4kb     .bss=512kb      .other=32.4mb     total=74.2mb
-Counts: .text=22 .rodata=12 .data.rel.ro=4 .data=6 .bss=6 .other=1
+     [2,4): 7    [16,32): 12     [128,256): 2      [8192,16384): 1     [262144,524288): 1   [33554432,67108864): 1
+     [4,8): 6    [32,64): 9      [256,512): 1    [65536,131072): 1    [524288,1048576): 2
+    [8,16): 3   [64,128): 1    [2048,4096): 1   [131072,262144): 2   [1048576,2097152): 1
+Sizes: .text=81.8kb     .rodata=2.52mb     .data.rel.ro=92 bytes   .data=168 bytes  .bss=512kb      .other=32.3mb     total=35.7mb
+Counts: .text=21 .rodata=11 .data.rel.ro=3 .data=5 .bss=6 .other=1
 Number of unique paths: 9
 
 Section Legend: t=.text, r=.rodata, R=.data.rel.ro, d=.data, b=.bss, o=.other
@@ -298,175 +316,160 @@ Index | Running Total | Section@Address | ...
 4)        168 (0.0%)  d@0x2de70a4  pss=4  padding=0  num_aliases=1
              source_path=third_party/container/container.c 	object_path=third_party/sub/ContiguousContainer.o
              flags={anon,rel.loc}  name=base::android::g_library_version_number
-5)     101768 (0.1%)  d@0x2dffd88  pss=101600  padding=101600  num_aliases=1
-             source_path= 	object_path=
-             flags={}  name=** symbol gap 0 (end of section)
-6)     101824 (0.1%)  R@0x2cd8500  pss=56  padding=0  num_aliases=1
+5)        224 (0.0%)  R@0x2cd8500  pss=56  padding=0  num_aliases=1
              source_path=third_party/paint.cc 	object_path=third_party/sub/PaintChunker.o
              flags={}  name=ChromeMainDelegateAndroid [vtable]
-7)     101848 (0.1%)  R@0x2cd8538  pss=24  padding=0  num_aliases=1
+6)        248 (0.0%)  R@0x2cd8538  pss=24  padding=0  num_aliases=1
              source_path=base/page_allocator.cc 	object_path=base/base/page_allocator.o
              flags={}  name=mojo::MessageReceiver [vtable]
-8)     101860 (0.1%)  R@0x2cd8550  pss=12  padding=0  num_aliases=1
+7)        260 (0.0%)  R@0x2cd8550  pss=12  padding=0  num_aliases=1
              source_path=base/page_allocator.cc 	object_path=base/base/page_allocator.o
              flags={}  name=kMethodsAnimationFrameTimeHistogram
-9)    1166992 (1.5%)  R@0x2ddc608  pss=1065132  padding=1065132  num_aliases=1
-             source_path= 	object_path=
-             flags={}  name=** symbol gap 0 (end of section)
-10)   1167048 (1.5%)  R@0x2c176f0  pss=56  padding=0  num_aliases=1
+8)        316 (0.0%)  R@0x2c176f0  pss=56  padding=0  num_aliases=1
              source_path=third_party/icu/ucnv_ext.c 	object_path=third_party/icu/icuuc/ucnv_ext.o
              flags={gen}  name=ChromeMainDelegate [vtable]
-11)   1167072 (1.5%)  R@0x2c17728  pss=24  padding=0  num_aliases=1
+9)        340 (0.0%)  R@0x2c17728  pss=24  padding=0  num_aliases=1
              source_path=third_party/icu/ucnv_ext.c 	object_path=third_party/icu/icuuc/ucnv_ext.o
              flags={gen}  name=chrome::mojom::FieldTrialRecorder [vtable]
-12)   1956976 (2.5%)  R@0x2c17740  pss=789904  padding=0  num_aliases=1
+10)    790244 (2.1%)  R@0x2c17740  pss=789904  padding=0  num_aliases=1
              source_path=third_party/container/container.c 	object_path=third_party/sub/ContiguousContainer.o
              flags={}  name=chrome::mojom::FieldTrialRecorderProxy [vtable]
-13)   1957008 (2.5%)  R@0x2cd84e0  pss=32  padding=16  num_aliases=1
+11)    790276 (2.1%)  R@0x2cd84e0  pss=32  padding=16  num_aliases=1
              source_path= 	object_path=third_party/gvr-android-sdk/libgvr_shim_static_arm.a/libcontroller_api_impl.a_controller_api_impl.o
              flags={}  name=.Lswitch.table.45
-14)   1957016 (2.5%)  R@0x2cd84f0  pss=8  padding=0  num_aliases=1
+12)    790284 (2.1%)  R@0x2cd84f0  pss=8  padding=0  num_aliases=1
              source_path= 	object_path=third_party/gvr-android-sdk/libgvr_shim_static_arm.a/libport_android_jni.a_jni_utils.o
              flags={anon}  name=kSystemClassPrefixes
-15)  35941187 (46.2%) o@0x0        pss=33984171  padding=33984171  num_aliases=1
+13)  34692919 (92.7%) o@0x0        pss=33902635  padding=33902635  num_aliases=1
              source_path= 	object_path=
              flags={}  name=Overhead: ELF file
-16)  35941189 (46.2%) r@0x266e600  pss=2.5 (size=5)  padding=0  num_aliases=2
+14)  34692921 (92.7%) r@0x266e600  pss=2.5 (size=5)  padding=0  num_aliases=2
              source_path=base/page_allocator.cc 	object_path=base/base/page_allocator.o
-             flags={}  name=string literal
-17)  35941192 (46.2%) r@0x266e600  pss=2.5 (size=5)  padding=0  num_aliases=2
+             flags={}  name="Str1"
+15)  34692924 (92.7%) r@0x266e600  pss=2.5 (size=5)  padding=0  num_aliases=2
              source_path=third_party/icu/ucnv_ext.c 	object_path=third_party/icu/icuuc/ucnv_ext.o
-             flags={gen}  name=string literal
-18)  35941208 (46.2%) r@0x266e605  pss=16  padding=0  num_aliases=1
+             flags={gen}  name="Str1"
+16)  34692940 (92.7%) r@0x266e605  pss=16  padding=0  num_aliases=1
              source_path=third_party/icu/ucnv_ext.c 	object_path=third_party/icu/icuuc/ucnv_ext.o
-             flags={gen}  name=string literal
-19)  35941251 (46.2%) r@0x266e630  pss=43  padding=27  num_aliases=1
+             flags={gen}  name="String literal2"
+17)  34692983 (92.7%) r@0x266e630  pss=43  padding=27  num_aliases=1
              source_path= 	object_path=
              flags={}  name=** merge strings
-20)  37906596 (48.7%) r@0x284d600  pss=1965345  padding=1961920  num_aliases=1
+18)  36658328 (98.0%) r@0x284d600  pss=1965345  padding=1961920  num_aliases=1
              source_path= 	object_path=
              flags={}  name=** merge constants
-21)  41192711 (53.0%) r@Group      pss=3286115  padding=3286115  count=2
+19)  36658331 (98.0%) r@0x284e364  pss=3  padding=3  num_aliases=1
              source_path= 	object_path=
-             flags={}  name=** symbol gaps
-> 0)          3 (0.0%)  r@0x284e364  pss=3  padding=3  num_aliases=1
-               source_path= 	object_path=
-               flags={}  name=** symbol gap 0
-> 1)    3286115 (100.0%) r@0x2c158e4  pss=3286112  padding=3286112  num_aliases=1
-               source_path= 	object_path=
-               flags={}  name=** symbol gap 1 (end of section)
-22)  41192719 (53.0%) r@0x284e364  pss=8  padding=0  num_aliases=1
+             flags={}  name=** symbol gap 0
+20)  36658339 (98.0%) r@0x284e364  pss=8  padding=0  num_aliases=1
              source_path=base/page_allocator.cc 	object_path=base/base/page_allocator.o
-23)  41192763 (53.0%) r@0x284e370  pss=44  padding=4  num_aliases=1
+21)  36658383 (98.0%) r@0x284e370  pss=44  padding=4  num_aliases=1
              source_path=base/page_allocator.cc 	object_path=base/base/page_allocator.o
              flags={}  name=Name
-24)  41192795 (53.0%) r@0x284e398  pss=32  padding=0  num_aliases=1
+22)  36658415 (98.0%) r@0x284e398  pss=32  padding=0  num_aliases=1
              source_path=third_party/container/container.c 	object_path=third_party/sub/ContiguousContainer.o
              flags={}  name=chrome::mojom::FilePatcher::Name_
-25)  41868835 (53.8%) r@0x28f3450  pss=676040  padding=675992  num_aliases=1
+23)  37334455 (99.8%) r@0x28f3450  pss=676040  padding=675992  num_aliases=1
              source_path=third_party/paint.cc 	object_path=third_party/sub/PaintChunker.o
              flags={anon}  name=kAnimationFrameTimeHistogramClassPath
-26)  41868839 (53.8%) r@0x28f3480  pss=4  padding=0  num_aliases=1
+24)  37334459 (99.8%) r@0x28f3480  pss=4  padding=0  num_aliases=1
              source_path=third_party/paint.cc 	object_path=third_party/sub/PaintChunker.o
              flags={anon}  name=blink::CSSValueKeywordsHash::findValueImpl::value_word_list
                   full_name=blink::CSSValueKeywordsHash::findValueImpl(char const*, unsigned int)::value_word_list
-27)  41868855 (53.8%) t@0x28d900   pss=16  padding=0  num_aliases=1
+25)  37334475 (99.8%) t@0x28d900   pss=16  padding=0  num_aliases=1
              source_path=base/page_allocator.cc 	object_path=base/base/page_allocator.o
              flags={startup}  name=_GLOBAL__sub_I_page_allocator.cc
-28)  41868911 (53.8%) t@0x28d910   pss=56  padding=0  num_aliases=1
+26)  37334531 (99.8%) t@0x28d910   pss=56  padding=0  num_aliases=1
              source_path=base/page_allocator.cc 	object_path=base/base/page_allocator.o
              flags={startup}  name=_GLOBAL__sub_I_bbr_sender.cc
-29)  41868939 (53.8%) t@0x28d948   pss=28  padding=0  num_aliases=1
+27)  37334559 (99.8%) t@0x28d948   pss=28  padding=0  num_aliases=1
              source_path=base/page_allocator.cc 	object_path=base/base/page_allocator.o
              flags={startup}  name=_GLOBAL__sub_I_pacing_sender.cc
-30)  41868977 (53.8%) t@0x28d964   pss=38  padding=0  num_aliases=1
+28)  37334597 (99.8%) t@0x28d964   pss=38  padding=0  num_aliases=1
              source_path=base/page_allocator.cc 	object_path=base/base/page_allocator.o
              flags={}  name=extFromUUseMapping
                   full_name=extFromUUseMapping(signed char, unsigned int, int)
-31)  41869009 (53.8%) t@0x28d98a   pss=32  padding=0  num_aliases=1
+29)  37334629 (99.8%) t@0x28d98a   pss=32  padding=0  num_aliases=1
              source_path=base/page_allocator.cc 	object_path=base/base/page_allocator.o
              flags={}  name=extFromUUseMapping
                   full_name=extFromUUseMapping(aj, int)
-32)  77695687 (99.9%) t@Group      pss=35826678  padding=35826678  count=3
+30)  37344387 (99.8%) t@Group      pss=9758  padding=9758  count=2
              source_path= 	object_path=
              flags={}  name=** symbol gaps
-> 0)       5718 (0.0%)  t@0x28f000   pss=5718  padding=5718  num_aliases=1
+> 0)       5718 (58.6%) t@0x28f000   pss=5718  padding=5718  num_aliases=1
                source_path= 	object_path=
                flags={}  name=** symbol gap 0
-> 1)       9758 (0.0%)  t@0x2a1000   pss=4040  padding=4040  num_aliases=1
+> 1)       9758 (100.0%) t@0x2a1000   pss=4040  padding=4040  num_aliases=1
                source_path= 	object_path=
                flags={}  name=** symbol gap 1
-> 2)   35826678 (100.0%) t@0x24ca628  pss=35816920  padding=35816920  num_aliases=1
-               source_path= 	object_path=
-               flags={}  name=** symbol gap 2 (end of section)
-33)  77696135 (99.9%) t@0x28f000   pss=448  padding=0  num_aliases=1
+31)  37344835 (99.8%) t@0x28f000   pss=448  padding=0  num_aliases=1
              source_path=third_party/icu/ucnv_ext.c 	object_path=third_party/icu/icuuc/ucnv_ext.o
              flags={gen}  name=ucnv_extMatchFromU
                   full_name=ucnv_extMatchFromU(int const*, int, unsigned short const*, int, unsigned short const*, int, unsigned int*, signed char, signed char)
-34)  77696163 (99.9%) t@0x28f1c8   pss=28  padding=8  num_aliases=1
+32)  37344863 (99.8%) t@0x28f1c8   pss=28  padding=8  num_aliases=1
              source_path=third_party/icu/ucnv_ext.c 	object_path=third_party/icu/icuuc/ucnv_ext.o
              flags={startup,gen}  name=_GLOBAL__sub_I_SkDeviceProfile.cpp
-35)  77765287 (100.0%) t@0x28f1e0   pss=69124  padding=4  num_aliases=1
+33)  37413987 (100.0%) t@0x28f1e0   pss=69124  padding=4  num_aliases=1
              source_path=third_party/icu/ucnv_ext.c 	object_path=third_party/icu/icuuc/ucnv_ext.o
              flags={unlikely,gen}  name=foo_bar
-36)  77765311 (100.0%) t@0x2a0000   pss=24 (size=48)  padding=32  num_aliases=2
+34)  37414011 (100.0%) t@0x2a0000   pss=24 (size=48)  padding=32  num_aliases=2
              source_path=third_party/icu/ucnv_ext.c 	object_path=third_party/icu/icuuc/ucnv_ext.o
              flags={gen}  name=BazAlias
                   full_name=BazAlias(bool)
-37)  77765335 (100.0%) t@0x2a0000   pss=24 (size=48)  padding=32  num_aliases=2
+35)  37414035 (100.0%) t@0x2a0000   pss=24 (size=48)  padding=32  num_aliases=2
              source_path= 	object_path=
              flags={}  name=blink::ContiguousContainerBase::shrinkToFit
                   full_name=blink::ContiguousContainerBase::shrinkToFit()
-38)  77765338 (100.0%) t@0x2a0010   pss=3 (size=12)  padding=0  num_aliases=4
+36)  37414038 (100.0%) t@0x2a0010   pss=3 (size=12)  padding=0  num_aliases=4
              source_path=third_party/fft_float.cc 	object_path=third_party/ffmpeg/libffmpeg_internal.a/fft_float.o
              flags={}  name=BarAlias
                   full_name=BarAlias()
-39)  77765341 (100.0%) t@0x2a0010   pss=3 (size=12)  padding=0  num_aliases=4
+37)  37414041 (100.0%) t@0x2a0010   pss=3 (size=12)  padding=0  num_aliases=4
              source_path=third_party/fft_float.cc 	object_path=third_party/ffmpeg/libffmpeg_internal.a/fft_float.o
              flags={}  name=FooAlias
                   full_name=FooAlias()
-40)  77765344 (100.0%) t@0x2a0010   pss=3 (size=12)  padding=0  num_aliases=4
+38)  37414044 (100.0%) t@0x2a0010   pss=3 (size=12)  padding=0  num_aliases=4
              source_path=third_party/icu/ucnv_ext.c 	object_path=third_party/icu/icuuc/ucnv_ext.o
              flags={gen,clone}  name=blink::ContiguousContainerBase::shrinkToFit
                   full_name=blink::ContiguousContainerBase::shrinkToFit()
-41)  77765347 (100.0%) t@0x2a0010   pss=3 (size=12)  padding=0  num_aliases=4
+39)  37414047 (100.0%) t@0x2a0010   pss=3 (size=12)  padding=0  num_aliases=4
              source_path=third_party/paint.cc 	object_path=third_party/sub/PaintChunker.o
              flags={clone}  name=blink::ContiguousContainerBase::shrinkToFit
                   full_name=blink::ContiguousContainerBase::shrinkToFit()
-42)  77765375 (100.0%) t@0x2a0020   pss=28  padding=4  num_aliases=1
+40)  37414075 (100.0%) t@0x2a0020   pss=28  padding=4  num_aliases=1
              source_path=third_party/container/container.c 	object_path=third_party/sub/ContiguousContainer.o
              flags={}  name=blink::ContiguousContainerBase::ContiguousContainerBase
                   full_name=blink::ContiguousContainerBase::ContiguousContainerBase(blink::ContiguousContainerBase&&)
-43)  77765469 (100.0%) t@0x2a1000   pss=94  padding=0  num_aliases=1
+41)  37414169 (100.0%) t@0x2a1000   pss=94  padding=0  num_aliases=1
              source_path=third_party/container/container.c 	object_path=third_party/sub/ContiguousContainer.o
              flags={anon,clone}  name=blink::PaintChunker::releasePaintChunks
                   full_name=blink::PaintChunker::releasePaintChunks()
-44)  77769503 (100.0%) t@0x2a2000   pss=4034  padding=4002  num_aliases=1
+42)  37418203 (100.0%) t@0x2a2000   pss=4034  padding=4002  num_aliases=1
              source_path=third_party/container/container.c 	object_path=third_party/sub/ContiguousContainer.o
              flags={}  name=** outlined function
-45)  77769527 (100.0%) t@0x2a2020   pss=24 (size=48)  padding=0  num_aliases=2
+43)  37418227 (100.0%) t@0x2a2020   pss=24 (size=48)  padding=0  num_aliases=2
              source_path= 	object_path=
              flags={}  name=** outlined function * 2
-46)  77769551 (100.0%) t@0x2a2020   pss=24 (size=48)  padding=0  num_aliases=2
+44)  37418251 (100.0%) t@0x2a2020   pss=24 (size=48)  padding=0  num_aliases=2
              source_path= 	object_path=
              flags={}  name=aliasedWithOutlinedFunction
                   full_name=aliasedWithOutlinedFunction()
-47)  77769551 (100.0%) b@0x0        pss=262144  padding=0  num_aliases=1
+45)  37418251 (100.0%) b@0x0        pss=262144  padding=0  num_aliases=1
              source_path=third_party/fft_float.cc 	object_path=third_party/ffmpeg/libffmpeg_internal.a/fft_float.o
              flags={}  name=ff_cos_131072
-48)  77769551 (100.0%) b@0x0        pss=131072  padding=0  num_aliases=1
+46)  37418251 (100.0%) b@0x0        pss=131072  padding=0  num_aliases=1
              source_path=third_party/fft_fixed.cc 	object_path=third_party/ffmpeg/libffmpeg_internal.a/fft_fixed.o
              flags={}  name=ff_cos_131072_fixed
-49)  77769551 (100.0%) b@0x0        pss=131072  padding=0  num_aliases=1
+47)  37418251 (100.0%) b@0x0        pss=131072  padding=0  num_aliases=1
              source_path=third_party/fft_float.cc 	object_path=third_party/ffmpeg/libffmpeg_internal.a/fft_float.o
              flags={}  name=ff_cos_65536
-50)  77769551 (100.0%) b@0x2dffda0  pss=28  padding=0  num_aliases=1
+48)  37418251 (100.0%) b@0x2dffda0  pss=28  padding=0  num_aliases=1
              source_path=third_party/icu/ucnv_ext.c 	object_path=third_party/icu/icuuc/ucnv_ext.o
              flags={gen}  name=g_chrome_content_browser_client
-51)  77769551 (100.0%) b@0x2dffe80  pss=200  padding=196  num_aliases=1
+49)  37418251 (100.0%) b@0x2dffe80  pss=200  padding=196  num_aliases=1
              source_path=third_party/icu/ucnv_ext.c 	object_path=third_party/icu/icuuc/ucnv_ext.o
              flags={gen}  name=SaveHistogram::atomic_histogram_pointer
                   full_name=SaveHistogram(_JNIEnv*, base::android::JavaParamRef<_jobject*> const&, base::android::JavaParamRef<_jstring*> const&, base::android::JavaParamRef<_jlongArray*> const&, int)::atomic_histogram_pointer
-52)  77769551 (100.0%) b@0x2dffe84  pss=4  padding=0  num_aliases=1
+50)  37418251 (100.0%) b@0x2dffe84  pss=4  padding=0  num_aliases=1
              source_path=third_party/icu/ucnv_ext.c 	object_path=third_party/icu/icuuc/ucnv_ext.o
              flags={anon,gen}  name=g_AnimationFrameTimeHistogram_clazz

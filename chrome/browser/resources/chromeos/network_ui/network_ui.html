@@ -6,33 +6,54 @@
   <title id="network">$i18n{titleText}</title>
   <link rel="stylesheet" href="chrome://resources/css/text_defaults.css">
   <link rel="stylesheet" href="chrome://network/network_ui.css">
-  <link rel="import" href="chrome://resources/cr_elements/chromeos/network/cr_network_icon.html">
-  <link rel="import" href="chrome://resources/cr_elements/chromeos/network/cr_network_select.html">
-  <link rel="import" href="chrome://resources/cr_elements/chromeos/network/cr_onc_types.html">
-  <link rel="import" href="chrome://resources/polymer/v1_0/paper-button/paper-button.html">
+  <link rel="import" href="chrome://resources/cr_components/chromeos/network/mojo_interface_provider.html">
+  <link rel="import" href="chrome://resources/cr_components/chromeos/network/network_icon.html">
+  <link rel="import" href="chrome://resources/cr_components/chromeos/network/network_select.html">
+  <link rel="import" href="chrome://resources/cr_elements/chromeos/network/cr_onc_strings.html">
+  <link rel="import" href="chrome://resources/cr_elements/cr_button/cr_button.html">
 
+  <script src="chrome://resources/js/chromeos/onc_mojo.js"></script>
   <script src="chrome://resources/js/load_time_data.js"></script>
   <script src="chrome://resources/js/util.js"></script>
   <script src="chrome://network/strings.js"></script>
   <script src="chrome://network/network_ui.js"></script>
+
+  <style>
+    #cellular-error-text {
+      color: red;
+    }
+  </style>
 </head>
 
 <body>
   <div>$i18n{autoRefreshText}</div>
   <span>$i18nRaw{deviceLogLinkText}</span>
 
+  <div>
+    <h2>$i18n{cellularActivationLabel}</h2>
+    <cr-button class="action-button" id="cellular-activation-button">
+      $i18n{cellularActivationButtonText}
+    </cr-button>
+    <div id="cellular-error-text" hidden>$i18n{noCellularErrorText}</div>
+  </div>
+
+  <div>
+    <h2>$i18n{addNewWifiLabel}</h2>
+    <cr-button class="action-button" id="add-new-wifi-button">
+      $i18n{addNewWifiButtonText}
+    </cr-button>
+  </div>
+
   <h2>$i18n{globalPolicyLabel}</h2>
   <div id="global-policy"></div>
 
-  <h2>CrNetworkSelect</h2>
   <div id="select-div">
-    <cr-network-select handle-network-item-selected>
-    </cr-network-select>
+    <network-select></network-select>
   </div>
   <div>
-    <paper-button raised class="colored" id="refresh">
+    <cr-button class="action-button" id="refresh">
       $i18n{networkRefreshText}
-    </paper-button>
+    </cr-button>
   </div>
 
   <h2>$i18n{networkListsLabel}</h2>
@@ -78,6 +99,18 @@
     </tr>
   </table>
 
+  <h3>$i18n{ethernetEapNetworkLabel}</h3>
+  <table id="ethernet-eap-state-table" class="state-table">
+    <tr class="state-table-header">
+      <td></td>
+      <td></td>
+      <td>GUID</td>
+      <td>Name</td>
+      <td>Type</td>
+      <td>ONC Source</td>
+    </tr>
+  </table>
+
   <h3>$i18n{favoriteNetworksLabel}</h3>
   <table id="favorite-state-table" class="state-table">
     <tr class="state-table-header">
@@ -86,8 +119,6 @@
       <td>GUID</td>
       <td>Name</td>
       <td>Type</td>
-      <td>Profile</td>
-      <td>Visible</td>
       <td>ONC Source</td>
     </tr>
   </table>

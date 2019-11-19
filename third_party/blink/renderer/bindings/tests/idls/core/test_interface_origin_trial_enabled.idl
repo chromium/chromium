@@ -2,21 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Test for [OriginTrialEnabled] extended attribute applied to an interface.
-// This is separate from TestInterface (and TestInterface[2|3]), as the
-// [OriginTrialEnabled] attribute takes precedence over [RuntimeEnabled].
+// Test for [RuntimeEnabled] extended attribute applied to an interface that
+// references an origin trial controlled feature.
 
 [
-    OriginTrialEnabled=InterfaceFeatureName
+    RuntimeEnabled=InterfaceFeatureName
 ] interface TestInterfaceOriginTrialEnabled {
     const unsigned long UNSIGNED_LONG = 0;
     const short CONST_JAVASCRIPT = 1;
 
     attribute double doubleAttribute;
-    [RuntimeEnabled=FeatureName] attribute long conditionalLongAttribute;
-    [RuntimeEnabled=FeatureName] readonly attribute long conditionalReadOnlyLongAttribute;
+    [RuntimeEnabled=RuntimeFeature] attribute long conditionalLongAttribute;
+    [RuntimeEnabled=RuntimeFeature] readonly attribute long conditionalReadOnlyLongAttribute;
     static attribute DOMString staticStringAttribute;
-    [RuntimeEnabled=FeatureName] static readonly attribute long staticConditionalReadOnlyLongAttribute;
+    [RuntimeEnabled=RuntimeFeature] static readonly attribute long staticConditionalReadOnlyLongAttribute;
 
     void voidMethodDoubleArgFloatArg(double doubleArg, float floatArg);
 

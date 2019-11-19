@@ -145,6 +145,33 @@ TEST(AlgorithmTest, AlignCeil) {
   EXPECT_EQ(33U, AlignCeil<uint32_t>(23U, 11U));
 }
 
+TEST(AlgorithmTest, IncrementForAlignCeil) {
+  struct TestCase {
+    int exp;  // Increment to |pos| to get the next nearest aligned value.
+    int pos;
+  };
+  TestCase kTestCases2[] = {
+      {0, 0},    {1, 1},    {0, 2},   {1, 3},   {0, 4},   {1, 5},
+      {1, 97},   {0, 98},   {1, 99},  {0, 100}, {1, -1},  {0, -2},
+      {1, -101}, {0, -100}, {1, -99}, {0, -98}, {1, -97}, {0, -96},
+  };
+  for (const auto& test_case : kTestCases2) {
+    EXPECT_EQ(test_case.exp, IncrementForAlignCeil2<int32_t>(test_case.pos));
+    if (test_case.pos >= 0)
+      EXPECT_EQ(test_case.exp, IncrementForAlignCeil2<uint32_t>(test_case.pos));
+  }
+  TestCase kTestCases4[] = {
+      {0, 0},    {3, 1},    {2, 2},   {1, 3},   {0, 4},   {3, 5},
+      {3, 97},   {2, 98},   {1, 99},  {0, 100}, {1, -1},  {2, -2},
+      {1, -101}, {0, -100}, {3, -99}, {2, -98}, {1, -97}, {0, -96},
+  };
+  for (const auto& test_case : kTestCases4) {
+    EXPECT_EQ(test_case.exp, IncrementForAlignCeil4<int32_t>(test_case.pos));
+    if (test_case.pos >= 0)
+      EXPECT_EQ(test_case.exp, IncrementForAlignCeil4<uint32_t>(test_case.pos));
+  }
+}
+
 TEST(AlgorithmTest, GetBit) {
   // 0xC5 = 0b1100'0101.
   constexpr uint8_t v = 0xC5;

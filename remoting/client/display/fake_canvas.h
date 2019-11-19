@@ -33,7 +33,7 @@ class FakeCanvas : public Canvas {
 
  private:
   base::ThreadChecker thread_checker_;
-  base::WeakPtrFactory<Canvas> weak_factory_;
+  base::WeakPtrFactory<Canvas> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(FakeCanvas);
 };

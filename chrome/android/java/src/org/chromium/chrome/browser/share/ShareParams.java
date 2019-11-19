@@ -4,14 +4,17 @@
 
 package org.chromium.chrome.browser.share;
 
-import android.app.Activity;
 import android.net.Uri;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.text.TextUtils;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import org.chromium.chrome.browser.share.ShareHelper.TargetChosenCallback;
 import org.chromium.components.dom_distiller.core.DomDistillerUrlUtils;
+import org.chromium.ui.base.WindowAndroid;
+
+import java.util.ArrayList;
 
 /**
  * A container object for passing share parameters to {@link ShareHelper}.
@@ -26,8 +29,8 @@ public class ShareParams {
     /** Whether to save the chosen activity for future direct sharing. */
     private final boolean mSaveLastUsed;
 
-    /** The activity that is used to access package manager. */
-    private final Activity mActivity;
+    /** The window that triggered the share action. */
+    private final WindowAndroid mWindow;
 
     /** The title of the page to be shared. */
     private final String mTitle;
@@ -40,6 +43,12 @@ public class ShareParams {
 
     /** The URL of the page to be shared. */
     private final String mUrl;
+
+    /** The common MIME type of the files to be shared. A wildcard if they have differing types. */
+    private final String mFileContentType;
+
+    /** The list of Uris of the files to be shared. */
+    private final ArrayList<Uri> mFileUris;
 
     /** The Uri to the offline MHTML file to be shared. */
     private final Uri mOfflineUri;
@@ -60,16 +69,19 @@ public class ShareParams {
     @Nullable
     private final Runnable mOnDialogDismissed;
 
-    private ShareParams(boolean shareDirectly, boolean saveLastUsed, Activity activity,
-            String title, String text, String url, @Nullable Uri offlineUri,
+    private ShareParams(boolean shareDirectly, boolean saveLastUsed, WindowAndroid window,
+            String title, String text, String url, @Nullable String fileContentType,
+            @Nullable ArrayList<Uri> fileUris, @Nullable Uri offlineUri,
             @Nullable Uri screenshotUri, @Nullable TargetChosenCallback callback,
             @Nullable String sourcePackageName, @Nullable Runnable onDialogDismissed) {
         mShareDirectly = shareDirectly;
         mSaveLastUsed = saveLastUsed;
-        mActivity = activity;
+        mWindow = window;
         mTitle = title;
         mText = text;
         mUrl = url;
+        mFileContentType = fileContentType;
+        mFileUris = fileUris;
         mOfflineUri = offlineUri;
         mScreenshotUri = screenshotUri;
         mCallback = callback;
@@ -93,10 +105,10 @@ public class ShareParams {
     }
 
     /**
-     * @return The activity that is used to access package manager.
+     * @return The window that triggered share.
      */
-    public Activity getActivity() {
-        return mActivity;
+    public WindowAndroid getWindow() {
+        return mWindow;
     }
 
     /**
@@ -118,6 +130,22 @@ public class ShareParams {
      */
     public String getUrl() {
         return mUrl;
+    }
+
+    /**
+     * @return The MIME type to the arbitrary files to be shared.
+     */
+    @Nullable
+    public String getFileContentType() {
+        return mFileContentType;
+    }
+
+    /**
+     * @return The Uri to the arbitrary files to be shared.
+     */
+    @Nullable
+    public ArrayList<Uri> getFileUris() {
+        return mFileUris;
     }
 
     /**
@@ -163,10 +191,12 @@ public class ShareParams {
     public static class Builder {
         private boolean mShareDirectly;
         private boolean mSaveLastUsed;
-        private Activity mActivity;
+        private WindowAndroid mWindow;
         private String mTitle;
         private String mText;
         private String mUrl;
+        private String mFileContentType;
+        private ArrayList<Uri> mFileUris;
         private Uri mOfflineUri;
         private Uri mScreenshotUri;
         private TargetChosenCallback mCallback;
@@ -174,8 +204,8 @@ public class ShareParams {
         private boolean mIsExternalUrl;
         private Runnable mOnDialogDismissed;
 
-        public Builder(@NonNull Activity activity, @NonNull String title, @NonNull String url) {
-            mActivity = activity;
+        public Builder(@NonNull WindowAndroid window, @NonNull String title, @NonNull String url) {
+            mWindow = window;
             mUrl = url;
             mTitle = title;
         }
@@ -210,6 +240,22 @@ public class ShareParams {
          */
         public Builder setUrl(@NonNull String url) {
             mUrl = url;
+            return this;
+        }
+
+        /**
+         * Sets the MIME type of the arbitrary files to be shared.
+         */
+        public Builder setFileContentType(@NonNull String fileContentType) {
+            mFileContentType = fileContentType;
+            return this;
+        }
+
+        /**
+         * Sets the Uri of the arbitrary files to be shared.
+         */
+        public Builder setFileUris(@Nullable ArrayList<Uri> fileUris) {
+            mFileUris = fileUris;
             return this;
         }
 
@@ -274,8 +320,9 @@ public class ShareParams {
                     mText = mUrl;
                 }
             }
-            return new ShareParams(mShareDirectly, mSaveLastUsed, mActivity, mTitle, mText, mUrl,
-                    mOfflineUri, mScreenshotUri, mCallback, mSourcePackageName, mOnDialogDismissed);
+            return new ShareParams(mShareDirectly, mSaveLastUsed, mWindow, mTitle, mText, mUrl,
+                    mFileContentType, mFileUris, mOfflineUri, mScreenshotUri, mCallback,
+                    mSourcePackageName, mOnDialogDismissed);
         }
     }
 }

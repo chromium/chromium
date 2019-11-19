@@ -9,7 +9,6 @@
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/modules/payments/payment_request_update_event_init.h"
-#include "third_party/blink/renderer/modules/payments/payment_updater.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/timer.h"
@@ -18,10 +17,11 @@ namespace blink {
 
 class ExceptionState;
 class ExecutionContext;
+class PaymentRequestDelegate;
 class ScriptState;
 
 class MODULES_EXPORT PaymentRequestUpdateEvent : public Event,
-                                                 public PaymentUpdater {
+                                                 public GarbageCollectedMixin {
   DEFINE_WRAPPERTYPEINFO();
   USING_GARBAGE_COLLECTED_MIXIN(PaymentRequestUpdateEvent);
 
@@ -37,28 +37,20 @@ class MODULES_EXPORT PaymentRequestUpdateEvent : public Event,
       const PaymentRequestUpdateEventInit* =
           PaymentRequestUpdateEventInit::Create());
 
-  void SetPaymentDetailsUpdater(PaymentUpdater*);
+  void SetPaymentRequest(PaymentRequestDelegate* request);
 
   void updateWith(ScriptState*, ScriptPromise, ExceptionState&);
 
+  void start_waiting_for_update(bool value) { wait_for_update_ = value; }
   bool is_waiting_for_update() const { return wait_for_update_; }
-
-  // PaymentUpdater:
-  void OnUpdatePaymentDetails(const ScriptValue& details_script_value) override;
-  void OnUpdatePaymentDetailsFailure(const String& error) override;
 
   void Trace(blink::Visitor*) override;
 
-  void OnUpdateEventTimeoutForTesting();
-
  private:
-  void OnUpdateEventTimeout(TimerBase*);
-
   // True after event.updateWith() was called.
   bool wait_for_update_;
 
-  Member<PaymentUpdater> updater_;
-  TaskRunnerTimer<PaymentRequestUpdateEvent> abort_timer_;
+  Member<PaymentRequestDelegate> request_;
 };
 
 }  // namespace blink

@@ -10,6 +10,8 @@ include_rules = [
 
   "+chrome/test/chromedriver",
 
+  "+components/crx_file",
+
   "+third_party/webdriver",
   "+third_party/zlib",
 ]

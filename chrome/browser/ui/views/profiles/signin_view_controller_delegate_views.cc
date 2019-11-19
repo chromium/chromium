@@ -16,7 +16,6 @@
 #include "chrome/browser/ui/webui/signin/sync_confirmation_ui.h"
 #include "chrome/common/url_constants.h"
 #include "components/constrained_window/constrained_window_views.h"
-#include "components/unified_consent/feature.h"
 #include "components/web_modal/web_contents_modal_dialog_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
@@ -26,7 +25,7 @@
 namespace {
 
 const int kModalDialogWidth = 448;
-const int kModalDialogWidthForUnifiedConsent = 512;
+const int kSyncConfirmationDialogWidth = 512;
 const int kSyncConfirmationDialogHeight = 487;
 const int kSigninErrorDialogHeight = 164;
 
@@ -35,15 +34,6 @@ int GetSyncConfirmationDialogPreferredHeight(Profile* profile) {
   // dialog and thus it has the same preferred size.
   return profile->IsSyncAllowed() ? kSyncConfirmationDialogHeight
                                   : kSigninErrorDialogHeight;
-}
-
-int GetSyncConfirmationDialogPreferredWidth(Profile* profile) {
-  // If unified consent is enabled, we show a different sync confirmation dialog
-  // which uses a different width.
-  return unified_consent::IsUnifiedConsentFeatureEnabled() &&
-                 profile->IsSyncAllowed()
-             ? kModalDialogWidthForUnifiedConsent
-             : kModalDialogWidth;
 }
 
 }  // namespace
@@ -64,6 +54,9 @@ SigninViewControllerDelegateViews::SigninViewControllerDelegateViews(
   DCHECK(browser_);
   DCHECK(browser_->tab_strip_model()->GetActiveWebContents())
       << "A tab must be active to present the sign-in modal dialog.";
+
+  DialogDelegate::set_buttons(ui::DIALOG_BUTTON_NONE);
+
   web_contents_->SetDelegate(this);
 
   DCHECK(dialog_modal_type == ui::MODAL_TYPE_CHILD ||
@@ -99,10 +92,6 @@ ui::ModalType SigninViewControllerDelegateViews::GetModalType() const {
 
 bool SigninViewControllerDelegateViews::ShouldShowCloseButton() const {
   return false;
-}
-
-int SigninViewControllerDelegateViews::GetDialogButtons() const {
-  return ui::DIALOG_BUTTON_NONE;
 }
 
 void SigninViewControllerDelegateViews::ResizeNativeView(int height) {
@@ -185,7 +174,7 @@ SigninViewControllerDelegateViews::CreateSyncConfirmationWebView(
   return CreateDialogWebView(
       browser, chrome::kChromeUISyncConfirmationURL,
       GetSyncConfirmationDialogPreferredHeight(browser->profile()),
-      GetSyncConfirmationDialogPreferredWidth(browser->profile()));
+      kSyncConfirmationDialogWidth);
 }
 
 std::unique_ptr<views::WebView>

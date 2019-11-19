@@ -252,7 +252,7 @@ MojoSharedBufferVideoFrame::~MojoSharedBufferVideoFrame() {
 }
 
 size_t MojoSharedBufferVideoFrame::PlaneOffset(size_t plane) const {
-  DCHECK(IsValidPlane(plane, format()));
+  DCHECK(IsValidPlane(format(), plane));
   return offsets_[plane];
 }
 

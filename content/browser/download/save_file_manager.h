@@ -71,7 +71,7 @@ class FilePath;
 }
 
 namespace content {
-class ResourceContext;
+class BrowserContext;
 class SaveFile;
 class SavePackage;
 class StoragePartition;
@@ -98,7 +98,7 @@ class CONTENT_EXPORT SaveFileManager
                int render_frame_routing_id,
                SaveFileCreateInfo::SaveFileSource save_source,
                const base::FilePath& file_full_path,
-               ResourceContext* context,
+               BrowserContext* context,
                StoragePartition* storage_partition,
                SavePackage* save_package);
 

@@ -15,7 +15,9 @@ import java.util.Set;
 public class FakeProfileSyncService extends ProfileSyncService {
     private boolean mEngineInitialized;
     private int mNumberOfSyncedDevices;
+    private boolean mPassphraseRequiredForPreferredDataTypes;
     private Set<Integer> mChosenTypes = new HashSet<>();
+    private boolean mCanSyncFeatureStart;
 
     public FakeProfileSyncService() {
         super();
@@ -52,5 +54,24 @@ public class FakeProfileSyncService extends ProfileSyncService {
     @Override
     public Set<Integer> getPreferredDataTypes() {
         return mChosenTypes;
+    }
+
+    @Override
+    public boolean isPassphraseRequiredForPreferredDataTypes() {
+        return mPassphraseRequiredForPreferredDataTypes;
+    }
+
+    public void setPassphraseRequiredForPreferredDataTypes(
+            boolean passphraseRequiredForPreferredDataTypes) {
+        mPassphraseRequiredForPreferredDataTypes = passphraseRequiredForPreferredDataTypes;
+    }
+
+    @Override
+    public boolean canSyncFeatureStart() {
+        return mCanSyncFeatureStart;
+    }
+
+    public void setCanSyncFeatureStart(boolean canSyncFeatureStart) {
+        mCanSyncFeatureStart = canSyncFeatureStart;
     }
 }

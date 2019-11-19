@@ -4,22 +4,65 @@
 
 #include "chrome/browser/chromeos/arc/intent_helper/arc_external_protocol_dialog.h"
 
-#include <memory>
-
 #include "base/macros.h"
+#include "base/time/time.h"
 #include "chrome/browser/chromeos/arc/arc_web_contents_data.h"
+#include "chrome/browser/sharing/click_to_call/click_to_call_ui_controller.h"
+#include "chrome/browser/sharing/mock_sharing_service.h"
+#include "chrome/browser/sharing/sharing_service_factory.h"
+#include "chrome/browser/ui/app_list/arc/arc_app_test.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
+#include "chromeos/dbus/session_manager/fake_session_manager_client.h"
+#include "components/arc/arc_prefs.h"
+#include "components/arc/arc_service_manager.h"
 #include "components/arc/intent_helper/arc_intent_helper_bridge.h"
+#include "components/arc/session/arc_bridge_service.h"
+#include "components/arc/test/connection_holder_util.h"
+#include "components/arc/test/fake_intent_helper_instance.h"
+#include "content/public/browser/render_process_host.h"
+#include "content/public/browser/render_view_host.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "url/gurl.h"
 
 namespace arc {
 
 namespace {
 
-// Helper class to run tests that need a dummy WebContents.
+// Helper class to run tests that need a dummy WebContents and arc bridge.
 class ArcExternalProtocolDialogTestUtils : public BrowserWithTestWindowTest {
  public:
   ArcExternalProtocolDialogTestUtils() = default;
+
+  void SetUp() override {
+    chromeos::SessionManagerClient::InitializeFakeInMemory();
+    chromeos::FakeSessionManagerClient::Get()->set_arc_available(true);
+    BrowserWithTestWindowTest::SetUp();
+
+    profile()->GetPrefs()->SetBoolean(arc::prefs::kArcEnabled, true);
+    arc_test_.set_wait_default_apps(true);
+    arc_test_.SetUp(profile());
+    // Set up ArcIntentHelperBridge to emulate full-duplex IntentHelper
+    // connection.
+    intent_helper_bridge_ = std::make_unique<arc::ArcIntentHelperBridge>(
+        profile(), arc::ArcServiceManager::Get()->arc_bridge_service());
+    arc::ArcServiceManager::Get()
+        ->arc_bridge_service()
+        ->intent_helper()
+        ->SetInstance(&intent_helper_);
+    WaitForInstanceReady(
+        arc::ArcServiceManager::Get()->arc_bridge_service()->intent_helper());
+  }
+
+  void TearDown() override {
+    arc::ArcServiceManager::Get()
+        ->arc_bridge_service()
+        ->intent_helper()
+        ->CloseInstance(&intent_helper_);
+    intent_helper_bridge_.reset();
+    arc_test_.TearDown();
+    BrowserWithTestWindowTest::TearDown();
+    chromeos::SessionManagerClient::Shutdown();
+  }
 
  protected:
   void CreateTab(bool started_from_arc) {
@@ -37,9 +80,35 @@ class ArcExternalProtocolDialogTestUtils : public BrowserWithTestWindowTest {
         web_contents_);
   }
 
+  std::unique_ptr<syncer::DeviceInfo> CreateSharingDevice(
+      const std::string& device_guid) {
+    return std::make_unique<syncer::DeviceInfo>(
+        device_guid, "device_name", "chrome_version", "user_agent",
+        sync_pb::SyncEnums_DeviceType_TYPE_PHONE, "device_id",
+        base::SysInfo::HardwareInfo(),
+        /*last_updated_timestamp=*/base::Time::Now(),
+        /*send_tab_to_self_receiving_enabled=*/false,
+        /*sharing_info=*/base::nullopt);
+  }
+
+  MockSharingService* CreateSharingService() {
+    return static_cast<MockSharingService*>(
+        SharingServiceFactory::GetInstance()->SetTestingFactoryAndUse(
+            profile(),
+            base::BindRepeating([](content::BrowserContext* context) {
+              return static_cast<std::unique_ptr<KeyedService>>(
+                  std::make_unique<MockSharingService>());
+            })));
+  }
+
+  content::WebContents* web_contents() { return web_contents_; }
+
  private:
   // Keep only one |WebContents| at a time.
   content::WebContents* web_contents_;
+  arc::FakeIntentHelperInstance intent_helper_;
+  ArcAppTest arc_test_;
+  std::unique_ptr<arc::ArcIntentHelperBridge> intent_helper_bridge_;
 
   DISALLOW_COPY_AND_ASSIGN(ArcExternalProtocolDialogTestUtils);
 };
@@ -71,29 +140,6 @@ mojom::IntentHandlerInfoPtr Create(const std::string& name,
 }
 
 }  // namespace
-
-// Tests that when no apps are returned from ARC, GetAction returns
-// SHOW_CHROME_OS_DIALOG.
-TEST(ArcExternalProtocolDialogTest, TestGetActionWithNoApp) {
-  std::vector<mojom::IntentHandlerInfoPtr> handlers;
-  GurlAndActivityInfo url_and_activity_name = CreateEmptyGurlAndActivityInfo();
-
-  // Marking this as safe to bypass or not makes no difference since there are
-  // no handlers.
-  bool in_out_safe_to_bypass_ui = false;
-  EXPECT_EQ(GetActionResult::SHOW_CHROME_OS_DIALOG,
-            GetActionForTesting(GURL("external-protocol:foo"), handlers,
-                                handlers.size(), &url_and_activity_name,
-                                &in_out_safe_to_bypass_ui));
-  EXPECT_FALSE(in_out_safe_to_bypass_ui);
-
-  in_out_safe_to_bypass_ui = true;
-  EXPECT_EQ(GetActionResult::SHOW_CHROME_OS_DIALOG,
-            GetActionForTesting(GURL("external-protocol:foo"), handlers,
-                                handlers.size(), &url_and_activity_name,
-                                &in_out_safe_to_bypass_ui));
-  EXPECT_FALSE(in_out_safe_to_bypass_ui);
-}
 
 // Tests that when one app is passed to GetAction but the user hasn't selected
 // it and |in_out_safe_to_bypass_ui| is true, the function returns
@@ -952,6 +998,52 @@ TEST(ArcExternalProtocolDialogTest,
       GetActionForTesting(GURL("intent:foo"), handlers, no_selection,
                           &url_and_activity_name, &in_out_safe_to_bypass_ui));
   EXPECT_TRUE(in_out_safe_to_bypass_ui);
+}
+
+// Tests that clicking on a device calls through to SharingService.
+TEST_F(ArcExternalProtocolDialogTestUtils, TestSelectDeviceForTelLink) {
+  CreateTab(/*started_from_arc=*/false);
+
+  std::string device_guid = "device_guid";
+  MockSharingService* sharing_service = CreateSharingService();
+  content::RenderViewHost* rvh = web_contents()->GetRenderViewHost();
+  std::vector<mojom::IntentHandlerInfoPtr> handlers;
+  std::vector<std::unique_ptr<syncer::DeviceInfo>> devices;
+  devices.push_back(CreateSharingDevice(device_guid));
+
+  EXPECT_CALL(*sharing_service,
+              SendMessageToDevice(testing::Eq(device_guid), testing::_,
+                                  testing::_, testing::_));
+
+  OnIntentPickerClosedForTesting(
+      rvh->GetProcess()->GetID(), rvh->GetRoutingID(), GURL("tel:0123456789"),
+      /*safe_to_bypass_ui=*/true, std::move(handlers), std::move(devices),
+      /*selected_app_package=*/device_guid, apps::PickerEntryType::kDevice,
+      apps::IntentPickerCloseReason::OPEN_APP, /*should_persist=*/false);
+}
+
+TEST_F(ArcExternalProtocolDialogTestUtils, TestDialogWithoutAppsWithDevices) {
+  CreateTab(/*started_from_arc=*/false);
+
+  MockSharingService* sharing_service = CreateSharingService();
+  content::RenderViewHost* rvh = web_contents()->GetRenderViewHost();
+  std::vector<std::unique_ptr<syncer::DeviceInfo>> devices;
+  devices.push_back(CreateSharingDevice("device_guid"));
+
+  EXPECT_CALL(*sharing_service, GetDeviceCandidates(testing::_))
+      .WillOnce(testing::Return(testing::ByMove(std::move(devices))));
+
+  base::RunLoop run_loop;
+  ClickToCallUiController::GetOrCreateFromWebContents(web_contents())
+      ->set_on_dialog_shown_closure_for_testing(run_loop.QuitClosure());
+
+  ASSERT_TRUE(arc::RunArcExternalProtocolDialog(
+      GURL("tel:12341234"), /*initiating_origin=*/base::nullopt,
+      rvh->GetProcess()->GetID(), rvh->GetRoutingID(), ui::PAGE_TRANSITION_LINK,
+      /*has_user_gesture=*/true));
+
+  // Wait until the bubble is visible.
+  run_loop.Run();
 }
 
 }  // namespace arc

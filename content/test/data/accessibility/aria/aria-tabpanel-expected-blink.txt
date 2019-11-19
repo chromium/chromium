@@ -1,10 +1,11 @@
 rootWebArea
-++tabPanel
-++++tab name='Item' selected=false
-++++++heading name='Item' hierarchicalLevel=3
-++++++++staticText name='Item'
-++++++++++inlineTextBox name='Item'
-++++tab name='Prices' selected=false
-++++++heading name='Prices' hierarchicalLevel=3
-++++++++staticText name='Prices'
-++++++++++inlineTextBox name='Prices'
+++genericContainer ignored
+++++tabPanel
+++++++tab name='Item' selected=false
+++++++++heading name='Item' hierarchicalLevel=3
+++++++++++staticText name='Item'
+++++++++++++inlineTextBox name='Item'
+++++++tab name='Prices' selected=false
+++++++++heading name='Prices' hierarchicalLevel=3
+++++++++++staticText name='Prices'
+++++++++++++inlineTextBox name='Prices'

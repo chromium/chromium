@@ -20,7 +20,6 @@ struct StatusIconMenuModel::ItemState {
   bool is_dynamic;
   ui::Accelerator accelerator;
   base::string16 label;
-  base::string16 sublabel;
   gfx::Image icon;
 };
 
@@ -59,13 +58,6 @@ void StatusIconMenuModel::ChangeLabelForCommandId(int command_id,
                                                   const base::string16& label) {
   item_states_[command_id].is_dynamic = true;
   item_states_[command_id].label = label;
-  NotifyMenuStateChanged();
-}
-
-void StatusIconMenuModel::ChangeSublabelForCommandId(
-    int command_id, const base::string16& sublabel) {
-  item_states_[command_id].is_dynamic = true;
-  item_states_[command_id].sublabel = sublabel;
   NotifyMenuStateChanged();
 }
 
@@ -127,14 +119,6 @@ base::string16 StatusIconMenuModel::GetLabelForCommandId(int command_id) const {
   auto iter = item_states_.find(command_id);
   if (iter != item_states_.end())
     return iter->second.label;
-  return base::string16();
-}
-
-base::string16 StatusIconMenuModel::GetSublabelForCommandId(
-    int command_id) const {
-  auto iter = item_states_.find(command_id);
-  if (iter != item_states_.end())
-    return iter->second.sublabel;
   return base::string16();
 }
 

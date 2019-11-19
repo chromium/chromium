@@ -18,7 +18,10 @@ namespace {
 // A helper for the StringAppendV test that follows.
 //
 // Just forwards its args to StringAppendV.
-static void StringAppendVTestHelper(std::string* out, const char* format, ...) {
+template <class CharT>
+static void StringAppendVTestHelper(std::basic_string<CharT>* out,
+                                    const CharT* format,
+                                    ...) {
   va_list ap;
   va_start(ap, format);
   StringAppendV(out, format, ap);
@@ -35,6 +38,7 @@ TEST(StringPrintfTest, StringPrintfMisc) {
   EXPECT_EQ("123hello w", StringPrintf("%3d%2s %1c", 123, "hello", 'w'));
 #if defined(OS_WIN)
   EXPECT_EQ(L"123hello w", StringPrintf(L"%3d%2ls %1lc", 123, L"hello", 'w'));
+  EXPECT_EQ(u"123hello w", StringPrintf(u"%3d%2ls %1lc", 123, u"hello", 'w'));
 #endif
 }
 
@@ -47,6 +51,10 @@ TEST(StringPrintfTest, StringAppendfEmptyString) {
   std::wstring valuew(L"Hello");
   StringAppendF(&valuew, L"%ls", L"");
   EXPECT_EQ(L"Hello", valuew);
+
+  std::u16string value16(u"Hello");
+  StringAppendF(&value16, u"%ls", u"");
+  EXPECT_EQ(u"Hello", value16);
 #endif
 }
 
@@ -59,6 +67,10 @@ TEST(StringPrintfTest, StringAppendfString) {
   std::wstring valuew(L"Hello");
   StringAppendF(&valuew, L" %ls", L"World");
   EXPECT_EQ(L"Hello World", valuew);
+
+  std::u16string value16(u"Hello");
+  StringAppendF(&value16, u" %ls", u"World");
+  EXPECT_EQ(u"Hello World", value16);
 #endif
 }
 
@@ -71,6 +83,10 @@ TEST(StringPrintfTest, StringAppendfInt) {
   std::wstring valuew(L"Hello");
   StringAppendF(&valuew, L" %d", 123);
   EXPECT_EQ(L"Hello 123", valuew);
+
+  std::u16string value16(u"Hello");
+  StringAppendF(&value16, u" %d", 123);
+  EXPECT_EQ(u"Hello 123", value16);
 #endif
 }
 
@@ -79,12 +95,13 @@ TEST(StringPrintfTest, StringAppendfInt) {
 TEST(StringPrintfTest, StringPrintfBounds) {
   const int kSrcLen = 1026;
   char src[kSrcLen];
-  for (auto& i : src)
-    i = 'A';
+  std::fill_n(src, kSrcLen, 'A');
 
   wchar_t srcw[kSrcLen];
-  for (auto& i : srcw)
-    i = 'A';
+  std::fill_n(srcw, kSrcLen, 'A');
+
+  char16_t src16[kSrcLen];
+  std::fill_n(src16, kSrcLen, 'A');
 
   for (int i = 1; i < 3; i++) {
     src[kSrcLen - i] = 0;
@@ -97,6 +114,14 @@ TEST(StringPrintfTest, StringPrintfBounds) {
     std::wstring outw;
     SStringPrintf(&outw, L"%ls", srcw);
     EXPECT_STREQ(srcw, outw.c_str());
+
+    src16[kSrcLen - i] = 0;
+    std::u16string out16;
+    SStringPrintf(&out16, u"%ls", src16);
+    // EXPECT_STREQ does not support const char16_t* strings yet.
+    // Dispatch to the const wchar_t* overload instead.
+    EXPECT_STREQ(reinterpret_cast<const wchar_t*>(src16),
+                 reinterpret_cast<const wchar_t*>(out16.c_str()));
 #endif
   }
 }
@@ -129,6 +154,16 @@ TEST(StringPrintfTest, StringAppendV) {
   std::string out;
   StringAppendVTestHelper(&out, "%d foo %s", 1, "bar");
   EXPECT_EQ("1 foo bar", out);
+
+#if defined(OS_WIN)
+  std::wstring outw;
+  StringAppendVTestHelper(&outw, L"%d foo %ls", 1, L"bar");
+  EXPECT_EQ(L"1 foo bar", outw);
+
+  std::u16string out16;
+  StringAppendVTestHelper(&out16, u"%d foo %ls", 1, u"bar");
+  EXPECT_EQ(u"1 foo bar", out16);
+#endif
 }
 
 // Test the boundary condition for the size of the string_util's

@@ -36,7 +36,7 @@ class LocationProviderAndroid : public LocationProvider {
   mojom::Geoposition last_position_;
   LocationProviderUpdateCallback callback_;
 
-  base::WeakPtrFactory<LocationProviderAndroid> weak_ptr_factory_;
+  base::WeakPtrFactory<LocationProviderAndroid> weak_ptr_factory_{this};
 };
 
 }  // namespace device

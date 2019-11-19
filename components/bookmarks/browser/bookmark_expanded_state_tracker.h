@@ -39,7 +39,7 @@ class BookmarkExpandedStateTracker : public BaseBookmarkModelObserver {
   void BookmarkModelBeingDeleted(BookmarkModel* model) override;
   void BookmarkNodeRemoved(BookmarkModel* model,
                            const BookmarkNode* parent,
-                           int old_index,
+                           size_t old_index,
                            const BookmarkNode* node,
                            const std::set<GURL>& removed_urls) override;
   void BookmarkAllUserNodesRemoved(BookmarkModel* model,

@@ -16,7 +16,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/task/post_task.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/assist_ranker/proto/ranker_model.pb.h"
 #include "components/assist_ranker/proto/translate_ranker_model.pb.h"
@@ -76,7 +76,7 @@ class RankerModelLoaderImplTest : public ::testing::Test {
   void OnModelAvailable(std::unique_ptr<RankerModel> model);
 
   // Sets up the task scheduling/task-runner environment for each test.
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_;
 
   // Override the default URL loader to return custom responses for tests.
   network::TestURLLoaderFactory test_loader_factory_;
@@ -175,7 +175,7 @@ bool RankerModelLoaderImplTest::DoLoaderTest(const base::FilePath& model_path,
       test_shared_loader_factory_, model_path, model_url,
       "RankerModelLoaderImplTest");
   loader->NotifyOfRankerActivity();
-  scoped_task_environment_.RunUntilIdle();
+  task_environment_.RunUntilIdle();
 
   return true;
 }
@@ -187,7 +187,7 @@ void RankerModelLoaderImplTest::InitRemoteModels() {
   test_loader_factory_.AddResponse(invalid_model_url_.spec(),
                                    kInvalidModelData);
   test_loader_factory_.AddResponse(
-      failed_model_url_, network::ResourceResponseHead(), "",
+      failed_model_url_, network::mojom::URLResponseHead::New(), "",
       network::URLLoaderCompletionStatus(net::HTTP_INTERNAL_SERVER_ERROR));
 }
 

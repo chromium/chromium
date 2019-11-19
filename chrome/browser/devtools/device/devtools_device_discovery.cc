@@ -46,9 +46,8 @@ const char kPageReloadCommand[] = "{'method': 'Page.reload', id: 1}";
 const char kWebViewSocketPrefix[] = "webview_devtools_remote";
 
 static void ScheduleTaskDefault(const base::Closure& task) {
-  base::PostDelayedTaskWithTraits(
-      FROM_HERE, {BrowserThread::UI}, task,
-      base::TimeDelta::FromMilliseconds(kPollingIntervalMs));
+  base::PostDelayedTask(FROM_HERE, {BrowserThread::UI}, task,
+                        base::TimeDelta::FromMilliseconds(kPollingIntervalMs));
 }
 
 // ProtocolCommand ------------------------------------------------------------
@@ -152,7 +151,7 @@ class AgentHostDelegate : public content::DevToolsExternalAgentProxyDelegate {
       const std::string& local_id,
       const std::string& target_path,
       const std::string& type,
-      base::DictionaryValue* value);
+      base::Value* value);
   ~AgentHostDelegate() override;
 
  private:
@@ -162,7 +161,7 @@ class AgentHostDelegate : public content::DevToolsExternalAgentProxyDelegate {
                     const std::string& local_id,
                     const std::string& target_path,
                     const std::string& type,
-                    base::DictionaryValue* value);
+                    base::Value* value);
   // DevToolsExternalAgentProxyDelegate overrides.
   void Attach(content::DevToolsExternalAgentProxy* proxy) override;
   void Detach(content::DevToolsExternalAgentProxy* proxy) override;
@@ -197,22 +196,20 @@ class AgentHostDelegate : public content::DevToolsExternalAgentProxyDelegate {
   DISALLOW_COPY_AND_ASSIGN(AgentHostDelegate);
 };
 
-static std::string GetStringProperty(base::DictionaryValue* value,
+static std::string GetStringProperty(const base::Value& value,
                                      const std::string& name) {
-  std::string result;
-  value->GetString(name, &result);
-  return result;
+  const std::string* result = value.FindStringKey(name);
+  return result ? *result : std::string();
 }
 
-static std::string BuildUniqueTargetId(
-    const std::string& serial,
-    const std::string& browser_id,
-    base::DictionaryValue* value) {
+static std::string BuildUniqueTargetId(const std::string& serial,
+                                       const std::string& browser_id,
+                                       const base::Value& value) {
   return base::StringPrintf("%s:%s:%s", serial.c_str(),
       browser_id.c_str(), GetStringProperty(value, "id").c_str());
 }
 
-static std::string GetFrontendURLFromValue(base::DictionaryValue* value,
+static std::string GetFrontendURLFromValue(const base::Value& value,
                                            const std::string& browser_version) {
   std::string frontend_url = GetStringProperty(value, "devtoolsFrontendUrl");
   size_t ws_param = frontend_url.find("?ws");
@@ -225,7 +222,7 @@ static std::string GetFrontendURLFromValue(base::DictionaryValue* value,
   return frontend_url;
 }
 
-static std::string GetTargetPath(base::DictionaryValue* value) {
+static std::string GetTargetPath(const base::Value& value) {
   std::string target_path = GetStringProperty(value, "webSocketDebuggerUrl");
 
   if (base::StartsWith(target_path, "ws://", base::CompareCase::SENSITIVE)) {
@@ -248,7 +245,7 @@ AgentHostDelegate::GetOrCreateAgentHost(
     const std::string& local_id,
     const std::string& target_path,
     const std::string& type,
-    base::DictionaryValue* value) {
+    base::Value* value) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   scoped_refptr<DevToolsAgentHost> result =
       DevToolsAgentHost::GetForId(local_id);
@@ -270,21 +267,21 @@ AgentHostDelegate::AgentHostDelegate(
     const std::string& local_id,
     const std::string& target_path,
     const std::string& type,
-    base::DictionaryValue* value)
+    base::Value* value)
     : device_(device),
       browser_id_(browser_id),
       local_id_(local_id),
       target_path_(target_path),
       remote_type_(type),
-      remote_id_(value ? GetStringProperty(value, "id") : ""),
-      frontend_url_(value ? GetFrontendURLFromValue(value, browser_version)
+      remote_id_(value ? GetStringProperty(*value, "id") : ""),
+      frontend_url_(value ? GetFrontendURLFromValue(*value, browser_version)
                           : ""),
       title_(value ? base::UTF16ToUTF8(net::UnescapeForHTML(
-                         base::UTF8ToUTF16(GetStringProperty(value, "title"))))
+                         base::UTF8ToUTF16(GetStringProperty(*value, "title"))))
                    : ""),
-      description_(value ? GetStringProperty(value, "description") : ""),
-      url_(GURL(value ? GetStringProperty(value, "url") : "")),
-      favicon_url_(GURL(value ? GetStringProperty(value, "faviconUrl") : "")),
+      description_(value ? GetStringProperty(*value, "description") : ""),
+      url_(GURL(value ? GetStringProperty(*value, "url") : "")),
+      favicon_url_(GURL(value ? GetStringProperty(*value, "faviconUrl") : "")),
       agent_host_(nullptr) {}
 
 AgentHostDelegate::~AgentHostDelegate() {
@@ -459,26 +456,24 @@ void DevToolsDeviceDiscovery::DiscoveryRequest::ReceivedVersion(
   if (result < 0)
     return;
   // Parse version, append to package name if available,
-  std::unique_ptr<base::Value> value =
-      base::JSONReader::ReadDeprecated(response);
-  base::DictionaryValue* dict;
-  if (value && value->GetAsDictionary(&dict)) {
-    std::string browser_name;
-    if (dict->GetString("Browser", &browser_name)) {
+  base::Optional<base::Value> value = base::JSONReader::Read(response);
+  if (value && value->is_dict()) {
+    const std::string* browser_name = value->FindStringKey("Browser");
+    if (browser_name) {
       std::vector<std::string> parts = base::SplitString(
-          browser_name, "/", base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+          *browser_name, "/", base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
       if (parts.size() == 2)
         browser->version_ = parts[1];
       else
-        browser->version_ = browser_name;
+        browser->version_ = *browser_name;
     }
-    browser->browser_target_id_ = GetTargetPath(dict);
+    browser->browser_target_id_ = GetTargetPath(*value);
     if (browser->browser_target_id_.empty())
       browser->browser_target_id_ = kBrowserTargetSocket;
-    std::string package;
-    if (dict->GetString("Android-Package", &package)) {
+    const std::string* package = value->FindStringKey("Android-Package");
+    if (package) {
       browser->display_name_ =
-          AndroidDeviceManager::GetBrowserName(browser->socket(), package);
+          AndroidDeviceManager::GetBrowserName(browser->socket(), *package);
     }
   }
 }
@@ -491,15 +486,13 @@ void DevToolsDeviceDiscovery::DiscoveryRequest::ReceivedPages(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (result < 0)
     return;
-  std::unique_ptr<base::Value> value =
-      base::JSONReader::ReadDeprecated(response);
-  base::ListValue* list_value;
-  if (value && value->GetAsList(&list_value)) {
-    for (const auto& page_value : *list_value) {
-      const base::DictionaryValue* dict;
-      if (page_value.GetAsDictionary(&dict))
+  base::Optional<base::Value> value = base::JSONReader::Read(response);
+  if (value && value->is_list()) {
+    for (base::Value& page_value : value->GetList()) {
+      if (page_value.is_dict())
         browser->pages_.push_back(new RemotePage(device, browser->browser_id_,
-                                                 browser->version_, *dict));
+                                                 browser->version_,
+                                                 std::move(page_value)));
     }
   }
 }
@@ -510,25 +503,24 @@ DevToolsDeviceDiscovery::RemotePage::RemotePage(
     scoped_refptr<AndroidDeviceManager::Device> device,
     const std::string& browser_id,
     const std::string& browser_version,
-    const base::DictionaryValue& dict)
+    base::Value dict)
     : device_(device),
       browser_id_(browser_id),
       browser_version_(browser_version),
-      dict_(dict.DeepCopy()) {}
+      dict_(std::move(dict)) {}
 
 DevToolsDeviceDiscovery::RemotePage::~RemotePage() {
 }
 
 scoped_refptr<content::DevToolsAgentHost>
 DevToolsDeviceDiscovery::RemotePage::CreateTarget() {
-  std::string local_id = BuildUniqueTargetId(device_->serial(),
-                                             browser_id_,
-                                             dict_.get());
-  std::string target_path = GetTargetPath(dict_.get());
-  std::string type = GetStringProperty(dict_.get(), "type");
+  std::string local_id =
+      BuildUniqueTargetId(device_->serial(), browser_id_, dict_);
+  std::string target_path = GetTargetPath(dict_);
+  std::string type = GetStringProperty(dict_, "type");
   agent_host_ = AgentHostDelegate::GetOrCreateAgentHost(
       device_, browser_id_, browser_version_, local_id, target_path, type,
-      dict_.get());
+      &dict_);
   return agent_host_;
 }
 
@@ -593,8 +585,7 @@ DevToolsDeviceDiscovery::DevToolsDeviceDiscovery(
     const DeviceListCallback& callback)
     : device_manager_(device_manager),
       callback_(callback),
-      task_scheduler_(base::Bind(&ScheduleTaskDefault)),
-      weak_factory_(this) {
+      task_scheduler_(base::Bind(&ScheduleTaskDefault)) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   RequestDeviceList();
 }

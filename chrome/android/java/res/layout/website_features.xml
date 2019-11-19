@@ -17,4 +17,7 @@
       android:layout_height="wrap_content"
       android:visibility="gone"
       tools:ignore="ContentDescription" />
+
+  <include layout="@layout/preference_chrome_image_view"
+      android:visibility="gone" />
 </LinearLayout>

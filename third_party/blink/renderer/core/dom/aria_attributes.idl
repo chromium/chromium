@@ -2,13 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// ARIA reflection
+// ARIA reflection, note this doesn't include relationship properties,
+// which is defined in AriaRelationshipAttributes.
 // https://w3c.github.io/aria/#idl-interface
 [
-    NoInterfaceObject,
-    RuntimeEnabled=AccessibilityObjectModel
-] interface AriaAttributes {
-    [CEReactions, Reflect=aria_activedescendant] attribute DOMString? ariaActiveDescendant;
+    RuntimeEnabled=AOMAriaProperties
+] interface mixin AriaAttributes {
     [CEReactions, Reflect=aria_atomic] attribute DOMString? ariaAtomic;
     [CEReactions, Reflect=aria_autocomplete] attribute DOMString? ariaAutoComplete;
     [CEReactions, Reflect=aria_busy] attribute DOMString? ariaBusy;
@@ -16,26 +15,19 @@
     [CEReactions, Reflect=aria_colcount] attribute DOMString? ariaColCount;
     [CEReactions, Reflect=aria_colindex] attribute DOMString? ariaColIndex;
     [CEReactions, Reflect=aria_colspan] attribute DOMString? ariaColSpan;
-    [CEReactions, Reflect=aria_controls] attribute DOMString? ariaControls;
     [CEReactions, Reflect=aria_current] attribute DOMString? ariaCurrent;
-    [CEReactions, Reflect=aria_describedby] attribute DOMString? ariaDescribedBy;
-    [CEReactions, Reflect=aria_details] attribute DOMString? ariaDetails;
     [CEReactions, Reflect=aria_disabled] attribute DOMString? ariaDisabled;
-    [CEReactions, Reflect=aria_errormessage] attribute DOMString? ariaErrorMessage;
     [CEReactions, Reflect=aria_expanded] attribute DOMString? ariaExpanded;
-    [CEReactions, Reflect=aria_flowto] attribute DOMString? ariaFlowTo;
     [CEReactions, Reflect=aria_haspopup] attribute DOMString? ariaHasPopup;
     [CEReactions, Reflect=aria_hidden] attribute DOMString? ariaHidden;
     [CEReactions, Reflect=aria_keyshortcuts] attribute DOMString? ariaKeyShortcuts;
     [CEReactions, Reflect=aria_label] attribute DOMString? ariaLabel;
-    [CEReactions, Reflect=aria_labelledby] attribute DOMString? ariaLabelledBy;
     [CEReactions, Reflect=aria_level] attribute DOMString? ariaLevel;
     [CEReactions, Reflect=aria_live] attribute DOMString? ariaLive;
     [CEReactions, Reflect=aria_modal] attribute DOMString? ariaModal;
     [CEReactions, Reflect=aria_multiline] attribute DOMString? ariaMultiLine;
     [CEReactions, Reflect=aria_multiselectable] attribute DOMString? ariaMultiSelectable;
     [CEReactions, Reflect=aria_orientation] attribute DOMString? ariaOrientation;
-    [CEReactions, Reflect=aria_owns] attribute DOMString? ariaOwns;
     [CEReactions, Reflect=aria_placeholder] attribute DOMString? ariaPlaceholder;
     [CEReactions, Reflect=aria_posinset] attribute DOMString? ariaPosInSet;
     [CEReactions, Reflect=aria_pressed] attribute DOMString? ariaPressed;
@@ -54,4 +46,5 @@
     [CEReactions, Reflect=aria_valuetext] attribute DOMString? ariaValueText;
 };
 
-Element implements AriaAttributes;
+Element includes AriaAttributes;
+ElementInternals includes AriaAttributes;

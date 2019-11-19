@@ -7,16 +7,6 @@
   await TestRunner.loadModule('security_test_runner');
   await TestRunner.showPanel('security');
 
-  /** @type {!Protocol.Security.InsecureContentStatus} */
-  var insecureContentStatus = {
-    ranMixedContent: false,
-    displayedMixedContent: false,
-    ranContentWithCertErrors: false,
-    displayedContentWithCertErrors: false,
-    ranInsecureContentStyle: Protocol.Security.SecurityState.Insecure,
-    displayedInsecureContentStyle: Protocol.Security.SecurityState.Neutral
-  };
-
   // Explanations from https://cbc.badssl.com/ as of 2016-06-13.
   // We explicitly place the explanation with the security state "info"
   // first to make sure it gets reordered.
@@ -52,7 +42,7 @@
       .dispatchEventToListeners(
           Security.SecurityModel.Events.SecurityStateChanged,
           new Security.PageSecurityState(
-              Protocol.Security.SecurityState.Secure, true, explanations, insecureContentStatus, null));
+              Protocol.Security.SecurityState.Secure, explanations, null));
 
   var request = new SDK.NetworkRequest(0, 'http://foo.test', 'https://foo.test', 0, 0, null);
   SecurityTestRunner.dispatchRequestFinished(request);

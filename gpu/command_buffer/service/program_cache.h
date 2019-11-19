@@ -10,10 +10,11 @@
 #include <map>
 #include <string>
 #include <unordered_map>
+#include <unordered_set>
 
+#include "base/hash/sha1.h"
 #include "base/macros.h"
 #include "base/memory/memory_pressure_listener.h"
-#include "base/sha1.h"
 #include "gpu/command_buffer/common/gl2_types.h"
 #include "gpu/gpu_gles2_export.h"
 
@@ -58,6 +59,8 @@ class GPU_GLES2_EXPORT ProgramCache {
 
   explicit ProgramCache(size_t max_cache_size_bytes);
   virtual ~ProgramCache();
+
+  bool HasSuccessfullyCompiledShader(const std::string& shader_signature) const;
 
   LinkedProgramStatus GetLinkedProgramStatus(
       const std::string& shader_signature_a,
@@ -115,6 +118,8 @@ class GPU_GLES2_EXPORT ProgramCache {
   // called by implementing class after a shader was successfully cached
   void LinkedProgramCacheSuccess(const std::string& program_hash);
 
+  void CompiledShaderCacheSuccess(const std::string& shader_hash);
+
   // result is not null terminated
   void ComputeShaderHash(const std::string& shader,
                          char* result) const;
@@ -129,7 +134,9 @@ class GPU_GLES2_EXPORT ProgramCache {
       GLenum transform_feedback_buffer_mode,
       char* result) const;
 
-  void Evict(const std::string& program_hash);
+  void Evict(const std::string& program_hash,
+             const std::string& shader_0_hash,
+             const std::string& shader_1_hash);
 
   // Used by the passthrough program cache to notify when a new blob is
   // inserted.
@@ -137,12 +144,15 @@ class GPU_GLES2_EXPORT ProgramCache {
 
  private:
   typedef std::unordered_map<std::string, LinkedProgramStatus> LinkStatusMap;
+  typedef std::unordered_set<std::string> CachedCompiledShaderSet;
 
   // called to clear the backend cache
   virtual void ClearBackend() = 0;
 
   const size_t max_size_bytes_;
   LinkStatusMap link_status_;
+  // only cache the hash of successfully compiled shaders
+  CachedCompiledShaderSet compiled_shaders_;
 
   DISALLOW_COPY_AND_ASSIGN(ProgramCache);
 };

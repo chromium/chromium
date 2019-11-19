@@ -1,0 +1,6 @@
+document
+++group
+++++description Name='Some LTR text'
+++++description Name=' '
+++++description Name='Some RTL text '
+++++description Name='with some LTR text embedded'

@@ -1,23 +1,8 @@
 android.webkit.WebView focusable focused scrollable
-++android.widget.ListView collection item_count=7 row_count=7
-++++android.view.View collection_item
-++++++android.view.View name='• '
-++++++android.view.View name='copy'
-++++android.view.View collection_item item_index=1 row_index=1
-++++++android.view.View name='• '
-++++++android.view.View name='move'
-++++android.view.View collection_item item_index=2 row_index=2
-++++++android.view.View name='• '
-++++++android.view.View name='link'
-++++android.view.View collection_item item_index=3 row_index=3
-++++++android.view.View name='• '
-++++++android.view.View name='execute'
-++++android.view.View collection_item item_index=4 row_index=4
-++++++android.view.View name='• '
-++++++android.view.View name='popup'
-++++android.view.View collection_item item_index=5 row_index=5
-++++++android.view.View name='• '
-++++++android.view.View name='none(default)'
-++++android.view.View collection_item item_index=6 row_index=6
-++++++android.view.View name='• '
-++++++android.view.View name='link'
+++android.view.View name='copy'
+++android.view.View name='move'
+++android.view.View name='link'
+++android.view.View name='execute'
+++android.view.View name='popup'
+++android.view.View name='none(default)'
+++android.view.View name='link popup'

@@ -4,8 +4,12 @@
 
 #include "services/device/time_zone_monitor/time_zone_monitor.h"
 
+#include <memory>
+
+#include "base/logging.h"
 #include "base/macros.h"
 #include "chromeos/settings/timezone_settings.h"
+#include "third_party/icu/source/i18n/unicode/timezone.h"
 
 namespace device {
 
@@ -23,7 +27,9 @@ class TimeZoneMonitorChromeOS
 
   // chromeos::system::TimezoneSettings::Observer implementation.
   void TimezoneChanged(const icu::TimeZone& time_zone) override {
-    NotifyClients();
+    // ICU's default time zone is already set to a new zone. No need to redetect
+    // it with detectHostTimeZone() or to update ICU.
+    NotifyClients(GetTimeZoneId(time_zone));
   }
 
  private:

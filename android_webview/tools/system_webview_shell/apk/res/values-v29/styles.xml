@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2019 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<resources>
+  <style name="ShellTheme" parent="Theme.AppCompat.DayNight.NoActionBar">
+    <item name="android:forceDarkAllowed">true</item>
+    <item name="android:isLightTheme">true</item>
+  </style>
+</resources>

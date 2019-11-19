@@ -1,20 +1,8 @@
-<link rel="import" href="chrome://resources/html/polymer.html">
 
-<link rel="import" href="chrome://resources/cr_elements/cr_icons_css.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_toolbar/cr_toolbar.html">
-<link rel="import" href="chrome://resources/cr_elements/icons.html">
-<link rel="import" href="chrome://resources/cr_elements/shared_style_css.html">
-<link rel="import" href="chrome://resources/html/i18n_behavior.html">
-<link rel="import" href="chrome://resources/html/load_time_data.html">
-<link rel="import" href="chrome://resources/html/web_ui_listener_behavior.html">
-<link rel="import" href="icons.html">
-<link rel="import" href="management_browser_proxy.html">
-
-<dom-module id="management-ui">
-  <template>
-    <style>
+    <style include="cr-icons cr-hidden-style cr-page-host-style
+        cr-shared-style">
       :host {
-        @apply --cr-page-host;
+        color: var(--cr-secondary-text-color);
         display: flex;
         flex-direction: column;
         height: 100%;
@@ -26,226 +14,297 @@
       }
 
       cr-toolbar {
-        background-color: var(--md-toolbar-color);
         flex-shrink: 0;
       }
 
       main {
-        overflow: auto;
-        padding-bottom: 2em;
-      }
-
-      .header {
-        font-weight: 500;
-      }
-
-      h2 {
-        @apply --cr-title-text;
-        font-weight: 600;
-      }
-
-      .subtitle {
-        margin: 1em 0;
-      }
-
-      section {
-        @apply --cr-section;
+        height: 100%;
+        overflow: overlay;
       }
 
       .sections-container {
         @apply --cr-centered-card-container;
-        margin-top: var(--cr-centered-card-container-vertical-margin);
+        height: 100%;
       }
 
       .card {
         @apply --cr-card-elevation;
         background-color: var(--cr-card-background-color);
-        border-radius: var(--cr-card-border-radius);
         margin: 0 3px;
+        min-height: 100%;
       }
 
-      .browser-report iron-icon {
-        margin-inline-end: 20px;
+      .page-subtitle {
+        align-items: center;
+        box-sizing: border-box;
+        flex-direction: row;
+        justify-content: start;
+        min-height: 73px;
+        padding-bottom: 24px;
+        padding-top: 6px;
       }
 
-      .browser-report {
-        align-items: start;
-        display: flex;
-        margin: 12px 0;
+      .page-subtitle cr-icon-button {
+        margin-inline-end: 10px;
+        margin-inline-start: -10px;
       }
 
-      .single-column {
+      .overview-section div + div {
+        margin-top: 16px;
+      }
+
+      .overview-container img {
+        float: left;
+        margin-inline-end: 10px;
+        vertical-align: top;
+        width: 20%;
+      }
+
+      .overview-container div {
+        display: block;
+        overflow: hidden;
+        width: auto;
+      }
+
+      .overview-messages {
+        margin-top: 0;
+      }
+
+      .overview-messages li {
+        margin-top: 8px;
+      }
+
+      th {
+        font-weight: 500;
+      }
+
+      .subtitle {
+        margin-top: 16px;
+      }
+
+      section {
+        @apply --cr-section;
         align-items: flex-start;
+        border-top: none;
         flex-direction: column;
         justify-content: center;
+        padding-bottom: 12px;
+        padding-top: 12px;
       }
 
-      .content-indented {
-        margin-inline-start: 20px;
-      }
-
-      .three-line {
-        min-height: var(--cr-section-three-line-min-height);
-      }
-
-<if expr="chromeos">
-      .device-reporting div {
-        align-items: center;
-        display: flex;
-      }
-
-      .device-reporting div + div {
-        margin-top: 2em;
-      }
-
-      .device-reporting iron-icon {
-        margin-inline-end: 10px;
-        width: 24px;
-      }
-
-      .device-reporting {
-        margin-bottom: 2em;
-      }
-</if>
-
-      .extension-name {
-        align-items: center;
-        display: flex;
-        flex: 2;
-      }
-
-      .extension-name > div {
-        align-items: center;
-        display: flex;
-      }
-
-      .extension-name img {
-        margin-inline-end: 20px;
-      }
-
-      .extension-permissions {
-        flex: 3;
-      }
-
-      .extensions-list .list-item {
-        display: flex;
-      }
-
-      .browser-report li,
-      .extensions-list li {
-        padding: 2px;
-      }
-
-      .browser-report ul,
-      .extensions-list ul {
-        list-style: none;
-        padding: 0;
-      }
-
-      .browser-report ul {
+      section:not(.page-subtitle) h2 {
+        font-size: 100%;
         margin: 0;
       }
 
-      .list-item div {
-        padding: 0 5px 0;
+      .report iron-icon {
+        height: 20px;
+        margin-inline-end: 16px;
+        width: 20px;
+      }
+
+      .report {
+        align-items: start;
+        display: flex;
+        margin-top: 16px;
+      }
+
+      .content-indented {
+        padding-inline-start: 24px;
+      }
+
+      table {
+        border-spacing: 0 16px;
+        box-sizing: border-box;
+        width: 100%;
+      }
+
+      th,
+      td {
+        text-align: start;
+      }
+
+      td > div {
+        align-items: center;
+        display: flex;
+      }
+
+      .extension-name,
+      .protection-name {
+        width: 40%;
+      }
+
+      .extension-name span {
+        max-width: 200px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .extension-permissions,
+      .protection-permissions {
+        width: 60%;
+      }
+
+      .protection-name,
+      .protection-permissions {
+        vertical-align: top;
+      }
+
+      .extension-name img {
+        height: 20px;
+        margin-inline-end: 12px;
+        width: 20px;
+      }
+
+      .extension-permissions ul,
+      .report ul {
+        list-style: none;
+        margin: 0;
+        padding: 0;
       }
     </style>
 
-    <cr-toolbar page-name="$i18n{title}" show-search="[[showSearchInToolbar_]]">
+    <cr-toolbar page-name="$i18n{toolbarTitle}" role="banner"
+        on-search-changed="onSearchChanged_" clear-label="$i18n{clearSearch}"
+        search-prompt="$i18n{searchPrompt}">
     </cr-toolbar>
     <main id="mainContent">
       <div class="sections-container">
         <div class="card">
-          <if expr="not chromeos">
-            <section class="three-line single-column">
-              <p inner-h-t-m-l="[[i18nAdvanced('browserManagementNotice')]]">
-              </p>
-            </section>
-          </if>
+          <section hidden="[[!managed_]]" class="page-subtitle">
+            <cr-icon-button class="icon-arrow-back" id="closeButton"
+                on-click="onTapBack_" aria-label="$i18n{backButton}">
+            </cr-icon-button>
+            <h2 class="cr-title-text">
+              [[subtitle_]]
+            </h2>
+          </section>
+          <section class="overview-section" hidden="[[!managementOverview_]]">
+<if expr="not chromeos">
+            <div inner-h-t-m-l="[[managementNoticeHtml_]]"></div>
+</if>
 <if expr="chromeos">
+            <div class="overview-container">
+              <img src="[[customerLogo_]]" alt="" aria-hidden="true"
+                  hidden="[[!customerLogo_]]">
+              <div>[[managementOverview_]]</div>
+            </div>
+</if>
+          </section>
+          <template is="dom-if"
+              if="[[showThreatProtectionInfo_(threatProtectionInfo_)]]">
+            <section>
+              <h2 class="cr-title-text">$i18n{threatProtectionTitle}</h2>
+              <div class="subtitle">
+                [[threatProtectionInfo_.description]]
+              </div>
+              <table class="content-indented">
+                <tr>
+                  <th class="protection-name">$i18n{extensionName}</th>
+                  <th class="protection-permissions">
+                    $i18n{extensionPermissions}
+                  </th>
+                </tr>
+                <template is="dom-repeat"
+                    items="[[threatProtectionInfo_.info]]">
+                  <tr>
+                    <td class="protection-name">[[i18n(item.title)]]</td>
+                    <td class="protection-permissions">
+                      [[i18n(item.permission)]]
+                    </td>
+                  </tr>
+                </template>
+              </table>
+            </section>
+          </template>
+
+<if expr="chromeos">
+          <div hidden="[[!localTrustRoots_]]">
+            <section>
+              <h2 class="cr-title-text">$i18n{localTrustRoots}</h2>
+              <div class="subtitle" id="trust-roots-configuration">
+                [[localTrustRoots_]]</div>
+            </section>
+          </div>
           <template is="dom-if"
               if="[[showDeviceReportingInfo_(deviceReportingInfo_)]]">
-            <section class="three-line single-column">
-              <h2>$i18n{deviceReporting}</h2>
-              <div class="content-indented subtitle">
-                  $i18n{deviceConfiguration}
+            <section>
+              <h2 class="cr-title-text">$i18n{deviceReporting}</h2>
+              <div class="subtitle">
+                $i18n{deviceConfiguration}
               </div>
-              <template is="dom-repeat" items="[[deviceReportingInfo_]]">
-                <div class="content-indented device-reporting">
-                  <span>
+              <div class="content-indented">
+                <template is="dom-repeat" items="[[deviceReportingInfo_]]">
+                  <div class="report">
                     <iron-icon icon="[[getIconForDeviceReportingType_(
                         item.reportingType)]]"></iron-icon>
                     [[i18n(item.messageId)]]
-                  </span>
-                </div>
-              </template>
+                  </div>
+                </template>
+              </div>
+            </section>
+          </template>
+</if>
+<if expr="not chromeos">
+          <template is="dom-if"
+              if="[[showBrowserReportingInfo_(browserReportingInfo_)]]">
+            <section>
+              <h2 class="cr-title-text">$i18n{browserReporting}</h2>
+              <div class="subtitle">
+                $i18n{browserReportingExplanation}
+              </div>
+              <div>
+                <template is="dom-repeat" items="[[browserReportingInfo_]]">
+                  <div class="report">
+                    <iron-icon icon="[[item.icon]]"></iron-icon>
+                    <ul>
+                      <template is="dom-repeat" items="[[item.messageIds]]"
+                          as="messageId">
+                        <li inner-h-t-m-l="[[i18nAdvanced(messageId)]]"></li>
+                      </template>
+                    </ul>
+                  </div>
+                </template>
+              </div>
             </section>
           </template>
 </if>
           <template is="dom-if"
-              if="[[showBrowserReportingInfo_(browserReportingInfo_)]]">
-            <section class="three-line single-column">
-              <h2>$i18n{browserReporting}</h2>
-              <div class="content-indented subtitle">
-                $i18n{browserReportingExplanation}
-              </div>
-              <template is="dom-repeat" items="[[browserReportingInfo_]]">
-                <div class="content-indented browser-report">
-                  <iron-icon icon="[[item.icon]]"></iron-icon>
-                  <ul>
-                    <template is="dom-repeat" items="[[item.messageIds]]"
-                        as="messageId">
-                      <li inner-h-t-m-l="[[i18nAdvanced(messageId)]]"></li>
-                    </template>
-                  </ul>
-                </div>
-              </template>
-            </section>
-          </template>
-          <template is="dom-if"
               if="[[showExtensionReportingInfo_(extensions_)]]">
-            <section class="three-line single-column">
-              <h2>$i18n{extensionReporting}</h2>
-              <div class="content-indented subtitle">
-                $i18n{extensionsInstalled}
+            <section class="extension-reporting">
+              <h2 class="cr-title-text">$i18n{extensionReporting}</h2>
+              <div class="subtitle">
+                [[extensionReportingSubtitle_]]
               </div>
-              <div class="extensions-list">
-                <div class="list-item header">
-                  <div class="extension-name">$i18n{extensionName}</div>
-                  <div class="extension-permissions">
+              <table class="content-indented">
+                <tr>
+                  <th class="extension-name">$i18n{extensionName}</th>
+                  <th class="extension-permissions">
                     $i18n{extensionPermissions}
-                  </div>
-                </div>
+                  </th>
+                </tr>
                 <template is="dom-repeat" items="[[extensions_]]">
-                  <div class="list-item">
-                    <div class="extension-name">
-                      <img src="[[item.icon]]"
-                          aria-describedby="a11yAssociation">
-                      <span>[[item.name]]</span>
-                    </div>
-                    <div class="extension-permissions">
+                  <tr>
+                    <td class="extension-name">
+                      <div title="[[item.name]]" role="presentation">
+                        <img src="[[item.icon]]" alt="" aria-hidden="true">
+                        <span>[[item.name]]</span>
+                      </div>
+                    </td>
+                    <td class="extension-permissions">
                       <ul>
                         <template is="dom-repeat" items="[[item.permissions]]"
                             as="permission">
                           <li>[[permission]]</li>
                         </template>
                       </ul>
-                    </div>
+                    </td>
+                  </tr>
                 </template>
-              </div>
+              </table>
             </section>
           </template>
-          <if expr="chromeos">
-            <template is="dom-if" if="[[localTrustRoots_]]">
-              <section class="three-line single-column">
-                <h2>$i18n{localTrustRoots}</h2>
-                <div id="trust-roots-configuration">[[localTrustRoots_]]</div>
-              </section>
-            </template>
-          </if>
         </div>
       </div>
     </main>
-  </template>
-  <script src="management_ui.js"></script>
-</dom-module>

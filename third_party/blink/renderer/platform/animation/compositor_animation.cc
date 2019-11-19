@@ -24,10 +24,12 @@ CompositorAnimation::CreateWorkletAnimation(
     const String& name,
     double playback_rate,
     std::unique_ptr<CompositorScrollTimeline> scroll_timeline,
-    std::unique_ptr<cc::AnimationOptions> options) {
+    std::unique_ptr<cc::AnimationOptions> options,
+    std::unique_ptr<cc::AnimationEffectTimings> effect_timings) {
   return std::make_unique<CompositorAnimation>(cc::WorkletAnimation::Create(
-      worklet_animation_id, std::string(name.Ascii().data(), name.length()),
-      playback_rate, std::move(scroll_timeline), std::move(options)));
+      worklet_animation_id, name.Utf8(), playback_rate,
+      std::move(scroll_timeline), std::move(options),
+      std::move(effect_timings)));
 }
 
 CompositorAnimation::CompositorAnimation(
@@ -133,6 +135,13 @@ void CompositorAnimation::NotifyAnimationTakeover(
         (monotonic_time - base::TimeTicks()).InSecondsF(),
         (animation_start_time - base::TimeTicks()).InSecondsF(),
         std::move(curve));
+  }
+}
+
+void CompositorAnimation::NotifyLocalTimeUpdated(
+    base::Optional<base::TimeDelta> local_time) {
+  if (delegate_) {
+    delegate_->NotifyLocalTimeUpdated(local_time);
   }
 }
 

@@ -5,7 +5,7 @@
 #include "base/android/jni_string.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/metrics_hashes.h"
-#include "jni/AndroidLanguageMetricsBridge_jni.h"
+#include "components/language/android/jni_headers/AndroidLanguageMetricsBridge_jni.h"
 
 const char kTranslateExplicitLanguageAskLanguageAdded[] =
     "Translate.ExplicitLanguageAsk.LanguageAdded";

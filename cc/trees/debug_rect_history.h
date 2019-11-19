@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "cc/input/touch_action.h"
 #include "cc/layers/layer_collections.h"
 #include "ui/gfx/geometry/rect.h"
@@ -18,8 +17,9 @@ namespace cc {
 class LayerImpl;
 class LayerTreeDebugState;
 class LayerTreeImpl;
+class HeadsUpDisplayLayerImpl;
 
-// There are currently six types of debug rects:
+// There are various types of debug rects:
 //
 // - Paint rects (update rects): regions of a layer that needed to be
 // re-uploaded to the texture resource; in most cases implying that they had to
@@ -34,6 +34,9 @@ class LayerTreeImpl;
 // paint rects, (2) property- changed rects, and (3) newly exposed areas.
 //
 // - Screen space rects: this is the region the contents occupy in screen space.
+//
+// - Layout shift rects: regions of an animation frame that were shifted while
+// the page is loading content.
 enum DebugRectType {
   PAINT_RECT_TYPE,
   PROPERTY_CHANGED_RECT_TYPE,
@@ -43,25 +46,32 @@ enum DebugRectType {
   WHEEL_EVENT_HANDLER_RECT_TYPE,
   SCROLL_EVENT_HANDLER_RECT_TYPE,
   NON_FAST_SCROLLABLE_RECT_TYPE,
+  MAIN_THREAD_SCROLLING_REASON_RECT_TYPE,
   ANIMATION_BOUNDS_RECT_TYPE,
+  LAYOUT_SHIFT_RECT_TYPE,
 };
 
 struct DebugRect {
   DebugRect(DebugRectType new_type,
             const gfx::Rect& new_rect,
-            TouchAction new_touch_action)
-      : type(new_type), rect(new_rect), touch_action(new_touch_action) {
+            TouchAction new_touch_action = kTouchActionNone,
+            uint32_t main_thread_scrolling_reasons = 0)
+      : type(new_type),
+        rect(new_rect),
+        touch_action(new_touch_action),
+        main_thread_scrolling_reasons(main_thread_scrolling_reasons) {
     if (type != TOUCH_EVENT_HANDLER_RECT_TYPE)
       DCHECK_EQ(touch_action, kTouchActionNone);
+    if (type != MAIN_THREAD_SCROLLING_REASON_RECT_TYPE)
+      DCHECK(!main_thread_scrolling_reasons);
   }
-  DebugRect(DebugRectType new_type, const gfx::Rect& new_rect)
-      : DebugRect(new_type, new_rect, kTouchActionNone) {}
-
   DebugRectType type;
   gfx::Rect rect;
   // Valid when |type| is |TOUCH_EVENT_HANDLER_RECT_TYPE|, otherwise default to
   // |kTouchActionNone|.
   TouchAction touch_action;
+  // Valid when |type| is |MAIN_THREAD_SCROLLING_REASON_RECT_TYPE|, otherwise 0.
+  uint32_t main_thread_scrolling_reasons;
 };
 
 // This class maintains a history of rects of various types that can be used
@@ -71,13 +81,16 @@ class DebugRectHistory {
  public:
   static std::unique_ptr<DebugRectHistory> Create();
 
+  DebugRectHistory(const DebugRectHistory&) = delete;
   ~DebugRectHistory();
+
+  DebugRectHistory& operator=(const DebugRectHistory&) = delete;
 
   // Note: Saving debug rects must happen before layers' change tracking is
   // reset.
   void SaveDebugRectsForCurrentFrame(
       LayerTreeImpl* tree_impl,
-      LayerImpl* hud_layer,
+      HeadsUpDisplayLayerImpl* hud_layer,
       const RenderSurfaceList& render_surface_list,
       const LayerTreeDebugState& debug_state);
 
@@ -86,6 +99,7 @@ class DebugRectHistory {
  private:
   DebugRectHistory();
 
+  void SaveLayoutShiftRects(HeadsUpDisplayLayerImpl* hud);
   void SavePaintRects(LayerTreeImpl* tree_impl);
   void SavePropertyChangedRects(LayerTreeImpl* tree_impl, LayerImpl* hud_layer);
   void SaveSurfaceDamageRects(const RenderSurfaceList& render_surface_list);
@@ -97,10 +111,9 @@ class DebugRectHistory {
   void SaveScrollEventHandlerRectsCallback(LayerImpl* layer);
   void SaveNonFastScrollableRects(LayerTreeImpl* layer);
   void SaveNonFastScrollableRectsCallback(LayerImpl* layer);
+  void SaveMainThreadScrollingReasonRects(LayerTreeImpl*);
 
   std::vector<DebugRect> debug_rects_;
-
-  DISALLOW_COPY_AND_ASSIGN(DebugRectHistory);
 };
 
 }  // namespace cc

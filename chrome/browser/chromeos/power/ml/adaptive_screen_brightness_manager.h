@@ -12,21 +12,19 @@
 #include "base/optional.h"
 #include "base/scoped_observer.h"
 #include "base/time/time.h"
+#include "chrome/browser/chromeos/power/ml/boot_clock.h"
 #include "chrome/browser/chromeos/power/ml/screen_brightness_event.pb.h"
+#include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/dbus/power_manager/power_supply_properties.pb.h"
-#include "chromeos/dbus/power_manager_client.h"
-#include "mojo/public/cpp/bindings/binding.h"
-#include "services/viz/public/interfaces/compositing/video_detector_observer.mojom.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "services/viz/public/mojom/compositing/video_detector_observer.mojom.h"
+#include "ui/base/user_activity/user_activity_detector.h"
 #include "ui/base/user_activity/user_activity_observer.h"
 
 namespace base {
-class Clock;
 class RepeatingTimer;
 }  // namespace base
-
-namespace ui {
-class UserActivityDetector;
-}  // namespace ui
 
 namespace chromeos {
 
@@ -37,7 +35,6 @@ namespace power {
 namespace ml {
 
 class AdaptiveScreenBrightnessUkmLogger;
-class BootClock;
 class RecentEventsCounter;
 
 // AdaptiveScreenBrightnessManager logs screen brightness and other features
@@ -61,10 +58,8 @@ class AdaptiveScreenBrightnessManager
       chromeos::PowerManagerClient* power_manager_client,
       AccessibilityManager* accessibility_manager,
       MagnificationManager* magnification_manager,
-      viz::mojom::VideoDetectorObserverRequest request,
-      std::unique_ptr<base::RepeatingTimer> periodic_timer,
-      base::Clock* clock,
-      std::unique_ptr<BootClock> boot_clock);
+      mojo::PendingReceiver<viz::mojom::VideoDetectorObserver> receiver,
+      std::unique_ptr<base::RepeatingTimer> periodic_timer);
 
   ~AdaptiveScreenBrightnessManager() override;
 
@@ -107,10 +102,7 @@ class AdaptiveScreenBrightnessManager
 
   void LogEvent();
 
-  // It is base::DefaultClock, but will be set to a mock clock for tests.
-  base::Clock* const clock_;
-  // It is RealBootClock, but will be set to FakeBootClock for tests.
-  const std::unique_ptr<BootClock> boot_clock_;
+  BootClock boot_clock_;
 
   // Timer to trigger periodically for logging data.
   const std::unique_ptr<base::RepeatingTimer> periodic_timer_;
@@ -118,15 +110,15 @@ class AdaptiveScreenBrightnessManager
   const std::unique_ptr<AdaptiveScreenBrightnessUkmLogger> ukm_logger_;
 
   ScopedObserver<ui::UserActivityDetector, ui::UserActivityObserver>
-      user_activity_observer_;
+      user_activity_observer_{this};
   ScopedObserver<chromeos::PowerManagerClient,
                  chromeos::PowerManagerClient::Observer>
-      power_manager_client_observer_;
+      power_manager_client_observer_{this};
 
   AccessibilityManager* const accessibility_manager_;
   MagnificationManager* const magnification_manager_;
 
-  const mojo::Binding<viz::mojom::VideoDetectorObserver> binding_;
+  const mojo::Receiver<viz::mojom::VideoDetectorObserver> receiver_;
 
   // Counters for user events.
   const std::unique_ptr<RecentEventsCounter> mouse_counter_;
@@ -162,7 +154,7 @@ class AdaptiveScreenBrightnessManager
   base::Optional<bool> is_video_playing_;
   base::Optional<ScreenBrightnessEvent_Event_Reason> reason_;
 
-  base::WeakPtrFactory<AdaptiveScreenBrightnessManager> weak_ptr_factory_;
+  base::WeakPtrFactory<AdaptiveScreenBrightnessManager> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(AdaptiveScreenBrightnessManager);
 };

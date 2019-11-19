@@ -2,22 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import <EarlGrey/EarlGrey.h>
-
+#include "base/strings/sys_string_conversions.h"
 #include "base/values.h"
 #import "ios/chrome/browser/autofill/automation/automation_action.h"
-#import "ios/chrome/test/app/chrome_test_util.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
-#import "ios/web/public/test/js_test_util.h"
+#import "ios/testing/earl_grey/earl_grey_test.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
-const char kTestPageDirectory[] = "components/test/data/autofill/";
-const char kTestPageUrl[] = "/credit_card_upload_form_address_and_cc.html";
+const char kTestPageUrl[] = "/components/test/data/autofill/"
+                            "credit_card_upload_form_address_and_cc.html";
 
 // Tests each automation that can be performed, by performing them individually
 // against a self-hosted webpage and verifying the action was performed through
@@ -30,8 +28,9 @@ const char kTestPageUrl[] = "/credit_card_upload_form_address_and_cc.html";
 - (void)setUp {
   [super setUp];
 
-  self.testServer->ServeFilesFromSourceDirectory(
-      base::FilePath(FILE_PATH_LITERAL(kTestPageDirectory)));
+  NSString* bundlePath = [NSBundle bundleForClass:[self class]].resourcePath;
+  self.testServer->ServeFilesFromDirectory(
+      base::FilePath(base::SysNSStringToUTF8(bundlePath)));
   XCTAssertTrue(self.testServer->Start());
 
   [ChromeEarlGrey loadURL:self.testServer->GetURL(kTestPageUrl)];
@@ -47,12 +46,11 @@ const char kTestPageUrl[] = "/credit_card_upload_form_address_and_cc.html";
   AutomationAction* action = [AutomationAction actionWithValueDictionary:dict];
   [action execute];
 
-  NSError* error;
-  id result = chrome_test_util::ExecuteJavaScript(
-      @"document.getElementsByName(\"name_address\")[0].value == \"John "
-      @"Smith\"",
-      &error);
-  GREYAssert([result boolValue] && !error,
+  id result = [ChromeEarlGrey
+      executeJavaScript:
+          @"document.getElementsByName(\"name_address\")[0].value == \"John "
+          @"Smith\""];
+  GREYAssert([result boolValue],
              @"Click automation action did not populate the name field.");
 }
 
@@ -70,7 +68,7 @@ const char kTestPageUrl[] = "/credit_card_upload_form_address_and_cc.html";
   base::DictionaryValue waitForDict = base::DictionaryValue();
   waitForDict.SetKey("type", base::Value("waitFor"));
   base::Value assertions = base::Value(base::Value::Type::LIST);
-  assertions.GetList().emplace_back(base::Value(
+  assertions.Append(base::Value(
       "return document.getElementsByName(\"name_address\")[0].value == \"Jane "
       "Smith\";"));
   waitForDict.SetKey("assertions", std::move(assertions));
@@ -88,11 +86,10 @@ const char kTestPageUrl[] = "/credit_card_upload_form_address_and_cc.html";
       [AutomationAction actionWithValueDictionary:selectDict];
   [selectAction execute];
 
-  NSError* error;
-  id result = chrome_test_util::ExecuteJavaScript(
-      @"document.getElementsByName(\"cc_month_exp\")[0].value == \"6\"",
-      &error);
-  GREYAssert([result boolValue] && !error,
+  id result = [ChromeEarlGrey
+      executeJavaScript:
+          @"document.getElementsByName(\"cc_month_exp\")[0].value == \"6\""];
+  GREYAssert([result boolValue],
              @"Select automation action did not change the dropdown.");
 }
 

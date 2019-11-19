@@ -61,9 +61,9 @@ bool Parser::ReadTagAndValue(Tag* tag, Input* out) {
   return true;
 }
 
-bool Parser::ReadOptionalTag(Tag tag, Input* out, bool* present) {
+bool Parser::ReadOptionalTag(Tag tag, base::Optional<Input>* out) {
   if (!HasMore()) {
-    *present = false;
+    *out = base::nullopt;
     return true;
   }
   Tag actual_tag;
@@ -73,12 +73,20 @@ bool Parser::ReadOptionalTag(Tag tag, Input* out, bool* present) {
   }
   if (actual_tag == tag) {
     CHECK(Advance());
-    *present = true;
     *out = value;
   } else {
     advance_len_ = 0;
-    *present = false;
+    *out = base::nullopt;
   }
+  return true;
+}
+
+bool Parser::ReadOptionalTag(Tag tag, Input* out, bool* present) {
+  base::Optional<Input> tmp_out;
+  if (!ReadOptionalTag(tag, &tmp_out))
+    return false;
+  *present = tmp_out.has_value();
+  *out = tmp_out.value_or(der::Input());
   return true;
 }
 

@@ -24,7 +24,7 @@
 #include "base/numerics/checked_math.h"
 #include "third_party/blink/renderer/core/layout/layout_counter.h"
 
-#ifndef NDEBUG
+#if DCHECK_IS_ON()
 #include <stdio.h>
 #endif
 
@@ -379,7 +379,7 @@ void CounterNode::MoveNonResetSiblingsToChildOf(
   }
 }
 
-#ifndef NDEBUG
+#if DCHECK_IS_ON()
 
 static void ShowTreeAndMark(const CounterNode* node) {
   const CounterNode* root = node;
@@ -405,7 +405,7 @@ static void ShowTreeAndMark(const CounterNode* node) {
 
 }  // namespace blink
 
-#ifndef NDEBUG
+#if DCHECK_IS_ON()
 
 void showCounterTree(const blink::CounterNode* counter) {
   if (counter)

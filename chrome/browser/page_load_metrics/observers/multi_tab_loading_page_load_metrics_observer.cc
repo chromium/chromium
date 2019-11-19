@@ -6,7 +6,7 @@
 
 #include "base/metrics/histogram_macros.h"
 #include "chrome/browser/page_load_metrics/observers/histogram_suffixes.h"
-#include "chrome/browser/page_load_metrics/page_load_metrics_util.h"
+#include "components/page_load_metrics/browser/page_load_metrics_util.h"
 #include "content/public/browser/web_contents.h"
 
 #if defined(OS_ANDROID)
@@ -27,9 +27,6 @@ const char kHistogramPrefixMultiTabLoading2OrMore[] =
 const char kHistogramPrefixMultiTabLoading5OrMore[] =
     "PageLoad.Clients.MultiTabLoading.5OrMore.";
 
-const char kHistogramMultiTabLoadingNumTabsWithInflightLoad[] =
-    "PageLoad.Clients.MultiTabLoading.NumTabsWithInflightLoad";
-
 }  // namespace internal
 
 MultiTabLoadingPageLoadMetricsObserver::
@@ -45,17 +42,6 @@ MultiTabLoadingPageLoadMetricsObserver::OnStart(
     bool started_in_foreground) {
   num_loading_tabs_when_started_ =
       NumberOfTabsWithInflightLoad(navigation_handle);
-  return CONTINUE_OBSERVING;
-}
-
-page_load_metrics::PageLoadMetricsObserver::ObservePolicy
-MultiTabLoadingPageLoadMetricsObserver::OnCommit(
-    content::NavigationHandle* navigation_handle,
-    ukm::SourceId source_id) {
-  // Report here so that this is logged only for normal page loads.
-  UMA_HISTOGRAM_COUNTS_100(
-      internal::kHistogramMultiTabLoadingNumTabsWithInflightLoad,
-      num_loading_tabs_when_started_);
   return num_loading_tabs_when_started_ > 0 ? CONTINUE_OBSERVING
                                             : STOP_OBSERVING;
 }
@@ -81,46 +67,44 @@ MultiTabLoadingPageLoadMetricsObserver::OnCommit(
   } while (false)
 
 void MultiTabLoadingPageLoadMetricsObserver::OnFirstContentfulPaintInPage(
-    const page_load_metrics::mojom::PageLoadTiming& timing,
-    const page_load_metrics::PageLoadExtraInfo& info) {
-  if (WasStartedInForegroundOptionalEventInForeground(
-          timing.paint_timing->first_contentful_paint, info)) {
+    const page_load_metrics::mojom::PageLoadTiming& timing) {
+  if (page_load_metrics::WasStartedInForegroundOptionalEventInForeground(
+          timing.paint_timing->first_contentful_paint, GetDelegate())) {
     RECORD_HISTOGRAMS(internal::kHistogramFirstContentfulPaintSuffix,
                       timing.paint_timing->first_contentful_paint.value());
   }
 
-  if (WasStartedInBackgroundOptionalEventInForeground(
-          timing.paint_timing->first_contentful_paint, info)) {
+  if (page_load_metrics::WasStartedInBackgroundOptionalEventInForeground(
+          timing.paint_timing->first_contentful_paint, GetDelegate())) {
     RECORD_HISTOGRAMS(
         internal::kHistogramForegroundToFirstContentfulPaintSuffix,
         timing.paint_timing->first_contentful_paint.value() -
-            info.first_foreground_time.value());
+            GetDelegate().GetFirstForegroundTime().value());
   }
 }
 
 void MultiTabLoadingPageLoadMetricsObserver::
     OnFirstMeaningfulPaintInMainFrameDocument(
-        const page_load_metrics::mojom::PageLoadTiming& timing,
-        const page_load_metrics::PageLoadExtraInfo& info) {
-  if (WasStartedInForegroundOptionalEventInForeground(
-          timing.paint_timing->first_meaningful_paint, info)) {
+        const page_load_metrics::mojom::PageLoadTiming& timing) {
+  if (page_load_metrics::WasStartedInForegroundOptionalEventInForeground(
+          timing.paint_timing->first_meaningful_paint, GetDelegate())) {
     RECORD_HISTOGRAMS(internal::kHistogramFirstMeaningfulPaintSuffix,
                       timing.paint_timing->first_meaningful_paint.value());
   }
-  if (WasStartedInBackgroundOptionalEventInForeground(
-          timing.paint_timing->first_meaningful_paint, info)) {
+  if (page_load_metrics::WasStartedInBackgroundOptionalEventInForeground(
+          timing.paint_timing->first_meaningful_paint, GetDelegate())) {
     RECORD_HISTOGRAMS(
         internal::kHistogramForegroundToFirstMeaningfulPaintSuffix,
         timing.paint_timing->first_meaningful_paint.value() -
-            info.first_foreground_time.value());
+            GetDelegate().GetFirstForegroundTime().value());
   }
 }
 
 void MultiTabLoadingPageLoadMetricsObserver::OnDomContentLoadedEventStart(
-    const page_load_metrics::mojom::PageLoadTiming& timing,
-    const page_load_metrics::PageLoadExtraInfo& info) {
-  if (WasStartedInForegroundOptionalEventInForeground(
-          timing.document_timing->dom_content_loaded_event_start, info)) {
+    const page_load_metrics::mojom::PageLoadTiming& timing) {
+  if (page_load_metrics::WasStartedInForegroundOptionalEventInForeground(
+          timing.document_timing->dom_content_loaded_event_start,
+          GetDelegate())) {
     RECORD_HISTOGRAMS(
         internal::kHistogramDOMContentLoadedEventFiredSuffix,
         timing.document_timing->dom_content_loaded_event_start.value());
@@ -132,10 +116,9 @@ void MultiTabLoadingPageLoadMetricsObserver::OnDomContentLoadedEventStart(
 }
 
 void MultiTabLoadingPageLoadMetricsObserver::OnLoadEventStart(
-    const page_load_metrics::mojom::PageLoadTiming& timing,
-    const page_load_metrics::PageLoadExtraInfo& info) {
-  if (WasStartedInForegroundOptionalEventInForeground(
-          timing.document_timing->load_event_start, info)) {
+    const page_load_metrics::mojom::PageLoadTiming& timing) {
+  if (page_load_metrics::WasStartedInForegroundOptionalEventInForeground(
+          timing.document_timing->load_event_start, GetDelegate())) {
     RECORD_HISTOGRAMS(internal::kHistogramLoadEventFiredSuffix,
                       timing.document_timing->load_event_start.value());
   } else {

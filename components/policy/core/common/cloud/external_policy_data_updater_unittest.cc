@@ -14,7 +14,7 @@
 #include "base/callback.h"
 #include "base/compiler_specific.h"
 #include "base/run_loop.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/test/test_pending_task.h"
 #include "base/test/test_simple_task_runner.h"
 #include "base/time/time.h"
@@ -73,11 +73,10 @@ class ExternalPolicyDataUpdaterTest : public testing::Test {
   void RequestExternalDataFetch(int key_index, int url_index);
   void RequestExternalDataFetch(int index);
 
-  base::test::ScopedTaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_;
   network::TestURLLoaderFactory test_url_loader_factory_;
   MockFetchSuccessCallbackListener callback_listener_;
   scoped_refptr<base::TestSimpleTaskRunner> backend_task_runner_;
-  std::unique_ptr<ExternalPolicyDataFetcherBackend> fetcher_backend_;
   std::unique_ptr<ExternalPolicyDataUpdater> updater_;
 };
 
@@ -89,11 +88,10 @@ void ExternalPolicyDataUpdaterTest::CreateUpdater(size_t max_parallel_fetches) {
   auto url_loader_factory =
       base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
           &test_url_loader_factory_);
-  fetcher_backend_ = std::make_unique<ExternalPolicyDataFetcherBackend>(
-      std::move(url_loader_factory));
   updater_ = std::make_unique<ExternalPolicyDataUpdater>(
       backend_task_runner_,
-      fetcher_backend_->CreateFrontend(backend_task_runner_),
+      std::make_unique<ExternalPolicyDataFetcher>(std::move(url_loader_factory),
+                                                  backend_task_runner_),
       max_parallel_fetches);
 }
 
@@ -193,7 +191,7 @@ TEST_F(ExternalPolicyDataUpdaterTest, FetchFailure) {
 
   // Make the first fetch fail due to an interrupted connection.
   test_url_loader_factory_.AddResponse(
-      GURL(kExternalPolicyDataURLs[0]), network::ResourceResponseHead(),
+      GURL(kExternalPolicyDataURLs[0]), network::mojom::URLResponseHead::New(),
       std::string(),
       network::URLLoaderCompletionStatus(net::ERR_NETWORK_CHANGED));
   base::RunLoop().RunUntilIdle();
@@ -222,7 +220,7 @@ TEST_F(ExternalPolicyDataUpdaterTest, ServerFailure) {
 
   // Make the first fetch fail with a server error.
   test_url_loader_factory_.AddResponse(
-      GURL(kExternalPolicyDataURLs[0]), network::ResourceResponseHead(),
+      GURL(kExternalPolicyDataURLs[0]), network::mojom::URLResponseHead::New(),
       std::string(),
       network::URLLoaderCompletionStatus(net::HTTP_INTERNAL_SERVER_ERROR));
   base::RunLoop().RunUntilIdle();

@@ -30,11 +30,9 @@ class TestChromeUpdateClientConfig
     : public extensions::ChromeUpdateClientConfig {
  public:
   TestChromeUpdateClientConfig(content::BrowserContext* context,
-                               bool use_JSON,
                                const std::vector<GURL>& update_url,
                                const std::vector<GURL>& ping_url)
       : extensions::ChromeUpdateClientConfig(context),
-        use_JSON_(use_JSON),
         update_url_(update_url),
         ping_url_(ping_url) {}
 
@@ -47,16 +45,13 @@ class TestChromeUpdateClientConfig
 
   std::unique_ptr<update_client::ProtocolHandlerFactory>
   GetProtocolHandlerFactory() const final {
-    if (use_JSON_)
-      return std::make_unique<update_client::ProtocolHandlerFactoryJSON>();
-    return std::make_unique<update_client::ProtocolHandlerFactoryXml>();
+    return std::make_unique<update_client::ProtocolHandlerFactoryJSON>();
   }
 
  protected:
   ~TestChromeUpdateClientConfig() override = default;
 
  private:
-  bool use_JSON_ = false;
   std::vector<GURL> update_url_;
   std::vector<GURL> ping_url_;
 
@@ -116,10 +111,9 @@ class UpdateClientCompleteEventWaiter
 
 }  // namespace
 
-ExtensionUpdateClientBaseTest::ExtensionUpdateClientBaseTest(bool use_JSON)
+ExtensionUpdateClientBaseTest::ExtensionUpdateClientBaseTest()
     : https_server_for_update_(net::EmbeddedTestServer::TYPE_HTTPS),
-      https_server_for_ping_(net::EmbeddedTestServer::TYPE_HTTPS),
-      use_JSON_(use_JSON) {}
+      https_server_for_ping_(net::EmbeddedTestServer::TYPE_HTTPS) {}
 
 ExtensionUpdateClientBaseTest::~ExtensionUpdateClientBaseTest() {}
 
@@ -135,20 +129,18 @@ ConfigFactoryCallback
 ExtensionUpdateClientBaseTest::ChromeUpdateClientConfigFactory() const {
   return base::BindRepeating(
       [](const std::vector<GURL>& update_url, const std::vector<GURL>& ping_url,
-         bool use_JSON, content::BrowserContext* context)
+         content::BrowserContext* context)
           -> scoped_refptr<ChromeUpdateClientConfig> {
         return base::MakeRefCounted<TestChromeUpdateClientConfig>(
-            context, use_JSON, update_url, ping_url);
+            context, update_url, ping_url);
       },
-      GetUpdateUrls(), GetPingUrls(), use_JSON_);
+      GetUpdateUrls(), GetPingUrls());
 }
 
 void ExtensionUpdateClientBaseTest::SetUp() {
   ASSERT_TRUE(https_server_for_update_.InitializeAndListen());
   ASSERT_TRUE(https_server_for_ping_.InitializeAndListen());
 
-  scoped_feature_list_.InitAndEnableFeature(
-      extensions_features::kNewExtensionUpdaterService);
   ChromeUpdateClientConfig::SetChromeUpdateClientConfigFactoryForTesting(
       ChromeUpdateClientConfigFactory());
   ExtensionBrowserTest::SetUp();

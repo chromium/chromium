@@ -3,7 +3,7 @@
 
    <!-- Translate Info Bar -->
   <message name="IDS_TRANSLATE_INFOBAR_OPTIONS_MORE_LANGUAGE" desc="Text for the menu item that lets the user open a dialog to choose another target language for translation, from a list of available languages.">
-    More languages
+    More languages...
   </message>
   <message name="IDS_TRANSLATE_INFOBAR_OPTIONS_NOT_SOURCE_LANGUAGE" desc="Text for the menu item that lets the user open a dialog to choose another language as the source language for translation, from a list of available languages.">
     Page is not in <ph name="language">$1<ex>French</ex></ph>?
@@ -86,6 +86,11 @@
   </message>
   <message name="IDS_TRANSLATE_NOTIFICATION_UNDO" desc="A text label on the translate snackbar widget to undo the this selection.">
     Undo
+  </message>
+
+  <!-- Translate Combobox Text -->
+  <message name="IDS_TRANSLATE_UNKNOWN_SOURCE_LANGUAGE" desc="This text is added to source language combobox dropdown menu for source language not supported or detected.">
+    Unknown
   </message>
 
 </grit-part>

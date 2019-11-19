@@ -4,6 +4,8 @@
 
 #include "ui/views/controls/menu/menu_runner_impl_adapter.h"
 
+#include <utility>
+
 #include "ui/views/controls/menu/menu_model_adapter.h"
 #include "ui/views/controls/menu/menu_runner_impl.h"
 
@@ -12,9 +14,9 @@ namespace internal {
 
 MenuRunnerImplAdapter::MenuRunnerImplAdapter(
     ui::MenuModel* menu_model,
-    const base::Closure& on_menu_done_callback)
+    base::RepeatingClosure on_menu_done_callback)
     : menu_model_adapter_(
-          new MenuModelAdapter(menu_model, on_menu_done_callback)),
+          new MenuModelAdapter(menu_model, std::move(on_menu_done_callback))),
       impl_(new MenuRunnerImpl(menu_model_adapter_->CreateMenu())) {}
 
 bool MenuRunnerImplAdapter::IsRunning() const {
@@ -27,11 +29,11 @@ void MenuRunnerImplAdapter::Release() {
 }
 
 void MenuRunnerImplAdapter::RunMenuAt(Widget* parent,
-                                      MenuButton* button,
+                                      MenuButtonController* button_controller,
                                       const gfx::Rect& bounds,
                                       MenuAnchorPosition anchor,
                                       int32_t types) {
-  impl_->RunMenuAt(parent, button, bounds, anchor, types);
+  impl_->RunMenuAt(parent, button_controller, bounds, anchor, types);
 }
 
 void MenuRunnerImplAdapter::Cancel() {

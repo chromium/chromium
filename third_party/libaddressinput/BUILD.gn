@@ -278,6 +278,7 @@ test("libaddressinput_unittests") {
     ":test_support",
     ":util",
     "//base/test:run_all_unittests",
+    "//base/test:test_support",
     "//components/prefs",
     "//mojo/core/embedder",
     "//net:test_support",
@@ -306,4 +307,14 @@ fuzzer_test("libaddressinput_parse_format_rule_fuzzer") {
     ":util",
   ]
   dict = "//third_party/libaddressinput/fuzz/data/fmt.dict"
+}
+
+fuzzer_test("libaddressinput_address_formatter_fuzzer") {
+  sources = [
+    "fuzz/address_formatter_fuzzer.cc",
+  ]
+  deps = [
+    ":libaddressinput",
+    ":util",
+  ]
 }

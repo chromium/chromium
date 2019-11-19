@@ -3,6 +3,8 @@
 # found in the LICENSE file.
 """Module to hold the Target plugin."""
 
+from __future__ import print_function
+
 import operator
 import re
 
@@ -112,16 +114,16 @@ class Target(cr.base.context.Context, cr.AutoExport):
       target = handler.Build(target_name)
       if target:
         if not target.valid:
-          print 'Invalid target {0} as {1}'.format(
-              target_name, target.build_target)
+          print('Invalid target {0} as {1}'.format(target_name,
+                                                   target.build_target))
           guesses = cr.Builder.GuessTargets(target_name)
           if guesses:
-            print 'Did you mean {0}?'.format(
-                ', '.join(guesses[:-1]) + ' or ' + guesses[-1]
-                if len(guesses) > 1 else guesses[0])
+            print('Did you mean {0}?'
+                  .format(', '.join(guesses[:-1]) + ' or ' +
+                          guesses[-1] if len(guesses) > 1 else guesses[0]))
           exit(1)
         return target
-    print 'Unknown target {0}'.format(target_name)
+    print('Unknown target {0}'.format(target_name))
     exit(1)
 
   @classmethod

@@ -10,12 +10,102 @@ found in the LICENSE file.
   <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
   <meta name="theme-color" id="theme-color">
   <title>$1</title>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet">
   <!-- Placeholder for CSS. -->
   $2
 </head>
 <body class="$3">
   <div id="contentWrap">
     <div id="mainContent">
+      <div id="settingsContainer" class="desktopOnly">
+        <button id="settingsToggle" type="button"
+            aria-label="Adjust appearance settings" tabindex=0>
+          <i class="material-icons">text_format</i>
+        </button>
+        <dialog id="settingsDialog">
+          <div id="settingsHeader">
+            <h2>Reader Mode Styling</h2>
+            <button id="closeSettingsButton" type="button" aria-label="Close settings"
+                tabindex=0>
+              <i class="material-icons">close</i>
+            </button>
+          </div>
+          <div id="settingsFields">
+            <div class="setting">
+              <label for="fontFamilySelection" class="screenReaderOnly">
+                Font Style
+              </label>
+              <select id="fontFamilySelection" name="fontFamily">
+                <option value="sans-serif" selected>Sans-serif font</option>
+                <option value="serif">Serif font</option>
+                <option value="monospace">Monospace font</option>
+              </select>
+            </div>
+            <div class="setting">
+              <fieldset id="themeSelection">
+                <legend class="screenReaderOnly">
+                  Page Theme
+                </legend>
+                <ul>
+                  <li class="themeOption">
+                    <label for="themeOptionLight" class="screenReaderOnly">
+                      Light
+                    </label>
+                    <input type="radio" name="theme" value="light"
+                       id="themeOptionLight" class="light" checked/>
+                    <div class="checkmark"><i class="material-icons">check_circle</i></div>
+                  </li>
+                  <li class="themeOption">
+                    <label for="themeOptionSepia" class="screenReaderOnly">
+                      Sepia
+                    </label>
+                    <input type="radio" name="theme" value="sepia"
+                       id="themeOptionSepia" class="sepia"/>
+                    <div class="checkmark"><i class="material-icons">check_circle</i></div>
+                  </li>
+                  <li class="themeOption">
+                    <label for="themeOptionDark" class="screenReaderOnly">
+                      Dark
+                    </label>
+                    <input type="radio" name="theme" value="dark"
+                        id="themeOptionDark" class="dark"/>
+                    <div class="checkmark"><i class="material-icons">check_circle</i></div>
+                  </li>
+                </ul>
+              </fieldset>
+            </div>
+            <div class="setting" id="fontSizeWrapper">
+              <label for="fontSizeSelection" class="screenReaderOnly">
+                Font Size
+              </label>
+              <input id="fontSizeSelection"
+                     type="range"
+                     name="fontSize"
+                     list="tickmarks"
+                     min="0"
+                     max="9"
+                     value="2">
+              <datalist class="tickmarks">
+                <option value="0" aria-labelledby="slider-label-min"></option>
+                <option value="1"></option>
+                <option value="2"></option>
+                <option value="3"></option>
+                <option value="4"></option>
+                <option value="5"></option>
+                <option value="6"></option>
+                <option value="7"></option>
+                <option value="8"></option>
+                <option value="9" aria-labelledby="slider-label-max"></option>
+              </datalist>
+              <div class="label-container">
+                <span id="slider-label-min">Small</span>
+                <span id="slider-label-max">Large</span>
+              </div>
+            </div>
+          </div>
+        </dialog>
+      </div>
       <article>
         <header id="articleHeader">
           <div id="titleCollapse">
@@ -34,16 +124,6 @@ found in the LICENSE file.
       </div>
     </div>
     <a data-original-url="$7" id="closeReaderView">$8</a>
-  </div>
-  <div id="feedbackContainer" class="footerFeedback hidden">
-    <div class="feedbackContent">
-      <div id="feedbackQuestion"></div>
-      <div class="feedbackButtonWrap">
-        <a class="feedbackButton" id="feedbackNo"></a>
-        <a class="feedbackButton" id="feedbackYes"></a>
-      </div>
-    </div>
-    <div class="clear"></div>
   </div>
 </body>
 </html>

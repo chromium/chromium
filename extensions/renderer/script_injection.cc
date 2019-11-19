@@ -19,7 +19,6 @@
 #include "extensions/common/extension_features.h"
 #include "extensions/common/extension_messages.h"
 #include "extensions/common/host_id.h"
-#include "extensions/renderer/async_scripts_run_info.h"
 #include "extensions/renderer/dom_activity_logger.h"
 #include "extensions/renderer/extension_frame_helper.h"
 #include "extensions/renderer/extensions_renderer_client.h"
@@ -88,14 +87,11 @@ int GetIsolatedWorldIdForInstance(const InjectionHost* injection_host,
 // This class manages its own lifetime.
 class TimedScriptInjectionCallback : public ScriptInjectionCallback {
  public:
-  TimedScriptInjectionCallback(
-      base::WeakPtr<ScriptInjection> injection,
-      scoped_refptr<AsyncScriptsRunInfo> async_run_info)
+  TimedScriptInjectionCallback(base::WeakPtr<ScriptInjection> injection)
       : ScriptInjectionCallback(
             base::Bind(&TimedScriptInjectionCallback::OnCompleted,
                        base::Unretained(this))),
-        injection_(injection),
-        async_run_info_(async_run_info) {}
+        injection_(injection) {}
   ~TimedScriptInjectionCallback() override {}
 
   void OnCompleted(const std::vector<v8::Local<v8::Value>>& result) {
@@ -105,25 +101,19 @@ class TimedScriptInjectionCallback : public ScriptInjectionCallback {
       // If the script will never execute (such as if the context is destroyed),
       // willExecute() will not be called, but OnCompleted() will. Only log a
       // time for execution if the script, in fact, executed.
-      if (!start_time_.is_null()) {
+      if (!start_time_.is_null())
         elapsed = timestamp - start_time_;
-        if (async_run_info_)
-          async_run_info_->OnCompleted(timestamp, elapsed);
-      }
       injection_->OnJsInjectionCompleted(result, elapsed);
     }
   }
 
   void WillExecute() override {
     start_time_ = base::TimeTicks::Now();
-    if (async_run_info_)
-      async_run_info_->WillExecute(start_time_);
   }
 
  private:
   base::WeakPtr<ScriptInjection> injection_;
   base::TimeTicks start_time_;
-  scoped_refptr<AsyncScriptsRunInfo> async_run_info_;
 };
 
 }  // namespace
@@ -177,8 +167,7 @@ ScriptInjection::ScriptInjection(
       complete_(false),
       did_inject_js_(false),
       log_activity_(log_activity),
-      frame_watcher_(new FrameWatcher(render_frame, this)),
-      weak_ptr_factory_(this) {
+      frame_watcher_(new FrameWatcher(render_frame, this)) {
   CHECK(injection_host_.get());
 }
 
@@ -190,7 +179,6 @@ ScriptInjection::~ScriptInjection() {
 ScriptInjection::InjectionResult ScriptInjection::TryToInject(
     UserScript::RunLocation current_location,
     ScriptsRunInfo* scripts_run_info,
-    scoped_refptr<AsyncScriptsRunInfo> async_run_info,
     const CompletionCallback& async_completion_callback) {
   if (current_location < run_location_)
     return INJECTION_WAITING;  // Wait for the right location.
@@ -216,8 +204,7 @@ ScriptInjection::InjectionResult ScriptInjection::TryToInject(
       RequestPermissionFromBrowser();
       return INJECTION_WAITING;  // Wait around for permission.
     case PermissionsData::PageAccess::kAllowed:
-      InjectionResult result =
-          Inject(scripts_run_info, std::move(async_run_info));
+      InjectionResult result = Inject(scripts_run_info);
       // If the injection is blocked, we need to set the manager so we can
       // notify it upon completion.
       if (result == INJECTION_BLOCKED)
@@ -236,7 +223,7 @@ ScriptInjection::InjectionResult ScriptInjection::OnPermissionGranted(
     return INJECTION_FINISHED;
   }
 
-  return Inject(scripts_run_info, nullptr);
+  return Inject(scripts_run_info);
 }
 
 void ScriptInjection::OnHostRemoved() {
@@ -259,8 +246,7 @@ void ScriptInjection::NotifyWillNotInject(
 }
 
 ScriptInjection::InjectionResult ScriptInjection::Inject(
-    ScriptsRunInfo* scripts_run_info,
-    scoped_refptr<AsyncScriptsRunInfo> async_run_info) {
+    ScriptsRunInfo* scripts_run_info) {
   DCHECK(injection_host_);
   DCHECK(scripts_run_info);
   DCHECK(!complete_);
@@ -278,7 +264,7 @@ ScriptInjection::InjectionResult ScriptInjection::Inject(
 
   if (should_inject_js)
     InjectJs(&(scripts_run_info->executing_scripts[host_id().id()]),
-             &(scripts_run_info->num_js), std::move(async_run_info));
+             &(scripts_run_info->num_js));
   if (should_inject_css)
     InjectCss(&(scripts_run_info->injected_stylesheets[host_id().id()]),
               &(scripts_run_info->num_css));
@@ -295,54 +281,41 @@ ScriptInjection::InjectionResult ScriptInjection::Inject(
   return complete_ ? INJECTION_FINISHED : INJECTION_BLOCKED;
 }
 
-void ScriptInjection::InjectJs(
-    std::set<std::string>* executing_scripts,
-    size_t* num_injected_js_scripts,
-    scoped_refptr<AsyncScriptsRunInfo> async_run_info) {
+void ScriptInjection::InjectJs(std::set<std::string>* executing_scripts,
+                               size_t* num_injected_js_scripts) {
   DCHECK(!did_inject_js_);
   blink::WebLocalFrame* web_frame = render_frame_->GetWebFrame();
   std::vector<blink::WebScriptSource> sources = injector_->GetJsSources(
       run_location_, executing_scripts, num_injected_js_scripts);
   DCHECK(!sources.empty());
-  bool in_main_world = injector_->ShouldExecuteInMainWorld();
-  int world_id = in_main_world
-                     ? DOMActivityLogger::kMainWorldId
-                     : GetIsolatedWorldIdForInstance(injection_host_.get(),
-                                                     web_frame);
+  int world_id =
+      GetIsolatedWorldIdForInstance(injection_host_.get(), web_frame);
   bool is_user_gesture = injector_->IsUserGesture();
 
   std::unique_ptr<blink::WebScriptExecutionCallback> callback(
-      new TimedScriptInjectionCallback(weak_ptr_factory_.GetWeakPtr(),
-                                       std::move(async_run_info)));
+      new TimedScriptInjectionCallback(weak_ptr_factory_.GetWeakPtr()));
 
   base::ElapsedTimer exec_timer;
   if (injection_host_->id().type() == HostID::EXTENSIONS && log_activity_)
     DOMActivityLogger::AttachToWorld(world_id, injection_host_->id().id());
-  if (in_main_world) {
-    // We only inject in the main world for javascript: urls.
-    DCHECK_EQ(1u, sources.size());
 
-    web_frame->RequestExecuteScriptAndReturnValue(
-        sources.front(), is_user_gesture, callback.release());
-  } else {
-    blink::WebLocalFrame::ScriptExecutionType option;
-    if (injector_->script_type() == UserScript::CONTENT_SCRIPT) {
-      switch (run_location_) {
-        case UserScript::DOCUMENT_END:
-        case UserScript::DOCUMENT_IDLE:
-          option = blink::WebLocalFrame::kAsynchronousBlockingOnload;
-          break;
-        default:
-          option = blink::WebLocalFrame::kSynchronous;
-          break;
-      }
-    } else {
-      option = blink::WebLocalFrame::kSynchronous;
+  blink::WebLocalFrame::ScriptExecutionType option;
+  if (injector_->script_type() == UserScript::CONTENT_SCRIPT) {
+    switch (run_location_) {
+      case UserScript::DOCUMENT_END:
+      case UserScript::DOCUMENT_IDLE:
+        option = blink::WebLocalFrame::kAsynchronousBlockingOnload;
+        break;
+      default:
+        option = blink::WebLocalFrame::kSynchronous;
+        break;
     }
-    web_frame->RequestExecuteScriptInIsolatedWorld(
-        world_id, &sources.front(), sources.size(), is_user_gesture, option,
-        callback.release());
+  } else {
+    option = blink::WebLocalFrame::kSynchronous;
   }
+  web_frame->RequestExecuteScriptInIsolatedWorld(
+      world_id, &sources.front(), sources.size(), is_user_gesture, option,
+      callback.release());
 }
 
 void ScriptInjection::OnJsInjectionCompleted(

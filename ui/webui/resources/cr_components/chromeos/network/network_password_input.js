@@ -16,7 +16,7 @@ Polymer({
 
   behaviors: [
     I18nBehavior,
-    CrPolicyNetworkBehavior,
+    CrPolicyNetworkBehaviorMojo,
     NetworkConfigElementBehavior,
   ],
 
@@ -41,27 +41,15 @@ Polymer({
       value: false,
       computed: 'getDisabled_(disabled, property)',
     },
-
-    /** @private */
-    restoreUnknown_: {
-      type: Boolean,
-      value: false,
-    },
   },
-
-  observers: [
-    'updateShowPassword_(value)',
-  ],
 
   /** @private */
-  updateShowPassword_: function() {
-    if (this.value == FAKE_CREDENTIAL) {
-      this.showPassword = false;
-    }
-  },
-
   focus: function() {
     this.$$('cr-input').focus();
+
+    // If the input has any contents, the should be selected when focus is
+    // applied.
+    this.$$('cr-input').select();
   },
 
   /**
@@ -70,6 +58,14 @@ Polymer({
    */
   getInputType_: function() {
     return this.showPassword ? 'text' : 'password';
+  },
+
+  /**
+   * @return {boolean}
+   * @private
+   */
+  isShowingPlaceholder_: function() {
+    return this.value == FAKE_CREDENTIAL;
   },
 
   /**
@@ -90,21 +86,16 @@ Polymer({
   },
 
   /**
-   * @param {string}  value
-   * @return {boolean} True if the value equals |FAKE_CREDENTIAL| to
-   * prevent users from seeing this fake credential, but they should be able to
-   * see their custom input.
-   * @private
-   */
-  getButtonDisabled_: function(value) {
-    return value == FAKE_CREDENTIAL;
-  },
-
-  /**
    * @param {!Event} event
    * @private
    */
   onShowPasswordTap_: function(event) {
+    if (this.isShowingPlaceholder_()) {
+      // Never show the actual placeholder, clear the field instead.
+      this.value = '';
+      this.focus();
+    }
+
     this.showPassword = !this.showPassword;
     event.stopPropagation();
   },
@@ -114,56 +105,51 @@ Polymer({
    * @private
    */
   onKeypress_: function(event) {
-    if (event.target.id != 'input' || event.key != 'Enter') {
-      return;
+    if (event.target.id == 'input' && event.key == 'Enter') {
+      event.stopPropagation();
+      this.fire('enter');
     }
-    event.stopPropagation();
-    this.fire('enter');
   },
 
   /**
-   * If the input field is focused and the value is |FAKE_CREDENTIAL|,
-   * clear the value.
-   * @param {!InputEvent} e
+   * @param {!Event} event
    * @private
    */
-  onFocus_: function(e) {
-    if (this.value != FAKE_CREDENTIAL) {
+  onKeydown_: function(event) {
+    if (!this.isShowingPlaceholder_()) {
       return;
     }
-    // We can not rely on data binding to update the target value when a
-    // field is focused.
-    e.target.value = '';
-    this.value = '';
-    // Remember to restore |FAKE_CREDENTIAL| if the user doesn't change
-    // the input value.
-    this.restoreUnknown_ = true;
+
+    if (event.key.indexOf('Arrow') < 0 && event.key != 'Home' &&
+        event.key != 'End') {
+      return;
+    }
+
+    // Prevent cursor navigation keys from working when the placeholder password
+    // is displayed. This prevents using the arrows or home/end keys to
+    // remove or change the selection.
+    event.preventDefault();
   },
 
   /**
-   * If the input field should be restored, restore the |FAKE_CREDENTIAL|
-   * value when the field is unfocused.
-   * @param {!InputEvent} e
+   * @param {!Event} event
    * @private
    */
-  onBlur_: function(e) {
-    if (!this.restoreUnknown_) {
+  onMousedown_: function(event) {
+    if (!this.isShowingPlaceholder_()) {
       return;
     }
-    // The target is still focused so we can not rely on data binding to
-    // update the target value.
-    e.target.value = FAKE_CREDENTIAL;
-    this.value = FAKE_CREDENTIAL;
-  },
 
-  /**
-   * When the input field is changed, clear |restoreUnknown_|.
-   * @param {!InputEvent} e
-   * @private
-   */
-  onInput_: function(e) {
-    this.restoreUnknown_ = false;
-  },
+    if (document.activeElement != event.target) {
+      // Focus the field and select the placeholder text if not already focused.
+      this.focus();
+    }
 
+    // Prevent using the mouse or touchscreen to move the cursor or change the
+    // selection when the placeholder password is displayed.  This prevents
+    // the user from modifying the placeholder, only allows it to be left alone
+    // or completely removed.
+    event.preventDefault();
+  },
 
 });

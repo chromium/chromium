@@ -7,34 +7,25 @@ import android.content.Context;
 import android.view.LayoutInflater;
 
 import org.chromium.base.Callback;
-import org.chromium.components.offline_items_collection.RenameResult;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /**
- * A class to manage Rename Dialog UI.
+ * The Coordinator for the Rename Dialog. Manages UI objects like views and model, and
+ * handles communication with the {@link ModalDialogManager}.
  */
 public class RenameDialogCoordinator {
-    /**
-     * Helper interface for handling rename attempts by the UI, must be called when user click
-     * submit and make the attempt to rename the download item, allows the UI to
-     * response to result of a rename attempt from the backend.
-     */
-    @FunctionalInterface
-    public interface RenameCallback {
-        void attemptRename(String name, Callback</*@RenameResult*/ Integer> callback);
-    }
-
     private final ModalDialogManager mModalDialogManager;
     private final PropertyModel mRenameDialogModel;
     private final RenameDialogCustomView mRenameDialogCustomView;
+    private final Callback<Boolean> mOnClickEventCallback;
+    private final Callback<Integer> mOnDismissEventCallback;
 
-    private String mOriginalName;
-    private RenameCallback mRenameCallback;
-
-    public RenameDialogCoordinator(Context context, ModalDialogManager modalDialogManager) {
+    public RenameDialogCoordinator(Context context, ModalDialogManager modalDialogManager,
+            Callback<Boolean> onClickCallback,
+            Callback</*DialogDismissalCause*/ Integer> dismissCallback) {
         mModalDialogManager = modalDialogManager;
         mRenameDialogCustomView = (RenameDialogCustomView) LayoutInflater.from(context).inflate(
                 org.chromium.chrome.download.R.layout.download_rename_custom_dialog, null);
@@ -49,57 +40,68 @@ public class RenameDialogCoordinator {
                         .with(ModalDialogProperties.NEGATIVE_BUTTON_TEXT, context.getResources(),
                                 org.chromium.chrome.download.R.string.cancel)
                         .build();
-    }
+        mOnClickEventCallback = onClickCallback;
+        mOnDismissEventCallback = dismissCallback;
 
-    /**
-     * Function that will be triggered by UI to show a rename dialog showing {@code originalName}.
-     * @param originalName the Original Name for the download item.
-     * @param callback  the callback that talks to the backend.
-     */
-    public void startRename(String originalName, RenameCallback callback) {
-        mRenameCallback = callback;
-        mOriginalName = originalName;
-        mRenameDialogCustomView.initializeView(originalName);
-        mModalDialogManager.showDialog(mRenameDialogModel, ModalDialogManager.ModalDialogType.APP);
+        mRenameDialogCustomView.setEmptyInputObserver((result) -> {
+            mRenameDialogModel.set(ModalDialogProperties.POSITIVE_BUTTON_DISABLED, result);
+        });
     }
 
     public void destroy() {
+        dismissDialog(DialogDismissalCause.ACTIVITY_DESTROYED);
+    }
+
+    public String getCurSuggestedName() {
+        return mRenameDialogCustomView.getTargetName();
+    }
+
+    /**
+     * Initialize rename dialog view and its sub-components, {@link ModalDialogManager}.
+     * @param name The content to initialize display on EditTextBox.
+     */
+    public void showDialog(String name) {
+        mModalDialogManager.showDialog(
+                mRenameDialogModel, ModalDialogManager.ModalDialogType.APP, true);
+        mRenameDialogCustomView.initializeView(name);
+    }
+
+    /**
+     * Update rename dialog view and its sub-components, {@link ModalDialogManager}.
+     * @param name The content to update the display on EditText box.
+     * @param error {@RenameResult} Error message to display on subtitle view.
+     */
+    public void showDialogWithErrorMessage(String name, int /*RenameResult*/ error) {
+        mRenameDialogCustomView.updateToErrorView(name, error);
+        if (!mModalDialogManager.isShowing()) {
+            mModalDialogManager.showDialog(
+                    mRenameDialogModel, ModalDialogManager.ModalDialogType.APP, true);
+        }
+    }
+
+    public void dismissDialog(int dismissalCause) {
         if (mModalDialogManager != null) {
-            mModalDialogManager.dismissDialog(
-                    mRenameDialogModel, DialogDismissalCause.ACTIVITY_DESTROYED);
+            mModalDialogManager.dismissDialog(mRenameDialogModel, dismissalCause);
         }
     }
 
     private class RenameDialogController implements ModalDialogProperties.Controller {
         @Override
-        public void onDismiss(PropertyModel model, int dismissalCause) {}
+        public void onDismiss(PropertyModel model, int dismissalCause) {
+            mOnDismissEventCallback.onResult(dismissalCause);
+        }
 
         @Override
         public void onClick(PropertyModel model, int buttonType) {
             switch (buttonType) {
                 case ModalDialogProperties.ButtonType.POSITIVE:
-                    String targetName = mRenameDialogCustomView.getTargetName();
-
-                    if (targetName.equals(mOriginalName)) {
-                        mModalDialogManager.dismissDialog(
-                                model, DialogDismissalCause.ACTION_ON_CONTENT);
-                        return;
-                    }
-
-                    mRenameCallback.attemptRename(targetName, result -> {
-                        if (result == RenameResult.SUCCESS) {
-                            mModalDialogManager.dismissDialog(
-                                    model, DialogDismissalCause.POSITIVE_BUTTON_CLICKED);
-                        } else {
-                            mRenameDialogCustomView.updateSubtitleView(result);
-                        }
-                    });
+                    mOnClickEventCallback.onResult(true);
                     break;
                 case ModalDialogProperties.ButtonType.NEGATIVE:
-                    mModalDialogManager.dismissDialog(
-                            model, DialogDismissalCause.NEGATIVE_BUTTON_CLICKED);
+                    mOnClickEventCallback.onResult(false);
                     break;
                 default:
+                    break;
             }
         }
     }

@@ -5,6 +5,7 @@
 <translation id="1185134272377778587">Over Chromium</translation>
 <translation id="1289966288285062467">Privacybeleid van Chromium</translation>
 <translation id="1472013873724362412">Je account werkt niet in Chromium. Neem contact op met je domeinbeheerder of gebruik een gewoon Google-account om je aan te melden.</translation>
+<translation id="1507010443238049608">Help de functies en prestaties van Chromium te verbeteren</translation>
 <translation id="1617663976202781617">Gegevens van Chromium-synchronisatie</translation>
 <translation id="1736662517232558588">Chromium-gegevens gewist</translation>
 <translation id="1838412507805038478">Chromium heeft bevestigd dat <ph name="ISSUER" /> het certificaat voor deze website heeft verstrekt.</translation>
@@ -14,24 +15,16 @@
 <translation id="2168108852149185974">Sommige add-ons kunnen ervoor zorgen dat Chromium crasht. Verwijder de volgende add-ons:</translation>
 <translation id="2178608107313874732">Chromium kan je camera momenteel niet gebruiken</translation>
 <translation id="2195025571279539885">Wil je dat Chromium de volgende keer aanbiedt om pagina's in het <ph name="LANGUAGE_NAME" /> op deze site te vertalen?</translation>
-<translation id="2517624234762908348">Je Chromium-gegevens synchroniseren</translation>
-<translation id="2647554856022461007">Chromium kan webservices gebruiken om de browsefunctionaliteit te verbeteren. Je kunt deze services eventueel uitschakelen. <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
+<translation id="2590893390871230428">Je Chromium-gegevens synchroniseren</translation>
 <translation id="2730884209570016437">Chromium kan je camera niet gebruiken omdat deze wordt gebruikt door een andere app</translation>
 <translation id="2915596697727466327">Chromium gebruikt Face ID om geautoriseerde toegang tot je wachtwoorden mogelijk te maken.</translation>
 <translation id="3256316712990552818">Gekopieerd naar Chromium</translation>
-<translation id="3413120535237193088">Log in bij Chromium om al je bladwijzers op al je apparaten te bekijken.</translation>
-<translation id="3473048256428424907">QR-scanner van Chromium inschakelen</translation>
-<translation id="3605252743693911722">Log in bij Chromium om je bladwijzers, wachtwoorden en meer op al je apparaten op te halen.</translation>
 <translation id="3805899903892079518">Chromium heeft geen toegang tot je foto's of video's. Schakel toegang in via iOS-instellingen &gt; Privacy &gt; Foto's.</translation>
-<translation id="4024541897090868497">Log in bij Chromium om al je tabbladen op al je apparaten te bekijken</translation>
-<translation id="4157467675761413638">Chromium-tip. Voor meer tabbladopties tik je, op de werkbalk onder- of bovenaan het scherm, op de knop 'Tabbladen weergeven' en houd je deze knop vast.</translation>
-<translation id="4241912885070669028">Je logt uit van een account dat wordt beheerd door <ph name="SIGNOUT_MANAGED_DOMAIN" />. Hierdoor worden je Chromium-gegevens verwijderd van dit apparaat. Je gegevens blijven echter opgeslagen in je Google-account.</translation>
-<translation id="4272892696084633551">Help de functies en prestaties van Chromium te verbeteren</translation>
 <translation id="4555020257205549924">Als deze functie is ingeschakeld, biedt Chromium aan pagina's die zijn geschreven in andere talen te vertalen met Google Translate. <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
+<translation id="4681781466797808448">Chromium-scanner inschakelen</translation>
 <translation id="4787850887676698916">Tabbladen die je op andere apparaten in Chromium hebt geopend, worden hier weergegeven.</translation>
-<translation id="495292094137889840">QR-scanner van Chromium gebruiken</translation>
 <translation id="4999538639245140991">Omdat je uitlogt van een account dat wordt beheerd door <ph name="SIGNOUT_MANAGED_DOMAIN" />, worden je Chromium-gegevens van dit apparaat verwijderd. Je gegevens blijven echter wel in je Google-account staan.</translation>
-<translation id="5231355151045086930">Uitloggen bij Chromium</translation>
+<translation id="5573014823074921752">Chromium-tip. Voor meer tabbladopties tik je op de werkbalk onder- of bovenaan het scherm op de knop 'Tabbladen weergeven' en houd je deze vast.</translation>
 <translation id="5862307444128926510">Welkom bij Chromium</translation>
 <translation id="5945387852661427312">Je logt in met een account dat wordt beheerd door <ph name="DOMAIN" />, waarmee je de eigenaar beheer geeft over je Chromium-gegevens. Je gegevens worden permanent gekoppeld aan dit account. Als je uitlogt van Chromium, worden je gegevens van dit apparaat verwijderd. Ze blijven echter opgeslagen in je Google-account.</translation>
 <translation id="6068866989048414399">Servicevoorwaarden van Chromium</translation>
@@ -48,11 +41,13 @@
 <translation id="7674213385180944843">Open Instellingen &gt; Privacy &gt; Camera &gt; Chromium en zet de camera aan.</translation>
 <translation id="7746854981345936341">Chromium-tip. Sommige knoppen zoals Terug, Vooruit en Zoeken worden nu onderaan het scherm weergegeven.</translation>
 <translation id="786327964234957808">Je wijzigt het synchronisatieaccount van <ph name="USER_EMAIL1" /> in <ph name="USER_EMAIL2" />. Je bestaande Chromium-gegevens worden beheerd door <ph name="DOMAIN" />. Hierdoor worden je gegevens van dit apparaat verwijderd. Je gegevens blijven echter opgeslagen in <ph name="USER_EMAIL1" />.</translation>
+<translation id="7890287942691234100">Chromium-scanner gebruiken</translation>
 <translation id="8073677936375100957">Je Chromium-gegevens van dit apparaat wissen?</translation>
 <translation id="8175055321229419309">Tip: <ph name="BEGIN_LINK" />Verplaats Chromium naar je dock<ph name="END_LINK" /></translation>
 <translation id="8252885722420466166">Gebruik Google in Chromium beter en efficiënter op basis van je locatie.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> De auteurs van Chromium. Alle rechten voorbehouden.</translation>
 <translation id="8809780021347235332">Als je afbeeldingen wilt opslaan, tik je op Instellingen om Chromium je foto's te laten gebruiken</translation>
 <translation id="9022552996538154597">Inloggen bij Chromium</translation>
+<translation id="9217078088703304241"><ph name="BEGIN_LINK" />De geüpdatete servicevoorwaarden van Chromium bekijken<ph name="END_LINK" /></translation>
 <translation id="985602178874221306">De auteurs van Chromium</translation>
 </translationbundle>

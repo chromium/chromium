@@ -9,8 +9,9 @@
 
 #include "base/bind.h"
 #include "media/base/audio_parameters.h"
-#include "media/mojo/interfaces/audio_logging.mojom.h"
-#include "mojo/public/cpp/bindings/binding.h"
+#include "media/mojo/mojom/audio_logging.mojom.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace audio {
@@ -21,15 +22,15 @@ class MockLog : public media::mojom::AudioLog {
   ~MockLog() override;
 
   // Should only be called once.
-  media::mojom::AudioLogPtr MakePtr() {
-    media::mojom::AudioLogPtr ptr;
-    binding_.Bind(mojo::MakeRequest(&ptr));
-    binding_.set_connection_error_handler(base::BindOnce(
+  mojo::PendingRemote<media::mojom::AudioLog> MakeRemote() {
+    mojo::PendingRemote<media::mojom::AudioLog> remote;
+    receiver_.Bind(remote.InitWithNewPipeAndPassReceiver());
+    receiver_.set_disconnect_handler(base::BindOnce(
         &MockLog::BindingConnectionError, base::Unretained(this)));
-    return ptr;
+    return remote;
   }
 
-  void CloseBinding() { binding_.Close(); }
+  void CloseBinding() { receiver_.reset(); }
 
   MOCK_METHOD2(OnCreated,
                void(const media::AudioParameters& params,
@@ -45,7 +46,7 @@ class MockLog : public media::mojom::AudioLog {
   MOCK_METHOD0(BindingConnectionError, void());
 
  private:
-  mojo::Binding<media::mojom::AudioLog> binding_;
+  mojo::Receiver<media::mojom::AudioLog> receiver_;
 
   DISALLOW_COPY_AND_ASSIGN(MockLog);
 };

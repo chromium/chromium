@@ -48,7 +48,7 @@ class PersistentEventStore : public EventStore {
   // fails.
   bool ready_;
 
-  base::WeakPtrFactory<PersistentEventStore> weak_ptr_factory_;
+  base::WeakPtrFactory<PersistentEventStore> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(PersistentEventStore);
 };

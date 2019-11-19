@@ -13,6 +13,7 @@
 #include "base/callback.h"
 #include "base/time/time.h"
 #include "net/url_request/url_request.h"
+#include "services/network/public/mojom/url_response_head.mojom-forward.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -25,7 +26,6 @@ struct RedirectInfo;
 
 namespace network {
 class SimpleURLLoader;
-struct ResourceResponseHead;
 }  // namespace network
 
 namespace customtabs {
@@ -70,7 +70,7 @@ class DetachedResourceRequest {
   static void Start(std::unique_ptr<DetachedResourceRequest> request,
                     content::BrowserContext* browser_context);
   void OnRedirectCallback(const net::RedirectInfo& redirect_info,
-                          const network::ResourceResponseHead& response_head,
+                          const network::mojom::URLResponseHead& response_head,
                           std::vector<std::string>* to_be_removed_headers);
   void OnResponseCallback(std::unique_ptr<std::string> response_body);
 

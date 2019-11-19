@@ -1,0 +1,59 @@
+    <style>
+      #item {
+        @apply --layout-center;
+        @apply --layout-horizontal;
+        cursor: pointer;
+        height: 30px;
+        position: relative;
+      }
+
+      #item:hover {
+        background-color: var(--cr-menu-background-focus-color);
+      }
+
+      paper-ripple {
+        /* Allowing the ripple to capture pointer events prevents a focus
+         * rectangle for showing up for clicks, while still allowing it with
+         * tab-navigation. This undoes a paper-ripple bug fix aimed at
+         * non-Chrome browsers. TODO(tsergeant): Improve focus in
+         * viewer-bookmark so this can be removed (https://crbug.com/5448190).
+         */
+        pointer-events: auto;
+      }
+
+      #title {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      #expand {
+        --cr-icon-button-color: var(--primary-text-color);
+        --cr-icon-button-icon-size: 16px;
+        --cr-icon-button-size: 28px;
+        margin: 0;
+        transition: transform 150ms;
+      }
+
+      :host-context([dir=rtl]) #expand {
+        transform: rotate(180deg);
+      }
+
+      :host([children-shown_]) #expand {
+        transform: rotate(90deg);
+      }
+    </style>
+    <div id="item" on-click="onClick_">
+      <paper-ripple></paper-ripple>
+      <cr-icon-button id="expand" iron-icon="cr:chevron-right"
+          on-click="toggleChildren_"></cr-icon-button>
+      <span id="title" tabindex="0">{{bookmark.title}}</span>
+    </div>
+    <!-- dom-if will stamp the complex bookmark tree lazily as individual nodes
+      are opened. -->
+    <template is="dom-if" if="[[childrenShown_]]">
+      <template is="dom-repeat" items="[[bookmark.children]]">
+        <viewer-bookmark bookmark="{{item}}" depth="[[childDepth_]]">
+        </viewer-bookmark>
+      </template>
+    </template>

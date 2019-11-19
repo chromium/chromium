@@ -20,15 +20,14 @@
 namespace blink {
 
 void EmbeddedContentPainter::PaintReplaced(const PaintInfo& paint_info,
-                                           const LayoutPoint& paint_offset) {
+                                           const PhysicalOffset& paint_offset) {
   EmbeddedContentView* embedded_content_view =
       layout_embedded_content_.GetEmbeddedContentView();
   if (!embedded_content_view)
     return;
 
   IntPoint paint_location(RoundedIntPoint(
-      paint_offset +
-      layout_embedded_content_.ReplacedContentRect().Location()));
+      paint_offset + layout_embedded_content_.ReplacedContentRect().offset));
 
   IntSize view_paint_offset =
       paint_location - embedded_content_view->FrameRect().Location();

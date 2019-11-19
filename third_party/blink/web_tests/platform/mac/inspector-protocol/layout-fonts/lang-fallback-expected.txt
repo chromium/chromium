@@ -1,0 +1,249 @@
+تح
+#ar:
+"Geeza Pro" : 2
+
+ՀՁ
+#hy-am:
+"Mshtakan" : 2
+
+সম
+#bn:
+"Kohinoor Bangla" : 2
+
+⡰⡱
+#en-us-brai:
+"Apple Braille" : 2
+
+ᨀᨁ
+#bug:
+"Times" : 2
+
+ᐐᐑ
+#cans:
+"Euphemia UCAS" : 2
+
+𐊠𐊡
+#xcr:
+"Geneva" : 2
+
+ᎡᎢ
+#chr:
+"Plantagenet Cherokee" : 2
+
+ⲁⲂ
+#copt:
+"Times" : 2
+
+𒀀𒀌
+#akk:
+"Times" : 2
+
+𐠀𐠁
+#ecy:
+"Times" : 2
+
+АБВ
+#ru:
+"Times" : 3
+
+𐐀𐐁
+#en:
+"Baskerville" : 2
+
+अआ
+#hi:
+"ITF Devanagari" : 2
+
+ሁሂ
+#am:
+"Kefa" : 2
+
+ႠႡ
+#ka:
+"Arial Unicode MS" : 2
+
+ΑΒ
+#el:
+"Times" : 2
+
+ਡਢ
+#pa:
+"Gurmukhi MN" : 2
+
+我
+#zh-CN:
+"Songti SC" : 1
+
+我
+#zh-HK:
+"Songti SC" : 1
+
+我
+#zh-Hans:
+"Songti SC" : 1
+
+我
+#zh-Hant:
+"Songti SC" : 1
+
+我
+#ja:
+"Songti SC" : 1
+
+ᄀᄁ
+#ko:
+"AppleMyungjo" : 2
+
+בג
+#he:
+"Lucida Grande" : 2
+
+កខ
+#km:
+"Khmer MN" : 2
+
+𐡁𐡂
+#arc:
+"Times" : 2
+
+𐭡𐭢
+#pal:
+"Times" : 2
+
+𐭁𐭂
+#xpr:
+"Times" : 2
+
+ꦑꦒ
+#jv:
+"Times" : 2
+
+ಡಢ
+#kn:
+"Kannada MN" : 2
+
+𐨐𐨑
+#sa:
+"Times" : 2
+
+໐໑
+#lo:
+"Lao MN" : 2
+
+ꓐꓑ
+#lis:
+"Geneva" : 2
+
+𐊁𐊂
+#xlc:
+"Geneva" : 2
+
+𐤡𐤢
+#xld:
+"Times" : 2
+
+ഡഢ
+#ml:
+"Malayalam MN" : 2
+
+𐦡𐦢
+#script_meroitic:
+"Times" : 2
+
+ကခ
+#my:
+"Myanmar MN" : 2
+
+ᦁᦂ
+#script_new_tai_lue:
+"Times" : 2
+
+߁߂
+#nko:
+"Times" : 2
+
+ᚁ
+#script_ogham:
+"Geneva" : 2
+
+᱑᱒
+#script_ol_chiki:
+"Times" : 2
+
+𐌁𐌂
+#script_old_italic:
+"Geneva" : 2
+
+𐎡𐎢
+#peo:
+"Times" : 2
+
+𐩡𐩢
+#script_old_south_arabian:
+"Times" : 2
+
+ଡଢ
+#or:
+"Oriya MN" : 2
+
+ꡁꡂ
+#script_phags_pa:
+"Times" : 2
+
+ᚠᚡ
+#script_runic:
+"Geneva" : 2
+
+𐑑𐑒
+#script_shavian:
+"Geneva" : 2
+
+එඒ
+#si:
+"Sinhala MN" : 2
+
+𑃑𑃒
+#script_sora_sompeng:
+"Times" : 2
+
+ܑܒ
+#syr:
+"Times" : 2
+
+ᥑᥒ
+#script_tai_le:
+"Times" : 2
+
+றல
+#ta:
+"Tamil Sangam MN" : 2
+
+డఢ
+#te:
+"Kohinoor Telugu" : 2
+
+ށނ
+#script_thaana:
+"Times" : 2
+
+กข
+#th:
+"Thonburi" : 2
+
+༁༂
+#bo:
+"Kokonor" : 2
+
+ⴱⴲ
+#script_tifinagh:
+"Times" : 2
+
+ꔁꔂ
+#vai:
+"Times" : 2
+
+ꀀꀁ
+#yi:
+"Songti SC" : 2
+
+

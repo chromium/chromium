@@ -7,23 +7,25 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <list>
+#include <map>
 #include <memory>
+#include <string>
 
 #include "base/base64.h"
 #include "base/bind.h"
-#include "base/bind_helpers.h"
 #include "base/callback.h"
 #include "base/files/file.h"
+#include "base/files/file_path.h"
 #include "base/location.h"
 #include "base/macros.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/supports_user_data.h"
+#include "base/task/post_task.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/bookmarks/browser/bookmark_codec.h"
@@ -32,7 +34,6 @@
 #include "components/favicon_base/favicon_types.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/notification_source.h"
 #include "net/base/escape.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/favicon_size.h"
@@ -43,7 +44,7 @@ using content::BrowserThread;
 
 namespace {
 
-BookmarkFaviconFetcher* g_fetcher = nullptr;
+const char kBookmarkFaviconFetcherKey[] = "bookmark-favicon-fetcher";
 
 // File header.
 const char kHeader[] =
@@ -92,6 +93,60 @@ const char kFolderChildrenEnd[] = "</DL><p>";
 
 // Number of characters to indent by.
 const size_t kIndentSize = 4;
+
+// Fetches favicons for list of bookmarks and then starts Writer which outputs
+// bookmarks and favicons to html file.
+class BookmarkFaviconFetcher : public base::SupportsUserData::Data {
+ public:
+  // Map of URL and corresponding favicons.
+  typedef std::map<std::string, scoped_refptr<base::RefCountedMemory>>
+      URLFaviconMap;
+
+  BookmarkFaviconFetcher(Profile* profile,
+                         const base::FilePath& path,
+                         BookmarksExportObserver* observer);
+  ~BookmarkFaviconFetcher() override = default;
+
+  // Executes bookmark export process.
+  void ExportBookmarks();
+
+ private:
+  // Recursively extracts URLs from bookmarks.
+  void ExtractUrls(const bookmarks::BookmarkNode* node);
+
+  // Executes Writer task that writes bookmarks data to html file.
+  void ExecuteWriter();
+
+  // Starts async fetch for the next bookmark favicon.
+  // Takes single url from bookmark_urls_ and removes it from the list.
+  // Returns true if there are more favicons to extract.
+  bool FetchNextFavicon();
+
+  // Favicon fetch callback. After all favicons are fetched executes
+  // html output with |background_io_task_runner_|.
+  void OnFaviconDataAvailable(
+      const favicon_base::FaviconRawBitmapResult& bitmap_result);
+
+  // The Profile object used for accessing FaviconService, bookmarks model.
+  Profile* profile_;
+
+  // All URLs that are extracted from bookmarks. Used to fetch favicons
+  // for each of them. After favicon is fetched top url is removed from list.
+  std::list<std::string> bookmark_urls_;
+
+  // Tracks favicon tasks.
+  base::CancelableTaskTracker cancelable_task_tracker_;
+
+  // Map that stores favicon per URL.
+  std::unique_ptr<URLFaviconMap> favicons_map_;
+
+  // Path where html output is stored.
+  base::FilePath path_;
+
+  BookmarksExportObserver* observer_;
+
+  DISALLOW_COPY_AND_ASSIGN(BookmarkFaviconFetcher);
+};
 
 // Class responsible for the actual writing. Takes ownership of favicons_map.
 class Writer : public base::RefCountedThreadSafe<Writer> {
@@ -398,13 +453,8 @@ BookmarkFaviconFetcher::BookmarkFaviconFetcher(
     : profile_(profile),
       path_(path),
       observer_(observer) {
+  DCHECK(!profile->IsOffTheRecord());
   favicons_map_.reset(new URLFaviconMap());
-  registrar_.Add(this,
-                 chrome::NOTIFICATION_PROFILE_DESTROYED,
-                 content::Source<Profile>(profile_));
-}
-
-BookmarkFaviconFetcher::~BookmarkFaviconFetcher() {
 }
 
 void BookmarkFaviconFetcher::ExportBookmarks() {
@@ -420,25 +470,14 @@ void BookmarkFaviconFetcher::ExportBookmarks() {
     ExecuteWriter();
 }
 
-void BookmarkFaviconFetcher::Observe(
-    int type,
-    const content::NotificationSource& source,
-    const content::NotificationDetails& details) {
-  DCHECK_EQ(chrome::NOTIFICATION_PROFILE_DESTROYED, type);
-  if (g_fetcher) {
-    base::ThreadTaskRunnerHandle::Get()->DeleteSoon(FROM_HERE, g_fetcher);
-    g_fetcher = nullptr;
-  }
-}
-
 void BookmarkFaviconFetcher::ExtractUrls(const BookmarkNode* node) {
   if (node->is_url()) {
     std::string url = node->url().spec();
     if (!url.empty())
       bookmark_urls_.push_back(url);
   } else {
-    for (int i = 0; i < node->child_count(); ++i)
-      ExtractUrls(node->GetChild(i));
+    for (const auto& child : node->children())
+      ExtractUrls(child.get());
   }
 }
 
@@ -447,19 +486,17 @@ void BookmarkFaviconFetcher::ExecuteWriter() {
   // for the duration of the write), as such we make a copy of the
   // BookmarkModel using BookmarkCodec then write from that.
   BookmarkCodec codec;
-
-  background_io_task_runner_->PostTask(
+  base::PostTask(
       FROM_HERE,
+      {base::ThreadPool(), base::MayBlock(), base::TaskPriority::BEST_EFFORT},
       base::BindOnce(
           &Writer::DoWrite,
           base::MakeRefCounted<Writer>(
               codec.Encode(BookmarkModelFactory::GetForBrowserContext(profile_),
                            /*sync_metadata_str=*/std::string()),
               path_, favicons_map_.release(), observer_)));
-  if (g_fetcher) {
-    base::ThreadTaskRunnerHandle::Get()->DeleteSoon(FROM_HERE, g_fetcher);
-    g_fetcher = nullptr;
-  }
+  profile_->RemoveUserData(kBookmarkFaviconFetcherKey);
+  // |this| is deleted!
 }
 
 bool BookmarkFaviconFetcher::FetchNextFavicon() {
@@ -511,13 +548,15 @@ namespace bookmark_html_writer {
 void WriteBookmarks(Profile* profile,
                     const base::FilePath& path,
                     BookmarksExportObserver* observer) {
-  // BookmarkModel isn't thread safe (nor would we want to lock it down
-  // for the duration of the write), as such we make a copy of the
-  // BookmarkModel using BookmarkCodec then write from that.
-  if (!g_fetcher) {
-    g_fetcher = new BookmarkFaviconFetcher(profile, path, observer);
-    g_fetcher->ExportBookmarks();
-  }
+  // We allow only one concurrent bookmark export operation per profile.
+  if (profile->GetUserData(kBookmarkFaviconFetcherKey))
+    return;
+
+  auto fetcher =
+      std::make_unique<BookmarkFaviconFetcher>(profile, path, observer);
+  auto* fetcher_ptr = fetcher.get();
+  profile->SetUserData(kBookmarkFaviconFetcherKey, std::move(fetcher));
+  fetcher_ptr->ExportBookmarks();
 }
 
 }  // namespace bookmark_html_writer

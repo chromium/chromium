@@ -48,8 +48,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothMediaEndpointServiceProviderImpl
       : origin_thread_id_(base::PlatformThread::CurrentId()),
         bus_(bus),
         delegate_(delegate),
-        object_path_(object_path),
-        weak_ptr_factory_(this) {
+        object_path_(object_path) {
     VLOG(1) << "Creating Bluetooth Media Endpoint: " << object_path_.value();
     DCHECK(bus_);
     DCHECK(delegate_);
@@ -283,7 +282,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothMediaEndpointServiceProviderImpl
   // Note This should remain the last member so it'll be destroyed and
   // invalidate it's weak pointers before any other members are destroyed.
   base::WeakPtrFactory<BluetoothMediaEndpointServiceProviderImpl>
-      weak_ptr_factory_;
+      weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(BluetoothMediaEndpointServiceProviderImpl);
 };

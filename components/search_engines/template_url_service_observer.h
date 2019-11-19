@@ -5,9 +5,11 @@
 #ifndef COMPONENTS_SEARCH_ENGINES_TEMPLATE_URL_SERVICE_OBSERVER_H_
 #define COMPONENTS_SEARCH_ENGINES_TEMPLATE_URL_SERVICE_OBSERVER_H_
 
+#include "base/observer_list_types.h"
+
 // TemplateURLServiceObserver is notified whenever the set of TemplateURLs
 // are modified.
-class TemplateURLServiceObserver {
+class TemplateURLServiceObserver : public base::CheckedObserver {
  public:
   // Notification that the template url model has changed in some way.
   virtual void OnTemplateURLServiceChanged() = 0;
@@ -18,7 +20,7 @@ class TemplateURLServiceObserver {
   virtual void OnTemplateURLServiceShuttingDown() {}
 
  protected:
-  virtual ~TemplateURLServiceObserver() {}
+  ~TemplateURLServiceObserver() override {}
 };
 
 #endif  // COMPONENTS_SEARCH_ENGINES_TEMPLATE_URL_SERVICE_OBSERVER_H_

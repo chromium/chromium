@@ -9,10 +9,10 @@
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/autofill_data_util.h"
-#include "components/autofill/core/browser/autofill_profile.h"
-#include "components/autofill/core/browser/credit_card.h"
+#include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/field_types.h"
-#include "components/payments/core/autofill_payment_instrument.h"
+#include "components/payments/core/autofill_payment_app.h"
 #include "components/payments/core/currency_formatter.h"
 #include "components/payments/core/payment_item.h"
 #include "components/payments/core/payment_prefs.h"
@@ -25,12 +25,12 @@
 #import "ios/chrome/browser/payments/payment_request_util.h"
 #import "ios/chrome/browser/ui/collection_view/cells/collection_view_footer_item.h"
 #import "ios/chrome/browser/ui/collection_view/cells/collection_view_item.h"
-#import "ios/chrome/browser/ui/colors/MDCPalette+CrAdditions.h"
 #import "ios/chrome/browser/ui/payments/cells/autofill_profile_item.h"
 #import "ios/chrome/browser/ui/payments/cells/payment_method_item.h"
 #import "ios/chrome/browser/ui/payments/cells/payments_text_item.h"
 #import "ios/chrome/browser/ui/payments/cells/price_item.h"
 #include "ios/chrome/browser/ui/util/uikit_ui_util.h"
+#import "ios/chrome/common/colors/semantic_color_names.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 
@@ -142,8 +142,9 @@ using ::payment_request_util::GetShippingSectionTitle;
   if (self.paymentRequest->shipping_profiles().empty()) {
     item.text = base::SysUTF16ToNSString(
         GetAddShippingAddressButtonLabel(self.paymentRequest->shipping_type()));
-    item.trailingImage = TintImage([UIImage imageNamed:@"ic_add"],
-                                   [[MDCPalette greyPalette] tint400]);
+    item.trailingImage = [[UIImage imageNamed:@"ic_add"]
+        imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+    item.trailingImageTintColor = [UIColor colorNamed:kGrey400Color];
   } else {
     item.text = base::SysUTF16ToNSString(GetChooseShippingAddressButtonLabel(
         self.paymentRequest->shipping_type()));
@@ -190,7 +191,7 @@ using ::payment_request_util::GetShippingSectionTitle;
 }
 
 - (CollectionViewItem*)paymentMethodItem {
-  payments::PaymentInstrument* paymentMethod =
+  payments::PaymentApp* paymentMethod =
       self.paymentRequest->selected_payment_method();
   if (paymentMethod) {
     PaymentMethodItem* item = [[PaymentMethodItem alloc] init];
@@ -198,17 +199,17 @@ using ::payment_request_util::GetShippingSectionTitle;
     item.methodDetail = base::SysUTF16ToNSString(paymentMethod->GetSublabel());
 
     switch (paymentMethod->type()) {
-      case payments::PaymentInstrument::Type::AUTOFILL: {
+      case payments::PaymentApp::Type::AUTOFILL: {
         item.methodTypeIcon = NativeImage(paymentMethod->icon_resource_id());
         break;
       }
-      case payments::PaymentInstrument::Type::NATIVE_MOBILE_APP: {
+      case payments::PaymentApp::Type::NATIVE_MOBILE_APP: {
         payments::IOSPaymentInstrument* mobileApp =
             static_cast<payments::IOSPaymentInstrument*>(paymentMethod);
         item.methodTypeIcon = mobileApp->icon_image();
         break;
       }
-      case payments::PaymentInstrument::Type::SERVICE_WORKER_APP: {
+      case payments::PaymentApp::Type::SERVICE_WORKER_APP: {
         NOTIMPLEMENTED();
         break;
       }
@@ -221,8 +222,9 @@ using ::payment_request_util::GetShippingSectionTitle;
   PaymentsTextItem* item = [[PaymentsTextItem alloc] init];
   if (self.paymentRequest->payment_methods().empty()) {
     item.text = l10n_util::GetNSString(IDS_ADD_PAYMENT_METHOD);
-    item.trailingImage = TintImage([UIImage imageNamed:@"ic_add"],
-                                   [[MDCPalette greyPalette] tint400]);
+    item.trailingImage = [[UIImage imageNamed:@"ic_add"]
+        imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+    item.trailingImageTintColor = [UIColor colorNamed:kGrey400Color];
   } else {
     item.text = l10n_util::GetNSString(IDS_CHOOSE_PAYMENT_METHOD);
     item.accessoryType = MDCCollectionViewCellAccessoryDisclosureIndicator;
@@ -263,8 +265,9 @@ using ::payment_request_util::GetShippingSectionTitle;
   PaymentsTextItem* item = [[PaymentsTextItem alloc] init];
   if (self.paymentRequest->contact_profiles().empty()) {
     item.text = l10n_util::GetNSString(IDS_PAYMENT_REQUEST_ADD_CONTACT_INFO);
-    item.trailingImage = TintImage([UIImage imageNamed:@"ic_add"],
-                                   [[MDCPalette greyPalette] tint400]);
+    item.trailingImage = [[UIImage imageNamed:@"ic_add"]
+        imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+    item.trailingImageTintColor = [UIColor colorNamed:kGrey400Color];
   } else {
     item.text = l10n_util::GetNSString(IDS_PAYMENT_REQUEST_CHOOSE_CONTACT_INFO);
     item.accessoryType = MDCCollectionViewCellAccessoryDisclosureIndicator;

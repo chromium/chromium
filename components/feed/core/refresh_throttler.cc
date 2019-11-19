@@ -16,7 +16,6 @@
 #include "base/time/clock.h"
 #include "components/feed/core/pref_names.h"
 #include "components/feed/feed_feature_list.h"
-#include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 
 namespace feed {
@@ -76,12 +75,6 @@ RefreshThrottler::RefreshThrottler(UserClassifier::UserClass user_class,
       base::StringPrintf("NewTabPage.RequestThrottler.PerDay_%s",
                          name_.c_str()),
       1, 100, 50, base::HistogramBase::kUmaTargetedHistogramFlag);
-}
-
-// static
-void RefreshThrottler::RegisterProfilePrefs(PrefRegistrySimple* registry) {
-  registry->RegisterIntegerPref(prefs::kThrottlerRequestCount, 0);
-  registry->RegisterIntegerPref(prefs::kThrottlerRequestsDay, 0);
 }
 
 bool RefreshThrottler::RequestQuota() {

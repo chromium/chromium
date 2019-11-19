@@ -17,8 +17,8 @@ namespace media {
 MultiChannelResampler::MultiChannelResampler(int channels,
                                              double io_sample_rate_ratio,
                                              size_t request_size,
-                                             const ReadCB& read_cb)
-    : read_cb_(read_cb),
+                                             const ReadCB read_cb)
+    : read_cb_(std::move(read_cb)),
       wrapped_resampler_audio_bus_(AudioBus::CreateWrapper(channels)),
       output_frames_ready_(0) {
   // Allocate each channel's resampler.

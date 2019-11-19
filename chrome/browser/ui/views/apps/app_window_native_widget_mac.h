@@ -24,9 +24,9 @@ class AppWindowNativeWidgetMac : public views::NativeWidgetMac {
   // NativeWidgetMac:
   void PopulateCreateWindowParams(
       const views::Widget::InitParams& widget_params,
-      views_bridge_mac::mojom::CreateWindowParams* params) override;
+      remote_cocoa::mojom::CreateWindowParams* params) override;
   NativeWidgetMacNSWindow* CreateNSWindow(
-      const views_bridge_mac::mojom::CreateWindowParams* params) override;
+      const remote_cocoa::mojom::CreateWindowParams* params) override;
 
  private:
   // Weak. Owned by extensions::AppWindow (which manages our Widget via its

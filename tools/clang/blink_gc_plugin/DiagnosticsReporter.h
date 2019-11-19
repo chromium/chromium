@@ -40,14 +40,11 @@ class DiagnosticsReporter {
   void FinalizerAccessesFinalizedFields(
       clang::CXXMethodDecl* dtor,
       const CheckFinalizerVisitor::Errors& errors);
-  void ClassRequiresFinalization(RecordInfo* info);
-  void ClassDoesNotRequireFinalization(RecordInfo* info);
   void ClassMustDeclareGCMixinTraceMethod(RecordInfo* info);
   void OverriddenNonVirtualTrace(RecordInfo* info,
                                  clang::CXXMethodDecl* trace,
                                  clang::CXXMethodDecl* overridden);
   void MissingTraceDispatchMethod(RecordInfo* info);
-  void MissingFinalizeDispatchMethod(RecordInfo* info);
   void VirtualAndManualDispatch(RecordInfo* info,
                                 clang::CXXMethodDecl* dispatch);
   void MissingTraceDispatch(const clang::FunctionDecl* dispatch,
@@ -62,6 +59,9 @@ class DiagnosticsReporter {
                                      clang::CXXRecordDecl* base);
   void BaseClassMustDeclareVirtualTrace(RecordInfo* derived,
                                               clang::CXXRecordDecl* base);
+  void ClassMustCRTPItself(const RecordInfo* derived,
+                           const clang::CXXRecordDecl* base,
+                           const clang::CXXBaseSpecifier* base_spec);
   void TraceMethodForStackAllocatedClass(RecordInfo* parent,
                                          clang::CXXMethodDecl* trace);
 
@@ -71,10 +71,6 @@ class DiagnosticsReporter {
   void NoteFieldShouldNotBeTraced(RecordInfo* holder, clang::FieldDecl* field);
   void NotePartObjectContainsGCRoot(FieldPoint* point);
   void NoteFieldContainsGCRoot(FieldPoint* point);
-  void NoteUserDeclaredDestructor(clang::CXXMethodDecl* dtor);
-  void NoteUserDeclaredFinalizer(clang::CXXMethodDecl* dtor);
-  void NoteBaseRequiresFinalization(BasePoint* base);
-  void NoteFieldRequiresFinalization(FieldPoint* field);
   void NoteField(FieldPoint* point, unsigned note);
   void NoteField(clang::FieldDecl* field, unsigned note);
   void NoteOverriddenNonVirtualTrace(clang::CXXMethodDecl* overridden);
@@ -111,13 +107,9 @@ class DiagnosticsReporter {
   unsigned diag_fields_improperly_traced_;
   unsigned diag_class_contains_invalid_fields_;
   unsigned diag_class_contains_gc_root_;
-  unsigned diag_class_requires_finalization_;
-  unsigned diag_class_does_not_require_finalization_;
   unsigned diag_finalizer_accesses_finalized_field_;
-  unsigned diag_finalizer_eagerly_finalized_field_;
   unsigned diag_overridden_non_virtual_trace_;
   unsigned diag_missing_trace_dispatch_method_;
-  unsigned diag_missing_finalize_dispatch_method_;
   unsigned diag_virtual_and_manual_dispatch_;
   unsigned diag_missing_trace_dispatch_;
   unsigned diag_missing_finalize_dispatch_;
@@ -126,6 +118,7 @@ class DiagnosticsReporter {
   unsigned diag_class_declares_pure_virtual_trace_;
   unsigned diag_left_most_base_must_be_polymorphic_;
   unsigned diag_base_class_must_declare_virtual_trace_;
+  unsigned diag_class_must_crtp_itself_;
 
   unsigned diag_base_requires_tracing_note_;
   unsigned diag_field_requires_tracing_note_;
@@ -142,11 +135,6 @@ class DiagnosticsReporter {
   unsigned diag_part_object_contains_gc_root_note_;
   unsigned diag_field_contains_gc_root_note_;
   unsigned diag_finalized_field_note_;
-  unsigned diag_eagerly_finalized_field_note_;
-  unsigned diag_user_declared_destructor_note_;
-  unsigned diag_user_declared_finalizer_note_;
-  unsigned diag_base_requires_finalization_note_;
-  unsigned diag_field_requires_finalization_note_;
   unsigned diag_overridden_non_virtual_trace_note_;
   unsigned diag_manual_dispatch_method_note_;
   unsigned diag_iterator_to_gc_managed_collection_note_;

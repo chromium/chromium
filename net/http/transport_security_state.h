@@ -34,6 +34,10 @@ class HostPortPair;
 class SSLInfo;
 class X509Certificate;
 
+// Controls whether or not Certificate Transparency should be enforced for
+// newly-issued certificates.
+extern const NET_EXPORT_PRIVATE base::Feature kEnforceCTForNewCerts;
+
 void NET_EXPORT_PRIVATE SetTransportSecurityStateSourceForTesting(
     const TransportSecurityStateSource* source);
 
@@ -330,6 +334,13 @@ class NET_EXPORT TransportSecurityState {
   static const base::Feature kDynamicExpectCTFeature;
 
   TransportSecurityState();
+
+  // Creates a TransportSecurityState object that will skip the check to force
+  // HTTPS from static entries for the given set of hosts. All hostnames in the
+  // bypass list must consist of a single label, i.e. they must be a TLD.
+  explicit TransportSecurityState(
+      std::vector<std::string> hsts_host_bypass_list);
+
   ~TransportSecurityState();
 
   // These functions search for static and dynamic STS and PKP states, and
@@ -654,6 +665,8 @@ class NET_EXPORT TransportSecurityState {
   // rate-limiting.
   ReportCache sent_hpkp_reports_cache_;
   ReportCache sent_expect_ct_reports_cache_;
+
+  std::set<std::string> hsts_host_bypass_list_;
 
   THREAD_CHECKER(thread_checker_);
 

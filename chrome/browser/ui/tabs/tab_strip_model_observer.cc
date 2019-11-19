@@ -4,63 +4,91 @@
 
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 
+#include <utility>
+
+#include "base/logging.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
+
 using content::WebContents;
+
+TabStripModelChange::Insert::Insert() = default;
+TabStripModelChange::Insert::Insert(Insert&& other) = default;
+TabStripModelChange::Insert& TabStripModelChange::Insert::operator=(Insert&&) =
+    default;
+TabStripModelChange::Insert::~Insert() = default;
+
+TabStripModelChange::Remove::Remove() = default;
+TabStripModelChange::Remove::Remove(Remove&& other) = default;
+TabStripModelChange::Remove& TabStripModelChange::Remove::operator=(Remove&&) =
+    default;
+TabStripModelChange::Remove::~Remove() = default;
 
 ////////////////////////////////////////////////////////////////////////////////
 // TabStripModelChange
 //
-// static
-TabStripModelChange::Delta TabStripModelChange::CreateInsertDelta(
-    content::WebContents* contents,
-    int index) {
-  TabStripModelChange::Delta delta;
-  delta.insert = {contents, index};
-  return delta;
-}
-
-// static
-TabStripModelChange::Delta TabStripModelChange::CreateRemoveDelta(
-    content::WebContents* contents,
-    int index,
-    bool will_be_deleted) {
-  TabStripModelChange::Delta delta;
-  delta.remove = {contents, index, will_be_deleted};
-  return delta;
-}
-
-// static
-TabStripModelChange::Delta TabStripModelChange::CreateMoveDelta(
-    content::WebContents* contents,
-    int from_index,
-    int to_index) {
-  TabStripModelChange::Delta delta;
-  delta.move = {contents, from_index, to_index};
-  return delta;
-}
-
-// static
-TabStripModelChange::Delta TabStripModelChange::CreateReplaceDelta(
-    content::WebContents* old_contents,
-    content::WebContents* new_contents,
-    int index) {
-  TabStripModelChange::Delta delta;
-  delta.replace = {old_contents, new_contents, index};
-  return delta;
-}
-
 TabStripModelChange::TabStripModelChange() = default;
 
-TabStripModelChange::TabStripModelChange(Type type, const Delta& delta)
-    : type_(type), deltas_({delta}) {}
+TabStripModelChange::GroupChange::GroupChange() = default;
 
-TabStripModelChange::TabStripModelChange(
-    TabStripModelChange::Type type,
-    const std::vector<TabStripModelChange::Delta>& deltas)
-    : type_(type), deltas_(deltas) {}
+TabStripModelChange::GroupChange::GroupChange(const GroupChange& other) =
+    default;
 
-TabStripModelChange::TabStripModelChange(TabStripModelChange&& other) = default;
+TabStripModelChange::GroupChange& TabStripModelChange::GroupChange::operator=(
+    const GroupChange& other) = default;
+
+TabStripModelChange::GroupChange::~GroupChange() = default;
+
+TabStripModelChange::TabStripModelChange(Insert delta)
+    : TabStripModelChange(Type::kInserted,
+                          std::make_unique<Insert>(std::move(delta))) {}
+
+TabStripModelChange::TabStripModelChange(Remove delta)
+    : TabStripModelChange(Type::kRemoved,
+                          std::make_unique<Remove>(std::move(delta))) {}
+
+TabStripModelChange::TabStripModelChange(Move delta)
+    : TabStripModelChange(Type::kMoved,
+                          std::make_unique<Move>(std::move(delta))) {}
+
+TabStripModelChange::TabStripModelChange(Replace delta)
+    : TabStripModelChange(Type::kReplaced,
+                          std::make_unique<Replace>(std::move(delta))) {}
+
+TabStripModelChange::TabStripModelChange(GroupChange delta)
+    : TabStripModelChange(Type::kGroupChanged,
+                          std::make_unique<GroupChange>(std::move(delta))) {}
 
 TabStripModelChange::~TabStripModelChange() = default;
+
+const TabStripModelChange::Insert* TabStripModelChange::GetInsert() const {
+  DCHECK_EQ(type_, Type::kInserted);
+  return static_cast<const Insert*>(delta_.get());
+}
+
+const TabStripModelChange::Remove* TabStripModelChange::GetRemove() const {
+  DCHECK_EQ(type_, Type::kRemoved);
+  return static_cast<const Remove*>(delta_.get());
+}
+
+const TabStripModelChange::Move* TabStripModelChange::GetMove() const {
+  DCHECK_EQ(type_, Type::kMoved);
+  return static_cast<const Move*>(delta_.get());
+}
+
+const TabStripModelChange::Replace* TabStripModelChange::GetReplace() const {
+  DCHECK_EQ(type_, Type::kReplaced);
+  return static_cast<const Replace*>(delta_.get());
+}
+
+const TabStripModelChange::GroupChange* TabStripModelChange::GetGroupChange()
+    const {
+  DCHECK_EQ(type_, Type::kGroupChanged);
+  return static_cast<const GroupChange*>(delta_.get());
+}
+
+TabStripModelChange::TabStripModelChange(Type type,
+                                         std::unique_ptr<Delta> delta)
+    : type_(type), delta_(std::move(delta)) {}
 
 ////////////////////////////////////////////////////////////////////////////////
 // TabStripSelectionChange
@@ -87,13 +115,25 @@ TabStripSelectionChange& TabStripSelectionChange::operator=(
 ////////////////////////////////////////////////////////////////////////////////
 // TabStripModelObserver
 //
-TabStripModelObserver::TabStripModelObserver() {
+TabStripModelObserver::TabStripModelObserver() {}
+
+TabStripModelObserver::~TabStripModelObserver() {
+  std::set<TabStripModel*> models(observed_models_.begin(),
+                                  observed_models_.end());
+  for (auto* model : models) {
+    model->RemoveObserver(this);
+  }
 }
 
 void TabStripModelObserver::OnTabStripModelChanged(
     TabStripModel* tab_strip_model,
     const TabStripModelChange& change,
     const TabStripSelectionChange& selection) {}
+
+void TabStripModelObserver::OnTabGroupVisualDataChanged(
+    TabStripModel* tab_strip_model,
+    TabGroupId group,
+    const TabGroupVisualData* visual_data) {}
 
 void TabStripModelObserver::TabChangedAt(WebContents* contents,
                                          int index,
@@ -118,3 +158,48 @@ void TabStripModelObserver::WillCloseAllTabs(TabStripModel* tab_strip_model) {}
 void TabStripModelObserver::CloseAllTabsStopped(TabStripModel* tab_strip_model,
                                                 CloseAllStoppedReason reason) {}
 void TabStripModelObserver::SetTabNeedsAttentionAt(int index, bool attention) {}
+void TabStripModelObserver::OnTabStripModelDestroyed(TabStripModel* model) {}
+
+// static
+void TabStripModelObserver::StopObservingAll(TabStripModelObserver* observer) {
+  while (!observer->observed_models_.empty()) {
+    (*observer->observed_models_.begin())->RemoveObserver(observer);
+  }
+}
+
+// static
+bool TabStripModelObserver::IsObservingAny(TabStripModelObserver* observer) {
+  return !observer->observed_models_.empty();
+}
+
+// static
+int TabStripModelObserver::CountObservedModels(
+    TabStripModelObserver* observer) {
+  return observer->observed_models_.size();
+}
+
+void TabStripModelObserver::StartedObserving(
+    TabStripModelObserver::ModelPasskey,
+    TabStripModel* model) {
+  // TODO(https://crbug.com/991308): Add this DCHECK here. This DCHECK enforces
+  // that a given TabStripModelObserver only observes a given TabStripModel
+  // once.
+  // DCHECK_EQ(observed_models_.count(model), 0U);
+  observed_models_.insert(model);
+}
+
+void TabStripModelObserver::StoppedObserving(
+    TabStripModelObserver::ModelPasskey,
+    TabStripModel* model) {
+  // TODO(https://crbug.com/991308): Add this DCHECK here. This DCHECK enforces
+  // that a given TabStripModelObserver is only removed from a given
+  // TabStripModel once.
+  // DCHECK_EQ(observed_models_.count(model), 1U);
+  observed_models_.erase(model);
+}
+
+void TabStripModelObserver::ModelDestroyed(TabStripModelObserver::ModelPasskey,
+                                           TabStripModel* model) {
+  model->RemoveObserver(this);
+  OnTabStripModelDestroyed(model);
+}

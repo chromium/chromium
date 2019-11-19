@@ -5,9 +5,11 @@
 #include <utility>
 
 #include "base/logging.h"
-#include "base/message_loop/message_loop.h"
 #include "base/stl_util.h"
-#include "mojo/public/cpp/bindings/binding.h"
+#include "base/test/task_environment.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/mojom/url_test.mojom.h"
 
@@ -15,8 +17,8 @@ namespace url {
 
 class UrlTestImpl : public mojom::UrlTest {
  public:
-  explicit UrlTestImpl(mojo::InterfaceRequest<mojom::UrlTest> request)
-      : binding_(this, std::move(request)) {}
+  explicit UrlTestImpl(mojo::PendingReceiver<mojom::UrlTest> receiver)
+      : receiver_(this, std::move(receiver)) {}
 
   // UrlTest:
   void BounceUrl(const GURL& in, BounceUrlCallback callback) override {
@@ -28,15 +30,15 @@ class UrlTestImpl : public mojom::UrlTest {
   }
 
  private:
-  mojo::Binding<UrlTest> binding_;
+  mojo::Receiver<UrlTest> receiver_;
 };
 
 // Mojo version of chrome IPC test in url/ipc/url_param_traits_unittest.cc.
 TEST(MojoGURLStructTraitsTest, Basic) {
-  base::MessageLoop message_loop;
+  base::test::SingleThreadTaskEnvironment task_environment;
 
-  mojom::UrlTestPtr proxy;
-  UrlTestImpl impl(MakeRequest(&proxy));
+  mojo::Remote<mojom::UrlTest> remote;
+  UrlTestImpl impl(remote.BindNewPipeAndPassReceiver());
 
   const char* serialize_cases[] = {
       "http://www.google.com/", "http://user:pass@host.com:888/foo;bar?baz#nop",
@@ -45,7 +47,7 @@ TEST(MojoGURLStructTraitsTest, Basic) {
   for (size_t i = 0; i < base::size(serialize_cases); i++) {
     GURL input(serialize_cases[i]);
     GURL output;
-    EXPECT_TRUE(proxy->BounceUrl(input, &output));
+    EXPECT_TRUE(remote->BounceUrl(input, &output));
 
     // We want to test each component individually to make sure its range was
     // correctly serialized and deserialized, not just the spec.
@@ -67,7 +69,7 @@ TEST(MojoGURLStructTraitsTest, Basic) {
         std::string("http://example.org/").append(kMaxURLChars + 1, 'a');
     GURL input(url.c_str());
     GURL output;
-    EXPECT_TRUE(proxy->BounceUrl(input, &output));
+    EXPECT_TRUE(remote->BounceUrl(input, &output));
     EXPECT_TRUE(output.is_empty());
   }
 
@@ -76,7 +78,7 @@ TEST(MojoGURLStructTraitsTest, Basic) {
                           "http", "www.google.com", 80)
                           .value();
   Origin output;
-  EXPECT_TRUE(proxy->BounceOrigin(non_unique, &output));
+  EXPECT_TRUE(remote->BounceOrigin(non_unique, &output));
   EXPECT_EQ(non_unique, output);
   EXPECT_FALSE(output.opaque());
 
@@ -85,11 +87,11 @@ TEST(MojoGURLStructTraitsTest, Basic) {
   EXPECT_NE(unique1, unique2);
   EXPECT_NE(unique2, unique1);
   EXPECT_NE(unique2, non_unique);
-  EXPECT_TRUE(proxy->BounceOrigin(unique1, &output));
+  EXPECT_TRUE(remote->BounceOrigin(unique1, &output));
   EXPECT_TRUE(output.opaque());
   EXPECT_EQ(unique1, output);
   Origin output2;
-  EXPECT_TRUE(proxy->BounceOrigin(unique2, &output2));
+  EXPECT_TRUE(remote->BounceOrigin(unique2, &output2));
   EXPECT_EQ(unique2, output2);
   EXPECT_NE(unique2, output);
   EXPECT_NE(unique1, output2);
@@ -97,7 +99,7 @@ TEST(MojoGURLStructTraitsTest, Basic) {
   Origin normalized =
       Origin::CreateFromNormalizedTuple("http", "www.google.com", 80);
   EXPECT_EQ(normalized, non_unique);
-  EXPECT_TRUE(proxy->BounceOrigin(normalized, &output));
+  EXPECT_TRUE(remote->BounceOrigin(normalized, &output));
   EXPECT_EQ(normalized, output);
   EXPECT_EQ(non_unique, output);
   EXPECT_FALSE(output.opaque());

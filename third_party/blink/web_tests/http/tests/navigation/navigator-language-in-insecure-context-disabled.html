@@ -1,0 +1,7 @@
+<!DOCTYPE html>
+<script src="/resources/get-host-info.js"></script>
+<script>
+let file_pathname = window.location.pathname;
+let folder_pathname = file_pathname.substring(0, file_pathname.lastIndexOf('/'));
+window.location = get_host_info().UNAUTHENTICATED_ORIGIN + folder_pathname + '/resources/navigator-language-in-insecure-context-disabled-helper.html';
+</script>

@@ -19,8 +19,7 @@ ElementsUploadDataStream::ElementsUploadDataStream(
     : UploadDataStream(false, identifier),
       element_readers_(std::move(element_readers)),
       element_index_(0),
-      read_error_(OK),
-      weak_ptr_factory_(this) {}
+      read_error_(OK) {}
 
 ElementsUploadDataStream::~ElementsUploadDataStream() = default;
 

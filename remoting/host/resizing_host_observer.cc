@@ -122,8 +122,7 @@ ResizingHostObserver::ResizingHostObserver(
     bool restore)
     : desktop_resizer_(std::move(desktop_resizer)),
       restore_(restore),
-      now_function_(base::Bind(base::TimeTicks::Now)),
-      weak_factory_(this) {}
+      now_function_(base::Bind(base::TimeTicks::Now)) {}
 
 ResizingHostObserver::~ResizingHostObserver() {
   if (restore_)

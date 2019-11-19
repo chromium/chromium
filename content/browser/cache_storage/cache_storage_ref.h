@@ -48,7 +48,7 @@ class CacheStorageRef {
       target_->DropHandleRef();
   }
 
-  TargetType* value() { return target_.get(); }
+  TargetType* value() const { return target_.get(); }
 
   CacheStorageRef Clone() const { return CacheStorageRef(target_); }
 

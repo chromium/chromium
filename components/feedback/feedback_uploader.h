@@ -17,6 +17,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -26,7 +27,6 @@ class BrowserContext;
 namespace network {
 struct ResourceRequest;
 class SimpleURLLoader;
-class SharedURLLoaderFactory;
 }  // namespace network
 
 namespace feedback {
@@ -39,16 +39,17 @@ class FeedbackReport;
 class FeedbackUploader : public KeyedService,
                          public base::SupportsWeakPtr<FeedbackUploader> {
  public:
-  FeedbackUploader(
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      content::BrowserContext* context,
-      scoped_refptr<base::SingleThreadTaskRunner> task_runner);
+  FeedbackUploader(content::BrowserContext* context,
+                   scoped_refptr<base::SingleThreadTaskRunner> task_runner);
   ~FeedbackUploader() override;
 
   static void SetMinimumRetryDelayForTesting(base::TimeDelta delay);
 
   // Queues a report for uploading.
   void QueueReport(std::unique_ptr<std::string> data);
+
+  // Re-queues an existing report from disk for uploading.
+  void RequeueReport(scoped_refptr<FeedbackReport> report);
 
   bool QueueEmpty() const { return reports_queue_.empty(); }
 
@@ -63,6 +64,12 @@ class FeedbackUploader : public KeyedService,
   }
 
   base::TimeDelta retry_delay() const { return retry_delay_; }
+
+  // Tests inject a TestURLLoaderFactory so they can mock the network response.
+  void set_url_loader_factory_for_test(
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
+    url_loader_factory_ = url_loader_factory;
+  }
 
  protected:
   // Virtual to give implementers a chance to do work before the report is
@@ -112,9 +119,6 @@ class FeedbackUploader : public KeyedService,
 
   // Update our timer for uploading the next report.
   void UpdateUploadTimer();
-
-  void QueueReportWithDelay(std::unique_ptr<std::string> data,
-                            base::TimeDelta delay);
 
   // URLLoaderFactory used for network requests.
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;

@@ -171,9 +171,9 @@ SysInfo::HardwareInfo SysInfo::GetHardwareInfoSync() {
   win::WmiComputerSystemInfo wmi_info = win::WmiComputerSystemInfo::Get();
 
   HardwareInfo info;
-  info.manufacturer = UTF16ToUTF8(wmi_info.manufacturer());
-  info.model = UTF16ToUTF8(wmi_info.model());
-  info.serial_number = UTF16ToUTF8(wmi_info.serial_number());
+  info.manufacturer = WideToUTF8(wmi_info.manufacturer());
+  info.model = WideToUTF8(wmi_info.model());
+  info.serial_number = WideToUTF8(wmi_info.serial_number());
   DCHECK(IsStringUTF8(info.manufacturer));
   DCHECK(IsStringUTF8(info.model));
   DCHECK(IsStringUTF8(info.serial_number));

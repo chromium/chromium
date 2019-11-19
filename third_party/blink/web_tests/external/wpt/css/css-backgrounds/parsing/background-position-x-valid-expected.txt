@@ -1,0 +1,18 @@
+This is a testharness.js-based test.
+FAIL e.style['background-position-x'] = "center" should set the property value assert_equals: serialization should be canonical expected "center" but got "50%"
+FAIL e.style['background-position-x'] = "left" should set the property value assert_equals: serialization should be canonical expected "left" but got "0%"
+FAIL e.style['background-position-x'] = "right" should set the property value assert_equals: serialization should be canonical expected "right" but got "100%"
+FAIL e.style['background-position-x'] = "x-start" should set the property value assert_not_equals: property should be set got disallowed value ""
+FAIL e.style['background-position-x'] = "x-end" should set the property value assert_not_equals: property should be set got disallowed value ""
+PASS e.style['background-position-x'] = "-20%" should set the property value
+PASS e.style['background-position-x'] = "10px" should set the property value
+PASS e.style['background-position-x'] = "0.5em" should set the property value
+FAIL e.style['background-position-x'] = "calc(10px - 0.5em)" should set the property value assert_equals: serialization should be canonical expected "calc(-0.5em + 10px)" but got "calc(10px - 0.5em)"
+FAIL e.style['background-position-x'] = "left -20%" should set the property value assert_not_equals: property should be set got disallowed value ""
+FAIL e.style['background-position-x'] = "right 10px" should set the property value assert_not_equals: property should be set got disallowed value ""
+PASS e.style['background-position-x'] = "-20%, 10px" should set the property value
+FAIL e.style['background-position-x'] = "center, left, right" should set the property value assert_equals: serialization should be canonical expected "center, left, right" but got "50%, 0%, 100%"
+FAIL e.style['background-position-x'] = "0.5em, x-start, x-end" should set the property value assert_not_equals: property should be set got disallowed value ""
+FAIL e.style['background-position-x'] = "calc(10px - 0.5em), left -20%, right 10px" should set the property value assert_not_equals: property should be set got disallowed value ""
+Harness: the test ran to completion.
+

@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<script src="../../../../../resources/testharness.js"></script>
+<script src="../../../../../resources/testharnessreport.js"></script>
+<script src="file:///gen/layout_test_data/mojo/public/js/mojo_bindings.js"></script>
+<script src="file:///gen/third_party/blink/public/mojom/page/spatial_navigation.mojom.js"></script>
+<script src="../../../../../fast/spatial-navigation/resources/mock-snav-service.js"></script>
+<script src="../../../../../fast/spatial-navigation/resources/snav-testharness.js"></script>
+
+<style>
+  div {
+    width: 100px;
+    height: 100px;
+    margin: 5px;
+    border: 1px solid black;
+  }
+</style>
+
+<div id="first" tabindex="0">First</div>
+<iframe id="iframe"
+        srcdoc="<!DOCTYPE html>
+                <style>
+                  div {
+                    width: 100px;
+                    height: 100px;
+                    margin: 5px;
+                    border: 1px solid black;
+                  }
+                </style>
+                <div id='inner' tabindex='0'>Inner</div>"></iframe>
+<div id="second" tabindex="0">Second</div>
+<div id="third" tabindex="0">Third</div>
+
+<script>
+  // This test checks that interest is correctly reset when the interested
+  // element is in a document that's been detached (e.g. navigated away).
+  const t = async_test("Interested element's document is detached.");
+
+  addEventListener('load', t.step_func(() => {
+    let first = document.getElementById("first");
+    let inner = window.frames[0].document.getElementById('inner');
+    let iframe = document.getElementById("iframe");
+    let second = document.getElementById("second");
+    let third = document.getElementById("third");
+
+    assert_true(!!window.internals);
+
+    // Move interest to 'inner'.
+    snav.triggerMove('Down'); // move to first
+    snav.triggerMove('Down'); // move to iframe
+    snav.triggerMove('Down'); // move to inner
+
+    // Enter focus into 'second'
+    assert_equals(window.internals.interestedElement,
+                  inner,
+                  "'inner' element has interest");
+
+    // Navigate the iframe to about:blank. This should reset interest.
+    iframe.addEventListener('load', t.step_func(() => {
+      assert_equals(window.internals.interestedElement,
+                    null,
+                    "Interested element cleared after navigating document");
+
+      // Send down arrow key. Should start navigation from top of page and focus
+      // 'first'.
+      snav.triggerMove('Down');
+      assert_equals(window.internals.interestedElement,
+                    first,
+                    "Navigating after reset starts at document top");
+
+      t.done();
+    }));
+
+    window.frames[0].window.location = 'about:blank';
+
+  }));
+</script>

@@ -5,6 +5,7 @@
 #include "chrome/browser/policy/browser_dm_token_storage.h"
 
 #include <memory>
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -28,18 +29,37 @@
 namespace policy {
 
 namespace {
+
+constexpr char kInvalidTokenValue[] = "INVALID_DM_TOKEN";
+
 void OnHardwarePlatformInfo(base::OnceClosure quit_closure,
                             std::string* out,
                             base::SysInfo::HardwareInfo info) {
   *out = info.serial_number;
   std::move(quit_closure).Run();
 }
+
+DMToken CreateValidToken(const std::string& dm_token) {
+  DCHECK_NE(dm_token, kInvalidTokenValue);
+  DCHECK(!dm_token.empty());
+  return DMToken(DMToken::Status::kValid, dm_token);
+}
+
+DMToken CreateInvalidToken() {
+  return DMToken(DMToken::Status::kInvalid, "");
+}
+
+DMToken CreateEmptyToken() {
+  return DMToken(DMToken::Status::kEmpty, "");
+}
+
 }  // namespace
 
 // static
 BrowserDMTokenStorage* BrowserDMTokenStorage::storage_for_testing_ = nullptr;
 
-BrowserDMTokenStorage::BrowserDMTokenStorage() : is_initialized_(false) {
+BrowserDMTokenStorage::BrowserDMTokenStorage()
+    : is_initialized_(false), dm_token_(CreateEmptyToken()) {
   DETACH_FROM_SEQUENCE(sequence_checker_);
 
   // We don't call InitIfNeeded() here so that the global instance can be
@@ -82,14 +102,25 @@ void BrowserDMTokenStorage::StoreDMToken(const std::string& dm_token,
   DCHECK(!store_callback_);
   InitIfNeeded();
 
-  dm_token_ = dm_token;
-
   store_callback_ = std::move(callback);
 
-  SaveDMToken(dm_token);
+  if (dm_token.empty()) {
+    dm_token_ = CreateEmptyToken();
+    SaveDMToken("");
+  } else if (dm_token == kInvalidTokenValue) {
+    dm_token_ = CreateInvalidToken();
+    SaveDMToken(kInvalidTokenValue);
+  } else {
+    dm_token_ = CreateValidToken(dm_token);
+    SaveDMToken(dm_token_.value());
+  }
 }
 
 std::string BrowserDMTokenStorage::RetrieveDMToken() {
+  return RetrieveBrowserDMToken().value();
+}
+
+DMToken BrowserDMTokenStorage::RetrieveBrowserDMToken() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!store_callback_);
 
@@ -112,17 +143,6 @@ bool BrowserDMTokenStorage::ShouldDisplayErrorMessageOnFailure() {
   return should_display_error_message_on_failure_;
 }
 
-void BrowserDMTokenStorage::ScheduleUnusedPolicyDirectoryDeletion() {
-  // TODO(crbug.com/883869): Add a UMA metrics to track the deletion progress.
-  content::BrowserThread::PostAfterStartupTask(
-      FROM_HERE,
-      base::CreateTaskRunnerWithTraits(
-          {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
-           base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN}),
-      base::BindOnce(&BrowserDMTokenStorage::DeletePolicyDirectory,
-                     base::Unretained(this)));
-}
-
 void BrowserDMTokenStorage::InitIfNeeded() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -140,8 +160,17 @@ void BrowserDMTokenStorage::InitIfNeeded() {
   enrollment_token_ = InitEnrollmentToken();
   DVLOG(1) << "Enrollment token = " << enrollment_token_;
 
-  dm_token_ = InitDMToken();
-  DVLOG(1) << "DM Token = " << dm_token_;
+  std::string init_dm_token = InitDMToken();
+  if (init_dm_token.empty()) {
+    dm_token_ = CreateEmptyToken();
+    DVLOG(1) << "DM Token = empty";
+  } else if (init_dm_token == kInvalidTokenValue) {
+    dm_token_ = CreateInvalidToken();
+    DVLOG(1) << "DM Token = invalid";
+  } else {
+    dm_token_ = CreateValidToken(init_dm_token);
+    DVLOG(1) << "DM Token = " << dm_token_.value();
+  }
 
   should_display_error_message_on_failure_ = InitEnrollmentErrorOption();
 }
@@ -161,7 +190,5 @@ std::string BrowserDMTokenStorage::InitSerialNumber() {
 
   return serial_number;
 }
-
-void BrowserDMTokenStorage::DeletePolicyDirectory() {}
 
 }  // namespace policy

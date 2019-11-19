@@ -45,9 +45,10 @@ int SeekFile(base::File* file, size_t offset) {
 ArcContentFileSystemFileStreamReader::ArcContentFileSystemFileStreamReader(
     const GURL& arc_url,
     int64_t offset)
-    : arc_url_(arc_url), offset_(offset), weak_ptr_factory_(this) {
-  task_runner_ = base::CreateSequencedTaskRunnerWithTraits(
-      {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
+    : arc_url_(arc_url), offset_(offset) {
+  task_runner_ = base::CreateSequencedTaskRunner(
+      {base::ThreadPool(), base::MayBlock(),
+       base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
 }
 
 ArcContentFileSystemFileStreamReader::~ArcContentFileSystemFileStreamReader() {

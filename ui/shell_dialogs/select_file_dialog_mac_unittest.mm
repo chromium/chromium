@@ -4,16 +4,17 @@
 
 #import "ui/shell_dialogs/select_file_dialog_mac.h"
 
-#include <vector>
-
 #include "base/files/file_util.h"
 #import "base/mac/foundation_util.h"
 #include "base/mac/mac_util.h"
 #include "base/memory/ref_counted.h"
+#include "base/run_loop.h"
 #include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/task_environment.h"
+#include "components/remote_cocoa/app_shim/select_file_dialog_bridge.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/shell_dialogs/select_file_policy.h"
 
@@ -92,28 +93,33 @@ class SelectFileDialogMacTest : public testing::Test,
                     void* params) override {}
 
  protected:
+  base::test::TaskEnvironment task_environment_;
+
   // Helper method to launch a dialog with the given |args|.
   void SelectFileWithParams(FileDialogArguments args) {
     dialog_->SelectFile(args.type, args.title, args.default_path,
                         args.file_types, args.file_type_index,
                         args.default_extension, args.owning_window,
                         args.params);
+    base::RunLoop().RunUntilIdle();
   }
 
   // Returns the number of panels currently active.
   size_t GetActivePanelCount() const {
-    return dialog_->dialog_data_map_.size();
+    return dialog_->dialog_data_list_.size();
   }
 
-  // Returns one of the created NSSavePanel. If multiple SelectFile calls were
-  // made on the same |dialog_| object, any of the created NSSavePanel will be
-  // returned.
+  // Returns the most recently created NSSavePanel.
   NSSavePanel* GetPanel() const {
     DCHECK_GE(GetActivePanelCount(), 1lu);
-    return dialog_->dialog_data_map_.begin()->first;
+    return remote_cocoa::SelectFileDialogBridge::
+        GetLastCreatedNativePanelForTesting();
   }
 
-  void ResetDialog() { dialog_ = new SelectFileDialogImpl(this, nullptr); }
+  void ResetDialog() {
+    dialog_ = new SelectFileDialogImpl(this, nullptr);
+    base::RunLoop().RunUntilIdle();
+  }
 
  private:
   scoped_refptr<SelectFileDialogImpl> dialog_;
@@ -428,16 +434,25 @@ TEST_F(SelectFileDialogMacTest, MultipleDialogs) {
 
   FileDialogArguments args(GetDefaultArguments());
   SelectFileWithParams(args);
+  NSSavePanel* panel1 = GetPanel();
   SelectFileWithParams(args);
+  NSSavePanel* panel2 = GetPanel();
   EXPECT_EQ(2lu, GetActivePanelCount());
 
   // Verify closing the panel decreases the panel count.
-  NSSavePanel* panel = GetPanel();
-  [panel cancel:panel];
+  [panel1 cancel:nil];
+  base::RunLoop().RunUntilIdle();
   EXPECT_EQ(1lu, GetActivePanelCount());
 
-  panel = GetPanel();
-  [panel ok:panel];
+  // In 10.15, file picker dialogs are remote, and the restriction of apps not
+  // being allowed to OK their own file requests has been extended from just
+  // sandboxed apps to all apps. If we can test OK-ing our own dialogs, sure,
+  // but if not, at least try to close them all.
+  if (base::mac::IsAtMostOS10_14())
+    [panel2 ok:nil];
+  else
+    [panel2 cancel:nil];
+  base::RunLoop().RunUntilIdle();
   EXPECT_EQ(0lu, GetActivePanelCount());
 }
 
@@ -462,15 +477,24 @@ TEST_F(SelectFileDialogMacTest, DefaultPath) {
 TEST_F(SelectFileDialogMacTest, MultipleExtension) {
   const std::string fake_path_normal = "/fake_directory/filename.tar";
   const std::string fake_path_multiple = "/fake_directory/filename.tar.gz";
+  const std::string fake_path_long = "/fake_directory/example.com-123.json";
   FileDialogArguments args(GetDefaultArguments());
 
   args.default_path = base::FilePath(FILE_PATH_LITERAL(fake_path_normal));
   SelectFileWithParams(args);
   NSSavePanel* panel = GetPanel();
   EXPECT_TRUE([panel canSelectHiddenExtension]);
+  EXPECT_TRUE([panel isExtensionHidden]);
 
   ResetDialog();
   args.default_path = base::FilePath(FILE_PATH_LITERAL(fake_path_multiple));
+  SelectFileWithParams(args);
+  panel = GetPanel();
+  EXPECT_FALSE([panel canSelectHiddenExtension]);
+  EXPECT_FALSE([panel isExtensionHidden]);
+
+  ResetDialog();
+  args.default_path = base::FilePath(FILE_PATH_LITERAL(fake_path_long));
   SelectFileWithParams(args);
   panel = GetPanel();
   EXPECT_FALSE([panel canSelectHiddenExtension]);

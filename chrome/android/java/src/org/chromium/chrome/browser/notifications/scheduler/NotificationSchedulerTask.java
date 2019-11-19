@@ -5,11 +5,13 @@
 package org.chromium.chrome.browser.notifications.scheduler;
 
 import android.content.Context;
-import android.support.annotation.MainThread;
+
+import androidx.annotation.MainThread;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.annotations.CalledByNative;
+import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.background_task_scheduler.NativeBackgroundTask;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.background_task_scheduler.BackgroundTaskScheduler;
@@ -43,7 +45,9 @@ public class NotificationSchedulerTask extends NativeBackgroundTask {
                 callback.taskFinished(needsReschedule);
             }
         };
-        nativeOnStartTask(Profile.getLastUsedProfile().getOriginalProfile(), taskCallback);
+
+        NotificationSchedulerTaskJni.get().onStartTask(NotificationSchedulerTask.this,
+                Profile.getLastUsedProfile().getOriginalProfile(), taskCallback);
     }
 
     @Override
@@ -55,8 +59,8 @@ public class NotificationSchedulerTask extends NativeBackgroundTask {
 
     @Override
     protected boolean onStopTaskWithNative(Context context, TaskParameters taskParameters) {
-        // TODO(xingliu): Check with native to see if we need to reschedule.
-        return nativeOnStopTask(Profile.getLastUsedProfile().getOriginalProfile());
+        return NotificationSchedulerTaskJni.get().onStopTask(
+                NotificationSchedulerTask.this, Profile.getLastUsedProfile().getOriginalProfile());
     }
 
     /**
@@ -68,7 +72,7 @@ public class NotificationSchedulerTask extends NativeBackgroundTask {
      */
     @MainThread
     @CalledByNative
-    public static void schedule(long windowStartMs, long windowEndMs) {
+    private static void schedule(long windowStartMs, long windowEndMs) {
         BackgroundTaskScheduler scheduler = BackgroundTaskSchedulerFactory.getScheduler();
         TaskInfo taskInfo =
                 TaskInfo.createOneOffTask(TaskIds.NOTIFICATION_SCHEDULER_JOB_ID,
@@ -79,6 +83,20 @@ public class NotificationSchedulerTask extends NativeBackgroundTask {
         scheduler.schedule(ContextUtils.getApplicationContext(), taskInfo);
     }
 
-    private native void nativeOnStartTask(Profile profile, Callback<Boolean> callback);
-    private native boolean nativeOnStopTask(Profile profile);
+    /**
+     * Cancels the background task for notification scheduler.
+     */
+    @MainThread
+    @CalledByNative
+    private static void cancel() {
+        BackgroundTaskSchedulerFactory.getScheduler().cancel(
+                ContextUtils.getApplicationContext(), TaskIds.NOTIFICATION_SCHEDULER_JOB_ID);
+    }
+
+    @NativeMethods
+    interface Natives {
+        void onStartTask(
+                NotificationSchedulerTask caller, Profile profile, Callback<Boolean> callback);
+        boolean onStopTask(NotificationSchedulerTask caller, Profile profile);
+    }
 }

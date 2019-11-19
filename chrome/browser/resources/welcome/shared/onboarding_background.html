@@ -1,0 +1,180 @@
+<style>
+  @keyframes blue-circle-anim-x {
+    50% {
+      animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+      transform: translateX(44px);
+    }
+  }
+
+  @keyframes blue-circle-anim-y {
+    50% {
+      animation-timing-function: cubic-bezier(0.55, 0, 0.2, 1);
+      transform: translateY(17px);
+    }
+  }
+
+  @keyframes green-rectangle-anim {
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+
+  @keyframes red-triangle-anim {
+    50% {
+      animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+      transform: translateY(25px) rotate(-53deg);
+    }
+  }
+
+  @keyframes yellow-semicircle-anim {
+    40% {
+      animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+      transform: translateY(40px) rotate(-1deg);
+    }
+  }
+
+  @keyframes grey-rounded-rectangle-anim {
+    65% {
+      animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+      transform: translateY(-48px) rotate(-75deg);
+    }
+  }
+
+  :host {
+    bottom: 0;
+    left: 0;
+    margin: auto;
+    overflow: hidden;
+    position: absolute;
+    right: 0;
+    top: 0;
+    z-index: -1;
+  }
+
+  /* The container is necessary in order for :host to hide overflowing SVGs
+     correctly without disturbing their positions. */
+  #container {
+    height: 100%;
+    left: 50%;
+    min-height: 700px;
+    min-width: 1024px;
+    position: absolute;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 100%;
+  }
+
+  img,
+  span {
+    position: absolute;
+  }
+
+  #blue-circle-container {
+    animation: blue-circle-anim-x 9s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+    left: calc(13% - 50px);  /* Relative to #yellow-dots. */
+    top: calc(18% - 26px);  /* Relative to #yellow-dots. */
+  }
+
+  #blue-circle-container::after {
+    -webkit-mask: url(../images/background_svgs/blue_circle.svg) no-repeat
+        top left;
+    animation: blue-circle-anim-y 9s cubic-bezier(0.25, 0, 0.2, 1) infinite;
+    background-color: var(--navi-shape-blue-color);
+    content: ' '; /* Content needs to be non-empty */
+    height: 43px;
+    position: absolute;
+    width: 43px;
+  }
+
+  #yellow-dots {
+    -webkit-mask: url(../images/background_svgs/yellow_dots.svg) no-repeat
+        top left;
+    background-color: var(--navi-shape-yellow-dots-color);
+    content: ' '; /* Content needs to be non-empty */
+    height: 57px;
+    left: 13%;
+    top: 18%;
+    width: 76px;
+  }
+
+  #grey-rounded-rectangle {
+    -webkit-mask: url(../images/background_svgs/grey_rounded_rectangle.svg)
+        no-repeat top left;
+    animation: grey-rounded-rectangle-anim 10s cubic-bezier(0.4, 0, 0.2, 1)
+        infinite;
+    background-color: var(--navi-shape-grey-color);
+    content: ' '; /* Content needs to be non-empty */
+    height: 132px;
+    left: -42px;
+    top: 45%;
+    width: 132px;
+  }
+
+  #red-triangle {
+    -webkit-mask: url(../images/background_svgs/red_triangle.svg) no-repeat
+        bottom left;
+    animation: red-triangle-anim 9.6s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+    background-color: var(--navi-shape-red-color);
+    bottom: 15%;
+    content: ' '; /* Content needs to be non-empty */
+    height: 74px;
+    left: 12%;
+    width: 65px;
+  }
+
+  #yellow-semicircle {
+    -webkit-mask: url(../images/background_svgs/yellow_semicircle.svg)
+        no-repeat top right;
+    animation: yellow-semicircle-anim 10s cubic-bezier(0.4, 0, 0.2, 1)
+        infinite;
+    background-color: var(--navi-shape-yellow-semicircle-color);
+    content: ' '; /* Content needs to be non-empty */
+    height: 171px;
+    right: 28.5%;
+    top: -50px;
+    transform: rotate(-7deg);
+    width: 211px;
+  }
+
+  #green-rectangle {
+    -webkit-mask: url(../images/background_svgs/green_rectangle.svg)
+        no-repeat bottom right;
+    animation: green-rectangle-anim 40s infinite linear;
+    background-color: var(--navi-shape-green-color);
+    bottom: 8%;
+    content: ' '; /* Content needs to be non-empty */
+    height: 371px;
+    right: -255px;
+    width: 371px;
+  }
+
+  #grey-oval {
+    -webkit-mask: url(../images/background_svgs/grey_oval.svg) no-repeat
+        bottom right;
+    background-color: var(--navi-shape-grey-color);
+    bottom: calc(8% + 24px);  /* Relative to green-rectangle. */
+    content: ' '; /* Content needs to be non-empty */
+    height: 100px;
+    mix-blend-mode: multiply;
+    right: 48px;
+    width: 100px;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    #grey-oval {
+      mix-blend-mode: screen;
+    }
+  }
+</style>
+<div id="container">
+  <!-- Using span as container for an :after element that actually contains
+       the blue-circle svg, because the animation needs to curve so x and y
+       needs to be animated separately. -->
+  <span id="blue-circle-container"></span>
+  <span id="green-rectangle"></span>
+  <span id="grey-oval"></span>
+  <span id="grey-rounded-rectangle"></span>
+  <span id="red-triangle"></span>
+  <span id="yellow-dots"></span>
+  <span id="yellow-semicircle"></span>
+</div>

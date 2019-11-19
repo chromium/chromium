@@ -25,12 +25,12 @@ class SuggestionsSourceWrapper : public content::URLDataSource {
   ~SuggestionsSourceWrapper() override;
 
   // content::URLDataSource implementation.
-  std::string GetSource() const override;
+  std::string GetSource() override;
   void StartDataRequest(
-      const std::string& path,
-      const content::ResourceRequestInfo::WebContentsGetter& wc_getter,
+      const GURL& url,
+      const content::WebContents::Getter& wc_getter,
       const content::URLDataSource::GotDataCallback& callback) override;
-  std::string GetMimeType(const std::string& path) const override;
+  std::string GetMimeType(const std::string& path) override;
 
  private:
   SuggestionsSource suggestions_source_;
@@ -45,19 +45,19 @@ SuggestionsSourceWrapper::SuggestionsSourceWrapper(
 
 SuggestionsSourceWrapper::~SuggestionsSourceWrapper() {}
 
-std::string SuggestionsSourceWrapper::GetSource() const {
+std::string SuggestionsSourceWrapper::GetSource() {
   return chrome::kChromeUISuggestionsHost;
 }
 
 void SuggestionsSourceWrapper::StartDataRequest(
-    const std::string& path,
-    const content::ResourceRequestInfo::WebContentsGetter& wc_getter,
+    const GURL& url,
+    const content::WebContents::Getter& wc_getter,
     const content::URLDataSource::GotDataCallback& callback) {
-  suggestions_source_.StartDataRequest(path, callback);
+  suggestions_source_.StartDataRequest(
+      content::URLDataSource::URLToRequestPath(url), callback);
 }
 
-std::string SuggestionsSourceWrapper::GetMimeType(
-    const std::string& path) const {
+std::string SuggestionsSourceWrapper::GetMimeType(const std::string& path) {
   return "text/html";
 }
 

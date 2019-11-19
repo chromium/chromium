@@ -1,0 +1,6 @@
+include_rules = [
+  "+components/metrics",
+  "+components/prefs",
+  "+services/network/public",
+  "+third_party/metrics_proto",
+]

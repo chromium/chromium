@@ -10,8 +10,8 @@
 #include <memory>
 
 #include "base/callback_forward.h"
-#include "storage/browser/fileapi/file_system_backend.h"
-#include "storage/common/fileapi/file_system_types.h"
+#include "storage/browser/file_system/file_system_backend.h"
+#include "storage/common/file_system/file_system_types.h"
 
 namespace base {
 class Time;

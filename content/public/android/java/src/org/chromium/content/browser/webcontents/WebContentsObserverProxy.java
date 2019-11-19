@@ -9,6 +9,7 @@ import org.chromium.base.ObserverList.RewindableIterator;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
+import org.chromium.base.annotations.NativeMethods;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.WebContentsObserver;
 
@@ -31,7 +32,8 @@ class WebContentsObserverProxy extends WebContentsObserver {
      */
     public WebContentsObserverProxy(WebContentsImpl webContents) {
         ThreadUtils.assertOnUiThread();
-        mNativeWebContentsObserverProxy = nativeInit(webContents);
+        mNativeWebContentsObserverProxy =
+                WebContentsObserverProxyJni.get().init(WebContentsObserverProxy.this, webContents);
         mObservers = new ObserverList<WebContentsObserver>();
         mObserversIterator = mObservers.rewindableIterator();
     }
@@ -79,15 +81,17 @@ class WebContentsObserverProxy extends WebContentsObserver {
     @Override
     @CalledByNative
     public void didStartNavigation(NavigationHandle navigation) {
-        for (mObserversIterator.rewind(); mObserversIterator.hasNext();)
+        for (mObserversIterator.rewind(); mObserversIterator.hasNext();) {
             mObserversIterator.next().didStartNavigation(navigation);
+        }
     }
 
     @Override
     @CalledByNative
     public void didRedirectNavigation(NavigationHandle navigation) {
-        for (mObserversIterator.rewind(); mObserversIterator.hasNext();)
+        for (mObserversIterator.rewind(); mObserversIterator.hasNext();) {
             mObserversIterator.next().didRedirectNavigation(navigation);
+        }
     }
 
     @Override
@@ -111,6 +115,22 @@ class WebContentsObserverProxy extends WebContentsObserver {
     public void didStopLoading(String url) {
         for (mObserversIterator.rewind(); mObserversIterator.hasNext();) {
             mObserversIterator.next().didStopLoading(url);
+        }
+    }
+
+    @Override
+    @CalledByNative
+    public void loadProgressChanged(float progress) {
+        for (mObserversIterator.rewind(); mObserversIterator.hasNext();) {
+            mObserversIterator.next().loadProgressChanged(progress);
+        }
+    }
+
+    @Override
+    @CalledByNative
+    public void didChangeVisibleSecurityState() {
+        for (mObserversIterator.rewind(); mObserversIterator.hasNext();) {
+            mObserversIterator.next().didChangeVisibleSecurityState();
         }
     }
 
@@ -245,9 +265,17 @@ class WebContentsObserverProxy extends WebContentsObserver {
 
     @Override
     @CalledByNative
-    public void didReloadLoFiImages() {
+    public void onWebContentsFocused() {
         for (mObserversIterator.rewind(); mObserversIterator.hasNext();) {
-            mObserversIterator.next().didReloadLoFiImages();
+            mObserversIterator.next().onWebContentsFocused();
+        }
+    }
+
+    @Override
+    @CalledByNative
+    public void onWebContentsLostFocus() {
+        for (mObserversIterator.rewind(); mObserversIterator.hasNext();) {
+            mObserversIterator.next().onWebContentsLostFocus();
         }
     }
 
@@ -267,11 +295,15 @@ class WebContentsObserverProxy extends WebContentsObserver {
         mObservers.clear();
 
         if (mNativeWebContentsObserverProxy != 0) {
-            nativeDestroy(mNativeWebContentsObserverProxy);
+            WebContentsObserverProxyJni.get().destroy(
+                    mNativeWebContentsObserverProxy, WebContentsObserverProxy.this);
             mNativeWebContentsObserverProxy = 0;
         }
     }
 
-    private native long nativeInit(WebContentsImpl webContents);
-    private native void nativeDestroy(long nativeWebContentsObserverProxy);
+    @NativeMethods
+    interface Natives {
+        long init(WebContentsObserverProxy caller, WebContentsImpl webContents);
+        void destroy(long nativeWebContentsObserverProxy, WebContentsObserverProxy caller);
+    }
 }

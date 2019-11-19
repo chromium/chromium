@@ -11,5 +11,6 @@ executable("bluetooth_metrics_hash") {
     "//base",
     "//build/win:default_exe_manifest",
     "//device/bluetooth",
+    "//device/bluetooth/public/cpp",
   ]
 }

@@ -1,7 +1,7 @@
 include_rules = [
-  "+components/data_use_measurement/core",
   "+net",
   "+services/network/public/cpp",
+  "+services/network/public/mojom",
   "+services/network/test",
   "+ui/gfx/geometry",
   "+ui/gfx/image",

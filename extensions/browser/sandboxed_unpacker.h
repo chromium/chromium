@@ -22,8 +22,9 @@
 #include "extensions/browser/install/crx_install_error.h"
 #include "extensions/browser/json_file_sanitizer.h"
 #include "extensions/common/manifest.h"
+#include "mojo/public/cpp/bindings/remote.h"
+#include "services/data_decoder/public/cpp/data_decoder.h"
 #include "services/data_decoder/public/mojom/json_parser.mojom.h"
-#include "services/service_manager/public/cpp/service_filter.h"
 
 class SkBitmap;
 
@@ -35,16 +36,12 @@ namespace crx_file {
 enum class VerifierFormat;
 }
 
-namespace service_manager {
-class Connector;
-}
-
 namespace extensions {
 class Extension;
 enum class SandboxedUnpackerFailureReason;
 
 namespace declarative_net_request {
-struct IndexAndPersistRulesResult;
+struct IndexAndPersistJSONRulesetResult;
 }
 
 class SandboxedUnpackerClient
@@ -110,12 +107,19 @@ class SandboxedUnpackerClient
 //
 class SandboxedUnpacker : public base::RefCountedThreadSafe<SandboxedUnpacker> {
  public:
+  // Overrides the required verifier format for testing purposes. Only one
+  // ScopedVerifierFormatOverrideForTest may exist at a time.
+  class ScopedVerifierFormatOverrideForTest {
+   public:
+    explicit ScopedVerifierFormatOverrideForTest(
+        crx_file::VerifierFormat format);
+    ~ScopedVerifierFormatOverrideForTest();
+  };
+
   // Creates a SandboxedUnpacker that will do work to unpack an extension,
   // passing the |location| and |creation_flags| to Extension::Create. The
   // |extensions_dir| parameter should specify the directory under which we'll
   // create a subdirectory to write the unpacked extension contents.
-  // |connector| must be a fresh connector (not yet associated to any thread) to
-  // the service manager.
   // Note: Because this requires disk I/O, the task runner passed should use
   // TaskShutdownBehavior::SKIP_ON_SHUTDOWN to ensure that either the task is
   // fully run (if initiated before shutdown) or not run at all (if shutdown is
@@ -125,7 +129,6 @@ class SandboxedUnpacker : public base::RefCountedThreadSafe<SandboxedUnpacker> {
   // TODO(devlin): SKIP_ON_SHUTDOWN is also not quite sufficient for this. We
   // should probably instead be using base::ImportantFileWriter or similar.
   SandboxedUnpacker(
-      std::unique_ptr<service_manager::Connector> connector,
       Manifest::Location location,
       int creation_flags,
       const base::FilePath& extensions_dir,
@@ -219,7 +222,7 @@ class SandboxedUnpacker : public base::RefCountedThreadSafe<SandboxedUnpacker> {
 
   void OnJSONRulesetIndexed(
       std::unique_ptr<base::DictionaryValue> manifest,
-      declarative_net_request::IndexAndPersistRulesResult result);
+      declarative_net_request::IndexAndPersistJSONRulesetResult result);
 
   // Returns a JsonParser that can be used on the |unpacker_io_task_runner|.
   data_decoder::mojom::JsonParser* GetJsonParserPtr();
@@ -229,9 +232,6 @@ class SandboxedUnpacker : public base::RefCountedThreadSafe<SandboxedUnpacker> {
   // This must be called from the |unpacker_io_task_runner_|.
   void ParseJsonFile(const base::FilePath& path,
                      data_decoder::mojom::JsonParser::ParseCallback callback);
-
-  // Connector to the ServiceManager required by the Unzip API.
-  std::unique_ptr<service_manager::Connector> connector_;
 
   // If we unpacked a CRX file, we hold on to the path name for use
   // in various histograms.
@@ -279,14 +279,13 @@ class SandboxedUnpacker : public base::RefCountedThreadSafe<SandboxedUnpacker> {
   // The decoded install icon.
   SkBitmap install_icon_;
 
-  // The ServiceFilter used to connect to the data decoder service. It is unique
-  // to this SandboxedUnpacker instance so that data decoder operations for
-  // unpacking this extension share the same process, and so that no unrelated
-  // data decoder operation use that process.
-  const service_manager::ServiceFilter data_decoder_service_filter_;
+  // Controls our own lazily started, isolated instance of the Data Decoder
+  // service so that multiple decode operations related to this
+  // SandboxedUnpacker can share a single instance.
+  data_decoder::DataDecoder data_decoder_;
 
-  // The JSONParser interface pointer from the data decoder service.
-  data_decoder::mojom::JsonParserPtr json_parser_ptr_;
+  // The JSONParser remote from the data decoder service.
+  mojo::Remote<data_decoder::mojom::JsonParser> json_parser_;
 
   // The ImageSanitizer used to clean-up images.
   std::unique_ptr<ImageSanitizer> image_sanitizer_;

@@ -20,15 +20,13 @@ class CriticalNotificationBubbleView : public views::BubbleDialogDelegateView {
   bool Cancel() override;
   bool Accept() override;
   void Init() override;
-  base::string16 GetDialogButtonLabel(ui::DialogButton button) const override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   void ViewHierarchyChanged(
-      const ViewHierarchyChangedDetails& details) override;
+      const views::ViewHierarchyChangedDetails& details) override;
 
  private:
-  // Helper function to calculate the remaining time (in seconds) until
-  // spontaneous reboot.
-  int GetRemainingTime() const;
+  // Helper function to calculate the remaining time until spontaneous reboot.
+  base::TimeDelta GetRemainingTime() const;
 
   // Called when the timer fires each time the clock ticks.
   void OnCountdown();

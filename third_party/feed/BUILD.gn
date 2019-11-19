@@ -8,10 +8,36 @@ import("//third_party/feed/java_sources.gni")
 import("//third_party/feed/proto_sources.gni")
 import("//third_party/protobuf/proto_library.gni")
 
-android_resources("sharedstream_resources") {
-  resource_dirs =
-      [ "src/src/main/java/com/google/android/libraries/feed/sharedstream/res" ]
-  custom_package = "com.google.android.libraries.feed.sharedstream"
+# Quick Android facts that will be helpful when messing around here.
+# You don't need to import something from the same package (wow!).
+# So if you see "error: package R does not exist" (quite common). Here are the
+# steps to address it.
+# 1. Identify the resource that's being used. Search for the the string after R.
+#    If it's R.some_string, search for some_string in the third_party/feed
+#    directory.
+# 2. Identify the resource file it belongs to.
+# 3. Create an android_resources rule below to match the package that the error
+#    occurs under.
+#
+# Example:
+# Error in foo.bar
+# Found resource R.my_string under "src/res"
+# Write rule
+# android_resource("foo_bar_resource") {
+#   resource_dirs = [ "src/src" ]
+#   custom_package = "foo.bar"
+# }
+# Add rule to feed_lib_java.
+# Fixed!
+
+android_resources("sharedstream_ui_resources") {
+  resource_dirs = [
+    "src/src/main/java/com/google/android/libraries/feed/sharedstream/ui/res",
+  ]
+  deps = [
+    "//chrome/android:chrome_app_java_resources",
+  ]
+  custom_package = "com.google.android.libraries.feed.sharedstream.ui"
 }
 
 android_resources("piet_resources") {
@@ -20,18 +46,34 @@ android_resources("piet_resources") {
   custom_package = "com.google.android.libraries.feed.piet"
 }
 
+android_resources("basicstream_internal_drivers_resources") {
+  resource_dirs = [
+    "src/src/main/java/com/google/android/libraries/feed/sharedstream/ui/res",
+  ]
+  deps = [
+    "//chrome/android:chrome_app_java_resources",
+  ]
+  custom_package =
+      "com.google.android.libraries.feed.basicstream.internal.drivers"
+}
+
 android_resources("basicstream_internal_viewholders_resources") {
   resource_dirs = [ "src/src/main/java/com/google/android/libraries/feed/basicstream/internal/viewholders/res" ]
   deps = [
-    ":sharedstream_resources",
+    ":sharedstream_ui_resources",
   ]
   custom_package =
       "com.google.android.libraries.feed.basicstream.internal.viewholders"
 }
 
 android_resources("basicstream_resources") {
-  resource_dirs =
-      [ "src/src/main/java/com/google/android/libraries/feed/basicstream/res/" ]
+  resource_dirs = [
+    "src/src/main/java/com/google/android/libraries/feed/basicstream/res/",
+    "src/src/main/java/com/google/android/libraries/feed/sharedstream/ui/res",
+  ]
+  deps = [
+    "//chrome/android:chrome_app_java_resources",
+  ]
   custom_package = "com.google.android.libraries.feed.basicstream"
 }
 
@@ -42,8 +84,12 @@ android_resources("shared_stream_publicapi_menumeasurer_resources") {
 }
 
 android_resources("sharedstream_contextmenumanager_resources") {
-  resource_dirs =
-      [ "src/src/main/java/com/google/android/libraries/feed/sharedstream/res" ]
+  resource_dirs = [
+    "src/src/main/java/com/google/android/libraries/feed/sharedstream/ui/res",
+  ]
+  deps = [
+    "//chrome/android:chrome_app_java_resources",
+  ]
   custom_package =
       "com.google.android.libraries.feed.sharedstream.contextmenumanager"
 }
@@ -53,20 +99,27 @@ android_library("feed_lib_java") {
   java_files = feed_lib_java_sources
 
   deps = [
+    ":basicstream_internal_drivers_resources",
     ":basicstream_internal_viewholders_resources",
     ":basicstream_resources",
     ":feed_lib_proto_java",
     ":piet_resources",
     ":shared_stream_publicapi_menumeasurer_resources",
     ":sharedstream_contextmenumanager_resources",
-    "//third_party/android_deps:android_support_annotations_java",
-    "//third_party/android_deps:android_support_cardview_java",
     "//third_party/android_deps:android_support_v7_appcompat_java",
-    "//third_party/android_deps:android_support_v7_recyclerview_java",
+    "//third_party/android_deps:com_android_support_cardview_v7_java",
+    "//third_party/android_deps:com_android_support_collections_java",
+    "//third_party/android_deps:com_android_support_interpolator_java",
+    "//third_party/android_deps:com_android_support_recyclerview_v7_java",
+    "//third_party/android_deps:com_android_support_support_annotations_java",
+    "//third_party/android_deps:com_android_support_swiperefreshlayout_java",
     "//third_party/android_deps:com_google_protobuf_protobuf_lite_java",
     "//third_party/android_deps:javax_inject_javax_inject_java",
     "//third_party/jsr-305:jsr_305_javalib",
   ]
+  if (!is_java_debug) {
+    proguard_configs = [ "src/src/main/java/com/google/android/libraries/feed/buildtools/proguard/r8_release.flags" ]
+  }
 }
 
 android_library("feed_conformance_test_lib_android_java") {

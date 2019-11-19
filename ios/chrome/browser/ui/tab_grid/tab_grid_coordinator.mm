@@ -24,8 +24,8 @@
 #import "ios/chrome/browser/ui/tab_grid/tab_grid_mediator.h"
 #import "ios/chrome/browser/ui/tab_grid/tab_grid_paging.h"
 #import "ios/chrome/browser/ui/tab_grid/tab_grid_transition_handler.h"
-#import "ios/chrome/browser/ui/tab_grid/tab_grid_url_loader.h"
 #import "ios/chrome/browser/ui/tab_grid/tab_grid_view_controller.h"
+#import "ios/chrome/browser/url_loading/url_loading_params.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -57,9 +57,6 @@
 @property(nonatomic, strong) RecentTabsMediator* remoteTabsMediator;
 // Coordinator for history, which can be started from recent tabs.
 @property(nonatomic, strong) HistoryCoordinator* historyCoordinator;
-// Specialized URL loader for tab grid, since tab grid has a different use case
-// than BVC.
-@property(nonatomic, strong) TabGridURLLoader* URLLoader;
 @end
 
 @implementation TabGridCoordinator
@@ -180,6 +177,7 @@
   self.remoteTabsMediator = [[RecentTabsMediator alloc] init];
   self.remoteTabsMediator.browserState = _regularTabModel.browserState;
   self.remoteTabsMediator.consumer = baseViewController.remoteTabsConsumer;
+  self.remoteTabsMediator.webStateList = self.regularTabModel.webStateList;
   // TODO(crbug.com/845636) : Currently, the image data source must be set
   // before the mediator starts updating its consumer. Fix this so that order of
   // calls does not matter.
@@ -189,13 +187,8 @@
       self.remoteTabsMediator;
   baseViewController.remoteTabsViewController.dispatcher =
       static_cast<id<ApplicationCommands>>(self.dispatcher);
-  self.URLLoader = [[TabGridURLLoader alloc]
-      initWithRegularWebStateList:self.regularTabModel.webStateList
-            incognitoWebStateList:self.incognitoTabModel.webStateList
-              regularBrowserState:self.regularTabModel.browserState
-            incognitoBrowserState:self.incognitoTabModel.browserState];
-  self.adaptor.loader = self.URLLoader;
-  baseViewController.remoteTabsViewController.loader = self.URLLoader;
+  baseViewController.remoteTabsViewController.loadStrategy =
+      UrlLoadStrategy::ALWAYS_NEW_FOREGROUND_TAB;
   baseViewController.remoteTabsViewController.restoredTabDisposition =
       WindowOpenDisposition::NEW_FOREGROUND_TAB;
   baseViewController.remoteTabsViewController.webStateList =
@@ -235,6 +228,10 @@
   [self.dispatcher
       stopDispatchingForProtocol:@protocol(ApplicationSettingsCommands)];
   [self.dispatcher stopDispatchingForProtocol:@protocol(BrowsingDataCommands)];
+
+  // Disconnect UI from models they observe.
+  self.regularTabsMediator.tabModel = nil;
+  self.incognitoTabsMediator.tabModel = nil;
 
   // TODO(crbug.com/845192) : RecentTabsTableViewController behaves like a
   // coordinator and that should be factored out.
@@ -306,6 +303,7 @@
   }
 
   self.bvcContainer = [[BVCContainerViewController alloc] init];
+  self.bvcContainer.modalPresentationStyle = UIModalPresentationFullScreen;
   self.bvcContainer.currentBVC = viewController;
   self.bvcContainer.transitioningDelegate = self.transitionHandler;
   BOOL animated = !self.animationsDisabledForTesting;
@@ -366,12 +364,13 @@
 
 - (void)showHistoryFromRecentTabs {
   // A history coordinator from main_controller won't work properly from the
-  // tab grid. Using a local coordinator works better when hooked up with a
-  // specialized URL loader and tab presentation delegate.
+  // tab grid. Using a local coordinator works better and we need to set
+  // |loadStrategy| to YES to ALWAYS_NEW_FOREGROUND_TAB.
   self.historyCoordinator = [[HistoryCoordinator alloc]
       initWithBaseViewController:self.baseViewController
                     browserState:self.regularTabModel.browserState];
-  self.historyCoordinator.loader = self.URLLoader;
+  self.historyCoordinator.loadStrategy =
+      UrlLoadStrategy::ALWAYS_NEW_FOREGROUND_TAB;
   self.historyCoordinator.presentationDelegate = self;
   self.historyCoordinator.dispatcher =
       static_cast<id<ApplicationCommands>>(self.dispatcher);

@@ -103,14 +103,15 @@ chrome.test.runTests([
       contextID: 1,
       keyData: [{
         type: 'keydown',
-        requestId: '0',
         key: 'a',
         code: 'KeyA'
       }, {
         type: 'keyup',
-        requestId: '1',
         key: 'a',
-        code: 'KeyA'
+        code: 'KeyA',
+        // Check backwards-compatibility: should be able to put a requestID.
+        // See crbug.com/1005996.
+        requestId: '1'
      }]
     }, function() {
       // Normal character key should be allowed to send on any page.
@@ -121,13 +122,11 @@ chrome.test.runTests([
       contextID: 1,
       keyData: [{
         type: 'keydown',
-        requestId: '2',
         key: 'a',
         code: 'KeyA',
         ctrlKey: true
       }, {
         type: 'keyup',
-        requestId: '3',
         key: 'a',
         code: 'KeyA',
         ctrlKey: true
@@ -143,7 +142,6 @@ chrome.test.runTests([
       contextID: 1,
       keyData: [{
         type: 'keydown',
-        requestId: '4',
         key: '\u0009', // Unicode value for Tab key.
         code: 'Tab'
       }]

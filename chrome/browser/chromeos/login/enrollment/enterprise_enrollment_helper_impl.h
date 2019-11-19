@@ -35,8 +35,7 @@ class EnterpriseEnrollmentHelperImpl
   ~EnterpriseEnrollmentHelperImpl() override;
 
   // EnterpriseEnrollmentHelper:
-  void EnrollUsingAuthCode(const std::string& auth_code,
-                           bool fetch_additional_token) override;
+  void EnrollUsingAuthCode(const std::string& auth_code) override;
   void EnrollUsingToken(const std::string& token) override;
   void EnrollUsingEnrollmentToken(const std::string& token) override;
   void EnrollUsingAttestation() override;
@@ -75,8 +74,7 @@ class EnterpriseEnrollmentHelperImpl
   void DoEnroll(std::unique_ptr<policy::DMAuth> auth_data);
 
   // Handles completion of the OAuth2 token fetch attempt.
-  void OnTokenFetched(bool is_additional_token,
-                      const std::string& token,
+  void OnTokenFetched(const std::string& token,
                       const GoogleServiceAuthError& error);
 
   // Handles multiple license types case.
@@ -107,9 +105,7 @@ class EnterpriseEnrollmentHelperImpl
 
   policy::EnrollmentConfig enrollment_config_;
   std::string enrolling_user_domain_;
-  bool fetch_additional_token_;
 
-  std::string additional_token_;
   enum {
     OAUTH_NOT_STARTED,
     OAUTH_STARTED_WITH_AUTH_CODE,

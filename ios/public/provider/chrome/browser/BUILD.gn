@@ -13,6 +13,8 @@ source_set("browser") {
     "chrome_browser_provider.mm",
     "geolocation_updater_provider.h",
     "geolocation_updater_provider.mm",
+    "overrides_provider.h",
+    "overrides_provider.mm",
   ]
   deps = [
     "//base",
@@ -42,7 +44,6 @@ source_set("test_support") {
     "//ios/public/provider/chrome/browser/signin:test_support",
     "//ios/public/provider/chrome/browser/spotlight:test_support",
     "//ios/public/provider/chrome/browser/ui",
-    "//ios/public/provider/chrome/browser/ui:test_support",
     "//ios/public/provider/chrome/browser/user_feedback:test_support",
     "//ios/public/provider/chrome/browser/voice",
     "//ios/public/provider/chrome/browser/voice:test_support",

@@ -7,10 +7,11 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/fileapi/blob.h"
 #include "third_party/blink/renderer/core/fileapi/public_url_manager.h"
-#include "third_party/blink/renderer/core/frame/use_counter.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/url/dom_url.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 
 namespace blink {
 
@@ -30,6 +31,14 @@ String URLFileAPI::createObjectURL(ScriptState* script_state,
 void URLFileAPI::revokeObjectURL(ScriptState* script_state,
                                  const String& url_string) {
   ExecutionContext* execution_context = ExecutionContext::From(script_state);
+  DCHECK(execution_context);
+
+  revokeObjectURL(execution_context, url_string);
+}
+
+// static
+void URLFileAPI::revokeObjectURL(ExecutionContext* execution_context,
+                                 const String& url_string) {
   DCHECK(execution_context);
 
   KURL url(NullURL(), url_string);

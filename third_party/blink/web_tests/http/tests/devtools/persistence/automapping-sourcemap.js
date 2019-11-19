@@ -36,7 +36,7 @@
     return promise;
 
     function onSource(uiSourceCode) {
-      uiSourceCode.requestContent().then(content => fulfill(content));
+      uiSourceCode.requestContent().then(({ content, error, isEncoded }) => fulfill(content));
     }
   }
 })();

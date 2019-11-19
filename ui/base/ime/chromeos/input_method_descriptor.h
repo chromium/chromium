@@ -8,14 +8,14 @@
 #include <string>
 #include <vector>
 
-#include "ui/base/ime/ui_base_ime_export.h"
+#include "base/component_export.h"
 #include "url/gurl.h"
 
 namespace chromeos {
 namespace input_method {
 
 // A structure which represents an input method.
-class UI_BASE_IME_EXPORT InputMethodDescriptor {
+class COMPONENT_EXPORT(UI_BASE_IME_CHROMEOS) InputMethodDescriptor {
  public:
   InputMethodDescriptor();
   InputMethodDescriptor(const std::string& id,

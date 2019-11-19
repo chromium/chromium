@@ -34,7 +34,7 @@
 #include "third_party/blink/renderer/platform/audio/hrtf_panner.h"
 #include "third_party/blink/renderer/platform/bindings/exception_messages.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "third_party/blink/renderer/platform/histogram.h"
+#include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 
 namespace blink {
@@ -608,7 +608,7 @@ void PannerHandler::SetChannelCount(unsigned channel_count,
   } else {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotSupportedError,
-        ExceptionMessages::IndexOutsideRange<unsigned long>(
+        ExceptionMessages::IndexOutsideRange<uint32_t>(
             "channelCount", channel_count, 1,
             ExceptionMessages::kInclusiveBound, 2,
             ExceptionMessages::kInclusiveBound));
@@ -681,37 +681,43 @@ PannerNode::PannerNode(BaseAudioContext& context)
     : AudioNode(context),
       position_x_(
           AudioParam::Create(context,
-                             kParamTypePannerPositionX,
+                             Uuid(),
+                             AudioParamHandler::kParamTypePannerPositionX,
                              0.0,
                              AudioParamHandler::AutomationRate::kAudio,
                              AudioParamHandler::AutomationRateMode::kVariable)),
       position_y_(
           AudioParam::Create(context,
-                             kParamTypePannerPositionY,
+                             Uuid(),
+                             AudioParamHandler::kParamTypePannerPositionY,
                              0.0,
                              AudioParamHandler::AutomationRate::kAudio,
                              AudioParamHandler::AutomationRateMode::kVariable)),
       position_z_(
           AudioParam::Create(context,
-                             kParamTypePannerPositionZ,
+                             Uuid(),
+                             AudioParamHandler::kParamTypePannerPositionZ,
                              0.0,
                              AudioParamHandler::AutomationRate::kAudio,
                              AudioParamHandler::AutomationRateMode::kVariable)),
       orientation_x_(
           AudioParam::Create(context,
-                             kParamTypePannerOrientationX,
+                             Uuid(),
+                             AudioParamHandler::kParamTypePannerOrientationX,
                              1.0,
                              AudioParamHandler::AutomationRate::kAudio,
                              AudioParamHandler::AutomationRateMode::kVariable)),
       orientation_y_(
           AudioParam::Create(context,
-                             kParamTypePannerOrientationY,
+                             Uuid(),
+                             AudioParamHandler::kParamTypePannerOrientationY,
                              0.0,
                              AudioParamHandler::AutomationRate::kAudio,
                              AudioParamHandler::AutomationRateMode::kVariable)),
       orientation_z_(
           AudioParam::Create(context,
-                             kParamTypePannerOrientationZ,
+                             Uuid(),
+                             AudioParamHandler::kParamTypePannerOrientationZ,
                              0.0,
                              AudioParamHandler::AutomationRate::kAudio,
                              AudioParamHandler::AutomationRateMode::kVariable)),
@@ -885,6 +891,26 @@ void PannerNode::Trace(blink::Visitor* visitor) {
   visitor->Trace(orientation_z_);
   visitor->Trace(listener_);
   AudioNode::Trace(visitor);
+}
+
+void PannerNode::ReportDidCreate() {
+  GraphTracer().DidCreateAudioNode(this);
+  GraphTracer().DidCreateAudioParam(position_x_);
+  GraphTracer().DidCreateAudioParam(position_y_);
+  GraphTracer().DidCreateAudioParam(position_z_);
+  GraphTracer().DidCreateAudioParam(orientation_x_);
+  GraphTracer().DidCreateAudioParam(orientation_y_);
+  GraphTracer().DidCreateAudioParam(orientation_z_);
+}
+
+void PannerNode::ReportWillBeDestroyed() {
+  GraphTracer().WillDestroyAudioParam(position_x_);
+  GraphTracer().WillDestroyAudioParam(position_y_);
+  GraphTracer().WillDestroyAudioParam(position_z_);
+  GraphTracer().WillDestroyAudioParam(orientation_x_);
+  GraphTracer().WillDestroyAudioParam(orientation_y_);
+  GraphTracer().WillDestroyAudioParam(orientation_z_);
+  GraphTracer().WillDestroyAudioNode(this);
 }
 
 }  // namespace blink

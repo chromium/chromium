@@ -6,16 +6,17 @@ package org.chromium.chrome.browser.compositor.bottombar;
 
 import android.animation.Animator;
 import android.content.Context;
-import android.support.annotation.Nullable;
 
-import org.chromium.base.VisibleForTesting;
+import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.chrome.browser.compositor.animation.CompositorAnimationHandler;
 import org.chromium.chrome.browser.compositor.animation.CompositorAnimator;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel.PanelState;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel.StateChangeReason;
 import org.chromium.chrome.browser.compositor.layouts.LayoutUpdateHost;
+import org.chromium.chrome.browser.ui.widget.animation.CancelAwareAnimatorListener;
 import org.chromium.chrome.browser.util.MathUtils;
-import org.chromium.chrome.browser.widget.animation.CancelAwareAnimatorListener;
 
 /**
  * Base abstract class for animating the Overlay Panel.
@@ -161,6 +162,22 @@ public abstract class OverlayPanelAnimation extends OverlayPanelBase {
                     closePanel(StateChangeReason.UNKNOWN, false);
                 }
             });
+        }
+    }
+
+    @Override
+    public void hidePanel(@StateChangeReason int reason) {
+        if (getPanelState() == PanelState.PEEKED) {
+            mPanelHidden = true;
+            animatePanelToState(PanelState.CLOSED, reason);
+        }
+    }
+
+    @Override
+    public void showPanel(@StateChangeReason int reason) {
+        if (mPanelHidden) {
+            animatePanelToState(PanelState.PEEKED, reason);
+            mPanelHidden = false;
         }
     }
 

@@ -28,8 +28,7 @@ EasyUnlockChallengeWrapper::EasyUnlockChallengeWrapper(
     : challenge_(challenge),
       channel_binding_data_(channel_binding_data),
       account_id_(account_id),
-      key_manager_(key_manager),
-      weak_ptr_factory_(this) {}
+      key_manager_(key_manager) {}
 
 EasyUnlockChallengeWrapper::~EasyUnlockChallengeWrapper() {}
 

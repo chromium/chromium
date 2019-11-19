@@ -5,7 +5,7 @@
   -->
 
 <link rel="import" href="chrome://resources/html/polymer.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/paper-button/paper-button.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_button/cr_button.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/font-roboto/roboto.html">
 
 <dom-module id="track-info-panel">
@@ -22,11 +22,9 @@
           <div class="data-title">[[track.title]]</div>
           <div class="data-artist">[[track.artist]]</div>
         </div>
-        <paper-button toggles
-            id="expand"
-            class="expand"
-            active="{{expanded}}">
-        </paper-button>
+        <cr-button id="expand" class="expand" on-click="onExpandClick_"
+            aria-expanded="false" aria-label$="[[ariaExpandArtworkLabel]]">
+        </cr-button>
       </div>
     </div>
   </template>

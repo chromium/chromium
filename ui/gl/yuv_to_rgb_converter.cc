@@ -14,6 +14,11 @@
 namespace gl {
 namespace {
 
+const char kVertexHeaderES2[] =
+    "precision mediump float;\n"
+    "#define ATTRIBUTE attribute\n"
+    "#define VARYING varying\n";
+
 const char kVertexHeaderES3[] =
     "#version 300 es\n"
     "precision mediump float;\n"
@@ -29,6 +34,13 @@ const char kVertexHeaderCoreProfile[] =
     "#version 150\n"
     "#define ATTRIBUTE in\n"
     "#define VARYING out\n";
+
+const char kFragmentHeaderES2[] =
+    "#extension GL_ARB_texture_rectangle : require\n"
+    "precision mediump float;\n"
+    "#define VARYING varying\n"
+    "#define FRAGCOLOR gl_FragColor\n"
+    "#define TEX texture2DRect\n";
 
 const char kFragmentHeaderES3[] =
     "#version 300 es\n"
@@ -89,27 +101,33 @@ YUVToRGBConverter::YUVToRGBConverter(const GLVersionInfo& gl_version_info,
   DCHECK(color_transform->CanGetShaderSource());
   std::string do_color_conversion = color_transform->GetShaderSource();
 
-  bool use_es3 = gl_version_info.is_es3;
-  bool use_core_profile = gl_version_info.is_desktop_core_profile;
+  const char* fragment_header = nullptr;
+  const char* vertex_header = nullptr;
+  if (gl_version_info.is_es2) {
+    vertex_header = kVertexHeaderES2;
+    fragment_header = kFragmentHeaderES2;
+  } else if (gl_version_info.is_es3) {
+    vertex_header = kVertexHeaderES3;
+    fragment_header = kFragmentHeaderES3;
+  } else if (gl_version_info.is_desktop_core_profile) {
+    vertex_header = kVertexHeaderCoreProfile;
+    fragment_header = kFragmentHeaderCoreProfile;
+  } else {
+    DCHECK(!gl_version_info.is_es);
+    vertex_header = kVertexHeaderCompatiblityProfile;
+    fragment_header = kFragmentHeaderCompatiblityProfile;
+  }
+  DCHECK(vertex_header && fragment_header);
+
   glGenFramebuffersEXT(1, &framebuffer_);
   vertex_buffer_ = GLHelper::SetupQuadVertexBuffer();
   vertex_shader_ = GLHelper::LoadShader(
       GL_VERTEX_SHADER,
-      base::StringPrintf(
-          "%s\n%s",
-          use_es3 ? kVertexHeaderES3
-                  : (use_core_profile ? kVertexHeaderCoreProfile
-                                      : kVertexHeaderCompatiblityProfile),
-          kVertexShader)
-          .c_str());
+      base::StringPrintf("%s\n%s", vertex_header, kVertexShader).c_str());
   fragment_shader_ = GLHelper::LoadShader(
       GL_FRAGMENT_SHADER,
-      base::StringPrintf(
-          "%s\n%s\n%s",
-          use_es3 ? kFragmentHeaderES3
-                  : (use_core_profile ? kFragmentHeaderCoreProfile
-                                      : kFragmentHeaderCompatiblityProfile),
-          do_color_conversion.c_str(), kFragmentShader)
+      base::StringPrintf("%s\n%s\n%s", fragment_header,
+                         do_color_conversion.c_str(), kFragmentShader)
           .c_str());
   program_ = GLHelper::SetupProgram(vertex_shader_, fragment_shader_);
 
@@ -127,7 +145,9 @@ YUVToRGBConverter::YUVToRGBConverter(const GLVersionInfo& gl_version_info,
   glUniform1i(y_sampler_location, 0);
   glUniform1i(uv_sampler_location, 1);
 
-  if (use_es3 || use_core_profile) {
+  bool has_vertex_array_objects =
+      gl_version_info.is_es3 || gl_version_info.is_desktop_core_profile;
+  if (has_vertex_array_objects) {
     glGenVertexArraysOES(1, &vertex_array_object_);
   }
 }

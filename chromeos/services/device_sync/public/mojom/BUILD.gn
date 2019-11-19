@@ -6,12 +6,29 @@ import("//mojo/public/tools/bindings/mojom.gni")
 
 mojom("mojom") {
   sources = [
-    "constants.mojom",
     "device_sync.mojom",
   ]
 
   public_deps = [
     "//chromeos/components/multidevice/mojom",
     "//mojo/public/mojom/base",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "device_sync_mojom_traits_unittest.cc",
+  ]
+
+  deps = [
+    ":mojom",
+    "//base",
+    "//base/test:test_support",
+    "//chromeos/services/device_sync:feature_status_change",
+    "//chromeos/services/device_sync/proto",
+    "//mojo/public/cpp/test_support:test_utils",
+    "//testing/gtest",
   ]
 }

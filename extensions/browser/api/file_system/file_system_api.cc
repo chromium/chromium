@@ -30,8 +30,6 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/child_process_security_policy.h"
-#include "content/public/browser/render_frame_host.h"
-#include "content/public/browser/render_process_host.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/api/extensions_api_client.h"
@@ -49,12 +47,12 @@
 #include "extensions/common/permissions/api_permission.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "net/base/mime_util.h"
-#include "storage/browser/fileapi/external_mount_points.h"
-#include "storage/browser/fileapi/file_system_context.h"
-#include "storage/browser/fileapi/file_system_operation_runner.h"
-#include "storage/browser/fileapi/isolated_context.h"
-#include "storage/common/fileapi/file_system_types.h"
-#include "storage/common/fileapi/file_system_util.h"
+#include "storage/browser/file_system/external_mount_points.h"
+#include "storage/browser/file_system/file_system_context.h"
+#include "storage/browser/file_system/file_system_operation_runner.h"
+#include "storage/browser/file_system/isolated_context.h"
+#include "storage/common/file_system/file_system_types.h"
+#include "storage/common/file_system/file_system_util.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
 
@@ -188,8 +186,8 @@ void PassFileInfoToUIThread(const FileInfoOptCallback& callback,
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
   std::unique_ptr<base::File::Info> file_info(
       result == base::File::FILE_OK ? new base::File::Info(info) : NULL);
-  base::PostTaskWithTraits(FROM_HERE, {content::BrowserThread::UI},
-                           base::BindOnce(callback, base::Passed(&file_info)));
+  base::PostTask(FROM_HERE, {content::BrowserThread::UI},
+                 base::BindOnce(callback, base::Passed(&file_info)));
 }
 
 // Gets a WebContents instance handle for a platform app hosted in
@@ -241,8 +239,8 @@ ExtensionFunction::ResponseAction FileSystemGetDisplayPathFunction::Run() {
   base::FilePath file_path;
   std::string error;
   if (!app_file_handler_util::ValidateFileEntryAndGetPath(
-          filesystem_name, filesystem_path,
-          render_frame_host()->GetProcess()->GetID(), &file_path, &error)) {
+          filesystem_name, filesystem_path, source_process_id(), &file_path,
+          &error)) {
     return RespondNow(Error(error));
   }
 
@@ -294,8 +292,7 @@ void FileSystemEntryFunction::AddEntryToResult(const base::FilePath& path,
                                                const std::string& id_override,
                                                base::DictionaryValue* result) {
   GrantedFileEntry file_entry = app_file_handler_util::CreateFileEntry(
-      browser_context(), extension(),
-      render_frame_host()->GetProcess()->GetID(), path, is_directory_);
+      browser_context(), extension(), source_process_id(), path, is_directory_);
   base::ListValue* entries;
   bool success = result->GetList("entries", &entries);
   DCHECK(success);
@@ -330,13 +327,14 @@ ExtensionFunction::ResponseAction FileSystemGetWritableEntryFunction::Run() {
 
   std::string error;
   if (!app_file_handler_util::ValidateFileEntryAndGetPath(
-          filesystem_name, filesystem_path,
-          render_frame_host()->GetProcess()->GetID(), &path_, &error)) {
+          filesystem_name, filesystem_path, source_process_id(), &path_,
+          &error)) {
     return RespondNow(Error(error));
   }
 
-  base::PostTaskWithTraitsAndReply(
-      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+  base::PostTaskAndReply(
+      FROM_HERE,
+      {base::ThreadPool(), base::MayBlock(), base::TaskPriority::BEST_EFFORT},
       base::BindOnce(&FileSystemGetWritableEntryFunction::SetIsDirectoryAsync,
                      this),
       base::BindOnce(
@@ -375,8 +373,8 @@ ExtensionFunction::ResponseAction FileSystemIsWritableEntryFunction::Run() {
 
   content::ChildProcessSecurityPolicy* policy =
       content::ChildProcessSecurityPolicy::GetInstance();
-  int renderer_id = render_frame_host()->GetProcess()->GetID();
-  bool is_writable = policy->CanReadWriteFileSystem(renderer_id, filesystem_id);
+  bool is_writable =
+      policy->CanReadWriteFileSystem(source_process_id(), filesystem_id);
 
   return RespondNow(OneArgument(std::make_unique<base::Value>(is_writable)));
 }
@@ -395,7 +393,7 @@ void FileSystemChooseEntryFunction::ShowPicker(
     else if (g_paths_to_be_picked_for_test)
       test_paths = *g_paths_to_be_picked_for_test;
 
-    base::PostTaskWithTraits(
+    base::PostTask(
         FROM_HERE, {content::BrowserThread::UI},
         test_paths.size() > 0
             ? base::BindOnce(&FileSystemChooseEntryFunction::FilesSelected,
@@ -520,8 +518,9 @@ void FileSystemChooseEntryFunction::FilesSelected(
                                       browser_context(), paths[0]);
 #endif
 
-    base::PostTaskWithTraits(
-        FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+    base::PostTask(
+        FROM_HERE,
+        {base::ThreadPool(), base::MayBlock(), base::TaskPriority::BEST_EFFORT},
         base::BindOnce(
             &FileSystemChooseEntryFunction::ConfirmDirectoryAccessAsync, this,
             non_native_path, paths, web_contents));
@@ -542,7 +541,7 @@ void FileSystemChooseEntryFunction::ConfirmDirectoryAccessAsync(
   const base::FilePath check_path =
       non_native_path ? paths[0] : base::MakeAbsoluteFilePath(paths[0]);
   if (check_path.empty()) {
-    base::PostTaskWithTraits(
+    base::PostTask(
         FROM_HERE, {content::BrowserThread::UI},
         base::BindOnce(&FileSystemChooseEntryFunction::FileSelectionCanceled,
                        this));
@@ -559,14 +558,14 @@ void FileSystemChooseEntryFunction::ConfirmDirectoryAccessAsync(
     if (g_skip_directory_confirmation_for_test) {
       if (g_allow_directory_access_for_test)
         break;
-      base::PostTaskWithTraits(
+      base::PostTask(
           FROM_HERE, {content::BrowserThread::UI},
           base::BindOnce(&FileSystemChooseEntryFunction::FileSelectionCanceled,
                          this));
       return;
     }
 
-    base::PostTaskWithTraits(
+    base::PostTask(
         FROM_HERE, {content::BrowserThread::UI},
         base::BindOnce(
             &FileSystemChooseEntryFunction::ConfirmSensitiveDirectoryAccess,
@@ -574,7 +573,7 @@ void FileSystemChooseEntryFunction::ConfirmDirectoryAccessAsync(
     return;
   }
 
-  base::PostTaskWithTraits(
+  base::PostTask(
       FROM_HERE, {content::BrowserThread::UI},
       base::BindOnce(&FileSystemChooseEntryFunction::OnDirectoryAccessConfirmed,
                      this, paths));
@@ -639,8 +638,7 @@ void FileSystemChooseEntryFunction::BuildFileTypeInfo(
 
       // If we still need to find suggested_extension, hunt for it inside the
       // extensions returned from GetFileTypesFromAcceptOption.
-      if (need_suggestion &&
-          base::ContainsValue(extensions, suggested_extension)) {
+      if (need_suggestion && base::Contains(extensions, suggested_extension)) {
         need_suggestion = false;
       }
     }
@@ -769,8 +767,9 @@ ExtensionFunction::ResponseAction FileSystemChooseEntryFunction::Run() {
     return RespondLater();
   }
 #endif
-  base::PostTaskWithTraitsAndReplyWithResult(
-      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+  base::PostTaskAndReplyWithResult(
+      FROM_HERE,
+      {base::ThreadPool(), base::MayBlock(), base::TaskPriority::BEST_EFFORT},
       base::Bind(&base::DirectoryExists, previous_path),
       set_initial_path_callback);
 
@@ -803,8 +802,8 @@ ExtensionFunction::ResponseAction FileSystemRetainEntryFunction::Run() {
     EXTENSION_FUNCTION_VALIDATE(args_->GetString(2, &filesystem_path));
     std::string error;
     if (!app_file_handler_util::ValidateFileEntryAndGetPath(
-            filesystem_name, filesystem_path,
-            render_frame_host()->GetProcess()->GetID(), &path, &error)) {
+            filesystem_name, filesystem_path, source_process_id(), &path,
+            &error)) {
       return RespondNow(Error(error));
     }
 
@@ -826,7 +825,7 @@ ExtensionFunction::ResponseAction FileSystemRetainEntryFunction::Run() {
 
     // It is safe to use base::Unretained() for operation_runner(), since it
     // is owned by |context| which will delete it on the IO thread.
-    base::PostTaskWithTraits(
+    base::PostTask(
         FROM_HERE, {content::BrowserThread::IO},
         base::BindOnce(
             base::IgnoreResult(

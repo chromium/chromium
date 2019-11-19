@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "ash/frame/non_client_frame_view_ash.h"
 #include "ash/public/cpp/caption_buttons/caption_button_model.h"
 #include "ash/public/cpp/caption_buttons/frame_back_button.h"
 #include "ash/public/cpp/caption_buttons/frame_caption_button_container_view.h"
@@ -15,9 +14,8 @@
 #include "ash/shell.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/window_state.h"
+#include "base/auto_reset.h"
 #include "ui/aura/client/aura_constants.h"
-#include "ui/aura/mus/window_tree_host_mus.h"
-#include "ui/aura/window.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/widget/widget.h"
@@ -53,18 +51,13 @@ class HeaderView::HeaderContentView : public views::View {
 };
 
 HeaderView::HeaderView(views::Widget* target_widget)
-    : target_widget_(target_widget),
-      avatar_icon_(nullptr),
-      header_content_view_(new HeaderContentView(this)),
-      caption_button_container_(nullptr),
-      fullscreen_visible_fraction_(0),
-      should_paint_(true) {
-  AddChildView(header_content_view_);
+    : target_widget_(target_widget) {
+  header_content_view_ =
+      AddChildView(std::make_unique<HeaderContentView>(this));
 
-  caption_button_container_ =
-      new FrameCaptionButtonContainerView(target_widget_, &caption_controller_);
+  caption_button_container_ = AddChildView(
+      std::make_unique<FrameCaptionButtonContainerView>(target_widget_));
   caption_button_container_->UpdateCaptionButtonState(false /*=animate*/);
-  AddChildView(caption_button_container_);
 
   aura::Window* window = target_widget->GetNativeWindow();
   frame_header_ = std::make_unique<DefaultFrameHeader>(
@@ -91,11 +84,14 @@ void HeaderView::ResetWindowControls() {
 }
 
 int HeaderView::GetPreferredOnScreenHeight() {
-  if (is_immersive_delegate_ && in_immersive_mode_) {
+  if (in_immersive_mode_) {
     return static_cast<int>(GetPreferredHeight() *
                             fullscreen_visible_fraction_);
   }
-  return GetPreferredHeight();
+
+  return (target_widget_ && target_widget_->IsFullscreen())
+             ? 0
+             : GetPreferredHeight();
 }
 
 int HeaderView::GetPreferredHeight() {
@@ -147,9 +143,6 @@ void HeaderView::SetWidthInPixels(int width_in_pixels) {
           : views::PaintInfo::ScaleType::kScaleWithEdgeSnapping);
 }
 
-///////////////////////////////////////////////////////////////////////////////
-// HeaderView, views::View overrides:
-
 void HeaderView::Layout() {
   did_layout_ = true;
   header_content_view_->SetBoundsRect(GetLocalBounds());
@@ -163,6 +156,12 @@ void HeaderView::ChildPreferredSizeChanged(views::View* child) {
   // May be null during view initialization.
   if (parent())
     parent()->Layout();
+}
+
+bool HeaderView::IsDrawn() const {
+  if (is_drawn_override_)
+    return true;
+  return views::View::IsDrawn();
 }
 
 void HeaderView::OnTabletModeStarted() {
@@ -226,10 +225,6 @@ views::FrameCaptionButton* HeaderView::GetBackButton() {
   return frame_header_->GetBackButton();
 }
 
-///////////////////////////////////////////////////////////////////////////////
-// HeaderView,
-//   ImmersiveFullscreenControllerDelegate overrides:
-
 void HeaderView::OnImmersiveRevealStarted() {
   fullscreen_visible_fraction_ = 0;
 
@@ -255,9 +250,8 @@ void HeaderView::OnImmersiveRevealEnded() {
 void HeaderView::OnImmersiveFullscreenEntered() {
   in_immersive_mode_ = true;
   parent()->InvalidateLayout();
-  // The frame may not have been created yet (during window initialization).
-  if (target_widget_ && target_widget_->non_client_view()->frame_view())
-    target_widget_->non_client_view()->Layout();
+  if (!immersive_mode_changed_callback_.is_null())
+    immersive_mode_changed_callback_.Run();
 }
 
 void HeaderView::OnImmersiveFullscreenExited() {
@@ -266,8 +260,8 @@ void HeaderView::OnImmersiveFullscreenExited() {
   if (add_layer_for_immersive_)
     DestroyLayer();
   parent()->InvalidateLayout();
-  if (target_widget_ && target_widget_->non_client_view()->frame_view())
-    target_widget_->non_client_view()->Layout();
+  if (!immersive_mode_changed_callback_.is_null())
+    immersive_mode_changed_callback_.Run();
 }
 
 void HeaderView::SetVisibleFraction(double visible_fraction) {
@@ -279,6 +273,7 @@ void HeaderView::SetVisibleFraction(double visible_fraction) {
 
 std::vector<gfx::Rect> HeaderView::GetVisibleBoundsInScreen() const {
   // TODO(pkotwicz): Implement views::View::ConvertRectToScreen().
+  base::AutoReset<bool> reset(&is_drawn_override_, true);
   gfx::Rect visible_bounds(GetVisibleBounds());
   gfx::Point visible_origin_in_screen(visible_bounds.origin());
   views::View::ConvertPointToScreen(this, &visible_origin_in_screen);
@@ -286,6 +281,10 @@ std::vector<gfx::Rect> HeaderView::GetVisibleBoundsInScreen() const {
   bounds_in_screen.push_back(
       gfx::Rect(visible_origin_in_screen, visible_bounds.size()));
   return bounds_in_screen;
+}
+
+void HeaderView::Relayout() {
+  parent()->Layout();
 }
 
 void HeaderView::PaintHeaderContent(gfx::Canvas* canvas) {

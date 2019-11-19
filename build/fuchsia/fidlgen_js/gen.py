@@ -156,7 +156,7 @@ class Compiler(object):
     if val.kind == fidl.ConstantKind.IDENTIFIER:
       js_name = self.resolved_constant_name.get(val.identifier)
       if not js_name:
-        raise Exception('expected ' + val.identifer +
+        raise Exception('expected ' + val.identifier +
                         ' to be in self.resolved_constant_name')
       return js_name
     elif val.kind == fidl.ConstantKind.LITERAL:
@@ -217,7 +217,8 @@ const %(name)s = {
       self.f.write(
           '''  %s: %s,\n''' %
           (member.name, self._CompileConstant(member.value, underlying_type)))
-      fidl_constant_name = '.'.join(compound.library) + '/' + member.name
+      fidl_constant_name = ('.'.join(compound.library) +
+                            '/' + name + '.' + member.name)
       javascript_name = name + '.' + member.name
       self.resolved_constant_name[fidl_constant_name] = javascript_name
     self.f.write('};\n')
@@ -521,7 +522,7 @@ function %(name)s() {}
     for method in interface.methods:
       method_name = _CompileIdentifier(method.name)
       self.f.write(
-          'const _k%(name)s_%(method_name)s_Ordinal = %(ordinal)s;\n' % {
+          'const _k%(name)s_%(method_name)s_Ordinal = %(ordinal)sn;\n' % {
               'name': name,
               'method_name': method_name,
               'ordinal': method.ordinal
@@ -586,14 +587,16 @@ function %(proxy_name)s() {
   if (this.channel === $ZX_HANDLE_INVALID) {
     throw "channel closed";
   }
-  var $encoder = new $fidl_Encoder(_k%(name)s_%(method_name)s_Ordinal);
+  var $encoder = new $fidl_Encoder(
+      _k%(name)s_%(method_name)s_Ordinal, %(has_response)d);
   $encoder.alloc(%(size)s - $fidl_kMessageHeaderSize);
 ''' % {
                 'name': name,
                 'proxy_name': proxy_name,
                 'method_name': method_name,
                 'param_names': ', '.join(param_names),
-                'size': method.maybe_request_size
+                'size': method.maybe_request_size,
+                'has_response': method.has_response
             })
 
         for param, ttname in zip(method.maybe_request, type_tables):

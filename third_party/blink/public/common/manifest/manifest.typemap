@@ -13,7 +13,7 @@ sources = [
   "//third_party/blink/common/manifest/manifest_mojom_traits.cc",
 ]
 deps = [
-  "//ui/gfx/geometry/mojo:struct_traits",
+  "//ui/gfx/geometry/mojom:mojom_traits",
 ]
 type_mappings = [
   "blink.mojom.Manifest=::blink::Manifest[nullable_is_same_type]",

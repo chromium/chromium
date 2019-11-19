@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<style>
+#scroller {
+    background: green local content-box;
+    border: 10px solid rgba(0, 255, 0, 0.5);
+    contain: paint;
+    overflow: scroll;
+    width: 200px;
+    height: 200px;
+}
+.spacer {
+    height: 300px;
+}
+</style>
+<div id="scroller"><div class="spacer"></div></div>
+<p>Scroller background should be green</p>
+

@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL Animation.id for CSS Animations assert_equals: id for CSS Animation is initially empty expected "" but got "abc"
-Harness: the test ran to completion.
-

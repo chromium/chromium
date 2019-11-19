@@ -11,7 +11,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "components/variations/variations_associated_data.h"
-#include "device/usb/public/mojom/device.mojom.h"
+#include "services/device/public/mojom/usb_device.mojom.h"
 
 namespace {
 

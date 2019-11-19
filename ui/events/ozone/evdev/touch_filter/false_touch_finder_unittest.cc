@@ -17,6 +17,7 @@
 #include "ui/events/event_switches.h"
 #include "ui/events/ozone/evdev/touch_evdev_types.h"
 #include "ui/gfx/geometry/point_f.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace ui {
 
@@ -31,6 +32,8 @@ class FalseTouchFinderTest : public testing::Test {
     bool expect_noise;
     bool expect_delay;
   };
+
+  static constexpr gfx::Size kTouchscreenSize = gfx::Size(4000, 4000);
 
   FalseTouchFinderTest() {}
   ~FalseTouchFinderTest() override {}
@@ -79,8 +82,6 @@ class FalseTouchFinderTest : public testing::Test {
     return true;
   }
 
- gfx::Size touchscreen_size = gfx::Size(4000,4000);
-
  private:
   // testing::Test:
   void SetUp() override {
@@ -90,13 +91,15 @@ class FalseTouchFinderTest : public testing::Test {
         switches::kEdgeTouchFiltering);
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
         switches::kLowPressureTouchFiltering);
-    false_touch_finder_ = FalseTouchFinder::Create(touchscreen_size);
+    false_touch_finder_ = FalseTouchFinder::Create(kTouchscreenSize);
   }
 
   std::unique_ptr<FalseTouchFinder> false_touch_finder_;
 
   DISALLOW_COPY_AND_ASSIGN(FalseTouchFinderTest);
 };
+
+constexpr gfx::Size FalseTouchFinderTest::kTouchscreenSize;
 
 // Test that taps which are far apart in quick succession are considered noise.
 TEST_F(FalseTouchFinderTest, FarApartTaps) {
@@ -172,21 +175,25 @@ TEST_F(FalseTouchFinderTest, MultiSecondTouch) {
 // Test that a touch on the edge which never leaves is delayed and never
 // released.
 TEST_F(FalseTouchFinderTest, EdgeTap) {
-  int ts_width = touchscreen_size.width();
-  int ts_height = touchscreen_size.height();
+  int touchscreen_width = kTouchscreenSize.width();
+  int touchscreen_height = kTouchscreenSize.height();
   const TouchEntry kTestData[] = {
       {10, 1, true, gfx::PointF(0, 100), 0.35, false, true},
       {20, 1, true, gfx::PointF(0, 100), 0.35, false, true},
       {30, 1, false, gfx::PointF(0, 100), 0.35, false, true},
-      {40, 2, true, gfx::PointF(ts_width - 1, 100), 0.35, false, true},
-      {50, 2, true, gfx::PointF(ts_width - 1, 100), 0.35, false, true},
-      {60, 2, false, gfx::PointF(ts_width - 1, 100), 0.35, false, true},
+      {40, 2, true, gfx::PointF(touchscreen_width - 1, 100), 0.35, false, true},
+      {50, 2, true, gfx::PointF(touchscreen_width - 1, 100), 0.35, false, true},
+      {60, 2, false, gfx::PointF(touchscreen_width - 1, 100), 0.35, false,
+       true},
       {70, 3, true, gfx::PointF(100, 0), 0.35, false, true},
       {80, 3, true, gfx::PointF(100, 0), 0.35, false, true},
       {90, 3, false, gfx::PointF(100, 0), 0.35, false, true},
-      {100, 4, true, gfx::PointF(100, ts_height - 1), 0.35, false, true},
-      {110, 4, true, gfx::PointF(100, ts_height - 1), 0.35, false, true},
-      {120, 4, false, gfx::PointF(100, ts_height - 1), 0.35, false, true}};
+      {100, 4, true, gfx::PointF(100, touchscreen_height - 1), 0.35, false,
+       true},
+      {110, 4, true, gfx::PointF(100, touchscreen_height - 1), 0.35, false,
+       true},
+      {120, 4, false, gfx::PointF(100, touchscreen_height - 1), 0.35, false,
+       true}};
   EXPECT_TRUE(FilterAndCheck(kTestData, base::size(kTestData)));
 }
 

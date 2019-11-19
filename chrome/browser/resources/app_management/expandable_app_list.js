@@ -40,6 +40,13 @@ Polymer({
       type: Boolean,
       observer: 'onListExpandedChanged_',
     },
+
+    /** @private {number} */
+    numChildrenForTesting_: {
+      type: Number,
+      value: 0,
+      notify: true,
+    },
   },
 
   listeners: {
@@ -50,9 +57,6 @@ Polymer({
     // Hide on reattach.
     this.listExpanded_ = false;
     this.$.collapse.hide();
-
-    // Recalculate child heights on reattach.
-    this.onDomChange_();
   },
 
   /** @private */
@@ -84,6 +88,7 @@ Polymer({
     this.style.setProperty(
         '--collapsed-height', String(collapsedHeight) + 'px');
     this.$['expander-row'].hidden = numChildren <= this.collapsedSize;
+    this.numChildrenForTesting_ = numChildren;
   },
 
   /** @private */

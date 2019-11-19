@@ -21,9 +21,9 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.RetryOnFailure;
 import org.chromium.chrome.browser.locale.LocaleManager.SearchEnginePromoType;
-import org.chromium.chrome.browser.search_engines.TemplateUrl;
-import org.chromium.chrome.browser.widget.RadioButtonLayout;
+import org.chromium.chrome.browser.ui.widget.RadioButtonLayout;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.components.search_engines.TemplateUrl;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -115,7 +115,7 @@ public class DefaultSearchEngineDialogHelperTest {
     private @SearchEnginePromoType int mDialogType;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         mContext = InstrumentationRegistry.getTargetContext();
 
         mTemplateUrls.clear();

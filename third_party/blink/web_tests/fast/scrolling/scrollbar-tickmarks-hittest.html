@@ -13,10 +13,8 @@
 <span id='elt'>&nbsp;</span>
 
 <script>
-  if (window.internals) {
-    internals.runtimeFlags.overlayScrollbarsEnabled = true;
+  if (window.internals)
     internals.settings.setScrollAnimatorEnabled(false);
-  }
 
   window.onload = async () => {
     await waitForCompositorCommit();
@@ -32,7 +30,7 @@
     await waitForCompositorCommit();
 
     promise_test(async () => {
-      await mouseDragAndDrop(window.innerWidth - 1, 10, window.innerWidth - 1, 100);
+      await mouseDragAndDrop(window.innerWidth - 1, 50, window.innerWidth - 1, 100);
       // Will throw exception if window.scrollY not greater than 0.
       await waitFor(() => { return window.scrollY > 0; });
     }, 'Checks that clicking on overlay scrollbar works when tickmarks are added.');

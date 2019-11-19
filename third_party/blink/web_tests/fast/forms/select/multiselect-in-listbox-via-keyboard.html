@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<!--
+    This test ensures non-contiguous select via keyboard works.
+
+    steps:
+    1) Loads this page, focus goes to "start" automatically.
+    2) move the focus  Up/Down via keyboard and space-bar to select it.
+s-->
+
+<select id="start" multiple>
+  <option>1</option>
+  <option>2</option>
+  <option disabled>3</option>
+  <option>4</option>
+  <option>5</option>
+</select>
+
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+
+<script>
+  var isMacOSX = navigator.userAgent.indexOf("Mac") != -1;
+  var ctrlKey  = isMacOSX ? "metaKey" : "ctrlKey";
+
+  test(() => {
+    const start = document.getElementById("start");
+    const options = start.options;
+    start.focus();
+
+    assert_false(options[0].selected, "options[0].selected should be false.");
+    assert_false(options[1].selected, "options[1].selected should be false.");
+    assert_false(options[2].selected, "options[2].selected should be false.");
+    assert_false(options[3].selected, "options[3].selected should be false.");
+    assert_false(options[4].selected, "options[4].selected should be false.");
+
+    eventSender.keyDown("ArrowDown");
+    eventSender.keyDown(" ");                        //select item 1
+    assert_true(options[0].selected, "options[0].selected should be true.");
+    assert_false(options[1].selected, "options[1].selected should be false.");
+    assert_false(options[2].selected, "options[2].selected should be false.");
+    assert_false(options[3].selected, "options[3].selected should be false.");
+    assert_false(options[4].selected, "options[4].selected should be false.");
+
+    eventSender.keyDown("ArrowDown", [ctrlKey]);     //move focus to item 2
+    assert_true(options[0].selected, "options[0].selected should be false.");
+    assert_false(options[1].selected, "options[1].selected should be false.");
+    assert_false(options[2].selected, "options[2].selected should be false.");
+    assert_false(options[3].selected, "options[3].selected should be false.");
+    assert_false(options[4].selected, "options[4].selected should be false.");
+
+    eventSender.keyDown("ArrowDown", [ctrlKey]);
+    eventSender.keyDown(" ");                        //select item 4
+    assert_true(options[0].selected, "options[0].selected should be false.");
+    assert_false(options[1].selected, "options[1].selected should be true.");
+    assert_false(options[2].selected, "options[2].selected should be false.");
+    assert_true(options[3].selected, "options[3].selected should be false.");
+    assert_false(options[4].selected, "options[4].selected should be false.");
+
+    eventSender.keyDown("ArrowUp", [ctrlKey]);
+    eventSender.keyDown(" ", [ctrlKey]);             //select item 2
+    assert_true(options[0].selected, "options[0].selected should be false.");
+    assert_true(options[1].selected, "options[1].selected should be true.");
+    assert_false(options[2].selected, "options[2].selected should be false.");
+    assert_true(options[3].selected, "options[3].selected should be false.");
+    assert_false(options[4].selected, "options[4].selected should be false.");
+
+    eventSender.keyDown(" ");                        //deselect item 2
+    assert_true(options[0].selected, "options[0].selected should be false.");
+    assert_false(options[1].selected, "options[1].selected should be true.");
+    assert_false(options[2].selected, "options[2].selected should be false.");
+    assert_true(options[3].selected, "options[3].selected should be true.");
+    assert_false(options[4].selected, "options[4].selected should be false.");
+
+    eventSender.keyDown("ArrowDown");                //single select item 4
+    assert_false(options[0].selected, "options[0].selected should be false.");
+    assert_false(options[1].selected, "options[1].selected should be true.");
+    assert_false(options[2].selected, "options[2].selected should be false.");
+    assert_true(options[3].selected, "options[3].selected should be true.");
+    assert_false(options[4].selected, "options[4].selected should be false.");
+  });
+</script>

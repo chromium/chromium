@@ -2,9 +2,9 @@ This is a testharness.js-based test.
 PASS Can set 'line-height' to CSS-wide keywords
 PASS Can set 'line-height' to var() references
 PASS Can set 'line-height' to the 'normal' keyword
-FAIL Can set 'line-height' to a length assert_equals: relative lengths must compute to a CSSUnitValue expected "[object CSSUnitValue]" but got "[object CSSKeywordValue]"
-FAIL Can set 'line-height' to a number assert_equals: relative lengths must compute to a CSSUnitValue expected "[object CSSUnitValue]" but got "[object CSSKeywordValue]"
-FAIL Can set 'line-height' to a percent assert_equals: relative lengths must compute to a CSSUnitValue expected "[object CSSUnitValue]" but got "[object CSSKeywordValue]"
+FAIL Can set 'line-height' to a length assert_class_string: relative lengths must compute to a CSSUnitValue expected "[object CSSUnitValue]" but got "[object CSSKeywordValue]"
+FAIL Can set 'line-height' to a number assert_class_string: relative lengths must compute to a CSSUnitValue expected "[object CSSUnitValue]" but got "[object CSSKeywordValue]"
+FAIL Can set 'line-height' to a percent assert_class_string: relative lengths must compute to a CSSUnitValue expected "[object CSSUnitValue]" but got "[object CSSKeywordValue]"
 PASS Setting 'line-height' to a time throws TypeError
 PASS Setting 'line-height' to an angle throws TypeError
 PASS Setting 'line-height' to a flexible length throws TypeError

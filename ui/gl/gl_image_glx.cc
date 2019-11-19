@@ -146,6 +146,10 @@ gfx::Size GLImageGLX::GetSize() {
 
 unsigned GLImageGLX::GetInternalFormat() { return internalformat_; }
 
+unsigned GLImageGLX::GetDataType() {
+  return GL_UNSIGNED_BYTE;
+}
+
 GLImageGLX::BindOrCopy GLImageGLX::ShouldBindOrCopy() {
   return BIND;
 }

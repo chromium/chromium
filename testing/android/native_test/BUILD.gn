@@ -23,6 +23,17 @@ source_set("native_test_support") {
   ]
 }
 
+source_set("native_browser_test_support") {
+  testonly = true
+  sources = [
+    "native_browser_test_support.cc",
+    "native_browser_test_support.h",
+  ]
+  deps = [
+    ":native_browser_test_jni_headers",
+  ]
+}
+
 source_set("native_test_native_code") {
   testonly = true
   sources = [
@@ -50,11 +61,14 @@ android_library("native_test_java") {
     "//base:base_java",
     "//base:base_java_test_support",
     "//testing/android/reporter:reporter_java",
+    "//third_party/android_deps:android_support_v4_java",
   ]
   java_files = [
-    "java/src/org/chromium/native_test/NativeTestApplication.java",
+    "java/src/org/chromium/native_test/NativeBrowserTest.java",
     "java/src/org/chromium/native_test/NativeBrowserTestActivity.java",
+    "java/src/org/chromium/native_test/NativeBrowserTestApplication.java",
     "java/src/org/chromium/native_test/NativeTest.java",
+    "java/src/org/chromium/native_test/NativeTestApplication.java",
     "java/src/org/chromium/native_test/NativeTestInstrumentationTestRunner.java",
     "java/src/org/chromium/native_test/NativeUnitTest.java",
     "java/src/org/chromium/native_test/NativeUnitTestActivity.java",
@@ -63,9 +77,16 @@ android_library("native_test_java") {
 }
 
 generate_jni("native_test_jni_headers") {
+  testonly = true
   sources = [
     "java/src/org/chromium/native_test/MainRunner.java",
     "java/src/org/chromium/native_test/NativeTest.java",
   ]
-  jni_package = "testing"
+}
+
+generate_jni("native_browser_test_jni_headers") {
+  testonly = true
+  sources = [
+    "java/src/org/chromium/native_test/NativeBrowserTest.java",
+  ]
 }

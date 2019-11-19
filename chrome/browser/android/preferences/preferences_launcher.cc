@@ -5,10 +5,10 @@
 #include "chrome/browser/android/preferences/preferences_launcher.h"
 
 #include "base/android/jni_android.h"
+#include "chrome/android/chrome_jni_headers/PreferencesLauncher_jni.h"
 #include "chrome/browser/android/tab_android.h"
 #include "components/password_manager/core/browser/manage_passwords_referrer.h"
 #include "content/public/browser/web_contents.h"
-#include "jni/PreferencesLauncher_jni.h"
 
 namespace chrome {
 namespace android {

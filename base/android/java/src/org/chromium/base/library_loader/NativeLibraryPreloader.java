@@ -4,7 +4,7 @@
 
 package org.chromium.base.library_loader;
 
-import android.content.Context;
+import android.content.pm.ApplicationInfo;
 
 /**
  * This is interface to preload the native library before calling System.loadLibrary.
@@ -16,5 +16,5 @@ import android.content.Context;
  * only subclass (MonochromeLibraryPreloader) is doing.
  */
 public abstract class NativeLibraryPreloader {
-    public abstract int loadLibrary(Context context);
+    public abstract int loadLibrary(ApplicationInfo appInfo);
 }

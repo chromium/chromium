@@ -7,11 +7,13 @@ public_headers = [
   "//third_party/blink/public/common/notifications/notification_resources.h",
   "//third_party/blink/public/common/notifications/platform_notification_data.h",
 ]
-traits_headers = [ "//third_party/blink/public/common/notifications/notification_struct_traits.h" ]
+traits_headers = [
+  "//third_party/blink/public/common/notifications/notification_mojom_traits.h",
+]
 deps = [
   "//mojo/public/cpp/bindings",
 ]
 type_mappings = [
-  "blink.mojom.NotificationData=blink::PlatformNotificationData",
-  "blink.mojom.NotificationResources=blink::NotificationResources",
+  "blink.mojom.NotificationData=::blink::PlatformNotificationData",
+  "blink.mojom.NotificationResources=::blink::NotificationResources",
 ]

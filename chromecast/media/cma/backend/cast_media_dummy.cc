@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chromecast/media/cma/backend/audio_buildflags.h"
 #include "chromecast/public/cast_media_shlib.h"
 #include "chromecast/public/media/media_capabilities_shlib.h"
 #include "chromecast/public/volume_control.h"
@@ -52,6 +53,8 @@ bool MediaCapabilitiesShlib::IsSupportedAudioConfig(const AudioConfig& config) {
          config.codec == kCodecPCM || config.codec == kCodecVorbis;
 }
 
+#if BUILDFLAG(VOLUME_CONTROL_IN_MEDIA_SHLIB)
+
 void VolumeControl::Initialize(const std::vector<std::string>& argv) {}
 void VolumeControl::Finalize() {}
 void VolumeControl::AddVolumeObserver(VolumeObserver* observer) {}
@@ -84,6 +87,8 @@ float VolumeControl::DbFSToVolume(float db) {
 }
 
 void VolumeControl::SetPowerSaveMode(bool power_save_on) {}
+
+#endif  // BUILDFLAG(VOLUME_CONTROL_IN_MEDIA_SHLIB)
 
 }  // namespace media
 }  // namespace chromecast

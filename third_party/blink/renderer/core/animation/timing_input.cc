@@ -62,7 +62,7 @@ Timing TimingInput::Convert(
     Document* document,
     ExceptionState& exception_state) {
   if (options.IsNull()) {
-    return Timing::Defaults();
+    return Timing();
   }
 
   if (options.IsKeyframeEffectOptions()) {
@@ -86,9 +86,8 @@ Timing TimingInput::Convert(
     const UnrestrictedDoubleOrKeyframeAnimationOptions& options,
     Document* document,
     ExceptionState& exception_state) {
-  if (options.IsNull()) {
-    return Timing::Defaults();
-  }
+  if (options.IsNull())
+    return Timing();
 
   if (options.IsKeyframeAnimationOptions()) {
     return ConvertEffectTiming(options.GetAsKeyframeAnimationOptions(),

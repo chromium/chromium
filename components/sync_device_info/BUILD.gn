@@ -1,0 +1,118 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/features.gni")
+import("//build/config/jumbo.gni")
+
+jumbo_static_library("sync_device_info") {
+  sources = [
+    "device_count_metrics_provider.cc",
+    "device_count_metrics_provider.h",
+    "device_info.cc",
+    "device_info.h",
+    "device_info_prefs.cc",
+    "device_info_prefs.h",
+    "device_info_sync_bridge.cc",
+    "device_info_sync_bridge.h",
+    "device_info_sync_client.cc",
+    "device_info_sync_client.h",
+    "device_info_sync_service.cc",
+    "device_info_sync_service.h",
+    "device_info_sync_service_impl.cc",
+    "device_info_sync_service_impl.h",
+    "device_info_tracker.h",
+    "device_info_util.cc",
+    "device_info_util.h",
+    "local_device_info_provider.h",
+    "local_device_info_provider_impl.cc",
+    "local_device_info_provider_impl.h",
+    "local_device_info_util.cc",
+    "local_device_info_util.h",
+    "local_device_info_util_android.cc",
+    "local_device_info_util_ios.mm",
+    "local_device_info_util_linux.cc",
+    "local_device_info_util_mac.mm",
+    "local_device_info_util_win.cc",
+  ]
+
+  configs += [ "//build/config:precompiled_headers" ]
+
+  public_deps = [
+    "//base",
+    "//components/sync",
+    "//components/sync/protocol",
+  ]
+  deps = [
+    "//components/keyed_service/core",
+    "//components/metrics",
+    "//components/prefs",
+    "//components/version_info",
+    "//ui/base",
+  ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
+  if (is_mac) {
+    libs = [
+      "CoreFoundation.framework",
+      "SystemConfiguration.framework",  # Required by local_device_info_util_mac.mm.
+    ]
+  }
+
+  if (is_chromeos) {
+    # Required by device_info_util_linux.cc on Chrome OS.
+    deps += [ "//chromeos/constants" ]
+  }
+}
+
+static_library("test_support") {
+  testonly = true
+  sources = [
+    "fake_device_info_sync_service.cc",
+    "fake_device_info_sync_service.h",
+    "fake_device_info_tracker.cc",
+    "fake_device_info_tracker.h",
+    "fake_local_device_info_provider.cc",
+    "fake_local_device_info_provider.h",
+  ]
+
+  public_deps = [
+    ":sync_device_info",
+  ]
+
+  deps = [
+    "//components/sync:test_support_model",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "device_count_metrics_provider_unittest.cc",
+    "device_info_prefs_unittest.cc",
+    "device_info_sync_bridge_unittest.cc",
+    "device_info_util_unittest.cc",
+    "local_device_info_provider_impl_unittest.cc",
+    "local_device_info_util_unittest.cc",
+  ]
+
+  configs += [ "//build/config:precompiled_headers" ]
+
+  deps = [
+    ":sync_device_info",
+    ":test_support",
+    "//base",
+    "//base/test:test_support",
+    "//components/prefs:test_support",
+    "//components/sync:test_support",
+    "//components/version_info:version_string",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+
+  if (is_chromeos) {
+    # Required by local_device_info_util_unittest.cc on Chrome OS.
+    deps += [ "//chromeos/constants" ]
+  }
+}

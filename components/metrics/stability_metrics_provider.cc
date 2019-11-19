@@ -4,9 +4,12 @@
 
 #include "components/metrics/stability_metrics_provider.h"
 
+#include <string>
+
 #include "base/metrics/histogram_macros.h"
 #include "build/build_config.h"
 #include "components/metrics/metrics_pref_names.h"
+#include "components/metrics/stability_metrics_helper.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "third_party/metrics_proto/system_profile.pb.h"
@@ -110,54 +113,58 @@ void StabilityMetricsProvider::ProvideStabilityMetrics(
 
   int pref_value = 0;
 
-  if (GetPrefValue(prefs::kStabilityLaunchCount, &pref_value))
+  if (GetAndClearPrefValue(prefs::kStabilityLaunchCount, &pref_value))
     stability->set_launch_count(pref_value);
 
-  if (GetPrefValue(prefs::kStabilityCrashCount, &pref_value))
+  if (GetAndClearPrefValue(prefs::kStabilityCrashCount, &pref_value))
     stability->set_crash_count(pref_value);
 
 #if defined(OS_ANDROID)
-  if (GetPrefValue(prefs::kStabilityCrashCountDueToGmsCoreUpdate,
-                   &pref_value)) {
+  if (GetAndClearPrefValue(prefs::kStabilityCrashCountDueToGmsCoreUpdate,
+                           &pref_value)) {
     stability->set_crash_count_due_to_gms_core_update(pref_value);
   }
 #endif
 
-  if (GetPrefValue(prefs::kStabilityIncompleteSessionEndCount, &pref_value))
+  if (GetAndClearPrefValue(prefs::kStabilityIncompleteSessionEndCount,
+                           &pref_value))
     stability->set_incomplete_shutdown_count(pref_value);
 
-  if (GetPrefValue(prefs::kStabilityBreakpadRegistrationSuccess, &pref_value))
+  if (GetAndClearPrefValue(prefs::kStabilityBreakpadRegistrationSuccess,
+                           &pref_value))
     stability->set_breakpad_registration_success_count(pref_value);
 
-  if (GetPrefValue(prefs::kStabilityBreakpadRegistrationFail, &pref_value))
+  if (GetAndClearPrefValue(prefs::kStabilityBreakpadRegistrationFail,
+                           &pref_value))
     stability->set_breakpad_registration_failure_count(pref_value);
 
-  if (GetPrefValue(prefs::kStabilityDebuggerPresent, &pref_value))
+  if (GetAndClearPrefValue(prefs::kStabilityDebuggerPresent, &pref_value))
     stability->set_debugger_present_count(pref_value);
 
-  if (GetPrefValue(prefs::kStabilityDebuggerNotPresent, &pref_value))
+  if (GetAndClearPrefValue(prefs::kStabilityDebuggerNotPresent, &pref_value))
     stability->set_debugger_not_present_count(pref_value);
 
   // Note: only logging the following histograms for non-zero values.
-  if (GetPrefValue(prefs::kStabilityDeferredCount, &pref_value)) {
+  if (GetAndClearPrefValue(prefs::kStabilityDeferredCount, &pref_value)) {
     UMA_STABILITY_HISTOGRAM_COUNTS_100(
         "Stability.Internals.InitialStabilityLogDeferredCount", pref_value);
   }
 
   // Note: only logging the following histograms for non-zero values.
-  if (GetPrefValue(prefs::kStabilityDiscardCount, &pref_value)) {
+  if (GetAndClearPrefValue(prefs::kStabilityDiscardCount, &pref_value)) {
     UMA_STABILITY_HISTOGRAM_COUNTS_100("Stability.Internals.DataDiscardCount",
                                        pref_value);
   }
 
   // Note: only logging the following histograms for non-zero values.
-  if (GetPrefValue(prefs::kStabilityVersionMismatchCount, &pref_value)) {
+  if (GetAndClearPrefValue(prefs::kStabilityVersionMismatchCount,
+                           &pref_value)) {
     UMA_STABILITY_HISTOGRAM_COUNTS_100(
         "Stability.Internals.VersionMismatchCount", pref_value);
   }
 
 #if defined(OS_WIN)
-  if (GetPrefValue(prefs::kStabilitySystemCrashCount, &pref_value)) {
+  if (GetAndClearPrefValue(prefs::kStabilitySystemCrashCount, &pref_value)) {
     UMA_STABILITY_HISTOGRAM_COUNTS_100("Stability.Internals.SystemCrashCount",
                                        pref_value);
   }
@@ -198,12 +205,12 @@ void StabilityMetricsProvider::LogCrash(base::Time last_live_timestamp) {
   // specific bucket for crashes caused by GMS Core updates.
   if (HasGmsCoreVersionChanged(local_state_)) {
     IncrementPrefValue(prefs::kStabilityCrashCountDueToGmsCoreUpdate);
-  } else {
-    IncrementPrefValue(prefs::kStabilityCrashCount);
+    return;
   }
-#else
-  IncrementPrefValue(prefs::kStabilityCrashCount);
 #endif
+  IncrementPrefValue(prefs::kStabilityCrashCount);
+  StabilityMetricsHelper::RecordStabilityEvent(
+      StabilityEventType::kBrowserCrash);
 
 #if defined(OS_WIN)
   MaybeLogSystemCrash(last_live_timestamp);
@@ -259,7 +266,8 @@ void StabilityMetricsProvider::IncrementPrefValue(const char* path) {
   local_state_->SetInteger(path, value + 1);
 }
 
-int StabilityMetricsProvider::GetPrefValue(const char* path, int* value) {
+int StabilityMetricsProvider::GetAndClearPrefValue(const char* path,
+                                                   int* value) {
   *value = local_state_->GetInteger(path);
   if (*value != 0)
     local_state_->SetInteger(path, 0);

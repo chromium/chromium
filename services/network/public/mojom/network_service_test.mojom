@@ -14,6 +14,7 @@ enum ResolverType {
   kResolverTypeFail,
   kResolverTypeSystem,
   kResolverTypeIPLiteral,
+  kResolverTypeDirectLookup,
 };
 
 struct Rule {
@@ -75,9 +76,32 @@ interface NetworkServiceTest {
   // Causes the next host resolve to the given hostname to crash the process.
   CrashOnResolveHost(string host);
 
+  // Causes the next CookieManager::GetCookieList call to crash.
+  CrashOnGetCookieList();
+
   // Gets the latest memory pressure level reported by the
   // MemoryPressureListener.
   [Sync]
   GetLatestMemoryPressureLevel()
       => (mojo_base.mojom.MemoryPressureLevel memory_pressure_level);
+
+  // Gets the current count of peer to peer connections that may require low
+  // latency.
+  [Sync]
+  GetPeerToPeerConnectionsCountChange()
+      => (uint32 connection_count);
+
+  // Returns the value of an environment variable in the network service's
+  // process, or an empty string if it's not set.
+  [Sync]
+  GetEnvironmentVariableValue(string name) => (string value);
+
+  // Logs the given string in the network service. This is used to test log
+  // redirection.
+  [Sync]
+  Log(string message) => ();
+
+  // Activates the specified field trial. Intended for use verifying that the
+  // network service informs the main process when a field trial is activated.
+  ActivateFieldTrial(string field_trial_name);
 };

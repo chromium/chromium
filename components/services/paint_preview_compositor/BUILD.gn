@@ -1,0 +1,66 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//testing/test.gni")
+
+assert(!is_ios, "Paint Previews are not supported on iOS.")
+
+static_library("paint_preview_compositor") {
+  sources = [
+    "paint_preview_compositor_collection_impl.cc",
+    "paint_preview_compositor_collection_impl.h",
+    "paint_preview_compositor_impl.cc",
+    "paint_preview_compositor_impl.h",
+    "paint_preview_frame.cc",
+    "paint_preview_frame.h",
+  ]
+
+  deps = [
+    "//base",
+    "//components/discardable_memory/client",
+    "//components/paint_preview/common",
+    "//components/paint_preview/common/proto",
+    "//mojo/public/cpp/bindings",
+    "//skia",
+    "//ui/gfx/geometry",
+    "//url",
+  ]
+
+  if (is_win) {
+    deps += [ "//content/public/child" ]
+  }
+
+  public_deps = [
+    "//components/services/paint_preview_compositor/public/mojom",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "paint_preview_compositor_collection_impl_unittest.cc",
+    "paint_preview_compositor_impl_unittest.cc",
+  ]
+
+  deps = [
+    ":paint_preview_compositor",
+    "//base",
+    "//base/test:test_support",
+    "//components/paint_preview/common",
+    "//components/paint_preview/common/proto",
+    "//skia",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}
+
+test("paint_preview_compositor_unit_tests") {
+  deps = [
+    ":unit_tests",
+    "//base",
+    "//base/test:test_support",
+    "//components/test:run_all_unittests",
+  ]
+}

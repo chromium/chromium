@@ -12,8 +12,7 @@
 #include "base/bind_helpers.h"
 #include "base/location.h"
 #include "base/metrics/histogram_macros.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/dbus/shill_service_client.h"
+#include "chromeos/dbus/shill/shill_service_client.h"
 #include "chromeos/network/client_cert_util.h"
 #include "chromeos/network/network_handler_callbacks.h"
 #include "chromeos/network/network_state.h"
@@ -62,12 +61,11 @@ class NetworkCertMigrator::MigrationTask
         continue;
       }
 
-      DBusThreadManager::Get()->GetShillServiceClient()->GetProperties(
+      ShillServiceClient::Get()->GetProperties(
           dbus::ObjectPath(service_path),
           base::Bind(&network_handler::GetPropertiesCallback,
                      base::Bind(&MigrationTask::MigrateNetwork, this),
-                     network_handler::ErrorCallback(),
-                     service_path));
+                     network_handler::ErrorCallback(), service_path));
     }
   }
 
@@ -145,7 +143,7 @@ class NetworkCertMigrator::MigrationTask
 
   void SendPropertiesToShill(const std::string& service_path,
                              const base::DictionaryValue& properties) {
-    DBusThreadManager::Get()->GetShillServiceClient()->SetProperties(
+    ShillServiceClient::Get()->SetProperties(
         dbus::ObjectPath(service_path), properties, base::DoNothing(),
         base::Bind(&LogError, service_path));
   }
@@ -175,10 +173,7 @@ class NetworkCertMigrator::MigrationTask
   base::WeakPtr<NetworkCertMigrator> cert_migrator_;
 };
 
-NetworkCertMigrator::NetworkCertMigrator()
-    : network_state_handler_(nullptr),
-      weak_ptr_factory_(this) {
-}
+NetworkCertMigrator::NetworkCertMigrator() : network_state_handler_(nullptr) {}
 
 NetworkCertMigrator::~NetworkCertMigrator() {
   network_state_handler_->RemoveObserver(this, FROM_HERE);

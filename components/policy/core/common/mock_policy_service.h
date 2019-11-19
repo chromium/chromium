@@ -21,6 +21,16 @@ class MockPolicyServiceObserver : public PolicyService::Observer {
   MOCK_METHOD1(OnPolicyServiceInitialized, void(PolicyDomain));
 };
 
+class MockPolicyServiceProviderUpdateObserver
+    : public PolicyService::ProviderUpdateObserver {
+ public:
+  MockPolicyServiceProviderUpdateObserver();
+  ~MockPolicyServiceProviderUpdateObserver() override;
+
+  MOCK_METHOD1(OnProviderUpdatePropagated,
+               void(ConfigurationPolicyProvider* provider));
+};
+
 class MockPolicyService : public PolicyService {
  public:
   MockPolicyService();
@@ -28,6 +38,9 @@ class MockPolicyService : public PolicyService {
 
   MOCK_METHOD2(AddObserver, void(PolicyDomain, Observer*));
   MOCK_METHOD2(RemoveObserver, void(PolicyDomain, Observer*));
+  MOCK_METHOD1(AddProviderUpdateObserver, void(ProviderUpdateObserver*));
+  MOCK_METHOD1(RemoveProviderUpdateObserver, void(ProviderUpdateObserver*));
+  MOCK_CONST_METHOD1(HasProvider, bool(ConfigurationPolicyProvider*));
 
   MOCK_CONST_METHOD1(GetPolicies, const PolicyMap&(const PolicyNamespace&));
   MOCK_CONST_METHOD1(IsInitializationComplete, bool(PolicyDomain domain));

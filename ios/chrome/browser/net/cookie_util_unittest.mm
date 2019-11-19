@@ -7,6 +7,7 @@
 #import <Foundation/Foundation.h>
 
 #include "base/bind.h"
+#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
@@ -14,8 +15,7 @@
 #include "ios/net/cookies/cookie_store_ios_test_util.h"
 #import "ios/net/cookies/ns_http_system_cookie_store.h"
 #import "ios/net/cookies/system_cookie_store.h"
-#include "ios/web/public/features.h"
-#include "ios/web/public/test/test_web_thread_bundle.h"
+#include "ios/web/public/test/web_task_environment.h"
 #include "ios/web/public/test/web_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/gtest_mac.h"
@@ -71,16 +71,11 @@ TEST_F(CookieUtilTest, ShouldClearSessionCookies) {
 }
 
 // Tests that CreateCookieStore returns the correct type of net::CookieStore
-// based on the given parameters and the iOS version.
-TEST_F(CookieUtilTest, CreateCookieStoreInIOS11) {
-  web::TestWebThreadBundle thread_bundle;
+// based on the given parameters.
+TEST_F(CookieUtilTest, CreateCookieStore) {
+  web::WebTaskEnvironment task_environment;
   net::ScopedTestingCookieStoreIOSClient scoped_cookie_store_ios_client(
       std::make_unique<net::TestCookieStoreIOSClient>());
-
-  // Testing while WKHTTPSystemCookieStore feature is enabled.
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      web::features::kWKHTTPSystemCookieStore);
 
   GURL test_url("http://foo.google.com/bar");
   NSString* cookie_name = @"cookie_name";
@@ -101,8 +96,12 @@ TEST_F(CookieUtilTest, CreateCookieStoreInIOS11) {
   options.set_include_httponly();
   std::string cookie_line = base::SysNSStringToUTF8(cookie_name) + "=" +
                             base::SysNSStringToUTF8(cookie_value);
-  cookie_store->SetCookieWithOptionsAsync(
-      test_url, cookie_line, options, net::CookieStore::SetCookiesCallback());
+  auto canonical_cookie =
+      net::CanonicalCookie::Create(test_url, cookie_line, base::Time::Now(),
+                                   base::nullopt /* server_time */);
+  cookie_store->SetCanonicalCookieAsync(std::move(canonical_cookie),
+                                        test_url.scheme(), options,
+                                        net::CookieStore::SetCookiesCallback());
 
   __block NSArray<NSHTTPCookie*>* result_cookies = nil;
   __block bool callback_called = false;

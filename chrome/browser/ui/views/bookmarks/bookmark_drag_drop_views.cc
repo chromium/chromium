@@ -74,7 +74,7 @@ class BookmarkDragImageSource : public gfx::CanvasImageSource {
   BookmarkDragImageSource(const base::string16& title,
                           const gfx::ImageSkia& icon,
                           size_t count)
-      : gfx::CanvasImageSource(kBookmarkDragImageSize, false),
+      : gfx::CanvasImageSource(kBookmarkDragImageSize),
         title_(title),
         icon_(icon),
         count_(count) {}
@@ -174,14 +174,15 @@ class BookmarkDragHelper : public bookmarks::BaseBookmarkModelObserver {
         count_(params.nodes.size()),
         native_view_(params.view),
         source_(params.source),
+        start_point_(params.start_point),
         do_drag_callback_(std::move(do_drag_callback)),
-        observer_(this),
-        weak_factory_(this) {
+        drag_data_(std::make_unique<ui::OSExchangeData>()),
+        observer_(this) {
     observer_.Add(model_);
 
     // Set up our OLE machinery.
     bookmarks::BookmarkNodeData bookmark_drag_data(params.nodes);
-    bookmark_drag_data.Write(profile->GetPath(), &drag_data_);
+    bookmark_drag_data.Write(profile->GetPath(), drag_data_.get());
 
     operation_ = ui::DragDropTypes::DRAG_COPY | ui::DragDropTypes::DRAG_LINK;
     if (bookmarks::CanAllBeEditedByUser(model_->client(), params.nodes))
@@ -224,12 +225,13 @@ class BookmarkDragHelper : public bookmarks::BaseBookmarkModelObserver {
             count_),
         BookmarkDragImageSource::kBookmarkDragImageSize);
 
-    drag_data_.provider().SetDragImage(
+    drag_data_->provider().SetDragImage(
         drag_image, gfx::Vector2d(BookmarkDragImageSource::kDragImageOffsetX,
                                   BookmarkDragImageSource::kDragImageOffsetY));
 
     std::move(do_drag_callback_)
-        .Run(drag_data_, native_view_, source_, operation_);
+        .Run(std::move(drag_data_), native_view_, source_, start_point_,
+             operation_);
 
     delete this;
   }
@@ -260,30 +262,37 @@ class BookmarkDragHelper : public bookmarks::BaseBookmarkModelObserver {
   int count_;
   gfx::NativeView native_view_;
   ui::DragDropTypes::DragEventSource source_;
+  const gfx::Point start_point_;
   int operation_;
 
   DoBookmarkDragCallback do_drag_callback_;
 
-  ui::OSExchangeData drag_data_;
+  std::unique_ptr<ui::OSExchangeData> drag_data_;
 
   ScopedObserver<bookmarks::BookmarkModel, bookmarks::BookmarkModelObserver>
       observer_;
 
-  base::WeakPtrFactory<BookmarkDragHelper> weak_factory_;
+  base::WeakPtrFactory<BookmarkDragHelper> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(BookmarkDragHelper);
 };
 
-void DoDragImpl(const ui::OSExchangeData& drag_data,
+void DoDragImpl(std::unique_ptr<ui::OSExchangeData> drag_data,
                 gfx::NativeView native_view,
                 ui::DragDropTypes::DragEventSource source,
+                gfx::Point point,
                 int operation) {
   // Allow nested run loop so we get DnD events as we drag this around.
   base::MessageLoopCurrent::ScopedNestableTaskAllower nestable_task_allower;
 
   views::Widget* widget = views::Widget::GetWidgetForNativeView(native_view);
-  DCHECK(widget);
-  widget->RunShellDrag(nullptr, drag_data, gfx::Point(), operation, source);
+  if (widget) {
+    widget->RunShellDrag(nullptr, std::move(drag_data), gfx::Point(), operation,
+                         source);
+  } else {
+    views::RunShellDrag(native_view, std::move(drag_data), point, operation,
+                        source);
+  }
 }
 
 void DragBookmarksImpl(Profile* profile,

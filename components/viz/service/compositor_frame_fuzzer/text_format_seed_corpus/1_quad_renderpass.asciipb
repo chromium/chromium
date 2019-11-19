@@ -24,7 +24,7 @@ quad_list: [
       width: 620
       height: 400
     }
-    quad: {
+    solid_color_quad: {
       color: 0xffffffff
       force_anti_aliasing_off: false
     }

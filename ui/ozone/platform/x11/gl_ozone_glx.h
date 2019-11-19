@@ -24,6 +24,7 @@ class GLOzoneGLX : public GLOzone {
   bool InitializeExtensionSettingsOneOffPlatform() override;
   void ShutdownGL() override;
   bool GetGLWindowSystemBindingInfo(
+      const gl::GLVersionInfo& gl_info,
       gl::GLWindowSystemBindingInfo* info) override;
   scoped_refptr<gl::GLContext> CreateGLContext(
       gl::GLShareGroup* share_group,

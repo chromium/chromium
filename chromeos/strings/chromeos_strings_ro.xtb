@@ -1,22 +1,41 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ro">
+<translation id="1482734542997480527"><ph name="ENROLLMENT_DOMAIN" /> gestionează acest dispozitiv și poate să îți monitorizeze activitatea.</translation>
 <translation id="1510238584712386396">Lansator</translation>
 <translation id="1734367976349034509">Acest dispozitiv este gestionat de companie</translation>
+<translation id="1930797645656624981">Serviciul metodei de introducere a textului din sistemul de operare Chrome</translation>
+<translation id="1979103255016296513">Ai depășit timpul limită pentru schimbarea parolei</translation>
 <translation id="2049639323467105390">Acest dispozitiv este gestionat de <ph name="DOMAIN" />.</translation>
 <translation id="2083960536266308407">Nu s-a găsit nimic pe ecran</translation>
 <translation id="2338501278241028356">Pentru a descoperi dispozitivele din apropiere, activează Bluetooth</translation>
 <translation id="2805756323405976993">Aplicații</translation>
 <translation id="2872961005593481000">Închide</translation>
-<translation id="3147142846278915599">Lansator (se sincronizează aplicațiile...)</translation>
+<translation id="3008341117444806826">ACTUALIZEAZĂ</translation>
+<translation id="3838338534323494292">Parolă nouă</translation>
+<translation id="4003259559679196451"><ph name="ENROLLMENT_DOMAIN" /> gestionează acest dispozitiv și are acces la toată activitatea utilizatorului, inclusiv la paginile web accesate, parole și e-mail.</translation>
+<translation id="4227825898293920515">Parola expiră în <ph name="TIME" /></translation>
+<translation id="4429881212383817840">Tichetul Kerberos expiră în curând</translation>
+<translation id="445059817448385655">Parolă veche</translation>
+<translation id="467510802200863975">Parolele nu se potrivesc</translation>
 <translation id="4731797938093519117">Acces pentru părinți</translation>
+<translation id="4890353053343094602">Alege imediat una nouă</translation>
 <translation id="5212543919916444558">Nu găsesc conținut pe ecran în privința căruia te-aș putea ajuta.
 Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="5222676887888702881">Deconectează-te</translation>
+<translation id="5317780077021120954">Salvează</translation>
+<translation id="5332948983412042822">Alege una nouă acum</translation>
 <translation id="5457599981699367932">Navighează ca invitat</translation>
 <translation id="54609108002486618">Gestionat</translation>
 <translation id="5832805196449965646">Adăugați un utilizator</translation>
 <translation id="5895138241574237353">Reîncepe</translation>
+<translation id="6058625436358447366">Pentru a finaliza, introdu parola veche și pe cea nouă</translation>
+<translation id="6106186594183574873">Pentru a finaliza, introdu vechea parolă</translation>
+<translation id="6146993107019042706">Pentru a finaliza, introdu noua parolă</translation>
 <translation id="7658239707568436148">Anulează</translation>
+<translation id="7690294790491645610">Confirmă noua parolă</translation>
+<translation id="808894953321890993">Schimbă parola</translation>
+<translation id="8747900814994928677">Confirmă schimbarea</translation>
+<translation id="910415269708673980">Actualizează tichetul pentru <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9111102763498581341">Deblochează</translation>
 </translationbundle>

@@ -45,9 +45,7 @@ class WebTextCheckingCompletion {
   virtual void DidFinishCheckingText(
       const WebVector<WebTextCheckingResult>&) = 0;
   virtual void DidCancelCheckingText() {}
-
- protected:
-  ~WebTextCheckingCompletion() = default;
+  virtual ~WebTextCheckingCompletion() = default;
 };
 
 }  // namespace blink

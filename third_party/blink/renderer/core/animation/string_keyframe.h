@@ -7,7 +7,7 @@
 
 #include "third_party/blink/renderer/core/animation/keyframe.h"
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
-
+#include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 
 namespace blink {
@@ -27,20 +27,16 @@ class StyleSheetContents;
 // expand shorthand properties; that is done for computed keyframes.
 class CORE_EXPORT StringKeyframe : public Keyframe {
  public:
-  static StringKeyframe* Create() {
-    return MakeGarbageCollected<StringKeyframe>();
-  }
-
   StringKeyframe()
-      : css_property_map_(
-            MutableCSSPropertyValueSet::Create(kHTMLStandardMode)),
+      : css_property_map_(MakeGarbageCollected<MutableCSSPropertyValueSet>(
+            kHTMLStandardMode)),
         presentation_attribute_map_(
-            MutableCSSPropertyValueSet::Create(kHTMLStandardMode)) {}
+            MakeGarbageCollected<MutableCSSPropertyValueSet>(
+                kHTMLStandardMode)) {}
   StringKeyframe(const StringKeyframe& copy_from);
 
   MutableCSSPropertyValueSet::SetResult SetCSSPropertyValue(
       const AtomicString& property_name,
-      const PropertyRegistry*,
       const String& value,
       SecureContextMode,
       StyleSheetContents*);
@@ -92,15 +88,6 @@ class CORE_EXPORT StringKeyframe : public Keyframe {
   class CSSPropertySpecificKeyframe
       : public Keyframe::PropertySpecificKeyframe {
    public:
-    static CSSPropertySpecificKeyframe* Create(
-        double offset,
-        scoped_refptr<TimingFunction> easing,
-        const CSSValue* value,
-        EffectModel::CompositeOperation composite) {
-      return MakeGarbageCollected<CSSPropertySpecificKeyframe>(
-          offset, std::move(easing), value, composite);
-    }
-
     CSSPropertySpecificKeyframe(double offset,
                                 scoped_refptr<TimingFunction> easing,
                                 const CSSValue* value,
@@ -112,12 +99,13 @@ class CORE_EXPORT StringKeyframe : public Keyframe {
 
     const CSSValue* Value() const { return value_.Get(); }
 
-    bool PopulateAnimatableValue(const PropertyHandle&,
-                                 Element&,
-                                 const ComputedStyle& base_style,
-                                 const ComputedStyle* parent_style) const final;
-    const AnimatableValue* GetAnimatableValue() const final {
-      return animatable_value_cache_;
+    bool PopulateCompositorKeyframeValue(
+        const PropertyHandle&,
+        Element&,
+        const ComputedStyle& base_style,
+        const ComputedStyle* parent_style) const final;
+    const CompositorKeyframeValue* GetCompositorKeyframeValue() const final {
+      return compositor_keyframe_value_cache_;
     }
 
     bool IsNeutral() const final { return !value_; }
@@ -133,21 +121,12 @@ class CORE_EXPORT StringKeyframe : public Keyframe {
     bool IsCSSPropertySpecificKeyframe() const override { return true; }
 
     Member<const CSSValue> value_;
-    mutable Member<AnimatableValue> animatable_value_cache_;
+    mutable Member<CompositorKeyframeValue> compositor_keyframe_value_cache_;
   };
 
   class SVGPropertySpecificKeyframe
       : public Keyframe::PropertySpecificKeyframe {
    public:
-    static SVGPropertySpecificKeyframe* Create(
-        double offset,
-        scoped_refptr<TimingFunction> easing,
-        const String& value,
-        EffectModel::CompositeOperation composite) {
-      return MakeGarbageCollected<SVGPropertySpecificKeyframe>(
-          offset, std::move(easing), value, composite);
-    }
-
     SVGPropertySpecificKeyframe(double offset,
                                 scoped_refptr<TimingFunction> easing,
                                 const String& value,
@@ -161,7 +140,9 @@ class CORE_EXPORT StringKeyframe : public Keyframe {
 
     PropertySpecificKeyframe* CloneWithOffset(double offset) const final;
 
-    const AnimatableValue* GetAnimatableValue() const final { return nullptr; }
+    const CompositorKeyframeValue* GetCompositorKeyframeValue() const final {
+      return nullptr;
+    }
 
     bool IsNeutral() const final { return value_.IsNull(); }
     PropertySpecificKeyframe* NeutralKeyframe(
@@ -183,6 +164,28 @@ class CORE_EXPORT StringKeyframe : public Keyframe {
 
   bool IsStringKeyframe() const override { return true; }
 
+  // The unresolved property and their values. This is needed for correct
+  // implementation of KeyframeEffect.getKeyframes(). We use a single list for
+  // CSS, SVG properties. The only requirement for a property value to be
+  // in this list is that it parses correctly.
+  //
+  // See: https://drafts.csswg.org/web-animations/#keyframes-section
+  HeapHashMap<PropertyHandle, Member<const CSSValue>> input_properties_;
+
+  // The resolved properties are computed from unresolved ones applying these
+  // steps:
+  //  1. Resolve conflicts when multiple properties map to same underlying
+  //      one (e.g., margin, margin-top)
+  //  2. Expand shorthands to longhands
+  //  3. Expand logical properties to physical ones
+  //
+  // See:
+  // https://drafts.csswg.org/web-animations/#calculating-computed-keyframes
+  //
+  // TODO(816956): AFAICT we don't do (1) at the moment rather we parse and feed
+  // values into the MutableCSSPropertyValueSet which keeps replacing values as
+  // they come in. I am not sure if it leads to the same conflict resolution
+  // that web-animation expects. This needs more investigation.
   Member<MutableCSSPropertyValueSet> css_property_map_;
   Member<MutableCSSPropertyValueSet> presentation_attribute_map_;
   HashMap<const QualifiedName*, String> svg_attribute_map_;

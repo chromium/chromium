@@ -14,11 +14,12 @@
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/message_loop/message_loop.h"
+#include "base/message_loop/message_pump_type.h"
 #include "base/process/process.h"
 #include "base/process/process_handle.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
+#include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "ipc/ipc_channel.h"
 #include "ipc/ipc_channel_proxy.h"
@@ -197,8 +198,8 @@ class IpcDesktopEnvironmentTest : public testing::Test {
 
   void RunMainLoopUntilDone();
 
-  // The main message loop.
-  base::MessageLoopForUI message_loop_;
+  base::test::SingleThreadTaskEnvironment task_environment_{
+      base::test::SingleThreadTaskEnvironment::MainThreadType::UI};
 
   // Runs until |desktop_session_proxy_| is connected to the desktop.
   std::unique_ptr<base::RunLoop> setup_run_loop_;
@@ -262,11 +263,12 @@ IpcDesktopEnvironmentTest::~IpcDesktopEnvironmentTest() = default;
 
 void IpcDesktopEnvironmentTest::SetUp() {
   // Arrange to run |message_loop_| until no components depend on it.
-  task_runner_ = new AutoThreadTaskRunner(
-      message_loop_.task_runner(), main_run_loop_.QuitClosure());
+  task_runner_ =
+      new AutoThreadTaskRunner(task_environment_.GetMainThreadTaskRunner(),
+                               main_run_loop_.QuitClosure());
 
-  io_task_runner_ = AutoThread::CreateWithType(
-      "IPC thread", task_runner_, base::MessageLoop::TYPE_IO);
+  io_task_runner_ = AutoThread::CreateWithType("IPC thread", task_runner_,
+                                               base::MessagePumpType::IO);
 
   setup_run_loop_.reset(new base::RunLoop());
 
@@ -300,8 +302,7 @@ void IpcDesktopEnvironmentTest::SetUp() {
       .Times(AnyNumber())
       .WillRepeatedly(InvokeWithoutArgs(
           this, &IpcDesktopEnvironmentTest::DeleteDesktopEnvironment));
-  EXPECT_CALL(client_session_control_, OnLocalMouseMoved(_))
-      .Times(0);
+  EXPECT_CALL(client_session_control_, OnLocalPointerMoved(_, _)).Times(0);
   EXPECT_CALL(client_session_control_, SetDisableInputs(_))
       .Times(0);
 
@@ -370,8 +371,8 @@ DesktopEnvironment* IpcDesktopEnvironmentTest::CreateDesktopEnvironment() {
       .Times(AtMost(1));
 
   // Let tests know that the remote desktop environment is created.
-  message_loop_.task_runner()->PostTask(FROM_HERE,
-                                        setup_run_loop_->QuitClosure());
+  task_environment_.GetMainThreadTaskRunner()->PostTask(
+      FROM_HERE, setup_run_loop_->QuitClosure());
 
   return desktop_environment;
 }

@@ -10,6 +10,7 @@ component("constants") {
   deps = [
     "//base",
     "//base:i18n",
+    "//build:branding_buildflags",
     "//chromeos/dbus/constants",
     "//third_party/icu",
   ]
@@ -26,5 +27,6 @@ component("constants") {
     "chromeos_switches.h",
     "devicetype.cc",
     "devicetype.h",
+    "security_token_pin_types.h",
   ]
 }

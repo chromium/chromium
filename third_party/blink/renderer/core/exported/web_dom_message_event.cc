@@ -91,7 +91,8 @@ WebDOMMessageEvent::WebDOMMessageEvent(TransferableMessage message,
   // right?
   Unwrap<MessageEvent>()->initMessageEvent(
       "message", false, false, std::move(msg.message), origin,
-      "" /*lastEventId*/, window, ports, user_activation);
+      "" /*lastEventId*/, window, ports, user_activation,
+      msg.transfer_user_activation, msg.allow_autoplay);
 }
 
 WebString WebDOMMessageEvent::Origin() const {
@@ -102,6 +103,9 @@ TransferableMessage WebDOMMessageEvent::AsMessage() {
   BlinkTransferableMessage msg;
   msg.message = Unwrap<MessageEvent>()->DataAsSerializedScriptValue();
   msg.ports = Unwrap<MessageEvent>()->ReleaseChannels();
+  msg.transfer_user_activation =
+      Unwrap<MessageEvent>()->transferUserActivation();
+  msg.allow_autoplay = Unwrap<MessageEvent>()->allowAutoplay();
   UserActivation* user_activation = Unwrap<MessageEvent>()->userActivation();
   TransferableMessage transferable_msg = ToTransferableMessage(std::move(msg));
   if (user_activation) {

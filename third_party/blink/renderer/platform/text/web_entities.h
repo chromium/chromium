@@ -32,6 +32,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_TEXT_WEB_ENTITIES_H_
 
 #include "third_party/blink/renderer/platform/platform_export.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -39,6 +40,8 @@ namespace blink {
 
 // FIXME: This class is wrong and needs to be removed!
 class PLATFORM_EXPORT WebEntities {
+  DISALLOW_NEW();
+
  public:
   // &apos;, &percnt;, &nsup;, &supl; are not defined by the HTML standards.
   //  - IE does not support &apos; as an HTML entity (but support it as an XML

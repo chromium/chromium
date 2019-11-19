@@ -10,16 +10,4 @@ URLRequestInterceptor::URLRequestInterceptor() = default;
 
 URLRequestInterceptor::~URLRequestInterceptor() = default;
 
-URLRequestJob* URLRequestInterceptor::MaybeInterceptRedirect(
-    URLRequest* request,
-    NetworkDelegate* network_delegate,
-    const GURL& location) const {
-  return nullptr;
-}
-
-URLRequestJob* URLRequestInterceptor::MaybeInterceptResponse(
-    URLRequest* request, NetworkDelegate* network_delegate) const {
-  return nullptr;
-}
-
 }  // namespace net

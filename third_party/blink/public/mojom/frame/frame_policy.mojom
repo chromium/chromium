@@ -1,0 +1,17 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+import "third_party/blink/public/mojom/feature_policy/feature_policy.mojom";
+
+// This struct holds frame policy value that needs to be passed around between
+// renderer process and browser process during navigation. It is used as a data
+// member of CommonNavigationParams. For details, please refer to
+// navigation_params.mojom.
+struct FramePolicy {
+  blink.mojom.WebSandboxFlags sandbox_flags;
+  array<blink.mojom.ParsedFeaturePolicyDeclaration> container_policy;
+  bool allowed_to_download_without_user_activation = true;
+};

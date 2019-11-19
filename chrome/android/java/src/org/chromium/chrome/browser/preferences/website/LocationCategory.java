@@ -11,7 +11,6 @@ import android.content.res.Resources;
 
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.preferences.LocationSettings;
-import org.chromium.chrome.browser.preferences.PrefServiceBridge;
 import org.chromium.components.location.LocationUtils;
 
 /**
@@ -37,9 +36,8 @@ public class LocationCategory extends SiteSettingsCategory {
         // The only time we don't want to show location as blocked in system is when Chrome also
         // blocks Location by policy (because then turning it on in the system isn't going to
         // turn on location in Chrome).
-        PrefServiceBridge prefs = PrefServiceBridge.getInstance();
         if (!LocationSettings.getInstance().isChromeLocationSettingEnabled()
-                && !prefs.isAllowLocationUserModifiable()) {
+                && !WebsitePreferenceBridge.isAllowLocationUserModifiable()) {
             return false;
         }
 

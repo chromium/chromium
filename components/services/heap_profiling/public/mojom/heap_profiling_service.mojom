@@ -24,19 +24,10 @@ interface ProfilingService {
   //
   // The "client" interface will be for the instrumented process. It allows the
   // profiling process to talk to the new process.
-  //
-  // Both ends of a platform-specific pipe to read memlog trace data from is
-  // passed in. The sender end will be forwarded to the client process.
-  //
-  // |stack_mode| refers to the type of stacks that the client should record for
-  // allocations.
-  AddProfilingClient(mojo_base.mojom.ProcessId pid, ProfilingClient client,
-                     handle memlog_pipe_receiver, ProcessType process_type,
+  AddProfilingClient(mojo_base.mojom.ProcessId pid,
+                     pending_remote<ProfilingClient> client,
+                     ProcessType process_type,
                      ProfilingParams params);
-
-  // |keep_small_allocations| controls whether small allocations are emitted in
-  // heap dumps.
-  SetKeepSmallAllocations(bool keep_small_allocations);
 
   // Returns the pids of all profiled processes.
   GetProfiledPids() => (array<mojo_base.mojom.ProcessId> pids);

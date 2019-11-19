@@ -1,12 +1,13 @@
 <!DOCTYPE html>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
 <script type="text/javascript">
+  var test = async_test("Tests that children of a display:none iframe do not run animations");
+
   function go() {
-    if (window.testRunner) {
-      testRunner.waitUntilDone();
-    }
     // Wait a couple of frames for the animation inside the iframe to progress.
-    requestAnimationFrame(function() {
-      requestAnimationFrame(function() {
+    requestAnimationFrame(test.step_func(() => {
+      requestAnimationFrame(test.step_func_done(() => {
         var iframe = document.getElementById("iframe");
         iframe.style.display = "block";
         var innerDoc = iframe.contentDocument;
@@ -14,21 +15,11 @@
 
         // If the animation has been running, then we expect "left" to be
         // non-zero.
-        if (parseInt(getComputedStyle(target).left, 10) == 0)
-          document.write("PASS");
-        else
-          document.write("FAIL");
-        if (window.testRunner) {
-          testRunner.dumpAsText();
-          testRunner.notifyDone();
-        }
-      });
-    });
+        assert_equals(parseInt(getComputedStyle(target).left, 10), 0);
+      }));
+    }));
   };
 </script>
 <body onload="go()">
-  <p>
-    Tests that children of a display:none iframe do not run animations.
-  </p>
   <iframe id="iframe" style="display:none" src="resources/frame_with_animation.html"></iframe>
 </body>

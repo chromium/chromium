@@ -9,19 +9,34 @@
 
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "services/device/geolocation/position_cache_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "testing/perf/perf_test.h"
+#include "testing/perf/perf_result_reporter.h"
+
+namespace {
+
+constexpr char kMetricPrefixPositionCacheImpl[] = "PositionCacheImpl.";
+constexpr char kMetricAddTimeMs[] = "add_time";
+constexpr char kMetricFindTimeMs[] = "find_time";
+constexpr char kStoryBaseline[] = "baseline_story";
+
+perf_test::PerfResultReporter SetUpReporter(const std::string& story) {
+  perf_test::PerfResultReporter reporter(kMetricPrefixPositionCacheImpl, story);
+  reporter.RegisterImportantMetric(kMetricAddTimeMs, "ms");
+  reporter.RegisterImportantMetric(kMetricFindTimeMs, "ms");
+  return reporter;
+}
+
+}  // namespace
 
 namespace device {
 
 class PositionCacheImplPerfTest : public ::testing::Test {
  public:
   PositionCacheImplPerfTest()
-      : task_environment_(
-            base::test::ScopedTaskEnvironment::MainThreadType::MOCK_TIME),
+      : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME),
         cache_(task_environment_.GetMockTickClock()) {}
 
   void SetUp() override {
@@ -34,7 +49,7 @@ class PositionCacheImplPerfTest : public ::testing::Test {
  protected:
   static constexpr size_t kBatchSize = 5000;
   std::vector<std::pair<WifiData, mojom::Geoposition>> data_;
-  base::test::ScopedTaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_;
   PositionCacheImpl cache_;
 };
 
@@ -43,9 +58,8 @@ TEST_F(PositionCacheImplPerfTest, Adding) {
   for (const auto& pair : data_)
     cache_.CachePosition(pair.first, pair.second);
   base::Time end = base::Time::Now();
-  perf_test::PrintResult("adding_to_cache", "", "",
-                         base::TimeDelta(end - start).InMillisecondsF(),
-                         "ms per batch", true);
+  auto reporter = SetUpReporter(kStoryBaseline);
+  reporter.AddResult(kMetricAddTimeMs, base::TimeDelta(end - start));
 }
 
 TEST_F(PositionCacheImplPerfTest, Finding) {
@@ -55,8 +69,7 @@ TEST_F(PositionCacheImplPerfTest, Finding) {
   for (const auto& pair : data_)
     cache_.FindPosition(pair.first);
   base::Time end = base::Time::Now();
-  perf_test::PrintResult("finding_in_cache", "", "",
-                         base::TimeDelta(end - start).InMillisecondsF(),
-                         "ms per batch", true);
+  auto reporter = SetUpReporter(kStoryBaseline);
+  reporter.AddResult(kMetricFindTimeMs, base::TimeDelta(end - start));
 }
 }  // namespace device

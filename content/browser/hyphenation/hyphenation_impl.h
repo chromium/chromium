@@ -7,8 +7,8 @@
 
 #include "base/macros.h"
 #include "base/sequenced_task_runner.h"
-#include "mojo/public/cpp/bindings/interface_request.h"
-#include "third_party/blink/public/platform/modules/hyphenation/hyphenation.mojom.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "third_party/blink/public/mojom/hyphenation/hyphenation.mojom.h"
 
 namespace hyphenation {
 
@@ -17,7 +17,7 @@ class HyphenationImpl : public blink::mojom::Hyphenation {
   HyphenationImpl();
   ~HyphenationImpl() override;
 
-  static void Create(blink::mojom::HyphenationRequest);
+  static void Create(mojo::PendingReceiver<blink::mojom::Hyphenation>);
 
   static scoped_refptr<base::SequencedTaskRunner> GetTaskRunner();
 

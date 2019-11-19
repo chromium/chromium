@@ -33,69 +33,13 @@
 </template>
 <script src="resources/interpolation-test.js"></script>
 <script>
+// Regression test for https://crbug.com/984700
 assertInterpolation({
   property: 'perspective-origin',
-  from: neutralKeyframe,
-  to: '20px 20px',
+  from: '20% 25%',
+  to: '40% 50%',
 }, [
-  {at: -0.3, is: '7px 33px'},
-  {at: 0, is: '10px 30px'},
-  {at: 0.3, is: '13px 27px'},
-  {at: 0.6, is: '16px 24px'},
-  {at: 1, is: '20px 20px'},
-  {at: 1.5, is: '25px 15px'},
-]);
-
-assertInterpolation({
-  property: 'perspective-origin',
-  from: 'initial',
-  to: '20px 20px',
-}, [
-  {at: -0.3, is: '26.5px 26.5px'},
-  {at: 0, is: '25px 25px'},
-  {at: 0.3, is: '23.5px 23.5px'},
-  {at: 0.6, is: '22px 22px'},
-  {at: 1, is: '20px 20px'},
-  {at: 1.5, is: '17.5px 17.5px'},
-]);
-
-assertInterpolation({
-  property: 'perspective-origin',
-  from: 'inherit',
-  to: '20px 20px',
-}, [
-  {at: -0.3, is: '33px 7px'},
-  {at: 0, is: '30px 10px'},
-  {at: 0.3, is: '27px 13px'},
-  {at: 0.6, is: '24px 16px'},
-  {at: 1, is: '20px 20px'},
-  {at: 1.5, is: '15px 25px'},
-]);
-
-assertInterpolation({
-  property: 'perspective-origin',
-  from: 'unset',
-  to: '20px 20px',
-}, [
-  {at: -0.3, is: '26.5px 26.5px'},
-  {at: 0, is: '25px 25px'},
-  {at: 0.3, is: '23.5px 23.5px'},
-  {at: 0.6, is: '22px 22px'},
-  {at: 1, is: '20px 20px'},
-  {at: 1.5, is: '17.5px 17.5px'},
-]);
-
-assertInterpolation({
-  property: 'perspective-origin',
-  from: '0% 50%',
-  to: '100% 150%'
-}, [
-  {at: -0.3, is: '-30% 20%'},
-  {at: 0, is: '0% 50%'},
-  {at: 0.3, is: '30% 80%'},
-  {at: 0.6, is: '60% 110%'},
-  {at: 1, is: '100% 150%'},
-  {at: 1.5, is: '150% 200%'}
+  {at: 3.40282e+38, is: '3.35544e+07px 3.35544e+07px'}
 ]);
 </script>
 </body>

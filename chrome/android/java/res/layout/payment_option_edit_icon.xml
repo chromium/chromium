@@ -3,28 +3,26 @@
      Use of this source code is governed by a BSD-style license that can be
      found in the LICENSE file. -->
 
-<LinearLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools"
-        android:id="@+id/payments_open_editor_pencil_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:contentDescription="@string/payments_edit_button">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/payments_open_editor_pencil_button"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:contentDescription="@string/payments_edit_button">
 
     <View
-            android:layout_width="1dp"
-            android:layout_height="48dp"
-            android:layout_gravity="center_vertical"
-            android:layout_marginStart="@dimen/editor_dialog_section_large_spacing"
-            android:layout_marginEnd="@dimen/editor_dialog_section_large_spacing"
-            android:background="@color/payments_section_separator"
-            android:importantForAccessibility="no"/>
+        android:layout_width="1dp"
+        android:layout_height="48dp"
+        android:layout_gravity="center_vertical"
+        android:layout_marginStart="@dimen/editor_dialog_section_large_spacing"
+        android:layout_marginEnd="@dimen/editor_dialog_section_large_spacing"
+        style="@style/VerticalDivider" />
 
-    <ImageView
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:layout_gravity="center_vertical"
-            android:src="@drawable/ic_edit_24dp"
-            tools:ignore="ContentDescription"
-            android:importantForAccessibility="no" />
+    <org.chromium.ui.widget.ChromeImageView
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_gravity="center_vertical"
+        android:src="@drawable/ic_edit_24dp"
+        android:importantForAccessibility="no"
+        app:tint="@color/default_icon_color"/>
 </LinearLayout>

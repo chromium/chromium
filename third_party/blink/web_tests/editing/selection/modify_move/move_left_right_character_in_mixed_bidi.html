@@ -7,17 +7,12 @@
 <div id="rtl" dir="rtl" contenteditable>&#1494;&#1495; &#x202a;&#1491;&#1492;&#x202a;car &#1493;&#x202c;&#x202c;  </div>
 <div id="log"></div>
 <script>
-// When bidi caret affinity is enabled, carets are shown at different visual
-// locations. Use the changed test expectations in this case.
-const usesBidiAffinity = window.internals && internals.runtimeFlags.bidiCaretAffinityEnabled;
-console.log(usesBidiAffinity);
-
 test(function() {
     var sample = document.getElementById('ltr');
     var selection = window.getSelection();
     selection.collapse(sample.firstChild, 6);
     selection.modify('move', 'right', 'character');
-    assert_equals(selection.anchorOffset, usesBidiAffinity ? 5 : 1);
+    assert_equals(selection.anchorOffset, 7);
 }, 'move right character');
 
 test(function() {

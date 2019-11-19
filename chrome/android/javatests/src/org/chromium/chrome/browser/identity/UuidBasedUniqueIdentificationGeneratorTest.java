@@ -23,7 +23,7 @@ public class UuidBasedUniqueIdentificationGeneratorTest {
     private AdvancedMockContext mContext;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         mContext = new AdvancedMockContext(InstrumentationRegistry.getTargetContext());
     }
 

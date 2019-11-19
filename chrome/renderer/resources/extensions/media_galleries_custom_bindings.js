@@ -4,12 +4,8 @@
 
 // Custom binding for the Media Gallery API.
 
-var binding = apiBridge || require('binding').Binding.create('mediaGalleries');
 var blobNatives = requireNative('blob_natives');
 var mediaGalleriesNatives = requireNative('mediaGalleries');
-var sendRequest = bindingUtil ?
-    $Function.bind(bindingUtil.sendRequest, bindingUtil) :
-    require('sendRequest').sendRequest;
 
 var blobsAwaitingMetadata = {};
 var mediaGalleriesMetadata = {};
@@ -30,7 +26,7 @@ function createFileSystemObjectsAndUpdateMetadata(response) {
   return result;
 }
 
-binding.registerCustomHook(function(bindingsAPI, extensionId) {
+apiBridge.registerCustomHook(function(bindingsAPI, extensionId) {
   var apiFunctions = bindingsAPI.apiFunctions;
 
   // getMediaFileSystems and addUserSelectedFolder use a custom callback so that
@@ -103,10 +99,8 @@ binding.registerCustomHook(function(bindingsAPI, extensionId) {
       customCallback: $Function.bind(getMetadataCallback, null, blobUuid),
     };
 
-    sendRequest('mediaGalleries.getMetadata', [blobUuid, options, callback],
-                bindingUtil ? undefined : this.definition.parameters, optArgs);
+    bindingUtil.sendRequest(
+        'mediaGalleries.getMetadata', [blobUuid, options, callback],
+        optArgs);
   });
 });
-
-if (!apiBridge)
-  exports.$set('binding', binding.generate());

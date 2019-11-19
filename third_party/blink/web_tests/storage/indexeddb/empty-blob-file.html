@@ -5,6 +5,9 @@
 <input type="file" id="emptyFileListInput" multiple></input>
 <script>
 
+ // This test cannot be a WPT because it uses the Blink specific APIs to
+ // automate file drag/drop.
+
 description("Confirm that IndexedDB can store an empty Blob/File/FileList");
 
 var emptyFileInput = document.getElementById("emptyFileInput");

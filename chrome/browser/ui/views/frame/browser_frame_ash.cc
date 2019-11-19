@@ -6,16 +6,13 @@
 
 #include <memory>
 
-// This file is only instantiated in classic ash/mus. It is never used in mash.
-// See native_browser_frame_factory_chromeos.cc switches on
-// features::IsUsingWindowService().
 #include "ash/public/cpp/window_properties.h"
 #include "ash/public/cpp/window_state_type.h"
-#include "ash/shell.h"                     // mash-ok
-#include "ash/wm/window_properties.h"      // mash-ok
-#include "ash/wm/window_state.h"           // mash-ok
-#include "ash/wm/window_state_delegate.h"  // mash-ok
-#include "ash/wm/window_util.h"            // mash-ok
+#include "ash/shell.h"
+#include "ash/wm/window_properties.h"
+#include "ash/wm/window_state.h"
+#include "ash/wm/window_state_delegate.h"
+#include "ash/wm/window_util.h"
 #include "base/macros.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -24,14 +21,13 @@
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/views/view.h"
 
 namespace {
 
 // BrowserWindowStateDelegate class handles a user's fullscreen
 // request (Shift+F4/F4).
-class BrowserWindowStateDelegate : public ash::wm::WindowStateDelegate {
+class BrowserWindowStateDelegate : public ash::WindowStateDelegate {
  public:
   explicit BrowserWindowStateDelegate(Browser* browser)
       : browser_(browser) {
@@ -39,8 +35,8 @@ class BrowserWindowStateDelegate : public ash::wm::WindowStateDelegate {
   }
   ~BrowserWindowStateDelegate() override {}
 
-  // Overridden from ash::wm::WindowStateDelegate.
-  bool ToggleFullscreen(ash::wm::WindowState* window_state) override {
+  // Overridden from ash::WindowStateDelegate.
+  bool ToggleFullscreen(ash::WindowState* window_state) override {
     DCHECK(window_state->IsFullscreen() || window_state->CanMaximize());
     // Windows which cannot be maximized should not be fullscreened.
     if (!window_state->IsFullscreen() && !window_state->CanMaximize())
@@ -48,6 +44,7 @@ class BrowserWindowStateDelegate : public ash::wm::WindowStateDelegate {
     chrome::ToggleFullscreenMode(browser_);
     return true;
   }
+
  private:
   Browser* browser_;  // not owned.
 
@@ -63,7 +60,6 @@ BrowserFrameAsh::BrowserFrameAsh(BrowserFrame* browser_frame,
                                  BrowserView* browser_view)
     : views::NativeWidgetAura(browser_frame),
       browser_view_(browser_view) {
-  DCHECK(!features::IsUsingWindowService());
   GetNativeWindow()->SetName("BrowserFrameAsh");
   Browser* browser = browser_view->browser();
 
@@ -80,14 +76,22 @@ BrowserFrameAsh::~BrowserFrameAsh() {}
 
 void BrowserFrameAsh::OnWidgetInitDone() {
   Browser* browser = browser_view_->browser();
-  ash::wm::WindowState* window_state =
-      ash::wm::GetWindowState(GetNativeWindow());
+  ash::WindowState* window_state = ash::WindowState::Get(GetNativeWindow());
   window_state->SetDelegate(
       std::make_unique<BrowserWindowStateDelegate>(browser));
   // For legacy reasons v1 apps (like Secure Shell) are allowed to consume keys
   // like brightness, volume, etc. Otherwise these keys are handled by the
   // Ash window manager.
-  window_state->SetCanConsumeSystemKeys(browser->is_app());
+  window_state->SetCanConsumeSystemKeys(browser->deprecated_is_app());
+}
+
+void BrowserFrameAsh::OnBoundsChanged(const gfx::Rect& old_bounds,
+                                      const gfx::Rect& new_bounds) {
+  NativeWidgetAura::OnBoundsChanged(old_bounds, new_bounds);
+  if (GetNativeWindow()->transparent()) {
+    GetNativeWindow()->SetOpaqueRegionsForOcclusion(
+        {gfx::Rect(new_bounds.size())});
+  }
 }
 
 void BrowserFrameAsh::OnWindowTargetVisibilityChanged(bool visible) {
@@ -166,6 +170,6 @@ int BrowserFrameAsh::GetMinimizeButtonOffset() const {
 void BrowserFrameAsh::SetWindowAutoManaged() {
   // For browser window in Chrome OS, we should only enable the auto window
   // management logic for tabbed browser.
-  if (!browser_view_->browser()->is_type_popup())
+  if (browser_view_->browser()->is_type_normal())
     GetNativeWindow()->SetProperty(ash::kWindowPositionManagedTypeKey, true);
 }

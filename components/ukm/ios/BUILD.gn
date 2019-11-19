@@ -4,6 +4,13 @@
 
 assert(target_os == "ios")
 
+group("ios") {
+  public_deps = [
+    ":features",
+    ":ukm_url_recorder",
+  ]
+}
+
 source_set("features") {
   sources = [
     "features.cc",
@@ -11,5 +18,40 @@ source_set("features") {
   ]
   deps = [
     "//base",
+  ]
+}
+
+source_set("ukm_url_recorder") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "ukm_url_recorder.h",
+    "ukm_url_recorder.mm",
+  ]
+  public_deps = [
+    "//services/metrics/public/cpp:metrics_cpp",
+  ]
+  deps = [
+    "//base",
+    "//ios/web",
+    "//url",
+  ]
+}
+
+source_set("unit_tests") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  testonly = true
+  sources = [
+    "ukm_url_recorder_unittest.mm",
+  ]
+  deps = [
+    ":ukm_url_recorder",
+    "//base",
+    "//base/test:test_support",
+    "//components/ukm:test_support",
+    "//ios/web/public",
+    "//ios/web/public/test",
+    "//net:test_support",
+    "//services/metrics/public/cpp:metrics_cpp",
+    "//testing/gtest",
   ]
 }

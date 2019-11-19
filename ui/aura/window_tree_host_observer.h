@@ -35,6 +35,14 @@ class AURA_EXPORT WindowTreeHostObserver {
   virtual void OnOcclusionStateChanged(WindowTreeHost* host,
                                        Window::OcclusionState new_state) {}
 
+  // Called before processing a bounds change. The bounds change may result in
+  // one or both of OnHostResized() and OnHostMovedInPixels() being called.
+  // This is not supported by all WindowTreeHosts.
+  // OnHostWillProcessBoundsChange() is always followed by
+  // OnHostDidProcessBoundsChange().
+  virtual void OnHostWillProcessBoundsChange(WindowTreeHost* host) {}
+  virtual void OnHostDidProcessBoundsChange(WindowTreeHost* host) {}
+
  protected:
   virtual ~WindowTreeHostObserver() {}
 };

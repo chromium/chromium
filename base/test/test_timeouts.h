@@ -32,9 +32,11 @@ class TestTimeouts {
     return base::TimeDelta::FromMilliseconds(action_timeout_ms_);
   }
 
-  // Timeout longer than the above, but still suitable to use
-  // multiple times in a single test. Use if the timeout above
-  // is not sufficient.
+  // Timeout longer than the above, suitable to wait on success conditions which
+  // can take a while to achieve but still should expire on failure before
+  // |test_launcher_timeout()| terminates the process. Note that
+  // test_launcher_timeout() can be reached nonetheless when multiple such
+  // actions are compounded in the same test.
   static base::TimeDelta action_max_timeout() {
     DCHECK(initialized_);
     return base::TimeDelta::FromMilliseconds(action_max_timeout_ms_);

@@ -46,7 +46,7 @@ base::File::Error ProviderErrorToFileError(
 
 // Base class for internal API functions handling request results, either
 // a success or a failure.
-class FileSystemProviderInternalFunction : public UIThreadExtensionFunction {
+class FileSystemProviderInternalFunction : public ExtensionFunction {
  public:
   FileSystemProviderInternalFunction();
 

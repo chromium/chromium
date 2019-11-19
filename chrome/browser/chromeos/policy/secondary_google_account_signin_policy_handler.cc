@@ -3,10 +3,11 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/chromeos/policy/secondary_google_account_signin_policy_handler.h"
+#include "chromeos/constants/chromeos_pref_names.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_value_map.h"
-#include "components/signin/core/browser/signin_pref_names.h"
+#include "components/signin/public/base/signin_pref_names.h"
 
 namespace policy {
 
@@ -31,8 +32,14 @@ void SecondaryGoogleAccountSigninPolicyHandler::ApplyPolicySettings(
     return;
   }
 
-  // Disallow secondary sign-in by enabling Mirror consistency.
+  // Disallow secondary sign-in by enabling Mirror consistency. If Chrome OS
+  // Account Manager is not available, this has the effect of disabling
+  // secondary account sign-ins within the content area.
+  // TODO(https://crbug.com/938835): Clean this up after releasing Chrome OS
+  // Account Manager.
   prefs->SetBoolean(prefs::kAccountConsistencyMirrorRequired, true);
+  prefs->SetBoolean(chromeos::prefs::kSecondaryGoogleAccountSigninAllowed,
+                    false);
 }
 
 }  // namespace policy

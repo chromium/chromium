@@ -36,22 +36,21 @@ class LzmaUtilTest : public testing::Test {
 TEST_F(LzmaUtilTest, OpenArchiveTest) {
   base::FilePath archive = data_dir_.AppendASCII("archive1.7z");
   LzmaUtilImpl lzma_util;
-  EXPECT_EQ(static_cast<DWORD>(ERROR_SUCCESS), lzma_util.OpenArchive(archive));
+  EXPECT_EQ(UNPACK_NO_ERROR, lzma_util.OpenArchive(archive));
 
   // We allow opening another archive (which will automatically close the first
   // archive).
   archive = data_dir_.AppendASCII("archive2.7z");
-  EXPECT_EQ(static_cast<DWORD>(ERROR_SUCCESS), lzma_util.OpenArchive(archive));
+  EXPECT_EQ(UNPACK_NO_ERROR, lzma_util.OpenArchive(archive));
 
   // Explicitly close and open the first archive again.
   lzma_util.CloseArchive();
   archive = data_dir_.AppendASCII("archive1.7z");
-  EXPECT_EQ(static_cast<DWORD>(ERROR_SUCCESS), lzma_util.OpenArchive(archive));
+  EXPECT_EQ(UNPACK_NO_ERROR, lzma_util.OpenArchive(archive));
 
   // Make sure non-existent archive returns error.
   archive = data_dir_.AppendASCII("archive.non_existent.7z");
-  EXPECT_EQ(static_cast<DWORD>(ERROR_FILE_NOT_FOUND),
-            lzma_util.OpenArchive(archive));
+  EXPECT_EQ(UNPACK_ARCHIVE_NOT_FOUND, lzma_util.OpenArchive(archive));
 }
 
 // Test that we can extract archives successfully.
@@ -64,38 +63,33 @@ TEST_F(LzmaUtilTest, UnPackTest) {
 
   base::FilePath archive = data_dir_.AppendASCII("archive1.7z");
   LzmaUtilImpl lzma_util;
-  EXPECT_EQ(static_cast<DWORD>(ERROR_SUCCESS), lzma_util.OpenArchive(archive));
+  EXPECT_EQ(UNPACK_NO_ERROR, lzma_util.OpenArchive(archive));
   base::FilePath unpacked_file;
-  EXPECT_EQ(static_cast<DWORD>(ERROR_SUCCESS),
-            lzma_util.UnPack(extract_dir, &unpacked_file));
-  EXPECT_EQ(lzma_util.GetUnPackStatus(), UNPACK_NO_ERROR);
+  EXPECT_EQ(UNPACK_NO_ERROR, lzma_util.UnPack(extract_dir, &unpacked_file));
+  EXPECT_FALSE(lzma_util.GetErrorCode());
 
   EXPECT_TRUE(base::PathExists(extract_dir.AppendASCII("a.exe")));
   EXPECT_TRUE(unpacked_file == extract_dir.AppendASCII("a.exe"));
 
   archive = data_dir_.AppendASCII("archive2.7z");
-  EXPECT_EQ(static_cast<DWORD>(ERROR_SUCCESS), lzma_util.OpenArchive(archive));
-  EXPECT_EQ(static_cast<DWORD>(ERROR_SUCCESS),
-            lzma_util.UnPack(extract_dir, &unpacked_file));
+  EXPECT_EQ(UNPACK_NO_ERROR, lzma_util.OpenArchive(archive));
+  EXPECT_EQ(UNPACK_NO_ERROR, lzma_util.UnPack(extract_dir, &unpacked_file));
   EXPECT_TRUE(base::PathExists(extract_dir.AppendASCII("b.exe")));
   EXPECT_TRUE(unpacked_file == extract_dir.AppendASCII("b.exe"));
-  EXPECT_EQ(lzma_util.GetUnPackStatus(), UNPACK_NO_ERROR);
+  EXPECT_FALSE(lzma_util.GetErrorCode());
 
   lzma_util.CloseArchive();
   archive = data_dir_.AppendASCII("invalid_archive.7z");
-  EXPECT_EQ(static_cast<DWORD>(ERROR_INVALID_HANDLE),
-            lzma_util.UnPack(extract_dir, &unpacked_file));
-  EXPECT_EQ(static_cast<DWORD>(ERROR_SUCCESS), lzma_util.OpenArchive(archive));
-  EXPECT_EQ(static_cast<DWORD>(ERROR_INVALID_HANDLE),
+  EXPECT_EQ(UNPACK_NO_ERROR, lzma_util.OpenArchive(archive));
+  EXPECT_EQ(UNPACK_SZAREX_OPEN_ERROR,
             lzma_util.UnPack(extract_dir, &unpacked_file));
 
-  EXPECT_EQ(static_cast<DWORD>(ERROR_INVALID_HANDLE),
+  EXPECT_EQ(UNPACK_SZAREX_OPEN_ERROR,
             lzma_util.UnPack(extract_dir, &unpacked_file));
 
   archive = data_dir_.AppendASCII("archive3.7z");
-  EXPECT_EQ(static_cast<DWORD>(ERROR_SUCCESS), lzma_util.OpenArchive(archive));
-  EXPECT_EQ(static_cast<DWORD>(ERROR_SUCCESS),
-            lzma_util.UnPack(extract_dir, &unpacked_file));
+  EXPECT_EQ(UNPACK_NO_ERROR, lzma_util.OpenArchive(archive));
+  EXPECT_EQ(UNPACK_NO_ERROR, lzma_util.UnPack(extract_dir, &unpacked_file));
   EXPECT_TRUE(base::PathExists(extract_dir.AppendASCII("archive\\a.exe")));
   EXPECT_TRUE(base::PathExists(
       extract_dir.AppendASCII("archive\\sub_dir\\text.txt")));
@@ -112,23 +106,21 @@ TEST_F(LzmaUtilTest, UnPackArchiveTest) {
   base::FilePath archive = data_dir_.AppendASCII("archive1.7z");
   base::FilePath unpacked_file;
 
-  EXPECT_EQ(
-      static_cast<DWORD>(ERROR_SUCCESS),
-      UnPackArchive(archive, extract_dir, &unpacked_file, nullptr, nullptr));
+  EXPECT_EQ(UNPACK_NO_ERROR, UnPackArchive(archive, extract_dir, &unpacked_file,
+                                           nullptr, nullptr));
 
   EXPECT_TRUE(base::PathExists(extract_dir.AppendASCII("a.exe")));
   EXPECT_TRUE(unpacked_file == extract_dir.AppendASCII("a.exe"));
 
   archive = data_dir_.AppendASCII("archive2.7z");
-  EXPECT_EQ(
-      static_cast<DWORD>(ERROR_SUCCESS),
-      UnPackArchive(archive, extract_dir, &unpacked_file, nullptr, nullptr));
+  EXPECT_EQ(UNPACK_NO_ERROR, UnPackArchive(archive, extract_dir, &unpacked_file,
+                                           nullptr, nullptr));
 
   EXPECT_TRUE(base::PathExists(extract_dir.AppendASCII("b.exe")));
   EXPECT_TRUE(unpacked_file == extract_dir.AppendASCII("b.exe"));
 
   archive = data_dir_.AppendASCII("invalid_archive.7z");
   EXPECT_EQ(
-      static_cast<DWORD>(ERROR_INVALID_HANDLE),
+      UNPACK_SZAREX_OPEN_ERROR,
       UnPackArchive(archive, extract_dir, &unpacked_file, nullptr, nullptr));
 }

@@ -17,7 +17,9 @@
 #include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/notifications/notification_platform_bridge.h"
 #include "chrome/browser/notifications/persistent_notification_handler.h"
+#include "chrome/browser/permissions/permission_request_notification_handler.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/sharing/sharing_notification_handler.h"
 #include "chrome/common/chrome_features.h"
 #include "content/public/browser/browser_thread.h"
 #include "ui/base/ui_base_features.h"
@@ -31,7 +33,7 @@
 #include "chrome/browser/notifications/notification_platform_bridge_message_center.h"
 #endif
 
-#if defined(OS_LINUX) || defined(OS_MACOSX)
+#if defined(OS_LINUX) || defined(OS_MACOSX) || defined(OS_WIN)
 #include "chrome/browser/send_tab_to_self/desktop_notification_handler.h"
 #endif
 
@@ -111,8 +113,7 @@ NotificationDisplayServiceImpl* NotificationDisplayServiceImpl::GetForProfile(
 NotificationDisplayServiceImpl::NotificationDisplayServiceImpl(Profile* profile)
     : profile_(profile),
       message_center_bridge_(CreateMessageCenterBridge(profile)),
-      bridge_(GetNativeNotificationPlatformBridge()),
-      weak_factory_(this) {
+      bridge_(GetNativeNotificationPlatformBridge()) {
   // TODO(peter): Move these to the NotificationDisplayServiceFactory.
   if (profile_) {
     AddNotificationHandler(
@@ -121,17 +122,27 @@ NotificationDisplayServiceImpl::NotificationDisplayServiceImpl(Profile* profile)
     AddNotificationHandler(NotificationHandler::Type::WEB_PERSISTENT,
                            std::make_unique<PersistentNotificationHandler>());
 
-#if defined(OS_LINUX) || defined(OS_MACOSX)
+#if defined(OS_LINUX) || defined(OS_MACOSX) || defined(OS_WIN)
     AddNotificationHandler(
         NotificationHandler::Type::SEND_TAB_TO_SELF,
         std::make_unique<send_tab_to_self::DesktopNotificationHandler>(
-            profile));
+            profile_));
 #endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
     AddNotificationHandler(
         NotificationHandler::Type::EXTENSION,
         std::make_unique<extensions::ExtensionNotificationHandler>());
+#endif
+
+#if defined(OS_ANDROID)
+    AddNotificationHandler(
+        NotificationHandler::Type::PERMISSION_REQUEST,
+        std::make_unique<PermissionRequestNotificationHandler>());
+#endif
+#if !defined(OS_ANDROID)
+    AddNotificationHandler(NotificationHandler::Type::SHARING,
+                           std::make_unique<SharingNotificationHandler>());
 #endif
   }
 

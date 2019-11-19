@@ -9,6 +9,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "content/common/content_security_policy/csp_context.h"
+#include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "url/url_canon.h"
 #include "url/url_util.h"
 
@@ -171,6 +172,14 @@ CSPSource::CSPSource(const std::string& scheme,
   DCHECK(!HasPath() || HasHost());  // path => host
   DCHECK(!is_port_wildcard || port == url::PORT_UNSPECIFIED);
 }
+
+CSPSource::CSPSource(const network::mojom::CSPSource& csp_source)
+    : CSPSource(csp_source.scheme,
+                csp_source.host,
+                csp_source.is_host_wildcard,
+                csp_source.port,
+                csp_source.is_port_wildcard,
+                csp_source.path) {}
 
 CSPSource::CSPSource(const CSPSource& source) = default;
 CSPSource::~CSPSource() = default;

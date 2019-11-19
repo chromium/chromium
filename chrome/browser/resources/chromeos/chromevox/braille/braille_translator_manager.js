@@ -6,27 +6,26 @@
  * @fileoverview Keeps track of the current braille translators.
  */
 
-goog.provide('cvox.BrailleTranslatorManager');
+goog.provide('BrailleTranslatorManager');
 
-goog.require('cvox.BrailleTable');
-goog.require('cvox.ExpandingBrailleTranslator');
-goog.require('cvox.LibLouis');
+goog.require('BrailleTable');
+goog.require('ExpandingBrailleTranslator');
+goog.require('LibLouis');
 
 /**
- * @param {cvox.LibLouis=} opt_liblouisForTest Liblouis instance to use
+ * @param {LibLouis=} opt_liblouisForTest Liblouis instance to use
  *     for testing.
  * @constructor
  */
-cvox.BrailleTranslatorManager = function(opt_liblouisForTest) {
+BrailleTranslatorManager = function(opt_liblouisForTest) {
   /**
-   * @type {!cvox.LibLouis}
+   * @type {!LibLouis}
    * @private
    */
   this.liblouis_ = opt_liblouisForTest ||
-      new cvox.LibLouis(
-          chrome.extension.getURL('braille/liblouis_wrapper.js'),
-          chrome.extension.getURL('braille/tables'),
-          this.loadLiblouis_.bind(this));
+      new LibLouis(chrome.extension.getURL('braille/liblouis_wrapper.js'),
+                   chrome.extension.getURL('braille/tables'),
+                   this.loadLiblouis_.bind(this));
 
   /**
    * @type {!Array<function()>}
@@ -34,17 +33,17 @@ cvox.BrailleTranslatorManager = function(opt_liblouisForTest) {
    */
   this.changeListeners_ = [];
   /**
-   * @type {!Array<cvox.BrailleTable.Table>}
+   * @type {!Array<BrailleTable.Table>}
    * @private
    */
   this.tables_ = [];
   /**
-   * @type {cvox.ExpandingBrailleTranslator}
+   * @type {ExpandingBrailleTranslator}
    * @private
    */
   this.expandingTranslator_ = null;
   /**
-   * @type {cvox.LibLouis.Translator}
+   * @type {LibLouis.Translator}
    * @private
    */
   this.defaultTranslator_ = null;
@@ -54,7 +53,7 @@ cvox.BrailleTranslatorManager = function(opt_liblouisForTest) {
    */
   this.defaultTableId_ = null;
   /**
-   * @type {cvox.LibLouis.Translator}
+   * @type {LibLouis.Translator}
    * @private
    */
   this.uncontractedTranslator_ = null;
@@ -65,7 +64,7 @@ cvox.BrailleTranslatorManager = function(opt_liblouisForTest) {
   this.uncontractedTableId_ = null;
 };
 
-cvox.BrailleTranslatorManager.prototype = {
+BrailleTranslatorManager.prototype = {
   /**
    * Adds a listener to be called whenever there is a change in the
    * translator(s) returned by other methods of this instance.
@@ -89,11 +88,12 @@ cvox.BrailleTranslatorManager.prototype = {
     }
 
     var tables = this.tables_;
-    if (tables.length == 0)
+    if (tables.length == 0) {
       return;
+    }
 
     // Look for the table requested.
-    var table = cvox.BrailleTable.forId(tables, brailleTable);
+    var table = BrailleTable.forId(tables, brailleTable);
     if (!table) {
       // Match table against current locale.
       var currentLocale = chrome.i18n.getMessage('@@ui_locale').split(/[_-]/);
@@ -108,22 +108,24 @@ cvox.BrailleTranslatorManager.prototype = {
           var secondPass = firstPass.filter(function(table) {
             return table.locale.split(/[_-]/)[1] == minor;
           });
-          if (secondPass.length > 0)
+          if (secondPass.length > 0) {
             table = secondPass[0];
+          }
         }
       }
     }
-    if (!table)
-      table = cvox.BrailleTable.forId(tables, 'en-US-comp8');
+    if (!table) {
+      table = BrailleTable.forId(tables, 'en-US-comp8');
+    }
 
     // If the user explicitly set an 8 dot table, use that when looking
     // for an uncontracted table.  Otherwise, use the current table and let
     // getUncontracted find an appropriate corresponding table.
     var table8Dot = opt_brailleTable8 ?
-        cvox.BrailleTable.forId(tables, opt_brailleTable8) :
+        BrailleTable.forId(tables, opt_brailleTable8) :
         null;
     var uncontractedTable =
-        cvox.BrailleTable.getUncontracted(tables, table8Dot || table);
+        BrailleTable.getUncontracted(tables, table8Dot || table);
     var newDefaultTableId = table.id;
     var newUncontractedTableId =
         table.id === uncontractedTable.id ? null : uncontractedTable.id;
@@ -135,7 +137,7 @@ cvox.BrailleTranslatorManager.prototype = {
     var finishRefresh = function(defaultTranslator, uncontractedTranslator) {
       this.defaultTableId_ = newDefaultTableId;
       this.uncontractedTableId_ = newUncontractedTableId;
-      this.expandingTranslator_ = new cvox.ExpandingBrailleTranslator(
+      this.expandingTranslator_ = new ExpandingBrailleTranslator(
           defaultTranslator, uncontractedTranslator);
       this.defaultTranslator_ = defaultTranslator;
       this.uncontractedTranslator_ = uncontractedTranslator;
@@ -157,7 +159,7 @@ cvox.BrailleTranslatorManager.prototype = {
   },
 
   /**
-   * @return {cvox.ExpandingBrailleTranslator} The current expanding braille
+   * @return {ExpandingBrailleTranslator} The current expanding braille
    *     translator, or {@code null} if none is available.
    */
   getExpandingTranslator: function() {
@@ -165,7 +167,7 @@ cvox.BrailleTranslatorManager.prototype = {
   },
 
   /**
-   * @return {cvox.LibLouis.Translator} The current braille translator to use
+   * @return {LibLouis.Translator} The current braille translator to use
    *     by default, or {@code null} if none is available.
    */
   getDefaultTranslator: function() {
@@ -173,7 +175,7 @@ cvox.BrailleTranslatorManager.prototype = {
   },
 
   /**
-   * @return {cvox.LibLouis.Translator} The current uncontracted braille
+   * @return {LibLouis.Translator} The current uncontracted braille
    *     translator, or {@code null} if it is the same as the default
    *     translator.
    */
@@ -187,7 +189,7 @@ cvox.BrailleTranslatorManager.prototype = {
    * @private
    */
   fetchTables_: function() {
-    cvox.BrailleTable.getAll(function(tables) {
+    BrailleTable.getAll(function(tables) {
       this.tables_ = tables;
 
       // Initial refresh; set options from user preferences.
@@ -204,14 +206,14 @@ cvox.BrailleTranslatorManager.prototype = {
   },
 
   /**
-   * @return {!cvox.LibLouis} The liblouis instance used by this object.
+   * @return {!LibLouis} The liblouis instance used by this object.
    */
   getLibLouisForTest: function() {
     return this.liblouis_;
   },
 
   /**
-   * @return {!Array<cvox.BrailleTable.Table>} The currently loaded braille
+   * @return {!Array<BrailleTable.Table>} The currently loaded braille
    *     tables, or an empty array if they are not yet loaded.
    */
   getTablesForTest: function() {

@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html>
+  <head><title>echo</title></head>
+  <body>
+    <script>
+      // Use the "echo" port that was bound to the scripting context by the
+      // browsertest.
+      echo.onmessage = function(msg) {
+        echo.postMessage('ack ' + msg.data);
+      }
+    </script>
+  </body>
+</html>

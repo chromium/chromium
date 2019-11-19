@@ -13,7 +13,6 @@
 ../grit/grit/format/html_inline.py
 ../grit/grit/format/minifier.py
 ../grit/grit/format/rc.py
-../grit/grit/format/rc_header.py
 ../grit/grit/gather/__init__.py
 ../grit/grit/gather/admin_template.py
 ../grit/grit/gather/chrome_html.py
@@ -28,6 +27,7 @@
 ../grit/grit/lazy_re.py
 ../grit/grit/node/__init__.py
 ../grit/grit/node/base.py
+../grit/grit/node/brotli_util.py
 ../grit/grit/node/include.py
 ../grit/grit/node/message.py
 ../grit/grit/node/misc.py
@@ -39,6 +39,7 @@
 ../grit/grit/tclib.py
 ../grit/grit/util.py
 ../grit/grit/xtb_reader.py
+../grit/third_party/six/__init__.py
 libsupersize/apkanalyzer.py
 libsupersize/ar.py
 libsupersize/archive.py

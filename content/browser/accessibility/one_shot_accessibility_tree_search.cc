@@ -44,7 +44,7 @@ OneShotAccessibilityTreeSearch::OneShotAccessibilityTreeSearch(
       result_limit_(UNLIMITED_RESULTS),
       immediate_descendants_only_(false),
       can_wrap_to_last_element_(false),
-      visible_only_(false),
+      onscreen_only_(false),
       did_search_(false) {}
 
 OneShotAccessibilityTreeSearch::~OneShotAccessibilityTreeSearch() {}
@@ -82,9 +82,9 @@ void OneShotAccessibilityTreeSearch::SetCanWrapToLastElement(
   can_wrap_to_last_element_ = can_wrap_to_last_element;
 }
 
-void OneShotAccessibilityTreeSearch::SetVisibleOnly(bool visible_only) {
+void OneShotAccessibilityTreeSearch::SetOnscreenOnly(bool onscreen_only) {
   DCHECK(!did_search_);
-  visible_only_ = visible_only;
+  onscreen_only_ = onscreen_only;
 }
 
 void OneShotAccessibilityTreeSearch::SetSearchText(const std::string& text) {
@@ -177,10 +177,17 @@ void OneShotAccessibilityTreeSearch::SearchByWalkingTree() {
     if (Matches(node))
       matches_.push_back(node);
 
-    if (direction_ == FORWARDS)
+    if (direction_ == FORWARDS) {
       node = tree_->NextInTreeOrder(node);
-    else
+    } else {
+      // This needs to be handled carefully. If not, there is a chance of
+      // getting into infinite loop.
+      if (can_wrap_to_last_element_ && !stop_node &&
+          node->manager()->GetRoot() == node) {
+        stop_node = node;
+      }
       node = tree_->PreviousInTreeOrder(node, can_wrap_to_last_element_);
+    }
   }
 }
 
@@ -190,11 +197,11 @@ bool OneShotAccessibilityTreeSearch::Matches(BrowserAccessibility* node) {
       return false;
   }
 
-  if (visible_only_) {
-    if (node->HasState(ax::mojom::State::kInvisible) || node->IsOffscreen()) {
-      return false;
-    }
-  }
+  if (node->HasState(ax::mojom::State::kInvisible))
+    return false;  // Programmatically hidden, e.g. aria-hidden or via CSS.
+
+  if (onscreen_only_ && node->IsOffscreen())
+    return false;  // Partly scrolled offscreen.
 
   if (!search_text_.empty()) {
     base::string16 search_text_lower =
@@ -287,7 +294,7 @@ bool AccessibilityFocusablePredicate(BrowserAccessibility* start,
 
 bool AccessibilityGraphicPredicate(BrowserAccessibility* start,
                                    BrowserAccessibility* node) {
-  return ui::IsImage(node->GetRole());
+  return ui::IsImageOrVideo(node->GetRole());
 }
 
 bool AccessibilityHeadingPredicate(BrowserAccessibility* start,
@@ -366,8 +373,9 @@ bool AccessibilityLandmarkPredicate(BrowserAccessibility* start,
     case ax::mojom::Role::kContentInfo:
     case ax::mojom::Role::kMain:
     case ax::mojom::Role::kNavigation:
-    case ax::mojom::Role::kSearch:
     case ax::mojom::Role::kRegion:
+    case ax::mojom::Role::kSearch:
+    case ax::mojom::Role::kSection:
       return true;
     default:
       return false;
@@ -404,6 +412,11 @@ bool AccessibilityMediaPredicate(BrowserAccessibility* start,
   const std::string& tag =
       node->GetStringAttribute(ax::mojom::StringAttribute::kHtmlTag);
   return tag == "audio" || tag == "video";
+}
+
+bool AccessibilityPopupButtonPredicate(BrowserAccessibility* start,
+                                       BrowserAccessibility* node) {
+  return (node->GetRole() == ax::mojom::Role::kPopUpButton);
 }
 
 bool AccessibilityRadioButtonPredicate(BrowserAccessibility* start,

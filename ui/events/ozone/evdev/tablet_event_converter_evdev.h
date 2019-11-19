@@ -50,16 +50,16 @@ class EVENTS_OZONE_EVDEV_EXPORT TabletEventConverterEvdev
   void FlushEvents(const input_event& input);
 
   // Input device file descriptor.
-  base::ScopedFD input_device_fd_;
+  const base::ScopedFD input_device_fd_;
 
   // Controller for watching the input fd.
   base::MessagePumpLibevent::FdWatchController controller_;
 
   // Shared cursor state.
-  CursorDelegateEvdev* cursor_;
+  CursorDelegateEvdev* const cursor_;
 
   // Dispatcher for events.
-  DeviceEventDispatcherEvdev* dispatcher_;
+  DeviceEventDispatcherEvdev* const dispatcher_;
 
   int y_abs_location_ = 0;
   int x_abs_location_ = 0;

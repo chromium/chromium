@@ -11,15 +11,18 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "media/base/android/media_drm_storage.h"
-#include "media/mojo/interfaces/media_drm_storage.mojom.h"
+#include "media/mojo/mojom/media_drm_storage.mojom.h"
 #include "media/mojo/services/media_mojo_export.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 namespace media {
 
-// A MediaDrmStorage that proxies to a mojom::MediaDrmStoragePtr.
+// A MediaDrmStorage that proxies to a Remote<mojom::MediaDrmStorage>.
 class MEDIA_MOJO_EXPORT MojoMediaDrmStorage : public MediaDrmStorage {
  public:
-  explicit MojoMediaDrmStorage(mojom::MediaDrmStoragePtr media_drm_storage_ptr);
+  explicit MojoMediaDrmStorage(
+      mojo::PendingRemote<mojom::MediaDrmStorage> media_drm_storage);
   ~MojoMediaDrmStorage() final;
 
   // MediaDrmStorage implementation:
@@ -39,8 +42,8 @@ class MEDIA_MOJO_EXPORT MojoMediaDrmStorage : public MediaDrmStorage {
       LoadPersistentSessionCB load_persistent_session_cb,
       mojom::SessionDataPtr session_data);
 
-  mojom::MediaDrmStoragePtr media_drm_storage_ptr_;
-  base::WeakPtrFactory<MojoMediaDrmStorage> weak_factory_;
+  mojo::Remote<mojom::MediaDrmStorage> media_drm_storage_;
+  base::WeakPtrFactory<MojoMediaDrmStorage> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(MojoMediaDrmStorage);
 };

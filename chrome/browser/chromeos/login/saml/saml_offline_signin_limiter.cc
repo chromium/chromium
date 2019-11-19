@@ -11,6 +11,7 @@
 #include "base/bind_helpers.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/power_monitor/power_monitor.h"
 #include "base/time/clock.h"
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
@@ -18,26 +19,11 @@
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
-#include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 
 namespace chromeos {
-
-namespace {
-
-const int kDefaultSAMLOfflineSigninTimeLimit = 14 * 24 * 60 * 60;  // 14 days.
-
-}  // namespace
-
-// static
-void SAMLOfflineSigninLimiter::RegisterProfilePrefs(
-    user_prefs::PrefRegistrySyncable* registry) {
-  registry->RegisterIntegerPref(prefs::kSAMLOfflineSigninTimeLimit,
-                                kDefaultSAMLOfflineSigninTimeLimit);
-  registry->RegisterInt64Pref(prefs::kSAMLLastGAIASignInTime, 0);
-}
 
 void SAMLOfflineSigninLimiter::SignedIn(UserContext::AuthFlow auth_flow) {
   PrefService* prefs = profile_->GetPrefs();
@@ -75,6 +61,9 @@ void SAMLOfflineSigninLimiter::SignedIn(UserContext::AuthFlow auth_flow) {
                              base::Bind(&SAMLOfflineSigninLimiter::UpdateLimit,
                                         base::Unretained(this)));
 
+  // Start listening to power state.
+  base::PowerMonitor::AddObserver(this);
+
   // Arm the |offline_signin_limit_timer_| if a limit is in force.
   UpdateLimit();
 }
@@ -89,13 +78,19 @@ void SAMLOfflineSigninLimiter::Shutdown() {
   pref_change_registrar_.RemoveAll();
 }
 
+void SAMLOfflineSigninLimiter::OnResume() {
+  UpdateLimit();
+}
+
 SAMLOfflineSigninLimiter::SAMLOfflineSigninLimiter(Profile* profile,
                                                    base::Clock* clock)
     : profile_(profile),
       clock_(clock ? clock : base::DefaultClock::GetInstance()),
       offline_signin_limit_timer_(std::make_unique<base::OneShotTimer>()) {}
 
-SAMLOfflineSigninLimiter::~SAMLOfflineSigninLimiter() {}
+SAMLOfflineSigninLimiter::~SAMLOfflineSigninLimiter() {
+  base::PowerMonitor::RemoveObserver(this);
+}
 
 void SAMLOfflineSigninLimiter::UpdateLimit() {
   // Stop the |offline_signin_limit_timer_|.

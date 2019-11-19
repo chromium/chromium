@@ -1,0 +1,29 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="ru">
+<translation id="1075622780330595106">Вы давно не использовали некоторые вкладки (всего: <ph name="NUMBER_OF_TABS" />). Закрыть их?</translation>
+<translation id="1181037720776840403">Удалить</translation>
+<translation id="125153950246128346">Нажмите, чтобы перейти на другую вкладку</translation>
+<translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> вкладка}one{<ph name="TABS_COUNT_MANY" /> вкладка}few{<ph name="TABS_COUNT_MANY" /> вкладки}many{<ph name="TABS_COUNT_MANY" /> вкладок}other{<ph name="TABS_COUNT_MANY" /> вкладки}}</translation>
+<translation id="257674075312929031">Группа.</translation>
+<translation id="2613747923081026172">Создать группу</translation>
+<translation id="2671423594960767771">Открыть доступ</translation>
+<translation id="2977480621796371840">Удалить из группы</translation>
+<translation id="4212246570487010370">Продолжить просмотр</translation>
+<translation id="4648718555153979859">Вкладки сгруппированы здесь</translation>
+<translation id="5007392906805964215">Посмотреть</translation>
+<translation id="5073204694187207510">Скрыть полноэкранную сетку с вкладками</translation>
+<translation id="5082793167783849073">Сравнивайте страницы быстрее, объединяя их в группы. Чтобы начать, нажмите на ссылку и удерживайте ее.</translation>
+<translation id="5580090775658607195">Вкладки сгруппированы (всего <ph name="TAB_COUNT" />).</translation>
+<translation id="5792534911093536736">Дополнительные вкладки</translation>
+<translation id="58326064309361797">Перетаскивайте вкладки, чтобы группировать их</translation>
+<translation id="6040143037577758943">Закрыть</translation>
+<translation id="6193448654517602979">Выберите вкладки</translation>
+<translation id="6615455863669487791">Показать</translation>
+<translation id="6840760312327750441">Чтобы сгруппировать вкладки: нажмите и удерживайте одну вкладку, затем перетащите ее на другую.</translation>
+<translation id="7151209024774799310">Удалить вкладки из группы</translation>
+<translation id="7559245342362162951">Показать сетку с вкладками группы на весь экран</translation>
+<translation id="9150694013019234766">В нижней части экрана можно переключаться между вкладками, объединенными в группы</translation>
+<translation id="9169594135889675189">Добавить новую вкладку в группу</translation>
+<translation id="959682366969460160">Организация работы</translation>
+</translationbundle>

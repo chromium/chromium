@@ -43,6 +43,6 @@ VIEWS_EXPORT void SetDragImage(const GURL& url,
                                const views::Widget& widget,
                                ui::OSExchangeData* data);
 
-}  // namespace drag_utils
+}  // namespace button_drag_utils
 
 #endif  // UI_VIEWS_BUTTON_DRAG_UTILS_H_

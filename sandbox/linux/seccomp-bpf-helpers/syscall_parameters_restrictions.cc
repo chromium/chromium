@@ -21,6 +21,7 @@
 
 #include "base/logging.h"
 #include "base/macros.h"
+#include "base/synchronization/synchronization_buildflags.h"
 #include "build/build_config.h"
 #include "sandbox/linux/bpf_dsl/bpf_dsl.h"
 #include "sandbox/linux/bpf_dsl/seccomp_macros.h"
@@ -134,7 +135,8 @@ namespace sandbox {
 #if !defined(OS_NACL_NONSFI)
 // Allow Glibc's and Android pthread creation flags, crash on any other
 // thread creation attempts and EPERM attempts to use neither
-// CLONE_VM, nor CLONE_THREAD, which includes all fork() implementations.
+// CLONE_VM nor CLONE_THREAD (all fork implementations), unless CLONE_VFORK is
+// present (as in newer versions of posix_spawn).
 ResultExpr RestrictCloneToThreadsAndEPERMFork() {
   const Arg<unsigned long> flags(0);
 
@@ -153,8 +155,16 @@ ResultExpr RestrictCloneToThreadsAndEPERMFork() {
       AnyOf(flags == kAndroidCloneMask, flags == kObsoleteAndroidCloneMask,
             flags == kGlibcPthreadFlags);
 
+  // The following two flags are the two important flags in any vfork-emulating
+  // clone call. EPERM any clone call that contains both of them.
+  const uint64_t kImportantCloneVforkFlags = CLONE_VFORK | CLONE_VM;
+
+  const BoolExpr is_fork_or_clone_vfork =
+      AnyOf((flags & (CLONE_VM | CLONE_THREAD)) == 0,
+            (flags & kImportantCloneVforkFlags) == kImportantCloneVforkFlags);
+
   return If(IsAndroid() ? android_test : glibc_test, Allow())
-      .ElseIf((flags & (CLONE_VM | CLONE_THREAD)) == 0, Error(EPERM))
+      .ElseIf(is_fork_or_clone_vfork, Error(EPERM))
       .Else(CrashSIGSYSClone());
 }
 
@@ -300,6 +310,11 @@ ResultExpr RestrictFutex() {
   const Arg<int> op(1);
   return Switch(op & ~kAllowedFutexFlags)
       .CASES((FUTEX_WAIT, FUTEX_WAKE, FUTEX_REQUEUE, FUTEX_CMP_REQUEUE,
+#if BUILDFLAG(ENABLE_MUTEX_PRIORITY_INHERITANCE)
+              // Enable priority-inheritance operations.
+              FUTEX_LOCK_PI, FUTEX_UNLOCK_PI, FUTEX_TRYLOCK_PI,
+              FUTEX_WAIT_REQUEUE_PI, FUTEX_CMP_REQUEUE_PI,
+#endif  // BUILDFLAG(ENABLE_MUTEX_PRIORITY_INHERITANCE)
               FUTEX_WAKE_OP, FUTEX_WAIT_BITSET, FUTEX_WAKE_BITSET),
              Allow())
       .Default(IsBuggyGlibcSemPost() ? Error(EINVAL) : CrashSIGSYSFutex());
@@ -357,11 +372,10 @@ ResultExpr RestrictClockID() {
   return
     If((clockid & kIsPidBit) == 0,
       Switch(clockid).CASES((
-#if defined(OS_ANDROID)
               CLOCK_BOOTTIME,
-#endif
               CLOCK_MONOTONIC,
               CLOCK_MONOTONIC_COARSE,
+              CLOCK_MONOTONIC_RAW,
               CLOCK_PROCESS_CPUTIME_ID,
               CLOCK_REALTIME,
               CLOCK_REALTIME_COARSE,

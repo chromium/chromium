@@ -19,12 +19,13 @@ public class NavigationEntry {
     private final String mTitle;
     private Bitmap mFavicon;
     private int mTransition;
+    private long mTimestamp;
 
     /**
      * Default constructor.
      */
     public NavigationEntry(int index, String url, String virtualUrl, String originalUrl,
-            String referrerUrl, String title, Bitmap favicon, int transition) {
+            String referrerUrl, String title, Bitmap favicon, int transition, long timestamp) {
         mIndex = index;
         mUrl = url;
         mVirtualUrl = virtualUrl;
@@ -33,6 +34,7 @@ public class NavigationEntry {
         mTitle = title;
         mFavicon = favicon;
         mTransition = transition;
+        mTimestamp = timestamp;
     }
 
     /**
@@ -106,5 +108,12 @@ public class NavigationEntry {
 
     public int getTransition() {
         return mTransition;
+    }
+
+    /**
+     * @return The Timestamp when the last navigation completed.
+     */
+    public long getTimestamp() {
+        return mTimestamp;
     }
 }

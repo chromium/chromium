@@ -4,7 +4,6 @@
 
 #include "ash/window_factory.h"
 
-#include "ash/shell.h"
 #include "ui/aura/window.h"
 
 namespace ash {
@@ -12,8 +11,7 @@ namespace window_factory {
 
 std::unique_ptr<aura::Window> NewWindow(aura::WindowDelegate* delegate,
                                         aura::client::WindowType type) {
-  return std::make_unique<aura::Window>(delegate, type,
-                                        Shell::Get()->aura_env());
+  return std::make_unique<aura::Window>(delegate, type);
 }
 
 }  // namespace window_factory

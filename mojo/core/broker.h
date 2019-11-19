@@ -19,9 +19,13 @@ namespace core {
 // to fulfill shared memory allocation requests on some platforms.
 class Broker {
  public:
-  // Note: This is blocking, and will wait for the first message over
-  // the endpoint handle in |handle|.
-  explicit Broker(PlatformHandle handle);
+  // Note: If |wait_for_channel_handle| is |true|, this constructor blocks the
+  // calling thread until it reads first message from |handle|, which must
+  // contain another PlatformHandle for a NodeChannel.
+  //
+  // Otherwise, no initialization message is expected and this will not wait for
+  // one.
+  Broker(PlatformHandle handle, bool wait_for_channel_handle);
   ~Broker();
 
   // Returns the platform handle that should be used to establish a NodeChannel

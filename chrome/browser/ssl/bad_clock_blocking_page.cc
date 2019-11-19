@@ -6,16 +6,15 @@
 
 #include <utility>
 
-#include "base/callback_helpers.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/interstitials/chrome_metrics_helper.h"
 #include "chrome/browser/interstitials/enterprise_util.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/renderer_preferences_util.h"
 #include "chrome/browser/ssl/cert_report_helper.h"
-#include "chrome/browser/ssl/ssl_cert_reporter.h"
+#include "chrome/browser/ssl/chrome_ssl_blocking_page.h"
 #include "chrome/browser/ssl/ssl_error_controller_client.h"
 #include "components/safe_browsing/common/safe_browsing_prefs.h"
+#include "components/security_interstitials/content/ssl_cert_reporter.h"
 #include "components/security_interstitials/core/bad_clock_ui.h"
 #include "components/security_interstitials/core/metrics_helper.h"
 #include "content/public/browser/interstitial_page.h"
@@ -27,7 +26,6 @@
 #include "content/public/browser/ssl_status.h"
 #include "content/public/browser/web_contents.h"
 #include "net/base/net_errors.h"
-#include "third_party/blink/public/mojom/renderer_preferences.mojom.h"
 
 using content::InterstitialPageDelegate;
 using content::NavigationController;
@@ -67,11 +65,9 @@ BadClockBlockingPage::BadClockBlockingPage(
     const GURL& request_url,
     const base::Time& time_triggered,
     ssl_errors::ClockState clock_state,
-    std::unique_ptr<SSLCertReporter> ssl_cert_reporter,
-    const base::Callback<void(content::CertificateRequestResultType)>& callback)
+    std::unique_ptr<SSLCertReporter> ssl_cert_reporter)
     : SSLBlockingPageBase(
           web_contents,
-          cert_error,
           CertificateErrorReport::INTERSTITIAL_CLOCK,
           ssl_info,
           request_url,
@@ -84,28 +80,23 @@ BadClockBlockingPage::BadClockBlockingPage(
               cert_error,
               request_url,
               CreateBadClockMetricsHelper(web_contents, request_url))),
-      callback_(callback),
       ssl_info_(ssl_info),
       bad_clock_ui_(new security_interstitials::BadClockUI(request_url,
                                                            cert_error,
                                                            ssl_info,
                                                            time_triggered,
                                                            clock_state,
-                                                           controller())) {}
-
-BadClockBlockingPage::~BadClockBlockingPage() {
-  if (!callback_.is_null()) {
-    // Deny when the page is closed.
-    NotifyDenyCertificate();
-  }
+                                                           controller())) {
+  ChromeSSLBlockingPage::DoChromeSpecificSetup(this);
 }
+
+BadClockBlockingPage::~BadClockBlockingPage() = default;
 
 bool BadClockBlockingPage::ShouldCreateNewNavigation() const {
   return true;
 }
 
-InterstitialPageDelegate::TypeID BadClockBlockingPage::GetTypeForTesting()
-    const {
+InterstitialPageDelegate::TypeID BadClockBlockingPage::GetTypeForTesting() {
   return BadClockBlockingPage::kTypeForTesting;
 }
 
@@ -139,27 +130,4 @@ void BadClockBlockingPage::CommandReceived(const std::string& command) {
       controller()->GetPrefService());
   bad_clock_ui_->HandleCommand(
       static_cast<security_interstitials::SecurityInterstitialCommand>(cmd));
-}
-
-void BadClockBlockingPage::OverrideRendererPrefs(
-    blink::mojom::RendererPreferences* prefs) {
-  Profile* profile =
-      Profile::FromBrowserContext(web_contents()->GetBrowserContext());
-  renderer_preferences_util::UpdateFromSystemSettings(prefs, profile);
-}
-
-void BadClockBlockingPage::OnDontProceed() {
-  OnInterstitialClosing();
-  NotifyDenyCertificate();
-}
-
-void BadClockBlockingPage::NotifyDenyCertificate() {
-  // It's possible that callback_ may not exist if the user clicks "Proceed"
-  // followed by pressing the back button before the interstitial is hidden.
-  // In that case the certificate will still be treated as allowed.
-  if (callback_.is_null())
-    return;
-
-  base::ResetAndReturn(&callback_)
-      .Run(content::CERTIFICATE_REQUEST_RESULT_TYPE_CANCEL);
 }

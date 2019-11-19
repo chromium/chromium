@@ -6,12 +6,14 @@
 
 #include "base/bind.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/post_task.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "net/url_request/url_fetcher.h"
-#include "services/identity/public/cpp/identity_manager.h"
-#include "services/identity/public/cpp/primary_account_access_token_fetcher.h"
-#include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "components/feedback/feedback_report.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
+#include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
 
 namespace feedback {
 
@@ -20,19 +22,33 @@ namespace {
 constexpr char kAuthenticationErrorLogMessage[] =
     "Feedback report will be sent without authentication.";
 
+void QueueSingleReport(base::WeakPtr<feedback::FeedbackUploader> uploader,
+                       scoped_refptr<FeedbackReport> report) {
+  base::PostTask(FROM_HERE, {content::BrowserThread::UI},
+                 base::BindOnce(&FeedbackUploaderChrome::RequeueReport,
+                                std::move(uploader), std::move(report)));
+}
+
 }  // namespace
 
 FeedbackUploaderChrome::FeedbackUploaderChrome(
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     content::BrowserContext* context,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner)
-    : FeedbackUploader(url_loader_factory, context, task_runner) {}
+    : FeedbackUploader(context, task_runner) {
+  DCHECK(!context->IsOffTheRecord());
+
+  task_runner->PostTask(
+      FROM_HERE,
+      base::BindOnce(&FeedbackReport::LoadReportsAndQueue,
+                     feedback_reports_path(),
+                     base::BindRepeating(&QueueSingleReport, AsWeakPtr())));
+}
 
 FeedbackUploaderChrome::~FeedbackUploaderChrome() = default;
 
 void FeedbackUploaderChrome::AccessTokenAvailable(
     GoogleServiceAuthError error,
-    identity::AccessTokenInfo access_token_info) {
+    signin::AccessTokenInfo access_token_info) {
   DCHECK(token_fetcher_);
   token_fetcher_.reset();
   if (error.state() == GoogleServiceAuthError::NONE) {
@@ -46,6 +62,9 @@ void FeedbackUploaderChrome::AccessTokenAvailable(
 }
 
 void FeedbackUploaderChrome::StartDispatchingReport() {
+  if (delegate_)
+    delegate_->OnStartDispatchingReport();
+
   access_token_.clear();
 
   // TODO(crbug.com/849591): Instead of getting the IdentityManager from the
@@ -53,18 +72,17 @@ void FeedbackUploaderChrome::StartDispatchingReport() {
   // ctor.
   Profile* profile = Profile::FromBrowserContext(context());
   DCHECK(profile);
-  identity::IdentityManager* identity_manager =
+  signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
 
   if (identity_manager && identity_manager->HasPrimaryAccount()) {
     identity::ScopeSet scopes;
     scopes.insert("https://www.googleapis.com/auth/supportcontent");
-    token_fetcher_ =
-        std::make_unique<identity::PrimaryAccountAccessTokenFetcher>(
-            "feedback_uploader_chrome", identity_manager, scopes,
-            base::BindOnce(&FeedbackUploaderChrome::AccessTokenAvailable,
-                           base::Unretained(this)),
-            identity::PrimaryAccountAccessTokenFetcher::Mode::kImmediate);
+    token_fetcher_ = std::make_unique<signin::PrimaryAccountAccessTokenFetcher>(
+        "feedback_uploader_chrome", identity_manager, scopes,
+        base::BindOnce(&FeedbackUploaderChrome::AccessTokenAvailable,
+                       base::Unretained(this)),
+        signin::PrimaryAccountAccessTokenFetcher::Mode::kImmediate);
     return;
   }
 

@@ -24,17 +24,24 @@ class VR_UI_EXPORT ViewportAwareRoot : public UiElement {
 
   void Reset();
   bool HasVisibleChildren();
+  void SetRecenterOnRotate(bool recenter_on_rotate) {
+    recenter_on_rotate_ = true;
+  }
 
  protected:
   // Returns true if the rotation was adjusted.
   // Virtual for tests.
   virtual bool AdjustRotationForHeadPose(const gfx::Vector3dF& look_at);
+  virtual bool AdjustTranslation(float head_x, float head_z, bool did_rotate);
 
  private:
   bool OnBeginFrame(const gfx::Transform& head_pose) override;
 
   float viewport_aware_total_rotation_ = 0.f;
+  float x_center = 0;
+  float z_center = 0;
   bool children_visible_ = false;
+  bool recenter_on_rotate_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(ViewportAwareRoot);
 };

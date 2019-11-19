@@ -37,11 +37,11 @@
 #include "media/base/logging_override_if_enabled.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/public/platform/web_source_buffer.h"
+#include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/dom/events/event_queue.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/deprecation.h"
-#include "third_party/blink/renderer/core/frame/use_counter.h"
 #include "third_party/blink/renderer/core/html/media/html_media_element.h"
 #include "third_party/blink/renderer/core/html/time_ranges.h"
 #include "third_party/blink/renderer/core/html/track/audio_track.h"
@@ -54,7 +54,9 @@
 #include "third_party/blink/renderer/modules/mediasource/source_buffer_track_base_supplement.h"
 #include "third_party/blink/renderer/platform/bindings/exception_messages.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/network/mime/content_type.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
@@ -116,7 +118,7 @@ SourceBuffer::SourceBuffer(std::unique_ptr<WebSourceBuffer> web_source_buffer,
     : ContextLifecycleObserver(source->GetExecutionContext()),
       web_source_buffer_(std::move(web_source_buffer)),
       source_(source),
-      track_defaults_(TrackDefaultList::Create()),
+      track_defaults_(MakeGarbageCollected<TrackDefaultList>()),
       async_event_queue_(async_event_queue),
       mode_(SegmentsKeyword()),
       updating_(false),
@@ -132,8 +134,10 @@ SourceBuffer::SourceBuffer(std::unique_ptr<WebSourceBuffer> web_source_buffer,
   DCHECK(web_source_buffer_);
   DCHECK(source_);
   DCHECK(source_->MediaElement());
-  audio_tracks_ = AudioTrackList::Create(*source_->MediaElement());
-  video_tracks_ = VideoTrackList::Create(*source_->MediaElement());
+  audio_tracks_ =
+      MakeGarbageCollected<AudioTrackList>(*source_->MediaElement());
+  video_tracks_ =
+      MakeGarbageCollected<VideoTrackList>(*source_->MediaElement());
   web_source_buffer_->SetClient(this);
 }
 
@@ -226,7 +230,11 @@ TimeRanges* SourceBuffer::buffered(ExceptionState& exception_state) const {
 
   // 2. Return a new static normalized TimeRanges object for the media segments
   //    buffered.
-  return TimeRanges::Create(web_source_buffer_->Buffered());
+  return MakeGarbageCollected<TimeRanges>(web_source_buffer_->Buffered());
+}
+
+WebTimeRanges SourceBuffer::buffered() const {
+  return web_source_buffer_->Buffered();
 }
 
 double SourceBuffer::timestampOffset() const {
@@ -362,12 +370,12 @@ void SourceBuffer::appendBuffer(DOMArrayBuffer* data,
                                 ExceptionState& exception_state) {
   double media_time = GetMediaTime();
   DVLOG(2) << __func__ << " this=" << this << " media_time=" << media_time
-           << " size=" << data->ByteLength();
+           << " size=" << data->DeprecatedByteLengthAsUnsigned();
   // Section 3.2 appendBuffer()
   // https://dvcs.w3.org/hg/html-media/raw-file/default/media-source/media-source.html#widl-SourceBuffer-appendBuffer-void-ArrayBufferView-data
   AppendBufferInternal(media_time,
                        static_cast<const unsigned char*>(data->Data()),
-                       data->ByteLength(), exception_state);
+                       data->DeprecatedByteLengthAsUnsigned(), exception_state);
 }
 
 void SourceBuffer::appendBuffer(NotShared<DOMArrayBufferView> data,
@@ -538,6 +546,10 @@ void SourceBuffer::changeType(const String& type,
   //    abort these steps.
   ContentType content_type(type);
   String codecs = content_type.Parameter("codecs");
+  // TODO(wolenetz): Refactor and use a less-strict version of isTypeSupported
+  // here. As part of that, CanChangeType in Chromium should inherit relaxation
+  // of impl's StreamParserFactory (since it returns true iff a stream parser
+  // can be constructed with |type|). See https://crbug.com/535738.
   if (!MediaSource::isTypeSupported(type) ||
       !web_source_buffer_->CanChangeType(content_type.GetType(), codecs)) {
     MediaSource::LogAndThrowDOMException(
@@ -1011,8 +1023,8 @@ bool SourceBuffer::InitializationSegmentReceived(
       const auto& kind = track_info.kind;
       // 5.2.7 TODO(servolk): Implement track kind processing.
       // 5.2.8.2 Let new audio track be a new AudioTrack object.
-      AudioTrack* audio_track =
-          AudioTrack::Create(track_info.id, kind, label, language, false);
+      auto* audio_track = MakeGarbageCollected<AudioTrack>(
+          track_info.id, kind, label, language, false);
       SourceBufferTrackBaseSupplement::SetSourceBuffer(*audio_track, this);
       // 5.2.8.7 If audioTracks.length equals 0, then run the following steps:
       if (audioTracks().length() == 0) {
@@ -1072,8 +1084,8 @@ bool SourceBuffer::InitializationSegmentReceived(
       const auto& kind = track_info.kind;
       // 5.3.7 TODO(servolk): Implement track kind processing.
       // 5.3.8.2 Let new video track be a new VideoTrack object.
-      VideoTrack* video_track =
-          VideoTrack::Create(track_info.id, kind, label, language, false);
+      auto* video_track = MakeGarbageCollected<VideoTrack>(
+          track_info.id, kind, label, language, false);
       SourceBufferTrackBaseSupplement::SetSourceBuffer(*video_track, this);
       // 5.3.8.7 If videoTracks.length equals 0, then run the following steps:
       if (videoTracks().length() == 0) {
@@ -1136,6 +1148,16 @@ void SourceBuffer::NotifyParseWarning(const ParseWarning warning) {
       // https://crbug.com/737757.
       UseCounter::Count(source_->MediaElement()->GetDocument(),
                         WebFeature::kMediaSourceMuxedSequenceMode);
+      break;
+    case WebSourceBufferClient::kGroupEndTimestampDecreaseWithinMediaSegment:
+      // Report this problematic Media Segment structure usage to help inform
+      // follow-up work.
+      // TODO(wolenetz): Use the data to scope additional work. See
+      // https://crbug.com/920853 and
+      // https://github.com/w3c/media-source/issues/203.
+      UseCounter::Count(
+          source_->MediaElement()->GetDocument(),
+          WebFeature::kMediaSourceGroupEndTimestampDecreaseWithinMediaSegment);
       break;
   }
 }

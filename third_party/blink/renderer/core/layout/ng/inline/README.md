@@ -309,11 +309,6 @@ In a bird's‐eye view, it consists of two parts:
 content of an inline formatting context (computed in [pre-layout]) and DOM
 positions in the context. See [design doc](https://goo.gl/CJbxky) for details.
 
-[NGCaretNavigator] provides functions for inspecting bidi levels and visual
-ordering of text content, and supports visual left/right caret movements in the
-text. See [design doc](http://bit.ly/2QVAwGq) for details.
-
-
 [ICU BiDi]: http://userguide.icu-project.org/transforms/bidi
 [UAX#9 Unicode Bidirectional Algorithm]: http://unicode.org/reports/tr9/
 [UAX#9 Resolving Embedding Levels]: http://www.unicode.org/reports/tr9/#Resolving_Embedding_Levels
@@ -322,7 +317,6 @@ text. See [design doc](http://bit.ly/2QVAwGq) for details.
 [FontBaseline]: ../../../platform/fonts/FontBaseline.h
 [NGBaselineAlgorithmType]: ng_baseline.h
 [NGBaselineRequest]: ng_baseline.h
-[NGCaretNavigator]: ng_caret_navigator.h
 [NGBidiParagraph]: ng_bidi_paragraph.h
 [NGBlockNode]: ../ng_block_node.h
 [NGBoxFragment]: ../ng_box_fragment.h

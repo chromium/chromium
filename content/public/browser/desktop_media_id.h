@@ -8,6 +8,7 @@
 #include <string>
 #include <tuple>
 
+#include "build/build_config.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/web_contents_media_capture_id.h"
 #include "ui/gfx/native_widget_types.h"
@@ -27,7 +28,7 @@ struct CONTENT_EXPORT DesktopMediaID {
   // Represents a fake id to create a dummy capturer for autotests.
   static const Id kFakeId;
 
-#if defined(USE_AURA)
+#if defined(USE_AURA) || defined(OS_MACOSX)
   // Assigns integer identifier to the |window| and returns its DesktopMediaID.
   static DesktopMediaID RegisterNativeWindow(Type type,
                                              gfx::NativeWindow window);
@@ -35,7 +36,7 @@ struct CONTENT_EXPORT DesktopMediaID {
   // Returns the Window that was previously registered using
   // RegisterNativeWindow(), else nullptr.
   static gfx::NativeWindow GetNativeWindowById(const DesktopMediaID& id);
-#endif  // USE_AURA
+#endif  // USE_AURA || OS_MACOSX
 
   constexpr DesktopMediaID() = default;
 

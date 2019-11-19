@@ -112,7 +112,7 @@ class ProcessReaderFuchsia {
   const ProcessMemory* Memory() const { return process_memory_.get(); }
 
   //! \brief Return a memory map for the target process.
-  const MemoryMapFuchsia* MemoryMap() const { return &memory_map_; }
+  const MemoryMapFuchsia* MemoryMap();
 
  private:
   //! Performs lazy initialization of the \a modules_ vector on behalf of
@@ -123,15 +123,20 @@ class ProcessReaderFuchsia {
   //! Threads().
   void InitializeThreads();
 
+  //! Performs lazy initialization of the \a memory_map_ on behalf of
+  //! MemoryMap().
+  void InitializeMemoryMap();
+
   std::vector<Module> modules_;
   std::vector<Thread> threads_;
   std::vector<std::unique_ptr<ElfImageReader>> module_readers_;
   std::vector<std::unique_ptr<ProcessMemoryRange>> process_memory_ranges_;
   std::unique_ptr<ProcessMemoryFuchsia> process_memory_;
-  MemoryMapFuchsia memory_map_;
+  std::unique_ptr<MemoryMapFuchsia> memory_map_;
   zx::unowned_process process_;
   bool initialized_modules_ = false;
   bool initialized_threads_ = false;
+  bool initialized_memory_map_ = false;
   InitializationStateDcheck initialized_;
 
   DISALLOW_COPY_AND_ASSIGN(ProcessReaderFuchsia);

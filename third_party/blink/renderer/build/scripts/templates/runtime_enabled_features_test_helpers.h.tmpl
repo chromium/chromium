@@ -31,7 +31,7 @@ class ScopedRuntimeEnabledFeatureForTest {
 
 {% for feature in features %}
 typedef ScopedRuntimeEnabledFeatureForTest<
-{% if feature.origin_trial_feature_name %}
+{% if feature.in_origin_trial %}
     RuntimeEnabledFeatures::{{feature.name}}EnabledByRuntimeFlag,
 {% else %}
     RuntimeEnabledFeatures::{{feature.name}}Enabled,

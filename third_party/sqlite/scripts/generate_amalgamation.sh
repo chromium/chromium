@@ -7,7 +7,7 @@
 set -o errexit  # Stop the script on the first error.
 set -o nounset  # Catch un-initialized variables.
 
-cd src
+cd patched
 
 mkdir build
 cd build

@@ -1,0 +1,13 @@
+Name: Android Transition Support Library
+Short Name: transition
+URL: http://developer.android.com/tools/extras/support-library.html
+Version: 1.0.0-rc02
+License: Apache Version 2.0
+License File: LICENSE
+Security Critical: yes
+
+Description:
+Android Transition Support Library
+
+Local Modifications:
+No modifications.

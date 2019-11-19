@@ -4,9 +4,10 @@
 
 package org.chromium.net;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.ApplicationState;
 import org.chromium.base.ApplicationStatus;
-import org.chromium.base.VisibleForTesting;
 
 /**
  * Regsitration policy which depends on the ApplicationState.

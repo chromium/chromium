@@ -1,0 +1,13 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://github.com/samuelgoto/sms-receiver
+
+[
+  SecureContext,
+  Exposed=(Window,DedicatedWorker),
+  RuntimeEnabled=SmsReceiver]
+interface SMS {
+  readonly attribute DOMString content;
+};

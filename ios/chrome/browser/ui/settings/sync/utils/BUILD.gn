@@ -17,7 +17,6 @@ source_set("utils") {
     "//base",
     "//components/browser_sync",
     "//components/infobars/core",
-    "//components/signin/core/browser",
     "//components/strings",
     "//components/sync",
     "//google_apis",

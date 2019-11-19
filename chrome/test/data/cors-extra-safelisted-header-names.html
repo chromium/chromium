@@ -1,0 +1,17 @@
+<!doctype html>
+<html>
+<title>Fetching...</title>
+<script>
+
+const searchParams = new URL(location.href).searchParams;
+const url = searchParams.get('url');
+const headerNames =
+  (searchParams.get('headers') || '').split(',').filter(x => x);
+
+fetch(url, {headers: headerNames.map(x => [x, x + '-value'])}).then(() => {
+  document.title = 'OK';
+}).catch((e) => {
+  document.title = 'FAIL';
+});
+</script>
+</html>

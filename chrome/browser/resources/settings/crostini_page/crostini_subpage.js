@@ -10,24 +10,13 @@
 Polymer({
   is: 'settings-crostini-subpage',
 
-  behaviors: [PrefsBehavior],
+  behaviors: [PrefsBehavior, WebUIListenerBehavior],
 
   properties: {
     /** Preferences state. */
     prefs: {
       type: Object,
       notify: true,
-    },
-
-    /**
-     * Whether CrostiniUsbSupport flag is enabled.
-     * @private {boolean}
-     */
-    enableCrostiniUsbDeviceSupport_: {
-      type: Boolean,
-      value: function() {
-        return loadTimeData.getBoolean('enableCrostiniUsbDeviceSupport');
-      },
     },
 
     /**
@@ -41,6 +30,25 @@ Polymer({
       },
     },
 
+    /** @private {boolean} */
+    showArcAdbSideloading_: {
+      type: Boolean,
+      computed: 'and_(isArcAdbSideloadingSupported_, isAndroidEnabled_)',
+    },
+
+    /** @private {boolean} */
+    isArcAdbSideloadingSupported_: {
+      type: Boolean,
+      value: function() {
+        return loadTimeData.getBoolean('ArcAdbSideloadingSupported');
+      },
+    },
+
+    /** @private {boolean} */
+    isAndroidEnabled_: {
+      type: Boolean,
+    },
+
     /**
      * Whether the uninstall options should be displayed.
      * @private {boolean}
@@ -50,14 +58,18 @@ Polymer({
     },
   },
 
-  observers: ['onCrostiniEnabledChanged_(prefs.crostini.enabled.value)'],
+  observers: [
+    'onCrostiniEnabledChanged_(prefs.crostini.enabled.value)',
+    'onArcEnabledChanged_(prefs.arc.enabled.value)'
+  ],
 
-  created: function() {
+  attached: function() {
     const callback = (status) => {
       this.hideCrostiniUninstall_ = status;
     };
-    cr.addWebUIListener('crostini-installer-status-changed', callback);
-    cr.sendWithPromise('requestCrostiniInstallerStatus').then(callback);
+    this.addWebUIListener('crostini-installer-status-changed', callback);
+    settings.CrostiniBrowserProxyImpl.getInstance()
+        .requestCrostiniInstallerStatus();
   },
 
   /** @private */
@@ -68,32 +80,41 @@ Polymer({
     }
   },
 
+  /** @private */
+  onArcEnabledChanged_: function(enabled) {
+    this.isAndroidEnabled_ = enabled;
+  },
+
+  /** @private */
+  onExportImportClick_: function() {
+    settings.navigateTo(settings.routes.CROSTINI_EXPORT_IMPORT);
+  },
+
+  /** @private */
+  onEnableArcAdbClick_: function() {
+    settings.navigateTo(settings.routes.CROSTINI_ANDROID_ADB);
+  },
+
   /**
    * Shows a confirmation dialog when removing crostini.
-   * @param {!Event} event
    * @private
    */
-  onRemoveTap_: function(event) {
+  onRemoveClick_: function() {
     settings.CrostiniBrowserProxyImpl.getInstance().requestRemoveCrostini();
   },
 
   /** @private */
-  onSharedPathsTap_: function(event) {
+  onSharedPathsClick_: function() {
     settings.navigateTo(settings.routes.CROSTINI_SHARED_PATHS);
   },
 
   /** @private */
-  onExportClick_: function(event) {
-    settings.CrostiniBrowserProxyImpl.getInstance().exportCrostiniContainer();
-  },
-
-  /** @private */
-  onImportClick_: function(event) {
-    settings.CrostiniBrowserProxyImpl.getInstance().importCrostiniContainer();
-  },
-
-  /** @private */
-  onSharedUsbDevicesTap_: function(event) {
+  onSharedUsbDevicesClick_: function() {
     settings.navigateTo(settings.routes.CROSTINI_SHARED_USB_DEVICES);
+  },
+
+  /** @private */
+  and_: function(a, b) {
+    return a && b;
   },
 });

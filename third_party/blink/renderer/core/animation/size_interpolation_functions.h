@@ -14,6 +14,7 @@ namespace blink {
 
 class CSSToLengthConversionData;
 class CSSValue;
+class UnderlyingValue;
 
 class SizeInterpolationFunctions {
   STATIC_ONLY(SizeInterpolationFunctions);
@@ -30,8 +31,7 @@ class SizeInterpolationFunctions {
   static InterpolationValue CreateNeutralValue(const NonInterpolableValue*);
   static bool NonInterpolableValuesAreCompatible(const NonInterpolableValue*,
                                                  const NonInterpolableValue*);
-  static void Composite(std::unique_ptr<InterpolableValue>&,
-                        scoped_refptr<NonInterpolableValue>&,
+  static void Composite(UnderlyingValue&,
                         double underlying_fraction,
                         const InterpolableValue&,
                         const NonInterpolableValue*);

@@ -10,7 +10,7 @@
         android:key="account_section"
         android:order="0"
         android:title="@string/prefs_section_account"/>
-    <org.chromium.chrome.browser.preferences.SignInPreference
+    <org.chromium.chrome.browser.preferences.sync.SignInPreference
         android:key="sign_in"
         android:order="1"
         android:title="@string/sign_in_to_chrome"/>
@@ -19,7 +19,7 @@
         android:order="2"
         android:layout="@layout/account_management_account_row"
         android:title="@string/prefs_sync_and_services"
-        android:fragment="org.chromium.chrome.browser.preferences.SyncAndServicesPreferences"/>
+        android:fragment="org.chromium.chrome.browser.preferences.sync.SyncAndServicesPreferences"/>
 
     <PreferenceCategory
         android:key="basics_section"
@@ -56,65 +56,59 @@
         android:order="9"
         android:title="@string/prefs_notifications"/>
     <Preference
-        android:fragment="org.chromium.chrome.browser.preferences.ContextualSuggestionsPreference"
-        android:key="contextual_suggestions"
-        android:order="10"
-        android:title="@string/prefs_contextual_suggestions"/>
-    <Preference
         android:fragment="org.chromium.chrome.browser.preferences.HomepagePreferences"
         android:key="homepage"
-        android:order="11"
+        android:order="10"
         android:title="@string/options_homepage_title"/>
-    <!-- TODO(huayinz): Change to a proper string. -->
     <Preference
-        android:fragment="org.chromium.chrome.browser.preferences.NightModePreferences"
-        android:key="night_mode"
-        android:order="12"
-        android:title="Dark mode" />
+        android:fragment="org.chromium.chrome.browser.preferences.themes.ThemePreferences"
+        android:key="ui_theme"
+        android:order="11"
+        android:title="@string/prefs_themes" />
 
     <PreferenceCategory
         android:key="advanced_section"
-        android:order="13"
+        android:order="12"
         android:title="@string/prefs_section_advanced"/>
     <Preference
         android:fragment="org.chromium.chrome.browser.preferences.privacy.PrivacyPreferences"
         android:key="privacy"
-        android:order="14"
+        android:order="13"
         android:title="@string/prefs_privacy"/>
     <Preference
         android:fragment="org.chromium.chrome.browser.preferences.AccessibilityPreferences"
         android:key="accessibility"
-        android:order="15"
+        android:order="14"
         android:title="@string/prefs_accessibility"/>
     <Preference
         android:fragment="org.chromium.chrome.browser.preferences.website.SiteSettingsPreferences"
         android:key="content_settings"
-        android:order="16"
+        android:order="15"
         android:title="@string/prefs_site_settings"/>
     <Preference
         android:fragment="org.chromium.chrome.browser.preferences.languages.LanguagesPreferences"
         android:key="languages"
-        android:order="17"
+        android:order="16"
         android:title="@string/prefs_languages"/>
-    <org.chromium.chrome.browser.preferences.datareduction.DataReductionPreference
+    <org.chromium.chrome.browser.preferences.ChromeBasePreference
         android:fragment="org.chromium.chrome.browser.preferences.datareduction.DataReductionPreferenceFragment"
         android:key="data_reduction"
-        android:order="18"
-        android:title="@string/data_reduction_title"/>
+        android:order="17"
+        android:title="@string/data_reduction_title_lite_mode"/>
     <org.chromium.chrome.browser.preferences.ChromeBasePreference
         android:fragment="org.chromium.chrome.browser.preferences.download.DownloadPreferences"
         android:key="downloads"
-        android:order="19"
+        android:order="18"
         android:title="@string/menu_downloads"/>
     <Preference
         android:fragment="org.chromium.chrome.browser.preferences.developer.DeveloperPreferences"
         android:key="developer"
-        android:order="20"
+        android:order="19"
         android:title="Developer options"/>
     <Preference
-        android:fragment="org.chromium.chrome.browser.preferences.AboutChromePreferences"
+        android:fragment="org.chromium.chrome.browser.preferences.about.AboutChromePreferences"
         android:key="about_chrome"
-        android:order="21"
+        android:order="20"
         android:title="@string/prefs_about_chrome"/>
 
 </PreferenceScreen>

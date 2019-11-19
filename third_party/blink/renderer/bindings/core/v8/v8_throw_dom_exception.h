@@ -7,7 +7,8 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/bindings/v8_private_property.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "v8/include/v8.h"
 
@@ -22,8 +23,8 @@ class CORE_EXPORT V8ThrowDOMException {
   static void Init();
 
   // Creates and returns a DOMException object, or returns an empty handle if
-  // the isolate is being terminated. Unlike DOMException::Create, this function
-  // associates the stacktrace with the returned object.
+  // the isolate is being terminated. Unlike the DOMException constructor,
+  // this function associates the stacktrace with the returned object.
   //
   // |unsanitized_message| should be specified iff SecurityError.
   static v8::Local<v8::Value> CreateOrEmpty(
@@ -32,6 +33,8 @@ class CORE_EXPORT V8ThrowDOMException {
       const String& sanitized_message,
       const String& unsanitized_message = String());
 };
+
+extern const V8PrivateProperty::SymbolKey kPrivatePropertyDOMExceptionError;
 
 }  // namespace blink
 

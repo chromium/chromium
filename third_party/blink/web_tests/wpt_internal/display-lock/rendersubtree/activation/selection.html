@@ -1,0 +1,39 @@
+<!doctype HTML>
+<html>
+<meta charset="utf8">
+<title>Display Locking: selection activates locked element</title>
+<link rel="author" title="Rakina Zata Amni" href="mailto:rakina@chromium.org">
+<link rel="help" href="https://github.com/WICG/display-locking">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="../resources/utils.js"></script>
+
+<div id="container">
+foo
+  <div id="nonActivatable">
+    bleh
+  </div>
+  <div id="nested">
+    bar
+  </div>
+</div>
+
+<script>
+promise_test(() => {
+  const acquirePromise = Promise.all(
+    [setInvisibleActivatable(container),
+     setInvisible(nonActivatable),
+     setInvisibleActivatable(nested)
+    ]);
+  return new Promise((resolve, reject) => {
+    acquirePromise.then(() => {
+      window.getSelection().selectAllChildren(container);
+      assert_equals(window.getSelection().toString(), "foo\nbar");
+      assert_equals(container.renderSubtree, "");
+      assert_equals(nonActivatable.renderSubtree, INVISIBLE_NOT_ACTIVATABLE);
+      assert_equals(nested.renderSubtree, "");
+      resolve();
+    });
+  });
+}, "Activating locked element through selection activates activatable elements");
+</script>

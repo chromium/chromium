@@ -80,10 +80,10 @@ class TestCertVerifier : public net::CertVerifier {
              net::CompletionOnceCallback callback,
              std::unique_ptr<Request>* out_req,
              const net::NetLogWithSource& net_log) override {
-    net::Error result = net::OK;
+    verify_result->Reset();
     verify_result->verified_cert = params.certificate();
-    verify_result->cert_status = net::MapNetErrorToCertStatus(result);
-    return result;
+    verify_result->is_issued_by_known_root = true;
+    return net::OK;
   }
   void SetConfig(const Config& config) override {}
 };

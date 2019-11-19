@@ -10,6 +10,10 @@
 
 namespace gfx {
 
+namespace {
+const char kDefaultApplicationLocale[] = "us-en";
+}  // namespace
+
 // A targeted test for GetFallbackFonts on Mac. It uses a system API that
 // only became publicly available in the 10.8 SDK. This test is to ensure it
 // behaves sensibly on all supported OS versions.
@@ -30,10 +34,13 @@ TEST(FontFallbackMacTest, GetFallbackFont) {
   const base::string16 emoji = base::UTF8ToUTF16("😋");
 
   gfx::Font fallback;
-  EXPECT_FALSE(GetFallbackFont(arial, ascii.data(), ascii.size(), &fallback));
-  EXPECT_TRUE(GetFallbackFont(arial, hebrew.data(), hebrew.size(), &fallback));
+  EXPECT_FALSE(
+      GetFallbackFont(arial, kDefaultApplicationLocale, ascii, &fallback));
+  EXPECT_TRUE(
+      GetFallbackFont(arial, kDefaultApplicationLocale, hebrew, &fallback));
   EXPECT_EQ("Lucida Grande", fallback.GetFontName());
-  EXPECT_TRUE(GetFallbackFont(arial, emoji.data(), emoji.size(), &fallback));
+  EXPECT_TRUE(
+      GetFallbackFont(arial, kDefaultApplicationLocale, emoji, &fallback));
   EXPECT_EQ("Apple Color Emoji", fallback.GetFontName());
 }
 

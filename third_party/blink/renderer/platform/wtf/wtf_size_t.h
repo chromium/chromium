@@ -5,9 +5,11 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_WTF_SIZE_T_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_WTF_SIZE_T_H_
 
+#include <limits.h>
 #include <stdint.h>
 
 namespace WTF {
+
 // TLDR: size_t != wtf_size_t
 //
 // WTF defines wtf_size_t as an unsigned 32 bit integer. This is to align
@@ -29,8 +31,11 @@ namespace WTF {
 // based and this definition may not be necessary, so long as the internal
 // type matches the external type.
 using wtf_size_t = uint32_t;
+const wtf_size_t kNotFound = UINT_MAX;
+
 }  // namespace WTF
 
+using WTF::kNotFound;
 using WTF::wtf_size_t;
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_WTF_SIZE_T_H_

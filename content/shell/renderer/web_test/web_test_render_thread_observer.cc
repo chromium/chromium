@@ -7,7 +7,6 @@
 #include "content/public/common/content_client.h"
 #include "content/public/renderer/render_thread.h"
 #include "content/public/test/web_test_support.h"
-#include "content/shell/common/shell_messages.h"
 #include "content/shell/common/web_test/web_test_messages.h"
 #include "content/shell/common/web_test/web_test_switches.h"
 #include "content/shell/test_runner/test_interfaces.h"

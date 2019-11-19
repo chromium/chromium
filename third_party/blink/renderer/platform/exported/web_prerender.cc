@@ -35,6 +35,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/platform/prerender.h"
+#include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 
 namespace blink {
 
@@ -88,6 +89,11 @@ unsigned WebPrerender::RelTypes() const {
 
 WebString WebPrerender::GetReferrer() const {
   return private_->GetReferrer();
+}
+
+url::Origin WebPrerender::SecurityOrigin() const {
+  auto* security_origin = private_->GetSecurityOrigin();
+  return security_origin ? security_origin->ToUrlOrigin() : url::Origin();
 }
 
 network::mojom::ReferrerPolicy WebPrerender::GetReferrerPolicy() const {

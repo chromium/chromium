@@ -7,18 +7,53 @@
 
 #include "base/macros.h"
 #include "base/strings/string16.h"
-#include "chrome/browser/chromeos/login/screens/network_screen_view.h"
 #include "chrome/browser/ui/webui/chromeos/login/base_screen_handler.h"
 
 namespace chromeos {
 
 class CoreOobeView;
+class NetworkScreen;
+
+// Interface of network screen. Owned by NetworkScreen.
+class NetworkScreenView {
+ public:
+  constexpr static StaticOobeScreenId kScreenId{"network-selection"};
+
+  virtual ~NetworkScreenView() {}
+
+  // Shows the contents of the screen.
+  virtual void Show() = 0;
+
+  // Hides the contents of the screen.
+  virtual void Hide() = 0;
+
+  // Binds |screen| to the view.
+  virtual void Bind(NetworkScreen* screen) = 0;
+
+  // Unbinds model from the view.
+  virtual void Unbind() = 0;
+
+  // Shows error message in a bubble.
+  virtual void ShowError(const base::string16& message) = 0;
+
+  // Hides error messages showing no error state.
+  virtual void ClearErrors() = 0;
+
+  // Shows network connecting status or network selection otherwise.
+  virtual void ShowConnectingStatus(bool connecting,
+                                    const base::string16& network_id) = 0;
+
+  // Enables or disables offline Demo Mode during Demo Mode network selection.
+  virtual void SetOfflineDemoModeEnabled(bool enabled) = 0;
+};
 
 // WebUI implementation of NetworkScreenView. It is used to interact with
 // the OOBE network selection screen.
 class NetworkScreenHandler : public NetworkScreenView,
                              public BaseScreenHandler {
  public:
+  using TView = NetworkScreenView;
+
   NetworkScreenHandler(JSCallsContainer* js_calls_container,
                        CoreOobeView* core_oobe_view);
   ~NetworkScreenHandler() override;

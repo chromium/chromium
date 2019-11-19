@@ -23,7 +23,7 @@ TEST_F(AccessibilityCheckerTest, VerifyAccessibilityCheckerFailAndPass) {
   params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   params.bounds = gfx::Rect(0, 0, 650, 650);
   params.context = GetContext();
-  widget.Init(params);
+  widget.Init(std::move(params));
   widget.Show();
 
   // Add the button.

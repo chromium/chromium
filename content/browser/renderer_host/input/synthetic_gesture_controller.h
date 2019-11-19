@@ -54,6 +54,12 @@ class CONTENT_EXPORT SyntheticGestureController {
 
   bool DispatchNextEvent(base::TimeTicks = base::TimeTicks::Now());
 
+  void EnsureRendererInitialized(base::OnceClosure on_completed);
+
+  void UpdateSyntheticGestureTarget(
+      std::unique_ptr<SyntheticGestureTarget> gesture_target,
+      Delegate* delegate);
+
  private:
   friend class SyntheticGestureControllerTestBase;
 
@@ -63,14 +69,14 @@ class CONTENT_EXPORT SyntheticGestureController {
       bool complete_immediately);
 
   void StartTimer(bool high_frequency);
-  void StartGesture(const SyntheticGesture& gesture);
+  void StartGesture();
   void StopGesture(const SyntheticGesture& gesture,
                    SyntheticGesture::Result result,
                    bool complete_immediately);
   void GestureCompleted(SyntheticGesture::Result result);
   void ResolveCompletionCallback();
 
-  Delegate* const delegate_;
+  Delegate* delegate_;
   std::unique_ptr<SyntheticGestureTarget> gesture_target_;
 
   // A queue of gesture/callback/bool tuples.  Implemented as multiple queues to
@@ -130,8 +136,20 @@ class CONTENT_EXPORT SyntheticGestureController {
     DISALLOW_COPY_AND_ASSIGN(GestureAndCallbackQueue);
   } pending_gesture_queue_;
 
+  // The first time we start sending a gesture, the renderer may not yet be
+  // ready to receive events. e.g. Tests often start a gesture from script
+  // before load. The renderer  may not yet have produced a compositor frame
+  // and geometry data may not yet be available in the browser. The first time
+  // we try to start a gesture, we'll first force a redraw in the renderer and
+  // wait until it produces a compositor frame. The gesture will begin after
+  // that happens.
+  // TODO(bokan): The renderer currently just waits for a CompositorFrame to be
+  // generated. We should be waiting for hit test data to be available to be
+  // truly robust. https://crbug.com/985374.
+  bool renderer_known_to_be_initialized_ = false;
+
   base::RepeatingTimer dispatch_timer_;
-  base::WeakPtrFactory<SyntheticGestureController> weak_ptr_factory_;
+  base::WeakPtrFactory<SyntheticGestureController> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(SyntheticGestureController);
 };

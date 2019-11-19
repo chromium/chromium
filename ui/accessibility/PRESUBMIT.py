@@ -7,7 +7,7 @@
 import os, re, json
 
 AX_MOJOM = 'ui/accessibility/ax_enums.mojom'
-AUTOMATION_IDL = 'chrome/common/extensions/api/automation.idl'
+AUTOMATION_IDL = 'extensions/common/api/automation.idl'
 
 AX_JS_FILE = 'chrome/browser/resources/accessibility/accessibility.js'
 AX_MODE_HEADER = 'ui/accessibility/ax_mode.h'
@@ -141,6 +141,8 @@ def CheckEnumsMatch(input_api, output_api):
                     output_api)
   CheckMatchingEnum(ax_enums, 'NameFrom', automation_enums, 'NameFromType',
                     errs, output_api)
+  CheckMatchingEnum(ax_enums, 'DescriptionFrom', automation_enums, 'DescriptionFromType',
+                    errs, output_api)
   CheckMatchingEnum(ax_enums, 'Restriction', automation_enums,
                    'Restriction', errs, output_api)
   CheckMatchingEnum(ax_enums, 'DefaultActionVerb', automation_enums,
@@ -159,7 +161,11 @@ def GetConstexprFromFile(fullpath):
     # Look for lines of the form "static constexpr <type> NAME "
     m = re.search('static constexpr [\w]+ ([\w]+)', line)
     if m:
-      values.append(m.group(1))
+      value = m.group(1)
+      # Skip first/last sentinels
+      if value == 'kFirstModeFlag' or value == 'kLastModeFlag':
+        continue
+      values.append(value)
 
   return values
 
@@ -239,7 +245,3 @@ def CheckChangeOnCommit(input_api, output_api):
       errs.extend(CheckModesMatch(input_api, output_api))
 
   return errs
-
-# Run this script directly to dump its keys, for debugging.
-if __name__ == '__main__':
-  print json.dumps(GetEnumsFromFile(AX_MOJOM), sort_keys=True, indent=4)

@@ -204,6 +204,11 @@
     "extension_types": ["extension"],
     "min_manifest_version": 2
   },
+  "declarativeNetRequestFeedback": {
+    "channel": "trunk",
+    "extension_types": ["extension"],
+    "min_manifest_version": 2
+  },
   "declarativeWebRequest": {
       "channel": "beta",
       "extension_types": ["extension", "legacy_packaged_app"]
@@ -247,14 +252,6 @@
     "extension_types": ["extension", "platform_app"],
     "platforms": ["chromeos"]
   },
-  "extensionview": {
-    "channel": "stable",
-    "extension_types": ["platform_app"],
-    "whitelist": [
-      // Used in browser tests: http://crbug.com/515284
-      "BD2EB5085B5324203BCCC3DF3CF102B8AB850402"
-    ]
-  },
   "externally_connectable.all_urls": {
     "channel": "stable",
     "extension_types": [
@@ -294,9 +291,6 @@
       "2FC374607C2DF285634B67C64A2E356C607091C3",  // Quickoffice
       "3727DD3E564B6055387425027AD74C58784ACC15",  // Quickoffice internal
       "12E618C3C6E97495AAECF2AC12DEB082353241C6",  // QO component extension
-      "D5736E4B5CF695CB93A2FB57E4FDC6E5AFAB6FE2",  // http://crbug.com/312900
-      "D57DE394F36DC1C3220E7604C575D29C51A6C495",  // http://crbug.com/319444
-      "3F65507A3B39259B38C8173C6FFA3D12DF64CCE9",  // http://crbug.com/371562
       "2B6C6A4A5940017146F3E58B7F90116206E84685",  // http://crbug.com/642141
       "B6C2EFAB3EC3BF6EF03701408B6B09A67B2D0069",  // http://crbug.com/642141
       "96FF2FFA5C9173C76D47184B3E86D267B37781DE",  // http://crbug.com/642141
@@ -318,10 +312,7 @@
     "whitelist": [
       "2FC374607C2DF285634B67C64A2E356C607091C3",  // Quickoffice
       "3727DD3E564B6055387425027AD74C58784ACC15",  // Quickoffice internal
-      "12E618C3C6E97495AAECF2AC12DEB082353241C6",  // QO component extension
-      "D5736E4B5CF695CB93A2FB57E4FDC6E5AFAB6FE2",  // http://crbug.com/312900
-      "D57DE394F36DC1C3220E7604C575D29C51A6C495",  // http://crbug.com/319444
-      "3F65507A3B39259B38C8173C6FFA3D12DF64CCE9"   // http://crbug.com/371562
+      "12E618C3C6E97495AAECF2AC12DEB082353241C6"  // QO component extension
     ]
   }],
   "fileSystem.requestDownloads": {
@@ -415,9 +406,6 @@
       "7AE714FFD394E073F0294CFA134C9F91DB5FBAA4",  // CCD Development
       "C7DA3A55C2355F994D3FDDAD120B426A0DF63843",  // CCD Testing
       "75E3CFFFC530582C583E4690EF97C70B9C8423B7",  // CCD Release
-      "D5736E4B5CF695CB93A2FB57E4FDC6E5AFAB6FE2",  // http://crbug.com/312900.
-      "D57DE394F36DC1C3220E7604C575D29C51A6C495",  // http://crbug.com/319444.
-      "3F65507A3B39259B38C8173C6FFA3D12DF64CCE9",  // http://crbug.com/371562.
       "06BE211D5F014BAB34BC22D9DDA09C63A81D828E",  // Official XKB virtual kbd
       "CFBF7EE448FA48960FFDA7CEB30F7A21B26AA981",  // Official m17n virtual kbd
       "B9EF10DDFEA11EF77873CC5009809E5037FC4C7A",  // Google input tools
@@ -450,8 +438,8 @@
       "898FB5A39687D210766B8998BA4530B99C9E6586",  // http://crbug.com/819404
       "82F30B65397BC3E4ADE627BBD857AB8A58210648",  // http://crbug.com/819404
       "A3E3DE9E9F16B41D4A2FAD106BD6CA76B94A0C94",  // http://crbug.com/932466
-      "B41E7F08E1179CC03CBD1F49E57CF353A40ADE07"   // http://crbug.com/932466
-
+      "B41E7F08E1179CC03CBD1F49E57CF353A40ADE07",  // http://crbug.com/932466
+      "C74B2AF138F9EDECD04D0965AB36CA66C8290466"   // http://crbug.com/957772
     ]
   },
   "nativeMessaging": {
@@ -569,11 +557,23 @@
       ]
     }
   ],
-  "storage": {
-    "channel": "stable",
-    "extension_types": ["extension", "legacy_packaged_app", "platform_app"],
-    "min_manifest_version": 2
-  },
+  "storage": [
+    {
+      "channel": "stable",
+      "extension_types": ["extension", "legacy_packaged_app", "platform_app"],
+      "min_manifest_version": 2
+    },
+    {
+      "channel": "stable",
+      "extension_types": ["login_screen_extension"],
+      "min_manifest_version": 2,
+      "whitelist": [
+        "E219EE36A3B40612FD2A8CD6937B03EF0C97D3FE", // Imprivata (login screen)
+        "4DBFC1C52D6660DD90791976DF7FEF7B3D360509", // Imprivata (login screen) DEV
+        "7FE4A999359A456C4B0FB7B7AD85CEA29CA50519"  // Login screen APIs test extension
+      ]
+    }
+  ],
   "system.cpu": [
     {
       "channel": "stable",
@@ -686,6 +686,20 @@
         "D4EFCCC0CC612380762758BB96C7997224BD6395",  // http://crbug.com/710541
         "4839A26B29CD1BD021B2E126EF6D28C9CB84018B",  // http://crbug.com/710541
         "8F44FBB4474CCDF23450B166C9E83E85BD03AE24"   // http://crbug.com/710541
+      ]
+    },
+    // TODO(995294, hendrich) Remove this whitelisting once a WebUSB solution is
+    // ready to go (target M79/M80).
+    {
+      "channel": "stable",
+      "extension_types": ["login_screen_extension", "extension"],
+      "location": "policy",
+      "platforms": ["chromeos"],
+      "whitelist": [
+        "E219EE36A3B40612FD2A8CD6937B03EF0C97D3FE",  // Imprivata (login screen)
+        "4DBFC1C52D6660DD90791976DF7FEF7B3D360509",  // Imprivata (login screen) DEV
+        "A24DE1B21A67E25FB62AC8491642038FE25DA75B",  // Imprivata (in session)
+        "6B25164FFE2BADB5F1DBBD301CC022170267022D"   // Imprivata (in session) DEV
       ]
     }
   ],

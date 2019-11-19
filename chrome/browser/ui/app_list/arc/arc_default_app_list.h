@@ -29,24 +29,26 @@ class ArcDefaultAppList {
  public:
   struct AppInfo {
     AppInfo(const std::string& name,
-                   const std::string& package_name,
-                   const std::string& activity,
-                   bool oem,
-                   const base::FilePath app_path);
+            const std::string& package_name,
+            const std::string& activity,
+            bool oem,
+            bool system,
+            const base::FilePath app_path);
     ~AppInfo();
 
     std::string name;
     std::string package_name;
     std::string activity;
     bool oem;
+    bool system;
     base::FilePath app_path;  // App folder that contains pre-installed icons.
   };
 
   enum class FilterLevel {
     // Filter nothing.
     NOTHING,
-    // Filter out only optional apps, excluding Play Store for example. Used in
-    // case when Play Store is managed and enabled.
+    // Filter out only optional apps, leaving system apps available, Play Store
+    // is also system app.
     OPTIONAL_APPS,
     // Filter out everything. Used in case when Play Store is managed and
     // disabled.
@@ -71,6 +73,8 @@ class ArcDefaultAppList {
   // Returns true if package exists in default packages list. Note it may be
   // marked as uninstalled.
   bool HasPackage(const std::string& package_name) const;
+  // Returns true if a uninstalled package exists in default packages list.
+  bool HasHiddenPackage(const std::string& package_name) const;
   // Marks default app |app_id| as hidden in case |hidden| is true.
   void SetAppHidden(const std::string& app_id, bool hidden);
   // Marks all default apps from the package |package_name| as hidden.
@@ -105,7 +109,7 @@ class ArcDefaultAppList {
   // To wait until all sources with apps are loaded.
   base::RepeatingClosure barrier_closure_;
 
-  base::WeakPtrFactory<ArcDefaultAppList> weak_ptr_factory_;
+  base::WeakPtrFactory<ArcDefaultAppList> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ArcDefaultAppList);
 };

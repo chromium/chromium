@@ -13,14 +13,17 @@
 #include "base/memory/shared_memory_mapping.h"
 #include "base/task/post_task.h"
 #include "content/public/browser/browser_task_traits.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
 #include "media/base/video_frame.h"
 #include "media/capture/video/video_frame_receiver.h"
 #include "media/capture/video_capture_types.h"
 #include "mojo/public/cpp/base/shared_memory_utils.h"
-#include "mojo/public/cpp/bindings/binding.h"
-#include "services/viz/privileged/interfaces/compositing/frame_sink_video_capture.mojom.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
+#include "services/viz/privileged/mojom/compositing/frame_sink_video_capture.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/size.h"
@@ -53,12 +56,12 @@ namespace {
 
 // Convenience macro to post a task to run on the device thread.
 #define POST_DEVICE_TASK(closure) \
-  base::PostTaskWithTraits(FROM_HERE, {BrowserThread::IO}, closure)
+  base::PostTask(FROM_HERE, {BrowserThread::IO}, closure)
 
 // Convenience macro to block the test procedure until all pending tasks have
 // run on the device thread.
-#define WAIT_FOR_DEVICE_TASKS()            \
-  browser_threads_.RunIOThreadUntilIdle(); \
+#define WAIT_FOR_DEVICE_TASKS()             \
+  task_environment_.RunIOThreadUntilIdle(); \
   RUN_UI_TASKS()
 
 // Capture parameters.
@@ -79,13 +82,14 @@ media::VideoCaptureParams GetCaptureParams() {
 // Mock for the FrameSinkVideoCapturer running in the VIZ process.
 class MockFrameSinkVideoCapturer : public viz::mojom::FrameSinkVideoCapturer {
  public:
-  MockFrameSinkVideoCapturer() : binding_(this) {}
+  MockFrameSinkVideoCapturer() = default;
 
-  bool is_bound() const { return binding_.is_bound(); }
+  bool is_bound() const { return receiver_.is_bound(); }
 
-  void Bind(viz::mojom::FrameSinkVideoCapturerRequest request) {
+  void Bind(
+      mojo::PendingReceiver<viz::mojom::FrameSinkVideoCapturer> receiver) {
     DCHECK_NOT_ON_DEVICE_THREAD();
-    binding_.Bind(std::move(request));
+    receiver_.Bind(std::move(receiver));
   }
 
   MOCK_METHOD2(SetFormat,
@@ -104,9 +108,10 @@ class MockFrameSinkVideoCapturer : public viz::mojom::FrameSinkVideoCapturer {
     MockChangeTarget(frame_sink_id ? *frame_sink_id : viz::FrameSinkId());
   }
   MOCK_METHOD1(MockChangeTarget, void(const viz::FrameSinkId& frame_sink_id));
-  void Start(viz::mojom::FrameSinkVideoConsumerPtr consumer) final {
+  void Start(
+      mojo::PendingRemote<viz::mojom::FrameSinkVideoConsumer> consumer) final {
     DCHECK_NOT_ON_DEVICE_THREAD();
-    consumer_ = std::move(consumer);
+    consumer_.Bind(std::move(consumer));
     MockStart(consumer_.get());
   }
   MOCK_METHOD1(MockStart, void(viz::mojom::FrameSinkVideoConsumer* consumer));
@@ -117,13 +122,15 @@ class MockFrameSinkVideoCapturer : public viz::mojom::FrameSinkVideoCapturer {
   }
   MOCK_METHOD0(MockStop, void());
   MOCK_METHOD0(RequestRefreshFrame, void());
-  MOCK_METHOD2(CreateOverlay,
-               void(int32_t stacking_index,
-                    viz::mojom::FrameSinkVideoCaptureOverlayRequest request));
+  MOCK_METHOD2(
+      CreateOverlay,
+      void(int32_t stacking_index,
+           mojo::PendingReceiver<viz::mojom::FrameSinkVideoCaptureOverlay>
+               receiver));
 
  private:
-  mojo::Binding<viz::mojom::FrameSinkVideoCapturer> binding_;
-  viz::mojom::FrameSinkVideoConsumerPtr consumer_;
+  mojo::Receiver<viz::mojom::FrameSinkVideoCapturer> receiver_{this};
+  mojo::Remote<viz::mojom::FrameSinkVideoConsumer> consumer_;
 };
 
 // Represents the FrameSinkVideoConsumerFrameCallbacks instance in the VIZ
@@ -131,18 +138,21 @@ class MockFrameSinkVideoCapturer : public viz::mojom::FrameSinkVideoCapturer {
 class MockFrameSinkVideoConsumerFrameCallbacks
     : public viz::mojom::FrameSinkVideoConsumerFrameCallbacks {
  public:
-  MockFrameSinkVideoConsumerFrameCallbacks() : binding_(this) {}
+  MockFrameSinkVideoConsumerFrameCallbacks() = default;
 
-  void Bind(viz::mojom::FrameSinkVideoConsumerFrameCallbacksRequest request) {
+  void Bind(
+      mojo::PendingReceiver<viz::mojom::FrameSinkVideoConsumerFrameCallbacks>
+          receiver) {
     DCHECK_NOT_ON_DEVICE_THREAD();
-    binding_.Bind(std::move(request));
+    receiver_.Bind(std::move(receiver));
   }
 
   MOCK_METHOD0(Done, void());
   MOCK_METHOD1(ProvideFeedback, void(double utilization));
 
  private:
-  mojo::Binding<viz::mojom::FrameSinkVideoConsumerFrameCallbacks> binding_;
+  mojo::Receiver<viz::mojom::FrameSinkVideoConsumerFrameCallbacks> receiver_{
+      this};
 };
 
 // Mock for the VideoFrameReceiver, the point-of-injection of video frames into
@@ -262,15 +272,15 @@ class FrameSinkVideoCaptureDeviceForTest : public FrameSinkVideoCaptureDevice {
       : capturer_(capturer) {}
 
  protected:
-  void CreateCapturer(viz::mojom::FrameSinkVideoCapturerRequest request) final {
-    base::PostTaskWithTraits(
+  void CreateCapturer(mojo::PendingReceiver<viz::mojom::FrameSinkVideoCapturer>
+                          receiver) final {
+    base::PostTask(
         FROM_HERE, {BrowserThread::UI},
         base::BindOnce(
             [](MockFrameSinkVideoCapturer* capturer,
-               viz::mojom::FrameSinkVideoCapturerRequest request) {
-              capturer->Bind(std::move(request));
-            },
-            capturer_, std::move(request)));
+               mojo::PendingReceiver<viz::mojom::FrameSinkVideoCapturer>
+                   receiver) { capturer->Bind(std::move(receiver)); },
+            capturer_, std::move(receiver)));
   }
 
   MockFrameSinkVideoCapturer* const capturer_;
@@ -289,7 +299,7 @@ class FrameSinkVideoCaptureDeviceForTest : public FrameSinkVideoCaptureDevice {
 class FrameSinkVideoCaptureDeviceTest : public testing::Test {
  public:
   FrameSinkVideoCaptureDeviceTest()
-      : browser_threads_(TestBrowserThreadBundle::REAL_IO_THREAD) {}
+      : task_environment_(BrowserTaskEnvironment::REAL_IO_THREAD) {}
 
   ~FrameSinkVideoCaptureDeviceTest() override { EXPECT_FALSE(device_); }
 
@@ -361,16 +371,16 @@ class FrameSinkVideoCaptureDeviceTest : public testing::Test {
     memset(region.mapping.memory(), GetFrameFillValue(frame_number),
            region.mapping.size());
 
-    viz::mojom::FrameSinkVideoConsumerFrameCallbacksPtr callbacks_ptr;
-    callbacks->Bind(mojo::MakeRequest(&callbacks_ptr));
-    // |callbacks_ptr| is bound on the main thread, so it needs to be re-bound
-    // to the device thread before calling OnFrameCaptured().
+    mojo::PendingRemote<viz::mojom::FrameSinkVideoConsumerFrameCallbacks>
+        callbacks_remote;
+    callbacks->Bind(callbacks_remote.InitWithNewPipeAndPassReceiver());
+    // |callbacks_remote| is bound on the main thread, so it needs to be
+    // re-bound to the device thread before calling OnFrameCaptured().
     POST_DEVICE_TASK(base::BindOnce(
         [](FrameSinkVideoCaptureDevice* device,
            base::ReadOnlySharedMemoryRegion data, int frame_number,
-           mojo::InterfacePtrInfo<
-               viz::mojom::FrameSinkVideoConsumerFrameCallbacks>
-               callbacks_info) {
+           mojo::PendingRemote<viz::mojom::FrameSinkVideoConsumerFrameCallbacks>
+               callbacks_remote) {
           device->OnFrameCaptured(
               std::move(data),
               media::mojom::VideoFrameInfo::New(
@@ -378,12 +388,10 @@ class FrameSinkVideoCaptureDeviceTest : public testing::Test {
                   base::Value(base::Value::Type::DICTIONARY), kFormat,
                   kResolution, gfx::Rect(kResolution),
                   gfx::ColorSpace::CreateREC709(), nullptr),
-              gfx::Rect(kResolution),
-              viz::mojom::FrameSinkVideoConsumerFrameCallbacksPtr(
-                  std::move(callbacks_info)));
+              gfx::Rect(kResolution), std::move(callbacks_remote));
         },
         base::Unretained(device_.get()), std::move(region.region), frame_number,
-        callbacks_ptr.PassInterface()));
+        std::move(callbacks_remote)));
   }
 
   // Returns a byte value based on the given |frame_number|.
@@ -412,7 +420,7 @@ class FrameSinkVideoCaptureDeviceTest : public testing::Test {
 
  protected:
   // See the threading notes at top of this file.
-  TestBrowserThreadBundle browser_threads_;
+  BrowserTaskEnvironment task_environment_;
 
   NiceMock<MockFrameSinkVideoCapturer> capturer_;
   std::unique_ptr<FrameSinkVideoCaptureDevice> device_;

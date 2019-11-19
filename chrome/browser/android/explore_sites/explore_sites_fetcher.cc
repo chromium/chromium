@@ -46,7 +46,6 @@ namespace {
 // proto format.
 const char kRequestContentType[] = "application/x-protobuf";
 const char kRequestMethod[] = "GET";
-const char kExperiment[] = "exp";
 
 constexpr net::NetworkTrafficAnnotationTag traffic_annotation =
     net::DefineNetworkTrafficAnnotation("explore_sites", R"(
@@ -122,8 +121,7 @@ ExploreSitesFetcher::ExploreSitesFetcher(
       url_(url),
       device_delegate_(std::make_unique<DeviceDelegate>()),
       callback_(std::move(callback)),
-      url_loader_factory_(loader_factory),
-      weak_factory_(this) {
+      url_loader_factory_(loader_factory) {
   base::Version version = version_info::GetVersion();
   std::string channel_name = chrome::GetChannelName();
   client_version_ = base::StringPrintf("%d.%d.%d.%s.chrome",
@@ -163,9 +161,12 @@ void ExploreSitesFetcher::Start() {
 
   // Get field trial value, if any.
   std::string tag = base::GetFieldTrialParamValueByFeature(
-      chrome::android::kExploreSites, kExperiment);
+      chrome::android::kExploreSites,
+      chrome::android::explore_sites::
+          kExploreSitesHeadersExperimentParameterName);
+
   if (!tag.empty()) {
-    resource_request->headers.SetHeader("X-Google-Chrome-Experiment-Tag", tag);
+    resource_request->headers.SetHeader("X-Goog-Chrome-Experiment-Tag", tag);
   }
 
   url_loader_ = network::SimpleURLLoader::Create(std::move(resource_request),

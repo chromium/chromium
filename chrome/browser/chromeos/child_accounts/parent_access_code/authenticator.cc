@@ -4,6 +4,7 @@
 
 #include "chrome/browser/chromeos/child_accounts/parent_access_code/authenticator.h"
 
+#include <utility>
 #include <vector>
 
 #include "base/big_endian.h"
@@ -68,12 +69,22 @@ AccessCodeConfig::AccessCodeConfig(const std::string& shared_secret,
   DCHECK(clock_drift_tolerance_ <= kMaxClockDriftTolerance);
 }
 
-AccessCodeConfig::AccessCodeConfig(const AccessCodeConfig& rhs) = default;
+AccessCodeConfig::AccessCodeConfig(AccessCodeConfig&&) = default;
 
-AccessCodeConfig& AccessCodeConfig::operator=(const AccessCodeConfig& rhs) =
-    default;
+AccessCodeConfig& AccessCodeConfig::operator=(AccessCodeConfig&&) = default;
 
 AccessCodeConfig::~AccessCodeConfig() = default;
+
+base::Value AccessCodeConfig::ToDictionary() const {
+  base::Value config(base::Value::Type::DICTIONARY);
+  config.SetKey(kSharedSecretDictKey, base::Value(shared_secret_));
+  config.SetKey(kCodeValidityDictKey,
+                base::Value(static_cast<int>(code_validity_.InSeconds())));
+  config.SetKey(
+      kClockDriftDictKey,
+      base::Value(static_cast<int>(clock_drift_tolerance_.InSeconds())));
+  return config;
+}
 
 AccessCode::AccessCode(const std::string& code,
                        base::Time valid_from,
@@ -107,7 +118,8 @@ std::ostream& operator<<(std::ostream& out, const AccessCode& code) {
 // static
 constexpr base::TimeDelta Authenticator::kAccessCodeGranularity;
 
-Authenticator::Authenticator(const AccessCodeConfig& config) : config_(config) {
+Authenticator::Authenticator(AccessCodeConfig config)
+    : config_(std::move(config)) {
   bool result = hmac_.Init(config_.shared_secret());
   DCHECK(result);
 }

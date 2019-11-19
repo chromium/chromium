@@ -1,9 +1,7 @@
 // Copyright 2017 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-
 package org.chromium.content.browser.androidoverlay;
-
 import android.annotation.TargetApi;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -20,13 +18,13 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.content.browser.RenderCoordinatesImpl;
 import org.chromium.content.browser.androidoverlay.DialogOverlayImplTestRule.Client;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.concurrent.Callable;
 
@@ -100,7 +98,7 @@ public class DialogOverlayImplPixelTest {
     RenderCoordinatesImpl mCoordinates;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         takeScreenshotOfBackground();
         mCoordinates = mActivityTestRule.getRenderCoordinates();
     }
@@ -232,10 +230,10 @@ public class DialogOverlayImplPixelTest {
         Assert.assertNotNull(overlay);
         final Client.Event event = mActivityTestRule.getClient().nextEvent();
         Assert.assertTrue(event.surfaceKey > 0);
-        return ThreadUtils.runOnUiThreadBlocking(new Callable<Surface>() {
+        return TestThreadUtils.runOnUiThreadBlocking(new Callable<Surface>() {
             @Override
             public Surface call() {
-                return DialogOverlayImpl.nativeLookupSurfaceForTesting((int) event.surfaceKey);
+                return DialogOverlayImplJni.get().lookupSurfaceForTesting((int) event.surfaceKey);
             }
         });
     }
@@ -266,12 +264,7 @@ public class DialogOverlayImplPixelTest {
         rect.width = mDivWidthPx;
         rect.height = mDivHeightPx;
 
-        ThreadUtils.runOnUiThreadBlocking(new Runnable() {
-            @Override
-            public void run() {
-                overlay.scheduleLayout(rect);
-            }
-        });
+        TestThreadUtils.runOnUiThreadBlocking(() -> { overlay.scheduleLayout(rect); });
 
         assertDivIsExactlyCovered(surface);
     }

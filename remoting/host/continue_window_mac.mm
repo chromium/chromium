@@ -10,7 +10,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/logging.h"
-#include "base/mac/scoped_nsautorelease_pool.h"
 #include "base/mac/scoped_nsobject.h"
 #include "base/macros.h"
 #include "base/strings/sys_string_conversions.h"
@@ -62,17 +61,19 @@ ContinueWindowMac::~ContinueWindowMac() {
 void ContinueWindowMac::ShowUi() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  base::mac::ScopedNSAutoreleasePool pool;
-  controller_.reset(
-      [[ContinueWindowMacController alloc] initWithWindow:this]);
-  [controller_ show];
+  @autoreleasepool {
+    controller_.reset(
+        [[ContinueWindowMacController alloc] initWithWindow:this]);
+    [controller_ show];
+  }
 }
 
 void ContinueWindowMac::HideUi() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  base::mac::ScopedNSAutoreleasePool pool;
-  [controller_ hide];
+  @autoreleasepool {
+    [controller_ hide];
+  }
 }
 
 // static
@@ -152,7 +153,10 @@ std::unique_ptr<HostWindow> HostWindow::CreateContinueWindow() {
     [window close];
   }
   shades_.reset();
-  continue_alert_.reset();
+  if (continue_alert_) {
+    [[continue_alert_ window] close];
+    continue_alert_.reset();
+  }
 }
 
 - (void)onCancel:(id)sender {

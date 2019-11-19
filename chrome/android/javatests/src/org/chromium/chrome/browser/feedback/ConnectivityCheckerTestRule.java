@@ -9,7 +9,7 @@ import android.support.test.InstrumentationRegistry;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 
-import org.chromium.chrome.browser.test.ChromeBrowserTestRule;
+import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.net.test.EmbeddedTestServer;
 
 /**
@@ -59,7 +59,7 @@ public class ConnectivityCheckerTestRule extends ChromeBrowserTestRule {
         return mGeneratedSlowUrl;
     }
 
-    private void setUp() throws Exception {
+    private void setUp() {
         mTestServer = EmbeddedTestServer.createAndStartServer(InstrumentationRegistry.getContext());
         mGenerated200Url = mTestServer.getURL("/echo?status=200");
         mGenerated204Url = mTestServer.getURL("/echo?status=204");
@@ -68,7 +68,7 @@ public class ConnectivityCheckerTestRule extends ChromeBrowserTestRule {
         mGeneratedSlowUrl = mTestServer.getURL("/slow?5");
     }
 
-    private void tearDown() throws Exception {
+    private void tearDown() {
         mTestServer.stopAndDestroyServer();
     }
 }

@@ -24,13 +24,13 @@ const char kRenderFrameBlameContextScope[] = "RenderFrame";
 
 FrameTreeNodeBlameContext::FrameTreeNodeBlameContext(int node_id,
                                                      FrameTreeNode* parent)
-    : base::trace_event::BlameContext(kFrameTreeNodeBlameContextCategory,
-                                      kFrameTreeNodeBlameContextName,
-                                      kFrameTreeNodeBlameContextType,
-                                      kFrameTreeNodeBlameContextScope,
-                                      node_id,
-                                      parent ? &parent->blame_context()
-                                             : nullptr) {}
+    : base::trace_event::BlameContext(
+          kFrameTreeNodeBlameContextCategory,
+          kFrameTreeNodeBlameContextName,
+          kFrameTreeNodeBlameContextType,
+          kFrameTreeNodeBlameContextScope,
+          node_id,
+          parent ? &parent->blame_context() : nullptr) {}
 
 FrameTreeNodeBlameContext::~FrameTreeNodeBlameContext() {}
 

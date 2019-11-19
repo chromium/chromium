@@ -113,7 +113,8 @@ static void SortBlock(unsigned from,
     // FIXME: namespace nodes are not implemented.
     for (unsigned i = sorted_end; i < to; ++i) {
       Node* n = parent_matrix[i][0];
-      if (n->IsAttributeNode() && ToAttr(n)->ownerElement() == common_ancestor)
+      auto* attr = DynamicTo<Attr>(n);
+      if (attr && attr->ownerElement() == common_ancestor)
         parent_matrix[i].swap(parent_matrix[sorted_end++]);
     }
     if (sorted_end != from) {
@@ -179,8 +180,8 @@ void NodeSet::Sort() const {
     NodeSetVector& parents_vector = parent_matrix[i];
     Node* n = nodes_[i].Get();
     parents_vector.push_back(n);
-    if (n->IsAttributeNode()) {
-      n = ToAttr(n)->ownerElement();
+    if (auto* attr = DynamicTo<Attr>(n)) {
+      n = attr->ownerElement();
       parents_vector.push_back(n);
       contains_attribute_nodes = true;
     }
@@ -200,8 +201,8 @@ void NodeSet::Sort() const {
 }
 
 static Node* FindRootNode(Node* node) {
-  if (node->IsAttributeNode())
-    node = ToAttr(node)->ownerElement();
+  if (auto* attr = DynamicTo<Attr>(node))
+    node = attr->ownerElement();
   if (node->isConnected()) {
     node = &node->GetDocument();
   } else {
@@ -231,10 +232,10 @@ void NodeSet::TraversalSort() const {
     if (nodes.Contains(&n))
       sorted_nodes.push_back(&n);
 
-    if (!contains_attribute_nodes || !n.IsElementNode())
+    auto* element = DynamicTo<Element>(&n);
+    if (!element || !contains_attribute_nodes)
       continue;
 
-    Element* element = ToElement(&n);
     AttributeCollection attributes = element->Attributes();
     for (auto& attribute : attributes) {
       Attr* attr = element->AttrIfExists(attribute.GetName());

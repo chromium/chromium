@@ -12,24 +12,25 @@
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/field_trial_params.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "services/data_decoder/public/mojom/json_parser.mojom.h"
 #include "services/image_annotation/annotator.h"
+#include "services/image_annotation/public/mojom/image_annotation.mojom.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
-#include "services/service_manager/public/cpp/binder_registry.h"
-#include "services/service_manager/public/cpp/service.h"
-#include "services/service_manager/public/cpp/service_binding.h"
-#include "services/service_manager/public/mojom/service.mojom.h"
 
 namespace image_annotation {
 
-class ImageAnnotationService : public service_manager::Service {
+class ImageAnnotationService : public mojom::ImageAnnotationService {
  public:
   // Whether or not to override service parameters for experimentation.
   static const base::Feature kExperiment;
 
   ImageAnnotationService(
-      service_manager::mojom::ServiceRequest request,
+      mojo::PendingReceiver<mojom::ImageAnnotationService> receiver,
       std::string api_key,
-      scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory);
+      scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
+      std::unique_ptr<Annotator::Client> annotator_client);
   ~ImageAnnotationService() override;
 
  private:
@@ -49,15 +50,10 @@ class ImageAnnotationService : public service_manager::Service {
   static constexpr base::FeatureParam<double> kMinOcrConfidence{
       &kExperiment, "min_ocr_confidence", 0.7};
 
-  // service_manager::Service:
-  void OnBindInterface(const service_manager::BindSourceInfo& source_info,
-                       const std::string& interface_name,
-                       mojo::ScopedMessagePipeHandle interface_pipe) override;
-  void OnStart() override;
+  // mojom::ImageAnnotationService implementation:
+  void BindAnnotator(mojo::PendingReceiver<mojom::Annotator> receiver) override;
 
-  service_manager::BinderRegistry registry_;
-  service_manager::ServiceBinding service_binding_;
-
+  mojo::Receiver<mojom::ImageAnnotationService> receiver_;
   Annotator annotator_;
 
   DISALLOW_COPY_AND_ASSIGN(ImageAnnotationService);

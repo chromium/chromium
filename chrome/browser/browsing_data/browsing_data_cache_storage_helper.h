@@ -54,12 +54,6 @@ class BrowsingDataCacheStorageHelper
  private:
   friend class base::RefCountedThreadSafe<BrowsingDataCacheStorageHelper>;
 
-  // Deletes Cache Storages for an origin the IO thread.
-  void DeleteCacheStorageOnIOThread(const GURL& origin);
-
-  // Enumerates all Cache Storage instances on the IO thread.
-  void FetchCacheStorageUsageInfoOnIOThread(FetchCallback callback);
-
   DISALLOW_COPY_AND_ASSIGN(BrowsingDataCacheStorageHelper);
 };
 

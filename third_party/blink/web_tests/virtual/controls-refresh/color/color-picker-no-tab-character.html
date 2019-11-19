@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src='../../../resources/testharness.js'></script>
+<script src='../../../resources/testharnessreport.js'></script>
+<script src='../../../fast/forms/resources/picker-common.js'></script>
+</head>
+<body>
+<input type='color' id='color' value='#80d9ff'>
+<script>
+'use strict';
+
+let t = async_test('Color picker: Tabbing into a color value container should not insert a tab character.');
+t.step(() => {
+  let colorControl = document.getElementById('color');
+  openPicker(colorControl, t.step_func_done(() => {
+    popupWindow.focus();
+    const popupDocument = popupWindow.document;
+    const rValueContainer = popupDocument.getElementById('rValueContainer');
+    const gValueContainer = popupDocument.getElementById('gValueContainer');
+    const bValueContainer = popupDocument.getElementById('bValueContainer');
+    assert_equals(rValueContainer.value, '128');
+    assert_equals(gValueContainer.value, '217');
+    assert_equals(bValueContainer.value, '255');
+    const hueSliderSelectionRing = popupDocument.querySelector('hue-slider > color-selection-ring');
+    hueSliderSelectionRing.focus();
+    assert_equals(popupDocument.activeElement, hueSliderSelectionRing);
+    eventSender.keyDown('Tab');
+    assert_equals(popupDocument.activeElement, rValueContainer, 'rValueContainer should be the active element');
+    assert_equals(rValueContainer.value, '128', 'rValueContainer\'s value should not have changed');
+    eventSender.keyDown('Tab');
+    assert_equals(popupDocument.activeElement, gValueContainer, 'gValueContainer should be the active element');
+    assert_equals(gValueContainer.value, '217', 'gValueContainer\'s value should not have changed');
+    eventSender.keyDown('Tab');
+    assert_equals(popupDocument.activeElement, bValueContainer, 'bValueContainer should be the active element');
+    assert_equals(bValueContainer.value, '255', 'bValueContainer\'s value should not have changed');
+  }), t.step_func_done(() => {
+    assert_false(internals.runtimeFlags.formControlsRefreshEnabled, "Popup should only not open when the formControlsRefresh flag is disabled.");
+  }));
+});
+</script>
+</body>
+</html>

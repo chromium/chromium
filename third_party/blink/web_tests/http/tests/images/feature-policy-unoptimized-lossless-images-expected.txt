@@ -1,0 +1,1 @@
+CONSOLE ERROR: Feature policy violation: unoptimized-lossless-images is not allowed in this document.

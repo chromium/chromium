@@ -126,8 +126,9 @@ void CreateSystemProfileForUserManager(
     const base::Callback<void(Profile*, const std::string&)>& callback);
 
 // Converts from modes in the avatar menu to modes understood by
-// ProfileChooserView.
+// ProfileMenuView.
 void BubbleViewModeFromAvatarBubbleMode(BrowserWindow::AvatarBubbleMode mode,
+                                        Profile* profile,
                                         BubbleViewMode* bubble_view_mode);
 
 // Handles running a callback when a new Browser for the given profile

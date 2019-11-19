@@ -1,0 +1,63 @@
+// Copyright 2017 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Next MinVersion: 4
+module arc.mojom;
+
+// re-use device.mojom.UsbDeviceInfo
+import "services/device/public/mojom/usb_device.mojom";
+
+// Next method ID: 4
+interface UsbHostHost {
+  // Tries to open the USB device node for the device named 'guid' for caller
+  // 'pkg_name' and returns an open file descriptor to this node. 'pkg_name'
+  // needs to have previously called RequestPermission for this 'guid' else this
+  // call will fail. Note the 'pkg_name' is informational purposes only, there
+  // is no effective way that host can restrict access to only a specific
+  // package at the security boundary formed by this Mojo interface.
+  // Deprecated.
+  OpenDeviceDeprecated@0(string guid,
+                         [MinVersion=1] string? pkg_name) => (handle usb_fd);
+
+  // Tries to open the USB device node for the device named 'guid' for caller
+  // 'pkg_name' and returns an open file descriptor to this node. 'pkg_name'
+  // needs to have previously called RequestPermission for this 'guid' else this
+  // call will fail. Note the 'pkg_name' is informational purposes only, there
+  // is no effective way that host can restrict access to only a specific
+  // package at the security boundary formed by this Mojo interface.
+  // When app tries to open a device without requesting permission, or
+  // permission_broker rejects the open request, empty handle will be returned.
+  [MinVersion=3] OpenDevice@3(string guid, string? pkg_name) =>
+      (handle? usb_fd);
+
+  // Returns the USB device descriptors for the device named 'guid'.
+  GetDeviceInfo@1(string guid) => (string device_name,
+                                   device.mojom.UsbDeviceInfo info);
+
+  // Asks for the permission to access the USB device called 'guid',
+  // if 'guid' is an empty string, requests the permission to list USB devices
+  // instead.
+  // if the permission hasn't successfully obtained in the past, this will
+  // trigger a UI pop-up requesting the user authorization on the behalf of
+  // the package 'pkg_name' if 'interactive' is set to true, or fail
+  // immediately.
+  RequestPermission@2(string guid, string pkg_name, bool interactive)
+      => (bool authorized);
+};
+
+// Next method ID: 3
+interface UsbHostInstance {
+  // Establishes full-duplex communication with the host.
+  Init@0(UsbHostHost host_ptr) => ();
+
+  // Notifies the instance of a new USB device.
+  // Only packages in |event_receiver_packages| will receive broadcast.
+  OnDeviceAdded@1(string guid,
+                  [MinVersion=2] array<string>? event_receiver_packages);
+
+  // Notifies the instance of the removal of a USB device.
+  // Only packages in |event_receiver_packages| will receive broadcast.
+  OnDeviceRemoved@2(string guid,
+                    [MinVersion=2] array<string>? event_receiver_packages);
+};

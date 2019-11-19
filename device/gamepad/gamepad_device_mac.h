@@ -5,17 +5,22 @@
 #ifndef DEVICE_GAMEPAD_GAMEPAD_DEVICE_MAC_H_
 #define DEVICE_GAMEPAD_GAMEPAD_DEVICE_MAC_H_
 
+#include <stddef.h>
+
 #include <CoreFoundation/CoreFoundation.h>
 #include <ForceFeedback/ForceFeedback.h>
 #include <IOKit/hid/IOHIDManager.h>
-#include <stddef.h>
 
+#include "base/memory/weak_ptr.h"
 #include "device/gamepad/abstract_haptic_gamepad.h"
-#include "device/gamepad/dualshock4_controller_mac.h"
-#include "device/gamepad/hid_haptic_gamepad_mac.h"
+#include "device/gamepad/gamepad_standard_mappings.h"
 #include "device/gamepad/public/cpp/gamepad.h"
 
 namespace device {
+
+class Dualshock4Controller;
+class HidHapticGamepad;
+class XboxHidController;
 
 // GamepadDeviceMac represents a single gamepad device. Gamepad enumeration
 // and state polling is handled through the raw HID interface, while haptics
@@ -23,7 +28,7 @@ namespace device {
 //
 // Dualshock4 haptics are not supported through ForceFeedback and are instead
 // sent through the raw HID interface.
-class GamepadDeviceMac : public AbstractHapticGamepad {
+class GamepadDeviceMac final : public AbstractHapticGamepad {
  public:
   GamepadDeviceMac(int location_id,
                    IOHIDDeviceRef device_ref,
@@ -49,14 +54,13 @@ class GamepadDeviceMac : public AbstractHapticGamepad {
   // ForceFeedback framework.
   bool SupportsVibration();
 
-  // Starts vibrating the device with the specified magnitudes.
+  // AbstractHapticGamepad public implementation.
   void SetVibration(double strong_magnitude, double weak_magnitude) override;
-
-  // Stop vibration by canceling any ongoing vibration effect.
   void SetZeroVibration() override;
+  base::WeakPtr<AbstractHapticGamepad> GetWeakPtr() override;
 
  private:
-  // Stop vibration and release held resources.
+  // AbstractHapticGamepad private implementation.
   void DoShutdown() override;
 
   // Initialize button capabilities for |gamepad|.
@@ -88,6 +92,7 @@ class GamepadDeviceMac : public AbstractHapticGamepad {
 
   int location_id_;
   IOHIDDeviceRef device_ref_;
+  GamepadBusType bus_type_;
 
   IOHIDElementRef button_elements_[Gamepad::kButtonsLengthCap];
   IOHIDElementRef axis_elements_[Gamepad::kAxesLengthCap];
@@ -105,10 +110,18 @@ class GamepadDeviceMac : public AbstractHapticGamepad {
   LONG direction_data_[2];
 
   // Dualshock4 functionality, if available.
-  std::unique_ptr<Dualshock4ControllerMac> dualshock4_;
+  std::unique_ptr<Dualshock4Controller> dualshock4_;
+
+  // Xbox Wireless Controller behaves like a HID gamepad when connected over
+  // Bluetooth. In this mode, haptics functionality is provided by |xbox_hid_|.
+  // When connected over USB, Xbox Wireless Controller is supported through
+  // XboxDataFetcher.
+  std::unique_ptr<XboxHidController> xbox_hid_;
 
   // A controller that uses a HID output report for vibration effects.
-  std::unique_ptr<HidHapticGamepadMac> hid_haptics_;
+  std::unique_ptr<HidHapticGamepad> hid_haptics_;
+
+  base::WeakPtrFactory<GamepadDeviceMac> weak_factory_{this};
 };
 
 }  // namespace device

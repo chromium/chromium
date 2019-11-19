@@ -30,6 +30,8 @@
 
 // https://webaudio.github.io/web-midi-api/#MIDIInput
 
-interface MIDIInput : MIDIPort {
+[
+    SecureContext
+] interface MIDIInput : MIDIPort {
     attribute EventHandler onmidimessage;
 };

@@ -18,7 +18,7 @@ void BookmarkNodeData::WriteToClipboard() {
   NOTREACHED();
 }
 
-bool BookmarkNodeData::ReadFromClipboard(ui::ClipboardType type) {
+bool BookmarkNodeData::ReadFromClipboard(ui::ClipboardBuffer buffer) {
   NOTREACHED();
   return false;
 }

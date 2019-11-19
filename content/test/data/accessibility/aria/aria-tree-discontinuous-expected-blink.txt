@@ -1,0 +1,10 @@
+rootWebArea
+++genericContainer ignored
+++++tree setSize=2
+++++++treeItem name='card content' hierarchicalLevel=1 setSize=2 posInSet=1 selected=false
+++++++++staticText name='card content'
+++++++++++inlineTextBox name='card content'
+++++++genericContainer
+++++++treeItem name='card content' hierarchicalLevel=1 setSize=2 posInSet=2 selected=false
+++++++++staticText name='card content'
+++++++++++inlineTextBox name='card content'

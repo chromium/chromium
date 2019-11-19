@@ -13,6 +13,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/chromeos/crostini/crostini_manager.h"
 #include "chrome/browser/chromeos/crostini/crostini_package_operation_status.h"
+#include "chrome/browser/chromeos/crostini/crostini_registry_service.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
 
 namespace message_center {
@@ -25,8 +26,8 @@ class CrostiniPackageService;
 
 // Notification for various Crostini package operations, such as installing
 // from a package or uninstalling an existing app.
-class CrostiniPackageNotification
-    : public message_center::NotificationObserver {
+class CrostiniPackageNotification : public message_center::NotificationObserver,
+                                    public CrostiniRegistryService::Observer {
  public:
   enum class NotificationType { PACKAGE_INSTALL, APPLICATION_UNINSTALL };
 
@@ -35,17 +36,32 @@ class CrostiniPackageNotification
   CrostiniPackageNotification(Profile* profile,
                               NotificationType notification_type,
                               PackageOperationStatus status,
+                              const ContainerId& container_id,
                               const base::string16& app_name,
                               const std::string& notification_id,
                               CrostiniPackageService* installer_service);
-  virtual ~CrostiniPackageNotification();
+  ~CrostiniPackageNotification() override;
 
   void UpdateProgress(PackageOperationStatus status, int progress_percent);
 
   void ForceAllowAutoHide();
 
+  PackageOperationStatus GetOperationStatus() const;
+
   // message_center::NotificationObserver:
   void Close(bool by_user) override;
+
+  void Click(const base::Optional<int>& button_index,
+             const base::Optional<base::string16>& reply) override;
+
+  // CrostiniRegistryService::Observer:
+  void OnRegistryUpdated(
+      CrostiniRegistryService* registry_service,
+      const std::vector<std::string>& updated_apps,
+      const std::vector<std::string>& removed_apps,
+      const std::vector<std::string>& inserted_apps) override;
+
+  int GetButtonCountForTesting();
 
  private:
   // A type giving the string, etc displayed for each notification type. Note
@@ -79,7 +95,7 @@ class CrostiniPackageNotification
 
   // The most-recent time we entered the "RUNNING" state. Used for
   // guesstimating when we'll be done.
-  base::Time running_start_time_;
+  base::TimeTicks running_start_time_;
 
   // These notifications are owned by the package service.
   CrostiniPackageService* package_service_;
@@ -91,7 +107,16 @@ class CrostiniPackageNotification
   // True if we think the notification is visible.
   bool visible_;
 
-  base::WeakPtrFactory<CrostiniPackageNotification> weak_ptr_factory_;
+  // If we show a launch button on completion, this is the app that will be
+  // launched.
+  std::string app_id_;
+
+  ContainerId container_id_;
+
+  std::set<std::string> inserted_apps_;
+  int app_count_ = 0;
+
+  base::WeakPtrFactory<CrostiniPackageNotification> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(CrostiniPackageNotification);
 };

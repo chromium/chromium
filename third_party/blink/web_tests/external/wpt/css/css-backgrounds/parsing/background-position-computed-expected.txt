@@ -1,0 +1,32 @@
+This is a testharness.js-based test.
+PASS Property background-position value '1px' computes to '1px 50%'
+PASS Property background-position value '1px center' computes to '1px 50%'
+PASS Property background-position value '-2% -3%' computes to '-2% -3%'
+PASS Property background-position value '5% top' computes to '5% 0%'
+PASS Property background-position value 'center' computes to '50% 50%'
+PASS Property background-position value 'center center' computes to '50% 50%'
+PASS Property background-position value 'center 6px' computes to '50% 6px'
+PASS Property background-position value 'center left' computes to '0% 50%'
+FAIL Property background-position value 'center right 7%' computes to '93% 50%' assert_equals: expected "93% 50%" but got "right 7% 50%"
+PASS Property background-position value 'center bottom' computes to '50% 100%'
+FAIL Property background-position value 'center top 8px' computes to '50% 8px' assert_equals: expected "50% 8px" but got "50% top 8px"
+PASS Property background-position value 'left' computes to '0% 50%'
+PASS Property background-position value 'right 9%' computes to '100% 9%'
+FAIL Property background-position value 'left 10px center' computes to '10px 50%' assert_equals: expected "10px 50%" but got "left 10px 50%"
+FAIL Property background-position value 'right 11% bottom' computes to '89% 100%' assert_equals: expected "89% 100%" but got "right 11% 100%"
+FAIL Property background-position value 'left 12px top 13px' computes to '12px 13px' assert_equals: expected "12px 13px" but got "left 12px top 13px"
+PASS Property background-position value 'right center' computes to '100% 50%'
+PASS Property background-position value 'left bottom' computes to '0% 100%'
+FAIL Property background-position value 'right top 14%' computes to '100% 14%' assert_equals: expected "100% 14%" but got "100% top 14%"
+PASS Property background-position value 'bottom' computes to '50% 100%'
+FAIL Property background-position value 'top 15px center' computes to '50% 15px' assert_equals: expected "50% 15px" but got "50% top 15px"
+FAIL Property background-position value 'bottom 16% left' computes to '0% 84%' assert_equals: expected "0% 84%" but got "0% bottom 16%"
+FAIL Property background-position value 'top 17px right -18px' computes to 'calc(100% + 18px) 17px' assert_equals: expected "calc(100% + 18px) 17px" but got "right -18px top 17px"
+PASS Property background-position value 'bottom center' computes to '50% 100%'
+PASS Property background-position value 'top left' computes to '0% 0%'
+FAIL Property background-position value 'bottom right 19%' computes to '81% 100%' assert_equals: expected "81% 100%" but got "right 19% 100%"
+PASS Property background-position value 'calc(10px + 0.5em) calc(10px - 0.5em)' computes to '30px -10px'
+PASS Property background-position value 'calc(10px - 0.5em) calc(10px + 0.5em)' computes to '-10px 30px'
+PASS Property background-position value '12px 13px, 50% 6px, 30px -10px' computes to '12px 13px'
+Harness: the test ran to completion.
+

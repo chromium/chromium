@@ -11,18 +11,18 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-CWV_EXPORT
 // Represents a user in ChromeWebView.
+CWV_EXPORT
 @interface CWVIdentity : NSObject
 
-- (instancetype)initWithEmail:(NSString*)email
+- (instancetype)initWithEmail:(nullable NSString*)email
                      fullName:(nullable NSString*)fullName
                        gaiaID:(NSString*)gaiaID NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
 
 // The user's email address. e.g. john.doe@chromium.org.
-@property(nonatomic, copy, readonly) NSString* email;
+@property(nonatomic, copy, readonly, nullable) NSString* email;
 
 // The user's full name. e.g. John Doe.
 @property(nonatomic, copy, readonly, nullable) NSString* fullName;

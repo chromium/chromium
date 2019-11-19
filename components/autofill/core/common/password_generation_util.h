@@ -79,6 +79,13 @@ enum PasswordGenerationEvent {
   EVENT_ENUM_COUNT
 };
 
+enum class PasswordGenerationType {
+  // The user was automatically shown the possibility to generate a password.
+  kAutomatic,
+  // The user had to manually request password generation.
+  kManual
+};
+
 // Wrapper to store the user interactions with the password generation bubble.
 struct PasswordGenerationActions {
   // Whether the user has clicked on the learn more link.
@@ -101,9 +108,15 @@ struct PasswordGenerationUIData {
   PasswordGenerationUIData(const gfx::RectF& bounds,
                            int max_length,
                            const base::string16& generation_element,
+                           uint32_t generation_element_id,
+                           bool is_generation_element_password_type,
                            base::i18n::TextDirection text_direction,
                            const autofill::PasswordForm& password_form);
   PasswordGenerationUIData();
+  PasswordGenerationUIData(const PasswordGenerationUIData& rhs);
+  PasswordGenerationUIData(PasswordGenerationUIData&& rhs);
+  PasswordGenerationUIData& operator=(const PasswordGenerationUIData& rhs);
+  PasswordGenerationUIData& operator=(PasswordGenerationUIData&& rhs);
   ~PasswordGenerationUIData();
 
   // Location at which to display a popup if needed. This location is specified
@@ -117,6 +130,12 @@ struct PasswordGenerationUIData {
   // Name of the password field to which the generation popup is attached.
   base::string16 generation_element;
 
+  // Renderer ID of the generation element.
+  uint32_t generation_element_id;
+
+  // Is the generation element |type=password|.
+  bool is_generation_element_password_type;
+
   // Direction of the text for |generation_element|.
   base::i18n::TextDirection text_direction;
 
@@ -125,10 +144,6 @@ struct PasswordGenerationUIData {
 };
 
 void LogPasswordGenerationEvent(PasswordGenerationEvent event);
-
-// Returns true if Password Generation is enabled according to the field
-// trial result and the flags.
-bool IsPasswordGenerationEnabled();
 
 }  // namespace password_generation
 }  // namespace autofill

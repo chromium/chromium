@@ -35,8 +35,8 @@
 
 namespace blink {
 
-inline AudioNodeOutput::AudioNodeOutput(AudioHandler* handler,
-                                        unsigned number_of_channels)
+AudioNodeOutput::AudioNodeOutput(AudioHandler* handler,
+                                 unsigned number_of_channels)
     : handler_(*handler),
       number_of_channels_(number_of_channels),
       desired_number_of_channels_(number_of_channels),
@@ -49,12 +49,6 @@ inline AudioNodeOutput::AudioNodeOutput(AudioHandler* handler,
 
   internal_bus_ = AudioBus::Create(number_of_channels,
                                    audio_utilities::kRenderQuantumFrames);
-}
-
-std::unique_ptr<AudioNodeOutput> AudioNodeOutput::Create(
-    AudioHandler* handler,
-    unsigned number_of_channels) {
-  return base::WrapUnique(new AudioNodeOutput(handler, number_of_channels));
 }
 
 void AudioNodeOutput::Dispose() {

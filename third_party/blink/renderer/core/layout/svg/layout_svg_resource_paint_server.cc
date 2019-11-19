@@ -72,8 +72,8 @@ static SVGPaintDescription RequestPaint(const LayoutObject& object,
   const SVGPaint& paint =
       apply_to_fill ? svg_style.FillPaint() : svg_style.StrokePaint();
   const SVGPaint& visited_paint = apply_to_fill
-                                      ? svg_style.VisitedLinkFillPaint()
-                                      : svg_style.VisitedLinkStrokePaint();
+                                      ? svg_style.InternalVisitedFillPaint()
+                                      : svg_style.InternalVisitedStrokePaint();
 
   // If we have no, ignore it.
   if (paint.IsNone())

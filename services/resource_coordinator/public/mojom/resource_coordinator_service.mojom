@@ -1,0 +1,24 @@
+// Copyright 2017 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module resource_coordinator.mojom;
+
+import "services/resource_coordinator/public/mojom/memory_instrumentation/memory_instrumentation.mojom";
+
+// The main interface to the Resource Coordinator service. This should be
+// considered a privileged interface and thus only bound by e.g. the browser
+// process.
+interface ResourceCoordinatorService {
+  // Binds the main control interface for memory the instrumentation subsystem.
+  BindMemoryInstrumentationCoordinatorController(
+      pending_receiver<memory_instrumentation.mojom.CoordinatorController>
+          receiver);
+
+  // Registers a remote HeapProfiler implementation for the Resource Coordinator
+  // service to use.
+  RegisterHeapProfiler(
+      pending_remote<memory_instrumentation.mojom.HeapProfiler> profiler,
+      pending_receiver<memory_instrumentation.mojom.HeapProfilerHelper>
+          helper_receiver);
+};

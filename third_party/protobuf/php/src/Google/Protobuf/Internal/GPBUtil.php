@@ -215,9 +215,10 @@ class GPBUtil
                     "Expect repeated field of different type.");
             }
             if ($var->getType() === GPBType::MESSAGE &&
-                $var->getClass() !== $klass) {
+                $var->getClass() !== $klass &&
+                $var->getLegacyClass() !== $klass) {
                 throw new \Exception(
-                    "Expect repeated field of different message.");
+                    "Expect repeated field of " . $klass . ".");
             }
             return $var;
         }
@@ -242,9 +243,10 @@ class GPBUtil
                 throw new \Exception("Expect map field of value type.");
             }
             if ($var->getValueType() === GPBType::MESSAGE &&
-                $var->getValueClass() !== $klass) {
+                $var->getValueClass() !== $klass &&
+                $var->getLegacyValueClass() !== $klass) {
                 throw new \Exception(
-                    "Expect map field of different value message.");
+                    "Expect map field of " . $klass . ".");
             }
             return $var;
         }
@@ -299,6 +301,14 @@ class GPBUtil
         return "";
     }
 
+    public static function getLegacyClassNameWithoutPackage(
+        $name,
+        $file_proto)
+    {
+        $classname = implode('_', explode('.', $name));
+        return static::getClassNamePrefix($classname, $file_proto) . $classname;
+    }
+
     public static function getClassNameWithoutPackage(
         $name,
         $file_proto)
@@ -316,6 +326,7 @@ class GPBUtil
         $file_proto,
         &$message_name_without_package,
         &$classname,
+        &$legacy_classname,
         &$fullname)
     {
         // Full name needs to start with '.'.
@@ -334,21 +345,28 @@ class GPBUtil
 
         $class_name_without_package =
             static::getClassNameWithoutPackage($message_name_without_package, $file_proto);
+        $legacy_class_name_without_package =
+            static::getLegacyClassNameWithoutPackage(
+                $message_name_without_package, $file_proto);
 
         $option = $file_proto->getOptions();
         if (!is_null($option) && $option->hasPhpNamespace()) {
             $namespace = $option->getPhpNamespace();
             if ($namespace !== "") {
                 $classname = $namespace . "\\" . $class_name_without_package;
+                $legacy_classname =
+                    $namespace . "\\" . $legacy_class_name_without_package;
                 return;
             } else {
                 $classname = $class_name_without_package;
+                $legacy_classname = $legacy_class_name_without_package;
                 return;
             }
         }
 
         if ($package === "") {
             $classname = $class_name_without_package;
+            $legacy_classname = $legacy_class_name_without_package;
         } else {
             $parts = array_map('ucwords', explode('.', $package));
             foreach ($parts as $i => $part) {
@@ -358,6 +376,9 @@ class GPBUtil
                 implode('\\', $parts) .
                 "\\".self::getClassNamePrefix($class_name_without_package,$file_proto).
                 $class_name_without_package;
+            $legacy_classname =
+                implode('\\', array_map('ucwords', explode('.', $package))).
+                "\\".$legacy_class_name_without_package;
         }
     }
 
@@ -417,8 +438,8 @@ class GPBUtil
                 $nanoseconds = intval($nanoseconds);
 
                 // remove the nanoseconds and preceding period from the timestamp
-                $date = substr($timestamp, 0, $periodIndex - 1);
-                $timezone = substr($timestamp, $periodIndex + $nanosecondsLength);
+                $date = substr($timestamp, 0, $periodIndex);
+                $timezone = substr($timestamp, $periodIndex + $nanosecondsLength + 1);
                 $timestamp = $date.$timezone;
             }
         }
@@ -483,22 +504,37 @@ class GPBUtil
 
     public static function formatDuration($value)
     {
-        if (bccomp($value->getSeconds(), "315576000001") != -1) {
-          throw new GPBDecodeException("Duration number too large.");
+        if (bccomp($value->getSeconds(), '315576000001') != -1) {
+            throw new GPBDecodeException('Duration number too large.');
         }
-        if (bccomp($value->getSeconds(), "-315576000001") != 1) {
-          throw new GPBDecodeException("Duration number too small.");
+        if (bccomp($value->getSeconds(), '-315576000001') != 1) {
+            throw new GPBDecodeException('Duration number too small.');
         }
-        return strval(bcadd($value->getSeconds(),
-                      $value->getNanos() / 1000000000.0, 9));
+
+        $nanos = $value->getNanos();
+        if ($nanos === 0) {
+            return (string) $value->getSeconds();
+        }
+
+        if ($nanos % 1000000 === 0) {
+            $digits = 3;
+        } elseif ($nanos % 1000 === 0) {
+            $digits = 6;
+        } else {
+            $digits = 9;
+        }
+
+        $nanos = bcdiv($nanos, '1000000000', $digits);
+        return bcadd($value->getSeconds(), $nanos, $digits);
     }
-
-
 
     public static function parseFieldMask($paths_string)
     {
-        $path_strings = explode(",", $paths_string);
         $field_mask = new FieldMask();
+        if (strlen($paths_string) === 0) {
+            return $field_mask;
+        }
+        $path_strings = explode(",", $paths_string);
         $paths = $field_mask->getPaths();
         foreach($path_strings as &$path_string) {
             $field_strings = explode(".", $path_string);

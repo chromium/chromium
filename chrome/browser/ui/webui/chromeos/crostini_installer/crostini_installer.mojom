@@ -1,0 +1,46 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module chromeos.crostini_installer.mojom;
+
+import "chrome/browser/chromeos/crostini/crostini_installer_types.mojom";
+
+// Lives in the browser process. A renderer uses this to create a page handler
+// for controlling Crostini installation.
+interface PageHandlerFactory {
+  // Create a page handler to control Crostini installation.
+  CreatePageHandler(pending_remote<Page> page,
+                    pending_receiver<PageHandler> handler);
+};
+
+// Lives in the browser process. A renderer use this to control Crostini
+// installation.
+interface PageHandler {
+  // Start installation
+  Install();
+  // Cancel an on-going installation
+  Cancel();
+  // If a user cancels the installation without starting it at all, this should
+  // be called so that metrics can be recorded.
+  CancelBeforeStart();
+  // The page normally is displayed in a dialog. Call this to close the dialog.
+  // chrome.send('dialogClose') should not be used, which could kill the page
+  // handler before previous mojom calls have been run.
+  Close();
+};
+
+// Lives in the renderer process. The browser uses this to sends installation
+// updates to the web page in the render.
+interface Page {
+  // Callback to receive the install progress once the installation has
+  // started.
+  OnProgressUpdate(crostini.mojom.InstallerState install_state,
+                   double progress_fraction);
+  // This is called when the installation finished. |error| is kNone if the
+  // install succeeded.
+  OnInstallFinished(crostini.mojom.InstallerError error);
+  // After user cancels the installation, this is called when the cancellation
+  // finishes.
+  OnCanceled();
+};

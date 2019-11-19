@@ -148,7 +148,7 @@ class DeviceDisablingManager {
   // A cached copy of the serial number to show on the device disabled screen.
   std::string serial_number_;
 
-  base::WeakPtrFactory<DeviceDisablingManager> weak_factory_;
+  base::WeakPtrFactory<DeviceDisablingManager> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(DeviceDisablingManager);
 };

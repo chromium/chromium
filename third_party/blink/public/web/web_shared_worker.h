@@ -34,21 +34,11 @@
 #include <memory>
 
 #include "base/unguessable_token.h"
-#include "mojo/public/cpp/bindings/scoped_interface_endpoint_handle.h"
 #include "mojo/public/cpp/system/message_pipe.h"
-#include "third_party/blink/public/common/privacy_preferences.h"
-#include "third_party/blink/public/mojom/csp/content_security_policy.mojom-shared.h"
-#include "third_party/blink/public/mojom/net/ip_address_space.mojom-shared.h"
+#include "services/network/public/mojom/content_security_policy.mojom-shared.h"
+#include "services/network/public/mojom/ip_address_space.mojom-shared.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/public/platform/web_common.h"
-
-namespace base {
-class SingleThreadTaskRunner;
-}
-
-namespace network {
-class SharedURLLoaderFactory;
-}
 
 namespace blink {
 
@@ -69,14 +59,16 @@ class BLINK_EXPORT WebSharedWorker {
   virtual void StartWorkerContext(
       const WebURL& script_url,
       const WebString& name,
+      const WebString& user_agent,
       const WebString& content_security_policy,
-      mojom::ContentSecurityPolicyType,
-      mojom::IPAddressSpace,
+      network::mojom::ContentSecurityPolicyType,
+      network::mojom::IPAddressSpace,
+      const base::UnguessableToken& appcache_host_id,
       const base::UnguessableToken& devtools_worker_token,
-      PrivacyPreferences privacy_preferences,
-      scoped_refptr<network::SharedURLLoaderFactory> loader_factory,
       mojo::ScopedMessagePipeHandle content_settings_handle,
-      mojo::ScopedMessagePipeHandle interface_provider) = 0;
+      mojo::ScopedMessagePipeHandle interface_provider,
+      mojo::ScopedMessagePipeHandle browser_interface_broker,
+      bool pause_worker_context_on_start) = 0;
 
   // Sends a connect event to the SharedWorker context.
   virtual void Connect(MessagePortChannel) = 0;
@@ -84,14 +76,6 @@ class BLINK_EXPORT WebSharedWorker {
   // Invoked to shutdown the worker when there are no more associated documents.
   // This eventually deletes this instance.
   virtual void TerminateWorkerContext() = 0;
-
-  virtual void PauseWorkerContextOnStart() = 0;
-  virtual void BindDevToolsAgent(
-      mojo::ScopedInterfaceEndpointHandle devtools_agent_host_ptr_info,
-      mojo::ScopedInterfaceEndpointHandle devtools_agent_request) = 0;
-
-  virtual scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner(
-      TaskType) = 0;
 };
 
 }  // namespace blink

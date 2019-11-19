@@ -565,8 +565,8 @@ TEST(URLPatternSetTest, ToStringVector) {
 
   EXPECT_EQ(2UL, string_vector->size());
 
-  EXPECT_TRUE(base::ContainsValue(*string_vector, "https://google.com/"));
-  EXPECT_TRUE(base::ContainsValue(*string_vector, "https://yahoo.com/"));
+  EXPECT_TRUE(base::Contains(*string_vector, "https://google.com/"));
+  EXPECT_TRUE(base::Contains(*string_vector, "https://yahoo.com/"));
 }
 
 }  // namespace extensions

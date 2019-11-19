@@ -21,4 +21,5 @@ dictionary RTCRtpEncodingParameters : RTCRtpCodingParameters {
     unsigned long   maxBitrate;
     //TODO(orphis): Missing maxFramerate. https://crbug.com/857047
     double          scaleResolutionDownBy;
+    [RuntimeEnabled=RTCSvcScalabilityMode] DOMString scalabilityMode;
 };

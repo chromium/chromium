@@ -15,6 +15,7 @@
 #include "media/audio/audio_source_parameters.h"
 #include "media/base/audio_latency.h"
 #include "media/base/output_device_info.h"
+#include "third_party/blink/public/platform/audio/web_audio_device_source_type.h"
 
 namespace media {
 class AudioRendererSink;
@@ -31,25 +32,9 @@ namespace content {
 // AudioCapturerSourceFactory.
 class CONTENT_EXPORT AudioDeviceFactory {
  public:
-  // Types of audio sources. Each source can have individual mixing and/or
-  // latency requirements for output. The source is specified by the client when
-  // requesting output sink from the factory, and the factory creates the output
-  // sink basing on those requirements.
-  enum SourceType {
-    kSourceNone = 0,
-    kSourceMediaElement,
-    kSourceWebRtc,
-    kSourceNonRtcAudioTrack,
-    kSourceWebAudioInteractive,
-    kSourceWebAudioBalanced,
-    kSourceWebAudioPlayback,
-    kSourceWebAudioExact,
-    kSourceLast = kSourceWebAudioExact  // Only used for validation of format.
-  };
-
   // Maps the source type to the audio latency it requires.
   static media::AudioLatency::LatencyType GetSourceLatencyType(
-      SourceType source);
+      blink::WebAudioDeviceSourceType source);
 
   // Creates a sink for AudioRendererMixer. |render_frame_id| refers to the
   // RenderFrame containing the entity producing the audio. Note: These sinks do
@@ -66,7 +51,7 @@ class CONTENT_EXPORT AudioDeviceFactory {
   // TODO(olka): merge it with NewRestartableOutputDevice() as soon as
   // AudioOutputDevice is fixed to be restartable.
   static scoped_refptr<media::AudioRendererSink> NewAudioRendererSink(
-      SourceType source_type,
+      blink::WebAudioDeviceSourceType source_type,
       int render_frame_id,
       const media::AudioSinkParameters& params);
 
@@ -74,7 +59,7 @@ class CONTENT_EXPORT AudioDeviceFactory {
   // Basing on |source_type| and build configuration, audio played out through
   // the sink goes to AOD directly or can be mixed with other audio before that.
   static scoped_refptr<media::SwitchableAudioRendererSink>
-  NewSwitchableAudioRendererSink(SourceType source_type,
+  NewSwitchableAudioRendererSink(blink::WebAudioDeviceSourceType source_type,
                                  int render_frame_id,
                                  const media::AudioSinkParameters& params);
 
@@ -109,13 +94,13 @@ class CONTENT_EXPORT AudioDeviceFactory {
       base::TimeDelta auth_timeout) = 0;
 
   virtual scoped_refptr<media::AudioRendererSink> CreateAudioRendererSink(
-      SourceType source_type,
+      blink::WebAudioDeviceSourceType source_type,
       int render_frame_id,
       const media::AudioSinkParameters& params) = 0;
 
   virtual scoped_refptr<media::SwitchableAudioRendererSink>
   CreateSwitchableAudioRendererSink(
-      SourceType source_type,
+      blink::WebAudioDeviceSourceType source_type,
       int render_frame_id,
       const media::AudioSinkParameters& params) = 0;
 

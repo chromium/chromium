@@ -120,10 +120,21 @@ class {{message_typename}}
   }
 
 {%      if not is_response %}
-  void Dispatch({{interface.name}}* impl
+  void Dispatch(
+      mojo::Message* message,
+      {{interface.name}}* impl
 {%-       if method.response_parameters != None -%}
       , {{interface.name}}::{{method.name}}Callback callback
 {%-       endif -%}) {
+    if (message->receiver_connection_group()) {
+{%-       for param in parameters -%}
+{%-         if param.kind|is_receiver_kind %}
+      param_{{param.name}}_.set_connection_group(
+          *message->receiver_connection_group());
+{%-         endif %}
+{%-       endfor %}
+    }
+
     impl->{{method.name}}(
 {%-       for param in parameters -%}
 {%-         if param.kind|is_interface_kind %}
@@ -138,7 +149,17 @@ class {{message_typename}}
 {%-       endif -%});
   }
 {%-     else %}
-  void Dispatch({{interface.name}}::{{method.name}}Callback* callback) {
+  void Dispatch(mojo::Message* message,
+                {{interface.name}}::{{method.name}}Callback* callback) {
+    if (message->receiver_connection_group()) {
+{%-       for param in parameters -%}
+{%-         if param.kind|is_receiver_kind %}
+      param_{{param.name}}_.set_connection_group(
+          *message->receiver_connection_group());
+{%-         endif %}
+{%-       endfor %}
+    }
+
     std::move(*callback).Run(
 {%-       for param in parameters -%}
 {%-         if param.kind|is_interface_kind %}
@@ -152,10 +173,20 @@ class {{message_typename}}
 
 {%        if method.sync %}
   void HandleSyncResponse(
-{%          for param in parameters %}
+      mojo::Message* message
+{%          for param in parameters %},
       {{param.kind|cpp_wrapper_call_type}}* out_{{param.name}}
-      {%- if not loop.last -%}, {% endif -%}
 {%-         endfor -%}) {
+
+    if (message->receiver_connection_group()) {
+{%-       for param in parameters -%}
+{%-         if param.kind|is_receiver_kind %}
+      param_{{param.name}}_.set_connection_group(
+          *message->receiver_connection_group());
+{%-         endif %}
+{%-       endfor %}
+    }
+
 {%          for param in parameters -%}
 {%-           if param.kind|is_interface_kind %}
     out_{{param.name}}->Bind(std::move(param_{{param.name}}_));

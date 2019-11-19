@@ -4,7 +4,10 @@
 
 #import "ios/chrome/browser/ui/table_view/cells/table_view_link_header_footer_item.h"
 
+#import "ios/chrome/browser/ui/table_view/cells/table_view_cells_constants.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
+#import "ios/chrome/common/colors/UIColor+cr_semantic_colors.h"
+#import "ios/chrome/common/colors/semantic_color_names.h"
 #import "ios/chrome/common/string_util.h"
 #import "net/base/mac/url_conversions.h"
 
@@ -19,8 +22,6 @@ const CGFloat kHorizontalPadding = 24;
 // Padding used on the top and bottom edges of the cell.
 const CGFloat kVerticalPadding = 8;
 
-// Text color.
-const int kTextColor = 0x8A8A8F;
 }  // namespace
 
 @implementation TableViewLinkHeaderFooterItem
@@ -40,6 +41,10 @@ const int kTextColor = 0x8A8A8F;
   [super configureHeaderFooterView:headerFooter withStyler:styler];
 
   headerFooter.linkURL = self.linkURL;
+  if (self.linkURL.is_valid())
+    headerFooter.accessibilityTraits |= UIAccessibilityTraitLink;
+  else
+    headerFooter.accessibilityTraits &= ~UIAccessibilityTraitLink;
   [headerFooter setText:self.text];
 }
 
@@ -65,10 +70,13 @@ const int kTextColor = 0x8A8A8F;
     _textView.scrollEnabled = NO;
     _textView.editable = NO;
     _textView.delegate = self;
-    _textView.backgroundColor = [UIColor clearColor];
-    _textView.font = [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
+    _textView.backgroundColor = UIColor.clearColor;
+    _textView.font =
+        [UIFont preferredFontForTextStyle:kTableViewSublabelFontStyle];
     _textView.adjustsFontForContentSizeCategory = YES;
     _textView.translatesAutoresizingMaskIntoConstraints = NO;
+    _textView.linkTextAttributes =
+        @{NSForegroundColorAttributeName : [UIColor colorNamed:kBlueColor]};
 
     [self.contentView addSubview:_textView];
 
@@ -97,12 +105,13 @@ const int kTextColor = 0x8A8A8F;
   NSMutableAttributedString* attributedText =
       [[NSMutableAttributedString alloc] initWithString:strippedText];
   [attributedText addAttribute:NSForegroundColorAttributeName
-                         value:UIColorFromRGB(kTextColor)
+                         value:UIColor.cr_secondaryLabelColor
                          range:fullRange];
 
   [attributedText
       addAttribute:NSFontAttributeName
-             value:[UIFont preferredFontForTextStyle:UIFontTextStyleFootnote]
+             value:[UIFont
+                       preferredFontForTextStyle:kTableViewSublabelFontStyle]
              range:fullRange];
 
   if (range.location != NSNotFound && range.length != 0) {
@@ -134,6 +143,12 @@ const int kTextColor = 0x8A8A8F;
   [self.delegate view:self didTapLinkURL:convertedURL];
   // Returns NO as the app is handling the opening of the URL.
   return NO;
+}
+
+#pragma mark - NSObject(Accessibility)
+
+- (NSString*)accessibilityLabel {
+  return [self.textView.attributedText string];
 }
 
 @end

@@ -2,21 +2,11 @@ include_rules = [
   "+components/cryptauth",
   "+components/gcm_driver",
   "+components/proximity_auth/logging",
-  "+components/signin/core/browser",
-  # Use identity_manager.h instead of the below files;
-  # see https://groups.google.com/a/chromium.org/d/msg/chromium-dev/dgFLuxqZt1o/iEqkyoQQBwAJ for help and info.
-  "-components/signin/core/browser/fake_profile_oauth2_token_service.h",
-  "-components/signin/core/browser/profile_oauth2_token_service.h",
-  "-components/signin/core/browser/fake_signin_manager.h",
-  "-components/signin/core/browser/signin_manager.h",
-  "-components/signin/core/browser/signin_manager_base.h",
+  "+components/signin/public",
   "+components/version_info",
   "+google_apis/gaia",
   "+mojo/public/cpp",
-  "+services/identity",
   "+services/network/public",
   "+services/network/test",
-  "+services/preferences/public",
-  "+services/service_manager/public/cpp",
   "+components/cryptauth"
 ]

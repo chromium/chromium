@@ -30,10 +30,12 @@ if (is_android) {
   android_library("background_task_scheduler_java") {
     java_files = [
       "android/java/src/org/chromium/components/background_task_scheduler/BackgroundTask.java",
+      "android/java/src/org/chromium/components/background_task_scheduler/BackgroundTaskBroadcastReceiver.java",
+      "android/java/src/org/chromium/components/background_task_scheduler/BackgroundTaskFactory.java",
       "android/java/src/org/chromium/components/background_task_scheduler/BackgroundTaskGcmTaskService.java",
       "android/java/src/org/chromium/components/background_task_scheduler/BackgroundTaskJobService.java",
-      "android/java/src/org/chromium/components/background_task_scheduler/BackgroundTaskReflection.java",
       "android/java/src/org/chromium/components/background_task_scheduler/BackgroundTaskScheduler.java",
+      "android/java/src/org/chromium/components/background_task_scheduler/BackgroundTaskSchedulerAlarmManager.java",
       "android/java/src/org/chromium/components/background_task_scheduler/BackgroundTaskSchedulerDelegate.java",
       "android/java/src/org/chromium/components/background_task_scheduler/BackgroundTaskSchedulerExternalUma.java",
       "android/java/src/org/chromium/components/background_task_scheduler/BackgroundTaskSchedulerFactory.java",
@@ -43,20 +45,22 @@ if (is_android) {
       "android/java/src/org/chromium/components/background_task_scheduler/BackgroundTaskSchedulerPrefs.java",
       "android/java/src/org/chromium/components/background_task_scheduler/BackgroundTaskSchedulerUma.java",
       "android/java/src/org/chromium/components/background_task_scheduler/BundleToPersistableBundleConverter.java",
+      "android/java/src/org/chromium/components/background_task_scheduler/ExtrasToProtoConverter.java",
       "android/java/src/org/chromium/components/background_task_scheduler/TaskInfo.java",
       "android/java/src/org/chromium/components/background_task_scheduler/TaskParameters.java",
     ]
 
-    proguard_configs = [ "android/proguard.flags" ]
-
     deps = [
       ":background_task_scheduler_task_ids_java",
+      ":scheduled_task_java",
       "$google_play_services_package:google_play_services_base_java",
       "$google_play_services_package:google_play_services_basement_java",
       "$google_play_services_package:google_play_services_gcm_java",
       "$google_play_services_package:google_play_services_tasks_java",
       "//base:base_java",
-      "//third_party/android_deps:android_support_annotations_java",
+      "//content/public/android:content_java",
+      "//third_party/android_deps:androidx_annotation_annotation_java",
+      "//third_party/android_deps:com_google_protobuf_protobuf_lite_java",
     ]
   }
 
@@ -64,6 +68,8 @@ if (is_android) {
     testonly = true
 
     java_files = [
+      "android/javatests/src/org/chromium/components/background_task_scheduler/BackgroundTaskSchedulerImplWithMockTest.java",
+      "android/javatests/src/org/chromium/components/background_task_scheduler/MockBackgroundTaskSchedulerDelegate.java",
       "android/javatests/src/org/chromium/components/background_task_scheduler/BackgroundTaskSchedulerJobServiceTest.java",
       "android/javatests/src/org/chromium/components/background_task_scheduler/BundleToPersistableBundleConverterTest.java",
     ]
@@ -77,6 +83,7 @@ if (is_android) {
       "$google_play_services_package:google_play_services_tasks_java",
       "//base:base_java",
       "//base:base_java_test_support",
+      "//content/public/test/android:content_java_test_support",
       "//third_party/android_support_test_runner:runner_java",
       "//third_party/junit",
     ]
@@ -86,11 +93,16 @@ if (is_android) {
     java_files = [
       "android/junit/src/org/chromium/components/background_task_scheduler/BackgroundTaskSchedulerGcmNetworkManagerTest.java",
       "android/junit/src/org/chromium/components/background_task_scheduler/BackgroundTaskGcmTaskServiceTest.java",
+      "android/junit/src/org/chromium/components/background_task_scheduler/BackgroundTaskJobServiceTest.java",
+      "android/junit/src/org/chromium/components/background_task_scheduler/BackgroundTaskSchedulerAlarmManagerTest.java",
       "android/junit/src/org/chromium/components/background_task_scheduler/BackgroundTaskSchedulerImplTest.java",
       "android/junit/src/org/chromium/components/background_task_scheduler/BackgroundTaskSchedulerPrefsTest.java",
       "android/junit/src/org/chromium/components/background_task_scheduler/BackgroundTaskSchedulerUmaTest.java",
+      "android/junit/src/org/chromium/components/background_task_scheduler/ExtrasToProtoConverterTest.java",
       "android/junit/src/org/chromium/components/background_task_scheduler/ShadowGcmNetworkManager.java",
+      "android/junit/src/org/chromium/components/background_task_scheduler/TaskInfoTest.java",
       "android/junit/src/org/chromium/components/background_task_scheduler/TestBackgroundTask.java",
+      "android/junit/src/org/chromium/components/background_task_scheduler/TestBackgroundTaskFactory.java",
     ]
 
     deps = [
@@ -104,6 +116,14 @@ if (is_android) {
       "//base:base_java_test_support",
       "//base:base_junit_test_support",
       "//third_party/junit",
+    ]
+  }
+
+  proto_java_library("scheduled_task_java") {
+    proto_path =
+        "android/java/src/org/chromium/components/background_task_scheduler"
+    sources = [
+      "$proto_path/scheduled_task.proto",
     ]
   }
 }

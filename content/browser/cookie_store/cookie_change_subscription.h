@@ -98,7 +98,8 @@ class CookieChangeSubscription
       blink::mojom::CookieChangeSubscription* mojo_subscription) const;
 
   // True if the subscription covers a change to the given cookie.
-  bool ShouldObserveChangeTo(const net::CanonicalCookie& cookie) const;
+  bool ShouldObserveChangeTo(const net::CanonicalCookie& cookie,
+                             net::CookieAccessSemantics access_semantics) const;
 
  private:
   const GURL url_;

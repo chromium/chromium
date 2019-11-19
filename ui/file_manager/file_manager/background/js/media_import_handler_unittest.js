@@ -63,9 +63,6 @@ function setUp() {
         mockChrome.power.requestKeepAwakeStatus = false;
       }
     },
-    fileManagerPrivate: {
-      setEntryTag: function() {},
-    },
   };
 
   installMockChrome(mockChrome);
@@ -97,7 +94,7 @@ function setUp() {
   importHistory = new importer.TestImportHistory();
   driveSyncHandler = new MockDriveSyncHandler();
   importer.setupTestLogger();
-  mediaImporter = new importer.MediaImportHandler(
+  mediaImporter = new importer.MediaImportHandlerImpl(
       progressCenter, importHistory, dispositionChecker, driveSyncHandler);
 
   // Setup the copy destination.
@@ -115,14 +112,12 @@ function testImportMedia(callback) {
     '/DCIM/photos0/IMG00003.jpg',
     '/DCIM/photos1/IMG00004.jpg',
     '/DCIM/photos1/IMG00005.jpg',
-    '/DCIM/photos1/IMG00006.jpg'
+    '/DCIM/photos1/IMG00006.jpg',
   ]);
 
   const scanResult = new TestScanResult(media);
   const importTask = mediaImporter.importFromScanResult(
-      scanResult,
-      importer.Destination.GOOGLE_DRIVE,
-      destinationFactory);
+      scanResult, importer.Destination.GOOGLE_DRIVE, destinationFactory);
 
   const whenImportDone = new Promise((resolve, reject) => {
     importTask.addObserver(
@@ -178,13 +173,11 @@ function testImportMedia_skipAndMarkDuplicatedFiles(callback) {
     }
     return Promise.resolve(importer.Disposition.ORIGINAL);
   };
-  mediaImporter = new importer.MediaImportHandler(
+  mediaImporter = new importer.MediaImportHandlerImpl(
       progressCenter, importHistory, dispositionChecker, driveSyncHandler);
   const scanResult = new TestScanResult(media);
   const importTask = mediaImporter.importFromScanResult(
-      scanResult,
-      importer.Destination.GOOGLE_DRIVE,
-      destinationFactory);
+      scanResult, importer.Destination.GOOGLE_DRIVE, destinationFactory);
 
   const whenImportDone = new Promise((resolve, reject) => {
     importTask.addObserver(
@@ -205,24 +198,24 @@ function testImportMedia_skipAndMarkDuplicatedFiles(callback) {
   });
 
   reportPromise(
-      whenImportDone.then(
-          () => {
-            // Only the new file should be copied.
-            const mockDirectoryEntry =
-                /** @type {!MockDirectoryEntry} */ (destinationFileSystem.root);
-            const copiedEntries = mockDirectoryEntry.getAllChildren();
-            assertEquals(1, copiedEntries.length);
-            assertEquals(ORIGINAL_FILE_DEST_PATH, copiedEntries[0].fullPath);
-            const mockFileEntry = /** @type {!MockFileEntry} */ (media[1]);
-            importHistory.assertCopied(
-                mockFileEntry, importer.Destination.GOOGLE_DRIVE);
-            // The 2 duplicated files should be marked as imported.
-            [media[0], media[2]].forEach(entry => {
-              entry = /** @type {!MockFileEntry} */ (entry);
-              importHistory.assertImported(
-                  entry, importer.Destination.GOOGLE_DRIVE);
-            });
-          }), callback);
+      whenImportDone.then(() => {
+        // Only the new file should be copied.
+        const mockDirectoryEntry =
+            /** @type {!MockDirectoryEntry} */ (destinationFileSystem.root);
+        const copiedEntries = mockDirectoryEntry.getAllChildren();
+        assertEquals(1, copiedEntries.length);
+        assertEquals(ORIGINAL_FILE_DEST_PATH, copiedEntries[0].fullPath);
+        const mockFileEntry = /** @type {!FileEntry} */ (media[1]);
+        importHistory.assertCopied(
+            mockFileEntry, importer.Destination.GOOGLE_DRIVE);
+        // The 2 duplicated files should be marked as imported.
+        [media[0], media[2]].forEach(entry => {
+          entry = /** @type {!FileEntry} */ (entry);
+          importHistory.assertImported(
+              entry, importer.Destination.GOOGLE_DRIVE);
+        });
+      }),
+      callback);
 
   scanResult.finalize();
 }
@@ -237,9 +230,7 @@ function testImportMedia_EmploysEncodedUrls(callback) {
 
   const scanResult = new TestScanResult(media);
   const importTask = mediaImporter.importFromScanResult(
-      scanResult,
-      importer.Destination.GOOGLE_DRIVE,
-      destinationFactory);
+      scanResult, importer.Destination.GOOGLE_DRIVE, destinationFactory);
 
   const promise =
       new Promise((resolve, reject) => {
@@ -283,14 +274,12 @@ function testImportMediaWithDuplicateFilenames(callback) {
     '/DCIM/photos0/IMG00003.jpg',
     '/DCIM/photos1/IMG00001.jpg',
     '/DCIM/photos1/IMG00002.jpg',
-    '/DCIM/photos1/IMG00003.jpg'
+    '/DCIM/photos1/IMG00003.jpg',
   ]);
 
   const scanResult = new TestScanResult(media);
   const importTask = mediaImporter.importFromScanResult(
-      scanResult,
-      importer.Destination.GOOGLE_DRIVE,
-      destinationFactory);
+      scanResult, importer.Destination.GOOGLE_DRIVE, destinationFactory);
 
   const whenImportDone = new Promise((resolve, reject) => {
     importTask.addObserver(
@@ -333,14 +322,12 @@ function testKeepAwakeDuringImport(callback) {
     '/DCIM/photos0/IMG00003.jpg',
     '/DCIM/photos1/IMG00004.jpg',
     '/DCIM/photos1/IMG00005.jpg',
-    '/DCIM/photos1/IMG00006.jpg'
+    '/DCIM/photos1/IMG00006.jpg',
   ]);
 
   const scanResult = new TestScanResult(media);
   const importTask = mediaImporter.importFromScanResult(
-      scanResult,
-      importer.Destination.GOOGLE_DRIVE,
-      destinationFactory);
+      scanResult, importer.Destination.GOOGLE_DRIVE, destinationFactory);
 
   const whenImportDone = new Promise((resolve, reject) => {
     importTask.addObserver(
@@ -384,7 +371,7 @@ function testUpdatesHistoryAfterImport(callback) {
     '/DCIM/photos0/IMG00001.jpg',
     '/DCIM/photos1/IMG00003.jpg',
     '/DCIM/photos0/DRIVEDUPE00001.jpg',
-    '/DCIM/photos1/DRIVEDUPE99999.jpg'
+    '/DCIM/photos1/DRIVEDUPE99999.jpg',
   ]);
 
   const newFiles = entries.slice(0, 2);
@@ -393,9 +380,7 @@ function testUpdatesHistoryAfterImport(callback) {
   const scanResult = new TestScanResult(entries.slice(0, 2));
   scanResult.duplicateFileEntries = dupeFiles;
   const importTask = mediaImporter.importFromScanResult(
-      scanResult,
-      importer.Destination.GOOGLE_DRIVE,
-      destinationFactory);
+      scanResult, importer.Destination.GOOGLE_DRIVE, destinationFactory);
 
   const whenImportDone = new Promise((resolve, reject) => {
     importTask.addObserver(
@@ -419,12 +404,12 @@ function testUpdatesHistoryAfterImport(callback) {
     mockCopier.copiedFiles.forEach(
         /** @param {!MockCopyTo.CopyInfo} copy */
         copy => {
-          const mockFileEntry = /** @type {!MockFileEntry} */ (copy.source);
+          const mockFileEntry = /** @type {!FileEntry} */ (copy.source);
           importHistory.assertCopied(
               mockFileEntry, importer.Destination.GOOGLE_DRIVE);
         });
     dupeFiles.forEach(entry => {
-      const mockFileEntry = /** @type {!MockFileEntry} */ (entry);
+      const mockFileEntry = /** @type {!FileEntry} */ (entry);
       importHistory.assertImported(
           mockFileEntry, importer.Destination.GOOGLE_DRIVE);
     });
@@ -432,55 +417,6 @@ function testUpdatesHistoryAfterImport(callback) {
 
   scanResult.finalize();
   reportPromise(promise, callback);
-}
-
-/**
- * Tests that media imports tag entries after import.
- */
-function testTagsEntriesAfterImport(callback) {
-  const entries = setupFileSystem([
-    '/DCIM/photos0/IMG00001.jpg',
-    '/DCIM/photos1/IMG00003.jpg'
-  ]);
-
-  const scanResult = new TestScanResult(entries);
-  const importTask = mediaImporter.importFromScanResult(
-      scanResult,
-      importer.Destination.GOOGLE_DRIVE,
-      destinationFactory);
-
-  const whenImportDone = new Promise((resolve, reject) => {
-    importTask.addObserver(
-        /**
-         * @param {!importer.TaskQueue.UpdateType} updateType
-         * @param {Object=} opt_task
-         */
-        (updateType, opt_task) => {
-          switch (updateType) {
-            case importer.TaskQueue.UpdateType.COMPLETE:
-              resolve();
-              break;
-            case importer.TaskQueue.UpdateType.ERROR:
-              reject(new Error(importer.TaskQueue.UpdateType.ERROR));
-              break;
-          }
-        });
-  });
-
-  const taggedEntries = [];
-  // Replace chrome.fileManagerPrivate.setEntryTag with a listener.
-  mockChrome.fileManagerPrivate.setEntryTag = entry => {
-    taggedEntries.push(entry);
-  };
-
-  reportPromise(
-      whenImportDone.then(
-          () => {
-            assertEquals(entries.length, taggedEntries.length);
-          }),
-      callback);
-
-  scanResult.finalize();
 }
 
 /**
@@ -493,7 +429,7 @@ function testImportCancellation(callback) {
     '/DCIM/photos0/IMG00003.jpg',
     '/DCIM/photos1/IMG00004.jpg',
     '/DCIM/photos1/IMG00005.jpg',
-    '/DCIM/photos1/IMG00006.jpg'
+    '/DCIM/photos1/IMG00006.jpg',
   ]);
 
   /** @const {number} */
@@ -501,9 +437,7 @@ function testImportCancellation(callback) {
 
   const scanResult = new TestScanResult(media);
   const importTask = mediaImporter.importFromScanResult(
-      scanResult,
-      importer.Destination.GOOGLE_DRIVE,
-      destinationFactory);
+      scanResult, importer.Destination.GOOGLE_DRIVE, destinationFactory);
 
   const whenImportCancelled = new Promise((resolve, reject) => {
     importTask.addObserver(
@@ -556,7 +490,7 @@ function testImportWithErrors(callback) {
     '/DCIM/photos0/IMG00003.jpg',
     '/DCIM/photos1/IMG00004.jpg',
     '/DCIM/photos1/IMG00005.jpg',
-    '/DCIM/photos1/IMG00006.jpg'
+    '/DCIM/photos1/IMG00006.jpg',
   ]);
 
   /** @const {number} */
@@ -564,9 +498,7 @@ function testImportWithErrors(callback) {
 
   const scanResult = new TestScanResult(media);
   const importTask = mediaImporter.importFromScanResult(
-      scanResult,
-      importer.Destination.GOOGLE_DRIVE,
-      destinationFactory);
+      scanResult, importer.Destination.GOOGLE_DRIVE, destinationFactory);
 
   const whenImportDone = new Promise((resolve, reject) => {
     importTask.addObserver(
@@ -621,23 +553,72 @@ function setupFileSystem(fileNames) {
 
 /**
  * Replaces fileOperationUtil.copyTo with a mock for testing.
- * @constructor
  */
-function MockCopyTo() {
-  /** @type {!Array<!MockCopyTo.CopyInfo>} */
-  this.copiedFiles = [];
+class MockCopyTo {
+  constructor() {
+    /** @type {!Array<!MockCopyTo.CopyInfo>} */
+    this.copiedFiles = [];
 
-  // Replace fileOperationUtil.copyTo with our mock test function.
-  fileOperationUtil.copyTo =
-      /** @type {function(*)} */ (this.copyTo_.bind(this));
+    // Replace fileOperationUtil.copyTo with our mock test function.
+    fileOperationUtil.copyTo =
+        /** @type {function(*)} */ (this.copyTo_.bind(this));
 
-  /** @private {boolean} */
-  this.simulateError_ = false;
+    /** @private {boolean} */
+    this.simulateError_ = false;
 
-  this.entryChangedCallback_ = null;
-  this.progressCallback_ = null;
-  this.successCallback_ = null;
-  this.errorCallback_ = null;
+    this.entryChangedCallback_ = null;
+    this.progressCallback_ = null;
+    this.successCallback_ = null;
+    this.errorCallback_ = null;
+  }
+
+  /**
+   * Makes the mock copier simulate an error the next time copyTo_ is called.
+   */
+  simulateOneError() {
+    this.simulateError_ = true;
+  }
+
+  /**
+   * A mock to replace fileOperationUtil.copyTo.  See the original for details.
+   * @param {!Entry} source
+   * @param {!DirectoryEntry} parent
+   * @param {string} newName
+   * @param {function(string, Entry)} entryChangedCallback
+   * @param {function(string, number)} progressCallback
+   * @param {function(Entry)} successCallback
+   * @param {function(Error)} errorCallback
+   */
+  copyTo_(
+      source, parent, newName, entryChangedCallback, progressCallback,
+      successCallback, errorCallback) {
+    this.entryChangedCallback_ = entryChangedCallback;
+    this.progressCallback_ = progressCallback;
+    this.successCallback_ = successCallback;
+    this.errorCallback_ = errorCallback;
+
+    if (this.simulateError_) {
+      this.simulateError_ = false;
+      const error = new Error('test error');
+      this.errorCallback_(error);
+      return;
+    }
+
+    // Log the copy details.
+    this.copiedFiles.push(/** @type {!MockCopyTo.CopyInfo} */ ({
+      source: source,
+      destination: parent,
+      newName: newName,
+    }));
+
+    // Copy the file.
+    const copyErrorCallback = /** @type {!function(FileError):*} */
+        (this.errorCallback_.bind(this));
+    source.copyTo(parent, newName, newEntry => {
+      this.entryChangedCallback_(source.toURL(), parent);
+      this.successCallback_(newEntry);
+    }, copyErrorCallback);
+  }
 }
 
 /**
@@ -648,50 +629,3 @@ function MockCopyTo() {
  * }}
  */
 MockCopyTo.CopyInfo;
-
-/**
- * Makes the mock copier simulate an error the next time copyTo_ is called.
- */
-MockCopyTo.prototype.simulateOneError = function() {
-  this.simulateError_ = true;
-};
-
-/**
- * A mock to replace fileOperationUtil.copyTo.  See the original for details.
- * @param {!Entry} source
- * @param {!DirectoryEntry} parent
- * @param {string} newName
- * @param {function(string, Entry)} entryChangedCallback
- * @param {function(string, number)} progressCallback
- * @param {function(Entry)} successCallback
- * @param {function(Error)} errorCallback
- */
-MockCopyTo.prototype.copyTo_ = function(source, parent, newName,
-    entryChangedCallback, progressCallback, successCallback, errorCallback) {
-  this.entryChangedCallback_ = entryChangedCallback;
-  this.progressCallback_ = progressCallback;
-  this.successCallback_ = successCallback;
-  this.errorCallback_ = errorCallback;
-
-  if (this.simulateError_) {
-    this.simulateError_ = false;
-    const error = new Error('test error');
-    this.errorCallback_(error);
-    return;
-  }
-
-  // Log the copy details.
-  this.copiedFiles.push(/** @type {!MockCopyTo.CopyInfo} */ ({
-    source: source,
-    destination: parent,
-    newName: newName,
-  }));
-
-  // Copy the file.
-  const copyErrorCallback = /** @type {!function(FileError):*} */
-      (this.errorCallback_.bind(this));
-  source.copyTo(parent, newName, newEntry => {
-    this.entryChangedCallback_(source.toURL(), parent);
-    this.successCallback_(newEntry);
-  }, copyErrorCallback);
-};

@@ -4,14 +4,11 @@
 
 #include "ui/aura/window_targeter.h"
 
-#include "services/ws/public/mojom/window_tree_constants.mojom.h"
 #include "ui/aura/client/capture_client.h"
 #include "ui/aura/client/event_client.h"
 #include "ui/aura/client/focus_client.h"
 #include "ui/aura/client/screen_position_client.h"
 #include "ui/aura/env.h"
-#include "ui/aura/mus/window_port_mus.h"
-#include "ui/aura/mus/window_tree_client.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_delegate.h"
 #include "ui/aura/window_event_dispatcher.h"
@@ -22,32 +19,10 @@
 #include "ui/events/event_target_iterator.h"
 
 namespace aura {
-namespace {
 
-bool AreInsetsEmptyOrPositive(const gfx::Insets& insets) {
-  return insets.left() >= 0 && insets.right() >= 0 && insets.top() >= 0 &&
-         insets.bottom() >= 0;
-}
+WindowTargeter::WindowTargeter() = default;
 
-void UpdateMusIfNecessary(aura::Window* window,
-                          const gfx::Insets& mouse_extend,
-                          const gfx::Insets& touch_extend) {
-  if (!window || window->env()->mode() != Env::Mode::MUS)
-    return;
-
-  // Negative insets are used solely to extend the hit-test region of child
-  // windows, which is not needed by code using MUS (negative insets are only
-  // used in the server).
-  if (AreInsetsEmptyOrPositive(mouse_extend) &&
-      AreInsetsEmptyOrPositive(touch_extend)) {
-    WindowPortMus::Get(window)->SetHitTestInsets(mouse_extend, touch_extend);
-  }
-}
-
-}  // namespace
-
-WindowTargeter::WindowTargeter() {}
-WindowTargeter::~WindowTargeter() {}
+WindowTargeter::~WindowTargeter() = default;
 
 bool WindowTargeter::SubtreeShouldBeExploredForEvent(
     Window* window,
@@ -87,7 +62,6 @@ void WindowTargeter::SetInsets(const gfx::Insets& mouse_extend,
 
   mouse_extend_ = mouse_extend;
   touch_extend_ = touch_extend;
-  UpdateMusIfNecessary();
 }
 
 Window* WindowTargeter::GetPriorityTargetInRootWindow(
@@ -120,7 +94,7 @@ Window* WindowTargeter::GetPriorityTargetInRootWindow(
     // Query the gesture-recognizer to find targets for touch events.
     const ui::TouchEvent& touch = *event.AsTouchEvent();
     ui::GestureConsumer* consumer =
-        root_window->env()->gesture_recognizer()->GetTouchLockedTarget(touch);
+        Env::GetInstance()->gesture_recognizer()->GetTouchLockedTarget(touch);
     if (consumer)
       return static_cast<Window*>(consumer);
   }
@@ -141,7 +115,7 @@ Window* WindowTargeter::FindTargetInRootWindow(Window* root_window,
     const ui::TouchEvent& touch = *event.AsTouchEvent();
     // GetTouchLockedTarget() is handled in GetPriorityTargetInRootWindow().
     ui::GestureRecognizer* gesture_recognizer =
-        root_window->env()->gesture_recognizer();
+        Env::GetInstance()->gesture_recognizer();
     DCHECK(!gesture_recognizer->GetTouchLockedTarget(touch));
     ui::GestureConsumer* consumer = gesture_recognizer->GetTargetForLocation(
         event.location_f(), touch.source_device_id());
@@ -239,11 +213,7 @@ Window* WindowTargeter::FindTargetForKeyEvent(Window* window) {
 }
 
 void WindowTargeter::OnInstalled(Window* window) {
-  // Needs to clear the existing insets when uninstalled.
-  if (!window)
-    aura::UpdateMusIfNecessary(window_, gfx::Insets(), gfx::Insets());
   window_ = window;
-  UpdateMusIfNecessary();
 }
 
 Window* WindowTargeter::FindTargetForLocatedEvent(Window* window,
@@ -282,10 +252,8 @@ bool WindowTargeter::SubtreeCanAcceptEvent(
     const ui::LocatedEvent& event) const {
   if (!window->IsVisible())
     return false;
-  if (window->event_targeting_policy() ==
-          ws::mojom::EventTargetingPolicy::NONE ||
-      window->event_targeting_policy() ==
-          ws::mojom::EventTargetingPolicy::TARGET_ONLY) {
+  if (window->event_targeting_policy() == EventTargetingPolicy::kNone ||
+      window->event_targeting_policy() == EventTargetingPolicy::kTargetOnly) {
     return false;
   }
   client::EventClient* client = client::GetEventClient(window->GetRootWindow());
@@ -348,11 +316,6 @@ bool WindowTargeter::ShouldUseExtendedBounds(const aura::Window* w) const {
   // Insets should only apply to the window. Subclasses may enforce other
   // policies.
   return window() == w;
-}
-
-// TODO: this function should go away once https://crbug.com/879308 is fixed.
-void WindowTargeter::UpdateMusIfNecessary() {
-  aura::UpdateMusIfNecessary(window_, mouse_extend_, touch_extend_);
 }
 
 Window* WindowTargeter::FindTargetForNonKeyEvent(Window* root_window,

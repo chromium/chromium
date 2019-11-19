@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_MARKERS_SPELL_CHECK_MARKER_LIST_IMPL_H_
 
 #include "third_party/blink/renderer/core/editing/markers/document_marker_list.h"
+#include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
 
@@ -52,13 +53,13 @@ class CORE_EXPORT SpellCheckMarkerListImpl : public DocumentMarkerList {
   DISALLOW_COPY_AND_ASSIGN(SpellCheckMarkerListImpl);
 };
 
-DEFINE_TYPE_CASTS(SpellCheckMarkerListImpl,
-                  DocumentMarkerList,
-                  list,
-                  list->MarkerType() == DocumentMarker::kSpelling ||
-                      list->MarkerType() == DocumentMarker::kGrammar,
-                  list.MarkerType() == DocumentMarker::kSpelling ||
-                      list.MarkerType() == DocumentMarker::kGrammar);
+template <>
+struct DowncastTraits<SpellCheckMarkerListImpl> {
+  static bool AllowFrom(const DocumentMarkerList& list) {
+    return list.MarkerType() == DocumentMarker::kSpelling ||
+           list.MarkerType() == DocumentMarker::kGrammar;
+  }
+};
 
 }  // namespace blink
 

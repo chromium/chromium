@@ -21,7 +21,7 @@
 #include "media/renderers/default_decoder_factory.h"
 #include "media/renderers/default_renderer_factory.h"
 
-#if BUILDFLAG(ENABLE_LIBRARY_CDMS)
+#if BUILDFLAG(ENABLE_CDM_PROXY)
 #include "media/cdm/cdm_paths.h"  // nogncheck
 #include "media/cdm/cdm_proxy.h"  // nogncheck
 #include "media/cdm/library_cdm/clear_key_cdm/clear_key_cdm_proxy.h"  // nogncheck
@@ -88,8 +88,17 @@ std::unique_ptr<Renderer> TestMojoMediaClient::CreateRenderer(
   return renderer_factory_->CreateRenderer(
       task_runner, task_runner, audio_sink.get(), video_sink_ptr,
       RequestOverlayInfoCB(), gfx::ColorSpace());
+}
 
-}  // namespace media
+#if BUILDFLAG(ENABLE_CAST_RENDERER)
+std::unique_ptr<Renderer> TestMojoMediaClient::CreateCastRenderer(
+    service_manager::mojom::InterfaceProvider* host_interfaces,
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+    MediaLog* media_log,
+    const base::UnguessableToken& /* overlay_plane_id */) {
+  return CreateRenderer(host_interfaces, task_runner, media_log, std::string());
+}
+#endif  // BUILDFLAG(ENABLE_CAST_RENDERER)
 
 std::unique_ptr<CdmFactory> TestMojoMediaClient::CreateCdmFactory(
     service_manager::mojom::InterfaceProvider* /* host_interfaces */) {
@@ -97,7 +106,7 @@ std::unique_ptr<CdmFactory> TestMojoMediaClient::CreateCdmFactory(
   return std::make_unique<DefaultCdmFactory>();
 }
 
-#if BUILDFLAG(ENABLE_LIBRARY_CDMS)
+#if BUILDFLAG(ENABLE_CDM_PROXY)
 std::unique_ptr<CdmProxy> TestMojoMediaClient::CreateCdmProxy(
     const base::Token& cdm_guid) {
   DVLOG(1) << __func__ << ": cdm_guid = " << cdm_guid.ToString();
@@ -106,6 +115,6 @@ std::unique_ptr<CdmProxy> TestMojoMediaClient::CreateCdmProxy(
 
   return nullptr;
 }
-#endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
+#endif  // BUILDFLAG(ENABLE_CDM_PROXY)
 
 }  // namespace media

@@ -5,10 +5,10 @@
 #include "remoting/test/test_video_renderer.h"
 
 #include <stdint.h>
+
 #include <utility>
 
 #include "base/bind.h"
-#include "base/callback_helpers.h"
 #include "base/logging.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
@@ -214,8 +214,8 @@ void TestVideoRenderer::Core::ProcessVideoPacket(
   // on the current frame.
   RGBValue accumulating_avg_value = CalculateAverageColorValue(expected_rect_);
   if (ExpectedAverageColorIsMatched(accumulating_avg_value)) {
-    main_task_runner_->PostTask(
-        FROM_HERE, base::ResetAndReturn(&image_pattern_matched_callback_));
+    main_task_runner_->PostTask(FROM_HERE,
+                                std::move(image_pattern_matched_callback_));
   }
 }
 
@@ -272,8 +272,7 @@ bool TestVideoRenderer::Core::ExpectedAverageColorIsMatched(
 
 TestVideoRenderer::TestVideoRenderer()
     : video_decode_thread_(
-        new base::Thread("TestVideoRendererVideoDecodingThread")),
-      weak_factory_(this) {
+          new base::Thread("TestVideoRendererVideoDecodingThread")) {
   DCHECK(thread_checker_.CalledOnValidThread());
 
   core_.reset(new Core());

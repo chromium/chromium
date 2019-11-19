@@ -13,7 +13,9 @@
 #include "base/macros.h"
 #include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/win/win_util.h"
 #include "base/win/windows_version.h"
+#include "sandbox/win/src/acl.h"
 #include "sandbox/win/src/filesystem_policy.h"
 #include "sandbox/win/src/interception.h"
 #include "sandbox/win/src/job.h"
@@ -29,6 +31,7 @@
 #include "sandbox/win/src/sandbox_policy.h"
 #include "sandbox/win/src/sandbox_utils.h"
 #include "sandbox/win/src/security_capabilities.h"
+#include "sandbox/win/src/signed_policy.h"
 #include "sandbox/win/src/sync_policy.h"
 #include "sandbox/win/src/target_process.h"
 #include "sandbox/win/src/top_level_dispatcher.h"
@@ -177,10 +180,10 @@ ResultCode PolicyBase::SetAlternateDesktop(bool alternate_winstation) {
   return CreateAlternateDesktop(alternate_winstation);
 }
 
-base::string16 PolicyBase::GetAlternateDesktop() const {
+std::wstring PolicyBase::GetAlternateDesktop() const {
   // No alternate desktop or winstation. Return an empty string.
   if (!use_alternate_desktop_ && !use_alternate_winstation_) {
-    return base::string16();
+    return std::wstring();
   }
 
   if (use_alternate_winstation_) {
@@ -188,14 +191,14 @@ base::string16 PolicyBase::GetAlternateDesktop() const {
     // If we hit this scenario, it means that the user ignored the failure
     // during SetAlternateDesktop, so we ignore it here too.
     if (!alternate_desktop_handle_ || !alternate_winstation_handle_)
-      return base::string16();
+      return std::wstring();
 
     return GetFullDesktopName(alternate_winstation_handle_,
                               alternate_desktop_handle_);
   }
 
   if (!alternate_desktop_local_winstation_handle_)
-    return base::string16();
+    return std::wstring();
 
   return GetFullDesktopName(nullptr,
                             alternate_desktop_local_winstation_handle_);
@@ -215,7 +218,7 @@ ResultCode PolicyBase::CreateAlternateDesktop(bool alternate_winstation) {
 
     // Verify that everything is fine.
     if (!alternate_winstation_handle_ ||
-        GetWindowObjectName(alternate_winstation_handle_).empty())
+        base::win::GetWindowObjectName(alternate_winstation_handle_).empty())
       return SBOX_ERROR_CANNOT_CREATE_DESKTOP;
 
     // Create the destkop.
@@ -226,7 +229,7 @@ ResultCode PolicyBase::CreateAlternateDesktop(bool alternate_winstation) {
 
     // Verify that everything is fine.
     if (!alternate_desktop_handle_ ||
-        GetWindowObjectName(alternate_desktop_handle_).empty()) {
+        base::win::GetWindowObjectName(alternate_desktop_handle_).empty()) {
       return SBOX_ERROR_CANNOT_CREATE_DESKTOP;
     }
   } else {
@@ -242,7 +245,8 @@ ResultCode PolicyBase::CreateAlternateDesktop(bool alternate_winstation) {
 
     // Verify that everything is fine.
     if (!alternate_desktop_local_winstation_handle_ ||
-        GetWindowObjectName(alternate_desktop_local_winstation_handle_)
+        base::win::GetWindowObjectName(
+            alternate_desktop_local_winstation_handle_)
             .empty()) {
       return SBOX_ERROR_CANNOT_CREATE_DESKTOP;
     }
@@ -288,7 +292,7 @@ ResultCode PolicyBase::SetDelayedIntegrityLevel(
 }
 
 ResultCode PolicyBase::SetLowBox(const wchar_t* sid) {
-  if (base::win::GetVersion() < base::win::VERSION_WIN8)
+  if (base::win::GetVersion() < base::win::Version::WIN8)
     return SBOX_ERROR_UNSUPPORTED;
 
   DCHECK(sid);
@@ -296,13 +300,20 @@ ResultCode PolicyBase::SetLowBox(const wchar_t* sid) {
     return SBOX_ERROR_BAD_PARAMS;
 
   if (!ConvertStringSidToSid(sid, &lowbox_sid_))
-    return SBOX_ERROR_GENERIC;
+    return SBOX_ERROR_INVALID_LOWBOX_SID;
 
   return SBOX_ALL_OK;
 }
 
 ResultCode PolicyBase::SetProcessMitigations(MitigationFlags flags) {
-  if (app_container_profile_ || !CanSetProcessMitigationsPreStartup(flags))
+  // Prior to Win10 RS5 CreateProcess fails when AppContainer and mitigation
+  // flags are enabled. Return an error on downlevel platforms if trying to
+  // set new mitigations.
+  if (app_container_profile_ &&
+      base::win::GetVersion() < base::win::Version::WIN10_RS5) {
+    return SBOX_ERROR_BAD_PARAMS;
+  }
+  if (!CanSetProcessMitigationsPreStartup(flags))
     return SBOX_ERROR_BAD_PARAMS;
   mitigations_ = flags;
   return SBOX_ALL_OK;
@@ -353,12 +364,12 @@ ResultCode PolicyBase::AddRule(SubSystem subsystem,
 }
 
 ResultCode PolicyBase::AddDllToUnload(const wchar_t* dll_name) {
-  blacklisted_dlls_.push_back(dll_name);
+  blocklisted_dlls_.push_back(dll_name);
   return SBOX_ALL_OK;
 }
 
-ResultCode PolicyBase::AddKernelObjectToClose(const base::char16* handle_type,
-                                              const base::char16* handle_name) {
+ResultCode PolicyBase::AddKernelObjectToClose(const wchar_t* handle_type,
+                                              const wchar_t* handle_name) {
   return handle_closer_.AddHandle(handle_type, handle_name);
 }
 
@@ -393,7 +404,7 @@ ResultCode PolicyBase::MakeJobObject(base::win::ScopedHandle* job) {
   DWORD result =
       job_obj.Init(job_level_, nullptr, ui_exceptions_, memory_limit_);
   if (ERROR_SUCCESS != result)
-    return SBOX_ERROR_GENERIC;
+    return SBOX_ERROR_CANNOT_INIT_JOB;
 
   *job = job_obj.Take();
   return SBOX_ALL_OK;
@@ -408,7 +419,7 @@ ResultCode PolicyBase::MakeTokens(base::win::ScopedHandle* initial,
       CreateRestrictedToken(effective_token_, lockdown_level_, integrity_level_,
                             PRIMARY, lockdown_default_dacl_, lockdown);
   if (ERROR_SUCCESS != result)
-    return SBOX_ERROR_GENERIC;
+    return SBOX_ERROR_CANNOT_CREATE_RESTRICTED_TOKEN;
 
   // If we're launching on the alternate desktop we need to make sure the
   // integrity label on the object is no higher than the sandboxed process's
@@ -434,7 +445,7 @@ ResultCode PolicyBase::MakeTokens(base::win::ScopedHandle* initial,
           SetObjectIntegrityLabel(desktop_handle, SE_WINDOW_OBJECT, L"",
                                   GetIntegrityLevelString(integrity_level_));
       if (ERROR_SUCCESS != result)
-        return SBOX_ERROR_GENERIC;
+        return SBOX_ERROR_CANNOT_SET_DESKTOP_INTEGRITY;
 
       if (use_alternate_winstation_) {
         alternate_desktop_integrity_level_label_ = integrity_level_;
@@ -461,7 +472,12 @@ ResultCode PolicyBase::MakeTokens(base::win::ScopedHandle* initial,
     SecurityCapabilities caps(package_sid);
     if (CreateLowBoxToken(lockdown->Get(), PRIMARY, &caps, saved_handles,
                           saved_handles_count, lowbox) != ERROR_SUCCESS) {
-      return SBOX_ERROR_GENERIC;
+      return SBOX_ERROR_CANNOT_CREATE_LOWBOX_TOKEN;
+    }
+
+    if (!ReplacePackageSidInDacl(lowbox->Get(), SE_KERNEL_OBJECT, package_sid,
+                                 TOKEN_ALL_ACCESS)) {
+      return SBOX_ERROR_CANNOT_MODIFY_LOWBOX_TOKEN_DACL;
     }
   }
 
@@ -472,7 +488,7 @@ ResultCode PolicyBase::MakeTokens(base::win::ScopedHandle* initial,
       CreateRestrictedToken(effective_token_, initial_level_, integrity_level_,
                             IMPERSONATION, lockdown_default_dacl_, initial);
   if (ERROR_SUCCESS != result)
-    return SBOX_ERROR_GENERIC;
+    return SBOX_ERROR_CANNOT_CREATE_RESTRICTED_IMP_TOKEN;
 
   return SBOX_ALL_OK;
 }
@@ -554,7 +570,7 @@ ResultCode PolicyBase::SetDisconnectCsrss() {
 // CreateThread EAT patch used when this is enabled.
 // See https://crbug.com/783296#c27.
 #if defined(_WIN64) && !defined(ADDRESS_SANITIZER)
-  if (base::win::GetVersion() >= base::win::VERSION_WIN10) {
+  if (base::win::GetVersion() >= base::win::Version::WIN10) {
     is_csrss_connected_ = false;
     return AddKernelObjectToClose(L"ALPC Port", nullptr);
   }
@@ -562,10 +578,10 @@ ResultCode PolicyBase::SetDisconnectCsrss() {
   return SBOX_ALL_OK;
 }
 
-EvalResult PolicyBase::EvalPolicy(int service,
+EvalResult PolicyBase::EvalPolicy(IpcTag service,
                                   CountedParameterSetBase* params) {
   if (policy_) {
-    if (!policy_->entry[service]) {
+    if (!policy_->entry[static_cast<size_t>(service)]) {
       // There is no policy for this particular service. This is not a big
       // deal.
       return DENY_ACCESS;
@@ -576,7 +592,7 @@ EvalResult PolicyBase::EvalPolicy(int service,
         return SIGNAL_ALARM;
       }
     }
-    PolicyProcessor pol_evaluator(policy_->entry[service]);
+    PolicyProcessor pol_evaluator(policy_->entry[static_cast<size_t>(service)]);
     PolicyResult result =
         pol_evaluator.Evaluate(kShortEval, params->parameters, params->count);
     if (POLICY_MATCH == result)
@@ -606,7 +622,7 @@ bool PolicyBase::GetEnableOPMRedirection() {
 
 ResultCode PolicyBase::AddAppContainerProfile(const wchar_t* package_name,
                                               bool create_profile) {
-  if (base::win::GetVersion() < base::win::VERSION_WIN8)
+  if (base::win::GetVersion() < base::win::Version::WIN8)
     return SBOX_ERROR_UNSUPPORTED;
 
   DCHECK(package_name);
@@ -623,12 +639,19 @@ ResultCode PolicyBase::AddAppContainerProfile(const wchar_t* package_name,
   }
   if (!app_container_profile_)
     return SBOX_ERROR_CREATE_APPCONTAINER_PROFILE;
+
   // A bug exists in CreateProcess where enabling an AppContainer profile and
   // passing a set of mitigation flags will generate ERROR_INVALID_PARAMETER.
   // Apply best efforts here and convert set mitigations to delayed mitigations.
+  // This bug looks to have been fixed in Win10 RS5, so exit early if possible.
+  if (base::win::GetVersion() >= base::win::Version::WIN10_RS5)
+    return SBOX_ALL_OK;
+
   delayed_mitigations_ =
       mitigations_ & GetAllowedPostStartupProcessMitigations();
-  DCHECK(delayed_mitigations_ == (mitigations_ & ~MITIGATION_SEHOP));
+  DCHECK(delayed_mitigations_ ==
+         (mitigations_ & ~(MITIGATION_SEHOP |
+                           MITIGATION_RESTRICT_INDIRECT_BRANCH_PREDICTION)));
   mitigations_ = 0;
   return SBOX_ALL_OK;
 }
@@ -651,13 +674,14 @@ ResultCode PolicyBase::SetupAllInterceptions(TargetProcess* target) {
   InterceptionManager manager(target, relaxed_interceptions_);
 
   if (policy_) {
-    for (int i = 0; i < IPC_LAST_TAG; i++) {
-      if (policy_->entry[i] && !dispatcher_->SetupService(&manager, i))
+    for (size_t i = 0; i < kMaxIpcTag; i++) {
+      if (policy_->entry[i] &&
+          !dispatcher_->SetupService(&manager, static_cast<IpcTag>(i)))
         return SBOX_ERROR_SETUP_INTERCEPTION_SERVICE;
     }
   }
 
-  for (const base::string16& dll : blacklisted_dlls_)
+  for (const std::wstring& dll : blocklisted_dlls_)
     manager.AddToUnloadModules(dll.c_str());
 
   if (!SetupBasicInterceptions(&manager, is_csrss_connected_))
@@ -736,10 +760,34 @@ ResultCode PolicyBase::AddRuleInternal(SubSystem subsystem,
       break;
     }
     case SUBSYS_WIN32K_LOCKDOWN: {
-      if (!ProcessMitigationsWin32KLockdownPolicy::GenerateRules(
-              pattern, semantics, policy_maker_)) {
-        NOTREACHED();
-        return SBOX_ERROR_BAD_PARAMS;
+      // Win32k intercept rules only supported on Windows 8 and above. This must
+      // match the version checks in process_mitigations.cc for consistency.
+      if (base::win::GetVersion() >= base::win::Version::WIN8) {
+        DCHECK_EQ(MITIGATION_WIN32K_DISABLE,
+                  mitigations_ & MITIGATION_WIN32K_DISABLE)
+            << "Enable MITIGATION_WIN32K_DISABLE before adding win32k policy "
+               "rules.";
+        if (!ProcessMitigationsWin32KLockdownPolicy::GenerateRules(
+                pattern, semantics, policy_maker_)) {
+          NOTREACHED();
+          return SBOX_ERROR_BAD_PARAMS;
+        }
+      }
+      break;
+    }
+    case SUBSYS_SIGNED_BINARY: {
+      // Signed intercept rules only supported on Windows 10 TH2 and above. This
+      // must match the version checks in process_mitigations.cc for
+      // consistency.
+      if (base::win::GetVersion() >= base::win::Version::WIN10_TH2) {
+        DCHECK_EQ(MITIGATION_FORCE_MS_SIGNED_BINS,
+                  mitigations_ & MITIGATION_FORCE_MS_SIGNED_BINS)
+            << "Enable MITIGATION_FORCE_MS_SIGNED_BINS before adding signed "
+               "policy rules.";
+        if (!SignedPolicy::GenerateRules(pattern, semantics, policy_maker_)) {
+          NOTREACHED();
+          return SBOX_ERROR_BAD_PARAMS;
+        }
       }
       break;
     }

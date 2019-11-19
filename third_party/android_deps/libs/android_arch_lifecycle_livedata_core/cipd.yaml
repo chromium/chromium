@@ -1,0 +1,10 @@
+# Copyright 2018 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# To create CIPD package run the following command.
+# cipd create --pkg-def cipd.yaml -tag version:1.1.1-cr0
+package: chromium/third_party/android_deps/libs/android_arch_lifecycle_livedata_core
+description: "Android Lifecycle LiveData Core"
+data:
+- file: livedata-core-1.1.1.aar

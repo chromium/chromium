@@ -4,8 +4,8 @@
 
 package org.chromium.chrome.browser.download.home.list;
 
-import android.support.annotation.IntDef;
-import android.support.annotation.StringRes;
+import androidx.annotation.IntDef;
+import androidx.annotation.StringRes;
 
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.download.home.DownloadManagerUiConfig;
@@ -20,6 +20,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 /** Utility methods for representing {@link ListItem}s in a {@link RecyclerView} list. */
@@ -27,7 +28,8 @@ public class ListUtils {
     /** The potential types of list items that could be displayed. */
     @IntDef({ViewType.DATE, ViewType.IN_PROGRESS, ViewType.GENERIC, ViewType.VIDEO, ViewType.IMAGE,
             ViewType.IMAGE_FULL_WIDTH, ViewType.CUSTOM_VIEW, ViewType.PREFETCH,
-            ViewType.SECTION_HEADER, ViewType.IN_PROGRESS_VIDEO, ViewType.IN_PROGRESS_IMAGE})
+            ViewType.SECTION_HEADER, ViewType.IN_PROGRESS_VIDEO, ViewType.IN_PROGRESS_IMAGE,
+            ViewType.PAGINATION_HEADER})
     @Retention(RetentionPolicy.SOURCE)
     public @interface ViewType {
         int DATE = 0;
@@ -41,6 +43,7 @@ public class ListUtils {
         int SECTION_HEADER = 8;
         int IN_PROGRESS_VIDEO = 9;
         int IN_PROGRESS_IMAGE = 10;
+        int PAGINATION_HEADER = 11;
     }
 
     /**
@@ -76,6 +79,7 @@ public class ListUtils {
     public static @ViewType int getViewTypeForItem(ListItem item, DownloadManagerUiConfig config) {
         if (item instanceof ViewListItem) return ViewType.CUSTOM_VIEW;
         if (item instanceof ListItem.SectionHeaderListItem) return ViewType.SECTION_HEADER;
+        if (item instanceof ListItem.PaginationListItem) return ViewType.PAGINATION_HEADER;
 
         if (item instanceof OfflineItemListItem) {
             OfflineItemListItem offlineItem = (OfflineItemListItem) item;
@@ -93,16 +97,16 @@ public class ListUtils {
             if (offlineItem.item.isSuggested) return ViewType.PREFETCH;
 
             switch (offlineItem.item.filter) {
-                case OfflineItemFilter.FILTER_VIDEO:
+                case OfflineItemFilter.VIDEO:
                     return inProgress ? ViewType.IN_PROGRESS_VIDEO : ViewType.VIDEO;
-                case OfflineItemFilter.FILTER_IMAGE:
+                case OfflineItemFilter.IMAGE:
                     return inProgress ? ViewType.IN_PROGRESS_IMAGE
                                       : (offlineItem.spanFullWidth ? ViewType.IMAGE_FULL_WIDTH
                                                                    : ViewType.IMAGE);
-                // case OfflineItemFilter.FILTER_PAGE:
-                // case OfflineItemFilter.FILTER_AUDIO:
-                // case OfflineItemFilter.FILTER_OTHER:
-                // case OfflineItemFilter.FILTER_DOCUMENT:
+                // case OfflineItemFilter.PAGE:
+                // case OfflineItemFilter.AUDIO:
+                // case OfflineItemFilter.OTHER:
+                // case OfflineItemFilter.DOCUMENT:
                 default:
                     return inProgress ? ViewType.IN_PROGRESS : ViewType.GENERIC;
             }
@@ -117,17 +121,17 @@ public class ListUtils {
      */
     public static @StringRes int getTextForSection(int filter) {
         switch (filter) {
-            case OfflineItemFilter.FILTER_PAGE:
+            case OfflineItemFilter.PAGE:
                 return R.string.download_manager_ui_pages;
-            case OfflineItemFilter.FILTER_IMAGE:
+            case OfflineItemFilter.IMAGE:
                 return R.string.download_manager_ui_images;
-            case OfflineItemFilter.FILTER_VIDEO:
+            case OfflineItemFilter.VIDEO:
                 return R.string.download_manager_ui_video;
-            case OfflineItemFilter.FILTER_AUDIO:
+            case OfflineItemFilter.AUDIO:
                 return R.string.download_manager_ui_audio;
-            case OfflineItemFilter.FILTER_OTHER:
+            case OfflineItemFilter.OTHER:
                 return R.string.download_manager_ui_other;
-            case OfflineItemFilter.FILTER_DOCUMENT:
+            case OfflineItemFilter.DOCUMENT:
                 return R.string.download_manager_ui_documents;
             default:
                 return R.string.download_manager_ui_all_downloads;
@@ -164,6 +168,41 @@ public class ListUtils {
         int aPriority = getVisualPriorityForFilter(a);
         int bPriority = getVisualPriorityForFilter(b);
         return (aPriority < bPriority) ? -1 : ((aPriority == bPriority) ? 0 : 1);
+    }
+
+    /**
+     * Helper method to compare list items based on date. Two items have equal if they both got
+     * created on the same day.
+     * @return -1 if {@code a} should be shown before {@code b}.
+     *          0 if {@code a} == {@code b}.
+     *          1 if {@code a} should be shown after {@code b}.
+     */
+    public static int compareItemByDate(OfflineItem a, OfflineItem b) {
+        Date aDay = CalendarUtils.getStartOfDay(a.creationTimeMs).getTime();
+        Date bDay = CalendarUtils.getStartOfDay(b.creationTimeMs).getTime();
+        return bDay.compareTo(aDay);
+    }
+
+    /**
+     * Helper method to compare list items based on timestamp.
+     * @return -1 if {@code a} should be shown before {@code b}.
+     *          0 if {@code a} == {@code b}.
+     *          1 if {@code a} should be shown after {@code b}.
+     */
+    public static int compareItemByTimestamp(OfflineItem a, OfflineItem b) {
+        return Long.compare(b.creationTimeMs, a.creationTimeMs);
+    }
+
+    /**
+     * Helper method to compare list items based on ID.
+     * @return -1 if {@code a} should be shown before {@code b}.
+     *          0 if {@code a} == {@code b}.
+     *          1 if {@code a} should be shown after {@code b}.
+     */
+    public static int compareItemByID(OfflineItem a, OfflineItem b) {
+        int comparison = a.id.namespace.compareTo(b.id.namespace);
+        if (comparison != 0) return comparison;
+        return a.id.id.compareTo(b.id.id);
     }
 
     private static int getVisualPriorityForFilter(@FilterType int type) {

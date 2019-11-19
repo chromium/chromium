@@ -86,7 +86,7 @@ bool operator!=(const AXRange& a, const AXRange& b) {
 }
 
 std::ostream& operator<<(std::ostream& ostream, const AXRange& range) {
-  return ostream << range.ToString().Utf8().data();
+  return ostream << range.ToString().Utf8();
 }
 
 }  // namespace blink

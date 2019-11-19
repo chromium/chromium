@@ -11,8 +11,6 @@
 
 namespace content {
 
-class StreamHandle;
-
 // Initializes the browser side navigation test utils. Following this call, all
 // NavigationURLLoader objects created will be TestNavigationURLLoaders instead
 // of NavigationURLloaderImpls. This should be called before any call in the UI
@@ -22,10 +20,6 @@ void BrowserSideNavigationSetUp();
 
 // Tears down the browser side navigation test utils.
 void BrowserSideNavigationTearDown();
-
-// Returns an empty stream. Used when faking a navigation commit notification
-// from the IO thread with a TestNavigationURLLoader.
-std::unique_ptr<StreamHandle> MakeEmptyStream();
 
 }  // namespace content
 

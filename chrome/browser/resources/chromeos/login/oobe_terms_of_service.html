@@ -1,0 +1,81 @@
+<!-- Copyright 2019 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
+<link rel="import" href="chrome://resources/cr_elements/icons.html">
+<link rel="import" href="chrome://resources/html/i18n_behavior.html">
+<link rel="import" href="chrome://oobe/custom_elements.html">
+
+<dom-module id="terms-of-service">
+  <template>
+    <link rel="stylesheet" href="chrome://resources/css/throbber.css">
+    <link rel="stylesheet" href="oobe_dialog_host.css">
+    <link rel="stylesheet" href="oobe_terms_of_service.css">
+    <link rel="stylesheet" href="oobe_flex_layout.css">
+
+    <!-- ERROR DIALOG -->
+    <oobe-dialog id="termsOfServiceErrorDialog" role="dialog"
+        aria-labelledby="title"
+        hidden="[[!isInErrorState_(uiState)]]" has-buttons>
+      <iron-icon icon="cr:warning" slot="oobe-icon" class="warning">
+      </iron-icon>
+      <h1 id="title" slot="title">
+        <div>
+          [[i18nDynamic(locale, 'termsOfServiceError')]]
+        </div>
+      </h1>
+      <div slot="subtitle">
+        <div>
+          [[i18nDynamic(locale, 'termsOfServiceTryAgain')]]
+        </div>
+      </div>
+      <div slot="bottom-buttons" class="flex layout horizontal">
+        <oobe-back-button id="errorBackButton"
+            disabled="[[backButtonDisabled_]]"
+            on-tap="onTosBackButtonPressed_"></oobe-back-button>
+      </div>
+    </oobe-dialog>
+
+    <!-- NORMAL DIALOG -->
+    <oobe-dialog id="termsOfServiceDialog" role="dialog"
+        aria-labelledby="title"
+        hidden="[[isInErrorState_(uiState)]]" has-buttons>
+      <hd-iron-icon slot="oobe-icon" id="termsOfServiceGoogleIcon"
+          icon1x="oobe-32:googleg" icon2x="oobe-64:googleg">
+      </hd-iron-icon>
+
+      <h1 id="title" slot="title">
+        <div id="tosHeading">[[i18nDynamic(locale,
+                                           'termsOfServiceScreenHeading',
+                                           tosDomain_)]]</div>
+      </h1>
+      <div slot="subtitle">
+        <div id="tosSubheading">[[i18nDynamic(locale,
+                                              'termsOfServiceScreenSubheading',
+                                              tosDomain_)]]</div>
+      </div>
+      <div slot="footer" class="flex layout center-justified vertical">
+        <div hidden="[[!isLoading_(uiState)]]">
+          <throbber-notice id="termsOfServiceLoadingThrobber"
+              text="[[i18nDynamic(locale, termsOfServiceLoading)]]">
+          </throbber-notice>
+        </div>
+        <webview id="termsOfServiceFrame" hidden="[[isLoading_(uiState)]]"
+            role="document" class="focus-on-show flex">
+        </webview>
+      </div>
+      <div slot="bottom-buttons" class="flex layout horizontal end-justified">
+        <oobe-back-button id="backButton" disabled="[[backButtonDisabled_]]"
+            on-tap="onTosBackButtonPressed_"></oobe-back-button>
+        <oobe-text-button id="acceptButton" inverse
+            disabled="[[acceptButtonDisabled_]]"
+            on-tap="onTermsOfServiceAccepted_">
+            <div>
+              [[i18nDynamic(locale, 'termsOfServiceAcceptButton')]]
+            </div>
+        </oobe-text-button>
+      </div>
+    </oobe-dialog>
+  </template>
+</dom-module>

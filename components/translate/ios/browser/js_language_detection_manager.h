@@ -10,7 +10,7 @@
 
 #include "base/callback_forward.h"
 #include "base/strings/string16.h"
-#import "ios/web/public/web_state/js/crw_js_injection_manager.h"
+#import "ios/web/public/deprecated/crw_js_injection_manager.h"
 
 namespace language_detection {
 

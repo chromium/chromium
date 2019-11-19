@@ -6,7 +6,7 @@
 
 [
     DoNotCheckConstants,
-    Exposed(Worker OffscreenCanvas, Window StableBlinkFeatures)
+    Exposed=(Window,Worker)
 ] interface WebGL2RenderingContext { };
-WebGL2RenderingContext implements WebGLRenderingContextBase;
-WebGL2RenderingContext implements WebGL2RenderingContextBase;
+WebGL2RenderingContext includes WebGLRenderingContextBase;
+WebGL2RenderingContext includes WebGL2RenderingContextBase;

@@ -7,9 +7,10 @@
 
 #import "base/test/ios/wait_util.h"
 #include "ios/web/public/test/element_selector.h"
-#import "ios/web/public/web_state/web_state.h"
 
 namespace web {
+class WebState;
+
 namespace test {
 
 // Enum describing loaded/blocked state of an image html element.
@@ -49,17 +50,17 @@ bool WaitForWebViewContainingImage(std::string image_id,
 // Returns true if there is a web view for |web_state| that contains an
 // element for the |selector|.
 bool IsWebViewContainingElement(web::WebState* web_state,
-                                const web::test::ElementSelector& selector);
+                                ElementSelector* selector);
 
 // Waits for |web_state| to contain an element for |selector|.
 bool WaitForWebViewContainingElement(web::WebState* web_state,
-                                     const web::test::ElementSelector& selector)
+                                     ElementSelector* selector)
     WARN_UNUSED_RESULT;
 
 // Waits for |web_state| to not contain an element for |selector|.
-bool WaitForWebViewNotContainingElement(
-    web::WebState* web_state,
-    const web::test::ElementSelector& selector) WARN_UNUSED_RESULT;
+bool WaitForWebViewNotContainingElement(web::WebState* web_state,
+                                        ElementSelector* selector)
+    WARN_UNUSED_RESULT;
 
 }  // namespace test
 }  // namespace web

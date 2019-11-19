@@ -45,8 +45,6 @@ class SVGPatternElement final : public SVGElement,
   USING_GARBAGE_COLLECTED_MIXIN(SVGPatternElement);
 
  public:
-  DECLARE_NODE_FACTORY(SVGPatternElement);
-
   explicit SVGPatternElement(Document&);
 
   void CollectPatternAttributes(PatternAttributes&) const;
@@ -100,7 +98,7 @@ class SVGPatternElement final : public SVGElement,
   void BuildPendingResource() override;
   void ClearResourceReferences();
 
-  LayoutObject* CreateLayoutObject(const ComputedStyle&) override;
+  LayoutObject* CreateLayoutObject(const ComputedStyle&, LegacyLayout) override;
 
   bool SelfHasRelativeLengths() const override;
 

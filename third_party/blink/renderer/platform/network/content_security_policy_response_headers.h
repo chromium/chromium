@@ -26,9 +26,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_NETWORK_CONTENT_SECURITY_POLICY_RESPONSE_HEADERS_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_NETWORK_CONTENT_SECURITY_POLICY_RESPONSE_HEADERS_H_
 
-#include "third_party/blink/renderer/platform/cross_thread_copier.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_copier.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -37,6 +37,8 @@ class ResourceResponse;
 class HTTPHeaderMap;
 
 class PLATFORM_EXPORT ContentSecurityPolicyResponseHeaders final {
+  STACK_ALLOCATED();
+
  public:
   ContentSecurityPolicyResponseHeaders() = default;
   explicit ContentSecurityPolicyResponseHeaders(const ResourceResponse&);
@@ -62,16 +64,20 @@ class PLATFORM_EXPORT ContentSecurityPolicyResponseHeaders final {
   const bool should_parse_wasm_eval_ = false;
 };
 
+}  // namespace blink
+
+namespace WTF {
+
 template <>
-struct CrossThreadCopier<ContentSecurityPolicyResponseHeaders> {
+struct CrossThreadCopier<blink::ContentSecurityPolicyResponseHeaders> {
   STATIC_ONLY(CrossThreadCopier);
-  using Type = ContentSecurityPolicyResponseHeaders;
+  using Type = blink::ContentSecurityPolicyResponseHeaders;
   PLATFORM_EXPORT static Type Copy(
-      const ContentSecurityPolicyResponseHeaders& headers) {
+      const blink::ContentSecurityPolicyResponseHeaders& headers) {
     return headers.IsolatedCopy();
   }
 };
 
-}  // namespace blink
+}  // namespace WTF
 
 #endif

@@ -38,7 +38,8 @@ TEST_F(I18nHooksDelegateTest, TestI18nGetMessage) {
   L10nMessagesMap messages = {
       {"simple", "simple message"},
       {"one_placeholder", "placeholder $1 end"},
-      {"multi_placeholders", "placeholder $1 and $2 end"}};
+      {"multi_placeholders", "placeholder $1 and $2 end"},
+      {"special_characters", "< Hello $1 World &gt;"}};
   GetExtensionToL10nMessagesMap()->emplace(extension->id(), messages);
 
   auto run_get_message = [context](const char* args) {
@@ -60,6 +61,14 @@ TEST_F(I18nHooksDelegateTest, TestI18nGetMessage) {
             run_get_message("'one_placeholder', ['foo']"));
   EXPECT_EQ(R"("placeholder foo and bar end")",
             run_get_message("'multi_placeholders', ['foo', 'bar']"));
+  EXPECT_EQ(R"("\u003C Hello \u003Cbr> World &gt;")",
+            run_get_message("'special_characters', ['<br>'], {}"));
+  EXPECT_EQ(
+      R"("\u003C Hello \u003Cbr> World &gt;")",
+      run_get_message("'special_characters', ['<br>'], {escapeLt: false}"));
+  EXPECT_EQ(
+      R"("&lt; Hello \u003Cbr> World &gt;")",
+      run_get_message("'special_characters', ['<br>'], {escapeLt: true}"));
 
   // We place the somewhat-arbitrary (but documented) limit of 9 substitutions
   // on the call.

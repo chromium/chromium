@@ -10,6 +10,7 @@
 #include <set>
 #include <string>
 
+#include "components/sync/base/client_tag_hash.h"
 #include "components/sync/model/fake_model_type_change_processor.h"
 #include "components/sync/model/model_type_sync_bridge.h"
 
@@ -33,12 +34,10 @@ class RecordingModelTypeChangeProcessor : public FakeModelTypeChangeProcessor {
                         MetadataChangeList* metadata_change_list) override;
   void UntrackEntityForStorageKey(const std::string& storage_key) override;
   void UntrackEntityForClientTagHash(
-      const std::string& client_tag_hash) override;
+      const ClientTagHash& client_tag_hash) override;
   void ModelReadyToSync(std::unique_ptr<MetadataBatch> batch) override;
   bool IsTrackingMetadata() override;
   std::string TrackedAccountId() override;
-
-  void SetIsTrackingMetadata(bool is_tracking);
 
   const std::multimap<std::string, std::unique_ptr<EntityData>>& put_multimap()
       const {
@@ -56,7 +55,7 @@ class RecordingModelTypeChangeProcessor : public FakeModelTypeChangeProcessor {
     return untrack_for_storage_key_set_;
   }
 
-  const std::set<std::string>& untrack_for_client_tag_hash_set() const {
+  const std::set<ClientTagHash>& untrack_for_client_tag_hash_set() const {
     return untrack_for_client_tag_hash_set_;
   }
 
@@ -74,9 +73,8 @@ class RecordingModelTypeChangeProcessor : public FakeModelTypeChangeProcessor {
   std::multimap<std::string, std::unique_ptr<EntityData>> update_multimap_;
   std::set<std::string> delete_set_;
   std::set<std::string> untrack_for_storage_key_set_;
-  std::set<std::string> untrack_for_client_tag_hash_set_;
+  std::set<ClientTagHash> untrack_for_client_tag_hash_set_;
   std::unique_ptr<MetadataBatch> metadata_;
-  bool is_tracking_metadata_ = true;
 };
 
 }  //  namespace syncer

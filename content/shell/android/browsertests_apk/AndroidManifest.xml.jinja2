@@ -9,7 +9,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="org.chromium.content_browsertests_apk">
 
-    <uses-sdk android:minSdkVersion="19" android:targetSdkVersion="23" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
     <uses-permission android:name="android.permission.CAMERA" />
@@ -58,6 +57,13 @@
                  android:exported="false" />
         {% endfor %}
 
+        <provider android:name="android.support.v4.content.FileProvider"
+            android:authorities="org.chromium.content_browsertests_apk.FileProvider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
     </application>
 
     <instrumentation android:name="org.chromium.native_test.NativeTestInstrumentationTestRunner"

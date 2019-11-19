@@ -79,7 +79,10 @@ void Rijndael::Init(bool Encrypt,const byte *key,uint keyLen,const byte * initVe
   AES_NI=(CPUInfo[2] & 0x2000000)!=0;
 #endif
 
-  uint uKeyLenInBytes;
+  // Other developers asked us to initialize it to suppress "may be used
+  // uninitialized" warning in code below in some compilers.
+  uint uKeyLenInBytes=0;
+
   switch(keyLen)
   {
     case 128:

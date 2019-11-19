@@ -9,29 +9,33 @@
 #include <string>
 #include <vector>
 
+#include "base/component_export.h"
 #include "base/macros.h"
 #include "base/observer_list.h"
+#include "base/scoped_observer.h"
 #include "base/sequence_checker.h"
 #include "base/synchronization/lock.h"
 #include "base/time/time.h"
+#include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/services/assistant/public/mojom/assistant.mojom.h"
 #include "libassistant/shared/public/platform_audio_input.h"
 #include "media/base/audio_capturer_source.h"
 #include "mojo/public/cpp/bindings/binding.h"
 
-namespace service_manager {
-class Connector;
-}  // namespace service_manager
-
 namespace chromeos {
+class CrasAudioHandler;
+
 namespace assistant {
 
-class AudioInputImpl : public assistant_client::AudioInput,
-                       public media::AudioCapturerSource::CaptureCallback {
+class COMPONENT_EXPORT(ASSISTANT_SERVICE) AudioInputImpl
+    : public assistant_client::AudioInput,
+      public media::AudioCapturerSource::CaptureCallback,
+      public chromeos::PowerManagerClient::Observer {
  public:
-  AudioInputImpl(service_manager::Connector* connector,
-                 const std::string& device_id,
-                 const std::string& hotword_device_id);
+  AudioInputImpl(mojom::Client* client,
+                 PowerManagerClient* power_manager_client,
+                 CrasAudioHandler* cras_audio_handler,
+                 const std::string& device_id);
   ~AudioInputImpl() override;
 
   class HotwordStateManager {
@@ -54,7 +58,7 @@ class AudioInputImpl : public assistant_client::AudioInput,
 
   // media::AudioCapturerSource::CaptureCallback overrides:
   void Capture(const media::AudioBus* audio_source,
-               int audio_delay_milliseconds,
+               base::TimeTicks audio_capture_time,
                double volume,
                bool key_pressed) override;
   void OnCaptureError(const std::string& message) override;
@@ -68,6 +72,10 @@ class AudioInputImpl : public assistant_client::AudioInput,
   void RemoveObserver(
       assistant_client::AudioInput::Observer* observer) override;
 
+  // chromeos::PowerManagerClient::Observer overrides:
+  void LidEventReceived(chromeos::PowerManagerClient::LidState state,
+                        const base::TimeTicks& timestamp) override;
+
   // Called when the mic state associated with the interaction is changed.
   void SetMicState(bool mic_open);
   void OnConversationTurnStarted();
@@ -78,23 +86,34 @@ class AudioInputImpl : public assistant_client::AudioInput,
 
   void SetDeviceId(const std::string& device_id);
   void SetHotwordDeviceId(const std::string& device_id);
+  void SetDspHotwordLocale(std::string pref_locale);
+  void SetDspHotwordLocaleCallback(bool success);
 
   void RecreateAudioInputStream(bool use_dsp);
 
-  bool IsHotwordAvailable();
+  bool IsHotwordAvailable() const;
+
+  // Returns the recording state used in unittests.
+  bool IsRecordingForTesting() const;
+  // Returns if the hotword device is used for recording now.
+  bool IsUsingHotwordDeviceForTesting() const;
 
  private:
   void StartRecording();
   void StopRecording();
   void UpdateRecordingState();
 
-  scoped_refptr<media::AudioCapturerSource> source_;
+  // Updates lid state from received switch states.
+  void OnSwitchStatesReceived(
+      base::Optional<chromeos::PowerManagerClient::SwitchStates> switch_states);
 
-  // Should audio input always recording actively.
-  bool default_on_ = false;
+  scoped_refptr<media::AudioCapturerSource> source_;
 
   // User explicitly requested to open microphone.
   bool mic_open_ = false;
+
+  // Whether hotword is currently enabled.
+  bool hotword_enabled_ = true;
 
   // Guards observers_;
   base::Lock lock_;
@@ -111,16 +130,28 @@ class AudioInputImpl : public assistant_client::AudioInput,
   // sequence.
   SEQUENCE_CHECKER(observer_sequence_checker_);
 
-  service_manager::Connector* connector_;
+  mojom::Client* const client_;
+
+  chromeos::PowerManagerClient* power_manager_client_;
+  ScopedObserver<chromeos::PowerManagerClient,
+                 chromeos::PowerManagerClient::Observer>
+      power_manager_client_observer_;
+
+  CrasAudioHandler* const cras_audio_handler_;
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
   std::unique_ptr<HotwordStateManager> state_manager_;
 
-  // Audio input device which will be used for capture.
-  std::string device_id_;
+  // Preferred audio input device which will be used for capture.
+  std::string preferred_device_id_;
   // Hotword input device used for hardware based hotword detection.
   std::string hotword_device_id_;
+  // Device currently being used for recording.
+  std::string device_id_;
+
+  chromeos::PowerManagerClient::LidState lid_state_ =
+      chromeos::PowerManagerClient::LidState::NOT_PRESENT;
 
   base::WeakPtrFactory<AudioInputImpl> weak_factory_;
   DISALLOW_COPY_AND_ASSIGN(AudioInputImpl);

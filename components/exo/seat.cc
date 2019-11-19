@@ -4,17 +4,27 @@
 
 #include "components/exo/seat.h"
 
+#if defined(OS_CHROMEOS)
+#include "ash/shell.h"
+#endif  // defined(OS_CHROMEOS)
+
 #include "base/auto_reset.h"
+#include "base/barrier_closure.h"
 #include "base/bind.h"
+#include "base/bind_helpers.h"
+#include "base/memory/weak_ptr.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/post_task.h"
 #include "components/exo/data_source.h"
+#include "components/exo/drag_drop_operation.h"
+#include "components/exo/mime_utils.h"
 #include "components/exo/seat_observer.h"
 #include "components/exo/shell_surface_util.h"
 #include "components/exo/surface.h"
 #include "components/exo/wm_helper.h"
+#include "services/data_decoder/public/cpp/decode_image.h"
 #include "ui/aura/client/focus_client.h"
 #include "ui/base/clipboard/clipboard_monitor.h"
-#include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/events/event_utils.h"
 #include "ui/events/platform/platform_event_source.h"
 
@@ -68,9 +78,24 @@ Surface* Seat::GetFocusedSurface() {
   return GetEffectiveFocus(WMHelper::GetInstance()->GetFocusedWindow());
 }
 
+void Seat::StartDrag(DataSource* source,
+                     Surface* origin,
+                     Surface* icon,
+                     ui::DragDropTypes::DragEventSource event_source) {
+  // DragDropOperation manages its own lifetime.
+  drag_drop_operation_ =
+      DragDropOperation::Create(source, origin, icon, event_source);
+}
+
+void Seat::AbortPendingDragOperation() {
+  if (drag_drop_operation_)
+    drag_drop_operation_->AbortIfPending();
+}
+
 void Seat::SetSelection(DataSource* source) {
   if (!source) {
-    ui::Clipboard::GetForCurrentThread()->Clear(ui::CLIPBOARD_TYPE_COPY_PASTE);
+    ui::Clipboard::GetForCurrentThread()->Clear(
+        ui::ClipboardBuffer::kCopyPaste);
     // selection_source_ is Cancelled() and reset() in OnClipboardDataChanged().
     return;
   }
@@ -81,18 +106,92 @@ void Seat::SetSelection(DataSource* source) {
     selection_source_->get()->Cancelled();
   }
   selection_source_ = std::make_unique<ScopedDataSource>(source, this);
+  scoped_refptr<RefCountedScopedClipboardWriter> writer =
+      base::MakeRefCounted<RefCountedScopedClipboardWriter>(
+          ui::ClipboardBuffer::kCopyPaste);
 
-  // Unretained is safe as Seat always outlives DataSource.
-  source->ReadData(base::BindOnce(&Seat::OnDataRead, base::Unretained(this)));
+  base::RepeatingClosure data_read_callback = base::BarrierClosure(
+      kMaxClipboardDataTypes,
+      base::BindOnce(&Seat::OnAllReadsFinished, weak_ptr_factory_.GetWeakPtr(),
+                     writer));
+
+  source->GetDataForPreferredMimeTypes(
+      base::BindOnce(&Seat::OnTextRead, weak_ptr_factory_.GetWeakPtr(), writer,
+                     data_read_callback),
+      base::BindOnce(&Seat::OnRTFRead, weak_ptr_factory_.GetWeakPtr(), writer,
+                     data_read_callback),
+      base::BindOnce(&Seat::OnHTMLRead, weak_ptr_factory_.GetWeakPtr(), writer,
+                     data_read_callback),
+      base::BindOnce(&Seat::OnImageRead, weak_ptr_factory_.GetWeakPtr(), writer,
+                     data_read_callback),
+      data_read_callback);
 }
 
-void Seat::OnDataRead(const std::vector<uint8_t>& data) {
+void Seat::OnTextRead(scoped_refptr<RefCountedScopedClipboardWriter> writer,
+                      base::OnceClosure callback,
+                      const std::string& mime_type,
+                      base::string16 data) {
+  writer->WriteText(std::move(data));
+  std::move(callback).Run();
+}
+
+void Seat::OnRTFRead(scoped_refptr<RefCountedScopedClipboardWriter> writer,
+                     base::OnceClosure callback,
+                     const std::string& mime_type,
+                     const std::vector<uint8_t>& data) {
+  writer->WriteRTF(
+      std::string(reinterpret_cast<const char*>(data.data()), data.size()));
+  std::move(callback).Run();
+}
+
+void Seat::OnHTMLRead(scoped_refptr<RefCountedScopedClipboardWriter> writer,
+                      base::OnceClosure callback,
+                      const std::string& mime_type,
+                      base::string16 data) {
+  writer->WriteHTML(std::move(data), std::string());
+  std::move(callback).Run();
+}
+
+void Seat::OnImageRead(scoped_refptr<RefCountedScopedClipboardWriter> writer,
+                       base::OnceClosure callback,
+                       const std::string& mime_type,
+                       const std::vector<uint8_t>& data) {
+#if defined(OS_CHROMEOS)
+  data_decoder::DecodeImageIsolated(
+      data, data_decoder::mojom::ImageCodec::DEFAULT, false,
+      std::numeric_limits<int64_t>::max(), gfx::Size(),
+      base::BindOnce(&Seat::OnImageDecoded, weak_ptr_factory_.GetWeakPtr(),
+                     std::move(callback), writer));
+#else
+  std::move(callback).Run();
+#endif  // defined(OS_CHROMEOS)
+}
+
+#if defined(OS_CHROMEOS)
+void Seat::OnImageDecoded(base::OnceClosure callback,
+                          scoped_refptr<RefCountedScopedClipboardWriter> writer,
+                          const SkBitmap& bitmap) {
+  if (!bitmap.isNull() && !bitmap.empty())
+    writer->WriteImage(bitmap);
+  std::move(callback).Run();
+}
+#endif  // defined(OS_CHROMEOS)
+
+void Seat::OnAllReadsFinished(
+    scoped_refptr<RefCountedScopedClipboardWriter> writer) {
+  // We need to destroy the ScopedClipboardWriter in this call, before
+  // |auto_reset| is destroyed, so if there are outstanding references that
+  // would prevent that, reschedule this task.
+  if (!writer->HasOneRef()) {
+    base::ThreadTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&Seat::OnAllReadsFinished,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(writer)));
+    return;
+  }
   base::AutoReset<bool> auto_reset(
       &changing_clipboard_data_to_selection_source_, true);
-
-  ui::ScopedClipboardWriter writer(ui::CLIPBOARD_TYPE_COPY_PASTE);
-  writer.WriteText(base::UTF8ToUTF16(base::StringPiece(
-      reinterpret_cast<const char*>(data.data()), data.size())));
+  writer.reset();
 }
 
 ////////////////////////////////////////////////////////////////////////////////

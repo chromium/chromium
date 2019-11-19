@@ -10,7 +10,7 @@
 
 #include "base/macros.h"
 #include "chrome/browser/media/router/presentation/presentation_service_delegate_impl.h"
-#include "chrome/common/media_router/mojo/media_router.mojom.h"
+#include "chrome/common/media_router/mojom/media_router.mojom.h"
 #include "content/public/browser/presentation_request.h"
 #include "content/public/browser/presentation_service_delegate.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -33,7 +33,9 @@ class MediaRouterDialogController {
 
   // Gets a reference to the MediaRouterDialogController associated with
   // |web_contents|, creating one if it does not exist. The returned pointer is
-  // guaranteed to be non-null.
+  // guaranteed to be non-null. This method has platform-specific
+  // implementations in directories such as chrome/browser/ui/views/ and
+  // chrome/browser/media/android/.
   static MediaRouterDialogController* GetOrCreateForWebContents(
       content::WebContents* web_contents);
 

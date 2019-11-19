@@ -17,7 +17,7 @@
 using offline_pages::TaskTestBase;
 
 namespace explore_sites {
-
+using InitializationStatus = ExploreSitesStore::InitializationStatus;
 class ExploreSitesIncrementShownCountTaskTest : public TaskTestBase {
  public:
   ExploreSitesIncrementShownCountTaskTest() = default;
@@ -71,7 +71,8 @@ VALUES
 }
 
 TEST_F(ExploreSitesIncrementShownCountTaskTest, StoreFailure) {
-  store()->SetInitializationStatusForTest(InitializationStatus::FAILURE);
+  store()->SetInitializationStatusForTesting(InitializationStatus::kFailure,
+                                             false);
   IncrementShownCountTask task(store(), 1);
   RunTask(&task);
 

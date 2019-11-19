@@ -30,8 +30,8 @@
 
 #include "third_party/blink/renderer/core/svg/svg_integer_optional_integer.h"
 
-#include "third_party/blink/renderer/core/svg/svg_animation_element.h"
 #include "third_party/blink/renderer/core/svg/svg_parser_utilities.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
 
 namespace blink {
 
@@ -46,14 +46,14 @@ void SVGIntegerOptionalInteger::Trace(blink::Visitor* visitor) {
 }
 
 SVGIntegerOptionalInteger* SVGIntegerOptionalInteger::Clone() const {
-  return SVGIntegerOptionalInteger::Create(first_integer_->Clone(),
-                                           second_integer_->Clone());
+  return MakeGarbageCollected<SVGIntegerOptionalInteger>(
+      first_integer_->Clone(), second_integer_->Clone());
 }
 
 SVGPropertyBase* SVGIntegerOptionalInteger::CloneForAnimation(
     const String& value) const {
-  SVGIntegerOptionalInteger* clone =
-      Create(SVGInteger::Create(0), SVGInteger::Create(0));
+  auto* clone = MakeGarbageCollected<SVGIntegerOptionalInteger>(
+      MakeGarbageCollected<SVGInteger>(0), MakeGarbageCollected<SVGInteger>(0));
   clone->SetValueAsString(value);
   return clone;
 }
@@ -87,45 +87,36 @@ void SVGIntegerOptionalInteger::SetInitial(unsigned value) {
   second_integer_->SetInitial(value);
 }
 
-void SVGIntegerOptionalInteger::Add(SVGPropertyBase* other, SVGElement*) {
-  SVGIntegerOptionalInteger* other_integer_optional_integer =
-      ToSVGIntegerOptionalInteger(other);
-
-  first_integer_->SetValue(
-      first_integer_->Value() +
-      other_integer_optional_integer->first_integer_->Value());
-  second_integer_->SetValue(
-      second_integer_->Value() +
-      other_integer_optional_integer->second_integer_->Value());
+void SVGIntegerOptionalInteger::Add(SVGPropertyBase* other,
+                                    SVGElement* context_element) {
+  auto* other_integer_optional_integer = ToSVGIntegerOptionalInteger(other);
+  first_integer_->Add(other_integer_optional_integer->FirstInteger(),
+                      context_element);
+  second_integer_->Add(other_integer_optional_integer->SecondInteger(),
+                       context_element);
 }
 
 void SVGIntegerOptionalInteger::CalculateAnimatedValue(
-    SVGAnimationElement* animation_element,
+    const SVGAnimateElement& animation_element,
     float percentage,
     unsigned repeat_count,
     SVGPropertyBase* from,
     SVGPropertyBase* to,
     SVGPropertyBase* to_at_end_of_duration,
-    SVGElement*) {
-  DCHECK(animation_element);
-
-  SVGIntegerOptionalInteger* from_integer = ToSVGIntegerOptionalInteger(from);
-  SVGIntegerOptionalInteger* to_integer = ToSVGIntegerOptionalInteger(to);
-  SVGIntegerOptionalInteger* to_at_end_of_duration_integer =
+    SVGElement* context_element) {
+  auto* from_integer = ToSVGIntegerOptionalInteger(from);
+  auto* to_integer = ToSVGIntegerOptionalInteger(to);
+  auto* to_at_end_of_duration_integer =
       ToSVGIntegerOptionalInteger(to_at_end_of_duration);
 
-  float x = first_integer_->Value();
-  float y = second_integer_->Value();
-  animation_element->AnimateAdditiveNumber(
-      percentage, repeat_count, from_integer->FirstInteger()->Value(),
-      to_integer->FirstInteger()->Value(),
-      to_at_end_of_duration_integer->FirstInteger()->Value(), x);
-  animation_element->AnimateAdditiveNumber(
-      percentage, repeat_count, from_integer->SecondInteger()->Value(),
-      to_integer->SecondInteger()->Value(),
-      to_at_end_of_duration_integer->SecondInteger()->Value(), y);
-  first_integer_->SetValue(clampTo<int>(roundf(x)));
-  second_integer_->SetValue(clampTo<int>(roundf(y)));
+  first_integer_->CalculateAnimatedValue(
+      animation_element, percentage, repeat_count, from_integer->FirstInteger(),
+      to_integer->FirstInteger(), to_at_end_of_duration_integer->FirstInteger(),
+      context_element);
+  second_integer_->CalculateAnimatedValue(
+      animation_element, percentage, repeat_count,
+      from_integer->SecondInteger(), to_integer->SecondInteger(),
+      to_at_end_of_duration_integer->SecondInteger(), context_element);
 }
 
 float SVGIntegerOptionalInteger::CalculateDistance(SVGPropertyBase* other,

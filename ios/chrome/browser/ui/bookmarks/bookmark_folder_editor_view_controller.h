@@ -9,6 +9,7 @@
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_controller.h"
 
 @class BookmarkFolderEditorViewController;
+@protocol BrowserCommands;
 
 namespace bookmarks {
 class BookmarkModel;
@@ -40,7 +41,8 @@ class ChromeBrowserState;
 // the title and selecting the parent folder of the bookmark.
 // This controller monitors the state of the bookmark model, so changes to the
 // bookmark model can affect this controller's state.
-@interface BookmarkFolderEditorViewController : ChromeTableViewController
+@interface BookmarkFolderEditorViewController
+    : ChromeTableViewController <UIAdaptivePresentationControllerDelegate>
 
 @property(nonatomic, weak) id<BookmarkFolderEditorViewControllerDelegate>
     delegate;
@@ -51,16 +53,18 @@ class ChromeBrowserState;
 // If |parentFolder| is NULL, a default parent will be set.
 // |bookmarkModel| must not be NULL and must be loaded.
 + (instancetype)
-folderCreatorWithBookmarkModel:(bookmarks::BookmarkModel*)bookmarkModel
-                  parentFolder:(const bookmarks::BookmarkNode*)parentFolder;
+    folderCreatorWithBookmarkModel:(bookmarks::BookmarkModel*)bookmarkModel
+                      parentFolder:(const bookmarks::BookmarkNode*)parentFolder
+                        dispatcher:(id<BrowserCommands>)dispatcher;
 
 // |bookmarkModel| must not be null and must be loaded.
 // |folder| must not be NULL and be editable.
 // |browserState| must not be null.
 + (instancetype)
-folderEditorWithBookmarkModel:(bookmarks::BookmarkModel*)bookmarkModel
-                       folder:(const bookmarks::BookmarkNode*)folder
-                 browserState:(ios::ChromeBrowserState*)browserState;
+    folderEditorWithBookmarkModel:(bookmarks::BookmarkModel*)bookmarkModel
+                           folder:(const bookmarks::BookmarkNode*)folder
+                     browserState:(ios::ChromeBrowserState*)browserState
+                       dispatcher:(id<BrowserCommands>)dispatcher;
 
 - (instancetype)initWithTableViewStyle:(UITableViewStyle)style
                            appBarStyle:(ChromeTableViewControllerStyle)style

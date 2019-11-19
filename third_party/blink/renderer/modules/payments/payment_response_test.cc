@@ -25,7 +25,7 @@ namespace blink {
 namespace {
 
 class MockPaymentStateResolver final
-    : public GarbageCollectedFinalized<MockPaymentStateResolver>,
+    : public GarbageCollected<MockPaymentStateResolver>,
       public PaymentStateResolver {
   USING_GARBAGE_COLLECTED_MIXIN(MockPaymentStateResolver);
 
@@ -42,7 +42,9 @@ class MockPaymentStateResolver final
                ScriptPromise(ScriptState*,
                              const PaymentValidationErrors* errorFields));
 
-  void Trace(blink::Visitor* visitor) override {}
+  void Trace(blink::Visitor* visitor) override {
+    visitor->Trace(dummy_promise_);
+  }
 
  private:
   ScriptPromise dummy_promise_;
@@ -80,7 +82,7 @@ TEST(PaymentResponseTest, DataCopiedOver) {
   ASSERT_TRUE(details.V8Value()->IsObject());
 
   ScriptValue transaction_id(
-      scope.GetScriptState(),
+      scope.GetIsolate(),
       details.V8Value()
           .As<v8::Object>()
           ->Get(scope.GetContext(),

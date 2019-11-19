@@ -8,6 +8,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/platform/fonts/font_data_for_range_set.h"
 #include "third_party/blink/renderer/platform/fonts/font_fallback_priority.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/ref_counted.h"
 #include "third_party/blink/renderer/platform/wtf/text/unicode.h"
@@ -20,6 +21,8 @@ class FontFallbackList;
 class SimpleFontData;
 
 class FontFallbackIterator : public RefCounted<FontFallbackIterator> {
+  USING_FAST_MALLOC(FontFallbackIterator);
+
  public:
   static scoped_refptr<FontFallbackIterator> Create(const FontDescription&,
                                              scoped_refptr<FontFallbackList>,

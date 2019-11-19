@@ -12,6 +12,11 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/session_manager/core/session_manager.h"
+#include "components/user_manager/user_names.h"
+#include "chrome/browser/chromeos/login/users/fake_chrome_user_manager.h"
+#include "components/user_manager/fake_user_manager.h"
+#include "components/user_manager/scoped_user_manager.h"
 #include "components/zoom/zoom_controller.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/site_instance.h"
@@ -22,6 +27,7 @@
 using content::SiteInstance;
 using content::WebContents;
 using content::WebContentsTester;
+using session_manager::SessionState;
 
 class BrowserUnitTest : public BrowserWithTestWindowTest {
  public:
@@ -135,8 +141,8 @@ TEST_F(BrowserUnitTest, DisableZoomOnCrashedTab) {
   WebContentsTester::For(raw_contents)->NavigateAndCommit(GURL("about:blank"));
   zoom::ZoomController* zoom_controller =
       zoom::ZoomController::FromWebContents(raw_contents);
-  EXPECT_TRUE(zoom_controller->SetZoomLevel(zoom_controller->
-                                            GetDefaultZoomLevel()));
+  EXPECT_TRUE(
+      zoom_controller->SetZoomLevel(zoom_controller->GetDefaultZoomLevel()));
 
   CommandUpdater* command_updater = browser()->command_controller();
 
@@ -268,6 +274,39 @@ TEST_F(BrowserUnitTest, CreateBrowserWithIncognitoModeEnabled) {
   EXPECT_TRUE(otr_browser);
 }
 
+#if defined(OS_CHROMEOS)
+TEST_F(BrowserUnitTest, CreateBrowserDuringKioskSplashScreen) {
+  session_manager::SessionManager session_manager;
+
+  // Setting up user manager state to be in kiosk mode:
+  // Creating a new user manager.
+  chromeos::FakeChromeUserManager* user_manager =
+      new chromeos::FakeChromeUserManager();
+  user_manager::ScopedUserManager manager{
+      std::unique_ptr<user_manager::UserManager>(user_manager)};
+  const user_manager::User* user =
+      user_manager->AddKioskAppUser(AccountId::FromUserEmail("fake_user@test"));
+  user_manager->LoginUser(user->GetAccountId());
+
+  TestingProfile profile;
+  Browser::CreateParams create_params(&profile, false);
+
+  std::unique_ptr<BrowserWindow> window1(CreateBrowserWindow());
+  create_params.window = window1.get();
+  session_manager.SetSessionState(SessionState::LOGIN_PRIMARY);
+  std::unique_ptr<Browser> test_browser(Browser::Create(create_params));
+  // Browser should not be created during login session state.
+  EXPECT_FALSE(test_browser);
+
+  std::unique_ptr<BrowserWindow> window2(CreateBrowserWindow());
+  create_params.window = window2.get();
+  session_manager.SetSessionState(SessionState::ACTIVE);
+  std::unique_ptr<Browser> test_browser2(Browser::Create(create_params));
+  // Normal flow, creation succeeds.
+  EXPECT_TRUE(test_browser2);
+}
+#endif
+
 class BrowserBookmarkBarTest : public BrowserWithTestWindowTest {
  public:
   BrowserBookmarkBarTest() {}
@@ -275,27 +314,26 @@ class BrowserBookmarkBarTest : public BrowserWithTestWindowTest {
 
  protected:
   BookmarkBar::State window_bookmark_bar_state() const {
-    return static_cast<BookmarkBarStateTestBrowserWindow*>(
-        browser()->window())->bookmark_bar_state();
+    return static_cast<BookmarkBarStateTestBrowserWindow*>(browser()->window())
+        ->bookmark_bar_state();
   }
 
   // BrowserWithTestWindowTest:
   void SetUp() override {
     BrowserWithTestWindowTest::SetUp();
-    static_cast<BookmarkBarStateTestBrowserWindow*>(
-        browser()->window())->set_browser(browser());
+    static_cast<BookmarkBarStateTestBrowserWindow*>(browser()->window())
+        ->set_browser(browser());
   }
 
-  BrowserWindow* CreateBrowserWindow() override {
-    return new BookmarkBarStateTestBrowserWindow();
+  std::unique_ptr<BrowserWindow> CreateBrowserWindow() override {
+    return std::make_unique<BookmarkBarStateTestBrowserWindow>();
   }
 
  private:
   class BookmarkBarStateTestBrowserWindow : public TestBrowserWindow {
    public:
     BookmarkBarStateTestBrowserWindow()
-        : browser_(NULL),
-          bookmark_bar_state_(BookmarkBar::HIDDEN) {}
+        : browser_(NULL), bookmark_bar_state_(BookmarkBar::HIDDEN) {}
     ~BookmarkBarStateTestBrowserWindow() override {}
 
     void set_browser(Browser* browser) { browser_ = browser; }
@@ -341,8 +379,8 @@ TEST_F(BrowserBookmarkBarTest, StateOnActiveTabChanged) {
 
   // Open a tab to NTP.
   AddTab(browser(), ntp_url);
-  EXPECT_EQ(BookmarkBar::DETACHED, browser()->bookmark_bar_state());
-  EXPECT_EQ(BookmarkBar::DETACHED, window_bookmark_bar_state());
+  EXPECT_EQ(BookmarkBar::HIDDEN, browser()->bookmark_bar_state());
+  EXPECT_EQ(BookmarkBar::HIDDEN, window_bookmark_bar_state());
 
   // Navigate 1st tab to a non-NTP URL.
   NavigateAndCommitActiveTab(non_ntp_url);
@@ -351,8 +389,8 @@ TEST_F(BrowserBookmarkBarTest, StateOnActiveTabChanged) {
 
   // Open a tab to NTP at index 0.
   AddTab(browser(), ntp_url);
-  EXPECT_EQ(BookmarkBar::DETACHED, browser()->bookmark_bar_state());
-  EXPECT_EQ(BookmarkBar::DETACHED, window_bookmark_bar_state());
+  EXPECT_EQ(BookmarkBar::HIDDEN, browser()->bookmark_bar_state());
+  EXPECT_EQ(BookmarkBar::HIDDEN, window_bookmark_bar_state());
 
   // Activate the 2nd tab which is non-NTP.
   browser()->tab_strip_model()->ActivateTabAt(

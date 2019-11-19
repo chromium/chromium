@@ -8,14 +8,12 @@ namespace media_session {
 namespace test {
 
 TestMediaControllerImageObserver::TestMediaControllerImageObserver(
-    mojom::MediaControllerPtr& controller,
+    mojo::Remote<mojom::MediaController>& controller,
     int minimum_size_px,
     int desired_size_px) {
-  mojom::MediaControllerImageObserverPtr ptr;
-  binding_.Bind(mojo::MakeRequest(&ptr));
-
   controller->ObserveImages(mojom::MediaSessionImageType::kArtwork,
-                            minimum_size_px, desired_size_px, std::move(ptr));
+                            minimum_size_px, desired_size_px,
+                            receiver_.BindNewPipeAndPassRemote());
   controller.FlushForTesting();
 }
 
@@ -51,11 +49,8 @@ void TestMediaControllerImageObserver::WaitForExpectedImageOfType(
 }
 
 TestMediaControllerObserver::TestMediaControllerObserver(
-    mojom::MediaControllerPtr& media_controller)
-    : binding_(this) {
-  mojom::MediaControllerObserverPtr observer;
-  binding_.Bind(mojo::MakeRequest(&observer));
-  media_controller->AddObserver(std::move(observer));
+    mojo::Remote<mojom::MediaController>& media_controller) {
+  media_controller->AddObserver(receiver_.BindNewPipeAndPassRemote());
 }
 
 TestMediaControllerObserver::~TestMediaControllerObserver() = default;
@@ -97,6 +92,30 @@ void TestMediaControllerObserver::MediaSessionActionsChanged(
   if (expected_actions_.has_value() && expected_actions_ == session_actions_) {
     run_loop_->Quit();
     expected_actions_.reset();
+  }
+}
+
+void TestMediaControllerObserver::MediaSessionChanged(
+    const base::Optional<base::UnguessableToken>& request_id) {
+  session_request_id_ = request_id;
+
+  if (expected_request_id_.has_value() &&
+      expected_request_id_ == session_request_id_) {
+    run_loop_->Quit();
+    expected_request_id_.reset();
+  }
+}
+
+void TestMediaControllerObserver::MediaSessionPositionChanged(
+    const base::Optional<media_session::MediaPosition>& position) {
+  session_position_ = position;
+
+  if (waiting_for_empty_position_ && !position.has_value()) {
+    run_loop_->Quit();
+    waiting_for_empty_position_ = false;
+  } else if (waiting_for_non_empty_position_ && position.has_value()) {
+    run_loop_->Quit();
+    waiting_for_non_empty_position_ = false;
   }
 }
 
@@ -156,6 +175,33 @@ void TestMediaControllerObserver::WaitForExpectedActions(
   StartWaiting();
 }
 
+void TestMediaControllerObserver::WaitForEmptyPosition() {
+  // |session_position_| is doubly wrapped in base::Optional so we must check
+  // both values.
+  if (session_position_.has_value() && !session_position_->has_value())
+    return;
+
+  waiting_for_empty_position_ = true;
+  StartWaiting();
+}
+
+void TestMediaControllerObserver::WaitForNonEmptyPosition() {
+  if (session_position_.has_value() && session_position_->has_value())
+    return;
+
+  waiting_for_non_empty_position_ = true;
+  StartWaiting();
+}
+
+void TestMediaControllerObserver::WaitForSession(
+    const base::Optional<base::UnguessableToken>& request_id) {
+  if (session_request_id_.has_value() && session_request_id_ == request_id)
+    return;
+
+  expected_request_id_ = request_id;
+  StartWaiting();
+}
+
 void TestMediaControllerObserver::StartWaiting() {
   DCHECK(!run_loop_);
 
@@ -168,10 +214,11 @@ TestMediaController::TestMediaController() = default;
 
 TestMediaController::~TestMediaController() = default;
 
-mojom::MediaControllerPtr TestMediaController::CreateMediaControllerPtr() {
-  mojom::MediaControllerPtr ptr;
-  binding_.Bind(mojo::MakeRequest(&ptr));
-  return ptr;
+mojo::Remote<mojom::MediaController>
+TestMediaController::CreateMediaControllerRemote() {
+  mojo::Remote<mojom::MediaController> remote;
+  binding_.Bind(remote.BindNewPipeAndPassReceiver());
+  return remote;
 }
 
 void TestMediaController::Suspend() {
@@ -182,14 +229,18 @@ void TestMediaController::Resume() {
   ++resume_count_;
 }
 
+void TestMediaController::Stop() {
+  ++stop_count_;
+}
+
 void TestMediaController::ToggleSuspendResume() {
   ++toggle_suspend_resume_count_;
 }
 
 void TestMediaController::AddObserver(
-    mojom::MediaControllerObserverPtr observer) {
+    mojo::PendingRemote<mojom::MediaControllerObserver> observer) {
   ++add_observer_count_;
-  observers_.AddPtr(std::move(observer));
+  observers_.Add(std::move(observer));
 }
 
 void TestMediaController::PreviousTrack() {
@@ -210,11 +261,21 @@ void TestMediaController::Seek(base::TimeDelta seek_time) {
   }
 }
 
+void TestMediaController::SeekTo(base::TimeDelta seek_time) {
+  seek_to_time_ = seek_time;
+  ++seek_to_count_;
+}
+
+void TestMediaController::SimulateMediaSessionInfoChanged(
+    mojom::MediaSessionInfoPtr session_info) {
+  for (auto& observer : observers_)
+    observer->MediaSessionInfoChanged(session_info.Clone());
+}
+
 void TestMediaController::SimulateMediaSessionActionsChanged(
     const std::vector<mojom::MediaSessionAction>& actions) {
-  observers_.ForAllPtrs([&actions](mojom::MediaControllerObserver* observer) {
+  for (auto& observer : observers_)
     observer->MediaSessionActionsChanged(actions);
-  });
 }
 
 void TestMediaController::Flush() {

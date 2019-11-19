@@ -5,8 +5,6 @@
 #ifndef BASE_COMPONENT_EXPORT_H_
 #define BASE_COMPONENT_EXPORT_H_
 
-#include "build/build_config.h"
-
 // Used to annotate symbols which are exported by the component named
 // |component|. Note that this only does the right thing if the corresponding
 // component target's sources are compiled with |IS_$component_IMPL| defined

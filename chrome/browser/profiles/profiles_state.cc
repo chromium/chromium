@@ -16,17 +16,20 @@
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
-#include "components/signin/core/browser/account_info.h"
+#include "components/signin/public/identity_manager/account_info.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/browsing_data_remover.h"
-#include "content/public/browser/resource_dispatcher_host.h"
-#include "services/identity/public/cpp/identity_manager.h"
 #include "ui/base/l10n/l10n_util.h"
+
+#if !defined(OS_ANDROID)
+#include "chrome/browser/ui/browser.h"
+#endif
 
 #if defined(OS_CHROMEOS)
 #include "chromeos/login/login_state/login_state.h"
@@ -35,7 +38,7 @@
 #include "chrome/browser/profiles/gaia_info_update_service.h"
 #include "chrome/browser/profiles/gaia_info_update_service_factory.h"
 #include "chrome/browser/signin/signin_error_controller_factory.h"
-#include "components/signin/core/browser/signin_pref_names.h"
+#include "components/signin/public/base/signin_pref_names.h"
 #endif
 
 namespace profiles {
@@ -63,6 +66,7 @@ void RegisterPrefs(PrefRegistrySimple* registry) {
 
   // Preferences about the user manager.
   registry->RegisterBooleanPref(prefs::kBrowserGuestModeEnabled, true);
+  registry->RegisterBooleanPref(prefs::kBrowserGuestModeEnforced, false);
   registry->RegisterBooleanPref(prefs::kBrowserAddPersonEnabled, true);
   registry->RegisterBooleanPref(prefs::kForceBrowserSignin, false);
 }
@@ -80,35 +84,41 @@ void SetLastUsedProfile(const std::string& profile_dir) {
 
 #if !defined(OS_ANDROID)
 base::string16 GetAvatarNameForProfile(const base::FilePath& profile_path) {
-  base::string16 display_name;
-
   if (profile_path == ProfileManager::GetGuestProfilePath()) {
-    display_name = l10n_util::GetStringUTF16(IDS_GUEST_PROFILE_NAME);
-  } else {
-    ProfileAttributesStorage& storage =
-        g_browser_process->profile_manager()->GetProfileAttributesStorage();
-
-    ProfileAttributesEntry* entry;
-    if (!storage.GetProfileAttributesWithPath(profile_path, &entry))
-      return l10n_util::GetStringUTF16(IDS_SINGLE_PROFILE_DISPLAY_NAME);
-
-    // Using the --new-avatar-menu flag, there's a couple of rules about what
-    // the avatar button displays. If there's a single profile, with a default
-    // name (i.e. of the form Person %d) not manually set, it should display
-    // IDS_SINGLE_PROFILE_DISPLAY_NAME. If the profile is signed in but is using
-    // a default name, use the profiles's email address. Otherwise, it
-    // will return the actual name of the profile.
-    const base::string16 profile_name = entry->GetName();
-    const base::string16 email = entry->GetUserName();
-    bool is_default_name = entry->IsUsingDefaultName() &&
-        storage.IsDefaultProfileName(profile_name);
-
-    if (storage.GetNumberOfProfiles() == 1u && is_default_name)
-      display_name = l10n_util::GetStringUTF16(IDS_SINGLE_PROFILE_DISPLAY_NAME);
-    else
-      display_name = (is_default_name && !email.empty()) ? email : profile_name;
+    return l10n_util::GetStringUTF16(IDS_GUEST_PROFILE_NAME);
   }
-  return display_name;
+
+  ProfileAttributesStorage& storage =
+      g_browser_process->profile_manager()->GetProfileAttributesStorage();
+
+  ProfileAttributesEntry* entry;
+  if (!storage.GetProfileAttributesWithPath(profile_path, &entry))
+    return l10n_util::GetStringUTF16(IDS_SINGLE_PROFILE_DISPLAY_NAME);
+
+  const base::string16 profile_name_to_display = entry->GetName();
+  // If the user has set their local profile name on purpose.
+  bool is_default_name = entry->IsUsingDefaultName();
+  if (!is_default_name)
+    return profile_name_to_display;
+
+  // The profile is signed in and has a GAIA name.
+  const base::string16 gaia_name_to_display = entry->GetGAIANameToDisplay();
+  if (!gaia_name_to_display.empty())
+    return profile_name_to_display;
+
+  // For a single profile that does not have a GAIA name
+  // (most probably not signed in), with a default name
+  // (i.e. of the form Person %d) not manually set, it should display
+  // IDS_SINGLE_PROFILE_DISPLAY_NAME.
+  if (storage.GetNumberOfProfiles() == 1u)
+    return l10n_util::GetStringUTF16(IDS_SINGLE_PROFILE_DISPLAY_NAME);
+
+  // If the profile is signed in but does not have a GAIA name nor a custom
+  // local profile name, show the email address if it exists.
+  // Otherwise, show the profile name which is expected to be the local
+  // profile name.
+  const base::string16 email = entry->GetUserName();
+  return email.empty() ? profile_name_to_display : email;
 }
 
 #if !defined(OS_CHROMEOS)
@@ -130,7 +140,12 @@ void UpdateProfileName(Profile* profile,
     return;
   }
 
-  if (new_profile_name == entry->GetName())
+  base::string16 current_profile_name =
+      ProfileAttributesEntry::ShouldConcatenateGaiaAndProfileName()
+          ? entry->GetLocalProfileName()
+          : entry->GetName();
+
+  if (new_profile_name == current_profile_name)
     return;
 
   // This is only called when updating the profile name through the UI,
@@ -144,32 +159,11 @@ void UpdateProfileName(Profile* profile,
                           base::UTF16ToUTF8(new_profile_name));
 }
 
-std::vector<AccountInfo> GetSecondaryAccountsForSignedInProfile(
-    Profile* profile) {
-  auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
-  std::vector<AccountInfo> accounts =
-      identity_manager->GetAccountsWithRefreshTokens();
-
-  // The vector returned by GetAccountsWithRefreshTokens() contains
-  // the primary account too, so we need to remove it from the list.
-  DCHECK(identity_manager->HasPrimaryAccount());
-  CoreAccountInfo primary_account = identity_manager->GetPrimaryAccountInfo();
-
-  auto primary_index = std::find_if(
-      accounts.begin(), accounts.end(),
-      [&primary_account](const AccountInfo& account_info) {
-        return account_info.account_id == primary_account.account_id;
-      });
-  DCHECK(primary_index != accounts.end());
-  accounts.erase(primary_index);
-
-  return accounts;
-}
 #endif  // !defined(OS_CHROMEOS)
 
 bool IsRegularOrGuestSession(Browser* browser) {
   Profile* profile = browser->profile();
-  return profile->IsGuestSession() || !profile->IsOffTheRecord();
+  return profile->IsRegularProfile() || profile->IsGuestSession();
 }
 
 bool IsProfileLocked(const base::FilePath& profile_path) {
@@ -230,9 +224,10 @@ bool SetActiveProfileToGuestIfLocked() {
 #endif  // !defined(OS_CHROMEOS)
 
 void RemoveBrowsingDataForProfile(const base::FilePath& profile_path) {
-  // The BrowsingDataRemover relies on the ResourceDispatcherHost, which is
-  // null in unit tests.
-  if (!content::ResourceDispatcherHost::Get())
+  // The BrowsingDataRemover relies on many objects that aren't created in unit
+  // tests. Previously this code would depend on content::ResourceDispatcherHost
+  // but that's gone, so do a similar hack for now.
+  if (!g_browser_process->safe_browsing_service())
     return;
 
   Profile* profile = g_browser_process->profile_manager()->GetProfileByPath(
@@ -244,10 +239,7 @@ void RemoveBrowsingDataForProfile(const base::FilePath& profile_path) {
   if (profile->IsGuestSession())
     profile = profile->GetOffTheRecordProfile();
 
-  content::BrowserContext::GetBrowsingDataRemover(profile)->Remove(
-      base::Time(), base::Time::Max(),
-      ChromeBrowsingDataRemoverDelegate::WIPE_PROFILE,
-      ChromeBrowsingDataRemoverDelegate::ALL_ORIGIN_TYPES);
+  profile->Wipe();
 }
 
 #if !defined(OS_CHROMEOS)

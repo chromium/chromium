@@ -13,7 +13,7 @@
 #import "ios/chrome/browser/ui/payments/payment_request_selector_view_controller.h"
 
 namespace payments {
-class PaymentInstrument;
+class PaymentApp;
 class PaymentRequest;
 }  // namespace payments
 
@@ -25,8 +25,7 @@ class PaymentRequest;
 // Notifies the delegate that the user has selected a payment method.
 - (void)paymentMethodSelectionCoordinator:
             (PaymentMethodSelectionCoordinator*)coordinator
-                   didSelectPaymentMethod:
-                       (payments::PaymentInstrument*)paymentMethod;
+                   didSelectPaymentMethod:(payments::PaymentApp*)paymentMethod;
 
 // Notifies the delegate that the user has chosen to return to the previous
 // screen without making a selection.

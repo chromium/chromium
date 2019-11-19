@@ -10,7 +10,6 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
-#include "third_party/blink/renderer/core/timing/sub_task_attribution.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
@@ -39,11 +38,11 @@ class SourceLocation;
 // Long task notifications are delivered to observing WindowPerformance*
 // instances (in the local frame tree) in m_webPerformanceObservers.
 class CORE_EXPORT PerformanceMonitor final
-    : public GarbageCollectedFinalized<PerformanceMonitor>,
+    : public GarbageCollected<PerformanceMonitor>,
       public base::sequence_manager::TaskTimeObserver {
  public:
   enum Violation : size_t {
-    kLongTask,
+    kLongTask = 0,
     kLongLayout,
     kBlockedEvent,
     kBlockedParser,
@@ -55,12 +54,10 @@ class CORE_EXPORT PerformanceMonitor final
 
   class CORE_EXPORT Client : public GarbageCollectedMixin {
    public:
-    virtual void ReportLongTask(
-        base::TimeTicks start_time,
-        base::TimeTicks end_time,
-        ExecutionContext* task_context,
-        bool has_multiple_contexts,
-        const SubTaskAttribution::EntriesVector& sub_task_attributions) {}
+    virtual void ReportLongTask(base::TimeTicks start_time,
+                                base::TimeTicks end_time,
+                                ExecutionContext* task_context,
+                                bool has_multiple_contexts) {}
     virtual void ReportLongLayout(base::TimeDelta duration) {}
     virtual void ReportGenericViolation(Violation,
                                         const String& text,
@@ -75,8 +72,6 @@ class CORE_EXPORT PerformanceMonitor final
                                      base::TimeDelta time,
                                      std::unique_ptr<SourceLocation>);
   static base::TimeDelta Threshold(ExecutionContext*, Violation);
-
-  void BypassLongCompileThresholdOnceForTesting();
 
   // Instrumenting methods.
   void Will(const probe::RecalculateStyle&);
@@ -116,7 +111,10 @@ class CORE_EXPORT PerformanceMonitor final
   friend class WindowPerformanceTest;
 
   static PerformanceMonitor* Monitor(const ExecutionContext*);
-  static PerformanceMonitor* InstrumentingMonitor(const ExecutionContext*);
+  // Returns the monitor of the ExecutionContext if its
+  // |enabled_| is set, nullptr otherwise.
+  static PerformanceMonitor* InstrumentingMonitorExcludingLongTasks(
+      const ExecutionContext*);
 
   void UpdateInstrumentation();
 
@@ -141,15 +139,14 @@ class CORE_EXPORT PerformanceMonitor final
       const HeapHashSet<Member<Frame>>& frame_contexts,
       Frame* observer_frame);
 
+  // This boolean is used to track whether there is any subscription to any
+  // Violation other than longtasks.
   bool enabled_ = false;
-  TimeDelta per_task_style_and_layout_time_;
+  base::TimeDelta per_task_style_and_layout_time_;
   unsigned script_depth_ = 0;
   unsigned layout_depth_ = 0;
   unsigned user_callback_depth_ = 0;
   const void* user_callback_;
-  TimeTicks v8_compile_start_time_;
-
-  SubTaskAttribution::EntriesVector sub_task_attributions_;
 
   base::TimeDelta thresholds_[kAfterLast];
 
@@ -163,7 +160,6 @@ class CORE_EXPORT PerformanceMonitor final
               typename DefaultHash<size_t>::Hash,
               WTF::UnsignedWithZeroKeyHashTraits<size_t>>
       subscriptions_;
-  bool bypass_long_compile_threshold_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(PerformanceMonitor);
 };

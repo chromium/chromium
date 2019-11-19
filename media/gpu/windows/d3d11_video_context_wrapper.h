@@ -11,6 +11,7 @@
 
 #include "base/macros.h"
 #include "media/gpu/media_gpu_export.h"
+#include "media/gpu/windows/d3d11_com_defs.h"
 
 namespace media {
 
@@ -40,7 +41,7 @@ class MEDIA_GPU_EXPORT VideoContextWrapper {
 
   static std::unique_ptr<VideoContextWrapper> CreateWrapper(
       D3D_FEATURE_LEVEL supported_d3d11_version,
-      Microsoft::WRL::ComPtr<ID3D11DeviceContext> device_context,
+      ComD3D11DeviceContext device_context,
       HRESULT* status);
 
   // This method signiture is defined to match exactly that of

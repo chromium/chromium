@@ -42,22 +42,16 @@ void CastTouchEventGate::SetEnabled(bool enabled) {
   }
 }
 
-ui::EventRewriteStatus CastTouchEventGate::RewriteEvent(
+ui::EventDispatchDetails CastTouchEventGate::RewriteEvent(
     const ui::Event& event,
-    std::unique_ptr<ui::Event>* rewritten_event) {
+    const Continuation continuation) {
   if (!enabled_ || !event.IsTouchEvent())
-    return ui::EVENT_REWRITE_CONTINUE;
+    return SendEvent(continuation, &event);
 
   for (auto* observer : observers_) {
     observer->OnTouchActivity();
   }
-  return ui::EVENT_REWRITE_DISCARD;
-}
-
-ui::EventRewriteStatus CastTouchEventGate::NextDispatchEvent(
-    const ui::Event& last_event,
-    std::unique_ptr<ui::Event>* new_event) {
-  return ui::EVENT_REWRITE_DISCARD;
+  return DiscardEvent(continuation);
 }
 
 }  // namespace chromecast

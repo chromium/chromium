@@ -24,44 +24,50 @@
 #include "third_party/blink/public/mojom/feature_policy/feature_policy.mojom-blink.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
-#include "third_party/blink/renderer/core/frame/use_counter.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/media/media_element_parser_helpers.h"
-#include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/layout/layout_image_resource.h"
 #include "third_party/blink/renderer/core/layout/layout_replaced.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_image.h"
 #include "third_party/blink/renderer/core/svg_names.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 
 namespace blink {
 
-inline SVGImageElement::SVGImageElement(Document& document)
+SVGImageElement::SVGImageElement(Document& document)
     : SVGGraphicsElement(svg_names::kImageTag, document),
       SVGURIReference(this),
       is_default_overridden_intrinsic_size_(false),
-      x_(SVGAnimatedLength::Create(this,
-                                   svg_names::kXAttr,
-                                   SVGLengthMode::kWidth,
-                                   SVGLength::Initial::kUnitlessZero,
-                                   CSSPropertyX)),
-      y_(SVGAnimatedLength::Create(this,
-                                   svg_names::kYAttr,
-                                   SVGLengthMode::kHeight,
-                                   SVGLength::Initial::kUnitlessZero,
-                                   CSSPropertyY)),
-      width_(SVGAnimatedLength::Create(this,
-                                       svg_names::kWidthAttr,
-                                       SVGLengthMode::kWidth,
-                                       SVGLength::Initial::kUnitlessZero,
-                                       CSSPropertyWidth)),
-      height_(SVGAnimatedLength::Create(this,
-                                        svg_names::kHeightAttr,
-                                        SVGLengthMode::kHeight,
-                                        SVGLength::Initial::kUnitlessZero,
-                                        CSSPropertyHeight)),
-      preserve_aspect_ratio_(SVGAnimatedPreserveAspectRatio::Create(
+      x_(MakeGarbageCollected<SVGAnimatedLength>(
           this,
-          svg_names::kPreserveAspectRatioAttr)),
-      image_loader_(SVGImageLoader::Create(this)) {
+          svg_names::kXAttr,
+          SVGLengthMode::kWidth,
+          SVGLength::Initial::kUnitlessZero,
+          CSSPropertyID::kX)),
+      y_(MakeGarbageCollected<SVGAnimatedLength>(
+          this,
+          svg_names::kYAttr,
+          SVGLengthMode::kHeight,
+          SVGLength::Initial::kUnitlessZero,
+          CSSPropertyID::kY)),
+      width_(MakeGarbageCollected<SVGAnimatedLength>(
+          this,
+          svg_names::kWidthAttr,
+          SVGLengthMode::kWidth,
+          SVGLength::Initial::kUnitlessZero,
+          CSSPropertyID::kWidth)),
+      height_(MakeGarbageCollected<SVGAnimatedLength>(
+          this,
+          svg_names::kHeightAttr,
+          SVGLengthMode::kHeight,
+          SVGLength::Initial::kUnitlessZero,
+          CSSPropertyID::kHeight)),
+      preserve_aspect_ratio_(
+          MakeGarbageCollected<SVGAnimatedPreserveAspectRatio>(
+              this,
+              svg_names::kPreserveAspectRatioAttr)),
+      image_loader_(MakeGarbageCollected<SVGImageLoader>(this)) {
   AddToPropertyMap(x_);
   AddToPropertyMap(y_);
   AddToPropertyMap(width_);
@@ -75,8 +81,6 @@ inline SVGImageElement::SVGImageElement(Document& document)
         IntSize(LayoutReplaced::kDefaultWidth, LayoutReplaced::kDefaultHeight);
   }
 }
-
-DEFINE_NODE_FACTORY(SVGImageElement)
 
 void SVGImageElement::Trace(blink::Visitor* visitor) {
   visitor->Trace(x_);
@@ -172,23 +176,6 @@ void SVGImageElement::ParseAttribute(
   if (params.name == svg_names::kDecodingAttr) {
     UseCounter::Count(GetDocument(), WebFeature::kImageDecodingAttribute);
     decoding_mode_ = ParseImageDecodingMode(params.new_value);
-  } else if (params.name == svg_names::kIntrinsicsizeAttr &&
-             RuntimeEnabledFeatures::
-                 ExperimentalProductivityFeaturesEnabled()) {
-    String message;
-    bool intrinsic_size_changed =
-        media_element_parser_helpers::ParseIntrinsicSizeAttribute(
-            params.new_value, this, &overridden_intrinsic_size_,
-            &is_default_overridden_intrinsic_size_, &message);
-    if (!message.IsEmpty()) {
-      GetDocument().AddConsoleMessage(ConsoleMessage::Create(
-          kOtherMessageSource, mojom::ConsoleMessageLevel::kWarning, message));
-    }
-
-    if (intrinsic_size_changed) {
-      if (LayoutSVGImage* layout_obj = ToLayoutSVGImage(GetLayoutObject()))
-        MarkForLayoutAndParentResourceInvalidation(*layout_obj);
-    }
   } else {
     SVGElement::ParseAttribute(params);
   }
@@ -200,7 +187,8 @@ bool SVGImageElement::SelfHasRelativeLengths() const {
          height_->CurrentValue()->IsRelative();
 }
 
-LayoutObject* SVGImageElement::CreateLayoutObject(const ComputedStyle&) {
+LayoutObject* SVGImageElement::CreateLayoutObject(const ComputedStyle&,
+                                                  LegacyLayout) {
   return new LayoutSVGImage(this);
 }
 
@@ -235,9 +223,9 @@ const AtomicString SVGImageElement::ImageSourceURL() const {
 }
 
 void SVGImageElement::DidMoveToNewDocument(Document& old_document) {
-  GetImageLoader().UpdateFromElement(ImageLoader::kUpdateIgnorePreviousError);
   GetImageLoader().ElementDidMoveToNewDocument();
   SVGGraphicsElement::DidMoveToNewDocument(old_document);
+  GetImageLoader().UpdateFromElement(ImageLoader::kUpdateIgnorePreviousError);
 }
 
 }  // namespace blink

@@ -51,14 +51,11 @@ class Element;
 class StylePropertyShorthand;
 class StyleResolver;
 
-class CSSAnimations final {
+class CORE_EXPORT CSSAnimations final {
   DISALLOW_NEW();
 
  public:
   CSSAnimations();
-
-  bool IsAnimationForInspector(const Animation&);
-  bool IsTransitionAnimationForInspector(const Animation&) const;
 
   static const StylePropertyShorthand& PropertiesForTransitionAll();
   static bool IsAnimationAffectingProperty(const CSSProperty&);
@@ -105,8 +102,7 @@ class CSSAnimations final {
   void Trace(blink::Visitor*);
 
  private:
-  class RunningAnimation final
-      : public GarbageCollectedFinalized<RunningAnimation> {
+  class RunningAnimation final : public GarbageCollected<RunningAnimation> {
    public:
     RunningAnimation(Animation* animation, NewCSSAnimation new_animation)
         : animation(animation),
@@ -205,10 +201,9 @@ class CSSAnimations final {
     AnimationEventDelegate(Element* animation_target, const AtomicString& name)
         : animation_target_(animation_target),
           name_(name),
-          previous_phase_(AnimationEffect::kPhaseNone),
-          previous_iteration_(NullValue()) {}
+          previous_phase_(Timing::kPhaseNone) {}
     bool RequiresIterationEvents(const AnimationEffect&) override;
-    void OnEventCondition(const AnimationEffect&) override;
+    void OnEventCondition(const AnimationEffect&, Timing::Phase) override;
     void Trace(blink::Visitor*) override;
 
    private:
@@ -218,11 +213,11 @@ class CSSAnimations final {
 
     void MaybeDispatch(Document::ListenerType,
                        const AtomicString& event_name,
-                       double elapsed_time);
+                       const AnimationTimeDelta& elapsed_time);
     Member<Element> animation_target_;
     const AtomicString name_;
-    AnimationEffect::Phase previous_phase_;
-    double previous_iteration_;
+    Timing::Phase previous_phase_;
+    base::Optional<double> previous_iteration_;
   };
 
   class TransitionEventDelegate final : public AnimationEffect::EventDelegate {
@@ -231,15 +226,16 @@ class CSSAnimations final {
                             const PropertyHandle& property)
         : transition_target_(transition_target),
           property_(property),
-          previous_phase_(AnimationEffect::kPhaseNone) {}
+          previous_phase_(Timing::kPhaseNone) {}
     bool RequiresIterationEvents(const AnimationEffect&) override {
       return false;
     }
-    void OnEventCondition(const AnimationEffect&) override;
+    void OnEventCondition(const AnimationEffect&, Timing::Phase) override;
     void Trace(blink::Visitor*) override;
 
    private:
-    void EnqueueEvent(const WTF::AtomicString& type, double elapsed_time);
+    void EnqueueEvent(const WTF::AtomicString& type,
+                      const AnimationTimeDelta& elapsed_time);
 
     const Element& TransitionTarget() const { return *transition_target_; }
     EventTarget* GetEventTarget() const;
@@ -248,7 +244,7 @@ class CSSAnimations final {
 
     Member<Element> transition_target_;
     PropertyHandle property_;
-    AnimationEffect::Phase previous_phase_;
+    Timing::Phase previous_phase_;
   };
 
   DISALLOW_COPY_AND_ASSIGN(CSSAnimations);

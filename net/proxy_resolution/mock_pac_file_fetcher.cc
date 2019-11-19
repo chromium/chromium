@@ -4,7 +4,8 @@
 
 #include "net/proxy_resolution/mock_pac_file_fetcher.h"
 
-#include "base/callback_helpers.h"
+#include <utility>
+
 #include "base/logging.h"
 #include "base/run_loop.h"
 #include "base/strings/string16.h"
@@ -14,8 +15,7 @@
 namespace net {
 
 MockPacFileFetcher::MockPacFileFetcher()
-    : pending_request_text_(NULL),
-      is_shutdown_(false) {}
+    : pending_request_text_(nullptr), is_shutdown_(false) {}
 
 MockPacFileFetcher::~MockPacFileFetcher() = default;
 
@@ -45,7 +45,7 @@ void MockPacFileFetcher::NotifyFetchCompletion(int result,
                                                const std::string& ascii_text) {
   DCHECK(has_pending_request());
   *pending_request_text_ = base::ASCIIToUTF16(ascii_text);
-  base::ResetAndReturn(&pending_request_callback_).Run(result);
+  std::move(pending_request_callback_).Run(result);
 }
 
 void MockPacFileFetcher::Cancel() {
@@ -55,12 +55,12 @@ void MockPacFileFetcher::Cancel() {
 void MockPacFileFetcher::OnShutdown() {
   is_shutdown_ = true;
   if (pending_request_callback_) {
-    base::ResetAndReturn(&pending_request_callback_).Run(ERR_CONTEXT_SHUT_DOWN);
+    std::move(pending_request_callback_).Run(ERR_CONTEXT_SHUT_DOWN);
   }
 }
 
 URLRequestContext* MockPacFileFetcher::GetRequestContext() const {
-  return NULL;
+  return nullptr;
 }
 
 const GURL& MockPacFileFetcher::pending_request_url() const {

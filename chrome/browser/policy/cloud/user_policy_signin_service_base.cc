@@ -12,14 +12,13 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "chrome/browser/chrome_notification_types.h"
-#include "chrome/browser/policy/cloud/user_cloud_policy_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/account_id_from_account_info.h"
 #include "chrome/common/chrome_content_client.h"
-#include "components/account_id/account_id.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
 #include "components/policy/core/common/cloud/user_cloud_policy_manager.h"
-#include "components/signin/core/browser/account_info.h"
+#include "components/signin/public/identity_manager/account_info.h"
 #include "content/public/browser/notification_source.h"
 #include "content/public/browser/storage_partition.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -31,14 +30,13 @@ UserPolicySigninServiceBase::UserPolicySigninServiceBase(
     PrefService* local_state,
     DeviceManagementService* device_management_service,
     UserCloudPolicyManager* policy_manager,
-    identity::IdentityManager* identity_manager,
+    signin::IdentityManager* identity_manager,
     scoped_refptr<network::SharedURLLoaderFactory> system_url_loader_factory)
     : policy_manager_(policy_manager),
       identity_manager_(identity_manager),
       local_state_(local_state),
       device_management_service_(device_management_service),
-      system_url_loader_factory_(system_url_loader_factory),
-      weak_factory_(this) {
+      system_url_loader_factory_(system_url_loader_factory) {
   // Register a listener to be called back once the current profile has finished
   // initializing, so we can startup/shutdown the UserCloudPolicyManager.
   registrar_.Add(this,

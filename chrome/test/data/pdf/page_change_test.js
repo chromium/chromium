@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {pressAndReleaseKeyOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
+
 function resetDocument() {
   window.viewer.viewport.goToPage(0);
   window.viewer.viewport.setZoom(1);
@@ -12,17 +14,17 @@ function getCurrentPage() {
   return window.viewer.viewport.getMostVisiblePage();
 }
 
-var tests = [
+const tests = [
   /**
    * Test that the left/right arrows change page back and forth.
    */
   function testPageChangesWithArrows() {
     // Right arrow -> Go to page 2.
-    MockInteractions.pressAndReleaseKeyOn(document, 39);
+    pressAndReleaseKeyOn(document, 39);
     chrome.test.assertEq(1, getCurrentPage());
 
     // Left arrow -> Back to page 1.
-    MockInteractions.pressAndReleaseKeyOn(document, 37);
+    pressAndReleaseKeyOn(document, 37);
     chrome.test.assertEq(0, getCurrentPage());
 
     resetDocument();
@@ -39,10 +41,10 @@ var tests = [
     window.viewer.isFormFieldFocused_ = true;
 
     // Page should not change when left/right are pressed.
-    MockInteractions.pressAndReleaseKeyOn(document, 39);
+    pressAndReleaseKeyOn(document, 39);
     chrome.test.assertEq(0, getCurrentPage());
 
-    MockInteractions.pressAndReleaseKeyOn(document, 37);
+    pressAndReleaseKeyOn(document, 37);
     chrome.test.assertEq(0, getCurrentPage());
 
     resetDocument();
@@ -57,11 +59,11 @@ var tests = [
     window.viewer.viewport.fitToPage();
 
     // Page down -> Go to page 2.
-    MockInteractions.pressAndReleaseKeyOn(document, 34);
+    pressAndReleaseKeyOn(document, 34);
     chrome.test.assertEq(1, getCurrentPage());
 
     // Page up -> Back to page 1.
-    MockInteractions.pressAndReleaseKeyOn(document, 33);
+    pressAndReleaseKeyOn(document, 33);
     chrome.test.assertEq(0, getCurrentPage());
 
     resetDocument();

@@ -69,3 +69,6 @@ Searching UA shadow DOM with setting enabled:
 Running: testSearchShadowHostChildren
 < d i v   i d = " s h a d o w - h o s t - c o n t e n t " > < / d i v >
 
+Running: testSearchClosingTag
+< t e x t a r e a > < / t e x t a r e a >
+

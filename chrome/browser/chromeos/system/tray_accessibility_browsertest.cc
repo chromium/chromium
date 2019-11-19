@@ -4,8 +4,7 @@
 
 #include "ash/public/cpp/ash_pref_names.h"
 #include "ash/public/cpp/ash_view_ids.h"
-#include "ash/public/interfaces/system_tray_test_api.test-mojom-test-utils.h"
-#include "ash/public/interfaces/system_tray_test_api.test-mojom.h"
+#include "ash/public/cpp/system_tray_test_api.h"
 #include "base/callback.h"
 #include "base/command_line.h"
 #include "base/run_loop.h"
@@ -17,7 +16,7 @@
 #include "chrome/browser/chromeos/login/startup_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/ui/ash/session_controller_client.h"
+#include "chrome/browser/ui/ash/session_controller_client_impl.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/testing_profile.h"
@@ -31,9 +30,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/user_manager.h"
-#include "content/public/common/service_manager_connection.h"
 #include "content/public/test/test_utils.h"
-#include "services/service_manager/public/cpp/connector.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/views/controls/button/button.h"
@@ -133,18 +130,10 @@ class TrayAccessibilityTest
   // The profile which should be used by these tests.
   Profile* GetProfile() { return ProfileManager::GetActiveUserProfile(); }
 
-  // Connect / reconnect to SystemTrayTestApi.
-  void BindTestApi() {
-    tray_test_api_.reset();
-    content::ServiceManagerConnection::GetForProcess()
-        ->GetConnector()
-        ->BindInterface(ash::mojom::kServiceName, &tray_test_api_);
-  }
-
   // InProcessBrowserTest:
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
-    BindTestApi();
+    tray_test_api_ = ash::SystemTrayTestApi::Create();
   }
 
   void SetUpInProcessBrowserTestFixture() override {
@@ -174,44 +163,32 @@ class TrayAccessibilityTest
   }
 
   bool IsMenuButtonVisible() {
-    ash::mojom::SystemTrayTestApiAsyncWaiter wait_for(tray_test_api_.get());
-    bool visible = false;
-    wait_for.IsBubbleViewVisible(ash::VIEW_ID_ACCESSIBILITY_TRAY_ITEM,
-                                 true /* open_tray */, &visible);
-    wait_for.CloseBubble();
+    bool visible = tray_test_api_->IsBubbleViewVisible(
+        ash::VIEW_ID_ACCESSIBILITY_TRAY_ITEM, true /* open_tray */);
+    tray_test_api_->CloseBubble();
     return visible;
   }
 
-  void CreateDetailedMenu() {
-    ash::mojom::SystemTrayTestApiAsyncWaiter wait_for(tray_test_api_.get());
-    wait_for.ShowDetailedView(ash::mojom::TrayItem::kAccessibility);
+  void CreateDetailedMenu() { tray_test_api_->ShowAccessibilityDetailedView(); }
+
+  bool IsBubbleOpen() { return tray_test_api_->IsTrayBubbleOpen(); }
+
+  void ClickVirtualKeyboardOnDetailMenu() {
+    tray_test_api_->ClickBubbleView(
+        ash::VIEW_ID_ACCESSIBILITY_VIRTUAL_KEYBOARD);
   }
 
-  bool IsBubbleOpen() {
-    ash::mojom::SystemTrayTestApiAsyncWaiter wait_for(tray_test_api_.get());
-    bool is_open = false;
-    wait_for.IsTrayBubbleOpen(&is_open);
-    return is_open;
-  }
-
-  void ClickAutoclickOnDetailMenu() {
-    ash::mojom::SystemTrayTestApiAsyncWaiter wait_for(tray_test_api_.get());
-    wait_for.ClickBubbleView(ash::VIEW_ID_ACCESSIBILITY_AUTOCLICK);
-  }
-
-  bool IsAutoclickEnabledOnDetailMenu() const {
-    ash::mojom::SystemTrayTestApiAsyncWaiter wait_for(tray_test_api_.get());
-    bool visible = false;
-    wait_for.IsBubbleViewVisible(ash::VIEW_ID_ACCESSIBILITY_AUTOCLICK_ENABLED,
-                                 false /* open_tray */, &visible);
-    return visible;
+  bool IsVirtualKeyboardEnabledOnDetailMenu() const {
+    return tray_test_api_->IsBubbleViewVisible(
+        ash::VIEW_ID_ACCESSIBILITY_VIRTUAL_KEYBOARD_ENABLED,
+        false /* open_tray */);
   }
 
   // Disable animations so that tray icons hide immediately.
   ui::ScopedAnimationDurationScaleMode disable_animations_;
 
   policy::MockConfigurationPolicyProvider provider_;
-  ash::mojom::SystemTrayTestApiPtr tray_test_api_;
+  std::unique_ptr<ash::SystemTrayTestApi> tray_test_api_;
 };
 
 IN_PROC_BROWSER_TEST_P(TrayAccessibilityTest, ShowMenu) {
@@ -483,9 +460,10 @@ IN_PROC_BROWSER_TEST_P(TrayAccessibilityTest, KeepMenuVisibilityOnLockScreen) {
   EXPECT_TRUE(IsMenuButtonVisible());
 
   // Locks the screen.
-  SessionControllerClient::Get()->RequestLockScreen();
-  // Resets binding because UnifiedSystemTray is recreated.
-  BindTestApi();
+  SessionControllerClientImpl::Get()->RequestLockScreen();
+
+  // Resets the test API because UnifiedSystemTray is recreated.
+  tray_test_api_ = ash::SystemTrayTestApi::Create();
   EXPECT_TRUE(IsMenuButtonVisible());
 
   // Disables high contrast mode.
@@ -497,19 +475,21 @@ IN_PROC_BROWSER_TEST_P(TrayAccessibilityTest, KeepMenuVisibilityOnLockScreen) {
 
 // Verify that the accessiblity system detailed menu remains open when an item
 // is selected or deselected.
+// Do not use a feature which requires an enable/disable confirmation dialog
+// here, as the dialogs change focus and close the detail menu.
 IN_PROC_BROWSER_TEST_P(TrayAccessibilityTest, DetailMenuRemainsOpen) {
   CreateDetailedMenu();
 
-  ClickAutoclickOnDetailMenu();
-  EXPECT_TRUE(IsAutoclickEnabledOnDetailMenu());
+  ClickVirtualKeyboardOnDetailMenu();
+  EXPECT_TRUE(IsVirtualKeyboardEnabledOnDetailMenu());
   {
     base::RunLoop run_loop;
     run_loop.RunUntilIdle();
   }
   EXPECT_TRUE(IsBubbleOpen());
 
-  ClickAutoclickOnDetailMenu();
-  EXPECT_FALSE(IsAutoclickEnabledOnDetailMenu());
+  ClickVirtualKeyboardOnDetailMenu();
+  EXPECT_FALSE(IsVirtualKeyboardEnabledOnDetailMenu());
   {
     base::RunLoop run_loop;
     run_loop.RunUntilIdle();

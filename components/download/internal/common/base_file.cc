@@ -13,6 +13,7 @@
 #include "base/format_macros.h"
 #include "base/logging.h"
 #include "base/macros.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/pickle.h"
 #include "base/strings/stringprintf.h"
@@ -24,6 +25,10 @@
 #include "components/download/public/common/download_stats.h"
 #include "components/download/quarantine/quarantine.h"
 #include "crypto/secure_hash.h"
+
+#if defined(OS_WIN)
+#include "components/services/quarantine/public/cpp/quarantine_features_win.h"
+#endif  // defined(OS_WIN)
 
 #if defined(OS_ANDROID)
 #include "base/android/content_uri_utils.h"
@@ -75,9 +80,19 @@ void InitializeFile(base::File* file, const base::FilePath& file_path) {
     return;
   }
 #endif  // defined(OS_ANDROID)
-  file->Initialize(file_path, base::File::FLAG_OPEN_ALWAYS |
-                                  base::File::FLAG_WRITE |
-                                  base::File::FLAG_READ);
+
+  // Use exclusive write to prevent another process from writing the file.
+  file->Initialize(
+      file_path,
+      base::File::FLAG_OPEN_ALWAYS | base::File::FLAG_WRITE |
+          base::File::FLAG_READ
+#if defined(OS_WIN)
+          // Don't allow other process to write to the file while Chrome is
+          // writing to it. On posix systems, use FLAG_EXCLUSIVE_WRITE will
+          // cause file creation to fail if the file already exists.
+          | base::File::FLAG_EXCLUSIVE_WRITE
+#endif  // defined(OS_WIN)
+  );
 }
 
 void DeleteFile(const base::FilePath& file_path) {
@@ -154,9 +169,10 @@ DownloadInterruptReason BaseFile::WriteDataToFile(int64_t offset,
   if (detached_)
     RecordDownloadCount(APPEND_TO_DETACHED_FILE_COUNT);
 
-  if (!file_.IsValid())
+  if (!file_.IsValid()) {
     return LogInterruptReason("No file stream on append", 0,
                               DOWNLOAD_INTERRUPT_REASON_FILE_FAILED);
+  }
 
   // TODO(phajdan.jr): get rid of this check.
   if (data_len == 0)
@@ -202,6 +218,27 @@ DownloadInterruptReason BaseFile::WriteDataToFile(int64_t offset,
     secure_hash_->Update(data, data_len);
 
   return DOWNLOAD_INTERRUPT_REASON_NONE;
+}
+
+bool BaseFile::ValidateDataInFile(int64_t offset,
+                                  const char* data,
+                                  size_t data_len) {
+  if (!file_.IsValid())
+    return false;
+
+  // Only validate the first chunk of the file. So |offset| cannot be
+  // larger than bytes received.
+  if (offset > bytes_so_far_)
+    return false;
+
+  if (data_len <= 0)
+    return true;
+
+  std::unique_ptr<char[]> buffer(new char[data_len]);
+  if (file_.Read(offset, buffer.get(), data_len) <= 0)
+    return false;
+
+  return memcmp(data, buffer.get(), data_len) == 0;
 }
 
 DownloadInterruptReason BaseFile::Rename(const base::FilePath& new_path) {
@@ -256,6 +293,7 @@ DownloadInterruptReason BaseFile::Rename(const base::FilePath& new_path) {
 }
 
 void BaseFile::Detach() {
+  weak_factory_.InvalidateWeakPtrs();
   detached_ = true;
   CONDITIONAL_TRACE(
       INSTANT0("download", "DownloadFileDetached", TRACE_EVENT_SCOPE_THREAD));
@@ -494,9 +532,45 @@ DownloadInterruptReason BaseFile::PublishDownload() {
 }
 #endif  // defined(OS_ANDROID)
 
-#if defined(OS_WIN) || defined(OS_MACOSX) || defined(OS_LINUX)
-
 namespace {
+
+DownloadInterruptReason QuarantineFileResultToReason(
+    quarantine::mojom::QuarantineFileResult result) {
+  switch (result) {
+    case quarantine::mojom::QuarantineFileResult::OK:
+      return DOWNLOAD_INTERRUPT_REASON_NONE;
+    case quarantine::mojom::QuarantineFileResult::VIRUS_INFECTED:
+      return DOWNLOAD_INTERRUPT_REASON_FILE_VIRUS_INFECTED;
+    case quarantine::mojom::QuarantineFileResult::SECURITY_CHECK_FAILED:
+      return DOWNLOAD_INTERRUPT_REASON_FILE_SECURITY_CHECK_FAILED;
+    case quarantine::mojom::QuarantineFileResult::BLOCKED_BY_POLICY:
+      return DOWNLOAD_INTERRUPT_REASON_FILE_BLOCKED;
+    case quarantine::mojom::QuarantineFileResult::ACCESS_DENIED:
+      return DOWNLOAD_INTERRUPT_REASON_FILE_ACCESS_DENIED;
+
+    case quarantine::mojom::QuarantineFileResult::FILE_MISSING:
+      // Don't have a good interrupt reason here. This return code means that
+      // the file at |full_path_| went missing before QuarantineFile got to
+      // look at it. Not expected to happen, but we've seen instances where a
+      // file goes missing immediately after BaseFile closes the handle.
+      //
+      // Intentionally using a different error message than
+      // SECURITY_CHECK_FAILED in order to distinguish the two.
+      return DOWNLOAD_INTERRUPT_REASON_FILE_FAILED;
+
+    case quarantine::mojom::QuarantineFileResult::ANNOTATION_FAILED:
+      // This means that the mark-of-the-web couldn't be applied. The file is
+      // already on the file system under its final target name.
+      //
+      // Causes of failed annotations typically aren't transient. E.g. the
+      // target file system may not support extended attributes or alternate
+      // streams. We are going to allow these downloads to progress on the
+      // assumption that failures to apply MOTW can't reliably be introduced
+      // remotely.
+      return DOWNLOAD_INTERRUPT_REASON_NONE;
+  }
+  return DOWNLOAD_INTERRUPT_REASON_FILE_FAILED;
+}
 
 // Given a source and a referrer, determines the "safest" URL that can be used
 // to determine the authority of the download source. Returns an empty URL if no
@@ -529,7 +603,9 @@ GURL GetEffectiveAuthorityURL(const GURL& source_url,
 
 }  // namespace
 
-DownloadInterruptReason BaseFile::AnnotateWithSourceInformation(
+#if defined(OS_WIN) || defined(OS_MACOSX) || defined(OS_LINUX)
+
+DownloadInterruptReason BaseFile::AnnotateWithSourceInformationSync(
     const std::string& client_guid,
     const GURL& source_url,
     const GURL& referrer_url) {
@@ -543,48 +619,73 @@ DownloadInterruptReason BaseFile::AnnotateWithSourceInformation(
       referrer_url, client_guid);
   CONDITIONAL_TRACE(END0("download", "DownloadFileAnnotate"));
 
-  switch (result) {
-    case QuarantineFileResult::OK:
-      return DOWNLOAD_INTERRUPT_REASON_NONE;
-    case QuarantineFileResult::VIRUS_INFECTED:
-      return DOWNLOAD_INTERRUPT_REASON_FILE_VIRUS_INFECTED;
-    case QuarantineFileResult::SECURITY_CHECK_FAILED:
-      return DOWNLOAD_INTERRUPT_REASON_FILE_SECURITY_CHECK_FAILED;
-    case QuarantineFileResult::BLOCKED_BY_POLICY:
-      return DOWNLOAD_INTERRUPT_REASON_FILE_BLOCKED;
-    case QuarantineFileResult::ACCESS_DENIED:
-      return DOWNLOAD_INTERRUPT_REASON_FILE_ACCESS_DENIED;
-
-    case QuarantineFileResult::FILE_MISSING:
-      // Don't have a good interrupt reason here. This return code means that
-      // the file at |full_path_| went missing before QuarantineFile got to look
-      // at it. Not expected to happen, but we've seen instances where a file
-      // goes missing immediately after BaseFile closes the handle.
-      //
-      // Intentionally using a different error message than
-      // SECURITY_CHECK_FAILED in order to distinguish the two.
-      return DOWNLOAD_INTERRUPT_REASON_FILE_FAILED;
-
-    case QuarantineFileResult::ANNOTATION_FAILED:
-      // This means that the mark-of-the-web couldn't be applied. The file is
-      // already on the file system under its final target name.
-      //
-      // Causes of failed annotations typically aren't transient. E.g. the
-      // target file system may not support extended attributes or alternate
-      // streams. We are going to allow these downloads to progress on the
-      // assumption that failures to apply MOTW can't reliably be introduced
-      // remotely.
-      return DOWNLOAD_INTERRUPT_REASON_NONE;
-  }
-  return DOWNLOAD_INTERRUPT_REASON_FILE_FAILED;
+  return QuarantineFileResultToReason(result);
 }
 #else  // !OS_WIN && !OS_MACOSX && !OS_LINUX
-DownloadInterruptReason BaseFile::AnnotateWithSourceInformation(
+DownloadInterruptReason BaseFile::AnnotateWithSourceInformationSync(
     const std::string& client_guid,
     const GURL& source_url,
     const GURL& referrer_url) {
   return DOWNLOAD_INTERRUPT_REASON_NONE;
 }
 #endif
+
+void BaseFile::OnFileQuarantined(
+    bool connection_error,
+    quarantine::mojom::QuarantineFileResult result) {
+  base::UmaHistogramBoolean("Download.QuarantineService.ConnectionError",
+                            connection_error);
+
+  DCHECK(on_annotation_done_callback_);
+  quarantine_service_.reset();
+  std::move(on_annotation_done_callback_)
+      .Run(QuarantineFileResultToReason(result));
+}
+
+void BaseFile::OnQuarantineServiceError(const GURL& source_url,
+                                        const GURL& referrer_url) {
+#if defined(OS_WIN)
+  if (base::FeatureList::IsEnabled(quarantine::kOutOfProcessQuarantine)) {
+    OnFileQuarantined(/*connection_error=*/true,
+                      quarantine::SetInternetZoneIdentifierDirectly(
+                          full_path_, source_url, referrer_url));
+    return;
+  }
+#endif  // defined(OS_WIN)
+
+  CHECK(false) << "In-process quarantine service should not have failed.";
+}
+
+void BaseFile::AnnotateWithSourceInformation(
+    const std::string& client_guid,
+    const GURL& source_url,
+    const GURL& referrer_url,
+    mojo::PendingRemote<quarantine::mojom::Quarantine> remote_quarantine,
+    OnAnnotationDoneCallback on_annotation_done_callback) {
+  GURL authority_url = GetEffectiveAuthorityURL(source_url, referrer_url);
+  if (!remote_quarantine) {
+#if defined(OS_WIN)
+    QuarantineFileResult result = quarantine::SetInternetZoneIdentifierDirectly(
+        full_path_, authority_url, referrer_url);
+#else
+    QuarantineFileResult result = QuarantineFileResult::ANNOTATION_FAILED;
+#endif
+    std::move(on_annotation_done_callback)
+        .Run(QuarantineFileResultToReason(result));
+  } else {
+    quarantine_service_.Bind(std::move(remote_quarantine));
+
+    on_annotation_done_callback_ = std::move(on_annotation_done_callback);
+
+    quarantine_service_.set_disconnect_handler(base::BindOnce(
+        &BaseFile::OnQuarantineServiceError, weak_factory_.GetWeakPtr(),
+        authority_url, referrer_url));
+
+    quarantine_service_->QuarantineFile(
+        full_path_, authority_url, referrer_url, client_guid,
+        base::BindOnce(&BaseFile::OnFileQuarantined, weak_factory_.GetWeakPtr(),
+                       false));
+  }
+}
 
 }  // namespace download

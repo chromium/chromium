@@ -2,6 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
+import 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.m.js';
+import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
+import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
+import 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
+import 'chrome://resources/cr_elements/cr_radio_button/cr_radio_button.m.js';
+import 'chrome://resources/cr_elements/cr_radio_group/cr_radio_group.m.js';
+import 'chrome://resources/cr_elements/shared_style_css.m.js';
+import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
+import './icons.js';
+import './shared_styles.js';
+
+import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
+import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
 /** @enum {string} */ var AudioNodeType = {
   HEADPHONE: 'HEADPHONE',
   MIC: 'MIC',
@@ -20,6 +35,7 @@
 /**
  * An audio node. Based on the struct AudioNode found in audio_node.h.
  * @constructor
+ * @suppress {checkTypes}
  */
 var AudioNode = function() {
   // Whether node will input or output audio.
@@ -49,16 +65,16 @@ var AudioNode = function() {
 Polymer({
   is: 'audio-settings',
 
+  _template: html`{__html_template__}`,
+
   properties: {
     /**
      * An AudioNode which is currently being edited.
-     * @type {AudioNode}
+     * @type {?AudioNode}
      */
     currentEditableObject: {
       type: Object,
-      value: function() {
-        return {};
-      }
+      value: null,
     },
 
     /**
@@ -123,7 +139,8 @@ Polymer({
   },
 
   ready: function() {
-    chrome.send('requestAudioNodes');
+    sendWithPromise('requestAudioNodes').then(
+        this.updateAudioNodes_.bind(this));
   },
 
   /**
@@ -138,7 +155,7 @@ Polymer({
 
   /**
    * This adds or modifies an audio node to the AudioNodeList.
-   * @param {model: {index: number}} e Event with a model containing
+   * @param {{model: {index: number}}} e Event with a model containing
    *     the index in |nodes| to add.
    */
   insertAudioNode: function(e) {
@@ -150,10 +167,8 @@ Polymer({
   /**
    * This adds/modifies the audio node |nodes[currentEditIndex]| to/from the
    * AudioNodeList.
-   * @param {model: {index: number}} e Event with a model containing
-   *     the index in |nodes| to add.
    */
-  insertEditedAudioNode: function(e) {
+  insertEditedAudioNode: function() {
     // Insert a new node or update an existing node using all the properties
     // in |node|.
     var node = this.nodes[this.currentEditIndex];
@@ -163,8 +178,8 @@ Polymer({
 
   /**
    * Removes the audio node with id |id|.
-   * @param {model: {index: number}} e Event with a model containing
-   *     the index in |nodes| to add.
+   * @param {{model: {index: number}}} e Event with a model containing
+   *     the index in |nodes| to remove.
    */
   removeAudioNode: function(e) {
     var info = this.nodes[e.model.index];
@@ -204,8 +219,9 @@ Polymer({
   /**
    * Called by the WebUI which provides a list of nodes.
    * @param {!Array<!AudioNode>} nodeList A list of audio nodes.
+   * @private
    */
-  updateAudioNodes: function(nodeList) {
+  updateAudioNodes_: function(nodeList) {
     /** @type {!Array<!AudioNode>} */ var newNodeList = [];
     for (var i = 0; i < nodeList.length; ++i) {
       // Create a new audio node and add all the properties from |nodeList[i]|.

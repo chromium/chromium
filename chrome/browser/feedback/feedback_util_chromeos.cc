@@ -39,7 +39,9 @@ void OnGetSystemInformation(
 
   feedback_data->set_context(profile);
   feedback_data->set_description(description);
-  feedback_data->SetAndCompressSystemInfo(std::move(sys_info));
+  if (sys_info)
+    feedback_data->AddLogs(std::move(*sys_info));
+  feedback_data->CompressSystemInfo();
 
   GetFeedbackService(profile)->SendFeedback(feedback_data, callback);
 }

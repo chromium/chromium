@@ -16,14 +16,15 @@
 <translation id="106222400312645156">κεφαλίδα σειράς</translation>
 <translation id="1065552602950927991">Μη έγκυρη καταχώριση</translation>
 <translation id="1066085461259044485">Πράσινο του δάσους</translation>
-<translation id="1080471004309605942">Τέλος πλάγιας γραφής</translation>
 <translation id="1082209053475788238">Δεν υπάρχει προηγούμενη επικεφαλίδα επιπέδου 6.</translation>
 <translation id="1087788677726983142">Απόκρυψη φίλτρων ροής συμβάντων</translation>
 <translation id="1088219014394087294">Δεν υπάρχουν επικεφαλίδες.</translation>
 <translation id="1106741348836243114">Ενεργοποίηση ή απενεργοποίηση των ηχητικών σχολίων (ηχητικά μηνύματα).</translation>
-<translation id="1120743664840974483">{"a": "alpha", "b": "bravo", "c": "charlie", "d": "delta", "e": "echo", "f": "foxtrot", "g": "golf", "h": "hotel", "i": "india", "j": "juliet","k": "kilo", "l": "lima", "m": "mike", "n": "november", "o": "oscar","p": "papa", "q": "quebec", "r": "romeo", "s": "sierra", "t": "tango", "u": "uniform", "v": "victor", "w": "whiskey","x": "xray", "y": "yankee", "z": "zulu"}</translation>
+<translation id="1114836634143403764">Πρόταση</translation>
+<translation id="1120743664840974483">{"α": "Αστέρι", "β": "Βάτραχος", "γ": "Γάτα", "δ": "Δέντρο", "ε": "Ελέφαντας", "ζ": "Ζάρι", "η": "Ήλιος", "θ": "Θησαυρός", "ι": "Ιππότης", "κ": "Κότα","λ": "Λαγός", "μ": "Μήλο", "ν": "Νάνος", "ξ": "Ξιφίας", "ο": "Ομπρέλα","π": "Πάπια", "ρ": "Ρόδι", "σ": "Σαλιγκάρι", "τ": "Τρένο", "υ": "Υποβρύχιο", "φ": "Φεγγάρι", "χ": "Χελιδόνι", "ψ": "Ψάρι","ω": "Ώρα"}</translation>
 <translation id="1120938014254001895">Σύρετε δύο δάκτυλα προς τα πάνω</translation>
 <translation id="1124771028211010580">Το τρέχον στυλ προβολής είναι η παράθεση.</translation>
+<translation id="1126928665165112660">Δεν είναι πλάγια γραφή</translation>
 <translation id="113582498867142724">Συλλογή <ph name="TAG" /> με <ph name="NUM" /> στοιχεία</translation>
 <translation id="1155043339247954670">Δεν υπάρχει επόμενο στοιχείο στη λίστα.</translation>
 <translation id="1157782847298808853">Βοήθεια πληκτρολογίου</translation>
@@ -56,6 +57,7 @@
 <translation id="1325946044405407859">Ανοιχτό καφέ</translation>
 <translation id="1331702245475014624"><ph name="INDEX" /> από <ph name="TOTAL" /></translation>
 <translation id="1334095593597963605">εκφώνηση χαρακτήρων και λέξεων</translation>
+<translation id="1334570596456017464">Δείκτης</translation>
 <translation id="1339428534620983148">Προηγούμενη στήλη πίνακα</translation>
 <translation id="1342835525016946179">άρθρο</translation>
 <translation id="1346059596910821859">Συμβουλή</translation>
@@ -97,6 +99,7 @@
 <translation id="1616111909442424068">Σιτάρι</translation>
 <translation id="1618597272655350600">Παρέχει μια πλήρη περιγραφή της τρέχουσας τοποθεσίας</translation>
 <translation id="1627222324347828322">Λευκόγκριζο</translation>
+<translation id="1630688379087270943">Ένδειξη πλάγιας γραφής:</translation>
 <translation id="1639634871799530612">{COUNT,plural, =1{σύμβολο "μεγαλύτερο από"}other{# σύμβολα "μεγαλύτερο από"}}</translation>
 <translation id="1653266918374749391">Επικεφαλίδα προηγούμενου επιπέδου 3</translation>
 <translation id="1657616855184033958">Εμφάνιση φίλτρων ροής συμβάντων</translation>
@@ -131,6 +134,7 @@
 <translation id="1905379170753160525">Εμφάνιση λίστας επικεφαλίδων</translation>
 <translation id="1912556590115083156">σύνδεσμος που επισκεφτήκατε</translation>
 <translation id="1913761808037590218">#ed</translation>
+<translation id="1914424852593176649">Μέγεθος <ph name="FONT_SIZE" /></translation>
 <translation id="1914635379910604678">Συγχορδία <ph name="DOT" /></translation>
 <translation id="1923956950274750765">Μεσαία ορχιδέα</translation>
 <translation id="1954623340234317532">Έλεγχος εβδομάδας του έτους</translation>
@@ -140,18 +144,21 @@
 <translation id="1990932729021763163">Κεφαλίδα γραμμής:</translation>
 <translation id="2002895034995108595">Επαναφορά των τρεχουσών αντιστοιχίσεων πλήκτρων</translation>
 <translation id="2007545860310005685">{COUNT,plural, =1{αριστερή αγκύλη}other{# αριστερές αγκύλες}}</translation>
+<translation id="2009187674653301682">Δεν είναι εκθέτης</translation>
 <translation id="2010555995361223825">Μενού ChromeVox</translation>
 <translation id="2045490512405922022">μη επιλεγμένο</translation>
 <translation id="20601713649439366">Δεν υπάρχει προηγούμενη μαθηματική έκφραση.</translation>
 <translation id="2063539687800151747">Επιγραφή</translation>
 <translation id="207477615537953741">Σημασιολογική ερμηνεία ανενεργή</translation>
 <translation id="2086961585857038472">Επόμενη λέξη</translation>
+<translation id="2087981446621639008">dscrplst dtl</translation>
 <translation id="2089387485033699258">el</translation>
 <translation id="2091933974477985526">Προηγούμενη περιοχή κειμένου με δυνατότητα επεξεργασίας</translation>
 <translation id="2100350898815792233">Όλα τα σημεία στίξης</translation>
 <translation id="2110480898214777136">Περικλύστε περιεχόμενο από την αρχή ως το τέλος ή από το τέλος ως την αρχή σε μια σελίδα, ένα πλαίσιο διαλόγου ή άλλο κοντέινερ</translation>
 <translation id="2119965627982867824">κουμπί αυξομείωσης</translation>
 <translation id="2121067395472282800">κλειδί πρόσβασης:<ph name="KEY" /></translation>
+<translation id="2126597928985245619">Δεν υπάρχει διαθέσιμο κείμενο για αυτό το στοιχείο</translation>
 <translation id="2127747486437921899">Πλάγια γραφή</translation>
 <translation id="2138345533858834403">Προσομοιώνει την έξοδο μιας οθόνης Μπράιγ με δυνατότητα ανανέωσης
         στο πλαίσιο του ChromeVox στο επάνω μέρος της οθόνης.</translation>
@@ -162,14 +169,17 @@
 <translation id="2197863150503783129">Καφέ σέλας</translation>
 <translation id="2199994615414171367">Προηγούμενη μαθηματική έκφραση</translation>
 <translation id="2203046366315513658">Μείωση αξίας</translation>
+<translation id="2216790501338699346">URL συνδέσμου: <ph name="LINK_URL" /></translation>
 <translation id="2220529011494928058">Αναφορά προβλήματος</translation>
 <translation id="2223693656926968778">Εκτέλεση ενέργειας για το τρέχον αντικείμενο</translation>
+<translation id="224426591676115802">Δεν υπάρχει διαθέσιμη φωνή για τη γλώσσα: <ph name="LANGUAGE" /></translation>
 <translation id="225732394367814946">Αύξηση ταχύτητας ομιλίας</translation>
+<translation id="2267538686624070261">Αποχώρηση από σφάλμα ορθογραφίας</translation>
 <translation id="2267945578749931355">Επόμενος χαρακτήρας</translation>
 <translation id="2278490101488436824">Σύρετε τρία δάκτυλα προς τα αριστερά</translation>
 <translation id="2281234842553884450">Προηγούμενο ρυθμιστικό</translation>
-<translation id="2294136146931447363">Αρχή πλάγιας γραφής</translation>
 <translation id="2311237334957139798">Μετακίνηση στο προηγούμενο επίπεδο ευαισθησίας</translation>
+<translation id="2314393392395134769">Δεν είναι δείκτης</translation>
 <translation id="2318372665160196757">Κύριο</translation>
 <translation id="2329324941084714723">Παράθυρο καρτέλας</translation>
 <translation id="2344193891939537199">Έλεγχος ημερομηνίας και ώρας</translation>
@@ -182,6 +192,7 @@
 <translation id="2416512023405990736">Ένα αποεπιλεγμένο πλαίσιο ελέγχου</translation>
 <translation id="2417569100218200841">Πληροφορίες περιεχομένου</translation>
 <translation id="2417948780551741035">Σημειώσεις τέλους</translation>
+<translation id="2419852971200420169">Λίστα περιγραφής</translation>
 <translation id="2421113964388408478">Διαγραφή</translation>
 <translation id="2422937916923936891">Πλαίσιο ελέγχου στοιχείου μενού</translation>
 <translation id="2428534162001909979">Μενού εντολών</translation>
@@ -203,12 +214,13 @@
 <translation id="257674075312929031">Ομάδα</translation>
 <translation id="2582407057977008361">Ετικέτα "εκτός" (aside)</translation>
 <translation id="2592212930811759050">Πατήστε δύο φορές για να ξεκινήσετε την επεξεργασία</translation>
-<translation id="2606210917827248971">με {COUNT,plural, =1{# στοιχείο}other{# στοιχεία}}</translation>
+<translation id="2598495320872286378">Σφάλμα γραμματικής</translation>
 <translation id="2614981083756825552">Διάταξη Math ML</translation>
 <translation id="2624431853467395961">Άνοιγμα λειτουργίας εκμάθησης</translation>
 <translation id="2626530649491650971">με δυνατότητα κλικ</translation>
 <translation id="2628764385451019380">Δεν υπάρχει προηγούμενο πλαίσιο συνδυασμού.</translation>
 <translation id="2637227747952042642">Μαθηματικά</translation>
+<translation id="2638785836053527382">Συνεχίζεται η λήψη του αρχείου <ph name="FILE_NAME" />.</translation>
 <translation id="2639750663247012216">Τροποποιητής ChromeVox</translation>
 <translation id="2644542693584024604">ορθογραφικό σφάλμα</translation>
 <translation id="2661530546602071611">Ειδοποίηση</translation>
@@ -225,12 +237,11 @@
 <translation id="2717271541250958000">πίνακας καρτελών</translation>
 <translation id="2723001399770238859">ήχος</translation>
 <translation id="2732718972699418926">π.μ.</translation>
-<translation id="2737520612859577214">Λήξη εκθέτη</translation>
 <translation id="2749275490991666823">Επιλεγμένο</translation>
 <translation id="27527859628328957">Μετάβαση στο επόμενο αντικείμενο με δυνατότητα εστίασης</translation>
 <translation id="2770781857296573485">Εισαγωγή στην εξερεύνηση ομάδας</translation>
 <translation id="2777845298774924149">Έγινε έξοδος</translation>
-<translation id="2781264313200109999">Αρχή συνδέσμου</translation>
+<translation id="2783001728278437613">{COUNT,plural, =1{+#}other{+#}}</translation>
 <translation id="2784959586797362050">Όπως πάντα, μπορείτε να μας στείλετε απευθείας τα σχόλιά σας, πατώντας Αναζήτηση+a και έπειτα i. Θα χαρούμε να ακούσουμε τη γνώμη σας.</translation>
 <translation id="2800204403141299078">Δεν υπάρχουν διαφορετικά στοιχεία.</translation>
 <translation id="2800780099804980316">Δεν υπάρχει προηγούμενη επικεφαλίδα επιπέδου 1.</translation>
@@ -250,9 +261,9 @@
 <translation id="287383510823843610">Σκούρο πορτοκαλί</translation>
 <translation id="2879867157561757640">Σύρετε τρία δάκτυλα προς τα κάτω</translation>
 <translation id="288178314850623291">Χρησιμοποιήστε εντολές μετάβασης για μετάβαση σε συγκεκριμένους τύπους στοιχείων. Για μετάβαση προς τα εμπρός μεταξύ των επικεφαλίδων, πατήστε Αναζήτηση + H ή για μετάβαση προς τα πίσω, πατήστε Αναζήτηση + Shift + H.</translation>
+<translation id="2885764457467528513">{COUNT,plural, =1{λεπτό}other{λεπτά}}</translation>
 <translation id="2894654529758326923">Πληροφορίες</translation>
 <translation id="2899328121302785497">{COUNT,plural, =1{αριστερό άγκιστρο}other{# αριστερά άγκιστρα}}</translation>
-<translation id="2909478709401302630">Έναρξη εκθέτη</translation>
 <translation id="2911433807131383493">Άνοιγμα εκπαιδευτικού οδηγού ChromeVox</translation>
 <translation id="2912405967290226587">Σύρετε τρία δάκτυλα προς τα δεξιά</translation>
 <translation id="2932083475399492303">Εναλλαγή τύπου γραμμής μεταξύ δομικού ή διαρθρωτικού</translation>
@@ -285,6 +296,7 @@
 <translation id="3084806535845658316">χωρίς εκφώνηση πληκτρολόγησης</translation>
 <translation id="3086746722712840547">σημείωση</translation>
 <translation id="308895241372589742">Δεν υπάρχει επόμενη μαθηματική έκφραση.</translation>
+<translation id="3090227230165225418">Ανακοίνωση ειδοποιήσεων λήψης</translation>
 <translation id="3090532668523289635">ομάδα</translation>
 <translation id="3093176084511590672">Επόμενο ορόσημο</translation>
 <translation id="3096671415663099226">σύνθετο πλαίσιο</translation>
@@ -304,16 +316,19 @@
 <translation id="3163593631834463955">Κενή κεφαλίδα στήλης</translation>
 <translation id="316542773973815724">Πλοήγηση</translation>
 <translation id="3172700825913348768">{COUNT,plural, =1{διάστημα}other{# διαστήματα}}</translation>
+<translation id="3179119189286472195">Δεν είναι σύνδεσμος</translation>
 <translation id="320961988183078793">εισήχθη <ph name="TYPE" /></translation>
 <translation id="321072937702597574">Ορχιδέα</translation>
 <translation id="3218691001991391708">επικόλληση <ph name="TEXT" />.</translation>
 <translation id="3223701887221307104"><ph name="NAME" />, καρτέλα</translation>
+<translation id="3223779237381380437">Χωρίς διακριτή διαγραφή</translation>
 <translation id="3226035351387556942">πλαίσιο επιλογής ρόλου</translation>
 <translation id="3229375994964697375">Σύνδεσμος που έχετε επισκεφτεί</translation>
 <translation id="3232388865800379423">Ένα αναδυόμενο κουμπί</translation>
 <translation id="3241052487511142956">Προηγούμενος σύνδεσμος που έχετε επισκεφτεί</translation>
 <translation id="3241638166094654466">Κελιά σε κάθε γραμμή:</translation>
-<translation id="327361630706777244">Τέλος <ph name="FONT_COLOR" /></translation>
+<translation id="3244209481693235975"><ph name="LANGUAGE" />: <ph name="CONTENT" /></translation>
+<translation id="3260949043575829030">Προηγούμενο παρόμοιο στοιχείο</translation>
 <translation id="3286372614333682499">κατακόρυφος προσανατολισμός</translation>
 <translation id="3286390186030710347">Ρυθμιστικό</translation>
 <translation id="3299925995433437805">Δεν υπάρχει επόμενος σύνδεσμος που έχετε επισκεφτεί.</translation>
@@ -329,6 +344,7 @@
 <translation id="3324983252691184275">Βαθύ κόκκινο</translation>
 <translation id="3338224621010291843">Ρυθμιστικό <ph name="VALUE" /> <ph name="NAME" /></translation>
 <translation id="335581015389089642">Ομιλία</translation>
+<translation id="3356951775008366684">Ανακοίνωση φωνητικής προφοράς για τη λέξη</translation>
 <translation id="3359142382821736686">διαχωριστικό ρόλων</translation>
 <translation id="3374537878095184207">{COUNT,plural, =1{σύμβολο "συν"}other{# σύμβολα "συν"}}</translation>
 <translation id="338583716107319301">Διαχωριστικό</translation>
@@ -338,7 +354,6 @@
 <translation id="3393605254399152980">Σύρετε ένα δάκτυλο για να ακούσετε τι αγγίζετε</translation>
 <translation id="3406283310380167331">Εμφάνιση λίστας φορμών</translation>
 <translation id="3414400929511680526">Ωχρό μπλε</translation>
-<translation id="3437941064431741545">Τέλος μεγέθους <ph name="FONT_SIZE" /></translation>
 <translation id="344800400831402066">Περού</translation>
 <translation id="3457000393508828486">Έχει πατηθεί μερικώς</translation>
 <translation id="3458865416877308321"><ph name="NAME" />, απενεργοποίηση</translation>
@@ -355,9 +370,9 @@
 <translation id="3497063866483065785">{COUNT,plural, =1{λατινικό ερωτηματικό}other{# λατινικά ερωτηματικά}}</translation>
 <translation id="3514822174137761109">{COUNT,plural, =1{σύμβολο προσθήκης}other{# σύμβολα προσθήκης}}</translation>
 <translation id="352577523970648069">Ένα πεδίο κειμένου με δυνατότητα επεξεργασίας</translation>
+<translation id="3538907380453898475">dscrplst</translation>
 <translation id="3549141990712742152">αποκοπή <ph name="TEXT" />.</translation>
 <translation id="3549680091535286226">Πατήστε με δύο δάκτυλα για να διακόψετε προσωρινά την ομιλία</translation>
-<translation id="3555380819397253474">Αρχή <ph name="FONT_FAMILY" /></translation>
 <translation id="3568702578574425662"><ph name="NAME" />, το πλαίσιο ελέγχου δεν είναι επιλεγμένο</translation>
 <translation id="3589661172894441357">Γλωσσάρι</translation>
 <translation id="3591784666823501596">Μπλε ρουά</translation>
@@ -369,6 +384,7 @@
 <translation id="3646890046000188562">{COUNT,plural, =1{βαρεία}other{# βαρείες}}</translation>
 <translation id="3650317109285159359">πλαίσιο επιλογής στοιχείου μενού</translation>
 <translation id="3655855170848725876">{COUNT,plural, =1{σύμβολο δολαρίου}other{# σύμβολα δολαρίου}}</translation>
+<translation id="3658742229777143148">Αναθεώρηση</translation>
 <translation id="3659787053479271466">ειδοποίηση</translation>
 <translation id="3665563998540286755"><ph name="VALUE" />, πλαίσιο λίστας</translation>
 <translation id="3681531118904532409">Ανοιχτό παπάγιας</translation>
@@ -387,7 +403,6 @@
 <translation id="3781428340399460090">Έντονο ροζ</translation>
 <translation id="3783725005098956899">Εμφάνιση αρχείου καταγραφής</translation>
 <translation id="3793710123303304873">Έξοδος από το παράθυρο διαλόγου.</translation>
-<translation id="3795836767122514678">+{COUNT,plural, =1{#}other{#}}</translation>
 <translation id="3801735343383419236">Λίστα αυτόματης συμπλήρωσης</translation>
 <translation id="3810838688059735925">Βίντεο</translation>
 <translation id="3813387282697781382">Ανοιχτό κοραλλί</translation>
@@ -406,6 +421,7 @@
 <translation id="3930498801443296724">Ελκυστική φράση</translation>
 <translation id="3936394396199829062">Λεβάντα ρουζ</translation>
 <translation id="3941269780691800708">Εκφώνηση κειμένου κάτω από το ποντίκι.</translation>
+<translation id="394953087167197343">Ένδειξη ορθογραφικού σφάλματος:</translation>
 <translation id="3962990492275676168">Έναρξη ανάγνωσης από την τρέχουσα τοποθεσία</translation>
 <translation id="3970951409746498040">Αμμώδες καφέ</translation>
 <translation id="3989324057180830702">tgl btn</translation>
@@ -417,7 +433,6 @@
 <translation id="4039983576244166038">Κενή κεφαλίδα γραμμής</translation>
 <translation id="4042843249978639960">Δεν υπάρχει επόμενη επικεφαλίδα επιπέδου 2.</translation>
 <translation id="4043348641337972076">Δεν υπάρχει προηγούμενο ορόσημο ARIA.</translation>
-<translation id="4045764028670444336">Αρχή ορθογραφικού λάθους</translation>
 <translation id="4047216625641135770">Επισήμανση</translation>
 <translation id="404803211695627272"><ph name="V1" />-<ph name="V2" /></translation>
 <translation id="4053520724192563562">Λαχανί</translation>
@@ -436,8 +451,8 @@
 <translation id="4148180433151187540">{COUNT,plural, =1{δεξιό άγκιστρο}other{# δεξιά άγκιστρα}}</translation>
 <translation id="4158704014418536539">Διάκριση πεζών-κεφαλαίων.</translation>
 <translation id="4159784952369912983">Μοβ</translation>
+<translation id="4161104397932142764">{COUNT,plural, =1{δευτερόλεπτο}other{δευτερόλεπτα}}</translation>
 <translation id="4161663686871496107">Τα προφορικά σχόλια ChromeVox είναι έτοιμα</translation>
-<translation id="4166192625054637755">Λήξη δείκτη</translation>
 <translation id="4173994908659439270">Δεν υπάρχει επόμενο πεδίο με δυνατότητα επεξεργασίας.</translation>
 <translation id="4176463684765177261">Απενεργοποιημένη</translation>
 <translation id="4187322598335821254">Σύρετε προς τα επάνω ή προς τα κάτω για μετακίνηση ανά γραμμή</translation>
@@ -453,6 +468,7 @@
 <translation id="42164919740161077">Ανοιχτό μπλε γκρι</translation>
 <translation id="4218529045364428769">{COUNT,plural, =1{παύλα}other{# παύλες}}</translation>
 <translation id="421884353938374759">επιλογέας χρώματος</translation>
+<translation id="4221071177874897997">Ένδειξη έντονης γραφής:</translation>
 <translation id="4229646983878045487">ημερομηνία ώρα</translation>
 <translation id="4230834257931120629">Ανοιχτό γκρι του σχιστόλιθου</translation>
 <translation id="4231102694147661229">Ενεργοποίηση επιλογών για προγραμματιστές</translation>
@@ -478,6 +494,7 @@
 <translation id="4372705107434148843">Διακοπή ομιλίας</translation>
 <translation id="4373197658375206385">Δεν υπάρχει προηγούμενο στοιχείο που δεν αποτελεί σύνδεσμο.</translation>
 <translation id="4376316291247992553">Προβολή γραφικού ως Braille</translation>
+<translation id="437809255587011096">Ανακοίνωση μορφοποίησης κειμένου</translation>
 <translation id="4378308539633073595">Κύλιση προς τα εμπρός</translation>
 <translation id="4384583879834880242">Ερωτήσεις και απαντήσεις</translation>
 <translation id="4391478986194775161">πληροφορίες περιεχομένου</translation>
@@ -495,10 +512,10 @@
 <translation id="4517854969512651305">Αύξηση αξίας</translation>
 <translation id="4529987814483543472">Κλασική αντιστοίχιση πλήκτρων</translation>
 <translation id="4532633738839459153">{COUNT,plural, =1{κάθετος}other{# κάθετοι}}</translation>
+<translation id="4537277403911487429">Επόμενο παρόμοιο στοιχείο</translation>
 <translation id="4547556996012970016">Επικεφαλίδα επόμενου επιπέδου 5</translation>
 <translation id="4562381607973973258">Κεφαλίδα</translation>
 <translation id="4569941707103739422">Πατήστε το πάνω ή το κάτω βέλος για πλοήγηση και το πλήκτρο Enter για ενεργοποίηση.</translation>
-<translation id="4570424871453628777">Τέλος ορθογραφικού λάθους</translation>
 <translation id="4591507479202817876">, επιλέχθηκε</translation>
 <translation id="4597532268155981612">φόρμα</translation>
 <translation id="4597896406374528575">Απρίλιος</translation>
@@ -525,6 +542,8 @@
 <translation id="4763296182459741068">Ενσωμάτωση στο κάτω μέρος</translation>
 <translation id="4763480195061959176">βίντεο</translation>
 <translation id="4764692524839457597">προεπιλογή</translation>
+<translation id="4772771694153161212">Χωρίς υπογράμμιση</translation>
+<translation id="4787577491510559358">Ανακοίνωση μορφοποίησης για το τρέχον στοιχείο</translation>
 <translation id="479989351350248267">search</translation>
 <translation id="4804818685124855865">Αποσύνδεση</translation>
 <translation id="481165870889056555">Ανακοίνωση του τίτλου της τρέχουσας σελίδας</translation>
@@ -538,9 +557,9 @@
 <translation id="4842108708071771135">Δεν υπάρχει επόμενο blockquote.</translation>
 <translation id="4844625982113518938">Πατήστε οποιοδήποτε πλήκτρο για να μάθετε το όνομά του. Με τον συνδυασμό Ctrl+W, μπορείτε να κλείσετε τη λειτουργία εκμάθησης.</translation>
 <translation id="4846428657345567687">Καλώς ήρθατε στο ChromeVox!</translation>
-<translation id="4846487886195635104">Τέλος διακριτής διαγραφής</translation>
 <translation id="4848993367330139335">χρονόμετρο</translation>
 <translation id="4850023505158945298">Προηγούμενο παρόμοιο στοιχείο.</translation>
+<translation id="4862744964787595316">Δεν έχει έντονη γραφή</translation>
 <translation id="4866956062845190338">κουμπί επιλογής στοιχείου μενού</translation>
 <translation id="4867316986324544967">Ενεργοποίηση καταγραφής TTS</translation>
 <translation id="4877261390094455813">Εισαγάγετε ένα ερώτημα αναζήτησης.</translation>
@@ -561,6 +580,7 @@
 <translation id="4983588134362688868">Μετάβαση στην κορυφή της σελίδας</translation>
 <translation id="4986606102545753256"><ph name="NAME" />, παράθυρο</translation>
 <translation id="4993152509206108683">Ρυθμός <ph name="PERCENT" /> τοις εκατό</translation>
+<translation id="4994420463726586413">Ανακοίνωση τρέχουσας κατάστασης μπαταρίας</translation>
 <translation id="4996716799442435517">Οπτική λειτουργία</translation>
 <translation id="4997282455736854877"><ph name="NAME" />, επιλεγμένο κουμπί επιλογής</translation>
 <translation id="4997475792277222884">Δεν υπάρχει επόμενο στοιχείο που δεν αποτελεί σύνδεσμο.</translation>
@@ -600,7 +620,7 @@
 <translation id="520883772648104506">Δεν υπάρχει επόμενο κουμπί επιλογής.</translation>
 <translation id="5263034204789987535">Μετάξι καλαμποκιού</translation>
 <translation id="5263344797180442561">κεφαλίδα 2</translation>
-<translation id="528468243742722775">End</translation>
+<translation id="528468243742722775">Τέλος</translation>
 <translation id="5291783959063340370">Στοιχείο</translation>
 <translation id="5302089807023311274">Βιβλιογραφική αναφορά</translation>
 <translation id="5304943142864553931"><ph name="TITLE" />, καρτέλα</translation>
@@ -612,9 +632,9 @@
 <translation id="5330443287809544590"><ph name="NAME" />, σύνδεσμος</translation>
 <translation id="5336381510091010269">autoinl+lst</translation>
 <translation id="5349770431644471053">Σύνδεσμος επιστροφής</translation>
-<translation id="5350654862897073517">Έναρξη δείκτη</translation>
 <translation id="536031132345979795">Μετάβαση προς τα πίσω κατά τη συνεχόμενη ανάγνωση</translation>
 <translation id="5368000168321181111">Ηχητικά μηνύματα ανενεργά</translation>
+<translation id="5368505757342402527">Ολοκληρώθηκε το <ph name="PROGRESS" />% της λήψης του αρχείου <ph name="FILE_NAME" />. Απομένουν <ph name="TIME" /> <ph name="UNITS" />.</translation>
 <translation id="5374320867641260420">Δεν υπάρχει επόμενο κουμπί.</translation>
 <translation id="5376407118396657359">Πατήστε τα πλήκτρα Αναζήτηση+Ctrl+Alt σε συνδυασμό με τα βέλη για πλοήγηση ανά κελί.</translation>
 <translation id="5382299583965267720">Δεν υπάρχει επόμενη επικεφαλίδα επιπέδου 1.</translation>
@@ -648,6 +668,7 @@
 <translation id="5574412348552378458">Λειτουργία εκμάθησης ChromeVox</translation>
 <translation id="5583640892426849032">Πλήκτρο Backspace</translation>
 <translation id="5585044216466955529">Επεξεργασία κειμένου, καταχώριση διεύθυνσης ηλεκτρονικού ταχυδρομείου</translation>
+<translation id="5586942249556966598">Kαμία ενέργεια</translation>
 <translation id="5597170376237141345">Επόμενο πλαίσιο ελέγχου</translation>
 <translation id="5597933780944041114">Δεν υπάρχει επόμενη επικεφαλίδα.</translation>
 <translation id="5598905979683743333"><ph name="NAME" />, μη επιλεγμένο κουμπί επιλογής</translation>
@@ -708,6 +729,7 @@
 <translation id="5956928062748260866">Διάλογος</translation>
 <translation id="5963413905009737549">Ενότητα</translation>
 <translation id="5968607524793740041">Εμφάνιση μενού περιβάλλοντος</translation>
+<translation id="597121107011153418">{COUNT,plural, =1{με # στοιχείο}other{με # στοιχεία}}</translation>
 <translation id="5981446804259161541">Ανοιχτό κυανό</translation>
 <translation id="5983179082906765664">Αύξηση ευαισθησίας περιήγησης</translation>
 <translation id="5992285135956208197">Έγγραφο γραφικών</translation>
@@ -719,10 +741,7 @@
 <translation id="6037602951055904232">Μετακίνηση προς τα εμπρός</translation>
 <translation id="6042826534790431634">Πατήστε τα πλήκτρα Αναζήτηση+Space για ενεργοποίηση.</translation>
 <translation id="6044160928851315051">Απενεργοποίηση φωτισμού οθόνης</translation>
-<translation id="605761629541007221">Τέλος έντονης γραφής</translation>
-<translation id="6065293622157674001">Αρχή γραμματικού σφάλματος</translation>
 <translation id="6082768461603900813">Βασική πλοήγηση</translation>
-<translation id="6092707270915298410">Τέλος συνδέσμου</translation>
 <translation id="6118126368611144850">Εφαρμογές Android για Chrome. Εάν έχετε εγκατεστημένο το Play Store στη συσκευή σας, μπορείτε να πάρετε μια γεύση από το ChromeVox με τις εφαρμογές Android. Δοκιμάστε την πειραματική υποστήριξη κατεβάζοντας το Google Chrome Canary από το Play Store.</translation>
 <translation id="611827076493383239">ιστότοπος που επισκεφτήκατε</translation>
 <translation id="6119955456199054975">Τέλος κελιού.</translation>
@@ -760,6 +779,7 @@
 <translation id="6378394210114975876">Γαϊδουράγκαθο</translation>
 <translation id="6385591741672306837">στήλη</translation>
 <translation id="6387719785439924554">εκτός</translation>
+<translation id="6393014464788431702">Απενεργοποίηση όλων των φίλτρων συμβάντων.</translation>
 <translation id="6411426777058107714">Δεν υπάρχει προηγούμενο κουμπί επιλογής.</translation>
 <translation id="6414968628640960377">Προηγούμενο διαφορετικό στοιχείο.</translation>
 <translation id="6417265370957905582">Βοηθός Google</translation>
@@ -770,9 +790,8 @@
 <translation id="6459511626086141404">Σταθερή αντιστοίχιση πλήκτρων</translation>
 <translation id="6468049171101508116">Επόμενο κουμπί</translation>
 <translation id="646954774886932461">Ευρετήριο</translation>
-<translation id="6470797302070897045">Αρχή μεγέθους <ph name="FONT_SIZE" /></translation>
+<translation id="6479792383819319132">Δεν υπάρχει επόμενη παράγραφος.</translation>
 <translation id="6493991254603208962">Μείωση φωτεινότητας</translation>
-<translation id="6497864469186228849">Τέλος <ph name="FONT_FAMILY" /></translation>
 <translation id="6501595918865591267">Τιρκουάζ</translation>
 <translation id="6508059270146105198">Μετακίνηση οθόνης μπράιγ στο κάτω μέρος της σελίδας</translation>
 <translation id="6521550811716689390">Σκούρο βιολετί</translation>
@@ -794,9 +813,11 @@
 <translation id="6637586476836377253">αρχείο καταγραφής</translation>
 <translation id="6657128831881431364">Γραμμή προόδου</translation>
 <translation id="6659594942844771486">Καρτέλα</translation>
+<translation id="6675661017770918201">Δεν υπάρχει προηγούμενη παράγραφος.</translation>
 <translation id="667999046851023355">Έγγραφο</translation>
 <translation id="6688209025607531203">Μια μη αποκλειστική ειδοποίηση</translation>
 <translation id="6689672606256159458">Σκούρο σομόν</translation>
+<translation id="669617842401078250">Η λήψη του αρχείου <ph name="FILE_NAME" /> διακόπηκε προσωρινά.</translation>
 <translation id="6696967141280706829">Πρόλογος</translation>
 <translation id="6697092096875747123">Προηγούμενο σύνθετο πλαίσιο</translation>
 <translation id="6702609185760332517">{COUNT,plural, =1{θαυμαστικό}other{# θαυμαστικά}}</translation>
@@ -818,6 +839,7 @@
 <translation id="6833103209700200188">Υποσέλιδο</translation>
 <translation id="6858047746862060282">Πρόλογος</translation>
 <translation id="6859876496651143278">Σύρετε ένα δάκτυλο προς τα αριστερά</translation>
+<translation id="6865519907510167493">Σφάλμα ορθογραφίας</translation>
 <translation id="6871161210040114857">Παράβλεψη διάκρισης πεζών-κεφαλαίων.</translation>
 <translation id="6877435256196695200">Δεν υπάρχει επόμενο γραφικό.</translation>
 <translation id="6897341342232909480">Μετακίνηση αριστερά</translation>
@@ -859,11 +881,11 @@
 <translation id="712735679809149106">εκφώνηση λέξεων</translation>
 <translation id="7137397390322864165">Σομόν</translation>
 <translation id="713824876195128146">Επόμενο block quote</translation>
+<translation id="7140168702531682811">Εκθέτης</translation>
 <translation id="7143034430156387447">Κάντε εναλλαγή μεταξύ εξάστιγμου και οκτάστιγμου braille</translation>
 <translation id="7143207342074048698">Σύνδεση</translation>
 <translation id="7153618581592392745">Λιλά</translation>
 <translation id="7157306005867877619">Περίληψη</translation>
-<translation id="7161425887892204659">Τέλος αντιστοίχισης κειμένου</translation>
 <translation id="7161771961008409533">Αναδυόμενο κουμπί</translation>
 <translation id="7165714724802225287">Το τρέχον στυλ προβολής είναι η παρεμβολή.</translation>
 <translation id="7167657087543110">εκφώνηση χαρακτήρων</translation>
@@ -896,13 +918,12 @@
 <translation id="7332592614823088566">Σειρά <ph name="ROWINDEX" /> από <ph name="ROWTOTAL" />, στήλη <ph name="COLINDEX" /> από <ph name="COLTOTAL" /></translation>
 <translation id="7336596009609913925">με αναδυόμενο</translation>
 <translation id="7356165926712028380">Αλλαγή σε οκτάστιγμο μπράιγ</translation>
+<translation id="7356610683936413584">Λεπτομέρεια λίστας περιγραφής</translation>
 <translation id="7362871137496673139">Δεν υπάρχει προηγούμενη επικεφαλίδα επιπέδου 2.</translation>
 <translation id="7370432716629432284">{COUNT,plural, =1{συμπλεκτικό σύμβολο}other{# συμπλεκτικά σύμβολα}}</translation>
 <translation id="737396357417333429">στοιχείο με δυνατότητα κλικ</translation>
 <translation id="7374104575779636480">Απομάκρυνση από τον πίνακα.</translation>
-<translation id="7374188624530452127">Αρχή <ph name="FONT_COLOR" /></translation>
 <translation id="738899727977260036">Μπλε γκρι</translation>
-<translation id="7392145451309930991">Αρχή αντιστοίχισης κειμένου</translation>
 <translation id="739763518212184081">Προηγούμενη γραμμή</translation>
 <translation id="7400575256015741911">Έχει εντοπιστεί ορθογραφικό λάθος</translation>
 <translation id="7408482676469142474">πίνακας</translation>
@@ -931,10 +952,12 @@
 <translation id="762020119231868829">Διακόπτει όλες τις τρέχουσες αναπαραγωγές γραφικών στοιχείων μέσων</translation>
 <translation id="7625690649919402823">Επόμενος πίνακας</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />), βαθμός <ph name="GRADE" /></translation>
+<translation id="763535765081585392">Ένδειξη υπογράμμισης:</translation>
 <translation id="7639968568612851608">Σκούρο γκρι</translation>
 <translation id="7641134354185483015">Δεν υπάρχει προηγούμενη επικεφαλίδα επιπέδου 3.</translation>
 <translation id="7659376057562985921"><ph name="VALUE" />, <ph name="NAME" />, πλαίσιο κειμένου</translation>
 <translation id="7663318257180412551">Επικεφαλίδα 2</translation>
+<translation id="7668307052366682650">{COUNT,plural, =1{ώρα}other{ώρες}}</translation>
 <translation id="7674576868851035240">Επόμενος σύνδεσμος</translation>
 <translation id="7674768236845044097">Ετικέτα mark</translation>
 <translation id="7684431668231950609">Επεξεργασία κειμένου, καταχώριση διεύθυνσης URL</translation>
@@ -949,9 +972,8 @@
         <ph name="LINE_THROUGH_STRING" />
         <ph name="FONT_FAMILY_STRING" /></translation>
 <translation id="7701196182766842984">αυτόματη συμπλήρωση λίστας</translation>
-<translation id="7712273827621319827">Αρχή υπογράμμισης</translation>
+<translation id="7763537600611320912">Ξεκίνησε η λήψη του αρχείου <ph name="FILE_NAME" /></translation>
 <translation id="7770823902658038748"><ph name="VALUE" />, <ph name="NAME" />, πλαίσιο κειμένου κωδικού πρόσβασης</translation>
-<translation id="7773125101284285285">Τέλος υπογράμμισης</translation>
 <translation id="7776293189010177726">Άνοιγμα των μενού του ChromeVox</translation>
 <translation id="7800558923657349506">Επίλογος</translation>
 <translation id="7805247615045262757">προεπιλεγμένη πλοήγηση</translation>
@@ -1075,11 +1097,12 @@
 <translation id="8096975275316362544">Κρεμ μέντας</translation>
 <translation id="8098587210054821856">Γκρι του σχιστόλιθου</translation>
 <translation id="8110647606445335195">Δεν υπάρχουν ορόσημα ARIA.</translation>
+<translation id="8121539003537428024">Ενεργοποίηση όλων των συμβάντων φίλτρων</translation>
+<translation id="812886159861361726">Η λήψη του αρχείου <ph name="FILE_NAME" /> σταμάτησε</translation>
 <translation id="8138880386467279117">Άγγιγμα</translation>
 <translation id="8153880621934657047">Όχι μέσα στον πίνακα.</translation>
 <translation id="817440585505441544">{COUNT,plural, =1{σύμβολο υπογράμμισης}other{# σύμβολα υπογράμμισης}}</translation>
 <translation id="8179976553408161302">Enter</translation>
-<translation id="8183813379996435469">Αυτόματος εντοπισμός και αλλαγή γλώσσας του ChromeVox.</translation>
 <translation id="8184828902145951186">σειρά</translation>
 <translation id="8186185314313222077">εναλλαγή πλήρους οθόνης</translation>
 <translation id="8199231515320852133">Ανακοίνωση των κεφαλίδων του τρέχοντος κελιού</translation>
@@ -1103,7 +1126,6 @@
 <translation id="8374154622594089836">μήνας</translation>
 <translation id="8378855320830505539">Περιοχή</translation>
 <translation id="8382679411218029383">Ενσωματωμένη αυτόματη συμπλήρωση και λίστα</translation>
-<translation id="8384907037845425279">Αρχή έντονης γραφής</translation>
 <translation id="8428603554127842284">επίπεδο <ph name="DEPTH" /></translation>
 <translation id="842922884199979200">Δεν υπάρχει επόμενη επικεφαλίδα επιπέδου 3.</translation>
 <translation id="8430049249787218991">γραμμή μενού</translation>
@@ -1111,18 +1133,20 @@
 <translation id="8446884382197647889">Μάθετε περισσότερα</translation>
 <translation id="8455868257606149352">Μέγιστο <ph name="X" /></translation>
 <translation id="84575901236241018">διαθέτει το κλειδί πρόσβασης, <ph name="KEY" /></translation>
+<translation id="8463645336674919227">Αποχώρηση από σφάλμα γραμματικής</translation>
 <translation id="847154984256717791">απασχολημένο</translation>
 <translation id="8476408756881832830">Παύση αναπαραγωγής κατά την εκφώνηση από το ChromeVox</translation>
 <translation id="8476508772960940536">επισκόπηση παραθύρου</translation>
 <translation id="8503360654911991865">Μείωση ευαισθησίας πλοήγησης</translation>
-<translation id="8504695234784218301">Τέλος γραμματικού σφάλματος</translation>
 <translation id="8520472399088452386">Κουμπί περιστροφής</translation>
+<translation id="8534394844575788431">Μορφοποίηση</translation>
 <translation id="8538744478902126321">Κάντε μια εκτίμηση για την κεφαλίδα της σειράς του τρέχοντος κελιού</translation>
 <translation id="8540054775867439484">Ενσωμάτωση στο επάνω μέρος</translation>
 <translation id="8542271685829952264">Για να εξερευνήσετε όλες τις εντολές και συντομεύσεις του ChromeVox, πατήστε Search + Τελεία και έπειτα χρησιμοποιήστε τα πλήκτρα με τα βέλη για να πλοηγηθείτε στα μενού και το πλήκτρο Enter για να ενεργοποιήσετε μια εντολή. Επιστρέψτε εδώ πατώντας Search+o και έπειτα t.</translation>
 <translation id="8548973727659841685">Χαρακτήρας</translation>
 <translation id="8561322612995434619">διαθέτει αναδυόμενο</translation>
 <translation id="8571096049907249734">με δυνατότητα πολλαπλής επιλογής</translation>
+<translation id="858006550102277544">Σχόλιο</translation>
 <translation id="8584721346566392021">κεφαλίδα 5</translation>
 <translation id="8587549812518406253">Επόμενο στοιχείο λίστας</translation>
 <translation id="860150890330522909">Το πλαίσιο ελέγχου <ph name="NAME" /> επιλέχθηκε</translation>
@@ -1145,6 +1169,7 @@
 <translation id="8743786158317878347">εισαγωγή σε δομημένο περιεχόμενο, όπως πίνακες</translation>
 <translation id="8747966237988593539">Ταξινομημένη λίστα</translation>
 <translation id="8749988712346667988">Ασημί</translation>
+<translation id="875769700429317857">Ολοκληρώθηκε η λήψη του αρχείου <ph name="FILE_NAME" /></translation>
 <translation id="8759334257841767240">Δεν υπάρχει επόμενος σύνδεσμος.</translation>
 <translation id="8767968232364267681">Επικεφαλίδα επόμενου επιπέδου 4</translation>
 <translation id="8770473310765924354">έξοδος από δομημένο περιεχόμενο, όπως πίνακες</translation>
@@ -1159,6 +1184,7 @@
 <translation id="8883850400338911892">urled 8dot</translation>
 <translation id="8896347895970027998">Εναλλαγή μεταξύ ενεργού ή ανενεργού ChromeVox.</translation>
 <translation id="8896479570570613387">Μεσαίο μοβ</translation>
+<translation id="8897030325301866860">Γραμματοσειρά <ph name="FONT_FAMILY" /></translation>
 <translation id="8898516272131543774">Επανάληψη εκφώνησης σημείων στίξης</translation>
 <translation id="8900148057318340779">Κλειδί προθέματος</translation>
 <translation id="8908714597367957477">κεφαλίδα στήλης</translation>
@@ -1168,6 +1194,7 @@
 <translation id="8943175951035496220">Δεν υπάρχει κελί δεξιά.</translation>
 <translation id="8943282376843390568">Λάιμ</translation>
 <translation id="8946628535652548639">σ<ph name="TABLECELLROWINDEX" />σ<ph name="TABLECELLCOLUMNINDEX" /></translation>
+<translation id="8957142051395645063">Ανακοίνωση</translation>
 <translation id="8978496506222343566">επεξήγηση εργαλείου</translation>
 <translation id="8986362086234534611">Διαγραφή από τη μνήμη</translation>
 <translation id="900114243503212879">αρχείο</translation>
@@ -1193,6 +1220,7 @@
 <translation id="9149560530563164529">ενότητα</translation>
 <translation id="9150735707954472829">Καρτέλα</translation>
 <translation id="9151211641321628915">Παρέχει μια σύντομη περιγραφή της τρέχουσας τοποθεσίας</translation>
+<translation id="9151249085738989067">Αυτόματη εναλλαγή φωνής ChromeVox με βάση τη γλώσσα</translation>
 <translation id="9153606228985488238">Τόνος <ph name="PERCENT" /> τοις εκατό</translation>
 <translation id="9160096769946561184">Μετάβαση στο τέλος της τρέχουσας στήλης</translation>
 <translation id="9173115498289768110">Ένταση <ph name="PERCENT" /> τοις εκατό</translation>
@@ -1212,5 +1240,4 @@
 <translation id="973955474346881951">Ενεργοποίηση/απενεργοποίηση λειτουργίας σταθεροποίησης</translation>
 <translation id="976849232629612000">Κανένα στοιχείο.</translation>
 <translation id="992256792861109788">Ροζ</translation>
-<translation id="995852680044449248">Αρχή διακριτής διαγραφής</translation>
 </translationbundle>

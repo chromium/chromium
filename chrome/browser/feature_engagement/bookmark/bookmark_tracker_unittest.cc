@@ -6,10 +6,6 @@
 
 #include <memory>
 
-#include "base/feature_list.h"
-#include "base/metrics/field_trial.h"
-#include "base/metrics/field_trial_param_associator.h"
-#include "base/metrics/field_trial_params.h"
 #include "base/run_loop.h"
 #include "base/sequenced_task_runner.h"
 #include "base/strings/string_number_conversions.h"
@@ -28,8 +24,7 @@
 #include "components/feature_engagement/test/mock_tracker.h"
 #include "components/feature_engagement/test/test_tracker.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
-#include "components/variations/variations_params_manager.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -37,8 +32,6 @@ namespace feature_engagement {
 
 namespace {
 
-constexpr char kBookmarkTrialName[] = "BookmarkTrial";
-constexpr char kGroupName[] = "Enabled";
 constexpr char kTestProfileName[] = "test-profile";
 
 class FakeBookmarkTracker : public BookmarkTracker {
@@ -91,7 +84,7 @@ class BookmarkTrackerEventTest : public testing::Test {
   std::unique_ptr<FakeBookmarkTracker> bookmark_tracker_;
 
  private:
-  content::TestBrowserThreadBundle thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
 
   DISALLOW_COPY_AND_ASSIGN(BookmarkTrackerEventTest);
 };
@@ -118,26 +111,8 @@ namespace {
 
 class BookmarkTrackerTest : public testing::Test {
  public:
-  BookmarkTrackerTest() = default;
-  ~BookmarkTrackerTest() override = default;
-
-  void SetUp() override {
-    // Set up the kBookmarkTrialName field trial.
-    base::FieldTrial* bookmark_trial =
-        base::FieldTrialList::CreateFieldTrial(kBookmarkTrialName, kGroupName);
-    trials_[kIPHBookmarkFeature.name] = bookmark_trial;
-
-    std::unique_ptr<base::FeatureList> feature_list =
-        std::make_unique<base::FeatureList>();
-    feature_list->RegisterFieldTrialOverride(
-        kIPHBookmarkFeature.name, base::FeatureList::OVERRIDE_ENABLE_FEATURE,
-        bookmark_trial);
-
-    scoped_feature_list_.InitWithFeatureList(std::move(feature_list));
-    ASSERT_EQ(bookmark_trial,
-              base::FeatureList::GetFieldTrial(kIPHBookmarkFeature));
-
-    std::map<std::string, std::string> bookmark_params;
+  BookmarkTrackerTest() {
+    base::FieldTrialParams bookmark_params;
     bookmark_params["event_bookmark_added"] =
         "name:bookmark_added;comparator:==0;window:3650;storage:3650";
     bookmark_params["event_bookmark_session_time_met"] =
@@ -153,8 +128,12 @@ class BookmarkTrackerTest : public testing::Test {
         base::NumberToString(static_cast<int64_t>(
             first_run::GetFirstRunSentinelCreationTime().ToDoubleT()));
 
-    SetFeatureParams(kIPHBookmarkFeature, bookmark_params);
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(kIPHBookmarkFeature,
+                                                            bookmark_params);
+  }
+  ~BookmarkTrackerTest() override = default;
 
+  void SetUp() override {
     // Start the DesktopSessionDurationTracker to track active session time.
     metrics::DesktopSessionDurationTracker::Initialize();
 
@@ -183,28 +162,14 @@ class BookmarkTrackerTest : public testing::Test {
     base::FieldTrialParamAssociator::GetInstance()->ClearAllParamsForTesting();
   }
 
-  void SetFeatureParams(const base::Feature& feature,
-                        std::map<std::string, std::string> params) {
-    ASSERT_TRUE(
-        base::FieldTrialParamAssociator::GetInstance()
-            ->AssociateFieldTrialParams(trials_[feature.name]->trial_name(),
-                                        kGroupName, params));
-
-    std::map<std::string, std::string> actualParams;
-    EXPECT_TRUE(base::GetFieldTrialParamsByFeature(feature, &actualParams));
-    EXPECT_EQ(params, actualParams);
-  }
-
  protected:
   std::unique_ptr<FakeBookmarkTracker> bookmark_tracker_;
   std::unique_ptr<Tracker> feature_engagement_tracker_;
-  variations::testing::VariationParamsManager params_manager_;
 
  private:
   std::unique_ptr<TestingProfileManager> testing_profile_manager_;
   base::test::ScopedFeatureList scoped_feature_list_;
-  content::TestBrowserThreadBundle thread_bundle_;
-  std::map<std::string, base::FieldTrial*> trials_;
+  content::BrowserTaskEnvironment task_environment_;
 
   DISALLOW_COPY_AND_ASSIGN(BookmarkTrackerTest);
 };

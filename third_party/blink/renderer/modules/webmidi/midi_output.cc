@@ -34,13 +34,14 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
-#include "third_party/blink/renderer/core/frame/use_counter.h"
 #include "third_party/blink/renderer/core/timing/dom_window_performance.h"
 #include "third_party/blink/renderer/core/timing/window_performance.h"
 #include "third_party/blink/renderer/core/timing/worker_global_scope_performance.h"
 #include "third_party/blink/renderer/core/workers/worker_global_scope.h"
 #include "third_party/blink/renderer/modules/webmidi/midi_access.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 using midi::mojom::PortState;
 
@@ -78,10 +79,12 @@ base::TimeTicks GetTimeOrigin(ExecutionContext* context) {
 
   DCHECK(performance);
   return base::TimeTicks() +
-         TimeDelta::FromSecondsD(performance->GetTimeOrigin());
+         base::TimeDelta::FromSecondsD(performance->GetTimeOrigin());
 }
 
 class MessageValidator {
+  STACK_ALLOCATED();
+
  public:
   static bool Validate(DOMUint8Array* array,
                        ExceptionState& exception_state,
@@ -216,7 +219,7 @@ class MessageValidator {
 
   String GetPositionString() {
     return "at index " + String::Number(offset_) + " (" +
-           String::Number(data_[offset_]) + ").";
+           String::Number(static_cast<uint16_t>(data_[offset_])) + ").";
   }
 
   const unsigned char* data_;

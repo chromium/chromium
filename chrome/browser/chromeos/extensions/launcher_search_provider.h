@@ -11,7 +11,7 @@ namespace extensions {
 
 // Implements chrome.launcherSearchProvider.setSearchResults method.
 class LauncherSearchProviderSetSearchResultsFunction
-    : public UIThreadExtensionFunction {
+    : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("launcherSearchProvider.setSearchResults",
                              LAUNCHERSEARCHPROVIDER_SETSEARCHRESULTS)

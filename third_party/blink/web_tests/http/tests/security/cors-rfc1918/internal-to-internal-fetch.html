@@ -8,6 +8,8 @@
 </head>
 <body>
     <script>
+        test(t => { assert_equals(document.addressSpace, "local"); }, "Sanity check: locality.");
+
         promise_test(function (t) {
             return fetch(preflightURL('fail-with-500', 'json'))
                 .then(function (response) {

@@ -1,0 +1,20 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+// Per-process agent data is reported as a list of agent strings. These strings
+// will either be a "site-like" string or the empty string. A site like string
+// will be the Agent's |protocol| + "://" + |registrable domain|. The empty
+// string specifies that the agent is for a non-domain based document (e.g.
+// opaque or local URL).
+struct AgentMetricsData {
+   array<string> agents;
+};
+
+interface AgentMetricsCollectorHost {
+  // Reports Blink agent related metrics to the browser so that we can track
+  // per-process counts.
+  ReportRendererMetrics(AgentMetricsData data);
+};

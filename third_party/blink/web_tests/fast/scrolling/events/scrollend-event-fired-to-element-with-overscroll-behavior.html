@@ -2,6 +2,7 @@
 <script src="../../../resources/testharness.js"></script>
 <script src="../../../resources/testharnessreport.js"></script>
 <script src="../../../resources/gesture-util.js"></script>
+<script src="resources/scroll-util.js"></script>
 <style>
 #overscrollXDiv {
   width: 600px;
@@ -49,15 +50,6 @@ var target_div = document.getElementById('targetDiv');
 var rect = target_div.getBoundingClientRect();
 var x = rect.left + rect.width / 2;
 var y = rect.top + rect.height / 2;
-function scrollLeft() {
-  return smoothScroll(1000, x, y, GestureSourceType.TOUCH_INPUT, "left",
-      SPEED_INSTANT);
-}
-
-function scrollUp() {
-  return smoothScroll(1000, x, y, GestureSourceType.TOUCH_INPUT, "up",
-      SPEED_INSTANT);
-}
 
 var horizontal_scrollend_arrived = false;
 var vertical_scrollend_arrived = false;
@@ -76,18 +68,15 @@ document.getElementById('overscrollXDiv').onscrollend = onHorizontalScrollEnd;
 document.getElementById('overscrollYDiv').
     addEventListener("scrollend", onVerticalScrollEnd);
 
-promise_test (async (t) => {
-  // Make sure that no scrollend event is sent to document or target_div.
-  document.addEventListener("scrollend",
-      t.unreached_func("Document got unexpected scrollend event."));
-  target_div.addEventListener("scrollend",
-      t.unreached_func("target_div got unexpected scrollend event."));
-
+async function test_scrollend_event_fire(source_device,
+    precise_scrolling_delta) {
+  horizontal_scrollend_arrived = false;
+  vertical_scrollend_arrived = false;
   await waitForCompositorCommit();
 
   // Scroll left on target div and wait for the element with overscroll-x to
   // get scrollend event.
-  await scrollLeft();
+  await scrollLeft(source_device, precise_scrolling_delta);
   await waitFor(() => { return horizontal_scrollend_arrived; },
       'Expected element did not receive scrollend event after scroll left ' +
       'on target.');
@@ -95,11 +84,42 @@ promise_test (async (t) => {
 
   // Scroll up on target div and wait for the element with overscroll-y to get
   // scrollend event.
-  await scrollUp();
+  await scrollUp(source_device, precise_scrolling_delta);
   await waitFor(() => { return vertical_scrollend_arrived; },
       'Expected element did not receive scrollend event after scroll up on ' +
       'target.');
   assert_equals(target_div.scrollTop, 0);
+}
+
+promise_test (async (t) => {
+  // Make sure that no scrollend event is sent to document or target_div.
+  document.addEventListener("scrollend",
+      t.unreached_func("Document got unexpected scrollend event."));
+  target_div.addEventListener("scrollend",
+      t.unreached_func("target_div got unexpected scrollend event."));
+  return test_scrollend_event_fire(GestureSourceType.TOUCH_INPUT);
 }, 'Tests that the last element in the cut scroll chain gets scrollend ' +
-   'event when no element scrolls.');
+   'event when no element scrolls by touch.');
+
+promise_test (async (t) => {
+  // Make sure that no scrollend event is sent to document or target_div.
+  document.addEventListener("scrollend",
+      t.unreached_func("Document got unexpected scrollend event."));
+  target_div.addEventListener("scrollend",
+      t.unreached_func("target_div got unexpected scrollend event."));
+  return test_scrollend_event_fire(GestureSourceType.MOUSE_INPUT,
+    true /* precise_scrolling_delta */);
+}, 'Tests that the last element in the cut scroll chain gets scrollend ' +
+   'event when no element scrolls by wheel in non-animated scroll path.');
+
+promise_test (async (t) => {
+  // Make sure that no scrollend event is sent to document or target_div.
+  document.addEventListener("scrollend",
+      t.unreached_func("Document got unexpected scrollend event."));
+  target_div.addEventListener("scrollend",
+      t.unreached_func("target_div got unexpected scrollend event."));
+  return test_scrollend_event_fire(GestureSourceType.MOUSE_INPUT,
+    false /* precise_scrolling_delta */);
+}, 'Tests that the last element in the cut scroll chain gets scrollend ' +
+   'event when no element scrolls by wheel in smooth scrolling path.');
 </script>

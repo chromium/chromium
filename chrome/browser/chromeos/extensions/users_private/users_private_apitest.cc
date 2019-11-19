@@ -18,12 +18,12 @@
 #include "chrome/browser/chromeos/ownership/owner_settings_service_chromeos_factory.h"
 #include "chrome/browser/chromeos/settings/scoped_testing_cros_settings.h"
 #include "chrome/browser/chromeos/settings/stub_cros_settings_provider.h"
-#include "chrome/browser/chromeos/settings/stub_install_attributes.h"
 #include "chrome/browser/extensions/api/settings_private/prefs_util.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/extensions/api/users_private.h"
 #include "chromeos/settings/cros_settings_names.h"
+#include "chromeos/tpm/stub_install_attributes.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/ownership/mock_owner_key_util.h"
 #include "components/prefs/pref_service.h"
@@ -219,6 +219,10 @@ IN_PROC_BROWSER_TEST_F(UsersPrivateApiTest, AddUser) {
 
 IN_PROC_BROWSER_TEST_F(UsersPrivateApiTest, AddAndRemoveUsers) {
   EXPECT_TRUE(RunSubtest("addAndRemoveUsers")) << message_;
+}
+
+IN_PROC_BROWSER_TEST_F(UsersPrivateApiTest, IsWhitelistedUser) {
+  EXPECT_TRUE(RunSubtest("isWhitelistedUser")) << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(UsersPrivateApiTest, IsOwner) {

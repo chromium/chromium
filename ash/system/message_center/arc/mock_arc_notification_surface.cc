@@ -9,18 +9,16 @@
 namespace ash {
 
 MockArcNotificationSurface::MockArcNotificationSurface(
-    const std::string& notification_key,
-    aura::Env* aura_env)
+    const std::string& notification_key)
     : notification_key_(notification_key),
       ax_tree_id_(ui::AXTreeIDUnknown()),
       native_view_host_(nullptr),
-      window_(std::make_unique<aura::Window>(nullptr,
-                                             aura::client::WINDOW_TYPE_UNKNOWN,
-                                             aura_env)),
+      window_(
+          std::make_unique<aura::Window>(nullptr,
+                                         aura::client::WINDOW_TYPE_UNKNOWN)),
       content_window_(
           std::make_unique<aura::Window>(nullptr,
-                                         aura::client::WINDOW_TYPE_UNKNOWN,
-                                         aura_env)) {
+                                         aura::client::WINDOW_TYPE_UNKNOWN)) {
   window_->Init(ui::LAYER_NOT_DRAWN);
   content_window_->Init(ui::LAYER_NOT_DRAWN);
 }

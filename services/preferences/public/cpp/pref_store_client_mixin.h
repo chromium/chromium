@@ -11,7 +11,8 @@
 
 #include "base/macros.h"
 #include "base/observer_list.h"
-#include "mojo/public/cpp/bindings/binding.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "services/preferences/public/mojom/preferences.mojom.h"
 
 namespace base {
@@ -48,7 +49,7 @@ class PrefStoreClientMixin : public BasePrefStore,
   // protected member functions.
   void Init(std::unique_ptr<base::DictionaryValue> initial_prefs,
             bool initialized,
-            mojom::PrefStoreObserverRequest observer_request);
+            mojo::PendingReceiver<mojom::PrefStoreObserver> observer_receiver);
 
   base::DictionaryValue& GetMutableValues();
   void ReportPrefValueChanged(const std::string& key);
@@ -77,7 +78,7 @@ class PrefStoreClientMixin : public BasePrefStore,
   // Has the PrefStore we're observing been initialized?
   bool initialized_ = false;
 
-  mojo::Binding<mojom::PrefStoreObserver> observer_binding_;
+  mojo::Receiver<mojom::PrefStoreObserver> observer_receiver_{this};
 
   DISALLOW_COPY_AND_ASSIGN(PrefStoreClientMixin);
 };

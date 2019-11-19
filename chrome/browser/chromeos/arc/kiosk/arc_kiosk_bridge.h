@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "components/arc/common/kiosk.mojom.h"
+#include "components/arc/mojom/kiosk.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 namespace content {

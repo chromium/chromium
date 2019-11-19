@@ -172,3 +172,50 @@ class IdlUnionTypeTest(unittest.TestCase):
         self.assertEqual(union.member_types[1].element_type.member_types[1].name,
                          'Double')
         self.assertEqual(2, len(union.flattened_member_types))
+
+
+class IdlNullableTypeTest(unittest.TestCase):
+    _TEST_DICTIONARY = 'TestDictionary'
+
+    def setUp(self):
+        IdlType.dictionaries.add(self._TEST_DICTIONARY)
+
+    def tearDown(self):
+        IdlType.dictionaries.remove(self._TEST_DICTIONARY)
+
+    def test_valid_inner_type_basic(self):
+        inner_type = IdlType('long')
+        self.assertTrue(IdlNullableType(inner_type).is_nullable)
+
+    def test_valid_inner_type_dictionary(self):
+        inner_type = IdlType(self._TEST_DICTIONARY)
+        self.assertTrue(IdlNullableType(inner_type).is_nullable)
+
+    def test_valid_inner_type_union(self):
+        inner_type = IdlUnionType([IdlType('long')])
+        self.assertTrue(IdlNullableType(inner_type).is_nullable)
+
+    def test_invalid_inner_type_any(self):
+        inner_type = IdlType('any')
+        with self.assertRaises(ValueError):
+            IdlNullableType(inner_type)
+
+    def test_invalid_inner_type_promise(self):
+        inner_type = IdlType('Promise')
+        with self.assertRaises(ValueError):
+            IdlNullableType(inner_type)
+
+    def test_invalid_inner_type_nullable(self):
+        inner_type = IdlNullableType(IdlType('long'))
+        with self.assertRaises(ValueError):
+            IdlNullableType(inner_type)
+
+    def test_invalid_inner_type_union_nullable_member(self):
+        inner_type = IdlUnionType([IdlNullableType(IdlType('long'))])
+        with self.assertRaises(ValueError):
+            IdlNullableType(inner_type)
+
+    def test_invalid_inner_type_union_dictionary_member(self):
+        inner_type = IdlUnionType([IdlType(self._TEST_DICTIONARY)])
+        with self.assertRaises(ValueError):
+            IdlNullableType(inner_type)

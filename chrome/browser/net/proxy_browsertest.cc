@@ -13,6 +13,7 @@
 #include "base/test/bind_test_util.h"
 #include "build/build_config.h"
 #include "chrome/browser/chrome_notification_types.h"
+#include "chrome/browser/net/proxy_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/login/login_handler.h"
@@ -39,6 +40,10 @@
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "url/gurl.h"
+
+#if defined(OS_CHROMEOS)
+#include "chrome/browser/chromeos/net/dhcp_wpad_url_client.h"
+#endif  // defined(OS_CHROMEOS)
 
 namespace {
 
@@ -86,53 +91,6 @@ class LoginPromptObserver : public content::NotificationObserver {
   DISALLOW_COPY_AND_ASSIGN(LoginPromptObserver);
 };
 
-class ProxyBrowserTest : public InProcessBrowserTest {
- public:
-  ProxyBrowserTest()
-      : proxy_server_(net::SpawnedTestServer::TYPE_BASIC_AUTH_PROXY,
-                      base::FilePath()) {
-  }
-
-  void SetUp() override {
-    ASSERT_TRUE(proxy_server_.Start());
-    // Block the GaiaAuthFetcher related requests, they somehow interfere with
-    // the test when the network service is running.
-    url_loader_interceptor_ = std::make_unique<content::URLLoaderInterceptor>(
-        base::BindLambdaForTesting(
-            [&](content::URLLoaderInterceptor::RequestParams* params) -> bool {
-              if (params->url_request.url.host() ==
-                  GaiaUrls::GetInstance()->gaia_url().host()) {
-                return true;
-              }
-              return false;
-            }));
-    InProcessBrowserTest::SetUp();
-  }
-
-  void PostRunTestOnMainThread() override {
-    url_loader_interceptor_.reset();
-    InProcessBrowserTest::PostRunTestOnMainThread();
-  }
-
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    command_line->AppendSwitchASCII(switches::kProxyServer,
-                                    proxy_server_.host_port_pair().ToString());
-
-    // TODO(https://crbug.com/901896): Don't rely on proxying localhost (Relied
-    // on by BasicAuthWSConnect)
-    command_line->AppendSwitchASCII(
-        switches::kProxyBypassList,
-        net::ProxyBypassRules::GetRulesToSubtractImplicit());
-  }
-
- protected:
-  net::SpawnedTestServer proxy_server_;
-
- private:
-  std::unique_ptr<content::URLLoaderInterceptor> url_loader_interceptor_;
-  DISALLOW_COPY_AND_ASSIGN(ProxyBrowserTest);
-};
-
 // Test that the browser can establish a WebSocket connection via a proxy
 // that requires basic authentication. This test also checks the headers
 // arrive at WebSocket server.
@@ -174,7 +132,7 @@ IN_PROC_BROWSER_TEST_F(ProxyBrowserTest, BasicAuthWSConnect) {
 class BaseHttpProxyScriptBrowserTest : public InProcessBrowserTest {
  public:
   BaseHttpProxyScriptBrowserTest() {
-    http_server_.ServeFilesFromSourceDirectory("chrome/test/data");
+    http_server_.ServeFilesFromSourceDirectory(GetChromeTestDataDir());
   }
   ~BaseHttpProxyScriptBrowserTest() override {}
 
@@ -191,9 +149,9 @@ class BaseHttpProxyScriptBrowserTest : public InProcessBrowserTest {
 
  protected:
   virtual std::string GetPacFilename() = 0;
+  net::EmbeddedTestServer http_server_;
 
  private:
-  net::EmbeddedTestServer http_server_;
   DISALLOW_COPY_AND_ASSIGN(BaseHttpProxyScriptBrowserTest);
 };
 
@@ -215,6 +173,41 @@ class HttpProxyScriptBrowserTest : public BaseHttpProxyScriptBrowserTest {
 IN_PROC_BROWSER_TEST_F(HttpProxyScriptBrowserTest, Verify) {
   VerifyProxyScript(browser());
 }
+
+#if defined(OS_CHROMEOS)
+// Tests the use of a PAC script set via Web Proxy Autodiscovery Protocol.
+// TODO(crbug.com/991867): Add a test case for when DhcpWpadUrlClient
+// returns an empty PAC URL.
+class WPADHttpProxyScriptBrowserTest : public HttpProxyScriptBrowserTest {
+ public:
+  WPADHttpProxyScriptBrowserTest() = default;
+  ~WPADHttpProxyScriptBrowserTest() override {}
+
+  void SetUp() override {
+    ASSERT_TRUE(http_server_.Start());
+    pac_url_ = http_server_.GetURL("/" + GetPacFilename());
+    chromeos::DhcpWpadUrlClient::SetPacUrlForTesting(pac_url_);
+    InProcessBrowserTest::SetUp();
+  }
+
+  void TearDown() override {
+    chromeos::DhcpWpadUrlClient::ClearPacUrlForTesting();
+    InProcessBrowserTest::TearDown();
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    command_line->AppendSwitch(switches::kProxyAutoDetect);
+  }
+
+ private:
+  GURL pac_url_;
+  DISALLOW_COPY_AND_ASSIGN(WPADHttpProxyScriptBrowserTest);
+};
+
+IN_PROC_BROWSER_TEST_F(WPADHttpProxyScriptBrowserTest, Verify) {
+  VerifyProxyScript(browser());
+}
+#endif  // defined(OS_CHROMEOS)
 
 // Tests the use of a PAC script that rejects requests to http://www.google.com/
 // when myIpAddress() and myIpAddressEx() appear to be working.

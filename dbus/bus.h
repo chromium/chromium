@@ -24,7 +24,6 @@
 
 namespace base {
 class SequencedTaskRunner;
-class SingleThreadTaskRunner;
 class TaskRunner;
 }
 
@@ -724,8 +723,8 @@ class CHROME_DBUS_EXPORT Bus : public base::RefCountedThreadSafe<Bus> {
   base::WaitableEvent on_shutdown_;
   DBusConnection* connection_;
 
-  scoped_refptr<base::SingleThreadTaskRunner> origin_task_runner_;
   base::PlatformThreadId origin_thread_id_;
+  scoped_refptr<base::SequencedTaskRunner> origin_task_runner_;
 
   std::set<std::string> owned_service_names_;
   // The following sets are used to check if rules/object_paths/filters

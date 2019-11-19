@@ -8,12 +8,12 @@ mojom("mojom") {
   sources = [
     "device.mojom",
     "device_factory.mojom",
-    "device_factory_provider.mojom",
     "devices_changed_observer.mojom",
     "producer.mojom",
-    "receiver.mojom",
     "scoped_access_permission.mojom",
     "testing_controls.mojom",
+    "video_capture_service.mojom",
+    "video_frame_handler.mojom",
     "video_source.mojom",
     "video_source_provider.mojom",
     "virtual_device.mojom",
@@ -22,10 +22,16 @@ mojom("mojom") {
   deps = [
     "//media/capture/mojom:image_capture",
     "//media/capture/mojom:video_capture",
-    "//media/mojo/interfaces",
-    "//services/ws/public/mojom",
-    "//ui/gfx/geometry/mojo",
+    "//media/mojo/mojom",
+    "//ui/gfx/geometry/mojom",
   ]
+
+  if (is_chromeos) {
+    deps += [
+      "//components/chromeos_camera/common",
+      "//media/capture/video/chromeos/mojom:cros_camera",
+    ]
+  }
 }
 
 mojom("constants") {

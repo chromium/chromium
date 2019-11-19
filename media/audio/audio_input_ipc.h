@@ -22,7 +22,7 @@ class AudioProcessorControls;
 class MEDIA_EXPORT AudioInputIPCDelegate {
  public:
   // Called when an AudioInputController has been created.
-  // See media/mojo/interfaces/audio_data_pipe.mojom for documentation of
+  // See media/mojo/mojom/audio_data_pipe.mojom for documentation of
   // |handle| and |socket_handle|.
   virtual void OnStreamCreated(
       base::ReadOnlySharedMemoryRegion shared_memory_region,

@@ -7,6 +7,7 @@ package org.chromium.components.dom_distiller.core;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
+import org.chromium.base.annotations.NativeMethods;
 
 /**
  * Wrapper for native dom_distiller::DomDistillerService.
@@ -14,25 +15,16 @@ import org.chromium.base.annotations.JNINamespace;
 @JNINamespace("dom_distiller::android")
 public final class DomDistillerService {
 
-    private final long mDomDistillerServiceAndroid;
     private final DistilledPagePrefs mDistilledPagePrefs;
 
     private DomDistillerService(long nativeDomDistillerAndroidServicePtr) {
-        mDomDistillerServiceAndroid = nativeDomDistillerAndroidServicePtr;
-        mDistilledPagePrefs = new DistilledPagePrefs(
-                nativeGetDistilledPagePrefsPtr(mDomDistillerServiceAndroid));
+        mDistilledPagePrefs =
+                new DistilledPagePrefs(DomDistillerServiceJni.get().getDistilledPagePrefsPtr(
+                        nativeDomDistillerAndroidServicePtr));
     }
 
     public DistilledPagePrefs getDistilledPagePrefs() {
         return mDistilledPagePrefs;
-    }
-
-    public boolean hasEntry(String entryId) {
-        return nativeHasEntry(mDomDistillerServiceAndroid, entryId);
-    }
-
-    public String getUrlForEntry(String entryId) {
-        return nativeGetUrlForEntry(mDomDistillerServiceAndroid, entryId);
     }
 
     @CalledByNative
@@ -41,9 +33,8 @@ public final class DomDistillerService {
         return new DomDistillerService(nativeDomDistillerServiceAndroid);
     }
 
-    private native boolean nativeHasEntry(long nativeDomDistillerServiceAndroid, String entryId);
-    private native String nativeGetUrlForEntry(
-            long nativeDomDistillerServiceAndroid, String entryId);
-    private static native long nativeGetDistilledPagePrefsPtr(
-            long nativeDomDistillerServiceAndroid);
+    @NativeMethods
+    interface Natives {
+        long getDistilledPagePrefsPtr(long nativeDomDistillerServiceAndroid);
+    }
 }

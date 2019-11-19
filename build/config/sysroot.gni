@@ -27,7 +27,7 @@ if (current_os == target_os && current_cpu == target_cpu &&
   import("//build/config/android/config.gni")
 
   # Android uses unified headers, and thus a single compile time sysroot
-  sysroot = "$android_ndk_root/sysroot"
+  sysroot = "$android_toolchain_root/sysroot"
 } else if (is_linux && use_sysroot) {
   # By default build against a sysroot image downloaded from Cloud Storage
   # during gclient runhooks.
@@ -75,27 +75,4 @@ if (current_os == target_os && current_cpu == target_cpu &&
   }
 } else {
   sysroot = ""
-}
-
-if (is_android) {
-  # Android uses unified headers in NDK r16 and later, meaning that the
-  # compile time sysroot and link time sysroot are different
-  link_sysroot = sysroot
-  if (current_cpu == "arm") {
-    link_sysroot = "$android_ndk_root/$arm_android_sysroot_subdir"
-  } else if (current_cpu == "arm64") {
-    link_sysroot = "$android_ndk_root/$arm64_android_sysroot_subdir"
-  } else if (current_cpu == "x86") {
-    link_sysroot = "$android_ndk_root/$x86_android_sysroot_subdir"
-  } else if (current_cpu == "x64") {
-    link_sysroot = "$android_ndk_root/$x86_64_android_sysroot_subdir"
-  } else if (current_cpu == "mipsel") {
-    link_sysroot = "$android_ndk_root/$mips_android_sysroot_subdir"
-  } else if (current_cpu == "mips64el") {
-    link_sysroot = "$android_ndk_root/$mips64_android_sysroot_subdir"
-  } else {
-    assert(false, "No android link sysroot for cpu: $target_cpu")
-  }
-} else {
-  link_sysroot = sysroot
 }

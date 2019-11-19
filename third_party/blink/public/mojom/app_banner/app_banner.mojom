@@ -11,9 +11,9 @@ enum AppBannerPromptReply {
 
 interface AppBannerController {
   // The browser asks the renderer if the app banner should be shown.
-  BannerPromptRequest(AppBannerService service, AppBannerEvent& event,
-                      array<string> platform, bool require_gesture) =>
-      (AppBannerPromptReply reply);
+  BannerPromptRequest(pending_remote<AppBannerService> service,
+                      pending_receiver<AppBannerEvent> event_receiver,
+                      array<string> platform) => (AppBannerPromptReply reply);
 };
 
 interface AppBannerEvent {

@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<?xml-stylesheet href="chrome://measurepageloadtimeextension/skin/overlay.css" type="text/css"?>
-<!DOCTYPE overlay SYSTEM "chrome://measurepageloadtimeextension/locale/measurepageloadtimeextension.dtd">
-<overlay id="measurepageloadtimeextension-overlay"
-         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
-  <script src="measure_page_load_time.js"/>
-</overlay>

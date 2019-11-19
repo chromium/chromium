@@ -8,41 +8,18 @@ differs from Google style.
 
 [TOC]
 
-## Use references for all non-null pointer arguments
-Pointer arguments that can never be null should be passed as a reference, even
-if this results in a mutable reference argument.
+## May use mutable reference arguments
 
-> Note: Even though Google style prohibits mutable reference arguments, Blink
-style explicitly permits their use.
+Mutable reference arguments are permitted in Blink, in contrast to Google style.
 
-**Good:**
+> Note: This rule is under [discussion](https://groups.google.com/a/chromium.org/d/msg/blink-dev/O7R4YwyPIHc/mJyEyJs-EAAJ).
+
+**OK:**
 ```c++
-// Passed by mutable reference since |frame| is assumed to be non-null.
+// May be passed by mutable reference since |frame| is assumed to be non-null.
 FrameLoader::FrameLoader(LocalFrame& frame)
     : frame_(&frame),
       progress_tracker_(ProgressTracker::Create(frame)) {
-  // ...
-}
-
-// Optional arguments should still be passed by pointer.
-void LocalFrame::SetDOMWindow(LocalDOMWindow* dom_window) {
-  if (dom_window)
-    GetScriptController().ClearWindowProxy();
-
-  if (this->DomWindow())
-    this->DomWindow()->Reset();
-  dom_window_ = dom_window;
-}
-```
-
-**Bad:**
-```c++
-// Since the constructor assumes that |frame| is never null, it should be
-// passed as a mutable reference.
-FrameLoader::FrameLoader(LocalFrame* frame)
-    : frame_(frame),
-      progress_tracker_(ProgressTracker::Create(frame)) {
-  DCHECK(frame_);
   // ...
 }
 ```
@@ -65,6 +42,8 @@ for more details on Blink directories and their type usage.
   std::vector<GURL> urls;
   std::unordered_map<int, std::deque<url::Origin>> origins;
 ```
+
+When interacting with WTF types, use `wtf_size_t` instead of `size_t`.
 
 ## Do not use `new` and `delete`
 
@@ -212,16 +191,58 @@ class Node {
 };
 ```
 
-## Prefer enums to bools for function parameters
+## Prefer enums or StrongAliases to bare bools for function parameters
 Prefer enums to bools for function parameters if callers are likely to be
 passing constants, since named constants are easier to read at the call site.
-An exception to this rule is a setter function, where the name of the function
-already makes clear what the boolean is.
+Alternatively, you can use base::util::StrongAlias<Tag, bool>. An exception to
+this rule is a setter function, where the name of the function already makes
+clear what the boolean is.
 
 **Good:**
 ```c++
+class FrameLoader {
+public:
+  enum class CloseType {
+    kNotForReload,
+    kForReload,
+  };
+
+  bool ShouldClose(CloseType) {
+    if (type == CloseType::kForReload) {
+      ...
+    } else {
+      DCHECK_EQ(type, CloseType::kNotForReload);
+      ...
+    }
+  }
+};
+
 // An named enum value makes it clear what the parameter is for.
-if (frame_->Loader().ShouldClose(CloseType::kNotForReload)) {
+if (frame_->Loader().ShouldClose(FrameLoader::CloseType::kNotForReload)) {
+  // No need to use enums for boolean setters, since the meaning is clear.
+  frame_->SetIsClosing(true);
+
+  // ...
+```
+
+**Good:**
+```c++
+class FrameLoader {
+public:
+  using ForReload = base::util::StrongAlias<class ForReloadTag, bool>;
+
+  bool ShouldClose(ForReload) {
+    // A StrongAlias<_, bool> can be tested like a bool.
+    if (for_reload) {
+      ...
+    } else {
+      ...
+    }
+  }
+};
+
+// Using a StrongAlias makes it clear what the parameter is for.
+if (frame_->Loader().ShouldClose(FrameLoader::ForReload(false))) {
   // No need to use enums for boolean setters, since the meaning is clear.
   frame_->SetIsClosing(true);
 
@@ -230,6 +251,17 @@ if (frame_->Loader().ShouldClose(CloseType::kNotForReload)) {
 
 **Bad:**
 ```c++
+class FrameLoader {
+public:
+  bool ShouldClose(bool for_reload) {
+    if (for_reload) {
+      ...
+    } else {
+      ...
+    }
+  }
+};
+
 // Not obvious what false means here.
 if (frame_->Loader().ShouldClose(false)) {
   frame_->SetIsClosing(ClosingState::kTrue);

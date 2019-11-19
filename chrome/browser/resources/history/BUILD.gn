@@ -15,10 +15,6 @@ optimize_webui("build") {
     "app.vulcanized.html",
     "lazy_load.vulcanized.html",
   ]
-  html_out_files_polymer2 = [
-    "app.vulcanized.p2.html",
-    "lazy_load.vulcanized.p2.html",
-  ]
 
   input = rebase_path(".", root_build_dir)
   js_out_files = [
@@ -91,6 +87,7 @@ js_library("history_list") {
     "//third_party/polymer/v1_0/components-chromium/iron-scroll-threshold:iron-scroll-threshold-extracted",
     "//ui/webui/resources/cr_elements/cr_action_menu:cr_action_menu",
     "//ui/webui/resources/cr_elements/cr_lazy_render:cr_lazy_render",
+    "//ui/webui/resources/js:i18n_behavior",
     "//ui/webui/resources/js:load_time_data",
     "//ui/webui/resources/js:util",
   ]

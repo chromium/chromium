@@ -59,61 +59,103 @@
   <release seq="1">
     <messages fallback_to_english="true">
       <message name="IDS_PROJNAME" desc="">
-        Google Credential Provider
+        Google Credential Provider for Windows
       </message>
       <message name="IDS_INVALID_UI_RESPONSE" desc="">
-        Signing in to your Google Account failed. Make sure the computer has an internet connection, then try again.
+        Signing in to your work account failed. Make sure the computer has an internet connection, then try again.
       </message>
       <message name="IDS_CANT_CREATE_USER" desc="">
         A user could not be created.
       </message>
       <message name="IDS_INVALID_PASSWORD" desc="">
-        Sorry, your Windows password couldn't be verified. Please try again.
+        You entered an incorrect Windows password. Please try again.
       </message>
       <message name="IDS_INTERNAL_ERROR" desc="">
         An internal error occurred.
       </message>
       <message name="IDS_EMAIL_MISMATCH" desc="">
-         Signing in with this Google Account is not allowed. Try a different account.
+         Signing in with this account is not allowed. Try a different account.
       </message>
       <message name="IDS_INVALID_EMAIL_DOMAIN" desc="">
-        Signing in with Google Accounts on this domain is not allowed. Try a different account.
+        Signing in with a work account on this domain is not allowed. Try a different account.
+      </message>
+      <message name="IDS_DISALLOWED_CONSUMER_EMAIL" desc="">
+        Signing in with a personal account on this device is not allowed. Please login with a work account.
       </message>
       <message name="IDS_GAIA_ACCOUNT_FULLNAME" desc="">
-        Google Credential Provider Helper
+        Google Credential Provider for Windows helper
       </message>
       <message name="IDS_GAIA_ACCOUNT_COMMENT" desc="">
         Used to run Google Credential Provider sign in page.
       </message>
       <message name="IDS_AUTH_FID_DESCRIPTION" desc="">
-        Sign in using your Google Account.
+        Sign in using your work account.
+      </message>
+      <message name="IDS_REAUTH_FID_DESCRIPTION" desc="">
+        Your session has expired. Sign in using your Google work account.
+      </message>
+      <message name="IDS_REAUTH_NOT_ENROLLED_WITH_MDM_FID_DESCRIPTION" desc="">
+        Your device needs to enroll with device management. Sign in using your Google work account.
+      </message>
+      <message name="IDS_REAUTH_MISSING_PASSWORD_RECOVERY_INFO_FID_DESCRIPTION" desc="">
+        Your device is missing recovery info. Sign in using your Google work account.
+      </message>
+      <message name="IDS_REAUTH_AD_NO_USER_FID_DESCRIPTION" desc="">
+        Sign in using your GSuite work account.
       </message>
       <message name="IDS_AUTH_FID_PROVIDER_LABEL" desc="">
-        Add person
+        Add work account
       </message>
       <message name="IDS_EXISTING_AUTH_FID_PROVIDER_LABEL" desc="">
-        Sign in using your Google Account
+        Sign in using your work account
       </message>
       <message name="IDS_USER_ACCOUNT_COMMENT" desc="">
-        Google user
+        User account created by Google Credential Provider for Windows
       </message>
       <message name="IDS_NO_NETWORK" desc="">
         Make sure you have a network connection and try again.
       </message>
+      <message name="IDS_FAILED_CREATE_LOGON_STUB" desc="">
+        Unable to load Google sign in screen due to an issue in your Chrome installation. Contact your administrator.
+      </message>
       <message name="IDS_PASSWORD_UPDATE_NEEDED" desc="">
-        Your password has changed on Google. Please enter your current Windows password in order to sync your Windows Account with your Google Account.
+        Your account password has changed. Please enter your current Windows password in order to sync your Windows account with your work account.
       </message>
       <message name="IDS_ACCOUNT_IN_USE" desc="">
-        Another account on this computer has already registered with this Google Account. Please sign in with a different Google Account.
+        A user on this computer was already added using this account. Please sign in with a different account.
       </message>
       <message name="IDS_ACCOUNT_LOCKED" desc="">
-        Your account has been locked. Please contact a system adminstrator.
+        Your account has been locked out. Please contact your system administrator.
       </message>
       <message name="IDS_MDM_ENROLLMENT_FAILED" desc="">
-        Unable to enroll this computer for enterprise management.  Please sign in with a different Google Account.
+        Unable to enroll this computer for enterprise management.  Please sign in with a different work account.
       </message>
       <message name="IDS_INVALID_UNLOCK_WORKSTATION_USER" desc="">
-        Only the user that locked this workstation is currently allowed sign in to the system.
+        Only the user that locked this computer is allowed to sign in.
+      </message>
+      <message name="IDS_ADD_USER_DISALLOWED" desc="">
+        Failed to add a new user. This computer only allows one user to be created using a work account.
+      </message>
+      <message name="IDS_FORGOT_PASSWORD_LINK" desc="">
+        Forgot Windows Password
+      </message>
+      <message name="IDS_ENTER_PASSWORD_LINK" desc="">
+        Enter Windows Password
+      </message>
+      <message name="IDS_CONFIRM_FORCED_PASSWORD_CHANGE" desc="">
+        Continuing without entering your current Windows password might cause irreversible loss of information.
+      </message>
+      <message name="IDS_FORCED_PASSWORD_CHANGE_FAILURE" desc="">
+        Unable to continue without entering the current Windows password. Please contact a system administrator.
+      </message>
+      <message name="IDS_WINDOWS_PASSWORD_FIELD_LABEL" desc="">
+        Password
+      </message>
+      <message name="IDS_EMPTY_ACCESS_TOKEN" desc="">
+        Only GSuite Enterprise users are allowed to login.
+      </message>
+      <message name="IDS_INVALID_AD_UPN" desc="">
+        No Domain user could be found for your account. Please contact your administrator.
       </message>
     </messages>
   </release>

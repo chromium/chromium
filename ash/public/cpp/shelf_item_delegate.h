@@ -10,30 +10,29 @@
 
 #include "ash/public/cpp/ash_public_export.h"
 #include "ash/public/cpp/shelf_types.h"
-#include "ash/public/interfaces/shelf.mojom.h"
 #include "base/callback.h"
-#include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "mojo/public/cpp/bindings/binding.h"
 #include "ui/events/event.h"
 
 class AppWindowLauncherItemController;
 
+namespace gfx {
+class ImageSkia;
+}
+
 namespace ui {
-class MenuModel;
+class SimpleMenuModel;
 }
 
 namespace ash {
 
-using MenuItemList = std::vector<mojom::MenuItemPtr>;
-
-// ShelfItemDelegate tracks some item state and serves as a base class for
-// various subclasses that implement the mojo interface.
-class ASH_PUBLIC_EXPORT ShelfItemDelegate : public mojom::ShelfItemDelegate {
+// ShelfItemDelegate tracks some item state, handles shelf item selection, menu
+// command execution, etc.
+class ASH_PUBLIC_EXPORT ShelfItemDelegate {
  public:
   explicit ShelfItemDelegate(const ShelfID& shelf_id);
-  ~ShelfItemDelegate() override;
+  virtual ~ShelfItemDelegate();
 
   const ShelfID& shelf_id() const { return shelf_id_; }
   void set_shelf_id(const ShelfID& shelf_id) { shelf_id_ = shelf_id; }
@@ -45,17 +44,28 @@ class ASH_PUBLIC_EXPORT ShelfItemDelegate : public mojom::ShelfItemDelegate {
     image_set_by_controller_ = image_set_by_controller;
   }
 
-  // Returns a pointer to this instance, to be used by remote shelf models, etc.
-  mojom::ShelfItemDelegatePtr CreateInterfacePtrAndBind();
+  // Called when the user selects a shelf item. The event, display, and source
+  // info should be provided if known; some implementations use these arguments.
+  // Defaults: (nullptr, kInvalidDisplayId, LAUNCH_FROM_UNKNOWN)
+  // The callback reports the action taken and any application menu to show.
+  // NOTE: This codepath is not currently used for context menu triggering.
+  using AppMenuItem = std::pair<base::string16, gfx::ImageSkia>;
+  using AppMenuItems = std::vector<AppMenuItem>;
+  using ItemSelectedCallback =
+      base::OnceCallback<void(ShelfAction, AppMenuItems)>;
+  virtual void ItemSelected(std::unique_ptr<ui::Event> event,
+                            int64_t display_id,
+                            ShelfLaunchSource source,
+                            ItemSelectedCallback callback);
 
   // Returns items for the application menu; used for convenience and testing.
-  virtual MenuItemList GetAppMenuItems(int event_flags);
+  virtual AppMenuItems GetAppMenuItems(int event_flags);
 
   // Returns the context menu model; used to show ShelfItem context menus.
-  using GetMenuModelCallback =
-      base::OnceCallback<void(std::unique_ptr<ui::MenuModel>)>;
+  using GetContextMenuCallback =
+      base::OnceCallback<void(std::unique_ptr<ui::SimpleMenuModel>)>;
   virtual void GetContextMenu(int64_t display_id,
-                              GetMenuModelCallback callback);
+                              GetContextMenuCallback callback);
 
   // Returns nullptr if class is not AppWindowLauncherItemController.
   virtual AppWindowLauncherItemController* AsAppWindowLauncherItemController();
@@ -63,15 +73,19 @@ class ASH_PUBLIC_EXPORT ShelfItemDelegate : public mojom::ShelfItemDelegate {
   // Attempts to execute a context menu command; returns true if it was run.
   bool ExecuteContextMenuCommand(int64_t command_id, int32_t event_flags);
 
-  // mojom::ShelfItemDelegate:
-  void GetContextMenuItems(int64_t display_id,
-                           GetContextMenuItemsCallback callback) override;
+  // Called on invocation of a shelf item's context or application menu command.
+  // |from_context_menu| is true if the command came from a context menu, or
+  // false if the command came from an application menu. If the |display_id| is
+  // unknown or irrelevant, callers may pass |display::kInvalidDisplayId|.
+  virtual void ExecuteCommand(bool from_context_menu,
+                              int64_t command_id,
+                              int32_t event_flags,
+                              int64_t display_id) = 0;
+
+  // Closes all windows associated with this shelf item.
+  virtual void Close() = 0;
 
  private:
-  // Bound by GetContextMenu().
-  void OnGetContextMenu(GetContextMenuItemsCallback callback,
-                        std::unique_ptr<ui::MenuModel> menu_model);
-
   // The shelf id; empty if there is no app associated with the item.
   // Besides the application id, ShelfID also contains a launch id, which is an
   // id that can be passed to an app when launched in order to support multiple
@@ -79,16 +93,13 @@ class ASH_PUBLIC_EXPORT ShelfItemDelegate : public mojom::ShelfItemDelegate {
   // identify each shelf item that has the same app_id.
   ShelfID shelf_id_;
 
-  // A binding used by remote shelf item delegate users.
-  mojo::Binding<mojom::ShelfItemDelegate> binding_;
-
   // Set to true if the launcher item image has been set by the controller.
   bool image_set_by_controller_ = false;
 
   // The context menu model that was last shown for the associated shelf item.
-  std::unique_ptr<ui::MenuModel> context_menu_;
+  std::unique_ptr<ui::SimpleMenuModel> context_menu_;
 
-  base::WeakPtrFactory<ShelfItemDelegate> weak_ptr_factory_;
+  base::WeakPtrFactory<ShelfItemDelegate> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ShelfItemDelegate);
 };

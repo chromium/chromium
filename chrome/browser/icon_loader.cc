@@ -24,7 +24,7 @@ IconLoader* IconLoader::Create(const base::FilePath& file_path,
 void IconLoader::Start() {
   target_task_runner_ = base::ThreadTaskRunnerHandle::Get();
 
-  base::PostTaskWithTraits(
+  base::PostTask(
       FROM_HERE, traits(),
       base::BindOnce(&IconLoader::ReadGroup, base::Unretained(this)));
 }

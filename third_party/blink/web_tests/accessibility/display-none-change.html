@@ -1,13 +1,12 @@
 <!DOCTYPE HTML>
 <script src="../resources/testharness.js"></script>
 <script src="../resources/testharnessreport.js"></script>
-<script src="../resources/run-after-layout-and-paint.js"></script>
 
 <button id="button">Button</button>
 <label id="label" for="button" style="display:none" aria-label="AriaLabel">Label</label>
 
 <script>
-test_after_layout_and_paint(function(t) {
+test(function(t) {
     var axButton = accessibilityController.accessibleElementById("button");
 
     // Get the AXObject for the label indirectly, even though it's display:none.

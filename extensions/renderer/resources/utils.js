@@ -6,17 +6,6 @@ var nativeDeepCopy = requireNative('utils').deepCopy;
 var logActivity = requireNative('activityLogger');
 var exceptionHandler = require('uncaught_exception_handler');
 
-var jsLastError = bindingUtil ? undefined : require('lastError');
-function runCallbackWithLastError(name, message, stack, callback, args) {
-  if (bindingUtil) {
-    bindingUtil.runCallbackWithLastError(message, function() {
-      $Function.apply(callback, null, args);
-    });
-  } else {
-    jsLastError.run(name, message, stack, callback, args);
-  }
-}
-
 /**
  * An object forEach. Calls |f| with each (key, value) pair of |obj|, using
  * |self| as the target.
@@ -206,7 +195,7 @@ function handleRequestWithPromiseDoNotUse(
     }).catch(function(error) {
       if (callback) {
         var message = exceptionHandler.safeErrorToString(error, true);
-        runCallbackWithLastError(fullName, message, stack, callback);
+        bindingUtil.runCallbackWithLastError(message, callback);
       }
     }).then(function() {
       keepAlive.close();

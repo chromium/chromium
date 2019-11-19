@@ -43,7 +43,7 @@ std::unique_ptr<ECPrivateKey> ECPrivateKey::Create() {
 
 // static
 std::unique_ptr<ECPrivateKey> ECPrivateKey::CreateFromPrivateKeyInfo(
-    const std::vector<uint8_t>& input) {
+    base::span<const uint8_t> input) {
   OpenSSLErrStackTracer err_tracer(FROM_HERE);
 
   CBS cbs;
@@ -59,7 +59,7 @@ std::unique_ptr<ECPrivateKey> ECPrivateKey::CreateFromPrivateKeyInfo(
 
 // static
 std::unique_ptr<ECPrivateKey> ECPrivateKey::CreateFromEncryptedPrivateKeyInfo(
-    const std::vector<uint8_t>& encrypted_private_key_info) {
+    base::span<const uint8_t> encrypted_private_key_info) {
   OpenSSLErrStackTracer err_tracer(FROM_HERE);
 
   CBS cbs;
@@ -84,6 +84,28 @@ std::unique_ptr<ECPrivateKey> ECPrivateKey::CreateFromEncryptedPrivateKeyInfo(
 
   std::unique_ptr<ECPrivateKey> result(new ECPrivateKey());
   result->key_ = std::move(pkey);
+  return result;
+}
+
+// static
+std::unique_ptr<ECPrivateKey> ECPrivateKey::DeriveFromSecret(
+    base::span<const uint8_t> secret) {
+  bssl::UniquePtr<EC_GROUP> group(
+      EC_GROUP_new_by_curve_name(NID_X9_62_prime256v1));
+  if (!group)
+    return nullptr;
+
+  bssl::UniquePtr<EC_KEY> ec_key(
+      EC_KEY_derive_from_secret(group.get(), secret.data(), secret.size()));
+  if (!ec_key)
+    return nullptr;
+
+  std::unique_ptr<ECPrivateKey> result(new ECPrivateKey());
+  result->key_.reset(EVP_PKEY_new());
+  if (!result->key_ || !EVP_PKEY_set1_EC_KEY(result->key_.get(), ec_key.get()))
+    return nullptr;
+
+  CHECK_EQ(EVP_PKEY_EC, EVP_PKEY_id(result->key_.get()));
   return result;
 }
 
@@ -135,7 +157,7 @@ bool ECPrivateKey::ExportEncryptedPrivateKey(
 
 bool ECPrivateKey::ExportPublicKey(std::vector<uint8_t>* output) const {
   OpenSSLErrStackTracer err_tracer(FROM_HERE);
-  uint8_t *der;
+  uint8_t* der;
   size_t der_len;
   bssl::ScopedCBB cbb;
   if (!CBB_init(cbb.get(), 0) ||

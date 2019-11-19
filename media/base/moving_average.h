@@ -37,7 +37,7 @@ class MEDIA_EXPORT MovingAverage {
   // Resets the state of the class to its initial post-construction state.
   void Reset();
 
-  size_t count() const { return count_; }
+  uint64_t count() const { return count_; }
 
   base::TimeDelta max() const { return max_; }
 

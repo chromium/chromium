@@ -5,26 +5,22 @@
 package org.chromium.chrome.browser.preferences.privacy;
 
 import android.os.Bundle;
-import android.preference.Preference;
-import android.preference.Preference.OnPreferenceChangeListener;
-import android.preference.PreferenceFragment;
+import android.support.v7.preference.PreferenceFragmentCompat;
 
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.contextualsearch.ContextualSearchManager;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchUma;
 import org.chromium.chrome.browser.preferences.ChromeSwitchPreference;
-import org.chromium.chrome.browser.preferences.PrefServiceBridge;
 import org.chromium.chrome.browser.preferences.PreferenceUtils;
 
 /**
  * Fragment to manage the Contextual Search preference and to explain to the user what it does.
  */
-public class ContextualSearchPreferenceFragment extends PreferenceFragment {
-
+public class ContextualSearchPreferenceFragment extends PreferenceFragmentCompat {
     private static final String PREF_CONTEXTUAL_SEARCH_SWITCH = "contextual_search_switch";
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
         PreferenceUtils.addPreferencesFromResource(this, R.xml.contextual_search_preferences);
         getActivity().setTitle(R.string.contextual_search_title);
         setHasOptionsMenu(true);
@@ -35,20 +31,15 @@ public class ContextualSearchPreferenceFragment extends PreferenceFragment {
         ChromeSwitchPreference contextualSearchSwitch =
                 (ChromeSwitchPreference) findPreference(PREF_CONTEXTUAL_SEARCH_SWITCH);
 
-        boolean isContextualSearchEnabled =
-                !PrefServiceBridge.getInstance().isContextualSearchDisabled();
+        boolean isContextualSearchEnabled = !ContextualSearchManager.isContextualSearchDisabled();
         contextualSearchSwitch.setChecked(isContextualSearchEnabled);
 
-        contextualSearchSwitch.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
-            @Override
-            public boolean onPreferenceChange(Preference preference, Object newValue) {
-                PrefServiceBridge.getInstance().setContextualSearchState((boolean) newValue);
-                ContextualSearchUma.logPreferenceChange((boolean) newValue);
-                return true;
-            }
+        contextualSearchSwitch.setOnPreferenceChangeListener((preference, newValue) -> {
+            ContextualSearchManager.setContextualSearchState((boolean) newValue);
+            ContextualSearchUma.logPreferenceChange((boolean) newValue);
+            return true;
         });
         contextualSearchSwitch.setManagedPreferenceDelegate(
-                preference -> PrefServiceBridge.getInstance().isContextualSearchDisabledByPolicy());
+                preference -> ContextualSearchManager.isContextualSearchDisabledByPolicy());
     }
-
 }

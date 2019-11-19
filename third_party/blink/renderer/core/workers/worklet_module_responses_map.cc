@@ -5,8 +5,8 @@
 #include "third_party/blink/renderer/core/workers/worklet_module_responses_map.h"
 
 #include "base/optional.h"
-#include "third_party/blink/renderer/platform/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 
 namespace blink {
 
@@ -45,8 +45,8 @@ void WorkletModuleResponsesMap::Entry::SetParams(
     for (auto& it : clients_) {
       PostCrossThreadTask(
           *it.value, FROM_HERE,
-          CrossThreadBind(&ModuleScriptFetcher::Client::OnFetched, it.key,
-                          *params));
+          CrossThreadBindOnce(&ModuleScriptFetcher::Client::OnFetched, it.key,
+                              *params));
     }
   } else {
     state_ = State::kFailed;
@@ -54,7 +54,7 @@ void WorkletModuleResponsesMap::Entry::SetParams(
     for (auto& it : clients_) {
       PostCrossThreadTask(
           *it.value, FROM_HERE,
-          CrossThreadBind(&ModuleScriptFetcher::Client::OnFailed, it.key));
+          CrossThreadBindOnce(&ModuleScriptFetcher::Client::OnFailed, it.key));
     }
   }
 

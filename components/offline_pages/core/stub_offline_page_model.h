@@ -10,7 +10,6 @@
 #include <string>
 #include <vector>
 
-#include "components/offline_pages/core/client_policy_controller.h"
 #include "components/offline_pages/core/offline_page_model.h"
 
 namespace offline_pages {
@@ -33,15 +32,8 @@ class StubOfflinePageModel : public OfflinePageModel {
                 SavePageCallback callback) override;
   void AddPage(const OfflinePageItem& page, AddPageCallback callback) override;
   void MarkPageAccessed(int64_t offline_id) override;
-  void DeletePagesByOfflineId(const std::vector<int64_t>& offline_ids,
-                              DeletePageCallback callback) override;
-  void DeletePagesByClientIds(const std::vector<ClientId>& client_ids,
-                              DeletePageCallback callback) override;
-  void DeletePagesByClientIdsAndOrigin(const std::vector<ClientId>& client_ids,
-                                       const std::string& origin,
-                                       DeletePageCallback callback) override;
-  void GetPagesByClientIds(const std::vector<ClientId>& client_ids,
-                           MultipleOfflinePageItemCallback callback) override;
+  void DeletePagesWithCriteria(const PageCriteria& criteria,
+                               DeletePageCallback callback) override;
   void DeleteCachedPagesByURLPredicate(const UrlPredicate& predicate,
                                        DeletePageCallback callback) override;
   void GetAllPages(MultipleOfflinePageItemCallback callback) override;
@@ -49,40 +41,24 @@ class StubOfflinePageModel : public OfflinePageModel {
                                 MultipleOfflineIdCallback callback) override;
   void GetPageByOfflineId(int64_t offline_id,
                           SingleOfflinePageItemCallback callback) override;
-  void GetPageByGuid(const std::string& guid,
-                     SingleOfflinePageItemCallback callback) override;
-  void GetPagesByURL(const GURL& url,
-                     MultipleOfflinePageItemCallback callback) override;
-  void GetPagesByRequestOrigin(
-      const std::string& origin,
-      MultipleOfflinePageItemCallback callback) override;
-  void GetPageBySizeAndDigest(int64_t file_size,
-                              const std::string& digest,
-                              SingleOfflinePageItemCallback callback) override;
-  void GetPagesRemovedOnCacheReset(
-      MultipleOfflinePageItemCallback callback) override;
-  void GetPagesByNamespace(const std::string& name_space,
-                           MultipleOfflinePageItemCallback callback) override;
-  void GetPagesSupportedByDownloads(
-      MultipleOfflinePageItemCallback callback) override;
-  void StoreThumbnail(const OfflinePageThumbnail& thumb) override;
-  void GetThumbnailByOfflineId(int64_t offline_id,
-                               GetThumbnailCallback callback) override;
-  void HasThumbnailForOfflineId(
+  void GetPagesWithCriteria(const PageCriteria& criteria,
+                            MultipleOfflinePageItemCallback callback) override;
+  void StoreThumbnail(int64_t offline_id, std::string thumbnail) override;
+  void StoreFavicon(int64_t offline_id, std::string favicon) override;
+  void GetVisualsByOfflineId(int64_t offline_id,
+                             GetVisualsCallback callback) override;
+  void GetVisualsAvailability(
       int64_t offline_id,
-      base::OnceCallback<void(bool)> callback) override;
+      base::OnceCallback<void(VisualsAvailability)> callback) override;
   void PublishInternalArchive(
       const OfflinePageItem& offline_page,
-      std::unique_ptr<OfflinePageArchiver> archiver,
       PublishPageCallback publish_done_callback) override;
-  const base::FilePath& GetInternalArchiveDirectory(
+  const base::FilePath& GetArchiveDirectory(
       const std::string& name_space) const override;
   bool IsArchiveInInternalDir(const base::FilePath& file_path) const override;
-  ClientPolicyController* GetPolicyController() override;
   OfflineEventLogger* GetLogger() override;
 
  private:
-  ClientPolicyController policy_controller_;
   std::vector<int64_t> offline_ids_;
   base::FilePath archive_directory_;
 };

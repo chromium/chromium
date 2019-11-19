@@ -77,6 +77,17 @@ bool IsSystemLibraryPath(const char* lib_path) {
   return false;
 }
 
+FileDescriptor& FileDescriptor::operator=(FileDescriptor&& other) noexcept {
+  if (this != &other) {
+    if (fd_ != kEmptyFD) {
+      DoClose(fd_);
+    }
+    fd_ = other.fd_;
+    other.fd_ = kEmptyFD;
+  }
+  return *this;
+}
+
 }  // namespace crazy
 
 #ifndef UNIT_TEST

@@ -814,6 +814,84 @@ TEST(PaymentManifestParserTest, EmptyServiceWorkerSrcInInstallInfoIsMalformed) {
   ExpectUnableToParseInstallInfo("{\"serviceworker\": {\"src\": \"\"}}");
 }
 
+// Test "payment" member format when every other member is well formed.
+void TestPaymentMemberFormat(const std::string& payment_format) {
+  ExpectUnableToParseInstallInfo(
+      "{ "
+      "  \"name\": \"Pay with BobPay\","
+      "  \"icons\": [{"
+      "    \"src\": \"bobpay.png\","
+      "    \"sizes\": \"48x48\","
+      "    \"type\": \"image/png\""
+      "  }],"
+      "  \"serviceworker\": {"
+      "    \"src\": \"sw.js\","
+      "    \"scope\": \"/some/scope/\","
+      "    \"use_cache\": true"
+      "  },"
+      "  \"prefer_related_applications\": true,"
+      "  \"related_applications\": [{"
+      "      \"platform\": \"play\","
+      "      \"id\": \"com.bobpay\""
+      "  }]," +
+      payment_format + "}");
+}
+
+TEST(PaymentManifestParserTest, EmptyPaymentMemberIsMalformed) {
+  TestPaymentMemberFormat("\"payment\": {}");
+}
+
+TEST(PaymentManifestParserTest, PaymentMemberMustBeADictionary_List) {
+  TestPaymentMemberFormat("\"payment\": [\"supported_delegations\"]");
+}
+
+TEST(PaymentManifestParserTest, PaymentMemberMustBeADictionary_String) {
+  TestPaymentMemberFormat("\"payment\": \"supported_delegations\"");
+}
+
+TEST(PaymentManifestParserTest, PaymentMemberMustBeADictionary_Integer) {
+  TestPaymentMemberFormat("\"payment\": 1");
+}
+
+TEST(PaymentManifestParserTest, InvalidKeyInPaymentMemberIsMalformed) {
+  TestPaymentMemberFormat("\"payment\": {\"key\": \"value\"}");
+}
+
+TEST(PaymentManifestParserTest, SupportedDelegationsMustBeAList_String) {
+  TestPaymentMemberFormat(
+      "\"payment\": {\"supported_delegations\": \"string\"}");
+}
+
+TEST(PaymentManifestParserTest, SupportedDelegationsMustBeAList_Dictionary) {
+  TestPaymentMemberFormat(
+      "\"payment\": {\"supported_delegations\": {\"key\": \"value\"}}");
+}
+
+TEST(PaymentManifestParserTest, SupportedDelegationsMustBeAList_Integer) {
+  TestPaymentMemberFormat("\"payment\": {\"supported_delegations\": 1}");
+}
+
+TEST(PaymentManifestParserTest, EmptyListSupportedDelegationsIsMalformed) {
+  TestPaymentMemberFormat("\"payment\": {\"supported_delegations\": []}");
+}
+
+TEST(PaymentManifestParserTest, InvalidSupportedDelegationsIsMalformed) {
+  TestPaymentMemberFormat(
+      "\"payment\": {\"supported_delegations\": [\"random string\"]}");
+}
+
+TEST(PaymentManifestParserTest,
+     NonASCIICharsInSupportedDelegationsIsMalformed) {
+  TestPaymentMemberFormat("\"payment\": {\"supported_delegations\": [\"β\"]}");
+}
+
+TEST(PaymentManifestParserTest, TooLongSupportedDelegationsListIsMalformed) {
+  TestPaymentMemberFormat(
+      "\"payment\": {\"supported_delegations\": [" +
+      base::JoinString(std::vector<std::string>(101, "\"payerEmail\""), ", ") +
+      "]}");
+}
+
 TEST(PaymentManifestParserTest, MinimumWellFormedInstallInfo) {
   WebAppInstallationInfo expected_installation_info;
   expected_installation_info.sw_js_url = "sw.js";
@@ -838,6 +916,10 @@ TEST(PaymentManifestParserTest, WellFormedInstallInfo) {
   expected_installation_info.sw_scope = "/some/scope/";
   expected_installation_info.sw_use_cache = true;
   expected_installation_info.preferred_app_ids = {"com.bobpay"};
+  expected_installation_info.supported_delegations.shipping_address = true;
+  expected_installation_info.supported_delegations.payer_email = true;
+  expected_installation_info.supported_delegations.payer_name = false;
+  expected_installation_info.supported_delegations.payer_phone = false;
 
   PaymentManifestParser::WebAppIcon expected_icon;
   expected_icon.src = "bobpay.png";
@@ -863,7 +945,10 @@ TEST(PaymentManifestParserTest, WellFormedInstallInfo) {
       "  \"related_applications\": [{"
       "      \"platform\": \"play\","
       "      \"id\": \"com.bobpay\""
-      "  }]"
+      "  }],"
+      "  \"payment\": {"
+      "      \"supported_delegations\": [\"shippingAddress\", \"payerEmail\"]"
+      "  }"
       "}",
       expected_installation_info, expected_icons);
 }

@@ -20,7 +20,8 @@ namespace {
 // Creates a very simple extension with a background page.
 scoped_refptr<const Extension> CreateExtensionWithBackgroundPage() {
   return ExtensionBuilder("test")
-      .SetBackgroundPage(ExtensionBuilder::BackgroundPage::PERSISTENT)
+      .SetBackgroundContext(
+          ExtensionBuilder::BackgroundContext::BACKGROUND_PAGE)
       .SetID("id2")
       .Build();
 }

@@ -1,0 +1,6 @@
+AriaProperties changed on role=heading, name=Item2
+AriaProperties changed on role=heading, name=Item3
+AriaProperties changed on role=heading, name=Item4
+LiveSetting changed on role=heading, name=Item2
+LiveSetting changed on role=heading, name=Item3
+LiveSetting changed on role=heading, name=Item4

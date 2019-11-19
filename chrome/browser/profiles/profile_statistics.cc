@@ -12,8 +12,7 @@
 #include "chrome/browser/profiles/profile_statistics_aggregator.h"
 
 ProfileStatistics::ProfileStatistics(Profile* profile)
-    : profile_(profile), aggregator_(nullptr), weak_ptr_factory_(this) {
-}
+    : profile_(profile), aggregator_(nullptr) {}
 
 ProfileStatistics::~ProfileStatistics() {
 }

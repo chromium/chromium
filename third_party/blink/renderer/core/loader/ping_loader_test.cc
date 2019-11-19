@@ -5,7 +5,6 @@
 #include "third_party/blink/renderer/core/loader/ping_loader.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_url_loader_mock_factory.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/loader/empty_clients.h"
@@ -45,9 +44,7 @@ class PingLoaderTest : public PageTestBase {
   }
 
   void TearDown() override {
-    Platform::Current()
-        ->GetURLLoaderMockFactory()
-        ->UnregisterAllURLsAndClearMemoryCache();
+    url_test_helpers::UnregisterAllURLsAndClearMemoryCache();
   }
 
   void SetDocumentURL(const KURL& url) {
@@ -60,6 +57,8 @@ class PingLoaderTest : public PageTestBase {
 
   const ResourceRequest& PingAndGetRequest(const KURL& ping_url) {
     KURL destination_url("http://navigation.destination");
+    // TODO(crbug.com/751425): We should use the mock functionality
+    // via |PageTestBase::dummy_page_holder_|.
     url_test_helpers::RegisterMockedURLLoad(
         ping_url, test::CoreTestDataPath("bar.html"), "text/html");
     PingLoader::SendLinkAuditPing(&GetFrame(), ping_url, destination_url);
@@ -70,7 +69,7 @@ class PingLoaderTest : public PageTestBase {
     }
     // Serve the ping request, since it will otherwise bleed in to the next
     // test, and once begun there is no way to cancel it directly.
-    Platform::Current()->GetURLLoaderMockFactory()->ServeAsynchronousRequests();
+    url_test_helpers::ServeAsynchronousRequests();
     return ping_request;
   }
 
@@ -110,10 +109,12 @@ TEST_F(PingLoaderTest, LinkAuditPingPriority) {
   SetDocumentURL(KURL("http://localhost/foo.html"));
 
   KURL ping_url("https://localhost/bar.html");
+  // TODO(crbug.com/751425): We should use the mock functionality
+  // via |PageTestBase::dummy_page_holder_|.
   url_test_helpers::RegisterMockedURLLoad(
       ping_url, test::CoreTestDataPath("bar.html"), "text/html");
   PingLoader::SendLinkAuditPing(&GetFrame(), ping_url, destination_url);
-  Platform::Current()->GetURLLoaderMockFactory()->ServeAsynchronousRequests();
+  url_test_helpers::ServeAsynchronousRequests();
   const ResourceRequest& request = client_->PingRequest();
   ASSERT_FALSE(request.IsNull());
   ASSERT_EQ(request.Url(), ping_url);
@@ -124,12 +125,13 @@ TEST_F(PingLoaderTest, ViolationPriority) {
   SetDocumentURL(KURL("http://localhost/foo.html"));
 
   KURL ping_url("https://localhost/bar.html");
+  // TODO(crbug.com/751425): We should use the mock functionality
+  // via |PageTestBase::dummy_page_holder_|.
   url_test_helpers::RegisterMockedURLLoad(
       ping_url, test::CoreTestDataPath("bar.html"), "text/html");
   PingLoader::SendViolationReport(&GetFrame(), ping_url,
-                                  EncodedFormData::Create(),
-                                  PingLoader::kXSSAuditorViolationReport);
-  Platform::Current()->GetURLLoaderMockFactory()->ServeAsynchronousRequests();
+                                  EncodedFormData::Create());
+  url_test_helpers::ServeAsynchronousRequests();
   const ResourceRequest& request = client_->PingRequest();
   ASSERT_FALSE(request.IsNull());
   ASSERT_EQ(request.Url(), ping_url);
@@ -140,10 +142,12 @@ TEST_F(PingLoaderTest, BeaconPriority) {
   SetDocumentURL(KURL("https://localhost/foo.html"));
 
   KURL ping_url("https://localhost/bar.html");
+  // TODO(crbug.com/751425): We should use the mock functionality
+  // via |PageTestBase::dummy_page_holder_|.
   url_test_helpers::RegisterMockedURLLoad(
       ping_url, test::CoreTestDataPath("bar.html"), "text/html");
   PingLoader::SendBeacon(&GetFrame(), ping_url, "hello");
-  Platform::Current()->GetURLLoaderMockFactory()->ServeAsynchronousRequests();
+  url_test_helpers::ServeAsynchronousRequests();
   const ResourceRequest& request = client_->PingRequest();
   ASSERT_FALSE(request.IsNull());
   ASSERT_EQ(request.Url(), ping_url);

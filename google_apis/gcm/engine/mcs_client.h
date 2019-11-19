@@ -102,6 +102,7 @@ class GCM_EXPORT MCSClient {
             base::Clock* clock,
             ConnectionFactory* connection_factory,
             GCMStore* gcm_store,
+            scoped_refptr<base::SequencedTaskRunner> io_task_runner,
             GCMStatsRecorder* recorder);
   virtual ~MCSClient();
 
@@ -297,6 +298,8 @@ class GCM_EXPORT MCSClient {
   // The GCM persistent store. Not owned.
   GCMStore* gcm_store_;
 
+  const scoped_refptr<base::SequencedTaskRunner> io_task_runner_;
+
   // Manager to handle triggering/detecting heartbeats.
   HeartbeatManager heartbeat_manager_;
 
@@ -306,7 +309,7 @@ class GCM_EXPORT MCSClient {
   // Recorder that records GCM activities for debugging purpose. Not owned.
   GCMStatsRecorder* recorder_;
 
-  base::WeakPtrFactory<MCSClient> weak_ptr_factory_;
+  base::WeakPtrFactory<MCSClient> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(MCSClient);
 };

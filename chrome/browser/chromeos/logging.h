@@ -14,6 +14,9 @@ namespace logging {
 // Redirects chrome logging to the appropriate session log dir.
 void RedirectChromeLogging(const base::CommandLine& command_line);
 
+// Forces log redirection to occur, even if not running on ChromeOS hardware.
+void ForceLogRedirectionForTesting();
+
 }  // namespace logging
 
 #endif  // CHROME_BROWSER_CHROMEOS_LOGGING_H_

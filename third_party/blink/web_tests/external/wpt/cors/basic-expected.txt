@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+FAIL Same domain basic usage assert_true: Got CORS-allowed response expected true got false
+PASS Cross domain basic usage
+PASS Same domain different port
+PASS Cross domain different port
+PASS Cross domain different protocol
+PASS Same domain different protocol different port
+Harness: the test ran to completion.
+

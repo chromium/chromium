@@ -12,49 +12,46 @@
 
 namespace cc {
 
-// This visits a tree of layers in drawing order. For LayerImpls, this is only
-// useful for tests, since there's no LayerImpl tree outside unit tests.
-template <typename LayerType>
+class Layer;
+
+// This visits a tree of layers in drawing order.
 class CC_EXPORT LayerListIterator {
  public:
-  explicit LayerListIterator(LayerType* root_layer);
-  LayerListIterator(const LayerListIterator<LayerType>& other);
+  explicit LayerListIterator(Layer* root_layer);
+  LayerListIterator(const LayerListIterator& other);
   virtual ~LayerListIterator();
 
-  bool operator==(const LayerListIterator<LayerType>& other) const {
+  bool operator==(const LayerListIterator& other) const {
     return current_layer_ == other.current_layer_;
   }
 
-  bool operator!=(const LayerListIterator<LayerType>& other) const {
+  bool operator!=(const LayerListIterator& other) const {
     return !(*this == other);
   }
 
   // We will only support prefix increment.
   virtual LayerListIterator& operator++();
-  LayerType* operator->() const { return current_layer_; }
-  LayerType* operator*() const { return current_layer_; }
+  Layer* operator->() const { return current_layer_; }
+  Layer* operator*() const { return current_layer_; }
 
  protected:
   // The implementation of this iterator is currently tied tightly to the layer
   // tree, but it should be straightforward to reimplement in terms of a list
   // when it's ready.
-  LayerType* current_layer_;
+  Layer* current_layer_;
   std::vector<size_t> list_indices_;
 };
 
-template <typename LayerType>
-class CC_EXPORT LayerListReverseIterator : public LayerListIterator<LayerType> {
+class CC_EXPORT LayerListReverseIterator : public LayerListIterator {
  public:
-  explicit LayerListReverseIterator(LayerType* root_layer);
+  explicit LayerListReverseIterator(Layer* root_layer);
   ~LayerListReverseIterator() override;
 
   // We will only support prefix increment.
-  LayerListIterator<LayerType>& operator++() override;
+  LayerListIterator& operator++() override;
 
  private:
   void DescendToRightmostInSubtree();
-  LayerType* current_layer() { return this->current_layer_; }
-  std::vector<size_t>& list_indices() { return this->list_indices_; }
 };
 
 }  // namespace cc

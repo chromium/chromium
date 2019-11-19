@@ -1,6 +1,0 @@
-PASS successfullyParsed is true
-
-TEST COMPLETE
-
-PASS entry.domainLookupStart > 0 is true
-This fetches ahem font.

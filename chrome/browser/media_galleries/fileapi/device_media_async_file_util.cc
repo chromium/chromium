@@ -21,14 +21,14 @@
 #include "chrome/browser/media_galleries/fileapi/mtp_file_stream_reader.h"
 #include "chrome/browser/media_galleries/fileapi/native_media_file_util.h"
 #include "chrome/browser/media_galleries/fileapi/readahead_file_stream_reader.h"
-#include "components/services/filesystem/public/interfaces/types.mojom.h"
+#include "components/services/filesystem/public/mojom/types.mojom.h"
 #include "content/public/browser/browser_thread.h"
 #include "storage/browser/blob/shareable_file_reference.h"
-#include "storage/browser/fileapi/file_stream_reader.h"
-#include "storage/browser/fileapi/file_system_context.h"
-#include "storage/browser/fileapi/file_system_operation_context.h"
-#include "storage/browser/fileapi/file_system_url.h"
-#include "storage/browser/fileapi/native_file_util.h"
+#include "storage/browser/file_system/file_stream_reader.h"
+#include "storage/browser/file_system/file_system_context.h"
+#include "storage/browser/file_system/file_system_operation_context.h"
+#include "storage/browser/file_system/file_system_url.h"
+#include "storage/browser/file_system/native_file_util.h"
 
 using storage::AsyncFileUtil;
 using storage::FileSystemOperationContext;
@@ -151,7 +151,7 @@ void OnDidCheckMediaForCreateSnapshotFile(
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
   base::FilePath platform_path(platform_file.get()->path());
   if (error != base::File::FILE_OK)
-    platform_file = NULL;
+    platform_file.reset();
   std::move(callback).Run(error, file_info, platform_path, platform_file);
 }
 
@@ -641,8 +641,7 @@ void DeviceMediaAsyncFileUtil::RemoveWatcher(
 DeviceMediaAsyncFileUtil::DeviceMediaAsyncFileUtil(
     const base::FilePath& profile_path,
     MediaFileValidationType validation_type)
-    : profile_path_(profile_path),
-      weak_ptr_factory_(this) {
+    : profile_path_(profile_path) {
   if (validation_type == APPLY_MEDIA_FILE_VALIDATION) {
     media_path_filter_wrapper_ = new MediaPathFilterWrapper;
   }

@@ -12,8 +12,8 @@ namespace gwp_asan {
 namespace internal {
 
 void* GuardedPageAllocator::MapRegion() {
-  return mmap(nullptr, RegionSize(), PROT_NONE, MAP_ANONYMOUS | MAP_PRIVATE, -1,
-              0);
+  return mmap(MapRegionHint(), RegionSize(), PROT_NONE,
+              MAP_ANONYMOUS | MAP_PRIVATE, -1, 0);
 }
 
 void GuardedPageAllocator::UnmapRegion() {

@@ -1,0 +1,96 @@
+Tests the DOM.getAttributes API.
+
+Running test: expectGetAttributesForElementWorksCorrectly
+{
+    attributes : [
+        [0] : class
+        [1] : class1
+        [2] : attr1
+        [3] : attr1
+    ]
+    backendNodeId : <number>
+    childNodeCount : 1
+    children : [
+        [0] : {
+            backendNodeId : <number>
+            localName : 
+            nodeId : <number>
+            nodeName : #text
+            nodeType : 3
+            nodeValue : Paragraph Text
+            parentId : <number>
+        }
+    ]
+    localName : p
+    nodeId : <number>
+    nodeName : P
+    nodeType : 1
+    nodeValue : 
+    parentId : <number>
+}
+[
+    [0] : class
+    [1] : class1
+    [2] : attr1
+    [3] : attr1
+]
+
+Running test: expectGetAttributesOnNonElementReturnsError
+{
+    backendNodeId : <number>
+    baseURL : <string>
+    childNodeCount : 1
+    children : [
+        [0] : {
+            attributes : [
+            ]
+            backendNodeId : <number>
+            childNodeCount : 2
+            children : [
+                [0] : {
+                    attributes : [
+                    ]
+                    backendNodeId : <number>
+                    childNodeCount : 0
+                    localName : head
+                    nodeId : <number>
+                    nodeName : HEAD
+                    nodeType : 1
+                    nodeValue : 
+                    parentId : <number>
+                }
+                [1] : {
+                    attributes : [
+                    ]
+                    backendNodeId : <number>
+                    childNodeCount : 1
+                    localName : body
+                    nodeId : <number>
+                    nodeName : BODY
+                    nodeType : 1
+                    nodeValue : 
+                    parentId : <number>
+                }
+            ]
+            frameId : <string>
+            localName : html
+            nodeId : <number>
+            nodeName : HTML
+            nodeType : 1
+            nodeValue : 
+            parentId : <number>
+        }
+    ]
+    documentURL : <string>
+    localName : 
+    nodeId : <number>
+    nodeName : #document
+    nodeType : 9
+    nodeValue : 
+    xmlVersion : 
+}
+{
+    code : -32000
+    message : Node is not an Element
+}
+

@@ -1,0 +1,143 @@
+{
+  "layers": [
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF",
+      "paintInvalidations": [
+        {
+          "object": "NGPhysicalTextFragment 'A A A A A AA AA'",
+          "rect": [0, 0, 300, 200],
+          "reason": "geometry"
+        },
+        {
+          "object": "NGPhysicalTextFragment 'A A'",
+          "rect": [0, 0, 300, 200],
+          "reason": "geometry"
+        },
+        {
+          "object": "NGPhysicalTextFragment 'AA AA AA A A A'",
+          "rect": [0, 0, 300, 200],
+          "reason": "geometry"
+        },
+        {
+          "object": "NGPhysicalTextFragment 'AA AA AAA AAA'",
+          "rect": [0, 0, 300, 200],
+          "reason": "geometry"
+        },
+        {
+          "object": "NGPhysicalTextFragment 'AAA AAA AAA AA'",
+          "rect": [0, 0, 300, 200],
+          "reason": "geometry"
+        },
+        {
+          "object": "NGPhysicalTextFragment 'AAA AAAA AAAA'",
+          "rect": [0, 0, 300, 200],
+          "reason": "geometry"
+        },
+        {
+          "object": "NGPhysicalTextFragment 'AAAAA AAAA AAAA'",
+          "rect": [0, 0, 300, 200],
+          "reason": "geometry"
+        },
+        {
+          "object": "NGPhysicalTextFragment 'AAAAA AAAAA'",
+          "rect": [0, 0, 300, 200],
+          "reason": "geometry"
+        },
+        {
+          "object": "NGPhysicalTextFragment 'AAAAAA AAAAA'",
+          "rect": [0, 0, 300, 200],
+          "reason": "geometry"
+        },
+        {
+          "object": "NGPhysicalTextFragment 'AAAAAA AAAAAAA'",
+          "rect": [0, 0, 300, 200],
+          "reason": "geometry"
+        },
+        {
+          "object": "NGPhysicalTextFragment 'A A A A A AA AA'",
+          "rect": [0, 0, 200, 300],
+          "reason": "geometry"
+        },
+        {
+          "object": "NGPhysicalTextFragment 'A A A A'",
+          "rect": [0, 0, 200, 300],
+          "reason": "disappeared"
+        },
+        {
+          "object": "NGPhysicalTextFragment 'A A'",
+          "rect": [0, 0, 200, 300],
+          "reason": "geometry"
+        },
+        {
+          "object": "NGPhysicalTextFragment 'AA AA AA A A A'",
+          "rect": [0, 0, 200, 300],
+          "reason": "geometry"
+        },
+        {
+          "object": "NGPhysicalTextFragment 'AA AA AA A'",
+          "rect": [0, 0, 200, 300],
+          "reason": "disappeared"
+        },
+        {
+          "object": "NGPhysicalTextFragment 'AA AA AAA AAA'",
+          "rect": [0, 0, 200, 300],
+          "reason": "geometry"
+        },
+        {
+          "object": "NGPhysicalTextFragment 'AAA AAA AA'",
+          "rect": [0, 0, 200, 300],
+          "reason": "disappeared"
+        },
+        {
+          "object": "NGPhysicalTextFragment 'AAA AAA AAA AA'",
+          "rect": [0, 0, 200, 300],
+          "reason": "geometry"
+        },
+        {
+          "object": "NGPhysicalTextFragment 'AAA AAAA AAAA'",
+          "rect": [0, 0, 200, 300],
+          "reason": "geometry"
+        },
+        {
+          "object": "NGPhysicalTextFragment 'AAAA AAA'",
+          "rect": [0, 0, 200, 300],
+          "reason": "disappeared"
+        },
+        {
+          "object": "NGPhysicalTextFragment 'AAAAA AAAA AAAA'",
+          "rect": [0, 0, 200, 300],
+          "reason": "geometry"
+        },
+        {
+          "object": "NGPhysicalTextFragment 'AAAAA AAAA'",
+          "rect": [0, 0, 200, 300],
+          "reason": "disappeared"
+        },
+        {
+          "object": "NGPhysicalTextFragment 'AAAAA AAAAA'",
+          "rect": [0, 0, 200, 300],
+          "reason": "geometry"
+        },
+        {
+          "object": "NGPhysicalTextFragment 'AAAAAA AAAAA'",
+          "rect": [0, 0, 200, 300],
+          "reason": "geometry"
+        },
+        {
+          "object": "NGPhysicalTextFragment 'AAAAAA AAAAAAA'",
+          "rect": [0, 0, 200, 300],
+          "reason": "geometry"
+        },
+        {
+          "object": "NGPhysicalTextFragment 'A A A A A'",
+          "rect": [0, 300, 180, 20],
+          "reason": "geometry"
+        }
+      ]
+    }
+  ]
+}
+

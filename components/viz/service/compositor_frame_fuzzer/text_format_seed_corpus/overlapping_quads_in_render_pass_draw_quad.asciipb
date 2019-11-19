@@ -1,0 +1,249 @@
+output_rect: {
+  x: 0
+  y: 0
+  width: 620
+  height: 400
+}
+damage_rect: {
+  x: 0
+  y: 0
+  width: 620
+  height: 400
+}
+quad_list: [
+  {
+    rect: {
+      x: 0
+      y: 0
+      width: 100
+      height: 100
+    }
+    visible_rect: {
+      x: 0
+      y: 0
+      width: 100
+      height: 100
+    }
+    solid_color_quad: {
+      color: 0xFFFF0070
+      force_anti_aliasing_off: false
+    }
+    sqs: {
+      transform: {
+        rotate: -10
+        scale_x: 1
+        scale_y: 1
+        translate_x: 50
+        translate_y: 50
+      }
+      layer_rect: {
+        x: 0
+        y: 0
+        width: 100
+        height: 100
+      }
+      visible_rect: {
+        x: 0
+        y: 0
+        width: 100
+        height: 100
+      }
+      clip_rect: {
+        x: 0
+        y: 0
+        width: 0
+        height: 0
+      }
+      is_clipped: false
+      are_contents_opaque: false
+      opacity: 0xFFFFFFFF
+      sorting_context_id: 0
+    }
+  },
+  {
+    rect: {
+      x: 0
+      y: 0
+      width: 100
+      height: 100
+    }
+    visible_rect: {
+      x: 0
+      y: 0
+      width: 100
+      height: 100
+    }
+    solid_color_quad: {
+      color: 0xFF70FF00
+      force_anti_aliasing_off: false
+    }
+    sqs: {
+      transform: {
+        rotate: 0
+        scale_x: 1
+        scale_y: 1
+        translate_x: 100
+        translate_y: 50
+      }
+      layer_rect: {
+        x: 0
+        y: 0
+        width: 100
+        height: 100
+      }
+      visible_rect: {
+        x: 0
+        y: 0
+        width: 100
+        height: 100
+      }
+      clip_rect: {
+        x: 0
+        y: 0
+        width: 0
+        height: 0
+      }
+      is_clipped: false
+      are_contents_opaque: true
+      opacity: 0xFFFFFFFF
+      sorting_context_id: 0
+    }
+  },
+  {
+    rect: {
+      x: 0
+      y: 0
+      width: 200
+      height: 200
+    }
+    visible_rect: {
+      x: 0
+      y: 0
+      width: 200
+      height: 200
+    }
+    render_pass_quad: {
+      render_pass: {
+        transform_to_root_target : {
+          rotate: 15
+          scale_x: 1
+          scale_y: 1
+          translate_x: 300
+          translate_y: 0
+        }
+        output_rect: {
+          x: 0
+          y: 0
+          width: 200
+          height: 200
+        }
+        damage_rect: {
+          x: 0
+          y: 0
+          width: 200
+          height: 200
+        }
+        quad_list: [
+          {
+            rect: {
+              x: 0
+              y: 0
+              width: 100
+              height: 100
+            }
+            visible_rect: {
+              x: 0
+              y: 0
+              width: 100
+              height: 100
+            }
+            solid_color_quad: {
+              color: 0xFF0070FF
+              force_anti_aliasing_off: false
+            }
+            sqs: {
+              transform: {
+                rotate: -10
+                scale_x: 1
+                scale_y: 1
+                translate_x: 50
+                translate_y: 50
+              }
+              layer_rect: {
+                x: 0
+                y: 0
+                width: 100
+                height: 100
+              }
+              visible_rect: {
+                x: 0
+                y: 0
+                width: 100
+                height: 100
+              }
+              clip_rect: {
+                x: 0
+                y: 0
+                width: 0
+                height: 0
+              }
+              is_clipped: false
+              are_contents_opaque: true
+              opacity: 0xFFFFFFFF
+              sorting_context_id: 0
+            }
+          },
+          {
+            rect: {
+              x: 0
+              y: 0
+              width: 100
+              height: 100
+            }
+            visible_rect: {
+              x: 0
+              y: 0
+              width: 100
+              height: 100
+            }
+            solid_color_quad: {
+              color: 0xFF9970FF
+              force_anti_aliasing_off: false
+            }
+            sqs: {
+              transform: {
+                rotate: 0
+                scale_x: 1
+                scale_y: 1
+                translate_x: 100
+                translate_y: 50
+              }
+              layer_rect: {
+                x: 0
+                y: 0
+                width: 100
+                height: 100
+              }
+              visible_rect: {
+                x: 0
+                y: 0
+                width: 100
+                height: 100
+              }
+              clip_rect: {
+                x: 0
+                y: 0
+                width: 0
+                height: 0
+              }
+              is_clipped: false
+              are_contents_opaque: true
+              opacity: 0xFFFFFFFF
+              sorting_context_id: 0
+            }
+          }
+        ]
+      }
+    }
+  }
+]

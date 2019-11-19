@@ -6,10 +6,10 @@ package org.chromium.chrome.browser.preferences;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
-import android.os.Build;
-import android.preference.PreferenceGroup;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.content.res.AppCompatResources;
+import android.support.v7.preference.PreferenceGroup;
+import android.support.v7.preference.PreferenceViewHolder;
 import android.util.AttributeSet;
 import android.view.View;
 
@@ -28,15 +28,9 @@ public class ExpandablePreferenceGroup extends PreferenceGroup {
     private Drawable mDrawable;
 
     public ExpandablePreferenceGroup(Context context, AttributeSet attrs) {
-        super(context, attrs, android.R.attr.preferenceStyle);
-        setWidgetLayoutResource(R.layout.checkable_image_view_widget);
+        super(context, attrs, R.attr.preferenceStyle);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            // Fix animations. Background: setWidgetLayout resource call above disables view
-            // recycling, thus breaking animations. Views recycling is safe in this case, as this
-            // Preference doesn't change view types on the fly.
-            setRecycleEnabled(true);
-        }
+        setWidgetLayoutResource(R.layout.checkable_image_view_widget);
     }
 
     /** Returns whether the preference group is expanded. */
@@ -59,18 +53,19 @@ public class ExpandablePreferenceGroup extends PreferenceGroup {
     protected void onExpandedChanged(boolean expanded) {}
 
     @Override
-    protected void onBindView(View view) {
-        super.onBindView(view);
+    public void onBindViewHolder(PreferenceViewHolder holder) {
+        super.onBindViewHolder(holder);
 
         if (mDrawable == null) {
             mDrawable = createDrawable(getContext());
         }
         CheckableImageView imageView =
-                (CheckableImageView) view.findViewById(R.id.checkable_image_view);
+                (CheckableImageView) holder.findViewById(R.id.checkable_image_view);
         imageView.setImageDrawable(mDrawable);
         imageView.setChecked(mExpanded);
 
         // For accessibility, read out the whole title and whether the group is collapsed/expanded.
+        View view = holder.itemView;
         String description = getTitle() + getContext().getResources().getString(mExpanded
                 ? R.string.accessibility_expanded_group
                 : R.string.accessibility_collapsed_group);

@@ -49,13 +49,15 @@ void FilteredOfflineItemObserver::OnItemRemoved(const ContentId& id) {
     observer.OnItemRemoved(id);
 }
 
-void FilteredOfflineItemObserver::OnItemUpdated(const OfflineItem& item) {
+void FilteredOfflineItemObserver::OnItemUpdated(
+    const OfflineItem& item,
+    const base::Optional<UpdateDelta>& update_delta) {
   auto it = observers_.find(item.id);
   if (it == observers_.end())
     return;
 
   for (auto& observer : *(it->second))
-    observer.OnItemUpdated(item);
+    observer.OnItemUpdated(item, update_delta);
 }
 
 }  // namespace offline_items_collection

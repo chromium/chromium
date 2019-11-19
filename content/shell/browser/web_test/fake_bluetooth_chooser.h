@@ -9,7 +9,11 @@
 
 #include "content/public/browser/bluetooth_chooser.h"
 #include "content/shell/common/web_test/fake_bluetooth_chooser.mojom.h"
-#include "mojo/public/cpp/bindings/binding.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
+#include "mojo/public/cpp/bindings/pending_associated_remote.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "url/origin.h"
 
 namespace content {
 
@@ -28,28 +32,28 @@ namespace content {
 class FakeBluetoothChooser : public mojom::FakeBluetoothChooser,
                              public BluetoothChooser {
  public:
-  // Resets the test scan duration to timeout immediately.
+  // FakeBluetoothChooserFactory will create an instance of this class when its
+  // CreateFakeBluetoothChooser() method is called. It will maintain ownership
+  // of the instance temporarily until the chooser is opened. When the chooser
+  // is opened, ownership of this instance will shift to the caller of
+  // WebContentsDelegate::RunBluetoothChooser.
+  FakeBluetoothChooser(
+      mojo::PendingReceiver<mojom::FakeBluetoothChooser> receiver,
+      mojo::PendingAssociatedRemote<mojom::FakeBluetoothChooserClient> client);
+
+  // Resets the test scan duration to timeout immediately and sends a
+  // |CHOOSER_CLOSED| event to the client.
   ~FakeBluetoothChooser() override;
 
-  // WebTestContentBrowserClient will create an instance of this class when a
-  // request is bound. It will maintain ownership of the instance temporarily
-  // until the chooser is opened. When the chooser is opened, ownership of this
-  // instance will shift to the caller of
-  // WebContentsDelegate::RunBluetoothChooser.
-  static std::unique_ptr<FakeBluetoothChooser> Create(
-      mojom::FakeBluetoothChooserRequest request);
-
-  // Sets the EventHandler that will handle events produced by the chooser.
-  void SetEventHandler(const EventHandler& event_handler);
+  // Sets the EventHandler that will handle events produced by the chooser, and
+  // sends a |CHOOSER_OPENED| event to the client with the |origin|.
+  void OnRunBluetoothChooser(const EventHandler& event_handler,
+                             const url::Origin& origin);
 
   // mojom::FakeBluetoothChooser overrides:
-
-  void WaitForEvents(uint32_t num_of_events,
-                     WaitForEventsCallback callback) override;
-  void SelectPeripheral(const std::string& peripheral_address,
-                        SelectPeripheralCallback callback) override;
-  void Cancel(CancelCallback callback) override;
-  void Rescan(RescanCallback callback) override;
+  void SelectPeripheral(const std::string& peripheral_address) override;
+  void Cancel() override;
+  void Rescan() override;
 
   // BluetoothChooser overrides:
 
@@ -63,12 +67,14 @@ class FakeBluetoothChooser : public mojom::FakeBluetoothChooser,
                          int signal_strength_level) override;
 
  private:
-  explicit FakeBluetoothChooser(mojom::FakeBluetoothChooserRequest request);
-
   // Stores the callback function that handles chooser events.
   EventHandler event_handler_;
 
-  mojo::Binding<mojom::FakeBluetoothChooser> binding_;
+  mojo::Receiver<mojom::FakeBluetoothChooser> receiver_;
+
+  // Stores the associated pointer to the client that will be receiving events
+  // from FakeBluetoothChooser.
+  mojo::AssociatedRemote<mojom::FakeBluetoothChooserClient> client_;
 
   DISALLOW_COPY_AND_ASSIGN(FakeBluetoothChooser);
 };

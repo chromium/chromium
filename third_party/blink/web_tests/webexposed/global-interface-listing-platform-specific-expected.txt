@@ -7,6 +7,7 @@ interface Bluetooth : EventTarget
     attribute @@toStringTag
     getter onadvertisementreceived
     method constructor
+    method getAvailability
     method requestDevice
     method requestLEScan
     setter onadvertisementreceived

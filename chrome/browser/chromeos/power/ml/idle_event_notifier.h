@@ -11,26 +11,22 @@
 #include "base/observer_list.h"
 #include "base/optional.h"
 #include "base/scoped_observer.h"
-#include "base/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "chrome/browser/chromeos/power/ml/boot_clock.h"
 #include "chrome/browser/chromeos/power/ml/user_activity_event.pb.h"
+#include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/dbus/power_manager/power_supply_properties.pb.h"
-#include "chromeos/dbus/power_manager_client.h"
-#include "mojo/public/cpp/bindings/binding.h"
-#include "services/viz/public/interfaces/compositing/video_detector_observer.mojom.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "services/viz/public/mojom/compositing/video_detector_observer.mojom.h"
 #include "ui/base/user_activity/user_activity_detector.h"
 #include "ui/base/user_activity/user_activity_observer.h"
-
-namespace base {
-class Clock;
-}
 
 namespace chromeos {
 namespace power {
 namespace ml {
 
-class BootClock;
 class RecentEventsCounter;
 
 // This is time since midnight in the local time zone and may move back or
@@ -95,34 +91,16 @@ class IdleEventNotifier : public PowerManagerClient::Observer,
     int touch_events_in_last_hour = 0;
   };
 
-  class Observer {
-   public:
-    // Called when an idle event is observed.
-    virtual void OnIdleEventObserved(const ActivityData& activity_data) = 0;
-
-   protected:
-    virtual ~Observer() {}
-  };
-
-  IdleEventNotifier(PowerManagerClient* power_client,
-                    ui::UserActivityDetector* detector,
-                    viz::mojom::VideoDetectorObserverRequest request);
+  IdleEventNotifier(
+      PowerManagerClient* power_client,
+      ui::UserActivityDetector* detector,
+      mojo::PendingReceiver<viz::mojom::VideoDetectorObserver> receiver);
   ~IdleEventNotifier() override;
-
-  // Set test clock so that we can check activity time.
-  void SetClockForTesting(scoped_refptr<base::SequencedTaskRunner> task_runner,
-                          base::Clock* test_clock,
-                          std::unique_ptr<BootClock> test_boot_clock);
-
-  // Adds or removes an observer.
-  void AddObserver(Observer* observer);
-  void RemoveObserver(Observer* observer);
 
   // chromeos::PowerManagerClient::Observer overrides:
   void LidEventReceived(chromeos::PowerManagerClient::LidState state,
                         const base::TimeTicks& timestamp) override;
   void PowerChanged(const power_manager::PowerSupplyProperties& proto) override;
-  void ScreenDimImminent() override;
   void SuspendDone(const base::TimeDelta& sleep_duration) override;
 
   // ui::UserActivityObserver overrides:
@@ -131,6 +109,14 @@ class IdleEventNotifier : public PowerManagerClient::Observer,
   // viz::mojom::VideoDetectorObserver overrides:
   void OnVideoActivityStarted() override;
   void OnVideoActivityEnded() override;
+
+  // Called in UserActivityController::ShouldDeferScreenDim to prepare activity
+  // data for making Smart Dim decision.
+  ActivityData GetActivityDataAndReset();
+
+  // Get activity data only, do not mutate the class, may be used by machine
+  // learning internal page.
+  ActivityData GetActivityData() const;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(IdleEventNotifierTest, CheckInitialValues);
@@ -159,11 +145,7 @@ class IdleEventNotifier : public PowerManagerClient::Observer,
   // will be recalculated.
   void ResetTimestampsForRecentActivity();
 
-  // It is base::DefaultClock, but will be set to a mock clock for tests.
-  base::Clock* clock_;
-
-  // It is RealBootClock, but will be set to FakeBootClock for tests.
-  std::unique_ptr<BootClock> boot_clock_;
+  BootClock boot_clock_;
 
   ScopedObserver<chromeos::PowerManagerClient,
                  chromeos::PowerManagerClient::Observer>
@@ -183,7 +165,7 @@ class IdleEventNotifier : public PowerManagerClient::Observer,
 
   // Whether video is playing.
   bool video_playing_ = false;
-  mojo::Binding<viz::mojom::VideoDetectorObserver> binding_;
+  mojo::Receiver<viz::mojom::VideoDetectorObserver> receiver_;
 
   std::unique_ptr<RecentEventsCounter> key_counter_;
   std::unique_ptr<RecentEventsCounter> mouse_counter_;

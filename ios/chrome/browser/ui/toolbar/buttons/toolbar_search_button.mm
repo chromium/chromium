@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_search_button.h"
 
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_configuration.h"
+#import "ios/chrome/browser/ui/toolbar/public/features.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_constants.h"
 #import "ios/chrome/common/ui_util/constraints_ui_util.h"
 
@@ -27,11 +28,6 @@ const CGFloat kSpotlightHeight = 38.0f;
   [super setDimmed:dimmed];
 
   self.spotlightView.hidden = dimmed && !self.spotlighted;
-  if (!dimmed) {
-    // Override the color of the non-dimmed button.
-    self.spotlightView.backgroundColor =
-        [self.configuration locationBarBackgroundColorWithVisibility:1];
-  }
 }
 
 - (void)setSpotlighted:(BOOL)spotlighted {
@@ -46,8 +42,7 @@ const CGFloat kSpotlightHeight = 38.0f;
   spotlightView.translatesAutoresizingMaskIntoConstraints = NO;
   spotlightView.userInteractionEnabled = NO;
   spotlightView.layer.cornerRadius = kSpotlightHeight / 2;
-  spotlightView.backgroundColor =
-      [self.configuration locationBarBackgroundColorWithVisibility:1];
+  spotlightView.backgroundColor = self.configuration.buttonsSpotlightColor;
   // Make sure that the spotlightView is below the image to avoid changing the
   // color of the image.
   [self insertSubview:spotlightView belowSubview:self.imageView];
@@ -55,8 +50,13 @@ const CGFloat kSpotlightHeight = 38.0f;
   AddSameCenterConstraints(self, spotlightView);
   [spotlightView.heightAnchor constraintEqualToConstant:kSpotlightHeight]
       .active = YES;
-  [self.widthAnchor constraintEqualToAnchor:spotlightView.widthAnchor].active =
-      YES;
+  if (base::FeatureList::IsEnabled(kToolbarNewTabButton)) {
+    [spotlightView.widthAnchor constraintEqualToConstant:kSpotlightHeight]
+        .active = YES;
+  } else {
+    [self.widthAnchor constraintEqualToAnchor:spotlightView.widthAnchor]
+        .active = YES;
+  }
   self.spotlightView = spotlightView;
 }
 

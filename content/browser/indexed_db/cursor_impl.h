@@ -36,23 +36,21 @@ class CursorImpl : public blink::mojom::IDBCursor {
   void CursorContinue(
       const blink::IndexedDBKey& key,
       const blink::IndexedDBKey& primary_key,
-      blink::mojom::IDBCallbacksAssociatedPtrInfo callbacks) override;
+      blink::mojom::IDBCursor::CursorContinueCallback callback) override;
   void Prefetch(int32_t count,
-                blink::mojom::IDBCallbacksAssociatedPtrInfo callbacks) override;
+                blink::mojom::IDBCursor::PrefetchCallback callback) override;
   void PrefetchReset(int32_t used_prefetches,
                      int32_t unused_prefetches) override;
 
   void OnRemoveBinding(base::OnceClosure remove_binding_cb);
 
  private:
-  class IDBSequenceHelper;
-
-  std::unique_ptr<IDBSequenceHelper> helper_;
   // This raw pointer is safe because all CursorImpl instances are owned by an
   // IndexedDBDispatcherHost.
   IndexedDBDispatcherHost* dispatcher_host_;
   const url::Origin origin_;
   scoped_refptr<base::SequencedTaskRunner> idb_runner_;
+  std::unique_ptr<IndexedDBCursor> cursor_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

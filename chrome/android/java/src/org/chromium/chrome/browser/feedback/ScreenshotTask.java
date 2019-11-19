@@ -8,10 +8,12 @@ import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Rect;
-import android.support.annotation.Nullable;
+
+import androidx.annotation.Nullable;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
+import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.task.PostTask;
 import org.chromium.chrome.browser.ChromeActivity;
 import org.chromium.chrome.browser.tab.SadTab;
@@ -73,7 +75,8 @@ final class ScreenshotTask implements ScreenshotSource {
         return mBitmap;
     }
 
-    // This will be called on the UI thread in response to nativeGrabWindowSnapshotAsync.
+    // This will be called on the UI thread in response to
+    // ScreenshotTaskJni.get().grabWindowSnapshotAsync.
     @CalledByNative
     private void onBytesReceived(byte[] pngBytes) {
         Bitmap bitmap = null;
@@ -93,7 +96,7 @@ final class ScreenshotTask implements ScreenshotSource {
 
         Rect rect = new Rect();
         activity.getWindow().getDecorView().getRootView().getWindowVisibleDisplayFrame(rect);
-        nativeGrabWindowSnapshotAsync(
+        ScreenshotTaskJni.get().grabWindowSnapshotAsync(
                 this, ((ChromeActivity) activity).getWindowAndroid(), rect.width(), rect.height());
 
         return true;
@@ -126,10 +129,7 @@ final class ScreenshotTask implements ScreenshotSource {
         // so that the Android View for the bottom sheet will be captured.
         // TODO(https://crbug.com/835862): When the sheet is partially opened both the compositor
         // and Android views should be captured in the screenshot.
-        if (chromeActivity.getBottomSheet() != null
-                && chromeActivity.getBottomSheet().isSheetOpen()) {
-            return false;
-        }
+        if (chromeActivity.getBottomSheetController().isSheetOpen()) return false;
 
         // If the tab is null, assume in the tab switcher so a Compositor snapshot is good.
         if (currentTab == null) return true;
@@ -144,6 +144,9 @@ final class ScreenshotTask implements ScreenshotSource {
         return false;
     }
 
-    private static native void nativeGrabWindowSnapshotAsync(
-            ScreenshotTask callback, WindowAndroid window, int width, int height);
+    @NativeMethods
+    interface Natives {
+        void grabWindowSnapshotAsync(
+                ScreenshotTask callback, WindowAndroid window, int width, int height);
+    }
 }

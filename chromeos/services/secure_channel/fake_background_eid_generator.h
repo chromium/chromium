@@ -41,11 +41,16 @@ class FakeBackgroundEidGenerator : public BackgroundEidGenerator {
     identified_device_id_ = identified_device_id;
   }
 
+  void set_matching_service_data(const std::string& matching_service_data) {
+    matching_service_data_ = matching_service_data;
+  }
+
   int num_identify_calls() { return num_identify_calls_; }
 
  private:
   std::unique_ptr<std::vector<DataWithTimestamp>> nearest_eids_;
   std::string identified_device_id_;
+  std::string matching_service_data_;
 
   int num_identify_calls_ = 0;
 };

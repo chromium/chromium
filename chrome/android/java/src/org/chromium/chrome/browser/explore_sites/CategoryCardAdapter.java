@@ -5,18 +5,18 @@
 package org.chromium.chrome.browser.explore_sites;
 
 import android.content.Context;
-import android.support.annotation.IntDef;
-import android.support.annotation.Nullable;
-import android.support.v7.widget.LinearLayoutManager;
 import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
+
+import androidx.annotation.IntDef;
+import androidx.annotation.Nullable;
 
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.native_page.ContextMenuManager;
 import org.chromium.chrome.browser.native_page.NativePageNavigationDelegate;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.widget.LoadingView;
-import org.chromium.chrome.browser.widget.RoundedIconGenerator;
+import org.chromium.chrome.browser.ui.widget.LoadingView;
+import org.chromium.chrome.browser.ui.widget.RoundedIconGenerator;
 import org.chromium.ui.modelutil.ForwardingListObservable;
 import org.chromium.ui.modelutil.ListObservable.ListObserver;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -48,17 +48,23 @@ class CategoryCardAdapter extends ForwardingListObservable<Void>
     private final ContextMenuManager mContextMenuManager;
     private final NativePageNavigationDelegate mNavDelegate;
     private final Profile mProfile;
-
-    private LinearLayoutManager mLayoutManager;
+    private final int mMaxRows;
+    private final int mMaxColumns;
+    @DenseVariation
+    private final int mDenseVariation;
+    private StableScrollLayoutManager mLayoutManager;
     private PropertyModel mCategoryModel;
 
-    public CategoryCardAdapter(PropertyModel model, LinearLayoutManager layoutManager,
+    CategoryCardAdapter(PropertyModel model, StableScrollLayoutManager layoutManager,
             RoundedIconGenerator iconGenerator, ContextMenuManager contextMenuManager,
             NativePageNavigationDelegate navDelegate, Profile profile) {
         mCategoryModel = model;
         mCategoryModel.addObserver(this);
         mCategoryModel.get(ExploreSitesPage.CATEGORY_LIST_KEY).addObserver(this);
 
+        mMaxRows = mCategoryModel.get(ExploreSitesPage.MAX_ROWS_KEY);
+        mMaxColumns = mCategoryModel.get(ExploreSitesPage.MAX_COLUMNS_KEY);
+        mDenseVariation = mCategoryModel.get(ExploreSitesPage.DENSE_VARIATION_KEY);
         mLayoutManager = layoutManager;
         mIconGenerator = iconGenerator;
         mContextMenuManager = contextMenuManager;
@@ -98,6 +104,7 @@ class CategoryCardAdapter extends ForwardingListObservable<Void>
             int position, @Nullable Void payload) {
         if (holder.getItemViewType() == ViewType.CATEGORY) {
             ExploreSitesCategoryCardView view = (ExploreSitesCategoryCardView) holder.itemView;
+            view.setTileGridParams(mMaxRows, mMaxColumns, mDenseVariation);
             view.setCategory(mCategoryModel.get(ExploreSitesPage.CATEGORY_LIST_KEY).get(position),
                     position, mIconGenerator, mContextMenuManager, mNavDelegate, mProfile);
         } else if (holder.getItemViewType() == ViewType.LOADING) {
@@ -133,16 +140,8 @@ class CategoryCardAdapter extends ForwardingListObservable<Void>
             }
         }
         if (key == ExploreSitesPage.SCROLL_TO_CATEGORY_KEY) {
-            // NOTE: LinearLayoutManager#scrollToPosition has strange behavior if the scrolling
-            // happens between the time that the adapter has an item and the time that the view has
-            // actually added its children.  In that case, the LinearLayoutManager will only scroll
-            // the requested position /into view/.
-            //
-            // To work around that, we use LinearLayoutManager#scrollToPositionWithOffset, and set
-            // the offset to 0.  This allows us to always scroll the desired view to the top of the
-            // screen.
-            mLayoutManager.scrollToPositionWithOffset(
-                    mCategoryModel.get(ExploreSitesPage.SCROLL_TO_CATEGORY_KEY), 0);
+            mLayoutManager.scrollToPositionAndFocus(
+                    mCategoryModel.get(ExploreSitesPage.SCROLL_TO_CATEGORY_KEY));
         }
     }
 }

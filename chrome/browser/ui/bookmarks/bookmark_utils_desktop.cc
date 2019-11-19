@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/bookmarks/bookmark_utils_desktop.h"
 
+#include <numeric>
+
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -52,9 +54,7 @@ std::vector<GURL> GetURLsToOpen(
     } else {
       // If the node is not a URL, it is a folder. We want to add those of its
       // children which are URLs.
-      for (int child_index = 0; child_index < node->child_count();
-           ++child_index) {
-        const BookmarkNode* child = node->GetChild(child_index);
+      for (const auto& child : node->children()) {
         if (child->is_url())
           AddUrlIfLegal(child->url());
       }
@@ -80,14 +80,13 @@ bool ShouldOpenAll(gfx::NativeWindow parent,
 
 // Returns the total number of descendants nodes.
 int ChildURLCountTotal(const BookmarkNode* node) {
-  int result = 0;
-  for (int i = 0; i < node->child_count(); ++i) {
-    const BookmarkNode* child = node->GetChild(i);
-    result++;
+  const auto count_children = [](int total, const auto& child) {
     if (child->is_folder())
-      result += ChildURLCountTotal(child);
-  }
-  return result;
+      total += ChildURLCountTotal(child.get());
+    return total + 1;
+  };
+  return std::accumulate(node->children().cbegin(), node->children().cend(), 0,
+                         count_children);
 }
 
 #if !defined(OS_ANDROID)
@@ -170,7 +169,7 @@ int OpenCount(gfx::NativeWindow parent,
 
 bool ConfirmDeleteBookmarkNode(const BookmarkNode* node,
                                gfx::NativeWindow window) {
-  DCHECK(node && node->is_folder() && !node->empty());
+  DCHECK(node && node->is_folder() && !node->children().empty());
   return ShowQuestionMessageBox(
              window, l10n_util::GetStringUTF16(IDS_PRODUCT_NAME),
              l10n_util::GetPluralStringFUTF16(
@@ -186,7 +185,7 @@ void ShowBookmarkAllTabsDialog(Browser* browser) {
 
   const BookmarkNode* parent = GetParentForNewNodes(model);
   BookmarkEditor::EditDetails details =
-      BookmarkEditor::EditDetails::AddFolder(parent, parent->child_count());
+      BookmarkEditor::EditDetails::AddFolder(parent, parent->children().size());
   GetURLsForOpenTabs(browser, &(details.urls));
   DCHECK(!details.urls.empty());
 

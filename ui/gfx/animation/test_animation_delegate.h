@@ -15,31 +15,25 @@ namespace gfx {
 // message loop.
 class TestAnimationDelegate : public AnimationDelegate {
  public:
-  TestAnimationDelegate() : canceled_(false), finished_(false) {
-  }
+  TestAnimationDelegate() = default;
 
   virtual void AnimationEnded(const Animation* animation) {
     finished_ = true;
-    base::RunLoop::QuitCurrentWhenIdleDeprecated();
+    if (base::RunLoop::IsRunningOnCurrentThread())
+      base::RunLoop::QuitCurrentWhenIdleDeprecated();
   }
 
   virtual void AnimationCanceled(const Animation* animation) {
-    finished_ = true;
     canceled_ = true;
-    base::RunLoop::QuitCurrentWhenIdleDeprecated();
+    AnimationEnded(animation);
   }
 
-  bool finished() const {
-    return finished_;
-  }
-
-  bool canceled() const {
-    return canceled_;
-  }
+  bool finished() const { return finished_; }
+  bool canceled() const { return canceled_; }
 
  private:
-  bool canceled_;
-  bool finished_;
+  bool canceled_ = false;
+  bool finished_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(TestAnimationDelegate);
 };

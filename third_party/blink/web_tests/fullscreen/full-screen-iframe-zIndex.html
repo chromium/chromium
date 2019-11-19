@@ -7,10 +7,7 @@
             function init() {
                 var iframe = document.getElementById('block1');
                 var element = iframe.contentDocument.documentElement;
-                if (!internals.runtimeFlags.userActivationV2Enabled)
-                    waitForEventAndEnd(element, 'webkitfullscreenchange');
-                else
-                    waitForEventAndEnd(element, 'webkitfullscreenerror');
+                waitForEventAndEnd(element, 'webkitfullscreenchange');
                 runWithKeyDown(goFullScreen);
             }
 

@@ -52,19 +52,18 @@ class HistoryTabHelperTest : public ChromeRenderViewHostTestHarness {
   }
 
   std::string QueryPageTitleFromHistory(const GURL& url) {
-    base::string16 title;
+    std::string title;
     base::RunLoop loop;
     history_service_->QueryURL(
         url, /*want_visits=*/false,
-        base::BindLambdaForTesting([&](bool success, const history::URLRow& row,
-                                       const history::VisitVector&) {
-          EXPECT_TRUE(success);
-          title = row.title();
+        base::BindLambdaForTesting([&](history::QueryURLResult result) {
+          EXPECT_TRUE(result.success);
+          title = base::UTF16ToUTF8(result.row.title());
           loop.Quit();
         }),
         &tracker_);
     loop.Run();
-    return base::UTF16ToUTF8(title);
+    return title;
   }
 
   const GURL page_url_ = GURL("http://foo.com");
@@ -82,7 +81,6 @@ TEST_F(HistoryTabHelperTest, ShouldUpdateTitleInHistory) {
   content::NavigationEntry* entry =
       web_contents()->GetController().GetLastCommittedEntry();
   ASSERT_NE(nullptr, entry);
-  ASSERT_TRUE(web_contents()->IsLoading());
 
   web_contents()->UpdateTitleForEntry(entry, base::UTF8ToUTF16("title1"));
   EXPECT_EQ("title1", QueryPageTitleFromHistory(page_url_));
@@ -94,7 +92,6 @@ TEST_F(HistoryTabHelperTest, ShouldLimitTitleUpdatesPerPage) {
   content::NavigationEntry* entry =
       web_contents()->GetController().GetLastCommittedEntry();
   ASSERT_NE(nullptr, entry);
-  ASSERT_TRUE(web_contents()->IsLoading());
 
   // The first 10 title updates are accepted and update history, as per
   // history::kMaxTitleChanges.

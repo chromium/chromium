@@ -11,7 +11,7 @@ namespace printing {
 static NSString* kPrintAndFaxPrefPane =
     @"/System/Library/PreferencePanes/PrintAndFax.prefPane";
 
-void PrinterManagerDialog::ShowPrinterManagerDialog() {
+void PrinterManagerDialog::ShowPrinterManagerDialog(Profile* profile) {
   [[NSWorkspace sharedWorkspace] openFile:kPrintAndFaxPrefPane];
 }
 

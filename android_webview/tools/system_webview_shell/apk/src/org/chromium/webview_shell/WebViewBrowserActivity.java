@@ -13,6 +13,7 @@ import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.Bitmap;
@@ -25,12 +26,14 @@ import android.print.PrintAttributes;
 import android.print.PrintDocumentAdapter;
 import android.print.PrintManager;
 import android.provider.Browser;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.SparseArray;
 import android.view.Gravity;
 import android.view.KeyEvent;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.View.OnKeyListener;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.view.WindowManager;
@@ -45,11 +48,12 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.EditText;
 import android.widget.FrameLayout;
-import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Log;
+import org.chromium.base.PackageManagerUtils;
 import org.chromium.base.StrictModeContext;
 
 import java.io.File;
@@ -71,7 +75,7 @@ import java.util.regex.Pattern;
  * It takes an optional URL as an argument, and displays the page. There is a URL bar
  * on top of the webview for manually specifying URLs to load.
  */
-public class WebViewBrowserActivity extends Activity implements PopupMenu.OnMenuItemClickListener {
+public class WebViewBrowserActivity extends AppCompatActivity {
     private static final String TAG = "WebViewShell";
 
     // Our imaginary Android permission to associate with the WebKit geo permission
@@ -231,17 +235,16 @@ public class WebViewBrowserActivity extends Activity implements PopupMenu.OnMenu
         super.onCreate(savedInstanceState);
         WebView.setWebContentsDebuggingEnabled(true);
         setContentView(R.layout.activity_webview_browser);
+        setSupportActionBar((Toolbar) findViewById(R.id.browser_toolbar));
         mUrlBar = (EditText) findViewById(R.id.url_field);
-        mUrlBar.setOnKeyListener(new OnKeyListener() {
-            @Override
-            public boolean onKey(View view, int keyCode, KeyEvent event) {
-                if (keyCode == KeyEvent.KEYCODE_ENTER && event.getAction() == KeyEvent.ACTION_UP) {
-                    loadUrlFromUrlBar(view);
-                    return true;
-                }
-                return false;
+        mUrlBar.setOnKeyListener((View view, int keyCode, KeyEvent event) -> {
+            if (keyCode == KeyEvent.KEYCODE_ENTER && event.getAction() == KeyEvent.ACTION_UP) {
+                loadUrlFromUrlBar(view);
+                return true;
             }
+            return false;
         });
+        findViewById(R.id.btn_load_url).setOnClickListener((view) -> loadUrlFromUrlBar(view));
 
         StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
                 .detectAll()
@@ -291,6 +294,7 @@ public class WebViewBrowserActivity extends Activity implements PopupMenu.OnMenu
 
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
+        super.onSaveInstanceState(savedInstanceState);
         // Deliberately don't catch TransactionTooLargeException here.
         mWebView.saveState(savedInstanceState);
 
@@ -330,7 +334,8 @@ public class WebViewBrowserActivity extends Activity implements PopupMenu.OnMenu
         } else {
             mWebViewVersion = "-";
         }
-        setTitle(getResources().getString(R.string.title_activity_browser) + " " + mWebViewVersion);
+        getSupportActionBar().setTitle(getResources().getString(R.string.title_activity_browser));
+        getSupportActionBar().setSubtitle(mWebViewVersion);
 
         webview.setWebViewClient(new WebViewClient() {
             @Override
@@ -503,17 +508,45 @@ public class WebViewBrowserActivity extends Activity implements PopupMenu.OnMenu
         hideKeyboard(mUrlBar);
     }
 
-    public void showPopup(View v) {
-        PopupMenu popup = new PopupMenu(this, v);
-        popup.setOnMenuItemClickListener(this);
-        popup.inflate(R.menu.main_menu);
-        popup.getMenu().findItem(R.id.menu_enable_tracing).setChecked(mEnableTracing);
-        popup.show();
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main_menu, menu);
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {
+            menu.findItem(R.id.menu_enable_tracing).setEnabled(false);
+        }
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+            menu.findItem(R.id.menu_force_dark_off).setEnabled(false);
+            menu.findItem(R.id.menu_force_dark_auto).setEnabled(false);
+            menu.findItem(R.id.menu_force_dark_on).setEnabled(false);
+        }
+        return true;
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            menu.findItem(R.id.menu_enable_tracing).setChecked(mEnableTracing);
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            int fdState = mWebView.getSettings().getForceDark();
+            switch (fdState) {
+                case WebSettings.FORCE_DARK_OFF:
+                    menu.findItem(R.id.menu_force_dark_off).setChecked(true);
+                    break;
+                case WebSettings.FORCE_DARK_AUTO:
+                    menu.findItem(R.id.menu_force_dark_auto).setChecked(true);
+                    break;
+                case WebSettings.FORCE_DARK_ON:
+                    menu.findItem(R.id.menu_force_dark_on).setChecked(true);
+                    break;
+            }
+        }
+        return true;
     }
 
     @Override
     @SuppressLint("NewApi") // TracingController related methods require API level 28.
-    public boolean onMenuItemClick(MenuItem item) {
+    public boolean onOptionsItemSelected(MenuItem item) {
         switch(item.getItemId()) {
             case R.id.menu_reset_webview:
                 if (mWebView != null) {
@@ -532,6 +565,8 @@ public class WebViewBrowserActivity extends Activity implements PopupMenu.OnMenu
             case R.id.menu_enable_tracing:
                 mEnableTracing = !mEnableTracing;
                 item.setChecked(mEnableTracing);
+
+                // TODO(laisminchillo): replace this with AndroidX's TracingController
                 TracingController tracingController = TracingController.getInstance();
                 if (mEnableTracing) {
                     tracingController.start(
@@ -540,7 +575,7 @@ public class WebViewBrowserActivity extends Activity implements PopupMenu.OnMenu
                                     .setTracingMode(TracingConfig.RECORD_CONTINUOUSLY)
                                     .build());
                 } else {
-                    try (StrictModeContext unused = StrictModeContext.allowDiskWrites()) {
+                    try (StrictModeContext ignored = StrictModeContext.allowDiskWrites()) {
                         String outFileName = getFilesDir() + "/webview_tracing.json";
                         try {
                             tracingController.stop(new TracingLogger(outFileName, this),
@@ -550,6 +585,18 @@ public class WebViewBrowserActivity extends Activity implements PopupMenu.OnMenu
                         }
                     }
                 }
+                return true;
+            case R.id.menu_force_dark_off:
+                mWebView.getSettings().setForceDark(WebSettings.FORCE_DARK_OFF);
+                item.setChecked(true);
+                return true;
+            case R.id.menu_force_dark_auto:
+                mWebView.getSettings().setForceDark(WebSettings.FORCE_DARK_AUTO);
+                item.setChecked(true);
+                return true;
+            case R.id.menu_force_dark_on:
+                mWebView.getSettings().setForceDark(WebSettings.FORCE_DARK_ON);
+                item.setChecked(true);
                 return true;
             case R.id.start_animation_activity:
                 startActivity(new Intent(this, WebViewAnimationTestActivity.class));
@@ -564,9 +611,13 @@ public class WebViewBrowserActivity extends Activity implements PopupMenu.OnMenu
                 about();
                 hideKeyboard(mUrlBar);
                 return true;
+            case R.id.menu_devui:
+                launchWebViewDevUI();
+                return true;
             default:
-                return false;
+                break;
         }
+        return super.onOptionsItemSelected(item);
     }
 
     // setGeolocationDatabasePath deprecated in api level 24,
@@ -575,7 +626,7 @@ public class WebViewBrowserActivity extends Activity implements PopupMenu.OnMenu
     private void initializeSettings(WebSettings settings) {
         File appcache = null;
         File geolocation = null;
-        try (StrictModeContext ctx = StrictModeContext.allowDiskWrites()) {
+        try (StrictModeContext ignored = StrictModeContext.allowDiskWrites()) {
             appcache = getDir("appcache", 0);
             geolocation = getDir("geolocation", 0);
         }
@@ -619,6 +670,31 @@ public class WebViewBrowserActivity extends Activity implements PopupMenu.OnMenu
         dialog.getWindow().setLayout(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
     }
 
+    private void launchWebViewDevUI() {
+        PackageInfo currentWebViewPackage = WebViewPackageHelper.getCurrentWebViewPackage(this);
+        if (currentWebViewPackage == null) {
+            Log.e(TAG, "Couldn't find current WebView package");
+            Toast.makeText(this, "WebView package isn't found", Toast.LENGTH_LONG).show();
+            return;
+        }
+        String currentWebViewPackageName = currentWebViewPackage.packageName;
+        Intent intent = new Intent("com.android.webview.SHOW_DEV_UI");
+        intent.setPackage(currentWebViewPackageName);
+
+        // Check if the intent is resolved, i.e current WebView package has a developer UI that
+        // responds to "com.android.webview.SHOW_DEV_UI" action.
+        List<ResolveInfo> intentResolveInfo = getPackageManager().queryIntentActivities(intent, 0);
+        if (intentResolveInfo.size() > 0) {
+            startActivity(intent);
+        } else {
+            Log.e(TAG,
+                    "Couldn't launch developer UI from current WebView package: "
+                            + currentWebViewPackage);
+            Toast.makeText(this, "No DevTools in " + currentWebViewPackageName, Toast.LENGTH_LONG)
+                    .show();
+        }
+    }
+
     // Returns true is a method has no arguments and returns either a boolean or a String.
     private boolean methodIsSimpleInspector(Method method) {
         Class<?> returnType = method.getReturnType();
@@ -647,7 +723,9 @@ public class WebViewBrowserActivity extends Activity implements PopupMenu.OnMenu
     }
 
     private void setUrlFail(boolean fail) {
-        mUrlBar.setTextColor(fail ? Color.RED : Color.BLACK);
+        mUrlBar.setTextColor(fail ?
+            ApiCompatibilityUtils.getColor(getResources(), R.color.url_error_color) :
+            ApiCompatibilityUtils.getColor(getResources(), R.color.url_color));
     }
 
     /**
@@ -686,7 +764,7 @@ public class WebViewBrowserActivity extends Activity implements PopupMenu.OnMenu
         // check if there is a specialized app that had registered itself
         // for this kind of an intent.
         Matcher m = BROWSER_URI_SCHEMA.matcher(url);
-        if (m.matches() && !isSpecializedHandlerAvailable(context, intent)) {
+        if (m.matches() && !isSpecializedHandlerAvailable(intent)) {
             return false;
         }
         // Sanitize the Intent, ensuring web pages can not bypass browser
@@ -720,10 +798,9 @@ public class WebViewBrowserActivity extends Activity implements PopupMenu.OnMenu
     /**
      * Search for intent handlers that are specific to the scheme of the URL in the intent.
      */
-    private static boolean isSpecializedHandlerAvailable(Context context, Intent intent) {
-        PackageManager pm = context.getPackageManager();
-        List<ResolveInfo> handlers = pm.queryIntentActivities(intent,
-                PackageManager.GET_RESOLVED_FILTER);
+    private static boolean isSpecializedHandlerAvailable(Intent intent) {
+        List<ResolveInfo> handlers = PackageManagerUtils.queryIntentActivities(
+                intent, PackageManager.GET_RESOLVED_FILTER);
         if (handlers == null || handlers.size() == 0) {
             return false;
         }

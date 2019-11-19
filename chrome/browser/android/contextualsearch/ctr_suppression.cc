@@ -7,7 +7,7 @@
 
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
-#include "jni/CtrSuppression_jni.h"
+#include "chrome/android/chrome_jni_headers/CtrSuppression_jni.h"
 
 using base::android::AttachCurrentThread;
 using base::android::ConvertUTF8ToJavaString;

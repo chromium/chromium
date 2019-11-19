@@ -2,15 +2,21 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/jumbo.gni")
+import("//media/webrtc/audio_processing.gni")
 import("//third_party/blink/renderer/modules/modules.gni")
 
 blink_modules_sources("mediastream") {
   sources = [
+    "apply_constraints_processor.cc",
+    "apply_constraints_processor.h",
     "apply_constraints_request.cc",
     "apply_constraints_request.h",
     "dom_window_media_stream.h",
     "input_device_info.cc",
     "input_device_info.h",
+    "local_media_stream_audio_source.cc",
+    "local_media_stream_audio_source.h",
     "media_constraints_impl.cc",
     "media_constraints_impl.h",
     "media_device_info.cc",
@@ -21,24 +27,101 @@ blink_modules_sources("mediastream") {
     "media_error_state.h",
     "media_stream.cc",
     "media_stream.h",
+    "media_stream_audio_processor.cc",
+    "media_stream_audio_processor.h",
+    "media_stream_constraints_util.cc",
+    "media_stream_constraints_util.h",
+    "media_stream_constraints_util_audio.cc",
+    "media_stream_constraints_util_audio.h",
+    "media_stream_constraints_util_sets.cc",
+    "media_stream_constraints_util_sets.h",
+    "media_stream_constraints_util_video_content.cc",
+    "media_stream_constraints_util_video_content.h",
+    "media_stream_constraints_util_video_device.cc",
+    "media_stream_constraints_util_video_device.h",
+    "media_stream_device_observer.cc",
+    "media_stream_device_observer.h",
     "media_stream_event.cc",
     "media_stream_event.h",
+    "media_stream_local_frame_wrapper.cc",
+    "media_stream_local_frame_wrapper.h",
+    "media_stream_renderer_factory_impl.cc",
+    "media_stream_renderer_factory_impl.h",
     "media_stream_track.cc",
     "media_stream_track.h",
     "media_stream_track_content_hint.h",
     "media_stream_track_event.cc",
     "media_stream_track_event.h",
+    "media_stream_utils.cc",
+    "media_stream_utils.h",
+    "media_stream_video_capturer_source.cc",
+    "media_stream_video_capturer_source.h",
+    "media_stream_video_renderer_sink.cc",
+    "media_stream_video_renderer_sink.h",
+    "media_stream_video_sink.cc",
+    "media_stream_video_source.cc",
+    "media_stream_video_track.cc",
     "navigator_media_stream.cc",
     "navigator_media_stream.h",
     "navigator_user_media.cc",
     "navigator_user_media.h",
     "overconstrained_error.cc",
     "overconstrained_error.h",
+    "processed_local_audio_source.cc",
+    "processed_local_audio_source.h",
+    "remote_media_stream_track_adapter.cc",
+    "remote_media_stream_track_adapter.h",
+    "track_audio_renderer.cc",
+    "track_audio_renderer.h",
     "user_media_client.cc",
     "user_media_client.h",
     "user_media_controller.cc",
     "user_media_controller.h",
+    "user_media_processor.cc",
+    "user_media_processor.h",
     "user_media_request.cc",
     "user_media_request.h",
+    "video_track_adapter.cc",
+    "video_track_adapter.h",
+    "video_track_adapter_settings.cc",
+    "video_track_adapter_settings.h",
+    "web_media_stream_device_observer.cc",
+    "web_media_stream_utils.cc",
+    "webaudio_media_stream_audio_sink.cc",
+    "webaudio_media_stream_audio_sink.h",
+    "webmediaplayer_ms.cc",
+    "webmediaplayer_ms_compositor.cc",
+    "webmediaplayer_ms_compositor.h",
+  ]
+  deps = [
+    "//media/capture/mojom:image_capture_blink",
+    "//media/webrtc",
+  ]
+}
+
+jumbo_source_set("test_support") {
+  testonly = true
+
+  sources = [
+    "mock_constraint_factory.cc",
+    "mock_constraint_factory.h",
+    "mock_media_stream_registry.cc",
+    "mock_media_stream_registry.h",
+    "mock_media_stream_video_sink.cc",
+    "mock_media_stream_video_sink.h",
+    "mock_media_stream_video_source.cc",
+    "mock_media_stream_video_source.h",
+    "testing_platform_support_with_mock_audio_capture_source.cc",
+    "testing_platform_support_with_mock_audio_capture_source.h",
+  ]
+
+  deps = [
+    "//base",
+    "//base/test:test_support",
+    "//skia",
+    "//testing/gmock",
+    "//third_party/blink/public:test_headers",
+    "//third_party/blink/public/mojom:mojom_platform_blink_headers",
+    "//third_party/webrtc_overrides:webrtc_component",
   ]
 }

@@ -49,7 +49,7 @@ public class ApplicationStatusTest {
     }
 
     @Test
-    public void testWindowsFocusChanged() throws Exception {
+    public void testWindowsFocusChanged() {
         ApplicationStatus.WindowFocusChangedListener mock =
                 mock(ApplicationStatus.WindowFocusChangedListener.class);
         ApplicationStatus.registerWindowFocusChangedListener(mock);

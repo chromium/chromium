@@ -11,12 +11,12 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "media/base/encryption_scheme.h"
 #include "media/base/media_log.h"
 #include "media/formats/webm/webm_parser.h"
 
 namespace media {
 class AudioDecoderConfig;
-class EncryptionScheme;
 
 // Helper class used to parse an Audio element inside a TrackEntry element.
 class WebMAudioClient : public WebMParserClient {
@@ -37,7 +37,7 @@ class WebMAudioClient : public WebMParserClient {
                         const std::vector<uint8_t>& codec_private,
                         const int64_t seek_preroll,
                         const int64_t codec_delay,
-                        const EncryptionScheme& encryption_scheme,
+                        EncryptionScheme encryption_scheme,
                         AudioDecoderConfig* config);
 
  private:

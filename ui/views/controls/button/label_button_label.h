@@ -5,6 +5,7 @@
 #ifndef UI_VIEWS_CONTROLS_BUTTON_LABEL_BUTTON_LABEL_H_
 #define UI_VIEWS_CONTROLS_BUTTON_LABEL_BUTTON_LABEL_H_
 
+#include "base/bind.h"
 #include "base/macros.h"
 #include "base/strings/string16.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -29,16 +30,20 @@ class VIEWS_EXPORT LabelButtonLabel : public Label {
 
  protected:
   // Label:
-  void OnEnabledChanged() override;
-  void OnNativeThemeChanged(const ui::NativeTheme* theme) override;
+  void OnThemeChanged() override;
 
  private:
+  void OnEnabledChanged();
   void SetColorForEnableState();
 
   SkColor requested_disabled_color_ = SK_ColorRED;
   SkColor requested_enabled_color_ = SK_ColorRED;
   bool disabled_color_set_ = false;
   bool enabled_color_set_ = false;
+  PropertyChangedSubscription enabled_changed_subscription_ =
+      AddEnabledChangedCallback(
+          base::BindRepeating(&LabelButtonLabel::OnEnabledChanged,
+                              base::Unretained(this)));
 
   DISALLOW_COPY_AND_ASSIGN(LabelButtonLabel);
 };

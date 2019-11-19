@@ -6,9 +6,10 @@
 #include "base/location.h"
 #include "base/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "components/dom_distiller/content/browser/android/jni_headers/DistillablePageUtils_jni.h"
 #include "components/dom_distiller/content/browser/distillable_page_utils.h"
 #include "content/public/browser/web_contents.h"
-#include "jni/DistillablePageUtils_jni.h"
+#include "content/public/browser/web_contents_user_data.h"
 
 using base::android::JavaParamRef;
 using base::android::JavaRef;
@@ -16,15 +17,33 @@ using base::android::ScopedJavaGlobalRef;
 
 namespace dom_distiller {
 namespace android {
+
 namespace {
-void OnIsPageDistillableUpdate(const JavaRef<jobject>& callback,
-                               bool isDistillable,
-                               bool isLast,
-                               bool isMobileFriendly) {
-  Java_DistillablePageUtils_callOnIsPageDistillableUpdate(
-      base::android::AttachCurrentThread(), callback, isDistillable, isLast,
-      isMobileFriendly);
-}
+
+class JniDistillabilityObserverWrapper
+    : public DistillabilityObserver,
+      public content::WebContentsUserData<JniDistillabilityObserverWrapper> {
+ public:
+  void SetCallback(JNIEnv* env, const JavaParamRef<jobject>& callback) {
+    callback_ = ScopedJavaGlobalRef<jobject>(env, callback);
+  }
+
+  void OnResult(const DistillabilityResult& result) override {
+    Java_DistillablePageUtils_callOnIsPageDistillableUpdate(
+        base::android::AttachCurrentThread(), callback_, result.is_distillable,
+        result.is_last, result.is_mobile_friendly);
+  }
+
+ private:
+  explicit JniDistillabilityObserverWrapper(content::WebContents* contents) {}
+  friend class content::WebContentsUserData<JniDistillabilityObserverWrapper>;
+  WEB_CONTENTS_USER_DATA_KEY_DECL();
+
+  ScopedJavaGlobalRef<jobject> callback_;
+
+  DISALLOW_COPY_AND_ASSIGN(JniDistillabilityObserverWrapper);
+};
+
 }  // namespace
 
 static void JNI_DistillablePageUtils_SetDelegate(
@@ -37,10 +56,16 @@ static void JNI_DistillablePageUtils_SetDelegate(
     return;
   }
 
-  DistillabilityDelegate delegate = base::Bind(
-      OnIsPageDistillableUpdate, ScopedJavaGlobalRef<jobject>(env, callback));
-  SetDelegate(web_contents, delegate);
+  JniDistillabilityObserverWrapper::CreateForWebContents(web_contents);
+  auto* observer =
+      JniDistillabilityObserverWrapper::FromWebContents(web_contents);
+  DCHECK(observer);
+  observer->SetCallback(env, callback);
+
+  AddObserver(web_contents, observer);
 }
+
+WEB_CONTENTS_USER_DATA_KEY_IMPL(JniDistillabilityObserverWrapper)
 
 }  // namespace android
 }  // namespace dom_distiller

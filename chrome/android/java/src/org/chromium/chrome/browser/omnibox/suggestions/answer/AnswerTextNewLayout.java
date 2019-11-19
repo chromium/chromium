@@ -5,9 +5,10 @@
 package org.chromium.chrome.browser.omnibox.suggestions.answer;
 
 import android.content.Context;
-import android.support.annotation.StyleRes;
 import android.text.style.MetricAffectingSpan;
 import android.text.style.TextAppearanceSpan;
+
+import androidx.annotation.StyleRes;
 
 import org.chromium.base.Log;
 import org.chromium.chrome.R;
@@ -42,8 +43,8 @@ class AnswerTextNewLayout extends AnswerText {
             // As an exception, we handle calculation suggestions, too, considering them an Answer,
             // even if these are not one.
             assert suggestion.getType() == OmniboxSuggestionType.CALCULATOR;
-            result[0] = new AnswerTextNewLayout(context, suggestion.getFillIntoEdit(), true);
-            result[1] = new AnswerTextNewLayout(context, query, false);
+            result[0] = new AnswerTextNewLayout(context, query, true);
+            result[1] = new AnswerTextNewLayout(context, suggestion.getDisplayText(), false);
         } else if (answer.getType() == AnswerType.DICTIONARY) {
             result[0] =
                     new AnswerTextNewLayout(context, answer.getType(), answer.getFirstLine(), true);
@@ -51,11 +52,19 @@ class AnswerTextNewLayout extends AnswerText {
                     context, answer.getType(), answer.getSecondLine(), false);
             result[0].mMaxLines = 1;
         } else {
+            // Construct the Answer card presenting AiS in Answer > Query order.
+            // Note: Despite AiS being presented in reverse order (first answer, then query)
+            // we want to ensure that the query is announced first to visually impaired people
+            // to avoid confusion.
             result[0] = new AnswerTextNewLayout(
                     context, answer.getType(), answer.getSecondLine(), true);
             result[1] = new AnswerTextNewLayout(
                     context, answer.getType(), answer.getFirstLine(), false);
             result[1].mMaxLines = 1;
+
+            String temp = result[1].mAccessibilityDescription;
+            result[1].mAccessibilityDescription = result[0].mAccessibilityDescription;
+            result[0].mAccessibilityDescription = temp;
         }
 
         return result;

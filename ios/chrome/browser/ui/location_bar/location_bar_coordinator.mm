@@ -18,14 +18,22 @@
 #include "ios/chrome/browser/autocomplete/autocomplete_scheme_classifier_impl.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/geolocation/omnibox_geolocation_controller.h"
+#include "ios/chrome/browser/infobars/infobar_metrics_recorder.h"
+#import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/ntp/new_tab_page_tab_helper.h"
+#import "ios/chrome/browser/overlays/public/overlay_presenter.h"
 #include "ios/chrome/browser/search_engines/template_url_service_factory.h"
+#import "ios/chrome/browser/ui/badges/badge_button_factory.h"
+#import "ios/chrome/browser/ui/badges/badge_delegate.h"
+#import "ios/chrome/browser/ui/badges/badge_mediator.h"
+#import "ios/chrome/browser/ui/badges/badge_view_controller.h"
 #include "ios/chrome/browser/ui/commands/browser_commands.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/commands/load_query_commands.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_controller.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_controller_factory.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_ui_updater.h"
+#import "ios/chrome/browser/ui/infobars/infobar_feature.h"
 #import "ios/chrome/browser/ui/location_bar/location_bar_constants.h"
 #import "ios/chrome/browser/ui/location_bar/location_bar_mediator.h"
 #import "ios/chrome/browser/ui/location_bar/location_bar_url_loader.h"
@@ -38,6 +46,7 @@
 #include "ios/chrome/browser/ui/omnibox/web_omnibox_edit_controller_impl.h"
 #import "ios/chrome/browser/ui/toolbar/toolbar_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/util/pasteboard_util.h"
+#import "ios/chrome/browser/url_loading/url_loading_params.h"
 #import "ios/chrome/browser/url_loading/url_loading_service.h"
 #import "ios/chrome/browser/url_loading/url_loading_service_factory.h"
 #import "ios/chrome/browser/url_loading/url_loading_util.h"
@@ -45,9 +54,9 @@
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #include "ios/public/provider/chrome/browser/chrome_browser_provider.h"
 #include "ios/public/provider/chrome/browser/voice/voice_search_provider.h"
-#import "ios/web/public/navigation_manager.h"
-#import "ios/web/public/referrer.h"
-#import "ios/web/public/web_state/web_state.h"
+#import "ios/web/public/navigation/navigation_manager.h"
+#import "ios/web/public/navigation/referrer.h"
+#import "ios/web/public/web_state.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "url/gurl.h"
 
@@ -60,26 +69,34 @@ namespace {
 const char* const kOmniboxQueryLocationAuthorizationStatusHistogram =
     "Omnibox.QueryIosLocationAuthorizationStatus";
 // The number of possible CLAuthorizationStatus values to report.
-const int kLocationAuthorizationStatusCount = 4;
+const int kLocationAuthorizationStatusCount = 5;
 }  // namespace
 
-@interface LocationBarCoordinator ()<LoadQueryCommands,
-                                     LocationBarDelegate,
-                                     LocationBarViewControllerDelegate,
-                                     LocationBarConsumer> {
+@interface LocationBarCoordinator () <LoadQueryCommands,
+                                      LocationBarDelegate,
+                                      LocationBarViewControllerDelegate,
+                                      LocationBarConsumer> {
   // API endpoint for omnibox.
   std::unique_ptr<WebOmniboxEditControllerImpl> _editController;
   // Observer that updates |viewController| for fullscreen events.
-  std::unique_ptr<FullscreenControllerObserver> _fullscreenObserver;
+  std::unique_ptr<FullscreenUIUpdater> _omniboxFullscreenUIUpdater;
+  // Observer that updates BadgeViewController for fullscreen events.
+  std::unique_ptr<FullscreenUIUpdater> _badgeFullscreenUIUpdater;
 }
 // Whether the coordinator is started.
 @property(nonatomic, assign, getter=isStarted) BOOL started;
 // Coordinator for the omnibox popup.
 @property(nonatomic, strong) OmniboxPopupCoordinator* omniboxPopupCoordinator;
+// Mediator for the badges displayed in the LocationBar.
+@property(nonatomic, strong) BadgeMediator* badgeMediator;
+// ViewController for the badges displayed in the LocationBar.
+@property(nonatomic, strong) BadgeViewController* badgeViewController;
 // Coordinator for the omnibox.
 @property(nonatomic, strong) OmniboxCoordinator* omniboxCoordinator;
 @property(nonatomic, strong) LocationBarMediator* mediator;
 @property(nonatomic, strong) LocationBarViewController* viewController;
+@property(nonatomic, readonly) ios::ChromeBrowserState* browserState;
+@property(nonatomic, readonly) WebStateList* webStateList;
 
 // Tracks calls in progress to -cancelOmniboxEdit to avoid calling it from
 // itself when -resignFirstResponder causes -textFieldWillResignFirstResponder
@@ -89,16 +106,16 @@ const int kLocationAuthorizationStatusCount = 4;
 @end
 
 @implementation LocationBarCoordinator
-@synthesize commandDispatcher = _commandDispatcher;
-@synthesize viewController = _viewController;
-@synthesize started = _started;
-@synthesize mediator = _mediator;
-@synthesize browserState = _browserState;
-@synthesize dispatcher = _dispatcher;
-@synthesize delegate = _delegate;
-@synthesize webStateList = _webStateList;
-@synthesize omniboxPopupCoordinator = _omniboxPopupCoordinator;
-@synthesize omniboxCoordinator = _omniboxCoordinator;
+
+#pragma mark - Accessors
+
+- (ios::ChromeBrowserState*)browserState {
+  return self.browser ? self.browser->GetBrowserState() : nullptr;
+}
+
+- (WebStateList*)webStateList {
+  return self.browser ? self.browser->GetWebStateList() : nullptr;
+}
 
 #pragma mark - public
 
@@ -108,6 +125,7 @@ const int kLocationAuthorizationStatusCount = 4;
 
 - (void)start {
   DCHECK(self.commandDispatcher);
+  DCHECK(self.browser);
 
   if (self.started)
     return;
@@ -155,18 +173,39 @@ const int kLocationAuthorizationStatusCount = 4;
   self.omniboxPopupCoordinator.webStateList = self.webStateList;
   [self.omniboxPopupCoordinator start];
 
+  // Create button factory that wil be used by the ViewController to get
+  // BadgeButtons for a BadgeType.
+  BadgeButtonFactory* buttonFactory = [[BadgeButtonFactory alloc] init];
+  buttonFactory.incognito = isIncognito;
+  self.badgeViewController =
+      [[BadgeViewController alloc] initWithButtonFactory:buttonFactory];
+  [self.viewController addChildViewController:self.badgeViewController];
+  [self.viewController setBadgeView:self.badgeViewController.view];
+  [self.badgeViewController didMoveToParentViewController:self.viewController];
+  // Create BadgeMediator and set the viewController as its consumer.
+  self.badgeMediator =
+      [[BadgeMediator alloc] initWithConsumer:self.badgeViewController
+                                 webStateList:self.webStateList];
+  self.badgeMediator.dispatcher =
+      static_cast<id<InfobarCommands, BrowserCoordinatorCommands>>(
+          self.dispatcher);
+  buttonFactory.delegate = self.badgeMediator;
+  FullscreenController* fullscreenController =
+      FullscreenControllerFactory::GetForBrowserState(self.browserState);
+  _badgeFullscreenUIUpdater = std::make_unique<FullscreenUIUpdater>(
+      fullscreenController, self.badgeViewController);
+
   self.mediator = [[LocationBarMediator alloc]
       initWithLocationBarModel:[self locationBarModel]];
   self.mediator.webStateList = self.webStateList;
+  self.mediator.webContentAreaOverlayPresenter = OverlayPresenter::FromBrowser(
+      self.browser, OverlayModality::kWebContentArea);
   self.mediator.templateURLService =
       ios::TemplateURLServiceFactory::GetForBrowserState(self.browserState);
   self.mediator.consumer = self;
 
-  _fullscreenObserver =
-      std::make_unique<FullscreenUIUpdater>(self.viewController);
-  FullscreenControllerFactory::GetInstance()
-      ->GetForBrowserState(self.browserState)
-      ->AddObserver(_fullscreenObserver.get());
+  _omniboxFullscreenUIUpdater = std::make_unique<FullscreenUIUpdater>(
+      fullscreenController, self.viewController);
 
   self.started = YES;
 }
@@ -178,15 +217,15 @@ const int kLocationAuthorizationStatusCount = 4;
   // The popup has to be destroyed before the location bar.
   [self.omniboxPopupCoordinator stop];
   [self.omniboxCoordinator stop];
+  [self.badgeMediator disconnect];
   _editController.reset();
 
   self.viewController = nil;
   [self.mediator disconnect];
   self.mediator = nil;
 
-  FullscreenControllerFactory::GetInstance()
-      ->GetForBrowserState(self.browserState)
-      ->RemoveObserver(_fullscreenObserver.get());
+  _badgeFullscreenUIUpdater = nullptr;
+  _omniboxFullscreenUIUpdater = nullptr;
   self.started = NO;
 }
 
@@ -244,16 +283,16 @@ const int kLocationAuthorizationStatusCount = 4;
     // |loadURL|?  It doesn't seem to be causing major problems.  If we call
     // cancel before load, then any prerendered pages get destroyed before the
     // call to load.
-    web::NavigationManager::WebLoadParams params =
+    web::NavigationManager::WebLoadParams web_params =
         web_navigation_util::CreateWebLoadParams(url, transition, postContent);
     NSMutableDictionary* combinedExtraHeaders =
         [[self variationHeadersForURL:url] mutableCopy];
-    [combinedExtraHeaders addEntriesFromDictionary:params.extra_headers];
-    params.extra_headers = [combinedExtraHeaders copy];
-    ChromeLoadParams chromeParams(params);
-    chromeParams.disposition = disposition;
+    [combinedExtraHeaders addEntriesFromDictionary:web_params.extra_headers];
+    web_params.extra_headers = [combinedExtraHeaders copy];
+    UrlLoadParams params = UrlLoadParams::InCurrentTab(web_params);
+    params.disposition = disposition;
     UrlLoadingServiceFactory::GetForBrowserState(self.browserState)
-        ->LoadUrlInCurrentTab(chromeParams);
+        ->Load(params);
 
     if (google_util::IsGoogleSearchUrl(url)) {
       UMA_HISTOGRAM_ENUMERATION(
@@ -270,10 +309,12 @@ const int kLocationAuthorizationStatusCount = 4;
 - (void)focusOmniboxFromSearchButton {
   // TODO(crbug.com/931284): Temporary workaround for intermediate broken state
   // in the NTP.  Remove this once crbug.com/899827 is fixed.
-  NewTabPageTabHelper* NTPHelper =
-      NewTabPageTabHelper::FromWebState(self.webState);
-  if (NTPHelper && NTPHelper->IsActive() && NTPHelper->IgnoreLoadRequests()) {
-    return;
+  if (self.webState) {
+    NewTabPageTabHelper* NTPHelper =
+        NewTabPageTabHelper::FromWebState(self.webState);
+    if (NTPHelper && NTPHelper->IsActive() && NTPHelper->IgnoreLoadRequests()) {
+      return;
+    }
   }
   [self.omniboxCoordinator setNextFocusSourceAsSearchButton];
   [self focusOmnibox];
@@ -286,22 +327,24 @@ const int kLocationAuthorizationStatusCount = 4;
 - (void)focusOmnibox {
   // TODO(crbug.com/931284): Temporary workaround for intermediate broken state
   // in the NTP.  Remove this once crbug.com/899827 is fixed.
-  NewTabPageTabHelper* NTPHelper =
-      NewTabPageTabHelper::FromWebState(self.webState);
-  if (NTPHelper && NTPHelper->IsActive() && NTPHelper->IgnoreLoadRequests()) {
-    return;
+  if (self.webState) {
+    NewTabPageTabHelper* NTPHelper =
+        NewTabPageTabHelper::FromWebState(self.webState);
+    if (NTPHelper && NTPHelper->IsActive() && NTPHelper->IgnoreLoadRequests()) {
+      return;
+    }
   }
   // Dismiss the edit menu.
   [[UIMenuController sharedMenuController] setMenuVisible:NO animated:NO];
 
   // When the NTP and fakebox are visible, make the fakebox animates into place
-  // before focusing the omnibox.webState
+  // before focusing the omnibox.
   if (IsVisibleURLNewTabPage([self webState]) &&
       !self.browserState->IsOffTheRecord()) {
     [self.viewController.dispatcher focusFakebox];
   } else {
     [self.omniboxCoordinator focusOmnibox];
-    [self.omniboxPopupCoordinator openPopup];
+    [self.omniboxPopupCoordinator presentShortcutsIfNecessary];
   }
 }
 
@@ -311,7 +354,7 @@ const int kLocationAuthorizationStatusCount = 4;
   }
   self.isCancellingOmniboxEdit = YES;
   [self.omniboxCoordinator endEditing];
-  [self.omniboxPopupCoordinator closePopup];
+  [self.omniboxPopupCoordinator dismissShortcuts];
   self.isCancellingOmniboxEdit = NO;
 }
 
@@ -349,9 +392,9 @@ const int kLocationAuthorizationStatusCount = 4;
 
 #pragma mark - LocationBarConsumer
 
-- (void)updateLocationText:(NSString*)text {
+- (void)updateLocationText:(NSString*)text clipTail:(BOOL)clipTail {
   [self.omniboxCoordinator updateOmniboxState];
-  [self.viewController updateLocationText:text];
+  [self.viewController updateLocationText:text clipTail:clipTail];
   [self.viewController updateForNTP:NO];
 }
 
@@ -374,10 +417,6 @@ const int kLocationAuthorizationStatusCount = 4;
 
 - (void)updateSearchByImageSupported:(BOOL)searchByImageSupported {
   self.viewController.searchByImageEnabled = searchByImageSupported;
-}
-
-- (void)displayInfobarBadge:(BOOL)display {
-  [self.viewController displayInfobarButton:display];
 }
 
 #pragma mark - private
@@ -418,12 +457,11 @@ const int kLocationAuthorizationStatusCount = 4;
     // It is necessary to include PAGE_TRANSITION_FROM_ADDRESS_BAR in the
     // transition type is so that query-in-the-omnibox is triggered for the
     // URL.
-    web::NavigationManager::WebLoadParams params(searchURL);
-    params.transition_type = ui::PageTransitionFromInt(
+    UrlLoadParams params = UrlLoadParams::InCurrentTab(searchURL);
+    params.web_params.transition_type = ui::PageTransitionFromInt(
         ui::PAGE_TRANSITION_LINK | ui::PAGE_TRANSITION_FROM_ADDRESS_BAR);
-    ChromeLoadParams chromeParams(params);
     UrlLoadingServiceFactory::GetForBrowserState(self.browserState)
-        ->LoadUrlInCurrentTab(chromeParams);
+        ->Load(params);
   }
 }
 

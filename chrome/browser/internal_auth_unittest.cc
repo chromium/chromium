@@ -9,7 +9,7 @@
 #include <algorithm>
 
 #include "base/lazy_instance.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -26,7 +26,7 @@ class InternalAuthTest : public ::testing::Test {
 
   void TearDown() override {}
 
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
   std::string long_string_;
 };
 

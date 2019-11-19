@@ -12,6 +12,10 @@ DeviceSyncClient::DeviceSyncClient() = default;
 
 DeviceSyncClient::~DeviceSyncClient() = default;
 
+mojo::Remote<mojom::DeviceSync>* DeviceSyncClient::GetDeviceSyncRemote() {
+  return nullptr;
+}
+
 void DeviceSyncClient::AddObserver(Observer* observer) {
   observer_list_.AddObserver(observer);
 }

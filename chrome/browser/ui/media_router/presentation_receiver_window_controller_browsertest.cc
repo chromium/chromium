@@ -27,7 +27,10 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/test/browser_test_utils.h"
 #include "extensions/browser/script_executor.h"
-#include "mojo/public/cpp/bindings/binding.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/filename_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/mojom/presentation/presentation.mojom.h"
@@ -88,11 +91,11 @@ class CloseObserver final : public content::WebContentsObserver {
 class FakeControllerConnection final
     : public blink::mojom::PresentationConnection {
  public:
-  FakeControllerConnection() : binding_(this) {}
+  FakeControllerConnection() {}
 
   void SendTextMessage(const std::string& message) {
-    ASSERT_TRUE(receiver_connection_.is_bound());
-    receiver_connection_->OnMessage(
+    ASSERT_TRUE(receiver_connection_remote_.is_bound());
+    receiver_connection_remote_->OnMessage(
         blink::mojom::PresentationConnectionMessage::NewMessage(message));
   }
 
@@ -104,18 +107,22 @@ class FakeControllerConnection final
   void DidClose(
       blink::mojom::PresentationConnectionCloseReason reason) override {}
 
-  blink::mojom::PresentationConnectionRequest MakeConnectionRequest() {
-    return mojo::MakeRequest(&receiver_connection_);
+  mojo::PendingReceiver<blink::mojom::PresentationConnection>
+  MakeConnectionRequest() {
+    return receiver_connection_remote_.BindNewPipeAndPassReceiver();
   }
-  blink::mojom::PresentationConnectionPtr Bind() {
-    blink::mojom::PresentationConnectionPtr connection;
-    binding_.Bind(mojo::MakeRequest(&connection));
+  mojo::PendingRemote<blink::mojom::PresentationConnection> Bind() {
+    mojo::PendingRemote<blink::mojom::PresentationConnection> connection;
+    receiver_connection_receiver_.Bind(
+        connection.InitWithNewPipeAndPassReceiver());
     return connection;
   }
 
  private:
-  mojo::Binding<blink::mojom::PresentationConnection> binding_;
-  blink::mojom::PresentationConnectionPtr receiver_connection_;
+  mojo::Receiver<blink::mojom::PresentationConnection>
+      receiver_connection_receiver_{this};
+  mojo::Remote<blink::mojom::PresentationConnection>
+      receiver_connection_remote_;
 
   DISALLOW_COPY_AND_ASSIGN(FakeControllerConnection);
 };

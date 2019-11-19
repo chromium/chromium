@@ -1,13 +1,6 @@
 <!DOCTYPE html>
-<body>
 <p>Check if a validation bubble is shown at a correct position.</p>
 <input pattern="\d{4}" title="Please specify four digits." value="abc" style="position:absolute; right:8px; bottom: 8px;">
 <script>
-if (window.testRunner) {
-  // Layout tree dump doesn't matter.
-  testRunner.dumpAsTextWithPixelResults();
-}
-
 document.querySelector('input').reportValidity();
 </script>
-<body>

@@ -4,7 +4,10 @@
 The scrollbar within the inner (blue) box should be visible and positioned at
 the top, even though the outer (green) box has been scrolled.
 -->
-
+<script>
+if (window.internals)
+  internals.useMockOverlayScrollbars();
+</script>
 <style>
 html, body { margin: 0; padding: 0; }
 #outer {
@@ -30,10 +33,6 @@ html, body { margin: 0; padding: 0; }
 </div>
 
 <script>
-if (window.internals) {
-    internals.runtimeFlags.overlayScrollbarsEnabled = true;
-    internals.settings.setMockScrollbarsEnabled(true);
-}
 const outer = document.getElementById('outer');
 outer.scrollTop = outer.scrollHeight - outer.clientHeight;
 if (window.testRunner) {

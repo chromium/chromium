@@ -17,7 +17,7 @@
 #include "base/location.h"
 #include "base/macros.h"
 #include "base/memory/singleton.h"
-#include "base/message_loop/message_loop.h"
+#include "base/message_loop/message_pump_type.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
@@ -25,8 +25,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/post_task.h"
-#include "base/task/task_scheduler/scheduler_worker_pool_params.h"
-#include "base/task/task_scheduler/task_scheduler.h"
+#include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -153,27 +152,30 @@ bool ServiceProcess::Initialize(base::OnceClosure quit_closure,
   quit_closure_ = std::move(quit_closure);
   service_process_state_ = std::move(state);
 
-  // Initialize TaskScheduler.
-  constexpr int kMaxBackgroundThreads = 2;
+  // Initialize ThreadPool.
   constexpr int kMaxForegroundThreads = 6;
-  constexpr base::TimeDelta kSuggestedReclaimTime =
-      base::TimeDelta::FromSeconds(30);
+  base::ThreadPoolInstance::InitParams thread_pool_init_params(
+      kMaxForegroundThreads);
+#if defined(OS_WIN)
+  // TODO(robliao): Remove DEPRECATED_COM_STA_IN_FOREGROUND_GROUP usage.
+  // WIP: https://chromium-review.googlesource.com/c/chromium/src/+/1271099
+  thread_pool_init_params.common_thread_pool_environment =
+      base::ThreadPoolInstance::InitParams::CommonThreadPoolEnvironment::
+          DEPRECATED_COM_STA_IN_FOREGROUND_GROUP;
+#endif
 
-  base::TaskScheduler::Create("CloudPrintServiceProcess");
-  base::TaskScheduler::GetInstance()->Start(
-      {{kMaxBackgroundThreads, kSuggestedReclaimTime},
-       {kMaxForegroundThreads, kSuggestedReclaimTime,
-        base::SchedulerBackwardCompatibility::INIT_COM_STA}});
+  base::ThreadPoolInstance::Create("CloudPrintServiceProcess");
+  base::ThreadPoolInstance::Get()->Start(thread_pool_init_params);
 
-  // The NetworkChangeNotifier must be created after TaskScheduler because it
+  // The NetworkChangeNotifier must be created after ThreadPool because it
   // posts tasks to it.
-  network_change_notifier_.reset(net::NetworkChangeNotifier::Create());
+  network_change_notifier_ = net::NetworkChangeNotifier::CreateIfNeeded();
   network_connection_tracker_ =
       std::make_unique<InProcessNetworkConnectionTracker>();
 
   // Initialize the IO and FILE threads.
   base::Thread::Options options;
-  options.message_loop_type = base::MessageLoop::TYPE_IO;
+  options.message_pump_type = base::MessagePumpType::IO;
   io_thread_.reset(new ServiceIOThread("ServiceProcess_IO"));
   if (!io_thread_->StartWithOptions(options)) {
     NOTREACHED();
@@ -194,10 +196,10 @@ bool ServiceProcess::Initialize(base::OnceClosure quit_closure,
   base::FilePath pref_path =
       user_data_dir.Append(chrome::kServiceStateFileName);
   service_prefs_ = std::make_unique<ServiceProcessPrefs>(
-      pref_path,
-      base::CreateSequencedTaskRunnerWithTraits(
-          {base::MayBlock(), base::TaskShutdownBehavior::BLOCK_SHUTDOWN})
-          .get());
+      pref_path, base::CreateSequencedTaskRunner(
+                     {base::ThreadPool(), base::MayBlock(),
+                      base::TaskShutdownBehavior::BLOCK_SHUTDOWN})
+                     .get());
   service_prefs_->ReadPrefs();
 
   // This switch it required to run connector with test gaia.
@@ -270,8 +272,8 @@ bool ServiceProcess::Teardown() {
   shutdown_event_.Signal();
   io_thread_.reset();
 
-  if (base::TaskScheduler::GetInstance())
-    base::TaskScheduler::GetInstance()->Shutdown();
+  if (base::ThreadPoolInstance::Get())
+    base::ThreadPoolInstance::Get()->Shutdown();
 
   // The NetworkChangeNotifier must be destroyed after all other threads that
   // might use it have been shut down.
@@ -345,7 +347,10 @@ mojo::ScopedMessagePipeHandle ServiceProcess::CreateChannelMessagePipe() {
 #endif
 
   mojo::PlatformChannelServerEndpoint server_endpoint;
-#if defined(OS_POSIX)
+#if defined(OS_MACOSX)
+  // Mach receive rights (named server channels) are not Clone-able.
+  server_endpoint = std::move(server_endpoint_);
+#elif defined(OS_POSIX)
   server_endpoint = server_endpoint_.Clone();
 #elif defined(OS_WIN)
   mojo::NamedPlatformChannel::Options options;

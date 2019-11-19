@@ -58,18 +58,6 @@ extern char *_strdup(const char *strSource);
 #define LIST_SEPARATOR              ';'
 #define HTAB_SIZE                   1021
 
-// http://msdn.microsoft.com/en-us/library/ff545978.aspx
-// http://msdn.microsoft.com/en-us/library/ff545972.aspx
-// http://msdn.microsoft.com/en-us/library/ff545982.aspx
-#if !defined(GUID_DEVINTERFACE_USB_HOST_CONTROLLER)
-const GUID GUID_DEVINTERFACE_USB_HOST_CONTROLLER = { 0x3ABF6F2D, 0x71C4, 0x462A, {0x8A, 0x92, 0x1E, 0x68, 0x61, 0xE6, 0xAF, 0x27} };
-#endif
-#if !defined(GUID_DEVINTERFACE_USB_DEVICE)
-const GUID GUID_DEVINTERFACE_USB_DEVICE = { 0xA5DCBF10, 0x6530, 0x11D2, {0x90, 0x1F, 0x00, 0xC0, 0x4F, 0xB9, 0x51, 0xED} };
-#endif
-#if !defined(GUID_DEVINTERFACE_USB_HUB)
-const GUID GUID_DEVINTERFACE_USB_HUB = { 0xF18A0E88, 0xC30C, 0x11D0, {0x88, 0x15, 0x00, 0xA0, 0xC9, 0x06, 0xBE, 0xD8} };
-#endif
 #if !defined(GUID_DEVINTERFACE_LIBUSB0_FILTER)
 const GUID GUID_DEVINTERFACE_LIBUSB0_FILTER = { 0xF9F3FF14, 0xAE21, 0x48A0, {0x8A, 0x25, 0x80, 0x11, 0xA7, 0xA9, 0x31, 0xD9} };
 #endif
@@ -136,7 +124,6 @@ extern const struct windows_usb_api_backend usb_api_backend[USB_API_MAX];
 #define LIBUSB_REQ_IN(request_type) ((request_type) & LIBUSB_ENDPOINT_IN)
 #define LIBUSB_REQ_OUT(request_type) (!LIBUSB_REQ_IN(request_type))
 
-typedef struct libusb_device_descriptor USB_DEVICE_DESCRIPTOR, *PUSB_DEVICE_DESCRIPTOR;
 struct windows_device_priv {
 	uint8_t depth;						// distance to HCD
 	uint8_t port;						// port number on the hub
@@ -229,24 +216,6 @@ struct driver_lookup {
 	const char* designation;	// internal designation (for debug output)
 };
 
-/* OLE32 dependency */
-DLL_DECLARE_PREFIXED(WINAPI, HRESULT, p, CLSIDFromString, (LPCOLESTR, LPCLSID));
-
-/* SetupAPI dependencies */
-DLL_DECLARE_PREFIXED(WINAPI, HDEVINFO, p, SetupDiGetClassDevsA, (const GUID*, PCSTR, HWND, DWORD));
-DLL_DECLARE_PREFIXED(WINAPI, BOOL, p, SetupDiEnumDeviceInfo, (HDEVINFO, DWORD, PSP_DEVINFO_DATA));
-DLL_DECLARE_PREFIXED(WINAPI, BOOL, p, SetupDiEnumDeviceInterfaces, (HDEVINFO, PSP_DEVINFO_DATA,
-			const GUID*, DWORD, PSP_DEVICE_INTERFACE_DATA));
-DLL_DECLARE_PREFIXED(WINAPI, BOOL, p, SetupDiGetDeviceInterfaceDetailA, (HDEVINFO, PSP_DEVICE_INTERFACE_DATA,
-			PSP_DEVICE_INTERFACE_DETAIL_DATA_A, DWORD, PDWORD, PSP_DEVINFO_DATA));
-DLL_DECLARE_PREFIXED(WINAPI, BOOL, p, SetupDiDestroyDeviceInfoList, (HDEVINFO));
-DLL_DECLARE_PREFIXED(WINAPI, HKEY, p, SetupDiOpenDevRegKey, (HDEVINFO, PSP_DEVINFO_DATA, DWORD, DWORD, DWORD, REGSAM));
-DLL_DECLARE_PREFIXED(WINAPI, BOOL, p, SetupDiGetDeviceRegistryPropertyA, (HDEVINFO,
-			PSP_DEVINFO_DATA, DWORD, PDWORD, PBYTE, DWORD, PDWORD));
-DLL_DECLARE_PREFIXED(WINAPI, HKEY, p, SetupDiOpenDeviceInterfaceRegKey, (HDEVINFO, PSP_DEVICE_INTERFACE_DATA, DWORD, DWORD));
-DLL_DECLARE_PREFIXED(WINAPI, LONG, p, RegQueryValueExW, (HKEY, LPCWSTR, LPDWORD, LPDWORD, LPBYTE, LPDWORD));
-DLL_DECLARE_PREFIXED(WINAPI, LONG, p, RegCloseKey, (HKEY));
-
 /*
  * Windows DDK API definitions. Most of it copied from MinGW's includes
  */
@@ -254,27 +223,6 @@ typedef DWORD DEVNODE, DEVINST;
 typedef DEVNODE *PDEVNODE, *PDEVINST;
 typedef DWORD RETURN_TYPE;
 typedef RETURN_TYPE CONFIGRET;
-
-#define CR_SUCCESS                              0x00000000
-#define CR_NO_SUCH_DEVNODE                      0x0000000D
-
-#define USB_DEVICE_DESCRIPTOR_TYPE              LIBUSB_DT_DEVICE
-#define USB_CONFIGURATION_DESCRIPTOR_TYPE       LIBUSB_DT_CONFIG
-#define USB_STRING_DESCRIPTOR_TYPE              LIBUSB_DT_STRING
-#define USB_INTERFACE_DESCRIPTOR_TYPE           LIBUSB_DT_INTERFACE
-#define USB_ENDPOINT_DESCRIPTOR_TYPE            LIBUSB_DT_ENDPOINT
-
-#define USB_REQUEST_GET_STATUS                  LIBUSB_REQUEST_GET_STATUS
-#define USB_REQUEST_CLEAR_FEATURE               LIBUSB_REQUEST_CLEAR_FEATURE
-#define USB_REQUEST_SET_FEATURE                 LIBUSB_REQUEST_SET_FEATURE
-#define USB_REQUEST_SET_ADDRESS                 LIBUSB_REQUEST_SET_ADDRESS
-#define USB_REQUEST_GET_DESCRIPTOR              LIBUSB_REQUEST_GET_DESCRIPTOR
-#define USB_REQUEST_SET_DESCRIPTOR              LIBUSB_REQUEST_SET_DESCRIPTOR
-#define USB_REQUEST_GET_CONFIGURATION           LIBUSB_REQUEST_GET_CONFIGURATION
-#define USB_REQUEST_SET_CONFIGURATION           LIBUSB_REQUEST_SET_CONFIGURATION
-#define USB_REQUEST_GET_INTERFACE               LIBUSB_REQUEST_GET_INTERFACE
-#define USB_REQUEST_SET_INTERFACE               LIBUSB_REQUEST_SET_INTERFACE
-#define USB_REQUEST_SYNC_FRAME                  LIBUSB_REQUEST_SYNCH_FRAME
 
 #define USB_GET_NODE_INFORMATION                258
 #define USB_GET_DESCRIPTOR_FROM_NODE_CONNECTION 260
@@ -305,32 +253,6 @@ typedef RETURN_TYPE CONFIGRET;
   ((DeviceType) << 16) | ((Access) << 14) | ((Function) << 2) | (Method))
 #endif
 
-typedef enum USB_CONNECTION_STATUS {
-	NoDeviceConnected,
-	DeviceConnected,
-	DeviceFailedEnumeration,
-	DeviceGeneralFailure,
-	DeviceCausedOvercurrent,
-	DeviceNotEnoughPower,
-	DeviceNotEnoughBandwidth,
-	DeviceHubNestedTooDeeply,
-	DeviceInLegacyHub
-} USB_CONNECTION_STATUS, *PUSB_CONNECTION_STATUS;
-
-typedef enum USB_HUB_NODE {
-	UsbHub,
-	UsbMIParent
-} USB_HUB_NODE;
-
-/* Cfgmgr32.dll interface */
-DLL_DECLARE(WINAPI, CONFIGRET, CM_Get_Parent, (PDEVINST, DEVINST, ULONG));
-DLL_DECLARE(WINAPI, CONFIGRET, CM_Get_Child, (PDEVINST, DEVINST, ULONG));
-DLL_DECLARE(WINAPI, CONFIGRET, CM_Get_Sibling, (PDEVINST, DEVINST, ULONG));
-DLL_DECLARE(WINAPI, CONFIGRET, CM_Get_Device_IDA, (DEVINST, PCHAR, ULONG, ULONG));
-
-#define IOCTL_USB_GET_HUB_CAPABILITIES_EX \
-  CTL_CODE( FILE_DEVICE_USB, USB_GET_HUB_CAPABILITIES_EX, METHOD_BUFFERED, FILE_ANY_ACCESS)
-
 #define IOCTL_USB_GET_HUB_CAPABILITIES \
   CTL_CODE(FILE_DEVICE_USB, USB_GET_HUB_CAPABILITIES, METHOD_BUFFERED, FILE_ANY_ACCESS)
 
@@ -355,397 +277,23 @@ DLL_DECLARE(WINAPI, CONFIGRET, CM_Get_Device_IDA, (DEVINST, PCHAR, ULONG, ULONG)
 // Most of the structures below need to be packed
 #pragma pack(push, 1)
 
-typedef struct USB_INTERFACE_DESCRIPTOR {
-  UCHAR  bLength;
-  UCHAR  bDescriptorType;
-  UCHAR  bInterfaceNumber;
-  UCHAR  bAlternateSetting;
-  UCHAR  bNumEndpoints;
-  UCHAR  bInterfaceClass;
-  UCHAR  bInterfaceSubClass;
-  UCHAR  bInterfaceProtocol;
-  UCHAR  iInterface;
-} USB_INTERFACE_DESCRIPTOR, *PUSB_INTERFACE_DESCRIPTOR;
-
-typedef struct USB_CONFIGURATION_DESCRIPTOR {
-  UCHAR  bLength;
-  UCHAR  bDescriptorType;
-  USHORT wTotalLength;
-  UCHAR  bNumInterfaces;
-  UCHAR  bConfigurationValue;
-  UCHAR  iConfiguration;
-  UCHAR  bmAttributes;
-  UCHAR  MaxPower;
-} USB_CONFIGURATION_DESCRIPTOR, *PUSB_CONFIGURATION_DESCRIPTOR;
-
 typedef struct USB_CONFIGURATION_DESCRIPTOR_SHORT {
-	struct {
-		ULONG ConnectionIndex;
-		struct {
-			UCHAR bmRequest;
-			UCHAR bRequest;
-			USHORT wValue;
-			USHORT wIndex;
-			USHORT wLength;
-		} SetupPacket;
-	} req;
-	USB_CONFIGURATION_DESCRIPTOR data;
+  struct {
+    ULONG ConnectionIndex;
+    struct {
+      UCHAR bmRequest;
+      UCHAR bRequest;
+      USHORT wValue;
+      USHORT wIndex;
+      USHORT wLength;
+    } SetupPacket;
+  } req;
+  USB_CONFIGURATION_DESCRIPTOR data;
 } USB_CONFIGURATION_DESCRIPTOR_SHORT;
-
-typedef struct USB_ENDPOINT_DESCRIPTOR {
-  UCHAR  bLength;
-  UCHAR  bDescriptorType;
-  UCHAR  bEndpointAddress;
-  UCHAR  bmAttributes;
-  USHORT  wMaxPacketSize;
-  UCHAR  bInterval;
-} USB_ENDPOINT_DESCRIPTOR, *PUSB_ENDPOINT_DESCRIPTOR;
-
-typedef struct USB_DESCRIPTOR_REQUEST {
-	ULONG  ConnectionIndex;
-	struct {
-		UCHAR  bmRequest;
-		UCHAR  bRequest;
-		USHORT  wValue;
-		USHORT  wIndex;
-		USHORT  wLength;
-	} SetupPacket;
-//	UCHAR  Data[0];
-} USB_DESCRIPTOR_REQUEST, *PUSB_DESCRIPTOR_REQUEST;
-
-typedef struct USB_HUB_DESCRIPTOR {
-	UCHAR  bDescriptorLength;
-	UCHAR  bDescriptorType;
-	UCHAR  bNumberOfPorts;
-	USHORT  wHubCharacteristics;
-	UCHAR  bPowerOnToPowerGood;
-	UCHAR  bHubControlCurrent;
-	UCHAR  bRemoveAndPowerMask[64];
-} USB_HUB_DESCRIPTOR, *PUSB_HUB_DESCRIPTOR;
-
-typedef struct USB_ROOT_HUB_NAME {
-	ULONG  ActualLength;
-	WCHAR  RootHubName[1];
-} USB_ROOT_HUB_NAME, *PUSB_ROOT_HUB_NAME;
 
 typedef struct USB_ROOT_HUB_NAME_FIXED {
 	ULONG ActualLength;
 	WCHAR RootHubName[MAX_PATH_LENGTH];
 } USB_ROOT_HUB_NAME_FIXED;
 
-typedef struct USB_NODE_CONNECTION_NAME {
-	ULONG  ConnectionIndex;
-	ULONG  ActualLength;
-	WCHAR  NodeName[1];
-} USB_NODE_CONNECTION_NAME, *PUSB_NODE_CONNECTION_NAME;
-
-typedef struct USB_NODE_CONNECTION_NAME_FIXED {
-	ULONG ConnectionIndex;
-	ULONG ActualLength;
-	WCHAR NodeName[MAX_PATH_LENGTH];
-} USB_NODE_CONNECTION_NAME_FIXED;
-
-typedef struct USB_HUB_NAME_FIXED {
-	union {
-		USB_ROOT_HUB_NAME_FIXED root;
-		USB_NODE_CONNECTION_NAME_FIXED node;
-	} u;
-} USB_HUB_NAME_FIXED;
-
-typedef struct USB_HUB_INFORMATION {
-	USB_HUB_DESCRIPTOR  HubDescriptor;
-	BOOLEAN  HubIsBusPowered;
-} USB_HUB_INFORMATION, *PUSB_HUB_INFORMATION;
-
-typedef struct USB_MI_PARENT_INFORMATION {
-  ULONG  NumberOfInterfaces;
-} USB_MI_PARENT_INFORMATION, *PUSB_MI_PARENT_INFORMATION;
-
-typedef struct USB_NODE_INFORMATION {
-	USB_HUB_NODE  NodeType;
-	union {
-		USB_HUB_INFORMATION  HubInformation;
-		USB_MI_PARENT_INFORMATION  MiParentInformation;
-	} u;
-} USB_NODE_INFORMATION, *PUSB_NODE_INFORMATION;
-
-typedef struct USB_PIPE_INFO {
-	USB_ENDPOINT_DESCRIPTOR  EndpointDescriptor;
-	ULONG  ScheduleOffset;
-} USB_PIPE_INFO, *PUSB_PIPE_INFO;
-
-typedef struct USB_NODE_CONNECTION_INFORMATION_EX {
-	ULONG  ConnectionIndex;
-	USB_DEVICE_DESCRIPTOR  DeviceDescriptor;
-	UCHAR  CurrentConfigurationValue;
-	UCHAR  Speed;
-	BOOLEAN  DeviceIsHub;
-	USHORT  DeviceAddress;
-	ULONG  NumberOfOpenPipes;
-	USB_CONNECTION_STATUS  ConnectionStatus;
-//	USB_PIPE_INFO  PipeList[0];
-} USB_NODE_CONNECTION_INFORMATION_EX, *PUSB_NODE_CONNECTION_INFORMATION_EX;
-
-typedef struct USB_HUB_CAP_FLAGS {
-	ULONG HubIsHighSpeedCapable:1;
-	ULONG HubIsHighSpeed:1;
-	ULONG HubIsMultiTtCapable:1;
-	ULONG HubIsMultiTt:1;
-	ULONG HubIsRoot:1;
-	ULONG HubIsArmedWakeOnConnect:1;
-	ULONG ReservedMBZ:26;
-} USB_HUB_CAP_FLAGS, *PUSB_HUB_CAP_FLAGS;
-
-typedef struct USB_HUB_CAPABILITIES {
-  ULONG  HubIs2xCapable : 1;
-} USB_HUB_CAPABILITIES, *PUSB_HUB_CAPABILITIES;
-
-typedef struct USB_HUB_CAPABILITIES_EX {
-	USB_HUB_CAP_FLAGS CapabilityFlags;
-} USB_HUB_CAPABILITIES_EX, *PUSB_HUB_CAPABILITIES_EX;
-
 #pragma pack(pop)
-
-/* winusb.dll interface */
-
-#define SHORT_PACKET_TERMINATE  0x01
-#define AUTO_CLEAR_STALL        0x02
-#define PIPE_TRANSFER_TIMEOUT   0x03
-#define IGNORE_SHORT_PACKETS    0x04
-#define ALLOW_PARTIAL_READS     0x05
-#define AUTO_FLUSH              0x06
-#define RAW_IO                  0x07
-#define MAXIMUM_TRANSFER_SIZE   0x08
-#define AUTO_SUSPEND            0x81
-#define SUSPEND_DELAY           0x83
-#define DEVICE_SPEED            0x01
-#define LowSpeed                0x01
-#define FullSpeed               0x02
-#define HighSpeed               0x03
-
-typedef enum USBD_PIPE_TYPE {
-	UsbdPipeTypeControl,
-	UsbdPipeTypeIsochronous,
-	UsbdPipeTypeBulk,
-	UsbdPipeTypeInterrupt
-} USBD_PIPE_TYPE;
-
-typedef struct {
-  USBD_PIPE_TYPE PipeType;
-  UCHAR          PipeId;
-  USHORT         MaximumPacketSize;
-  UCHAR          Interval;
-} WINUSB_PIPE_INFORMATION, *PWINUSB_PIPE_INFORMATION;
-
-#pragma pack(1)
-typedef struct {
-  UCHAR  request_type;
-  UCHAR  request;
-  USHORT value;
-  USHORT index;
-  USHORT length;
-} WINUSB_SETUP_PACKET, *PWINUSB_SETUP_PACKET;
-#pragma pack()
-
-typedef void *WINUSB_INTERFACE_HANDLE, *PWINUSB_INTERFACE_HANDLE;
-
-typedef BOOL (WINAPI *WinUsb_AbortPipe_t)(
-	WINUSB_INTERFACE_HANDLE InterfaceHandle,
-	UCHAR PipeID
-);
-typedef BOOL (WINAPI *WinUsb_ControlTransfer_t)(
-	WINUSB_INTERFACE_HANDLE InterfaceHandle,
-	WINUSB_SETUP_PACKET SetupPacket,
-	PUCHAR Buffer,
-	ULONG BufferLength,
-	PULONG LengthTransferred,
-	LPOVERLAPPED Overlapped
-);
-typedef BOOL (WINAPI *WinUsb_FlushPipe_t)(
-	WINUSB_INTERFACE_HANDLE InterfaceHandle,
-	UCHAR PipeID
-);
-typedef BOOL (WINAPI *WinUsb_Free_t)(
-	WINUSB_INTERFACE_HANDLE InterfaceHandle
-);
-typedef BOOL (WINAPI *WinUsb_GetAssociatedInterface_t)(
-	WINUSB_INTERFACE_HANDLE InterfaceHandle,
-	UCHAR AssociatedInterfaceIndex,
-	PWINUSB_INTERFACE_HANDLE AssociatedInterfaceHandle
-);
-typedef BOOL (WINAPI *WinUsb_GetCurrentAlternateSetting_t)(
-	WINUSB_INTERFACE_HANDLE InterfaceHandle,
-	PUCHAR AlternateSetting
-);
-typedef BOOL (WINAPI *WinUsb_GetDescriptor_t)(
-	WINUSB_INTERFACE_HANDLE InterfaceHandle,
-	UCHAR DescriptorType,
-	UCHAR Index,
-	USHORT LanguageID,
-	PUCHAR Buffer,
-	ULONG BufferLength,
-	PULONG LengthTransferred
-);
-typedef BOOL (WINAPI *WinUsb_GetOverlappedResult_t)(
-	WINUSB_INTERFACE_HANDLE InterfaceHandle,
-	LPOVERLAPPED lpOverlapped,
-	LPDWORD lpNumberOfBytesTransferred,
-	BOOL bWait
-);
-typedef BOOL (WINAPI *WinUsb_GetPipePolicy_t)(
-	WINUSB_INTERFACE_HANDLE InterfaceHandle,
-	UCHAR PipeID,
-	ULONG PolicyType,
-	PULONG ValueLength,
-	PVOID Value
-);
-typedef BOOL (WINAPI *WinUsb_GetPowerPolicy_t)(
-	WINUSB_INTERFACE_HANDLE InterfaceHandle,
-	ULONG PolicyType,
-	PULONG ValueLength,
-	PVOID Value
-);
-typedef BOOL (WINAPI *WinUsb_Initialize_t)(
-	HANDLE DeviceHandle,
-	PWINUSB_INTERFACE_HANDLE InterfaceHandle
-);
-typedef BOOL (WINAPI *WinUsb_QueryDeviceInformation_t)(
-	WINUSB_INTERFACE_HANDLE InterfaceHandle,
-	ULONG InformationType,
-	PULONG BufferLength,
-	PVOID Buffer
-);
-typedef BOOL (WINAPI *WinUsb_QueryInterfaceSettings_t)(
-	WINUSB_INTERFACE_HANDLE InterfaceHandle,
-	UCHAR AlternateSettingNumber,
-	PUSB_INTERFACE_DESCRIPTOR UsbAltInterfaceDescriptor
-);
-typedef BOOL (WINAPI *WinUsb_QueryPipe_t)(
-	WINUSB_INTERFACE_HANDLE InterfaceHandle,
-	UCHAR AlternateInterfaceNumber,
-	UCHAR PipeIndex,
-	PWINUSB_PIPE_INFORMATION PipeInformation
-);
-typedef BOOL (WINAPI *WinUsb_ReadPipe_t)(
-	WINUSB_INTERFACE_HANDLE InterfaceHandle,
-	UCHAR PipeID,
-	PUCHAR Buffer,
-	ULONG BufferLength,
-	PULONG LengthTransferred,
-	LPOVERLAPPED Overlapped
-);
-typedef BOOL (WINAPI *WinUsb_ResetPipe_t)(
-	WINUSB_INTERFACE_HANDLE InterfaceHandle,
-	UCHAR PipeID
-);
-typedef BOOL (WINAPI *WinUsb_SetCurrentAlternateSetting_t)(
-	WINUSB_INTERFACE_HANDLE InterfaceHandle,
-	UCHAR AlternateSetting
-);
-typedef BOOL (WINAPI *WinUsb_SetPipePolicy_t)(
-	WINUSB_INTERFACE_HANDLE InterfaceHandle,
-	UCHAR PipeID,
-	ULONG PolicyType,
-	ULONG ValueLength,
-	PVOID Value
-);
-typedef BOOL (WINAPI *WinUsb_SetPowerPolicy_t)(
-	WINUSB_INTERFACE_HANDLE InterfaceHandle,
-	ULONG PolicyType,
-	ULONG ValueLength,
-	PVOID Value
-);
-typedef BOOL (WINAPI *WinUsb_WritePipe_t)(
-	WINUSB_INTERFACE_HANDLE InterfaceHandle,
-	UCHAR PipeID,
-	PUCHAR Buffer,
-	ULONG BufferLength,
-	PULONG LengthTransferred,
-	LPOVERLAPPED Overlapped
-);
-typedef BOOL (WINAPI *WinUsb_ResetDevice_t)(
-	WINUSB_INTERFACE_HANDLE InterfaceHandle
-);
-
-/* /!\ These must match the ones from the official libusbk.h */
-typedef enum _KUSB_FNID
-{
-	KUSB_FNID_Init,
-	KUSB_FNID_Free,
-	KUSB_FNID_ClaimInterface,
-	KUSB_FNID_ReleaseInterface,
-	KUSB_FNID_SetAltInterface,
-	KUSB_FNID_GetAltInterface,
-	KUSB_FNID_GetDescriptor,
-	KUSB_FNID_ControlTransfer,
-	KUSB_FNID_SetPowerPolicy,
-	KUSB_FNID_GetPowerPolicy,
-	KUSB_FNID_SetConfiguration,
-	KUSB_FNID_GetConfiguration,
-	KUSB_FNID_ResetDevice,
-	KUSB_FNID_Initialize,
-	KUSB_FNID_SelectInterface,
-	KUSB_FNID_GetAssociatedInterface,
-	KUSB_FNID_Clone,
-	KUSB_FNID_QueryInterfaceSettings,
-	KUSB_FNID_QueryDeviceInformation,
-	KUSB_FNID_SetCurrentAlternateSetting,
-	KUSB_FNID_GetCurrentAlternateSetting,
-	KUSB_FNID_QueryPipe,
-	KUSB_FNID_SetPipePolicy,
-	KUSB_FNID_GetPipePolicy,
-	KUSB_FNID_ReadPipe,
-	KUSB_FNID_WritePipe,
-	KUSB_FNID_ResetPipe,
-	KUSB_FNID_AbortPipe,
-	KUSB_FNID_FlushPipe,
-	KUSB_FNID_IsoReadPipe,
-	KUSB_FNID_IsoWritePipe,
-	KUSB_FNID_GetCurrentFrameNumber,
-	KUSB_FNID_GetOverlappedResult,
-	KUSB_FNID_GetProperty,
-	KUSB_FNID_COUNT,
-} KUSB_FNID; 
-
-typedef struct _KLIB_VERSION {
-	INT Major;
-	INT Minor;
-	INT Micro;
-	INT Nano;
-} KLIB_VERSION;
-typedef KLIB_VERSION* PKLIB_VERSION;
-
-typedef BOOL (WINAPI *LibK_GetProcAddress_t)(
-	PVOID* ProcAddress,
-	ULONG DriverID,
-	ULONG FunctionID
-);
-
-typedef VOID (WINAPI *LibK_GetVersion_t)(
-	PKLIB_VERSION Version
-);
-
-struct winusb_interface {
-	bool initialized;
-	WinUsb_AbortPipe_t AbortPipe;
-	WinUsb_ControlTransfer_t ControlTransfer;
-	WinUsb_FlushPipe_t FlushPipe;
-	WinUsb_Free_t Free;
-	WinUsb_GetAssociatedInterface_t GetAssociatedInterface;
-	WinUsb_GetCurrentAlternateSetting_t GetCurrentAlternateSetting;
-	WinUsb_GetDescriptor_t GetDescriptor;
-	WinUsb_GetOverlappedResult_t GetOverlappedResult;
-	WinUsb_GetPipePolicy_t GetPipePolicy;
-	WinUsb_GetPowerPolicy_t GetPowerPolicy;
-	WinUsb_Initialize_t Initialize;
-	WinUsb_QueryDeviceInformation_t QueryDeviceInformation;
-	WinUsb_QueryInterfaceSettings_t QueryInterfaceSettings;
-	WinUsb_QueryPipe_t QueryPipe;
-	WinUsb_ReadPipe_t ReadPipe;
-	WinUsb_ResetPipe_t ResetPipe;
-	WinUsb_SetCurrentAlternateSetting_t SetCurrentAlternateSetting;
-	WinUsb_SetPipePolicy_t SetPipePolicy;
-	WinUsb_SetPowerPolicy_t SetPowerPolicy;
-	WinUsb_WritePipe_t WritePipe;
-	WinUsb_ResetDevice_t ResetDevice;
-};

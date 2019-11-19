@@ -12,7 +12,6 @@
 <translation id="2159915644201199628">Không thể giải mã hình ảnh: '<ph name="IMAGE_NAME" />'</translation>
 <translation id="2350172092385603347">Sử dụng bản địa hóa nhưng không chỉ định default_locale trong tệp kê khai.</translation>
 <translation id="2576842806987913196">Hiện có tệp CRX hiển thị với tên này.</translation>
-<translation id="2753617847762399167">Đường dẫn không hợp lệ (tuyệt đối hoặc tương đối với '..'): '<ph name="IMAGE_PATH" />'</translation>
 <translation id="2785530881066938471">Không thể tải tệp '<ph name="RELATIVE_PATH" />' cho tập lệnh nội dung. Tệp không được mã hóa UTF-8.</translation>
 <translation id="2903070246402204397"><ph name="EXTENSION_NAME" /> (ID tiện ích "<ph name="EXTENSION_ID" />") bị quản trị viên chặn. <ph name="ADMIN_INFO" /></translation>
 <translation id="2988488679308982380">Không thể cài đặt gói: '<ph name="ERROR_CODE" />'</translation>
@@ -38,8 +37,6 @@
 <translation id="5436430103864390185">Cửa sổ đã định hình không được hỗ trợ.</translation>
 <translation id="5456409301717116725">Tiện ích này bao gồm tệp khóa '<ph name="KEY_PATH" />'. Bạn có thể không muốn thực hiện việc đó.</translation>
 <translation id="5486326529110362464">Giá trị dữ liệu nhập cho khóa cá nhân phải tồn tại.</translation>
-<translation id="5627523580512561598">tiện ích <ph name="EXTENSION_NAME" /></translation>
-<translation id="5960890139610307736">ExtensionView: <ph name="EXTENSIONVIEW_TAG_NAME" /></translation>
 <translation id="5972529113578162692">Quản trị viên của máy này yêu cầu cài đặt <ph name="EXTENSION_NAME" />. Không thể gỡ cài đặt tiện ích này.</translation>
 <translation id="6027032947578871493">Sản phẩm không xác định <ph name="PRODUCT_ID" /> từ <ph name="VENDOR_NAME" /> (số sê-ri <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="6068932090455285721"><ph name="PRODUCT_NAME" /> từ nhà cung cấp <ph name="VENDOR_ID" /></translation>
@@ -51,7 +48,6 @@
 <translation id="6542618148162044354">"<ph name="APP_NAME" />" đang yêu cầu quyền truy cập vào một hoặc nhiều thiết bị của bạn:</translation>
 <translation id="657064425229075395">Không thể tải tập lệnh nền '<ph name="BACKGROUND_SCRIPT" />'.</translation>
 <translation id="6580950983454333167"><ph name="PRODUCT_NAME" /> của <ph name="VENDOR_NAME" /> (số sê-ri <ph name="SERIAL_NUMBER" />)</translation>
-<translation id="6731255991101203740">Không thể tạo thư mục để giải nén: '<ph name="DIRECTORY_PATH" />'</translation>
 <translation id="677806580227005219">Mimehandler: <ph name="MIMEHANDLERVIEW_TAG_NAME" /></translation>
 <translation id="6840444547062817500">Phần mở rộng này đã được tải lại quá thường xuyên.</translation>
 <translation id="7003844668372540529">Sản phẩm không xác định <ph name="PRODUCT_ID" /> từ <ph name="VENDOR_NAME" /></translation>

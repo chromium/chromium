@@ -14,16 +14,16 @@
 #include <memory>
 
 #include "base/bind.h"
-#include "base/message_loop/message_loop.h"
+#include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "gpu/ipc/common/gpu_memory_buffer_support.h"
 #include "mojo/public/cpp/base/shared_memory_mojom_traits.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/buffer_format_util.h"
-#include "ui/gfx/mojo/buffer_types_struct_traits.h"
+#include "ui/gfx/mojom/buffer_types_mojom_traits.h"
 
-#if defined(OS_WIN)
+#if defined(OS_WIN) || defined(USE_OZONE)
 #include "ui/gl/init/gl_factory.h"
 #include "ui/gl/test/gl_surface_test_support.h"
 #endif
@@ -50,11 +50,15 @@ class GpuMemoryBufferImplTest : public testing::Test {
     return &gpu_memory_buffer_support_;
   }
 
-#if defined(OS_WIN)
+#if defined(OS_WIN) || defined(USE_OZONE)
   // Overridden from testing::Test:
   void SetUp() override { gl::GLSurfaceTestSupport::InitializeOneOff(); }
   void TearDown() override { gl::init::ShutdownGL(false); }
 #endif
+
+ protected:
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::MainThreadType::UI};
 
  private:
   GpuMemoryBufferSupport gpu_memory_buffer_support_;
@@ -95,11 +99,13 @@ TYPED_TEST_P(GpuMemoryBufferImplTest, CreateFromHandle) {
         gfx::BufferUsage::SCANOUT_CPU_READ_WRITE,
         gfx::BufferUsage::SCANOUT_VDA_WRITE,
         gfx::BufferUsage::GPU_READ_CPU_READ_WRITE,
-        gfx::BufferUsage::GPU_READ_CPU_READ_WRITE_PERSISTENT};
+        gfx::BufferUsage::SCANOUT_VEA_READ_CAMERA_AND_CPU_READ_WRITE,
+    };
     for (auto usage : usages) {
       if (!TestFixture::gpu_memory_buffer_support()->IsConfigurationSupported(
-              TypeParam::kBufferType, format, usage))
+              TypeParam::kBufferType, format, usage)) {
         continue;
+      }
 
       bool destroyed = false;
       gfx::GpuMemoryBufferHandle handle;
@@ -117,6 +123,51 @@ TYPED_TEST_P(GpuMemoryBufferImplTest, CreateFromHandle) {
       // Check if destruction callback is executed when deleting the buffer.
       buffer.reset();
       ASSERT_TRUE(destroyed);
+    }
+  }
+}
+
+TYPED_TEST_P(GpuMemoryBufferImplTest, CreateFromHandleSmallBuffer) {
+  const gfx::Size kBufferSize(8, 8);
+
+  for (auto format : gfx::GetBufferFormatsForTesting()) {
+    gfx::BufferUsage usages[] = {
+        gfx::BufferUsage::GPU_READ,
+        gfx::BufferUsage::SCANOUT,
+        gfx::BufferUsage::SCANOUT_CAMERA_READ_WRITE,
+        gfx::BufferUsage::CAMERA_AND_CPU_READ_WRITE,
+        gfx::BufferUsage::SCANOUT_CPU_READ_WRITE,
+        gfx::BufferUsage::SCANOUT_VDA_WRITE,
+        gfx::BufferUsage::GPU_READ_CPU_READ_WRITE,
+        gfx::BufferUsage::SCANOUT_VEA_READ_CAMERA_AND_CPU_READ_WRITE,
+    };
+    for (auto usage : usages) {
+      if (!TestFixture::gpu_memory_buffer_support()->IsConfigurationSupported(
+              TypeParam::kBufferType, format, usage)) {
+        continue;
+      }
+
+      bool destroyed = false;
+      gfx::GpuMemoryBufferHandle handle;
+      GpuMemoryBufferImpl::DestructionCallback destroy_callback =
+          TestFixture::CreateGpuMemoryBuffer(kBufferSize, format, usage,
+                                             &handle, &destroyed);
+
+      gfx::Size bogus_size = kBufferSize;
+      bogus_size.Enlarge(100, 100);
+
+      // Handle import should fail when the size is bigger than expected.
+      std::unique_ptr<GpuMemoryBufferImpl> buffer(
+          TestFixture::gpu_memory_buffer_support()
+              ->CreateGpuMemoryBufferImplFromHandle(
+                  std::move(handle), bogus_size, format, usage,
+                  std::move(destroy_callback)));
+
+      // Only non-mappable GMB implementations can be imported with invalid
+      // size. In other words all GMP implementations that allow memory mapping
+      // must validate image size when importing a handle.
+      if (buffer)
+        ASSERT_FALSE(buffer->Map());
     }
   }
 }
@@ -145,7 +196,7 @@ TYPED_TEST_P(GpuMemoryBufferImplTest, Map) {
                 std::move(destroy_callback)));
     ASSERT_TRUE(buffer);
 
-    const size_t num_planes = gfx::NumberOfPlanesForBufferFormat(format);
+    const size_t num_planes = gfx::NumberOfPlanesForLinearBufferFormat(format);
 
     // Map buffer into user space.
     ASSERT_TRUE(buffer->Map());
@@ -182,21 +233,20 @@ TYPED_TEST_P(GpuMemoryBufferImplTest, PersistentMap) {
   for (auto format : gfx::GetBufferFormatsForTesting()) {
     if (!TestFixture::gpu_memory_buffer_support()->IsConfigurationSupported(
             TypeParam::kBufferType, format,
-            gfx::BufferUsage::GPU_READ_CPU_READ_WRITE_PERSISTENT)) {
+            gfx::BufferUsage::GPU_READ_CPU_READ_WRITE)) {
       continue;
     }
 
     gfx::GpuMemoryBufferHandle handle;
     GpuMemoryBufferImpl::DestructionCallback destroy_callback =
         TestFixture::CreateGpuMemoryBuffer(
-            kBufferSize, format,
-            gfx::BufferUsage::GPU_READ_CPU_READ_WRITE_PERSISTENT, &handle,
-            nullptr);
+            kBufferSize, format, gfx::BufferUsage::GPU_READ_CPU_READ_WRITE,
+            &handle, nullptr);
     std::unique_ptr<GpuMemoryBufferImpl> buffer(
         TestFixture::gpu_memory_buffer_support()
             ->CreateGpuMemoryBufferImplFromHandle(
                 std::move(handle), kBufferSize, format,
-                gfx::BufferUsage::GPU_READ_CPU_READ_WRITE_PERSISTENT,
+                gfx::BufferUsage::GPU_READ_CPU_READ_WRITE,
                 std::move(destroy_callback)));
     ASSERT_TRUE(buffer);
 
@@ -204,7 +254,7 @@ TYPED_TEST_P(GpuMemoryBufferImplTest, PersistentMap) {
     ASSERT_TRUE(buffer->Map());
 
     // Copy and compare mapped buffers.
-    size_t num_planes = gfx::NumberOfPlanesForBufferFormat(format);
+    size_t num_planes = gfx::NumberOfPlanesForLinearBufferFormat(format);
     for (size_t plane = 0; plane < num_planes; ++plane) {
       const size_t row_size_in_bytes =
           gfx::RowSizeForBufferFormat(kBufferSize.width(), format, plane);
@@ -251,7 +301,6 @@ TYPED_TEST_P(GpuMemoryBufferImplTest, PersistentMap) {
 }
 
 TYPED_TEST_P(GpuMemoryBufferImplTest, SerializeAndDeserialize) {
-  base::MessageLoop message_loop;
   const gfx::Size kBufferSize(8, 8);
   const gfx::GpuMemoryBufferType kBufferType = TypeParam::kBufferType;
 
@@ -264,7 +313,8 @@ TYPED_TEST_P(GpuMemoryBufferImplTest, SerializeAndDeserialize) {
         gfx::BufferUsage::SCANOUT_CPU_READ_WRITE,
         gfx::BufferUsage::SCANOUT_VDA_WRITE,
         gfx::BufferUsage::GPU_READ_CPU_READ_WRITE,
-        gfx::BufferUsage::GPU_READ_CPU_READ_WRITE_PERSISTENT};
+        gfx::BufferUsage::SCANOUT_VEA_READ_CAMERA_AND_CPU_READ_WRITE,
+    };
     for (auto usage : usages) {
       if (!TestFixture::gpu_memory_buffer_support()->IsConfigurationSupported(
               TypeParam::kBufferType, format, usage))
@@ -300,6 +350,7 @@ TYPED_TEST_P(GpuMemoryBufferImplTest, SerializeAndDeserialize) {
 // from a GpuMemoryBuffer implementation in order to be conformant.
 REGISTER_TYPED_TEST_SUITE_P(GpuMemoryBufferImplTest,
                             CreateFromHandle,
+                            CreateFromHandleSmallBuffer,
                             Map,
                             PersistentMap,
                             SerializeAndDeserialize);

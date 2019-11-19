@@ -4,6 +4,7 @@
 
 import("//third_party/closure_compiler/compile_js.gni")
 import("//third_party/closure_compiler/js_unit_tests.gni")
+import("//ui/file_manager/base/gn/js_test_gen_html.gni")
 
 js_type_check("closure_compile_module") {
   deps = [
@@ -25,9 +26,9 @@ js_type_check("closure_compile_module") {
 
 js_library("background") {
   deps = [
-    "../../file_manager/background/js:app_window_wrapper",
-    "../../file_manager/background/js:background_base",
-    "../../file_manager/common/js:util",
+    "//ui/file_manager/file_manager/background/js:app_window_wrapper",
+    "//ui/file_manager/file_manager/background/js:background_base",
+    "//ui/file_manager/file_manager/common/js:util",
   ]
 }
 
@@ -52,7 +53,7 @@ js_unittest("dimmable_ui_controller_unittest") {
 
 js_library("entry_list_watcher") {
   deps = [
-    "../../externs:file_manager_private",
+    "//ui/file_manager/externs:file_manager_private",
     "//ui/webui/resources/js:assert",
     "//ui/webui/resources/js/cr/ui:array_data_model",
   ]
@@ -61,14 +62,14 @@ js_library("entry_list_watcher") {
 js_unittest("entry_list_watcher_unittest") {
   deps = [
     ":entry_list_watcher",
-    "../../file_manager/common/js:mock_entry",
     "//ui/file_manager/base/js:test_error_reporting",
+    "//ui/file_manager/file_manager/common/js:mock_entry",
   ]
 }
 
 js_library("error_banner") {
   deps = [
-    "../../file_manager/common/js:util",
+    "//ui/file_manager/file_manager/common/js:util",
   ]
 }
 
@@ -92,8 +93,8 @@ js_library("gallery_data_model") {
   deps = [
     ":entry_list_watcher",
     ":gallery_item",
-    "../../file_manager/common/js:util",
-    "../../file_manager/foreground/js/metadata:thumbnail_model",
+    "//ui/file_manager/file_manager/common/js:util",
+    "//ui/file_manager/file_manager/foreground/js/metadata:thumbnail_model",
     "//ui/webui/resources/js:assert",
     "//ui/webui/resources/js/cr/ui:array_data_model",
   ]
@@ -111,13 +112,13 @@ js_library("gallery_item") {
   deps = [
     ":gallery_metrics",
     ":gallery_util",
-    "../../file_manager/common/js:util",
-    "../../file_manager/foreground/js/metadata:metadata_model",
-    "../../file_manager/foreground/js/metadata:thumbnail_model",
     "image_editor:image_encoder",
     "image_editor:image_util",
+    "//ui/file_manager/file_manager/common/js:util",
+    "//ui/file_manager/file_manager/foreground/js/metadata:metadata_model",
+    "//ui/file_manager/file_manager/foreground/js/metadata:thumbnail_model",
   ]
-  externs_list = [ "../../externs/entry_location.js" ]
+  externs_list = [ "//ui/file_manager/externs/entry_location.js" ]
 }
 
 js_unittest("gallery_item_unittest") {
@@ -130,35 +131,38 @@ js_unittest("gallery_item_unittest") {
 
 js_library("gallery_metrics") {
   deps = [
-    "../../file_manager/common/js:metrics_base",
+    "//ui/file_manager/file_manager/common/js:metrics_base",
   ]
 }
 
 js_library("gallery_util") {
   deps = [
-    "../../file_manager/common/js:file_type",
-    "../../file_manager/common/js:util",
     "//ui/file_manager/base/js:volume_manager_types",
     "//ui/file_manager/externs:volume_manager",
+    "//ui/file_manager/file_manager/common/js:file_type",
+    "//ui/file_manager/file_manager/common/js:util",
   ]
 }
 
 js_unittest("gallery_util_unittest") {
   deps = [
     ":gallery_util",
-    "../../file_manager/common/js:mock_entry",
     "//ui/file_manager/base/js:test_error_reporting",
+    "//ui/file_manager/file_manager/common/js:mock_entry",
   ]
 }
 
 js_library("metadata_worker") {
+  deps = [
+    "//ui/file_manager/file_manager/foreground/js/metadata:metadata_dispatcher",
+  ]
 }
 
 js_library("mock_gallery_item") {
   deps = [
     ":gallery_item",
-    "../../file_manager/common/js:mock_entry",
-    "../../file_manager/foreground/js/metadata:mock_metadata",
+    "//ui/file_manager/file_manager/common/js:mock_entry",
+    "//ui/file_manager/file_manager/foreground/js/metadata:mock_metadata",
   ]
 }
 
@@ -166,9 +170,9 @@ js_library("ribbon") {
   deps = [
     ":gallery_data_model",
     ":gallery_item",
-    "../../file_manager/foreground/js:thumbnail_loader",
-    "../../file_manager/foreground/js/metadata:thumbnail_model",
     "image_editor:image_util",
+    "//ui/file_manager/file_manager/foreground/js:thumbnail_loader",
+    "//ui/file_manager/file_manager/foreground/js/metadata:thumbnail_model",
     "//ui/webui/resources/js/cr/ui:array_data_model",
     "//ui/webui/resources/js/cr/ui:list_selection_model",
   ]
@@ -189,8 +193,6 @@ js_library("slide_mode") {
     ":gallery_item",
     ":gallery_metrics",
     ":ribbon",
-    "../../file_manager/common/js:util",
-    "../../file_manager/foreground/elements:files_toggle_ripple",
     "image_editor:image_adjust",
     "image_editor:image_editor",
     "image_editor:image_transform",
@@ -198,8 +200,10 @@ js_library("slide_mode") {
     "image_editor:image_view",
     "image_editor:viewport",
     "//third_party/polymer/v1_0/components-chromium/paper-progress:paper-progress-extracted",
+    "//ui/file_manager/file_manager/common/js:util",
+    "//ui/file_manager/file_manager/foreground/elements:files_toggle_ripple",
   ]
-  externs_list = [ "../../externs/gallery_foreground.js" ]
+  externs_list = [ "//ui/file_manager/externs/gallery_foreground.js" ]
 }
 
 js_unittest("slide_mode_unittest") {
@@ -215,14 +219,14 @@ js_library("thumbnail_mode") {
     ":gallery_constants",
     ":gallery_data_model",
     ":gallery_item",
-    "../../file_manager/foreground/js:thumbnail_loader",
-    "../../file_manager/foreground/js/metadata:thumbnail_model",
     "image_editor:image_editor",
+    "//ui/file_manager/file_manager/foreground/js:thumbnail_loader",
+    "//ui/file_manager/file_manager/foreground/js/metadata:thumbnail_model",
     "//ui/webui/resources/js/cr/ui:list_selection_model",
   ]
 }
 
-js_unit_tests("unit_tests") {
+js_test_gen_html("js_test_gen_html") {
   deps = [
     ":dimmable_ui_controller_unittest",
     ":entry_list_watcher_unittest",
@@ -238,6 +242,6 @@ group("closure_compile") {
   testonly = true
   deps = [
     ":closure_compile_module",
-    ":unit_tests_type_check",
+    ":js_test_gen_html_type_check_auto",
   ]
 }

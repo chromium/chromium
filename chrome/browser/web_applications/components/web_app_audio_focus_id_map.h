@@ -25,7 +25,7 @@ class WebAppAudioFocusIdMap {
   ~WebAppAudioFocusIdMap();
 
  protected:
-  friend class WebAppTabHelperBase;
+  friend class WebAppTabHelper;
 
   const base::UnguessableToken& CreateOrGetIdForApp(const AppId& app_id);
 

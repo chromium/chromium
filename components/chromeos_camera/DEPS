@@ -1,0 +1,7 @@
+include_rules = [
+  "+ash/public/cpp",
+  "+media",
+  "+mojo",
+  "+third_party/libyuv",
+  "+ui/gfx",
+]

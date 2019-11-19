@@ -13,10 +13,10 @@
 #include "base/compiler_specific.h"
 #include "base/run_loop.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "jni/AndroidProxyConfigServiceTestUtil_jni.h"
+#include "net/net_test_jni_headers/AndroidProxyConfigServiceTestUtil_jni.h"
 #include "net/proxy_resolution/proxy_config_with_annotation.h"
 #include "net/proxy_resolution/proxy_info.h"
-#include "net/test/test_with_scoped_task_environment.h"
+#include "net/test/test_with_task_environment.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -60,7 +60,7 @@ class JavaLooperPreparer {
 
 typedef std::map<std::string, std::string> StringMap;
 
-class ProxyConfigServiceAndroidTestBase : public TestWithScopedTaskEnvironment {
+class ProxyConfigServiceAndroidTestBase : public TestWithTaskEnvironment {
  protected:
   // Note that the current thread's message loop is initialized by the test
   // suite (see net/test/net_test_suite.cc).
@@ -94,6 +94,14 @@ class ProxyConfigServiceAndroidTestBase : public TestWithScopedTaskEnvironment {
     if (it == configuration_.end())
       return std::string();
     return it->second;
+  }
+
+  void ProxySettingsChangedTo(const std::string& host,
+                              int port,
+                              const std::string& pac_url,
+                              const std::vector<std::string>& exclusion_list) {
+    service_.ProxySettingsChangedTo(host, port, pac_url, exclusion_list);
+    base::RunLoop().RunUntilIdle();
   }
 
   void ProxySettingsChanged() {
@@ -187,6 +195,17 @@ TEST_F(ProxyConfigServiceAndroidWithInitialConfigTest, TestInitialConfig) {
   AddProperty("http.proxyHost", "httpproxy.com");
   ProxySettingsChanged();
   TestMapping("http://example.com/", "PROXY httpproxy.com:80");
+}
+
+TEST_F(ProxyConfigServiceAndroidTest, TestClearProxy) {
+  AddProperty("http.proxyHost", "httpproxy.com");
+  ProxySettingsChanged();
+  TestMapping("http://example.com/", "PROXY httpproxy.com:80");
+
+  // These values are used in ProxyChangeListener.java to indicate a direct
+  // proxy connection.
+  ProxySettingsChangedTo("", 0, "", {});
+  TestMapping("http://example.com/", "DIRECT");
 }
 
 struct ProxyCallback {

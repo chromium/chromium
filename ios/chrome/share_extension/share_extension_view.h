@@ -21,6 +21,10 @@
 
 // Called when the user presses the "Add to Reading List" button.
 - (void)shareExtensionViewDidSelectAddToReadingList:(id)sender;
+
+// Called when the user presses the "Open in Chrome" button.
+- (void)shareExtensionViewDidSelectOpenInChrome:(id)sender;
+
 @end
 
 // This is the view for the ShareExtensionController. It shows the shared

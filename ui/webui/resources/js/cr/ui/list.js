@@ -7,20 +7,6 @@
 // require: list_selection_controller.js
 // require: list_item.js
 
-cr.exportPath('cr.ui');
-
-/**
- *  @typedef {{
- *    height: number,
- *    marginBottom: number,
- *    marginLeft: number,
- *    marginRight: number,
- *    marginTop: number,
- *    width: number
- *  }}
- */
-cr.ui.Size;
-
 /**
  * @fileoverview This implements a list control.
  */
@@ -29,6 +15,18 @@ cr.define('cr.ui', function() {
   /** @const */ const ListSelectionModel = cr.ui.ListSelectionModel;
   /** @const */ const ListSelectionController = cr.ui.ListSelectionController;
   /** @const */ const ArrayDataModel = cr.ui.ArrayDataModel;
+
+  /**
+   *  @typedef {{
+   *    height: number,
+   *    marginBottom: number,
+   *    marginLeft: number,
+   *    marginRight: number,
+   *    marginTop: number,
+   *    width: number
+   *  }}
+   */
+  let Size;
 
   /**
    * Whether a mouse event is inside the element viewport. This will return
@@ -1445,5 +1443,8 @@ cr.define('cr.ui', function() {
     return false;
   }
 
-  return {List: List};
+  return {
+    List: List,
+    Size: Size,
+  };
 });

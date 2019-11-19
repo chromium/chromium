@@ -15,19 +15,17 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observer.h"
 #include "chrome/browser/chromeos/login/demo_mode/demo_extensions_external_loader.h"
+#include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/core/session_manager_observer.h"
 #include "components/user_manager/user_manager.h"
 #include "extensions/browser/app_window/app_window_registry.h"
+#include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
 
 class PrefRegistrySimple;
 
 namespace base {
 class OneShotTimer;
-}
-
-namespace session_manager {
-class SessionManager;
 }
 
 namespace chromeos {
@@ -73,9 +71,15 @@ class DemoSession : public session_manager::SessionManagerObserver,
     kMaxValue = kExtensionApi
   };
 
-  // The list of countries that Demo Mode supports.
+  // The list of countries that Demo Mode supports, ie the countries we have
+  // created OUs and admin users for in the admin console.
+  // Sorted by the English name of the country (not the country code), except US
+  // is first.
+  // TODO(crbug.com/983359): Sort these by country name in the current locale
+  // instead of using this hard-coded US-centric order.
   static constexpr char kSupportedCountries[][3] = {
-      "us", "be", "ca", "dk", "fi", "fr", "ie", "lu", "nl", "no", "se", "gb"};
+      "us", "be", "ca", "dk", "fi", "fr", "de",
+      "ie", "jp", "lu", "nl", "no", "se", "gb"};
 
   static std::string DemoConfigToString(DemoModeConfig config);
 
@@ -149,7 +153,7 @@ class DemoSession : public session_manager::SessionManagerObserver,
   base::OneShotTimer* GetTimerForTesting();
 
   // user_manager::UserManager::UserSessionStateObserver:
-  void ActiveUserChanged(const user_manager::User* user) override;
+  void ActiveUserChanged(user_manager::User* active_user) override;
 
   // extensions::AppWindowRegistry::Observer:
   void OnAppWindowActivated(extensions::AppWindow* app_window) override;
@@ -181,6 +185,11 @@ class DemoSession : public session_manager::SessionManagerObserver,
 
   // Removes the splash screen.
   void RemoveSplashScreen();
+
+  // Returns whether splash screen should be removed. The splash screen should
+  // be removed when both active session starts (i.e. login screen is destroyed)
+  // and screensaver is shown, to ensure a smooth transition.
+  bool ShouldRemoveSplashScreen();
 
   // session_manager::SessionManagerObserver:
   void OnSessionStateChanged() override;
@@ -222,6 +231,7 @@ class DemoSession : public session_manager::SessionManagerObserver,
   std::unique_ptr<base::OneShotTimer> remove_splash_screen_fallback_timer_;
 
   bool splash_screen_removed_ = false;
+  bool screensaver_activated_ = false;
 
   base::WeakPtrFactory<DemoSession> weak_ptr_factory_{this};
 

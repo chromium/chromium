@@ -8,7 +8,7 @@
 #include <string>
 
 #include "base/bind.h"
-#include "base/hash.h"
+#include "base/hash/hash.h"
 #include "base/logging.h"
 #include "base/pickle.h"
 #include "content/public/browser/render_frame_host.h"
@@ -242,7 +242,6 @@ void ScriptExecutor::ExecuteScript(const HostID& host_id,
                                    int frame_id,
                                    ScriptExecutor::MatchAboutBlank about_blank,
                                    UserScript::RunLocation run_at,
-                                   ScriptExecutor::WorldType world_type,
                                    ScriptExecutor::ProcessType process_type,
                                    const GURL& webview_src,
                                    const GURL& file_url,
@@ -268,7 +267,6 @@ void ScriptExecutor::ExecuteScript(const HostID& host_id,
   params.code = code;
   params.match_about_blank = (about_blank == MATCH_ABOUT_BLANK);
   params.run_at = run_at;
-  params.in_main_world = (world_type == MAIN_WORLD);
   params.is_web_view = (process_type == WEB_VIEW_PROCESS);
   params.webview_src = webview_src;
   params.file_url = file_url;

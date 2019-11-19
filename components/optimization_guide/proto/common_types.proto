@@ -1,0 +1,49 @@
+// Copyright 2017 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+option optimize_for = LITE_RUNTIME;
+
+package optimization_guide.proto;
+
+// The possible effective connection type values.
+//
+// The values should match those of //net/nqe/effective_connection_type.h in the
+// Chromium repository.
+enum EffectiveConnectionType {
+  // Effective connection type reported when the network quality is unknown.
+  EFFECTIVE_CONNECTION_TYPE_UNKNOWN = 0;
+
+  // Effective connection type reported when the Internet is unreachable,
+  // either because the device does not have a connection or because the
+  // connection is too slow to be usable.
+  EFFECTIVE_CONNECTION_TYPE_OFFLINE = 1;
+
+  // Effective connection type reported when the network has the quality of a
+  // poor 2G connection.
+  EFFECTIVE_CONNECTION_TYPE_SLOW_2G = 2;
+
+  // Effective connection type reported when the network has the quality of a
+  // faster 2G connection.
+  EFFECTIVE_CONNECTION_TYPE_2G = 3;
+
+  // Effective connection type reported when the network has the quality of a
+  // 3G connection.
+  EFFECTIVE_CONNECTION_TYPE_3G = 4;
+
+  // Effective connection type reported when the network has the quality of a
+  // 4G connection.
+  EFFECTIVE_CONNECTION_TYPE_4G = 5;
+}
+
+// Context in which the items are requested.
+enum RequestContext {
+  reserved 1;
+  // Context not specified.
+  CONTEXT_UNSPECIFIED = 0;
+  // Requesting items on page navigation.
+  CONTEXT_PAGE_NAVIGATION = 2;
+  // Requesting items as part of a batch update.
+  CONTEXT_BATCH_UPDATE = 3;
+}

@@ -249,8 +249,8 @@ class SSLPlatformKeyCNG : public ThreadedSSLPrivateKey::Delegate {
       return ERR_SSL_CLIENT_AUTH_SIGNATURE_FAILED;
     }
 
-    BCRYPT_PKCS1_PADDING_INFO pkcs1_padding_info = {0};
-    BCRYPT_PSS_PADDING_INFO pss_padding_info = {0};
+    BCRYPT_PKCS1_PADDING_INFO pkcs1_padding_info = {nullptr};
+    BCRYPT_PSS_PADDING_INFO pss_padding_info = {nullptr};
     void* padding_info = nullptr;
     DWORD flags = 0;
     if (SSL_get_signature_algorithm_key_type(algorithm) == EVP_PKEY_RSA) {

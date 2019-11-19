@@ -10,6 +10,7 @@
 #include "base/macros.h"
 #include "base/no_destructor.h"
 #include "chromeos/components/drivefs/mojom/fake_drivefs_launcher.mojom.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 namespace drivefs {
 
@@ -33,7 +34,7 @@ class FakeDriveFsLauncherClient {
   const base::FilePath chroot_path_;
   const base::FilePath socket_path_;
 
-  mojom::FakeDriveFsLauncherPtr launcher_;
+  mojo::Remote<mojom::FakeDriveFsLauncher> launcher_;
 
   DISALLOW_COPY_AND_ASSIGN(FakeDriveFsLauncherClient);
 };

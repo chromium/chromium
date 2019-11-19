@@ -3,7 +3,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-"""Usage: <win-path-to-pdb.pdb>
+"""Usage: Run with the '--help' flag to see how to use this script.
 This tool will take a PDB on the command line, extract the source files that
 were used in building the PDB, query the source server for which repository
 and revision these files are at, and then finally write this information back
@@ -15,107 +15,95 @@ You most likely want to run these immediately after a build, since the source
 input files need to match the generated PDB, and we want the correct
 revision information for the exact files that were used for the build.
 
-The following files from a windbg + source server installation are expected
-to reside in the same directory as this python script:
-  dbghelp.dll
-  pdbstr.exe
-  srctool.exe
+Here's a quick overview of what this script does:
+  - Extract the list of source files listed in the PDB, i.e. all the source
+    files that have been used to produce the matching binary. This list contains
+    some files for which the source code is accessible (e.g. files from the
+    Chromium repo) and some from private repos (e.g. files that have been used
+    to build the CRT static library that we link against).
+  - Iterate over the list of files from the previous step, from here there's a
+    few different possibilities:
+      - This file is coming from a public Git repository (e.g. Chromium), in
+        this case this script will list all the files that are contained in this
+        repository and index them all at once (and then remove them from the
+        file list it's iterating over).
+      - This file is a generated file produced during the build. It will likely
+        be living in a subdirectory of the build directory, if the "--build-dir"
+        flag has been passed to this flag this flag this directory will be
+        automatically ignored.
+      - The directory containing this file isn't part of a Git checkout, this
+        file will be excluded and all the files from this directory will get
+        added to an exclusion list. Specifying the toolchain directory (via the
+        "--toolchain-dir" flag) allow automatically skipping all the files from
+        the VS toolchain directory (e.g. all the CRT files), this is much faster
+        than using Git to check if these files are from a Git repo.
+      - This file doesn't exist on disk, which means that it is coming from a
+        third party static library. This file will be ignored.
+  - A map that associates each source file to a public URL will be added in a
+    new stream in the PDB.
 
 NOTE: Expected to run under a native win32 python, NOT cygwin.  All paths are
 dealt with as win32 paths, since we have to interact with the Microsoft tools.
 """
 
-import os
+from __future__ import print_function
+
+try:
+  # Python 3.x
+  from urllib.parse import urlparse
+except ImportError:
+  # Python 2.x
+  from urlparse import urlparse
+
 import optparse
+import os
+import re
+import subprocess
 import sys
 import tempfile
 import time
-import subprocess
 import win32api
 
 from collections import namedtuple
 
-# This serves two purposes.  First, it acts as a whitelist, and only files
-# from repositories listed here will be source indexed.  Second, it allows us
-# to map from one URL to another, so we can map to external source servers.  It
-# also indicates if the source for this project will be retrieved in a base64
-# encoded format.
-# TODO(sebmarchand): Initialize this variable in the main function and pass it
-#     to the sub functions instead of having a global variable.
-REPO_MAP = {
-    'http://src.chromium.org/svn': {
-        'url': 'https://src.chromium.org/chrome/'
-            '{file_path}?revision={revision}',
-        'base64': False
-    },
-    'https://src.chromium.org/svn': {
-        'url': 'https://src.chromium.org/chrome/'
-            '{file_path}?revision={revision}',
-        'base64': False
-    }
-}
+# Map that associates Git repository URLs with the URL that should be used to
+# retrieve individual files from this repo. Entries in this map should have the
+# following format:
+#   {
+#     'url': |path to public URL, with the {revision} and {file_path} tags|,
+#     'base64': |boolean indicating if the files are base64 encoded|
+#   }
+#
+# Here's an example of what the entry for the Chromium repo looks like:
+#   {
+#     'url': 'chromium.googlesource/+/{revision}/{file_path}?format=TEXT',
+#     'base64': True
+#   }
+#
+# The {revision} and {file_path} will be replaced by the appropriate values when
+# building the source indexing map that gets added to the PDB.
+#
+# TODO(sebmarchand): Check if this is really needed, this is a legacy thing
+# coming from when this script was used for SVN repos and we could probably do
+# without it.
+REPO_MAP = {}
 
 
-PROJECT_GROUPS = [
-  # Googlecode SVN projects
-  {
-    'projects': [
-      'angleproject',
-      'google-breakpad',
-      'google-cache-invalidation-api',
-      'google-url',
-      'googletest',
-      'leveldb',
-      'libphonenumber',
-      'libyuv',
-      'open-vcdiff',
-      'ots',
-      'sawbuck',
-      'sfntly',
-      'smhasher',
-      'v8',
-      'v8-i18n',
-      'webrtc',
-    ],
-    'public_url': 'https://%s.googlecode.com/svn-history/' \
-        'r{revision}/{file_path}',
-    'svn_urls': [
-        'svn://svn-mirror.golo.chromium.org/%s',
-        'http://src.chromium.org/%s',
-        'https://src.chromium.org/%s',
-        'http://%s.googlecode.com/svn',
-        'https://%s.googlecode.com/svn',
-    ],
-  },
-  # Googlecode Git projects
-  {
-    'projects': [
-      'syzygy',
-    ],
-    'public_url': 'https://%s.googlecode.com/git-history/' \
-        '{revision}/{file_path}',
-    'svn_urls': [
-        'https://code.google.com/p/%s/',
-    ],
-  },
-  # Chrome projects
-  {
-    'projects': [
-        'blink',
-        'chrome',
-        'multivm',
-        'native_client',
-    ],
-    'public_url': 'https://src.chromium.org/%s/' \
-        '{file_path}?revision={revision}',
-    'svn_urls': [
-        'svn://chrome-svn/%s',
-        'svn://chrome-svn.corp.google.com/%s',
-        'svn://svn-mirror.golo.chromium.org/%s',
-        'svn://svn.chromium.org/%s',
-    ],
-  },
-]
+# Regex matching a junction at it's printed by the 'dir' command.
+# It usually looks like this when the junction has been created with mklink:
+#
+#    Directory of C:\a
+#
+#   07/23/2015  06:42 PM <JUNCTION>     b [C:\real_a\b]
+#
+# The junctions created with the 'junction' utility look almost the same, except
+# for a leading '\??\' on the junction target:
+#
+#   07/23/2015  06:42 PM <JUNCTION>     b [\??\C:\real_a\b]
+_DIR_JUNCTION_RE = re.compile(r"""
+    .*<JUNCTION\>\s+(?P<dirname>[^ ]+)\s+\[(\\\?\?\\)?(?P<real_path>.*)\]
+""", re.VERBOSE)
+
 
 # A named tuple used to store the information about a repository.
 #
@@ -135,24 +123,15 @@ def GetCasedFilePath(filename):
   return win32api.GetLongPathName(win32api.GetShortPathName(unicode(filename)))
 
 
-def FillRepositoriesMap():
-  """ Fill the repositories map with the whitelisted projects. """
-  for project_group in PROJECT_GROUPS:
-    for project in project_group['projects']:
-      for svn_url in project_group['svn_urls']:
-        REPO_MAP[svn_url % project] = {
-            'url': project_group['public_url'] % project,
-            'base64': False
-        }
-      REPO_MAP[project_group['public_url'] % project] = None
+def FindSrcSrvFile(filename, toolchain_dir):
+  """Return the absolute path for a file in the srcsrv directory.
 
-FillRepositoriesMap()
-
-
-def FindFile(filename):
-  """Return the full windows path to a file in the same dir as this code."""
-  thisdir = os.path.dirname(os.path.join(os.path.curdir, __file__))
-  return os.path.abspath(os.path.join(thisdir, filename))
+  If |toolchain_dir| is null then this will assume that the file is in this
+  script's directory.
+  """
+  bin_dir = os.path.join(toolchain_dir, 'win_sdk', 'Debuggers', 'x64', 'srcsrv')
+  assert(os.path.exists(bin_dir))
+  return os.path.abspath(os.path.join(bin_dir, filename))
 
 
 def RunCommand(*cmd, **kwargs):
@@ -174,7 +153,7 @@ def RunCommand(*cmd, **kwargs):
   ret, err = proc.communicate()
   if proc.returncode != 0:
     if raise_on_failure:
-      print 'Error: %s' % err
+      print('Error: %s' % err)
       raise subprocess.CalledProcessError(proc.returncode, cmd)
     return
 
@@ -182,29 +161,41 @@ def RunCommand(*cmd, **kwargs):
   return ret
 
 
-def ExtractSourceFiles(pdb_filename):
+def ExtractSourceFiles(pdb_filename, toolchain_dir):
   """Extract a list of local paths of the source files from a PDB."""
-  src_files = RunCommand(FindFile('srctool.exe'), '-r', pdb_filename)
-  if not src_files or src_files.startswith("srctool: "):
+
+  # Don't use |RunCommand| as it expect the return code to be 0 on success but
+  # srctool returns the number of files instead.
+  srctool = subprocess.Popen([FindSrcSrvFile('srctool.exe', toolchain_dir),
+                              '-r', pdb_filename],
+                             stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                             universal_newlines=True)
+  src_files, _ = srctool.communicate()
+
+  if (not src_files or src_files.startswith("srctool: ") or
+      srctool.returncode <= 0):
     raise Exception("srctool failed: " + src_files)
-  return set(x.lower() for x in src_files.split('\n') if len(x) != 0)
+  return set(
+      x.rstrip('\n').lower() for x in src_files.split('\n') if len(x) != 0)
 
 
-def ReadSourceStream(pdb_filename):
+def ReadSourceStream(pdb_filename, toolchain_dir):
   """Read the contents of the source information stream from a PDB."""
-  srctool = subprocess.Popen([FindFile('pdbstr.exe'),
+  pdbstr = subprocess.Popen([FindSrcSrvFile('pdbstr.exe', toolchain_dir),
                               '-r', '-s:srcsrv',
                               '-p:%s' % pdb_filename],
                              stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-  data, _ = srctool.communicate()
+  data, _ = pdbstr.communicate()
 
-  if ((srctool.returncode != 0 and srctool.returncode != -1) or
-      data.startswith("pdbstr: ")):
+  # Old version of pdbstr.exe return -1 when the source requested stream is
+  # missing, while more recent ones return 1, use |abs| to workaround this.
+  if (((pdbstr.returncode != 0 and abs(pdbstr.returncode) != 1) or
+      data.startswith("pdbstr: "))):
     raise Exception("pdbstr failed: " + data)
   return data
 
 
-def WriteSourceStream(pdb_filename, data):
+def WriteSourceStream(pdb_filename, data, toolchain_dir):
   """Write the contents of the source information stream to a PDB."""
   # Write out the data to a temporary filename that we can pass to pdbstr.
   (f, fname) = tempfile.mkstemp()
@@ -212,7 +203,7 @@ def WriteSourceStream(pdb_filename, data):
   f.write(data)
   f.close()
 
-  srctool = subprocess.Popen([FindFile('pdbstr.exe'),
+  srctool = subprocess.Popen([FindSrcSrvFile('pdbstr.exe', toolchain_dir),
                               '-w', '-s:srcsrv',
                               '-i:%s' % fname,
                               '-p:%s' % pdb_filename],
@@ -224,54 +215,6 @@ def WriteSourceStream(pdb_filename, data):
     raise Exception("pdbstr failed: " + data)
 
   os.unlink(fname)
-
-
-def GetSVNRepoInfo(local_path):
-  """Calls svn info to extract the SVN information about a path."""
-  # We call svn.bat to make sure and get the depot tools SVN and not cygwin.
-  info = RunCommand('svn.bat', 'info', local_path, raise_on_failure=False)
-  if not info:
-    return
-  # Hack up into a dictionary of the fields printed by svn info.
-  vals = dict((y.split(': ', 2) for y in info.split('\n') if y))
-  return vals
-
-
-def ExtractSVNInfo(local_filename):
-  """Checks if a file is coming from a svn repository and if so returns some
-  information about it.
-
-  Args:
-    local_filename: The name of the file that we want to check.
-
-  Returns:
-    None if the file doesn't come from a svn repository, otherwise it returns a
-    RevisionInfo tuple.
-  """
-  # Try to get the svn information about this file.
-  vals = GetSVNRepoInfo(local_filename)
-  if not vals:
-    return
-
-  repo = vals['Repository Root']
-  if not vals['URL'].startswith(repo):
-    raise Exception("URL is not inside of the repository root?!?")
-  rev  = vals['Revision']
-
-  svn_local_root = os.path.split(local_filename)[0]
-
-  # We need to look at the SVN URL of the current path to handle the case when
-  # we do a partial SVN checkout inside another checkout of the same repository.
-  # This happens in Chromium where we do some checkout of
-  # '/trunk/deps/third_party' in 'src/third_party'.
-  svn_root_url = os.path.dirname(vals['URL'])
-
-  # Don't try to list all the files from this repository as this seem to slow
-  # down the indexing, instead index one file at a time.
-  file_list = [local_filename.replace(svn_local_root, '').lstrip(os.path.sep)]
-
-  return RevisionInfo(repo=repo, rev=rev, files=file_list,
-      root_path=svn_local_root, path_prefix=svn_root_url.replace(repo, ''))
 
 
 def ExtractGitInfo(local_filename):
@@ -328,13 +271,21 @@ def ExtractGitInfo(local_filename):
   git_root_path = local_filename.replace(git_path, '')
 
   if repo not in REPO_MAP:
-    # Automatically adds the project coming from a git GoogleCode repository to
-    # the repository map. The files from these repositories are accessible via
-    # gitiles in a base64 encoded format.
-    if 'chromium.googlesource.com' in repo:
+    # Automatically adds the project coming from a git GoogleCode or Github
+    # repository to the repository map.
+    if urlparse(repo).netloc.endswith('.googlesource.com'):
+      # The files from these repositories are accessible via gitiles in a
+      # base64 encoded format.
       REPO_MAP[repo] = {
           'url': '%s/+/{revision}/{file_path}?format=TEXT' % repo,
           'base64': True
+      }
+    elif urlparse(repo).netloc.endswith('github.com'):
+      raw_url = '%s/{revision}/{file_path}' % repo.replace('.git', '').replace(
+          'github.com', 'raw.githubusercontent.com')
+      REPO_MAP[repo] = {
+          'url': raw_url,
+          'base64': False
       }
 
   # Get the list of files coming from this repository.
@@ -347,28 +298,100 @@ def ExtractGitInfo(local_filename):
       root_path=git_root_path, path_prefix=None)
 
 
-def IndexFilesFromRepo(local_filename, file_list, output_lines):
-  """Checks if a given file is a part of a revision control repository (svn or
-  git) and index all the files from this repository if it's the case.
+def CheckForJunction(filename):
+  """Check if a directory containing a file is a junction to another directory.
+
+  If so return 3 values:
+      - The real path to this file.
+      - The root directory of this checkout relative to |filename| (i.e. not
+        relative to the real path).
+      - The sub directory of the repository that has been checked out.
+  """
+  # Process the path of |filename| from right to left until a junction has been
+  # found.
+  #
+  # Here's an example of what this does, for this example
+  # |filename| = 'C:/a/b/c/d.h' and 'C:/a' is a junction to 'C:/real_a/'.
+  #
+  # - We remove the filename part (we're only looking at directory junctions
+  #   here), that left us with 'C:/a/b/c'.
+  # - During the first iteration we take 'C:/a/b' as our current root value and
+  #   'c' as the leaf value.
+  # - We run the 'dir' command on 'C:/a/b' and we look for a junction to 'c'. As
+  #   we don't find any we go up one directory. Now the current root is 'C:/a'
+  #   and the current leaf value is 'b'.
+  # - We run the 'dir' command on 'C:/a' and we look for a junction to 'b'. This
+  #   time we find one so we return the following triplet:
+  #     - C:/real_a/b/c/d.h   # The real file path.
+  #     - C:/a                # The root directory containing this junction.
+  #     - b                   # The name of the junction.
+  cur_root, cur_leaf = os.path.split(os.path.dirname(filename))
+  while cur_leaf:
+    # Run the 'dir' command and look for a junction.
+    dir_cmd = RunCommand('cmd', '/c', 'dir', cur_root)
+    for entry in dir_cmd.splitlines():
+      m = _DIR_JUNCTION_RE.match(entry)
+      if not m:
+        continue
+      if not m.group('dirname') == cur_leaf:
+        continue
+      real_path = filename.replace(os.path.join(cur_root, cur_leaf),
+                                    m.group('real_path'))
+      # This should always be the case.
+      # TODO(sebmarchand): Remove this check if it proves to be useless.
+      if os.path.exists(real_path):
+        return real_path, cur_root, cur_leaf
+      else:
+        print('Source indexing: error: Unexpected non existing file \'%s\'' %
+              real_path)
+        return None, None, None
+    cur_root, cur_leaf = os.path.split(cur_root)
+  return None, None, None
+
+
+def IndexFilesFromRepo(
+    local_filename, file_list, output_lines, follow_junctions):
+  """Checks if a given file is a part of a Git repository  and index all the
+  files from this repository if it's the case.
 
   Args:
     local_filename: The filename of the current file.
     file_list: The list of files that should be indexed.
     output_lines: The source indexing lines that will be appended to the PDB.
+    follow_junctions: Indicates if we should try to index the files in a
+        junction.
 
   Returns the number of indexed files.
   """
   indexed_files = 0
-
+  patch_root = None
   # Try to extract the revision info for the current file.
   info = ExtractGitInfo(local_filename)
-  if not info:
-    info = ExtractSVNInfo(local_filename)
+
+  # If we haven't been able to find information for this file it might be
+  # because its path contains a junction to another directory. It can be the
+  # case if you do a Git checkout in C:/real_a/ and you're adding a junction to
+  # one of the subdirectories (lets say 'b') of this checkout in another
+  # project (e.g. 'C:/a'), so you'll end up with a partial Git checkout in a
+  # junction, and any Git command in the path of the junction won't work (or
+  # it'll return information related to 'C:/a' instead of 'C:/real_a').
+  if not info and follow_junctions:
+    real_filename, patch_root, patch_leaf = CheckForJunction(local_filename)
+    if real_filename:
+      info = ExtractGitInfo(real_filename)
+
+  # Don't try to index the internal sources.
+  if not info or ('internal.googlesource.com' in info.repo):
+    return 0
 
   repo = info.repo
   rev = info.rev
   files = info.files
-  root_path = info.root_path.lower()
+  if patch_root:
+    files = [x for x in files if x.startswith(patch_leaf)]
+    root_path = patch_root.lower()
+  else:
+    root_path = info.root_path.lower()
 
   # Checks if we should index this file and if the source that we'll retrieve
   # will be base64 encoded.
@@ -401,8 +424,8 @@ def IndexFilesFromRepo(local_filename, file_list, output_lines):
 
   # The input file should have been removed from the list of files to index.
   if indexed_files and local_filename in file_list:
-    print '%s shouldn\'t be in the list of files to index anymore.' % \
-        local_filename
+    print('%s shouldn\'t be in the list of files to index anymore.' % \
+        local_filename)
     # TODO(sebmarchand): Turn this into an exception once I've confirmed that
     #     this doesn't happen on the official builder.
     file_list.remove(local_filename)
@@ -410,40 +433,38 @@ def IndexFilesFromRepo(local_filename, file_list, output_lines):
   return indexed_files
 
 
-def DirectoryIsUnderPublicVersionControl(local_dir):
-  # Checks if this directory is from a Git checkout.
+def DirectoryIsPartOfPublicGitRepository(local_dir):
+  # Checks if this directory is from a public Git checkout.
   info = RunCommand('git.bat', 'config', '--get', 'remote.origin.url',
       cwd=local_dir, raise_on_failure=False)
   if info:
-    return True
-
-  # If not checks if it's from a SVN checkout.
-  info = GetSVNRepoInfo(local_dir)
-  if info:
+    if 'internal.googlesource.com' in info:
+      return False
     return True
 
   return False
 
 
-def UpdatePDB(pdb_filename, verbose=True, build_dir=None, toolchain_dir=None):
+def UpdatePDB(pdb_filename, verbose=True, build_dir=None, toolchain_dir=None,
+              follow_junctions=False):
   """Update a pdb file with source information."""
-  dir_blacklist = { }
+  dir_exclusion_list = { }
 
   if build_dir:
-    # Blacklisting the build directory allows skipping the generated files, for
+    # Excluding the build directory allows skipping the generated files, for
     # Chromium this makes the indexing ~10x faster.
     build_dir = (os.path.normpath(build_dir)).lower()
     for directory, _, _ in os.walk(build_dir):
-      dir_blacklist[directory.lower()] = True
-    dir_blacklist[build_dir.lower()] = True
+      dir_exclusion_list[directory.lower()] = True
+    dir_exclusion_list[build_dir.lower()] = True
 
   if toolchain_dir:
-    # Blacklisting the directories from the toolchain as we don't have revision
-    # info for them.
+    # Exclude the directories from the toolchain as we don't have revision info
+    # for them.
     toolchain_dir = (os.path.normpath(toolchain_dir)).lower()
-    for directory, _, _ in os.walk(build_dir):
-      dir_blacklist[directory.lower()] = True
-    dir_blacklist[toolchain_dir.lower()] = True
+    for directory, _, _ in os.walk(toolchain_dir):
+      dir_exclusion_list[directory.lower()] = True
+    dir_exclusion_list[toolchain_dir.lower()] = True
 
   # Writes the header of the source index stream.
   #
@@ -462,36 +483,47 @@ def UpdatePDB(pdb_filename, verbose=True, build_dir=None, toolchain_dir=None):
     'VERCTRL=Subversion',
     'DATETIME=%s' % time.asctime(),
     'SRCSRV: variables ------------------------------------------',
-    'SRC_EXTRACT_TARGET_DIR=%targ%\%fnbksl%(%var2%)\%var3%',
-    'SRC_EXTRACT_TARGET=%SRC_EXTRACT_TARGET_DIR%\%fnfile%(%var1%)',
+    'SRC_EXTRACT_TARGET_DIR=%targ%\\%fnbksl%(%var2%)\\%var3%',
+    'SRC_EXTRACT_TARGET=%SRC_EXTRACT_TARGET_DIR%\\%fnfile%(%var1%)',
     'SRC_EXTRACT_CMD=cmd /c "mkdir "%SRC_EXTRACT_TARGET_DIR%" & python -c '
         '"import urllib2, base64;'
         'url = \\\"%var4%\\\";'
         'u = urllib2.urlopen(url);'
-        'print %var5%(u.read());" > "%SRC_EXTRACT_TARGET%""',
+        'open(r\\\"%SRC_EXTRACT_TARGET%\\\", \\\"wb\\\").write(%var5%('
+            'u.read()))"',
     'SRCSRVTRG=%SRC_EXTRACT_TARGET%',
     'SRCSRVCMD=%SRC_EXTRACT_CMD%',
     'SRCSRV: source files ---------------------------------------',
   ]
 
-  if ReadSourceStream(pdb_filename):
+  if ReadSourceStream(pdb_filename, toolchain_dir):
     raise Exception("PDB already has source indexing information!")
 
-  filelist = ExtractSourceFiles(pdb_filename)
+  filelist = ExtractSourceFiles(pdb_filename, toolchain_dir)
   number_of_files = len(filelist)
   indexed_files_total = 0
+
+  t_init = time.time()
+  t1 = t_init
   while filelist:
     filename = next(iter(filelist))
     filedir = os.path.dirname(filename)
     if verbose:
-      print "[%d / %d] Processing: %s" % (number_of_files - len(filelist),
-          number_of_files, filename)
+      print("[%d / %d] Processing: %s" % (number_of_files - len(filelist),
+                                          number_of_files, filename))
 
-    # This directory is blacklisted, either because it's not part of a
-    # repository, or from one we're not interested in indexing.
-    if dir_blacklist.get(filedir, False):
+    # Print a message every 60 seconds to make sure that the process doesn't
+    # time out.
+    if time.time() - t1 > 60:
+      t1 = time.time()
+      print("Still working, %d / %d files have been processed." %
+            (number_of_files - len(filelist), number_of_files))
+
+    # This directory is in the exclusion listed, either because it's not part of
+    # a repository, or from one we're not interested in indexing.
+    if dir_exclusion_list.get(filedir, False):
       if verbose:
-        print "  skipping, directory is blacklisted."
+        print("  skipping, directory is excluded.")
       filelist.remove(filename)
       continue
 
@@ -502,27 +534,30 @@ def UpdatePDB(pdb_filename, verbose=True, build_dir=None, toolchain_dir=None):
 
     # Try to index the current file and all the ones coming from the same
     # repository.
-    indexed_files = IndexFilesFromRepo(filename, filelist, lines)
+    indexed_files = IndexFilesFromRepo(
+        filename, filelist, lines, follow_junctions)
     if not indexed_files:
-      if not DirectoryIsUnderPublicVersionControl(filedir):
-        dir_blacklist[filedir] = True
+      if not DirectoryIsPartOfPublicGitRepository(filedir):
+        dir_exclusion_list[filedir] = True
         if verbose:
-          print "Adding %s to the blacklist." % filedir
+          print("Adding %s to the exclusion list." % filedir)
       filelist.remove(filename)
       continue
 
     indexed_files_total += indexed_files
 
     if verbose:
-      print "  %d files have been indexed." % indexed_files
+      print("  %d files have been indexed." % indexed_files)
+
+  print('Indexing took %d seconds' % (time.time() - t_init))
 
   lines.append('SRCSRV: end ------------------------------------------------')
 
-  WriteSourceStream(pdb_filename, '\r\n'.join(lines))
+  WriteSourceStream(pdb_filename, '\r\n'.join(lines), toolchain_dir)
 
   if verbose:
-    print "%d / %d files have been indexed." % (indexed_files_total,
-                                                number_of_files)
+    print("%d / %d files have been indexed." % (indexed_files_total,
+                                                number_of_files))
 
 
 def main():
@@ -531,17 +566,23 @@ def main():
   parser.add_option('--build-dir', help='The original build directory, if set '
       'all the files present in this directory (or one of its subdirectories) '
       'will be skipped.')
-  parser.add_option('--toolchain-dir', help='The directory containing the '
-      'toolchain that has been used for this build. If set all the files '
-      'present in this directory (or one of its subdirectories) will be '
-      'skipped.')
+  parser.add_option('--toolchain-dir', help='The directory containing the VS '
+      'toolchain that has been used for this build. All the files present in '
+      'this directory (or one of its subdirectories) will be skipped.')
+  parser.add_option('--follow-junctions', action='store_true',help='Indicates '
+      'if the junctions should be followed while doing the indexing.',
+      default=False)
   options, args = parser.parse_args()
 
   if not args:
-    parser.error('Specify a pdb')
+    parser.error('Specify a pdb.')
+
+  if not options.toolchain_dir:
+    parser.error('The toolchain directory should be specified.')
 
   for pdb in args:
-    UpdatePDB(pdb, options.verbose, options.build_dir)
+    UpdatePDB(pdb, options.verbose, options.build_dir, options.toolchain_dir,
+        options.follow_junctions)
 
   return 0
 

@@ -20,18 +20,16 @@
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/network_service_util.h"
-#include "content/public/common/service_manager_connection.h"
-#include "content/public/common/service_names.mojom.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_base.h"
 #include "content/public/test/browser_test_utils.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "net/nqe/effective_connection_type.h"
 #include "net/nqe/network_quality_estimator.h"
 #include "services/network/network_service.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/network_quality_tracker.h"
 #include "services/network/public/mojom/network_service_test.mojom.h"
-#include "services/service_manager/public/cpp/connector.h"
 
 namespace network {
 
@@ -39,22 +37,12 @@ namespace {
 
 // Simulates a network quality change. This is only called when network service
 // is running in the browser process, in which case, the network quality
-// estimator lives on the network thread (which will be the IO thread if network
-// service is disabled).
+// estimator lives on the network thread.
 void SimulateNetworkQualityChangeOnNetworkThread(
     net::EffectiveConnectionType type) {
-  if (content::IsInProcessNetworkService()) {
-    network::NetworkService::GetNetworkServiceForTesting()
-        ->network_quality_estimator()
-        ->SimulateNetworkQualityChangeForTesting(type);
-  } else {
-    DCHECK(!base::FeatureList::IsEnabled(network::features::kNetworkService));
-    DCHECK(content::GetNetworkServiceImpl());
-    DCHECK(content::GetNetworkServiceImpl()->network_quality_estimator());
-    content::GetNetworkServiceImpl()
-        ->network_quality_estimator()
-        ->SimulateNetworkQualityChangeForTesting(type);
-  }
+  network::NetworkService::GetNetworkServiceForTesting()
+      ->network_quality_estimator()
+      ->SimulateNetworkQualityChangeForTesting(type);
   base::RunLoop().RunUntilIdle();
 }
 
@@ -134,8 +122,7 @@ class NetworkQualityTrackerBrowserTest : public InProcessBrowserTest {
   void SimulateNetworkQualityChange(net::EffectiveConnectionType type) {
     if (!content::IsOutOfProcessNetworkService()) {
       scoped_refptr<base::SequencedTaskRunner> task_runner =
-          base::CreateSequencedTaskRunnerWithTraits(
-              {content::BrowserThread::IO});
+          base::CreateSequencedTaskRunner({content::BrowserThread::IO});
       if (content::IsInProcessNetworkService())
         task_runner = content::GetNetworkTaskRunner();
       task_runner->PostTask(
@@ -151,11 +138,9 @@ class NetworkQualityTrackerBrowserTest : public InProcessBrowserTest {
     DCHECK(partition->GetNetworkContext());
     DCHECK(content::GetNetworkService());
 
-    network::mojom::NetworkServiceTestPtr network_service_test;
-    content::ServiceManagerConnection::GetForProcess()
-        ->GetConnector()
-        ->BindInterface(content::mojom::kNetworkServiceName,
-                        &network_service_test);
+    mojo::Remote<network::mojom::NetworkServiceTest> network_service_test;
+    content::GetNetworkService()->BindTestInterface(
+        network_service_test.BindNewPipeAndPassReceiver());
     base::RunLoop run_loop;
     network_service_test->SimulateNetworkQualityChange(
         type, base::BindOnce([](base::RunLoop* run_loop) { run_loop->Quit(); },

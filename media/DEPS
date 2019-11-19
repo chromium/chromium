@@ -3,15 +3,15 @@ include_rules = [
   "+cc/base/math_util.h",
   "+cc/paint",
   "+chromeos/audio",
+  "+components/system_media_controls/linux/buildflags",
   "+crypto",
   "+device/udev_linux",
-  "+device/usb",
   "+gpu",
-  "+jni",
+  "+media/midi/midi_jni_headers",
   "+mojo/public/cpp/bindings/callback_helpers.h",
   "+mojo/public/cpp/system/platform_handle.h",
-  "+services/ws/public/cpp/gpu/context_provider_command_buffer.h",
-  "+skia/ext",
+  "+services/device/public",
+  "+services/viz/public/cpp/gpu/context_provider_command_buffer.h",
   "+third_party/dav1d",
   "+third_party/ffmpeg",
   "+third_party/libaom",
@@ -34,7 +34,19 @@ specific_include_rules = {
   "audio_manager_unittest.cc": [
     "+chromeos/dbus"
   ],
+  "cras_input_unittest.cc": [
+    "+chromeos/dbus"
+  ],
+  "cras_unified_unittest.cc": [
+    "+chromeos/dbus"
+  ],
+  "fuchsia_video_decoder_unittest.cc": [
+    "+components/viz/test/test_context_support.h",
+  ],
   "gpu_memory_buffer_video_frame_pool_unittest.cc": [
     "+components/viz/test/test_context_provider.h",
-  ]
+  ],
+  "null_video_sink_unittest.cc": [
+    "+components/viz/common/frame_sinks/begin_frame_args.h",
+  ],
 }

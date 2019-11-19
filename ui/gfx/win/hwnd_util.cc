@@ -4,10 +4,8 @@
 
 #include "ui/gfx/win/hwnd_util.h"
 
-#include "base/i18n/rtl.h"
 #include "base/strings/string_util.h"
 #include "base/win/win_util.h"
-#include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -198,29 +196,6 @@ void CheckWindowCreated(HWND hwnd) {
     }
     PLOG(FATAL);
   }
-}
-
-void ShowSystemMenu(HWND window) {
-  RECT rect;
-  GetWindowRect(window, &rect);
-  Point point = Point(base::i18n::IsRTL() ? rect.right : rect.left, rect.top);
-  static const int kSystemMenuOffset = 10;
-  point.Offset(base::i18n::IsRTL() ? -kSystemMenuOffset : kSystemMenuOffset,
-               kSystemMenuOffset);
-  ShowSystemMenuAtPoint(window, point);
-}
-
-void ShowSystemMenuAtPoint(HWND window, const Point& point) {
-  UINT flags = TPM_LEFTBUTTON | TPM_RIGHTBUTTON | TPM_RETURNCMD;
-  if (base::i18n::IsRTL())
-    flags |= TPM_RIGHTALIGN;
-  HMENU menu = GetSystemMenu(window, FALSE);
-
-  const int command =
-      TrackPopupMenu(menu, flags, point.x(), point.y(), 0, window, NULL);
-
-  if (command)
-    SendMessage(window, WM_SYSCOMMAND, command, 0);
 }
 
 extern "C" {

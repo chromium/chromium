@@ -5,6 +5,8 @@ Frame: '<!--framePath //<!--frame1-->-->'
 --------
 This test PASSED if DRT outputs two <iframe>s with unique names.
 
+ 
+
 --------
 Frame: '<!--framePath //<!--frame1-->/<!--frame0-->-->'
 --------

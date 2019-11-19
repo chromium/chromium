@@ -79,7 +79,8 @@ void LoadErrorReporter::ReportError(const base::string16& message,
 
   if (enable_noisy_errors_ && be_noisy) {
     chrome::ShowWarningMessageBox(
-        NULL, l10n_util::GetStringUTF16(IDS_EXTENSIONS_LOAD_ERROR_HEADING),
+        NULL,
+        l10n_util::GetStringUTF16(IDS_EXTENSIONS_LOAD_ERROR_ALERT_HEADING),
         message);
   }
 }

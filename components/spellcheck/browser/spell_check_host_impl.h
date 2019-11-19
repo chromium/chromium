@@ -9,6 +9,7 @@
 #include "build/build_config.h"
 #include "components/spellcheck/common/spellcheck.mojom.h"
 #include "components/spellcheck/spellcheck_buildflags.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 
 #if defined(OS_ANDROID)
 #include "components/spellcheck/browser/spellchecker_session_bridge_android.h"
@@ -29,17 +30,18 @@ class SpellCheckHostImpl : public spellcheck::mojom::SpellCheckHost {
   SpellCheckHostImpl();
   ~SpellCheckHostImpl() override;
 
-  static void Create(spellcheck::mojom::SpellCheckHostRequest request);
+  static void Create(
+      mojo::PendingReceiver<spellcheck::mojom::SpellCheckHost> receiver);
 
  protected:
   // spellcheck::mojom::SpellCheckHost:
   void RequestDictionary() override;
   void NotifyChecked(const base::string16& word, bool misspelled) override;
 
-#if !BUILDFLAG(USE_BROWSER_SPELLCHECKER)
+#if BUILDFLAG(USE_RENDERER_SPELLCHECKER)
   void CallSpellingService(const base::string16& text,
                            CallSpellingServiceCallback callback) override;
-#endif  // !BUILDFLAG(USE_BROWSER_SPELLCHECKER)
+#endif  // BUILDFLAG(USE_RENDERER_SPELLCHECKER)
 
 #if BUILDFLAG(USE_BROWSER_SPELLCHECKER)
   void RequestTextCheck(const base::string16& text,

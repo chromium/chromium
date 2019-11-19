@@ -292,6 +292,9 @@ enum ThreatType {
 
   // Billing threat list. The internal proto's enum name is different
   BILLING = 15;
+
+  // Safe list to ship hashes of known safe URL expressions.
+  HIGH_CONFIDENCE_ALLOWLIST = 16;
 }
 
 // Types of platforms.

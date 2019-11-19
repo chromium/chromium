@@ -24,6 +24,9 @@ std::ostream& operator<<(std::ostream& out, const StyleDifference& diff) {
       break;
   }
 
+  out << ", collectInlines=" << diff.needs_collect_inlines_;
+  out << ", reshape=" << diff.needs_reshape_;
+
   out << ", paintInvalidationType=";
   switch (diff.paint_invalidation_type_) {
     case StyleDifference::kNoPaintInvalidation:

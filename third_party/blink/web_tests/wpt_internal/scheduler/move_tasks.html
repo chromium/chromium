@@ -1,0 +1,32 @@
+<!doctype html>
+<title>Scheduling API: TaskQueue.move</title>
+<link rel="author" title="Scott Haseley" href="mailto:shaseley@chromium.org">
+<link rel="help" href="https://github.com/WICG/main-thread-scheduling">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<script>
+'use strict';
+
+async_test(t => {
+  let result = '';
+  let tasks = [];
+
+  for (let i = 0; i < 5; i++) {
+    let task = scheduler.postTask(() => {
+      result += i.toString();
+    }, { priority: 'idle' });
+    tasks.push(task);
+  }
+
+  scheduler.getTaskQueue('high').take(tasks[2]);
+  assert_equals(tasks[2].priority, 'high');
+
+  scheduler.postTask(() => {
+    assert_equals('20134', result);
+    t.done();
+  }, { priority: 'idle' });
+
+}, 'Test moving tasks between task queues using TaskQueue.take');
+
+</script>

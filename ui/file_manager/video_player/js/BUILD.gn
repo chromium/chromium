@@ -4,6 +4,7 @@
 
 import("//third_party/closure_compiler/compile_js.gni")
 import("//third_party/closure_compiler/js_unit_tests.gni")
+import("//ui/file_manager/base/gn/js_test_gen_html.gni")
 
 js_type_check("closure_compile_module") {
   deps = [
@@ -25,16 +26,17 @@ js_library("closure_compile_externs") {
     "$externs_path/media_player_private.js",
     "$externs_path/metrics_private.js",
     "$externs_path/mediasession.js",
-    "../../externs/chrome_cast.js",
-    "../../externs/platform.js",
+    "$externs_path/picture_in_picture.js",
+    "//ui/file_manager/externs/chrome_cast.js",
+    "//ui/file_manager/externs/platform.js",
   ]
 }
 
 js_library("background") {
   deps = [
     ":error_util",
-    "../../file_manager/background/js:app_window_wrapper",
-    "../../file_manager/background/js:background_base",
+    "//ui/file_manager/file_manager/background/js:app_window_wrapper",
+    "//ui/file_manager/file_manager/background/js:background_base",
   ]
 }
 
@@ -43,7 +45,7 @@ js_library("error_util") {
 
 js_library("media_controls") {
   deps = [
-    "../../file_manager/common/js:util",
+    "//ui/file_manager/file_manager/common/js:util",
     "//ui/webui/resources/cr_elements/cr_slider:cr_slider",
     "//ui/webui/resources/js/cr/ui:menu_button",
   ]
@@ -59,7 +61,7 @@ js_library("video_player_native_controls") {
     "//ui/webui/resources/js:load_time_data",
     "//ui/webui/resources/js:util",
   ]
-  externs_list = [ "../../externs/platform.js" ]
+  externs_list = [ "//ui/file_manager/externs/platform.js" ]
 }
 
 js_unittest("video_player_native_controls_unittest") {
@@ -93,11 +95,11 @@ js_library("video_player") {
 
 js_library("video_player_metrics") {
   deps = [
-    "../../file_manager/common/js:metrics_base",
+    "//ui/file_manager/file_manager/common/js:metrics_base",
   ]
 }
 
-js_unit_tests("unit_tests") {
+js_test_gen_html("js_test_gen_html") {
   deps = [
     ":video_player_native_controls_unittest",
   ]
@@ -107,6 +109,6 @@ group("closure_compile") {
   testonly = true
   deps = [
     ":closure_compile_module",
-    ":unit_tests_type_check",
+    ":js_test_gen_html_type_check_auto",
   ]
 }

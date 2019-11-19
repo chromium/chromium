@@ -1,4 +1,5 @@
 rootWebArea
-++log name='Busy log' busy=true containerLiveBusy=true
-++log name='Not-busy log' containerLiveBusy=false
-++genericContainer name='plain div' busy=true
+++genericContainer ignored
+++++log name='Busy log' busy=true containerLiveBusy=true
+++++log name='Not-busy log' containerLiveBusy=false
+++++genericContainer name='plain div' busy=true

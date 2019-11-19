@@ -1,36 +1,29 @@
-<!DOCTYPE html>
-<head>
-<style>
-blockquote {
-    color: blue;
-    border-left: 2px solid blue;
-    padding-left: 5px;
-    margin: 0px;
-}
-</style>
-</head>
-<body>
-<p id="description">We copy and paste a blockquoted paragraph plus a paragraph break.
-The paragraph break shouldn't be inside the blockquote on paste.  
-You should see 'hello' (blockquoted), 'world' (not quoted, black text), 'hello' (blockquoted), empty paragraph.
-See &lt;rdar://problem/5368833&lt;</p>
-<div id="div" contenteditable="true"><br><blockquote id="blockquote" type="cite">hello<br></blockquote><br></div>
-<script src="../../resources/dump-as-markup.js"></script>
+<!doctype html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../assert_selection.js"></script>
 <script>
-div = document.getElementById("div");
-blockquote = document.getElementById("blockquote");
-sel = window.getSelection();
-sel.setBaseAndExtent(blockquote, 0, div, 2);
-document.execCommand("Copy");
-sel.collapse(div, 0);
-
-Markup.description(document.getElementById('description').textContent);
-
-Markup.dump(div, 'Before paste');
-document.execCommand("Paste");
-Markup.dump(div, 'After paste');
-document.execCommand("InsertHTML", false, "world");
-Markup.dump(div, 'After inserting "world"');
+selection_test(
+    [
+      '<div contenteditable id="div">',
+        '<br>',
+        '<blockquote type="cite" id="blockquote">^hello<br></blockquote>',
+        '|<br>',
+      '</div>'
+    ].join(''),
+    selection => {
+      const div = selection.document.getElementById("div");
+      selection.document.execCommand('Copy');
+      selection.collapse(div, 0);
+      selection.document.execCommand('Paste');
+    },
+    [
+      '<div contenteditable id="div">',
+        '<blockquote id="blockquote" type="cite">hello|<br></blockquote>',
+        '<blockquote id="blockquote" type="cite">hello<br></blockquote>',
+        '<br>',
+      '</div>'
+    ].join(''),
+    'Copy and paste a blockquoted paragraph plus a paragraph break The',
+    'paragraph break should be inside the blockquote on paste.');
 </script>
-</body>
-</html>

@@ -18,7 +18,7 @@
 
 namespace syncer {
 
-JsMutationEventObserver::JsMutationEventObserver() : weak_ptr_factory_(this) {}
+JsMutationEventObserver::JsMutationEventObserver() {}
 
 JsMutationEventObserver::~JsMutationEventObserver() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

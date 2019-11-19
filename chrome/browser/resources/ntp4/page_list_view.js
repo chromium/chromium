@@ -78,13 +78,13 @@ cr.define('ntp', function() {
 
     /**
      * A list of all 'tile-page' elements.
-     * @type {!NodeList|undefined}
+     * @type {!HTMLCollection<!ntp.TilePage>|undefined}
      */
     tilePages: undefined,
 
     /**
      * A list of all 'apps-page' elements.
-     * @type {!NodeList|undefined}
+     * @type {!HTMLCollection<!ntp.AppsPage>|undefined}
      */
     appsPages: undefined,
 
@@ -175,8 +175,10 @@ cr.define('ntp', function() {
 
       document.addEventListener('keydown', this.onDocKeyDown_.bind(this));
 
-      this.tilePages = this.pageList.getElementsByClassName('tile-page');
-      this.appsPages = this.pageList.getElementsByClassName('apps-page');
+      this.tilePages = /** @type {!HTMLCollection<!ntp.TilePage>} */ (
+          this.pageList.getElementsByClassName('tile-page'));
+      this.appsPages = /** @type {!HTMLCollection<!ntp.AppsPage>} */ (
+          this.pageList.getElementsByClassName('apps-page'));
 
       // Initialize the cardSlider without any cards at the moment.
       this.sliderFrame = cardSliderFrame;

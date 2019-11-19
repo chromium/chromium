@@ -17,8 +17,9 @@ class UkmRotationScheduler : public metrics::MetricsRotationScheduler {
   // callback to call when log rotation should happen and |interval_callback|
   // to determine the interval between rotations in steady state.
   UkmRotationScheduler(
-      const base::Closure& rotation_callback,
-      const base::Callback<base::TimeDelta(void)>& interval_callback);
+      const base::RepeatingClosure& rotation_callback,
+      bool fast_startup_for_testing,
+      const base::RepeatingCallback<base::TimeDelta(void)>& interval_callback);
   ~UkmRotationScheduler() override;
 
  private:

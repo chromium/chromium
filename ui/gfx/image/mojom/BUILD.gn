@@ -1,0 +1,58 @@
+# Copyright 2017 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//mojo/public/tools/bindings/mojom.gni")
+
+mojom("mojom") {
+  sources = [
+    "image.mojom",
+  ]
+
+  public_deps = [
+    "//skia/public/mojom",
+  ]
+}
+
+source_set("mojom_traits") {
+  sources = [
+    "image_skia_mojom_traits.cc",
+    "image_skia_mojom_traits.h",
+  ]
+
+  public_deps = [
+    ":mojom_shared_cpp_sources",
+    "//skia/public/mojom",
+    "//ui/gfx",
+  ]
+}
+
+# Using a test service because the traits need to pass handles around. Revisit
+# this after Deserialize(Serialize()) API works with handles.
+mojom("test_interfaces") {
+  sources = [
+    "image_traits_test_service.mojom",
+  ]
+
+  public_deps = [
+    ":mojom",
+  ]
+}
+
+source_set("unit_test") {
+  testonly = true
+
+  sources = [
+    "image_traits_unittest.cc",
+  ]
+
+  deps = [
+    ":mojom_traits",
+    ":test_interfaces",
+    "//base",
+    "//base/test:test_support",
+    "//mojo/public/cpp/bindings",
+    "//testing/gtest",
+    "//ui/gfx:test_support",
+  ]
+}

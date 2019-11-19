@@ -6,14 +6,16 @@ package org.chromium.chrome.browser.feed;
 
 import android.util.Base64;
 
+import androidx.annotation.VisibleForTesting;
+
+import com.google.android.libraries.feed.api.host.config.Configuration;
+import com.google.android.libraries.feed.api.host.network.HttpRequest;
+import com.google.android.libraries.feed.api.host.network.HttpRequest.HttpMethod;
+import com.google.android.libraries.feed.api.host.network.HttpResponse;
+import com.google.android.libraries.feed.api.host.network.NetworkClient;
 import com.google.android.libraries.feed.common.functional.Consumer;
 import com.google.android.libraries.feed.common.logging.Logger;
-import com.google.android.libraries.feed.feedrequestmanager.FeedRequestManager;
-import com.google.android.libraries.feed.host.config.Configuration;
-import com.google.android.libraries.feed.host.network.HttpRequest;
-import com.google.android.libraries.feed.host.network.HttpRequest.HttpMethod;
-import com.google.android.libraries.feed.host.network.HttpResponse;
-import com.google.android.libraries.feed.host.network.NetworkClient;
+import com.google.android.libraries.feed.feedrequestmanager.RequestHelper;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.CodedOutputStream;
 import com.google.protobuf.ExtensionRegistryLite;
@@ -23,7 +25,6 @@ import com.google.search.now.wire.feed.ResponseProto.Response;
 import com.google.search.now.wire.feed.mockserver.MockServerProto.ConditionalResponse;
 import com.google.search.now.wire.feed.mockserver.MockServerProto.MockServer;
 
-import org.chromium.base.VisibleForTesting;
 import org.chromium.base.task.PostTask;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 
@@ -126,10 +127,10 @@ public class TestNetworkClient implements NetworkClient {
     private Request getRequest(HttpRequest httpRequest) throws IOException {
         byte[] rawRequest = new byte[0];
         if (httpRequest.getMethod().equals(HttpMethod.GET)) {
-            if (httpRequest.getUri().getQueryParameter(FeedRequestManager.MOTHERSHIP_PARAM_PAYLOAD)
+            if (httpRequest.getUri().getQueryParameter(RequestHelper.MOTHERSHIP_PARAM_PAYLOAD)
                     != null) {
                 rawRequest = Base64.decode(httpRequest.getUri().getQueryParameter(
-                                                   FeedRequestManager.MOTHERSHIP_PARAM_PAYLOAD),
+                                                   RequestHelper.MOTHERSHIP_PARAM_PAYLOAD),
                         Base64.URL_SAFE);
             }
         } else {

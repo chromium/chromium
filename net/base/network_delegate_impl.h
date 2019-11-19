@@ -9,6 +9,7 @@
 
 #include <set>
 
+#include "base/optional.h"
 #include "base/strings/string16.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/net_export.h"
@@ -17,10 +18,6 @@
 #include "net/proxy_resolution/proxy_retry_info.h"
 
 class GURL;
-
-namespace base {
-class FilePath;
-}
 
 namespace url {
 class Origin;
@@ -52,35 +49,23 @@ class NET_EXPORT NetworkDelegateImpl : public NetworkDelegate {
                            const ProxyRetryInfoMap& proxy_retry_info,
                            HttpRequestHeaders* headers) override;
 
-  void OnStartTransaction(URLRequest* request,
-                          const HttpRequestHeaders& headers) override;
-
   int OnHeadersReceived(
       URLRequest* request,
       CompletionOnceCallback callback,
       const HttpResponseHeaders* original_response_headers,
       scoped_refptr<HttpResponseHeaders>* override_response_headers,
-      GURL* allowed_unsafe_redirect_url) override;
+      const IPEndPoint& endpoint,
+      base::Optional<GURL>* preserve_fragment_on_redirect_url) override;
 
   void OnBeforeRedirect(URLRequest* request, const GURL& new_location) override;
 
   void OnResponseStarted(URLRequest* request, int net_error) override;
-
-  void OnNetworkBytesReceived(URLRequest* request,
-                              int64_t bytes_received) override;
-
-  void OnNetworkBytesSent(URLRequest* request, int64_t bytes_sent) override;
 
   void OnCompleted(URLRequest* request, bool started, int net_error) override;
 
   void OnURLRequestDestroyed(URLRequest* request) override;
 
   void OnPACScriptError(int line_number, const base::string16& error) override;
-
-  AuthRequiredResponse OnAuthRequired(URLRequest* request,
-                                      const AuthChallengeInfo& auth_info,
-                                      AuthCallback callback,
-                                      AuthCredentials* credentials) override;
 
   bool OnCanGetCookies(const URLRequest& request,
                        const CookieList& cookie_list,
@@ -91,12 +76,10 @@ class NET_EXPORT NetworkDelegateImpl : public NetworkDelegate {
                       CookieOptions* options,
                       bool allowed_from_caller) override;
 
-  bool OnCanAccessFile(const URLRequest& request,
-                       const base::FilePath& original_path,
-                       const base::FilePath& absolute_path) const override;
-
-  bool OnForcePrivacyMode(const GURL& url,
-                          const GURL& site_for_cookies) const override;
+  bool OnForcePrivacyMode(
+      const GURL& url,
+      const GURL& site_for_cookies,
+      const base::Optional<url::Origin>& top_frame_origin) const override;
 
   bool OnCancelURLRequestWithPolicyViolatingReferrerHeader(
       const URLRequest& request,

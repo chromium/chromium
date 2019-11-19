@@ -18,10 +18,8 @@ class CONTENT_EXPORT RenderAccessibility {
   virtual int GenerateAXID() = 0;
 
   // These APIs allow a page with a single EMBED element to graft an
-  // accessibility tree for the plugin content, implemented as an AXTreeSource,
-  // into the page's accessibility tree.
-  using PluginAXTreeSource =
-      ui::AXTreeSource<const ui::AXNode*, ui::AXNodeData, ui::AXTreeData>;
+  // accessibility tree for the plugin content, implemented as a
+  // PluginAXTreeSource, into the page's accessibility tree.
   virtual void SetPluginTreeSource(PluginAXTreeSource* source) = 0;
   virtual void OnPluginRootNodeUpdated() = 0;
 

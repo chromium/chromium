@@ -5,45 +5,44 @@
 #ifndef CHROME_BROWSER_UI_ASH_ASSISTANT_ASSISTANT_SETUP_H_
 #define CHROME_BROWSER_UI_ASH_ASSISTANT_ASSISTANT_SETUP_H_
 
-#include "ash/public/interfaces/assistant_setup.mojom.h"
+#include "ash/public/cpp/assistant/assistant_setup.h"
+#include "ash/public/cpp/assistant/assistant_state.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/chromeos/arc/voice_interaction/voice_interaction_controller_client.h"
+#include "chromeos/services/assistant/public/mojom/assistant.mojom.h"
 #include "chromeos/services/assistant/public/mojom/settings.mojom.h"
-#include "mojo/public/cpp/bindings/binding.h"
-
-namespace service_manager {
-class Connector;
-}  // namespace service_manager
+#include "mojo/public/cpp/bindings/remote.h"
 
 // AssistantSetup is the class responsible for start Assistant OptIn flow.
-class AssistantSetup : public ash::mojom::AssistantSetup,
-                       public arc::VoiceInteractionControllerClient::Observer {
+class AssistantSetup : public ash::AssistantSetup,
+                       public ash::AssistantStateObserver {
  public:
-  explicit AssistantSetup(service_manager::Connector* connector);
+  explicit AssistantSetup(
+      chromeos::assistant::mojom::AssistantService* service);
   ~AssistantSetup() override;
 
-  // ash::mojom::AssistantSetup:
+  // ash::AssistantSetup:
   void StartAssistantOptInFlow(
-      ash::mojom::FlowType type,
+      ash::FlowType type,
       StartAssistantOptInFlowCallback callback) override;
+  bool BounceOptInWindowIfActive() override;
 
   // If prefs::kVoiceInteractionConsentStatus is nullptr, means the
   // pref is not set by user. Therefore we need to start OOBE.
   void MaybeStartAssistantOptInFlow();
 
  private:
-  // arc::VoiceInteractionControllerClient::Observer overrides
-  void OnStateChanged(ash::mojom::VoiceInteractionState state) override;
+  // ash::AssistantStateObserver:
+  void OnAssistantStatusChanged(ash::mojom::AssistantState state) override;
 
-  void SyncActivityControlState();
+  void SyncSettingsState();
   void OnGetSettingsResponse(const std::string& settings);
 
-  service_manager::Connector* connector_;
-  chromeos::assistant::mojom::AssistantSettingsManagerPtr settings_manager_;
-  mojo::Binding<ash::mojom::AssistantSetup> binding_;
+  chromeos::assistant::mojom::AssistantService* const service_;
+  mojo::Remote<chromeos::assistant::mojom::AssistantSettingsManager>
+      settings_manager_;
 
-  base::WeakPtrFactory<AssistantSetup> weak_factory_;
+  base::WeakPtrFactory<AssistantSetup> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(AssistantSetup);
 };

@@ -38,13 +38,6 @@ void SharedMemory::CloseHandle(const SharedMemoryHandle& handle) {
   handle.Close();
 }
 
-// static
-size_t SharedMemory::GetHandleLimit() {
-  // Duplicated from the internal Magenta kernel constant kMaxHandleCount
-  // (kernel/lib/zircon/zircon.cpp).
-  return 256 * 1024u;
-}
-
 bool SharedMemory::CreateAndMapAnonymous(size_t size) {
   return CreateAnonymous(size) && Map(size);
 }
@@ -53,12 +46,15 @@ bool SharedMemory::Create(const SharedMemoryCreateOptions& options) {
   requested_size_ = options.size;
   mapped_size_ = bits::Align(requested_size_, GetPageSize());
   zx::vmo vmo;
-  zx_status_t status =
-      zx::vmo::create(mapped_size_, ZX_VMO_NON_RESIZABLE, &vmo);
+  zx_status_t status = zx::vmo::create(mapped_size_, 0, &vmo);
   if (status != ZX_OK) {
     ZX_DLOG(ERROR, status) << "zx_vmo_create";
     return false;
   }
+
+  static const char kVmoName[] = "cr-shared-memory";
+  status = vmo.set_property(ZX_PROP_NAME, kVmoName, strlen(kVmoName));
+  ZX_DCHECK(status == ZX_OK, status);
 
   if (!options.executable) {
     // If options.executable isn't set, drop that permission by replacement.

@@ -48,8 +48,9 @@ NavigationItemImpl::NavigationItemImpl()
       has_state_been_replaced_(false),
       is_created_from_hash_change_(false),
       should_skip_repost_form_confirmation_(false),
+      should_skip_serialization_(false),
       navigation_initiation_type_(web::NavigationInitiationType::NONE),
-      is_unsafe_(false) {}
+      is_untrusted_(false) {}
 
 NavigationItemImpl::~NavigationItemImpl() {
 }
@@ -74,10 +75,11 @@ NavigationItemImpl::NavigationItemImpl(const NavigationItemImpl& item)
       is_created_from_hash_change_(item.is_created_from_hash_change_),
       should_skip_repost_form_confirmation_(
           item.should_skip_repost_form_confirmation_),
+      should_skip_serialization_(item.should_skip_serialization_),
       post_data_([item.post_data_ copy]),
       error_retry_state_machine_(item.error_retry_state_machine_),
       navigation_initiation_type_(item.navigation_initiation_type_),
-      is_unsafe_(item.is_unsafe_),
+      is_untrusted_(item.is_untrusted_),
       cached_display_title_(item.cached_display_title_) {}
 
 int NavigationItemImpl::GetUniqueID() const {
@@ -96,6 +98,11 @@ void NavigationItemImpl::SetURL(const GURL& url) {
   url_ = url;
   cached_display_title_.clear();
   error_retry_state_machine_.SetURL(url);
+  if (!wk_navigation_util::URLNeedsUserAgentType(url)) {
+    SetUserAgentType(web::UserAgentType::NONE);
+  } else if (GetUserAgentType() == web::UserAgentType::NONE) {
+    SetUserAgentType(web::UserAgentType::MOBILE);
+  }
 }
 
 const GURL& NavigationItemImpl::GetURL() const {
@@ -150,8 +157,9 @@ const base::string16& NavigationItemImpl::GetTitleForDisplay() const {
   if (!cached_display_title_.empty())
     return cached_display_title_;
 
-  cached_display_title_ =
-      NavigationItemImpl::GetDisplayTitleForURL(GetVirtualURL());
+  // File urls have different display rules, so use one if it is present.
+  cached_display_title_ = NavigationItemImpl::GetDisplayTitleForURL(
+      GetURL().SchemeIsFile() ? GetURL() : GetVirtualURL());
   return cached_display_title_;
 }
 
@@ -189,8 +197,16 @@ base::Time NavigationItemImpl::GetTimestamp() const {
 
 void NavigationItemImpl::SetUserAgentType(UserAgentType type) {
   user_agent_type_ = type;
-  DCHECK_EQ(!wk_navigation_util::URLNeedsUserAgentType(GetVirtualURL()),
+  DCHECK_EQ(!wk_navigation_util::URLNeedsUserAgentType(GetURL()),
             user_agent_type_ == UserAgentType::NONE);
+}
+
+void NavigationItemImpl::SetUntrusted() {
+  is_untrusted_ = true;
+}
+
+bool NavigationItemImpl::IsUntrusted() {
+  return is_untrusted_;
 }
 
 UserAgentType NavigationItemImpl::GetUserAgentType() const {
@@ -265,6 +281,14 @@ void NavigationItemImpl::SetShouldSkipRepostFormConfirmation(bool skip) {
 
 bool NavigationItemImpl::ShouldSkipRepostFormConfirmation() const {
   return should_skip_repost_form_confirmation_;
+}
+
+void NavigationItemImpl::SetShouldSkipSerialization(bool skip) {
+  should_skip_serialization_ = skip;
+}
+
+bool NavigationItemImpl::ShouldSkipSerialization() const {
+  return should_skip_serialization_;
 }
 
 void NavigationItemImpl::SetPostData(NSData* post_data) {

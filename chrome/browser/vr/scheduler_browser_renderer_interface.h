@@ -22,7 +22,8 @@ class SchedulerBrowserRendererInterface {
   // Pass the same head_pose used to render the submitted WebXR frame.
   virtual void DrawWebXrFrame(base::TimeTicks current_time,
                               const gfx::Transform& head_pose) = 0;
-  virtual void ProcessControllerInputForWebXr(base::TimeTicks current_time) = 0;
+  virtual void ProcessControllerInputForWebXr(const gfx::Transform& head_pose,
+                                              base::TimeTicks current_time) = 0;
 };
 
 }  // namespace vr

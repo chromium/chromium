@@ -10,7 +10,7 @@
 #include "base/metrics/sample_vector.h"
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "testing/perf/perf_test.h"
+#include "testing/perf/perf_result_reporter.h"
 #include "ui/latency/fixed_point.h"
 #include "ui/latency/frame_metrics_test_common.h"
 
@@ -52,6 +52,12 @@ class RatioHistogramBaseline : public Histogram {
   DISALLOW_COPY_AND_ASSIGN(RatioHistogramBaseline);
 };
 
+perf_test::PerfResultReporter SetUpReporter(const std::string& story_name) {
+  perf_test::PerfResultReporter reporter("FrameMetricsHistograms", story_name);
+  reporter.RegisterImportantMetric(".speedup", "score");
+  return reporter;
+}
+
 TEST(FrameMetricsHistogramsPerfTest, RatioEntireRange) {
   const int kStride = 0x1000;
 
@@ -90,8 +96,9 @@ TEST(FrameMetricsHistogramsPerfTest, RatioEntireRange) {
     }
   }
 
-  double X = base_time.InSecondsF() / impl_time.InSecondsF();
-  perf_test::PrintResult(__FUNCTION__, "", __FUNCTION__, X, "x", true);
+  double speedup = base_time.InSecondsF() / impl_time.InSecondsF();
+  perf_test::PerfResultReporter reporter = SetUpReporter("RatioEntireRange");
+  reporter.AddResult(".speedup", speedup);
 }
 
 TEST(FrameMetricsHistogramsPerfTest, RatioCommonRange) {
@@ -132,8 +139,9 @@ TEST(FrameMetricsHistogramsPerfTest, RatioCommonRange) {
     }
   }
 
-  double X = base_time.InSecondsF() / impl_time.InSecondsF();
-  perf_test::PrintResult(__FUNCTION__, "", __FUNCTION__, X, "x", true);
+  double speedup = base_time.InSecondsF() / impl_time.InSecondsF();
+  perf_test::PerfResultReporter reporter = SetUpReporter("RatioCommonRange");
+  reporter.AddResult(".speedup", speedup);
 }
 
 // A version of VSyncHistogram based on the default implementations
@@ -207,8 +215,9 @@ TEST(FrameMetricsHistogramsPerfTest, VSyncEntireRange) {
     }
   }
 
-  double X = base_time.InSecondsF() / impl_time.InSecondsF();
-  perf_test::PrintResult(__FUNCTION__, "", __FUNCTION__, X, "x", true);
+  double speedup = base_time.InSecondsF() / impl_time.InSecondsF();
+  perf_test::PerfResultReporter reporter = SetUpReporter("VSyncEntireRange");
+  reporter.AddResult(".speedup", speedup);
 }
 
 TEST(FrameMetricsHistogramsPerfTest, VSyncCommonRange) {
@@ -249,8 +258,9 @@ TEST(FrameMetricsHistogramsPerfTest, VSyncCommonRange) {
     }
   }
 
-  double X = base_time.InSecondsF() / impl_time.InSecondsF();
-  perf_test::PrintResult(__FUNCTION__, "", __FUNCTION__, X, "x", true);
+  double speedup = base_time.InSecondsF() / impl_time.InSecondsF();
+  perf_test::PerfResultReporter reporter = SetUpReporter("VSyncCommonRange");
+  reporter.AddResult(".speedup", speedup);
 }
 
 }  // namespace frame_metrics

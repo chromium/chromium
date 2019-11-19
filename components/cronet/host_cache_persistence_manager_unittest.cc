@@ -5,12 +5,15 @@
 #include "components/cronet/host_cache_persistence_manager.h"
 
 #include "base/test/scoped_mock_time_message_loop_task_runner.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/values.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "net/base/net_errors.h"
+#include "net/base/network_isolation_key.h"
 #include "net/dns/host_cache.h"
+#include "net/dns/host_resolver_source.h"
+#include "net/dns/public/dns_query_type.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace cronet {
@@ -33,7 +36,9 @@ class HostCachePersistenceManagerTest : public testing::Test {
   // a write, and the HostCache's interaction with its PersistenceDelegate is
   // assumed to work (it's tested in net/dns/host_cache_unittest.cc).
   void WriteToCache(const std::string& host) {
-    net::HostCache::Key key(host, net::ADDRESS_FAMILY_UNSPECIFIED, 0);
+    net::HostCache::Key key(host, net::DnsQueryType::UNSPECIFIED, 0,
+                            net::HostResolverSource::ANY,
+                            net::NetworkIsolationKey());
     net::HostCache::Entry entry(net::OK, net::AddressList(),
                                 net::HostCache::Entry::SOURCE_UNKNOWN);
     cache_->Set(key, entry, base::TimeTicks::Now(),
@@ -45,14 +50,14 @@ class HostCachePersistenceManagerTest : public testing::Test {
   // not the full contents, since the tests in this file are only intended
   // to test that writes happen when they're supposed to, not serialization
   // correctness.
-  void CheckPref(size_t size) {
+  void CheckPref(size_t expected_size) {
     const base::Value* value = pref_service_->GetUserPref(kPrefName);
-    base::ListValue list;
+    base::Value list(base::Value::Type::LIST);
     if (value)
-      list = base::ListValue(value->GetList());
+      list = base::Value(value->GetList());
     net::HostCache temp_cache(10);
-    temp_cache.RestoreFromListValue(list);
-    ASSERT_EQ(size, temp_cache.size());
+    temp_cache.RestoreFromListValue(base::Value::AsListValue(list));
+    ASSERT_EQ(expected_size, temp_cache.size());
   }
 
   // Generates a temporary HostCache with a few entries and uses it to
@@ -60,9 +65,15 @@ class HostCachePersistenceManagerTest : public testing::Test {
   void InitializePref() {
     net::HostCache temp_cache(10);
 
-    net::HostCache::Key key1("1", net::ADDRESS_FAMILY_UNSPECIFIED, 0);
-    net::HostCache::Key key2("2", net::ADDRESS_FAMILY_UNSPECIFIED, 0);
-    net::HostCache::Key key3("3", net::ADDRESS_FAMILY_UNSPECIFIED, 0);
+    net::HostCache::Key key1("1", net::DnsQueryType::UNSPECIFIED, 0,
+                             net::HostResolverSource::ANY,
+                             net::NetworkIsolationKey());
+    net::HostCache::Key key2("2", net::DnsQueryType::UNSPECIFIED, 0,
+                             net::HostResolverSource::ANY,
+                             net::NetworkIsolationKey());
+    net::HostCache::Key key3("3", net::DnsQueryType::UNSPECIFIED, 0,
+                             net::HostResolverSource::ANY,
+                             net::NetworkIsolationKey());
     net::HostCache::Entry entry(net::OK, net::AddressList(),
                                 net::HostCache::Entry::SOURCE_UNKNOWN);
 
@@ -80,7 +91,7 @@ class HostCachePersistenceManagerTest : public testing::Test {
 
   static const char kPrefName[];
 
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_;
   base::ScopedMockTimeMessageLoopTaskRunner task_runner_;
 
   // The HostCache and PrefService have to outlive the

@@ -1,13 +1,13 @@
 Tests layer compositing reasons in Layers Panel
-Compositing reasons for div#transform3d: assumedOverlap,transform3D
-Compositing reasons for div#transform3d-individual: assumedOverlap,transform3D
-Compositing reasons for div#backface-visibility: backfaceVisibilityHidden
-Compositing reasons for div#animation: activeTransformAnimation,assumedOverlap
-Compositing reasons for div#animation-individual: activeTransformAnimation,assumedOverlap
-Compositing reasons for div#transformWithCompositedDescendants: assumedOverlap,transformWithCompositedDescendants
-Compositing reasons for div#transformWithCompositedDescendants-individual: assumedOverlap,transformWithCompositedDescendants
-Compositing reasons for div#opacityWithCompositedDescendants: assumedOverlap,opacityWithCompositedDescendants
-Compositing reasons for div#reflectionWithCompositedDescendants: assumedOverlap,filterWithCompositedDescendants,reflectionWithCompositedDescendants
-Compositing reasons for div#perspective: assumedOverlap,perspectiveWith3DDescendants
-Compositing reasons for div#preserve3d: assumedOverlap,preserve3DWith3DDescendants
+Compositing reasons for div#transform3d: Has a 3d transform,Might overlap other composited content
+Compositing reasons for div#transform3d-individual: Has a 3d transform,Might overlap other composited content
+Compositing reasons for div#backface-visibility: Has backface-visibility: hidden
+Compositing reasons for div#animation: Has an active accelerated transform animation or transition,Might overlap other composited content
+Compositing reasons for div#animation-individual: Has an active accelerated transform animation or transition,Might overlap other composited content
+Compositing reasons for div#transformWithCompositedDescendants: Layer was separately composited because it could not be squashed.,Might overlap other composited content
+Compositing reasons for div#transformWithCompositedDescendants-individual: Layer was separately composited because it could not be squashed.,Might overlap other composited content
+Compositing reasons for div#opacityWithCompositedDescendants: Has opacity that needs to be applied by compositor because of composited descendants,Might overlap other composited content
+Compositing reasons for div#reflectionWithCompositedDescendants: Has a filter effect that needs to be known by compositor because of composited descendants,Has a reflection that needs to be known by compositor because of composited descendants,Might overlap other composited content
+Compositing reasons for div#perspective: Has a perspective transform that needs to be known by compositor because of 3d descendants,Might overlap other composited content
+Compositing reasons for div#preserve3d: Has a preserves-3d property that needs to be known by compositor because of 3d descendants,Might overlap other composited content
 

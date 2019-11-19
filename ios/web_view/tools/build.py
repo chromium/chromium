@@ -49,7 +49,7 @@ def build(build_config, target_device, extra_gn_options, extra_ninja_options):
 
   build_dir = os.path.join("out", target_dir_name(build_config, target_device))
   gn_args = ('target_os="ios" enable_websockets=false '
-            'is_component_build=false use_xcode_clang=true '
+            'is_component_build=false use_xcode_clang=false '
             'disable_file_support=true disable_ftp_support=true '
             'disable_brotli_filter=true ios_enable_code_signing=false '
             'enable_dsyms=true '
@@ -223,9 +223,6 @@ def main():
     extra_gn_options += 'ios_web_view_include_cronet=false '
   if options.enable_sync:
     extra_gn_options += 'ios_web_view_enable_sync=true '
-    # Used to differentiate //ios/web_view from //ios/chrome in the user agent
-    # product string passed to sync servers.
-    extra_gn_options += 'sync_user_agent_product="ChromeWebView" '
   else:
     extra_gn_options += 'ios_web_view_enable_sync=false '
   if options.enable_autofill:

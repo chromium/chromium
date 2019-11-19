@@ -31,7 +31,7 @@ public class AwContentsAnchorViewTest {
     private AwViewAndroidDelegate mViewDelegate;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         mContainerView = new FrameLayout(mActivityTestRule.getActivity());
         mViewDelegate = new AwViewAndroidDelegate(mContainerView, null, null);
     }

@@ -1,5 +1,8 @@
 include_rules = [
+  "+cc/base/completion_event.h",
   "+components/viz/common/features.h",
+  "+components/viz/common/display/update_vsync_parameters_callback.h",
+  "+components/viz/common/gpu/gpu_vsync_callback.h",
   "+components/viz/common/resources/resource_format.h",
 ]
 

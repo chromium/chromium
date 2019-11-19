@@ -33,7 +33,7 @@
 #include "components/sync_bookmarks/bookmark_sync_service.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -50,10 +50,9 @@ std::unique_ptr<KeyedService> BuildBookmarkModelWithoutLoad(
 
 void LoadBookmarkModel(Profile* profile,
                        bookmarks::BookmarkModel* bookmark_model) {
-  bookmark_model->Load(profile->GetPrefs(), profile->GetPath(),
-                       profile->GetIOTaskRunner(),
-                       base::CreateSingleThreadTaskRunnerWithTraits(
-                           {content::BrowserThread::UI}));
+  bookmark_model->Load(
+      profile->GetPrefs(), profile->GetPath(), profile->GetIOTaskRunner(),
+      base::CreateSingleThreadTaskRunner({content::BrowserThread::UI}));
 }
 
 bookmarks::BookmarkModel* CreateBookmarkModelWithoutLoad(Profile* profile) {
@@ -95,7 +94,7 @@ class ProfileStatisticsTest : public testing::Test {
   TestingProfileManager* manager() { return &manager_; }
 
  private:
-  content::TestBrowserThreadBundle thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
   TestingProfileManager manager_;
 };
 

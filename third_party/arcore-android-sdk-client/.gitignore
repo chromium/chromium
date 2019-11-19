@@ -1,0 +1,2 @@
+# AAR files will be fetched via CIPD.
+*.aar

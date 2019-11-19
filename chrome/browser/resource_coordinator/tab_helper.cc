@@ -13,11 +13,10 @@
 #include "base/strings/string_number_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
-// TODO(siggi): This is an abomination, remove this as soon as the page signal
-//     receiver is abolished.
-#include "chrome/browser/performance_manager/performance_manager_tab_helper.h"
-#include "chrome/browser/resource_coordinator/page_signal_receiver.h"
+#include "chrome/browser/resource_coordinator/lifecycle_unit_state.mojom-shared.h"
 #include "chrome/browser/resource_coordinator/resource_coordinator_parts.h"
+#include "chrome/browser/resource_coordinator/tab_lifecycle_unit_external.h"
+#include "chrome/browser/resource_coordinator/tab_lifecycle_unit_source.h"
 #include "chrome/browser/resource_coordinator/tab_load_tracker.h"
 #include "chrome/browser/resource_coordinator/tab_memory_metrics_reporter.h"
 #include "chrome/browser/resource_coordinator/utils.h"
@@ -37,25 +36,6 @@ ResourceCoordinatorTabHelper::ResourceCoordinatorTabHelper(
     content::WebContents* web_contents)
     : content::WebContentsObserver(web_contents) {
   TabLoadTracker::Get()->StartTracking(web_contents);
-
-  // The invalid type is used as sentinel for no CU ID available.
-  DCHECK_EQ(CoordinationUnitType::kInvalidType, page_cu_id_.type);
-  bool have_cu_id = performance_manager::PerformanceManagerTabHelper::
-      GetCoordinationIDForWebContents(web_contents, &page_cu_id_);
-
-  // This can happen in unit tests.
-  if (have_cu_id) {
-    DCHECK_EQ(CoordinationUnitType::kPage, page_cu_id_.type);
-    if (auto* page_signal_receiver = GetPageSignalReceiver()) {
-      // Gets CoordinationUnitID for this WebContents and adds it to
-      // PageSignalReceiver.
-      page_signal_receiver->AssociateCoordinationUnitIDWithWebContents(
-          page_cu_id_, web_contents);
-    }
-  } else {
-    DCHECK_EQ(CoordinationUnitType::kInvalidType, page_cu_id_.type);
-  }
-
   if (memory_instrumentation::MemoryInstrumentation::GetInstance()) {
     auto* rc_parts = g_browser_process->resource_coordinator_parts();
     DCHECK(rc_parts);
@@ -65,10 +45,8 @@ ResourceCoordinatorTabHelper::ResourceCoordinatorTabHelper(
 
 #if !defined(OS_ANDROID)
   // Don't create the LocalSiteCharacteristicsWebContentsObserver for this tab
-  // we don't have a page signal receiver as the data that this observer
-  // records depend on it.
-  if (base::FeatureList::IsEnabled(features::kSiteCharacteristicsDatabase) &&
-      GetPageSignalReceiver()) {
+  // if the feature is disabled.
+  if (base::FeatureList::IsEnabled(features::kSiteCharacteristicsDatabase)) {
     local_site_characteristics_wc_observer_ =
         std::make_unique<LocalSiteCharacteristicsWebContentsObserver>(
             web_contents);
@@ -78,16 +56,34 @@ ResourceCoordinatorTabHelper::ResourceCoordinatorTabHelper(
 
 ResourceCoordinatorTabHelper::~ResourceCoordinatorTabHelper() = default;
 
+bool ResourceCoordinatorTabHelper::IsLoaded(content::WebContents* contents) {
+  if (resource_coordinator::ResourceCoordinatorTabHelper::FromWebContents(
+          contents)) {
+    return resource_coordinator::TabLoadTracker::Get()->GetLoadingState(
+               contents) == ::mojom::LifecycleUnitLoadingState::LOADED;
+  }
+  return true;
+}
+
+bool ResourceCoordinatorTabHelper::IsFrozen(content::WebContents* contents) {
+#if !defined(OS_ANDROID)
+  if (resource_coordinator::ResourceCoordinatorTabHelper::FromWebContents(
+          contents)) {
+    auto* tab_lifecycle_unit = resource_coordinator::TabLifecycleUnitSource::
+        GetTabLifecycleUnitExternal(contents);
+    if (tab_lifecycle_unit)
+      return tab_lifecycle_unit->IsFrozen();
+  }
+#endif
+  return false;
+}
+
 void ResourceCoordinatorTabHelper::DidStartLoading() {
   TabLoadTracker::Get()->DidStartLoading(web_contents());
 }
 
 void ResourceCoordinatorTabHelper::DidReceiveResponse() {
   TabLoadTracker::Get()->DidReceiveResponse(web_contents());
-}
-
-void ResourceCoordinatorTabHelper::DidStopLoading() {
-  TabLoadTracker::Get()->DidStopLoading(web_contents());
 }
 
 void ResourceCoordinatorTabHelper::DidFailLoad(
@@ -106,14 +102,6 @@ void ResourceCoordinatorTabHelper::RenderProcessGone(
 }
 
 void ResourceCoordinatorTabHelper::WebContentsDestroyed() {
-  if (page_cu_id_.type == CoordinationUnitType::kPage) {
-    if (auto* page_signal_receiver = GetPageSignalReceiver()) {
-      // Gets CoordinationUnitID for this WebContents and removes it from
-      // PageSignalReceiver.
-      page_signal_receiver->RemoveCoordinationUnitID(page_cu_id_);
-    }
-  }
-
   TabLoadTracker::Get()->StopTracking(web_contents());
 }
 
@@ -122,14 +110,6 @@ void ResourceCoordinatorTabHelper::DidFinishNavigation(
   if (!navigation_handle->HasCommitted() ||
       navigation_handle->IsSameDocument()) {
     return;
-  }
-
-  if (navigation_handle->IsInMainFrame()) {
-    if (auto* page_signal_receiver = GetPageSignalReceiver()) {
-      // Update the last observed navigation ID for this WebContents.
-      page_signal_receiver->SetNavigationID(
-          web_contents(), navigation_handle->GetNavigationId());
-    }
   }
 
   if (navigation_handle->IsInMainFrame()) {

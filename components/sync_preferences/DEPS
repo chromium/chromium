@@ -1,10 +1,10 @@
 include_rules = [
+  "+chromeos/constants",
   "+components/policy/core/browser",
   "+components/policy/core/common",
   "+components/pref_registry",
   "+components/prefs",
   "+components/sync",
-  "+services/preferences/public",
   "+services/service_manager/public",
 
   # sync_preferences can be used on all platforms, including iOS. Do not allow

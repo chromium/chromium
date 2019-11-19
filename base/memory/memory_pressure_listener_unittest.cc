@@ -6,7 +6,7 @@
 
 #include "base/bind.h"
 #include "base/run_loop.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace base {
@@ -16,12 +16,11 @@ using MemoryPressureLevel = MemoryPressureListener::MemoryPressureLevel;
 class MemoryPressureListenerTest : public testing::Test {
  public:
   MemoryPressureListenerTest()
-      : scoped_task_environment_(
-            test::ScopedTaskEnvironment::MainThreadType::UI) {}
+      : task_environment_(test::TaskEnvironment::MainThreadType::UI) {}
 
   void SetUp() override {
-    listener_.reset(new MemoryPressureListener(
-        Bind(&MemoryPressureListenerTest::OnMemoryPressure, Unretained(this))));
+    listener_ = std::make_unique<MemoryPressureListener>(BindRepeating(
+        &MemoryPressureListenerTest::OnMemoryPressure, Unretained(this)));
   }
 
   void TearDown() override {
@@ -49,7 +48,7 @@ class MemoryPressureListenerTest : public testing::Test {
   MOCK_METHOD1(OnMemoryPressure,
                void(MemoryPressureListener::MemoryPressureLevel));
 
-  test::ScopedTaskEnvironment scoped_task_environment_;
+  test::TaskEnvironment task_environment_;
   std::unique_ptr<MemoryPressureListener> listener_;
 };
 

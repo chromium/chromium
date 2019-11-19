@@ -8,6 +8,7 @@
 #include <mach/mach.h>
 
 #include "base/base_export.h"
+#include "base/optional.h"
 #include "base/scoped_generic.h"
 
 namespace base {
@@ -60,6 +61,15 @@ using ScopedMachReceiveRight =
 // destroys the port set on destruction. Destroying a port set does not destroy
 // the receive rights that are members of the port set.
 using ScopedMachPortSet = ScopedGeneric<mach_port_t, internal::PortSetTraits>;
+
+// Constructs a Mach port receive right and places the result in |receive|.
+// If |send| is non-null, a send right will be created as well and stored
+// there. If |queue_limit| is specified, the receive right will be constructed
+// with the specified mpo_qlmit. Returns true on success and false on failure.
+BASE_EXPORT bool CreateMachPort(
+    ScopedMachReceiveRight* receive,
+    ScopedMachSendRight* send,
+    Optional<mach_port_msgcount_t> queue_limit = nullopt);
 
 }  // namespace mac
 }  // namespace base

@@ -6,7 +6,7 @@
 
 GEN_INCLUDE([
   'accessibility_audit_rules.js',
-  '../../../../../third_party/axe-core/axe.js',
+  '//third_party/axe-core/axe.js',
 ]);
 
 /**

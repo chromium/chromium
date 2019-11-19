@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+FAIL e.style['alignment-baseline'] = "auto" should not set the property value assert_equals: expected "" but got "auto"
+PASS e.style['alignment-baseline'] = "none" should not set the property value
+PASS e.style['alignment-baseline'] = "baseline text-bottom" should not set the property value
+Harness: the test ran to completion.
+

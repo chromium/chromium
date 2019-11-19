@@ -1,0 +1,147 @@
+# Copyright 2014 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//media/media_options.gni")
+import("//mojo/public/tools/bindings/mojom.gni")
+
+mojom("mojom") {
+  generate_java = true
+
+  # TODO(crbug.com/676224): Conditionally add source files in this list when we
+  # support EnabledIf attribute in mojom files.
+  sources = [
+    "audio_data_pipe.mojom",
+    "audio_decoder.mojom",
+    "audio_input_stream.mojom",
+    "audio_logging.mojom",
+    "audio_output_stream.mojom",
+    "audio_parameters.mojom",
+    "cdm_service.mojom",
+    "cdm_storage.mojom",
+    "content_decryption_module.mojom",
+    "decryptor.mojom",
+    "demuxer_stream.mojom",
+    "display_media_information.mojom",
+    "interface_factory.mojom",
+    "key_system_support.mojom",
+    "media_log.mojom",
+    "media_metrics_provider.mojom",
+    "media_service.mojom",
+    "media_types.mojom",
+    "output_protection.mojom",
+    "platform_verification.mojom",
+    "provision_fetcher.mojom",
+    "renderer.mojom",
+    "renderer_extensions.mojom",
+    "video_decode_perf_history.mojom",
+    "video_decode_stats_recorder.mojom",
+    "video_decoder.mojom",
+    "video_encode_accelerator.mojom",
+    "watch_time_recorder.mojom",
+  ]
+
+  if (is_android) {
+    sources += [
+      "android_overlay.mojom",
+      "media_drm_storage.mojom",
+    ]
+  }
+
+  if (is_chromecast) {
+    sources += [ "cast_application_media_info_manager.mojom" ]
+  }
+
+  public_deps = [
+    "//gpu/ipc/common:interfaces",
+    "//media/learning/mojo/public/mojom",
+    "//mojo/public/mojom/base",
+    "//services/service_manager/public/mojom",
+    "//ui/gfx/geometry/mojom",
+    "//ui/gfx/mojom",
+    "//url/mojom:url_mojom_gurl",
+    "//url/mojom:url_mojom_origin",
+  ]
+
+  if (is_mac) {
+    # TODO(xhwang): Ideally media should not worry about sandbox. Find a way to
+    # remove this dependency.
+    public_deps += [ "//sandbox/mac/mojom" ]
+  }
+
+  if (enable_cast_renderer) {
+    enabled_features = [ "enable_cast_renderer" ]
+  }
+
+  if (enable_cdm_proxy) {
+    enabled_features = [ "enable_cdm_proxy" ]
+    sources += [ "cdm_proxy.mojom" ]
+  }
+
+  export_class_attribute_blink = "BLINK_PLATFORM_EXPORT"
+  export_define_blink = "BLINK_PLATFORM_IMPLEMENTATION=1"
+  export_header_blink = "third_party/blink/public/platform/web_common.h"
+}
+
+mojom("constants") {
+  sources = [
+    "constants.mojom",
+  ]
+}
+
+mojom("remoting_common") {
+  sources = [
+    "remoting_common.mojom",
+  ]
+}
+
+mojom("mirror_service_remoting") {
+  sources = [
+    "mirror_service_remoting.mojom",
+  ]
+
+  public_deps = [
+    ":remoting_common",
+  ]
+}
+
+mojom("remoting") {
+  sources = [
+    "remoting.mojom",
+  ]
+
+  public_deps = [
+    ":remoting_common",
+  ]
+}
+
+mojom("test_interfaces") {
+  testonly = true
+  sources = [
+    "traits_test_service.mojom",
+  ]
+  public_deps = [
+    ":mojom",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "audio_decoder_config_mojom_traits_unittest.cc",
+    "cdm_key_information_mojom_traits_unittest.cc",
+    "video_decoder_config_mojom_traits_unittest.cc",
+    "video_frame_mojom_traits_unittest.cc",
+  ]
+
+  deps = [
+    "//base",
+    "//base/test:test_support",
+    "//media:test_support",
+    "//media/mojo:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/gfx:test_support",
+  ]
+}

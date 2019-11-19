@@ -20,31 +20,35 @@ class JSChecker(object):
     return regex_check.RegexCheck(
         self.input_api.re, line_number, line, regex, message)
 
+  def BindThisCheck(self, i, line):
+    return self.RegexCheck(i, line, r"(\.bind\(this)[^)]*\)",
+        "Prefer arrow (=>) functions over bind(this)");
+
   def ChromeSendCheck(self, i, line):
-    """Checks for a particular misuse of 'chrome.send'."""
+    """Checks for a particular misuse of "chrome.send"."""
     return self.RegexCheck(i, line, r"chrome\.send\('[^']+'\s*(, \[\])\)",
-        'Passing an empty array to chrome.send is unnecessary')
+        "Passing an empty array to chrome.send is unnecessary")
 
   def CommentIfAndIncludeCheck(self, line_number, line):
-    return self.RegexCheck(line_number, line, r'(?<!\/\/ )(<if|<include) ',
-        '<if> or <include> should be in a single line comment with a space ' +
-        'after the slashes. Examples:\n' +
+    return self.RegexCheck(line_number, line, r"(?<!\/\/ )(<if|<include) ",
+        "<if> or <include> should be in a single line comment with a space " +
+        "after the slashes. Examples:\n" +
         '    // <include src="...">\n' +
         '    // <if expr="chromeos">\n' +
-        '    // </if>\n')
+        "    // </if>\n")
 
   def EndJsDocCommentCheck(self, i, line):
-    msg = 'End JSDoc comments with */ instead of **/'
+    msg = "End JSDoc comments with */ instead of **/"
     def _check(regex):
       return self.RegexCheck(i, line, regex, msg)
-    return _check(r'^\s*(\*\*/)\s*$') or _check(r'/\*\* @[a-zA-Z]+.* (\*\*/)')
+    return _check(r"^\s*(\*\*/)\s*$") or _check(r"/\*\* @[a-zA-Z]+.* (\*\*/)")
 
   def ExtraDotInGenericCheck(self, i, line):
     return self.RegexCheck(i, line, r"((?:Array|Object|Promise)\.<)",
         "Don't use a dot after generics (Object.<T> should be Object<T>).")
 
   def InheritDocCheck(self, i, line):
-    """Checks for use of '@inheritDoc' instead of '@override'."""
+    """Checks for use of "@inheritDoc" instead of "@override"."""
     return self.RegexCheck(i, line, r"\* (@inheritDoc)",
         "@inheritDoc is deprecated, use @override instead")
 
@@ -53,7 +57,7 @@ class JSChecker(object):
     return self.RegexCheck(i, line, r"(?<!this)(\.\$)[\[\.](?![a-zA-Z]+\()",
         "Please only use this.$.localId, not element.$.localId")
 
-  def RunEsLintChecks(self, affected_js_files, format='stylish'):
+  def RunEsLintChecks(self, affected_js_files, format="stylish"):
     """Runs lint checks using ESLint. The ESLint rules being applied are defined
        in the .eslintrc.js configuration file.
     """
@@ -61,12 +65,10 @@ class JSChecker(object):
 
     # Extract paths to be passed to ESLint.
     affected_js_files_paths = []
-    presubmit_path = self.input_api.PresubmitLocalPath()
     for f in affected_js_files:
-      affected_js_files_paths.append(
-          os_path.relpath(f.AbsoluteLocalPath(), presubmit_path))
+      affected_js_files_paths.append(f.AbsoluteLocalPath())
 
-    args = ['--color', '--format', format, '--ignore-pattern \'!.eslintrc.js\'']
+    args = ["--color", "--format", format, "--ignore-pattern '!.eslintrc.js'"]
     args += affected_js_files_paths
 
     import eslint
@@ -81,10 +83,10 @@ class JSChecker(object):
         "Please use variable namesLikeThis <https://goo.gl/eQiXVW>")
 
   def _GetErrorHighlight(self, start, length):
-    """Takes a start position and a length, and produces a row of '^'s to
+    """Takes a start position and a length, and produces a row of "^"s to
        highlight the corresponding part of a string.
     """
-    return start * ' ' + length * '^'
+    return start * " " + length * "^"
 
   def RunChecks(self):
     """Check for violations of the Chromium JavaScript style guide. See
@@ -94,7 +96,7 @@ class JSChecker(object):
 
     affected_files = self.input_api.AffectedFiles(file_filter=self.file_filter,
                                                   include_deletes=False)
-    affected_js_files = filter(lambda f: f.LocalPath().endswith('.js'),
+    affected_js_files = filter(lambda f: f.LocalPath().endswith(".js"),
                                affected_files)
 
     if affected_js_files:
@@ -116,13 +118,13 @@ class JSChecker(object):
 
       if error_lines:
         error_lines = [
-            'Found JavaScript style violations in %s:' %
+            "Found JavaScript style violations in %s:" %
             f.LocalPath()] + error_lines
-        results.append(self.output_api.PresubmitError('\n'.join(error_lines)))
+        results.append(self.output_api.PresubmitError("\n".join(error_lines)))
 
     if results:
       results.append(self.output_api.PresubmitNotifyResult(
-          'See the JavaScript style guide at '
-          'https://chromium.googlesource.com/chromium/src/+/master/styleguide/web/web.md#JavaScript'))
+          "See the JavaScript style guide at "
+          "https://chromium.googlesource.com/chromium/src/+/master/styleguide/web/web.md#JavaScript"))
 
     return results

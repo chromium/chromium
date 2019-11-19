@@ -9,12 +9,13 @@
 <link rel="import" href="chrome://resources/html/polymer.html">
 
 <link rel="import" href="chrome://resources/cr_components/chromeos/bluetooth_dialog.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_page_host_style_css.html">
 <link rel="import" href="chrome://resources/cr_elements/shared_style_css.html">
 <link rel="import" href="chrome://resources/html/load_time_data.html">
 <link rel="import" href="chrome://resources/html/i18n_behavior.html">
 <link rel="stylesheet" href="chrome://resources/css/text_defaults_md.css">
 
-<script src="chrome://bluetooth-pairing/strings.js"></script>
+<script src="strings.js"></script>
 
 </head>
 
@@ -22,22 +23,17 @@
 
   <dom-module id="bluetooth-pairing-dialog">
     <template>
-      <style include="cr-shared-style">
-        :host {
-          @apply --cr-page-host;
-        }
-
-        bluetooth-dialog {
-          --cr-dialog-native: {
-            border-radius: 0;
-            height: 100%;
-            width: 100%;
-          }
+      <style include="cr-page-host-style cr-shared-style">
+        bluetooth-dialog::part(dialog) {
+          border-radius: 0;
+          height: 100%;
+          width: 100%;
         }
       </style>
 
       <bluetooth-dialog id="deviceDialog" no-cancel on-close="onDialogClose_"
-          pairing-device="[[pairingDevice_]]">
+          pairing-device="[[pairingDevice_]]"
+          dialog-title="$i18n{bluetoothPairDeviceTitle}">
       </bluetooth-dialog>
     </template>
     <script src="bluetooth_pairing_dialog.js"></script>

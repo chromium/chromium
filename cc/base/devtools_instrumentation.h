@@ -9,7 +9,7 @@
 
 #include <memory>
 
-#include "base/macros.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
@@ -53,31 +53,68 @@ class CC_BASE_EXPORT ScopedLayerTask {
     TRACE_EVENT_BEGIN1(internal::CategoryName::kTimeline, event_name_,
                        internal::kLayerId, layer_id);
   }
+  ScopedLayerTask(const ScopedLayerTask&) = delete;
   ~ScopedLayerTask() {
     TRACE_EVENT_END0(internal::CategoryName::kTimeline, event_name_);
   }
 
+  ScopedLayerTask& operator=(const ScopedLayerTask&) = delete;
+
  private:
   const char* event_name_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedLayerTask);
 };
 
-class CC_BASE_EXPORT ScopedImageDecodeTask {
+class CC_BASE_EXPORT ScopedImageTask {
  public:
-  enum DecodeType { kSoftware, kGpu };
+  enum ImageType { kWebP, kJpeg, kOther };
+
+  ScopedImageTask(ImageType image_type)
+      : image_type_(image_type), start_time_(base::TimeTicks::Now()) {}
+  ScopedImageTask(const ScopedImageTask&) = delete;
+  ~ScopedImageTask() = default;
+  ScopedImageTask& operator=(const ScopedImageTask&) = delete;
+
+  // Prevents logging duration metrics. Used in cases where a task performed
+  // uninteresting work or was terminated early.
+  void SuppressMetrics() { suppress_metrics_ = true; }
+
+ protected:
+  bool suppress_metrics_ = false;
+  const ImageType image_type_;
+  const base::TimeTicks start_time_;
+
+  // UMA histogram parameters
+  const uint32_t bucket_count_ = 50;
+  base::TimeDelta hist_min_ = base::TimeDelta::FromMicroseconds(1);
+  base::TimeDelta hist_max_ = base::TimeDelta::FromMilliseconds(1000);
+};
+
+class CC_BASE_EXPORT ScopedImageUploadTask : public ScopedImageTask {
+ public:
+  ScopedImageUploadTask(const void* image_ptr, ImageType image_type);
+  ScopedImageUploadTask(const ScopedImageUploadTask&) = delete;
+  ~ScopedImageUploadTask();
+
+  ScopedImageUploadTask& operator=(const ScopedImageUploadTask&) = delete;
+};
+
+class CC_BASE_EXPORT ScopedImageDecodeTask : public ScopedImageTask {
+ public:
   enum TaskType { kInRaster, kOutOfRaster };
+  enum DecodeType { kSoftware, kGpu };
 
   ScopedImageDecodeTask(const void* image_ptr,
                         DecodeType decode_type,
-                        TaskType task_type);
+                        TaskType task_type,
+                        ImageType image_type);
+  ScopedImageDecodeTask(const ScopedImageDecodeTask&) = delete;
   ~ScopedImageDecodeTask();
+
+  ScopedImageDecodeTask& operator=(const ScopedImageDecodeTask&) = delete;
 
  private:
   const DecodeType decode_type_;
   const TaskType task_type_;
-  const base::TimeTicks start_time_;
-  DISALLOW_COPY_AND_ASSIGN(ScopedImageDecodeTask);
 };
 
 class CC_BASE_EXPORT ScopedLayerTreeTask {
@@ -90,14 +127,15 @@ class CC_BASE_EXPORT ScopedLayerTreeTask {
                        internal::kLayerId, layer_id, internal::kLayerTreeId,
                        layer_tree_host_id);
   }
+  ScopedLayerTreeTask(const ScopedLayerTreeTask&) = delete;
   ~ScopedLayerTreeTask() {
     TRACE_EVENT_END0(internal::CategoryName::kTimeline, event_name_);
   }
 
+  ScopedLayerTreeTask& operator=(const ScopedLayerTreeTask&) = delete;
+
  private:
   const char* event_name_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedLayerTreeTask);
 };
 
 struct CC_BASE_EXPORT ScopedCommitTrace {
@@ -107,13 +145,13 @@ struct CC_BASE_EXPORT ScopedCommitTrace {
                        internal::kCompositeLayers, internal::kLayerTreeId,
                        layer_tree_host_id);
   }
+  ScopedCommitTrace(const ScopedCommitTrace&) = delete;
   ~ScopedCommitTrace() {
     TRACE_EVENT_END0(internal::CategoryName::kTimeline,
                      internal::kCompositeLayers);
   }
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(ScopedCommitTrace);
+  ScopedCommitTrace& operator=(const ScopedCommitTrace&) = delete;
 };
 
 struct CC_BASE_EXPORT ScopedLayerObjectTracker
@@ -124,9 +162,8 @@ struct CC_BASE_EXPORT ScopedLayerObjectTracker
             TraceScopedTrackableObject<int, internal::CategoryName::kTimeline>(
                 internal::kLayerId,
                 layer_id) {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ScopedLayerObjectTracker);
+  ScopedLayerObjectTracker(const ScopedLayerObjectTracker&) = delete;
+  ScopedLayerObjectTracker& operator=(const ScopedLayerObjectTracker&) = delete;
 };
 
 inline void CC_BASE_EXPORT DidActivateLayerTree(int layer_tree_host_id,

@@ -11,8 +11,8 @@
 #include "base/macros.h"
 #include "base/run_loop.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/dbus/fake_debug_daemon_client.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "chromeos/dbus/debug_daemon/fake_debug_daemon_client.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace system_logs {
@@ -54,7 +54,7 @@ class SingleDebugDaemonLogSourceTest : public ::testing::Test {
   }
 
   // Creates the necessary browser threads.
-  content::TestBrowserThreadBundle browser_thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
 
   // Used to verify that OnFetchComplete was called the correct number of times.
   int num_callback_calls_;

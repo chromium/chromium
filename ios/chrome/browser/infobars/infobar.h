@@ -24,9 +24,6 @@ class InfoBarIOS : public infobars::InfoBar, public InfoBarControllerDelegate {
              std::unique_ptr<infobars::InfoBarDelegate> delegate);
   ~InfoBarIOS() override;
 
-  // Returns the infobar view holding contents of this infobar.
-  UIView* View();
-
   // Returns the InfobarUIDelegate associated to this Infobar.
   id<InfobarUIDelegate> InfobarUIDelegate();
 

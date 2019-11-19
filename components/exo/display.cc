@@ -5,12 +5,13 @@
 #include "components/exo/display.h"
 
 #include <iterator>
+#include <memory>
 #include <utility>
 
 #include "base/command_line.h"
-#include "base/memory/ptr_util.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
+#include "build/build_config.h"
 #include "components/exo/data_device.h"
 #include "components/exo/file_helper.h"
 #include "components/exo/input_method_surface_manager.h"
@@ -26,6 +27,7 @@
 #if defined(USE_OZONE)
 #include <GLES2/gl2extchromium.h>
 #include "components/exo/buffer.h"
+#include "gpu/command_buffer/common/gpu_memory_buffer_support.h"
 #include "gpu/ipc/common/gpu_memory_buffer_impl_native_pixmap.h"
 #include "third_party/khronos/GLES2/gl2.h"
 #include "third_party/khronos/GLES2/gl2ext.h"
@@ -34,6 +36,7 @@
 
 #if defined(OS_CHROMEOS)
 #include "ash/public/cpp/shell_window_ids.h"
+#include "ash/wm/desks/desks_util.h"
 #include "components/exo/client_controlled_shell_surface.h"
 #include "components/exo/input_method_surface.h"
 #include "components/exo/shell_surface.h"
@@ -69,7 +72,7 @@ Display::~Display() {}
 std::unique_ptr<Surface> Display::CreateSurface() {
   TRACE_EVENT0("exo", "Display::CreateSurface");
 
-  return base::WrapUnique(new Surface);
+  return std::make_unique<Surface>();
 }
 
 std::unique_ptr<SharedMemory> Display::CreateSharedMemory(
@@ -87,24 +90,18 @@ std::unique_ptr<SharedMemory> Display::CreateSharedMemory(
 std::unique_ptr<Buffer> Display::CreateLinuxDMABufBuffer(
     const gfx::Size& size,
     gfx::BufferFormat format,
-    const std::vector<gfx::NativePixmapPlane>& planes,
-    bool y_invert,
-    std::vector<base::ScopedFD>&& fds) {
+    gfx::NativePixmapHandle handle,
+    bool y_invert) {
   TRACE_EVENT1("exo", "Display::CreateLinuxDMABufBuffer", "size",
                size.ToString());
 
-  gfx::GpuMemoryBufferHandle handle;
-  handle.type = gfx::NATIVE_PIXMAP;
-  for (auto& fd : fds)
-    handle.native_pixmap_handle.fds.emplace_back(std::move(fd));
-
-  for (auto& plane : planes)
-    handle.native_pixmap_handle.planes.push_back(plane);
-
+  gfx::GpuMemoryBufferHandle gmb_handle;
+  gmb_handle.type = gfx::NATIVE_PIXMAP;
+  gmb_handle.native_pixmap_handle = std::move(handle);
   std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer =
       gpu::GpuMemoryBufferImplNativePixmap::CreateFromHandle(
-          client_native_pixmap_factory_.get(), handle, size, format,
-          gfx::BufferUsage::GPU_READ,
+          client_native_pixmap_factory_.get(), std::move(gmb_handle), size,
+          format, gfx::BufferUsage::GPU_READ,
           gpu::GpuMemoryBufferImpl::DestructionCallback());
   if (!gpu_memory_buffer) {
     LOG(ERROR) << "Failed to create GpuMemoryBuffer from handle";
@@ -114,12 +111,19 @@ std::unique_ptr<Buffer> Display::CreateLinuxDMABufBuffer(
   // Using zero-copy for optimal performance.
   bool use_zero_copy = true;
 
+#if defined(ARCH_CPU_X86_FAMILY)
   // TODO(dcastagna): Re-enable NV12 format as HW overlay once b/113362843
   // is addressed.
   bool is_overlay_candidate = format != gfx::BufferFormat::YUV_420_BIPLANAR;
+#else
+  bool is_overlay_candidate = true;
+#endif
 
   return std::make_unique<Buffer>(
-      std::move(gpu_memory_buffer), GL_TEXTURE_EXTERNAL_OES,
+      std::move(gpu_memory_buffer),
+      gpu::NativeBufferNeedsPlatformSpecificTextureTarget(format)
+          ? gpu::GetPlatformSpecificTextureTarget()
+          : GL_TEXTURE_2D,
       // COMMANDS_COMPLETED queries are required by native pixmaps.
       GL_COMMANDS_COMPLETED_CHROMIUM, use_zero_copy, is_overlay_candidate,
       y_invert);
@@ -137,7 +141,7 @@ std::unique_ptr<ShellSurface> Display::CreateShellSurface(Surface* surface) {
 
   return std::make_unique<ShellSurface>(
       surface, gfx::Point(), true /* activatable */, false /* can_minimize */,
-      ash::kShellWindowId_DefaultContainer);
+      ash::desks_util::GetActiveDeskContainerId());
 }
 
 std::unique_ptr<XdgShellSurface> Display::CreateXdgShellSurface(
@@ -151,7 +155,7 @@ std::unique_ptr<XdgShellSurface> Display::CreateXdgShellSurface(
 
   return std::make_unique<XdgShellSurface>(
       surface, gfx::Point(), true /* activatable */, false /* can_minimize */,
-      ash::kShellWindowId_DefaultContainer);
+      ash::desks_util::GetActiveDeskContainerId());
 }
 
 std::unique_ptr<ClientControlledShellSurface>
@@ -175,6 +179,7 @@ Display::CreateClientControlledShellSurface(
                                                      container));
   DCHECK_GE(default_device_scale_factor, 1.0);
   shell_surface->SetScale(default_device_scale_factor);
+  shell_surface->CommitPendingScale();
   return shell_surface;
 }
 

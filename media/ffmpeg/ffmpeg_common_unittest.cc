@@ -323,4 +323,42 @@ TEST_F(FFmpegCommonTest, VerifyH264Profile) {
 }
 #endif
 
+// Verifies that the HDR Metadata and VideoColorSpace are correctly parsed.
+TEST_F(FFmpegCommonTest, VerifyHDRMetadataAndColorSpaceInfo) {
+  // Open a file to get a real AVStreams from FFmpeg.
+  base::MemoryMappedFile file;
+  ASSERT_TRUE(file.Initialize(GetTestDataFilePath("colour.webm")));
+  InMemoryUrlProtocol protocol(file.data(), file.length(), false);
+  FFmpegGlue glue(&protocol);
+  ASSERT_TRUE(glue.OpenContext());
+  AVFormatContext* format_context = glue.format_context();
+  ASSERT_EQ(format_context->nb_streams, 1u);
+
+  AVStream* stream = format_context->streams[0];
+  AVCodecParameters* codec_parameters = stream->codecpar;
+  AVMediaType codec_type = codec_parameters->codec_type;
+  ASSERT_EQ(codec_type, AVMEDIA_TYPE_VIDEO);
+
+  VideoDecoderConfig video_config;
+  EXPECT_TRUE(AVStreamToVideoDecoderConfig(stream, &video_config));
+  ASSERT_TRUE(video_config.hdr_metadata().has_value());
+  EXPECT_EQ(30.0,
+            video_config.hdr_metadata()->mastering_metadata.luminance_min);
+  EXPECT_EQ(40.0,
+            video_config.hdr_metadata()->mastering_metadata.luminance_max);
+  EXPECT_EQ(gfx::PointF(0.1, 0.2),
+            video_config.hdr_metadata()->mastering_metadata.primary_r);
+  EXPECT_EQ(gfx::PointF(0.1, 0.2),
+            video_config.hdr_metadata()->mastering_metadata.primary_g);
+  EXPECT_EQ(gfx::PointF(0.1, 0.2),
+            video_config.hdr_metadata()->mastering_metadata.primary_b);
+  EXPECT_EQ(gfx::PointF(0.1, 0.2),
+            video_config.hdr_metadata()->mastering_metadata.white_point);
+
+  EXPECT_EQ(VideoColorSpace(VideoColorSpace::PrimaryID::SMPTEST428_1,
+                            VideoColorSpace::TransferID::LOG,
+                            VideoColorSpace::MatrixID::RGB,
+                            gfx::ColorSpace::RangeID::FULL),
+            video_config.color_space_info());
+}
 }  // namespace media

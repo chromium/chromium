@@ -9,9 +9,11 @@
 #include "base/bind.h"
 #include "base/bind_helpers.h"
 #include "base/callback.h"
+#include "base/enterprise_util.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/mac/foundation_util.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/sequenced_task_runner.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/values.h"
@@ -58,6 +60,11 @@ void PolicyLoaderMac::InitOnBackgroundThread() {
         managed_policy_path_, false,
         base::Bind(&PolicyLoaderMac::OnFileUpdated, base::Unretained(this)));
   }
+
+  base::UmaHistogramBoolean("EnterpriseCheck.IsManaged",
+                            !managed_policy_path_.empty());
+  base::UmaHistogramBoolean("EnterpriseCheck.IsEnterpriseUser",
+                            base::IsMachineExternallyManaged());
 }
 
 std::unique_ptr<PolicyBundle> PolicyLoaderMac::Load() {

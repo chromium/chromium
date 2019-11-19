@@ -4,15 +4,28 @@
 
 #include "net/base/mock_network_change_notifier.h"
 
+#include <utility>
+
+#include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
+#include "net/dns/dns_config_service.h"
+#include "net/dns/system_dns_config_change_notifier.h"
 
 namespace net {
 namespace test {
 
-MockNetworkChangeNotifier::MockNetworkChangeNotifier()
-    : force_network_handles_supported_(false),
-      connection_type_(CONNECTION_UNKNOWN) {}
-MockNetworkChangeNotifier::~MockNetworkChangeNotifier() = default;
+// static
+std::unique_ptr<MockNetworkChangeNotifier> MockNetworkChangeNotifier::Create() {
+  // Use an empty noop SystemDnsConfigChangeNotifier to disable actual system
+  // DNS configuration notifications.
+  return base::WrapUnique(new MockNetworkChangeNotifier(
+      std::make_unique<SystemDnsConfigChangeNotifier>(
+          nullptr /* task_runner */, nullptr /* dns_config_service */)));
+}
+
+MockNetworkChangeNotifier::~MockNetworkChangeNotifier() {
+  StopSystemDnsConfigNotifier();
+}
 
 MockNetworkChangeNotifier::ConnectionType
 MockNetworkChangeNotifier::GetCurrentConnectionType() const {
@@ -72,10 +85,18 @@ void MockNetworkChangeNotifier::NotifyNetworkConnected(
   base::RunLoop().RunUntilIdle();
 }
 
+MockNetworkChangeNotifier::MockNetworkChangeNotifier(
+    std::unique_ptr<SystemDnsConfigChangeNotifier> dns_config_notifier)
+    : NetworkChangeNotifier(NetworkChangeCalculatorParams(),
+                            dns_config_notifier.get()),
+      force_network_handles_supported_(false),
+      connection_type_(CONNECTION_UNKNOWN),
+      dns_config_notifier_(std::move(dns_config_notifier)) {}
+
 ScopedMockNetworkChangeNotifier::ScopedMockNetworkChangeNotifier()
     : disable_network_change_notifier_for_tests_(
           new NetworkChangeNotifier::DisableForTest()),
-      mock_network_change_notifier_(new MockNetworkChangeNotifier()) {}
+      mock_network_change_notifier_(MockNetworkChangeNotifier::Create()) {}
 
 ScopedMockNetworkChangeNotifier::~ScopedMockNetworkChangeNotifier() = default;
 

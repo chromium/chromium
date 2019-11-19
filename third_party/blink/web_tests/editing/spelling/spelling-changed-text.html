@@ -6,27 +6,37 @@
 <script>
 spellcheck_test(
     '<div contenteditable>|</div>',
-    'insertText Spell wellcome. Is it broken?',
-    '<div contenteditable>Spell #wellcome#. Is it broken?</div>',
+    // Insert a space after the misspelled word so it is spellchecked properly.
+    // This is done to trigger spellchecking as the punctuation after the misspelled word
+    // doesn't trigger spellchecking until the user has pressed space bar or changed the selection.
+    // This is how it should be done in real sites anyways so inserting the space after spellcheck
+    // makes sense.
+    'insertText Spell wellcome. ',
+    '<div contenteditable>Spell #wellcome#.\u00A0</div>',
     {
       title: '1 Setup a content editable div with spelling marker',
       callback: sample => spellcheck_test(
           sample,
           document => {
-            assert_not_equals(window.eventSender, undefined, 'This test requires eventSender.');
+            assert_not_equals(window.eventSender, undefined, 'This test requires eventSender. ');
 
             const destination = document.querySelector('div');
             const textNode = destination.firstChild;
-
-            // Select the text "Is it broken?".
             const deleteRange = document.createRange();
-            deleteRange.setStart(textNode, 15);
-            deleteRange.setEnd(textNode, 29);
+            deleteRange.setStart(textNode, 16);
+            deleteRange.setEnd(textNode, 16);
+            document.getSelection().removeAllRanges();
+            document.getSelection().addRange(deleteRange);
+            document.execCommand('insertText', false, 'Is it broken?');
+            const textNode1 = destination.firstChild;
+            // Select the text "Is it broken?".
+            deleteRange.setStart(textNode1, 16);
+            deleteRange.setEnd(textNode1, 29);
             document.getSelection().removeAllRanges();
             document.getSelection().addRange(deleteRange);
 
-            // Del key to delete the text "Is it broken?".
-            eventSender.keyDown("Delete", null);
+            // Delete the text "Is it broken?".
+            textNode1.deleteData(16, 29);
 
             // Context click to show the context menu.
             var x = destination.offsetParent.offsetLeft + destination.offsetLeft + 50;
@@ -37,7 +47,7 @@ spellcheck_test(
             // Esc key to hide the context menu.
             eventSender.keyDown("Escape", null);
           },
-          '<div contenteditable>Spell #wellcome#.</div>',
+          '<div contenteditable>Spell #wellcome#. </div>',
           '1 Spellcheck should not crash after the text has changed.')
     });
 

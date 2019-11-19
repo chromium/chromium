@@ -7,6 +7,8 @@
 
 #include <jni.h>
 
+#include <string>
+
 namespace chrome {
 namespace android {
 
@@ -21,6 +23,10 @@ CustomTabsVisibilityHistogram GetCustomTabsVisibleValue();
 bool GetIsInMultiWindowModeValue();
 
 bool IsDownloadAutoResumptionEnabledInNative();
+
+// Returns a finch group name currently used for the reached code profiler.
+// Returns an empty string if the group isn't specified.
+std::string GetReachedCodeProfilerTrialGroup();
 
 } // namespace android
 } // namespace chrome

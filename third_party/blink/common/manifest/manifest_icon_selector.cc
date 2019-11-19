@@ -13,12 +13,25 @@
 namespace blink {
 
 // static
-BLINK_COMMON_EXPORT GURL ManifestIconSelector::FindBestMatchingIcon(
+BLINK_COMMON_EXPORT GURL ManifestIconSelector::FindBestMatchingSquareIcon(
     const std::vector<blink::Manifest::ImageResource>& icons,
     int ideal_icon_size_in_px,
     int minimum_icon_size_in_px,
     blink::Manifest::ImageResource::Purpose purpose) {
-  DCHECK(minimum_icon_size_in_px <= ideal_icon_size_in_px);
+  return FindBestMatchingIcon(icons, ideal_icon_size_in_px,
+                              minimum_icon_size_in_px,
+                              1 /*max_width_to_height_ratio */, purpose);
+}
+
+// static
+BLINK_COMMON_EXPORT GURL ManifestIconSelector::FindBestMatchingIcon(
+    const std::vector<blink::Manifest::ImageResource>& icons,
+    int ideal_icon_height_in_px,
+    int minimum_icon_height_in_px,
+    float max_width_to_height_ratio,
+    blink::Manifest::ImageResource::Purpose purpose) {
+  DCHECK_LE(minimum_icon_height_in_px, ideal_icon_height_in_px);
+  DCHECK_GE(max_width_to_height_ratio, 1.0);
 
   // Icon with exact matching size has priority over icon with size "any", which
   // has priority over icon with closest matching size.
@@ -36,7 +49,7 @@ BLINK_COMMON_EXPORT GURL ManifestIconSelector::FindBestMatchingIcon(
     }
 
     // Check for icon purpose.
-    if (!base::ContainsValue(icon.purpose, purpose))
+    if (!base::Contains(icon.purpose, purpose))
       continue;
 
     // Check for size constraints.
@@ -47,20 +60,29 @@ BLINK_COMMON_EXPORT GURL ManifestIconSelector::FindBestMatchingIcon(
         continue;
       }
 
-      // Check for squareness.
-      if (size.width() != size.height())
-        continue;
-
       // Check for minimum size.
-      if (size.width() < minimum_icon_size_in_px)
+      if (size.height() < minimum_icon_height_in_px)
         continue;
 
-      // Check for ideal size. Return this icon immediately.
-      if (size.width() == ideal_icon_size_in_px)
-        return icon.src;
+      // Check for width to height ratio.
+      float width = static_cast<float>(size.width());
+      float height = static_cast<float>(size.height());
+      DCHECK_GT(height, 0);
+      float ratio = width / height;
+      if (ratio < 1 || ratio > max_width_to_height_ratio)
+        continue;
+
+      // According to the spec when there are multiple equally appropriate icons
+      // we should choose the last one declared in the list:
+      // https://w3c.github.io/manifest/#icons-member
+      if (size.height() == ideal_icon_height_in_px) {
+        closest_size_match_index = i;
+        best_delta_in_size = 0;
+        continue;
+      }
 
       // Check for closest match.
-      int delta = size.width() - ideal_icon_size_in_px;
+      int delta = size.height() - ideal_icon_height_in_px;
 
       // Smallest icon larger than ideal size has priority over largest icon
       // smaller than ideal size.
@@ -75,6 +97,10 @@ BLINK_COMMON_EXPORT GURL ManifestIconSelector::FindBestMatchingIcon(
     }
   }
 
+  if (best_delta_in_size == 0) {
+    DCHECK_NE(closest_size_match_index, -1);
+    return icons[closest_size_match_index].src;
+  }
   if (latest_size_any_index != -1)
     return icons[latest_size_any_index].src;
   if (closest_size_match_index != -1)

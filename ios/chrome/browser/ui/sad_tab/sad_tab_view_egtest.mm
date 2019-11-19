@@ -2,17 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import <EarlGrey/EarlGrey.h>
-#import <XCTest/XCTest.h>
-
 #include "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_constants.h"
-#import "ios/chrome/test/app/chrome_test_util.h"
-#import "ios/chrome/test/app/navigation_test_util.h"
+#import "ios/chrome/test/earl_grey/chrome_actions.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
+#import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ios/web/public/test/http_server/http_server.h"
 #include "ios/web/public/test/http_server/http_server_util.h"
 #include "ui/base/l10n/l10n_util_mac.h"
@@ -25,53 +22,36 @@ namespace {
 // Returns matcher that looks for text in UILabel, UITextView, and UITextField
 // objects, checking if their displayed strings contain the provided |text|.
 id<GREYMatcher> ContainsText(NSString* text) {
-  MatchesBlock matches = ^BOOL(id element) {
+  GREYMatchesBlock matches = ^BOOL(id element) {
     return [[element text] containsString:text];
   };
-  DescribeToBlock describe = ^void(id<GREYDescription> description) {
+  GREYDescribeToBlock describe = ^void(id<GREYDescription> description) {
     [description appendText:[NSString stringWithFormat:@"hasText('%@')", text]];
   };
   id<GREYMatcher> matcher =
       [[GREYElementMatcherBlock alloc] initWithMatchesBlock:matches
                                            descriptionBlock:describe];
-  return grey_allOf(grey_anyOf(grey_kindOfClass([UILabel class]),
-                               grey_kindOfClass([UITextField class]),
-                               grey_kindOfClass([UITextView class]), nil),
+  return grey_allOf(grey_anyOf(grey_kindOfClassName(@"UILabel"),
+                               grey_kindOfClassName(@"UITextField"),
+                               grey_kindOfClassName(@"UITextView"), nil),
                     matcher, nil);
 }
 
 // A matcher for the main title of the Sad Tab in 'reload' mode.
 id<GREYMatcher> reloadSadTabTitleText() {
-  static id matcher = nil;
-  static dispatch_once_t onceToken;
-  dispatch_once(&onceToken, ^{
-    matcher = [GREYMatchers
-        matcherForText:l10n_util::GetNSString(IDS_SAD_TAB_MESSAGE)];
-  });
-  return matcher;
+  return ContainsText(l10n_util::GetNSString(IDS_SAD_TAB_MESSAGE));
 }
 
 // A matcher for the main title of the Sad Tab in 'feedback' mode.
 id<GREYMatcher> feedbackSadTabTitleContainsText() {
-  static id matcher = nil;
-  static dispatch_once_t onceToken;
-  dispatch_once(&onceToken, ^{
-    matcher = ContainsText(l10n_util::GetNSString(IDS_SAD_TAB_RELOAD_TRY));
-  });
-  return matcher;
+  return ContainsText(l10n_util::GetNSString(IDS_SAD_TAB_RELOAD_TRY));
 }
 
 // A matcher for a help string suggesting the user use Incognito Mode.
 id<GREYMatcher> incognitoHelpContainsText() {
-  static id matcher = nil;
-  static dispatch_once_t onceToken;
-  dispatch_once(&onceToken, ^{
-    matcher =
-        ContainsText(l10n_util::GetNSString(IDS_SAD_TAB_RELOAD_INCOGNITO));
-  });
-  return matcher;
+  return ContainsText(l10n_util::GetNSString(IDS_SAD_TAB_RELOAD_INCOGNITO));
 }
-}
+}  // namespace
 
 // Sad Tab View integration tests for Chrome.
 @interface SadTabViewTestCase : ChromeTestCase
@@ -93,7 +73,7 @@ id<GREYMatcher> incognitoHelpContainsText() {
   // Prepare a helper block to test Sad Tab navigating from and to normal pages.
   void (^loadAndCheckSimpleURL)() = ^void() {
     [ChromeEarlGrey loadURL:simple_URL];
-    [ChromeEarlGrey waitForWebViewContainingText:"You've arrived"];
+    [ChromeEarlGrey waitForWebStateContainingText:"You've arrived"];
     [[EarlGrey selectElementWithMatcher:reloadSadTabTitleText()]
         assertWithMatcher:grey_nil()];
     [[EarlGrey selectElementWithMatcher:feedbackSadTabTitleContainsText()]
@@ -103,10 +83,8 @@ id<GREYMatcher> incognitoHelpContainsText() {
   loadAndCheckSimpleURL();
 
   // Navigate to the chrome://crash URL which should show the Sad Tab.
-  // Use chrome_test_util::LoadURL() directly to avoid ChomeEarlGrey helper
-  // methods which expect to wait for web content.
   const GURL crash_URL = GURL("chrome://crash");
-  chrome_test_util::LoadUrl(crash_URL);
+  [ChromeEarlGrey loadURL:crash_URL waitForCompletion:NO];
   [[EarlGrey selectElementWithMatcher:reloadSadTabTitleText()]
       assertWithMatcher:grey_notNil()];
 
@@ -117,7 +95,7 @@ id<GREYMatcher> incognitoHelpContainsText() {
   // A second visit to the crashing URL should show a feedback message.
   // It should also show help messages including an invitation to use
   // Incognito Mode.
-  chrome_test_util::LoadUrl(crash_URL);
+  [ChromeEarlGrey loadURL:crash_URL waitForCompletion:NO];
   [[EarlGrey selectElementWithMatcher:feedbackSadTabTitleContainsText()]
       assertWithMatcher:grey_notNil()];
   [[EarlGrey selectElementWithMatcher:incognitoHelpContainsText()]
@@ -139,10 +117,10 @@ id<GREYMatcher> incognitoHelpContainsText() {
 
   // Test an initial crash, and then a second crash in Incognito mode, as above.
   // Incognito mode should not be suggested if already in Incognito mode.
-  chrome_test_util::LoadUrl(crash_URL);
+  [ChromeEarlGrey loadURL:crash_URL waitForCompletion:NO];
   [[EarlGrey selectElementWithMatcher:reloadSadTabTitleText()]
       assertWithMatcher:grey_notNil()];
-  chrome_test_util::LoadUrl(crash_URL);
+  [ChromeEarlGrey loadURL:crash_URL waitForCompletion:NO];
   [[EarlGrey selectElementWithMatcher:feedbackSadTabTitleContainsText()]
       assertWithMatcher:grey_notNil()];
   [[EarlGrey selectElementWithMatcher:incognitoHelpContainsText()]

@@ -34,7 +34,8 @@ void FakeCryptAuthEnrollmentManager::FinishActiveEnrollment(
 }
 
 void FakeCryptAuthEnrollmentManager::ForceEnrollmentNow(
-    cryptauth::InvocationReason invocation_reason) {
+    cryptauth::InvocationReason invocation_reason,
+    const base::Optional<std::string>& session_id) {
   is_enrollment_in_progress_ = true;
   last_invocation_reason_ = invocation_reason;
   NotifyEnrollmentStarted();

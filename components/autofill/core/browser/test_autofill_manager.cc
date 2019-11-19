@@ -28,16 +28,12 @@ TestAutofillManager::TestAutofillManager(
 
 TestAutofillManager::~TestAutofillManager() {}
 
-bool TestAutofillManager::IsAutofillEnabled() const {
-  return autofill_enabled_;
-}
-
 bool TestAutofillManager::IsProfileAutofillEnabled() const {
-  return profile_enabled_;
+  return profile_autofill_enabled_;
 }
 
 bool TestAutofillManager::IsCreditCardAutofillEnabled() const {
-  return credit_card_enabled_;
+  return credit_card_autofill_enabled_;
 }
 
 void TestAutofillManager::UploadFormData(const FormStructure& submitted_form,
@@ -132,20 +128,18 @@ const std::string TestAutofillManager::GetSubmittedFormSignature() {
   return submitted_form_signature_;
 }
 
-void TestAutofillManager::SetAutofillEnabled(bool autofill_enabled) {
-  autofill_enabled_ = autofill_enabled;
-}
-
-void TestAutofillManager::SetProfileEnabled(bool profile_enabled) {
-  profile_enabled_ = profile_enabled;
-  if (!profile_enabled_)
+void TestAutofillManager::SetProfileAutofillEnabled(
+    bool profile_autofill_enabled) {
+  profile_autofill_enabled_ = profile_autofill_enabled;
+  if (!profile_autofill_enabled_)
     // Profile data is refreshed when this pref is changed.
     personal_data_->ClearProfiles();
 }
 
-void TestAutofillManager::SetCreditCardEnabled(bool credit_card_enabled) {
-  credit_card_enabled_ = credit_card_enabled;
-  if (!credit_card_enabled_)
+void TestAutofillManager::SetCreditCardAutofillEnabled(
+    bool credit_card_autofill_enabled) {
+  credit_card_autofill_enabled_ = credit_card_autofill_enabled;
+  if (!credit_card_autofill_enabled_)
     // Credit card data is refreshed when this pref is changed.
     personal_data_->ClearCreditCards();
 }

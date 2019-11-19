@@ -38,13 +38,13 @@ class COMPONENT_EXPORT(TRACING_CPP) ThreadLocalEventSink {
   virtual void AddTraceEvent(base::trace_event::TraceEvent* trace_event,
                              base::trace_event::TraceEventHandle* handle) = 0;
 
-  virtual void UpdateDuration(base::trace_event::TraceEventHandle handle,
-                              const base::TimeTicks& now,
-                              const base::ThreadTicks& thread_now) = 0;
+  virtual void UpdateDuration(
+      base::trace_event::TraceEventHandle handle,
+      const base::TimeTicks& now,
+      const base::ThreadTicks& thread_now,
+      base::trace_event::ThreadInstructionCount thread_instruction_now) = 0;
 
   virtual void Flush() = 0;
-
-  virtual void ResetIncrementalState();
 
   uint32_t session_id() const { return session_id_; }
 
@@ -52,6 +52,7 @@ class COMPONENT_EXPORT(TRACING_CPP) ThreadLocalEventSink {
   std::unique_ptr<perfetto::StartupTraceWriter> trace_writer_;
   uint32_t session_id_;
   bool disable_interning_;
+  uint32_t sink_id_;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(ThreadLocalEventSink);

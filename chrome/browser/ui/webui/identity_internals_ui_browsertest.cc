@@ -51,8 +51,7 @@ void IdentityInternalsUIBrowserTest::AddTokenToCache(
       extensions::IdentityTokenCacheValue(token_id,
           base::TimeDelta::FromSeconds(time_to_live));
   extensions::ExtensionTokenKey key(
-      extension_id,
-      "test@example.com",
+      extension_id, CoreAccountId("account_id"),
       std::set<std::string>(scopes.begin(), scopes.end()));
   extensions::IdentityAPI::GetFactoryInstance()
       ->Get(browser()->profile())

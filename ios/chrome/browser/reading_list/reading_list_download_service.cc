@@ -19,6 +19,7 @@
 #include "components/reading_list/core/reading_list_model.h"
 #include "ios/chrome/browser/application_context.h"
 #include "ios/chrome/browser/reading_list/reading_list_distiller_page_factory.h"
+#include "net/base/network_change_notifier.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace {
@@ -70,8 +71,7 @@ ReadingListDownloadService::ReadingListDownloadService(
         distiller_page_factory)
     : reading_list_model_(reading_list_model),
       chrome_profile_path_(chrome_profile_path),
-      had_connection_(
-          !GetApplicationContext()->GetNetworkConnectionTracker()->IsOffline()),
+      had_connection_(!net::NetworkChangeNotifier::IsOffline()),
       distiller_page_factory_(std::move(distiller_page_factory)),
       distiller_factory_(std::move(distiller_factory)),
       weak_ptr_factory_(this) {
@@ -169,9 +169,9 @@ void ReadingListDownloadService::SyncWithModel() {
         break;
     }
   }
-  base::PostTaskWithTraitsAndReply(
+  base::PostTaskAndReply(
       FROM_HERE,
-      {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
+      {base::ThreadPool(), base::MayBlock(), base::TaskPriority::USER_VISIBLE,
        base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
       base::Bind(&::CleanUpFiles, OfflineRoot(), processed_directories),
       base::Bind(&ReadingListDownloadService::DownloadUnprocessedEntries,
@@ -208,7 +208,7 @@ void ReadingListDownloadService::DownloadEntry(const GURL& url) {
       entry->DistilledState() == ReadingListEntry::PROCESSED || entry->IsRead())
     return;
 
-  if (GetApplicationContext()->GetNetworkConnectionTracker()->IsOffline()) {
+  if (net::NetworkChangeNotifier::IsOffline()) {
     // There is no connection, save it for download only if we did not exceed
     // the maximaxum number of tries.
     if (entry->FailedDownloadCounter() < kNumberOfFailsBeforeWifiOnly)

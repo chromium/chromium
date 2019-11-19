@@ -3,6 +3,23 @@
 // found in the LICENSE file.
 
 /**
+ * Asserts that promise gets rejected.
+ * @param {Promise} promise
+ */
+async function assertRejected(promise) {
+  let triggeredError = false;
+  try {
+    await promise;
+  } catch (e) {
+    triggeredError = true;
+  }
+
+  if (!triggeredError) {
+    throw new Error('Assertion Failed: Expected promise to be rejected');
+  }
+}
+
+/**
  * Invokes a callback function depending on the result of promise.
  *
  * @param {Promise} promise Promise.
@@ -14,8 +31,8 @@ function reportPromise(promise, callback) {
       () => {
         callback(/* error */ false);
       },
-      (/** Error */ error) => {
-        console.error(error.stack || error);
+      (error) => {
+        console.error(/** @type {!Error} */ (error).stack || error);
         callback(/* error */ true);
       });
 }

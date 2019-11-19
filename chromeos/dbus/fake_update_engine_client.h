@@ -32,35 +32,37 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) FakeUpdateEngineClient
   void RebootAfterUpdate() override;
   void Rollback() override;
   void CanRollbackCheck(const RollbackCheckCallback& callback) override;
-  Status GetLastStatus() override;
+  update_engine::StatusResult GetLastStatus() override;
   void SetChannel(const std::string& target_channel,
                   bool is_powerwash_allowed) override;
   void GetChannel(bool get_current_channel,
                   const GetChannelCallback& callback) override;
-  void GetEolStatus(GetEolStatusCallback callback) override;
+  void GetEolInfo(GetEolInfoCallback callback) override;
   void SetUpdateOverCellularPermission(bool allowed,
                                        const base::Closure& callback) override;
   void SetUpdateOverCellularOneTimePermission(
       const std::string& target_version,
       int64_t target_size,
       const UpdateOverCellularOneTimePermissionCallback& callback) override;
-  // Pushes UpdateEngineClient::Status in the queue to test changing status.
+  // Pushes update_engine::StatusResult in the queue to test changing status.
   // GetLastStatus() returns the status set by this method in FIFO order.
   // See set_default_status().
-  void PushLastStatus(const UpdateEngineClient::Status& status) {
+  void PushLastStatus(const update_engine::StatusResult& status) {
     status_queue_.push(status);
   }
 
   // Sends status change notification.
   void NotifyObserversThatStatusChanged(
-      const UpdateEngineClient::Status& status);
+      const update_engine::StatusResult& status);
 
   // Notifies observers that the user's one time permission is granted.
   void NotifyUpdateOverCellularOneTimePermissionGranted();
 
-  // Sets the default UpdateEngineClient::Status. GetLastStatus() returns the
+  // Sets the default update_engine::StatusResult. GetLastStatus() returns the
   // value set here if |status_queue_| is empty.
-  void set_default_status(const UpdateEngineClient::Status& status);
+  void set_default_status(const update_engine::StatusResult& status);
+
+  void set_eol_date(const base::Time& eol_date) { eol_date_ = eol_date; }
 
   // Sets a value returned by RequestUpdateCheck().
   void set_update_check_result(
@@ -83,19 +85,33 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) FakeUpdateEngineClient
   // Returns how many times Rollback() is called.
   int rollback_call_count() const { return rollback_call_count_; }
 
-  // Returns how many times Rollback() is called.
+  // Returns how many times CanRollback() is called.
   int can_rollback_call_count() const { return can_rollback_call_count_; }
+
+  // Returns how many times |SetUpdateOverCellularPermission()| is called.
+  int update_over_cellular_permission_count() const {
+    return update_over_cellular_permission_count_;
+  }
+
+  // Returns how many times |SetUpdateOverCellularOneTimePermission()| is
+  // called.
+  int update_over_cellular_one_time_permission_count() const {
+    return update_over_cellular_one_time_permission_count_;
+  }
 
  private:
   base::ObserverList<Observer>::Unchecked observers_;
-  base::queue<UpdateEngineClient::Status> status_queue_;
-  UpdateEngineClient::Status default_status_;
-  UpdateEngineClient::UpdateCheckResult update_check_result_;
-  bool can_rollback_stub_result_;
-  int reboot_after_update_call_count_;
-  int request_update_check_call_count_;
-  int rollback_call_count_;
-  int can_rollback_call_count_;
+  base::queue<update_engine::StatusResult> status_queue_;
+  update_engine::StatusResult default_status_;
+  UpdateCheckResult update_check_result_ = UPDATE_RESULT_SUCCESS;
+  bool can_rollback_stub_result_ = false;
+  int reboot_after_update_call_count_ = 0;
+  int request_update_check_call_count_ = 0;
+  int rollback_call_count_ = 0;
+  int can_rollback_call_count_ = 0;
+  int update_over_cellular_permission_count_ = 0;
+  int update_over_cellular_one_time_permission_count_ = 0;
+  base::Time eol_date_;
 };
 
 }  // namespace chromeos

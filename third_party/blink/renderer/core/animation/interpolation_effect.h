@@ -30,7 +30,6 @@ class CORE_EXPORT InterpolationEffect
   }
 
   void GetActiveInterpolations(double fraction,
-                               double iteration_duration,
                                HeapVector<Member<Interpolation>>&) const;
 
   void AddInterpolation(Interpolation* interpolation,
@@ -53,8 +52,8 @@ class CORE_EXPORT InterpolationEffect
   void Trace(Visitor*);
 
  private:
-  class InterpolationRecord
-      : public GarbageCollectedFinalized<InterpolationRecord> {
+  class InterpolationRecord final
+      : public GarbageCollected<InterpolationRecord> {
    public:
     InterpolationRecord(Interpolation* interpolation,
                         scoped_refptr<TimingFunction> easing,

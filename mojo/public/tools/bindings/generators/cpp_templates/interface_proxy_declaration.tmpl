@@ -1,4 +1,8 @@
 {%- import "interface_macros.tmpl" as interface_macros %}
+
+{%- set interface_prefix = "%s.%s"|format(module_prefix, interface.name) %}
+
+{{ kythe_annotation(interface_prefix) }}
 class {{export_attribute}} {{interface.name}}Proxy
     : public {{interface.name}} {
  public:
@@ -8,8 +12,10 @@ class {{export_attribute}} {{interface.name}}Proxy
 
 {%- for method in interface.methods %}
 {%-   if method.sync %}
+  {{ kythe_annotation("%s.%s"|format(interface_prefix, method.name)) }}
   bool {{method.name}}({{interface_macros.declare_sync_method_params("", method)}}) final;
 {%-   endif %}
+  {{ kythe_annotation("%s.%s"|format(interface_prefix, method.name)) }}
   void {{method.name}}({{interface_macros.declare_request_params("", method)}}) final;
 {%- endfor %}
 

@@ -140,6 +140,11 @@ DeprecatedInvalidatorRegistrar::GetSanitizedHandlersIdsMap() {
   return clean_handlers_to_ids;
 }
 
+bool DeprecatedInvalidatorRegistrar::HasRegisteredHandlers() const {
+  DCHECK(thread_checker_.CalledOnValidThread());
+  return (GetAllRegisteredIds().size() == 0);
+}
+
 bool DeprecatedInvalidatorRegistrar::IsHandlerRegisteredForTest(
     const InvalidationHandler* handler) const {
   DCHECK(thread_checker_.CalledOnValidThread());

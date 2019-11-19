@@ -18,10 +18,10 @@ package chrome_cleaner;
 // FoilReporterLogs is a legacy name that must be kept because existing
 // analysis tools use it.
 //
-// Next tag: 12.
+// Next tag: 13.
 message FoilReporterLogs {
   // Corresponded to data related to reporter experiments.
-  reserved 7, 8;
+  reserved 7, 8, 12;
 
   // Environmental data regarding the machine and the Reporter.
   // Next tag: 9.

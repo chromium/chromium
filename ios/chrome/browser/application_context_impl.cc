@@ -50,10 +50,10 @@
 #include "ios/chrome/browser/prefs/browser_prefs.h"
 #include "ios/chrome/browser/prefs/ios_chrome_pref_service_factory.h"
 #include "ios/chrome/browser/update_client/ios_chrome_update_query_params_delegate.h"
-#include "ios/chrome/browser/web_resource/web_resource_util.h"
 #include "ios/chrome/common/channel_info.h"
-#include "ios/web/public/web_task_traits.h"
-#include "ios/web/public/web_thread.h"
+#include "ios/web/public/thread/web_task_traits.h"
+#include "ios/web/public/thread/web_thread.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "net/log/net_log.h"
 #include "net/log/net_log_capture_mode.h"
 #include "net/socket/client_socket_pool_manager.h"
@@ -69,27 +69,28 @@ namespace {
 // Note that this cannot be called on a thread that is not the UI thread.
 void RequestProxyResolvingSocketFactoryOnUIThread(
     ApplicationContextImpl* app_context,
-    network::mojom::ProxyResolvingSocketFactoryRequest request) {
+    mojo::PendingReceiver<network::mojom::ProxyResolvingSocketFactory>
+        receiver) {
   network::mojom::NetworkContext* network_context =
       app_context->GetSystemNetworkContext();
-  network_context->CreateProxyResolvingSocketFactory(std::move(request));
+  network_context->CreateProxyResolvingSocketFactory(std::move(receiver));
 }
 
 // Wrapper on top of the method above. This does a PostTask to the UI thread.
 void RequestProxyResolvingSocketFactory(
     ApplicationContextImpl* app_context,
-    network::mojom::ProxyResolvingSocketFactoryRequest request) {
-  base::PostTaskWithTraits(
-      FROM_HERE, {web::WebThread::UI},
-      base::BindOnce(&RequestProxyResolvingSocketFactoryOnUIThread, app_context,
-                     std::move(request)));
+    mojo::PendingReceiver<network::mojom::ProxyResolvingSocketFactory>
+        receiver) {
+  base::PostTask(FROM_HERE, {web::WebThread::UI},
+                 base::BindOnce(&RequestProxyResolvingSocketFactoryOnUIThread,
+                                app_context, std::move(receiver)));
 }
 
-// Passed to NetworkConnectionTracker to bind a NetworkChangeManagerRequest.
-void BindNetworkChangeManagerRequest(
+// Passed to NetworkConnectionTracker to bind a NetworkChangeManager receiver.
+void BindNetworkChangeManagerReceiver(
     network::NetworkChangeManager* network_change_manager,
-    network::mojom::NetworkChangeManagerRequest request) {
-  network_change_manager->AddRequest(std::move(request));
+    mojo::PendingReceiver<network::mojom::NetworkChangeManager> receiver) {
+  network_change_manager->AddReceiver(std::move(receiver));
 }
 
 }  // namespace
@@ -355,7 +356,7 @@ ApplicationContextImpl::GetNetworkConnectionTracker() {
     }
     network_connection_tracker_ =
         std::make_unique<network::NetworkConnectionTracker>(base::BindRepeating(
-            &BindNetworkChangeManagerRequest,
+            &BindNetworkChangeManagerReceiver,
             base::Unretained(network_change_manager_.get())));
   }
   return network_connection_tracker_.get();
@@ -406,8 +407,9 @@ void ApplicationContextImpl::CreateGCMDriver() {
   CHECK(base::PathService::Get(ios::DIR_GLOBAL_GCM_STORE, &store_path));
 
   scoped_refptr<base::SequencedTaskRunner> blocking_task_runner(
-      base::CreateSequencedTaskRunnerWithTraits(
-          {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+      base::CreateSequencedTaskRunner(
+          {base::ThreadPool(), base::MayBlock(),
+           base::TaskPriority::BEST_EFFORT,
            base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN}));
 
   gcm_driver_ = gcm::CreateGCMDriverDesktop(
@@ -419,7 +421,7 @@ void ApplicationContextImpl::CreateGCMDriver() {
       GetSharedURLLoaderFactory(),
       GetApplicationContext()->GetNetworkConnectionTracker(), ::GetChannel(),
       IOSChromeGCMProfileServiceFactory::GetProductCategoryForSubtypes(),
-      base::CreateSingleThreadTaskRunnerWithTraits({web::WebThread::UI}),
-      base::CreateSingleThreadTaskRunnerWithTraits({web::WebThread::IO}),
+      base::CreateSingleThreadTaskRunner({web::WebThread::UI}),
+      base::CreateSingleThreadTaskRunner({web::WebThread::IO}),
       blocking_task_runner);
 }

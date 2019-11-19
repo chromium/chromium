@@ -6,7 +6,6 @@
 
 #include "base/logging.h"
 #include "build/build_config.h"
-#include "components/download/database/in_progress/download_entry.h"
 #include "components/download/public/common/auto_resumption_handler.h"
 #include "components/download/public/common/download_danger_type.h"
 #include "components/download/public/common/download_item_impl.h"
@@ -86,11 +85,6 @@ void DownloadItemImplDelegate::DownloadRemoved(DownloadItemImpl* download) {}
 void DownloadItemImplDelegate::DownloadInterrupted(DownloadItemImpl* download) {
 }
 
-base::Optional<DownloadEntry> DownloadItemImplDelegate::GetInProgressEntry(
-    DownloadItemImpl* download) {
-  return base::Optional<DownloadEntry>();
-}
-
 bool DownloadItemImplDelegate::IsOffTheRecord() const {
   return false;
 }
@@ -102,5 +96,15 @@ bool DownloadItemImplDelegate::IsActiveNetworkMetered() const {
 }
 
 void DownloadItemImplDelegate::ReportBytesWasted(DownloadItemImpl* download) {}
+
+service_manager::Connector*
+DownloadItemImplDelegate::GetServiceManagerConnector() {
+  return nullptr;
+}
+
+QuarantineConnectionCallback
+DownloadItemImplDelegate::GetQuarantineConnectionCallback() {
+  return base::NullCallback();
+}
 
 }  // namespace download

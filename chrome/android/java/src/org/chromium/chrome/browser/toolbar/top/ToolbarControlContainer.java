@@ -19,15 +19,12 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.compositor.layouts.eventfilter.EdgeSwipeHandler;
 import org.chromium.chrome.browser.compositor.resources.ResourceFactory;
 import org.chromium.chrome.browser.contextualsearch.SwipeRecognizer;
-import org.chromium.chrome.browser.util.FeatureUtilities;
+import org.chromium.chrome.browser.toolbar.ControlContainer;
+import org.chromium.chrome.browser.toolbar.ToolbarProgressBar;
+import org.chromium.chrome.browser.ui.widget.ClipDrawableProgressBar.DrawingInfo;
+import org.chromium.chrome.browser.ui.widget.ViewResourceFrameLayout;
 import org.chromium.chrome.browser.util.ViewUtils;
-import org.chromium.chrome.browser.widget.ClipDrawableProgressBar.DrawingInfo;
-import org.chromium.chrome.browser.widget.ControlContainer;
-import org.chromium.chrome.browser.widget.ToolbarProgressBar;
-import org.chromium.chrome.browser.widget.ViewResourceFrameLayout;
-import org.chromium.ui.AsyncViewStub;
 import org.chromium.ui.KeyboardVisibilityDelegate;
-import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.resources.dynamics.ViewResourceAdapter;
 import org.chromium.ui.widget.OptimizedFrameLayout;
 
@@ -92,19 +89,9 @@ public class ToolbarControlContainer extends OptimizedFrameLayout implements Con
         try (TraceEvent te = TraceEvent.scoped("ToolbarControlContainer.initWithToolbar")) {
             mToolbarContainer =
                     (ToolbarViewResourceFrameLayout) findViewById(R.id.toolbar_container);
-            View viewStub = findViewById(R.id.toolbar_stub);
-            if (viewStub instanceof AsyncViewStub) {
-                AsyncViewStub toolbarStub = (AsyncViewStub) viewStub;
-                toolbarStub.setLayoutResource(toolbarLayoutId);
-                toolbarStub.setShouldInflateOnBackgroundThread(
-                        !DeviceFormFactor.isNonMultiDisplayContextOnTablet(getContext())
-                        && FeatureUtilities.shouldInflateToolbarOnBackgroundThread());
-                toolbarStub.inflate();
-            } else {
-                ViewStub toolbarStub = (ViewStub) viewStub;
-                toolbarStub.setLayoutResource(toolbarLayoutId);
-                toolbarStub.inflate();
-            }
+            ViewStub toolbarStub = findViewById(R.id.toolbar_stub);
+            toolbarStub.setLayoutResource(toolbarLayoutId);
+            toolbarStub.inflate();
         }
     }
 
@@ -304,12 +291,12 @@ public class ToolbarControlContainer extends OptimizedFrameLayout implements Con
 
         @Override
         public boolean shouldRecognizeSwipe(MotionEvent e1, MotionEvent e2) {
-            if (FeatureUtilities.isGridTabSwitcherEnabled(getContext())) return false;
             if (isOnTabStrip(e1)) return false;
             if (mToolbar != null && mToolbar.shouldIgnoreSwipeGesture()) return false;
             if (KeyboardVisibilityDelegate.getInstance().isKeyboardShowing(
-                        getContext(), ToolbarControlContainer.this))
+                        getContext(), ToolbarControlContainer.this)) {
                 return false;
+            }
             return true;
         }
     }

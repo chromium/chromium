@@ -22,6 +22,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/feedback/system_logs/about_system_logs_fetcher.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/webui/localized_string.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/browser_resources.h"
@@ -49,23 +50,23 @@ content::WebUIDataSource* CreateSystemInfoUIDataSource() {
   content::WebUIDataSource* html_source =
       content::WebUIDataSource::Create(chrome::kChromeUISystemInfoHost);
 
-  html_source->AddLocalizedString("title", IDS_ABOUT_SYS_TITLE);
-  html_source->AddLocalizedString("description", IDS_ABOUT_SYS_DESC);
-  html_source->AddLocalizedString("tableTitle", IDS_ABOUT_SYS_TABLE_TITLE);
-
-  html_source->AddLocalizedString("logFileTableTitle",
-                                  IDS_ABOUT_SYS_LOG_FILE_TABLE_TITLE);
-  html_source->AddLocalizedString("expandAllBtn", IDS_ABOUT_SYS_EXPAND_ALL);
-  html_source->AddLocalizedString("collapseAllBtn", IDS_ABOUT_SYS_COLLAPSE_ALL);
-  html_source->AddLocalizedString("expandBtn", IDS_ABOUT_SYS_EXPAND);
-  html_source->AddLocalizedString("collapseBtn", IDS_ABOUT_SYS_COLLAPSE);
-  html_source->AddLocalizedString("parseError", IDS_ABOUT_SYS_PARSE_ERROR);
+  static constexpr LocalizedString kStrings[] = {
+      {"title", IDS_ABOUT_SYS_TITLE},
+      {"description", IDS_ABOUT_SYS_DESC},
+      {"tableTitle", IDS_ABOUT_SYS_TABLE_TITLE},
+      {"logFileTableTitle", IDS_ABOUT_SYS_LOG_FILE_TABLE_TITLE},
+      {"expandAllBtn", IDS_ABOUT_SYS_EXPAND_ALL},
+      {"collapseAllBtn", IDS_ABOUT_SYS_COLLAPSE_ALL},
+      {"expandBtn", IDS_ABOUT_SYS_EXPAND},
+      {"collapseBtn", IDS_ABOUT_SYS_COLLAPSE},
+      {"parseError", IDS_ABOUT_SYS_PARSE_ERROR},
+  };
+  AddLocalizedStringsBulk(html_source, kStrings, base::size(kStrings));
 
   html_source->AddResourcePath("about_sys.js", IDR_ABOUT_SYS_JS);
   html_source->AddResourcePath("about_sys.css", IDR_ABOUT_SYS_CSS);
   html_source->SetDefaultResource(IDR_ABOUT_SYS_HTML);
-  html_source->SetJsonPath("strings.js");
-  html_source->UseGzip();
+  html_source->UseStringsJs();
   return html_source;
 }
 
@@ -87,7 +88,7 @@ class SystemInfoHandler : public WebUIMessageHandler {
   void OnSystemInfo(std::unique_ptr<SystemLogsResponse> sys_info);
 
  private:
-  base::WeakPtrFactory<SystemInfoHandler> weak_ptr_factory_;
+  base::WeakPtrFactory<SystemInfoHandler> weak_ptr_factory_{this};
   DISALLOW_COPY_AND_ASSIGN(SystemInfoHandler);
 };
 
@@ -96,7 +97,7 @@ class SystemInfoHandler : public WebUIMessageHandler {
 // SystemInfoHandler
 //
 ////////////////////////////////////////////////////////////////////////////////
-SystemInfoHandler::SystemInfoHandler() : weak_ptr_factory_(this) {}
+SystemInfoHandler::SystemInfoHandler() {}
 
 SystemInfoHandler::~SystemInfoHandler() {}
 

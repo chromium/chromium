@@ -18,4 +18,11 @@ class InfoBar;
 std::unique_ptr<infobars::InfoBar> CreateConfirmInfoBar(
     std::unique_ptr<ConfirmInfoBarDelegate> delegate);
 
+// Returns a confirm infobar with high priority presentation that owns
+// |delegate|.
+// TODO (crbug.com/961343):Reassess this method once there's more clarity on how
+// to handle queueing and if priorities are actually needed.
+std::unique_ptr<infobars::InfoBar> CreateHighPriorityConfirmInfoBar(
+    std::unique_ptr<ConfirmInfoBarDelegate> delegate);
+
 #endif  // IOS_CHROME_BROWSER_INFOBARS_INFOBAR_UTILS_H_

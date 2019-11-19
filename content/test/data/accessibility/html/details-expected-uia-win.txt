@@ -1,0 +1,9 @@
+document
+++group LocalizedControlType='details'
+++++button Name='details tag' ExpandCollapse.ExpandCollapseState='Collapsed'
+++++++description Name='details tag'
+++group LocalizedControlType='details'
+++++button Name='details tag open' ExpandCollapse.ExpandCollapseState='Expanded'
+++++++description Name='details tag open'
+++++group
+++++++description Name='The details tag with open specifies that the details should be visible (open) to the user.'

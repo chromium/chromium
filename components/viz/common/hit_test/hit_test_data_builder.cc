@@ -81,10 +81,25 @@ std::vector<gfx::Rect> ExtractAlphaRects(
   return filter_regions;
 }
 
-void AddHitTestDataFromRenderPass(const CompositorFrame& frame,
-                                  RenderPassId render_pass_id,
-                                  std::vector<HitTestRegion>* regions,
-                                  bool should_ask_for_child_region) {
+void AddHitTestDataFromRenderPass(
+    const CompositorFrame& frame,
+    RenderPassId render_pass_id,
+    std::vector<HitTestRegion>* regions,
+    bool should_ask_for_child_region,
+    base::flat_map<RenderPassId, std::pair<uint32_t, uint32_t>>*
+        render_pass_hit_test_region_list) {
+  if (render_pass_hit_test_region_list->count(render_pass_id)) {
+    const auto& list_range =
+        render_pass_hit_test_region_list->find(render_pass_id)->second;
+    const uint32_t start = list_range.first;
+    const uint32_t end = list_range.second;
+    if (start >= end || regions->size() < end)
+      return;
+    regions->insert(regions->end(), regions->begin() + start,
+                    regions->begin() + end);
+    return;
+  }
+
   const RenderPass* render_pass = GetRenderPassInFrame(frame, render_pass_id);
   if (!render_pass)
     return;
@@ -99,8 +114,9 @@ void AddHitTestDataFromRenderPass(const CompositorFrame& frame,
     return;
   }
 
+  const uint32_t render_pass_hit_test_region_list_start = regions->size();
   for (const DrawQuad* quad : render_pass->quad_list) {
-    if (quad->material == DrawQuad::SURFACE_CONTENT) {
+    if (quad->material == DrawQuad::Material::kSurfaceContent) {
       const SurfaceDrawQuad* surface_quad = SurfaceDrawQuad::MaterialCast(quad);
 
       // Skip the quad if the transform is not invertible (i.e. it will not
@@ -135,13 +151,18 @@ void AddHitTestDataFromRenderPass(const CompositorFrame& frame,
                            surface_quad->ignores_input_event);
         }
       }
-    } else if (quad->material == DrawQuad::RENDER_PASS) {
+    } else if (quad->material == DrawQuad::Material::kRenderPass) {
       const RenderPassDrawQuad* render_quad =
           RenderPassDrawQuad::MaterialCast(quad);
       AddHitTestDataFromRenderPass(frame, render_quad->render_pass_id, regions,
-                                   should_ask_for_child_region);
+                                   should_ask_for_child_region,
+                                   render_pass_hit_test_region_list);
     }
   }
+  const uint32_t render_pass_hit_test_region_list_end = regions->size();
+  render_pass_hit_test_region_list->emplace(
+      render_pass_id, std::make_pair(render_pass_hit_test_region_list_start,
+                                     render_pass_hit_test_region_list_end));
 }
 
 }  // namespace
@@ -157,9 +178,12 @@ base::Optional<HitTestRegionList> HitTestDataBuilder::CreateHitTestData(
                            : HitTestRegionFlags::kHitTestIgnore) |
       HitTestRegionFlags::kHitTestMouse | HitTestRegionFlags::kHitTestTouch;
   hit_test_region_list->bounds.set_size(compositor_frame.size_in_pixels());
+  base::flat_map<RenderPassId, std::pair<uint32_t, uint32_t>>
+      render_pass_hit_test_region_list_cache;
   AddHitTestDataFromRenderPass(
       compositor_frame, compositor_frame.render_pass_list.back()->id,
-      &hit_test_region_list->regions, should_ask_for_child_region);
+      &hit_test_region_list->regions, should_ask_for_child_region,
+      &render_pass_hit_test_region_list_cache);
   return hit_test_region_list;
 }
 

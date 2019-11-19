@@ -73,7 +73,8 @@ class SmartLockMetricsRecorder {
     kForcedReauth = 16,
     kLoginWithSmartLockDisabled = 17,
     kPhoneNotLockable = 18,
-    kMaxValue = kPhoneNotLockable
+    kPrimaryUserAbsent = 19,
+    kMaxValue = kPrimaryUserAbsent
   };
 
   static void RecordSmartLockUnlockAuthMethodChoice(
@@ -85,17 +86,9 @@ class SmartLockMetricsRecorder {
   static void RecordAuthResultUnlockFailure(
       SmartLockAuthResultFailureReason failure_reason);
 
-  static void RecordGetRemoteStatusResultUnlockSuccess(bool success = true);
-  static void RecordGetRemoteStatusResultUnlockFailure(
-      SmartLockGetRemoteStatusResultFailureReason failure_reason);
-
   static void RecordAuthResultSignInSuccess(bool success = true);
   static void RecordAuthResultSignInFailure(
       SmartLockAuthResultFailureReason failure_reason);
-
-  static void RecordGetRemoteStatusResultSignInSuccess(bool success = true);
-  static void RecordGetRemoteStatusResultSignInFailure(
-      SmartLockGetRemoteStatusResultFailureReason failure_reason);
 
   static void RecordAuthMethodChoiceUnlockPasswordState(
       SmartLockAuthEventPasswordState password_state);

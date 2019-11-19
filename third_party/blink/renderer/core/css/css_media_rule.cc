@@ -58,9 +58,10 @@ String CSSMediaRule::conditionText() const {
 MediaList* CSSMediaRule::media() const {
   if (!MediaQueries())
     return nullptr;
-  if (!media_cssom_wrapper_)
-    media_cssom_wrapper_ =
-        MediaList::Create(MediaQueries(), const_cast<CSSMediaRule*>(this));
+  if (!media_cssom_wrapper_) {
+    media_cssom_wrapper_ = MakeGarbageCollected<MediaList>(
+        MediaQueries(), const_cast<CSSMediaRule*>(this));
+  }
   return media_cssom_wrapper_.Get();
 }
 

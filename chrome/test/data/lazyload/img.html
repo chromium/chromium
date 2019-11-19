@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<body onload="on_load('document')">
+  <script>
+  function on_load(msg) {
+    console.log("LAZY_LOAD CONSOLE", msg, "ON_LOAD FOR TEST");
+  }
+  </script>
+
+  In the viewport image <br>
+  <img src="images/fruit1.jpg?auto"
+    onload="on_load('in-viewport img')">
+  <img src="images/fruit1.jpg?lazy" loading="lazy"
+    onload="on_load('in-viewport loading=lazy img')">
+  <img src="images/fruit1.jpg?eager" loading="eager"
+    onload="on_load('in-viewport loading=eager img')">
+
+  <div style="height:11000px;"></div>
+  Below the viewport images <br>
+  <img src="images/fruit2.jpg?auto"
+    onload="on_load('below-viewport img')">
+  <img src="images/fruit2.jpg?lazy" loading="lazy"
+    onload="on_load('below-viewport loading=lazy img')">
+  <img src="images/fruit2.jpg?eager" loading="eager"
+    onload="on_load('below-viewport loading=eager img')">
+</body>
+</html>

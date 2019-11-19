@@ -29,7 +29,7 @@ class COMPONENT_EXPORT(ASSISTANT_UI) AssistantNotificationOverlay
   const char* GetClassName() const override;
   LayoutParams GetLayoutParams() const override;
   void ViewHierarchyChanged(
-      const ViewHierarchyChangedDetails& details) override;
+      const views::ViewHierarchyChangedDetails& details) override;
 
   // AssistantUiModelObserver:
   void OnUiVisibilityChanged(

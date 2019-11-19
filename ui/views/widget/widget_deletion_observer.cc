@@ -25,7 +25,7 @@ void WidgetDeletionObserver::OnWidgetDestroying(Widget* widget) {
 void WidgetDeletionObserver::CleanupWidget() {
   if (widget_) {
     widget_->RemoveObserver(this);
-    widget_ = NULL;
+    widget_ = nullptr;
   }
 }
 

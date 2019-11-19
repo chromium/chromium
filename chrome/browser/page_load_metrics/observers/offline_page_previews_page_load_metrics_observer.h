@@ -8,7 +8,7 @@
 #include <string>
 
 #include "base/macros.h"
-#include "chrome/browser/page_load_metrics/page_load_metrics_observer.h"
+#include "components/page_load_metrics/browser/page_load_metrics_observer.h"
 #include "services/metrics/public/cpp/ukm_source.h"
 
 namespace content {
@@ -42,23 +42,19 @@ class OfflinePagePreviewsPageLoadMetricsObserver
   ObservePolicy OnCommit(content::NavigationHandle* navigation_handle,
                          ukm::SourceId source_id) override;
   ObservePolicy FlushMetricsOnAppEnterBackground(
-      const page_load_metrics::mojom::PageLoadTiming& timing,
-      const page_load_metrics::PageLoadExtraInfo& info) override;
-  void OnComplete(const page_load_metrics::mojom::PageLoadTiming& timing,
-                  const page_load_metrics::PageLoadExtraInfo& info) override;
+      const page_load_metrics::mojom::PageLoadTiming& timing) override;
+  void OnComplete(
+      const page_load_metrics::mojom::PageLoadTiming& timing) override;
   void OnDomContentLoadedEventStart(
-      const page_load_metrics::mojom::PageLoadTiming& timing,
-      const page_load_metrics::PageLoadExtraInfo& info) override;
+      const page_load_metrics::mojom::PageLoadTiming& timing) override;
   void OnLoadEventStart(
-      const page_load_metrics::mojom::PageLoadTiming& timing,
-      const page_load_metrics::PageLoadExtraInfo& info) override;
-  void OnFirstLayout(const page_load_metrics::mojom::PageLoadTiming& timing,
-                     const page_load_metrics::PageLoadExtraInfo& info) override;
+      const page_load_metrics::mojom::PageLoadTiming& timing) override;
+  void OnFirstLayout(
+      const page_load_metrics::mojom::PageLoadTiming& timing) override;
   void OnFirstContentfulPaintInPage(
-      const page_load_metrics::mojom::PageLoadTiming& timing,
-      const page_load_metrics::PageLoadExtraInfo& info) override;
-  void OnParseStart(const page_load_metrics::mojom::PageLoadTiming& timing,
-                    const page_load_metrics::PageLoadExtraInfo& info) override;
+      const page_load_metrics::mojom::PageLoadTiming& timing) override;
+  void OnParseStart(
+      const page_load_metrics::mojom::PageLoadTiming& timing) override;
   ObservePolicy ShouldObserveMimeType(
       const std::string& mime_type) const override;
 
@@ -66,6 +62,9 @@ class OfflinePagePreviewsPageLoadMetricsObserver
   // Whether |web_contents| is showing an offline pages preview. Overridden in
   // testing.
   virtual bool IsOfflinePreview(content::WebContents* web_contents) const;
+
+  // Records metrics derived from global page load state.
+  void RecordPageLoadMetrics();
 
   DISALLOW_COPY_AND_ASSIGN(OfflinePagePreviewsPageLoadMetricsObserver);
 };

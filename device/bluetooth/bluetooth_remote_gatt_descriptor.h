@@ -13,7 +13,7 @@
 #include "base/macros.h"
 #include "device/bluetooth/bluetooth_export.h"
 #include "device/bluetooth/bluetooth_gatt_descriptor.h"
-#include "device/bluetooth/bluetooth_uuid.h"
+#include "device/bluetooth/public/cpp/bluetooth_uuid.h"
 
 namespace device {
 
@@ -33,7 +33,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothRemoteGattDescriptor
 
   // The ValueCallback is used to return the value of a remote characteristic
   // descriptor upon a read request.
-  typedef base::Callback<void(const std::vector<uint8_t>&)> ValueCallback;
+  using ValueCallback = base::OnceCallback<void(const std::vector<uint8_t>&)>;
 
   // Returns the value of the descriptor. For remote descriptors, this is the
   // most recently cached value of the remote descriptor. For local descriptors
@@ -48,8 +48,8 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothRemoteGattDescriptor
   // Sends a read request to a remote characteristic descriptor to read its
   // value. |callback| is called to return the read value on success and
   // |error_callback| is called for failures.
-  virtual void ReadRemoteDescriptor(const ValueCallback& callback,
-                                    const ErrorCallback& error_callback) = 0;
+  virtual void ReadRemoteDescriptor(ValueCallback callback,
+                                    ErrorCallback error_callback) = 0;
 
   // Sends a write request to a remote characteristic descriptor, to modify the
   // value of the descriptor with the new value |new_value|. |callback| is
@@ -57,8 +57,8 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothRemoteGattDescriptor
   // only applies to remote descriptors and will fail for those that are locally
   // hosted.
   virtual void WriteRemoteDescriptor(const std::vector<uint8_t>& new_value,
-                                     const base::Closure& callback,
-                                     const ErrorCallback& error_callback) = 0;
+                                     base::OnceClosure callback,
+                                     ErrorCallback error_callback) = 0;
 
  protected:
   BluetoothRemoteGattDescriptor();

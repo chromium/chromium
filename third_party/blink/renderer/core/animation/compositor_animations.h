@@ -37,7 +37,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/animation/timing_function.h"
 #include "third_party/blink/renderer/platform/graphics/compositor_element_id.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
@@ -46,47 +46,65 @@ class Animation;
 class CompositorAnimation;
 class Element;
 class KeyframeEffectModelBase;
+class PaintArtifactCompositor;
 
 class CORE_EXPORT CompositorAnimations {
   STATIC_ONLY(CompositorAnimations);
 
  public:
-  struct FailureCode {
-    const bool can_composite;
-    const bool web_developer_actionable;
-    const String reason;
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  using FailureReasons = uint32_t;
+  enum FailureReason : uint32_t {
+    kNoFailure = 0,
 
-    static FailureCode None() { return FailureCode(true, false, String()); }
-    static FailureCode Actionable(const String& reason) {
-      return FailureCode(false, true, reason);
-    }
-    static FailureCode NonActionable(const String& reason) {
-      return FailureCode(false, false, reason);
-    }
+    // Cases where the compositing is disabled by an exterior cause.
+    kAcceleratedAnimationsDisabled = 1 << 0,
+    kEffectSuppressedByDevtools = 1 << 1,
 
-    bool Ok() const { return can_composite; }
+    // There are many cases where an animation may not be valid (e.g. it is not
+    // playing, or has no effect, etc). In these cases we would never composite
+    // it in any world, so we lump them together.
+    kInvalidAnimationOrEffect = 1 << 2,
 
-    bool operator==(const FailureCode& other) const {
-      return can_composite == other.can_composite &&
-             web_developer_actionable == other.web_developer_actionable &&
-             reason == other.reason;
-    }
+    // The compositor is not able to support all setups of timing values; see
+    // CompositorAnimations::ConvertTimingForCompositor.
+    kEffectHasUnsupportedTimingParameters = 1 << 3,
 
-   private:
-    FailureCode(bool can_composite,
-                bool web_developer_actionable,
-                const String& reason)
-        : can_composite(can_composite),
-          web_developer_actionable(web_developer_actionable),
-          reason(reason) {}
+    // Currently the compositor does not support any composite mode other than
+    // 'replace'.
+    kEffectHasNonReplaceCompositeMode = 1 << 4,
+
+    // Cases where the target element isn't in a valid compositing state.
+    kTargetHasInvalidCompositingState = 1 << 5,
+
+    // Cases where the target is invalid (but that we could feasibly address).
+    kTargetHasIncompatibleAnimations = 1 << 6,
+    kTargetHasCSSOffset = 1 << 7,
+    kTargetHasMultipleTransformProperties = 1 << 8,
+
+    // Cases relating to the properties being animated.
+    kAnimationAffectsNonCSSProperties = 1 << 9,
+    kTransformRelatedPropertyCannotBeAcceleratedOnTarget = 1 << 10,
+    kTransformRelatedPropertyDependsOnBoxSize = 1 << 11,
+    kFilterRelatedPropertyMayMovePixels = 1 << 12,
+    kUnsupportedCSSProperty = 1 << 13,
+    kMultipleTransformAnimationsOnSameTarget = 1 << 14,
+    kMixedKeyframeValueTypes = 1 << 15,
+
+    // The maximum number of flags in this enum (excluding itself). New flags
+    // should increment this number but it should never be decremented because
+    // the values are used in UMA histograms. It should also be noted that it
+    // excludes the kNoFailure value.
+    kFailureReasonCount = 16,
   };
 
-  static FailureCode CheckCanStartAnimationOnCompositor(
+  static FailureReasons CheckCanStartAnimationOnCompositor(
       const Timing&,
       const Element&,
       const Animation*,
       const EffectModel&,
-      const base::Optional<CompositorElementIdSet>& composited_element_ids,
+      const PaintArtifactCompositor*,
       double animation_playback_rate);
   static void CancelIncompatibleAnimationsOnCompositor(const Element&,
                                                        const Animation&,
@@ -137,29 +155,20 @@ class CORE_EXPORT CompositorAnimations {
       Vector<std::unique_ptr<CompositorKeyframeModel>>& animations,
       double animation_playback_rate);
 
+  static CompositorElementIdNamespace CompositorElementNamespaceForProperty(
+      CSSPropertyID property);
+
  private:
-  static FailureCode CheckCanStartEffectOnCompositor(
+  static FailureReasons CheckCanStartEffectOnCompositor(
       const Timing&,
       const Element&,
       const Animation*,
       const EffectModel&,
-      const base::Optional<CompositorElementIdSet>& composited_element_ids,
+      const PaintArtifactCompositor*,
       double animation_playback_rate);
-  static FailureCode CheckCanStartElementOnCompositor(const Element&);
+  static FailureReasons CheckCanStartElementOnCompositor(const Element&);
 
   friend class AnimationCompositorAnimationsTest;
-  FRIEND_TEST_ALL_PREFIXES(AnimationCompositorAnimationsTest,
-                           CanStartElementOnCompositorTransformCAP);
-  FRIEND_TEST_ALL_PREFIXES(AnimationCompositorAnimationsTest,
-                           CanStartElementOnCompositorEffectCAP);
-  FRIEND_TEST_ALL_PREFIXES(AnimationCompositorAnimationsTest,
-                           CanStartElementOnCompositorEffect);
-  FRIEND_TEST_ALL_PREFIXES(AnimationCompositorAnimationsTest,
-                           CannotStartElementOnCompositorEffectSVG);
-  FRIEND_TEST_ALL_PREFIXES(AnimationCompositorAnimationsTest,
-                           CancelIncompatibleCompositorAnimations);
-  FRIEND_TEST_ALL_PREFIXES(AnimationCompositorAnimationsTest,
-                           NonAnimatedTransformPropertyChangeGetsUpdated);
 };
 
 }  // namespace blink

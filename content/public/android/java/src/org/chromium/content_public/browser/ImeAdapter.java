@@ -9,7 +9,8 @@ import android.os.ResultReceiver;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputConnection;
 
-import org.chromium.base.VisibleForTesting;
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.content.browser.input.ImeAdapterImpl;
 
 /**
@@ -67,6 +68,13 @@ public interface ImeAdapter {
     void setInputMethodManagerWrapper(InputMethodManagerWrapper immw);
 
     /**
+     * Advances the focus to next input field in the current form.
+     *
+     * @param focusType indicates whether to advance forward or backward direction.
+     */
+    void advanceFocusInForm(int focusType);
+
+    /**
      * @return a newly instantiated {@link ResultReceiver} used to scroll to the editable
      *     node at the right timing.
      */
@@ -86,4 +94,11 @@ public interface ImeAdapter {
      */
     @VisibleForTesting
     void setComposingTextForTest(final CharSequence text, final int newCursorPosition);
+
+    /**
+     * Call this when we get result from ResultReceiver passed in calling showSoftInput().
+     * @param resultCode The result of showSoftInput() as defined in InputMethodManager.
+     */
+    @VisibleForTesting
+    void onShowKeyboardReceiveResult(int resultCode);
 }

@@ -266,14 +266,14 @@ class ObservableInternals
     void AddObserver(Observer<T>* observer) {
       DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
       DCHECK(observer);
-      DCHECK(!base::ContainsValue(observers_, observer));
+      DCHECK(!base::Contains(observers_, observer));
       observers_.push_back(observer);
     }
 
     void RemoveObserver(Observer<T>* observer) {
       DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
       DCHECK(observer);
-      DCHECK(base::ContainsValue(observers_, observer));
+      DCHECK(base::Contains(observers_, observer));
       observers_.erase(
           std::remove(observers_.begin(), observers_.end(), observer),
           observers_.end());

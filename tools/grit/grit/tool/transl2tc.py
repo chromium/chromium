@@ -5,7 +5,7 @@
 '''The 'grit transl2tc' tool.
 '''
 
-import sys
+from __future__ import print_function
 
 from grit import grd_reader
 from grit import util
@@ -222,7 +222,7 @@ Bulk Translation Upload tool.
     # or have been marked as not translateable, or do not occur in the 'limits'
     # list (if it has been set).
     current_message_ids = current_grd.UberClique().AllMessageIds()
-    for message_id in id2transl.keys():
+    for message_id in list(id2transl.keys()):
       if (message_id not in current_message_ids or
           not current_grd.UberClique().BestClique(message_id).IsTranslateable() or
           (self.limits and message_id not in self.limits)):

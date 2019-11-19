@@ -121,6 +121,7 @@ class FakeGattDeviceServiceWinrt
   Microsoft::WRL::ComPtr<FakeBluetoothLEDeviceWinrt> fake_device_;
   GUID uuid_;
   uint16_t attribute_handle_;
+  bool opened_ = false;
 
   std::vector<Microsoft::WRL::ComPtr<FakeGattCharacteristicWinrt>>
       fake_characteristics_;

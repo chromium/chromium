@@ -24,12 +24,14 @@ class CrashIdsSource : public SystemLogsSource {
 
  private:
   void OnUploadListAvailable();
-  void RespondWithCrashIds(SysLogsSourceCallback callback) const;
+  void RespondWithCrashIds(SysLogsSourceCallback callback);
 
   scoped_refptr<UploadList> crash_upload_list_;
 
-  // A comma-separated list of crash IDs as expected by the server.
+  // A comma-separated list of crash IDs as expected by the server. The first
+  // is for the last hour, the second is for the pat 120 days.
   std::string crash_ids_list_;
+  std::string all_crash_ids_list_;
 
   // Contains any pending fetch requests waiting for the crash upload list to
   // finish loading.

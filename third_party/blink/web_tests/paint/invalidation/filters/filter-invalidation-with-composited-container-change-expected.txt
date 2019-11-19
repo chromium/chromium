@@ -1,37 +1,26 @@
 {
   "layers": [
     {
-      "name": "LayoutView #document",
-      "bounds": [800, 600],
-      "drawsContent": false,
-      "backgroundColor": "#FFFFFF"
-    },
-    {
-      "name": "Scrolling Layer",
-      "bounds": [800, 600],
-      "drawsContent": false
-    },
-    {
       "name": "Scrolling Contents Layer",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
       "paintInvalidations": [
         {
-          "object": "LayoutBlockFlow DIV id='box' class='green drop-shadowed box'",
+          "object": "LayoutNGBlockFlow DIV id='box' class='green drop-shadowed box'",
           "rect": [8, 8, 330, 330],
           "reason": "chunk disappeared"
         }
       ]
     },
     {
-      "name": "LayoutBlockFlow DIV id='box' class='green box blurry'",
+      "name": "LayoutNGBlockFlow DIV id='box' class='green box blurry'",
       "bounds": [200, 200],
       "contentsOpaque": true,
       "backgroundColor": "#008000",
       "paintInvalidations": [
         {
-          "object": "LayoutBlockFlow DIV id='box' class='green box blurry'",
+          "object": "LayoutNGBlockFlow DIV id='box' class='green box blurry'",
           "rect": [0, 0, 200, 200],
           "reason": "full layer"
         }

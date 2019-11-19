@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "components/strings/grit/components_strings.h"
+#include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/platform/ax_platform_node.h"
 #include "ui/base/buildflags.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -38,12 +39,12 @@ SkColor AutofillPopupBaseView::GetBackgroundColor() {
 
 SkColor AutofillPopupBaseView::GetSelectedBackgroundColor() {
   return GetNativeTheme()->GetSystemColor(
-      ui::NativeTheme::kColorId_FocusedHighlightedMenuItemBackgroundColor);
+      ui::NativeTheme::kColorId_FocusedMenuItemBackgroundColor);
 }
 
 SkColor AutofillPopupBaseView::GetFooterBackgroundColor() {
   return GetNativeTheme()->GetSystemColor(
-      ui::NativeTheme::kColorId_HighlightedMenuItemBackgroundColor);
+      ui::NativeTheme::kColorId_BubbleFooterBackground);
 }
 
 SkColor AutofillPopupBaseView::GetSeparatorColor() {
@@ -59,9 +60,7 @@ SkColor AutofillPopupBaseView::GetWarningColor() {
 AutofillPopupBaseView::AutofillPopupBaseView(
     AutofillPopupViewDelegate* delegate,
     views::Widget* parent_widget)
-    : delegate_(delegate),
-      parent_widget_(parent_widget),
-      weak_ptr_factory_(this) {}
+    : delegate_(delegate), parent_widget_(parent_widget) {}
 
 AutofillPopupBaseView::~AutofillPopupBaseView() {
   if (delegate_) {
@@ -90,8 +89,8 @@ void AutofillPopupBaseView::DoShow() {
                                    : delegate_->container_view();
     // Ensure the bubble border is not painted on an opaque background.
     params.opacity = views::Widget::InitParams::TRANSLUCENT_WINDOW;
-    params.shadow_type = views::Widget::InitParams::SHADOW_TYPE_NONE;
-    widget->Init(params);
+    params.shadow_type = views::Widget::InitParams::ShadowType::kNone;
+    widget->Init(std::move(params));
     widget->AddObserver(this);
 
     // No animation for popup appearance (too distracting).
@@ -290,26 +289,6 @@ void AutofillPopupBaseView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->role = ax::mojom::Role::kPane;
   node_data->SetName(
       l10n_util::GetStringUTF16(IDS_AUTOFILL_POPUP_ACCESSIBLE_NODE_DATA));
-}
-
-void AutofillPopupBaseView::VisibilityChanged(View* starting_from,
-                                              bool is_visible) {
-  if (is_visible) {
-    // Announce that the suggestions are available before the pop up is open.
-    // The password generation pop up relies on this call.
-    ui::AXPlatformNode::OnInputSuggestionsAvailable();
-    // Fire these the first time a menu is visible. By firing these and the
-    // matching end events, we are telling screen readers that the focus
-    // is only changing temporarily, and the screen reader will restore the
-    // focus back to the appropriate textfield when the menu closes.
-    NotifyAccessibilityEvent(ax::mojom::Event::kMenuStart, true);
-  } else {
-    // TODO(https://crbug.com/848427) Only call if suggestions are actually no
-    // longer available. The suggestions could be hidden but still available, as
-    // is the case when the Escape key is pressed.
-    ui::AXPlatformNode::OnInputSuggestionsUnavailable();
-    NotifyAccessibilityEvent(ax::mojom::Event::kMenuEnd, true);
-  }
 }
 
 void AutofillPopupBaseView::SetSelection(const gfx::Point& point) {

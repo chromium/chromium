@@ -38,7 +38,7 @@ class H264VideoToolboxEncoder : public VideoEncoder,
 
   // media::cast::VideoEncoder implementation
   bool EncodeVideoFrame(
-      const scoped_refptr<media::VideoFrame>& video_frame,
+      scoped_refptr<media::VideoFrame> video_frame,
       const base::TimeTicks& reference_time,
       const FrameEncodedCallback& frame_encoded_callback) final;
   void SetBitRate(int new_bit_rate) final;

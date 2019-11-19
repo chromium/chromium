@@ -4,25 +4,28 @@
 
 #include "content/browser/renderer_host/media/service_launched_video_capture_device.h"
 
+#include <utility>
+
 #include "base/bind.h"
 #include "base/bind_helpers.h"
 
 namespace content {
 
 ServiceLaunchedVideoCaptureDevice::ServiceLaunchedVideoCaptureDevice(
-    video_capture::mojom::VideoSourcePtr source,
-    video_capture::mojom::PushVideoStreamSubscriptionPtr subscription,
+    mojo::Remote<video_capture::mojom::VideoSource> source,
+    mojo::Remote<video_capture::mojom::PushVideoStreamSubscription>
+        subscription,
     base::OnceClosure connection_lost_cb)
     : source_(std::move(source)),
       subscription_(std::move(subscription)),
       connection_lost_cb_(std::move(connection_lost_cb)) {
   // Unretained |this| is safe, because |this| owns |source_|.
-  source_.set_connection_error_handler(
+  source_.set_disconnect_handler(
       base::BindOnce(&ServiceLaunchedVideoCaptureDevice::
                          OnLostConnectionToSourceOrSubscription,
                      base::Unretained(this)));
   // Unretained |this| is safe, because |this| owns |subscription_|.
-  subscription_.set_connection_error_handler(
+  subscription_.set_disconnect_handler(
       base::BindOnce(&ServiceLaunchedVideoCaptureDevice::
                          OnLostConnectionToSourceOrSubscription,
                      base::Unretained(this)));
@@ -33,7 +36,7 @@ ServiceLaunchedVideoCaptureDevice::~ServiceLaunchedVideoCaptureDevice() {
 }
 
 void ServiceLaunchedVideoCaptureDevice::GetPhotoState(
-    media::VideoCaptureDevice::GetPhotoStateCallback callback) const {
+    media::VideoCaptureDevice::GetPhotoStateCallback callback) {
   DCHECK(sequence_checker_.CalledOnValidSequence());
   subscription_->GetPhotoState(base::BindOnce(
       &ServiceLaunchedVideoCaptureDevice::OnGetPhotoStateResponse,
@@ -100,7 +103,7 @@ void ServiceLaunchedVideoCaptureDevice::
   DCHECK(sequence_checker_.CalledOnValidSequence());
   source_.reset();
   subscription_.reset();
-  base::ResetAndReturn(&connection_lost_cb_).Run();
+  std::move(connection_lost_cb_).Run();
 }
 
 void ServiceLaunchedVideoCaptureDevice::OnGetPhotoStateResponse(

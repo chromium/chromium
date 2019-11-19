@@ -13,7 +13,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/webui/profile_info_watcher.h"
-#include "components/signin/core/browser/signin_metrics.h"
+#include "components/signin/public/base/signin_metrics.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 
@@ -23,10 +23,10 @@ HistoryLoginHandler::HistoryLoginHandler(const base::Closure& signin_callback)
 HistoryLoginHandler::~HistoryLoginHandler() {}
 
 void HistoryLoginHandler::RegisterMessages() {
-  profile_info_watcher_.reset(new ProfileInfoWatcher(
+  profile_info_watcher_ = std::make_unique<ProfileInfoWatcher>(
       Profile::FromWebUI(web_ui()),
       base::Bind(&HistoryLoginHandler::ProfileInfoChanged,
-                 base::Unretained(this))));
+                 base::Unretained(this)));
 
   web_ui()->RegisterMessageCallback(
       "otherDevicesInitialized",
@@ -59,6 +59,6 @@ void HistoryLoginHandler::HandleStartSignInFlow(
   Browser* browser =
       chrome::FindBrowserWithWebContents(web_ui()->GetWebContents());
   browser->window()->ShowAvatarBubbleFromAvatarButton(
-      BrowserWindow::AVATAR_BUBBLE_MODE_SIGNIN, signin::ManageAccountsParams(),
+      BrowserWindow::AVATAR_BUBBLE_MODE_SIGNIN,
       signin_metrics::AccessPoint::ACCESS_POINT_RECENT_TABS, false);
 }

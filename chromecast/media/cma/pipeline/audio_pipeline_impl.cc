@@ -45,9 +45,12 @@ AudioPipelineImpl::~AudioPipelineImpl() = default;
   }
 
   DCHECK(audio_config.IsValidConfig());
-  audio_config_ =
+  AudioConfig config =
       DecoderConfigAdapter::ToCastAudioConfig(kPrimary, audio_config);
-  if (!audio_decoder_->SetConfig(audio_config_)) {
+  encryption_scheme_ = config.encryption_scheme;
+  config.encryption_scheme = EncryptionScheme::kUnencrypted;
+
+  if (!audio_decoder_->SetConfig(config)) {
     return ::media::PIPELINE_ERROR_INITIALIZATION_FAILED;
   }
   set_state(kFlushed);
@@ -66,27 +69,28 @@ void AudioPipelineImpl::OnUpdateConfig(
     LOG(INFO) << __FUNCTION__ << " id:" << id << " "
               << audio_config.AsHumanReadableString();
 
-    audio_config_ = DecoderConfigAdapter::ToCastAudioConfig(id, audio_config);
-    bool success = audio_decoder_->SetConfig(audio_config_);
+    AudioConfig config =
+        DecoderConfigAdapter::ToCastAudioConfig(id, audio_config);
+    encryption_scheme_ = config.encryption_scheme;
+    config.encryption_scheme = EncryptionScheme::kUnencrypted;
+    bool success = audio_decoder_->SetConfig(config);
     if (!success && !client().playback_error_cb.is_null())
       client().playback_error_cb.Run(::media::PIPELINE_ERROR_DECODE);
   }
 }
 
-const EncryptionScheme& AudioPipelineImpl::GetEncryptionScheme(
-    StreamId id) const {
-  return audio_config_.encryption_scheme;
+EncryptionScheme AudioPipelineImpl::GetEncryptionScheme(StreamId id) const {
+  return encryption_scheme_;
 }
 
 std::unique_ptr<StreamDecryptor> AudioPipelineImpl::CreateDecryptor() {
-  bool clear_buffer_needed = audio_decoder_->RequiresDecryption();
-  if (audio_config_.encryption_scheme.is_encrypted() &&
-      MediaPipelineBackend::CreateAudioDecryptor && clear_buffer_needed) {
+  if (MediaPipelineBackend::CreateAudioDecryptor) {
+    DCHECK_NE(encryption_scheme_, EncryptionScheme::kUnencrypted);
     LOG(INFO) << __func__ << " Create backend decryptor for audio.";
-    return std::make_unique<BackendDecryptor>(audio_config_.encryption_scheme);
+    return std::make_unique<BackendDecryptor>(encryption_scheme_);
   }
 
-  return std::make_unique<CdmDecryptor>(clear_buffer_needed);
+  return std::make_unique<CdmDecryptor>(true /* clear_buffer_needed */);
 }
 
 void AudioPipelineImpl::UpdateStatistics() {

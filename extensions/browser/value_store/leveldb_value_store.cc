@@ -83,12 +83,12 @@ ValueStore::ReadResult LeveldbValueStore::Get(
   std::unique_ptr<base::DictionaryValue> settings(new base::DictionaryValue());
 
   for (const std::string& key : keys) {
-    std::unique_ptr<base::Value> setting;
+    base::Optional<base::Value> setting;
     status.Merge(Read(key, &setting));
     if (!status.ok())
       return ReadResult(std::move(status));
     if (setting)
-      settings->SetWithoutPathExpansion(key, std::move(setting));
+      settings->SetKey(key, std::move(*setting));
   }
 
   return ReadResult(std::move(settings), std::move(status));
@@ -104,7 +104,7 @@ ValueStore::ReadResult LeveldbValueStore::Get() {
   std::unique_ptr<leveldb::Iterator> it(db()->NewIterator(read_options()));
   for (it->SeekToFirst(); it->Valid(); it->Next()) {
     std::string key = it->key().ToString();
-    std::unique_ptr<base::Value> value = base::JSONReader::ReadDeprecated(
+    base::Optional<base::Value> value = base::JSONReader::Read(
         StringPiece(it->value().data(), it->value().size()));
     if (!value) {
       return ReadResult(Status(CORRUPTION,
@@ -112,7 +112,7 @@ ValueStore::ReadResult LeveldbValueStore::Get() {
                                                 : VALUE_RESTORE_DELETE_FAILURE,
                                kInvalidJson));
     }
-    settings->SetWithoutPathExpansion(key, std::move(value));
+    settings->SetKey(key, std::move(*value));
   }
 
   if (!it->status().ok()) {
@@ -178,13 +178,14 @@ ValueStore::WriteResult LeveldbValueStore::Remove(
   std::unique_ptr<ValueStoreChangeList> changes(new ValueStoreChangeList());
 
   for (const std::string& key : keys) {
-    std::unique_ptr<base::Value> old_value;
+    base::Optional<base::Value> old_value;
     status.Merge(Read(key, &old_value));
     if (!status.ok())
       return WriteResult(std::move(status));
 
     if (old_value) {
-      changes->push_back(ValueStoreChange(key, std::move(old_value), nullptr));
+      changes->push_back(
+          ValueStoreChange(key, std::move(old_value), base::nullopt));
       batch.Delete(key);
     }
   }
@@ -210,7 +211,7 @@ ValueStore::WriteResult LeveldbValueStore::Clear() {
     std::unique_ptr<base::Value> next_value;
     whole_db.RemoveWithoutPathExpansion(next_key, &next_value);
     changes->push_back(
-        ValueStoreChange(next_key, std::move(next_value), nullptr));
+        ValueStoreChange(next_key, std::move(*next_value), base::nullopt));
   }
 
   DeleteDbFile();
@@ -258,13 +259,13 @@ ValueStore::Status LeveldbValueStore::AddToBatch(
   bool write_new_value = true;
 
   if (!(options & NO_GENERATE_CHANGES)) {
-    std::unique_ptr<base::Value> old_value;
+    base::Optional<base::Value> old_value;
     Status status = Read(key, &old_value);
     if (!status.ok())
       return status;
-    if (!old_value || !old_value->Equals(&value)) {
+    if (!old_value || *old_value != value) {
       changes->push_back(
-          ValueStoreChange(key, std::move(old_value), value.CreateDeepCopy()));
+          ValueStoreChange(key, std::move(old_value), value.Clone()));
     } else {
       write_new_value = false;
     }

@@ -4,7 +4,7 @@
 //
 #include "ash/system/network/unified_vpn_detailed_view_controller.h"
 
-#include "ash/session/session_controller.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/system/network/vpn_list_view.h"
 #include "ash/system/tray/detailed_view_delegate.h"
@@ -14,9 +14,8 @@ namespace ash {
 UnifiedVPNDetailedViewController::UnifiedVPNDetailedViewController(
     UnifiedSystemTrayController* tray_controller)
     : detailed_view_delegate_(
-          std::make_unique<DetailedViewDelegate>(tray_controller)),
-      network_state_observer_(
-          std::make_unique<TrayNetworkStateObserver>(this)) {}
+          std::make_unique<DetailedViewDelegate>(tray_controller)) {
+}
 
 UnifiedVPNDetailedViewController::~UnifiedVPNDetailedViewController() = default;
 
@@ -27,11 +26,6 @@ views::View* UnifiedVPNDetailedViewController::CreateView() {
                             Shell::Get()->session_controller()->login_status());
   view_->Init();
   return view_;
-}
-
-void UnifiedVPNDetailedViewController::NetworkStateChanged(bool notify_a11y) {
-  if (view_)
-    view_->Update();
 }
 
 }  // namespace ash

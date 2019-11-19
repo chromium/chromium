@@ -37,7 +37,7 @@ using typed_urls_helper::GetVisitsFromClient;
 using typed_urls_helper::RemoveVisitsFromClient;
 
 namespace {
-const std::string kDummyUrl = "http://dummy-history.google.com/";
+const char kDummyUrl[] = "http://dummy-history.google.com/";
 }  // namespace
 
 class TwoClientTypedUrlsSyncTest : public SyncTest {
@@ -85,6 +85,7 @@ class TwoClientTypedUrlsSyncTest : public SyncTest {
 };
 
 IN_PROC_BROWSER_TEST_F(TwoClientTypedUrlsSyncTest, E2E_ENABLED(Add)) {
+  ResetSyncForPrimaryAccount();
   // Use a randomized URL to prevent test collisions.
   const base::string16 kHistoryUrl = ASCIIToUTF16(base::StringPrintf(
       "http://www.add-history.google.com/%s", base::GenerateGUID().c_str()));
@@ -363,6 +364,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientTypedUrlsSyncTest, AddThenExpireVisitByVisit) {
 }
 
 IN_PROC_BROWSER_TEST_F(TwoClientTypedUrlsSyncTest, E2E_ENABLED(AddThenDelete)) {
+  ResetSyncForPrimaryAccount();
   // Use a randomized URL to prevent test collisions.
   const base::string16 kHistoryUrl = ASCIIToUTF16(base::StringPrintf(
       "http://www.add-history.google.com/%s", base::GenerateGUID().c_str()));
@@ -423,12 +425,13 @@ IN_PROC_BROWSER_TEST_F(TwoClientTypedUrlsSyncTest,
 
 IN_PROC_BROWSER_TEST_F(TwoClientTypedUrlsSyncTest,
                        E2E_ENABLED(DisableEnableSync)) {
+  ResetSyncForPrimaryAccount();
   const base::string16 kUrl1(ASCIIToUTF16("http://history1.google.com/"));
   const base::string16 kUrl2(ASCIIToUTF16("http://history2.google.com/"));
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
 
-  // Disable typed url sync for one client, leave it active for the other.
-  GetClient(0)->DisableSyncForDatatype(syncer::TYPED_URLS);
+  // Disable history sync for one client, leave it active for the other.
+  GetClient(0)->DisableSyncForType(syncer::UserSelectableType::kHistory);
 
   // Add one URL to non-syncing client, add a different URL to the other,
   // wait for sync cycle to complete. No data should be exchanged.
@@ -446,8 +449,8 @@ IN_PROC_BROWSER_TEST_F(TwoClientTypedUrlsSyncTest,
   ASSERT_EQ(1U, post_sync_urls.size());
   ASSERT_EQ(url2, post_sync_urls[0].url());
 
-  // Enable typed url sync, make both URLs are synced to each client.
-  GetClient(0)->EnableSyncForDatatype(syncer::TYPED_URLS);
+  // Enable history sync, make both URLs are synced to each client.
+  GetClient(0)->EnableSyncForType(syncer::UserSelectableType::kHistory);
 
   ASSERT_TRUE(ProfilesHaveSameTypedURLsChecker().Wait());
 }
@@ -614,6 +617,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientTypedUrlsSyncTest, UpdateToNonTypedURL) {
 
 IN_PROC_BROWSER_TEST_F(TwoClientTypedUrlsSyncTest,
                        E2E_ENABLED(DontSyncUpdatedNonTypedURLs)) {
+  ResetSyncForPrimaryAccount();
   // Checks if a non-typed URL that has been updated (modified) doesn't get
   // synced. This is a regression test after fixing a bug where adding a
   // non-typed URL was guarded against but later modifying it was not. Since
@@ -652,6 +656,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientTypedUrlsSyncTest,
 
 IN_PROC_BROWSER_TEST_F(TwoClientTypedUrlsSyncTest,
                        E2E_ENABLED(SyncTypedRedirects)) {
+  ResetSyncForPrimaryAccount();
   const base::string16 kHistoryUrl(ASCIIToUTF16("http://typed.google.com/"));
   const base::string16 kRedirectedHistoryUrl(
       ASCIIToUTF16("http://www.typed.google.com/"));

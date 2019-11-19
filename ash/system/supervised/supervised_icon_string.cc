@@ -5,7 +5,7 @@
 #include "ash/system/supervised/supervised_icon_string.h"
 
 #include "ash/resources/vector_icons/vector_icons.h"
-#include "ash/session/session_controller.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "base/strings/utf_string_conversions.h"
@@ -16,7 +16,8 @@ using base::UTF8ToUTF16;
 namespace ash {
 
 const gfx::VectorIcon& GetSupervisedUserIcon() {
-  SessionController* session_controller = Shell::Get()->session_controller();
+  SessionControllerImpl* session_controller =
+      Shell::Get()->session_controller();
 
   if (session_controller->IsUserSupervised() &&
       session_controller->IsUserChild())
@@ -26,13 +27,13 @@ const gfx::VectorIcon& GetSupervisedUserIcon() {
 }
 
 base::string16 GetSupervisedUserMessage() {
-  SessionController* session_controller = Shell::Get()->session_controller();
+  SessionControllerImpl* session_controller =
+      Shell::Get()->session_controller();
   DCHECK(session_controller->IsUserSupervised());
   DCHECK(session_controller->IsActiveUserSessionStarted());
 
   // Get the active user session.
-  const mojom::UserSession* const user_session =
-      session_controller->GetUserSession(0);
+  const UserSession* const user_session = session_controller->GetUserSession(0);
   DCHECK(user_session);
 
   base::string16 first_custodian = UTF8ToUTF16(user_session->custodian_email);

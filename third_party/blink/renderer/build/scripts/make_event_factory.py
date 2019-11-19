@@ -36,11 +36,11 @@ import name_utilities
 import template_expander
 
 
-# All events on the following whitelist are matched case-insensitively
+# All events on the following list are matched case-insensitively
 # in createEvent.
 #
 # https://dom.spec.whatwg.org/#dom-document-createevent
-def create_event_whitelist(name):
+def create_event_ignore_case_list(name):
     return (name == 'HTMLEvents'
             or name == 'Event'
             or name == 'Events'
@@ -52,13 +52,13 @@ def create_event_whitelist(name):
             or name == 'TouchEvent')
 
 
-# All events on the following whitelist are matched case-insensitively
-# in createEvent and are measured using UseCounter.
+# All events on the following list are matched case-insensitively in createEvent
+# and are measured using UseCounter.
 #
-# TODO(foolip): All events on this list should either be added to the spec and
-# moved to the above whitelist (causing them to be matched case-insensitively)
-# or be deprecated/removed. https://crbug.com/569690
-def create_event_measure_whitelist(name):
+# TODO(https://crbug.com/569690): All events on this list should either be added
+# to the spec and moved to the above list (causing them to be matched
+# case-insensitively) or be deprecated/removed.
+def create_event_ignore_case_and_measure_list(name):
     return (name == 'AnimationEvent'
             or name == 'BeforeUnloadEvent'
             or name == 'CloseEvent'
@@ -102,8 +102,8 @@ class EventFactoryWriter(json5_generator.Writer):
     filters = {
         'cpp_name': name_utilities.cpp_name,
         'name': lambda entry: entry['name'].original,
-        'create_event_whitelist': create_event_whitelist,
-        'create_event_measure_whitelist': create_event_measure_whitelist,
+        'create_event_ignore_case_list': create_event_ignore_case_list,
+        'create_event_ignore_case_and_measure_list': create_event_ignore_case_and_measure_list,
         'measure_name': measure_name,
     }
 

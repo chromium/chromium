@@ -17,10 +17,8 @@
 #include "base/test/simple_test_clock.h"
 #include "chrome/browser/password_manager/password_store_factory.h"
 #include "chrome/browser/sync/profile_sync_service_factory.h"
-#include "chrome/browser/sync/profile_sync_test_util.h"
 #include "chrome/browser/ui/passwords/passwords_model_delegate_mock.h"
 #include "chrome/test/base/testing_profile.h"
-#include "components/browser_sync/profile_sync_service_mock.h"
 #include "components/password_manager/core/browser/mock_password_store.h"
 #include "components/password_manager/core/browser/password_form_metrics_recorder.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
@@ -30,10 +28,11 @@
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/password_manager/core/common/password_manager_ui.h"
 #include "components/prefs/pref_service.h"
-#include "components/signin/core/browser/account_info.h"
+#include "components/signin/public/identity_manager/account_info.h"
+#include "components/sync/driver/test_sync_service.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
@@ -41,9 +40,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using ::testing::AnyNumber;
-using ::testing::Contains;
-using ::testing::Not;
 using ::testing::Return;
 using ::testing::ReturnRef;
 using ::testing::_;
@@ -52,14 +48,6 @@ namespace {
 
 constexpr ukm::SourceId kTestSourceId = 0x1234;
 
-constexpr char kSignInPromoCountTilNoThanksMetric[] =
-    "PasswordManager.SignInPromoCountTilNoThanks";
-constexpr char kSignInPromoCountTilSignInMetric[] =
-    "PasswordManager.SignInPromoCountTilSignIn";
-constexpr char kSignInPromoDismissalCountMetric[] =
-    "PasswordManager.SignInPromoDismissalCount";
-constexpr char kSignInPromoDismissalReasonMetric[] =
-    "PasswordManager.SignInPromo";
 constexpr char kSiteOrigin[] = "http://example.com/login";
 constexpr char kUsername[] = "Admin";
 constexpr char kUsernameExisting[] = "User";
@@ -73,48 +61,11 @@ constexpr char kUIDismissalReasonSaveMetric[] =
 constexpr char kUIDismissalReasonUpdateMetric[] =
     "PasswordManager.UpdateUIDismissalReason";
 
-class TestSyncService : public browser_sync::ProfileSyncServiceMock {
- public:
-  enum class SyncedTypes { ALL, NONE };
-
-  explicit TestSyncService(Profile* profile)
-      : browser_sync::ProfileSyncServiceMock(
-            CreateProfileSyncServiceParamsForTest(profile)),
-        synced_types_(SyncedTypes::NONE) {}
-  ~TestSyncService() override {}
-
-  // FakeSyncService:
-  int GetDisableReasons() const override { return DISABLE_REASON_NONE; }
-  TransportState GetTransportState() const override {
-    return TransportState::ACTIVE;
-  }
-  syncer::ModelTypeSet GetActiveDataTypes() const override {
-    switch (synced_types_) {
-      case SyncedTypes::ALL:
-        return syncer::ModelTypeSet::All();
-      case SyncedTypes::NONE:
-        return syncer::ModelTypeSet();
-    }
-    NOTREACHED();
-    return syncer::ModelTypeSet();
-  }
-  syncer::ModelTypeSet GetPreferredDataTypes() const override {
-    return GetActiveDataTypes();
-  }
-
-  void set_synced_types(SyncedTypes synced_types) {
-    synced_types_ = synced_types;
-  }
-
- private:
-  SyncedTypes synced_types_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestSyncService);
-};
+enum class SyncedTypes { ALL, NONE };
 
 std::unique_ptr<KeyedService> TestingSyncFactoryFunction(
     content::BrowserContext* context) {
-  return std::make_unique<TestSyncService>(static_cast<Profile*>(context));
+  return std::make_unique<syncer::TestSyncService>();
 }
 
 MATCHER_P(AccountEq, expected, "") {
@@ -132,7 +83,8 @@ class ManagePasswordsBubbleModelTest : public ::testing::Test {
   void SetUp() override {
     test_web_contents_ =
         content::WebContentsTester::CreateTestWebContents(&profile_, nullptr);
-    mock_delegate_.reset(new testing::NiceMock<PasswordsModelDelegateMock>);
+    mock_delegate_ =
+        std::make_unique<testing::NiceMock<PasswordsModelDelegateMock>>();
     ON_CALL(*mock_delegate_, GetPasswordFormMetricsRecorder())
         .WillByDefault(Return(nullptr));
     PasswordStoreFactory::GetInstance()->SetTestingFactoryAndUse(
@@ -191,7 +143,7 @@ class ManagePasswordsBubbleModelTest : public ::testing::Test {
   std::vector<std::unique_ptr<autofill::PasswordForm>> GetCurrentForms() const;
 
  private:
-  content::TestBrowserThreadBundle thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
   content::RenderViewHostTestEnabler rvh_enabler_;
   TestingProfile profile_;
   std::unique_ptr<content::WebContents> test_web_contents_;
@@ -448,9 +400,10 @@ TEST_F(ManagePasswordsBubbleModelTest, EditCredential) {
 }
 
 TEST_F(ManagePasswordsBubbleModelTest, SuppressSignInPromo) {
+  prefs()->SetBoolean(password_manager::prefs::kSignInPasswordPromoRevive,
+                      true);
   prefs()->SetBoolean(password_manager::prefs::kWasSignInPasswordPromoClicked,
                       true);
-  base::HistogramTester histogram_tester;
   PretendPasswordWaiting();
   EXPECT_CALL(*GetStore(), RemoveSiteStatsImpl(GURL(kSiteOrigin).GetOrigin()));
   EXPECT_CALL(*controller(), SavePassword(pending_password().username_value,
@@ -459,10 +412,6 @@ TEST_F(ManagePasswordsBubbleModelTest, SuppressSignInPromo) {
 
   EXPECT_FALSE(model()->ReplaceToShowPromotionIfNeeded());
   DestroyModelAndVerifyControllerExpectations();
-  histogram_tester.ExpectTotalCount(kSignInPromoDismissalReasonMetric, 0);
-  histogram_tester.ExpectTotalCount(kSignInPromoCountTilSignInMetric, 0);
-  histogram_tester.ExpectTotalCount(kSignInPromoCountTilNoThanksMetric, 0);
-  histogram_tester.ExpectTotalCount(kSignInPromoDismissalCountMetric, 0);
 }
 
 TEST_F(ManagePasswordsBubbleModelTest, SignInPromoOK) {
@@ -476,7 +425,7 @@ TEST_F(ManagePasswordsBubbleModelTest, SignInPromoOK) {
   EXPECT_TRUE(model()->ReplaceToShowPromotionIfNeeded());
 
   AccountInfo account;
-  account.account_id = "foo_account_id";
+  account.account_id = CoreAccountId("foo_account_id");
   account.gaia = "foo_gaia_id";
   account.email = "foo@bar.com";
   EXPECT_CALL(*controller(), EnableSync(AccountEq(account), false));
@@ -486,12 +435,6 @@ TEST_F(ManagePasswordsBubbleModelTest, SignInPromoOK) {
   histogram_tester.ExpectUniqueSample(
       kUIDismissalReasonSaveMetric,
       password_manager::metrics_util::CLICKED_SAVE, 1);
-  histogram_tester.ExpectUniqueSample(
-      kSignInPromoDismissalReasonMetric,
-      password_manager::metrics_util::CHROME_SIGNIN_OK, 1);
-  histogram_tester.ExpectUniqueSample(kSignInPromoCountTilSignInMetric, 1, 1);
-  histogram_tester.ExpectTotalCount(kSignInPromoCountTilNoThanksMetric, 0);
-  histogram_tester.ExpectTotalCount(kSignInPromoDismissalCountMetric, 0);
   EXPECT_TRUE(prefs()->GetBoolean(
       password_manager::prefs::kWasSignInPasswordPromoClicked));
 }
@@ -510,12 +453,6 @@ TEST_F(ManagePasswordsBubbleModelTest, SignInPromoCancel) {
   histogram_tester.ExpectUniqueSample(
       kUIDismissalReasonSaveMetric,
       password_manager::metrics_util::CLICKED_SAVE, 1);
-  histogram_tester.ExpectUniqueSample(
-      kSignInPromoDismissalReasonMetric,
-      password_manager::metrics_util::CHROME_SIGNIN_CANCEL, 1);
-  histogram_tester.ExpectUniqueSample(kSignInPromoCountTilNoThanksMetric, 1, 1);
-  histogram_tester.ExpectTotalCount(kSignInPromoCountTilSignInMetric, 0);
-  histogram_tester.ExpectTotalCount(kSignInPromoDismissalCountMetric, 0);
   EXPECT_TRUE(prefs()->GetBoolean(
       password_manager::prefs::kWasSignInPasswordPromoClicked));
 }
@@ -533,25 +470,24 @@ TEST_F(ManagePasswordsBubbleModelTest, SignInPromoDismiss) {
   histogram_tester.ExpectUniqueSample(
       kUIDismissalReasonSaveMetric,
       password_manager::metrics_util::CLICKED_SAVE, 1);
-  histogram_tester.ExpectUniqueSample(
-      kSignInPromoDismissalReasonMetric,
-      password_manager::metrics_util::CHROME_SIGNIN_DISMISSED, 1);
-  histogram_tester.ExpectTotalCount(kSignInPromoCountTilSignInMetric, 0);
-  histogram_tester.ExpectTotalCount(kSignInPromoCountTilNoThanksMetric, 0);
-  histogram_tester.ExpectUniqueSample(kSignInPromoDismissalCountMetric, 1, 1);
   EXPECT_FALSE(prefs()->GetBoolean(
       password_manager::prefs::kWasSignInPasswordPromoClicked));
 }
 
 class ManagePasswordsBubbleModelManageLinkTest
     : public ManagePasswordsBubbleModelTest,
-      public ::testing::WithParamInterface<TestSyncService::SyncedTypes> {};
+      public ::testing::WithParamInterface<SyncedTypes> {};
 
 TEST_P(ManagePasswordsBubbleModelManageLinkTest, OnManageClicked) {
-  TestSyncService* sync_service = static_cast<TestSyncService*>(
+  syncer::TestSyncService* sync_service = static_cast<syncer::TestSyncService*>(
       ProfileSyncServiceFactory::GetInstance()->SetTestingFactoryAndUse(
           profile(), base::BindRepeating(&TestingSyncFactoryFunction)));
-  sync_service->set_synced_types(GetParam());
+  syncer::ModelTypeSet types;
+  if (GetParam() == SyncedTypes::ALL) {
+    types = syncer::ModelTypeSet::All();
+  }
+  sync_service->SetPreferredDataTypes(types);
+  sync_service->SetActiveDataTypes(types);
 
   PretendManagingPasswords();
 
@@ -566,8 +502,8 @@ TEST_P(ManagePasswordsBubbleModelManageLinkTest, OnManageClicked) {
 
 INSTANTIATE_TEST_SUITE_P(Default,
                          ManagePasswordsBubbleModelManageLinkTest,
-                         ::testing::Values(TestSyncService::SyncedTypes::ALL,
-                                           TestSyncService::SyncedTypes::NONE));
+                         ::testing::Values(SyncedTypes::ALL,
+                                           SyncedTypes::NONE));
 
 // Verify that URL keyed metrics are properly recorded.
 TEST_F(ManagePasswordsBubbleModelTest, RecordUKMs) {

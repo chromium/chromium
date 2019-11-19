@@ -335,6 +335,9 @@ need to be translated for each locale.-->
       </message>
 
       <if expr="is_macosx">
+        <message name="IDS_SAVE_PAGE_FILE_FORMAT_PROMPT_MAC" desc="The title of the File Format label for saving a page.">
+          Format:
+        </message>
         <message name="IDS_SELECT_FOLDER_BUTTON_TITLE" desc="The name of the Select button in the folder selection dialog.">
           Select
         </message>
@@ -423,12 +426,6 @@ need to be translated for each locale.-->
 
       <!--Accessible name strings-->
       <if expr="is_macosx">
-        <message name="IDS_ACCNAME_CONTENT_DELETION_ROLE_DESCRIPTION" desc="Accessibility role description for content deletion, meaning content that is has been or is suggested to be removed from a document, such as in a revision review" meaning="UI element">
-          Deletion
-        </message>
-        <message name="IDS_ACCNAME_CONTENT_INSERTION_ROLE_DESCRIPTION" desc="Accessibility role description for content insertion, meaning content that is has been or is suggested to be inserted into a document, such as in a revision review" meaning="UI element">
-          Insertion
-        </message>
         <message name="IDS_ACCNAME_TAB_ROLE_DESCRIPTION" desc="A generic description of a tab button's role." meaning="UI element">
           Tab
         </message>
@@ -686,9 +683,6 @@ need to be translated for each locale.-->
       <message name="IDS_MESSAGE_CENTER_NOTIFICATION_ACCESSIBLE_NAME_PLURAL" desc="The accessible name for a multiple notifications.">
         Notifications
       </message>
-      <message name="IDS_MESSAGE_CENTER_NOTIFIER_DISABLE" desc="The menu entry for disabling a notifier from a notification.">
-        Disable notifications from <ph name="notifier_name">$1<ex>Notification Galore!</ex></ph>
-      </message>
       <message name="IDS_MESSAGE_CENTER_EXPAND_NOTIFICATION" desc="The button for expanding the notification. By clicking this, the long message and the buttons of the notification are shown.">
         Expand notification
       </message>
@@ -725,6 +719,18 @@ need to be translated for each locale.-->
       <message name="IDS_MESSAGE_NOTIFICATION_DURATION_YEARS_SHORTEST" desc="Phrase describing a time duration using years that is as short as possible, preferrably one character. Should be same as AndroidPlatform msgId 7848711145196397042. (frameworks/base/core/res/res/values/strings.xml:plurals:duration_years_shortest) [ICU Syntax]">
         {YEARS, plural, =1 {1y} other {#y}}
       </message>
+      <message name="IDS_MESSAGE_NOTIFICATION_DURATION_MINUTES_SHORTEST_FUTURE" desc="Phrase describing a time duration using minutes that is as short as possible, preferrably one character. This version should be a future point in time. Should be same as AndroidPlatform msgId 3277614521231489951. (frameworks/base/core/res/res/values/strings.xml:plurals:duration_minutes_shortest_future) [ICU Syntax]">
+        {MINUTES, plural, =1 {in 1m} other {in #m}}
+      </message>
+      <message name="IDS_MESSAGE_NOTIFICATION_DURATION_HOURS_SHORTEST_FUTURE" desc="Phrase describing a time duration using hours that is as short as possible, preferrably one character. This version should be a future point in time. Should be same as AndroidPlatform msgId 2152452368397489370. (frameworks/base/core/res/res/values/strings.xml:plurals:duration_hours_shortest_future) [ICU Syntax]">
+        {HOURS, plural, =1 {in 1h} other {in #h}}
+      </message>
+      <message name="IDS_MESSAGE_NOTIFICATION_DURATION_DAYS_SHORTEST_FUTURE" desc="Phrase describing a time duration using days that is as short as possible, preferrably one character. This version should be a future point in time. Should be same as AndroidPlatform msgId 8088331502820295701. (frameworks/base/core/res/res/values/strings.xml:plurals:duration_days_shortest_future) [ICU Syntax]">
+        {DAYS, plural, =1 {in 1d} other {in #d}}
+      </message>
+      <message name="IDS_MESSAGE_NOTIFICATION_DURATION_YEARS_SHORTEST_FUTURE" desc="Phrase describing a time duration using years that is as short as possible, preferrably one character. This version should be a future point in time. Should be same as AndroidPlatform msgId 2317006667145250301. (frameworks/base/core/res/res/values/strings.xml:plurals:duration_years_shortest_future) [ICU Syntax]">
+        {YEARS, plural, =1 {in 1y} other {in #y}}
+      </message>
       <message name="IDS_MESSAGE_CENTER_BLOCK_ALL_NOTIFICATIONS_SITE" desc="The label for the radio button to block all the notifications from this notification origin.">
         Block all notifications from this site
       </message>
@@ -746,11 +752,23 @@ need to be translated for each locale.-->
       <message name="IDS_MESSAGE_CENTER_CLOSE_NOTIFICATION_BUTTON_TOOLTIP" desc="The tooltip text for the close button in a notification.">
         Close
       </message>
+      <message name="IDS_MESSAGE_CENTER_NOTIFICATION_SNOOZE_BUTTON_TOOLTIP" desc="The tooltip and spoken feedback text for the snooze button in a notification. Usually 'button' is suffixed to this text automatically during spoken feedback.">
+        Snooze
+      </message>
       <message name="IDS_MESSAGE_NOTIFICATION_SETTINGS_BUTTON_ACCESSIBLE_NAME" desc="The spoken feedback text for the settings button in a notification. Usually 'button' is suffixed to this text automatically.">
         Notification settings
       </message>
-      <message name="IDS_MESSAGE_NOTIFICATION_SEND_TAB_TO_SELF_DEVICE_INFO_PREFIX" desc="For SEND_TAB_TO_SELF notification, this will be a prefix of device info.">
-        Shared from 
+      <message name="IDS_MESSAGE_NOTIFICATION_SEND_TAB_TO_SELF_DEVICE_INFO" desc="The message text for the notification when the user receive a shared tab from another device. It shows the name of the device which shared the tab.">
+        Shared from <ph name="DEVICE_NAME">$1<ex>Ted's Pixel 2</ex></ph>
+      </message>
+      <message name="IDS_MESSAGE_NOTIFICATION_SEND_TAB_TO_SELF_CONFIRMATION_SUCCESS" desc="The title text for the comformation notification when the user successfully share a tab to other devices.">
+        Sending to <ph name="DEVICE_NAME">$1<ex>Ted's Pixel 2</ex></ph>...
+      </message>
+      <message name="IDS_MESSAGE_NOTIFICATION_SEND_TAB_TO_SELF_CONFIRMATION_FAILURE_TITLE" desc="The title text for the comformation notification when the user failed to share a tab to other devices.">
+        Failed to send
+      </message>
+      <message name="IDS_MESSAGE_NOTIFICATION_SEND_TAB_TO_SELF_CONFIRMATION_FAILURE_MESSAGE" desc="The message text for the comformation notification when the user failed to share a tab to other devices.">
+        Please try again
       </message>
       <if expr="chromeos">
         <message name="IDS_MESSAGE_CENTER_NOTIFIER_SCREENSHOT_NAME" desc="The name of screenshot notifier that is a system component">
@@ -843,17 +861,23 @@ need to be translated for each locale.-->
       <message name="IDS_SHELF_STATE_AUTO_HIDE" desc="Accessibility announcement notifying users that the shelf will now hide itself automatically">
         Shelf auto hidden
       </message>
+      <message name="IDS_SHELF_NEXT" desc="Tooltip for the shelf arrow button that scrolls the shelf forward">
+        Next
+      </message>
+      <message name="IDS_SHELF_PREVIOUS" desc="Tooltip for the shelf arrow button that scrolls the shelf backward">
+        Previous
+      </message>
       <message name="IDS_REMOVE_ZERO_STATE_SUGGESTION_TITLE" desc="Titlebar of removing zero state suggestion confirmation dialog">
-        Remove this suggestion?
+        Delete this search from your history?
       </message>
       <message name="IDS_REMOVE_ZERO_STATE_SUGGESTION_DETAILS" desc="Detailed explanation message for removing zero state suggestion">
-        Removing this suggestion will hide it from your account across all your devices.
+        You searched for this before. Deleting "<ph name="query">$1<ex>Previously Searched Query</ex></ph>" from your history will permanently remove it from your account across all your devices.
       </message>
       <message name="IDS_REMOVE_SUGGESTION_BUTTON_LABEL" desc="Remove suggestion button label">
         Remove
       </message>
       <message name="IDS_APP_LIST_START_ASSISTANT" desc="Tooltip for the button that starts Google Assistant from the search box in the app list.">
-        Start Google Assistant
+        Google Assistant
       </message>
       <message name="IDS_APP_LIST_PAGE_SWITCHER" desc="Tooltip for page switcher for each page in fullscreen view which shows all apps.">
         Page <ph name="selected_page">$1<ex>1</ex></ph> of <ph name="total_page_num">$2<ex>3</ex></ph>
@@ -861,6 +885,17 @@ need to be translated for each locale.-->
       <message name="IDS_APP_LIST_CONTINUE_READING_ACCESSIBILE_NAME" desc="The spoken feedback text for the suggestion chip of continue reading.">
         Continue reading from your mobile device <ph name="title">$1<ex>Title</ex></ph>
       </message>
+      <message name="IDS_APP_LIST_LEARN_MORE" desc="Text of Learn more links.">
+        Learn more
+      </message>
+      <message name="IDS_APP_LIST_ASSISTANT_PRIVACY_INFO" desc="Text shown in Launcher to imply Assistant search.">
+        Your searches are powered by the Google Assistant. <ph name="LEARN_MORE">$1<ex>Learn more</ex></ph>
+      </message>
+      <message name="IDS_APP_LIST_ASSISTANT_PRIVACY_INFO_CLOSE" desc="Close button text.">
+        Close
+      </message>
+
+
       <message name="IDS_APP_ACCESSIBILITY_STAR_RATING_ARC" desc="Accessibility text for the star rating of a Play Store app.">
         Star rating <ph name="RATING_SCORE">$1<ex>5.0</ex></ph>
       </message>
@@ -922,6 +957,85 @@ need to be translated for each locale.-->
       <message name="IDS_BADGE_UNREAD_NOTIFICATIONS" desc="The accessibility text which will be read by a screen reader when there are notifcatications">
         {UNREAD_NOTIFICATIONS, plural, =1 {1 Unread Notification} other {# Unread Notifications}}
       </message>
+
+      <!-- Browser sharing messages -->
+      <message name="IDS_BROWSER_SHARING_CLICK_TO_CALL_DIALOG_TITLE_LABEL" desc="The label to be shown as the title of the dialog when user click on a phone number, which means which device from the dialog to use for telephony service.">
+        Make a call from
+      </message>
+      <message name="IDS_BROWSER_SHARING_CLICK_TO_CALL_DIALOG_TITLE_NO_DEVICES" desc="The label to be shown as the title of the dialog when user click on a phone number, if there are no phones or apps to choose from.">
+        Call this number from your phone?
+      </message>
+      <message name="IDS_BROWSER_SHARING_CLICK_TO_CALL_DIALOG_HELP_TEXT_NO_DEVICES" desc="The label to be shown as a help text of the dialog when user click on a phone number, if there are no phones to choose from.">
+        To send a number from here to your Android phone, <ph name="TROUBLESHOOT_LINK">$1<ex>turn on sync</ex></ph> for both devices in settings.
+      </message>
+      <message name="IDS_BROWSER_SHARING_CLICK_TO_CALL_DIALOG_HELP_TEXT_NO_DEVICES_ORIGIN" desc="The label to be shown as a help text of the dialog when user click on a phone number, if there are no phones to choose from.">
+        To send a number from <ph name="ORIGIN">$1<ex>www.google.com</ex></ph> to your Android phone, <ph name="TROUBLESHOOT_LINK">$2<ex>turn on sync</ex></ph> for both devices in settings.
+      </message>
+      <message name="IDS_BROWSER_SHARING_CLICK_TO_CALL_DIALOG_TROUBLESHOOT_LINK" desc="The label to be shown on the dialog when user click on a phone number for the link to a help page to turn on sync.">
+        turn on sync
+      </message>
+      <message name="IDS_BROWSER_SHARING_CLICK_TO_CALL_DIALOG_CALL_BUTTON_LABEL" desc="The button label to make a call, shown in the Click to Call dialog.">
+        Make call
+      </message>
+      <message name="IDS_BROWSER_SHARING_OMNIBOX_SENDING_LABEL" desc="The label to be shown next to the omnibox icon when the message is being sent to the other device.">
+        Sending...
+      </message>
+      <message name="IDS_BROWSER_SHARING_DIALOG_DEVICE_SUBTITLE_LAST_ACTIVE_DAYS" desc="The label to be shown below the name of a valid device indicating the last active time of device,">
+        {DAYS, plural, =0 {Active today} =1 {Active 1 day ago} other {Active # days ago}}
+      </message>
+      <message name="IDS_BROWSER_SHARING_CLICK_TO_CALL_DIALOG_INITIATING_ORIGIN" desc="The label for the initiating origin shown in Click to Call dialogs.">
+        Number from <ph name="ORIGIN">$1<ex>https://google.com</ex></ph>
+      </message>
+
+      <!-- Sharing content types -->
+      <message name="IDS_BROWSER_SHARING_CONTENT_TYPE_TEXT" desc="The label used to describe that the content type being shared is a text.">
+        Text
+      </message>
+      <message name="IDS_BROWSER_SHARING_CONTENT_TYPE_NUMBER" desc="The label used to describe that the content type being shared is a number.">
+        Number
+      </message>
+
+      <!-- Sharing dialog error messages -->
+      <message name="IDS_BROWSER_SHARING_ERROR_DIALOG_TITLE_GENERIC_ERROR" desc="The label to be shown as the title of the dialog when we encounter an error that can be fixed by the user. Eg, device not connected to internet or sync turned off.">
+        Can't share <ph name="CONTENT_TYPE">$1<ex>video</ex></ph>
+      </message>
+      <message name="IDS_BROWSER_SHARING_ERROR_DIALOG_TITLE_INTERNAL_ERROR" desc="The label to be shown as the title of the dialog when an internal error occurred while sending the message.">
+        Couldn't share <ph name="CONTENT_TYPE">$1<ex>video</ex></ph>
+      </message>
+
+      <message name="IDS_BROWSER_SHARING_ERROR_DIALOG_TEXT_DEVICE_NOT_FOUND" desc="The text to be shown on the dialog when an error occurred because the device is not synced.">
+        Make sure <ph name="TARGET_DEVICE_NAME">$1<ex>Pixel XL</ex></ph> has sync turned on in Chrome, and then try sending again.
+      </message>
+      <message name="IDS_BROWSER_SHARING_ERROR_DIALOG_TEXT_NETWORK_ERROR" desc="The text to be shown on the dialog when the sender device has network issues.">
+        Make sure this device is connected to the internet.
+      </message>
+      <message name="IDS_BROWSER_SHARING_ERROR_DIALOG_TEXT_DEVICE_ACK_TIMEOUT" desc="The text to be shown on the dialog when the recipient device has network issues.">
+        Make sure <ph name="TARGET_DEVICE_NAME">$1<ex>Pixel XL</ex></ph> is connected to the internet.
+      </message>
+      <message name="IDS_BROWSER_SHARING_ERROR_DIALOG_TEXT_INTERNAL_ERROR" desc="The text to be shown on the dialog when an internal error occurred while sending the message.">
+        Something went wrong. Try again later.
+      </message>
+
+      <!-- Shared clipboard error message. Could potentially be made generic -->
+      <message name="IDS_BROWSER_SHARING_SHARED_CLIPBOARD_ERROR_DIALOG_TITLE_PAYLOAD_TOO_LARGE" desc="The label to be shown as the title of the dialog when the text shared is too large.">
+        Text is too large
+      </message>
+      <message name="IDS_BROWSER_SHARING_SHARED_CLIPBOARD_ERROR_DIALOG_TEXT_PAYLOAD_TOO_LARGE" desc="The text to be shown on the dialog when the text shared is too large.">
+        Try sharing the text in smaller chunks.
+      </message>
+
+      <if expr="is_android">
+        <!-- DevUI DFM Loader error strings -->
+        <message name="IDS_DEV_UI_LOADER_ERROR_HEADING" desc="Heading text for error page shown when Chrome fails to dynamically install the DevUI module.">
+          Something went wrong
+        </message>
+        <message name="IDS_DEV_UI_LOADER_ERROR_SUGGEST_RELOAD" desc="Suggests to reload page to retry install of the DevUI module.">
+          Reloading this page
+        </message>
+        <message name="IDS_DEV_UI_LOADER_ERROR_SUGGEST_CHECK_INTERNET" desc="Suggests to check internet connection if retrying to install the DevUI module.">
+          Checking your internet connection
+        </message>
+      </if>
     </messages>
   </release>
 </grit>

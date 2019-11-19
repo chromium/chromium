@@ -92,8 +92,8 @@ IN_PROC_BROWSER_TEST_F(OpenedByDOMTest, NormalWindow) {
   // list has only one element. Navigate a bit so the second condition is false.
   GURL url1 = embedded_test_server()->GetURL("/site_isolation/blank.html?1");
   GURL url2 = embedded_test_server()->GetURL("/site_isolation/blank.html?2");
-  NavigateToURL(shell(), url1);
-  NavigateToURL(shell(), url2);
+  EXPECT_TRUE(NavigateToURL(shell(), url1));
+  EXPECT_TRUE(NavigateToURL(shell(), url2));
 
   // This window was not opened by DOM, so close does not reach the browser
   // process.
@@ -108,10 +108,10 @@ IN_PROC_BROWSER_TEST_F(OpenedByDOMTest, Popup) {
   GURL url1 = embedded_test_server()->GetURL("/site_isolation/blank.html?1");
   GURL url2 = embedded_test_server()->GetURL("/site_isolation/blank.html?2");
   GURL url3 = embedded_test_server()->GetURL("/site_isolation/blank.html?3");
-  NavigateToURL(shell(), url1);
+  EXPECT_TRUE(NavigateToURL(shell(), url1));
 
   Shell* popup = OpenWindowFromJavaScript(shell(), url2);
-  NavigateToURL(popup, url3);
+  EXPECT_TRUE(NavigateToURL(popup, url3));
   EXPECT_TRUE(AttemptCloseFromJavaScript(popup->web_contents()));
 }
 
@@ -130,10 +130,10 @@ IN_PROC_BROWSER_TEST_F(OpenedByDOMTest, CrossProcessPopup) {
   GURL url3 = embedded_test_server()->GetURL("/site_isolation/blank.html?3");
   url3 = url3.ReplaceComponents(replace_host);
 
-  NavigateToURL(shell(), url1);
+  EXPECT_TRUE(NavigateToURL(shell(), url1));
 
   Shell* popup = OpenWindowFromJavaScript(shell(), url2);
-  NavigateToURL(popup, url3);
+  EXPECT_TRUE(NavigateToURL(popup, url3));
   EXPECT_TRUE(AttemptCloseFromJavaScript(popup->web_contents()));
 }
 

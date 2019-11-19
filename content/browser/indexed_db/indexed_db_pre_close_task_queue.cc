@@ -4,6 +4,8 @@
 
 #include "content/browser/indexed_db/indexed_db_pre_close_task_queue.h"
 
+#include <utility>
+
 #include "base/bind.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/threading/sequenced_task_runner_handle.h"
@@ -25,8 +27,7 @@ IndexedDBPreCloseTaskQueue::IndexedDBPreCloseTaskQueue(
       on_done_(std::move(on_complete)),
       timeout_time_(max_run_time),
       timeout_timer_(std::move(timer)),
-      task_runner_(base::SequencedTaskRunnerHandle::Get()),
-      ptr_factory_(this) {}
+      task_runner_(base::SequencedTaskRunnerHandle::Get()) {}
 IndexedDBPreCloseTaskQueue::~IndexedDBPreCloseTaskQueue() {}
 
 void IndexedDBPreCloseTaskQueue::StopForNewConnection() {

@@ -1,39 +1,36 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="es-419">
-<translation id="1326317727527857210">Accede a Chrome para obtener las pestañas de tus otros dispositivos.</translation>
+<translation id="1282031177488366470">Ayuda a mejorar las funciones y el rendimiento de Chrome</translation>
+<translation id="1682483655351012182">Sincronizar tus datos de Chrome</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1816764564654397850">Aviso de privacidad de Google Chrome</translation>
 <translation id="1863312987075920112">Al usar esta app, aceptas las <ph name="BEGIN_LINK_TOS" />Condiciones del servicio<ph name="END_LINK_TOS" /> y la <ph name="BEGIN_LINK_PRIVACY" />Política de Privacidad<ph name="END_LINK_PRIVACY" /> de Chrome.</translation>
-<translation id="1984705450038014246">Sincroniza tus datos de Chrome</translation>
 <translation id="2147651015520127414">Chrome verificó que <ph name="ISSUER" /> emitió el certificado de este sitio web.</translation>
 <translation id="2199719347983604670">Datos de Sincronización de Chrome</translation>
-<translation id="2334084861041072223">Copyright <ph name="YEAR" /> Google Inc. Todos los derechos reservados.</translation>
-<translation id="2342981853652716282">Accede a tu cuenta en Chrome para obtener tus favoritos, contraseñas y mucho más desde todos tus dispositivos.</translation>
 <translation id="2347208864470321755">Cuando esté activada esta función, Chrome ofrecerá traducir páginas escritas en otros idiomas con Google Traductor. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="2441696206556358796">Para guardar imágenes, presiona Configuración para permitir que Chrome use tus fotos</translation>
 <translation id="2576431527583832481">¡Chrome mejoró! Hay una nueva versión disponible.</translation>
 <translation id="257708665678654955">¿Quieres que Google Chrome te ofrezca traducir las páginas de este sitio que estén en <ph name="LANGUAGE_NAME" /> la próxima vez?</translation>
 <translation id="3030414234702425231">Como estás saliendo de una cuenta que administra <ph name="SIGNOUT_MANAGED_DOMAIN" />, tus datos de Chrome se borrarán de este dispositivo, pero permanecerán en tu Cuenta de Google.</translation>
-<translation id="3148434565183091099">Para usar tus favoritos en todos los dispositivos, accede a Chrome.</translation>
 <translation id="3148688391461398285">Obtén una mejor experiencia en Chrome según tu ubicación.</translation>
 <translation id="3167189358072330585">Tu cuenta no funciona en Google Chrome. Comunícate con tu administrador de dominio o utiliza una cuenta común de Google para acceder.</translation>
 <translation id="3196546062792660320">Chrome lleva tus cuentas a la Web para ahorrarte tiempo. Puedes agregar o quitar cuentas en la configuración.</translation>
 <translation id="3282568296779691940">Acceder a Chrome</translation>
 <translation id="3345341804167540816">Usar Chrome en todas partes</translation>
 <translation id="384394811301901750">Google Chrome no puede usar tu cámara en este momento</translation>
-<translation id="3870154837782082782">Google Inc.</translation>
 <translation id="3980220367029651214">Estás cambiando la cuenta de sincronización de <ph name="USER_EMAIL1" /> a <ph name="USER_EMAIL2" />. <ph name="DOMAIN" /> administra tus datos de Chrome existentes. Esta acción borrará tus datos del dispositivo, pero permanecerán en <ph name="USER_EMAIL1" />.</translation>
 <translation id="3988789688219830639">Google Chrome no puede acceder a tus fotos ni videos. Habilita el acceso en Configuración de iOS &gt; Privacidad &gt; Fotos.</translation>
 <translation id="4099578267706723511">Envía las estadísticas de uso y los informes de fallos a Google para ayudarnos a mejorar Chrome.</translation>
 <translation id="415767770115540173">Obtén una mejor experiencia de Google en Chrome según tu ubicación.</translation>
 <translation id="424864128008805179">¿Quieres salir de Chrome?</translation>
-<translation id="447252321002412580">Ayudar a mejorar las funciones y el rendimiento de Chrome</translation>
+<translation id="4249068189593983585">Sugerencia de Chrome: Para obtener más opciones de pestañas, mantén presionado el botón Mostrar pestañas de la barra de herramientas, que se encuentra en la parte inferior o superior de la pantalla.</translation>
 <translation id="4523886039239821078">Algunos complementos causan bloqueos en Chrome. Desinstala:</translation>
-<translation id="4615174829807303908">Estás saliendo de una cuenta administrada por <ph name="SIGNOUT_MANAGED_DOMAIN" />. Esta acción borrará tus datos de Chrome en este dispositivo, pero permanecerán en tu cuenta de Google.</translation>
 <translation id="5389212809648216794">Google Chrome no puede utilizar tu cámara porque la está usando otra aplicación</translation>
+<translation id="5621912349729388018"><ph name="BEGIN_LINK" />Revisa las Condiciones del Servicio de Chrome actualizadas.<ph name="END_LINK" /></translation>
 <translation id="5639704535586432836">Abre Configuración &gt; Privacidad &gt; Cámara &gt; Google Chrome y activa la cámara.</translation>
 <translation id="5642200033778930880">Google Chrome no puede usar tu cámara en el modo de vista dividida</translation>
+<translation id="5690427481109656848">Google LLC</translation>
 <translation id="5854621639439811139">Sugerencia de Chrome: Algunos botones ahora están en la parte inferior de la pantalla, como Retroceder, Avanzar y Buscar.</translation>
 <translation id="6036420186814142909">Google Chrome tiene funciones que te ayudan a administrar tus datos de Internet y la rapidez con la que puedes cargar páginas web.
 <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
@@ -46,14 +43,12 @@
 <translation id="7172660552945675509">Sugerencia: <ph name="BEGIN_LINK" />Lleva Chrome a tu Dock<ph name="END_LINK" /></translation>
 <translation id="7173660919484573146">Chrome usa Face ID para garantizar el acceso autorizado a tus contraseñas.</translation>
 <translation id="7265369419224458312">Accede aquí a las pestañas que abriste en la computadora. Abre Chrome en la computadora, accede al menú y selecciona "Acceder a Chrome…".</translation>
-<translation id="728488472449859922">Activar el escáner QR en Google Chrome</translation>
 <translation id="7400722733683201933">Acerca de Google Chrome</translation>
-<translation id="7437998757836447326">Salir de Chrome</translation>
 <translation id="756809126120519699">Datos de Chrome borrados</translation>
 <translation id="7626032353295482388">Te damos la bienvenida a Chrome</translation>
+<translation id="7698568245838009292">Chrome quiere acceder a la cámara</translation>
+<translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Todos los derechos reservados.</translation>
 <translation id="840168496893712993">Algunos complementos causan bloqueos en Chrome. Prueba a desinstalarlos.</translation>
 <translation id="8459495907675268833">Los datos seleccionados se quitaron de Chrome y los dispositivos sincronizados. Es posible que tu cuenta de Google tenga otros formularios del historial de navegación, como las búsquedas y la actividad de otros servicios de Google en history.google.com.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
-<translation id="8606668294522778825">Es posible que Google Chrome utilice servicios web para mejorar tu experiencia de navegación (tienes la opción de inhabilitar estos servicios). <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
-<translation id="96145293669295453">Sugerencia de Chrome: Para obtener más opciones de pestañas, mantén presionado el botón Mostrar pestañas de la barra de herramientas, que se encuentra en la parte inferior o superior de la pantalla.</translation>
 </translationbundle>

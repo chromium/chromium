@@ -15,20 +15,11 @@ var GuestViewInternalNatives = requireNative('guest_view_internal');
 var IdGenerator = requireNative('id_generator');
 var logging = requireNative('logging');
 
-// Registers the browserplugin and guestview as custom elements once the
-// document has loaded.
+// Registers the browserplugin and guestview as custom elements.
 // |containerElementType| is a GuestViewContainerElement (e.g. WebViewElement)
 function registerElement(elementName, containerElementType) {
-  var useCapture = true;
-  window.addEventListener('readystatechange', function listener(event) {
-    if (document.readyState == 'loading')
-      return;
-
-    registerInternalElement($String.toLowerCase(elementName));
-    registerGuestViewElement(elementName, containerElementType);
-
-    $EventTarget.removeEventListener(window, event.type, listener, useCapture);
-  }, useCapture);
+  registerInternalElement($String.toLowerCase(elementName));
+  registerGuestViewElement(elementName, containerElementType);
 }
 
 // Registers the browser plugin <object> custom element. |viewType| is the

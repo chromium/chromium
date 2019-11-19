@@ -7,6 +7,9 @@
 
 #include <string>
 
+#include "base/optional.h"
+#include "chromeos/services/device_sync/cryptauth_feature_type.h"
+
 class PrefRegistrySimple;
 
 namespace chromeos {
@@ -29,11 +32,25 @@ class CryptAuthGCMManager {
 
     // Called when a GCM message is received to re-enroll the device with
     // CryptAuth.
-    virtual void OnReenrollMessage();
+    // |session_id|: Only included in messages sent by CryptAuth v2 DeviceSync
+    //               and null otherwise. Value should be included in the
+    //               session_id field of ClientMetadata.
+    // |feature_type|: Only included in messages resulting from
+    //                 BatchNotifyGroupDevices requests and null otherwise.
+    virtual void OnReenrollMessage(
+        const base::Optional<std::string>& session_id,
+        const base::Optional<CryptAuthFeatureType>& feature_type);
 
     // Called when a GCM message is received to sync down new devices from
     // CryptAuth.
-    virtual void OnResyncMessage();
+    // |session_id|: Only included in messages sent by CryptAuth v2 DeviceSync
+    //               and null otherwise. Value should be included in the
+    //               session_id field of ClientMetadata.
+    // |feature_type|: Only included in messages resulting from
+    //                 BatchNotifyGroupDevices requests and null otherwise.
+    virtual void OnResyncMessage(
+        const base::Optional<std::string>& session_id,
+        const base::Optional<CryptAuthFeatureType>& feature_type);
   };
 
   virtual ~CryptAuthGCMManager() {}

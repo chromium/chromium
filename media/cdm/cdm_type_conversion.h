@@ -51,9 +51,7 @@ MEDIA_EXPORT CdmKeyInformation::KeyStatus ToMediaKeyStatus(
 MEDIA_EXPORT cdm::KeyStatus ToCdmKeyStatus(CdmKeyInformation::KeyStatus status);
 
 MEDIA_EXPORT cdm::EncryptionScheme ToCdmEncryptionScheme(
-    const EncryptionScheme& scheme);
-MEDIA_EXPORT cdm::EncryptionScheme ToCdmEncryptionScheme(
-    const EncryptionMode& mode);
+    EncryptionScheme scheme);
 
 MEDIA_EXPORT CdmPromise::Exception ToMediaCdmPromiseException(
     cdm::Exception exception);

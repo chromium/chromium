@@ -5,6 +5,7 @@
 #include "content/test/test_render_widget_host.h"
 
 #include "base/run_loop.h"
+#include "content/browser/renderer_host/frame_token_message_queue.h"
 #include "content/public/common/content_features.h"
 
 namespace content {
@@ -14,9 +15,9 @@ std::unique_ptr<RenderWidgetHostImpl> TestRenderWidgetHost::Create(
     RenderProcessHost* process,
     int32_t routing_id,
     bool hidden) {
-  mojom::WidgetPtr widget;
+  mojo::PendingRemote<mojom::Widget> widget;
   std::unique_ptr<MockWidgetImpl> widget_impl =
-      std::make_unique<MockWidgetImpl>(mojo::MakeRequest(&widget));
+      std::make_unique<MockWidgetImpl>(widget.InitWithNewPipeAndPassReceiver());
   return base::WrapUnique(new TestRenderWidgetHost(
       delegate, process, routing_id, std::move(widget_impl), std::move(widget),
       hidden));
@@ -27,13 +28,14 @@ TestRenderWidgetHost::TestRenderWidgetHost(
     RenderProcessHost* process,
     int32_t routing_id,
     std::unique_ptr<MockWidgetImpl> widget_impl,
-    mojom::WidgetPtr widget,
+    mojo::PendingRemote<mojom::Widget> widget,
     bool hidden)
     : RenderWidgetHostImpl(delegate,
                            process,
                            routing_id,
                            std::move(widget),
-                           hidden),
+                           hidden,
+                           std::make_unique<FrameTokenMessageQueue>()),
       widget_impl_(std::move(widget_impl)) {}
 
 TestRenderWidgetHost::~TestRenderWidgetHost() {}

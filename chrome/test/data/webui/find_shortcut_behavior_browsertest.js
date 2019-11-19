@@ -2,12 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-/** @const {string} Path to source root. */
-const ROOT_PATH = '../../../../';
-
 // Polymer BrowserTest fixture.
-GEN_INCLUDE(
-    [ROOT_PATH + 'chrome/test/data/webui/polymer_browser_test_base.js']);
+GEN_INCLUDE(['//chrome/test/data/webui/polymer_browser_test_base.js']);
 
 /**
  * Test fixture for FindShortcutBehavior.
@@ -28,10 +24,9 @@ FindShortcutBehaviorTest.prototype = {
 
   /** @override */
   extraLibraries: [
-    ...PolymerTest.getLibraries(ROOT_PATH),
-    ROOT_PATH + 'ui/webui/resources/js/util.js',
-    'settings/test_util.js',
-    'settings/test_util.js',
+    ...PolymerTest.prototype.extraLibraries,
+    '//ui/webui/resources/js/util.js',
+    'test_util.js',
     'find_shortcut_behavior_test.js',
   ],
 };

@@ -33,14 +33,6 @@ login.createScreen('EnableDebuggingScreen', 'debugging', function() {
     },
 
     /**
-     * Header text of the screen.
-     * @type {string}
-     */
-    get header() {
-      return loadTimeData.getString('enableDebuggingScreenTitle');
-    },
-
-    /**
      * Buttons in oobe wizard's button strip.
      * @type {array} Array of Buttons.
      */

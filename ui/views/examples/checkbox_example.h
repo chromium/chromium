@@ -29,9 +29,9 @@ class VIEWS_EXAMPLES_EXPORT CheckboxExample : public ExampleBase,
   void ButtonPressed(Button* sender, const ui::Event& event) override;
 
   // The only control in this test.
-  Checkbox* button_;
+  Checkbox* button_ = nullptr;
 
-  int count_;
+  int count_ = 0;
 
   DISALLOW_COPY_AND_ASSIGN(CheckboxExample);
 };

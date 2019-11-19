@@ -1,0 +1,121 @@
+<link rel="import" href="chrome://resources/html/polymer.html">
+
+<link rel="import" href="chrome://resources/cr_elements/cr_link_row/cr_link_row.html">
+<link rel="import" href="chrome://resources/cr_elements/md_select_css.html">
+<link rel="import" href="chrome://resources/cr_elements/policy/cr_policy_pref_indicator.html">
+<link rel="import" href="chrome://resources/cr_elements/shared_vars_css.html">
+<link rel="import" href="chrome://resources/html/assert.html">
+<link rel="import" href="chrome://resources/html/i18n_behavior.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/paper-tooltip/paper-tooltip.html">
+<link rel="import" href="../../controls/extension_controlled_indicator.html">
+<link rel="import" href="../../google_assistant_page/google_assistant_page.html">
+<link rel="import" href="../../google_assistant_page/google_assistant_browser_proxy.html">
+<link rel="import" href="../../icons.html">
+<link rel="import" href="../../i18n_setup.html">
+<link rel="import" href="../../route.html">
+<link rel="import" href="../../search_engines_page/search_engines_browser_proxy.html">
+<link rel="import" href="../../settings_page/settings_animated_pages.html">
+<link rel="import" href="../../settings_page/settings_subpage.html">
+<link rel="import" href="../../settings_shared_css.html">
+<link rel="import" href="../../settings_vars_css.html">
+
+<dom-module id="os-settings-search-page">
+  <template>
+    <style include="settings-shared md-select">
+      #search-wrapper {
+        align-items: center;
+        display: flex;
+        min-height: var(--settings-row-min-height);
+      }
+
+      /* TODO(jamescook): Style all OS settings tooltips to new spec. */
+      paper-tooltip {
+        --paper-tooltip: {
+          @apply --cr-tooltip;
+          padding: 12px 10px;
+        };
+      }
+
+      iron-icon {
+        --iron-icon-fill-color: var(--cros-search-page-question-icon-color);
+      }
+
+      cr-policy-pref-indicator {
+        padding-inline-end: 8px;
+      }
+    </style>
+    <settings-animated-pages id="pages" section="search"
+        focus-config="[[focusConfig_]]">
+      <div route-path="default">
+        <!-- Omnibox and launcher search engine. This shares the same pref with
+             browser search engine because users probably don't want one engine
+             in the omnibox and a different one in the launcher. -->
+        <div class="settings-box first block">
+          <div id="search-wrapper">
+            <div id="searchExplanation" class="start settings-box-text">
+              $i18n{osSearchEngineLabel}
+              <iron-icon id="help-icon" icon="cr:help-outline"
+                  aria-label="$i18n{osSearchEngineTooltip}"
+                  aria-describedby="tooltip"></iron-icon>
+              <paper-tooltip id="tooltip" for="help-icon" position="bottom"
+                  aria-hidden="true" fit-to-visible-bounds>
+                $i18n{osSearchEngineTooltip}
+              </paper-tooltip>
+            </div>
+            <template is="dom-if" if="[[isDefaultSearchControlledByPolicy_(
+                prefs.default_search_provider_data.template_url_data)]]">
+              <cr-policy-pref-indicator pref="[[
+                  prefs.default_search_provider_data.template_url_data]]">
+              </cr-policy-pref-indicator>
+            </template>
+            <select class="md-select" on-change="onChange_"
+                aria-labelledby="searchExplanation"
+                disabled$="[[isDefaultSearchEngineEnforced_(
+                    prefs.default_search_provider_data.template_url_data)]]">
+              <template is="dom-repeat" items="[[searchEngines_]]">
+                <option selected="[[item.default]]">[[item.name]]</option>
+              </template>
+            </select>
+          </div>
+          <template is="dom-if"
+              if="[[prefs.default_search_provider_data.template_url_data.extensionId]]">
+            <extension-controlled-indicator
+                extension-id="[[
+                    prefs.default_search_provider_data.template_url_data.extensionId]]"
+                extension-name="[[
+                    prefs.default_search_provider_data.template_url_data.controlledByName]]"
+                extension-can-be-disabled="[[
+                    prefs.default_search_provider_data.template_url_data.extensionCanBeDisabled]]"
+                on-disable-extension="onDisableExtension_">
+            </extension-controlled-indicator>
+          </template>
+        </div>
+
+        <!-- Google Assistant -->
+        <template is="dom-if" if="[[isAssistantAllowed_]]">
+          <cr-link-row
+              class="hr"
+              id="assistantSubpageTrigger"
+              label="$i18n{searchGoogleAssistant}"
+              sub-label="[[getAssistantEnabledDisabledLabel_(
+                  prefs.settings.voice_interaction.enabled.value)]]"
+              on-click="onGoogleAssistantTap_"
+              role-description="$i18n{subpageArrowRoleDescription}">
+          </cr-link-row>
+        </template>
+      </div>
+      <template is="dom-if" if="[[isAssistantAllowed_]]">
+        <template is="dom-if" route-path="/googleAssistant">
+          <settings-subpage
+              associated-control="[[$$('#assistantSubpageTrigger')]]"
+              page-title="$i18n{googleAssistantPageTitle}">
+            <settings-google-assistant-page prefs="{{prefs}}">
+            </settings-google-assistant-page>
+          </settings-subpage>
+        </template>
+      </template>
+    </settings-animated-pages>
+  </template>
+  <script src="os_search_page.js"></script>
+</dom-module>

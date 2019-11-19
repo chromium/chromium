@@ -60,7 +60,7 @@ void NetworkDelegateErrorObserver::Core::NotifyPACScriptError(
 
 void NetworkDelegateErrorObserver::Core::Shutdown() {
   CHECK(origin_runner_->BelongsToCurrentThread());
-  network_delegate_ = NULL;
+  network_delegate_ = nullptr;
 }
 
 // NetworkDelegateErrorObserver -----------------------------------------------

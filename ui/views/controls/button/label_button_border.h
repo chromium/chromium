@@ -42,11 +42,11 @@ class VIEWS_EXPORT LabelButtonBorder : public Border {
 // A Border that paints a LabelButton's background frame using image assets.
 class VIEWS_EXPORT LabelButtonAssetBorder : public LabelButtonBorder {
  public:
-  explicit LabelButtonAssetBorder(Button::ButtonStyle style);
+  LabelButtonAssetBorder();
   ~LabelButtonAssetBorder() override;
 
-  // Returns the default insets for a given |style|.
-  static gfx::Insets GetDefaultInsetsForStyle(Button::ButtonStyle style);
+  // Returns the default insets.
+  static gfx::Insets GetDefaultInsets();
 
   // Overridden from LabelButtonBorder:
   bool PaintsButtonState(bool focused, Button::ButtonState state) override;

@@ -1,0 +1,20 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("translate_internals") {
+  sources = [
+    "translate_internals_handler.cc",
+    "translate_internals_handler.h",
+  ]
+  deps = [
+    "//base",
+    "//components/language/core/browser",
+    "//components/prefs",
+    "//components/translate/core/browser",
+    "//components/translate/core/common",
+    "//components/variations/service",
+    "//services/network/public/cpp:cpp",
+    "//ui/base",
+  ]
+}

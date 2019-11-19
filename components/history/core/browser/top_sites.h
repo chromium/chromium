@@ -77,10 +77,6 @@ class TopSites : public RefcountedKeyedService {
   // Clear the blacklist. Should be called from the UI thread.
   virtual void ClearBlacklistedURLs() = 0;
 
-  // Returns true if the given URL is known to the top sites service.
-  // This function also returns false if TopSites isn't loaded yet.
-  virtual bool IsKnownURL(const GURL& url) = 0;
-
   // Returns true if the top sites list is full (i.e. we already have the
   // maximum number of top sites).  This function also returns false if TopSites
   // isn't loaded yet.

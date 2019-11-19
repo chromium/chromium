@@ -9,6 +9,8 @@
 #include "ash/assistant/ui/assistant_container_view.h"
 #include "ash/assistant/ui/assistant_ui_constants.h"
 #include "ash/assistant/ui/assistant_view_delegate.h"
+#include "ash/assistant/util/animation_util.h"
+#include "ash/assistant/util/assistant_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "ui/gfx/animation/slide_animation.h"
 #include "ui/views/animation/ink_drop_painted_layer_delegates.h"
@@ -19,7 +21,7 @@ namespace ash {
 namespace {
 
 // Animation.
-constexpr int kAnimationDurationMs = 250;
+constexpr auto kAnimationDuration = base::TimeDelta::FromMilliseconds(250);
 
 // Helpers ---------------------------------------------------------------------
 
@@ -41,7 +43,8 @@ AssistantContainerViewAnimatorLegacyImpl::
     AssistantContainerViewAnimatorLegacyImpl(
         AssistantViewDelegate* delegate,
         AssistantContainerView* assistant_container_view)
-    : AssistantContainerViewAnimator(delegate, assistant_container_view) {}
+    : AssistantContainerViewAnimator(delegate, assistant_container_view),
+      views::AnimationDelegateViews(assistant_container_view) {}
 
 AssistantContainerViewAnimatorLegacyImpl::
     ~AssistantContainerViewAnimatorLegacyImpl() = default;
@@ -78,11 +81,11 @@ void AssistantContainerViewAnimatorLegacyImpl::OnPreferredSizeChanged() {
   // When visible, size changes are animated.
   if (visible) {
     animation_ = std::make_unique<gfx::SlideAnimation>(this);
-    animation_->SetSlideDuration(kAnimationDurationMs);
+    animation_->SetSlideDuration(kAnimationDuration);
 
     // Cache start and end animation values.
-    start_size_ = gfx::SizeF(assistant_container_view_->size());
-    end_size_ = gfx::SizeF(assistant_container_view_->GetPreferredSize());
+    start_size_ = assistant_container_view_->size();
+    end_size_ = assistant_container_view_->GetPreferredSize();
     start_radius_ = assistant_container_view_->GetCornerRadius();
 
     // Cache start frame number for measuring animation smoothness.
@@ -102,6 +105,40 @@ void AssistantContainerViewAnimatorLegacyImpl::OnPreferredSizeChanged() {
   assistant_container_view_->SizeToContents();
 }
 
+void AssistantContainerViewAnimatorLegacyImpl::OnUiVisibilityChanged(
+    AssistantVisibility new_visibility,
+    AssistantVisibility old_visibility,
+    base::Optional<AssistantEntryPoint> entry_point,
+    base::Optional<AssistantExitPoint> exit_point) {
+  if (!assistant::util::IsStartingSession(new_visibility, old_visibility))
+    return;
+
+  // Start the container open animation on height growth and fade-in when
+  // Assistant starts a new session.
+  using assistant::util::CreateLayerAnimationSequence;
+  using assistant::util::CreateOpacityElement;
+  animation_.reset();
+
+  // Animate the fade in with a delay.
+  assistant_container_view_->GetNonClientViewLayer()->SetOpacity(0.f);
+  assistant_container_view_->GetNonClientViewLayer()
+      ->GetAnimator()
+      ->StartAnimation(CreateLayerAnimationSequence(
+          ui::LayerAnimationElement::CreatePauseElement(
+              ui::LayerAnimationElement::AnimatableProperty::OPACITY,
+              base::TimeDelta::FromMilliseconds(17)),
+          CreateOpacityElement(1.0f, kAnimationDuration,
+                               gfx::Tween::Type::FAST_OUT_SLOW_IN_2)));
+
+  // Set the initial animation value of bound with height equals to 0.
+  gfx::Rect current_bounds = assistant_container_view_->bounds();
+  assistant_container_view_->SetBounds(
+      current_bounds.x(), current_bounds.y() + current_bounds.height(),
+      current_bounds.width(), 0);
+  // Animate the height growth.
+  OnPreferredSizeChanged();
+}
+
 void AssistantContainerViewAnimatorLegacyImpl::AnimationProgressed(
     const gfx::Animation* animation) {
   if (!assistant_container_view_->GetWidget())
@@ -117,11 +154,8 @@ void AssistantContainerViewAnimatorLegacyImpl::AnimationProgressed(
   const int center_x = bounds.CenterPoint().x();
 
   // Interpolate size at our current animation value.
-  const gfx::SizeF size = gfx::Tween::SizeValueBetween(
-      animation->GetCurrentValue(), start_size_, end_size_);
-
-  // Use our interpolated size.
-  bounds.set_size(gfx::Size(size.width(), size.height()));
+  bounds.set_size(gfx::Tween::SizeValueBetween(animation->GetCurrentValue(),
+                                               start_size_, end_size_));
 
   // Maintain original |center_x| and |bottom| positions.
   bounds.set_x(std::max(center_x - (bounds.width() / 2), 0));
@@ -140,7 +174,7 @@ void AssistantContainerViewAnimatorLegacyImpl::AnimationEnded(
     const gfx::Animation* animation) {
   const int ideal_frames =
       GetCompositorRefreshRate(assistant_container_view_->layer()) *
-      kAnimationDurationMs / base::Time::kMillisecondsPerSecond;
+      kAnimationDuration.InSecondsF();
 
   const int actual_frames =
       GetCompositorFrameNumber(assistant_container_view_->layer()) -

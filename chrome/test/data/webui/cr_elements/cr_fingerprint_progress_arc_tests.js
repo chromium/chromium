@@ -89,7 +89,7 @@ cr.define('cr_fingerprint_progress_arc_test', function() {
    * @param {!Array<Point>} listOfPoints
    */
   function assertListOfColorsEqual(expectedColor, listOfPoints) {
-    for (let point of listOfPoints) {
+    for (const point of listOfPoints) {
       assertColorEquals(expectedColor, getRGBData(point));
     }
   }

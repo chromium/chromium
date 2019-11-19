@@ -5,11 +5,10 @@
 #include "third_party/blink/renderer/modules/bluetooth/bluetooth_uuid.h"
 
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "third_party/blink/renderer/platform/uuid.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
-#include "third_party/blink/renderer/platform/wtf/hex_number.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "third_party/blink/renderer/platform/wtf/uuid.h"
 
 namespace blink {
 
@@ -334,7 +333,7 @@ String GetUUIDForGATTAttribute(GATTAttribute attribute,
   String name_str = name.GetAsString();
 
   // If name is a valid UUID, return name and abort these steps.
-  if (IsValidUUID(name_str))
+  if (WTF::IsValidUUID(name_str))
     return name_str;
 
   // If name is in the corresponding attribute map return
@@ -416,14 +415,7 @@ String BluetoothUUID::getDescriptor(StringOrUnsignedLong name,
 
 // static
 String BluetoothUUID::canonicalUUID(unsigned alias) {
-  StringBuilder builder;
-  builder.ReserveCapacity(36 /* 36 chars or 128 bits, length of a UUID */);
-  HexNumber::AppendUnsignedAsHexFixedSize(
-      alias, builder, 8 /* 8 chars or 32 bits, prefix length */,
-      HexNumber::kLowercase);
-
-  builder.Append("-0000-1000-8000-00805f9b34fb");
-  return builder.ToString();
+  return String::Format("%08x-0000-1000-8000-00805f9b34fb", alias);
 }
 
 }  // namespace blink

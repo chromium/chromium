@@ -52,8 +52,6 @@ generate_jni("audio_track_jni_headers") {
       "java/src/org/chromium/chromecast/cma/backend/android/VolumeMap.java",
     ]
   }
-
-  jni_package = "audio_track"
 }
 
 android_library("audio_track_java") {
@@ -71,11 +69,13 @@ android_library("audio_track_java") {
 
   deps = [
     "//base:base_java",
+    "//base:jni_java",
     "//chromecast/base:base_java",
     "//chromecast/public:volume_control_enums_java",
-    "//third_party/android_deps:android_support_annotations_java",
-    "//third_party/android_deps:android_support_v13_java",
+    "//third_party/android_deps:androidx_annotation_annotation_java",
+    "//third_party/android_deps:com_android_support_support_v13_java",
   ]
+  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 }
 
 test("cast_android_cma_backend_unittests") {

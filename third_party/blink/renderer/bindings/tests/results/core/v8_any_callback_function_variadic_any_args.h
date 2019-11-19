@@ -33,43 +33,12 @@ class CORE_EXPORT V8AnyCallbackFunctionVariadicAnyArgs final : public CallbackFu
 
   // Performs "invoke".
   // https://heycam.github.io/webidl/#es-invoking-callback-functions
-  v8::Maybe<ScriptValue> Invoke(bindings::V8ValueOrScriptWrappableAdapter callback_this_value, const Vector<ScriptValue>& arguments) WARN_UNUSED_RESULT;
+  v8::Maybe<ScriptValue> Invoke(bindings::V8ValueOrScriptWrappableAdapter callback_this_value, const HeapVector<ScriptValue>& arguments) WARN_UNUSED_RESULT;
 
   // Performs "construct".
   // https://heycam.github.io/webidl/#construct-a-callback-function
-  v8::Maybe<ScriptValue> Construct(const Vector<ScriptValue>& arguments) WARN_UNUSED_RESULT;
+  v8::Maybe<ScriptValue> Construct(const HeapVector<ScriptValue>& arguments) WARN_UNUSED_RESULT;
 };
-
-template <>
-class V8PersistentCallbackFunction<V8AnyCallbackFunctionVariadicAnyArgs> final : public V8PersistentCallbackFunctionBase {
-  using V8CallbackFunction = V8AnyCallbackFunctionVariadicAnyArgs;
-
- public:
-  explicit V8PersistentCallbackFunction(V8CallbackFunction* callback_function)
-      : V8PersistentCallbackFunctionBase(callback_function) {}
-  ~V8PersistentCallbackFunction() override = default;
-
-  // Returns a wrapper-tracing version of this callback function.
-  V8CallbackFunction* ToNonV8Persistent() { return Proxy(); }
-
-  v8::Maybe<ScriptValue> Invoke(bindings::V8ValueOrScriptWrappableAdapter callback_this_value, const Vector<ScriptValue>& arguments) WARN_UNUSED_RESULT;
-
- private:
-  V8CallbackFunction* Proxy() {
-    return As<V8CallbackFunction>();
-  }
-
-  template <typename V8CallbackFunction>
-  friend V8PersistentCallbackFunction<V8CallbackFunction>*
-  ToV8PersistentCallbackFunction(V8CallbackFunction*);
-};
-
-// V8AnyCallbackFunctionVariadicAnyArgs is designed to be used with wrapper-tracing.
-// As blink::Persistent does not perform wrapper-tracing, use of
-// |WrapPersistent| for callback functions is likely (if not always) misuse.
-// Thus, this code prohibits such a use case. The call sites should explicitly
-// use WrapPersistent(V8PersistentCallbackFunction<T>*).
-Persistent<V8AnyCallbackFunctionVariadicAnyArgs> WrapPersistent(V8AnyCallbackFunctionVariadicAnyArgs*) = delete;
 
 }  // namespace blink
 

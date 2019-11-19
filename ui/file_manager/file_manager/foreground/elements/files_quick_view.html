@@ -4,8 +4,8 @@
 -->
 
 <link rel="import" href="chrome://resources/html/polymer.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_button/cr_button.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/paper-button/paper-button.html">
 <link rel="import" href="files_icon_button.html">
 <link rel="import" href="files_metadata_box.html">
 <link rel="import" href="files_safe_media.html">
@@ -18,15 +18,15 @@
     <dialog id="dialog" on-close="onDialogClose_">
       <div id="toolbar">
         <div class="buttons-group">
-           <paper-button on-tap="close" aria-label="$i18n{QUICK_VIEW_CLOSE_BUTTON_LABEL}" tabindex="0" has-tooltip>
+           <cr-button on-click="close" aria-label="$i18n{QUICK_VIEW_CLOSE_BUTTON_LABEL}" has-tooltip>
              <iron-icon icon="files:arrow-back"></iron-icon>
-           </paper-button>
+           </cr-button>
         </div>
         <div id="file-path">[[filePath]]</div>
         <div class="buttons-group">
-           <paper-button id="open-button" on-tap="onOpenInNewButtonTap" hidden$="[[!hasTask]]" aria-label="$i18n{QUICK_VIEW_OPEN_IN_NEW_BUTTON_LABEL}" tabindex="0" has-tooltip>
+           <cr-button id="open-button" on-click="onOpenInNewButtonTap" hidden$="[[!hasTask]]" aria-label="$i18n{QUICK_VIEW_OPEN_IN_NEW_BUTTON_LABEL}">
              <span>$i18n{QUICK_VIEW_OPEN_IN_NEW_BUTTON_LABEL}</span>
-           </paper-button>
+           </cr-button>
            <files-icon-button toggles id="metadata-button" on-tap="onMetadataButtonTap_" active="{{metadataBoxActive}}" aria-label="$i18n{QUICK_VIEW_TOGGLE_METADATA_BOX_BUTTON_LABEL}" tabindex="0" has-tooltip>
            </files-icon-button>
         </div>
@@ -64,7 +64,7 @@
                 <div class="no-preview">[[noPlaybackText]]</div>
               </template>
               <template is="dom-if" if="[[contentUrl]]">
-                <files-safe-media tabindex="0" type="video" class="content no-close-on-click" controls autoplay="[[autoplay]]" src="[[contentUrl]]" poster="[[videoPoster]]"></files-safe-media>
+                <files-safe-media id="videoSafeMedia" tabindex="0" type="video" class="content no-close-on-click" controls autoplay="[[autoplay]]" src="[[contentUrl]]" poster="[[videoPoster]]"></files-safe-media>
               </template>
             </template>
             <!-- Audio -->

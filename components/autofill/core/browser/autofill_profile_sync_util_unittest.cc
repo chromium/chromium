@@ -5,8 +5,8 @@
 #include "components/autofill/core/browser/autofill_profile_sync_util.h"
 
 #include "base/strings/utf_string_conversions.h"
-#include "components/autofill/core/browser/autofill_profile.h"
-#include "components/autofill/core/browser/country_names.h"
+#include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/geo/country_names.h"
 #include "components/autofill/core/browser/test_autofill_clock.h"
 #include "components/autofill/core/browser/webdata/autofill_table.h"
 #include "components/autofill/core/common/autofill_constants.h"
@@ -127,13 +127,13 @@ TEST_F(AutofillProfileSyncUtilTest, CreateEntityDataFromAutofillProfile) {
   std::unique_ptr<EntityData> entity_data =
       CreateEntityDataFromAutofillProfile(profile);
   // The non-unique name should be set to the guid of the profile.
-  EXPECT_EQ(entity_data->non_unique_name, profile.guid());
+  EXPECT_EQ(entity_data->name, profile.guid());
 
   EXPECT_EQ(specifics.SerializeAsString(),
             entity_data->specifics.autofill_profile().SerializeAsString());
 }
 
-// Test that fields not set for the input are also not set on the output.
+// Test that fields not set for the input are empty in the output.
 TEST_F(AutofillProfileSyncUtilTest, CreateEntityDataFromAutofillProfile_Empty) {
   AutofillProfile profile(kGuid, std::string());
   ASSERT_FALSE(profile.HasRawInfo(NAME_FULL));
@@ -141,8 +141,10 @@ TEST_F(AutofillProfileSyncUtilTest, CreateEntityDataFromAutofillProfile_Empty) {
 
   std::unique_ptr<EntityData> entity_data =
       CreateEntityDataFromAutofillProfile(profile);
-  EXPECT_EQ(0, entity_data->specifics.autofill_profile().name_full_size());
-  EXPECT_FALSE(entity_data->specifics.autofill_profile().has_company_name());
+  EXPECT_EQ(1, entity_data->specifics.autofill_profile().name_full_size());
+  EXPECT_EQ("", entity_data->specifics.autofill_profile().name_full(0));
+  EXPECT_TRUE(entity_data->specifics.autofill_profile().has_company_name());
+  EXPECT_EQ("", entity_data->specifics.autofill_profile().company_name());
 }
 
 // Test that long fields get trimmed.

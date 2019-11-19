@@ -5,8 +5,10 @@
 
 goog.provide('mojo.internal');
 
+// "self" is always defined as opposed to "this", which isn't defined in
+// modules, or "window", which isn't defined in workers.
 /** @const {!Object} */
-mojo.internal.globalScope = this;
+mojo.internal.globalScope = self;
 
 /**
  * This is effectively the same as goog.provide, but it's made available under
@@ -84,7 +86,7 @@ mojo.internal.align = function(size, alignment) {
  */
 mojo.internal.setInt64 = function(dataView, byteOffset, value) {
   if (mojo.internal.kHostLittleEndian) {
-    dataView.setInt32(
+    dataView.setUint32(
         byteOffset, Number(BigInt(value) & BigInt(0xffffffff)),
         mojo.internal.kHostLittleEndian);
     dataView.setInt32(
@@ -94,7 +96,7 @@ mojo.internal.setInt64 = function(dataView, byteOffset, value) {
     dataView.setInt32(
         byteOffset, Number(BigInt(value) >> BigInt(32)),
         mojo.internal.kHostLittleEndian);
-    dataView.setInt32(
+    dataView.setUint32(
         byteOffset + 4, Number(BigInt(value) & BigInt(0xffffffff)),
         mojo.internal.kHostLittleEndian);
   }
@@ -131,10 +133,10 @@ mojo.internal.setUint64 = function(dataView, byteOffset, value) {
 mojo.internal.getInt64 = function(dataView, byteOffset) {
   let low, high;
   if (mojo.internal.kHostLittleEndian) {
-    low = dataView.getInt32(byteOffset, mojo.internal.kHostLittleEndian);
+    low = dataView.getUint32(byteOffset, mojo.internal.kHostLittleEndian);
     high = dataView.getInt32(byteOffset + 4, mojo.internal.kHostLittleEndian);
   } else {
-    low = dataView.getInt32(byteOffset + 4, mojo.internal.kHostLittleEndian);
+    low = dataView.getUint32(byteOffset + 4, mojo.internal.kHostLittleEndian);
     high = dataView.getInt32(byteOffset, mojo.internal.kHostLittleEndian);
   }
   const value = (BigInt(high) << BigInt(32)) | BigInt(low);
@@ -1325,6 +1327,22 @@ mojo.internal.Struct = function(objectToBlessAsType, name, packedSize, fields) {
     },
     arrayElementSize: nullable => 8,
     isValidObjectKeyType: false,
+  };
+};
+
+/**
+ * @param {!mojo.internal.MojomType} structMojomType
+ * @return {!Function}
+ * @export
+ */
+mojo.internal.createStructDeserializer = function(structMojomType) {
+  return function(dataView) {
+    if (structMojomType.$ == undefined ||
+        structMojomType.$.structSpec == undefined) {
+      throw new Error("Invalid struct mojom type!");
+    }
+    const decoder = new mojo.internal.Decoder(dataView, []);
+    return decoder.decodeStructInline(structMojomType.$.structSpec);
   };
 };
 

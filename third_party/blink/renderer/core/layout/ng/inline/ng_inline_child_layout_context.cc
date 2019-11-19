@@ -10,7 +10,7 @@ namespace {
 
 struct SameSizeAsNGInlineChildLayoutContext {
   base::Optional<NGInlineLayoutStateStack> box_states_;
-  void* pointer;
+  void* pointers[2];
   unsigned number;
 };
 
@@ -29,12 +29,6 @@ NGInlineChildLayoutContext::BoxStatesIfValidForItemIndex(
   if (box_states_.has_value() && items_ == &items && item_index_ == item_index)
     return &*box_states_;
   return nullptr;
-}
-
-void NGInlineChildLayoutContext::SetItemIndex(const Vector<NGInlineItem>& items,
-                                              unsigned item_index) {
-  items_ = &items;
-  item_index_ = item_index;
 }
 
 }  // namespace blink

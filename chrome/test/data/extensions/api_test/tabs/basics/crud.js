@@ -19,8 +19,19 @@ chrome.test.runTests([
       assertEq(1, tab.index);
       assertEq(firstWindowId, tab.windowId);
       assertEq(false, tab.selected);
-      assertEq("chrome://newtab/", tab.url);
+      assertEq("chrome://newtab/", tab.pendingUrl);
+      assertEq("", tab.url);
+      // For most create calls the title will be an empty string until the
+      // navigation commits, but the new tab page is an exception to this.
+      assertEq("New Tab", tab.title);
       assertEq(false, tab.pinned);
+      waitForAllTabs(pass(function() {
+        chrome.tabs.get(tab.id, pass(function(tab) {
+          assertEq("chrome://newtab/", tab.url);
+          assertEq("New Tab", tab.title);
+          assertEq(undefined, tab.pendingUrl);
+        }));
+      }));
     }));
   },
 
@@ -68,7 +79,7 @@ chrome.test.runTests([
     var verify_default = function() {
       return pass(function(win) {
         assertEq(1, win.tabs.length);
-        assertEq("chrome://newtab/", win.tabs[0].url);
+        assertEq("chrome://newtab/", win.tabs[0].pendingUrl);
       });
     };
 
@@ -83,14 +94,14 @@ chrome.test.runTests([
                         "active" : false},
                        pass(function(tab) {
       assertEq(firstWindowId, tab.windowId);
-      assertEq(pageUrl('a'), tab.url);
+      assertEq(pageUrl('a'), tab.pendingUrl);
 
       // Create a new window with this tab
       chrome.windows.create({"tabId": tab.id}, pass(function(win) {
         assertEq(1, win.tabs.length);
         assertEq(tab.id, win.tabs[0].id);
         assertEq(win.id, win.tabs[0].windowId);
-        assertEq(pageUrl('a'), win.tabs[0].url);
+        assertEq(pageUrl('a'), win.tabs[0].pendingUrl);
       }));
     }));
   },

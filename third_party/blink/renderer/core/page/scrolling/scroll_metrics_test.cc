@@ -60,7 +60,7 @@ class ScrollBeginEventBuilder : public WebGestureEvent {
                           WebGestureDevice device)
       : WebGestureEvent(WebInputEvent::kGestureScrollBegin,
                         WebInputEvent::kNoModifiers,
-                        CurrentTimeTicks(),
+                        base::TimeTicks::Now(),
                         device) {
     SetPositionInWidget(position);
     SetPositionInScreen(position);
@@ -144,17 +144,17 @@ TEST_F(NonCompositedMainThreadScrollingReasonRecordTest,
   HistogramTester histogram_tester;
 
   // Test touch scroll.
-  Scroll(box, kWebGestureDeviceTouchscreen);
+  Scroll(box, WebGestureDevice::kTouchscreen);
   EXPECT_TOUCH_BUCKET(kHasOpacityAndLCDText, 1);
   EXPECT_TOUCH_BUCKET(kBackgroundNotOpaqueInRectAndLCDText, 1);
 
-  Scroll(box, kWebGestureDeviceTouchscreen);
+  Scroll(box, WebGestureDevice::kTouchscreen);
   EXPECT_TOUCH_BUCKET(kHasOpacityAndLCDText, 2);
   EXPECT_TOUCH_BUCKET(kBackgroundNotOpaqueInRectAndLCDText, 2);
   EXPECT_TOUCH_TOTAL(4);
 
   // Test wheel scroll.
-  Scroll(box, kWebGestureDeviceTouchpad);
+  Scroll(box, WebGestureDevice::kTouchpad);
   EXPECT_WHEEL_BUCKET(kHasOpacityAndLCDText, 1);
   EXPECT_WHEEL_BUCKET(kBackgroundNotOpaqueInRectAndLCDText, 1);
   EXPECT_WHEEL_TOTAL(2);
@@ -181,14 +181,14 @@ TEST_F(NonCompositedMainThreadScrollingReasonRecordTest,
   Element* box = GetDocument().getElementById("box");
   HistogramTester histogram_tester;
 
-  Scroll(box, kWebGestureDeviceTouchpad);
+  Scroll(box, WebGestureDevice::kTouchpad);
   EXPECT_WHEEL_BUCKET(kHasOpacityAndLCDText, 1);
   EXPECT_WHEEL_BUCKET(kBackgroundNotOpaqueInRectAndLCDText, 1);
   EXPECT_WHEEL_TOTAL(2);
 
   box->setAttribute("class", "composited translucent box");
   UpdateAllLifecyclePhases();
-  Scroll(box, kWebGestureDeviceTouchpad);
+  Scroll(box, WebGestureDevice::kTouchpad);
   EXPECT_FALSE(ToLayoutBox(box->GetLayoutObject())
                    ->GetScrollableArea()
                    ->GetNonCompositedMainThreadScrollingReasons());
@@ -215,14 +215,14 @@ TEST_F(NonCompositedMainThreadScrollingReasonRecordTest,
   Element* box = GetDocument().getElementById("box");
   HistogramTester histogram_tester;
 
-  Scroll(box, kWebGestureDeviceTouchpad);
+  Scroll(box, WebGestureDevice::kTouchpad);
   EXPECT_WHEEL_BUCKET(kHasOpacityAndLCDText, 1);
   EXPECT_WHEEL_BUCKET(kBackgroundNotOpaqueInRectAndLCDText, 1);
   EXPECT_WHEEL_TOTAL(2);
 
   box->setAttribute("class", "hidden translucent box");
   UpdateAllLifecyclePhases();
-  Scroll(box, kWebGestureDeviceTouchpad);
+  Scroll(box, WebGestureDevice::kTouchpad);
   EXPECT_WHEEL_BUCKET(kHasOpacityAndLCDText, 1);
   EXPECT_WHEEL_BUCKET(kBackgroundNotOpaqueInRectAndLCDText, 1);
   EXPECT_WHEEL_TOTAL(2);
@@ -256,7 +256,7 @@ TEST_F(NonCompositedMainThreadScrollingReasonRecordTest, NestedScrollersTest) {
   Element* box = GetDocument().getElementById("inner");
   HistogramTester histogram_tester;
 
-  Scroll(box, kWebGestureDeviceTouchpad);
+  Scroll(box, WebGestureDevice::kTouchpad);
   // Scrolling the inner box will gather reasons from the scrolling chain. The
   // inner box itself has no reason because it's composited. Other scrollable
   // areas from the chain have corresponding reasons.

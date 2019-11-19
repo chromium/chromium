@@ -1,0 +1,38 @@
+Name: Apache2 (+ PHP and dependencies)
+Short Name: httpd
+URL: http://www.apache.org
+Version: 2.4.38
+Security Critical: no
+License: Apache Version 2.0
+License File: NOT_SHIPPED
+
+Description:
+
+This is a checked-in copy of Apache2 with OpenSSL, PHP, and dependencies for
+Mac. It is used by the Blink layout tests. Binaries are built from:
+
+apr 1.6.5
+apr-util 1.6.1
+httpd 2.4.38
+openssl 1.1.1b
+pcre 8.42
+php 7.3.3
+zlib 1.2.11
+
+To update, use the build-apache-mac.sh script.
+
+   mkdir tmp
+   cd tmp
+   /path/to/build-apache-mac.sh
+
+The files will be placed in the out directory. Copy these over and upload the
+executables and DLLs to Google Storage, to the chromium-apache-mac bucket.
+See http://g.co/bugatrooper in order to get permission to upload. Upload all
+binaries with:
+
+  find bin lib libexec -type f -not -name '*.sha1' | upload_to_google_storage.py --bucket chromium-apache-mac -
+
+Optionally, prune the files that were uploaded and run gclient runhooks to
+verify that they are re-downloaded. Remember to clean up any temp files used in
+the above process before uploading a CL. The CL should contain sha1 files but
+not actual binaries.

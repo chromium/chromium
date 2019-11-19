@@ -1,0 +1,41 @@
+# Copyright 2018 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/features.gni")
+import("//printing/buildflags/buildflags.gni")
+
+enable_service = use_cups && is_chromeos
+
+source_set("ipp_parser") {
+  sources = [
+    "ipp_parser.h",
+    "ipp_parser_service.cc",
+    "ipp_parser_service.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chrome:strings",
+    "//mojo/public/cpp/bindings",
+    "//net",
+  ]
+
+  public_deps = [
+    "//chrome/services/ipp_parser/public/mojom",
+    "//mojo/public/mojom/base",
+    "//printing",
+  ]
+
+  # We stub the implementation if libCUPS is not present.
+  if (enable_service) {
+    configs += [ "//printing:cups" ]
+    sources += [ "ipp_parser.cc" ]
+    deps += [
+      "//chrome/services/cups_proxy/public/cpp",
+      "//chrome/services/ipp_parser/public/cpp",
+    ]
+  } else {
+    sources += [ "fake_ipp_parser.cc" ]
+  }
+}

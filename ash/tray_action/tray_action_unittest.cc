@@ -69,7 +69,7 @@ TEST_F(TrayActionTest, NoTrayActionClient) {
 
   std::unique_ptr<TestTrayActionClient> action_client =
       std::make_unique<TestTrayActionClient>();
-  tray_action->SetClient(action_client->CreateInterfacePtrAndBind(),
+  tray_action->SetClient(action_client->CreateRemoteAndBind(),
                          TrayActionState::kLaunching);
 
   EXPECT_EQ(TrayActionState::kLaunching, tray_action->GetLockScreenNoteState());
@@ -91,7 +91,7 @@ TEST_F(TrayActionTest, SettingInitialState) {
 
   ScopedTestStateObserver observer(tray_action);
   TestTrayActionClient action_client;
-  tray_action->SetClient(action_client.CreateInterfacePtrAndBind(),
+  tray_action->SetClient(action_client.CreateRemoteAndBind(),
                          TrayActionState::kAvailable);
 
   EXPECT_EQ(TrayActionState::kAvailable, tray_action->GetLockScreenNoteState());
@@ -105,7 +105,7 @@ TEST_F(TrayActionTest, StateChangeNotificationOnConnectionLoss) {
   ScopedTestStateObserver observer(tray_action);
   std::unique_ptr<TestTrayActionClient> action_client(
       new TestTrayActionClient());
-  tray_action->SetClient(action_client->CreateInterfacePtrAndBind(),
+  tray_action->SetClient(action_client->CreateRemoteAndBind(),
                          TrayActionState::kAvailable);
 
   EXPECT_EQ(TrayActionState::kAvailable, tray_action->GetLockScreenNoteState());
@@ -127,7 +127,7 @@ TEST_F(TrayActionTest, NormalStateProgression) {
 
   ScopedTestStateObserver observer(tray_action);
   TestTrayActionClient action_client;
-  tray_action->SetClient(action_client.CreateInterfacePtrAndBind(),
+  tray_action->SetClient(action_client.CreateRemoteAndBind(),
                          TrayActionState::kNotAvailable);
 
   tray_action->UpdateLockScreenNoteState(TrayActionState::kAvailable);
@@ -164,7 +164,7 @@ TEST_F(TrayActionTest, ObserversNotNotifiedOnDuplicateState) {
 
   ScopedTestStateObserver observer(tray_action);
   TestTrayActionClient action_client;
-  tray_action->SetClient(action_client.CreateInterfacePtrAndBind(),
+  tray_action->SetClient(action_client.CreateRemoteAndBind(),
                          TrayActionState::kNotAvailable);
 
   tray_action->UpdateLockScreenNoteState(TrayActionState::kAvailable);
@@ -182,7 +182,7 @@ TEST_F(TrayActionTest, RequestAction) {
   TrayAction* tray_action = Shell::Get()->tray_action();
 
   TestTrayActionClient action_client;
-  tray_action->SetClient(action_client.CreateInterfacePtrAndBind(),
+  tray_action->SetClient(action_client.CreateRemoteAndBind(),
                          TrayActionState::kNotAvailable);
 
   EXPECT_TRUE(action_client.note_origins().empty());
@@ -212,7 +212,7 @@ TEST_F(TrayActionTest, CloseLockScreenNote) {
   TrayAction* tray_action = Shell::Get()->tray_action();
 
   TestTrayActionClient action_client;
-  tray_action->SetClient(action_client.CreateInterfacePtrAndBind(),
+  tray_action->SetClient(action_client.CreateRemoteAndBind(),
                          TrayActionState::kNotAvailable);
 
   tray_action->UpdateLockScreenNoteState(TrayActionState::kActive);

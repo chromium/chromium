@@ -28,8 +28,21 @@ if (build_with_chromium) {
       "compression_utils.h",
     ]
     deps = [
+      ":compression_utils_portable",
       "//base",
       "//third_party/zlib",
     ]
   }
+}
+
+# This allows other users of Chromium's zlib library, but don't use Chromium's
+# //base, to reuse some boilerplate code.
+static_library("compression_utils_portable") {
+  sources = [
+    "compression_utils_portable.cc",
+    "compression_utils_portable.h",
+  ]
+  deps = [
+    "//third_party/zlib",
+  ]
 }

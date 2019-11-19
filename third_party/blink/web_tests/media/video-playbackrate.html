@@ -28,10 +28,10 @@ async_test(function(t) {
         // Test extreme playback rates.
 
         video.defaultPlaybackRate = Number.MIN_VALUE;
-        assert_equals(video.defaultPlaybackRate, Number.MIN_VALUE);
+        assert_equals(video.defaultPlaybackRate, 2);
 
         video.defaultPlaybackRate = Number.MAX_VALUE;
-        assert_equals(video.defaultPlaybackRate, Number.MAX_VALUE);
+        assert_equals(video.defaultPlaybackRate, 2);
 
         assert_throws("NotSupportedError", function() { video.playbackRate = Number.MIN_VALUE; });
         assert_throws("NotSupportedError", function() { video.playbackRate = Number.MAX_VALUE; });

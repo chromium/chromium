@@ -1,7 +1,0 @@
-PASS
-
-This test does the following via EventSender:
-1. Click and drag the div scrollbar to a middle point.
-2. Click and drag again, this time down and to right, with the mouseup occurring in a parent frame.
-3. Move the mouse back into the div with the scrollbar.
-Per https://bugs.webkit.org/show_bug.cgi?id=73097, because the div with the scrollbar had a mousedown event that called preventDefault(), the mouse moves would not properly be handled by the scrollbar. We pass if the div's scrollTop property is the same after all 3 steps.

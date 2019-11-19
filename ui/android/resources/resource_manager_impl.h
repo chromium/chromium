@@ -49,6 +49,8 @@ class UI_ANDROID_EXPORT ResourceManagerImpl
                        jint res_type,
                        jint res_id,
                        const base::android::JavaRef<jobject>& bitmap,
+                       jint width,
+                       jint height,
                        jlong native_resource);
   void RemoveResource(
       JNIEnv* env,

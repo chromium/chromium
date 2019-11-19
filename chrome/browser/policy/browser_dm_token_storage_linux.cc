@@ -12,10 +12,10 @@
 #include "base/callback.h"
 #include "base/files/file_util.h"
 #include "base/files/important_file_writer.h"
+#include "base/hash/sha1.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
 #include "base/path_service.h"
-#include "base/sha1.h"
 #include "base/strings/string16.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -81,8 +81,7 @@ BrowserDMTokenStorage* BrowserDMTokenStorage::Get() {
   return storage.get();
 }
 
-BrowserDMTokenStorageLinux::BrowserDMTokenStorageLinux()
-    : weak_factory_(this) {}
+BrowserDMTokenStorageLinux::BrowserDMTokenStorageLinux() {}
 
 BrowserDMTokenStorageLinux::~BrowserDMTokenStorageLinux() {}
 
@@ -146,7 +145,7 @@ std::string BrowserDMTokenStorageLinux::InitDMToken() {
   if (!base::ReadFileToString(token_file_path, &token))
     return std::string();
 
-  return token;
+  return base::TrimWhitespaceASCII(token, base::TRIM_ALL).as_string();
 }
 
 bool BrowserDMTokenStorageLinux::InitEnrollmentErrorOption() {
@@ -170,30 +169,11 @@ bool BrowserDMTokenStorageLinux::InitEnrollmentErrorOption() {
 
 void BrowserDMTokenStorageLinux::SaveDMToken(const std::string& token) {
   std::string client_id = RetrieveClientId();
-  base::PostTaskWithTraitsAndReplyWithResult(
-      FROM_HERE, {base::MayBlock()},
+  base::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::ThreadPool(), base::MayBlock()},
       base::BindOnce(&StoreDMTokenInUserDataDir, token, client_id),
       base::BindOnce(&BrowserDMTokenStorage::OnDMTokenStored,
                      weak_factory_.GetWeakPtr()));
-}
-
-void BrowserDMTokenStorageLinux::DeletePolicyDirectory() {
-  base::FilePath token_file_path;
-  std::string dummy_id = "id";
-  if (!GetDmTokenFilePath(&token_file_path, dummy_id, /* create_dir = */ false))
-    return;
-
-  base::FilePath token_dir_path = token_file_path.DirName();
-  if (base::DirectoryExists(token_dir_path) &&
-      base::IsDirectoryEmpty(token_dir_path)) {
-    base::DeleteFile(token_dir_path, /* recursive = */ false);
-  }
-
-  base::FilePath policy_dir_path = token_dir_path.DirName();
-  if (base::DirectoryExists(policy_dir_path) &&
-      base::IsDirectoryEmpty(policy_dir_path)) {
-    base::DeleteFile(policy_dir_path, /* recursive = */ false);
-  }
 }
 
 std::string BrowserDMTokenStorageLinux::ReadMachineIdFile() {

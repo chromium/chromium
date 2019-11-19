@@ -37,7 +37,6 @@ async_test(t => {
   assert_true('internals' in window);
   assert_true('eventSender' in window);
   assert_true('chrome' in window);
-  assert_true(internals.runtimeFlags.modernMediaControlsEnabled);
 
   const video = document.createElement('video');
   video.controls = true;

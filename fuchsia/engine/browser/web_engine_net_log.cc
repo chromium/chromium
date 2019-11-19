@@ -22,7 +22,7 @@ std::unique_ptr<base::DictionaryValue> GetWebEngineConstants() {
       net::GetNetConstants();
 
   base::DictionaryValue dict;
-  dict.SetKey("name", base::Value("webrunner"));
+  dict.SetKey("name", base::Value("WebEngine"));
   dict.SetKey(
       "command_line",
       base::Value(
@@ -37,7 +37,7 @@ std::unique_ptr<base::DictionaryValue> GetWebEngineConstants() {
 
 WebEngineNetLog::WebEngineNetLog(const base::FilePath& log_path) {
   if (!log_path.empty()) {
-    net::NetLogCaptureMode capture_mode = net::NetLogCaptureMode::Default();
+    net::NetLogCaptureMode capture_mode = net::NetLogCaptureMode::kDefault;
     file_net_log_observer_ = net::FileNetLogObserver::CreateUnbounded(
         log_path, GetWebEngineConstants());
     file_net_log_observer_->StartObserving(this, capture_mode);

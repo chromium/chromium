@@ -9,8 +9,6 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
-#include "third_party/blink/renderer/platform/bindings/trace_wrapper_member.h"
-#include "third_party/blink/renderer/platform/bindings/trace_wrapper_v8_reference.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
@@ -25,17 +23,8 @@ class TransformStreamTransformer;
 class Visitor;
 class WritableStream;
 
-// Creates and wraps a JavaScript TransformStream object with a transformation
-// defined in C++. Provides access to the readable and writable streams.
-//
-// On-heap references to this class must always be via a TraceWrapperMember, and
-// must always have an ancestor in the V8 heap, or the internal JavaScript
-// objects owned by |readable_| and |writable_| will be lost.
-//
-// To ensure that the JS TransformStream is always referenced, this class uses
-// two-stage construction. After calling the constructor, store the reference
-// in a TraceWrapperMember before calling Init(). Init() must always be called
-// before using the instance.
+// Creates and wraps a (readable, writable) pair in a TransformStream object.
+// The transformation may be defined in C++ or JavaScript.
 class CORE_EXPORT TransformStream final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
@@ -86,8 +75,8 @@ class CORE_EXPORT TransformStream final : public ScriptWrappable {
                     v8::Local<v8::Object> stream,
                     ExceptionState&);
 
-  TraceWrapperMember<ReadableStream> readable_;
-  TraceWrapperMember<WritableStream> writable_;
+  Member<ReadableStream> readable_;
+  Member<WritableStream> writable_;
 
   DISALLOW_COPY_AND_ASSIGN(TransformStream);
 };

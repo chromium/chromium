@@ -37,7 +37,7 @@ class FakeSecurityKeyMessageReader : public SecurityKeyMessageReader {
   SecurityKeyMessageCallback message_callback_;
   base::Closure error_callback_;
 
-  base::WeakPtrFactory<FakeSecurityKeyMessageReader> weak_factory_;
+  base::WeakPtrFactory<FakeSecurityKeyMessageReader> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(FakeSecurityKeyMessageReader);
 };

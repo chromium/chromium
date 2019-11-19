@@ -5,7 +5,7 @@
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//      http://www.apache.org/licenses/LICENSE-2.0
+//      https://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -22,7 +22,7 @@
 // support type inference, classification, and transformation, as well as
 // make it easier to write templates based on generic type behavior.
 //
-// See http://en.cppreference.com/w/cpp/header/type_traits
+// See https://en.cppreference.com/w/cpp/header/type_traits
 //
 // WARNING: use of many of the constructs in this header will count as "complex
 // template metaprogramming", so before proceeding, please carefully consider
@@ -43,7 +43,38 @@
 
 namespace absl {
 
+// Defined and documented later on in this file.
+template <typename T>
+struct is_trivially_move_assignable;
+
 namespace type_traits_internal {
+
+// Silence MSVC warnings about the destructor being defined as deleted.
+#if defined(_MSC_VER) && !defined(__GNUC__)
+#pragma warning(push)
+#pragma warning(disable : 4624)
+#endif  // defined(_MSC_VER) && !defined(__GNUC__)
+
+template <class T>
+union SingleMemberUnion {
+  T t;
+};
+
+// Restore the state of the destructor warning that was silenced above.
+#if defined(_MSC_VER) && !defined(__GNUC__)
+#pragma warning(pop)
+#endif  // defined(_MSC_VER) && !defined(__GNUC__)
+
+template <class T>
+struct IsTriviallyMoveAssignableReference : std::false_type {};
+
+template <class T>
+struct IsTriviallyMoveAssignableReference<T&>
+    : absl::is_trivially_move_assignable<T>::type {};
+
+template <class T>
+struct IsTriviallyMoveAssignableReference<T&&>
+    : absl::is_trivially_move_assignable<T>::type {};
 
 template <typename... Ts>
 struct VoidTImpl {
@@ -193,6 +224,23 @@ struct disjunction<> : std::false_type {};
 template <typename T>
 struct negation : std::integral_constant<bool, !T::value> {};
 
+// is_function()
+//
+// Determines whether the passed type `T` is a function type.
+//
+// This metafunction is designed to be a drop-in replacement for the C++11
+// `std::is_function()` metafunction for platforms that have incomplete C++11
+// support (such as libstdc++ 4.x).
+//
+// This metafunction works because appending `const` to a type does nothing to
+// function types and reference types (and forms a const-qualified type
+// otherwise).
+template <typename T>
+struct is_function
+    : std::integral_constant<
+          bool, !(std::is_reference<T>::value ||
+                  std::is_const<typename std::add_const<T>::type>::value)> {};
+
 // is_trivially_destructible()
 //
 // Determines whether the passed type `T` is trivially destructable.
@@ -246,7 +294,7 @@ struct is_trivially_destructible
 // For the purposes of this check, the call to std::declval is considered
 // trivial."
 //
-// Notes from http://en.cppreference.com/w/cpp/types/is_constructible:
+// Notes from https://en.cppreference.com/w/cpp/types/is_constructible:
 // In many implementations, is_nothrow_constructible also checks if the
 // destructor throws because it is effectively noexcept(T(arg)). Same
 // applies to is_trivially_constructible, which, in these implementations, also
@@ -275,6 +323,40 @@ struct is_trivially_default_constructible
 #endif  // ABSL_HAVE_STD_IS_TRIVIALLY_CONSTRUCTIBLE
 };
 
+// is_trivially_move_constructible()
+//
+// Determines whether the passed type `T` is trivially move constructible.
+//
+// This metafunction is designed to be a drop-in replacement for the C++11
+// `std::is_trivially_move_constructible()` metafunction for platforms that have
+// incomplete C++11 support (such as libstdc++ 4.x). On any platforms that do
+// fully support C++11, we check whether this yields the same result as the std
+// implementation.
+//
+// NOTE: `T obj(declval<T>());` needs to be well-formed and not call any
+// nontrivial operation.  Nontrivially destructible types will cause the
+// expression to be nontrivial.
+template <typename T>
+struct is_trivially_move_constructible
+    : std::conditional<
+          std::is_object<T>::value && !std::is_array<T>::value,
+          std::is_move_constructible<
+              type_traits_internal::SingleMemberUnion<T>>,
+          std::is_reference<T>>::type::type {
+#ifdef ABSL_HAVE_STD_IS_TRIVIALLY_CONSTRUCTIBLE
+ private:
+  static constexpr bool compliant =
+      std::is_trivially_move_constructible<T>::value ==
+      is_trivially_move_constructible::value;
+  static_assert(compliant || std::is_trivially_move_constructible<T>::value,
+                "Not compliant with std::is_trivially_move_constructible; "
+                "Standard: false, Implementation: true");
+  static_assert(compliant || !std::is_trivially_move_constructible<T>::value,
+                "Not compliant with std::is_trivially_move_constructible; "
+                "Standard: true, Implementation: false");
+#endif  // ABSL_HAVE_STD_IS_TRIVIALLY_CONSTRUCTIBLE
+};
+
 // is_trivially_copy_constructible()
 //
 // Determines whether the passed type `T` is trivially copy constructible.
@@ -290,9 +372,11 @@ struct is_trivially_default_constructible
 // expression to be nontrivial.
 template <typename T>
 struct is_trivially_copy_constructible
-    : std::integral_constant<bool, __has_trivial_copy(T) &&
-                                   std::is_copy_constructible<T>::value &&
-                                   is_trivially_destructible<T>::value> {
+    : std::conditional<
+          std::is_object<T>::value && !std::is_array<T>::value,
+          std::is_copy_constructible<
+              type_traits_internal::SingleMemberUnion<T>>,
+          std::is_lvalue_reference<T>>::type::type {
 #ifdef ABSL_HAVE_STD_IS_TRIVIALLY_CONSTRUCTIBLE
  private:
   static constexpr bool compliant =
@@ -305,6 +389,42 @@ struct is_trivially_copy_constructible
                 "Not compliant with std::is_trivially_copy_constructible; "
                 "Standard: true, Implementation: false");
 #endif  // ABSL_HAVE_STD_IS_TRIVIALLY_CONSTRUCTIBLE
+};
+
+// is_trivially_move_assignable()
+//
+// Determines whether the passed type `T` is trivially move assignable.
+//
+// This metafunction is designed to be a drop-in replacement for the C++11
+// `std::is_trivially_move_assignable()` metafunction for platforms that have
+// incomplete C++11 support (such as libstdc++ 4.x). On any platforms that do
+// fully support C++11, we check whether this yields the same result as the std
+// implementation.
+//
+// NOTE: `is_assignable<T, U>::value` is `true` if the expression
+// `declval<T>() = declval<U>()` is well-formed when treated as an unevaluated
+// operand. `is_trivially_assignable<T, U>` requires the assignment to call no
+// operation that is not trivial. `is_trivially_copy_assignable<T>` is simply
+// `is_trivially_assignable<T&, T>`.
+template <typename T>
+struct is_trivially_move_assignable
+    : std::conditional<
+          std::is_object<T>::value && !std::is_array<T>::value,
+          std::is_move_assignable<type_traits_internal::SingleMemberUnion<T>>,
+          type_traits_internal::IsTriviallyMoveAssignableReference<T>>::type::
+          type {
+#ifdef ABSL_HAVE_STD_IS_TRIVIALLY_ASSIGNABLE
+ private:
+  static constexpr bool compliant =
+      std::is_trivially_move_assignable<T>::value ==
+      is_trivially_move_assignable::value;
+  static_assert(compliant || std::is_trivially_move_assignable<T>::value,
+                "Not compliant with std::is_trivially_move_assignable; "
+                "Standard: false, Implementation: true");
+  static_assert(compliant || !std::is_trivially_move_assignable<T>::value,
+                "Not compliant with std::is_trivially_move_assignable; "
+                "Standard: true, Implementation: false");
+#endif  // ABSL_HAVE_STD_IS_TRIVIALLY_ASSIGNABLE
 };
 
 // is_trivially_copy_assignable()
@@ -340,6 +460,49 @@ struct is_trivially_copy_assignable
                 "Standard: true, Implementation: false");
 #endif  // ABSL_HAVE_STD_IS_TRIVIALLY_ASSIGNABLE
 };
+
+namespace type_traits_internal {
+// is_trivially_copyable()
+//
+// Determines whether the passed type `T` is trivially copyable.
+//
+// This metafunction is designed to be a drop-in replacement for the C++11
+// `std::is_trivially_copyable()` metafunction for platforms that have
+// incomplete C++11 support (such as libstdc++ 4.x). We use the C++17 definition
+// of TriviallyCopyable.
+//
+// NOTE: `is_trivially_copyable<T>::value` is `true` if all of T's copy/move
+// constructors/assignment operators are trivial or deleted, T has at least
+// one non-deleted copy/move constructor/assignment operator, and T is trivially
+// destructible. Arrays of trivially copyable types are trivially copyable.
+//
+// We expose this metafunction only for internal use within absl.
+template <typename T>
+class is_trivially_copyable_impl {
+  using ExtentsRemoved = typename std::remove_all_extents<T>::type;
+  static constexpr bool kIsCopyOrMoveConstructible =
+      std::is_copy_constructible<ExtentsRemoved>::value ||
+      std::is_move_constructible<ExtentsRemoved>::value;
+  static constexpr bool kIsCopyOrMoveAssignable =
+      absl::is_copy_assignable<ExtentsRemoved>::value ||
+      absl::is_move_assignable<ExtentsRemoved>::value;
+
+ public:
+  static constexpr bool kValue =
+      (__has_trivial_copy(ExtentsRemoved) || !kIsCopyOrMoveConstructible) &&
+      (__has_trivial_assign(ExtentsRemoved) || !kIsCopyOrMoveAssignable) &&
+      (kIsCopyOrMoveConstructible || kIsCopyOrMoveAssignable) &&
+      is_trivially_destructible<ExtentsRemoved>::value &&
+      // We need to check for this explicitly because otherwise we'll say
+      // references are trivial copyable when compiled by MSVC.
+      !std::is_reference<ExtentsRemoved>::value;
+};
+
+template <typename T>
+struct is_trivially_copyable
+    : std::integral_constant<
+          bool, type_traits_internal::is_trivially_copyable_impl<T>::kValue> {};
+}  // namespace type_traits_internal
 
 // -----------------------------------------------------------------------------
 // C++14 "_t" trait aliases
@@ -483,6 +646,69 @@ inline void AssertHashEnabled() {
 
 }  // namespace type_traits_internal
 
+// An internal namespace that is required to implement the C++17 swap traits.
+// It is not further nested in type_traits_internal to avoid long symbol names.
+namespace swap_internal {
+
+// Necessary for the traits.
+using std::swap;
+
+// This declaration prevents global `swap` and `absl::swap` overloads from being
+// considered unless ADL picks them up.
+void swap();
+
+template <class T>
+using IsSwappableImpl = decltype(swap(std::declval<T&>(), std::declval<T&>()));
+
+// NOTE: This dance with the default template parameter is for MSVC.
+template <class T,
+          class IsNoexcept = std::integral_constant<
+              bool, noexcept(swap(std::declval<T&>(), std::declval<T&>()))>>
+using IsNothrowSwappableImpl = typename std::enable_if<IsNoexcept::value>::type;
+
+// IsSwappable
+//
+// Determines whether the standard swap idiom is a valid expression for
+// arguments of type `T`.
+template <class T>
+struct IsSwappable
+    : absl::type_traits_internal::is_detected<IsSwappableImpl, T> {};
+
+// IsNothrowSwappable
+//
+// Determines whether the standard swap idiom is a valid expression for
+// arguments of type `T` and is noexcept.
+template <class T>
+struct IsNothrowSwappable
+    : absl::type_traits_internal::is_detected<IsNothrowSwappableImpl, T> {};
+
+// Swap()
+//
+// Performs the swap idiom from a namespace where valid candidates may only be
+// found in `std` or via ADL.
+template <class T, absl::enable_if_t<IsSwappable<T>::value, int> = 0>
+void Swap(T& lhs, T& rhs) noexcept(IsNothrowSwappable<T>::value) {
+  swap(lhs, rhs);
+}
+
+// StdSwapIsUnconstrained
+//
+// Some standard library implementations are broken in that they do not
+// constrain `std::swap`. This will effectively tell us if we are dealing with
+// one of those implementations.
+using StdSwapIsUnconstrained = IsSwappable<void()>;
+
+}  // namespace swap_internal
+
+namespace type_traits_internal {
+
+// Make the swap-related traits/function accessible from this namespace.
+using swap_internal::IsNothrowSwappable;
+using swap_internal::IsSwappable;
+using swap_internal::Swap;
+using swap_internal::StdSwapIsUnconstrained;
+
+}  // namespace type_traits_internal
 }  // namespace absl
 
 #endif  // ABSL_META_TYPE_TRAITS_H_

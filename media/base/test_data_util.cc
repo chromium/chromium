@@ -29,6 +29,7 @@ const char kMp3Audio[] = "audio/mpeg";
 const char kMp4AacAudio[] = "audio/mp4; codecs=\"mp4a.40.2\"";
 const char kMp4Av110bitVideo[] = "video/mp4; codecs=\"av01.0.04M.10\"";
 const char kMp4Av1Video[] = "video/mp4; codecs=\"av01.0.04M.08\"";
+const char kMp4Av1VideoOpusAudio[] = "video/mp4; codecs=\"av01.0.04M.08,opus\"";
 const char kMp4Avc1Video[] = "video/mp4; codecs=\"avc1.64001E\"";
 const char kMp4AacAudioAvc1Video[] =
     "video/mp4; codecs=\"mp4a.40.2, avc1.64001E\"";
@@ -125,12 +126,14 @@ const FileToMimeTypeMap& GetFileToMimeTypeMap() {
       {"bear-av1-480x360.webm", kWebMAv1Video},
       {"bear-av1-cenc.mp4", kMp4Av1Video},
       {"bear-av1-cenc.webm", kWebMAv1Video},
+      {"bear-av1-opus.mp4", kMp4Av1VideoOpusAudio},
       {"bear-av1.mp4", kMp4Av1Video},
       {"bear-av1.webm", kWebMAv1Video},
       {"bear-flac-cenc.mp4", kMp4FlacAudio},
       {"bear-flac_frag.mp4", kMp4FlacAudio},
       {"bear-opus.mp4", kMp4OpusAudio},
       {"bear-opus.webm", kWebMOpusAudio},
+      {"bear-opus-cenc.mp4", kMp4OpusAudio},
       {"bear-vp8a.webm", kWebMVp8Video},
       {"bear-vp9-blockgroup.webm", kWebMVp9Video},
       {"bear-vp9.webm", kWebMVp9Video},

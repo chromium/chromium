@@ -2,10 +2,10 @@ Tests that console logging different types of functions correctly.
 
 console-functions.js:27 ƒ simple() {}
 console-functions.js:28 ƒ simple()
-    arguments: null
-    caller: null
     length: 0
     name: "simple"
+    arguments: null
+    caller: null
     prototype: {constructor: ƒ}
     __proto__: ƒ ()
     [[FunctionLocation]]: console-functions.js:13
@@ -32,50 +32,50 @@ console-functions.js:28 ƒ* genSimple()
     [[Scopes]]: Scopes[1]
 console-functions.js:27 ƒ (){}
 console-functions.js:28 ƒ anonymous()
-    arguments: null
-    caller: null
     length: 0
     name: ""
+    arguments: null
+    caller: null
     prototype: {constructor: ƒ}
     __proto__: ƒ ()
     [[FunctionLocation]]: console-functions.js:16
     [[Scopes]]: Scopes[1]
 console-functions.js:27 ƒ (x, y){}
 console-functions.js:28 ƒ anonymous(x, y)
-    arguments: null
-    caller: null
     length: 2
     name: ""
+    arguments: null
+    caller: null
     prototype: {constructor: ƒ}
     __proto__: ƒ ()
     [[FunctionLocation]]: console-functions.js:17
     [[Scopes]]: Scopes[1]
 console-functions.js:27 ƒ namedArgs(x) {}
 console-functions.js:28 ƒ namedArgs(x)
-    arguments: null
-    caller: null
     length: 1
     name: "namedArgs"
+    arguments: null
+    caller: null
     prototype: {constructor: ƒ}
     __proto__: ƒ ()
     [[FunctionLocation]]: console-functions.js:18
     [[Scopes]]: Scopes[1]
 console-functions.js:27 ƒ namedArgs2(x, y) {}
 console-functions.js:28 ƒ namedArgs2(x, y)
-    arguments: null
-    caller: null
     length: 2
     name: "namedArgs2"
+    arguments: null
+    caller: null
     prototype: {constructor: ƒ}
     __proto__: ƒ ()
     [[FunctionLocation]]: console-functions.js:19
     [[Scopes]]: Scopes[1]
 console-functions.js:27 ƒ ({}) {}
 console-functions.js:28 ƒ anonymous({})
-    arguments: null
-    caller: null
     length: 1
     name: ""
+    arguments: null
+    caller: null
     prototype: {constructor: ƒ}
     __proto__: ƒ ()
     [[FunctionLocation]]: console-functions.js:20

@@ -3,7 +3,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-"""Script which gathers and merges the JSON results from multiple
+"""Script which gathers the JSON results merged from multiple
 swarming shards of a step on the waterfall.
 
 This is used to feed in the per-test times of previous runs of tests
@@ -13,97 +13,65 @@ distribution.
 
 import argparse
 import json
-import os
-import shutil
-import subprocess
+import logging
 import sys
-import tempfile
-import urllib
 import urllib2
 
-SWARMING_SERVICE = 'https://chromium-swarm.appspot.com'
 
-THIS_DIR = os.path.dirname(os.path.abspath(__file__))
-SRC_DIR = os.path.dirname(os.path.dirname(os.path.dirname(THIS_DIR)))
-SWARMING_CLIENT_DIR = os.path.join(SRC_DIR, 'tools', 'swarming_client')
+def GetBuildData(method, request):
+  # Explorable via RPC explorer:
+  # https://cr-buildbucket.appspot.com/rpcexplorer/services/
+  #   buildbucket.v2.Builds/{GetBuild|SearchBuilds}
+  assert method in ['GetBuild', 'SearchBuilds']
 
-class Swarming:
-  @staticmethod
-  def CheckAuth():
-    output = subprocess.check_output([
-      'python',
-      os.path.join(SWARMING_CLIENT_DIR, 'auth.py'),
-      'check',
-      '--service',
-      SWARMING_SERVICE])
-    if not output.startswith('user:'):
-      print 'Must run:'
-      print '  tools/swarming_client/auth.py login --service ' + \
-          SWARMING_SERVICE
-      print 'and authenticate with @google.com credentials.'
-      sys.exit(1)
+  # The Python docs are wrong. It's fine for this payload to be just
+  # a JSON string.
+  headers = {
+    'content-type': 'application/json',
+    'accept': 'application/json'
+  }
+  url = urllib2.Request(
+    'https://cr-buildbucket.appspot.com/prpc/buildbucket.v2.Builds/' + method,
+    request,
+    headers)
+  conn = urllib2.urlopen(url)
+  result = conn.read()
+  conn.close()
+  # Result is a multi-line string the first line of which is
+  # deliberate garbage and the rest of which is a JSON payload.
+  return json.loads(''.join(result.splitlines()[1:]))
 
-  @staticmethod
-  def Collect(taskIDs, output_dir, verbose):
-    cmd = [
-      'python',
-      os.path.join(SWARMING_CLIENT_DIR, 'swarming.py'),
-      'collect',
-      '-S',
-      SWARMING_SERVICE,
-      '--task-output-dir',
-      output_dir] + taskIDs
-    if verbose:
-      print 'Collecting Swarming results:'
-      print cmd
-    if verbose > 1:
-      # Print stdout from the collect command.
-      stdout = None
-    else:
-      fnull = open(os.devnull, 'w')
-      stdout = fnull
-    subprocess.check_call(cmd, stdout=stdout, stderr=subprocess.STDOUT)
 
-  @staticmethod
-  def ExtractShardTaskIDs(urls):
-    SWARMING_URL = 'https://chromium-swarm.appspot.com/user/task/'
-    task_ids = []
-    for u in urls:
-      if not u.startswith(SWARMING_URL):
-        raise Exception('Illegally formatted \'urls\' value %s' % v)
-      task_ids.append(u[len(SWARMING_URL):])
-    return task_ids
+def GetJsonForBuildSteps(bot, build):
+  request = json.dumps({ 'builder': { 'project': 'chromium',
+                                      'bucket': 'ci',
+                                      'builder': bot },
+                         'buildNumber': build,
+                         'fields': 'steps.*.name,steps.*.logs' })
+  return GetBuildData('GetBuild', request)
 
-class Waterfall:
-  def __init__(self, waterfall):
-    self._waterfall = waterfall
 
-  def GetJsonForBuild(self, bot, build):
-    # Explorable via RPC explorer:
-    # https://luci-milo.appspot.com/rpcexplorer/services/milo.BuildInfo/Get
+def GetJsonForLatestGreenBuildSteps(bot):
+  fields = [
+    'builds.*.number',
+    'builds.*.steps.*.name',
+    'builds.*.steps.*.logs',
+  ]
+  request = json.dumps({ 'predicate': { 'builder': { 'project': 'chromium',
+                                                     'bucket': 'ci',
+                                                     'builder': bot },
+                                        'status': 'SUCCESS' },
+                         'fields': ','.join(fields),
+                         'pageSize': 1 })
+  builds_json = GetBuildData('SearchBuilds', request)
+  if 'builds' not in builds_json:
+    raise ValueError('Returned json data does not have "builds"')
+  builds = builds_json['builds']
+  assert len(builds) == 1
+  return builds[0]
 
-    # The Python docs are wrong. It's fine for this payload to be just
-    # a JSON string.
-    call_arg = json.dumps({ "buildbot": { "masterName": self._waterfall,
-                                          "builderName": bot,
-                                          "buildNumber": build }})
-    headers = {
-      "content-type": "application/json",
-      "accept": "application/json"
-    }
-    request = urllib2.Request(
-      "https://luci-milo.appspot.com/prpc/milo.BuildInfo/Get",
-      call_arg,
-      headers)
-    conn = urllib2.urlopen(request)
-    result = conn.read()
-    conn.close()
 
-    # Result is a two-line string the first line of which is
-    # deliberate garbage and the second of which is a JSON payload.
-    return json.loads(result.splitlines()[1])
-
-def JsonLoadStrippingUnicode(file, **kwargs):
+def JsonLoadStrippingUnicode(url):
   def StripUnicode(obj):
     if isinstance(obj, unicode):
       try:
@@ -121,152 +89,108 @@ def JsonLoadStrippingUnicode(file, **kwargs):
 
     return obj
 
-  return StripUnicode(json.load(file, **kwargs))
+  # The following fails with Python 2.7.6, but succeeds with Python 2.7.14.
+  conn = urllib2.urlopen(url + '?format=raw')
+  result = conn.read()
+  conn.close()
+  return StripUnicode(json.loads(result))
 
-def FindStepRecursive(node, step_name):
+
+def FindStepLogURL(steps, step_name, log_name):
   # The format of this JSON-encoded protobuf is defined here:
   # https://chromium.googlesource.com/infra/luci/luci-go/+/master/
-  #   common/proto/milo/annotations.proto
+  #   buildbucket/proto/step.proto
   # It's easiest to just use the RPC explorer to fetch one and see
   # what's desired to extract.
-  if 'name' in node:
-    if node['name'].startswith(step_name):
-      return node
-  if 'substep' in node:
-    for subnode in node['substep']:
-      # The substeps all wrap the node we care about in a wrapper
-      # object which has one field named "step".
-      res = FindStepRecursive(subnode['step'], step_name)
-      if res:
-        return res
+  for step in steps:
+    if 'name' not in step or 'logs' not in step:
+      continue
+    if step['name'].startswith(step_name):
+      for log in step['logs']:
+        if log.get('name') == log_name:
+          return log.get('viewUrl')
   return None
 
-def Merge(dest, src):
-  if isinstance(dest, list):
-    if not isinstance(src, list):
-      raise Exception('Both must be lists: ' + dest + ' and ' + src)
-    return dest + src
 
-  if isinstance(dest, dict):
-    if not isinstance(src, dict):
-      raise Exception('Both must be dicts: ' + dest + ' and ' + src)
-    for k in src.iterkeys():
-      if k not in dest:
-        dest[k] = src[k]
-      else:
-        dest[k] = Merge(dest[k], src[k])
-    return dest
-
-  return src
-
-
-def ExtractTestTimes(node, node_name, dest):
+def ExtractTestTimes(node, node_name, dest, delim):
   if 'times' in node:
     dest[node_name] = sum(node['times']) / len(node['times'])
   else:
-    # Currently the prefix names in the trie are dropped. Could
-    # concatenate them if the naming convention is changed.
     for k in node.iterkeys():
       if isinstance(node[k], dict):
-        ExtractTestTimes(node[k], k, dest)
+        test_name = node_name  + delim + k if node_name else k
+        ExtractTestTimes(node[k], test_name, dest, delim)
+
+
+def GatherResults(bot, build, step):
+  if build is None:
+    build_json = GetJsonForLatestGreenBuildSteps(bot)
+    build = build_json.get('number')
+  else:
+    build_json = GetJsonForBuildSteps(bot, build)
+
+  logging.debug('Fetched information from bot %s, build %s', bot, build)
+
+  if 'steps' not in build_json:
+    raise ValueError('Returned Json data do not have "steps"')
+
+  json_output = FindStepLogURL(build_json['steps'], step, 'json.output')
+  if not json_output:
+    raise ValueError('Unable to find json.output from step starting with %s' %
+                     step)
+  logging.debug('json.output for step starting with %s: %s', step, json_output)
+
+  merged_json = JsonLoadStrippingUnicode(json_output)
+  extracted_times = {'times':{}}
+  ExtractTestTimes(merged_json['tests'], '', extracted_times['times'],
+                   merged_json['path_delimiter'])
+
+  return extracted_times, merged_json
+
 
 def main():
   rest_args = sys.argv[1:]
   parser = argparse.ArgumentParser(
     description='Gather JSON results from a run of a Swarming test.',
     formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-  parser.add_argument('-v', '--verbose', action='count', default=0,
-                      help='Enable verbose output (specify multiple times '
-                      'for more output)')
-  parser.add_argument('--waterfall', type=str, default='chromium.gpu.fyi',
-                      help='Which waterfall to examine')
-  parser.add_argument('--bot', type=str, default='Linux Release (NVIDIA)',
-                      help='Which bot on the waterfall to examine')
-  parser.add_argument('--build', default=-1, type=int,
-                      help='Which build to fetch (must be specified)')
-  parser.add_argument('--step', type=str, default='webgl2_conformance_tests',
+  parser.add_argument('-v', '--verbose', action='store_true', default=False,
+                      help='Enable verbose output')
+  parser.add_argument('--bot', default='Linux FYI Release (NVIDIA)',
+                      help='Which bot to examine')
+  parser.add_argument('--build', type=int,
+                      help='Which build to fetch. If not specified, use '
+                      'the latest successful build.')
+  parser.add_argument('--step', default='webgl2_conformance_tests',
                       help='Which step to fetch (treated as a prefix)')
-  parser.add_argument('--output', type=str, default='output.json',
+  parser.add_argument('--output', metavar='FILE', default='output.json',
                       help='Name of output file; contains only test run times')
-  parser.add_argument('--full-output', type=str, default='',
+  parser.add_argument('--full-output', metavar='FILE',
                       help='Name of complete output file if desired')
-  parser.add_argument('--leak-temp-dir', action='store_true', default=False,
-                      help='Deliberately leak temporary directory')
-  parser.add_argument('--start-from-temp-dir', type=str, default='',
-                      help='Start from temporary directory (for debugging)')
 
   options = parser.parse_args(rest_args)
+  if options.verbose:
+    logging.basicConfig(level=logging.DEBUG)
 
-  if options.start_from_temp_dir:
-    tmpdir = options.start_from_temp_dir
-    shard_dirs = [f for f in os.listdir(tmpdir)
-                  if os.path.isdir(os.path.join(tmpdir, f))]
-    numTaskIDs = len(shard_dirs)
-  else:
-    Swarming.CheckAuth()
+  if sys.version_info < (2, 7, 10):
+    logging.warn('Script does not work with Python older than 2.7.10')
+    return 0
 
-    waterfall = Waterfall(options.waterfall)
-    build = options.build
-    if build < 0:
-      print "Build number must be specified; check the bot's page"
-      return 1
+  extracted_times, merged_json = GatherResults(
+      options.bot, options.build, options.step)
 
-    build_json = waterfall.GetJsonForBuild(options.bot, build)
-
-    if options.verbose:
-      print 'Fetching information from %s, bot %s, build %s' % (
-        options.waterfall, options.bot, build)
-
-    step = FindStepRecursive(build_json['step'], options.step)
-    if not step:
-      print "Unable to find step starting with " + options.step
-      return 1
-
-    shard_urls = []
-    expected_prefix = 'https://chromium-swarm.appspot.com/user/task/'
-    for link in step['otherLinks']:
-      label = link['label']
-      if label.startswith('shard #') and not label.endswith('isolated out'):
-        shard_urls.append(link['url'])
-    task_ids = Swarming.ExtractShardTaskIDs(shard_urls)
-
-    if not task_ids:
-      print 'Problem gathering the Swarming task IDs for %s' % options.step
-      return 1
-
-    # Collect the results.
-    tmpdir = tempfile.mkdtemp()
-    Swarming.Collect(task_ids, tmpdir, options.verbose)
-    num_task_ids = len(task_ids)
-
-  # Shards' JSON outputs are in sequentially-numbered subdirectories
-  # of the output directory.
-  merged_json = None
-  for i in xrange(num_task_ids):
-    with open(os.path.join(tmpdir, str(i), 'output.json')) as f:
-      cur_json = JsonLoadStrippingUnicode(f)
-      if not merged_json:
-        merged_json = cur_json
-      else:
-        merged_json = Merge(merged_json, cur_json)
-  extracted_times = {'times':{}}
-  ExtractTestTimes(merged_json, '', extracted_times['times'])
-
+  logging.debug('Saving output to %s', options.output)
   with open(options.output, 'w') as f:
     json.dump(extracted_times, f, sort_keys=True, indent=2,
               separators=(',', ': '))
 
-  if options.full_output:
-    json.dump(merged_json, f, sort_keys=True, indent=2,
-              separators=(',', ': '))
-
-  if options.leak_temp_dir:
-    print 'Temporary directory: %s' % tmpdir
-  else:
-    shutil.rmtree(tmpdir)
+  if options.full_output is not None:
+    logging.debug('Saving full output to %s', options.full_output)
+    with open(options.full_output, 'w') as f:
+      json.dump(merged_json, f, sort_keys=True, indent=2,
+                separators=(',', ': '))
 
   return 0
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
   sys.exit(main())

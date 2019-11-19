@@ -51,16 +51,15 @@ namespace blink {
 
 // Convert a local point into the coordinate system of backing coordinates.
 static gfx::Point LocalToInvalidationBackingPoint(
-    const LayoutPoint& local_point,
+    const PhysicalOffset& local_point,
     const LayoutObject& layout_object,
     const GraphicsLayer& graphics_layer) {
   const LayoutBoxModelObject& paint_invalidation_container =
       layout_object.ContainerForPaintInvalidation();
   const PaintLayer& paint_layer = *paint_invalidation_container.Layer();
 
-  FloatPoint container_point = layout_object.LocalToAncestorPoint(
-      FloatPoint(local_point), &paint_invalidation_container,
-      kTraverseDocumentBoundaries);
+  PhysicalOffset container_point = layout_object.LocalToAncestorPoint(
+      local_point, &paint_invalidation_container, kTraverseDocumentBoundaries);
 
   // A layoutObject can have no invalidation backing if it is from a detached
   // frame, or when forced compositing is disabled.
@@ -69,58 +68,63 @@ static gfx::Point LocalToInvalidationBackingPoint(
 
   PaintLayer::MapPointInPaintInvalidationContainerToBacking(
       paint_invalidation_container, container_point);
-  container_point.Move(-graphics_layer.OffsetFromLayoutObject());
+  container_point -= PhysicalOffset(graphics_layer.OffsetFromLayoutObject());
 
   // Ensure the coordinates are in the scrolling contents space, if the object
   // is a scroller.
   if (paint_invalidation_container.UsesCompositedScrolling()) {
-    container_point.Move(paint_invalidation_container.Layer()
-                             ->GetScrollableArea()
-                             ->GetScrollOffset());
+    container_point +=
+        PhysicalOffset::FromFloatSizeRound(paint_invalidation_container.Layer()
+                                               ->GetScrollableArea()
+                                               ->GetScrollOffset());
   }
 
   return RoundedIntPoint(container_point);
 }
 
-std::pair<LayoutPoint, LayoutPoint> static GetLocalSelectionStartpoints(
+std::pair<PhysicalOffset, PhysicalOffset> static GetLocalSelectionStartpoints(
     const LocalCaretRect& local_caret_rect) {
-  const LayoutRect rect = local_caret_rect.rect;
-  if (local_caret_rect.layout_object->Style()->IsHorizontalWritingMode())
+  const PhysicalRect rect = local_caret_rect.rect;
+  if (local_caret_rect.layout_object->IsHorizontalWritingMode())
     return {rect.MinXMinYCorner(), rect.MinXMaxYCorner()};
 
   // When text is vertical, it looks better for the start handle baseline to
   // be at the starting edge, to enclose the selection fully between the
   // handles.
+  if (local_caret_rect.layout_object->HasFlippedBlocksWritingMode())
+    return {rect.MinXMinYCorner(), rect.MaxXMinYCorner()};
   return {rect.MaxXMinYCorner(), rect.MinXMinYCorner()};
 }
 
-std::pair<LayoutPoint, LayoutPoint> static GetLocalSelectionEndpoints(
+std::pair<PhysicalOffset, PhysicalOffset> static GetLocalSelectionEndpoints(
     const LocalCaretRect& local_caret_rect) {
-  const LayoutRect rect = local_caret_rect.rect;
-  if (local_caret_rect.layout_object->Style()->IsHorizontalWritingMode())
+  const PhysicalRect rect = local_caret_rect.rect;
+  if (local_caret_rect.layout_object->IsHorizontalWritingMode())
     return {rect.MinXMinYCorner(), rect.MinXMaxYCorner()};
 
+  if (local_caret_rect.layout_object->HasFlippedBlocksWritingMode())
+    return {rect.MaxXMinYCorner(), rect.MinXMinYCorner()};
   return {rect.MinXMinYCorner(), rect.MaxXMinYCorner()};
 }
 
-static LayoutPoint GetSamplePointForVisibility(
-    const LayoutPoint& edge_top_in_layer,
-    const LayoutPoint& edge_bottom_in_layer,
+static PhysicalOffset GetSamplePointForVisibility(
+    const PhysicalOffset& edge_start_in_layer,
+    const PhysicalOffset& edge_end_in_layer,
     float zoom_factor) {
-  FloatSize diff(edge_top_in_layer - edge_bottom_in_layer);
+  FloatSize diff(edge_start_in_layer - edge_end_in_layer);
   // Adjust by ~1px to avoid integer snapping error. This logic is the same
   // as that in ComputeViewportSelectionBound in cc.
   diff.Scale(zoom_factor / diff.DiagonalLength());
-  LayoutPoint sample_point = edge_bottom_in_layer;
-  sample_point.Move(LayoutSize(diff));
+  PhysicalOffset sample_point = edge_end_in_layer;
+  sample_point += PhysicalOffset::FromFloatSizeRound(diff);
   return sample_point;
 }
 
 // Returns whether this position is not visible on the screen (because
 // clipped out).
 static bool IsVisible(const LayoutObject& rect_layout_object,
-                      const LayoutPoint& edge_top_in_layer,
-                      const LayoutPoint& edge_bottom_in_layer) {
+                      const PhysicalOffset& edge_start_in_layer,
+                      const PhysicalOffset& edge_end_in_layer) {
   Node* const node = rect_layout_object.GetNode();
   if (!node)
     return true;
@@ -134,31 +138,32 @@ static bool IsVisible(const LayoutObject& rect_layout_object,
   if (!layout_object || !layout_object->IsBox())
     return true;
 
-  const LayoutPoint sample_point =
-      GetSamplePointForVisibility(edge_top_in_layer, edge_bottom_in_layer,
+  const PhysicalOffset sample_point =
+      GetSamplePointForVisibility(edge_start_in_layer, edge_end_in_layer,
                                   rect_layout_object.View()->ZoomFactor());
 
   LayoutBox* const text_control_object = ToLayoutBox(layout_object);
-  const LayoutPoint position_in_input(rect_layout_object.LocalToAncestorPoint(
-      FloatPoint(sample_point), text_control_object,
-      kTraverseDocumentBoundaries));
-  return text_control_object->BorderBoxRect().Contains(position_in_input);
+  const PhysicalOffset position_in_input =
+      rect_layout_object.LocalToAncestorPoint(sample_point, text_control_object,
+                                              kTraverseDocumentBoundaries);
+  return text_control_object->PhysicalBorderBoxRect().Contains(
+      position_in_input);
 }
 
 static cc::LayerSelectionBound ComputeSelectionBound(
     const LayoutObject& layout_object,
     const GraphicsLayer& graphics_layer,
-    const LayoutPoint& edge_top_in_layer,
-    const LayoutPoint& edge_bottom_in_layer) {
+    const PhysicalOffset& edge_start_in_layer,
+    const PhysicalOffset& edge_end_in_layer) {
   cc::LayerSelectionBound bound;
 
-  bound.edge_top = LocalToInvalidationBackingPoint(
-      edge_top_in_layer, layout_object, graphics_layer);
-  bound.edge_bottom = LocalToInvalidationBackingPoint(
-      edge_bottom_in_layer, layout_object, graphics_layer);
+  bound.edge_start = LocalToInvalidationBackingPoint(
+      edge_start_in_layer, layout_object, graphics_layer);
+  bound.edge_end = LocalToInvalidationBackingPoint(
+      edge_end_in_layer, layout_object, graphics_layer);
   bound.layer_id = graphics_layer.CcLayer()->id();
   bound.hidden =
-      !IsVisible(layout_object, edge_top_in_layer, edge_bottom_in_layer);
+      !IsVisible(layout_object, edge_start_in_layer, edge_end_in_layer);
   return bound;
 }
 
@@ -196,11 +201,11 @@ StartPositionInGraphicsLayerBacking(const SelectionInDOMTree& selection) {
   if (!graphics_layer)
     return base::nullopt;
 
-  LayoutPoint edge_top_in_layer, edge_bottom_in_layer;
-  std::tie(edge_top_in_layer, edge_bottom_in_layer) =
+  PhysicalOffset edge_start_in_layer, edge_end_in_layer;
+  std::tie(edge_start_in_layer, edge_end_in_layer) =
       GetLocalSelectionStartpoints(local_caret_rect);
   cc::LayerSelectionBound bound = ComputeSelectionBound(
-      *layout_object, *graphics_layer, edge_top_in_layer, edge_bottom_in_layer);
+      *layout_object, *graphics_layer, edge_start_in_layer, edge_end_in_layer);
   if (selection.IsRange()) {
     bound.type = IsTextDirectionRTL(*position.AnchorNode(), *layout_object)
                      ? gfx::SelectionBound::Type::RIGHT
@@ -223,11 +228,11 @@ EndPositionInGraphicsLayerBacking(const SelectionInDOMTree& selection) {
   if (!graphics_layer)
     return base::nullopt;
 
-  LayoutPoint edge_top_in_layer, edge_bottom_in_layer;
-  std::tie(edge_top_in_layer, edge_bottom_in_layer) =
+  PhysicalOffset edge_start_in_layer, edge_end_in_layer;
+  std::tie(edge_start_in_layer, edge_end_in_layer) =
       GetLocalSelectionEndpoints(local_caret_rect);
   cc::LayerSelectionBound bound = ComputeSelectionBound(
-      *layout_object, *graphics_layer, edge_top_in_layer, edge_bottom_in_layer);
+      *layout_object, *graphics_layer, edge_start_in_layer, edge_end_in_layer);
   if (selection.IsRange()) {
     bound.type = IsTextDirectionRTL(*position.AnchorNode(), *layout_object)
                      ? gfx::SelectionBound::Type::LEFT

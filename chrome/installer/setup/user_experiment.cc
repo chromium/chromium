@@ -222,7 +222,7 @@ bool ShouldRunUserExperiment(const InstallerState& installer_state) {
     return false;
 
   // The current experiment only applies to Windows 10 and newer.
-  if (base::win::GetVersion() < base::win::VERSION_WIN10)
+  if (base::win::GetVersion() < base::win::Version::WIN10)
     return false;
 
   // Installs originating from the MSI and domain joined machines are excluded.

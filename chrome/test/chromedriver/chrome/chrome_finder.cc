@@ -19,7 +19,9 @@
 #include "base/stl_util.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/branding_buildflags.h"
 #include "build/build_config.h"
+#include "chrome/common/chrome_constants.h"
 
 #if defined(OS_WIN)
 #include "base/base_paths_win.h"
@@ -60,6 +62,7 @@ void GetApplicationDirs(std::vector<base::FilePath>* locations) {
   locations->push_back(base::FilePath("/bin"));
   // Lastly, try the default installation location.
   locations->push_back(base::FilePath("/opt/google/chrome"));
+  locations->push_back(base::FilePath("/opt/chromium.org/chromium"));
 }
 #elif defined(OS_ANDROID)
 void GetApplicationDirs(std::vector<base::FilePath>* locations) {
@@ -129,17 +132,16 @@ void GetApplicationDirs(std::vector<base::FilePath>* locations);
 #endif
 
 bool FindChrome(base::FilePath* browser_exe) {
+#if defined(OS_WIN) || defined(OS_MACOSX) || defined(OS_LINUX)
   base::FilePath browser_exes_array[] = {
-#if defined(OS_WIN)
-      base::FilePath(L"chrome.exe")
-#elif defined(OS_MACOSX)
-      base::FilePath("Google Chrome.app/Contents/MacOS/Google Chrome"),
-      base::FilePath("Chromium.app/Contents/MacOS/Chromium")
-#elif defined(OS_LINUX)
-      base::FilePath("google-chrome"),
-      base::FilePath("chrome"),
-      base::FilePath("chromium"),
-      base::FilePath("chromium-browser")
+    base::FilePath(chrome::kBrowserProcessExecutablePath),
+    base::FilePath(chrome::kBrowserProcessExecutablePathChromium),
+#if defined(OS_LINUX)
+    base::FilePath("google-chrome"),
+    base::FilePath("chrome"),
+    base::FilePath("chromium"),
+    base::FilePath("chromium-browser")
+#endif
 #else
       // it will compile but won't work on other OSes
       base::FilePath()

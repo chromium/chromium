@@ -21,7 +21,7 @@ namespace policy {
 AsyncPolicyProvider::AsyncPolicyProvider(
     SchemaRegistry* registry,
     std::unique_ptr<AsyncPolicyLoader> loader)
-    : loader_(std::move(loader)), weak_factory_(this) {
+    : loader_(std::move(loader)) {
   // Make an immediate synchronous load on startup.
   OnLoaderReloaded(loader_->InitialLoad(registry->schema_map()));
 }

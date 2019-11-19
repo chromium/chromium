@@ -27,7 +27,7 @@ void GeometryMapperTransformCache::Update(
   cache_generation_ = s_global_generation;
 
   if (node.IsRoot()) {
-    DCHECK(node.Matrix().IsIdentity());
+    DCHECK(node.IsIdentity());
     to_2d_translation_root_ = FloatSize();
     root_of_2d_translation_ = &node;
     plane_root_transform_ = nullptr;
@@ -44,7 +44,7 @@ void GeometryMapperTransformCache::Update(
   if (node.IsIdentityOr2DTranslation()) {
     root_of_2d_translation_ = parent.root_of_2d_translation_;
     to_2d_translation_root_ = parent.to_2d_translation_root_;
-    const auto& translation = node.Matrix().To2DTranslation();
+    const auto& translation = node.Translation2D();
     to_2d_translation_root_ += translation;
 
     if (parent.plane_root_transform_) {
@@ -70,9 +70,7 @@ void GeometryMapperTransformCache::Update(
   root_of_2d_translation_ = &node;
   to_2d_translation_root_ = FloatSize();
 
-  TransformationMatrix local = node.Matrix();
-  local.ApplyTransformOrigin(node.Origin());
-
+  TransformationMatrix local = node.MatrixWithOriginApplied();
   bool is_plane_root = !local.IsFlat() || !local.IsInvertible();
   if (is_plane_root && root_of_2d_translation_ == &node) {
     // We don't need plane root transform because the plane root is the same
@@ -119,13 +117,11 @@ void GeometryMapperTransformCache::UpdateScreenTransform(
   if (node.FlattensInheritedTransform())
     screen_transform_->to_screen.FlattenTo2d();
   if (node.IsIdentityOr2DTranslation()) {
-    const auto& translation = node.Matrix().To2DTranslation();
+    const auto& translation = node.Translation2D();
     screen_transform_->to_screen.Translate(translation.Width(),
                                            translation.Height());
   } else {
-    TransformationMatrix local = node.Matrix();
-    local.ApplyTransformOrigin(node.Origin());
-    screen_transform_->to_screen.Multiply(local);
+    screen_transform_->to_screen.Multiply(node.MatrixWithOriginApplied());
   }
 
   auto to_screen_flattened = screen_transform_->to_screen;

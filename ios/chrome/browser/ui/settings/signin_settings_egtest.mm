@@ -8,6 +8,7 @@
 #include "components/prefs/pref_service.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/pref_names.h"
+#import "ios/chrome/browser/ui/authentication/cells/signin_promo_view_constants.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui.h"
 #import "ios/chrome/browser/ui/authentication/signin_earlgrey_utils.h"
 #import "ios/chrome/browser/ui/settings/settings_table_view_controller.h"
@@ -18,6 +19,7 @@
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/public/provider/chrome/browser/signin/fake_chrome_identity.h"
 #import "ios/public/provider/chrome/browser/signin/fake_chrome_identity_service.h"
+#include "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -41,10 +43,11 @@ using chrome_test_util::ButtonWithAccessibilityLabelId;
       checkSigninPromoVisibleWithMode:SigninPromoViewModeColdState];
   [ChromeEarlGreyUI tapSettingsMenuButton:PrimarySignInButton()];
 
-  [[EarlGrey
-      selectElementWithMatcher:grey_allOf(grey_buttonTitle(@"Cancel"),
-                                          grey_sufficientlyVisible(), nil)]
-      performAction:grey_tap()];
+  // Cancel the sign-in operation.
+  [[EarlGrey selectElementWithMatcher:
+                 grey_buttonTitle([l10n_util::GetNSString(
+                     IDS_IOS_ACCOUNT_CONSISTENCY_SETUP_SKIP_BUTTON)
+                     uppercaseString])] performAction:grey_tap()];
   [SigninEarlGreyUI
       checkSigninPromoVisibleWithMode:SigninPromoViewModeColdState];
 }
@@ -62,7 +65,7 @@ using chrome_test_util::ButtonWithAccessibilityLabelId;
   [SigninEarlGreyUI confirmSigninConfirmationDialog];
 
   // User signed in.
-  [SigninEarlGreyUtils assertSignedInWithIdentity:identity];
+  [SigninEarlGreyUtils checkSignedInWithIdentity:identity];
   [SigninEarlGreyUI checkSigninPromoNotVisible];
   [[EarlGrey selectElementWithMatcher:SettingsAccountButton()]
       assertWithMatcher:grey_interactable()];
@@ -82,7 +85,7 @@ using chrome_test_util::ButtonWithAccessibilityLabelId;
   [SigninEarlGreyUI confirmSigninConfirmationDialog];
 
   // User signed in.
-  [SigninEarlGreyUtils assertSignedInWithIdentity:identity];
+  [SigninEarlGreyUtils checkSignedInWithIdentity:identity];
   [SigninEarlGreyUI checkSigninPromoNotVisible];
   [[EarlGrey selectElementWithMatcher:SettingsAccountButton()]
       assertWithMatcher:grey_interactable()];

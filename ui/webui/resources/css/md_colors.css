@@ -9,10 +9,15 @@ html {
   --md-loading-message-color: #6e6e6e;
   /* --google-blue-700, rewritten as a native custom property for speed. */
   --md-toolbar-color: rgb(51, 103, 214);
+  --md-toolbar-height: 56px;
 }
 
-html[dark] {
-  --md-background-color: rgb(32, 33, 36);  /* --google-grey-900 */
-  --md-loading-message-color: #9AA0A6;  /* --google-grey-refresh-500 */
-  --md-toolbar-color: rgba(255, 255, 255, .04);
+@media (prefers-color-scheme: dark) {
+  html {
+    --md-background-color: rgb(32, 33, 36);  /* --google-grey-900 */
+    --md-loading-message-color: #9AA0A6;  /* --google-grey-refresh-500 */
+    /* --cr-separator-line */
+    --md-toolbar-border: 1px solid rgba(255, 255, 255, .1);
+    --md-toolbar-color: rgba(255, 255, 255, .04);
+  }
 }

@@ -7,8 +7,8 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/views/payments/payment_request_browsertest_base.h"
 #include "chrome/browser/ui/views/payments/payment_request_dialog_view_ids.h"
-#include "components/autofill/core/browser/autofill_profile.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
+#include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -52,7 +52,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestShippingOptionViewControllerTest,
   OpenShippingAddressSectionScreen();
   EXPECT_EQ(base::ASCIIToUTF16(
                 "To see shipping methods and requirements, select an address"),
-            GetLabelText(DialogViewID::SHIPPING_ADDRESS_SECTION_HEADER_LABEL));
+            GetLabelText(DialogViewID::WARNING_LABEL));
 
   ResetEventWaiterForSequence({DialogEvent::PROCESSING_SPINNER_SHOWN,
                                DialogEvent::PROCESSING_SPINNER_HIDDEN,
@@ -101,7 +101,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestShippingOptionViewControllerTest,
 
   // The address selector has this error.
   EXPECT_EQ(base::ASCIIToUTF16("We do not ship to this address"),
-            GetLabelText(DialogViewID::SHIPPING_ADDRESS_SECTION_HEADER_LABEL));
+            GetLabelText(DialogViewID::WARNING_LABEL));
 
   // There is no a longer shipping option section, because no shipping options
   // are available for Canada.

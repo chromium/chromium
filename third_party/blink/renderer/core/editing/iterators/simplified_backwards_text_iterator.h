@@ -27,7 +27,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_ITERATORS_SIMPLIFIED_BACKWARDS_TEXT_ITERATOR_H_
 
 #include "third_party/blink/renderer/core/editing/forward.h"
-#include "third_party/blink/renderer/core/editing/iterators/backwards_text_buffer.h"
 #include "third_party/blink/renderer/core/editing/iterators/fully_clipped_state_stack.h"
 #include "third_party/blink/renderer/core/editing/iterators/text_iterator_behavior.h"
 #include "third_party/blink/renderer/core/editing/iterators/text_iterator_text_state.h"
@@ -57,6 +56,7 @@ class SimplifiedBackwardsTextIteratorAlgorithm {
   void Advance();
 
   int length() const { return text_state_.length(); }
+  const TextIteratorTextState& GetTextState() const { return text_state_; }
 
   // Note: |characterAt()| returns characters in the reversed order, since
   // the iterator is backwards. For example, if the current text is "abc",
@@ -64,14 +64,6 @@ class SimplifiedBackwardsTextIteratorAlgorithm {
   UChar CharacterAt(unsigned index) const;
 
   const Node* GetNode() const { return node_; }
-
-  // Calculate the minimum |actualLength >= minLength| such that code units
-  // with offset range [position, position + actualLength) are whole code
-  // points. Prepend these code points to |output| and return |actualLength|.
-  int CopyTextTo(BackwardsTextBuffer* output,
-                 int position,
-                 int min_length) const;
-  int CopyTextTo(BackwardsTextBuffer* output, int position = 0) const;
 
   // TODO(editing-dev): We should consider code sharing between |TextIterator|
   // and |SimplifiedBackwardsTextIterator| for
@@ -97,8 +89,6 @@ class SimplifiedBackwardsTextIteratorAlgorithm {
   bool HandleReplacedElement();
   bool HandleNonTextNode();
   bool AdvanceRespectingRange(const Node*);
-
-  bool IsBetweenSurrogatePair(int position) const;
 
   // TODO(editing-dev): We should consider code sharing between |TextIterator|
   // and |SimplifiedBackwardsTextIterator| for

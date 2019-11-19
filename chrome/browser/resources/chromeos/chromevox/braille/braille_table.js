@@ -6,7 +6,7 @@
  * @fileoverview Holds information about a braille table.
  */
 
-goog.provide('cvox.BrailleTable');
+goog.provide('BrailleTable');
 
 
 /**
@@ -19,38 +19,38 @@ goog.provide('cvox.BrailleTable');
  *   fileNames:string
  * }}
  */
-cvox.BrailleTable.Table;
+BrailleTable.Table;
 
 
 /**
  * @const {string}
  */
-cvox.BrailleTable.TABLE_PATH = 'braille/tables.json';
+BrailleTable.TABLE_PATH = 'braille/tables.json';
 
 
 /**
  * @const {string}
  * @private
  */
-cvox.BrailleTable.COMMON_DEFS_FILENAME_ = 'cvox-common.cti';
+BrailleTable.COMMON_DEFS_FILENAME_ = 'cvox-common.cti';
 
 
 /**
  * Retrieves a list of all available braille tables.
- * @param {function(!Array<cvox.BrailleTable.Table>)} callback
+ * @param {function(!Array<BrailleTable.Table>)} callback
  *     Called asynchronously with an array of tables.
  */
-cvox.BrailleTable.getAll = function(callback) {
+BrailleTable.getAll = function(callback) {
   function appendCommonFilename(tables) {
     // Append the common definitions to all table filenames.
     tables.forEach(function(table) {
-      table.fileNames += (',' + cvox.BrailleTable.COMMON_DEFS_FILENAME_);
+      table.fileNames += (',' + BrailleTable.COMMON_DEFS_FILENAME_);
     });
     return tables;
   }
-  var url = chrome.extension.getURL(cvox.BrailleTable.TABLE_PATH);
+  var url = chrome.extension.getURL(BrailleTable.TABLE_PATH);
   if (!url) {
-    throw 'Invalid path: ' + cvox.BrailleTable.TABLE_PATH;
+    throw 'Invalid path: ' + BrailleTable.TABLE_PATH;
   }
 
   var xhr = new XMLHttpRequest();
@@ -59,7 +59,7 @@ cvox.BrailleTable.getAll = function(callback) {
     if (xhr.readyState == 4) {
       if (xhr.status == 200) {
         callback(appendCommonFilename(
-            /** @type {!Array<cvox.BrailleTable.Table>} */ (
+            /** @type {!Array<BrailleTable.Table>} */ (
                 JSON.parse(xhr.responseText))));
       }
     }
@@ -70,11 +70,11 @@ cvox.BrailleTable.getAll = function(callback) {
 
 /**
  * Finds a table in a list of tables by id.
- * @param {!Array<cvox.BrailleTable.Table>} tables tables to search in.
+ * @param {!Array<BrailleTable.Table>} tables tables to search in.
  * @param {string} id id of table to find.
- * @return {cvox.BrailleTable.Table} The found table, or null if not found.
+ * @return {BrailleTable.Table} The found table, or null if not found.
  */
-cvox.BrailleTable.forId = function(tables, id) {
+BrailleTable.forId = function(tables, id) {
   return tables.filter(function(table) {
     return table.id === id;
   })[0] ||
@@ -86,12 +86,12 @@ cvox.BrailleTable.forId = function(tables, id) {
  * Returns an uncontracted braille table corresponding to another, possibly
  * contracted, table.  If {@code table} is the lowest-grade table for its
  * locale and dot count, {@code table} itself is returned.
- * @param {!Array<cvox.BrailleTable.Table>} tables tables to search in.
- * @param {!cvox.BrailleTable.Table} table Table to match.
- * @return {!cvox.BrailleTable.Table} Corresponding uncontracted table,
+ * @param {!Array<BrailleTable.Table>} tables tables to search in.
+ * @param {!BrailleTable.Table} table Table to match.
+ * @return {!BrailleTable.Table} Corresponding uncontracted table,
  *     or {@code table} if it is uncontracted.
  */
-cvox.BrailleTable.getUncontracted = function(tables, table) {
+BrailleTable.getUncontracted = function(tables, table) {
   function mostUncontractedOf(current, candidate) {
     // An 8 dot table for the same language is prefered over a 6 dot table
     // even if the locales differ by region.
@@ -111,10 +111,10 @@ cvox.BrailleTable.getUncontracted = function(tables, table) {
 
 
 /**
- * @param {!cvox.BrailleTable.Table} table Table to get name for.
+ * @param {!BrailleTable.Table} table Table to get name for.
  * @return {string} Localized display name.
  */
-cvox.BrailleTable.getDisplayName = function(table) {
+BrailleTable.getDisplayName = function(table) {
   var localeName = Msgs.getLocaleDisplayName(table.locale);
   if (!table.grade && !table.variant) {
     return localeName;

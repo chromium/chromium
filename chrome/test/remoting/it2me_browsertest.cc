@@ -5,6 +5,7 @@
 #include <stdint.h>
 
 #include "base/strings/string_number_conversions.h"
+#include "build/build_config.h"
 #include "chrome/test/remoting/remote_desktop_browsertest.h"
 #include "chrome/test/remoting/remote_test_helper.h"
 
@@ -33,7 +34,14 @@ content::WebContents* It2MeBrowserTest::SetUpHelperInstance() {
   return helper_content;
 }
 
-IN_PROC_BROWSER_TEST_F(It2MeBrowserTest, MANUAL_Connect) {
+// TODO(1020591): The win7 bots do not seem to recognize the MANUAL_ prefix,
+// so we explicitly disable this test.
+#if defined(OS_WIN)
+#define MAYBE_MANUAL_Connect DISABLED_MANUAL_Connect
+#else
+#define MAYBE_MANUAL_Connect MANUAL_Connect
+#endif
+IN_PROC_BROWSER_TEST_F(It2MeBrowserTest, MAYBE_MANUAL_Connect) {
   content::WebContents* helpee_content = SetUpTest();
   LoadScript(helpee_content, FILE_PATH_LITERAL("it2me_browser_test.js"));
 
@@ -45,7 +53,14 @@ IN_PROC_BROWSER_TEST_F(It2MeBrowserTest, MANUAL_Connect) {
   Cleanup();
 }
 
-IN_PROC_BROWSER_TEST_F(It2MeBrowserTest, MANUAL_CancelShare) {
+// TODO(1020591): The win7 bots do not seem to recognize the MANUAL_ prefix,
+// so we explicitly disable this test.
+#if defined(OS_WIN)
+#define MAYBE_MANUAL_CancelShare DISABLED_MANUAL_CancelShare
+#else
+#define MAYBE_MANUAL_CancelShare MANUAL_CancelShare
+#endif
+IN_PROC_BROWSER_TEST_F(It2MeBrowserTest, MAYBE_MANUAL_CancelShare) {
   content::WebContents* helpee_content = SetUpTest();
   LoadScript(helpee_content, FILE_PATH_LITERAL("it2me_browser_test.js"));
   std::string access_code = GetAccessCode(helpee_content);
@@ -58,7 +73,17 @@ IN_PROC_BROWSER_TEST_F(It2MeBrowserTest, MANUAL_CancelShare) {
   Cleanup();
 }
 
-IN_PROC_BROWSER_TEST_F(It2MeBrowserTest, MANUAL_VerifyAccessCodeNonReusable) {
+// TODO(1020591): The win7 bots do not seem to recognize the MANUAL_ prefix,
+// so we explicitly disable this test.
+#if defined(OS_WIN)
+#define MAYBE_MANUAL_VerifyAccessCodeNonReusable \
+  DISABLED_MANUAL_VerifyAccessCodeNonReusable
+#else
+#define MAYBE_MANUAL_VerifyAccessCodeNonReusable \
+  MANUAL_VerifyAccessCodeNonReusable
+#endif
+IN_PROC_BROWSER_TEST_F(It2MeBrowserTest,
+                       MAYBE_MANUAL_VerifyAccessCodeNonReusable) {
   content::WebContents* helpee_content = SetUpTest();
   LoadScript(helpee_content, FILE_PATH_LITERAL("it2me_browser_test.js"));
   std::string access_code = GetAccessCode(helpee_content);
@@ -74,7 +99,14 @@ IN_PROC_BROWSER_TEST_F(It2MeBrowserTest, MANUAL_VerifyAccessCodeNonReusable) {
   Cleanup();
 }
 
-IN_PROC_BROWSER_TEST_F(It2MeBrowserTest, MANUAL_InvalidAccessCode) {
+// TODO(1020591): The win7 bots do not seem to recognize the MANUAL_ prefix,
+// so we explicitly disable this test.
+#if defined(OS_WIN)
+#define MAYBE_MANUAL_InvalidAccessCode DISABLED_MANUAL_InvalidAccessCode
+#else
+#define MAYBE_MANUAL_InvalidAccessCode MANUAL_InvalidAccessCode
+#endif
+IN_PROC_BROWSER_TEST_F(It2MeBrowserTest, MAYBE_MANUAL_InvalidAccessCode) {
   content::WebContents* helpee_content = SetUpTest();
   LoadScript(helpee_content, FILE_PATH_LITERAL("it2me_browser_test.js"));
 

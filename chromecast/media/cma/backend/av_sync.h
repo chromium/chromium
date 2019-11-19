@@ -8,12 +8,7 @@
 #include <stdint.h>
 #include <memory>
 
-#include "base/memory/scoped_refptr.h"
 #include "chromecast/public/media/media_pipeline_backend.h"
-
-namespace base {
-class SingleThreadTaskRunner;
-}  // namespace base
 
 namespace chromecast {
 namespace media {
@@ -29,9 +24,7 @@ class MediaPipelineBackendForMixer;
 // by linking in their AvSync::Create method statically defined below.
 class AvSync {
  public:
-  static std::unique_ptr<AvSync> Create(
-      scoped_refptr<base::SingleThreadTaskRunner> task_runner,
-      MediaPipelineBackendForMixer* backend);
+  static std::unique_ptr<AvSync> Create(MediaPipelineBackendForMixer* backend);
 
   virtual ~AvSync() = default;
 

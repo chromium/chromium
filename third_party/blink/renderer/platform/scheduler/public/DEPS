@@ -1,0 +1,5 @@
+specific_include_rules = {
+  "thread.h": [
+    "+base/task/task_observer.h",
+  ]
+}

@@ -9,9 +9,8 @@
 #include "base/run_loop.h"
 #include "content/browser/service_worker/embedded_worker_test_helper.h"
 #include "content/browser/service_worker/service_worker_registration.h"
-#include "content/common/service_worker/service_worker_types.h"
+#include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
-#include "content/public/test/test_browser_thread_bundle.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
 #include "url/gurl.h"
@@ -21,7 +20,7 @@ namespace content {
 class NotificationStorageTest : public ::testing::Test {
  public:
   NotificationStorageTest()
-      : thread_bundle_(TestBrowserThreadBundle::IO_MAINLOOP),
+      : task_environment_(BrowserTaskEnvironment::IO_MAINLOOP),
         origin_(GURL("https://example.com")),
         success_(false),
         service_worker_registration_id_(
@@ -69,7 +68,7 @@ class NotificationStorageTest : public ::testing::Test {
       options.scope = origin_;
       base::RunLoop run_loop;
       helper_->context()->RegisterServiceWorker(
-          script_url, options,
+          script_url, options, blink::mojom::FetchClientSettingsObject::New(),
           base::BindOnce(&NotificationStorageTest::DidRegisterServiceWorker,
                          base::Unretained(this), run_loop.QuitClosure()));
       run_loop.Run();
@@ -95,7 +94,7 @@ class NotificationStorageTest : public ::testing::Test {
     }
 
     // Wait for the worker to be activated.
-    thread_bundle_.RunUntilIdle();
+    task_environment_.RunUntilIdle();
 
     if (!service_worker_registration) {
       ADD_FAILURE() << "Could not find the new Service Worker registration.";
@@ -152,7 +151,7 @@ class NotificationStorageTest : public ::testing::Test {
   std::string GenerateNotificationId() { return base::GenerateGUID(); }
 
  protected:
-  TestBrowserThreadBundle thread_bundle_;  // Must be first member
+  BrowserTaskEnvironment task_environment_;  // Must be first member
   std::unique_ptr<EmbeddedWorkerTestHelper> helper_;
   GURL origin_;
   TestBrowserContext browser_context_;

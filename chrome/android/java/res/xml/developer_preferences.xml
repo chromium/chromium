@@ -3,9 +3,19 @@
      Use of this source code is governed by a BSD-style license that can be
      found in the LICENSE file. -->
 
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orderingFromXml="true">
     <Preference
         android:fragment="org.chromium.chrome.browser.preferences.developer.TracingPreferences"
         android:key="tracing"
-        android:title="Tracing"/>
+        android:title="Tracing" />
+    <org.chromium.chrome.browser.preferences.TextMessagePreference
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:enabled="false"
+        android:key="beta_stable_hint"
+        android:title="Hint: You can also enable Developer options on Beta/Stable channels by tapping the Chrome version in &quot;Settings > About Chrome&quot; multiple times."
+        app:allowDividerAbove="false"
+        app:allowDividerBelow="false" />
 </PreferenceScreen>

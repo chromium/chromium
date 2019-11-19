@@ -17,7 +17,6 @@ namespace download {
 
 namespace {
 
-const char kDatabaseClientName[] = "DownloadService";
 using KeyVector = std::vector<std::string>;
 using ProtoEntryVector = std::vector<protodb::Entry>;
 using KeyProtoEntryVector = std::vector<std::pair<std::string, protodb::Entry>>;
@@ -33,12 +32,8 @@ leveldb_env::Options GetDownloadDBOptions() {
 }  // namespace
 
 DownloadStore::DownloadStore(
-    const base::FilePath& database_dir,
     std::unique_ptr<leveldb_proto::ProtoDatabase<protodb::Entry>> db)
-    : db_(std::move(db)),
-      database_dir_(database_dir),
-      is_initialized_(false),
-      weak_factory_(this) {}
+    : db_(std::move(db)), is_initialized_(false) {}
 
 DownloadStore::~DownloadStore() = default;
 
@@ -48,7 +43,7 @@ bool DownloadStore::IsInitialized() {
 
 void DownloadStore::Initialize(InitCallback callback) {
   DCHECK(!IsInitialized());
-  db_->Init(kDatabaseClientName, database_dir_, GetDownloadDBOptions(),
+  db_->Init(GetDownloadDBOptions(),
             base::BindOnce(&DownloadStore::OnDatabaseInited,
                            weak_factory_.GetWeakPtr(), std::move(callback)));
 }
@@ -59,9 +54,10 @@ void DownloadStore::HardRecover(StoreCallback callback) {
                               weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-void DownloadStore::OnDatabaseInited(InitCallback callback, bool success) {
-  if (!success) {
-    std::move(callback).Run(success, std::make_unique<std::vector<Entry>>());
+void DownloadStore::OnDatabaseInited(InitCallback callback,
+                                     leveldb_proto::Enums::InitStatus status) {
+  if (status != leveldb_proto::Enums::InitStatus::kOK) {
+    std::move(callback).Run(false, std::make_unique<std::vector<Entry>>());
     return;
   }
 
@@ -89,15 +85,16 @@ void DownloadStore::OnDatabaseDestroyed(StoreCallback callback, bool success) {
     return;
   }
 
-  db_->Init(kDatabaseClientName, database_dir_, GetDownloadDBOptions(),
+  db_->Init(GetDownloadDBOptions(),
             base::BindOnce(&DownloadStore::OnDatabaseInitedAfterDestroy,
                            weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-void DownloadStore::OnDatabaseInitedAfterDestroy(StoreCallback callback,
-                                                 bool success) {
-  is_initialized_ = success;
-  std::move(callback).Run(success);
+void DownloadStore::OnDatabaseInitedAfterDestroy(
+    StoreCallback callback,
+    leveldb_proto::Enums::InitStatus status) {
+  is_initialized_ = status == leveldb_proto::Enums::InitStatus::kOK;
+  std::move(callback).Run(is_initialized_);
 }
 
 void DownloadStore::Update(const Entry& entry, StoreCallback callback) {

@@ -2,13 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "build/build_config.h"
 #include "chrome/browser/sync/test/integration/bookmarks_helper.h"
 #include "chrome/browser/sync/test/integration/encryption_helper.h"
 #include "chrome/browser/sync/test/integration/profile_sync_service_harness.h"
 #include "chrome/browser/sync/test/integration/sync_integration_test_util.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
+#include "chrome/browser/sync/test/integration/updated_progress_marker_checker.h"
 #include "components/sync/base/sync_base_switches.h"
 #include "components/sync/engine/sync_engine_switches.h"
+#include "content/public/test/test_launcher.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -18,6 +21,7 @@ static const int kDecryptingClientId = 1;
 
 using bookmarks_helper::AddURL;
 using bookmarks_helper::AllModelsMatchVerifier;
+using bookmarks_helper::BookmarksMatchVerifierChecker;
 
 // These tests consider the client as a black-box; they are not concerned with
 // whether the data is committed to the server correctly encrypted. Rather, they
@@ -50,6 +54,33 @@ class TwoClientCustomPassphraseSyncTest : public SyncTest {
   DISALLOW_COPY_AND_ASSIGN(TwoClientCustomPassphraseSyncTest);
 };
 
+class TwoClientCustomPassphraseSyncTestScryptEnabledInPreTest
+    : public TwoClientCustomPassphraseSyncTest {
+ public:
+  TwoClientCustomPassphraseSyncTestScryptEnabledInPreTest() {
+    if (content::IsPreTest()) {
+      override_features_.InitWithFeatures(
+          /*enable_features=*/{switches::kSyncUseScryptForNewCustomPassphrases},
+          /*disable_features=*/{
+              switches::kSyncForceDisableScryptForCustomPassphrase});
+    } else {
+      override_features_.InitWithFeatures(
+          /*enable_features=*/{},
+          /*disable_features=*/{
+              switches::kSyncUseScryptForNewCustomPassphrases,
+              switches::kSyncForceDisableScryptForCustomPassphrase});
+    }
+  }
+
+  ~TwoClientCustomPassphraseSyncTestScryptEnabledInPreTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList override_features_;
+
+  DISALLOW_COPY_AND_ASSIGN(
+      TwoClientCustomPassphraseSyncTestScryptEnabledInPreTest);
+};
+
 IN_PROC_BROWSER_TEST_F(TwoClientCustomPassphraseSyncTest,
                        DecryptionFailsWhenIncorrectPassphraseProvided) {
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
@@ -65,7 +96,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientCustomPassphraseSyncTest,
                    ->SetDecryptionPassphrase("incorrect passphrase"));
   EXPECT_TRUE(GetSyncService(kDecryptingClientId)
                   ->GetUserSettings()
-                  ->IsPassphraseRequiredForDecryption());
+                  ->IsPassphraseRequiredForPreferredDataTypes());
 }
 
 IN_PROC_BROWSER_TEST_F(TwoClientCustomPassphraseSyncTest, ClientsCanSyncData) {
@@ -102,11 +133,14 @@ IN_PROC_BROWSER_TEST_F(TwoClientCustomPassphraseSyncTest,
   ASSERT_TRUE(
       PassphraseAcceptedChecker(GetSyncService(kEncryptingClientId)).Wait());
   AddTestBookmarksToClient(kEncryptingClientId);
+  // Wait for the client to commit the update.
+  ASSERT_TRUE(
+      UpdatedProgressMarkerChecker(GetSyncService(kEncryptingClientId)).Wait());
 
   // Set up a new sync client.
-  ASSERT_TRUE(
-      GetClient(kDecryptingClientId)
-          ->SetupSyncNoWaitForCompletion(syncer::UserSelectableTypes()));
+  ASSERT_TRUE(GetClient(kDecryptingClientId)
+                  ->SetupSyncNoWaitForCompletion(
+                      GetRegisteredSelectableTypes(kDecryptingClientId)));
   ASSERT_TRUE(
       PassphraseRequiredChecker(GetSyncService(kDecryptingClientId)).Wait());
 
@@ -177,8 +211,6 @@ class TwoClientCustomPassphraseSyncTestWithScryptEncryptionEnabled
 IN_PROC_BROWSER_TEST_F(
     TwoClientCustomPassphraseSyncTestWithScryptEncryptionEnabled,
     ClientsCanSyncData) {
-  ScopedScryptFeatureToggler toggler(/*force_disabled=*/false,
-                                     /*use_for_new_passphrases=*/true);
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
   ASSERT_TRUE(AllModelsMatchVerifier());
 
@@ -200,31 +232,29 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(WaitForBookmarksToMatchVerifier());
 }
 
-#if defined(THREAD_SANITIZER)
-// https://crbug.com/915219. This data race is hard to avoid as overriding
-// g_feature_list after it has been used is needed for this test.
-#define MAYBE_ClientsCanSyncDataWhenScryptEncryptionEnabledInOne \
-  DISABLED_ClientsCanSyncDataWhenScryptEncryptionEnabledInOne
-#else
-#define MAYBE_ClientsCanSyncDataWhenScryptEncryptionEnabledInOne \
-  ClientsCanSyncDataWhenScryptEncryptionEnabledInOne
-#endif
-
-IN_PROC_BROWSER_TEST_F(
-    TwoClientCustomPassphraseSyncTest,
-    MAYBE_ClientsCanSyncDataWhenScryptEncryptionEnabledInOne) {
-  ScopedScryptFeatureToggler toggler(/*force_disabled=*/false,
-                                     /*use_for_new_passphrases=*/false);
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+IN_PROC_BROWSER_TEST_F(TwoClientCustomPassphraseSyncTestScryptEnabledInPreTest,
+                       PRE_ClientsCanSyncDataWhenScryptEncryptionEnabledInOne) {
+  ASSERT_TRUE(SetupSync());
   ASSERT_TRUE(AllModelsMatchVerifier());
 
-  {
-    ScopedScryptFeatureToggler temporary_toggler(
-        /*force_disabled=*/false, /*use_for_new_passphrases=*/true);
-    GetSyncService(kEncryptingClientId)
-        ->GetUserSettings()
-        ->SetEncryptionPassphrase("hunter2");
-  }
+  GetSyncService(kEncryptingClientId)
+      ->GetUserSettings()
+      ->SetEncryptionPassphrase("hunter2");
+  ASSERT_TRUE(ServerNigoriChecker(GetSyncService(kEncryptingClientId),
+                                  GetFakeServer(),
+                                  syncer::PassphraseType::kCustomPassphrase)
+                  .Wait());
+}
+
+IN_PROC_BROWSER_TEST_F(TwoClientCustomPassphraseSyncTestScryptEnabledInPreTest,
+                       ClientsCanSyncDataWhenScryptEncryptionEnabledInOne) {
+  ASSERT_TRUE(SetupClients());
+  ASSERT_TRUE(AllModelsMatchVerifier());
+
+  // WaitForPassphraseRequiredState() doesn't guarantee, that sync engine will
+  // be initialized, but SetDecryptionPassphrase() requires it, so explicitly
+  // wait for engine initialization.
+  ASSERT_TRUE(GetClient(kDecryptingClientId)->AwaitEngineInitialization());
   ASSERT_TRUE(WaitForPassphraseRequiredState(kDecryptingClientId,
                                              /*desired_state=*/true));
   EXPECT_TRUE(GetSyncService(kDecryptingClientId)

@@ -2,6 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+# Nothing outside //chrome/chrome_cleaner can depend on these targets.
+visibility = [ "//chrome/chrome_cleaner/*" ]
+
 static_library("parser_sandbox_broker") {
   sources = [
     "sandbox_setup_hooks.cc",
@@ -9,11 +12,11 @@ static_library("parser_sandbox_broker") {
   ]
 
   deps = [
-    "//base:base",
+    "//base",
     "//chrome/chrome_cleaner/constants:common_strings",
-    "//chrome/chrome_cleaner/interfaces:parser_interface",
     "//chrome/chrome_cleaner/ipc:mojo_task_runner",
     "//chrome/chrome_cleaner/ipc:sandbox",
+    "//chrome/chrome_cleaner/mojom:parser_interface",
     "//chrome/chrome_cleaner/settings:settings_types",
     "//components/chrome_cleaner/public/constants:constants",
     "//mojo/public/cpp/bindings",
@@ -29,12 +32,12 @@ source_set("unittest_sources") {
   ]
   deps = [
     ":parser_sandbox_broker",
-    "//base:base",
+    "//base",
     "//base/test:test_support",
-    "//chrome/chrome_cleaner/interfaces:parser_interface",
     "//chrome/chrome_cleaner/ipc:mojo_task_runner",
+    "//chrome/chrome_cleaner/mojom:parser_interface",
     "//chrome/chrome_cleaner/os:common_os",
-    "//chrome/chrome_cleaner/parsers/json_parser:json_parser",
+    "//chrome/chrome_cleaner/parsers/json_parser",
     "//chrome/chrome_cleaner/parsers/json_parser:json_splicer",
     "//chrome/chrome_cleaner/parsers/shortcut_parser:sandboxed_lnk_parser_test_util",
     "//chrome/chrome_cleaner/parsers/shortcut_parser/broker:sandboxed_shortcut_parser",

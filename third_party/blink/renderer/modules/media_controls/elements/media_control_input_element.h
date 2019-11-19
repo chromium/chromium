@@ -43,16 +43,16 @@ class MODULES_EXPORT MediaControlInputElement : public HTMLInputElement,
   bool IsDisabled() const override;
 
  protected:
-  MediaControlInputElement(MediaControlsImpl&, MediaControlElementType);
+  MediaControlInputElement(MediaControlsImpl&);
 
   // Returns a string that represents the button for metrics purposes. This
   // will be used as a suffix for histograms.
   virtual const char* GetNameForHistograms() const = 0;
 
-  // Returns a string representation of the media control element.
-  // Subclasses should override this method to return the string representation
+  // Returns a string resource id of the media control element.
+  // Subclasses should override this method to return the string resource id
   // of the overflow button.
-  virtual WebLocalizedString::Name GetOverflowStringName() const;
+  virtual int GetOverflowStringId() const;
 
   // Implements a default event handler to record interaction on click.
   void DefaultEventHandler(Event&) override;
@@ -99,6 +99,9 @@ class MODULES_EXPORT MediaControlInputElement : public HTMLInputElement,
   // Remove the subtitle text from the overflow element.
   void RemoveOverflowSubtitleElement();
 
+  // Updates aria label on overflow_label_element_.
+  void UpdateOverflowLabelAriaLabel(String);
+
   // Used for histograms, do not reorder.
   enum class CTREvent {
     kDisplayed = 0,
@@ -113,6 +116,9 @@ class MODULES_EXPORT MediaControlInputElement : public HTMLInputElement,
   // Setting this pointer is optional so it may be null.
   Member<MediaControlInputElement> overflow_element_;
 
+  // The overflow label element for the overflow_element_;
+  Member<HTMLLabelElement> overflow_label_element_;
+
   // Contains the overflow text and its subtitle (if exists).
   Member<HTMLDivElement> overflow_menu_container_;
 
@@ -121,6 +127,9 @@ class MODULES_EXPORT MediaControlInputElement : public HTMLInputElement,
 
   // The subtitle of the text within the overflow menu.
   Member<HTMLSpanElement> overflow_menu_subtitle_;
+
+  // The aria label for the overflow element without subtitle text.
+  String aria_label_;
 
   // Keeps track if the button was created for the purpose of the overflow menu.
   bool is_overflow_element_ = false;

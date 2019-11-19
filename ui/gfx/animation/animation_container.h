@@ -5,25 +5,27 @@
 #ifndef UI_GFX_ANIMATION_ANIMATION_CONTAINER_H_
 #define UI_GFX_ANIMATION_ANIMATION_CONTAINER_H_
 
+#include <memory>
 #include <utility>
 
 #include "base/containers/flat_set.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
-#include "base/timer/timer.h"
 #include "ui/gfx/animation/animation_export.h"
+#include "ui/gfx/animation/animation_runner.h"
 
 namespace gfx {
 
 class AnimationContainerElement;
 class AnimationContainerObserver;
 
-// AnimationContainer is used by Animation to manage the underlying timer.
-// Internally each Animation creates a single AnimationContainer. You can
-// group a set of Animations into the same AnimationContainer by way of
-// Animation::SetContainer. Grouping a set of Animations into the same
-// AnimationContainer ensures they all update and start at the same time.
+// AnimationContainer is used by Animation to manage the underlying
+// AnimationRunner. Internally each Animation creates a single
+// AnimationContainer. You can group a set of Animations into the same
+// AnimationContainer by way of Animation::SetContainer. Grouping a set of
+// Animations into the same AnimationContainer ensures they all update and start
+// at the same time.
 //
 // AnimationContainer is ref counted. Each Animation contained within the
 // AnimationContainer own it.
@@ -53,7 +55,14 @@ class ANIMATION_EXPORT AnimationContainer
   // Are there any timers running?
   bool is_running() const { return !elements_.empty(); }
 
+  void SetAnimationRunner(std::unique_ptr<AnimationRunner> runner);
+  AnimationRunner* animation_runner_for_testing() { return runner_.get(); }
+  bool has_custom_animation_runner() const {
+    return has_custom_animation_runner_;
+  }
+
  private:
+  friend class AnimationContainerTestApi;
   friend class base::RefCounted<AnimationContainer>;
 
   // This set is usually quite small so a flat_set is the most obvious choice.
@@ -67,10 +76,14 @@ class ANIMATION_EXPORT AnimationContainer
   ~AnimationContainer();
 
   // Timer callback method.
-  void Run();
+  void Run(base::TimeTicks current_time);
 
   // Sets min_timer_interval_ and restarts the timer.
   void SetMinTimerInterval(base::TimeDelta delta);
+
+  // Restarts the timer, assuming |elapsed| has already elapsed out of the timer
+  // interval.
+  void RestartTimer(base::TimeDelta elapsed);
 
   // Returns the min timer interval of all the timers, and the count of timers
   // at that interval.
@@ -80,7 +93,7 @@ class ANIMATION_EXPORT AnimationContainer
   // . If only a single animation has been started and the timer hasn't yet
   //   fired this is the time the animation was added.
   // . The time the last animation ran at (::Run was invoked).
-  base::TimeTicks last_tick_time_;
+  base::TimeTicks last_tick_time_ = base::TimeTicks::Now();
 
   // Set of elements (animations) being managed.
   Elements elements_;
@@ -92,11 +105,13 @@ class ANIMATION_EXPORT AnimationContainer
   // it means that the linear scan for the new minimum timer can almost always
   // be avoided.
   base::TimeDelta min_timer_interval_;
-  size_t min_timer_interval_count_;
+  size_t min_timer_interval_count_ = 0;
 
-  base::RepeatingTimer timer_;
+  std::unique_ptr<AnimationRunner> runner_ =
+      AnimationRunner::CreateDefaultAnimationRunner();
+  bool has_custom_animation_runner_ = false;
 
-  AnimationContainerObserver* observer_;
+  AnimationContainerObserver* observer_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(AnimationContainer);
 };

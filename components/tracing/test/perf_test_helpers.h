@@ -19,12 +19,12 @@ namespace tracing {
 // with value name passed to constructor.
 class ScopedStopwatch {
  public:
-  ScopedStopwatch(const std::string& name);
+  ScopedStopwatch(const std::string& metric);
   ~ScopedStopwatch();
 
  private:
   base::TimeTicks begin_;
-  const std::string name_;
+  const std::string metric_;
 
   DISALLOW_COPY_AND_ASSIGN(ScopedStopwatch);
 };
@@ -40,15 +40,15 @@ class ScopedStopwatch {
 // with value name passed to constructor.
 class IterableStopwatch {
  public:
-  IterableStopwatch(const std::string& name);
+  IterableStopwatch(const std::string& metric);
   ~IterableStopwatch();
 
   void NextLap();
 
  private:
   base::TimeTicks begin_;
-  std::vector<int64_t> laps_;
-  const std::string name_;
+  std::vector<double> laps_;
+  const std::string metric_;
 
   DISALLOW_COPY_AND_ASSIGN(IterableStopwatch);
 };

@@ -28,7 +28,6 @@ class TestDirectoryBackingStore : public DirectoryBackingStore {
                             sql::Database* connection);
   ~TestDirectoryBackingStore() override;
   DirOpenResult Load(Directory::MetahandlesMap* handles_map,
-                     JournalIndex* delete_journals,
                      MetahandleSet* metahandles_to_purge,
                      Directory::KernelLoadInfo* kernel_load_info) override;
   bool DeleteEntries(const MetahandleSet& handles);

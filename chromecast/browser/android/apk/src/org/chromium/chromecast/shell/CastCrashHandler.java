@@ -12,7 +12,7 @@ import org.chromium.base.annotations.JNINamespace;
  */
 @JNINamespace("chromecast")
 public final class CastCrashHandler {
-    private static final String TAG = "cr_CastCrashHandler";
+    private static final String TAG = "CastCrashHandler";
 
     @CalledByNative
     public static void uploadOnce(String crashDumpPath, String crashReportsPath, String uuid,

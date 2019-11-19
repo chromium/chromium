@@ -11,16 +11,11 @@ source_set("common") {
     "spellcheck_common.h",
     "spellcheck_features.cc",
     "spellcheck_features.h",
-    "spellcheck_result.cc",
-    "spellcheck_result.h",
-    "spellcheck_struct_traits.cc",
-    "spellcheck_struct_traits.h",
-    "spellcheck_switches.cc",
-    "spellcheck_switches.h",
   ]
 
   public_deps = [
     ":interfaces",
+    ":spellcheck_result",
     "//components/spellcheck:buildflags",
   ]
 
@@ -28,6 +23,19 @@ source_set("common") {
     "//base:i18n",
     "//ipc",
     "//third_party/icu",
+  ]
+}
+
+# This is separated out because it is used by both the mojo interfaces below
+# (see spellcheck.typemap) and by "common" above.
+source_set("spellcheck_result") {
+  sources = [
+    "spellcheck_result.cc",
+    "spellcheck_result.h",
+  ]
+
+  deps = [
+    "//base",
   ]
 }
 
@@ -47,7 +55,9 @@ mojom("interfaces") {
   enabled_features = []
   if (use_browser_spellchecker) {
     enabled_features += [ "USE_BROWSER_SPELLCHECKER" ]
-  } else {
+  }
+
+  if (use_renderer_spellchecker) {
     enabled_features += [ "USE_RENDERER_SPELLCHECKER" ]
   }
 }

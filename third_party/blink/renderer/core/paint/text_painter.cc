@@ -30,17 +30,17 @@ void TextPainter::Paint(unsigned start_offset,
                         unsigned end_offset,
                         unsigned length,
                         const TextPaintStyle& text_style,
-                        const NodeHolder& node_holder) {
+                        DOMNodeId node_id) {
   GraphicsContextStateSaver state_saver(graphics_context_, false);
   UpdateGraphicsContext(text_style, state_saver);
   if (combined_text_) {
     graphics_context_.Save();
     combined_text_->TransformToInlineCoordinates(graphics_context_,
-                                                 text_bounds_);
-    PaintInternal<kPaintText>(start_offset, end_offset, length, node_holder);
+                                                 text_bounds_.ToLayoutRect());
+    PaintInternal<kPaintText>(start_offset, end_offset, length, node_id);
     graphics_context_.Restore();
   } else {
-    PaintInternal<kPaintText>(start_offset, end_offset, length, node_holder);
+    PaintInternal<kPaintText>(start_offset, end_offset, length, node_id);
   }
 
   if (!emphasis_mark_.IsEmpty()) {
@@ -51,7 +51,7 @@ void TextPainter::Paint(unsigned start_offset,
       PaintEmphasisMarkForCombinedText();
     } else {
       PaintInternal<kPaintEmphasisMark>(start_offset, end_offset, length,
-                                        node_holder);
+                                        node_id);
     }
   }
 }
@@ -60,7 +60,7 @@ template <TextPainter::PaintInternalStep step>
 void TextPainter::PaintInternalRun(TextRunPaintInfo& text_run_paint_info,
                                    unsigned from,
                                    unsigned to,
-                                   const NodeHolder& node_holder) {
+                                   DOMNodeId node_id) {
   DCHECK(from <= text_run_paint_info.run.length());
   DCHECK(to <= text_run_paint_info.run.length());
 
@@ -74,7 +74,7 @@ void TextPainter::PaintInternalRun(TextRunPaintInfo& text_run_paint_info,
   } else {
     DCHECK(step == kPaintText);
     graphics_context_.DrawText(font_, text_run_paint_info,
-                               FloatPoint(text_origin_), node_holder);
+                               FloatPoint(text_origin_), node_id);
   }
 }
 
@@ -82,19 +82,19 @@ template <TextPainter::PaintInternalStep Step>
 void TextPainter::PaintInternal(unsigned start_offset,
                                 unsigned end_offset,
                                 unsigned truncation_point,
-                                const NodeHolder& node_holder) {
+                                DOMNodeId node_id) {
   TextRunPaintInfo text_run_paint_info(run_);
   if (start_offset <= end_offset) {
     PaintInternalRun<Step>(text_run_paint_info, start_offset, end_offset,
-                           node_holder);
+                           node_id);
   } else {
     if (end_offset > 0) {
       PaintInternalRun<Step>(text_run_paint_info, ellipsis_offset_, end_offset,
-                             node_holder);
+                             node_id);
     }
     if (start_offset < truncation_point) {
       PaintInternalRun<Step>(text_run_paint_info, start_offset,
-                             truncation_point, node_holder);
+                             truncation_point, node_id);
     }
   }
 }

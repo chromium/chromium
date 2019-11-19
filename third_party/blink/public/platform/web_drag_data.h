@@ -86,7 +86,7 @@ class WebDragData {
 
     // Only valid when storage_type == kStorageTypeFileSystemFile.
     WebURL file_system_url;
-    long long file_system_file_size;
+    int64_t file_system_file_size;
     WebString file_system_id;
   };
 

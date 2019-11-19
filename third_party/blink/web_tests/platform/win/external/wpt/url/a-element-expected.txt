@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 516 tests; 330 PASS, 186 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 517 tests; 328 PASS, 189 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Loading data…
 PASS Parsing: <http://example	.
 org> against <http://example.org/foo/bar>
@@ -183,8 +183,8 @@ PASS Parsing: <https://foo:443/> against <about:blank>
 PASS Parsing: <https://foo:80/> against <about:blank>
 PASS Parsing: <ftp://foo:21/> against <about:blank>
 PASS Parsing: <ftp://foo:80/> against <about:blank>
-PASS Parsing: <gopher://foo:70/> against <about:blank>
-PASS Parsing: <gopher://foo:443/> against <about:blank>
+FAIL Parsing: <gopher://foo:70/> against <about:blank> assert_equals: host expected "foo:70" but got ""
+FAIL Parsing: <gopher://foo:443/> against <about:blank> assert_equals: host expected "foo:443" but got ""
 PASS Parsing: <ws://foo:80/> against <about:blank>
 PASS Parsing: <ws://foo:81/> against <about:blank>
 PASS Parsing: <ws://foo:443/> against <about:blank>
@@ -360,6 +360,7 @@ PASS Parsing: <sc:\../> against <about:blank>
 PASS Parsing: <sc::a@example.net> against <about:blank>
 PASS Parsing: <wow:%NBD> against <about:blank>
 PASS Parsing: <wow:%1G> against <about:blank>
+FAIL Parsing: <wow:￿> against <about:blank> assert_equals: href expected "wow:%EF%BF%BF" but got "wow:%EF%BF%BD"
 FAIL Parsing: <ftp://example.com%80/> against <about:blank> assert_equals: failure should set href to input expected "ftp://example.com%80/" but got "ftp://example.com%EF%BF%BD/"
 FAIL Parsing: <ftp://example.com%A0/> against <about:blank> assert_equals: failure should set href to input expected "ftp://example.com%A0/" but got "ftp://example.com%EF%BF%BD/"
 FAIL Parsing: <https://example.com%80/> against <about:blank> assert_equals: failure should set href to input expected "https://example.com%80/" but got "https://example.com%EF%BF%BD/"

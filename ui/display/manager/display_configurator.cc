@@ -4,7 +4,7 @@
 
 #include "ui/display/manager/display_configurator.h"
 
-#include <stddef.h>
+#include <cstddef>
 #include <utility>
 
 #include "base/bind.h"
@@ -17,7 +17,7 @@
 #include "ui/display/display.h"
 #include "ui/display/display_features.h"
 #include "ui/display/display_switches.h"
-#include "ui/display/manager/apply_content_protection_task.h"
+#include "ui/display/manager/content_protection_manager.h"
 #include "ui/display/manager/display_layout_manager.h"
 #include "ui/display/manager/display_util.h"
 #include "ui/display/manager/managed_display_info.h"
@@ -573,30 +573,26 @@ DisplayConfigurator::DisplayConfigurator()
       has_pending_power_state_(false),
       pending_power_flags_(kSetDisplayPowerNoFlags),
       force_configure_(false),
-      next_display_protection_client_id_(1),
       display_externally_controlled_(false),
       display_control_changing_(false),
       displays_suspended_(false),
       layout_manager_(new DisplayLayoutManagerImpl(this)),
-      has_unassociated_display_(false),
-      weak_ptr_factory_(this) {}
+      content_protection_manager_(new ContentProtectionManager(
+          layout_manager_.get(),
+          base::BindRepeating(&DisplayConfigurator::configurator_disabled,
+                              base::Unretained(this)))),
+      has_unassociated_display_(false) {
+  AddObserver(content_protection_manager_.get());
+}
 
 DisplayConfigurator::~DisplayConfigurator() {
+  RemoveObserver(content_protection_manager_.get());
+
   if (native_display_delegate_)
     native_display_delegate_->RemoveObserver(this);
 
   CallAndClearInProgressCallbacks(false);
   CallAndClearQueuedCallbacks(false);
-
-  while (!query_protection_callbacks_.empty()) {
-    std::move(query_protection_callbacks_.front()).Run(false, 0, 0);
-    query_protection_callbacks_.pop();
-  }
-
-  while (!set_protection_callbacks_.empty()) {
-    std::move(set_protection_callbacks_.front()).Run(false);
-    set_protection_callbacks_.pop();
-  }
 }
 
 void DisplayConfigurator::SetDelegateForTesting(
@@ -638,7 +634,7 @@ void DisplayConfigurator::Init(
     std::unique_ptr<NativeDisplayDelegate> display_delegate,
     bool is_panel_fitting_enabled) {
   is_panel_fitting_enabled_ = is_panel_fitting_enabled;
-  if (!configure_display_ || display_externally_controlled_)
+  if (configurator_disabled())
     return;
 
   // If the delegate is already initialized don't update it (For example, tests
@@ -647,6 +643,9 @@ void DisplayConfigurator::Init(
     native_display_delegate_ = std::move(display_delegate);
 
   native_display_delegate_->AddObserver(this);
+
+  content_protection_manager_->set_native_display_delegate(
+      native_display_delegate_.get());
 }
 
 void DisplayConfigurator::TakeControl(DisplayControlCallback callback) {
@@ -662,8 +661,8 @@ void DisplayConfigurator::TakeControl(DisplayControlCallback callback) {
 
   display_control_changing_ = true;
   native_display_delegate_->TakeDisplayControl(
-      base::Bind(&DisplayConfigurator::OnDisplayControlTaken,
-                 weak_ptr_factory_.GetWeakPtr(), base::Passed(&callback)));
+      base::BindOnce(&DisplayConfigurator::OnDisplayControlTaken,
+                     weak_ptr_factory_.GetWeakPtr(), base::Passed(&callback)));
 }
 
 void DisplayConfigurator::OnDisplayControlTaken(DisplayControlCallback callback,
@@ -706,8 +705,8 @@ void DisplayConfigurator::RelinquishControl(DisplayControlCallback callback) {
   // them for output.
   SetDisplayPowerInternal(
       chromeos::DISPLAY_POWER_ALL_OFF, kSetDisplayPowerNoFlags,
-      base::Bind(&DisplayConfigurator::SendRelinquishDisplayControl,
-                 weak_ptr_factory_.GetWeakPtr(), base::Passed(&callback)));
+      base::BindOnce(&DisplayConfigurator::SendRelinquishDisplayControl,
+                     weak_ptr_factory_.GetWeakPtr(), base::Passed(&callback)));
 }
 
 void DisplayConfigurator::SendRelinquishDisplayControl(
@@ -717,9 +716,9 @@ void DisplayConfigurator::SendRelinquishDisplayControl(
     // Set the flag early such that an incoming configuration event won't start
     // while we're releasing control of the displays.
     display_externally_controlled_ = true;
-    native_display_delegate_->RelinquishDisplayControl(
-        base::Bind(&DisplayConfigurator::OnDisplayControlRelinquished,
-                   weak_ptr_factory_.GetWeakPtr(), base::Passed(&callback)));
+    native_display_delegate_->RelinquishDisplayControl(base::BindOnce(
+        &DisplayConfigurator::OnDisplayControlRelinquished,
+        weak_ptr_factory_.GetWeakPtr(), base::Passed(&callback)));
   } else {
     display_control_changing_ = false;
     std::move(callback).Run(false);
@@ -740,7 +739,7 @@ void DisplayConfigurator::OnDisplayControlRelinquished(
 }
 
 void DisplayConfigurator::ForceInitialConfigure() {
-  if (!configure_display_ || display_externally_controlled_)
+  if (configurator_disabled())
     return;
 
   DCHECK(native_display_delegate_);
@@ -750,182 +749,13 @@ void DisplayConfigurator::ForceInitialConfigure() {
   // be anything scheduled.
   DCHECK(!configuration_task_);
 
-  configuration_task_.reset(new UpdateDisplayConfigurationTask(
+  configuration_task_ = std::make_unique<UpdateDisplayConfigurationTask>(
       native_display_delegate_.get(), layout_manager_.get(),
       requested_display_state_, GetRequestedPowerState(),
       kSetDisplayPowerForceProbe, /*force_configure=*/true,
-      base::Bind(&DisplayConfigurator::OnConfigured,
-                 weak_ptr_factory_.GetWeakPtr())));
+      base::BindOnce(&DisplayConfigurator::OnConfigured,
+                     weak_ptr_factory_.GetWeakPtr()));
   configuration_task_->Run();
-}
-
-uint64_t DisplayConfigurator::RegisterContentProtectionClient() {
-  if (!configure_display_ || display_externally_controlled_)
-    return INVALID_CLIENT_ID;
-
-  return next_display_protection_client_id_++;
-}
-
-void DisplayConfigurator::UnregisterContentProtectionClient(
-    uint64_t client_id) {
-  client_protection_requests_.erase(client_id);
-
-  ContentProtections protections;
-  for (const auto& requests_pair : client_protection_requests_) {
-    for (const auto& protections_pair : requests_pair.second) {
-      protections[protections_pair.first] |= protections_pair.second;
-    }
-  }
-
-  set_protection_callbacks_.push(base::DoNothing());
-  ApplyContentProtectionTask* task = new ApplyContentProtectionTask(
-      layout_manager_.get(), native_display_delegate_.get(), protections,
-      base::Bind(&DisplayConfigurator::OnContentProtectionClientUnregistered,
-                 weak_ptr_factory_.GetWeakPtr()));
-  content_protection_tasks_.push(
-      base::Bind(&ApplyContentProtectionTask::Run, base::Owned(task)));
-
-  if (content_protection_tasks_.size() == 1)
-    content_protection_tasks_.front().Run();
-}
-
-void DisplayConfigurator::OnContentProtectionClientUnregistered(bool success) {
-  DCHECK(!content_protection_tasks_.empty());
-  content_protection_tasks_.pop();
-
-  DCHECK(!set_protection_callbacks_.empty());
-  SetProtectionCallback callback = std::move(set_protection_callbacks_.front());
-  set_protection_callbacks_.pop();
-
-  if (!content_protection_tasks_.empty())
-    content_protection_tasks_.front().Run();
-}
-
-void DisplayConfigurator::QueryContentProtectionStatus(
-    uint64_t client_id,
-    int64_t display_id,
-    QueryProtectionCallback callback) {
-  // Exclude virtual displays so that protected content will not be recaptured
-  // through the cast stream.
-  for (const DisplaySnapshot* display : cached_displays_) {
-    if (display->display_id() == display_id &&
-        !IsPhysicalDisplayType(display->type())) {
-      std::move(callback).Run(false, 0, 0);
-      return;
-    }
-  }
-
-  if (!configure_display_ || display_externally_controlled_) {
-    std::move(callback).Run(false, 0, 0);
-    return;
-  }
-
-  query_protection_callbacks_.push(std::move(callback));
-  QueryContentProtectionTask* task = new QueryContentProtectionTask(
-      layout_manager_.get(), native_display_delegate_.get(), display_id,
-      base::Bind(&DisplayConfigurator::OnContentProtectionQueried,
-                 weak_ptr_factory_.GetWeakPtr(), client_id, display_id));
-  content_protection_tasks_.push(
-      base::Bind(&QueryContentProtectionTask::Run, base::Owned(task)));
-  if (content_protection_tasks_.size() == 1)
-    content_protection_tasks_.front().Run();
-}
-
-void DisplayConfigurator::OnContentProtectionQueried(
-    uint64_t client_id,
-    int64_t display_id,
-    QueryContentProtectionTask::Response task_response) {
-  bool success = task_response.success;
-  uint32_t link_mask = task_response.link_mask;
-  uint32_t protection_mask = 0;
-
-  // Don't reveal protections requested by other clients.
-  ProtectionRequests::iterator it = client_protection_requests_.find(client_id);
-  if (success && it != client_protection_requests_.end()) {
-    uint32_t requested_mask = 0;
-    if (it->second.find(display_id) != it->second.end())
-      requested_mask = it->second[display_id];
-    protection_mask =
-        task_response.enabled & ~task_response.unfulfilled & requested_mask;
-  }
-
-  DCHECK(!content_protection_tasks_.empty());
-  content_protection_tasks_.pop();
-
-  DCHECK(!query_protection_callbacks_.empty());
-  QueryProtectionCallback callback =
-      std::move(query_protection_callbacks_.front());
-  query_protection_callbacks_.pop();
-  std::move(callback).Run(success, link_mask, protection_mask);
-
-  if (!content_protection_tasks_.empty())
-    content_protection_tasks_.front().Run();
-}
-
-void DisplayConfigurator::SetContentProtection(uint64_t client_id,
-                                               int64_t display_id,
-                                               uint32_t desired_method_mask,
-                                               SetProtectionCallback callback) {
-  if (!configure_display_ || display_externally_controlled_) {
-    std::move(callback).Run(false);
-    return;
-  }
-
-  ContentProtections protections;
-  for (const auto& requests_pair : client_protection_requests_) {
-    for (const auto& protections_pair : requests_pair.second) {
-      if (requests_pair.first == client_id &&
-          protections_pair.first == display_id)
-        continue;
-
-      protections[protections_pair.first] |= protections_pair.second;
-    }
-  }
-  protections[display_id] |= desired_method_mask;
-
-  set_protection_callbacks_.push(std::move(callback));
-  ApplyContentProtectionTask* task = new ApplyContentProtectionTask(
-      layout_manager_.get(), native_display_delegate_.get(), protections,
-      base::Bind(&DisplayConfigurator::OnSetContentProtectionCompleted,
-                 weak_ptr_factory_.GetWeakPtr(), client_id, display_id,
-                 desired_method_mask));
-  content_protection_tasks_.push(
-      base::Bind(&ApplyContentProtectionTask::Run, base::Owned(task)));
-  if (content_protection_tasks_.size() == 1)
-    content_protection_tasks_.front().Run();
-}
-
-void DisplayConfigurator::OnSetContentProtectionCompleted(
-    uint64_t client_id,
-    int64_t display_id,
-    uint32_t desired_method_mask,
-    bool success) {
-  DCHECK(!content_protection_tasks_.empty());
-  content_protection_tasks_.pop();
-
-  DCHECK(!set_protection_callbacks_.empty());
-  SetProtectionCallback callback = std::move(set_protection_callbacks_.front());
-  set_protection_callbacks_.pop();
-
-  if (!success) {
-    std::move(callback).Run(false);
-    return;
-  }
-
-  if (desired_method_mask == CONTENT_PROTECTION_METHOD_NONE) {
-    if (client_protection_requests_.find(client_id) !=
-        client_protection_requests_.end()) {
-      client_protection_requests_[client_id].erase(display_id);
-      if (client_protection_requests_[client_id].size() == 0)
-        client_protection_requests_.erase(client_id);
-    }
-  } else {
-    client_protection_requests_[client_id][display_id] = desired_method_mask;
-  }
-
-  std::move(callback).Run(true);
-  if (!content_protection_tasks_.empty())
-    content_protection_tasks_.front().Run();
 }
 
 bool DisplayConfigurator::SetColorMatrix(
@@ -964,7 +794,7 @@ void DisplayConfigurator::PrepareForExit() {
 void DisplayConfigurator::SetDisplayPowerInternal(
     chromeos::DisplayPowerState power_state,
     int flags,
-    const ConfigurationCallback& callback) {
+    ConfigurationCallback callback) {
   // Only skip if the current power state is the same and the latest requested
   // power state is the same. If |pending_power_state_ != current_power_state_|
   // then there is a current task pending or the last configuration failed. In
@@ -973,14 +803,14 @@ void DisplayConfigurator::SetDisplayPowerInternal(
   if (power_state == current_power_state_ &&
       power_state == pending_power_state_ &&
       !(flags & kSetDisplayPowerForceProbe)) {
-    callback.Run(true);
+    std::move(callback).Run(true);
     return;
   }
 
   pending_power_state_ = power_state;
   has_pending_power_state_ = true;
   pending_power_flags_ = flags;
-  queued_configuration_callbacks_.push_back(callback);
+  queued_configuration_callbacks_.push_back(std::move(callback));
 
   if (configure_timer_.IsRunning()) {
     // If there is a configuration task scheduled, avoid performing
@@ -996,9 +826,9 @@ void DisplayConfigurator::SetDisplayPowerInternal(
 void DisplayConfigurator::SetDisplayPower(
     chromeos::DisplayPowerState power_state,
     int flags,
-    const ConfigurationCallback& callback) {
-  if (!configure_display_ || display_externally_controlled_) {
-    callback.Run(false);
+    ConfigurationCallback callback) {
+  if (configurator_disabled()) {
+    std::move(callback).Run(false);
     return;
   }
 
@@ -1008,11 +838,11 @@ void DisplayConfigurator::SetDisplayPower(
           << (configure_timer_.IsRunning() ? "Running" : "Stopped");
 
   requested_power_state_ = power_state;
-  SetDisplayPowerInternal(*requested_power_state_, flags, callback);
+  SetDisplayPowerInternal(*requested_power_state_, flags, std::move(callback));
 }
 
 void DisplayConfigurator::SetDisplayMode(MultipleDisplayState new_state) {
-  if (!configure_display_ || display_externally_controlled_)
+  if (configurator_disabled())
     return;
 
   VLOG(1) << "SetDisplayMode: state="
@@ -1062,10 +892,9 @@ void DisplayConfigurator::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
-void DisplayConfigurator::SuspendDisplays(
-    const ConfigurationCallback& callback) {
-  if (!configure_display_ || display_externally_controlled_) {
-    callback.Run(false);
+void DisplayConfigurator::SuspendDisplays(ConfigurationCallback callback) {
+  if (configurator_disabled()) {
+    std::move(callback).Run(false);
     return;
   }
 
@@ -1080,11 +909,11 @@ void DisplayConfigurator::SuspendDisplays(
   // unless explicitly requested by lucid sleep code). Use
   // SetDisplayPowerInternal so requested_power_state_ is maintained.
   SetDisplayPowerInternal(chromeos::DISPLAY_POWER_ALL_OFF,
-                          kSetDisplayPowerNoFlags, callback);
+                          kSetDisplayPowerNoFlags, std::move(callback));
 }
 
 void DisplayConfigurator::ResumeDisplays() {
-  if (!configure_display_ || display_externally_controlled_)
+  if (configurator_disabled())
     return;
 
   displays_suspended_ = false;
@@ -1114,7 +943,7 @@ void DisplayConfigurator::ResumeDisplays() {
 }
 
 void DisplayConfigurator::ConfigureDisplays() {
-  if (!configure_display_ || display_externally_controlled_)
+  if (configurator_disabled())
     return;
 
   force_configure_ = true;
@@ -1134,12 +963,12 @@ void DisplayConfigurator::RunPendingConfiguration() {
     return;
   }
 
-  configuration_task_.reset(new UpdateDisplayConfigurationTask(
+  configuration_task_ = std::make_unique<UpdateDisplayConfigurationTask>(
       native_display_delegate_.get(), layout_manager_.get(),
       requested_display_state_, pending_power_state_, pending_power_flags_,
       force_configure_,
-      base::Bind(&DisplayConfigurator::OnConfigured,
-                 weak_ptr_factory_.GetWeakPtr())));
+      base::BindOnce(&DisplayConfigurator::OnConfigured,
+                     weak_ptr_factory_.GetWeakPtr()));
 
   // Reset the flags before running the task; otherwise it may end up scheduling
   // another configuration.
@@ -1166,16 +995,6 @@ void DisplayConfigurator::OnConfigured(
 
   cached_displays_ = displays;
   has_unassociated_display_ = unassociated_displays.size();
-
-  if (has_unassociated_display_) {
-    std::string names;
-    for (const auto* unassociated_display : unassociated_displays) {
-      if (!names.empty())
-        names.push_back(',');
-      names += unassociated_display->display_name();
-    }
-    LOG(WARNING) << "Following displays have no associated crtc: " << names;
-  }
 
   if (success) {
     current_display_state_ = new_display_state;
@@ -1229,15 +1048,15 @@ bool DisplayConfigurator::ShouldRunConfigurationTask() const {
 }
 
 void DisplayConfigurator::CallAndClearInProgressCallbacks(bool success) {
-  for (const auto& callback : in_progress_configuration_callbacks_)
-    callback.Run(success);
+  for (auto& callback : in_progress_configuration_callbacks_)
+    std::move(callback).Run(success);
 
   in_progress_configuration_callbacks_.clear();
 }
 
 void DisplayConfigurator::CallAndClearQueuedCallbacks(bool success) {
-  for (const auto& callback : queued_configuration_callbacks_)
-    callback.Run(success);
+  for (auto& callback : queued_configuration_callbacks_)
+    std::move(callback).Run(success);
 
   queued_configuration_callbacks_.clear();
 }

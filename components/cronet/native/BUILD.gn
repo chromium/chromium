@@ -89,6 +89,7 @@ source_set("cronet_native_unittests") {
   configs += [ ":cronet_native_include_config" ]
 
   sources = [
+    "engine_unittest.cc",
     "native_metrics_util_test.cc",
     "runnables_unittest.cc",
 

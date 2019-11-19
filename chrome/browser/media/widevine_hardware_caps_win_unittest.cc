@@ -13,7 +13,7 @@ TEST(WidevineHardwareCapsTest, GetWidevineHardwareCaps) {
   base::flat_set<media::CdmProxy::Protocol> cdm_proxy_protocols = {
       media::CdmProxy::Protocol::kIntel};
   base::flat_set<media::VideoCodec> video_codecs;
-  base::flat_set<media::EncryptionMode> encryption_schemes;
+  base::flat_set<media::EncryptionScheme> encryption_schemes;
 
   // Not checking the results since it's hardware dependent.
   GetWidevineHardwareCaps(cdm_proxy_protocols, &video_codecs,

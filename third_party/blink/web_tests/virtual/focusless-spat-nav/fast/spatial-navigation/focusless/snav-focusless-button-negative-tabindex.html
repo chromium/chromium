@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<script src="../../../../../resources/testharness.js"></script>
+<script src="../../../../../resources/testharnessreport.js"></script>
+<script src="file:///gen/layout_test_data/mojo/public/js/mojo_bindings.js"></script>
+<script src="file:///gen/third_party/blink/public/mojom/page/spatial_navigation.mojom.js"></script>
+<script src="../../../../../fast/spatial-navigation/resources/mock-snav-service.js"></script>
+<script src="../../../../../fast/spatial-navigation/resources/snav-testharness.js"></script>
+
+<style>
+  div {
+    width: 130px;
+    height: 130px;
+    border: 1px solid black;
+  }
+</style>
+<button tabindex="-1" id="unselectable">Unselectable</button>
+<br>
+<br>
+<button id="selectable"">Selectable</button>
+
+<script>
+  const unselectable = document.getElementById("unselectable");
+  const selectable = document.getElementById("selectable");
+
+  // This test checks that tabindex="-1" is effective on a button element,
+  // which overrides Element::IsKeyboardFocusable.
+  test(() => {
+    assert_true(!!window.internals);
+
+    snav.triggerMove('Down');
+    assert_equals(window.internals.interestedElement,
+                  selectable,
+                  "Expected interest to move to |selectable| button.");
+
+    snav.triggerMove('Up');
+    assert_equals(window.internals.interestedElement,
+                  selectable,
+                  "Expected interest to stay on |selectable| button.");
+  }, "Cannot navigate to button with tabindex'-1'");
+</script>

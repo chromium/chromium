@@ -27,7 +27,7 @@
   for (var i=0; i<5; i++) {
       newPos = textElement.getStartPositionOfChar(i).x;
       test(function () {
-          assert_approx_equals(newPos, positions[i], 1);
+          assert_approx_equals(newPos, positions[i], 2);
       }, "Position of character index " + i + " unaffected by zoom level");
   }
   html.style.zoom = 1;

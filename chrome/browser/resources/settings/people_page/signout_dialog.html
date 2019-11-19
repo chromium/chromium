@@ -1,10 +1,11 @@
 <link rel="import" href="chrome://resources/html/polymer.html">
 
+<link rel="import" href="chrome://resources/cr_elements/cr_button/cr_button.html">
 <link rel="import" href="chrome://resources/cr_elements/cr_checkbox/cr_checkbox.html">
 <link rel="import" href="chrome://resources/cr_elements/cr_dialog/cr_dialog.html">
 <link rel="import" href="chrome://resources/cr_elements/cr_expand_button/cr_expand_button.html">
+<link rel="import" href="chrome://resources/cr_elements/shared_vars_css.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-collapse/iron-collapse.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/paper-button/paper-button.html">
 <link rel="import" href="profile_info_browser_proxy.html">
 <link rel="import" href="sync_browser_proxy.html">
 <link rel="import" href="../settings_shared_css.html">
@@ -13,7 +14,7 @@
   <template>
     <style include="settings-shared">
       #dialog [slot=footer] .settings-box {
-        --settings-box-row-padding: 0;
+        --cr-section-padding: 0;
       }
 
       .delete-profile-warning {
@@ -29,35 +30,33 @@
         padding: 16px 0;
       }
 
-      cr-dialog {
-        --cr-dialog-body: {
-          /* Add space for the link focus ring. See https://crbug.com/916939. */
-          padding-bottom: 2px;
-        };
+      #dialog-body {
+        /* Add space for the link focus ring. See https://crbug.com/916939. */
+        padding-bottom: 2px;
       }
     </style>
 
     <cr-dialog id="dialog" ignore-enter-key close-text="$i18n{close}">
       <div slot="title">$i18n{syncDisconnectTitle}</div>
-      <div slot="body">
+      <div id="dialog-body" slot="body">
         <div inner-h-t-m-l="[[
             getDisconnectExplanationHtml_(syncStatus.domain)]]">
         </div>
       </div>
       <div slot="button-container">
-        <paper-button id="disconnectCancel" class="cancel-button"
+        <cr-button id="disconnectCancel" class="cancel-button"
             on-click="onDisconnectCancel_" >
           $i18n{cancel}
-        </paper-button>
-        <paper-button id="disconnectConfirm" class="action-button"
+        </cr-button>
+        <cr-button id="disconnectConfirm" class="action-button"
             hidden="[[syncStatus.domain]]" on-click="onDisconnectConfirm_">
           $i18n{syncDisconnect}
-        </paper-button>
-        <paper-button id="disconnectManagedProfileConfirm"
+        </cr-button>
+        <cr-button id="disconnectManagedProfileConfirm"
             class="action-button" hidden="[[!syncStatus.domain]]"
             on-click="onDisconnectConfirm_">
           $i18n{syncDisconnectConfirm}
-        </paper-button>
+        </cr-button>
       </div>
 <if expr="(not chromeos and is_posix) or is_win or is_macosx">
       <template is="dom-if" if="[[!syncStatus.domain]]">

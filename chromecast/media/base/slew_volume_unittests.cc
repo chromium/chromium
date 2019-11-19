@@ -36,7 +36,8 @@ std::unique_ptr<::media::AudioBus> GetSineData(size_t frames, float frequency) {
     sine[i * 2 + 1] = cos(static_cast<float>(i + 1) * frequency * 2 * M_PI) *
                       std::numeric_limits<int32_t>::max();
   }
-  data->FromInterleaved(sine.data(), frames, kBytesPerSample);
+  data->FromInterleaved<::media::SignedInt32SampleTypeTraits>(sine.data(),
+                                                              frames);
   return data;
 }
 

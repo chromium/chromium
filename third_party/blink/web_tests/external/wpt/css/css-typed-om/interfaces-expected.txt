@@ -3,7 +3,7 @@ Found 408 tests; 384 PASS, 24 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS Partial interface Element: original interface defined
 PASS Partial interface CSSStyleRule: original interface defined
-PASS Partial interface ElementCSSInlineStyle: original interface defined
+PASS Partial interface mixin ElementCSSInlineStyle: original interface mixin defined
 PASS Partial namespace CSS: original namespace defined
 PASS CSSStyleValue interface: existence and properties of interface object
 PASS CSSStyleValue interface object length

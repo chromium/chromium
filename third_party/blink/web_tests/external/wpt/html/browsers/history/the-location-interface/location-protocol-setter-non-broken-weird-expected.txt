@@ -3,7 +3,6 @@ PASS Set location.protocol to x
 FAIL Set location.protocol to data Blocked a frame with origin "http://web-platform.test:8001" from accessing a cross-origin frame.
 FAIL Set location.protocol to file Failed to set the 'protocol' property on 'Location': 'file://web-platform.test:8001/common/blank.html' is not a valid URL.
 PASS Set location.protocol to ftp
-PASS Set location.protocol to gopher
 PASS Set location.protocol to http+x
 Harness: the test ran to completion.
 

@@ -63,7 +63,7 @@ class LayoutSVGForeignObject final : public LayoutSVGBlock {
 
   bool NodeAtPoint(HitTestResult&,
                    const HitTestLocation&,
-                   const LayoutPoint&,
+                   const PhysicalOffset&,
                    HitTestAction) override;
 
   // A method to call when recursively hit testing from an SVG parent.
@@ -72,7 +72,7 @@ class LayoutSVGForeignObject final : public LayoutSVGBlock {
   // on this object. This is why there are two methods.
   bool NodeAtPointFromSVG(HitTestResult&,
                           const HitTestLocation&,
-                          const LayoutPoint&,
+                          const PhysicalOffset&,
                           HitTestAction);
 
   bool IsOfType(LayoutObjectType type) const override {

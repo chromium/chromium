@@ -73,7 +73,7 @@ class MenuError : public BaseError {
 
 // Test adding errors to the global error service.
 TEST(GlobalErrorServiceTest, AddError) {
-  std::unique_ptr<GlobalErrorService> service(new GlobalErrorService(NULL));
+  auto service = std::make_unique<GlobalErrorService>();
   EXPECT_EQ(0u, service->errors().size());
 
   BaseError* error1 = new BaseError;
@@ -95,7 +95,7 @@ TEST(GlobalErrorServiceTest, AddError) {
 
 // Test removing errors from the global error service.
 TEST(GlobalErrorServiceTest, RemoveError) {
-  std::unique_ptr<GlobalErrorService> service(new GlobalErrorService(NULL));
+  auto service = std::make_unique<GlobalErrorService>();
   BaseError error1;
   service->AddUnownedGlobalError(&error1);
   BaseError error2;
@@ -124,7 +124,7 @@ TEST(GlobalErrorServiceTest, GetMenuItem) {
   MenuError* error2 = new MenuError(2, GlobalError::SEVERITY_MEDIUM);
   MenuError* error3 = new MenuError(3, GlobalError::SEVERITY_HIGH);
 
-  GlobalErrorService service(NULL);
+  GlobalErrorService service;
   service.AddGlobalError(base::WrapUnique(error1));
   service.AddGlobalError(base::WrapUnique(error2));
   service.AddGlobalError(base::WrapUnique(error3));
@@ -140,7 +140,7 @@ TEST(GlobalErrorServiceTest, HighestSeverity) {
   MenuError* error2 = new MenuError(2, GlobalError::SEVERITY_MEDIUM);
   MenuError* error3 = new MenuError(3, GlobalError::SEVERITY_HIGH);
 
-  GlobalErrorService service(NULL);
+  GlobalErrorService service;
   EXPECT_EQ(NULL, service.GetHighestSeverityGlobalErrorWithAppMenuItem());
 
   service.AddGlobalError(base::WrapUnique(error1));

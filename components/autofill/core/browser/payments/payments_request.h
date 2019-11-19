@@ -28,7 +28,7 @@ class PaymentsRequest {
   virtual std::string GetRequestContent() = 0;
 
   // Parses the required elements of the HTTP response.
-  virtual void ParseResponse(base::Value response) = 0;
+  virtual void ParseResponse(const base::Value& response) = 0;
 
   // Returns true if all of the required elements were successfully retrieved by
   // a call to ParseResponse.

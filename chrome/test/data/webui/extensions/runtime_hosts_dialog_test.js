@@ -2,16 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {getPatternFromSite} from 'chrome://extensions/extensions.js';
+
+import {TestService} from './test_service.js';
+
 suite('RuntimeHostsDialog', function() {
-  /** @type {extensions.RuntimeHostsDialogElement} */ let dialog;
-  /** @type {extensions.TestService} */ let delegate;
+  /** @type {RuntimeHostsDialogElement} */ let dialog;
+  /** @type {TestService} */ let delegate;
   const ITEM_ID = 'a'.repeat(32);
 
   setup(function() {
     PolymerTest.clearBody();
     dialog = document.createElement('extensions-runtime-hosts-dialog');
 
-    delegate = new extensions.TestService();
+    delegate = new TestService();
     dialog.delegate = delegate;
     dialog.itemId = ITEM_ID;
 
@@ -105,22 +109,18 @@ suite('RuntimeHostsDialog', function() {
 
   test('get pattern from url', function() {
     expectEquals(
-        'https://example.com/*',
-        extensions.getPatternFromSite('https://example.com/*'));
+        'https://example.com/*', getPatternFromSite('https://example.com/*'));
     expectEquals(
-        'https://example.com/*',
-        extensions.getPatternFromSite('https://example.com/'));
+        'https://example.com/*', getPatternFromSite('https://example.com/'));
     expectEquals(
-        'https://example.com/*',
-        extensions.getPatternFromSite('https://example.com'));
+        'https://example.com/*', getPatternFromSite('https://example.com'));
     expectEquals(
         'https://*.example.com/*',
-        extensions.getPatternFromSite('https://*.example.com/*'));
-    expectEquals(
-        '*://example.com/*', extensions.getPatternFromSite('example.com'));
+        getPatternFromSite('https://*.example.com/*'));
+    expectEquals('*://example.com/*', getPatternFromSite('example.com'));
     expectEquals(
         'https://example.com:80/*',
-        extensions.getPatternFromSite('https://example.com:80/*'));
+        getPatternFromSite('https://example.com:80/*'));
   });
 
   test('update site access', function() {

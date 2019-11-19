@@ -75,7 +75,7 @@ public class SelectionClientManagerTest {
     }
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         // Assume Smart Selection is enabled and we have a Smart Selection client for most tests.
         mSmartSelectionClientStub = new SelectionClientStub();
         mManager = new SelectionClientManager(mSmartSelectionClientStub, true);

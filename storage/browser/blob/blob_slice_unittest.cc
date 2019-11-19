@@ -29,7 +29,7 @@ class BlobSliceTest : public testing::Test {
   ~BlobSliceTest() override = default;
 
   scoped_refptr<ShareableBlobDataItem> CreateDataItem(size_t size) {
-    std::vector<char> bytes(size);
+    std::vector<uint8_t> bytes(size);
     for (size_t i = 0; i < size; ++i)
       bytes[i] = i;
     return scoped_refptr<ShareableBlobDataItem>(new ShareableBlobDataItem(

@@ -11,8 +11,8 @@
 #include "base/files/file_path.h"
 #include "chromeos/services/media_perception/public/mojom/media_perception_service.mojom.h"
 #include "extensions/common/api/media_perception_private.h"
-#include "services/video_capture/public/mojom/device_factory.mojom.h"
-#include "services/video_capture/public/mojom/device_factory_provider.mojom.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "services/video_capture/public/mojom/video_source_provider.mojom.h"
 
 namespace content {
 
@@ -26,11 +26,14 @@ class MediaPerceptionAPIDelegate {
  public:
   // Callback for loading a CrOS component. |mount_point| will contain a path to
   // the loaded component, if |success| is true (installation succeeded).
-  using LoadCrOSComponentCallback =
-      base::OnceCallback<void(bool success, const base::FilePath& mount_point)>;
+  using LoadCrOSComponentCallback = base::OnceCallback<void(
+      const api::media_perception_private::ComponentInstallationError
+          installation_error,
+      const base::FilePath& mount_point)>;
 
   using MediaPerceptionRequestHandler = base::RepeatingCallback<void(
-      chromeos::media_perception::mojom::MediaPerceptionRequest request)>;
+      mojo::PendingReceiver<chromeos::media_perception::mojom::MediaPerception>
+          receiver)>;
 
   virtual ~MediaPerceptionAPIDelegate() {}
 
@@ -40,22 +43,23 @@ class MediaPerceptionAPIDelegate {
       const api::media_perception_private::ComponentType& type,
       LoadCrOSComponentCallback load_callback) = 0;
 
-  // Provides an interface to the VideoCaptureService (started lazily by the
-  // Chrome service manager) to connect the MediaPerceptionService to it and
-  // establish a direct Mojo IPC-based connection.
-  // |provider| is owned by the caller.
-  virtual void BindDeviceFactoryProviderToVideoCaptureService(
-      video_capture::mojom::DeviceFactoryProviderPtr* provider) = 0;
+  // Provides an interface to the Video Capture service (started lazily by the
+  // browser) to connect the MediaPerceptionService to it and establish a direct
+  // Mojo IPC-based connection.
+  virtual void BindVideoSourceProvider(
+      mojo::PendingReceiver<video_capture::mojom::VideoSourceProvider>
+          receiver) = 0;
 
   // Provides an interface to set a handler for an incoming
   // MediaPerceptionRequest.
   virtual void SetMediaPerceptionRequestHandler(
       MediaPerceptionRequestHandler handler) = 0;
 
-  // Receives an incoming media perception request and forwards it to the
-  // request handler if set.
-  virtual void ForwardMediaPerceptionRequest(
-      chromeos::media_perception::mojom::MediaPerceptionRequest request,
+  // Receives an incoming media perception receiver and forwards it to the
+  // receiver handler if set.
+  virtual void ForwardMediaPerceptionReceiver(
+      mojo::PendingReceiver<chromeos::media_perception::mojom::MediaPerception>
+          receiver,
       content::RenderFrameHost* render_frame_host) = 0;
 };
 

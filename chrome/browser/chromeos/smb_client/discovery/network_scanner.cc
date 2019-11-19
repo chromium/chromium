@@ -40,6 +40,7 @@ void NetworkScanner::FindHostsInNetwork(FindHostsCallback callback) {
   DCHECK(!running_);
 
   if (locators_.empty()) {
+    find_hosts_returned_ = true;
     // Fire the callback immediately if there are no registered HostLocators.
     std::move(callback).Run(false /* success */, HostMap());
     return;

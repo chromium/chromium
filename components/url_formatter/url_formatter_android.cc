@@ -6,10 +6,10 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
+#include "components/url_formatter/android/jni_headers/UrlFormatter_jni.h"
 #include "components/url_formatter/elide_url.h"
 #include "components/url_formatter/url_fixer.h"
 #include "components/url_formatter/url_formatter.h"
-#include "jni/UrlFormatter_jni.h"
 #include "url/gurl.h"
 
 using base::android::JavaParamRef;
@@ -88,6 +88,19 @@ JNI_UrlFormatter_FormatUrlForSecurityDisplayOmitScheme(
       env, url_formatter::FormatUrlForSecurityDisplay(
                JNI_UrlFormatter_ConvertJavaStringToGURL(env, url),
                url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS));
+}
+
+static ScopedJavaLocalRef<jstring>
+JNI_UrlFormatter_FormatUrlForDisplayOmitSchemeOmitTrivialSubdomains(
+    JNIEnv* env,
+    const JavaParamRef<jstring>& url) {
+  return base::android::ConvertUTF16ToJavaString(
+      env, url_formatter::FormatUrl(
+               JNI_UrlFormatter_ConvertJavaStringToGURL(env, url),
+               url_formatter::kFormatUrlOmitDefaults |
+                   url_formatter::kFormatUrlOmitHTTPS |
+                   url_formatter::kFormatUrlOmitTrivialSubdomains,
+               net::UnescapeRule::SPACES, nullptr, nullptr, nullptr));
 }
 
 }  // namespace android

@@ -55,7 +55,7 @@ class DOMPatchSupport final {
   Node* PatchNode(Node*, const String& markup, ExceptionState&);
 
  private:
-  class Digest : public GarbageCollectedFinalized<Digest> {
+  class Digest final : public GarbageCollected<Digest> {
    public:
     explicit Digest(Node* node) : node_(node) {}
     void Trace(blink::Visitor*);

@@ -12,7 +12,9 @@
 #include "build/build_config.h"
 #include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/webui/localized_string.h"
 #include "chrome/browser/ui/webui/version_handler.h"
+#include "chrome/browser/ui/webui/version_util_win.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/chromium_strings.h"
@@ -38,9 +40,12 @@
 #include "chrome/browser/ui/webui/version_handler_chromeos.h"
 #endif
 
+#if defined(OS_MACOSX)
+#include "base/mac/mac_util.h"
+#endif
+
 #if defined(OS_WIN)
 #include "chrome/browser/ui/webui/version_handler_win.h"
-#include "chrome/install_static/install_details.h"
 #endif
 
 using content::WebUIDataSource;
@@ -50,111 +55,39 @@ namespace {
 WebUIDataSource* CreateVersionUIDataSource() {
   WebUIDataSource* html_source =
       WebUIDataSource::Create(chrome::kChromeUIVersionHost);
-
-  // Localized and data strings.
-  html_source->AddLocalizedString(version_ui::kTitle, IDS_VERSION_UI_TITLE);
-  html_source->AddLocalizedString(version_ui::kApplicationLabel,
-                                  IDS_PRODUCT_NAME);
-  html_source->AddString(version_ui::kVersion,
-                         version_info::GetVersionNumber());
-  html_source->AddString(version_ui::kVersionModifier,
-                         chrome::GetChannelName());
-  html_source->AddString(version_ui::kJSEngine, "V8");
-  html_source->AddString(version_ui::kJSVersion, V8_VERSION_STRING);
-  html_source->AddLocalizedString(version_ui::kCompany,
-                                  IDS_ABOUT_VERSION_COMPANY_NAME);
-  html_source->AddString(
-      version_ui::kCopyright,
-      base::i18n::MessageFormatter::FormatWithNumberedArgs(
-          l10n_util::GetStringUTF16(IDS_ABOUT_VERSION_COPYRIGHT),
-          base::Time::Now()));
-  html_source->AddLocalizedString(version_ui::kRevision,
-                                  IDS_VERSION_UI_REVISION);
-  html_source->AddString(version_ui::kCL, version_info::GetLastChange());
-  html_source->AddLocalizedString(version_ui::kOfficial,
-                                  version_info::IsOfficialBuild()
-                                      ? IDS_VERSION_UI_OFFICIAL
-                                      : IDS_VERSION_UI_UNOFFICIAL);
-  html_source->AddLocalizedString(version_ui::kUserAgentName,
-                                  IDS_VERSION_UI_USER_AGENT);
-  html_source->AddString(version_ui::kUserAgent, GetUserAgent());
-  html_source->AddLocalizedString(version_ui::kCommandLineName,
-                                  IDS_VERSION_UI_COMMAND_LINE);
-  // Note that the executable path and profile path are retrieved asynchronously
-  // and returned in VersionHandler::OnGotFilePaths. The area is initially
-  // blank.
-  html_source->AddLocalizedString(version_ui::kExecutablePathName,
-                                  IDS_VERSION_UI_EXECUTABLE_PATH);
-  html_source->AddString(version_ui::kExecutablePath, std::string());
-  html_source->AddLocalizedString(version_ui::kProfilePathName,
-                                  IDS_VERSION_UI_PROFILE_PATH);
-  html_source->AddString(version_ui::kProfilePath, std::string());
-  html_source->AddLocalizedString(version_ui::kVariationsName,
-                                  IDS_VERSION_UI_VARIATIONS);
-  html_source->AddLocalizedString(version_ui::kVariationsCmdName,
-                                  IDS_VERSION_UI_VARIATIONS_CMD);
+  // These localized strings are used to label version details.
+  static constexpr LocalizedString kStrings[] = {
+    {version_ui::kTitle, IDS_VERSION_UI_TITLE},
+    {version_ui::kApplicationLabel, IDS_PRODUCT_NAME},
+    {version_ui::kCompany, IDS_ABOUT_VERSION_COMPANY_NAME},
+    {version_ui::kRevision, IDS_VERSION_UI_REVISION},
+    {version_ui::kUserAgentName, IDS_VERSION_UI_USER_AGENT},
+    {version_ui::kCommandLineName, IDS_VERSION_UI_COMMAND_LINE},
+    {version_ui::kExecutablePathName, IDS_VERSION_UI_EXECUTABLE_PATH},
+    {version_ui::kProfilePathName, IDS_VERSION_UI_PROFILE_PATH},
+    {version_ui::kVariationsName, IDS_VERSION_UI_VARIATIONS},
+    {version_ui::kVariationsCmdName, IDS_VERSION_UI_VARIATIONS_CMD},
 #if defined(OS_CHROMEOS)
-  html_source->AddLocalizedString(version_ui::kARC, IDS_ARC_LABEL);
-  html_source->AddLocalizedString(version_ui::kPlatform, IDS_PLATFORM_LABEL);
-  html_source->AddLocalizedString(version_ui::kCustomizationId,
-                                  IDS_VERSION_UI_CUSTOMIZATION_ID);
-  html_source->AddLocalizedString(version_ui::kFirmwareVersion,
-                                  IDS_VERSION_UI_FIRMWARE_VERSION);
+    {version_ui::kARC, IDS_ARC_LABEL},
+    {version_ui::kPlatform, IDS_PLATFORM_LABEL},
+    {version_ui::kCustomizationId, IDS_VERSION_UI_CUSTOMIZATION_ID},
+    {version_ui::kFirmwareVersion, IDS_VERSION_UI_FIRMWARE_VERSION},
 #else
-  html_source->AddLocalizedString(version_ui::kOSName, IDS_VERSION_UI_OS);
-  html_source->AddString(version_ui::kOSType, version_info::GetOSType());
+    {version_ui::kOSName, IDS_VERSION_UI_OS},
 #endif  // OS_CHROMEOS
-
 #if defined(OS_ANDROID)
-  html_source->AddString(version_ui::kOSVersion,
-                         AndroidAboutAppInfo::GetOsInfo());
-  html_source->AddLocalizedString(version_ui::kGmsName, IDS_VERSION_UI_GMS);
-  html_source->AddString(version_ui::kGmsVersion,
-                         AndroidAboutAppInfo::GetGmsInfo());
-#else
-  html_source->AddString(version_ui::kFlashPlugin, "Flash");
-  // Note that the Flash version is retrieve asynchronously and returned in
-  // VersionHandler::OnGotPlugins. The area is initially blank.
-  html_source->AddString(version_ui::kFlashVersion, std::string());
+    {version_ui::kGmsName, IDS_VERSION_UI_GMS},
 #endif  // OS_ANDROID
+  };
+  AddLocalizedStringsBulk(html_source, kStrings, base::size(kStrings));
 
-  html_source->AddLocalizedString(
-      version_ui::kVersionBitSize,
-      sizeof(void*) == 8 ? IDS_VERSION_UI_64BIT : IDS_VERSION_UI_32BIT);
+  VersionUI::AddVersionDetailStrings(html_source);
 
-#if defined(OS_WIN)
-  html_source->AddString(
-      version_ui::kCommandLine,
-      base::CommandLine::ForCurrentProcess()->GetCommandLineString());
-#elif defined(OS_POSIX)
-  std::string command_line;
-  typedef std::vector<std::string> ArgvList;
-  const ArgvList& argv = base::CommandLine::ForCurrentProcess()->argv();
-  for (auto iter = argv.begin(); iter != argv.end(); iter++)
-    command_line += " " + *iter;
-  // TODO(viettrungluu): |command_line| could really have any encoding, whereas
-  // below we assumes it's UTF-8.
-  html_source->AddString(version_ui::kCommandLine, command_line);
-#endif
-
-#if defined(OS_WIN)
-  base::string16 update_cohort_name =
-      install_static::InstallDetails::Get().update_cohort_name();
-  if (!update_cohort_name.empty()) {
-    html_source->AddString(version_ui::kUpdateCohortName,
-                           l10n_util::GetStringFUTF16(
-                               IDS_VERSION_UI_COHORT_NAME, update_cohort_name));
-  } else {
-    html_source->AddString(version_ui::kUpdateCohortName, std::string());
-  }
-#endif  // defined(OS_WIN)
-
-  html_source->SetJsonPath("strings.js");
+  html_source->UseStringsJs();
   html_source->AddResourcePath(version_ui::kVersionJS, IDR_VERSION_UI_JS);
   html_source->AddResourcePath(version_ui::kAboutVersionCSS,
                                IDR_VERSION_UI_CSS);
   html_source->SetDefaultResource(IDR_VERSION_UI_HTML);
-  html_source->UseGzip();
   return html_source;
 }
 
@@ -181,3 +114,75 @@ VersionUI::VersionUI(content::WebUI* web_ui)
 }
 
 VersionUI::~VersionUI() {}
+
+// static
+void VersionUI::AddVersionDetailStrings(content::WebUIDataSource* html_source) {
+  html_source->AddLocalizedString(version_ui::kOfficial,
+                                  version_info::IsOfficialBuild()
+                                      ? IDS_VERSION_UI_OFFICIAL
+                                      : IDS_VERSION_UI_UNOFFICIAL);
+  html_source->AddLocalizedString(
+      version_ui::kVersionBitSize,
+      sizeof(void*) == 8 ? IDS_VERSION_UI_64BIT : IDS_VERSION_UI_32BIT);
+
+  // Data strings.
+  html_source->AddString(version_ui::kVersion,
+                         version_info::GetVersionNumber());
+  html_source->AddString(version_ui::kVersionModifier,
+                         chrome::GetChannelName());
+  html_source->AddString(version_ui::kJSEngine, "V8");
+  html_source->AddString(version_ui::kJSVersion, V8_VERSION_STRING);
+  html_source->AddString(
+      version_ui::kCopyright,
+      base::i18n::MessageFormatter::FormatWithNumberedArgs(
+          l10n_util::GetStringUTF16(IDS_ABOUT_VERSION_COPYRIGHT),
+          base::Time::Now()));
+  html_source->AddString(version_ui::kCL, version_info::GetLastChange());
+  html_source->AddString(version_ui::kUserAgent, GetUserAgent());
+  // Note that the executable path and profile path are retrieved asynchronously
+  // and returned in VersionHandler::OnGotFilePaths. The area is initially
+  // blank.
+  html_source->AddString(version_ui::kExecutablePath, std::string());
+  html_source->AddString(version_ui::kProfilePath, std::string());
+
+#if defined(OS_MACOSX)
+  html_source->AddString(version_ui::kOSType, base::mac::GetOSDisplayName());
+#elif !defined(OS_CHROMEOS)
+  html_source->AddString(version_ui::kOSType, version_info::GetOSType());
+#endif  // OS_MACOSX
+
+#if defined(OS_ANDROID)
+  html_source->AddString(version_ui::kOSVersion,
+                         AndroidAboutAppInfo::GetOsInfo());
+  html_source->AddString(version_ui::kGmsVersion,
+                         AndroidAboutAppInfo::GetGmsInfo());
+#else
+  html_source->AddString(version_ui::kFlashPlugin, "Flash");
+  // Note that the Flash version is retrieve asynchronously and returned in
+  // VersionHandler::OnGotPlugins. The area is initially blank.
+  html_source->AddString(version_ui::kFlashVersion, std::string());
+#endif  // OS_ANDROID
+
+
+#if defined(OS_WIN)
+  html_source->AddString(
+      version_ui::kCommandLine,
+      base::CommandLine::ForCurrentProcess()->GetCommandLineString());
+#elif defined(OS_POSIX)
+  std::string command_line;
+  typedef std::vector<std::string> ArgvList;
+  const ArgvList& argv = base::CommandLine::ForCurrentProcess()->argv();
+  for (auto iter = argv.begin(); iter != argv.end(); iter++)
+    command_line += " " + *iter;
+  // TODO(viettrungluu): |command_line| could really have any encoding, whereas
+  // below we assumes it's UTF-8.
+  html_source->AddString(version_ui::kCommandLine, command_line);
+#endif
+
+#if defined(OS_WIN)
+  html_source->AddString(version_ui::kUpdateCohortName,
+                         version_utils::win::GetCohortVersionInfo());
+#endif  // defined(OS_WIN)
+
+  html_source->AddString(version_ui::kSanitizer, version_info::GetSanitizerList());
+}

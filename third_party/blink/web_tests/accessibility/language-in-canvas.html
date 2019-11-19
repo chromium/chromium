@@ -3,7 +3,6 @@
   <head>
     <script src="../resources/testharness.js"></script>
     <script src="../resources/testharnessreport.js"></script>
-<script src="../resources/run-after-layout-and-paint.js"></script>
     <meta http-equiv="content-language" content="en, fr">
   </head>
 
@@ -21,7 +20,7 @@
       window.axSpan = accessibilityController.accessibleElementById('span');
     });
 
-    async_test_after_layout_and_paint((t) => {
+    async_test((t) => {
       internals.setUserPreferredLanguages([ 'de' ]);
 
       assert_equals(window.axCanvas.language, 'AXLanguage: en',

@@ -15,6 +15,8 @@
 #include "components/offline_pages/core/offline_page_types.h"
 #include "url/gurl.h"
 
+class SimpleFactoryKey;
+
 namespace base {
 class Time;
 }
@@ -28,6 +30,7 @@ class WebContents;
 namespace offline_pages {
 struct OfflinePageHeader;
 struct OfflinePageItem;
+struct PageCriteria;
 
 class OfflinePageUtils {
  public:
@@ -67,9 +70,14 @@ class OfflinePageUtils {
   // the search. The returned list is sorted by descending creation date so that
   // the most recent offline page will be the first element of the list.
   static void SelectPagesForURL(
-      content::BrowserContext* browser_context,
+      SimpleFactoryKey* key,
       const GURL& url,
       int tab_id,
+      base::OnceCallback<void(const std::vector<OfflinePageItem>&)> callback);
+
+  static void SelectPagesWithCriteria(
+      SimpleFactoryKey* key,
+      const PageCriteria& criteria,
       base::OnceCallback<void(const std::vector<OfflinePageItem>&)> callback);
 
   // Gets the offline page corresponding to the given web contents.  The

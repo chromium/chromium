@@ -148,7 +148,7 @@ class GenericChangeProcessor : public ChangeProcessor,
   // List of observers that want to be notified of local changes being written.
   base::ObserverList<LocalChangeObserver>::Unchecked local_change_observers_;
 
-  base::WeakPtrFactory<GenericChangeProcessor> weak_ptr_factory_;
+  base::WeakPtrFactory<GenericChangeProcessor> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(GenericChangeProcessor);
 };

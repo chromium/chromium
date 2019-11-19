@@ -8,8 +8,8 @@
 #include "base/logging.h"
 #include "chrome/browser/sync_file_system/local/canned_syncable_file_system.h"
 #include "chrome/browser/sync_file_system/local/local_file_sync_context.h"
-#include "storage/browser/fileapi/external_mount_points.h"
-#include "storage/common/fileapi/file_system_types.h"
+#include "storage/browser/file_system/external_mount_points.h"
+#include "storage/common/file_system/file_system_types.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using storage::ExternalMountPoints;

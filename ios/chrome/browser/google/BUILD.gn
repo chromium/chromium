@@ -7,18 +7,9 @@ source_set("google") {
   sources = [
     "google_brand.h",
     "google_brand.mm",
-    "google_url_tracker_client_impl.cc",
-    "google_url_tracker_client_impl.h",
-    "google_url_tracker_factory.cc",
-    "google_url_tracker_factory.h",
   ]
   deps = [
     "//base",
-    "//components/google/core/browser",
-    "//components/keyed_service/ios",
-    "//components/prefs",
-    "//ios/chrome/browser",
-    "//ios/chrome/browser/browser_state",
     "//ios/public/provider/chrome/browser",
     "//ios/public/provider/chrome/browser/distribution",
   ]

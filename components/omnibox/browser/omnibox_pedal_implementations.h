@@ -6,10 +6,11 @@
 #define COMPONENTS_OMNIBOX_BROWSER_OMNIBOX_PEDAL_IMPLEMENTATIONS_H_
 
 #include <memory>
-#include <vector>
+#include <unordered_map>
 
 #include "build/build_config.h"
 #include "components/omnibox/browser/omnibox_pedal.h"
+#include "components/omnibox/browser/omnibox_pedal_concepts.h"
 
 class OmniboxPedalClearBrowsingData : public OmniboxPedal {
  public:
@@ -28,6 +29,7 @@ class OmniboxPedalUpdateChrome : public OmniboxPedal {
 };
 
 // Returns the full set of encapsulated OmniboxPedal implementations.
-std::vector<std::unique_ptr<OmniboxPedal>> GetPedalImplementations();
+std::unordered_map<OmniboxPedalId, std::unique_ptr<OmniboxPedal>>
+GetPedalImplementations();
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_OMNIBOX_PEDAL_IMPLEMENTATIONS_H_

@@ -38,7 +38,7 @@ class FakeChannelAuthenticator : public ChannelAuthenticator {
   bool did_read_bytes_ = false;
   bool did_write_bytes_ = false;
 
-  base::WeakPtrFactory<FakeChannelAuthenticator> weak_factory_;
+  base::WeakPtrFactory<FakeChannelAuthenticator> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(FakeChannelAuthenticator);
 };

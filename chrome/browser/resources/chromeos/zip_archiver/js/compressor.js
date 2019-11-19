@@ -219,7 +219,7 @@ unpacker.Compressor.prototype.getArchiveFile_ = function() {
               });
         })
         .catch((error) => {
-          console.error('failed to create a ZIP file', error);
+          console.error('failed to create a ZIP file: ' + error.code);
           this.onErrorInternal_();
         });
   };
@@ -479,14 +479,7 @@ unpacker.Compressor.prototype.onReadFileChunk_ = function(data) {
     entry.file(
         (file) => {
           this.file_ = file;
-          chrome.fileManagerPrivate.ensureFileDownloaded(entry, () => {
-            if (chrome.runtime.lastError) {
-              console.error(chrome.runtime.lastError.message);
-              this.onErrorInternal_();
-              return;
-            }
-            readFileChunk();
-          });
+          readFileChunk();
         },
         (error) => {
           console.error(error);

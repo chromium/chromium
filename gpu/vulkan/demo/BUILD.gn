@@ -2,9 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//gpu/vulkan/features.gni")
 import("//build/config/ui.gni")
-import("//build/buildflag_header.gni")
+import("//gpu/vulkan/features.gni")
 
 assert(enable_vulkan)
 

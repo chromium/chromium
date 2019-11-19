@@ -139,7 +139,7 @@ class FakeArcSupport : public extensions::NativeMessageHost::Client {
   std::string active_directory_auth_device_management_url_prefix_;
   base::ObserverList<Observer>::Unchecked observer_list_;
 
-  base::WeakPtrFactory<FakeArcSupport> weak_ptr_factory_;
+  base::WeakPtrFactory<FakeArcSupport> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(FakeArcSupport);
 };

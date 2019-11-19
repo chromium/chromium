@@ -10,12 +10,23 @@ import("//build/toolchain/toolchain.gni")
 config("config") {
   cflags = [ "-fstrict-aliasing" ]
   if (is_win) {
-    # libc++ wants to redefine the macros WIN32_LEAN_AND_MEAN and _CRT_RAND_S in its
-    # implementation.
+    # libc++ wants to redefine the macros WIN32_LEAN_AND_MEAN and _CRT_RAND_S in
+    # its implementation.
     cflags += [ "-Wno-macro-redefined" ]
   } else {
     cflags += [ "-fPIC" ]
   }
+}
+
+# Explicitly set version macros to Windows 7 to prevent libc++ from adding a
+# hard dependency on GetSystemTimePreciseAsFileTime, which was introduced in
+# Windows 8.
+config("winver") {
+  defines = [
+    "NTDDI_VERSION=NTDDI_WIN7",
+    "_WIN32_WINNT=_WIN32_WINNT_WIN7",
+    "WINVER=_WIN32_WINNT_WIN7",
+  ]
 }
 
 if (libcxx_is_shared) {
@@ -24,6 +35,19 @@ if (libcxx_is_shared) {
   _libcxx_target_type = "source_set"
 }
 target(_libcxx_target_type, "libc++") {
+  # Most things that need to depend on libc++ should do so via the implicit
+  # 'common_deps' dependency below.  Some targets that package libc++.so may
+  # need to explicitly depend on libc++.
+  visibility = [
+    "//build/config:common_deps",
+    "//third_party/catapult/devil:devil",
+  ]
+  if (is_linux) {
+    # This target packages libc++.so, so must have an explicit dependency on
+    # libc++.
+    visibility +=
+        [ "//remoting/host/linux:remoting_me2me_host_copy_user_session" ]
+  }
   if (libcxx_is_shared) {
     no_default_deps = true
   }
@@ -31,8 +55,10 @@ target(_libcxx_target_type, "libc++") {
     "trunk/src/algorithm.cpp",
     "trunk/src/any.cpp",
     "trunk/src/bind.cpp",
+    "trunk/src/charconv.cpp",
     "trunk/src/chrono.cpp",
     "trunk/src/condition_variable.cpp",
+    "trunk/src/condition_variable_destructor.cpp",
     "trunk/src/debug.cpp",
     "trunk/src/exception.cpp",
     "trunk/src/functional.cpp",
@@ -43,6 +69,7 @@ target(_libcxx_target_type, "libc++") {
     "trunk/src/locale.cpp",
     "trunk/src/memory.cpp",
     "trunk/src/mutex.cpp",
+    "trunk/src/mutex_destructor.cpp",
     "trunk/src/new.cpp",
     "trunk/src/optional.cpp",
     "trunk/src/random.cpp",
@@ -65,6 +92,16 @@ target(_libcxx_target_type, "libc++") {
       "trunk/src/support/win32/support.cpp",
       "trunk/src/support/win32/thread_win32.cpp",
     ]
+    configs -= [ "//build/config/win:winver" ]
+    configs += [ ":winver" ]
+    if (libcxx_natvis_include) {
+      inputs = [
+        # libc++.natvis listed as an input here instead of in
+        # //build/config/c++:runtime_library to prevent unnecessary size
+        # increase in generated build files.
+        "//build/config/c++/libc++.natvis",
+      ]
+    }
   }
   configs -= [
     "//build/config/compiler:chromium_code",
@@ -96,7 +133,9 @@ target(_libcxx_target_type, "libc++") {
     defines += [ "_LIBCPP_EXTERN_TEMPLATE_TYPE_VIS=__attribute__((__visibility__(\"default\")))" ]
   }
   if (!libcxx_is_shared) {
-    if (is_mac && is_clang) {
+    # TODO(https://crbug.com/946629): Remove use_xcode_clang condition once
+    # XCode clang is updated to support -fvisibility-global-new-delete-hidden.
+    if ((is_mac || (is_ios && !use_xcode_clang)) && is_clang) {
       # We want operator new/delete to be private on Mac, but these functions
       # are implicitly created by the compiler for each translation unit, as
       # specified in the C++ spec 3.7.4p2, which makes them always have default
@@ -123,7 +162,7 @@ target(_libcxx_target_type, "libc++") {
       ]
     }
   }
-  if (!is_mac && (is_asan || is_tsan || is_msan)) {
+  if (!is_mac && !is_ios && (is_asan || is_tsan || is_msan)) {
     # In {a,t,m}san configurations, operator new and operator delete will be
     # provided by the sanitizer runtime library.  Since libc++ defines these
     # symbols with weak linkage, and the *san runtime uses strong linkage, it

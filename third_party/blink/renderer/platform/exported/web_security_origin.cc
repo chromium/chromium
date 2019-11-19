@@ -93,6 +93,11 @@ bool WebSecurityOrigin::CanRequest(const WebURL& url) const {
   return private_->CanRequest(url);
 }
 
+bool WebSecurityOrigin::CanDisplay(const WebURL& url) const {
+  DCHECK(private_);
+  return private_->CanDisplay(url);
+}
+
 bool WebSecurityOrigin::IsPotentiallyTrustworthy() const {
   DCHECK(private_);
   return private_->IsPotentiallyTrustworthy();

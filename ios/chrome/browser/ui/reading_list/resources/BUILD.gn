@@ -7,9 +7,10 @@ import("//build/config/ios/asset_catalog.gni")
 imageset("distillation_fail_new") {
   sources = [
     "distillation_fail_new.imageset/Contents.json",
-    "distillation_fail_new.imageset/distillation_fail_new.png",
     "distillation_fail_new.imageset/distillation_fail_new@2x.png",
     "distillation_fail_new.imageset/distillation_fail_new@3x.png",
+    "distillation_fail_new.imageset/distillation_fail_new_dark@2x.png",
+    "distillation_fail_new.imageset/distillation_fail_new_dark@3x.png",
   ]
 }
 
@@ -25,7 +26,6 @@ imageset("reading_list_empty_state") {
 imageset("reading_list_empty_state_new") {
   sources = [
     "reading_list_empty_state_new.imageset/Contents.json",
-    "reading_list_empty_state_new.imageset/reading_list_empty_state_new.png",
     "reading_list_empty_state_new.imageset/reading_list_empty_state_new@2x.png",
     "reading_list_empty_state_new.imageset/reading_list_empty_state_new@3x.png",
   ]

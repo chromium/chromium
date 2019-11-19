@@ -11,18 +11,17 @@
 #include "chrome/browser/chromeos/arc/arc_util.h"
 #include "chrome/browser/chromeos/policy/browser_policy_connector_chromeos.h"
 #include "chrome/browser/chromeos/settings/cros_settings.h"
-#include "chrome/browser/chromeos/settings/stub_install_attributes.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
-#include "chromeos/constants/chromeos_switches.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/settings/cros_settings_names.h"
+#include "chromeos/tpm/stub_install_attributes.h"
 #include "components/arc/arc_util.h"
 #include "components/prefs/pref_service.h"
-#include "services/ws/public/cpp/input_devices/input_device_client_test_api.h"
 #include "ui/aura/window.h"
-#include "ui/base/ui_base_features.h"
+#include "ui/events/devices/device_data_manager_test_api.h"
 #include "ui/events/devices/input_device.h"
 #include "ui/events/devices/touchscreen_device.h"
 #include "ui/events/test/event_generator.h"
@@ -142,22 +141,8 @@ IN_PROC_BROWSER_TEST_F(ChromeOSInfoPrivateTest, UnknownDeviceType) {
 }
 
 IN_PROC_BROWSER_TEST_F(ChromeOSInfoPrivateTest, AssistantSupported) {
-  // Enable native Assistant.
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(chromeos::switches::kAssistantFeature);
-
   ASSERT_TRUE(RunPlatformAppTestWithArg("chromeos_info_private/extended",
                                         "assistant supported"))
-      << message_;
-}
-
-IN_PROC_BROWSER_TEST_F(ChromeOSInfoPrivateTest, AssistantUnsupported) {
-  // Disable native Assistant.
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(chromeos::switches::kAssistantFeature);
-
-  ASSERT_TRUE(RunPlatformAppTestWithArg("chromeos_info_private/extended",
-                                        "assistant unsupported"))
       << message_;
 }
 
@@ -168,7 +153,7 @@ IN_PROC_BROWSER_TEST_F(ChromeOSInfoPrivateTest, StylusUnsupported) {
 }
 
 IN_PROC_BROWSER_TEST_F(ChromeOSInfoPrivateTest, StylusSupported) {
-  ws::InputDeviceClientTestApi test_api;
+  ui::DeviceDataManagerTestApi test_api;
   ui::TouchscreenDevice touchscreen(1,
                                     ui::InputDeviceType::INPUT_DEVICE_INTERNAL,
                                     "Touchscreen", gfx::Size(1024, 768), 0);
@@ -183,7 +168,7 @@ IN_PROC_BROWSER_TEST_F(ChromeOSInfoPrivateTest, StylusSupported) {
 // TODO(https://crbug.com/814675): Excluded from Mash because pointer events
 // aren't seen.
 IN_PROC_BROWSER_TEST_F(ChromeOSInfoPrivateTest, StylusSeen) {
-  ws::InputDeviceClientTestApi test_api;
+  ui::DeviceDataManagerTestApi test_api;
   ui::TouchscreenDevice touchscreen(1,
                                     ui::InputDeviceType::INPUT_DEVICE_INTERNAL,
                                     "Touchscreen", gfx::Size(1024, 768), 0);
@@ -191,9 +176,7 @@ IN_PROC_BROWSER_TEST_F(ChromeOSInfoPrivateTest, StylusSeen) {
   test_api.SetTouchscreenDevices({touchscreen});
 
   ui::test::EventGenerator generator(
-      features::IsUsingWindowService()
-          ? nullptr
-          : browser()->window()->GetNativeWindow()->GetRootWindow());
+      browser()->window()->GetNativeWindow()->GetRootWindow());
   generator.EnterPenPointerMode();
   generator.PressTouch();
   generator.ReleaseTouch();

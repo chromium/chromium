@@ -8,148 +8,162 @@
 
 /**
  * Creates a new button element.
- * @param {Object=} opt_propertyBag Optional properties.
- * @constructor
  * @extends {HTMLButtonElement}
  */
-const CommandButton = cr.ui.define('button');
-
-/** @override */
-CommandButton.prototype.__proto__ = HTMLButtonElement.prototype;
-
-/**
- * Associated command.
- * @type {cr.ui.Command}
- * @private
- */
-CommandButton.prototype.command_ = null;
-
-/**
- * Initializes the menu item.
- */
-CommandButton.prototype.decorate = function() {
-  let commandId;
-  if ((commandId = this.getAttribute('command'))) {
-    this.setCommand(commandId);
+class CommandButton {
+  constructor() {
+    /**
+     * Associated command.
+     * @private {cr.ui.Command}
+     */
+    this.command_ = null;
   }
 
-  this.addEventListener('click', this.handleClick_.bind(this));
-};
-
-/**
- * Returns associated command.
- * @return {cr.ui.Command} associated command.
- */
-CommandButton.prototype.getCommand = function() {
-  return this.command_;
-};
-
-/**
- * Associates command with this button.
- * @param {string|cr.ui.Command} command Command id, or command object to
- * associate with this button.
- */
-CommandButton.prototype.setCommand = function(command) {
-  if (this.command_) {
-    this.command_.removeEventListener('labelChange',
-                                      /** @type {EventListener} */ (this));
-    this.command_.removeEventListener('disabledChange',
-                                      /** @type {EventListener} */ (this));
-    this.command_.removeEventListener('hiddenChange',
-                                      /** @type {EventListener} */ (this));
+  /**
+   * Decorates the given element as a progress item.
+   * @param {!Element} element Item to be decorated.
+   * @return {!CommandButton} Decorated item.
+   */
+  static decorate(element) {
+    element.__proto__ = CommandButton.prototype;
+    element = /** @type {!CommandButton} */ (element);
+    element.decorate();
+    return element;
   }
 
-  if (typeof command == 'string') {
-    assert(command[0] == '#');
-    command = /** @type {!cr.ui.Command} */
-        (this.ownerDocument.getElementById(command.slice(1)));
-    cr.ui.decorate(command, cr.ui.Command);
-  }
-
-  this.command_ = command;
-  if (command) {
-    if (command.id) {
-      this.setAttribute('command', '#' + command.id);
+  /**
+   * Initializes the menu item.
+   */
+  decorate() {
+    let commandId;
+    if ((commandId = this.getAttribute('command'))) {
+      this.setCommand(commandId);
     }
 
-    this.setLabel(command.label);
-    this.disabled = command.disabled;
-    this.hidden = command.hidden;
-
-    this.command_.addEventListener('labelChange',
-                                   /** @type {EventListener} */ (this));
-    this.command_.addEventListener('disabledChange',
-                                   /** @type {EventListener} */ (this));
-    this.command_.addEventListener('hiddenChange',
-                                   /** @type {EventListener} */ (this));
+    this.addEventListener('click', this.handleClick_.bind(this));
   }
-};
 
-/**
- * Returns button label
- * @return {string} Button label.
- */
-CommandButton.prototype.getLabel = function() {
-  return this.command_ ? this.command_.label : '';
-};
-
-/**
- * Sets button label.
- * @param {string} label New button label.
- */
-CommandButton.prototype.setLabel = function(label) {
-  // Swap the textContent with current label only when this button doesn't have
-  // any elements as children.
-  //
-  // TODO(fukino): If a user customize the button content, it becomes the
-  // user's responsibility to update the content on command label's change.
-  // Updating the label in customized button content should be done
-  // automatically by specifying an element which should be synced with the
-  // command label using class name or polymer's template binding.
-  if (!this.firstElementChild) {
-    this.textContent = label;
+  /**
+   * Returns associated command.
+   * @return {cr.ui.Command} associated command.
+   */
+  getCommand() {
+    return this.command_;
   }
-};
 
-/**
- * Handles click event and dispatches associated command.
- * @param {Event} e The mouseup event object.
- * @private
- */
-CommandButton.prototype.handleClick_ = function(e) {
-  if (!this.disabled && this.command_) {
-    this.command_.execute(this);
-  }
-};
+  /**
+   * Associates command with this button.
+   * @param {string|cr.ui.Command} command Command id, or command object to
+   * associate with this button.
+   */
+  setCommand(command) {
+    if (this.command_) {
+      this.command_.removeEventListener(
+          'labelChange',
+          /** @type {EventListener} */ (this));
+      this.command_.removeEventListener(
+          'disabledChange',
+          /** @type {EventListener} */ (this));
+      this.command_.removeEventListener(
+          'hiddenChange',
+          /** @type {EventListener} */ (this));
+    }
 
-/**
- * Handles changes to the associated command.
- * @param {Event} e The event object.
- */
-CommandButton.prototype.handleEvent = function(e) {
-  switch (e.type) {
-    case 'disabledChange':
-      this.disabled = this.command_.disabled;
-      break;
-    case 'hiddenChange':
-      this.hidden = this.command_.hidden;
-      break;
-    case 'labelChange':
-      this.setLabel(this.command_.label);
-      break;
+    if (typeof command == 'string') {
+      assert(command[0] == '#');
+      command = /** @type {!cr.ui.Command} */
+          (this.ownerDocument.body.querySelector(command));
+      cr.ui.decorate(command, cr.ui.Command);
+    }
+
+    this.command_ = command;
+    if (command) {
+      if (command.id) {
+        this.setAttribute('command', '#' + command.id);
+      }
+
+      this.setLabel(command.label);
+      this.disabled = command.disabled;
+      this.hidden = command.hidden;
+
+      this.command_.addEventListener(
+          'labelChange',
+          /** @type {EventListener} */ (this));
+      this.command_.addEventListener(
+          'disabledChange',
+          /** @type {EventListener} */ (this));
+      this.command_.addEventListener(
+          'hiddenChange',
+          /** @type {EventListener} */ (this));
+    }
   }
-};
+
+  /**
+   * Returns button label
+   * @return {string} Button label.
+   */
+  getLabel() {
+    return this.command_ ? this.command_.label : '';
+  }
+
+  /**
+   * Sets button label.
+   * @param {string} label New button label.
+   */
+  setLabel(label) {
+    // Swap the textContent with current label only when this button doesn't
+    // have any elements as children.
+    //
+    // TODO(fukino): If a user customize the button content, it becomes the
+    // user's responsibility to update the content on command label's change.
+    // Updating the label in customized button content should be done
+    // automatically by specifying an element which should be synced with the
+    // command label using class name or polymer's template binding.
+    if (!this.firstElementChild) {
+      this.textContent = label;
+    }
+  }
+
+  /**
+   * Handles click event and dispatches associated command.
+   * @param {Event} e The mouseup event object.
+   * @private
+   */
+  handleClick_(e) {
+    if (!this.disabled && this.command_) {
+      this.command_.execute(this);
+    }
+  }
+
+  /**
+   * Handles changes to the associated command.
+   * @param {Event} e The event object.
+   */
+  handleEvent(e) {
+    switch (e.type) {
+      case 'disabledChange':
+        this.disabled = this.command_.disabled;
+        break;
+      case 'hiddenChange':
+        this.hidden = this.command_.hidden;
+        break;
+      case 'labelChange':
+        this.setLabel(this.command_.label);
+        break;
+    }
+  }
+}
+
+CommandButton.prototype.__proto__ = HTMLButtonElement.prototype;
 
 /**
  * Whether the button is disabled or not.
  * @type {boolean}
  */
-cr.defineProperty(CommandButton, 'disabled',
-                  cr.PropertyKind.BOOL_ATTR);
+cr.defineProperty(CommandButton, 'disabled', cr.PropertyKind.BOOL_ATTR);
 
 /**
  * Whether the button is hidden or not.
  * @type {boolean}
  */
-cr.defineProperty(CommandButton, 'hidden',
-                  cr.PropertyKind.BOOL_ATTR);
+cr.defineProperty(CommandButton, 'hidden', cr.PropertyKind.BOOL_ATTR);

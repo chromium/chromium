@@ -13,18 +13,16 @@
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "chrome/browser/chromeos/login/test/device_state_mixin.h"
 #include "chrome/browser/chromeos/login/ui/login_display_host.h"
 #include "chrome/browser/chromeos/policy/device_policy_builder.h"
 #include "chrome/browser/chromeos/policy/device_policy_cros_browser_test.h"
 #include "chrome/browser/chromeos/settings/cros_settings.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
-#include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chromeos/constants/chromeos_switches.h"
-#include "chromeos/dbus/cryptohome_client.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/dbus/fake_cryptohome_client.h"
-#include "chromeos/dbus/fake_session_manager_client.h"
-#include "chromeos/dbus/session_manager_client.h"
+#include "chromeos/dbus/session_manager/fake_session_manager_client.h"
+#include "chromeos/dbus/session_manager/session_manager_client.h"
 #include "chromeos/settings/cros_settings_names.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "extensions/browser/api/system_display/display_info_provider.h"
@@ -228,8 +226,6 @@ class DeviceDisplayResolutionTestBase
   }
 
   void SetUpInProcessBrowserTestFixture() override {
-    InstallOwnerKey();
-    MarkAsEnterpriseOwned();
     ash::DisplayConfigurationController::DisableAnimatorForTest();
     DevicePolicyCrosBrowserTest::SetUpInProcessBrowserTestFixture();
   }
@@ -287,7 +283,8 @@ class DeviceDisplayResolutionTest : public DeviceDisplayResolutionTestBase {
   DISALLOW_COPY_AND_ASSIGN(DeviceDisplayResolutionTest);
 };
 
-IN_PROC_BROWSER_TEST_P(DeviceDisplayResolutionTest, Internal) {
+// crbug.com/1000694.
+IN_PROC_BROWSER_TEST_P(DeviceDisplayResolutionTest, DISABLED_Internal) {
   const PolicyValue policy_value = GetParam();
 
   EXPECT_EQ(kDefaultDisplayScale, GetScaleOfInternalDisplay())
@@ -304,7 +301,9 @@ IN_PROC_BROWSER_TEST_P(DeviceDisplayResolutionTest, Internal) {
       << "Scale of primary display after policy";
 }
 
-IN_PROC_BROWSER_TEST_P(DeviceDisplayResolutionTest, ResizeExternalDisplay) {
+// crbug.com/1000694.
+IN_PROC_BROWSER_TEST_P(DeviceDisplayResolutionTest,
+                       DISABLED_ResizeExternalDisplay) {
   const PolicyValue policy_value = GetParam();
 
   AddExternalDisplay();
@@ -332,7 +331,9 @@ IN_PROC_BROWSER_TEST_P(DeviceDisplayResolutionTest, ResizeExternalDisplay) {
       << "Primary display scale after resizing external";
 }
 
-IN_PROC_BROWSER_TEST_P(DeviceDisplayResolutionTest, ConnectExternalDisplay) {
+// crbug.com/1000694.
+IN_PROC_BROWSER_TEST_P(DeviceDisplayResolutionTest,
+                       DISABLED_ConnectExternalDisplay) {
   const PolicyValue policy_value = GetParam();
 
   SetPolicy(policy_value);
@@ -352,7 +353,9 @@ IN_PROC_BROWSER_TEST_P(DeviceDisplayResolutionTest, ConnectExternalDisplay) {
       << "Primary display scale after connecting external";
 }
 
-IN_PROC_BROWSER_TEST_P(DeviceDisplayResolutionTest, SetAndUnsetPolicy) {
+// crbug.com/1000694.
+IN_PROC_BROWSER_TEST_P(DeviceDisplayResolutionTest,
+                       DISABLED_SetAndUnsetPolicy) {
   const PolicyValue policy_value = GetParam();
   AddExternalDisplay();
   SetPolicy(policy_value);
@@ -383,32 +386,33 @@ INSTANTIATE_TEST_SUITE_P(
 // Thus, DeviceSettingsProvider falls back on the cached values (using
 // device_settings_cache::Retrieve()).
 class DisplayResolutionBootTest
-    : public InProcessBrowserTest,
+    : public MixinBasedInProcessBrowserTest,
       public testing::WithParamInterface<PolicyValue> {
  protected:
-  DisplayResolutionBootTest()
-      : fake_session_manager_client_(new chromeos::FakeSessionManagerClient) {}
-  ~DisplayResolutionBootTest() override {}
+  DisplayResolutionBootTest() {
+    device_state_.set_skip_initial_policy_setup(true);
+  }
+  ~DisplayResolutionBootTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitch(switches::kUseFirstDisplayAsInternal);
   }
 
   void SetUpInProcessBrowserTestFixture() override {
-    chromeos::DBusThreadManager::GetSetterForTesting()->SetSessionManagerClient(
-        std::unique_ptr<chromeos::SessionManagerClient>(
-            fake_session_manager_client_));
-    chromeos::DBusThreadManager::GetSetterForTesting()->SetCryptohomeClient(
-        std::unique_ptr<chromeos::CryptohomeClient>(
-            new chromeos::FakeCryptohomeClient));
-
-    test_helper_.InstallOwnerKey();
-    test_helper_.MarkAsEnterpriseOwned();
+    // Override FakeSessionManagerClient. This will be shut down by the browser.
+    chromeos::SessionManagerClient::InitializeFakeInMemory();
     ash::DisplayConfigurationController::DisableAnimatorForTest();
+    MixinBasedInProcessBrowserTest::SetUpInProcessBrowserTestFixture();
   }
 
-  chromeos::FakeSessionManagerClient* fake_session_manager_client_;
   policy::DevicePolicyCrosTestHelper test_helper_;
+
+  chromeos::DeviceStateMixin device_state_{
+      &mixin_host_,
+      chromeos::DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};
+
+ private:
+  DISALLOW_COPY_AND_ASSIGN(DisplayResolutionBootTest);
 };
 
 IN_PROC_BROWSER_TEST_P(DisplayResolutionBootTest, PRE_Reboot) {
@@ -425,8 +429,9 @@ IN_PROC_BROWSER_TEST_P(DisplayResolutionBootTest, PRE_Reboot) {
           chromeos::kDeviceDisplayResolution, run_loop.QuitClosure());
   device_policy->SetDefaultSigningKey();
   device_policy->Build();
-  fake_session_manager_client_->set_device_policy(device_policy->GetBlob());
-  fake_session_manager_client_->OnPropertyChangeComplete(true);
+  chromeos::FakeSessionManagerClient::Get()->set_device_policy(
+      device_policy->GetBlob());
+  chromeos::FakeSessionManagerClient::Get()->OnPropertyChangeComplete(true);
   run_loop.Run();
   // Allow tasks posted by CrosSettings observers to complete:
   base::RunLoop().RunUntilIdle();
@@ -443,7 +448,8 @@ IN_PROC_BROWSER_TEST_P(DisplayResolutionBootTest, PRE_Reboot) {
       << "Initial primary display scale after policy set";
 }
 
-IN_PROC_BROWSER_TEST_P(DisplayResolutionBootTest, Reboot) {
+// crbug.com/1000694.
+IN_PROC_BROWSER_TEST_P(DisplayResolutionBootTest, DISABLED_Reboot) {
   const PolicyValue policy_value = GetParam();
 
   AddExternalDisplay();
@@ -496,7 +502,9 @@ class DeviceDisplayResolutionRecommendedTest
   DISALLOW_COPY_AND_ASSIGN(DeviceDisplayResolutionRecommendedTest);
 };
 
-IN_PROC_BROWSER_TEST_P(DeviceDisplayResolutionRecommendedTest, Internal) {
+// crbug.com/1000694.
+IN_PROC_BROWSER_TEST_P(DeviceDisplayResolutionRecommendedTest,
+                       DISABLED_Internal) {
   const PolicyValue policy_value = GetParam();
   EXPECT_EQ(kDefaultDisplayResolution, GetResolutionOfInternalDisplay())
       << "Initial primary display resolution before policy";
@@ -520,8 +528,9 @@ IN_PROC_BROWSER_TEST_P(DeviceDisplayResolutionRecommendedTest, Internal) {
       << "Scale of internal display after user operation";
 }
 
+// crbug.com/1000694.
 IN_PROC_BROWSER_TEST_P(DeviceDisplayResolutionRecommendedTest,
-                       ResizeExternalDisplay) {
+                       DISABLED_ResizeExternalDisplay) {
   const PolicyValue policy_value = GetParam();
   AddExternalDisplay();
 

@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<script src="../../assert_selection.js"></script>
+<script>
+selection_test(
+    [
+      '<div contenteditable>',
+      'foo ba|r<br>',
+      'foo <input value="bar">',
+      '</div>'
+    ],
+    selection => selection.modify('move', 'forward', 'line'),
+    [
+      '<div contenteditable>',
+      'foo bar<br>',
+      'foo |<input value="bar">',
+      '</div>'
+    ],
+    'Move forward line should not enter text control');
+
+selection_test(
+    [
+      '<div contenteditable>',
+      'foo <input value="bar"><br>',
+      'foo ba|r',
+      '</div>'
+    ],
+    selection => selection.modify('move', 'backward', 'line'),
+    [
+      '<div contenteditable>',
+      'foo |<input value="bar"><br>',
+      'foo bar',
+      '</div>'
+    ],
+    'Move backward line should not enter text control');
+</script>

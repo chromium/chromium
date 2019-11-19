@@ -72,8 +72,8 @@ void PrivetLocalPrinterLister::DeviceChanged(
   device_contexts_[name] = std::move(context);
   context_ptr->privet_resolution->Start(
       description.address,
-      base::Bind(&PrivetLocalPrinterLister::OnPrivetResolved,
-                 base::Unretained(this), name));
+      base::BindOnce(&PrivetLocalPrinterLister::OnPrivetResolved,
+                     base::Unretained(this), name));
 }
 
 void PrivetLocalPrinterLister::DeviceCacheFlushed() {
@@ -92,7 +92,7 @@ void PrivetLocalPrinterLister::OnPrivetResolved(
   auto it = device_contexts_.find(http_client->GetName());
   DCHECK(it != device_contexts_.end());
 
-  it->second->info_operation = http_client->CreateInfoOperation(base::Bind(
+  it->second->info_operation = http_client->CreateInfoOperation(base::BindOnce(
       &PrivetLocalPrinterLister::OnPrivetInfoDone, base::Unretained(this),
       it->second.get(), http_client->GetName()));
   it->second->privet_client = std::move(http_client);

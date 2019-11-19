@@ -15,6 +15,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/string_number_conversions.h"
+#include "net/base/http_user_agent_settings.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
 #include "net/base/request_priority.h"
@@ -27,7 +28,6 @@
 #include "net/http/http_util.h"
 #include "net/ssl/ssl_info.h"
 #include "net/third_party/quiche/src/spdy/core/spdy_header_block.h"
-#include "net/url_request/http_user_agent_settings.h"
 #include "net/url_request/url_request_context.h"
 #include "net/url_request/url_request_context_getter.h"
 #include "url/gurl.h"
@@ -75,8 +75,7 @@ BidirectionalStream::BidirectionalStream(
       pending_write_data_(new WriteBuffers()),
       flushing_write_data_(new WriteBuffers()),
       sending_write_data_(new WriteBuffers()),
-      delegate_(delegate),
-      weak_factory_(this) {
+      delegate_(delegate) {
   weak_this_ = weak_factory_.GetWeakPtr();
 }
 
@@ -115,7 +114,7 @@ bool BidirectionalStream::ReadData(char* buffer, int capacity) {
 
   PostToNetworkThread(
       FROM_HERE, base::BindOnce(&BidirectionalStream::ReadDataOnNetworkThread,
-                                weak_this_, read_buffer, capacity));
+                                weak_this_, std::move(read_buffer), capacity));
   return true;
 }
 
@@ -131,7 +130,8 @@ bool BidirectionalStream::WriteData(const char* buffer,
   PostToNetworkThread(
       FROM_HERE,
       base::BindOnce(&BidirectionalStream::WriteDataOnNetworkThread, weak_this_,
-                     write_buffer, count, end_of_stream));
+                     std::move(write_buffer), count, end_of_stream));
+
   return true;
 }
 

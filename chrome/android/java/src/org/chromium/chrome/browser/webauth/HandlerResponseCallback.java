@@ -10,21 +10,27 @@ import org.chromium.blink.mojom.MakeCredentialAuthenticatorResponse;
 /**
  * Callback for receiving responses from an internal handler.
  */
-public interface HandlerResponseCallback {
+public class HandlerResponseCallback {
     /**
-     * Interface that returns the response from a request to register a
+     * Callback for handling the response from a request to register a
      * credential with an authenticator.
      */
-    void onRegisterResponse(Integer status, MakeCredentialAuthenticatorResponse response);
+    public void onRegisterResponse(Integer status, MakeCredentialAuthenticatorResponse response){};
 
     /**
-     * Interface that returns the response from a request to use a credential
+     * Callback for handling the response from a request to use a credential
      * to produce a signed assertion.
      */
-    void onSignResponse(Integer status, GetAssertionAuthenticatorResponse response);
+    public void onSignResponse(Integer status, GetAssertionAuthenticatorResponse response){};
 
     /**
-     * Interface that returns any errors from either register or sign requests.
+     * Callback for handling response from a request to call
+     * isUserVerifyingPlatformAuthenticatorAvailable.
      */
-    void onError(Integer status);
+    public void onIsUserVerifyingPlatformAuthenticatorAvailableResponse(boolean isUVPAA){};
+
+    /**
+     * Callback for handling any errors from either register or sign requests.
+     */
+    public void onError(Integer status){};
 }

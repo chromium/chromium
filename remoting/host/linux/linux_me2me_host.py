@@ -77,9 +77,13 @@ XORG_DUMMY_VIDEO_RAM = 1048576 # KiB
 # defaults can be overridden in ~/.profile.
 DEFAULT_SIZES = "1600x1200,3840x2560"
 
-# If RANDR is not available, use a smaller default size. Only a single
-# resolution is supported in this case.
-DEFAULT_SIZE_NO_RANDR = "1600x1200"
+# Xorg's dummy driver only supports switching between preconfigured sizes. To
+# make resize-to-fit somewhat useful, include several common resolutions by
+# default.
+DEFAULT_SIZES_XORG = ("1600x1200,1600x900,1440x900,1366x768,1360x768,1280x1024,"
+                      "1280x800,1280x768,1280x720,1152x864,1024x768,1024x600,"
+                      "800x600,1680x1050,1920x1080,1920x1200,2560x1440,"
+                      "2560x1600,3840x2160,3840x2560")
 
 SCRIPT_PATH = os.path.abspath(sys.argv[0])
 SCRIPT_DIR = os.path.dirname(SCRIPT_PATH)
@@ -244,21 +248,6 @@ def is_supported_platform():
   # The host has been tested only on Ubuntu.
   distribution = platform.linux_distribution()
   return (distribution[0]).lower() == 'ubuntu'
-
-
-def locate_xvfb_randr():
-  """Returns a path to our RANDR-supporting Xvfb server, if it is found on the
-  system. Otherwise returns None."""
-
-  xvfb = "/usr/bin/Xvfb-randr"
-  if os.path.exists(xvfb):
-    return xvfb
-
-  xvfb = os.path.join(SCRIPT_DIR, "Xvfb-randr")
-  if os.path.exists(xvfb):
-    return xvfb
-
-  return None
 
 
 class Config:
@@ -541,14 +530,10 @@ class Desktop:
     max_width = max([width for width, height in self.sizes])
     max_height = max([height for width, height in self.sizes])
 
-    xvfb = locate_xvfb_randr()
-    if not xvfb:
-      xvfb = "Xvfb"
-
-    logging.info("Starting %s on display :%d" % (xvfb, display))
+    logging.info("Starting Xvfb on display :%d" % display)
     screen_option = "%dx%dx24" % (max_width, max_height)
     self.x_proc = subprocess.Popen(
-        [xvfb, ":%d" % display,
+        ["Xvfb", ":%d" % display,
          "-auth", x_auth_file,
          "-nolisten", "tcp",
          "-noreset",
@@ -924,29 +909,8 @@ def choose_x_session():
         # current user.
         return ["/bin/sh", startup_file]
 
-  # Choose a session wrapper script to run the session. On some systems,
-  # /etc/X11/Xsession fails to load the user's .profile, so look for an
-  # alternative wrapper that is more likely to match the script that the
-  # system actually uses for console desktop sessions.
-  SESSION_WRAPPERS = [
-    "/usr/sbin/lightdm-session",
-    "/etc/gdm/Xsession",
-    "/etc/X11/Xsession" ]
-  for session_wrapper in SESSION_WRAPPERS:
-    if os.path.exists(session_wrapper):
-      if os.path.exists("/usr/bin/unity-2d-panel"):
-        # On Ubuntu 12.04, the default session relies on 3D-accelerated
-        # hardware. Trying to run this with a virtual X display produces
-        # weird results on some systems (for example, upside-down and
-        # corrupt displays).  So if the ubuntu-2d session is available,
-        # choose it explicitly.
-        return [session_wrapper, "/usr/bin/gnome-session --session=ubuntu-2d"]
-      else:
-        # Use the session wrapper by itself, and let the system choose a
-        # session.
-        return [session_wrapper]
-  return None
-
+  # If there's no configuration, show the user a session chooser.
+  return [HOST_BINARY_PATH, "--type=xsession_chooser"]
 
 class ParentProcessLogger(object):
   """Redirects logs to the parent process, until the host is ready or quits.
@@ -1419,6 +1383,9 @@ Web Store: https://chrome.google.com/remotedesktop"""
   parser.add_argument("--watch-resolution", dest="watch_resolution",
                       type=int, nargs=2, default=False, action="store",
                       help=argparse.SUPPRESS)
+  parser.add_argument("--skip-config-upgrade", dest="skip_config_upgrade",
+                      default=False, action="store_true",
+                      help="Skip running the config upgrade tool.")
   parser.add_argument(dest="args", nargs="*", help=argparse.SUPPRESS)
   options = parser.parse_args()
 
@@ -1550,12 +1517,10 @@ Web Store: https://chrome.google.com/remotedesktop"""
   # Start logging to user-session messaging pipe if it exists.
   ParentProcessLogger.try_start_logging(USER_SESSION_MESSAGE_FD)
 
-  # If a RANDR-supporting Xvfb is not available, limit the default size to
-  # something more sensible.
-  if USE_XORG_ENV_VAR not in os.environ and locate_xvfb_randr():
-    default_sizes = DEFAULT_SIZES
+  if USE_XORG_ENV_VAR in os.environ:
+    default_sizes = DEFAULT_SIZES_XORG
   else:
-    default_sizes = DEFAULT_SIZE_NO_RANDR
+    default_sizes = DEFAULT_SIZES
 
   # Collate the list of sizes that XRANDR should support.
   if not options.size:
@@ -1584,6 +1549,15 @@ Web Store: https://chrome.google.com/remotedesktop"""
 
   # Register an exit handler to clean up session process and the PID file.
   atexit.register(cleanup)
+
+  # Run the config upgrade tool, to update the refresh token if needed.
+  # TODO(lambroslambrou): Respect CHROME_REMOTE_DESKTOP_HOST_EXTRA_PARAMS
+  # and the GOOGLE_CLIENT... variables, and fix the tool to work in a
+  # test environment.
+  if not options.skip_config_upgrade:
+    args = [HOST_BINARY_PATH, "--upgrade-token",
+            "--host-config=%s" % config_file]
+    subprocess.check_call(args);
 
   # Load the initial host configuration.
   host_config = Config(config_file)
@@ -1756,6 +1730,9 @@ Web Store: https://chrome.google.com/remotedesktop"""
         # Nothing to do for Mac-only status 104 (login screen unsupported)
         elif os.WEXITSTATUS(status) == 105:
           logging.info("Username is blocked by policy - exiting.")
+          return 0
+        elif os.WEXITSTATUS(status) == 106:
+          logging.info("Host has been deleted - exiting.")
           return 0
         else:
           logging.info("Host exited with status %s." % os.WEXITSTATUS(status))

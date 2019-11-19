@@ -81,6 +81,9 @@ class BASE_EXPORT ApplicationStatusListener {
   // Expose jni call for ApplicationStatus.getStateForApplication.
   static ApplicationState GetState();
 
+  // Returns true if the app is currently foregrounded.
+  static bool HasVisibleActivities();
+
  protected:
   ApplicationStatusListener();
 

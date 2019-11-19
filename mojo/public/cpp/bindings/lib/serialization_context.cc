@@ -59,6 +59,7 @@ void SerializationContext::AddAssociatedInterfaceInfo(
 }
 
 void SerializationContext::TakeHandlesFromMessage(Message* message) {
+  receiver_connection_group_ = message->receiver_connection_group();
   handles_.swap(*message->mutable_handles());
   associated_endpoint_handles_.swap(
       *message->mutable_associated_endpoint_handles());
@@ -70,6 +71,14 @@ mojo::ScopedHandle SerializationContext::TakeHandle(
     return mojo::ScopedHandle();
   DCHECK_LT(encoded_handle.value, handles_.size());
   return std::move(handles_[encoded_handle.value]);
+}
+
+void SerializationContext::TakeHandleAsReceiver(
+    const Handle_Data& encoded_handle,
+    PendingReceiverState* receiver_state) {
+  receiver_state->pipe = TakeHandleAs<MessagePipeHandle>(encoded_handle);
+  if (receiver_connection_group_)
+    receiver_state->connection_group = *receiver_connection_group_;
 }
 
 mojo::ScopedInterfaceEndpointHandle

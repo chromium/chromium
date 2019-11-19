@@ -26,8 +26,8 @@
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/constants/chromeos_switches.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/dbus/shill_device_client.h"
-#include "chromeos/dbus/shill_service_client.h"
+#include "chromeos/dbus/shill/shill_device_client.h"
+#include "chromeos/dbus/shill/shill_service_client.h"
 #include "chromeos/network/network_handler.h"
 #include "chromeos/network/network_state.h"
 #include "chromeos/network/network_state_handler.h"
@@ -36,7 +36,7 @@
 #include "components/captive_portal/captive_portal_testing_utils.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user_manager.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "dbus/object_path.h"
 #include "net/base/net_errors.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -101,7 +101,6 @@ class NetworkPortalDetectorImplTest
     // Create a profile for the user.
     profile_ = test_profile_manager_.CreateTestingProfile(
         test_account_id.GetUserEmail());
-    test_profile_manager_.SetLoggedIn(true);
     EXPECT_TRUE(user_manager::UserManager::Get()->GetPrimaryUser());
 
     network_portal_detector_.reset(
@@ -229,7 +228,7 @@ class NetworkPortalDetectorImplTest
   void SetBehindPortal(const std::string& service_path) {
     DBusThreadManager::Get()->GetShillServiceClient()->SetProperty(
         dbus::ObjectPath(service_path), shill::kStateProperty,
-        base::Value(shill::kStatePortal), base::DoNothing(),
+        base::Value(shill::kStateNoConnectivity), base::DoNothing(),
         base::Bind(&ErrorCallbackFunction));
     base::RunLoop().RunUntilIdle();
   }
@@ -290,7 +289,7 @@ class NetworkPortalDetectorImplTest
     NetworkHandler::Initialize();
   }
 
-  content::TestBrowserThreadBundle thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
   Profile* profile_ = nullptr;
   std::unique_ptr<NetworkPortalDetectorImpl> network_portal_detector_;
   std::unique_ptr<base::HistogramSamples> original_samples_;

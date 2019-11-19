@@ -56,9 +56,11 @@ class GPU_EXPORT Scheduler {
   // Create a sequence with given priority. Returns an identifier for the
   // sequence that can be used with SyncPonintManager for creating sync point
   // release clients. Sequences start off as enabled (see |EnableSequence|).
+  // Sequence could be created outside of GPU thread.
   SequenceId CreateSequence(SchedulingPriority priority);
 
-  // Destroy the sequence and run any scheduled tasks immediately.
+  // Destroy the sequence and run any scheduled tasks immediately. Sequence
+  // could be destroyed outside of GPU thread.
   void DestroySequence(SequenceId sequence_id);
 
   // Enables the sequence so that its tasks may be scheduled.
@@ -89,6 +91,12 @@ class GPU_EXPORT Scheduler {
 
   // If the sequence should yield so that a higher priority sequence may run.
   bool ShouldYield(SequenceId sequence_id);
+
+  base::WeakPtr<Scheduler> AsWeakPtr();
+
+  // Takes and resets current accumulated blocking time. Not available on all
+  // platforms. Returns TimeDelta::Min() when not available.
+  base::TimeDelta TakeTotalBlockingTime();
 
  private:
 
@@ -331,11 +339,14 @@ class GPU_EXPORT Scheduler {
   // priority.
   bool rebuild_scheduling_queue_ = false;
 
+  // Accumulated time the thread was blocked during running task
+  base::TimeDelta total_blocked_time_;
+
   base::ThreadChecker thread_checker_;
 
   // Invalidated on main thread.
   base::WeakPtr<Scheduler> weak_ptr_;
-  base::WeakPtrFactory<Scheduler> weak_factory_;
+  base::WeakPtrFactory<Scheduler> weak_factory_{this};
 
  private:
   FRIEND_TEST_ALL_PREFIXES(SchedulerTest, StreamPriorities);

@@ -30,18 +30,4 @@ ScopedMakeCurrent::~ScopedMakeCurrent() {
   }
 }
 
-ScopedReleaseCurrent::ScopedReleaseCurrent()
-    : previous_context_(gl::GLContext::GetCurrent()),
-      previous_surface_(gl::GLSurface::GetCurrent()) {
-  if (previous_context_) {
-    DCHECK(previous_surface_);
-    previous_context_->ReleaseCurrent(previous_surface_.get());
-  }
-}
-
-ScopedReleaseCurrent::~ScopedReleaseCurrent() {
-  if (previous_context_)
-    previous_context_->MakeCurrent(previous_surface_.get());
-}
-
 }  // namespace ui

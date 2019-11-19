@@ -11,7 +11,6 @@
 #include "base/optional.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
-#include "chrome/browser/google/google_url_tracker_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/one_google_bar/one_google_bar_loader_impl.h"
 #include "chrome/browser/search/one_google_bar/one_google_bar_service.h"
@@ -41,7 +40,6 @@ OneGoogleBarServiceFactory::OneGoogleBarServiceFactory()
           "OneGoogleBarService",
           BrowserContextDependencyManager::GetInstance()) {
   DependsOn(CookieSettingsFactory::GetInstance());
-  DependsOn(GoogleURLTrackerFactory::GetInstance());
   DependsOn(IdentityManagerFactory::GetInstance());
 }
 
@@ -51,10 +49,8 @@ KeyedService* OneGoogleBarServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
 
   Profile* profile = Profile::FromBrowserContext(context);
-  identity::IdentityManager* identity_manager =
+  signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
-  GoogleURLTracker* google_url_tracker =
-      GoogleURLTrackerFactory::GetForProfile(profile);
   content_settings::CookieSettings* cookie_settings =
       CookieSettingsFactory::GetForProfile(profile).get();
   auto url_loader_factory =
@@ -63,8 +59,7 @@ KeyedService* OneGoogleBarServiceFactory::BuildServiceInstanceFor(
   return new OneGoogleBarService(
       identity_manager,
       std::make_unique<OneGoogleBarLoaderImpl>(
-          url_loader_factory, google_url_tracker,
-          g_browser_process->GetApplicationLocale(),
+          url_loader_factory, g_browser_process->GetApplicationLocale(),
           AccountConsistencyModeManager::IsMirrorEnabledForProfile(profile) &&
               signin::SettingsAllowSigninCookies(cookie_settings)));
 }

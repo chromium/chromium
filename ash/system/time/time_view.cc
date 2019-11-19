@@ -4,7 +4,7 @@
 
 #include "ash/system/time/time_view.h"
 
-#include "ash/session/session_controller.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/model/clock_model.h"
@@ -20,6 +20,7 @@
 #include "third_party/icu/source/i18n/unicode/datefmt.h"
 #include "third_party/icu/source/i18n/unicode/dtptngen.h"
 #include "third_party/icu/source/i18n/unicode/smpdtfmt.h"
+#include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/geometry/insets.h"
@@ -38,9 +39,6 @@ namespace {
 // Amount of slop to add into the timer to make sure we're into the next minute
 // when the timer goes off.
 const int kTimerSlopSeconds = 1;
-
-// Text color of the vertical clock minutes.
-const SkColor kVerticalClockMinuteColor = SkColorSetRGB(0xBA, 0xBA, 0xBA);
 
 // Padding between the left edge of the shelf and the left edge of the vertical
 // clock.
@@ -72,6 +70,12 @@ TimeView::~TimeView() {
 }
 
 void TimeView::UpdateClockLayout(ClockLayout clock_layout) {
+  // Do nothing if the layout hasn't changed.
+  if (((clock_layout == ClockLayout::HORIZONTAL_CLOCK) ? horizontal_label_
+                                                       : vertical_label_hours_)
+          ->parent() == this)
+    return;
+
   SetBorder(views::NullBorder());
   if (clock_layout == ClockLayout::HORIZONTAL_CLOCK) {
     RemoveChildView(vertical_label_hours_.get());
@@ -80,8 +84,14 @@ void TimeView::UpdateClockLayout(ClockLayout clock_layout) {
     AddChildView(horizontal_label_.get());
   } else {
     RemoveChildView(horizontal_label_.get());
+    // Remove the current layout manager since it could be the FillLayout which
+    // only allows one child.
+    SetLayoutManager(nullptr);
+    // Pre-add the children since ownership is being retained by this.
+    AddChildView(vertical_label_hours_.get());
+    AddChildView(vertical_label_minutes_.get());
     views::GridLayout* layout =
-        SetLayoutManager(std::make_unique<views::GridLayout>(this));
+        SetLayoutManager(std::make_unique<views::GridLayout>());
     const int kColumnId = 0;
     views::ColumnSet* columns = layout->AddColumnSet(kColumnId);
     columns->AddPaddingColumn(0, kVerticalClockLeftPadding);
@@ -89,9 +99,10 @@ void TimeView::UpdateClockLayout(ClockLayout clock_layout) {
                        0, views::GridLayout::USE_PREF, 0, 0);
     layout->AddPaddingRow(0, kClockLeadingPadding);
     layout->StartRow(0, kColumnId);
-    layout->AddView(vertical_label_hours_.get());
+    // Add the views as existing since ownership isn't being transferred.
+    layout->AddExistingView(vertical_label_hours_.get());
     layout->StartRow(0, kColumnId);
-    layout->AddView(vertical_label_minutes_.get());
+    layout->AddExistingView(vertical_label_minutes_.get());
     layout->AddPaddingRow(0, kVerticalClockMinutesTopOffset);
   }
   Layout();
@@ -124,6 +135,10 @@ void TimeView::Refresh() {
 
 base::HourClockType TimeView::GetHourTypeForTesting() const {
   return model_->hour_clock_type();
+}
+
+const char* TimeView::GetClassName() const {
+  return "TimeView";
 }
 
 bool TimeView::PerformAction(const ui::Event& event) {
@@ -212,9 +227,6 @@ void TimeView::SetupLabels() {
   SetupLabel(vertical_label_hours_.get());
   vertical_label_minutes_.reset(new views::Label());
   SetupLabel(vertical_label_minutes_.get());
-  // TODO(estade): this should use the NativeTheme's secondary text color. See
-  // crbug.com/687791
-  vertical_label_minutes_->SetEnabledColor(kVerticalClockMinuteColor);
   // Pull the minutes up closer to the hours by using a negative top border.
   vertical_label_minutes_->SetBorder(
       views::CreateEmptyBorder(kVerticalClockMinutesTopOffset, 0, 0, 0));

@@ -43,13 +43,15 @@
     TestRunner.addResult(quotaStripped);
 
     TestRunner.addResult('Usage breakdown:');
-    for (var i = 0; i < view._pieChartLegend.children.length; i++) {
+    const legendElement = view._pieChart.element.shadowRoot.querySelector('.pie-chart-legend');
+
+    for (var i = 0; i < legendElement.children.length; i++) {
       var typeUsage = ': ';
-      var children = view._pieChartLegend.children[i].children;
+      var children = legendElement.children[i].children;
       for (var j = 0; j < children.length; j++) {
-        if (children[j].classList.contains('usage-breakdown-legend-title'))
+        if (children[j].classList.contains('pie-chart-name'))
           typeUsage = children[j].textContent + typeUsage;
-        if (children[j].classList.contains('usage-breakdown-legend-value')) {
+        if (children[j].classList.contains('pie-chart-size')) {
           // Clean usage value because it's platform-dependent.
           var cleanedValue = children[j].textContent.replace(/\d+.\d\sKB/, '--.- KB');
           typeUsage = typeUsage + cleanedValue;
@@ -76,6 +78,11 @@
 
   await writeArray();
   await dumpWhenMatches(clearStorageView, usage => usage > 20000);
+
+  TestRunner.markStep('Clear again with ActionDelegate');
+
+  await UI.actionRegistry.action('resources.clear').execute();
+  await dumpWhenMatches(clearStorageView, usage => usage === 0);
 
   TestRunner.completeTest();
 })();

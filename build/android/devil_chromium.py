@@ -132,6 +132,8 @@ def Initialize(output_directory=None, custom_deps=None, adb_path=None):
           },
           ...
         }
+    adb_path: An optional path to use for the adb binary. If not set, this uses
+      the adb binary provided by the Android SDK.
   """
 
   devil_dynamic_config = {

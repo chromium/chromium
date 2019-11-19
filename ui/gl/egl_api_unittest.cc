@@ -4,6 +4,7 @@
 
 #include <memory>
 
+#include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gl/gl_egl_api_implementation.h"
 #include "ui/gl/gl_surface_egl.h"
@@ -18,8 +19,6 @@ class EGLApiTest : public testing::Test {
     fake_client_extension_string_ = "";
     fake_extension_string_ = "";
 
-    // TODO(dyen): Add a way to bind mock drivers for testing.
-    init::ShutdownGL(false);
     g_driver_egl.fn.eglInitializeFn = &FakeInitialize;
     g_driver_egl.fn.eglTerminateFn = &FakeTerminate;
     g_driver_egl.fn.eglQueryStringFn = &FakeQueryString;
@@ -28,7 +27,11 @@ class EGLApiTest : public testing::Test {
     g_driver_egl.fn.eglGetErrorFn = &FakeGetError;
     g_driver_egl.fn.eglGetProcAddressFn = &FakeGetProcAddress;
 
+#if defined(OS_WIN)
+    SetGLImplementation(kGLImplementationEGLANGLE);
+#else
     SetGLImplementation(kGLImplementationEGLGLES2);
+#endif
   }
 
   void TearDown() override {
@@ -40,7 +43,7 @@ class EGLApiTest : public testing::Test {
   }
 
   void InitializeAPI(const char* disabled_extensions) {
-    api_.reset(new RealEGLApi());
+    api_ = std::make_unique<RealEGLApi>();
     g_current_egl_context = api_.get();
     api_->Initialize(&g_driver_egl);
     if (disabled_extensions) {

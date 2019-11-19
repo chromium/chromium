@@ -101,7 +101,8 @@ base::FilePath CrashReporterClient::GetReporterLogFilename() {
   return base::FilePath();
 }
 
-bool CrashReporterClient::HandleCrashDump(const char* crashdump_filename) {
+bool CrashReporterClient::HandleCrashDump(const char* crashdump_filename,
+                                          uint64_t crash_pid) {
   return false;
 }
 #endif

@@ -12,8 +12,7 @@ FakeImeKeyboard::FakeImeKeyboard()
       auto_repeat_is_enabled_(false) {
 }
 
-FakeImeKeyboard::~FakeImeKeyboard() {
-}
+FakeImeKeyboard::~FakeImeKeyboard() = default;
 
 bool FakeImeKeyboard::SetCurrentKeyboardLayoutByName(
     const std::string& layout_name) {

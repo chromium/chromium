@@ -1,0 +1,14 @@
+{
+  "name": "Test [piexwasm] module.",
+  "description": "Test [piexwasm] module loads and runs in a Chrome extension.",
+  "version": "1.0.0",
+  "manifest_version": 2,
+
+  "background": {
+    "scripts": [
+      "background.js"
+    ]
+  },
+
+  "content_security_policy": "script-src 'self' 'wasm-eval'; object-src 'self'"
+}

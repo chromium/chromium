@@ -180,7 +180,7 @@ TEST_F(PermissionContextBaseFeaturePolicyTest, RequestPermission) {
   content::RenderFrameHost* parent = GetMainRFH(kOrigin1);
 
   HostContentSettingsMapFactory::GetForProfile(profile())
-      ->SetDefaultContentSetting(CONTENT_SETTINGS_TYPE_GEOLOCATION,
+      ->SetDefaultContentSetting(ContentSettingsType::GEOLOCATION,
                                  CONTENT_SETTING_ALLOW);
 
   // Request geolocation in the top level frame, request should work.

@@ -1,0 +1,29 @@
+{
+  "layers": [
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [802, 585],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF",
+      "paintInvalidations": [
+        {
+          "object": "LayoutBlockFlow (relative positioned) DIV id='box' class='rotated'",
+          "rect": [76, 190, 286, 286],
+          "reason": "paint property change"
+        },
+        {
+          "object": "LayoutBlockFlow (relative positioned) DIV id='box' class='rotated'",
+          "rect": [118, 232, 202, 202],
+          "reason": "paint property change"
+        }
+      ]
+    },
+    {
+      "name": "ContentsLayer for Horizontal Scrollbar Layer",
+      "position": [0, 585],
+      "bounds": [800, 15],
+      "contentsOpaque": true
+    }
+  ]
+}
+

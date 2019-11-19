@@ -46,7 +46,7 @@ __gCrWeb.form.wasEditedByUser = null;
  * @return {boolean} true if the |element| is a form control element.
  */
 __gCrWeb.form.isFormControlElement = function(element) {
-  var tagName = element.tagName;
+  const tagName = element.tagName;
   return (
       tagName === 'INPUT' || tagName === 'SELECT' || tagName === 'TEXTAREA');
 };
@@ -68,7 +68,7 @@ __gCrWeb.form.getFormControlElements = function(form) {
   if (!form) {
     return [];
   }
-  var results = [];
+  const results = [];
   // Get input and select elements from form.elements.
   // According to
   // http://www.w3.org/TR/2011/WD-html5-20110525/forms.html, form.elements are
@@ -81,8 +81,8 @@ __gCrWeb.form.getFormControlElements = function(form) {
   // implementation. Note for Autofill, as input Image Button is not
   // considered as autofillable elements, there is no impact on Autofill
   // feature.
-  var elements = form.elements;
-  for (var i = 0; i < elements.length; i++) {
+  const elements = form.elements;
+  for (let i = 0; i < elements.length; i++) {
     if (__gCrWeb.form.isFormControlElement(elements[i])) {
       results.push(/** @type {FormControlElement} */ (elements[i]));
     }
@@ -121,7 +121,7 @@ __gCrWeb.form.getFieldIdentifier = function(element) {
   if (!element) {
     return '';
   }
-  var trimmedIdentifier = element.id;
+  let trimmedIdentifier = element.id;
   if (trimmedIdentifier) {
     return __gCrWeb.common.trim(trimmedIdentifier);
   }
@@ -136,8 +136,8 @@ __gCrWeb.form.getFieldIdentifier = function(element) {
       }
     }
 
-    var elements = __gCrWeb.form.getFormControlElements(element.form);
-    for (var index = 0; index < elements.length; index++) {
+    const elements = __gCrWeb.form.getFormControlElements(element.form);
+    for (let index = 0; index < elements.length; index++) {
       if (elements[index] === element) {
         return __gCrWeb.form.kNamelessFieldIDPrefix + index;
       }
@@ -147,25 +147,25 @@ __gCrWeb.form.getFieldIdentifier = function(element) {
   // As best effort, try to find the closest ancestor with an id, then
   // check the index of the element in the descendants of the ancestors with
   // the same type.
-  var ancestor = element.parentNode;
+  let ancestor = element.parentNode;
   while (!!ancestor && ancestor.nodeType == Node.ELEMENT_NODE &&
          (!ancestor.hasAttribute('id') ||
           __gCrWeb.common.trim(ancestor.id) == '')) {
     ancestor = ancestor.parentNode;
   }
-  var query = element.tagName;
-  var ancestor_id = '';
+  const query = element.tagName;
+  let ancestorId = '';
   if (!ancestor || ancestor.nodeType != Node.ELEMENT_NODE) {
     ancestor = document.body;
   }
   if (ancestor.hasAttribute('id')) {
-    ancestor_id = '#' + __gCrWeb.common.trim(ancestor.id);
+    ancestorId = '#' + __gCrWeb.common.trim(ancestor.id);
   }
-  var descendants = ancestor.querySelectorAll(element.tagName);
-  var i = 0;
+  const descendants = ancestor.querySelectorAll(element.tagName);
+  let i = 0;
   for (i = 0; i < descendants.length; i++) {
     if (descendants[i] === element) {
-      return __gCrWeb.form.kNamelessFieldIDPrefix + ancestor_id + '~' +
+      return __gCrWeb.form.kNamelessFieldIDPrefix + ancestorId + '~' +
           element.tagName + '~' + i;
     }
   }
@@ -192,7 +192,7 @@ __gCrWeb.form.getFieldName = function(element) {
   if (!element) {
     return '';
   }
-  var trimmedName = element.name;
+  let trimmedName = element.name;
   if (trimmedName) {
     trimmedName = __gCrWeb.common.trim(trimmedName);
     if (trimmedName.length > 0) {
@@ -219,7 +219,7 @@ __gCrWeb.form.getFieldName = function(element) {
  */
 __gCrWeb.form.getFormIdentifier = function(form) {
   if (!form) return '';
-  var name = form.getAttribute('name');
+  let name = form.getAttribute('name');
   if (name && name.length != 0 &&
       form.ownerDocument.forms.namedItem(name) === form) {
     return name;
@@ -233,7 +233,7 @@ __gCrWeb.form.getFormIdentifier = function(form) {
   // identified from the name. A last resort is to take the index number of
   // the form in document.forms. ids are not supposed to begin with digits (by
   // HTML 4 spec) so this is unlikely to match a true id.
-  for (var idx = 0; idx != document.forms.length; idx++) {
+  for (let idx = 0; idx != document.forms.length; idx++) {
     if (document.forms[idx] == form) {
       return __gCrWeb.form.kNamelessFormIDPrefix + idx;
     }
@@ -252,7 +252,7 @@ __gCrWeb.form.getFormIdentifier = function(form) {
  */
 __gCrWeb.form.getFormElementFromIdentifier = function(name) {
   // First attempt is from the name / id supplied.
-  var form = document.forms.namedItem(name);
+  const form = document.forms.namedItem(name);
   if (form) {
     if (form.nodeType !== Node.ELEMENT_NODE) return null;
     return (form);
@@ -260,7 +260,7 @@ __gCrWeb.form.getFormElementFromIdentifier = function(name) {
   // Second attempt is from the prefixed index position of the form in
   // document.forms.
   if (name.indexOf(__gCrWeb.form.kNamelessFormIDPrefix) == 0) {
-    var nameAsInteger =
+    const nameAsInteger =
         0 | name.substring(__gCrWeb.form.kNamelessFormIDPrefix.length);
     if (__gCrWeb.form.kNamelessFormIDPrefix + nameAsInteger == name &&
         nameAsInteger < document.forms.length) {
@@ -284,6 +284,6 @@ __gCrWeb.form['fieldWasEditedByUser'] = function(element) {
     return false;
   }
   return __gCrWeb.form.wasEditedByUser.get(element);
-}
+};
 
 }());  // End of anonymous object

@@ -4,13 +4,11 @@
 
 #include "chrome/browser/search_engines/chrome_template_url_service_client.h"
 
-#include "components/history/core/browser/history_service.h"
 #include "components/search_engines/template_url_service.h"
 
 ChromeTemplateURLServiceClient::ChromeTemplateURLServiceClient(
     history::HistoryService* history_service)
     : owner_(NULL),
-      history_service_observer_(this),
       history_service_(history_service) {
   // TODO(sky): bug 1166191. The keywords should be moved into the history
   // db, which will mean we no longer need this notification and the history

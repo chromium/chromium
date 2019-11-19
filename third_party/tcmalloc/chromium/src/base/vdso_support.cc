@@ -42,12 +42,9 @@
 #include <fcntl.h>
 #include <stddef.h>   // for ptrdiff_t
 
-#include "base/atomicops.h"  // for MemoryBarrier
 #include "base/logging.h"
 #include "base/dynamic_annotations.h"
 #include "base/basictypes.h"  // for COMPILE_ASSERT
-
-using base::subtle::MemoryBarrier;
 
 #ifndef AT_SYSINFO_EHDR
 #define AT_SYSINFO_EHDR 33

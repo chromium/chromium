@@ -50,7 +50,6 @@ class ScriptingPermissionsModifier {
   ~ScriptingPermissionsModifier();
 
   // Sets whether Chrome should withhold host permissions from the extension.
-  // Used when the features::kRuntimeHostPermissions feature is enabled.
   // This may only be called for extensions that can be affected (i.e., for
   // which CanAffectExtension() returns true). Anything else will DCHECK.
   void SetWithholdHostPermissions(bool withhold);
@@ -61,7 +60,7 @@ class ScriptingPermissionsModifier {
   bool HasWithheldHostPermissions() const;
 
   // Returns true if the associated extension can be affected by
-  // features::kRuntimeHostPermissions.
+  // runtime host permissions.
   bool CanAffectExtension() const;
 
   // Returns the current access level for the extension on the specified |url|.
@@ -100,16 +99,15 @@ class ScriptingPermissionsModifier {
   void RemoveAllGrantedHostPermissions();
 
   // Takes in a set of permissions and withholds any permissions that should not
-  // be granted for the given |extension|, populating |granted_permissions_out|
-  // with the set of all permissions that can be granted.
+  // be granted for the given |extension|, returning a permission set with all
+  // of the permissions that can be granted.
   // Note: we pass in |permissions| explicitly here, as this is used during
   // permission initialization, where the active permissions on the extension
   // may not be the permissions to compare against.
-  static void WithholdPermissionsIfNecessary(
+  static std::unique_ptr<const PermissionSet> WithholdPermissionsIfNecessary(
       const Extension& extension,
       const ExtensionPrefs& extension_prefs,
-      const PermissionSet& permissions,
-      std::unique_ptr<const PermissionSet>* granted_permissions_out);
+      const PermissionSet& permissions);
 
   // Returns the subset of active permissions which can be withheld.
   std::unique_ptr<const PermissionSet> GetRevokablePermissions() const;

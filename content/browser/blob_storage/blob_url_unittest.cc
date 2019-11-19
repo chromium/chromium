@@ -17,40 +17,35 @@
 #include "base/stl_util.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
-#include "content/browser/url_loader_factory_getter.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/data_pipe_utils.h"
 #include "net/base/net_errors.h"
 #include "net/base/request_priority.h"
 #include "net/base/test_completion_callback.h"
-#include "net/disk_cache/disk_cache.h"
 #include "net/http/http_byte_range.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_response_headers.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "net/url_request/url_request.h"
-#include "net/url_request/url_request_context.h"
-#include "net/url_request/url_request_job_factory_impl.h"
-#include "net/url_request/url_request_test_util.h"
 #include "services/network/test/test_url_loader_client.h"
 #include "storage/browser/blob/blob_data_builder.h"
 #include "storage/browser/blob/blob_data_handle.h"
 #include "storage/browser/blob/blob_data_snapshot.h"
 #include "storage/browser/blob/blob_impl.h"
 #include "storage/browser/blob/blob_storage_context.h"
-#include "storage/browser/blob/blob_url_request_job.h"
 #include "storage/browser/blob/blob_url_store_impl.h"
-#include "storage/browser/fileapi/file_system_context.h"
-#include "storage/browser/fileapi/file_system_operation_context.h"
-#include "storage/browser/fileapi/file_system_url.h"
+#include "storage/browser/file_system/file_system_context.h"
+#include "storage/browser/file_system/file_system_operation_context.h"
+#include "storage/browser/file_system/file_system_url.h"
 #include "storage/browser/test/async_file_test_helper.h"
+#include "storage/browser/test/fake_blob_data_handle.h"
 #include "storage/browser/test/mock_blob_registry_delegate.h"
 #include "storage/browser/test/test_file_system_context.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using storage::BlobDataSnapshot;
 using storage::BlobDataBuilder;
-using storage::BlobURLRequestJob;
 
 namespace content {
 
@@ -63,10 +58,8 @@ const char kTestFileData1[] = "0123456789";
 const char kTestFileData2[] = "This is sample file.";
 const char kTestFileSystemFileData1[] = "abcdefghijklmnop";
 const char kTestFileSystemFileData2[] = "File system file test data.";
-const char kTestDiskCacheKey1[] = "key1";
-const char kTestDiskCacheKey2[] = "key2";
-const char kTestDiskCacheData1[] = "disk cache test data1.";
-const char kTestDiskCacheData2[] = "disk cache test data2.";
+const char kTestDataHandleData1[] = "data handle test data1.";
+const char kTestDataHandleData2[] = "data handle test data2.";
 const char kTestDiskCacheSideData[] = "test side data";
 const char kTestContentType[] = "foo/bar";
 const char kTestContentDisposition[] = "attachment; filename=foo.txt";
@@ -75,90 +68,12 @@ const char kFileSystemURLOrigin[] = "http://remote";
 const storage::FileSystemType kFileSystemType =
     storage::kFileSystemTypeTemporary;
 
-const int kTestDiskCacheStreamIndex = 0;
-const int kTestDiskCacheSideStreamIndex = 1;
-
-// Our disk cache tests don't need a real data handle since the tests themselves
-// scope the disk cache and entries.
-class EmptyDataHandle : public storage::BlobDataBuilder::DataHandle {
- private:
-  ~EmptyDataHandle() override {}
-};
-
-std::unique_ptr<disk_cache::Backend> CreateInMemoryDiskCache() {
-  std::unique_ptr<disk_cache::Backend> cache;
-  net::TestCompletionCallback callback;
-  int rv = disk_cache::CreateCacheBackend(
-      net::MEMORY_CACHE, net::CACHE_BACKEND_DEFAULT, base::FilePath(), 0, false,
-      nullptr, &cache, callback.callback());
-  EXPECT_EQ(net::OK, callback.GetResult(rv));
-
-  return cache;
-}
-
-disk_cache::ScopedEntryPtr CreateDiskCacheEntry(disk_cache::Backend* cache,
-                                                const char* key,
-                                                const std::string& data) {
-  disk_cache::Entry* temp_entry = nullptr;
-  net::TestCompletionCallback callback;
-  int rv =
-      cache->CreateEntry(key, net::HIGHEST, &temp_entry, callback.callback());
-  if (callback.GetResult(rv) != net::OK)
-    return nullptr;
-  disk_cache::ScopedEntryPtr entry(temp_entry);
-
-  scoped_refptr<net::StringIOBuffer> iobuffer =
-      base::MakeRefCounted<net::StringIOBuffer>(data);
-  rv = entry->WriteData(kTestDiskCacheStreamIndex, 0, iobuffer.get(),
-                        iobuffer->size(), callback.callback(), false);
-  EXPECT_EQ(static_cast<int>(data.size()), callback.GetResult(rv));
-  return entry;
-}
-
-disk_cache::ScopedEntryPtr CreateDiskCacheEntryWithSideData(
-    disk_cache::Backend* cache,
-    const char* key,
-    const std::string& data,
-    const std::string& side_data) {
-  disk_cache::ScopedEntryPtr entry = CreateDiskCacheEntry(cache, key, data);
-  scoped_refptr<net::StringIOBuffer> iobuffer =
-      base::MakeRefCounted<net::StringIOBuffer>(side_data);
-  net::TestCompletionCallback callback;
-  int rv = entry->WriteData(kTestDiskCacheSideStreamIndex, 0, iobuffer.get(),
-                            iobuffer->size(), callback.callback(), false);
-  EXPECT_EQ(static_cast<int>(side_data.size()), callback.GetResult(rv));
-  return entry;
-}
-
-enum class RequestTestType {
-  kNetRequest,
-  kRequestFromBlobImpl
-};
-
 }  // namespace
 
-class BlobURLRequestJobTest : public testing::TestWithParam<RequestTestType> {
+class BlobURLTest : public testing::Test {
  public:
-  // A simple ProtocolHandler implementation to create BlobURLRequestJob.
-  class MockProtocolHandler
-      : public net::URLRequestJobFactory::ProtocolHandler {
-   public:
-    MockProtocolHandler(BlobURLRequestJobTest* test) : test_(test) {}
-
-    // net::URLRequestJobFactory::ProtocolHandler override.
-    net::URLRequestJob* MaybeCreateJob(
-        net::URLRequest* request,
-        net::NetworkDelegate* network_delegate) const override {
-      return new BlobURLRequestJob(request, network_delegate,
-                                   test_->GetHandleFromBuilder());
-    }
-
-   private:
-    BlobURLRequestJobTest* test_;
-  };
-
-  BlobURLRequestJobTest()
-      : thread_bundle_(TestBrowserThreadBundle::IO_MAINLOOP),
+  BlobURLTest()
+      : task_environment_(BrowserTaskEnvironment::IO_MAINLOOP),
         blob_data_(new BlobDataBuilder("uuid")),
         blob_uuid_(blob_data_->uuid()),
         response_error_code_(net::OK),
@@ -183,14 +98,6 @@ class BlobURLRequestJobTest : public testing::TestWithParam<RequestTestType> {
     base::File::Info file_info2;
     base::GetFileInfo(temp_file2_, &file_info2);
     temp_file_modification_time2_ = file_info2.last_modified;
-
-    disk_cache_backend_ = CreateInMemoryDiskCache();
-    disk_cache_entry_ = CreateDiskCacheEntry(
-        disk_cache_backend_.get(), kTestDiskCacheKey1, kTestDiskCacheData1);
-
-    url_request_job_factory_.SetProtocolHandler(
-        "blob", std::make_unique<MockProtocolHandler>(this));
-    url_request_context_.set_job_factory(&url_request_job_factory_);
   }
 
   void TearDown() override {
@@ -208,7 +115,7 @@ class BlobURLRequestJobTest : public testing::TestWithParam<RequestTestType> {
     file_system_context_->OpenFileSystem(
         GURL(kFileSystemURLOrigin), kFileSystemType,
         storage::OPEN_FILE_SYSTEM_CREATE_IF_NONEXISTENT,
-        base::BindOnce(&BlobURLRequestJobTest::OnValidateFileSystem,
+        base::BindOnce(&BlobURLTest::OnValidateFileSystem,
                        base::Unretained(this)));
     base::RunLoop().RunUntilIdle();
     ASSERT_TRUE(file_system_root_url_.is_valid());
@@ -283,64 +190,39 @@ class BlobURLRequestJobTest : public testing::TestWithParam<RequestTestType> {
     request.method = method;
     request.headers = extra_headers;
 
-    switch (GetParam()) {
-      case RequestTestType::kNetRequest: {
-        std::unique_ptr<net::URLRequest> request =
-            url_request_context_.CreateRequest(url, net::DEFAULT_PRIORITY,
-                                               &url_request_delegate_,
-                                               TRAFFIC_ANNOTATION_FOR_TESTS);
-        request->set_method(method);
-        if (!extra_headers.IsEmpty())
-          request->SetExtraRequestHeaders(extra_headers);
-        request->Start();
+    storage::MockBlobRegistryDelegate delegate;
+    storage::BlobURLStoreImpl url_store(GetStorageContext(), &delegate);
 
-        base::RunLoop().Run();
-        response_ = url_request_delegate_.data_received();
-        response_headers_ = request->response_headers();
-        if (request->response_info().metadata) {
-          response_metadata_ =
-              std::string(request->response_info().metadata->data(),
-                          request->response_info().metadata->size());
-        }
+    mojo::PendingRemote<blink::mojom::Blob> blob_remote;
+    storage::BlobImpl::Create(
+        std::make_unique<storage::BlobDataHandle>(*GetHandleFromBuilder()),
+        blob_remote.InitWithNewPipeAndPassReceiver());
 
-        response_error_code_ = url_request_delegate_.request_status();
-      } break;
-      case RequestTestType::kRequestFromBlobImpl: {
-        storage::MockBlobRegistryDelegate delegate;
-        storage::BlobURLStoreImpl url_store(GetStorageContext(), &delegate);
+    base::RunLoop loop;
+    url_store.Register(std::move(blob_remote), url, loop.QuitClosure());
+    loop.Run();
 
-        blink::mojom::BlobPtr blob_ptr;
-        storage::BlobImpl::Create(
-            std::make_unique<storage::BlobDataHandle>(*GetHandleFromBuilder()),
-            MakeRequest(&blob_ptr));
+    mojo::Remote<network::mojom::URLLoaderFactory> url_loader_factory;
+    url_store.ResolveAsURLLoaderFactory(
+        url, url_loader_factory.BindNewPipeAndPassReceiver());
 
-        base::RunLoop loop;
-        url_store.Register(std::move(blob_ptr), url, loop.QuitClosure());
-        loop.Run();
+    network::mojom::URLLoaderPtr url_loader;
+    network::TestURLLoaderClient url_loader_client;
+    url_loader_factory->CreateLoaderAndStart(
+        MakeRequest(&url_loader), 0, 0, network::mojom::kURLLoadOptionNone,
+        request, url_loader_client.CreateRemote(),
+        net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS));
+    url_loader_client.RunUntilComplete();
 
-        network::mojom::URLLoaderFactoryPtr url_loader_factory;
-        url_store.ResolveAsURLLoaderFactory(url,
-                                            MakeRequest(&url_loader_factory));
-
-        network::mojom::URLLoaderPtr url_loader;
-        network::TestURLLoaderClient url_loader_client;
-        url_loader_factory->CreateLoaderAndStart(
-            MakeRequest(&url_loader), 0, 0, network::mojom::kURLLoadOptionNone,
-            request, url_loader_client.CreateInterfacePtr(),
-            net::MutableNetworkTrafficAnnotationTag(
-                TRAFFIC_ANNOTATION_FOR_TESTS));
-        url_loader_client.RunUntilComplete();
-
-        if (url_loader_client.response_body().is_valid()) {
-          EXPECT_TRUE(mojo::BlockingCopyToString(
-              url_loader_client.response_body_release(), &response_));
-        }
-        response_headers_ = url_loader_client.response_head().headers;
-        response_metadata_ = url_loader_client.cached_metadata();
-        response_error_code_ = url_loader_client.completion_status().error_code;
-
-      } break;
+    if (url_loader_client.response_body().is_valid()) {
+      EXPECT_TRUE(mojo::BlockingCopyToString(
+          url_loader_client.response_body_release(), &response_));
     }
+    response_headers_ = url_loader_client.response_head()
+                            ? url_loader_client.response_head()->headers
+                            : nullptr;
+    response_metadata_ = url_loader_client.cached_metadata();
+    response_error_code_ = url_loader_client.completion_status().error_code;
 
     // Verify response.
     EXPECT_EQ(expected_error_code_, response_error_code_);
@@ -351,24 +233,26 @@ class BlobURLRequestJobTest : public testing::TestWithParam<RequestTestType> {
   }
 
   void BuildComplicatedData(std::string* expected_result) {
-    blob_data_->AppendData(kTestData1 + 1, 2);
-    *expected_result = std::string(kTestData1 + 1, 2);
+    auto str1 = std::string(kTestData1 + 1, 2);
+    blob_data_->AppendData(str1);
+    *expected_result = str1;
 
     blob_data_->AppendFile(temp_file1_, 2, 3, temp_file_modification_time1_);
     *expected_result += std::string(kTestFileData1 + 2, 3);
 
-    blob_data_->AppendDiskCacheEntry(new EmptyDataHandle(),
-                                     disk_cache_entry_.get(),
-                                     kTestDiskCacheStreamIndex);
-    *expected_result += std::string(kTestDiskCacheData1);
+    blob_data_->AppendReadableDataHandle(
+        base::MakeRefCounted<storage::FakeBlobDataHandle>(kTestDataHandleData1,
+                                                          ""));
+    *expected_result += std::string(kTestDataHandleData1);
 
     blob_data_->AppendFileSystemFile(temp_file_system_file1_, 3, 4,
                                      temp_file_system_file_modification_time1_,
                                      file_system_context_);
     *expected_result += std::string(kTestFileSystemFileData1 + 3, 4);
 
-    blob_data_->AppendData(kTestData2 + 4, 5);
-    *expected_result += std::string(kTestData2 + 4, 5);
+    auto str2 = std::string(kTestData2 + 4, 5);
+    blob_data_->AppendData(str2);
+    *expected_result += str2;
 
     blob_data_->AppendFile(temp_file2_, 5, 6, temp_file_modification_time2_);
     *expected_result += std::string(kTestFileData2 + 5, 6);
@@ -417,10 +301,7 @@ class BlobURLRequestJobTest : public testing::TestWithParam<RequestTestType> {
   base::Time temp_file_system_file_modification_time1_;
   base::Time temp_file_system_file_modification_time2_;
 
-  std::unique_ptr<disk_cache::Backend> disk_cache_backend_;
-  disk_cache::ScopedEntryPtr disk_cache_entry_;
-
-  TestBrowserThreadBundle thread_bundle_;
+  BrowserTaskEnvironment task_environment_;
   scoped_refptr<storage::FileSystemContext> file_system_context_;
 
   storage::BlobStorageContext blob_context_;
@@ -428,9 +309,6 @@ class BlobURLRequestJobTest : public testing::TestWithParam<RequestTestType> {
   std::unique_ptr<BlobDataBuilder> blob_data_;
   std::string blob_uuid_;
   std::unique_ptr<BlobDataSnapshot> blob_data_snapshot_;
-  net::URLRequestJobFactoryImpl url_request_job_factory_;
-  net::URLRequestContext url_request_context_;
-  net::TestDelegate url_request_delegate_;
   std::string response_;
   int response_error_code_;
   scoped_refptr<net::HttpResponseHeaders> response_headers_;
@@ -441,18 +319,18 @@ class BlobURLRequestJobTest : public testing::TestWithParam<RequestTestType> {
   std::string expected_response_;
 };
 
-TEST_P(BlobURLRequestJobTest, TestGetSimpleDataRequest) {
+TEST_F(BlobURLTest, TestGetSimpleDataRequest) {
   blob_data_->AppendData(kTestData1);
   TestSuccessNonrangeRequest(kTestData1, base::size(kTestData1) - 1);
 }
 
-TEST_P(BlobURLRequestJobTest, TestGetSimpleFileRequest) {
+TEST_F(BlobURLTest, TestGetSimpleFileRequest) {
   blob_data_->AppendFile(temp_file1_, 0, std::numeric_limits<uint64_t>::max(),
                          base::Time());
   TestSuccessNonrangeRequest(kTestFileData1, base::size(kTestFileData1) - 1);
 }
 
-TEST_P(BlobURLRequestJobTest, TestGetLargeFileRequest) {
+TEST_F(BlobURLTest, TestGetLargeFileRequest) {
   base::FilePath large_temp_file =
       temp_dir_.GetPath().AppendASCII("LargeBlob.dat");
   std::string large_data;
@@ -467,7 +345,7 @@ TEST_P(BlobURLRequestJobTest, TestGetLargeFileRequest) {
   TestSuccessNonrangeRequest(large_data, large_data.size());
 }
 
-TEST_P(BlobURLRequestJobTest, TestGetNonExistentFileRequest) {
+TEST_F(BlobURLTest, TestGetNonExistentFileRequest) {
   base::FilePath non_existent_file =
       temp_file1_.InsertBeforeExtension(FILE_PATH_LITERAL("-na"));
   blob_data_->AppendFile(non_existent_file, 0,
@@ -475,20 +353,20 @@ TEST_P(BlobURLRequestJobTest, TestGetNonExistentFileRequest) {
   TestErrorRequest(net::ERR_FILE_NOT_FOUND);
 }
 
-TEST_P(BlobURLRequestJobTest, TestGetChangedFileRequest) {
+TEST_F(BlobURLTest, TestGetChangedFileRequest) {
   base::Time old_time =
       temp_file_modification_time1_ - base::TimeDelta::FromSeconds(10);
   blob_data_->AppendFile(temp_file1_, 0, 3, old_time);
   TestErrorRequest(net::ERR_UPLOAD_FILE_CHANGED);
 }
 
-TEST_P(BlobURLRequestJobTest, TestGetSlicedFileRequest) {
+TEST_F(BlobURLTest, TestGetSlicedFileRequest) {
   blob_data_->AppendFile(temp_file1_, 2, 4, temp_file_modification_time1_);
   std::string result(kTestFileData1 + 2, 4);
   TestSuccessNonrangeRequest(result, 4);
 }
 
-TEST_P(BlobURLRequestJobTest, TestGetSimpleFileSystemFileRequest) {
+TEST_F(BlobURLTest, TestGetSimpleFileSystemFileRequest) {
   SetUpFileSystem();
   blob_data_->AppendFileSystemFile(temp_file_system_file1_, 0,
                                    std::numeric_limits<uint64_t>::max(),
@@ -497,7 +375,7 @@ TEST_P(BlobURLRequestJobTest, TestGetSimpleFileSystemFileRequest) {
                              base::size(kTestFileSystemFileData1) - 1);
 }
 
-TEST_P(BlobURLRequestJobTest, TestGetLargeFileSystemFileRequest) {
+TEST_F(BlobURLTest, TestGetLargeFileSystemFileRequest) {
   SetUpFileSystem();
   std::string large_data;
   large_data.reserve(kBufferSize * 5);
@@ -513,7 +391,7 @@ TEST_P(BlobURLRequestJobTest, TestGetLargeFileSystemFileRequest) {
   TestSuccessNonrangeRequest(large_data, large_data.size());
 }
 
-TEST_P(BlobURLRequestJobTest, TestGetNonExistentFileSystemFileRequest) {
+TEST_F(BlobURLTest, TestGetNonExistentFileSystemFileRequest) {
   SetUpFileSystem();
   GURL non_existent_file = GetFileSystemURL("non-existent.dat");
   blob_data_->AppendFileSystemFile(non_existent_file, 0,
@@ -522,7 +400,7 @@ TEST_P(BlobURLRequestJobTest, TestGetNonExistentFileSystemFileRequest) {
   TestErrorRequest(net::ERR_FILE_NOT_FOUND);
 }
 
-TEST_P(BlobURLRequestJobTest, TestGetInvalidFileSystemFileRequest) {
+TEST_F(BlobURLTest, TestGetInvalidFileSystemFileRequest) {
   SetUpFileSystem();
   GURL invalid_file;
   blob_data_->AppendFileSystemFile(invalid_file, 0,
@@ -531,7 +409,7 @@ TEST_P(BlobURLRequestJobTest, TestGetInvalidFileSystemFileRequest) {
   TestErrorRequest(net::ERR_FILE_NOT_FOUND);
 }
 
-TEST_P(BlobURLRequestJobTest, TestGetChangedFileSystemFileRequest) {
+TEST_F(BlobURLTest, TestGetChangedFileSystemFileRequest) {
   SetUpFileSystem();
   base::Time old_time = temp_file_system_file_modification_time1_ -
                         base::TimeDelta::FromSeconds(10);
@@ -540,7 +418,7 @@ TEST_P(BlobURLRequestJobTest, TestGetChangedFileSystemFileRequest) {
   TestErrorRequest(net::ERR_UPLOAD_FILE_CHANGED);
 }
 
-TEST_P(BlobURLRequestJobTest, TestGetSlicedFileSystemFileRequest) {
+TEST_F(BlobURLTest, TestGetSlicedFileSystemFileRequest) {
   SetUpFileSystem();
   blob_data_->AppendFileSystemFile(temp_file_system_file1_, 2, 4,
                                    temp_file_system_file_modification_time1_,
@@ -549,22 +427,22 @@ TEST_P(BlobURLRequestJobTest, TestGetSlicedFileSystemFileRequest) {
   TestSuccessNonrangeRequest(result, 4);
 }
 
-TEST_P(BlobURLRequestJobTest, TestGetSimpleDiskCacheRequest) {
-  blob_data_->AppendDiskCacheEntry(new EmptyDataHandle(),
-                                   disk_cache_entry_.get(),
-                                   kTestDiskCacheStreamIndex);
-  TestSuccessNonrangeRequest(kTestDiskCacheData1,
-                             base::size(kTestDiskCacheData1) - 1);
+TEST_F(BlobURLTest, TestGetSimpleDataHandleRequest) {
+  blob_data_->AppendReadableDataHandle(
+      base::MakeRefCounted<storage::FakeBlobDataHandle>(kTestDataHandleData1,
+                                                        ""));
+  TestSuccessNonrangeRequest(kTestDataHandleData1,
+                             base::size(kTestDataHandleData1) - 1);
 }
 
-TEST_P(BlobURLRequestJobTest, TestGetComplicatedDataFileAndDiskCacheRequest) {
+TEST_F(BlobURLTest, TestGetComplicatedDataFileAndDiskCacheRequest) {
   SetUpFileSystem();
   std::string result;
   BuildComplicatedData(&result);
   TestSuccessNonrangeRequest(result, GetTotalBlobLength());
 }
 
-TEST_P(BlobURLRequestJobTest, TestGetRangeRequest1) {
+TEST_F(BlobURLTest, TestGetRangeRequest1) {
   SetUpFileSystem();
   std::string result;
   BuildComplicatedData(&result);
@@ -585,7 +463,7 @@ TEST_P(BlobURLRequestJobTest, TestGetRangeRequest1) {
   EXPECT_EQ(GetTotalBlobLength(), length);
 }
 
-TEST_P(BlobURLRequestJobTest, TestGetRangeRequest2) {
+TEST_F(BlobURLTest, TestGetRangeRequest2) {
   SetUpFileSystem();
   std::string result;
   BuildComplicatedData(&result);
@@ -607,7 +485,7 @@ TEST_P(BlobURLRequestJobTest, TestGetRangeRequest2) {
   EXPECT_EQ(total, length);
 }
 
-TEST_P(BlobURLRequestJobTest, TestGetRangeRequest3) {
+TEST_F(BlobURLTest, TestGetRangeRequest3) {
   SetUpFileSystem();
   std::string result;
   BuildComplicatedData(&result);
@@ -628,7 +506,7 @@ TEST_P(BlobURLRequestJobTest, TestGetRangeRequest3) {
   EXPECT_EQ(GetTotalBlobLength(), length);
 }
 
-TEST_P(BlobURLRequestJobTest, TestExtraHeaders) {
+TEST_F(BlobURLTest, TestExtraHeaders) {
   blob_data_->set_content_type(kTestContentType);
   blob_data_->set_content_disposition(kTestContentDisposition);
   blob_data_->AppendData(kTestData1);
@@ -647,51 +525,36 @@ TEST_P(BlobURLRequestJobTest, TestExtraHeaders) {
   EXPECT_EQ(kTestContentDisposition, content_disposition);
 }
 
-TEST_P(BlobURLRequestJobTest, TestSideData) {
-  disk_cache::ScopedEntryPtr disk_cache_entry_with_side_data =
-      CreateDiskCacheEntryWithSideData(disk_cache_backend_.get(),
-                                       kTestDiskCacheKey2, kTestDiskCacheData2,
-                                       kTestDiskCacheSideData);
-  blob_data_->AppendDiskCacheEntryWithSideData(
-      new EmptyDataHandle(), disk_cache_entry_with_side_data.get(),
-      kTestDiskCacheStreamIndex, kTestDiskCacheSideStreamIndex);
+TEST_F(BlobURLTest, TestSideData) {
+  blob_data_->AppendReadableDataHandle(
+      base::MakeRefCounted<storage::FakeBlobDataHandle>(
+          kTestDataHandleData2, kTestDiskCacheSideData));
   expected_status_code_ = 200;
-  expected_response_ = kTestDiskCacheData2;
+  expected_response_ = kTestDataHandleData2;
   TestRequest("GET", net::HttpRequestHeaders());
-  EXPECT_EQ(static_cast<int>(base::size(kTestDiskCacheData2) - 1),
+  EXPECT_EQ(static_cast<int>(base::size(kTestDataHandleData2) - 1),
             response_headers_->GetContentLength());
 
   EXPECT_EQ(std::string(kTestDiskCacheSideData), response_metadata_);
 }
 
-TEST_P(BlobURLRequestJobTest, TestZeroSizeSideData) {
-  disk_cache::ScopedEntryPtr disk_cache_entry_with_side_data =
-      CreateDiskCacheEntryWithSideData(disk_cache_backend_.get(),
-                                       kTestDiskCacheKey2, kTestDiskCacheData2,
-                                       "");
-  blob_data_->AppendDiskCacheEntryWithSideData(
-      new EmptyDataHandle(), disk_cache_entry_with_side_data.get(),
-      kTestDiskCacheStreamIndex, kTestDiskCacheSideStreamIndex);
+TEST_F(BlobURLTest, TestZeroSizeSideData) {
+  blob_data_->AppendReadableDataHandle(
+      base::MakeRefCounted<storage::FakeBlobDataHandle>(kTestDataHandleData2,
+                                                        ""));
   expected_status_code_ = 200;
-  expected_response_ = kTestDiskCacheData2;
+  expected_response_ = kTestDataHandleData2;
   TestRequest("GET", net::HttpRequestHeaders());
-  EXPECT_EQ(static_cast<int>(base::size(kTestDiskCacheData2) - 1),
+  EXPECT_EQ(static_cast<int>(base::size(kTestDataHandleData2) - 1),
             response_headers_->GetContentLength());
 
   EXPECT_TRUE(response_metadata_.empty());
 }
 
-TEST_P(BlobURLRequestJobTest, BrokenBlob) {
+TEST_F(BlobURLTest, BrokenBlob) {
   blob_handle_ = blob_context_.AddBrokenBlob(
       "uuid", "", "", storage::BlobStatus::ERR_INVALID_CONSTRUCTION_ARGUMENTS);
   TestErrorRequest(net::ERR_FAILED);
 }
-
-// The parameter's value determines whether BlobURLLoaderFactory is used.
-INSTANTIATE_TEST_SUITE_P(
-    BlobURLRequestJobTest,
-    BlobURLRequestJobTest,
-    ::testing::Values(RequestTestType::kNetRequest,
-                      RequestTestType::kRequestFromBlobImpl));
 
 }  // namespace content

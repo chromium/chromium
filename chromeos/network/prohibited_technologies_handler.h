@@ -6,6 +6,7 @@
 #define CHROMEOS_NETWORK_PROHIBITED_TECHNOLOGIES_HANDLER_H_
 
 #include <string>
+#include <vector>
 
 #include "base/component_export.h"
 #include "base/macros.h"
@@ -28,8 +29,15 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ProhibitedTechnologiesHandler
   // NetworkPolicyObserver
   void PoliciesChanged(const std::string& userhash) override;
   void PoliciesApplied(const std::string& userhash) override;
-
+  // Function for updating the list of technologies that are prohibited during
+  // user sessions
   void SetProhibitedTechnologies(const base::ListValue* prohibited_list);
+  // Functions for updating the list of technologies that are prohibited
+  // everywhere, including login screen
+  void AddGloballyProhibitedTechnology(const std::string& prohibited_list);
+  void RemoveGloballyProhibitedTechnology(const std::string& technology);
+  // Returns the currently active list of prohibited
+  // technologies(session-dependent and globally-prohibited ones)
   std::vector<std::string> GetCurrentlyProhibitedTechnologies();
 
  private:
@@ -44,7 +52,12 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ProhibitedTechnologiesHandler
 
   void EnforceProhibitedTechnologies();
 
-  std::vector<std::string> prohibited_technologies_;
+  // These only apply in user or kiosk sessions.
+  std::vector<std::string> session_prohibited_technologies_;
+  // Network technologies that are prohibited not only in user sessions, but at
+  // all time.
+  std::vector<std::string> globally_prohibited_technologies_;
+
   ManagedNetworkConfigurationHandler* managed_network_configuration_handler_ =
       nullptr;
   NetworkStateHandler* network_state_handler_ = nullptr;

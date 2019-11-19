@@ -98,7 +98,7 @@ if [[ ! -z "${new}${deleted}" ]]; then
 fi
 
 echo 'Stripping unnecessary prefixed CSS rules...'
-python css_strip_prefixes.py
+python css_strip_prefixes.py --file_extension=html
 
 echo 'Generating -rgb versions of --google-* vars in paper-style/colors.html...'
 python rgbify_hex_vars.py --filter-prefix=google --replace \
@@ -108,7 +108,7 @@ echo 'Creating a summary of components...'
 python create_components_summary.py > components_summary.txt
 
 echo 'Creating GN files for interfaces and externs...'
-./generate_gn.sh
+./generate_gn.sh 2 # polymer_version=2
 
 popd > /dev/null
 

@@ -14,7 +14,7 @@
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "net/http/http_util.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/resource_response.h"
@@ -23,6 +23,7 @@
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 namespace {
 
@@ -38,7 +39,7 @@ class WebApkIconHasherRunner {
   void Run(network::mojom::URLLoaderFactory* url_loader_factory,
            const GURL& icon_url) {
     WebApkIconHasher::DownloadAndComputeMurmur2HashWithTimeout(
-        url_loader_factory, icon_url, 300,
+        url_loader_factory, url::Origin::Create(icon_url), icon_url, 300,
         base::Bind(&WebApkIconHasherRunner::OnCompleted,
                    base::Unretained(this)));
 
@@ -72,7 +73,7 @@ class WebApkIconHasherRunner {
 class WebApkIconHasherTest : public ::testing::Test {
  public:
   WebApkIconHasherTest()
-      : thread_bundle_(content::TestBrowserThreadBundle::IO_MAINLOOP) {}
+      : task_environment_(content::BrowserTaskEnvironment::IO_MAINLOOP) {}
   ~WebApkIconHasherTest() override {}
 
  protected:
@@ -81,7 +82,7 @@ class WebApkIconHasherTest : public ::testing::Test {
   }
 
  private:
-  content::TestBrowserThreadBundle thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
   network::TestURLLoaderFactory test_url_loader_factory_;
 
   DISALLOW_COPY_AND_ASSIGN(WebApkIconHasherTest);
@@ -143,8 +144,8 @@ TEST_F(WebApkIconHasherTest, HTTPError) {
   std::string icon_url = "http://www.google.com/404";
   network::ResourceResponseHead head;
   std::string headers("HTTP/1.1 404 Not Found\nContent-type: text/html\n\n");
-  head.headers = new net::HttpResponseHeaders(
-      net::HttpUtil::AssembleRawHeaders(headers.c_str(), headers.size()));
+  head.headers = base::MakeRefCounted<net::HttpResponseHeaders>(
+      net::HttpUtil::AssembleRawHeaders(headers));
   head.mime_type = "text/html";
   network::URLLoaderCompletionStatus status;
   status.decoded_body_length = 0;

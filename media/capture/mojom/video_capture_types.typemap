@@ -18,22 +18,25 @@ sources = [
 
 deps = [
   "//media",
-  "//media/base/ipc",
   "//media/capture:capture_base",
-  "//media/mojo/interfaces",
-  "//ui/gfx/geometry/mojo:struct_traits",
+  "//media/mojo/mojom",
+  "//ui/gfx/geometry/mojom:mojom_traits",
+]
+
+public_deps = [
+  "//media/base/ipc",
 ]
 
 type_mappings = [
-  "media.mojom.ResolutionChangePolicy=media::ResolutionChangePolicy",
-  "media.mojom.PowerLineFrequency=media::PowerLineFrequency",
-  "media.mojom.VideoCapturePixelFormat=media::VideoPixelFormat",
-  "media.mojom.VideoCaptureBufferType=media::VideoCaptureBufferType",
-  "media.mojom.VideoCaptureError=media::VideoCaptureError",
-  "media.mojom.VideoCaptureFrameDropReason=media::VideoCaptureFrameDropReason",
-  "media.mojom.VideoCaptureFormat=media::VideoCaptureFormat",
-  "media.mojom.VideoCaptureParams=media::VideoCaptureParams",
-  "media.mojom.VideoCaptureDeviceDescriptorCameraCalibration=media::VideoCaptureDeviceDescriptor::CameraCalibration",
-  "media.mojom.VideoCaptureDeviceDescriptor=media::VideoCaptureDeviceDescriptor",
-  "media.mojom.VideoCaptureDeviceInfo=media::VideoCaptureDeviceInfo",
+  "media.mojom.ResolutionChangePolicy=::media::ResolutionChangePolicy",
+  "media.mojom.PowerLineFrequency=::media::PowerLineFrequency",
+  "media.mojom.VideoCapturePixelFormat=::media::VideoPixelFormat",
+  "media.mojom.VideoCaptureBufferType=::media::VideoCaptureBufferType",
+  "media.mojom.VideoCaptureError=::media::VideoCaptureError",
+  "media.mojom.VideoCaptureFrameDropReason=::media::VideoCaptureFrameDropReason",
+  "media.mojom.VideoCaptureFormat=::media::VideoCaptureFormat",
+  "media.mojom.VideoCaptureParams=::media::VideoCaptureParams",
+  "media.mojom.VideoCaptureDeviceDescriptor=::media::VideoCaptureDeviceDescriptor",
+  "media.mojom.VideoCaptureDeviceInfo=::media::VideoCaptureDeviceInfo",
+  "media.mojom.VideoFacingMode=::media::VideoFacingMode",
 ]

@@ -1,0 +1,21 @@
+// Copyright 2017 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+import "services/device/public/mojom/geolocation.mojom";
+import "third_party/blink/public/mojom/permissions/permission_status.mojom";
+
+// GeolocationService provides a Geolocation. It exists in order to examine the
+// environment (permissions, etc.) before creating a Geolocation.
+// There should only be one GeolocationService instance that creates many
+// Geolocation instances.  There is one GeolocationService per RenderFrameHost.
+interface GeolocationService {
+  // Creates a Geolocation. Returns the status of the geolocation permission
+  // request (GRANTED or DENIED).
+  // This may not be called a second time until the Geolocation instance has
+  // been created.
+  CreateGeolocation(pending_receiver<device.mojom.Geolocation> receiver, bool user_gesture)
+      => (PermissionStatus status);
+};

@@ -1,0 +1,40 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+static_library("core") {
+  sources = [
+    "games_features.cc",
+    "games_features.h",
+    "games_prefs.cc",
+    "games_prefs.h",
+    "games_service.h",
+    "games_service_impl.cc",
+    "games_service_impl.h",
+    "games_types.h",
+  ]
+
+  deps = [
+    "//base",
+    "//components/games/core/proto",
+    "//components/keyed_service/core",
+    "//components/prefs:prefs",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "games_prefs_unittest.cc",
+    "games_service_impl_unittest.cc",
+  ]
+  deps = [
+    ":core",
+    "//base",
+    "//base/test:test_support",
+    "//components/games/core/proto",
+    "//components/prefs:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

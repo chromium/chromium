@@ -2,12 +2,8 @@
 <script src="../resources/testharness.js"></script>
 <script src="../resources/testharnessreport.js"></script>
 <script src="file:///gen/layout_test_data/mojo/public/js/mojo_bindings.js"></script>
-<script src="file:///gen/services/shape_detection/public/mojom/barcodedetection_provider.mojom.js"></script>
-<script src="file:///gen/services/shape_detection/public/mojom/facedetection_provider.mojom.js"></script>
 <script src="file:///gen/services/shape_detection/public/mojom/textdetection.mojom.js"></script>
 <script src="resources/big-buffer-helpers.js"></script>
-<script src="resources/mock-barcodedetection.js"></script>
-<script src="resources/mock-facedetection.js"></script>
 <script src="resources/mock-textdetection.js"></script>
 <script>
 
@@ -45,20 +41,8 @@ function CheckDetectedReadOnlyBoundingBoxes(detectedObjects) {
   });
 }
 
-// These tests verify that detected{Face, Barcode, Text}'s boundingBox should be DOMRectReadOnly.
+// These tests verify that detected Text's boundingBox should be DOMRectReadOnly.
 generate_tests(createTestForImageData, [
-  [
-    "Face - detectedFace.boundingBox should be DOMRectReadOnly",
-    () => { return new FaceDetector(); },
-    mockFaceDetectionProvider,
-    CheckDetectedReadOnlyBoundingBoxes
-  ],
-  [
-    "Barcode - detectedBarcode.boundingBox should be DOMRectReadOnly",
-    () => { return new BarcodeDetector(); },
-    mockBarcodeDetectionProvider,
-    CheckDetectedReadOnlyBoundingBoxes
-  ],
   [
     "Text - detectedText.boundingBox should be DOMRectReadOnly",
     () => { return new TextDetector(); },

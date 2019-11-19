@@ -9,7 +9,9 @@
 
 #include "base/compiler_specific.h"
 
-@class Tab;
+namespace web {
+class WebState;
+}
 
 namespace chrome_test_util {
 
@@ -22,11 +24,21 @@ void OpenNewIncognitoTab();
 // Returns YES if the browser is in incognito mode, and NO otherwise.
 BOOL IsIncognitoMode();
 
-// Gets current tab.
-Tab* GetCurrentTab();
+// Gets current active WebState.
+web::WebState* GetCurrentWebState();
 
-// Gets next tab and returns nil if less than two tabs are open.
-Tab* GetNextTab();
+// Gets next WebState and returns nullptr if less than two tabs are open.
+web::WebState* GetNextWebState();
+
+// Gets the current webState title. Assumes that the current webState exists.
+NSString* GetCurrentTabTitle();
+
+// Gets the next webState title. Assumes that the next webState exists.
+NSString* GetNextTabTitle();
+
+// Gets the WebState with the given index in the current mode (incognito or
+// normal). Returns nullptr if less than |index| + 1 tabs are open.
+web::WebState* GetWebStateAtIndexInCurrentMode(int index);
 
 // Closes current tab.
 void CloseCurrentTab();
@@ -63,8 +75,14 @@ BOOL SetCurrentTabsToBeColdStartTabs();
 // Simulates a backgrounding. Return YES on success.
 BOOL SimulateTabsBackgrounding();
 
+// Persists the current list of tabs to disk immediately.
+void SaveSessionImmediately();
+
 // Evicts the tabs associated with the non-current browser mode.
 void EvictOtherTabModelTabs();
+
+// Closes all normal (non-incognito) tabs. Return YES on success.
+BOOL CloseAllNormalTabs() WARN_UNUSED_RESULT;
 
 // Closes all incognito tabs. Return YES on success.
 BOOL CloseAllIncognitoTabs() WARN_UNUSED_RESULT;

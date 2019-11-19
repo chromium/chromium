@@ -15,7 +15,7 @@ body,
 
 #signin-frame,
 #spinner-container {
-  background-color: #f5f5f5;
+  background-color: var(--cr-card-background-color);
   bottom: 0;
   left: 0;
   position: absolute;
@@ -24,9 +24,9 @@ body,
 }
 
 #spinner-container {
-  -webkit-box-align: center;
-  -webkit-box-pack: center;
-  display: -webkit-box;
+  align-items: center;
+  display: flex;
+  justify-content: center;
 }
 
 #contents:not(.loading) #spinner-container {
@@ -34,12 +34,46 @@ body,
 }
 
 #navigation-button {
-  color: white;
+  background: white;
+  bottom: 32px;
+  left: 32px;
+  padding-inline-start: 10px;
   position: absolute;
-  top: 0;
   visibility: hidden;
+}
+
+:host-context([dir='rtl']) #navigation-button {
+  left: auto;
+  right: 32px;
 }
 
 #navigation-button.enabled {
   visibility: visible;
 }
+
+/* On Chrome OS, we need to shift the webview a bit to accommodate the Back
+ * button at the bottom.
+ */
+<if expr="chromeos">
+#contents,
+#signin-frame {
+  height: calc(100% - 96px);
+}
+
+@media (max-width: 767px) {
+  #contents,
+  #signin-frame {
+    height: calc(100% - 80px);
+  }
+
+  #navigation-button {
+    bottom: 24px;
+    left: 24px;
+  }
+
+  :host-context([dir='rtl']) #navigation-button {
+    left: auto;
+    right: 24px;
+  }
+}
+</if>

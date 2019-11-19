@@ -64,10 +64,16 @@ function resizeTestFrameBy(deltaWidthInPixels)
 
 function log(message)
 {
-    document.getElementById("results").contentDocument.getElementById("console").appendChild(document.createTextNode(message + "\n"));
+    document.getElementById("results").contentWindow.postMessage({
+        type: "log",
+        message: message
+    }, "*");
 }
 
 function description(message)
 {
-    document.getElementById("results").contentDocument.getElementById("description").innerText = message;
+    document.getElementById("results").contentWindow.postMessage({
+        type: "description",
+        message: message
+    }, "*");
 }

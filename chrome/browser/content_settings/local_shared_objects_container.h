@@ -36,6 +36,9 @@ class LocalSharedObjectsContainer {
   // Returns the number of objects for the given |origin|.
   size_t GetObjectCountForDomain(const GURL& origin) const;
 
+  // Get number of unique registrable domains in the container.
+  size_t GetDomainCount() const;
+
   // Empties the container.
   void Reset();
 

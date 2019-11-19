@@ -19,6 +19,10 @@
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 
+#if defined(OS_CHROMEOS)
+#include "base/memory/weak_ptr.h"
+#endif
+
 class GURL;
 
 namespace captive_portal {
@@ -76,6 +80,10 @@ class CAPTIVE_PORTAL_EXPORT CaptivePortalDetector {
                                           net::HttpResponseHeaders* headers,
                                           Results* results) const;
 
+  // Starts portal detection probe after GetProbeUrl finishes running.
+  void StartProbe(const net::NetworkTrafficAnnotationTag& traffic_annotation,
+                  const GURL& url);
+
   // Returns the current time. Used only when determining time until a
   // Retry-After date.
   base::Time GetCurrentTime() const;
@@ -101,7 +109,14 @@ class CAPTIVE_PORTAL_EXPORT CaptivePortalDetector {
   // Test time used by unit tests.
   base::Time time_for_testing_;
 
+  // Probe URL accessed by tests.
+  GURL probe_url_;
+
   SEQUENCE_CHECKER(sequence_checker_);
+
+#if defined(OS_CHROMEOS)
+  base::WeakPtrFactory<CaptivePortalDetector> weak_factory_;
+#endif
 
   DISALLOW_COPY_AND_ASSIGN(CaptivePortalDetector);
 };

@@ -35,11 +35,6 @@ class SyncedTabDelegate {
   virtual SessionID GetSessionId() const = 0;
   virtual bool IsBeingDestroyed() const = 0;
 
-  // Get the tab id of the tab responsible for opening this tab, if applicable.
-  // Returns an invalid ID if no such tab relationship is known.
-  // TODO(mastiz): Rename to GetSourceTabSessionId().
-  virtual SessionID GetSourceTabID() const = 0;
-
   // Method derived from extensions TabHelper.
   virtual std::string GetExtensionAppId() const = 0;
 
@@ -50,6 +45,7 @@ class SyncedTabDelegate {
   virtual GURL GetVirtualURLAtIndex(int i) const = 0;
   virtual GURL GetFaviconURLAtIndex(int i) const = 0;
   virtual ui::PageTransition GetTransitionAtIndex(int i) const = 0;
+  virtual std::string GetPageLanguageAtIndex(int i) const = 0;
   virtual void GetSerializedNavigationAtIndex(
       int i,
       sessions::SerializedNavigationEntry* serialized_entry) const = 0;
@@ -68,6 +64,13 @@ class SyncedTabDelegate {
   // restored as a placeholder. In that case, the previous synced data from that
   // tab should be preserved.
   virtual bool IsPlaceholderTab() const = 0;
+
+  // Task IDs represent navigations and relationships between navigations. -1
+  // indicates the Task ID is unknown. A Navigation ID is a Unique ID and
+  // is stored on a NavigationEntry and SerialiedNavigationEntry.
+  virtual int64_t GetTaskIdForNavigationId(int nav_id) const = 0;
+  virtual int64_t GetParentTaskIdForNavigationId(int nav_id) const = 0;
+  virtual int64_t GetRootTaskIdForNavigationId(int nav_id) const = 0;
 
  protected:
   SyncedTabDelegate();

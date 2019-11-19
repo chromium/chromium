@@ -1,6 +1,8 @@
 include_rules = [
-  "+third_party/brotli",  # For compressed protocol.json.
   "+content/shell/browser/shell.h", # for access to web contents from devtools_protocol_test_support.cc
   # V8 version info
   "+v8/include/v8-version-string.h",
+
+  # For converting between JSON and CBOR in devtools_session_encoding.cc.
+  "+third_party/inspector_protocol/crdtp",
 ]

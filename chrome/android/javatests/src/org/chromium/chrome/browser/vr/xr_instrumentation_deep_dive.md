@@ -27,8 +27,6 @@ self-explanatory) naming convention:
   are applicable to the `WebXR Devices API` in its AR usecase.
 * `WebXR for VR`/`WebXrVr` - A subset of `WebXR` and `VR`. Used for things that
   are applicable to the `WebXR Devices API` in its VR usecase.
-* `WebVR`/`WebVr` - A subset of `WebXrVr`. Used for things that are only
-  applicable to the older `WebVR` API.
 
 ## Test Framework Structure
 
@@ -42,7 +40,6 @@ structured in the following hierarchy:
   * `WebXrTestFramework`
     * `WebXrArTestFramework`
     * `WebXrVrTestFramework`
-      * `WebVrTestFramework`
 
 ### Static vs. Non-Static Methods
 

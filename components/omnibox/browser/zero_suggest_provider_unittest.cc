@@ -11,15 +11,18 @@
 
 #include "base/metrics/field_trial.h"
 #include "base/run_loop.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
+#include "build/build_config.h"
 #include "components/history/core/browser/top_sites.h"
 #include "components/omnibox/browser/autocomplete_provider_listener.h"
 #include "components/omnibox/browser/mock_autocomplete_provider_client.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/omnibox_pref_names.h"
 #include "components/omnibox/browser/test_scheme_classifier.h"
+#include "components/omnibox/common/omnibox_features.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/search_engines/template_url.h"
@@ -49,9 +52,6 @@ class FakeEmptyTopSites : public history::TopSites {
     return false;
   }
   void ClearBlacklistedURLs() override {}
-  bool IsKnownURL(const GURL& url) override {
-    return false;
-  }
   bool IsFull() override { return false; }
   bool loaded() const override {
     return false;
@@ -140,7 +140,7 @@ class FakeAutocompleteProviderClient : public MockAutocompleteProviderClient {
 class ZeroSuggestProviderTest : public testing::Test,
                                 public AutocompleteProviderListener {
  public:
-  ZeroSuggestProviderTest();
+  ZeroSuggestProviderTest() = default;
 
   void SetUp() override;
 
@@ -148,32 +148,33 @@ class ZeroSuggestProviderTest : public testing::Test,
   // AutocompleteProviderListener:
   void OnProviderUpdate(bool updated_matches) override;
 
-  void ResetFieldTrialList();
-
-  void CreatePersonalizedFieldTrial();
+  void CreateRemoteNoUrlFieldTrial();
   void CreateMostVisitedFieldTrial();
-  void CreateContextualSuggestFieldTrial();
+  void SetZeroSuggestVariantForAllContexts(const std::string& variant);
 
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
-
-  // Needed for OmniboxFieldTrial::ActivateStaticTrials().
-  std::unique_ptr<base::FieldTrialList> field_trial_list_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
+  std::unique_ptr<base::test::ScopedFeatureList> scoped_feature_list_;
 
   std::unique_ptr<FakeAutocompleteProviderClient> client_;
   scoped_refptr<ZeroSuggestProvider> provider_;
-  TemplateURL* default_t_url_;
 
   network::TestURLLoaderFactory* test_loader_factory() {
     return client_->test_url_loader_factory();
   }
 
+  GURL GetSuggestURL(
+      metrics::OmniboxEventProto::PageClassification page_classification) {
+    TemplateURLRef::SearchTermsArgs search_terms_args;
+    search_terms_args.page_classification = page_classification;
+    search_terms_args.omnibox_focus_type =
+        TemplateURLRef::SearchTermsArgs::OmniboxFocusType::ON_FOCUS;
+    return RemoteSuggestionsService::EndpointUrl(
+        search_terms_args, client_->GetTemplateURLService());
+  }
+
  private:
   DISALLOW_COPY_AND_ASSIGN(ZeroSuggestProviderTest);
 };
-
-ZeroSuggestProviderTest::ZeroSuggestProviderTest() {
-  ResetFieldTrialList();
-}
 
 void ZeroSuggestProviderTest::SetUp() {
   client_.reset(new FakeAutocompleteProviderClient());
@@ -181,60 +182,132 @@ void ZeroSuggestProviderTest::SetUp() {
   TemplateURLService* turl_model = client_->GetTemplateURLService();
   turl_model->Load();
 
-  TemplateURLData data;
-  data.SetShortName(base::ASCIIToUTF16("t"));
-  data.SetURL("https://www.google.com/?q={searchTerms}");
-  data.suggestions_url = "https://www.google.com/complete/?q={searchTerms}";
-  default_t_url_ = turl_model->Add(std::make_unique<TemplateURL>(data));
-  turl_model->SetUserSelectedDefaultSearchProvider(default_t_url_);
+  // Verify that Google is the default search provider.
+  ASSERT_EQ(SEARCH_ENGINE_GOOGLE,
+            turl_model->GetDefaultSearchProvider()->GetEngineType(
+                turl_model->search_terms_data()));
 
-  provider_ = ZeroSuggestProvider::Create(client_.get(), nullptr, this);
+  provider_ = ZeroSuggestProvider::Create(client_.get(), this);
 }
 
 void ZeroSuggestProviderTest::OnProviderUpdate(bool updated_matches) {
 }
 
-void ZeroSuggestProviderTest::ResetFieldTrialList() {
-  // Destroy the existing FieldTrialList before creating a new one to avoid
-  // a DCHECK.
-  field_trial_list_.reset();
-  field_trial_list_.reset(new base::FieldTrialList(
-      std::make_unique<variations::SHA1EntropyProvider>("foo")));
-  variations::testing::ClearAllVariationParams();
-}
-
-void ZeroSuggestProviderTest::CreatePersonalizedFieldTrial() {
-  std::map<std::string, std::string> params;
-  params[std::string(OmniboxFieldTrial::kZeroSuggestVariantRule)] =
-      "Personalized";
-  variations::AssociateVariationParams(
-      OmniboxFieldTrial::kBundledExperimentFieldTrialName, "A", params);
-  base::FieldTrialList::CreateFieldTrial(
-      OmniboxFieldTrial::kBundledExperimentFieldTrialName, "A");
+void ZeroSuggestProviderTest::CreateRemoteNoUrlFieldTrial() {
+  SetZeroSuggestVariantForAllContexts(ZeroSuggestProvider::kRemoteNoUrlVariant);
 }
 
 void ZeroSuggestProviderTest::CreateMostVisitedFieldTrial() {
-  std::map<std::string, std::string> params;
-  params[std::string(OmniboxFieldTrial::kZeroSuggestVariantRule)] =
-      "MostVisitedWithoutSERP";
-  variations::AssociateVariationParams(
-      OmniboxFieldTrial::kBundledExperimentFieldTrialName, "A", params);
-  base::FieldTrialList::CreateFieldTrial(
-      OmniboxFieldTrial::kBundledExperimentFieldTrialName, "A");
+  SetZeroSuggestVariantForAllContexts(ZeroSuggestProvider::kMostVisitedVariant);
 }
 
-void ZeroSuggestProviderTest::CreateContextualSuggestFieldTrial() {
-  std::map<std::string, std::string> params;
-  params[std::string(OmniboxFieldTrial::kZeroSuggestVariantRule)] =
-      "ContextualSuggestions";
-  variations::AssociateVariationParams(
-      OmniboxFieldTrial::kBundledExperimentFieldTrialName, "A", params);
-  base::FieldTrialList::CreateFieldTrial(
-      OmniboxFieldTrial::kBundledExperimentFieldTrialName, "A");
+void ZeroSuggestProviderTest::SetZeroSuggestVariantForAllContexts(
+    const std::string& variant) {
+  scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
+  scoped_feature_list_->InitAndEnableFeatureWithParameters(
+      omnibox::kOnFocusSuggestions,
+      {{std::string(OmniboxFieldTrial::kZeroSuggestVariantRule) + ":*:*",
+        variant}});
+}
+
+TEST_F(ZeroSuggestProviderTest, TypeOfResultToRun) {
+  provider_->SetPageClassificationForTesting(metrics::OmniboxEventProto::OTHER);
+  GURL current_url = GURL("https://example.com/");
+  GURL suggest_url = GetSuggestURL(metrics::OmniboxEventProto::OTHER);
+
+  EXPECT_CALL(*client_, IsAuthenticated())
+      .WillRepeatedly(testing::Return(true));
+  EXPECT_CALL(*client_, IsPersonalizedUrlDataCollectionActive())
+      .WillRepeatedly(testing::Return(true));
+
+  // Verify the unconfigured state returns platorm-specific defaults.
+#if defined(OS_IOS) || defined(OS_ANDROID)
+  EXPECT_EQ(ZeroSuggestProvider::ResultType::MOST_VISITED,
+            provider_->TypeOfResultToRun(current_url, suggest_url));
+#else
+  EXPECT_EQ(ZeroSuggestProvider::ResultType::NONE,
+            provider_->TypeOfResultToRun(current_url, suggest_url));
+#endif
+
+  // Verify remote suggestions are only allowed when the user is signed in.
+  // Otherwise, falls back to platorm-specific defaults.
+  EXPECT_CALL(*client_, IsAuthenticated())
+      .WillRepeatedly(testing::Return(false));
+
+  CreateRemoteNoUrlFieldTrial();
+#if defined(OS_IOS) || defined(OS_ANDROID)
+  EXPECT_EQ(ZeroSuggestProvider::ResultType::MOST_VISITED,
+            provider_->TypeOfResultToRun(current_url, suggest_url));
+#else
+  EXPECT_EQ(ZeroSuggestProvider::ResultType::NONE,
+            provider_->TypeOfResultToRun(current_url, suggest_url));
+#endif
+
+  // Restore authentication state.
+  EXPECT_CALL(*client_, IsAuthenticated())
+      .WillRepeatedly(testing::Return(true));
+
+  // Verify remote suggestions are only allowed when user has set up Google as
+  // default search engine. Otherwise, falls back to platorm-specific defaults.
+  TemplateURLService* turl_model = client_->GetTemplateURLService();
+  auto* google_search_provider = turl_model->GetDefaultSearchProvider();
+
+  TemplateURLData data;
+  data.SetURL("https://www.example.com/?q={searchTerms}");
+  data.suggestions_url = "https://www.example.com/suggest/?q={searchTerms}";
+  auto* other_search_provider =
+      turl_model->Add(std::make_unique<TemplateURL>(data));
+  turl_model->SetUserSelectedDefaultSearchProvider(other_search_provider);
+
+  CreateRemoteNoUrlFieldTrial();
+#if defined(OS_IOS) || defined(OS_ANDROID)
+  EXPECT_EQ(ZeroSuggestProvider::ResultType::MOST_VISITED,
+            provider_->TypeOfResultToRun(current_url, suggest_url));
+#else
+  EXPECT_EQ(ZeroSuggestProvider::ResultType::NONE,
+            provider_->TypeOfResultToRun(current_url, suggest_url));
+#endif
+
+  // Restore Google as the default search provider.
+  turl_model->SetUserSelectedDefaultSearchProvider(
+      const_cast<TemplateURL*>(google_search_provider));
+
+  // Verify a few globally configured states work.
+  SetZeroSuggestVariantForAllContexts(
+      ZeroSuggestProvider::kRemoteSendUrlVariant);
+  EXPECT_EQ(ZeroSuggestProvider::ResultType::REMOTE_SEND_URL,
+            provider_->TypeOfResultToRun(current_url, suggest_url));
+  CreateRemoteNoUrlFieldTrial();
+  EXPECT_EQ(ZeroSuggestProvider::ResultType::REMOTE_NO_URL,
+            provider_->TypeOfResultToRun(current_url, suggest_url));
+  CreateMostVisitedFieldTrial();
+  EXPECT_EQ(ZeroSuggestProvider::ResultType::MOST_VISITED,
+            provider_->TypeOfResultToRun(current_url, suggest_url));
+
+  // Verify that a wildcard rule works in conjunction with a
+  // page-classification-specific rule.
+  scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
+  scoped_feature_list_->InitAndEnableFeatureWithParameters(
+      omnibox::kOnFocusSuggestions,
+      {
+          {std::string(OmniboxFieldTrial::kZeroSuggestVariantRule) + ":*:*",
+           ZeroSuggestProvider::kMostVisitedVariant},
+          {base::StringPrintf("%s:%d:*",
+                              OmniboxFieldTrial::kZeroSuggestVariantRule,
+                              metrics::OmniboxEventProto::NTP),
+           ZeroSuggestProvider::kNoneVariant},
+      });
+  provider_->SetPageClassificationForTesting(metrics::OmniboxEventProto::OTHER);
+  EXPECT_EQ(ZeroSuggestProvider::ResultType::MOST_VISITED,
+            provider_->TypeOfResultToRun(current_url, suggest_url));
+  provider_->SetPageClassificationForTesting(metrics::OmniboxEventProto::NTP);
+  EXPECT_EQ(
+      ZeroSuggestProvider::ResultType::NONE,
+      provider_->TypeOfResultToRun(GURL("chrome://newtab/"), suggest_url));
 }
 
 TEST_F(ZeroSuggestProviderTest, TestDoesNotReturnMatchesForPrefix) {
-  CreatePersonalizedFieldTrial();
+  CreateRemoteNoUrlFieldTrial();
 
   std::string url("http://www.cnn.com/");
   AutocompleteInput input(base::ASCIIToUTF16(url),
@@ -260,7 +333,10 @@ TEST_F(ZeroSuggestProviderTest, TestDoesNotReturnMatchesForPrefix) {
 }
 
 TEST_F(ZeroSuggestProviderTest, TestStartWillStopForSomeInput) {
-  CreatePersonalizedFieldTrial();
+  EXPECT_CALL(*client_, IsAuthenticated())
+      .WillRepeatedly(testing::Return(true));
+
+  CreateRemoteNoUrlFieldTrial();
 
   std::string input_url("http://www.cnn.com/");
   AutocompleteInput input(base::ASCIIToUTF16(input_url),
@@ -369,7 +445,7 @@ TEST_F(ZeroSuggestProviderTest, TestMostVisitedNavigateToSearchPage) {
 }
 
 TEST_F(ZeroSuggestProviderTest, TestPsuggestZeroSuggestCachingFirstRun) {
-  CreatePersonalizedFieldTrial();
+  CreateRemoteNoUrlFieldTrial();
   EXPECT_CALL(*client_, IsAuthenticated())
       .WillRepeatedly(testing::Return(true));
 
@@ -389,13 +465,13 @@ TEST_F(ZeroSuggestProviderTest, TestPsuggestZeroSuggestCachingFirstRun) {
   EXPECT_TRUE(prefs->GetString(omnibox::kZeroSuggestCachedResults).empty());
   EXPECT_TRUE(provider_->matches().empty());
 
-  const char kUrl[] = "https://www.google.com/complete/?q=";
-  EXPECT_TRUE(test_loader_factory()->IsPending(kUrl));
+  GURL suggest_url = GetSuggestURL(metrics::OmniboxEventProto::OTHER);
+  EXPECT_TRUE(test_loader_factory()->IsPending(suggest_url.spec()));
 
   std::string json_response("[\"\",[\"search1\", \"search2\", \"search3\"],"
       "[],[],{\"google:suggestrelevance\":[602, 601, 600],"
       "\"google:verbatimrelevance\":1300}]");
-  test_loader_factory()->AddResponse(kUrl, json_response);
+  test_loader_factory()->AddResponse(suggest_url.spec(), json_response);
 
   base::RunLoop().RunUntilIdle();
 
@@ -405,7 +481,7 @@ TEST_F(ZeroSuggestProviderTest, TestPsuggestZeroSuggestCachingFirstRun) {
 }
 
 TEST_F(ZeroSuggestProviderTest, TestPsuggestZeroSuggestHasCachedResults) {
-  CreatePersonalizedFieldTrial();
+  CreateRemoteNoUrlFieldTrial();
   EXPECT_CALL(*client_, IsAuthenticated())
       .WillRepeatedly(testing::Return(true));
 
@@ -431,12 +507,12 @@ TEST_F(ZeroSuggestProviderTest, TestPsuggestZeroSuggestHasCachedResults) {
   EXPECT_EQ(base::ASCIIToUTF16("search2"), provider_->matches()[2].contents);
   EXPECT_EQ(base::ASCIIToUTF16("search3"), provider_->matches()[3].contents);
 
-  const char kUrl[] = "https://www.google.com/complete/?q=";
-  EXPECT_TRUE(test_loader_factory()->IsPending(kUrl));
+  GURL suggest_url = GetSuggestURL(metrics::OmniboxEventProto::OTHER);
+  EXPECT_TRUE(test_loader_factory()->IsPending(suggest_url.spec()));
   std::string json_response2("[\"\",[\"search4\", \"search5\", \"search6\"],"
       "[],[],{\"google:suggestrelevance\":[602, 601, 600],"
       "\"google:verbatimrelevance\":1300}]");
-  test_loader_factory()->AddResponse(kUrl, json_response2);
+  test_loader_factory()->AddResponse(suggest_url.spec(), json_response2);
 
   base::RunLoop().RunUntilIdle();
 
@@ -452,7 +528,7 @@ TEST_F(ZeroSuggestProviderTest, TestPsuggestZeroSuggestHasCachedResults) {
 }
 
 TEST_F(ZeroSuggestProviderTest, TestPsuggestZeroSuggestReceivedEmptyResults) {
-  CreatePersonalizedFieldTrial();
+  CreateRemoteNoUrlFieldTrial();
   EXPECT_CALL(*client_, IsAuthenticated())
       .WillRepeatedly(testing::Return(true));
 
@@ -478,10 +554,10 @@ TEST_F(ZeroSuggestProviderTest, TestPsuggestZeroSuggestReceivedEmptyResults) {
   EXPECT_EQ(base::ASCIIToUTF16("search2"), provider_->matches()[2].contents);
   EXPECT_EQ(base::ASCIIToUTF16("search3"), provider_->matches()[3].contents);
 
-  const char kUrl[] = "https://www.google.com/complete/?q=";
-  EXPECT_TRUE(test_loader_factory()->IsPending(kUrl));
+  GURL suggest_url = GetSuggestURL(metrics::OmniboxEventProto::OTHER);
+  EXPECT_TRUE(test_loader_factory()->IsPending(suggest_url.spec()));
   std::string empty_response("[\"\",[],[],[],{}]");
-  test_loader_factory()->AddResponse(kUrl, empty_response);
+  test_loader_factory()->AddResponse(suggest_url.spec(), empty_response);
 
   base::RunLoop().RunUntilIdle();
 
@@ -491,32 +567,4 @@ TEST_F(ZeroSuggestProviderTest, TestPsuggestZeroSuggestReceivedEmptyResults) {
   // Expect the new results have been stored.
   EXPECT_EQ(empty_response,
             prefs->GetString(omnibox::kZeroSuggestCachedResults));
-}
-
-TEST_F(ZeroSuggestProviderTest, RedirectToChrome) {
-  // Coverage for the URL-specific page. (Regression test for a DCHECK).
-  // This is exercising ContextualSuggestionsService::CreateExperimentalRequest,
-  // and to do that, ZeroSuggestProvider needs to be looking for
-  // DEFAULT_SERP_FOR_URL results (which needs various personalization
-  // experiments off, IsPersonalizedUrlDataCollectionActive true), and the
-  // redirect to chrome mode on.
-  base::test::ScopedFeatureList features;
-  features.InitAndEnableFeature(omnibox::kZeroSuggestRedirectToChrome);
-  CreateContextualSuggestFieldTrial();
-
-  EXPECT_CALL(*client_, IsAuthenticated())
-      .WillRepeatedly(testing::Return(true));
-  EXPECT_CALL(*client_, IsPersonalizedUrlDataCollectionActive())
-      .WillRepeatedly(testing::Return(true));
-
-  std::string url("http://www.cnn.com/");
-  AutocompleteInput input(base::ASCIIToUTF16(url),
-                          metrics::OmniboxEventProto::OTHER,
-                          TestSchemeClassifier());
-  input.set_current_url(GURL(url));
-  input.set_from_omnibox_focus(true);
-  provider_->Start(input, false);
-  EXPECT_TRUE(test_loader_factory()->IsPending(
-      "https://cuscochromeextension-pa.googleapis.com/v1/omniboxsuggestions"));
-  base::RunLoop().RunUntilIdle();
 }

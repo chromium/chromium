@@ -49,7 +49,9 @@ enum class SignedExchangeLoadResult {
   kInvalidIntegrityHeader,
   // SXG has Variants / Variant-Key headers that don't match the request.
   kVariantMismatch,
-  kMaxValue = kVariantMismatch
+  // Certificate's validity period is too long.
+  kCertValidityPeriodTooLong,
+  kMaxValue = kCertValidityPeriodTooLong
 };
 
 struct SignedExchangeError {

@@ -39,10 +39,6 @@ UserScript::InjectionType ProgrammaticScriptInjector::script_type()
   return UserScript::PROGRAMMATIC_SCRIPT;
 }
 
-bool ProgrammaticScriptInjector::ShouldExecuteInMainWorld() const {
-  return params_->in_main_world;
-}
-
 bool ProgrammaticScriptInjector::IsUserGesture() const {
   return params_->user_gesture;
 }
@@ -76,10 +72,10 @@ PermissionsData::PageAccess ProgrammaticScriptInjector::CanExecuteOnFrame(
     const InjectionHost* injection_host,
     blink::WebLocalFrame* frame,
     int tab_id) {
-  // Note: we calculate url_ now and not in the constructor because with
-  // PlzNavigate we won't have the URL at that point when loads start. The
-  // browser issues the request and only when it has a response does the
-  // renderer see the provisional data source which the method below uses.
+  // Note: we calculate url_ now and not in the constructor because we don't
+  // have the URL at that point when loads start. The browser issues the request
+  // and only when it has a response does the renderer see the provisional data
+  // source which the method below uses.
   url_ = ScriptContext::GetDocumentLoaderURLForFrame(frame);
   if (url_.SchemeIs(url::kAboutScheme)) {
     origin_for_about_error_ = frame->GetSecurityOrigin().ToString().Utf8();

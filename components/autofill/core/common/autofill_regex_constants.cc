@@ -79,25 +79,28 @@ const char kAddressLinesExtraRe[] =
 const char kAddressLookupRe[] = "lookup";
 const char kCountryRe[] =
     "country|countries"
-    "|país|pais"       // es
-    "|(?<!(入|出))国"  // ja-JP
-    "|国家"            // zh-CN
-    "|국가|나라"       // ko-KR
-    "|کشور";           // fa
+    "|país|pais"           // es
+    "|land(?!.*(mark.*))"  // de-DE landmark is another field type in India.
+    "|(?<!(入|出))国"      // ja-JP
+    "|国家"                // zh-CN
+    "|국가|나라"           // ko-KR
+    "|کشور";               // fa
 const char kCountryLocationRe[] = "location";
 const char kZipCodeRe[] =
     "zip|postal|post.*code|pcode"
-    "|pin.?code"                // en-IN
-    "|postleitzahl"             // de-DE
-    "|\\bcp\\b"                 // es
-    "|\\bcdp\\b"                // fr-FR
-    "|\\bcap\\b"                // it-IT
-    "|郵便番号"                 // ja-JP
-    "|codigo|codpos|\\bcep\\b"  // pt-BR, pt-PT
-    "|Почтовый.?Индекс"         // ru
-    "|邮政编码|邮编"            // zh-CN
-    "|郵遞區號"                 // zh-TW
-    "|우편.?번호";              // ko-KR
+    "|pin.?code"                    // en-IN
+    "|postleitzahl"                 // de-DE
+    "|\\bcp\\b"                     // es
+    "|\\bcdp\\b"                    // fr-FR
+    "|\\bcap\\b"                    // it-IT
+    "|郵便番号"                     // ja-JP
+    "|codigo|codpos|\\bcep\\b"      // pt-BR, pt-PT
+    "|Почтовый.?Индекс"             // ru
+    "|पिन.?कोड"                     // hi
+    "|പിന്‍കോഡ്"  // ml
+    "|邮政编码|邮编"                // zh-CN
+    "|郵遞區號"                     // zh-TW
+    "|우편.?번호";                  // ko-KR
 const char kZip4Re[] =
     "zip|^-$|post2"
     "|codpos2";  // pt-BR, pt-PT
@@ -114,17 +117,21 @@ const char kCityRe[] =
     "|市"                                    // zh-CN
     "|分區"                                  // zh-TW
     "|شهر"                                   // fa
+    "|शहर"                                   // hi for city
+    "|ग्राम|गाँव"                              // hi for village
+    "|നഗരം|ഗ്രാമം"                            // ml for town|village
     "|^시[^도·・]|시[·・]?군[·・]?구";       // ko-KR
 const char kStateRe[] =
     "(?<!(united|hist|history).?)state|county|region|province"
-    "|land"                 // de-DE
     "|county|principality"  // en-UK
     "|都道府県"             // ja-JP
     "|estado|provincia"     // pt-BR, pt-PT
     "|область"              // ru
     "|省"                   // zh-CN
     "|地區"                 // zh-TW
+    "|സംസ്ഥാനം"              // ml
     "|استان"                // fa
+    "|राज्य"                 // hi
     "|^시[·・]?도";         // ko-KR
 
 /////////////////////////////////////////////////////////////////////////////
@@ -148,8 +155,8 @@ const char kSearchTermRe[] =
 /////////////////////////////////////////////////////////////////////////////
 const char kPriceRe[] =
     "\\bprice\\b|\\brate\\b|\\bcost\\b"
-    "قیمة‎|سعر‎"                           // ar
-    "قیمت"                                            // fa
+    "|قیمة‎|سعر‎"                          // ar
+    "|قیمت"                                           // fa
     "|\\bprix\\b|\\bcoût\\b|\\bcout\\b|\\btarif\\b";  // fr-CA
 
 /////////////////////////////////////////////////////////////////////////////
@@ -169,13 +176,14 @@ const char kNameOnCardRe[] =
 const char kNameOnCardContextualRe[] = "name";
 const char kCardNumberRe[] =
     "(add)?(?:card|cc|acct).?(?:number|#|no|num|field)"
-    "|(?<!telefon|haus)nummer"                             // de-DE
-    "|カード番号"                                          // ja-JP
-    "|Номер.*карты"                                        // ru
-    "|信用卡号|信用卡号码"                                 // zh-CN
-    "|信用卡卡號"                                          // zh-TW
-    "|카드"                                                // ko-KR
-    "|(numero|número|numéro)(?!.*(document|fono|phone))";  // es/pt/fr
+    "|(?<!telefon|haus)nummer"  // de-DE
+    "|カード番号"               // ja-JP
+    "|Номер.*карты"             // ru
+    "|信用卡号|信用卡号码"      // zh-CN
+    "|信用卡卡號"               // zh-TW
+    "|카드"                     // ko-KR
+    // es/pt/fr
+    "|(numero|número|numéro)(?!.*(document|fono|phone|réservation))";
 
 const char kCardCvcRe[] =
     "verification|card.?identification|security.?code|card.?code"
@@ -251,13 +259,16 @@ const char kDebitCardRe[] = "debit.*card";
 /////////////////////////////////////////////////////////////////////////////
 const char kEmailRe[] =
     "e.?mail"
-    "|courriel"                                    // fr
-    "|correo.*electr(o|ó)nico"                     // es-ES
-    "|メールアドレス"                              // ja-JP
-    "|Электронной.?Почты"                          // ru
-    "|邮件|邮箱"                                   // zh-CN
-    "|電郵地址"                                    // zh-TW
+    "|courriel"                 // fr
+    "|correo.*electr(o|ó)nico"  // es-ES
+    "|メールアドレス"           // ja-JP
+    "|Электронной.?Почты"       // ru
+    "|邮件|邮箱"                // zh-CN
+    "|電郵地址"                 // zh-TW
+    "|ഇ-മെയില്‍|ഇലക്ട്രോണിക്.?"
+    "മെയിൽ"                                        // ml
     "|ایمیل|پست.*الکترونیک"                        // fa
+    "|ईमेल|इलॅक्ट्रॉनिक.?मेल"                           // hi
     "|(?:이메일|전자.?우편|[Ee]-?mail)(.?주소)?";  // ko-KR
 
 /////////////////////////////////////////////////////////////////////////////
@@ -291,7 +302,9 @@ const char kFirstNameRe[] =
     "|nome"                    // pt-BR, pt-PT
     "|Имя"                     // ru
     "|نام"                     // fa
-    "|이름";                   // ko-KR
+    "|이름"                    // ko-KR
+    "|പേര്"                     // ml
+    "|नाम";                    // hi
 const char kMiddleInitialRe[] = "middle.*initial|m\\.i\\.|mi$|\\bmi\\b";
 const char kMiddleNameRe[] =
     "middle.*name|mname|middle$"
@@ -310,6 +323,8 @@ const char kLastNameRe[] =
     "|morada|apelidos|surename|sobrenome"  // pt-BR, pt-PT
     "|Фамилия"                             // ru
     "|نام.*خانوادگی"                       // fa
+    "|उपनाम"                               // hi
+    "|മറുപേര്"                               // ml
     "|\\b성(?:[^명]|\\b)";                 // ko-KR
 
 /////////////////////////////////////////////////////////////////////////////
@@ -323,7 +338,9 @@ const char kPhoneRe[] =
     "|電話"                                         // ja-JP
     "|telefone|telemovel"                           // pt-BR, pt-PT
     "|телефон"                                      // ru
+    "|मोबाइल"                                       // hi for mobile
     "|电话"                                         // zh-CN
+    "|മൊബൈല്‍"                        // ml for mobile
     "|(?:전화|핸드폰|휴대폰|휴대전화)(?:.?번호)?";  // ko-KR
 const char kCountryCodeRe[] =
     "country.*code|ccode|_cc|phone.*code|user.*phone.*code";
@@ -368,64 +385,128 @@ const char kFlightRe[] =
 // validation.cc
 /////////////////////////////////////////////////////////////////////////////
 const char kUPIVirtualPaymentAddressRe[] =
-    "^\\w+@("
-    "airtel|"       // My Airtel-Recharge, Bill, Bank
-    "allbank|"      // Allahabad Bank UPI
-    "andb|"         // Andhra Bank ONE
-    "axisbank|"     // Axis Pay
-    "axisgo|"       // Ola
-    "barodampay|"   // Baroda MPay
-    "boi|"          // BHIM BOI UPI
-    "centralbank|"  // Cent UPI
-    "cnrb|"         // Canara Bank UPI - Empower
-    "csbpay|"       // CSB UPI
-    "dbs|"          // digibank by DBS
-    "dcb|"          // DCB Bank
-    "denabank|"     // Dena Bank E-UPI
-    "fbl|"          // Cointab
-    "federal|"      // Lotza
-    "hdfcbank|"     // HDFC Bank MobileBanking
-    "hsbc|"         // HSBC Simply Pay
-    "icici|"        // Pockets- ICICI Bank
-    "idbi|"         // PayWiz
-    "idfcbank|"     // IDFC Bank UPI App
-    "indianbank|"   // Indian Bank UPI
-    "indus|"        // Indus Pay
-    "iob|"          // IOB UPI
-    "jkb|"          // BHIM JK Bank UPI
-    "jsb|"          // JetPay UPI
-    "kaypay|"       // KayPay
-    "kbl|"          // KBL Smartz
-    "kotak|"        // kotak Mahindra Bank
-    "kvb|"          // KVB Upay
-    "lvb|"          // LVB UPay
-    "mahb|"         // MAHAUPI
-    "obc|"          // Oriental BHIM UPI
-    "okicici|"      // Tez
-    "okhdfcbank|"   // Tez
-    "okaxis|"       // Tez
-    "paytm|"        // Paytm
-    "pingpay|"      // Samsung Pay
-    "pnb|"          // PNB UPI
-    "pockets|"      // Pockets- ICICI Bank
-    "psb|"          // PSB UPI App
-    "rbl|"          // RBL Pay
-    "sbi|"          // SBI Pay
-    "scb|"          // Standard Chartered
-    "sib|"          // SIB M-Pay (UPI Pay)
-    "syndicate|"    // Synd UPI
-    "tjsb|"         // TranZapp
-    "ubi|"          // United UPI
-    "uboi|"         // Union Bank UPI
-    "uco|"          // UCO UPI
-    "unionbank|"    // Union Bank UPI
-    "united|"       // United UPI
-    "upi|"          // BHIM Bharat Interface for Money
-    "utbi|"         // United UPI
-    "vijb|"         // Vijaya UPI App
-    "ybl|"          // Yes Pay
-    "yesbank"       // NuPay
+    "^[\\w.+-_]+@("        // eg user@
+    "\\w+\\.ifsc\\.npci|"  // IFSC code
+    "aadhaar\\.npci|"      // Aadhaar number
+    "mobile\\.npci|"       // Mobile number
+    "rupay\\.npci|"        // RuPay card number
+    "airtel|"  // List of banks https://www.npci.org.in/upi-live-members
+    "airtelpaymentsbank|"
+    "albk|"
+    "allahabadbank|"
+    "allbank|"
+    "andb|"
+    "apb|"
+    "apl|"
+    "axis|"
+    "axisbank|"
+    "axisgo|"
+    "bandhan|"
+    "barodampay|"
+    "birla|"
+    "boi|"
+    "cbin|"
+    "cboi|"
+    "centralbank|"
+    "cmsidfc|"
+    "cnrb|"
+    "csbcash|"
+    "csbpay|"
+    "cub|"
+    "dbs|"
+    "dcb|"
+    "dcbbank|"
+    "denabank|"
+    "dlb|"
+    "eazypay|"
+    "equitas|"
+    "ezeepay|"
+    "fbl|"
+    "federal|"
+    "finobank|"
+    "hdfcbank|"
+    "hsbc|"
+    "icici|"
+    "idbi|"
+    "idbibank|"
+    "idfc|"
+    "idfcbank|"
+    "idfcnetc|"
+    "ikwik|"
+    "imobile|"
+    "indbank|"
+    "indianbank|"
+    "indianbk|"
+    "indus|"
+    "iob|"
+    "jkb|"
+    "jsb|"
+    "jsbp|"
+    "karb|"
+    "karurvysyabank|"
+    "kaypay|"
+    "kbl|"
+    "kbl052|"
+    "kmb|"
+    "kmbl|"
+    "kotak|"
+    "kvb|"
+    "kvbank|"
+    "lime|"
+    "lvb|"
+    "lvbank|"
+    "mahb|"
+    "obc|"
+    "okaxis|"
+    "okbizaxis|"
+    "okhdfcbank|"
+    "okicici|"
+    "oksbi|"
+    "paytm|"
+    "payzapp|"
+    "pingpay|"
+    "pnb|"
+    "pockets|"
+    "psb|"
+    "purz|"
+    "rajgovhdfcbank|"
+    "rbl|"
+    "sbi|"
+    "sc|"
+    "scb|"
+    "scbl|"
+    "scmobile|"
+    "sib|"
+    "srcb|"
+    "synd|"
+    "syndbank|"
+    "syndicate|"
+    "tjsb|"
+    "tjsp|"
+    "ubi|"
+    "uboi|"
+    "uco|"
+    "unionbank|"
+    "unionbankofindia|"
+    "united|"
+    "upi|"
+    "utbi|"
+    "vijayabank|"
+    "vijb|"
+    "vjb|"
+    "ybl|"
+    "yesbank|"
+    "yesbankltd"
     ")$";
+
+const char kInternationalBankAccountNumberRe[] =
+    "^[a-zA-Z]{2}[0-9]{2}[a-zA-Z0-9]{4}[0-9]{7}([a-zA-Z0-9]?){0,16}$";
+
+// Matches all 3 and 4 digit numbers.
+const char kCreditCardCVCPattern[] = "^\\d{3,4}$";
+
+// Matches numbers in the range [2010-2099].
+const char kCreditCard4DigitExpYearPattern[] = "^[2][0][1-9][0-9]$";
 
 /////////////////////////////////////////////////////////////////////////////
 // form_structure.cc

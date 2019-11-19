@@ -4,12 +4,11 @@
 
 #include "chrome/browser/ui/views/chrome_views_delegate.h"
 
-#include "ash/accelerators/accelerator_controller.h"
+#include "ash/public/cpp/accelerators.h"
 #include "ash/shell.h"
 #include "base/bind.h"
-#include "base/message_loop/message_loop.h"
+#include "base/message_loop/message_loop_current.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 
@@ -18,7 +17,7 @@ namespace {
 void ProcessAcceleratorNow(const ui::Accelerator& accelerator) {
   // TODO(afakhry): See if we need here to send the accelerator to the
   // FocusManager of the active window in a follow-up CL.
-  ash::Shell::Get()->accelerator_controller()->Process(accelerator);
+  ash::AcceleratorController::Get()->Process(accelerator);
 }
 
 }  // namespace
@@ -28,17 +27,7 @@ ChromeViewsDelegate::ProcessAcceleratorWhileMenuShowing(
     const ui::Accelerator& accelerator) {
   DCHECK(base::MessageLoopCurrentForUI::IsSet());
 
-  // Early return because mash chrome does not have access to ash::Shell
-  if (features::IsMultiProcessMash())
-    return views::ViewsDelegate::ProcessMenuAcceleratorResult::LEAVE_MENU_OPEN;
-
-  ash::AcceleratorController* accelerator_controller =
-      ash::Shell::Get()->accelerator_controller();
-
-  accelerator_controller->accelerator_history()->StoreCurrentAccelerator(
-      accelerator);
-  if (accelerator_controller->ShouldCloseMenuAndRepostAccelerator(
-          accelerator)) {
+  if (ash::AcceleratorController::Get()->OnMenuAccelerator(accelerator)) {
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE, base::BindOnce(ProcessAcceleratorNow, accelerator));
     return views::ViewsDelegate::ProcessMenuAcceleratorResult::CLOSE_MENU;
@@ -78,13 +67,12 @@ views::NativeWidget* ChromeViewsDelegate::CreateNativeWidget(
   if (params->context)
     params->context = params->context->GetRootWindow();
 
-  // Classic ash requires a parent or a context that it can use to look up a
-  // root window to find a WindowParentingClient. Mash handles window parenting
-  // inside ash, see ash::CreateAndParentTopLevelWindow().
-  if (!features::IsUsingWindowService() && !params->parent && !params->context)
+  // Ash requires a parent or a context that it can use to look up a root window
+  // to find a WindowParentingClient.
+  if (!params->parent && !params->context)
     params->context = ash::Shell::GetRootWindowForNewWindows();
 
   // By returning null Widget creates the default NativeWidget implementation,
-  // which for chromeos is NativeWidgetAura.
+  // which for Chrome OS is NativeWidgetAura.
   return nullptr;
 }

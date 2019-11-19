@@ -6,7 +6,7 @@ package org.chromium.android_webview.shell;
 
 import android.content.Context;
 
-import org.chromium.android_webview.AwResource;
+import org.chromium.android_webview.common.AwResource;
 
 /**
  * Registers resources for the Android webview shell.

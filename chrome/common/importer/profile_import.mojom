@@ -4,11 +4,9 @@
 
 module chrome.mojom;
 
-import "components/autofill/content/common/autofill_types.mojom";
+import "components/autofill/core/common/mojom/autofill_types.mojom";
 import "mojo/public/mojom/base/string16.mojom";
 import "url/mojom/url.mojom";
-
-const string kProfileImportServiceName = "profile_import";
 
 [Native]
 struct ImportedBookmarkEntry;
@@ -74,7 +72,7 @@ interface ProfileImport {
       SourceProfile source_profile,
       uint16 items,
       map<uint32, string> localized_strings,
-      ProfileImportObserver observer);
+      pending_remote<ProfileImportObserver> observer);
 
   // Stop the importer.
   CancelImport();

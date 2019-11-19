@@ -39,6 +39,7 @@ class DateTimeSymbolicFieldElement : public DateTimeFieldElement,
  protected:
   DateTimeSymbolicFieldElement(Document&,
                                FieldOwner&,
+                               DateTimeField,
                                const Vector<String>&,
                                int minimum,
                                int maximum);

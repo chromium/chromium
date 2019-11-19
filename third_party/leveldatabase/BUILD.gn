@@ -13,17 +13,6 @@ config("leveldb_config") {
     "src",
     "src/include",
   ]
-
-  if (is_win) {
-    # windows.h #defines DeleteFile to DeleteFileW on Unicode builds. This
-    # definition is in effect in a large part of Chromium's compilation units.
-    # leveldb::Env has a DeleteFile method, which becomes DeleteFileW when the
-    # definition is in effect.
-    #
-    # Define the macro everywhere, to avoid reasoning about which headers bring
-    # windows.h in.
-    defines += [ "DeleteFile=DeleteFileW" ]
-  }
 }
 
 leveldb_sources = [
@@ -289,7 +278,7 @@ if (!is_ios && !is_android) {
 
   test("leveldb_db_bench") {
     sources = [
-      "src/db/db_bench.cc",
+      "src/benchmarks/db_bench.cc",
     ]
     configs -= [ "//build/config/compiler:chromium_code" ]
     configs += [ "//build/config/compiler:no_chromium_code" ]

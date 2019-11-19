@@ -17,7 +17,7 @@ BleScanner::BleScanner(Delegate* delegate) : delegate_(delegate) {}
 BleScanner::~BleScanner() = default;
 
 void BleScanner::AddScanFilter(const ScanFilter& scan_filter) {
-  if (base::ContainsKey(scan_filters_, scan_filter)) {
+  if (base::Contains(scan_filters_, scan_filter)) {
     PA_LOG(ERROR) << "BleScanner::AddScanFilter(): Tried to add a scan filter "
                   << "which already existed. Filter: " << scan_filter;
     NOTREACHED();
@@ -28,7 +28,7 @@ void BleScanner::AddScanFilter(const ScanFilter& scan_filter) {
 }
 
 void BleScanner::RemoveScanFilter(const ScanFilter& scan_filter) {
-  if (!base::ContainsKey(scan_filters_, scan_filter)) {
+  if (!base::Contains(scan_filters_, scan_filter)) {
     PA_LOG(ERROR) << "BleScanner::RemoveScanFilter(): Tried to remove a scan "
                   << "filter which was not present. Filter: " << scan_filter;
     NOTREACHED();
@@ -39,7 +39,7 @@ void BleScanner::RemoveScanFilter(const ScanFilter& scan_filter) {
 }
 
 bool BleScanner::HasScanFilter(const ScanFilter& scan_filter) {
-  return base::ContainsKey(scan_filters_, scan_filter);
+  return base::Contains(scan_filters_, scan_filter);
 }
 
 DeviceIdPairSet BleScanner::GetAllDeviceIdPairs() {

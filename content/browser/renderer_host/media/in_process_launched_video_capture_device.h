@@ -20,7 +20,7 @@ class InProcessLaunchedVideoCaptureDevice : public LaunchedVideoCaptureDevice {
   ~InProcessLaunchedVideoCaptureDevice() override;
 
   void GetPhotoState(
-      media::VideoCaptureDevice::GetPhotoStateCallback callback) const override;
+      media::VideoCaptureDevice::GetPhotoStateCallback callback) override;
   void SetPhotoOptions(
       media::mojom::PhotoSettingsPtr settings,
       media::VideoCaptureDevice::SetPhotoOptionsCallback callback) override;

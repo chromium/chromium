@@ -1,0 +1,52 @@
+// Copyright 2017 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+import "third_party/blink/public/mojom/push_messaging/push_messaging_status.mojom";
+import "url/mojom/url.mojom";
+
+// TODO(heke): The type-mapping struct and enums are duplicately defined. Need
+// to remove/replace those defined in content or blink namespace.
+
+struct PushSubscriptionOptions {
+  bool user_visible_only;
+  array<uint8> application_server_key;
+};
+
+struct PushSubscription {
+  url.mojom.Url endpoint;
+  PushSubscriptionOptions options;
+  array<uint8> p256dh;
+  array<uint8> auth;
+};
+
+enum PushErrorType {
+  ABORT = 0,
+  NETWORK = 1,
+  NONE = 2,
+  NOT_ALLOWED = 3,
+  NOT_FOUND = 4,
+  NOT_SUPPORTED = 5,
+  INVALID_STATE = 6,
+};
+
+interface PushMessaging {
+  Subscribe(int64 service_worker_registration_id,
+            PushSubscriptionOptions options,
+            bool user_gesture)
+           => (PushRegistrationStatus status, PushSubscription? subscription);
+
+  // We use the value of |error_type| as a flag. If |error_type| == NONE, it
+  // means no error and returns |did_unsubscribe|. Else, it means there is an
+  // error and returns |error_type| and |error_message|.
+  Unsubscribe(int64 service_worker_registration_id)
+             => (PushErrorType error_type,
+                 bool did_unsubscribe,
+                 string? error_message);
+
+  GetSubscription(int64 service_worker_registration_id)
+                 => (PushGetRegistrationStatus status,
+                     PushSubscription? subscription);
+};

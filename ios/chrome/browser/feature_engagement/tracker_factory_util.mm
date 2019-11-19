@@ -11,7 +11,6 @@
 #include "components/feature_engagement/public/tracker.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/chrome_constants.h"
-#include "ios/chrome/browser/leveldb_proto/proto_database_provider_factory.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -33,15 +32,14 @@ std::unique_ptr<KeyedService> CreateFeatureEngagementTracker(
       ios::ChromeBrowserState::FromBrowserState(context);
 
   scoped_refptr<base::SequencedTaskRunner> background_task_runner =
-      base::CreateSequencedTaskRunnerWithTraits(
-          {base::MayBlock(), base::TaskPriority::BEST_EFFORT});
+      base::CreateSequencedTaskRunner({base::ThreadPool(), base::MayBlock(),
+                                       base::TaskPriority::BEST_EFFORT});
 
   base::FilePath storage_dir = browser_state->GetStatePath().Append(
       kIOSFeatureEngagementTrackerStorageDirname);
 
   leveldb_proto::ProtoDatabaseProvider* db_provider =
-      leveldb_proto::ProtoDatabaseProviderFactory::GetForBrowserState(
-          browser_state);
+      browser_state->GetProtoDatabaseProvider();
 
   return base::WrapUnique(feature_engagement::Tracker::Create(
       storage_dir, background_task_runner, db_provider));

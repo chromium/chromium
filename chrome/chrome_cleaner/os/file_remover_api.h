@@ -20,7 +20,10 @@ class FileRemoverAPI {
   enum class DeletionValidationStatus {
     ALLOWED,
     FORBIDDEN,
-    INACTIVE,
+
+    // Path is unsafe (eg. a UNC path that could be a network share). Do not
+    // even call functions like SanitizePath or NormalizePath on it.
+    UNSAFE,
   };
   // Callback used for the asynchronous versions of RemoveNow
   // and RegisterPostRebootRemoval.

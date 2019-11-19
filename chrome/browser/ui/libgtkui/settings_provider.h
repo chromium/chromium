@@ -5,9 +5,6 @@
 #ifndef CHROME_BROWSER_UI_LIBGTKUI_SETTINGS_PROVIDER_H_
 #define CHROME_BROWSER_UI_LIBGTKUI_SETTINGS_PROVIDER_H_
 
-#include <string>
-#include <vector>
-
 namespace libgtkui {
 
 // This class is just a switch between SettingsProviderGSettings and

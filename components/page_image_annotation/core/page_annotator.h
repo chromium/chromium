@@ -14,6 +14,7 @@
 #include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "services/image_annotation/public/cpp/image_processor.h"
 #include "services/image_annotation/public/mojom/image_annotation.mojom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -66,7 +67,8 @@ class PageAnnotator {
         image_annotation::mojom::AnnotateImageResultPtr result) = 0;
   };
 
-  explicit PageAnnotator(image_annotation::mojom::AnnotatorPtr annotator_ptr);
+  explicit PageAnnotator(
+      mojo::PendingRemote<image_annotation::mojom::Annotator> annotator);
   ~PageAnnotator();
 
   // Request annotation of the given image via the image annotation service.
@@ -101,7 +103,7 @@ class PageAnnotator {
                       uint64_t node_id,
                       image_annotation::mojom::AnnotateImageResultPtr result);
 
-  image_annotation::mojom::AnnotatorPtr annotator_ptr_;
+  mojo::Remote<image_annotation::mojom::Annotator> annotator_;
 
   base::ObserverList<Observer> observers_;
 

@@ -13,16 +13,7 @@ namespace content {
 class BrowserContext;
 }
 
-namespace user_prefs {
-class PrefRegistrySyncable;
-}
-
 namespace extensions {
-namespace launch_util {
-
-void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
-
-}  // namespace launch_util
 
 class Extension;
 class ExtensionPrefs;

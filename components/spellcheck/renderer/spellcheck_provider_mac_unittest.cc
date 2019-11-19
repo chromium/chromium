@@ -16,9 +16,11 @@ namespace {
 class SpellCheckProviderMacTest : public SpellCheckProviderTest {};
 
 TEST_F(SpellCheckProviderMacTest, SingleRoundtripSuccess) {
-  FakeTextCheckingCompletion completion;
+  FakeTextCheckingResult completion;
 
-  provider_.RequestTextChecking(base::ASCIIToUTF16("hello "), &completion);
+  provider_.RequestTextChecking(
+      base::ASCIIToUTF16("hello "),
+      std::make_unique<FakeTextCheckingCompletion>(&completion));
   EXPECT_EQ(completion.completion_count_, 0U);
   EXPECT_EQ(provider_.text_check_requests_.size(), 1U);
   EXPECT_EQ(provider_.pending_text_request_size(), 1U);
@@ -39,10 +41,14 @@ TEST_F(SpellCheckProviderMacTest, SingleRoundtripSuccess) {
 }
 
 TEST_F(SpellCheckProviderMacTest, TwoRoundtripSuccess) {
-  FakeTextCheckingCompletion completion1;
-  provider_.RequestTextChecking(base::ASCIIToUTF16("hello "), &completion1);
-  FakeTextCheckingCompletion completion2;
-  provider_.RequestTextChecking(base::ASCIIToUTF16("bye "), &completion2);
+  FakeTextCheckingResult completion1;
+  provider_.RequestTextChecking(
+      base::ASCIIToUTF16("hello "),
+      std::make_unique<FakeTextCheckingCompletion>(&completion1));
+  FakeTextCheckingResult completion2;
+  provider_.RequestTextChecking(
+      base::ASCIIToUTF16("bye "),
+      std::make_unique<FakeTextCheckingCompletion>(&completion2));
 
   EXPECT_EQ(completion1.completion_count_, 0U);
   EXPECT_EQ(completion2.completion_count_, 0U);

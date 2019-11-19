@@ -9,15 +9,15 @@
 
 #include <string>
 
-#include "base/message_loop/message_loop.h"
 #include "base/pending_task.h"
+#include "base/task/task_observer.h"
 
 namespace net {
 
-// SpdySessionTestTaskObserver is a MessageLoop::TaskObserver that monitors the
+// SpdySessionTestTaskObserver is a TaskObserver that monitors the
 // completion of all tasks executed by the current MessageLoop, recording the
 // number of tasks that refer to a specific function and filename.
-class SpdySessionTestTaskObserver : public base::MessageLoop::TaskObserver {
+class SpdySessionTestTaskObserver : public base::TaskObserver {
  public:
   // Creates a SpdySessionTaskObserver that will record all tasks that are
   // executed that were posted by the function named by |function_name|, located
@@ -29,7 +29,7 @@ class SpdySessionTestTaskObserver : public base::MessageLoop::TaskObserver {
                               const std::string& function_name);
   ~SpdySessionTestTaskObserver() override;
 
-  // Implements MessageLoop::TaskObserver.
+  // Implements TaskObserver.
   void WillProcessTask(const base::PendingTask& pending_task) override;
   void DidProcessTask(const base::PendingTask& pending_task) override;
 

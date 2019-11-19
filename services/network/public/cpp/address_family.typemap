@@ -9,7 +9,7 @@ traits_headers =
 sources = [
   "//services/network/public/cpp/address_family_mojom_traits.cc",
 ]
-type_mappings = [ "network.mojom.AddressFamily=net::AddressFamily" ]
+type_mappings = [ "network.mojom.AddressFamily=::net::AddressFamily" ]
 public_deps = [
   "//net",
 ]

@@ -219,8 +219,11 @@ size_t find_first_of(const StringPiece& self,
 size_t find_first_of(const StringPiece16& self,
                      const StringPiece16& s,
                      size_t pos) {
+  // Use the faster std::find() if searching for a single character.
   StringPiece16::const_iterator found =
-      std::find_first_of(self.begin() + pos, self.end(), s.begin(), s.end());
+      s.size() == 1 ? std::find(self.begin() + pos, self.end(), s[0])
+                    : std::find_first_of(self.begin() + pos, self.end(),
+                                         s.begin(), s.end());
   if (found == self.end())
     return StringPiece16::npos;
   return found - self.begin();

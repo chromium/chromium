@@ -518,7 +518,7 @@ void GetOSAndCPU(UserAgent* user_agent) {
     user_agent->set_architecture(UserAgent::WOW64);
   } else {
     base::win::OSInfo::WindowsArchitecture windows_architecture =
-        os_info->architecture();
+        os_info->GetArchitecture();
     if (windows_architecture == base::win::OSInfo::X64_ARCHITECTURE)
       user_agent->set_architecture(UserAgent::X64);
     else if (windows_architecture == base::win::OSInfo::IA64_ARCHITECTURE)

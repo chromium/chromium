@@ -216,6 +216,9 @@ void CloudPolicyService::CheckInitializationCompleted() {
 }
 
 void CloudPolicyService::RefreshCompleted(bool success) {
+  if (!initial_policy_refresh_result_.has_value())
+    initial_policy_refresh_result_ = success;
+
   // Clear state and |refresh_callbacks_| before actually invoking them, s.t.
   // triggering new policy fetches behaves as expected.
   std::vector<RefreshPolicyCallback> callbacks;

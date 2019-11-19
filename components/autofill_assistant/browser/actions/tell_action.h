@@ -14,13 +14,12 @@ namespace autofill_assistant {
 // An action to display a message.
 class TellAction : public Action {
  public:
-  explicit TellAction(const ActionProto& proto);
+  explicit TellAction(ActionDelegate* delegate, const ActionProto& proto);
   ~TellAction() override;
 
  private:
   // Overrides Action:
-  void InternalProcessAction(ActionDelegate* delegate,
-                             ProcessActionCallback callback) override;
+  void InternalProcessAction(ProcessActionCallback callback) override;
 
   DISALLOW_COPY_AND_ASSIGN(TellAction);
 };

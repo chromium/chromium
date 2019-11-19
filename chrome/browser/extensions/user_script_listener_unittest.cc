@@ -14,7 +14,6 @@
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/threading/thread.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/browser/extensions/unpacked_installer.h"
@@ -24,10 +23,9 @@
 #include "chrome/test/base/testing_profile_manager.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/navigation_throttle.h"
-#include "content/public/browser/notification_service.h"
 #include "content/public/browser/render_process_host.h"
+#include "content/public/test/browser_task_environment.h"
 #include "content/public/test/mock_navigation_handle.h"
-#include "content/public/test/test_browser_thread_bundle.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/test_utils.h"
 #include "content/public/test/web_contents_tester.h"
@@ -77,7 +75,7 @@ scoped_refptr<Extension> LoadExtension(const std::string& filename,
 class UserScriptListenerTest : public testing::Test {
  public:
   UserScriptListenerTest()
-      : thread_bundle_(content::TestBrowserThreadBundle::IO_MAINLOOP),
+      : task_environment_(content::BrowserTaskEnvironment::IO_MAINLOOP),
         profile_manager_(
             new TestingProfileManager(TestingBrowserProcess::GetGlobal())) {}
 
@@ -134,7 +132,7 @@ class UserScriptListenerTest : public testing::Test {
     return throttle;
   }
 
-  content::TestBrowserThreadBundle thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
   content::RenderViewHostTestEnabler rvh_test_enabler_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
   UserScriptListener listener_;
@@ -158,11 +156,7 @@ TEST_F(UserScriptListenerTest, DelayAndUpdate) {
       CreateListenerNavigationThrottle(&handle);
   EXPECT_EQ(NavigationThrottle::DEFER, throttle->WillStartRequest());
 
-  content::NotificationService::current()->Notify(
-      extensions::NOTIFICATION_USER_SCRIPTS_UPDATED,
-      content::Source<Profile>(profile_),
-      content::NotificationService::NoDetails());
-  base::RunLoop().RunUntilIdle();
+  listener_.TriggerUserScriptsReadyForTesting(profile_);
   EXPECT_TRUE(was_navigation_resumed_);
 }
 
@@ -182,11 +176,7 @@ TEST_F(UserScriptListenerTest, DelayAndUnload) {
   // listener that the user scripts have been updated.
   EXPECT_FALSE(was_navigation_resumed_);
 
-  content::NotificationService::current()->Notify(
-      extensions::NOTIFICATION_USER_SCRIPTS_UPDATED,
-      content::Source<Profile>(profile_),
-      content::NotificationService::NoDetails());
-  base::RunLoop().RunUntilIdle();
+  listener_.TriggerUserScriptsReadyForTesting(profile_);
   EXPECT_TRUE(was_navigation_resumed_);
 }
 
@@ -233,23 +223,15 @@ TEST_F(UserScriptListenerTest, MultiProfile) {
 
   // When the first profile's user scripts are ready, the request should still
   // be blocked waiting for profile2.
-  content::NotificationService::current()->Notify(
-      extensions::NOTIFICATION_USER_SCRIPTS_UPDATED,
-      content::Source<Profile>(profile_),
-      content::NotificationService::NoDetails());
-  base::RunLoop().RunUntilIdle();
+  listener_.TriggerUserScriptsReadyForTesting(profile_);
   EXPECT_FALSE(was_navigation_resumed_);
 
   // After profile2 is ready, the request should proceed.
-  content::NotificationService::current()->Notify(
-      extensions::NOTIFICATION_USER_SCRIPTS_UPDATED,
-      content::Source<Profile>(profile2),
-      content::NotificationService::NoDetails());
-  base::RunLoop().RunUntilIdle();
+  listener_.TriggerUserScriptsReadyForTesting(profile2);
   EXPECT_TRUE(was_navigation_resumed_);
 }
 
-// Test when the script updated notification occurs before the throttle's
+// Test when the user scripts ready trigger occurs before the throttle's
 // WillStartRequest function is called.  This can occur when there are multiple
 // throttles.
 TEST_F(UserScriptListenerTest, ResumeBeforeStart) {
@@ -260,11 +242,7 @@ TEST_F(UserScriptListenerTest, ResumeBeforeStart) {
       listener_.CreateNavigationThrottle(&handle);
   ASSERT_TRUE(throttle);
 
-  content::NotificationService::current()->Notify(
-      extensions::NOTIFICATION_USER_SCRIPTS_UPDATED,
-      content::Source<Profile>(profile_),
-      content::NotificationService::NoDetails());
-  base::RunLoop().RunUntilIdle();
+  listener_.TriggerUserScriptsReadyForTesting(profile_);
 
   ASSERT_EQ(content::NavigationThrottle::PROCEED, throttle->WillStartRequest());
 }

@@ -1,4 +1,0 @@
-The scrollbar width should be properly scaled..
-
-
-

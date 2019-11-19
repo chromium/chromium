@@ -7,7 +7,7 @@
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "net/nqe/effective_connection_type.h"
 #include "services/network/test/test_network_quality_tracker.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -16,8 +16,8 @@ namespace content {
 namespace {
 
 TEST(NetworkQualityObserverImplTest, TestObserverNotified) {
-  content::TestBrowserThreadBundle thread_bundle(
-      content::TestBrowserThreadBundle::IO_MAINLOOP);
+  content::BrowserTaskEnvironment task_environment(
+      content::BrowserTaskEnvironment::IO_MAINLOOP);
 
   network::TestNetworkQualityTracker test_network_quality_tracker;
 

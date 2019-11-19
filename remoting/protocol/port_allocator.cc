@@ -10,35 +10,8 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/logging.h"
-#include "base/strings/string_number_conversions.h"
-#include "base/strings/string_split.h"
-#include "net/base/escape.h"
-#include "net/http/http_status_code.h"
-#include "net/traffic_annotation/network_traffic_annotation.h"
-#include "remoting/protocol/native_ip_synthesizer.h"
 #include "remoting/protocol/network_settings.h"
 #include "remoting/protocol/transport_context.h"
-
-namespace {
-
-typedef std::map<std::string, std::string> StringMap;
-
-// Parses the lines in the result of the HTTP request that are of the form
-// 'a=b' and returns them in a map.
-StringMap ParseMap(const std::string& string) {
-  StringMap map;
-  base::StringPairs pairs;
-  base::SplitStringIntoKeyValuePairs(string, '=', '\n', &pairs);
-
-  for (auto& pair : pairs) {
-    map[pair.first] = pair.second;
-  }
-  return map;
-}
-
-const int kNumRetries = 5;
-
-}  // namespace
 
 namespace remoting {
 namespace protocol {
@@ -98,8 +71,7 @@ PortAllocatorSession::PortAllocatorSession(PortAllocator* allocator,
                                 component,
                                 ice_ufrag,
                                 ice_pwd),
-      transport_context_(allocator->transport_context()),
-      weak_factory_(this) {}
+      transport_context_(allocator->transport_context()) {}
 
 PortAllocatorSession::~PortAllocatorSession() = default;
 
@@ -111,11 +83,6 @@ void PortAllocatorSession::GetPortConfigurations() {
 void PortAllocatorSession::OnIceConfig(const IceConfig& ice_config) {
   ice_config_ = ice_config;
   ConfigReady(GetPortConfiguration().release());
-
-  if (relay_enabled() && !ice_config_.relay_servers.empty() &&
-      !ice_config_.relay_token.empty()) {
-    TryCreateRelaySession();
-  }
 }
 
 std::unique_ptr<cricket::PortConfiguration>
@@ -135,111 +102,6 @@ PortAllocatorSession::GetPortConfiguration() {
   }
 
   return config;
-}
-
-void PortAllocatorSession::TryCreateRelaySession() {
-  DCHECK(!ice_config_.relay_servers.empty());
-  DCHECK(!ice_config_.relay_token.empty());
-
-  if (attempts_ == kNumRetries) {
-    LOG(ERROR) << "PortAllocator: maximum number of requests reached; "
-               << "giving up on relay.";
-    return;
-  }
-
-  // Choose the next host to try.
-  std::string host =
-      ice_config_.relay_servers[attempts_ % ice_config_.relay_servers.size()];
-  attempts_++;
-
-  DCHECK(!username().empty());
-  DCHECK(!password().empty());
-  std::string url = "https://" + host + "/create_session?username=" +
-                    net::EscapeUrlEncodedData(username(), false) +
-                    "&password=" +
-                    net::EscapeUrlEncodedData(password(), false) + "&sn=1";
-  net::NetworkTrafficAnnotationTag traffic_annotation =
-      net::DefineNetworkTrafficAnnotation("CRD_relay_session_request", R"(
-        semantics {
-          sender: "Chrome Remote Desktop"
-          description:
-            "Request is sent by Chrome Remote Desktop to allocate relay "
-            "session. Returned relay session credentials are used over UDP to "
-            "connect to Google-owned relay servers, which is required for NAT "
-            "traversal."
-          trigger:
-            "Start of each Chrome Remote Desktop and during connection when "
-            "peer-to-peer transport needs to be reconnected."
-          data:
-            "A temporary authentication token issued by Google services (over "
-            "XMPP connection)."
-          destination: GOOGLE_OWNED_SERVICE
-        }
-        policy {
-          cookies_allowed: NO
-          setting:
-            "This feature cannot be disabled by settings. You can block Chrome "
-            "Remote Desktop as specified here: "
-            "https://support.google.com/chrome/?p=remote_desktop"
-          chrome_policy {
-            RemoteAccessHostFirewallTraversal {
-              policy_options {mode: MANDATORY}
-              RemoteAccessHostFirewallTraversal: false
-            }
-          }
-        }
-        comments:
-          "Above specified policy is only applicable on the host side and "
-          "doesn't have effect in Android and iOS client apps. The product "
-          "is shipped separately from Chromium, except on Chrome OS."
-        )");
-  std::unique_ptr<UrlRequest> url_request =
-      transport_context_->url_request_factory()->CreateUrlRequest(
-          UrlRequest::Type::GET, url, traffic_annotation);
-  url_request->AddHeader("X-Talk-Google-Relay-Auth: " +
-                         ice_config_.relay_token);
-  url_request->AddHeader("X-Google-Relay-Auth: " + ice_config_.relay_token);
-  url_request->AddHeader("X-Stream-Type: chromoting");
-  url_request->Start(base::Bind(&PortAllocatorSession::OnSessionRequestResult,
-                                base::Unretained(this)));
-  url_requests_.insert(std::move(url_request));
-}
-
-void PortAllocatorSession::OnSessionRequestResult(
-    const UrlRequest::Result& result) {
-  if (!result.success || result.status != net::HTTP_OK) {
-    LOG(WARNING) << "Received error when allocating relay session: "
-                 << result.status;
-    TryCreateRelaySession();
-    return;
-  }
-
-  StringMap map = ParseMap(result.response_body);
-
-  if (!username().empty() && map["username"] != username()) {
-    LOG(WARNING) << "Received unexpected username value from relay server.";
-  }
-  if (!password().empty() && map["password"] != password()) {
-    LOG(WARNING) << "Received unexpected password value from relay server.";
-  }
-
-  std::unique_ptr<cricket::PortConfiguration> config = GetPortConfiguration();
-
-  std::string relay_ip = map["relay.ip"];
-  std::string relay_port = map["relay.udp_port"];
-  unsigned relay_port_int;
-
-  if (!relay_ip.empty() && !relay_port.empty() &&
-      base::StringToUint(relay_port, &relay_port_int)) {
-    cricket::RelayServerConfig relay_config(cricket::RELAY_GTURN);
-    rtc::SocketAddress address(relay_ip, relay_port_int);
-    // |relay_ip| is in IPv4 so we will need to do an IPv6 synthesis.
-    relay_config.ports.push_back(
-        cricket::ProtocolAddress(ToNativeSocket(address), cricket::PROTO_UDP));
-    config->AddRelay(relay_config);
-  }
-
-  ConfigReady(config.release());
 }
 
 }  // namespace protocol

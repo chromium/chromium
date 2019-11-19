@@ -36,7 +36,7 @@ class FakePaintedScrollbarLayer : public PaintedScrollbarLayer {
 
   void PushPropertiesTo(LayerImpl* layer) override;
 
-  std::unique_ptr<base::AutoReset<bool>> IgnoreSetNeedsCommit();
+  using PaintedScrollbarLayer::IgnoreSetNeedsCommit;
 
   size_t push_properties_count() const { return push_properties_count_; }
   void reset_push_properties_count() { push_properties_count_ = 0; }
@@ -48,14 +48,12 @@ class FakePaintedScrollbarLayer : public PaintedScrollbarLayer {
   UIResourceId thumb_resource_id() {
     return PaintedScrollbarLayer::thumb_resource_id();
   }
-  FakeScrollbar* fake_scrollbar() {
-    return fake_scrollbar_;
-  }
+  FakeScrollbar* fake_scrollbar() { return fake_scrollbar_; }
   using PaintedScrollbarLayer::UpdateInternalContentScale;
   using PaintedScrollbarLayer::UpdateThumbAndTrackGeometry;
 
  private:
-  FakePaintedScrollbarLayer(FakeScrollbar* fake_scrollbar,
+  FakePaintedScrollbarLayer(scoped_refptr<FakeScrollbar> fake_scrollbar,
                             ElementId scrolling_element_id);
   ~FakePaintedScrollbarLayer() override;
 

@@ -4,14 +4,17 @@
 
 package org.chromium.chrome.browser.sync;
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.VisibleForTesting;
 import org.chromium.base.annotations.CalledByNative;
+import org.chromium.base.annotations.NativeMethods;
+import org.chromium.chrome.browser.ChromeFeatureList;
+import org.chromium.chrome.browser.SyncFirstSetupCompleteSource;
 import org.chromium.components.sync.ModelType;
 import org.chromium.components.sync.Passphrase;
 
@@ -23,9 +26,9 @@ import java.util.concurrent.CopyOnWriteArrayList;
 /**
  * JNI wrapper for the native ProfileSyncService.
  *
- * This class purely makes calls to native and contains absolutely  no business logic. It is only
+ * This class mostly makes calls to native and contains a minimum of business logic. It is only
  * usable from the UI thread as the native ProfileSyncService requires its access to be on the
- * UI thread. See chrome/browser/sync/profile_sync_service.h for more details.
+ * UI thread. See components/sync/driver/profile_sync_service.h for more details.
  */
 public class ProfileSyncService {
 
@@ -36,34 +39,6 @@ public class ProfileSyncService {
         // Invoked when the status has changed.
         public void syncStateChanged();
     }
-
-    /**
-     * Callback for getAllNodes.
-     */
-    public static class GetAllNodesCallback {
-        private String mNodesString;
-
-        // Invoked when getAllNodes completes.
-        public void onResult(String nodesString) {
-            mNodesString = nodesString;
-        }
-
-        // Returns the result of GetAllNodes as a JSONArray.
-        @VisibleForTesting
-        public JSONArray getNodesAsJsonArray() throws JSONException {
-            return new JSONArray(mNodesString);
-        }
-    }
-
-    /**
-     * Provider for the Android master sync flag.
-     */
-    interface MasterSyncEnabledProvider {
-        // Returns whether master sync is enabled.
-        public boolean isMasterSyncEnabled();
-    }
-
-    private static final String TAG = "ProfileSyncService";
 
     private static final int[] ALL_SELECTABLE_TYPES = new int[] {
         ModelType.AUTOFILL,
@@ -86,11 +61,6 @@ public class ProfileSyncService {
      * {@link init()}.
      */
     private long mNativeProfileSyncServiceAndroid;
-
-    /**
-     * An object that knows whether Android's master sync setting is enabled.
-     */
-    private MasterSyncEnabledProvider mMasterSyncEnabledProvider;
 
     private int mSetupInProgressCounter;
 
@@ -145,153 +115,59 @@ public class ProfileSyncService {
         ThreadUtils.assertOnUiThread();
 
         // This may cause us to create ProfileSyncService even if sync has not
-        // been set up, but ProfileSyncService::Startup() won't be called until
+        // been set up, but ProfileSyncService won't actually start until
         // credentials are available.
-        mNativeProfileSyncServiceAndroid = nativeInit();
-    }
-
-    @CalledByNative
-    private static long getProfileSyncServiceAndroid() {
-        return get().mNativeProfileSyncServiceAndroid;
+        mNativeProfileSyncServiceAndroid =
+                ProfileSyncServiceJni.get().init(ProfileSyncService.this);
     }
 
     /**
-     * Sets the the machine tag used by session sync.
-     */
-    public void setSessionsId(String sessionTag) {
-        ThreadUtils.assertOnUiThread();
-        nativeSetSyncSessionsId(mNativeProfileSyncServiceAndroid, sessionTag);
-    }
-
-    /**
-     * Returns the actual passphrase type being used for encryption. The sync engine must be
-     * running (isEngineInitialized() returns true) before calling this function.
-     * <p/>
-     * This method should only be used if you want to know the raw value. For checking whether
-     * we should ask the user for a passphrase, use isPassphraseRequiredForDecryption().
-     */
-    public @Passphrase.Type int getPassphraseType() {
-        assert isEngineInitialized();
-        int passphraseType = nativeGetPassphraseType(mNativeProfileSyncServiceAndroid);
-        if (passphraseType < 0 || passphraseType >= Passphrase.Type.NUM_ENTRIES) {
-            throw new IllegalArgumentException();
-        }
-        return passphraseType;
-    }
-
-    /**
-     * Returns true if the current explicit passphrase time is defined.
-     */
-    public boolean hasExplicitPassphraseTime() {
-        assert isEngineInitialized();
-        return nativeHasExplicitPassphraseTime(mNativeProfileSyncServiceAndroid);
-    }
-
-    /**
-     * Returns the current explicit passphrase time in milliseconds since epoch.
-     */
-    public long getExplicitPassphraseTime() {
-        assert isEngineInitialized();
-        return nativeGetExplicitPassphraseTime(mNativeProfileSyncServiceAndroid);
-    }
-
-    public String getSyncEnterGooglePassphraseBodyWithDateText() {
-        assert isEngineInitialized();
-        return nativeGetSyncEnterGooglePassphraseBodyWithDateText(mNativeProfileSyncServiceAndroid);
-    }
-
-    public String getSyncEnterCustomPassphraseBodyWithDateText() {
-        assert isEngineInitialized();
-        return nativeGetSyncEnterCustomPassphraseBodyWithDateText(mNativeProfileSyncServiceAndroid);
-    }
-
-    public String getCurrentSignedInAccountText() {
-        assert isEngineInitialized();
-        return nativeGetCurrentSignedInAccountText(mNativeProfileSyncServiceAndroid);
-    }
-
-    public String getSyncEnterCustomPassphraseBodyText() {
-        return nativeGetSyncEnterCustomPassphraseBodyText(mNativeProfileSyncServiceAndroid);
-    }
-
-    public int getNumberOfSyncedDevices() {
-        return nativeGetNumberOfSyncedDevices(mNativeProfileSyncServiceAndroid);
-    }
-
-    /**
-     * Checks if sync is currently set to use a custom passphrase. The sync engine must be running
-     * (isEngineInitialized() returns true) before calling this function.
+     * Checks if the sync engine is initialized.
      *
-     * @return true if sync is using a custom passphrase.
-     */
-    public boolean isUsingSecondaryPassphrase() {
-        assert isEngineInitialized();
-        return nativeIsUsingSecondaryPassphrase(mNativeProfileSyncServiceAndroid);
-    }
-
-    /**
-     * Checks if we need a passphrase to decrypt a currently-enabled data type. This returns false
-     * if a passphrase is needed for a type that is not currently enabled.
-     *
-     * @return true if we need a passphrase.
-     */
-    public boolean isPassphraseRequiredForDecryption() {
-        assert isEngineInitialized();
-        return nativeIsPassphraseRequiredForDecryption(mNativeProfileSyncServiceAndroid);
-    }
-
-    /**
-     * Checks if the sync engine is running.
-     *
-     * @return true if sync is initialized/running.
+     * @return true if the sync engine is initialized.
      */
     public boolean isEngineInitialized() {
-        return nativeIsEngineInitialized(mNativeProfileSyncServiceAndroid);
+        return ProfileSyncServiceJni.get().isEngineInitialized(
+                mNativeProfileSyncServiceAndroid, ProfileSyncService.this);
     }
 
     /**
-     * Checks if encrypting all the data types is allowed.
+     * Checks whether sync machinery is active.
      *
-     * @return true if encrypting all data types is allowed, false if only passwords are allowed to
-     * be encrypted.
+     * @return true if the transport state is active.
      */
-    public boolean isEncryptEverythingAllowed() {
-        assert isEngineInitialized();
-        return nativeIsEncryptEverythingAllowed(mNativeProfileSyncServiceAndroid);
+    @VisibleForTesting
+    public boolean isTransportStateActive() {
+        return ProfileSyncServiceJni.get().isTransportStateActive(
+                mNativeProfileSyncServiceAndroid, ProfileSyncService.this);
     }
 
     /**
-     * Checks if the user has chosen to encrypt all data types. Note that some data types (e.g.
-     * DEVICE_INFO) are never encrypted.
+     * Checks whether Sync-the-feature can (attempt to) start. This means that there is a primary
+     * account and no disable reasons. Note that the Sync machinery may start up in transport-only
+     * mode even if this is false.
      *
-     * @return true if all data types are encrypted, false if only passwords are encrypted.
+     * @return true if Sync can start, false otherwise.
      */
-    public boolean isEncryptEverythingEnabled() {
-        assert isEngineInitialized();
-        return nativeIsEncryptEverythingEnabled(mNativeProfileSyncServiceAndroid);
+    public boolean canSyncFeatureStart() {
+        return ProfileSyncServiceJni.get().canSyncFeatureStart(
+                mNativeProfileSyncServiceAndroid, ProfileSyncService.this);
     }
 
     /**
-     * Turns on encryption of all data types. This only takes effect after sync configuration is
-     * completed and setChosenDataTypes() is invoked.
+     * Checks whether Sync-the-feature is currently active. Note that Sync-the-transport may be
+     * active even if this is false.
+     *
+     * @return true if Sync is active, false otherwise.
      */
-    public void enableEncryptEverything() {
-        assert isEngineInitialized();
-        nativeEnableEncryptEverything(mNativeProfileSyncServiceAndroid);
-    }
-
-    public void setEncryptionPassphrase(String passphrase) {
-        assert isEngineInitialized();
-        nativeSetEncryptionPassphrase(mNativeProfileSyncServiceAndroid, passphrase);
-    }
-
-    public boolean setDecryptionPassphrase(String passphrase) {
-        assert isEngineInitialized();
-        return nativeSetDecryptionPassphrase(mNativeProfileSyncServiceAndroid, passphrase);
+    public boolean isSyncActive() {
+        return ProfileSyncServiceJni.get().isSyncActive(
+                mNativeProfileSyncServiceAndroid, ProfileSyncService.this);
     }
 
     public @GoogleServiceAuthError.State int getAuthError() {
-        int authErrorCode = nativeGetAuthError(mNativeProfileSyncServiceAndroid);
+        int authErrorCode = ProfileSyncServiceJni.get().getAuthError(
+                mNativeProfileSyncServiceAndroid, ProfileSyncService.this);
         if (authErrorCode < 0 || authErrorCode >= GoogleServiceAuthError.State.NUM_ENTRIES) {
             throw new IllegalArgumentException("No state for code: " + authErrorCode);
         }
@@ -299,12 +175,38 @@ public class ProfileSyncService {
     }
 
     /**
-     * Gets client action for sync protocol error.
+     * Checks whether Sync is disabled by enterprise policy (through prefs) or account policy
+     * received from the sync server.
      *
-     * @return {@link ProtocolErrorClientAction}.
+     * @return true if Sync is disabled, false otherwise.
      */
-    public int getProtocolErrorClientAction() {
-        return nativeGetProtocolErrorClientAction(mNativeProfileSyncServiceAndroid);
+    public boolean isSyncDisabledByEnterprisePolicy() {
+        return ProfileSyncServiceJni.get().isSyncDisabledByEnterprisePolicy(
+                mNativeProfileSyncServiceAndroid, ProfileSyncService.this);
+    }
+
+    public boolean hasUnrecoverableError() {
+        return ProfileSyncServiceJni.get().hasUnrecoverableError(
+                mNativeProfileSyncServiceAndroid, ProfileSyncService.this);
+    }
+
+    public boolean requiresClientUpgrade() {
+        return ProfileSyncServiceJni.get().requiresClientUpgrade(
+                mNativeProfileSyncServiceAndroid, ProfileSyncService.this);
+    }
+
+    /**
+     * Gets the set of data types that are "preferred" in sync. Those are the
+     * chosen ones (see getChosenDataTypes), plus any that are implied by them.
+     *
+     * This is unaffected by whether sync is on.
+     *
+     * @return Set of preferred data types.
+     */
+    public Set<Integer> getPreferredDataTypes() {
+        int[] modelTypeArray = ProfileSyncServiceJni.get().getPreferredDataTypes(
+                mNativeProfileSyncServiceAndroid, ProfileSyncService.this);
+        return modelTypeArrayToSet(modelTypeArray);
     }
 
     /**
@@ -315,7 +217,8 @@ public class ProfileSyncService {
      * @return Set of active data types.
      */
     public Set<Integer> getActiveDataTypes() {
-        int[] activeDataTypes = nativeGetActiveDataTypes(mNativeProfileSyncServiceAndroid);
+        int[] activeDataTypes = ProfileSyncServiceJni.get().getActiveDataTypes(
+                mNativeProfileSyncServiceAndroid, ProfileSyncService.this);
         return modelTypeArrayToSet(activeDataTypes);
     }
 
@@ -328,42 +231,14 @@ public class ProfileSyncService {
      * @return Set of chosen types.
      */
     public Set<Integer> getChosenDataTypes() {
-        int[] modelTypeArray = nativeGetChosenDataTypes(mNativeProfileSyncServiceAndroid);
+        int[] modelTypeArray = ProfileSyncServiceJni.get().getChosenDataTypes(
+                mNativeProfileSyncServiceAndroid, ProfileSyncService.this);
         return modelTypeArrayToSet(modelTypeArray);
-    }
-
-    /**
-     * Gets the set of data types that are "preferred" in sync. Those are the
-     * "chosen" ones (see above), plus any that are implied by them.
-     *
-     * This is unaffected by whether sync is on.
-     *
-     * @return Set of preferred types.
-     */
-    public Set<Integer> getPreferredDataTypes() {
-        int[] modelTypeArray = nativeGetPreferredDataTypes(mNativeProfileSyncServiceAndroid);
-        return modelTypeArrayToSet(modelTypeArray);
-    }
-
-    private static Set<Integer> modelTypeArrayToSet(int[] modelTypeArray) {
-        Set<Integer> modelTypeSet = new HashSet<Integer>();
-        for (int i = 0; i < modelTypeArray.length; i++) {
-            modelTypeSet.add(modelTypeArray[i]);
-        }
-        return modelTypeSet;
-    }
-
-    private static int[] modelTypeSetToArray(Set<Integer> modelTypeSet) {
-        int[] modelTypeArray = new int[modelTypeSet.size()];
-        int i = 0;
-        for (int modelType : modelTypeSet) {
-            modelTypeArray[i++] = modelType;
-        }
-        return modelTypeArray;
     }
 
     public boolean hasKeepEverythingSynced() {
-        return nativeHasKeepEverythingSynced(mNativeProfileSyncServiceAndroid);
+        return ProfileSyncServiceJni.get().hasKeepEverythingSynced(
+                mNativeProfileSyncServiceAndroid, ProfileSyncService.this);
     }
 
     /**
@@ -375,48 +250,41 @@ public class ProfileSyncService {
      *                       syncEverything is true.
      */
     public void setChosenDataTypes(boolean syncEverything, Set<Integer> enabledTypes) {
-        nativeSetChosenDataTypes(mNativeProfileSyncServiceAndroid, syncEverything,
+        ProfileSyncServiceJni.get().setChosenDataTypes(mNativeProfileSyncServiceAndroid,
+                ProfileSyncService.this, syncEverything,
                 syncEverything ? ALL_SELECTABLE_TYPES : modelTypeSetToArray(enabledTypes));
     }
 
-    public void setFirstSetupComplete() {
-        nativeSetFirstSetupComplete(mNativeProfileSyncServiceAndroid);
+    public void setFirstSetupComplete(int syncFirstSetupCompleteSource) {
+        ProfileSyncServiceJni.get().setFirstSetupComplete(mNativeProfileSyncServiceAndroid,
+                ProfileSyncService.this, syncFirstSetupCompleteSource);
     }
 
     public boolean isFirstSetupComplete() {
-        return nativeIsFirstSetupComplete(mNativeProfileSyncServiceAndroid);
+        return ProfileSyncServiceJni.get().isFirstSetupComplete(
+                mNativeProfileSyncServiceAndroid, ProfileSyncService.this);
+    }
+
+    public void requestStart() {
+        ProfileSyncServiceJni.get().requestStart(
+                mNativeProfileSyncServiceAndroid, ProfileSyncService.this);
+    }
+
+    public void requestStop() {
+        ProfileSyncServiceJni.get().requestStop(
+                mNativeProfileSyncServiceAndroid, ProfileSyncService.this);
     }
 
     /**
-     * Checks whether syncing is "requested" by the user, i.e. the user has not disabled syncing
-     * in settings. Note that even if this is true, other reasons might prevent Sync from actually
-     * starting up.
+     * Checks whether syncing is requested by the user, i.e. the user has at least started a Sync
+     * setup flow, and has not disabled syncing in settings. Note that even if this is true, other
+     * reasons might prevent Sync from actually starting up.
      *
      * @return true if the user wants to sync, false otherwise.
      */
     public boolean isSyncRequested() {
-        return nativeIsSyncRequested(mNativeProfileSyncServiceAndroid);
-    }
-
-    /**
-     * Checks whether Sync-the-feature can (attempt to) start. This means that there is a primary
-     * account and no disable reasons. Note that the Sync machinery may start up in transport-only
-     * mode even if this is false.
-     *
-     * @return true if Sync can start, false otherwise.
-     */
-    public boolean canSyncFeatureStart() {
-        return nativeCanSyncFeatureStart(mNativeProfileSyncServiceAndroid);
-    }
-
-    /**
-     * Checks whether Sync-the-feature is currently active. Note that Sync-the-transport may be
-     * active even if this is false.
-     *
-     * @return true if Sync is active, false otherwise.
-     */
-    public boolean isSyncActive() {
-        return nativeIsSyncActive(mNativeProfileSyncServiceAndroid);
+        return ProfileSyncServiceJni.get().isSyncRequested(
+                mNativeProfileSyncServiceAndroid, ProfileSyncService.this);
     }
 
     /**
@@ -442,8 +310,11 @@ public class ProfileSyncService {
             assert mSetupInProgressCounter > 0;
             if (--mSetupInProgressCounter == 0) {
                 setSetupInProgress(false);
-                // The user has finished setting up sync at least once.
-                setFirstSetupComplete();
+                if (!ChromeFeatureList.isEnabled(ChromeFeatureList.SYNC_MANUAL_START_ANDROID)) {
+                    // The user has finished setting up sync at least once.
+                    setFirstSetupComplete(
+                            SyncFirstSetupCompleteSource.ENGINE_INITIALIZED_WITH_AUTO_START);
+                }
             }
         }
     }
@@ -462,7 +333,8 @@ public class ProfileSyncService {
     }
 
     private void setSetupInProgress(boolean inProgress) {
-        nativeSetSetupInProgress(mNativeProfileSyncServiceAndroid, inProgress);
+        ProfileSyncServiceJni.get().setSetupInProgress(
+                mNativeProfileSyncServiceAndroid, ProfileSyncService.this, inProgress);
     }
 
     public void addSyncStateChangedListener(SyncStateChangedListener listener) {
@@ -475,80 +347,157 @@ public class ProfileSyncService {
         mListeners.remove(listener);
     }
 
-    public boolean hasUnrecoverableError() {
-        return nativeHasUnrecoverableError(mNativeProfileSyncServiceAndroid);
-    }
-
-    /**
-     * Returns whether either personalized or anonymized URL keyed data collection is enabled.
-     *
-     * @param personlized Whether to check for personalized data collection. If false, this will
-     *                    check for anonymized data collection.
-     * @return Whether URL-keyed data collection is enabled for the current profile.
-     */
-    public boolean isUrlKeyedDataCollectionEnabled(boolean personalized) {
-        return nativeIsUrlKeyedDataCollectionEnabled(
-                mNativeProfileSyncServiceAndroid, personalized);
-    }
-
     /**
      * Called when the state of the native sync engine has changed, so various
      * UI elements can update themselves.
      */
     @CalledByNative
+    @VisibleForTesting
     public void syncStateChanged() {
         for (SyncStateChangedListener listener : mListeners) {
             listener.syncStateChanged();
         }
     }
 
-    /**
-     * Starts the sync engine.
-     */
-    public void requestStart() {
-        nativeRequestStart(mNativeProfileSyncServiceAndroid);
-    }
-
-    /**
-     * Stops the sync engine.
-     */
-    public void requestStop() {
-        nativeRequestStop(mNativeProfileSyncServiceAndroid);
-    }
-
     public void setSyncAllowedByPlatform(boolean allowed) {
-        nativeSetSyncAllowedByPlatform(mNativeProfileSyncServiceAndroid, allowed);
+        ProfileSyncServiceJni.get().setSyncAllowedByPlatform(
+                mNativeProfileSyncServiceAndroid, ProfileSyncService.this, allowed);
     }
 
     /**
-     * Flushes the sync directory.
+     * Flushes the sync directory to disk.
      */
     public void flushDirectory() {
-        nativeFlushDirectory(mNativeProfileSyncServiceAndroid);
+        ProfileSyncServiceJni.get().flushDirectory(
+                mNativeProfileSyncServiceAndroid, ProfileSyncService.this);
     }
 
     /**
-     * Returns the time when the last sync cycle was completed.
-     *
-     * @return The difference measured in microseconds, between last sync cycle completion time
-     * and 1 January 1970 00:00:00 UTC.
+     * Returns the actual passphrase type being used for encryption. The sync engine must be
+     * running (isEngineInitialized() returns true) before calling this function.
+     * <p/>
+     * This method should only be used if you want to know the raw value. For checking whether
+     * we should ask the user for a passphrase, use isPassphraseRequiredForPreferredDataTypes().
      */
-    @VisibleForTesting
-    public long getLastSyncedTimeForTest() {
-        return nativeGetLastSyncedTimeForTest(mNativeProfileSyncServiceAndroid);
+    public @Passphrase.Type int getPassphraseType() {
+        assert isEngineInitialized();
+        int passphraseType = ProfileSyncServiceJni.get().getPassphraseType(
+                mNativeProfileSyncServiceAndroid, ProfileSyncService.this);
+        if (passphraseType < 0 || passphraseType >= Passphrase.Type.NUM_ENTRIES) {
+            throw new IllegalArgumentException();
+        }
+        return passphraseType;
     }
 
     /**
-     * Overrides the Sync engine's NetworkResources. This is used to set up the Sync FakeServer for
-     * testing.
-     *
-     * @param networkResources the pointer to the NetworkResources created by the native code. It
-     *                         is assumed that the Java caller has ownership of this pointer;
-     *                         ownership is transferred as part of this call.
+     * Returns true if the current explicit passphrase time is defined.
      */
-    @VisibleForTesting
-    public void overrideNetworkResourcesForTest(long networkResources) {
-        nativeOverrideNetworkResourcesForTest(mNativeProfileSyncServiceAndroid, networkResources);
+    public boolean hasExplicitPassphraseTime() {
+        assert isEngineInitialized();
+        return ProfileSyncServiceJni.get().hasExplicitPassphraseTime(
+                mNativeProfileSyncServiceAndroid, ProfileSyncService.this);
+    }
+
+    /**
+     * Returns the current explicit passphrase time in milliseconds since epoch.
+     */
+    public long getExplicitPassphraseTime() {
+        assert isEngineInitialized();
+        return ProfileSyncServiceJni.get().getExplicitPassphraseTime(
+                mNativeProfileSyncServiceAndroid, ProfileSyncService.this);
+    }
+
+    public String getSyncEnterGooglePassphraseBodyWithDateText() {
+        assert isEngineInitialized();
+        return ProfileSyncServiceJni.get().getSyncEnterGooglePassphraseBodyWithDateText(
+                mNativeProfileSyncServiceAndroid, ProfileSyncService.this);
+    }
+
+    public String getSyncEnterCustomPassphraseBodyWithDateText() {
+        assert isEngineInitialized();
+        return ProfileSyncServiceJni.get().getSyncEnterCustomPassphraseBodyWithDateText(
+                mNativeProfileSyncServiceAndroid, ProfileSyncService.this);
+    }
+
+    public String getCurrentSignedInAccountText() {
+        assert isEngineInitialized();
+        return ProfileSyncServiceJni.get().getCurrentSignedInAccountText(
+                mNativeProfileSyncServiceAndroid, ProfileSyncService.this);
+    }
+
+    public String getSyncEnterCustomPassphraseBodyText() {
+        return ProfileSyncServiceJni.get().getSyncEnterCustomPassphraseBodyText(
+                mNativeProfileSyncServiceAndroid, ProfileSyncService.this);
+    }
+
+    /**
+     * Checks if sync is currently set to use a custom passphrase. The sync engine must be running
+     * (isEngineInitialized() returns true) before calling this function.
+     *
+     * @return true if sync is using a custom passphrase.
+     */
+    public boolean isUsingSecondaryPassphrase() {
+        assert isEngineInitialized();
+        return ProfileSyncServiceJni.get().isUsingSecondaryPassphrase(
+                mNativeProfileSyncServiceAndroid, ProfileSyncService.this);
+    }
+
+    /**
+     * Checks if we need a passphrase to decrypt a currently-enabled data type. This returns false
+     * if a passphrase is needed for a type that is not currently enabled.
+     *
+     * @return true if we need a passphrase.
+     */
+    public boolean isPassphraseRequiredForPreferredDataTypes() {
+        assert isEngineInitialized();
+        return ProfileSyncServiceJni.get().isPassphraseRequiredForPreferredDataTypes(
+                mNativeProfileSyncServiceAndroid, ProfileSyncService.this);
+    }
+
+    /**
+     * Checks if encrypting all the data types is allowed.
+     *
+     * @return true if encrypting all data types is allowed, false if only passwords are allowed to
+     * be encrypted.
+     */
+    public boolean isEncryptEverythingAllowed() {
+        assert isEngineInitialized();
+        return ProfileSyncServiceJni.get().isEncryptEverythingAllowed(
+                mNativeProfileSyncServiceAndroid, ProfileSyncService.this);
+    }
+
+    /**
+     * Checks if the user has chosen to encrypt all data types. Note that some data types (e.g.
+     * DEVICE_INFO) are never encrypted.
+     *
+     * @return true if all data types are encrypted, false if only passwords are encrypted.
+     */
+    public boolean isEncryptEverythingEnabled() {
+        assert isEngineInitialized();
+        return ProfileSyncServiceJni.get().isEncryptEverythingEnabled(
+                mNativeProfileSyncServiceAndroid, ProfileSyncService.this);
+    }
+
+    /**
+     * Turns on encryption of all data types. This only takes effect after sync configuration is
+     * completed and setChosenDataTypes() is invoked.
+     */
+    public void enableEncryptEverything() {
+        assert isEngineInitialized();
+        ProfileSyncServiceJni.get().enableEncryptEverything(
+                mNativeProfileSyncServiceAndroid, ProfileSyncService.this);
+    }
+
+    public void setEncryptionPassphrase(String passphrase) {
+        assert isEngineInitialized();
+        ProfileSyncServiceJni.get().setEncryptionPassphrase(
+                mNativeProfileSyncServiceAndroid, ProfileSyncService.this, passphrase);
+    }
+
+    public boolean setDecryptionPassphrase(String passphrase) {
+        assert isEngineInitialized();
+        return ProfileSyncServiceJni.get().setDecryptionPassphrase(
+                mNativeProfileSyncServiceAndroid, ProfileSyncService.this, passphrase);
     }
 
     /**
@@ -560,7 +509,8 @@ public class ProfileSyncService {
      * @return Whether client has prompted for a passphrase error previously.
      */
     public boolean isPassphrasePrompted() {
-        return nativeIsPassphrasePrompted(mNativeProfileSyncServiceAndroid);
+        return ProfileSyncServiceJni.get().isPassphrasePrompted(
+                mNativeProfileSyncServiceAndroid, ProfileSyncService.this);
     }
 
     /**
@@ -572,32 +522,69 @@ public class ProfileSyncService {
      * @param prompted whether the client has prompted the user previously.
      */
     public void setPassphrasePrompted(boolean prompted) {
-        nativeSetPassphrasePrompted(mNativeProfileSyncServiceAndroid,
-                                    prompted);
+        ProfileSyncServiceJni.get().setPassphrasePrompted(
+                mNativeProfileSyncServiceAndroid, ProfileSyncService.this, prompted);
     }
 
     /**
-     * Set the MasterSyncEnabledProvider for ProfileSyncService.
+     * Sets the the machine tag used by session sync.
+     */
+    public void setSessionsId(String sessionTag) {
+        ThreadUtils.assertOnUiThread();
+        ProfileSyncServiceJni.get().setSyncSessionsId(
+                mNativeProfileSyncServiceAndroid, ProfileSyncService.this, sessionTag);
+    }
+
+    /**
+     * Gets the number of devices known to sync.
      *
-     * This method is intentionally package-scope and should only be called once.
+     * @return number of syncing devices
      */
-    void setMasterSyncEnabledProvider(MasterSyncEnabledProvider masterSyncEnabledProvider) {
-        ThreadUtils.assertOnUiThread();
-        assert mMasterSyncEnabledProvider == null;
-        mMasterSyncEnabledProvider = masterSyncEnabledProvider;
+    public int getNumberOfSyncedDevices() {
+        return ProfileSyncServiceJni.get().getNumberOfSyncedDevices(
+                mNativeProfileSyncServiceAndroid, ProfileSyncService.this);
+    }
+
+    @VisibleForTesting
+    public long getNativeProfileSyncServiceForTest() {
+        return ProfileSyncServiceJni.get().getProfileSyncServiceForTest(
+                mNativeProfileSyncServiceAndroid, ProfileSyncService.this);
     }
 
     /**
-     * Returns whether Android's master sync setting is enabled.
+     * Returns the time when the last sync cycle was completed.
+     *
+     * @return The difference measured in microseconds, between last sync cycle completion time
+     * and 1 January 1970 00:00:00 UTC.
      */
-    @CalledByNative
-    public boolean isMasterSyncEnabled() {
-        ThreadUtils.assertOnUiThread();
-        // TODO(maxbogue): ensure that this method is never called before
-        // setMasterSyncEnabledProvider() and change the line below to an assert.
-        // See http://crbug.com/570569
-        if (mMasterSyncEnabledProvider == null) return true;
-        return mMasterSyncEnabledProvider.isMasterSyncEnabled();
+    @VisibleForTesting
+    public long getLastSyncedTimeForTest() {
+        return ProfileSyncServiceJni.get().getLastSyncedTimeForTest(
+                mNativeProfileSyncServiceAndroid, ProfileSyncService.this);
+    }
+
+    @VisibleForTesting
+    public void triggerRefresh() {
+        ProfileSyncServiceJni.get().triggerRefresh(
+                mNativeProfileSyncServiceAndroid, ProfileSyncService.this);
+    }
+
+    /**
+     * Callback for getAllNodes.
+     */
+    public static class GetAllNodesCallback {
+        private String mNodesString;
+
+        // Invoked when getAllNodes completes.
+        public void onResult(String nodesString) {
+            mNodesString = nodesString;
+        }
+
+        // Returns the result of GetAllNodes as a JSONArray.
+        @VisibleForTesting
+        public JSONArray getNodesAsJsonArray() throws JSONException {
+            return new JSONArray(mNodesString);
+        }
     }
 
     /**
@@ -614,64 +601,106 @@ public class ProfileSyncService {
      */
     @VisibleForTesting
     public void getAllNodes(GetAllNodesCallback callback) {
-        nativeGetAllNodes(mNativeProfileSyncServiceAndroid, callback);
+        ProfileSyncServiceJni.get().getAllNodes(
+                mNativeProfileSyncServiceAndroid, ProfileSyncService.this, callback);
     }
 
-    // Native methods
-    private native long nativeInit();
-    private native void nativeRequestStart(long nativeProfileSyncServiceAndroid);
-    private native void nativeRequestStop(long nativeProfileSyncServiceAndroid);
-    private native void nativeSetSyncAllowedByPlatform(
-            long nativeProfileSyncServiceAndroid, boolean allowed);
-    private native void nativeFlushDirectory(long nativeProfileSyncServiceAndroid);
-    private native void nativeSetSyncSessionsId(long nativeProfileSyncServiceAndroid, String tag);
-    private native int nativeGetAuthError(long nativeProfileSyncServiceAndroid);
-    private native int nativeGetProtocolErrorClientAction(long nativeProfileSyncServiceAndroid);
-    private native boolean nativeIsEngineInitialized(long nativeProfileSyncServiceAndroid);
-    private native boolean nativeIsEncryptEverythingAllowed(long nativeProfileSyncServiceAndroid);
-    private native boolean nativeIsEncryptEverythingEnabled(long nativeProfileSyncServiceAndroid);
-    private native void nativeEnableEncryptEverything(long nativeProfileSyncServiceAndroid);
-    private native boolean nativeIsPassphraseRequiredForDecryption(
-            long nativeProfileSyncServiceAndroid);
-    private native boolean nativeIsUsingSecondaryPassphrase(long nativeProfileSyncServiceAndroid);
+    private static Set<Integer> modelTypeArrayToSet(int[] modelTypeArray) {
+        Set<Integer> modelTypeSet = new HashSet<Integer>();
+        for (int i = 0; i < modelTypeArray.length; i++) {
+            modelTypeSet.add(modelTypeArray[i]);
+        }
+        return modelTypeSet;
+    }
 
-    private native boolean nativeSetDecryptionPassphrase(
-            long nativeProfileSyncServiceAndroid, String passphrase);
-    private native void nativeSetEncryptionPassphrase(
-            long nativeProfileSyncServiceAndroid, String passphrase);
-    private native int nativeGetPassphraseType(long nativeProfileSyncServiceAndroid);
-    private native boolean nativeHasExplicitPassphraseTime(long nativeProfileSyncServiceAndroid);
-    private native long nativeGetExplicitPassphraseTime(long nativeProfileSyncServiceAndroid);
-    private native String nativeGetSyncEnterGooglePassphraseBodyWithDateText(
-            long nativeProfileSyncServiceAndroid);
-    private native String nativeGetSyncEnterCustomPassphraseBodyWithDateText(
-            long nativeProfileSyncServiceAndroid);
-    private native String nativeGetCurrentSignedInAccountText(long nativeProfileSyncServiceAndroid);
-    private native String nativeGetSyncEnterCustomPassphraseBodyText(
-            long nativeProfileSyncServiceAndroid);
-    private native int nativeGetNumberOfSyncedDevices(long nativeProfileSyncServiceAndroid);
-    private native int[] nativeGetActiveDataTypes(long nativeProfileSyncServiceAndroid);
-    private native int[] nativeGetChosenDataTypes(long nativeProfileSyncServiceAndroid);
-    private native int[] nativeGetPreferredDataTypes(long nativeProfileSyncServiceAndroid);
-    private native void nativeSetChosenDataTypes(
-            long nativeProfileSyncServiceAndroid, boolean syncEverything, int[] modelTypeArray);
-    private native void nativeSetSetupInProgress(
-            long nativeProfileSyncServiceAndroid, boolean inProgress);
-    private native void nativeSetFirstSetupComplete(long nativeProfileSyncServiceAndroid);
-    private native boolean nativeIsFirstSetupComplete(long nativeProfileSyncServiceAndroid);
-    private native boolean nativeIsSyncRequested(long nativeProfileSyncServiceAndroid);
-    private native boolean nativeCanSyncFeatureStart(long nativeProfileSyncServiceAndroid);
-    private native boolean nativeIsSyncActive(long nativeProfileSyncServiceAndroid);
-    private native boolean nativeHasKeepEverythingSynced(long nativeProfileSyncServiceAndroid);
-    private native boolean nativeHasUnrecoverableError(long nativeProfileSyncServiceAndroid);
-    private native boolean nativeIsUrlKeyedDataCollectionEnabled(
-            long nativeProfileSyncServiceAndroid, boolean personalized);
-    private native boolean nativeIsPassphrasePrompted(long nativeProfileSyncServiceAndroid);
-    private native void nativeSetPassphrasePrompted(long nativeProfileSyncServiceAndroid,
-                                                    boolean prompted);
-    private native long nativeGetLastSyncedTimeForTest(long nativeProfileSyncServiceAndroid);
-    private native void nativeOverrideNetworkResourcesForTest(
-            long nativeProfileSyncServiceAndroid, long networkResources);
-    private native void nativeGetAllNodes(
-            long nativeProfileSyncServiceAndroid, GetAllNodesCallback callback);
+    private static int[] modelTypeSetToArray(Set<Integer> modelTypeSet) {
+        int[] modelTypeArray = new int[modelTypeSet.size()];
+        int i = 0;
+        for (int modelType : modelTypeSet) {
+            modelTypeArray[i++] = modelType;
+        }
+        return modelTypeArray;
+    }
+
+    @NativeMethods
+    interface Natives {
+        long init(ProfileSyncService caller);
+
+        void requestStart(long nativeProfileSyncServiceAndroid, ProfileSyncService caller);
+        void requestStop(long nativeProfileSyncServiceAndroid, ProfileSyncService caller);
+        void setSyncAllowedByPlatform(
+                long nativeProfileSyncServiceAndroid, ProfileSyncService caller, boolean allowed);
+        void flushDirectory(long nativeProfileSyncServiceAndroid, ProfileSyncService caller);
+        void setSyncSessionsId(
+                long nativeProfileSyncServiceAndroid, ProfileSyncService caller, String tag);
+        int getAuthError(long nativeProfileSyncServiceAndroid, ProfileSyncService caller);
+        boolean requiresClientUpgrade(
+                long nativeProfileSyncServiceAndroid, ProfileSyncService caller);
+        boolean isEngineInitialized(
+                long nativeProfileSyncServiceAndroid, ProfileSyncService caller);
+        boolean isEncryptEverythingAllowed(
+                long nativeProfileSyncServiceAndroid, ProfileSyncService caller);
+        boolean isEncryptEverythingEnabled(
+                long nativeProfileSyncServiceAndroid, ProfileSyncService caller);
+        boolean isTransportStateActive(
+                long nativeProfileSyncServiceAndroid, ProfileSyncService caller);
+        void enableEncryptEverything(
+                long nativeProfileSyncServiceAndroid, ProfileSyncService caller);
+        boolean isPassphraseRequiredForPreferredDataTypes(
+                long nativeProfileSyncServiceAndroid, ProfileSyncService caller);
+        boolean isUsingSecondaryPassphrase(
+                long nativeProfileSyncServiceAndroid, ProfileSyncService caller);
+        boolean setDecryptionPassphrase(
+                long nativeProfileSyncServiceAndroid, ProfileSyncService caller, String passphrase);
+        void setEncryptionPassphrase(
+                long nativeProfileSyncServiceAndroid, ProfileSyncService caller, String passphrase);
+        int getPassphraseType(long nativeProfileSyncServiceAndroid, ProfileSyncService caller);
+        boolean hasExplicitPassphraseTime(
+                long nativeProfileSyncServiceAndroid, ProfileSyncService caller);
+        long getExplicitPassphraseTime(
+                long nativeProfileSyncServiceAndroid, ProfileSyncService caller);
+        String getSyncEnterGooglePassphraseBodyWithDateText(
+                long nativeProfileSyncServiceAndroid, ProfileSyncService caller);
+        String getSyncEnterCustomPassphraseBodyWithDateText(
+                long nativeProfileSyncServiceAndroid, ProfileSyncService caller);
+        String getCurrentSignedInAccountText(
+                long nativeProfileSyncServiceAndroid, ProfileSyncService caller);
+        String getSyncEnterCustomPassphraseBodyText(
+                long nativeProfileSyncServiceAndroid, ProfileSyncService caller);
+        int getNumberOfSyncedDevices(
+                long nativeProfileSyncServiceAndroid, ProfileSyncService caller);
+        int[] getActiveDataTypes(long nativeProfileSyncServiceAndroid, ProfileSyncService caller);
+        int[] getChosenDataTypes(long nativeProfileSyncServiceAndroid, ProfileSyncService caller);
+        int[] getPreferredDataTypes(
+                long nativeProfileSyncServiceAndroid, ProfileSyncService caller);
+        void setChosenDataTypes(long nativeProfileSyncServiceAndroid, ProfileSyncService caller,
+                boolean syncEverything, int[] modelTypeArray);
+        void triggerRefresh(long nativeProfileSyncServiceAndroid, ProfileSyncService caller);
+        void setSetupInProgress(long nativeProfileSyncServiceAndroid, ProfileSyncService caller,
+                boolean inProgress);
+        void setFirstSetupComplete(long nativeProfileSyncServiceAndroid, ProfileSyncService caller,
+                int syncFirstSetupCompleteSource);
+        boolean isFirstSetupComplete(
+                long nativeProfileSyncServiceAndroid, ProfileSyncService caller);
+        boolean isSyncRequested(long nativeProfileSyncServiceAndroid, ProfileSyncService caller);
+        boolean canSyncFeatureStart(
+                long nativeProfileSyncServiceAndroid, ProfileSyncService caller);
+        boolean isSyncActive(long nativeProfileSyncServiceAndroid, ProfileSyncService caller);
+        boolean isSyncDisabledByEnterprisePolicy(
+                long nativeProfileSyncServiceAndroid, ProfileSyncService caller);
+        boolean hasKeepEverythingSynced(
+                long nativeProfileSyncServiceAndroid, ProfileSyncService caller);
+        boolean hasUnrecoverableError(
+                long nativeProfileSyncServiceAndroid, ProfileSyncService caller);
+        boolean isPassphrasePrompted(
+                long nativeProfileSyncServiceAndroid, ProfileSyncService caller);
+        void setPassphrasePrompted(
+                long nativeProfileSyncServiceAndroid, ProfileSyncService caller, boolean prompted);
+        long getProfileSyncServiceForTest(
+                long nativeProfileSyncServiceAndroid, ProfileSyncService caller);
+        long getLastSyncedTimeForTest(
+                long nativeProfileSyncServiceAndroid, ProfileSyncService caller);
+        void getAllNodes(long nativeProfileSyncServiceAndroid, ProfileSyncService caller,
+                GetAllNodesCallback callback);
+    }
 }

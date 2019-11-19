@@ -11,13 +11,10 @@
 #include "ash/ash_export.h"
 #include "base/callback.h"
 #include "base/strings/string16.h"
+#include "ui/gfx/native_widget_types.h"
 
 namespace aura {
 class Window;
-}
-
-namespace ws {
-class InputDeviceControllerClient;
 }
 
 namespace ash {
@@ -41,10 +38,10 @@ class ASH_EXPORT ShellDelegate {
   // Creates a accessibility delegate. Shell takes ownership of the delegate.
   virtual AccessibilityDelegate* CreateAccessibilityDelegate() = 0;
 
-  virtual void OpenKeyboardShortcutHelpPage() const {}
+  // Check whether the current tab of the browser window can go back.
+  virtual bool CanGoBack(gfx::NativeWindow window) const = 0;
 
-  // Creator of Shell owns this; it's assumed this outlives Shell.
-  virtual ws::InputDeviceControllerClient* GetInputDeviceControllerClient() = 0;
+  virtual void OpenKeyboardShortcutHelpPage() const {}
 };
 
 }  // namespace ash

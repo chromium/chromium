@@ -1,0 +1,11 @@
+<html>
+  <head>
+    <!-- Disable referrer to test that the redirect loop detection works even
+         when referrer policy prevents setting of referrer-->
+    <meta name="referrer" content="no-referrer" />
+    <title>Test page that client redirects to another page (that may loop back).</title>
+    <script>
+    document.location.href = "/client_redirect_loop_with_defer_all_script.html";
+    </script>
+  </head>
+</html>

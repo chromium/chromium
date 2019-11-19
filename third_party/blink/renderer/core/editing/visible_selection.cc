@@ -38,7 +38,6 @@
 #include "third_party/blink/renderer/platform/geometry/layout_point.h"
 #include "third_party/blink/renderer/platform/wtf/assertions.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
-#include "third_party/blink/renderer/platform/wtf/text/cstring.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
@@ -367,7 +366,7 @@ void VisibleSelectionTemplate<Strategy>::Trace(Visitor* visitor) {
   visitor->Trace(extent_);
 }
 
-#ifndef NDEBUG
+#if DCHECK_IS_ON()
 
 template <typename Strategy>
 void VisibleSelectionTemplate<Strategy>::ShowTreeForThis() const {
@@ -381,10 +380,8 @@ void VisibleSelectionTemplate<Strategy>::ShowTreeForThis() const {
                    ->ToMarkedTreeString(Start().AnchorNode(), "S",
                                         End().AnchorNode(), "E")
                    .Utf8()
-                   .data()
-            << "start: " << Start().ToAnchorTypeAndOffsetString().Utf8().data()
-            << "\n"
-            << "end: " << End().ToAnchorTypeAndOffsetString().Utf8().data();
+            << "start: " << Start().ToAnchorTypeAndOffsetString().Utf8() << "\n"
+            << "end: " << End().ToAnchorTypeAndOffsetString().Utf8();
 }
 
 #endif
@@ -422,7 +419,7 @@ std::ostream& operator<<(std::ostream& ostream,
 
 }  // namespace blink
 
-#ifndef NDEBUG
+#if DCHECK_IS_ON()
 
 void showTree(const blink::VisibleSelection& sel) {
   sel.ShowTreeForThis();

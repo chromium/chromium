@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL Ordering of steps in "Update the Rendering" - child document requestAnimationFrame order assert_array_equals: expected order of notifications lengths differ, expected 3 got 6
+Harness: the test ran to completion.
+

@@ -12,9 +12,9 @@
 #include "base/memory/weak_ptr.h"
 #include "device/bluetooth/bluetooth_gatt_characteristic.h"
 #include "device/bluetooth/bluetooth_local_gatt_characteristic.h"
-#include "device/bluetooth/bluetooth_uuid.h"
 #include "device/bluetooth/bluez/bluetooth_gatt_characteristic_bluez.h"
 #include "device/bluetooth/bluez/bluetooth_local_gatt_descriptor_bluez.h"
+#include "device/bluetooth/public/cpp/bluetooth_uuid.h"
 
 namespace bluez {
 
@@ -74,7 +74,8 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothLocalGattCharacteristicBlueZ
 
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.
-  base::WeakPtrFactory<BluetoothLocalGattCharacteristicBlueZ> weak_ptr_factory_;
+  base::WeakPtrFactory<BluetoothLocalGattCharacteristicBlueZ> weak_ptr_factory_{
+      this};
 
   DISALLOW_COPY_AND_ASSIGN(BluetoothLocalGattCharacteristicBlueZ);
 };

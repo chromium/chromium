@@ -5,5 +5,5 @@
 
 <nine-patch xmlns:android="http://schemas.android.com/apk/res/android"
     android:src="@drawable/popup_bg"
-    android:tint="@color/modern_primary_color"
-    android:tintMode="multiply"/>
+    android:tint="@color/popup_bg_color"
+    android:tintMode="multiply" />

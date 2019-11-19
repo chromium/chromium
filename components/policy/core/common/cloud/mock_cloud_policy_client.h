@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -18,6 +19,11 @@ class SharedURLLoaderFactory;
 }
 
 namespace policy {
+
+ACTION_P(ScheduleStatusCallback, status) {
+  base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
+                                                base::BindOnce(arg0, status));
+}
 
 class MockCloudPolicyClient : public CloudPolicyClient {
  public:
@@ -30,16 +36,10 @@ class MockCloudPolicyClient : public CloudPolicyClient {
                void(const std::string&,
                     const std::string&,
                     const std::vector<std::string>&));
-  MOCK_METHOD8(
-      Register,
-      void(enterprise_management::DeviceRegisterRequest::Type type,
-           enterprise_management::DeviceRegisterRequest::Flavor flavor,
-           enterprise_management::DeviceRegisterRequest::Lifetime lifetime,
-           enterprise_management::LicenseType::LicenseTypeEnum license_type,
-           const std::string&,
-           const std::string&,
-           const std::string&,
-           const std::string&));
+  MOCK_METHOD3(Register,
+               void(const RegistrationParameters&,
+                    const std::string&,
+                    const std::string&));
   MOCK_METHOD0(FetchPolicy, void(void));
   MOCK_METHOD0(Unregister, void(void));
   MOCK_METHOD2(UploadEnterpriseMachineCertificate,
@@ -48,9 +48,10 @@ class MockCloudPolicyClient : public CloudPolicyClient {
                void(const std::string&, const StatusCallback&));
   MOCK_METHOD2(UploadEnterpriseEnrollmentId,
                void(const std::string&, const StatusCallback&));
-  MOCK_METHOD3(UploadDeviceStatus,
+  MOCK_METHOD4(UploadDeviceStatus,
                void(const enterprise_management::DeviceStatusReportRequest*,
                     const enterprise_management::SessionStatusReportRequest*,
+                    const enterprise_management::ChildStatusReportRequest*,
                     const StatusCallback&));
   MOCK_METHOD2(UploadAppInstallReport,
                void(const enterprise_management::AppInstallReportRequest*,
@@ -62,6 +63,29 @@ class MockCloudPolicyClient : public CloudPolicyClient {
                     const std::vector<ValueValidationIssue>&,
                     const std::string&,
                     const std::string&));
+
+  void UploadChromeDesktopReport(
+      std::unique_ptr<enterprise_management::ChromeDesktopReportRequest>
+          request,
+      const StatusCallback& callback) override {
+    UploadChromeDesktopReportProxy(request.get(), callback);
+  }
+  // Use Proxy function because unique_ptr can't be used in mock function.
+  MOCK_METHOD2(UploadChromeDesktopReportProxy,
+               void(enterprise_management::ChromeDesktopReportRequest*,
+                    const StatusCallback&));
+
+  void UploadChromeOsUserReport(
+      std::unique_ptr<enterprise_management::ChromeOsUserReportRequest> request,
+      const StatusCallback& callback) override {
+    UploadChromeOsUserReportProxy(request.get(), callback);
+  }
+  // Use Proxy function because unique_ptr can't be used in mock function.
+  MOCK_METHOD2(UploadChromeOsUserReportProxy,
+               void(enterprise_management::ChromeOsUserReportRequest*,
+                    const StatusCallback&));
+
+  MOCK_METHOD2(UploadRealtimeReport, void(base::Value, const StatusCallback&));
 
   // Sets the DMToken.
   void SetDMToken(const std::string& token);

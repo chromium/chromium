@@ -25,10 +25,13 @@ source_set("service_manager") {
     "background_service_manager.h",
     "catalog.cc",
     "catalog.h",
-    "connect_params.cc",
-    "connect_params.h",
+    "service_instance.cc",
+    "service_instance.h",
+    "service_instance_registry.cc",
+    "service_instance_registry.h",
     "service_manager.cc",
     "service_manager.h",
+    "service_process_host.h",
     "service_process_launcher_delegate.h",
     "service_process_launcher_factory.h",
     "switches.cc",
@@ -40,7 +43,8 @@ source_set("service_manager") {
   deps = [
     "//base/third_party/dynamic_annotations",
     "//components/services/filesystem:lib",
-    "//components/services/filesystem/public/interfaces",
+    "//components/services/filesystem/public/mojom",
+    "//ui/base",
   ]
 
   public_deps = [

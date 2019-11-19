@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>navigator.clipboard.readText() succeeds when permission granted</title>
+<link rel="help" href="https://w3c.github.io/clipboard-apis/#async-clipboard-api">
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<script src="../../../http/tests/resources/permissions-helper.js"></script>
+<script>
+promise_test(async () => {
+  await PermissionsHelper.setPermission('clipboard-read', 'granted');
+  await navigator.clipboard.readText();
+}, 'navigator.clipboard.readText() succeeds when permission granted');
+</script>

@@ -3,10 +3,7 @@
      Use of this source code is governed by a BSD-style license that can be
      found in the LICENSE file.
 -->
-<resources xmlns:android="http://schemas.android.com/apk/res/android">
-    <!-- Menu Animation Constants -->
-    <item type="fraction" format="fraction" name="menu_animation_pivot_x">5%</item>
-
+<resources>
     <!-- Value for scaleX to mirror drawables correctly for LTR / RTL layouts. -->
     <integer name="automirror_scale_x_reverse">1</integer>
 </resources>

@@ -32,50 +32,57 @@
 // 6. "multi_gpu_category" is a string, valid values include "any", "primary",
 //    "secondary", and "active". If unspecified, the default value is "active".
 //    See gpu_control_list.h for more details on the meanings of the strings.
-// 7. "driver_vendor" is a string pattern.
-// 8. "driver_version" is a VERSION structure (defined below).
-// 9. "driver_date" is a VERSION structure (defined below).
-//    The version is interpreted as "year.month.day".
-// 10. "gl_type" is a string, valid values include "gl", "gles", and "angle".
+// 7. "driver_vendor" is a string pattern. (Not available on Windows)
+// 8. "driver_version" is a VERSION structure (defined below). On Windows
+//    this value can be retrieved by searching for the "Driver File Version" in
+//    dxdiag.txt
+// 9. "gl_type" is a string, valid values include "gl", "gles", and "angle".
 //    If "gl_version" is specified and "gl_type" is not, use the default value.
 //    The default value on Android is "gles", on Windows is "angle", on other
 //    platforms is "gl".
-// 11. "gl_version" is a VERSION structure (defined below).
-// 12. "gl_vendor" is a string pattern.
-// 13. "gl_renderer" is a string pattern.
-// 14. "gl_extensions" is a string pattern.
-// 15. "machine_model_name" is an array of string patterns.
-// 16. "machine_model_version" is a VERSION structure (defined below).
-// 17. "gpu_count" is a INT structure (defined below).
-// 18. "cpu_info" is a string pattern.
-// 19. "exceptions" is a list of entries.
-// 20. "features" is a list of gpu control list options, which can be
+// 10. "gl_version" is a VERSION structure (defined below).
+// 11. "gl_vendor" is a string pattern.
+// 12. "gl_renderer" is a string pattern.
+// 13. "gl_extensions" is a string pattern.
+// 14. "machine_model_name" is an array of string patterns.
+// 15. "machine_model_version" is a VERSION structure (defined below).
+// 16. "gpu_count" is a INT structure (defined below).
+// 17. "cpu_info" is a string pattern.
+// 18. "exceptions" is a list of entries.
+// 19. "features" is a list of gpu control list options, which can be
 //     configured by a specific list. See its *_json.cc file for a list of
 //     supported features. This field is mandatory.
 //     An "exceptions" list to the features can be added for convenience instead
 //     of listing all features except one.
-// 21. "description" has the description of the entry.
-// 22. "webkit_bugs" is an array of associated webkit bug numbers.
-// 23. "cr_bugs" is an array of associated webkit bug numbers.
-// 24. "disabled" is a boolean. If it is present, the entry will be skipped.
+// 20. "description" has the description of the entry.
+// 21. "webkit_bugs" is an array of associated webkit bug numbers.
+// 22. "cr_bugs" is an array of associated webkit bug numbers.
+// 23. "disabled" is a boolean. If it is present, the entry will be skipped.
 //     This can not be used in exceptions.
-// 25. "direct_rendering" is a boolean. If present, this will filter on whether
+// 24. "direct_rendering" is a boolean. If present, this will filter on whether
 //     the GL contexts are direct or indirect based on the value.
-// 26. "disabled_extensions" is a list of strings which contain the GL_EXTENSION
+// 25. "disabled_extensions" is a list of strings which contain the GL_EXTENSION
 //     strings which are disabled by the workaround.
-// 27. "pixel_shader_version" is a VERSION structure (defined below).
-// 28. "test_group" is an non-negative integer. If not specified, it defaults
+// 26. "pixel_shader_version" is a VERSION structure (defined below).
+// 27. "test_group" is an non-negative integer. If not specified, it defaults
 //     to 0, which is Chrome's blacklist. Any entries with a non-zero test_group
 //     ID will be appended on top of the default group entries if Chrome runs
 //     with --gpu-blacklist-test-group=ID.
-// 29. "gpu_series" is a list of gpu series names. Currently supported series
+// 28. "gpu_series" is a list of gpu series names. Currently supported series
 //     include: "intel_sandybridge", "intel_valleyview", "intel_ivybridge",
 //     "intel_haswell", "intel_cherryview", "intel_broadwell",
 //     "intel_apollolake", "intel_skylake", "intel_geminilake",
-//     "intel_kabylake", "intel_coffeelake".
-// 30. "hardware_overlay" is either "supported" or "unsupported". Currently it
+//     "intel_kabylake", "intel_coffeelake", "intel_whiskeylake",
+//     "intel_cometlake", "intel_cannonlake", "intel_icelake".
+// 29. "hardware_overlay" is either "supported" or "unsupported". Currently it
 //     only applies on Windows where hardware overlays may be supported on
 //     certain Intel GPUs. By default it's "dont_care" and there is no need to
+//     specify that.
+// 30. "intel_gpu_generation" is a VERSION structure. Each Intel GPU has a
+//     specific integer (meaning generation) associated.
+// 31. "subpixel_font_rendering" is either "supported" or "unsupported". Currently it
+//     only applies on ChromeOS where subpixel font rendering causes a glitch
+//     on Mali GPUs. By default it's "dont_care" and there is no need to
 //     specify that.
 //
 // VERSION includes "op", "style", "value", and "value2".  "op" can be any of
@@ -86,7 +93,7 @@
 // "value" is used for all "op" values except "any". "value" and "value2"
 // are in the format of x, x.x, x.x.x, etc.
 // Only "driver_version" supports lexical style if the format is major.minor;
-// in that case, major is still numerical, but minor is lexical. 
+// in that case, major is still numerical, but minor is lexical.
 //
 // FLOAT includes "op" "value", and "value2".  "op" can be any of the
 // following values: "=", "<", "<=", ">", ">=", "any", "between".  "value2" is

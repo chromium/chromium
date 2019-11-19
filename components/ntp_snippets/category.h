@@ -23,10 +23,10 @@ enum class KnownCategories {
   RECENT_TABS_DEPRECATED,
 
   // Pages downloaded by the user for offline consumption.
-  DOWNLOADS,
+  DOWNLOADS_DEPRECATED,
 
   // Recently used bookmarks.
-  BOOKMARKS,
+  BOOKMARKS_DEPRECATED,
 
   // Physical Web page available in the vicinity.
   PHYSICAL_WEB_PAGES_DEPRECATED,
@@ -36,9 +36,6 @@ enum class KnownCategories {
 
   // Pages from the user reading list.
   READING_LIST,
-
-  // Contextual suggestion.
-  CONTEXTUAL,
 
   // ****************** INSERT NEW LOCAL CATEGORIES HERE! ******************
   // Existing categories are persisted and they must never be removed. This may

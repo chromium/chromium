@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+FAIL events are dispatched in the correct order for an empty blob assert_equals: Expected load event, but got progress event instead expected "load" but got "progress"
+PASS events are dispatched in the correct order for a non-empty blob
+Harness: the test ran to completion.
+

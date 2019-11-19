@@ -1,5 +1,5 @@
 <!doctype html>
-<html i18n-values="dir:textdirection;lang:language">
+<html dir="$i18n{textdirection}" lang="$i18n{language}">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0,
@@ -7,23 +7,19 @@
 <link rel="stylesheet" href="chrome://resources/css/text_defaults.css">
 <link rel="stylesheet" href="chrome://resources/css/widgets.css">
 <link rel="stylesheet" href="slow.css">
-<script src="chrome://resources/js/load_time_data.js"></script>
 <script src="chrome://resources/js/cr.js"></script>
-<script src="chrome://resources/js/cr/event_target.js"></script>
 <script src="chrome://resources/js/util.js"></script>
-<script src="chrome://slow/slow.js"></script>
-<script src="chrome://slow/strings.js"></script>
+<script src="slow.js"></script>
 </head>
 <body>
-  <div id="container" class="container">
-    <div i18n-content="slowDescription"></div>
+  <div id="container">
+    <div>$i18n{slowDescription}</div>
     <br>
-    <div i18n-values=".innerHTML:slowWarning"></div>
-    <div id="container-inner" width=100% class="container-inner">
-      <button id="slow-disable" i18n-content="slowDisable" hidden></button>
-      <button id="slow-enable" i18n-content="slowEnable" hidden></button>
+    <div>$i18nRaw{slowWarning}</div>
+    <div id="container-inner">
+      <button id="slow-disable" hidden>$i18n{slowDisable}</button>
+      <button id="slow-enable" hidden>$i18n{slowEnable}</button>
     </div>
   </div>
-<script src="chrome://resources/js/i18n_template.js"></script>
 </body>
 </html>

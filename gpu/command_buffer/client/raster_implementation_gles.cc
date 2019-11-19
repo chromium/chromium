@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/logging.h"
-#include "cc/paint/color_space_transfer_cache_entry.h"
 #include "cc/paint/decode_stashing_image_provider.h"
 #include "cc/paint/display_item_list.h"  // nogncheck
 #include "cc/paint/paint_op_buffer_serializer.h"
@@ -51,20 +50,6 @@ void RasterImplementationGLES::OrderingBarrierCHROMIUM() {
   gl_->OrderingBarrierCHROMIUM();
 }
 
-void RasterImplementationGLES::GenUnverifiedSyncTokenCHROMIUM(
-    GLbyte* sync_token) {
-  gl_->GenUnverifiedSyncTokenCHROMIUM(sync_token);
-}
-
-void RasterImplementationGLES::VerifySyncTokensCHROMIUM(GLbyte** sync_tokens,
-                                                        GLsizei count) {
-  gl_->VerifySyncTokensCHROMIUM(sync_tokens, count);
-}
-
-void RasterImplementationGLES::WaitSyncTokenCHROMIUM(const GLbyte* sync_token) {
-  gl_->WaitSyncTokenCHROMIUM(sync_token);
-}
-
 GLenum RasterImplementationGLES::GetError() {
   return gl_->GetError();
 }
@@ -95,10 +80,20 @@ void RasterImplementationGLES::EndQueryEXT(GLenum target) {
   gl_->EndQueryEXT(target);
 }
 
+void RasterImplementationGLES::QueryCounterEXT(GLuint id, GLenum target) {
+  gl_->QueryCounterEXT(id, target);
+}
+
 void RasterImplementationGLES::GetQueryObjectuivEXT(GLuint id,
                                                     GLenum pname,
                                                     GLuint* params) {
   gl_->GetQueryObjectuivEXT(id, pname, params);
+}
+
+void RasterImplementationGLES::GetQueryObjectui64vEXT(GLuint id,
+                                                      GLenum pname,
+                                                      GLuint64* params) {
+  gl_->GetQueryObjectui64vEXT(id, pname, params);
 }
 
 void RasterImplementationGLES::CopySubTexture(
@@ -128,7 +123,7 @@ void RasterImplementationGLES::BeginRasterCHROMIUM(
     GLuint sk_color,
     GLuint msaa_sample_count,
     GLboolean can_use_lcd_text,
-    const cc::RasterColorSpace& raster_color_space,
+    const gfx::ColorSpace& color_space,
     const GLbyte* mailbox) {
   NOTREACHED();
 }
@@ -141,7 +136,8 @@ void RasterImplementationGLES::RasterCHROMIUM(
     const gfx::Rect& playback_rect,
     const gfx::Vector2dF& post_translate,
     GLfloat post_scale,
-    bool requires_clear) {
+    bool requires_clear,
+    size_t* max_op_size_hint) {
   NOTREACHED();
 }
 
@@ -151,12 +147,6 @@ void RasterImplementationGLES::SetActiveURLCHROMIUM(const char* url) {
 
 void RasterImplementationGLES::EndRasterCHROMIUM() {
   NOTREACHED();
-}
-
-bool RasterImplementationGLES::CanDecodeWithHardwareAcceleration(
-    base::span<const uint8_t> encoded_data) {
-  NOTREACHED();
-  return false;
 }
 
 SyncToken RasterImplementationGLES::ScheduleImageDecode(
@@ -170,8 +160,12 @@ SyncToken RasterImplementationGLES::ScheduleImageDecode(
 }
 
 GLuint RasterImplementationGLES::CreateAndConsumeForGpuRaster(
-    const GLbyte* mailbox) {
-  return gl_->CreateAndConsumeTextureCHROMIUM(mailbox);
+    const gpu::Mailbox& mailbox) {
+  if (mailbox.IsSharedImage()) {
+    return gl_->CreateAndTexStorage2DSharedImageCHROMIUM(mailbox.name);
+  } else {
+    return gl_->CreateAndConsumeTextureCHROMIUM(mailbox.name);
+  }
 }
 
 void RasterImplementationGLES::DeleteGpuRasterTexture(GLuint texture) {
@@ -203,6 +197,22 @@ void RasterImplementationGLES::TraceBeginCHROMIUM(const char* category_name,
 
 void RasterImplementationGLES::TraceEndCHROMIUM() {
   gl_->TraceEndCHROMIUM();
+}
+
+// InterfaceBase implementation.
+void RasterImplementationGLES::GenSyncTokenCHROMIUM(GLbyte* sync_token) {
+  gl_->GenSyncTokenCHROMIUM(sync_token);
+}
+void RasterImplementationGLES::GenUnverifiedSyncTokenCHROMIUM(
+    GLbyte* sync_token) {
+  gl_->GenUnverifiedSyncTokenCHROMIUM(sync_token);
+}
+void RasterImplementationGLES::VerifySyncTokensCHROMIUM(GLbyte** sync_tokens,
+                                                        GLsizei count) {
+  gl_->VerifySyncTokensCHROMIUM(sync_tokens, count);
+}
+void RasterImplementationGLES::WaitSyncTokenCHROMIUM(const GLbyte* sync_token) {
+  gl_->WaitSyncTokenCHROMIUM(sync_token);
 }
 
 }  // namespace raster

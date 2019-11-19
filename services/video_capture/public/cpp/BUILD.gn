@@ -14,7 +14,6 @@ source_set("cpp") {
     "//base",
     "//media",
     "//media/capture:capture",
-    "//services/service_manager/public/cpp",
     "//services/video_capture/public/mojom",
   ]
 
@@ -23,36 +22,20 @@ source_set("cpp") {
   ]
 }
 
-source_set("manifest") {
-  sources = [
-    "manifest.cc",
-    "manifest.h",
-  ]
-  deps = [
-    "//base",
-    "//services/service_manager/public/cpp",
-    "//services/video_capture/public/mojom",
-    "//services/video_capture/public/mojom:constants",
-  ]
-  if (is_chromeos) {
-    deps += [ "//media/capture/video/chromeos/mojo:cros_camera" ]
-  }
-}
-
 source_set("mocks") {
   testonly = true
 
   sources = [
     "mock_device_factory.cc",
     "mock_device_factory.h",
-    "mock_device_factory_provider.cc",
-    "mock_device_factory_provider.h",
     "mock_producer.cc",
     "mock_producer.h",
     "mock_push_subscription.cc",
     "mock_push_subscription.h",
-    "mock_receiver.cc",
-    "mock_receiver.h",
+    "mock_video_capture_service.cc",
+    "mock_video_capture_service.h",
+    "mock_video_frame_handler.cc",
+    "mock_video_frame_handler.h",
     "mock_video_source.cc",
     "mock_video_source.h",
     "mock_video_source_provider.cc",

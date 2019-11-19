@@ -9,32 +9,18 @@
 
 #include "base/bind.h"
 #include "base/numerics/safe_conversions.h"
-#include "content/public/child/child_thread.h"
-#include "content/public/common/service_manager_connection.h"
-#include "content/public/common/simple_connection_filter.h"
 #include "content/public/renderer/render_thread.h"
-#include "services/service_manager/public/cpp/binder_registry.h"
 #include "third_party/blink/public/platform/web_cache.h"
 
 namespace web_cache {
 
-WebCacheImpl::WebCacheImpl() : clear_cache_state_(kInit) {
-  auto registry = std::make_unique<service_manager::BinderRegistry>();
-  registry->AddInterface(
-      base::Bind(&WebCacheImpl::BindRequest, base::Unretained(this)),
-      base::ThreadTaskRunnerHandle::Get());
-  if (content::ChildThread::Get()) {
-    content::ChildThread::Get()
-        ->GetServiceManagerConnection()
-        ->AddConnectionFilter(std::make_unique<content::SimpleConnectionFilter>(
-            std::move(registry)));
-  }
-}
+WebCacheImpl::WebCacheImpl() = default;
 
-WebCacheImpl::~WebCacheImpl() {}
+WebCacheImpl::~WebCacheImpl() = default;
 
-void WebCacheImpl::BindRequest(mojom::WebCacheRequest web_cache_request) {
-  bindings_.AddBinding(this, std::move(web_cache_request));
+void WebCacheImpl::BindReceiver(
+    mojo::PendingReceiver<mojom::WebCache> web_cache_receiver) {
+  receivers_.Add(this, std::move(web_cache_receiver));
 }
 
 void WebCacheImpl::ExecutePendingClearCache() {

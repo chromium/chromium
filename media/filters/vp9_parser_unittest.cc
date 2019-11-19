@@ -134,7 +134,9 @@ class Vp9ParserTest : public TestWithParam<TestParams> {
 Vp9Parser::Result Vp9ParserTest::ParseNextFrame(Vp9FrameHeader* fhdr) {
   while (1) {
     std::unique_ptr<DecryptConfig> null_config;
-    Vp9Parser::Result res = vp9_parser_->ParseNextFrame(fhdr, &null_config);
+    gfx::Size allocate_size;
+    Vp9Parser::Result res =
+        vp9_parser_->ParseNextFrame(fhdr, &allocate_size, &null_config);
     if (res == Vp9Parser::kEOStream) {
       IvfFrameHeader ivf_frame_header;
       const uint8_t* ivf_payload;
@@ -142,7 +144,8 @@ Vp9Parser::Result Vp9ParserTest::ParseNextFrame(Vp9FrameHeader* fhdr) {
       if (!ivf_parser_.ParseNextFrame(&ivf_frame_header, &ivf_payload))
         return Vp9Parser::kEOStream;
 
-      vp9_parser_->SetStream(ivf_payload, ivf_frame_header.frame_size, nullptr);
+      vp9_parser_->SetStream(ivf_payload, ivf_frame_header.frame_size,
+                             nullptr);
       continue;
     }
 

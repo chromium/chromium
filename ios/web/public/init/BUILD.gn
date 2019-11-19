@@ -1,0 +1,40 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("init") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+
+  sources = [
+    "network_context_owner.h",
+    "web_main.h",
+    "web_main_delegate.h",
+    "web_main_parts.h",
+    "web_main_runner.h",
+  ]
+
+  public_deps = [
+    ":global_state",
+  ]
+
+  deps = [
+    ":global_state",
+    "//base",
+    "//ios/web/public",
+    "//net",
+    "//services/network:network_service",
+  ]
+}
+
+source_set("global_state") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+
+  sources = [
+    "ios_global_state.h",
+    "ios_global_state_configuration.h",
+  ]
+
+  deps = [
+    "//base",
+  ]
+}

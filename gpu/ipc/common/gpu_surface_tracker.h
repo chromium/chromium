@@ -36,7 +36,9 @@ class GPU_EXPORT GpuSurfaceTracker : public gpu::GpuSurfaceLookup {
  public:
   struct SurfaceRecord {
 #if defined(OS_ANDROID)
-    SurfaceRecord(gfx::AcceleratedWidget widget, jobject j_surface);
+    SurfaceRecord(gfx::AcceleratedWidget widget,
+                  jobject j_surface,
+                  bool can_be_used_with_surface_control);
 #else   // defined(OS_ANDROID)
     explicit SurfaceRecord(gfx::AcceleratedWidget widget);
 #endif  // !defined(OS_ANDROID)
@@ -47,6 +49,7 @@ class GPU_EXPORT GpuSurfaceTracker : public gpu::GpuSurfaceLookup {
     gfx::AcceleratedWidget widget;
 #if defined(OS_ANDROID)
     gl::ScopedJavaSurface surface;
+    bool can_be_used_with_surface_control;
 #endif
   };
 
@@ -54,11 +57,13 @@ class GPU_EXPORT GpuSurfaceTracker : public gpu::GpuSurfaceLookup {
   // Returns the native widget associated with a given surface_handle.
   // On Android, this adds a reference on the ANativeWindow.
   gfx::AcceleratedWidget AcquireNativeWidget(
-      gpu::SurfaceHandle surface_handle) override;
+      gpu::SurfaceHandle surface_handle,
+      bool* can_be_used_with_surface_control) override;
 
 #if defined(OS_ANDROID)
   gl::ScopedJavaSurface AcquireJavaSurface(
-      gpu::SurfaceHandle surface_handle) override;
+      gpu::SurfaceHandle surface_handle,
+      bool* can_be_used_with_surface_control) override;
 #endif
 
   // Gets the global instance of the surface tracker.

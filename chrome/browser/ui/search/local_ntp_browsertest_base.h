@@ -23,27 +23,25 @@ class TestInstantServiceObserver : public InstantServiceObserver {
 
   void WaitForMostVisitedItems(size_t count);
 
-  void WaitForThemeInfoUpdated(std::string background_url,
-                               std::string attribution_1,
-                               std::string attribution_2,
-                               std::string attribution_action_url);
+  void WaitForNtpThemeUpdated(std::string background_url,
+                              std::string attribution_1,
+                              std::string attribution_2,
+                              std::string attribution_action_url);
 
   void WaitForThemeApplied(bool theme_installed);
-
-  void WaitForDarkModeApplied(bool dark_mode);
 
   bool IsUsingDefaultTheme();
 
  private:
-  void ThemeInfoChanged(const ThemeBackgroundInfo& theme_info) override;
+  void NtpThemeChanged(const NtpTheme& theme) override;
 
-  void MostVisitedItemsChanged(const std::vector<InstantMostVisitedItem>& items,
-                               bool is_custom_links) override;
+  void MostVisitedInfoChanged(
+      const InstantMostVisitedInfo& most_visited_info) override;
 
   InstantService* const service_;
 
   std::vector<InstantMostVisitedItem> items_;
-  ThemeBackgroundInfo theme_info_;
+  NtpTheme theme_;
 
   bool theme_installed_;
 
@@ -52,12 +50,10 @@ class TestInstantServiceObserver : public InstantServiceObserver {
   std::string expected_attribution_1_;
   std::string expected_attribution_2_;
   std::string expected_attribution_action_url_;
-  bool expected_dark_mode_ = false;
 
   base::OnceClosure quit_closure_most_visited_;
   base::OnceClosure quit_closure_custom_background_;
   base::OnceClosure quit_closure_theme_;
-  base::OnceClosure quit_closure_dark_mode_;
 };
 
 // Base class for dark mode tests on the local NTP. Provides helper functions to

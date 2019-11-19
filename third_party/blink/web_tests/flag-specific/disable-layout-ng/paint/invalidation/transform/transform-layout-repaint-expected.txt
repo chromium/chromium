@@ -1,0 +1,28 @@
+{
+  "layers": [
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF",
+      "paintInvalidations": [
+        {
+          "object": "LayoutBlockFlow DIV id='target'",
+          "rect": [40, 50, 208, 118],
+          "reason": "geometry"
+        },
+        {
+          "object": "InlineTextBox 'PASS'",
+          "rect": [52, 51, 43, 32],
+          "reason": "appeared"
+        },
+        {
+          "object": "InlineTextBox 'FAIL'",
+          "rect": [52, 51, 40, 31],
+          "reason": "disappeared"
+        }
+      ]
+    }
+  ]
+}
+

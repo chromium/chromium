@@ -8,8 +8,6 @@
 
 #include <lm.h>
 
-#include <Shellapi.h>  // For <Shlobj.h>
-#include <Shlobj.h>    // For SHFileOperation()
 #include <sddl.h>      // For ConvertSidToStringSid()
 #include <userenv.h>   // For GetUserProfileDirectory()
 #include <wincrypt.h>  // For CryptXXX()
@@ -24,9 +22,11 @@
 #include <memory>
 
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/macros.h"
 #include "base/scoped_native_library.h"
 #include "base/stl_util.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/win/registry.h"
@@ -70,6 +70,11 @@ OSUserManager* OSUserManager::Get() {
 // static
 void OSUserManager::SetInstanceForTesting(OSUserManager* instance) {
   *GetInstanceStorage() = instance;
+}
+
+// static
+bool OSUserManager::IsDeviceDomainJoined() {
+  return base::win::IsEnrolledToDomain();
 }
 
 // static
@@ -235,6 +240,18 @@ HRESULT OSUserManager::AddUser(const wchar_t* username,
                                DWORD* error) {
   DCHECK(sid);
 
+  base::string16 local_users_group_name;
+  // If adding to the local users group, make sure we can get the localized
+  // name for the group before proceeding.
+  if (add_to_users_group) {
+    HRESULT hr = LookupLocalizedNameForWellKnownSid(WinBuiltinUsersSid,
+                                                    &local_users_group_name);
+    if (FAILED(hr)) {
+      LOGFN(ERROR) << "LookupLocalizedNameForWellKnownSid hr=" << putHR(hr);
+      return hr;
+    }
+  }
+
   USER_INFO_1 info;
   memset(&info, 0, sizeof(info));
   info.usri1_comment = _wcsdup(comment);
@@ -280,12 +297,14 @@ HRESULT OSUserManager::AddUser(const wchar_t* username,
     }
 
     if (nsts == NERR_Success && add_to_users_group) {
-      // Add to the "Users" group so that it appears on login screen.
+      // Add to the well known local users group so that it appears on login
+      // screen.
       LOCALGROUP_MEMBERS_INFO_0 member_info;
       memset(&member_info, 0, sizeof(member_info));
       member_info.lgrmi0_sid = user_info->usri4_user_sid;
-      nsts = ::NetLocalGroupAddMembers(
-          nullptr, L"Users", 0, reinterpret_cast<LPBYTE>(&member_info), 1);
+      nsts =
+          ::NetLocalGroupAddMembers(nullptr, local_users_group_name.c_str(), 0,
+                                    reinterpret_cast<LPBYTE>(&member_info), 1);
       if (nsts != NERR_Success && nsts != ERROR_MEMBER_IN_ALIAS) {
         LOGFN(ERROR) << "NetLocalGroupAddMembers nsts=" << nsts;
       } else {
@@ -342,12 +361,13 @@ HRESULT OSUserManager::ChangeUserPassword(const wchar_t* domain,
     flags_changed = true;
   }
 
-  base::string16 password_domain = base::StringPrintf(L"\\\\%ls", domain);
+  base::string16 password_domain = base::StringPrintf(L"%ls", domain);
 
   NET_API_STATUS changepassword_nsts = ::NetUserChangePassword(
       password_domain.c_str(), username, old_password, new_password);
   if (changepassword_nsts != NERR_Success) {
     LOGFN(ERROR) << "Unable to change password for '" << username
+                 << "' domain '" << password_domain
                  << "' nsts=" << changepassword_nsts;
   }
 
@@ -364,6 +384,67 @@ HRESULT OSUserManager::ChangeUserPassword(const wchar_t* domain,
   ::NetApiBufferFree(buffer);
 
   return HRESULT_FROM_WIN32(changepassword_nsts);
+}
+
+HRESULT OSUserManager::SetUserPassword(const wchar_t* domain,
+                                       const wchar_t* username,
+                                       const wchar_t* password) {
+  LPBYTE domain_server_buffer = nullptr;
+  HRESULT hr =
+      GetDomainControllerServerForDomain(domain, &domain_server_buffer);
+  if (FAILED(hr))
+    return hr;
+
+  std::unique_ptr<wchar_t, void (*)(wchar_t*)> domain_to_query(
+      reinterpret_cast<wchar_t*>(domain_server_buffer), [](wchar_t* p) {
+        if (p)
+          ::NetApiBufferFree(p);
+      });
+
+  DWORD error = 0;
+  USER_INFO_1003 info1003;
+  NET_API_STATUS nsts;
+  memset(&info1003, 0, sizeof(info1003));
+  info1003.usri1003_password = const_cast<wchar_t*>(password);
+  nsts = ::NetUserSetInfo(domain_to_query.get(), username, 1003,
+                          reinterpret_cast<LPBYTE>(&info1003), &error);
+  if (nsts != NERR_Success) {
+    LOGFN(ERROR) << "Unable to change password for '" << username
+                 << "' nsts=" << nsts;
+  }
+
+  return HRESULT_FROM_WIN32(nsts);
+}
+
+HRESULT OSUserManager::SetUserFullname(const wchar_t* domain,
+                                       const wchar_t* username,
+                                       const wchar_t* full_name) {
+  LPBYTE domain_server_buffer = nullptr;
+  HRESULT hr =
+      GetDomainControllerServerForDomain(domain, &domain_server_buffer);
+  if (FAILED(hr))
+    return hr;
+
+  std::unique_ptr<wchar_t, void (*)(wchar_t*)> domain_to_query(
+      reinterpret_cast<wchar_t*>(domain_server_buffer), [](wchar_t* p) {
+        if (p)
+          ::NetApiBufferFree(p);
+      });
+
+  DWORD error = 0;
+  USER_INFO_1011 info1011;
+  NET_API_STATUS nsts;
+  memset(&info1011, 0, sizeof(info1011));
+  info1011.usri1011_full_name = const_cast<wchar_t*>(full_name);
+
+  nsts = ::NetUserSetInfo(domain_to_query.get(), username, 1011,
+                          reinterpret_cast<LPBYTE>(&info1011), &error);
+  if (nsts != NERR_Success) {
+    LOGFN(ERROR) << "Unable to change full name on the account for '"
+                 << username << "' nsts=" << nsts;
+  }
+
+  return HRESULT_FROM_WIN32(nsts);
 }
 
 HRESULT OSUserManager::IsWindowsPasswordValid(const wchar_t* domain,
@@ -410,6 +491,30 @@ HRESULT OSUserManager::CreateLogonToken(const wchar_t* domain,
                                         base::win::ScopedHandle* token) {
   return ::credential_provider::CreateLogonToken(domain, username, password,
                                                  interactive, token);
+}
+
+HRESULT OSUserManager::GetUserSID(const wchar_t* domain,
+                                  const wchar_t* username,
+                                  base::string16* sid_string) {
+  DCHECK(sid_string);
+  sid_string->clear();
+
+  PSID sid;
+  HRESULT hr = GetUserSID(domain, username, &sid);
+
+  if (SUCCEEDED(hr)) {
+    wchar_t* sid_buffer;
+    if (::ConvertSidToStringSid(sid, &sid_buffer)) {
+      *sid_string = sid_buffer;
+      ::LocalFree(sid_buffer);
+    } else {
+      hr = HRESULT_FROM_WIN32(::GetLastError());
+      LOGFN(ERROR) << "ConvertStringSidToSid hr=" << putHR(hr);
+    }
+    ::LocalFree(sid);
+  }
+
+  return hr;
 }
 
 HRESULT OSUserManager::GetUserSID(const wchar_t* domain,
@@ -480,12 +585,24 @@ HRESULT OSUserManager::FindUserBySID(const wchar_t* sid,
     wcscpy_s(domain, domain_size, local_domain_buffer);
   }
 
-  if (hr != S_OK && hr != HRESULT_FROM_WIN32(ERROR_INSUFFICIENT_BUFFER))
-    LOGFN(ERROR) << "LookupAccountSid hr=" << putHR(hr);
-
-  LOGFN(INFO) << "username=" << username << " ntdomain=" << domain;
   ::LocalFree(psid);
   return hr;
+}
+
+bool OSUserManager::IsUserDomainJoined(const base::string16& sid) {
+  wchar_t username[kWindowsUsernameBufferLength];
+  wchar_t domain[kWindowsDomainBufferLength];
+
+  HRESULT hr = FindUserBySID(sid.c_str(), username, base::size(username),
+                             domain, base::size(domain));
+
+  if (FAILED(hr)) {
+    LOGFN(ERROR) << "IsUserDomainJoined sid=" << sid << " hr=" << putHR(hr);
+    return hr;
+  }
+
+  return !base::EqualsCaseInsensitiveASCII(
+      domain, OSUserManager::GetLocalDomain().c_str());
 }
 
 HRESULT OSUserManager::RemoveUser(const wchar_t* username,
@@ -515,9 +632,6 @@ HRESULT OSUserManager::RemoveUser(const wchar_t* username,
       if (hr != HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND))
         LOGFN(ERROR) << "GetUserProfileDirectory hr=" << putHR(hr);
       profiledir[0] = 0;
-    } else {
-      // Double null terminate the profile directory for SHFileOperation().
-      profiledir[length] = 0;
     }
   } else {
     LOGFN(ERROR) << "CreateLogonToken hr=" << putHR(hr);
@@ -529,17 +643,24 @@ HRESULT OSUserManager::RemoveUser(const wchar_t* username,
     LOGFN(ERROR) << "NetUserDel nsts=" << nsts;
 
   // Force delete the user's profile directory.
-  if (profiledir[0] != 0) {
-    SHFILEOPSTRUCT op;
-    memset(&op, 0, sizeof(op));
-    op.wFunc = FO_DELETE;
-    op.pFrom = profiledir;  // Double null terminated above.
-    op.fFlags = FOF_NOCONFIRMATION | FOF_NOERRORUI | FOF_NO_UI | FOF_SILENT;
+  if (*profiledir && !base::DeleteFile(base::FilePath(profiledir), true))
+    LOGFN(ERROR) << "base::DeleteFile";
 
-    int ret = ::SHFileOperation(&op);
-    if (ret != 0) {
-      LOGFN(ERROR) << "SHFileOperation ret=" << ret;
-    }
+  return S_OK;
+}
+
+HRESULT OSUserManager::ModifyUserAccessWithLogonHours(const wchar_t* domain,
+                                                      const wchar_t* username,
+                                                      bool allow) {
+  BYTE buffer[21] = {0x0};
+  memset(buffer, allow ? 0xff : 0x0, sizeof(buffer));
+  USER_INFO_1020 user_info{UNITS_PER_WEEK, buffer};
+
+  NET_API_STATUS nsts = ::NetUserSetInfo(
+      domain, username, 1020, reinterpret_cast<BYTE*>(&user_info), nullptr);
+  if (nsts != NERR_Success) {
+    LOGFN(ERROR) << "NetUserSetInfo(set logon time) nsts=" << nsts;
+    return HRESULT_FROM_WIN32(nsts);
   }
 
   return S_OK;

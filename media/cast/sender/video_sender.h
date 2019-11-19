@@ -52,7 +52,7 @@ class VideoSender : public FrameSender {
   // Note: It is not guaranteed that |video_frame| will actually be encoded and
   // sent, if VideoSender detects too many frames in flight.  Therefore, clients
   // should be careful about the rate at which this method is called.
-  void InsertRawVideoFrame(const scoped_refptr<media::VideoFrame>& video_frame,
+  void InsertRawVideoFrame(scoped_refptr<media::VideoFrame> video_frame,
                            const base::TimeTicks& reference_time);
 
   // Creates a |VideoFrameFactory| object to vend |VideoFrame| object with
@@ -68,7 +68,7 @@ class VideoSender : public FrameSender {
 
  private:
   // Called by the |video_encoder_| with the next EncodedFrame to send.
-  void OnEncodedVideoFrame(const scoped_refptr<media::VideoFrame>& video_frame,
+  void OnEncodedVideoFrame(scoped_refptr<media::VideoFrame> video_frame,
                            int encoder_bitrate,
                            std::unique_ptr<SenderEncodedFrame> encoded_frame);
 
@@ -110,7 +110,7 @@ class VideoSender : public FrameSender {
   base::TimeTicks last_time_attempted_to_resolve_pli_;
 
   // NOTE: Weak pointers must be invalidated before all other member variables.
-  base::WeakPtrFactory<VideoSender> weak_factory_;
+  base::WeakPtrFactory<VideoSender> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(VideoSender);
 };

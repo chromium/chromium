@@ -9,21 +9,22 @@
 
 #include "base/macros.h"
 #include "chrome/browser/chromeos/login/screens/welcome_screen.h"
-#include "chrome/browser/chromeos/login/screens/welcome_view.h"
+#include "chrome/browser/ui/webui/chromeos/login/welcome_screen_handler.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace chromeos {
 
 class MockWelcomeScreen : public WelcomeScreen {
  public:
-  MockWelcomeScreen(BaseScreenDelegate* base_screen_delegate,
-                    Delegate* delegate,
-                    WelcomeView* view);
+  MockWelcomeScreen(WelcomeView* view,
+                    const base::RepeatingClosure& exit_callback);
   ~MockWelcomeScreen() override;
 
   MOCK_METHOD0(Show, void());
   MOCK_METHOD0(Hide, void());
-  MOCK_METHOD2(SetConfiguration, void(base::Value* configuration, bool notify));
+  MOCK_METHOD1(SetConfiguration, void(base::Value* configuration));
+
+  void ExitScreen();
 
  private:
   DISALLOW_COPY_AND_ASSIGN(MockWelcomeScreen);

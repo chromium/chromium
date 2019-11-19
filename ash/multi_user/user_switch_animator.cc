@@ -4,10 +4,12 @@
 
 #include "ash/multi_user/user_switch_animator.h"
 
-#include "ash/multi_user/multi_user_window_manager.h"
+#include "ash/multi_user/multi_user_window_manager_impl.h"
+#include "ash/public/cpp/multi_user_window_manager_delegate.h"
 #include "ash/shell.h"
-#include "ash/wallpaper/wallpaper_controller.h"
+#include "ash/wallpaper/wallpaper_controller_impl.h"
 #include "ash/wm/mru_window_tracker.h"
+#include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/window_positioner.h"
 #include "base/bind.h"
 #include "ui/aura/client/aura_constants.h"
@@ -79,17 +81,16 @@ void PutMruWindowLast(std::vector<aura::Window*>* window_list) {
 
 }  // namespace
 
-UserSwitchAnimator::UserSwitchAnimator(
-    MultiUserWindowManager* owner,
-    mojom::WallpaperUserInfoPtr wallpaper_user_info,
-    base::TimeDelta animation_speed)
+UserSwitchAnimator::UserSwitchAnimator(MultiUserWindowManagerImpl* owner,
+                                       const AccountId& new_account_id,
+                                       base::TimeDelta animation_speed)
     : owner_(owner),
-      wallpaper_user_info_(std::move(wallpaper_user_info)),
-      new_account_id_(wallpaper_user_info_->account_id),
+      new_account_id_(new_account_id),
       animation_speed_(animation_speed),
       animation_step_(ANIMATION_STEP_HIDE_OLD_USER),
       screen_cover_(GetScreenCover(NULL)),
       windows_by_account_id_() {
+  Shell::Get()->overview_controller()->EndOverview();
   BuildUserToWindowsListMap();
   AdvanceUserTransitionAnimation();
 
@@ -140,8 +141,7 @@ void UserSwitchAnimator::AdvanceUserTransitionAnimation() {
     case ANIMATION_STEP_FINALIZE:
       user_changed_animation_timer_.reset();
       animation_step_ = ANIMATION_STEP_ENDED;
-      if (owner_->client_)
-        owner_->client_->OnDidSwitchActiveAccount();
+      owner_->OnDidSwitchActiveAccount();
       break;
     case ANIMATION_STEP_ENDED:
       NOTREACHED();
@@ -160,8 +160,7 @@ void UserSwitchAnimator::FinalizeAnimation() {
 }
 
 void UserSwitchAnimator::TransitionWallpaper(AnimationStep animation_step) {
-  WallpaperController* wallpaper_controller =
-      Shell::Get()->wallpaper_controller();
+  auto* wallpaper_controller = Shell::Get()->wallpaper_controller();
 
   // Handle the wallpaper switch.
   if (animation_step == ANIMATION_STEP_HIDE_OLD_USER) {
@@ -172,8 +171,7 @@ void UserSwitchAnimator::TransitionWallpaper(AnimationStep animation_step) {
     wallpaper_controller->SetAnimationDuration(
         duration > kMinimalAnimationTime ? duration : kMinimalAnimationTime);
     if (screen_cover_ != NEW_USER_COVERS_SCREEN) {
-      DCHECK(wallpaper_user_info_);
-      wallpaper_controller->ShowUserWallpaper(std::move(wallpaper_user_info_));
+      wallpaper_controller->ShowUserWallpaper(new_account_id_);
       wallpaper_user_id_for_test_ =
           (NO_USER_COVERS_SCREEN == screen_cover_ ? "->" : "") +
           new_account_id_.Serialize();
@@ -181,10 +179,8 @@ void UserSwitchAnimator::TransitionWallpaper(AnimationStep animation_step) {
   } else if (animation_step == ANIMATION_STEP_FINALIZE) {
     // Revert the wallpaper cross dissolve animation duration back to the
     // default.
-    if (screen_cover_ == NEW_USER_COVERS_SCREEN) {
-      DCHECK(wallpaper_user_info_);
-      wallpaper_controller->ShowUserWallpaper(std::move(wallpaper_user_info_));
-    }
+    if (screen_cover_ == NEW_USER_COVERS_SCREEN)
+      wallpaper_controller->ShowUserWallpaper(new_account_id_);
 
     // Coming here the wallpaper user id is the final result. No matter how we
     // got here.
@@ -197,8 +193,7 @@ void UserSwitchAnimator::TransitionUserShelf(AnimationStep animation_step) {
   if (animation_step != ANIMATION_STEP_SHOW_NEW_USER)
     return;
 
-  if (owner_->client_)
-    owner_->client_->OnTransitionUserShelfToNewAccount();
+  owner_->delegate_->OnTransitionUserShelfToNewAccount();
 }
 
 void UserSwitchAnimator::TransitionWindows(AnimationStep animation_step) {
@@ -231,7 +226,7 @@ void UserSwitchAnimator::TransitionWindows(AnimationStep animation_step) {
           // different than that of the for_show_account_id) should retrun to
           // their
           // original owners' desktops.
-          MultiUserWindowManager::WindowToEntryMap::const_iterator itr =
+          MultiUserWindowManagerImpl::WindowToEntryMap::const_iterator itr =
               owner_->window_to_entry().find(window);
           DCHECK(itr != owner_->window_to_entry().end());
           if (show_for_account_id != itr->second->owner() &&
@@ -293,7 +288,7 @@ void UserSwitchAnimator::TransitionWindows(AnimationStep animation_step) {
     case ANIMATION_STEP_FINALIZE: {
       // Reactivate the MRU window of the new user.
       aura::Window::Windows mru_list =
-          Shell::Get()->mru_window_tracker()->BuildMruWindowList();
+          Shell::Get()->mru_window_tracker()->BuildMruWindowList(kActiveDesk);
       if (!mru_list.empty()) {
         aura::Window* window = mru_list[0];
         if (owner_->IsWindowOnDesktopOfUser(window, new_account_id_) &&

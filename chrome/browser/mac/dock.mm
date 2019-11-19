@@ -17,6 +17,7 @@
 #include "base/mac/scoped_cftyperef.h"
 #include "base/mac/scoped_nsautorelease_pool.h"
 #include "base/strings/sys_string_conversions.h"
+#include "build/branding_buildflags.h"
 
 extern "C" {
 
@@ -262,7 +263,7 @@ AddIconStatus AddIcon(NSString* installed_path, NSString* dmg_app_path) {
       }
     }
 
-#if defined(GOOGLE_CHROME_BUILD)
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
     if (app_index == NSNotFound) {
       // If this is an officially-branded Chrome (including Canary) and an
       // application matching the "other" flavor is already in the Dock, put
@@ -289,28 +290,24 @@ AddIconStatus AddIcon(NSString* installed_path, NSString* dmg_app_path) {
         }
       }
     }
-#endif  // GOOGLE_CHROME_BUILD
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
     if (app_index == NSNotFound) {
       // Put the new application after the last browser application already
       // present in the Dock.
       NSArray* other_browser_app_names =
           [NSArray arrayWithObjects:
-#if defined(GOOGLE_CHROME_BUILD)
-                                    @"Chromium.app",  // Unbranded Google Chrome
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+                       @"Chromium.app",  // Unbranded Google Chrome
 #else
-                                    @"Google Chrome.app",
-                                    @"Google Chrome Canary.app",
+                       @"Google Chrome.app", @"Google Chrome Canary.app",
 #endif
-                                    @"Safari.app",
-                                    @"Firefox.app",
-                                    @"Camino.app",
-                                    @"Opera.app",
-                                    @"OmniWeb.app",
-                                    @"WebKit.app",    // Safari nightly
-                                    @"Aurora.app",    // Firefox dev
-                                    @"Nightly.app",   // Firefox nightly
-                                    nil];
+                       @"Safari.app", @"Firefox.app", @"Camino.app",
+                       @"Opera.app", @"OmniWeb.app",
+                       @"WebKit.app",   // Safari nightly
+                       @"Aurora.app",   // Firefox dev
+                       @"Nightly.app",  // Firefox nightly
+                       nil];
       for (NSUInteger index = 0; index < [persistent_apps count]; ++index) {
         NSString* dock_app_name =
             [[persistent_app_paths objectAtIndex:index] lastPathComponent];

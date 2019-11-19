@@ -15,7 +15,7 @@
 // Callback called when the async request launched from
 // |getLoginsFromPasswordStore| finishes.
 - (void)onGetPasswordStoreResults:
-    (std::vector<std::unique_ptr<autofill::PasswordForm>>&)result;
+    (std::vector<std::unique_ptr<autofill::PasswordForm>>)results;
 
 @end
 

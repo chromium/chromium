@@ -14,6 +14,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.annotations.CalledByNative;
+import org.chromium.base.annotations.NativeMethods;
 
 /**
  * ChildAccountInfoFetcher for the Android platform.
@@ -81,7 +82,8 @@ public final class ChildAccountInfoFetcher {
     private void setIsChildAccount(boolean isChildAccount) {
         Log.d(TAG, "Setting child account status for %s to %s", mAccount.name,
                 Boolean.toString(isChildAccount));
-        nativeSetIsChildAccount(mNativeAccountFetcherService, mAccountId, isChildAccount);
+        ChildAccountInfoFetcherJni.get().setIsChildAccount(
+                mNativeAccountFetcherService, mAccountId, isChildAccount);
     }
 
     @CalledByNative
@@ -90,6 +92,9 @@ public final class ChildAccountInfoFetcher {
         AccountManagerFacade.overrideAccountManagerFacadeForTests(delegate);
     }
 
-    private static native void nativeSetIsChildAccount(
-            long accountFetcherServicePtr, String accountId, boolean isChildAccount);
+    @NativeMethods
+    interface Natives {
+        void setIsChildAccount(
+                long accountFetcherServicePtr, String accountId, boolean isChildAccount);
+    }
 }

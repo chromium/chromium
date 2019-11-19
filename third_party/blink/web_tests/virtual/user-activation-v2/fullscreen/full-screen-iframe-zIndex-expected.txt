@@ -1,1 +1,0 @@
-CONSOLE WARNING: line 20: Failed to execute 'requestFullscreen' on 'Element': API can only be initiated by a user gesture.

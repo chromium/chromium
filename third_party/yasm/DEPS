@@ -1,0 +1,18 @@
+# This file is a dummy used so that non-Chromium clients can specify
+# recursive DEPS. Otherwise the clients would need to nest DEPS inside
+# each other. Nested DEPS are not supported by gclient.
+#
+# Clients *must* specify patched_yasm_revision when using this DEPS file.
+
+use_relative_paths = True
+
+vars = {
+  'chromium_git': 'https://chromium.googlesource.com',
+
+  # We must specify a dummy variable here for recursedeps to work.
+  'patched_yasm_revision': 'master',
+}
+
+deps = {
+  'source/patched-yasm': '{chromium_git}/chromium/deps/yasm/patched-yasm.git@{patched_yasm_revision}'
+}

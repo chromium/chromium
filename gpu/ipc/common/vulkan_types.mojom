@@ -1,0 +1,232 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// This file is auto-generated from
+// gpu/ipc/common/generate_vulkan_types.py
+// It's formatted by clang-format using chromium coding style:
+//    clang-format -i -style=chromium filename
+// DO NOT EDIT!
+
+module gpu.mojom;
+
+struct VkExtensionProperties {
+  string extensionName;
+  uint32 specVersion;
+};
+
+struct VkLayerProperties {
+  string layerName;
+  uint32 specVersion;
+  uint32 implementationVersion;
+  string description;
+};
+
+enum VkPhysicalDeviceType {
+  OTHER = 0,
+  INTEGRATED_GPU = 1,
+  DISCRETE_GPU = 2,
+  VIRTUAL_GPU = 3,
+  CPU = 4,
+  INVALID_VALUE = -1,
+};
+
+struct VkPhysicalDeviceLimits {
+  uint32 maxImageDimension1D;
+  uint32 maxImageDimension2D;
+  uint32 maxImageDimension3D;
+  uint32 maxImageDimensionCube;
+  uint32 maxImageArrayLayers;
+  uint32 maxTexelBufferElements;
+  uint32 maxUniformBufferRange;
+  uint32 maxStorageBufferRange;
+  uint32 maxPushConstantsSize;
+  uint32 maxMemoryAllocationCount;
+  uint32 maxSamplerAllocationCount;
+  uint64 bufferImageGranularity;
+  uint64 sparseAddressSpaceSize;
+  uint32 maxBoundDescriptorSets;
+  uint32 maxPerStageDescriptorSamplers;
+  uint32 maxPerStageDescriptorUniformBuffers;
+  uint32 maxPerStageDescriptorStorageBuffers;
+  uint32 maxPerStageDescriptorSampledImages;
+  uint32 maxPerStageDescriptorStorageImages;
+  uint32 maxPerStageDescriptorInputAttachments;
+  uint32 maxPerStageResources;
+  uint32 maxDescriptorSetSamplers;
+  uint32 maxDescriptorSetUniformBuffers;
+  uint32 maxDescriptorSetUniformBuffersDynamic;
+  uint32 maxDescriptorSetStorageBuffers;
+  uint32 maxDescriptorSetStorageBuffersDynamic;
+  uint32 maxDescriptorSetSampledImages;
+  uint32 maxDescriptorSetStorageImages;
+  uint32 maxDescriptorSetInputAttachments;
+  uint32 maxVertexInputAttributes;
+  uint32 maxVertexInputBindings;
+  uint32 maxVertexInputAttributeOffset;
+  uint32 maxVertexInputBindingStride;
+  uint32 maxVertexOutputComponents;
+  uint32 maxTessellationGenerationLevel;
+  uint32 maxTessellationPatchSize;
+  uint32 maxTessellationControlPerVertexInputComponents;
+  uint32 maxTessellationControlPerVertexOutputComponents;
+  uint32 maxTessellationControlPerPatchOutputComponents;
+  uint32 maxTessellationControlTotalOutputComponents;
+  uint32 maxTessellationEvaluationInputComponents;
+  uint32 maxTessellationEvaluationOutputComponents;
+  uint32 maxGeometryShaderInvocations;
+  uint32 maxGeometryInputComponents;
+  uint32 maxGeometryOutputComponents;
+  uint32 maxGeometryOutputVertices;
+  uint32 maxGeometryTotalOutputComponents;
+  uint32 maxFragmentInputComponents;
+  uint32 maxFragmentOutputAttachments;
+  uint32 maxFragmentDualSrcAttachments;
+  uint32 maxFragmentCombinedOutputResources;
+  uint32 maxComputeSharedMemorySize;
+  array<uint32, 3> maxComputeWorkGroupCount;
+  uint32 maxComputeWorkGroupInvocations;
+  array<uint32, 3> maxComputeWorkGroupSize;
+  uint32 subPixelPrecisionBits;
+  uint32 subTexelPrecisionBits;
+  uint32 mipmapPrecisionBits;
+  uint32 maxDrawIndexedIndexValue;
+  uint32 maxDrawIndirectCount;
+  float maxSamplerLodBias;
+  float maxSamplerAnisotropy;
+  uint32 maxViewports;
+  array<uint32, 2> maxViewportDimensions;
+  array<float, 2> viewportBoundsRange;
+  uint32 viewportSubPixelBits;
+  uint64 minMemoryMapAlignment;
+  uint64 minTexelBufferOffsetAlignment;
+  uint64 minUniformBufferOffsetAlignment;
+  uint64 minStorageBufferOffsetAlignment;
+  int32 minTexelOffset;
+  uint32 maxTexelOffset;
+  int32 minTexelGatherOffset;
+  uint32 maxTexelGatherOffset;
+  float minInterpolationOffset;
+  float maxInterpolationOffset;
+  uint32 subPixelInterpolationOffsetBits;
+  uint32 maxFramebufferWidth;
+  uint32 maxFramebufferHeight;
+  uint32 maxFramebufferLayers;
+  uint32 framebufferColorSampleCounts;
+  uint32 framebufferDepthSampleCounts;
+  uint32 framebufferStencilSampleCounts;
+  uint32 framebufferNoAttachmentsSampleCounts;
+  uint32 maxColorAttachments;
+  uint32 sampledImageColorSampleCounts;
+  uint32 sampledImageIntegerSampleCounts;
+  uint32 sampledImageDepthSampleCounts;
+  uint32 sampledImageStencilSampleCounts;
+  uint32 storageImageSampleCounts;
+  uint32 maxSampleMaskWords;
+  bool timestampComputeAndGraphics;
+  float timestampPeriod;
+  uint32 maxClipDistances;
+  uint32 maxCullDistances;
+  uint32 maxCombinedClipAndCullDistances;
+  uint32 discreteQueuePriorities;
+  array<float, 2> pointSizeRange;
+  array<float, 2> lineWidthRange;
+  float pointSizeGranularity;
+  float lineWidthGranularity;
+  bool strictLines;
+  bool standardSampleLocations;
+  uint64 optimalBufferCopyOffsetAlignment;
+  uint64 optimalBufferCopyRowPitchAlignment;
+  uint64 nonCoherentAtomSize;
+};
+
+struct VkPhysicalDeviceSparseProperties {
+  bool residencyStandard2DBlockShape;
+  bool residencyStandard2DMultisampleBlockShape;
+  bool residencyStandard3DBlockShape;
+  bool residencyAlignedMipSize;
+  bool residencyNonResidentStrict;
+};
+
+struct VkPhysicalDeviceProperties {
+  uint32 apiVersion;
+  uint32 driverVersion;
+  uint32 vendorID;
+  uint32 deviceID;
+  VkPhysicalDeviceType deviceType;
+  string deviceName;
+  array<uint8, 16> pipelineCacheUUID;
+  VkPhysicalDeviceLimits limits;
+  VkPhysicalDeviceSparseProperties sparseProperties;
+};
+
+struct VkPhysicalDeviceFeatures {
+  bool robustBufferAccess;
+  bool fullDrawIndexUint32;
+  bool imageCubeArray;
+  bool independentBlend;
+  bool geometryShader;
+  bool tessellationShader;
+  bool sampleRateShading;
+  bool dualSrcBlend;
+  bool logicOp;
+  bool multiDrawIndirect;
+  bool drawIndirectFirstInstance;
+  bool depthClamp;
+  bool depthBiasClamp;
+  bool fillModeNonSolid;
+  bool depthBounds;
+  bool wideLines;
+  bool largePoints;
+  bool alphaToOne;
+  bool multiViewport;
+  bool samplerAnisotropy;
+  bool textureCompressionETC2;
+  bool textureCompressionASTC_LDR;
+  bool textureCompressionBC;
+  bool occlusionQueryPrecise;
+  bool pipelineStatisticsQuery;
+  bool vertexPipelineStoresAndAtomics;
+  bool fragmentStoresAndAtomics;
+  bool shaderTessellationAndGeometryPointSize;
+  bool shaderImageGatherExtended;
+  bool shaderStorageImageExtendedFormats;
+  bool shaderStorageImageMultisample;
+  bool shaderStorageImageReadWithoutFormat;
+  bool shaderStorageImageWriteWithoutFormat;
+  bool shaderUniformBufferArrayDynamicIndexing;
+  bool shaderSampledImageArrayDynamicIndexing;
+  bool shaderStorageBufferArrayDynamicIndexing;
+  bool shaderStorageImageArrayDynamicIndexing;
+  bool shaderClipDistance;
+  bool shaderCullDistance;
+  bool shaderFloat64;
+  bool shaderInt64;
+  bool shaderInt16;
+  bool shaderResourceResidency;
+  bool shaderResourceMinLod;
+  bool sparseBinding;
+  bool sparseResidencyBuffer;
+  bool sparseResidencyImage2D;
+  bool sparseResidencyImage3D;
+  bool sparseResidency2Samples;
+  bool sparseResidency4Samples;
+  bool sparseResidency8Samples;
+  bool sparseResidency16Samples;
+  bool sparseResidencyAliased;
+  bool variableMultisampleRate;
+  bool inheritedQueries;
+};
+
+struct VkExtent3D {
+  uint32 width;
+  uint32 height;
+  uint32 depth;
+};
+
+struct VkQueueFamilyProperties {
+  uint32 queueFlags;
+  uint32 queueCount;
+  uint32 timestampValidBits;
+  VkExtent3D minImageTransferGranularity;
+};

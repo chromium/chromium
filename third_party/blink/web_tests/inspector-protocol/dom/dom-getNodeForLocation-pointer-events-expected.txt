@@ -1,0 +1,10 @@
+Tests DOM.getNodeForLocation method with ignorePointerEventsNone: true.
+Node: [
+    [0] : style
+    [1] : position:absolute;top:0;left:0;width:100;height:100
+]
+Overlay node: [
+    [0] : style
+    [1] : position:absolute;top:0;left:0;width:200;height:200;pointer-events:none
+]
+

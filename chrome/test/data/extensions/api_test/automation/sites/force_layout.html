@@ -1,0 +1,22 @@
+y<!--
+ * Copyright 2019 The Chromium Authors. All rights reserved.  Use of this
+ * source code is governed by a BSD-style license that can be found in the
+ * LICENSE file.
+-->
+<html>
+<head>
+<title>Automation Tests - Force Layout</title>
+</head>
+<body>
+<p>Test</p>
+<button></button>
+<script>
+  let button = document.body.querySelector('button');
+  button.addEventListener('focus', () => {
+    button.style.display = 'none';
+    button.style.width = 200;
+    button.style.display = 'block';
+  });
+</script>
+</body>
+</html>

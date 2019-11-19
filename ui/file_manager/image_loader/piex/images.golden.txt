@@ -1,0 +1,42 @@
+test: images/SONY_A500_01.ARW
+test: images/SONY_A500_01.ARW details hash 6dfd7755 {"cameraMaker":"SONY","cameraModel":"DSLR-A500","aperture":3.5,"focalLength":18,"exposureTime":0.033,"isoSpeed":800,"width":4272,"height":2848,"orientation":1,"colorSpace":"sRGB","date":"2010:02:01 15:32:36"}
+test: images/SONY_A500_01.ARW preview hash 962c7faa4a {"colorSpace":"sRgb","orientation":1,"format":0,"offset":163891,"length":903326,"width":1616,"height":1080,"type":"preview"}
+test: images/SONY_A500_01.ARW thumbnail hash 5b77ade47 {"colorSpace":"sRgb","orientation":1,"format":0,"offset":47796,"length":4813,"width":160,"height":120,"type":"thumbnail"}
+test: images/EOS_XS_REBEL.CR2
+test: images/EOS_XS_REBEL.CR2 details hash 3879e9fee {"cameraMaker":"Canon","cameraModel":"Canon EOS DIGITAL REBEL XS","aperture":5.6,"focalLength":55,"exposureTime":0.001,"isoSpeed":100,"width":3888,"height":2592,"orientation":8,"colorSpace":"sRGB","date":"2010:07:23 11:00:15"}
+test: images/EOS_XS_REBEL.CR2 preview hash 1c0e9e8cbf6 {"colorSpace":"sRgb","orientation":8,"format":0,"offset":46568,"length":842753,"width":1936,"height":1288,"type":"preview"}
+test: images/EOS_XS_REBEL.CR2 thumbnail hash 2dadc4e1ea {"colorSpace":"sRgb","orientation":8,"format":0,"offset":38124,"length":8441,"width":160,"height":120,"type":"thumbnail"}
+test: images/RAW_CANON_1DM2.CR2
+test: images/RAW_CANON_1DM2.CR2 details hash 4a096e538 {"cameraMaker":"Canon","cameraModel":"Canon EOS-1D Mark II","aperture":9,"focalLength":252,"exposureTime":0.001,"isoSpeed":100,"width":3504,"height":2336,"orientation":1,"colorSpace":"AdobeRGB1998","date":"2005:10:29 16:14:44"}
+test: images/RAW_CANON_1DM2.CR2 preview hash ffea0d8b0c {"colorSpace":"adobeRgb","orientation":1,"format":0,"offset":9996,"length":551740,"width":1536,"height":1024,"type":"preview"}
+test: images/RAW_CANON_1DM2.CR2 thumbnail hash 17c37d76a2 {"colorSpace":"adobeRgb","orientation":1,"format":0,"offset":561766,"length":8680,"width":160,"height":120,"type":"thumbnail"}
+test: images/L100_4220.DNG
+test: images/L100_4220.DNG details hash 77ef4bbf0 {"cameraMaker":"Leica Camera AG","cameraModel":"M9 Digital Camera","aperture":0,"focalLength":35,"exposureTime":0.177,"isoSpeed":160,"width":5212,"height":3468,"orientation":1,"colorSpace":"sRGB","date":"2009:10:19 15:48:10"}
+test: images/L100_4220.DNG thumbnail hash e55ce7a0ea {"colorSpace":"sRgb","orientation":1,"format":1,"offset":7044,"length":207360,"width":320,"height":216,"size":207360,"type":"thumbnail"}
+test: images/RAW_LEICA_M8.DNG
+test: images/RAW_LEICA_M8.DNG details hash 34761ca86 {"cameraMaker":"Leica Camera AG","cameraModel":"M8 Digital Camera","aperture":0,"focalLength":50,"exposureTime":12,"isoSpeed":160,"width":3916,"height":2634,"orientation":1,"colorSpace":"sRGB","date":"2007:08:02 22:13:49"}
+test: images/RAW_LEICA_M8.DNG thumbnail hash abea89dfb7 {"colorSpace":"sRgb","orientation":1,"format":1,"offset":3936,"length":230400,"width":320,"height":240,"size":230400,"type":"thumbnail"}
+test: images/FUJI_E550_RAW.RAF
+test: images/FUJI_E550_RAW.RAF details hash 160f59c0e {"cameraMaker":"FUJIFILM","cameraModel":"FinePix E550","aperture":5,"focalLength":7.2,"exposureTime":0.002,"isoSpeed":200,"width":4048,"height":1520,"orientation":1,"colorSpace":"sRGB","date":"2008:06:01 14:29:52"}
+test: images/FUJI_E550_RAW.RAF preview hash ada7914438 {"colorSpace":"sRgb","orientation":1,"format":0,"offset":148,"length":667499,"width":0,"height":0,"type":"preview"}
+test: images/FUJI_E550_RAW.RAF thumbnail hash 136fb97598 {"colorSpace":"sRgb","orientation":1,"format":0,"offset":1466,"length":9312,"width":0,"height":0,"type":"thumbnail"}
+test: images/NIKON_UB20_O35.NEF
+test: images/NIKON_UB20_O35.NEF details hash 731decb73 {"cameraMaker":"NIKON CORPORATION","cameraModel":"NIKON D1X","aperture":11,"focalLength":24,"exposureTime":0.006,"width":4028,"height":1324,"orientation":1,"colorSpace":"sRGB","date":"2004:07:30 12:23:24"}
+test: images/NIKON_UB20_O35.NEF thumbnail hash 71591f3c17 {"colorSpace":"sRgb","orientation":1,"format":1,"offset":32418,"length":57600,"width":160,"height":120,"size":57600,"type":"thumbnail"}
+test: images/NIKON_GDN0447.NEF
+test: images/NIKON_GDN0447.NEF details hash 601825b88 {"cameraMaker":"NIKON CORPORATION","cameraModel":"NIKON D700","aperture":8,"focalLength":20,"exposureTime":0.5,"width":4256,"height":2832,"orientation":1,"colorSpace":"sRGB","date":"2018:01:17 12:31:01"}
+test: images/NIKON_GDN0447.NEF preview hash a49796a236 {"colorSpace":"sRgb","orientation":1,"format":0,"offset":175616,"length":1747382,"width":4256,"height":2832,"type":"preview"}
+test: images/NIKON_GDN0447.NEF thumbnail hash ec18fa833 {"colorSpace":"sRgb","orientation":1,"format":1,"offset":117638,"length":57600,"width":160,"height":120,"size":57600,"type":"thumbnail"}
+test: images/OLYMPUS_SC877.ORF
+test: images/OLYMPUS_SC877.ORF details hash 36d238b54 {"cameraMaker":"OLYMPUS IMAGING CORP.","cameraModel":"E-M1","aperture":8,"focalLength":12,"exposureTime":0.002,"isoSpeed":200,"width":4608,"height":3456,"orientation":1,"colorSpace":"sRGB","date":"2016:06:19 14:44:42"}
+test: images/OLYMPUS_SC877.ORF preview hash 66b589cb7f {"colorSpace":"sRgb","orientation":1,"format":0,"offset":52224,"length":922386,"width":0,"height":0,"type":"preview"}
+test: images/OLYMPUS_SC877.ORF thumbnail hash 1ca4452baf {"colorSpace":"sRgb","orientation":1,"format":0,"offset":23808,"length":9441,"width":0,"height":0,"type":"thumbnail"}
+test: images/NIKON_CPIX78.NRW
+test: images/NIKON_CPIX78.NRW details hash 2fe503ca4 {"cameraMaker":"NIKON","cameraModel":"COOLPIX P7800","aperture":2,"focalLength":6,"exposureTime":0.04,"isoSpeed":100,"width":4000,"height":3000,"orientation":1,"colorSpace":"sRGB","date":"2013:10:07 14:37:29"}
+test: images/NIKON_CPIX78.NRW preview hash e7f9b6542b {"colorSpace":"sRgb","orientation":1,"format":0,"offset":24421226,"length":2620351,"width":4000,"height":3000,"type":"preview"}
+test: images/NIKON_CPIX78.NRW thumbnail hash f7bdde6f0 {"colorSpace":"sRgb","orientation":1,"format":0,"offset":31429,"length":4261,"width":160,"height":120,"type":"thumbnail"}
+test: images/PANASONIC_DMC.RW2
+test: images/PANASONIC_DMC.RW2 details hash 1a6875707 {"cameraMaker":"Panasonic","cameraModel":"DMC-TZ70","aperture":3.3,"focalLength":4.3,"exposureTime":0.002,"isoSpeed":80,"width":4000,"height":3000,"orientation":1,"colorSpace":"sRGB","date":"2017:01:18 12:39:26"}
+test: images/PANASONIC_DMC.RW2 preview hash c4b5f92809 {"colorSpace":"sRgb","orientation":1,"format":0,"offset":1536,"length":690176,"width":1920,"height":1440,"type":"preview"}
+test: images/PANASONIC_DMC.RW2 thumbnail hash 405666a33 {"colorSpace":"sRgb","orientation":1,"format":0,"offset":16384,"length":5560,"width":0,"height":0,"type":"thumbnail"}
+test: images/UNKNOWN_FORMAT.JPG

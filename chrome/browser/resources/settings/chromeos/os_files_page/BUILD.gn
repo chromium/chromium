@@ -1,0 +1,25 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/closure_compiler/compile_js.gni")
+
+js_type_check("closure_compile") {
+  deps = [
+    ":os_files_page",
+    ":smb_shares_page",
+  ]
+}
+
+js_library("smb_shares_page") {
+  deps = [
+    "../..:route",
+    "//ui/webui/resources/cr_components/chromeos/smb_shares:smb_browser_proxy",
+  ]
+}
+
+js_library("os_files_page") {
+  deps = [
+    "../..:route",
+  ]
+}

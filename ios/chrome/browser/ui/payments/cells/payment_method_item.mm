@@ -5,9 +5,9 @@
 #import "ios/chrome/browser/ui/payments/cells/payment_method_item.h"
 
 #import "ios/chrome/browser/ui/collection_view/cells/MDCCollectionViewCell+Chrome.h"
-#import "ios/chrome/browser/ui/colors/MDCPalette+CrAdditions.h"
 #import "ios/chrome/browser/ui/payments/cells/accessibility_util.h"
 #include "ios/chrome/browser/ui/util/uikit_ui_util.h"
+#import "ios/chrome/common/colors/semantic_color_names.h"
 #import "ios/third_party/material_components_ios/src/components/Typography/src/MaterialTypography.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -92,25 +92,25 @@ const CGFloat kHorizontalPadding = 16;
     // Method ID.
     _methodIDLabel = [[UILabel alloc] initWithFrame:CGRectZero];
     SetUILabelScaledFont(_methodIDLabel, [MDCTypography body2Font]);
-    _methodIDLabel.textColor = [[MDCPalette greyPalette] tint900];
+    _methodIDLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
     [_stackView addArrangedSubview:_methodIDLabel];
 
     // Method detail.
     _methodDetailLabel = [[UILabel alloc] initWithFrame:CGRectZero];
     SetUILabelScaledFont(_methodDetailLabel, [MDCTypography body1Font]);
-    _methodDetailLabel.textColor = [[MDCPalette greyPalette] tint900];
+    _methodDetailLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
     [_stackView addArrangedSubview:_methodDetailLabel];
 
     // Method address.
     _methodAddressLabel = [[UILabel alloc] initWithFrame:CGRectZero];
     SetUILabelScaledFont(_methodAddressLabel, [MDCTypography body1Font]);
-    _methodAddressLabel.textColor = [[MDCPalette greyPalette] tint900];
+    _methodAddressLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
     [_stackView addArrangedSubview:_methodAddressLabel];
 
     // Notification label.
     _notificationLabel = [[UILabel alloc] initWithFrame:CGRectZero];
     SetUILabelScaledFont(_notificationLabel, [MDCTypography body1Font]);
-    _notificationLabel.textColor = [[MDCPalette cr_bluePalette] tint500];
+    _notificationLabel.textColor = [UIColor colorNamed:kBlueColor];
     [_stackView addArrangedSubview:_notificationLabel];
 
     // Method type icon.

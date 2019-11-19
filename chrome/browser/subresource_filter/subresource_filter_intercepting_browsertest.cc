@@ -47,7 +47,8 @@ class SubresourceFilterInterceptingBrowserTest
         safe_browsing::GetUrlSubresourceFilterId().platform_type());
     threat_match.set_threat_entry_type(safe_browsing::URL);
 
-    safe_browsing::FullHash enforce_full_hash = safe_browsing::GetFullHash(url);
+    safe_browsing::FullHash enforce_full_hash =
+        safe_browsing::V4ProtocolManagerUtil::GetFullHash(url);
     threat_match.mutable_threat()->set_hash(enforce_full_hash);
     threat_match.mutable_cache_duration()->set_seconds(300);
 
@@ -175,14 +176,24 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterInterceptingBrowserTest,
   EXPECT_GE(timer.Elapsed(), delay);
 }
 
+class SubresourceFilterInterceptingBrowserTestConsiderRedirects
+    : public SubresourceFilterInterceptingBrowserTest {
+ public:
+  SubresourceFilterInterceptingBrowserTestConsiderRedirects() {
+    feature_list_.InitAndEnableFeature(
+        kSafeBrowsingSubresourceFilterConsiderRedirects);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
 // Verify that the correct safebrowsing result is reported when there is a
 // redirect chain. With kSafeBrowsingSubresourceFilterConsiderRedirects, the
 // result with the highest priority should be returned.
-IN_PROC_BROWSER_TEST_F(SubresourceFilterInterceptingBrowserTest,
-                       SafeBrowsingNotificationsCheckBest) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      kSafeBrowsingSubresourceFilterConsiderRedirects);
+IN_PROC_BROWSER_TEST_F(
+    SubresourceFilterInterceptingBrowserTestConsiderRedirects,
+    SafeBrowsingNotificationsCheckBest) {
   ASSERT_NO_FATAL_FAILURE(
       SetRulesetToDisallowURLsWithPathSuffix("included_script.js"));
   GURL redirect_url(embedded_test_server()->GetURL(
@@ -193,14 +204,24 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterInterceptingBrowserTest,
   EXPECT_FALSE(WasParsedScriptElementLoaded(web_contents()->GetMainFrame()));
 }
 
+class SubresourceFilterInterceptingBrowserTestDontConsiderRedirects
+    : public SubresourceFilterInterceptingBrowserTest {
+ public:
+  SubresourceFilterInterceptingBrowserTestDontConsiderRedirects() {
+    feature_list_.InitAndDisableFeature(
+        kSafeBrowsingSubresourceFilterConsiderRedirects);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
 // Verify that the correct safebrowsing result is reported when there is a
 // redirect chain. Without kSafeBrowsingSubresourceFilterConsiderRedirects, the
 // last result should be used.
-IN_PROC_BROWSER_TEST_F(SubresourceFilterInterceptingBrowserTest,
-                       SafeBrowsingNotificationsCheckLastResult) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      kSafeBrowsingSubresourceFilterConsiderRedirects);
+IN_PROC_BROWSER_TEST_F(
+    SubresourceFilterInterceptingBrowserTestDontConsiderRedirects,
+    SafeBrowsingNotificationsCheckLastResult) {
   ASSERT_NO_FATAL_FAILURE(
       SetRulesetToDisallowURLsWithPathSuffix("included_script.js"));
   GURL redirect_url(embedded_test_server()->GetURL(

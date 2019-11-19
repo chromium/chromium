@@ -9,7 +9,6 @@
 #include "ash/wm/test_child_modal_parent.h"
 #include "ash/wm/window_util.h"
 #include "base/stl_util.h"
-#include "services/ws/public/mojom/window_manager.mojom.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/capture_client.h"
 #include "ui/aura/test/test_window_delegate.h"
@@ -426,11 +425,11 @@ TEST_F(WindowModalityControllerTest, TouchEvent) {
   // transient parent |w1| from going to them because of
   // EasyResizeWindowTargeter.
   w11->SetProperty(aura::client::kResizeBehaviorKey,
-                   ws::mojom::kResizeBehaviorCanMaximize |
-                       ws::mojom::kResizeBehaviorCanMinimize);
+                   aura::client::kResizeBehaviorCanMaximize |
+                       aura::client::kResizeBehaviorCanMinimize);
   w12->SetProperty(aura::client::kResizeBehaviorKey,
-                   ws::mojom::kResizeBehaviorCanMaximize |
-                       ws::mojom::kResizeBehaviorCanMinimize);
+                   aura::client::kResizeBehaviorCanMaximize |
+                       aura::client::kResizeBehaviorCanMinimize);
   ui::test::EventGenerator generator(Shell::GetPrimaryRootWindow(),
                                      gfx::Point(10, 10));
 

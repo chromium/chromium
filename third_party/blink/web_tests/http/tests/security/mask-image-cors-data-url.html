@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<style>
+#target {
+  width: 200px;
+  height: 200px;
+  background-color: green;
+  /* Data URL access is OK. */
+  -webkit-mask-image: url('data:image/svg+xml;utf8, \
+    <svg xmlns="http://www.w3.org/2000/svg" width="200px" height="200px"> \
+      <rect x="50px" y="50px" width="100px" height="100px" fill="black" /> \
+    </svg>');
+}
+</style>
+<div id="target"></div>

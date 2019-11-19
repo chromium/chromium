@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_ANDROID_SIGNIN_SIGNIN_PROMO_UTIL_ANDROID_H_
 
 #include "base/android/jni_android.h"
-#include "components/signin/core/browser/signin_metrics.h"
+#include "components/signin/public/base/signin_metrics.h"
 
 namespace ui {
 class WindowAndroid;
@@ -18,7 +18,7 @@ namespace android {
 class SigninPromoUtilAndroid {
  public:
   // Opens a signin flow with the specified |access_point| for metrics.
-  static void StartAccountSigninActivityForPromo(
+  static void StartSigninActivityForPromo(
       ui::WindowAndroid* window,
       signin_metrics::AccessPoint access_point);
 };

@@ -26,7 +26,7 @@ int main(int argc, char** argv) {
   mojo::core::Init();
 #endif
 
-  return base::LaunchUnitTestsSerially(
+  return base::LaunchUnitTests(
       argc, argv,
       base::BindOnce(&base::TestSuite::Run, base::Unretained(&test_suite)));
 }

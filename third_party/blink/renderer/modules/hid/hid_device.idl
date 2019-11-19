@@ -1,0 +1,65 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// A logical device enumerated by the HID service. Note that a physical device
+// may be represented by more than one logical device when enumerated through
+// HID.
+// https://wicg.github.io/webhid/index.html#device-usage
+
+[
+    Exposed(Window WebHID),
+    SecureContext
+] interface HIDDevice : EventTarget {
+    attribute EventHandler oninputreport;
+
+    // True if the device is ready to send or receive reports.
+    readonly attribute boolean opened;
+
+    // The 16-bit vendor and product IDs reported by the device.
+    readonly attribute unsigned short vendorId;
+    readonly attribute unsigned short productId;
+
+    // The device name, as reported by the device and shown in the chooser.
+    readonly attribute DOMString productName;
+
+    // An array of the top-level collections within the HID report descriptor,
+    // in the order they were encountered within the descriptor. The collections
+    // describe the reports supported by the device.
+    readonly attribute FrozenArray<HIDCollectionInfo> collections;
+
+    // Open a connection to the device. The promise is resolved once the device
+    // is ready to send or receive reports.
+    [CallWith=ScriptState, MeasureAs=HidDeviceOpen] Promise<void> open();
+
+    // Close the connection to the device. The promise is resolved once the
+    // device is closed.
+    [CallWith=ScriptState, MeasureAs=HidDeviceClose] Promise<void> close();
+
+    // Send an output report to the device. Set |reportId| to the first byte of
+    // the report and |data| to the remaining bytes. Set |reportId| to zero if
+    // the device does not use report IDs. The promise is resolved once the
+    // report has been sent.
+    [
+        CallWith=ScriptState,
+        MeasureAs=HidDeviceSendReport
+    ] Promise<void> sendReport(octet reportId, BufferSource data);
+
+    // Send a feature report to the device. Set |reportId| to the first byte of
+    // the report and |data| to the remaining bytes. Set |reportId| to zero if
+    // the device does not use report IDs. The promise is resolved once the
+    // report has been sent.
+    [
+        CallWith=ScriptState,
+        MeasureAs=HidDeviceSendFeatureReport
+    ] Promise<void> sendFeatureReport(octet reportId, BufferSource data);
+
+    // Request a feature report from the device. Set |reportId| to the ID of the
+    // feature report to request, or zero if the device does not use report IDs.
+    // Resolves the promise with a DataView containing the contents of the
+    // feature report.
+    [
+        CallWith=ScriptState,
+        MeasureAs=HidDeviceReceiveFeatureReport
+    ] Promise<DataView> receiveFeatureReport(octet reportId);
+};

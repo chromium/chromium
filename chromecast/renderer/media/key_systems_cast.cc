@@ -97,8 +97,8 @@ class PlayReadyKeySystemProperties : public ::media::KeySystemProperties {
   }
 
   EmeConfigRule GetEncryptionSchemeConfigRule(
-      ::media::EncryptionMode encryption_mode) const override {
-    if (encryption_mode == ::media::EncryptionMode::kCenc)
+      ::media::EncryptionScheme encryption_scheme) const override {
+    if (encryption_scheme == ::media::EncryptionScheme::kCenc)
       return EmeConfigRule::SUPPORTED;
     return EmeConfigRule::NOT_SUPPORTED;
   }
@@ -123,24 +123,24 @@ SupportedCodecs GetCastEmeSupportedCodecs() {
   codecs |= ::media::EME_CODEC_FLAC | ::media::EME_CODEC_OPUS;
 #endif  // BUILDFLAG(DISABLE_SECURE_FLAC_OPUS_DECODING)
 
-#if BUILDFLAG(ENABLE_HEVC_DEMUXING)
+#if BUILDFLAG(ENABLE_PLATFORM_HEVC)
   codecs |= ::media::EME_CODEC_HEVC;
-#endif  // BUILDFLAG(ENABLE_HEVC_DEMUXING)
+#endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC)
 
-#if BUILDFLAG(ENABLE_DOLBY_VISION_DEMUXING)
+#if BUILDFLAG(ENABLE_PLATFORM_DOLBY_VISION)
   codecs |= ::media::EME_CODEC_DOLBY_VISION_AVC;
-#if BUILDFLAG(ENABLE_HEVC_DEMUXING)
+#if BUILDFLAG(ENABLE_PLATFORM_HEVC)
   codecs |= ::media::EME_CODEC_DOLBY_VISION_HEVC;
-#endif  // BUILDFLAG(ENABLE_HEVC_DEMUXING)
-#endif  // BUILDFLAG(ENABLE_DOLBY_VISION_DEMUXING)
+#endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC)
+#endif  // BUILDFLAG(ENABLE_PLATFORM_DOLBY_VISION)
 
-#if BUILDFLAG(ENABLE_AC3_EAC3_AUDIO_DEMUXING)
+#if BUILDFLAG(ENABLE_PLATFORM_AC3_EAC3_AUDIO)
   codecs |= ::media::EME_CODEC_AC3 | ::media::EME_CODEC_EAC3;
-#endif  // BUILDFLAG(ENABLE_AC3_EAC3_AUDIO_DEMUXING)
+#endif  // BUILDFLAG(ENABLE_PLATFORM_AC3_EAC3_AUDIO)
 
-#if BUILDFLAG(ENABLE_MPEG_H_AUDIO_DEMUXING)
+#if BUILDFLAG(ENABLE_PLATFORM_MPEG_H_AUDIO)
   codecs |= ::media::EME_CODEC_MPEG_H_AUDIO;
-#endif  // BUILDFLAG(ENABLE_MPEG_H_AUDIO_DEMUXING)
+#endif  // BUILDFLAG(ENABLE_PLATFORM_MPEG_H_AUDIO)
 
   return codecs;
 }
@@ -162,15 +162,15 @@ void AddCmaKeySystems(
 #if BUILDFLAG(ENABLE_WIDEVINE)
   using Robustness = cdm::WidevineKeySystemProperties::Robustness;
 
-  base::flat_set<::media::EncryptionMode> encryption_schemes = {
-      ::media::EncryptionMode::kCenc, ::media::EncryptionMode::kCbcs};
+  base::flat_set<::media::EncryptionScheme> encryption_schemes = {
+      ::media::EncryptionScheme::kCenc, ::media::EncryptionScheme::kCbcs};
 
   key_systems_properties->emplace_back(new cdm::WidevineKeySystemProperties(
       codecs,                            // Regular codecs.
       encryption_schemes,                // Encryption schemes.
       codecs,                            // Hardware secure codecs.
       encryption_schemes,                // Hardware secure encryption schemes.
-      Robustness::HW_SECURE_ALL,         // Max audio robustness.
+      Robustness::HW_SECURE_CRYPTO,      // Max audio robustness.
       Robustness::HW_SECURE_ALL,         // Max video robustness.
       EmeSessionTypeSupport::SUPPORTED,  // persistent-license.
       EmeSessionTypeSupport::NOT_SUPPORTED,  // persistent-release-message.

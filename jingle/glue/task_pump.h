@@ -37,7 +37,7 @@ class TaskPump : public jingle_xmpp::TaskRunner {
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  base::WeakPtrFactory<TaskPump> weak_factory_;
+  base::WeakPtrFactory<TaskPump> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(TaskPump);
 };

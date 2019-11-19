@@ -22,6 +22,41 @@ class CSSChecker(object):
     self.output_api = output_api
     self.file_filter = file_filter
 
+  def RemoveAtBlocks(self, s):
+    re = self.input_api.re
+
+    def _remove_comments(s):
+      return re.sub(r'/\*.*\*/', '', s)
+
+    lines = s.splitlines()
+    i = 0
+    while i < len(lines):
+      line = _remove_comments(lines[i]).strip()
+      if (len(line) > 0 and line[0] == '@' and
+          not line[1:].startswith(("apply", "page")) and
+          line[-1] == '{' and not re.match("\d+x\b", line[1:])):
+        j = i
+        open_brackets = 1
+        while open_brackets > 0:
+          j += 1
+          inner_line = _remove_comments(lines[j]).strip()
+          if not inner_line:
+            continue
+          if inner_line[-1] == '{':
+            open_brackets += 1
+          elif inner_line[-1] == '}':
+            # Ignore single line keyframes (from { height: 0; }).
+            if not re.match(r'\s*(from|to|\d+%)\s*{', inner_line):
+              open_brackets -= 1
+          elif len(inner_line) > 1 and inner_line[-2:] == '};':
+            # End of mixin. TODO(dbeam): worth detecting ": {" start?
+            open_brackets -= 1
+        del lines[j]  # Later index first, as indices shift with deletion.
+        del lines[i]
+      else:
+        i += 1
+    return '\n'.join(lines)
+
   def RunChecks(self):
     # We use this a lot, so make a nick name variable.
     re = self.input_api.re
@@ -32,27 +67,11 @@ class CSSChecker(object):
     def _is_gray(s):
       return s[0] == s[1] == s[2] if len(s) == 3 else s[0:2] == s[2:4] == s[4:6]
 
-    def _remove_all(s):
-      s = _remove_grit(s)  # Must be done first.
-      s = _remove_ats(s)
-      s = _remove_comments_except_for_disables(s)
-      s = _remove_mixins_and_valid_vars(s)
-      s = _remove_template_expressions(s)
-      return s
-
     def _extract_inline_style(s):
       return '\n'.join(re.findall(r'<style\b[^>]*>([^<]*)<\/style>', s))
 
-    def _remove_ats(s):
-      return re.sub(r"""
-          @(?!apply)(?!\d+x\b)    # @at-keyword, not (apply|2x)
-          \w+[^'"]*?{             # selector junk {
-          (.*{.*?})+              # inner { curly } blocks, rules, and selector
-          .*?}                    # stuff up to the first end curly }
-          """, r'\1', s, flags=re.DOTALL | re.VERBOSE)
-
     def _remove_comments_except_for_disables(s):
-      return re.sub(r'/\*(?! %s \*/$).*?\*/' % self.DISABLE_FORMAT,'', s,
+      return re.sub(r'/\*(?! %s \*/$).*?\*/' % self.DISABLE_FORMAT, '', s,
                     flags=re.DOTALL | re.MULTILINE)
 
     def _remove_grit(s):
@@ -454,13 +473,25 @@ class CSSChecker(object):
       if not is_html and not path.endswith('.css'):
         continue
 
+      file_contents = '\n'.join(f.NewContents())
+
       # Remove all /*comments*/, @at-keywords, and grit <if|include> tags; we're
       # not using a real parser. TODO(dbeam): Check alpha in <if> blocks.
-      file_contents = _remove_all('\n'.join(f.NewContents()))
 
-      # Handle CSS files and HTML files with inline styles.
+      file_contents = _remove_grit(file_contents)  # Must be done first.
+
       if is_html:
-        file_contents = _extract_inline_style(file_contents)
+        # The <style> extraction regex can't handle <if> nor /* <tag> */.
+        prepped_html = _remove_comments_except_for_disables(file_contents)
+        file_contents = _extract_inline_style(prepped_html)
+
+      file_contents = self.RemoveAtBlocks(file_contents)
+
+      if not is_html:
+        file_contents = _remove_comments_except_for_disables(file_contents)
+
+      file_contents = _remove_mixins_and_valid_vars(file_contents)
+      file_contents = _remove_template_expressions(file_contents)
 
       files.append((path, file_contents))
 

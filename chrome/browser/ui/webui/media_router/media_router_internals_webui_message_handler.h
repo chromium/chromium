@@ -25,7 +25,7 @@ class MediaRouterInternalsWebUIMessageHandler
   void RegisterMessages() override;
 
   // Handlers for JavaScript messages.
-  void HandleInitialized(const base::ListValue* args);
+  void HandleGetStatus(const base::ListValue* args);
 
   // Pointer to the MediaRouter.
   const MediaRouter* router_;

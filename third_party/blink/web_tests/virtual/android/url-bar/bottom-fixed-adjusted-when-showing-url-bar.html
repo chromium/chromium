@@ -7,9 +7,9 @@
   // fully without causing a resize. i.e. as if the user dragged them into view
   // but hasn't lifted their finger.
   if (window.internals) {
-    internals.setBrowserControlsShownRatio(0);
+    internals.setBrowserControlsShownRatio(0, 0);
     internals.setBrowserControlsState(100, 0, false);
-    internals.setBrowserControlsShownRatio(1);
+    internals.setBrowserControlsShownRatio(1, 1);
     internals.settings.setHideScrollbars(true);
   }
 </script>

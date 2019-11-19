@@ -5,10 +5,13 @@
 #include "components/exo/wayland/zwp_linux_explicit_synchronization.h"
 
 #include <linux-explicit-synchronization-unstable-v1-server-protocol.h>
+#include <sync/sync.h>
 
 #include "components/exo/surface.h"
 #include "components/exo/surface_observer.h"
 #include "components/exo/wayland/server_util.h"
+#include "ui/gfx/gpu_fence.h"
+#include "ui/gfx/gpu_fence_handle.h"
 
 namespace exo {
 namespace wayland {
@@ -36,10 +39,13 @@ class LinuxSurfaceSynchronization : public SurfaceObserver {
   ~LinuxSurfaceSynchronization() override {
     if (surface_) {
       surface_->RemoveSurfaceObserver(this);
+      surface_->SetAcquireFence(nullptr);
       surface_->SetProperty(kSurfaceSynchronizationResource,
                             static_cast<wl_resource*>(nullptr));
     }
   }
+
+  Surface* surface() { return surface_; }
 
   // Overridden from SurfaceObserver:
   void OnSurfaceDestroying(Surface* surface) override {
@@ -61,7 +67,39 @@ void linux_surface_synchronization_destroy(struct wl_client* client,
 void linux_surface_synchronization_set_acquire_fence(wl_client* client,
                                                      wl_resource* resource,
                                                      int32_t fd) {
-  NOTIMPLEMENTED_LOG_ONCE();
+  auto fence_fd = base::ScopedFD(fd);
+  auto* surface =
+      GetUserDataAs<LinuxSurfaceSynchronization>(resource)->surface();
+
+  if (!surface) {
+    wl_resource_post_error(
+        resource, ZWP_LINUX_SURFACE_SYNCHRONIZATION_V1_ERROR_NO_SURFACE,
+        "Associated surface has been destroyed");
+    return;
+  }
+
+  if (surface->HasPendingAcquireFence()) {
+    wl_resource_post_error(
+        resource, ZWP_LINUX_SURFACE_SYNCHRONIZATION_V1_ERROR_DUPLICATE_FENCE,
+        "surface already has an acquire fence");
+    return;
+  }
+
+  auto fence_info =
+      std::unique_ptr<sync_fence_info_data, void (*)(sync_fence_info_data*)>{
+          sync_fence_info(fence_fd.get()), sync_fence_info_free};
+  if (!fence_info) {
+    wl_resource_post_error(
+        resource, ZWP_LINUX_SURFACE_SYNCHRONIZATION_V1_ERROR_INVALID_FENCE,
+        "the provided acquire fence is invalid");
+    return;
+  }
+
+  gfx::GpuFenceHandle handle;
+  handle.type = gfx::GpuFenceHandleType::kAndroidNativeFenceSync;
+  handle.native_fd = base::FileDescriptor(std::move(fence_fd));
+
+  surface->SetAcquireFence(std::make_unique<gfx::GpuFence>(handle));
 }
 
 void linux_surface_synchronization_get_release(wl_client* client,
@@ -125,6 +163,24 @@ void bind_linux_explicit_synchronization(wl_client* client,
   wl_resource_set_implementation(resource,
                                  &linux_explicit_synchronization_implementation,
                                  nullptr, nullptr);
+}
+
+bool linux_surface_synchronization_validate_commit(Surface* surface) {
+  if (surface->HasPendingAcquireFence() &&
+      !surface->HasPendingAttachedBuffer()) {
+    wl_resource* linux_surface_synchronization_resource =
+        surface->GetProperty(kSurfaceSynchronizationResource);
+    DCHECK(linux_surface_synchronization_resource);
+
+    wl_resource_post_error(
+        linux_surface_synchronization_resource,
+        ZWP_LINUX_SURFACE_SYNCHRONIZATION_V1_ERROR_NO_BUFFER,
+        "surface has acquire fence but no buffer for synchronization");
+
+    return false;
+  }
+
+  return true;
 }
 
 }  // namespace wayland

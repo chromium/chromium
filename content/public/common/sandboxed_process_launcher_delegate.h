@@ -52,6 +52,12 @@ class CONTENT_EXPORT SandboxedProcessLauncherDelegate
   // Override this if the process needs a non-empty environment map.
   virtual base::EnvironmentMap GetEnvironment();
 #endif  // defined(OS_POSIX)
+
+#if defined(OS_MACOSX)
+  // Whether or not to disclaim TCC responsibility for the process, defaults to
+  // false. See base::LaunchOptions::disclaim_responsibility.
+  virtual bool DisclaimResponsibility();
+#endif
 };
 
 }  // namespace content

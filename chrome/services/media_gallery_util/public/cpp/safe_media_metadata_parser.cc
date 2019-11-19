@@ -8,8 +8,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "chrome/services/media_gallery_util/public/mojom/constants.mojom.h"
-#include "services/service_manager/public/cpp/connector.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 
 SafeMediaMetadataParser::SafeMediaMetadataParser(
     int64_t size,
@@ -19,26 +18,25 @@ SafeMediaMetadataParser::SafeMediaMetadataParser(
     : size_(size),
       mime_type_(mime_type),
       get_attached_images_(get_attached_images),
-      media_source_factory_(std::move(media_source_factory)),
-      weak_factory_(this) {}
+      media_source_factory_(std::move(media_source_factory)) {}
 
 SafeMediaMetadataParser::~SafeMediaMetadataParser() = default;
 
-void SafeMediaMetadataParser::Start(service_manager::Connector* connector,
-                                    DoneCallback callback) {
+void SafeMediaMetadataParser::Start(DoneCallback callback) {
   DCHECK(!media_parser());
   DCHECK(callback);
 
   callback_ = std::move(callback);
 
-  RetrieveMediaParser(connector);
+  RetrieveMediaParser();
 }
 
 void SafeMediaMetadataParser::OnMediaParserCreated() {
-  chrome::mojom::MediaDataSourcePtr source;
+  mojo::PendingRemote<chrome::mojom::MediaDataSource> source;
   media_data_source_ = media_source_factory_->CreateMediaDataSource(
-      &source, base::BindRepeating(&SafeMediaMetadataParser::OnMediaDataReady,
-                                   weak_factory_.GetWeakPtr()));
+      source.InitWithNewPipeAndPassReceiver(),
+      base::BindRepeating(&SafeMediaMetadataParser::OnMediaDataReady,
+                          weak_factory_.GetWeakPtr()));
   media_parser()->ParseMediaMetadata(
       mime_type_, size_, get_attached_images_, std::move(source),
       base::BindOnce(&SafeMediaMetadataParser::ParseMediaMetadataDone,

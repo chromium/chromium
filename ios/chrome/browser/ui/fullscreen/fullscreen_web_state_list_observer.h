@@ -9,7 +9,7 @@
 
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_web_state_observer.h"
 #import "ios/chrome/browser/web_state_list/web_state_list_observer.h"
-#include "ios/web/public/web_state/web_state_observer.h"
+#include "ios/web/public/web_state_observer.h"
 
 class FullscreenController;
 class FullscreenMediator;
@@ -57,6 +57,12 @@ class FullscreenWebStateListObserver : public WebStateListObserver {
                            web::WebState* web_state,
                            int index,
                            bool user_action) override;
+
+  // Called when |web_state| is activated in |web_state_list_|.
+  void WebStateWasActivated(web::WebState* web_state);
+
+  // Called when |web_state| is removed from |web_state_list_|.
+  void WebStateWasRemoved(web::WebState* web_state);
 
   // Whether |web_state| has been activated during the lifetime of this object.
   bool HasWebStateBeenActivated(web::WebState* web_state);

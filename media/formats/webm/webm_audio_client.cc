@@ -27,7 +27,7 @@ bool WebMAudioClient::InitializeConfig(
     const std::vector<uint8_t>& codec_private,
     int64_t seek_preroll,
     int64_t codec_delay,
-    const EncryptionScheme& encryption_scheme,
+    EncryptionScheme encryption_scheme,
     AudioDecoderConfig* config) {
   DCHECK(config);
   SampleFormat sample_format = kSampleFormatPlanarF32;

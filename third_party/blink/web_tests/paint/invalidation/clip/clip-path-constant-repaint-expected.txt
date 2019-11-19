@@ -1,41 +1,20 @@
 {
   "layers": [
     {
-      "name": "LayoutView #document",
-      "bounds": [800, 600],
-      "drawsContent": false,
-      "backgroundColor": "#FFFFFF"
-    },
-    {
-      "name": "Scrolling Layer",
-      "bounds": [800, 600],
-      "drawsContent": false
-    },
-    {
       "name": "Scrolling Contents Layer",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutBlockFlow (positioned) DIV id='clip'",
+      "name": "LayoutNGBlockFlow (positioned) DIV id='clip'",
       "bounds": [800, 300],
-      "backfaceVisibility": "hidden",
       "backgroundColor": "#FF0000E6",
-      "maskLayer": [
-        {
-          "name": "Mask Layer",
-          "bounds": [800, 300],
-          "backfaceVisibility": "hidden",
-          "paintInvalidations": [
-            {
-              "object": "Mask Layer",
-              "rect": [0, 0, 800, 300],
-              "reason": "paint property change"
-            }
-          ]
-        }
-      ],
+      "transform": 2
+    },
+    {
+      "name": "Mask Layer",
+      "bounds": [800, 300],
       "transform": 2
     }
   ],

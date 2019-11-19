@@ -13,9 +13,9 @@ AssociatedBindingBase::AssociatedBindingBase() {}
 
 AssociatedBindingBase::~AssociatedBindingBase() {}
 
-void AssociatedBindingBase::AddFilter(std::unique_ptr<MessageReceiver> filter) {
+void AssociatedBindingBase::SetFilter(std::unique_ptr<MessageFilter> filter) {
   DCHECK(endpoint_client_);
-  endpoint_client_->AddFilter(std::move(filter));
+  endpoint_client_->SetFilter(std::move(filter));
 }
 
 void AssociatedBindingBase::Close() {
@@ -52,7 +52,8 @@ void AssociatedBindingBase::BindImpl(
     std::unique_ptr<MessageReceiver> payload_validator,
     bool expect_sync_requests,
     scoped_refptr<base::SequencedTaskRunner> runner,
-    uint32_t interface_version) {
+    uint32_t interface_version,
+    const char* interface_name) {
   if (!handle.is_valid()) {
     endpoint_client_.reset();
     return;
@@ -62,7 +63,7 @@ void AssociatedBindingBase::BindImpl(
       std::move(handle), receiver, std::move(payload_validator),
       expect_sync_requests,
       internal::GetTaskRunnerToUseFromUserProvidedTaskRunner(std::move(runner)),
-      interface_version));
+      interface_version, interface_name));
 }
 
 }  // namespace mojo

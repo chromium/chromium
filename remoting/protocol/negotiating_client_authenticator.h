@@ -69,7 +69,7 @@ class NegotiatingClientAuthenticator : public NegotiatingAuthenticatorBase {
 
   // Internal NegotiatingClientAuthenticator data.
   bool method_set_by_host_ = false;
-  base::WeakPtrFactory<NegotiatingClientAuthenticator> weak_factory_;
+  base::WeakPtrFactory<NegotiatingClientAuthenticator> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(NegotiatingClientAuthenticator);
 };

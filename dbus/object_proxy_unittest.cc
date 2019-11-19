@@ -3,10 +3,11 @@
 // found in the LICENSE file.
 
 #include "dbus/object_proxy.h"
+
 #include "base/bind.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "dbus/bus.h"
 #include "dbus/test_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -27,8 +28,8 @@ class ObjectProxyTest : public testing::Test {
 
   void TearDown() override { bus_->ShutdownAndBlock(); }
 
-  base::test::ScopedTaskEnvironment task_environment_{
-      base::test::ScopedTaskEnvironment::MainThreadType::IO};
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::MainThreadType::IO};
 
   scoped_refptr<Bus> bus_;
 };

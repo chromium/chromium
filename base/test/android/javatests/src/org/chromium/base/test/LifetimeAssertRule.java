@@ -4,16 +4,25 @@
 
 package org.chromium.base.test;
 
-import org.junit.rules.ExternalResource;
+import org.junit.rules.TestRule;
+import org.junit.runner.Description;
+import org.junit.runners.model.Statement;
 
 import org.chromium.base.LifetimeAssert;
 
 /**
  * Ensures that all object instances that use LifetimeAssert are destroyed.
  */
-public class LifetimeAssertRule extends ExternalResource {
+public class LifetimeAssertRule implements TestRule {
     @Override
-    protected void after() {
-        LifetimeAssert.assertAllInstancesDestroyedForTesting();
+    public Statement apply(Statement base, Description description) {
+        return new Statement() {
+            @Override
+            public void evaluate() throws Throwable {
+                base.evaluate();
+                // Do not use try/finally so that lifetime asserts do not mask prior exceptions.
+                LifetimeAssert.assertAllInstancesDestroyedForTesting();
+            }
+        };
     }
 }

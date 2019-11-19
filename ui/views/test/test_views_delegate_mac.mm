@@ -8,14 +8,9 @@
 
 namespace views {
 
-TestViewsDelegate::TestViewsDelegate()
-    : context_factory_(nullptr),
-      context_factory_private_(nullptr),
-      use_desktop_native_widgets_(false),
-      use_transparent_windows_(false) {}
+TestViewsDelegate::TestViewsDelegate() = default;
 
-TestViewsDelegate::~TestViewsDelegate() {
-}
+TestViewsDelegate::~TestViewsDelegate() = default;
 
 void TestViewsDelegate::OnBeforeWidgetInit(
     Widget::InitParams* params,

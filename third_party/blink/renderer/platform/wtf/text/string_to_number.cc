@@ -5,8 +5,8 @@
 #include "third_party/blink/renderer/platform/wtf/text/string_to_number.h"
 
 #include <type_traits>
-#include "third_party/blink/renderer/platform/wtf/ascii_ctype.h"
 #include "third_party/blink/renderer/platform/wtf/dtoa.h"
+#include "third_party/blink/renderer/platform/wtf/text/ascii_ctype.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_impl.h"
 
 namespace WTF {

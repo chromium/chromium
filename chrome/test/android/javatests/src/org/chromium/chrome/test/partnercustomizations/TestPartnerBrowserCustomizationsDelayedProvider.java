@@ -12,6 +12,7 @@ import android.text.TextUtils;
 import org.chromium.base.annotations.MainDex;
 
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
 
 /**
  * PartnerBrowserCustomizationsProvider example for testing. This adds one second latency for
@@ -22,14 +23,20 @@ import java.util.List;
 public class TestPartnerBrowserCustomizationsDelayedProvider
         extends TestPartnerBrowserCustomizationsProvider {
     private static String sUriPathToDelay;
+    private static CountDownLatch sLatch;
 
     public TestPartnerBrowserCustomizationsDelayedProvider() {
         super();
         mTag = TestPartnerBrowserCustomizationsDelayedProvider.class.getSimpleName();
     }
 
+    public static void unblockQuery() {
+        sLatch.countDown();
+    }
+
     private void setUriPathToDelay(String path) {
         sUriPathToDelay = path;
+        sLatch = new CountDownLatch(1);
     }
 
     @Override
@@ -48,7 +55,7 @@ public class TestPartnerBrowserCustomizationsDelayedProvider
             if (sUriPathToDelay == null
                     || (pathSegments != null && !pathSegments.isEmpty()
                             && TextUtils.equals(pathSegments.get(0), sUriPathToDelay))) {
-                Thread.sleep(1000);
+                sLatch.await();
             }
         } catch (InterruptedException e) {
             assert false;

@@ -26,6 +26,7 @@
 namespace content {
 namespace {
 
+using ::payments::mojom::PaymentDelegation;
 using ::payments::mojom::PaymentHandlerStatus;
 using ::payments::mojom::PaymentInstrument;
 using ::payments::mojom::PaymentInstrumentPtr;
@@ -86,6 +87,28 @@ PaymentInstrumentPtr ToPaymentInstrumentForMojo(const std::string& input) {
   return instrument;
 }
 
+SupportedDelegations ToSupportedDelegations(
+    const content::SupportedDelegationsProto& supported_delegations_proto) {
+  SupportedDelegations supported_delegations;
+  if (supported_delegations_proto.has_shipping_address()) {
+    supported_delegations.shipping_address =
+        supported_delegations_proto.shipping_address();
+  }
+  if (supported_delegations_proto.has_payer_name()) {
+    supported_delegations.payer_name = supported_delegations_proto.payer_name();
+  }
+  if (supported_delegations_proto.has_payer_email()) {
+    supported_delegations.payer_email =
+        supported_delegations_proto.payer_email();
+  }
+  if (supported_delegations_proto.has_payer_phone()) {
+    supported_delegations.payer_phone =
+        supported_delegations_proto.payer_phone();
+  }
+
+  return supported_delegations;
+}
+
 std::unique_ptr<StoredPaymentApp> ToStoredPaymentApp(const std::string& input) {
   StoredPaymentAppProto app_proto;
   if (!app_proto.ParseFromString(input))
@@ -102,6 +125,8 @@ std::unique_ptr<StoredPaymentApp> ToStoredPaymentApp(const std::string& input) {
     app->related_applications.back().id = related_app.id();
   }
   app->user_hint = app_proto.user_hint();
+  app->supported_delegations =
+      ToSupportedDelegations(app_proto.supported_delegations());
 
   if (!app_proto.icon().empty()) {
     std::string icon_raw_data;
@@ -122,17 +147,17 @@ std::unique_ptr<StoredPaymentApp> ToStoredPaymentApp(const std::string& input) {
 
 PaymentAppDatabase::PaymentAppDatabase(
     scoped_refptr<ServiceWorkerContextWrapper> service_worker_context)
-    : service_worker_context_(service_worker_context), weak_ptr_factory_(this) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+    : service_worker_context_(service_worker_context) {
+  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
 }
 
 PaymentAppDatabase::~PaymentAppDatabase() {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
 }
 
 void PaymentAppDatabase::ReadAllPaymentApps(
     ReadAllPaymentAppsCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
 
   service_worker_context_->GetUserDataForAllRegistrationsByKeyPrefix(
       kPaymentAppPrefix,
@@ -144,7 +169,7 @@ void PaymentAppDatabase::DeletePaymentInstrument(
     const GURL& scope,
     const std::string& instrument_key,
     DeletePaymentInstrumentCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
 
   service_worker_context_->FindReadyRegistrationForScope(
       scope,
@@ -157,7 +182,7 @@ void PaymentAppDatabase::ReadPaymentInstrument(
     const GURL& scope,
     const std::string& instrument_key,
     ReadPaymentInstrumentCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
 
   service_worker_context_->FindReadyRegistrationForScope(
       scope,
@@ -169,7 +194,7 @@ void PaymentAppDatabase::ReadPaymentInstrument(
 void PaymentAppDatabase::KeysOfPaymentInstruments(
     const GURL& scope,
     KeysOfPaymentInstrumentsCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
 
   service_worker_context_->FindReadyRegistrationForScope(
       scope,
@@ -181,7 +206,7 @@ void PaymentAppDatabase::HasPaymentInstrument(
     const GURL& scope,
     const std::string& instrument_key,
     HasPaymentInstrumentCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
 
   service_worker_context_->FindReadyRegistrationForScope(
       scope,
@@ -195,7 +220,7 @@ void PaymentAppDatabase::WritePaymentInstrument(
     const std::string& instrument_key,
     PaymentInstrumentPtr instrument,
     WritePaymentInstrumentCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
 
   if (instrument->icons.size() > 0) {
     std::vector<blink::Manifest::ImageResource> icons(instrument->icons);
@@ -221,7 +246,7 @@ void PaymentAppDatabase::DidFetchedPaymentInstrumentIcon(
     payments::mojom::PaymentInstrumentPtr instrument,
     WritePaymentInstrumentCallback callback,
     const std::string& icon) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
 
   if (icon.empty()) {
     std::move(callback).Run(PaymentHandlerStatus::FETCH_INSTRUMENT_ICON_FAILED);
@@ -240,7 +265,7 @@ void PaymentAppDatabase::FetchAndUpdatePaymentAppInfo(
     const GURL& context,
     const GURL& scope,
     FetchAndUpdatePaymentAppInfoCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
 
   PaymentAppInfoFetcher::Start(
       context, service_worker_context_,
@@ -253,7 +278,7 @@ void PaymentAppDatabase::FetchPaymentAppInfoCallback(
     const GURL& scope,
     FetchAndUpdatePaymentAppInfoCallback callback,
     std::unique_ptr<PaymentAppInfoFetcher::PaymentAppInfo> app_info) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
 
   service_worker_context_->FindReadyRegistrationForScope(
       scope, base::BindOnce(
@@ -267,7 +292,7 @@ void PaymentAppDatabase::DidFindRegistrationToUpdatePaymentAppInfo(
     std::unique_ptr<PaymentAppInfoFetcher::PaymentAppInfo> app_info,
     blink::ServiceWorkerStatusCode status,
     scoped_refptr<ServiceWorkerRegistration> registration) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
   if (status != blink::ServiceWorkerStatusCode::kOk) {
     std::move(callback).Run(PaymentHandlerStatus::NO_ACTIVE_WORKER);
     return;
@@ -287,7 +312,7 @@ void PaymentAppDatabase::DidGetPaymentAppInfoToUpdatePaymentAppInfo(
     scoped_refptr<ServiceWorkerRegistration> registration,
     const std::vector<std::string>& data,
     blink::ServiceWorkerStatusCode status) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
   if (status != blink::ServiceWorkerStatusCode::kOk) {
     std::move(callback).Run(PaymentHandlerStatus::NO_ACTIVE_WORKER);
     return;
@@ -333,7 +358,7 @@ void PaymentAppDatabase::DidUpdatePaymentApp(
     FetchAndUpdatePaymentAppInfoCallback callback,
     bool fetch_app_info_failed,
     blink::ServiceWorkerStatusCode status) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
 
   PaymentHandlerStatus handler_status =
       fetch_app_info_failed
@@ -348,7 +373,7 @@ void PaymentAppDatabase::DidUpdatePaymentApp(
 void PaymentAppDatabase::ClearPaymentInstruments(
     const GURL& scope,
     ClearPaymentInstrumentsCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
 
   service_worker_context_->FindReadyRegistrationForScope(
       scope,
@@ -359,7 +384,7 @@ void PaymentAppDatabase::ClearPaymentInstruments(
 
 void PaymentAppDatabase::SetPaymentAppUserHint(const GURL& scope,
                                                const std::string& user_hint) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
 
   service_worker_context_->FindReadyRegistrationForScope(
       scope,
@@ -368,11 +393,104 @@ void PaymentAppDatabase::SetPaymentAppUserHint(const GURL& scope,
           weak_ptr_factory_.GetWeakPtr(), user_hint));
 }
 
+void PaymentAppDatabase::EnablePaymentAppDelegations(
+    const GURL& scope,
+    const std::vector<PaymentDelegation>& delegations,
+    EnableDelegationsCallback callback) {
+  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
+
+  service_worker_context_->FindReadyRegistrationForScope(
+      scope,
+      base::BindOnce(
+          &PaymentAppDatabase::DidFindRegistrationToEnablePaymentAppDelegations,
+          weak_ptr_factory_.GetWeakPtr(), delegations, std::move(callback)));
+}
+
+void PaymentAppDatabase::DidFindRegistrationToEnablePaymentAppDelegations(
+    const std::vector<PaymentDelegation>& delegations,
+    EnableDelegationsCallback callback,
+    blink::ServiceWorkerStatusCode status,
+    scoped_refptr<ServiceWorkerRegistration> registration) {
+  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
+  if (status != blink::ServiceWorkerStatusCode::kOk) {
+    std::move(callback).Run(PaymentHandlerStatus::NO_ACTIVE_WORKER);
+    return;
+  }
+
+  service_worker_context_->GetRegistrationUserDataByKeyPrefix(
+      registration->id(), CreatePaymentAppKey(registration->scope().spec()),
+      base::BindOnce(
+          &PaymentAppDatabase::DidGetPaymentAppInfoToEnableDelegations,
+          weak_ptr_factory_.GetWeakPtr(), delegations, std::move(callback),
+          registration->id(), registration->scope()));
+}
+
+void PaymentAppDatabase::DidGetPaymentAppInfoToEnableDelegations(
+    const std::vector<PaymentDelegation>& delegations,
+    EnableDelegationsCallback callback,
+    int64_t registration_id,
+    const GURL& pattern,
+    const std::vector<std::string>& data,
+    blink::ServiceWorkerStatusCode status) {
+  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
+  if (status != blink::ServiceWorkerStatusCode::kOk) {
+    std::move(callback).Run(PaymentHandlerStatus::NOT_FOUND);
+    return;
+  }
+
+  DCHECK_LE(data.size(), 1U);
+  StoredPaymentAppProto app_proto;
+  if (data.size() == 1U) {
+    app_proto.ParseFromString(data[0]);
+  }
+
+  auto supported_delegations_proto =
+      std::make_unique<SupportedDelegationsProto>();
+  for (auto delegation : delegations) {
+    switch (delegation) {
+      case PaymentDelegation::SHIPPING_ADDRESS:
+        supported_delegations_proto->set_shipping_address(true);
+        break;
+      case PaymentDelegation::PAYER_NAME:
+        supported_delegations_proto->set_payer_name(true);
+        break;
+      case PaymentDelegation::PAYER_PHONE:
+        supported_delegations_proto->set_payer_phone(true);
+        break;
+      case PaymentDelegation::PAYER_EMAIL:
+        supported_delegations_proto->set_payer_email(true);
+        break;
+    }
+  }
+  app_proto.set_allocated_supported_delegations(
+      supported_delegations_proto.release());
+
+  std::string serialized_payment_app;
+  bool success = app_proto.SerializeToString(&serialized_payment_app);
+  DCHECK(success);
+
+  service_worker_context_->StoreRegistrationUserData(
+      registration_id, pattern.GetOrigin(),
+      {{CreatePaymentAppKey(pattern.spec()), serialized_payment_app}},
+      base::BindOnce(&PaymentAppDatabase::DidEnablePaymentAppDelegations,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void PaymentAppDatabase::DidEnablePaymentAppDelegations(
+    EnableDelegationsCallback callback,
+    blink::ServiceWorkerStatusCode status) {
+  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
+  return std::move(callback).Run(
+      status == blink::ServiceWorkerStatusCode::kOk
+          ? PaymentHandlerStatus::SUCCESS
+          : PaymentHandlerStatus::STORAGE_OPERATION_FAILED);
+}
+
 void PaymentAppDatabase::DidFindRegistrationToSetPaymentAppUserHint(
     const std::string& user_hint,
     blink::ServiceWorkerStatusCode status,
     scoped_refptr<ServiceWorkerRegistration> registration) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
   if (status != blink::ServiceWorkerStatusCode::kOk)
     return;
 
@@ -389,7 +507,7 @@ void PaymentAppDatabase::DidGetPaymentAppInfoToSetUserHint(
     const GURL& pattern,
     const std::vector<std::string>& data,
     blink::ServiceWorkerStatusCode status) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
   if (status != blink::ServiceWorkerStatusCode::kOk)
     return;
 
@@ -413,7 +531,7 @@ void PaymentAppDatabase::DidGetPaymentAppInfoToSetUserHint(
 
 void PaymentAppDatabase::DidSetPaymentAppUserHint(
     blink::ServiceWorkerStatusCode status) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
   DCHECK(status == blink::ServiceWorkerStatusCode::kOk);
 }
 
@@ -423,14 +541,15 @@ void PaymentAppDatabase::SetPaymentAppInfoForRegisteredServiceWorker(
     const std::string& name,
     const std::string& icon,
     const std::string& method,
+    const SupportedDelegations& supported_delegations,
     SetPaymentAppInfoCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
 
   service_worker_context_->FindReadyRegistrationForIdOnly(
       registration_id,
       base::BindOnce(&PaymentAppDatabase::DidFindRegistrationToSetPaymentApp,
                      weak_ptr_factory_.GetWeakPtr(), instrument_key, name, icon,
-                     method, std::move(callback)));
+                     method, supported_delegations, std::move(callback)));
 }
 
 void PaymentAppDatabase::DidFindRegistrationToSetPaymentApp(
@@ -438,10 +557,11 @@ void PaymentAppDatabase::DidFindRegistrationToSetPaymentApp(
     const std::string& name,
     const std::string& icon,
     const std::string& method,
+    const SupportedDelegations& supported_delegations,
     SetPaymentAppInfoCallback callback,
     blink::ServiceWorkerStatusCode status,
     scoped_refptr<ServiceWorkerRegistration> registration) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
 
   if (status != blink::ServiceWorkerStatusCode::kOk) {
     std::move(callback).Run(PaymentHandlerStatus::NO_ACTIVE_WORKER);
@@ -453,6 +573,19 @@ void PaymentAppDatabase::DidFindRegistrationToSetPaymentApp(
   payment_app_proto.set_scope(registration->scope().spec());
   payment_app_proto.set_name(name);
   payment_app_proto.set_icon(icon);
+
+  // Set supported delegations.
+  auto supported_delegations_proto =
+      std::make_unique<SupportedDelegationsProto>();
+  supported_delegations_proto->set_shipping_address(
+      supported_delegations.shipping_address);
+  supported_delegations_proto->set_payer_name(supported_delegations.payer_name);
+  supported_delegations_proto->set_payer_phone(
+      supported_delegations.payer_phone);
+  supported_delegations_proto->set_payer_email(
+      supported_delegations.payer_email);
+  payment_app_proto.set_allocated_supported_delegations(
+      supported_delegations_proto.release());
 
   std::string serialized_payment_app;
   bool success = payment_app_proto.SerializeToString(&serialized_payment_app);
@@ -479,7 +612,7 @@ void PaymentAppDatabase::DidWritePaymentAppForSetPaymentApp(
     SetPaymentAppInfoCallback callback,
     scoped_refptr<ServiceWorkerRegistration> registration,
     blink::ServiceWorkerStatusCode status) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
 
   if (status != blink::ServiceWorkerStatusCode::kOk) {
     std::move(callback).Run(PaymentHandlerStatus::STORAGE_OPERATION_FAILED);
@@ -516,7 +649,7 @@ void PaymentAppDatabase::DidWritePaymentAppForSetPaymentApp(
 void PaymentAppDatabase::DidWritePaymentInstrumentForSetPaymentApp(
     SetPaymentAppInfoCallback callback,
     blink::ServiceWorkerStatusCode status) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
   return std::move(callback).Run(
       status == blink::ServiceWorkerStatusCode::kOk
           ? PaymentHandlerStatus::SUCCESS
@@ -527,7 +660,7 @@ void PaymentAppDatabase::DidReadAllPaymentApps(
     ReadAllPaymentAppsCallback callback,
     const std::vector<std::pair<int64_t, std::string>>& raw_data,
     blink::ServiceWorkerStatusCode status) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
   if (status != blink::ServiceWorkerStatusCode::kOk) {
     std::move(callback).Run(PaymentApps());
     return;
@@ -558,7 +691,7 @@ void PaymentAppDatabase::DidReadAllPaymentInstruments(
     ReadAllPaymentAppsCallback callback,
     const std::vector<std::pair<int64_t, std::string>>& raw_data,
     blink::ServiceWorkerStatusCode status) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
   if (status != blink::ServiceWorkerStatusCode::kOk) {
     std::move(callback).Run(std::move(apps));
     return;
@@ -570,7 +703,7 @@ void PaymentAppDatabase::DidReadAllPaymentInstruments(
       continue;
 
     int64_t id = instrument_proto.registration_id();
-    if (!base::ContainsKey(apps, id))
+    if (!base::Contains(apps, id))
       continue;
 
     apps[id]->enabled_methods.emplace_back(instrument_proto.method());
@@ -592,7 +725,7 @@ void PaymentAppDatabase::DidFindRegistrationToDeletePaymentInstrument(
     DeletePaymentInstrumentCallback callback,
     blink::ServiceWorkerStatusCode status,
     scoped_refptr<ServiceWorkerRegistration> registration) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
   if (status != blink::ServiceWorkerStatusCode::kOk) {
     std::move(callback).Run(PaymentHandlerStatus::NO_ACTIVE_WORKER);
     return;
@@ -611,7 +744,7 @@ void PaymentAppDatabase::DidFindPaymentInstrument(
     DeletePaymentInstrumentCallback callback,
     const std::vector<std::string>& data,
     blink::ServiceWorkerStatusCode status) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
   if (status != blink::ServiceWorkerStatusCode::kOk || data.size() != 1) {
     std::move(callback).Run(PaymentHandlerStatus::NOT_FOUND);
     return;
@@ -628,7 +761,7 @@ void PaymentAppDatabase::DidFindPaymentInstrument(
 void PaymentAppDatabase::DidDeletePaymentInstrument(
     DeletePaymentInstrumentCallback callback,
     blink::ServiceWorkerStatusCode status) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
   return std::move(callback).Run(status == blink::ServiceWorkerStatusCode::kOk
                                      ? PaymentHandlerStatus::SUCCESS
                                      : PaymentHandlerStatus::NOT_FOUND);
@@ -639,7 +772,7 @@ void PaymentAppDatabase::DidFindRegistrationToReadPaymentInstrument(
     ReadPaymentInstrumentCallback callback,
     blink::ServiceWorkerStatusCode status,
     scoped_refptr<ServiceWorkerRegistration> registration) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
   if (status != blink::ServiceWorkerStatusCode::kOk) {
     std::move(callback).Run(PaymentInstrument::New(),
                             PaymentHandlerStatus::NO_ACTIVE_WORKER);
@@ -656,7 +789,7 @@ void PaymentAppDatabase::DidReadPaymentInstrument(
     ReadPaymentInstrumentCallback callback,
     const std::vector<std::string>& data,
     blink::ServiceWorkerStatusCode status) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
   if (status != blink::ServiceWorkerStatusCode::kOk || data.size() != 1) {
     std::move(callback).Run(PaymentInstrument::New(),
                             PaymentHandlerStatus::NOT_FOUND);
@@ -677,7 +810,7 @@ void PaymentAppDatabase::DidFindRegistrationToGetKeys(
     KeysOfPaymentInstrumentsCallback callback,
     blink::ServiceWorkerStatusCode status,
     scoped_refptr<ServiceWorkerRegistration> registration) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
   if (status != blink::ServiceWorkerStatusCode::kOk) {
     std::move(callback).Run(std::vector<std::string>(),
                             PaymentHandlerStatus::NO_ACTIVE_WORKER);
@@ -694,7 +827,7 @@ void PaymentAppDatabase::DidGetKeysOfPaymentInstruments(
     KeysOfPaymentInstrumentsCallback callback,
     const std::vector<std::string>& data,
     blink::ServiceWorkerStatusCode status) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
   if (status != blink::ServiceWorkerStatusCode::kOk) {
     std::move(callback).Run(std::vector<std::string>(),
                             PaymentHandlerStatus::NOT_FOUND);
@@ -714,7 +847,7 @@ void PaymentAppDatabase::DidFindRegistrationToHasPaymentInstrument(
     HasPaymentInstrumentCallback callback,
     blink::ServiceWorkerStatusCode status,
     scoped_refptr<ServiceWorkerRegistration> registration) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
   if (status != blink::ServiceWorkerStatusCode::kOk) {
     std::move(callback).Run(PaymentHandlerStatus::NO_ACTIVE_WORKER);
     return;
@@ -730,7 +863,7 @@ void PaymentAppDatabase::DidHasPaymentInstrument(
     DeletePaymentInstrumentCallback callback,
     const std::vector<std::string>& data,
     blink::ServiceWorkerStatusCode status) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
   if (status != blink::ServiceWorkerStatusCode::kOk || data.size() != 1) {
     std::move(callback).Run(PaymentHandlerStatus::NOT_FOUND);
     return;
@@ -746,7 +879,7 @@ void PaymentAppDatabase::DidFindRegistrationToWritePaymentInstrument(
     WritePaymentInstrumentCallback callback,
     blink::ServiceWorkerStatusCode status,
     scoped_refptr<ServiceWorkerRegistration> registration) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
   if (status != blink::ServiceWorkerStatusCode::kOk) {
     std::move(callback).Run(PaymentHandlerStatus::NO_ACTIVE_WORKER);
     return;
@@ -802,7 +935,7 @@ void PaymentAppDatabase::DidFindRegistrationToWritePaymentInstrument(
 void PaymentAppDatabase::DidWritePaymentInstrument(
     WritePaymentInstrumentCallback callback,
     blink::ServiceWorkerStatusCode status) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
   return std::move(callback).Run(
       status == blink::ServiceWorkerStatusCode::kOk
           ? PaymentHandlerStatus::SUCCESS
@@ -814,7 +947,7 @@ void PaymentAppDatabase::DidFindRegistrationToClearPaymentInstruments(
     ClearPaymentInstrumentsCallback callback,
     blink::ServiceWorkerStatusCode status,
     scoped_refptr<ServiceWorkerRegistration> registration) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
 
   if (status != blink::ServiceWorkerStatusCode::kOk) {
     std::move(callback).Run(PaymentHandlerStatus::NO_ACTIVE_WORKER);
@@ -833,7 +966,7 @@ void PaymentAppDatabase::DidGetKeysToClearPaymentInstruments(
     ClearPaymentInstrumentsCallback callback,
     const std::vector<std::string>& keys,
     PaymentHandlerStatus status) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
 
   if (status != PaymentHandlerStatus::SUCCESS) {
     std::move(callback).Run(PaymentHandlerStatus::NOT_FOUND);
@@ -858,7 +991,7 @@ void PaymentAppDatabase::DidGetKeysToClearPaymentInstruments(
 void PaymentAppDatabase::DidClearPaymentInstruments(
     ClearPaymentInstrumentsCallback callback,
     blink::ServiceWorkerStatusCode status) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
   return std::move(callback).Run(status == blink::ServiceWorkerStatusCode::kOk
                                      ? PaymentHandlerStatus::SUCCESS
                                      : PaymentHandlerStatus::NOT_FOUND);

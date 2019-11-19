@@ -49,7 +49,10 @@ class ThemeProperties {
     COLOR_NTP_TEXT,
     COLOR_NTP_LINK,
     COLOR_NTP_HEADER,
-    COLOR_BUTTON_BACKGROUND,
+    COLOR_CONTROL_BUTTON_BACKGROUND,
+    COLOR_TOOLBAR_BUTTON_ICON,
+    COLOR_OMNIBOX_TEXT,
+    COLOR_OMNIBOX_BACKGROUND,
 
     TINT_BUTTONS,
     TINT_FRAME,
@@ -86,17 +89,13 @@ class ThemeProperties {
   // The enum takes on values >= 1000 as not to overlap with
   // OverwritableByUserThemeProperties.
   enum NotOverwritableByUserThemeProperty {
-    COLOR_CONTROL_BACKGROUND = 1000,
-
     // The color of the border drawn around the location bar.
-    COLOR_LOCATION_BAR_BORDER,
+    COLOR_LOCATION_BAR_BORDER = 1000,
 
     // The color of the line separating the bottom of the toolbar from the
     // contents.
     COLOR_TOOLBAR_CONTENT_AREA_SEPARATOR,
 
-    // The color of a normal toolbar button's icon.
-    COLOR_TOOLBAR_BUTTON_ICON,
     // The color of a disabled toolbar button's icon.
     COLOR_TOOLBAR_BUTTON_ICON_INACTIVE,
 
@@ -111,17 +110,14 @@ class ThemeProperties {
     // shelf.
     COLOR_TOOLBAR_VERTICAL_SEPARATOR,
 
-    // The color of the "instructions text" in an empty bookmarks bar.
-    COLOR_BOOKMARK_BAR_INSTRUCTIONS_TEXT,
-
-    // Colors used for the detached (NTP) bookmark bar.
-    COLOR_DETACHED_BOOKMARK_BAR_BACKGROUND,
-    COLOR_DETACHED_BOOKMARK_BAR_SEPARATOR,
-
     // Color used for various 'shelves' and 'bars'.
     COLOR_DOWNLOAD_SHELF,
     COLOR_INFOBAR,
     COLOR_STATUS_BUBBLE,
+
+    // Colors used when displaying hover cards.
+    COLOR_HOVER_CARD_NO_PREVIEW_FOREGROUND,
+    COLOR_HOVER_CARD_NO_PREVIEW_BACKGROUND,
 
     // The throbber colors for tabs or anything on a toolbar (currently, only
     // the download shelf). If you're adding a throbber elsewhere, such as in
@@ -129,12 +125,6 @@ class ThemeProperties {
     // NativeTheme::kColorId_ThrobberSpinningColor.
     COLOR_TAB_THROBBER_SPINNING,
     COLOR_TAB_THROBBER_WAITING,
-
-    // Colors for the tab close button inons.
-    COLOR_TAB_CLOSE_BUTTON_ACTIVE,
-    COLOR_TAB_CLOSE_BUTTON_INACTIVE,
-    COLOR_TAB_CLOSE_BUTTON_BACKGROUND_HOVER,
-    COLOR_TAB_CLOSE_BUTTON_BACKGROUND_PRESSED,
 
     // The colors used by the various alert indicator icons in the tab.
     COLOR_TAB_ALERT_AUDIO,
@@ -152,11 +142,9 @@ class ThemeProperties {
     // These colors don't have constant default values. They are derived from
     // the runtime value of other colors.
     COLOR_NTP_TEXT_LIGHT,
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-    COLOR_SUPERVISED_USER_LABEL,
-    COLOR_SUPERVISED_USER_LABEL_BACKGROUND,
-    COLOR_SUPERVISED_USER_LABEL_BORDER,
-#endif
+    COLOR_NTP_LOGO,
+    // Color for the background of the most visited/custom link tile.
+    COLOR_NTP_SHORTCUT,
 
 #if defined(OS_WIN)
     // The color of the 1px border around the window on Windows 10.
@@ -168,14 +156,25 @@ class ThemeProperties {
     // Colors for in-product help promo bubbles.
     COLOR_FEATURE_PROMO_BUBBLE_TEXT,
     COLOR_FEATURE_PROMO_BUBBLE_BACKGROUND,
-  };
 
-  // Represents the lookup values for a theme property.
-  struct PropertyLookupPair {
-    int property_id;    // ID of the property to lookup (should never be an
-                        // incognito variant)
-    bool is_incognito;  // Whether the lookup should use the incognito value
-                        // of this property or not
+    COLOR_OMNIBOX_BACKGROUND_HOVERED,
+    COLOR_OMNIBOX_SELECTED_KEYWORD,
+    COLOR_OMNIBOX_TEXT_DIMMED,
+    COLOR_OMNIBOX_RESULTS_BG,
+    COLOR_OMNIBOX_RESULTS_BG_HOVERED,
+    COLOR_OMNIBOX_RESULTS_BG_SELECTED,
+    COLOR_OMNIBOX_RESULTS_TEXT_SELECTED,
+    COLOR_OMNIBOX_RESULTS_TEXT_DIMMED,
+    COLOR_OMNIBOX_RESULTS_TEXT_DIMMED_SELECTED,
+    COLOR_OMNIBOX_RESULTS_ICON,
+    COLOR_OMNIBOX_RESULTS_ICON_SELECTED,
+    COLOR_OMNIBOX_RESULTS_URL,
+    COLOR_OMNIBOX_RESULTS_URL_SELECTED,
+    COLOR_OMNIBOX_BUBBLE_OUTLINE,
+    COLOR_OMNIBOX_BUBBLE_OUTLINE_EXPERIMENTAL_KEYWORD_MODE,
+    COLOR_OMNIBOX_SECURITY_CHIP_DEFAULT,
+    COLOR_OMNIBOX_SECURITY_CHIP_SECURE,
+    COLOR_OMNIBOX_SECURITY_CHIP_DANGEROUS,
   };
 
   // Themes are hardcoded to draw frame images as if they start this many DIPs
@@ -210,16 +209,6 @@ class ThemeProperties {
   // Returns the default color for the given color |id| COLOR_* enum value.
   // Returns gfx::kPlaceholderColor if |id| is invalid.
   static SkColor GetDefaultColor(int id, bool incognito);
-
-  // Returns the default color for the color represented by |lookup_pair|
-  // Returns gfx::kPlaceholderColor if |id| is invalid.
-  static SkColor GetDefaultColor(PropertyLookupPair lookup_pair);
-
-  // Get the PropertyLookupPair  necessary to look up a property for |input_id|
-  // in an incognito-aware context.  Returns a pair with the id to lookup
-  // (always a non-incognito variant), and a boolean representing whether
-  // |input_id| was an incognito variant of the id to lookup
-  static PropertyLookupPair GetLookupID(int input_id);
 
  private:
   DISALLOW_IMPLICIT_CONSTRUCTORS(ThemeProperties);

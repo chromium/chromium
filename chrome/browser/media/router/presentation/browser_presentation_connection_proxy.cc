@@ -24,24 +24,25 @@ void LogMojoPipeError() {
 BrowserPresentationConnectionProxy::BrowserPresentationConnectionProxy(
     MediaRouter* router,
     const MediaRoute::Id& route_id,
-    blink::mojom::PresentationConnectionRequest receiver_connection_request,
-    blink::mojom::PresentationConnectionPtr controller_connection_ptr)
+    mojo::PendingReceiver<blink::mojom::PresentationConnection>
+        receiver_connection_receiver,
+    mojo::PendingRemote<blink::mojom::PresentationConnection>
+        controller_connection_remote)
     : RouteMessageObserver(router, route_id),
       router_(router),
       route_id_(route_id),
-      binding_(this),
-      target_connection_ptr_(std::move(controller_connection_ptr)) {
+      target_connection_remote_(std::move(controller_connection_remote)) {
   DCHECK(router);
-  DCHECK(target_connection_ptr_);
+  DCHECK(target_connection_remote_);
 
-  binding_.Bind(std::move(receiver_connection_request));
-  target_connection_ptr_->DidChangeState(
+  receiver_.Bind(std::move(receiver_connection_receiver));
+  target_connection_remote_->DidChangeState(
       blink::mojom::PresentationConnectionState::CONNECTED);
   // TODO(btolsch): These pipes may need proper mojo error handlers.  They
   // probably need to be plumbed up to PSDImpl so the PresentationFrame knows
   // about the error.
-  binding_.set_connection_error_handler(base::BindOnce(LogMojoPipeError));
-  target_connection_ptr_.set_connection_error_handler(
+  receiver_.set_disconnect_handler(base::BindOnce(LogMojoPipeError));
+  target_connection_remote_.set_disconnect_handler(
       base::BindOnce(LogMojoPipeError));
 }
 
@@ -72,7 +73,7 @@ void BrowserPresentationConnectionProxy::OnMessagesReceived(
   // TODO(imcheng): It would be slightly more efficient to send messages in
   // a single batch.
   for (auto& message : messages) {
-    target_connection_ptr_->OnMessage(
+    target_connection_remote_->OnMessage(
         message_util::PresentationConnectionFromRouteMessage(
             std::move(message)));
   }

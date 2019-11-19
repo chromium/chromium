@@ -67,9 +67,15 @@ class DownloadRequestLimiterTest : public ChromeRenderViewHostTestHarness {
   }
 
   void CanDownloadFor(WebContents* web_contents) {
+    CanDownloadFor(web_contents, base::nullopt);
+  }
+
+  void CanDownloadFor(WebContents* web_contents,
+                      base::Optional<url::Origin> origin) {
     download_request_limiter_->CanDownloadImpl(
         web_contents,
         "GET",  // request method
+        std::move(origin),
         base::Bind(&DownloadRequestLimiterTest::ContinueDownload,
                    base::Unretained(this)));
     base::RunLoop().RunUntilIdle();
@@ -82,8 +88,7 @@ class DownloadRequestLimiterTest : public ChromeRenderViewHostTestHarness {
   void OnUserInteractionFor(WebContents* web_contents,
                             blink::WebInputEvent::Type type) {
     DownloadRequestLimiter::TabDownloadState* state =
-        download_request_limiter_->GetDownloadState(web_contents, nullptr,
-                                                    false);
+        download_request_limiter_->GetDownloadState(web_contents, false);
     if (state)
       state->DidGetUserInteraction(type);
   }
@@ -103,7 +108,7 @@ class DownloadRequestLimiterTest : public ChromeRenderViewHostTestHarness {
   void UpdateContentSettings(WebContents* web_contents,
                              ContentSetting setting) {
     // Ensure a download state exists.
-    download_request_limiter_->GetDownloadState(web_contents, nullptr, true);
+    download_request_limiter_->GetDownloadState(web_contents, true);
     SetHostContentSetting(web_contents, setting);
   }
 
@@ -117,11 +122,17 @@ class DownloadRequestLimiterTest : public ChromeRenderViewHostTestHarness {
   }
 
   void SetHostContentSetting(WebContents* contents, ContentSetting setting) {
+    SetHostContentSetting(contents, contents->GetURL(), setting);
+  }
+
+  void SetHostContentSetting(WebContents* contents,
+                             const GURL& host,
+                             ContentSetting setting) {
     HostContentSettingsMapFactory::GetForProfile(
         Profile::FromBrowserContext(contents->GetBrowserContext()))
         ->SetContentSettingDefaultScope(
-            contents->GetURL(), GURL(),
-            CONTENT_SETTINGS_TYPE_AUTOMATIC_DOWNLOADS, std::string(), setting);
+            host, GURL(), ContentSettingsType::AUTOMATIC_DOWNLOADS,
+            std::string(), setting);
   }
 
   void LoadCompleted() {
@@ -753,7 +764,7 @@ TEST_F(DownloadRequestLimiterTest, RawWebContents) {
 
   // DownloadRequestLimiter won't try to make a permission request or infobar
   // if there is no PermissionRequestManager, and we want to test that it will
-  // Cancel() instead of prompting.
+  // CancelOnce() instead of prompting.
   ExpectAndResetCounts(0, 0, 0, __LINE__);
   EXPECT_EQ(DownloadRequestLimiter::ALLOW_ONE_DOWNLOAD,
             download_request_limiter_->GetDownloadStatus(web_contents.get()));
@@ -807,6 +818,8 @@ TEST_F(DownloadRequestLimiterTest, SetHostContentSetting) {
   LoadCompleted();
   SetHostContentSetting(web_contents(), CONTENT_SETTING_ALLOW);
 
+  // The content setting will be checked first and overwrite the
+  // ALLOW_ONE_DOWNLOAD default status.
   CanDownload();
   ExpectAndResetCounts(1, 0, 0, __LINE__);
   EXPECT_EQ(DownloadRequestLimiter::PROMPT_BEFORE_DOWNLOAD,
@@ -885,3 +898,103 @@ TEST_F(DownloadRequestLimiterTest, ContentSettingChanged) {
             download_request_limiter_->GetDownloadStatus(web_contents()));
 }
 
+// Test that renderer initiated download from another origin are handled
+// properly.
+TEST_F(DownloadRequestLimiterTest, RendererInitiatedDownloadFromAnotherOrigin) {
+  NavigateAndCommit(GURL("http://foo.com/bar"));
+  LoadCompleted();
+
+  // Sets the content setting to block for another origin.
+  SetHostContentSetting(web_contents(), GURL("http://foobar.com"),
+                        CONTENT_SETTING_BLOCK);
+
+  // Trigger a renderer initiated download from the other origin.
+  CanDownloadFor(web_contents(),
+                 url::Origin::Create(GURL("http://foobar.com")));
+  ExpectAndResetCounts(1, 0, 0, __LINE__);
+  EXPECT_EQ(DownloadRequestLimiter::PROMPT_BEFORE_DOWNLOAD,
+            download_request_limiter_->GetDownloadStatus(web_contents()));
+  EXPECT_EQ(DownloadRequestLimiter::DOWNLOAD_UI_DEFAULT,
+            download_request_limiter_->GetDownloadUiStatus(web_contents()));
+
+  // The current tab is not affected, still allowing one download.
+  CanDownloadFor(web_contents());
+  ExpectAndResetCounts(1, 0, 0, __LINE__);
+  EXPECT_EQ(DownloadRequestLimiter::PROMPT_BEFORE_DOWNLOAD,
+            download_request_limiter_->GetDownloadStatus(web_contents()));
+  EXPECT_EQ(DownloadRequestLimiter::DOWNLOAD_UI_DEFAULT,
+            download_request_limiter_->GetDownloadUiStatus(web_contents()));
+
+  // Change the content setting to allow for the other origin.
+  SetHostContentSetting(web_contents(), GURL("http://foobar.com"),
+                        CONTENT_SETTING_ALLOW);
+  CanDownloadFor(web_contents(),
+                 url::Origin::Create(GURL("http://foobar.com")));
+  ExpectAndResetCounts(1, 0, 0, __LINE__);
+  EXPECT_EQ(DownloadRequestLimiter::ALLOW_ALL_DOWNLOADS,
+            download_request_limiter_->GetDownloadStatus(web_contents()));
+  EXPECT_EQ(DownloadRequestLimiter::DOWNLOAD_UI_ALLOWED,
+            download_request_limiter_->GetDownloadUiStatus(web_contents()));
+
+  // Trigger another download in the current tab, and cancel the prompt.
+  UpdateExpectations(CANCEL);
+  CanDownloadFor(web_contents());
+  ExpectAndResetCounts(0, 1, 1, __LINE__);
+  EXPECT_EQ(DownloadRequestLimiter::DOWNLOADS_NOT_ALLOWED,
+            download_request_limiter_->GetDownloadStatus(web_contents()));
+  EXPECT_EQ(DownloadRequestLimiter::DOWNLOAD_UI_BLOCKED,
+            download_request_limiter_->GetDownloadUiStatus(web_contents()));
+
+  // Download should proceed for the other origin.
+  CanDownloadFor(web_contents(),
+                 url::Origin::Create(GURL("http://foobar.com")));
+  ExpectAndResetCounts(1, 0, 0, __LINE__);
+  EXPECT_EQ(DownloadRequestLimiter::ALLOW_ALL_DOWNLOADS,
+            download_request_limiter_->GetDownloadStatus(web_contents()));
+  EXPECT_EQ(DownloadRequestLimiter::DOWNLOAD_UI_ALLOWED,
+            download_request_limiter_->GetDownloadUiStatus(web_contents()));
+}
+
+// Test that user interaction on the current page won't reset download status
+// for another origin.
+TEST_F(DownloadRequestLimiterTest,
+       DownloadStatusForOtherOriginsNotResetOnUserInteraction) {
+  NavigateAndCommit(GURL("http://foo.com/bar"));
+  LoadCompleted();
+
+  // Trigger a renderer initiated download from the other origin.
+  CanDownloadFor(web_contents(),
+                 url::Origin::Create(GURL("http://foobar.com")));
+  ExpectAndResetCounts(1, 0, 0, __LINE__);
+  EXPECT_EQ(DownloadRequestLimiter::PROMPT_BEFORE_DOWNLOAD,
+            download_request_limiter_->GetDownloadStatus(web_contents()));
+  EXPECT_EQ(DownloadRequestLimiter::DOWNLOAD_UI_DEFAULT,
+            download_request_limiter_->GetDownloadUiStatus(web_contents()));
+
+  // The current tab is not affected, still allowing one download.
+  CanDownloadFor(web_contents());
+  ExpectAndResetCounts(1, 0, 0, __LINE__);
+  EXPECT_EQ(DownloadRequestLimiter::PROMPT_BEFORE_DOWNLOAD,
+            download_request_limiter_->GetDownloadStatus(web_contents()));
+  EXPECT_EQ(DownloadRequestLimiter::DOWNLOAD_UI_DEFAULT,
+            download_request_limiter_->GetDownloadUiStatus(web_contents()));
+
+  // On user interaction, the current page should reset its download status.
+  OnUserInteraction(blink::WebInputEvent::kTouchStart);
+  CanDownloadFor(web_contents());
+  ExpectAndResetCounts(1, 0, 0, __LINE__);
+  EXPECT_EQ(DownloadRequestLimiter::PROMPT_BEFORE_DOWNLOAD,
+            download_request_limiter_->GetDownloadStatus(web_contents()));
+  EXPECT_EQ(DownloadRequestLimiter::DOWNLOAD_UI_DEFAULT,
+            download_request_limiter_->GetDownloadUiStatus(web_contents()));
+
+  // Download status from the other origin does not reset and should prompt.
+  UpdateExpectations(CANCEL);
+  CanDownloadFor(web_contents(),
+                 url::Origin::Create(GURL("http://foobar.com")));
+  ExpectAndResetCounts(0, 1, 1, __LINE__);
+  EXPECT_EQ(DownloadRequestLimiter::DOWNLOADS_NOT_ALLOWED,
+            download_request_limiter_->GetDownloadStatus(web_contents()));
+  EXPECT_EQ(DownloadRequestLimiter::DOWNLOAD_UI_BLOCKED,
+            download_request_limiter_->GetDownloadUiStatus(web_contents()));
+}

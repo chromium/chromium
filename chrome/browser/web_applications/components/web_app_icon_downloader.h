@@ -22,11 +22,6 @@ namespace content {
 struct FaviconURL;
 }
 
-namespace extensions {
-FORWARD_DECLARE_TEST(BookmarkAppHelperExtensionServiceInstallableSiteTest,
-                     CreateBookmarkAppWithManifestIcons);
-}
-
 namespace gfx {
 class Size;
 }
@@ -37,8 +32,14 @@ namespace web_app {
 // icons) for a tab.
 class WebAppIconDownloader : public content::WebContentsObserver {
  public:
+  enum class Histogram {
+    kForCreate,
+    kForSync,
+    kForUpdate,
+  };
+
   using WebAppIconDownloaderCallback =
-      base::OnceCallback<void(bool success, const IconsMap& icons_map)>;
+      base::OnceCallback<void(bool success, IconsMap icons_map)>;
 
   // |extra_favicon_urls| allows callers to provide icon urls that aren't
   // provided by the renderer (e.g touch icons on non-android environments).
@@ -46,7 +47,7 @@ class WebAppIconDownloader : public content::WebContentsObserver {
   // to use for logging http status code class results from fetch attempts.
   WebAppIconDownloader(content::WebContents* web_contents,
                        const std::vector<GURL>& extra_favicon_urls,
-                       const char* https_status_code_class_histogram_name,
+                       Histogram histogram,
                        WebAppIconDownloaderCallback callback);
   ~WebAppIconDownloader() override;
 
@@ -59,9 +60,6 @@ class WebAppIconDownloader : public content::WebContentsObserver {
 
  private:
   friend class TestWebAppIconDownloader;
-  FRIEND_TEST_ALL_PREFIXES(
-      extensions::BookmarkAppHelperExtensionServiceInstallableSiteTest,
-      CreateBookmarkAppWithManifestIcons);
 
   // Initiates a download of the image at |url| and returns the download id.
   // This is overridden in testing.
@@ -110,10 +108,10 @@ class WebAppIconDownloader : public content::WebContentsObserver {
   // Callback to run on favicon download completion.
   WebAppIconDownloaderCallback callback_;
 
-  // The histogram name to log individual fetch results under.
-  std::string https_status_code_class_histogram_name_;
+  // Which histogram to log individual fetch results under.
+  Histogram histogram_;
 
-  base::WeakPtrFactory<WebAppIconDownloader> weak_ptr_factory_;
+  base::WeakPtrFactory<WebAppIconDownloader> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(WebAppIconDownloader);
 };

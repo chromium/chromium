@@ -10,9 +10,9 @@ module mojo.test;
 interface InterfaceX {};
 
 interface AssociatedConformanceTestInterface {
-  Method0(associated InterfaceX param0);
-  Method1(associated InterfaceX& param0);
-  Method2(associated InterfaceX? param0);
-  Method3(array<associated InterfaceX> param0);
+  Method0(pending_associated_remote<InterfaceX> param0);
+  Method1(pending_associated_receiver<InterfaceX> param0);
+  Method2(pending_associated_remote<InterfaceX>? param0);
+  Method3(array<pending_associated_remote<InterfaceX>> param0);
 };
 

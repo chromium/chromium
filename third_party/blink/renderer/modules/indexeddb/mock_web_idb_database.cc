@@ -14,8 +14,4 @@ MockWebIDBDatabase::MockWebIDBDatabase() = default;
 
 MockWebIDBDatabase::~MockWebIDBDatabase() = default;
 
-std::unique_ptr<MockWebIDBDatabase> MockWebIDBDatabase::Create() {
-  return base::WrapUnique(new MockWebIDBDatabase());
-}
-
 }  // namespace blink

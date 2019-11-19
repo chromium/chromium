@@ -4,17 +4,21 @@
 
 #include "chrome/browser/ui/webui/chromeos/network_element_localized_strings_provider.h"
 
+#include "base/feature_list.h"
 #include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/chromeos/net/shill_error.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/localized_string.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/login/login_state/login_state.h"
 #include "chromeos/network/network_connection_handler.h"
 #include "components/login/localized_values_builder.h"
+#include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace chromeos {
 namespace network_element {
@@ -22,17 +26,20 @@ namespace network_element {
 namespace {
 
 constexpr LocalizedString kElementLocalizedStrings[] = {
-    {"OncTypeCellular", IDS_NETWORK_TYPE_MOBILE_DATA},
+    {"OncTypeCellular", IDS_NETWORK_TYPE_CELLULAR},
     {"OncTypeEthernet", IDS_NETWORK_TYPE_ETHERNET},
-    {"OncTypeTether", IDS_NETWORK_TYPE_MOBILE_DATA},
+    {"OncTypeMobile", IDS_NETWORK_TYPE_MOBILE_DATA},
+    {"OncTypeTether", IDS_NETWORK_TYPE_TETHER},
     {"OncTypeVPN", IDS_NETWORK_TYPE_VPN},
     {"OncTypeWiFi", IDS_NETWORK_TYPE_WIFI},
-    {"OncTypeWiMAX", IDS_NETWORK_TYPE_WIMAX},
     {"networkListItemConnected", IDS_STATUSBAR_NETWORK_DEVICE_CONNECTED},
     {"networkListItemConnecting", IDS_STATUSBAR_NETWORK_DEVICE_CONNECTING},
     {"networkListItemConnectingTo", IDS_NETWORK_LIST_CONNECTING_TO},
     {"networkListItemInitializing", IDS_NETWORK_LIST_INITIALIZING},
+    {"networkListItemLabelTemplate", IDS_NETWORK_LIST_ITEM_LABEL_TEMPLATE},
+    {"networkListItemNotAvailable", IDS_NETWORK_LIST_NOT_AVAILABLE},
     {"networkListItemScanning", IDS_SETTINGS_INTERNET_MOBILE_SEARCH},
+    {"networkListItemSimCardLocked", IDS_NETWORK_LIST_SIM_CARD_LOCKED},
     {"networkListItemNotConnected", IDS_NETWORK_LIST_NOT_CONNECTED},
     {"networkListItemNoNetwork", IDS_NETWORK_LIST_NO_NETWORK},
     {"vpnNameTemplate", IDS_NETWORK_LIST_THIRD_PARTY_VPN_NAME_TEMPLATE},
@@ -71,7 +78,8 @@ void AddOncLocalizedStrings(content::WebUIDataSource* html_source) {
        IDS_ONC_CELLULAR_ACTIVATION_STATE_NOT_ACTIVATED},
       {"OncCellular-ActivationState_PartiallyActivated",
        IDS_ONC_CELLULAR_ACTIVATION_STATE_PARTIALLY_ACTIVATED},
-      {"OncCellular-Carrier", IDS_ONC_CELLULAR_CARRIER},
+      {"OncCellular-ActivationState_NoService",
+       IDS_ONC_CELLULAR_ACTIVATION_STATE_NO_SERVICE},
       {"OncCellular-Family", IDS_ONC_CELLULAR_FAMILY},
       {"OncCellular-FirmwareRevision", IDS_ONC_CELLULAR_FIRMWARE_REVISION},
       {"OncCellular-HardwareRevision", IDS_ONC_CELLULAR_HARDWARE_REVISION},
@@ -82,7 +90,6 @@ void AddOncLocalizedStrings(content::WebUIDataSource* html_source) {
       {"OncCellular-Manufacturer", IDS_ONC_CELLULAR_MANUFACTURER},
       {"OncCellular-ModelID", IDS_ONC_CELLULAR_MODEL_ID},
       {"OncCellular-NetworkTechnology", IDS_ONC_CELLULAR_NETWORK_TECHNOLOGY},
-      {"OncCellular-PRLVersion", IDS_ONC_CELLULAR_PRL_VERSION},
       {"OncCellular-RoamingState", IDS_ONC_CELLULAR_ROAMING_STATE},
       {"OncCellular-RoamingState_Home", IDS_ONC_CELLULAR_ROAMING_STATE_HOME},
       {"OncCellular-RoamingState_Roaming",
@@ -134,11 +141,11 @@ void AddOncLocalizedStrings(content::WebUIDataSource* html_source) {
       {"OncVPN-IPsec-PSK", IDS_ONC_VPN_IPSEC_PSK},
       {"OncVPN-L2TP-Password", IDS_ONC_VPN_PASSWORD},
       {"OncVPN-L2TP-Username", IDS_ONC_VPN_USERNAME},
+      {"OncVPN-OpenVPN-ExtraHosts", IDS_ONC_VPN_OPENVPN_EXTRA_HOSTS},
       {"OncVPN-OpenVPN-OTP", IDS_ONC_VPN_OPENVPN_OTP},
       {"OncVPN-OpenVPN-Password", IDS_ONC_VPN_PASSWORD},
       {"OncVPN-OpenVPN-Username", IDS_ONC_VPN_USERNAME},
-      {"OncVPN-ThirdPartyVPN-ProviderName",
-       IDS_ONC_VPN_THIRD_PARTY_VPN_PROVIDER_NAME},
+      {"OncVPN-ProviderName", IDS_ONC_VPN_THIRD_PARTY_VPN_PROVIDER_NAME},
       {"OncVPN-Type", IDS_ONC_VPN_TYPE},
       {"OncVPN-Type_L2TP_IPsec", IDS_ONC_VPN_TYPE_L2TP_IPSEC},
       {"OncVPN-Type_L2TP_IPsec_PSK", IDS_ONC_VPN_TYPE_L2TP_IPSEC_PSK},
@@ -155,7 +162,6 @@ void AddOncLocalizedStrings(content::WebUIDataSource* html_source) {
       {"OncWiFi-Security_WPA-PSK", IDS_ONC_WIFI_SECURITY_PSK},
       {"OncWiFi-Security_WEP-8021X", IDS_ONC_WIFI_SECURITY_EAP},
       {"OncWiFi-SignalStrength", IDS_ONC_WIFI_SIGNAL_STRENGTH},
-      {"OncWiMAX-EAP-Identity", IDS_ONC_WIMAX_EAP_IDENTITY},
       {"Oncipv4-Gateway", IDS_ONC_IPV4_GATEWAY},
       {"Oncipv4-IPAddress", IDS_ONC_IPV4_ADDRESS},
       {"Oncipv4-RoutingPrefix", IDS_ONC_IPV4_ROUTING_PREFIX},
@@ -187,11 +193,19 @@ void AddDetailsLocalizedStrings(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_INTERNET_NETWORK_PROXY_CONNECTION_TYPE},
       {"networkProxyEnforcedPolicy",
        IDS_SETTINGS_INTERNET_NETWORK_PROXY_ENFORCED_POLICY},
+      {"networkProxyExceptionInputA11yLabel",
+       IDS_SETTINGS_INTERNET_NETWORK_PROXY_EXCEPTION_INPUT_ACCESSIBILITY_LABEL},
       {"networkProxyExceptionList",
        IDS_SETTINGS_INTERNET_NETWORK_PROXY_EXCEPTION_LIST},
+      {"networkProxyExceptionRemoveA11yLabel",
+       IDS_SETTINGS_INTERNET_NETWORK_PROXY_EXCEPT_REMOVE_ACCESSIBILITY_LABEL},
       {"networkProxyFtp", IDS_SETTINGS_INTERNET_NETWORK_PROXY_FTP_PROXY},
+      {"networkProxyHostInputA11yLabel",
+       IDS_SETTINGS_INTERNET_NETWORK_PROXY_HOST_INPUT_ACCESSIBILITY_LABEL},
       {"networkProxyHttp", IDS_SETTINGS_INTERNET_NETWORK_PROXY_HTTP_PROXY},
       {"networkProxyPort", IDS_SETTINGS_INTERNET_NETWORK_PROXY_PORT},
+      {"networkProxyPortInputA11yLabel",
+       IDS_SETTINGS_INTERNET_NETWORK_PROXY_PORT_INPUT_ACCESSIBILITY_LABEL},
       {"networkProxyShttp", IDS_SETTINGS_INTERNET_NETWORK_PROXY_SHTTP_PROXY},
       {"networkProxySocks", IDS_SETTINGS_INTERNET_NETWORK_PROXY_SOCKS_HOST},
       {"networkProxyTypeDirect",
@@ -224,6 +238,16 @@ void AddDetailsLocalizedStrings(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_INTERNET_NETWORK_SIM_RE_ENTER_NEW_PIN},
       {"networkSimReEnterNewPin",
        IDS_SETTINGS_INTERNET_NETWORK_SIM_RE_ENTER_NEW_PIN},
+      {"networkSimErrorIncorrectPin",
+       IDS_SETTINGS_INTERNET_NETWORK_SIM_ERROR_INCORRECT_PIN},
+      {"networkSimErrorIncorrectPuk",
+       IDS_SETTINGS_INTERNET_NETWORK_SIM_ERROR_INCORRECT_PUK},
+      {"networkSimErrorInvalidPin",
+       IDS_SETTINGS_INTERNET_NETWORK_SIM_ERROR_INVALID_PIN},
+      {"networkSimErrorInvalidPuk",
+       IDS_SETTINGS_INTERNET_NETWORK_SIM_ERROR_INVALID_PUK},
+      {"networkSimErrorPinMismatch",
+       IDS_SETTINGS_INTERNET_NETWORK_SIM_ERROR_PIN_MISMATCH},
       {"networkSimUnlock", IDS_SETTINGS_INTERNET_NETWORK_SIM_BUTTON_UNLOCK},
       {"networkAccessPoint", IDS_SETTINGS_INTERNET_NETWORK_ACCESS_POINT},
       {"networkChooseMobile", IDS_SETTINGS_INTERNET_NETWORK_CHOOSE_MOBILE},
@@ -243,8 +267,11 @@ void AddDetailsLocalizedStrings(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_INTERNET_NETWORK_NAMESERVERS_CUSTOM},
       {"networkNameserversGoogle",
        IDS_SETTINGS_INTERNET_NETWORK_NAMESERVERS_GOOGLE},
+      {"networkNameserversCustomInputA11yLabel",
+       IDS_SETTINGS_INTERNET_NETWORK_NAMESERVERS_INPUT_ACCESSIBILITY_LABEL},
       {"networkProxyWpad", IDS_SETTINGS_INTERNET_NETWORK_PROXY_WPAD},
       {"networkProxyWpadNone", IDS_SETTINGS_INTERNET_NETWORK_PROXY_WPAD_NONE},
+      {"remove", IDS_REMOVE},
   };
   AddLocalizedStringsBulk(html_source, kLocalizedStrings,
                           base::size(kLocalizedStrings));
@@ -264,11 +291,17 @@ void AddConfigLocalizedStrings(content::WebUIDataSource* html_source) {
       {"networkConfigSaveCredentials",
        IDS_SETTINGS_INTERNET_CONFIG_SAVE_CREDENTIALS},
       {"networkConfigShare", IDS_SETTINGS_INTERNET_CONFIG_SHARE},
+      {"networkAutoConnect", IDS_SETTINGS_INTERNET_NETWORK_AUTO_CONNECT},
+      {"hiddenNetworkWarning", IDS_SETTINGS_HIDDEN_NETWORK_WARNING},
       {"hidePassword", IDS_SETTINGS_PASSWORD_HIDE},
       {"showPassword", IDS_SETTINGS_PASSWORD_SHOW},
   };
   AddLocalizedStringsBulk(html_source, kLocalizedStrings,
                           base::size(kLocalizedStrings));
+
+  html_source->AddBoolean(
+      "showHiddenNetworkWarning",
+      base::FeatureList::IsEnabled(features::kHiddenNetworkWarning));
 
   // Login screen and public account users can only create shared network
   // configurations. Other users default to unshared network configurations.

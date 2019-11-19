@@ -42,6 +42,9 @@ enum class ParameterError {
 // Logs to UMA that a parameter is invalid.
 void LogParameterError(ParameterError error);
 
+// Formats a double value that represents percentages.
+std::string FormatToPrint(double value);
+
 }  // namespace auto_screen_brightness
 }  // namespace power
 }  // namespace chromeos

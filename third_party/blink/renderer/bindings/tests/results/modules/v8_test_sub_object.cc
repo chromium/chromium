@@ -10,6 +10,8 @@
 // clang-format off
 #include "third_party/blink/renderer/bindings/tests/results/modules/v8_test_sub_object.h"
 
+#include <algorithm>
+
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
@@ -19,6 +21,7 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/runtime_call_stats.h"
 #include "third_party/blink/renderer/platform/bindings/v8_object_constructor.h"
+#include "third_party/blink/renderer/platform/scheduler/public/cooperative_scheduling_manager.h"
 #include "third_party/blink/renderer/platform/wtf/get_ptr.h"
 
 namespace blink {
@@ -149,11 +152,6 @@ void V8TestSubObject::UnforgeableLongAttributeAttributeSetterCallback(
   test_sub_object_v8_internal::UnforgeableLongAttributeAttributeSetter(v8_value, info);
 }
 
-static constexpr V8DOMConfiguration::AccessorConfiguration kV8TestSubObjectAccessors[] = {
-    { "unforgeableStringAttribute", V8TestSubObject::UnforgeableStringAttributeAttributeGetterCallback, V8TestSubObject::UnforgeableStringAttributeAttributeSetterCallback, V8PrivateProperty::kNoCachedAccessor, static_cast<v8::PropertyAttribute>(v8::DontDelete), V8DOMConfiguration::kOnInstance, V8DOMConfiguration::kCheckHolder, V8DOMConfiguration::kHasSideEffect, V8DOMConfiguration::kAlwaysCallGetter, V8DOMConfiguration::kAllWorlds },
-    { "unforgeableLongAttribute", V8TestSubObject::UnforgeableLongAttributeAttributeGetterCallback, V8TestSubObject::UnforgeableLongAttributeAttributeSetterCallback, V8PrivateProperty::kNoCachedAccessor, static_cast<v8::PropertyAttribute>(v8::DontDelete), V8DOMConfiguration::kOnInstance, V8DOMConfiguration::kCheckHolder, V8DOMConfiguration::kHasSideEffect, V8DOMConfiguration::kAlwaysCallGetter, V8DOMConfiguration::kAllWorlds },
-};
-
 static void InstallV8TestSubObjectTemplate(
     v8::Isolate* isolate,
     const DOMWrapperWorld& world,
@@ -169,9 +167,15 @@ static void InstallV8TestSubObjectTemplate(
   ALLOW_UNUSED_LOCAL(prototype_template);
 
   // Register IDL constants, attributes and operations.
+  static constexpr V8DOMConfiguration::AccessorConfiguration
+  kAccessorConfigurations[] = {
+      { "unforgeableStringAttribute", V8TestSubObject::UnforgeableStringAttributeAttributeGetterCallback, V8TestSubObject::UnforgeableStringAttributeAttributeSetterCallback, V8PrivateProperty::kNoCachedAccessor, static_cast<v8::PropertyAttribute>(v8::DontDelete), V8DOMConfiguration::kOnInstance, V8DOMConfiguration::kCheckHolder, V8DOMConfiguration::kHasSideEffect, V8DOMConfiguration::kAlwaysCallGetter, V8DOMConfiguration::kAllWorlds },
+      { "unforgeableLongAttribute", V8TestSubObject::UnforgeableLongAttributeAttributeGetterCallback, V8TestSubObject::UnforgeableLongAttributeAttributeSetterCallback, V8PrivateProperty::kNoCachedAccessor, static_cast<v8::PropertyAttribute>(v8::DontDelete), V8DOMConfiguration::kOnInstance, V8DOMConfiguration::kCheckHolder, V8DOMConfiguration::kHasSideEffect, V8DOMConfiguration::kAlwaysCallGetter, V8DOMConfiguration::kAllWorlds },
+  };
   V8DOMConfiguration::InstallAccessors(
       isolate, world, instance_template, prototype_template, interface_template,
-      signature, kV8TestSubObjectAccessors, base::size(kV8TestSubObjectAccessors));
+      signature, kAccessorConfigurations,
+      base::size(kAccessorConfigurations));
 
   // Custom signature
 

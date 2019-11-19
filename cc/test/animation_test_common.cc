@@ -136,6 +136,38 @@ int AddAnimatedFilter(Animation* target,
   return id;
 }
 
+int AddAnimatedBackdropFilter(Animation* target,
+                              double duration,
+                              float start_invert,
+                              float end_invert,
+                              KeyframeEffectId effect_id) {
+  std::unique_ptr<KeyframedFilterAnimationCurve> curve(
+      KeyframedFilterAnimationCurve::Create());
+
+  if (duration > 0.0) {
+    FilterOperations start_filters;
+    start_filters.Append(FilterOperation::CreateInvertFilter(start_invert));
+    curve->AddKeyframe(
+        FilterKeyframe::Create(base::TimeDelta(), start_filters, nullptr));
+  }
+
+  FilterOperations filters;
+  filters.Append(FilterOperation::CreateInvertFilter(end_invert));
+  curve->AddKeyframe(FilterKeyframe::Create(
+      base::TimeDelta::FromSecondsD(duration), filters, nullptr));
+
+  int id = AnimationIdProvider::NextKeyframeModelId();
+
+  std::unique_ptr<KeyframeModel> keyframe_model(KeyframeModel::Create(
+      std::move(curve), id, AnimationIdProvider::NextGroupId(),
+      TargetProperty::BACKDROP_FILTER));
+  keyframe_model->set_needs_synchronized_start_time(true);
+
+  target->AddKeyframeModelForKeyframeEffect(std::move(keyframe_model),
+                                            effect_id);
+  return id;
+}
+
 FakeFloatAnimationCurve::FakeFloatAnimationCurve()
     : duration_(base::TimeDelta::FromSecondsD(1.0)) {
 }
@@ -273,6 +305,15 @@ int AddAnimatedFilterToAnimation(Animation* animation,
                                  KeyframeEffectId effect_id) {
   return AddAnimatedFilter(animation, duration, start_brightness,
                            end_brightness, effect_id);
+}
+
+int AddAnimatedBackdropFilterToAnimation(Animation* animation,
+                                         double duration,
+                                         float start_invert,
+                                         float end_invert,
+                                         KeyframeEffectId effect_id) {
+  return AddAnimatedBackdropFilter(animation, duration, start_invert,
+                                   end_invert, effect_id);
 }
 
 int AddOpacityStepsToAnimation(Animation* animation,

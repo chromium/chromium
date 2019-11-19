@@ -92,7 +92,7 @@ scoped_refptr<ShortcutsBackend> ShortcutsBackendFactory::CreateShortcutsBackend(
     bool suppress_db) {
   scoped_refptr<ShortcutsBackend> backend(new ShortcutsBackend(
       TemplateURLServiceFactory::GetForProfile(profile),
-      std::make_unique<UIThreadSearchTermsData>(profile),
+      std::make_unique<UIThreadSearchTermsData>(),
       HistoryServiceFactory::GetForProfile(profile,
                                            ServiceAccessType::EXPLICIT_ACCESS),
       profile->GetPath().Append(kShortcutsDatabaseName), suppress_db));

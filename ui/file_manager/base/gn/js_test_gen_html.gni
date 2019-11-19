@@ -1,0 +1,128 @@
+# Copyright 2019 The Chromium Authors.  All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/closure_compiler/js_unit_tests.gni")
+
+# Describes a list of js_unittest targets that will each have an HTML file
+# generated listing all its (flattened) js dependencies, for loading as a test.
+#
+# A companion group target with a "_type_check_auto" suffix is also generated with
+# this template. This depends on a list of js_type_check(..) targets -- one for
+# each test -- that will type check the test js file and its dependency subtree.
+#
+# Must be declared after the js_library targets it depends on.
+#
+# Note js_type_check() is only in effect if `closure_compile` is set in gn args.
+#
+# Variables:
+#   deps:
+#     List of js_unittest targets to depend on
+#
+#   mocks:
+#     An optional list of .js files to load before any other scripts
+#
+#   html_import:
+#     Boolean indicating that it's a Polymer element being tested, thus it
+#     generates HTMLImport instead of <script>. Only the main element is
+#     imported.
+#
+# Non-Polymer example:
+#   js_test_gen_html("folder_tests") {
+#     deps = [
+#       ":foo_unittest",
+#       ":bar_unittest",
+#       ":baz_unittest",
+#     ]
+#     mocks = [ "my_mocks.js" ]
+#   }
+#
+#   group("closure_compile") {
+#     # ...
+#     ":folder_tests_type_check_auto".
+#   }
+#
+#   test("browser_tests") {
+#     # ...
+#     data_deps += [ "//folder:folder_tests" ]
+#   }
+#
+# Polymer example:
+#   js_test_gen_html("polymer_tests") {
+#     deps = [
+#       ":element1_unittest",
+#     ]
+#     html_import = true
+#   }
+#
+#   For "element1_unittest" instead of <script src="element1.js"> it will
+#   generate <link rel="import" href="element1.html">. Note the different
+#   extensions (.html vs .js). Ffor all other deps it will still use
+#   <script src="chrome://file_manager_test/$DEP_PATH">.
+#
+template("js_test_gen_html") {
+  html_gen_target_name = target_name + "_gen_html"
+  action_foreach(html_gen_target_name) {
+    script_path = "//ui/file_manager/base/gn/"
+    script = "$script_path/js_test_gen_html.py"
+    forward_variables_from(invoker,
+                           [
+                             "deps",
+                             "mocks",
+                             "html_import",
+                           ])
+    testonly = true
+    sources = []
+    foreach(dep, deps) {
+      sources += get_target_outputs(dep)
+    }
+
+    outputs = [
+      "$target_gen_dir/{{source_name_part}}_gen.html",
+    ]
+    args = [ "--output" ] + rebase_path(outputs, root_build_dir)
+    args += [
+      "--src_path",
+      rebase_path("//"),
+    ]
+    args += [ "--input" ] + [ "{{source}}" ]
+
+    args += [
+      "--target_name",
+      "{{source_name_part}}",
+    ]
+
+    if (defined(html_import) && html_import) {
+      args += [ "--html_import" ]
+    }
+
+    if (defined(mocks)) {
+      args += [ "--mocks" ] + rebase_path(mocks, root_build_dir)
+      data = mocks
+    }
+  }
+  type_check_deps = []
+  foreach(dep, invoker.deps) {
+    type_check_target_name = target_name + "_" + dep + "_type_check_auto"
+    type_check_deps += [ ":$type_check_target_name" ]
+    js_type_check(type_check_target_name) {
+      testonly = true
+      forward_variables_from(invoker, [ "closure_flags" ])
+      deps = [
+        dep,
+      ]
+    }
+  }
+  type_check_group_name = target_name + "_type_check_auto"
+  group(type_check_group_name) {
+    testonly = true
+    deps = type_check_deps
+  }
+  group(target_name) {
+    data = get_target_outputs(":$html_gen_target_name")
+    testonly = true
+    deps = [
+      ":$html_gen_target_name",
+    ]
+  }
+}

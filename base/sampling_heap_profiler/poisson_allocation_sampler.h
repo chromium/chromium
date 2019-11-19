@@ -5,19 +5,19 @@
 #ifndef BASE_SAMPLING_HEAP_PROFILER_POISSON_ALLOCATION_SAMPLER_H_
 #define BASE_SAMPLING_HEAP_PROFILER_POISSON_ALLOCATION_SAMPLER_H_
 
-#include <memory>
 #include <vector>
 
 #include "base/base_export.h"
+#include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/sampling_heap_profiler/lock_free_address_hash_set.h"
 #include "base/synchronization/lock.h"
+#include "base/thread_annotations.h"
 
 namespace base {
 
 template <typename T>
 class NoDestructor;
-
-class LockFreeAddressHashSet;
 
 // This singleton class implements Poisson sampling of the incoming allocations
 // stream. It hooks onto base::allocator and base::PartitionAlloc.
@@ -33,7 +33,7 @@ class LockFreeAddressHashSet;
 //
 class BASE_EXPORT PoissonAllocationSampler {
  public:
-  enum AllocatorType : uint32_t { kMalloc, kPartitionAlloc, kBlinkGC, kMax };
+  enum AllocatorType : uint32_t { kMalloc, kPartitionAlloc, kBlinkGC };
 
   class SamplesObserver {
    public:
@@ -74,6 +74,13 @@ class BASE_EXPORT PoissonAllocationSampler {
   static void SetHooksInstallCallback(void (*hooks_install_callback)());
 
   void AddSamplesObserver(SamplesObserver*);
+
+  // Note: After an observer is removed it is still possible to receive
+  // a notification to that observer. This is not a problem currently as
+  // the only client of this interface is the base::SamplingHeapProfiler,
+  // which is a singleton.
+  // If there's a need for this functionality in the future, one might
+  // want to put observers notification loop under a reader-writer lock.
   void RemoveSamplesObserver(SamplesObserver*);
 
   void SetSamplingInterval(size_t sampling_interval);
@@ -83,7 +90,7 @@ class BASE_EXPORT PoissonAllocationSampler {
                           size_t,
                           AllocatorType,
                           const char* context);
-  static void RecordFree(void* address);
+  ALWAYS_INLINE static void RecordFree(void* address);
 
   static PoissonAllocationSampler* Get();
 
@@ -106,8 +113,12 @@ class BASE_EXPORT PoissonAllocationSampler {
   void BalanceAddressesHashSet();
 
   Lock mutex_;
-  std::vector<std::unique_ptr<LockFreeAddressHashSet>> sampled_addresses_stack_;
-  std::vector<SamplesObserver*> observers_;
+  // The |observers_| list is guarded by |mutex_|, however a copy of it
+  // is made before invoking the observers (to avoid performing expensive
+  // operations under the lock) as such the SamplesObservers themselves need
+  // to be thread-safe and support being invoked racily after
+  // RemoveSamplesObserver().
+  std::vector<SamplesObserver*> observers_ GUARDED_BY(mutex_);
 
   static PoissonAllocationSampler* instance_;
 
@@ -117,6 +128,14 @@ class BASE_EXPORT PoissonAllocationSampler {
 
   DISALLOW_COPY_AND_ASSIGN(PoissonAllocationSampler);
 };
+
+// static
+ALWAYS_INLINE void PoissonAllocationSampler::RecordFree(void* address) {
+  if (UNLIKELY(address == nullptr))
+    return;
+  if (UNLIKELY(sampled_addresses_set().Contains(address)))
+    instance_->DoRecordFree(address);
+}
 
 }  // namespace base
 

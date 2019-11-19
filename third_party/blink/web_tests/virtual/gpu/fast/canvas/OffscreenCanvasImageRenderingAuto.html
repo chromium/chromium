@@ -1,0 +1,55 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Test if the users can change Image Rendering Quality in Offscreen Canvas</title>
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+    <style type="text/css">
+#can {
+  width: 500px;
+  height: 500px;
+  image-rendering: pixelated;
+}
+    </style>
+  </head>
+  <body>
+  <canvas id="can" width="50" height="50"></canvas>
+  <script>
+const c2 = document.getElementById("can");
+const offscreen_canvas = c2.transferControlToOffscreen();
+const ctx_o = offscreen_canvas.getContext('2d');
+
+c2.style.imageRendering = "auto";
+
+ctx_o.clearRect(0, 0, 50, 50);
+ctx_o.fillRect(10, 10, 30, 30);
+
+function waitForCanvasToDraw() {
+  return new Promise(resolve => {
+    const testPixel = function() {
+      const d = ctx_o.getImageData(20, 20, 1, 1);
+      if (d.data[0] == 0 && d.data[3] == 255) {
+        setTimeout(resolve, 2000);
+      } else {
+        requestAnimationFrame(testPixel);
+      }
+    }
+    testPixel();
+  })
+}
+
+if (window.testRunner) {
+  testRunner.waitUntilDone();
+}
+waitForCanvasToDraw().then(() => {
+  if (window.testRunner) {
+    testRunner.notifyDone();
+  }
+}).catch(err => {
+  testRunner.notifyDone();
+  throw err;
+});
+
+</script>
+</body>
+</html>

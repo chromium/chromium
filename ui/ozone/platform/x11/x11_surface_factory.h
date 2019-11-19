@@ -26,9 +26,13 @@ class X11SurfaceFactory : public SurfaceFactoryOzone {
   std::vector<gl::GLImplementation> GetAllowedGLImplementations() override;
   GLOzone* GetGLOzone(gl::GLImplementation implementation) override;
 #if BUILDFLAG(ENABLE_VULKAN)
-  std::unique_ptr<gpu::VulkanImplementation> CreateVulkanImplementation()
-      override;
+  std::unique_ptr<gpu::VulkanImplementation> CreateVulkanImplementation(
+      bool allow_protected_memory,
+      bool enforce_protected_memory) override;
 #endif
+  std::unique_ptr<SurfaceOzoneCanvas> CreateCanvasForWidget(
+      gfx::AcceleratedWidget widget,
+      base::TaskRunner* task_runner) override;
 
  private:
   std::unique_ptr<GLOzone> glx_implementation_;

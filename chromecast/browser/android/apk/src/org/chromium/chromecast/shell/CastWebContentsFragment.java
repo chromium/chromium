@@ -35,7 +35,7 @@ import org.chromium.chromecast.base.Unit;
  * TODO(vincentli): Add a test case to test its lifecycle
  */
 public class CastWebContentsFragment extends Fragment {
-    private static final String TAG = "cr_CastWebContentFrg";
+    private static final String TAG = "CastWebContentFrg";
 
     private final Controller<Unit> mResumedState = new Controller<>();
 

@@ -217,13 +217,4 @@ IPC_MESSAGE_CONTROL2(BrowserPluginMsg_SetMouseLock,
                      int /* browser_plugin_instance_id */,
                      bool /* enable */)
 
-#if defined(USE_AURA)
-// Sets the token that is used to embed the guest. |embed_token| is a token
-// that was generated from the window server and is expected to be supplied to
-// EmbedUsingToken().
-IPC_MESSAGE_CONTROL2(BrowserPluginMsg_SetMusEmbedToken,
-                     int /* browser_plugin_instance_id */,
-                     base::UnguessableToken /* embed_token */)
-#endif
-
 #endif  // CONTENT_COMMON_BROWSER_PLUGIN_BROWSER_PLUGIN_MESSAGES_H_

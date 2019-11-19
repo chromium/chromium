@@ -30,6 +30,8 @@
 
 #include "third_party/blink/renderer/platform/text/character.h"
 
+#include <unicode/uchar.h>
+#include <unicode/ucptrie.h>
 #include <unicode/uobject.h>
 #include <unicode/uscript.h>
 #include <algorithm>
@@ -40,103 +42,61 @@
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
-#if defined(USING_SYSTEM_ICU)
-#include <unicode/uniset.h>
-#else
-#define MUTEX_H  // Prevent compile failure of utrie2.h on Windows
-#include <utrie2.h>
-#endif
 
 namespace blink {
 
-#if defined(USING_SYSTEM_ICU)
-static icu::UnicodeSet* createUnicodeSet(const UChar32* characters,
-                                         size_t charactersCount,
-                                         const UChar32* ranges,
-                                         size_t rangesCount) {
-  icu::UnicodeSet* unicodeSet = new icu::UnicodeSet();
-  for (size_t i = 0; i < charactersCount; i++)
-    unicodeSet->add(characters[i]);
-  for (size_t i = 0; i < rangesCount; i += 2)
-    unicodeSet->add(ranges[i], ranges[i + 1]);
-  unicodeSet->freeze();
-  return unicodeSet;
-}
-
-#define CREATE_UNICODE_SET(name)                                       \
-  createUnicodeSet(name##Array, base::size(name##Array), name##Ranges, \
-                   base::size(name##Ranges))
-
-#define RETURN_HAS_PROPERTY(c, name)            \
-  static icu::UnicodeSet* unicodeSet = nullptr; \
-  if (!unicodeSet)                              \
-    unicodeSet = CREATE_UNICODE_SET(name);      \
-  return unicodeSet->contains(c);
-#else
-static UTrie2* CreateTrie() {
+static UCPTrie* CreateTrie() {
   // Create a Trie from the value array.
   ICUError error;
-  UTrie2* trie = utrie2_openFromSerialized(
-      UTrie2ValueBits::UTRIE2_16_VALUE_BITS, kSerializedCharacterData,
-      kSerializedCharacterDataSize, nullptr, &error);
+  UCPTrie* trie = ucptrie_openFromBinary(
+      UCPTrieType::UCPTRIE_TYPE_FAST, UCPTrieValueWidth::UCPTRIE_VALUE_BITS_16,
+      kSerializedCharacterData, kSerializedCharacterDataSize, nullptr, &error);
   DCHECK_EQ(error, U_ZERO_ERROR);
   return trie;
 }
 
 static bool HasProperty(UChar32 c, CharacterProperty property) {
-  static UTrie2* trie = nullptr;
-  if (!trie)
-    trie = CreateTrie();
-  return UTRIE2_GET16(trie, c) & static_cast<CharacterPropertyType>(property);
-}
-
-#define RETURN_HAS_PROPERTY(c, name) \
-  return HasProperty(c, CharacterProperty::name);
-#endif
-
-// Takes a flattened list of closed intervals
-template <class T, size_t size>
-bool ValueInIntervalList(const T (&interval_list)[size], const T& value) {
-  const T* bound =
-      std::upper_bound(&interval_list[0], &interval_list[size], value);
-  if ((bound - interval_list) % 2 == 1)
-    return true;
-  return bound > interval_list && *(bound - 1) == value;
+  static const UCPTrie* trie = CreateTrie();
+  return UCPTRIE_FAST_GET(trie, UCPTRIE_16, c) &
+         static_cast<CharacterPropertyType>(property);
 }
 
 bool Character::IsUprightInMixedVertical(UChar32 character) {
-  RETURN_HAS_PROPERTY(character, kIsUprightInMixedVertical)
+  return u_getIntPropertyValue(character,
+                               UProperty::UCHAR_VERTICAL_ORIENTATION) !=
+         UVerticalOrientation::U_VO_ROTATED;
 }
 
 bool Character::IsCJKIdeographOrSymbolSlow(UChar32 c) {
-  RETURN_HAS_PROPERTY(c, kIsCJKIdeographOrSymbol)
+  return HasProperty(c, CharacterProperty::kIsCJKIdeographOrSymbol);
 }
 
 bool Character::IsPotentialCustomElementNameChar(UChar32 character) {
-  RETURN_HAS_PROPERTY(character, kIsPotentialCustomElementNameChar);
+  return HasProperty(character,
+                     CharacterProperty::kIsPotentialCustomElementNameChar);
 }
 
 bool Character::IsBidiControl(UChar32 character) {
-  RETURN_HAS_PROPERTY(character, kIsBidiControl);
+  return HasProperty(character, CharacterProperty::kIsBidiControl);
 }
 
 bool Character::IsHangulSlow(UChar32 character) {
-  RETURN_HAS_PROPERTY(character, kIsHangul);
+  return HasProperty(character, CharacterProperty::kIsHangul);
 }
 
-unsigned Character::ExpansionOpportunityCount(const LChar* characters,
-                                              unsigned length,
-                                              TextDirection direction,
-                                              bool& is_after_expansion,
-                                              const TextJustify text_justify) {
-  unsigned count = 0;
+unsigned Character::ExpansionOpportunityCount(
+    base::span<const LChar> characters,
+    TextDirection direction,
+    bool& is_after_expansion,
+    const TextJustify text_justify) {
   if (text_justify == TextJustify::kDistribute) {
     is_after_expansion = true;
-    return length;
+    return characters.size();
   }
 
+  unsigned count = 0;
   if (direction == TextDirection::kLtr) {
-    for (unsigned i = 0; i < length; ++i) {
+    for (unsigned i = 0; i < characters.size(); ++i) {
       if (TreatAsSpace(characters[i])) {
         count++;
         is_after_expansion = true;
@@ -145,7 +105,7 @@ unsigned Character::ExpansionOpportunityCount(const LChar* characters,
       }
     }
   } else {
-    for (unsigned i = length; i > 0; --i) {
+    for (unsigned i = characters.size(); i > 0; --i) {
       if (TreatAsSpace(characters[i - 1])) {
         count++;
         is_after_expansion = true;
@@ -158,21 +118,21 @@ unsigned Character::ExpansionOpportunityCount(const LChar* characters,
   return count;
 }
 
-unsigned Character::ExpansionOpportunityCount(const UChar* characters,
-                                              unsigned length,
-                                              TextDirection direction,
-                                              bool& is_after_expansion,
-                                              const TextJustify text_justify) {
+unsigned Character::ExpansionOpportunityCount(
+    base::span<const UChar> characters,
+    TextDirection direction,
+    bool& is_after_expansion,
+    const TextJustify text_justify) {
   unsigned count = 0;
   if (direction == TextDirection::kLtr) {
-    for (unsigned i = 0; i < length; ++i) {
+    for (unsigned i = 0; i < characters.size(); ++i) {
       UChar32 character = characters[i];
       if (TreatAsSpace(character)) {
         count++;
         is_after_expansion = true;
         continue;
       }
-      if (U16_IS_LEAD(character) && i + 1 < length &&
+      if (U16_IS_LEAD(character) && i + 1 < characters.size() &&
           U16_IS_TRAIL(characters[i + 1])) {
         character = U16_GET_SUPPLEMENTARY(character, characters[i + 1]);
         i++;
@@ -188,7 +148,7 @@ unsigned Character::ExpansionOpportunityCount(const UChar* characters,
       is_after_expansion = false;
     }
   } else {
-    for (unsigned i = length; i > 0; --i) {
+    for (unsigned i = characters.size(); i > 0; --i) {
       UChar32 character = characters[i - 1];
       if (TreatAsSpace(character)) {
         count++;

@@ -42,6 +42,7 @@
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "third_party/skia/include/core/SkData.h"
 #include "third_party/skia/include/core/SkPoint.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/core/SkScalar.h"
@@ -152,6 +153,11 @@ WebCoreClampingModeToSkiaRectConstraint(Image::ImageClampingMode clamp_mode) {
              ? cc::PaintCanvas::kStrict_SrcRectConstraint
              : cc::PaintCanvas::kFast_SrcRectConstraint;
 }
+
+// Attempts to allocate an SkData on the PartitionAlloc buffer partition.
+// If this fails (e.g. due to low memory), returns a null sk_sp<SkData> instead.
+// Otherwise, the returned buffer is guaranteed to be zero-filled.
+PLATFORM_EXPORT sk_sp<SkData> TryAllocateSkData(size_t size);
 
 // Skia's smart pointer APIs are preferable over their legacy raw pointer
 // counterparts.

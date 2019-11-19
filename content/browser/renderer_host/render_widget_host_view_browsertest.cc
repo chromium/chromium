@@ -30,7 +30,7 @@
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/test_utils.h"
 #include "content/shell/browser/shell.h"
-#include "content/test/frame_host_interceptor.h"
+#include "content/test/did_commit_navigation_interceptor.h"
 #include "net/base/filename_util.h"
 #include "net/dns/mock_host_resolver.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -147,21 +147,22 @@ class RenderWidgetHostViewBrowserTest : public ContentBrowserTest {
 
 // Helps to ensure that a navigation is committed after a compositor frame was
 // submitted by the renderer, but before corresponding ACK is sent back.
-class CommitBeforeSwapAckSentHelper : public FrameHostInterceptor {
+class CommitBeforeSwapAckSentHelper : public DidCommitNavigationInterceptor {
  public:
   explicit CommitBeforeSwapAckSentHelper(
       WebContents* web_contents,
       RenderFrameSubmissionObserver* frame_observer)
-      : FrameHostInterceptor(web_contents), frame_observer_(frame_observer) {}
+      : DidCommitNavigationInterceptor(web_contents),
+        frame_observer_(frame_observer) {}
 
  private:
-  // FrameHostInterceptor:
-  bool WillDispatchDidCommitProvisionalLoad(
+  // DidCommitNavigationInterceptor:
+  bool WillProcessDidCommitNavigation(
       RenderFrameHost* render_frame_host,
+      NavigationRequest* navigation_request,
       ::FrameHostMsg_DidCommitProvisionalLoad_Params* params,
       mojom::DidCommitProvisionalLoadInterfaceParamsPtr* interface_params)
       override {
-    base::MessageLoopCurrent::ScopedNestableTaskAllower allow;
     frame_observer_->WaitForAnyFrameSubmission();
     return true;
   }
@@ -210,8 +211,8 @@ IN_PROC_BROWSER_TEST_F(NoCompositingRenderWidgetHostViewBrowserTest,
   ASSERT_TRUE(embedded_test_server()->Start());
   // Creates the initial RenderWidgetHostViewBase, and connects to a
   // CompositorFrameSink. This will trigger frame eviction.
-  NavigateToURL(shell(),
-                embedded_test_server()->GetURL("/page_with_animation.html"));
+  EXPECT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("/page_with_animation.html")));
   RenderWidgetHostViewBase* rwhvb = GetRenderWidgetHostView();
   // Eviction normally invalidates the LocalSurfaceId, however if the
   // RenderWidgetHostViewBase is visible, a new id must be allocated. Otherwise
@@ -239,8 +240,8 @@ IN_PROC_BROWSER_TEST_F(NoCompositingRenderWidgetHostViewBrowserTest,
   ASSERT_TRUE(embedded_test_server()->Start());
   // Creates the initial RenderWidgetHostViewBase, and connects to a
   // CompositorFrameSink.
-  NavigateToURL(shell(),
-                embedded_test_server()->GetURL("/page_with_animation.html"));
+  EXPECT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("/page_with_animation.html")));
   RenderWidgetHostViewBase* rwhvb = GetRenderWidgetHostView();
   EXPECT_TRUE(rwhvb);
   viz::LocalSurfaceId rwhvb_local_surface_id =
@@ -265,8 +266,8 @@ IN_PROC_BROWSER_TEST_F(NoCompositingRenderWidgetHostViewBrowserTest,
 
   // Perform a navigation to the same content source. This will reuse the
   // existing RenderWidgetHostViewBase.
-  NavigateToURL(shell(),
-                embedded_test_server()->GetURL("/page_with_animation.html"));
+  EXPECT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("/page_with_animation.html")));
   EXPECT_FALSE(rwhvb->GetLocalSurfaceIdAllocation().IsValid());
 
 #if defined(OS_ANDROID)
@@ -299,8 +300,8 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewBrowserTestBase,
   ASSERT_TRUE(embedded_test_server()->Start());
   auto* web_contents = shell()->web_contents();
   // Load a page that draws new frames infinitely.
-  NavigateToURL(shell(),
-                embedded_test_server()->GetURL("/page_with_animation.html"));
+  EXPECT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("/page_with_animation.html")));
   std::unique_ptr<RenderFrameSubmissionObserver> frame_observer(
       std::make_unique<RenderFrameSubmissionObserver>(web_contents));
 
@@ -366,7 +367,7 @@ class CompositingRenderWidgetHostViewBrowserTest
 
   bool SetUpSourceSurface(const char* wait_message) override {
     content::DOMMessageQueue message_queue;
-    NavigateToURL(shell(), TestUrl());
+    EXPECT_TRUE(NavigateToURL(shell(), TestUrl()));
     if (wait_message != nullptr) {
       std::string result(wait_message);
       if (!message_queue.WaitForMessage(&result)) {

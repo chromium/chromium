@@ -55,6 +55,7 @@ class FakeBluetoothChooserController : public ChooserController {
   bool ShouldShowReScanButton() const override;
   base::string16 GetNoOptionsText() const override;
   base::string16 GetOkButtonLabel() const override;
+  bool TableViewAlwaysDisabled() const override;
   size_t NumOptions() const override;
   int GetSignalStrengthLevel(size_t index) const override;
   base::string16 GetOption(size_t index) const override;
@@ -72,10 +73,14 @@ class FakeBluetoothChooserController : public ChooserController {
   void AddDevice(FakeDevice device);
   void RemoveDevice(size_t index);
   void UpdateDevice(size_t index, FakeDevice new_device);
+  void set_table_view_always_disabled(bool table_view_always_disabled) {
+    table_view_always_disabled_ = table_view_always_disabled;
+  }
 
  private:
   BluetoothStatus status_ = BluetoothStatus::UNAVAILABLE;
   std::vector<FakeDevice> devices_;
+  bool table_view_always_disabled_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(FakeBluetoothChooserController);
 };

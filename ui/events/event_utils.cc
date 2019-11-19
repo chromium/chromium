@@ -23,7 +23,7 @@ std::unique_ptr<Event> EventFromNative(const PlatformEvent& native_event) {
   switch(type) {
     case ET_KEY_PRESSED:
     case ET_KEY_RELEASED:
-      event.reset(new KeyEvent(native_event));
+      event = std::make_unique<KeyEvent>(native_event);
       break;
 
     case ET_MOUSE_PRESSED:
@@ -32,24 +32,24 @@ std::unique_ptr<Event> EventFromNative(const PlatformEvent& native_event) {
     case ET_MOUSE_MOVED:
     case ET_MOUSE_ENTERED:
     case ET_MOUSE_EXITED:
-      event.reset(new MouseEvent(native_event));
+      event = std::make_unique<MouseEvent>(native_event);
       break;
 
     case ET_MOUSEWHEEL:
-      event.reset(new MouseWheelEvent(native_event));
+      event = std::make_unique<MouseWheelEvent>(native_event);
       break;
 
     case ET_SCROLL_FLING_START:
     case ET_SCROLL_FLING_CANCEL:
     case ET_SCROLL:
-      event.reset(new ScrollEvent(native_event));
+      event = std::make_unique<ScrollEvent>(native_event);
       break;
 
     case ET_TOUCH_RELEASED:
     case ET_TOUCH_PRESSED:
     case ET_TOUCH_MOVED:
     case ET_TOUCH_CANCELLED:
-      event.reset(new TouchEvent(native_event));
+      event = std::make_unique<TouchEvent>(native_event);
       break;
 
     default:

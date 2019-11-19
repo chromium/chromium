@@ -4,9 +4,13 @@
 
 #include "chrome/browser/ui/browser_navigator_params.h"
 
+#include <utility>
+
 #include "build/build_config.h"
+#include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/page_navigator.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 
 #if !defined(OS_ANDROID)
@@ -50,6 +54,13 @@ void NavigateParams::FillNavigateParamsFromOpenURLParams(
   this->referrer = params.referrer;
   this->reload_type = params.reload_type;
   this->source_site_instance = params.source_site_instance;
+  if (params.source_site_instance) {
+    this->initiating_profile =
+        static_cast<Profile*>(params.source_site_instance->GetBrowserContext());
+  }
+  this->source_contents = content::WebContents::FromRenderFrameHost(
+      content::RenderFrameHost::FromID(params.source_render_process_id,
+                                       params.source_render_frame_id));
   this->frame_tree_node_id = params.frame_tree_node_id;
   this->redirect_chain = params.redirect_chain;
   this->extra_headers = params.extra_headers;
@@ -57,8 +68,32 @@ void NavigateParams::FillNavigateParamsFromOpenURLParams(
   this->trusted_source = false;
   this->is_renderer_initiated = params.is_renderer_initiated;
   this->should_replace_current_entry = params.should_replace_current_entry;
-  this->uses_post = params.uses_post;
   this->post_data = params.post_data;
   this->started_from_context_menu = params.started_from_context_menu;
   this->open_pwa_window_if_possible = params.open_app_window_if_possible;
+  this->user_gesture = params.user_gesture;
+  this->blob_url_loader_factory = params.blob_url_loader_factory;
+  this->href_translate = params.href_translate;
+
+  // Implementation notes:
+  //   The following NavigateParams don't have an equivalent in OpenURLParams:
+  //     browser
+  //     contents_to_insert
+  //     created_with_opener
+  //     extension_app_id
+  //     frame_name
+  //     group
+  //     input_start
+  //     navigated_or_inserted_contents
+  //     opener
+  //     path_behavior
+  //     switch_to_singleton_tab
+  //     tabstrip_add_types
+  //     tabstrip_index
+  //     was_activated
+  //     window_action
+  //     window_bounds
+  //
+  //   The following OpenURLParams don't have an equivalent in NavigateParams:
+  //     triggering_event_info
 }

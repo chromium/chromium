@@ -4,7 +4,7 @@
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//      http://www.apache.org/licenses/LICENSE-2.0
+//      https://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -749,8 +749,8 @@ static bool ParseSourceName(State *state) {
 // <local-source-name> ::= L <source-name> [<discriminator>]
 //
 // References:
-//   http://gcc.gnu.org/bugzilla/show_bug.cgi?id=31775
-//   http://gcc.gnu.org/viewcvs?view=rev&revision=124467
+//   https://gcc.gnu.org/bugzilla/show_bug.cgi?id=31775
+//   https://gcc.gnu.org/viewcvs?view=rev&revision=124467
 static bool ParseLocalSourceName(State *state) {
   ComplexityGuard guard(state);
   if (guard.IsTooComplex()) return false;
@@ -1164,6 +1164,12 @@ static bool ParseType(State *state) {
   state->parse_state = copy;
 
   if (ParseTwoCharToken(state, "Dp") && ParseType(state)) {
+    return true;
+  }
+  state->parse_state = copy;
+
+  // nullptr_t, i.e. decltype(nullptr).
+  if (ParseTwoCharToken(state, "Dn")) {
     return true;
   }
   state->parse_state = copy;

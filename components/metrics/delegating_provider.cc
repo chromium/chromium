@@ -63,8 +63,17 @@ bool DelegatingProvider::HasIndependentMetrics() {
 
 void DelegatingProvider::ProvideSystemProfileMetrics(
     SystemProfileProto* system_profile_proto) {
-  for (auto& provider : metrics_providers_)
-    provider->ProvideSystemProfileMetrics(system_profile_proto);
+  // ProvideSystemProfileMetricsWithLogCreationTime() should be called instead.
+  NOTREACHED();
+}
+
+void DelegatingProvider::ProvideSystemProfileMetricsWithLogCreationTime(
+    base::TimeTicks log_creation_time,
+    SystemProfileProto* system_profile_proto) {
+  for (auto& provider : metrics_providers_) {
+    provider->ProvideSystemProfileMetricsWithLogCreationTime(
+        log_creation_time, system_profile_proto);
+  }
 }
 
 bool DelegatingProvider::HasPreviousSessionData() {

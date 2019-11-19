@@ -47,6 +47,12 @@ class AppRegistryCacheTest : public testing::Test,
     updated_names_.insert(update.Name());
   }
 
+  void OnAppRegistryCacheWillBeDestroyed(
+      apps::AppRegistryCache* cache) override {
+    // The test code explicitly calls both AddObserver and RemoveObserver.
+    NOTREACHED();
+  }
+
   int num_freshly_installed_ = 0;
   std::set<std::string> updated_ids_;
   std::set<std::string> updated_names_;
@@ -63,10 +69,10 @@ class AppRegistryCacheTest : public testing::Test,
 class RecursiveObserver : public apps::AppRegistryCache::Observer {
  public:
   explicit RecursiveObserver(apps::AppRegistryCache* cache) : cache_(cache) {
-    cache_->AddObserver(this);
+    Observe(cache);
   }
 
-  ~RecursiveObserver() override { cache_->RemoveObserver(this); }
+  ~RecursiveObserver() override = default;
 
   void PrepareForOnApps(
       int expected_num_apps,
@@ -154,6 +160,11 @@ class RecursiveObserver : public apps::AppRegistryCache::Observer {
     }
 
     num_apps_seen_on_app_update_++;
+  }
+
+  void OnAppRegistryCacheWillBeDestroyed(
+      apps::AppRegistryCache* cache) override {
+    Observe(nullptr);
   }
 
   static void ExpectEq(const apps::AppUpdate& outer,

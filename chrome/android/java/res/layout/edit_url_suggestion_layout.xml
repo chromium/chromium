@@ -22,18 +22,16 @@
         android:layout_marginEnd="@dimen/omnibox_suggestion_refine_view_modern_end_padding">
 
         <org.chromium.ui.widget.ChromeImageButton
-            android:id="@+id/url_copy_icon"
-            style="@style/OmniboxSuggestionIconButton"
-            app:srcCompat="@drawable/ic_content_copy_black"
-            android:contentDescription="@string/copy_link"
-            android:visibility="gone" />
-
-        <org.chromium.ui.widget.ChromeImageButton
             android:id="@+id/url_share_icon"
             style="@style/OmniboxSuggestionIconButton"
             app:srcCompat="@drawable/ic_share_white_24dp"
-            android:contentDescription="@string/menu_share_page"
-            android:visibility="gone" />
+            android:contentDescription="@string/menu_share_page" />
+
+        <org.chromium.ui.widget.ChromeImageButton
+            android:id="@+id/url_copy_icon"
+            style="@style/OmniboxSuggestionIconButton"
+            app:srcCompat="@drawable/ic_content_copy_black"
+            android:contentDescription="@string/copy_link" />
 
         <org.chromium.ui.widget.ChromeImageButton
             android:id="@+id/url_edit_icon"
@@ -43,14 +41,31 @@
 
     </LinearLayout>
 
+    <Space
+        android:id="@+id/edit_url_space"
+        android:layout_width="@dimen/omnibox_suggestion_start_offset_without_icon"
+        android:layout_height="match_parent"
+        android:layout_alignParentStart="true" />
+
+    <ImageView
+        android:id="@+id/edit_url_favicon"
+        android:layout_width="@dimen/omnibox_suggestion_favicon_size"
+        android:layout_height="@dimen/omnibox_suggestion_favicon_size"
+        android:layout_centerVertical="true"
+        android:layout_marginStart="@dimen/omnibox_suggestion_24dp_icon_margin_start"
+        android:layout_marginEnd="@dimen/omnibox_suggestion_24dp_icon_margin_end"
+        android:layout_toEndOf="@id/edit_url_space"
+        android:importantForAccessibility="no"
+        android:visibility="gone"
+        android:scaleType="centerInside" />
+
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
         android:layout_centerVertical="true"
         android:layout_toStartOf="@id/edit_url_suggestion_icons"
-        android:orientation="vertical"
-        android:layout_marginStart="@dimen/omnibox_suggestion_start_offset">
+        android:layout_toEndOf="@id/edit_url_favicon"
+        android:orientation="vertical">
 
         <TextView
             android:id="@+id/title_text_view"

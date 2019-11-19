@@ -54,6 +54,7 @@ class METRICS_EXPORT DelegatingUkmRecorder : public UkmRecorder {
       SourceId source_id,
       const UkmSource::NavigationData& navigation_data) override;
   void AddEntry(mojom::UkmEntryPtr entry) override;
+  void MarkSourceForDeletion(SourceId source_id) override;
 
   class Delegate final {
    public:
@@ -67,6 +68,7 @@ class METRICS_EXPORT DelegatingUkmRecorder : public UkmRecorder {
     void RecordNavigation(SourceId source_id,
                           const UkmSource::NavigationData& navigation_data);
     void AddEntry(mojom::UkmEntryPtr entry);
+    void MarkSourceForDeletion(SourceId source_id);
 
    private:
     scoped_refptr<base::SequencedTaskRunner> task_runner_;

@@ -88,8 +88,7 @@ class WebTestBluetoothChooserFactory::Chooser : public BluetoothChooser {
   DISALLOW_COPY_AND_ASSIGN(Chooser);
 };
 
-WebTestBluetoothChooserFactory::WebTestBluetoothChooserFactory()
-    : weak_this_(this) {}
+WebTestBluetoothChooserFactory::WebTestBluetoothChooserFactory() {}
 
 WebTestBluetoothChooserFactory::~WebTestBluetoothChooserFactory() {
   SendEvent(BluetoothChooser::Event::CANCELLED, "");

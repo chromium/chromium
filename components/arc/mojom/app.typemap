@@ -1,0 +1,6 @@
+mojom = "//components/arc/mojom/app.mojom"
+public_headers = [ "//components/arc/app/arc_playstore_search_request_state.h" ]
+traits_headers = [ "//components/arc/mojom/app_mojom_traits.h" ]
+type_mappings = [
+  "arc.mojom.AppDiscoveryRequestState=::arc::ArcPlayStoreSearchRequestState",
+]

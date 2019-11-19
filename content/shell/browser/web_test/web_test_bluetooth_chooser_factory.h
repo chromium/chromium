@@ -37,7 +37,7 @@ class WebTestBluetoothChooserFactory {
   // Contains the set of live choosers, in order to send them events.
   std::set<Chooser*> choosers_;
 
-  base::WeakPtrFactory<WebTestBluetoothChooserFactory> weak_this_;
+  base::WeakPtrFactory<WebTestBluetoothChooserFactory> weak_this_{this};
 };
 
 }  // namespace content

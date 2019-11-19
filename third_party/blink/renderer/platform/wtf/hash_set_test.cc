@@ -405,8 +405,11 @@ enum class TestEnumClass : unsigned char {
 TEST(HashSetTest, HasTraitsForEnum) {
   // Ensure that enum hash keys are buildable.
   HashSet<TestEnum> set1;
+  set1.insert(TestEnum::kItem0);
   HashSet<TestEnumClass> set2;
+  set2.insert(TestEnumClass::kItem0);
   HashSet<std::pair<TestEnum, TestEnumClass>> set3;
+  set3.insert(std::make_pair(TestEnum::kItem0, TestEnumClass::kItem0));
 }
 
 static_assert(!IsTraceable<HashSet<int>>::value,

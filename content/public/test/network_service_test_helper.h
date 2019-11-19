@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "services/network/public/mojom/network_service_test.mojom.h"
 #include "services/service_manager/public/cpp/binder_registry.h"
 
@@ -29,8 +30,8 @@ class NetworkServiceTestHelper {
  private:
   class NetworkServiceTestImpl;
 
-  void BindNetworkServiceTestRequest(
-      network::mojom::NetworkServiceTestRequest request);
+  void BindNetworkServiceTestReceiver(
+      mojo::PendingReceiver<network::mojom::NetworkServiceTest> receiver);
 
   std::unique_ptr<NetworkServiceTestImpl> network_service_test_impl_;
 

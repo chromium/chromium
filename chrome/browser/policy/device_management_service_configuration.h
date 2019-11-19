@@ -18,15 +18,19 @@ namespace policy {
 class DeviceManagementServiceConfiguration
     : public DeviceManagementService::Configuration {
  public:
-  explicit DeviceManagementServiceConfiguration(const std::string& server_url);
+  explicit DeviceManagementServiceConfiguration(
+      const std::string& server_url,
+      const std::string& reporting_server_url);
   ~DeviceManagementServiceConfiguration() override;
 
-  std::string GetServerUrl() override;
+  std::string GetDMServerUrl() override;
   std::string GetAgentParameter() override;
   std::string GetPlatformParameter() override;
+  std::string GetReportingServerUrl() override;
 
  private:
   const std::string server_url_;
+  const std::string reporting_server_url_;
 
   DISALLOW_COPY_AND_ASSIGN(DeviceManagementServiceConfiguration);
 };

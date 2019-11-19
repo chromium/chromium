@@ -8,10 +8,14 @@
 #include <string>
 
 #include "third_party/icu/source/common/unicode/uchar.h"
-#include "ui/gfx/font_fallback.h"
 #include "ui/gfx/gfx_export.h"
 
 namespace gfx {
+
+// Exposed fallback font caches methods for testing.
+GFX_EXPORT size_t GetFallbackFontEntriesCacheSizeForTesting();
+GFX_EXPORT size_t GetFallbackFontListCacheSizeForTesting();
+GFX_EXPORT void ClearAllFontFallbackCachesForTesting();
 
 // Return a font family which provides a glyph for the Unicode code point
 // specified by character.
@@ -25,6 +29,8 @@ namespace gfx {
 // Previously blink::WebFontInfo::fallbackFontForChar.
 struct FallbackFontData {
   std::string name;
+  // TODO(etienneb): This field should be a base::FilePath and renamed
+  // |filepath|.
   std::string filename;
   int ttc_index = 0;
   bool is_bold = false;

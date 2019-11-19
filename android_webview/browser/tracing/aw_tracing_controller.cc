@@ -15,7 +15,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/tracing_controller.h"
 
-#include "jni/AwTracingController_jni.h"
+#include "android_webview/browser_jni_headers/AwTracingController_jni.h"
 
 using base::android::JavaParamRef;
 
@@ -33,31 +33,26 @@ class AwTraceDataEndpoint
  public:
   using ReceivedChunkCallback =
       base::RepeatingCallback<void(std::unique_ptr<std::string>)>;
-  using CompletedCallback =
-      base::OnceCallback<void(std::unique_ptr<const base::DictionaryValue>)>;
 
   static scoped_refptr<content::TracingController::TraceDataEndpoint> Create(
       ReceivedChunkCallback received_chunk_callback,
-      CompletedCallback completed_callback) {
+      base::OnceClosure completed_callback) {
     return new AwTraceDataEndpoint(std::move(received_chunk_callback),
                                    std::move(completed_callback));
   }
 
-  void ReceiveTraceFinalContents(
-      std::unique_ptr<const base::DictionaryValue> metadata) override {
-    base::PostTaskWithTraits(
-        FROM_HERE, {content::BrowserThread::UI},
-        base::BindOnce(std::move(completed_callback_), std::move(metadata)));
+  void ReceivedTraceFinalContents() override {
+    base::PostTask(FROM_HERE, {content::BrowserThread::UI},
+                   std::move(completed_callback_));
   }
 
   void ReceiveTraceChunk(std::unique_ptr<std::string> chunk) override {
-    base::PostTaskWithTraits(
-        FROM_HERE, {content::BrowserThread::UI},
-        base::BindOnce(received_chunk_callback_, std::move(chunk)));
+    base::PostTask(FROM_HERE, {content::BrowserThread::UI},
+                   base::BindOnce(received_chunk_callback_, std::move(chunk)));
   }
 
   explicit AwTraceDataEndpoint(ReceivedChunkCallback received_chunk_callback,
-                               CompletedCallback completed_callback)
+                               base::OnceClosure completed_callback)
       : received_chunk_callback_(std::move(received_chunk_callback)),
         completed_callback_(std::move(completed_callback)) {}
 
@@ -65,7 +60,7 @@ class AwTraceDataEndpoint
   ~AwTraceDataEndpoint() override {}
 
   ReceivedChunkCallback received_chunk_callback_;
-  CompletedCallback completed_callback_;
+  base::OnceClosure completed_callback_;
 
   DISALLOW_COPY_AND_ASSIGN(AwTraceDataEndpoint);
 };
@@ -81,7 +76,7 @@ static jlong JNI_AwTracingController_Init(JNIEnv* env,
 }
 
 AwTracingController::AwTracingController(JNIEnv* env, jobject obj)
-    : weak_java_object_(env, obj), weak_factory_(this) {}
+    : weak_java_object_(env, obj) {}
 
 AwTracingController::~AwTracingController() {}
 
@@ -93,24 +88,24 @@ bool AwTracingController::Start(JNIEnv* env,
       base::android::ConvertJavaStringToUTF8(env, jcategories);
   base::trace_event::TraceConfig trace_config(
       categories, static_cast<base::trace_event::TraceRecordMode>(jmode));
-  // Required for filtering out potential PII.
-  trace_config.EnableArgumentFilter();
   return content::TracingController::GetInstance()->StartTracing(
       trace_config, content::TracingController::StartTracingDoneCallback());
 }
 
 bool AwTracingController::StopAndFlush(JNIEnv* env,
                                        const JavaParamRef<jobject>& obj) {
+  // privacy_filtering_enabled=true is required for filtering out potential PII.
   return content::TracingController::GetInstance()->StopTracing(
       AwTraceDataEndpoint::Create(
           base::BindRepeating(&AwTracingController::OnTraceDataReceived,
                               weak_factory_.GetWeakPtr()),
           base::BindOnce(&AwTracingController::OnTraceDataComplete,
-                         weak_factory_.GetWeakPtr())));
+                         weak_factory_.GetWeakPtr())),
+      /*agent_label=*/"",
+      /*privacy_filtering_enabled=*/true);
 }
 
-void AwTracingController::OnTraceDataComplete(
-    std::unique_ptr<const base::DictionaryValue> metadata) {
+void AwTracingController::OnTraceDataComplete() {
   JNIEnv* env = base::android::AttachCurrentThread();
   base::android::ScopedJavaLocalRef<jobject> obj = weak_java_object_.get(env);
   if (obj.obj()) {

@@ -4,8 +4,8 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
+#include "chrome/android/chrome_jni_headers/RevenueStats_jni.h"
 #include "chrome/browser/search_engines/ui_thread_search_terms_data_android.h"
-#include "jni/RevenueStats_jni.h"
 #include "url/gurl.h"
 
 using base::android::JavaParamRef;

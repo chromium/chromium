@@ -4,7 +4,9 @@
 
 #include "chrome/common/channel_info.h"
 
+#include "base/environment.h"
 #include "base/strings/string_util.h"
+#include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "components/version_info/version_info.h"
 
@@ -15,17 +17,15 @@ namespace {
 // Helper function to return both the channel enum and modifier string.
 // Implements both together to prevent their behavior from diverging, which has
 // happened multiple times in the past.
-version_info::Channel GetChannelImpl(std::string* modifier_out,
-                                     std::string* data_dir_suffix_out) {
+version_info::Channel GetChannelImpl(std::string* modifier_out) {
   version_info::Channel channel = version_info::Channel::UNKNOWN;
   std::string modifier;
-  std::string data_dir_suffix;
 
   char* env = getenv("CHROME_VERSION_EXTRA");
   if (env)
     modifier = env;
 
-#if defined(GOOGLE_CHROME_BUILD)
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   // Only ever return "", "unknown", "dev" or "beta" in a branded build.
   if (modifier == "unstable")  // linux version of "dev"
     modifier = "dev";
@@ -34,10 +34,8 @@ version_info::Channel GetChannelImpl(std::string* modifier_out,
     modifier = "";
   } else if (modifier == "dev") {
     channel = version_info::Channel::DEV;
-    data_dir_suffix = "-unstable";
   } else if (modifier == "beta") {
     channel = version_info::Channel::BETA;
-    data_dir_suffix = "-beta";
   } else {
     modifier = "unknown";
   }
@@ -45,8 +43,6 @@ version_info::Channel GetChannelImpl(std::string* modifier_out,
 
   if (modifier_out)
     modifier_out->swap(modifier);
-  if (data_dir_suffix_out)
-    data_dir_suffix_out->swap(data_dir_suffix);
 
   return channel;
 }
@@ -55,20 +51,48 @@ version_info::Channel GetChannelImpl(std::string* modifier_out,
 
 std::string GetChannelName() {
   std::string modifier;
-  GetChannelImpl(&modifier, nullptr);
+  GetChannelImpl(&modifier);
   return modifier;
 }
 
-#if defined(GOOGLE_CHROME_BUILD)
 std::string GetChannelSuffixForDataDir() {
-  std::string data_dir_suffix;
-  GetChannelImpl(nullptr, &data_dir_suffix);
-  return data_dir_suffix;
+  switch (GetChannel()) {
+    case version_info::Channel::BETA:
+      return "-beta";
+    case version_info::Channel::DEV:
+      return "-unstable";
+    default:
+      // Stable and unknown (e.g. in unbranded builds) don't get a suffix.
+      return std::string();
+  }
 }
-#endif  // defined(GOOGLE_CHROME_BUILD)
+
+#if defined(OS_LINUX) && !defined(OS_CHROMEOS)
+std::string GetDesktopName(base::Environment* env) {
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  version_info::Channel product_channel(GetChannel());
+  switch (product_channel) {
+    case version_info::Channel::DEV:
+      return "google-chrome-unstable.desktop";
+    case version_info::Channel::BETA:
+      return "google-chrome-beta.desktop";
+    default:
+      return "google-chrome.desktop";
+  }
+#else  // BUILDFLAG(CHROMIUM_BRANDING)
+  // Allow $CHROME_DESKTOP to override the built-in value, so that development
+  // versions can set themselves as the default without interfering with
+  // non-official, packaged versions using the built-in value.
+  std::string name;
+  if (env->GetVar("CHROME_DESKTOP", &name) && !name.empty())
+    return name;
+  return "chromium-browser.desktop";
+#endif
+}
+#endif  // defined(OS_LINUX) && !defined(OS_CHROMEOS)
 
 version_info::Channel GetChannel() {
-  return GetChannelImpl(nullptr, nullptr);
+  return GetChannelImpl(nullptr);
 }
 
 }  // namespace chrome

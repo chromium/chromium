@@ -6,6 +6,7 @@
 
 #include "base/lazy_instance.h"
 #include "base/logging.h"
+#include "content/public/browser/web_contents_delegate.h"
 #include "extensions/browser/media_capture_util.h"
 #include "extensions/browser/serial_extension_host_queue.h"
 #include "extensions/shell/browser/shell_extension_web_contents_observer.h"
@@ -58,7 +59,7 @@ void ShellExtensionHostDelegate::ProcessMediaAccessRequest(
 bool ShellExtensionHostDelegate::CheckMediaAccessPermission(
     content::RenderFrameHost* render_frame_host,
     const GURL& security_origin,
-    blink::MediaStreamType type,
+    blink::mojom::MediaStreamType type,
     const Extension* extension) {
   media_capture_util::VerifyMediaAccessPermission(type, extension);
   return true;
@@ -71,12 +72,13 @@ ExtensionHostQueue* ShellExtensionHostDelegate::GetExtensionHostQueue() const {
   return g_queue.Pointer();
 }
 
-gfx::Size ShellExtensionHostDelegate::EnterPictureInPicture(
+content::PictureInPictureResult
+ShellExtensionHostDelegate::EnterPictureInPicture(
     content::WebContents* web_contents,
     const viz::SurfaceId& surface_id,
     const gfx::Size& natural_size) {
   NOTREACHED();
-  return gfx::Size();
+  return content::PictureInPictureResult::kNotSupported;
 }
 
 void ShellExtensionHostDelegate::ExitPictureInPicture() {

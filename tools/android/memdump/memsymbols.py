@@ -4,6 +4,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+from __future__ import print_function
+
 import base64
 import os
 import sys
@@ -75,18 +77,16 @@ def _GetResidentPagesSet(memdump_contents, lib_name, verbose):
     bitmap_pages_count = len(bitmap) * 8
 
     if verbose:
-      print 'Found %s: mapped %d pages in mode %s @ offset %s.' % (
-            lib, map_pages_count, prot, _HexAddr(offset))
-      print ' Map range in the process VA: [%s - %s]. Len: %s' % (
-          _HexAddr(map_start),
-          _HexAddr(map_end),
-          _HexAddr(map_pages_count * _PAGE_SIZE))
-      print ' Corresponding addresses in the binary: [%s - %s]. Len: %s' % (
-          _HexAddr(offset),
-          _HexAddr(offset + map_end - map_start),
-          _HexAddr(map_pages_count * _PAGE_SIZE))
-      print ' Bitmap: %d pages' % bitmap_pages_count
-      print ''
+      print('Found %s: mapped %d pages in mode %s @ offset %s.' %
+            (lib, map_pages_count, prot, _HexAddr(offset)))
+      print(' Map range in the process VA: [%s - %s]. Len: %s' %
+            (_HexAddr(map_start), _HexAddr(map_end),
+             _HexAddr(map_pages_count * _PAGE_SIZE)))
+      print(' Corresponding addresses in the binary: [%s - %s]. Len: %s' %
+            (_HexAddr(offset), _HexAddr(offset + map_end - map_start),
+             _HexAddr(map_pages_count * _PAGE_SIZE)))
+      print(' Bitmap: %d pages' % bitmap_pages_count)
+      print('')
 
     assert(bitmap_pages_count >= map_pages_count)
     for i in xrange(map_pages_count):
@@ -112,8 +112,8 @@ def main(argv):
   (options, args) = parser.parse_args()
 
   if len(args) != 3:
-    print 'Usage: %s [-v] memdump.file nm.file library.so' % (
-        os.path.basename(argv[0]))
+    print('Usage: %s [-v] memdump.file nm.file library.so' % (os.path.basename(
+        argv[0])))
     return 1
 
   memdump_file = args[0]
@@ -145,7 +145,7 @@ def main(argv):
     sym_page = sym_addr / _PAGE_SIZE
     last_sym_matched = (sym_page in resident_pages)
     if (sym_page in resident_pages) != options.reverse:
-      print line
+      print(line)
   return 0
 
 if __name__ == '__main__':

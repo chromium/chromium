@@ -13,7 +13,7 @@
     var uiSourceCode = event.data;
     var content = await uiSourceCode.requestContent();
     TestRunner.addResult('Added: ' + uiSourceCode.url());
-    TestRunner.addResult('With content: ' + content);
+    TestRunner.addResult('With content: ' + content.content);
     TestRunner.completeTest();
   });
 

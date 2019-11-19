@@ -22,11 +22,11 @@
 #error "This file requires ARC support."
 #endif
 
-#pragma mark - LinkLayout
+#pragma mark - LinkData
 
 // Object encapsulating the range of a link and the frames corresponding with
 // that range.
-@interface LinkLayout : NSObject
+@interface LinkData : NSObject
 
 // Designated initializer.
 - (instancetype)initWithRange:(NSRange)range NS_DESIGNATED_INITIALIZER;
@@ -38,12 +38,12 @@
 // The frames calculated for |_range|.
 @property(nonatomic, strong) NSArray* frames;
 
+// Accessibility identifier for the link button.
+@property(nonatomic, copy) NSString* accessibilityID;
+
 @end
 
-@implementation LinkLayout
-
-@synthesize range = _range;
-@synthesize frames = _frames;
+@implementation LinkData
 
 - (instancetype)initWithRange:(NSRange)range {
   if ((self = [super init])) {
@@ -126,7 +126,7 @@
   UITapGestureRecognizer* _linkTapRecognizer;
 
   // Ivars that reset when label text changes.
-  NSMutableDictionary* _layoutsForURLs;
+  NSMutableDictionary* _linkDataForURLs;
   CGRect _lastLabelFrame;
 
   // Ivars that reset when text or bounds change.
@@ -208,12 +208,19 @@
 }
 
 - (void)addLinkWithRange:(NSRange)range url:(GURL)url {
+  [self addLinkWithRange:range url:url accessibilityID:nil];
+}
+
+- (void)addLinkWithRange:(NSRange)range
+                     url:(GURL)url
+         accessibilityID:(NSString*)accessibilityID {
   DCHECK(url.is_valid());
-  if (!_layoutsForURLs)
-    _layoutsForURLs = [[NSMutableDictionary alloc] init];
+  if (!_linkDataForURLs)
+    _linkDataForURLs = [[NSMutableDictionary alloc] init];
   NSURL* key = net::NSURLWithGURL(url);
-  LinkLayout* layout = [[LinkLayout alloc] initWithRange:range];
-  [_layoutsForURLs setObject:layout forKey:key];
+  LinkData* linkData = [[LinkData alloc] initWithRange:range];
+  linkData.accessibilityID = accessibilityID;
+  [_linkDataForURLs setObject:linkData forKey:key];
   [self updateStyles];
 }
 
@@ -247,7 +254,7 @@
   _originalLabelText = [[_label attributedText] copy];
   _textMapper = nil;
   _lastLabelFrame = CGRectZero;
-  _layoutsForURLs = nil;
+  _linkDataForURLs = nil;
 }
 
 - (void)labelLayoutInvalidated {
@@ -274,27 +281,27 @@
 }
 
 - (void)updateStyles {
-  if (![_layoutsForURLs count])
+  if (![_linkDataForURLs count])
     return;
 
   __block NSMutableAttributedString* labelText =
       [_originalLabelText mutableCopy];
-  [_layoutsForURLs enumerateKeysAndObjectsUsingBlock:^(
-                       NSURL* key, LinkLayout* layout, BOOL* stop) {
+  [_linkDataForURLs enumerateKeysAndObjectsUsingBlock:^(
+                        NSURL* key, LinkData* linkData, BOOL* stop) {
     if (_linkColor) {
       [labelText addAttribute:NSForegroundColorAttributeName
                         value:_linkColor
-                        range:layout.range];
+                        range:linkData.range];
     }
     if (_linkUnderlineStyle != NSUnderlineStyleNone) {
       [labelText addAttribute:NSUnderlineStyleAttributeName
                         value:@(_linkUnderlineStyle)
-                        range:layout.range];
+                        range:linkData.range];
     }
     if (_linkFont) {
       [labelText addAttribute:NSFontAttributeName
                         value:_linkFont
-                        range:layout.range];
+                        range:linkData.range];
     }
   }];
   _justUpdatedStyles = YES;
@@ -307,7 +314,7 @@
   if (CGRectEqualToRect([_label frame], _lastLabelFrame))
     return;
   // Don't update if there are no links.
-  if (![_layoutsForURLs count])
+  if (![_linkDataForURLs count])
     return;
 
   _lastLabelFrame = [_label frame];
@@ -320,15 +327,15 @@
   if (!_textMapper)
     [self resetTextMapper];
 
-  for (LinkLayout* layout in [_layoutsForURLs allValues]) {
+  for (LinkData* linkData in [_linkDataForURLs allValues]) {
     NSMutableArray* frames = [[NSMutableArray alloc] init];
-    NSArray* rects = [_textMapper rectsForRange:layout.range];
+    NSArray* rects = [_textMapper rectsForRange:linkData.range];
     for (NSUInteger rectIdx = 0; rectIdx < [rects count]; ++rectIdx) {
       CGRect frame = [rects[rectIdx] CGRectValue];
       frame = [[_label superview] convertRect:frame fromView:_label];
       [frames addObject:[NSValue valueWithCGRect:frame]];
     }
-    layout.frames = frames;
+    linkData.frames = frames;
   }
   [self updateTapButtons];
 }
@@ -366,21 +373,22 @@
     }
   }
   // If there are no buttons, make some and put them in the label's superview.
-  if (![_linkButtons count] && _layoutsForURLs) {
-    [_layoutsForURLs enumerateKeysAndObjectsUsingBlock:^(
-                         NSURL* key, LinkLayout* layout, BOOL* stop) {
+  if (![_linkButtons count] && _linkDataForURLs) {
+    [_linkDataForURLs enumerateKeysAndObjectsUsingBlock:^(
+                          NSURL* key, LinkData* linkData, BOOL* stop) {
       GURL URL = net::GURLWithNSURL(key);
       NSString* accessibilityLabel =
-          [[_label text] substringWithRange:layout.range];
+          [[_label text] substringWithRange:linkData.range];
       // Only pass along line height if there are more than one layouts that
       // can overlap.
       CGFloat lineHeightLimit =
-          [_layoutsForURLs count] > 1 ? _label.cr_lineHeight : 0;
+          [_linkDataForURLs count] > 1 ? _label.cr_lineHeight : 0;
       NSArray* buttons =
-          [TransparentLinkButton buttonsForLinkFrames:layout.frames
+          [TransparentLinkButton buttonsForLinkFrames:linkData.frames
                                                   URL:URL
                                            lineHeight:lineHeightLimit
-                                   accessibilityLabel:accessibilityLabel];
+                                   accessibilityLabel:accessibilityLabel
+                                      accessibilityID:linkData.accessibilityID];
       for (TransparentLinkButton* button in buttons) {
 #ifndef NDEBUG
         button.debug = self.showTapAreas;
@@ -407,8 +415,8 @@
 
 - (NSArray*)tapRectsForURL:(GURL)url {
   NSURL* key = net::NSURLWithGURL(url);
-  LinkLayout* layout = [_layoutsForURLs objectForKey:key];
-  return layout.frames;
+  LinkData* linkData = [_linkDataForURLs objectForKey:key];
+  return linkData.frames;
 }
 
 - (NSArray*)buttonFrames {
@@ -421,9 +429,9 @@
 }
 
 - (void)tapLabelAtPoint:(CGPoint)point {
-  [_layoutsForURLs enumerateKeysAndObjectsUsingBlock:^(
-                       NSURL* key, LinkLayout* layout, BOOL* stop) {
-    for (NSValue* frameValue in layout.frames) {
+  [_linkDataForURLs enumerateKeysAndObjectsUsingBlock:^(
+                        NSURL* key, LinkData* linkData, BOOL* stop) {
+    for (NSValue* frameValue in linkData.frames) {
       CGRect frame = [frameValue CGRectValue];
       if (CGRectContainsPoint(frame, point)) {
         _action(net::GURLWithNSURL(key));

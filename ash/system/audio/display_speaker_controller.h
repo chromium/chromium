@@ -6,7 +6,7 @@
 #define ASH_SYSTEM_AUDIO_DISPLAY_SPEAKER_CONTROLLER_H_
 
 #include "base/macros.h"
-#include "chromeos/dbus/power_manager_client.h"
+#include "chromeos/dbus/power/power_manager_client.h"
 #include "ui/display/display_observer.h"
 
 namespace ash {

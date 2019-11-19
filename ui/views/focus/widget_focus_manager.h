@@ -23,13 +23,13 @@ class WidgetFocusChangeListener {
   virtual void OnNativeFocusChanged(gfx::NativeView focused_now) = 0;
 
  protected:
-  virtual ~WidgetFocusChangeListener() {}
+  virtual ~WidgetFocusChangeListener() = default;
 };
 
 class VIEWS_EXPORT WidgetFocusManager {
  public:
   // Returns the singleton instance.
-  static WidgetFocusManager* GetInstance(gfx::NativeWindow context = nullptr);
+  static WidgetFocusManager* GetInstance();
 
   ~WidgetFocusManager();
 
@@ -57,7 +57,7 @@ class VIEWS_EXPORT WidgetFocusManager {
   base::ObserverList<WidgetFocusChangeListener>::Unchecked
       focus_change_listeners_;
 
-  bool enabled_;
+  bool enabled_ = true;
 
   DISALLOW_COPY_AND_ASSIGN(WidgetFocusManager);
 };

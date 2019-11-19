@@ -31,7 +31,7 @@ import javax.inject.Named;
  * - Transforming the origin into a domain (requires native).
  *
  * Lifecycle: There should be a 1-1 relationship between this class and
- * {@link TrustedWebActivityVerifier}. Having more instances won't effect correctness, but will
+ * {@link CurrentPageVerifier}. Having more instances won't effect correctness, but will
  * limit the performance benefits of the cache.
  * Thread safety: All methods on this class should be called from the same thread.
  */
@@ -71,7 +71,7 @@ public class ClientAppDataRecorder {
             String appLabel = mPackageManager.getApplicationLabel(ai).toString();
 
             if (TextUtils.isEmpty(appLabel) || ai.uid == -1) {
-                Log.e(TAG, "Invalid details for client package %s: %d, %d",
+                Log.e(TAG, "Invalid details for client package %s: %d, %s",
                         packageName, ai.uid, appLabel);
                 return;
             }

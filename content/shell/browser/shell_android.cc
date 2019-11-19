@@ -13,8 +13,8 @@
 #include "base/strings/string_piece.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_switches.h"
+#include "content/shell/android/content_shell_jni_headers/Shell_jni.h"
 #include "content/shell/android/shell_manager.h"
-#include "jni/Shell_jni.h"
 
 using base::android::AttachCurrentThread;
 using base::android::ConvertUTF8ToJavaString;
@@ -79,11 +79,6 @@ void Shell::PlatformSetTitle(const base::string16& title) {
   NOTIMPLEMENTED() << ": " << title;
 }
 
-void Shell::LoadProgressChanged(WebContents* source, double progress) {
-  JNIEnv* env = AttachCurrentThread();
-  Java_Shell_onLoadProgressChanged(env, java_object_, progress);
-}
-
 void Shell::SetOverlayMode(bool use_overlay_mode) {
   JNIEnv* env = base::android::AttachCurrentThread();
   return Java_Shell_setOverlayMode(env, java_object_, use_overlay_mode);
@@ -99,6 +94,11 @@ bool Shell::PlatformIsFullscreenForTabOrPending(
     const WebContents* web_contents) const {
   JNIEnv* env = AttachCurrentThread();
   return Java_Shell_isFullscreenForTabOrPending(env, java_object_);
+}
+
+void Shell::LoadProgressChanged(double progress) {
+  JNIEnv* env = AttachCurrentThread();
+  Java_Shell_onLoadProgressChanged(env, java_object_, progress);
 }
 
 void Shell::Close() {

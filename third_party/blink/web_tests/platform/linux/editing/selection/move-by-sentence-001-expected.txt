@@ -23,7 +23,7 @@ layer at (0,0) size 800x600
       LayoutBlockFlow {DIV} at (0,0) size 784x56 [border: (2px solid #FF0000)]
         LayoutText {#text} at (14,14) size 14x27
           text run at (14,14) width 14: "\x{2022} "
-        LayoutInline {B} at (0,0) size 240x26
+        LayoutInline {B} at (28,14) size 240x26
           LayoutText {#text} at (28,14) size 240x26
             text run at (28,14) width 240: "This is some linked text"
         LayoutText {#text} at (0,0) size 0x0

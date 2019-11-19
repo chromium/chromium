@@ -19,6 +19,8 @@
 #include "content/browser/indexed_db/indexed_db_database_error.h"
 #include "content/browser/indexed_db/indexed_db_dispatcher_host.h"
 #include "content/public/browser/browser_thread.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
+#include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "storage/browser/blob/blob_storage_context.h"
 #include "third_party/blink/public/common/indexeddb/indexeddb_key.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom.h"
@@ -38,7 +40,6 @@ class IndexedDBConnection;
 class IndexedDBCursor;
 class IndexedDBDatabase;
 struct IndexedDBDataLossInfo;
-struct IndexedDBReturnValue;
 struct IndexedDBValue;
 
 class CONTENT_EXPORT IndexedDBCallbacks
@@ -77,17 +78,17 @@ class CONTENT_EXPORT IndexedDBCallbacks
 
     const IndexedDBBlobInfo& blob_info_;
     std::string uuid_;
-    blink::mojom::BlobRequest request_;
+    mojo::PendingReceiver<blink::mojom::Blob> receiver_;
   };
 
   static bool CreateAllBlobs(
       scoped_refptr<ChromeBlobStorageContext> blob_context,
-      scoped_refptr<base::SequencedTaskRunner> idb_runner,
       std::vector<IndexedDBValueBlob> value_blobs);
 
   IndexedDBCallbacks(base::WeakPtr<IndexedDBDispatcherHost> dispatcher_host,
                      const url::Origin& origin,
-                     blink::mojom::IDBCallbacksAssociatedPtrInfo callbacks_info,
+                     mojo::PendingAssociatedRemote<blink::mojom::IDBCallbacks>
+                         pending_callbacks,
                      scoped_refptr<base::SequencedTaskRunner> idb_runner);
 
   virtual void OnError(const IndexedDBDatabaseError& error);
@@ -110,33 +111,6 @@ class CONTENT_EXPORT IndexedDBCallbacks
   virtual void OnSuccess(std::unique_ptr<IndexedDBConnection> connection,
                          const blink::IndexedDBDatabaseMetadata& metadata);
 
-  // IndexedDBDatabase::OpenCursor
-  virtual void OnSuccess(std::unique_ptr<IndexedDBCursor> cursor,
-                         const blink::IndexedDBKey& key,
-                         const blink::IndexedDBKey& primary_key,
-                         IndexedDBValue* value);
-
-  // IndexedDBCursor::Continue / Advance
-  virtual void OnSuccess(const blink::IndexedDBKey& key,
-                         const blink::IndexedDBKey& primary_key,
-                         IndexedDBValue* value);
-
-  // IndexedDBCursor::PrefetchContinue
-  virtual void OnSuccessWithPrefetch(
-      const std::vector<blink::IndexedDBKey>& keys,
-      const std::vector<blink::IndexedDBKey>& primary_keys,
-      std::vector<IndexedDBValue>* values);
-
-  // IndexedDBDatabase::Get
-  // IndexedDBCursor::Advance
-  virtual void OnSuccess(IndexedDBReturnValue* value);
-
-  // IndexedDBDatabase::GetAll
-  virtual void OnSuccessArray(std::vector<IndexedDBReturnValue>* values);
-
-  // IndexedDBDatabase::Put / IndexedDBCursor::Update
-  virtual void OnSuccess(const blink::IndexedDBKey& key);
-
   // IndexedDBDatabase::Count
   // IndexedDBFactory::DeleteDatabase
   // IndexedDBDatabase::DeleteRange
@@ -146,13 +120,15 @@ class CONTENT_EXPORT IndexedDBCallbacks
   // IndexedDBCursor::Continue / Advance (when complete)
   virtual void OnSuccess();
 
+  void OnConnectionError();
+
+  bool is_complete() const { return complete_; }
+
  protected:
   virtual ~IndexedDBCallbacks();
 
  private:
   friend class base::RefCounted<IndexedDBCallbacks>;
-
-  class Helper;
 
   // Stores if this callbacks object is complete and should not be called again.
   bool complete_ = false;
@@ -168,7 +144,11 @@ class CONTENT_EXPORT IndexedDBCallbacks
   // The "blocked" event should be sent at most once per request.
   bool sent_blocked_ = false;
 
-  std::unique_ptr<Helper> helper_;
+  base::WeakPtr<IndexedDBDispatcherHost> dispatcher_host_;
+  url::Origin origin_;
+  scoped_refptr<base::SequencedTaskRunner> idb_runner_;
+  mojo::AssociatedRemote<blink::mojom::IDBCallbacks> callbacks_;
+
   SEQUENCE_CHECKER(sequence_checker_);
 
   DISALLOW_COPY_AND_ASSIGN(IndexedDBCallbacks);

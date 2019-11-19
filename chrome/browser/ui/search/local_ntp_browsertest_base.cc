@@ -14,7 +14,7 @@ namespace {
 
 // Delimiter in the Most Visited icon URL that indicates a dark icon. Keep value
 // in sync with NtpIconSource.
-const char kMVIconDarkParameter[] = "/dark/";
+const char kMVIconDarkParameter[] = "dark=true";
 
 }  // namespace
 
@@ -41,7 +41,7 @@ void TestInstantServiceObserver::WaitForMostVisitedItems(size_t count) {
   run_loop.Run();
 }
 
-void TestInstantServiceObserver::WaitForThemeInfoUpdated(
+void TestInstantServiceObserver::WaitForNtpThemeUpdated(
     std::string background_url,
     std::string attribution_1,
     std::string attribution_2,
@@ -53,10 +53,10 @@ void TestInstantServiceObserver::WaitForThemeInfoUpdated(
   expected_attribution_2_ = attribution_2;
   expected_attribution_action_url_ = attribution_action_url;
 
-  if (theme_info_.custom_background_url == background_url &&
-      theme_info_.custom_background_attribution_line_1 == attribution_1 &&
-      theme_info_.custom_background_attribution_line_2 == attribution_2 &&
-      theme_info_.custom_background_attribution_action_url ==
+  if (theme_.custom_background_url == background_url &&
+      theme_.custom_background_attribution_line_1 == attribution_1 &&
+      theme_.custom_background_attribution_line_2 == attribution_2 &&
+      theme_.custom_background_attribution_action_url ==
           attribution_action_url) {
     return;
   }
@@ -70,20 +70,7 @@ void TestInstantServiceObserver::WaitForThemeApplied(bool theme_installed) {
   DCHECK(!quit_closure_theme_);
 
   theme_installed_ = theme_installed;
-  if (!theme_info_.using_default_theme == theme_installed) {
-    return;
-  }
-
-  base::RunLoop run_loop;
-  quit_closure_theme_ = run_loop.QuitClosure();
-  run_loop.Run();
-}
-
-void TestInstantServiceObserver::WaitForDarkModeApplied(bool dark_mode) {
-  DCHECK(!quit_closure_dark_mode_);
-
-  expected_dark_mode_ = dark_mode;
-  if (theme_info_.using_dark_mode == dark_mode) {
+  if (!theme_.using_default_theme == theme_installed) {
     return;
   }
 
@@ -93,41 +80,32 @@ void TestInstantServiceObserver::WaitForDarkModeApplied(bool dark_mode) {
 }
 
 bool TestInstantServiceObserver::IsUsingDefaultTheme() {
-  return theme_info_.using_default_theme;
+  return theme_.using_default_theme;
 }
 
-void TestInstantServiceObserver::ThemeInfoChanged(
-    const ThemeBackgroundInfo& theme_info) {
-  theme_info_ = theme_info;
+void TestInstantServiceObserver::NtpThemeChanged(const NtpTheme& theme) {
+  theme_ = theme;
 
   if (quit_closure_custom_background_ &&
-      theme_info_.custom_background_url == expected_background_url_ &&
-      theme_info_.custom_background_attribution_line_1 ==
-          expected_attribution_1_ &&
-      theme_info_.custom_background_attribution_line_2 ==
-          expected_attribution_2_ &&
-      theme_info_.custom_background_attribution_action_url ==
+      theme_.custom_background_url == expected_background_url_ &&
+      theme_.custom_background_attribution_line_1 == expected_attribution_1_ &&
+      theme_.custom_background_attribution_line_2 == expected_attribution_2_ &&
+      theme_.custom_background_attribution_action_url ==
           expected_attribution_action_url_) {
     // Exit when the custom background was applied successfully.
     std::move(quit_closure_custom_background_).Run();
     quit_closure_custom_background_.Reset();
   } else if (quit_closure_theme_ &&
-             !theme_info_.using_default_theme == theme_installed_) {
+             !theme_.using_default_theme == theme_installed_) {
     // Exit when the theme was applied successfully.
     std::move(quit_closure_theme_).Run();
     quit_closure_theme_.Reset();
-  } else if (quit_closure_dark_mode_ &&
-             theme_info_.using_dark_mode == expected_dark_mode_) {
-    // Exit when the theme was applied successfully.
-    std::move(quit_closure_dark_mode_).Run();
-    quit_closure_dark_mode_.Reset();
   }
 }
 
-void TestInstantServiceObserver::MostVisitedItemsChanged(
-    const std::vector<InstantMostVisitedItem>& items,
-    bool is_custom_links) {
-  items_ = items;
+void TestInstantServiceObserver::MostVisitedInfoChanged(
+    const InstantMostVisitedInfo& most_visited_info) {
+  items_ = most_visited_info.items;
 
   if (quit_closure_most_visited_ && items_.size() == expected_count_) {
     std::move(quit_closure_most_visited_).Run();
@@ -140,9 +118,10 @@ DarkModeTestBase::DarkModeTestBase() {}
 bool DarkModeTestBase::GetIsDarkModeApplied(
     const content::ToRenderFrameHost& frame) {
   bool dark_mode_applied = false;
-  if (instant_test_utils::GetBoolFromJS(
-          frame, "document.documentElement.getAttribute('darkmode') === 'true'",
-          &dark_mode_applied)) {
+  if (instant_test_utils::GetBoolFromJS(frame,
+                                        " window.matchMedia('(prefers-color-"
+                                        "scheme: dark)').matches === true",
+                                        &dark_mode_applied)) {
     return dark_mode_applied;
   }
   return false;

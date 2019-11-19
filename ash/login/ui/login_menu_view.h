@@ -43,7 +43,7 @@ class ASH_EXPORT LoginMenuView : public LoginBaseBubbleView {
   };
 
   using OnSelect = base::RepeatingCallback<void(Item item)>;
-  using OnHighLight = base::RepeatingCallback<void(bool by_selection)>;
+  using OnHighlight = base::RepeatingCallback<void(bool by_selection)>;
 
   LoginMenuView(const std::vector<Item>& items,
                 views::View* anchor_view,
@@ -51,8 +51,7 @@ class ASH_EXPORT LoginMenuView : public LoginBaseBubbleView {
                 const OnSelect& on_select);
   ~LoginMenuView() override;
 
-  void OnHighLightChange(int item_index, bool by_selection);
-  int FindNextItem(bool reverse);
+  void OnHighlightChange(size_t item_index, bool by_selection);
 
   // LoginBaseBubbleView:
   LoginButton* GetBubbleOpener() const override;
@@ -63,6 +62,8 @@ class ASH_EXPORT LoginMenuView : public LoginBaseBubbleView {
   void VisibilityChanged(View* starting_from, bool is_visible) override;
 
  private:
+  views::View* FindNextItem(bool reverse);
+
   // Owned by this class.
   views::ScrollView* scroller_ = nullptr;
 
@@ -72,7 +73,7 @@ class ASH_EXPORT LoginMenuView : public LoginBaseBubbleView {
   LoginButton* opener_ = nullptr;
 
   const OnSelect on_select_;
-  int selected_index_ = 0;
+  size_t selected_index_ = 0;
 
   DISALLOW_COPY_AND_ASSIGN(LoginMenuView);
 };

@@ -35,9 +35,7 @@ namespace onc {
 CertificateImporterImpl::CertificateImporterImpl(
     const scoped_refptr<base::SequencedTaskRunner>& io_task_runner,
     net::NSSCertDatabase* target_nssdb)
-    : io_task_runner_(io_task_runner),
-      target_nssdb_(target_nssdb),
-      weak_factory_(this) {
+    : io_task_runner_(io_task_runner), target_nssdb_(target_nssdb) {
   CHECK(target_nssdb);
 }
 

@@ -14,8 +14,8 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/macros.h"
-#include "base/message_loop/message_loop.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/task_environment.h"
 #include "base/values.h"
 #include "chrome/browser/android/contextualsearch/contextual_search_context.h"
 #include "chrome/browser/android/contextualsearch/resolved_search_term.h"
@@ -213,18 +213,25 @@ class ContextualSearchDelegateTest : public testing::Test {
     return result;
   }
 
+  // Accessors to response members
   bool is_invalid() { return is_invalid_; }
   int response_code() { return response_code_; }
   std::string search_term() { return search_term_; }
   std::string display_text() { return display_text_; }
   std::string alternate_term() { return alternate_term_; }
   std::string mid() { return mid_; }
-  std::string caption() { return caption_; }
-  std::string thumbnail_url() { return thumbnail_url_; }
   bool do_prevent_preload() { return prevent_preload_; }
   int start_adjust() { return start_adjust_; }
   int end_adjust() { return end_adjust_; }
   std::string context_language() { return context_language_; }
+  std::string thumbnail_url() { return thumbnail_url_; }
+  std::string caption() { return caption_; }
+  std::string quick_action_uri() { return quick_action_uri_; }
+  QuickActionCategory quick_action_category() { return quick_action_category_; }
+  int64_t logged_event_id() { return logged_event_id_; }
+  std::string search_url_full() { return search_url_full_; }
+  std::string search_url_preload() { return search_url_preload_; }
+  int coca_card_tag() { return coca_card_tag_; }
 
   // The delegate under test.
   std::unique_ptr<ContextualSearchDelegate> delegate_;
@@ -240,12 +247,18 @@ class ContextualSearchDelegateTest : public testing::Test {
     display_text_ = resolved_search_term.display_text;
     alternate_term_ = resolved_search_term.alternate_term;
     mid_ = resolved_search_term.mid;
-    thumbnail_url_ = resolved_search_term.thumbnail_url;
-    caption_ = resolved_search_term.caption;
     prevent_preload_ = resolved_search_term.prevent_preload;
     start_adjust_ = resolved_search_term.selection_start_adjust;
     end_adjust_ = resolved_search_term.selection_end_adjust;
     context_language_ = resolved_search_term.context_language;
+    thumbnail_url_ = resolved_search_term.thumbnail_url;
+    caption_ = resolved_search_term.caption;
+    quick_action_uri_ = resolved_search_term.quick_action_uri;
+    quick_action_category_ = resolved_search_term.quick_action_category;
+    logged_event_id_ = resolved_search_term.logged_event_id;
+    search_url_full_ = resolved_search_term.search_url_full;
+    search_url_preload_ = resolved_search_term.search_url_preload;
+    coca_card_tag_ = resolved_search_term.coca_card_tag;
   }
 
   void recordSampleSelectionAvailable(const std::string& encoding,
@@ -255,20 +268,28 @@ class ContextualSearchDelegateTest : public testing::Test {
     // unused.
   }
 
+  // Local response members
   bool is_invalid_;
   int response_code_;
   std::string search_term_;
   std::string display_text_;
   std::string alternate_term_;
   std::string mid_;
-  std::string thumbnail_url_;
-  std::string caption_;
   bool prevent_preload_;
   int start_adjust_;
   int end_adjust_;
   std::string context_language_;
+  std::string thumbnail_url_;
+  std::string caption_;
+  std::string quick_action_uri_;
+  QuickActionCategory quick_action_category_;
+  int64_t logged_event_id_;
+  std::string search_url_full_;
+  std::string search_url_preload_;
+  int coca_card_tag_;
 
-  base::MessageLoopForIO io_message_loop_;
+  base::test::SingleThreadTaskEnvironment task_environment_{
+      base::test::SingleThreadTaskEnvironment::MainThreadType::IO};
   std::unique_ptr<TemplateURLService> template_url_service_;
   scoped_refptr<network::SharedURLLoaderFactory>
       test_shared_url_loader_factory_;
@@ -362,7 +383,7 @@ TEST_F(ContextualSearchDelegateTest, InvalidResponse) {
   auto* pending_request = test_url_loader_factory_.GetPendingRequest(0);
   test_url_loader_factory_.SimulateResponseForPendingRequest(
       pending_request->request.url, network::URLLoaderCompletionStatus(net::OK),
-      network::ResourceResponseHead(), std::string());
+      network::mojom::URLResponseHead::New(), std::string());
   base::RunLoop().RunUntilIdle();
 
   EXPECT_FALSE(do_prevent_preload());
@@ -529,7 +550,13 @@ TEST_F(ContextualSearchDelegateTest, DecodeSearchTermFromJsonResponse) {
       "\"info_text\":\"44th U.S. President\","
       "\"display_text\":\"Barack Obama\", \"mentions\":[0,15],"
       "\"selected_text\":\"obama\", \"resolved_term\":\"barack obama\","
-      "\"logged_event_id\":\"1234567890123456789\"}";
+      "\"logged_event_id\":\"1234567890123456789\","
+      "\"search_url_full\":\"https://www.google.com/"
+      "search?q=define+obscure&ctxs=2\","
+      "\"search_url_preload\":\"https://www.google.com/"
+      "search?q=define+obscure&ctxs=2&pf=c&sns=1\","
+      "\"card_tag\":12"
+      "}";
   std::string search_term;
   std::string display_text;
   std::string alternate_term;
@@ -543,12 +570,15 @@ TEST_F(ContextualSearchDelegateTest, DecodeSearchTermFromJsonResponse) {
   std::string quick_action_uri;
   int64_t logged_event_id;
   QuickActionCategory quick_action_category = QUICK_ACTION_CATEGORY_NONE;
+  std::string search_url_full;
+  std::string search_url_preload;
+  int coca_card_tag;
 
   delegate_->DecodeSearchTermFromJsonResponse(
       json_with_escape, &search_term, &display_text, &alternate_term, &mid,
       &prevent_preload, &mention_start, &mention_end, &context_language,
       &thumbnail_url, &caption, &quick_action_uri, &quick_action_category,
-      &logged_event_id);
+      &logged_event_id, &search_url_full, &search_url_preload, &coca_card_tag);
 
   EXPECT_EQ("obama", search_term);
   EXPECT_EQ("Barack Obama", display_text);
@@ -561,6 +591,11 @@ TEST_F(ContextualSearchDelegateTest, DecodeSearchTermFromJsonResponse) {
   EXPECT_EQ("", quick_action_uri);
   EXPECT_EQ(QUICK_ACTION_CATEGORY_NONE, quick_action_category);
   EXPECT_EQ(1234567890123456789, logged_event_id);
+  EXPECT_EQ("https://www.google.com/search?q=define+obscure&ctxs=2",
+            search_url_full);
+  EXPECT_EQ("https://www.google.com/search?q=define+obscure&ctxs=2&pf=c&sns=1",
+            search_url_preload);
+  EXPECT_EQ(12, coca_card_tag);
 }
 
 TEST_F(ContextualSearchDelegateTest, ResponseWithLanguage) {
@@ -625,4 +660,32 @@ TEST_F(ContextualSearchDelegateTest, DestroyContextDuringGatherSurroundings) {
   CreateTestContext();
   DestroyTestContext();
   CallOnTextSurroundingSelectionAvailable();
+}
+
+TEST_F(ContextualSearchDelegateTest, ResponseWithCocaCardTag) {
+  CreateDefaultSearchContextAndRequestSearchTerm();
+  std::string response(
+      "{\"search_term\":\"obscure\","
+      "\"card_tag\":11}");
+  SimulateResponseReturned(response);
+  EXPECT_EQ("obscure", search_term());
+  EXPECT_EQ(11, coca_card_tag());
+}
+
+TEST_F(ContextualSearchDelegateTest, ResponseWithoutCocaCardTag) {
+  CreateDefaultSearchContextAndRequestSearchTerm();
+  std::string response("{\"search_term\":\"obscure\"}");
+  SimulateResponseReturned(response);
+  EXPECT_EQ("obscure", search_term());
+  EXPECT_EQ(0, coca_card_tag());
+}
+
+TEST_F(ContextualSearchDelegateTest, ResponseWithStringCocaCardTag) {
+  CreateDefaultSearchContextAndRequestSearchTerm();
+  std::string response(
+      "{\"search_term\":\"obscure\","
+      "\"card_tag\":\"11\"}");
+  SimulateResponseReturned(response);
+  EXPECT_EQ("obscure", search_term());
+  EXPECT_EQ(0, coca_card_tag());
 }

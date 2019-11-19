@@ -1,0 +1,60 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# This file contains proguard flags that prevent Trichrome library APKs from
+# having illegal references to Chrome/Webview code. Trichrome's class loader
+# can't load any classes from Chrome/Webview, so referencing these classes from
+# the dex file will fail at run time.
+# This list of classes can be found by running
+# //build/android/gyp/validate_static_library_dex_references.py.
+
+-keep,allowobfuscation class android.support.design.widget.BaseTransientBottomBar$SnackbarBaseLayout { *; }
+-keep,allowobfuscation class android.support.design.widget.BaseTransientBottomBar$SnackbarBaseLayout$** { *; }
+-keep,allowobfuscation class android.support.design.widget.TabLayout { *; }
+-keep,allowobfuscation class android.support.design.widget.TabLayout$AdapterChangeListener { *; }
+-keep,allowobfuscation class android.support.v7.app.MediaRouteControllerDialog { *; }
+-keep,allowobfuscation class android.support.v7.app.MediaRouteControllerDialog$MediaControllerCallback { *; }
+-keep,allowobfuscation class android.support.v7.media.MediaRouter$GlobalMediaRouter { *; }
+-keep,allowobfuscation class android.support.v7.media.MediaRouter$GlobalMediaRouter$** { *; }
+-keep,allowobfuscation class com.google.protobuf.nano.CodedOutputByteBufferNano { *; }
+-keep,allowobfuscation class org.chromium.chrome.browser.ChromeActivity { *; }
+-keep,allowobfuscation class org.chromium.chrome.browser.ChromeFeatureList { *; }
+-keep,allowobfuscation class org.chromium.chrome.browser.compositor.CompositorViewHolder { *; }
+-keep,allowobfuscation class org.chromium.chrome.browser.compositor.CompositorViewHolder$CompositorAccessibilityProvider { *; }
+-keep,allowobfuscation class org.chromium.chrome.browser.compositor.layouts.components.VirtualView { *; }
+-keep,allowobfuscation class org.chromium.chrome.browser.compositor.layouts.LayoutManager { *; }
+-keep,allowobfuscation class org.chromium.chrome.browser.contacts_picker.ContactsPickerDialog { *; }
+-keep,allowobfuscation class org.chromium.chrome.browser.crash.LogcatExtractionRunnable { *; }
+-keep,allowobfuscation class org.chromium.chrome.browser.favicon.LargeIconBridge { *; }
+-keep,allowobfuscation class org.chromium.chrome.browser.favicon.LargeIconBridge$LargeIconCallback { *; }
+-keep,allowobfuscation class org.chromium.chrome.browser.FileProviderHelper { *; }
+-keep,allowobfuscation class org.chromium.chrome.browser.firstrun.FirstRunPage { *; }
+-keep,allowobfuscation class org.chromium.chrome.browser.firstrun.FirstRunPagerAdapter { *; }
+-keep,allowobfuscation class org.chromium.chrome.browser.init.ChromeBrowserInitializer$** { *; }
+-keep,allowobfuscation class org.chromium.chrome.browser.init.ProcessInitializationHandler$** { *; }
+-keep,allowobfuscation class org.chromium.chrome.browser.media.ui.MediaImageCallback { *; }
+-keep,allowobfuscation class org.chromium.chrome.browser.media.ui.MediaImageManager { *; }
+-keep,allowobfuscation class org.chromium.chrome.browser.media.ui.MediaNotificationInfo$Builder { *; }
+-keep,allowobfuscation class org.chromium.chrome.browser.media.ui.MediaNotificationListener { *; }
+-keep,allowobfuscation class org.chromium.chrome.browser.media.ui.MediaSessionTabHelper { *; }
+-keep,allowobfuscation class org.chromium.chrome.browser.media.ui.MediaSessionTabHelper$** { *; }
+-keep,allowobfuscation class org.chromium.chrome.browser.payments.AndroidPaymentApp { *; }
+-keep,allowobfuscation class org.chromium.chrome.browser.payments.AndroidPaymentApp$** { *; }
+-keep,allowobfuscation class org.chromium.chrome.browser.payments.PaymentInstrument { *; }
+-keep,allowobfuscation class org.chromium.chrome.browser.photo_picker.PhotoPickerDialog { *; }
+-keep,allowobfuscation class org.chromium.chrome.browser.preferences.languages.AddLanguageFragment { *; }
+-keep,allowobfuscation class org.chromium.chrome.browser.preferences.languages.AddLanguageFragment$$Lambda$** { *; }
+-keep,allowobfuscation class org.chromium.chrome.browser.preferences.privacy.ClearBrowsingDataFetcher { *; }
+-keep,allowobfuscation class org.chromium.chrome.browser.preferences.privacy.ClearBrowsingDataPreferences { *; }
+-keep,allowobfuscation class org.chromium.chrome.browser.preferences.privacy.ClearBrowsingDataPreferencesAdvanced { *; }
+-keep,allowobfuscation class org.chromium.chrome.browser.preferences.privacy.ClearBrowsingDataPreferencesBasic { *; }
+-keep,allowobfuscation class org.chromium.chrome.browser.preferences.privacy.ClearBrowsingDataTabsFragment { *; }
+-keep,allowobfuscation class org.chromium.chrome.browser.preferences.privacy.ClearBrowsingDataTabsFragment$ClearBrowsingDataPagerAdapter { *; }
+-keep,allowobfuscation class org.chromium.chrome.browser.profiles.Profile { *; }
+-keep,allowobfuscation class org.chromium.chrome.browser.tab.Tab { *; }
+-keep,allowobfuscation class org.chromium.chrome.browser.usage_stats.NotificationSuspender$** { *; }
+-keep,allowobfuscation class org.chromium.chrome.browser.usage_stats.SuspensionTracker { *; }
+-keep,allowobfuscation class org.chromium.chrome.browser.usage_stats.UsageStatsService { *; }
+-keep,allowobfuscation class org.chromium.chrome.browser.util.IntentUtils { *; }
+-keep,allowobfuscation class org.chromium.chrome.browser.vr.ArImmersiveOverlay { *; }

@@ -10,7 +10,10 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/optional.h"
 #include "base/strings/string_piece.h"
+#include "base/task/thread_pool/thread_pool_instance.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/trace_event_analyzer.h"
 #include "chrome/test/base/in_process_browser_test.h"
 
@@ -122,6 +125,16 @@ class TabCapturePerformanceTestBase : public InProcessBrowserTest {
   static const char kExtensionId[];
 
  private:
+  // In the spirit of NoBestEffortTasksTests, use a fence to make sure that
+  // BEST_EFFORT tasks in the browser process are not required for the success
+  // of these tests. In a performance test run, this also removes sources of
+  // variance. Do not use the --disable-best-effort-tasks command line switch as
+  // that would also preempt BEST_EFFORT tasks in utility processes, and
+  // TabCapturePerformanceTest.Performance relies on BEST_EFFORT tasks in
+  // utility process for tracing.
+  base::Optional<base::ThreadPoolInstance::ScopedBestEffortExecutionFence>
+      best_effort_fence_;
+
   bool is_full_performance_run_ = false;
 
   // Set to the test page that should be served by the next call to
@@ -134,6 +147,9 @@ class TabCapturePerformanceTestBase : public InProcessBrowserTest {
       const net::test_server::HttpRequest& request);
 
   const extensions::Extension* extension_ = nullptr;
+
+  // Manages the Audio Service feature set, enabled for these performance tests.
+  base::test::ScopedFeatureList feature_list_;
 
   DISALLOW_COPY_AND_ASSIGN(TabCapturePerformanceTestBase);
 };

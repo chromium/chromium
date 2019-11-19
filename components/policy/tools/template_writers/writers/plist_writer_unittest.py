@@ -90,6 +90,7 @@ class PListWriterUnittest(writer_unittest_common.WriterUnittestCommon):
     policy_json = '''
       {
         'policy_definitions': [],
+        'policy_atomic_group_definitions': [],
         'placeholders': [],
         'messages': {},
       }'''
@@ -107,6 +108,7 @@ class PListWriterUnittest(writer_unittest_common.WriterUnittestCommon):
     policy_json = '''
       {
         'policy_definitions': [],
+        'policy_atomic_group_definitions': [],
         'placeholders': [],
         'messages': {},
       }'''
@@ -142,6 +144,7 @@ class PListWriterUnittest(writer_unittest_common.WriterUnittestCommon):
             'supported_on': ['chrome.mac:8-'],
           },
         ],
+        'policy_atomic_group_definitions': [],
         'placeholders': [],
         'messages': {}
       }'''
@@ -191,6 +194,7 @@ class PListWriterUnittest(writer_unittest_common.WriterUnittestCommon):
             'supported_on': ['chrome.mac:8-'],
            },
         ],
+        'policy_atomic_group_definitions': [],
         'placeholders': [],
         'messages': {}
       }'''
@@ -242,6 +246,7 @@ class PListWriterUnittest(writer_unittest_common.WriterUnittestCommon):
             'supported_on': ['chrome.mac:8-'],
           },
         ],
+        'policy_atomic_group_definitions': [],
         'placeholders': [],
         'messages': {}
       }'''
@@ -288,6 +293,7 @@ class PListWriterUnittest(writer_unittest_common.WriterUnittestCommon):
             'caption': '',
           },
         ],
+        'policy_atomic_group_definitions': [],
         'placeholders': [],
         'messages': {},
       }'''
@@ -338,6 +344,7 @@ class PListWriterUnittest(writer_unittest_common.WriterUnittestCommon):
             'caption': '',
           },
         ],
+        'policy_atomic_group_definitions': [],
         'placeholders': [],
         'messages': {},
       }'''
@@ -400,6 +407,7 @@ class PListWriterUnittest(writer_unittest_common.WriterUnittestCommon):
             'caption': '',
           }
         ],
+        'policy_atomic_group_definitions': [],
         'placeholders': [],
         'messages': {},
       }'''
@@ -453,6 +461,7 @@ class PListWriterUnittest(writer_unittest_common.WriterUnittestCommon):
             'supported_on': ['chrome.mac:8-'],
           },
         ],
+        'policy_atomic_group_definitions': [],
         'placeholders': [],
         'messages': {},
       }'''
@@ -503,6 +512,7 @@ class PListWriterUnittest(writer_unittest_common.WriterUnittestCommon):
             'supported_on': ['chrome.mac:8-'],
           },
         ],
+        'policy_atomic_group_definitions': [],
         'placeholders': [],
         'messages': {},
       }'''
@@ -558,6 +568,7 @@ class PListWriterUnittest(writer_unittest_common.WriterUnittestCommon):
             'supported_on': ['chrome.mac:8-'],
           },
         ],
+        'policy_atomic_group_definitions': [],
         'placeholders': [],
         'messages': {},
       }'''
@@ -609,6 +620,7 @@ class PListWriterUnittest(writer_unittest_common.WriterUnittestCommon):
             'caption': '',
           },
         ],
+        'policy_atomic_group_definitions': [],
         'placeholders': [],
         'messages': {},
       }'''
@@ -655,6 +667,7 @@ class PListWriterUnittest(writer_unittest_common.WriterUnittestCommon):
             'caption': '',
           },
         ],
+        'policy_atomic_group_definitions': [],
         'placeholders': [],
         'messages': {},
       }'''
@@ -702,6 +715,7 @@ class PListWriterUnittest(writer_unittest_common.WriterUnittestCommon):
             'desc': '',
           },
         ],
+        'policy_atomic_group_definitions': [],
         'placeholders': [],
         'messages': {},
       }'''

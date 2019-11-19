@@ -154,7 +154,8 @@ void ComponentManager::PostComponentTasks(
 
   // Allow blocking operations, such as file operations, in the component task.
   // This is allowed since there is no UI for it to block.
-  auto task_runner = base::CreateTaskRunnerWithTraits(base::MayBlock());
+  auto task_runner =
+      base::CreateTaskRunner({base::ThreadPool(), base::MayBlock()});
   for (auto& component : components_) {
     if (cancelable_task_tracker_.PostTaskAndReply(
             task_runner.get(), FROM_HERE,

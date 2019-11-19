@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-PASS Number should be rejected as the mark-options.
-PASS NaN should be rejected as the mark-options.
-PASS Infinity should be rejected as the mark-options.
-PASS String should be rejected as the mark-options.
-Harness: the test ran to completion.
-

@@ -2,13 +2,13 @@ include_rules = [
   "+components/crx_file",
   "+components/url_formatter",
   "+components/nacl/common/buildflags.h",
+  "+components/version_info/channel.h",
   "+device/bluetooth",  # For BluetoothPermission
-  "+device/usb",
   "+grit/extensions_strings.h",
-  "+libxml",
   "+net",
+  "+services/device/public",
   "+services/network/public/mojom/cors_origin_pattern.mojom-forward.h",
   "+services/network/public/mojom/cors_origin_pattern.mojom.h",
-  "+third_party/libxml",
   "+third_party/re2",
+  "+third_party/zlib",
 ]

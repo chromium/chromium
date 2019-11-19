@@ -4,6 +4,7 @@
 
 #include "components/exo/text_input.h"
 
+#include <memory>
 #include <string>
 
 #include "base/strings/utf_string_conversions.h"
@@ -48,7 +49,7 @@ class MockTextInputDelegate : public TextInput::Delegate {
 
 class TestingInputMethodObserver : public ui::InputMethodObserver {
  public:
-  TestingInputMethodObserver(ui::InputMethod* input_method)
+  explicit TestingInputMethodObserver(ui::InputMethod* input_method)
       : input_method_(input_method) {
     input_method_->AddObserver(this);
   }
@@ -124,7 +125,8 @@ class TextInputTest : public test::ExoTestBase {
     t.text = base::UTF8ToUTF16(utf8);
     t.selection = gfx::Range(1u);
     t.ime_text_spans.push_back(
-        ui::ImeTextSpan(0, t.text.size(), ui::ImeTextSpan::Thickness::kThick));
+        ui::ImeTextSpan(ui::ImeTextSpan::Type::kComposition, 0, t.text.size(),
+                        ui::ImeTextSpan::Thickness::kThick));
     EXPECT_CALL(*delegate(), SetCompositionText(t)).Times(1);
     text_input()->SetCompositionText(t);
   }
@@ -164,10 +166,11 @@ TEST_F(TextInputTest, ShowVirtualKeyboardIfEnabled) {
 
   EXPECT_CALL(observer, OnShowVirtualKeyboardIfEnabled)
       .WillOnce(testing::Invoke(
-          [this]() { text_input()->OnKeyboardVisibilityStateChanged(true); }));
+          [this]() { text_input()->OnKeyboardVisibilityChanged(true); }));
   EXPECT_CALL(*delegate(), OnVirtualKeyboardVisibilityChanged(true)).Times(1);
   text_input()->ShowVirtualKeyboardIfEnabled();
 
+  EXPECT_CALL(observer, OnTextInputStateChanged(nullptr)).Times(1);
   EXPECT_CALL(*delegate(), Deactivated).Times(1);
   text_input()->Deactivate();
 }
@@ -181,7 +184,7 @@ TEST_F(TextInputTest, ShowVirtualKeyboardIfEnabledBeforeActivated) {
   EXPECT_CALL(observer, OnTextInputStateChanged(text_input())).Times(1);
   EXPECT_CALL(observer, OnShowVirtualKeyboardIfEnabled)
       .WillOnce(testing::Invoke(
-          [this]() { text_input()->OnKeyboardVisibilityStateChanged(true); }));
+          [this]() { text_input()->OnKeyboardVisibilityChanged(true); }));
   EXPECT_CALL(*delegate(), Activated).Times(1);
   EXPECT_CALL(*delegate(), OnVirtualKeyboardVisibilityChanged(true)).Times(1);
   text_input()->Activate(surface());
@@ -247,7 +250,7 @@ TEST_F(TextInputTest, CommitCompositionText) {
   SetCompositionText("composition");
 
   EXPECT_CALL(*delegate(), Commit(base::UTF8ToUTF16("composition"))).Times(1);
-  text_input()->ConfirmCompositionText();
+  text_input()->ConfirmCompositionText(/** keep_selection */ false);
 }
 
 TEST_F(TextInputTest, Commit) {

@@ -36,6 +36,7 @@ enum ChannelInterpretation {
     "discrete"
 };
 
+[Exposed=Window]
 interface AudioNode : EventTarget {
     [RaisesException, MeasureAs=AudioNodeConnectToAudioNode] AudioNode connect(AudioNode destination, optional unsigned long output = 0, optional unsigned long input = 0);
     [RaisesException, MeasureAs=AudioNodeConnectToAudioParam] void connect(AudioParam destination, optional unsigned long output = 0);

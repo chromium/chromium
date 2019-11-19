@@ -7,6 +7,7 @@
 #include "base/mac/foundation_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "components/open_from_clipboard/clipboard_recent_content_impl_ios.h"
+#include "ios/chrome/common/app_group/app_group_command.h"
 #include "ios/chrome/common/app_group/app_group_constants.h"
 #include "ios/chrome/common/app_group/app_group_field_trial_version.h"
 #include "ios/chrome/common/app_group/app_group_metrics.h"
@@ -19,14 +20,6 @@
 #error "This file requires ARC support."
 #endif
 
-namespace {
-// Using GURL in the extension is not wanted as it includes ICU which makes the
-// extension binary much larger; therefore, ios/chrome/common/x_callback_url.h
-// cannot be used. This class makes a very basic use of x-callback-url, so no
-// full implementation is required.
-NSString* const kXCallbackURLHost = @"x-callback-url";
-}  // namespace
-
 @interface SearchWidgetViewController ()<SearchWidgetViewActionTarget>
 @property(nonatomic, weak) SearchWidgetView* widgetView;
 @property(nonatomic, strong, nullable) NSString* copiedText;
@@ -37,7 +30,7 @@ NSString* const kXCallbackURLHost = @"x-callback-url";
 @property(nonatomic, copy, nullable) NSDictionary* fieldTrialValues;
 // Whether the current default search engine supports search by image
 @property(nonatomic, assign) BOOL supportsSearchByImage;
-@property(nonatomic, readonly) BOOL copiedContentBehaviorEnabled;
+@property(nonatomic, strong) AppGroupCommand* command;
 
 @end
 
@@ -52,6 +45,11 @@ NSString* const kXCallbackURLHost = @"x-callback-url";
              userDefaults:app_group::GetGroupUserDefaults()
                  delegate:nil];
     _copiedContentType = CopiedContentTypeNone;
+    _command = [[AppGroupCommand alloc]
+        initWithSourceApp:app_group::kOpenCommandSourceSearchExtension
+           URLOpenerBlock:^(NSURL* openURL) {
+             [self.extensionContext openURL:openURL completionHandler:nil];
+           }];
   }
   return self;
 }
@@ -118,14 +116,15 @@ NSString* const kXCallbackURLHost = @"x-callback-url";
   UIImage* copiedImage;
   CopiedContentType type = CopiedContentTypeNone;
 
-  if (UIImage* image = [self getCopiedImageUsingFlag]) {
+  if (UIImage* image = [self getCopiedImageFromClipboard]) {
     copiedImage = image;
     type = CopiedContentTypeImage;
   } else if (NSURL* url =
                  [self.clipboardRecentContent recentURLFromClipboard]) {
     copiedText = url.absoluteString;
     type = CopiedContentTypeURL;
-  } else if (NSString* text = [self getCopiedTextUsingFlag]) {
+  } else if (NSString* text =
+                 [self.clipboardRecentContent recentTextFromClipboard]) {
     copiedText = text;
     type = CopiedContentTypeString;
   }
@@ -135,21 +134,10 @@ NSString* const kXCallbackURLHost = @"x-callback-url";
                         copiedImage:copiedImage];
 }
 
-// Helper method to encapsulate both checking the flag and getting the copied
-// text.
-// TODO(crbug.com/932116): Can be removed when the flag is cleaned up.
-- (NSString*)getCopiedTextUsingFlag {
-  if (!self.copiedContentBehaviorEnabled) {
-    return nil;
-  }
-  return [self.clipboardRecentContent recentTextFromClipboard];
-}
-
-// Helper method to encapsulate both checking the flag and getting the copied
-// image.
-// TODO(crbug.com/932116): Can be removed when the flag is cleaned up.
-- (UIImage*)getCopiedImageUsingFlag {
-  if (!self.copiedContentBehaviorEnabled || !self.supportsSearchByImage) {
+// Helper method to encapsulate checking whether the current search engine
+// supports search-by-image and getting the copied image.
+- (UIImage*)getCopiedImageFromClipboard {
+  if (!self.supportsSearchByImage) {
     return nil;
   }
   return [self.clipboardRecentContent recentImageFromClipboard];
@@ -213,38 +201,32 @@ NSString* const kXCallbackURLHost = @"x-callback-url";
 
 - (void)openCopiedContent:(id)sender {
   DCHECK([self verifyCopiedContentType]);
-  NSString* command;
-  NSData* imageData;
   switch (self.copiedContentType) {
     case CopiedContentTypeURL:
-      command =
-          base::SysUTF8ToNSString(app_group::kChromeAppGroupOpenURLCommand);
+      [self.command prepareToOpenURL:[NSURL URLWithString:self.copiedText]];
       break;
     case CopiedContentTypeString:
-      command =
-          base::SysUTF8ToNSString(app_group::kChromeAppGroupSearchTextCommand);
+      [self.command prepareToSearchText:self.copiedText];
       break;
     case CopiedContentTypeImage: {
-      command =
-          base::SysUTF8ToNSString(app_group::kChromeAppGroupSearchImageCommand);
-
       // Resize image before converting to NSData so we can store less data.
       UIImage* resizedImage = ResizeImageForSearchByImage(self.copiedImage);
-      imageData = UIImageJPEGRepresentation(resizedImage, 1.0);
+      [self.command prepareToSearchImage:resizedImage];
       break;
     }
     case CopiedContentTypeNone:
       NOTREACHED();
       return;
   }
-  [self openAppWithCommand:command text:self.copiedText imageData:imageData];
+  [self.command executeInApp];
 }
 
 #pragma mark - internal
 
 // Opens the main application with the given |command|.
 - (void)openAppWithCommand:(NSString*)command {
-  return [self openAppWithCommand:command text:nil imageData:nil];
+  [self.command prepareWithCommandID:command];
+  [self.command executeInApp];
 }
 
 // Register a display of the widget in the app_group NSUserDefaults.
@@ -256,69 +238,6 @@ NSString* const kXCallbackURLHost = @"x-callback-url";
       [sharedDefaults integerForKey:app_group::kSearchExtensionDisplayCount];
   [sharedDefaults setInteger:numberOfDisplay + 1
                       forKey:app_group::kSearchExtensionDisplayCount];
-}
-
-// Opens the main application with the given |command|, |text|, and |image|.
-- (void)openAppWithCommand:(NSString*)command
-                      text:(NSString*)text
-                 imageData:(NSData*)imageData {
-  NSUserDefaults* sharedDefaults = app_group::GetGroupUserDefaults();
-  NSString* defaultsKey =
-      base::SysUTF8ToNSString(app_group::kChromeAppGroupCommandPreference);
-  [sharedDefaults
-      setObject:[SearchWidgetViewController dictForCommand:command
-                                                      text:text
-                                                 imageData:imageData]
-         forKey:defaultsKey];
-  [sharedDefaults synchronize];
-
-  NSString* scheme = base::mac::ObjCCast<NSString>([[NSBundle mainBundle]
-      objectForInfoDictionaryKey:@"KSChannelChromeScheme"]);
-  if (!scheme)
-    return;
-
-  NSURLComponents* urlComponents = [NSURLComponents new];
-  urlComponents.scheme = scheme;
-  urlComponents.host = kXCallbackURLHost;
-  urlComponents.path = [NSString
-      stringWithFormat:@"/%@", base::SysUTF8ToNSString(
-                                   app_group::kChromeAppGroupXCallbackCommand)];
-
-  NSURL* openURL = [urlComponents URL];
-  [self.extensionContext openURL:openURL completionHandler:nil];
-}
-
-// Returns the dictionary of commands to pass via user defaults to open the main
-// application for a given |command| and optional |text| and |image|.
-+ (NSDictionary*)dictForCommand:(NSString*)command
-                           text:(NSString*)text
-                      imageData:(NSData*)imageData {
-  NSString* timePrefKey =
-      base::SysUTF8ToNSString(app_group::kChromeAppGroupCommandTimePreference);
-  NSString* appPrefKey =
-      base::SysUTF8ToNSString(app_group::kChromeAppGroupCommandAppPreference);
-  NSString* commandPrefKey = base::SysUTF8ToNSString(
-      app_group::kChromeAppGroupCommandCommandPreference);
-
-  NSMutableDictionary* baseKeys = [@{
-    timePrefKey : [NSDate date],
-    appPrefKey : app_group::kOpenCommandSourceSearchExtension,
-    commandPrefKey : command,
-  } mutableCopy];
-
-  if (text) {
-    NSString* TextPrefKey = base::SysUTF8ToNSString(
-        app_group::kChromeAppGroupCommandTextPreference);
-    baseKeys[TextPrefKey] = text;
-  }
-
-  if (imageData) {
-    NSString* DataPrefKey = base::SysUTF8ToNSString(
-        app_group::kChromeAppGroupCommandDataPreference);
-    baseKeys[DataPrefKey] = imageData;
-  }
-
-  return baseKeys;
 }
 
 // Sets the copied content type. |copiedText| should be provided if the content
@@ -353,16 +272,6 @@ NSString* const kXCallbackURLHost = @"x-callback-url";
     case CopiedContentTypeNone:
       return true;
   }
-}
-
-- (BOOL)copiedContentBehaviorEnabled {
-  NSDictionary* storedData = self.fieldTrialValues[@"CopiedContentBehavior"];
-  if (![kCopiedContentBehaviorVersion
-          isEqualToNumber:storedData[kFieldTrialVersionKey]]) {
-    return NO;
-  }
-
-  return [storedData[kFieldTrialValueKey] boolValue];
 }
 
 @end

@@ -4,7 +4,7 @@ PASS Test document.getAnimations for script-generated animations
 PASS Test the order of document.getAnimations with script generated animations
 PASS Test document.getAnimations for a disconnected node
 PASS Test document.getAnimations with null target
-FAIL Test document.getAnimations for elements inside same-origin iframes assert_true: Not expecting event, but got load event expected true got false
+FAIL Test document.getAnimations for elements inside same-origin iframes assert_equals: expected 1 but got 0
 PASS Triggers a style change event
 Harness: the test ran to completion.
 

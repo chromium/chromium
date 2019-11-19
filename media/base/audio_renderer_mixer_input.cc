@@ -114,6 +114,10 @@ void AudioRendererMixerInput::Pause() {
   playing_ = false;
 }
 
+// Flush is not supported with mixed sinks due to how delayed pausing works in
+// the mixer.
+void AudioRendererMixerInput::Flush() {}
+
 bool AudioRendererMixerInput::SetVolume(double volume) {
   base::AutoLock auto_lock(volume_lock_);
   volume_ = volume;

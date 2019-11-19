@@ -29,15 +29,6 @@
   *;
 }
 
-# WebView doesn't load secondary dex.
--keep public class com.android.webview.** {
-  *;
-}
-
--keep public class org.chromium.android_webview.** {
-  *;
-}
-
 # Used by tests for secondary dex extraction.
 -keep class android.support.v4.content.ContextCompat {
   *;

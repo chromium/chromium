@@ -8,7 +8,7 @@
 
 #include "base/macros.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_service_manager_context.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/display/screen.h"
@@ -16,9 +16,7 @@
 #include "ui/gfx/geometry/size.h"
 
 #if defined(USE_OZONE) || defined(USE_X11)
-#include "services/ws/public/cpp/input_devices/input_device_client_test_api.h"
-#include "ui/aura/test/aura_test_utils.h"
-#include "ui/events/devices/input_device_manager.h"
+#include "ui/events/devices/device_data_manager_test_api.h"
 #endif
 
 namespace {
@@ -35,13 +33,12 @@ class ChromeBrowserMainExtraPartsMetricsTest : public testing::Test {
 
  protected:
 #if defined(USE_OZONE) || defined(USE_X11)
-  std::unique_ptr<ui::InputDeviceManager> input_manager_;
-  ws::InputDeviceClientTestApi input_device_client_test_api_;
+  ui::DeviceDataManagerTestApi device_data_manager_test_api_;
 #endif
 
  private:
   // Provides a message loop and allows the use of the task scheduler
-  content::TestBrowserThreadBundle thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
   content::TestServiceManagerContext service_manager_context_;
 
   // Dummy screen required by a ChromeBrowserMainExtraPartsMetrics test target.
@@ -53,9 +50,6 @@ class ChromeBrowserMainExtraPartsMetricsTest : public testing::Test {
 ChromeBrowserMainExtraPartsMetricsTest::
     ChromeBrowserMainExtraPartsMetricsTest() {
   display::Screen::SetScreenInstance(&test_screen_);
-#if defined(USE_OZONE) || defined(USE_X11)
-  input_manager_ = aura::test::CreateTestInputDeviceManager();
-#endif
 }
 
 ChromeBrowserMainExtraPartsMetricsTest::
@@ -76,8 +70,9 @@ TEST_F(ChromeBrowserMainExtraPartsMetricsTest,
 
 // Verify a TouchEventsEnabled value isn't recorded during PostBrowserStart if
 // the device scan hasn't completed yet.
+// TODO(https://crbug.com/940076): Consistently flaky.
 TEST_F(ChromeBrowserMainExtraPartsMetricsTest,
-       VerifyTouchEventsEnabledIsNotRecordedAfterPostBrowserStart) {
+       DISABLED_VerifyTouchEventsEnabledIsNotRecordedAfterPostBrowserStart) {
   base::HistogramTester histogram_tester;
 
   ChromeBrowserMainExtraPartsMetrics test_target;
@@ -93,7 +88,7 @@ TEST_F(ChromeBrowserMainExtraPartsMetricsTest,
        VerifyTouchEventsEnabledIsRecordedAfterPostBrowserStart) {
   base::HistogramTester histogram_tester;
 
-  input_device_client_test_api_.OnDeviceListsComplete();
+  device_data_manager_test_api_.OnDeviceListsComplete();
 
   ChromeBrowserMainExtraPartsMetrics test_target;
 
@@ -110,7 +105,7 @@ TEST_F(ChromeBrowserMainExtraPartsMetricsTest,
   ChromeBrowserMainExtraPartsMetrics test_target;
 
   test_target.PostBrowserStart();
-  input_device_client_test_api_.NotifyObserversDeviceListsComplete();
+  device_data_manager_test_api_.NotifyObserversDeviceListsComplete();
   histogram_tester.ExpectTotalCount(
       kTouchEventFeatureDetectionEnabledHistogramName, 1);
 }
@@ -123,8 +118,8 @@ TEST_F(ChromeBrowserMainExtraPartsMetricsTest,
   ChromeBrowserMainExtraPartsMetrics test_target;
 
   test_target.PostBrowserStart();
-  input_device_client_test_api_.NotifyObserversDeviceListsComplete();
-  input_device_client_test_api_.NotifyObserversDeviceListsComplete();
+  device_data_manager_test_api_.NotifyObserversDeviceListsComplete();
+  device_data_manager_test_api_.NotifyObserversDeviceListsComplete();
   histogram_tester.ExpectTotalCount(
       kTouchEventFeatureDetectionEnabledHistogramName, 1);
 }

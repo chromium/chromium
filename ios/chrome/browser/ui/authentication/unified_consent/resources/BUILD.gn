@@ -17,5 +17,7 @@ imageset("unified_consent_header") {
     "unified_consent_header.imageset/Contents.json",
     "unified_consent_header.imageset/unified_consent_header@2x.png",
     "unified_consent_header.imageset/unified_consent_header@3x.png",
+    "unified_consent_header.imageset/unified_consent_header_dark@2x.png",
+    "unified_consent_header.imageset/unified_consent_header_dark@3x.png",
   ]
 }

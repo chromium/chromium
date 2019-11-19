@@ -1,0 +1,26 @@
+// Copyright 2017 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// The original version of this file lives in the Chromium repository at:
+// src/components/arc/mojom/oemcrypto_daemon.mojom
+
+// This file defines the mojo interface used between Chrome and the Chrome OS
+// daemon for establishing the connection from Android to the Chrome OS
+// daemon. This is used so Chrome can proxy the OemCryptoService implementation
+// over to the daemon and then also hand the daemon a Mojo connection to the
+// GPU process for dealing with secure buffers.
+
+module arc_oemcrypto.mojom;
+
+import "components/arc/mojom/oemcrypto.mojom";
+import "components/arc/mojom/protected_buffer_manager.mojom";
+
+// OemCryptoHostDaemon is implemented by the OemCrypto daemon running in
+// Chrome OS and has Connect called from the Browser process in Chrome.
+// Next Method ID: 1
+interface OemCryptoHostDaemon {
+  Connect@0(
+    arc.mojom.OemCryptoService& oemcryptor,
+    pending_remote<arc.mojom.ProtectedBufferManager> protected_buffer_manager);
+};

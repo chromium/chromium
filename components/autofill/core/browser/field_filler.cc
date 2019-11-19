@@ -14,17 +14,17 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/address_normalizer.h"
-#include "components/autofill/core/browser/autofill_country.h"
-#include "components/autofill/core/browser/autofill_data_model.h"
 #include "components/autofill/core/browser/autofill_data_util.h"
 #include "components/autofill/core/browser/autofill_field.h"
-#include "components/autofill/core/browser/autofill_profile.h"
 #include "components/autofill/core/browser/autofill_type.h"
-#include "components/autofill/core/browser/country_names.h"
-#include "components/autofill/core/browser/credit_card.h"
+#include "components/autofill/core/browser/data_model/autofill_data_model.h"
+#include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/data_model/phone_number.h"
 #include "components/autofill/core/browser/field_types.h"
-#include "components/autofill/core/browser/phone_number.h"
-#include "components/autofill/core/browser/state_names.h"
+#include "components/autofill/core/browser/geo/autofill_country.h"
+#include "components/autofill/core/browser/geo/country_names.h"
+#include "components/autofill/core/browser/geo/state_names.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_l10n_util.h"
 #include "components/autofill/core/common/autofill_util.h"
@@ -633,24 +633,8 @@ bool FieldFiller::FillFormField(const AutofillField& field,
     return false;
   }
 
-  // Check for the validity of the data. Leave the field empty if the data is
-  // invalid and the relevant feature is enabled.
-  bool use_server_validation = base::FeatureList::IsEnabled(
-      autofill::features::kAutofillProfileServerValidation);
-  bool use_client_validation = base::FeatureList::IsEnabled(
-      autofill::features::kAutofillProfileClientValidation);
-  ServerFieldType server_field_type = type.GetStorableType();
-
-  if ((use_client_validation &&
-       data_model.GetValidityState(server_field_type,
-                                   AutofillProfile::CLIENT) ==
-           AutofillProfile::INVALID) ||
-      (use_server_validation &&
-       data_model.GetValidityState(server_field_type,
-                                   AutofillProfile::SERVER) ==
-           AutofillProfile::INVALID)) {
+  if (data_model.ShouldSkipFillingOrSuggesting(type.GetStorableType()))
     return false;
-  }
 
   base::string16 value = data_model.GetInfo(type, app_locale_);
   if (type.GetStorableType() == CREDIT_CARD_VERIFICATION_CODE)

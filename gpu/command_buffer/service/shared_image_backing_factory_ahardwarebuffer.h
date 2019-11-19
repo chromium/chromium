@@ -17,7 +17,6 @@ class ColorSpace;
 }  // namespace gfx
 
 namespace gpu {
-class SharedContextState;
 class SharedImageBacking;
 class GpuDriverBugWorkarounds;
 struct GpuFeatureInfo;
@@ -29,8 +28,7 @@ class GPU_GLES2_EXPORT SharedImageBackingFactoryAHB
     : public SharedImageBackingFactory {
  public:
   SharedImageBackingFactoryAHB(const GpuDriverBugWorkarounds& workarounds,
-                               const GpuFeatureInfo& gpu_feature_info,
-                               SharedContextState* context_state);
+                               const GpuFeatureInfo& gpu_feature_info);
   ~SharedImageBackingFactoryAHB() override;
 
   // SharedImageBackingFactory implementation.
@@ -39,7 +37,8 @@ class GPU_GLES2_EXPORT SharedImageBackingFactoryAHB
       viz::ResourceFormat format,
       const gfx::Size& size,
       const gfx::ColorSpace& color_space,
-      uint32_t usage) override;
+      uint32_t usage,
+      bool is_thread_safe) override;
   std::unique_ptr<SharedImageBacking> CreateSharedImage(
       const Mailbox& mailbox,
       viz::ResourceFormat format,
@@ -56,8 +55,23 @@ class GPU_GLES2_EXPORT SharedImageBackingFactoryAHB
       const gfx::Size& size,
       const gfx::ColorSpace& color_space,
       uint32_t usage) override;
+  bool CanImportGpuMemoryBuffer(
+      gfx::GpuMemoryBufferType memory_buffer_type) override;
 
  private:
+  bool ValidateUsage(uint32_t usage,
+                     const gfx::Size& size,
+                     viz::ResourceFormat format) const;
+
+  std::unique_ptr<SharedImageBacking> MakeBacking(
+      const Mailbox& mailbox,
+      viz::ResourceFormat format,
+      const gfx::Size& size,
+      const gfx::ColorSpace& color_space,
+      uint32_t usage,
+      bool is_thread_safe,
+      base::span<const uint8_t> pixel_data);
+
   struct FormatInfo {
     FormatInfo();
     ~FormatInfo();
@@ -79,7 +93,6 @@ class GPU_GLES2_EXPORT SharedImageBackingFactoryAHB
 
   // Used to limit the max size of AHardwareBuffer.
   int32_t max_gl_texture_size_ = 0;
-  SharedContextState* context_state_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(SharedImageBackingFactoryAHB);
 };

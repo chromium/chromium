@@ -24,7 +24,7 @@ void InitializeSharedFactoryOnIOThread(
     scoped_refptr<network::SharedURLLoaderFactory>* out_shared_factory) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   base::RunLoop run_loop;
-  base::PostTaskWithTraitsAndReply(
+  base::PostTaskAndReply(
       FROM_HERE, {BrowserThread::IO},
       base::BindOnce(
           [](SharedURLLoaderFactoryGetterCallback getter,
@@ -46,7 +46,7 @@ network::SimpleURLLoader::BodyAsStringCallback RunOnUIThread(
       [](network::SimpleURLLoader::BodyAsStringCallback callback,
          std::unique_ptr<std::string> response_body) {
         DCHECK_CURRENTLY_ON(BrowserThread::IO);
-        base::PostTaskWithTraits(
+        base::PostTask(
             FROM_HERE, {BrowserThread::UI},
             base::BindOnce(std::move(callback), std::move(response_body)));
       },
@@ -106,19 +106,18 @@ int IOThreadSharedURLLoaderFactoryOwner::LoadBasicRequestOnIOThread(
       network::SimpleURLLoader::Create(std::move(request),
                                        TRAFFIC_ANNOTATION_FOR_TESTS);
 
-  base::PostTaskWithTraits(
-      FROM_HERE, {BrowserThread::IO},
-      base::BindOnce(
-          [](network::SimpleURLLoader* loader,
-             network::mojom::URLLoaderFactory* factory,
-             network::SimpleURLLoader::BodyAsStringCallback
-                 body_as_string_callback) {
-            loader->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
-                factory, std::move(body_as_string_callback));
-          },
-          base::Unretained(simple_loader.get()),
-          base::Unretained(shared_url_loader_factory_.get()),
-          RunOnUIThread(simple_loader_helper.GetCallback())));
+  base::PostTask(FROM_HERE, {BrowserThread::IO},
+                 base::BindOnce(
+                     [](network::SimpleURLLoader* loader,
+                        network::mojom::URLLoaderFactory* factory,
+                        network::SimpleURLLoader::BodyAsStringCallback
+                            body_as_string_callback) {
+                       loader->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
+                           factory, std::move(body_as_string_callback));
+                     },
+                     base::Unretained(simple_loader.get()),
+                     base::Unretained(shared_url_loader_factory_.get()),
+                     RunOnUIThread(simple_loader_helper.GetCallback())));
 
   simple_loader_helper.WaitForCallback();
   return simple_loader->NetError();

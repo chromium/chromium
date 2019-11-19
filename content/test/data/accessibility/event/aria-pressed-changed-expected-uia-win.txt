@@ -1,0 +1,4 @@
+AriaProperties changed on role=button, name=button1
+AriaProperties changed on role=button, name=button2
+ToggleToggleState changed on role=button, name=button1
+ToggleToggleState changed on role=button, name=button2

@@ -1,7 +1,7 @@
 <link rel="import" href="chrome://resources/html/polymer.html">
 
+<link rel="import" href="chrome://resources/cr_elements/cr_icon_button/cr_icon_button.html">
 <link rel="import" href="chrome://resources/cr_elements/shared_vars_css.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/paper-icon-button/paper-icon-button-light.html">
 <link rel="import" href="../i18n_setup.html">
 <link rel="import" href="../settings_shared_css.html">
 <link rel="import" href="passwords_shared_css.html">
@@ -42,18 +42,13 @@
             [[creditCard.expirationMonth]]/[[creditCard.expirationYear]]
         </div>
         <template is="dom-if" if="[[showDots_(creditCard.metadata)]]">
-          <paper-icon-button-light class="icon-more-vert">
-            <button id="creditCardMenu" title="$i18n{moreActions}"
-                on-click="onDotsMenuClick_">
-            </button>
-          </paper-icon-button-light>
+          <cr-icon-button class="icon-more-vert" id="creditCardMenu"
+              title="$i18n{moreActions}" on-click="onDotsMenuClick_">
+          </cr-icon-button>
         </template>
         <template is="dom-if" if="[[!showDots_(creditCard.metadata)]]">
-          <paper-icon-button-light actionable class="icon-external">
-            <button id="remoteCreditCardLink"
-                on-click="onRemoteEditClick_">
-            </button>
-          </paper-icon-button-light>
+          <cr-icon-button class="icon-external" id="remoteCreditCardLink"
+              on-click="onRemoteEditClick_"></cr-icon-button>
         </template>
       </div>
     </div>

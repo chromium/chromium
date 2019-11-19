@@ -49,9 +49,15 @@ struct WebWindowFeatures {
   // string, we don't distinguish between the two.
   bool tool_bar_visible = true;
   bool scrollbars_visible = true;
+
+  // The members above this line are transferred through mojo
+  // in the form of |struct WindowFeatures| defined in window_features.mojom,
+  // to be used across process boundaries.
+  // Below members are the ones not transferred through mojo.
   bool resizable = true;
 
   bool noopener = false;
+  bool noreferrer = false;
   bool background = false;
   bool persistent = false;
 };

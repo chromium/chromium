@@ -1,0 +1,58 @@
+<shortcuts xmlns:android='http://schemas.android.com/apk/res/android'>
+
+  {{#shortcut_1}}
+  <shortcut
+    android:shortcutId='shortcut_1'
+    android:icon='@drawable/shortcut_1_icon'
+    android:shortcutShortLabel='@string/shortcut_1_short_name'
+    android:shortcutLongLabel='@string/shortcut_1_name'>
+      <intent
+          android:action='android.intent.action.MAIN'
+          android:targetPackage='{{{manifest_package}}}'
+          android:targetClass='{{{target_class}}}'
+          android:data='{{{launch_url}}}' />
+  </shortcut>
+  {{/shortcut_1}}
+
+  {{#shortcut_2}}
+  <shortcut
+    android:shortcutId='shortcut_2'
+    android:icon='@drawable/shortcut_2_icon'
+    android:shortcutShortLabel='@string/shortcut_2_short_name'
+    android:shortcutLongLabel='@string/shortcut_2_name'>
+      <intent
+          android:action='android.intent.action.MAIN'
+          android:targetPackage='{{{manifest_package}}}'
+          android:targetClass='{{{target_class}}}'
+          android:data='{{{launch_url}}}' />
+  </shortcut>
+  {{/shortcut_2}}
+
+  {{#shortcut_3}}
+  <shortcut
+    android:shortcutId='shortcut_3'
+    android:icon='@drawable/shortcut_3_icon'
+    android:shortcutShortLabel='@string/shortcut_3_short_name'
+    android:shortcutLongLabel='@string/shortcut_3_name'>
+      <intent
+          android:action='android.intent.action.MAIN'
+          android:targetPackage='{{{manifest_package}}}'
+          android:targetClass='{{{target_class}}}'
+          android:data='{{{launch_url}}}' />
+  </shortcut>
+  {{/shortcut_3}}
+
+  {{#shortcut_4}}
+  <shortcut
+    android:shortcutId='shortcut_4'
+    android:icon='@drawable/shortcut_4_icon'
+    android:shortcutShortLabel='@string/shortcut_4_short_name'
+    android:shortcutLongLabel='@string/shortcut_4_name'>
+      <intent
+          android:action='android.intent.action.MAIN'
+          android:targetPackage='{{{manifest_package}}}'
+          android:targetClass='{{{target_class}}}'
+          android:data='{{{launch_url}}}' />
+  </shortcut>
+  {{/shortcut_4}}
+</shortcuts>

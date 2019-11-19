@@ -13,6 +13,7 @@
 #include "content/browser/indexed_db/indexed_db_tracing.h"
 #include "content/browser/indexed_db/indexed_db_transaction.h"
 #include "third_party/blink/public/common/indexeddb/indexeddb_metadata.h"
+#include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom.h"
 
 using base::ASCIIToUTF16;
 using blink::IndexedDBIndexKeys;
@@ -27,8 +28,8 @@ IndexWriter::IndexWriter(
     : index_metadata_(index_metadata) {}
 
 IndexWriter::IndexWriter(const IndexedDBIndexMetadata& index_metadata,
-                         const IndexedDBIndexKeys& index_keys)
-    : index_metadata_(index_metadata), index_keys_(index_keys) {}
+                         const std::vector<IndexedDBKey>& keys)
+    : index_metadata_(index_metadata), keys_(keys) {}
 
 IndexWriter::~IndexWriter() {}
 
@@ -42,8 +43,7 @@ bool IndexWriter::VerifyIndexKeys(
     const IndexedDBKey& primary_key,
     base::string16* error_message) const {
   *can_add_keys = false;
-  DCHECK_EQ(index_id, index_keys_.first);
-  for (const auto& key : index_keys_.second) {
+  for (const auto& key : keys_) {
     bool ok = AddingKeyAllowed(backing_store, transaction, database_id,
                                object_store_id, index_id, key, primary_key,
                                can_add_keys);
@@ -63,22 +63,21 @@ bool IndexWriter::VerifyIndexKeys(
   return true;
 }
 
-void IndexWriter::WriteIndexKeys(
+leveldb::Status IndexWriter::WriteIndexKeys(
     const IndexedDBBackingStore::RecordIdentifier& record_identifier,
     IndexedDBBackingStore* backing_store,
     IndexedDBBackingStore::Transaction* transaction,
     int64_t database_id,
     int64_t object_store_id) const {
   int64_t index_id = index_metadata_.id;
-  DCHECK_EQ(index_id, index_keys_.first);
-  for (const auto& key : index_keys_.second) {
+  for (const auto& key : keys_) {
     leveldb::Status s = backing_store->PutIndexDataForRecord(
         transaction, database_id, object_store_id, index_id, key,
         record_identifier);
-    // This should have already been verified as a valid write during
-    // verify_index_keys.
-    DCHECK(s.ok());
+    if (!s.ok())
+      return s;
   }
+  return leveldb::Status::OK();
 }
 
 bool IndexWriter::AddingKeyAllowed(
@@ -126,19 +125,34 @@ bool MakeIndexWriters(IndexedDBTransaction* transaction,
   *completed = false;
 
   for (const auto& it : index_keys) {
-    const auto& found = object_store.indexes.find(it.first);
+    const auto& found = object_store.indexes.find(it.id);
     if (found == object_store.indexes.end())
       continue;
     const IndexedDBIndexMetadata& index = found->second;
-    IndexedDBIndexKeys keys = it;
+    // A copy is made because additional keys may be added.
+    std::vector<IndexedDBKey> keys = it.keys;
 
-    // If the object_store is using auto_increment, then any indexes with an
-    // identical key_path need to also use the primary (generated) key as a key.
-    if (key_was_generated && (index.key_path == object_store.key_path))
-      keys.second.push_back(primary_key);
+    // If the object_store is using a key generator to produce the primary key,
+    // and the store uses in-line keys, index key paths may reference it.
+    if (key_was_generated && !object_store.key_path.IsNull()) {
+      if (index.key_path == object_store.key_path) {
+        // The index key path is the same as the store's key path - no index key
+        // will have been sent by the front end, so synthesize one here.
+        keys.push_back(primary_key);
+
+      } else if (index.key_path.type() == blink::mojom::IDBKeyPathType::Array) {
+        // An index with compound keys for a store with a key generator and
+        // in-line keys may need subkeys filled in. These are represented as
+        // "holes", which are not otherwise allowed.
+        for (size_t i = 0; i < keys.size(); ++i) {
+          if (keys[i].HasHoles())
+            keys[i] = keys[i].FillHoles(primary_key);
+        }
+      }
+    }
 
     std::unique_ptr<IndexWriter> index_writer(
-        std::make_unique<IndexWriter>(index, keys));
+        std::make_unique<IndexWriter>(index, std::move(keys)));
     bool can_add_keys = false;
     bool backing_store_success =
         index_writer->VerifyIndexKeys(backing_store,

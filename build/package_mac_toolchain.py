@@ -8,6 +8,8 @@
 Stored in in https://pantheon.corp.google.com/storage/browser/chrome-mac-sdk/.
 """
 
+from __future__ import print_function
+
 import argparse
 import glob
 import os
@@ -92,7 +94,7 @@ def main():
   try:
     info = plistlib.readPlist(plist_file)
   except:
-    print "Invalid Xcode dir."
+    print("Invalid Xcode dir.")
     return 0
   build_version = info['ProductBuildVersion']
 
@@ -113,14 +115,14 @@ def main():
                      % (build_version, next_count - 1))
 
     if raw_input().lower() not in set(['yes','y', 'ye']):
-      print "Skipping duplicate upload."
+      print("Skipping duplicate upload.")
       return 0
 
   os.chdir(parser_args.target_dir)
   toolchain_file_name = "%s-%s-%s" % (fname, build_version, next_count)
   toolchain_name = tempfile.mktemp(suffix='toolchain.tgz')
 
-  print "Creating %s (%s)." % (toolchain_file_name, toolchain_name)
+  print("Creating %s (%s)." % (toolchain_file_name, toolchain_name))
   os.environ["COPYFILE_DISABLE"] = "1"
   os.environ["GZ_OPT"] = "-8"
   args = ['tar', '-cvzf', toolchain_name]
@@ -133,12 +135,12 @@ def main():
   args.extend(['.'])
   subprocess.check_call(args)
 
-  print "Uploading %s toolchain." % toolchain_file_name
+  print("Uploading %s toolchain." % toolchain_file_name)
   destination_path = '%s/%s.tgz' % (TOOLCHAIN_URL, toolchain_file_name)
   subprocess.check_call(['gsutil.py', 'cp', '-n', toolchain_name,
                          destination_path])
 
-  print "Done with %s upload." % toolchain_file_name
+  print("Done with %s upload." % toolchain_file_name)
   return 0
 
 if __name__ == '__main__':

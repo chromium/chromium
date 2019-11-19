@@ -154,7 +154,8 @@ void ChromeBubbleManager::FrameDeleted(
 }
 
 void ChromeBubbleManager::DidToggleFullscreenModeForTab(
-    bool entered_fullscreen, bool will_cause_resize) {
+    bool entered_fullscreen,
+    bool will_cause_resize) {
   CloseAllBubbles(BUBBLE_CLOSE_FULLSCREEN_TOGGLED);
   // Any bubble that didn't close should update its anchor position.
   UpdateAllBubbleAnchors();
@@ -172,10 +173,14 @@ void ChromeBubbleManager::ChromeBubbleMetrics::OnBubbleNeverShown(
 }
 
 void ChromeBubbleManager::ChromeBubbleMetrics::OnBubbleClosed(
-    BubbleReference bubble, BubbleCloseReason reason) {
+    BubbleReference bubble,
+    BubbleCloseReason reason) {
   // Log the amount of time the bubble was visible.
   base::TimeDelta visible_time = bubble->GetVisibleTime();
   UMA_HISTOGRAM_LONG_TIMES("Bubbles.DisplayTime.All", visible_time);
 
   LogBubbleCloseReason(bubble, reason);
 }
+
+void ChromeBubbleManager::ChromeBubbleMetrics::OnBubbleShown(
+    BubbleReference bubble) {}

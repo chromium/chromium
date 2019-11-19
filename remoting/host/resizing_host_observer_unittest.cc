@@ -12,9 +12,9 @@
 #include "base/logging.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/message_loop/message_loop.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
+#include "base/test/task_environment.h"
 #include "remoting/host/desktop_resizer.h"
 #include "remoting/host/screen_resolution.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -297,7 +297,7 @@ TEST_F(ResizingHostObserverTest, RateLimited) {
   resizing_host_observer_->SetNowFunctionForTesting(
       base::Bind(&ResizingHostObserverTest::GetTime, base::Unretained(this)));
 
-  base::MessageLoop message_loop;
+  base::test::SingleThreadTaskEnvironment task_environment;
   base::RunLoop run_loop;
 
   EXPECT_EQ(MakeResolution(100, 100),
@@ -315,7 +315,7 @@ TEST_F(ResizingHostObserverTest, RateLimited) {
   // Since it was queued 900 + 99 ms after the first, we need to wait an
   // additional 1ms. However, since RunLoop is not guaranteed to process tasks
   // with the same due time in FIFO order, wait an additional 1ms for safety.
-  message_loop.task_runner()->PostDelayedTask(
+  task_environment.GetMainThreadTaskRunner()->PostDelayedTask(
       FROM_HERE, run_loop.QuitClosure(), base::TimeDelta::FromMilliseconds(2));
   run_loop.Run();
 

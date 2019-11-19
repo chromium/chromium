@@ -27,8 +27,7 @@ bool CompareDrawableZOrder(base::WeakPtr<Drawable> a,
 
 }  // namespace
 
-GlRenderer::GlRenderer() :
-    weak_factory_(this) {
+GlRenderer::GlRenderer() {
   weak_ptr_ = weak_factory_.GetWeakPtr();
   thread_checker_.DetachFromThread();
 }

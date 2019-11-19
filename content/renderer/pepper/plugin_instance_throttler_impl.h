@@ -115,7 +115,7 @@ class CONTENT_EXPORT PluginInstanceThrottlerImpl
 
   base::ObserverList<Observer>::Unchecked observer_list_;
 
-  base::WeakPtrFactory<PluginInstanceThrottlerImpl> weak_factory_;
+  base::WeakPtrFactory<PluginInstanceThrottlerImpl> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(PluginInstanceThrottlerImpl);
 };

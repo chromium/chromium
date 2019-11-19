@@ -10,6 +10,7 @@
 
 #include "base/json/json_parser.h"
 #include "base/stl_util.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/extension_management_internal.h"
 #include "chrome/browser/extensions/extension_management_test_util.h"
@@ -19,7 +20,7 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "extensions/browser/pref_names.h"
 #include "extensions/common/extension_urls.h"
 #include "extensions/common/manifest.h"
@@ -38,53 +39,62 @@ const char kTargetExtension[] = "abcdefghijklmnopabcdefghijklmnop";
 const char kTargetExtension2[] = "bcdefghijklmnopabcdefghijklmnopa";
 const char kTargetExtension3[] = "cdefghijklmnopabcdefghijklmnopab";
 const char kTargetExtension4[] = "defghijklmnopabcdefghijklmnopabc";
+const char kTargetExtension5[] = "efghijklmnopabcdefghijklmnopabcd";
+const char kTargetExtension6[] = "fghijklmnopabcdefghijklmnopabcde";
+const char kTargetExtension7[] = "ghijklmnopabcdefghijklmnopabcdef";
+const char kTargetExtension8[] = "hijklmnopabcdefghijklmnopabcdefg";
+const char kTargetExtension9[] = "ijklmnopabcdefghijklmnopabcdefgh";
 const char kExampleUpdateUrl[] = "http://example.com/update_url";
 
 const char kNonExistingExtension[] = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
 const char kNonExistingUpdateUrl[] = "http://example.net/update.xml";
 
 const char kExampleDictPreference[] =
-    "{"
-    "  \"abcdefghijklmnopabcdefghijklmnop\": {"  // kTargetExtension
-    "    \"installation_mode\": \"allowed\","
-    "    \"blocked_permissions\": [\"fileSystem\", "
-    "                              \"bookmarks\", "
-    "                              \"downloads\"],"
-    "    \"minimum_version_required\": \"1.1.0\","
-    "    \"runtime_allowed_hosts\": [\"<all_urls>\"],"
-    "  },"
-    "  \"bcdefghijklmnopabcdefghijklmnopa\": {"  // kTargetExtension2
-    "    \"installation_mode\": \"force_installed\","
-    "    \"update_url\": \"http://example.com/update_url\","
-    "    \"blocked_permissions\": [\"downloads\"],"
-    "  },"
-    "  \"cdefghijklmnopabcdefghijklmnopab\": {"  // kTargetExtension3
-    "    \"installation_mode\": \"normal_installed\","
-    "    \"update_url\": \"http://example.com/update_url\","
-    "    \"blocked_permissions\": [\"fileSystem\", \"history\"],"
-    "  },"
-    "  \"defghijklmnopabcdefghijklmnopabc\": {"  // kTargetExtension4
-    "    \"installation_mode\": \"blocked\","
-    "    \"runtime_blocked_hosts\": [\"*://*.foo.com\", "
-    "\"https://bar.org/test\"],"
-    "    \"blocked_install_message\": \"Custom Error Extension4\","
-    "  },"
-    "  \"jdkrmdirkjskemfioeesiofoielsmroi\": {"  // kTargetExtension5
-    "    \"installation_mode\": \"normal_installed\","
-    "  },"
-    "  \"update_url:http://example.com/update_url\": {"  // kExampleUpdateUrl
-    "    \"installation_mode\": \"allowed\","
-    "    \"blocked_permissions\": [\"fileSystem\", \"bookmarks\"],"
-    "  },"
-    "  \"*\": {"
-    "    \"installation_mode\": \"blocked\","
-    "    \"install_sources\": [\"*://foo.com/*\"],"
-    "    \"allowed_types\": [\"theme\", \"user_script\"],"
-    "    \"blocked_permissions\": [\"fileSystem\", \"downloads\"],"
-    "    \"runtime_blocked_hosts\": [\"*://*.example.com\"],"
-    "    \"blocked_install_message\": \"Custom Error Default\","
-    "  },"
-    "}";
+    R"(
+{
+  "abcdefghijklmnopabcdefghijklmnop": {
+    "installation_mode": "allowed",
+    "blocked_permissions": ["fileSystem", "bookmarks", "downloads"],
+    "minimum_version_required": "1.1.0",
+    "runtime_allowed_hosts": ["<all_urls>"],
+  },
+  "bcdefghijklmnopabcdefghijklmnopa": {
+    "installation_mode": "force_installed",
+    "update_url": "http://example.com/update_url",
+    "blocked_permissions": ["downloads"],
+  },
+  "cdefghijklmnopabcdefghijklmnopab": {
+    "installation_mode": "normal_installed",
+    "update_url": "http://example.com/update_url",
+    "blocked_permissions": ["fileSystem", "history"],
+  },
+  "defghijklmnopabcdefghijklmnopabc": {
+    "installation_mode": "blocked",
+    "runtime_blocked_hosts": ["*://*.foo.com", "https://bar.org/test"],
+    "blocked_install_message": "Custom Error Extension4",
+  },
+  "efghijklmnopabcdefghijklmnopabcd,fghijklmnopabcdefghijklmnopabcde": {
+    "installation_mode": "allowed",
+  },
+  "ghijklmnopabcdefghijklmnopabcdef,hijklmnopabcdefghijklmnopabcdefg,": {
+    "installation_mode": "allowed",
+  },
+  "ijklmnopabcdefghijklmnopabcdefgh": {
+    "installation_mode": "removed",
+  },
+  "update_url:http://example.com/update_url": {
+    "installation_mode": "allowed",
+    "blocked_permissions": ["fileSystem", "bookmarks"],
+  },
+  "*": {
+    "installation_mode": "blocked",
+    "install_sources": ["*://foo.com/*"],
+    "allowed_types": ["theme", "user_script"],
+    "blocked_permissions": ["fileSystem", "downloads"],
+    "runtime_blocked_hosts": ["*://*.example.com"],
+    "blocked_install_message": "Custom Error Default",
+  },
+})";
 
 const char kExampleDictNoCustomError[] =
     "{"
@@ -254,7 +264,7 @@ class ExtensionManagementServiceTest : public testing::Test {
     return extension;
   }
 
-  content::TestBrowserThreadBundle test_browser_thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
 
   std::unique_ptr<TestingProfile> profile_;
   sync_preferences::TestingPrefServiceSyncable* pref_service_;
@@ -394,9 +404,9 @@ TEST_F(ExtensionManagementServiceTest, LegacyAllowedTypes) {
       ReadGlobalSettings()->allowed_types;
   ASSERT_TRUE(ReadGlobalSettings()->has_restricted_allowed_types);
   EXPECT_EQ(allowed_types.size(), 2u);
-  EXPECT_FALSE(base::ContainsValue(allowed_types, Manifest::TYPE_EXTENSION));
-  EXPECT_TRUE(base::ContainsValue(allowed_types, Manifest::TYPE_THEME));
-  EXPECT_TRUE(base::ContainsValue(allowed_types, Manifest::TYPE_USER_SCRIPT));
+  EXPECT_FALSE(base::Contains(allowed_types, Manifest::TYPE_EXTENSION));
+  EXPECT_TRUE(base::Contains(allowed_types, Manifest::TYPE_THEME));
+  EXPECT_TRUE(base::Contains(allowed_types, Manifest::TYPE_USER_SCRIPT));
 }
 
 // Verify that preference controlled by legacy ExtensionInstallBlacklist policy
@@ -461,6 +471,28 @@ TEST_F(ExtensionManagementServiceTest, LegacyInstallForcelist) {
             ExtensionManagement::INSTALLATION_ALLOWED);
 }
 
+// Tests handling of exceeding number of urls
+TEST_F(ExtensionManagementServiceTest, HostsMaximumExceeded) {
+  const char policy_template[] =
+      "{"
+      "  \"abcdefghijklmnopabcdefghijklmnop\": {"
+      "    \"installation_mode\": \"allowed\","
+      "    \"runtime_blocked_hosts\": [%s],"
+      "    \"runtime_allowed_hosts\": [%s]"
+      "  }"
+      "}";
+
+  std::string urls;
+  for (size_t i = 0; i < 200; ++i)
+    urls.append("\"*://example" + base::NumberToString(i) + ".com\",");
+
+  std::string policy =
+      base::StringPrintf(policy_template, urls.c_str(), urls.c_str());
+  SetExampleDictPref(policy);
+  EXPECT_EQ(100u, GetPolicyBlockedHosts(kTargetExtension).size());
+  EXPECT_EQ(100u, GetPolicyAllowedHosts(kTargetExtension).size());
+}
+
 // Tests parsing of new dictionary preference.
 TEST_F(ExtensionManagementServiceTest, PreferenceParsing) {
   SetExampleDictPref(kExampleDictPreference);
@@ -490,6 +522,16 @@ TEST_F(ExtensionManagementServiceTest, PreferenceParsing) {
   EXPECT_EQ("Custom Error Default",
             GetBlockedInstallMessage(kNonExistingExtension));
 
+  // Verifies using multiple extensions as a key.
+  EXPECT_EQ(GetInstallationModeById(kTargetExtension5),
+            ExtensionManagement::INSTALLATION_ALLOWED);
+  EXPECT_EQ(GetInstallationModeById(kTargetExtension6),
+            ExtensionManagement::INSTALLATION_ALLOWED);
+  EXPECT_EQ(GetInstallationModeById(kTargetExtension7),
+            ExtensionManagement::INSTALLATION_ALLOWED);
+  EXPECT_EQ(GetInstallationModeById(kTargetExtension8),
+            ExtensionManagement::INSTALLATION_ALLOWED);
+
   // Verifies global settings.
   EXPECT_TRUE(ReadGlobalSettings()->has_restricted_install_sources);
   const URLPatternSet& allowed_sites = ReadGlobalSettings()->install_sources;
@@ -503,8 +545,8 @@ TEST_F(ExtensionManagementServiceTest, PreferenceParsing) {
   const std::vector<Manifest::Type>& allowed_types =
       ReadGlobalSettings()->allowed_types;
   EXPECT_EQ(allowed_types.size(), 2u);
-  EXPECT_TRUE(base::ContainsValue(allowed_types, Manifest::TYPE_THEME));
-  EXPECT_TRUE(base::ContainsValue(allowed_types, Manifest::TYPE_USER_SCRIPT));
+  EXPECT_TRUE(base::Contains(allowed_types, Manifest::TYPE_THEME));
+  EXPECT_TRUE(base::Contains(allowed_types, Manifest::TYPE_USER_SCRIPT));
 
   // Verifies blocked permission list settings.
   APIPermissionSet api_permission_set;
@@ -782,6 +824,7 @@ TEST_F(ExtensionManagementServiceTest, IsInstallationExplicitlyAllowed) {
   const char* forced  = kTargetExtension2;
   const char* recommended = kTargetExtension3;
   const char* blocked = kTargetExtension4;
+  const char* removed = kTargetExtension9;
   const char* not_specified = kNonExistingExtension;
 
   // BlacklistedByDefault() is true in example preference.
@@ -790,14 +833,13 @@ TEST_F(ExtensionManagementServiceTest, IsInstallationExplicitlyAllowed) {
   EXPECT_TRUE(
       extension_management_->IsInstallationExplicitlyAllowed(recommended));
   EXPECT_FALSE(extension_management_->IsInstallationExplicitlyAllowed(blocked));
+  EXPECT_FALSE(extension_management_->IsInstallationExplicitlyAllowed(removed));
   EXPECT_FALSE(
       extension_management_->IsInstallationExplicitlyAllowed(not_specified));
 
-  {
-    // Set BlacklistedByDefault() to false.
-    PrefUpdater pref(pref_service_);
-    pref.SetBlacklistedByDefault(false);
-  }
+  // Set BlacklistedByDefault() to false.
+  PrefUpdater pref(pref_service_);
+  pref.SetBlacklistedByDefault(false);
 
   // The result should remain the same.
   EXPECT_TRUE(extension_management_->IsInstallationExplicitlyAllowed(allowed));
@@ -805,8 +847,44 @@ TEST_F(ExtensionManagementServiceTest, IsInstallationExplicitlyAllowed) {
   EXPECT_TRUE(
       extension_management_->IsInstallationExplicitlyAllowed(recommended));
   EXPECT_FALSE(extension_management_->IsInstallationExplicitlyAllowed(blocked));
+  EXPECT_FALSE(extension_management_->IsInstallationExplicitlyAllowed(removed));
   EXPECT_FALSE(
       extension_management_->IsInstallationExplicitlyAllowed(not_specified));
+}
+
+TEST_F(ExtensionManagementServiceTest, IsInstallationExplicitlyBlocked) {
+  SetExampleDictPref(kExampleDictPreference);
+
+  // Constant name indicates the installation_mode of extensions in example
+  // preference.
+  const char* allowed = kTargetExtension;
+  const char* forced = kTargetExtension2;
+  const char* recommended = kTargetExtension3;
+  const char* blocked = kTargetExtension4;
+  const char* removed = kTargetExtension9;
+  const char* not_specified = kNonExistingExtension;
+
+  // BlacklistedByDefault() is true in example preference.
+  EXPECT_FALSE(extension_management_->IsInstallationExplicitlyBlocked(allowed));
+  EXPECT_FALSE(extension_management_->IsInstallationExplicitlyBlocked(forced));
+  EXPECT_FALSE(
+      extension_management_->IsInstallationExplicitlyBlocked(recommended));
+  EXPECT_TRUE(extension_management_->IsInstallationExplicitlyBlocked(blocked));
+  EXPECT_TRUE(extension_management_->IsInstallationExplicitlyBlocked(removed));
+  EXPECT_FALSE(
+      extension_management_->IsInstallationExplicitlyBlocked(not_specified));
+
+  PrefUpdater pref(pref_service_);
+  pref.SetBlacklistedByDefault(false);
+
+  EXPECT_FALSE(extension_management_->IsInstallationExplicitlyBlocked(allowed));
+  EXPECT_FALSE(extension_management_->IsInstallationExplicitlyBlocked(forced));
+  EXPECT_FALSE(
+      extension_management_->IsInstallationExplicitlyBlocked(recommended));
+  EXPECT_TRUE(extension_management_->IsInstallationExplicitlyBlocked(blocked));
+  EXPECT_TRUE(extension_management_->IsInstallationExplicitlyBlocked(removed));
+  EXPECT_FALSE(
+      extension_management_->IsInstallationExplicitlyBlocked(not_specified));
 }
 
 #if !defined(OS_CHROMEOS)
@@ -926,6 +1004,25 @@ TEST_F(ExtensionManagementServiceTest,
                   .is_empty());
 }
 #endif
+
+TEST_F(ExtensionManagementServiceTest,
+       ExtensionsAreBlockedByDefaultForExtensionRequest) {
+  // When extension request policy is set to true, all extensions are blocked by
+  // default.
+  SetPref(true, prefs::kCloudExtensionRequestEnabled,
+          std::make_unique<base::Value>(true));
+  EXPECT_TRUE(extension_management_->BlacklistedByDefault());
+  EXPECT_EQ(ExtensionManagement::INSTALLATION_BLOCKED,
+            GetInstallationModeById(kTargetExtension));
+  // However, it will be overridden by ExtensionSettings
+  SetExampleDictPref(R"({
+    "*": {
+      "installation_mode": "removed",
+    }
+  })");
+  EXPECT_EQ(ExtensionManagement::INSTALLATION_REMOVED,
+            GetInstallationModeById(kTargetExtension));
+}
 
 // Tests the flag value indicating that extensions are blacklisted by default.
 TEST_F(ExtensionAdminPolicyTest, BlacklistedByDefault) {

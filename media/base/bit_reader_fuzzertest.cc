@@ -5,7 +5,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "base/hash.h"
+#include "base/hash/hash.h"
 #include "base/numerics/safe_conversions.h"
 #include "media/base/bit_reader.h"
 #include "media/base/test_random.h"

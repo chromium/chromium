@@ -20,7 +20,7 @@ class ArticleDistillationUpdate {
   typedef base::RefCountedData<DistilledPageProto> RefCountedPageProto;
 
   ArticleDistillationUpdate(
-      const std::vector<scoped_refptr<RefCountedPageProto> >& pages,
+      const std::vector<scoped_refptr<RefCountedPageProto>>& pages,
       bool has_next_page,
       bool has_prev_page);
   ArticleDistillationUpdate(const ArticleDistillationUpdate& other);
@@ -46,7 +46,7 @@ class ArticleDistillationUpdate {
   bool has_next_page_;
   bool has_prev_page_;
   // Currently available pages.
-  std::vector<scoped_refptr<RefCountedPageProto> > pages_;
+  std::vector<scoped_refptr<RefCountedPageProto>> pages_;
 };
 
 }  // namespace dom_distiller

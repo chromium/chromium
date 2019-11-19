@@ -13,13 +13,11 @@ class GamepadDelegate {
   // Called when the gamepad has been removed.
   virtual void OnRemoved() = 0;
 
-  // Called when the user moved an axis of the gamepad. Valid axes are defined
-  // by the W3C 'standard gamepad' specification.
+  // Called when the user moved an axis of the gamepad.
   virtual void OnAxis(int axis, double value) = 0;
 
   // Called when the user pressed or moved a button of the gamepad.
-  // Valid buttons are defined by the W3C 'standard gamepad' specification.
-  virtual void OnButton(int button, bool pressed, double value) = 0;
+  virtual void OnButton(int button, bool pressed) = 0;
 
   // Called after all gamepad information of this frame has been set and the
   // client should evaluate the updated state.

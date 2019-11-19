@@ -11,16 +11,16 @@
  * chrome.brailleDisplayPrivate.*.
  */
 
-goog.provide('cvox.BrailleDisplayState');
-goog.provide('cvox.BrailleKeyCommand');
-goog.provide('cvox.BrailleKeyEvent');
+goog.provide('BrailleDisplayState');
+goog.provide('BrailleKeyCommand');
+goog.provide('BrailleKeyEvent');
 
 
 /**
  * The set of commands sent from a braille display.
  * @enum {string}
  */
-cvox.BrailleKeyCommand = {
+BrailleKeyCommand = {
   PAN_LEFT: 'pan_left',
   PAN_RIGHT: 'pan_right',
   LINE_UP: 'line_up',
@@ -38,7 +38,7 @@ cvox.BrailleKeyCommand = {
 /**
  * Represents a key event from a braille display.
  *
- * @typedef {{command: cvox.BrailleKeyCommand,
+ * @typedef {{command: BrailleKeyCommand,
  *            displayPosition: (undefined|number),
  *            brailleDots: (undefined|number),
  *            standardKeyCode: (undefined|string),
@@ -60,7 +60,7 @@ cvox.BrailleKeyCommand = {
  * ctrlKey Whether the control key was pressed.
  * shiftKey Whether the shift key was pressed.
  */
-cvox.BrailleKeyEvent = {};
+BrailleKeyEvent = {};
 
 
 /**
@@ -71,8 +71,8 @@ cvox.BrailleKeyEvent = {};
  * @return {number|undefined} The numeric key code, or {@code undefined}
  *     if unknown.
  */
-cvox.BrailleKeyEvent.keyCodeToLegacyCode = function(code) {
-  return cvox.BrailleKeyEvent.legacyKeyCodeMap_[code];
+BrailleKeyEvent.keyCodeToLegacyCode = function(code) {
+  return BrailleKeyEvent.legacyKeyCodeMap_[code];
 };
 
 
@@ -82,7 +82,7 @@ cvox.BrailleKeyEvent.keyCodeToLegacyCode = function(code) {
  * @param {string} keyCode The DOM level 4 key code.
  * @return {number} Integral character code.
  */
-cvox.BrailleKeyEvent.keyCodeToCharValue = function(keyCode) {
+BrailleKeyEvent.keyCodeToCharValue = function(keyCode) {
   /** @const */
   var SPECIAL_CODES = {'Backspace': 0x08, 'Tab': 0x09, 'Enter': 0x0A};
   // Note, the Chrome virtual keyboard falls back on the first character of the
@@ -111,7 +111,7 @@ cvox.BrailleKeyEvent.keyCodeToCharValue = function(keyCode) {
  * Maps a braille pattern to a standard key code.
  * @type {!Object<number, string>}
  */
-cvox.BrailleKeyEvent.brailleDotsToStandardKeyCode = {
+BrailleKeyEvent.brailleDotsToStandardKeyCode = {
   0b1: 'A',
   0b11: 'B',
   0b1001: 'C',
@@ -154,7 +154,7 @@ cvox.BrailleKeyEvent.brailleDotsToStandardKeyCode = {
  * Maps a braille chord pattern to a standard key code.
  * @type {!Object<number, string>}
  */
-cvox.BrailleKeyEvent.brailleChordsToStandardKeyCode = {
+BrailleKeyEvent.brailleChordsToStandardKeyCode = {
   0b1000000: 'Backspace',
   0b10100: 'Tab',
   0b110101: 'Escape',
@@ -164,7 +164,7 @@ cvox.BrailleKeyEvent.brailleChordsToStandardKeyCode = {
 /**
  * Maps a braille dot chord pattern to standard key modifiers.
  */
-cvox.BrailleKeyEvent.brailleDotsToModifiers = {
+BrailleKeyEvent.brailleDotsToModifiers = {
   0b010010: {ctrlKey: true},
   0b100100: {altKey: true},
   0b1000100: {shiftKey: true},
@@ -177,7 +177,7 @@ cvox.BrailleKeyEvent.brailleDotsToModifiers = {
  * Map from DOM level 4 key codes to legacy numeric key codes.
  * @private {Object<number>}
  */
-cvox.BrailleKeyEvent.legacyKeyCodeMap_ = {
+BrailleKeyEvent.legacyKeyCodeMap_ = {
   'Backspace': 8,
   'Tab': 9,
   'Enter': 13,
@@ -199,17 +199,17 @@ cvox.BrailleKeyEvent.legacyKeyCodeMap_ = {
 (function() {
 // Add 0-9.
 for (var i = '0'.charCodeAt(0); i < '9'.charCodeAt(0); ++i) {
-  cvox.BrailleKeyEvent.legacyKeyCodeMap_[String.fromCharCode(i)] = i;
+  BrailleKeyEvent.legacyKeyCodeMap_[String.fromCharCode(i)] = i;
 }
 
 // Add A-Z.
 for (var i = 'A'.charCodeAt(0); i < 'Z'.charCodeAt(0); ++i) {
-  cvox.BrailleKeyEvent.legacyKeyCodeMap_[String.fromCharCode(i)] = i;
+  BrailleKeyEvent.legacyKeyCodeMap_[String.fromCharCode(i)] = i;
 }
 
 // Add the F1 to F12 keys.
 for (var i = 0; i < 12; ++i) {
-  cvox.BrailleKeyEvent.legacyKeyCodeMap_['F' + (i + 1)] = 112 + i;
+  BrailleKeyEvent.legacyKeyCodeMap_['F' + (i + 1)] = 112 + i;
 }
 })();
 
@@ -220,4 +220,4 @@ for (var i = 0; i < 12; ++i) {
  * @typedef {{available: boolean, textRowCount: number,
  *     textColumnCount: number}}
  */
-cvox.BrailleDisplayState;
+var BrailleDisplayState;

@@ -722,8 +722,14 @@ jvalue CoerceJavaScriptValueToJavaValue(JNIEnv* env,
     case base::Value::Type::BINARY:
       return CoerceGinJavaBridgeValueToJavaValue(
           env, value, target_type, coerce_to_string, object_refs, error);
+    // TODO(crbug.com/859477): Remove after root cause is found.
+    case base::Value::Type::DEAD:
+      CHECK(false);
+      return jvalue();
   }
-  NOTREACHED();
+
+  // TODO(crbug.com/859477): Revert to NOTREACHED() after root cause is found.
+  CHECK(false);
   return jvalue();
 }
 

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SERVICES_SERVICE_MANAGER_PUBLIC_CPP_IDENTITY_STRUCT_TRAITS_H_
-#define SERVICES_SERVICE_MANAGER_PUBLIC_CPP_IDENTITY_STRUCT_TRAITS_H_
+#ifndef SERVICES_SERVICE_MANAGER_PUBLIC_CPP_IDENTITY_MOJOM_TRAITS_H_
+#define SERVICES_SERVICE_MANAGER_PUBLIC_CPP_IDENTITY_MOJOM_TRAITS_H_
 
 #include "base/component_export.h"
 #include "services/service_manager/public/cpp/identity.h"
@@ -38,4 +38,4 @@ struct COMPONENT_EXPORT(SERVICE_MANAGER_MOJOM_TRAITS)
 
 }  // namespace mojo
 
-#endif  // SERVICES_SERVICE_MANAGER_PUBLIC_CPP_IDENTITY_STRUCT_TRAITS_H_
+#endif  // SERVICES_SERVICE_MANAGER_PUBLIC_CPP_IDENTITY_MOJOM_TRAITS_H_

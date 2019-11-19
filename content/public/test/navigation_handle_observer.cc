@@ -15,6 +15,8 @@ NavigationHandleObserver::NavigationHandleObserver(
       page_transition_(ui::PAGE_TRANSITION_LINK),
       expected_start_url_(expected_start_url) {}
 
+NavigationHandleObserver::~NavigationHandleObserver() {}
+
 void NavigationHandleObserver::DidStartNavigation(
     NavigationHandle* navigation_handle) {
   if (handle_ || navigation_handle->GetURL() != expected_start_url_)
@@ -33,6 +35,7 @@ void NavigationHandleObserver::DidStartNavigation(
   was_redirected_ = navigation_handle->WasServerRedirect();
   frame_tree_node_id_ = navigation_handle->GetFrameTreeNodeId();
   navigation_id_ = navigation_handle->GetNavigationId();
+  navigation_start_ = navigation_handle->NavigationStart();
 }
 
 void NavigationHandleObserver::DidFinishNavigation(
@@ -49,6 +52,7 @@ void NavigationHandleObserver::DidFinishNavigation(
   was_redirected_ = navigation_handle->WasServerRedirect();
   net_error_code_ = navigation_handle->GetNetErrorCode();
   is_download_ = navigation_handle->IsDownload();
+  auth_challenge_info_ = navigation_handle->GetAuthChallengeInfo();
 
   if (navigation_handle->HasCommitted()) {
     has_committed_ = true;

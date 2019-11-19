@@ -24,7 +24,7 @@ namespace views {
 // platform specific objects to replicate the native platforms looks and feel.
 class VIEWS_EXPORT Checkbox : public LabelButton {
  public:
-  static const char kViewClassName[];
+  METADATA_HEADER(Checkbox);
 
   // |force_md| forces MD even when --secondary-ui-md flag is not set.
   explicit Checkbox(const base::string16& label,
@@ -33,9 +33,10 @@ class VIEWS_EXPORT Checkbox : public LabelButton {
 
   // Sets/Gets whether or not the checkbox is checked.
   virtual void SetChecked(bool checked);
-  bool checked() const { return checked_; }
+  bool GetChecked() const;
 
   void SetMultiLine(bool multi_line);
+  bool GetMultiLine() const;
 
   // If the accessible name should be the same as the labelling view's text,
   // use this. It will set the accessible label relationship and copy the
@@ -48,15 +49,13 @@ class VIEWS_EXPORT Checkbox : public LabelButton {
 
  protected:
   // LabelButton:
-  const char* GetClassName() const override;
-  void OnNativeThemeChanged(const ui::NativeTheme* theme) override;
+  void OnThemeChanged() override;
   std::unique_ptr<InkDrop> CreateInkDrop() override;
   std::unique_ptr<InkDropRipple> CreateInkDropRipple() const override;
   std::unique_ptr<InkDropMask> CreateInkDropMask() const override;
   SkColor GetInkDropBaseColor() const override;
   gfx::ImageSkia GetImage(ButtonState for_state) const override;
   std::unique_ptr<LabelButtonBorder> CreateDefaultBorder() const override;
-  void Layout() override;
 
   // Gets the vector icon to use based on the current state of |checked_|.
   virtual const gfx::VectorIcon& GetVectorIcon() const;
@@ -65,7 +64,7 @@ class VIEWS_EXPORT Checkbox : public LabelButton {
   virtual SkPath GetFocusRingPath() const;
 
  private:
-  friend class IconFocusRing;
+  class FocusRingHighlightPathGenerator;
 
   // Bitmask constants for GetIconImageColor.
   enum IconState { CHECKED = 0b1, ENABLED = 0b10 };

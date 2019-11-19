@@ -23,21 +23,20 @@ int BatteryStatusListenerImpl::GetBatteryPercentage() {
 }
 
 bool BatteryStatusListenerImpl::IsOnBatteryPower() {
-  return base::PowerMonitor::Get()->IsOnBatteryPower();
+  return base::PowerMonitor::IsOnBatteryPower();
 }
 
 void BatteryStatusListenerImpl::Start(Observer* observer) {
   observer_ = observer;
 
-  base::PowerMonitor* power_monitor = base::PowerMonitor::Get();
-  DCHECK(power_monitor);
-  power_monitor->AddObserver(this);
+  DCHECK(base::PowerMonitor::IsInitialized());
+  base::PowerMonitor::AddObserver(this);
 
   UpdateBatteryPercentage(true);
 }
 
 void BatteryStatusListenerImpl::Stop() {
-  base::PowerMonitor::Get()->RemoveObserver(this);
+  base::PowerMonitor::RemoveObserver(this);
 }
 
 int BatteryStatusListenerImpl::GetBatteryPercentageInternal() {

@@ -16,7 +16,6 @@
 #include <sstream>
 
 #include "net/test/gtest_util.h"
-#include "net/third_party/quiche/src/http2/platform/api/http2_string.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -43,19 +42,19 @@ class VerifyThatHelper {
 
   operator bool() const { return matches_; }
 
-  const Http2String& printed_value() const { return printed_value_; }
-  const Http2String& matcher_description() const {
+  const std::string& printed_value() const { return printed_value_; }
+  const std::string& matcher_description() const {
     return matcher_description_;
   }
 
  private:
   bool matches_;
-  Http2String printed_value_;
-  Http2String matcher_description_;
+  std::string printed_value_;
+  std::string matcher_description_;
 };
 
 // Constructs a failure message for Boolean assertions such as VERIFY_TRUE.
-Http2String GetBoolAssertionFailureMessage(
+std::string GetBoolAssertionFailureMessage(
     const ::testing::AssertionResult& assertion_result,
     const char* expression_text,
     const char* actual_predicate_value,
@@ -64,9 +63,9 @@ Http2String GetBoolAssertionFailureMessage(
 namespace {
 // Define HasSubstr() for Http2StringPiece arguments.
 // This shadows ::testing::HasSubstr(), which only works on argument types
-// that can be implicitly converted to a Http2String.
+// that can be implicitly converted to a std::string.
 inline ::testing::PolymorphicMatcher<net::test::StringPieceHasSubstrMatcher>
-HasSubstr(const Http2String& substring) {
+HasSubstr(const std::string& substring) {
   return ::testing::MakePolymorphicMatcher(
       net::test::StringPieceHasSubstrMatcher(substring));
 }

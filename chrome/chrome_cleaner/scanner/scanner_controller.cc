@@ -213,10 +213,17 @@ int ScannerController::WatchdogTimeoutCallback() {
           ? RESULT_CODE_WATCHDOG_TIMEOUT_WITH_REMOVABLE_UWS
           : RESULT_CODE_WATCHDOG_TIMEOUT_WITHOUT_REMOVABLE_UWS;
 
-  registry_logger_->WriteExitCode(watchdog_result_code);
-  registry_logger_->WriteEndTime();
-
+  HandleWatchdogTimeout(watchdog_result_code);
   return watchdog_result_code;
+}
+
+void ScannerController::HandleWatchdogTimeout(ResultCode result_code) {
+  {
+    base::AutoLock lock(lock_);
+    result_code_ = result_code;
+  }
+  registry_logger_->WriteExitCode(result_code);
+  registry_logger_->WriteEndTime();
 }
 
 void ScannerController::LogsUploadComplete(bool success) {

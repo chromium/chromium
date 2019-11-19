@@ -1,6 +1,6 @@
 AXWebArea AXRoleDescription='HTML content'
 ++AXGroup AXRoleDescription='group'
 ++++AXStaticText AXRoleDescription='text' AXValue='This test is to check '
-++++AXGroup AXRoleDescription='highlighted content'
+++++AXGroup AXRoleDescription='highlight'
 ++++++AXStaticText AXRoleDescription='text' AXValue='mark tag'
 ++++AXStaticText AXRoleDescription='text' AXValue='.'

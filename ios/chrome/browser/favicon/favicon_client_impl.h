@@ -26,7 +26,7 @@ class FaviconClientImpl : public favicon::FaviconClient {
   base::CancelableTaskTracker::TaskId GetFaviconForNativeApplicationURL(
       const GURL& url,
       const std::vector<int>& desired_sizes_in_pixel,
-      const favicon_base::FaviconResultsCallback& callback,
+      favicon_base::FaviconResultsCallback callback,
       base::CancelableTaskTracker* tracker) override;
 
   DISALLOW_COPY_AND_ASSIGN(FaviconClientImpl);

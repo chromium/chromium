@@ -13,7 +13,7 @@ namespace chromeos {
 
 ShutdownPolicyHandler::ShutdownPolicyHandler(CrosSettings* cros_settings,
                                              Delegate* delegate)
-    : cros_settings_(cros_settings), delegate_(delegate), weak_factory_(this) {
+    : cros_settings_(cros_settings), delegate_(delegate) {
   DCHECK(cros_settings_);
   DCHECK(delegate);
   shutdown_policy_subscription_ = cros_settings_->AddSettingsObserver(

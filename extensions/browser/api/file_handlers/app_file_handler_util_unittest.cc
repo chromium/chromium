@@ -4,6 +4,7 @@
 
 #include "extensions/browser/api/file_handlers/app_file_handler_util.h"
 
+#include "components/services/app_service/public/cpp/file_handler_info.h"
 #include "extensions/browser/entry_info.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -11,15 +12,16 @@ namespace extensions {
 namespace app_file_handler_util {
 namespace {
 
-FileHandlerInfo CreateHandlerInfoFromExtension(const std::string& extension) {
-  FileHandlerInfo handler_info;
+apps::FileHandlerInfo CreateHandlerInfoFromExtension(
+    const std::string& extension) {
+  apps::FileHandlerInfo handler_info;
   handler_info.extensions.insert(extension);
   return handler_info;
 }
 
-FileHandlerInfo CreateHandlerInfoFromIncludeDirectories(
+apps::FileHandlerInfo CreateHandlerInfoFromIncludeDirectories(
     bool include_directories) {
-  FileHandlerInfo handler_info;
+  apps::FileHandlerInfo handler_info;
   handler_info.include_directories = include_directories;
   return handler_info;
 }

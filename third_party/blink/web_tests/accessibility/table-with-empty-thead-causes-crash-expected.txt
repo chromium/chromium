@@ -7,16 +7,17 @@ Construct accessibility objects for a table with an empty thread tag. This can c
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
 AXRole: AXWebArea
-    AXRole: AXTable "table"
-        AXRole: AXRow
-            AXRole: AXCell "1"
-                AXRole: AXStaticText "1"
-                    AXRole: AXInlineTextBox "1"
-            AXRole: AXCell "2"
-                AXRole: AXStaticText "2"
-                    AXRole: AXInlineTextBox "2"
-    AXRole: AXParagraph
-        AXRole: AXStaticText "End of test"
+    AXRole: AXGenericContainer
+        AXRole: AXTable "table"
+            AXRole: AXRow
+                AXRole: AXCell "1"
+                    AXRole: AXStaticText "1"
+                        AXRole: AXInlineTextBox "1"
+                AXRole: AXCell "2"
+                    AXRole: AXStaticText "2"
+                        AXRole: AXInlineTextBox "2"
+        AXRole: AXParagraph
+            AXRole: AXStaticText "End of test"
 
 PASS successfullyParsed is true
 

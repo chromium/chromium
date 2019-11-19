@@ -228,7 +228,7 @@ SimpleCacheConsistencyResult UpgradeSimpleCacheOnDisk(
     LogMessageFailedUpgradeFromVersion(file_header.version);
     return SimpleCacheConsistencyResult::kWriteFakeIndexFileFailed;
   }
-  if (!base::ReplaceFile(temp_fake_index, fake_index, NULL)) {
+  if (!base::ReplaceFile(temp_fake_index, fake_index, nullptr)) {
     LOG(ERROR) << "Failed to replace the fake index.";
     LogMessageFailedUpgradeFromVersion(file_header.version);
     return SimpleCacheConsistencyResult::kReplaceFileFailed;

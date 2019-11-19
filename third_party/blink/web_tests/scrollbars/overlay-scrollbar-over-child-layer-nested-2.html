@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<script>
+if (window.internals)
+  internals.useMockOverlayScrollbars();
+</script>
+<style>
+  #intermediate::-webkit-scrollbar { display: none; }
+</style>
+<div style="position: relative; width: 200px; height: 200px; overflow: scroll">
+  <!-- The intermediate div's scrollbars are hidden. -->
+  <div id="intermediate" style="position: relative; width: 210px; height: 80px; overflow: scroll">
+    <div style="position: absolute; z-index: 5; background: green; width: 300px; height: 100px"></div>
+  </div>
+  <div style="height: 210px"></div>
+</div>

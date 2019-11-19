@@ -5,7 +5,7 @@
 #include "ui/android/event_forwarder.h"
 
 #include "base/android/jni_array.h"
-#include "jni/EventForwarder_jni.h"
+#include "ui/android/ui_android_jni_headers/EventForwarder_jni.h"
 #include "ui/android/window_android.h"
 #include "ui/base/ui_base_switches_util.h"
 #include "ui/events/android/drag_event_android.h"
@@ -223,14 +223,17 @@ void EventForwarder::StartFling(JNIEnv* env,
 
   if (velocity_x == 0 && velocity_y == 0)
     return;
+  float dip_scale = view_->GetDipScale();
   // Use velocity as delta in scroll event.
   view_->OnGestureEvent(GestureEventAndroid(
       GESTURE_EVENT_TYPE_SCROLL_START, gfx::PointF(), gfx::PointF(), time_ms, 0,
-      velocity_x, velocity_y, 0, 0, /*target_viewport*/ true, synthetic_scroll,
+      velocity_x / dip_scale, velocity_y / dip_scale, 0, 0,
+      /*target_viewport*/ true, synthetic_scroll,
       /*prevent_boosting*/ false));
   view_->OnGestureEvent(GestureEventAndroid(
       GESTURE_EVENT_TYPE_FLING_START, gfx::PointF(), gfx::PointF(), time_ms, 0,
-      0, 0, velocity_x, velocity_y, /*target_viewport*/ true, synthetic_scroll,
+      0, 0, velocity_x / dip_scale, velocity_y / dip_scale,
+      /*target_viewport*/ true, synthetic_scroll,
       /*prevent_boosting*/ false));
 }
 

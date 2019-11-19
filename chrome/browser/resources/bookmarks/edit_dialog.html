@@ -1,17 +1,5 @@
-<link rel="import" href="chrome://resources/html/polymer.html">
 
-<link rel="import" href="chrome://resources/html/assert.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_dialog/cr_dialog.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_input/cr_input.html">
-<link rel="import" href="chrome://resources/cr_elements/paper_button_style_css.html">
-<link rel="import" href="chrome://resources/cr_elements/shared_style_css.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/paper-button/paper-button.html">
-<link rel="import" href="dialog_focus_manager.html">
-<link rel="import" href="strings.html">
-
-<dom-module id="bookmarks-edit-dialog">
-  <template>
-    <style include="cr-shared-style paper-button-style">
+    <style include="cr-shared-style">
     </style>
     <cr-dialog id="dialog">
       <div slot="title">
@@ -27,15 +15,12 @@
         </cr-input>
       </div>
       <div slot="button-container">
-        <paper-button class="cancel-button" on-click="onCancelButtonTap_">
+        <cr-button class="cancel-button" on-click="onCancelButtonTap_">
           $i18n{cancel}
-        </paper-button>
-        <paper-button id="saveButton" class="action-button"
+        </cr-button>
+        <cr-button id="saveButton" class="action-button"
             on-click="onSaveButtonTap_">
           $i18n{saveEdit}
-        </paper-button>
+        </cr-button>
       </div>
     </cr-dialog>
-  </template>
-  <script src="edit_dialog.js"></script>
-</dom-module>

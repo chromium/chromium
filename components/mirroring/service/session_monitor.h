@@ -16,6 +16,8 @@
 #include "base/timer/timer.h"
 #include "base/values.h"
 #include "components/mirroring/mojom/session_observer.mojom.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 
 namespace media {
@@ -52,10 +54,11 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) SessionMonitor {
  public:
   using EventsAndStats =
       std::pair<std::string /* events */, std::string /* stats */>;
-  SessionMonitor(int max_retention_bytes,
-                 const net::IPAddress& receiver_address,
-                 base::Value session_tags,
-                 network::mojom::URLLoaderFactoryPtr loader_factory);
+  SessionMonitor(
+      int max_retention_bytes,
+      const net::IPAddress& receiver_address,
+      base::Value session_tags,
+      mojo::PendingRemote<network::mojom::URLLoaderFactory> loader_factory);
 
   ~SessionMonitor();
 
@@ -116,7 +119,7 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) SessionMonitor {
 
   std::string receiver_name_;
 
-  network::mojom::URLLoaderFactoryPtr url_loader_factory_;
+  mojo::Remote<network::mojom::URLLoaderFactory> url_loader_factory_;
 
   // Monitors the WiFi status if not null.
   std::unique_ptr<WifiStatusMonitor> wifi_status_monitor_;
@@ -138,7 +141,7 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) SessionMonitor {
   base::Time error_time_;
   base::Optional<mojom::SessionError> error_;
 
-  base::WeakPtrFactory<SessionMonitor> weak_factory_;
+  base::WeakPtrFactory<SessionMonitor> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(SessionMonitor);
 };

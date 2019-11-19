@@ -3,12 +3,13 @@
 // found in the LICENSE file.
 
 #include "base/strings/utf_string_conversions.h"
-#include "cc/base/lap_timer.h"
+#include "base/timer/lap_timer.h"
 #include "chrome/browser/vr/elements/text.h"
 #include "chrome/browser/vr/skia_surface_provider_factory.h"
 #include "chrome/browser/vr/test/constants.h"
 #include "chrome/browser/vr/test/gl_test_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "testing/perf/perf_result_reporter.h"
 #include "testing/perf/perf_test.h"
 #include "third_party/skia/include/core/SkSurface.h"
 
@@ -35,17 +36,25 @@ class TextPerfTest : public testing::Test {
   }
 
   void TearDown() override {
+    PrintResults();
     text_element_.reset();
     provider_.reset();
     gl_test_environment_.reset();
   }
 
  protected:
-  void PrintResults(const std::string& name) {
-    perf_test::PrintResult("TextPerfTest", ".render_time_avg", name,
-                           timer_.MsPerLap(), "ms", true);
-    perf_test::PrintResult("TextPerfTest", ".number_of_runs", name,
-                           static_cast<size_t>(timer_.NumLaps()), "runs", true);
+  void SetupReporter(const std::string& test_name,
+                     const std::string& story_name) {
+    reporter_ =
+        std::make_unique<perf_test::PerfResultReporter>(test_name, story_name);
+    reporter_->RegisterImportantMetric(".render_time_avg", "ms");
+    reporter_->RegisterImportantMetric(".number_of_runs", "runs");
+  }
+
+  void PrintResults() {
+    reporter_->AddResult(".render_time_avg", timer_.TimePerLap());
+    reporter_->AddResult(".number_of_runs",
+                         static_cast<size_t>(timer_.NumLaps()));
   }
 
   void RenderAndLapTimer() {
@@ -57,7 +66,10 @@ class TextPerfTest : public testing::Test {
   }
 
   std::unique_ptr<Text> text_element_;
-  cc::LapTimer timer_;
+  // It would be better to initialize this during SetUp(), but there doesn't
+  // appear to be a good way to get the test name from within testing::Test.
+  std::unique_ptr<perf_test::PerfResultReporter> reporter_;
+  base::LapTimer timer_;
 
  private:
   std::unique_ptr<SkiaSurfaceProvider> provider_;
@@ -65,6 +77,7 @@ class TextPerfTest : public testing::Test {
 };
 
 TEST_F(TextPerfTest, RenderLoremIpsum100Chars) {
+  SetupReporter("TextPerfTest", "render_lorem_ipsum_100_chars");
   base::string16 text = base::UTF8ToUTF16(kLoremIpsum100Chars);
   timer_.Reset();
   for (size_t i = 0; i < kNumberOfRuns; i++) {
@@ -72,10 +85,10 @@ TEST_F(TextPerfTest, RenderLoremIpsum100Chars) {
     text_element_->SetText(text);
     RenderAndLapTimer();
   }
-  PrintResults("render_lorem_ipsum_100_chars");
 }
 
 TEST_F(TextPerfTest, RenderLoremIpsum700Chars) {
+  SetupReporter("TextPerfTest", "render_lorem_ipsum_700_chars");
   base::string16 text = base::UTF8ToUTF16(kLoremIpsum700Chars);
   timer_.Reset();
   for (size_t i = 0; i < kNumberOfRuns; i++) {
@@ -83,7 +96,6 @@ TEST_F(TextPerfTest, RenderLoremIpsum700Chars) {
     text_element_->SetText(text);
     RenderAndLapTimer();
   }
-  PrintResults("render_lorem_ipsum_700_chars");
 }
 
 }  // namespace vr

@@ -10,11 +10,12 @@
 
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "base/process/kill.h"
 #include "base/process/process.h"
+#include "base/sequenced_task_runner.h"
 #include "build/build_config.h"
-#include "content/public/browser/browser_thread.h"
 #include "content/public/common/result_codes.h"
 #include "mojo/public/cpp/platform/platform_channel.h"
 #include "mojo/public/cpp/system/invitation.h"
@@ -93,11 +94,13 @@ class ChildProcessLauncherHelper :
 
   ChildProcessLauncherHelper(
       int child_process_id,
-      BrowserThread::ID client_thread_id,
       std::unique_ptr<base::CommandLine> command_line,
       std::unique_ptr<SandboxedProcessLauncherDelegate> delegate,
       const base::WeakPtr<ChildProcessLauncher>& child_process_launcher,
       bool terminate_on_shutdown,
+#if defined(OS_ANDROID)
+      bool is_pre_warmup_required,
+#endif
       mojo::OutgoingInvitation mojo_invitation,
       const mojo::ProcessErrorCallback& process_error_callback);
 
@@ -125,9 +128,8 @@ class ChildProcessLauncherHelper :
   // LaunchOnLauncherThread will not call LaunchProcessOnLauncherThread and
   // AfterLaunchOnLauncherThread, and the launch_result will be reported as
   // LAUNCH_RESULT_FAILURE.
-  bool BeforeLaunchOnLauncherThread(
-      const FileMappedForLaunch& files_to_register,
-      base::LaunchOptions* options);
+  bool BeforeLaunchOnLauncherThread(FileMappedForLaunch& files_to_register,
+                                    base::LaunchOptions* options);
 
   // Does the actual starting of the process.
   // |is_synchronous_launch| is set to false if the starting of the process is
@@ -138,6 +140,9 @@ class ChildProcessLauncherHelper :
   ChildProcessLauncherHelper::Process LaunchProcessOnLauncherThread(
       const base::LaunchOptions& options,
       std::unique_ptr<FileMappedForLaunch> files_to_register,
+#if defined(OS_ANDROID)
+      bool is_pre_warmup_required,
+#endif
       bool* is_synchronous_launch,
       int* launch_result);
 
@@ -155,8 +160,6 @@ class ChildProcessLauncherHelper :
   // Posted by PostLaunchOnLauncherThread onto the client thread.
   void PostLaunchOnClientThread(ChildProcessLauncherHelper::Process process,
                                 int error_code);
-
-  int client_thread_id() const { return client_thread_id_; }
 
   // See ChildProcessLauncher::GetChildTerminationInfo for more info.
   ChildProcessTerminationInfo GetTerminationInfo(
@@ -188,8 +191,10 @@ class ChildProcessLauncherHelper :
 
 #if defined(OS_ANDROID)
   void OnChildProcessStarted(JNIEnv* env,
-                             const base::android::JavaParamRef<jobject>& obj,
                              jint handle);
+
+  // Dumps the stack of the child process without crashing it.
+  void DumpProcessStack(const base::Process& process);
 #endif  // OS_ANDROID
 
  private:
@@ -214,7 +219,7 @@ class ChildProcessLauncherHelper :
 #endif
 
   const int child_process_id_;
-  const BrowserThread::ID client_thread_id_;
+  const scoped_refptr<base::SequencedTaskRunner> client_task_runner_;
   base::TimeTicks begin_launch_time_;
   std::unique_ptr<base::CommandLine> command_line_;
   std::unique_ptr<SandboxedProcessLauncherDelegate> delegate_;
@@ -244,6 +249,8 @@ class ChildProcessLauncherHelper :
 #if defined(OS_ANDROID)
   base::android::ScopedJavaGlobalRef<jobject> java_peer_;
   bool java_peer_avaiable_on_client_thread_ = false;
+  // Whether the process can use warmed up connection.
+  bool can_use_warm_up_connection_;
 #endif
 
 #if defined(OS_FUCHSIA)

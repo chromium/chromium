@@ -12,8 +12,8 @@
 #include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
+#include "chrome/browser/translate/translate_test_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
@@ -23,12 +23,12 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/translate/core/browser/translate_manager.h"
-#include "components/translate/core/common/language_detection_details.h"
-#include "content/public/browser/notification_details.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/views/controls/button/menu_button.h"
+
+namespace translate {
 
 class TranslateBubbleViewBrowserTest : public InProcessBrowserTest {
  public:
@@ -37,34 +37,27 @@ class TranslateBubbleViewBrowserTest : public InProcessBrowserTest {
 
   void SetUp() override {
     set_open_about_blank_on_browser_launch(true);
-    translate::TranslateManager::SetIgnoreMissingKeyForTesting(true);
+    TranslateManager::SetIgnoreMissingKeyForTesting(true);
     InProcessBrowserTest::SetUp();
   }
 
  protected:
   void NavigateAndWaitForLanguageDetection(const GURL& url,
                                            const std::string& expected_lang) {
-    expected_lang_ = expected_lang;
-    content::WindowedNotificationObserver language_detected_signal(
-        chrome::NOTIFICATION_TAB_LANGUAGE_DETERMINED,
-        base::Bind(&TranslateBubbleViewBrowserTest::OnLanguageDetermined,
-                   base::Unretained(this)));
-
     ui_test_utils::NavigateToURL(browser(), url);
-    language_detected_signal.Wait();
+
+    while (expected_lang !=
+           ChromeTranslateClient::FromWebContents(
+               browser()->tab_strip_model()->GetActiveWebContents())
+               ->GetLanguageState()
+               .original_language()) {
+      TranslateWaiter(browser()->tab_strip_model()->GetActiveWebContents(),
+                      TranslateWaiter::WaitEvent::kLanguageDetermined)
+          .Wait();
+    }
   }
 
  private:
-  std::string expected_lang_;
-
-  bool OnLanguageDetermined(const content::NotificationSource& source,
-                            const content::NotificationDetails& details) {
-    const std::string& language =
-        content::Details<translate::LanguageDetectionDetails>(details)
-            ->cld_language;
-    return language == expected_lang_;
-  }
-
   DISALLOW_COPY_AND_ASSIGN(TranslateBubbleViewBrowserTest);
 };
 
@@ -90,8 +83,6 @@ IN_PROC_BROWSER_TEST_F(TranslateBubbleViewBrowserTest,
   EXPECT_FALSE(TranslateBubbleView::GetCurrentBubble());
 
   // Show a French page and wait until the bubble is shown.
-  content::WebContents* current_web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
   GURL french_url = ui_test_utils::GetTestUrl(
       base::FilePath(), base::FilePath(FILE_PATH_LITERAL("french_page.html")));
   NavigateAndWaitForLanguageDetection(french_url, "fr");
@@ -100,7 +91,8 @@ IN_PROC_BROWSER_TEST_F(TranslateBubbleViewBrowserTest,
   // Close the tab without translating. Spin the runloop to allow asynchronous
   // window closure to happen.
   EXPECT_EQ(1, browser()->tab_strip_model()->count());
-  chrome::CloseWebContents(browser(), current_web_contents, false);
+  chrome::CloseWebContents(
+      browser(), browser()->tab_strip_model()->GetActiveWebContents(), false);
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(TranslateBubbleView::GetCurrentBubble());
 }
@@ -136,3 +128,5 @@ IN_PROC_BROWSER_TEST_F(TranslateBubbleViewBrowserTest,
                            browser()->tab_strip_model()->GetActiveWebContents(),
                            false);
 }
+
+}  // namespace translate

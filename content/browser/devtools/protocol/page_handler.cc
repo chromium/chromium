@@ -22,6 +22,7 @@
 #include "base/task/post_task.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
+#include "content/browser/child_process_security_policy_impl.h"
 #include "content/browser/devtools/devtools_agent_host_impl.h"
 #include "content/browser/devtools/protocol/devtools_download_manager_delegate.h"
 #include "content/browser/devtools/protocol/devtools_download_manager_helper.h"
@@ -38,11 +39,11 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/download_manager.h"
+#include "content/public/browser/file_select_listener.h"
 #include "content/public/browser/javascript_dialog_manager.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
-#include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/common/referrer.h"
@@ -183,7 +184,9 @@ void GetMetadataFromFrame(const media::VideoFrame& frame,
 }  // namespace
 
 PageHandler::PageHandler(EmulationHandler* emulation_handler,
-                         bool allow_set_download_behavior)
+                         void** active_file_chooser_interceptor,
+                         bool allow_set_download_behavior,
+                         bool allow_file_access)
     : DevToolsDomainHandler(Page::Metainfo::domainName),
       enabled_(false),
       screencast_enabled_(false),
@@ -192,7 +195,6 @@ PageHandler::PageHandler(EmulationHandler* emulation_handler,
       screencast_max_height_(-1),
       capture_every_nth_frame_(1),
       capture_retry_count_(0),
-      has_compositor_frame_metadata_(false),
       session_id_(0),
       frame_counter_(0),
       frames_in_flight_(0),
@@ -200,9 +202,9 @@ PageHandler::PageHandler(EmulationHandler* emulation_handler,
       last_surface_size_(gfx::Size()),
       host_(nullptr),
       emulation_handler_(emulation_handler),
+      active_file_chooser_interceptor_(active_file_chooser_interceptor),
       allow_set_download_behavior_(allow_set_download_behavior),
-      observer_(this),
-      weak_factory_(this) {
+      allow_file_access_(allow_file_access) {
   bool create_video_consumer = true;
 #ifdef OS_ANDROID
   // Video capture doesn't work on Android WebView. Use CopyFromSurface instead.
@@ -269,17 +271,10 @@ void PageHandler::Wire(UberDispatcher* dispatcher) {
 }
 
 void PageHandler::OnSynchronousSwapCompositorFrame(
-    viz::CompositorFrameMetadata frame_metadata) {
-  if (has_compositor_frame_metadata_) {
-    last_compositor_frame_metadata_ =
-        std::move(next_compositor_frame_metadata_);
-  } else {
-    last_compositor_frame_metadata_ = frame_metadata.Clone();
-  }
-  next_compositor_frame_metadata_ = std::move(frame_metadata);
-
-  has_compositor_frame_metadata_ = true;
-
+    const cc::RenderFrameMetadata& frame_metadata) {
+  // Cache |frame_metadata_| as InnerSwapCompositorFrame may also be called on
+  // screencast start.
+  frame_metadata_ = frame_metadata;
   if (screencast_enabled_)
     InnerSwapCompositorFrame();
 }
@@ -359,6 +354,8 @@ Response PageHandler::Disable() {
   enabled_ = false;
   screencast_enabled_ = false;
 
+  SetInterceptFileChooserDialog(false);
+
   if (video_consumer_)
     video_consumer_->StopCapture();
 
@@ -406,6 +403,13 @@ void PageHandler::Reload(Maybe<bool> bypassCache,
     callback->sendFailure(Response::InternalError());
     return;
   }
+
+  // In the case of inspecting a GuestView (e.g. a PDF), we should reload
+  // the outer web contents (embedder), since otherwise reloading the guest by
+  // itself will fail.
+  if (web_contents->GetOuterWebContents())
+    web_contents = web_contents->GetOuterWebContents();
+
   // It is important to fallback before triggering reload, so that
   // renderer could prepare beforehand.
   callback->fallThrough();
@@ -510,15 +514,22 @@ void PageHandler::NavigationReset(NavigationRequest* navigation_request) {
     return;
   std::string frame_id =
       navigation_request->frame_tree_node()->devtools_frame_token().ToString();
-  bool success = navigation_request->net_error() == net::OK;
+  bool success = navigation_request->GetNetErrorCode() == net::OK;
   std::string error_string =
-      net::ErrorToString(navigation_request->net_error());
+      net::ErrorToString(navigation_request->GetNetErrorCode());
   navigate_callback->second->sendSuccess(
       frame_id,
       Maybe<std::string>(
           navigation_request->devtools_navigation_token().ToString()),
       success ? Maybe<std::string>() : Maybe<std::string>(error_string));
   navigate_callbacks_.erase(navigate_callback);
+}
+
+void PageHandler::DownloadWillBegin(FrameTreeNode* ftn, const GURL& url) {
+  if (!enabled_)
+    return;
+  frontend_->DownloadWillBegin(ftn->devtools_frame_token().ToString(),
+                               url.spec());
 }
 
 static const char* TransitionTypeName(ui::PageTransition type) {
@@ -560,10 +571,10 @@ Response PageHandler::GetNavigationHistory(
 
   NavigationController& controller = web_contents->GetController();
   *current_index = controller.GetCurrentEntryIndex();
-  *entries = NavigationEntries::create();
+  *entries = std::make_unique<NavigationEntries>();
   for (int i = 0; i != controller.GetEntryCount(); ++i) {
     auto* entry = controller.GetEntryAtIndex(i);
-    (*entries)->addItem(
+    (*entries)->emplace_back(
         Page::NavigationEntry::Create()
             .SetId(entry->GetUniqueID())
             .SetUrl(entry->GetURL().spec())
@@ -603,6 +614,114 @@ Response PageHandler::ResetNavigationHistory() {
   NavigationController& controller = web_contents->GetController();
   controller.DeleteNavigationEntries(base::BindRepeating(&ReturnTrue));
   return Response::OK();
+}
+
+Response PageHandler::SetInterceptFileChooserDialog(bool enabled) {
+  if (!allow_file_access_)
+    return Response::Error("Not Allowed");
+  if (*active_file_chooser_interceptor_ == this && enabled)
+    return Response::OK();
+  if (*active_file_chooser_interceptor_ &&
+      *active_file_chooser_interceptor_ != this) {
+    return enabled
+               ? Response::Error(
+                     "Cannot enable file chooser interception because other "
+                     "protocol client already intercepts it")
+               : Response::Error("File chooser interception was not enabled");
+  }
+  *active_file_chooser_interceptor_ = enabled ? this : nullptr;
+  if (!enabled && file_chooser_listener_)
+    FallbackOrCancelFileChooser();
+  return Response::OK();
+}
+
+Response PageHandler::HandleFileChooser(
+    const std::string& action,
+    Maybe<protocol::Array<std::string>> optional_files) {
+  if (!host_)
+    return Response::Error("Cannot resolve file paths");
+  if (!file_chooser_listener_)
+    return Response::Error("No pending file chooser");
+
+  if (action == Page::HandleFileChooser::ActionEnum::Fallback) {
+    if (optional_files.isJust()) {
+      return Response::InvalidParams(
+          "Either 'ignore' or 'files' parameter should be specified; received "
+          "both");
+    }
+    FallbackOrCancelFileChooser();
+    return Response::OK();
+  }
+
+  if (action == Page::HandleFileChooser::ActionEnum::Accept) {
+    if (!optional_files.isJust())
+      return Response::InvalidParams("Files must be specified");
+    std::unique_ptr<protocol::Array<std::string>> files =
+        optional_files.takeJust();
+    if (file_chooser_params_->mode ==
+            blink::mojom::FileChooserParams::Mode::kOpen &&
+        files->size() > 1) {
+      return Response::Error("Expected to accept a single file");
+    }
+    std::vector<blink::mojom::FileChooserFileInfoPtr> chooser_files;
+    for (const std::string& file : *files) {
+      base::FilePath file_path = base::FilePath::FromUTF8Unsafe(file);
+      ChildProcessSecurityPolicyImpl::GetInstance()->GrantReadFile(
+          host_->GetProcess()->GetID(), file_path);
+      chooser_files.push_back(blink::mojom::FileChooserFileInfo::NewNativeFile(
+          blink::mojom::NativeFileInfo::New(file_path, base::string16())));
+    }
+    file_chooser_listener_->FileSelected(
+        std::move(chooser_files), base::FilePath(), file_chooser_params_->mode);
+    file_chooser_listener_.reset();
+    file_chooser_params_.reset();
+    file_chooser_rfh_id_.reset();
+    return Response::OK();
+  }
+
+  if (action == Page::HandleFileChooser::ActionEnum::Cancel) {
+    file_chooser_listener_->FileSelectionCanceled();
+    file_chooser_listener_.reset();
+    file_chooser_params_.reset();
+    file_chooser_rfh_id_.reset();
+    return Response::OK();
+  }
+
+  return Response::InvalidParams("Unknown action '" + action + "'");
+}
+
+void PageHandler::FallbackOrCancelFileChooser() {
+  RenderFrameHost* rfh = RenderFrameHost::FromID(file_chooser_rfh_id_->first,
+                                                 file_chooser_rfh_id_->second);
+  WebContents* web_contents = GetWebContents();
+  if (rfh && web_contents && web_contents->GetDelegate()) {
+    web_contents->GetDelegate()->RunFileChooser(
+        rfh, std::move(file_chooser_listener_), *file_chooser_params_);
+  } else {
+    file_chooser_listener_->FileSelectionCanceled();
+  }
+  file_chooser_listener_.reset();
+  file_chooser_params_.reset();
+  file_chooser_rfh_id_.reset();
+}
+
+bool PageHandler::InterceptFileChooser(
+    RenderFrameHostImpl* rfh,
+    std::unique_ptr<FileSelectListener>* listener,
+    const blink::mojom::FileChooserParams& params) {
+  if (*active_file_chooser_interceptor_ != this)
+    return false;
+  file_chooser_rfh_id_ =
+      std::make_pair<int, int>(rfh->GetProcess()->GetID(), rfh->GetRoutingID());
+  DCHECK(!file_chooser_listener_);
+  file_chooser_listener_ = std::move(*listener);
+  file_chooser_params_ =
+      std::make_unique<blink::mojom::FileChooserParams>(params);
+  frontend_->FileChooserOpened(
+      params.mode == blink::mojom::FileChooserParams::Mode::kOpen
+          ? Page::FileChooserOpened::ModeEnum::SelectSingle
+          : Page::FileChooserOpened::ModeEnum::SelectMultiple);
+  return true;
 }
 
 void PageHandler::CaptureSnapshot(
@@ -769,6 +888,7 @@ void PageHandler::PrintToPDF(Maybe<bool> landscape,
                              Maybe<String> header_template,
                              Maybe<String> footer_template,
                              Maybe<bool> prefer_css_page_size,
+                             Maybe<String> transfer_mode,
                              std::unique_ptr<PrintToPDFCallback> callback) {
   callback->sendFailure(Response::Error("PrintToPDF is not implemented"));
   return;
@@ -822,7 +942,7 @@ Response PageHandler::StartScreencast(Maybe<std::string> format,
   if (!visible)
     return Response::FallThrough();
 
-  if (has_compositor_frame_metadata_) {
+  if (frame_metadata_) {
     InnerSwapCompositorFrame();
   } else {
     widget_host->Send(
@@ -975,16 +1095,14 @@ void PageHandler::InnerSwapCompositorFrame() {
   if (snapshot_size.IsEmpty())
     return;
 
-  double top_controls_height =
-      last_compositor_frame_metadata_.top_controls_height;
-  double top_controls_shown_ratio =
-      last_compositor_frame_metadata_.top_controls_shown_ratio;
+  double top_controls_height = frame_metadata_->top_controls_height;
+  double top_controls_shown_ratio = frame_metadata_->top_controls_shown_ratio;
 
   std::unique_ptr<Page::ScreencastFrameMetadata> page_metadata =
       BuildScreencastFrameMetadata(
-          surface_size, last_compositor_frame_metadata_.device_scale_factor,
-          last_compositor_frame_metadata_.page_scale_factor,
-          last_compositor_frame_metadata_.root_scroll_offset,
+          surface_size, frame_metadata_->device_scale_factor,
+          frame_metadata_->page_scale_factor,
+          frame_metadata_->root_scroll_offset.value_or(gfx::Vector2dF()),
           top_controls_height, top_controls_shown_ratio);
   if (!page_metadata)
     return;
@@ -1053,8 +1171,9 @@ void PageHandler::ScreencastFrameCaptured(
     --frames_in_flight_;
     return;
   }
-  base::PostTaskWithTraitsAndReplyWithResult(
-      FROM_HERE, {base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
+  base::PostTaskAndReplyWithResult(
+      FROM_HERE,
+      {base::ThreadPool(), base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
       base::BindOnce(&EncodeSkBitmap, bitmap, screencast_format_,
                      screencast_quality_),
       base::BindOnce(&PageHandler::ScreencastFrameEncoded,
@@ -1108,18 +1227,17 @@ void PageHandler::ScreenshotCaptured(
 void PageHandler::GotManifest(std::unique_ptr<GetAppManifestCallback> callback,
                               const GURL& manifest_url,
                               blink::mojom::ManifestDebugInfoPtr debug_info) {
-  std::unique_ptr<Array<Page::AppManifestError>> errors =
-      Array<Page::AppManifestError>::create();
+  auto errors = std::make_unique<protocol::Array<Page::AppManifestError>>();
   bool failed = true;
   if (debug_info) {
     failed = false;
     for (const auto& error : debug_info->errors) {
-      errors->addItem(Page::AppManifestError::Create()
-                          .SetMessage(error->message)
-                          .SetCritical(error->critical)
-                          .SetLine(error->line)
-                          .SetColumn(error->column)
-                          .Build());
+      errors->emplace_back(Page::AppManifestError::Create()
+                               .SetMessage(error->message)
+                               .SetCritical(error->critical)
+                               .SetLine(error->line)
+                               .SetColumn(error->column)
+                               .Build());
       if (error->critical)
         failed = true;
     }
@@ -1153,6 +1271,14 @@ Response PageHandler::SetWebLifecycleState(const std::string& state) {
     return Response::OK();
   }
   return Response::Error("Unidentified lifecycle state");
+}
+
+void PageHandler::GetInstallabilityErrors(
+    std::unique_ptr<GetInstallabilityErrorsCallback> callback) {
+  auto errors = std::make_unique<protocol::Array<std::string>>();
+  // TODO: Use InstallableManager once it moves into content/.
+  // Until then, this code is only used to return empty array in the tests.
+  callback->sendSuccess(std::move(errors));
 }
 
 }  // namespace protocol

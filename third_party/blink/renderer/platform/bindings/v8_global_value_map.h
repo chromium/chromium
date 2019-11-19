@@ -5,7 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_V8_GLOBAL_VALUE_MAP_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_V8_GLOBAL_VALUE_MAP_H_
 
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
 #include "v8/include/v8-util.h"
@@ -98,17 +98,16 @@ class V8GlobalValueMapTraits {
  * A map for safely storing persistent V8 values, based on
  * v8::GlobalValueMap.
  */
-template <typename KeyType,
-          typename ValueType,
-          v8::PersistentContainerCallbackType type>
-class V8GlobalValueMap : public v8::GlobalValueMap<
-                             KeyType,
-                             ValueType,
-                             V8GlobalValueMapTraits<KeyType, ValueType, type>> {
+template <typename KeyType, typename ValueType>
+class V8GlobalValueMap
+    : public v8::GlobalValueMap<
+          KeyType,
+          ValueType,
+          V8GlobalValueMapTraits<KeyType, ValueType, v8::kNotWeak>> {
   DISALLOW_NEW();
 
  public:
-  typedef V8GlobalValueMapTraits<KeyType, ValueType, type> Traits;
+  typedef V8GlobalValueMapTraits<KeyType, ValueType, v8::kNotWeak> Traits;
   explicit V8GlobalValueMap(v8::Isolate* isolate)
       : v8::GlobalValueMap<KeyType, ValueType, Traits>(isolate) {}
   V8GlobalValueMap(v8::Isolate* isolate, const char* label)

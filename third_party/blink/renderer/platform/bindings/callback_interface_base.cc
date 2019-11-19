@@ -72,17 +72,4 @@ ScriptState* CallbackInterfaceBase::CallbackRelevantScriptStateOrThrowException(
   return nullptr;
 }
 
-V8PersistentCallbackInterfaceBase::V8PersistentCallbackInterfaceBase(
-    CallbackInterfaceBase* callback_interface)
-    : callback_interface_(callback_interface) {
-  v8::Isolate* isolate = callback_interface_->GetIsolate();
-  v8::HandleScope scope(isolate);
-  auto local = callback_interface_->callback_object_.NewLocal(isolate);
-  v8_object_.Reset(isolate, local);
-}
-
-void V8PersistentCallbackInterfaceBase::Trace(blink::Visitor* visitor) {
-  visitor->Trace(callback_interface_);
-}
-
 }  // namespace blink

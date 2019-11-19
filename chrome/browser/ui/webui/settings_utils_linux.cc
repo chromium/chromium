@@ -133,9 +133,9 @@ void DetectAndStartProxyConfigUtil(int render_process_id,
 
   if (launched)
     return;
-  base::PostTaskWithTraits(FROM_HERE, {BrowserThread::UI},
-                           base::BindOnce(&ShowLinuxProxyConfigUrl,
-                                          render_process_id, render_view_id));
+  base::PostTask(FROM_HERE, {BrowserThread::UI},
+                 base::BindOnce(&ShowLinuxProxyConfigUrl, render_process_id,
+                                render_view_id));
 }
 
 }  // namespace
@@ -143,8 +143,9 @@ void DetectAndStartProxyConfigUtil(int render_process_id,
 namespace settings_utils {
 
 void ShowNetworkProxySettings(content::WebContents* web_contents) {
-  base::PostTaskWithTraits(
-      FROM_HERE, {base::TaskPriority::USER_VISIBLE, base::MayBlock()},
+  base::PostTask(
+      FROM_HERE,
+      {base::ThreadPool(), base::TaskPriority::USER_VISIBLE, base::MayBlock()},
       base::BindOnce(&DetectAndStartProxyConfigUtil,
                      web_contents->GetRenderViewHost()->GetProcess()->GetID(),
                      web_contents->GetRenderViewHost()->GetRoutingID()));

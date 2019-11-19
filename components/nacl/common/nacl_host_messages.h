@@ -44,7 +44,7 @@ IPC_STRUCT_TRAITS_BEGIN(nacl::NaClLaunchResult)
   IPC_STRUCT_TRAITS_MEMBER(manifest_service_ipc_channel_handle)
   IPC_STRUCT_TRAITS_MEMBER(plugin_pid)
   IPC_STRUCT_TRAITS_MEMBER(plugin_child_id)
-  IPC_STRUCT_TRAITS_MEMBER(crash_info_shmem_handle)
+  IPC_STRUCT_TRAITS_MEMBER(crash_info_shmem_region)
 IPC_STRUCT_TRAITS_END()
 
 IPC_STRUCT_TRAITS_BEGIN(nacl::PnaclCacheInfo)

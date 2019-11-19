@@ -43,6 +43,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method matchAll
 [Worker]     setter onprogress
 [Worker] interface BarcodeDetector
+[Worker]     static method getSupportedFormats
 [Worker]     attribute @@toStringTag
 [Worker]     method constructor
 [Worker]     method detect
@@ -50,8 +51,11 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     attribute @@toStringTag
 [Worker]     getter size
 [Worker]     getter type
+[Worker]     method arrayBuffer
 [Worker]     method constructor
 [Worker]     method slice
+[Worker]     method stream
+[Worker]     method text
 [Worker] interface BroadcastChannel : EventTarget
 [Worker]     attribute @@toStringTag
 [Worker]     getter name
@@ -63,8 +67,10 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     setter onmessage
 [Worker]     setter onmessageerror
 [Worker] interface ByteLengthQueuingStrategy
+[Worker]     attribute @@toStringTag
+[Worker]     getter highWaterMark
+[Worker]     getter size
 [Worker]     method constructor
-[Worker]     method size
 [Worker] interface CSSSkewX : CSSTransformComponent
 [Worker]     attribute @@toStringTag
 [Worker]     getter ax
@@ -107,9 +113,22 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter reason
 [Worker]     getter wasClean
 [Worker]     method constructor
-[Worker] interface CountQueuingStrategy
+[Worker] interface CompressionStream
+[Worker]     attribute @@toStringTag
+[Worker]     getter readable
+[Worker]     getter writable
 [Worker]     method constructor
-[Worker]     method size
+[Worker] interface ContentIndex
+[Worker]     attribute @@toStringTag
+[Worker]     method add
+[Worker]     method constructor
+[Worker]     method delete
+[Worker]     method getAll
+[Worker] interface CountQueuingStrategy
+[Worker]     attribute @@toStringTag
+[Worker]     getter highWaterMark
+[Worker]     getter size
+[Worker]     method constructor
 [Worker] interface Crypto
 [Worker]     attribute @@toStringTag
 [Worker]     getter subtle
@@ -326,6 +345,29 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method constructor
 [Worker]     method contains
 [Worker]     method item
+[Worker] interface DecompressionStream
+[Worker]     attribute @@toStringTag
+[Worker]     getter readable
+[Worker]     getter writable
+[Worker]     method constructor
+[Worker] interface DetectedBarcode
+[Worker]     attribute @@toStringTag
+[Worker]     getter boundingBox
+[Worker]     getter cornerPoints
+[Worker]     getter format
+[Worker]     getter rawValue
+[Worker]     method constructor
+[Worker] interface DetectedFace
+[Worker]     attribute @@toStringTag
+[Worker]     getter boundingBox
+[Worker]     getter landmarks
+[Worker]     method constructor
+[Worker] interface DetectedText
+[Worker]     attribute @@toStringTag
+[Worker]     getter boundingBox
+[Worker]     getter cornerPoints
+[Worker]     getter rawValue
+[Worker]     method constructor
 [Worker] interface ErrorEvent : Event
 [Worker]     attribute @@toStringTag
 [Worker]     getter colno
@@ -433,6 +475,33 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method readAsBinaryString
 [Worker]     method readAsDataURL
 [Worker]     method readAsText
+[Worker] interface FileSystemDirectoryHandle : FileSystemHandle
+[Worker]     static method getSystemDirectory
+[Worker]     attribute @@toStringTag
+[Worker]     method constructor
+[Worker]     method getDirectory
+[Worker]     method getEntries
+[Worker]     method getFile
+[Worker]     method removeEntry
+[Worker] interface FileSystemFileHandle : FileSystemHandle
+[Worker]     attribute @@toStringTag
+[Worker]     method constructor
+[Worker]     method createWriter
+[Worker]     method getFile
+[Worker] interface FileSystemHandle
+[Worker]     attribute @@toStringTag
+[Worker]     getter isDirectory
+[Worker]     getter isFile
+[Worker]     getter name
+[Worker]     method constructor
+[Worker]     method queryPermission
+[Worker]     method requestPermission
+[Worker] interface FileSystemWriter
+[Worker]     attribute @@toStringTag
+[Worker]     method close
+[Worker]     method constructor
+[Worker]     method truncate
+[Worker]     method write
 [Worker] interface FontFace
 [Worker]     attribute @@toStringTag
 [Worker]     getter display
@@ -487,6 +556,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter direction
 [Worker]     getter key
 [Worker]     getter primaryKey
+[Worker]     getter request
 [Worker]     getter source
 [Worker]     method advance
 [Worker]     method constructor
@@ -613,6 +683,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker] interface IDBTransaction : EventTarget
 [Worker]     attribute @@toStringTag
 [Worker]     getter db
+[Worker]     getter durability
 [Worker]     getter error
 [Worker]     getter mode
 [Worker]     getter objectStoreNames
@@ -639,6 +710,11 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter width
 [Worker]     method close
 [Worker]     method constructor
+[Worker] interface ImageBitmapRenderingContext
+[Worker]     attribute @@toStringTag
+[Worker]     getter canvas
+[Worker]     method constructor
+[Worker]     method transferFromImageBitmap
 [Worker] interface ImageData
 [Worker]     attribute @@toStringTag
 [Worker]     getter data
@@ -657,6 +733,31 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method constructor
 [Worker]     method query
 [Worker]     method request
+[Worker] interface MediaCapabilities
+[Worker]     attribute @@toStringTag
+[Worker]     method constructor
+[Worker]     method decodingInfo
+[Worker]     method encodingInfo
+[Worker] interface MediaSource : EventTarget
+[Worker]     static method isTypeSupported
+[Worker]     attribute @@toStringTag
+[Worker]     getter activeSourceBuffers
+[Worker]     getter duration
+[Worker]     getter onsourceclose
+[Worker]     getter onsourceended
+[Worker]     getter onsourceopen
+[Worker]     getter readyState
+[Worker]     getter sourceBuffers
+[Worker]     method addSourceBuffer
+[Worker]     method clearLiveSeekableRange
+[Worker]     method constructor
+[Worker]     method endOfStream
+[Worker]     method removeSourceBuffer
+[Worker]     method setLiveSeekableRange
+[Worker]     setter duration
+[Worker]     setter onsourceclose
+[Worker]     setter onsourceended
+[Worker]     setter onsourceopen
 [Worker] interface MessageChannel
 [Worker]     attribute @@toStringTag
 [Worker]     getter port1
@@ -687,8 +788,6 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     static method createDataPipe
 [Worker]     static method createMessagePipe
 [Worker]     static method createSharedBuffer
-[Worker]     static method getDocumentInterfaceBrokerHandle
-[Worker]     static method replaceDocumentInterfaceBrokerForTesting
 [Worker]     attribute @@toStringTag
 [Worker]     attribute RESULT_ABORTED
 [Worker]     attribute RESULT_ALREADY_EXISTS
@@ -839,6 +938,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method fillText
 [Worker]     method getImageData
 [Worker]     method getLineDash
+[Worker]     method getTransform
 [Worker]     method isPointInPath
 [Worker]     method isPointInStroke
 [Worker]     method lineTo
@@ -903,12 +1003,8 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method set
 [Worker] interface Performance : EventTarget
 [Worker]     attribute @@toStringTag
-[Worker]     getter onelementtimingbufferfull
-[Worker]     getter oneventtimingbufferfull
 [Worker]     getter onresourcetimingbufferfull
 [Worker]     getter timeOrigin
-[Worker]     method clearElementTimings
-[Worker]     method clearEventTimings
 [Worker]     method clearMarks
 [Worker]     method clearMeasures
 [Worker]     method clearResourceTimings
@@ -918,13 +1014,11 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method getEntriesByType
 [Worker]     method mark
 [Worker]     method measure
+[Worker]     method measureMemory
 [Worker]     method now
-[Worker]     method setElementTimingBufferMaxSize
-[Worker]     method setEventTimingBufferMaxSize
+[Worker]     method profile
 [Worker]     method setResourceTimingBufferSize
 [Worker]     method toJSON
-[Worker]     setter onelementtimingbufferfull
-[Worker]     setter oneventtimingbufferfull
 [Worker]     setter onresourcetimingbufferfull
 [Worker] interface PerformanceEntry
 [Worker]     attribute @@toStringTag
@@ -936,9 +1030,11 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method toJSON
 [Worker] interface PerformanceMark : PerformanceEntry
 [Worker]     attribute @@toStringTag
+[Worker]     getter detail
 [Worker]     method constructor
 [Worker] interface PerformanceMeasure : PerformanceEntry
 [Worker]     attribute @@toStringTag
+[Worker]     getter detail
 [Worker]     method constructor
 [Worker] interface PerformanceObserver
 [Worker]     static getter supportedEntryTypes
@@ -973,6 +1069,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter serverTiming
 [Worker]     getter transferSize
 [Worker]     getter workerStart
+[Worker]     getter workerTiming
 [Worker]     method constructor
 [Worker]     method toJSON
 [Worker] interface PerformanceServerTiming
@@ -982,6 +1079,12 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter name
 [Worker]     method constructor
 [Worker]     method toJSON
+[Worker] interface PeriodicSyncManager
+[Worker]     attribute @@toStringTag
+[Worker]     method constructor
+[Worker]     method getTags
+[Worker]     method register
+[Worker]     method unregister
 [Worker] interface PermissionStatus : EventTarget
 [Worker]     attribute @@toStringTag
 [Worker]     getter onchange
@@ -995,6 +1098,12 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method request
 [Worker]     method requestAll
 [Worker]     method revoke
+[Worker] interface Profiler
+[Worker]     attribute @@toStringTag
+[Worker]     getter sampleInterval
+[Worker]     getter stopped
+[Worker]     method constructor
+[Worker]     method stop
 [Worker] interface ProgressEvent : Event
 [Worker]     attribute @@toStringTag
 [Worker]     getter lengthComputable
@@ -1027,6 +1136,10 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter applicationServerKey
 [Worker]     getter userVisibleOnly
 [Worker]     method constructor
+[Worker] interface QuicTransport
+[Worker]     attribute @@toStringTag
+[Worker]     method close
+[Worker]     method constructor
 [Worker] interface ReadableStream
 [Worker]     attribute @@toStringTag
 [Worker]     getter locked
@@ -1036,6 +1149,13 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method pipeThrough
 [Worker]     method pipeTo
 [Worker]     method tee
+[Worker] interface ReadableStreamDefaultReader
+[Worker]     attribute @@toStringTag
+[Worker]     getter closed
+[Worker]     method cancel
+[Worker]     method constructor
+[Worker]     method read
+[Worker]     method releaseLock
 [Worker] interface Request
 [Worker]     attribute @@toStringTag
 [Worker]     getter bodyUsed
@@ -1080,14 +1200,35 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method formData
 [Worker]     method json
 [Worker]     method text
+[Worker] interface ScreenManager
+[Worker]     attribute @@toStringTag
+[Worker]     method constructor
+[Worker]     method getScreens
+[Worker] interface SecurityPolicyViolationEvent : Event
+[Worker]     attribute @@toStringTag
+[Worker]     getter blockedURI
+[Worker]     getter columnNumber
+[Worker]     getter disposition
+[Worker]     getter documentURI
+[Worker]     getter effectiveDirective
+[Worker]     getter lineNumber
+[Worker]     getter originalPolicy
+[Worker]     getter referrer
+[Worker]     getter sample
+[Worker]     getter sourceFile
+[Worker]     getter statusCode
+[Worker]     getter violatedDirective
+[Worker]     method constructor
 [Worker] interface ServiceWorkerRegistration : EventTarget
 [Worker]     attribute @@toStringTag
 [Worker]     getter active
 [Worker]     getter backgroundFetch
+[Worker]     getter index
 [Worker]     getter installing
 [Worker]     getter navigationPreload
 [Worker]     getter onupdatefound
 [Worker]     getter paymentManager
+[Worker]     getter periodicSync
 [Worker]     getter pushManager
 [Worker]     getter scope
 [Worker]     getter sync
@@ -1160,6 +1301,20 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter readable
 [Worker]     getter writable
 [Worker]     method constructor
+[Worker] interface TextMetrics
+[Worker]     attribute @@toStringTag
+[Worker]     getter actualBoundingBoxAscent
+[Worker]     getter actualBoundingBoxDescent
+[Worker]     getter actualBoundingBoxLeft
+[Worker]     getter actualBoundingBoxRight
+[Worker]     getter advances
+[Worker]     getter emHeightAscent
+[Worker]     getter emHeightDescent
+[Worker]     getter fontBoundingBoxAscent
+[Worker]     getter fontBoundingBoxDescent
+[Worker]     getter width
+[Worker]     method constructor
+[Worker]     method getBaselines
 [Worker] interface TimestampTrigger
 [Worker]     attribute @@toStringTag
 [Worker]     getter timestamp
@@ -1172,6 +1327,9 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker] interface TrustedTypePolicyFactory
 [Worker]     attribute @@toStringTag
 [Worker]     method constructor
+[Worker]     method getAttributeType
+[Worker]     method getPropertyType
+[Worker]     method getTypeMapping
 [Worker] interface URL
 [Worker]     static method createObjectURL
 [Worker]     static method revokeObjectURL
@@ -1217,6 +1375,11 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method sort
 [Worker]     method toString
 [Worker]     method values
+[Worker] interface UserActivation
+[Worker]     attribute @@toStringTag
+[Worker]     getter hasBeenActive
+[Worker]     getter isActive
+[Worker]     method constructor
 [Worker] interface WebGL2ComputeRenderingContext
 [Worker]     attribute @@toStringTag
 [Worker]     attribute ACTIVE_ATOMIC_COUNTER_BUFFERS
@@ -1228,6 +1391,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     attribute ACTIVE_VARIABLES
 [Worker]     attribute ALIASED_LINE_WIDTH_RANGE
 [Worker]     attribute ALIASED_POINT_SIZE_RANGE
+[Worker]     attribute ALL_BARRIER_BITS
 [Worker]     attribute ALPHA
 [Worker]     attribute ALPHA_BITS
 [Worker]     attribute ALREADY_SIGNALED
@@ -1330,6 +1494,8 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     attribute DEPTH_STENCIL_ATTACHMENT
 [Worker]     attribute DEPTH_TEST
 [Worker]     attribute DEPTH_WRITEMASK
+[Worker]     attribute DISPATCH_INDIRECT_BUFFER
+[Worker]     attribute DISPATCH_INDIRECT_BUFFER_BINDING
 [Worker]     attribute DITHER
 [Worker]     attribute DONT_CARE
 [Worker]     attribute DRAW_BUFFER0
@@ -1350,6 +1516,8 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     attribute DRAW_BUFFER9
 [Worker]     attribute DRAW_FRAMEBUFFER
 [Worker]     attribute DRAW_FRAMEBUFFER_BINDING
+[Worker]     attribute DRAW_INDIRECT_BUFFER
+[Worker]     attribute DRAW_INDIRECT_BUFFER_BINDING
 [Worker]     attribute DST_ALPHA
 [Worker]     attribute DST_COLOR
 [Worker]     attribute DYNAMIC_COPY
@@ -1359,7 +1527,6 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     attribute ELEMENT_ARRAY_BUFFER
 [Worker]     attribute ELEMENT_ARRAY_BUFFER_BINDING
 [Worker]     attribute EQUAL
-[Worker]     attribute FALSE
 [Worker]     attribute FASTEST
 [Worker]     attribute FLOAT
 [Worker]     attribute FLOAT_32_UNSIGNED_INT_24_8_REV
@@ -1790,7 +1957,6 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     attribute TRIANGLES
 [Worker]     attribute TRIANGLE_FAN
 [Worker]     attribute TRIANGLE_STRIP
-[Worker]     attribute TRUE
 [Worker]     attribute TYPE
 [Worker]     attribute UNIFORM
 [Worker]     attribute UNIFORM_ARRAY_STRIDE
@@ -1938,10 +2104,13 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method disable
 [Worker]     method disableVertexAttribArray
 [Worker]     method dispatchCompute
+[Worker]     method dispatchComputeIndirect
 [Worker]     method drawArrays
+[Worker]     method drawArraysIndirect
 [Worker]     method drawArraysInstanced
 [Worker]     method drawBuffers
 [Worker]     method drawElements
+[Worker]     method drawElementsIndirect
 [Worker]     method drawElementsInstanced
 [Worker]     method drawRangeElements
 [Worker]     method enable
@@ -3403,8 +3572,16 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     setter onerror
 [Worker]     setter onmessage
 [Worker]     setter onopen
+[Worker] interface WebSocketStream
+[Worker]     attribute @@toStringTag
+[Worker]     getter closed
+[Worker]     getter connection
+[Worker]     getter url
+[Worker]     method close
+[Worker]     method constructor
 [Worker] interface WorkerGlobalScope : EventTarget
 [Worker]     attribute @@toStringTag
+[Worker]     getter addressSpace
 [Worker]     getter caches
 [Worker]     getter crypto
 [Worker]     getter fonts
@@ -3421,7 +3598,6 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter self
 [Worker]     method atob
 [Worker]     method btoa
-[Worker]     method cancelAnimationFrame
 [Worker]     method clearInterval
 [Worker]     method clearTimeout
 [Worker]     method constructor
@@ -3429,7 +3605,6 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method fetch
 [Worker]     method importScripts
 [Worker]     method queueMicrotask
-[Worker]     method requestAnimationFrame
 [Worker]     method setInterval
 [Worker]     method setTimeout
 [Worker]     setter onerror
@@ -3459,18 +3634,20 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter connection
 [Worker]     getter deviceMemory
 [Worker]     getter hardwareConcurrency
-[Worker]     getter idle
 [Worker]     getter language
 [Worker]     getter languages
 [Worker]     getter locks
+[Worker]     getter mediaCapabilities
 [Worker]     getter onLine
 [Worker]     getter permissions
 [Worker]     getter platform
 [Worker]     getter product
+[Worker]     getter screen
 [Worker]     getter serial
 [Worker]     getter storage
 [Worker]     getter usb
 [Worker]     getter userAgent
+[Worker]     getter wakeLock
 [Worker]     method constructor
 [Worker] interface WritableStream
 [Worker]     attribute @@toStringTag
@@ -3478,6 +3655,16 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method abort
 [Worker]     method constructor
 [Worker]     method getWriter
+[Worker] interface WritableStreamDefaultWriter
+[Worker]     attribute @@toStringTag
+[Worker]     getter closed
+[Worker]     getter desiredSize
+[Worker]     getter ready
+[Worker]     method abort
+[Worker]     method close
+[Worker]     method constructor
+[Worker]     method releaseLock
+[Worker]     method write
 [Worker] interface XMLHttpRequest : XMLHttpRequestEventTarget
 [Worker]     attribute @@toStringTag
 [Worker]     attribute DONE
@@ -3535,6 +3722,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     attribute internals
 [Worker]     getter name
 [Worker]     getter onconnect
+[Worker]     getter trustedTypes
 [Worker]     method close
 [Worker]     method gc
 [Worker]     method webkitRequestFileSystem

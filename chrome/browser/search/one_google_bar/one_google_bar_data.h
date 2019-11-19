@@ -27,6 +27,9 @@ struct OneGoogleBarData {
   std::string after_bar_script;
   std::string end_of_body_html;
   std::string end_of_body_script;
+
+  // User's language code returned by the server
+  std::string language_code;
 };
 
 bool operator==(const OneGoogleBarData& lhs, const OneGoogleBarData& rhs);

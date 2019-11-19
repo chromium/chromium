@@ -10,6 +10,7 @@
 
 #include "base/bind.h"
 #include "cc/input/input_handler.h"
+#include "ui/events/types/scroll_types.h"
 #include "ui/gfx/geometry/vector2d_conversions.h"
 
 // InputScrollElasticityController is based on
@@ -93,8 +94,7 @@ InputScrollElasticityController::InputScrollElasticityController(
     : helper_(helper),
       state_(kStateInactive),
       momentum_animation_reset_at_next_frame_(false),
-      received_overscroll_update_(false),
-      weak_factory_(this) {}
+      received_overscroll_update_(false) {}
 
 InputScrollElasticityController::~InputScrollElasticityController() {
 }
@@ -164,12 +164,14 @@ void InputScrollElasticityController::ObserveGestureEventAndResult(
       if (gesture_event.data.scroll_begin.synthetic)
         return;
 
-      bool enter_momentum = gesture_event.data.scroll_begin.inertial_phase ==
-                            blink::WebGestureEvent::kMomentumPhase;
-      bool leave_momentum = gesture_event.data.scroll_begin.inertial_phase ==
-                                blink::WebGestureEvent::kNonMomentumPhase &&
-                            gesture_event.data.scroll_begin.delta_hint_units ==
-                                blink::WebGestureEvent::kPrecisePixels;
+      bool enter_momentum =
+          gesture_event.data.scroll_begin.inertial_phase ==
+          blink::WebGestureEvent::InertialPhaseState::kMomentum;
+      bool leave_momentum =
+          gesture_event.data.scroll_begin.inertial_phase ==
+              blink::WebGestureEvent::InertialPhaseState::kNonMomentum &&
+          gesture_event.data.scroll_begin.delta_hint_units ==
+              ui::input_types::ScrollGranularity::kScrollByPrecisePixel;
       ObserveRealScrollBegin(enter_momentum, leave_momentum);
       break;
     }
@@ -177,7 +179,7 @@ void InputScrollElasticityController::ObserveGestureEventAndResult(
       gfx::Vector2dF event_delta(-gesture_event.data.scroll_update.delta_x,
                                  -gesture_event.data.scroll_update.delta_y);
       bool has_momentum = gesture_event.data.scroll_update.inertial_phase ==
-                          blink::WebGestureEvent::kMomentumPhase;
+                          blink::WebGestureEvent::InertialPhaseState::kMomentum;
       ObserveScrollUpdate(event_delta, scroll_result.unused_scroll_delta,
                           event_timestamp, scroll_result.overscroll_behavior,
                           has_momentum);

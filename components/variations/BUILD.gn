@@ -30,9 +30,6 @@ static_library("variations") {
     "pref_names.h",
     "processed_study.cc",
     "processed_study.h",
-    "proto/client_variations.proto",
-    "proto/study.proto",
-    "proto/variations_seed.proto",
     "seed_response.cc",
     "seed_response.h",
     "study_filtering.cc",
@@ -95,7 +92,6 @@ if (is_android) {
       "android/java/src/org/chromium/components/variations/VariationsAssociatedData.java",
       "android/java/src/org/chromium/components/variations/firstrun/VariationsSeedBridge.java",
     ]
-    jni_package = "variations"
   }
 
   android_library("load_seed_result_enum_java") {
@@ -134,10 +130,12 @@ source_set("unit_tests") {
   sources = [
     "active_field_trials_unittest.cc",
     "child_process_field_trial_syncer_unittest.cc",
+    "client_filterable_state_unittest.cc",
     "entropy_provider_unittest.cc",
     "hashing_unittest.cc",
     "net/variations_command_line_unittest.cc",
     "net/variations_http_headers_unittest.cc",
+    "simulate_for_crosstalk_unittest.cc",
     "study_filtering_unittest.cc",
     "synthetic_trial_registry_unittest.cc",
     "variations_associated_data_unittest.cc",

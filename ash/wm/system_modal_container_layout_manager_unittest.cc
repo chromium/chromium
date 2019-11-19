@@ -6,7 +6,11 @@
 
 #include <memory>
 
-#include "ash/keyboard/ash_keyboard_controller.h"
+#include "ash/keyboard/keyboard_controller_impl.h"
+#include "ash/keyboard/ui/keyboard_ui.h"
+#include "ash/keyboard/ui/keyboard_ui_controller.h"
+#include "ash/keyboard/ui/test/keyboard_test_util.h"
+#include "ash/public/cpp/keyboard/keyboard_switches.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/root_window_controller.h"
 #include "ash/shell.h"
@@ -26,10 +30,6 @@
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor/test/layer_animator_test_controller.h"
 #include "ui/events/test/event_generator.h"
-#include "ui/keyboard/keyboard_controller.h"
-#include "ui/keyboard/keyboard_ui.h"
-#include "ui/keyboard/public/keyboard_switches.h"
-#include "ui/keyboard/test/keyboard_test_util.h"
 #include "ui/views/test/capture_tracking_view.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
@@ -46,7 +46,7 @@ aura::Window* GetModalContainer() {
 
 bool AllRootWindowsHaveModalBackgroundsForContainer(int container_id) {
   aura::Window::Windows containers =
-      wm::GetContainersFromAllRootWindows(container_id);
+      GetContainersForAllRootWindows(container_id);
   bool has_modal_screen = !containers.empty();
   for (aura::Window* container : containers) {
     has_modal_screen &= static_cast<SystemModalContainerLayoutManager*>(
@@ -169,7 +169,7 @@ class SystemModalContainerLayoutManagerTest : public AshTestBase {
 
   // Show or hide the keyboard.
   void ShowKeyboard(bool show) {
-    auto* keyboard = keyboard::KeyboardController::Get();
+    auto* keyboard = keyboard::KeyboardUIController::Get();
     ASSERT_TRUE(keyboard->IsEnabled());
     if (show == keyboard->IsKeyboardVisible())
       return;
@@ -324,6 +324,17 @@ TEST_F(SystemModalContainerLayoutManagerTest, EventFocusContainers) {
   e1.ClickLeftButton();
   EXPECT_EQ(1, main_delegate->mouse_presses());
 
+  EventTestWindow* status_delegate = new EventTestWindow(false);
+  std::unique_ptr<aura::Window> status(
+      status_delegate->OpenTestWindowWithParent(
+          Shell::GetPrimaryRootWindowController()->GetContainer(
+              ash::kShellWindowId_StatusContainer)));
+  status->SetBounds(main->bounds());
+
+  // Make sure that status window can receive event.
+  e1.ClickLeftButton();
+  EXPECT_EQ(1, status_delegate->mouse_presses());
+
   // Create a modal window for the main window and verify that the main window
   // no longer receives mouse events.
   EventTestWindow* transient_delegate = new EventTestWindow(true);
@@ -331,7 +342,14 @@ TEST_F(SystemModalContainerLayoutManagerTest, EventFocusContainers) {
       transient_delegate->OpenTestWindowWithParent(main.get());
   EXPECT_TRUE(wm::IsActiveWindow(transient));
   e1.ClickLeftButton();
+
+  EXPECT_EQ(0, transient_delegate->mouse_presses());
+  EXPECT_EQ(1, status_delegate->mouse_presses());
+
+  status->Hide();
+  e1.ClickLeftButton();
   EXPECT_EQ(1, transient_delegate->mouse_presses());
+  EXPECT_EQ(1, status_delegate->mouse_presses());
 
   for (int block_reason = FIRST_BLOCK_REASON;
        block_reason < NUMBER_OF_BLOCK_REASONS; ++block_reason) {
@@ -346,9 +364,11 @@ TEST_F(SystemModalContainerLayoutManagerTest, EventFocusContainers) {
     // BlockUserSession could change the workspace size. Make sure |lock| has
     // the same bounds as |main| so that |lock| gets the generated mouse events.
     lock->SetBounds(main->bounds());
+
     EXPECT_TRUE(wm::IsActiveWindow(lock.get()));
     e1.ClickLeftButton();
     EXPECT_EQ(1, lock_delegate->mouse_presses());
+    EXPECT_EQ(1, status_delegate->mouse_presses());
 
     // Make sure that a modal container created by the lock screen can still
     // receive mouse events.
@@ -357,11 +377,25 @@ TEST_F(SystemModalContainerLayoutManagerTest, EventFocusContainers) {
         lock_modal_delegate->OpenTestWindowWithParent(lock.get());
     EXPECT_TRUE(wm::IsActiveWindow(lock_modal));
     e1.ClickLeftButton();
+
     // Verify that none of the other containers received any more mouse presses.
     EXPECT_EQ(1, lock_modal_delegate->mouse_presses());
     EXPECT_EQ(1, lock_delegate->mouse_presses());
+    EXPECT_EQ(1, status_delegate->mouse_presses());
     EXPECT_EQ(1, main_delegate->mouse_presses());
     EXPECT_EQ(1, transient_delegate->mouse_presses());
+
+    // Showing status will block events.
+    status->Show();
+    e1.ClickLeftButton();
+
+    // Verify that none of the other containers received any more mouse presses.
+    EXPECT_EQ(1, lock_modal_delegate->mouse_presses());
+    EXPECT_EQ(1, lock_delegate->mouse_presses());
+    EXPECT_EQ(1, status_delegate->mouse_presses());
+    EXPECT_EQ(1, main_delegate->mouse_presses());
+    EXPECT_EQ(1, transient_delegate->mouse_presses());
+    status->Hide();
 
     // Close |lock| before unlocking so that Shell::OnLockStateChanged does
     // not DCHECK on finding a system modal in Lock layer when unlocked.
@@ -369,6 +403,46 @@ TEST_F(SystemModalContainerLayoutManagerTest, EventFocusContainers) {
 
     UnblockUserSession();
   }
+}
+
+// Test if a user can still click the status area in lock screen
+// even if the user session has system modal dialog.
+TEST_F(SystemModalContainerLayoutManagerTest,
+       ClickStatusWithModalDialogInLockedState) {
+  // Create a normal window and attempt to receive a click event.
+  EventTestWindow* main_delegate = new EventTestWindow(false);
+  std::unique_ptr<aura::Window> main(
+      main_delegate->OpenTestWindowWithContext(CurrentContext()));
+  ui::test::EventGenerator generator(Shell::GetPrimaryRootWindow(), main.get());
+
+  // A window in status area container to test if it could receive an event
+  // under each condition.
+  EventTestWindow* status_delegate = new EventTestWindow(false);
+  std::unique_ptr<aura::Window> status(
+      status_delegate->OpenTestWindowWithParent(
+          Shell::GetPrimaryRootWindowController()->GetContainer(
+              ash::kShellWindowId_StatusContainer)));
+  status->SetBounds(main->bounds());
+
+  // Events are blocked on all windows because status window is above the modal
+  // window.
+  EventTestWindow* modal_delegate = new EventTestWindow(true);
+  aura::Window* modal = modal_delegate->OpenTestWindowWithParent(main.get());
+  EXPECT_TRUE(wm::IsActiveWindow(modal));
+  generator.ClickLeftButton();
+
+  EXPECT_EQ(0, main_delegate->mouse_presses());
+  EXPECT_EQ(0, modal_delegate->mouse_presses());
+  EXPECT_EQ(0, status_delegate->mouse_presses());
+
+  BlockUserSession(BLOCKED_BY_LOCK_SCREEN);
+
+  // In lock screen, a window in status area container should be able to receive
+  // the event even with a system modal dialog in the user session.
+  generator.ClickLeftButton();
+  EXPECT_EQ(0, main_delegate->mouse_presses());
+  EXPECT_EQ(0, modal_delegate->mouse_presses());
+  EXPECT_EQ(1, status_delegate->mouse_presses());
 }
 
 TEST_F(SystemModalContainerLayoutManagerTest, ModalTransientChildEvents) {

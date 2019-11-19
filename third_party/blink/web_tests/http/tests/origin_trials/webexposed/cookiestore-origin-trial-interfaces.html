@@ -11,7 +11,7 @@ generate_token.py http://127.0.0.1:8000 CookieStore --expire-timestamp=200000000
 <script src="/serviceworker/resources/test-helpers.js"></script>
 <script>
 test(t => {
-  OriginTrialsHelper.check_properties(this, {
+  OriginTrialsHelper.check_properties_exist(this, {
      'CookieStore': ['get', 'getAll', 'set', 'delete', 'onchange'],
      'CookieChangeEvent': ['changed', 'deleted'],
   });

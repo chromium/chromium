@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <cstring>
 
+#include "base/message_loop/message_pump_type.h"
 #include "build/build_config.h"
 #include "gpu/ipc/common/gpu_preferences.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -21,8 +22,6 @@ void CheckGpuPreferencesEqual(GpuPreferences left, GpuPreferences right) {
   EXPECT_EQ(left.gpu_startup_dialog, right.gpu_startup_dialog);
   EXPECT_EQ(left.disable_gpu_watchdog, right.disable_gpu_watchdog);
   EXPECT_EQ(left.gpu_sandbox_start_early, right.gpu_sandbox_start_early);
-  EXPECT_EQ(left.enable_accelerated_vpx_decode,
-            right.enable_accelerated_vpx_decode);
   EXPECT_EQ(left.enable_low_latency_dxva, right.enable_low_latency_dxva);
   EXPECT_EQ(left.enable_zero_copy_dxgi_video,
             right.enable_zero_copy_dxgi_video);
@@ -55,7 +54,6 @@ void CheckGpuPreferencesEqual(GpuPreferences left, GpuPreferences right) {
             right.enable_threaded_texture_mailboxes);
   EXPECT_EQ(left.gl_shader_interm_output, right.gl_shader_interm_output);
   EXPECT_EQ(left.emulate_shader_precision, right.emulate_shader_precision);
-  EXPECT_EQ(left.max_active_webgl_contexts, right.max_active_webgl_contexts);
   EXPECT_EQ(left.enable_gpu_service_logging, right.enable_gpu_service_logging);
   EXPECT_EQ(left.enable_gpu_service_tracing, right.enable_gpu_service_tracing);
   EXPECT_EQ(left.use_passthrough_cmd_decoder,
@@ -71,10 +69,14 @@ void CheckGpuPreferencesEqual(GpuPreferences left, GpuPreferences right) {
   EXPECT_EQ(left.disable_oop_rasterization, right.disable_oop_rasterization);
   EXPECT_EQ(left.watchdog_starts_backgrounded,
             right.watchdog_starts_backgrounded);
-  EXPECT_EQ(left.enable_vulkan, right.enable_vulkan);
+  EXPECT_EQ(left.gr_context_type, right.gr_context_type);
+  EXPECT_EQ(left.use_vulkan, right.use_vulkan);
   EXPECT_EQ(left.enable_gpu_benchmarking_extension,
             right.enable_gpu_benchmarking_extension);
   EXPECT_EQ(left.enable_webgpu, right.enable_webgpu);
+#if defined(USE_OZONE)
+  EXPECT_EQ(left.message_pump_type, right.message_pump_type);
+#endif
 }
 
 }  // namespace
@@ -108,13 +110,18 @@ TEST(GpuPreferencesTest, EncodeDecode) {
   prefs_mojom.name = value;                        \
   EXPECT_EQ(input_prefs.name, prefs_mojom.name);
 
+#define GPU_PREFERENCES_FIELD_ENUM(name, value, mojom_value) \
+  input_prefs.name = value;                                  \
+  EXPECT_NE(default_prefs.name, input_prefs.name);           \
+  prefs_mojom.name = mojom_value;                            \
+  EXPECT_EQ(static_cast<uint32_t>(input_prefs.name),         \
+            static_cast<uint32_t>(prefs_mojom.name));
+
     GPU_PREFERENCES_FIELD(disable_accelerated_video_decode, true)
     GPU_PREFERENCES_FIELD(disable_accelerated_video_encode, true)
     GPU_PREFERENCES_FIELD(gpu_startup_dialog, true)
     GPU_PREFERENCES_FIELD(disable_gpu_watchdog, true)
     GPU_PREFERENCES_FIELD(gpu_sandbox_start_early, true)
-    GPU_PREFERENCES_FIELD(enable_accelerated_vpx_decode,
-                          GpuPreferences::VPX_VENDOR_AMD)
     GPU_PREFERENCES_FIELD(enable_low_latency_dxva, false)
     GPU_PREFERENCES_FIELD(enable_zero_copy_dxgi_video, true)
     GPU_PREFERENCES_FIELD(enable_nv12_dxgi_video, true)
@@ -138,7 +145,6 @@ TEST(GpuPreferencesTest, EncodeDecode) {
     GPU_PREFERENCES_FIELD(enable_threaded_texture_mailboxes, true)
     GPU_PREFERENCES_FIELD(gl_shader_interm_output, true)
     GPU_PREFERENCES_FIELD(emulate_shader_precision, true)
-    GPU_PREFERENCES_FIELD(max_active_webgl_contexts, 1)
     GPU_PREFERENCES_FIELD(enable_gpu_service_logging, true)
     GPU_PREFERENCES_FIELD(enable_gpu_service_tracing, true)
     GPU_PREFERENCES_FIELD(use_passthrough_cmd_decoder, true)
@@ -149,9 +155,17 @@ TEST(GpuPreferencesTest, EncodeDecode) {
     GPU_PREFERENCES_FIELD(enable_oop_rasterization, true)
     GPU_PREFERENCES_FIELD(disable_oop_rasterization, true)
     GPU_PREFERENCES_FIELD(watchdog_starts_backgrounded, true)
-    GPU_PREFERENCES_FIELD(enable_vulkan, true)
+    GPU_PREFERENCES_FIELD_ENUM(gr_context_type,
+                               GrContextType::kVulkan,
+                               mojom::GrContextType::kVulkan)
+    GPU_PREFERENCES_FIELD_ENUM(use_vulkan, VulkanImplementationName::kNative,
+                               mojom::VulkanImplementationName::kNative)
     GPU_PREFERENCES_FIELD(enable_gpu_benchmarking_extension, true)
     GPU_PREFERENCES_FIELD(enable_webgpu, true)
+#if defined(USE_OZONE)
+    GPU_PREFERENCES_FIELD_ENUM(message_pump_type, base::MessagePumpType::UI,
+                               base::MessagePumpType::UI)
+#endif
 
     input_prefs.texture_target_exception_list.emplace_back(
         gfx::BufferUsage::SCANOUT, gfx::BufferFormat::RGBA_8888);

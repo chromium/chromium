@@ -16,10 +16,10 @@ namespace {
 
 blink::mojom::FeaturePolicyFeature GetFeaturePolicyFeature(
     ContentSettingsType type) {
-  if (type == CONTENT_SETTINGS_TYPE_MEDIASTREAM_MIC)
+  if (type == ContentSettingsType::MEDIASTREAM_MIC)
     return blink::mojom::FeaturePolicyFeature::kMicrophone;
 
-  DCHECK_EQ(CONTENT_SETTINGS_TYPE_MEDIASTREAM_CAMERA, type);
+  DCHECK_EQ(ContentSettingsType::MEDIASTREAM_CAMERA, type);
   return blink::mojom::FeaturePolicyFeature::kCamera;
 }
 
@@ -32,8 +32,8 @@ MediaStreamDevicePermissionContext::MediaStreamDevicePermissionContext(
                             content_settings_type,
                             GetFeaturePolicyFeature(content_settings_type)),
       content_settings_type_(content_settings_type) {
-  DCHECK(content_settings_type_ == CONTENT_SETTINGS_TYPE_MEDIASTREAM_MIC ||
-         content_settings_type_ == CONTENT_SETTINGS_TYPE_MEDIASTREAM_CAMERA);
+  DCHECK(content_settings_type_ == ContentSettingsType::MEDIASTREAM_MIC ||
+         content_settings_type_ == ContentSettingsType::MEDIASTREAM_CAMERA);
 }
 
 MediaStreamDevicePermissionContext::~MediaStreamDevicePermissionContext() {}
@@ -44,10 +44,10 @@ void MediaStreamDevicePermissionContext::DecidePermission(
     const GURL& requesting_origin,
     const GURL& embedding_origin,
     bool user_gesture,
-    const BrowserPermissionCallback& callback) {
+    BrowserPermissionCallback callback) {
   PermissionContextBase::DecidePermission(web_contents, id, requesting_origin,
                                           embedding_origin, user_gesture,
-                                          callback);
+                                          std::move(callback));
 }
 
 ContentSetting MediaStreamDevicePermissionContext::GetPermissionStatusInternal(
@@ -58,11 +58,11 @@ ContentSetting MediaStreamDevicePermissionContext::GetPermissionStatusInternal(
   // crbug.com/244389.
   const char* policy_name = nullptr;
   const char* urls_policy_name = nullptr;
-  if (content_settings_type_ == CONTENT_SETTINGS_TYPE_MEDIASTREAM_MIC) {
+  if (content_settings_type_ == ContentSettingsType::MEDIASTREAM_MIC) {
     policy_name = prefs::kAudioCaptureAllowed;
     urls_policy_name = prefs::kAudioCaptureAllowedUrls;
   } else {
-    DCHECK(content_settings_type_ == CONTENT_SETTINGS_TYPE_MEDIASTREAM_CAMERA);
+    DCHECK(content_settings_type_ == ContentSettingsType::MEDIASTREAM_CAMERA);
     policy_name = prefs::kVideoCaptureAllowed;
     urls_policy_name = prefs::kVideoCaptureAllowedUrls;
   }

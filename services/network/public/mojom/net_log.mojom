@@ -14,11 +14,11 @@ enum NetLogCaptureMode {
 
   // Log all events, but do not include the actual transferred bytes as
   // parameters for bytes sent/received events.
-  INCLUDE_COOKIES_AND_CREDENTIALS,
+  INCLUDE_PRIVACY_INFO,
 
   // Log everything possible, even if it is slow and memory expensive.
   // Includes logging of transferred bytes.
-  INCLUDE_SOCKET_BYTES
+  EVERYTHING
 };
 
 // Manages export of ongoing NetLog events to a file.

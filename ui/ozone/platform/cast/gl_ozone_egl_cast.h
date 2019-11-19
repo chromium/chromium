@@ -6,7 +6,6 @@
 #define UI_OZONE_PLATFORM_CAST_GL_OZONE_EGL_CAST_H_
 
 #include <stdint.h>
-
 #include <memory>
 
 #include "base/macros.h"

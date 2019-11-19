@@ -14,6 +14,7 @@
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequenced_task_runner.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -297,9 +298,11 @@ void BluetoothSocketWin::DoListen(
   reg_data->address_info.iSocketType = SOCK_STREAM;
   reg_data->address_info.iProtocol = BTHPROTO_RFCOMM;
 
-  base::string16 cannonical_uuid = L"{" + base::ASCIIToUTF16(
-      uuid.canonical_value()) + L"}";
-  if (!SUCCEEDED(CLSIDFromString(cannonical_uuid.c_str(), &reg_data->uuid))) {
+  base::string16 cannonical_uuid = STRING16_LITERAL("{") +
+                                   base::ASCIIToUTF16(uuid.canonical_value()) +
+                                   STRING16_LITERAL("}");
+  if (!SUCCEEDED(
+          CLSIDFromString(base::as_wcstr(cannonical_uuid), &reg_data->uuid))) {
     LOG(WARNING) << "Failed to start service: "
                  << ", invalid uuid=" << cannonical_uuid;
     PostErrorCompletion(error_callback, kInvalidUUID);
@@ -308,7 +311,7 @@ void BluetoothSocketWin::DoListen(
 
   reg_data->service.dwSize = sizeof(WSAQUERYSET);
   reg_data->service.lpszServiceInstanceName =
-      const_cast<LPWSTR>(reg_data->name.c_str());
+      base::as_writable_wcstr(reg_data->name);
   reg_data->service.lpServiceClassId = &reg_data->uuid;
   reg_data->service.dwNameSpace = NS_BTH;
   reg_data->service.dwNumberOfCsAddrs = 1;

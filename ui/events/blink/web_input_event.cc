@@ -122,7 +122,8 @@ blink::WebMouseWheelEvent MakeWebMouseWheelEventFromUiEvent(
       EventFlagsToWebEventModifiers(event.flags()), event.time_stamp());
 
   webkit_event.button = blink::WebMouseEvent::Button::kNoButton;
-  webkit_event.has_precise_scrolling_deltas = true;
+  webkit_event.delta_units =
+      ui::input_types::ScrollGranularity::kScrollByPrecisePixel;
 
   float offset_ordinal_x = event.x_offset_ordinal();
   float offset_ordinal_y = event.y_offset_ordinal();
@@ -174,6 +175,9 @@ blink::WebMouseWheelEvent MakeWebMouseWheelEventFromUiEvent(
     case ui::EventMomentumPhase::END:
       webkit_event.momentum_phase = blink::WebMouseWheelEvent::kPhaseEnded;
       break;
+    case ui::EventMomentumPhase::BLOCKED:
+      webkit_event.momentum_phase = blink::WebMouseWheelEvent::kPhaseBlocked;
+      break;
     default:
       NOTREACHED();
   }
@@ -200,7 +204,7 @@ blink::WebGestureEvent MakeWebGestureEventFromUiEvent(
 
   blink::WebGestureEvent webkit_event(
       type, EventFlagsToWebEventModifiers(event.flags()), event.time_stamp(),
-      blink::kWebGestureDeviceTouchpad);
+      blink::WebGestureDevice::kTouchpad);
   if (event.type() == ET_SCROLL_FLING_START) {
     webkit_event.data.fling_start.velocity_x = event.x_offset();
     webkit_event.data.fling_start.velocity_y = event.y_offset();
@@ -254,9 +258,14 @@ blink::WebMouseEvent MakeWebMouseEvent(const MouseEvent& event) {
   // Replace the event's coordinate fields with translated position data from
   // |event|.
   webkit_event.SetPositionInWidget(event.x(), event.y());
+  if (event.flags() & ui::EF_UNADJUSTED_MOUSE) {
+    webkit_event.movement_x = event.movement().x();
+    webkit_event.movement_y = event.movement().y();
+    webkit_event.is_raw_movement_event = true;
+  }
 
 #if defined(OS_WIN)
-  if (event.native_event().message)
+  if (event.native_event().message && event.type() != ET_MOUSE_EXITED)
     return webkit_event;
 #endif
 
@@ -367,7 +376,7 @@ blink::WebGestureEvent MakeWebGestureEventFlingCancel(
   blink::WebGestureEvent gesture_event(
       blink::WebInputEvent::kGestureFlingCancel,
       blink::WebInputEvent::kNoModifiers, wheel_event.TimeStamp(),
-      blink::kWebGestureDeviceTouchpad);
+      blink::WebGestureDevice::kTouchpad);
   // Coordinates need to be transferred to the fling cancel gesture only
   // for Surface-targeting to ensure that it is targeted to the correct
   // RenderWidgetHost.
@@ -390,22 +399,17 @@ blink::WebMouseEvent MakeWebMouseEventFromUiEvent(const MouseEvent& event) {
       click_count = event.GetClickCount();
       break;
     case ET_MOUSE_EXITED: {
-#if defined(USE_X11)
-      // NotifyVirtual events are created for intermediate windows that the
-      // pointer crosses through. These occur when middle clicking.
-      // Change these into mouse move events.
-      const PlatformEvent& native_event = event.native_event();
-
-      if (native_event && native_event->type == LeaveNotify &&
-          native_event->xcrossing.detail == NotifyVirtual) {
+      // When MOUSE_EXITED is created for intermediate windows that the
+      // pointer crosses through, change these into mouse move events.
+      const Event::Properties* props = event.properties();
+      if (props && props->contains(kPropertyMouseCrossedIntermediateWindow)) {
         type = blink::WebInputEvent::kMouseMove;
-        break;
+      } else {
+        static bool s_send_leave =
+            base::FeatureList::IsEnabled(features::kSendMouseLeaveEvents);
+        type = s_send_leave ? blink::WebInputEvent::kMouseLeave
+                            : blink::WebInputEvent::kMouseMove;
       }
-#endif
-      static bool s_send_leave =
-          base::FeatureList::IsEnabled(features::kSendMouseLeaveEvents);
-      type = s_send_leave ? blink::WebInputEvent::kMouseLeave
-                          : blink::WebInputEvent::kMouseMove;
       break;
     }
     case ET_MOUSE_ENTERED:
@@ -470,10 +474,16 @@ blink::WebMouseWheelEvent MakeWebMouseWheelEventFromUiEvent(
   webkit_event.delta_x = event.x_offset();
   webkit_event.delta_y = event.y_offset();
 
-  if (event.flags() & ui::EF_PRECISION_SCROLLING_DELTA)
-    webkit_event.has_precise_scrolling_deltas = true;
-  if (event.flags() & ui::EF_SCROLL_BY_PAGE)
-    webkit_event.scroll_by_page = true;
+  DCHECK(!(event.flags() & ui::EF_PRECISION_SCROLLING_DELTA &&
+           event.flags() & ui::EF_SCROLL_BY_PAGE));
+
+  if (event.flags() & ui::EF_PRECISION_SCROLLING_DELTA) {
+    webkit_event.delta_units =
+        ui::input_types::ScrollGranularity::kScrollByPrecisePixel;
+  } else if (event.flags() & ui::EF_SCROLL_BY_PAGE) {
+    webkit_event.delta_units =
+        ui::input_types::ScrollGranularity::kScrollByPage;
+  }
 
   webkit_event.wheel_ticks_x =
       webkit_event.delta_x / MouseWheelEvent::kWheelDelta;

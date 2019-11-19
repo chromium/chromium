@@ -1,0 +1,26 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// gpu/config/vulkan_info.h
+module gpu.mojom;
+
+import "gpu/ipc/common/vulkan_types.mojom";
+
+struct VulkanPhysicalDeviceInfo {
+  VkPhysicalDeviceProperties properties;
+  array<VkLayerProperties> layers;
+  VkPhysicalDeviceFeatures features;
+  bool feature_sampler_ycbcr_conversion;
+  bool feature_protected_memory;
+  array<VkQueueFamilyProperties> queue_families;
+};
+
+struct VulkanInfo {
+  uint32 api_version;
+  uint32 used_api_version;
+  array<VkExtensionProperties> instance_extensions;
+  array<string> enabled_instance_extensions;
+  array<VkLayerProperties> instance_layers;
+  array<VulkanPhysicalDeviceInfo> physical_devices;
+};

@@ -10,12 +10,10 @@
 #include <string>
 
 #include "base/stl_util.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "net/base/request_priority.h"
 #include "net/nqe/effective_connection_type.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
-#include "net/url_request/url_request.h"
-#include "net/url_request/url_request_context.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -28,8 +26,8 @@ class DataReductionProxyDataTest : public testing::Test {
   DataReductionProxyDataTest() {}
 
  private:
-  base::test::ScopedTaskEnvironment task_environment_{
-      base::test::ScopedTaskEnvironment::MainThreadType::IO};
+  base::test::SingleThreadTaskEnvironment task_environment_{
+      base::test::SingleThreadTaskEnvironment::MainThreadType::IO};
 };
 
 TEST_F(DataReductionProxyDataTest, BasicSettersAndGetters) {
@@ -45,12 +43,6 @@ TEST_F(DataReductionProxyDataTest, BasicSettersAndGetters) {
   EXPECT_TRUE(data->lite_page_received());
   data->set_lite_page_received(false);
   EXPECT_FALSE(data->lite_page_received());
-
-  EXPECT_FALSE(data->lofi_received());
-  data->set_lofi_received(true);
-  EXPECT_TRUE(data->lofi_received());
-  data->set_lofi_received(false);
-  EXPECT_FALSE(data->lofi_received());
 
   EXPECT_FALSE(data->black_listed());
   data->set_black_listed(true);
@@ -86,27 +78,10 @@ TEST_F(DataReductionProxyDataTest, BasicSettersAndGetters) {
   EXPECT_EQ(page_id, data->page_id().value());
 }
 
-TEST_F(DataReductionProxyDataTest, AddToURLRequest) {
-  std::unique_ptr<net::URLRequestContext> context(new net::URLRequestContext());
-  std::unique_ptr<net::URLRequest> fake_request(context->CreateRequest(
-      GURL("http://www.google.com"), net::RequestPriority::IDLE, nullptr,
-      TRAFFIC_ANNOTATION_FOR_TESTS));
-  DataReductionProxyData* data = DataReductionProxyData::GetData(*fake_request);
-  EXPECT_FALSE(data);
-  data =
-      DataReductionProxyData::GetDataAndCreateIfNecessary(fake_request.get());
-  EXPECT_TRUE(data);
-  data = DataReductionProxyData::GetData(*fake_request);
-  EXPECT_TRUE(data);
-  DataReductionProxyData* data2 =
-      DataReductionProxyData::GetDataAndCreateIfNecessary(fake_request.get());
-  EXPECT_EQ(data, data2);
-}
-
 TEST_F(DataReductionProxyDataTest, DeepCopy) {
   const struct {
     bool data_reduction_used;
-    bool lofi_test_value;
+    bool lite_page_test_value;
   } tests[] = {
       {
           false, true,
@@ -127,18 +102,16 @@ TEST_F(DataReductionProxyDataTest, DeepCopy) {
     static const GURL kTestURL("test-url");
     std::unique_ptr<DataReductionProxyData> data(new DataReductionProxyData());
     data->set_used_data_reduction_proxy(tests[i].data_reduction_used);
-    data->set_lite_page_received(tests[i].lofi_test_value);
-    data->set_lofi_received(tests[i].lofi_test_value);
-    data->set_black_listed(tests[i].lofi_test_value);
+    data->set_lite_page_received(tests[i].lite_page_test_value);
+    data->set_black_listed(tests[i].lite_page_test_value);
     data->set_session_key(kSessionKey);
     data->set_request_url(kTestURL);
     data->set_effective_connection_type(net::EFFECTIVE_CONNECTION_TYPE_OFFLINE);
     data->set_connection_type(net::NetworkChangeNotifier::CONNECTION_WIFI);
     data->set_page_id(2u);
     std::unique_ptr<DataReductionProxyData> copy = data->DeepCopy();
-    EXPECT_EQ(tests[i].lofi_test_value, copy->lite_page_received());
-    EXPECT_EQ(tests[i].lofi_test_value, copy->lofi_received());
-    EXPECT_EQ(tests[i].lofi_test_value, copy->black_listed());
+    EXPECT_EQ(tests[i].lite_page_test_value, copy->lite_page_received());
+    EXPECT_EQ(tests[i].lite_page_test_value, copy->black_listed());
     EXPECT_EQ(tests[i].data_reduction_used, copy->used_data_reduction_proxy());
     EXPECT_EQ(kSessionKey, copy->session_key());
     EXPECT_EQ(kTestURL, copy->request_url());
@@ -148,20 +121,6 @@ TEST_F(DataReductionProxyDataTest, DeepCopy) {
               copy->connection_type());
     EXPECT_EQ(2u, data->page_id().value());
   }
-}
-
-TEST_F(DataReductionProxyDataTest, ClearData) {
-  std::unique_ptr<net::URLRequestContext> context(new net::URLRequestContext());
-  std::unique_ptr<net::URLRequest> fake_request(context->CreateRequest(
-      GURL("http://www.google.com"), net::RequestPriority::IDLE, nullptr,
-      TRAFFIC_ANNOTATION_FOR_TESTS));
-
-  DataReductionProxyData* data =
-      DataReductionProxyData::GetDataAndCreateIfNecessary(fake_request.get());
-  EXPECT_TRUE(data);
-  DataReductionProxyData::ClearData(fake_request.get());
-  data = DataReductionProxyData::GetData(*fake_request);
-  EXPECT_FALSE(data);
 }
 
 }  // namespace

@@ -37,9 +37,7 @@ class SVGPathByteStream {
   USING_FAST_MALLOC(SVGPathByteStream);
 
  public:
-  static std::unique_ptr<SVGPathByteStream> Create() {
-    return base::WrapUnique(new SVGPathByteStream);
-  }
+  SVGPathByteStream() = default;
 
   std::unique_ptr<SVGPathByteStream> Clone() const {
     return base::WrapUnique(new SVGPathByteStream(data_));
@@ -66,7 +64,6 @@ class SVGPathByteStream {
   }
 
  private:
-  SVGPathByteStream() = default;
   SVGPathByteStream(const Data& data) : data_(data) {}
 
   Data data_;

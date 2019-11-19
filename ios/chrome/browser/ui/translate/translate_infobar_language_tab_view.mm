@@ -9,6 +9,7 @@
 #import "ios/chrome/browser/ui/translate/translate_infobar_language_tab_strip_view.h"
 #import "ios/chrome/browser/ui/translate/translate_infobar_language_tab_view_delegate.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
+#import "ios/chrome/common/colors/semantic_color_names.h"
 #import "ios/chrome/common/highlight_button.h"
 #import "ios/chrome/common/ui_util/constraints_ui_util.h"
 #import "ios/third_party/material_components_ios/src/components/ActivityIndicator/src/MaterialActivityIndicator.h"
@@ -81,8 +82,7 @@ const CGFloat kButtonPadding = 12;
   MDCActivityIndicator* activityIndicator = [[MDCActivityIndicator alloc] init];
   self.activityIndicator = activityIndicator;
   self.activityIndicator.translatesAutoresizingMaskIntoConstraints = NO;
-  self.activityIndicator.cycleColors =
-      @[ [[MDCPalette cr_bluePalette] tint500] ];
+  self.activityIndicator.cycleColors = @[ [UIColor colorNamed:kBlueColor] ];
   [self.activityIndicator setRadius:kActivityIndicatorRadius];
   [self addSubview:self.activityIndicator];
 
@@ -132,8 +132,8 @@ const CGFloat kButtonPadding = 12;
 // Returns the button's title color depending on the state.
 - (UIColor*)titleColor {
   return self.state == TranslateInfobarLanguageTabViewStateSelected
-             ? [[MDCPalette cr_bluePalette] tint500]
-             : [[MDCPalette greyPalette] tint600];
+             ? [UIColor colorNamed:kBlueColor]
+             : [UIColor colorNamed:kTextSecondaryColor];
 }
 
 // Returns the button's accessibility traits depending on the state.

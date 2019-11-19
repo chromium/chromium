@@ -38,7 +38,9 @@ import template_expander
 
 # We want exactly the same parsing as RuntimeFeatureWriter
 # but generate different files.
-class InternalRuntimeFlagsWriter(make_runtime_features.RuntimeFeatureWriter):
+class InternalRuntimeFlagsWriter(make_runtime_features.BaseRuntimeFeatureWriter):
+    class_name = 'InternalRuntimeFlags'
+    file_basename = 'internal_runtime_flags'
 
     def __init__(self, json5_file_path, output_dir):
         super(InternalRuntimeFlagsWriter, self).__init__(json5_file_path, output_dir)

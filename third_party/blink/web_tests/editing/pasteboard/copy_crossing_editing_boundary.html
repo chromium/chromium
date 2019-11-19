@@ -1,0 +1,18 @@
+<!doctype html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../assert_selection.js"></script>
+<script>
+selection_test(
+ '<div contenteditable>^foo</div>bar|',
+  selection => {
+    assert_own_property(window, 'internals',
+                        'This test requires window.internals');
+    assert_equals(selection.window.internals.selectedTextForClipboard(), 'foo\nbar');
+    assert_equals(selection.window.internals.selectedHTMLForClipboard()
+                    .replace(/ style=".+?"/g, ' style="..."'),
+                  '<div contenteditable="" style="...">foo</div><span style="...">bar</span>');
+  },
+  '<div contenteditable>^foo</div>bar|',
+  'Selection by script should not be adjusted.');
+</script>

@@ -20,7 +20,6 @@ import android.widget.ListPopupWindow;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.infobar.TranslateOptions;
 
@@ -135,7 +134,7 @@ public class TranslateMenuHelper implements AdapterView.OnItemClickListener {
 
         // When layout is RTL, set the horizontal offset to align the menu with the left side of the
         // screen.
-        if (ApiCompatibilityUtils.isLayoutRtl(mAnchorView)) {
+        if (mAnchorView.getLayoutDirection() == View.LAYOUT_DIRECTION_RTL) {
             int[] tempLocation = new int[2];
             mAnchorView.getLocationOnScreen(tempLocation);
             mPopup.setHorizontalOffset(-tempLocation[0]);

@@ -14,7 +14,7 @@ namespace extensions {
 
 // Implementation of the systeminfo.storage.get API. It is an asynchronous
 // call relative to browser UI thread.
-class SystemStorageGetInfoFunction : public UIThreadExtensionFunction {
+class SystemStorageGetInfoFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("system.storage.getInfo", SYSTEM_STORAGE_GETINFO)
   SystemStorageGetInfoFunction();
@@ -28,7 +28,7 @@ class SystemStorageGetInfoFunction : public UIThreadExtensionFunction {
   void OnGetStorageInfoCompleted(bool success);
 };
 
-class SystemStorageEjectDeviceFunction : public UIThreadExtensionFunction {
+class SystemStorageEjectDeviceFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("system.storage.ejectDevice",
                              SYSTEM_STORAGE_EJECTDEVICE)
@@ -46,8 +46,7 @@ class SystemStorageEjectDeviceFunction : public UIThreadExtensionFunction {
   void HandleResponse(storage_monitor::StorageMonitor::EjectStatus status);
 };
 
-class SystemStorageGetAvailableCapacityFunction
-    : public UIThreadExtensionFunction {
+class SystemStorageGetAvailableCapacityFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("system.storage.getAvailableCapacity",
                              SYSTEM_STORAGE_GETAVAILABLECAPACITY)

@@ -10,7 +10,7 @@
 #include "components/cast_channel/cast_test_util.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -76,8 +76,8 @@ class MockCastSessionObserver : public CastSessionTracker::Observer {
 class CastSessionTrackerTest : public testing::Test {
  public:
   CastSessionTrackerTest()
-      : socket_service_(base::CreateSingleThreadTaskRunnerWithTraits(
-            {content::BrowserThread::UI})),
+      : socket_service_(
+            base::CreateSingleThreadTaskRunner({content::BrowserThread::UI})),
         message_handler_(&socket_service_),
         session_tracker_(&media_sink_service_,
                          &message_handler_,
@@ -98,7 +98,7 @@ class CastSessionTrackerTest : public testing::Test {
     session_tracker_.OnInternalMessage(
         sink_.cast_data().cast_channel_id,
         cast_channel::InternalMessage(
-            cast_channel::CastMessageType::kReceiverStatus,
+            cast_channel::CastMessageType::kReceiverStatus, "theNamespace",
             std::move(*ParseJsonDeprecated(kReceiverStatus))));
 
     session_ = session_tracker_.GetSessions().begin()->second.get();
@@ -106,7 +106,7 @@ class CastSessionTrackerTest : public testing::Test {
   }
 
  protected:
-  content::TestBrowserThreadBundle thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
 
   cast_channel::MockCastSocketService socket_service_;
   cast_channel::MockCastMessageHandler message_handler_;
@@ -144,7 +144,7 @@ TEST_F(CastSessionTrackerTest, RemoveSession) {
   session_tracker_.OnInternalMessage(
       sink_.cast_data().cast_channel_id,
       cast_channel::InternalMessage(
-          cast_channel::CastMessageType::kReceiverStatus,
+          cast_channel::CastMessageType::kReceiverStatus, "theNamespace",
           std::move(*ParseJsonDeprecated(kIdleReceiverStatus))));
 }
 
@@ -192,6 +192,7 @@ TEST_F(CastSessionTrackerTest, HandleMediaStatusMessageBasic) {
   session_tracker_.OnInternalMessage(
       sink_.cast_data().cast_channel_id,
       cast_channel::InternalMessage(cast_channel::CastMessageType::kMediaStatus,
+                                    "theNamespace",
                                     std::move(*ParseJsonDeprecated(R"({
     "status": [{
         "playerState": "anything but IDLE",
@@ -247,6 +248,7 @@ TEST_F(CastSessionTrackerTest, HandleMediaStatusMessageFancy) {
   session_tracker_.OnInternalMessage(
       sink_.cast_data().cast_channel_id,
       cast_channel::InternalMessage(cast_channel::CastMessageType::kMediaStatus,
+                                    "theNamespace",
                                     std::move(*ParseJsonDeprecated(R"({
     "requestId": 12345,
     "status": [{
@@ -278,6 +280,7 @@ TEST_F(CastSessionTrackerTest, CopySavedMediaFieldsToMediaList) {
   session_tracker_.OnInternalMessage(
       sink_.cast_data().cast_channel_id,
       cast_channel::InternalMessage(cast_channel::CastMessageType::kMediaStatus,
+                                    "theNamespace",
                                     std::move(*ParseJsonDeprecated(R"({
     "status": [{
         "media": "theMedia",
@@ -324,6 +327,7 @@ TEST_F(CastSessionTrackerTest, CopySavedMediaFieldsToMediaList) {
   session_tracker_.OnInternalMessage(
       sink_.cast_data().cast_channel_id,
       cast_channel::InternalMessage(cast_channel::CastMessageType::kMediaStatus,
+                                    "theNamespace",
                                     std::move(*ParseJsonDeprecated(R"({
     "status": [{
         "mediaSessionId": 345,

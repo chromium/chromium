@@ -14,12 +14,9 @@ dictionary MediaTrackSupportedConstraints {
     boolean frameRate = true;
     boolean facingMode = true;
     boolean resizeMode = true;
-    boolean volume = true;
     boolean sampleRate = true;
     boolean sampleSize = true;
     boolean echoCancellation = true;
-    // See http://crbug.com/846270.
-    [OriginTrialEnabled=ExperimentalHardwareEchoCancellation] boolean echoCancellationType = true;
     boolean autoGainControl = true;
     boolean noiseSuppression = true;
     boolean latency = true;
@@ -29,14 +26,9 @@ dictionary MediaTrackSupportedConstraints {
 
     // Media Capture Depth Stream Extensions
     // https://w3c.github.io/mediacapture-depth
-    // TODO(aleksandar.stojiljkovic): videoKind, depthNear, depthFar,
-    // focalLengthX and focalLengthY attributes should be declared as partial
+    // TODO(riju): videoKind attribute should be declared as partial
     // dictionary but IDL parser can't support it yet. http://crbug.com/579896.
     [RuntimeEnabled=MediaCaptureDepthVideoKind] boolean videoKind = true;
-    [RuntimeEnabled=MediaCaptureDepth] boolean depthNear = true;
-    [RuntimeEnabled=MediaCaptureDepth] boolean depthFar = true;
-    [RuntimeEnabled=MediaCaptureDepth] boolean focalLengthX = true;
-    [RuntimeEnabled=MediaCaptureDepth] boolean focalLengthY = true;
 
     // W3C Image Capture API
     // https://w3c.github.io/mediacapture-image/#mediatracksupportedconstraints-section
@@ -52,9 +44,11 @@ dictionary MediaTrackSupportedConstraints {
     boolean iso = true;
     boolean brightness = true;
     boolean contrast = true;
+    [RuntimeEnabled=MediaCapturePanTilt] boolean pan = true;
     boolean saturation = true;
     boolean sharpness = true;
     boolean focusDistance = true;
+    [RuntimeEnabled=MediaCapturePanTilt] boolean tilt = true;
     boolean zoom = true;
     boolean torch = true;
 };

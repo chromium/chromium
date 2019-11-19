@@ -56,6 +56,9 @@ const char kUseFirstDisplayAsInternal[] = "use-first-display-as-internal";
 #if defined(OS_CHROMEOS)
 // Enables unified desktop mode.
 const char kEnableUnifiedDesktop[] = "ash-enable-unified-desktop";
+
+// Enables using HDR transfer function if the monitor says it supports it.
+const char kEnableUseHDRTransferFunction[] = "enable-use-hdr-transfer-function";
 #endif
 
 }  // namespace switches

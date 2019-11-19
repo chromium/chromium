@@ -14,7 +14,7 @@ the DON flow is canceled.
     <script src="../resources/webxr_boilerplate.js"></script>
     <script>
       function onImmersiveRequestWithDon() {
-        navigator.xr.requestSession({mode: 'immersive-vr'}).then( (session) => {
+        navigator.xr.requestSession('immersive-vr').then( (session) => {
           assert_unreached("requestPresent promise resolved");
         }, () => {
           // Do nothing when the promise is rejected

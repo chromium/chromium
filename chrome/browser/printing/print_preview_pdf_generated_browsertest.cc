@@ -21,10 +21,10 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/hash/md5.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/macros.h"
-#include "base/md5.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
@@ -130,13 +130,14 @@ class PrintPreviewObserver : public WebContentsObserver {
   ~PrintPreviewObserver() override {}
 
   // Sets closure for the observer so that it can end the loop.
-  void set_quit_closure(const base::Closure &closure) {
-    quit_closure_ = closure;
+  void set_quit_closure(base::OnceClosure closure) {
+    quit_closure_ = std::move(closure);
   }
 
   // Actually stops the message loop so that the test can proceed.
   void EndLoop() {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE, quit_closure_);
+    base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
+                                                  std::move(quit_closure_));
   }
 
   bool OnMessageReceived(const IPC::Message& message) override {
@@ -199,9 +200,8 @@ class PrintPreviewObserver : public WebContentsObserver {
     } else if (state_ == kWaitingForFinalMessage) {
       // Called by |GetUI()->handler_|, it is a callback function that call
       // |EndLoop| when an attempt to save the PDF has been made.
-      base::Closure end_loop_closure =
-          base::Bind(&PrintPreviewObserver::EndLoop, base::Unretained(this));
-      GetUI()->SetPdfSavedClosureForTesting(end_loop_closure);
+      GetUI()->SetPdfSavedClosureForTesting(base::BindOnce(
+          &PrintPreviewObserver::EndLoop, base::Unretained(this)));
       ASSERT_FALSE(pdf_file_save_path_.empty());
       GetUI()->SetSelectedFileForTesting(pdf_file_save_path_);
       return;
@@ -290,7 +290,7 @@ class PrintPreviewObserver : public WebContentsObserver {
   }
 
   Browser* browser_;
-  base::Closure quit_closure_;
+  base::OnceClosure quit_closure_;
   std::unique_ptr<PrintPreviewSettings> settings_;
 
   // State of the observer. The state indicates what message to send

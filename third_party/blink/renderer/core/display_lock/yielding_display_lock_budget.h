@@ -8,7 +8,6 @@
 #include "base/optional.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_budget.h"
-#include "third_party/blink/renderer/platform/wtf/time.h"
 
 namespace blink {
 
@@ -21,9 +20,9 @@ class CORE_EXPORT YieldingDisplayLockBudget final : public DisplayLockBudget {
   YieldingDisplayLockBudget(DisplayLockContext*);
   ~YieldingDisplayLockBudget() override = default;
 
-  bool ShouldPerformPhase(Phase) const override;
+  bool ShouldPerformPhase(Phase, const LifecycleData& lifecycle_data) override;
   void DidPerformPhase(Phase) override;
-  void WillStartLifecycleUpdate() override;
+  void OnLifecycleChange(const LifecycleData& lifecycle_data) override;
   // Returns true if any of the lifecycles that have been previously blocked by
   // this budget need updates. Note that this does not check lifecycle phases
   // that have already completed by this budget even if they are now dirty
@@ -35,11 +34,13 @@ class CORE_EXPORT YieldingDisplayLockBudget final : public DisplayLockBudget {
  protected:
   friend class DisplayLockBudgetTest;
 
-  double GetCurrentBudgetMs() const;
+  base::TimeDelta GetCurrentBudget(const LifecycleData& lifecycle_data) const;
 
-  int lifecycle_count_ = 0;
-  TimeTicks deadline_;
+ private:
+  unsigned first_lifecycle_count_ = 0;
+  base::TimeTicks deadline_;
   base::Optional<Phase> last_completed_phase_;
+  Phase next_phase_from_start_of_lifecycle_ = Phase::kFirst;
 };
 
 }  // namespace blink

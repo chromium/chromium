@@ -1,0 +1,20 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer
+++++++++genericContainer
+++++++++++staticText name='child'
+++++++++++++inlineTextBox name='child'
+++++++++genericContainer
+++++++++++staticText name='nested locked element!'
+++++++++++++inlineTextBox name='nested locked element!'
+++++++++genericContainer
+++++++++++staticText name='nested non activatable locked element'
+++++++++++++inlineTextBox name='nested non activatable locked element'
+++++++++presentational ignored
+++++++++++listItem ignored
+++++++++++++staticText name='role=presentation item'
+++++++++++++++inlineTextBox name='role=presentation item'
+++++++++genericContainer ignored invisible name='visibility:hidden text'
+++++++++genericContainer ignored invisible
+++++++++++staticText ignored invisible name='aria-hidden text'

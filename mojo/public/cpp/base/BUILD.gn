@@ -34,8 +34,14 @@ component("shared_typemap_traits") {
     "big_buffer_mojom_traits.h",
     "file_info_mojom_traits.cc",
     "file_info_mojom_traits.h",
+    "file_mojom_traits.cc",
+    "file_mojom_traits.h",
     "file_path_mojom_traits.cc",
     "file_path_mojom_traits.h",
+    "generic_pending_receiver_mojom_traits.cc",
+    "generic_pending_receiver_mojom_traits.h",
+    "read_only_buffer_mojom_traits.cc",
+    "read_only_buffer_mojom_traits.h",
     "shared_memory_mojom_traits.cc",
     "shared_memory_mojom_traits.h",
     "time_mojom_traits.cc",
@@ -86,7 +92,6 @@ source_set("tests") {
     "//base/test:test_support",
     "//mojo/public/cpp/test_support:test_utils",
     "//mojo/public/mojom/base",
-    "//mojo/public/mojom/base:read_only_buffer",
     "//testing/gtest",
   ]
 }

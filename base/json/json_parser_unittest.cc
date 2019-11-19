@@ -87,9 +87,8 @@ TEST_F(JSONParserTest, ConsumeList) {
   TestLastThree(parser.get());
 
   ASSERT_TRUE(value);
-  base::ListValue* list;
-  EXPECT_TRUE(value->GetAsList(&list));
-  EXPECT_EQ(2u, list->GetSize());
+  ASSERT_TRUE(value->is_list());
+  EXPECT_EQ(2u, value->GetList().size());
 }
 
 TEST_F(JSONParserTest, ConsumeDictionary) {
@@ -101,11 +100,10 @@ TEST_F(JSONParserTest, ConsumeDictionary) {
   TestLastThree(parser.get());
 
   ASSERT_TRUE(value);
-  base::DictionaryValue* dict;
-  EXPECT_TRUE(value->GetAsDictionary(&dict));
-  std::string str;
-  EXPECT_TRUE(dict->GetString("abc", &str));
-  EXPECT_EQ("def", str);
+  ASSERT_TRUE(value->is_dict());
+  const std::string* str = value->FindStringKey("abc");
+  ASSERT_TRUE(str);
+  EXPECT_EQ("def", *str);
 }
 
 TEST_F(JSONParserTest, ConsumeLiterals) {

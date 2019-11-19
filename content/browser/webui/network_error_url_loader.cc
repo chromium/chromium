@@ -7,12 +7,14 @@
 #include "base/strings/string_number_conversions.h"
 #include "content/browser/webui/url_data_manager_backend.h"
 #include "content/public/common/url_constants.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/net_errors.h"
 
 namespace content {
 
-void StartNetworkErrorsURLLoader(const network::ResourceRequest& request,
-                                 network::mojom::URLLoaderClientPtr client) {
+void StartNetworkErrorsURLLoader(
+    const network::ResourceRequest& request,
+    mojo::PendingRemote<network::mojom::URLLoaderClient> client) {
   int net_error = net::ERR_INVALID_URL;
   if (request.url.host() == kChromeUIDinoHost) {
     net_error = net::Error::ERR_INTERNET_DISCONNECTED;
@@ -31,7 +33,8 @@ void StartNetworkErrorsURLLoader(const network::ResourceRequest& request,
 
   network::URLLoaderCompletionStatus status;
   status.error_code = net_error;
-  client->OnComplete(status);
+  mojo::Remote<network::mojom::URLLoaderClient>(std::move(client))
+      ->OnComplete(status);
 }
 
 }  // namespace content

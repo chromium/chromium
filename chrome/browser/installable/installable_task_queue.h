@@ -5,23 +5,27 @@
 #ifndef CHROME_BROWSER_INSTALLABLE_INSTALLABLE_TASK_QUEUE_H_
 #define CHROME_BROWSER_INSTALLABLE_INSTALLABLE_TASK_QUEUE_H_
 
-#include "chrome/browser/installable/installable_data.h"
-#include "chrome/browser/installable/installable_params.h"
+#include <deque>
 
 #include "base/callback.h"
 #include "base/gtest_prod_util.h"
+#include "base/macros.h"
+#include "chrome/browser/installable/installable_data.h"
+#include "chrome/browser/installable/installable_params.h"
 
 struct InstallableTask {
   InstallableTask();
   InstallableTask(const InstallableParams& params,
-                  const InstallableCallback& callback);
-  InstallableTask(const InstallableTask& other);
+                  InstallableCallback callback);
+  InstallableTask(InstallableTask&& other);
   ~InstallableTask();
 
-  InstallableTask& operator=(const InstallableTask& other);
+  InstallableTask& operator=(InstallableTask&& other);
 
   InstallableParams params;
   InstallableCallback callback;
+
+  DISALLOW_COPY_AND_ASSIGN(InstallableTask);
 };
 
 // InstallableTaskQueue keeps track of pending tasks.
@@ -55,19 +59,19 @@ class InstallableTaskQueue {
   void Reset();
 
  private:
-  // The list of <params, callback> pairs that have come from a call to
-  // InstallableManager::GetData.
-  std::vector<InstallableTask> tasks_;
-
-  // Tasks which are waiting indefinitely for a service worker to be detected.
-  std::vector<InstallableTask> paused_tasks_;
-
   friend class InstallableManagerBrowserTest;
   FRIEND_TEST_ALL_PREFIXES(InstallableManagerBrowserTest,
                            CheckLazyServiceWorkerPassesWhenWaiting);
 
   FRIEND_TEST_ALL_PREFIXES(InstallableManagerBrowserTest,
                            CheckLazyServiceWorkerNoFetchHandlerFails);
+
+  // The list of <params, callback> pairs that have come from a call to
+  // InstallableManager::GetData.
+  std::deque<InstallableTask> tasks_;
+
+  // Tasks which are waiting indefinitely for a service worker to be detected.
+  std::deque<InstallableTask> paused_tasks_;
 };
 
 #endif  // CHROME_BROWSER_INSTALLABLE_INSTALLABLE_TASK_QUEUE_H_

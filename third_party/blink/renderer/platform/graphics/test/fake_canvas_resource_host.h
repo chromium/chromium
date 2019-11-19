@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_TEST_FAKE_CANVAS_RESOURCE_HOST_H_
 
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_host.h"
+#include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_canvas.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
@@ -31,21 +32,27 @@ class FakeCanvasResourceHost : public CanvasResourceHost {
       AccelerationHint hint) override {
     if (ResourceProvider())
       return ResourceProvider();
-    CanvasResourceProvider::ResourceUsage usage =
-        hint == kPreferAcceleration
-            ? CanvasResourceProvider::kAcceleratedCompositedResourceUsage
-            : CanvasResourceProvider::kSoftwareCompositedResourceUsage;
 
-    CanvasResourceProvider::PresentationMode presentation_mode =
-        RuntimeEnabledFeatures::Canvas2dImageChromiumEnabled()
-            ? CanvasResourceProvider::kAllowImageChromiumPresentationMode
-            : CanvasResourceProvider::kDefaultPresentationMode;
+    CanvasResourceProvider::ResourceUsage usage =
+        hint == kPreferAcceleration ? CanvasResourceProvider::ResourceUsage::
+                                          kAcceleratedCompositedResourceUsage
+                                    : CanvasResourceProvider::ResourceUsage::
+                                          kSoftwareCompositedResourceUsage;
+
+    uint8_t presentation_mode =
+        CanvasResourceProvider::kDefaultPresentationMode;
+    if (RuntimeEnabledFeatures::Canvas2dImageChromiumEnabled()) {
+      presentation_mode |=
+          CanvasResourceProvider::kAllowImageChromiumPresentationMode;
+    }
 
     ReplaceResourceProvider(CanvasResourceProvider::Create(
         size_, usage, SharedGpuContext::ContextProviderWrapper(), 0,
-        CanvasColorParams(), presentation_mode, nullptr));
+        kMedium_SkFilterQuality, CanvasColorParams(), presentation_mode,
+        nullptr));
     return ResourceProvider();
   }
+
   SkFilterQuality FilterQuality() const override {
     return kLow_SkFilterQuality;
   }

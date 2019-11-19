@@ -11,6 +11,7 @@
 #include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "build/build_config.h"
+#include "components/metrics/metrics_provider.h"
 #include "content/public/browser/browser_accessibility_state.h"
 #include "ui/accessibility/ax_mode.h"
 #include "ui/accessibility/ax_mode_observer.h"
@@ -51,18 +52,27 @@ class CONTENT_EXPORT BrowserAccessibilityStateImpl
   void EnableAccessibility() override;
   void DisableAccessibility() override;
   bool IsRendererAccessibilityEnabled() override;
-  ui::AXMode GetAccessibilityMode() const override;
+  ui::AXMode GetAccessibilityMode() override;
   void AddAccessibilityModeFlags(ui::AXMode mode) override;
   void RemoveAccessibilityModeFlags(ui::AXMode mode) override;
   void ResetAccessibilityMode() override;
   void OnScreenReaderDetected() override;
   bool IsAccessibleBrowser() override;
-  void AddHistogramCallback(base::Closure callback) override;
+  void AddUIThreadHistogramCallback(base::OnceClosure callback) override;
+  void AddOtherThreadHistogramCallback(base::OnceClosure callback) override;
 
   void UpdateHistogramsForTesting() override;
 
+  // Returns whether caret browsing is enabled for this browser session.
+  bool IsCaretBrowsingEnabled() const;
+
   // AXModeObserver
   void OnAXModeAdded(ui::AXMode mode) override;
+
+  // Fire frequent metrics signals to ensure users keeping browser open multiple
+  // days are counted each day, not only at launch. This is necessary, because
+  // UMA only aggregates uniques on a daily basis,
+  void UpdateUniqueUserHistograms();
 
   // Accessibility objects can have the "hot tracked" state set when
   // the mouse is hovering over them, but this makes tests flaky because
@@ -85,17 +95,22 @@ class CONTENT_EXPORT BrowserAccessibilityStateImpl
 
   // Called a short while after startup to allow time for the accessibility
   // state to be determined. Updates histograms with the current state.
-  void UpdateHistograms();
+  // Two variants - one for things that must be run on the UI thread, and
+  // another that can be run on another thread.
+  void UpdateHistogramsOnUIThread();
+  void UpdateHistogramsOnOtherThread();
 
   // Leaky singleton, destructor generally won't be called.
   ~BrowserAccessibilityStateImpl() override;
 
   void PlatformInitialize();
-  void UpdatePlatformSpecificHistograms();
+  void UpdatePlatformSpecificHistogramsOnUIThread();
+  void UpdatePlatformSpecificHistogramsOnOtherThread();
 
   ui::AXMode accessibility_mode_;
 
-  std::vector<base::Closure> histogram_callbacks_;
+  std::vector<base::OnceClosure> ui_thread_histogram_callbacks_;
+  std::vector<base::OnceClosure> other_thread_histogram_callbacks_;
 
   bool disable_hot_tracking_;
 

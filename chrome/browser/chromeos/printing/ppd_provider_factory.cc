@@ -4,8 +4,6 @@
 
 #include "chrome/browser/chromeos/printing/ppd_provider_factory.h"
 
-#include <memory>
-
 #include "base/files/file_path.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/net/system_network_context_manager.h"

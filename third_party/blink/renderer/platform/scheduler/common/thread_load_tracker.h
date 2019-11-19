@@ -9,6 +9,7 @@
 #include "base/macros.h"
 #include "base/time/time.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
 namespace scheduler {
@@ -19,6 +20,8 @@ namespace scheduler {
 // Every |reporting_interval_| time units, it reports the average thread load
 // level computed using a sliding window of width |reporting_interval_|.
 class PLATFORM_EXPORT ThreadLoadTracker {
+  DISALLOW_NEW();
+
  public:
   // Callback is called with (current_time, load_level) parameters.
   using Callback = base::RepeatingCallback<void(base::TimeTicks, double)>;

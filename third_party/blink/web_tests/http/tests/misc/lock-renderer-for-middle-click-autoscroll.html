@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<title>Lock input events to single renderer when middle click autoscroll is in progress</title>
+<style>
+#target-iframe1 {
+  height: 100px;
+  width: 100px;
+  overflow-y: scroll;
+  position: absolute;
+  left: 100px;
+  top: 100px;
+}
+</style>
+<script src='/resources/testharness.js'></script>
+<script src='/resources/testharnessreport.js'></script>
+<script src='/js-test-resources/gesture-util.js'></script>
+<script>
+  var container;
+  var scrollOffset;
+
+  async_test(t => {
+    // On document load, perform middle click just above the container
+    // of iframe and start moving mouse in vertical direction such that cursor
+    // is over OOPIF. If the bug repros (crbug.com/872832), cursor changes
+    // back to pointer once mouse move over OOPIF and will not scroll the root
+    // frame. Test will time out as it will wait for scroll to happen.
+     window.addEventListener('load', async () => {
+       container = document.getElementById('container');
+       var subFrame = document.getElementsByTagName('iframe')[0];
+       var startx = subFrame.offsetLeft + (subFrame.offsetWidth / 2);
+       var starty = subFrame.offsetTop;
+       var endX =  startx;
+       var endY = starty + 20;
+
+       await mouseMoveTo(startx, starty);
+       // middle click at startx starty
+       await mouseClickOn(startx, starty, 1);
+       await mouseMoveTo(endX, endY + 50);
+       await waitFor(() => {
+         return (container.scrollTop > 0);
+       });
+       // Left click to cancel middle click autoscroll.
+       await mouseClickOn(endX,endY + 50);
+       // Wait for the cursor shape to go back to normal.
+       await waitFor(() => {
+         var cursorInfo = internals.getCurrentCursorInfo();
+         return cursorInfo === "type=Pointer hotSpot=0,0" ||
+                cursorInfo === "type=IBeam hotSpot=0,0";
+       });
+
+       t.step(() => { assert_greater_than(container.scrollTop, 0 ,
+                    "Root frame scroll offset must be greater than 0.")});
+       t.done();
+    });
+});
+</script>
+<div id="container" style="height: 400px; width: 400px; overflow: auto">
+    <div id="filler" style="height:4000px; width: 4000px"></div>
+<iframe id="target-iframe1"
+  src="http://localhost:8080/misc/resources/cross-origin-subframe-for-scrolling.html">
+</iframe>
+</div>

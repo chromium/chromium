@@ -46,8 +46,6 @@ int GetResourceType(bool is_main_resource, bool is_redirect, bool is_no_store) {
 }  // namespace
 
 const char kFollowOnlyWhenPrerenderShown[] = "follow-only-when-prerender-shown";
-const char kPurposeHeaderName[] = "Purpose";
-const char kPurposeHeaderValue[] = "prefetch";
 
 bool DoesURLHaveValidScheme(const GURL& url) {
   return (url.SchemeIsHTTPOrHTTPS() ||

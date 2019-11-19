@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<script src="../../../../resources/run-after-layout-and-paint.js"></script>
+<script src="../../../../fast/forms/resources/common.js"></script>
+<body>
+
+<!-- no style for reference -->
+<ul>
+  <li>Week: <input type="week" /></li>
+</ul>
+
+<!-- disabled, readonly -->
+<ul>
+  <li>Week disabled: <input type="week" disabled/></li>
+  <li>Week readonly: <input type="week" readonly/></li>
+</ul>
+
+<!-- RTL -->
+<ul>
+  <li>Week RTL: <input type="week" value="2019-W08" dir="rtl"/></li>
+</ul>
+
+<!-- font-size, font-weight -->
+<ul>
+  <li>Week font-size, font-weight: <input type="week" value="2019-W08" style="font-size: 36px; font-weight: bold;"/> </li>
+</ul>
+
+<!-- hover -->
+<ul>
+  <li>Week hover: <input type="week" id="hoverTarget" value="2019-W08"/></li>
+</ul>
+
+<!-- small width -->
+<ul>
+  <li>Week width: 10px: <input type="week" style="width: 10px;"/> </li>
+</ul>
+
+<!-- zoom -->
+<ul>
+  <li>Week zoom: 1.5: <input type="week" style="zoom: 1.5;"/></li>
+  <li>Week zoom: 3: <input type="week" style="zoom: 3;"/></li>
+</ul>
+
+<script>
+
+runAfterLayoutAndPaint(function() {
+  var target = document.getElementById('hoverTarget');
+  hoverOverElement(target);
+}, true);
+
+</script>
+
+</body>

@@ -7,24 +7,23 @@
 #include "base/bind.h"
 #include "base/json/json_writer.h"
 #include "base/path_service.h"
-#include "base/strings/stringprintf.h"
 #include "base/task/post_task.h"
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/policy/affiliation_test_helper.h"
 #include "chrome/browser/chromeos/policy/browser_policy_connector_chromeos.h"
 #include "chrome/browser/chromeos/policy/device_policy_cros_browser_test.h"
-#include "chrome/browser/chromeos/settings/stub_install_attributes.h"
 #include "chrome/browser/extensions/extension_apitest.h"
+#include "chrome/browser/extensions/policy_test_utils.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "chromeos/dbus/fake_session_manager_client.h"
+#include "chromeos/dbus/session_manager/fake_session_manager_client.h"
 #include "chromeos/system/fake_statistics_provider.h"
 #include "chromeos/system/statistics_provider.h"
+#include "chromeos/tpm/stub_install_attributes.h"
 #include "components/account_id/account_id.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
-#include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -33,10 +32,7 @@
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/api_test_utils.h"
 #include "extensions/browser/extension_registry.h"
-#include "extensions/browser/test_extension_registry_observer.h"
 #include "extensions/test/result_catcher.h"
-#include "net/test/embedded_test_server/http_request.h"
-#include "net/test/embedded_test_server/http_response.h"
 
 namespace {
 
@@ -99,34 +95,6 @@ class EnterpriseDeviceAttributesTest
     set_chromeos_user_ = false;
   }
 
-  // Replace "mock.http" with "127.0.0.1:<port>" on "update_manifest.xml" files.
-  // Host resolver doesn't work here because the test file doesn't know the
-  // correct port number.
-  std::unique_ptr<net::test_server::HttpResponse> InterceptMockHttp(
-      const net::test_server::HttpRequest& request) {
-    const std::string kFileNameToIntercept = "update_manifest.xml";
-    if (request.GetURL().ExtractFileName() != kFileNameToIntercept)
-      return nullptr;
-
-    base::FilePath test_data_dir;
-    base::PathService::Get(chrome::DIR_TEST_DATA, &test_data_dir);
-    // Remove the leading '/'.
-    std::string relative_manifest_path = request.GetURL().path().substr(1);
-    std::string manifest_response;
-    CHECK(base::ReadFileToString(test_data_dir.Append(relative_manifest_path),
-                                 &manifest_response));
-
-    base::ReplaceSubstringsAfterOffset(
-        &manifest_response, 0, "mock.http",
-        embedded_test_server()->host_port_pair().ToString());
-
-    std::unique_ptr<net::test_server::BasicHttpResponse> response(
-        new net::test_server::BasicHttpResponse());
-    response->set_content_type("text/xml");
-    response->set_content(manifest_response);
-    return response;
-  }
-
  protected:
   // ExtensionApiTest
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -138,20 +106,16 @@ class EnterpriseDeviceAttributesTest
   void SetUpInProcessBrowserTestFixture() override {
     ExtensionApiTest::SetUpInProcessBrowserTestFixture();
 
-    chromeos::FakeSessionManagerClient* fake_session_manager_client =
-        new chromeos::FakeSessionManagerClient;
-    chromeos::DBusThreadManager::GetSetterForTesting()->SetSessionManagerClient(
-        std::unique_ptr<chromeos::SessionManagerClient>(
-            fake_session_manager_client));
-
+    chromeos::SessionManagerClient::InitializeFakeInMemory();
     policy::AffiliationTestHelper affiliation_helper =
         policy::AffiliationTestHelper::CreateForCloud(
-            fake_session_manager_client);
+            chromeos::FakeSessionManagerClient::Get());
 
     std::set<std::string> device_affiliation_ids;
     device_affiliation_ids.insert(kAffiliationID);
     ASSERT_NO_FATAL_FAILURE(affiliation_helper.SetDeviceAffiliationIDs(
         &test_helper_, device_affiliation_ids));
+    test_helper_.InstallOwnerKey();
 
     std::set<std::string> user_affiliation_ids;
     if (GetParam().affiliated) {
@@ -172,8 +136,9 @@ class EnterpriseDeviceAttributesTest
     device_policy->policy_data().set_annotated_location(kAnnotatedLocation);
     device_policy->Build();
 
-    fake_session_manager_client->set_device_policy(device_policy->GetBlob());
-    fake_session_manager_client->OnPropertyChangeComplete(true);
+    chromeos::FakeSessionManagerClient::Get()->set_device_policy(
+        device_policy->GetBlob());
+    chromeos::FakeSessionManagerClient::Get()->OnPropertyChangeComplete(true);
 
     // Init the user policy provider.
     EXPECT_CALL(policy_provider_, IsInitializationComplete(testing::_))
@@ -193,29 +158,6 @@ class EnterpriseDeviceAttributesTest
       policy::AffiliationTestHelper::LoginUser(affiliated_account_id_);
 
     ExtensionApiTest::SetUpOnMainThread();
-  }
-
-  void SetPolicy() {
-    // Extensions that are force-installed come from an update URL, which
-    // defaults to the webstore. Use a mock URL for this test with an update
-    // manifest that includes the crx file of the test extension.
-    GURL update_manifest_url(
-        embedded_test_server()->GetURL(kUpdateManifestPath));
-
-    std::unique_ptr<base::ListValue> forcelist(new base::ListValue);
-    forcelist->AppendString(base::StringPrintf(
-        "%s;%s", kTestExtensionID, update_manifest_url.spec().c_str()));
-
-    policy::PolicyMap policy;
-    policy.Set(policy::key::kExtensionInstallForcelist,
-               policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_MACHINE,
-               policy::POLICY_SOURCE_CLOUD, std::move(forcelist), nullptr);
-
-    // Set the policy and wait until the extension is installed.
-    extensions::TestExtensionRegistryObserver observer(
-        ExtensionRegistry::Get(profile()));
-    policy_provider_.UpdateChromePolicy(policy);
-    observer.WaitForExtensionLoaded();
   }
 
   // Load |page_url| in |browser| and wait for PASSED or FAILED notification.
@@ -251,11 +193,12 @@ class EnterpriseDeviceAttributesTest
       AccountId::FromUserEmailGaiaId(kAffiliatedUserEmail,
                                      kAffiliatedUserGaiaId);
 
+  policy::MockConfigurationPolicyProvider policy_provider_;
+
  private:
   chromeos::ScopedStubInstallAttributes test_install_attributes_{
       chromeos::StubInstallAttributes::CreateCloudManaged("fake-domain",
                                                           "fake-id")};
-  policy::MockConfigurationPolicyProvider policy_provider_;
   policy::DevicePolicyCrosTestHelper test_helper_;
   chromeos::system::ScopedFakeStatisticsProvider fake_statistics_provider_;
 };
@@ -265,13 +208,11 @@ IN_PROC_BROWSER_TEST_P(EnterpriseDeviceAttributesTest, PRE_Success) {
 }
 
 IN_PROC_BROWSER_TEST_P(EnterpriseDeviceAttributesTest, Success) {
-  // Setup |URLLoaderInterceptor|, which is required for force-installing the
-  // test extension through policy.
-  embedded_test_server()->RegisterRequestHandler(
-      base::BindRepeating(&EnterpriseDeviceAttributesTest::InterceptMockHttp,
-                          base::Unretained(this)));
+  policy_test_utils::SetUpEmbeddedTestServer(embedded_test_server());
   ASSERT_TRUE(embedded_test_server()->Start());
-  SetPolicy();
+  policy_test_utils::SetExtensionInstallForcelistPolicy(
+      kTestExtensionID, embedded_test_server()->GetURL(kUpdateManifestPath),
+      profile(), &policy_provider_);
 
   EXPECT_EQ(GetParam().affiliated, user_manager::UserManager::Get()
                                        ->FindUser(affiliated_account_id_)

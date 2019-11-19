@@ -9,12 +9,12 @@
 
 namespace content {
 
-class CacheStorageCache;
+class LegacyCacheStorageCache;
 
 class CONTENT_EXPORT CacheStorageCacheObserver {
  public:
   // The cache size has been set.
-  virtual void CacheSizeUpdated(const CacheStorageCache* cache) = 0;
+  virtual void CacheSizeUpdated(const LegacyCacheStorageCache* cache) = 0;
 };
 
 }  // namespace content

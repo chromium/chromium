@@ -26,11 +26,23 @@
 
 namespace storage {
 
-class StorageMonitor;
 class UsageTracker;
 
-// This class holds per-client usage tracking information and caches per-host
-// usage data.  An instance of this class is created per client.
+// These values are logged to UMA. Entries should not be renumbered and
+// numeric values should never be reused. Please keep in sync with
+// "InvalidOriginReason" in src/tools/metrics/histograms/enums.xml.
+enum class InvalidOriginReason {
+  kIsOpaque = 0,
+  kIsEmpty = 1,
+  kMaxValue = kIsEmpty
+};
+
+// Holds per-client usage tracking information and caches
+// per-host usage data.
+//
+// A UsageTracker object will own one ClientUsageTracker instance per client.
+// This class is not thread-safe. All methods other than the constructor must be
+// called on the same sequence.
 class ClientUsageTracker : public SpecialStoragePolicy::Observer,
                            public base::SupportsWeakPtr<ClientUsageTracker> {
  public:
@@ -39,8 +51,7 @@ class ClientUsageTracker : public SpecialStoragePolicy::Observer,
   ClientUsageTracker(UsageTracker* tracker,
                      QuotaClient* client,
                      blink::mojom::StorageType type,
-                     SpecialStoragePolicy* special_storage_policy,
-                     StorageMonitor* storage_monitor);
+                     SpecialStoragePolicy* special_storage_policy);
   ~ClientUsageTracker() override;
 
   void GetGlobalLimitedUsage(UsageCallback callback);
@@ -54,12 +65,11 @@ class ClientUsageTracker : public SpecialStoragePolicy::Observer,
   void GetCachedOrigins(std::set<url::Origin>* origins) const;
   bool IsUsageCacheEnabledForOrigin(const url::Origin& origin) const;
   void SetUsageCacheEnabled(const url::Origin& origin, bool enabled);
-
  private:
   using UsageMap = std::map<url::Origin, int64_t>;
 
   struct AccumulateInfo {
-    int pending_jobs = 0;
+    size_t pending_jobs = 0;
     int64_t limited_usage = 0;
     int64_t unlimited_usage = 0;
   };
@@ -84,8 +94,6 @@ class ClientUsageTracker : public SpecialStoragePolicy::Observer,
                              const base::Optional<url::Origin>& origin,
                              int64_t usage);
 
-  void DidGetHostUsageAfterUpdate(const url::Origin& origin, int64_t usage);
-
   // Methods used by our GatherUsage tasks, as a task makes progress
   // origins and hosts are added incrementally to the cache.
   void AddCachedOrigin(const url::Origin& origin, int64_t usage);
@@ -106,7 +114,6 @@ class ClientUsageTracker : public SpecialStoragePolicy::Observer,
 
   QuotaClient* client_;
   const blink::mojom::StorageType type_;
-  StorageMonitor* storage_monitor_;
 
   int64_t global_limited_usage_;
   int64_t global_unlimited_usage_;

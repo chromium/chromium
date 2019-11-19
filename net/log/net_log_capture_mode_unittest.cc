@@ -10,41 +10,25 @@ namespace net {
 
 namespace {
 
-TEST(NetLogCaptureMode, DefaultConstructor) {
-  EXPECT_EQ(NetLogCaptureMode(), NetLogCaptureMode::Default());
-}
-
 TEST(NetLogCaptureMode, Default) {
-  NetLogCaptureMode mode = NetLogCaptureMode::Default();
+  NetLogCaptureMode mode = NetLogCaptureMode::kDefault;
 
-  EXPECT_FALSE(mode.include_cookies_and_credentials());
-  EXPECT_FALSE(mode.include_socket_bytes());
-
-  EXPECT_EQ(mode, NetLogCaptureMode::Default());
-  EXPECT_NE(mode, NetLogCaptureMode::IncludeCookiesAndCredentials());
-  EXPECT_NE(mode, NetLogCaptureMode::IncludeSocketBytes());
+  EXPECT_FALSE(NetLogCaptureIncludesSensitive(mode));
+  EXPECT_FALSE(NetLogCaptureIncludesSocketBytes(mode));
 }
 
-TEST(NetLogCaptureMode, IncludeCookiesAndCredentials) {
-  NetLogCaptureMode mode = NetLogCaptureMode::IncludeCookiesAndCredentials();
+TEST(NetLogCaptureMode, IncludeSensitive) {
+  NetLogCaptureMode mode = NetLogCaptureMode::kIncludeSensitive;
 
-  EXPECT_TRUE(mode.include_cookies_and_credentials());
-  EXPECT_FALSE(mode.include_socket_bytes());
-
-  EXPECT_NE(mode, NetLogCaptureMode::Default());
-  EXPECT_EQ(mode, NetLogCaptureMode::IncludeCookiesAndCredentials());
-  EXPECT_NE(mode, NetLogCaptureMode::IncludeSocketBytes());
+  EXPECT_TRUE(NetLogCaptureIncludesSensitive(mode));
+  EXPECT_FALSE(NetLogCaptureIncludesSocketBytes(mode));
 }
 
-TEST(NetLogCaptureMode, IncludeSocketBytes) {
-  NetLogCaptureMode mode = NetLogCaptureMode::IncludeSocketBytes();
+TEST(NetLogCaptureMode, Everything) {
+  NetLogCaptureMode mode = NetLogCaptureMode::kEverything;
 
-  EXPECT_TRUE(mode.include_cookies_and_credentials());
-  EXPECT_TRUE(mode.include_socket_bytes());
-
-  EXPECT_NE(mode, NetLogCaptureMode::Default());
-  EXPECT_NE(mode, NetLogCaptureMode::IncludeCookiesAndCredentials());
-  EXPECT_EQ(mode, NetLogCaptureMode::IncludeSocketBytes());
+  EXPECT_TRUE(NetLogCaptureIncludesSensitive(mode));
+  EXPECT_TRUE(NetLogCaptureIncludesSocketBytes(mode));
 }
 
 }  // namespace

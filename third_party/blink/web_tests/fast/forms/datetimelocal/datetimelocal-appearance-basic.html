@@ -1,12 +1,8 @@
 <!DOCTYPE html>
 <html>
 <body>
-<script>
-if (window.testRunner)
-    testRunner.dumpAsTextWithPixelResults();
-</script>
 <ul>
-    <li>step=none <input autofocus type="datetime-local"> <input type="datetime-local" value="9876-05-04T12:34"></li>
+    <li>step=none <input type="datetime-local"> <input type="datetime-local" value="9876-05-04T12:34"></li>
     <li>step=1 <input type="datetime-local" step="1"> <input step="1" type="datetime-local" value="9876-05-04T12:34:56"></li>
     <li>step=0.001 <input type="datetime-local" step="0.001"> <input step="0.001" type="datetime-local" value="9876-05-04T12:34:56.789"></li>
     <li>step=3600 <input type="datetime-local" step="3600"> <input step="3600" type="datetime-local" value="9876-05-04T12:00"></li>
@@ -28,7 +24,7 @@ if (window.testRunner)
     <li>padding: <input type="datetime-local" value="1234-05-06T12:34:56" style="padding: 20px"></li>
 </ul>
 <script>
-document.querySelector('input[autofocus]').focus();
+document.querySelector('input').focus();
 </script>
 </body>
 </html>

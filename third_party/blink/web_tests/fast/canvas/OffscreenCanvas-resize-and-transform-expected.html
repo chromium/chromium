@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head></head>
+<body>
+  <canvas id="myCanvas" width="512" height="256"></canvas>
+  <div id="log"></div>
+</body>
+<script>
+const canvas = document.getElementById("myCanvas");
+ctx = canvas.getContext("2d");
+
+ctx.translate(120, 60);
+ctx.scale(2, 1);
+ctx.rotate(Math.PI/8);
+
+ctx.fillStyle = "#ff00aa";
+ctx.fillRect(-40, -40, 40, 40);
+ctx.fillStyle = "#ffaa00";
+ctx.fillRect(0, -40, 40, 40);
+ctx.fillStyle = "#00aaff";
+ctx.fillRect(0, 0, 40, 40);
+ctx.fillStyle = "#00ff00";
+ctx.fillRect(-40, 0, 40, 40);
+</script>
+</html>

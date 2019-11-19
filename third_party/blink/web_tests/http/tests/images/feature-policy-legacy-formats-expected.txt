@@ -1,1 +1,0 @@
-CONSOLE ERROR: Feature policy violation: legacy-image-formats is not allowed in this document.

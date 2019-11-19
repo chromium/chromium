@@ -13,16 +13,22 @@ source_set("lib") {
   ]
 
   deps = [
-    "//base",
     "//components/crash/core/common:crash_key",
     "//components/pwg_encoder",
-    "//mojo/public/cpp/bindings",
   ]
 
   public_deps = [
+    "//base",
     "//chrome/services/printing/public/mojom",
-    "//services/service_manager/public/cpp",
+    "//mojo/public/cpp/bindings",
   ]
+
+  if (is_chromeos) {
+    sources += [
+      "pdf_flattener.cc",
+      "pdf_flattener.h",
+    ]
+  }
 
   if (is_win) {
     sources += [

@@ -57,6 +57,7 @@ class MultipleTapDetectorTest : public aura::test::AuraTestBase {
   }
 
   void TearDown() override {
+    ui::SetEventTickClockForTesting(nullptr);
     triple_tap_detector_.reset();
     aura::test::AuraTestBase::TearDown();
   }
@@ -79,13 +80,13 @@ class MultipleTapDetectorTest : public aura::test::AuraTestBase {
     ui::TouchEvent press(
         ui::ET_TOUCH_PRESSED, tap_point, simulated_clock_.NowTicks(),
         ui::PointerDetails(ui::EventPointerType::POINTER_TYPE_TOUCH,
-                           ui::PointerDetails::kUnknownPointerId));
+                           ui::kPointerIdUnknown));
     generator_->Dispatch(&press);
     simulated_clock_.Advance(base::TimeDelta::FromMilliseconds(kTapLengthMs));
     ui::TouchEvent release(
         ui::ET_TOUCH_RELEASED, tap_point, simulated_clock_.NowTicks(),
         ui::PointerDetails(ui::EventPointerType::POINTER_TYPE_TOUCH,
-                           ui::PointerDetails::kUnknownPointerId));
+                           ui::kPointerIdUnknown));
     generator_->Dispatch(&release);
   }
 

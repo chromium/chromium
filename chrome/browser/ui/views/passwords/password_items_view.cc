@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/passwords/password_items_view.h"
 
 #include <numeric>
+#include <utility>
 
 #include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
@@ -16,6 +17,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/password_manager/core/common/password_manager_ui.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/models/simple_combobox_model.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/range/range.h"
 #include "ui/resources/grit/ui_resources.h"
@@ -23,12 +25,13 @@
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/image_button_factory.h"
 #include "ui/views/controls/button/md_text_button.h"
+#include "ui/views/controls/editable_combobox/editable_combobox.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/link.h"
 #include "ui/views/controls/link_listener.h"
-#include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/grid_layout.h"
+#include "ui/views/style/typography.h"
 
 namespace {
 
@@ -100,25 +103,47 @@ std::unique_ptr<views::LabelButton> CreateUndoButton(
   return undo_button;
 }
 
+std::unique_ptr<views::View> CreateManageButton(
+    views::ButtonListener* listener) {
+  return views::MdTextButton::CreateSecondaryUiButton(
+      listener,
+      l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_MANAGE_PASSWORDS_BUTTON));
+}
+
 }  // namespace
 
 std::unique_ptr<views::Label> CreateUsernameLabel(
     const autofill::PasswordForm& form) {
-  auto label = std::make_unique<views::Label>(
-      GetDisplayUsername(form), CONTEXT_BODY_TEXT_LARGE, STYLE_SECONDARY);
+  auto label = std::make_unique<views::Label>(GetDisplayUsername(form),
+                                              CONTEXT_BODY_TEXT_LARGE,
+                                              views::style::STYLE_SECONDARY);
   label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   return label;
 }
 
-std::unique_ptr<views::Textfield> CreateUsernameEditable(
-    const base::string16& initial_username) {
-  auto editable = std::make_unique<views::Textfield>();
-  editable->SetText(initial_username);
-  editable->SetAccessibleName(
+std::unique_ptr<views::EditableCombobox> CreateUsernameEditableCombobox(
+    const autofill::PasswordForm& form) {
+  std::vector<base::string16> usernames = {form.username_value};
+  for (const autofill::ValueElementPair& other_possible_username_pair :
+       form.all_possible_usernames) {
+    if (other_possible_username_pair.first != form.username_value)
+      usernames.push_back(other_possible_username_pair.first);
+  }
+  base::EraseIf(usernames, [](const base::string16& username) {
+    return username.empty();
+  });
+  bool display_arrow = !usernames.empty();
+  auto combobox = std::make_unique<views::EditableCombobox>(
+      std::make_unique<ui::SimpleComboboxModel>(std::move(usernames)),
+      /*filter_on_edit=*/false, /*show_on_empty=*/true,
+      views::EditableCombobox::Type::kRegular, views::style::CONTEXT_BUTTON,
+      views::style::STYLE_PRIMARY, display_arrow);
+  combobox->SetText(form.username_value);
+  combobox->SetAccessibleName(
       l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_USERNAME_LABEL));
   // In case of long username, ensure that the beginning of value is visible.
-  editable->SelectRange(gfx::Range(0));
-  return editable;
+  combobox->SelectRange(gfx::Range(0));
+  return combobox;
 }
 
 std::unique_ptr<views::Label> CreatePasswordLabel(
@@ -130,8 +155,9 @@ std::unique_ptr<views::Label> CreatePasswordLabel(
           ? form.password_value
           : l10n_util::GetStringFUTF16(federation_message_id,
                                        GetDisplayFederation(form));
-  int text_style = form.federation_origin.opaque() ? STYLE_SECONDARY_MONOSPACED
-                                                   : STYLE_SECONDARY;
+  int text_style = form.federation_origin.opaque()
+                       ? STYLE_SECONDARY_MONOSPACED
+                       : views::style::STYLE_SECONDARY;
   auto label =
       std::make_unique<views::Label>(text, CONTEXT_BODY_TEXT_LARGE, text_style);
   label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
@@ -188,8 +214,8 @@ void PasswordItemsView::PasswordRow::AddUndoRow(views::GridLayout* layout) {
       CreateUndoButton(this, GetDisplayUsername(*password_form_));
 
   StartRow(layout, UNDO_COLUMN_SET);
-  layout->AddView(text.release());
-  layout->AddView(undo_button.release());
+  layout->AddView(std::move(text));
+  layout->AddView(std::move(undo_button));
 }
 
 void PasswordItemsView::PasswordRow::AddPasswordRow(views::GridLayout* layout) {
@@ -200,9 +226,9 @@ void PasswordItemsView::PasswordRow::AddPasswordRow(views::GridLayout* layout) {
   std::unique_ptr<views::ImageButton> delete_button =
       CreateDeleteButton(this, GetDisplayUsername(*password_form_));
   StartRow(layout, PASSWORD_COLUMN_SET);
-  layout->AddView(username_label.release());
-  layout->AddView(password_label.release());
-  layout->AddView(delete_button.release());
+  layout->AddView(std::move(username_label));
+  layout->AddView(std::move(password_label));
+  layout->AddView(std::move(delete_button));
 }
 
 void PasswordItemsView::PasswordRow::ButtonPressed(views::Button* sender,
@@ -216,9 +242,13 @@ void PasswordItemsView::PasswordRow::ButtonPressed(views::Button* sender,
 
 PasswordItemsView::PasswordItemsView(content::WebContents* web_contents,
                                      views::View* anchor_view,
-                                     const gfx::Point& anchor_point,
                                      DisplayReason reason)
-    : PasswordBubbleViewBase(web_contents, anchor_view, anchor_point, reason) {
+    : PasswordBubbleViewBase(web_contents,
+                             anchor_view,
+                             reason,
+                             /*easily_dismissable=*/true) {
+  DialogDelegate::set_buttons(ui::DIALOG_BUTTON_OK);
+  DialogDelegate::SetExtraView(CreateManageButton(this));
   DCHECK_EQ(password_manager::ui::MANAGE_STATE, model()->state());
 
   if (model()->local_credentials().empty()) {
@@ -245,7 +275,7 @@ void PasswordItemsView::RecreateLayout() {
   RemoveAllChildViews(true);
 
   views::GridLayout* grid_layout =
-      SetLayoutManager(std::make_unique<views::GridLayout>(this));
+      SetLayoutManager(std::make_unique<views::GridLayout>());
 
   const int vertical_padding = ChromeLayoutProvider::Get()->GetDistanceMetric(
       DISTANCE_CONTROL_LIST_VERTICAL);
@@ -271,16 +301,6 @@ void PasswordItemsView::NotifyPasswordFormAction(
   // After the view is consistent, notify the model that the password needs to
   // be updated (either removed or put back into the store, as appropriate.
   model()->OnPasswordAction(password_form, action);
-}
-
-views::View* PasswordItemsView::CreateExtraView() {
-  return views::MdTextButton::CreateSecondaryUiButton(
-      this,
-      l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_MANAGE_PASSWORDS_BUTTON));
-}
-
-int PasswordItemsView::GetDialogButtons() const {
-  return ui::DIALOG_BUTTON_OK;
 }
 
 bool PasswordItemsView::ShouldShowCloseButton() const {

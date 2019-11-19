@@ -11,7 +11,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseJUnit4ClassRunner;
-import org.chromium.base.test.util.DisabledTest;
 
 /**
  * Test class for {@link UserDataHost}.
@@ -46,34 +45,31 @@ public class UserDataHostTest {
         }
     }
 
-    private <T extends UserData> void assertGetUserData(Class<T> key) {
-        boolean exception = false;
+    private <T extends UserData, E extends RuntimeException> void getUserDataException(
+            Class<T> key, Class<E> exceptionType) {
         try {
             mHost.getUserData(key);
-        } catch (AssertionError e) {
-            exception = true;
+        } catch (Exception e) {
+            if (!exceptionType.isInstance(e)) throw e;
         }
-        Assert.assertTrue(exception);
     }
 
-    private <T extends UserData> void assertSetUserData(Class<T> key, T obj) {
-        boolean exception = false;
+    private <T extends UserData, E extends RuntimeException> void setUserDataException(
+            Class<T> key, T obj, Class<E> exceptionType) {
         try {
             mHost.setUserData(key, obj);
-        } catch (AssertionError e) {
-            exception = true;
+        } catch (Exception e) {
+            if (!exceptionType.isInstance(e)) throw e;
         }
-        Assert.assertTrue(exception);
     }
 
-    private <T extends UserData> void assertRemoveUserData(Class<T> key) {
-        boolean exception = false;
+    private <T extends UserData, E extends RuntimeException> void removeUserDataException(
+            Class<T> key, Class<E> exceptionType) {
         try {
             mHost.removeUserData(key);
-        } catch (AssertionError e) {
-            exception = true;
+        } catch (Exception e) {
+            if (!exceptionType.isInstance(e)) throw e;
         }
-        Assert.assertTrue(exception);
     }
 
     /**
@@ -81,14 +77,13 @@ public class UserDataHostTest {
      */
     @Test
     @SmallTest
-    @DisabledTest
     public void testBasicOperations() {
         TestObjectA obj = new TestObjectA();
         mHost.setUserData(TestObjectA.class, obj);
         Assert.assertEquals(obj, mHost.getUserData(TestObjectA.class));
         Assert.assertEquals(obj, mHost.removeUserData(TestObjectA.class));
         Assert.assertNull(mHost.getUserData(TestObjectA.class));
-        assertRemoveUserData(TestObjectA.class);
+        removeUserDataException(TestObjectA.class, IllegalStateException.class);
     }
 
     /**
@@ -96,14 +91,13 @@ public class UserDataHostTest {
      */
     @Test
     @SmallTest
-    @DisabledTest
     public void testNullKeyOrDataAreDisallowed() {
         TestObjectA obj = new TestObjectA();
-        assertSetUserData(null, null);
-        assertSetUserData(TestObjectA.class, null);
-        assertSetUserData(null, obj);
-        assertGetUserData(null);
-        assertRemoveUserData(null);
+        setUserDataException(null, null, IllegalArgumentException.class);
+        setUserDataException(TestObjectA.class, null, IllegalArgumentException.class);
+        setUserDataException(null, obj, IllegalArgumentException.class);
+        getUserDataException(null, IllegalArgumentException.class);
+        removeUserDataException(null, IllegalArgumentException.class);
     }
 
     /**
@@ -126,11 +120,11 @@ public class UserDataHostTest {
      */
     @Test
     @SmallTest
-    @DisabledTest
     public void testSingleThreadPolicy() {
         TestObjectA obj = new TestObjectA();
         mHost.setUserData(TestObjectA.class, obj);
-        ThreadUtils.runOnUiThreadBlocking(() -> assertGetUserData(TestObjectA.class));
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> getUserDataException(TestObjectA.class, IllegalStateException.class));
     }
 
     /**
@@ -156,15 +150,14 @@ public class UserDataHostTest {
      */
     @Test
     @SmallTest
-    @DisabledTest
     public void testOperationsDisallowedAfterDestroy() {
         TestObjectA obj = new TestObjectA();
         mHost.setUserData(TestObjectA.class, obj);
         Assert.assertEquals(obj, mHost.getUserData(TestObjectA.class));
 
         mHost.destroy();
-        assertGetUserData(TestObjectA.class);
-        assertSetUserData(TestObjectA.class, obj);
-        assertRemoveUserData(TestObjectA.class);
+        getUserDataException(TestObjectA.class, IllegalStateException.class);
+        setUserDataException(TestObjectA.class, obj, IllegalStateException.class);
+        removeUserDataException(TestObjectA.class, IllegalStateException.class);
     }
 }

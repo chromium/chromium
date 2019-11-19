@@ -6,6 +6,8 @@
 
 #include <gio/gio.h>
 
+#include <memory>
+
 #include "base/environment.h"
 #include "base/nix/xdg_util.h"
 #include "chrome/browser/ui/libgtkui/gtk_ui.h"
@@ -45,8 +47,10 @@ SettingsProviderGSettings::SettingsProviderGSettings(GtkUi* delegate)
                                      ? kCinnamonPreferencesSchema
                                      : kGnomePreferencesSchema;
 
-  if (!g_settings_schema_source_lookup(g_settings_schema_source_get_default(),
-                                       settings_schema, FALSE) ||
+  GSettingsSchema* button_schema = g_settings_schema_source_lookup(
+      g_settings_schema_source_get_default(), settings_schema, FALSE);
+  if (!button_schema ||
+      !g_settings_schema_has_key(button_schema, kButtonLayoutKey) ||
       !(button_settings_ = g_settings_new(settings_schema))) {
     ParseAndStoreButtonValue(kDefaultButtonString);
   } else {
@@ -57,9 +61,11 @@ SettingsProviderGSettings::SettingsProviderGSettings(GtkUi* delegate)
         G_CALLBACK(OnDecorationButtonLayoutChangedThunk), this);
   }
 
+  GSettingsSchema* click_schema = g_settings_schema_source_lookup(
+      g_settings_schema_source_get_default(), kGnomePreferencesSchema, FALSE);
   // If this fails, the default action has already been set in gtk_ui.cc.
-  if (g_settings_schema_source_lookup(g_settings_schema_source_get_default(),
-                                      kGnomePreferencesSchema, FALSE) &&
+  if (click_schema &&
+      g_settings_schema_has_key(click_schema, kMiddleClickActionKey) &&
       (click_settings_ = g_settings_new(kGnomePreferencesSchema))) {
     OnMiddleClickActionChanged(click_settings_, kMiddleClickActionKey);
     signal_middle_click_id_ =
@@ -112,25 +118,25 @@ void SettingsProviderGSettings::OnMiddleClickActionChanged(GSettings* settings,
 
 void SettingsProviderGSettings::ParseAndStoreMiddleClickValue(
     const std::string& click_action) {
-  GtkUi::NonClientWindowFrameAction action;
+  GtkUi::WindowFrameAction action;
 
   if (click_action == "none") {
-    action = views::LinuxUI::WINDOW_FRAME_ACTION_NONE;
+    action = views::LinuxUI::WindowFrameAction::kNone;
   } else if (click_action == "lower") {
-    action = views::LinuxUI::WINDOW_FRAME_ACTION_LOWER;
+    action = views::LinuxUI::WindowFrameAction::kLower;
   } else if (click_action == "minimize") {
-    action = views::LinuxUI::WINDOW_FRAME_ACTION_MINIMIZE;
+    action = views::LinuxUI::WindowFrameAction::kMinimize;
   } else if (click_action == "toggle-maximize") {
-    action = views::LinuxUI::WINDOW_FRAME_ACTION_TOGGLE_MAXIMIZE;
+    action = views::LinuxUI::WindowFrameAction::kToggleMaximize;
   } else {
     // While we want to have the default state be lower if there isn't a
     // value, we want to default to no action if the user has explicitly
     // chose an action that we don't implement.
-    action = views::LinuxUI::WINDOW_FRAME_ACTION_NONE;
+    action = views::LinuxUI::WindowFrameAction::kNone;
   }
 
-  delegate_->SetNonClientWindowFrameAction(
-      views::LinuxUI::WINDOW_FRAME_ACTION_SOURCE_MIDDLE_CLICK, action);
+  delegate_->SetWindowFrameAction(
+      views::LinuxUI::WindowFrameActionSource::kMiddleClick, action);
 }
 
 }  // namespace libgtkui

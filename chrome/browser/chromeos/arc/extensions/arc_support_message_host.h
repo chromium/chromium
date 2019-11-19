@@ -10,6 +10,7 @@
 
 #include "base/macros.h"
 #include "base/values.h"
+#include "content/public/browser/browser_context.h"
 #include "extensions/browser/api/messaging/native_message_host.h"
 
 namespace arc {
@@ -32,7 +33,8 @@ class ArcSupportMessageHost : public extensions::NativeMessageHost {
 
   // Called when the arc_support connects the "port". Returns the
   // instance of ArcSupportMessageHost.
-  static std::unique_ptr<NativeMessageHost> Create();
+  static std::unique_ptr<NativeMessageHost> Create(
+      content::BrowserContext* browser_context);
 
   ~ArcSupportMessageHost() override;
 

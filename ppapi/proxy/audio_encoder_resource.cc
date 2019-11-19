@@ -218,20 +218,19 @@ void AudioEncoderResource::OnPluginMsgInitializeReply(
   }
 
   // Get audio buffers shared memory buffer.
-  base::SharedMemoryHandle buffer_handle;
-  if (!params.TakeSharedMemoryHandleAtIndex(0, &buffer_handle) ||
-      !audio_buffer_manager_.SetBuffers(
-          audio_buffer_count, audio_buffer_size,
-          std::make_unique<base::SharedMemory>(buffer_handle, false), true)) {
+  base::UnsafeSharedMemoryRegion region;
+  if (!params.TakeUnsafeSharedMemoryRegionAtIndex(0, &region) ||
+      !audio_buffer_manager_.SetBuffers(audio_buffer_count, audio_buffer_size,
+                                        std::move(region), true)) {
     SafeRunCallback(&initialize_callback_, PP_ERROR_NOMEMORY);
     return;
   }
 
   // Get bitstream buffers shared memory buffer.
-  if (!params.TakeSharedMemoryHandleAtIndex(1, &buffer_handle) ||
-      !bitstream_buffer_manager_.SetBuffers(
-          bitstream_buffer_count, bitstream_buffer_size,
-          std::make_unique<base::SharedMemory>(buffer_handle, false), false)) {
+  if (!params.TakeUnsafeSharedMemoryRegionAtIndex(1, &region) ||
+      !bitstream_buffer_manager_.SetBuffers(bitstream_buffer_count,
+                                            bitstream_buffer_size,
+                                            std::move(region), false)) {
     SafeRunCallback(&initialize_callback_, PP_ERROR_NOMEMORY);
     return;
   }

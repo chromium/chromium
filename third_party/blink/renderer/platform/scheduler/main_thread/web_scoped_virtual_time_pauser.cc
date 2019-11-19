@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/public/platform/web_scoped_virtual_time_pauser.h"
+#include "third_party/blink/public/platform/scheduler/web_scoped_virtual_time_pauser.h"
 
 #include "base/trace_event/trace_event.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/traced_value.h"
@@ -20,7 +20,7 @@ WebScopedVirtualTimePauser::WebScopedVirtualTimePauser(
     : duration_(duration),
       scheduler_(scheduler),
       debug_name_(name),
-      trace_id_(WebScopedVirtualTimePauser::next_trace_id_++) {}
+      trace_id_(reinterpret_cast<intptr_t>(this)) {}
 
 WebScopedVirtualTimePauser::~WebScopedVirtualTimePauser() {
   if (paused_ && scheduler_)
@@ -68,9 +68,6 @@ void WebScopedVirtualTimePauser::UnpauseVirtualTime() {
     return;
 
   paused_ = false;
-  TRACE_EVENT_NESTABLE_ASYNC_END0(
-      "renderer.scheduler", "WebScopedVirtualTimePauser::PauseVirtualTime",
-      trace_id_);
   DecrementVirtualTimePauseCount();
 }
 
@@ -80,8 +77,9 @@ void WebScopedVirtualTimePauser::DecrementVirtualTimePauseCount() {
     scheduler_->MaybeAdvanceVirtualTime(virtual_time_when_paused_ +
                                         base::TimeDelta::FromMilliseconds(10));
   }
+  TRACE_EVENT_NESTABLE_ASYNC_END0(
+      "renderer.scheduler", "WebScopedVirtualTimePauser::PauseVirtualTime",
+      trace_id_);
 }
-
-int WebScopedVirtualTimePauser::next_trace_id_ = 0;
 
 }  // namespace blink

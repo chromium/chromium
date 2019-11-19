@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<title>Tests "thumb snap back" on a non-custom composited div scrollbar.</title>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<script src="../../../resources/gesture-util.js"></script>
+<script src="../../../resources/scrollbar-util.js"></script>
+<style>
+.appearance {
+  width: 100px;
+  height: 100px;
+  overflow: scroll;
+  border: 1px solid black;
+}
+.standardLocation {
+  position: absolute;
+  top: 100px;
+  left: 100px;
+}
+.customLocation {
+  position: absolute;
+  top: 250px;
+  left: 100px;
+}
+.space {
+  height: 1000px;
+  width: 1000px;
+}
+</style>
+<script>
+  if (window.internals)
+    internals.settings.setScrollAnimatorEnabled(false);
+
+  let scroll_threshold_crossed = false;
+  var testThumbSnapBack = async_test('Tests that the thumb snaps back.');
+  function pointerActionsCallback() {
+    const scroller = document.getElementById("standard");
+    testThumbSnapBack.step(() => {
+      assert_true(scroll_threshold_crossed, 'scroll threashold should be crossed');
+      assert_equals(scroller.scrollTop, 20, 'scroll offset should snap back');
+    });
+    testThumbSnapBack.done();
+  }
+
+  function inject_input() {
+    if (!(window.chrome && chrome.gpuBenchmarking))
+      return;
+
+    const standardDivFast = document.getElementById("standard");
+    const standardRectFast = standardDivFast.getBoundingClientRect();
+    const TRACK_WIDTH = calculateScrollbarThickness();
+    const BUTTON_WIDTH = TRACK_WIDTH;
+    const X = standardRectFast.right - TRACK_WIDTH / 2;
+    const Y = standardRectFast.top + BUTTON_WIDTH + 5;
+
+    // Verify that scrolling occured.
+    standardDivFast.addEventListener("scroll", function() {
+      if (standardDivFast.scrollTop == 505)
+        scroll_threshold_crossed = true;
+    });
+
+    // Testing the vertical scrollbar thumb.
+    standardDivFast.scrollTop = 20;
+    var pointerActions =
+      [{source: "mouse", id: 0,
+          actions: [
+            { name: "pointerDown", x: X, y: Y },
+            { name: "pause", duration: 100},
+            { name: 'pointerMove', x: X, y: Y + 20 },
+            { name: "pause", duration: 100},
+            { name: 'pointerMove', x: X + 500, y: Y + 20 },
+            { name: "pointerUp", x: X + 500, y: Y + 20 },
+          ]
+      }];
+    chrome.gpuBenchmarking.pointerActionSequence(pointerActions, pointerActionsCallback);
+  }
+</script>
+<body id="target" onload="inject_input()">
+  <!-- Composited non-custom fast scroller -->
+  <div id="standard" class="appearance standardLocation fast">
+    <div class="space"></div>
+  </div>
+</body>

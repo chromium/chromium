@@ -103,7 +103,7 @@ class MEDIA_BLINK_EXPORT KeySystemConfigSelector {
   // tests. If null the implementation will check the support using MimeUtil.
   IsSupportedMediaTypeCB is_supported_media_type_cb_;
 
-  base::WeakPtrFactory<KeySystemConfigSelector> weak_factory_;
+  base::WeakPtrFactory<KeySystemConfigSelector> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(KeySystemConfigSelector);
 };

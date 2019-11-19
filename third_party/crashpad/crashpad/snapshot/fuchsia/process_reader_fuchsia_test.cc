@@ -41,11 +41,25 @@ TEST(ProcessReaderFuchsia, SelfBasic) {
   EXPECT_STREQ(kTestMemory, buffer);
 
   const auto& modules = process_reader.Modules();
+  // The process should have at least one module, the executable, and then some
+  // shared libraries, no loadable modules.
   EXPECT_GT(modules.size(), 0u);
+  size_t num_executables = 0u;
+  size_t num_shared_libraries = 0u;
   for (const auto& module : modules) {
     EXPECT_FALSE(module.name.empty());
     EXPECT_NE(module.type, ModuleSnapshot::kModuleTypeUnknown);
+
+    if (module.type == ModuleSnapshot::kModuleTypeExecutable) {
+      EXPECT_EQ(module.name, "<_>");
+      num_executables++;
+    } else if (module.type == ModuleSnapshot::kModuleTypeSharedLibrary) {
+      EXPECT_NE(module.name, "<_>");
+      num_shared_libraries++;
+    }
   }
+  EXPECT_EQ(num_executables, 1u);
+  EXPECT_EQ(num_shared_libraries, modules.size() - num_executables);
 
   const auto& threads = process_reader.Threads();
   EXPECT_GT(threads.size(), 0u);
@@ -160,7 +174,8 @@ class ThreadsChildTest : public MultiprocessExec {
 
     for (size_t i = 1; i < 6; ++i) {
       ASSERT_GT(threads[i].stack_regions.size(), 0u);
-      EXPECT_EQ(threads[i].stack_regions[0].size(), i * 4096u);
+      EXPECT_GT(threads[i].stack_regions[0].size(), 0u);
+      EXPECT_LE(threads[i].stack_regions[0].size(), i * 4096u);
     }
   }
 

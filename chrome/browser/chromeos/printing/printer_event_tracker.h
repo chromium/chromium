@@ -5,19 +5,20 @@
 #ifndef CHROME_BROWSER_CHROMEOS_PRINTING_PRINTER_EVENT_TRACKER_H_
 #define CHROME_BROWSER_CHROMEOS_PRINTING_PRINTER_EVENT_TRACKER_H_
 
-#include <stdint.h>
-
 #include <string>
 #include <vector>
 
 #include "base/macros.h"
 #include "base/synchronization/lock.h"
 #include "chrome/browser/chromeos/printing/printer_detector.h"
-#include "chromeos/printing/printer_configuration.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "third_party/metrics_proto/printer_event.pb.h"
 
 namespace chromeos {
+
+class Printer;
+
+enum class PrinterSetupSource;
 
 // Aggregates printer events for logging.  This class is thread-safe.
 class PrinterEventTracker : public KeyedService {
@@ -42,11 +43,14 @@ class PrinterEventTracker : public KeyedService {
   // the PPD was selected automatically or chosen by the user.
   void RecordUsbPrinterInstalled(
       const PrinterDetector::DetectedPrinter& printer,
-      SetupMode mode);
+      SetupMode mode,
+      PrinterSetupSource source);
 
   // Store a succesful network printer installation. |mode| indicates if
   // the PPD was selected automatically or chosen by the user.
-  void RecordIppPrinterInstalled(const Printer& printer, SetupMode mode);
+  void RecordIppPrinterInstalled(const Printer& printer,
+                                 SetupMode mode,
+                                 PrinterSetupSource source);
 
   // Record an abandoned setup.
   void RecordSetupAbandoned(const Printer& printer);

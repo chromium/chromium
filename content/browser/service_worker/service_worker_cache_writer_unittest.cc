@@ -21,6 +21,48 @@
 namespace content {
 namespace {
 
+// A test implementation of ServiceWorkerCacheWriter::WriteObserver.
+// This observer captures the response info or data sent to the observer
+// for further checking.
+class MockServiceWorkerCacheWriterObserver
+    : public ServiceWorkerCacheWriter::WriteObserver {
+ public:
+  MockServiceWorkerCacheWriterObserver() : data_length_(0), result_(net::OK) {}
+  ~MockServiceWorkerCacheWriterObserver() {}
+
+  int WillWriteInfo(
+      scoped_refptr<HttpResponseInfoIOBuffer> response_info) override {
+    response_info_ = std::move(response_info);
+    return net::OK;
+  }
+
+  int WillWriteData(scoped_refptr<net::IOBuffer> data,
+                    int length,
+                    base::OnceCallback<void(net::Error)> callback) override {
+    data_ = std::move(data);
+    data_length_ = length;
+    callback_ = std::move(callback);
+    return result_;
+  }
+
+  // Call the |callback_| using |error| as input.
+  void Complete(net::Error error) {
+    if (callback_)
+      std::move(callback_).Run(error);
+  }
+
+  // Set the return value of WillWriteData().
+  void set_result(net::Error result) { result_ = result; }
+
+  scoped_refptr<HttpResponseInfoIOBuffer> response_info_;
+  scoped_refptr<net::IOBuffer> data_;
+  size_t data_length_;
+  base::OnceCallback<void(net::Error)> callback_;
+  net::Error result_;
+
+  DISALLOW_COPY_AND_ASSIGN(MockServiceWorkerCacheWriterObserver);
+};
+
 class ServiceWorkerCacheWriterTest : public ::testing::Test {
  public:
   // Cache writer is created differently depending on diffrerent usage.
@@ -1058,6 +1100,199 @@ TEST_F(ServiceWorkerCacheWriterTest, CopyScript_SyncMultiRead) {
   EXPECT_EQ(bytes_expected, cache_writer_->bytes_written());
   EXPECT_TRUE(copy_reader->AllExpectedReadsDone());
   EXPECT_TRUE(writer->AllExpectedWritesDone());
+}
+
+// The observer and the response writer all run synchronously.
+TEST_F(ServiceWorkerCacheWriterTest, ObserverSyncResponseWriterSync) {
+  const size_t kHeaderSize = 16;
+  const std::string data = "abcdef";
+  size_t response_size = data.size();
+
+  MockServiceWorkerResponseWriter* writer = ExpectWriter();
+  writer->ExpectWriteInfoOk(kHeaderSize, false);
+  writer->ExpectWriteDataOk(data.size(), false);
+
+  Initialize(CacheWriterUsage::kForWriteBack,
+             false /* pause_when_not_identical */);
+  MockServiceWorkerCacheWriterObserver observer;
+  cache_writer_->set_write_observer(&observer);
+
+  net::Error error = WriteHeaders(kHeaderSize);
+  EXPECT_TRUE(observer.response_info_);
+  EXPECT_EQ(net::OK, error);
+
+  error = WriteData(data);
+  EXPECT_EQ(net::OK, error);
+  EXPECT_EQ(observer.data_length_, response_size);
+  EXPECT_TRUE(observer.data_);
+
+  cache_writer_->set_write_observer(nullptr);
+
+  EXPECT_TRUE(writer->AllExpectedWritesDone());
+  EXPECT_EQ(response_size, cache_writer_->bytes_written());
+}
+
+// The observer runs asynchronously and the response writer runs synchronously.
+TEST_F(ServiceWorkerCacheWriterTest, ObserverAsyncResponseWriterSync) {
+  const size_t kHeaderSize = 16;
+  const std::string data = "abcdef";
+  size_t response_size = data.size();
+
+  MockServiceWorkerResponseWriter* writer = ExpectWriter();
+  writer->ExpectWriteInfoOk(kHeaderSize, false);
+  writer->ExpectWriteDataOk(data.size(), false);
+
+  Initialize(CacheWriterUsage::kForWriteBack,
+             false /* pause_when_not_identical */);
+  MockServiceWorkerCacheWriterObserver observer;
+  cache_writer_->set_write_observer(&observer);
+  observer.set_result(net::ERR_IO_PENDING);
+
+  net::Error error = WriteHeaders(kHeaderSize);
+  EXPECT_EQ(net::OK, error);
+  EXPECT_TRUE(observer.response_info_);
+
+  error = WriteData(data);
+  EXPECT_EQ(net::ERR_IO_PENDING, error);
+  observer.Complete(net::OK);
+  EXPECT_EQ(observer.data_length_, response_size);
+  EXPECT_TRUE(observer.data_);
+  EXPECT_TRUE(write_complete_);
+  EXPECT_EQ(last_error_, net::OK);
+
+  cache_writer_->set_write_observer(nullptr);
+
+  EXPECT_TRUE(writer->AllExpectedWritesDone());
+  EXPECT_EQ(response_size, cache_writer_->bytes_written());
+}
+
+// The observer runs synchronously and the response writer runs asynchronously.
+TEST_F(ServiceWorkerCacheWriterTest, ObserverSyncResponseWriterAsync) {
+  const size_t kHeaderSize = 16;
+  const std::string data = "abcdef";
+  size_t response_size = data.size();
+
+  MockServiceWorkerResponseWriter* writer = ExpectWriter();
+  writer->ExpectWriteInfoOk(kHeaderSize, true);
+  writer->ExpectWriteDataOk(data.size(), true);
+
+  Initialize(CacheWriterUsage::kForWriteBack,
+             false /* pause_when_not_identical */);
+  MockServiceWorkerCacheWriterObserver observer;
+  cache_writer_->set_write_observer(&observer);
+
+  net::Error error = WriteHeaders(kHeaderSize);
+  EXPECT_EQ(net::ERR_IO_PENDING, error);
+  EXPECT_TRUE(observer.response_info_);
+  writer->CompletePendingWrite();
+  EXPECT_TRUE(write_complete_);
+  EXPECT_EQ(last_error_, net::OK);
+
+  error = WriteData(data);
+  EXPECT_EQ(net::ERR_IO_PENDING, error);
+  EXPECT_EQ(observer.data_length_, response_size);
+  EXPECT_TRUE(observer.data_);
+  writer->CompletePendingWrite();
+  EXPECT_TRUE(write_complete_);
+  EXPECT_EQ(last_error_, net::OK);
+
+  cache_writer_->set_write_observer(nullptr);
+
+  EXPECT_TRUE(writer->AllExpectedWritesDone());
+  EXPECT_EQ(response_size, cache_writer_->bytes_written());
+}
+
+// The observer and response writer all run asynchronously.
+TEST_F(ServiceWorkerCacheWriterTest, ObserverAsyncResponseWriterAsync) {
+  const size_t kHeaderSize = 16;
+  const std::string data = "abcdef";
+  size_t response_size = data.size();
+
+  MockServiceWorkerResponseWriter* writer = ExpectWriter();
+  writer->ExpectWriteInfoOk(kHeaderSize, true);
+  writer->ExpectWriteDataOk(data.size(), true);
+
+  Initialize(CacheWriterUsage::kForWriteBack,
+             false /* pause_when_not_identical */);
+  MockServiceWorkerCacheWriterObserver observer;
+  cache_writer_->set_write_observer(&observer);
+  observer.set_result(net::ERR_IO_PENDING);
+
+  net::Error error = WriteHeaders(kHeaderSize);
+  EXPECT_EQ(net::ERR_IO_PENDING, error);
+  EXPECT_TRUE(observer.response_info_);
+  writer->CompletePendingWrite();
+  EXPECT_TRUE(write_complete_);
+  EXPECT_EQ(last_error_, net::OK);
+
+  error = WriteData(data);
+  EXPECT_EQ(net::ERR_IO_PENDING, error);
+  observer.Complete(net::OK);
+  EXPECT_EQ(observer.data_length_, response_size);
+  EXPECT_TRUE(observer.data_);
+  writer->CompletePendingWrite();
+  EXPECT_TRUE(write_complete_);
+  EXPECT_EQ(last_error_, net::OK);
+
+  cache_writer_->set_write_observer(nullptr);
+
+  EXPECT_TRUE(writer->AllExpectedWritesDone());
+  EXPECT_EQ(response_size, cache_writer_->bytes_written());
+}
+
+// Observer's OnWillWriteData() runs synchronously but fails.
+TEST_F(ServiceWorkerCacheWriterTest, ObserverSyncFail) {
+  const size_t kHeaderSize = 16;
+  const std::string data = "abcdef";
+
+  MockServiceWorkerResponseWriter* writer = ExpectWriter();
+  writer->ExpectWriteInfoOk(kHeaderSize, false);
+  writer->ExpectWriteDataOk(data.size(), false);
+
+  Initialize(CacheWriterUsage::kForWriteBack,
+             false /* pause_when_not_identical */);
+  MockServiceWorkerCacheWriterObserver observer;
+  cache_writer_->set_write_observer(&observer);
+
+  net::Error error = WriteHeaders(kHeaderSize);
+  EXPECT_TRUE(observer.response_info_);
+  EXPECT_EQ(net::OK, error);
+
+  observer.set_result(net::ERR_FAILED);
+  error = WriteData(data);
+  EXPECT_EQ(net::ERR_FAILED, error);
+  EXPECT_EQ(0U, cache_writer_->bytes_written());
+
+  cache_writer_->set_write_observer(nullptr);
+}
+
+// Observer's OnWillWriteData() runs asynchronously but fails.
+TEST_F(ServiceWorkerCacheWriterTest, ObserverAsyncFail) {
+  const size_t kHeaderSize = 16;
+  const std::string data = "abcdef";
+
+  MockServiceWorkerResponseWriter* writer = ExpectWriter();
+  writer->ExpectWriteInfoOk(kHeaderSize, false);
+  writer->ExpectWriteDataOk(data.size(), false);
+
+  Initialize(CacheWriterUsage::kForWriteBack,
+             false /* pause_when_not_identical */);
+  MockServiceWorkerCacheWriterObserver observer;
+  cache_writer_->set_write_observer(&observer);
+  observer.set_result(net::ERR_IO_PENDING);
+
+  net::Error error = WriteHeaders(kHeaderSize);
+  EXPECT_EQ(net::OK, error);
+  EXPECT_TRUE(observer.response_info_);
+
+  error = WriteData(data);
+  EXPECT_EQ(net::ERR_IO_PENDING, error);
+  observer.Complete(net::ERR_FAILED);
+  EXPECT_TRUE(write_complete_);
+  EXPECT_EQ(last_error_, net::ERR_FAILED);
+  EXPECT_EQ(0U, cache_writer_->bytes_written());
+
+  cache_writer_->set_write_observer(nullptr);
 }
 
 }  // namespace

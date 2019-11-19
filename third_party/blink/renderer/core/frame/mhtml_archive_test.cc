@@ -28,22 +28,22 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <map>
+#include "third_party/blink/renderer/platform/mhtml/mhtml_archive.h"
 
 #include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/renderer/platform/date_components.h"
-#include "third_party/blink/renderer/platform/mhtml/mhtml_archive.h"
+#include "third_party/blink/public/mojom/loader/mhtml_load_result.mojom-blink.h"
 #include "third_party/blink/renderer/platform/mhtml/mhtml_parser.h"
 #include "third_party/blink/renderer/platform/mhtml/serialized_resource.h"
-#include "third_party/blink/renderer/platform/shared_buffer.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/url_test_helpers.h"
+#include "third_party/blink/renderer/platform/text/date_components.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/scheme_registry.h"
-#include "third_party/blink/renderer/platform/wtf/time.h"
+#include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 using blink::mojom::MHTMLLoadResult;
 using blink::url_test_helpers::ToKURL;
@@ -62,7 +62,7 @@ class MHTMLArchiveTest : public testing::Test {
  public:
   MHTMLArchiveTest() {
     file_path_ = test::CoreTestDataPath("frameserializer/css/");
-    mhtml_date_ = WTF::Time::FromJsTime(1520551829000);
+    mhtml_date_ = base::Time::FromJsTime(1520551829000);
     mhtml_date_header_ = String::FromUTF8("Thu, 8 Mar 2018 23:30:29 -0000");
   }
 
@@ -106,39 +106,43 @@ class MHTMLArchiveTest : public testing::Test {
     AddResource("http://www.test.com/ol-dot.png", "image/png", "ol-dot.png");
   }
 
-  std::map<std::string, std::string> ExtractHeaders(LineReader& line_reader) {
+  HashMap<String, String> ExtractHeaders(LineReader& line_reader) {
     // Read the data per line until reaching the empty line.
-    std::map<std::string, std::string> mhtml_headers;
-    std::string line;
+    HashMap<String, String> mhtml_headers;
+    String line;
     line_reader.GetNextLine(&line);
     while (line.length()) {
+      StringBuilder builder;
+      builder.Append(line);
+
       // Peek next line to see if it starts with soft line break. If yes, append
       // to current line.
-      std::string next_line;
+      String next_line;
       while (true) {
         line_reader.GetNextLine(&next_line);
         if (next_line.length() > 1 &&
             (next_line[0] == ' ' || next_line[0] == '\t')) {
-          line += &(next_line.at(1));
+          builder.Append(next_line, 1, next_line.length() - 1);
           continue;
         }
         break;
       }
 
-      std::string::size_type pos = line.find(':');
-      if (pos == std::string::npos)
+      line = builder.ToString();
+      wtf_size_t pos = line.Find(":");
+      if (pos == kNotFound)
         continue;
-      std::string key = line.substr(0, pos);
-      std::string value = line.substr(pos + 2);
-      mhtml_headers.emplace(key, value);
+      String key = line.Substring(0, pos);
+      String value = line.Substring(pos + 2);
+      mhtml_headers.insert(key, value);
 
       line = next_line;
     }
     return mhtml_headers;
   }
 
-  std::map<std::string, std::string> ExtractMHTMLHeaders() {
-    LineReader line_reader(std::string(mhtml_data_.data(), mhtml_data_.size()));
+  HashMap<String, String> ExtractMHTMLHeaders() {
+    LineReader line_reader(String(mhtml_data_.data(), mhtml_data_.size()));
     return ExtractHeaders(line_reader);
   }
 
@@ -179,7 +183,7 @@ class MHTMLArchiveTest : public testing::Test {
 
   Vector<char>& mhtml_data() { return mhtml_data_; }
 
-  WTF::Time mhtml_date() const { return mhtml_date_; }
+  base::Time mhtml_date() const { return mhtml_date_; }
   const String& mhtml_date_header() const { return mhtml_date_header_; }
 
   void CheckLoadResult(const KURL url,
@@ -208,7 +212,7 @@ class MHTMLArchiveTest : public testing::Test {
   String file_path_;
   Vector<SerializedResource> resources_;
   Vector<char> mhtml_data_;
-  WTF::Time mhtml_date_;
+  base::Time mhtml_date_;
   String mhtml_date_header_;
 };
 
@@ -220,15 +224,15 @@ TEST_F(MHTMLArchiveTest,
   Serialize(ToKURL(kURL), String::FromUTF8(kTitle), "text/html",
             MHTMLArchive::kUseDefaultEncoding);
 
-  std::map<std::string, std::string> mhtml_headers = ExtractMHTMLHeaders();
+  HashMap<String, String> mhtml_headers = ExtractMHTMLHeaders();
 
-  EXPECT_EQ("<Saved by Blink>", mhtml_headers["From"]);
-  EXPECT_FALSE(mhtml_headers["Date"].empty());
+  EXPECT_EQ("<Saved by Blink>", mhtml_headers.find("From")->value);
+  EXPECT_FALSE(mhtml_headers.find("Date")->value.IsEmpty());
   EXPECT_EQ(
       "multipart/related;type=\"text/html\";boundary=\"boundary-example\"",
-      mhtml_headers["Content-Type"]);
-  EXPECT_EQ("abc", mhtml_headers["Subject"]);
-  EXPECT_EQ(kURL, mhtml_headers["Snapshot-Content-Location"]);
+      mhtml_headers.find("Content-Type")->value);
+  EXPECT_EQ("abc", mhtml_headers.find("Subject")->value);
+  EXPECT_EQ(kURL, mhtml_headers.find("Snapshot-Content-Location")->value);
 }
 
 TEST_F(MHTMLArchiveTest,
@@ -239,16 +243,16 @@ TEST_F(MHTMLArchiveTest,
   Serialize(ToKURL(kURL), String::FromUTF8(kTitle), "text/html",
             MHTMLArchive::kUseDefaultEncoding);
 
-  std::map<std::string, std::string> mhtml_headers = ExtractMHTMLHeaders();
+  HashMap<String, String> mhtml_headers = ExtractMHTMLHeaders();
 
-  EXPECT_EQ("<Saved by Blink>", mhtml_headers["From"]);
-  EXPECT_FALSE(mhtml_headers["Date"].empty());
+  EXPECT_EQ("<Saved by Blink>", mhtml_headers.find("From")->value);
+  EXPECT_FALSE(mhtml_headers.find("Date")->value.IsEmpty());
   EXPECT_EQ(
       "multipart/related;type=\"text/html\";boundary=\"boundary-example\"",
-      mhtml_headers["Content-Type"]);
+      mhtml_headers.find("Content-Type")->value);
   EXPECT_EQ("=?utf-8?Q?abc=20=09=3D=E2=98=9D=F0=9F=8F=BB?=",
-            mhtml_headers["Subject"]);
-  EXPECT_EQ(kURL, mhtml_headers["Snapshot-Content-Location"]);
+            mhtml_headers.find("Subject")->value);
+  EXPECT_EQ(kURL, mhtml_headers.find("Snapshot-Content-Location")->value);
 }
 
 TEST_F(MHTMLArchiveTest,
@@ -262,21 +266,21 @@ TEST_F(MHTMLArchiveTest,
   Serialize(ToKURL(kURL), String::FromUTF8(kTitle), "text/html",
             MHTMLArchive::kUseDefaultEncoding);
 
-  std::map<std::string, std::string> mhtml_headers = ExtractMHTMLHeaders();
+  HashMap<String, String> mhtml_headers = ExtractMHTMLHeaders();
 
-  EXPECT_EQ("<Saved by Blink>", mhtml_headers["From"]);
-  EXPECT_FALSE(mhtml_headers["Date"].empty());
+  EXPECT_EQ("<Saved by Blink>", mhtml_headers.find("From")->value);
+  EXPECT_FALSE(mhtml_headers.find("Date")->value.IsEmpty());
   EXPECT_EQ(
       "multipart/related;type=\"text/html\";boundary=\"boundary-example\"",
-      mhtml_headers["Content-Type"]);
+      mhtml_headers.find("Content-Type")->value);
   EXPECT_EQ(
       "=?utf-8?Q?012345678901234567890123456789"
       "012345678901234567890123456789012?="
       "=?utf-8?Q?345678901234567890123456789"
       "0123456789=20=09=3D=E2=98=9D=F0=9F?="
       "=?utf-8?Q?=8F=BB?=",
-      mhtml_headers["Subject"]);
-  EXPECT_EQ(kURL, mhtml_headers["Snapshot-Content-Location"]);
+      mhtml_headers.find("Subject")->value);
+  EXPECT_EQ(kURL, mhtml_headers.find("Snapshot-Content-Location")->value);
 }
 
 TEST_F(MHTMLArchiveTest, TestMHTMLPartsWithBinaryEncoding) {
@@ -287,20 +291,19 @@ TEST_F(MHTMLArchiveTest, TestMHTMLPartsWithBinaryEncoding) {
 
   // Read the MHTML data line per line and do some pseudo-parsing to make sure
   // the right encoding is used for the different sections.
-  LineReader line_reader(std::string(mhtml_data().data(), mhtml_data().size()));
+  LineReader line_reader(String(mhtml_data().data(), mhtml_data().size()));
   int part_count = 0;
-  std::string line, last_line;
+  String line, last_line;
   while (line_reader.GetNextLine(&line)) {
     last_line = line;
     if (line != kEndOfPartBoundary)
       continue;
     part_count++;
 
-    std::map<std::string, std::string> part_headers =
-        ExtractHeaders(line_reader);
-    EXPECT_FALSE(part_headers["Content-Type"].empty());
-    EXPECT_EQ("binary", part_headers["Content-Transfer-Encoding"]);
-    EXPECT_FALSE(part_headers["Content-Location"].empty());
+    HashMap<String, String> part_headers = ExtractHeaders(line_reader);
+    EXPECT_FALSE(part_headers.find("Content-Type")->value.IsEmpty());
+    EXPECT_EQ("binary", part_headers.find("Content-Transfer-Encoding")->value);
+    EXPECT_FALSE(part_headers.find("Content-Location")->value.IsEmpty());
   }
   EXPECT_EQ(12, part_count);
 
@@ -316,27 +319,26 @@ TEST_F(MHTMLArchiveTest, TestMHTMLPartsWithDefaultEncoding) {
 
   // Read the MHTML data line per line and do some pseudo-parsing to make sure
   // the right encoding is used for the different sections.
-  LineReader line_reader(std::string(mhtml_data().data(), mhtml_data().size()));
+  LineReader line_reader(String(mhtml_data().data(), mhtml_data().size()));
   int part_count = 0;
-  std::string line, last_line;
+  String line, last_line;
   while (line_reader.GetNextLine(&line)) {
     last_line = line;
     if (line != kEndOfPartBoundary)
       continue;
     part_count++;
 
-    std::map<std::string, std::string> part_headers =
-        ExtractHeaders(line_reader);
+    HashMap<String, String> part_headers = ExtractHeaders(line_reader);
 
-    std::string content_type = part_headers["Content-Type"];
-    EXPECT_FALSE(content_type.empty());
+    String content_type = part_headers.find("Content-Type")->value;
+    EXPECT_FALSE(content_type.IsEmpty());
 
-    std::string encoding = part_headers["Content-Transfer-Encoding"];
-    EXPECT_FALSE(encoding.empty());
+    String encoding = part_headers.find("Content-Transfer-Encoding")->value;
+    EXPECT_FALSE(encoding.IsEmpty());
 
-    if (content_type.compare(0, 5, "text/") == 0)
+    if (content_type.StartsWith("text/"))
       EXPECT_EQ("quoted-printable", encoding);
-    else if (content_type.compare(0, 6, "image/") == 0)
+    else if (content_type.StartsWith("image/"))
       EXPECT_EQ("base64", encoding);
     else
       FAIL() << "Unexpected Content-Type: " << content_type;
@@ -384,9 +386,8 @@ TEST_F(MHTMLArchiveTest, MHTMLDate) {
             MHTMLArchive::kUseDefaultEncoding);
   // The serialization process should have added a date header corresponding to
   // mhtml_date().
-  std::map<std::string, std::string> mhtml_headers = ExtractMHTMLHeaders();
-  ASSERT_EQ(mhtml_date_header(),
-            String::FromUTF8(mhtml_headers["Date"].c_str()));
+  HashMap<String, String> mhtml_headers = ExtractMHTMLHeaders();
+  ASSERT_EQ(mhtml_date_header(), mhtml_headers.find("Date")->value);
 
   scoped_refptr<SharedBuffer> data =
       SharedBuffer::Create(mhtml_data().data(), mhtml_data().size());

@@ -8,7 +8,6 @@
  * button (taking up the whole 'row'). The name link comes from the intended use
  * of this element to take the user to another page in the app or to an external
  * page (somewhat like an HTML link).
- * Note: the ripple handling was taken from Polymer v1 paper-icon-button-light.
  */
 Polymer({
   is: 'cr-link-row',
@@ -28,7 +27,6 @@ Polymer({
       type: String,
       /* Value used for noSubLabel attribute. */
       value: '',
-      observer: 'onSubLabelChange_',
     },
 
     disabled: {
@@ -41,13 +39,18 @@ Polymer({
       value: false,
     },
 
-    /** @private {string|undefined} */
-    ariaDescribedBy_: String,
-  },
+    usingSlottedLabel: {
+      type: Boolean,
+      value: false,
+    },
 
-  listeners: {
-    down: 'onDown_',
-    up: 'onUp_',
+    roleDescription: String,
+
+    /** @private */
+    hideLabelWrapper_: {
+      type: Boolean,
+      computed: 'computeHideLabelWrapper_(label, usingSlottedLabel)',
+    },
   },
 
   /** @type {boolean} */
@@ -64,35 +67,19 @@ Polymer({
     this.$.icon.focus();
   },
 
-  /** @private */
-  onDown_: function() {
-    // If the icon has focus, we want to preemptively blur it. Otherwise it will
-    // be blurred immediately after gaining focus. The ripple will either
-    // disappear when the mouse button is held down or the ripple will not
-    // be rendered. This is an issue only when the cr-link-row is clicked, not
-    // the icon itself.
-    if (this.shadowRoot.activeElement == this.$.icon) {
-      this.$.icon.blur();
-    }
-    // When cr-link-row is click, <body> will gain focus after the down event is
-    // handled. We need to wait until the next task to focus on the icon.
-    setTimeout(() => {
-      this.focus();
-    });
+  /**
+   * @return {boolean}
+   * @private
+   */
+  computeHideLabelWrapper_: function() {
+    return !(this.label || this.usingSlottedLabel);
   },
 
-  /** @private */
-  onUp_: function() {
-    this.$.icon.hideRipple();
-  },
-
-  /** @private */
-  getIconClass_: function() {
-    return this.external ? 'icon-external' : 'subpage-arrow';
-  },
-
-  /** @private */
-  onSubLabelChange_: function() {
-    this.ariaDescribedBy_ = this.subLabel ? 'subLabel' : undefined;
+  /**
+   * @return {string}
+   * @private
+   */
+  getIcon_: function() {
+    return this.external ? 'cr:open-in-new' : 'cr:arrow-right';
   },
 });

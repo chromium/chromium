@@ -1,0 +1,18 @@
+include_rules = [
+    "+base/memory/weak_ptr.h",
+    # TODO(crbug.com/787254): Remove the use of base::MessageLoopCurrent.
+    "+base/message_loop/message_loop_current.h",
+
+    # TODO(crbug.com/787254): Replace base::SequenceChecker by base::ThreadChecker.
+    "+base/sequence_checker.h",
+    "+base/single_thread_task_runner.h",
+    "+base/synchronization/waitable_event.h",
+    "+base/threading/thread.h",
+]
+
+specific_include_rules = {
+    "mock.*\.h": [
+        "+base/run_loop.h",
+        "+testing/gmock/include/gmock/gmock.h",
+    ],
+}

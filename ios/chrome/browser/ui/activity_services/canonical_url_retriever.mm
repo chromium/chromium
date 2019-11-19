@@ -10,7 +10,7 @@
 #include "base/values.h"
 #include "components/ui_metrics/canonical_url_share_metrics_types.h"
 #import "ios/chrome/browser/procedural_block_types.h"
-#import "ios/web/public/web_state/web_state.h"
+#import "ios/web/public/web_state.h"
 #include "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

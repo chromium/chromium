@@ -37,6 +37,12 @@ MediaCryptoContext* CdmContext::GetMediaCryptoContext() {
 }
 #endif
 
+#if defined(OS_FUCHSIA)
+FuchsiaCdmContext* CdmContext::GetFuchsiaCdmContext() {
+  return nullptr;
+}
+#endif
+
 void IgnoreCdmAttached(bool /* success */) {}
 
 }  // namespace media

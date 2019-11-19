@@ -19,10 +19,7 @@ namespace {
 class MockTimer : public MockableTime::Timer {
  public:
   MockTimer(MockTime* time)
-      : time_(time),
-        running_(false),
-        callback_sequence_number_(0),
-        weak_factory_(this) {
+      : time_(time), running_(false), callback_sequence_number_(0) {
     DCHECK(time);
   }
 
@@ -71,7 +68,7 @@ class MockTimer : public MockableTime::Timer {
   bool running_;
   int callback_sequence_number_;
   base::Closure user_task_;
-  base::WeakPtrFactory<MockTimer> weak_factory_;
+  base::WeakPtrFactory<MockTimer> weak_factory_{this};
 };
 
 }  // namespace

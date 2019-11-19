@@ -12,6 +12,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/numerics/ranges.h"
 #include "base/sequenced_task_runner.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -21,6 +22,8 @@
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "components/rlz/rlz_tracker_delegate.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 
@@ -173,14 +176,15 @@ class RLZTracker::WrapperURLLoaderFactory
       : url_loader_factory_(std::move(url_loader_factory)),
         main_thread_task_runner_(base::SequencedTaskRunnerHandle::Get()) {}
 
-  void CreateLoaderAndStart(network::mojom::URLLoaderRequest loader,
-                            int32_t routing_id,
-                            int32_t request_id,
-                            uint32_t options,
-                            const network::ResourceRequest& request,
-                            network::mojom::URLLoaderClientPtr client,
-                            const net::MutableNetworkTrafficAnnotationTag&
-                                traffic_annotation) override {
+  void CreateLoaderAndStart(
+      mojo::PendingReceiver<network::mojom::URLLoader> loader,
+      int32_t routing_id,
+      int32_t request_id,
+      uint32_t options,
+      const network::ResourceRequest& request,
+      mojo::PendingRemote<network::mojom::URLLoaderClient> client,
+      const net::MutableNetworkTrafficAnnotationTag& traffic_annotation)
+      override {
     if (main_thread_task_runner_->RunsTasksInCurrentSequence()) {
       url_loader_factory_->CreateLoaderAndStart(
           std::move(loader), routing_id, request_id, options, request,
@@ -194,7 +198,8 @@ class RLZTracker::WrapperURLLoaderFactory
                          traffic_annotation));
     }
   }
-  void Clone(network::mojom::URLLoaderFactoryRequest factory) override {
+  void Clone(mojo::PendingReceiver<network::mojom::URLLoaderFactory> factory)
+      override {
     NOTIMPLEMENTED();
   }
 
@@ -223,9 +228,9 @@ RLZTracker::RLZTracker()
       homepage_used_(false),
       app_list_used_(false),
       min_init_delay_(kMinInitDelay),
-      background_task_runner_(base::CreateSequencedTaskRunnerWithTraits(
-          {base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN, base::MayBlock(),
-           base::TaskPriority::BEST_EFFORT})) {
+      background_task_runner_(base::CreateSequencedTaskRunner(
+          {base::ThreadPool(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN,
+           base::MayBlock(), base::TaskPriority::BEST_EFFORT})) {
   DETACH_FROM_SEQUENCE(sequence_checker_);
 }
 
@@ -278,7 +283,7 @@ bool RLZTracker::Init(bool first_run,
   if (delegate_->ShouldEnableZeroDelayForTesting())
     EnableZeroDelayForTesting();
 
-  delay = std::min(kMaxInitDelay, std::max(min_init_delay_, delay));
+  delay = base::ClampToRange(delay, min_init_delay_, kMaxInitDelay);
 
   if (delegate_->GetBrand(&brand_) && !delegate_->IsBrandOrganic(brand_)) {
     // Register for notifications from the omnibox so that we can record when

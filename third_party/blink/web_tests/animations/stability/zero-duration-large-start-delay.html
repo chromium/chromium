@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<title>This tests an animation with zero duration and a very large start delay. See http:://crbug.com/324323</title>
 <style>
 p {
   animation-name: test;
@@ -11,11 +12,8 @@ p {
   }
 }
 </style>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
 <script>
-  if (window.testRunner)
-    testRunner.dumpAsText();
+done();
 </script>
-<body>
-<p>This tests an animation with zero duration and a very large start delay. See http:://crbug.com/324323.
-<p>This test passes if it doesn't crash.
-<body

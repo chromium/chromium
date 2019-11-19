@@ -14,7 +14,7 @@
 #include "chrome/chrome_cleaner/ipc/chrome_prompt_ipc.h"
 #include "chrome/chrome_cleaner/ui/main_dialog_api.h"
 #include "components/chrome_cleaner/public/constants/result_codes.h"
-#include "components/chrome_cleaner/public/interfaces/chrome_prompt.mojom.h"
+#include "components/chrome_cleaner/public/proto/chrome_prompt.pb.h"
 
 namespace chrome_cleaner {
 
@@ -46,22 +46,24 @@ class ChromeProxyMainDialog : public MainDialogAPI {
   // thread.
   void PostPromptResultReceivedTask(
       scoped_refptr<base::SequencedTaskRunner> task_runner,
-      mojom::PromptAcceptance prompt_acceptance);
+      PromptUserResponse::PromptAcceptance prompt_acceptance);
 
   // Handles the prompt acceptance result received from Chrome. This should
   // only be called by PostPromptResultReceivedTask(), that will handle posting
   // it to the right thread.
-  void PromptResultReceived(mojom::PromptAcceptance prompt_acceptance);
+  void PromptResultReceived(
+      PromptUserResponse::PromptAcceptance prompt_acceptance);
 
   // Callback for the Mojo IPC that posts CloseAfterReceivingResponse() on the
   // UI thread.
   void PostCloseAfterReceivingResponseTask(
       scoped_refptr<base::SequencedTaskRunner> task_runner,
-      mojom::PromptAcceptance prompt_acceptance);
+      PromptUserResponse::PromptAcceptance prompt_acceptance);
 
   // Closes the dialog after receiving a response from Chrome when no UwS is
   // found in the system.
-  void CloseAfterReceivingResponse(mojom::PromptAcceptance prompt_acceptance);
+  void CloseAfterReceivingResponse(
+      PromptUserResponse::PromptAcceptance prompt_acceptance);
 
   // Pointer to the wrapper for the Mojo IPC to send scan results to Chrome.
   ChromePromptIPC* chrome_prompt_ipc_;

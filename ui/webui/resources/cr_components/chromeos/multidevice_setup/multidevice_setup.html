@@ -20,23 +20,26 @@
         box-sizing: border-box;
         color: var(--google-grey-700);
         font-size: 13px;
-        height: 640px;
+        height: var(--multidevice-setup-height, 640px);
         line-height: 16px;
         margin: auto;
         padding: 60px 32px 32px 32px;
-        width: 768px;
+        width: var(--multidevice-setup-width, 768px);
       }
 
       iron-pages {
+        overflow: var(--iron-pages-overflow, visible);
         padding: 0 32px;
       }
     </style>
-    <iron-pages attr-for-selected="is"
+    <iron-pages id="ironPages"
+        attr-for-selected="is"
         selected="[[visiblePageName]]"
         selected-item="{{visiblePage_}}">
       <template is="dom-if" if="[[shouldPasswordPageBeIncluded_(delegate)]]"
           restamp>
-        <password-page auth-token="{{authToken_}}"
+        <password-page class="ui-page"
+            auth-token="{{authToken_}}"
             forward-button-disabled="{{passwordPageForwardButtonDisabled_}}"
             password-field-valid="{{passwordFieldValid}}"
             on-user-submitted-password="onUserSubmittedPassword_">
@@ -44,17 +47,18 @@
       </template>
       <template is="dom-if"
           if="[[shouldSetupSucceededPageBeIncluded_(delegate)]]" restamp>
-        <setup-succeeded-page></setup-succeeded-page>
+        <setup-succeeded-page class="ui-page"></setup-succeeded-page>
       </template>
-      <start-setup-page devices="[[devices_]]"
+      <start-setup-page class="ui-page"
+          devices="[[devices_]]"
           selected-device-id="{{selectedDeviceId_}}"
           delegate="[[delegate]]">
       </start-setup-page>
     </iron-pages>
     <div class="flex"></div>
-    <button-bar forward-button-hidden="[[!forwardButtonText]]"
-        backward-button-hidden="[[!backwardButtonText]]"
-        cancel-button-hidden="[[!cancelButtonText]]">
+    <button-bar forward-button-hidden="[[!forwardButtonTextId]]"
+        backward-button-hidden="[[!backwardButtonTextId]]"
+        cancel-button-hidden="[[!cancelButtonTextId]]">
       <slot name="backward-button" slot="backward-button"></slot>
       <slot name="cancel-button" slot="cancel-button"></slot>
       <slot name="forward-button" slot="forward-button"></slot>

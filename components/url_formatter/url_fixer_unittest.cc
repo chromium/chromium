@@ -41,203 +41,235 @@ struct SegmentCase {
 };
 
 static const SegmentCase segment_cases[] = {
-  { "http://www.google.com/", "http",
-    url::Component(0, 4), // scheme
-    url::Component(), // username
-    url::Component(), // password
-    url::Component(7, 14), // host
-    url::Component(), // port
-    url::Component(21, 1), // path
-    url::Component(), // query
-    url::Component(), // ref
-  },
-  { "aBoUt:vErSiOn", "about",
-    url::Component(0, 5), // scheme
-    url::Component(), // username
-    url::Component(), // password
-    url::Component(6, 7), // host
-    url::Component(), // port
-    url::Component(), // path
-    url::Component(), // query
-    url::Component(), // ref
-  },
-  { "about:host/path?query#ref", "about",
-    url::Component(0, 5), // scheme
-    url::Component(), // username
-    url::Component(), // password
-    url::Component(6, 4), // host
-    url::Component(), // port
-    url::Component(10, 5), // path
-    url::Component(16, 5), // query
-    url::Component(22, 3), // ref
-  },
-  { "about://host/path?query#ref", "about",
-    url::Component(0, 5), // scheme
-    url::Component(), // username
-    url::Component(), // password
-    url::Component(8, 4), // host
-    url::Component(), // port
-    url::Component(12, 5), // path
-    url::Component(18, 5), // query
-    url::Component(24, 3), // ref
-  },
-  { "chrome:host/path?query#ref", "chrome",
-    url::Component(0, 6), // scheme
-    url::Component(), // username
-    url::Component(), // password
-    url::Component(7, 4), // host
-    url::Component(), // port
-    url::Component(11, 5), // path
-    url::Component(17, 5), // query
-    url::Component(23, 3), // ref
-  },
-  { "chrome://host/path?query#ref", "chrome",
-    url::Component(0, 6), // scheme
-    url::Component(), // username
-    url::Component(), // password
-    url::Component(9, 4), // host
-    url::Component(), // port
-    url::Component(13, 5), // path
-    url::Component(19, 5), // query
-    url::Component(25, 3), // ref
-  },
-  { "    www.google.com:124?foo#", "http",
-    url::Component(), // scheme
-    url::Component(), // username
-    url::Component(), // password
-    url::Component(4, 14), // host
-    url::Component(19, 3), // port
-    url::Component(), // path
-    url::Component(23, 3), // query
-    url::Component(27, 0), // ref
-  },
-  { "user@www.google.com", "http",
-    url::Component(), // scheme
-    url::Component(0, 4), // username
-    url::Component(), // password
-    url::Component(5, 14), // host
-    url::Component(), // port
-    url::Component(), // path
-    url::Component(), // query
-    url::Component(), // ref
-  },
-  { "ftp:/user:P:a$$Wd@..ftp.google.com...::23///pub?foo#bar", "ftp",
-    url::Component(0, 3), // scheme
-    url::Component(5, 4), // username
-    url::Component(10, 7), // password
-    url::Component(18, 20), // host
-    url::Component(39, 2), // port
-    url::Component(41, 6), // path
-    url::Component(48, 3), // query
-    url::Component(52, 3), // ref
-  },
-  { "[2001:db8::1]/path", "http",
-    url::Component(), // scheme
-    url::Component(), // username
-    url::Component(), // password
-    url::Component(0, 13), // host
-    url::Component(), // port
-    url::Component(13, 5), // path
-    url::Component(), // query
-    url::Component(), // ref
-  },
-  { "[::1]", "http",
-    url::Component(), // scheme
-    url::Component(), // username
-    url::Component(), // password
-    url::Component(0, 5), // host
-    url::Component(), // port
-    url::Component(), // path
-    url::Component(), // query
-    url::Component(), // ref
-  },
-  // Incomplete IPv6 addresses (will not canonicalize).
-  { "[2001:4860:", "http",
-    url::Component(), // scheme
-    url::Component(), // username
-    url::Component(), // password
-    url::Component(0, 11), // host
-    url::Component(), // port
-    url::Component(), // path
-    url::Component(), // query
-    url::Component(), // ref
-  },
-  { "[2001:4860:/foo", "http",
-    url::Component(), // scheme
-    url::Component(), // username
-    url::Component(), // password
-    url::Component(0, 11), // host
-    url::Component(), // port
-    url::Component(11, 4), // path
-    url::Component(), // query
-    url::Component(), // ref
-  },
-  { "http://:b005::68]", "http",
-    url::Component(0, 4), // scheme
-    url::Component(), // username
-    url::Component(), // password
-    url::Component(7, 10), // host
-    url::Component(), // port
-    url::Component(), // path
-    url::Component(), // query
-    url::Component(), // ref
-  },
-  { ":b005::68]", "http",
-    url::Component(), // scheme
-    url::Component(), // username
-    url::Component(), // password
-    url::Component(1, 9), // host
-    url::Component(), // port
-    url::Component(), // path
-    url::Component(), // query
-    url::Component(), // ref
-  },
-  {
-      "file://host/path/file#ref", "file", url::Component(0, 4),  // scheme
-      url::Component(),                                           // username
-      url::Component(),                                           // password
-      url::Component(7, 4),                                       // host
-      url::Component(),                                           // port
-      url::Component(11, 10),                                     // path
-      url::Component(),                                           // query
-      url::Component(22, 3),                                      // ref
-  },
-  {
-      "file:///notahost/path/file#ref", "file",
-      url::Component(0, 4),   // scheme
-      url::Component(),       // username
-      url::Component(),       // password
-      url::Component(),       // host
-      url::Component(),       // port
-      url::Component(7, 19),  // path
-      url::Component(),       // query
-      url::Component(27, 3),  // ref
-  },
+    {
+        "http://www.google.com/", "http", url::Component(0, 4),  // scheme
+        url::Component(),                                        // username
+        url::Component(),                                        // password
+        url::Component(7, 14),                                   // host
+        url::Component(),                                        // port
+        url::Component(21, 1),                                   // path
+        url::Component(),                                        // query
+        url::Component(),                                        // ref
+    },
+    {
+        "aBoUt:vErSiOn", "about", url::Component(0, 5),  // scheme
+        url::Component(),                                // username
+        url::Component(),                                // password
+        url::Component(6, 7),                            // host
+        url::Component(),                                // port
+        url::Component(),                                // path
+        url::Component(),                                // query
+        url::Component(),                                // ref
+    },
+    {
+        "about:host/path?query#ref", "about", url::Component(0, 5),  // scheme
+        url::Component(),                                            // username
+        url::Component(),                                            // password
+        url::Component(6, 4),                                        // host
+        url::Component(),                                            // port
+        url::Component(10, 5),                                       // path
+        url::Component(16, 5),                                       // query
+        url::Component(22, 3),                                       // ref
+    },
+    {
+        "about://host/path?query#ref", "about", url::Component(0, 5),  // scheme
+        url::Component(),       // username
+        url::Component(),       // password
+        url::Component(8, 4),   // host
+        url::Component(),       // port
+        url::Component(12, 5),  // path
+        url::Component(18, 5),  // query
+        url::Component(24, 3),  // ref
+    },
+    {
+        "chrome:host/path?query#ref", "chrome", url::Component(0, 6),  // scheme
+        url::Component(),       // username
+        url::Component(),       // password
+        url::Component(7, 4),   // host
+        url::Component(),       // port
+        url::Component(11, 5),  // path
+        url::Component(17, 5),  // query
+        url::Component(23, 3),  // ref
+    },
+    {
+        "chrome://host/path?query#ref", "chrome",
+        url::Component(0, 6),   // scheme
+        url::Component(),       // username
+        url::Component(),       // password
+        url::Component(9, 4),   // host
+        url::Component(),       // port
+        url::Component(13, 5),  // path
+        url::Component(19, 5),  // query
+        url::Component(25, 3),  // ref
+    },
+    {
+        "    www.google.com:124?foo#", "http",
+        url::Component(),       // scheme
+        url::Component(),       // username
+        url::Component(),       // password
+        url::Component(4, 14),  // host
+        url::Component(19, 3),  // port
+        url::Component(),       // path
+        url::Component(23, 3),  // query
+        url::Component(27, 0),  // ref
+    },
+    {
+        "user@www.google.com", "http",
+        url::Component(),       // scheme
+        url::Component(0, 4),   // username
+        url::Component(),       // password
+        url::Component(5, 14),  // host
+        url::Component(),       // port
+        url::Component(),       // path
+        url::Component(),       // query
+        url::Component(),       // ref
+    },
+    {
+        "ftp:/user:P:a$$Wd@..ftp.google.com...::23///pub?foo#bar", "ftp",
+        url::Component(0, 3),    // scheme
+        url::Component(5, 4),    // username
+        url::Component(10, 7),   // password
+        url::Component(18, 20),  // host
+        url::Component(39, 2),   // port
+        url::Component(41, 6),   // path
+        url::Component(48, 3),   // query
+        url::Component(52, 3),   // ref
+    },
+    {
+        "[2001:db8::1]/path", "http",
+        url::Component(),       // scheme
+        url::Component(),       // username
+        url::Component(),       // password
+        url::Component(0, 13),  // host
+        url::Component(),       // port
+        url::Component(13, 5),  // path
+        url::Component(),       // query
+        url::Component(),       // ref
+    },
+    {
+        "[::1]", "http",
+        url::Component(),      // scheme
+        url::Component(),      // username
+        url::Component(),      // password
+        url::Component(0, 5),  // host
+        url::Component(),      // port
+        url::Component(),      // path
+        url::Component(),      // query
+        url::Component(),      // ref
+    },
+    // Incomplete IPv6 addresses (will not canonicalize).
+    {
+        "[2001:4860:", "http",
+        url::Component(),       // scheme
+        url::Component(),       // username
+        url::Component(),       // password
+        url::Component(0, 11),  // host
+        url::Component(),       // port
+        url::Component(),       // path
+        url::Component(),       // query
+        url::Component(),       // ref
+    },
+    {
+        "[2001:4860:/foo", "http",
+        url::Component(),       // scheme
+        url::Component(),       // username
+        url::Component(),       // password
+        url::Component(0, 11),  // host
+        url::Component(),       // port
+        url::Component(11, 4),  // path
+        url::Component(),       // query
+        url::Component(),       // ref
+    },
+    {
+        "http://:b005::68]", "http", url::Component(0, 4),  // scheme
+        url::Component(),                                   // username
+        url::Component(),                                   // password
+        url::Component(7, 10),                              // host
+        url::Component(),                                   // port
+        url::Component(),                                   // path
+        url::Component(),                                   // query
+        url::Component(),                                   // ref
+    },
+    {
+        ":b005::68]", "http",
+        url::Component(),      // scheme
+        url::Component(),      // username
+        url::Component(),      // password
+        url::Component(1, 9),  // host
+        url::Component(),      // port
+        url::Component(),      // path
+        url::Component(),      // query
+        url::Component(),      // ref
+    },
+    {
+        "file://host/path/file#ref", "file", url::Component(0, 4),  // scheme
+        url::Component(),                                           // username
+        url::Component(),                                           // password
+        url::Component(7, 4),                                       // host
+        url::Component(),                                           // port
+        url::Component(11, 10),                                     // path
+        url::Component(),                                           // query
+        url::Component(22, 3),                                      // ref
+    },
+    {
+        "file:///notahost/path/file#ref", "file",
+        url::Component(0, 4),   // scheme
+        url::Component(),       // username
+        url::Component(),       // password
+        url::Component(),       // host
+        url::Component(),       // port
+        url::Component(7, 19),  // path
+        url::Component(),       // query
+        url::Component(27, 3),  // ref
+    },
 #if defined(OS_WIN)
-  {
-      "c:/notahost/path/file#ref", "file",
-      url::Component(),       // scheme
-      url::Component(),       // username
-      url::Component(),       // password
-      url::Component(),       // host
-      url::Component(),       // port
-      url::Component(0, 21),  // path
-      url::Component(),       // query
-      url::Component(22, 3),  // ref
-  },
+    {
+        "c:/notahost/path/file#ref", "file",
+        url::Component(),       // scheme
+        url::Component(),       // username
+        url::Component(),       // password
+        url::Component(),       // host
+        url::Component(),       // port
+        url::Component(0, 21),  // path
+        url::Component(),       // query
+        url::Component(22, 3),  // ref
+    },
 #elif defined(OS_POSIX)
-  {
-      "~/notahost/path/file#ref", "file",
-      url::Component(),       // scheme
-      url::Component(),       // username
-      url::Component(),       // password
-      url::Component(),       // host
-      url::Component(),       // port
-      url::Component(0, 20),  // path
-      url::Component(),       // query
-      url::Component(21, 3),  // ref
-  },
+    {
+        "~/notahost/path/file#ref", "file",
+        url::Component(),       // scheme
+        url::Component(),       // username
+        url::Component(),       // password
+        url::Component(),       // host
+        url::Component(),       // port
+        url::Component(0, 20),  // path
+        url::Component(),       // query
+        url::Component(21, 3),  // ref
+    },
 #endif
+    {
+        "devtools://bundled/devtools/inspector.html?ws=localhost:9221",
+        "devtools", url::Component(0, 8),  // scheme
+        url::Component(),                  // username
+        url::Component(),                  // password
+        url::Component(11, 7),             // host
+        url::Component(),                  // port
+        url::Component(18, 24),            // path
+        url::Component(43, 17),            // query
+        url::Component(),                  // ref
+    },
+    {
+        "chrome-devtools://bundled/devtools/inspector.html?ws=localhost:9221",
+        "devtools",
+        url::Component(),        // scheme
+        url::Component(),        // username
+        url::Component(),        // password
+        url::Component(18, 7),   // host
+        url::Component(),        // port
+        url::Component(25, 24),  // path
+        url::Component(50, 17),  // query
+        url::Component(),        // ref
+    },
 };
 
 typedef testing::Test URLFixerTest;
@@ -279,9 +311,9 @@ static bool IsMatchingFileURL(const std::string& url,
   if (url.length() <= 8)
     return false;
   if (std::string("file:///") != url.substr(0, 8))
-    return false; // no file:/// prefix
+    return false;  // no file:/// prefix
   if (url.find('\\') != std::string::npos)
-    return false; // contains backslashes
+    return false;  // contains backslashes
 
   base::FilePath derived_path;
   net::FileURLToFilePath(GURL(url), &derived_path);
@@ -307,6 +339,11 @@ struct FixupCase {
     {"about:version", "chrome://version/"},
     {"about:blank", "about:blank"},
     {"About:blaNk", "about:blank"},
+    {"about:blank#blah", "about:blank#blah"},
+    {"about:blank/#blah", "about:blank/#blah"},
+    {"about:srcdoc", "about:srcdoc"},
+    {"about:srcdoc#blah", "about:srcdoc#blah"},
+    {"about:srcdoc/#blah", "about:srcdoc/#blah"},
     {"about:usr:pwd@hst:20/pth?qry#ref", "chrome://hst/pth?qry#ref"},
     {"about://usr:pwd@hst/pth?qry#ref", "chrome://hst/pth?qry#ref"},
     {"chrome:usr:pwd@hst/pth?qry#ref", "chrome://hst/pth?qry#ref"},
@@ -343,7 +380,7 @@ struct FixupCase {
     {"::1", "http://:1/"},
     // Semicolon as scheme separator for standard schemes.
     {"http;//www.google.com/", "http://www.google.com/"},
-    {"about;chrome", "chrome://chrome/"},
+    {"about;help", "chrome://help/"},
     // Semicolon in non-standard schemes is not replaced by colon.
     {"whatsup;//fool", "http://whatsup%3B//fool"},
     // Semicolon left as-is in URL itself.
@@ -353,6 +390,19 @@ struct FixupCase {
     {"http;/www.google.com/", "http://www.google.com/"},
     // Semicolon at start.
     {";http://www.google.com/", "http://%3Bhttp//www.google.com/"},
+    // Devtools scheme.
+    {"devtools://bundled/devtools/node.html",
+     "devtools://bundled/devtools/node.html"},
+    // Devtools fallback scheme.
+    {"chrome-devtools://bundled/devtools/toolbox.html",
+     "devtools://bundled/devtools/toolbox.html"},
+    // Devtools scheme with websocket query.
+    {"devtools://bundled/devtools/inspector.html?ws=ws://localhost:9222/guid",
+     "devtools://bundled/devtools/inspector.html?ws=ws://localhost:9222/guid"},
+    // Devtools fallback scheme with websocket query.
+    {"chrome-devtools://bundled/devtools/inspector.html?ws=ws://localhost:9222/"
+     "guid",
+     "devtools://bundled/devtools/inspector.html?ws=ws://localhost:9222/guid"},
 };
 
 TEST(URLFixerTest, FixupURL) {
@@ -576,7 +626,7 @@ TEST(URLFixerTest, FixupRelativeFile) {
 
   // done with the subdir
   EXPECT_TRUE(base::DeleteFile(full_path, false));
-  EXPECT_TRUE(base::DeleteFile(new_dir, true));
+  EXPECT_TRUE(base::DeleteFileRecursively(new_dir));
 
   // Test that an obvious HTTP URL isn't accidentally treated as an absolute
   // file path (on account of system-specific craziness).

@@ -132,12 +132,12 @@ class MEDIA_EXPORT AudioRendererImpl
 
   // Callback from the audio decoder delivering decoded audio samples.
   void DecodedAudioReady(AudioDecoderStream::Status status,
-                         const scoped_refptr<AudioBuffer>& buffer);
+                         scoped_refptr<AudioBuffer> buffer);
 
   // Handles buffers that come out of decoder (MSE: after passing through
   // |buffer_converter_|).
   // Returns true if more buffers are needed.
-  bool HandleDecodedBuffer_Locked(const scoped_refptr<AudioBuffer>& buffer);
+  bool HandleDecodedBuffer_Locked(scoped_refptr<AudioBuffer> buffer);
 
   // Helper functions for DecodeStatus values passed to
   // DecodedAudioReady().
@@ -182,7 +182,7 @@ class MEDIA_EXPORT AudioRendererImpl
 
   // Returns true if the data in the buffer is all before |start_timestamp_|.
   // This can only return true while in the kPlaying state.
-  bool IsBeforeStartTime(const scoped_refptr<AudioBuffer>& buffer);
+  bool IsBeforeStartTime(const AudioBuffer& buffer);
 
   // Called upon AudioDecoderStream initialization, or failure thereof
   // (indicated by the value of |success|).
@@ -240,6 +240,9 @@ class MEDIA_EXPORT AudioRendererImpl
 
   // Cached copy of audio params that the renderer is initialized with.
   AudioParameters audio_parameters_;
+
+  // Passed in during Initialize().
+  DemuxerStream* demuxer_stream_;
 
   RendererClient* client_;
 
@@ -337,7 +340,7 @@ class MEDIA_EXPORT AudioRendererImpl
   // End variables which must be accessed under |lock_|. ----------------------
 
   // NOTE: Weak pointers must be invalidated before all other member variables.
-  base::WeakPtrFactory<AudioRendererImpl> weak_factory_;
+  base::WeakPtrFactory<AudioRendererImpl> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(AudioRendererImpl);
 };

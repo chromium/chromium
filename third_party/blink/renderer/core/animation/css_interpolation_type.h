@@ -12,7 +12,6 @@
 namespace blink {
 
 class CSSCustomPropertyDeclaration;
-class CSSVariableResolver;
 class ComputedStyle;
 class PropertyRegistration;
 class StyleResolverState;
@@ -64,7 +63,21 @@ class CORE_EXPORT CSSInterpolationType : public InterpolationType {
                                         const InterpolationValue& underlying,
                                         ConversionCheckers&) const final;
 
-  virtual void AdditiveKeyframeHook(InterpolationValue&) const {}
+  // The interpolation stack has an optimization where we perform compositing
+  // after interpolation. This is against spec, but it works for simple addition
+  // cases and halves the amount of computation needed. Some types require
+  // compositing before interpolation (e.g. if their composition operator is a
+  // concatenation), however, and for those we define this method that is called
+  // pre-interpolation.
+  // TODO(crbug.com/1009230): Revisit the post-interpolation composite
+  // optimization.
+  virtual InterpolationValue PreInterpolationCompositeIfNeeded(
+      InterpolationValue value,
+      const InterpolationValue& underlying,
+      EffectModel::CompositeOperation,
+      ConversionCheckers&) const {
+    return value;
+  }
 
   InterpolationValue MaybeConvertUnderlyingValue(
       const InterpolationEnvironment&) const final;
@@ -87,8 +100,7 @@ class CORE_EXPORT CSSInterpolationType : public InterpolationType {
 
   InterpolationValue MaybeConvertCustomPropertyDeclaration(
       const CSSCustomPropertyDeclaration&,
-      const StyleResolverState&,
-      CSSVariableResolver&,
+      const InterpolationEnvironment&,
       ConversionCheckers&) const;
 
   const PropertyRegistration& Registration() const {

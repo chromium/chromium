@@ -1,0 +1,13 @@
+This is a testharness.js-based test.
+PASS Property font-family value 'serif' computes to 'serif'
+PASS Property font-family value 'sans-serif' computes to 'sans-serif'
+PASS Property font-family value 'cursive' computes to 'cursive'
+PASS Property font-family value 'fantasy' computes to 'fantasy'
+PASS Property font-family value 'monospace' computes to 'monospace'
+PASS Property font-family value 'serif, sans-serif, cursive, fantasy, monospace' computes to 'serif, sans-serif, cursive, fantasy, monospace'
+PASS Property font-family value 'Helvetica, Verdana, sans-serif' computes to 'Helvetica, Verdana, sans-serif'
+PASS Property font-family value '"New Century Schoolbook", serif' computes to '"New Century Schoolbook", serif'
+PASS Property font-family value '"21st Century", fantasy' computes to '"21st Century", fantasy'
+FAIL Property font-family value '"inherit", "serif"' computes to '"inherit", "serif"' assert_equals: expected "\"inherit\", \"serif\"" but got "inherit, serif"
+Harness: the test ran to completion.
+

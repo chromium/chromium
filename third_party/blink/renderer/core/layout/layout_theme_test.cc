@@ -5,21 +5,28 @@
 #include "third_party/blink/renderer/core/layout/layout_theme.h"
 
 #include <memory>
+#include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
+#include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/page/focus_controller.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
+#include "third_party/blink/renderer/core/testing/color_scheme_helper.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
 namespace blink {
 
-class LayoutThemeTest : public PageTestBase {
+class LayoutThemeTest : public PageTestBase,
+                        private ScopedCSSColorSchemeForTest {
  protected:
+  LayoutThemeTest() : ScopedCSSColorSchemeForTest(true) {}
   void SetHtmlInnerHTML(const char* html_content);
 };
 
@@ -73,14 +80,15 @@ TEST_F(LayoutThemeTest, ChangeFocusRingColor) {
 
 TEST_F(LayoutThemeTest, RootElementColor) {
   EXPECT_EQ(Color::kBlack,
-            LayoutTheme::GetTheme().RootElementColor(ColorScheme::kLight));
+            LayoutTheme::GetTheme().RootElementColor(WebColorScheme::kLight));
   EXPECT_EQ(Color::kWhite,
-            LayoutTheme::GetTheme().RootElementColor(ColorScheme::kDark));
+            LayoutTheme::GetTheme().RootElementColor(WebColorScheme::kDark));
 }
 
 TEST_F(LayoutThemeTest, RootElementColorChange) {
   SetHtmlInnerHTML(R"HTML(
     <style>
+      :root { color-scheme: light dark }
       #initial { color: initial }
     </style>
     <div id="initial"></div>
@@ -88,8 +96,6 @@ TEST_F(LayoutThemeTest, RootElementColorChange) {
 
   Element* initial = GetDocument().getElementById("initial");
   ASSERT_TRUE(initial);
-  EXPECT_EQ(ColorScheme::kLight, GetDocument().GetColorScheme());
-
   ASSERT_TRUE(GetDocument().documentElement());
   const ComputedStyle* document_element_style =
       GetDocument().documentElement()->GetComputedStyle();
@@ -103,8 +109,9 @@ TEST_F(LayoutThemeTest, RootElementColorChange) {
             initial_style->VisitedDependentColor(GetCSSPropertyColor()));
 
   // Change color scheme to dark.
-  GetDocument().SetColorScheme(ColorScheme::kDark);
-  EXPECT_EQ(ColorScheme::kDark, GetDocument().GetColorScheme());
+  ColorSchemeHelper color_scheme_helper;
+  color_scheme_helper.SetPreferredColorScheme(GetDocument(),
+                                              PreferredColorScheme::kDark);
   UpdateAllLifecyclePhasesForTest();
 
   document_element_style = GetDocument().documentElement()->GetComputedStyle();
@@ -119,5 +126,40 @@ TEST_F(LayoutThemeTest, RootElementColorChange) {
   EXPECT_EQ(Color::kBlack,
             initial_style->VisitedDependentColor(GetCSSPropertyColor()));
 }
+
+// The expectations are based on LayoutThemeDefault::SystemColor.
+// LayoutThemeMac doesn't use that code path.
+#if !defined(OS_MACOSX)
+TEST_F(LayoutThemeTest, SystemColorWithColorScheme) {
+  SetHtmlInnerHTML(R"HTML(
+    <style>
+      #dark {
+        color: buttonface;
+        color-scheme: dark;
+      }
+    </style>
+    <div id="dark"></div>
+  )HTML");
+
+  Element* dark_element = GetDocument().getElementById("dark");
+  ASSERT_TRUE(dark_element);
+
+  const ComputedStyle* style = dark_element->GetComputedStyle();
+  EXPECT_EQ(WebColorScheme::kLight, style->UsedColorScheme());
+  EXPECT_EQ(Color(0xdd, 0xdd, 0xdd),
+            style->VisitedDependentColor(GetCSSPropertyColor()));
+
+  // Change color scheme to dark.
+  ColorSchemeHelper color_scheme_helper;
+  color_scheme_helper.SetPreferredColorScheme(GetDocument(),
+                                              PreferredColorScheme::kDark);
+  UpdateAllLifecyclePhasesForTest();
+
+  style = dark_element->GetComputedStyle();
+  EXPECT_EQ(WebColorScheme::kDark, style->UsedColorScheme());
+  EXPECT_EQ(Color(0x44, 0x44, 0x44),
+            style->VisitedDependentColor(GetCSSPropertyColor()));
+}
+#endif  // !defined(OS_MACOSX)
 
 }  // namespace blink

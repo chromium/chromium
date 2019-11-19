@@ -105,7 +105,8 @@ ExtensionSystemImpl::Shared::~Shared() {
 }
 
 void ExtensionSystemImpl::Shared::InitPrefs() {
-  store_factory_ = new ValueStoreFactoryImpl(profile_->GetPath());
+  store_factory_ =
+      base::MakeRefCounted<ValueStoreFactoryImpl>(profile_->GetPath());
 
   // Two state stores. The latter, which contains declarative rules, must be
   // loaded immediately so that the rules are ready before we issue network
@@ -224,12 +225,12 @@ void ExtensionSystemImpl::Shared::Init(bool extensions_enabled) {
   // load any extensions.
   {
     InstallVerifier::Get(profile_)->Init();
-    ContentVerifierDelegate::Mode mode =
+    ChromeContentVerifierDelegate::Mode mode =
         ChromeContentVerifierDelegate::GetDefaultMode();
 #if defined(OS_CHROMEOS)
-    mode = std::max(mode, ContentVerifierDelegate::BOOTSTRAP);
+    mode = std::max(mode, ChromeContentVerifierDelegate::BOOTSTRAP);
 #endif  // defined(OS_CHROMEOS)
-    if (mode >= ContentVerifierDelegate::BOOTSTRAP)
+    if (mode >= ChromeContentVerifierDelegate::BOOTSTRAP)
       content_verifier_->Start();
     info_map()->SetContentVerifier(content_verifier_.get());
 #if defined(OS_CHROMEOS)
@@ -326,7 +327,7 @@ ExtensionSystemImpl::Shared::shared_user_script_master() {
 
 InfoMap* ExtensionSystemImpl::Shared::info_map() {
   if (!extension_info_map_.get())
-    extension_info_map_ = new InfoMap();
+    extension_info_map_ = base::MakeRefCounted<InfoMap>();
   return extension_info_map_.get();
 }
 
@@ -363,7 +364,6 @@ void ExtensionSystemImpl::Shutdown() {
 
 void ExtensionSystemImpl::InitForRegularProfile(bool extensions_enabled) {
   TRACE_EVENT0("browser,startup", "ExtensionSystemImpl::InitForRegularProfile");
-  cookie_notifier_ = std::make_unique<ExtensionCookieNotifier>(profile_);
 
   if (shared_user_script_master() || extension_service())
     return;  // Already initialized.
@@ -371,10 +371,6 @@ void ExtensionSystemImpl::InitForRegularProfile(bool extensions_enabled) {
   // The InfoMap needs to be created before the ProcessManager.
   shared_->info_map();
   shared_->Init(extensions_enabled);
-}
-
-void ExtensionSystemImpl::InitForIncognitoProfile() {
-  cookie_notifier_ = std::make_unique<ExtensionCookieNotifier>(profile_);
 }
 
 ExtensionService* ExtensionSystemImpl::extension_service() {
@@ -411,7 +407,7 @@ scoped_refptr<ValueStoreFactory> ExtensionSystemImpl::store_factory() {
 
 InfoMap* ExtensionSystemImpl::info_map() { return shared_->info_map(); }
 
-const OneShotEvent& ExtensionSystemImpl::ready() const {
+const base::OneShotEvent& ExtensionSystemImpl::ready() const {
   return shared_->ready();
 }
 
@@ -481,7 +477,7 @@ void ExtensionSystemImpl::RegisterExtensionWithRequestContexts(
   notifications_disabled =
       !notifier_state_tracker->IsNotifierEnabled(notifier_id);
 
-  base::PostTaskWithTraitsAndReply(
+  base::PostTaskAndReply(
       FROM_HERE, {BrowserThread::IO},
       base::BindOnce(&InfoMap::AddExtension, info_map(),
                      base::RetainedRef(extension), install_time,
@@ -492,9 +488,9 @@ void ExtensionSystemImpl::RegisterExtensionWithRequestContexts(
 void ExtensionSystemImpl::UnregisterExtensionWithRequestContexts(
     const std::string& extension_id,
     const UnloadedExtensionReason reason) {
-  base::PostTaskWithTraits(FROM_HERE, {BrowserThread::IO},
-                           base::BindOnce(&InfoMap::RemoveExtension, info_map(),
-                                          extension_id, reason));
+  base::PostTask(FROM_HERE, {BrowserThread::IO},
+                 base::BindOnce(&InfoMap::RemoveExtension, info_map(),
+                                extension_id, reason));
 }
 
 }  // namespace extensions

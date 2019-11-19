@@ -16,6 +16,8 @@
 namespace mojo {
 namespace {
 
+const char kMessageTag[] = "PipeControlMessageProxy";
+
 Message ConstructRunOrClosePipeMessage(
     pipe_control::RunOrClosePipeInputPtr input_ptr) {
   auto params_ptr = pipe_control::RunOrClosePipeMessageParams::New();
@@ -27,6 +29,7 @@ Message ConstructRunOrClosePipeMessage(
   internal::Serialize<pipe_control::RunOrClosePipeMessageParamsDataView>(
       params_ptr, message.payload_buffer(), &params, &context);
   message.set_interface_id(kInvalidInterfaceId);
+  message.set_heap_profiler_tag(kMessageTag);
   return message;
 }
 
@@ -39,6 +42,7 @@ void PipeControlMessageProxy::NotifyPeerEndpointClosed(
     InterfaceId id,
     const base::Optional<DisconnectReason>& reason) {
   Message message(ConstructPeerEndpointClosedMessage(id, reason));
+  message.set_heap_profiler_tag(kMessageTag);
   ignore_result(receiver_->Accept(&message));
 }
 

@@ -38,7 +38,7 @@ class EasyUnlockRemoveKeysOperation {
   UserContext user_context_;
   RemoveKeysCallback callback_;
   size_t key_index_;
-  base::WeakPtrFactory<EasyUnlockRemoveKeysOperation> weak_ptr_factory_;
+  base::WeakPtrFactory<EasyUnlockRemoveKeysOperation> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(EasyUnlockRemoveKeysOperation);
 };

@@ -12,10 +12,10 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/message_loop/message_loop.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
 #include "base/stl_util.h"
+#include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/platform/platform_event_dispatcher.h"
@@ -145,7 +145,9 @@ class PlatformEventTest : public testing::Test {
 
  protected:
   // testing::Test:
-  void SetUp() override { source_.reset(new TestPlatformEventSource()); }
+  void SetUp() override {
+    source_ = std::make_unique<TestPlatformEventSource>();
+  }
 
  private:
   std::unique_ptr<TestPlatformEventSource> source_;
@@ -334,20 +336,20 @@ class RunCallbackDuringDispatch : public TestPlatformEventDispatcher {
       : TestPlatformEventDispatcher(id, list) {}
   ~RunCallbackDuringDispatch() override {}
 
-  void set_callback(const base::Closure& callback) {
-    callback_ = callback;
+  void set_callback(base::OnceClosure callback) {
+    callback_ = std::move(callback);
   }
 
  protected:
   // PlatformEventDispatcher:
   uint32_t DispatchEvent(const PlatformEvent& event) override {
     if (!callback_.is_null())
-      callback_.Run();
+      std::move(callback_).Run();
     return TestPlatformEventDispatcher::DispatchEvent(event);
   }
 
  private:
-  base::Closure callback_;
+  base::OnceClosure callback_;
 
   DISALLOW_COPY_AND_ASSIGN(RunCallbackDuringDispatch);
 };
@@ -362,7 +364,8 @@ TEST_F(PlatformEventTest, DispatcherRemovesNextDispatcherDuringDispatch) {
   TestPlatformEventDispatcher third(20, &list);
   TestPlatformEventDispatcher fourth(30, &list);
 
-  second.set_callback(base::Bind(&RemoveDispatcher, base::Unretained(&third)));
+  second.set_callback(
+      base::BindOnce(&RemoveDispatcher, base::Unretained(&third)));
 
   std::unique_ptr<PlatformEvent> event = CreatePlatformEvent();
   source()->Dispatch(*event);
@@ -382,7 +385,8 @@ TEST_F(PlatformEventTest, DispatcherRemovesSelfDuringDispatch) {
   RunCallbackDuringDispatch second(15, &list);
   TestPlatformEventDispatcher third(20, &list);
 
-  second.set_callback(base::Bind(&RemoveDispatcher, base::Unretained(&second)));
+  second.set_callback(
+      base::BindOnce(&RemoveDispatcher, base::Unretained(&second)));
 
   std::unique_ptr<PlatformEvent> event = CreatePlatformEvent();
   source()->Dispatch(*event);
@@ -402,7 +406,8 @@ TEST_F(PlatformEventTest, DispatcherRemovesSelfDuringDispatchLast) {
   TestPlatformEventDispatcher first(10, &list);
   RunCallbackDuringDispatch second(15, &list);
 
-  second.set_callback(base::Bind(&RemoveDispatcher, base::Unretained(&second)));
+  second.set_callback(
+      base::BindOnce(&RemoveDispatcher, base::Unretained(&second)));
 
   std::unique_ptr<PlatformEvent> event = CreatePlatformEvent();
   source()->Dispatch(*event);
@@ -421,7 +426,8 @@ TEST_F(PlatformEventTest, DispatcherRemovesPrevDispatcherDuringDispatch) {
   RunCallbackDuringDispatch second(15, &list);
   TestPlatformEventDispatcher third(20, &list);
 
-  second.set_callback(base::Bind(&RemoveDispatcher, base::Unretained(&first)));
+  second.set_callback(
+      base::BindOnce(&RemoveDispatcher, base::Unretained(&first)));
 
   std::unique_ptr<PlatformEvent> event = CreatePlatformEvent();
   source()->Dispatch(*event);
@@ -442,9 +448,8 @@ TEST_F(PlatformEventTest, DispatcherRemovesPrevDispatchersDuringDispatch) {
   RunCallbackDuringDispatch third(15, &list);
   TestPlatformEventDispatcher fourth(20, &list);
 
-  third.set_callback(base::Bind(&RemoveDispatchers,
-                                base::Unretained(&first),
-                                base::Unretained(&second)));
+  third.set_callback(base::BindOnce(
+      &RemoveDispatchers, base::Unretained(&first), base::Unretained(&second)));
 
   std::unique_ptr<PlatformEvent> event = CreatePlatformEvent();
   source()->Dispatch(*event);
@@ -473,7 +478,7 @@ TEST_F(PlatformEventTest, DispatcherAddedDuringDispatchReceivesEvent) {
   EXPECT_EQ(10, list[0]);
   EXPECT_EQ(15, list[1]);
 
-  second.set_callback(base::Bind(&AddDispatcher, base::Unretained(&third)));
+  second.set_callback(base::BindOnce(&AddDispatcher, base::Unretained(&third)));
   list.clear();
   source()->Dispatch(*event);
   ASSERT_EQ(3u, list.size());
@@ -481,7 +486,8 @@ TEST_F(PlatformEventTest, DispatcherAddedDuringDispatchReceivesEvent) {
   EXPECT_EQ(15, list[1]);
   EXPECT_EQ(20, list[2]);
 
-  second.set_callback(base::Bind(&AddDispatcher, base::Unretained(&fourth)));
+  second.set_callback(
+      base::BindOnce(&AddDispatcher, base::Unretained(&fourth)));
   list.clear();
   source()->Dispatch(*event);
   ASSERT_EQ(4u, list.size());
@@ -498,7 +504,7 @@ class PlatformEventTestWithMessageLoop : public PlatformEventTest {
   ~PlatformEventTestWithMessageLoop() override {}
 
   void Run() {
-    message_loop_.task_runner()->PostTask(
+    task_environment_.GetMainThreadTaskRunner()->PostTask(
         FROM_HERE,
         base::BindOnce(&PlatformEventTestWithMessageLoop::RunTestImpl,
                        base::Unretained(this)));
@@ -509,7 +515,8 @@ class PlatformEventTestWithMessageLoop : public PlatformEventTest {
   virtual void RunTestImpl() = 0;
 
  private:
-  base::MessageLoopForUI message_loop_;
+  base::test::SingleThreadTaskEnvironment task_environment_{
+      base::test::SingleThreadTaskEnvironment::MainThreadType::UI};
 
   DISALLOW_COPY_AND_ASSIGN(PlatformEventTestWithMessageLoop);
 };
@@ -568,8 +575,8 @@ class DestroyScopedHandleDispatcher : public TestPlatformEventDispatcher {
     handler_ = std::move(handler);
   }
 
-  void set_callback(const base::Closure& callback) {
-    callback_ = callback;
+  void set_callback(base::OnceClosure callback) {
+    callback_ = std::move(callback);
   }
 
  private:
@@ -580,14 +587,13 @@ class DestroyScopedHandleDispatcher : public TestPlatformEventDispatcher {
     handler_.reset();
     uint32_t action = TestPlatformEventDispatcher::DispatchEvent(event);
     if (!callback_.is_null()) {
-      callback_.Run();
-      callback_ = base::Closure();
+      std::move(callback_).Run();
     }
     return action;
   }
 
   std::unique_ptr<ScopedEventDispatcher> handler_;
-  base::Closure callback_;
+  base::OnceClosure callback_;
 
   DISALLOW_COPY_AND_ASSIGN(DestroyScopedHandleDispatcher);
 };

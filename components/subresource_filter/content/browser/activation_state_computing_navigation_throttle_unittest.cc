@@ -483,45 +483,6 @@ TEST_P(ActivationStateComputingThrottleSubFrameTest, DisabledStatePropagated2) {
   EXPECT_TRUE(state.generic_blocking_rules_disabled);
 }
 
-TEST_P(ActivationStateComputingThrottleSubFrameTest, DelayMetrics) {
-  base::HistogramTester histogram_tester;
-  NavigateAndCommitMainFrameWithPageActivationState(
-      GURL("http://example.test/"), mojom::ActivationLevel::kEnabled);
-  mojom::ActivationState state = last_activation_state();
-  EXPECT_EQ(mojom::ActivationLevel::kEnabled, state.activation_level);
-  EXPECT_FALSE(state.filtering_disabled_for_document);
-
-  const char kActivationDelay[] =
-      "SubresourceFilter.DocumentLoad.ActivationComputingDelay";
-  const char kActivationDelayMainFrame[] =
-      "SubresourceFilter.DocumentLoad.ActivationComputingDelay.MainFrame";
-  histogram_tester.ExpectTotalCount(kActivationDelay, 1);
-  histogram_tester.ExpectTotalCount(kActivationDelayMainFrame, 1);
-
-  // Subframe activation should not log main frame metrics.
-  CreateSubframeAndInitTestNavigation(GURL("http://example.test/"),
-                                      last_committed_frame_host(),
-                                      last_activation_state());
-  SimulateStartAndExpectToProceed();
-  SimulateCommitAndExpectToProceed();
-  histogram_tester.ExpectTotalCount(kActivationDelay, 2);
-  histogram_tester.ExpectTotalCount(kActivationDelayMainFrame, 1);
-
-  // No page activation should imply no delay.
-  CreateTestNavigationForMainFrame(GURL("http://example.test2/"));
-  SimulateStartAndExpectToProceed();
-  SimulateCommitAndExpectToProceed();
-
-  state = last_activation_state();
-  EXPECT_EQ(dryrun_speculation() ? mojom::ActivationLevel::kDryRun
-                                 : mojom::ActivationLevel::kDisabled,
-            state.activation_level);
-  int extra_activation = dryrun_speculation() ? 1 : 0;
-  histogram_tester.ExpectTotalCount(kActivationDelay, 2 + extra_activation);
-  histogram_tester.ExpectTotalCount(kActivationDelayMainFrame,
-                                    1 + extra_activation);
-}
-
 TEST_P(ActivationStateComputingThrottleSubFrameTest, Speculation) {
   // Use the activation performance metric as a proxy for how many times
   // activation computation occurred.

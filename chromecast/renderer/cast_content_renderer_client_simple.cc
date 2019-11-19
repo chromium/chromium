@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/memory/ptr_util.h"
-#include "ipc/message_filter.h"
 
 namespace chromecast {
 namespace shell {

@@ -1,0 +1,70 @@
+<style include="cr-shared-style throbber cr-hidden-style">
+  :host {
+    display: block;
+  }
+
+  <if expr="not is_macosx">
+    :host(:not([should-show-system-dialog-link_])) {
+      display: none;
+    }
+  </if>
+
+  :host cr-icon-button {
+    --cr-icon-button-icon-size: 16px;
+    --cr-icon-button-margin-end: -2px;
+    --cr-icon-button-margin-start: 0;
+    --cr-icon-button-size: 28px;
+  }
+
+  .link:not([actionable]) {
+    pointer-events: none;
+  }
+
+  .throbber {
+    margin: 8px;
+    min-height: 16px;
+    min-width: 16px;
+  }
+
+  .link {
+    align-items: center;
+    display: flex;
+    min-height: 46px;
+    padding: 0 var(--print-preview-sidebar-margin);
+  }
+
+  #systemDialogLink {
+    padding-top: 0.5em;
+  }
+
+  .label {
+    flex: 1;
+  }
+
+  .link:not([actionable]) .label {
+    @apply --print-preview-disabled-label;
+  }
+</style>
+<div class="link" id="systemDialogLink"
+     actionable$="[[!systemDialogLinkDisabled_]]"
+     hidden$="[[!shouldShowSystemDialogLink_]]"
+     on-click="onSystemDialogClick_">
+  <div class="label">$i18n{systemDialogOption}</div>
+  <cr-icon-button class="icon-external"
+      hidden$="[[openingSystemDialog_]]"
+      disabled="[[systemDialogLinkDisabled_]]"
+      aria-label="$i18n{systemDialogOption}"></cr-icon-button>
+  <div id="systemDialogThrobber" hidden$="[[!openingSystemDialog_]]"
+      class="throbber"></div>
+</div>
+<if expr="is_macosx">
+<div class="link" id="openPdfInPreviewLink" actionable$="[[!disabled]]"
+    on-click="onOpenInPreviewClick_">
+  <div class="label">$i18n{openPdfInPreviewOption}</div>
+  <cr-icon-button class="icon-external"
+      hidden$="[[openingInPreview_]]" disabled="[[disabled]]"
+      aria-label="$i18n{openPdfInPreviewOption}"></cr-icon-button>
+  <div id="openPdfInPreviewThrobber" hidden$="[[!openingInPreview_]]"
+      class="throbber"></div>
+</div>
+</if>

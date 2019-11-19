@@ -1,21 +1,40 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="da">
+<translation id="1482734542997480527"><ph name="ENROLLMENT_DOMAIN" /> administrerer din enhed og kan muligvis overvåge din aktivitet.</translation>
 <translation id="1510238584712386396">Appliste</translation>
 <translation id="1734367976349034509">Denne enhed er virksomhedsadministreret</translation>
+<translation id="1930797645656624981">Indtastningsmetodetjeneste for Chrome OS</translation>
+<translation id="1979103255016296513">Adgangskoden mangler at blive ændret</translation>
 <translation id="2049639323467105390">Denne enhed administreres af <ph name="DOMAIN" />.</translation>
 <translation id="2083960536266308407">Der blev ikke fundet noget på skærmen</translation>
 <translation id="2338501278241028356">Slå Bluetooth til for at opdage enheder i nærheden</translation>
 <translation id="2805756323405976993">Apps</translation>
 <translation id="2872961005593481000">Sluk</translation>
-<translation id="3147142846278915599">Starter (synkronisering af apps...)</translation>
+<translation id="3008341117444806826">OPDATER</translation>
+<translation id="3838338534323494292">Ny adgangskode</translation>
+<translation id="4003259559679196451"><ph name="ENROLLMENT_DOMAIN" /> administrerer denne enhed og har adgang til al brugeraktivitet, bl.a. besøgte websider, adgangskoder og mails.</translation>
+<translation id="4227825898293920515">Adgangskoden udløber om <ph name="TIME" /></translation>
+<translation id="4429881212383817840">Din Kerberos-billet er ved at udløbe</translation>
+<translation id="445059817448385655">Gammel adgangskode</translation>
+<translation id="467510802200863975">Adgangskoderne stemmer ikke overens</translation>
 <translation id="4731797938093519117">Forældreadgang</translation>
+<translation id="4890353053343094602">Vælg omgående en ny adgangskode</translation>
 <translation id="5212543919916444558">Jeg kan ikke finde noget på skærmen, jeg kan hjælpe med. Prøv at trykke på mikrofonen for at spørge mig om noget.</translation>
 <translation id="5222676887888702881">Log ud</translation>
+<translation id="5317780077021120954">Gem</translation>
+<translation id="5332948983412042822">Vælg en ny adgangskode nu</translation>
 <translation id="5457599981699367932">Anvend som gæst</translation>
 <translation id="54609108002486618">Administreret</translation>
 <translation id="5832805196449965646">Tilføj person</translation>
 <translation id="5895138241574237353">Genstart</translation>
+<translation id="6058625436358447366">Angiv din gamle og nye adgangskode for at afslutte</translation>
+<translation id="6106186594183574873">Angiv din gamle adgangskode for at afslutte</translation>
+<translation id="6146993107019042706">Angiv din nye adgangskode for at afslutte</translation>
 <translation id="7658239707568436148">Annuller</translation>
+<translation id="7690294790491645610">Bekræft den nye adgangskode</translation>
+<translation id="808894953321890993">Skift adgangskode</translation>
+<translation id="8747900814994928677">Bekræft ændring</translation>
+<translation id="910415269708673980">Gendan billetten for <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9111102763498581341">Lås op</translation>
 </translationbundle>

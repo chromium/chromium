@@ -1,0 +1,7 @@
+[document web]
+++[tree] setsize:2
+++++[tree item] name='card content' selectable level:1 posinset:1 setsize:2
+++++++[static] name='card content'
+++++[section]
+++++[tree item] name='card content' selectable level:1 posinset:2 setsize:2
+++++++[static] name='card content'

@@ -20,6 +20,8 @@ struct PluginInfo {
   mojo_base.mojom.FilePath filename;
   uint32 background_color;
   array<PluginMimeType> mime_types;
+  // When true, the current plugin maybe implemented using an external handler.
+  bool may_use_external_handler;
 };
 
 interface PluginRegistry {

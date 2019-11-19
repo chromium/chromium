@@ -40,6 +40,12 @@
       name: "height",
     },
     {
+      name: "inherits"
+    },
+    {
+      name: "initial-value"
+    },
+    {
       name: "max-height",
     },
     {
@@ -62,6 +68,9 @@
     },
     {
       name: "src",
+    },
+    {
+      name: "syntax"
     },
     {
       name: "unicode-range",

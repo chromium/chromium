@@ -13,13 +13,13 @@
 #include "base/cancelable_callback.h"
 #include "base/run_loop.h"
 #include "base/test/mock_callback.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/sync/base/hash_util.h"
-#include "components/sync/device_info/device_info.h"
 #include "components/sync/model/model_type_store_test_util.h"
 #include "components/sync/protocol/session_specifics.pb.h"
 #include "components/sync/test/test_matchers.h"
+#include "components/sync_device_info/local_device_info_util.h"
 #include "components/sync_sessions/mock_sync_sessions_client.h"
 #include "components/sync_sessions/session_sync_prefs.h"
 #include "components/sync_sessions/test_matchers.h"
@@ -52,7 +52,6 @@ using testing::UnorderedElementsAre;
 using testing::_;
 
 const char kCacheGuid[] = "SomeCacheGuid";
-const char kClientName[] = "Some Client Name";
 
 // A mock callback that a) can be used as mock to verify call expectations and
 // b) conveniently exposes the last instantiated session store.
@@ -157,13 +156,7 @@ std::map<std::string, SessionSpecifics> ReadAllPersistedDataFrom(
 class SessionStoreOpenTest : public ::testing::Test {
  protected:
   SessionStoreOpenTest()
-      : local_device_info_(kCacheGuid,
-                           kClientName,
-                           "Chromium 10k",
-                           "Chrome 10k",
-                           sync_pb::SyncEnums_DeviceType_TYPE_LINUX,
-                           "device_id"),
-        session_sync_prefs_(&pref_service_),
+      : session_sync_prefs_(&pref_service_),
         underlying_store_(
             syncer::ModelTypeStoreTestUtil::CreateInMemoryStoreForTest(
                 syncer::SESSIONS)) {
@@ -182,8 +175,7 @@ class SessionStoreOpenTest : public ::testing::Test {
 
   ~SessionStoreOpenTest() override {}
 
-  base::test::ScopedTaskEnvironment task_environment_;
-  const syncer::DeviceInfo local_device_info_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
   TestingPrefServiceSimple pref_service_;
   SessionSyncPrefs session_sync_prefs_;
   std::unique_ptr<MockSyncSessionsClient> mock_sync_sessions_client_;
@@ -199,13 +191,12 @@ TEST_F(SessionStoreOpenTest, ShouldCreateStore) {
   MockOpenCallback completion;
   EXPECT_CALL(completion, Run(NoModelError(), /*store=*/NotNull(),
                               MetadataBatchContains(_, IsEmpty())));
-  SessionStore::Open(local_device_info_,
-                     mock_restored_foreign_tab_callback_.Get(),
+  SessionStore::Open(kCacheGuid, mock_restored_foreign_tab_callback_.Get(),
                      mock_sync_sessions_client_.get(), completion.Get());
   completion.Wait();
   ASSERT_THAT(completion.GetResult(), NotNull());
   EXPECT_THAT(completion.GetResult()->local_session_info().client_name,
-              Eq(kClientName));
+              Eq(syncer::GetPersonalizableDeviceNameBlocking()));
   EXPECT_THAT(session_sync_prefs_.GetSyncSessionsGUID(),
               Eq(std::string("session_sync") + kCacheGuid));
 }
@@ -215,8 +206,7 @@ TEST_F(SessionStoreOpenTest, ShouldReadSessionsGuidFromPrefs) {
   session_sync_prefs_.SetSyncSessionsGUID(kCachedGuid);
 
   NiceMock<MockOpenCallback> completion;
-  SessionStore::Open(local_device_info_,
-                     mock_restored_foreign_tab_callback_.Get(),
+  SessionStore::Open(kCacheGuid, mock_restored_foreign_tab_callback_.Get(),
                      mock_sync_sessions_client_.get(), completion.Get());
   completion.Wait();
   ASSERT_THAT(completion.GetResult(), NotNull());
@@ -229,8 +219,7 @@ TEST_F(SessionStoreOpenTest, ShouldNotUseClientIfCancelled) {
   // Mimics a caller that uses a weak pointer.
   class Caller {
    public:
-    explicit Caller(SessionStore::OpenCallback cb)
-        : cb_(std::move(cb)), weak_ptr_factory_(this) {}
+    explicit Caller(SessionStore::OpenCallback cb) : cb_(std::move(cb)) {}
 
     SessionStore::OpenCallback GetCancelableCallback() {
       return base::BindOnce(&Caller::Completed, weak_ptr_factory_.GetWeakPtr());
@@ -244,7 +233,7 @@ TEST_F(SessionStoreOpenTest, ShouldNotUseClientIfCancelled) {
     }
 
     SessionStore::OpenCallback cb_;
-    base::WeakPtrFactory<Caller> weak_ptr_factory_;
+    base::WeakPtrFactory<Caller> weak_ptr_factory_{this};
   };
 
   NiceMock<MockOpenCallback> mock_completion;
@@ -252,9 +241,9 @@ TEST_F(SessionStoreOpenTest, ShouldNotUseClientIfCancelled) {
 
   EXPECT_CALL(mock_completion, Run(_, _, _)).Times(0);
 
-  SessionStore::Open(
-      local_device_info_, mock_restored_foreign_tab_callback_.Get(),
-      mock_sync_sessions_client_.get(), caller->GetCancelableCallback());
+  SessionStore::Open(kCacheGuid, mock_restored_foreign_tab_callback_.Get(),
+                     mock_sync_sessions_client_.get(),
+                     caller->GetCancelableCallback());
 
   // The client gets destroyed before callback completion.
   mock_sync_sessions_client_.reset();
@@ -276,8 +265,7 @@ class SessionStoreTest : public SessionStoreOpenTest {
 
   std::unique_ptr<SessionStore> CreateSessionStore() {
     NiceMock<MockOpenCallback> completion;
-    SessionStore::Open(local_device_info_,
-                       mock_restored_foreign_tab_callback_.Get(),
+    SessionStore::Open(kCacheGuid, mock_restored_foreign_tab_callback_.Get(),
                        mock_sync_sessions_client_.get(), completion.Get());
     completion.Wait();
     EXPECT_THAT(completion.GetResult(), NotNull());
@@ -346,8 +334,7 @@ TEST_F(SessionStoreTest, ShouldWriteAndRestoreMetadata) {
                               MetadataBatchContains(
                                   HasEncryptionKeyName(kEncryptionKeyName1),
                                   ElementsAre(Pair(kStorageKey1, _)))));
-  SessionStore::Open(local_device_info_,
-                     mock_restored_foreign_tab_callback_.Get(),
+  SessionStore::Open(kCacheGuid, mock_restored_foreign_tab_callback_.Get(),
                      mock_sync_sessions_client_.get(), completion.Get());
   completion.Wait();
   EXPECT_THAT(completion.GetResult(), NotNull());

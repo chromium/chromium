@@ -1,0 +1,24 @@
+// Copyright 2017 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module viz.mojom;
+
+import "services/viz/public/mojom/compositing/frame_sink_id.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
+
+// Returns the hit-tested frame sink id for the given coordinates.
+interface InputTargetClient {
+
+  // Returns the FrameSinkId of the widget that the given point belongs to.
+  // When switches::IsMusHostingViz() is true this is the FrameSinkId for the
+  // target window. Otherwise, FrameSinkId is the ProcessID/RoutingID of a
+  // RenderWidget containing the point, which is either the widget that was
+  // asked to perform the hit test or an immediately embedded widget (i.e. an
+  // out-of-process iframe).
+  // |local_point| is the point in the coordinate space of the RenderWidget
+  // indicated by the FrameSinkId.
+  // |trace_id| is used for trace events and does not change the functionality.
+  FrameSinkIdAt(gfx.mojom.PointF point, uint64 trace_id) =>
+     (FrameSinkId id, gfx.mojom.PointF local_point);
+};

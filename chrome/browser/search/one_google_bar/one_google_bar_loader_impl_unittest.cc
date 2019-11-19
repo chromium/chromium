@@ -14,16 +14,13 @@
 #include "base/test/test_simple_task_runner.h"
 #include "base/time/time.h"
 #include "chrome/browser/search/one_google_bar/one_google_bar_data.h"
-#include "components/google/core/browser/google_url_tracker.h"
 #include "components/signin/core/browser/signin_header_helper.h"
-#include "content/public/test/test_browser_thread_bundle.h"
-#include "content/public/test/test_service_manager_context.h"
+#include "content/public/test/browser_task_environment.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_status_code.h"
-#include "services/data_decoder/public/cpp/testing_json_parser.h"
+#include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
-#include "services/network/test/test_network_connection_tracker.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -43,22 +40,6 @@ const char kMinimalValidResponse[] = R"json({"update": { "ogb": {
   "page_hooks": {}
 }}})json";
 
-// Required to instantiate a GoogleUrlTracker in UNIT_TEST_MODE.
-class GoogleURLTrackerClientStub : public GoogleURLTrackerClient {
- public:
-  GoogleURLTrackerClientStub() {}
-  ~GoogleURLTrackerClientStub() override {}
-
-  bool IsBackgroundNetworkingEnabled() override { return true; }
-  PrefService* GetPrefs() override { return nullptr; }
-  network::SharedURLLoaderFactory* GetURLLoaderFactory() override {
-    return nullptr;
-  }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(GoogleURLTrackerClientStub);
-};
-
 }  // namespace
 
 ACTION_P(Quit, run_loop) {
@@ -72,26 +53,18 @@ class OneGoogleBarLoaderImplTest : public testing::Test {
             /*account_consistency_mirror_required=*/false) {}
 
   explicit OneGoogleBarLoaderImplTest(bool account_consistency_mirror_required)
-      : thread_bundle_(content::TestBrowserThreadBundle::IO_MAINLOOP),
-        google_url_tracker_(
-            std::make_unique<GoogleURLTrackerClientStub>(),
-            GoogleURLTracker::ALWAYS_DOT_COM_MODE,
-            network::TestNetworkConnectionTracker::GetInstance()),
+      : task_environment_(content::BrowserTaskEnvironment::IO_MAINLOOP),
         test_shared_loader_factory_(
             base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
                 &test_url_loader_factory_)),
         account_consistency_mirror_required_(
             account_consistency_mirror_required) {}
 
-  ~OneGoogleBarLoaderImplTest() override {
-    static_cast<KeyedService&>(google_url_tracker_).Shutdown();
-  }
-
   void SetUp() override {
     testing::Test::SetUp();
 
     one_google_bar_loader_ = std::make_unique<OneGoogleBarLoaderImpl>(
-        test_shared_loader_factory_, &google_url_tracker_, kApplicationLocale,
+        test_shared_loader_factory_, kApplicationLocale,
         account_consistency_mirror_required_);
   }
 
@@ -108,7 +81,7 @@ class OneGoogleBarLoaderImplTest : public testing::Test {
   void SetUpResponseWithNetworkError() {
     test_url_loader_factory_.AddResponse(
         one_google_bar_loader_->GetLoadURLForTesting(),
-        network::ResourceResponseHead(), std::string(),
+        network::mojom::URLResponseHead::New(), std::string(),
         network::URLLoaderCompletionStatus(net::HTTP_NOT_FOUND));
   }
 
@@ -122,14 +95,12 @@ class OneGoogleBarLoaderImplTest : public testing::Test {
   }
 
  private:
-  // variations::AppendVariationHeaders and SafeJsonParser require a
-  // threads and a ServiceManagerConnection to be set.
-  content::TestBrowserThreadBundle thread_bundle_;
-  content::TestServiceManagerContext service_manager_context_;
+  // variations::AppendVariationHeaders requires browser threads.
+  content::BrowserTaskEnvironment task_environment_;
 
-  data_decoder::TestingJsonParser::ScopedFactoryOverride factory_override_;
+  // Supports JSON decoding in the loader implementation.
+  data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
 
-  GoogleURLTracker google_url_tracker_;
   network::TestURLLoaderFactory test_url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_;
   bool account_consistency_mirror_required_;
@@ -321,7 +292,10 @@ TEST_F(OneGoogleBarLoaderImplTest, MirrorAccountConsistencyNotRequired) {
   EXPECT_TRUE(last_request_headers().GetHeader(signin::kChromeConnectedHeader,
                                                &header_value));
   // mode = PROFILE_MODE_DEFAULT
-  EXPECT_EQ("mode=0,enable_account_consistency=false", header_value);
+  EXPECT_EQ(
+      "mode=0,enable_account_consistency=false,"
+      "consistency_enabled_by_default=false",
+      header_value);
 #else
   // On not Chrome OS, the X-Chrome-Connected header must not be present.
   EXPECT_FALSE(
@@ -356,11 +330,33 @@ TEST_F(OneGoogleBarLoaderImplWithMirrorAccountConsistencyTest,
   EXPECT_TRUE(last_request_headers().GetHeader(signin::kChromeConnectedHeader,
                                                &header_value));
   // mode = PROFILE_MODE_INCOGNITO_DISABLED | PROFILE_MODE_ADD_ACCOUNT_DISABLED
-  EXPECT_EQ("mode=3,enable_account_consistency=true", header_value);
+  EXPECT_EQ(
+      "mode=3,enable_account_consistency=true,"
+      "consistency_enabled_by_default=false",
+      header_value);
 #else
   // This is not a valid case (mirror account consistency can only be required
   // on Chrome OS). This ensures in this case nothing happens.
   EXPECT_FALSE(
       last_request_headers().HasHeader(signin::kChromeConnectedHeader));
 #endif
+}
+
+TEST_F(OneGoogleBarLoaderImplTest, ParsesLanguageCode) {
+  SetUpResponseWithData(R"json({"update": { "language_code": "en-US", "ogb": {
+  "html": { "private_do_not_access_or_else_safe_html_wrapped_value": "" },
+  "page_hooks": {}
+  }}})json");
+
+  base::MockCallback<OneGoogleBarLoader::OneGoogleCallback> callback;
+  one_google_bar_loader()->Load(callback.Get());
+
+  base::Optional<OneGoogleBarData> data;
+  base::RunLoop loop;
+  EXPECT_CALL(callback, Run(OneGoogleBarLoader::Status::OK, _))
+      .WillOnce(DoAll(SaveArg<1>(&data), Quit(&loop)));
+  loop.Run();
+
+  ASSERT_TRUE(data.has_value());
+  EXPECT_THAT(data->language_code, Eq("en-US"));
 }

@@ -17,6 +17,7 @@
 #include "chrome/common/cloud_print.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "printing/buildflags/buildflags.h"
 
 #if !BUILDFLAG(ENABLE_PRINT_PREVIEW) || defined(OS_CHROMEOS)
@@ -98,9 +99,9 @@ class CloudPrintProxyService : public KeyedService {
   // For watching for connector policy changes.
   PrefChangeRegistrar pref_change_registrar_;
 
-  cloud_print::mojom::CloudPrintPtr cloud_print_proxy_;
+  mojo::Remote<cloud_print::mojom::CloudPrint> cloud_print_proxy_;
 
-  base::WeakPtrFactory<CloudPrintProxyService> weak_factory_;
+  base::WeakPtrFactory<CloudPrintProxyService> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(CloudPrintProxyService);
 };

@@ -8,7 +8,13 @@
 #include "base/strings/string16.h"
 #include "build/build_config.h"
 
+class Browser;
+class GURL;
 class Profile;
+
+namespace signin {
+class IdentityManager;
+}  // namespace signin
 
 namespace syncer {
 class SyncService;
@@ -39,18 +45,30 @@ enum AvatarSyncErrorType {
   NO_SYNC_ERROR,                     // No sync error.
   MANAGED_USER_UNRECOVERABLE_ERROR,  // Unrecoverable error for managed users.
   UNRECOVERABLE_ERROR,               // Unrecoverable error for regular users.
-  // TODO(crbug.com/911153): Remove this value. It is never returned, but some
-  // clients still check for it.
-  SUPERVISED_USER_AUTH_ERROR,  // Auth token error for supervised users.
-  AUTH_ERROR,                  // Authentication error.
-  UPGRADE_CLIENT_ERROR,        // Out-of-date client error.
-  PASSPHRASE_ERROR,            // Sync passphrase error.
-  SETTINGS_UNCONFIRMED_ERROR,  // Sync settings dialog not confirmed yet.
+  AUTH_ERROR,                        // Authentication error.
+  UPGRADE_CLIENT_ERROR,              // Out-of-date client error.
+  PASSPHRASE_ERROR,                  // Sync passphrase error.
+  TRUSTED_VAULT_KEY_MISSING_ERROR,   // Trusted vault keys missing.
+  SETTINGS_UNCONFIRMED_ERROR,        // Sync settings dialog not confirmed yet.
 };
 
 // Returns the high-level sync status, and populates status and link label
-// strings for the current sync status by querying |profile|.
-// |status_label| and |link_label| must either be both null or both non-null.
+// strings for the current sync status by querying |sync_service| and
+// |identity_manager|. Any of |status_label|, |link_label|, and |action_type|
+// may be null if the caller isn't interested in it.
+MessageType GetStatusLabels(syncer::SyncService* sync_service,
+                            signin::IdentityManager* identity_manager,
+                            bool is_user_signout_allowed,
+                            base::string16* status_label,
+                            base::string16* link_label,
+                            ActionType* action_type);
+
+// Returns the high-level sync status, and populates status and link label
+// strings for the current sync status by querying |profile|. This is a
+// convenience version of GetStatusLabels that use the |sync_service| and
+// |identity_manager| associated to |profile| via their respective factories.
+// Any of |status_label|, |link_label|, and |action_type| may be null if the
+// caller isn't interested in it.
 MessageType GetStatusLabels(Profile* profile,
                             base::string16* status_label,
                             base::string16* link_label,
@@ -71,12 +89,24 @@ AvatarSyncErrorType GetMessagesForAvatarSyncError(
 
 // Whether sync is currently blocked from starting because the sync
 // confirmation dialog hasn't been shown. Note that once the dialog is
-// showing (i.e. IsFirstSetupInProgress() is true), this will return false.
+// showing (i.e. IsSetupInProgress() is true), this will return false.
 bool ShouldRequestSyncConfirmation(const syncer::SyncService* service);
 
 // Returns whether it makes sense to show a Sync passphrase error UI, i.e.
 // whether a missing passphrase is preventing Sync from fully starting up.
 bool ShouldShowPassphraseError(const syncer::SyncService* service);
+
+// Returns whether missing trusted vault keys is preventing sync from starting
+// up encrypted datatypes.
+bool ShouldShowSyncKeysMissingError(const syncer::SyncService* service);
+
+// Opens a tab to trigger a reauth to retrieve the trusted vault keys.
+void OpenTabForSyncKeyRetrieval(Browser* browser);
+
+// Testing-only variant of the above which allows the caller to specify the
+// URL.
+void OpenTabForSyncKeyRetrievalWithURLForTesting(Browser* browser,
+                                                 const GURL& url);
 
 }  // namespace sync_ui_util
 

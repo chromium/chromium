@@ -28,7 +28,7 @@ using ::testing::Return;
 
 class MockSpeechRecognizerDelegate : public SpeechRecognizerDelegate {
  public:
-  MockSpeechRecognizerDelegate() : weak_factory_(this) {}
+  MockSpeechRecognizerDelegate() {}
 
   base::WeakPtr<MockSpeechRecognizerDelegate> GetWeakPtr() {
     return weak_factory_.GetWeakPtr();
@@ -40,7 +40,7 @@ class MockSpeechRecognizerDelegate : public SpeechRecognizerDelegate {
   MOCK_METHOD2(GetSpeechAuthParameters, void(std::string*, std::string*));
 
  private:
-  base::WeakPtrFactory<MockSpeechRecognizerDelegate> weak_factory_;
+  base::WeakPtrFactory<MockSpeechRecognizerDelegate> weak_factory_{this};
 };
 
 class AppListSpeechRecognizerBrowserTest : public InProcessBrowserTest {

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2019 The Chromium Authors. All rights reserved.
+
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file.
+-->
+<!-- Layout for each item in the menu popup -->
+<!--
+    TODO(lazzzis): Replace this with TextViewWithCompoundDrawable. Currently,
+            TextViewWithCompoundDrawable works badly with AnchorPopupWindow: the content view
+            behaves like a scroll view even if layout_height has been set as wrap_content
+ -->
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_height="wrap_content"
+    android:minHeight="?android:attr/listPreferredItemHeightSmall"
+    android:layout_width="match_parent"
+    android:gravity="center_vertical"
+    android:paddingStart="16dp">
+
+    <org.chromium.ui.widget.ChromeImageView
+        android:id="@+id/menu_item_icon"
+        android:layout_weight="0"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:tint="@color/default_icon_color_secondary" />
+
+    <TextView
+        android:id="@+id/menu_item_text"
+        android:textAppearance="?android:attr/textAppearanceLargePopupMenu"
+        android:layout_weight="1"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center_vertical"
+        android:singleLine="true"
+        android:paddingStart="16dp" />
+
+</LinearLayout>

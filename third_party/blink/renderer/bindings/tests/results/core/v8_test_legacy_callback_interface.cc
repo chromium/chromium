@@ -19,6 +19,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_node.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/platform/bindings/exception_messages.h"
+#include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
 
 namespace blink {
 
@@ -117,6 +118,11 @@ v8::Maybe<uint16_t> V8TestLegacyCallbackInterface::acceptNode(bindings::V8ValueO
   v8::Context::BackupIncumbentScope backup_incumbent_scope(
       IncumbentScriptState()->GetContext());
 
+  if (UNLIKELY(ScriptForbiddenScope::IsScriptForbidden())) {
+    ScriptForbiddenScope::ThrowScriptForbiddenException(GetIsolate());
+    return v8::Nothing<uint16_t>();
+  }
+
   v8::Local<v8::Function> function;
   if (IsCallbackObjectCallable()) {
     // step 9.1. If value's interface is a single operation callback interface
@@ -201,11 +207,6 @@ v8::Maybe<uint16_t> V8TestLegacyCallbackInterface::acceptNode(bindings::V8ValueO
     else
       return v8::Just<uint16_t>(native_result);
   }
-}
-
-v8::Maybe<uint16_t> V8PersistentCallbackInterface<V8TestLegacyCallbackInterface>::acceptNode(bindings::V8ValueOrScriptWrappableAdapter callback_this_value, Node* node) {
-  return Proxy()->acceptNode(
-      callback_this_value, node);
 }
 
 }  // namespace blink

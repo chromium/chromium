@@ -10,20 +10,18 @@
   "incognito": "split",
 {% endif %}
   "background": {
-    "page": "cvox2/background/background.html"
+    "page": "background/background.html"
   },
   "bluetooth": {},
   "permissions": [
     "accessibilityPrivate",
     "audio",
     "bluetoothPrivate",
-    "bookmarks",
     "brailleDisplayPrivate",
     "clipboardRead",
-    "commands.accessibility",
     "commandLinePrivate",
-    "experimental",
-    "history",
+    "downloads",
+    "loginState",
     "metricsPrivate",
     "notifications",
     "settingsPrivate",
@@ -32,24 +30,19 @@
     "tts",
     "virtualKeyboardPrivate",
     "chrome://resources/",
-    "<all_urls>"
+    "https://docs.google.com/*",
+    "https://docs.sandbox.google.com/*"
   ],
   "content_scripts": [
     {
-      "matches": [ "<all_urls>", "chrome://resources/.*" ],
-      "exclude_globs": [
-{% if is_webstore is not defined %}
-          "chrome-extension://*",
-          "chrome://*",
-          "https://accounts.google.com/embedded/setup/chromeos*",
-          "https://talkgadget.google.com/hangouts*",
-          "*.pdf"
-{% endif %}
+      "matches": [
+        "https://docs.google.com/*",
+        "https://docs.sandbox.google.com/*"
       ],
       "all_frames": true,
       "js": [
 {% if is_js_compressed == '1' %}
-        "chromeVox2ChromePageScript.js"
+        "chromeVoxChromePageScript.js"
 {% else %}
         "closure/closure_preinit.js",
         "closure/base.js",
@@ -60,50 +53,29 @@
     }
   ],
   "web_accessible_resources": [
-    "chromevox/background/keymaps/next_keymap.json",
-    "chromevox/injected/api.js"
+    "injected/api.js"
   ],
   "automation": {
     "desktop": true
   },
-  "commands": {
-    "nextObject": {
-      "description": "__MSG_CHROMEVOX_NEXT_OBJECT__",
-      "suggested_key": {
-        "default": "Alt+Shift+Right"
-      }
-    },
-    "previousObject": {
-      "description": "__MSG_CHROMEVOX_PREVIOUS_OBJECT__",
-      "suggested_key": {
-        "default": "Alt+Shift+Left"
-      }
-    },
-    "performDefaultAction": {
-      "description": "__MSG_CHROMEVOX_PERFORM_DEFAULT_ACTION__",
-      "suggested_key": {
-        "default": "Alt+Shift+Space"
-      }
-    },
-    "toggleChromeVoxVersion": {
-      "description": "__MSG_CHROMEVOX_TOGGLE_CHROMEVOX__",
-      "suggested_key": {
-        "default": "Alt+Shift+Q"
-      }
-    },
-    "readFromHere": {
-      "description": "__MSG_CHROMEVOX_READ_FROM_HERE__",
-      "suggested_key": {
-        "default": "Alt+Shift+R"
-      }
-    }
-  },
-  "options_page": "chromevox/background/options.html",
+  "options_page": "background/options/options.html",
   "default_locale": "en",
   "icons": {
     "16": "images/chromevox-16.png",
     "48": "images/chromevox-48.png",
     "128": "images/chromevox-128.png"
   },
-   "content_security_policy": "default-src 'none'; script-src 'self' chrome://resources; style-src 'unsafe-inline' chrome://resources;"
-}
+  "content_security_policy": "default-src 'none'; script-src 'self' chrome://resources; style-src 'unsafe-inline' chrome://resources;",
+  "externally_connectable": {
+    "ids": [
+       // Braille IME.
+      "jddehjeebkoimngcbdkaahpobgicbffp",
+
+       // Allow connections with js2at (name may change) project, which allows
+       // web pages and ChromeVox to exchange messages that conform to
+       // a set of approved schemas. Note: js2at is currently built as an
+       // extension. If it is ever built into the browser the connection
+       // mechanism may change, and this line may no longer be necessary.
+      "jpgoldinadnmhfknenolkgbnockemnid"
+    ]
+}}

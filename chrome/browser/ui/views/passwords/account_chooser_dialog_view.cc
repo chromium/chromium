@@ -10,8 +10,8 @@
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_dialogs.h"
+#include "chrome/browser/ui/passwords/credential_manager_dialog_controller.h"
 #include "chrome/browser/ui/passwords/manage_passwords_view_utils.h"
-#include "chrome/browser/ui/passwords/password_dialog_controller.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/passwords/credentials_item_view.h"
@@ -41,12 +41,12 @@ constexpr double kMaxHeightAccounts = 3.5;
 
 // Creates a list view of credentials in |forms|.
 views::ScrollView* CreateCredentialsView(
-    const PasswordDialogController::FormsVector& forms,
+    const CredentialManagerDialogController::FormsVector& forms,
     views::ButtonListener* button_listener,
     network::mojom::URLLoaderFactory* loader_factory) {
-  views::View* list_view = new views::View;
-  list_view->SetLayoutManager(
-      std::make_unique<views::BoxLayout>(views::BoxLayout::kVertical));
+  auto list_view = std::make_unique<views::View>();
+  list_view->SetLayoutManager(std::make_unique<views::BoxLayout>(
+      views::BoxLayout::Orientation::kVertical));
   int item_height = 0;
   for (const auto& form : forms) {
     std::pair<base::string16, base::string16> titles =
@@ -67,20 +67,23 @@ views::ScrollView* CreateCredentialsView(
   }
   views::ScrollView* scroll_view = new views::ScrollView;
   scroll_view->ClipHeightTo(0, kMaxHeightAccounts * item_height);
-  scroll_view->SetContents(list_view);
+  scroll_view->SetContents(std::move(list_view));
   return scroll_view;
 }
 
 }  // namespace
 
 AccountChooserDialogView::AccountChooserDialogView(
-    PasswordDialogController* controller,
+    CredentialManagerDialogController* controller,
     content::WebContents* web_contents)
     : controller_(controller),
       web_contents_(web_contents),
       show_signin_button_(false) {
   DCHECK(controller);
   DCHECK(web_contents);
+  DialogDelegate::set_button_label(
+      ui::DIALOG_BUTTON_OK,
+      l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_ACCOUNT_CHOOSER_SIGN_IN));
   set_close_on_deactivate(false);
   SetArrow(views::BubbleBorder::NONE);
   set_margins(gfx::Insets(margins().top(), 0, margins().bottom(), 0));
@@ -133,24 +136,13 @@ int AccountChooserDialogView::GetDialogButtons() const {
   return ui::DIALOG_BUTTON_CANCEL;
 }
 
-base::string16 AccountChooserDialogView::GetDialogButtonLabel(
-    ui::DialogButton button) const {
-  int message_id = 0;
-  if (button == ui::DIALOG_BUTTON_OK)
-    message_id = IDS_PASSWORD_MANAGER_ACCOUNT_CHOOSER_SIGN_IN;
-  else if (button == ui::DIALOG_BUTTON_CANCEL)
-    message_id = IDS_APP_CANCEL;
-  else
-    NOTREACHED();
-  return l10n_util::GetStringUTF16(message_id);
-}
-
-views::View* AccountChooserDialogView::CreateFootnoteView() {
+std::unique_ptr<views::View> AccountChooserDialogView::CreateFootnoteView() {
   if (!controller_->ShouldShowFooter())
     return nullptr;
-  views::Label* label = new views::Label(
+  auto label = std::make_unique<views::Label>(
       l10n_util::GetStringUTF16(IDS_SAVE_PASSWORD_FOOTER),
-      ChromeTextContext::CONTEXT_BODY_TEXT_SMALL, STYLE_SECONDARY);
+      ChromeTextContext::CONTEXT_BODY_TEXT_SMALL,
+      views::style::STYLE_SECONDARY);
   label->SetMultiLine(true);
   label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   return label;
@@ -179,6 +171,7 @@ void AccountChooserDialogView::InitWindow() {
 }
 
 AccountChooserPrompt* CreateAccountChooserPromptView(
-    PasswordDialogController* controller, content::WebContents* web_contents) {
+    CredentialManagerDialogController* controller,
+    content::WebContents* web_contents) {
   return new AccountChooserDialogView(controller, web_contents);
 }

@@ -28,5 +28,7 @@
 
 // https://drafts.csswg.org/css-conditional/#the-csssupportsrule-interface
 
-interface CSSSupportsRule : CSSConditionRule {
+[
+    Exposed=Window
+] interface CSSSupportsRule : CSSConditionRule {
 };

@@ -8,10 +8,13 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Rect;
+import android.os.SystemClock;
 import android.view.View;
 import android.view.View.OnLayoutChangeListener;
+import android.view.ViewGroup;
 
 import org.chromium.base.TraceEvent;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.ui.resources.Resource;
 import org.chromium.ui.resources.ResourceFactory;
 import org.chromium.ui.resources.statics.NinePatchData;
@@ -20,14 +23,16 @@ import org.chromium.ui.resources.statics.NinePatchData;
  * An adapter that exposes a {@link View} as a {@link DynamicResource}. In order to properly use
  * this adapter {@link ViewResourceAdapter#invalidate(Rect)} must be called when parts of the
  * {@link View} are invalidated.  For {@link ViewGroup}s the easiest way to do this is to override
- * {@link View#invalidateChildInParent(int[], Rect)}.
+ * {@link ViewGroup#invalidateChildInParent(int[], Rect)}.
  */
-public class ViewResourceAdapter implements DynamicResource, OnLayoutChangeListener {
+public class ViewResourceAdapter extends DynamicResource implements OnLayoutChangeListener {
     private final View mView;
     private final Rect mDirtyRect = new Rect();
 
     private Bitmap mBitmap;
-    private Rect mBitmapSize = new Rect();
+    private Rect mViewSize = new Rect();
+    protected float mScale = 1;
+    private long mLastGetBitmapTimestamp;
 
     /**
      * Builds a {@link ViewResourceAdapter} instance around {@code view}.
@@ -36,18 +41,24 @@ public class ViewResourceAdapter implements DynamicResource, OnLayoutChangeListe
     public ViewResourceAdapter(View view) {
         mView = view;
         mView.addOnLayoutChangeListener(this);
+        mDirtyRect.set(0, 0, mView.getWidth(), mView.getHeight());
     }
 
     /**
-     * If this resource is not dirty ({@link #isDirty()} returned {@code false}), this will return
-     * the last {@link Bitmap} built from the {@link View}.  Otherwise it will recapture a
+     * If this resource is dirty ({@link #isDirty()} returned {@code true}), it will recapture a
      * {@link Bitmap} of the {@link View}.
-     * @see {@link DynamicResource#getBitmap()}.
+     * @see DynamicResource#getBitmap()
      * @return A {@link Bitmap} representing the {@link View}.
      */
     @Override
     public Bitmap getBitmap() {
-        if (!isDirty()) return mBitmap;
+        super.getBitmap();
+
+        if (mLastGetBitmapTimestamp > 0) {
+            RecordHistogram.recordLongTimesHistogram("ViewResourceAdapter.GetBitmapInterval",
+                    SystemClock.elapsedRealtime() - mLastGetBitmapTimestamp);
+        }
+
         TraceEvent.begin("ViewResourceAdapter:getBitmap");
         if (validateBitmap()) {
             Canvas canvas = new Canvas(mBitmap);
@@ -65,12 +76,26 @@ public class ViewResourceAdapter implements DynamicResource, OnLayoutChangeListe
 
         mDirtyRect.setEmpty();
         TraceEvent.end("ViewResourceAdapter:getBitmap");
+
+        mLastGetBitmapTimestamp = SystemClock.elapsedRealtime();
         return mBitmap;
     }
 
     @Override
     public Rect getBitmapSize() {
-        return mBitmapSize;
+        return mViewSize;
+    }
+
+    /**
+     * Set the downsampling scale. The rendered size is not affected.
+     * @param scale The scale to use. <1 means the Bitmap is smaller than the View.
+     */
+    public void setDownsamplingScale(float scale) {
+        assert scale <= 1;
+        if (mScale != scale) {
+            invalidate(null);
+        }
+        mScale = scale;
     }
 
     /**
@@ -88,8 +113,6 @@ public class ViewResourceAdapter implements DynamicResource, OnLayoutChangeListe
 
     @Override
     public boolean isDirty() {
-        if (mBitmap == null) mDirtyRect.set(0, 0, mView.getWidth(), mView.getHeight());
-
         return !mDirtyRect.isEmpty();
     }
 
@@ -144,7 +167,10 @@ public class ViewResourceAdapter implements DynamicResource, OnLayoutChangeListe
      * @param canvas The {@link Canvas} that will be drawn to.
      */
     protected void capture(Canvas canvas) {
+        canvas.save();
+        canvas.scale(mScale, mScale);
         mView.draw(canvas);
+        canvas.restore();
     }
 
     /**
@@ -157,8 +183,8 @@ public class ViewResourceAdapter implements DynamicResource, OnLayoutChangeListe
      * @return Whether |mBitmap| is corresponding to |mView| or not.
      */
     private boolean validateBitmap() {
-        int viewWidth = mView.getWidth();
-        int viewHeight = mView.getHeight();
+        int viewWidth = (int) (mView.getWidth() * mScale);
+        int viewHeight = (int) (mView.getHeight() * mScale);
         boolean isEmpty = viewWidth == 0 || viewHeight == 0;
         if (isEmpty) {
             viewWidth = 1;
@@ -173,8 +199,8 @@ public class ViewResourceAdapter implements DynamicResource, OnLayoutChangeListe
         if (mBitmap == null) {
             mBitmap = Bitmap.createBitmap(viewWidth, viewHeight, Bitmap.Config.ARGB_8888);
             mBitmap.setHasAlpha(true);
-            mDirtyRect.set(0, 0, viewWidth, viewHeight);
-            mBitmapSize.set(0, 0, mBitmap.getWidth(), mBitmap.getHeight());
+            mViewSize.set(0, 0, mView.getWidth(), mView.getHeight());
+            mDirtyRect.set(mViewSize);
         }
 
         return !isEmpty;

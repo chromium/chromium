@@ -27,8 +27,7 @@ HistoryCounter::HistoryCounter(
       sync_tracker_(this, sync_service),
       has_synced_visits_(false),
       local_counting_finished_(false),
-      web_counting_finished_(false),
-      weak_ptr_factory_(this) {
+      web_counting_finished_(false) {
   DCHECK(history_service_);
 }
 
@@ -68,8 +67,8 @@ void HistoryCounter::Count() {
 
   history_service_->GetHistoryCount(
       GetPeriodStart(), GetPeriodEnd(),
-      base::Bind(&HistoryCounter::OnGetLocalHistoryCount,
-                 weak_ptr_factory_.GetWeakPtr()),
+      base::BindOnce(&HistoryCounter::OnGetLocalHistoryCount,
+                     weak_ptr_factory_.GetWeakPtr()),
       &cancelable_task_tracker_);
 
   // If the history sync is enabled, test if there is at least one synced item.

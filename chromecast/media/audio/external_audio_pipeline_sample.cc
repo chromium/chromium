@@ -34,11 +34,13 @@ class TestLoopBack {
     }
   }
 
-  void AddObserver(CastMediaShlib::LoopbackAudioObserver* observer) {
+  void AddObserver(
+      ExternalAudioPipelineShlib::LoopbackAudioObserver* observer) {
     observers_.push_back(observer);
   }
 
-  void RemoveObserver(CastMediaShlib::LoopbackAudioObserver* observer) {
+  void RemoveObserver(
+      ExternalAudioPipelineShlib::LoopbackAudioObserver* observer) {
     auto it = std::find(observers_.begin(), observers_.end(), observer);
     if (it != observers_.end()) {
       observers_.erase(it);
@@ -46,14 +48,14 @@ class TestLoopBack {
   }
 
  private:
-  std::vector<CastMediaShlib::LoopbackAudioObserver*> observers_;
+  std::vector<ExternalAudioPipelineShlib::LoopbackAudioObserver*> observers_;
 };
 
 TestLoopBack g_test_loop_back;
 
 class MixerOutputStreamTest : public MixerOutputStream {
  public:
-  MixerOutputStreamTest(TestLoopBack* test_loop_back)
+  explicit MixerOutputStreamTest(TestLoopBack* test_loop_back)
       : stream_(MixerOutputStream::Create()), test_loop_back_(test_loop_back) {
     DCHECK(test_loop_back_);
   }
@@ -104,12 +106,12 @@ void ExternalAudioPipelineShlib::SetExternalMediaVolume(float level) {}
 void ExternalAudioPipelineShlib::SetExternalMediaMuted(bool muted) {}
 
 void ExternalAudioPipelineShlib::AddExternalLoopbackAudioObserver(
-    CastMediaShlib::LoopbackAudioObserver* observer) {
+    LoopbackAudioObserver* observer) {
   g_test_loop_back.AddObserver(observer);
 }
 
 void ExternalAudioPipelineShlib::RemoveExternalLoopbackAudioObserver(
-    CastMediaShlib::LoopbackAudioObserver* observer) {
+    LoopbackAudioObserver* observer) {
   g_test_loop_back.RemoveObserver(observer);
 }
 

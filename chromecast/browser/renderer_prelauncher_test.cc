@@ -67,7 +67,7 @@ IN_PROC_BROWSER_TEST_F(RendererPrelauncherTest, ReusedRenderer) {
   EXPECT_TRUE(site_instance->HasProcess());
 
   // Launch a web contents for the site instance.
-  content::WebContents::CreateParams create_params(browser_context, NULL);
+  content::WebContents::CreateParams create_params(browser_context, nullptr);
   create_params.site_instance = site_instance;
   std::unique_ptr<content::WebContents> web_contents(
       content::WebContents::Create(create_params));

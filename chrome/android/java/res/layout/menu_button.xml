@@ -15,7 +15,7 @@
        <org.chromium.ui.widget.ChromeImageButton
            android:id="@+id/menu_button"
            style="@style/ToolbarMenuButtonPhone"
-           android:src="@drawable/ic_more_vert_black_24dp"
+           android:src="@drawable/ic_more_vert_24dp"
            android:contentDescription="@string/accessibility_toolbar_btn_menu"
            android:layout_gravity="center"
            app:tint="@color/standard_mode_tint" />

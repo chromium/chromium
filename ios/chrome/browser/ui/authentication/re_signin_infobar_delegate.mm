@@ -11,14 +11,13 @@
 
 #include "base/logging.h"
 #include "components/infobars/core/infobar_manager.h"
-#include "components/signin/core/browser/signin_metrics.h"
+#include "components/signin/public/base/signin_metrics.h"
 #include "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/infobars/infobar.h"
 #include "ios/chrome/browser/infobars/infobar_manager_impl.h"
 #include "ios/chrome/browser/signin/authentication_service.h"
 #include "ios/chrome/browser/signin/authentication_service_factory.h"
-#include "ios/chrome/browser/tabs/tab.h"
 #import "ios/chrome/browser/ui/commands/show_signin_command.h"
 #import "ios/chrome/browser/ui/signin_interaction/public/signin_presenter.h"
 #include "ios/chrome/grit/ios_strings.h"
@@ -30,11 +29,11 @@
 
 // static
 bool ReSignInInfoBarDelegate::Create(ios::ChromeBrowserState* browser_state,
-                                     Tab* tab,
+                                     web::WebState* web_state,
                                      id<SigninPresenter> presenter) {
-  DCHECK(tab.webState);
+  DCHECK(web_state);
   infobars::InfoBarManager* infobar_manager =
-      InfoBarManagerImpl::FromWebState(tab.webState);
+      InfoBarManagerImpl::FromWebState(web_state);
   DCHECK(infobar_manager);
 
   std::unique_ptr<infobars::InfoBar> infobar =
@@ -73,8 +72,8 @@ ReSignInInfoBarDelegate::CreateInfoBarDelegate(
   if (!authService->ShouldPromptForSignIn())
     return nullptr;
   // Returns null if user has already signed in via some other path.
-  if ([authService->GetAuthenticatedUserEmail() length]) {
-    authService->SetPromptForSignIn(false);
+  if (authService->IsAuthenticated()) {
+    authService->ResetPromptForSignIn();
     return nullptr;
   }
   signin_metrics::RecordSigninImpressionUserActionForAccessPoint(
@@ -123,7 +122,6 @@ bool ReSignInInfoBarDelegate::Accept() {
   signin_metrics::RecordSigninUserActionForAccessPoint(
       signin_metrics::AccessPoint::ACCESS_POINT_RESIGNIN_INFOBAR,
       signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO);
-  DCHECK(static_cast<InfoBarIOS*>(infobar())->View());
   ShowSigninCommand* command = [[ShowSigninCommand alloc]
       initWithOperation:AUTHENTICATION_OPERATION_REAUTHENTICATE
             accessPoint:signin_metrics::AccessPoint::
@@ -132,12 +130,12 @@ bool ReSignInInfoBarDelegate::Accept() {
 
   // Stop displaying the infobar once user interacted with it.
   AuthenticationServiceFactory::GetForBrowserState(browser_state_)
-      ->SetPromptForSignIn(false);
+      ->ResetPromptForSignIn();
   return true;
 }
 
 void ReSignInInfoBarDelegate::InfoBarDismissed() {
   // Stop displaying the infobar once user interacted with it.
   AuthenticationServiceFactory::GetForBrowserState(browser_state_)
-      ->SetPromptForSignIn(false);
+      ->ResetPromptForSignIn();
 }

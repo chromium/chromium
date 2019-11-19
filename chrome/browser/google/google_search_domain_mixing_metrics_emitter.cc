@@ -55,8 +55,8 @@ GoogleSearchDomainMixingMetricsEmitter::GoogleSearchDomainMixingMetricsEmitter(
     history::HistoryService* history_service)
     : prefs_(prefs),
       history_service_(history_service),
-      ui_thread_task_runner_(base::CreateSingleThreadTaskRunnerWithTraits(
-          {content::BrowserThread::UI})) {
+      ui_thread_task_runner_(
+          base::CreateSingleThreadTaskRunner({content::BrowserThread::UI})) {
   DCHECK(history_service_);
 }
 

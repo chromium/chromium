@@ -9,7 +9,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_vector.h"
-#include "third_party/blink/public/web/web_text_checking_completion.h"
 #include "third_party/blink/public/web/web_text_checking_result.h"
 
 namespace {
@@ -27,17 +26,19 @@ class SpellCheckProviderCacheTest : public SpellCheckProviderTest {
 };
 
 TEST_F(SpellCheckProviderCacheTest, SubstringWithoutMisspellings) {
-  FakeTextCheckingCompletion completion;
+  FakeTextCheckingResult result;
+  FakeTextCheckingCompletion completion(&result);
 
   blink::WebVector<blink::WebTextCheckingResult> last_results;
   provider_.SetLastResults(base::ASCIIToUTF16("This is a test"), last_results);
   EXPECT_TRUE(provider_.SatisfyRequestFromCache(base::ASCIIToUTF16("This is a"),
                                                 &completion));
-  EXPECT_EQ(completion.completion_count_, 1U);
+  EXPECT_EQ(result.completion_count_, 1U);
 }
 
 TEST_F(SpellCheckProviderCacheTest, SubstringWithMisspellings) {
-  FakeTextCheckingCompletion completion;
+  FakeTextCheckingResult result;
+  FakeTextCheckingCompletion completion(&result);
 
   blink::WebVector<blink::WebTextCheckingResult> last_results;
   std::vector<blink::WebTextCheckingResult> results;
@@ -48,21 +49,23 @@ TEST_F(SpellCheckProviderCacheTest, SubstringWithMisspellings) {
   provider_.SetLastResults(base::ASCIIToUTF16("This isq a test"), last_results);
   EXPECT_TRUE(provider_.SatisfyRequestFromCache(
       base::ASCIIToUTF16("This isq a"), &completion));
-  EXPECT_EQ(completion.completion_count_, 1U);
+  EXPECT_EQ(result.completion_count_, 1U);
 }
 
 TEST_F(SpellCheckProviderCacheTest, ShorterTextNotSubstring) {
-  FakeTextCheckingCompletion completion;
+  FakeTextCheckingResult result;
+  FakeTextCheckingCompletion completion(&result);
 
   blink::WebVector<blink::WebTextCheckingResult> last_results;
   provider_.SetLastResults(base::ASCIIToUTF16("This is a test"), last_results);
   EXPECT_FALSE(provider_.SatisfyRequestFromCache(
       base::ASCIIToUTF16("That is a"), &completion));
-  EXPECT_EQ(completion.completion_count_, 0U);
+  EXPECT_EQ(result.completion_count_, 0U);
 }
 
 TEST_F(SpellCheckProviderCacheTest, ResetCacheOnCustomDictionaryUpdate) {
-  FakeTextCheckingCompletion completion;
+  FakeTextCheckingResult result;
+  FakeTextCheckingCompletion completion(&result);
 
   blink::WebVector<blink::WebTextCheckingResult> last_results;
   provider_.SetLastResults(base::ASCIIToUTF16("This is a test"), last_results);
@@ -71,7 +74,7 @@ TEST_F(SpellCheckProviderCacheTest, ResetCacheOnCustomDictionaryUpdate) {
 
   EXPECT_FALSE(provider_.SatisfyRequestFromCache(
       base::ASCIIToUTF16("This is a"), &completion));
-  EXPECT_EQ(completion.completion_count_, 0U);
+  EXPECT_EQ(result.completion_count_, 0U);
 }
 
 }  // namespace

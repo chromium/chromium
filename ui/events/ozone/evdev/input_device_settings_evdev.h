@@ -27,6 +27,8 @@ struct InputDeviceSettingsEvdev {
   bool tap_to_click_paused = false;
   bool touch_event_logging_enabled = true;
   bool mouse_reverse_scroll_enabled = false;
+  bool mouse_acceleration_enabled = true;
+  bool touchpad_acceleration_enabled = true;
 
   int touchpad_sensitivity = kDefaultSensitivity;
   int mouse_sensitivity = kDefaultSensitivity;

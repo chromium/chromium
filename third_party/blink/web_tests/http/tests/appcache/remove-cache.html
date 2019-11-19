@@ -1,20 +1,10 @@
 <html manifest="resources/fail-on-update.php">
-<p>Test that a 404 response for manifest results in cache removal.</p>
-<body>
-<ul>
-<li>Frame 1: Manifest is still available, so a new master resource is added to the cache.
-<li>Frame 2: Manifest loading results in 404 response, so the cache group becomes obsolete, and an obsolete event is dispatched (because the document in frame was associated with a cache in the group).
-<li>Frame 3: Manifest is still 404 - the document is never associated with a cache.
-<li>Frame 4: Manifest is now available, so the document gets associated with a cache in a newly created group; the obsolete cache group is not affected.
-</ul>
-<p>Should say SUCCESS:</p>
-<div id=result></div>
-
+<head>
+<title>remove-cache.html</title>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
 <script>
-if (window.testRunner) {
-    testRunner.dumpAsText();
-    testRunner.waitUntilDone();
-}
+setup({ single_test: true });
 
 function log(message)
 {
@@ -42,8 +32,8 @@ function test()
 
 function test2()
 {
-    applicationCache.onnoupdate = function() { log("Unexpected noupdate event") }
-    applicationCache.oncached = function() { log("Unexpected cached event") }
+    applicationCache.onnoupdate = function() { assert_unreached("Unexpected noupdate event"); }
+    applicationCache.oncached = function() { assert_unreached("Unexpected cached event"); }
 
     setManifestDeleted(true, () => {
         // The frame will be associated to a cache, but update will obsolete it.
@@ -57,11 +47,11 @@ function test2()
 
 function test3()
 {
-    applicationCache.onchecking = function() { log("Unexpected checking event after obsolete event") }
-    applicationCache.onupdateready = function() { log("Unexpected updateready event after obsolete event") }
-    applicationCache.onerror = function() { log("Unexpected error event after obsolete event") }
-    applicationCache.onnoupdate = function() { log("Unexpected noupdate event after obsolete event") }
-    applicationCache.oncached = function() { log("Unexpected cached event after obsolete event") }
+    applicationCache.onchecking = function() { assert_unreached("Unexpected checking event after obsolete event"); }
+    applicationCache.onupdateready = function() { assert_unreached("Unexpected updateready event after obsolete event"); }
+    applicationCache.onerror = function() { assert_unreached("Unexpected error event after obsolete event"); }
+    applicationCache.onnoupdate = function() { assert_unreached("Unexpected noupdate event after obsolete event"); }
+    applicationCache.oncached = function() { assert_unreached("Unexpected cached event after obsolete event"); }
 
     // The frame will not be associated to a cache.
     var ifr = document.createElement("iframe");
@@ -87,8 +77,7 @@ function test4()
 function test5()
 {
     log("SUCCESS");
-    if (window.testRunner)
-        testRunner.notifyDone();
+    done();
 }
 
 function resetManifest()
@@ -103,7 +92,7 @@ function resetManifest()
     });
 }
 
-applicationCache.onupdateready = function() { log("Unexpected updateready event") }
+applicationCache.onupdateready = function() { assert_unreached("Unexpected updateready event"); }
 applicationCache.onnoupdate = test;
 applicationCache.oncached = test;
 
@@ -111,5 +100,16 @@ applicationCache.oncached = test;
 var timeoutId = setTimeout(resetManifest, 100);
 
 </script>
+</head>
+<body>
+<p>Test that a 404 response for manifest results in cache removal.</p>
+<ul>
+<li>Frame 1: Manifest is still available, so a new master resource is added to the cache.
+<li>Frame 2: Manifest loading results in 404 response, so the cache group becomes obsolete, and an obsolete event is dispatched (because the document in frame was associated with a cache in the group).
+<li>Frame 3: Manifest is still 404 - the document is never associated with a cache.
+<li>Frame 4: Manifest is now available, so the document gets associated with a cache in a newly created group; the obsolete cache group is not affected.
+</ul>
+<p>Should say SUCCESS:</p>
+<div id=result></div>
 </body>
 </html>

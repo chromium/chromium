@@ -78,7 +78,7 @@ PopupBlockedInfoBarDelegate::PopupBlockedInfoBarDelegate(
     : ConfirmInfoBarDelegate(), num_popups_(num_popups), url_(url), map_(map) {
   content_settings::SettingInfo setting_info;
   std::unique_ptr<base::Value> setting = map->GetWebsiteSetting(
-      url, url, CONTENT_SETTINGS_TYPE_POPUPS, std::string(), &setting_info);
+      url, url, ContentSettingsType::POPUPS, std::string(), &setting_info);
   can_show_popups_ =
       setting_info.source != content_settings::SETTING_SOURCE_POLICY;
 }
@@ -92,19 +92,30 @@ int PopupBlockedInfoBarDelegate::GetButtons() const {
   if (!can_show_popups_)
     return 0;
 
-  return BUTTON_OK;
+  int buttons = BUTTON_OK;
+
+  return buttons;
 }
 
 base::string16 PopupBlockedInfoBarDelegate::GetButtonLabel(
     InfoBarButton button) const {
-  return l10n_util::GetStringUTF16(IDS_POPUPS_BLOCKED_INFOBAR_BUTTON_SHOW);
+  switch (button) {
+    case BUTTON_OK:
+      return l10n_util::GetStringUTF16(IDS_POPUPS_BLOCKED_INFOBAR_BUTTON_SHOW);
+    case BUTTON_CANCEL:
+      return l10n_util::GetStringUTF16(IDS_PERMISSION_DENY);
+    default:
+      NOTREACHED();
+      break;
+  }
+  return base::string16();
 }
 
 bool PopupBlockedInfoBarDelegate::Accept() {
   DCHECK(can_show_popups_);
 
   // Create exceptions.
-  map_->SetNarrowestContentSetting(url_, url_, CONTENT_SETTINGS_TYPE_POPUPS,
+  map_->SetNarrowestContentSetting(url_, url_, ContentSettingsType::POPUPS,
                                    CONTENT_SETTING_ALLOW);
 
   // Launch popups.

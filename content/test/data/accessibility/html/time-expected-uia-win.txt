@@ -1,0 +1,7 @@
+document
+++group
+++++time LocalizedControlType='time'
+++++++description Name='10:00'
+++++description Name=' '
+++++time LocalizedControlType='time'
+++++++description Name='Valentines day'

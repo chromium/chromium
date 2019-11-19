@@ -7,12 +7,12 @@
 #include <memory>
 
 #include "base/json/json_reader.h"
-#include "components/autofill/core/browser/autofill_profile.h"
-#include "components/autofill/core/browser/credit_card.h"
-#include "components/payments/core/autofill_payment_instrument.h"
+#include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/payments/core/autofill_payment_app.h"
 #include "components/payments/core/payment_address.h"
+#include "components/payments/core/payment_app.h"
 #include "components/payments/core/payment_details.h"
-#include "components/payments/core/payment_instrument.h"
 #include "components/payments/core/payment_item.h"
 #include "components/payments/core/payment_request_data_util.h"
 #include "components/payments/core/payment_shipping_option.h"
@@ -427,8 +427,7 @@ contactInfoSelectionCoordinator:(ContactInfoSelectionCoordinator*)coordinator
 
 - (void)paymentMethodSelectionCoordinator:
             (PaymentMethodSelectionCoordinator*)coordinator
-                   didSelectPaymentMethod:
-                       (payments::PaymentInstrument*)paymentMethod {
+                   didSelectPaymentMethod:(payments::PaymentApp*)paymentMethod {
   DCHECK(paymentMethod);
   DCHECK(paymentMethod->IsCompleteForPayment());
   _paymentRequest->set_selected_payment_method(paymentMethod);
@@ -449,8 +448,7 @@ contactInfoSelectionCoordinator:(ContactInfoSelectionCoordinator*)coordinator
 #pragma mark - CreditCardEditCoordinatorDelegate
 
 - (void)creditCardEditCoordinator:(CreditCardEditCoordinator*)coordinator
-    didFinishEditingPaymentMethod:
-        (payments::AutofillPaymentInstrument*)paymentMethod {
+    didFinishEditingPaymentMethod:(payments::AutofillPaymentApp*)paymentMethod {
   DCHECK(paymentMethod);
   DCHECK(paymentMethod->IsCompleteForPayment());
   _paymentRequest->set_selected_payment_method(paymentMethod);

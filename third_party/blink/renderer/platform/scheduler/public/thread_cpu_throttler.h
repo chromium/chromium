@@ -9,6 +9,7 @@
 
 #include "base/macros.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace base {
 template <typename T>
@@ -23,6 +24,8 @@ namespace scheduler {
 // additional thread which frequently interrupts main thread
 // and sleeps.
 class PLATFORM_EXPORT ThreadCPUThrottler final {
+  USING_FAST_MALLOC(ThreadCPUThrottler);
+
  public:
   static ThreadCPUThrottler* GetInstance();
 

@@ -192,8 +192,7 @@ JingleSession::JingleSession(JingleSessionManager* session_manager)
       event_handler_(nullptr),
       state_(INITIALIZING),
       error_(OK),
-      message_queue_(new OrderedMessageQueue),
-      weak_factory_(this) {}
+      message_queue_(new OrderedMessageQueue) {}
 
 JingleSession::~JingleSession() {
   DCHECK(thread_checker_.CalledOnValidThread());
@@ -810,7 +809,7 @@ void JingleSession::SendSessionInitiateMessage() {
   std::unique_ptr<JingleMessage> message(new JingleMessage(
       peer_address_, JingleMessage::SESSION_INITIATE, session_id_));
   message->initiator =
-      session_manager_->signal_strategy_->GetLocalAddress().jid();
+      session_manager_->signal_strategy_->GetLocalAddress().id();
   message->description.reset(new ContentDescription(
       session_manager_->protocol_config_->Clone(),
       authenticator_->GetNextMessage()));

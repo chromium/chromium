@@ -1,6 +1,8 @@
 <link rel="import" href="chrome://resources/html/polymer.html">
 
+<link rel="import" href="chrome://resources/cr_elements/cr_button/cr_button.html">
 <link rel="import" href="chrome://resources/cr_elements/hidden_style_css.html">
+<link rel="import" href="chrome://resources/cr_elements/shared_vars_css.html">
 <link rel="import" href="chrome://resources/html/web_ui_listener_behavior.html">
 <link rel="import" href="../appearance_page/appearance_page.html">
 <link rel="import" href="../autofill_page/autofill_page.html">
@@ -13,18 +15,18 @@
 <link rel="import" href="../settings_page/main_page_behavior.html">
 <link rel="import" href="../settings_page/settings_section.html">
 <link rel="import" href="../settings_page_css.html">
-<link rel="import" href="../settings_vars_css.html">
 
 <if expr="chromeos">
+<link rel="import" href="chrome://resources/cr_elements/cr_icon_button/cr_icon_button.html">
 <link rel="import" href="../android_apps_page/android_apps_browser_proxy.html">
 <link rel="import" href="../android_apps_page/android_apps_page.html">
 <link rel="import" href="../bluetooth_page/bluetooth_page.html">
-<link rel="import" href="../kiosk_next_shell_page/kiosk_next_shell_page.html">
 <link rel="import" href="../crostini_page/crostini_page.html">
-<link rel="import" href="../kiosk_next_shell_page/kiosk_next_shell_page.html">
+<link rel="import" href="../plugin_vm_page/plugin_vm_page.html">
 <link rel="import" href="../device_page/device_page.html">
 <link rel="import" href="../internet_page/internet_page.html">
 <link rel="import" href="../multidevice_page/multidevice_page.html">
+<link rel="import" href="../prefs/prefs_behavior.html">
 </if>
 
 <if expr="not chromeos">
@@ -35,7 +37,7 @@
      includes both the basic and advanced settings. -->
 <dom-module id="settings-basic-page">
   <template>
-    <style include="settings-page-styles cr-hidden-style">
+    <style include="settings-page-styles cr-hidden-style settings-shared">
       :host([is-subpage-animating]) {
         /* Prevent an unwanted horizontal scrollbar when transitioning back from
          * a sub-page. */
@@ -43,23 +45,32 @@
       }
 
       #advancedToggle {
-        @apply --settings-actionable;
+        --ink-color: currentColor;
         align-items: center;
+        background: transparent;
+        border: none;
+        box-shadow: none;
+        color: currentColor;
         display: flex;
+        font-weight: 400;
         margin-bottom: 3px;
         margin-top: 12px;  /* Part of a 48px spacer (33px + 12px + 3px). */
         min-height: 32px;
         padding: 0 12px;
-        text-transform: none;
       }
 
+      :host-context(.focus-outline-visible) #advancedToggle:focus {
+        font-weight: 600;
+      }
+
+      #osSettingsBanner,
       #secondaryUserBanner {
         @apply --cr-card-elevation;
         align-items: center;
         background-color: white;
         border-radius: 2px;
         display: flex;
-        margin: 21px 0;
+        margin-top: 21px;
       }
 
       #secondaryUserIcon {
@@ -76,11 +87,14 @@
 
       #toggleContainer {
         align-items: center;
+        color: var(--cr-primary-text-color);
         display: flex;
         font: inherit;
         justify-content: center;
         margin-bottom: 0;
         margin-top: 0;
+        padding-bottom: 0;
+        padding-top: 0;
       }
 
       #toggleSpacer {
@@ -99,12 +113,21 @@
           </settings-reset-profile-banner>
         </template>
 <if expr="chromeos">
+        <template is="dom-if" if="[[showOSSettingsBanner_]]">
+          <div id="osSettingsBanner" class="settings-box">
+            <div class="start" on-click="onOSSettingsBannerClick_">
+              $i18nRaw{osSettingsBannerText}
+            </div>
+            <cr-icon-button class="icon-clear"
+                title="$i18n{close}"
+                on-click="onOSSettingsBannerClosed_">
+            </cr-icon-button>
+          </div>
+        </template>
         <div id="secondaryUserBanner" hidden="[[!showSecondaryUserBanner_]]">
           <div id="secondaryUserIcon"></div>
           <div class="flex">$i18n{secondaryUserBannerText}</div>
         </div>
-</if>
-<if expr="chromeos">
         <template is="dom-if" if="[[showPage_(pageVisibility.internet)]]"
             restamp>
           <settings-section page-title="$i18n{internetPageTitle}"
@@ -171,24 +194,12 @@
           </settings-section>
         </template>
 </if>
-        <template is="dom-if" if="[[showPage_(pageVisibility.search)]]" restamp>
-          <settings-section page-title="$i18n{searchPageTitle}"
-              section="search">
+        <settings-section page-title="$i18n{searchPageTitle}"
+            section="search">
+          <settings-search-page prefs="{{prefs}}"></settings-search-page>
+        </settings-section>
 <if expr="chromeos">
-            <settings-search-page prefs="{{prefs}}"
-                 arc-enabled="[[prefs.arc.enabled.value]]"
-                 voice-interaction-value-prop-accepted="[[
-                     prefs.arc.voice_interaction_value_prop.accepted.value]]">
-            </settings-search-page>
-</if>
-<if expr="not chromeos">
-            <settings-search-page prefs="{{prefs}}"></settings-search-page>
-</if>
-          </settings-section>
-        </template>
-<if expr="chromeos">
-        <template is="dom-if" if="[[shouldCreateAndroidAppsSection_(
-            showAndroidApps, pageVisibility)]]" restamp>
+        <template is="dom-if" if="[[showAndroidApps]]" restamp>
           <settings-section page-title="$i18n{androidAppsPageTitle}"
               section="androidApps" hidden$="[[!shouldShowAndroidAppsSection_(
               androidAppsInfo)]]">
@@ -198,20 +209,19 @@
             </settings-android-apps-page>
           </settings-section>
         </template>
-        <template is="dom-if" if="[[showKioskNextShell]]" restamp>
-          <settings-section
-              page-title="$i18n{kioskNextShellPageTitle}"
-              section="kiosk-next-shell">
-            <settings-kiosk-next-shell-page prefs="{{prefs}}">
-            </settings-kiosk-next-shell-page>
-          </settings-section>
-        </template>
         <template is="dom-if" if="[[showCrostini]]" restamp>
           <settings-section page-title="$i18n{crostiniPageTitle}"
               section="crostini">
             <settings-crostini-page prefs="{{prefs}}"
                 allow-crostini="[[allowCrostini_]]">
             </settings-crostini-page>
+          </settings-section>
+        </template>
+        <template is="dom-if" if="[[showPluginVm]]" restamp>
+          <settings-section page-title="$i18n{pluginVmPageTitle}"
+              section="pluginVm">
+            <settings-plugin-vm-page prefs="{{prefs}}">
+            </settings-plugin-vm-page>
           </settings-section>
         </template>
 </if>
@@ -239,12 +249,12 @@
           inSearchMode, hasExpandedSection_)]]">
         <div id="toggleSpacer"></div>
         <h2 id="toggleContainer">
-          <paper-button id="advancedToggle" on-click="advancedToggleClicked_"
+          <cr-button id="advancedToggle" on-click="advancedToggleClicked_"
               aria-expanded$="[[boolToString_(advancedToggleExpanded)]]">
             <span>$i18n{advancedPageTitle}</span>
             <iron-icon icon="[[getArrowIcon_(advancedToggleExpanded)]]">
             </iron-icon>
-          </paper-button>
+          </cr-button>
         </h2>
       </template>
 
@@ -277,7 +287,8 @@
                 restamp>
               <settings-section page-title="$i18n{languagesPageTitle}"
                   section="languages">
-                <settings-languages-page prefs="{{prefs}}">
+                <settings-languages-page prefs="{{prefs}}"
+                    page-visibility="[[pageVisibility.languages]]">
                 </settings-languages-page>
               </settings-section>
             </template>
@@ -302,23 +313,24 @@
                 restamp>
               <settings-section page-title="$i18n{a11yPageTitle}"
                   section="a11y">
-                <settings-a11y-page prefs="{{prefs}}"></settings-a11y-page>
+                <settings-a11y-page prefs="{{prefs}}"
+                    page-visibility="[[pageVisibility.a11y]]">
+                </settings-a11y-page>
               </settings-section>
             </template>
 <if expr="not chromeos">
-            <template is="dom-if" if="[[showPage_(pageVisibility.system)]]"
-                restamp>
-              <settings-section page-title="$i18n{systemPageTitle}"
-                  section="system">
-                <settings-system-page prefs="{{prefs}}"></settings-system-page>
-              </settings-section>
-            </template>
+            <settings-section page-title="$i18n{systemPageTitle}"
+                section="system">
+              <settings-system-page prefs="{{prefs}}"></settings-system-page>
+            </settings-section>
 </if>
             <template is="dom-if" if="[[showPage_(pageVisibility.reset)]]"
                 restamp>
               <settings-section page-title="$i18n{resetPageTitle}"
                   section="reset">
-                <settings-reset-page prefs="{{prefs}}"></settings-reset-page>
+                <settings-reset-page prefs="{{prefs}}"
+                    page-visibility="[[pageVisibility.reset]]">
+                </settings-reset-page>
               </settings-section>
             </template>
           </div>

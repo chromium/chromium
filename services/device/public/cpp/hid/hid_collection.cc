@@ -67,7 +67,8 @@ std::vector<std::unique_ptr<HidCollection>> HidCollection::BuildCollections(
             state.collection = state.collection->parent_;
         }
         state.local.Reset();
-        --depth;
+        if (depth > 0)
+          --depth;
         break;
       case HidReportDescriptorItem::kTagInput:
       case HidReportDescriptorItem::kTagOutput:

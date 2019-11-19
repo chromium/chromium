@@ -150,9 +150,10 @@ xhr.send();
 
 <p>
 When performing cross-origin requests on behalf of a content script, be careful
-to guard against a malicious webpage that might try to impersonate a content
-script.  In particular, do not allow content scripts to request an arbitrary
-URL.
+to <a href="security#content_scripts"
+  >guard against malicious web pages</a> that might try to impersonate a
+content script.  In particular, do not allow content scripts to request an
+arbitrary URL.
 </p>
 
 <p>
@@ -166,7 +167,7 @@ fetched by the background page.
 chrome.runtime.onMessage.addListener(
     function(request, sender, sendResponse) {
       if (request.contentScriptQuery == 'fetchUrl') {
-        // WARNING: SECURITY PROBLEM - a malicious webpage may abuse
+        // WARNING: SECURITY PROBLEM - a malicious web page may abuse
         // the message handler to get access to arbitrary cross-origin
         // resources.
         fetch(request.url)
@@ -188,7 +189,7 @@ chrome.runtime.sendMessage(
 
 <p>
 In the approach above, the content script can ask the extension to fetch any
-URL that the extension has access to.  A malicious website may be able to forge
+URL that the extension has access to.  A malicious web page may be able to forge
 such messages and trick the extension into giving access to cross-origin
 resources.
 </p>

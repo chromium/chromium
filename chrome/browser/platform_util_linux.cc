@@ -5,16 +5,21 @@
 #include "chrome/browser/platform_util.h"
 
 #include "base/bind.h"
-#include "base/command_line.h"
-#include "base/files/file_util.h"
 #include "base/process/kill.h"
 #include "base/process/launch.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/task/post_task.h"
-#include "base/version.h"
+#include "base/threading/scoped_blocking_call.h"
+#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/platform_util_internal.h"
+#include "components/dbus/thread_linux/dbus_thread_linux.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/notification_observer.h"
+#include "content/public/browser/notification_registrar.h"
+#include "content/public/browser/notification_service.h"
+#include "dbus/bus.h"
+#include "dbus/message.h"
+#include "dbus/object_proxy.h"
 #include "url/gurl.h"
 
 using content::BrowserThread;
@@ -23,10 +28,88 @@ namespace platform_util {
 
 namespace {
 
-const char kNautilusKey[] = "nautilus.desktop";
-const char kNautilusKeyExtended[] = "nautilus-folder-handler.desktop";
-const char kNautilusCmd[] = "nautilus";
-const char kSupportedNautilusVersion[] = "3.0.2";
+const char kFreedesktopFileManagerName[] = "org.freedesktop.FileManager1";
+const char kFreedesktopFileManagerPath[] = "/org/freedesktop/FileManager1";
+
+const char kMethodShowItems[] = "ShowItems";
+
+class ShowItemHelper : public content::NotificationObserver {
+ public:
+  static ShowItemHelper& GetInstance() {
+    static base::NoDestructor<ShowItemHelper> instance;
+    return *instance;
+  }
+
+  ShowItemHelper() {
+    registrar_.Add(this, chrome::NOTIFICATION_APP_TERMINATING,
+                   content::NotificationService::AllSources());
+  }
+
+  ShowItemHelper(const ShowItemHelper&) = delete;
+  ShowItemHelper& operator=(const ShowItemHelper&) = delete;
+
+  void Observe(int type,
+               const content::NotificationSource& source,
+               const content::NotificationDetails& details) override {
+    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    DCHECK_EQ(chrome::NOTIFICATION_APP_TERMINATING, type);
+    // The browser process is about to exit. Clean up while we still can.
+    if (bus_)
+      bus_->ShutdownOnDBusThreadAndBlock();
+    bus_.reset();
+    filemanager_proxy_ = nullptr;
+  }
+
+  void ShowItemInFolder(Profile* profile, const base::FilePath& full_path) {
+    if (!bus_) {
+      // Sets up the D-Bus connection.
+      dbus::Bus::Options bus_options;
+      bus_options.bus_type = dbus::Bus::SESSION;
+      bus_options.connection_type = dbus::Bus::PRIVATE;
+      bus_options.dbus_task_runner = dbus_thread_linux::GetTaskRunner();
+      bus_ = base::MakeRefCounted<dbus::Bus>(bus_options);
+    }
+
+    if (!filemanager_proxy_) {
+      filemanager_proxy_ =
+          bus_->GetObjectProxy(kFreedesktopFileManagerName,
+                               dbus::ObjectPath(kFreedesktopFileManagerPath));
+    }
+
+    dbus::MethodCall show_items_call(kFreedesktopFileManagerName,
+                                     kMethodShowItems);
+    dbus::MessageWriter writer(&show_items_call);
+
+    writer.AppendArrayOfStrings(
+        {"file://" + full_path.value()});  // List of file(s) to highlight.
+    writer.AppendString({});               // startup-id
+
+    filemanager_proxy_->CallMethod(
+        &show_items_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+        base::BindOnce(&ShowItemHelper::ShowItemInFolderResponse,
+                       weak_ptr_factory_.GetWeakPtr(), profile, full_path));
+  }
+
+ private:
+  void ShowItemInFolderResponse(Profile* profile,
+                                const base::FilePath& full_path,
+                                dbus::Response* response) {
+    if (response)
+      return;
+
+    LOG(ERROR) << "Error calling " << kMethodShowItems;
+    // If the FileManager1 call fails, at least open the parent folder.
+    OpenItem(profile, full_path.DirName(), OPEN_FOLDER,
+             OpenOperationCallback());
+  }
+
+  content::NotificationRegistrar registrar_;
+
+  scoped_refptr<dbus::Bus> bus_;
+  dbus::ObjectProxy* filemanager_proxy_ = nullptr;
+
+  base::WeakPtrFactory<ShowItemHelper> weak_ptr_factory_{this};
+};
 
 void RunCommand(const std::string& command,
                 const base::FilePath& working_directory,
@@ -42,7 +125,7 @@ void RunCommand(const std::string& command,
   // to a command that needs a terminal.  Set the environment variable telling
   // it that we definitely don't have a terminal available and that it should
   // bring up a new terminal if necessary.  See "man mailcap".
-  options.environ["MM_NOTTTY"] = "1";
+  options.environment["MM_NOTTTY"] = "1";
 
   // In Google Chrome, we do not let GNOME's bug-buddy intercept our crashes.
   // However, we do not want this environment variable to propagate to external
@@ -50,7 +133,7 @@ void RunCommand(const std::string& command,
   char* disable_gnome_bug_buddy = getenv("GNOME_DISABLE_CRASH_DIALOG");
   if (disable_gnome_bug_buddy &&
       disable_gnome_bug_buddy == std::string("SET_BY_GOOGLE_CHROME"))
-    options.environ["GNOME_DISABLE_CRASH_DIALOG"] = std::string();
+    options.environment["GNOME_DISABLE_CRASH_DIALOG"] = std::string();
 
   base::Process process = base::LaunchProcess(argv, options);
   if (process.IsValid())
@@ -65,77 +148,14 @@ void XDGEmail(const std::string& email) {
   RunCommand("xdg-email", base::FilePath(), email);
 }
 
-void ShowFileInNautilus(const base::FilePath& working_directory,
-                        const std::string& path) {
-  RunCommand(kNautilusCmd, working_directory, path);
-}
-
-std::string GetNautilusVersion() {
-  std::string output;
-  std::string found_version;
-
-  base::CommandLine nautilus_cl((base::FilePath(kNautilusCmd)));
-  nautilus_cl.AppendArg("--version");
-
-  if (base::GetAppOutputAndError(nautilus_cl, &output)) {
-    // It is assumed that "nautilus --version" returns something like
-    // "GNOME nautilus 3.14.2". First, find the position of the first char of
-    // "nautilus " and skip the whole string to get the position of
-    // version in the |output| string.
-    size_t nautilus_position = output.find("nautilus ");
-    size_t version_position = nautilus_position + strlen("nautilus ");
-    if (nautilus_position != std::string::npos) {
-      found_version = output.substr(version_position);
-      base::TrimWhitespaceASCII(found_version,
-                                base::TRIM_TRAILING,
-                                &found_version);
-    }
-  }
-  return found_version;
-}
-
-bool CheckNautilusIsDefault() {
-  std::string file_browser;
-
-  base::CommandLine xdg_mime(base::FilePath("xdg-mime"));
-  xdg_mime.AppendArg("query");
-  xdg_mime.AppendArg("default");
-  xdg_mime.AppendArg("inode/directory");
-
-  bool success = base::GetAppOutputAndError(xdg_mime, &file_browser);
-  base::TrimWhitespaceASCII(file_browser,
-                            base::TRIM_TRAILING,
-                            &file_browser);
-
-  if (!success ||
-      (file_browser != kNautilusKey && file_browser != kNautilusKeyExtended))
-    return false;
-
-  const base::Version supported_version(kSupportedNautilusVersion);
-  DCHECK(supported_version.IsValid());
-  const base::Version current_version(GetNautilusVersion());
-  return current_version.IsValid() && current_version >= supported_version;
-}
-
-void ShowItem(Profile* profile,
-              const base::FilePath& full_path,
-              bool use_nautilus_file_browser) {
-  if (use_nautilus_file_browser) {
-    OpenItem(profile, full_path, SHOW_ITEM_IN_FOLDER, OpenOperationCallback());
-  } else {
-    // TODO(estade): It would be nice to be able to select the file in other
-    // file managers, but that probably requires extending xdg-open.
-    // For now just show the folder for non-Nautilus users.
-    OpenItem(profile, full_path.DirName(), OPEN_FOLDER,
-             OpenOperationCallback());
-  }
-}
-
 }  // namespace
 
 namespace internal {
 
 void PlatformOpenVerifiedItem(const base::FilePath& path, OpenItemType type) {
+  // May result in an interactive dialog.
+  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
+                                                base::BlockingType::MAY_BLOCK);
   switch (type) {
     case OPEN_FILE:
       XDGOpen(path.DirName(), path.value());
@@ -150,9 +170,6 @@ void PlatformOpenVerifiedItem(const base::FilePath& path, OpenItemType type) {
       // time the application invoked by xdg-open inspects the path by name.
       XDGOpen(path, ".");
       break;
-    case SHOW_ITEM_IN_FOLDER:
-      ShowFileInNautilus(path.DirName(), path.value());
-      break;
   }
 }
 
@@ -160,12 +177,7 @@ void PlatformOpenVerifiedItem(const base::FilePath& path, OpenItemType type) {
 
 void ShowItemInFolder(Profile* profile, const base::FilePath& full_path) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  base::PostTaskWithTraitsAndReplyWithResult(
-      FROM_HERE,
-      {base::WithBaseSyncPrimitives(), base::MayBlock(),
-       base::TaskPriority::USER_BLOCKING},
-      base::BindOnce(&CheckNautilusIsDefault),
-      base::BindOnce(&ShowItem, profile, full_path));
+  ShowItemHelper::GetInstance().ShowItemInFolder(profile, full_path);
 }
 
 void OpenExternal(Profile* profile, const GURL& url) {

@@ -1,0 +1,13 @@
+[document web] enabled sensitive
+++[section] enabled sensitive
+++++[entry] editable enabled sensitive selectable-text
+++++[entry] editable selectable-text
+++++[entry] editable enabled sensitive selectable-text
+++[section]
+++++[entry] editable selectable-text
+++++[entry] editable selectable-text
+++++[entry] editable enabled sensitive selectable-text
+++[section] enabled sensitive
+++++[entry] editable enabled sensitive selectable-text
+++++[entry] editable selectable-text
+++++[entry] editable enabled sensitive selectable-text

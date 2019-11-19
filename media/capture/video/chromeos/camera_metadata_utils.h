@@ -5,8 +5,10 @@
 #ifndef MEDIA_CAPTURE_VIDEO_CHROMEOS_CAMERA_METADATA_UTILS_H_
 #define MEDIA_CAPTURE_VIDEO_CHROMEOS_CAMERA_METADATA_UTILS_H_
 
+#include <base/stl_util.h>
+
 #include "media/capture/capture_export.h"
-#include "media/capture/video/chromeos/mojo/camera_metadata.mojom.h"
+#include "media/capture/video/chromeos/mojom/camera_metadata.mojom.h"
 
 namespace media {
 
@@ -68,6 +70,38 @@ CAPTURE_EXPORT void SortCameraMetadata(
 
 CAPTURE_EXPORT void MergeMetadata(cros::mojom::CameraMetadataPtr* to,
                                   const cros::mojom::CameraMetadataPtr& from);
+
+template <typename T>
+CAPTURE_EXPORT cros::mojom::CameraMetadataEntryPtr BuildMetadataEntry(
+    cros::mojom::CameraMetadataTag tag,
+    T value) {
+  static constexpr cros::mojom::CameraMetadataTag kInt32EnumTags[] = {
+      cros::mojom::CameraMetadataTag::
+          ANDROID_DEPTH_AVAILABLE_DEPTH_STREAM_CONFIGURATIONS,
+      cros::mojom::CameraMetadataTag::ANDROID_SCALER_AVAILABLE_FORMATS,
+      cros::mojom::CameraMetadataTag::
+          ANDROID_SCALER_AVAILABLE_STREAM_CONFIGURATIONS,
+      cros::mojom::CameraMetadataTag::ANDROID_SENSOR_TEST_PATTERN_MODE,
+      cros::mojom::CameraMetadataTag::ANDROID_SYNC_MAX_LATENCY,
+  };
+
+  cros::mojom::CameraMetadataEntryPtr e =
+      cros::mojom::CameraMetadataEntry::New();
+  e->tag = tag;
+  e->type = entry_type_of<T>::value;
+  e->count = 1;
+
+  // Mojo uses int32_t as the underlying type of enum classes, but
+  // the camera metadata expect uint8_t for them.
+  if (std::is_enum<T>::value && !base::Contains(kInt32EnumTags, tag)) {
+    e->data.push_back(base::checked_cast<uint8_t>(value));
+  } else {
+    e->data.resize(sizeof(T));
+    memcpy(e->data.data(), &value, e->data.size());
+  }
+
+  return e;
+}
 
 }  // namespace media
 

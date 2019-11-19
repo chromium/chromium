@@ -21,7 +21,7 @@ namespace views {
 // SetFocusForPlatform() to make it part of the focus chain.
 class VIEWS_EXPORT ImageButton : public Button {
  public:
-  static const char kViewClassName[];
+  METADATA_HEADER(ImageButton);
 
   // An enum describing the horizontal alignment of images on Buttons.
   enum HorizontalAlignment {
@@ -51,23 +51,22 @@ class VIEWS_EXPORT ImageButton : public Button {
   // consolidated.
   virtual void SetImage(ButtonState state, const gfx::ImageSkia& image);
 
-  // Set the background details.
+  // Set the background details.  The background image uses the same alignment
+  // as the image.
   void SetBackgroundImage(SkColor color,
                           const gfx::ImageSkia* image,
                           const gfx::ImageSkia* mask);
 
-  // Sets how the image is laid out within the button's bounds.
-  void SetImageAlignment(HorizontalAlignment h_align,
-                         VerticalAlignment v_align);
-
-  // Sets how the background is laid out within the button's bounds.
-  void SetBackgroundImageAlignment(HorizontalAlignment h_align,
-                                   VerticalAlignment v_align);
+  // How the image is laid out within the button's bounds.
+  HorizontalAlignment GetImageHorizontalAlignment() const;
+  VerticalAlignment GetImageVerticalAlignment() const;
+  void SetImageHorizontalAlignment(HorizontalAlignment h_alignment);
+  void SetImageVerticalAlignment(VerticalAlignment v_alignment);
 
   // The minimum size of the contents (not including the border). The contents
   // will be at least this size, but may be larger if the image itself is
   // larger.
-  const gfx::Size& minimum_image_size() const { return minimum_image_size_; }
+  gfx::Size GetMinimumImageSize() const;
   void SetMinimumImageSize(const gfx::Size& size);
 
   // Whether we should draw our images resources horizontally flipped.
@@ -76,7 +75,6 @@ class VIEWS_EXPORT ImageButton : public Button {
   }
 
   // Overridden from View:
-  const char* GetClassName() const override;
   gfx::Size CalculatePreferredSize() const override;
   views::PaintInfo::ScaleType GetPaintScaleType() const override;
 
@@ -106,25 +104,18 @@ class VIEWS_EXPORT ImageButton : public Button {
   FRIEND_TEST_ALL_PREFIXES(ImageButtonFactoryTest, CreateVectorImageButton);
 
   // Returns the correct position of the image for painting.
-  const gfx::Point ComputeImagePaintPosition(const gfx::ImageSkia& image,
-                                             HorizontalAlignment h_alignment,
-                                             VerticalAlignment v_alignment);
+  const gfx::Point ComputeImagePaintPosition(const gfx::ImageSkia& image) const;
 
   // Image alignment.
-  HorizontalAlignment h_alignment_;
-  VerticalAlignment v_alignment_;
+  HorizontalAlignment h_alignment_ = ALIGN_LEFT;
+  VerticalAlignment v_alignment_ = ALIGN_TOP;
   gfx::Size minimum_image_size_;
-
-  // Background alignment. If these are not set, the background image uses the
-  // image alignment.
-  base::Optional<HorizontalAlignment> h_background_alignment_;
-  base::Optional<VerticalAlignment> v_background_alignment_;
 
   // Whether we draw our resources horizontally flipped. This can happen in the
   // linux titlebar, where image resources were designed to be flipped so a
   // small curved corner in the close button designed to fit into the frame
   // resources.
-  bool draw_image_mirrored_;
+  bool draw_image_mirrored_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(ImageButton);
 };
@@ -157,8 +148,7 @@ class VIEWS_EXPORT ToggleImageButton : public ImageButton {
   void SetImage(ButtonState state, const gfx::ImageSkia& image) override;
 
   // Overridden from View:
-  bool GetTooltipText(const gfx::Point& p,
-                      base::string16* tooltip) const override;
+  base::string16 GetTooltipText(const gfx::Point& p) const override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
 
   bool toggled_for_testing() const;

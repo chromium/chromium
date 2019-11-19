@@ -1,0 +1,152 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+if (is_android) {
+  import("//build/config/android/rules.gni")
+}
+
+source_set("identity_manager") {
+  sources = [
+    "access_token_fetcher.cc",
+    "access_token_fetcher.h",
+    "access_token_info.cc",
+    "access_token_info.h",
+    "account_info.cc",
+    "account_info.h",
+    "accounts_cookie_mutator.h",
+    "accounts_in_cookie_jar_info.cc",
+    "accounts_in_cookie_jar_info.h",
+    "accounts_mutator.h",
+    "device_accounts_synchronizer.h",
+    "diagnostics_provider.h",
+    "identity_manager.cc",
+    "identity_manager.h",
+    "identity_manager_builder.cc",
+    "identity_manager_builder.h",
+    "identity_mutator.cc",
+    "identity_mutator.h",
+    "identity_utils.cc",
+    "identity_utils.h",
+    "load_credentials_state.h",
+    "primary_account_access_token_fetcher.cc",
+    "primary_account_access_token_fetcher.h",
+    "primary_account_mutator.h",
+    "set_accounts_in_cookie_result.h",
+    "ubertoken_fetcher.cc",
+    "ubertoken_fetcher.h",
+  ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
+  public_deps = [
+    "//base",
+    "//components/keyed_service/core",
+    "//components/signin/public/base",
+    "//components/signin/public/base:signin_buildflags",
+    "//google_apis",
+    "//services/identity/public/cpp:cpp_types",
+    "//ui/gfx",
+  ]
+
+  deps = [
+    "//components/image_fetcher/core",
+    "//components/prefs",
+    "//components/signin/internal/identity_manager",
+    "//components/signin/public/webdata",
+    "//services/network/public/cpp",
+  ]
+
+  if (is_chromeos) {
+    deps += [ "//components/user_manager" ]
+  }
+
+  if (is_ios) {
+    deps += [ "ios" ]
+  }
+
+  if (is_android) {
+    deps +=
+        [ "//components/signin/internal/identity_manager/android:jni_headers" ]
+  }
+
+  allow_circular_includes_from = [
+    # This target is a pair with internal/identity_manager. They always go
+    # together and include headers from each other.
+    "//components/signin/internal/identity_manager",
+  ]
+}
+
+if (is_android) {
+  java_cpp_enum("identity_manager_enum_javagen") {
+    sources = [
+      "primary_account_mutator.h",
+    ]
+  }
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "access_token_fetcher_unittest.cc",
+    "account_info_unittest.cc",
+    "accounts_cookie_mutator_unittest.cc",
+    "accounts_mutator_unittest.cc",
+    "diagnostics_provider_unittest.cc",
+    "identity_manager_unittest.cc",
+    "identity_test_environment_unittest.cc",
+    "identity_utils_unittest.cc",
+    "primary_account_access_token_fetcher_unittest.cc",
+    "primary_account_mutator_unittest.cc",
+  ]
+
+  deps = [
+    ":identity_manager",
+    ":test_support",
+    "//base",
+    "//base/test:test_support",
+    "//components/image_fetcher/core:test_support",
+    "//components/prefs",
+    "//components/prefs:test_support",
+    "//components/signin/internal/identity_manager",
+    "//components/signin/internal/identity_manager:test_support",
+    "//components/signin/public/base",
+    "//components/signin/public/base:test_support",
+    "//components/signin/public/identity_manager",
+    "//components/sync_preferences:test_support",
+    "//google_apis",
+    "//services/network:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}
+
+source_set("test_support") {
+  testonly = true
+
+  sources = [
+    "identity_test_environment.cc",
+    "identity_test_environment.h",
+    "identity_test_utils.cc",
+    "identity_test_utils.h",
+    "test_identity_manager_observer.cc",
+    "test_identity_manager_observer.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//components/signin/public/base",
+    "//components/signin/public/identity_manager",
+    "//google_apis",
+  ]
+
+  deps = [
+    "//components/image_fetcher/core:test_support",
+    "//components/signin/internal/identity_manager",
+    "//components/signin/internal/identity_manager:test_support",
+    "//components/signin/public/base:test_support",
+    "//components/sync_preferences:test_support",
+    "//testing/gtest",
+  ]
+}

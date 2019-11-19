@@ -63,7 +63,7 @@ class AudioSender : public FrameSender {
   int samples_in_encoder_;
 
   // NOTE: Weak pointers must be invalidated before all other member variables.
-  base::WeakPtrFactory<AudioSender> weak_factory_;
+  base::WeakPtrFactory<AudioSender> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(AudioSender);
 };

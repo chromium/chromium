@@ -62,6 +62,10 @@
       dumpFocus(true, 1, true /* skipObjectCheck */);
       press('ArrowDown');
       dumpFocus(true, 1, true /* skipObjectCheck */);
+      press('ArrowDown');
+      dumpFocus(true, 1, true /* skipObjectCheck */);
+      press('ArrowUp');
+      dumpFocus(true, 1, true /* skipObjectCheck */);
       press('ArrowUp');
       dumpFocus(true, 1, true /* skipObjectCheck */);
       press('ArrowLeft');
@@ -70,6 +74,8 @@
       next();
     },
 
+    // Note: During this test expanded objects
+    // do not include the __proto__ property.
     async function testExpandingObjects(next) {
       await clearAndLog(`console.log("before");console.log("text", obj1, obj2);console.log("after");`, 3);
       forceSelect(1);
@@ -78,26 +84,25 @@
       press('ArrowRight');
       dumpFocus(true, 1, true /* skipObjectCheck */);
 
-      // Expand object.
+      // Expand obj1.
       press('ArrowRight');
       dumpFocus(true, 1, true /* skipObjectCheck */);
       await ConsoleTestRunner.waitForRemoteObjectsConsoleMessagesPromise();
       press('ArrowDown');
       dumpFocus(true, 1, true /* skipObjectCheck */);
       press('ArrowDown');
-      press('ArrowDown');
       dumpFocus(true, 1, true /* skipObjectCheck */);
 
-      // Expand array.
+      // Expand obj2.
       press('ArrowRight');
       dumpFocus(true, 1, true /* skipObjectCheck */);
       await ConsoleTestRunner.waitForRemoteObjectsConsoleMessagesPromise();
       press('ArrowDown');
       press('ArrowDown');
       press('ArrowDown');
-      press('ArrowDown');
       dumpFocus(true, 1, true /* skipObjectCheck */);
 
+      press('ArrowUp');
       press('ArrowUp');
       dumpFocus(true, 1, true /* skipObjectCheck */);
 
@@ -130,8 +135,10 @@
       dumpFocus(true, 1);
       press('ArrowDown');
       press('ArrowDown');
+      press('ArrowDown');
       dumpFocus(true, 1);
 
+      press('ArrowUp');
       press('ArrowUp');
       dumpFocus(true, 1);
       press('ArrowUp');
@@ -163,6 +170,7 @@
 
       dumpFocus(true, 1);
       press('ArrowDown');
+      press('ArrowDown');
       dumpFocus(true, 1);
 
       // Expand object.
@@ -180,7 +188,7 @@
       TestRunner.addResult(`Setting focus in prompt:`);
       prompt.focus();
       shiftPress('Tab');
-
+      press('ArrowUp');  // Move from source link to object.
       dumpFocus(true, 1);
 
       // Expand object.
@@ -191,15 +199,18 @@
       next();
     },
 
-    async function testArrowUpToFirstVisibleMessageShouldSelectLastObject(next) {
+    async function testArrowUpToFirstVisibleMessageShouldSelectLastObject(
+        next) {
       await clearAndLog(`console.log(obj1);console.log("after");`, 2);
       await ConsoleTestRunner.waitForRemoteObjectsConsoleMessagesPromise();
 
       TestRunner.addResult(`Setting focus in prompt:`);
       prompt.focus();
       shiftPress('Tab');
+      press('ArrowUp');  // Move from source link to "after".
       dumpFocus(true);
 
+      press('ArrowUp');  // Move from source link to object.
       press('ArrowUp');
       dumpFocus(true);
 
@@ -218,12 +229,14 @@
       TestRunner.addResult(`Setting focus in prompt:`);
       prompt.focus();
       shiftPress('Tab');
+      press('ArrowUp');  // Move from source link to object.
       press('ArrowRight');
       await ConsoleTestRunner.waitForRemoteObjectsConsoleMessagesPromise();
       press('Tab');
 
       dumpFocus(true);
       shiftPress('Tab');
+      press('ArrowUp');  // Move from source link to object.
 
       dumpFocus(true);
       dumpScrollInfo();

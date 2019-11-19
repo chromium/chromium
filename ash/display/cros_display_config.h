@@ -10,10 +10,12 @@
 #include <string>
 
 #include "ash/ash_export.h"
-#include "ash/public/interfaces/cros_display_config.mojom.h"
+#include "ash/public/mojom/cros_display_config.mojom.h"
 #include "base/macros.h"
-#include "mojo/public/cpp/bindings/binding_set.h"
-#include "mojo/public/cpp/bindings/interface_ptr_set.h"
+#include "mojo/public/cpp/bindings/pending_associated_remote.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
+#include "mojo/public/cpp/bindings/remote_set.h"
 
 namespace ash {
 
@@ -26,11 +28,13 @@ class ASH_EXPORT CrosDisplayConfig : public mojom::CrosDisplayConfigController {
   CrosDisplayConfig();
   ~CrosDisplayConfig() override;
 
-  void BindRequest(mojom::CrosDisplayConfigControllerRequest request);
+  void BindReceiver(
+      mojo::PendingReceiver<mojom::CrosDisplayConfigController> receiver);
 
   // mojom::CrosDisplayConfigController:
   void AddObserver(
-      mojom::CrosDisplayConfigObserverAssociatedPtrInfo observer) override;
+      mojo::PendingAssociatedRemote<mojom::CrosDisplayConfigObserver> observer)
+      override;
   void GetDisplayLayoutInfo(GetDisplayLayoutInfoCallback callback) override;
   void SetDisplayLayoutInfo(mojom::DisplayLayoutInfoPtr info,
                             SetDisplayLayoutInfoCallback callback) override;
@@ -38,6 +42,7 @@ class ASH_EXPORT CrosDisplayConfig : public mojom::CrosDisplayConfigController {
                               GetDisplayUnitInfoListCallback callback) override;
   void SetDisplayProperties(const std::string& id,
                             mojom::DisplayConfigPropertiesPtr properties,
+                            mojom::DisplayConfigSource source,
                             SetDisplayPropertiesCallback callback) override;
   void SetUnifiedDesktopEnabled(bool enabled) override;
   void OverscanCalibration(const std::string& display_id,
@@ -54,13 +59,13 @@ class ASH_EXPORT CrosDisplayConfig : public mojom::CrosDisplayConfigController {
   }
 
  private:
-  class DisplayObserver;
-  void NotifyObserversDisplayConfigChanged();
+  class ObserverImpl;
+  friend class OverscanCalibratorTest;
+
   OverscanCalibrator* GetOverscanCalibrator(const std::string& id);
 
-  std::unique_ptr<DisplayObserver> display_observer_;
-  mojo::BindingSet<mojom::CrosDisplayConfigController> bindings_;
-  mojo::AssociatedInterfacePtrSet<mojom::CrosDisplayConfigObserver> observers_;
+  std::unique_ptr<ObserverImpl> observer_impl_;
+  mojo::ReceiverSet<mojom::CrosDisplayConfigController> receivers_;
   std::map<std::string, std::unique_ptr<OverscanCalibrator>>
       overscan_calibrators_;
   std::unique_ptr<TouchCalibratorController> touch_calibrator_;

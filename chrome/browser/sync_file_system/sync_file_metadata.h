@@ -9,7 +9,7 @@
 
 #include "base/time/time.h"
 #include "chrome/browser/sync_file_system/file_change.h"
-#include "storage/browser/fileapi/file_system_url.h"
+#include "storage/browser/file_system/file_system_url.h"
 
 namespace sync_file_system {
 

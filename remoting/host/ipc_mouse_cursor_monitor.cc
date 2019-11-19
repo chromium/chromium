@@ -11,10 +11,7 @@ namespace remoting {
 
 IpcMouseCursorMonitor::IpcMouseCursorMonitor(
     scoped_refptr<DesktopSessionProxy> desktop_session_proxy)
-    : callback_(nullptr),
-      desktop_session_proxy_(desktop_session_proxy),
-      weak_factory_(this) {
-}
+    : callback_(nullptr), desktop_session_proxy_(desktop_session_proxy) {}
 
 IpcMouseCursorMonitor::~IpcMouseCursorMonitor() = default;
 

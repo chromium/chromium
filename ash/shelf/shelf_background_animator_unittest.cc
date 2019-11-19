@@ -8,16 +8,18 @@
 
 #include "ash/animation/animation_change_type.h"
 #include "ash/public/cpp/ash_switches.h"
+#include "ash/public/cpp/shelf_config.h"
 #include "ash/session/test_session_controller_client.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_background_animator_observer.h"
-#include "ash/shelf/shelf_constants.h"
 #include "ash/shelf/shelf_widget.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "base/bind.h"
+#include "base/callback.h"
 #include "base/command_line.h"
 #include "base/macros.h"
+#include "base/run_loop.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "ui/gfx/animation/slide_animation.h"
@@ -30,7 +32,9 @@ namespace {
 // Used to check if color values are changed during animations.
 const SkColor kDummyColor = SK_ColorBLUE;
 
-// Observer that caches color values for the last observation.
+// Observer that caches color values for the last observation. This observer
+// will also call a set callback when ShelfBackgroundAnimator completes an
+// animation.
 class TestShelfBackgroundObserver : public ShelfBackgroundAnimatorObserver {
  public:
   TestShelfBackgroundObserver() = default;
@@ -41,11 +45,17 @@ class TestShelfBackgroundObserver : public ShelfBackgroundAnimatorObserver {
   // Convenience function to get the alpha value from |background_color_|.
   int GetBackgroundAlpha() const;
 
+  // Sets |animation_complete_callback_| to be called when animation ends.
+  void SetAnimationCompleteCallback(base::OnceClosure callback);
+
   // ShelfBackgroundObserver:
   void UpdateShelfBackground(SkColor color) override;
+  void OnShelfBackgroundAnimationEnded() override;
 
  private:
   int background_color_ = SK_ColorTRANSPARENT;
+
+  base::OnceClosure animation_complete_callback_;
 
   DISALLOW_COPY_AND_ASSIGN(TestShelfBackgroundObserver);
 };
@@ -56,6 +66,16 @@ int TestShelfBackgroundObserver::GetBackgroundAlpha() const {
 
 void TestShelfBackgroundObserver::UpdateShelfBackground(SkColor color) {
   background_color_ = color;
+}
+
+void TestShelfBackgroundObserver::OnShelfBackgroundAnimationEnded() {
+  if (!animation_complete_callback_.is_null())
+    std::move(animation_complete_callback_).Run();
+}
+
+void TestShelfBackgroundObserver::SetAnimationCompleteCallback(
+    base::OnceClosure callback) {
+  animation_complete_callback_ = std::move(callback);
 }
 
 }  // namespace
@@ -85,7 +105,7 @@ class ShelfBackgroundAnimatorTestApi {
   DISALLOW_COPY_AND_ASSIGN(ShelfBackgroundAnimatorTestApi);
 };
 
-class ShelfBackgroundAnimatorTest : public testing::Test {
+class ShelfBackgroundAnimatorTest : public AshTestBase {
  public:
   ShelfBackgroundAnimatorTest() = default;
   ~ShelfBackgroundAnimatorTest() override = default;
@@ -102,35 +122,29 @@ class ShelfBackgroundAnimatorTest : public testing::Test {
   // Set all of the color values for the |observer_|.
   void SetColorValuesOnObserver(SkColor color);
 
-  // Completes all the animations.
-  void CompleteAnimations();
+  // Waits for animation to complete.
+  void WaitForAnimationCompletion();
 
   TestShelfBackgroundObserver observer_;
 
   // Test target.
-  std::unique_ptr<ShelfBackgroundAnimator> animator_;
+  ShelfBackgroundAnimator* animator_;
 
   // Provides internal access to |animator_|.
   std::unique_ptr<ShelfBackgroundAnimatorTestApi> test_api_;
 
-  // Used to control the animations.
-  scoped_refptr<base::TestMockTimeTaskRunner> task_runner_;
-
  private:
-  std::unique_ptr<base::ThreadTaskRunnerHandle> task_runner_handle_;
-
   DISALLOW_COPY_AND_ASSIGN(ShelfBackgroundAnimatorTest);
 };
 
 void ShelfBackgroundAnimatorTest::SetUp() {
-  task_runner_ = new base::TestMockTimeTaskRunner();
-  task_runner_handle_.reset(new base::ThreadTaskRunnerHandle(task_runner_));
+  AshTestBase::SetUp();
 
-  animator_.reset(
-      new ShelfBackgroundAnimator(SHELF_BACKGROUND_DEFAULT, nullptr, nullptr));
+  animator_ =
+      GetPrimaryShelf()->shelf_widget()->background_animator_for_testing();
   animator_->AddObserver(&observer_);
 
-  test_api_.reset(new ShelfBackgroundAnimatorTestApi(animator_.get()));
+  test_api_.reset(new ShelfBackgroundAnimatorTestApi(animator_));
 }
 
 void ShelfBackgroundAnimatorTest::PaintBackground(
@@ -143,8 +157,12 @@ void ShelfBackgroundAnimatorTest::SetColorValuesOnObserver(SkColor color) {
   observer_.UpdateShelfBackground(color);
 }
 
-void ShelfBackgroundAnimatorTest::CompleteAnimations() {
-  task_runner_->FastForwardUntilNoTasksRemain();
+void ShelfBackgroundAnimatorTest::WaitForAnimationCompletion() {
+  base::RunLoop run_loop;
+
+  observer_.SetAnimationCompleteCallback(run_loop.QuitWhenIdleClosure());
+
+  run_loop.Run();
 }
 
 // Verify the |previous_background_type_| and |target_background_type_| values
@@ -170,14 +188,13 @@ TEST_F(ShelfBackgroundAnimatorTest,
   SetColorValuesOnObserver(kDummyColor);
   animator_->PaintBackground(SHELF_BACKGROUND_DEFAULT,
                              AnimationChangeType::ANIMATE);
-  CompleteAnimations();
+  WaitForAnimationCompletion();
 
   EXPECT_NE(observer_.background_color(), kDummyColor);
 
   SetColorValuesOnObserver(kDummyColor);
   animator_->PaintBackground(SHELF_BACKGROUND_DEFAULT,
                              AnimationChangeType::ANIMATE);
-  CompleteAnimations();
 
   EXPECT_EQ(observer_.background_color(), kDummyColor);
 }
@@ -197,7 +214,8 @@ TEST_F(ShelfBackgroundAnimatorTest, DefaultBackground) {
   PaintBackground(SHELF_BACKGROUND_DEFAULT);
 
   EXPECT_EQ(SHELF_BACKGROUND_DEFAULT, animator_->target_background_type());
-  EXPECT_EQ(kShelfTranslucentAlpha, observer_.GetBackgroundAlpha());
+  EXPECT_EQ((int)SkColorGetA(ShelfConfig::Get()->GetDefaultShelfColor()),
+            observer_.GetBackgroundAlpha());
 }
 
 // Verify the alpha values for the SHELF_BACKGROUND_MAXIMIZED state.
@@ -205,7 +223,8 @@ TEST_F(ShelfBackgroundAnimatorTest, MaximizedBackground) {
   PaintBackground(SHELF_BACKGROUND_MAXIMIZED);
 
   EXPECT_EQ(SHELF_BACKGROUND_MAXIMIZED, animator_->target_background_type());
-  EXPECT_EQ(kShelfTranslucentMaximizedWindow, observer_.GetBackgroundAlpha());
+  EXPECT_EQ((int)SkColorGetA(ShelfConfig::Get()->GetMaximizedShelfColor()),
+            observer_.GetBackgroundAlpha());
 }
 
 // Verify the alpha values for the SHELF_BACKGROUND_APP_LIST state.
@@ -213,14 +232,16 @@ TEST_F(ShelfBackgroundAnimatorTest, FullscreenAppListBackground) {
   PaintBackground(SHELF_BACKGROUND_APP_LIST);
 
   EXPECT_EQ(SHELF_BACKGROUND_APP_LIST, animator_->target_background_type());
-  EXPECT_EQ(kShelfTranslucentOverAppList, observer_.GetBackgroundAlpha());
+  EXPECT_EQ((int)SkColorGetA(ShelfConfig::Get()->GetShelfWithAppListColor()),
+            observer_.GetBackgroundAlpha());
 }
 
 TEST_F(ShelfBackgroundAnimatorTest,
        AnimatorIsDetroyedWhenCompletingSuccessfully) {
   PaintBackground(SHELF_BACKGROUND_MAXIMIZED, AnimationChangeType::ANIMATE);
   EXPECT_TRUE(test_api_->animator());
-  CompleteAnimations();
+  WaitForAnimationCompletion();
+
   EXPECT_FALSE(test_api_->animator());
 }
 
@@ -236,7 +257,9 @@ TEST_F(ShelfBackgroundAnimatorTest,
 // Verify that existing animator is used when animating to the previous state.
 TEST_F(ShelfBackgroundAnimatorTest,
        ExistingAnimatorIsReusedWhenAnimatingToPreviousState) {
-  PaintBackground(SHELF_BACKGROUND_DEFAULT, AnimationChangeType::ANIMATE);
+  // First PaintBackground() must be immediate so that the
+  // ShelfBackgroundAnimator has its color set correctly.
+  PaintBackground(SHELF_BACKGROUND_DEFAULT, AnimationChangeType::IMMEDIATE);
   PaintBackground(SHELF_BACKGROUND_MAXIMIZED, AnimationChangeType::ANIMATE);
 
   const gfx::SlideAnimation* animator = test_api_->animator();
@@ -277,15 +300,6 @@ class ShelfBackgroundTargetColorTest : public NoSessionAshTestBase {
   ShelfBackgroundTargetColorTest() = default;
   ~ShelfBackgroundTargetColorTest() override = default;
 
-  // AshTestBase:
-  void SetUp() override {
-    // Do not allow the shelf color to be derived from the wallpaper, in order
-    // to have a fixed color in tests.
-    base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-        switches::kAshShelfColor, switches::kAshShelfColorDisabled);
-    AshTestBase::SetUp();
-  }
-
  protected:
   // Helper function to notify session state changes.
   void NotifySessionStateChanged(session_manager::SessionState state) {
@@ -311,7 +325,7 @@ TEST_F(ShelfBackgroundTargetColorTest, ShelfBackgroundColorUpdatedFromLogin) {
 
   NotifySessionStateChanged(session_manager::SessionState::ACTIVE);
   EXPECT_EQ(test_api.shelf_background_target_color(),
-            SkColorSetA(kShelfDefaultBaseColor, kShelfTranslucentAlpha));
+            ShelfConfig::Get()->GetDefaultShelfColor());
 }
 
 // Verify the target color of the shelf background is updated based on session
@@ -333,7 +347,7 @@ TEST_F(ShelfBackgroundTargetColorTest, ShelfBackgroundColorUpdatedFromOOBE) {
 
   NotifySessionStateChanged(session_manager::SessionState::ACTIVE);
   EXPECT_EQ(test_api.shelf_background_target_color(),
-            SkColorSetA(kShelfDefaultBaseColor, kShelfTranslucentAlpha));
+            ShelfConfig::Get()->GetDefaultShelfColor());
 }
 
 }  // namespace ash

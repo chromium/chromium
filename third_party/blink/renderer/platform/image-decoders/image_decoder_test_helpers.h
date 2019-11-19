@@ -7,7 +7,8 @@
 
 #include <memory>
 #include "third_party/blink/renderer/platform/image-decoders/image_decoder.h"
-#include "third_party/blink/renderer/platform/shared_buffer.h"
+#include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_view.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 class SkBitmap;
@@ -27,7 +28,7 @@ inline void PrepareReferenceData(char* buffer, size_t size) {
     buffer[i] = static_cast<char>(i);
 }
 
-scoped_refptr<SharedBuffer> ReadFile(const char* file_name);
+scoped_refptr<SharedBuffer> ReadFile(StringView file_name);
 scoped_refptr<SharedBuffer> ReadFile(const char* dir, const char* file_name);
 unsigned HashBitmap(const SkBitmap&);
 void CreateDecodingBaseline(DecoderCreator,

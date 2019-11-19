@@ -8,13 +8,18 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/bind_helpers.h"
 #include "base/macros.h"
 #include "base/no_destructor.h"
 #include "base/optional.h"
 #include "base/run_loop.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
+#include "mojo/public/cpp/bindings/associated_receiver.h"
+#include "mojo/public/cpp/bindings/associated_receiver_set.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/bindings/unique_receiver_set.h"
 #include "mojo/public/interfaces/bindings/tests/new_endpoint_types.test-mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -26,15 +31,9 @@ class FactoryImpl;
 
 class WidgetImpl : public mojom::Widget {
  public:
-  WidgetImpl(FactoryImpl* factory,
-             mojo::PendingReceiver<mojom::Widget> receiver,
-             mojo::PendingRemote<mojom::WidgetClient> client)
-      : factory_(factory),
-        receiver_(this, std::move(receiver)),
-        client_(std::move(client)) {
-    client_.rpc(FROM_HERE)->OnInitialized();
-    receiver_.set_disconnect_handler(
-        base::BindOnce(&WidgetImpl::OnDisconnect, base::Unretained(this)));
+  explicit WidgetImpl(mojo::PendingRemote<mojom::WidgetClient> client)
+      : client_(std::move(client)) {
+    client_->OnInitialized();
   }
 
   ~WidgetImpl() override = default;
@@ -42,7 +41,7 @@ class WidgetImpl : public mojom::Widget {
   // mojom::Widget:
   void Click() override {
     for (auto& observer : observers_)
-      observer.rpc(FROM_HERE)->OnClick();
+      observer->OnClick();
   }
 
   void AddObserver(
@@ -51,10 +50,6 @@ class WidgetImpl : public mojom::Widget {
   }
 
  private:
-  void OnDisconnect();
-
-  FactoryImpl* const factory_;
-  mojo::Receiver<mojom::Widget> receiver_;
   mojo::Remote<mojom::WidgetClient> client_;
   std::vector<mojo::Remote<mojom::WidgetObserver>> observers_;
 
@@ -70,38 +65,24 @@ class FactoryImpl : public mojom::WidgetFactory {
   // mojom::WidgetFactory:
   void CreateWidget(mojo::PendingReceiver<mojom::Widget> receiver,
                     mojo::PendingRemote<mojom::WidgetClient> client) override {
-    widgets_.push_back(std::make_unique<WidgetImpl>(this, std::move(receiver),
-                                                    std::move(client)));
-  }
-
-  void DestroyWidget(WidgetImpl* widget) {
-    for (auto it = widgets_.begin(); it != widgets_.end(); ++it) {
-      if (it->get() == widget) {
-        widgets_.erase(it);
-        return;
-      }
-    }
+    widgets_.Add(std::make_unique<WidgetImpl>(std::move(client)),
+                 std::move(receiver));
   }
 
  private:
   mojo::Receiver<mojom::WidgetFactory> receiver_;
-  std::vector<std::unique_ptr<WidgetImpl>> widgets_;
+  mojo::UniqueReceiverSet<mojom::Widget> widgets_;
 
   DISALLOW_COPY_AND_ASSIGN(FactoryImpl);
 };
-
-void WidgetImpl::OnDisconnect() {
-  // Deletes |this|.
-  factory_->DestroyWidget(this);
-}
 
 class ClientImpl : public mojom::WidgetClient {
  public:
   ClientImpl() = default;
   ~ClientImpl() override = default;
 
-  mojo::PendingRemote<mojom::WidgetClient> BindNewRemote() {
-    return receiver_.BindNewRemote();
+  mojo::PendingRemote<mojom::WidgetClient> BindNewPipeAndPassRemote() {
+    return receiver_.BindNewPipeAndPassRemote();
   }
 
   void WaitForInitialize() { wait_loop_.Run(); }
@@ -121,8 +102,8 @@ class ObserverImpl : public mojom::WidgetObserver {
   ObserverImpl() = default;
   ~ObserverImpl() override = default;
 
-  mojo::PendingRemote<mojom::WidgetObserver> BindNewRemote() {
-    auto remote = receiver_.BindNewRemote();
+  mojo::PendingRemote<mojom::WidgetObserver> BindNewPipeAndPassRemote() {
+    auto remote = receiver_.BindNewPipeAndPassRemote();
     receiver_.set_disconnect_handler(
         base::BindOnce(&ObserverImpl::OnDisconnect, base::Unretained(this)));
     return remote;
@@ -144,12 +125,61 @@ class ObserverImpl : public mojom::WidgetObserver {
   DISALLOW_COPY_AND_ASSIGN(ObserverImpl);
 };
 
+class PingerImpl : public mojom::Pinger {
+ public:
+  PingerImpl() = default;
+  ~PingerImpl() override = default;
+
+  int ping_count() const { return ping_count_; }
+
+  void AddReceiver(mojo::PendingAssociatedReceiver<mojom::Pinger> receiver) {
+    receivers_.Add(this, std::move(receiver));
+  }
+
+ private:
+  // mojom::Ping:
+  void Ping(PingCallback callback) override {
+    ++ping_count_;
+    std::move(callback).Run();
+  }
+
+  mojo::AssociatedReceiverSet<mojom::Pinger> receivers_;
+  int ping_count_ = 0;
+
+  DISALLOW_COPY_AND_ASSIGN(PingerImpl);
+};
+
+class AssociatedPingerHostImpl : public mojom::AssociatedPingerHost {
+ public:
+  explicit AssociatedPingerHostImpl(
+      mojo::PendingReceiver<mojom::AssociatedPingerHost> receiver)
+      : receiver_(this, std::move(receiver)) {}
+  ~AssociatedPingerHostImpl() override = default;
+
+  int ping_count() const { return pinger_.ping_count(); }
+
+ private:
+  // mojom::AssociatedPingerHost:
+  void AddEndpoints(
+      mojo::PendingAssociatedReceiver<mojom::Pinger> receiver,
+      mojo::PendingAssociatedRemote<mojom::Pinger> remote) override {
+    mojo::AssociatedRemote<mojom::Pinger> pinger(std::move(remote));
+    pinger->Ping(base::DoNothing());
+    pinger_.AddReceiver(std::move(receiver));
+  }
+
+  mojo::Receiver<mojom::AssociatedPingerHost> receiver_;
+  PingerImpl pinger_;
+
+  DISALLOW_COPY_AND_ASSIGN(AssociatedPingerHostImpl);
+};
+
 TEST(NewEndpointTypesTest, BasicUsage) {
   // A simple smoke/compile test for new bindings endpoint types. Used to
   // demonstrate look & feel as well as to ensure basic completeness and
   // correctness.
 
-  base::test::ScopedTaskEnvironment task_environment;
+  base::test::TaskEnvironment task_environment;
 
   // A Remote<T> exposes a callable T interface which sends messages to a remote
   // implementation of T. Here we create a new unbound Remote which will control
@@ -162,11 +192,11 @@ TEST(NewEndpointTypesTest, BasicUsage) {
   // Remote<T> calling it, or it can live in another process. For simplicity in
   // this test we have the implementation living in the test process.
   //
-  // |BindNewReceiver()| creates a new message pipe to carry
+  // |BindNewPipeAndPassReceiver()| creates a new message pipe to carry
   // |mojom:WidgetFactory| interface messages. It binds one end to the
   // |factory| Remote above, and the other end is passed to |factory_impl| so
   // it can receive messages.
-  FactoryImpl factory_impl(factory.BindNewReceiver());
+  FactoryImpl factory_impl(factory.BindNewPipeAndPassReceiver());
   EXPECT_TRUE(factory.is_bound());
 
   // Similar to above, we create another Remote. this time to control a
@@ -187,8 +217,8 @@ TEST(NewEndpointTypesTest, BasicUsage) {
   // the factory implementation, as is the WidgetClient's Remote endpoint.
   // This allows the factory to bind and begin receiving Widget messages on
   // one pipe, and to bind and begin sending WidgetClient messages on the other.
-  factory.rpc(FROM_HERE)->CreateWidget(widget.BindNewReceiver(),
-                                       client.BindNewRemote());
+  factory->CreateWidget(widget.BindNewPipeAndPassReceiver(),
+                        client.BindNewPipeAndPassRemote());
 
   // Similar to |client| above, we create some implementations of
   // |mojom::WidgetObserver| here to receive messages from Remote
@@ -199,8 +229,8 @@ TEST(NewEndpointTypesTest, BasicUsage) {
   // pipes (one for each impl object) and pass their Remote ends to the remote
   // Widget implementation to bind and use. This allows the remote Widget
   // implementation to send messages to both |observer1| and |observer2|.
-  widget.rpc(FROM_HERE)->AddObserver(observer1.BindNewRemote());
-  widget.rpc(FROM_HERE)->AddObserver(observer2.BindNewRemote());
+  widget->AddObserver(observer1.BindNewPipeAndPassRemote());
+  widget->AddObserver(observer2.BindNewPipeAndPassRemote());
 
   // When the FactoryImpl asynchronously receives our |CreateWidget| call, it
   // will send back a |mojom::WidgetClient::Initialize()| message to our
@@ -209,7 +239,7 @@ TEST(NewEndpointTypesTest, BasicUsage) {
   client.WaitForInitialize();
 
   // Send another message, this time to the remote Widget implementation.
-  widget.rpc(FROM_HERE)->Click();
+  widget->Click();
 
   // When the remote Widget implementation receives a |Click()| message, it
   // broadcasts a |mojom::WidgetObserver::OnClick()| event to all registered
@@ -230,6 +260,44 @@ TEST(NewEndpointTypesTest, BasicUsage) {
   // instances' disconnection handlers. We wait for that to happen here.
   observer1.WaitForDisconnect();
   observer2.WaitForDisconnect();
+}
+
+TEST(NewEndpointTypesTest, AssociatedTypes) {
+  base::test::TaskEnvironment task_environment;
+
+  mojo::Remote<mojom::AssociatedPingerHost> host;
+  AssociatedPingerHostImpl host_impl(host.BindNewPipeAndPassReceiver());
+
+  PingerImpl test_pinger_impl;
+  mojo::PendingAssociatedRemote<mojom::Pinger> test_pinger1;
+  mojo::PendingAssociatedRemote<mojom::Pinger> test_pinger2;
+  test_pinger_impl.AddReceiver(
+      test_pinger1.InitWithNewEndpointAndPassReceiver());
+  test_pinger_impl.AddReceiver(
+      test_pinger2.InitWithNewEndpointAndPassReceiver());
+
+  mojo::AssociatedRemote<mojom::Pinger> host_pinger1;
+  mojo::AssociatedRemote<mojom::Pinger> host_pinger2;
+
+  // Both of these calls should result in a single ping each to |pinger_impl|.
+  host->AddEndpoints(host_pinger1.BindNewEndpointAndPassReceiver(),
+                     std::move(test_pinger1));
+  host->AddEndpoints(host_pinger2.BindNewEndpointAndPassReceiver(),
+                     std::move(test_pinger2));
+
+  // Ping each host pinger twice, should result in a total of 4 pings to
+  // |host|'s PingerImpl.
+  host_pinger1->Ping(base::DoNothing());
+  host_pinger1->Ping(base::DoNothing());
+  host_pinger2->Ping(base::DoNothing());
+  host_pinger2->Ping(base::DoNothing());
+
+  // Should be sufficient to flush all interesting operations, since they all
+  // run on the same pipe.
+  host.FlushForTesting();
+
+  EXPECT_EQ(4, host_impl.ping_count());
+  EXPECT_EQ(2, test_pinger_impl.ping_count());
 }
 
 }  // namespace new_endpoint_types

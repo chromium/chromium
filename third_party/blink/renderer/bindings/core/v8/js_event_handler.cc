@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/core/events/before_unload_event.h"
 #include "third_party/blink/renderer/core/events/error_event.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
 
@@ -48,7 +49,7 @@ void JSEventHandler::SetCompiledHandler(ScriptState* incumbent_script_state,
   event_handler_ = V8EventHandlerNonNull::Create(listener);
 }
 
-// https://html.spec.whatwg.org/C/webappapis.html#the-event-handler-processing-algorithm
+// https://html.spec.whatwg.org/C/#the-event-handler-processing-algorithm
 void JSEventHandler::InvokeInternal(EventTarget& event_target,
                                     Event& event,
                                     v8::Local<v8::Value> js_event) {
@@ -87,7 +88,7 @@ void JSEventHandler::InvokeInternal(EventTarget& event_target,
   //   If an exception gets thrown by the callback, end these steps and allow
   //   the exception to propagate. (It will propagate to the DOM event dispatch
   //   logic, which will then report the exception.)
-  Vector<ScriptValue> arguments;
+  HeapVector<ScriptValue> arguments;
   ScriptState* script_state_of_listener =
       event_handler_->CallbackRelevantScriptState();
 
@@ -95,12 +96,13 @@ void JSEventHandler::InvokeInternal(EventTarget& event_target,
     ErrorEvent* error_event = ToErrorEvent(&event);
 
     // The error argument should be initialized to null for dedicated workers.
-    // https://html.spec.whatwg.org/C/workers.html#runtime-script-errors-2
+    // https://html.spec.whatwg.org/C/#runtime-script-errors-2
     ScriptValue error_attribute = error_event->error(script_state_of_listener);
     if (error_attribute.IsEmpty() ||
-        error_event->target()->InterfaceName() == event_target_names::kWorker)
-      error_attribute = ScriptValue::CreateNull(script_state_of_listener);
-
+        error_event->target()->InterfaceName() == event_target_names::kWorker) {
+      error_attribute =
+          ScriptValue::CreateNull(script_state_of_listener->GetIsolate());
+    }
     arguments = {
         ScriptValue::From(script_state_of_listener, error_event->message()),
         ScriptValue::From(script_state_of_listener, error_event->filename()),
@@ -139,14 +141,22 @@ void JSEventHandler::InvokeInternal(EventTarget& event_target,
   // necessary only for OnBeforeUnloadEventHandler.
   String result_for_beforeunload;
   if (IsOnBeforeUnloadEventHandler()) {
-    // TODO(yukiy): use |NativeValueTraits|.
-    V8StringResource<kTreatNullAsNullString> native_result(v8_return_value);
+    event_handler_->EvaluateAsPartOfCallback(Bind(
+        [](v8::Local<v8::Value>& v8_return_value,
+           String& result_for_beforeunload) {
+          // TODO(yukiy): use |NativeValueTraits|.
+          V8StringResource<kTreatNullAsNullString> native_result(
+              v8_return_value);
 
-    // |native_result.Prepare()| throws exception if it fails to convert
-    // |native_result| to String.
-    if (!native_result.Prepare())
+          // |native_result.Prepare()| throws exception if it fails to convert
+          // |native_result| to String.
+          if (!native_result.Prepare())
+            return;
+          result_for_beforeunload = native_result;
+        },
+        std::ref(v8_return_value), std::ref(result_for_beforeunload)));
+    if (!result_for_beforeunload)
       return;
-    result_for_beforeunload = native_result;
   }
 
   // Step 5. Process return value as follows:

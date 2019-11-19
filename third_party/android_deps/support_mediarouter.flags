@@ -1,0 +1,18 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Help R8 to remove debug related coded. All of these static constants are
+# initialized to: Log.isLoggable(DEBUG, TAG).
+
+-assumevalues class android.support.v7.app.MediaRouteControllerDialogFragment {
+  static boolean USE_SUPPORT_DYNAMIC_GROUP return false;
+}
+
+-assumevalues class android.support.v7.media.MediaRouter {
+  static boolean DEBUG return false;
+}
+
+-assumevalues class android.support.v7.media.RegisteredMediaRouteProvider {
+  static boolean DEBUG return false;
+}

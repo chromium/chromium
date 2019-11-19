@@ -96,7 +96,7 @@ class COMPONENT_EXPORT(SERVICE_MANAGER_EMBEDDER) MainDelegate {
   // |quit_closure| is a callback the embedder may retain and invoke at any time
   // to cleanly terminate Service Manager execution.
   virtual void OnServiceManagerInitialized(
-      const base::Closure& quit_closure,
+      const base::RepeatingClosure& quit_closure,
       BackgroundServiceManager* service_manager);
 
   // Runs an embedded service by name. If the embedder does not know how to

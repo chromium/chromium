@@ -20,14 +20,9 @@ java_group("robolectric_all_java") {
   ]
 }
 
-java_prebuilt("android-all-4.1.2_r1-robolectric-r1_java") {
+java_prebuilt("android-all-4.4_r1-robolectric-r2_java") {
   testonly = true
-  jar_path = "lib/android-all-4.1.2_r1-robolectric-r1.jar"
-}
-
-java_prebuilt("android-all-4.3_r2-robolectric-r1_java") {
-  testonly = true
-  jar_path = "lib/android-all-4.3_r2-robolectric-r1.jar"
+  jar_path = "lib/android-all-4.4_r1-robolectric-r2.jar"
 }
 
 java_prebuilt("android-all-5.0.2_r3-robolectric-r0_java") {
@@ -45,9 +40,9 @@ java_prebuilt("android-all-8.0.0_r4-robolectric-r1_java") {
   jar_path = "lib/android-all-8.0.0_r4-robolectric-r1.jar"
 }
 
-java_prebuilt("android-all-8.1.0-robolectric-r4402310_java") {
+java_prebuilt("android-all-8.1.0-robolectric-4611349_java") {
   testonly = true
-  jar_path = "lib/android-all-8.1.0-robolectric-r4402310.jar"
+  jar_path = "lib/android-all-8.1.0-robolectric-4611349.jar"
 }
 
 java_prebuilt("android-all-9-robolectric-4913185-2_java") {
@@ -73,18 +68,18 @@ java_library("robolectric_java") {
     "//third_party/android_deps:androidx_test_core_java",
     "//third_party/android_deps:androidx_test_ext_junit_java",
     "//third_party/android_deps:androidx_test_monitor_java",
+    "//third_party/android_deps:com_google_guava_guava_java",
     "//third_party/bouncycastle:bouncycastle_java",
-    "//third_party/guava:guava_java",
     "//third_party/jsr-305:jsr_305_javalib",
     "//third_party/junit:junit",
     "//third_party/xstream:xstream_java",
   ]
   data_deps = [
-    ":android-all-4.1.2_r1-robolectric-r1_java",
-    ":android-all-4.3_r2-robolectric-r1_java",
+    ":android-all-4.4_r1-robolectric-r2_java",
     ":android-all-5.0.2_r3-robolectric-r0_java",
     ":android-all-7.1.0_r7-robolectric-r1_java",
     ":android-all-8.0.0_r4-robolectric-r1_java",
+    ":android-all-8.1.0-robolectric-4611349_java",
     ":android-all-9-robolectric-4913185-2_java",
   ]
   java_files = [
@@ -167,8 +162,8 @@ java_annotation_processor("robolectric_processor") {
     ":robolectric_annotations_java",
     ":sdk_list_txt",
     "//build/android:sun_tools_java",
+    "//third_party/android_deps:com_google_guava_guava_java",
     "//third_party/gson:gson_java",
-    "//third_party/guava:guava_java",
     "//third_party/intellij:intellij_annotations_java",
     "//third_party/jsr-305:jsr_305_javalib",
     "//third_party/ow2_asm:asm_commons_java",
@@ -219,12 +214,11 @@ group("sdk_list_txt") {
   # directory. Format is chosen as easliy importable by both python and bash.
   CR = "$0x0A"
   _data = ""
-  _data += rebase_path("lib/android-all-4.1.2_r1-robolectric-r1.jar") + CR
-  _data += rebase_path("lib/android-all-4.3_r2-robolectric-r1.jar") + CR
+  _data += rebase_path("lib/android-all-4.4_r1-robolectric-r2.jar") + CR
   _data += rebase_path("lib/android-all-5.0.2_r3-robolectric-r0.jar") + CR
   _data += rebase_path("lib/android-all-7.1.0_r7-robolectric-r1.jar") + CR
   _data += rebase_path("lib/android-all-8.0.0_r4-robolectric-r1.jar") + CR
-  _data += rebase_path("lib/android-all-8.1.0-robolectric-r4402310.jar") + CR
+  _data += rebase_path("lib/android-all-8.1.0-robolectric-4611349.jar") + CR
   _data += rebase_path("lib/android-all-9-robolectric-4913185-2.jar") + CR
   write_file(sdk_target_dir, _data)
 }
@@ -235,7 +229,7 @@ java_library("robolectric_resources_java") {
     ":android-all-9-robolectric-4913185-2_java",
     ":robolectric_annotations_java",
     ":robolectric_utils_java",
-    "//third_party/guava:guava_java",
+    "//third_party/android_deps:com_google_guava_guava_java",
     "//third_party/jsr-305:jsr_305_javalib",
   ]
   java_files = [
@@ -379,7 +373,7 @@ java_library("robolectric_sandbox_java") {
     ":robolectric_annotations_java",
     ":robolectric_shadowapi_java",
     ":robolectric_utils_java",
-    "//third_party/guava:guava_java",
+    "//third_party/android_deps:com_google_guava_guava_java",
     "//third_party/jsr-305:jsr_305_javalib",
     "//third_party/ow2_asm:asm_commons_java",
     "//third_party/ow2_asm:asm_java",
@@ -878,8 +872,8 @@ java_library("shadows_core_java") {
 
     # Note that gson is not a direct dependency for this library, but must be
     # in the classpath when the Robolectric annotation processor runs.
+    "//third_party/android_deps:com_google_guava_guava_java",
     "//third_party/gson:gson_java",
-    "//third_party/guava:guava_java",
     "//third_party/hamcrest:hamcrest_java",
     "//third_party/icu4j:icu4j_java",
     "//third_party/intellij:intellij_annotations_java",
@@ -912,9 +906,9 @@ java_library("shadows_multidex_java") {
     ":robolectric_utils_java",
     ":shadows_core_java",
     "//build/android:sun_tools_java",
-    "//third_party/android_deps:android_support_multidex_java",
+    "//third_party/android_deps:com_android_support_multidex_java",
+    "//third_party/android_deps:com_google_guava_guava_java",
     "//third_party/gson:gson_java",
-    "//third_party/guava:guava_java",
   ]
 
   # Work-around for gradle generator not yet supporting annotation processors.
@@ -948,8 +942,8 @@ java_library("shadows_play_services_java") {
     "$google_play_services_package:google_play_services_base_java",
     "$google_play_services_package:google_play_services_basement_java",
     "//third_party/android_deps:android_support_v4_java",
+    "//third_party/android_deps:com_google_guava_guava_java",
     "//third_party/gson:gson_java",
-    "//third_party/guava:guava_java",
   ]
 
   # Work-around for gradle generator not yet supporting annotation processors.

@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.contextualsearch;
 
 import org.chromium.chrome.browser.ChromeActivity;
+import org.chromium.chrome.browser.contextualsearch.ContextualSearchFieldTrial.ContextualSearchSwitch;
 import org.chromium.chrome.browser.fullscreen.ChromeFullscreenManager;
 import org.chromium.chrome.browser.tab.Tab;
 
@@ -30,7 +31,8 @@ public class BarOverlapTapSuppression extends ContextualSearchHeuristic {
         // after isCoordinateInsideBar(x, y).
         mPxToDp = selectionController.getPxToDp();
         mActivity = selectionController.getActivity();
-        mIsEnabled = ContextualSearchFieldTrial.isBarOverlapSuppressionEnabled();
+        mIsEnabled = ContextualSearchFieldTrial.getSwitch(
+                ContextualSearchSwitch.IS_BAR_OVERLAP_SUPPRESSION_ENABLED);
         mIsConditionSatisfied = doesBarOverlap(y);
     }
 
@@ -48,7 +50,8 @@ public class BarOverlapTapSuppression extends ContextualSearchHeuristic {
 
     @Override
     protected void logResultsSeen(boolean wasSearchContentViewSeen, boolean wasActivatedByTap) {
-        if (ContextualSearchFieldTrial.isBarOverlapCollectionEnabled()) {
+        if (ContextualSearchFieldTrial.getSwitch(
+                    ContextualSearchSwitch.IS_BAR_OVERLAP_COLLECTION_ENABLED)) {
             ContextualSearchUma.logBarOverlapResultsSeen(
                     wasSearchContentViewSeen, wasActivatedByTap, mIsConditionSatisfied);
         }

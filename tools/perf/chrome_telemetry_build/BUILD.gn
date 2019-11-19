@@ -20,7 +20,10 @@ group("telemetry_chrome_test") {
   data = []
 
   if (is_android) {
-    data_deps += [ "//chrome/android:chrome_public_apk" ]
+    data_deps += [
+      "//android_webview/test:webview_instrumentation_apk",
+      "//chrome/android:chrome_public_apk",
+    ]
 
     if (enable_chrome_android_internal) {
       data_deps += [ "//clank:telemetry_clank_test" ]
@@ -47,7 +50,7 @@ group("telemetry_chrome_test") {
   if (is_mac) {
     data_deps += [
       "//chrome:chrome_framework",
-      "//chrome:chrome_helper_app",
+      "//chrome:chrome_helper_app_default",
       "//third_party/breakpad:dump_syms",
       "//third_party/crashpad/crashpad/tools:crashpad_database_util",
     ]
@@ -56,7 +59,7 @@ group("telemetry_chrome_test") {
   if (is_chromeos && cros_board != "") {
     data_deps += [
       "//chromeos:cros_chrome_deploy",
-      "//chromeos:cros_vm_launcher",
+      "//chromeos:cros_test_wrapper",
     ]
   }
 
@@ -65,40 +68,45 @@ group("telemetry_chrome_test") {
       "//build/win:copy_cdb_to_output",
       "//third_party/crashpad/crashpad/tools:crashpad_database_util",
     ]
-
-    # TODO(GYP): These should be provided automatically through data_deps.
-    data += [ "$root_out_dir/chrome.exe.pdb" ]
-    if (is_component_build) {
-      data += [
-        "$root_out_dir/base.dll.pdb",
-        "$root_out_dir/blink_platform.dll.pdb",
-        "$root_out_dir/content.dll.pdb",
-      ]
-    } else {
-      data += [ "$root_out_dir/chrome_child.dll.pdb" ]
-    }
   }
 }
 
 group("telemetry_chrome_test_without_chrome") {
   testonly = true
 
-  data_deps = [
-    "//third_party/catapult:telemetry_chrome_test_support",
-  ]
-  if (is_android) {
-    data_deps += [
-      "//third_party/breakpad:minidump_dump",
-      "//third_party/breakpad:minidump_stackwalk",
-      "//third_party/breakpad:dump_syms",
-    ]
-  } else {
-    data_deps += [ "//third_party/catapult/telemetry:bitmaptools" ]
-  }
-
   data = [
     "//tools/perf/core/",  # chrome_telemetry_build/ depends on core/
     "//tools/perf/chrome_telemetry_build/",
     "//components/crash/content/tools/generate_breakpad_symbols.py",
   ]
+  data_deps = [
+    "//third_party/catapult:telemetry_chrome_test_support",
+  ]
+  if (is_chromeos) {
+    data_deps += [
+      "//third_party/breakpad:minidump_stackwalk",
+      "//third_party/breakpad:dump_syms",
+    ]
+  }
+  if (is_android) {
+    data += [
+      "//build/android/stacktrace/",
+      "//build/android/tombstones.py",
+
+      # TODO(httpss://crbug.com/833808): Remove this once bots always set
+      # CHROMIUM_OUTPUT_DIR correctly. Currently, this is necessary in order
+      # for //build/android/pylib/constants/__init__.py to detect the output
+      # directory, which tombstones.py depends on.
+      "$root_out_dir/build.ninja",
+    ]
+    data_deps += [
+      "//chrome/android/webapk/shell_apk:maps_go_webapk",
+      "//build/android:devil_chromium_py",
+      "//third_party/breakpad:dump_syms",
+      "//third_party/breakpad:minidump_dump",
+      "//third_party/breakpad:minidump_stackwalk",
+    ]
+  } else {
+    data_deps += [ "//third_party/catapult/telemetry:bitmaptools" ]
+  }
 }

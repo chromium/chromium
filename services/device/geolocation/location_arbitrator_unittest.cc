@@ -9,7 +9,7 @@
 
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "services/device/geolocation/fake_location_provider.h"
 #include "services/device/geolocation/fake_position_cache.h"
 #include "services/device/public/cpp/geolocation/geoposition.h"
@@ -85,13 +85,14 @@ class TestingLocationArbitrator : public LocationArbitrator {
   TestingLocationArbitrator(
       const LocationProviderUpdateCallback& callback,
       const CustomLocationProviderCallback& provider_getter,
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      bool should_use_system_location_provider = false)
       : LocationArbitrator(provider_getter,
                            std::move(url_loader_factory),
                            std::string() /* api_key */,
                            std::make_unique<FakePositionCache>()),
-        cell_(nullptr),
-        gps_(nullptr) {
+        should_use_system_location_provider_(
+            should_use_system_location_provider) {
     SetUpdateCallback(callback);
   }
 
@@ -100,23 +101,22 @@ class TestingLocationArbitrator : public LocationArbitrator {
   std::unique_ptr<LocationProvider> NewNetworkLocationProvider(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const std::string& api_key) override {
-    cell_ = new FakeLocationProvider;
-    return base::WrapUnique(cell_);
+    network_location_provider_ = new FakeLocationProvider;
+    return base::WrapUnique(network_location_provider_);
   }
 
   std::unique_ptr<LocationProvider> NewSystemLocationProvider() override {
-    gps_ = new FakeLocationProvider;
-    return base::WrapUnique(gps_);
+    if (!should_use_system_location_provider_) {
+      return nullptr;
+    }
+
+    system_location_provider_ = new FakeLocationProvider;
+    return base::WrapUnique(system_location_provider_);
   }
 
-  // Two location providers, with nice short names to make the tests more
-  // readable. Note |gps_| will only be set when there is a high accuracy
-  // observer registered (and |cell_| when there's at least one observer of any
-  // type).
-  // TODO(mvanouwerkerk): rename |cell_| to |network_location_provider_| and
-  // |gps_| to |gps_location_provider_|
-  FakeLocationProvider* cell_;
-  FakeLocationProvider* gps_;
+  FakeLocationProvider* network_location_provider_ = nullptr;
+  FakeLocationProvider* system_location_provider_ = nullptr;
+  bool should_use_system_location_provider_;
 };
 
 class GeolocationLocationArbitratorTest : public testing::Test {
@@ -129,12 +129,14 @@ class GeolocationLocationArbitratorTest : public testing::Test {
   // may be null.
   void InitializeArbitrator(
       const CustomLocationProviderCallback& provider_getter,
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      bool should_use_system_location_provider = false) {
     const LocationProvider::LocationProviderUpdateCallback callback =
         base::BindRepeating(&MockLocationObserver::OnLocationUpdate,
                             base::Unretained(observer_.get()));
     arbitrator_.reset(new TestingLocationArbitrator(
-        callback, provider_getter, std::move(url_loader_factory)));
+        callback, provider_getter, std::move(url_loader_factory),
+        should_use_system_location_provider));
   }
 
   // testing::Test
@@ -156,13 +158,17 @@ class GeolocationLocationArbitratorTest : public testing::Test {
            base::TimeDelta::FromMilliseconds(1);
   }
 
-  FakeLocationProvider* cell() { return arbitrator_->cell_; }
+  FakeLocationProvider* network_location_provider() {
+    return arbitrator_->network_location_provider_;
+  }
 
-  FakeLocationProvider* gps() { return arbitrator_->gps_; }
+  FakeLocationProvider* system_location_provider() {
+    return arbitrator_->system_location_provider_;
+  }
 
   const std::unique_ptr<MockLocationObserver> observer_;
   std::unique_ptr<TestingLocationArbitrator> arbitrator_;
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 };
 
@@ -184,61 +190,94 @@ TEST_F(GeolocationLocationArbitratorTest, OnPermissionGranted) {
   EXPECT_TRUE(arbitrator_->HasPermissionBeenGrantedForTest());
   // Can't check the provider has been notified without going through the
   // motions to create the provider (see next test).
-  EXPECT_FALSE(cell());
-  EXPECT_FALSE(gps());
+  EXPECT_FALSE(network_location_provider());
+  EXPECT_FALSE(system_location_provider());
 }
 
-// Tests basic operation (single position fix) with both network location
-// providers and system location provider.
-TEST_F(GeolocationLocationArbitratorTest, NormalUsage) {
+// Tests basic operation (single position fix) network location provider.
+TEST_F(GeolocationLocationArbitratorTest, NormalUsageNetwork) {
   InitializeArbitrator(
       base::BindRepeating(&GetCustomLocationProviderForTest, nullptr),
       url_loader_factory_);
   ASSERT_TRUE(arbitrator_);
 
-  EXPECT_FALSE(cell());
-  EXPECT_FALSE(gps());
+  EXPECT_FALSE(network_location_provider());
+  EXPECT_FALSE(system_location_provider());
   arbitrator_->StartProvider(false);
 
-  ASSERT_TRUE(cell());
-  EXPECT_TRUE(gps());
-  EXPECT_EQ(FakeLocationProvider::LOW_ACCURACY, cell()->state_);
-  EXPECT_EQ(FakeLocationProvider::LOW_ACCURACY, gps()->state_);
+  ASSERT_TRUE(network_location_provider());
+  EXPECT_FALSE(system_location_provider());
+  EXPECT_EQ(FakeLocationProvider::LOW_ACCURACY,
+            network_location_provider()->state_);
   EXPECT_FALSE(ValidateGeoposition(observer_->last_position()));
   EXPECT_EQ(mojom::Geoposition::ErrorCode::NONE,
             observer_->last_position().error_code);
 
-  SetReferencePosition(cell());
+  SetReferencePosition(network_location_provider());
 
   EXPECT_TRUE(ValidateGeoposition(observer_->last_position()) ||
               observer_->last_position().error_code !=
                   mojom::Geoposition::ErrorCode::NONE);
-  EXPECT_EQ(cell()->GetPosition().latitude,
+  EXPECT_EQ(network_location_provider()->GetPosition().latitude,
             observer_->last_position().latitude);
 
-  EXPECT_FALSE(cell()->is_permission_granted());
+  EXPECT_FALSE(network_location_provider()->is_permission_granted());
   EXPECT_FALSE(arbitrator_->HasPermissionBeenGrantedForTest());
   arbitrator_->OnPermissionGranted();
   EXPECT_TRUE(arbitrator_->HasPermissionBeenGrantedForTest());
-  EXPECT_TRUE(cell()->is_permission_granted());
+  EXPECT_TRUE(network_location_provider()->is_permission_granted());
+}
+
+// Tests basic operation (single position fix) system location provider.
+TEST_F(GeolocationLocationArbitratorTest, NormalUsageSystem) {
+  InitializeArbitrator(
+      base::BindRepeating(&GetCustomLocationProviderForTest, nullptr),
+      url_loader_factory_, true);
+  ASSERT_TRUE(arbitrator_);
+
+  EXPECT_FALSE(network_location_provider());
+  EXPECT_FALSE(system_location_provider());
+  arbitrator_->StartProvider(false);
+
+  EXPECT_FALSE(network_location_provider());
+  ASSERT_TRUE(system_location_provider());
+  EXPECT_EQ(FakeLocationProvider::LOW_ACCURACY,
+            system_location_provider()->state_);
+  EXPECT_FALSE(ValidateGeoposition(observer_->last_position()));
+  EXPECT_EQ(mojom::Geoposition::ErrorCode::NONE,
+            observer_->last_position().error_code);
+
+  SetReferencePosition(system_location_provider());
+
+  EXPECT_TRUE(ValidateGeoposition(observer_->last_position()) ||
+              observer_->last_position().error_code !=
+                  mojom::Geoposition::ErrorCode::NONE);
+  EXPECT_EQ(system_location_provider()->GetPosition().latitude,
+            observer_->last_position().latitude);
+
+  EXPECT_FALSE(system_location_provider()->is_permission_granted());
+  EXPECT_FALSE(arbitrator_->HasPermissionBeenGrantedForTest());
+  arbitrator_->OnPermissionGranted();
+  EXPECT_TRUE(arbitrator_->HasPermissionBeenGrantedForTest());
+  EXPECT_TRUE(system_location_provider()->is_permission_granted());
 }
 
 // Tests basic operation (single position fix) with no network location
-// providers and a custom system location provider.
+// provider, no system location provider and a custom system location provider.
 TEST_F(GeolocationLocationArbitratorTest, CustomSystemProviderOnly) {
   auto provider = std::make_unique<FakeLocationProvider>();
-  FakeLocationProvider* fake_location_provider = provider.get();
+  auto* fake_location_provider = provider.get();
   InitializeArbitrator(base::BindRepeating(&GetCustomLocationProviderForTest,
                                            base::Passed(&provider)),
-                       nullptr);
+                       nullptr, true);
   ASSERT_TRUE(arbitrator_);
 
-  EXPECT_FALSE(cell());
-  EXPECT_FALSE(gps());
+  EXPECT_FALSE(network_location_provider());
+  EXPECT_FALSE(system_location_provider());
   arbitrator_->StartProvider(false);
 
-  ASSERT_FALSE(cell());
-  EXPECT_FALSE(gps());
+  EXPECT_FALSE(network_location_provider());
+  EXPECT_FALSE(system_location_provider());
   EXPECT_EQ(FakeLocationProvider::LOW_ACCURACY, fake_location_provider->state_);
   EXPECT_FALSE(ValidateGeoposition(observer_->last_position()));
   EXPECT_EQ(mojom::Geoposition::ErrorCode::NONE,
@@ -259,44 +298,6 @@ TEST_F(GeolocationLocationArbitratorTest, CustomSystemProviderOnly) {
   EXPECT_TRUE(fake_location_provider->is_permission_granted());
 }
 
-// Tests basic operation (single position fix) with both network location
-// providers and a custom system location provider.
-TEST_F(GeolocationLocationArbitratorTest,
-       CustomSystemAndDefaultNetworkProviders) {
-  auto provider = std::make_unique<FakeLocationProvider>();
-  FakeLocationProvider* fake_location_provider = provider.get();
-  InitializeArbitrator(base::BindRepeating(&GetCustomLocationProviderForTest,
-                                           base::Passed(&provider)),
-                       url_loader_factory_);
-  ASSERT_TRUE(arbitrator_);
-
-  EXPECT_FALSE(cell());
-  EXPECT_FALSE(gps());
-  arbitrator_->StartProvider(false);
-
-  ASSERT_TRUE(cell());
-  EXPECT_FALSE(gps());
-  EXPECT_EQ(FakeLocationProvider::LOW_ACCURACY, fake_location_provider->state_);
-  EXPECT_EQ(FakeLocationProvider::LOW_ACCURACY, cell()->state_);
-  EXPECT_FALSE(ValidateGeoposition(observer_->last_position()));
-  EXPECT_EQ(mojom::Geoposition::ErrorCode::NONE,
-            observer_->last_position().error_code);
-
-  SetReferencePosition(cell());
-
-  EXPECT_TRUE(ValidateGeoposition(observer_->last_position()) ||
-              observer_->last_position().error_code !=
-                  mojom::Geoposition::ErrorCode::NONE);
-  EXPECT_EQ(cell()->GetPosition().latitude,
-            observer_->last_position().latitude);
-
-  EXPECT_FALSE(cell()->is_permission_granted());
-  EXPECT_FALSE(arbitrator_->HasPermissionBeenGrantedForTest());
-  arbitrator_->OnPermissionGranted();
-  EXPECT_TRUE(arbitrator_->HasPermissionBeenGrantedForTest());
-  EXPECT_TRUE(cell()->is_permission_granted());
-}
-
 // Tests flipping from Low to High accuracy mode as requested by a location
 // observer.
 TEST_F(GeolocationLocationArbitratorTest, SetObserverOptions) {
@@ -304,96 +305,16 @@ TEST_F(GeolocationLocationArbitratorTest, SetObserverOptions) {
       base::BindRepeating(&GetCustomLocationProviderForTest, nullptr),
       url_loader_factory_);
   arbitrator_->StartProvider(false);
-  ASSERT_TRUE(cell());
-  ASSERT_TRUE(gps());
-  EXPECT_EQ(FakeLocationProvider::LOW_ACCURACY, cell()->state_);
-  EXPECT_EQ(FakeLocationProvider::LOW_ACCURACY, gps()->state_);
-  SetReferencePosition(cell());
-  EXPECT_EQ(FakeLocationProvider::LOW_ACCURACY, cell()->state_);
-  EXPECT_EQ(FakeLocationProvider::LOW_ACCURACY, gps()->state_);
+  ASSERT_TRUE(network_location_provider());
+  EXPECT_FALSE(system_location_provider());
+  EXPECT_EQ(FakeLocationProvider::LOW_ACCURACY,
+            network_location_provider()->state_);
+  SetReferencePosition(network_location_provider());
+  EXPECT_EQ(FakeLocationProvider::LOW_ACCURACY,
+            network_location_provider()->state_);
   arbitrator_->StartProvider(true);
-  EXPECT_EQ(FakeLocationProvider::HIGH_ACCURACY, cell()->state_);
-  EXPECT_EQ(FakeLocationProvider::HIGH_ACCURACY, gps()->state_);
-}
-
-// Tests arbitration algorithm through a sequence of position fixes from
-// multiple sources, with varying accuracy, across a period of time.
-TEST_F(GeolocationLocationArbitratorTest, Arbitration) {
-  InitializeArbitrator(
-      base::BindRepeating(&GetCustomLocationProviderForTest, nullptr),
-      url_loader_factory_);
-  arbitrator_->StartProvider(false);
-  ASSERT_TRUE(cell());
-  ASSERT_TRUE(gps());
-
-  SetPositionFix(cell(), 1, 2, 150);
-
-  // First position available
-  EXPECT_TRUE(ValidateGeoposition(observer_->last_position()));
-  CheckLastPositionInfo(1, 2, 150);
-
-  SetPositionFix(gps(), 3, 4, 50);
-
-  // More accurate fix available
-  CheckLastPositionInfo(3, 4, 50);
-
-  SetPositionFix(cell(), 5, 6, 150);
-
-  // New fix is available but it's less accurate, older fix should be kept.
-  CheckLastPositionInfo(3, 4, 50);
-
-  // Advance time, and notify once again
-  AdvanceTimeNow(SwitchOnFreshnessCliff());
-  cell()->HandlePositionChanged(cell()->GetPosition());
-
-  // New fix is available, less accurate but fresher
-  CheckLastPositionInfo(5, 6, 150);
-
-  // Advance time, and set a low accuracy position
-  AdvanceTimeNow(SwitchOnFreshnessCliff());
-  SetPositionFix(cell(), 5.676731, 139.629385, 1000);
-  CheckLastPositionInfo(5.676731, 139.629385, 1000);
-
-  // 15 secs later, step outside. Switches to gps signal.
-  AdvanceTimeNow(base::TimeDelta::FromSeconds(15));
-  SetPositionFix(gps(), 3.5676457, 139.629198, 50);
-  CheckLastPositionInfo(3.5676457, 139.629198, 50);
-
-  // 5 mins later switch cells while walking. Stay on gps.
-  AdvanceTimeNow(base::TimeDelta::FromMinutes(5));
-  SetPositionFix(cell(), 3.567832, 139.634648, 300);
-  SetPositionFix(gps(), 3.5677675, 139.632314, 50);
-  CheckLastPositionInfo(3.5677675, 139.632314, 50);
-
-  // Ride train and gps signal degrades slightly. Stay on fresher gps
-  AdvanceTimeNow(base::TimeDelta::FromMinutes(5));
-  SetPositionFix(gps(), 3.5679026, 139.634777, 300);
-  CheckLastPositionInfo(3.5679026, 139.634777, 300);
-
-  // 14 minutes later
-  AdvanceTimeNow(base::TimeDelta::FromMinutes(14));
-
-  // GPS reading misses a beat, but don't switch to cell yet to avoid
-  // oscillating.
-  SetPositionFix(gps(), 3.5659005, 139.682579, 300);
-
-  AdvanceTimeNow(base::TimeDelta::FromSeconds(7));
-  SetPositionFix(cell(), 3.5689579, 139.691420, 1000);
-  CheckLastPositionInfo(3.5659005, 139.682579, 300);
-
-  // 1 minute later
-  AdvanceTimeNow(base::TimeDelta::FromMinutes(1));
-
-  // Enter tunnel. Stay on fresher gps for a moment.
-  SetPositionFix(cell(), 3.5657078, 139.68922, 300);
-  SetPositionFix(gps(), 3.5657104, 139.690341, 300);
-  CheckLastPositionInfo(3.5657104, 139.690341, 300);
-
-  // 2 minutes later
-  AdvanceTimeNow(base::TimeDelta::FromMinutes(2));
-  // Arrive in station. Cell moves but GPS is stale. Switch to fresher cell.
-  SetPositionFix(cell(), 3.5658700, 139.069979, 1000);
-  CheckLastPositionInfo(3.5658700, 139.069979, 1000);
+  EXPECT_EQ(FakeLocationProvider::HIGH_ACCURACY,
+            network_location_provider()->state_);
 }
 
 // Verifies that the arbitrator doesn't retain pointers to old providers after
@@ -403,11 +324,11 @@ TEST_F(GeolocationLocationArbitratorTest, TwoOneShotsIsNewPositionBetter) {
       base::BindRepeating(&GetCustomLocationProviderForTest, nullptr),
       url_loader_factory_);
   arbitrator_->StartProvider(false);
-  ASSERT_TRUE(cell());
-  ASSERT_TRUE(gps());
+  ASSERT_TRUE(network_location_provider());
+  EXPECT_FALSE(system_location_provider());
 
   // Set the initial position.
-  SetPositionFix(cell(), 3, 139, 100);
+  SetPositionFix(network_location_provider(), 3, 139, 100);
   CheckLastPositionInfo(3, 139, 100);
 
   // Restart providers to simulate a one-shot request.
@@ -424,7 +345,7 @@ TEST_F(GeolocationLocationArbitratorTest, TwoOneShotsIsNewPositionBetter) {
   AdvanceTimeNow(base::TimeDelta::FromMilliseconds(5));
 
   // Update with a less accurate position to verify 240956.
-  SetPositionFix(cell(), 3, 139, 150);
+  SetPositionFix(network_location_provider(), 3, 139, 150);
   CheckLastPositionInfo(3, 139, 150);
 }
 

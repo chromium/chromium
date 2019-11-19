@@ -11,7 +11,7 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/shared_memory.h"
+#include "base/memory/read_only_shared_memory_region.h"
 #include "base/observer_list.h"
 #include "content/public/renderer/render_thread_observer.h"
 #include "extensions/common/extension.h"
@@ -93,7 +93,7 @@ class UserScriptSetManager : public content::RenderThreadObserver {
   UserScriptSet* GetProgrammaticScriptsByHostID(const HostID& host_id);
 
   // Handle the UpdateUserScripts extension message.
-  void OnUpdateUserScripts(base::SharedMemoryHandle shared_memory,
+  void OnUpdateUserScripts(base::ReadOnlySharedMemoryRegion shared_memory,
                            const HostID& host_id,
                            const std::set<HostID>& changed_hosts,
                            bool whitelisted_only);

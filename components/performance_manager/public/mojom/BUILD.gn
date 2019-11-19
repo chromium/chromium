@@ -1,0 +1,19 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//mojo/public/tools/bindings/mojom.gni")
+
+mojom_component("mojom") {
+  output_prefix = "performace_manager_public_mojom"
+  macro_prefix = "PERFORMANCE_MANAGER_PUBLIC_MOJOM"
+
+  sources = [
+    "coordination_unit.mojom",
+    "lifecycle.mojom",
+  ]
+
+  public_deps = [
+    "//mojo/public/mojom/base",
+  ]
+}

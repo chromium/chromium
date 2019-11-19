@@ -9,8 +9,8 @@
 
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
-#include "components/autofill/core/browser/autofill_profile.h"
-#include "components/autofill/core/browser/credit_card.h"
+#include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/payments/full_card_request.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
@@ -18,8 +18,7 @@
 
 namespace autofill_assistant {
 
-SelfDeleteFullCardRequester::SelfDeleteFullCardRequester()
-    : weak_ptr_factory_(this) {}
+SelfDeleteFullCardRequester::SelfDeleteFullCardRequester() {}
 
 void SelfDeleteFullCardRequester::GetFullCard(
     content::WebContents* web_contents,

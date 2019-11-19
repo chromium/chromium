@@ -1,0 +1,81 @@
+    <style>
+    #colors,
+    #sizes {
+      display: grid;
+      grid-gap: 20px 10px;
+      grid-template-columns: repeat(8, 1fr);
+      margin: 10px;
+    }
+    #colors {
+      overflow: hidden;
+    }
+    #expand {
+      --cr-icon-button-icon-size: 16px;
+      --cr-icon-button-size: 32px;
+      grid-column: 8;
+      grid-row: 1 / 4;
+      margin: 0;
+    }
+    input {
+      -webkit-appearance: none;
+      border-radius: 16px;
+      height: 32px;
+      margin: 0;
+      padding: 0;
+      width: 32px;
+    }
+    #sizes input {
+      background: black;
+      border: calc(15px - 13px * var(--item-size)) solid white;
+      position: relative;
+    }
+    #sizes input:hover {
+      box-shadow: 0 0 0 1px silver;
+    }
+    #sizes input[checked] {
+      box-shadow: 0 0 0 1px black;
+    }
+    #colors input {
+      background: var(--item-color, magenta);
+      transition: transform 300ms;
+      transform: scale(0.625)
+    }
+    #colors input:hover {
+      transform: scale(0.8125);
+    }
+    #colors input[checked] {
+      transform: scale(1);
+    }
+    #colors input[outline] {
+      border: 1px solid silver;
+    }
+    #separator {
+      background: silver;
+      height: 1px;
+    }
+    </style>
+    <div id="colors" on-change="colorChanged_" expanded$="[[expanded_]]">
+      <template is="dom-repeat" items="[[colors_]]">
+        <input type="radio" name="color" value="[[item.color]]"
+            outline$="[[item.outline]]"
+            checked$="[[equal_(selectedColor, item.color)]]"
+            tabindex="1" style="--item-color: [[item.color]]"
+            title$="[[lookup_(strings, item.name)]]"
+            aria-label$="[[lookup_(strings, item.name)]]"
+            on-pointerdown="blurOnPointerDown">
+      </template>
+      <cr-icon-button id="expand" iron-icon="cr:expand-more" tabindex="3"
+          on-click="toggleExpanded_" aria-label$="[[strings.annotationExpand]]"
+          title$="[[strings.annotationExpand]]"></cr-icon-button>
+    </div>
+    <div id="separator"></div>
+    <div id="sizes" on-change="sizeChanged_">
+      <template is="dom-repeat" items="[[sizes_]]">
+        <input type="radio" name="size" value="[[item.size]]"
+            checked$="[[equal_(selectedSize, item.size)]]"
+            tabindex="2" style="--item-size: [[item.size]]"
+            title$="{{lookup_(strings, item.name)}}"
+            aria-label$="[[lookup_(strings, item.name)]]"
+            on-pointerdown="blurOnPointerDown">
+      </template>
+    </div>

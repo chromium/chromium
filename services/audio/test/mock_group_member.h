@@ -21,8 +21,8 @@ class MockGroupMember : public LoopbackGroupMember {
 
   MOCK_CONST_METHOD0(GetAudioParameters, const media::AudioParameters&());
   MOCK_CONST_METHOD0(GetDeviceId, std::string());
-  MOCK_METHOD2(StartSnooping, void(Snooper* snooper, SnoopingMode mode));
-  MOCK_METHOD2(StopSnooping, void(Snooper* snooper, SnoopingMode mode));
+  MOCK_METHOD1(StartSnooping, void(Snooper* snooper));
+  MOCK_METHOD1(StopSnooping, void(Snooper* snooper));
   MOCK_METHOD0(StartMuting, void());
   MOCK_METHOD0(StopMuting, void());
   MOCK_METHOD0(IsMuting, bool());

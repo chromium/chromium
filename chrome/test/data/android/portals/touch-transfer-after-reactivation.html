@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    #scroller {
+      height: 2000px;
+      width: 300px;
+      background-color: blue;
+    }
+  </style>
+</head>
+<body>
+  <div id="scroller"></div>
+  <portal src="activate-predecessor.html"></portal>
+  <script>
+    document.body.addEventListener('touchstart', e => {
+      var portal = document.querySelector('portal');
+      portal.activate().then(() => {
+        document.body.removeChild(portal);
+      });
+    }, {passive: false, once: true});
+  </script>
+</body>
+</html>

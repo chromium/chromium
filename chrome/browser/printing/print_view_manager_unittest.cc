@@ -18,8 +18,10 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
-#include "components/printing/common/print_messages.h"
+#include "components/printing/common/print.mojom.h"
 #include "content/public/test/test_renderer_host.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
+#include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 
 namespace printing {
 
@@ -40,9 +42,14 @@ class TestPrintViewManager : public PrintViewManagerBase {
   // Mostly copied from PrintViewManager::PrintPreviewNow(). We can't override
   // PrintViewManager since it is a user data class.
   bool PrintPreviewNow(content::RenderFrameHost* rfh, bool has_selection) {
-    auto msg = std::make_unique<PrintMsg_InitiatePrintPreview>(
-        rfh->GetRoutingID(), has_selection);
-    return PrintNowInternal(rfh, std::move(msg));
+    // Don't print / print preview interstitials or crashed tabs.
+    if (IsInterstitialOrCrashed())
+      return false;
+
+    mojo::AssociatedRemote<mojom::PrintRenderFrame> print_render_frame;
+    rfh->GetRemoteAssociatedInterfaces()->GetInterface(&print_render_frame);
+    print_render_frame->InitiatePrintPreview(nullptr, has_selection);
+    return true;
   }
 
   // Getters for validating arguments to StartPdf...Conversion functions
@@ -74,9 +81,12 @@ class TestPrintViewManager : public PrintViewManagerBase {
 
  protected:
   // Override to create a TestPrintJob instead of a real one.
-  bool CreateNewPrintJob(PrinterQuery* query) override {
+  bool CreateNewPrintJob(std::unique_ptr<PrinterQuery> query) override {
     print_job_ = base::MakeRefCounted<TestPrintJob>();
-    print_job_->Initialize(query, RenderSourceName(), number_pages_);
+    print_job_->Initialize(std::move(query), RenderSourceName(), number_pages_);
+#if defined(OS_CHROMEOS)
+    print_job_->SetSource(PrintJob::Source::PRINT_PREVIEW, /*source_id=*/"");
+#endif  // defined(OS_CHROMEOS)
     return true;
   }
 
@@ -135,7 +145,7 @@ TEST_F(PrintViewManagerTest, PostScriptHasCorrectOffsets) {
 
   print_view_manager->PrintPreviewNow(web_contents->GetMainFrame(), false);
 
-  base::Value print_ticket = GetPrintTicket(printing::kLocalPrinter, false);
+  base::Value print_ticket = GetPrintTicket(printing::kLocalPrinter);
   const char kTestData[] = "abc";
   auto print_data = base::MakeRefCounted<base::RefCountedStaticMemory>(
       kTestData, sizeof(kTestData));

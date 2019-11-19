@@ -4,217 +4,192 @@
 
 /**
  * Handler for scan related events of DirectoryModel.
- *
- * @param {!DirectoryModel} directoryModel
- * @param {!ListContainer} listContainer
- * @param {!SpinnerController} spinnerController
- * @param {!CommandHandler} commandHandler
- * @param {!FileSelectionHandler} selectionHandler
- * @constructor
- * @struct
  */
-function ScanController(
-    directoryModel,
-    listContainer,
-    spinnerController,
-    commandHandler,
-    selectionHandler) {
+class ScanController {
   /**
-   * @type {!DirectoryModel}
-   * @const
+   * @param {!DirectoryModel} directoryModel
+   * @param {!ListContainer} listContainer
+   * @param {!SpinnerController} spinnerController
+   * @param {!CommandHandler} commandHandler
+   * @param {!FileSelectionHandler} selectionHandler
+   */
+  constructor(
+      directoryModel, listContainer, spinnerController, commandHandler,
+      selectionHandler) {
+    /** @private @const {!DirectoryModel} */
+    this.directoryModel_ = directoryModel;
+
+    /** @private @const {!ListContainer} */
+    this.listContainer_ = listContainer;
+
+    /** @private @const {!SpinnerController} */
+    this.spinnerController_ = spinnerController;
+
+    /** @private @const {!CommandHandler} */
+    this.commandHandler_ = commandHandler;
+
+    /** @private @const {!FileSelectionHandler} */
+    this.selectionHandler_ = selectionHandler;
+
+    /**
+     * Whether a scan is in progress.
+     * @private {boolean}
+     */
+    this.scanInProgress_ = false;
+
+    /**
+     * Timer ID to delay UI refresh after a scan is updated.
+     * @private {number}
+     */
+    this.scanUpdatedTimer_ = 0;
+
+    /**
+     * @private {?function()}
+     */
+    this.spinnerHideCallback_ = null;
+
+    this.directoryModel_.addEventListener(
+        'scan-started', this.onScanStarted_.bind(this));
+    this.directoryModel_.addEventListener(
+        'scan-completed', this.onScanCompleted_.bind(this));
+    this.directoryModel_.addEventListener(
+        'scan-failed', this.onScanCancelled_.bind(this));
+    this.directoryModel_.addEventListener(
+        'scan-cancelled', this.onScanCancelled_.bind(this));
+    this.directoryModel_.addEventListener(
+        'scan-updated', this.onScanUpdated_.bind(this));
+    this.directoryModel_.addEventListener(
+        'rescan-completed', this.onRescanCompleted_.bind(this));
+  }
+
+  /**
    * @private
    */
-  this.directoryModel_ = directoryModel;
+  onScanStarted_() {
+    if (this.scanInProgress_) {
+      this.listContainer_.endBatchUpdates();
+    }
+
+    if (window.IN_TEST) {
+      this.listContainer_.element.removeAttribute('scan-completed');
+      this.listContainer_.element.setAttribute(
+          'scan-started', this.directoryModel_.getCurrentDirName());
+    }
+
+    this.listContainer_.startBatchUpdates();
+    this.scanInProgress_ = true;
+
+    if (this.scanUpdatedTimer_) {
+      clearTimeout(this.scanUpdatedTimer_);
+      this.scanUpdatedTimer_ = 0;
+    }
+
+    this.hideSpinner_();
+    this.spinnerHideCallback_ = this.spinnerController_.showWithDelay(
+        500, this.onSpinnerShown_.bind(this));
+  }
 
   /**
-   * @type {!ListContainer}
-   * @const
    * @private
    */
-  this.listContainer_ = listContainer;
+  onScanCompleted_() {
+    if (!this.scanInProgress_) {
+      console.error('Scan-completed event received. But scan is not started.');
+      return;
+    }
 
-  /**
-   * @type {!SpinnerController}
-   * @const
-   * @private
-   */
-  this.spinnerController_ = spinnerController;
+    if (window.IN_TEST) {
+      this.listContainer_.element.removeAttribute('scan-started');
+      this.listContainer_.element.setAttribute(
+          'scan-completed', this.directoryModel_.getCurrentDirName());
+    }
 
-  /**
-   * @type {!CommandHandler}
-   * @const
-   * @private
-   */
-  this.commandHandler_ = commandHandler;
+    this.hideSpinner_();
 
-  /**
-   * @type {!FileSelectionHandler}
-   * @const
-   * @private
-   */
-  this.selectionHandler_ = selectionHandler;
+    if (this.scanUpdatedTimer_) {
+      clearTimeout(this.scanUpdatedTimer_);
+      this.scanUpdatedTimer_ = 0;
+    }
 
-  /**
-   * Whether a scan is in progress.
-   * @type {boolean}
-   * @private
-   */
-  this.scanInProgress_ = false;
-
-  /**
-   * Timer ID to delay UI refresh after a scan is updated.
-   * @type {number}
-   * @private
-   */
-  this.scanUpdatedTimer_ = 0;
-
-  /**
-   * @type {?function()}
-   * @private
-   */
-  this.spinnerHideCallback_ = null;
-
-  this.directoryModel_.addEventListener(
-      'scan-started', this.onScanStarted_.bind(this));
-  this.directoryModel_.addEventListener(
-      'scan-completed', this.onScanCompleted_.bind(this));
-  this.directoryModel_.addEventListener(
-      'scan-failed', this.onScanCancelled_.bind(this));
-  this.directoryModel_.addEventListener(
-      'scan-cancelled', this.onScanCancelled_.bind(this));
-  this.directoryModel_.addEventListener(
-      'scan-updated', this.onScanUpdated_.bind(this));
-  this.directoryModel_.addEventListener(
-      'rescan-completed', this.onRescanCompleted_.bind(this));
-}
-
-/**
- * @private
- */
-ScanController.prototype.onScanStarted_ = function() {
-  if (this.scanInProgress_) {
+    this.scanInProgress_ = false;
     this.listContainer_.endBatchUpdates();
   }
 
-  if (this.commandHandler_) {
-    this.commandHandler_.updateAvailability();
+  /**
+   * @private
+   */
+  onScanUpdated_() {
+    if (!this.scanInProgress_) {
+      console.error('Scan-updated event received. But scan is not started.');
+      return;
+    }
+
+    if (this.scanUpdatedTimer_) {
+      return;
+    }
+
+    // Show contents incrementally by finishing batch updated, but only after
+    // 200ms elapsed, to avoid flickering when it is not necessary.
+    this.scanUpdatedTimer_ = setTimeout(() => {
+      this.hideSpinner_();
+
+      // Update the UI.
+      if (this.scanInProgress_) {
+        this.listContainer_.endBatchUpdates();
+        this.listContainer_.startBatchUpdates();
+      }
+      this.scanUpdatedTimer_ = 0;
+    }, 200);
   }
 
-  this.listContainer_.startBatchUpdates();
-  this.scanInProgress_ = true;
+  /**
+   * @private
+   */
+  onScanCancelled_() {
+    if (!this.scanInProgress_) {
+      console.error('Scan-cancelled event received. But scan is not started.');
+      return;
+    }
 
-  if (this.scanUpdatedTimer_) {
-    clearTimeout(this.scanUpdatedTimer_);
-    this.scanUpdatedTimer_ = 0;
-  }
-
-  this.hideSpinner_();
-  this.spinnerHideCallback_ = this.spinnerController_.showWithDelay(
-      500, this.onSpinnerShown_.bind(this));
-};
-
-/**
- * @private
- */
-ScanController.prototype.onScanCompleted_ = function() {
-  if (!this.scanInProgress_) {
-    console.error('Scan-completed event received. But scan is not started.');
-    return;
-  }
-
-  this.hideSpinner_();
-
-  if (this.scanUpdatedTimer_) {
-    clearTimeout(this.scanUpdatedTimer_);
-    this.scanUpdatedTimer_ = 0;
-  }
-
-  this.scanInProgress_ = false;
-  this.listContainer_.endBatchUpdates();
-
-  if (this.commandHandler_) {
-    this.commandHandler_.updateAvailability();
-  }
-};
-
-/**
- * @private
- */
-ScanController.prototype.onScanUpdated_ = function() {
-  if (!this.scanInProgress_) {
-    console.error('Scan-updated event received. But scan is not started.');
-    return;
-  }
-
-  if (this.scanUpdatedTimer_) {
-    return;
-  }
-
-  // Show contents incrementally by finishing batch updated, but only after
-  // 200ms elapsed, to avoid flickering when it is not necessary.
-  this.scanUpdatedTimer_ = setTimeout(() => {
     this.hideSpinner_();
 
-    // Update the UI.
+    if (this.scanUpdatedTimer_) {
+      clearTimeout(this.scanUpdatedTimer_);
+      this.scanUpdatedTimer_ = 0;
+    }
+
+    this.scanInProgress_ = false;
+    this.listContainer_.endBatchUpdates();
+  }
+
+  /**
+   * Handle the 'rescan-completed' from the DirectoryModel.
+   * @private
+   */
+  onRescanCompleted_() {
+    this.selectionHandler_.onFileSelectionChanged();
+  }
+
+  /**
+   * When a spinner is shown, updates the UI to remove items in the previous
+   * directory.
+   * @private
+   */
+  onSpinnerShown_() {
     if (this.scanInProgress_) {
       this.listContainer_.endBatchUpdates();
       this.listContainer_.startBatchUpdates();
     }
-    this.scanUpdatedTimer_ = 0;
-  }, 200);
-};
-
-/**
- * @private
- */
-ScanController.prototype.onScanCancelled_ = function() {
-  if (!this.scanInProgress_) {
-    console.error('Scan-cancelled event received. But scan is not started.');
-    return;
   }
 
-  this.hideSpinner_();
-
-  if (this.scanUpdatedTimer_) {
-    clearTimeout(this.scanUpdatedTimer_);
-    this.scanUpdatedTimer_ = 0;
+  /**
+   * Hides the spinner if it's shown or scheduled to be shown.
+   * @private
+   */
+  hideSpinner_() {
+    if (this.spinnerHideCallback_) {
+      this.spinnerHideCallback_();
+      this.spinnerHideCallback_ = null;
+    }
   }
-
-  this.scanInProgress_ = false;
-  this.listContainer_.endBatchUpdates();
-
-  if (this.commandHandler_) {
-    this.commandHandler_.updateAvailability();
-  }
-};
-
-/**
- * Handle the 'rescan-completed' from the DirectoryModel.
- * @private
- */
-ScanController.prototype.onRescanCompleted_ = function() {
-  this.selectionHandler_.onFileSelectionChanged();
-};
-
-/**
- * When a spinner is shown, updates the UI to remove items in the previous
- * directory.
- * @private
- */
-ScanController.prototype.onSpinnerShown_ = function() {
-  if (this.scanInProgress_) {
-    this.listContainer_.endBatchUpdates();
-    this.listContainer_.startBatchUpdates();
-  }
-};
-
-/**
- * Hides the spinner if it's shown or scheduled to be shown.
- * @private
- */
-ScanController.prototype.hideSpinner_ = function() {
-  if (this.spinnerHideCallback_) {
-    this.spinnerHideCallback_();
-    this.spinnerHideCallback_ = null;
-  }
-};
+}

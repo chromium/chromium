@@ -150,6 +150,7 @@ fontDisplay
 fontFamily
 fontFeatureSettings
 fontKerning
+fontOpticalSizing
 fontSize
 fontSizeAdjust
 fontStretch
@@ -194,6 +195,11 @@ insetBlockStart
 insetInline
 insetInlineEnd
 insetInlineStart
+intrinsicBlockSize
+intrinsicHeight
+intrinsicInlineSize
+intrinsicSize
+intrinsicWidth
 isolation
 item
 justifyContent
@@ -258,10 +264,14 @@ outlineStyle
 outlineWidth
 overflow
 overflowAnchor
+overflowBlock
+overflowInline
 overflowWrap
 overflowX
 overflowY
 overscrollBehavior
+overscrollBehaviorBlock
+overscrollBehaviorInline
 overscrollBehaviorX
 overscrollBehaviorY
 padding
@@ -291,6 +301,7 @@ position
 quotes
 r
 removeProperty
+renderSubtree
 resize
 right
 rotate

@@ -12,10 +12,9 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "net/base/completion_callback.h"
 #include "net/base/completion_once_callback.h"
-#include "storage/browser/fileapi/file_stream_writer.h"
-#include "storage/browser/fileapi/file_system_url.h"
+#include "storage/browser/file_system/file_stream_writer.h"
+#include "storage/browser/file_system/file_system_url.h"
 
 namespace chromeos {
 namespace file_system_provider {
@@ -53,7 +52,7 @@ class FileStreamWriter : public storage::FileStreamWriter {
 
   // Called when OperationRunner::WriteOnUIThread is completed.
   void OnWriteFileCompleted(int buffer_length,
-                            const net::CompletionCallback& callback,
+                            net::CompletionOnceCallback callback,
                             base::File::Error result);
 
   // Called when Write() operation is completed with either a success or an
@@ -62,19 +61,18 @@ class FileStreamWriter : public storage::FileStreamWriter {
 
   // Initializes the writer by opening the file. When completed with success,
   // runs the |pending_closure|. Otherwise, calls the |error_callback|.
-  void Initialize(const base::Closure& pending_closure,
-                  const net::CompletionCallback& error_callback);
+  void Initialize(base::OnceClosure pending_closure,
+                  net::CompletionOnceCallback error_callback);
 
   // Called when opening a file is completed with either a success or an error.
-  void OnOpenFileCompleted(
-      const base::Closure& pending_closure,
-      const net::CompletionCallback& error_callback,
-      base::File::Error result);
+  void OnOpenFileCompleted(base::OnceClosure pending_closure,
+                           net::CompletionOnceCallback error_callback,
+                           base::File::Error result);
 
   // Same as Write(), but called after initializing is completed.
   void WriteAfterInitialized(scoped_refptr<net::IOBuffer> buffer,
                              int buffer_length,
-                             const net::CompletionCallback& callback);
+                             net::CompletionOnceCallback callback);
 
   net::CompletionOnceCallback write_callback_;
   storage::FileSystemURL url_;
@@ -82,7 +80,7 @@ class FileStreamWriter : public storage::FileStreamWriter {
   scoped_refptr<OperationRunner> runner_;
   State state_;
 
-  base::WeakPtrFactory<FileStreamWriter> weak_ptr_factory_;
+  base::WeakPtrFactory<FileStreamWriter> weak_ptr_factory_{this};
   DISALLOW_COPY_AND_ASSIGN(FileStreamWriter);
 };
 

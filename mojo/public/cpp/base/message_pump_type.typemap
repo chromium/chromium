@@ -1,0 +1,15 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+mojom = "//mojo/public/mojom/base/message_pump_type.mojom"
+public_headers = [ "//base/message_loop/message_pump_type.h" ]
+traits_headers = [ "//mojo/public/cpp/base/message_pump_type_mojom_traits.h" ]
+sources = [
+  "//mojo/public/cpp/base/message_pump_type_mojom_traits.cc",
+  "//mojo/public/cpp/base/message_pump_type_mojom_traits.h",
+]
+public_deps = [
+  "//base",
+]
+type_mappings = [ "mojo_base.mojom.MessagePumpType=::base::MessagePumpType" ]

@@ -38,7 +38,7 @@ namespace internal {
 //
 class VIEWS_EXPORT NativeWidgetDelegate {
  public:
-  virtual ~NativeWidgetDelegate() {}
+  virtual ~NativeWidgetDelegate() = default;
 
   // Returns true if the window is modal.
   virtual bool IsModal() const = 0;
@@ -49,15 +49,11 @@ class VIEWS_EXPORT NativeWidgetDelegate {
   // Returns true if the window can be activated.
   virtual bool CanActivate() const = 0;
 
+  // Returns true if the window should paint as active.
+  virtual bool ShouldPaintAsActive() const = 0;
+
   // Returns true if the native widget has been initialized.
   virtual bool IsNativeWidgetInitialized() const = 0;
-
-  // Prevents the window from being rendered as deactivated. This state is
-  // reset automatically as soon as the window becomes activated again. There is
-  // no ability to control the state through this API as this leads to sync
-  // problems.
-  virtual void SetAlwaysRenderAsActive(bool always_render_as_active) = 0;
-  virtual bool IsAlwaysRenderAsActive() const = 0;
 
   // Called when the activation state of a window has changed.
   // Returns true if this event should be handled.
@@ -155,6 +151,9 @@ class VIEWS_EXPORT NativeWidgetDelegate {
       gfx::NativeView child,
       ui::Layer* child_layer,
       const gfx::Point& location) = 0;
+
+  // Called to process a previous call to ScheduleLayout().
+  virtual void LayoutRootViewIfNecessary() = 0;
 };
 
 }  // namespace internal

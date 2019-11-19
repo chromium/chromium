@@ -1,0 +1,28 @@
+// Copyright 2017 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module ui.mojom;
+
+// Dialog button identifiers used to specify which buttons to show the user.
+enum DialogButton {
+  NONE,
+  OK,
+  CANCEL,
+};
+
+// Specifies the type of modality applied to a window. Different modal
+// treatments may be handled differently by the window manager.
+enum ModalType {
+  // Window is not modal.
+  NONE,
+
+  // Window is modal to its transient parent.
+  WINDOW,
+
+  // Window is modal to a child of its transient parent.
+  CHILD,
+
+  // Window is modal to all other windows.
+  SYSTEM
+};

@@ -9,6 +9,8 @@ assert(enable_extensions,
 
 source_set("messaging") {
   sources = [
+    "channel_endpoint.cc",
+    "channel_endpoint.h",
     "extension_message_port.cc",
     "extension_message_port.h",
     "message_port.cc",

@@ -41,8 +41,8 @@ PushClientChannel::~PushClientChannel() {
   push_client_->RemoveObserver(this);
 }
 
-void PushClientChannel::UpdateCredentials(
-    const std::string& email, const std::string& token) {
+void PushClientChannel::UpdateCredentials(const CoreAccountId& account_id,
+                                          const std::string& token) {
   net::NetworkTrafficAnnotationTag traffic_annotation =
       net::DefineNetworkTrafficAnnotation("puch_client_channel", R"(
         semantics {
@@ -77,7 +77,9 @@ void PushClientChannel::UpdateCredentials(
           }
         }
     )");
-  push_client_->UpdateCredentials(email, token, traffic_annotation);
+  // TODO(https://crbug.com/1010544): Possibly pass an account id instead of
+  // string here.
+  push_client_->UpdateCredentials(account_id.id, token, traffic_annotation);
 }
 
 int PushClientChannel::GetInvalidationClientType() {

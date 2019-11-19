@@ -16,8 +16,8 @@
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "components/feedback/feedback_report.h"
 #include "components/feedback/feedback_uploader_factory.h"
+#include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
-#include "content/public/test/test_browser_thread_bundle.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -41,9 +41,10 @@ class MockFeedbackUploader : public FeedbackUploader {
   MockFeedbackUploader(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       content::BrowserContext* context)
-      : FeedbackUploader(url_loader_factory,
-                         context,
-                         FeedbackUploaderFactory::CreateUploaderTaskRunner()) {}
+      : FeedbackUploader(context,
+                         FeedbackUploaderFactory::CreateUploaderTaskRunner()) {
+    set_url_loader_factory_for_test(url_loader_factory);
+  }
   ~MockFeedbackUploader() override {}
 
   void RunMessageLoop() {
@@ -59,7 +60,8 @@ class MockFeedbackUploader : public FeedbackUploader {
         base::BindOnce(
             &FeedbackReport::LoadReportsAndQueue, feedback_reports_path(),
             base::BindRepeating(&MockFeedbackUploader::QueueSingleReport,
-                                base::SequencedTaskRunnerHandle::Get(), this)));
+                                base::SequencedTaskRunnerHandle::Get(),
+                                AsWeakPtr())));
   }
 
   const std::map<std::string, unsigned int>& dispatched_reports() const {
@@ -71,17 +73,16 @@ class MockFeedbackUploader : public FeedbackUploader {
  private:
   static void QueueSingleReport(
       scoped_refptr<base::SequencedTaskRunner> main_task_runner,
-      MockFeedbackUploader* uploader,
-      std::unique_ptr<std::string> data) {
+      base::WeakPtr<FeedbackUploader> uploader,
+      scoped_refptr<FeedbackReport> report) {
     main_task_runner->PostTask(
-        FROM_HERE, base::BindOnce(&MockFeedbackUploader::QueueReport,
-                                  uploader->AsWeakPtr(), std::move(data)));
+        FROM_HERE, base::BindOnce(&MockFeedbackUploader::RequeueReport,
+                                  std::move(uploader), std::move(report)));
   }
 
   // FeedbackUploaderChrome:
   void StartDispatchingReport() override {
-    if (base::ContainsKey(dispatched_reports_,
-                          report_being_dispatched()->data()))
+    if (base::Contains(dispatched_reports_, report_being_dispatched()->data()))
       dispatched_reports_[report_being_dispatched()->data()]++;
     else
       dispatched_reports_[report_being_dispatched()->data()] = 1;
@@ -140,7 +141,7 @@ class FeedbackUploaderTest : public testing::Test {
  private:
   network::TestURLLoaderFactory test_url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_;
-  content::TestBrowserThreadBundle test_browser_thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
   content::TestBrowserContext context_;
   std::unique_ptr<MockFeedbackUploader> uploader_;
 

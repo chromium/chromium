@@ -26,7 +26,7 @@ class MediaControlCastButtonElement final : public MediaControlInputElement {
 
   // MediaControlInputElement overrides.
   bool WillRespondToMouseClickEvents() final;
-  WebLocalizedString::Name GetOverflowStringName() const final;
+  int GetOverflowStringId() const final;
   bool HasOverflowButton() const final;
 
  protected:

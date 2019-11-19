@@ -38,19 +38,18 @@
 #include "third_party/blink/renderer/core/dom/document_type.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
-#include "third_party/blink/renderer/core/dom/user_gesture_indicator.h"
+#include "third_party/blink/renderer/core/execution_context/window_agent_factory.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
-#include "third_party/blink/renderer/core/frame/use_counter.h"
 #include "third_party/blink/renderer/core/html/html_frame_element_base.h"
 #include "third_party/blink/renderer/core/input/event_handler.h"
 #include "third_party/blink/renderer/core/layout/layout_embedded_content.h"
 #include "third_party/blink/renderer/core/loader/empty_clients.h"
-#include "third_party/blink/renderer/core/loader/navigation_scheduler.h"
 #include "third_party/blink/renderer/core/page/focus_controller.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
-#include "third_party/blink/renderer/platform/instance_counters.h"
+#include "third_party/blink/renderer/platform/instrumentation/instance_counters.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_error.h"
 #include "third_party/blink/renderer/platform/wtf/assertions.h"
 
@@ -70,6 +69,7 @@ void Frame::Trace(blink::Visitor* visitor) {
   visitor->Trace(dom_window_);
   visitor->Trace(client_);
   visitor->Trace(navigation_rate_limiter_);
+  visitor->Trace(window_agent_factory_);
 }
 
 void Frame::Detach(FrameDetachType type) {
@@ -89,7 +89,6 @@ void Frame::Detach(FrameDetachType type) {
   if (!client_)
     return;
 
-  detach_stack_ = base::debug::StackTrace();
   client_->SetOpener(nullptr);
   // After this, we must no longer talk to the client since this clears
   // its owning reference back to our owning LocalFrame.
@@ -129,13 +128,21 @@ bool Frame::IsMainFrame() const {
   return !Tree().Parent();
 }
 
+bool Frame::IsCrossOriginSubframe() const {
+  DCHECK(GetSecurityContext());
+  const SecurityOrigin* security_origin =
+      GetSecurityContext()->GetSecurityOrigin();
+  return !security_origin->CanAccess(
+      Tree().Top().GetSecurityContext()->GetSecurityOrigin());
+}
+
 HTMLFrameOwnerElement* Frame::DeprecatedLocalOwner() const {
   return DynamicTo<HTMLFrameOwnerElement>(owner_.Get());
 }
 
 static ChromeClient& GetEmptyChromeClient() {
   DEFINE_STATIC_LOCAL(Persistent<EmptyChromeClient>, client,
-                      (EmptyChromeClient::Create()));
+                      (MakeGarbageCollected<EmptyChromeClient>()));
   return *client;
 }
 
@@ -188,9 +195,10 @@ void Frame::NotifyUserActivationInLocalTree() {
   for (Frame* node = this; node; node = node->Tree().Parent())
     node->user_activation_state_.Activate();
 
-  // See FrameTreeNode::NotifyUserActivation() for details about this block.
+  // See the "Same-origin Visibility" section in |UserActivationState| class
+  // doc.
   auto* local_frame = DynamicTo<LocalFrame>(this);
-  if (local_frame && RuntimeEnabledFeatures::UserActivationV2Enabled() &&
+  if (local_frame &&
       RuntimeEnabledFeatures::UserActivationSameOriginVisibilityEnabled()) {
     const SecurityOrigin* security_origin =
         local_frame->GetSecurityContext()->GetSecurityOrigin();
@@ -210,9 +218,6 @@ void Frame::NotifyUserActivationInLocalTree() {
 bool Frame::ConsumeTransientUserActivationInLocalTree() {
   bool was_active = user_activation_state_.IsActive();
 
-  // Note that consumption "touches" the whole frame tree, to guarantee that a
-  // malicious subframe can't embed sub-subframes in a way that could allow
-  // multiple consumptions per user activation.
   Frame& root = Tree().Top();
   for (Frame* node = &root; node; node = node->Tree().TraverseNext(&root))
     node->user_activation_state_.ConsumeIfActive();
@@ -223,6 +228,11 @@ bool Frame::ConsumeTransientUserActivationInLocalTree() {
 void Frame::ClearUserActivationInLocalTree() {
   for (Frame* node = this; node; node = node->Tree().TraverseNext(this))
     node->user_activation_state_.Clear();
+}
+
+void Frame::TransferUserActivationFrom(Frame* other) {
+  if (other)
+    user_activation_state_.TransferFrom(other->user_activation_state_);
 }
 
 void Frame::SetOwner(FrameOwner* owner) {
@@ -250,27 +260,56 @@ void Frame::UpdateInheritedEffectiveTouchActionIfPossible() {
   }
 }
 
-const CString& Frame::ToTraceValue() {
+void Frame::UpdateVisibleToHitTesting() {
+  bool parent_visible_to_hit_testing = true;
+  if (auto* parent = Tree().Parent())
+    parent_visible_to_hit_testing = parent->GetVisibleToHitTesting();
+
+  bool self_visible_to_hit_testing = true;
+  if (auto* local_owner = DynamicTo<HTMLFrameOwnerElement>(owner_.Get())) {
+    self_visible_to_hit_testing =
+        local_owner->GetLayoutObject()
+            ? local_owner->GetLayoutObject()->Style()->VisibleToHitTesting()
+            : true;
+  }
+
+  bool visible_to_hit_testing =
+      parent_visible_to_hit_testing && self_visible_to_hit_testing;
+  bool changed = visible_to_hit_testing_ != visible_to_hit_testing;
+  visible_to_hit_testing_ = visible_to_hit_testing;
+  if (changed)
+    DidChangeVisibleToHitTesting();
+}
+
+const std::string& Frame::ToTraceValue() {
   // token's ToString() is latin1.
   if (!trace_value_)
-    trace_value_ = CString(devtools_frame_token_.ToString().c_str());
+    trace_value_ = devtools_frame_token_.ToString();
   return trace_value_.value();
 }
 
 Frame::Frame(FrameClient* client,
              Page& page,
              FrameOwner* owner,
-             WindowProxyManager* window_proxy_manager)
+             WindowProxyManager* window_proxy_manager,
+             WindowAgentFactory* inheriting_agent_factory)
     : tree_node_(this),
       page_(&page),
       owner_(owner),
       client_(client),
       window_proxy_manager_(window_proxy_manager),
       navigation_rate_limiter_(*this),
+      window_agent_factory_(inheriting_agent_factory
+                                ? inheriting_agent_factory
+                                : MakeGarbageCollected<WindowAgentFactory>()),
       is_loading_(false),
-      devtools_frame_token_(client->GetDevToolsFrameToken()),
-      create_stack_(base::debug::StackTrace()) {
+      devtools_frame_token_(client->GetDevToolsFrameToken()) {
   InstanceCounters::IncrementCounter(InstanceCounters::kFrameCounter);
+}
+
+void Frame::Initialize() {
+  // This frame must either be local or remote.
+  DCHECK_NE(IsLocalFrame(), IsRemoteFrame());
 
   if (owner_)
     owner_->SetContentFrame(*this);

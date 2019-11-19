@@ -34,15 +34,13 @@ IN_PROC_BROWSER_TEST_F(CloudPrintPolicyTest, NormalPassedFlag) {
   base::CommandLine new_command_line(GetCommandLineForRelaunch());
   new_command_line.AppendArgPath(test_file_path);
 
-  content::WindowedNotificationObserver observer(
-      chrome::NOTIFICATION_TAB_ADDED,
-      content::NotificationService::AllSources());
+  ui_test_utils::TabAddedWaiter tab_add(browser());
 
   base::Process process =
       base::LaunchProcess(new_command_line, base::LaunchOptionsForTest());
   EXPECT_TRUE(process.IsValid());
 
-  observer.Wait();
+  tab_add.Wait();
 
   int exit_code = -100;
   bool exited = process.WaitForExitWithTimeout(TestTimeouts::action_timeout(),

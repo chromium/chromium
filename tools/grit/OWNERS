@@ -2,3 +2,7 @@ agrieve@chromium.org
 flackr@chromium.org
 thakis@chromium.org
 thestig@chromium.org
+
+# Admin policy related grit tools.
+per-file *policy*=file://components/policy/tools/OWNERS
+per-file *admin_template*=file://components/policy/tools/OWNERS

@@ -11,8 +11,7 @@
 
 namespace extensions {
 
-PreloadCheckGroup::PreloadCheckGroup()
-    : PreloadCheck(nullptr), weak_ptr_factory_(this) {}
+PreloadCheckGroup::PreloadCheckGroup() : PreloadCheck(nullptr) {}
 
 PreloadCheckGroup::~PreloadCheckGroup() {}
 

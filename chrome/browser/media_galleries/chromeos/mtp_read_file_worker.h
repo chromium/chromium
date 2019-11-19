@@ -80,7 +80,7 @@ class MTPReadFileWorker {
   const std::string device_handle_;
 
   // For callbacks that may run after destruction.
-  base::WeakPtrFactory<MTPReadFileWorker> weak_ptr_factory_;
+  base::WeakPtrFactory<MTPReadFileWorker> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(MTPReadFileWorker);
 };

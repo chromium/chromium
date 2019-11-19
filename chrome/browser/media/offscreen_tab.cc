@@ -17,7 +17,7 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
-#include "third_party/blink/public/web/web_presentation_receiver_flags.h"
+#include "third_party/blink/public/common/presentation/presentation_receiver_flags.h"
 
 #if defined(USE_AURA)
 #include "base/threading/thread_task_runner_handle.h"
@@ -51,7 +51,7 @@ constexpr base::TimeDelta kPollInterval = base::TimeDelta::FromSeconds(1);
 class OffscreenTab::WindowAdoptionAgent : protected aura::WindowObserver {
  public:
   explicit WindowAdoptionAgent(aura::Window* content_window)
-      : content_window_(content_window), weak_ptr_factory_(this) {
+      : content_window_(content_window) {
     if (content_window_) {
       content_window->AddObserver(this);
       ScheduleFindNewParentIfDetached(content_window_->GetRootWindow());
@@ -115,7 +115,7 @@ class OffscreenTab::WindowAdoptionAgent : protected aura::WindowObserver {
   }
 
   aura::Window* content_window_;
-  base::WeakPtrFactory<WindowAdoptionAgent> weak_ptr_factory_;
+  base::WeakPtrFactory<WindowAdoptionAgent> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(WindowAdoptionAgent);
 };
@@ -237,12 +237,11 @@ bool OffscreenTab::ShouldFocusPageAfterCrash() {
   return false;
 }
 
-void OffscreenTab::CanDownload(
-    const GURL& url,
-    const std::string& request_method,
-    const base::RepeatingCallback<void(bool)>& callback) {
+void OffscreenTab::CanDownload(const GURL& url,
+                               const std::string& request_method,
+                               base::OnceCallback<void(bool)> callback) {
   // Offscreen tab pages are not allowed to download files.
-  callback.Run(false);
+  std::move(callback).Run(false);
 }
 
 bool OffscreenTab::HandleContextMenu(
@@ -281,27 +280,19 @@ bool OffscreenTab::CanDragEnter(
   return false;
 }
 
-bool OffscreenTab::ShouldCreateWebContents(
-    content::WebContents* web_contents,
-    content::RenderFrameHost* opener,
+bool OffscreenTab::IsWebContentsCreationOverridden(
     content::SiteInstance* source_site_instance,
-    int32_t route_id,
-    int32_t main_frame_route_id,
-    int32_t main_frame_widget_route_id,
     content::mojom::WindowContainerType window_container_type,
     const GURL& opener_url,
     const std::string& frame_name,
-    const GURL& target_url,
-    const std::string& partition_id,
-    content::SessionStorageNamespace* session_storage_namespace) {
-  DCHECK_EQ(offscreen_tab_web_contents_.get(), web_contents);
+    const GURL& target_url) {
   // Disallow creating separate WebContentses.  The WebContents implementation
   // uses this to spawn new windows/tabs, which is also not allowed for
   // offscreen tabs.
-  return false;
+  return true;
 }
 
-bool OffscreenTab::EmbedsFullscreenWidget() const {
+bool OffscreenTab::EmbedsFullscreenWidget() {
   // OffscreenTab will manage fullscreen widgets.
   return true;
 }
@@ -309,7 +300,7 @@ bool OffscreenTab::EmbedsFullscreenWidget() const {
 void OffscreenTab::EnterFullscreenModeForTab(
     WebContents* contents,
     const GURL& origin,
-    const blink::WebFullscreenOptions& options) {
+    const blink::mojom::FullscreenOptions& options) {
   DCHECK_EQ(offscreen_tab_web_contents_.get(), contents);
 
   if (in_fullscreen_mode())
@@ -331,17 +322,16 @@ void OffscreenTab::ExitFullscreenModeForTab(WebContents* contents) {
   non_fullscreen_size_ = gfx::Size();
 }
 
-bool OffscreenTab::IsFullscreenForTabOrPending(
-    const WebContents* contents) const {
+bool OffscreenTab::IsFullscreenForTabOrPending(const WebContents* contents) {
   DCHECK_EQ(offscreen_tab_web_contents_.get(), contents);
   return in_fullscreen_mode();
 }
 
-blink::WebDisplayMode OffscreenTab::GetDisplayMode(
-    const WebContents* contents) const {
+blink::mojom::DisplayMode OffscreenTab::GetDisplayMode(
+    const WebContents* contents) {
   DCHECK_EQ(offscreen_tab_web_contents_.get(), contents);
-  return in_fullscreen_mode() ? blink::kWebDisplayModeFullscreen
-                              : blink::kWebDisplayModeBrowser;
+  return in_fullscreen_mode() ? blink::mojom::DisplayMode::kFullscreen
+                              : blink::mojom::DisplayMode::kBrowser;
 }
 
 void OffscreenTab::RequestMediaAccessPermission(
@@ -355,11 +345,11 @@ void OffscreenTab::RequestMediaAccessPermission(
 bool OffscreenTab::CheckMediaAccessPermission(
     content::RenderFrameHost* render_frame_host,
     const GURL& security_origin,
-    blink::MediaStreamType type) {
+    blink::mojom::MediaStreamType type) {
   DCHECK_EQ(offscreen_tab_web_contents_.get(),
             content::WebContents::FromRenderFrameHost(render_frame_host));
-  return type == blink::MEDIA_GUM_TAB_AUDIO_CAPTURE ||
-         type == blink::MEDIA_GUM_TAB_VIDEO_CAPTURE;
+  return type == blink::mojom::MediaStreamType::GUM_TAB_AUDIO_CAPTURE ||
+         type == blink::mojom::MediaStreamType::GUM_TAB_VIDEO_CAPTURE;
 }
 
 void OffscreenTab::DidShowFullscreenWidget() {

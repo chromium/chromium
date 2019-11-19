@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+PASS Property on window.
+PASS Property on Window.prototype.
+FAIL Property on EventTarget.prototype. assert_equals: expected (undefined) undefined but got (object) object "[object Object]"
+FAIL Property on Object.prototype. assert_equals: expected (undefined) undefined but got (object) object "[object Object]"
+Harness: the test ran to completion.
+

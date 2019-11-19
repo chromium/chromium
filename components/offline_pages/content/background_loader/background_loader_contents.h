@@ -28,7 +28,7 @@ class BackgroundLoaderContents : public content::WebContentsDelegate {
     // start if a page initiates it. Callback can be called
     // synchronously. Returning true to the callback will initiate
     // the single file download. Assumes delegate will appropriately clean up.
-    virtual void CanDownload(const base::Callback<void(bool)>& callback) = 0;
+    virtual void CanDownload(base::OnceCallback<void(bool)> callback) = 0;
   };
 
   // Creates BackgroundLoaderContents with specified |browser_context|. Uses
@@ -54,21 +54,14 @@ class BackgroundLoaderContents : public content::WebContentsDelegate {
   bool ShouldFocusPageAfterCrash() override;
   void CanDownload(const GURL& url,
                    const std::string& request_method,
-                   const base::Callback<void(bool)>& callback) override;
+                   base::OnceCallback<void(bool)> callback) override;
 
-  bool ShouldCreateWebContents(
-      content::WebContents* web_contents,
-      content::RenderFrameHost* opener,
+  bool IsWebContentsCreationOverridden(
       content::SiteInstance* source_site_instance,
-      int32_t route_id,
-      int32_t main_frame_route_id,
-      int32_t main_frame_widget_route_id,
       content::mojom::WindowContainerType window_container_type,
       const GURL& opener_url,
       const std::string& frame_name,
-      const GURL& target_url,
-      const std::string& partition_id,
-      content::SessionStorageNamespace* session_storage_namespace) override;
+      const GURL& target_url) override;
 
   void AddNewContents(content::WebContents* source,
                       std::unique_ptr<content::WebContents> new_contents,
@@ -87,7 +80,7 @@ class BackgroundLoaderContents : public content::WebContentsDelegate {
       content::MediaResponseCallback callback) override;
   bool CheckMediaAccessPermission(content::RenderFrameHost* render_frame_host,
                                   const GURL& security_origin,
-                                  blink::MediaStreamType type) override;
+                                  blink::mojom::MediaStreamType type) override;
   void AdjustPreviewsStateForNavigation(
       content::WebContents* web_contents,
       content::PreviewsState* previews_state) override;

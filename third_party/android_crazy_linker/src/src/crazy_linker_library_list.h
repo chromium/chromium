@@ -8,6 +8,8 @@
 #include <link.h>
 
 #include "crazy_linker_error.h"
+#include "crazy_linker_expected.h"
+#include "crazy_linker_load_params.h"
 #include "crazy_linker_search_path_list.h"
 #include "elf_traits.h"
 
@@ -62,12 +64,41 @@ class LibraryList {
   int IteratePhdr(PhdrIterationCallback callback, void* data);
 #endif
 
-  // Try to load a library, possibly at a fixed address.
-  // On failure, returns NULL and sets the |error| message.
-  LibraryView* LoadLibrary(const char* path,
-                           uintptr_t load_address,
-                           SearchPathList* search_path_list,
+  // Find whether a library identified by |name| has already been loaded.
+  // Note that |name| should correspond to the library's unique soname, which
+  // comes from its DT_SONAME entry, and typically, but not necessarily
+  // matches its base name.
+  LibraryView* FindKnownLibrary(const char* name);
+
+  // Check whether |lib_path| matches an already loaded library, compatible
+  // with the content of |load_params| (except its |library_path| field).
+  // On failure, i.e. if the load parameters are incompatible, set |*error|
+  // and return its address. On success, return either nullptr (if the library
+  // was not previously loaded, or a LibraryView* pointer after incrementing
+  // its reference count).
+  Expected<LibraryView*> FindAndCheckLoadedLibrary(
+      const char* lib_path,
+      const LoadParams& load_params,
+      Error* error);
+
+  // Locate library |lib_name| using |search_path_list|. On success, update
+  // |params->library_path| and |params->library_offset| and return true. On
+  // failure, set |*error| and return false.
+  static bool LocateLibraryFile(const char* lib_name,
+                                const SearchPathList& search_path_list,
+                                LoadParams* params,
+                                Error* error);
+
+  // Try to load a library, according to |load_params|. On failure, returns
+  // nullptr and sets the |error| message.
+  LibraryView* LoadLibrary(const char* lib_name,
+                           const LoadParams& load_params,
                            Error* error);
+
+  // Try to load a library, according to |load_params|.
+  // On failure, return nullptr and sets the |error| message.
+  // Note: this will fail if the library is already loaded.
+  LibraryView* LoadLibraryInternal(const LoadParams& load_params, Error* error);
 
   // Unload a given shared library. This really decrements the library's
   // internal reference count. When it reaches zero, the library's
@@ -102,12 +133,6 @@ class LibraryList {
 
   // The list of all known libraries.
   Vector<LibraryView*> known_libraries_;
-
-  // Find whether a library identified by |name| has already been loaded.
-  // Note that |name| should correspond to the library's unique soname, which
-  // comes from its DT_SONAME entry, and typically, but not necessarily
-  // matches its base name.
-  LibraryView* FindKnownLibrary(const char* name);
 
   // The list of all libraries loaded by the crazy linker.
   // This does _not_ include system libraries present in known_libraries_.

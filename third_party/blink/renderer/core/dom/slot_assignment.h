@@ -17,10 +17,6 @@ class ShadowRoot;
 
 class SlotAssignment final : public GarbageCollected<SlotAssignment> {
  public:
-  static SlotAssignment* Create(ShadowRoot& owner) {
-    return MakeGarbageCollected<SlotAssignment>(owner);
-  }
-
   explicit SlotAssignment(ShadowRoot& owner);
 
   // Relevant DOM Standard: https://dom.spec.whatwg.org/#find-a-slot

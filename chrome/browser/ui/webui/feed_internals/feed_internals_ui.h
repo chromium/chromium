@@ -8,7 +8,9 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "chrome/browser/ui/webui/feed_internals/feed_internals.mojom.h"
 #include "chrome/browser/ui/webui/feed_internals/feed_internals_page_handler.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 
 class Profile;
@@ -27,7 +29,7 @@ class FeedInternalsUI : public ui::MojoWebUIController {
 
  private:
   void BindFeedInternalsPageHandler(
-      feed_internals::mojom::PageHandlerRequest request);
+      mojo::PendingReceiver<feed_internals::mojom::PageHandler> receiver);
 
   Profile* profile_;
 

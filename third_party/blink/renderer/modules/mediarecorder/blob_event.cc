@@ -4,8 +4,9 @@
 
 #include "third_party/blink/renderer/modules/mediarecorder/blob_event.h"
 
+#include <cmath>
+
 #include "third_party/blink/renderer/modules/mediarecorder/blob_event_init.h"
-#include "third_party/blink/renderer/platform/wtf/dtoa/double.h"
 
 namespace blink {
 
@@ -34,9 +35,7 @@ void BlobEvent::Trace(blink::Visitor* visitor) {
 BlobEvent::BlobEvent(const AtomicString& type, const BlobEventInit* initializer)
     : Event(type, initializer),
       blob_(initializer->data()),
-      timecode_(initializer->hasTimecode()
-                    ? initializer->timecode()
-                    : WTF::double_conversion::Double::NaN()) {}
+      timecode_(initializer->hasTimecode() ? initializer->timecode() : NAN) {}
 
 BlobEvent::BlobEvent(const AtomicString& type, Blob* blob, double timecode)
     : Event(type, Bubbles::kNo, Cancelable::kNo),

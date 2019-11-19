@@ -4,7 +4,6 @@
 
 #include <memory>
 
-#include "base/message_loop/message_loop.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/run_loop.h"
@@ -13,7 +12,7 @@
 #include "base/time/time.h"
 #include "ios/chrome/browser/metrics/first_user_action_recorder.h"
 #include "ios/chrome/browser/ui/util/ui_util.h"
-#include "ios/web/public/test/test_web_thread.h"
+#include "ios/web/public/test/web_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
 
@@ -22,9 +21,6 @@ using base::UserMetricsAction;
 class FirstUserActionRecorderTest : public PlatformTest {
  protected:
   void SetUp() override {
-    loop_.reset(new base::MessageLoop(base::MessageLoop::TYPE_DEFAULT));
-    ui_thread_.reset(new web::TestWebThread(web::WebThread::UI, loop_.get()));
-
     base::TimeDelta delta = base::TimeDelta::FromSeconds(60);
     recorder_.reset(new FirstUserActionRecorder(delta));
 
@@ -33,11 +29,8 @@ class FirstUserActionRecorderTest : public PlatformTest {
     is_pad_ = IsIPadIdiom();
   }
 
+  web::WebTaskEnvironment task_environment_;
   bool is_pad_;
-
-  std::unique_ptr<base::MessageLoop> loop_;
-  std::unique_ptr<web::TestWebThread> ui_thread_;
-
   std::unique_ptr<FirstUserActionRecorder> recorder_;
   std::unique_ptr<base::HistogramTester> histogram_tester_;
 };

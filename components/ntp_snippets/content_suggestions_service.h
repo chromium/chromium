@@ -20,16 +20,14 @@
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_service_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/ntp_snippets/breaking_news/breaking_news_gcm_app_handler.h"
 #include "components/ntp_snippets/callbacks.h"
 #include "components/ntp_snippets/category.h"
 #include "components/ntp_snippets/category_rankers/category_ranker.h"
 #include "components/ntp_snippets/category_status.h"
 #include "components/ntp_snippets/content_suggestions_provider.h"
-#include "components/ntp_snippets/logger.h"
 #include "components/ntp_snippets/remote/remote_suggestions_scheduler.h"
 #include "components/ntp_snippets/user_classifier.h"
-#include "services/identity/public/cpp/identity_manager.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 
 class PrefService;
 class PrefRegistrySimple;
@@ -50,7 +48,7 @@ class RemoteSuggestionsProvider;
 // them grouped into categories. There can be at most one provider per category.
 class ContentSuggestionsService : public KeyedService,
                                   public ContentSuggestionsProvider::Observer,
-                                  public identity::IdentityManager::Observer,
+                                  public signin::IdentityManager::Observer,
                                   public history::HistoryServiceObserver {
  public:
   class Observer {
@@ -99,7 +97,7 @@ class ContentSuggestionsService : public KeyedService,
 
   ContentSuggestionsService(
       State state,
-      identity::IdentityManager*
+      signin::IdentityManager*
           identity_manager,                      // Can be nullptr in unittests.
       history::HistoryService* history_service,  // Can be nullptr in unittests.
       // Can be nullptr in unittests.
@@ -108,8 +106,7 @@ class ContentSuggestionsService : public KeyedService,
       std::unique_ptr<CategoryRanker> category_ranker,
       std::unique_ptr<UserClassifier> user_classifier,
       std::unique_ptr<RemoteSuggestionsScheduler>
-          remote_suggestions_scheduler,  // Can be nullptr in unittests.
-      std::unique_ptr<Logger> debug_logger);
+          remote_suggestions_scheduler);  // Can be nullptr in unittests.
   ~ContentSuggestionsService() override;
 
   // Inherited from KeyedService.
@@ -236,10 +233,6 @@ class ContentSuggestionsService : public KeyedService,
   // supports it).
   void ClearDismissedSuggestionsForDebugging(Category category);
 
-  std::string GetDebugLog() const {
-    return debug_logger_->GetHumanReadableLog();
-  }
-
   // Returns true if the remote suggestions provider is enabled.
   bool AreRemoteSuggestionsEnabled() const;
 
@@ -272,8 +265,6 @@ class ContentSuggestionsService : public KeyedService,
 
   CategoryRanker* category_ranker() { return category_ranker_.get(); }
 
-  Logger* debug_logger() { return debug_logger_.get(); }
-
  private:
   friend class ContentSuggestionsServiceTest;
 
@@ -288,7 +279,7 @@ class ContentSuggestionsService : public KeyedService,
       ContentSuggestionsProvider* provider,
       const ContentSuggestion::ID& suggestion_id) override;
 
-  // identity::IdentityManager::Observer implementation.
+  // signin::IdentityManager::Observer implementation.
   void OnPrimaryAccountSet(const CoreAccountInfo& account_info) override;
   void OnPrimaryAccountCleared(const CoreAccountInfo& account_info) override;
 
@@ -386,7 +377,7 @@ class ContentSuggestionsService : public KeyedService,
 
   // Observer for the IdentityManager. All observers are notified when the
   // signin state changes so that they can refresh their list of suggestions.
-  ScopedObserver<identity::IdentityManager, identity::IdentityManager::Observer>
+  ScopedObserver<signin::IdentityManager, signin::IdentityManager::Observer>
       identity_manager_observer_;
 
   // Observer for the HistoryService. All providers are notified when history is
@@ -418,8 +409,6 @@ class ContentSuggestionsService : public KeyedService,
 
   // Provides order for categories.
   std::unique_ptr<CategoryRanker> category_ranker_;
-
-  std::unique_ptr<Logger> debug_logger_;
 
   DISALLOW_COPY_AND_ASSIGN(ContentSuggestionsService);
 };

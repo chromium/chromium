@@ -4,21 +4,22 @@
 
 import("//build/config/ui.gni")
 
-source_set("platform_window") {
+component("platform_window") {
   sources = [
-    "platform_ime_controller.h",
-    "platform_window.h",
+    "platform_window_base.cc",
+    "platform_window_base.h",
     "platform_window_delegate.h",
+    "platform_window_delegate_base.cc",
+    "platform_window_delegate_base.h",
     "platform_window_init_properties.cc",
     "platform_window_init_properties.h",
-    "text_input_state.cc",
-    "text_input_state.h",
   ]
+
+  defines = [ "IS_PLATFORM_WINDOW_IMPL" ]
 
   deps = [
     "//base",
     "//ui/base",
-    "//ui/base/ime:text_input_types",
     "//ui/gfx",
   ]
 
@@ -29,9 +30,24 @@ source_set("platform_window") {
     ]
 
     public_deps = [
-      "//third_party/fuchsia-sdk/sdk:ui_gfx",
+      "//third_party/fuchsia-sdk/sdk:scenic_cpp",
+      "//third_party/fuchsia-sdk/sdk:sys_cpp",
       "//third_party/fuchsia-sdk/sdk:ui_policy",
+      "//third_party/fuchsia-sdk/sdk:ui_views",
     ]
+  }
+
+  if (is_linux) {
+    sources += [
+      "platform_window_delegate_linux.cc",
+      "platform_window_delegate_linux.h",
+      "platform_window_linux.cc",
+      "platform_window_linux.h",
+    ]
+  }
+
+  if (is_win) {
+    sources += [ "platform_window_win.h" ]
   }
 }
 
@@ -39,12 +55,7 @@ group("platform_impls") {
   public_deps = [
     "//ui/platform_window/stub",
   ]
-  if (is_android) {
-    public_deps += [
-      "//ui/platform_window/android",
-      "//ui/platform_window/android:jni_headers",
-    ]
-  } else if (use_x11) {
+  if (use_x11) {
     public_deps += [ "//ui/platform_window/x11" ]
   } else if (is_win) {
     public_deps += [ "//ui/platform_window/win" ]

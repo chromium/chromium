@@ -9,7 +9,7 @@
 
 #include "chrome/browser/extensions/chrome_extension_function.h"
 #include "chrome/browser/media/webrtc/audio_debug_recordings_handler.h"
-#include "chrome/browser/media/webrtc/webrtc_logging_handler_host.h"
+#include "chrome/browser/media/webrtc/webrtc_logging_controller.h"
 #include "chrome/common/extensions/api/webrtc_logging_private.h"
 #include "media/media_buildflags.h"
 
@@ -32,7 +32,7 @@ class WebrtcLoggingPrivateFunction : public ChromeAsyncExtensionFunction {
       const api::webrtc_logging_private::RequestInfo& request,
       const std::string& security_origin);
 
-  scoped_refptr<WebRtcLoggingHandlerHost> LoggingHandlerFromRequest(
+  WebRtcLoggingController* LoggingControllerFromRequest(
       const api::webrtc_logging_private::RequestInfo& request,
       const std::string& security_origin);
 };
@@ -42,14 +42,14 @@ class WebrtcLoggingPrivateFunctionWithGenericCallback
  protected:
   ~WebrtcLoggingPrivateFunctionWithGenericCallback() override {}
 
-  // Finds the appropriate logging handler for performing the task and prepares
-  // a generic callback object for when the task is completed.
-  // If the logging handler can't be found for the given request+origin, the
+  // Finds the appropriate logging controller for performing the task and
+  // prepares a generic callback object for when the task is completed.  If the
+  // logging controller can't be found for the given request+origin, the
   // returned ptr will be null.
-  scoped_refptr<WebRtcLoggingHandlerHost> PrepareTask(
-    const api::webrtc_logging_private::RequestInfo& request,
-    const std::string& security_origin,
-    WebRtcLoggingHandlerHost::GenericDoneCallback* callback);
+  WebRtcLoggingController* PrepareTask(
+      const api::webrtc_logging_private::RequestInfo& request,
+      const std::string& security_origin,
+      WebRtcLoggingController::GenericDoneCallback* callback);
 
   // Must be called on UI thread.
   void FireCallback(bool success, const std::string& error_message);

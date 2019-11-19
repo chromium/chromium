@@ -49,6 +49,11 @@ void FakeDeviceSyncClient::FindEligibleDevices(
   find_eligible_devices_callback_queue_.push(std::move(callback));
 }
 
+void FakeDeviceSyncClient::GetDevicesActivityStatus(
+    mojom::DeviceSync::GetDevicesActivityStatusCallback callback) {
+  get_devices_activity_status_callback_queue_.push(std::move(callback));
+}
+
 void FakeDeviceSyncClient::GetDebugInfo(
     mojom::DeviceSync::GetDebugInfoCallback callback) {
   get_debug_info_callback_queue_.push(std::move(callback));
@@ -103,6 +108,16 @@ void FakeDeviceSyncClient::InvokePendingFindEligibleDevicesCallback(
   std::move(find_eligible_devices_callback_queue_.front())
       .Run(result_code, eligible_devices, ineligible_devices);
   find_eligible_devices_callback_queue_.pop();
+}
+
+void FakeDeviceSyncClient::InvokePendingGetDevicesActivityStatusCallback(
+    mojom::NetworkRequestResult result_code,
+    base::Optional<std::vector<mojom::DeviceActivityStatusPtr>>
+        device_activity_status) {
+  DCHECK(get_devices_activity_status_callback_queue_.size() > 0);
+  std::move(get_devices_activity_status_callback_queue_.front())
+      .Run(result_code, std::move(device_activity_status));
+  get_devices_activity_status_callback_queue_.pop();
 }
 
 void FakeDeviceSyncClient::InvokePendingGetDebugInfoCallback(

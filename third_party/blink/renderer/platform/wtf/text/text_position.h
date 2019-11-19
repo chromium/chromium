@@ -27,7 +27,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_TEXT_POSITION_H_
 
 #include <memory>
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/assertions.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"

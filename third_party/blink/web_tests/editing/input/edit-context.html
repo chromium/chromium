@@ -1,0 +1,485 @@
+<html>
+<head>
+<title>This tests the new EditContext APIs while in composition</title>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+</head>
+<body>
+<div id="test" tabindex="-1"></div>
+<script>
+
+test(function() {
+  const editContextDict = {
+    text: "Hello world",
+    selectionStart: 11,
+    selectionEnd: 11,
+    inputMode: "text",
+    inputPanelPolicy: "auto",
+    enterKeyHint: "enter"
+  };
+  const editContext = new EditContext(editContextDict);
+  assert_not_equals(editContext, null);
+  // Verify all the members of the EditContext
+  assert_equals(editContext.text, "Hello world");
+  assert_equals(editContext.selectionStart, 11);
+  assert_equals(editContext.selectionEnd, 11);
+  assert_equals(editContext.inputMode, "text");
+  assert_equals(editContext.inputPanelPolicy, "auto");
+  assert_equals(editContext.enterKeyHint, "enter");
+}, 'Testing EditContext Dictionary Init');
+
+test(function() {
+  const editContext = new EditContext();
+  assert_not_equals(editContext, null);
+  const test = document.getElementById('test');
+  test.innerHTML = "";
+  // Add EditContext event listeners
+  editContext.addEventListener("textupdate", e => {
+    // Update the text in the div
+    const buffer = test.innerText;
+    test.innerHTML = buffer.substr(0, e.updateRangeStart) + e.updateText + buffer.substr(e.updateRangeEnd);
+  });
+
+  test.focus();
+  editContext.focus();
+  textInputController.setComposition("foo");
+  assert_equals(test.innerHTML, "foo");
+  textInputController.setComposition("bar");
+  assert_equals(test.innerHTML, "bar");
+}, 'Testing EditContext TextUpdate');
+
+test(function() {
+  const editContext = new EditContext();
+  assert_not_equals(editContext, null);
+  const test = document.getElementById('test');
+  test.innerHTML = "";
+  // Add EditContext event listeners
+  editContext.addEventListener("textupdate", e => {
+    // Update the text in the div
+    const buffer = test.innerText;
+    test.innerHTML = buffer.substr(0, e.updateRangeStart) + e.updateText + buffer.substr(e.updateRangeEnd);
+  });
+
+  test.focus();
+  editContext.focus();
+  textInputController.setComposition("foo");
+  assert_equals(test.innerHTML, "foo");
+  textInputController.setComposition("");
+  assert_equals(test.innerHTML, "");
+}, 'Testing EditContext TextUpdate with empty strings');
+
+test(function() {
+  const editContext = new EditContext();
+  assert_not_equals(editContext, null);
+  const test = document.getElementById('test');
+  test.innerHTML = "";
+  let formatRangeStart = 0;
+  let formatRangeEnd = 0;
+  let underlineTextColor = "";
+  let backgroundTextColor = "";
+  let compositionTextDecorationColor = "";
+  let compositionTextUnderlineStyle = "";
+  // Add EditContext event listeners
+  editContext.addEventListener("textupdate", e => {
+    // Update the text in the div
+    const buffer = test.innerText;
+    test.innerHTML = buffer.substr(0, e.updateRangeStart) + e.updateText + buffer.substr(e.updateRangeEnd);
+  });
+  editContext.addEventListener("textformatupdate", e => {
+    //TODO: Currently Chromium only fires default styles
+    formatRangeStart = e.formatRangeStart;
+    formatRangeEnd = e.formatRangeEnd;
+    underlineColor = e.underlineColor;
+    backgroundColor = e.backgroundColor;
+    compositionTextDecorationColor = e.textDecorationColor;
+    compositionTextUnderlineStyle = e.textUnderlineStyle;
+  });
+
+  test.focus();
+  editContext.focus();
+  textInputController.setComposition("foo");
+  assert_equals(test.innerHTML, "foo");
+  assert_equals(formatRangeStart, 0);
+  assert_equals(formatRangeEnd, 3);
+  assert_equals(underlineColor, "rgba(0, 0, 0, 0)");
+  assert_equals(backgroundColor, "rgba(0, 0, 0, 0)");
+  assert_equals(compositionTextDecorationColor, "rgba(0, 0, 0, 0)");
+  assert_equals(compositionTextUnderlineStyle, "Thin");
+}, 'Testing EditContext TextFormatUpdate');
+
+test(function() {
+  const editContext1 = new EditContext();
+  const editContext2 = new EditContext();
+  assert_not_equals(editContext1, null);
+  assert_not_equals(editContext2, null);
+  const test = document.getElementById('test');
+  test.innerHTML = "";
+  // Add EditContext event listeners
+  editContext1.addEventListener("textupdate", e => {
+    // Update the text in the div
+    const buffer = test.innerText;
+    test.innerHTML = buffer.substr(0, e.updateRangeStart) + e.updateText + buffer.substr(e.updateRangeEnd);
+  });
+  editContext2.addEventListener("textupdate", e => {
+    // Update the text in the div
+    const buffer = test.innerText;
+    test.innerHTML = buffer.substr(0, e.updateRangeStart) + e.updateText + buffer.substr(e.updateRangeEnd);
+  });
+
+  test.focus();
+  editContext1.focus();
+  textInputController.setComposition("foo");
+  assert_equals(test.innerHTML, "foo");
+  textInputController.setComposition("bar");
+  assert_equals(test.innerHTML, "bar");
+  test.innerHTML = "";
+  editContext2.focus();
+  textInputController.setComposition("hello");
+  assert_equals(test.innerHTML, "hello");
+  textInputController.setComposition("world");
+  assert_equals(test.innerHTML, "world");
+}, 'Testing Multiple EditContext TextUpdates');
+
+test(function() {
+  const editContext = new EditContext();
+  assert_not_equals(editContext, null);
+  const test = document.getElementById('test');
+  test.innerHTML = "";
+  var compositionStartFired = 0;
+  var compositionEndFired = 0;
+  // Add EditContext event listeners
+  editContext.addEventListener("textupdate", e => {
+    // Update the text in the div
+    const buffer = test.innerText;
+    test.innerHTML = buffer.substr(0, e.updateRangeStart) + e.updateText + buffer.substr(e.updateRangeEnd);
+  });
+  editContext.addEventListener("compositionstart", e => {
+    // Update the text in the div
+    compositionStartFired++;
+  });
+  editContext.addEventListener("compositionend", e => {
+    compositionEndFired++;
+  });
+
+  test.focus();
+  editContext.focus();
+  textInputController.setComposition("foo");
+  assert_equals(test.innerHTML, "foo");
+  assert_equals(compositionStartFired, 1);
+  textInputController.setComposition("bar");
+  assert_equals(test.innerHTML, "bar");
+  assert_equals(compositionStartFired, 1);
+  textInputController.insertText("bar");
+  assert_equals(test.innerHTML, "bar");
+  assert_equals(compositionEndFired, 1);
+}, 'Testing EditContext Composition Event');
+
+test(function() {
+  const editContext = new EditContext();
+  assert_not_equals(editContext, null);
+  const test = document.getElementById('test');
+  test.innerHTML = "";
+  // Add EditContext event listeners
+  editContext.addEventListener("textupdate", e => {
+    // Update the text in the div
+    const buffer = test.innerText;
+    test.innerHTML = buffer.substr(0, e.updateRangeStart) + e.updateText + buffer.substr(e.updateRangeEnd);
+  });
+
+  test.focus();
+  editContext.focus();
+  textInputController.setComposition("foo");
+  assert_equals(test.innerHTML, "foo");
+  editContext.updateText(0, 1, "h");
+  assert_equals(editContext.text, "hoo");
+  editContext.updateText(0, 3, "bar");
+  assert_equals(editContext.text, "bar");
+}, 'Testing EditContext TextChange');
+
+test(function() {
+  const editContext = new EditContext();
+  assert_not_equals(editContext, null);
+  const test = document.getElementById('test');
+  test.innerHTML = "";
+  // Add EditContext event listeners
+  editContext.addEventListener("textupdate", e => {
+    // Update the text in the div
+    const buffer = test.innerText;
+    test.innerHTML = buffer.substr(0, e.updateRangeStart) + e.updateText + buffer.substr(e.updateRangeEnd);
+  });
+
+  test.focus();
+  editContext.focus();
+  textInputController.setComposition("foo");
+  assert_equals(test.innerHTML, "foo");
+  textInputController.insertText("bar");
+  assert_equals(editContext.text, "bar");
+  assert_equals(editContext.selectionStart, 3);
+  assert_equals(editContext.selectionEnd, 3);
+  editContext.updateSelection(0, 0);
+  assert_equals(editContext.selectionStart, 0);
+  assert_equals(editContext.selectionEnd, 0);
+  textInputController.setComposition("foo");
+  assert_equals(editContext.text, "foobar");
+  textInputController.insertText("foo");
+  assert_equals(editContext.selectionStart, 3);
+  assert_equals(editContext.selectionEnd, 3);
+}, 'Testing EditContext Selection Change');
+
+test(function() {
+  const editContext = new EditContext();
+  assert_not_equals(editContext, null);
+  const test = document.getElementById('test');
+  test.innerHTML = "";
+  // Add EditContext event listeners
+  editContext.addEventListener("textupdate", e => {
+    // Update the text in the div
+    const buffer = test.innerText;
+    test.innerHTML = buffer.substr(0, e.updateRangeStart) + e.updateText + buffer.substr(e.updateRangeEnd);
+  });
+
+  test.focus();
+  editContext.focus();
+  textInputController.setComposition("foo");
+  assert_equals(test.innerHTML, "foo");
+  editContext.updateText(0, 1, "h");
+  assert_equals(editContext.text, "hoo");
+  editContext.updateText(0, 3, "bar");
+  assert_equals(editContext.text, "bar");
+  textInputController.insertText("bar");
+  assert_equals(editContext.text, "bar");
+  editContext.updateSelection(0, 0);
+  assert_equals(editContext.selectionStart, 0);
+  assert_equals(editContext.selectionEnd, 0);
+  textInputController.setComposition("foo");
+  assert_equals(editContext.text, "foobar");
+  textInputController.insertText("foo");
+  assert_equals(editContext.text, "foobar");
+}, 'Testing EditContext Text And Selection Change');
+
+test(function() {
+  const editContext = new EditContext();
+  assert_not_equals(editContext, null);
+  const test = document.getElementById('test');
+  test.innerHTML = "";
+  // Add EditContext event listeners
+  editContext.addEventListener("textupdate", e => {
+    // Update the text in the div
+    const buffer = test.innerText;
+    test.innerHTML = buffer.substr(0, e.updateRangeStart) + e.updateText + buffer.substr(e.updateRangeEnd);
+  });
+
+  test.focus();
+  editContext.focus();
+  textInputController.setComposition("foo");
+  assert_equals(test.innerHTML, "foo");
+  textInputController.insertText("foo");
+  textInputController.setMarkedTextFromExistingText(0, 3);
+  textInputController.insertText("bar");
+  assert_equals(editContext.text, "bar");
+  textInputController.setMarkedTextFromExistingText(2, 3);
+  textInputController.insertText("t");
+  assert_equals(editContext.text, "bat");
+}, 'Testing EditContext SetCompositionFromExistingText');
+
+test(function() {
+  const editContext = new EditContext();
+  assert_not_equals(editContext, null);
+  const test = document.getElementById('test');
+  test.innerHTML = "";
+  // Add EditContext event listeners
+  editContext.addEventListener("textupdate", e => {
+    // Update the text in the div
+    const buffer = test.innerText;
+    test.innerHTML = buffer.substr(0, e.updateRangeStart) + e.updateText + buffer.substr(e.updateRangeEnd);
+  });
+
+  test.focus();
+  editContext.focus();
+  textInputController.setComposition("foo");
+  assert_equals(test.innerHTML, "foo");
+  textInputController.insertText("foo");
+  assert_equals(editContext.selectionStart, 3);
+  assert_equals(editContext.selectionEnd, 3);
+  textInputController.extendSelectionAndDelete(3, 0);
+  assert_equals(editContext.selectionStart, 0);
+  assert_equals(editContext.selectionEnd, 0);
+  textInputController.insertText("bar");
+  assert_equals(editContext.text, "bar");
+  assert_equals(editContext.selectionStart, 3);
+  assert_equals(editContext.selectionEnd, 3);
+  textInputController.extendSelectionAndDelete(1, 0);
+  assert_equals(editContext.selectionStart, 2);
+  assert_equals(editContext.selectionEnd, 2);
+  assert_equals(editContext.text, "ba");
+  textInputController.insertText("t");
+  assert_equals(editContext.text, "bat");
+}, 'Testing EditContext ExtendSelectionAndDelete');
+
+test(function() {
+  const editContext = new EditContext();
+  assert_not_equals(editContext, null);
+  const test = document.getElementById('test');
+  test.innerHTML = "";
+  // Add EditContext event listeners
+  editContext.addEventListener("textupdate", e => {
+    // Update the text in the div
+    const buffer = test.innerText;
+    test.innerHTML = buffer.substr(0, e.updateRangeStart) + e.updateText + buffer.substr(e.updateRangeEnd);
+  });
+
+  test.focus();
+  editContext.focus();
+  textInputController.setComposition("foo");
+  assert_equals(test.innerHTML, "foo");
+  textInputController.unmarkText();
+  assert_equals(editContext.text, "foo");
+  textInputController.setComposition("bar");
+  assert_equals(editContext.text, "foobar");
+}, 'Testing EditContext FinishComposingText');
+
+test(function() {
+  const editContext1 = new EditContext();
+  assert_not_equals(editContext1, null);
+  const editContext2 = new EditContext();
+  assert_not_equals(editContext2, null);
+  const test = document.getElementById('test');
+  test.innerHTML = "";
+  // Add EditContext event listeners
+  editContext1.addEventListener("textupdate", e => {
+    // Update the text in the div
+    const buffer = test.innerText;
+    test.innerHTML = buffer.substr(0, e.updateRangeStart) + e.updateText + buffer.substr(e.updateRangeEnd);
+  });
+
+  editContext2.addEventListener("textupdate", e => {
+    // Update the text in the div
+    const buffer = test.innerText;
+    test.innerHTML = buffer.substr(0, e.updateRangeStart) + e.updateText + buffer.substr(e.updateRangeEnd);
+  });
+
+  test.focus();
+  editContext1.focus();
+  textInputController.setComposition("foo");
+  assert_equals(test.innerHTML, "foo");
+  editContext1.blur();
+  editContext2.focus();
+  textInputController.setComposition("bar");
+  assert_equals(editContext2.text, "bar");
+  assert_equals(editContext1.text, "foo");
+}, 'Testing EditContext blur');
+
+test(function() {
+  const editContext = new EditContext();
+  assert_not_equals(editContext, null);
+  editContext.text = "foo";
+  assert_equals(editContext.text, "foo");
+  const test = document.getElementById('test');
+  // Update the layout of the |EditContext|
+  var viewRect = test.getBoundingClientRect();
+  viewRect.x = viewRect.left;
+  viewRect.y = viewRect.top;
+  var caretRect = test.getBoundingClientRect();
+  caretRect.x = caretRect.left;
+  caretRect.y = 2.2 * caretRect.top;
+  caretRect.width = 1;
+  editContext.updateSelection(0, 0);
+  assert_equals(editContext.selectionStart, 0);
+  assert_equals(editContext.selectionEnd, 0);
+  editContext.selectionStart = 1;
+  assert_equals(editContext.selectionStart, 0); // selectionEnd is still 0
+  editContext.selectionEnd = 1;
+  assert_equals(editContext.selectionEnd, 1);
+  editContext.selectionStart = 1;
+  assert_equals(editContext.selectionStart, 1);
+  editContext.updateLayout(viewRect, caretRect);
+}, 'Testing EditContext update text, selection and layout');
+
+test(function() {
+  const editContext = new EditContext();
+  assert_not_equals(editContext, null);
+  editContext.text = "foo";
+  assert_equals(editContext.text, "foo");
+  assert_throws("IndexSizeError", function() { editContext.updateSelection(10, 0); });
+  assert_equals(editContext.selectionStart, 0);
+  assert_equals(editContext.selectionEnd, 0);
+  assert_throws("IndexSizeError", function() { editContext.updateText(10, 1, "h"); });
+  assert_equals(editContext.text, "foo");
+}, 'Testing EditContext update text and selection with invalid values');
+
+test(function() {
+  const editContext = new EditContext();
+  assert_not_equals(editContext, null);
+  assert_equals(editContext.inputMode, "text"); // default value
+  editContext.inputMode = "tel";
+  assert_equals(editContext.inputMode, "tel");
+  editContext.inputMode = "email";
+  assert_equals(editContext.inputMode, "email");
+  editContext.inputMode = "search";
+  assert_equals(editContext.inputMode, "search");
+  editContext.inputMode = "decimal";
+  assert_equals(editContext.inputMode, "decimal");
+  editContext.inputMode = "numeric";
+  assert_equals(editContext.inputMode, "numeric");
+  editContext.inputMode = "url";
+  assert_equals(editContext.inputMode, "url");
+  editContext.inputMode = "none";
+  assert_equals(editContext.inputMode, "none");
+  editContext.inputMode = "test";
+  assert_equals(editContext.inputMode, "none");
+}, 'Testing EditContext inputMode');
+
+test(function() {
+  const editContext = new EditContext();
+  assert_not_equals(editContext, null);
+  assert_equals(editContext.enterKeyHint, "enter"); // default value
+  editContext.enterKeyHint = "done";
+  assert_equals(editContext.enterKeyHint, "done");
+  editContext.enterKeyHint = "go";
+  assert_equals(editContext.enterKeyHint, "go");
+  editContext.enterKeyHint = "next";
+  assert_equals(editContext.enterKeyHint, "next");
+  editContext.enterKeyHint = "previous";
+  assert_equals(editContext.enterKeyHint, "previous");
+  editContext.enterKeyHint = "search";
+  assert_equals(editContext.enterKeyHint, "search");
+  editContext.enterKeyHint = "send";
+  assert_equals(editContext.enterKeyHint, "send");
+  editContext.enterKeyHint = "test";
+  assert_equals(editContext.enterKeyHint, "send");
+}, 'Testing EditContext enterKeyHint');
+
+test(function() {
+  // SetComposition should not crash when event handler removes document
+  const child = document.createElement("iframe");
+  document.body.appendChild(child);
+  const childDocument = child.contentDocument;
+  const textarea = childDocument.createElement('textarea');
+  childDocument.body.appendChild(textarea);
+  textarea.addEventListener("focusin", e => {
+    const childEditContext = new EditContext()
+    childEditContext.focus();
+    childEditContext.addEventListener("textupdate", e => {
+      child.remove();
+    });
+    childEditContext.addEventListener("textformatupdate", e => {
+    });
+  });
+  textarea.focus();
+  child.contentWindow.focus();
+  child.contentWindow.textInputController.setComposition("bar");
+}, 'Testing EditContext Iframe Document Delete');
+
+test(function() {
+  const editContext1 = new EditContext();
+  editContext1.addEventListener("textupdate", e => {
+  });
+  editContext1.focus();
+  gc()
+  textInputController.setComposition("bar");
+
+}, 'Testing EditContext GC');
+
+</script>
+</body>
+</html>

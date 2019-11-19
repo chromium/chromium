@@ -14,6 +14,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser_dialogs.h"
+#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/toolbar/browser_app_menu_button.h"
@@ -32,6 +33,7 @@
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/layout/fill_layout.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/widget/widget.h"
 
@@ -51,16 +53,8 @@ views::Widget* RelaunchRecommendedBubbleView::ShowBubble(
                             ->toolbar_button_provider()
                             ->GetAppMenuButton();
   auto* bubble_view = new RelaunchRecommendedBubbleView(
-      anchor_button, gfx::Point(), detection_time, std::move(on_accept));
+      anchor_button, detection_time, std::move(on_accept));
   bubble_view->SetArrow(views::BubbleBorder::TOP_RIGHT);
-
-#if defined(OS_MACOSX)
-  // Parent the bubble to the browser window when there is no anchor view.
-  if (!anchor_button) {
-    bubble_view->set_parent_window(
-        platform_util::GetViewForWindow(browser->window()->GetNativeWindow()));
-  }
-#endif  // defined(OS_MACOSX)
 
   views::Widget* bubble_widget =
       views::BubbleDialogDelegateView::CreateBubble(bubble_view);
@@ -87,16 +81,6 @@ bool RelaunchRecommendedBubbleView::Close() {
   return true;
 }
 
-int RelaunchRecommendedBubbleView::GetDialogButtons() const {
-  return ui::DIALOG_BUTTON_OK;
-}
-
-base::string16 RelaunchRecommendedBubbleView::GetDialogButtonLabel(
-    ui::DialogButton button) const {
-  DCHECK_EQ(button, ui::DIALOG_BUTTON_OK);
-  return l10n_util::GetStringUTF16(IDS_RELAUNCH_ACCEPT_BUTTON);
-}
-
 base::string16 RelaunchRecommendedBubbleView::GetWindowTitle() const {
   return relaunch_recommended_timer_.GetWindowTitle();
 }
@@ -115,22 +99,15 @@ bool RelaunchRecommendedBubbleView::ShouldShowWindowIcon() const {
   return true;
 }
 
-int RelaunchRecommendedBubbleView::GetHeightForWidth(int width) const {
-  const gfx::Insets insets = GetInsets();
-  return body_label_->GetHeightForWidth(width - insets.width()) +
-         insets.height();
-}
-
-void RelaunchRecommendedBubbleView::Layout() {
-  body_label_->SetBoundsRect(GetContentsBounds());
-}
-
 void RelaunchRecommendedBubbleView::Init() {
-  body_label_ =
-      new views::Label(l10n_util::GetStringUTF16(IDS_RELAUNCH_RECOMMENDED_BODY),
-                       views::style::CONTEXT_MESSAGE_BOX_BODY_TEXT);
-  body_label_->SetMultiLine(true);
-  body_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  SetLayoutManager(std::make_unique<views::FillLayout>());
+  auto label = std::make_unique<views::Label>(
+      l10n_util::GetPluralStringFUTF16(IDS_RELAUNCH_RECOMMENDED_BODY,
+                                       BrowserList::GetIncognitoBrowserCount()),
+      views::style::CONTEXT_MESSAGE_BOX_BODY_TEXT);
+
+  label->SetMultiLine(true);
+  label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
 
   // Align the body label with the left edge of the bubble's title.
   // TODO(bsep): Remove this when fixing https://crbug.com/810970.
@@ -139,10 +116,10 @@ void RelaunchRecommendedBubbleView::Init() {
                              ->GetInsetsMetric(views::INSETS_DIALOG_TITLE)
                              .left() +
                      kTitleIconSize;
-  body_label_->SetBorder(views::CreateEmptyBorder(
+  label->SetBorder(views::CreateEmptyBorder(
       gfx::Insets(0, title_offset - margins().left(), 0, 0)));
 
-  AddChildView(body_label_);
+  AddChildView(std::move(label));
 
   base::RecordAction(base::UserMetricsAction("RelaunchRecommendedShown"));
 }
@@ -157,28 +134,29 @@ gfx::Size RelaunchRecommendedBubbleView::CalculatePreferredSize() const {
 void RelaunchRecommendedBubbleView::VisibilityChanged(
     views::View* starting_from,
     bool is_visible) {
-  views::Button* anchor_button = views::Button::AsButton(GetAnchorView());
-  if (anchor_button) {
-    anchor_button->AnimateInkDrop(is_visible ? views::InkDropState::ACTIVATED
-                                             : views::InkDropState::DEACTIVATED,
-                                  nullptr);
-  }
+  views::Button::AsButton(GetAnchorView())
+      ->AnimateInkDrop(is_visible ? views::InkDropState::ACTIVATED
+                                  : views::InkDropState::DEACTIVATED,
+                       nullptr);
 }
 
 // |relaunch_recommended_timer_| automatically starts for the next time the
 // title needs to be updated (e.g., from "2 days" to "3 days").
 RelaunchRecommendedBubbleView::RelaunchRecommendedBubbleView(
     views::Button* anchor_button,
-    const gfx::Point& anchor_point,
     base::Time detection_time,
     base::RepeatingClosure on_accept)
-    : LocationBarBubbleDelegateView(anchor_button, anchor_point, nullptr),
+    : LocationBarBubbleDelegateView(anchor_button, nullptr),
       on_accept_(std::move(on_accept)),
-      body_label_(nullptr),
       relaunch_recommended_timer_(
           detection_time,
           base::BindRepeating(&RelaunchRecommendedBubbleView::UpdateWindowTitle,
                               base::Unretained(this))) {
+  DialogDelegate::set_buttons(ui::DIALOG_BUTTON_OK);
+  DialogDelegate::set_button_label(
+      ui::DIALOG_BUTTON_OK,
+      l10n_util::GetStringUTF16(IDS_RELAUNCH_ACCEPT_BUTTON));
+
   chrome::RecordDialogCreation(chrome::DialogIdentifier::RELAUNCH_RECOMMENDED);
   set_margins(ChromeLayoutProvider::Get()->GetDialogInsetsForContentType(
       views::TEXT, views::TEXT));

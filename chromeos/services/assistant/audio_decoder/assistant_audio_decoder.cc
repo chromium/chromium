@@ -14,7 +14,6 @@
 #include "media/base/data_source.h"
 #include "media/filters/audio_file_reader.h"
 #include "media/filters/blocking_url_protocol.h"
-#include "services/service_manager/public/cpp/service_keepalive.h"
 
 namespace chromeos {
 namespace assistant {
@@ -31,17 +30,15 @@ void OnError(bool* succeeded) {
 }  // namespace
 
 AssistantAudioDecoder::AssistantAudioDecoder(
-    std::unique_ptr<service_manager::ServiceKeepaliveRef> service_ref,
-    mojom::AssistantAudioDecoderClientPtr client,
-    mojom::AssistantMediaDataSourcePtr data_source)
-    : service_ref_(std::move(service_ref)),
-      client_(std::move(client)),
+    mojo::PendingRemote<mojom::AssistantAudioDecoderClient> client,
+    mojo::PendingRemote<mojom::AssistantMediaDataSource> data_source)
+    : client_(std::move(client)),
       task_runner_(base::SequencedTaskRunnerHandle::Get()),
       data_source_(std::make_unique<IPCDataSource>(std::move(data_source))),
       media_thread_(std::make_unique<base::Thread>("media_thread")),
       weak_factory_(this) {
   CHECK(media_thread_->Start());
-  client_.set_connection_error_handler(base::BindOnce(
+  client_.set_disconnect_handler(base::BindOnce(
       &AssistantAudioDecoder::OnConnectionError, base::Unretained(this)));
 }
 
@@ -136,15 +133,15 @@ void AssistantAudioDecoder::OnBufferDecodedOnThread(
     const int bytes_to_alloc =
         audio_bus->frames() * kBytesPerSample * audio_bus->channels();
     std::vector<uint8_t> buffer(bytes_to_alloc);
-    audio_bus->ToInterleaved(audio_bus->frames(), kBytesPerSample,
-                             buffer.data());
+    audio_bus->ToInterleaved<media::SignedInt16SampleTypeTraits>(
+        audio_bus->frames(), reinterpret_cast<int16_t*>(buffer.data()));
     buffers.emplace_back(buffer);
   }
   client_->OnNewBuffers(buffers);
 }
 
 void AssistantAudioDecoder::OnConnectionError() {
-  client_ = nullptr;
+  client_.reset();
   media_thread_->task_runner()->PostTask(
       FROM_HERE,
       base::BindOnce(&AssistantAudioDecoder::CloseDecoderOnMediaThread,

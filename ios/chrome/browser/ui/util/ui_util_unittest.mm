@@ -308,3 +308,53 @@ TEST_F(UIUtilTest, TestProjectionAspectFillNoClipping) {
   EXPECT_EQ_RECT(expectedProjection, projection);
   EXPECT_EQ_SIZE(expectedRevisedSize, revisedSize);
 }
+
+TEST_F(UIUtilTest, TestMakeCenteredRectInFrame) {
+  CGSize frameSize, rectSize;
+  CGRect expectedRectPosition, rectPosition;
+
+  // Frame dimensions 100x100, rectangle dimensions 50x50
+  frameSize = CGSizeMake(100, 100);
+  rectSize = CGSizeMake(50, 50);
+
+  expectedRectPosition = CGRectMake(25, 25, 50, 50);
+  rectPosition = CGRectMakeCenteredRectInFrame(frameSize, rectSize);
+
+  EXPECT_EQ_RECT(expectedRectPosition, rectPosition);
+
+  // Frame dimensions 100x200, rectangle dimensions 40x40
+  frameSize = CGSizeMake(100, 200);
+  rectSize = CGSizeMake(40, 40);
+
+  expectedRectPosition = CGRectMake(30, 80, 40, 40);
+  rectPosition = CGRectMakeCenteredRectInFrame(frameSize, rectSize);
+
+  EXPECT_EQ_RECT(expectedRectPosition, rectPosition);
+
+  // Frame dimensions 100x200, rectangle dimensions 50x100
+  frameSize = CGSizeMake(100, 200);
+  rectSize = CGSizeMake(50, 100);
+
+  expectedRectPosition = CGRectMake(25, 50, 50, 100);
+  rectPosition = CGRectMakeCenteredRectInFrame(frameSize, rectSize);
+
+  EXPECT_EQ_RECT(expectedRectPosition, rectPosition);
+
+  // Frame dimensions 100x100, rectangle dimensions 50x20
+  frameSize = CGSizeMake(100, 100);
+  rectSize = CGSizeMake(50, 20);
+
+  expectedRectPosition = CGRectMake(25, 40, 50, 20);
+  rectPosition = CGRectMakeCenteredRectInFrame(frameSize, rectSize);
+
+  EXPECT_EQ_RECT(expectedRectPosition, rectPosition);
+
+  // Frame dimensions 100x100, rectangle dimensions 0x0
+  frameSize = CGSizeMake(100, 100);
+  rectSize = CGSizeMake(0, 0);
+
+  expectedRectPosition = CGRectMake(50, 50, 0, 0);
+  rectPosition = CGRectMakeCenteredRectInFrame(frameSize, rectSize);
+
+  EXPECT_EQ_RECT(expectedRectPosition, rectPosition);
+}

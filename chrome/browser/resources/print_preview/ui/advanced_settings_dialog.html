@@ -1,0 +1,44 @@
+<style include="print-preview-shared cr-hidden-style">
+  #dialog::part(dialog) {
+    height: -webkit-fit-content;
+    max-height: calc(100vh - 2 * var(--print-preview-dialog-margin));
+    max-width:  calc(100vw - 2 * var(--print-preview-dialog-margin));
+  }
+
+  print-preview-search-box {
+    margin-bottom: 8px;
+    margin-top: 24px;
+  }
+</style>
+<cr-dialog id="dialog" on-close="onCloseOrCancel_">
+  <div slot="title">
+    <div>[[i18n('advancedSettingsDialogTitle', destination.displayName)]]
+    </div>
+    <print-preview-search-box id="searchBox"
+        hidden$="[[!hasMultipleItems_(
+            destination.capabilities.printer.vendor_capability)]]"
+        label="$i18n{advancedSettingsSearchBoxPlaceholder}"
+        search-query="{{searchQuery_}}" autofocus>
+    </print-preview-search-box>
+  </div>
+  <div slot="body">
+    <template is="dom-repeat"
+        items="[[destination.capabilities.printer.vendor_capability]]">
+      <print-preview-advanced-settings-item capability="[[item]]"
+          settings="[[settings]]">
+      </print-preview-advanced-settings-item>
+    </template>
+    <div class="no-settings-match-hint"
+        hidden$="[[!shouldShowHint_(hasMatching_)]]">
+      $i18n{noAdvancedSettingsMatchSearchHint}
+    </div>
+  </div>
+  <div slot="button-container">
+    <cr-button class="cancel-button" on-click="onCancelButtonClick_">
+      $i18n{cancel}
+    </cr-button>
+    <cr-button class="action-button" on-click="onApplyButtonClick_">
+      $i18n{advancedSettingsDialogConfirm}
+    </cr-button>
+  </div>
+</cr-dialog>

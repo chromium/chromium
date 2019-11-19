@@ -7,7 +7,7 @@
 #include <stddef.h>
 
 #include "cc/resources/ui_resource_bitmap.h"
-#include "cc/test/layer_test_common.h"
+#include "cc/test/layer_tree_impl_test_base.h"
 #include "components/viz/common/quads/draw_quad.h"
 #include "components/viz/common/quads/texture_draw_quad.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -22,7 +22,7 @@ TEST(PaintedScrollbarLayerImplTest, Occlusion) {
   gfx::Size viewport_size(1000, 1000);
   float thumb_opacity = 0.2f;
 
-  LayerTestCommon::LayerImplTest impl;
+  LayerTreeImplTestBase impl;
 
   SkBitmap thumb_sk_bitmap;
   thumb_sk_bitmap.allocN32Pixels(10, 10);
@@ -41,7 +41,7 @@ TEST(PaintedScrollbarLayerImplTest, Occlusion) {
   ScrollbarOrientation orientation = VERTICAL;
 
   PaintedScrollbarLayerImpl* scrollbar_layer_impl =
-      impl.AddChildToRoot<PaintedScrollbarLayerImpl>(orientation, false, false);
+      impl.AddLayer<PaintedScrollbarLayerImpl>(orientation, false, false);
   scrollbar_layer_impl->SetBounds(layer_size);
   scrollbar_layer_impl->SetContentsOpaque(true);
   scrollbar_layer_impl->set_internal_contents_scale_and_bounds(
@@ -49,13 +49,14 @@ TEST(PaintedScrollbarLayerImplTest, Occlusion) {
   scrollbar_layer_impl->SetDrawsContent(true);
   scrollbar_layer_impl->SetThumbThickness(layer_size.width());
   scrollbar_layer_impl->SetThumbLength(500);
-  scrollbar_layer_impl->SetTrackLength(layer_size.height());
+  scrollbar_layer_impl->SetTrackRect(gfx::Rect(0, 0, 15, layer_size.height()));
   scrollbar_layer_impl->SetCurrentPos(100.f / 4);
   scrollbar_layer_impl->SetClipLayerLength(100.f);
   scrollbar_layer_impl->SetScrollLayerLength(200.f);
   scrollbar_layer_impl->set_track_ui_resource_id(track_uid);
   scrollbar_layer_impl->set_thumb_ui_resource_id(thumb_uid);
   scrollbar_layer_impl->set_thumb_opacity(thumb_opacity);
+  CopyProperties(impl.root_layer(), scrollbar_layer_impl);
 
   impl.CalcDrawProps(viewport_size);
 
@@ -69,8 +70,8 @@ TEST(PaintedScrollbarLayerImplTest, Occlusion) {
     impl.AppendQuadsWithOcclusion(scrollbar_layer_impl, occluded);
 
     size_t partially_occluded_count = 0;
-    LayerTestCommon::VerifyQuadsAreOccluded(
-        impl.quad_list(), occluded, &partially_occluded_count);
+    VerifyQuadsAreOccluded(impl.quad_list(), occluded,
+                           &partially_occluded_count);
     EXPECT_EQ(2u, impl.quad_list().size());
     EXPECT_EQ(0u, partially_occluded_count);
 
@@ -80,8 +81,10 @@ TEST(PaintedScrollbarLayerImplTest, Occlusion) {
     const viz::DrawQuad* thumb_draw_quad = impl.quad_list().ElementAt(0);
     const viz::DrawQuad* track_draw_quad = impl.quad_list().ElementAt(1);
 
-    EXPECT_EQ(viz::DrawQuad::TEXTURE_CONTENT, thumb_draw_quad->material);
-    EXPECT_EQ(viz::DrawQuad::TEXTURE_CONTENT, track_draw_quad->material);
+    EXPECT_EQ(viz::DrawQuad::Material::kTextureContent,
+              thumb_draw_quad->material);
+    EXPECT_EQ(viz::DrawQuad::Material::kTextureContent,
+              track_draw_quad->material);
 
     const viz::TextureDrawQuad* thumb_quad =
         viz::TextureDrawQuad::MaterialCast(thumb_draw_quad);
@@ -113,7 +116,7 @@ TEST(PaintedScrollbarLayerImplTest, Occlusion) {
     gfx::Rect occluded(scrollbar_layer_impl->visible_layer_rect());
     impl.AppendQuadsWithOcclusion(scrollbar_layer_impl, occluded);
 
-    LayerTestCommon::VerifyQuadsExactlyCoverRect(impl.quad_list(), gfx::Rect());
+    VerifyQuadsExactlyCoverRect(impl.quad_list(), gfx::Rect());
     EXPECT_EQ(impl.quad_list().size(), 0u);
   }
 
@@ -123,8 +126,8 @@ TEST(PaintedScrollbarLayerImplTest, Occlusion) {
     impl.AppendQuadsWithOcclusion(scrollbar_layer_impl, occluded);
 
     size_t partially_occluded_count = 0;
-    LayerTestCommon::VerifyQuadsAreOccluded(
-        impl.quad_list(), occluded, &partially_occluded_count);
+    VerifyQuadsAreOccluded(impl.quad_list(), occluded,
+                           &partially_occluded_count);
     // The layer outputs two quads, which is partially occluded.
     EXPECT_EQ(2u, impl.quad_list().size());
     EXPECT_EQ(2u, partially_occluded_count);

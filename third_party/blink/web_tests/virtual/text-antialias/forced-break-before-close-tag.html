@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<style>
+#container > * {
+  font-size: 20px;
+  line-height: 1;
+  border: 1px solid blue;
+  margin: 0;
+}
+.margin-right {
+  margin-right: 1em;
+}
+.border-right {
+  border-right: 1em solid purple;
+}
+.padding-right {
+  padding-right: 1em;
+}
+</style>
+<body>
+<div id="log"></div>
+<div id="container">
+<pre><span class="margin-right">First line
+</span></pre>
+
+<pre><span class="border-right">First line
+</span></pre>
+
+<pre><span class="padding-right">First line
+</span></pre>
+
+<pre><span class="border-right"><span class="border-right">First line
+</span></span></pre>
+
+<div><span class="margin-right">First line<br>
+</span></div>
+
+<div><span class="border-right">First line<br>
+</span></div>
+
+<div><span class="padding-right">First line<br>
+</span></div>
+
+<div><span class="border-right"><span class="border-right">First line<br>
+</span></span></div>
+</div>
+<script>
+for (let e of container.children) {
+  test(() => {
+    assert_approx_equals(e.offsetHeight, 20, 2);
+  }, e.innerHTML);
+}
+</script>
+</body>

@@ -14,6 +14,7 @@
 #include "ui/gfx/image/image.h"
 
 namespace gfx {
+class RenderText;
 class Size;
 }
 
@@ -82,6 +83,12 @@ class IconWithBadgeImageSource : public gfx::CanvasImageSource {
 
   // An optional badge to draw over the base icon.
   std::unique_ptr<Badge> badge_;
+
+  // The badge text to draw if a badge exists.
+  std::unique_ptr<gfx::RenderText> badge_text_;
+
+  // The badge's background display rectangle area.
+  gfx::Rect badge_background_rect_;
 
   // Whether or not the icon should be grayscaled (e.g., to show it is
   // disabled).

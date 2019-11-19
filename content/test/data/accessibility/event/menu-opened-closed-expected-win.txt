@@ -1,0 +1,7 @@
+EVENT_SYSTEM_MENUPOPUPSTART on <div#menu> role=ROLE_SYSTEM_MENUPOPUP name="menu" IA2_STATE_VERTICAL SetSize=2
+=== Start Continuation ===
+EVENT_SYSTEM_MENUPOPUPSTART on <div#submenu> role=ROLE_SYSTEM_MENUPOPUP IA2_STATE_VERTICAL SetSize=1
+=== Start Continuation ===
+EVENT_SYSTEM_MENUPOPUPEND on <div#submenu> role=ROLE_SYSTEM_MENUPOPUP IA2_STATE_VERTICAL SetSize=1
+=== Start Continuation ===
+EVENT_SYSTEM_MENUPOPUPEND on <div#menu> role=ROLE_SYSTEM_MENUPOPUP name="menu" IA2_STATE_VERTICAL SetSize=2

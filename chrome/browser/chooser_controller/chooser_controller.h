@@ -83,6 +83,28 @@ class ChooserController {
   // Returns the label for OK button.
   virtual base::string16 GetOkButtonLabel() const = 0;
 
+  // Returns the label for Cancel button.
+  virtual base::string16 GetCancelButtonLabel() const;
+
+  // Returns whether both OK and Cancel buttons are enabled.
+  //
+  // For chooser used in Web APIs such as WebBluetooth, WebUSB,
+  // WebSerial, etc., the OK button is only enabled when there is at least
+  // one device listed in the chooser, because user needs to be able to select
+  // a device to grant access permission in these APIs.
+  //
+  // For permission prompt used in Bluetooth scanning Web API, the two buttons
+  // represent Allow and Block, and should always be enabled so that user can
+  // make their permission decision.
+  virtual bool BothButtonsAlwaysEnabled() const;
+
+  // Returns whether table view should always be disabled.
+  //
+  // For permission prompt used in Bluetooth scanning Web API, the table is
+  // used for displaying device names, and user doesn't need to select a device
+  // from the table, so it should always be disabled.
+  virtual bool TableViewAlwaysDisabled() const;
+
   // The number of options users can pick from. For example, it can be
   // the number of USB/Bluetooth device names which are listed in the
   // chooser so that users can grant permission.

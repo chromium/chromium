@@ -1,0 +1,7 @@
+Fetched from Chrome Web Store.
+CRX ID = dlefkgcbefcjoiheimkdkkhdcejpbgda
+
+This extension has a file that has interesting size w.r.t
+FileURLLoaderFactory's mime-sniffing code. Specifically,
+jquery-3.2.0.min.js file is larger than 1024 bytes. This will trigger
+FileURLLoaderObserver::OnSeekComplete that we care about in our test.

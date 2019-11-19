@@ -36,6 +36,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/workers/abstract_worker.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/scheduler/public/frame_or_worker_scheduler.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
 
 namespace blink {
@@ -67,11 +68,14 @@ class CORE_EXPORT SharedWorker final
 
   bool HasPendingActivity() const final;
 
+  void ContextLifecycleStateChanged(mojom::FrameLifecycleState state) override;
   void Trace(blink::Visitor*) override;
 
  private:
   Member<MessagePort> port_;
   bool is_being_connected_;
+  FrameOrWorkerScheduler::SchedulingAffectingFeatureHandle
+      feature_handle_for_scheduler_;
 };
 
 }  // namespace blink

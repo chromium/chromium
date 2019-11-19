@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<title>Test that small videos don't show disabled mute/fullscreen buttons in the overflow menu.</title>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../media-controls.js"></script>
+<video controls width=50 preload=none src="../content/60_sec_video.webm"></video>
+<script>
+async_test(t => {
+  const video = document.querySelector('video');
+
+  window.onload = t.step_func_done(() => {
+    // Test that the controls are not visible.
+    assert_false(isControlVisible(fullscreenButton(video)));
+    assert_false(isControlVisible(muteButton(video)));
+
+    // Test that the overflow controls are also not visible.
+    assert_false(isControlVisible(fullscreenOverflowItem(video)));
+    assert_false(isControlVisible(muteOverflowItem(video)));
+  });
+});
+</script>
+</html>

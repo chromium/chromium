@@ -7,6 +7,8 @@
 
 #import <Foundation/Foundation.h>
 
+// Accessibility identifier for the History TableView.
+extern NSString* const kHistoryTableViewIdentifier;
 // Accessibility identifier of the search controller search bar.
 extern NSString* const kHistorySearchControllerSearchBarIdentifier;
 // Accessibility identifier of the navigation controller done button.
@@ -19,7 +21,7 @@ extern NSString* const kHistoryToolbarClearBrowsingButtonIdentifier;
 extern NSString* const kHistoryToolbarEditButtonIdentifier;
 // Accessibility identifier of the cancel toolbar button.
 extern NSString* const kHistoryToolbarCancelButtonIdentifier;
-// Accessibility ID for the scrim over TableView.
+// Accessibility identifier for the scrim over TableView.
 extern NSString* const kHistorySearchScrimIdentifier;
 
 #endif  // IOS_CHROME_BROWSER_UI_HISTORY_HISTORY_UI_CONSTANTS_H_

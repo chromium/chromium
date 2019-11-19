@@ -19,14 +19,12 @@
     1) the final colored blocks in the series of colored blocks in the
        video content box area are respectively: cyan, blue, green
     2) the video seek point is near 00:000:00.00 -->
-  <video/>
+  <video preload="auto"/>
 </body>
 
 <script>
-if (window.testRunner) {
-  testRunner.dumpAsTextWithPixelResults();
+if (window.testRunner)
   testRunner.waitUntilDone();
-}
 
 window.onload = function() {
   if (window.testRunner) {

@@ -1,265 +1,718 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="fi">
+<translation id="1000498691615767391">Valitse avattava kansio</translation>
 <translation id="1023220960495960452">Translitterointi (vanakkam → வணக்கம்)</translation>
+<translation id="1035094536595558507">Dianäkymä</translation>
 <translation id="1045157690796831147">Translitterointi (namaskar → നമസ്കാരം)</translation>
+<translation id="1046068652463704410">Japanin syöttö (Yhdysvaltain näppäimistö)</translation>
+<translation id="1047956942837015229">Poistetaan <ph name="COUNT" /> kohdetta…</translation>
+<translation id="1049926623896334335">Word-asiakirja</translation>
+<translation id="1062407476771304334">Korvaa</translation>
 <translation id="1065449928621190041">Näppäimistö: ranska (Kanada)</translation>
+<translation id="1119069657431255176">Bzip2-pakattu Tar-arkisto</translation>
 <translation id="1120073797882051782">Hangul Romaja</translation>
+<translation id="1148097584170732637"><ph name="FILE_COUNT" /> löytyi.
+    <ph name="LINE_BREAK1" />
+    Paikallinen tallennustila ei riitä. Tarvitaan vielä <ph name="FILE_SIZE" />.
+    <ph name="LINE_BREAK2" />
+    Kokeile valita vähemmän kuvia.</translation>
 <translation id="1150565364351027703">Aurinkolasit</translation>
 <translation id="115443833402798225">Hangul Ahnmatae</translation>
 <translation id="1155759005174418845">katalaani</translation>
+<translation id="1173894706177603556">Muuta nimeä</translation>
+<translation id="117624967391683467">Kopioidaan tiedostoa <ph name="FILE_NAME" />…</translation>
+<translation id="1178581264944972037">Tauko</translation>
+<translation id="1190144681599273207">Mobiiliyhteyden kautta noudettavan tiedoston koko on noin <ph name="FILE_SIZE" />.</translation>
+<translation id="1201402288615127009">Seuraava</translation>
 <translation id="1208421848177517699">Translitterointi (namaste → નમસ્તે)</translation>
+<translation id="1243314992276662751">Lähetä</translation>
+<translation id="1249250836236328755">Lajityyppi</translation>
 <translation id="1278813325885878377">Unkarilainen QWERTY-näppäimistö</translation>
+<translation id="1297922636971898492">Google Drive ei ole juuri nyt käytettävissä. Lähetys käynnistyy automaattisesti, kun Google Drive on taas käytettävissä.</translation>
+<translation id="1307931752636661898">Linux-tiedostoja ei voi näyttää</translation>
 <translation id="1310751437842832374">Translitterointi (mausam → ନମସ୍ତେ)</translation>
 <translation id="1337036551624197047">Näppäimistö: tšekki</translation>
+<translation id="1338950911836659113">Poistetaan…</translation>
+<translation id="1346748346194534595">Oikealle</translation>
+<translation id="1351692861129622852">Tuodaan <ph name="FILE_COUNT" /> tiedostoa…</translation>
 <translation id="1352103415082130575">Thainkielinen näppäimistö (pattachote)</translation>
-<translation id="1358032944105037487">Näppäimistö: japani</translation>
+<translation id="1358735829858566124">Tiedosto tai hakemisto ei ole käytettävissä.</translation>
+<translation id="1363028406613469049">Raita</translation>
+<translation id="1378727793141957596">Tervetuloa Google Driveen!</translation>
+<translation id="1383876407941801731">Haku</translation>
+<translation id="1395262318152388157">Kelaamisen liukusäädin</translation>
 <translation id="1399648040768741453">Telugunkielinen näppäimistö (foneettinen)</translation>
+<translation id="1430915738399379752">Tulosta</translation>
+<translation id="1439494416798956626">Siirretty kansioon <ph name="FOLDER_NAME" /></translation>
 <translation id="1441841714100794440">Vietnamilainen näppäimistö (telex)</translation>
 <translation id="1455548678241328678">Näppäimistö: norja</translation>
+<translation id="1464724975715666883">1 virhe.</translation>
+<translation id="1467432559032391204">Vasemmalle</translation>
+<translation id="1474339897586437869">Tiedostoa <ph name="FILENAME" /> ei lähetetty. Google Drivessasi ei ole riittävästi vapaata tallennustilaa.</translation>
 <translation id="148466539719134488">sveitsiläinen</translation>
+<translation id="1497522201463361063">Tiedostoa <ph name="FILE_NAME" /> ei voi nimetä uudelleen. <ph name="ERROR_MESSAGE" /></translation>
+<translation id="1538729222189715449">Avataan Linux-tiedostoja…</translation>
 <translation id="1547964879613821194">englanti (Kanada)</translation>
+<translation id="1556189134700913550">Käytä kaikkiin</translation>
+<translation id="1572585716423026576">Aseta taustakuvaksi</translation>
 <translation id="158809615184981282">Fäärinkielinen näppäimistö</translation>
+<translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> Pt</translation>
 <translation id="1646136617204068573">Näppäimistö: unkari</translation>
 <translation id="164729547906544836">Tamilinkielinen näppäimistö (itrans)</translation>
 <translation id="164969095109328410">Chrome-laite</translation>
+<translation id="1665611772925418501">Tiedostoa ei voi muuttaa.</translation>
+<translation id="1673103856845176271">Tiedostoa ei voi käyttää turvallisuussyistä.</translation>
+<translation id="169515659049020177">Shift</translation>
+<translation id="1722487484194605434">Pakataan <ph name="NUMBER_OF_ITEMS" /> kohdetta…</translation>
+<translation id="174173592514158117">Näytä kaikki Play-kansiot</translation>
+<translation id="174937106936716857">Tiedostoja yhteensä</translation>
+<translation id="1775381402323441512">Videon tiedot</translation>
+<translation id="180035236176489073">Sinun täytyy olla online-tilassa käyttääksesi näitä tiedostoja.</translation>
+<translation id="1807938677607439181">Kaikki tiedostot</translation>
+<translation id="1810764548349082891">Esikatselu ei saatavilla</translation>
+<translation id="1815861158988915678"><ph name="BEGIN_BOLD" />Huomaa:<ph name="END_BOLD" /> nämä tiedostot ovat tilapäisiä ja ne voidaan poistaa automaattisesti levytilan vapauttamiseksi. <ph name="BEGIN_LINK" />Lisätietoja<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">Pingviini</translation>
+<translation id="183183971458492120">Ladataan tietoja…</translation>
+<translation id="1838709767668011582">Google-sivusto</translation>
+<translation id="1844692022597038441">Tämä tiedosto ei ole käytettävissä offline-tilassa.</translation>
 <translation id="184633654410729720">Thainkielinen näppäimistö (kedmanee)</translation>
+<translation id="1847880352285315359">Tallennettu</translation>
+<translation id="1864756863218646478">Tiedostoa ei löytynyt.</translation>
 <translation id="1921986354447415460">Näppäimistö: turkki (F-tyyppi)</translation>
 <translation id="1931134289871235022">slovakki</translation>
+<translation id="1933345018156373194">Siirto epäonnistui odottamattoman virheen vuoksi: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="1936717151811561466">suomi</translation>
+<translation id="1942765061641586207">Kuvan resoluutio</translation>
+<translation id="1943097386230153518">Asenna uusi palvelu</translation>
 <translation id="1947424002851288782">Näppäimistö: saksa</translation>
+<translation id="1972984168337863910">Laajenna tiedostojen palautepaneelit</translation>
 <translation id="1984603991036629094">Armenialainen foneettinen näppäimistö</translation>
+<translation id="2001796770603320721">Ylläpidä Drivessa</translation>
+<translation id="2009067268969781306">Driven alustaminen poistaa kaiken sille tallennetun datan. Tätä toimintoa ei voi kumota.</translation>
+<translation id="2028997212275086731">RAR-arkisto</translation>
 <translation id="2046702855113914483">Ramen</translation>
+<translation id="2070909990982335904">Pisteellä alkavat nimet on varattu järjestelmän käyttöön. Valitse toinen nimi.</translation>
+<translation id="2079545284768500474">Kumoa</translation>
 <translation id="2080010875307505892">Näppäimistö: serbia</translation>
+<translation id="2084108471225856927">Laiteasetukset</translation>
+<translation id="2085470240340828803">Tiedosto <ph name="FILENAME" /> on jo olemassa. Mitä haluat tehdä?</translation>
+<translation id="2121825465123208577">Muuta kokoa</translation>
 <translation id="2136953289241069843">Translitterointi (namaste → नमस्कार)</translation>
+<translation id="2138867954865495510">Kohteen <ph name="PATH" /> avaaminen epäonnistui: <ph name="ERROR_MESSAGE" /></translation>
+<translation id="2163152940313951844">Virheellinen merkki: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2164862903024139959">Vietnamilainen näppäimistö (TCVN)</translation>
 <translation id="2168214441502403371">Persialainen näppäimistö</translation>
 <translation id="2198315389084035571">yksinkertaistettu kiina</translation>
+<translation id="2208158072373999562">Zip-arkisto</translation>
+<translation id="2225536596944493418">Haluatko varmasti poistaa <ph name="NUMBER_OF_ITEMS" /> kohdetta?</translation>
+<translation id="2230062665678605299">Kansiota <ph name="FOLDER_NAME" /> ei voi luoda. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="2278988676849463018">Kannadankielinen näppäimistö (foneettinen)</translation>
 <translation id="2288278176040912387">Levysoitin</translation>
+<translation id="2291538123825441971">Avataan <ph name="NUMBER_OF_FILES" /> tiedostoa.</translation>
+<translation id="2303301624314357662">Avataan tiedostoa <ph name="FILE_NAME" />.</translation>
+<translation id="2305020378527873881"><ph name="VOLUME_NAME" /> on poistettu.</translation>
+<translation id="2325650632570794183">Tätä tiedostotyyppiä ei tueta. Etsi tämäntyyppisiä tiedostoja avaava sovellus Chrome Web Storesta.</translation>
 <translation id="23434688402327542">Näppäimistö: kazakki</translation>
+<translation id="2352947182261340447">Paikallinen tallennustila ei riitä.</translation>
+<translation id="2377319039870049694">Vaihda luettelonäkymään</translation>
+<translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> kansiota jaettu Linuxille</translation>
+<translation id="2378075407703503998"><ph name="SELCTED_FILE_COUNT" /> tiedostoa on valittu</translation>
 <translation id="2384596874640104496">Sinhalinkielinen näppäimistö</translation>
+<translation id="240770291734945588"><ph name="SPACE_AVAILABLE" /> käytettävissä</translation>
+<translation id="2425665904502185219">Tiedostokoko yhteensä</translation>
+<translation id="2448312741937722512">Tyyppi</translation>
+<translation id="2453576648990281505">Tiedosto on jo olemassa</translation>
 <translation id="2464079411014186876">Jäätelö</translation>
 <translation id="2468402215065996499">Tamagotchi</translation>
 <translation id="247772113373397749">Kanadalainen monikielinen näppäimistö</translation>
 <translation id="2494837236724268445">Gudžaratinkielinen näppäimistö (foneettinen)</translation>
+<translation id="2515586267016047495">Alt</translation>
 <translation id="2529133382850673012">Näppäimistö: US</translation>
+<translation id="2542049655219295786">Google-taulukko</translation>
+<translation id="2547921442987553570">Lisää laajennukseen <ph name="EXTENSION_NAME" /></translation>
 <translation id="255937426064304553">USA (kansainvälinen)</translation>
+<translation id="2562685439590298522">Dokumentit</translation>
 <translation id="2563185590376525700">Sammakko</translation>
+<translation id="2614589611416690597">Video, jonka tyyppi on <ph name="VIDEO_TYPE" /></translation>
+<translation id="2620090360073999360">Google Drive ei ole käytettävissä juuri nyt.</translation>
+<translation id="2638942478653899953">Google Driveen ei saada yhteyttä. <ph name="BEGIN_LINK" />Kirjaudu ulos<ph name="END_LINK" /> ja takaisin sisään.</translation>
 <translation id="2649120831653069427">Kala</translation>
+<translation id="2661146741306740526">16 x 9</translation>
+<translation id="2672394958563893062">Tapahtui virhe. Aloita alusta klikkaamalla.</translation>
+<translation id="2676946222714718093">Toistetaan Chromecastilla</translation>
 <translation id="2735698359135166290">Romanialainen vakionäppäimistö</translation>
 <translation id="2771816809568414714">Juusto</translation>
 <translation id="2781645665747935084">belgialainen</translation>
+<translation id="2782104745158847185">Virhe Linux-sovelluksen asennuksessa</translation>
+<translation id="2787047795752739979">Korvaa alkuperäinen</translation>
 <translation id="2790805296069989825">Näppäimistö: venäjä</translation>
+<translation id="2843806747483486897">Muuta oletuksia...</translation>
+<translation id="2850124913210091882">Varmuuskopiointi</translation>
 <translation id="2870836398458454343">Translitterointi (marhaban ← مرحبا)</translation>
 <translation id="288024221176729610">tšekki</translation>
+<translation id="2887525882758501333">PDF-asiakirja</translation>
+<translation id="2888807692577297075">Haulla &lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt; ei löytynyt kohteita</translation>
 <translation id="2894654529758326923">Tiedot</translation>
+<translation id="2902312830803030883">Lisää toimintoja</translation>
 <translation id="2902734494705624966">USA, laajennettu</translation>
 <translation id="2923240520113693977">viro</translation>
 <translation id="2924296707677495905">Translitterointi (namaskaram → ನಮಸ್ಕಾರ)</translation>
+<translation id="2925966894897775835">Taulukot</translation>
 <translation id="2938685643439809023">mongolia</translation>
 <translation id="2942290791863759244">Saksan NEO 2 -näppäimistö</translation>
+<translation id="2943400156390503548">Slides</translation>
+<translation id="2943503720238418293">Nimi on liian pitkä.</translation>
 <translation id="2951236788251446349">Meduusa</translation>
 <translation id="2963783323012015985">Näppäimistö: turkki</translation>
 <translation id="2966459079597787514">Näppäimistö: ruotsi</translation>
+<translation id="2984337792991268709">Tänään <ph name="TODAY_DAYTIME" /></translation>
+<translation id="2994669386200004489"><ph name="FILE_NAME" />: varmuuskopiointi epäonnistui</translation>
+<translation id="3003633581067744647">Vaihda pikkukuvanäkymään</translation>
+<translation id="3007214526293698309">Korjaa kokosuhde</translation>
+<translation id="303198083543495566">Sijainti</translation>
+<translation id="3057861065630527966">Varmuuskopioi valokuvasi ja videosi.</translation>
 <translation id="3064388234319122767">Translitterointi (zdravo → здраво)</translation>
+<translation id="3078461028045006476">Jaa laajennuksen <ph name="EXTENSION_NAME" /> kanssa</translation>
 <translation id="3088034400796962477">Translitterointi (salam ← سلام)</translation>
 <translation id="3116361045094675131">Näppäimistö: UK</translation>
+<translation id="3126026824346185272">Ctrl</translation>
+<translation id="3144126448740580210">VALMIS</translation>
 <translation id="3157729859914172001">Näppäimistö: US, kansainvälinen (PC)</translation>
 <translation id="3187212781151025377">Näppäimistö: heprea</translation>
 <translation id="3188257591659621405">Omat tiedostot</translation>
 <translation id="3197563288998582412">UK, Dvorak</translation>
+<translation id="3202131003361292969">Reitti</translation>
 <translation id="3224239078034945833">Kanada, monikielinen</translation>
+<translation id="3236289833370040187">Omistajuus siirtyy verkkotunnukselle <ph name="DESTINATION_DOMAIN" />.</translation>
 <translation id="3241720467332021590">iiri</translation>
+<translation id="3245321423178950146">Tuntematon esittäjä</translation>
 <translation id="3252266817569339921">ranska</translation>
+<translation id="3254434849914415189">Valitse oletussovellus <ph name="FILE_TYPE" />-tiedostoille:</translation>
+<translation id="3264582393905923483">Konteksti</translation>
+<translation id="3280431534455935878">Valmistellaan</translation>
 <translation id="3280987981688031357">Vinyylilevy</translation>
 <translation id="3296763833017966289">gruusia</translation>
+<translation id="3326821416087822643">Pakataan tiedostoa <ph name="FILE_NAME" />…</translation>
+<translation id="3335337277364016868">Nauhoitusvuosi</translation>
 <translation id="3338239663705455570">Näppäimistö: sloveeni</translation>
+<translation id="3353984535370177728">Valitse lähetettävä kansio</translation>
 <translation id="3399597614303179694">Näppäimistö: makedonia</translation>
-<translation id="3494768541638400973">Googlen japanilainen syöttötapa (japanilaiselle näppäimistölle)</translation>
+<translation id="3414856743105198592">Siirrettävän tietovälineen alustaminen poistaa kaikki sen tiedot. Haluatko jatkaa?</translation>
+<translation id="3437801641691368414">Luontiaika</translation>
+<translation id="3466147780910026086">Tarkistetaan medialaitettasi…</translation>
+<translation id="3468522857997926824"><ph name="FILE_COUNT" /> valokuvaa on varmuuskopioitu <ph name="BEGIN_LINK" />Google Driveen<ph name="END_LINK" />.</translation>
+<translation id="3470502288861289375">Kopioidaan…</translation>
+<translation id="3473378059788601120">Kopioitu kansioon <ph name="FOLDER_NAME" /></translation>
+<translation id="3475447146579922140">Google-laskentataulukko</translation>
+<translation id="3495304270784461826"><ph name="COUNT" /> virhettä.</translation>
 <translation id="3519867315646775981">Translitterointi (shalom ← שלום)</translation>
 <translation id="3522708245912499433">portugali</translation>
+<translation id="3527085408025491307">Kansio</translation>
+<translation id="3549797760399244642">Siirry osoitteeseen drive.google.com...</translation>
 <translation id="357479282490346887">liettua</translation>
+<translation id="3583509704582854624">Aakkosnnumeerinen syöttö (japanilainen näppäimistö)</translation>
 <translation id="3603385196401704894">ranska (Kanada)</translation>
 <translation id="3606220979431771195">Turkki (tyyppi F)</translation>
+<translation id="3609785682760573515">Synkronoidaan…</translation>
+<translation id="3616113530831147358">Ääni</translation>
 <translation id="3619115746895587757">Cappuccino</translation>
+<translation id="3620292326130836921">Kaikki on varmuuskopioitu!</translation>
+<translation id="3626281679859535460">Kirkkaus</translation>
+<translation id="3644896802912593514">Leveys</translation>
+<translation id="3645531960514756307">Irrota kansio</translation>
 <translation id="3678559383040232393">Näppäimistö: malta</translation>
+<translation id="3685122418104378273">Google Driven synkronointi on oletuksena pois käytöstä käyttäessäsi mobiilitiedonsiirtoa.</translation>
+<translation id="3689865792480713551">Peruuta <ph name="ACTIVITY_DESCRIPTION" />.</translation>
+<translation id="3726463242007121105">Tätä laitetta ei voi avata, sillä sen tiedostojärjestelmää ei tueta.</translation>
+<translation id="3741243925913727067">Varmuuskopioi medialaitteesi valokuvat ja videot Google Driveen.</translation>
+<translation id="3749289110408117711">Tiedostonimi</translation>
+<translation id="3780536599611287598">Sinulla ei ole lupaa siirtää tiedostoja kansioon <ph name="FOLDER_NAME" />.</translation>
+<translation id="3786301125658655746">Olet offline-tilassa</translation>
+<translation id="3789841737615482174">Asenna</translation>
+<translation id="3798449238516105146">Versio</translation>
 <translation id="3801082500826908679">fääri</translation>
 <translation id="3809272675881623365">Jänis</translation>
+<translation id="3811494700605067549">1 tiedosto valittu</translation>
 <translation id="3815016854028376614">Zhuyin-syöttötapa</translation>
 <translation id="3825863595139017598">Mongolialainen näppäimistö</translation>
+<translation id="38275787300541712">Paina Enter, kun olet valmis</translation>
+<translation id="3830674330436234648">Toistoa ei ole saatavilla.</translation>
 <translation id="3833761542219863804">Translitterointi (mausam → ਮੌਸਮ)</translation>
 <translation id="383652340667548381">serbia</translation>
+<translation id="385051799172605136">Edellinen</translation>
 <translation id="3855472144336161447">saksa, Neo 2</translation>
+<translation id="3856075812838139784">Vain luku</translation>
 <translation id="3858678421048828670">Näppäimistö: italia</translation>
+<translation id="386548886866354912">Pakkaa laajennuksella <ph name="EXTENSION_NAME" /></translation>
+<translation id="3866249974567520381">Kuvaus</translation>
 <translation id="3910699493603749297">Khmerinkielinen näppäimistö</translation>
 <translation id="391445228316373457">Nepalinkielinen näppäimistö (foneettinen)</translation>
+<translation id="3924145049010392604">Meta</translation>
+<translation id="3930521966936686665">Toista kohteessa</translation>
+<translation id="3943857333388298514">Liitä</translation>
 <translation id="3958548648197196644">Kiivi</translation>
+<translation id="3966388904776714213">Äänisoitin</translation>
+<translation id="4002066346123236978">Nimi</translation>
 <translation id="4070370845051020638">Kantoninkiina-syöttötapa</translation>
 <translation id="4072248638558688893">Tamilinkielinen näppäimistö (foneettinen)</translation>
 <translation id="4124935795427217608">Yksisarvinen</translation>
+<translation id="4158739975813877944">Avaa soittolista</translation>
 <translation id="418179967336296930">Näppäimistö: venäjä (foneettinen YaZHert)</translation>
+<translation id="4193154014135846272">Google-dokumentti</translation>
+<translation id="4195249722193633765">Asenna sovellus Linuxilla (beta)</translation>
+<translation id="4197674956721858839">Pakkaa valitut</translation>
+<translation id="421017592316736757">Sinun täytyy olla online-tilassa käyttääksesi tätä tiedostoa.</translation>
+<translation id="4212740939091998969">Kansio nimeltä <ph name="FOLDER_NAME" /> on jo olemassa. Valitse toinen nimi.</translation>
+<translation id="4215448920900139318"><ph name="FILE_COUNT" /> varmuuskopioidaan</translation>
 <translation id="426015154560005552">Arabialainen näppäimistö</translation>
+<translation id="4261901459838235729">Google-esitys</translation>
+<translation id="4290535918735525311">1 kansio jaettu Linuxin kanssa</translation>
 <translation id="4298972503445160211">Näppäimistö: tanska</translation>
 <translation id="4299729908419173967">brasilianportugali</translation>
+<translation id="4309915981827077375">Yleistiedot</translation>
 <translation id="4326192123064055915">Kahvi</translation>
+<translation id="4336032328163998280">Kopiointi epäonnistui. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4364327530094270451">Meloni</translation>
+<translation id="4372884569765913867">1 x 1</translation>
+<translation id="4425149324548788773">Oma Drive</translation>
 <translation id="4465830120256509958">Näppäimistö: Brasilia</translation>
 <translation id="4470564870223067757">Hangul 2-set</translation>
 <translation id="4477219268485577442">bulgaria, foneettinen</translation>
 <translation id="4479812471636796472">Näppäimistö: US, Dvorak</translation>
 <translation id="4487088045714738411">Näppäimistö: Belgia</translation>
+<translation id="4522570452068850558">Tiedot</translation>
+<translation id="4552678318981539154">Osta lisää tallennustilaa</translation>
 <translation id="4559767610552730302">Bokeh</translation>
+<translation id="4572815280350369984"><ph name="FILE_TYPE" />-tiedosto</translation>
+<translation id="457386861538956877">Lisää...</translation>
+<translation id="4579744207439506346"><ph name="ENTRY_NAME" /> lisättiin valintaan.</translation>
+<translation id="4582497162516204941">Asenna Linuxilla (beta)</translation>
+<translation id="4594543368593301662">Näytetään tulokset haulla <ph name="SEARCH_TERM" /></translation>
+<translation id="4631887759990505102">Esittäjä</translation>
+<translation id="4656293982926141856">Tällä tietokoneella</translation>
+<translation id="4669606053856530811">Jäsenet (<ph name="SOURCE_NAME" />) menettävät käyttöoikeuden, ellei näitä kohteita jaeta heille.</translation>
 <translation id="4690246192099372265">ruotsi</translation>
 <translation id="4693155481716051732">Sushi</translation>
 <translation id="4694604912444486114">Apina</translation>
+<translation id="4697043402264950621">Tiedostoluettelo lajiteltu nousevassa järjestyksessä (<ph name="COLUMN_NAME" />).</translation>
 <translation id="4711094779914110278">turkki</translation>
+<translation id="4713544552769165154">Tämä tiedosto on tarkoitettu Macintosh-ohjelmistoa käyttävälle tietokoneelle. Tämä ei ole yhteensopiva Chrome-käyttöjärjestelmää käyttävän laitteesi kanssa. Etsi sopiva korvaava sovellus <ph name="BEGIN_LINK" />Chrome Web Storesta.<ph name="END_LINK" /> <ph name="BEGIN_LINK_HELP" />Lisätietoja<ph name="END_LINK_HELP" /></translation>
+<translation id="4724850507808590449"><ph name="FILE_COUNT" /> valokuvaa on varmuuskopioitu.</translation>
 <translation id="4725511304875193254">Corgi</translation>
+<translation id="4732760563705710320">Lähetyslaitteesi ei valitettavasti tue tätä videota.</translation>
+<translation id="4734518477988699048">Syötearvo on virheellinen.</translation>
 <translation id="4737050008115666127">Kiitorata</translation>
 <translation id="4747271164117300400">makedonia</translation>
 <translation id="4749157430980974800">Georgialainen näppäimistö</translation>
 <translation id="4755240240651974342">Näppäimistö: suomi</translation>
+<translation id="4759238208242260848">Lataukset</translation>
 <translation id="4779136857077979611">Onigiri</translation>
+<translation id="4784330909746505604">PowerPoint-esitys</translation>
+<translation id="4788401404269709922"><ph name="NUMBER_OF_KB" /> kt</translation>
+<translation id="4801956050125744859">Pidä molemmat</translation>
 <translation id="4804827417948292437">Avokado</translation>
+<translation id="4823651846660089135">Laite on vain luku ‑tilassa.</translation>
+<translation id="4839847978919684242"><ph name="SELCTED_FILES_COUNT" /> kohdetta on valittu</translation>
+<translation id="4850886885716139402">Näytä</translation>
 <translation id="485316830061041779">saksa</translation>
+<translation id="4867079195717347957">Klikkaa, jos haluat lajitella laskevaan järjestykseen.</translation>
+<translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" /> tavua</translation>
+<translation id="4880214202172289027">Äänenvoimakkuuden liukusäädin</translation>
+<translation id="4880520557730313061">Automaattinen korjaus</translation>
+<translation id="4881695831933465202">Avaa</translation>
 <translation id="4886021172213954916">Tamilinkielinen näppäimistö (kirjoituskone)</translation>
+<translation id="4905417359854579806"><ph name="FILE_COUNT" /> valmiina varmuuskopiointiin</translation>
+<translation id="4924638091161556692">Korjattu</translation>
 <translation id="4935975195727477204">Kukka</translation>
 <translation id="4943368462779413526">Jalkapallo</translation>
+<translation id="4969785127455456148">Albumi</translation>
 <translation id="497244430928947428">Malajalaminkielinen näppäimistö (foneettinen)</translation>
+<translation id="4973523518332075481">Käytä nimeä, jonka pituus on enintään <ph name="MAX_LENGTH" /> merkkiä.</translation>
+<translation id="4973970068702235170">Pakkaus epäonnistui odottamattoman virheen vuoksi: <ph name="ERROR_MESSAGE" /></translation>
+<translation id="4988205478593450158">Haluatko varmasti poistaa tiedoston <ph name="FILE_NAME" />?</translation>
 <translation id="498902553138568924">Punainen perhonen</translation>
+<translation id="4992066212339426712">Poista mykistys</translation>
+<translation id="5004584466530475658"><ph name="FILE_COUNT" /> uutta kuvaa</translation>
+<translation id="5010406651457630570">Tietokoneet</translation>
 <translation id="5011233892417813670">Chromebook</translation>
+<translation id="5024856940085636730">Toiminto kestää odotettua kauemmin. Haluatko keskeyttää sen?</translation>
+<translation id="5038625366300922036">Lisätietoja…</translation>
+<translation id="5061708541166515394">Kontrasti</translation>
 <translation id="5068919226082848014">Pizza</translation>
+<translation id="5081517858322016911"><ph name="TOTAL_FILE_SIZE" /> tiedostoja poistetaan</translation>
+<translation id="509429900233858213">Tapahtui virhe.</translation>
 <translation id="5098629044894065541">heprea</translation>
 <translation id="5123433949759960244">Koripallo</translation>
 <translation id="5129662217315786329">puola</translation>
 <translation id="5144820558584035333">Hangul 3-set (390)</translation>
+<translation id="5145331109270917438">Muokkauspäivämäärä</translation>
 <translation id="515594325917491223">Shakki</translation>
+<translation id="5158593464696388225">Kuvan tallennus epäonnistui.</translation>
+<translation id="5159383109919732130"><ph name="BEGIN_BOLD" />Älä irrota laitettasi vielä!<ph name="END_BOLD" />
+       <ph name="LINE_BREAKS" />
+       Jos irrotat laitteen sen ollessa käytössä, voit menettää tietoja. Odota, kunnes toiminto on suoritettu, ja poista laite sitten käytöstä Tiedostot-sovelluksen kautta.</translation>
+<translation id="5163869187418756376">Jakaminen epäonnistui. Tarkista internetyhteytesi ja yritä myöhemmin uudelleen.</translation>
 <translation id="516592729076796170">US, Dvorak ohjelmoijille</translation>
 <translation id="5167131699331641907">Hollantilainen näppäimistö</translation>
+<translation id="5170477580121653719">Google Drive -tallennustilaa jäljellä: <ph name="SPACE_AVAILABLE" />.</translation>
+<translation id="5177526793333269655">Pikkukuvanäkymä</translation>
+<translation id="5194713942430106590">Klikkaa, jos haluat lajitella nousevaan järjestykseen.</translation>
 <translation id="5218183485292899140">ranska (Sveitsi)</translation>
+<translation id="5234764350956374838">Piilota</translation>
 <translation id="5241298539944515331">Vietnamilainen näppäimistö (VIQR)</translation>
+<translation id="5253070652067921974">Tekijä</translation>
 <translation id="5257456363153333584">Sudenkorento</translation>
+<translation id="5262311848634918433"><ph name="MARKUP_1" />Käytä tiedostojasi missä vain, myös offline-tilassa.<ph name="MARKUP_2" />
+        Google Drivessa tiedostot ovat ajan tasalla ja käytettävissä kaikilla laitteillasi.<ph name="MARKUP_3" />
+        <ph name="MARKUP_4" />Pidä tiedostosi turvassa.<ph name="MARKUP_5" />
+        Vaikka laitteellesi sattuisi jotain, tiedostosi ovat turvassa Google Drivessa.<ph name="MARKUP_6" />
+        <ph name="MARKUP_7" />Jaa, luo ja muokkaa<ph name="MARKUP_8" />
+        tiedostoja yhdessä muiden käyttäjien kanssa.<ph name="MARKUP_9" /></translation>
+<translation id="5275973617553375938">Google Drivesta palautetut tiedostot</translation>
+<translation id="5288481194217812690"><ph name="FILENAME" /></translation>
+<translation id="5317780077021120954">Tallenna</translation>
+<translation id="5318819489018851358">Jaa Linuxilla</translation>
 <translation id="5319782540886810524">Näppäimistö: latvia</translation>
 <translation id="5323213332664049067">Latinalainen Amerikka</translation>
+<translation id="5327248766486351172">Nimi</translation>
+<translation id="5330145655348521461">Nämä tiedostot avattiin toisella työpöydällä. Näet tiedostot siirtymällä profiiliin <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />).</translation>
+<translation id="5330512191124428349">Näytä tiedot</translation>
+<translation id="5335458522276292100">Varmuuskopioidaan <ph name="FILE_COUNT" /> <ph name="BEGIN_LINK" />Google Driveen<ph name="END_LINK" /></translation>
+<translation id="5358764674931277">Kuvanopeus</translation>
+<translation id="5368191757080475556">Jaa kansio Linuxin kanssa</translation>
 <translation id="5402367795255837559">Pistekirjoitus</translation>
 <translation id="5412637665001827670">Näppäimistö: bulgaria</translation>
 <translation id="5418923334382419584">Myanmarilainen näppäimistö</translation>
 <translation id="5428105026674456456">espanja</translation>
+<translation id="5438282218546237410">Ei tuloksia haulla <ph name="SEARCH_TERM" /></translation>
 <translation id="5464696796438641524">Näppäimistö: puola</translation>
 <translation id="5465122519792752163">Nepalinkielinen näppäimistö (InScript)</translation>
 <translation id="5469868506864199649">italia</translation>
+<translation id="5494920125229734069">Valitse kaikki</translation>
 <translation id="5500122897333236901">islanti</translation>
 <translation id="5508696409934741614">Pisteet</translation>
+<translation id="5522908512596376669">Tiedostot näkyvät nyt luettelona.</translation>
+<translation id="5524517123096967210">Tiedostoa ei voi lukea.</translation>
+<translation id="5533102081734025921">Kuva, jonka tyyppi on <ph name="IMAGE_TYPE" /></translation>
 <translation id="5533555070048896610">Translitterointi (namaste → नमस्ते)</translation>
+<translation id="5534520101572674276">Lasketaan kokoa</translation>
+<translation id="5583640892426849032">Askelpalautin</translation>
 <translation id="5605830556594064952">USA, Dvorak</translation>
 <translation id="5640179856859982418">Näppäimistö: Sveitsi</translation>
+<translation id="5649768706273821470">Kuuntele</translation>
+<translation id="5678784840044122290">Linux-sovellus on saatavilla terminaalissa. Käynnistysohjelmassa saattaa myös näkyä kuvake.</translation>
+<translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Arkiston tai virtuaalilevyn yhteyden katkaisu epäonnistui<ph name="END_BOLD" />
+   <ph name="LINE_BREAKS" />
+   Sulje kaikki arkistossa tai virtuaalilevyllä olevat tiedostot ja yritä uudelleen.</translation>
+<translation id="5691596662111998220">Hups, kohdetta <ph name="FILE_NAME" /> ei ole enää olemassa.</translation>
+<translation id="5700087501958648444">Äänitiedoston tiedot</translation>
+<translation id="5731409020711461763">1 uusi valokuva</translation>
+<translation id="5752453871435543420">Chrome-käyttöjärjestelmän pilvivarmuuskopiointi</translation>
 <translation id="5756666464756035725">Unkarilainen QWERTY</translation>
 <translation id="5771585441665576801">Translitterointi (geia → γεια)</translation>
+<translation id="5776325638577448643">Poista ja alusta</translation>
+<translation id="57838592816432529">Mykistä</translation>
+<translation id="5788127256798019331">Play-tiedostot</translation>
 <translation id="5790193330357274855">kazakki</translation>
 <translation id="5817397429773072584">perinteinen kiina</translation>
 <translation id="5818003990515275822">korea</translation>
 <translation id="5819442873484330149">Hangul 3-set (lopullinen)</translation>
+<translation id="5833610766403489739">Tämä tiedosto on siirretty jonnekin muualle. Tarkista lataussijainnin asetukset ja yritä uudelleen.</translation>
+<translation id="5838451609423551646">Kaikki kohteet poistettiin valinnasta.</translation>
 <translation id="5838825566232597749">Yhdysvallat, kansainvälinen Workman</translation>
+<translation id="5850516540536751549">Tätä tiedostotyyppiä ei tueta. Etsi tämäntyyppisiä tiedostoja avaava sovellus <ph name="BEGIN_LINK" />Chrome Web Storesta<ph name="END_LINK" />.
+	      <ph name="BEGIN_LINK_HELP" />Lisätietoja<ph name="END_LINK_HELP" /></translation>
+<translation id="5851063901794976166">Tyhjää täynnä…</translation>
+<translation id="5857774240076772505">Anna Linux-sovelluksille lupa muokata kansiossa <ph name="FOLDER_NAME" /> olevia tiedostoja</translation>
 <translation id="5892290200158927959">Ranskalainen BÉPO-näppäimistö</translation>
+<translation id="5911887972742538906">Linux-sovellusta asennettaessa tapahtui virhe.</translation>
+<translation id="5912396950572065471">Muoto</translation>
+<translation id="5913638992615760742">Kopiointi epäonnistui odottamattoman virheen vuoksi: <ph name="ERROR_MESSAGE" /></translation>
+<translation id="5923484009666796948">Japanin syöttö (japanilainen näppäimistö)</translation>
 <translation id="5932901536148835538">Chromebit</translation>
+<translation id="5949281959820712067">Anna Linux-sovelluksille lupa muokata Google Driveesi tallennettuja tiedostoja. Muutokset synkronoidaan muille laitteillesi.</translation>
+<translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> kohdetta</translation>
+<translation id="5982621672636444458">Lajitteluasetukset</translation>
 <translation id="6005282720244019462">Näppäimistö: Latinalainen Amerikka</translation>
+<translation id="6007237601604674381">Siirto epäonnistui. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="6012987430370760224">Marathinkielinen näppäimistö (foneettinen)</translation>
+<translation id="6019169947004469866">Rajaa</translation>
 <translation id="60357267506638014">tšekki, QWERTY</translation>
+<translation id="604001903249547235">Pilvivarmuuskopiointi</translation>
+<translation id="6040143037577758943">Sulje</translation>
 <translation id="6054173164583630569">Näppäimistö: ranska</translation>
+<translation id="6074825444536523002">Google-lomake</translation>
+<translation id="6096979789310008754">Hakukysely poistettu, kaikki tiedostot ja kansiot näytetään.</translation>
 <translation id="6111770213269631447">Translitterointi (namaskar → নমস্কার)</translation>
+<translation id="6129953537138746214">Välilyönti</translation>
+<translation id="6133173853026656527">Siirretään tiedostoa <ph name="FILE_NAME" />…</translation>
+<translation id="6146563240635539929">Videot</translation>
+<translation id="6150853954427645995">Jos haluat tallentaa tämän tiedoston offline-käyttöä varten, siirry online-tilaan, klikkaa tiedostoja hiiren kakkospainikkeella ja valitse vaihtoehto <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
 <translation id="6164412158936057769">Perhoset</translation>
 <translation id="6170470584681422115">Voileipä</translation>
+<translation id="6189412234224385711">Avaa laajennuksella <ph name="EXTENSION_NAME" /></translation>
+<translation id="6199801702437275229">Odotetaan tietoja tallennustilasta...</translation>
+<translation id="6205710420833115353">Jotkin toiminnot kestävät odotettua kauemmin. Haluatko keskeyttää ne?</translation>
+<translation id="6224253798271602650">Alusta <ph name="DRIVE_NAME" /></translation>
+<translation id="6227235786875481728">Tätä tiedostoa ei voi toistaa.</translation>
+<translation id="6248400709929739064">Ota tekstitykset käyttöön</translation>
 <translation id="6264347891387618177">Translitterointi (selam → ሰላም)</translation>
+<translation id="6287852322318138013">Valitse sovellus, jolla haluat avata tämän tiedoston</translation>
 <translation id="6305012486838822927">Laonkielinen näppäimistö</translation>
 <translation id="6339034549827494595">Näppäimistö: venäjä (foneettinen AATSEEL)</translation>
 <translation id="6339145975392024142">US, kansainvälinen (PC)</translation>
+<translation id="6346310558342052870">Käyttö rajoitettu</translation>
 <translation id="6353618411602605519">Näppäimistö: kroatia</translation>
+<translation id="6356685157277930264">Tiedostojen tietoikkuna</translation>
 <translation id="6358884629796491903">Lohikäärme</translation>
+<translation id="637062427944097960">Tämä tiedosto avattiin toisella työpöydällä. Näet tiedoston siirtymällä profiiliin <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />).</translation>
+<translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> kohdetta</translation>
+<translation id="6398765197997659313">Poistu koko näytön tilasta</translation>
+<translation id="642282551015776456">Tätä nimeä ei voi käyttää tiedoston tai kansion nimenä.</translation>
 <translation id="6462109140674788769">Näppäimistö: kreikka</translation>
 <translation id="6466492211071551451">Iirinkielinen näppäimistö</translation>
+<translation id="6485131920355264772">Tilatietojen noutaminen epäonnistui</translation>
 <translation id="6503256918647795660">Näppäimistö: ranska (Sveitsi)</translation>
 <translation id="6505918941256367791">Tamilinkielinen näppäimistö (inscript)</translation>
 <translation id="6509122719576673235">norja</translation>
+<translation id="6527303717912515753">Jaa</translation>
+<translation id="653019979737152879">Synkronoidaan kohdetta <ph name="FILE_NAME" />…</translation>
+<translation id="6549689063733911810">Viimeisimmät</translation>
+<translation id="6556866813142980365">Tee uudelleen</translation>
+<translation id="6558280019477628686">Tapahtui virhe. Kaikkia kohteita ei välttämättä poistettu.</translation>
+<translation id="656398493051028875">Poistetaan tiedostoa <ph name="FILENAME" />…</translation>
+<translation id="6581162200855843583">Google Drive -linkki</translation>
+<translation id="6607272825297743757">Tiedoston tiedot</translation>
+<translation id="6629841649550503054">Kaikki on varmuuskopioitu <ph name="BEGIN_LINK" />Google Driveen!<ph name="END_LINK" /></translation>
+<translation id="6643016212128521049">Tyhjennä</translation>
 <translation id="6650726141019353908">Vaaleanpunainen perhonen</translation>
+<translation id="6710213216561001401">Edellinen</translation>
+<translation id="6718273304615422081">Pakataan…</translation>
+<translation id="6751256176799620176">1 kansio valittu</translation>
 <translation id="6760765581316020278">Vietnamilainen näppäimistö (VNI)</translation>
+<translation id="6790428901817661496">Toista</translation>
 <translation id="6795884519221689054">Panda</translation>
+<translation id="6806699711453372963">Määritä Linux-jakaminen</translation>
 <translation id="6808193438228982088">Kettu</translation>
+<translation id="6820687829547641339">Gzip-pakattu Tar-arkisto</translation>
 <translation id="6825883775269213504">venäjä</translation>
+<translation id="6827236167376090743">Tätä videota näytetään niin kauan, kunnes lehmät tulevat kotiin.</translation>
+<translation id="6847101934483209767"><ph name="ENTRY_NAME" /> poistettiin valinnasta.</translation>
+<translation id="6862635236584086457">Kaikki tähän kansioon tallennetut tiedostot varmuuskopioidaan verkkoon automaattisesti</translation>
 <translation id="6870130893560916279">Näppäimistö: ukraina</translation>
 <translation id="6876155724392614295">Pyörä</translation>
 <translation id="6878261347041253038">Devanagari-näppäimistö (foneettinen)</translation>
 <translation id="6885780034956018177">Etana</translation>
+<translation id="6896758677409633944">Kopioi</translation>
+<translation id="691516599546977041">Tallentaminen kansioon <ph name="FOLDER_NAME" /> ei onnistu. Muokatut kuvat tallennetaan Lataukset-kansioon.</translation>
 <translation id="6915678159055240887">Chromebox</translation>
 <translation id="6918340160281024199">Yhdysvallat, Workman</translation>
+<translation id="6930242544192836755">Kesto</translation>
+<translation id="6934241953272494177">Medialaitettasi tutkitaan…
+    <ph name="LINE_BREAK1" />
+    <ph name="FILE_COUNT" /> löytyi</translation>
 <translation id="6935521024859866267">Ylösalaisin</translation>
-<translation id="6937152069980083337">Googlen japanilainen syöttötapa (yhdysvaltalaiselle näppäimistölle)</translation>
 <translation id="6939777852457331078">Näppäimistö: Yhdysvallat, Workman</translation>
+<translation id="696203921837389374">Ota käyttöön synkronointi mobiilitiedonsiirron kautta</translation>
+<translation id="6965382102122355670">OK</translation>
 <translation id="6970230597523682626">bulgaria</translation>
+<translation id="6978611942794658017">Tämä tiedosto on tarkoitettu tietokoneelle, joka käyttää Windowsia. Se ei ole yhteensopiva Chrome-käyttöjärjestelmää käyttävän laitteesi kanssa. Etsi sopiva korvaava sovellus Chrome Web Storesta.</translation>
+<translation id="6979158407327259162">Google Drive</translation>
+<translation id="6990081529015358884">Tila ei riitä</translation>
+<translation id="6998711733709403587"><ph name="SELCTED_FOLDERS_COUNT" /> kansiota valittu</translation>
+<translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>
+<translation id="7014174261166285193">Asennus epäonnistui.</translation>
+<translation id="7040138676081995583">Avaa sovelluksessa...</translation>
+<translation id="7100897339030255923"><ph name="COUNT" /> valittua kohdetta</translation>
+<translation id="7106346894903675391">Osta lisää tallennustilaa...</translation>
+<translation id="7126604456862387217">&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt; – &lt;em&gt;hae Drivesta&lt;/em&gt;</translation>
 <translation id="714034171374937760">Chromebase</translation>
 <translation id="7170467426996704624">Translitterointi (salam → ሰላም)</translation>
 <translation id="7172053773111046550">Näppäimistö: viro</translation>
+<translation id="7180611975245234373">Päivitä</translation>
+<translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> Gt</translation>
 <translation id="719009910964971313">Näppäimistö: US, Dvorak ohjelmoijille</translation>
+<translation id="7191454237977785534">Tallenna tiedosto nimellä</translation>
 <translation id="7222624196722476520">Bulgarian foneettinen näppäimistö</translation>
+<translation id="7238097264433196391">Driven nimi</translation>
+<translation id="7248671827512403053">Sovellus</translation>
+<translation id="7268659760406822741">Käytettävissä olevat palvelut</translation>
+<translation id="7283041136720745563">Google Drive ‑kiintiösi ei riitä.</translation>
+<translation id="7295662345261934369">Jaa muille</translation>
+<translation id="7339898014177206373">Uusi ikkuna</translation>
 <translation id="7348749398828259943">Näppäimistö: Yhdysvallat, kansainvälinen Workman</translation>
+<translation id="7359359531237882347">Kopioidaan <ph name="NUMBER_OF_ITEMS" /> kohdetta…</translation>
+<translation id="7375951387215729722">Tiedostoluettelo lajiteltu laskevassa järjestyksessä (<ph name="COLUMN_NAME" />).</translation>
 <translation id="7389722738210761877">Thainkielinen näppäimistö (TIS 820-2531)</translation>
 <translation id="7396038720194014279">Hindinkielinen näppäimistö (foneettinen)</translation>
 <translation id="7417453074306512035">Etiopialainen näppäimistö</translation>
+<translation id="7417705661718309329">Google-kartta</translation>
 <translation id="7419631653042041064">Näppäimistö: katalaani</translation>
 <translation id="7434823369735508263">Näppäimistö: UK, Dvorak</translation>
 <translation id="7460898608667578234">ukraina</translation>
 <translation id="7474889694310679759">Näppäimistö: englanti (Kanada)</translation>
+<translation id="7489215562877293245"><ph name="FILE_COUNT" /> löytyi
+    <ph name="LINE_BREAK1" />
+    Valmis varmuuskopioimaan <ph name="BEGIN_LINK" />Google Driveen<ph name="END_LINK" /></translation>
+<translation id="7505167922889582512">Näytä piilotetut tiedostot</translation>
+<translation id="7508545000531937079">Diaesitys</translation>
 <translation id="751507702149411736">valkovenäjä</translation>
+<translation id="7544853251252956727">Satunnaistoisto</translation>
 <translation id="7547811415869834682">hollanti</translation>
+<translation id="7576032389798113292">6 x 4</translation>
+<translation id="7589661784326793847">Odota hetki</translation>
 <translation id="7603724359189955920">Ruudukot</translation>
+<translation id="7627790789328695202">Hups, <ph name="FILE_NAME" /> on jo olemassa. Anna kohteelle toinen nimi ja yritä uudelleen.</translation>
+<translation id="7628656427739290098"><ph name="PERCENT" /> % valmis</translation>
+<translation id="7649070708921625228">Ohje</translation>
+<translation id="7654209398114106148">Siirretään <ph name="NUMBER_OF_ITEMS" /> kohdetta…</translation>
+<translation id="7658239707568436148">Peruuta</translation>
 <translation id="770015031906360009">kreikka</translation>
 <translation id="7706319470528945664">Näppäimistö: portugali </translation>
+<translation id="7711920809702896782">Kuvan tiedot</translation>
+<translation id="7724603315864178912">Leikkaa</translation>
+<translation id="7730494089396812859">Näytä pilvivarmuuskopioinnin tiedot.</translation>
+<translation id="7748626145866214022">Lisää valintoja on saatavilla toimintopalkissa. Aseta toimintopalkki aktiiviseksi painamalla Alt + A.</translation>
+<translation id="7765158879357617694">Siirrä</translation>
 <translation id="7774365994322694683">Lintu</translation>
+<translation id="7788080748068240085">Jos haluat tallentaa tiedoston <ph name="FILE_NAME" /> offline-version, vapauta vielä <ph name="TOTAL_FILE_SIZE" /> levytilaa:<ph name="MARKUP_1" />
+    <ph name="MARKUP_2" />irrota tiedostoja, joita et enää tarvitse offline-tilassa<ph name="MARKUP_3" />
+    <ph name="MARKUP_4" />poista tiedostoja Lataukset-kansiosta.<ph name="MARKUP_5" /></translation>
+<translation id="7794058097940213561">Alusta laite</translation>
+<translation id="7799329977874311193">HTML-asiakirja</translation>
+<translation id="7805768142964895445">Tila</translation>
+<translation id="7821462174190887129"><ph name="FILE_COUNT" /> löytyi.
+    <ph name="LINE_BREAK1" />
+    Google Drive ‑kiintiösi ei riitä. Tarvitaan vielä <ph name="FILE_SIZE" />.
+    <ph name="LINE_BREAK2" />
+    Kokeile valita vähemmän kuvia.</translation>
 <translation id="7825423931463735974">Tamilinkielinen näppäimistö (tamil99)</translation>
+<translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> Tt</translation>
+<translation id="7839804798877833423">Mobiiliyhteyden kautta noudettavien tiedostojen koko on noin <ph name="FILE_SIZE" />.</translation>
+<translation id="7846076177841592234">Peruuta valinta</translation>
 <translation id="7853966320808728790">Ranskalainen BÉPO</translation>
+<translation id="7864662577698025113">Lisää uusi palvelu</translation>
+<translation id="7873831373602885875">Tallentaminen kansioon <ph name="FOLDER_NAME" /> ei onnistu. Kaikki muokkaukset tallennetaan Lataukset-kansion kohteeseen <ph name="DOWNLOADS_FOLDER" />.</translation>
+<translation id="7881969471599061635">Poista tekstitykset käytöstä</translation>
+<translation id="78946041517601018">Jaetut Drivet</translation>
 <translation id="7896906914454843592">Yhdysvaltain laajennettu näppäimistö</translation>
 <translation id="7898607018410277265">Gudžaratinkielinen näppäimistö (foneettinen, uusi)</translation>
 <translation id="7917972308273378936">Näppäimistö: liettua</translation>
+<translation id="7925686952655276919">Älä käytä mobiiliyhteyttä synkronointiin</translation>
+<translation id="7928710562641958568">Poista laite</translation>
 <translation id="7943385054491506837">USA, Colemak</translation>
+<translation id="7953739707111622108">Tätä laitetta ei voi avata, sillä sen tiedostojärjestelmää ei tunnistettu.</translation>
 <translation id="7969525169268594403">sloveeni</translation>
+<translation id="7982283708762922719">Korkeus</translation>
 <translation id="7987485481246785146">Soranîn arabiaan perustuva näppäimistö</translation>
 <translation id="8008366997883261463">Jackrussellinterrieri</translation>
+<translation id="8028993641010258682">Koko</translation>
 <translation id="8031722894461705849">Näppäimistö: slovakki</translation>
+<translation id="803771048473350947">Tiedosto</translation>
+<translation id="8038111231936746805">(oletus)</translation>
+<translation id="8042602468072383151">Äänitiedosto, jonka tyyppi on <ph name="AUDIO_TYPE" /></translation>
 <translation id="8045462269890919536">romania</translation>
+<translation id="8052887694493382350">Tämä tiedosto on tarkoitettu tietokoneelle, joka käyttää Windowsia. Se ei ole yhteensopiva Chrome-käyttöjärjestelmää käyttävän laitteesi kanssa. <ph name="BEGIN_LINK_HELP" />Lue lisää<ph name="END_LINK_HELP" /></translation>
+<translation id="8066773524873206594">Kaikki muokkaukset tallennetaan tänne: <ph name="DOWNLOADS_FOLDER" />.</translation>
+<translation id="8079530767338315840">Toista</translation>
+<translation id="8106045200081704138">Jaettu minun kanssani</translation>
 <translation id="8116072619078571545">Jäävesi</translation>
 <translation id="8117957376775388318">Dayi-syöttötapa</translation>
+<translation id="8137331602592933310"><ph name="FILENAME" /> on jaettu sinulle. Et voi poistaa sitä, koska et ole tiedoston omistaja.</translation>
 <translation id="8145409227593688472">Wubi-syöttötapa</translation>
 <translation id="8148264977957212129">Pinyin-syöttötapa</translation>
+<translation id="8151638057146502721">Määritä:</translation>
+<translation id="8153607920959057464">Tätä tiedostoa ei voi näyttää.</translation>
+<translation id="8154842056504218462">Kaikki kohteet valittiin.</translation>
+<translation id="8157684860301034423">Sovellustietojen noutaminen epäonnistui.</translation>
+<translation id="8157939133946352716">7 x 5</translation>
 <translation id="8160015581537295331">Näppäimistö: espanja</translation>
+<translation id="8179976553408161302">Enter</translation>
+<translation id="8193175696669055101">Laitteen malli</translation>
+<translation id="8208580316430297579">Kuvitus</translation>
+<translation id="8223479393428528563">Jos haluat tallentaa nämä tiedostot offline-käyttöä varten, siirry online-tilaan, klikkaa tiedostoja hiiren kakkospainikkeella ja valitse vaihtoehto <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
+<translation id="8249296373107784235">Keskeytä</translation>
+<translation id="8261506727792406068">Poista</translation>
+<translation id="8269755669432358899">Tiivistä tiedostojen palautepaneelit</translation>
 <translation id="8279388322240498158">Soranîn englantiin perustuva näppäimistö</translation>
 <translation id="8280151743281770066">armenia (foneettinen)</translation>
+<translation id="8294431847097064396">Lähde</translation>
 <translation id="8297012244086013755">Hangul 3-set (ei vaihtoa)</translation>
 <translation id="8299269255470343364">japani</translation>
+<translation id="8312871300878166382">Liitä kansioon</translation>
+<translation id="8329978297633540474">Vain teksti</translation>
+<translation id="8336153091935557858">Eilen <ph name="YESTERDAY_DAYTIME" /></translation>
 <translation id="8336579025507394412">Islantilainen näppäimistö</translation>
+<translation id="8342318071240498787">Samanniminen tiedosto tai hakemisto on jo olemassa.</translation>
+<translation id="8382450452152102026">Kohde: <ph name="FOLDER_NAME" /></translation>
 <translation id="8391950649760071442">Translitterointi (emandi → ఏమండీ)</translation>
+<translation id="8395901698320285466">Mittasuhteet</translation>
 <translation id="8412586565681117057">Nopea syöttötapa</translation>
 <translation id="8418113698656761985">Näppäimistö: romania</translation>
 <translation id="8432745813735585631">Näppäimistö: US, Colemak</translation>
 <translation id="8437209419043462667">USA</translation>
+<translation id="8456681095658380701">Nimi ei kelpaa</translation>
+<translation id="8466234950814670489">Tar-arkisto</translation>
 <translation id="8467473010914675605">Korealainen syöttötapa</translation>
+<translation id="8475647382427415476">Google Drive ei onnistunut synkronoimaan tiedostoa <ph name="FILENAME" />. Google Drive yrittää myöhemmin uudelleen.</translation>
 <translation id="8477649328507734757">Pyörä</translation>
+<translation id="8487700953926739672">Käytettävissä offline-tilassa</translation>
 <translation id="8521441079177373948">UK</translation>
+<translation id="8525306231823319788">Koko näyttö</translation>
 <translation id="8551494947769799688">latvia</translation>
 <translation id="8561206103590473338">Norsu</translation>
+<translation id="8569764466147087991">Valitse avattava tiedosto</translation>
+<translation id="8579285237314169903">Synkronoidaan <ph name="NUMBER_OF_FILES" /> kohdetta…</translation>
+<translation id="8600173386174225982">Tiedostot näkyvät nyt pikkukuvina.</translation>
+<translation id="8601932370724196034">Crostini-kuvatiedosto</translation>
+<translation id="8669949407341943408">Siirretään…</translation>
+<translation id="8698464937041809063">Google-piirros</translation>
 <translation id="8714406895390098252">Polkupyörä</translation>
+<translation id="8719721339511222681"><ph name="ENTRY_NAME" /> valittiin.</translation>
 <translation id="8722421161699219904">Yhdysvaltain kansainvälinen näppäimistö</translation>
 <translation id="872537912056138402">kroaatti</translation>
 <translation id="874420130893181774">Perinteinen pinyin-syöttötapa</translation>
+<translation id="8775404590947523323">Tekemäsi muutokset tallentuvat automaattisesti.<ph name="BREAKS" />Säilytä alkuperäisen kuvan kopio poistamalla valinta kohdasta Korvaa alkuperäinen.</translation>
 <translation id="8803496343472038847">Venäjän foneettinen näppäimistö</translation>
 <translation id="8808686172382650546">Kissa</translation>
+<translation id="8810671769985673465">Pakkaus epäonnistui, koska kohde on jo olemassa: <ph name="FILE_NAME" /></translation>
+<translation id="8834164572807951958">Paikan <ph name="DESTINATION_NAME" /> jäsenet saavat käyttöoikeuden näiden kohteiden kopioon.</translation>
 <translation id="885381502874625531">Valkovenäläinen näppäimistö</translation>
+<translation id="8860454412039442620">Excel-laskentataulukko</translation>
 <translation id="8900820606136623064">unkari</translation>
 <translation id="8901822611024316615">Tšekkiläinen QWERTY-näppäimistö</translation>
 <translation id="8919081441417203123">tanska</translation>
 <translation id="8960999352790021682">Bengalilainen näppäimistö (foneettinen)</translation>
+<translation id="8965697826696209160">Tallennustila ei riitä.</translation>
 <translation id="9017798300203431059">venäjä, foneettinen</translation>
+<translation id="9034924485347205037">Linux-tiedostot</translation>
+<translation id="9035012421917565900">Kohteita ei voi siirtää takaisin paikkaan <ph name="DESTINATION_NAME" />, joten tätä toimintoa ei voi kumota.</translation>
+<translation id="9038620279323455325">Tiedosto nimeltä <ph name="FILE_NAME" /> on jo olemassa. Valitse toinen nimi.</translation>
+<translation id="9064939804718829769">Siirretään…</translation>
+<translation id="9065203028668620118">Muokkaa</translation>
+<translation id="9099674669267916096">Sivumäärä</translation>
+<translation id="9110990317705400362">Pyrimme jatkuvasti tekemään selaamisesta turvallisempaa. Aiemmin mikä tahansa sivusto pystyi pyytämään laajennuksen lisäämistä selaimeen. Uusimmissa Google Chrome -versioissa sinun on erikseen ilmoitettava Chromelle, että haluat asentaa nämä laajennukset, lisäämällä ne Laajennukset-sivulla. <ph name="BEGIN_LINK" />Lisätietoja<ph name="END_LINK" /></translation>
+<translation id="912419004897138677">Pakkaus</translation>
+<translation id="9129931661813833980">Kiinnitä kansio</translation>
+<translation id="9130775360844693113">Paikan <ph name="DESTINATION_NAME" /> jäsenet saavat käyttöoikeuden näihin kohteisiin.</translation>
+<translation id="9131598836763251128">Valitse vähintään yksi tiedosto</translation>
+<translation id="9133055936679483811">Pakkaus epäonnistui. <ph name="ERROR_MESSAGE" /></translation>
+<translation id="9134524245363717059">Tämä tiedosto on tarkoitettu tietokoneelle, joka käyttää Macintosh-ohjelmistoa. Tämä ei ole yhteensopiva Chrome-käyttöjärjestelmää käyttävän laitteesi kanssa. Etsi Chrome Web Storesta soveltuva sovellus.</translation>
 <translation id="913758436357682283">Myanmarin myansan-näppäimistö</translation>
+<translation id="9148058034647219655">Poistu</translation>
 <translation id="9153744823707037316">Array-syöttötapa</translation>
+<translation id="9154418932169119429">Tämä kuva ei ole käytettävissä offline-tilassa.</translation>
 <translation id="9206487995878691001">Cangjie-syöttötapa</translation>
+<translation id="9213073329713032541">Asennus käynnistyi.</translation>
+<translation id="9219103736887031265">Kuvat</translation>
 <translation id="9219908252191632183">Kuu</translation>
+<translation id="939736085109172342">Uusi kansio</translation>
+<translation id="942954117721265519">Tässä hakemistossa ei ole kuvia.</translation>
+<translation id="943972244133411984">Muokkaaja</translation>
+<translation id="945522503751344254">Lähetä palautetta</translation>
+<translation id="947144732524271678">Valittiin <ph name="ENTRY_COUNT" /> kohdetta välillä <ph name="FROM_ENTRY_NAME" /> ja <ph name="TO_ENTRY_NAME" />.</translation>
+<translation id="981121421437150478">Offline</translation>
+<translation id="988685240266037636">Tiedosto nimeltä <ph name="FILE_NAME" /> on jo olemassa. Haluatko korvata sen?</translation>
+<translation id="996903396648773764"><ph name="NUMBER_OF_MB" /> Mt</translation>
 </translationbundle>

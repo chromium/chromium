@@ -18,8 +18,10 @@
  */
 
 // https://html.spec.whatwg.org/C/#the-html-element
-[HTMLConstructor]
-interface HTMLHtmlElement : HTMLElement {
+[
+    Exposed=Window,
+    HTMLConstructor
+] interface HTMLHtmlElement : HTMLElement {
     // obsolete members
     // https://html.spec.whatwg.org/C/#HTMLHtmlElement-partial
     [CEReactions, Reflect] attribute DOMString version;

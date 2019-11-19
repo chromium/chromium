@@ -190,11 +190,6 @@ chrome.runtime.onMessageExternal.addListener(function(
           requestInfo, origin, sessionId, maxLogSizeBytes, outputPeriodMs,
           webAppId, doSendResponse);
       return true;
-    } else if (method == 'setAudioExperiments') {
-      const experiments = message['experiments'];
-      chrome.webrtcAudioPrivate.setAudioExperiments(
-          requestInfo, origin, experiments, doSendResponse);
-      return true;
     } else if (method == 'getHardwarePlatformInfo') {
       chrome.enterprise.hardwarePlatform.getHardwarePlatformInfo(
           doSendResponse);

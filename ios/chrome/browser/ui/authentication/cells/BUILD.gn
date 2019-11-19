@@ -7,10 +7,6 @@ import("//build/config/chrome_build.gni")
 source_set("cells") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
-    "account_control_item.h",
-    "account_control_item.mm",
-    "legacy_account_control_item.h",
-    "legacy_account_control_item.mm",
     "signin_promo_view.h",
     "signin_promo_view.mm",
     "signin_promo_view_configurator.h",
@@ -24,20 +20,23 @@ source_set("cells") {
   ]
   deps = [
     "//base",
-    "//components/signin/core/browser",
-    "//components/unified_consent",
+    "//build:branding_buildflags",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser",
-    "//ios/chrome/browser/ui",
     "//ios/chrome/browser/ui/collection_view/cells",
     "//ios/chrome/browser/ui/colors",
     "//ios/chrome/browser/ui/commands",
-    "//ios/chrome/browser/ui/settings/cells",
+    "//ios/chrome/browser/ui/settings/cells:public",
     "//ios/chrome/browser/ui/table_view:styler",
     "//ios/chrome/browser/ui/table_view/cells",
+    "//ios/chrome/common/colors",
+    "//ios/chrome/common/ui_util",
     "//ios/public/provider/chrome/browser",
     "//ios/public/provider/chrome/browser/signin",
     "//ui/base",
+  ]
+  public_deps = [
+    ":constants",
   ]
   libs = [ "UIKit.framework" ]
 }
@@ -46,8 +45,6 @@ source_set("unit_tests") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
-    "account_control_item_unittest.mm",
-    "legacy_account_control_item_unittest.mm",
     "signin_promo_view_unittest.mm",
     "table_view_account_item_unittest.mm",
   ]
@@ -58,11 +55,8 @@ source_set("unit_tests") {
     "//components/consent_auditor",
     "//components/consent_auditor:test_support",
     "//components/pref_registry",
-    "//components/signin/core/browser:browser",
     "//components/sync_preferences",
     "//components/sync_preferences:test_support",
-    "//components/unified_consent",
-    "//components/unified_consent:test_support",
     "//components/version_info",
     "//ios/chrome/app/strings:ios_chromium_strings_grit",
     "//ios/chrome/app/strings:ios_strings_grit",
@@ -80,6 +74,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/ui/table_view:styler",
     "//ios/chrome/browser/ui/table_view/cells",
     "//ios/chrome/browser/unified_consent",
+    "//ios/chrome/common/colors",
     "//ios/chrome/test:test_support",
     "//ios/public/provider/chrome/browser/signin:test_support",
     "//ios/third_party/material_components_ios",
@@ -88,4 +83,13 @@ source_set("unit_tests") {
     "//third_party/ocmock",
     "//ui/base",
   ]
+}
+
+source_set("constants") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "signin_promo_view_constants.h",
+    "signin_promo_view_constants.mm",
+  ]
+  libs = [ "Foundation.framework" ]
 }

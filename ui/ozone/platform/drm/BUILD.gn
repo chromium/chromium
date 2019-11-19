@@ -46,6 +46,8 @@ source_set("gbm") {
     "gpu/drm_gpu_display_manager.h",
     "gpu/drm_gpu_util.cc",
     "gpu/drm_gpu_util.h",
+    "gpu/drm_overlay_manager_gpu.cc",
+    "gpu/drm_overlay_manager_gpu.h",
     "gpu/drm_overlay_plane.cc",
     "gpu/drm_overlay_plane.h",
     "gpu/drm_overlay_validator.cc",
@@ -127,12 +129,11 @@ source_set("gbm") {
     "//ipc",
     "//mojo/public/cpp/system",
     "//services/service_manager/public/cpp",
-    "//services/viz/public/interfaces:constants",
-    "//services/ws/public/mojom:constants",
     "//skia",
     "//third_party/libsync",
     "//third_party/minigbm",
     "//ui/base",
+    "//ui/base/ime",
     "//ui/display",
     "//ui/display/types",
     "//ui/display/util",
@@ -149,9 +150,13 @@ source_set("gbm") {
     "//ui/ozone/common",
     "//ui/ozone/common/linux:drm",
     "//ui/ozone/common/linux:gbm",
-    "//ui/ozone/public/interfaces",
+    "//ui/ozone/public/mojom",
     "//ui/platform_window",
   ]
+
+  if (is_chromeos) {
+    deps += [ "//ui/base/ime/chromeos" ]
+  }
 
   if (enable_vulkan) {
     sources += [
@@ -175,8 +180,8 @@ source_set("gbm_unittests") {
   sources = [
     "common/drm_overlay_manager_unittest.cc",
     "common/drm_util_unittest.cc",
-    "gpu/drm_gpu_display_manager_unittest.cc",
     "gpu/drm_overlay_validator_unittest.cc",
+    "gpu/drm_thread_unittest.cc",
     "gpu/drm_window_unittest.cc",
     "gpu/hardware_display_controller_unittest.cc",
     "gpu/hardware_display_plane_manager_unittest.cc",
@@ -194,6 +199,7 @@ source_set("gbm_unittests") {
     "//build/config/linux/libdrm",
     "//skia",
     "//testing/gtest",
+    "//ui/base/ime",
     "//ui/gfx",
     "//ui/ozone:platform",
     "//ui/ozone/common",

@@ -1,4 +1,5 @@
 include_rules = [
   "+mojo/public",
+  "+components/strings",
   "+services/service_manager/public",
 ]

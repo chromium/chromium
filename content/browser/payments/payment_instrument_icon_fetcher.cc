@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/bind_helpers.h"
 #include "base/task/post_task.h"
+#include "components/payments/content/icon/icon_size.h"
 #include "content/browser/frame_host/render_frame_host_impl.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
@@ -22,13 +23,6 @@
 
 namespace content {
 namespace {
-
-// TODO(zino): Choose appropriate icon size dynamically on different platforms.
-// Here we choose a large ideal icon size to be big enough for all platforms.
-// Note that we only scale down for this icon size but not scale up.
-// Please see: https://crbug.com/763886
-const int kPaymentAppIdealIconSize = 0xFFFF;
-const int kPaymentAppMinimumIconSize = 0;
 
 void DownloadBestMatchingIcon(
     WebContents* web_contents,
@@ -45,9 +39,8 @@ void OnIconFetched(
 
   if (bitmap.drawsNothing()) {
     if (icons.empty()) {
-      base::PostTaskWithTraits(
-          FROM_HERE, {BrowserThread::IO},
-          base::BindOnce(std::move(callback), std::string()));
+      base::PostTask(FROM_HERE, {ServiceWorkerContext::GetCoreThreadId()},
+                     base::BindOnce(std::move(callback), std::string()));
     } else {
       // If could not download or decode the chosen image(e.g. not supported,
       // invalid), try it again with remaining icons.
@@ -64,8 +57,8 @@ void OnIconFetched(
       base::StringPiece(reinterpret_cast<const char*>(&bitmap_data[0]),
                         bitmap_data.size()),
       &encoded_data);
-  base::PostTaskWithTraits(FROM_HERE, {BrowserThread::IO},
-                           base::BindOnce(std::move(callback), encoded_data));
+  base::PostTask(FROM_HERE, {ServiceWorkerContext::GetCoreThreadId()},
+                 base::BindOnce(std::move(callback), encoded_data));
 }
 
 void DownloadBestMatchingIcon(
@@ -75,17 +68,25 @@ void DownloadBestMatchingIcon(
         callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
+  if (web_contents == nullptr) {
+    base::PostTask(FROM_HERE, {ServiceWorkerContext::GetCoreThreadId()},
+                   base::BindOnce(std::move(callback), std::string()));
+    return;
+  }
+
+  gfx::NativeView native_view = web_contents->GetNativeView();
   GURL icon_url = blink::ManifestIconSelector::FindBestMatchingIcon(
-      icons, kPaymentAppIdealIconSize, kPaymentAppMinimumIconSize,
+      icons, payments::IconSizeCalculator::IdealIconHeight(native_view),
+      payments::IconSizeCalculator::MinimumIconHeight(),
+      ManifestIconDownloader::kMaxWidthToHeightRatio,
       blink::Manifest::ImageResource::Purpose::ANY);
-  if (web_contents == nullptr || !icon_url.is_valid()) {
+  if (!icon_url.is_valid()) {
     // If the icon url is invalid, it's better to give the information to
     // developers in advance unlike when fetching or decoding fails. We already
     // checked whether they are valid in renderer side. So, if the icon url is
     // invalid, it's something wrong.
-    base::PostTaskWithTraits(
-        FROM_HERE, {BrowserThread::IO},
-        base::BindOnce(std::move(callback), std::string()));
+    base::PostTask(FROM_HERE, {ServiceWorkerContext::GetCoreThreadId()},
+                   base::BindOnce(std::move(callback), std::string()));
     return;
   }
 
@@ -97,10 +98,12 @@ void DownloadBestMatchingIcon(
   }
 
   bool can_download_icon = ManifestIconDownloader::Download(
-      web_contents, icon_url, kPaymentAppIdealIconSize,
-      kPaymentAppMinimumIconSize,
-      base::Bind(&OnIconFetched, web_contents, copy_icons,
-                 base::Passed(std::move(callback))));
+      web_contents, icon_url,
+      payments::IconSizeCalculator::IdealIconHeight(native_view),
+      payments::IconSizeCalculator::MinimumIconHeight(),
+      base::BindOnce(&OnIconFetched, web_contents, copy_icons,
+                     std::move(callback)),
+      false /* square_only */);
   DCHECK(can_download_icon);
 }
 
@@ -148,10 +151,10 @@ void PaymentInstrumentIconFetcher::Start(
     std::unique_ptr<std::vector<GlobalFrameRoutingId>> provider_hosts,
     const std::vector<blink::Manifest::ImageResource>& icons,
     PaymentInstrumentIconFetcherCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
 
-  base::PostTaskWithTraits(
-      FROM_HERE, {BrowserThread::UI},
+  RunOrPostTaskOnThread(
+      FROM_HERE, BrowserThread::UI,
       base::BindOnce(&StartOnUI, scope, std::move(provider_hosts), icons,
                      std::move(callback)));
 }

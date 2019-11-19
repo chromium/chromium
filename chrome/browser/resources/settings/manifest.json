@@ -1,5 +1,5 @@
 {
-  "name": "Settings",
+  "name": "$i18nRaw{name}",
   "display": "standalone",
   "icons": [
     {

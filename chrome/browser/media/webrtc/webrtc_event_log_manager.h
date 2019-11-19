@@ -14,9 +14,9 @@
 #include "base/containers/flat_set.h"
 #include "base/files/file_path.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/sequenced_task_runner.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
+#include "base/updateable_sequenced_task_runner.h"
 #include "chrome/browser/media/webrtc/webrtc_event_log_manager_common.h"
 #include "chrome/browser/media/webrtc/webrtc_event_log_manager_local.h"
 #include "chrome/browser/media/webrtc/webrtc_event_log_manager_remote.h"
@@ -306,6 +306,8 @@ class WebRtcEventLogManager final : public content::RenderProcessHostObserver,
                                            const base::Time& delete_begin,
                                            const base::Time& delete_end);
 
+  void OnClearCacheForBrowserContextDoneInternal(base::OnceClosure reply);
+
   void GetHistoryInternal(
       BrowserContextId browser_context_id,
       base::OnceCallback<void(const std::vector<UploadList::UploadInfo>&)>
@@ -353,7 +355,7 @@ class WebRtcEventLogManager final : public content::RenderProcessHostObserver,
   // This allows unit tests that do not wish to change the task runner to still
   // check when certain operations are finished.
   // TODO(crbug.com/775415): Remove this and use PostNullTaskForTesting instead.
-  scoped_refptr<base::SequencedTaskRunner>& GetTaskRunnerForTesting();
+  scoped_refptr<base::SequencedTaskRunner> GetTaskRunnerForTesting();
 
   void PostNullTaskForTesting(base::OnceClosure reply);
 
@@ -364,7 +366,13 @@ class WebRtcEventLogManager final : public content::RenderProcessHostObserver,
 
   // The main logic will run sequentially on this runner, on which blocking
   // tasks are allowed.
-  scoped_refptr<base::SequencedTaskRunner> task_runner_;
+  scoped_refptr<base::UpdateableSequencedTaskRunner> task_runner_;
+
+  // The number of user-blocking tasks.
+  // The priority of |task_runner_| is increased to USER_BLOCKING when this is
+  // non-zero, and reduced to BEST_EFFORT when zero.
+  // This object is only to be accessed on the UI thread.
+  size_t num_user_blocking_tasks_;
 
   // Indicates whether remote-bound logging is generally allowed, although
   // possibly not for all profiles. This makes it possible for remote-bound to

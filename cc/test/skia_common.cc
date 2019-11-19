@@ -17,7 +17,6 @@
 #include "third_party/skia/include/core/SkImageGenerator.h"
 #include "third_party/skia/include/core/SkPixmap.h"
 #include "third_party/skia/include/gpu/GrContext.h"
-#include "third_party/skia/include/gpu/gl/GrGLInterface.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/skia_util.h"
 
@@ -137,7 +136,7 @@ PaintImage CreateDiscardablePaintImage(const gfx::Size& size,
 
   SkImageInfo info = SkImageInfo::Make(size.width(), size.height(), color_type,
                                        kPremul_SkAlphaType, color_space);
-  sk_sp<PaintImageGenerator> generator;
+  sk_sp<FakePaintImageGenerator> generator;
   if (is_yuv) {
     // TODO(crbug.com/915972): Remove assumption of YUV420 in tests once we
     // support other subsamplings.
@@ -227,8 +226,7 @@ scoped_refptr<SkottieWrapper> CreateSkottie(const gfx::Size& size,
 }
 
 PaintImage CreateNonDiscardablePaintImage(const gfx::Size& size) {
-  sk_sp<const GrGLInterface> gl_interface(GrGLCreateNullInterface());
-  auto context = GrContext::MakeGL(std::move(gl_interface));
+  auto context = GrContext::MakeMock(nullptr);
   SkBitmap bitmap;
   auto info = SkImageInfo::Make(size.width(), size.height(), kN32_SkColorType,
                                 kPremul_SkAlphaType, nullptr /* color_space */);
@@ -236,9 +234,9 @@ PaintImage CreateNonDiscardablePaintImage(const gfx::Size& size) {
   bitmap.eraseColor(SK_AlphaTRANSPARENT);
   return PaintImageBuilder::WithDefault()
       .set_id(PaintImage::GetNextId())
-      .set_image(SkImage::MakeFromBitmap(bitmap)->makeTextureImage(
-                     context.get(), nullptr),
-                 PaintImage::GetNextContentId())
+      .set_image(
+          SkImage::MakeFromBitmap(bitmap)->makeTextureImage(context.get()),
+          PaintImage::GetNextContentId())
       .TakePaintImage();
 }
 

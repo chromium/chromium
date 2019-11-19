@@ -41,6 +41,9 @@ class HeartbeatScheduler : public gcm::GCMAppHandler,
   // Default interval for how often we send up a heartbeat.
   static const base::TimeDelta kDefaultHeartbeatInterval;
 
+  // UMA histogram name.
+  static const char* const kHeartbeatSignalHistogram;
+
   // Constructor. |cloud_policy_client| will be used to send registered GCM id
   // to DM server, and can be null. |driver| can be null for tests.
   HeartbeatScheduler(
@@ -154,7 +157,7 @@ class HeartbeatScheduler : public gcm::GCMAppHandler,
 
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate the weak pointers before any other members are destroyed.
-  base::WeakPtrFactory<HeartbeatScheduler> weak_factory_;
+  base::WeakPtrFactory<HeartbeatScheduler> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(HeartbeatScheduler);
 };

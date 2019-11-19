@@ -1,6 +1,0 @@
-{
-  "modules" : [
-  ],
-  "extends": "shell",
-  "has_html": true
-}

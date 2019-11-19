@@ -34,11 +34,9 @@ namespace identity {
     // return failure any time a prompt would be required.
     boolean? interactive;
 
-    // The account ID whose token should be returned. If not
-    // specified, the primary account for the profile will be used.
-    //
-    // <code>account</code> is only supported when the
-    // "enable-new-profile-management" flag is set.
+    // The account ID whose token should be returned. If not specified, the
+    // function will use an account from the Chrome profile: the Sync account if
+    // there is one, or otherwise the first Google web account.
     AccountInfo? account;
 
     // A list of OAuth2 scopes to request.

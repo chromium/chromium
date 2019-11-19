@@ -7,7 +7,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/location_bar/zoom_bubble_view.h"
-#include "chrome/browser/ui/views/page_action/page_action_icon_container_view.h"
+#include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
 
 using ZoomViewBrowserTest = InProcessBrowserTest;
@@ -18,25 +18,23 @@ IN_PROC_BROWSER_TEST_F(ZoomViewBrowserTest, SharedPageVisibility) {
   views::View* zoom_icon =
       BrowserView::GetBrowserViewForBrowser(browser())
           ->toolbar_button_provider()
-          ->GetPageActionIconContainerView()
           ->GetPageActionIconView(PageActionIconType::kZoom);
   views::View* second_zoom_icon =
       BrowserView::GetBrowserViewForBrowser(CreateBrowser(browser()->profile()))
           ->toolbar_button_provider()
-          ->GetPageActionIconContainerView()
           ->GetPageActionIconView(PageActionIconType::kZoom);
 
   // Initially no icon.
   EXPECT_FALSE(ZoomBubbleView::GetZoomBubble());
-  EXPECT_FALSE(zoom_icon->visible());
-  EXPECT_FALSE(second_zoom_icon->visible());
+  EXPECT_FALSE(zoom_icon->GetVisible());
+  EXPECT_FALSE(second_zoom_icon->GetVisible());
 
   // Zooming in one browser should show the icon in all browsers on the same
   // URL.
   chrome::Zoom(browser(), content::PAGE_ZOOM_IN);
   EXPECT_TRUE(ZoomBubbleView::GetZoomBubble());
-  EXPECT_TRUE(zoom_icon->visible());
-  EXPECT_TRUE(second_zoom_icon->visible());
+  EXPECT_TRUE(zoom_icon->GetVisible());
+  EXPECT_TRUE(second_zoom_icon->GetVisible());
 
   ZoomBubbleView::CloseCurrentBubble();
   EXPECT_FALSE(ZoomBubbleView::GetZoomBubble());
@@ -45,6 +43,6 @@ IN_PROC_BROWSER_TEST_F(ZoomViewBrowserTest, SharedPageVisibility) {
   // the one where the interaction occured because the bubble is showing there.
   chrome::Zoom(browser(), content::PAGE_ZOOM_RESET);
   EXPECT_TRUE(ZoomBubbleView::GetZoomBubble());
-  EXPECT_TRUE(zoom_icon->visible());
-  EXPECT_FALSE(second_zoom_icon->visible());
+  EXPECT_TRUE(zoom_icon->GetVisible());
+  EXPECT_FALSE(second_zoom_icon->GetVisible());
 }

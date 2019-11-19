@@ -1,0 +1,36 @@
+<!doctype html>
+<!--
+WebXR page that only submits one frame.
+-->
+<html>
+  <head>
+    <link rel="stylesheet" type="text/css" href="../resources/webxr_e2e.css">
+  </head>
+  <body>
+    <canvas id="webgl-canvas"></canvas>
+    <script src="../resources/webxr_e2e.js"></script>
+    <script src="../resources/webxr_boilerplate.js"></script>
+    <script src="../../../../../../third_party/blink/web_tests/resources/testharness.js"></script>
+    <script>
+      shouldSetBaseLayer = false;
+      var frame_count = 0;
+      var frame_expected = false;
+      var delay_ended = false;
+      onImmersiveXRFrameCallback = function() {
+        assert_true(frame_expected);
+        frame_count++;
+      };
+
+      function setBaseLayer() {
+        let session = sessionInfos[sessionTypes.IMMERSIVE].session;
+        session.updateRenderState({ baseLayer: new XRWebGLLayer(session, gl) });
+        frame_expected = true;
+      }
+
+      function delayMilliseconds(waitTime) {
+        delay_ended = false;
+        window.setTimeout(() => { delay_ended = true }, waitTime);
+      }
+    </script>
+  </body>
+</html>

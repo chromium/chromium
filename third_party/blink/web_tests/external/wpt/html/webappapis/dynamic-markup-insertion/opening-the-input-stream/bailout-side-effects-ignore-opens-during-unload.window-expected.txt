@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+PASS document.open bailout should not have any side effects (ignore-opens-during-unload is greater than 0 during unload event)
+FAIL document.open bailout should not have any side effects (ignore-opens-during-unload is greater than 0 during beforeunload event) assert_not_equals: document nodes should not be cleared (ignore-opens-during-unload counter is greater than 0 during beforeunload event) got disallowed value 0
+PASS document.open bailout should not have any side effects (ignore-opens-during-unload is greater than 0 during pagehide event)
+Harness: the test ran to completion.
+

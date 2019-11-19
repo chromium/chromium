@@ -9,6 +9,7 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "base/optional.h"
 #include "base/synchronization/lock.h"
 #include "base/time/time.h"
 #include "media/base/audio_parameters.h"
@@ -74,6 +75,13 @@ class SnooperNode : public LoopbackGroupMember::Snooper {
               base::TimeTicks reference_time,
               double volume) final;
 
+  // Given the timing of recent OnData() calls and the |duration| of output that
+  // would be requested in a call to Render(), determine the latest possible
+  // |reference_time| for a Render() call that won't result in an underrun.
+  // Returns base::nullopt while current conditions prohibit making a reliable
+  // suggestion.
+  base::Optional<base::TimeTicks> SuggestLatestRenderTime(FrameTicks duration);
+
   // Renders more audio that was recorded from the GroupMember until
   // |output_bus| is filled, resampling and remixing the channels if necessary.
   // |reference_time| is used for detecting skip-ahead (i.e., a significant
@@ -118,6 +126,11 @@ class SnooperNode : public LoopbackGroupMember::Snooper {
   // TimeTicks representing its corresponding system clock timestamp.
   FrameTicks write_position_;             // Guarded by |lock_|.
   base::TimeTicks write_reference_time_;  // Guarded by |lock_|.
+
+  // Used by SuggestLatestRenderTime() to track whether OnData() has been called
+  // recently, and as a basis for its suggestion. Other methods should not
+  // depend on this value for anything.
+  base::TimeTicks checkpoint_time_;
 
   // The next frame position from which to read from the delay buffer. This is
   // the position of the frames about to be pushed into the resampler, not the

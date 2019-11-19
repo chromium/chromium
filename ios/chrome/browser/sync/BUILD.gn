@@ -23,6 +23,8 @@ source_set("sync") {
     "model_type_store_service_factory.h",
     "profile_sync_service_factory.cc",
     "profile_sync_service_factory.h",
+    "send_tab_to_self_sync_service_factory.h",
+    "send_tab_to_self_sync_service_factory.mm",
     "session_sync_service_factory.h",
     "session_sync_service_factory.mm",
     "sync_observer_bridge.h",
@@ -48,17 +50,21 @@ source_set("sync") {
     "//components/prefs",
     "//components/reading_list/core",
     "//components/search_engines",
+    "//components/send_tab_to_self",
     "//components/sessions",
-    "//components/signin/core/browser",
+    "//components/signin/public/base",
     "//components/sync",
+    "//components/sync_device_info",
     "//components/sync_preferences",
     "//components/sync_sessions",
+    "//components/sync_user_events",
     "//components/version_info",
     "//google_apis",
     "//ios/chrome/browser",
     "//ios/chrome/browser/autofill",
     "//ios/chrome/browser/bookmarks",
     "//ios/chrome/browser/browser_state",
+    "//ios/chrome/browser/complex_tasks",
     "//ios/chrome/browser/dom_distiller",
     "//ios/chrome/browser/favicon",
     "//ios/chrome/browser/gcm",
@@ -73,6 +79,7 @@ source_set("sync") {
     "//ios/chrome/browser/sync/sessions",
     "//ios/chrome/browser/tabs",
     "//ios/chrome/browser/undo",
+    "//ios/chrome/browser/webdata_services",
     "//ios/chrome/common",
     "//ios/web",
     "//net",
@@ -92,20 +99,15 @@ source_set("sync") {
 source_set("test_support") {
   testonly = true
   sources = [
-    "ios_chrome_profile_sync_test_util.cc",
-    "ios_chrome_profile_sync_test_util.h",
     "sync_setup_service_mock.cc",
     "sync_setup_service_mock.h",
   ]
   deps = [
     ":sync",
     "//base",
-    "//components/browser_sync",
-    "//components/browser_sync:test_support",
     "//components/keyed_service/core",
     "//components/keyed_service/ios",
     "//components/sync",
-    "//components/sync:test_support_driver",
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/signin",
     "//ios/chrome/common",
@@ -118,8 +120,10 @@ source_set("test_support") {
 }
 
 source_set("unit_tests") {
+  configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
+    "ios_chrome_synced_tab_delegate_unittest.mm",
     "profile_sync_service_factory_unittest.cc",
     "session_sync_service_factory_unittest.cc",
   ]
@@ -132,5 +136,6 @@ source_set("unit_tests") {
     "//ios/chrome/browser/browser_state:test_support",
     "//ios/web/public/test",
     "//testing/gtest",
+    "//ui/base",
   ]
 }

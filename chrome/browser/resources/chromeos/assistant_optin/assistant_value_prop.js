@@ -37,10 +37,23 @@ Polymer({
      */
     defaultUrl: {
       type: String,
-      value:
-          'https://www.gstatic.com/opa-android/oobe/a02187e41eed9e42/v2_omni_en_us.html',
+      value: function() {
+        return this.urlTemplate_.replace('$', 'en_us');
+      }
     },
   },
+
+  setUrlTemplateForTesting: function(url) {
+    this.urlTemplate_ = url;
+  },
+
+  /**
+   * The value prop URL template - loaded from loadTimeData.
+   * The template is expected to have '$' instead of the locale.
+   * @private {string}
+   */
+  urlTemplate_:
+      'https://www.gstatic.com/opa-android/oobe/a02187e41eed9e42/v2_omni_$.html',
 
   /**
    * Whether try to reload with the default url when a 404 error occurred.
@@ -152,15 +165,19 @@ Polymer({
     this.$['overlay-additional-info-text'].innerHTML =
         this.sanitizer_.sanitizeHtml(additionalInfo);
 
-    var overlay = this.$['learn-more-overlay'];
-    overlay.hidden = false;
+    this.$['learn-more-overlay'].showModal();
+    this.$['overlay-close-button'].focus();
   },
 
   /**
    * Hides overlay dialog.
    */
   hideOverlay: function() {
-    this.$['learn-more-overlay'].hidden = true;
+    this.$['learn-more-overlay'].close();
+    if (this.lastFocusedElement) {
+      this.lastFocusedElement.focus();
+      this.lastFocusedElement = null;
+    }
   },
 
   /**
@@ -179,9 +196,7 @@ Polymer({
 
     this.loadingError_ = false;
     this.headerReceived_ = false;
-    this.valuePropView_.src =
-        'https://www.gstatic.com/opa-android/oobe/a02187e41eed9e42/v2_omni_' +
-        this.locale + '.html';
+    this.valuePropView_.src = this.urlTemplate_.replace('$', this.locale);
 
     this.buttonsDisabled = true;
   },
@@ -262,13 +277,21 @@ Polymer({
    * Add a setting zippy with the provided data.
    */
   addSettingZippy: function(zippy_data) {
+    if (this.settingZippyLoaded_) {
+      if (this.webViewLoaded_ && this.consentStringLoaded_) {
+        this.onPageLoaded();
+      }
+      return;
+    }
+
     for (var i in zippy_data) {
       var data = zippy_data[i];
       var zippy = document.createElement('setting-zippy');
       zippy.setAttribute(
           'icon-src',
           'data:text/html;charset=utf-8,' +
-              encodeURIComponent(zippy.getWrappedIcon(data['iconUri'])));
+              encodeURIComponent(
+                  zippy.getWrappedIcon(data['iconUri'], data['title'])));
       zippy.setAttribute('hide-line', true);
       zippy.setAttribute('popup-style', true);
 
@@ -286,9 +309,10 @@ Polymer({
       learnMoreLink.className = 'learn-more-link';
       learnMoreLink.textContent = data['popupLink'];
       learnMoreLink.setAttribute('href', 'javascript:void(0)');
-      learnMoreLink.onclick = function(title, additionalInfo) {
+      learnMoreLink.onclick = function(title, additionalInfo, focus) {
+        this.lastFocusedElement = focus;
         this.showLearnMoreOverlay(title, additionalInfo);
-      }.bind(this, data['title'], data['additionalInfo']);
+      }.bind(this, data['title'], data['additionalInfo'], learnMoreLink);
 
       description.appendChild(learnMoreLink);
       zippy.appendChild(description);

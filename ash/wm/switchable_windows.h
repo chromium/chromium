@@ -5,28 +5,24 @@
 #ifndef ASH_WM_SWITCHABLE_WINDOWS_H_
 #define ASH_WM_SWITCHABLE_WINDOWS_H_
 
-#include <stddef.h>
+#include <vector>
 
 #include "ash/ash_export.h"
-#include "base/macros.h"
 
 namespace aura {
 class Window;
 }
 
 namespace ash {
-namespace wm {
 
-// List of containers which contain windows that can be switched via Alt+Tab to.
-ASH_EXPORT extern const int kSwitchableWindowContainerIds[];
-
-// The number of elements in kSwitchableWindowContainerIds.
-ASH_EXPORT extern const size_t kSwitchableWindowContainerIdsLength;
+// If |active_desk_only| is true, non-active desks' containers will be excluded.
+ASH_EXPORT std::vector<aura::Window*> GetSwitchableContainersForRoot(
+    aura::Window* root,
+    bool active_desk_only);
 
 // Returns true if |window| is a container for windows which can be switched to.
 ASH_EXPORT bool IsSwitchableContainer(const aura::Window* window);
 
-}  // namespace wm
 }  // namespace ash
 
 #endif  // ASH_WM_SWITCHABLE_WINDOWS_H_

@@ -49,7 +49,7 @@ bool ThreadSnapshotMac::Initialize(
   thread_specific_data_address_ =
       process_reader_thread.thread_specific_data_address;
 
-  stack_.Initialize(process_reader,
+  stack_.Initialize(process_reader->Memory(),
                     process_reader_thread.stack_region_address,
                     process_reader_thread.stack_region_size);
 

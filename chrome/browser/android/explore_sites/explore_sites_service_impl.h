@@ -46,6 +46,7 @@ class ExploreSitesServiceImpl : public ExploreSitesService,
   void GetCategoryImage(int category_id,
                         int pixel_size,
                         BitmapCallback callback) override;
+  void GetSummaryImage(int pixel_size, BitmapCallback callback) override;
   void GetSiteImage(int site_id, BitmapCallback callback) override;
   void UpdateCatalogFromNetwork(bool is_immediate_fetch,
                                 const std::string& accept_languages,
@@ -103,7 +104,7 @@ class ExploreSitesServiceImpl : public ExploreSitesService,
   std::unique_ptr<ExploreSitesFetcher> explore_sites_fetcher_;
   std::unique_ptr<HistoryStatisticsReporter> history_statistics_reporter_;
   std::vector<BooleanCallback> update_catalog_callbacks_;
-  base::WeakPtrFactory<ExploreSitesServiceImpl> weak_ptr_factory_;
+  base::WeakPtrFactory<ExploreSitesServiceImpl> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ExploreSitesServiceImpl);
 };

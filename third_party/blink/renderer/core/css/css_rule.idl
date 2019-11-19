@@ -46,11 +46,11 @@
     // https://drafts.csswg.org/css-conditional/#extentions-to-cssrule-interface
     const unsigned short SUPPORTS_RULE = 12;
 
-    // CSS Fonts Level 4
-    // https://drafts.csswg.org/css-fonts-4/#font-feature-values
-    [RuntimeEnabled=CSSFontFeatureValues] const unsigned short FONT_FEATURE_VALUES_RULE = 14;
-
     // CSS Device Adaptation
     // https://drafts.csswg.org/css-device-adapt/#css-rule-interface
     [RuntimeEnabled=CSSViewport] const unsigned short VIEWPORT_RULE = 15;
+
+    // CSS Properties and Values Level 1
+    // https://drafts.css-houdini.org/css-properties-values-api/#extensions-to-css-rule-interface
+    [RuntimeEnabled=CSSVariables2AtProperty] const unsigned short PROPERTY_RULE = 18;
 };

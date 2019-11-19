@@ -23,8 +23,10 @@
 
 #include "third_party/blink/renderer/core/html/forms/image_input_type.h"
 
+#include "third_party/blink/renderer/core/css/style_change_reason.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/events/mouse_event.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/forms/form_data.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
@@ -41,13 +43,11 @@
 
 namespace blink {
 
-using namespace html_names;
-
-inline ImageInputType::ImageInputType(HTMLInputElement& element)
+ImageInputType::ImageInputType(HTMLInputElement& element)
     : BaseButtonInputType(element), use_fallback_content_(false) {}
 
-InputType* ImageInputType::Create(HTMLInputElement& element) {
-  return MakeGarbageCollected<ImageInputType>(element);
+void ImageInputType::CountUsage() {
+  CountUsageIfVisible(WebFeature::kInputTypeImage);
 }
 
 const AtomicString& ImageInputType::FormControlType() const {
@@ -99,17 +99,17 @@ void ImageInputType::HandleDOMActivateEvent(Event& event) {
   if (GetElement().IsDisabledFormControl() || !GetElement().Form())
     return;
   click_location_ = ExtractClickLocation(event);
-  GetElement().Form()->PrepareForSubmission(
-      event, &GetElement());  // Event handlers can run.
+  // Event handlers can run.
+  GetElement().Form()->PrepareForSubmission(&event, &GetElement());
   event.SetDefaultHandled();
 }
 
-LayoutObject* ImageInputType::CreateLayoutObject(
-    const ComputedStyle& style) const {
+LayoutObject* ImageInputType::CreateLayoutObject(const ComputedStyle& style,
+                                                 LegacyLayout legacy) const {
   if (use_fallback_content_)
-    return LayoutObjectFactory::CreateBlockFlow(GetElement(), style);
+    return LayoutObjectFactory::CreateBlockFlow(GetElement(), style, legacy);
   LayoutImage* image = new LayoutImage(&GetElement());
-  image->SetImageResource(LayoutImageResource::Create());
+  image->SetImageResource(MakeGarbageCollected<LayoutImageResource>());
   return image;
 }
 
@@ -175,8 +175,8 @@ unsigned ImageInputType::Height() const {
   if (!GetElement().GetLayoutObject()) {
     // Check the attribute first for an explicit pixel value.
     unsigned height;
-    if (ParseHTMLNonNegativeInteger(GetElement().FastGetAttribute(kHeightAttr),
-                                    height))
+    if (ParseHTMLNonNegativeInteger(
+            GetElement().FastGetAttribute(html_names::kHeightAttr), height))
       return height;
 
     // If the image is available, use its height.
@@ -200,8 +200,8 @@ unsigned ImageInputType::Width() const {
   if (!GetElement().GetLayoutObject()) {
     // Check the attribute first for an explicit pixel value.
     unsigned width;
-    if (ParseHTMLNonNegativeInteger(GetElement().FastGetAttribute(kWidthAttr),
-                                    width))
+    if (ParseHTMLNonNegativeInteger(
+            GetElement().FastGetAttribute(html_names::kWidthAttr), width))
       return width;
 
     // If the image is available, use its width.
@@ -222,11 +222,12 @@ unsigned ImageInputType::Width() const {
 }
 
 bool ImageInputType::HasLegalLinkAttribute(const QualifiedName& name) const {
-  return name == kSrcAttr || BaseButtonInputType::HasLegalLinkAttribute(name);
+  return name == html_names::kSrcAttr ||
+         BaseButtonInputType::HasLegalLinkAttribute(name);
 }
 
 const QualifiedName& ImageInputType::SubResourceAttributeName() const {
-  return kSrcAttr;
+  return html_names::kSrcAttr;
 }
 
 void ImageInputType::EnsureFallbackContent() {
@@ -258,8 +259,14 @@ void ImageInputType::EnsurePrimaryContent() {
 }
 
 void ImageInputType::ReattachFallbackContent() {
-  if (!GetElement().GetDocument().InStyleRecalc())
-    GetElement().LazyReattachIfAttached();
+  if (!GetElement().GetDocument().InStyleRecalc()) {
+    // ComputedStyle depends on use_fallback_content_. Trigger recalc.
+    GetElement().SetNeedsStyleRecalc(
+        kLocalStyleChange,
+        StyleChangeReasonForTracing::Create(style_change_reason::kUseFallback));
+    // LayoutObject type depends on use_fallback_content_. Trigger re-attach.
+    GetElement().SetForceReattachLayoutTree();
+  }
 }
 
 void ImageInputType::CreateShadowSubtree() {

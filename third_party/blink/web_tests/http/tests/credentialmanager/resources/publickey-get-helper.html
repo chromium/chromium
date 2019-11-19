@@ -1,28 +1,32 @@
 <!DOCTYPE HTML>
-<script src="/gen/layout_test_data/mojo/public/js/mojo_bindings.js"></script>
-<script src="/gen/third_party/blink/public/platform/modules/credentialmanager/credential_manager.mojom.js"></script>
-<script src="/gen/third_party/blink/public/platform/modules/webauthn/authenticator.mojom.js"></script>
+<script src="/gen/layout_test_data/mojo/public/js/mojo_bindings_lite.js"></script>
+<script src="/gen/mojo/public/mojom/base/unguessable_token.mojom-lite.js"></script>
+<script src="/gen/mojo/public/mojom/base/big_buffer.mojom-lite.js"></script>
+<script src="/gen/mojo/public/mojom/base/string16.mojom-lite.js"></script>
+<script src="/gen/mojo/public/mojom/base/time.mojom-lite.js"></script>
+<script src="/gen/url/mojom/origin.mojom-lite.js"></script>
+<script src="/gen/url/mojom/url.mojom-lite.js"></script>
+<script src="/gen/third_party/blink/public/mojom/webauthn/authenticator.mojom-lite.js"></script>
+<script src="/gen/third_party/blink/public/mojom/webauthn/virtual_authenticator.mojom-lite.js"></script>
 <script src="test-inputs.js"></script>
-<script src="mock-navigator-credentials.js"></script>
+<script src="virtual-navigator-credentials.js"></script>
 <script>
-mockAuthenticator.setRawId(RAW_ID);
-mockAuthenticator.setId(ID);
-mockAuthenticator.setClientDataJson(CLIENT_DATA_JSON);
-mockAuthenticator.setAuthenticatorData(AUTHENTICATOR_DATA);
-mockAuthenticator.setSignature(SIGNATURE);
-mockAuthenticator.setAuthenticatorStatus(
-    blink.mojom.AuthenticatorStatus.SUCCESS);
+
 let queryParams = new URLSearchParams(window.location.search);
 var relyingPartyId = queryParams.has('rpId') ? queryParams.get('rpId') : document.domain;
-var customPublicKey = {
+var getCredentialOptions = {
     challenge: CHALLENGE,
     rpId: relyingPartyId,
-    allowCredentials: [ACCEPTABLE_CREDENTIAL]
+    allowCredentials: [ACCEPTABLE_CREDENTIAL],
+    userVerification: 'discouraged',
 };
-
 let responder =  window.opener || window.parent;
 
-navigator.credentials.get({publicKey : customPublicKey})
-  .then(r => responder.postMessage("SUCCESS", "*"))
+navigator.credentials.test.createAuthenticator().then((testAuthenticator) => {
+  return testAuthenticator.generateAndRegisterKey(ACCEPTABLE_CREDENTIAL_ID, relyingPartyId).then(() => {
+    return navigator.credentials.get({publicKey : getCredentialOptions});
+  });
+}).then(r => responder.postMessage("SUCCESS", "*"))
   .catch(t => responder.postMessage(t.name, "*"));
+
 </script>

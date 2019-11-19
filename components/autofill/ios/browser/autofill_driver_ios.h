@@ -40,7 +40,7 @@ class AutofillDriverIOS : public AutofillDriver {
   // AutofillDriver:
   bool IsIncognito() const override;
   bool IsInMainFrame() const override;
-  net::URLRequestContextGetter* GetURLRequestContext() override;
+  ui::AXTreeID GetAxTreeId() const override;
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory() override;
   bool RendererIsAvailable() override;
   void SendFormDataToRenderer(int query_id,
@@ -60,9 +60,12 @@ class AutofillDriverIOS : public AutofillDriver {
   void RendererShouldFillFieldWithValue(const base::string16& value) override;
   void RendererShouldPreviewFieldWithValue(
       const base::string16& value) override;
+  void RendererShouldSetSuggestionAvailability(
+      const mojom::AutofillState state) override;
   void PopupHidden() override;
   gfx::RectF TransformBoundingBoxToViewportCoordinates(
       const gfx::RectF& bounding_box) override;
+  net::NetworkIsolationKey NetworkIsolationKey() override;
 
   bool is_processed() const { return processed_; }
   void set_processed(bool processed) { processed_ = processed; }

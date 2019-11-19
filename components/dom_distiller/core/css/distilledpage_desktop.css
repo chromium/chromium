@@ -1,0 +1,300 @@
+/* Copyright 2019 The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* This file should contain style used on desktop but not Android or iOS. */
+
+:root {
+  --fontSizePercent: 22%;
+  --mdblue: rgb(26, 115, 232);
+  --mdblue-faint: rgba(26, 115, 232, .2);
+  --mdgrey: rgb(95, 99, 104);
+}
+
+fieldset {
+  border: none;
+  background: transparent;
+}
+
+#mainContent h1 {
+  font-size: 1.5em;
+}
+
+#mainContent article {
+  margin-top: 2em;
+}
+
+.screenReaderOnly {
+  display: block;
+  color: transparent;
+  height: 0px;
+  margin: 0;
+  padding: 0;
+  border: none;
+  user-select: none;
+}
+
+#mainContent {
+  max-width: 100%;
+  width: 35em;
+  padding: 1em;
+  margin-top: 1em;
+  margin-bottom: 1em;
+}
+
+#settingsContainer {
+  position: absolute;
+  width: inherit;
+  max-width: 90%;
+  flex: 1 1 auto;
+  display: flex;
+  justify-content: flex-end;
+  border-bottom: thin solid gray;
+}
+
+#settingsContainer button {
+  background: transparent;
+  border: none;
+  border-radius: 50%;
+  color: var(--mdgrey);
+}
+
+#settingsContainer button .material-icons {
+  user-select: none;
+}
+
+#settingsContainer button.activated {
+  background-color: rgba(0, 0, 0, .1);
+}
+
+.dark #settingsContainer button.activated {
+  background-color: rgba(255, 255, 255, .1);
+}
+
+#settingsContainer button:focus {
+  background-color: rgba(95, 99, 104, .2);
+  box-shadow: 0px 0px 0px 8px rgba(95, 99, 104, .2);
+  outline: none;
+}
+
+#settingsContainer button#settingsToggle {
+  border-radius: 16px;
+}
+
+.dark #settingsToggle {
+  color: #E0E0E0;
+}
+
+#settingsDialog {
+  top: 3em;
+  left: auto;
+  border: none;
+  box-shadow: 0 1px 3px 0 rgba(60, 64, 67, 0.3),
+              0 4px 8px 3px rgba(60, 64, 67, 0.15);
+  width: 320px;
+  height: 168px;
+  padding: 16px;
+  box-sizing: border-box;
+  font-size: 13px;
+  font-family: 'Roboto Regular', 'Roboto', sans-serif;
+  color: #3C4043;
+
+  /* The z-index is set so that any "positioned" elements in the article text
+   * (e.g. footnotes) are rendered below the dialog. */
+  z-index: 1;
+}
+
+#settingsDialog h2 {
+  font-size: 14px;
+  font-family: 'Roboto Medium', 'Roboto', sans-serif;
+}
+
+#settingsHeader {
+  margin-bottom: 16px;
+}
+
+#settingsHeader > * {
+  display: inline;
+}
+
+#closeSettingsButton {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 18px;
+  height: 18px;
+  padding: 0;
+}
+
+#closeSettingsButton > * {
+  font-size: 18px;
+  margin: 0;
+}
+
+
+#settingsFields {
+  width: 100%;
+  display: grid;
+  grid-row-gap: 12px;
+  grid-template:
+    "style color" 32px
+    "size size"  32px
+    / 50% 50%;
+}
+
+select#fontFamilySelection {
+  background: transparent;
+  border: 1px solid silver;
+  border-radius: 2px;
+  width: 100%;
+  height: 32px;
+  color: inherit;
+  font-size: inherit;
+  font-family: inherit;
+}
+
+select#fontFamilySelection:focus {
+  outline-color: var(--mdblue);
+}
+
+#themeSelection ul {
+  list-style-type: none;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+}
+
+.themeOption {
+  display: block;
+  position: relative;
+  width: 32px;
+  height: 32px;
+}
+
+.themeOption input[type="radio"] {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  margin: 0;
+  padding: 0;
+}
+
+.themeOption input[type="radio"].light {
+  border: 1px solid gray;
+}
+
+.themeOption input[type="radio"]:focus {
+  outline: none;
+  border: 2px solid var(--mdblue);
+}
+
+.checkmark {
+  display: none;
+  width: 16px;
+  height: 16px;
+  position: absolute;
+  bottom: 0;
+  right: 0;
+}
+
+.checkmark .material-icons {
+  font-size: 16px;
+  color: var(--mdblue);
+  background-color: white;
+  border-radius: 50%;
+  user-select: none;
+}
+
+.themeOption input[type="radio"]:checked + .checkmark {
+  display: inline;
+}
+
+#fontSizeWrapper {
+  grid-area: size;
+}
+
+#fontSizeSelection {
+  -webkit-appearance: none;
+  width: 100%;
+  margin: 0;
+  background: transparent;
+}
+
+#fontSizeSelection:focus {
+  outline: none;
+}
+
+#fontSizeSelection::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  border-radius: 50%;
+  background-color: var(--mdblue);
+  width: 10px;
+  height: 10px;
+
+  /* Position the thumb over the slider track. */
+  margin-top: -4px;
+
+  /* Render the thumb on top of the tickmarks. We can't just rearrange the HTML
+   * because the tickmarks need to render above the slider's track but below the
+   * thumb. */
+  position: relative;
+  z-index: 1;
+}
+
+#fontSizeSelection:focus::-webkit-slider-thumb {
+  box-shadow: 0px 0px 0px 11px var(--mdblue-faint);
+}
+
+#fontSizeSelection::-webkit-slider-container {
+  /* Increase the clickable area of the slider. */
+  border-top: 5px solid transparent;
+  border-bottom: 5px solid transparent;
+}
+
+#fontSizeSelection::-webkit-slider-runnable-track {
+  height: 2px;
+  width: 100%;
+
+  /* Make the track opaque blue to the left of the thumb and mostly transparent
+   * to the right of the thumb. */
+  background: linear-gradient(
+    to right, var(--mdblue), var(--mdblue) var(--fontSizePercent),
+    var(--mdblue-faint) var(--fontSizePercent), var(--mdblue-faint));
+}
+
+.tickmarks {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  padding-top: 0;
+  height: 2px;
+
+  /* Position the tickmarks over the slider track. */
+  margin-top: -19px;
+
+  /* Restrict the height of individual options to that of their containing
+   * datalist. Setting the height property directly does not seem to have an
+   * impact. */
+  overflow: hidden;
+}
+
+.tickmarks option {
+  width: 1px;
+  padding: 0;
+}
+
+.tickmarks option.beforeThumb {
+  background: white;
+}
+
+.tickmarks option.afterThumb {
+  background: var(--mdblue);
+}
+
+.label-container {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  padding-top: 8px;
+}

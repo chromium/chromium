@@ -53,7 +53,7 @@ class ListChangesTask : public SyncTask {
 
   std::vector<std::string> file_ids_;
 
-  base::WeakPtrFactory<ListChangesTask> weak_ptr_factory_;
+  base::WeakPtrFactory<ListChangesTask> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ListChangesTask);
 };

@@ -93,7 +93,7 @@ Running: testSetViaAncestorClass
 element.style { ()
 
 [expanded] 
-.red div:first-child { (<style>…</style>)
+.red div:first-child { (<style>)
     background-color: red;
 
 [expanded] 
@@ -117,7 +117,7 @@ Running: testSetViaSiblingAttr
 element.style { ()
 
 [expanded] 
-div[foo="bar"] + div { (<style>…</style>)
+div[foo="bar"] + div { (<style>)
     background-color: blue;
 
 [expanded] 

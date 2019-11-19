@@ -52,7 +52,7 @@ class CORE_EXPORT CSSMathNegate : public CSSMathValue {
     return value_->Equals(*other_negate.value_);
   }
 
-  CSSCalcExpressionNode* ToCalcExpressionNode() const final {
+  CSSMathExpressionNode* ToCalcExpressionNode() const final {
     // TODO(crbug.com/xxx): Implement
     return nullptr;
   }

@@ -26,8 +26,14 @@ class PageHandler : public protocol::Page::Backend,
   protocol::Response Enable() override;
   protocol::Response Disable() override;
   protocol::Response SetAdBlockingEnabled(bool enabled) override;
+  void GetInstallabilityErrors(
+      std::unique_ptr<GetInstallabilityErrorsCallback> callback) override;
 
  private:
+  static void GotInstallabilityErrors(
+      std::unique_ptr<GetInstallabilityErrorsCallback> callback,
+      std::vector<std::string> errors);
+
   bool enabled_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(PageHandler);

@@ -4,9 +4,9 @@
 
 #include "content/browser/renderer_host/input/fling_scheduler.h"
 
+#include "content/public/test/browser_task_environment.h"
 #include "content/public/test/mock_render_process_host.h"
 #include "content/public/test/test_browser_context.h"
-#include "content/public/test/test_browser_thread_bundle.h"
 #include "content/test/mock_render_widget_host_delegate.h"
 #include "content/test/test_render_view_host.h"
 #include "content/test/test_render_widget_host.h"
@@ -82,22 +82,22 @@ class FlingSchedulerTest : public testing::Test,
   void SimulateFlingStart(const gfx::Vector2dF& velocity) {
     blink::WebGestureEvent fling_start(blink::WebInputEvent::kGestureFlingStart,
                                        0, base::TimeTicks::Now(),
-                                       blink::kWebGestureDeviceTouchscreen);
+                                       blink::WebGestureDevice::kTouchscreen);
     fling_start.data.fling_start.velocity_x = velocity.x();
     fling_start.data.fling_start.velocity_y = velocity.y();
     GestureEventWithLatencyInfo fling_start_with_latency(fling_start);
-    if (!fling_controller_->FilterGestureEvent(fling_start_with_latency))
-      fling_controller_->ProcessGestureFlingStart(fling_start_with_latency);
+    fling_controller_->ObserveAndMaybeConsumeGestureEvent(
+        fling_start_with_latency);
   }
 
   void SimulateFlingCancel() {
     blink::WebGestureEvent fling_cancel(
         blink::WebInputEvent::kGestureFlingCancel, 0, base::TimeTicks::Now(),
-        blink::kWebGestureDeviceTouchscreen);
+        blink::WebGestureDevice::kTouchscreen);
     fling_cancel.data.fling_cancel.prevent_boosting = true;
     GestureEventWithLatencyInfo fling_cancel_with_latency(fling_cancel);
-    if (!fling_controller_->FilterGestureEvent(fling_cancel_with_latency))
-      fling_controller_->ProcessGestureFlingCancel(fling_cancel_with_latency);
+    fling_controller_->ObserveAndMaybeConsumeGestureEvent(
+        fling_cancel_with_latency);
   }
 
   // FlingControllerEventSenderClient
@@ -105,12 +105,15 @@ class FlingSchedulerTest : public testing::Test,
       const MouseWheelEventWithLatencyInfo& wheel_event) override {}
   void SendGeneratedGestureScrollEvents(
       const GestureEventWithLatencyInfo& gesture_event) override {}
+  gfx::Size GetRootWidgetViewportSize() override {
+    return gfx::Size(1920, 1080);
+  }
 
   std::unique_ptr<FlingController> fling_controller_;
   std::unique_ptr<FakeFlingScheduler> fling_scheduler_;
 
  private:
-  TestBrowserThreadBundle thread_bundle_;
+  BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestBrowserContext> browser_context_;
   RenderWidgetHostImpl* widget_host_;
   MockRenderProcessHost* process_host_;

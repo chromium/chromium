@@ -7,6 +7,8 @@
 
 #import <Foundation/Foundation.h>
 
+#include <vector>
+
 #include "ios/chrome/browser/signin/gaia_auth_fetcher_ios_bridge.h"
 #include "net/cookies/canonical_cookie.h"
 
@@ -40,7 +42,8 @@ class GaiaAuthFetcherIOSNSURLSessionBridge : public GaiaAuthFetcherIOSBridge {
 
   // Starts the NSURLRequest with the cookie list.
   void FetchPendingRequestWithCookies(
-      const std::vector<net::CanonicalCookie>& cookies);
+      const net::CookieStatusList& cookies,
+      const net::CookieStatusList& excluded_cookies);
   // Creates a NSURLSession, and sets its delegate.
   virtual NSURLSession* CreateNSURLSession(
       id<NSURLSessionTaskDelegate> url_session_delegate);

@@ -25,7 +25,7 @@ settings.StoredAccount;
  *            hasError: (boolean|undefined),
  *            hasUnrecoverableError: (boolean|undefined),
  *            managed: (boolean|undefined),
- *            setupInProgress: (boolean|undefined),
+ *            firstSetupInProgress: (boolean|undefined),
  *            signedIn: (boolean|undefined),
  *            signedInUsername: (string|undefined),
  *            signinAllowed: (boolean|undefined),
@@ -71,7 +71,6 @@ settings.StatusAction = {
  *   bookmarksSynced: boolean,
  *   encryptAllData: boolean,
  *   encryptAllDataAllowed: boolean,
- *   enterGooglePassphraseBody: (string|undefined),
  *   enterPassphraseBody: (string|undefined),
  *   extensionsEnforced: boolean,
  *   extensionsRegistered: boolean,
@@ -79,7 +78,6 @@ settings.StatusAction = {
  *   fullEncryptionBody: string,
  *   passphrase: (string|undefined),
  *   passphraseRequired: boolean,
- *   passphraseTypeIsCustom: boolean,
  *   passwordsEnforced: boolean,
  *   passwordsRegistered: boolean,
  *   passwordsSynced: boolean,
@@ -98,6 +96,9 @@ settings.StatusAction = {
  *   typedUrlsEnforced: boolean,
  *   typedUrlsRegistered: boolean,
  *   typedUrlsSynced: boolean,
+ *   wifiConfigurationsEnforced: boolean,
+ *   wifiConfigurationsRegistered: boolean,
+ *   wifiConfigurationsSynced: boolean,
  * }}
  */
 settings.SyncPrefs;
@@ -213,6 +214,13 @@ cr.define('settings', function() {
      * Opens the Google Activity Controls url in a new tab.
      */
     openActivityControlsUrl() {}
+
+    /**
+     * Function to dispatch event sync-prefs-changed even without a change.
+     * This is used to decide whether we should show the link to password
+     * manager in passwords section on page load.
+     */
+    sendSyncPrefsChanged() {}
   }
 
   /**
@@ -299,6 +307,11 @@ cr.define('settings', function() {
     openActivityControlsUrl() {
       chrome.metricsPrivate.recordUserAction(
           'Signin_AccountSettings_GoogleActivityControlsClicked');
+    }
+
+    /** @override */
+    sendSyncPrefsChanged() {
+      chrome.send('SyncPrefsDispatch');
     }
   }
 

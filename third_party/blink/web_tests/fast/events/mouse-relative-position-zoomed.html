@@ -29,7 +29,7 @@ body {
 <script>
 
 function run(zoom, scroll) {
-    internals.setZoomFactor(zoom);
+    eventSender.setPageZoomFactor(zoom);
     scrollTo(0, scroll);
     var result;
     var target = document.querySelector("#target");

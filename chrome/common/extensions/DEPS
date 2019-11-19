@@ -1,6 +1,6 @@
 include_rules = [
+  "+ash/keyboard/ui/resources",  # For virtual keyboard
   "+components/policy/core/common",
-  "+device/usb",  # For UsbDevicePermission
   "+extensions/grit",
   "+extensions/strings/grit",
   "+extensions/test",

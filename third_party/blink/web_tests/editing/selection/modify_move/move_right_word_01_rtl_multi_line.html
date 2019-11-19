@@ -17,13 +17,13 @@ selection_test(
 selection_test(
   '<div contenteditable dir="rtl">a|bc def<br><br><br>uvw xyz</div>',
   selection => selection.modify('move', 'right', 'word'),
-  '<div contenteditable dir="rtl">abc| def<br><br><br>uvw xyz</div>',
+  '<div contenteditable dir="rtl">|abc def<br><br><br>uvw xyz</div>',
   '1-1 rtl right word');
 
 selection_test(
   '<div contenteditable dir="rtl">ab|c def<br><br><br>uvw xyz</div>',
   selection => selection.modify('move', 'right', 'word'),
-  '<div contenteditable dir="rtl">abc| def<br><br><br>uvw xyz</div>',
+  '<div contenteditable dir="rtl">|abc def<br><br><br>uvw xyz</div>',
   '1-2 rtl right word');
 
 selection_test(
@@ -41,49 +41,49 @@ selection_test(
 selection_test(
   '<div contenteditable dir="rtl">abc d|ef<br><br><br>uvw xyz</div>',
   selection => selection.modify('move', 'right', 'word'),
-  '<div contenteditable dir="rtl">|abc def<br><br><br>uvw xyz</div>',
+  '<div contenteditable dir="rtl">abc |def<br><br><br>uvw xyz</div>',
   '1-5 rtl right word');
 
 selection_test(
   '<div contenteditable dir="rtl">abc de|f<br><br><br>uvw xyz</div>',
   selection => selection.modify('move', 'right', 'word'),
-  '<div contenteditable dir="rtl">|abc def<br><br><br>uvw xyz</div>',
+  '<div contenteditable dir="rtl">abc |def<br><br><br>uvw xyz</div>',
   '1-6 rtl right word');
 
 selection_test(
   '<div contenteditable dir="rtl">abc def|<br><br><br>uvw xyz</div>',
   selection => selection.modify('move', 'right', 'word'),
-  '<div contenteditable dir="rtl">abc| def<br><br><br>uvw xyz</div>',
+  '<div contenteditable dir="rtl">abc |def<br><br><br>uvw xyz</div>',
   '1-7 rtl right word');
 
 selection_test(
   '<div contenteditable dir="rtl">abc def<br>|<br><br>uvw xyz</div>',
   selection => selection.modify('move', 'right', 'word'),
-  '<div contenteditable dir="rtl">abc| def<br><br><br>uvw xyz</div>',
+  '<div contenteditable dir="rtl">abc |def<br><br><br>uvw xyz</div>',
   '1-8 rtl right word');
 
 selection_test(
   '<div contenteditable dir="rtl">abc def<br><br>|<br>uvw xyz</div>',
   selection => selection.modify('move', 'right', 'word'),
-  '<div contenteditable dir="rtl">abc| def<br><br><br>uvw xyz</div>',
+  '<div contenteditable dir="rtl">abc |def<br><br><br>uvw xyz</div>',
   '1-9 rtl right word');
 
 selection_test(
   '<div contenteditable dir="rtl">abc def<br><br><br>|uvw xyz</div>',
   selection => selection.modify('move', 'right', 'word'),
-  '<div contenteditable dir="rtl">abc| def<br><br><br>uvw xyz</div>',
+  '<div contenteditable dir="rtl">abc |def<br><br><br>uvw xyz</div>',
   '1-10 rtl right word');
 
 selection_test(
   '<div contenteditable dir="rtl">abc def<br><br><br>u|vw xyz</div>',
   selection => selection.modify('move', 'right', 'word'),
-  '<div contenteditable dir="rtl">abc def<br><br><br>uvw| xyz</div>',
+  '<div contenteditable dir="rtl">abc def<br><br><br>|uvw xyz</div>',
   '1-11 rtl right word');
 
 selection_test(
   '<div contenteditable dir="rtl">abc def<br><br><br>uv|w xyz</div>',
   selection => selection.modify('move', 'right', 'word'),
-  '<div contenteditable dir="rtl">abc def<br><br><br>uvw| xyz</div>',
+  '<div contenteditable dir="rtl">abc def<br><br><br>|uvw xyz</div>',
   '1-12 rtl right word');
 
 selection_test(
@@ -101,18 +101,18 @@ selection_test(
 selection_test(
   '<div contenteditable dir="rtl">abc def<br><br><br>uvw x|yz</div>',
   selection => selection.modify('move', 'right', 'word'),
-  '<div contenteditable dir="rtl">abc def<br><br><br>|uvw xyz</div>',
+  '<div contenteditable dir="rtl">abc def<br><br><br>uvw |xyz</div>',
   '1-15 rtl right word');
 
 selection_test(
   '<div contenteditable dir="rtl">abc def<br><br><br>uvw xy|z</div>',
   selection => selection.modify('move', 'right', 'word'),
-  '<div contenteditable dir="rtl">abc def<br><br><br>|uvw xyz</div>',
+  '<div contenteditable dir="rtl">abc def<br><br><br>uvw |xyz</div>',
   '1-16 rtl right word');
 
 selection_test(
   '<div contenteditable dir="rtl">abc def<br><br><br>uvw xyz|</div>',
   selection => selection.modify('move', 'right', 'word'),
-  '<div contenteditable dir="rtl">abc def<br><br><br>uvw| xyz</div>',
+  '<div contenteditable dir="rtl">abc def<br><br><br>uvw |xyz</div>',
   '1-17 rtl right word');
 </script>

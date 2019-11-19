@@ -5,6 +5,8 @@
 #include <stdint.h>
 
 #include <map>
+#include <memory>
+#include <utility>
 
 #include "base/bind.h"
 #include "base/files/file_path.h"
@@ -16,12 +18,12 @@
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "base/time/default_clock.h"
 #include "content/browser/indexed_db/indexed_db_context_impl.h"
 #include "content/browser/indexed_db/indexed_db_quota_client.h"
-#include "content/browser/indexed_db/leveldb/leveldb_env.h"
 #include "content/public/browser/storage_partition.h"
+#include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
-#include "content/public/test/test_browser_thread_bundle.h"
 #include "content/public/test/test_utils.h"
 #include "storage/browser/test/mock_quota_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -46,8 +48,7 @@ class IndexedDBQuotaClientTest : public testing::Test {
       : kOriginA(url::Origin::Create(GURL("http://host"))),
         kOriginB(url::Origin::Create(GURL("http://host:8000"))),
         kOriginOther(url::Origin::Create(GURL("http://other"))),
-        usage_(0),
-        weak_factory_(this) {
+        usage_(0) {
     browser_context_.reset(new TestBrowserContext());
 
     scoped_refptr<storage::QuotaManager> quota_manager =
@@ -58,7 +59,8 @@ class IndexedDBQuotaClientTest : public testing::Test {
     idb_context_ = new IndexedDBContextImpl(
         browser_context_->GetPath(),
         browser_context_->GetSpecialStoragePolicy(), quota_manager->proxy(),
-        indexed_db::GetDefaultLevelDBFactory());
+        base::DefaultClock::GetInstance(),
+        base::SequencedTaskRunnerHandle::Get());
     base::RunLoop().RunUntilIdle();
     setup_temp_dir();
   }
@@ -157,14 +159,14 @@ class IndexedDBQuotaClientTest : public testing::Test {
   }
 
  private:
-  content::TestBrowserThreadBundle thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
   base::ScopedTempDir temp_dir_;
   int64_t usage_;
   std::set<url::Origin> origins_;
   scoped_refptr<IndexedDBContextImpl> idb_context_;
   std::unique_ptr<TestBrowserContext> browser_context_;
   blink::mojom::QuotaStatusCode delete_status_;
-  base::WeakPtrFactory<IndexedDBQuotaClientTest> weak_factory_;
+  base::WeakPtrFactory<IndexedDBQuotaClientTest> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(IndexedDBQuotaClientTest);
 };

@@ -1,8 +1,8 @@
 <link rel="import" href="chrome://resources/html/polymer.html">
 
+<link rel="import" href="chrome://resources/cr_elements/cr_link_row/cr_link_row.html">
 <link rel="import" href="chrome://resources/html/cr.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-collapse/iron-collapse.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/paper-icon-button/paper-icon-button-light.html">
 <link rel="import" href="../controls/settings_dropdown_menu.html">
 <link rel="import" href="../controls/settings_slider.html">
 <link rel="import" href="../controls/settings_toggle_button.html">
@@ -36,15 +36,6 @@
           menu-options="[[keyMapTargets_]]">
       </settings-dropdown-menu>
     </div>
-    <template is="dom-if" if="[[showDiamondKey_]]">
-      <div class="settings-box" id="diamondKey">
-        <div class="start">$i18n{keyboardKeyDiamond}</div>
-        <settings-dropdown-menu label="$i18n{keyboardKeyDiamond}"
-            pref="{{prefs.settings.language.remap_diamond_key_to}}"
-            menu-options="[[keyMapTargets_]]">
-        </settings-dropdown-menu>
-      </div>
-    </template>
     <div class="settings-box">
       <div class="start">$i18n{keyboardKeyEscape}</div>
       <settings-dropdown-menu label="$i18n{keyboardKeyEscape}"
@@ -138,19 +129,12 @@
         </settings-slider>
       </div>
     </iron-collapse>
-    <div id="keyboardShortcutViewer" class="settings-box"
-        on-click="onShowKeyboardShortcutViewerTap_" actionable>
-      <div class="start">$i18n{showKeyboardShortcutViewer}</div>
-      <paper-icon-button-light class="icon-external">
-        <button aria-label="$i18n{showKeyboardShortcutViewer}"></button>
-      </paper-icon-button-light>
-    </div>
-    <div class="settings-box" on-click="onShowLanguageInputTap_" actionable>
-      <div class="start">$i18n{keyboardShowLanguageAndInput}</div>
-      <paper-icon-button-light class="subpage-arrow">
-        <button aria-label="$i18n{keyboardShowLanguageAndInput}"></button>
-      </paper-icon-button-light>
-    </div>
+    <cr-link-row id="keyboardShortcutViewer" class="hr"
+        on-click="onShowKeyboardShortcutViewerTap_"
+        label="$i18n{showKeyboardShortcutViewer}" external></cr-link-row>
+    <cr-link-row class="hr" on-click="onShowLanguageInputTap_"
+        label="$i18n{keyboardShowLanguageAndInput}"
+        role-description="$i18n{subpageArrowRoleDescription}"></cr-link-row>
   </template>
   <script src="keyboard.js"></script>
 </dom-module>

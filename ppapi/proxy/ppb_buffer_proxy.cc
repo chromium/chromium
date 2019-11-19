@@ -23,13 +23,10 @@ namespace ppapi {
 namespace proxy {
 
 Buffer::Buffer(const HostResource& resource,
-               const base::SharedMemoryHandle& shm_handle,
-               uint32_t size)
+               base::UnsafeSharedMemoryRegion shm_region)
     : Resource(OBJECT_IS_PROXY, resource),
-      shm_(shm_handle, false),
-      size_(size),
-      map_count_(0) {
-}
+      shm_(std::move(shm_region)),
+      map_count_(0) {}
 
 Buffer::~Buffer() {
   Unmap();
@@ -40,7 +37,7 @@ thunk::PPB_Buffer_API* Buffer::AsPPB_Buffer_API() {
 }
 
 PP_Bool Buffer::Describe(uint32_t* size_in_bytes) {
-  *size_in_bytes = size_;
+  *size_in_bytes = shm_.GetSize();
   return PP_TRUE;
 }
 
@@ -50,16 +47,16 @@ PP_Bool Buffer::IsMapped() {
 
 void* Buffer::Map() {
   if (map_count_++ == 0)
-    shm_.Map(size_);
-  return shm_.memory();
+    mapping_ = shm_.Map();
+  return mapping_.memory();
 }
 
 void Buffer::Unmap() {
   if (--map_count_ == 0)
-    shm_.Unmap();
+    mapping_ = {};
 }
 
-int32_t Buffer::GetSharedMemory(base::SharedMemory** out_handle) {
+int32_t Buffer::GetSharedMemory(base::UnsafeSharedMemoryRegion** out_handle) {
   NOTREACHED();
   return PP_ERROR_NOTSUPPORTED;
 }
@@ -83,18 +80,18 @@ PP_Resource PPB_Buffer_Proxy::CreateProxyResource(PP_Instance instance,
   dispatcher->Send(new PpapiHostMsg_PPBBuffer_Create(
       API_ID_PPB_BUFFER, instance, size, &result, &shm_handle));
   if (result.is_null() || !shm_handle.IsHandleValid() ||
-      !shm_handle.is_shmem())
+      !shm_handle.is_shmem_region())
     return 0;
 
-  return AddProxyResource(result, shm_handle.shmem(), size);
+  return AddProxyResource(result, base::UnsafeSharedMemoryRegion::Deserialize(
+                                      shm_handle.TakeSharedMemoryRegion()));
 }
 
 // static
 PP_Resource PPB_Buffer_Proxy::AddProxyResource(
     const HostResource& resource,
-    base::SharedMemoryHandle shm_handle,
-    uint32_t size) {
-  return (new Buffer(resource, shm_handle, size))->GetReference();
+    base::UnsafeSharedMemoryRegion shm_region) {
+  return (new Buffer(resource, std::move(shm_region)))->GetReference();
 }
 
 bool PPB_Buffer_Proxy::OnMessageReceived(const IPC::Message& msg) {
@@ -113,7 +110,7 @@ void PPB_Buffer_Proxy::OnMsgCreate(
     HostResource* result_resource,
     ppapi::proxy::SerializedHandle* result_shm_handle) {
   // Overwritten below on success.
-  result_shm_handle->set_null_shmem();
+  result_shm_handle->set_null_shmem_region();
   HostDispatcher* dispatcher = HostDispatcher::GetForInstance(instance);
   if (!dispatcher)
     return;
@@ -132,14 +129,14 @@ void PPB_Buffer_Proxy::OnMsgCreate(
       local_buffer_resource, false);
   if (trusted_buffer.failed())
     return;
-  base::SharedMemory* local_shm;
+  base::UnsafeSharedMemoryRegion* local_shm;
   if (trusted_buffer.object()->GetSharedMemory(&local_shm) != PP_OK)
     return;
 
   result_resource->SetHostResource(instance, local_buffer_resource);
 
-  result_shm_handle->set_shmem(
-      dispatcher->ShareSharedMemoryHandleWithRemote(local_shm->handle()), size);
+  result_shm_handle->set_unsafe_shmem_region(
+      dispatcher->ShareUnsafeSharedMemoryRegionWithRemote(*local_shm));
 }
 
 }  // namespace proxy

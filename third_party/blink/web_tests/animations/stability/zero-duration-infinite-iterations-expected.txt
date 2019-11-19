@@ -1,3 +1,0 @@
-This tests an animation with zero duration and infinite iterations. See http:://crbug.com/322575.
-
-This test passes if it doesn't crash.

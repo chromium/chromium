@@ -236,7 +236,7 @@ void ManifestHandlerRegistry::SortManifestHandlers() {
         CHECK(prereq_iter != handlers_.end())
             << "Extension manifest handler depends on unrecognized key " << key;
         // Prerequisite is in our map.
-        if (base::ContainsKey(priority_map_, prereq_iter->second))
+        if (base::Contains(priority_map_, prereq_iter->second))
           unsatisfied--;
       }
       if (unsatisfied == 0) {

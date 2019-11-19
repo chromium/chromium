@@ -1,0 +1,11 @@
+AXGroup AXDescription='Page 1'
+++AXGroup
+++++AXGroup AXDescription='Page 1'
+++++++AXGroup
+++++++++AXStaticText AXValue='Case 1<newline>'
+++++++AXGroup
+++++++++AXStaticText AXValue='Case 2<newline>'
+++++++AXGroup
+++++++++AXStaticText AXValue='Case 3<newline>'
+++++++AXGroup
+++++++++AXStaticText AXValue='Case 4'

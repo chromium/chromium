@@ -146,7 +146,7 @@ void ArrayBuffer::Private::FirstWeakCallback(
 void ArrayBuffer::Private::SecondWeakCallback(
     const v8::WeakCallbackInfo<Private>& data) {
   Private* parameter = data.GetParameter();
-  parameter->self_reference_ = NULL;
+  parameter->self_reference_.reset();
 }
 
 // ArrayBuffer ----------------------------------------------------------------

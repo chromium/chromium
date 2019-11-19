@@ -1,0 +1,13 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.↵
+
+mojom = "//services/network/public/mojom/network_isolation_key.mojom"
+public_headers = [ "//net/base/network_isolation_key.h" ]
+traits_headers =
+    [ "//services/network/public/cpp/network_isolation_key_mojom_traits.h" ]
+public_deps = [
+  "//net",
+]
+type_mappings =
+    [ "network.mojom.NetworkIsolationKey=::net::NetworkIsolationKey" ]

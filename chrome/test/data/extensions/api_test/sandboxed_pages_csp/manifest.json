@@ -2,6 +2,7 @@
   "name": "Tests that loading web content fails inside sandboxed pages",
   "manifest_version": 2,
   "version": "0.1",
+  "web_accessible_resources": ["local_frame.html", "remote_frame.html"],
   "sandbox": {
     "pages": ["sandboxed.html"],
     "content_security_policy": "sandbox allow-scripts; child-src *;"

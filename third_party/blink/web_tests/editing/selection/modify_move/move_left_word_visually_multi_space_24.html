@@ -1,0 +1,164 @@
+<!doctype html>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<script src="../../assert_selection.js"></script>
+<script>
+if (window.internals)
+  internals.settings.setEditingBehavior('win');
+
+selection_test(
+  '<div contenteditable dir="ltr" style="white-space:pre">|    abc    אבצ    def    </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr" style="white-space:pre">|    abc    אבצ    def    </div>',
+  '24-0 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr" style="white-space:pre"> |   abc    אבצ    def    </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr" style="white-space:pre">|    abc    אבצ    def    </div>',
+  '24-1 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr" style="white-space:pre">  |  abc    אבצ    def    </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr" style="white-space:pre">|    abc    אבצ    def    </div>',
+  '24-2 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr" style="white-space:pre">   | abc    אבצ    def    </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr" style="white-space:pre">|    abc    אבצ    def    </div>',
+  '24-3 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr" style="white-space:pre">    |abc    אבצ    def    </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr" style="white-space:pre">|    abc    אבצ    def    </div>',
+  '24-4 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr" style="white-space:pre">    a|bc    אבצ    def    </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr" style="white-space:pre">    |abc    אבצ    def    </div>',
+  '24-5 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr" style="white-space:pre">    ab|c    אבצ    def    </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr" style="white-space:pre">    |abc    אבצ    def    </div>',
+  '24-6 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr" style="white-space:pre">    abc|    אבצ    def    </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr" style="white-space:pre">    |abc    אבצ    def    </div>',
+  '24-7 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr" style="white-space:pre">    abc |   אבצ    def    </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr" style="white-space:pre">    |abc    אבצ    def    </div>',
+  '24-8 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr" style="white-space:pre">    abc  |  אבצ    def    </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr" style="white-space:pre">    |abc    אבצ    def    </div>',
+  '24-9 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr" style="white-space:pre">    abc   | אבצ    def    </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr" style="white-space:pre">    |abc    אבצ    def    </div>',
+  '24-10 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr" style="white-space:pre">    abc    |אבצ    def    </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr" style="white-space:pre">    |abc    אבצ    def    </div>',
+  '24-11 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr" style="white-space:pre">    abc    א|בצ    def    </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr" style="white-space:pre">    abc    |אבצ    def    </div>',
+  '24-12 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr" style="white-space:pre">    abc    אב|צ    def    </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr" style="white-space:pre">    abc    |אבצ    def    </div>',
+  '24-13 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr" style="white-space:pre">    abc    אבצ|    def    </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr" style="white-space:pre">    abc    |אבצ    def    </div>',
+  '24-14 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr" style="white-space:pre">    abc    אבצ |   def    </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr" style="white-space:pre">    abc    |אבצ    def    </div>',
+  '24-15 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr" style="white-space:pre">    abc    אבצ  |  def    </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr" style="white-space:pre">    abc    |אבצ    def    </div>',
+  '24-16 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr" style="white-space:pre">    abc    אבצ   | def    </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr" style="white-space:pre">    abc    |אבצ    def    </div>',
+  '24-17 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr" style="white-space:pre">    abc    אבצ    |def    </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr" style="white-space:pre">    abc    |אבצ    def    </div>',
+  '24-18 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr" style="white-space:pre">    abc    אבצ    d|ef    </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr" style="white-space:pre">    abc    אבצ    |def    </div>',
+  '24-19 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr" style="white-space:pre">    abc    אבצ    de|f    </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr" style="white-space:pre">    abc    אבצ    |def    </div>',
+  '24-20 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr" style="white-space:pre">    abc    אבצ    def|    </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr" style="white-space:pre">    abc    אבצ    |def    </div>',
+  '24-21 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr" style="white-space:pre">    abc    אבצ    def |   </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr" style="white-space:pre">    abc    אבצ    |def    </div>',
+  '24-22 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr" style="white-space:pre">    abc    אבצ    def  |  </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr" style="white-space:pre">    abc    אבצ    |def    </div>',
+  '24-23 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr" style="white-space:pre">    abc    אבצ    def   | </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr" style="white-space:pre">    abc    אבצ    |def    </div>',
+  '24-24 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr" style="white-space:pre">    abc    אבצ    def    |</div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr" style="white-space:pre">    abc    אבצ    |def    </div>',
+  '24-25 left word');
+</script>

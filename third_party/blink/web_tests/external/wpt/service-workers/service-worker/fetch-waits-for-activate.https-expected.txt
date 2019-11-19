@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+PASS Navigation fetch events should wait for the activate event to complete.
+FAIL Subresource fetch events should wait for the activate event to complete. assert_false: fetch()-ing a Service Worker-controlled scope shouldn't have settled yet expected false got true
+Harness: the test ran to completion.
+

@@ -1,0 +1,45 @@
+Name
+
+    CHROMIUM_ycbcr_p010_image
+
+Name Strings
+
+    GL_CHROMIUM_ycbcr_p010_image
+
+Version
+
+    Last Modified Date: June 12, 2019
+
+Dependencies
+
+    OpenGL ES 2.0 is required.
+
+    GL_CHROMIUM_image is required.
+
+Overview
+
+    This extension provides a new internal image format to use when creating an
+    image from underlying p010 buffers.
+
+    This extension is useful in conjunction with CreateImageCHROMIUM to define
+    the format of GpuMemoryBuffer backing the image.
+
+New Procedures and Functions
+
+    None.
+
+Errors
+
+    None.
+
+New Tokens
+
+    Accepted by the <internalformat> parameter of CreateImageCHROMIUM.
+
+New State
+
+    None.
+
+Revision History
+
+    06/12/2019   Documented the extension

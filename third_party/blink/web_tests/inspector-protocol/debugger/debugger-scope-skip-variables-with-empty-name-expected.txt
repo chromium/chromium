@@ -1,15 +1,5 @@
 Tests that we do not report scope variables with empty names.
 {
-    internalProperties : [
-        [0] : {
-            name : [[StableObjectId]]
-            value : {
-                description : 1
-                type : number
-                value : 1
-            }
-        }
-    ]
     result : [
         [0] : {
             configurable : true

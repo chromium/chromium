@@ -1,0 +1,18 @@
+include_rules = [
+  "+components/signin/public/base",
+  "+components/signin/public/identity_manager",
+  "+ios/web/common",
+  "+ios/web/public",
+  "+third_party/ocmock",
+]
+
+specific_include_rules = {
+    "account_consistency_service.mm": [
+      "+components/signin/core/browser/account_reconcilor.h",
+      "+components/signin/core/browser/signin_header_helper.h",
+    ],
+    "account_consistency_service_unittest.mm": [
+      "+components/signin/core/browser/account_reconcilor.h",
+      "+components/signin/core/browser/account_reconcilor_delegate.h",
+    ],
+}

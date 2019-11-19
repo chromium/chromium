@@ -2,35 +2,12 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//mojo/public/tools/bindings/mojom.gni")
-
-source_set("factory") {
+source_set("cpp") {
   sources = [
-    "pdf_compositor_service_factory.cc",
-    "pdf_compositor_service_factory.h",
-  ]
-
-  deps = [
-    "//components/services/pdf_compositor/",
-    "//content/public/common",
-    "//content/public/utility",
+    "pdf_service_mojo_types.h",
   ]
 
   public_deps = [
-    "//components/services/pdf_compositor/public/interfaces",
-    "//services/service_manager/public/cpp",
-  ]
-}
-
-source_set("manifest") {
-  sources = [
-    "manifest.cc",
-    "manifest.h",
-  ]
-
-  deps = [
     "//base",
-    "//components/services/pdf_compositor/public/interfaces",
-    "//services/service_manager/public/cpp",
   ]
 }

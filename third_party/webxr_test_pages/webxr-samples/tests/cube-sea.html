@@ -36,6 +36,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
     <!--The polyfill is not needed for browser that have native API support,
         but is linked by these samples for wider compatibility.-->
     <!--script src='https://cdn.jsdelivr.net/npm/webxr-polyfill@latest/build/webxr-polyfill.js'></script-->
+    <script src='../js/xrray-polyfill.js' type='module'></script>
     <script src='../js/webxr-polyfill.js'></script>
 
     <script src='../js/third-party/dat.gui/dat.gui.min.js'></script>
@@ -49,7 +50,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
         <p>
           All hail the cube sea! It's not very interesting to look at, but it's
           fantastic for testing!
-          <a class="back" href="./">Back</a>
+          <a class="back" href="./index.html">Back</a>
         </p>
       </details>
     </header>
@@ -157,17 +158,11 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
         // Framebuffer scale override. 1 = default
         framebufferScale: getFloatParam('framebufferScale', 1),
 
-        // Viewport scale
-        viewportScale: getFloatParam('viewportScale', 1),
-
         // Immersive AR mode
         arMode: getBoolParam('arMode', false),
 
         // Use an inline canvas for "magic window" mode?
         magicWindow: getBoolParam('magicWindow', true),
-
-        // Use a mirror canvas during immersive mode?
-        mirrorCanvas: getBoolParam('mirrorCanvas', true),
 
         // Don't produce frames at all. Simulates a broken app.
         noFrames: getBoolParam('noFrames', false),
@@ -207,16 +202,12 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
       var folderRender = gui.addFolder('Rendering options');
       folderRender.add(appSettings, 'framebufferScale', 0, 2, 0.25).onFinishChange(
           getParamSaver('framebufferScale'));
-      folderRender.add(appSettings, 'viewportScale', 0.25, 1, 0.125).onFinishChange(
-          getParamSaver('viewportScale'));
       folderRender.add(appSettings, 'antialias').onFinishChange(
           getParamSaver('antialias'));
       folderRender.add(appSettings, 'arMode').onFinishChange(
           getParamSaver('arMode', () => { window.location.reload(false); }));
       folderRender.add(appSettings, 'magicWindow').onFinishChange(
           getParamSaver('magicWindow', () => { window.location.reload(false); }));
-      folderRender.add(appSettings, 'mirrorCanvas').onFinishChange(
-          getParamSaver('mirrorCanvas'));
       folderRender.open();
 
       var folderTest = gui.addFolder('Regression testing');
@@ -266,19 +257,24 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
           buttonOptions.textEnterXRTitle = "START AR";
           buttonOptions.textXRNotFoundTitle = "AR NOT FOUND";
           buttonOptions.textExitXRTitle = "EXIT  AR";
+          buttonOptions.supportedSessionTypes = ['immersive-ar'];
+        } else {
+          buttonOptions.supportedSessionTypes = ['immersive-vr'];
         }
         xrButton = new XRDeviceButton(buttonOptions);
         document.querySelector('header').appendChild(xrButton.domElement);
 
-        let xrMode = appSettings.arMode ? 'immersive-ar' : 'immersive-vr';
         if (navigator.xr) {
-          navigator.xr.supportsSessionMode(xrMode).then(() => {
-            xrButton.enabled = true;
-          });
-
           // Set up "magic window" mode.
           if (appSettings.magicWindow) {
-            navigator.xr.requestSession().then(onSessionStarted);
+            requestInlineSession()
+            .then((session) => {
+              gl.canvas.addEventListener('touchend', () => {
+                session.end().then(() => {
+                  requestInlineSession({ optionalFeatures: ['local'] });
+                }, { once: true });
+              })
+            });
           }
         } else {
           initFallback();
@@ -287,7 +283,6 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
       function initFallback() {
         initGL();
-        document.body.appendChild(gl.canvas);
         let fallbackHelper = new FallbackHelper(scene, gl);
       }
 
@@ -298,6 +293,14 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
         gl = createWebGLContext({
           xrCompatible: true
         });
+        document.body.appendChild(gl.canvas);
+
+        function onResize () {
+          gl.canvas.width = (gl.canvas.offsetWidth * window.devicePixelRatio);
+          gl.canvas.height = (gl.canvas.offsetHeight * window.devicePixelRatio);
+        }
+        window.addEventListener('resize', onResize);
+        onResize();
 
         // Set up a non-black clear color so that we can see if something renders wrong.
         gl.clearColor(0.1, 0.2, 0.3, 1.0);
@@ -307,9 +310,18 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
         scene.inputRenderer.setControllerMesh(new Gltf2Node({url: '../media/gltf/controller/controller.gltf'}));
       }
 
+      function requestInlineSession(options) {
+        return navigator.xr.requestSession('inline', options)
+          .then((session) => {
+            session.mode = 'inline';
+            return onSessionStarted(session);
+          });
+      }
+
       function onRequestSession() {
-        let xrOptions = { mode: appSettings.arMode ? 'immersive-ar' : 'immersive-vr' };
-        navigator.xr.requestSession(xrOptions).then((session) => {
+        let xrMode = appSettings.arMode ? 'immersive-ar' : 'immersive-vr';
+        navigator.xr.requestSession(xrMode).then((session) => {
+          session.mode = xrMode;
           xrButton.setSession(session);
           onSessionStarted(session);
         });
@@ -324,14 +336,18 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
           framebufferScaleFactor: appSettings.framebufferScale,
           antialias: appSettings.antialias});
         session.updateRenderState({ baseLayer: webglLayer });
-        
-        if (session.mode.startsWith('immersive') && appSettings.mirrorCanvas) {
-          let outputCanvas = document.createElement('canvas');
-          document.body.appendChild(outputCanvas);
-          session.updateRenderState({ outputContext: outputCanvas.getContext('xrpresent') });
-        }
 
-        session.requestReferenceSpace({ type: 'stationary', subtype: 'eye-level' }).then((refSpace) => {
+        session.requestReferenceSpace('local').then((refSpace) => {
+          return refSpace;
+        }, (e) => {
+          if (!session.mode.startsWith('immersive')) {
+            // If we're in inline mode, our underlying platform may not support
+            // the stationary reference space, but an identity space is guaranteed.
+            return session.requestReferenceSpace('viewer');
+          } else {
+            throw e;
+          }
+        }).then((refSpace) => {
           if (session.mode.startsWith('immersive')) {
             xrImmersiveRefSpace = refSpace;
           } else {
@@ -339,6 +355,8 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
           }
           session.requestAnimationFrame(onXRFrame);
         });
+
+        return session;
       }
 
       function onEndSession(session) {
@@ -347,10 +365,6 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
       function onSessionEnded(event) {
         xrButton.setSession(null);
-
-        if (event.session.renderState.outputContext) {
-          document.body.removeChild(event.session.renderState.outputContext.canvas);
-        }
       }
 
       let frameNum = 0;
@@ -375,8 +389,6 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
             tmp = Math.sin(Math.cos(Math.tan(tmp)));
           }
         }
-
-        session.renderState.baseLayer.requestViewportScaling(appSettings.viewportScale);
 
         session.requestAnimationFrame(onXRFrame);
 

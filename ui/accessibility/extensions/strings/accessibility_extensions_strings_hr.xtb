@@ -31,6 +31,7 @@
 <translation id="4769065380738716500">Slike su zamijenjene alternativnim tekstom.</translation>
 <translation id="4896660567607030658">Bez povratnih informacija, samo prikaži kursor.</translation>
 <translation id="4937901943818762779">Dopusti animirane slike, ali samo jednom.</translation>
+<translation id="4949131196216960195">Pritisnite &lt;span class='key'&gt;Search&lt;/span&gt; + &lt;img src='increase_brightness.png'&gt; (tipka za pojačavanje svjetline ili F7) da biste uključili Pregledavanje kursorom. Pritisnite ih ponovo da biste ga isključili.</translation>
 <translation id="4954450790315188152">Kada je omogućeno Pregledavanje kursorom:</translation>
 <translation id="5041932793799765940">Prilagodba boja</translation>
 <translation id="5094574508723441140">Povećani kontrast</translation>
@@ -60,7 +61,6 @@
 <translation id="7658239707568436148">Odustani</translation>
 <translation id="786423340267544509">Dodajte granicu elementima s atributima aria-describedat ili longdesc.</translation>
 <translation id="7942349550061667556">Crvena</translation>
-<translation id="8254860724243898966">Pritisnite &lt;span class='key'&gt;Alt&lt;/span&gt; i &lt;img src='increase_brightness.png'&gt; (tipka za povećanje svjetline ili F7) da biste uključili Pregledavanje kursorom. Pritisnite ponovo da je isključite.</translation>
 <translation id="8260673944985561857">Opcije Pregledavanja kursorom</translation>
 <translation id="8321034316479930120">Pravila o animacijama</translation>
 <translation id="8480209185614411573">Visoki kontrast</translation>

@@ -4,7 +4,9 @@
 
 #include "chrome/browser/first_run/upgrade_util.h"
 
+// Must be first.
 #include <windows.h>
+
 #include <objbase.h>
 #include <psapi.h>
 #include <shellapi.h>
@@ -27,6 +29,7 @@
 #include "base/strings/string_util.h"
 #include "base/win/registry.h"
 #include "base/win/windows_version.h"
+#include "build/branding_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/first_run/upgrade_util_win.h"
 #include "chrome/browser/shell_integration.h"
@@ -38,7 +41,7 @@
 #include "components/prefs/pref_service.h"
 #include "ui/base/ui_base_switches.h"
 
-#if defined(GOOGLE_CHROME_BUILD)
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #include "google_update/google_update_idl.h"
 #endif
 
@@ -52,7 +55,7 @@ bool GetNewerChromeFile(base::FilePath* path) {
 }
 
 bool InvokeGoogleUpdateForRename() {
-#if defined(GOOGLE_CHROME_BUILD)
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   Microsoft::WRL::ComPtr<IProcessLauncher> ipl;
   HRESULT hr = ::CoCreateInstance(__uuidof(ProcessLauncherClass), nullptr,
                                   CLSCTX_ALL, IID_PPV_ARGS(&ipl));
@@ -86,16 +89,16 @@ bool InvokeGoogleUpdateForRename() {
   }
 
   return true;
-#else   // GOOGLE_CHROME_BUILD
+#else   // BUILDFLAG(GOOGLE_CHROME_BRANDING)
   return false;
-#endif  // GOOGLE_CHROME_BUILD
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 }
 
 }  // namespace
 
 namespace upgrade_util {
 
-bool RelaunchChromeBrowser(const base::CommandLine& command_line) {
+bool RelaunchChromeBrowserImpl(const base::CommandLine& command_line) {
   base::FilePath chrome_exe;
   if (!base::PathService::Get(base::FILE_EXE, &chrome_exe)) {
     NOTREACHED();

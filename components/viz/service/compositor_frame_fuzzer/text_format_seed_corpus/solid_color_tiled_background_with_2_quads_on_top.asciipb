@@ -24,8 +24,22 @@ quad_list: [
       width: 100
       height: 100
     }
-    quad: {
-      color: 0xffff0000
+    tile_quad: {
+      needs_blending: false
+      texture_color: 0xffff0000
+      texture_size: {
+        width: 100
+        height: 100
+      }
+      tex_coord_rect: {
+        x: 0
+        y: 0
+        width: 100
+        height: 100
+      }
+      swizzle_contents: false
+      is_premultiplied: false
+      nearest_neighbor: false
       force_anti_aliasing_off: false
     }
     sqs: {
@@ -73,7 +87,7 @@ quad_list: [
       width: 100
       height: 100
     }
-    quad: {
+    solid_color_quad: {
       color: 0xffffffff
       force_anti_aliasing_off: false
     }
@@ -122,8 +136,22 @@ quad_list: [
       width: 256
       height: 256
     }
-    quad: {
-      color: 0xff000000
+    tile_quad: {
+      needs_blending: false
+      texture_color: 0xff000000
+      texture_size: {
+        width: 256
+        height: 256
+      }
+      tex_coord_rect: {
+        x: 0
+        y: 0
+        width: 256
+        height: 256
+      }
+      swizzle_contents: false
+      is_premultiplied: false
+      nearest_neighbor: false
       force_anti_aliasing_off: false
     }
     sqs: {
@@ -171,7 +199,7 @@ quad_list: [
       width: 256
       height: 256
     }
-    quad: {
+    solid_color_quad: {
       color: 0xff00ff00
       force_anti_aliasing_off: false
     }
@@ -220,7 +248,7 @@ quad_list: [
       width: 108
       height: 256
     }
-    quad: {
+    solid_color_quad: {
       color: 0xff0000ff
       force_anti_aliasing_off: false
     }
@@ -269,7 +297,7 @@ quad_list: [
       width: 256
       height: 144
     }
-    quad: {
+    solid_color_quad: {
       color: 0xff0000ff
       force_anti_aliasing_off: false
     }
@@ -318,7 +346,7 @@ quad_list: [
       width: 256
       height: 144
     }
-    quad: {
+    solid_color_quad: {
       color: 0xff00ff00
       force_anti_aliasing_off: false
     }
@@ -367,7 +395,7 @@ quad_list: [
       width: 108
       height: 144
     }
-    quad: {
+    solid_color_quad: {
       color: 0xff000000
       force_anti_aliasing_off: false
     }

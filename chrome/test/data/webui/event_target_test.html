@@ -96,33 +96,6 @@ function testPreventDefault() {
   assertEquals(2, j);
   assertEquals(1, i);
 }
-
-
-function testReturnFalse() {
-  var i = 0;
-  function prevent(e) {
-    i++;
-    return false;
-  }
-
-  var j = 0;
-  function pass(e) {
-    j++;
-  }
-
-  var et = new EventTarget;
-  et.addEventListener('test', pass);
-
-  assertTrue(et.dispatchEvent(new Event('test', {cancelable: true})));
-  assertEquals(1, j);
-
-  et.addEventListener('test', prevent);
-
-  assertFalse(et.dispatchEvent(new Event('test', {cancelable: true})));
-  assertEquals(2, j);
-  assertEquals(1, i);
-}
-
 </script>
 </body>
 </html>

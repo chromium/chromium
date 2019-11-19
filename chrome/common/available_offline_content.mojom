@@ -41,25 +41,12 @@ struct AvailableOfflineContent {
   string date_modified;
   // A brief description of the source. May be empty.
   string attribution;
-  // A data URI for a thumbnail that is related to the content.
+  // Data URI containing thumbnail image data.
   url.mojom.Url thumbnail_data_uri;
+  // Data URI containing favicon image data.
+  url.mojom.Url favicon_data_uri;
   // Type of this content.
   AvailableContentType content_type;
-};
-
-// A summary of available offline content.
-struct AvailableOfflineContentSummary {
-  // Total number of offline content items (not limited to the categories listed
-  // below).
-  uint32 total_items;
-  // True if at least one prefetched article (Articles For You) is available.
-  bool has_prefetched_page;
-  // True if at least one offline page is available.
-  bool has_offline_page;
-  // True if at least one video file is available.
-  bool has_video;
-  // True if at least one audio file is available.
-  bool has_audio;
 };
 
 // Provides access to items available while offline.
@@ -68,9 +55,6 @@ interface AvailableOfflineContentProvider {
   // enough available content deemed interesting, the returned array will be
   // empty.
   List() => (bool list_visible_by_prefs, array<AvailableOfflineContent> out);
-  // Returns a summary of available offline content. If not there's not enough
-  // available content deemed interesting, the returned summary will be empty.
-  Summarize() => (AvailableOfflineContentSummary out);
   // Opens one of the items returned by List().
   LaunchItem(string item_id, string name_space);
   // Opens the downloads page to view all offline content.

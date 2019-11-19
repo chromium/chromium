@@ -15,6 +15,7 @@
 #include "base/mac/scoped_cftyperef.h"
 #include "base/mac/scoped_ioplugininterface.h"
 #include "base/macros.h"
+#include "base/memory/weak_ptr.h"
 #include "base/sequenced_task_runner.h"
 #include "device/gamepad/abstract_haptic_gamepad.h"
 #include "device/gamepad/public/mojom/gamepad.mojom.h"
@@ -24,7 +25,7 @@ struct IOUSBInterfaceStruct300;
 
 namespace device {
 
-class XboxControllerMac : public AbstractHapticGamepad {
+class XboxControllerMac final : public AbstractHapticGamepad {
  public:
   static const uint16_t kVendorMicrosoft = 0x045e;
   static const uint16_t kProductXbox360Controller = 0x028e;
@@ -32,6 +33,7 @@ class XboxControllerMac : public AbstractHapticGamepad {
   static const uint16_t kProductXboxOneController2015 = 0x02dd;
   static const uint16_t kProductXboxOneEliteController = 0x02e3;
   static const uint16_t kProductXboxOneSController = 0x02ea;
+  static const uint16_t kProductXboxAdaptiveController = 0x0b0a;
 
   enum ControllerType {
     UNKNOWN_CONTROLLER,
@@ -39,7 +41,8 @@ class XboxControllerMac : public AbstractHapticGamepad {
     XBOX_ONE_CONTROLLER_2013,
     XBOX_ONE_CONTROLLER_2015,
     XBOX_ONE_ELITE_CONTROLLER,
-    XBOX_ONE_S_CONTROLLER
+    XBOX_ONE_S_CONTROLLER,
+    XBOX_ADAPTIVE_CONTROLLER,
   };
 
   enum LEDPattern {
@@ -110,6 +113,7 @@ class XboxControllerMac : public AbstractHapticGamepad {
   void DoShutdown() override;
   double GetMaxEffectDurationMillis() override;
   void SetVibration(double strong_magnitude, double weak_magnitude) override;
+  base::WeakPtr<AbstractHapticGamepad> GetWeakPtr() override;
 
   UInt32 location_id() { return location_id_; }
   uint16_t GetVendorId() const;
@@ -117,6 +121,7 @@ class XboxControllerMac : public AbstractHapticGamepad {
   ControllerType GetControllerType() const;
   std::string GetControllerTypeString() const;
   std::string GetIdString() const;
+  bool SupportsVibration() const;
 
  private:
   static void WriteComplete(void* context, IOReturn result, void* arg0);
@@ -168,6 +173,8 @@ class XboxControllerMac : public AbstractHapticGamepad {
   int control_endpoint_ = 0;
 
   uint8_t counter_ = 0;
+
+  base::WeakPtrFactory<XboxControllerMac> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(XboxControllerMac);
 };

@@ -4,11 +4,10 @@ Initial throttling state
 === THROTTLING STATE ===
 Network throttling - download: -1 upload: -1 latency: 0
 CPU throttling rate: 1
-Device mode throttling: No throttling
-Network panel offline checkbox: false
-Network panel throttling: No throttling
-Network conditions drawer throttling: No throttling
-Performance panel network throttling: No throttling
+Device mode throttling: Online
+Network panel throttling: Online
+Network conditions drawer throttling: Online
+Performance panel network throttling: Online
 Performance panel CPU throttling: No throttling
 ========================
 
@@ -17,22 +16,9 @@ Change to offline in device mode
 Network throttling - download: 0 upload: 0 latency: 0
 CPU throttling rate: 1
 Device mode throttling: Offline
-Network panel offline checkbox: true
 Network panel throttling: Offline
 Network conditions drawer throttling: Offline
 Performance panel network throttling: Offline
-Performance panel CPU throttling: No throttling
-========================
-
-Toggle network offline checkbox
-=== THROTTLING STATE ===
-Network throttling - download: -1 upload: -1 latency: 0
-CPU throttling rate: 1
-Device mode throttling: No throttling
-Network panel offline checkbox: false
-Network panel throttling: No throttling
-Network conditions drawer throttling: No throttling
-Performance panel network throttling: No throttling
 Performance panel CPU throttling: No throttling
 ========================
 
@@ -41,7 +27,6 @@ Change to low-end mobile in device mode
 Network throttling - download: 51200 upload: 51200 latency: 2000
 CPU throttling rate: 6
 Device mode throttling: Low-end mobile
-Network panel offline checkbox: false
 Network panel throttling: Slow 3G
 Network conditions drawer throttling: Slow 3G
 Performance panel network throttling: Slow 3G
@@ -53,31 +38,6 @@ Change network to Fast 3G
 Network throttling - download: 188743.68000000002 upload: 86400 latency: 562.5
 CPU throttling rate: 6
 Device mode throttling: Custom
-Network panel offline checkbox: false
-Network panel throttling: Fast 3G
-Network conditions drawer throttling: Fast 3G
-Performance panel network throttling: Fast 3G
-Performance panel CPU throttling: 6× slowdown
-========================
-
-Toggle network offline checkbox (enable offline)
-=== THROTTLING STATE ===
-Network throttling - download: 0 upload: 0 latency: 0
-CPU throttling rate: 6
-Device mode throttling: Custom
-Network panel offline checkbox: true
-Network panel throttling: Offline
-Network conditions drawer throttling: Offline
-Performance panel network throttling: Offline
-Performance panel CPU throttling: 6× slowdown
-========================
-
-Toggle network offline checkbox (disable offline)
-=== THROTTLING STATE ===
-Network throttling - download: 188743.68000000002 upload: 86400 latency: 562.5
-CPU throttling rate: 6
-Device mode throttling: Custom
-Network panel offline checkbox: false
 Network panel throttling: Fast 3G
 Network conditions drawer throttling: Fast 3G
 Performance panel network throttling: Fast 3G
@@ -89,7 +49,6 @@ Change to mid-tier mobile in device mode
 Network throttling - download: 188743.68000000002 upload: 86400 latency: 562.5
 CPU throttling rate: 4
 Device mode throttling: Mid-tier mobile
-Network panel offline checkbox: false
 Network panel throttling: Fast 3G
 Network conditions drawer throttling: Fast 3G
 Performance panel network throttling: Fast 3G
@@ -101,7 +60,6 @@ Change CPU throttling to low-end mobile
 Network throttling - download: 188743.68000000002 upload: 86400 latency: 562.5
 CPU throttling rate: 6
 Device mode throttling: Custom
-Network panel offline checkbox: false
 Network panel throttling: Fast 3G
 Network conditions drawer throttling: Fast 3G
 Performance panel network throttling: Fast 3G
@@ -113,7 +71,6 @@ Change CPU throttling to mid-tier mobile
 Network throttling - download: 188743.68000000002 upload: 86400 latency: 562.5
 CPU throttling rate: 4
 Device mode throttling: Mid-tier mobile
-Network panel offline checkbox: false
 Network panel throttling: Fast 3G
 Network conditions drawer throttling: Fast 3G
 Performance panel network throttling: Fast 3G
@@ -124,11 +81,10 @@ Change to no throttling in device mode
 === THROTTLING STATE ===
 Network throttling - download: -1 upload: -1 latency: 0
 CPU throttling rate: 1
-Device mode throttling: No throttling
-Network panel offline checkbox: false
-Network panel throttling: No throttling
-Network conditions drawer throttling: No throttling
-Performance panel network throttling: No throttling
+Device mode throttling: Online
+Network panel throttling: Online
+Network conditions drawer throttling: Online
+Performance panel network throttling: Online
 Performance panel CPU throttling: No throttling
 ========================
 

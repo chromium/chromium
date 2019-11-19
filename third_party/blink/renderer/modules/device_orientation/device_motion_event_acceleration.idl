@@ -25,7 +25,7 @@
 
 // https://w3c.github.io/deviceorientation/spec-source-orientation.html#devicemotion
 
-[SecureContext=RestrictDeviceSensorEventsToSecureContexts]
+[Exposed=Window, SecureContext]
 interface DeviceMotionEventAcceleration {
     readonly attribute double? x;
     readonly attribute double? y;

@@ -23,15 +23,19 @@ namespace certificate_provider {
 
 class ThreadSafeCertificateMap {
  public:
-  struct MapValue {
-    MapValue(const CertificateInfo& cert_info, const std::string& extension_id);
-    ~MapValue();
+  struct CertAndExtension {
+    CertAndExtension(const CertificateInfo& cert_info,
+                     const std::string& extension_id);
+    ~CertAndExtension();
 
     CertificateInfo cert_info;
     std::string extension_id;
   };
   using FingerprintToCertAndExtensionMap =
-      std::map<net::SHA256HashValue, std::unique_ptr<MapValue>>;
+      std::map<net::SHA256HashValue, std::unique_ptr<CertAndExtension>>;
+  // A map that has a DER-encoded X.509 Subject Public Key Info as keys.
+  using SpkiToCertAndExtensionMap =
+      std::map<std::string, std::unique_ptr<CertAndExtension>>;
 
   ThreadSafeCertificateMap();
   ~ThreadSafeCertificateMap();
@@ -54,6 +58,21 @@ class ThreadSafeCertificateMap {
                          CertificateInfo* info,
                          std::string* extension_id);
 
+  // Looks up for certificate and extension_id based on
+  // |subject_public_key_info|, which is a DER-encoded X.509 Subject Public Key
+  // Info. If the certificate was added by previous Update() call, returns true.
+  // If this certificate was provided in the most recent Update() call,
+  // |is_currently_provided| will be set to true and |info| and |extension_id|
+  // will be populated according to the data that have been mapped to this
+  // |subject_public_key_info|. Otherwise, if this certificate was not provided
+  // in the most recent Update() call, sets |is_currently_provided| to false and
+  // doesn't modify |info| and |extension_id|. If multiple entries are found, it
+  // is unspecified which one will be returned.
+  bool LookUpCertificateBySpki(const std::string& subject_public_key_info,
+                               bool* is_currently_provided,
+                               CertificateInfo* info,
+                               std::string* extension_id);
+
   // Remove every association of stored certificates to the given extension.
   // The certificates themselves will be remembered.
   void RemoveExtension(const std::string& extension_id);
@@ -61,6 +80,7 @@ class ThreadSafeCertificateMap {
  private:
   base::Lock lock_;
   FingerprintToCertAndExtensionMap fingerprint_to_cert_and_extension_;
+  SpkiToCertAndExtensionMap spki_to_cert_and_extension_;
 
   DISALLOW_COPY_AND_ASSIGN(ThreadSafeCertificateMap);
 };

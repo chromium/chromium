@@ -1,0 +1,72 @@
+Tests that keyframes are shown in styles pane inside display:none.
+
+=== #element styles ===
+[expanded] 
+element.style { ()
+
+[expanded] 
+#element { (<style>)
+    animation: inherit;
+        animation-duration: inherit;
+        animation-timing-function: inherit;
+        animation-delay: inherit;
+        animation-iteration-count: inherit;
+        animation-direction: inherit;
+        animation-fill-mode: inherit;
+        animation-play-state: inherit;
+        animation-name: inherit;
+
+[expanded] 
+div { (user agent stylesheet)
+    display: block;
+
+======== Inherited from html ========
+[expanded] 
+html { (user agent stylesheet)
+    color: -internal-root-color;
+
+======== @keyframes animName ========
+[expanded] 
+0% { (<style>)
+    color: green;
+
+[expanded] 
+100% { (<style>)
+    color: lime;
+
+=== #container styles ===
+[expanded] 
+element.style { ()
+
+[expanded] 
+#container { (<style>)
+    animation: animName 1000s;
+        animation-duration: 1000s;
+        animation-timing-function: ease;
+        animation-delay: 0s;
+        animation-iteration-count: 1;
+        animation-direction: normal;
+        animation-fill-mode: none;
+        animation-play-state: running;
+        animation-name: animName;
+    display: none;
+
+[expanded] 
+div { (user agent stylesheet)
+/-- overloaded --/     display: block;
+
+======== Inherited from html ========
+[expanded] 
+html { (user agent stylesheet)
+    color: -internal-root-color;
+
+======== @keyframes animName ========
+[expanded] 
+0% { (<style>)
+    color: green;
+
+[expanded] 
+100% { (<style>)
+    color: lime;
+
+

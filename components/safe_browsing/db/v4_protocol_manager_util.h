@@ -8,6 +8,7 @@
 // A class that implements the stateless methods used by the GetHashUpdate and
 // GetFullHash stubby calls made by Chrome using the SafeBrowsing V4 protocol.
 
+#include <functional>
 #include <initializer_list>
 #include <memory>
 #include <ostream>
@@ -21,7 +22,6 @@
 #include "base/strings/string_piece.h"
 #include "components/safe_browsing/common/safe_browsing_prefs.h"
 #include "components/safe_browsing/db/safebrowsing.pb.h"
-#include "net/url_request/url_request_status.h"
 #include "url/gurl.h"
 
 namespace net {
@@ -142,11 +142,25 @@ enum SBThreatType {
   // DEPRECATED. Url detected by password protection service.
   DEPRECATED_SB_THREAT_TYPE_URL_PASSWORD_PROTECTION_PHISHING,
 
-  // Chrome sign in password reuse detected on low reputation page,
-  SB_THREAT_TYPE_SIGN_IN_PASSWORD_REUSE,
+  // Saved password reuse detected on low reputation page,
+  SB_THREAT_TYPE_SAVED_PASSWORD_REUSE,
+
+  // Chrome signed in and syncing gaia password reuse detected on low reputation
+  // page,
+  SB_THREAT_TYPE_SIGNED_IN_SYNC_PASSWORD_REUSE,
+
+  // Chrome signed in non syncing gaia password reuse detected on low reputation
+  // page,
+  SB_THREAT_TYPE_SIGNED_IN_NON_SYNC_PASSWORD_REUSE,
+
+  // A Google ad that caused a blocked autoredirect was collected
+  SB_THREAT_TYPE_BLOCKED_AD_REDIRECT,
 
   // A sample of an ad was collected
   SB_THREAT_TYPE_AD_SAMPLE,
+
+  // A report of Google ad that caused a blocked popup was collected.
+  SB_THREAT_TYPE_BLOCKED_AD_POPUP,
 
   // The page loaded a resource from the Suspicious Site list.
   SB_THREAT_TYPE_SUSPICIOUS_SITE,
@@ -159,6 +173,9 @@ enum SBThreatType {
 
   // Off-market APK file downloaded, which could be potentially dangerous.
   SB_THREAT_TYPE_APK_DOWNLOAD,
+
+  // Match found in the local high-confidence allowlist.
+  SB_THREAT_TYPE_HIGH_CONFIDENCE_ALLOWLIST,
 };
 
 using SBThreatTypeSet = base::flat_set<SBThreatType>;
@@ -172,7 +189,7 @@ bool SBThreatTypeSetIsValidForCheckBrowseUrl(const SBThreatTypeSet& set);
 //                             SB_THREAT_TYPE_URL_MALWARE})
 inline SBThreatTypeSet CreateSBThreatTypeSet(
     std::initializer_list<SBThreatType> set) {
-  return SBThreatTypeSet(set, base::KEEP_FIRST_OF_DUPES);
+  return SBThreatTypeSet(set);
 }
 
 // The information required to uniquely identify each list the client is
@@ -215,6 +232,7 @@ ListIdentifier GetIpMalwareId();
 ListIdentifier GetUrlBillingId();
 ListIdentifier GetUrlCsdDownloadWhitelistId();
 ListIdentifier GetUrlCsdWhitelistId();
+ListIdentifier GetUrlHighConfidenceAllowlistId();
 ListIdentifier GetUrlMalBinId();
 ListIdentifier GetUrlMalwareId();
 ListIdentifier GetUrlSocEngId();
@@ -307,6 +325,10 @@ class V4ProtocolManagerUtil {
   // Given a URL, returns all the patterns we need to check.
   static void GeneratePatternsToCheck(const GURL& url,
                                       std::vector<std::string>* urls);
+
+  // Returns a FullHash for the basic host+path pattern for a given URL after
+  // canonicalization. Not intended for general use.
+  static FullHash GetFullHash(const GURL& url);
 
   // Generates a Pver4 request URL and sets the appropriate header values.
   // |request_base64| is the serialized request protocol buffer encoded in

@@ -12,7 +12,7 @@
 namespace extensions {
 
 class EnterpriseHardwarePlatformGetHardwarePlatformInfoFunction
-    : public UIThreadExtensionFunction {
+    : public ExtensionFunction {
  public:
   EnterpriseHardwarePlatformGetHardwarePlatformInfoFunction();
 

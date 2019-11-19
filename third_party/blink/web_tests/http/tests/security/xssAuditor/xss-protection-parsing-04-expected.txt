@@ -1,9 +1,0 @@
-CONSOLE ERROR: line 4: The XSS Auditor blocked access to 'http://127.0.0.1:8000/security/xssAuditor/resources/echo-intertag.pl?notifyDone=1&valid-header=4&q=%3Cscript%3Ealert(String.fromCharCode(0x58,0x53,0x53))%3C/script%3E%3Cp%3EIf%20you%20see%20this%20message%20and%20no%20JavaScript%20alert()%20then%20the%20test%20PASSED.%3C/p%3E' because the source code of a script was found within the request. The server sent an 'X-XSS-Protection' header requesting this behavior.
-CONSOLE MESSAGE: line 31: PASS: "frame" is cross-origin.
-This tests that the X-XSS-Protection header is not ignored when the report and mode directives are swapped.
-
---------
-Frame: 'frame'
---------
-Could not load the requested resource.
-Error code: -28 (net::ERR_BLOCKED_BY_XSS_AUDITOR)

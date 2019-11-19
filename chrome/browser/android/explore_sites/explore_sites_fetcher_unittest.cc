@@ -7,15 +7,12 @@
 #include <map>
 
 #include "base/bind.h"
-#include "base/message_loop/message_loop.h"
-#include "base/metrics/field_trial.h"
-#include "base/metrics/field_trial_param_associator.h"
-#include "base/metrics/field_trial_params.h"
 #include "base/test/bind_test_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/mock_entropy_provider.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "chrome/browser/android/chrome_feature_list.h"
 #include "chrome/browser/android/explore_sites/catalog.pb.h"
@@ -75,21 +72,9 @@ class ExploreSitesFetcherTest : public testing::Test {
   void RespondWithHttpError(net::HttpStatusCode http_error);
 
   void SetUpExperimentOption(std::string option, std::string data) {
-    const std::string kTrialName = "trial_name";
-    const std::string kGroupName = "group_name";
-
-    scoped_refptr<base::FieldTrial> trial =
-        base::FieldTrialList::CreateFieldTrial(kTrialName, kGroupName);
-
-    std::map<std::string, std::string> params = {{option, data}};
-    base::AssociateFieldTrialParams(kTrialName, kGroupName, params);
-
-    std::unique_ptr<base::FeatureList> feature_list =
-        std::make_unique<base::FeatureList>();
-    feature_list->RegisterFieldTrialOverride(
-        chrome::android::kExploreSites.name,
-        base::FeatureList::OVERRIDE_ENABLE_FEATURE, trial.get());
-    scoped_feature_list_.InitWithFeatureList(std::move(feature_list));
+    base::FieldTrialParams params = {{option, data}};
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        chrome::android::kExploreSites, params);
   }
 
   network::ResourceRequest last_resource_request;
@@ -98,8 +83,8 @@ class ExploreSitesFetcherTest : public testing::Test {
   std::string last_data() const {
     return last_data_ ? *last_data_ : std::string();
   }
-  base::TestMockTimeTaskRunner* task_runner() const {
-    return task_runner_.get();
+  base::test::SingleThreadTaskEnvironment* task_environment() {
+    return &task_environment_;
   }
 
   const base::HistogramTester* histograms() const {
@@ -119,10 +104,11 @@ class ExploreSitesFetcherTest : public testing::Test {
 
   ExploreSitesRequestStatus last_status_;
   std::unique_ptr<std::string> last_data_;
-  base::MessageLoopForIO message_loop_;
+  base::test::SingleThreadTaskEnvironment task_environment_{
+      base::test::SingleThreadTaskEnvironment::MainThreadType::IO,
+      base::test::SingleThreadTaskEnvironment::TimeSource::MOCK_TIME};
   std::unique_ptr<base::FieldTrialList> field_trial_list_;
   base::test::ScopedFeatureList scoped_feature_list_;
-  scoped_refptr<base::TestMockTimeTaskRunner> task_runner_;
   std::unique_ptr<base::HistogramTester> histogram_tester_;
 };
 
@@ -137,10 +123,7 @@ ExploreSitesFetcher::Callback ExploreSitesFetcherTest::StoreResult() {
 ExploreSitesFetcherTest::ExploreSitesFetcherTest()
     : test_shared_url_loader_factory_(
           base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-              &test_url_loader_factory_)),
-      task_runner_(new base::TestMockTimeTaskRunner) {
-  message_loop_.SetTaskRunner(task_runner_);
-}
+              &test_url_loader_factory_)) {}
 
 void ExploreSitesFetcherTest::SetUp() {
   test_url_loader_factory_.SetInterceptor(
@@ -178,7 +161,7 @@ ExploreSitesRequestStatus ExploreSitesFetcherTest::RunFetcherWithHttpError(
   EXPECT_TRUE(data_received.empty());
 
   histograms()->ExpectUniqueSample("ExploreSites.FetcherNetErrorCode",
-                                   -net::ERR_FAILED, 1);
+                                   -net::ERR_HTTP_RESPONSE_CODE_FAILURE, 1);
   histograms()->ExpectUniqueSample("ExploreSites.FetcherHttpResponseCode",
                                    http_error, 1);
 
@@ -201,18 +184,18 @@ void ExploreSitesFetcherTest::RespondWithNetError(int net_error) {
   network::URLLoaderCompletionStatus completion_status(net_error);
   test_url_loader_factory_.SimulateResponseForPendingRequest(
       GetLastPendingRequest()->request.url, completion_status,
-      network::ResourceResponseHead(), std::string(),
+      network::mojom::URLResponseHead::New(), std::string(),
       network::TestURLLoaderFactory::kMostRecentMatch);
 }
 
 void ExploreSitesFetcherTest::RespondWithHttpError(
     net::HttpStatusCode http_error) {
   int pending_requests_count = test_url_loader_factory_.NumPending();
-  auto resource_response_head = network::CreateResourceResponseHead(http_error);
+  auto url_response_head = network::CreateURLResponseHead(http_error);
   DCHECK(pending_requests_count > 0);
   test_url_loader_factory_.SimulateResponseForPendingRequest(
       GetLastPendingRequest()->request.url,
-      network::URLLoaderCompletionStatus(net::OK), resource_response_head,
+      network::URLLoaderCompletionStatus(net::OK), std::move(url_response_head),
       std::string(), network::TestURLLoaderFactory::kMostRecentMatch);
 }
 
@@ -238,7 +221,7 @@ ExploreSitesRequestStatus ExploreSitesFetcherTest::RunFetcher(
       CreateFetcher(true /* disable_retry*/, true /*is_immediate_fetch*/);
 
   std::move(respond_callback).Run();
-  task_runner_->RunUntilIdle();
+  task_environment_.RunUntilIdle();
 
   if (last_data_)
     *data_received = *last_data_;
@@ -259,13 +242,13 @@ ExploreSitesRequestStatus ExploreSitesFetcherTest::RunFetcherWithBackoffs(
       CreateFetcher(false /* disable_retry*/, is_immediate_fetch);
 
   std::move(respond_callbacks[0]).Run();
-  task_runner_->RunUntilIdle();
+  task_environment_.RunUntilIdle();
 
   for (size_t i = 0; i < num_of_backoffs; ++i) {
-    task_runner_->FastForwardBy(backoff_delays[i]);
+    task_environment_.FastForwardBy(backoff_delays[i]);
     if (i + 1 <= respond_callbacks.size() - 1)
       std::move(respond_callbacks[i + 1]).Run();
-    task_runner_->RunUntilIdle();
+    task_environment_.RunUntilIdle();
   }
 
   if (last_data_)
@@ -306,7 +289,6 @@ TEST_F(ExploreSitesFetcherTest, NetErrors) {
 TEST_F(ExploreSitesFetcherTest, HttpErrors) {
   EXPECT_EQ(ExploreSitesRequestStatus::kShouldSuspendBadRequest,
             RunFetcherWithHttpError(net::HTTP_BAD_REQUEST));
-
   EXPECT_EQ(ExploreSitesRequestStatus::kFailure,
             RunFetcherWithHttpError(net::HTTP_NOT_IMPLEMENTED));
   EXPECT_EQ(ExploreSitesRequestStatus::kFailure,
@@ -374,7 +356,7 @@ TEST_F(ExploreSitesFetcherTest, TestHeaders) {
   EXPECT_EQ(kAcceptLanguages, languages);
 
   // The finch header should not be set since the experiment is not on.
-  success = headers.HasHeader("X-Google-Chrome-Experiment-Tag");
+  success = headers.HasHeader("X-Goog-Chrome-Experiment-Tag");
   EXPECT_FALSE(success);
 }
 
@@ -390,7 +372,7 @@ TEST_F(ExploreSitesFetcherTest, TestFinchHeader) {
   std::string header_text;
   bool success;
 
-  success = headers.GetHeader("X-Google-Chrome-Experiment-Tag", &header_text);
+  success = headers.GetHeader("X-Goog-Chrome-Experiment-Tag", &header_text);
   EXPECT_EQ(std::string(kExperimentData), header_text);
 }
 
@@ -539,16 +521,16 @@ TEST_F(ExploreSitesFetcherTest, RestartAsImmediateFetchIfNotYet) {
 
   // Fail the request in order to trigger the backoff.
   RespondWithNetError(net::ERR_INTERNET_DISCONNECTED);
-  task_runner()->RunUntilIdle();
+  task_environment()->RunUntilIdle();
 
   // Fast forward by the initial delay of the immediate fetch. The retry should
   // be triggered.
-  task_runner()->FastForwardBy(base::TimeDelta::FromMilliseconds(
+  task_environment()->FastForwardBy(base::TimeDelta::FromMilliseconds(
       ExploreSitesFetcher::kImmediateFetchBackoffPolicy.initial_delay_ms));
 
   // Make the request succeeded.
   RespondWithData(kTestData);
-  task_runner()->RunUntilIdle();
+  task_environment()->RunUntilIdle();
 
   EXPECT_EQ(ExploreSitesRequestStatus::kSuccess, last_status());
   EXPECT_EQ(kTestData, last_data());

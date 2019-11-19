@@ -1,0 +1,37 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/closure_compiler/compile_js.gni")
+
+group("closure_compile") {
+  deps = [
+    ":compile_resources",
+    "camera:compile_resources",
+  ]
+}
+
+js_type_check("compile_resources") {
+  deps = [
+    ":settings",
+    ":view",
+  ]
+}
+
+js_library("settings") {
+  deps = [
+    ":view",
+    "..:nav",
+    "..:type",
+    "../device:camera3_device_info",
+    "../device:device_info_updater",
+  ]
+}
+
+js_library("view") {
+  deps = [
+    "..:toast",
+  ]
+
+  externs_list = [ "../externs/chrome.js" ]
+}

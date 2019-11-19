@@ -1,0 +1,45 @@
+This is a testharness.js-based test.
+PASS cross origin iframe not setting other origins precondition: Test that the browser does not have client hints preferences cached
+PASS cross origin iframe not setting other origins set Accept-CH-Lifetime
+PASS cross origin iframe not setting other origins got client hints according to expectations.
+PASS cross origin iframe not setting own origin precondition: Test that the browser does not have client hints preferences cached
+PASS cross origin iframe not setting own origin set Accept-CH-Lifetime
+PASS cross origin iframe not setting own origin got client hints according to expectations.
+PASS cross origin navigation precondition: Test that the browser does not have client hints preferences cached
+PASS cross origin navigation set Accept-CH-Lifetime
+PASS cross origin navigation got client hints according to expectations.
+PASS cross origin subresource precondition: Test that the browser does not have client hints preferences cached
+PASS cross origin subresource set Accept-CH-Lifetime
+FAIL cross origin subresource got client hints according to expectations. assert_equals: message from opened page expected "PASS" but got "FAIL"
+PASS same origin iframe precondition: Test that the browser does not have client hints preferences cached
+PASS same origin iframe set Accept-CH-Lifetime
+PASS same origin iframe got client hints according to expectations.
+FAIL same origin navigation precondition: Test that the browser does not have client hints preferences cached assert_false: device-memory-received expected false got true
+PASS same origin navigation set Accept-CH-Lifetime
+PASS same origin navigation got client hints according to expectations.
+FAIL same origin subresource precondition: Test that the browser does not have client hints preferences cached assert_false: device-memory-received expected false got true
+PASS same origin subresource set Accept-CH-Lifetime
+FAIL same origin subresource got client hints according to expectations. assert_equals: message from opened page expected "PASS" but got "FAIL"
+FAIL http-equiv cross origin iframe not setting other origins precondition: Test that the browser does not have client hints preferences cached assert_false: device-memory-received expected false got true
+PASS http-equiv cross origin iframe not setting other origins set Accept-CH-Lifetime
+FAIL http-equiv cross origin iframe not setting other origins got client hints according to expectations. assert_equals: message from opened page expected "PASS" but got "FAIL"
+PASS http-equiv cross origin iframe not setting own origin precondition: Test that the browser does not have client hints preferences cached
+PASS http-equiv cross origin iframe not setting own origin set Accept-CH-Lifetime
+FAIL http-equiv cross origin iframe not setting own origin got client hints according to expectations. assert_equals: message from opened page expected "PASS" but got "FAIL"
+FAIL http-equiv cross origin navigation precondition: Test that the browser does not have client hints preferences cached assert_false: device-memory-received expected false got true
+PASS http-equiv cross origin navigation set Accept-CH-Lifetime
+PASS http-equiv cross origin navigation got client hints according to expectations.
+PASS http-equiv cross origin subresource precondition: Test that the browser does not have client hints preferences cached
+PASS http-equiv cross origin subresource set Accept-CH-Lifetime
+FAIL http-equiv cross origin subresource got client hints according to expectations. assert_equals: message from opened page expected "PASS" but got "FAIL"
+FAIL http-equiv same origin iframe precondition: Test that the browser does not have client hints preferences cached assert_false: device-memory-received expected false got true
+PASS http-equiv same origin iframe set Accept-CH-Lifetime
+PASS http-equiv same origin iframe got client hints according to expectations.
+FAIL http-equiv same origin navigation precondition: Test that the browser does not have client hints preferences cached assert_false: device-memory-received expected false got true
+PASS http-equiv same origin navigation set Accept-CH-Lifetime
+PASS http-equiv same origin navigation got client hints according to expectations.
+FAIL http-equiv same origin subresource precondition: Test that the browser does not have client hints preferences cached assert_false: device-memory-received expected false got true
+PASS http-equiv same origin subresource set Accept-CH-Lifetime
+FAIL http-equiv same origin subresource got client hints according to expectations. assert_equals: message from opened page expected "PASS" but got "FAIL"
+Harness: the test ran to completion.
+

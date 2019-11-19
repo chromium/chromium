@@ -8,8 +8,8 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_frame_request_callback.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/dom_high_res_time_stamp.h"
+#include "third_party/blink/renderer/core/probe/async_task_id.h"
 #include "third_party/blink/renderer/platform/bindings/name_client.h"
-#include "third_party/blink/renderer/platform/bindings/trace_wrapper_member.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 
 namespace blink {
@@ -27,9 +27,8 @@ class GC_PLUGIN_IGNORE("crbug.com/841830")
 
   // |FrameCallback| is an interface type which generalizes callbacks which are
   // invoked when a script-based animation needs to be resampled.
-  class CORE_EXPORT FrameCallback
-      : public GarbageCollectedFinalized<FrameCallback>,
-        public NameClient {
+  class CORE_EXPORT FrameCallback : public GarbageCollected<FrameCallback>,
+                                    public NameClient {
    public:
     virtual void Trace(Visitor* visitor) {}
     const char* NameInHeapSnapshot() const override { return "FrameCallback"; }
@@ -45,6 +44,8 @@ class GC_PLUGIN_IGNORE("crbug.com/841830")
       use_legacy_time_base_ = use_legacy_time_base;
     }
 
+    probe::AsyncTaskId* async_task_id() { return &async_task_id_; }
+
    protected:
     FrameCallback() = default;
 
@@ -52,15 +53,13 @@ class GC_PLUGIN_IGNORE("crbug.com/841830")
     int id_ = 0;
     bool is_cancelled_ = false;
     bool use_legacy_time_base_ = false;
+    probe::AsyncTaskId async_task_id_;
   };
 
   // |V8FrameCallback| is an adapter class for the conversion from
   // |V8FrameRequestCallback| to |Framecallback|.
   class CORE_EXPORT V8FrameCallback : public FrameCallback {
    public:
-    static V8FrameCallback* Create(V8FrameRequestCallback* callback) {
-      return MakeGarbageCollected<V8FrameCallback>(callback);
-    }
     void Trace(Visitor*) override;
     const char* NameInHeapSnapshot() const override {
       return "V8FrameCallback";
@@ -72,14 +71,24 @@ class GC_PLUGIN_IGNORE("crbug.com/841830")
     void Invoke(double) override;
 
    private:
-    TraceWrapperMember<V8FrameRequestCallback> callback_;
+    Member<V8FrameRequestCallback> callback_;
   };
 
-  CallbackId RegisterCallback(FrameCallback*);
-  void CancelCallback(CallbackId);
-  void ExecuteCallbacks(double high_res_now_ms, double high_res_now_ms_legacy);
+  CallbackId RegisterFrameCallback(FrameCallback*);
+  void CancelFrameCallback(CallbackId);
+  void ExecuteFrameCallbacks(double high_res_now_ms,
+                             double high_res_now_ms_legacy);
 
-  bool IsEmpty() const { return !callbacks_.size(); }
+  CallbackId RegisterPostFrameCallback(FrameCallback*);
+  void CancelPostFrameCallback(CallbackId);
+  void ExecutePostFrameCallbacks(double high_res_now_ms,
+                                 double high_rest_now_ms_legacy);
+
+  bool HasFrameCallback() const { return frame_callbacks_.size(); }
+  bool HasPostFrameCallback() const { return post_frame_callbacks_.size(); }
+  bool IsEmpty() const {
+    return !HasFrameCallback() && !HasPostFrameCallback();
+  }
 
   void Trace(Visitor*);
   const char* NameInHeapSnapshot() const override {
@@ -87,10 +96,20 @@ class GC_PLUGIN_IGNORE("crbug.com/841830")
   }
 
  private:
-  using CallbackList = HeapVector<TraceWrapperMember<FrameCallback>>;
-  CallbackList callbacks_;
-  CallbackList
-      callbacks_to_invoke_;  // only non-empty while inside executeCallbacks
+  using CallbackList = HeapVector<Member<FrameCallback>>;
+  void ExecuteCallbacksInternal(CallbackList& callbacks,
+                                const char* trace_event_name,
+                                const char* probe_name,
+                                double high_res_now_ms,
+                                double high_res_now_ms_legacy);
+  void CancelCallbackInternal(CallbackId id,
+                              const char* trace_event_name,
+                              const char* probe_name);
+
+  CallbackList frame_callbacks_;
+  CallbackList post_frame_callbacks_;
+  // only non-empty while inside ExecuteCallbacks or ExecutePostFrameCallbacks.
+  CallbackList callbacks_to_invoke_;
 
   CallbackId next_callback_id_ = 0;
 

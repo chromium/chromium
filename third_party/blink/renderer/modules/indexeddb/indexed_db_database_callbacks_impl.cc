@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/modules/indexeddb/indexed_db_database_callbacks_impl.h"
 
-#include <unordered_map>
 #include <utility>
 
 #include "third_party/blink/public/platform/web_blob_info.h"
@@ -12,6 +11,7 @@
 #include "third_party/blink/renderer/modules/indexeddb/idb_observation.h"
 #include "third_party/blink/renderer/modules/indexeddb/indexed_db_blink_mojom_traits.h"
 #include "third_party/blink/renderer/modules/indexeddb/web_idb_database_callbacks.h"
+#include "third_party/blink/renderer/platform/bindings/exception_code.h"
 
 namespace blink {
 
@@ -31,9 +31,11 @@ void IndexedDBDatabaseCallbacksImpl::VersionChange(int64_t old_version,
 }
 
 void IndexedDBDatabaseCallbacksImpl::Abort(int64_t transaction_id,
-                                           int32_t code,
+                                           mojom::blink::IDBException code,
                                            const String& message) {
-  callbacks_->OnAbort(transaction_id, IDBDatabaseError(code, message));
+  callbacks_->OnAbort(
+      transaction_id,
+      IDBDatabaseError(static_cast<DOMExceptionCode>(code), message));
 }
 
 void IndexedDBDatabaseCallbacksImpl::Complete(int64_t transaction_id) {
@@ -50,29 +52,28 @@ void IndexedDBDatabaseCallbacksImpl::Changes(
     if (observation->value.has_value())
       value = std::move(observation->value.value());
     if (!value || value->Data()->IsEmpty()) {
-      value = IDBValue::Create(scoped_refptr<SharedBuffer>(),
-                               Vector<WebBlobInfo>());
+      value = std::make_unique<IDBValue>(scoped_refptr<SharedBuffer>(),
+                                         Vector<WebBlobInfo>());
     }
-    observations.emplace_back(
-        IDBObservation::Create(observation->object_store_id, observation->type,
-                               key_range, std::move(value)));
+    observations.emplace_back(MakeGarbageCollected<IDBObservation>(
+        observation->object_store_id, observation->type, key_range,
+        std::move(value)));
   }
 
-  std::unordered_map<int32_t, Vector<int32_t>> observation_index_map;
+  HashMap<int32_t, Vector<int32_t>> observation_index_map;
   for (const auto& observation_pair : changes->observation_index_map) {
-    observation_index_map[observation_pair.key] =
-        Vector<int32_t>(observation_pair.value);
+    observation_index_map.insert(observation_pair.key,
+                                 Vector<int32_t>(observation_pair.value));
   }
 
-  std::unordered_map<int32_t, std::pair<int64_t, Vector<int64_t>>>
-      observer_transactions;
+  HashMap<int32_t, std::pair<int64_t, Vector<int64_t>>> observer_transactions;
   for (const auto& transaction_pair : changes->transaction_map) {
     // Moving an int64_t is rather silly. Sadly, std::make_pair's overloads
     // accept either two rvalue arguments, or none.
-    observer_transactions[transaction_pair.key] =
-        std::make_pair<int64_t, Vector<int64_t>>(
-            std::move(transaction_pair.value->id),
-            std::move(transaction_pair.value->scope));
+    observer_transactions.insert(transaction_pair.key,
+                                 std::make_pair<int64_t, Vector<int64_t>>(
+                                     std::move(transaction_pair.value->id),
+                                     std::move(transaction_pair.value->scope)));
   }
 
   callbacks_->OnChanges(observation_index_map, std::move(observations),

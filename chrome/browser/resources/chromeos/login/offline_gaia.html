@@ -5,8 +5,8 @@
 <link rel="import" href="chrome://resources/html/polymer.html">
 
 <link rel="import" href="chrome://resources/cr_elements/shared_style_css.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_button/cr_button.html">
 <link rel="import" href="chrome://resources/cr_elements/cr_dialog/cr_dialog.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/paper-button/paper-button.html">
 
 <!--
   Offline UI for the New Gaia flow.
@@ -65,9 +65,8 @@
                   [[i18nDynamic(locale, 'enterpriseInfoMessage', domain)]]
               </div>
             </div>
-            <gaia-input-form on-submit="onEmailSubmitted_"
-                disabled="[[disabled]]"
-                button-text="[[i18nDynamic(locale, 'offlineLoginNextBtn')]]">
+            <gaia-input-form id="email-input-form"
+                on-submit="onNextButtonClicked_" disabled="[[disabled]]">
               <gaia-input slot="inputs" id="emailInput" type="email" required
                   domain="[[emailDomain]]">
                 <div slot="label">
@@ -85,9 +84,8 @@
             </div>
             <div id="subtitle-container">
             </div>
-            <gaia-input-form disabled="[[disabled]]"
-                on-submit="onPasswordSubmitted_"
-                button-text="[[i18nDynamic(locale, 'offlineLoginNextBtn')]]">
+            <gaia-input-form id="password-input-form"
+                on-submit="onNextButtonClicked_" disabled="[[disabled]]">
               <gaia-input slot="inputs" id="passwordInput" type="password"
                   required>
                 <div slot="label">
@@ -97,28 +95,29 @@
                   [[i18nDynamic(locale, 'offlineLoginInvalidPassword')]]
                 </div>
               </gaia-input>
-              <gaia-button type="link" on-tap="onForgotPasswordClicked_">
+              <gaia-button on-click="onForgotPasswordClicked_" link>
                 [[i18nDynamic(locale, 'offlineLoginForgotPasswordBtn')]]
               </gaia-button>
             </gaia-input-form>
           </div>
         </div>
       </div>
-      <div slot="bottom-buttons" class="flex layout horizontal">
-        <oobe-back-button id="offline-gaia-back-button"
-            on-tap="onBackButtonClicked_"></oobe-back-button>
-        <div class="flex">
-        </div>
+      <div slot="bottom-buttons" class="flex layout horizontal justified">
+        <oobe-back-button on-tap="onBackButtonClicked_"></oobe-back-button>
+        <oobe-next-button id="next-button"
+            on-tap="onNextButtonClicked_"></oobe-next-button>
       </div>
     </oobe-dialog>
     <cr-dialog id="forgotPasswordDlg"
         on-close="onDialogOverlayClosed_">
-      <div slot="body"
-          i18n-content="offlineLoginForgotPasswordDlg"></div>
+      <div slot="body">
+        [[i18nDynamic(locale, 'offlineLoginForgotPasswordDlg')]]
+      </div>
       <div slot="button-container">
-        <paper-button autofocus on-tap="onForgotPasswordCloseTap_"
-            i18n-content="offlineLoginCloseBtn" class="action-button">
-        </paper-button>
+        <cr-button autofocus on-tap="onForgotPasswordCloseTap_"
+            class="action-button">
+          [[i18nDynamic(locale, 'offlineLoginCloseBtn')]]
+        </cr-button>
       </div>
     </cr-dialog>
   </template>

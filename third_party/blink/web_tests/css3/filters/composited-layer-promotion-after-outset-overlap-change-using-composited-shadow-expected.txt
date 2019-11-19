@@ -1,14 +1,13 @@
 {
   "layers": [
     {
-      "name": "LayoutView #document",
+      "name": "Scrolling Contents Layer",
       "bounds": [800, 600],
-      "drawsContent": false,
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutBlockFlow (positioned) DIV id='composited-layer-to-overlap'",
+      "name": "LayoutNGBlockFlow (positioned) DIV id='composited-layer-to-overlap'",
       "bounds": [100, 100],
       "contentsOpaque": true,
       "backgroundColor": "#0000FF",
@@ -30,25 +29,24 @@
 {
   "layers": [
     {
-      "name": "LayoutView #document",
+      "name": "Scrolling Contents Layer",
       "bounds": [800, 600],
-      "drawsContent": false,
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutBlockFlow (positioned) DIV id='composited-layer-to-overlap'",
+      "name": "LayoutNGBlockFlow (positioned) DIV id='composited-layer-to-overlap'",
       "bounds": [100, 100],
       "contentsOpaque": true,
       "backgroundColor": "#0000FF",
       "transform": 1
     },
     {
-      "name": "LayoutBlockFlow (positioned) DIV id='software-layer-to-promote' class='final-drop-shadow'",
-      "position": [100, 100],
+      "name": "LayoutNGBlockFlow (positioned) DIV id='software-layer-to-promote' class='final-drop-shadow'",
       "bounds": [100, 100],
       "contentsOpaque": true,
-      "backgroundColor": "#000000"
+      "backgroundColor": "#000000",
+      "transform": 2
     }
   ],
   "transforms": [
@@ -59,6 +57,15 @@
         [0, 1, 0, 0],
         [0, 0, 1, 0],
         [250, 250, 0, 1]
+      ]
+    },
+    {
+      "id": 2,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [100, 100, 0, 1]
       ]
     }
   ]

@@ -8,7 +8,4 @@
 
 namespace features {
 
-const base::Feature kDnsOverHttps{"dns-over-https",
-                                  base::FEATURE_DISABLED_BY_DEFAULT};
-
 }  // namespace features

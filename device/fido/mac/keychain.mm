@@ -10,6 +10,7 @@
 #include "base/mac/mac_logging.h"
 #include "base/stl_util.h"
 #include "base/strings/sys_string_conversions.h"
+#include "components/device_event_log/device_event_log.h"
 #include "device/fido/mac/credential_metadata.h"
 
 namespace device {
@@ -78,16 +79,19 @@ Credential::~Credential() = default;
 Credential::Credential(Credential&& other) = default;
 Credential& Credential::operator=(Credential&& other) = default;
 
-base::Optional<Credential> FindCredentialInKeychain(
+// Like FindCredentialsInKeychain(), but empty |allowed_credential_ids| allows
+// any credential to match.
+static std::list<Credential> FindCredentialsImpl(
     const std::string& keychain_access_group,
     const std::string& metadata_secret,
     const std::string& rp_id,
-    const std::set<std::vector<uint8_t>>& credential_id_filter,
-    LAContext* authentication_context) {
+    const std::set<std::vector<uint8_t>>& allowed_credential_ids,
+    LAContext* authentication_context) API_AVAILABLE(macosx(10.12.2)) {
   base::Optional<std::string> encoded_rp_id =
-      CredentialMetadata::EncodeRpId(metadata_secret, rp_id);
-  if (!encoded_rp_id)
-    return base::nullopt;
+      EncodeRpId(metadata_secret, rp_id);
+  if (!encoded_rp_id) {
+    return {};
+  }
 
   base::ScopedCFTypeRef<CFMutableDictionaryRef> query(
       CFDictionaryCreateMutable(kCFAllocatorDefault, 0, nullptr, nullptr));
@@ -109,16 +113,16 @@ base::Optional<Credential> FindCredentialInKeychain(
       query, reinterpret_cast<CFTypeRef*>(keychain_items.InitializeInto()));
   if (status == errSecItemNotFound) {
     // No credentials for the RP.
-    return base::nullopt;
+    return {};
   }
   if (status != errSecSuccess) {
     OSSTATUS_DLOG(ERROR, status) << "SecItemCopyMatching failed";
-    return base::nullopt;
+    return {};
   }
 
-  // Credentials for the RP exist. Find a match.
-  std::vector<uint8_t> credential_id;
-  base::ScopedCFTypeRef<SecKeyRef> private_key(nil);
+  // Filter credentials for the RP down to |allowed_credential_ids|, unless it's
+  // empty in which case all credentials should be returned.
+  std::list<Credential> result;
   for (CFIndex i = 0; i < CFArrayGetCount(keychain_items); ++i) {
     CFDictionaryRef attributes = base::mac::CFCast<CFDictionaryRef>(
         CFArrayGetValueAtIndex(keychain_items, i));
@@ -132,21 +136,53 @@ base::Optional<Credential> FindCredentialInKeychain(
                   << attributes;
       continue;
     }
-    std::vector<uint8_t> cid(CFDataGetBytePtr(application_label),
-                             CFDataGetBytePtr(application_label) +
-                                 CFDataGetLength(application_label));
-    if (credential_id_filter.empty() ||
-        base::ContainsKey(credential_id_filter, cid)) {
-      private_key.reset(key, base::scoped_policy::RETAIN);
-      credential_id = std::move(cid);
-      break;
+    std::vector<uint8_t> credential_id(CFDataGetBytePtr(application_label),
+                                       CFDataGetBytePtr(application_label) +
+                                           CFDataGetLength(application_label));
+    if (!allowed_credential_ids.empty() &&
+        !base::Contains(allowed_credential_ids, credential_id)) {
+      continue;
     }
+    base::ScopedCFTypeRef<SecKeyRef> private_key(key,
+                                                 base::scoped_policy::RETAIN);
+    result.emplace_back(
+        Credential(std::move(private_key), std::move(credential_id)));
   }
-  if (private_key == nil) {
-    DVLOG(1) << "no allowed credential found";
-    return base::nullopt;
+  return result;
+}
+
+std::list<Credential> FindCredentialsInKeychain(
+    const std::string& keychain_access_group,
+    const std::string& metadata_secret,
+    const std::string& rp_id,
+    const std::set<std::vector<uint8_t>>& allowed_credential_ids,
+    LAContext* authentication_context) {
+  if (allowed_credential_ids.empty()) {
+    NOTREACHED();
+    return {};
   }
-  return Credential(std::move(private_key), std::move(credential_id));
+  return FindCredentialsImpl(keychain_access_group, metadata_secret, rp_id,
+                             allowed_credential_ids, authentication_context);
+}
+
+std::list<Credential> FindResidentCredentialsInKeychain(
+    const std::string& keychain_access_group,
+    const std::string& metadata_secret,
+    const std::string& rp_id,
+    LAContext* authentication_context) {
+  std::list<Credential> result = FindCredentialsImpl(
+      keychain_access_group, metadata_secret, rp_id,
+      /*allowed_credential_ids=*/{}, authentication_context);
+  result.remove_if([&metadata_secret, &rp_id](const Credential& credential) {
+    auto opt_metadata =
+        UnsealCredentialId(metadata_secret, rp_id, credential.credential_id);
+    if (!opt_metadata) {
+      FIDO_LOG(ERROR) << "UnsealCredentialId() failed";
+      return true;
+    }
+    return !opt_metadata->is_resident;
+  });
+  return result;
 }
 
 }  // namespace mac

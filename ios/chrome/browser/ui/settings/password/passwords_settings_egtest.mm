@@ -2,11 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import <EarlGrey/EarlGrey.h>
 #include <TargetConditionals.h>
 
 #include <utility>
 
 #include "base/callback.h"
+#include "base/ios/ios_util.h"
 #include "base/mac/foundation_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/stringprintf.h"
@@ -30,7 +32,6 @@
 #include "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
 #import "ios/chrome/test/app/password_test_util.h"
-#include "ios/chrome/test/earl_grey/accessibility_util.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
@@ -63,7 +64,6 @@ using chrome_test_util::SettingsMenuBackButton;
 using chrome_test_util::SetUpAndReturnMockReauthenticationModule;
 using chrome_test_util::SetUpAndReturnMockReauthenticationModuleForExport;
 using chrome_test_util::TurnSettingsSwitchOn;
-using web::test::ElementSelector;
 
 namespace {
 
@@ -250,18 +250,30 @@ id<GREYMatcher> MatchParentWith(id<GREYMatcher> parentMatcher) {
 // Matches the pop-up (call-out) menu item with accessibility label equal to the
 // translated string identified by |label|.
 id<GREYMatcher> PopUpMenuItemWithLabel(int label) {
-  // This is a hack relying on UIKit's internal structure. There are multiple
-  // items with the label the test is looking for, because the menu items likely
-  // have the same labels as the buttons for the same function. There is no easy
-  // way to identify elements which are part of the pop-up, because the
-  // associated classes are internal to UIKit. However, the pop-up items are
-  // composed of a button-type element (without accessibility traits of a
-  // button) owning a label, both with the same accessibility labels. This is
-  // differentiating the pop-up items from the other buttons.
-  return grey_allOf(
-      grey_accessibilityLabel(l10n_util::GetNSString(label)),
-      MatchParentWith(grey_accessibilityLabel(l10n_util::GetNSString(label))),
-      nullptr);
+  if (@available(iOS 13, *)) {
+    // iOS13 reworked menu button subviews to no longer be accessibility
+    // elements.  Multiple menu button subviews no longer show up as potential
+    // matches, which means the matcher logic does not need to be as complex as
+    // the iOS 11/12 logic.  Various table view cells may share the same
+    // accesibility label, but those can be filtered out by ignoring
+    // UIAccessibilityTraitButton.
+    return grey_allOf(
+        grey_accessibilityLabel(l10n_util::GetNSString(label)),
+        grey_not(grey_accessibilityTrait(UIAccessibilityTraitButton)), nil);
+  } else {
+    // This is a hack relying on UIKit's internal structure. There are multiple
+    // items with the label the test is looking for, because the menu items
+    // likely have the same labels as the buttons for the same function. There
+    // is no easy way to identify elements which are part of the pop-up, because
+    // the associated classes are internal to UIKit. However, the pop-up items
+    // are composed of a button-type element (without accessibility traits of a
+    // button) owning a label, both with the same accessibility labels. This is
+    // differentiating the pop-up items from the other buttons.
+    return grey_allOf(
+        grey_accessibilityLabel(l10n_util::GetNSString(label)),
+        MatchParentWith(grey_accessibilityLabel(l10n_util::GetNSString(label))),
+        nullptr);
+  }
 }
 
 scoped_refptr<password_manager::PasswordStore> GetPasswordStore() {
@@ -288,17 +300,11 @@ class TestStoreConsumer : public password_manager::PasswordStoreConsumer {
   const std::vector<autofill::PasswordForm>& GetStoreResults() {
     results_.clear();
     ResetObtained();
-    GetPasswordStore()->GetAutofillableLogins(this);
-    bool responded = base::test::ios::WaitUntilConditionOrTimeout(1.0, ^bool {
+    GetPasswordStore()->GetAllLogins(this);
+    bool responded = base::test::ios::WaitUntilConditionOrTimeout(2.0, ^bool {
       return !AreObtainedReset();
     });
     GREYAssert(responded, @"Obtaining fillable items took too long.");
-    AppendObtainedToResults();
-    GetPasswordStore()->GetBlacklistLogins(this);
-    responded = base::test::ios::WaitUntilConditionOrTimeout(2.0, ^bool {
-      return !AreObtainedReset();
-    });
-    GREYAssert(responded, @"Obtaining blacklisted items took too long.");
     AppendObtainedToResults();
     return results_;
   }
@@ -332,10 +338,13 @@ class TestStoreConsumer : public password_manager::PasswordStoreConsumer {
 // done.
 void SaveToPasswordStore(const PasswordForm& form) {
   GetPasswordStore()->AddLogin(form);
+  // When we retrieve the form from the store, |from_store| should be set.
+  autofill::PasswordForm expected_form = form;
+  expected_form.from_store = autofill::PasswordForm::Store::kProfileStore;
   // Check the result and ensure PasswordStore processed this.
   TestStoreConsumer consumer;
   for (const auto& result : consumer.GetStoreResults()) {
-    if (result == form)
+    if (result == expected_form)
       return;
   }
   GREYFail(@"Stored form was not found in the PasswordStore results.");
@@ -451,17 +460,17 @@ PasswordForm CreateSampleFormWithIndex(int index) {
   SaveExamplePasswordForm();
 
   OpenPasswordSettings();
-  chrome_test_util::VerifyAccessibilityForCurrentScreen();
+  [ChromeEarlGrey verifyAccessibilityForCurrentScreen];
 
   TapEdit();
-  chrome_test_util::VerifyAccessibilityForCurrentScreen();
+  [ChromeEarlGrey verifyAccessibilityForCurrentScreen];
   [[EarlGrey selectElementWithMatcher:NavigationBarDoneButton()]
       performAction:grey_tap()];
 
   // Inspect "password details" view.
   [GetInteractionForPasswordEntry(@"example.com, concrete username")
       performAction:grey_tap()];
-  chrome_test_util::VerifyAccessibilityForCurrentScreen();
+  [ChromeEarlGrey verifyAccessibilityForCurrentScreen];
   [[EarlGrey selectElementWithMatcher:SettingsMenuBackButton()]
       performAction:grey_tap()];
 
@@ -638,6 +647,11 @@ PasswordForm CreateSampleFormWithIndex(int index) {
 // Checks that deleting a saved password from password details view goes back
 // to the list-of-passwords view which doesn't display that form anymore.
 - (void)testSavedFormDeletionInDetailView {
+  // TODO(crbug.com/1023619): Enable the test on 13.2+ iPad once the bug is
+  // fixed.
+  if (base::ios::IsRunningOnOrLater(13, 2, 0) && [ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Test disabled on iPad and iOS 13.2+");
+  }
   // Save form to be deleted later.
   SaveExamplePasswordForm();
 
@@ -689,6 +703,11 @@ PasswordForm CreateSampleFormWithIndex(int index) {
 // goes back to the list-of-passwords view which doesn't display that form
 // anymore.
 - (void)testDuplicatedSavedFormDeletionInDetailView {
+  // TODO(crbug.com/1023619): Enable the test on 13.2+ iPad once the bug is
+  // fixed.
+  if (base::ios::IsRunningOnOrLater(13, 2, 0) && [ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Test disabled on iPad and iOS 13.2+");
+  }
   // Save form to be deleted later.
   SaveExamplePasswordForm();
   // Save duplicate of the previously saved form to be deleted at the same time.
@@ -748,6 +767,11 @@ PasswordForm CreateSampleFormWithIndex(int index) {
 // Checks that deleting a blacklisted form from password details view goes
 // back to the list-of-passwords view which doesn't display that form anymore.
 - (void)testBlacklistedFormDeletionInDetailView {
+  // TODO(crbug.com/1023619): Enable the test on 13.2+ iPad once the bug is
+  // fixed.
+  if (base::ios::IsRunningOnOrLater(13, 2, 0) && [ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Test disabled on iPad and iOS 13.2+");
+  }
   // Save blacklisted form to be deleted later.
   PasswordForm blacklisted;
   blacklisted.origin = GURL("https://blacklisted.com");
@@ -800,6 +824,11 @@ PasswordForm CreateSampleFormWithIndex(int index) {
 
 // Checks that deleting a password from password details can be cancelled.
 - (void)testCancelDeletionInDetailView {
+  // TODO(crbug.com/1023619): Enable the test on 13.2+ iPad once the bug is
+  // fixed.
+  if (base::ios::IsRunningOnOrLater(13, 2, 0) && [ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Test disabled on iPad and iOS 13.2+");
+  }
   // Save form to be deleted later.
   SaveExamplePasswordForm();
 
@@ -1415,7 +1444,7 @@ PasswordForm CreateSampleFormWithIndex(int index) {
 // any device. To limit the effect of (2), custom large scrolling steps are
 // added to the usual scrolling actions.
 - (void)testManyPasswords {
-  if (IsIPadIdiom()) {
+  if ([ChromeEarlGrey isIPadIdiom]) {
     // TODO(crbug.com/906551): Enable the test on iPad once the bug is fixed.
     EARL_GREY_TEST_DISABLED(@"Disabled for iPad.");
   }
@@ -1492,51 +1521,13 @@ PasswordForm CreateSampleFormWithIndex(int index) {
       performAction:grey_tap()];
 }
 
-// Opens a page with password input, focuses it, clocks "Show All" in the
-// keyboard accessory and verifies that the password list is presented.
-- (void)testOpenSettingsFromManualFallback {
-  // Saving a form is needed for using the "password details" view.
-  SaveExamplePasswordForm();
-
-  const GURL kPasswordURL(web::test::HttpServer::MakeUrl("http://form/"));
-  std::map<GURL, std::string> responses;
-  responses[kPasswordURL] = "<input id='password' type='password'>";
-  web::test::SetUpSimpleHttpServer(responses);
-  [ChromeEarlGrey loadURL:kPasswordURL];
-
-  // Focus the password field.
-  // Brings up the keyboard by tapping on one of the form's field.
-  [[EarlGrey
-      selectElementWithMatcher:web::WebViewInWebState(
-                                   chrome_test_util::GetCurrentWebState())]
-      performAction:web::WebViewTapElement(
-                        chrome_test_util::GetCurrentWebState(),
-                        ElementSelector::ElementSelectorId("password"))];
-
-  // Wait until the keyboard shows up before tapping.
-  id<GREYMatcher> showAll = grey_allOf(
-      grey_accessibilityLabel(@"Show All\u2026"), grey_interactable(), nil);
-  GREYCondition* condition =
-      [GREYCondition conditionWithName:@"Wait for the keyboard to show up."
-                                 block:^BOOL {
-                                   NSError* error = nil;
-                                   [[EarlGrey selectElementWithMatcher:showAll]
-                                       assertWithMatcher:grey_notNil()
-                                                   error:&error];
-                                   return (error == nil);
-                                 }];
-  GREYAssert(
-      [condition waitWithTimeout:base::test::ios::kWaitForUIElementTimeout],
-      @"No keyboard with 'Show All' button showed up.");
-  [[EarlGrey selectElementWithMatcher:showAll] performAction:grey_tap()];
-
-  [[EarlGrey selectElementWithMatcher:ButtonWithAccessibilityLabel(
-                                          @"example.com, concrete username")]
-      assertWithMatcher:grey_notNil()];
-}
-
 // Test export flow
 - (void)testExportFlow {
+  // TODO(crbug.com/1023619): Enable the test on 13.2+ iPad once the bug is
+  // fixed.
+  if (base::ios::IsRunningOnOrLater(13, 2, 0) && [ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Test disabled on iPad and iOS 13.2+");
+  }
   // Saving a form is needed for exporting passwords.
   SaveExamplePasswordForm();
 
@@ -1558,26 +1549,42 @@ PasswordForm CreateSampleFormWithIndex(int index) {
   // Wait until the alerts are dismissed.
   [[GREYUIThreadExecutor sharedInstance] drainUntilIdle];
 
-  // Check that export button is disabled
+  // On iOS 13+ phone when building with the iOS 12 SDK, the share sheet is
+  // presented fullscreen, so the export button is removed from the view
+  // hierarchy.  Check that either the button is not present, or that it remains
+  // visible but is disabled.
+  id<GREYMatcher> exportButtonStatusMatcher =
+      grey_accessibilityTrait(UIAccessibilityTraitNotEnabled);
+#if !defined(__IPHONE_13_0) || (__IPHONE_OS_VERSION_MAX_ALLOWED < __IPHONE_13_0)
+  if (base::ios::IsRunningOnIOS13OrLater()) {
+    exportButtonStatusMatcher =
+        grey_anyOf(grey_nil(), exportButtonStatusMatcher, nil);
+  }
+#endif
+
   [[EarlGrey
       selectElementWithMatcher:chrome_test_util::ButtonWithAccessibilityLabelId(
                                    IDS_IOS_EXPORT_PASSWORDS)]
-      assertWithMatcher:grey_accessibilityTrait(
-                            UIAccessibilityTraitNotEnabled)];
+      assertWithMatcher:exportButtonStatusMatcher];
 
-  if (IsIPadIdiom()) {
+  if ([ChromeEarlGrey isIPadIdiom]) {
     // Tap outside the activity view to dismiss it, because it is not
     // accompanied by a "Cancel" button on iPad.
     [[EarlGrey selectElementWithMatcher:
                    chrome_test_util::ButtonWithAccessibilityLabelId(
                        IDS_IOS_EXPORT_PASSWORDS)] performAction:grey_tap()];
   } else {
-    // Tap on the "Cancel" button accompanying the activity view to dismiss it.
+    // Tap on the "Cancel" or "X" button accompanying the activity view to
+    // dismiss it.
+    NSString* dismissLabel =
+        base::ios::IsRunningOnIOS13OrLater() ? @"Close" : @"Cancel";
     [[EarlGrey
         selectElementWithMatcher:grey_allOf(
-                                     ButtonWithAccessibilityLabel(@"Cancel"),
-                                     grey_interactable(), nullptr)]
-        performAction:grey_tap()];
+                                     ButtonWithAccessibilityLabel(dismissLabel),
+                                     grey_interactable(),
+                                     grey_not(grey_accessibilityTrait(
+                                         UIAccessibilityTraitNotEnabled)),
+                                     nullptr)] performAction:grey_tap()];
   }
 
   // Wait until the activity view is dismissed.

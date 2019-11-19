@@ -77,6 +77,36 @@ Polymer({
       readOnly: true,
       value: [0, 1, 2, 3, 4, 5],
     },
+
+    /**
+     * The time in milliseconds at which a connection attempt started (that is,
+     * when this dialog is opened).
+     * @private {?number}
+     */
+    connectionAttemptStartTimestampMs_: {
+      type: Number,
+      value: null,
+    },
+
+    /**
+     * The time in milliseconds at which the user is asked to comfirm the
+     * pairing auth process.
+     * @private {?number}
+     */
+    pairingUserAuthAttemptStartTimestampMs_: {
+      type: Number,
+      value: null,
+    },
+
+    /**
+     * The time in milliseconds at which the user confirms the pairing auth
+     * process.
+     * @private {?number}
+     */
+    pairingUserAuthAttemptFinishTimestampMs_: {
+      type: Number,
+      value: null,
+    },
   },
 
   observers: [
@@ -112,14 +142,23 @@ Polymer({
   },
 
   /**
-   * Updates the dialog after a connect attempt.
-   * @param {!chrome.bluetooth.Device} device The device connected to
-   * @param {!{message: string}} lastError chrome.runtime.lastError
+   * Updates the dialog after a connection attempt.
+   * @param {!chrome.bluetooth.Device} device The device connected to.
+   * @param {!boolean} wasPairing True if the device required pairing before
+   *     connecting.
+   * @param {!{message: string}} lastError chrome.runtime.lastError.
    * @param {chrome.bluetoothPrivate.ConnectResultType} result The connect
-   *     result
-   * @return {boolean}
+   *     result.
+   * @return {boolean} True if the dialog considers this a fatal error and
+   *     is displaying an error message.
    */
-  handleError: function(device, lastError, result) {
+  endConnectionAttempt: function(device, wasPairing, lastError, result) {
+    if (wasPairing) {
+      const transport = device.transport ? device.transport :
+                                           chrome.bluetooth.Transport.INVALID;
+      this.recordPairingMetrics_(transport, lastError, result);
+    }
+
     let error;
     if (lastError) {
       error = lastError.message;
@@ -136,14 +175,19 @@ Polymer({
       }
     }
 
+    // Attempting to connect and pair has failed. Remove listeners.
+    this.endPairing();
+
     const name = device.name || device.address;
-    const id = 'bluetooth_connect_' + error;
-    if (this.i18nExists(id)) {
-      this.errorMessage_ = this.i18n(id, name);
-    } else {
-      this.errorMessage_ = error;
-      console.error('Unexpected error connecting to: ' + name + ': ' + error);
+    let id = 'bluetooth_connect_' + error;
+    if (!this.i18nExists(id)) {
+      console.error(
+          'Unexpected error connecting to:', name, 'error:', error,
+          'result:', result);
+      id = 'bluetooth_connect_failed';
     }
+    this.errorMessage_ = this.i18n(id, name);
+
     return true;
   },
 
@@ -153,6 +197,8 @@ Polymer({
       this.$$('#pincode').focus();
     } else if (this.showEnterPasskey_()) {
       this.$$('#passkey').focus();
+    } else if (this.showAcceptReject_()) {
+      this.$$('#accept-button').focus();
     }
   },
 
@@ -184,6 +230,8 @@ Polymer({
           this.onBluetoothPrivateOnPairing_.bind(this);
       this.bluetoothPrivate.onPairing.addListener(
           this.bluetoothPrivateOnPairingListener_);
+
+      this.connectionAttemptStartTimestampMs_ = Date.now();
     }
     if (!this.bluetoothDeviceChangedListener_) {
       this.bluetoothDeviceChangedListener_ =
@@ -246,9 +294,23 @@ Polymer({
       return;
     }
 
+    if (!this.pairingUserAuthAttemptStartTimestampMs_ && !!this.pairingEvent_ &&
+        (this.pairingEvent_.pairing === PairingEventType.REQUEST_PINCODE ||
+         this.pairingEvent_.pairing === PairingEventType.REQUEST_PASSKEY ||
+         this.pairingEvent_.pairing === PairingEventType.DISPLAY_PINCODE ||
+         this.pairingEvent_.pairing === PairingEventType.DISPLAY_PASSKEY ||
+         this.pairingEvent_.pairing === PairingEventType.CONFIRM_PASSKEY ||
+         this.pairingEvent_.pairing === PairingEventType.KEYS_ENTERED)) {
+      this.pairingUserAuthAttemptStartTimestampMs_ = Date.now();
+    }
+
     // Auto-close the dialog when pairing completes.
     if (this.pairingDevice.paired && !this.pairingDevice.connecting &&
         this.pairingDevice.connected) {
+      if (this.pairingUserAuthAttemptStartTimestampMs_) {
+        this.pairingUserAuthAttemptFinishTimestampMs_ = Date.now();
+      }
+
       this.close();
       return;
     }
@@ -267,7 +329,13 @@ Polymer({
     } else {
       message = this.getEventDesc_(this.pairingEvent_.pairing);
     }
-    return this.i18n(message, this.pairingDevice.name || '');
+
+    let pairingDeviceName = '';
+    if (this.pairingDevice && this.pairingDevice.name) {
+      pairingDeviceName = this.pairingDevice.name;
+    }
+
+    return this.i18n(message, pairingDeviceName);
   },
 
   /**
@@ -349,7 +417,7 @@ Polymer({
    * @private
    */
   showDismiss_: function() {
-    return this.pairingDevice.paired ||
+    return (!!this.pairingDevice && this.pairingDevice.paired) ||
         (!!this.pairingEvent_ &&
          this.pairingEvent_.pairing == PairingEventType.COMPLETE);
   },
@@ -410,7 +478,6 @@ Polymer({
   getEventDesc_: function(eventType) {
     assert(eventType);
     if (eventType == PairingEventType.COMPLETE ||
-        eventType == PairingEventType.KEYS_ENTERED ||
         eventType == PairingEventType.REQUEST_AUTHORIZATION) {
       return 'bluetoothStartConnecting';
     }
@@ -475,5 +542,81 @@ Polymer({
       }
     }
     return cssClass;
+  },
+
+  /**
+   * Record metrics for pairing attempt results.
+   * @param {!chrome.bluetooth.Transport} transport The transport type of the
+   *     device.
+   * @param {!{message: string}} lastError chrome.runtime.lastError.
+   * @param {!chrome.bluetoothPrivate.ConnectResultType} result The connection
+   *     result.
+   * @private
+   */
+  recordPairingMetrics_: function(transport, lastError, result) {
+    // TODO(crbug.com/953149): Also create metrics which break down the simple
+    // boolean success/failure metric with error reasons, including |lastError|.
+
+    let success;
+    if (lastError) {
+      success = false;
+    } else {
+      switch (result) {
+        case chrome.bluetoothPrivate.ConnectResultType.SUCCESS:
+          success = true;
+          break;
+        case chrome.bluetoothPrivate.ConnectResultType.IN_PROGRESS:
+        case chrome.bluetoothPrivate.ConnectResultType.ALREADY_CONNECTED:
+        case chrome.bluetoothPrivate.ConnectResultType.AUTH_CANCELED:
+        case chrome.bluetoothPrivate.ConnectResultType.AUTH_REJECTED:
+          // Cases like this do not reflect success or failure to pair,
+          // particularly AUTH_CANCELED or AUTH_REJECTED. Do not emit to
+          // metrics.
+          return;
+        default:
+          success = false;
+          break;
+      }
+    }
+
+    chrome.bluetoothPrivate.recordPairing(
+        success, transport, this.getPairingDurationMs_());
+  },
+
+  /**
+   * Calculate how long it took to complete pairing, excluding how long the user
+   * took to confirm the pairing auth process.
+   * @return {number}
+   * @private
+   */
+  getPairingDurationMs_: function() {
+    let unadjustedPairingDurationMs = 0;
+    if (this.connectionAttemptStartTimestampMs_) {
+      unadjustedPairingDurationMs =
+          Date.now() - this.connectionAttemptStartTimestampMs_;
+    } else {
+      console.error('No connection start timestamp present.');
+    }
+
+    let userAuthActionDurationMs = 0;
+    if (this.pairingUserAuthAttemptStartTimestampMs_) {
+      if (this.pairingUserAuthAttemptFinishTimestampMs_) {
+        userAuthActionDurationMs =
+            this.pairingUserAuthAttemptFinishTimestampMs_ -
+            this.pairingUserAuthAttemptStartTimestampMs_;
+      } else {
+        console.error(
+            'No auth attempt finish timestamp present to' +
+            ' complement start timestamp.');
+      }
+    }
+
+    this.connectionAttemptStartTimestampMs_ = null;
+    this.pairingUserAuthAttemptStartTimestampMs_ = null;
+    this.pairingUserAuthAttemptFinishTimestampMs_ = null;
+
+    // If the pairing process required authentication, do not include the time
+    // it took the user to complete or confirm the authentication process.
+    return unadjustedPairingDurationMs - userAuthActionDurationMs;
   },
 });

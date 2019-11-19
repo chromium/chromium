@@ -81,7 +81,8 @@ interface FakeBluetooth {
   SetLESupported(bool available) => ();
 
   // Initializes a fake Central with |state| as the initial state.
-  SimulateCentral(CentralState state) => (FakeCentral fake_central);
+  SimulateCentral(CentralState state) =>
+      (pending_remote<FakeCentral> fake_central);
 
   // Evaluates whether all responses set by this API have been consumed by this
   // central or otherwise.  This includes responses set by:
@@ -143,10 +144,14 @@ interface FakeCentral {
                                  string name,
                                  array<UUID> known_service_uuids) => ();
 
-  // Simulates an advertisement packet described in |result| being received by the
-  // central. If the central is currently scanning, the detected device will be
-  // added to the list of detected devices. Otherwise, the call will DCHECK.
+  // Simulates an advertisement packet described in |result| being received by
+  // the central. If the central is currently scanning, the detected device will
+  // be added to the list of detected devices. Otherwise, the device will be
+  // ignored.
   SimulateAdvertisementReceived(ScanResult result) => ();
+
+  // Sets the state of this fake Central to |state|.
+  SetState(CentralState state) => ();
 
   // Sets the next GATT Connection request response for peripheral with
   // |address| to |code|. |code| could be an HCI Error Code from

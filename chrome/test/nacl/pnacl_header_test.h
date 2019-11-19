@@ -11,7 +11,6 @@
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "content/public/browser/resource_dispatcher_host_delegate.h"
 #include "content/public/common/resource_type.h"
 
 namespace net {
@@ -20,6 +19,10 @@ struct HttpRequest;
 class HttpResponse;
 }
 }
+
+/*
+TODO(https://crbug.com/711289): port to work with network service if this
+check matters.
 
 using content::ResourceDispatcherHostDelegate;
 
@@ -44,6 +47,7 @@ class TestDispatcherHostDelegate : public ResourceDispatcherHostDelegate {
 
   DISALLOW_COPY_AND_ASSIGN(TestDispatcherHostDelegate);
 };
+*/
 
 class PnaclHeaderTest : public InProcessBrowserTest {
  public:
@@ -65,7 +69,7 @@ class PnaclHeaderTest : public InProcessBrowserTest {
 
   int noncors_loads_;
   int cors_loads_;
-  TestDispatcherHostDelegate test_delegate_;
+  // TestDispatcherHostDelegate test_delegate_;
   DISALLOW_COPY_AND_ASSIGN(PnaclHeaderTest);
 };
 

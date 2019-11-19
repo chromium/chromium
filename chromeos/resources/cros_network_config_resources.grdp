@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<grit-part>
+  <include name="IDR_IP_ADDRESS_MOJOM_HTML"
+      file="${mojom_root}/services/network/public/mojom/ip_address.mojom.html"
+      use_base_dir="false"
+      type="BINDATA"
+      compress="gzip" />
+  <include name="IDR_IP_ADDRESS_MOJOM_LITE_JS"
+      file="${mojom_root}/services/network/public/mojom/ip_address.mojom-lite.js"
+      use_base_dir="false"
+      type="BINDATA"
+      compress="gzip" />
+  <include name="IDR_NETWORK_CONFIG_MOJOM_HTML"
+      file="${mojom_root}/chromeos/services/network_config/public/mojom/cros_network_config.mojom.html"
+      use_base_dir="false"
+      type="BINDATA"
+      compress="gzip" />
+  <include name="IDR_NETWORK_CONFIG_MOJOM_LITE_JS"
+      file="${mojom_root}/chromeos/services/network_config/public/mojom/cros_network_config.mojom-lite.js"
+      use_base_dir="false"
+      type="BINDATA"
+      compress="gzip" />
+</grit-part>

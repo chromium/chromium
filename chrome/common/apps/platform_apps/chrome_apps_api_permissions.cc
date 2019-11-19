@@ -23,6 +23,8 @@ std::unique_ptr<extensions::APIPermission> CreateAPIPermission(
 constexpr extensions::APIPermissionInfo::InitInfo permissions_to_register[] = {
     {extensions::APIPermission::kArcAppsPrivate, "arcAppsPrivate"},
     {extensions::APIPermission::kBrowser, "browser"},
+    {extensions::APIPermission::kFirstRunPrivate, "firstRunPrivate",
+     extensions::APIPermissionInfo::kFlagCannotBeOptional},
     {extensions::APIPermission::kMusicManagerPrivate, "musicManagerPrivate",
      extensions::APIPermissionInfo::kFlagCannotBeOptional},
     {extensions::APIPermission::kMediaGalleries, "mediaGalleries",

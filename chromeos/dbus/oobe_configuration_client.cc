@@ -22,7 +22,7 @@ namespace chromeos {
 
 class OobeConfigurationClientImpl : public OobeConfigurationClient {
  public:
-  OobeConfigurationClientImpl() : weak_ptr_factory_(this) {}
+  OobeConfigurationClientImpl() {}
 
   ~OobeConfigurationClientImpl() override = default;
 
@@ -81,7 +81,7 @@ class OobeConfigurationClientImpl : public OobeConfigurationClient {
 
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.
-  base::WeakPtrFactory<OobeConfigurationClientImpl> weak_ptr_factory_;
+  base::WeakPtrFactory<OobeConfigurationClientImpl> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(OobeConfigurationClientImpl);
 };

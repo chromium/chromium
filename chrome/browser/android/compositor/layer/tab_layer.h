@@ -155,9 +155,12 @@ class TabLayer : public Layer {
   scoped_refptr<cc::SolidColorLayer> side_padding_;
   scoped_refptr<cc::SolidColorLayer> bottom_padding_;
   scoped_refptr<cc::UIResourceLayer> close_button_;
+
   scoped_refptr<cc::NinePatchLayer> front_border_;
   scoped_refptr<cc::NinePatchLayer> front_border_inner_shadow_;
+
   scoped_refptr<cc::NinePatchLayer> contour_shadow_;
+
   scoped_refptr<cc::NinePatchLayer> shadow_;
   scoped_refptr<cc::UIResourceLayer> back_logo_;
   float brightness_;

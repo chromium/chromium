@@ -12,6 +12,8 @@ pattern that is passed in.  Only files which match the regex
 will be written to the list.
 """
 
+from __future__ import print_function
+
 import os
 import re
 import sys
@@ -39,7 +41,7 @@ def main():
 
   stream = StringIO()
   for f in files:
-    print >> stream, f
+    print(f, file=stream)
 
   WriteFile(stream.getvalue(), options.output)
   stream.close()

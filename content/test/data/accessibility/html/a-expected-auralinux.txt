@@ -1,4 +1,4 @@
 [document web] focusable focused
 ++[section]
 ++++[link] name='normal link' focusable
-++++++[text] name='normal link'
+++++++[static] name='normal link'

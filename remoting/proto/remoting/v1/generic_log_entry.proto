@@ -1,0 +1,18 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+
+package remoting.apis.v1;
+
+// A generic log entry: it's just a dictionary.
+message GenericLogEntry {
+  message Field {
+    required string key = 1;
+    required string value = 2;
+  }
+  repeated Field field = 1;
+}

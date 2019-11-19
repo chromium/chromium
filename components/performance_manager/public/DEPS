@@ -1,0 +1,5 @@
+# The public includes shouldn't depend on anything not public.
+include_rules = [
+  "-components/performance_manager",
+  "+components/performance_manager/public",
+]

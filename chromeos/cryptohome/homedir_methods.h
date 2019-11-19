@@ -13,9 +13,9 @@
 #include "base/callback_forward.h"
 #include "base/component_export.h"
 #include "chromeos/cryptohome/cryptohome_parameters.h"
+#include "chromeos/dbus/cryptohome/cryptohome_client.h"
 #include "chromeos/dbus/cryptohome/key.pb.h"
 #include "chromeos/dbus/cryptohome/rpc.pb.h"
-#include "chromeos/dbus/cryptohome_client.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
 namespace cryptohome {
@@ -61,6 +61,13 @@ class COMPONENT_EXPORT(CHROMEOS_CRYPTOHOME) HomedirMethods {
                            const AuthorizationRequest& auth,
                            const RemoveKeyRequest& request,
                            const Callback& callback) = 0;
+
+  // Asks cryptohomed to remove all keys except those whose labels are exempted
+  // in MassRemoveKeysRequest, for the user identified by |id| using |auth|.
+  virtual void MassRemoveKeys(const Identification& id,
+                              const AuthorizationRequest& auth,
+                              const MassRemoveKeysRequest& request,
+                              const Callback& callback) = 0;
 
   // Creates the global HomedirMethods instance.
   static void Initialize();

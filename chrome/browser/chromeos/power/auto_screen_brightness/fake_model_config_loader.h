@@ -44,7 +44,7 @@ class FakeModelConfigLoader : public ModelConfigLoader {
   bool is_model_config_valid_ = false;
   ModelConfig model_config_;
   base::ObserverList<Observer> observers_;
-  base::WeakPtrFactory<FakeModelConfigLoader> weak_ptr_factory_;
+  base::WeakPtrFactory<FakeModelConfigLoader> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(FakeModelConfigLoader);
 };

@@ -6,9 +6,11 @@
 
 #include "base/optional.h"
 #include "base/run_loop.h"
-#include "base/test/scoped_task_environment.h"
-#include "components/autofill/content/common/autofill_driver.mojom.h"
-#include "mojo/public/cpp/bindings/binding.h"
+#include "base/test/task_environment.h"
+#include "components/autofill/content/common/mojom/autofill_driver.mojom.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill {
@@ -19,14 +21,12 @@ const char kTestText[] = "test";
 
 class FakeContentPasswordManagerDriver : public mojom::PasswordManagerDriver {
  public:
-  FakeContentPasswordManagerDriver()
-      : called_record_save_(false), binding_(this) {}
+  FakeContentPasswordManagerDriver() : called_record_save_(false) {}
   ~FakeContentPasswordManagerDriver() override {}
 
-  mojom::PasswordManagerDriverPtr CreateInterfacePtrAndBind() {
-    mojom::PasswordManagerDriverPtr ptr;
-    binding_.Bind(mojo::MakeRequest(&ptr));
-    return ptr;
+  mojo::PendingRemote<mojom::PasswordManagerDriver>
+  CreatePendingRemoteAndBind() {
+    return receiver_.BindNewPipeAndPassRemote();
   }
 
   bool GetLogMessage(std::string* log) {
@@ -55,13 +55,15 @@ class FakeContentPasswordManagerDriver : public mojom::PasswordManagerDriver {
 
   void HideManualFallbackForSaving() override {}
 
-  void SameDocumentNavigation(
-      const autofill::PasswordForm& password_form) override {}
+  void SameDocumentNavigation(autofill::mojom::SubmissionIndicatorEvent
+                                  submission_indication_event) override {}
 
   void ShowPasswordSuggestions(base::i18n::TextDirection text_direction,
                                const base::string16& typed_username,
                                int options,
                                const gfx::RectF& bounds) override {}
+
+  void ShowTouchToFill() override {}
 
   void RecordSavePasswordProgress(const std::string& log) override {
     called_record_save_ = true;
@@ -70,10 +72,14 @@ class FakeContentPasswordManagerDriver : public mojom::PasswordManagerDriver {
 
   void UserModifiedPasswordField() override {}
 
+  void UserModifiedNonPasswordField(uint32_t renderer_id,
+                                    const base::string16& value) override {}
+
   void CheckSafeBrowsingReputation(const GURL& form_action,
                                    const GURL& frame_url) override {}
 
-  void FocusedInputChanged(bool is_fillable, bool is_password_field) override {}
+  void FocusedInputChanged(
+      autofill::mojom::FocusedFieldType focused_field_type) override {}
   void LogFirstFillingResult(uint32_t form_renderer_id,
                              int32_t result) override {}
 
@@ -82,7 +88,7 @@ class FakeContentPasswordManagerDriver : public mojom::PasswordManagerDriver {
   // Records data received via RecordSavePasswordProgress() call.
   base::Optional<std::string> log_;
 
-  mojo::Binding<mojom::PasswordManagerDriver> binding_;
+  mojo::Receiver<mojom::PasswordManagerDriver> receiver_{this};
 };
 
 class TestLogger : public RendererSavePasswordProgressLogger {
@@ -96,11 +102,11 @@ class TestLogger : public RendererSavePasswordProgressLogger {
 }  // namespace
 
 TEST(RendererSavePasswordProgressLoggerTest, SendLog) {
-  base::test::ScopedTaskEnvironment task_environment;
+  base::test::SingleThreadTaskEnvironment task_environment;
   FakeContentPasswordManagerDriver fake_driver;
-  mojom::PasswordManagerDriverPtr driver_ptr =
-      fake_driver.CreateInterfacePtrAndBind();
-  TestLogger logger(driver_ptr.get());
+  mojo::Remote<mojom::PasswordManagerDriver> driver_remote(
+      fake_driver.CreatePendingRemoteAndBind());
+  TestLogger logger(driver_remote.get());
   logger.SendLog(kTestText);
 
   base::RunLoop().RunUntilIdle();

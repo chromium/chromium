@@ -16,7 +16,7 @@ class ImeKeyboardTest : public testing::Test,
                         public ImeKeyboard::Observer {
  public:
   void SetUp() override {
-    xkey_.reset(new FakeImeKeyboard());
+    xkey_ = std::make_unique<FakeImeKeyboard>();
     xkey_->AddObserver(this);
     caps_changed_ = false;
   }

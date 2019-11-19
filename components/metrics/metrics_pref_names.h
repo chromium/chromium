@@ -10,8 +10,6 @@ namespace prefs {
 
 // Alphabetical list of preference names specific to the metrics
 // component. Document each in the .cc file.
-extern const char kDeprecatedMetricsInitialLogs[];
-extern const char kDeprecatedMetricsOngoingLogs[];
 extern const char kInstallDate[];
 extern const char kMetricsClientID[];
 extern const char kMetricsDefaultOptIn[];

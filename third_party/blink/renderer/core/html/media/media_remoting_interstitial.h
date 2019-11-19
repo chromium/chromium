@@ -5,7 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_MEDIA_MEDIA_REMOTING_INTERSTITIAL_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_MEDIA_MEDIA_REMOTING_INTERSTITIAL_H_
 
-#include "third_party/blink/public/platform/web_localized_string.h"
+#include "third_party/blink/public/strings/grit/blink_strings.h"
 #include "third_party/blink/renderer/core/html/html_div_element.h"
 #include "third_party/blink/renderer/platform/timer.h"
 
@@ -38,8 +38,8 @@ class MediaRemotingInterstitial final : public HTMLDivElement {
   void Show(const WebString& remote_device_friendly_name);
 
   // Hide Media Remoting interstitial. A text message may be displayed for five
-  // seconds according to |error_msg|.
-  void Hide(WebLocalizedString::Name error_msg);
+  // seconds according to the IDS string associated with the given |error_code|.
+  void Hide(int error_code);
 
   void OnPosterImageChanged();
 

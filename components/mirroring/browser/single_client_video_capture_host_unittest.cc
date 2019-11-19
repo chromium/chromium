@@ -7,9 +7,11 @@
 #include "base/bind.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
-#include "base/test/scoped_task_environment.h"
-#include "mojo/public/cpp/bindings/binding.h"
-#include "mojo/public/cpp/bindings/strong_binding.h"
+#include "base/test/task_environment.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -26,7 +28,7 @@ class MockVideoCaptureDevice final
   MockVideoCaptureDevice() {}
   ~MockVideoCaptureDevice() override {}
   void GetPhotoState(
-      VideoCaptureDevice::GetPhotoStateCallback callback) const override {}
+      VideoCaptureDevice::GetPhotoStateCallback callback) override {}
   void SetPhotoOptions(
       media::mojom::PhotoSettingsPtr settings,
       VideoCaptureDevice::SetPhotoOptionsCallback callback) override {}
@@ -49,13 +51,13 @@ class FakeDeviceLauncher final : public content::VideoCaptureDeviceLauncher {
                               MockVideoCaptureDevice*)>;
 
   explicit FakeDeviceLauncher(DeviceLaunchedCallback launched_cb)
-      : after_launch_cb_(std::move(launched_cb)), weak_factory_(this) {}
+      : after_launch_cb_(std::move(launched_cb)) {}
 
   ~FakeDeviceLauncher() override {}
 
   // content::VideoCaptureDeviceLauncher implementation.
   void LaunchDeviceAsync(const std::string& device_id,
-                         blink::MediaStreamType stream_type,
+                         blink::mojom::MediaStreamType stream_type,
                          const VideoCaptureParams& params,
                          base::WeakPtr<VideoFrameReceiver> receiver,
                          base::OnceClosure connection_lost_cb,
@@ -81,7 +83,7 @@ class FakeDeviceLauncher final : public content::VideoCaptureDeviceLauncher {
   }
 
   DeviceLaunchedCallback after_launch_cb_;
-  base::WeakPtrFactory<FakeDeviceLauncher> weak_factory_;
+  base::WeakPtrFactory<FakeDeviceLauncher> weak_factory_{this};
   DISALLOW_COPY_AND_ASSIGN(FakeDeviceLauncher);
 };
 
@@ -98,8 +100,9 @@ class StubReadWritePermission final
 class MockVideoCaptureObserver final
     : public media::mojom::VideoCaptureObserver {
  public:
-  explicit MockVideoCaptureObserver(media::mojom::VideoCaptureHostPtr host)
-      : host_(std::move(host)), binding_(this) {}
+  explicit MockVideoCaptureObserver(
+      mojo::PendingRemote<media::mojom::VideoCaptureHost> host)
+      : host_(std::move(host)) {}
   MOCK_METHOD1(OnBufferCreatedCall, void(int buffer_id));
   void OnNewBuffer(int32_t buffer_id,
                    media::mojom::VideoBufferHandlePtr buffer_handle) override {
@@ -131,9 +134,8 @@ class MockVideoCaptureObserver final
   MOCK_METHOD1(OnStateChanged, void(media::mojom::VideoCaptureState state));
 
   void Start() {
-    media::mojom::VideoCaptureObserverPtr observer;
-    binding_.Bind(mojo::MakeRequest(&observer));
-    host_->Start(0, 0, VideoCaptureParams(), std::move(observer));
+    host_->Start(device_id_, session_id_, VideoCaptureParams(),
+                 receiver_.BindNewPipeAndPassRemote());
   }
 
   void FinishConsumingBuffer(int32_t buffer_id, double utilization) {
@@ -141,14 +143,16 @@ class MockVideoCaptureObserver final
     const auto iter = frame_infos_.find(buffer_id);
     EXPECT_TRUE(iter != frame_infos_.end());
     frame_infos_.erase(iter);
-    host_->ReleaseBuffer(0, buffer_id, utilization);
+    host_->ReleaseBuffer(device_id_, buffer_id, utilization);
   }
 
-  void Stop() { host_->Stop(0); }
+  void Stop() { host_->Stop(device_id_); }
 
  private:
-  media::mojom::VideoCaptureHostPtr host_;
-  mojo::Binding<media::mojom::VideoCaptureObserver> binding_;
+  const base::UnguessableToken device_id_ = base::UnguessableToken::Create();
+  const base::UnguessableToken session_id_ = base::UnguessableToken::Create();
+  mojo::Remote<media::mojom::VideoCaptureHost> host_;
+  mojo::Receiver<media::mojom::VideoCaptureObserver> receiver_{this};
   base::flat_map<int, media::mojom::VideoBufferHandlePtr> buffers_;
   base::flat_map<int, media::mojom::VideoFrameInfoPtr> frame_infos_;
 
@@ -166,14 +170,15 @@ media::mojom::VideoFrameInfoPtr GetVideoFrameInfo() {
 
 class SingleClientVideoCaptureHostTest : public ::testing::Test {
  public:
-  SingleClientVideoCaptureHostTest() : weak_factory_(this) {
+  SingleClientVideoCaptureHostTest() {
     auto host_impl = std::make_unique<SingleClientVideoCaptureHost>(
-        std::string(), blink::MediaStreamType::MEDIA_GUM_TAB_VIDEO_CAPTURE,
+        std::string(), blink::mojom::MediaStreamType::GUM_TAB_VIDEO_CAPTURE,
         base::BindRepeating(
             &SingleClientVideoCaptureHostTest::CreateDeviceLauncher,
             base::Unretained(this)));
-    media::mojom::VideoCaptureHostPtr host;
-    mojo::MakeStrongBinding(std::move(host_impl), mojo::MakeRequest(&host));
+    mojo::PendingRemote<media::mojom::VideoCaptureHost> host;
+    mojo::MakeSelfOwnedReceiver(std::move(host_impl),
+                                host.InitWithNewPipeAndPassReceiver());
     consumer_ = std::make_unique<MockVideoCaptureObserver>(std::move(host));
     base::RunLoop run_loop;
     EXPECT_CALL(*this, OnDeviceLaunchedCall())
@@ -239,7 +244,7 @@ class SingleClientVideoCaptureHostTest : public ::testing::Test {
     run_loop.Run();
   }
 
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_;
   std::unique_ptr<MockVideoCaptureObserver> consumer_;
   base::WeakPtr<VideoFrameReceiver> frame_receiver_;
   MockVideoCaptureDevice* launched_device_ = nullptr;
@@ -259,7 +264,7 @@ class SingleClientVideoCaptureHostTest : public ::testing::Test {
     OnDeviceLaunchedCall();
   }
 
-  base::WeakPtrFactory<SingleClientVideoCaptureHostTest> weak_factory_;
+  base::WeakPtrFactory<SingleClientVideoCaptureHostTest> weak_factory_{this};
 };
 
 TEST_F(SingleClientVideoCaptureHostTest, Basic) {
@@ -277,7 +282,7 @@ TEST_F(SingleClientVideoCaptureHostTest, ReuseBufferId) {
   {
     EXPECT_CALL(*consumer_, OnBufferDestroyedCall(0)).Times(0);
     frame_receiver_->OnBufferRetired(0);
-    scoped_task_environment_.RunUntilIdle();
+    task_environment_.RunUntilIdle();
   }
 
   // Re-use buffer 0.

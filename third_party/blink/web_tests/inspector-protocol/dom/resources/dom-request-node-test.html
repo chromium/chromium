@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <script>
+let testObject = { a:3 };
+  </script>
+</head>
+
+<body>
+  <div id="depth-1">
+    <div id="depth-2">
+      <div id="targetDiv"></div>
+    </div>
+    <div id="targetUncle">
+      <div id="targetCousin"></div>
+    </div>
+  </div>
+  <iframe src="iframe-content.html"></iframe>
+</body>
+</html>

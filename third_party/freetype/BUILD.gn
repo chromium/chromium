@@ -61,6 +61,10 @@ source_set("freetype_source") {
   defines = []
   include_dirs = []
 
+  # FreeType only exposes ft2build.h, all other FreeType headers are accessed by macro names.
+  # gn check does not expand macros, so list only this header.
+  public = [ "src/include/ft2build.h" ]
+
   sources = [
     "include/freetype-custom-config/ftconfig.h",
     "include/freetype-custom-config/ftmodule.h",

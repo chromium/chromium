@@ -4,14 +4,15 @@
 
 #include "net/base/network_change_notifier_fuchsia.h"
 
+#include <lib/sys/cpp/component_context.h>
 #include <algorithm>
 #include <string>
 #include <utility>
 #include <vector>
 
 #include "base/bind.h"
+#include "base/fuchsia/default_context.h"
 #include "base/fuchsia/fuchsia_logging.h"
-#include "base/fuchsia/service_directory_client.h"
 #include "base/optional.h"
 #include "base/run_loop.h"
 #include "net/base/network_interfaces.h"
@@ -22,16 +23,40 @@ namespace net {
 NetworkChangeNotifierFuchsia::NetworkChangeNotifierFuchsia(
     uint32_t required_features)
     : NetworkChangeNotifierFuchsia(
-          base::fuchsia::ServiceDirectoryClient::ForCurrentProcess()
-              ->ConnectToService<fuchsia::netstack::Netstack>(),
+          base::fuchsia::ComponentContextForCurrentProcess()
+              ->svc()
+              ->Connect<fuchsia::netstack::Netstack>(),
           required_features) {}
 
 NetworkChangeNotifierFuchsia::NetworkChangeNotifierFuchsia(
     fuchsia::netstack::NetstackPtr netstack,
-    uint32_t required_features)
-    : required_features_(required_features), netstack_(std::move(netstack)) {
-  DCHECK(netstack_);
+    uint32_t required_features,
+    SystemDnsConfigChangeNotifier* system_dns_config_notifier)
+    : NetworkChangeNotifier(NetworkChangeCalculatorParams(),
+                            system_dns_config_notifier),
+      required_features_(required_features) {
+  DCHECK(netstack);
 
+  // Temporarily re-wrap our Netstack channel so we can query the interfaces
+  // and routing table synchronously to populate the initial state.
+  fuchsia::netstack::NetstackSyncPtr sync_netstack;
+  sync_netstack.Bind(netstack.Unbind());
+  DCHECK(sync_netstack);
+
+  // Manually fetch the interfaces and routes.
+  std::vector<fuchsia::netstack::NetInterface> interfaces;
+  zx_status_t status = sync_netstack->GetInterfaces(&interfaces);
+  ZX_CHECK(status == ZX_OK, status) << "synchronous GetInterfaces()";
+  std::vector<fuchsia::netstack::RouteTableEntry> routes;
+  status = sync_netstack->GetRouteTable(&routes);
+  ZX_CHECK(status == ZX_OK, status) << "synchronous GetInterfaces()";
+  // This will Notify internal observers like the NetworkChangeCalculator
+  // to be properly updated.
+  OnRouteTableReceived(std::move(interfaces), std::move(routes));
+
+  // Re-wrap Netstack back into an asynchronous pointer.
+  netstack_.Bind(sync_netstack.Unbind());
+  DCHECK(netstack_);
   netstack_.set_error_handler([](zx_status_t status) {
     // TODO(https://crbug.com/901092): Unit tests that use NetworkService are
     // crashing because NetworkService does not clean up properly, and the
@@ -41,15 +66,11 @@ NetworkChangeNotifierFuchsia::NetworkChangeNotifierFuchsia(
   });
   netstack_.events().OnInterfacesChanged = fit::bind_member(
       this, &NetworkChangeNotifierFuchsia::ProcessInterfaceList);
-
-  // Manually fetch the interface list, on which to base an initial
-  // ConnectionType.
-  netstack_->GetInterfaces(fit::bind_member(
-      this, &NetworkChangeNotifierFuchsia::ProcessInterfaceList));
 }
 
 NetworkChangeNotifierFuchsia::~NetworkChangeNotifierFuchsia() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  ClearGlobalPointer();
 }
 
 NetworkChangeNotifier::ConnectionType
@@ -119,19 +140,13 @@ void NetworkChangeNotifierFuchsia::OnRouteTableReceived(
     }
   }
 
-  bool connection_type_changed = false;
-  if (connection_type != cached_connection_type_) {
-    base::subtle::Release_Store(&cached_connection_type_, connection_type);
-    connection_type_changed = true;
-  }
-
   if (addresses != cached_addresses_) {
     std::swap(cached_addresses_, addresses);
     NotifyObserversOfIPAddressChange();
-    connection_type_changed = true;
   }
 
-  if (connection_type_changed) {
+  if (connection_type != cached_connection_type_) {
+    base::subtle::Release_Store(&cached_connection_type_, connection_type);
     NotifyObserversOfConnectionTypeChange();
   }
 }

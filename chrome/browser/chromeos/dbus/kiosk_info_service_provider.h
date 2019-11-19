@@ -41,7 +41,7 @@ class KioskInfoService : public CrosDBusService::ServiceProviderInterface {
       dbus::MethodCall* method_call,
       dbus::ExportedObject::ResponseSender response_sender);
 
-  base::WeakPtrFactory<KioskInfoService> weak_ptr_factory_;
+  base::WeakPtrFactory<KioskInfoService> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(KioskInfoService);
 };

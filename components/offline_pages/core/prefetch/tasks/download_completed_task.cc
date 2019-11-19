@@ -116,8 +116,7 @@ DownloadCompletedTask::DownloadCompletedTask(
     const PrefetchDownloadResult& download_result)
     : prefetch_dispatcher_(prefetch_dispatcher),
       prefetch_store_(prefetch_store),
-      download_result_(download_result),
-      weak_ptr_factory_(this) {
+      download_result_(download_result) {
   DCHECK(!download_result_.download_id.empty());
 }
 

@@ -47,16 +47,6 @@ class EngineComponentsFactory {
     BACKOFF_SHORT_INITIAL_RETRY_OVERRIDE
   };
 
-  enum PreCommitUpdatesPolicy {
-    // By default, the server will enable or disable this experiment through the
-    // sync protocol's experiments data type.
-    SERVER_CONTROLLED_PRE_COMMIT_UPDATE_AVOIANCE,
-
-    // This flag overrides the server's decision and enables the pre-commit
-    // update avoidance experiment.
-    FORCE_ENABLE_PRE_COMMIT_UPDATE_AVOIDANCE,
-  };
-
   // Configuration options for internal components. This struct is expected
   // to grow and shrink over time with transient features / experiments,
   // roughly following command line flags in chrome. Implementations of
@@ -66,7 +56,6 @@ class EngineComponentsFactory {
     EncryptionMethod encryption_method;
     BackoffOverride backoff_override;
     bool force_short_nudge_delay_for_test;
-    PreCommitUpdatesPolicy pre_commit_updates_policy;
   };
 
   // For selecting the types of storage to use to persist sync data when
@@ -97,17 +86,16 @@ class EngineComponentsFactory {
       DebugInfoGetter* debug_info_getter,
       ModelTypeRegistry* model_type_registry,
       const std::string& invalidator_client_id,
-      base::TimeDelta short_poll_interval,
-      base::TimeDelta long_poll_interval) = 0;
+      const std::string& store_birthday,
+      const std::string& bag_of_chips,
+      base::TimeDelta poll_interval) = 0;
 
   virtual std::unique_ptr<syncable::DirectoryBackingStore>
-  BuildDirectoryBackingStore(StorageOption storage,
-                             const std::string& dir_name,
-                             const base::FilePath& backing_filepath) = 0;
-
-  // Returns the Switches struct that this object is using as configuration, if
-  // the implementation is making use of one.
-  virtual Switches GetSwitches() const = 0;
+  BuildDirectoryBackingStore(
+      StorageOption storage,
+      const std::string& dir_name,
+      const base::RepeatingCallback<std::string()>& cache_guid_generator,
+      const base::FilePath& backing_filepath) = 0;
 };
 
 }  // namespace syncer

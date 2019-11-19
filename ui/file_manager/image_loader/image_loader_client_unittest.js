@@ -36,7 +36,7 @@ function loadAndCheckCacheUsed(client, url, cache) {
     if (callback) {
       callback(new LoadImageResponse(
           LoadImageResponseStatus.SUCCESS, message.taskId || -1,
-          {data: 'ImageData', width: 100, height: 100}));
+          {width: 100, height: 100, ifd: null, data: 'ImageData'}));
     }
   };
 

@@ -35,7 +35,7 @@
                 app:tint="@color/default_icon_color"
                 style="@style/ListItemStartIcon" />
 
-            <org.chromium.chrome.browser.widget.AlertDialogEditText
+            <org.chromium.chrome.browser.ui.widget.text.AlertDialogEditText
                 android:id="@+id/file_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -70,7 +70,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/download_location_dialog_checkbox"
-            android:layout_marginTop="16dp" />
+            android:layout_marginTop="16dp"
+            android:layout_marginStart="-5dp"/>
 
     </LinearLayout>
 

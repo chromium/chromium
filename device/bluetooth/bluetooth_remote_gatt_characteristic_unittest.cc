@@ -14,6 +14,7 @@
 #include "build/build_config.h"
 #include "device/bluetooth/bluetooth_remote_gatt_characteristic.h"
 #include "device/bluetooth/bluetooth_remote_gatt_service.h"
+#include "device/bluetooth/test/mock_bluetooth_adapter.h"
 #include "device/bluetooth/test/test_bluetooth_adapter_observer.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -30,6 +31,9 @@
 #elif defined(OS_FUCHSIA)
 #include "device/bluetooth/test/bluetooth_test_fuchsia.h"
 #endif
+
+using testing::_;
+using testing::Invoke;
 
 namespace device {
 
@@ -733,12 +737,12 @@ TEST_F(BluetoothRemoteGattCharacteristicTest, MAYBE_ReadRemoteCharacteristic) {
 
 // Callback that make sure GattCharacteristicValueChanged has been called
 // before the callback runs.
-static void test_callback(
+static void TestCallback(
     BluetoothRemoteGattCharacteristic::ValueCallback callback,
     const TestBluetoothAdapterObserver& callback_observer,
     const std::vector<uint8_t>& value) {
   EXPECT_EQ(0, callback_observer.gatt_characteristic_value_changed_count());
-  callback.Run(value);
+  std::move(callback).Run(value);
 }
 
 #if defined(OS_ANDROID) || defined(OS_MACOSX)
@@ -767,8 +771,8 @@ TEST_F(BluetoothRemoteGattCharacteristicTest,
   TestBluetoothAdapterObserver observer(adapter_);
 
   characteristic1_->ReadRemoteCharacteristic(
-      base::Bind(test_callback, GetReadValueCallback(Call::EXPECTED),
-                 std::cref(observer)),
+      base::BindOnce(TestCallback, GetReadValueCallback(Call::EXPECTED),
+                     std::cref(observer)),
       GetGattErrorCallback(Call::NOT_EXPECTED));
 
   std::vector<uint8_t> test_vector = {0, 1, 2, 3, 4, 0xf, 0xf0, 0xff};
@@ -878,7 +882,7 @@ TEST_F(BluetoothRemoteGattCharacteristicTest,
 #define MAYBE_WriteRemoteCharacteristic_Twice WriteRemoteCharacteristic_Twice
 #else
 #define MAYBE_WriteRemoteCharacteristic_Twice \
-  DISABLEDWriteRemoteCharacteristic_Twice
+  DISABLED_WriteRemoteCharacteristic_Twice
 #endif
 // Tests WriteRemoteCharacteristic multiple times.
 #if defined(OS_WIN)
@@ -2851,14 +2855,14 @@ TEST_F(BluetoothRemoteGattCharacteristicTest,
 
   // Start notify session
   characteristic1_->StartNotifySession(
-      base::Bind(
+      base::BindOnce(
           [](BluetoothRemoteGattCharacteristic::NotifySessionCallback
-                 notifyCallback,
-             base::Closure stopNotifyCallback,
+                 notify_callback,
+             base::OnceClosure stop_notify_callback,
              std::unique_ptr<BluetoothGattNotifySession> session) {
             BluetoothGattNotifySession* s = session.get();
-            notifyCallback.Run(std::move(session));
-            s->Stop(stopNotifyCallback);
+            std::move(notify_callback).Run(std::move(session));
+            s->Stop(std::move(stop_notify_callback));
           },
           GetNotifyCallback(Call::EXPECTED),
           GetStopNotifyCallback(Call::EXPECTED)),
@@ -2905,12 +2909,13 @@ TEST_F(BluetoothRemoteGattCharacteristicTest,
   EXPECT_EQ(characteristic1_, notify_sessions_[0]->GetCharacteristic());
   EXPECT_TRUE(characteristic1_->IsNotifying());
 
-  notify_sessions_[0]->Stop(base::Bind(
+  notify_sessions_[0]->Stop(base::BindOnce(
       [](BluetoothRemoteGattCharacteristic* characteristic,
          BluetoothRemoteGattCharacteristic::NotifySessionCallback
-             notifyCallback,
-         BluetoothRemoteGattCharacteristic::ErrorCallback errorCallback) {
-        characteristic->StartNotifySession(notifyCallback, errorCallback);
+             notify_callback,
+         BluetoothRemoteGattCharacteristic::ErrorCallback error_callback) {
+        characteristic->StartNotifySession(std::move(notify_callback),
+                                           std::move(error_callback));
       },
       characteristic1_, GetNotifyCallback(Call::EXPECTED),
       GetGattErrorCallback(Call::NOT_EXPECTED)));
@@ -2960,12 +2965,13 @@ TEST_F(BluetoothRemoteGattCharacteristicTest,
   EXPECT_EQ(characteristic1_, notify_sessions_[0]->GetCharacteristic());
   EXPECT_TRUE(characteristic1_->IsNotifying());
 
-  notify_sessions_[0]->Stop(base::Bind(
+  notify_sessions_[0]->Stop(base::BindOnce(
       [](BluetoothRemoteGattCharacteristic* characteristic,
          BluetoothRemoteGattCharacteristic::NotifySessionCallback
-             notifyCallback,
-         BluetoothRemoteGattCharacteristic::ErrorCallback errorCallback) {
-        characteristic->StartNotifySession(notifyCallback, errorCallback);
+             notify_callback,
+         BluetoothRemoteGattCharacteristic::ErrorCallback error_callback) {
+        characteristic->StartNotifySession(std::move(notify_callback),
+                                           std::move(error_callback));
       },
       characteristic1_, GetNotifyCallback(Call::NOT_EXPECTED),
       GetGattErrorCallback(Call::EXPECTED)));
@@ -3113,6 +3119,60 @@ TEST_F(BluetoothRemoteGattCharacteristicTest,
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE("Did not crash!");
   EXPECT_EQ(0, observer.gatt_characteristic_value_changed_count());
+}
+
+// Tests that closing the GATT connection during a characteristic
+// value notification is safe.
+#if defined(OS_ANDROID) || defined(OS_MACOSX)
+#define MAYBE_GattCharacteristicValueChanged_DisconnectDuring \
+  GattCharacteristicValueChanged_DisconnectDuring
+#else
+#define MAYBE_GattCharacteristicValueChanged_DisconnectDuring \
+  DISABLED_GattCharacteristicValueChanged_DisconnectDuring
+#endif
+#if defined(OS_WIN)
+TEST_P(BluetoothRemoteGattCharacteristicTestWinrtOnly,
+       GattCharacteristicValueChanged_DisconnectDuring) {
+#else
+TEST_F(BluetoothRemoteGattCharacteristicTest,
+       MAYBE_GattCharacteristicValueChanged_DisconnectDuring) {
+#endif
+  if (!PlatformSupportsLowEnergy()) {
+    LOG(WARNING) << "Low Energy Bluetooth unavailable, skipping unit test.";
+    return;
+  }
+  ASSERT_NO_FATAL_FAILURE(StartNotifyBoilerplate(
+      /* properties: NOTIFY */ 0x10, NotifyValueState::NOTIFY));
+  MockBluetoothAdapter::Observer observer1(adapter_);
+  MockBluetoothAdapter::Observer observer2(adapter_);
+
+  // |observer1| will be notified first and close the GATT connection which
+  // may prevent |observer2| from being notified if |characteristic1_| has been
+  // freed.
+  base::RunLoop loop;
+  EXPECT_CALL(observer1, GattCharacteristicValueChanged(adapter_.get(),
+                                                        characteristic1_, _))
+      .WillOnce(
+          Invoke([&](BluetoothAdapter*, BluetoothRemoteGattCharacteristic*,
+                     const std::vector<uint8_t>& value) {
+            gatt_connections_[0]->Disconnect();
+            loop.Quit();
+          }));
+  EXPECT_CALL(observer2, GattCharacteristicValueChanged(adapter_.get(),
+                                                        characteristic1_, _))
+      .Times(testing::AtMost(1))
+      .WillRepeatedly(
+          Invoke([&](BluetoothAdapter*,
+                     BluetoothRemoteGattCharacteristic* characteristic,
+                     const std::vector<uint8_t>& value) {
+            // Call a method on |characteristic| to check the pointer is still
+            // valid.
+            EXPECT_EQ(value, characteristic->GetValue());
+          }));
+
+  std::vector<uint8_t> empty_vector;
+  SimulateGattCharacteristicChanged(characteristic1_, empty_vector);
+  loop.Run();
 }
 
 #if defined(OS_ANDROID)
@@ -3330,6 +3390,44 @@ TEST_F(
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(BluetoothRemoteGattService::GATT_ERROR_FAILED,
             last_gatt_error_code_);
+}
+
+// Tests that closing the GATT connection when a characteristic value write
+// fails due to a disconnect is safe.
+#if defined(OS_ANDROID) || defined(OS_MACOSX)
+#define MAYBE_WriteWithoutResponseOnlyCharacteristic_CloseConnectionDuringDisconnect \
+  WriteWithoutResponseOnlyCharacteristic_CloseConnectionDuringDisconnect
+#else
+#define MAYBE_WriteWithoutResponseOnlyCharacteristic_CloseConnectionDuringDisconnect \
+  DISABLED_WriteWithoutResponseOnlyCharacteristic_CloseConnectionDuringDisconnect
+#endif
+#if defined(OS_WIN)
+TEST_P(BluetoothRemoteGattCharacteristicTestWinrtOnly,
+       WriteWithoutResponseOnlyCharacteristic_CloseConnectionDuringDisconnect) {
+#else
+TEST_F(
+    BluetoothRemoteGattCharacteristicTest,
+    MAYBE_WriteWithoutResponseOnlyCharacteristic_CloseConnectionDuringDisconnect) {
+#endif
+  if (!PlatformSupportsLowEnergy()) {
+    LOG(WARNING) << "Low Energy Bluetooth unavailable, skipping unit test.";
+    return;
+  }
+  ASSERT_NO_FATAL_FAILURE(FakeCharacteristicBoilerplate(
+      BluetoothRemoteGattCharacteristic::PROPERTY_WRITE_WITHOUT_RESPONSE));
+
+  base::RunLoop loop;
+  characteristic1_->WriteRemoteCharacteristic(
+      std::vector<uint8_t>(), GetCallback(Call::NOT_EXPECTED),
+      base::BindLambdaForTesting(
+          [&](BluetoothGattService::GattErrorCode error_code) {
+            EXPECT_EQ(BluetoothRemoteGattService::GATT_ERROR_FAILED,
+                      error_code);
+            gatt_connections_[0]->Disconnect();
+            loop.Quit();
+          }));
+  SimulateDeviceBreaksConnection(adapter_->GetDevices()[0]);
+  loop.Run();
 }
 
 #if defined(OS_MACOSX)

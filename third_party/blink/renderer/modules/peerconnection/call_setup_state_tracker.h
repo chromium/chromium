@@ -5,11 +5,11 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_PEERCONNECTION_CALL_SETUP_STATE_TRACKER_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_PEERCONNECTION_CALL_SETUP_STATE_TRACKER_H_
 
-#include <set>
 #include <utility>
 
 #include "third_party/blink/renderer/modules/modules_export.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/hash_set.h"
 
 namespace blink {
 
@@ -117,9 +117,9 @@ class MODULES_EXPORT CallSetupStateTracker {
   bool NoteAnswererStateEvent(AnswererState event, bool document_uses_media);
 
  private:
-  const std::set<std::pair<OffererState, OffererState>>
+  const HashSet<std::pair<OffererState, OffererState>>
       valid_offerer_transitions_;
-  const std::set<std::pair<AnswererState, AnswererState>>
+  const HashSet<std::pair<AnswererState, AnswererState>>
       valid_answerer_transitions_;
 
   OffererState offerer_state_;

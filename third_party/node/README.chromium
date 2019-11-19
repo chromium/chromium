@@ -1,7 +1,7 @@
 Name: Node JS
 Short Name: node
 URL: https://github.com/nodejs/node
-Version: 8.9.1
+Version: 10.15.3
 Revision: f098f8295c407e5a5126b501ed5f1aa80bd86106
 Date: Tue Dec 06 2016 18:07:35 GMT-0800 (PST)
 License: NodeJS
@@ -15,3 +15,38 @@ update NPM dependencies.
 
 Local Modifications:
 See chromium_polymer_bundler.patch
+
+
+Name: SVG Optimizer
+Short Name: svgo
+URL: https://www.npmjs.com/package/svgo
+Version: 1.2.0
+Date: Feb 24, 2019
+Revision: 0cc1d0a3d6d6ea38eb2f764d17fb097d9ffe6b31
+License: MIT
+License File: NOT_SHIPPED
+Security Critical: Probably not (does rewrite .svg files displayed on chrome:// pages, though)
+License Android Compatible: Yes?
+
+Description:
+SVG Optimizer is a Nodejs-based tool for optimizing SVG vector graphics files.
+
+Local Modifications:
+(none)
+
+
+Name: Typescript Compiler
+Short Name: typescript
+URL: https://www.npmjs.com/package/typescript
+Version: 3.5.3
+License: Apache 2.0
+Security Critical: No. The compiler is not shipped with Chrome but code compiled using it is.
+
+Description:
+TypeScript is a language for application-scale JavaScript. TypeScript adds
+optional types to JavaScript that support tools for large-scale JavaScript
+applications for any browser, for any host, on any OS. TypeScript compiles to
+readable, standards-based JavaScript.
+
+Local Modifications:
+(none)

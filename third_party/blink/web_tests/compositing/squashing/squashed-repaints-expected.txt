@@ -4,37 +4,23 @@ CASE 1, original layer tree:
 {
   "layers": [
     {
-      "name": "LayoutView #document",
-      "bounds": [800, 600],
-      "drawsContent": false,
-      "backgroundColor": "#FFFFFF"
-    },
-    {
-      "name": "Scrolling Layer",
-      "bounds": [800, 600],
-      "drawsContent": false
-    },
-    {
       "name": "Scrolling Contents Layer",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "Squashing Containment Layer",
-      "drawsContent": false
-    },
-    {
-      "name": "LayoutBlockFlow (positioned) DIV class='composited'",
+      "name": "LayoutNGBlockFlow (positioned) DIV class='composited'",
       "bounds": [100, 100],
       "contentsOpaque": true,
       "backgroundColor": "#808080",
       "transform": 1
     },
     {
-      "name": "Squashing Layer (first squashed layer: LayoutBlockFlow (positioned) DIV id='A' class='overlap1')",
-      "position": [140, 140],
-      "bounds": [260, 260]
+      "name": "Squashing Layer (first squashed layer: LayoutNGBlockFlow (positioned) DIV id='A' class='overlap1')",
+      "position": [80, 80],
+      "bounds": [260, 260],
+      "transform": 1
     }
   ],
   "transforms": [
@@ -45,8 +31,7 @@ CASE 1, original layer tree:
         [0, 1, 0, 0],
         [0, 0, 1, 0],
         [60, 60, 0, 1]
-      ],
-      "flattenInheritedTransform": false
+      ]
     }
   ]
 }
@@ -55,44 +40,30 @@ CASE 2, overlap1 changes color:
 {
   "layers": [
     {
-      "name": "LayoutView #document",
-      "bounds": [800, 600],
-      "drawsContent": false,
-      "backgroundColor": "#FFFFFF"
-    },
-    {
-      "name": "Scrolling Layer",
-      "bounds": [800, 600],
-      "drawsContent": false
-    },
-    {
       "name": "Scrolling Contents Layer",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "Squashing Containment Layer",
-      "drawsContent": false
-    },
-    {
-      "name": "LayoutBlockFlow (positioned) DIV class='composited'",
+      "name": "LayoutNGBlockFlow (positioned) DIV class='composited'",
       "bounds": [100, 100],
       "contentsOpaque": true,
       "backgroundColor": "#808080",
       "transform": 1
     },
     {
-      "name": "Squashing Layer (first squashed layer: LayoutBlockFlow (positioned) DIV id='A' class='overlap1')",
-      "position": [140, 140],
+      "name": "Squashing Layer (first squashed layer: LayoutNGBlockFlow (positioned) DIV id='A' class='overlap1')",
+      "position": [80, 80],
       "bounds": [260, 260],
       "paintInvalidations": [
         {
-          "object": "LayoutBlockFlow (positioned) DIV id='A' class='overlap1'",
+          "object": "LayoutNGBlockFlow (positioned) DIV id='A' class='overlap1'",
           "rect": [0, 0, 100, 100],
           "reason": "background"
         }
-      ]
+      ],
+      "transform": 1
     }
   ],
   "transforms": [
@@ -103,8 +74,7 @@ CASE 2, overlap1 changes color:
         [0, 1, 0, 0],
         [0, 0, 1, 0],
         [60, 60, 0, 1]
-      ],
-      "flattenInheritedTransform": false
+      ]
     }
   ]
 }
@@ -113,49 +83,35 @@ CASE 3, overlap1 and overlap2 change color:
 {
   "layers": [
     {
-      "name": "LayoutView #document",
-      "bounds": [800, 600],
-      "drawsContent": false,
-      "backgroundColor": "#FFFFFF"
-    },
-    {
-      "name": "Scrolling Layer",
-      "bounds": [800, 600],
-      "drawsContent": false
-    },
-    {
       "name": "Scrolling Contents Layer",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "Squashing Containment Layer",
-      "drawsContent": false
-    },
-    {
-      "name": "LayoutBlockFlow (positioned) DIV class='composited'",
+      "name": "LayoutNGBlockFlow (positioned) DIV class='composited'",
       "bounds": [100, 100],
       "contentsOpaque": true,
       "backgroundColor": "#808080",
       "transform": 1
     },
     {
-      "name": "Squashing Layer (first squashed layer: LayoutBlockFlow (positioned) DIV id='A' class='overlap1')",
-      "position": [140, 140],
+      "name": "Squashing Layer (first squashed layer: LayoutNGBlockFlow (positioned) DIV id='A' class='overlap1')",
+      "position": [80, 80],
       "bounds": [260, 260],
       "paintInvalidations": [
         {
-          "object": "LayoutBlockFlow (positioned) DIV id='B' class='overlap2'",
+          "object": "LayoutNGBlockFlow (positioned) DIV id='B' class='overlap2'",
           "rect": [80, 80, 100, 100],
           "reason": "background"
         },
         {
-          "object": "LayoutBlockFlow (positioned) DIV id='A' class='overlap1'",
+          "object": "LayoutNGBlockFlow (positioned) DIV id='A' class='overlap1'",
           "rect": [0, 0, 100, 100],
           "reason": "background"
         }
-      ]
+      ],
+      "transform": 1
     }
   ],
   "transforms": [
@@ -166,8 +122,7 @@ CASE 3, overlap1 and overlap2 change color:
         [0, 1, 0, 0],
         [0, 0, 1, 0],
         [60, 60, 0, 1]
-      ],
-      "flattenInheritedTransform": false
+      ]
     }
   ]
 }
@@ -176,49 +131,35 @@ CASE 4, overlap2 and overlap3 change color:
 {
   "layers": [
     {
-      "name": "LayoutView #document",
-      "bounds": [800, 600],
-      "drawsContent": false,
-      "backgroundColor": "#FFFFFF"
-    },
-    {
-      "name": "Scrolling Layer",
-      "bounds": [800, 600],
-      "drawsContent": false
-    },
-    {
       "name": "Scrolling Contents Layer",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "Squashing Containment Layer",
-      "drawsContent": false
-    },
-    {
-      "name": "LayoutBlockFlow (positioned) DIV class='composited'",
+      "name": "LayoutNGBlockFlow (positioned) DIV class='composited'",
       "bounds": [100, 100],
       "contentsOpaque": true,
       "backgroundColor": "#808080",
       "transform": 1
     },
     {
-      "name": "Squashing Layer (first squashed layer: LayoutBlockFlow (positioned) DIV id='A' class='overlap1')",
-      "position": [140, 140],
+      "name": "Squashing Layer (first squashed layer: LayoutNGBlockFlow (positioned) DIV id='A' class='overlap1')",
+      "position": [80, 80],
       "bounds": [260, 260],
       "paintInvalidations": [
         {
-          "object": "LayoutBlockFlow (positioned) DIV id='C' class='overlap3'",
+          "object": "LayoutNGBlockFlow (positioned) DIV id='C' class='overlap3'",
           "rect": [160, 160, 100, 100],
           "reason": "background"
         },
         {
-          "object": "LayoutBlockFlow (positioned) DIV id='B' class='overlap2'",
+          "object": "LayoutNGBlockFlow (positioned) DIV id='B' class='overlap2'",
           "rect": [80, 80, 100, 100],
           "reason": "background"
         }
-      ]
+      ],
+      "transform": 1
     }
   ],
   "transforms": [
@@ -229,8 +170,7 @@ CASE 4, overlap2 and overlap3 change color:
         [0, 1, 0, 0],
         [0, 0, 1, 0],
         [60, 60, 0, 1]
-      ],
-      "flattenInheritedTransform": false
+      ]
     }
   ]
 }
@@ -239,49 +179,35 @@ CASE 5, overlap3 and overlap1 change color:
 {
   "layers": [
     {
-      "name": "LayoutView #document",
-      "bounds": [800, 600],
-      "drawsContent": false,
-      "backgroundColor": "#FFFFFF"
-    },
-    {
-      "name": "Scrolling Layer",
-      "bounds": [800, 600],
-      "drawsContent": false
-    },
-    {
       "name": "Scrolling Contents Layer",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "Squashing Containment Layer",
-      "drawsContent": false
-    },
-    {
-      "name": "LayoutBlockFlow (positioned) DIV class='composited'",
+      "name": "LayoutNGBlockFlow (positioned) DIV class='composited'",
       "bounds": [100, 100],
       "contentsOpaque": true,
       "backgroundColor": "#808080",
       "transform": 1
     },
     {
-      "name": "Squashing Layer (first squashed layer: LayoutBlockFlow (positioned) DIV id='A' class='overlap1')",
-      "position": [140, 140],
+      "name": "Squashing Layer (first squashed layer: LayoutNGBlockFlow (positioned) DIV id='A' class='overlap1')",
+      "position": [80, 80],
       "bounds": [260, 260],
       "paintInvalidations": [
         {
-          "object": "LayoutBlockFlow (positioned) DIV id='C' class='overlap3'",
+          "object": "LayoutNGBlockFlow (positioned) DIV id='C' class='overlap3'",
           "rect": [160, 160, 100, 100],
           "reason": "background"
         },
         {
-          "object": "LayoutBlockFlow (positioned) DIV id='A' class='overlap1'",
+          "object": "LayoutNGBlockFlow (positioned) DIV id='A' class='overlap1'",
           "rect": [0, 0, 100, 100],
           "reason": "background"
         }
-      ]
+      ],
+      "transform": 1
     }
   ],
   "transforms": [
@@ -292,8 +218,7 @@ CASE 5, overlap3 and overlap1 change color:
         [0, 1, 0, 0],
         [0, 0, 1, 0],
         [60, 60, 0, 1]
-      ],
-      "flattenInheritedTransform": false
+      ]
     }
   ]
 }

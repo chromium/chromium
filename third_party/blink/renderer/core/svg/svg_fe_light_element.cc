@@ -26,30 +26,49 @@
 #include "third_party/blink/renderer/core/svg/svg_fe_diffuse_lighting_element.h"
 #include "third_party/blink/renderer/core/svg/svg_fe_specular_lighting_element.h"
 #include "third_party/blink/renderer/core/svg_names.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
 
 namespace blink {
 
 SVGFELightElement::SVGFELightElement(const QualifiedName& tag_name,
                                      Document& document)
     : SVGElement(tag_name, document),
-      azimuth_(SVGAnimatedNumber::Create(this, svg_names::kAzimuthAttr, 0.0f)),
+      azimuth_(MakeGarbageCollected<SVGAnimatedNumber>(this,
+                                                       svg_names::kAzimuthAttr,
+                                                       0.0f)),
       elevation_(
-          SVGAnimatedNumber::Create(this, svg_names::kElevationAttr, 0.0f)),
-      x_(SVGAnimatedNumber::Create(this, svg_names::kXAttr, 0.0f)),
-      y_(SVGAnimatedNumber::Create(this, svg_names::kYAttr, 0.0f)),
-      z_(SVGAnimatedNumber::Create(this, svg_names::kZAttr, 0.0f)),
+          MakeGarbageCollected<SVGAnimatedNumber>(this,
+                                                  svg_names::kElevationAttr,
+                                                  0.0f)),
+      x_(MakeGarbageCollected<SVGAnimatedNumber>(this,
+                                                 svg_names::kXAttr,
+                                                 0.0f)),
+      y_(MakeGarbageCollected<SVGAnimatedNumber>(this,
+                                                 svg_names::kYAttr,
+                                                 0.0f)),
+      z_(MakeGarbageCollected<SVGAnimatedNumber>(this,
+                                                 svg_names::kZAttr,
+                                                 0.0f)),
       points_at_x_(
-          SVGAnimatedNumber::Create(this, svg_names::kPointsAtXAttr, 0.0f)),
+          MakeGarbageCollected<SVGAnimatedNumber>(this,
+                                                  svg_names::kPointsAtXAttr,
+                                                  0.0f)),
       points_at_y_(
-          SVGAnimatedNumber::Create(this, svg_names::kPointsAtYAttr, 0.0f)),
+          MakeGarbageCollected<SVGAnimatedNumber>(this,
+                                                  svg_names::kPointsAtYAttr,
+                                                  0.0f)),
       points_at_z_(
-          SVGAnimatedNumber::Create(this, svg_names::kPointsAtZAttr, 0.0f)),
-      specular_exponent_(
-          SVGAnimatedNumber::Create(this, svg_names::kSpecularExponentAttr, 1)),
-      limiting_cone_angle_(
-          SVGAnimatedNumber::Create(this,
-                                    svg_names::kLimitingConeAngleAttr,
-                                    0.0f)) {
+          MakeGarbageCollected<SVGAnimatedNumber>(this,
+                                                  svg_names::kPointsAtZAttr,
+                                                  0.0f)),
+      specular_exponent_(MakeGarbageCollected<SVGAnimatedNumber>(
+          this,
+          svg_names::kSpecularExponentAttr,
+          1)),
+      limiting_cone_angle_(MakeGarbageCollected<SVGAnimatedNumber>(
+          this,
+          svg_names::kLimitingConeAngleAttr,
+          0.0f)) {
   AddToPropertyMap(azimuth_);
   AddToPropertyMap(elevation_);
   AddToPropertyMap(x_);

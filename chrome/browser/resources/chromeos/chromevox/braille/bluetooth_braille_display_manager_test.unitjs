@@ -3,9 +3,9 @@
 // found in the LICENSE file.
 
 // Include test fixture.
-GEN_INCLUDE(['../testing/chromevox_unittest_base.js']);
+GEN_INCLUDE(['//chrome/browser/resources/chromeos/chromevox/testing/chromevox_unittest_base.js']);
 
-GEN_INCLUDE(['../testing/fake_objects.js']);
+GEN_INCLUDE(['//chrome/browser/resources/chromeos/chromevox/testing/fake_objects.js']);
 
 // Fake out the Chrome API namespace we depend on.
 var chrome = {};

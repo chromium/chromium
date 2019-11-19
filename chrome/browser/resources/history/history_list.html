@@ -1,8 +1,8 @@
 <link rel="import" href="chrome://resources/html/polymer.html">
 
 <link rel="import" href="chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.html">
-<link rel="import" href="chrome://resources/cr_elements/paper_button_style_css.html">
 <link rel="import" href="chrome://resources/cr_elements/shared_style_css.html">
+<link rel="import" href="chrome://resources/html/i18n_behavior.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-a11y-announcer/iron-a11y-announcer.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-list/iron-list.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-scroll-threshold/iron-scroll-threshold.html">
@@ -11,11 +11,11 @@
 <link rel="import" href="history_item.html">
 <link rel="import" href="shared_style.html">
 
-<!-- Lazy loaded: cr-dialog, cr-action-menu, paper-button. -->
+<!-- Lazy loaded: cr-dialog, cr-action-menu, cr-button. -->
 
 <dom-module id="history-list">
   <template>
-    <style include="shared-style cr-shared-style paper-button-style">
+    <style include="shared-style cr-shared-style">
       :host {
         box-sizing: border-box;
         display: block;
@@ -48,6 +48,7 @@
             search-term="[[searchedTerm]]"
             number-of-items="[[historyData_.length]]"
             index="[[index]]"
+            focus-row-index="[[index]]"
             iron-list-tab-index="[[tabIndex]]"
             last-focused="{{lastFocused_}}"
             list-blurred="{{listBlurred_}}">
@@ -65,12 +66,12 @@
           <div slot="title">$i18n{removeSelected}</div>
           <div slot="body">$i18n{deleteWarning}</div>
           <div slot="button-container">
-            <paper-button class="cancel-button" on-click="onDialogCancelTap_">
+            <cr-button class="cancel-button" on-click="onDialogCancelTap_">
               $i18n{cancel}
-            </paper-button>
-            <paper-button class="action-button" on-click="onDialogConfirmTap_">
+            </cr-button>
+            <cr-button class="action-button" on-click="onDialogConfirmTap_">
               $i18n{deleteConfirm}
-            </paper-button>
+            </cr-button>
           </div>
         </cr-dialog>
       </template>
@@ -78,7 +79,7 @@
 
     <cr-lazy-render id="sharedMenu">
       <template>
-        <cr-action-menu aria-label="$i18n{actionMenuDescription}">
+        <cr-action-menu role-description="$i18n{actionMenuDescription}">
           <button id="menuMoreButton" class="dropdown-item"
               hidden="[[!canSearchMoreFromSite_(
                   searchedTerm, actionMenuModel_.item.domain)]]"

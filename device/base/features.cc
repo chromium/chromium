@@ -16,14 +16,8 @@ const base::Feature kNewBLEWinImplementation{"NewBLEWinImplementation",
 #endif  // defined(OS_WIN)
 
 #if defined(OS_CHROMEOS)
-// Enables or disables the use of newblue Bluetooth daemon on Chrome OS.
-const base::Feature kNewblueDaemon{"Newblue",
-                                   base::FEATURE_DISABLED_BY_DEFAULT};
-// Shows all Bluetooth devices in UI (System Tray/Settings Page).
-// Needed for working on the early integration with NewBlue.
-// TODO(crbug.com/862492): Remove this feature once NewBlue gets stable.
-const base::Feature kUnfilteredBluetoothDevices{
-    "UnfilteredBluetoothDevices", base::FEATURE_DISABLED_BY_DEFAULT};
+// Enables or disables the use of Bluetooth dispatcher daemon on Chrome OS.
+const base::Feature kNewblueDaemon{"Newblue", base::FEATURE_ENABLED_BY_DEFAULT};
 #endif  // defined(OS_CHROMEOS)
 
 #if BUILDFLAG(ENABLE_VR)

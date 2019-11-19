@@ -20,7 +20,7 @@ class AccessibilityFeaturePodControllerTest : public NoSessionAshTestBase {
   void SetUp() override {
     NoSessionAshTestBase::SetUp();
 
-    tray_model_ = std::make_unique<UnifiedSystemTrayModel>();
+    tray_model_ = std::make_unique<UnifiedSystemTrayModel>(nullptr);
     tray_controller_ =
         std::make_unique<UnifiedSystemTrayController>(tray_model_.get());
   }
@@ -58,14 +58,14 @@ class AccessibilityFeaturePodControllerTest : public NoSessionAshTestBase {
 TEST_F(AccessibilityFeaturePodControllerTest, ButtonVisibilityNotLoggedIn) {
   SetUpButton();
   // If not logged in, it should be always visible.
-  EXPECT_TRUE(button()->visible());
+  EXPECT_TRUE(button()->GetVisible());
 }
 
 TEST_F(AccessibilityFeaturePodControllerTest, ButtonVisibilityLoggedIn) {
   CreateUserSessions(1);
   SetUpButton();
   // If logged in, it's not visible by default.
-  EXPECT_FALSE(button()->visible());
+  EXPECT_FALSE(button()->GetVisible());
 }
 
 }  // namespace ash

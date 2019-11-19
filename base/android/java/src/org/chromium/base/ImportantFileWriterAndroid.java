@@ -5,6 +5,7 @@
 package org.chromium.base;
 
 import org.chromium.base.annotations.JNINamespace;
+import org.chromium.base.annotations.NativeMethods;
 
 /**
  * This class provides an interface to the native class for writing
@@ -23,9 +24,11 @@ public class ImportantFileWriterAndroid {
      * @return true if the data was written to the file, false if not.
      */
     public static boolean writeFileAtomically(String fileName, byte[] data) {
-        return nativeWriteFileAtomically(fileName, data);
+        return ImportantFileWriterAndroidJni.get().writeFileAtomically(fileName, data);
     }
 
-    private static native boolean nativeWriteFileAtomically(
-            String fileName, byte[] data);
+    @NativeMethods
+    interface Natives {
+        boolean writeFileAtomically(String fileName, byte[] data);
+    }
 }

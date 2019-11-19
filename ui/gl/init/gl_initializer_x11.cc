@@ -83,8 +83,6 @@ bool InitializeStaticEGLInternal(GLImplementation implementation) {
   base::FilePath glesv2_path(kGLESv2LibraryName);
   base::FilePath egl_path(kEGLLibraryName);
 
-  const base::CommandLine* cmd = base::CommandLine::ForCurrentProcess();
-
   if (implementation == kGLImplementationSwiftShaderGL) {
 #if BUILDFLAG(ENABLE_SWIFTSHADER)
     base::FilePath module_path;
@@ -97,8 +95,7 @@ bool InitializeStaticEGLInternal(GLImplementation implementation) {
 #else
     return false;
 #endif
-  } else if (cmd->GetSwitchValueASCII(switches::kUseGL) ==
-             kGLImplementationANGLEName) {
+  } else if (implementation == kGLImplementationEGLANGLE) {
     base::FilePath module_path;
     if (!base::PathService::Get(base::DIR_MODULE, &module_path))
       return false;
@@ -130,7 +127,11 @@ bool InitializeStaticEGLInternal(GLImplementation implementation) {
   SetGLGetProcAddressProc(get_proc_address);
   AddGLNativeLibrary(egl_library);
   AddGLNativeLibrary(gles_library);
-  SetGLImplementation(kGLImplementationEGLGLES2);
+  if (implementation == kGLImplementationEGLANGLE) {
+    SetGLImplementation(kGLImplementationEGLANGLE);
+  } else {
+    SetGLImplementation(kGLImplementationEGLGLES2);
+  }
 
   InitializeStaticGLBindingsGL();
   InitializeStaticGLBindingsEGL();
@@ -150,6 +151,7 @@ bool InitializeGLOneOffPlatform() {
       return true;
     case kGLImplementationSwiftShaderGL:
     case kGLImplementationEGLGLES2:
+    case kGLImplementationEGLANGLE:
       if (!GLSurfaceEGL::InitializeOneOff(gfx::GetXDisplay())) {
         LOG(ERROR) << "GLSurfaceEGL::InitializeOneOff failed.";
         return false;
@@ -177,6 +179,7 @@ bool InitializeStaticGLBindings(GLImplementation implementation) {
       return InitializeStaticGLXInternal();
     case kGLImplementationSwiftShaderGL:
     case kGLImplementationEGLGLES2:
+    case kGLImplementationEGLANGLE:
       return InitializeStaticEGLInternal(implementation);
     case kGLImplementationMockGL:
     case kGLImplementationStubGL:

@@ -76,7 +76,7 @@ class BackgroundProfilingTriggers {
   // Timer to periodically check memory consumption and upload a slow-report.
   base::RepeatingTimer timer_;
 
-  base::WeakPtrFactory<BackgroundProfilingTriggers> weak_ptr_factory_;
+  base::WeakPtrFactory<BackgroundProfilingTriggers> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(BackgroundProfilingTriggers);
 };

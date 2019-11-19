@@ -34,8 +34,6 @@
  * a certain type.
  * @prop {number} size Byte size
  * @prop {number} count Number of symbols
- * @prop {number} highlight Byte size of children that should be
- * highlighted.
  */
 
 /**

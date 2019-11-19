@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "base/callback.h"
 #include "base/compiler_specific.h"
@@ -23,11 +24,17 @@ namespace syncer {
 // behavior.
 class FakeSyncEngine : public SyncEngine {
  public:
+  static constexpr char kTestCacheGuid[] = "test-guid";
+  static constexpr char kTestBirthday[] = "1";
+  static constexpr char kTestKeystoreKey[] = "test-keystore-key";
+
   FakeSyncEngine();
   ~FakeSyncEngine() override;
 
   // Immediately calls params.host->OnEngineInitialized.
   void Initialize(InitParams params) override;
+
+  bool IsInitialized() const override;
 
   void TriggerRefresh(const ModelTypeSet& types) override;
 
@@ -42,6 +49,9 @@ class FakeSyncEngine : public SyncEngine {
   void SetEncryptionPassphrase(const std::string& passphrase) override;
 
   void SetDecryptionPassphrase(const std::string& passphrase) override;
+
+  void AddTrustedVaultDecryptionKeys(const std::vector<std::string>& keys,
+                                     base::OnceClosure done_cb) override;
 
   void StopSyncingForShutdown() override;
 
@@ -67,7 +77,7 @@ class FakeSyncEngine : public SyncEngine {
 
   UserShare* GetUserShare() const override;
 
-  Status GetDetailedStatus() override;
+  SyncStatus GetDetailedStatus() override;
 
   void HasUnsyncedItemsForTest(
       base::OnceCallback<void(bool)> cb) const override;
@@ -86,11 +96,12 @@ class FakeSyncEngine : public SyncEngine {
                           bool empty_jar,
                           const base::Closure& callback) override;
   void SetInvalidationsForSessionsEnabled(bool enabled) override;
-
+  void GetNigoriNodeForDebugging(AllNodesCallback callback) override;
   void set_fail_initial_download(bool should_fail);
 
  private:
-  bool fail_initial_download_;
+  bool fail_initial_download_ = false;
+  bool initialized_ = false;
 };
 
 }  // namespace syncer

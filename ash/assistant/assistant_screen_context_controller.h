@@ -11,9 +11,11 @@
 #include "ash/assistant/assistant_controller_observer.h"
 #include "ash/assistant/model/assistant_screen_context_model.h"
 #include "ash/assistant/model/assistant_ui_model_observer.h"
-#include "ash/public/interfaces/assistant_controller.mojom.h"
+#include "ash/public/mojom/assistant_controller.mojom.h"
 #include "base/macros.h"
-#include "mojo/public/cpp/bindings/binding.h"
+#include "chromeos/services/assistant/public/mojom/assistant.mojom.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace ui {
@@ -34,7 +36,8 @@ class ASH_EXPORT AssistantScreenContextController
       AssistantController* assistant_controller);
   ~AssistantScreenContextController() override;
 
-  void BindRequest(mojom::AssistantScreenContextControllerRequest request);
+  void BindReceiver(
+      mojo::PendingReceiver<mojom::AssistantScreenContextController> receiver);
 
   // Provides a pointer to the |assistant| owned by AssistantController.
   void SetAssistant(chromeos::assistant::mojom::Assistant* assistant);
@@ -71,7 +74,7 @@ class ASH_EXPORT AssistantScreenContextController
  private:
   AssistantController* const assistant_controller_;  // Owned by Shell.
 
-  mojo::Binding<mojom::AssistantScreenContextController> binding_;
+  mojo::Receiver<mojom::AssistantScreenContextController> receiver_{this};
 
   // Owned by AssistantController.
   chromeos::assistant::mojom::Assistant* assistant_ = nullptr;
@@ -80,7 +83,7 @@ class ASH_EXPORT AssistantScreenContextController
 
   // Weak pointer factory used for screen context requests.
   base::WeakPtrFactory<AssistantScreenContextController>
-      screen_context_request_factory_;
+      screen_context_request_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(AssistantScreenContextController);
 };

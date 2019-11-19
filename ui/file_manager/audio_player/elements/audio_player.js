@@ -100,6 +100,8 @@ Polymer({
 
     /** @type {AriaLabels} */
     ariaLabels: Object,
+
+    ariaExpandArtworkLabel: String,
   },
 
   /**

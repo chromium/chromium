@@ -2,6 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// clang-format off
+// #import 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.m.js';
+// #import {keyDownOn, keyUpOn, pressAndReleaseKeyOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
+// #import {eventToPromise} from '../test_util.m.js';
+// clang-format on
+
 suite('cr-checkbox', function() {
   let checkbox;
 
@@ -22,65 +28,57 @@ suite('cr-checkbox', function() {
   function assertChecked() {
     assertTrue(checkbox.checked);
     assertTrue(checkbox.hasAttribute('checked'));
-    assertEquals('true', checkbox.getAttribute('aria-checked'));
+    assertEquals('true', checkbox.$.checkbox.getAttribute('aria-checked'));
   }
 
   function assertNotChecked() {
     assertFalse(checkbox.checked);
     assertEquals(null, checkbox.getAttribute('checked'));
-    assertEquals('false', checkbox.getAttribute('aria-checked'));
+    assertEquals('false', checkbox.$.checkbox.getAttribute('aria-checked'));
   }
 
   function assertDisabled() {
     assertTrue(checkbox.disabled);
-    assertEquals('-1', checkbox.getAttribute('tabindex'));
+    assertFalse(checkbox.hasAttribute('tabindex'));
+    assertEquals('-1', checkbox.$.checkbox.getAttribute('tabindex'));
     assertTrue(checkbox.hasAttribute('disabled'));
-    assertEquals('true', checkbox.getAttribute('aria-disabled'));
+    assertEquals('true', checkbox.$.checkbox.getAttribute('aria-disabled'));
     assertEquals('none', getComputedStyle(checkbox).pointerEvents);
   }
 
   function assertNotDisabled() {
     assertFalse(checkbox.disabled);
-    assertEquals('0', checkbox.getAttribute('tabindex'));
+    assertFalse(checkbox.hasAttribute('tabindex'));
+    assertEquals('0', checkbox.$.checkbox.getAttribute('tabindex'));
     assertFalse(checkbox.hasAttribute('disabled'));
-    assertEquals('false', checkbox.getAttribute('aria-disabled'));
+    assertEquals('false', checkbox.$.checkbox.getAttribute('aria-disabled'));
   }
 
   /**
    * @param {string} keyName The name of the key to trigger.
-   * @param {string} keyCode The event keyCode and code to trigger.
    * @param {HTMLElement=} element
    */
-  function triggerKeyPressEvent(keyName, keyCode, element) {
-    element = element || checkbox;
-
-    // Note: MockInteractions incorrectly populates |keyCode| and |code| with
-    // the same value. The intention of passing a string here is only to set
-    // |code|, since |keyCode| is not used its value doesn't matter.
-    MockInteractions.keyEventOn(
-        element, 'keypress', keyCode, undefined, keyName);
+  function triggerKeyPressEvent(keyName, element) {
+    element = element || checkbox.$.checkbox;
+    MockInteractions.pressAndReleaseKeyOn(element, '', undefined, keyName);
   }
 
   // Test that the control is checked when the user taps on it (no movement
   // between pointerdown and pointerup).
-  test('ToggleByMouse', function() {
+  test('ToggleByMouse', async () => {
     let whenChanged = test_util.eventToPromise('change', checkbox);
     checkbox.click();
-    return whenChanged
-        .then(function() {
-          assertChecked();
-          whenChanged = test_util.eventToPromise('change', checkbox);
-          checkbox.click();
-          return whenChanged;
-        })
-        .then(function() {
-          assertNotChecked();
-        });
+    await whenChanged;
+    assertChecked();
+    whenChanged = test_util.eventToPromise('change', checkbox);
+    checkbox.click();
+    await whenChanged;
+    assertNotChecked();
   });
 
   // Test that the control is checked when the |checked| attribute is
   // programmatically changed.
-  test('ToggleByAttribute', function(done) {
+  test('ToggleByAttribute', done => {
     test_util.eventToPromise('change', checkbox).then(function() {
       // Should not fire 'change' event when state is changed programmatically.
       // Only user interaction should result in 'change' event.
@@ -97,27 +95,19 @@ suite('cr-checkbox', function() {
     setTimeout(done);
   });
 
-  // Test that the control is checked when the user presses the 'Enter' or
-  // 'Space' key.
-  test('ToggleByKey', function() {
+  test('Toggle checkbox button click', async () => {
     let whenChanged = test_util.eventToPromise('change', checkbox);
-    triggerKeyPressEvent('Enter', 'Enter');
-    return whenChanged
-        .then(function() {
-          assertChecked();
-          whenChanged = test_util.eventToPromise('change', checkbox);
-          triggerKeyPressEvent(' ', 'Space');
-          return whenChanged;
-        })
-        .then(function() {
-          assertNotChecked();
-          whenChanged = test_util.eventToPromise('change', checkbox);
-          triggerKeyPressEvent('Enter', 'NumpadEnter');
-          return whenChanged;
-        })
-        .then(function() {
-          assertChecked();
-        });
+    checkbox.$.checkbox.click();
+    await whenChanged;
+    assertChecked();
+    whenChanged = test_util.eventToPromise('change', checkbox);
+    triggerKeyPressEvent('Enter');
+    await whenChanged;
+    assertNotChecked();
+    whenChanged = test_util.eventToPromise('change', checkbox);
+    triggerKeyPressEvent(' ');
+    await whenChanged;
+    assertChecked();
   });
 
   // Test that the control is not affected by user interaction when disabled.
@@ -131,7 +121,13 @@ suite('cr-checkbox', function() {
     });
 
     checkbox.click();
-    triggerKeyPressEvent('Enter', 'Enter');
+    assertNotChecked();
+    checkbox.$.checkbox.click();
+    assertNotChecked();
+    triggerKeyPressEvent('Enter');
+    assertNotChecked();
+    triggerKeyPressEvent(' ');
+    assertNotChecked();
 
     // Wait 1 cycle to make sure change-event was not fired.
     setTimeout(done);
@@ -152,29 +148,42 @@ suite('cr-checkbox', function() {
     });
 
     assertNotChecked();
-    link = document.querySelector('a');
+    const link = document.querySelector('a');
     link.click();
     assertNotChecked();
 
-    triggerKeyPressEvent('Enter', 'Enter', link);
+    triggerKeyPressEvent('Enter', link);
     assertNotChecked();
 
     // Wait 1 cycle to make sure change-event was not fired.
     setTimeout(done);
   });
 
+  test('space key down does not toggle', () => {
+    assertNotChecked();
+    MockInteractions.keyDownOn(checkbox.$.checkbox, null, undefined, ' ');
+    assertNotChecked();
+  });
+
+  test('space key up toggles', () => {
+    assertNotChecked();
+    MockInteractions.keyUpOn(checkbox.$.checkbox, null, undefined, ' ');
+    assertChecked();
+  });
+
   test('InitializingWithTabindex', function() {
     PolymerTest.clearBody();
     document.body.innerHTML = `
-      <cr-checkbox id="checkbox" tabindex="-1"></cr-checkbox>
+      <cr-checkbox id="checkbox" tab-index="-1"></cr-checkbox>
     `;
 
     checkbox = document.querySelector('cr-checkbox');
 
     // Should not override tabindex if it is initialized.
     assertEquals(-1, checkbox.tabIndex);
+    assertFalse(checkbox.hasAttribute('tabindex'));
+    assertEquals('-1', checkbox.$.checkbox.getAttribute('tabindex'));
   });
-
 
   test('InitializingWithDisabled', function() {
     PolymerTest.clearBody();
@@ -186,16 +195,18 @@ suite('cr-checkbox', function() {
 
     // Initializing with disabled should make tabindex="-1".
     assertEquals(-1, checkbox.tabIndex);
+    assertFalse(checkbox.hasAttribute('tabindex'));
+    assertEquals('-1', checkbox.$.checkbox.getAttribute('tabindex'));
   });
 
-  // Ensure that even if user clicks on the element, the entire element gets
-  // focused, as opposed to focusing the inner <button> only.
-  test('FocusAfterClicking', function() {
-    const innerButton = checkbox.$$('button');
-    innerButton.focus();
-    assertNotChecked();
-    assertEquals(null, checkbox.shadowRoot.activeElement);
-    assertEquals('CR-CHECKBOX', document.activeElement.tagName);
+  test('tabindex attribute is controlled by tabIndex', () => {
+    PolymerTest.clearBody();
+    document.body.innerHTML = `
+      <cr-checkbox id="checkbox" tabindex="-1"></cr-checkbox>
+    `;
+    checkbox = document.querySelector('cr-checkbox');
+    assertEquals(0, checkbox.tabIndex);
+    assertFalse(checkbox.hasAttribute('tabindex'));
+    assertEquals('0', checkbox.$.checkbox.getAttribute('tabindex'));
   });
-
 });

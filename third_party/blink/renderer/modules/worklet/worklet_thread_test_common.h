@@ -13,12 +13,20 @@ namespace blink {
 
 class AnimationWorkletProxyClient;
 class Document;
+class PaintWorkletProxyClient;
 class WorkerReportingProxy;
 
 std::unique_ptr<AnimationAndPaintWorkletThread>
-CreateAnimationAndPaintWorkletThread(Document*,
-                                     WorkerReportingProxy*,
-                                     AnimationWorkletProxyClient* = nullptr);
+CreateThreadAndProvideAnimationWorkletProxyClient(
+    Document*,
+    WorkerReportingProxy*,
+    AnimationWorkletProxyClient* = nullptr);
+
+std::unique_ptr<AnimationAndPaintWorkletThread>
+CreateThreadAndProvidePaintWorkletProxyClient(
+    Document*,
+    WorkerReportingProxy*,
+    PaintWorkletProxyClient* = nullptr);
 
 }  // namespace blink
 

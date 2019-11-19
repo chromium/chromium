@@ -67,4 +67,13 @@ suite('AppearanceFontHandler', function() {
     button.click();
     return fontsBrowserProxy.whenCalled('openAdvancedFontSettings');
   });
+
+  test('minimum font size sample', async () => {
+    fontsPage.prefs = {webkit: {webprefs: {minimum_font_size: {value: 0}}}};
+    assertTrue(fontsPage.$.minimumSizeSample.hidden);
+    fontsPage.set('prefs.webkit.webprefs.minimum_font_size.value', 6);
+    assertFalse(fontsPage.$.minimumSizeSample.hidden);
+    fontsPage.set('prefs.webkit.webprefs.minimum_font_size.value', 0);
+    assertTrue(fontsPage.$.minimumSizeSample.hidden);
+  });
 });

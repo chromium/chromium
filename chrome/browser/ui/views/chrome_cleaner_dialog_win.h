@@ -55,8 +55,6 @@ class ChromeCleanerDialog
   bool ShouldShowCloseButton() const override;
 
   // views::DialogDelegate overrides.
-  base::string16 GetDialogButtonLabel(ui::DialogButton button) const override;
-  views::View* CreateExtraView() override;
   bool Accept() override;
   bool Cancel() override;
   bool Close() override;
@@ -82,13 +80,13 @@ class ChromeCleanerDialog
   void HandleDialogInteraction(DialogInteractionResult result);
   void Abort();
 
-  Browser* browser_;
+  Browser* browser_ = nullptr;
   // The pointer will be set to nullptr once the controller has been notified of
   // user interaction since the controller can delete itself after that point.
-  safe_browsing::ChromeCleanerDialogController* dialog_controller_;
-  safe_browsing::ChromeCleanerController* cleaner_controller_;
-  views::LabelButton* details_button_;
-  views::Checkbox* logs_permission_checkbox_;
+  safe_browsing::ChromeCleanerDialogController* dialog_controller_ = nullptr;
+  safe_browsing::ChromeCleanerController* cleaner_controller_ = nullptr;
+  views::LabelButton* details_button_ = nullptr;
+  views::Checkbox* logs_permission_checkbox_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(ChromeCleanerDialog);
 };

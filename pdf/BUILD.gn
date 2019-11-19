@@ -4,7 +4,6 @@
 
 import("//build/buildflag_header.gni")
 import("//build/config/features.gni")
-import("//build/config/jumbo.gni")
 import("//pdf/features.gni")
 import("//testing/test.gni")
 import("//third_party/pdfium/pdfium.gni")
@@ -20,12 +19,14 @@ if (enable_pdf) {
   pdf_engine = 0  # 0 PDFium
 
   config("pdf_common_config") {
+    configs = [ "//build/config/compiler:noshadowing" ]
+
     if (pdf_engine == 0) {
       include_dirs = [ "//third_party/pdfium" ]
     }
   }
 
-  jumbo_static_library("pdf") {
+  static_library("pdf") {
     configs += [ ":pdf_common_config" ]
     deps = [
       ":features",
@@ -50,13 +51,19 @@ if (enable_pdf) {
       "accessibility.cc",
       "accessibility.h",
       "chunk_stream.h",
+      "document_layout.cc",
+      "document_layout.h",
       "document_loader.h",
       "document_loader_impl.cc",
       "document_loader_impl.h",
-      "draw_utils.cc",
-      "draw_utils.h",
+      "draw_utils/coordinates.cc",
+      "draw_utils/coordinates.h",
+      "draw_utils/shadow.cc",
+      "draw_utils/shadow.h",
       "out_of_process_instance.cc",
       "out_of_process_instance.h",
+      "page_orientation.cc",
+      "page_orientation.h",
       "paint_aggregator.cc",
       "paint_aggregator.h",
       "paint_manager.cc",
@@ -103,6 +110,8 @@ if (enable_pdf) {
         "pdfium/pdfium_mem_buffer_file_write.h",
         "pdfium/pdfium_page.cc",
         "pdfium/pdfium_page.h",
+        "pdfium/pdfium_permissions.cc",
+        "pdfium/pdfium_permissions.h",
         "pdfium/pdfium_print.cc",
         "pdfium/pdfium_print.h",
         "pdfium/pdfium_range.cc",
@@ -110,6 +119,13 @@ if (enable_pdf) {
         "pdfium/pdfium_unsupported_features.cc",
         "pdfium/pdfium_unsupported_features.h",
       ]
+
+      if (is_linux) {
+        sources += [
+          "pdfium/pdfium_font_linux.cc",
+          "pdfium/pdfium_font_linux.h",
+        ]
+      }
     }
   }
 
@@ -136,11 +152,16 @@ if (enable_pdf) {
       "test/test_client.h",
       "test/test_document_loader.cc",
       "test/test_document_loader.h",
+      "test/test_utils.cc",
+      "test/test_utils.h",
     ]
+
+    configs += [ "//build/config/compiler:noshadowing" ]
 
     deps = [
       ":pdf",
       "//base",
+      "//testing/gtest",
     ]
   }
 
@@ -149,19 +170,22 @@ if (enable_pdf) {
     configs += [ ":pdf_common_config" ]
     sources = [
       "chunk_stream_unittest.cc",
+      "document_layout_unittest.cc",
       "document_loader_impl_unittest.cc",
+      "draw_utils/coordinates_unittest.cc",
+      "out_of_process_instance_unittest.cc",
+      "page_orientation_unittest.cc",
       "pdf_transform_unittest.cc",
       "range_set_unittest.cc",
-      "run_all_unittests.cc",
     ]
 
     deps = [
       ":pdf",
       ":pdf_test_utils",
       "//base",
+      "//base/test:run_all_unittests",
       "//base/test:test_support",
       "//ppapi/c",
-      "//ppapi/cpp",
       "//testing/gmock",
       "//testing/gtest",
       "//ui/gfx/range",
@@ -182,16 +206,16 @@ if (enable_pdf) {
         "pdfium/accessibility_unittest.cc",
         "pdfium/findtext_unittest.cc",
         "pdfium/pdfium_engine_exports_unittest.cc",
+        "pdfium/pdfium_engine_unittest.cc",
+        "pdfium/pdfium_page_unittest.cc",
+        "pdfium/pdfium_permissions_unittest.cc",
         "pdfium/pdfium_print_unittest.cc",
         "pdfium/pdfium_test_base.cc",
         "pdfium/pdfium_test_base.h",
       ]
 
       if (v8_use_external_startup_data) {
-        data += [
-          "$root_out_dir/natives_blob.bin",
-          "$root_out_dir/snapshot_blob.bin",
-        ]
+        data += [ "$root_out_dir/snapshot_blob.bin" ]
       }
     }
   }

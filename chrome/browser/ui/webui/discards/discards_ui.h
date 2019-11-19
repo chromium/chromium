@@ -9,7 +9,7 @@
 
 #include "base/macros.h"
 #include "chrome/browser/ui/webui/discards/discards.mojom.h"
-#include "services/resource_coordinator/public/mojom/webui_graph_dump.mojom.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 
 namespace resource_coordinator {
@@ -25,11 +25,11 @@ class DiscardsUI : public ui::MojoWebUIController {
 
  private:
   void BindDiscardsDetailsProvider(
-      mojom::DiscardsDetailsProviderRequest request);
-  void BindWebUIGraphDumpProvider(
-      resource_coordinator::mojom::WebUIGraphDumpRequest request);
+      mojo::PendingReceiver<discards::mojom::DetailsProvider> receiver);
+  void BindDiscardsGraphDumpProvider(
+      mojo::PendingReceiver<discards::mojom::GraphDump> receiver);
 
-  std::unique_ptr<mojom::DiscardsDetailsProvider> ui_handler_;
+  std::unique_ptr<discards::mojom::DetailsProvider> ui_handler_;
   resource_coordinator::LocalSiteCharacteristicsDataStoreInspector*
       data_store_inspector_;
 

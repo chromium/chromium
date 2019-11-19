@@ -1,6 +1,6 @@
 Tests that rules in shadow host are reported in matched styles
 Dumping matched rules: 
-:host {    regular
+*:host* {    regular
     color: red;
 }
 Dumping inherited rules: 

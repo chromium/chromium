@@ -5,14 +5,8 @@ found in the LICENSE file.
 -->
 <!doctype html>
 <head>
-<title>
-piex wasm raw image preview / thumbnail test page
-</title>
-<style>
-  canvas, img { margin: 0 9px 0 0; vertical-align: top }
-  pre { font-size: 18pt }
-  .zoom { width: 50% }
-</style>
+ <title>piex wasm raw image preview / thumbnail test page</title>
+ <link type="text/css" rel="stylesheet" href="/tests.css">
 </head>
 
 <body>
@@ -23,21 +17,18 @@ piex wasm raw image preview / thumbnail test page
   class ImageBuffer {
     constructor(buffer) {
       this.source = new Uint8Array(buffer);
+      this.length = buffer.byteLength;
     }
 
-    process(done) {
-      const memory = Module._malloc(this.source.byteLength);
+    process() {
+      this.memory = Module._malloc(this.length);
+      if (!this.memory)
+        throw new Error('image malloc failure');
 
-      const callback = Module.addFunction((result) => {
-        this.result = result;
-        Module.removeFunction(callback);
-        Module._free(memory);
-        done(this);
-      }, 'vi');
+      Module.HEAP8.set(this.source, this.memory);
+      this.result = Module.image(this.memory, this.length);
 
-      // Process the image: blocks until |callback| is called.
-      Module.HEAP8.set(this.source, memory);
-      Module._image(memory, this.source.byteLength, callback);
+      return this.result;
     }
 
     preview() {
@@ -45,12 +36,15 @@ piex wasm raw image preview / thumbnail test page
       if (!preview || this.result.error)
         return null;
 
-      const offset = preview.offset;
-      const length = preview.length;
-      const view = new Uint8Array(this.source.buffer, offset, length);
-
       if (preview.format != 0)
         throw new Error('preview images should be JPEG format');
+
+      const offset = preview.offset;
+      const length = preview.length;
+      if (offset > this.length || (this.length - offset) < length)
+        throw new Error('failed to extract preview');
+
+      const view = new Uint8Array(this.source.buffer, offset, length);
       preview.data = new Uint8Array(view);
       preview.type = 'preview';
 
@@ -64,15 +58,117 @@ piex wasm raw image preview / thumbnail test page
 
       const offset = thumbnail.offset;
       const length = thumbnail.length;
-      const view = new Uint8Array(this.source.buffer, offset, length);
+      if (offset > this.length || (this.length - offset) < length)
+        throw new Error('failed to extract thumbnail');
 
+      const view = new Uint8Array(this.source.buffer, offset, length);
+      thumbnail.data = new Uint8Array(view);
       if (thumbnail.format == 1)  // RGB
         thumbnail.size = thumbnail.width * thumbnail.height * 3;
-      thumbnail.data = new Uint8Array(view);
       thumbnail.type = 'thumbnail';
 
       return thumbnail;
     }
+
+    details() {
+      const details = this.result ? this.result.details : null;
+      if (!details || this.result.error)
+        return null;
+
+      let format = {};
+      for (const [key, value] of Object.entries(details)) {
+        if (typeof value === 'string') {
+          format[key] = value.replace(/\0+$/, '').trim();
+        } else if (typeof value === 'number') {
+          if (!Number.isInteger(value)) {
+            format[key] = Number(value.toFixed(3).replace(/0+$/, ''));
+          } else {
+            format[key] = value;
+          }
+        }
+      }
+
+      return JSON.stringify(format);
+    }
+
+    close() {
+      Module._free(this.memory);
+    }
+  }
+
+  function createFileSystem(images) {
+    return new Promise((resolve, reject) => {
+      document.title = 'createFileSystem';
+
+      function failed(error) {
+        reject(new Error('Creating file system: ' + error));
+      }
+
+      function createdFileSystem(fileSystem) {
+        console.log('test: created file system', fileSystem.name);
+        window.fileSystem = fileSystem;
+        resolve();
+      }
+
+      const bytes = images * 30 * 1024 * 1024;  // 30M per image.
+      window.webkitRequestFileSystem(
+          window.TEMPORARY, bytes, createdFileSystem, failed);
+    });
+  }
+
+  function writeToFileSystem(image) {
+    return new Promise(async (resolve, reject) => {
+      document.title = image;
+
+      const buffer = await fetch(image).then((response) => {
+        if (!response.ok)
+          throw new Error('Failed to fetch image: ' + image);
+        return response.arrayBuffer();
+      }).catch(reject);
+
+      function failure(error) {
+        reject(new Error('Writing file system: ' + error));
+      }
+
+      function writeEntry(fileEntry) {
+        fileEntry.createWriter((writer) => {
+          writer.onerror = failure;
+          writer.onwrite = resolve;
+          writer.write(new Blob([buffer]));
+        }, failure);
+      }
+
+      window.fileSystem.root.getFile(
+          image.replace('images/', ''), {create: true}, writeEntry, failure);
+    });
+  }
+
+  function readFromFileSystem(image) {
+    return new Promise((resolve, reject) => {
+      document.title = image;
+
+      function failure(error) {
+        reject(new Error('Reading file system: ' + error));
+      }
+
+      function invalid(size) {
+        return size <= 0 || size >= Math.pow(2, 30);
+      }
+
+      function readEntry(fileEntry) {
+        fileEntry.file((file) => {
+          if (invalid(file.size))
+            return failure('invalid file size');
+          const reader = new FileReader();
+          reader.onerror = failure;
+          reader.onload = () => resolve(reader.result);
+          reader.readAsArrayBuffer(file);
+        }, failure);
+      }
+
+      window.fileSystem.root.getFile(
+          image.replace('images/', ''), {}, readEntry, failure);
+    });
   }
 
   function hashUint8Array(data, hash = ~0) {
@@ -82,18 +178,9 @@ piex wasm raw image preview / thumbnail test page
   }
 
   function renderJPG(name, image) {
-    // Large image.data here: save it then undefine it so we don't JSON.stringify it
-    // into the image logging. The hash is sufficient to uniquely id the image.data.
-    const hash = hashUint8Array(image.data);
     const data = image.data;
-    image.data = undefined;
 
-    console.log('test:', name, image.type, 'hash', hash);
-    console.log('test:', JSON.stringify(image));
-
-    // Render the JPEG image.
     let renderer = new Image();
-
     renderer.onerror = renderer.onload = (event) => {
       if (renderer.width > (window.screen.availWidth / 2))
         renderer.classList.add('zoom');
@@ -108,16 +195,11 @@ piex wasm raw image preview / thumbnail test page
   }
 
   function renderRGB(name, image) {
-    // Large image.data here: save it then undefine it (for the reasons noted above).
-    const hash = hashUint8Array(image.data);
     const data = image.data;
-    image.data = undefined;
-
-    console.log('test:', name, image.type, 'hash', hash);
-    console.log('test:', JSON.stringify(image));
 
     let canvas = document.createElement('canvas');
-    Object.assign(canvas, { image.width, image.height });
+    canvas.width = image.width;
+    canvas.height = image.height;
     if (image.width > (window.screen.availWidth / 2))
       canvas.classList.add('zoom');
 
@@ -137,28 +219,41 @@ piex wasm raw image preview / thumbnail test page
   }
 
   function renderResult(name, image) {
-    if (image && image.format == 0)
-      renderJPG(name, image);
-    if (image && image.format == 1)
-      renderRGB(name, image);
+    if (!image)
+      return;
+
+    const hash = hashUint8Array(image.data);
+    const data = image.data;
+    image.data = undefined;
+    const result = JSON.stringify(image);
+    console.log('test:', name, image.type, 'hash', hash, result);
+    image.data = data;
+
+    if (image.format == 0)
+      return renderJPG(name, image);
+    if (image.format == 1)
+      return renderRGB(name, image);
   }
 
-  self.Module = {
-    onRuntimeInitialized: () => {
-      piexModuleReady instanceof Function ? piexModuleReady() : undefined;
-    }
+  function renderDetails(name, details) {
+    if (!details)
+      return;
+
+    const text = new TextEncoder('UTF-8').encode(details);
+    const hash = hashUint8Array(text);
+
+    console.log('test:', name, 'details hash', hash, details);
+  }
+
+  window.Module = {
+    onRuntimeInitialized: () => document.title = 'READY',
   };
 
-  window.onload = () => {
-    // Load the wasm module, now the piexModuleReady handler is installed.
+  window.onload = function loadPiexModule() {
     let script = document.createElement('script');
     document.head.appendChild(script);
-    script.src = '/a.out.js';
+    script.src = '/piex.js.wasm';
   };
-
-  function piexModuleReady() {
-    document.title = 'READY';
-  }
 
   window.onerror = (error) => {
     console.log('test: FAIL', error, '\n');
@@ -172,25 +267,37 @@ piex wasm raw image preview / thumbnail test page
     document.body.innerHTML = `<pre>${image}</pre>`;
 
     // Fetch the image in an array buffer.
-    let time = performance.now();
-    const buffer = await fetch(image).then(r => r.arrayBuffer());
-    time = performance.now() - time;
-    console.log('test: fetch time', time.toFixed(3) + 'ms');
+    let time = window.performance.now();
+    const buffer = await readFromFileSystem(image).catch(onerror);
+    if (!buffer)
+      return;
 
-    // Extract its preview and thumbnail images, render them.
-    time = performance.now();
-    new Promise(resolve => {
-      new ImageBuffer(buffer).process(resolve);
-    }).then((imageBuffer) => {
-      time = performance.now() - time;
-      console.log('test: result ' + JSON.stringify(imageBuffer.result));
+    let imageBuffer = new ImageBuffer(buffer);
+    const fetched = window.performance.now() - time;
+
+    // Extract the preview|thumbnail images, render them.
+    return new Promise((resolve) => {
+      resolve(imageBuffer.process());
+    }).then((result) => {
+      let preview = imageBuffer.preview();
+      let thumb = imageBuffer.thumbnail();
+      let details = imageBuffer.details();
+      imageBuffer.close();
+      time = window.performance.now() - time;
       window.images_ = 0;
-      renderResult(image, imageBuffer.preview());
-      renderResult(image, imageBuffer.thumbnail());
-      console.log('test: done', time.toFixed(3) + 'ms');
+      renderDetails(image, details);
+      renderResult(image, preview);
+      renderResult(image, thumb);
+      console.log('test: done',
+        time.toFixed(3), fetched.toFixed(3), (time - fetched).toFixed(3));
+      window.testTime += time;
       console.log('\n');
       if (!window.images_)
         document.title = 'DONE';
+    }).catch((error) => {
+      imageBuffer.close();
+      console.log(error);
+      document.title = 'DONE';
     });
   }
 </script>

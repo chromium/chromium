@@ -1,0 +1,9 @@
+<script src="../common.js"></script>
+<script>
+  const xhr = new XMLHttpRequest();
+  xhr.open('GET', '../../../resources/dummy.html?getPriority');
+  xhr.send();
+
+  xhr.onload = reportLoaded;
+  xhr.onerror = reportFailure;
+</script>

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<!--TODO(andruud): Migrate to WPT once @property is in the specification. -->
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<style>
+  @property --test {
+    syntax: "<color> | none";
+    inherits: false;
+    initial-value: red;
+  }
+  #target {
+    --test: green;
+  }
+</style>
+<div id="target"></div>
+<script>
+
+let rule = document.styleSheets[0].cssRules[0];
+
+test(() => {
+  assert_equals(getComputedStyle(target).getPropertyValue('--test'), 'rgb(0, 128, 0)');
+}, 'Rule is applied');
+
+test(() => {
+  let syntax = rule.style['syntax'];
+  assert_equals(syntax, '"<color> | none"');
+}, 'Can read "syntax" from declaration');
+
+test(() => {
+  let inherits = rule.style['inherits'];
+  assert_equals(inherits, 'false');
+}, 'Can read "inherits" from declaration');
+
+test(() => {
+  let initialValue = rule.style['initial-value'];
+  assert_equals(initialValue, ' red');
+}, 'Can read "initial-value" from declaration');
+
+// TODO(https://crbug.com/978780): Test mutation through CSSOM once
+// we can unregister properties.
+
+</script>

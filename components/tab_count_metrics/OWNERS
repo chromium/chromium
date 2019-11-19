@@ -1,0 +1,4 @@
+# COMPONENT: Internals>Metrics
+# Use the above COMPONENT in crbugs to to file bugs against issues in this folder
+
+file://base/metrics/OWNERS

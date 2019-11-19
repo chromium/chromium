@@ -114,7 +114,6 @@ class ShillToONCTranslator {
   void TranslateThirdPartyVPN();
   void TranslateVPN();
   void TranslateWiFiWithState();
-  void TranslateWiMAXWithState();
   void TranslateCellularWithState();
   void TranslateCellularDevice();
   void TranslateNetworkWithState();
@@ -200,8 +199,6 @@ ShillToONCTranslator::CreateTranslatedONCObject() {
     TranslateThirdPartyVPN();
   } else if (onc_signature_ == &kWiFiWithStateSignature) {
     TranslateWiFiWithState();
-  } else if (onc_signature_ == &kWiMAXWithStateSignature) {
-    TranslateWiMAXWithState();
   } else if (onc_signature_ == &kCellularWithStateSignature) {
     if (field_translation_table_ == kCellularDeviceTable)
       TranslateCellularDevice();
@@ -403,11 +400,6 @@ void ShillToONCTranslator::TranslateWiFiWithState() {
   TranslateAndAddNestedObject(::onc::wifi::kEAP);
 }
 
-void ShillToONCTranslator::TranslateWiMAXWithState() {
-  CopyPropertiesAccordingToSignature();
-  TranslateAndAddNestedObject(::onc::wimax::kEAP);
-}
-
 void ShillToONCTranslator::TranslateCellularWithState() {
   CopyPropertiesAccordingToSignature();
   TranslateWithTableAndSet(shill::kActivationStateProperty,
@@ -536,14 +528,11 @@ void ShillToONCTranslator::TranslateNetworkWithState() {
     }
   }
 
-  // 'ErrorState' reflects the most recent error maintained in NetworkState
-  // (which may not match Shill's Error or PreviousError properties). Non
-  // visible networks (with null network_state_) do not set ErrorState.
+  // Non-visible networks (with null network_state_) do not set ErrorState.
   if (network_state_) {
-    std::string error_state = network_state_->GetErrorState();
-    if (!error_state.empty()) {
+    if (!network_state_->GetError().empty()) {
       onc_object_->SetKey(::onc::network_config::kErrorState,
-                          base::Value(error_state));
+                          base::Value(network_state_->GetError()));
     }
   }
 

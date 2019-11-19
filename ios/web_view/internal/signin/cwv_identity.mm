@@ -4,6 +4,8 @@
 
 #import "ios/web_view/public/cwv_identity.h"
 
+#import "ios/web_view/internal/utils/nsobject_description_utils.h"
+
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
@@ -24,6 +26,14 @@
     _gaiaID = [gaiaID copy];
   }
   return self;
+}
+
+#pragma mark - NSObject
+
+- (NSString*)debugDescription {
+  NSString* debugDescription = [super debugDescription];
+  return [debugDescription
+      stringByAppendingFormat:@"\n%@", CWVPropertiesDescription(self)];
 }
 
 @end

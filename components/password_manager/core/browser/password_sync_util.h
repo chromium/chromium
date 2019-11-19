@@ -11,7 +11,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/sync/driver/sync_service.h"
 
-namespace identity {
+namespace signin {
 class IdentityManager;
 }
 
@@ -25,24 +25,18 @@ namespace sync_util {
 // (http://crbug.com/393626).
 std::string GetSyncUsernameIfSyncingPasswords(
     const syncer::SyncService* sync_service,
-    const identity::IdentityManager* identity_manager);
+    const signin::IdentityManager* identity_manager);
 
 // Returns true if |form| corresponds to the account specified by
 // GetSyncUsernameIfSyncingPasswords. Returns false if
 // GetSyncUsernameIfSyncingPasswords does not specify any account.
 bool IsSyncAccountCredential(const autofill::PasswordForm& form,
                              const syncer::SyncService* sync_service,
-                             const identity::IdentityManager* identity_manager);
-
-// If |form| doesn't match GAIA sign-on realm or enterprise-specified password
-// protection URL, returns false. Otherwise, return true.
-bool ShouldSavePasswordHash(const autofill::PasswordForm& form,
-                            const identity::IdentityManager* identity_manager,
-                            PrefService* prefs);
+                             const signin::IdentityManager* identity_manager);
 
 // If |username| matches sync account.
 bool IsSyncAccountEmail(const std::string& username,
-                        const identity::IdentityManager* identity_manager);
+                        const signin::IdentityManager* identity_manager);
 
 // If |signon_realm| matches Gaia signon realm.
 bool IsGaiaCredentialPage(const std::string& signon_realm);

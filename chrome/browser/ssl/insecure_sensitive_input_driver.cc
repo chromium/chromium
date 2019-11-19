@@ -16,9 +16,9 @@ InsecureSensitiveInputDriver::InsecureSensitiveInputDriver(
 
 InsecureSensitiveInputDriver::~InsecureSensitiveInputDriver() {}
 
-void InsecureSensitiveInputDriver::BindInsecureInputServiceRequest(
-    blink::mojom::InsecureInputServiceRequest request) {
-  insecure_input_bindings_.AddBinding(this, std::move(request));
+void InsecureSensitiveInputDriver::BindInsecureInputServiceReceiver(
+    mojo::PendingReceiver<blink::mojom::InsecureInputService> receiver) {
+  insecure_input_receivers_.Add(this, std::move(receiver));
 }
 
 void InsecureSensitiveInputDriver::DidEditFieldInInsecureContext() {

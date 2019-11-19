@@ -5,7 +5,6 @@
 #ifndef CC_PAINT_SKIA_PAINT_IMAGE_GENERATOR_H_
 #define CC_PAINT_SKIA_PAINT_IMAGE_GENERATOR_H_
 
-#include "base/macros.h"
 #include "cc/paint/paint_export.h"
 #include "cc/paint/paint_image.h"
 #include "third_party/skia/include/core/SkImageGenerator.h"
@@ -18,7 +17,10 @@ class CC_PAINT_EXPORT SkiaPaintImageGenerator final : public SkImageGenerator {
   SkiaPaintImageGenerator(sk_sp<PaintImageGenerator> paint_image_generator,
                           size_t frame_index,
                           PaintImage::GeneratorClientId client_id);
+  SkiaPaintImageGenerator(const SkiaPaintImageGenerator&) = delete;
   ~SkiaPaintImageGenerator() override;
+
+  SkiaPaintImageGenerator& operator=(const SkiaPaintImageGenerator&) = delete;
 
   sk_sp<SkData> onRefEncodedData() override;
   bool onGetPixels(const SkImageInfo&,
@@ -36,8 +38,6 @@ class CC_PAINT_EXPORT SkiaPaintImageGenerator final : public SkImageGenerator {
   sk_sp<PaintImageGenerator> paint_image_generator_;
   const size_t frame_index_;
   const PaintImage::GeneratorClientId client_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(SkiaPaintImageGenerator);
 };
 
 }  // namespace cc

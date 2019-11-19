@@ -21,6 +21,7 @@ const char kTestDomain3[] = "https://example.org";
 const char kTestDomain4[] = "http://localhost";
 const char kUsername1[] = "user1";
 const char kUsername2[] = "user2";
+const char kUsername3[] = "user3";
 
 using ::testing::ElementsAre;
 using ::testing::IsEmpty;
@@ -181,6 +182,36 @@ TEST_F(StatisticsTableTest, EmptyURL) {
   EXPECT_THAT(db()->GetAllRows(), IsEmpty());
   EXPECT_THAT(db()->GetRows(test_data().origin_domain), IsEmpty());
   EXPECT_FALSE(db()->RemoveRow(test_data().origin_domain));
+}
+
+TEST_F(StatisticsTableTest, GetDomainsAndAccountsDomainsWithNDismissals) {
+  struct {
+    const char* origin;
+    const char* username;
+    int dismissal_count;
+  } const stats_database_entries[] = {
+      {kTestDomain, kUsername1, 10},   // A
+      {kTestDomain, kUsername2, 10},   // B
+      {kTestDomain, kUsername3, 1},    // C
+      {kTestDomain2, kUsername1, 1},   // D
+      {kTestDomain3, kUsername1, 10},  // E
+  };
+  for (const auto& entry : stats_database_entries) {
+    EXPECT_TRUE(db()->AddRow({
+        .origin_domain = GURL(entry.origin),
+        .username_value = base::ASCIIToUTF16(entry.username),
+        .dismissal_count = entry.dismissal_count,
+        .update_time = base::Time::FromTimeT(1),
+    }));
+  }
+
+  EXPECT_EQ(5, db()->GetNumAccounts());  // A,B,C,D,E
+
+  EXPECT_EQ(3, db()->GetNumDomainsWithAtLeastNDismissals(1));   // (A,B,C), D, E
+  EXPECT_EQ(2, db()->GetNumDomainsWithAtLeastNDismissals(10));  // (A,B), E
+
+  EXPECT_EQ(5, db()->GetNumAccountsWithAtLeastNDismissals(1));   // A,B,C,D,E
+  EXPECT_EQ(3, db()->GetNumAccountsWithAtLeastNDismissals(10));  // A,B,E
 }
 
 }  // namespace

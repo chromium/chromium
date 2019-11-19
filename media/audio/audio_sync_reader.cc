@@ -235,8 +235,12 @@ void AudioSyncReader::Read(AudioBus* dest) {
     }
     output_bus_->SetBitstreamDataSize(data_size);
     output_bus_->SetBitstreamFrames(bitstream_frames);
+    output_bus_->CopyTo(dest);
+    return;
   }
-  output_bus_->CopyTo(dest);
+
+  // Copy and clip data coming across the shared memory since it's untrusted.
+  output_bus_->CopyAndClipTo(dest);
 }
 
 void AudioSyncReader::Close() {

@@ -4,6 +4,8 @@
 
 #include "ui/ozone/public/client_native_pixmap_factory_ozone.h"
 
+#include <memory>
+
 #include "base/trace_event/trace_event.h"
 #include "ui/ozone/platform_object.h"
 #include "ui/ozone/platform_selection.h"

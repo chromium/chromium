@@ -18,7 +18,7 @@ struct Testcase {
 
 }  // namespace
 
-TEST(AvProductsTest, ResultCodeHistogram) {
+TEST(AvProductsTest, DISABLED_ResultCodeHistogram) {
   base::win::ScopedCOMInitializer scoped_com_initializer;
   base::HistogramTester histograms;
 

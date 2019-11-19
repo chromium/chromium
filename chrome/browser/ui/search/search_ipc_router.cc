@@ -17,6 +17,9 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/child_process_host.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
+#include "mojo/public/cpp/bindings/pending_associated_receiver.h"
+#include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 
 namespace {
@@ -38,31 +41,34 @@ class EmbeddedSearchClientFactoryImpl
   // |web_contents| and |binding| must outlive this object.
   EmbeddedSearchClientFactoryImpl(
       content::WebContents* web_contents,
-      mojo::AssociatedBinding<chrome::mojom::EmbeddedSearch>* binding)
-      : client_binding_(binding), factory_bindings_(web_contents, this) {
+      mojo::AssociatedReceiver<chrome::mojom::EmbeddedSearch>* receiver)
+      : client_receiver_(receiver), factory_bindings_(web_contents, this) {
     DCHECK(web_contents);
-    DCHECK(binding);
+    DCHECK(receiver);
     // Before we are connected to a frame we throw away all messages.
-    mojo::MakeRequestAssociatedWithDedicatedPipe(&embedded_search_client_);
+    embedded_search_client_.reset();
   }
 
   chrome::mojom::EmbeddedSearchClient* GetEmbeddedSearchClient() override {
-    return embedded_search_client_.get();
+    return embedded_search_client_.is_bound() ? embedded_search_client_.get()
+                                              : nullptr;
   }
 
  private:
   void Connect(
-      chrome::mojom::EmbeddedSearchAssociatedRequest request,
-      chrome::mojom::EmbeddedSearchClientAssociatedPtrInfo client) override;
+      mojo::PendingAssociatedReceiver<chrome::mojom::EmbeddedSearch> receiver,
+      mojo::PendingAssociatedRemote<chrome::mojom::EmbeddedSearchClient> client)
+      override;
 
   // An interface used to push updates to the frame that connected to us. Before
   // we've been connected to a frame, messages sent on this interface go into
   // the void.
-  chrome::mojom::EmbeddedSearchClientAssociatedPtr embedded_search_client_;
+  mojo::AssociatedRemote<chrome::mojom::EmbeddedSearchClient>
+      embedded_search_client_;
 
-  // Used to bind incoming interface requests to the implementation, which lives
+  // Used to bind incoming pending receivers to the implementation, which lives
   // in SearchIPCRouter.
-  mojo::AssociatedBinding<chrome::mojom::EmbeddedSearch>* client_binding_;
+  mojo::AssociatedReceiver<chrome::mojom::EmbeddedSearch>* client_receiver_;
 
   // Binding used to listen to connection requests.
   content::WebContentsFrameBindingSet<chrome::mojom::EmbeddedSearchConnector>
@@ -72,14 +78,15 @@ class EmbeddedSearchClientFactoryImpl
 };
 
 void EmbeddedSearchClientFactoryImpl::Connect(
-    chrome::mojom::EmbeddedSearchAssociatedRequest request,
-    chrome::mojom::EmbeddedSearchClientAssociatedPtrInfo client) {
+    mojo::PendingAssociatedReceiver<chrome::mojom::EmbeddedSearch> receiver,
+    mojo::PendingAssociatedRemote<chrome::mojom::EmbeddedSearchClient> client) {
   content::RenderFrameHost* frame = factory_bindings_.GetCurrentTargetFrame();
   const bool is_main_frame = frame->GetParent() == nullptr;
   if (!IsInInstantProcess(frame) || !is_main_frame) {
     return;
   }
-  client_binding_->Bind(std::move(request));
+  client_receiver_->Bind(std::move(receiver));
+  embedded_search_client_.reset();
   embedded_search_client_.Bind(std::move(client));
 }
 
@@ -93,9 +100,8 @@ SearchIPCRouter::SearchIPCRouter(content::WebContents* web_contents,
       policy_(std::move(policy)),
       commit_counter_(0),
       is_active_tab_(false),
-      binding_(this),
       embedded_search_client_factory_(
-          new EmbeddedSearchClientFactoryImpl(web_contents, &binding_)) {
+          new EmbeddedSearchClientFactoryImpl(web_contents, &receiver_)) {
   DCHECK(web_contents);
   DCHECK(delegate);
   DCHECK(policy_.get());
@@ -103,41 +109,62 @@ SearchIPCRouter::SearchIPCRouter(content::WebContents* web_contents,
 
 SearchIPCRouter::~SearchIPCRouter() = default;
 
+void SearchIPCRouter::AutocompleteResultChanged(
+    chrome::mojom::AutocompleteResultPtr result) {
+  if (!policy_->ShouldProcessAutocompleteResultChanged(is_active_tab_) ||
+      !embedded_search_client()) {
+    return;
+  }
+
+  embedded_search_client()->AutocompleteResultChanged(std::move(result));
+}
+
 void SearchIPCRouter::OnNavigationEntryCommitted() {
   ++commit_counter_;
+  if (!embedded_search_client())
+    return;
   embedded_search_client()->SetPageSequenceNumber(commit_counter_);
 }
 
 void SearchIPCRouter::SetInputInProgress(bool input_in_progress) {
-  if (!policy_->ShouldSendSetInputInProgress(is_active_tab_))
+  if (!policy_->ShouldSendSetInputInProgress(is_active_tab_) ||
+      !embedded_search_client()) {
     return;
+  }
 
   embedded_search_client()->SetInputInProgress(input_in_progress);
 }
 
 void SearchIPCRouter::OmniboxFocusChanged(OmniboxFocusState state,
                                           OmniboxFocusChangeReason reason) {
-  if (!policy_->ShouldSendOmniboxFocusChanged())
+  if (!policy_->ShouldSendOmniboxFocusChanged() || !embedded_search_client())
     return;
 
   embedded_search_client()->FocusChanged(state, reason);
 }
 
-void SearchIPCRouter::SendMostVisitedItems(
-    const std::vector<InstantMostVisitedItem>& items,
-    bool is_custom_links) {
-  if (!policy_->ShouldSendMostVisitedItems())
+void SearchIPCRouter::SendMostVisitedInfo(
+    const InstantMostVisitedInfo& most_visited_info) {
+  if (!policy_->ShouldSendMostVisitedInfo() || !embedded_search_client())
     return;
 
-  embedded_search_client()->MostVisitedChanged(items, is_custom_links);
+  embedded_search_client()->MostVisitedInfoChanged(most_visited_info);
 }
 
-void SearchIPCRouter::SendThemeBackgroundInfo(
-    const ThemeBackgroundInfo& theme_info) {
-  if (!policy_->ShouldSendThemeBackgroundInfo())
+void SearchIPCRouter::SendNtpTheme(const NtpTheme& theme) {
+  if (!policy_->ShouldSendNtpTheme() || !embedded_search_client())
     return;
 
-  embedded_search_client()->ThemeChanged(theme_info);
+  embedded_search_client()->ThemeChanged(theme);
+}
+
+void SearchIPCRouter::SendLocalBackgroundSelected() {
+  if (!policy_->ShouldSendLocalBackgroundSelected() ||
+      !embedded_search_client()) {
+    return;
+  }
+
+  embedded_search_client()->LocalBackgroundSelected();
 }
 
 void SearchIPCRouter::OnTabActivated() {
@@ -259,6 +286,27 @@ void SearchIPCRouter::ResetCustomLinks(int page_seq_no) {
   delegate_->OnResetCustomLinks();
 }
 
+void SearchIPCRouter::ToggleMostVisitedOrCustomLinks(int page_seq_no) {
+  if (page_seq_no != commit_counter_)
+    return;
+
+  if (!policy_->ShouldProcessToggleMostVisitedOrCustomLinks())
+    return;
+
+  delegate_->OnToggleMostVisitedOrCustomLinks();
+}
+
+void SearchIPCRouter::ToggleShortcutsVisibility(int page_seq_no,
+                                                bool do_notify) {
+  if (page_seq_no != commit_counter_)
+    return;
+
+  if (!policy_->ShouldProcessToggleShortcutsVisibility())
+    return;
+
+  delegate_->OnToggleShortcutsVisibility(do_notify);
+}
+
 void SearchIPCRouter::LogEvent(int page_seq_no,
                                NTPLoggingEventType event,
                                base::TimeDelta time) {
@@ -269,6 +317,20 @@ void SearchIPCRouter::LogEvent(int page_seq_no,
     return;
 
   delegate_->OnLogEvent(event, time);
+}
+
+void SearchIPCRouter::LogSuggestionEventWithValue(
+    int page_seq_no,
+    NTPSuggestionsLoggingEventType event,
+    int data,
+    base::TimeDelta time) {
+  if (page_seq_no != commit_counter_)
+    return;
+
+  if (!policy_->ShouldProcessLogSuggestionEventWithValue())
+    return;
+
+  delegate_->OnLogSuggestionEventWithValue(event, data, time);
 }
 
 void SearchIPCRouter::LogMostVisitedImpression(
@@ -308,47 +370,18 @@ void SearchIPCRouter::PasteAndOpenDropdown(int page_seq_no,
   delegate_->PasteIntoOmnibox(text);
 }
 
-void SearchIPCRouter::ChromeIdentityCheck(
-    int page_seq_no,
-    const base::string16& identity,
-    ChromeIdentityCheckCallback callback) {
-  bool result = false;
-  if (page_seq_no == commit_counter_ &&
-      policy_->ShouldProcessChromeIdentityCheck()) {
-    result = delegate_->ChromeIdentityCheck(identity);
-  }
-
-  std::move(callback).Run(result);
-}
-
-void SearchIPCRouter::HistorySyncCheck(int page_seq_no,
-                                       HistorySyncCheckCallback callback) {
-  bool result = false;
-  if (page_seq_no == commit_counter_ &&
-      policy_->ShouldProcessHistorySyncCheck()) {
-    result = delegate_->HistorySyncCheck();
-  }
-
-  std::move(callback).Run(result);
-}
-
-void SearchIPCRouter::SetCustomBackgroundURL(const GURL& url) {
-  if (!policy_->ShouldProcessSetCustomBackgroundURL())
-    return;
-
-  delegate_->OnSetCustomBackgroundURL(url);
-}
-
-void SearchIPCRouter::SetCustomBackgroundURLWithAttributions(
+void SearchIPCRouter::SetCustomBackgroundInfo(
     const GURL& background_url,
     const std::string& attribution_line_1,
     const std::string& attribution_line_2,
-    const GURL& action_url) {
-  if (!policy_->ShouldProcessSetCustomBackgroundURLWithAttributions())
+    const GURL& action_url,
+    const std::string& collection_id) {
+  if (!policy_->ShouldProcessSetCustomBackgroundInfo())
     return;
 
-  delegate_->OnSetCustomBackgroundURLWithAttributions(
-      background_url, attribution_line_1, attribution_line_2, action_url);
+  delegate_->OnSetCustomBackgroundInfo(background_url, attribution_line_1,
+                                       attribution_line_2, action_url,
+                                       collection_id);
 }
 
 void SearchIPCRouter::SelectLocalBackgroundImage() {
@@ -398,6 +431,82 @@ void SearchIPCRouter::OptOutOfSearchSuggestions() {
     return;
 
   delegate_->OnOptOutOfSearchSuggestions();
+}
+
+void SearchIPCRouter::ApplyDefaultTheme() {
+  if (!policy_->ShouldProcessThemeChangeMessages())
+    return;
+
+  delegate_->OnApplyDefaultTheme();
+}
+
+void SearchIPCRouter::ApplyAutogeneratedTheme(SkColor color) {
+  if (!policy_->ShouldProcessThemeChangeMessages())
+    return;
+
+  delegate_->OnApplyAutogeneratedTheme(color);
+}
+
+void SearchIPCRouter::RevertThemeChanges() {
+  if (!policy_->ShouldProcessThemeChangeMessages())
+    return;
+
+  delegate_->OnRevertThemeChanges();
+}
+
+void SearchIPCRouter::ConfirmThemeChanges() {
+  if (!policy_->ShouldProcessThemeChangeMessages())
+    return;
+
+  delegate_->OnConfirmThemeChanges();
+}
+
+void SearchIPCRouter::QueryAutocomplete(const base::string16& input,
+                                        bool prevent_inline_autocomplete) {
+  if (!policy_->ShouldProcessQueryAutocomplete(is_active_tab_)) {
+    return;
+  }
+
+  delegate_->QueryAutocomplete(input, prevent_inline_autocomplete);
+}
+
+void SearchIPCRouter::StopAutocomplete(bool clear_result) {
+  if (!policy_->ShouldProcessStopAutocomplete()) {
+    return;
+  }
+
+  delegate_->StopAutocomplete(clear_result);
+}
+
+void SearchIPCRouter::BlocklistPromo(const std::string& promo_id) {
+  if (!policy_->ShouldProcessBlocklistPromo()) {
+    return;
+  }
+
+  delegate_->BlocklistPromo(promo_id);
+}
+
+void SearchIPCRouter::OpenAutocompleteMatch(uint8_t line,
+                                            const GURL& url,
+                                            double button,
+                                            bool alt_key,
+                                            bool ctrl_key,
+                                            bool meta_key,
+                                            bool shift_key) {
+  if (!policy_->ShouldProcessOpenAutocompleteMatch(is_active_tab_)) {
+    return;
+  }
+
+  delegate_->OpenAutocompleteMatch(line, url, button, alt_key, ctrl_key,
+                                   meta_key, shift_key);
+}
+
+void SearchIPCRouter::DeleteAutocompleteMatch(uint8_t line) {
+  if (!policy_->ShouldProcessDeleteAutocompleteMatch()) {
+    return;
+  }
+
+  delegate_->DeleteAutocompleteMatch(line);
 }
 
 void SearchIPCRouter::set_delegate_for_testing(Delegate* delegate) {

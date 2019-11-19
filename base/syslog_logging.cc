@@ -6,9 +6,14 @@
 
 #if defined(OS_WIN)
 #include <windows.h>
+
+#include <sddl.h>
+
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/debug/stack_trace.h"
+#include "base/strings/string_util.h"
+#include "base/win/win_util.h"
 #elif defined(OS_LINUX)
 // <syslog.h> defines LOG_INFO, LOG_WARNING macros that could conflict with
 // base::LOG_INFO, base::LOG_WARNING.
@@ -29,6 +34,7 @@ namespace {
 std::string* g_event_source_name = nullptr;
 uint16_t g_category = 0;
 uint32_t g_event_id = 0;
+std::wstring* g_user_sid = nullptr;
 
 }  // namespace
 
@@ -39,11 +45,16 @@ void SetEventSource(const std::string& name,
   g_event_source_name = new std::string(name);
   g_category = category;
   g_event_id = event_id;
+  DCHECK_EQ(nullptr, g_user_sid);
+  g_user_sid = new std::wstring();
+  base::win::GetUserSidString(g_user_sid);
 }
 
 void ResetEventSourceForTesting() {
   delete g_event_source_name;
   g_event_source_name = nullptr;
+  delete g_user_sid;
+  g_user_sid = nullptr;
 }
 
 #endif  // defined(OS_WIN)
@@ -69,8 +80,8 @@ EventLogMessage::~EventLogMessage() {
     return;
   }
 
-  base::ScopedClosureRunner auto_deregister(
-      base::Bind(base::IgnoreResult(&DeregisterEventSource), event_log_handle));
+  base::ScopedClosureRunner auto_deregister(base::BindOnce(
+      base::IgnoreResult(&DeregisterEventSource), event_log_handle));
   std::string message(log_message_.str());
   WORD log_type = EVENTLOG_ERROR_TYPE;
   switch (log_message_.severity()) {
@@ -90,10 +101,18 @@ EventLogMessage::~EventLogMessage() {
       break;
   }
   LPCSTR strings[1] = {message.data()};
-  if (!ReportEventA(event_log_handle, log_type, g_category, g_event_id, nullptr,
-                    1, 0, strings, nullptr)) {
+  PSID user_sid = nullptr;
+  if (!::ConvertStringSidToSid(g_user_sid->c_str(), &user_sid)) {
+    stream() << " !!ERROR GETTING USER SID!!";
+  }
+
+  if (!ReportEventA(event_log_handle, log_type, g_category, g_event_id,
+                    user_sid, 1, 0, strings, nullptr)) {
     stream() << " !!NOT ADDED TO EVENTLOG!!";
   }
+
+  if (user_sid != nullptr)
+    ::LocalFree(user_sid);
 #elif defined(OS_LINUX)
   const char kEventSource[] = "chrome";
   openlog(kEventSource, LOG_NOWAIT | LOG_PID, LOG_USER);

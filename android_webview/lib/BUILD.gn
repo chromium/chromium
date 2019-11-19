@@ -1,0 +1,70 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//components/gwp_asan/buildflags/buildflags.gni")
+import("//components/spellcheck/spellcheck_build_features.gni")
+import("//weblayer/variables.gni")
+
+source_set("lib") {
+  sources = [
+    "aw_main_delegate.cc",
+    "aw_main_delegate.h",
+    "webview_jni_onload.cc",
+    "webview_jni_onload.h",
+  ]
+
+  deps = [
+    "//android_webview/browser",
+    "//android_webview/browser/gfx",
+    "//android_webview/common",
+    "//android_webview/gpu",
+    "//android_webview/renderer",
+    "//base",
+    "//cc/base",
+    "//components/autofill/core/common",
+    "//components/crash/core/common",
+    "//components/gwp_asan/buildflags",
+    "//components/safe_browsing/android:safe_browsing_api_handler",
+    "//components/services/heap_profiling/public/cpp",
+    "//components/spellcheck:buildflags",
+    "//components/version_info",
+    "//components/version_info/android:channel_getter",
+    "//components/viz/common",
+    "//content/public/app:both",
+    "//content/public/browser",
+    "//content/public/common",
+    "//content/public/common:content_descriptor_keys",
+    "//gin",
+    "//gpu/command_buffer/service",
+    "//gpu/config",
+    "//gpu/ipc:gl_in_process_context",
+    "//media",
+    "//media:media_buildflags",
+    "//ui/base",
+    "//ui/events:gesture_detection",
+  ]
+
+  if (enable_gwp_asan) {
+    deps += [ "//components/gwp_asan/client" ]
+  }
+
+  if (enable_spellcheck) {
+    deps += [ "//components/spellcheck/common" ]
+  }
+}
+
+source_set("webview_entry_point") {
+  deps = [
+    ":lib",
+    "//base",
+  ]
+  sources = [
+    "webview_entry_point.cc",
+  ]
+
+  if (webview_includes_weblayer) {
+    defines = [ "WEBVIEW_INCLUDES_WEBLAYER" ]
+    deps += [ "//weblayer:weblayer_lib" ]
+  }
+}

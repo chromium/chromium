@@ -46,12 +46,13 @@ class DeviceListener {
   // Callback that is used for self-deletion on error to let the device
   // controller perform some additional cleanup work (e.g. removing the device
   // listener instance from its internal map before deleting it).
-  typedef base::Callback<void(std::unique_ptr<DeviceListener>)> ErrorCallback;
+  using ErrorCallback =
+      base::OnceCallback<void(std::unique_ptr<DeviceListener>)>;
 
   static std::unique_ptr<DeviceListener> Create(
       std::unique_ptr<Socket> host_socket,
       int port,
-      const ErrorCallback& error_callback);
+      ErrorCallback error_callback);
 
   ~DeviceListener();
 
@@ -65,7 +66,7 @@ class DeviceListener {
   DeviceListener(std::unique_ptr<Socket> listener_socket,
                  std::unique_ptr<Socket> host_socket,
                  int port,
-                 const ErrorCallback& error_callback);
+                 ErrorCallback error_callback);
 
   // Pushes an AcceptClientOnInternalThread() task to the internal thread's
   // message queue in order to wait for a new client soon.

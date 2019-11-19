@@ -9,6 +9,8 @@ IPC fuzzer. The fuzzer will then play back a specified testcase.
 Depends on ipc_fuzzer being available on the same directory as chrome.
 """
 
+from __future__ import print_function
+
 import argparse
 import os
 import platform
@@ -75,12 +77,12 @@ def main():
 
   chrome_path = os.path.join(build_dir, chrome_binary)
   if not os.path.exists(chrome_path):
-    print 'chrome executable not found at ', chrome_path
+    print('chrome executable not found at ', chrome_path)
     return 1
 
   fuzzer_path = os.path.join(build_dir, fuzzer_binary)
   if not os.path.exists(fuzzer_path):
-    print 'fuzzer executable not found at ', fuzzer_path
+    print('fuzzer executable not found at ', fuzzer_path)
     print('ensure GYP_DEFINES="enable_ipc_fuzzer=1" and build target ' +
           fuzzer_binary + '.')
     return 1
@@ -119,7 +121,7 @@ def main():
     chrome_command.append(switch + '=' + value)
 
   command_line = ' '.join(['\'' + arg + '\'' for arg in chrome_command])
-  print 'Executing: ' + command_line
+  print('Executing: ' + command_line)
 
   return subprocess.call(chrome_command)
 

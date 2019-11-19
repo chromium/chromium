@@ -1,0 +1,19 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/closure_compiler/compile_js.gni")
+
+js_type_check("closure_compile") {
+  deps = [
+    ":personalization_page",
+  ]
+}
+
+js_library("personalization_page") {
+  deps = [
+    "../../appearance_page:wallpaper_browser_proxy",
+    "../../settings_page:settings_animated_pages",
+    "//ui/webui/resources/js:cr",
+  ]
+}

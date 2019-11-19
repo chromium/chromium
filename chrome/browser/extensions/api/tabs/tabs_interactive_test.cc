@@ -21,6 +21,7 @@ namespace extensions {
 namespace keys = tabs_constants;
 namespace utils = extension_function_test_utils;
 
+using ContextType = ExtensionBrowserTest::ContextType;
 using ExtensionTabsTest = InProcessBrowserTest;
 
 IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, GetLastFocusedWindow) {
@@ -117,8 +118,35 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, QueryLastFocusedWindowTabs) {
   }
 }
 
-IN_PROC_BROWSER_TEST_F(ExtensionApiTest, TabCurrentWindow) {
-  ASSERT_TRUE(RunExtensionTest("tabs/current_window")) << message_;
+class NonPersistentExtensionTabsTest
+    : public ExtensionApiTest,
+      public testing::WithParamInterface<ContextType> {
+ protected:
+  const Extension* LoadNonPersistentExtension(const char* relative_path) {
+    return LoadExtensionWithFlags(test_data_dir_.AppendASCII(relative_path),
+                                  GetParam() == ContextType::kEventPage
+                                      ? kFlagNone
+                                      : kFlagRunAsServiceWorkerBasedExtension);
+  }
+};
+
+// Tests chrome.windows.create.
+// TODO(crbug.com/984350): Expand the test to verify that setSelfAsOpener
+// param is ignored from Service Worker extension scripts.
+IN_PROC_BROWSER_TEST_P(NonPersistentExtensionTabsTest, TabCurrentWindow) {
+  ASSERT_TRUE(RunExtensionTestWithFlags(
+      "tabs/current_window", GetParam() == ContextType::kServiceWorker
+                                 ? kFlagRunAsServiceWorkerBasedExtension
+                                 : kFlagNone))
+      << message_;
 }
+
+INSTANTIATE_TEST_SUITE_P(EventPage,
+                         NonPersistentExtensionTabsTest,
+                         ::testing::Values(ContextType::kEventPage));
+
+INSTANTIATE_TEST_SUITE_P(ServiceWorker,
+                         NonPersistentExtensionTabsTest,
+                         ::testing::Values(ContextType::kServiceWorker));
 
 }  // namespace extensions

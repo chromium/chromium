@@ -15,9 +15,8 @@ namespace {
 // If request.abort() is called without calling request.show() first, then
 // abort() should reject with exception.
 TEST(AbortTest, CannotAbortBeforeShow) {
-  V8TestingScope scope;
+  PaymentRequestV8TestingScope scope;
   PaymentRequestMockFunctionScope funcs(scope.GetScriptState());
-  MakePaymentRequestOriginSecure(scope.GetDocument());
   PaymentRequest* request = PaymentRequest::Create(
       scope.GetExecutionContext(), BuildPaymentMethodDataForTest(),
       BuildPaymentDetailsInitForTest(), scope.GetExceptionState());
@@ -29,9 +28,8 @@ TEST(AbortTest, CannotAbortBeforeShow) {
 // If request.abort() is called again before the previous abort() resolved, then
 // the second abort() should reject with exception.
 TEST(AbortTest, CannotAbortTwiceConcurrently) {
-  V8TestingScope scope;
+  PaymentRequestV8TestingScope scope;
   PaymentRequestMockFunctionScope funcs(scope.GetScriptState());
-  MakePaymentRequestOriginSecure(scope.GetDocument());
   PaymentRequest* request = PaymentRequest::Create(
       scope.GetExecutionContext(), BuildPaymentMethodDataForTest(),
       BuildPaymentDetailsInitForTest(), scope.GetExceptionState());
@@ -45,9 +43,8 @@ TEST(AbortTest, CannotAbortTwiceConcurrently) {
 // If request.abort() is called after calling request.show(), then abort()
 // should not reject with exception.
 TEST(AbortTest, CanAbortAfterShow) {
-  V8TestingScope scope;
+  PaymentRequestV8TestingScope scope;
   PaymentRequestMockFunctionScope funcs(scope.GetScriptState());
-  MakePaymentRequestOriginSecure(scope.GetDocument());
   PaymentRequest* request = PaymentRequest::Create(
       scope.GetExecutionContext(), BuildPaymentMethodDataForTest(),
       BuildPaymentDetailsInitForTest(), scope.GetExceptionState());
@@ -60,9 +57,8 @@ TEST(AbortTest, CanAbortAfterShow) {
 // If the browser is unable to abort the payment, then the request.abort()
 // promise should be rejected.
 TEST(AbortTest, FailedAbortShouldRejectAbortPromise) {
-  V8TestingScope scope;
+  PaymentRequestV8TestingScope scope;
   PaymentRequestMockFunctionScope funcs(scope.GetScriptState());
-  MakePaymentRequestOriginSecure(scope.GetDocument());
   PaymentRequest* request = PaymentRequest::Create(
       scope.GetExecutionContext(), BuildPaymentMethodDataForTest(),
       BuildPaymentDetailsInitForTest(), scope.GetExceptionState());
@@ -78,9 +74,8 @@ TEST(AbortTest, FailedAbortShouldRejectAbortPromise) {
 // After the browser is unable to abort the payment once, the second abort()
 // call should not be rejected, as it's not a duplicate request anymore.
 TEST(AbortTest, CanAbortAgainAfterFirstAbortRejected) {
-  V8TestingScope scope;
+  PaymentRequestV8TestingScope scope;
   PaymentRequestMockFunctionScope funcs(scope.GetScriptState());
-  MakePaymentRequestOriginSecure(scope.GetDocument());
   PaymentRequest* request = PaymentRequest::Create(
       scope.GetExecutionContext(), BuildPaymentMethodDataForTest(),
       BuildPaymentDetailsInitForTest(), scope.GetExceptionState());
@@ -96,9 +91,8 @@ TEST(AbortTest, CanAbortAgainAfterFirstAbortRejected) {
 // If the browser successfully aborts the payment, then the request.show()
 // promise should be rejected, and request.abort() promise should be resolved.
 TEST(AbortTest, SuccessfulAbortShouldRejectShowPromiseAndResolveAbortPromise) {
-  V8TestingScope scope;
+  PaymentRequestV8TestingScope scope;
   PaymentRequestMockFunctionScope funcs(scope.GetScriptState());
-  MakePaymentRequestOriginSecure(scope.GetDocument());
   PaymentRequest* request = PaymentRequest::Create(
       scope.GetExecutionContext(), BuildPaymentMethodDataForTest(),
       BuildPaymentDetailsInitForTest(), scope.GetExceptionState());

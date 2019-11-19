@@ -1,0 +1,115 @@
+CONSOLE WARNING: line 124: 'window.webkitStorageInfo' is deprecated. Please use 'navigator.webkitTemporaryStorage' or 'navigator.webkitPersistentStorage' instead.
+CONSOLE WARNING: line 124: Application Cache API use is deprecated and will be removed in M82, around April 2020. See https://www.chromestatus.com/features/6192449487634432 for more details.
+Tests access of cached DOMWindow properties after the associated frame is no longer in a web page. Test should not crash and properties should be set to sane defaults.
+
+On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
+
+PASS window.cached_applicationCache.oncached is null
+PASS window.cached_applicationCache.onchecking is null
+PASS window.cached_applicationCache.ondownloading is null
+PASS window.cached_applicationCache.onerror is null
+PASS window.cached_applicationCache.onnoupdate is null
+PASS window.cached_applicationCache.onobsolete is null
+PASS window.cached_applicationCache.onprogress is null
+PASS window.cached_applicationCache.onupdateready is null
+PASS window.cached_applicationCache.status is 0
+FAIL window.cached_location.hash should be  (of type string). Was undefined (of type undefined).
+FAIL window.cached_location.host should be  (of type string). Was undefined (of type undefined).
+FAIL window.cached_location.hostname should be  (of type string). Was undefined (of type undefined).
+FAIL window.cached_location.href should be about:blank (of type string). Was undefined (of type undefined).
+FAIL window.cached_location.origin should be null (of type string). Was undefined (of type undefined).
+FAIL window.cached_location.pathname should be blank (of type string). Was undefined (of type undefined).
+FAIL window.cached_location.port should be  (of type string). Was undefined (of type undefined).
+FAIL window.cached_location.protocol should be about: (of type string). Was undefined (of type undefined).
+FAIL window.cached_location.search should be  (of type string). Was undefined (of type undefined).
+PASS window.cached_location_ancestorOrigins.length is 1
+PASS window.cached_locationbar.visible is false
+PASS window.cached_menubar.visible is false
+PASS window.cached_navigator.appCodeName is window.navigator.appCodeName
+PASS window.cached_navigator.appName is window.navigator.appName
+PASS window.cached_navigator.appVersion is ''
+PASS window.cached_navigator.cookieEnabled is false
+PASS window.cached_navigator.deviceMemory is window.navigator.deviceMemory
+PASS window.cached_navigator.doNotTrack is null
+PASS window.cached_navigator.hardwareConcurrency is window.navigator.hardwareConcurrency
+PASS window.cached_navigator.language is window.navigator.language
+PASS window.cached_navigator.maxTouchPoints is 0
+PASS window.cached_navigator.onLine is window.navigator.onLine
+PASS window.cached_navigator.platform is window.navigator.platform
+PASS window.cached_navigator.product is window.navigator.product
+PASS window.cached_navigator.productSub is window.navigator.productSub
+PASS window.cached_navigator.userAgent is ''
+PASS window.cached_navigator.vendor is window.navigator.vendor
+PASS window.cached_navigator.vendorSub is ''
+PASS window.cached_navigator_connection.onchange is null
+PASS window.cached_navigator_connection.saveData is false
+PASS window.cached_navigator_mediaDevices.ondevicechange is null
+PASS window.cached_navigator_mediaSession.metadata is null
+PASS window.cached_navigator_mediaSession.playbackState is 'none'
+PASS window.cached_navigator_presentation.defaultRequest is null
+PASS window.cached_navigator_presentation.receiver is null
+PASS window.cached_navigator_serviceWorker.controller is null
+PASS window.cached_navigator_serviceWorker.oncontrollerchange is null
+PASS window.cached_navigator_serviceWorker.onmessage is null
+PASS window.cached_navigator_usb.onconnect is null
+PASS window.cached_navigator_usb.ondisconnect is null
+PASS window.cached_navigator_userActivation.hasBeenActive is false
+PASS window.cached_navigator_userActivation.isActive is false
+PASS window.cached_navigator_xr.ondevicechange is null
+PASS window.cached_performance.onresourcetimingbufferfull is null
+PASS window.cached_performance_navigation.redirectCount is 0
+PASS window.cached_performance_navigation.type is 0
+PASS window.cached_performance_timing.connectEnd is 0
+PASS window.cached_performance_timing.connectStart is 0
+PASS window.cached_performance_timing.domComplete is 0
+PASS window.cached_performance_timing.domContentLoadedEventEnd is 0
+PASS window.cached_performance_timing.domContentLoadedEventStart is 0
+PASS window.cached_performance_timing.domInteractive is 0
+PASS window.cached_performance_timing.domLoading is 0
+PASS window.cached_performance_timing.domainLookupEnd is 0
+PASS window.cached_performance_timing.domainLookupStart is 0
+PASS window.cached_performance_timing.fetchStart is 0
+PASS window.cached_performance_timing.loadEventEnd is 0
+PASS window.cached_performance_timing.loadEventStart is 0
+PASS window.cached_performance_timing.navigationStart is 0
+PASS window.cached_performance_timing.redirectEnd is 0
+PASS window.cached_performance_timing.redirectStart is 0
+PASS window.cached_performance_timing.requestStart is 0
+PASS window.cached_performance_timing.responseEnd is 0
+PASS window.cached_performance_timing.responseStart is 0
+PASS window.cached_performance_timing.secureConnectionStart is 0
+PASS window.cached_performance_timing.unloadEventEnd is 0
+PASS window.cached_performance_timing.unloadEventStart is 0
+PASS window.cached_personalbar.visible is false
+PASS window.cached_screen.availHeight is 0
+PASS window.cached_screen.availLeft is 0
+PASS window.cached_screen.availTop is 0
+PASS window.cached_screen.availWidth is 0
+PASS window.cached_screen.colorDepth is 0
+PASS window.cached_screen.height is 0
+PASS window.cached_screen.pixelDepth is 0
+PASS window.cached_screen.width is 0
+PASS window.cached_screen_orientation.angle is 0
+PASS window.cached_screen_orientation.onchange is null
+PASS window.cached_screen_orientation.type is 'portrait-primary'
+PASS window.cached_scrollbars.visible is false
+PASS window.cached_speechSynthesis.onvoiceschanged is null
+PASS window.cached_speechSynthesis.paused is false
+PASS window.cached_speechSynthesis.pending is false
+PASS window.cached_speechSynthesis.speaking is false
+PASS window.cached_statusbar.visible is false
+PASS window.cached_styleMedia.type is ''
+PASS window.cached_toolbar.visible is false
+PASS window.cached_visualViewport.height is 0
+PASS window.cached_visualViewport.offsetLeft is 0
+PASS window.cached_visualViewport.offsetTop is 0
+PASS window.cached_visualViewport.onresize is null
+PASS window.cached_visualViewport.onscroll is null
+PASS window.cached_visualViewport.pageLeft is 0
+PASS window.cached_visualViewport.pageTop is 0
+PASS window.cached_visualViewport.scale is 0
+PASS window.cached_visualViewport.width is 0
+PASS successfullyParsed is true
+
+TEST COMPLETE
+

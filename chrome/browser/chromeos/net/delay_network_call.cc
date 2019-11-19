@@ -49,7 +49,7 @@ void chromeos::DelayNetworkCall(base::TimeDelta retry,
     }
   }
   if (delay_network_call) {
-    base::PostDelayedTaskWithTraits(
+    base::PostDelayedTask(
         FROM_HERE, {content::BrowserThread::UI},
         base::BindOnce(&chromeos::DelayNetworkCall, retry, std::move(callback)),
         retry);

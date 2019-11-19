@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2019 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<resources>
+    <color name="black_alpha_11">#1D000000</color>
+    <color name="black_alpha_65">#A6000000</color>
+
+    <color name="toolbar_shadow_color">@color/black_alpha_11</color>
+    <color name="modal_dialog_scrim_color">@color/black_alpha_65</color>
+
+    <!-- Progress Bar colors -->
+    <color name="progress_bar_foreground">@color/light_active_color</color>
+    <color name="progress_bar_secondary">@color/modern_grey_600</color>
+    <color name="progress_bar_background">#3D4386F7</color>
+</resources>

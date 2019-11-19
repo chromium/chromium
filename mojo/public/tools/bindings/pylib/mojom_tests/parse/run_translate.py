@@ -5,6 +5,7 @@
 
 """Simple testing utility to just run the mojom translate stage."""
 
+from __future__ import print_function
 
 import os.path
 import sys
@@ -18,14 +19,15 @@ from mojom.parse.translate import Translate
 
 def main(argv):
   if len(argv) < 2:
-    print "usage: %s filename" % sys.argv[0]
+    print("usage: %s filename" % sys.argv[0])
     return 1
 
   for filename in argv[1:]:
     with open(filename) as f:
-      print "%s:" % filename
-      print Translate(Parse(f.read(), filename),
-                      os.path.splitext(os.path.basename(filename))[0])
+      print("%s:" % filename)
+      print(Translate(
+          Parse(f.read(), filename),
+          os.path.splitext(os.path.basename(filename))[0]))
 
   return 0
 

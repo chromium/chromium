@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<iframe srcdoc="<div>Hello, world!</div>"></iframe>
+<script>
+self.addEventListener("message", evt => {
+  let timeout_id = setTimeout(() => {
+    timeout_id = 0;
+    evt.source.postMessage("TIMEOUT", "*");
+  }, 1000);
+  requestAnimationFrame(() => {
+    if (timeout_id)
+      clearTimeout(timeout_id);
+    evt.source.postMessage("SUCCESS", "*");
+  });
+});
+</script>

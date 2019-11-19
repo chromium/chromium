@@ -41,7 +41,7 @@ public class VerificationResultStore {
 
     private static Set<String> getRelationships() {
         // In case we're called on the UI thread and Preferences haven't been read before.
-        try (StrictModeContext unused = StrictModeContext.allowDiskReads()) {
+        try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
             return ChromePreferenceManager.getInstance().getVerifiedDigitalAssetLinks();
         }
     }

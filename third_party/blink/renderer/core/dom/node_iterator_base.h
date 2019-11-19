@@ -25,7 +25,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_DOM_NODE_ITERATOR_BASE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_DOM_NODE_ITERATOR_BASE_H_
 
-#include "third_party/blink/renderer/platform/bindings/trace_wrapper_member.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 
 namespace blink {
@@ -51,7 +50,7 @@ class NodeIteratorBase : public GarbageCollectedMixin {
  private:
   Member<Node> root_;
   unsigned what_to_show_;
-  TraceWrapperMember<V8NodeFilter> filter_;
+  Member<V8NodeFilter> filter_;
   bool active_flag_ = false;
 };
 

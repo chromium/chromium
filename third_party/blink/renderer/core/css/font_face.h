@@ -113,9 +113,7 @@ class CORE_EXPORT FontFace : public ScriptWrappable,
   FontSelectionCapabilities GetFontSelectionCapabilities() const;
   CSSFontFace* CssFontFace() { return css_font_face_.Get(); }
   size_t ApproximateBlankCharacterCount() const;
-  // Return FontDisplay using the default from @font-feature-values if not
-  // specified on this FontFace.
-  FontDisplay GetFontDisplayWithFallback() const;
+  FontDisplay GetFontDisplay() const;
 
   void Trace(blink::Visitor*) override;
 

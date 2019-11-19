@@ -44,7 +44,7 @@ class ShutdownPolicyHandler {
   std::unique_ptr<CrosSettings::ObserverSubscription>
       shutdown_policy_subscription_;
 
-  base::WeakPtrFactory<ShutdownPolicyHandler> weak_factory_;
+  base::WeakPtrFactory<ShutdownPolicyHandler> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ShutdownPolicyHandler);
 };

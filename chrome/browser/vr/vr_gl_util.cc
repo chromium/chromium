@@ -16,13 +16,14 @@ std::array<float, 16> MatrixToGLArray(const gfx::Transform& transform) {
 }
 
 GLuint CompileShader(GLenum shader_type,
-                     const GLchar* shader_source,
+                     const std::string& shader_source,
                      std::string& error) {
   GLuint shader_handle = glCreateShader(shader_type);
   if (shader_handle != 0) {
-    // Pass in the shader source.
-    int len = strlen(shader_source);
-    glShaderSource(shader_handle, 1, &shader_source, &len);
+    // Pass in the shader source. No need to pass in a length for
+    // null-terminated input.
+    const char* source = shader_source.c_str();
+    glShaderSource(shader_handle, 1, &source, nullptr);
     // Compile the shader.
     glCompileShader(shader_handle);
     // Get the compilation status.

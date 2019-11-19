@@ -14,6 +14,8 @@ void HeadlessShell::OnStart(HeadlessBrowser* browser) {}
 void HeadlessShell::Shutdown() {}
 
 void HeadlessShell::DevToolsTargetReady() {}
+
+void HeadlessShell::HeadlessWebContentsDestroyed() {}
 #endif  // defined(CHROME_MULTIPLE_DLL_CHILD)
 
 }  // namespace headless

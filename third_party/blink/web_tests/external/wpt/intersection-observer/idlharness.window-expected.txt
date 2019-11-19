@@ -1,5 +1,10 @@
 This is a testharness.js-based test.
 PASS idl_test setup
+PASS idl_test validation
+PASS Element includes ParentNode: member names are unique
+PASS Element includes NonDocumentTypeChildNode: member names are unique
+PASS Element includes ChildNode: member names are unique
+PASS Element includes Slotable: member names are unique
 PASS IntersectionObserver interface: existence and properties of interface object
 PASS IntersectionObserver interface object length
 PASS IntersectionObserver interface object name

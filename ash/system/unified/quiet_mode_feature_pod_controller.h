@@ -6,7 +6,7 @@
 #define ASH_SYSTEM_UNIFIED_QUIET_MODE_FEATURE_POD_CONTROLLER_H_
 
 #include "ash/ash_export.h"
-#include "ash/system/message_center/message_center_controller.h"
+#include "ash/public/cpp/notifier_settings_observer.h"
 #include "ash/system/unified/feature_pod_controller_base.h"
 #include "base/macros.h"
 #include "base/strings/string16.h"
@@ -22,7 +22,7 @@ class UnifiedSystemTrayController;
 class ASH_EXPORT QuietModeFeaturePodController
     : public FeaturePodControllerBase,
       public message_center::MessageCenterObserver,
-      public MessageCenterController::NotifierSettingsListener {
+      public NotifierSettingsObserver {
  public:
   explicit QuietModeFeaturePodController(
       UnifiedSystemTrayController* tray_controller);
@@ -37,14 +37,12 @@ class ASH_EXPORT QuietModeFeaturePodController
   // message_center::MessageCenterObserver:
   void OnQuietModeChanged(bool in_quiet_mode) override;
 
-  // MessageCenterController::NotifierSettingsListener:
-  void OnNotifierListUpdated(
-      const std::vector<mojom::NotifierUiDataPtr>& ui_data) override;
-  void UpdateNotifierIcon(const message_center::NotifierId& notifier_id,
-                          const gfx::ImageSkia& icon) override;
+  // NotifierSettingsObserver:
+  void OnNotifiersUpdated(
+      const std::vector<NotifierMetadata>& notifiers) override;
 
  private:
-  void Update();
+  base::string16 GetQuietModeStateTooltip();
 
   UnifiedSystemTrayController* const tray_controller_;
 

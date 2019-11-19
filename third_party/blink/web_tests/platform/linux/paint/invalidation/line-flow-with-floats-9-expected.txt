@@ -1,396 +1,195 @@
 {
   "layers": [
     {
-      "name": "LayoutView #document",
-      "bounds": [800, 600],
-      "drawsContent": false,
-      "backgroundColor": "#FFFFFF"
-    },
-    {
-      "name": "Scrolling Layer",
-      "bounds": [800, 600],
-      "drawsContent": false
-    },
-    {
       "name": "Scrolling Contents Layer",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
       "paintInvalidations": [
         {
-          "object": "InlineTextBox 'Alice began to feel very uneasy: to be sure, she had not as\n'",
-          "rect": [14, 520, 407, 80],
-          "reason": "appeared"
-        },
-        {
-          "object": "InlineTextBox 'Alice began to feel very uneasy: to be sure, she had not as\n'",
-          "rect": [14, 520, 407, 80],
-          "reason": "disappeared"
-        },
-        {
-          "object": "InlineTextBox 'become of\n'",
-          "rect": [14, 520, 407, 80],
-          "reason": "appeared"
-        },
-        {
-          "object": "InlineTextBox 'become of\n'",
-          "rect": [14, 520, 407, 80],
-          "reason": "disappeared"
-        },
-        {
-          "object": "InlineTextBox 'had any dispute with the Queen, but she knew that it might'",
-          "rect": [14, 520, 407, 80],
-          "reason": "appeared"
-        },
-        {
-          "object": "InlineTextBox 'had any dispute with the Queen, but she knew that it might'",
-          "rect": [14, 520, 407, 80],
-          "reason": "disappeared"
-        },
-        {
-          "object": "InlineTextBox 'happen any minute, \u2018and then,\u2019 thought she, \u2018what would'",
-          "rect": [14, 520, 407, 80],
-          "reason": "appeared"
-        },
-        {
-          "object": "InlineTextBox 'happen any minute, \u2018and then,\u2019 thought she, \u2018what would'",
-          "rect": [14, 520, 407, 80],
-          "reason": "disappeared"
-        },
-        {
-          "object": "InlineTextBox 'me? They\u2019re dreadfully fond of beheading people'",
-          "rect": [14, 520, 407, 80],
-          "reason": "appeared"
-        },
-        {
-          "object": "InlineTextBox 'me? They\u2019re dreadfully fond of beheading people'",
-          "rect": [14, 520, 407, 80],
-          "reason": "disappeared"
-        },
-        {
-          "object": "InlineTextBox 'yet'",
-          "rect": [14, 520, 407, 80],
-          "reason": "appeared"
-        },
-        {
-          "object": "InlineTextBox 'yet'",
-          "rect": [14, 520, 407, 80],
-          "reason": "disappeared"
-        },
-        {
-          "object": "InlineTextBox 'a ridge or furrow in the way wherever\n'",
-          "rect": [14, 240, 406, 139],
-          "reason": "disappeared"
-        },
-        {
-          "object": "InlineTextBox 'and was in the act of crawling away: besides all\n'",
-          "rect": [14, 240, 406, 139],
-          "reason": "appeared"
-        },
-        {
-          "object": "InlineTextBox 'begin again, it was very'",
-          "rect": [14, 240, 406, 139],
-          "reason": "appeared"
-        },
-        {
-          "object": "InlineTextBox 'begin again, it was very'",
-          "rect": [14, 240, 406, 139],
-          "reason": "disappeared"
-        },
-        {
-          "object": "InlineTextBox 'getting up and walking off to other parts of\n'",
-          "rect": [14, 240, 406, 139],
-          "reason": "disappeared"
-        },
-        {
-          "object": "InlineTextBox 'ground, Alice soon came to the conclusion that it was a very'",
-          "rect": [14, 240, 406, 139],
-          "reason": "appeared"
-        },
-        {
-          "object": "InlineTextBox 'hedgehog to, and, as the doubled-up\n'",
-          "rect": [14, 240, 406, 139],
-          "reason": "disappeared"
-        },
-        {
-          "object": "InlineTextBox 'in the act of crawling away: besides all\n'",
-          "rect": [14, 240, 406, 139],
-          "reason": "disappeared"
-        },
-        {
-          "object": "InlineTextBox 'provoking to find that the hedgehog had\n'",
-          "rect": [14, 240, 406, 139],
-          "reason": "appeared"
-        },
-        {
-          "object": "InlineTextBox 'provoking to find that the hedgehog had\n'",
-          "rect": [14, 240, 406, 139],
-          "reason": "disappeared"
-        },
-        {
-          "object": "InlineTextBox 'she wanted to send the'",
-          "rect": [14, 240, 406, 139],
-          "reason": "disappeared"
-        },
-        {
-          "object": "InlineTextBox 'she'",
-          "rect": [14, 240, 406, 139],
-          "reason": "appeared"
-        },
-        {
-          "object": "InlineTextBox 'soldiers were always'",
-          "rect": [14, 240, 406, 139],
-          "reason": "disappeared"
-        },
-        {
-          "object": "InlineTextBox 'soldiers'",
-          "rect": [14, 240, 406, 139],
-          "reason": "appeared"
-        },
-        {
-          "object": "InlineTextBox 'soon came to the conclusion that it was a very\n'",
-          "rect": [14, 240, 406, 139],
-          "reason": "disappeared"
-        },
-        {
-          "object": "InlineTextBox 'the ground, Alice'",
-          "rect": [14, 240, 406, 139],
-          "reason": "disappeared"
-        },
-        {
-          "object": "InlineTextBox 'the'",
-          "rect": [14, 240, 406, 139],
-          "reason": "appeared"
-        },
-        {
-          "object": "InlineTextBox 'there was generally a ridge or furrow in the way wherever\n'",
-          "rect": [14, 240, 406, 139],
-          "reason": "appeared"
-        },
-        {
-          "object": "InlineTextBox 'this, there was generally'",
-          "rect": [14, 240, 406, 139],
-          "reason": "disappeared"
-        },
-        {
-          "object": "InlineTextBox 'this,'",
-          "rect": [14, 240, 406, 139],
-          "reason": "appeared"
-        },
-        {
-          "object": "InlineTextBox 'unrolled itself, and was'",
-          "rect": [14, 240, 406, 139],
-          "reason": "disappeared"
-        },
-        {
-          "object": "InlineTextBox 'unrolled itself,'",
-          "rect": [14, 240, 406, 139],
-          "reason": "appeared"
-        },
-        {
-          "object": "InlineTextBox 'wanted to send the hedgehog to, and, as the doubled-up\n'",
-          "rect": [14, 240, 406, 139],
-          "reason": "appeared"
-        },
-        {
-          "object": "InlineTextBox 'were always getting up and walking off to other parts of\n'",
-          "rect": [14, 240, 406, 139],
-          "reason": "appeared"
-        },
-        {
-          "object": "InlineTextBox ' twist itself round and'",
-          "rect": [14, 180, 406, 79],
+          "object": "NGPhysicalTextFragment 'Alice began to feel very uneasy: to be sure, she had not as yet'",
+          "rect": [14, 520, 408, 80],
           "reason": "geometry"
         },
         {
-          "object": "InlineTextBox 'could not help bursting out\n'",
-          "rect": [14, 180, 406, 79],
+          "object": "NGPhysicalTextFragment 'become of me? They\u2019re dreadfully fond of beheading people'",
+          "rect": [14, 520, 408, 80],
+          "reason": "geometry"
+        },
+        {
+          "object": "NGPhysicalTextFragment 'had any dispute with the Queen, but she knew that it might'",
+          "rect": [14, 520, 408, 80],
+          "reason": "geometry"
+        },
+        {
+          "object": "NGPhysicalTextFragment 'happen any minute, \u2018and then,\u2019 thought she, \u2018what would'",
+          "rect": [14, 520, 408, 80],
+          "reason": "geometry"
+        },
+        {
+          "object": "NGPhysicalTextFragment 'and was in the act of crawling away: besides all this,'",
+          "rect": [14, 240, 407, 139],
+          "reason": "geometry"
+        },
+        {
+          "object": "NGPhysicalTextFragment 'begin again, it was very'",
+          "rect": [14, 240, 407, 139],
           "reason": "appeared"
         },
         {
-          "object": "InlineTextBox 'could not help bursting out\n'",
-          "rect": [14, 180, 406, 79],
+          "object": "NGPhysicalTextFragment 'begin again, it was very'",
+          "rect": [14, 240, 407, 139],
           "reason": "disappeared"
         },
         {
-          "object": "InlineTextBox 'head down, and was going to\n'",
-          "rect": [14, 180, 406, 79],
-          "reason": "appeared"
+          "object": "NGPhysicalTextFragment 'ground, Alice soon came to the conclusion that it was a very'",
+          "rect": [14, 240, 407, 139],
+          "reason": "geometry"
         },
         {
-          "object": "InlineTextBox 'head down, and was going to\n'",
-          "rect": [14, 180, 406, 79],
-          "reason": "disappeared"
+          "object": "NGPhysicalTextFragment 'provoking to find that the hedgehog had unrolled itself,'",
+          "rect": [14, 240, 407, 139],
+          "reason": "geometry"
         },
         {
-          "object": "InlineTextBox 'laughing: and when she had got its'",
-          "rect": [14, 180, 406, 79],
-          "reason": "appeared"
+          "object": "NGPhysicalTextFragment 'there was generally a ridge or furrow in the way wherever she'",
+          "rect": [14, 240, 407, 139],
+          "reason": "geometry"
         },
         {
-          "object": "InlineTextBox 'laughing: and when she had got its'",
-          "rect": [14, 180, 406, 79],
-          "reason": "disappeared"
+          "object": "NGPhysicalTextFragment 'wanted to send the hedgehog to, and, as the doubled-up soldiers'",
+          "rect": [14, 240, 407, 139],
+          "reason": "geometry"
         },
         {
-          "object": "InlineTextBox 'look up in her face, with\n'",
-          "rect": [14, 180, 406, 79],
-          "reason": "appeared"
+          "object": "NGPhysicalTextFragment 'were always getting up and walking off to other parts of the'",
+          "rect": [14, 240, 407, 139],
+          "reason": "geometry"
         },
         {
-          "object": "InlineTextBox 'look up in her face, with\n'",
-          "rect": [14, 180, 406, 79],
-          "reason": "disappeared"
+          "object": "NGPhysicalTextFragment ' twist itself round and'",
+          "rect": [14, 180, 407, 79],
+          "reason": "geometry"
         },
         {
-          "object": "InlineTextBox 'such a puzzled expression that she'",
-          "rect": [14, 180, 406, 79],
-          "reason": "appeared"
+          "object": "NGPhysicalTextFragment 'could not help bursting out laughing: and when she had got its'",
+          "rect": [14, 180, 407, 79],
+          "reason": "geometry"
         },
         {
-          "object": "InlineTextBox 'such a puzzled expression that she'",
-          "rect": [14, 180, 406, 79],
-          "reason": "disappeared"
+          "object": "NGPhysicalTextFragment 'head down, and was going to '",
+          "rect": [14, 180, 407, 79],
+          "reason": "geometry"
         },
         {
-          "object": "InlineTextBox 'difficult'",
+          "object": "NGPhysicalTextFragment 'look up in her face, with such a puzzled expression that she'",
+          "rect": [14, 180, 407, 79],
+          "reason": "geometry"
+        },
+        {
+          "object": "NGPhysicalTextFragment 'difficult game indeed.'",
+          "rect": [65, 360, 356, 39],
+          "reason": "geometry"
+        },
+        {
+          "object": "NGPhysicalTextFragment 'difficult'",
           "rect": [65, 360, 356, 39],
           "reason": "disappeared"
         },
         {
-          "object": "InlineTextBox 'game indeed.\n'",
-          "rect": [65, 360, 356, 39],
+          "object": "NGPhysicalTextFragment 'The chief difficulty Alice found at first was in managing'",
+          "rect": [14, 80, 355, 119],
+          "reason": "geometry"
+        },
+        {
+          "object": "NGPhysicalTextFragment 'away, comfortably enough, under her arm, with its legs'",
+          "rect": [14, 80, 355, 119],
+          "reason": "geometry"
+        },
+        {
+          "object": "NGPhysicalTextFragment 'hanging down, but generally, just as she had got its'",
+          "rect": [14, 80, 355, 119],
+          "reason": "geometry"
+        },
+        {
+          "object": "NGPhysicalTextFragment 'hedgehog a blow with its head, it '",
+          "rect": [14, 80, 355, 119],
+          "reason": "geometry"
+        },
+        {
+          "object": "NGPhysicalTextFragment 'her flamingo: she succeeded in getting its body tucked'",
+          "rect": [14, 80, 355, 119],
+          "reason": "geometry"
+        },
+        {
+          "object": "NGPhysicalTextFragment 'neck nicely straightened out, and was going to give the'",
+          "rect": [14, 80, 355, 119],
+          "reason": "geometry"
+        },
+        {
+          "object": "NGPhysicalTextFragment ' was in a furious passion, and went stamping'",
+          "rect": [14, 460, 355, 59],
+          "reason": "appeared"
+        },
+        {
+          "object": "NGPhysicalTextFragment 'about, and shouting \u2018Off with his head!\u2019 or \u2018Off with'",
+          "rect": [14, 460, 355, 59],
+          "reason": "geometry"
+        },
+        {
+          "object": "NGPhysicalTextFragment 'her head!\u2019 about once in a minute.'",
+          "rect": [14, 460, 355, 59],
+          "reason": "geometry"
+        },
+        {
+          "object": "NGPhysicalTextFragment 'was in a furious passion, and went stamping about, and'",
+          "rect": [14, 460, 355, 59],
           "reason": "disappeared"
         },
         {
-          "object": "InlineTextBox 'Queen'",
+          "object": "NGPhysicalTextFragment 'Queen'",
           "rect": [14, 440, 355, 39],
           "reason": "appeared"
         },
         {
-          "object": "InlineTextBox 'the'",
+          "object": "NGPhysicalTextFragment 'the'",
           "rect": [14, 440, 355, 39],
-          "reason": "appeared"
+          "reason": "geometry"
         },
         {
-          "object": "InlineTextBox 'a very short time '",
+          "object": "NGPhysicalTextFragment 'for the hedgehogs; and in a very short time '",
           "rect": [14, 420, 355, 39],
-          "reason": "disappeared"
+          "reason": "geometry"
         },
         {
-          "object": "InlineTextBox 'for the hedgehogs; and in\n'",
+          "object": "NGPhysicalTextFragment 'for turns, quarrelling all the while, and fighting'",
           "rect": [14, 420, 355, 39],
-          "reason": "disappeared"
+          "reason": "geometry"
         },
         {
-          "object": "InlineTextBox 'for turns,\n'",
-          "rect": [14, 420, 355, 39],
-          "reason": "disappeared"
-        },
-        {
-          "object": "InlineTextBox 'quarrelling all the while, and fighting'",
-          "rect": [14, 420, 355, 39],
-          "reason": "disappeared"
-        },
-        {
-          "object": "InlineTextBox ' was in a furious passion, and went\n'",
-          "rect": [14, 460, 354, 59],
-          "reason": "appeared"
-        },
-        {
-          "object": "InlineTextBox 'about once in a minute.\n'",
-          "rect": [14, 460, 354, 59],
-          "reason": "disappeared"
-        },
-        {
-          "object": "InlineTextBox 'about, and shouting \u2018Off with his head!\u2019 or \u2018Off with'",
-          "rect": [14, 460, 354, 59],
-          "reason": "appeared"
-        },
-        {
-          "object": "InlineTextBox 'her head!\u2019 about once in a minute.\n'",
-          "rect": [14, 460, 354, 59],
-          "reason": "appeared"
-        },
-        {
-          "object": "InlineTextBox 'her head!\u2019'",
-          "rect": [14, 460, 354, 59],
-          "reason": "disappeared"
-        },
-        {
-          "object": "InlineTextBox 'shouting \u2018Off with his head!\u2019 or \u2018Off with\n'",
-          "rect": [14, 460, 354, 59],
-          "reason": "disappeared"
-        },
-        {
-          "object": "InlineTextBox 'stamping about, and'",
-          "rect": [14, 460, 354, 59],
-          "reason": "disappeared"
-        },
-        {
-          "object": "InlineTextBox 'stamping'",
-          "rect": [14, 460, 354, 59],
-          "reason": "appeared"
-        },
-        {
-          "object": "InlineTextBox 'was in a furious passion, and went\n'",
-          "rect": [14, 460, 354, 59],
-          "reason": "disappeared"
-        },
-        {
-          "object": "InlineTextBox 'a very short time '",
-          "rect": [65, 420, 304, 39],
-          "reason": "appeared"
-        },
-        {
-          "object": "InlineTextBox 'for the hedgehogs; and in\n'",
-          "rect": [65, 420, 304, 39],
-          "reason": "appeared"
-        },
-        {
-          "object": "InlineTextBox 'for turns,\n'",
-          "rect": [65, 420, 304, 39],
-          "reason": "appeared"
-        },
-        {
-          "object": "InlineTextBox 'quarrelling all the while, and fighting'",
-          "rect": [65, 420, 304, 39],
-          "reason": "appeared"
-        },
-        {
-          "object": "InlineTextBox 'The players all played at once without waiting'",
+          "object": "NGPhysicalTextFragment 'The players all played at once without waiting'",
           "rect": [65, 400, 304, 19],
-          "reason": "appeared"
+          "reason": "geometry"
         },
         {
-          "object": "InlineTextBox 'The players all played at once without waiting'",
-          "rect": [65, 400, 304, 19],
-          "reason": "disappeared"
-        },
-        {
-          "object": "InlineTextBox 'difficult game indeed.\n'",
-          "rect": [65, 380, 142, 19],
-          "reason": "appeared"
-        },
-        {
-          "object": "InlineTextBox 'the Queen'",
-          "rect": [302, 440, 66, 19],
-          "reason": "disappeared"
-        },
-        {
-          "object": "LayoutBlockFlow (floating) SPAN id='blueFloat'",
+          "object": "LayoutNGBlockFlow (floating) SPAN id='blueFloat'",
           "rect": [14, 383, 48, 65],
           "reason": "geometry"
         },
         {
-          "object": "LayoutBlockFlow (floating) SPAN id='blueFloat'",
+          "object": "LayoutNGBlockFlow (floating) SPAN id='blueFloat'",
           "rect": [14, 363, 48, 65],
           "reason": "geometry"
         },
         {
-          "object": "LayoutBlockFlow (floating) SPAN id='yellowFloat'",
+          "object": "LayoutNGBlockFlow (floating) SPAN id='yellowFloat'",
           "rect": [372, 243, 48, 49],
           "reason": "appeared"
+        },
+        {
+          "object": "NGPhysicalTextFragment 'would'",
+          "rect": [238, 180, 41, 19],
+          "reason": "geometry"
         }
       ]
     }

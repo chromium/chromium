@@ -17,10 +17,6 @@ class MediaControlsResourceLoader
  public:
   static void InjectMediaControlsUAStyleSheet();
 
-  // The timeline specific stylesheet is inserted into the timeline DOM tree
-  // and contains loading animations specific to the timeline.
-  static String GetShadowTimelineStyleSheet();
-
   // The loading specific stylesheet is inserted into the loading panel DOM
   // tree and contains styles specific to the loading panel.
   static String GetShadowLoadingStyleSheet();

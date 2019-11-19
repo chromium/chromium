@@ -1,0 +1,29 @@
+// Copyright 2017 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module unzip.mojom;
+
+import "components/services/filesystem/public/mojom/directory.mojom";
+import "mojo/public/mojom/base/file.mojom";
+import "mojo/public/mojom/base/file_path.mojom";
+
+interface UnzipFilter {
+  [Sync]
+  ShouldUnzipFile(mojo_base.mojom.FilePath path) => (bool result);
+};
+
+interface Unzipper {
+  // Unzip |zip_file| into |output_dir|.
+  // Returns true on success, false otherwise.
+  Unzip(mojo_base.mojom.File zip_file,
+        pending_remote<filesystem.mojom.Directory> output_dir)
+       => (bool result);
+
+  // Same as |unzip| but only includes the files for which |filter| returns
+  // true. Note that this incurs one IPC for each file of the archive.
+  UnzipWithFilter(
+      mojo_base.mojom.File zip_file,
+      pending_remote<filesystem.mojom.Directory> output_dir,
+      pending_remote<UnzipFilter> filter) => (bool result);
+};

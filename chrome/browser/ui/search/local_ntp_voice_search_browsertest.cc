@@ -3,12 +3,10 @@
 // found in the LICENSE file.
 
 #include "base/command_line.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/permissions/permission_manager.h"
 #include "chrome/browser/permissions/permission_manager_factory.h"
 #include "chrome/browser/permissions/permission_request_manager.h"
 #include "chrome/browser/permissions/permission_result.h"
-#include "chrome/browser/search/ntp_features.h"
 #include "chrome/browser/search/search.h"
 #include "chrome/browser/search_engines/ui_thread_search_terms_data.h"
 #include "chrome/browser/ui/browser.h"
@@ -30,18 +28,11 @@ class LocalNTPVoiceSearchSmokeTest : public InProcessBrowserTest {
   LocalNTPVoiceSearchSmokeTest() {}
 
  private:
-  void SetUp() override {
-    feature_list_.InitWithFeatures({features::kUseGoogleLocalNtp}, {});
-    InProcessBrowserTest::SetUp();
-  }
-
   void SetUpCommandLine(base::CommandLine* cmdline) override {
     // Requesting microphone permission doesn't work unless there's a device
     // available.
     cmdline->AppendSwitch(switches::kUseFakeDeviceForMediaStream);
   }
-
-  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(LocalNTPVoiceSearchSmokeTest,
@@ -92,7 +83,7 @@ IN_PROC_BROWSER_TEST_F(LocalNTPVoiceSearchSmokeTest, MicrophonePermission) {
   // Make sure microphone permission for the NTP isn't set yet.
   const PermissionResult mic_permission_before =
       permission_manager->GetPermissionStatusForFrame(
-          CONTENT_SETTINGS_TYPE_MEDIASTREAM_MIC, active_tab->GetMainFrame(),
+          ContentSettingsType::MEDIASTREAM_MIC, active_tab->GetMainFrame(),
           GURL(chrome::kChromeSearchLocalNtpUrl).GetOrigin());
   ASSERT_EQ(CONTENT_SETTING_ASK, mic_permission_before.content_setting);
   ASSERT_EQ(PermissionStatusSource::UNSPECIFIED, mic_permission_before.source);
@@ -114,8 +105,7 @@ IN_PROC_BROWSER_TEST_F(LocalNTPVoiceSearchSmokeTest, MicrophonePermission) {
   EXPECT_TRUE(prompt_factory.RequestTypeSeen(
       PermissionRequestType::PERMISSION_MEDIASTREAM_MIC));
   // ...and that it showed the Google base URL, not the NTP URL.
-  const GURL google_base_url(
-      UIThreadSearchTermsData(browser()->profile()).GoogleBaseURLValue());
+  const GURL google_base_url(UIThreadSearchTermsData().GoogleBaseURLValue());
   EXPECT_TRUE(prompt_factory.RequestOriginSeen(google_base_url.GetOrigin()));
   EXPECT_FALSE(prompt_factory.RequestOriginSeen(
       GURL(chrome::kChromeUINewTabURL).GetOrigin()));
@@ -125,7 +115,7 @@ IN_PROC_BROWSER_TEST_F(LocalNTPVoiceSearchSmokeTest, MicrophonePermission) {
   // Now microphone permission for the NTP should be set.
   const PermissionResult mic_permission_after =
       permission_manager->GetPermissionStatusForFrame(
-          CONTENT_SETTINGS_TYPE_MEDIASTREAM_MIC, active_tab->GetMainFrame(),
+          ContentSettingsType::MEDIASTREAM_MIC, active_tab->GetMainFrame(),
           GURL(chrome::kChromeSearchLocalNtpUrl).GetOrigin());
   EXPECT_EQ(CONTENT_SETTING_ALLOW, mic_permission_after.content_setting);
 }

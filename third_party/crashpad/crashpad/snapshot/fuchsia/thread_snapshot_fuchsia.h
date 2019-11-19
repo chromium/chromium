@@ -67,7 +67,7 @@ class ThreadSnapshotFuchsia final : public ThreadSnapshot {
 #error Port.
 #endif
   CPUContext context_;
-  MemorySnapshotGeneric<ProcessReaderFuchsia> stack_;
+  MemorySnapshotGeneric stack_;
   zx_koid_t thread_id_;
   zx_vaddr_t thread_specific_data_address_;
   InitializationStateDcheck initialized_;

@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/run_loop.h"
 #include "crypto/nss_util_internal.h"
 #include "crypto/scoped_test_nss_chromeos_user.h"
 #include "crypto/scoped_test_nss_db.h"
@@ -15,7 +16,7 @@
 #include "net/cert/x509_util_nss.h"
 #include "net/test/cert_test_util.h"
 #include "net/test/test_data_directory.h"
-#include "net/test/test_with_scoped_task_environment.h"
+#include "net/test/test_with_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace net {
@@ -49,7 +50,7 @@ void SwapCertLists(ScopedCERTCertificateList* destination,
 
 }  // namespace
 
-class NSSCertDatabaseChromeOSTest : public TestWithScopedTaskEnvironment,
+class NSSCertDatabaseChromeOSTest : public TestWithTaskEnvironment,
                                     public CertDatabase::Observer {
  public:
   NSSCertDatabaseChromeOSTest()
@@ -159,39 +160,24 @@ TEST_F(NSSCertDatabaseChromeOSTest, ImportCACerts) {
   EXPECT_EQ(0U, failed.size());
 
   // Get cert list for each user.
-  ScopedCERTCertificateList user_1_certlist = db_1_->ListCertsSync();
-  ScopedCERTCertificateList user_2_certlist = db_2_->ListCertsSync();
+  ScopedCERTCertificateList user_1_certlist;
+  ScopedCERTCertificateList user_2_certlist;
+  db_1_->ListCerts(
+      base::BindOnce(&SwapCertLists, base::Unretained(&user_1_certlist)));
+  db_2_->ListCerts(
+      base::BindOnce(&SwapCertLists, base::Unretained(&user_2_certlist)));
 
-  // Check that the imported certs only shows up in the list for the user that
-  // imported them.
+  // Run the message loop so the observer notifications get processed and
+  // lookups are completed.
+  RunUntilIdle();
+  // Should have gotten two OnCertDBChanged notifications.
+  ASSERT_EQ(2, db_changed_count_);
+
   EXPECT_TRUE(IsCertInCertificateList(certs_1[0].get(), user_1_certlist));
   EXPECT_FALSE(IsCertInCertificateList(certs_1[0].get(), user_2_certlist));
 
   EXPECT_TRUE(IsCertInCertificateList(certs_2[0].get(), user_2_certlist));
   EXPECT_FALSE(IsCertInCertificateList(certs_2[0].get(), user_1_certlist));
-
-  // Run the message loop so the observer notifications get processed.
-  RunUntilIdle();
-  // Should have gotten two OnCertDBChanged notifications.
-  ASSERT_EQ(2, db_changed_count_);
-
-  // Tests that the new certs are loaded by async ListCerts method.
-  ScopedCERTCertificateList user_1_certlist_async;
-  ScopedCERTCertificateList user_2_certlist_async;
-  db_1_->ListCerts(
-      base::BindOnce(&SwapCertLists, base::Unretained(&user_1_certlist_async)));
-  db_2_->ListCerts(
-      base::BindOnce(&SwapCertLists, base::Unretained(&user_2_certlist_async)));
-
-  RunUntilIdle();
-
-  EXPECT_TRUE(IsCertInCertificateList(certs_1[0].get(), user_1_certlist_async));
-  EXPECT_FALSE(
-      IsCertInCertificateList(certs_1[0].get(), user_2_certlist_async));
-
-  EXPECT_TRUE(IsCertInCertificateList(certs_2[0].get(), user_2_certlist_async));
-  EXPECT_FALSE(
-      IsCertInCertificateList(certs_2[0].get(), user_1_certlist_async));
 }
 
 // Test that ImportServerCerts imports the cert to the correct slot, and that
@@ -219,40 +205,25 @@ TEST_F(NSSCertDatabaseChromeOSTest, ImportServerCert) {
   EXPECT_EQ(0U, failed.size());
 
   // Get cert list for each user.
-  ScopedCERTCertificateList user_1_certlist = db_1_->ListCertsSync();
-  ScopedCERTCertificateList user_2_certlist = db_2_->ListCertsSync();
+  ScopedCERTCertificateList user_1_certlist;
+  ScopedCERTCertificateList user_2_certlist;
+  db_1_->ListCerts(
+      base::BindOnce(&SwapCertLists, base::Unretained(&user_1_certlist)));
+  db_2_->ListCerts(
+      base::BindOnce(&SwapCertLists, base::Unretained(&user_2_certlist)));
 
-  // Check that the imported certs only shows up in the list for the user that
-  // imported them.
-  EXPECT_TRUE(IsCertInCertificateList(certs_1[0].get(), user_1_certlist));
-  EXPECT_FALSE(IsCertInCertificateList(certs_1[0].get(), user_2_certlist));
-
-  EXPECT_TRUE(IsCertInCertificateList(certs_2[0].get(), user_2_certlist));
-  EXPECT_FALSE(IsCertInCertificateList(certs_2[0].get(), user_1_certlist));
-
-  // Run the message loop so the observer notifications get processed.
+  // Run the message loop so the observer notifications get processed and
+  // lookups are completed.
   RunUntilIdle();
   // TODO(mattm): ImportServerCert doesn't actually cause any observers to
   // fire. Is that correct?
   EXPECT_EQ(0, db_changed_count_);
 
-  // Tests that the new certs are loaded by async ListCerts method.
-  ScopedCERTCertificateList user_1_certlist_async;
-  ScopedCERTCertificateList user_2_certlist_async;
-  db_1_->ListCerts(
-      base::BindOnce(&SwapCertLists, base::Unretained(&user_1_certlist_async)));
-  db_2_->ListCerts(
-      base::BindOnce(&SwapCertLists, base::Unretained(&user_2_certlist_async)));
+  EXPECT_TRUE(IsCertInCertificateList(certs_1[0].get(), user_1_certlist));
+  EXPECT_FALSE(IsCertInCertificateList(certs_1[0].get(), user_2_certlist));
 
-  RunUntilIdle();
-
-  EXPECT_TRUE(IsCertInCertificateList(certs_1[0].get(), user_1_certlist_async));
-  EXPECT_FALSE(
-      IsCertInCertificateList(certs_1[0].get(), user_2_certlist_async));
-
-  EXPECT_TRUE(IsCertInCertificateList(certs_2[0].get(), user_2_certlist_async));
-  EXPECT_FALSE(
-      IsCertInCertificateList(certs_2[0].get(), user_1_certlist_async));
+  EXPECT_TRUE(IsCertInCertificateList(certs_2[0].get(), user_2_certlist));
+  EXPECT_FALSE(IsCertInCertificateList(certs_2[0].get(), user_1_certlist));
 }
 
 // Tests that There is no crash if the database is deleted while ListCerts
@@ -281,7 +252,10 @@ TEST_F(NSSCertDatabaseChromeOSTest, ListCertsReadsSystemSlot) {
                                      "client_2.pem",
                                      "client_2.pk8",
                                      db_1_->GetSystemSlot().get()));
-  ScopedCERTCertificateList certs = db_1_->ListCertsSync();
+
+  ScopedCERTCertificateList certs;
+  db_1_->ListCerts(base::BindOnce(&SwapCertLists, base::Unretained(&certs)));
+  RunUntilIdle();
   EXPECT_TRUE(IsCertInCertificateList(cert_1.get(), certs));
   EXPECT_TRUE(IsCertInCertificateList(cert_2.get(), certs));
 }
@@ -298,7 +272,9 @@ TEST_F(NSSCertDatabaseChromeOSTest, ListCertsDoesNotCrossReadSystemSlot) {
                                      "client_2.pem",
                                      "client_2.pk8",
                                      system_db_.slot()));
-  ScopedCERTCertificateList certs = db_2_->ListCertsSync();
+  ScopedCERTCertificateList certs;
+  db_2_->ListCerts(base::BindOnce(&SwapCertLists, base::Unretained(&certs)));
+  RunUntilIdle();
   EXPECT_TRUE(IsCertInCertificateList(cert_1.get(), certs));
   EXPECT_FALSE(IsCertInCertificateList(cert_2.get(), certs));
 }

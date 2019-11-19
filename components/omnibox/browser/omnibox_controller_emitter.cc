@@ -68,9 +68,10 @@ void OmniboxControllerEmitter::RemoveObserver(Observer* observer) {
 }
 
 void OmniboxControllerEmitter::NotifyOmniboxQuery(
-    AutocompleteController* controller) {
+    AutocompleteController* controller,
+    const AutocompleteInput& input) {
   for (Observer& observer : observers_)
-    observer.OnOmniboxQuery(controller);
+    observer.OnOmniboxQuery(controller, input);
 }
 
 void OmniboxControllerEmitter::NotifyOmniboxResultChanged(

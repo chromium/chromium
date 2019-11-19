@@ -27,7 +27,7 @@ class CC_EXPORT UkmManager {
   explicit UkmManager(std::unique_ptr<ukm::UkmRecorder> recorder);
   ~UkmManager();
 
-  void SetSourceURL(const GURL& url);
+  void SetSourceId(ukm::SourceId source_id);
 
   // These metrics are recorded while a user interaction is in progress.
   void SetUserInteractionInProgress(bool in_progress);

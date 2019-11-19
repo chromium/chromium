@@ -22,6 +22,7 @@ const base::FilePath::CharType kTokenStoreFolder[] =
     FILE_PATH_LITERAL("token_store");
 constexpr char kUnspecifiedUsername[] = "unspecified";
 constexpr char kRefreshTokenKey[] = "refresh_token";
+constexpr char kUserEmailKey[] = "user_email";
 constexpr char kAccessTokenKey[] = "access_token";
 constexpr char kDeviceIdKey[] = "device_id";
 }  // namespace
@@ -40,6 +41,8 @@ class TestTokenStorageOnDisk : public TestTokenStorage {
   // TestTokenStorage interface.
   std::string FetchRefreshToken() override;
   bool StoreRefreshToken(const std::string& refresh_token) override;
+  std::string FetchUserEmail() override;
+  bool StoreUserEmail(const std::string& user_email) override;
   std::string FetchAccessToken() override;
   bool StoreAccessToken(const std::string& access_token) override;
   std::string FetchDeviceId() override;
@@ -81,6 +84,14 @@ std::string TestTokenStorageOnDisk::FetchRefreshToken() {
 bool TestTokenStorageOnDisk::StoreRefreshToken(
     const std::string& refresh_token) {
   return StoreTokenForKey(kRefreshTokenKey, refresh_token);
+}
+
+std::string TestTokenStorageOnDisk::FetchUserEmail() {
+  return FetchTokenFromKey(kUserEmailKey);
+}
+
+bool TestTokenStorageOnDisk::StoreUserEmail(const std::string& user_email) {
+  return StoreTokenForKey(kUserEmailKey, user_email);
 }
 
 std::string TestTokenStorageOnDisk::FetchAccessToken() {

@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {TestStore} from 'chrome://test/bookmarks/test_store.js';
+import {getDisplayedList, Store} from 'chrome://bookmarks/bookmarks.js';
+import {createFolder, createItem, getAllFoldersOpenState, replaceBody, testTree} from 'chrome://test/bookmarks/test_util.js';
+import {flushTasks} from 'chrome://test/test_util.m.js';
+
 suite('<bookmarks-router>', function() {
   let store;
   let router;
@@ -13,7 +18,7 @@ suite('<bookmarks-router>', function() {
 
   setup(function() {
     const nodes = testTree(createFolder('1', [createFolder('2', [])]));
-    store = new bookmarks.TestStore({
+    store = new TestStore({
       nodes: nodes,
       folderOpenState: getAllFoldersOpenState(nodes),
       selectedFolder: '1',
@@ -43,11 +48,11 @@ suite('<bookmarks-router>', function() {
     store.data.selectedFolder = '2';
     store.notifyObservers();
 
-    await PolymerTest.flushTasks();
+    await flushTasks();
     assertEquals('chrome://bookmarks/?id=2', window.location.href);
     store.data.selectedFolder = '1';
     store.notifyObservers();
-    await PolymerTest.flushTasks();
+    await flushTasks();
     // Selecting Bookmarks bar clears route.
     assertEquals('chrome://bookmarks/', window.location.href);
   });
@@ -55,14 +60,14 @@ suite('<bookmarks-router>', function() {
   test('route updates from search', async function() {
     store.data.search = {term: 'bloop'};
     store.notifyObservers();
-    await PolymerTest.flushTasks();
+    await flushTasks();
 
     assertEquals('chrome://bookmarks/?q=bloop', window.location.href);
 
     // Ensure that the route doesn't change when the search finishes.
     store.data.selectedFolder = null;
     store.notifyObservers();
-    await PolymerTest.flushTasks();
+    await flushTasks();
     assertEquals('chrome://bookmarks/?q=bloop', window.location.href);
   });
 
@@ -81,7 +86,7 @@ suite('URL preload', function() {
    */
   function setupWithUrl(url) {
     PolymerTest.clearBody();
-    bookmarks.Store.instance_ = undefined;
+    Store.instance_ = undefined;
     window.history.replaceState({}, '', url);
 
     chrome.bookmarks.getTree = function(callback) {
@@ -103,7 +108,7 @@ suite('URL preload', function() {
       ]);
     };
 
-    app = document.createElement('bookmarks-app');
+    const app = document.createElement('bookmarks-app');
     document.body.appendChild(app);
   }
 
@@ -120,14 +125,14 @@ suite('URL preload', function() {
 
   test('loading a folder URL selects that folder', function() {
     setupWithUrl('/?id=2');
-    const state = bookmarks.Store.getInstance().data;
+    const state = Store.getInstance().data;
     assertEquals('2', state.selectedFolder);
-    assertDeepEquals(['21'], bookmarks.util.getDisplayedList(state));
+    assertDeepEquals(['21'], getDisplayedList(state));
   });
 
   test('loading an invalid folder URL selects the Bookmarks Bar', function() {
     setupWithUrl('/?id=42');
-    const state = bookmarks.Store.getInstance().data;
+    const state = Store.getInstance().data;
     assertEquals('1', state.selectedFolder);
     return Promise.resolve().then(function() {
       assertEquals('chrome://bookmarks/', window.location.href);

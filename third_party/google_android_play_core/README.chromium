@@ -1,13 +1,13 @@
-Name: Goole Android Play Core
+Name: Play Core Library
 Short Name: Play Core
-URL: https://developers.google.com/android/guides/setup
-Version: 1.3.7
+URL: https://developer.android.com/guide/app-bundle/playcore
+Version: 1.6.4
 License: Android Software Development Kit License
 License File: LICENSE
 Security Critical: yes
 
 Description:
-
+- Built from @272011728
 
 Local Modifications:
 - Unproguarded verification API.

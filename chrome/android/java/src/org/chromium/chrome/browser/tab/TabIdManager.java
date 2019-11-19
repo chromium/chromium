@@ -8,8 +8,9 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.ContextUtils;
-import org.chromium.base.VisibleForTesting;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 
 import java.util.concurrent.atomic.AtomicInteger;

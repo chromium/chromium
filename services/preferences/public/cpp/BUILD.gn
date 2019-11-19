@@ -47,18 +47,6 @@ source_set("manifest") {
   ]
 }
 
-source_set("local_state_manifest") {
-  sources = [
-    "local_state_manifest.cc",
-    "local_state_manifest.h",
-  ]
-  deps = [
-    "//base",
-    "//services/preferences/public/mojom",
-    "//services/service_manager/public/cpp",
-  ]
-}
-
 source_set("service_main") {
   deps = [
     "//base",

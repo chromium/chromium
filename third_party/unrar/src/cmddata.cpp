@@ -1,6 +1,7 @@
 #include "rar.hpp"
 
-namespace third_party_unrar {
+#include "cmdfilter.cpp"
+#include "cmdmix.cpp"
 
 CommandData::CommandData()
 {
@@ -132,7 +133,7 @@ void CommandData::ParseArg(wchar *Arg)
             FindData FileData;
             bool Found=FindFile::FastFind(Arg,&FileData);
             if ((!Found || ListMode==RCLM_ACCEPT_LISTS) && 
-                ListMode!=RCLM_REJECT_LISTS && *Arg=='@' && !IsWildcard(Arg))
+                ListMode!=RCLM_REJECT_LISTS && *Arg=='@' && !IsWildcard(Arg+1))
             {
               FileLists=true;
 
@@ -282,7 +283,11 @@ void CommandData::ProcessSwitch(const wchar *Switch)
           ClearArc=true;
           break;
         case 'D':
-          AppendArcNameToPath=true;
+          if (Switch[2]==0)
+            AppendArcNameToPath=APPENDARCNAME_DESTPATH;
+          else
+            if (Switch[2]=='1')
+              AppendArcNameToPath=APPENDARCNAME_OWNDIR;
           break;
 #ifndef SFX_MODULE
         case 'G':
@@ -304,7 +309,7 @@ void CommandData::ProcessSwitch(const wchar *Switch)
           AddArcOnly=true;
           break;
         case 'P':
-          wcscpy(ArcPath,Switch+2);
+          wcsncpyz(ArcPath,Switch+2,ASIZE(ArcPath));
           break;
         case 'S':
           SyncFiles=true;
@@ -409,9 +414,9 @@ void CommandData::ProcessSwitch(const wchar *Switch)
         wcsncpyz(LogName,Switch[4]!=0 ? Switch+4:DefLogName,ASIZE(LogName));
         break;
       }
-      if (wcsicomp(Switch+1,L"SND")==0)
+      if (wcsnicomp(Switch+1,L"SND",3)==0)
       {
-        Sound=true;
+        Sound=Switch[4]=='-' ? SOUND_NOTIFY_OFF : SOUND_NOTIFY_ON;
         break;
       }
       if (wcsicomp(Switch+1,L"ERR")==0)
@@ -768,11 +773,10 @@ void CommandData::ProcessSwitch(const wchar *Switch)
                   AlreadyBad=true;
                   break;
               };
-              if (!AlreadyBad) {
+              if (!AlreadyBad)
                 if (Switch[3]==0)
                   CommentCharset=FilelistCharset=ErrlogCharset=RedirectCharset=rch;
                 else
-                {
                   for (uint I=3;Switch[I]!=0 && !AlreadyBad;I++)
                     switch(toupperw(Switch[I]))
                     {
@@ -790,8 +794,6 @@ void CommandData::ProcessSwitch(const wchar *Switch)
                         AlreadyBad=true;
                         break;
                     }
-                }
-              }
               // Set it immediately when parsing the command line, so it also
               // affects messages issued while parsing the command line.
               SetConsoleRedirectCharset(RedirectCharset);
@@ -810,16 +812,16 @@ void CommandData::ProcessSwitch(const wchar *Switch)
           ArcTime=ARCTIME_LATEST;
           break;
         case 'O':
-          FileTimeBefore.SetAgeText(Switch+2);
+          SetTimeFilters(Switch+2,true,true);
           break;
         case 'N':
-          FileTimeAfter.SetAgeText(Switch+2);
+          SetTimeFilters(Switch+2,false,true);
           break;
         case 'B':
-          FileTimeBefore.SetIsoText(Switch+2);
+          SetTimeFilters(Switch+2,true,false);
           break;
         case 'A':
-          FileTimeAfter.SetIsoText(Switch+2);
+          SetTimeFilters(Switch+2,false,false);
           break;
         case 'S':
           {
@@ -902,7 +904,7 @@ void CommandData::ProcessSwitch(const wchar *Switch)
       if (Switch[1]==0)
       {
         // If comment file is not specified, we read data from stdin.
-        wcscpy(CommentFile,L"stdin");
+        wcsncpyz(CommentFile,L"stdin",ASIZE(CommentFile));
       }
       else
         wcsncpyz(CommentFile,Switch+1,ASIZE(CommentFile));
@@ -927,315 +929,12 @@ void CommandData::BadSwitch(const wchar *Switch)
 #endif
 
 
-void CommandData::OutTitle()
-{
-  if (BareOutput || DisableCopyright)
-    return;
-#if defined(__GNUC__) && defined(SFX_MODULE)
-  mprintf(St(MCopyrightS));
-#else
-#ifndef SILENT
-  static bool TitleShown=false;
-  if (TitleShown)
-    return;
-  TitleShown=true;
-
-  wchar Version[80];
-  if (RARVER_BETA!=0)
-    swprintf(Version,ASIZE(Version),L"%d.%02d %ls %d",RARVER_MAJOR,RARVER_MINOR,St(MBeta),RARVER_BETA);
-  else
-    swprintf(Version,ASIZE(Version),L"%d.%02d",RARVER_MAJOR,RARVER_MINOR);
-#if defined(_WIN_32) || defined(_WIN_64)
-  wcsncatz(Version,L" ",ASIZE(Version));
-#endif
-#ifdef _WIN_32
-  wcsncatz(Version,St(Mx86),ASIZE(Version));
-#endif
-#ifdef _WIN_64
-  wcsncatz(Version,St(Mx64),ASIZE(Version));
-#endif
-  if (PrintVersion)
-  {
-    mprintf(L"%s",Version);
-    exit(0);
-  }
-  mprintf(St(MUCopyright),Version,RARVER_YEAR);
-#endif
-#endif
-}
-
-
-inline bool CmpMSGID(MSGID i1,MSGID i2)
-{
-#ifdef MSGID_INT
-  return i1==i2;
-#else
-  // If MSGID is const char*, we cannot compare pointers only.
-  // Pointers to different instances of same string can differ,
-  // so we need to compare complete strings.
-  return wcscmp(i1,i2)==0;
-#endif
-}
-
-void CommandData::OutHelp(RAR_EXIT ExitCode)
-{
-#if !defined(SILENT)
-  OutTitle();
-  static MSGID Help[]={
-#ifdef SFX_MODULE
-    // Console SFX switches definition.
-    MCHelpCmd,MSHelpCmdE,MSHelpCmdT,MSHelpCmdV
-#else
-    // UnRAR switches definition.
-    MUNRARTitle1,MRARTitle2,MCHelpCmd,MCHelpCmdE,MCHelpCmdL,
-    MCHelpCmdP,MCHelpCmdT,MCHelpCmdV,MCHelpCmdX,MCHelpSw,MCHelpSwm,
-    MCHelpSwAT,MCHelpSwAC,MCHelpSwAD,MCHelpSwAG,MCHelpSwAI,MCHelpSwAP,
-    MCHelpSwCm,MCHelpSwCFGm,MCHelpSwCL,MCHelpSwCU,
-    MCHelpSwDH,MCHelpSwEP,MCHelpSwEP3,MCHelpSwF,MCHelpSwIDP,MCHelpSwIERR,
-    MCHelpSwINUL,MCHelpSwIOFF,MCHelpSwKB,MCHelpSwN,MCHelpSwNa,MCHelpSwNal,
-    MCHelpSwO,MCHelpSwOC,MCHelpSwOL,MCHelpSwOR,MCHelpSwOW,MCHelpSwP,
-    MCHelpSwPm,MCHelpSwR,MCHelpSwRI,MCHelpSwSC,MCHelpSwSL,MCHelpSwSM,
-    MCHelpSwTA,MCHelpSwTB,MCHelpSwTN,MCHelpSwTO,MCHelpSwTS,MCHelpSwU,
-    MCHelpSwVUnr,MCHelpSwVER,MCHelpSwVP,MCHelpSwX,MCHelpSwXa,MCHelpSwXal,
-    MCHelpSwY
-#endif
-  };
-
-  for (uint I=0;I<ASIZE(Help);I++)
-  {
-#ifndef SFX_MODULE
-    if (CmpMSGID(Help[I],MCHelpSwV))
-      continue;
-#ifndef _WIN_ALL
-    static MSGID Win32Only[]={
-      MCHelpSwIEML,MCHelpSwVD,MCHelpSwAO,MCHelpSwOS,MCHelpSwIOFF,
-      MCHelpSwEP2,MCHelpSwOC,MCHelpSwONI,MCHelpSwDR,MCHelpSwRI
-    };
-    bool Found=false;
-    for (int J=0;J<sizeof(Win32Only)/sizeof(Win32Only[0]);J++)
-      if (CmpMSGID(Help[I],Win32Only[J]))
-      {
-        Found=true;
-        break;
-      }
-    if (Found)
-      continue;
-#endif
-#if !defined(_UNIX) && !defined(_WIN_ALL)
-    if (CmpMSGID(Help[I],MCHelpSwOW))
-      continue;
-#endif
-#if !defined(_WIN_ALL) && !defined(_EMX)
-    if (CmpMSGID(Help[I],MCHelpSwAC))
-      continue;
-#endif
-#ifndef SAVE_LINKS
-    if (CmpMSGID(Help[I],MCHelpSwOL))
-      continue;
-#endif
-#ifndef RAR_SMP
-    if (CmpMSGID(Help[I],MCHelpSwMT))
-      continue;
-#endif
-#endif
-    mprintf(St(Help[I]));
-  }
-  mprintf(L"\n");
-  ErrHandler.Exit(ExitCode);
-#endif
-}
-
-
-// Return 'true' if we need to exclude the file from processing as result
-// of -x switch. If CheckInclList is true, we also check the file against
-// the include list created with -n switch.
-bool CommandData::ExclCheck(const wchar *CheckName,bool Dir,bool CheckFullPath,bool CheckInclList)
-{
-  if (CheckArgs(&ExclArgs,Dir,CheckName,CheckFullPath,MATCH_WILDSUBPATH))
-    return true;
-  if (!CheckInclList || InclArgs.ItemsCount()==0)
-    return false;
-  if (CheckArgs(&InclArgs,Dir,CheckName,CheckFullPath,MATCH_WILDSUBPATH))
-    return false;
-  return true;
-}
-
-
-bool CommandData::CheckArgs(StringList *Args,bool Dir,const wchar *CheckName,bool CheckFullPath,int MatchMode)
-{
-  wchar *Name=ConvertPath(CheckName,NULL);
-  wchar FullName[NM];
-  wchar CurMask[NM];
-  *FullName=0;
-  Args->Rewind();
-  while (Args->GetString(CurMask,ASIZE(CurMask)))
-  {
-    wchar *LastMaskChar=PointToLastChar(CurMask);
-    bool DirMask=IsPathDiv(*LastMaskChar); // Mask for directories only.
-
-    if (Dir)
-    {
-      // CheckName is a directory.
-      if (DirMask)
-      {
-        // We process the directory and have the directory exclusion mask.
-        // So let's convert "mask\" to "mask" and process it normally.
-        
-        *LastMaskChar=0;
-      }
-      else
-      {
-        // REMOVED, we want -npath\* to match empty folders too.
-        // If mask has wildcards in name part and does not have the trailing
-        // '\' character, we cannot use it for directories.
-      
-        // if (IsWildcard(PointToName(CurMask)))
-        //  continue;
-      }
-    }
-    else
-    {
-      // If we process a file inside of directory excluded by "dirmask\".
-      // we want to exclude such file too. So we convert "dirmask\" to
-      // "dirmask\*". It is important for operations other than archiving
-      // with -x. When archiving with -x, directory matched by "dirmask\"
-      // is excluded from further scanning.
-
-      if (DirMask)
-        wcsncatz(CurMask,L"*",ASIZE(CurMask));
-    }
-
-#ifndef SFX_MODULE
-    if (CheckFullPath && IsFullPath(CurMask))
-    {
-      // We do not need to do the special "*\" processing here, because
-      // unlike the "else" part of this "if", now we convert names to full
-      // format, so they all include the path, which is matched by "*\"
-      // correctly. Moreover, removing "*\" from mask would break
-      // the comparison, because now all names have the path.
-
-      if (*FullName==0)
-        ConvertNameToFull(CheckName,FullName,ASIZE(FullName));
-      if (CmpName(CurMask,FullName,MatchMode))
-        return true;
-    }
-    else
-#endif
-    {
-      wchar NewName[NM+2],*CurName=Name;
-
-      // Important to convert before "*\" check below, so masks like
-      // d:*\something are processed properly.
-      wchar *CmpMask=ConvertPath(CurMask,NULL);
-
-      if (CmpMask[0]=='*' && IsPathDiv(CmpMask[1]))
-      {
-        // We want "*\name" to match 'name' not only in subdirectories,
-        // but also in the current directory. We convert the name
-        // from 'name' to '.\name' to be matched by "*\" part even if it is
-        // in current directory.
-        NewName[0]='.';
-        NewName[1]=CPATHDIVIDER;
-        wcsncpyz(NewName+2,Name,ASIZE(NewName)-2);
-        CurName=NewName;
-      }
-
-      if (CmpName(CmpMask,CurName,MatchMode))
-        return true;
-    }
-  }
-  return false;
-}
-
-
-#ifndef SFX_MODULE
-// Now this function performs only one task and only in Windows version:
-// it skips symlinks to directories if -e1024 switch is specified.
-// Symlinks are skipped in ScanTree class, so their entire contents
-// is skipped too. Without this function we would check the attribute
-// only directly before archiving, so we would skip the symlink record,
-// but not the contents of symlinked directory.
-bool CommandData::ExclDirByAttr(uint FileAttr)
-{
-#ifdef _WIN_ALL
-  if ((FileAttr & FILE_ATTRIBUTE_REPARSE_POINT)!=0 &&
-      (ExclFileAttr & FILE_ATTRIBUTE_REPARSE_POINT)!=0)
-    return true;
-#endif
-  return false;
-}
-#endif
-
-
-
-
-#ifndef SFX_MODULE
-// Return 'true' if we need to exclude the file from processing.
-bool CommandData::TimeCheck(RarTime &ft)
-{
-  if (FileTimeBefore.IsSet() && ft>=FileTimeBefore)
-    return true;
-  if (FileTimeAfter.IsSet() && ft<=FileTimeAfter)
-    return true;
-  return false;
-}
-#endif
-
-
-#ifndef SFX_MODULE
-// Return 'true' if we need to exclude the file from processing.
-bool CommandData::SizeCheck(int64 Size)
-{
-  if (FileSizeLess!=INT64NDF && Size>=FileSizeLess)
-    return(true);
-  if (FileSizeMore!=INT64NDF && Size<=FileSizeMore)
-    return(true);
-  return(false);
-}
-#endif
-
-
-
-
-int CommandData::IsProcessFile(FileHeader &FileHead,bool *ExactMatch,int MatchType,
-                               wchar *MatchedArg,uint MatchedArgSize)
-{
-  if (MatchedArg!=NULL && MatchedArgSize>0)
-    *MatchedArg=0;
-//  if (wcslen(FileHead.FileName)>=NM)
-//    return 0;
-  bool Dir=FileHead.Dir;
-  if (ExclCheck(FileHead.FileName,Dir,false,true))
-    return 0;
-#ifndef SFX_MODULE
-  if (TimeCheck(FileHead.mtime))
-    return 0;
-  if ((FileHead.FileAttr & ExclFileAttr)!=0 || (InclAttrSet && (FileHead.FileAttr & InclFileAttr)==0))
-    return 0;
-  if (!Dir && SizeCheck(FileHead.UnpSize))
-    return 0;
-#endif
-  wchar *ArgName;
-  FileArgs.Rewind();
-  for (int StringCount=1;(ArgName=FileArgs.GetString())!=NULL;StringCount++)
-    if (CmpName(ArgName,FileHead.FileName,MatchType))
-    {
-      if (ExactMatch!=NULL)
-        *ExactMatch=wcsicompc(ArgName,FileHead.FileName)==0;
-      if (MatchedArg!=NULL)
-        wcsncpyz(MatchedArg,ArgName,MatchedArgSize);
-      return StringCount;
-    }
-  return 0;
-}
-
-
 void CommandData::ProcessCommand()
 {
 #ifndef SFX_MODULE
 
   const wchar *SingleCharCommands=L"FUADPXETK";
-  if ((Command[0]!=0 && Command[1]!=0 && wcschr(SingleCharCommands,Command[0])!=NULL) || *ArcName==0)
+  if (Command[0]!=0 && Command[1]!=0 && wcschr(SingleCharCommands,Command[0])!=NULL || *ArcName==0)
     OutHelp(*Command==0 ? RARX_SUCCESS:RARX_USERERROR); // Return 'success' for 'rar' without parameters.
 
   const wchar *ArcExt=GetExt(ArcName);
@@ -1410,5 +1109,3 @@ void CommandData::ReportWrongSwitches(RARFORMAT Format)
   }
 }
 #endif
-
-}  // namespace third_party_unrar

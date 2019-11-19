@@ -6,7 +6,6 @@
 
 #import <Foundation/Foundation.h>
 
-#include "base/mac/scoped_nsautorelease_pool.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 // The iOS watchdog timer will kill an app that doesn't spin the main event
@@ -22,11 +21,11 @@ class IOSRunLoopListener : public testing::EmptyTestEventListener {
 };
 
 void IOSRunLoopListener::OnTestEnd(const testing::TestInfo& test_info) {
-  base::mac::ScopedNSAutoreleasePool scoped_pool;
-
-  // At the end of the test, spin the default loop for a moment.
-  NSDate* stop_date = [NSDate dateWithTimeIntervalSinceNow:0.001];
-  [[NSRunLoop currentRunLoop] runUntilDate:stop_date];
+  @autoreleasepool {
+    // At the end of the test, spin the default loop for a moment.
+    NSDate* stop_date = [NSDate dateWithTimeIntervalSinceNow:0.001];
+    [[NSRunLoop currentRunLoop] runUntilDate:stop_date];
+  }
 }
 
 }  // namespace

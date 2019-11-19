@@ -6,7 +6,9 @@
 
 #include "base/bind.h"
 #include "base/files/file_util.h"
+#include "base/i18n/icu_string_conversions.h"
 #include "base/memory/ref_counted_memory.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/no_destructor.h"
 #include "base/pickle.h"
 #include "base/strings/utf_string_conversions.h"
@@ -14,9 +16,12 @@
 #include "components/exo/data_offer_delegate.h"
 #include "components/exo/data_offer_observer.h"
 #include "components/exo/file_helper.h"
+#include "third_party/skia/include/core/SkEncodedImageFormat.h"
+#include "third_party/skia/include/core/SkImageEncoder.h"
+#include "third_party/skia/include/core/SkStream.h"
 #include "ui/base/clipboard/clipboard.h"
+#include "ui/base/clipboard/clipboard_buffer.h"
 #include "ui/base/clipboard/clipboard_constants.h"
-#include "ui/base/clipboard/clipboard_types.h"
 #include "ui/base/dragdrop/file_info.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
 #include "url/gurl.h"
@@ -26,7 +31,15 @@ namespace {
 
 constexpr char kTextMimeTypeUtf8[] = "text/plain;charset=utf-8";
 constexpr char kUtf8String[] = "UTF8_STRING";
+constexpr char kTextMimeTypeUtf16[] = "text/plain;charset=utf-16";
+constexpr char kTextHtmlMimeTypeUtf8[] = "text/html;charset=utf-8";
+constexpr char kTextHtmlMimeTypeUtf16[] = "text/html;charset=utf-16";
+constexpr char kTextRtfMimeType[] = "text/rtf";
+constexpr char kImagePngMimeType[] = "image/png";
 constexpr char kUriListSeparator[] = "\r\n";
+
+constexpr char kUTF8[] = "utf8";
+constexpr char kUTF16[] = "utf16";
 
 class RefCountedString16 : public base::RefCountedMemory {
  public:
@@ -50,12 +63,22 @@ class RefCountedString16 : public base::RefCountedMemory {
   base::string16 data_;
 };
 
-void WriteFileDescriptor(base::ScopedFD fd,
-                         scoped_refptr<base::RefCountedMemory> memory) {
+void WriteFileDescriptorOnWorkerThread(
+    base::ScopedFD fd,
+    scoped_refptr<base::RefCountedMemory> memory) {
   if (!base::WriteFileDescriptor(fd.get(),
                                  reinterpret_cast<const char*>(memory->front()),
                                  memory->size()))
     DLOG(ERROR) << "Failed to write drop data";
+}
+
+void WriteFileDescriptor(base::ScopedFD fd,
+                         scoped_refptr<base::RefCountedMemory> memory) {
+  base::PostTask(
+      FROM_HERE,
+      {base::ThreadPool(), base::MayBlock(), base::TaskPriority::USER_BLOCKING},
+      base::BindOnce(&WriteFileDescriptorOnWorkerThread, std::move(fd),
+                     std::move(memory)));
 }
 
 // Gets a comma-separated list of urls extracted from |data|->file.
@@ -86,10 +109,76 @@ ui::ClipboardFormatType GetClipboardFormatType() {
   return *format_type;
 }
 
+scoped_refptr<base::RefCountedString> EncodeAsRefCountedString(
+    const base::string16& text,
+    const std::string& charset) {
+  std::string encoded_text;
+  base::UTF16ToCodepage(text, charset.c_str(),
+                        base::OnStringConversionError::SUBSTITUTE,
+                        &encoded_text);
+  return base::RefCountedString::TakeString(&encoded_text);
+}
+
+void ReadTextFromClipboard(const std::string& charset, base::ScopedFD fd) {
+  base::string16 text;
+  ui::Clipboard::GetForCurrentThread()->ReadText(
+      ui::ClipboardBuffer::kCopyPaste, &text);
+  WriteFileDescriptor(std::move(fd), EncodeAsRefCountedString(text, charset));
+}
+
+void ReadHTMLFromClipboard(const std::string& charset, base::ScopedFD fd) {
+  base::string16 text;
+  std::string url;
+  uint32_t start, end;
+  ui::Clipboard::GetForCurrentThread()->ReadHTML(
+      ui::ClipboardBuffer::kCopyPaste, &text, &url, &start, &end);
+  WriteFileDescriptor(std::move(fd), EncodeAsRefCountedString(text, charset));
+}
+
+void ReadRTFFromClipboard(base::ScopedFD fd) {
+  std::string text;
+  ui::Clipboard::GetForCurrentThread()->ReadRTF(ui::ClipboardBuffer::kCopyPaste,
+                                                &text);
+  WriteFileDescriptor(std::move(fd), base::RefCountedString::TakeString(&text));
+}
+
+void SendAsPNGOnWorkerThread(base::ScopedFD fd, const SkBitmap sk_bitmap) {
+  SkDynamicMemoryWStream data_stream;
+  if (SkEncodeImage(&data_stream, sk_bitmap.pixmap(),
+                    SkEncodedImageFormat::kPNG, 100)) {
+    std::vector<uint8_t> data(data_stream.bytesWritten());
+    data_stream.copyToAndReset(data.data());
+    WriteFileDescriptorOnWorkerThread(std::move(fd),
+                                      base::RefCountedBytes::TakeVector(&data));
+  } else {
+    LOG(ERROR) << "Couldn't encode image as PNG";
+  }
+}
+
+void ReadPNGFromClipboard(base::ScopedFD fd) {
+  const SkBitmap sk_bitmap = ui::Clipboard::GetForCurrentThread()->ReadImage(
+      ui::ClipboardBuffer::kCopyPaste);
+  base::PostTask(
+      FROM_HERE,
+      {base::ThreadPool(), base::MayBlock(), base::TaskPriority::USER_BLOCKING},
+      base::BindOnce(&SendAsPNGOnWorkerThread, std::move(fd),
+                     std::move(sk_bitmap)));
+}
+
 }  // namespace
 
-DataOffer::DataOffer(DataOfferDelegate* delegate)
-    : delegate_(delegate), weak_ptr_factory_(this) {}
+ScopedDataOffer::ScopedDataOffer(DataOffer* data_offer,
+                                 DataOfferObserver* observer)
+    : data_offer_(data_offer), observer_(observer) {
+  data_offer_->AddObserver(observer_);
+}
+
+ScopedDataOffer::~ScopedDataOffer() {
+  data_offer_->RemoveObserver(observer_);
+}
+
+DataOffer::DataOffer(DataOfferDelegate* delegate, Purpose purpose)
+    : delegate_(delegate), purpose_(purpose) {}
 
 DataOffer::~DataOffer() {
   delegate_->OnDataOfferDestroying(this);
@@ -109,19 +198,28 @@ void DataOffer::RemoveObserver(DataOfferObserver* observer) {
 void DataOffer::Accept(const std::string* mime_type) {}
 
 void DataOffer::Receive(const std::string& mime_type, base::ScopedFD fd) {
-  const auto data_it = data_.find(mime_type);
-  if (data_it == data_.end()) {
-    DLOG(ERROR) << "Unexpected mime type is requested";
-    return;
-  }
-  if (data_it->second) {
-    base::PostTaskWithTraits(
-        FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_BLOCKING},
-        base::BindOnce(&WriteFileDescriptor, std::move(fd), data_it->second));
+  if (purpose_ == Purpose::COPY_PASTE) {
+    const auto data_it = data_callbacks_.find(mime_type);
+    if (data_it == data_callbacks_.end()) {
+      DLOG(ERROR) << "Unexpected mime type is requested";
+      return;
+    }
+    data_it->second.Run(std::move(fd));
+  } else if (purpose_ == Purpose::DRAG_DROP) {
+    const auto data_it = data_.find(mime_type);
+    if (data_it == data_.end()) {
+      DLOG(ERROR) << "Unexpected mime type is requested";
+      return;
+    }
+    if (data_it->second) {
+      WriteFileDescriptor(std::move(fd), data_it->second);
+    } else {
+      // Data bytes for this mime type are being processed currently.
+      pending_receive_requests_.push_back(
+          std::make_pair(mime_type, std::move(fd)));
+    }
   } else {
-    // Data bytes for this mime type are being processed currently.
-    pending_receive_requests_.push_back(
-        std::make_pair(mime_type, std::move(fd)));
+    NOTREACHED();
   }
 }
 
@@ -169,11 +267,37 @@ void DataOffer::SetDropData(FileHelper* file_helper,
 
   base::string16 string_content;
   if (data.HasString() && data.GetString(&string_content)) {
-    const std::string text_mime_type = std::string(ui::kMimeTypeText);
-    data_.emplace(text_mime_type,
-                  RefCountedString16::TakeString(std::move(string_content)));
-    delegate_->OnOffer(text_mime_type);
-    return;
+    const std::string utf8_mime_type = std::string(kTextMimeTypeUtf8);
+    data_.emplace(utf8_mime_type,
+                  EncodeAsRefCountedString(string_content, kUTF8));
+    delegate_->OnOffer(utf8_mime_type);
+    const std::string utf16_mime_type = std::string(kTextMimeTypeUtf16);
+    data_.emplace(utf16_mime_type,
+                  EncodeAsRefCountedString(string_content, kUTF16));
+    delegate_->OnOffer(utf16_mime_type);
+    const std::string text_plain_mime_type = std::string(ui::kMimeTypeText);
+    // The MIME type standard says that new text/ subtypes should default to a
+    // UTF-8 encoding, but that old ones, including text/plain, keep ASCII as
+    // the default. Nonetheless, we use UTF8 here because it is a superset of
+    // ASCII and the defacto standard text encoding.
+    data_.emplace(text_plain_mime_type,
+                  EncodeAsRefCountedString(string_content, kUTF8));
+    delegate_->OnOffer(text_plain_mime_type);
+  }
+
+  base::string16 html_content;
+  GURL url_content;
+  if (data.HasHtml() && data.GetHtml(&html_content, &url_content)) {
+    const std::string utf8_html_mime_type = std::string(kTextHtmlMimeTypeUtf8);
+    data_.emplace(utf8_html_mime_type,
+                  EncodeAsRefCountedString(html_content, kUTF8));
+    delegate_->OnOffer(utf8_html_mime_type);
+
+    const std::string utf16_html_mime_type =
+        std::string(kTextHtmlMimeTypeUtf16);
+    data_.emplace(utf16_html_mime_type,
+                  EncodeAsRefCountedString(html_content, kUTF16));
+    delegate_->OnOffer(utf16_html_mime_type);
   }
 }
 
@@ -181,16 +305,40 @@ void DataOffer::SetClipboardData(FileHelper* file_helper,
                                  const ui::Clipboard& data) {
   DCHECK_EQ(0u, data_.size());
   if (data.IsFormatAvailable(ui::ClipboardFormatType::GetPlainTextWType(),
-                             ui::CLIPBOARD_TYPE_COPY_PASTE)) {
-    base::string16 content;
-    data.ReadText(ui::CLIPBOARD_TYPE_COPY_PASTE, &content);
-    std::string utf8_content = base::UTF16ToUTF8(content);
-    scoped_refptr<base::RefCountedString> utf8_ref =
-        base::RefCountedString::TakeString(&utf8_content);
-    data_.emplace(std::string(kTextMimeTypeUtf8), utf8_ref);
-    data_.emplace(std::string(kUtf8String), utf8_ref);
+                             ui::ClipboardBuffer::kCopyPaste)) {
+    auto utf8_callback =
+        base::BindRepeating(&ReadTextFromClipboard, std::string(kUTF8));
     delegate_->OnOffer(std::string(kTextMimeTypeUtf8));
+    data_callbacks_.emplace(std::string(kTextMimeTypeUtf8), utf8_callback);
     delegate_->OnOffer(std::string(kUtf8String));
+    data_callbacks_.emplace(std::string(kUtf8String), utf8_callback);
+    delegate_->OnOffer(std::string(kTextMimeTypeUtf16));
+    data_callbacks_.emplace(
+        std::string(kTextMimeTypeUtf16),
+        base::BindRepeating(&ReadTextFromClipboard, std::string(kUTF16)));
+  }
+  if (data.IsFormatAvailable(ui::ClipboardFormatType::GetHtmlType(),
+                             ui::ClipboardBuffer::kCopyPaste)) {
+    delegate_->OnOffer(std::string(kTextHtmlMimeTypeUtf8));
+    data_callbacks_.emplace(
+        std::string(kTextHtmlMimeTypeUtf8),
+        base::BindRepeating(&ReadHTMLFromClipboard, std::string(kUTF8)));
+    delegate_->OnOffer(std::string(kTextHtmlMimeTypeUtf16));
+    data_callbacks_.emplace(
+        std::string(kTextHtmlMimeTypeUtf16),
+        base::BindRepeating(&ReadHTMLFromClipboard, std::string(kUTF16)));
+  }
+  if (data.IsFormatAvailable(ui::ClipboardFormatType::GetRtfType(),
+                             ui::ClipboardBuffer::kCopyPaste)) {
+    delegate_->OnOffer(std::string(kTextRtfMimeType));
+    data_callbacks_.emplace(std::string(kTextRtfMimeType),
+                            base::BindRepeating(&ReadRTFFromClipboard));
+  }
+  if (data.IsFormatAvailable(ui::ClipboardFormatType::GetBitmapType(),
+                             ui::ClipboardBuffer::kCopyPaste)) {
+    delegate_->OnOffer(std::string(kImagePngMimeType));
+    data_callbacks_.emplace(std::string(kImagePngMimeType),
+                            base::BindRepeating(&ReadPNGFromClipboard));
   }
 }
 
@@ -217,10 +365,7 @@ void DataOffer::OnPickledUrlsResolved(const std::string& mime_type,
   auto it = pending_receive_requests_.begin();
   while (it != pending_receive_requests_.end()) {
     if (it->first == mime_type) {
-      base::PostTaskWithTraits(
-          FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_BLOCKING},
-          base::BindOnce(&WriteFileDescriptor, std::move(it->second),
-                         ref_counted_memory));
+      WriteFileDescriptor(std::move(it->second), ref_counted_memory);
       it = pending_receive_requests_.erase(it);
     } else {
       ++it;

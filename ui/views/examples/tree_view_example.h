@@ -5,6 +5,8 @@
 #ifndef UI_VIEWS_EXAMPLES_TREE_VIEW_EXAMPLE_H_
 #define UI_VIEWS_EXAMPLES_TREE_VIEW_EXAMPLE_H_
 
+#include <memory>
+
 #include "base/macros.h"
 #include "ui/base/models/simple_menu_model.h"
 #include "ui/base/models/tree_node_model.h"
@@ -60,9 +62,9 @@ class VIEWS_EXAMPLES_EXPORT TreeViewExample
   bool CanEdit(TreeView* tree_view, ui::TreeModelNode* node) override;
 
   // ContextMenuController:
-  void ShowContextMenuForView(View* source,
-                              const gfx::Point& point,
-                              ui::MenuSourceType source_type) override;
+  void ShowContextMenuForViewImpl(View* source,
+                                  const gfx::Point& point,
+                                  ui::MenuSourceType source_type) override;
 
   // SimpleMenuModel::Delegate:
   bool IsCommandIdChecked(int command_id) const override;
@@ -70,14 +72,14 @@ class VIEWS_EXAMPLES_EXPORT TreeViewExample
   void ExecuteCommand(int command_id, int event_flags) override;
 
   // The tree view to be tested.
-  std::unique_ptr<TreeView> tree_view_;
+  TreeView* tree_view_ = nullptr;
 
   // Control buttons to modify the model.
-  LabelButton* add_;
-  LabelButton* remove_;
-  LabelButton* change_title_;
+  LabelButton* add_ = nullptr;
+  LabelButton* remove_ = nullptr;
+  LabelButton* change_title_ = nullptr;
 
-  typedef ui::TreeNodeWithValue<int> NodeType;
+  using NodeType = ui::TreeNodeWithValue<int>;
 
   ui::TreeNodeModel<NodeType> model_;
 

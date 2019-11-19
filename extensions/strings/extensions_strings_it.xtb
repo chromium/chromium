@@ -12,7 +12,6 @@
 <translation id="2159915644201199628">Impossibile decodificare l'immagine: "<ph name="IMAGE_NAME" />"</translation>
 <translation id="2350172092385603347">Localizzazione utilizzata, ma default_locale non era specificato nel file manifest.</translation>
 <translation id="2576842806987913196">Esiste già un file CRX con questo nome.</translation>
-<translation id="2753617847762399167">Percorso non valido (assoluto o relativo con ".."): "<ph name="IMAGE_PATH" />"</translation>
 <translation id="2785530881066938471">Impossibile caricare il file "<ph name="RELATIVE_PATH" />" per la trascrizione dei contenuti. Non è codificato in UTF-8.</translation>
 <translation id="2903070246402204397">L'estensione <ph name="EXTENSION_NAME" /> (ID "<ph name="EXTENSION_ID" />") è stata bloccata dall'amministratore. <ph name="ADMIN_INFO" /></translation>
 <translation id="2988488679308982380">Impossibile installare il pacchetto: "<ph name="ERROR_CODE" />"</translation>
@@ -38,8 +37,6 @@
 <translation id="5436430103864390185">Le finestre con forma personalizzata non sono supportate.</translation>
 <translation id="5456409301717116725">Questa estensione include il file di chiave "<ph name="KEY_PATH" />". Probabilmente preferiresti che non l'includesse.</translation>
 <translation id="5486326529110362464">Il valore di input per la chiave privata deve essere esistente.</translation>
-<translation id="5627523580512561598">estensione <ph name="EXTENSION_NAME" /></translation>
-<translation id="5960890139610307736">ExtensionView: <ph name="EXTENSIONVIEW_TAG_NAME" /></translation>
 <translation id="5972529113578162692">L'amministratore di questo computer richiede che l'estensione <ph name="EXTENSION_NAME" /> sia installata. Non è possibile disinstallarla.</translation>
 <translation id="6027032947578871493">Prodotto sconosciuto <ph name="PRODUCT_ID" /> di <ph name="VENDOR_NAME" /> (numero di serie <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="6068932090455285721"><ph name="PRODUCT_NAME" /> del fornitore <ph name="VENDOR_ID" /></translation>
@@ -51,7 +48,6 @@
 <translation id="6542618148162044354">"<ph name="APP_NAME" />" richiede l'accesso a uno o più dispositivi:</translation>
 <translation id="657064425229075395">Impossibile caricare lo script in background "<ph name="BACKGROUND_SCRIPT" />".</translation>
 <translation id="6580950983454333167"><ph name="PRODUCT_NAME" /> di <ph name="VENDOR_NAME" /> (numero di serie: <ph name="SERIAL_NUMBER" />)</translation>
-<translation id="6731255991101203740">Impossibile creare la directory per la decompressione: "<ph name="DIRECTORY_PATH" />"</translation>
 <translation id="677806580227005219">Gestore MIME: <ph name="MIMEHANDLERVIEW_TAG_NAME" /></translation>
 <translation id="6840444547062817500">L'estensione si è ricaricata automaticamente troppo spesso.</translation>
 <translation id="7003844668372540529">Prodotto sconosciuto <ph name="PRODUCT_ID" /> di <ph name="VENDOR_NAME" /></translation>

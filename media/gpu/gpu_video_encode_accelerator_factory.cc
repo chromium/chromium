@@ -17,7 +17,7 @@
 #include "media/gpu/android/android_video_encode_accelerator.h"
 #endif
 #if defined(OS_MACOSX)
-#include "media/gpu/vt_video_encode_accelerator_mac.h"
+#include "media/gpu/mac/vt_video_encode_accelerator_mac.h"
 #endif
 #if defined(OS_WIN)
 #include "base/feature_list.h"

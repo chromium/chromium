@@ -32,10 +32,10 @@
 #include "third_party/blink/renderer/core/scroll/scrollbar.h"
 #include "third_party/blink/renderer/platform/geometry/int_rect.h"
 #include "third_party/blink/renderer/platform/graphics/paint/display_item.h"
+#include "third_party/blink/renderer/platform/graphics/scrollbar_theme_settings.h"
 
 namespace blink {
 
-class CullRect;
 class GraphicsContext;
 class WebMouseEvent;
 
@@ -48,13 +48,14 @@ class CORE_EXPORT ScrollbarTheme {
   virtual ~ScrollbarTheme() = default;
 
   // If true, then scrollbars with this theme will be painted every time
-  // Scrollbar::setNeedsPaintInvalidation is called. If false, then only parts
+  // Scrollbar::SetNeedsPaintInvalidation is called. If false, then only parts
   // which are explicitly invalidated will be repainted.
   virtual bool ShouldRepaintAllPartsOnInvalidation() const { return true; }
 
   virtual void UpdateEnabledState(const Scrollbar&) {}
 
-  virtual bool Paint(const Scrollbar&, GraphicsContext&, const CullRect&);
+  // |context|'s current space is the space of the scrollbar's FrameRect().
+  void Paint(const Scrollbar&, GraphicsContext& context);
 
   virtual ScrollbarPart HitTest(const Scrollbar&, const IntPoint&);
 
@@ -71,7 +72,7 @@ class CORE_EXPORT ScrollbarTheme {
     return kWebScrollbarButtonsPlacementSingle;
   }
 
-  virtual bool SupportsControlTints() const { return false; }
+  virtual bool IsSolidColor() const { return false; }
   virtual bool UsesOverlayScrollbars() const { return false; }
   virtual void UpdateScrollbarOverlayColorTheme(const Scrollbar&) {}
 
@@ -83,11 +84,10 @@ class CORE_EXPORT ScrollbarTheme {
   virtual bool ShouldDisableInvisibleScrollbars() const { return true; }
 
   virtual bool InvalidateOnMouseEnterExit() { return false; }
-  virtual bool InvalidateOnWindowActiveChange() const { return false; }
 
   // Returns parts of the scrollbar which must be repainted following a change
   // in the thumb position, given scroll positions before and after.
-  virtual ScrollbarPart InvalidateOnThumbPositionChange(
+  virtual ScrollbarPart PartsToInvalidateOnThumbPositionChange(
       const Scrollbar&,
       float old_position,
       float new_position) const {
@@ -95,8 +95,10 @@ class CORE_EXPORT ScrollbarTheme {
   }
 
   virtual void PaintScrollCorner(GraphicsContext&,
+                                 const Scrollbar* vertical_scrollbar,
                                  const DisplayItemClient&,
-                                 const IntRect& corner_rect);
+                                 const IntRect& corner_rect,
+                                 WebColorScheme color_scheme);
   virtual void PaintTickmarks(GraphicsContext&,
                               const Scrollbar&,
                               const IntRect&);
@@ -113,12 +115,14 @@ class CORE_EXPORT ScrollbarTheme {
     return false;
   }
 
+  virtual bool SupportsDragSnapBack() const { return false; }
+
   // The position of the thumb relative to the track.
   int ThumbPosition(const Scrollbar& scrollbar) {
     return ThumbPosition(scrollbar, scrollbar.CurrentPos());
   }
-  virtual TimeDelta OverlayScrollbarFadeOutDelay() const;
-  virtual TimeDelta OverlayScrollbarFadeOutDuration() const;
+  virtual base::TimeDelta OverlayScrollbarFadeOutDelay() const;
+  virtual base::TimeDelta OverlayScrollbarFadeOutDuration() const;
   // The position the thumb would have, relative to the track, at the specified
   // scroll position.
   virtual int ThumbPosition(const Scrollbar&, float scroll_position);
@@ -135,13 +139,11 @@ class CORE_EXPORT ScrollbarTheme {
   virtual bool HasButtons(const Scrollbar&) = 0;
   virtual bool HasThumb(const Scrollbar&) = 0;
 
-  virtual IntRect BackButtonRect(const Scrollbar&,
-                                 ScrollbarPart,
-                                 bool painting = false) = 0;
-  virtual IntRect ForwardButtonRect(const Scrollbar&,
-                                    ScrollbarPart,
-                                    bool painting = false) = 0;
-  virtual IntRect TrackRect(const Scrollbar&, bool painting = false) = 0;
+  // All these rects are in the same coordinate space as the scrollbar's
+  // FrameRect.
+  virtual IntRect BackButtonRect(const Scrollbar&, ScrollbarPart) = 0;
+  virtual IntRect ForwardButtonRect(const Scrollbar&, ScrollbarPart) = 0;
+  virtual IntRect TrackRect(const Scrollbar&) = 0;
   virtual IntRect ThumbRect(const Scrollbar&);
   virtual int ThumbThickness(const Scrollbar&);
 
@@ -153,36 +155,20 @@ class CORE_EXPORT ScrollbarTheme {
                           IntRect& thumb,
                           IntRect& end_track);
 
-  virtual void PaintScrollbarBackground(GraphicsContext&, const Scrollbar&) {}
-  virtual void PaintTrackBackground(GraphicsContext&,
-                                    const Scrollbar&,
-                                    const IntRect&) {}
-  virtual void PaintTrackPiece(GraphicsContext&,
-                               const Scrollbar&,
-                               const IntRect&,
-                               ScrollbarPart) {}
-  virtual void PaintButton(GraphicsContext&,
-                           const Scrollbar&,
-                           const IntRect&,
-                           ScrollbarPart) {}
   virtual void PaintThumb(GraphicsContext&, const Scrollbar&, const IntRect&) {}
 
-  // Paint the thumb with ThumbOpacity() applied.
-  virtual void PaintThumbWithOpacity(GraphicsContext& context,
-                                     const Scrollbar& scrollbar,
-                                     const IntRect& rect) {
-    // By default this method just calls PaintThumb(). A theme with custom
-    // ThumbOpacity() should override this method to apply the opacity.
-    DCHECK_EQ(1.0f, ThumbOpacity(scrollbar));
-    PaintThumb(context, scrollbar, rect);
-  }
+  // |offset| is from the space of the scrollbar's FrameRect() to |context|'s
+  // current space.
+  void PaintTrackButtonsTickmarks(GraphicsContext& context,
+                                  const Scrollbar&,
+                                  const IntPoint& offset);
 
   virtual int MaxOverlapBetweenPages() {
     return std::numeric_limits<int>::max();
   }
 
-  virtual TimeDelta InitialAutoscrollTimerDelay();
-  virtual TimeDelta AutoscrollTimerDelay();
+  virtual base::TimeDelta InitialAutoscrollTimerDelay();
+  virtual base::TimeDelta AutoscrollTimerDelay();
 
   virtual IntRect ConstrainTrackRectToTrackPieces(const Scrollbar&,
                                                   const IntRect& rect) {
@@ -190,7 +176,6 @@ class CORE_EXPORT ScrollbarTheme {
   }
 
   virtual void RegisterScrollbar(Scrollbar&) {}
-  virtual void UnregisterScrollbar(Scrollbar&) {}
 
   virtual bool IsMockTheme() const { return false; }
 
@@ -212,23 +197,54 @@ class CORE_EXPORT ScrollbarTheme {
     return IntRect();
   }
 
-  // Warning: Please call Page::GetScrollbarTheme instead of call this method
-  // directly since we support different native scrollbar theme base on page
-  // settings. See crrev.com/c/646727, this function will eventually be removed.
-  static ScrollbarTheme& DeprecatedStaticGetTheme();
-
-  static void SetMockScrollbarsEnabled(bool flag);
-  static bool MockScrollbarsEnabled();
+  virtual bool AllowsHitTest() const { return true; }
 
  protected:
   virtual int TickmarkBorderWidth() { return 0; }
-  static DisplayItem::Type ButtonPartToDisplayItemType(ScrollbarPart);
-  static DisplayItem::Type TrackPiecePartToDisplayItemType(ScrollbarPart);
+  virtual void PaintTrack(GraphicsContext&, const Scrollbar&, const IntRect&) {}
+  virtual void PaintButton(GraphicsContext&,
+                           const Scrollbar&,
+                           const IntRect&,
+                           ScrollbarPart) {}
+
+  // |offset| is the offset of the |context|'s current space to the space of
+  // scrollbar's FrameRect().
+  virtual void PaintTrackAndButtons(GraphicsContext& context,
+                                    const Scrollbar&,
+                                    const IntPoint& offset);
+
+  // Paint the thumb with ThumbOpacity() applied.
+  virtual void PaintThumbWithOpacity(GraphicsContext& context,
+                                     const Scrollbar& scrollbar,
+                                     const IntRect& rect) {
+    // By default this method just calls PaintThumb(). A theme with custom
+    // ThumbOpacity() should override this method to apply the opacity.
+    DCHECK_EQ(1.0f, ThumbOpacity(scrollbar));
+    PaintThumb(context, scrollbar, rect);
+  }
+
+ protected:
+  // For GetTheme().
+  friend class MockScrollableArea;
+  friend class MockScrollableAreaForAnimatorTest;
+  friend class Page;
+
+  // Get the theme based on global scrollbar settings. We should always use
+  // Page::GetScrollbarTheme() to get scrollbar theme because we support
+  // different native scrollbar theme base on page settings.
+  // See http://crrev.com/c/646727.
+  static ScrollbarTheme& GetTheme();
+
+  static bool OverlayScrollbarsEnabled() {
+    return ScrollbarThemeSettings::OverlayScrollbarsEnabled();
+  }
+  static bool MockScrollbarsEnabled() {
+    return ScrollbarThemeSettings::MockScrollbarsEnabled();
+  }
 
  private:
-  static ScrollbarTheme&
-  NativeTheme();  // Must be implemented to return the correct theme subclass.
-  static bool g_mock_scrollbars_enabled_;
+  // Must be implemented to return the correct theme subclass.
+  static ScrollbarTheme& NativeTheme();
 };
 
 }  // namespace blink

@@ -116,11 +116,11 @@ const MultiDeviceFeatureBehaviorImpl = {
   getIconName: function(feature) {
     switch (feature) {
       case settings.MultiDeviceFeature.BETTER_TOGETHER_SUITE:
-        return 'settings:multidevice-better-together-suite';
+        return 'os-settings:multidevice-better-together-suite';
       case settings.MultiDeviceFeature.MESSAGES:
-        return 'settings:multidevice-messages';
+        return 'os-settings:multidevice-messages';
       case settings.MultiDeviceFeature.SMART_LOCK:
-        return 'settings:multidevice-smart-lock';
+        return 'os-settings:multidevice-smart-lock';
       default:
         return '';
     }

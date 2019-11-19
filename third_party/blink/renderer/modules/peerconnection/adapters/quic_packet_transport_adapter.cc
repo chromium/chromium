@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/modules/peerconnection/adapters/quic_packet_transport_adapter.h"
-#include "net/third_party/quic/platform/api/quic_logging.h"
+#include "net/third_party/quiche/src/quic/platform/api/quic_logging.h"
 
 namespace blink {
 

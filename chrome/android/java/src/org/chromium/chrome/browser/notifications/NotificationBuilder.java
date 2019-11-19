@@ -89,6 +89,14 @@ public class NotificationBuilder implements ChromeNotificationBuilder {
     }
 
     @Override
+    public ChromeNotificationBuilder setColor(int argb) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            mBuilder.setColor(argb);
+        }
+        return this;
+    }
+
+    @Override
     public ChromeNotificationBuilder setTicker(CharSequence text) {
         mBuilder.setTicker(text);
         return this;
@@ -142,9 +150,7 @@ public class NotificationBuilder implements ChromeNotificationBuilder {
 
     @Override
     public ChromeNotificationBuilder setShowWhen(boolean showWhen) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-            mBuilder.setShowWhen(showWhen);
-        }
+        mBuilder.setShowWhen(showWhen);
         return this;
     }
 
@@ -327,22 +333,26 @@ public class NotificationBuilder implements ChromeNotificationBuilder {
 
     @Override
     @SuppressWarnings("deprecation")
-    public Notification buildWithBigContentView(RemoteViews view) {
+    public ChromeNotification buildWithBigContentView(RemoteViews view) {
+        assert mMetadata != null;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            return mBuilder.setCustomBigContentView(view).build();
+            return new ChromeNotification(
+                    mBuilder.setCustomBigContentView(view).build(), mMetadata);
         } else {
             Notification notification = mBuilder.build();
             notification.bigContentView = view;
-            return notification;
+            return new ChromeNotification(notification, mMetadata);
         }
     }
 
     @Override
-    public Notification buildWithBigTextStyle(String bigText) {
+    public ChromeNotification buildWithBigTextStyle(String bigText) {
         Notification.BigTextStyle bigTextStyle = new Notification.BigTextStyle();
         bigTextStyle.setBuilder(mBuilder);
         bigTextStyle.bigText(bigText);
-        return bigTextStyle.build();
+
+        assert mMetadata != null;
+        return new ChromeNotification(bigTextStyle.build(), mMetadata);
     }
 
     @Override

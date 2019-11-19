@@ -6,26 +6,29 @@
 #define CONTENT_BROWSER_SERVICE_WORKER_SERVICE_WORKER_NAVIGATION_HANDLE_CORE_H_
 
 #include <memory>
+#include <utility>
 
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
+#include "content/browser/service_worker/service_worker_controllee_request_handler.h"
+#include "content/browser/service_worker/service_worker_provider_host.h"
 #include "content/common/content_export.h"
-#include "content/common/service_worker/service_worker_types.h"
+#include "services/network/public/mojom/network_context.mojom.h"
+#include "third_party/blink/public/mojom/service_worker/service_worker_provider.mojom.h"
 
 namespace content {
 
 class ServiceWorkerContextWrapper;
 class ServiceWorkerNavigationHandle;
-class ServiceWorkerProviderHost;
 
-// PlzNavigate
-// This class is used to manage the lifetime of ServiceWorkerProviderHosts
-// created during navigations. This class is created on the UI thread, but
-// should only be accessed from the IO thread afterwards. It is the IO thread
-// pendant of ServiceWorkerNavigationHandle. See the
-// ServiceWorkerNavigationHandle header for more details about the lifetime of
-// both classes.
+// This class is created on the UI thread, but should only be accessed from the
+// service worker core thread afterwards. It is the core thread pendant of
+// ServiceWorkerNavigationHandle. See the ServiceWorkerNavigationHandle header
+// for more details about the lifetime of both classes.
+//
+// TODO(crbug.com/824858): Merge this class into ServiceWorkerNavigationHandle
+// when the core thread moves to the UI thread.
 class CONTENT_EXPORT ServiceWorkerNavigationHandleCore {
  public:
   ServiceWorkerNavigationHandleCore(
@@ -33,18 +36,52 @@ class CONTENT_EXPORT ServiceWorkerNavigationHandleCore {
       ServiceWorkerContextWrapper* context_wrapper);
   ~ServiceWorkerNavigationHandleCore();
 
-  // Called when a ServiceWorkerProviderHost was pre-created for the navigation
-  // tracked by this ServiceWorkerNavigationHandleCore.
-  void DidPreCreateProviderHost(int provider_id);
+  // Called when a ServiceWorkerProviderHost was created.
+  void OnCreatedProviderHost(
+      base::WeakPtr<ServiceWorkerProviderHost> provider_host,
+      blink::mojom::ServiceWorkerProviderInfoForClientPtr provider_info);
+
+  // Called by corresponding methods in ServiceWorkerNavigationHandle. See
+  // comments in the header of ServiceWorkerNavigationHandle for details.
+  void OnBeginNavigationCommit(
+      int render_process_id,
+      int render_frame_id,
+      network::mojom::CrossOriginEmbedderPolicy cross_origin_embedder_policy);
+  void OnBeginWorkerCommit(
+      network::mojom::CrossOriginEmbedderPolicy cross_origin_embedder_policy);
 
   ServiceWorkerContextWrapper* context_wrapper() const {
     return context_wrapper_.get();
   }
 
+  void set_provider_host(
+      base::WeakPtr<ServiceWorkerProviderHost> provider_host) {
+    provider_host_ = std::move(provider_host);
+  }
+
+  base::WeakPtr<ServiceWorkerProviderHost> provider_host() {
+    return provider_host_;
+  }
+
+  void set_interceptor(
+      std::unique_ptr<ServiceWorkerControlleeRequestHandler> interceptor) {
+    interceptor_ = std::move(interceptor);
+  }
+
+  ServiceWorkerControlleeRequestHandler* interceptor() {
+    return interceptor_.get();
+  }
+
+  base::WeakPtr<ServiceWorkerNavigationHandleCore> AsWeakPtr() {
+    return weak_factory_.GetWeakPtr();
+  }
+
  private:
-  int provider_id_ = kInvalidServiceWorkerProviderId;
   scoped_refptr<ServiceWorkerContextWrapper> context_wrapper_;
   base::WeakPtr<ServiceWorkerNavigationHandle> ui_handle_;
+  base::WeakPtr<ServiceWorkerProviderHost> provider_host_;
+  std::unique_ptr<ServiceWorkerControlleeRequestHandler> interceptor_;
+  base::WeakPtrFactory<ServiceWorkerNavigationHandleCore> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ServiceWorkerNavigationHandleCore);
 };

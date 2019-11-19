@@ -31,7 +31,7 @@ void MockBrowsingDataSharedWorkerHelper::DeleteSharedWorker(
     const std::string& name,
     const url::Origin& constructor_origin) {
   SharedWorkerInfo key(worker, name, constructor_origin);
-  ASSERT_TRUE(base::ContainsKey(workers_, key));
+  ASSERT_TRUE(base::Contains(workers_, key));
   workers_[key] = false;
 }
 

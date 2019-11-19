@@ -9,7 +9,7 @@
 #include "media/base/sinc_resampler.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "testing/perf/perf_test.h"
+#include "testing/perf/perf_result_reporter.h"
 
 namespace media {
 
@@ -38,14 +38,11 @@ static void RunConvolveBenchmark(
                 resampler.get_kernel_for_testing(),
                 resampler.get_kernel_for_testing(), kKernelInterpolationFactor);
   }
-  double total_time_milliseconds =
-      (base::TimeTicks::Now() - start).InMillisecondsF();
-  perf_test::PrintResult("sinc_resampler_convolve",
-                         "",
-                         trace_name,
-                         kBenchmarkIterations / total_time_milliseconds,
-                         "runs/ms",
-                         true);
+  double total_time_seconds = (base::TimeTicks::Now() - start).InSecondsF();
+
+  perf_test::PerfResultReporter reporter("sinc_resampler", trace_name);
+  reporter.RegisterImportantMetric("_convolve", "runs/s");
+  reporter.AddResult("_convolve", kBenchmarkIterations / total_time_seconds);
 }
 
 // Benchmark for the various Convolve() methods.  Make sure to build with

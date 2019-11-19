@@ -1,1 +1,0 @@
-This tests setting animation-name to none, it passes if it does not crash.

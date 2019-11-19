@@ -4,7 +4,8 @@
 
 #include "chrome/browser/ui/extensions/blocked_action_bubble_delegate.h"
 
-#include "base/callback_helpers.h"
+#include <utility>
+
 #include "base/strings/string16.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -61,7 +62,7 @@ void BlockedActionBubbleDelegate::OnBubbleShown(
     const base::Closure& close_bubble_callback) {}
 
 void BlockedActionBubbleDelegate::OnBubbleClosed(CloseAction action) {
-  base::ResetAndReturn(&callback_).Run(action);
+  std::move(callback_).Run(action);
 }
 
 std::unique_ptr<ToolbarActionsBarBubbleDelegate::ExtraViewInfo>

@@ -1,5 +1,5 @@
 rootWebArea
-++genericContainer size=(200, 200)
-++++genericContainer size=(0, 0)
+++genericContainer ignored
+++++genericContainer size=(200, 200)
 ++++++genericContainer offscreen size=(0, 0)
-<-- End-of-file -->
+++++++++genericContainer offscreen size=(0, 0)

@@ -9,6 +9,7 @@
 
 #include <algorithm>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "content/browser/indexed_db/indexed_db_blob_info.h"

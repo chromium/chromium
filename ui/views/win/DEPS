@@ -15,6 +15,7 @@ include_rules = [
   "+base",
   "+ui/base",
   "+ui/gfx",
+  "+ui/latency",
   "+ui/views/accessibility/native_view_accessibility_win.h",
   "+ui/views/ime/input_method_delegate.h",
   "+ui/views/views_delegate.h",

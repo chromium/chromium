@@ -7,15 +7,14 @@
 
 #include "chrome/browser/chromeos/login/screens/error_screen.h"
 #include "chrome/browser/chromeos/login/screens/network_error.h"
-#include "chrome/browser/chromeos/login/screens/network_error_view.h"
+#include "chrome/browser/ui/webui/chromeos/login/error_screen_handler.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace chromeos {
 
 class MockErrorScreen : public ErrorScreen {
  public:
-  MockErrorScreen(BaseScreenDelegate* base_screen_delegate,
-                  NetworkErrorView* view);
+  explicit MockErrorScreen(ErrorScreenView* view);
   ~MockErrorScreen() override;
 
   void FixCaptivePortal() override;
@@ -30,10 +29,10 @@ class MockErrorScreen : public ErrorScreen {
                     const std::string& network));
 };
 
-class MockNetworkErrorView : public NetworkErrorView {
+class MockErrorScreenView : public ErrorScreenView {
  public:
-  MockNetworkErrorView();
-  virtual ~MockNetworkErrorView();
+  MockErrorScreenView();
+  virtual ~MockErrorScreenView();
 
   void Bind(ErrorScreen* screen) override;
   void Unbind() override;
@@ -42,7 +41,14 @@ class MockNetworkErrorView : public NetworkErrorView {
   MOCK_METHOD0(Hide, void());
   MOCK_METHOD1(MockBind, void(ErrorScreen* screen));
   MOCK_METHOD0(MockUnbind, void());
-  MOCK_METHOD1(ShowOobeScreen, void(OobeScreen screen));
+  MOCK_METHOD1(ShowOobeScreen, void(OobeScreenId screen));
+  MOCK_METHOD1(SetErrorStateCode, void(NetworkError::ErrorState error_state));
+  MOCK_METHOD1(SetErrorStateNetwork, void(const std::string& network_name));
+  MOCK_METHOD1(SetGuestSigninAllowed, void(bool value));
+  MOCK_METHOD1(SetOfflineSigninAllowed, void(bool value));
+  MOCK_METHOD1(SetShowConnectingIndicator, void(bool value));
+  MOCK_METHOD1(SetUIState, void(NetworkError::UIState ui_state));
+  MOCK_METHOD1(SetIsPersistentError, void(bool is_persistent));
 
  private:
   ErrorScreen* screen_ = nullptr;

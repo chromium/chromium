@@ -1,0 +1,65 @@
+Tests the order in which unfinished Runtime.{enable,evaluate} calls are handled around paused navigation.
+promise created (100021)
+promise created (100013)
+promise created (100017)
+Unpausing navigation ...
+receiving result 100021:
+{
+    error : {
+        code : -32000
+        message : Inspected target navigated or closed
+    }
+    id : 100021
+    sessionId : <string>
+}
+receiving result 100013:
+{
+    error : {
+        code : -32000
+        message : Inspected target navigated or closed
+    }
+    id : 100013
+    sessionId : <string>
+}
+receiving result 100017:
+{
+    error : {
+        code : -32000
+        message : Inspected target navigated or closed
+    }
+    id : 100017
+    sessionId : <string>
+}
+receiving result 100091:
+{
+    id : 100091
+    result : {
+    }
+    sessionId : <string>
+}
+receiving result 100081:
+{
+    id : 100081
+    result : {
+    }
+    sessionId : <string>
+}
+receiving result 100086:
+{
+    id : 100086
+    result : {
+    }
+    sessionId : <string>
+}
+Hi from request 10099!
+receiving result 100099:
+{
+    id : 100099
+    result : {
+        result : {
+            type : undefined
+        }
+    }
+    sessionId : <string>
+}
+

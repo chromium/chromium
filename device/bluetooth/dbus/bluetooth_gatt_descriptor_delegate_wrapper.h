@@ -31,16 +31,14 @@ class BluetoothGattDescriptorDelegateWrapper
   // BluetoothGattAttributeValueDelegate overrides:
   void GetValue(
       const dbus::ObjectPath& device_path,
-      const device::BluetoothLocalGattService::Delegate::ValueCallback&
-          callback,
-      const device::BluetoothLocalGattService::Delegate::ErrorCallback&
-          error_callback) override;
-  void SetValue(
-      const dbus::ObjectPath& device_path,
-      const std::vector<uint8_t>& value,
-      const base::Closure& callback,
-      const device::BluetoothLocalGattService::Delegate::ErrorCallback&
-          error_callback) override;
+      device::BluetoothLocalGattService::Delegate::ValueCallback callback,
+      device::BluetoothLocalGattService::Delegate::ErrorCallback error_callback)
+      override;
+  void SetValue(const dbus::ObjectPath& device_path,
+                const std::vector<uint8_t>& value,
+                base::OnceClosure callback,
+                device::BluetoothLocalGattService::Delegate::ErrorCallback
+                    error_callback) override;
 
   void StartNotifications(const dbus::ObjectPath& device_path,
                           device::BluetoothGattCharacteristic::NotificationType

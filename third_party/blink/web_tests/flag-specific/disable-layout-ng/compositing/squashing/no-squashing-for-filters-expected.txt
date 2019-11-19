@@ -1,0 +1,40 @@
+{
+  "layers": [
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF"
+    },
+    {
+      "name": "LayoutBlockFlow DIV",
+      "bounds": [100, 100],
+      "contentsOpaque": true,
+      "backgroundColor": "#ADD8E6",
+      "transform": 1
+    },
+    {
+      "name": "LayoutBlockFlow (positioned) DIV class='trysquashed'",
+      "bounds": [50, 50],
+      "contentsOpaque": true,
+      "backgroundColor": "#D3D3D3"
+    },
+    {
+      "name": "Squashing Layer (first squashed layer: LayoutBlockFlow (positioned) DIV class='trysquashed')",
+      "position": [50, 50],
+      "bounds": [50, 50]
+    }
+  ],
+  "transforms": [
+    {
+      "id": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [8, 8, 0, 1]
+      ]
+    }
+  ]
+}
+

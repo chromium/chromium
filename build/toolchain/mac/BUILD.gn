@@ -18,7 +18,6 @@ import("//build/config/mac/symbols.gni")
 assert(host_os == "mac")
 
 import("//build/toolchain/cc_wrapper.gni")
-import("//build/toolchain/clang_static_analyzer.gni")
 import("//build/toolchain/concurrent_links.gni")
 import("//build/toolchain/goma.gni")
 import("//build/toolchain/toolchain.gni")
@@ -28,6 +27,12 @@ declare_args() {
   # tools as they can cause lots of I/O contention when invoking ninja with a
   # large number of parallel jobs (e.g. when using distributed build like goma).
   bundle_pool_depth = -1
+
+  # This makes the linker set timestamps in Mach-O files to 0. This isn't
+  # enabled by default because this breaks Xcode's lldb. This has been fixed in
+  # https://reviews.llvm.org/rL368199 but that has not yet made it into a public
+  # lldb release.
+  mac_deterministic_build = false
 }
 
 if (current_toolchain == default_toolchain) {
@@ -53,7 +58,7 @@ if (current_toolchain == default_toolchain) {
 tool_versions =
     exec_script("get_tool_mtime.py",
                 rebase_path([
-                              "//build/toolchain/mac/compile_xcassets.py",
+                              "//build/config/ios/compile_xcassets.py",
                               "//build/toolchain/mac/filter_libtool.py",
                               "//build/toolchain/mac/linker_driver.py",
                             ],
@@ -64,12 +69,6 @@ tool_versions =
 # build args in this definition.
 template("mac_toolchain") {
   toolchain(target_name) {
-    if (use_system_xcode) {
-      env_wrapper = ""
-    } else {
-      env_wrapper = "export DEVELOPER_DIR=$hermetic_xcode_path; "
-    }
-
     # When invoking this toolchain not as the default one, these args will be
     # passed to the build. They are ignored when this is the default toolchain.
     assert(defined(invoker.toolchain_args),
@@ -126,15 +125,9 @@ template("mac_toolchain") {
     cxx = compiler_prefix + _cxx
     ld = _cxx
 
-    if (use_clang_static_analyzer) {
-      analyzer_wrapper =
-          rebase_path("//build/toolchain/clang_static_analyzer_wrapper.py",
-                      root_build_dir) + "  --mode=clang"
-      cc = analyzer_wrapper + " ${cc}"
-      cxx = analyzer_wrapper + " ${cxx}"
-
-      ld = cxx
-    }
+    # Set the explicit search path for clang++ so it uses the right linker
+    # binary.
+    ld += " -B " + mac_bin_path
 
     if (defined(toolchain_args.coverage_instrumentation_input_file)) {
       toolchain_coverage_instrumentation_input_file =
@@ -146,10 +139,6 @@ template("mac_toolchain") {
     _use_clang_coverage_wrapper =
         toolchain_coverage_instrumentation_input_file != ""
     if (_use_clang_coverage_wrapper) {
-      assert(!use_clang_static_analyzer,
-             "Clang static analyzer wrapper and Clang code coverage wrapper " +
-                 "cannot be used together.")
-
       _coverage_wrapper =
           rebase_path("//build/toolchain/clang_code_coverage_wrapper.py",
                       root_build_dir) + " --files-to-instrument=" +
@@ -162,6 +151,14 @@ template("mac_toolchain") {
     linker_driver =
         "TOOL_VERSION=${tool_versions.linker_driver} " +
         rebase_path("//build/toolchain/mac/linker_driver.py", root_build_dir)
+
+    # Specify an explicit path for the strip binary.
+    _strippath = mac_bin_path + "strip"
+    linker_driver += " -Wcrl,strippath," + _strippath
+
+    if (mac_deterministic_build) {
+      linker_driver += " --deterministic"
+    }
 
     # On iOS, the final applications are assembled using lipo (to support fat
     # builds). The correct flags are passed to the linker_driver.py script
@@ -188,14 +185,13 @@ template("mac_toolchain") {
       dsym_switch = " -Wcrl,dsym,{{root_out_dir}} "
       if (is_mac) {
         dsym_switch += "-Wcrl,dsymutilpath," +
-                          rebase_path("//tools/clang/dsymutil/bin/dsymutil",
-                                      root_build_dir) + " "
+                       rebase_path("//tools/clang/dsymutil/bin/dsymutil",
+                                   root_build_dir) + " "
       }
 
       dsym_output_dir =
           "{{root_out_dir}}/{{target_output_name}}{{output_extension}}.dSYM"
       dsym_output = [
-        "$dsym_output_dir/",
         "$dsym_output_dir/Contents/Info.plist",
         "$dsym_output_dir/Contents/Resources/DWARF/" +
             "{{target_output_name}}{{output_extension}}",
@@ -277,7 +273,10 @@ template("mac_toolchain") {
       # corrupted by this process. Don't use spaces for source files or labels.
       rspfile = "{{output}}.rsp"
       rspfile_content = "{{inputs_newline}}"
-      command = "$env_wrapper rm -f {{output}} && TOOL_VERSION=${tool_versions.filter_libtool} python $script libtool -static {{arflags}} -o {{output}} -filelist $rspfile"
+
+      # Specify explicit path for libtool.
+      libtool = mac_bin_path + "libtool"
+      command = "rm -f {{output}} && TOOL_VERSION=${tool_versions.filter_libtool} python $script $libtool -static {{arflags}} -o {{output}} -filelist $rspfile"
       description = "LIBTOOL-STATIC {{output}}"
       outputs = [
         "{{output_dir}}/{{target_output_name}}{{output_extension}}",
@@ -303,7 +302,14 @@ template("mac_toolchain") {
       tocname = dylib + ".TOC"
       temporary_tocname = dylib + ".tmp"
 
-      does_reexport_command = "[ ! -e \"$dylib\" -o ! -e \"$tocname\" ] || otool -l \"$dylib\" | grep -q LC_REEXPORT_DYLIB"
+      # Use explicit paths to binaries. The binaries present on the default
+      # search path in /usr/bin are thin wrappers around xcrun, which requires a
+      # full CommandLineTools or Xcode install, and still may not choose the
+      # appropriate binary if there are multiple installs.
+      otool = mac_bin_path + "otool"
+      nm = mac_bin_path + "nm"
+
+      does_reexport_command = "[ ! -e \"$dylib\" -o ! -e \"$tocname\" ] || $otool -l \"$dylib\" | grep -q LC_REEXPORT_DYLIB"
 
       link_command = "$linker_driver $ld -shared "
       if (is_component_build) {
@@ -313,9 +319,9 @@ template("mac_toolchain") {
       link_command += "{{ldflags}} -o \"$dylib\" -Wl,-filelist,\"$rspfile\" {{libs}} {{solibs}}"
 
       replace_command = "if ! cmp -s \"$temporary_tocname\" \"$tocname\"; then mv \"$temporary_tocname\" \"$tocname\""
-      extract_toc_command = "{ otool -l \"$dylib\" | grep LC_ID_DYLIB -A 5; nm -gP \"$dylib\" | cut -f1-2 -d' ' | grep -v U\$\$; true; }"
+      extract_toc_command = "{ $otool -l \"$dylib\" | grep LC_ID_DYLIB -A 5; $nm -gP \"$dylib\" | cut -f1-2 -d' ' | grep -v U\$\$; true; }"
 
-      command = "$env_wrapper if $does_reexport_command ; then $link_command && $extract_toc_command > \"$tocname\"; else $link_command && $extract_toc_command > \"$temporary_tocname\" && $replace_command ; fi; fi"
+      command = "if $does_reexport_command ; then $link_command && $extract_toc_command > \"$tocname\"; else $link_command && $extract_toc_command > \"$temporary_tocname\" && $replace_command ; fi; fi"
 
       rspfile_content = "{{inputs_newline}}"
 
@@ -356,7 +362,7 @@ template("mac_toolchain") {
       rspfile = sofile + ".rsp"
       pool = "//build/toolchain:link_pool($default_toolchain)"
 
-      link_command = "$env_wrapper $linker_driver $ld -bundle {{ldflags}} -o \"$sofile\" -Wl,-filelist,\"$rspfile\""
+      link_command = "$linker_driver $ld -bundle {{ldflags}} -o \"$sofile\" -Wl,-filelist,\"$rspfile\""
       if (is_component_build) {
         link_command += " -Wl,-install_name,@rpath/{{target_output_name}}{{output_extension}}"
       }
@@ -399,7 +405,7 @@ template("mac_toolchain") {
       # do for command-line arguments. Thus any source names with spaces, or
       # label names with spaces (which GN bases the output paths on) will be
       # corrupted by this process. Don't use spaces for source files or labels.
-      command = "$env_wrapper $linker_driver $ld $dsym_switch {{ldflags}} -o \"$outfile\" -Wl,-filelist,\"$rspfile\" {{solibs}} {{libs}}"
+      command = "$linker_driver $ld $dsym_switch {{ldflags}} -o \"$outfile\" -Wl,-filelist,\"$rspfile\" {{solibs}} {{libs}}"
       description = "LINK $outfile"
       rspfile_content = "{{inputs_newline}}"
       outputs = [
@@ -455,27 +461,33 @@ template("mac_toolchain") {
       description = "COPY_BUNDLE_DATA {{source}} {{output}}"
       pool = ":bundle_pool($default_toolchain)"
     }
-    tool("compile_xcassets") {
-      _tool = rebase_path("//build/toolchain/mac/compile_xcassets.py",
-                          root_build_dir)
-      if (is_ios) {
-        _sdk_name = ios_sdk_name
-        _min_deployment_target = ios_deployment_target
-        _compress_pngs = ""
-      } else {
-        _sdk_name = mac_sdk_name
-        _min_deployment_target = mac_deployment_target
-        _compress_pngs = " -c "
-      }
-      command =
-          "$env_wrapper rm -f \"{{output}}\" && " +
-          "TOOL_VERSION=${tool_versions.compile_xcassets} " +
-          "python $_tool$_compress_pngs -p \"$_sdk_name\" " +
-          "-t \"$_min_deployment_target\" -T \"{{bundle_product_type}}\" " +
-          "-P \"{{bundle_partial_info_plist}}\" -o {{output}} {{inputs}}"
 
-      description = "COMPILE_XCASSETS {{output}}"
-      pool = ":bundle_pool($default_toolchain)"
+    # xcassets are only used on iOS, not macOS. We want to minimize the number
+    # of Xcode-based tools used by the macOS toolchain, so we intentionally
+    # disallow future uses of xcassets on macOS. https://crbug.com/965663.
+    if (toolchain_args.current_os == "ios") {
+      tool("compile_xcassets") {
+        _tool = rebase_path("//build/config/ios/compile_xcassets.py",
+                            root_build_dir)
+        if (is_ios) {
+          _sdk_name = ios_sdk_name
+          _min_deployment_target = ios_deployment_target
+          _compress_pngs = ""
+        } else {
+          _sdk_name = mac_sdk_name
+          _min_deployment_target = mac_deployment_target
+          _compress_pngs = " -c "
+        }
+        command =
+            "rm -f \"{{output}}\" && " +
+            "TOOL_VERSION=${tool_versions.compile_xcassets} " +
+            "python $_tool$_compress_pngs -p \"$_sdk_name\" " +
+            "-t \"$_min_deployment_target\" -T \"{{bundle_product_type}}\" " +
+            "-P \"{{bundle_partial_info_plist}}\" -o {{output}} {{inputs}}"
+
+        description = "COMPILE_XCASSETS {{output}}"
+        pool = ":bundle_pool($default_toolchain)"
+      }
     }
 
     tool("action") {

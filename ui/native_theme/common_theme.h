@@ -17,15 +17,18 @@ namespace ui {
 // Returns the color to use on Aura for |color_id|.  For a few colors that are
 // theme-specific, |base_theme| must be non-null; consult the code to see which
 // color IDs fall into this category.
-SkColor NATIVE_THEME_EXPORT GetAuraColor(NativeTheme::ColorId color_id,
-                                         const NativeTheme* base_theme);
+SkColor NATIVE_THEME_EXPORT GetAuraColor(
+    NativeTheme::ColorId color_id,
+    const NativeTheme* base_theme,
+    NativeTheme::ColorScheme color_scheme = NativeTheme::ColorScheme::kDefault);
 
 void NATIVE_THEME_EXPORT CommonThemePaintMenuItemBackground(
     const NativeTheme* theme,
     cc::PaintCanvas* canvas,
     NativeTheme::State state,
     const gfx::Rect& rect,
-    const NativeTheme::MenuItemExtraParams& menu_item);
+    const NativeTheme::MenuItemExtraParams& menu_item,
+    NativeTheme::ColorScheme color_scheme);
 
 }  // namespace ui
 

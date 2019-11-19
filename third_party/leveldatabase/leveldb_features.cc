@@ -7,5 +7,5 @@
 namespace leveldb {
 
 const base::Feature kLevelDBRewriteFeature{"LevelDBPerformRewrite",
-                                           base::FEATURE_DISABLED_BY_DEFAULT};
+                                           base::FEATURE_ENABLED_BY_DEFAULT};
 }  // namespace leveldb

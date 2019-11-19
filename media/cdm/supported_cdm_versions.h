@@ -32,8 +32,7 @@ struct SupportedVersion {
   bool enabled;
 };
 
-constexpr std::array<SupportedVersion, 3> kSupportedCdmInterfaceVersions = {{
-    {9, true},
+constexpr std::array<SupportedVersion, 2> kSupportedCdmInterfaceVersions = {{
     {10, true},
     {11, false},
 }};
@@ -43,7 +42,7 @@ constexpr std::array<SupportedVersion, 3> kSupportedCdmInterfaceVersions = {{
 // existing CDM host. So we keep CDM host support separate from CDM interface
 // support. In CdmInterfaceTraits we also static assert that for supported CDM
 // interface, CdmInterface::Host::kVersion must also be supported.
-constexpr int kMinSupportedCdmHostVersion = 9;
+constexpr int kMinSupportedCdmHostVersion = 10;
 constexpr int kMaxSupportedCdmHostVersion = 11;
 
 constexpr bool IsSupportedCdmModuleVersion(int version) {
@@ -120,17 +119,8 @@ constexpr bool CheckSupportedCdmHostVersions(int min_version, int max_version) {
 template <int CdmInterfaceVersion>
 struct CdmInterfaceTraits {};
 
-template <>
-struct CdmInterfaceTraits<9> {
-  using CdmInterface = cdm::ContentDecryptionModule_9;
-  static_assert(CdmInterface::kVersion == 9, "CDM interface version mismatch");
-  static_assert(IsSupportedCdmHostVersion(CdmInterface::Host::kVersion),
-                "Host not supported");
-  // CDM_9 is already stable and enabled by default.
-  // TODO(xhwang): After CDM_9 support is removed, consider to use a macro to
-  // help define CdmInterfaceTraits specializations.
-};
-
+// TODO(xhwang): CDM_9 support has been removed; consider to use a macro to
+// help define CdmInterfaceTraits specializations.
 template <>
 struct CdmInterfaceTraits<10> {
   using CdmInterface = cdm::ContentDecryptionModule_10;

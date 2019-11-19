@@ -14,12 +14,12 @@
 #include "base/bind.h"
 #include "base/optional.h"
 #include "base/time/time.h"
+#include "chrome/android/chrome_jni_headers/FeedOfflineBridge_jni.h"
 #include "chrome/browser/android/feed/feed_host_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_android.h"
 #include "components/feed/content/feed_host_service.h"
 #include "components/feed/core/content_metadata.h"
-#include "jni/FeedOfflineBridge_jni.h"
 
 using base::android::JavaRef;
 using base::android::JavaParamRef;
@@ -42,8 +42,7 @@ static jlong JNI_FeedOfflineBridge_Init(
 FeedOfflineBridge::FeedOfflineBridge(const JavaRef<jobject>& j_this,
                                      FeedOfflineHost* offline_host)
     : j_this_(ScopedJavaGlobalRef<jobject>(j_this)),
-      offline_host_(offline_host),
-      weak_factory_(this) {
+      offline_host_(offline_host) {
   DCHECK(offline_host_);
   // The host guarantees to not invoke these callbacks until Initialize() exits.
   // This is important because until the Java bridge's constructor finishes, any
@@ -134,7 +133,7 @@ void FeedOfflineBridge::AppendContentMetadata(
   if (!j_snippet.is_null()) {
     metadata.snippet = base::android::ConvertJavaStringToUTF8(env, j_snippet);
   }
-  known_content_metadata_buffer_.push_back(std::move(metadata));
+  known_content_metadata_buffer_.emplace_back(std::move(metadata));
 }
 
 void FeedOfflineBridge::OnGetKnownContentDone(

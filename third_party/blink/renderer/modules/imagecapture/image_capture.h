@@ -7,6 +7,7 @@
 
 #include <memory>
 #include "media/capture/mojom/image_capture.mojom-blink.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
@@ -21,10 +22,10 @@
 namespace blink {
 
 class ExceptionState;
+class ImageCaptureFrameGrabber;
 class MediaStreamTrack;
 class PhotoCapabilities;
 class ScriptPromiseResolver;
-class WebImageCaptureFrameGrabber;
 
 // TODO(mcasas): Consider adding a web test checking that this class is not
 // garbage collected while it has event listeners.
@@ -98,8 +99,8 @@ class MODULES_EXPORT ImageCapture final
   void ResolveWithPhotoCapabilities(ScriptPromiseResolver*);
 
   Member<MediaStreamTrack> stream_track_;
-  std::unique_ptr<WebImageCaptureFrameGrabber> frame_grabber_;
-  media::mojom::blink::ImageCapturePtr service_;
+  std::unique_ptr<ImageCaptureFrameGrabber> frame_grabber_;
+  mojo::Remote<media::mojom::blink::ImageCapture> service_;
 
   Member<MediaTrackCapabilities> capabilities_;
   Member<MediaTrackSettings> settings_;

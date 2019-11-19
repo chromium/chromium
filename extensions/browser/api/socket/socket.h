@@ -18,6 +18,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/api/api_resource.h"
 #include "extensions/browser/api/api_resource_manager.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/io_buffer.h"
 #include "net/base/ip_endpoint.h"
@@ -38,26 +39,25 @@ class Socket;
 
 namespace extensions {
 
-using CompletionCallback = base::Callback<void(int)>;
 using SetNoDelayCallback = base::OnceCallback<void(bool)>;
 using SetKeepAliveCallback = base::OnceCallback<void(bool)>;
 using ReadCompletionCallback = base::OnceCallback<
     void(int, scoped_refptr<net::IOBuffer> io_buffer, bool socket_destroying)>;
 using RecvFromCompletionCallback =
-    base::Callback<void(int,
-                        scoped_refptr<net::IOBuffer> io_buffer,
-                        bool socket_destroying,
-                        const std::string&,
-                        uint16_t)>;
+    base::OnceCallback<void(int,
+                            scoped_refptr<net::IOBuffer> io_buffer,
+                            bool socket_destroying,
+                            const std::string&,
+                            uint16_t)>;
 using ListenCallback =
     base::OnceCallback<void(int, const std::string& error_msg)>;
 
-using AcceptCompletionCallback =
-    base::OnceCallback<void(int,
-                            network::mojom::TCPConnectedSocketPtr,
-                            const base::Optional<net::IPEndPoint>&,
-                            mojo::ScopedDataPipeConsumerHandle,
-                            mojo::ScopedDataPipeProducerHandle)>;
+using AcceptCompletionCallback = base::OnceCallback<void(
+    int,
+    mojo::PendingRemote<network::mojom::TCPConnectedSocket>,
+    const base::Optional<net::IPEndPoint>&,
+    mojo::ScopedDataPipeConsumerHandle,
+    mojo::ScopedDataPipeProducerHandle)>;
 
 // A Socket wraps a low-level socket and includes housekeeping information that
 // we need to manage it in the context of an extension.
@@ -96,7 +96,7 @@ class Socket : public ApiResource {
   virtual void Disconnect(bool socket_destroying) = 0;
   virtual void Bind(const std::string& address,
                     uint16_t port,
-                    const CompletionCallback& callback) = 0;
+                    net::CompletionOnceCallback callback) = 0;
 
   // The |callback| will be called with the number of bytes read into the
   // buffer, or a negative number if an error occurred.
@@ -106,14 +106,13 @@ class Socket : public ApiResource {
   // error occurred.
   void Write(scoped_refptr<net::IOBuffer> io_buffer,
              int byte_count,
-             const CompletionCallback& callback);
+             net::CompletionOnceCallback callback);
 
-  virtual void RecvFrom(int count,
-                        const RecvFromCompletionCallback& callback) = 0;
+  virtual void RecvFrom(int count, RecvFromCompletionCallback callback) = 0;
   virtual void SendTo(scoped_refptr<net::IOBuffer> io_buffer,
                       int byte_count,
                       const net::IPEndPoint& address,
-                      const CompletionCallback& callback) = 0;
+                      net::CompletionOnceCallback callback) = 0;
 
   virtual void SetKeepAlive(bool enable,
                             int delay,
@@ -147,7 +146,7 @@ class Socket : public ApiResource {
   void WriteData();
   virtual int WriteImpl(net::IOBuffer* io_buffer,
                         int io_buffer_size,
-                        const net::CompletionCallback& callback) = 0;
+                        net::CompletionOnceCallback callback) = 0;
 
   std::string hostname_;
   bool is_connected_;
@@ -159,12 +158,12 @@ class Socket : public ApiResource {
   struct WriteRequest {
     WriteRequest(scoped_refptr<net::IOBuffer> io_buffer,
                  int byte_count,
-                 const CompletionCallback& callback);
-    WriteRequest(const WriteRequest& other);
+                 net::CompletionOnceCallback callback);
+    WriteRequest(WriteRequest&& other);
     ~WriteRequest();
     scoped_refptr<net::IOBuffer> io_buffer;
     int byte_count;
-    CompletionCallback callback;
+    net::CompletionOnceCallback callback;
     int bytes_written;
   };
 

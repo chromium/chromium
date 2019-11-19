@@ -142,8 +142,6 @@ HANDLE CreateFileMappingWithReducedPermissions(SECURITY_ATTRIBUTES* sa,
 
 SharedMemory::SharedMemory() {}
 
-SharedMemory::SharedMemory(const string16& name) : name_(name) {}
-
 SharedMemory::SharedMemory(const SharedMemoryHandle& handle, bool read_only)
     : external_section_(true), shm_(handle), read_only_(read_only) {}
 
@@ -160,13 +158,6 @@ bool SharedMemory::IsHandleValid(const SharedMemoryHandle& handle) {
 // static
 void SharedMemory::CloseHandle(const SharedMemoryHandle& handle) {
   handle.Close();
-}
-
-// static
-size_t SharedMemory::GetHandleLimit() {
-  // Rounded down from value reported here:
-  // http://blogs.technet.com/b/markrussinovich/archive/2009/09/29/3283844.aspx
-  return static_cast<size_t>(1 << 23);
 }
 
 // static
@@ -198,44 +189,41 @@ bool SharedMemory::Create(const SharedMemoryCreateOptions& options) {
   }
 
   size_t rounded_size = (options.size + kSectionMask) & ~kSectionMask;
-  name_ = options.name_deprecated ? ASCIIToUTF16(*options.name_deprecated)
-                                  : string16();
   SECURITY_ATTRIBUTES sa = {sizeof(sa), nullptr, FALSE};
   SECURITY_DESCRIPTOR sd;
   ACL dacl;
 
-  if (name_.empty()) {
-    // Add an empty DACL to enforce anonymous read-only sections.
-    sa.lpSecurityDescriptor = &sd;
-    if (!InitializeAcl(&dacl, sizeof(dacl), ACL_REVISION)) {
-      LogError(INITIALIZE_ACL_FAILURE, GetLastError());
-      return false;
-    }
-    if (!InitializeSecurityDescriptor(&sd, SECURITY_DESCRIPTOR_REVISION)) {
-      LogError(INITIALIZE_SECURITY_DESC_FAILURE, GetLastError());
-      return false;
-    }
-    if (!SetSecurityDescriptorDacl(&sd, TRUE, &dacl, FALSE)) {
-      LogError(SET_SECURITY_DESC_FAILURE, GetLastError());
-      return false;
-    }
+  // Add an empty DACL to enforce anonymous read-only sections.
+  sa.lpSecurityDescriptor = &sd;
+  if (!InitializeAcl(&dacl, sizeof(dacl), ACL_REVISION)) {
+    LogError(INITIALIZE_ACL_FAILURE, GetLastError());
+    return false;
+  }
+  if (!InitializeSecurityDescriptor(&sd, SECURITY_DESCRIPTOR_REVISION)) {
+    LogError(INITIALIZE_SECURITY_DESC_FAILURE, GetLastError());
+    return false;
+  }
+  if (!SetSecurityDescriptorDacl(&sd, TRUE, &dacl, FALSE)) {
+    LogError(SET_SECURITY_DESC_FAILURE, GetLastError());
+    return false;
+  }
 
-    if (win::GetVersion() < win::VERSION_WIN8_1) {
-      // Windows < 8.1 ignores DACLs on certain unnamed objects (like shared
-      // sections). So, we generate a random name when we need to enforce
-      // read-only.
-      uint64_t rand_values[4];
-      RandBytes(&rand_values, sizeof(rand_values));
-      name_ = ASCIIToUTF16(StringPrintf(
-          "CrSharedMem_%016llx%016llx%016llx%016llx", rand_values[0],
-          rand_values[1], rand_values[2], rand_values[3]));
-      DCHECK(!name_.empty());
-    }
+  string16 name;
+  if (win::GetVersion() < win::Version::WIN8_1) {
+    // Windows < 8.1 ignores DACLs on certain unnamed objects (like shared
+    // sections). So, we generate a random name when we need to enforce
+    // read-only.
+    uint64_t rand_values[4];
+    RandBytes(&rand_values, sizeof(rand_values));
+    name = ASCIIToUTF16(StringPrintf("CrSharedMem_%016llx%016llx%016llx%016llx",
+                                     rand_values[0], rand_values[1],
+                                     rand_values[2], rand_values[3]));
+    DCHECK(!name.empty());
   }
 
   shm_ = SharedMemoryHandle(
       CreateFileMappingWithReducedPermissions(
-          &sa, rounded_size, name_.empty() ? nullptr : as_wcstr(name_)),
+          &sa, rounded_size, name.empty() ? nullptr : as_wcstr(name)),
       rounded_size, UnguessableToken::Create());
   if (!shm_.IsValid()) {
     // The error is logged within CreateFileMappingWithReducedPermissions().
@@ -244,56 +232,15 @@ bool SharedMemory::Create(const SharedMemoryCreateOptions& options) {
 
   requested_size_ = options.size;
 
-  // Check if the shared memory pre-exists.
+  // If the shared memory already exists, something has gone wrong.
   if (GetLastError() == ERROR_ALREADY_EXISTS) {
-    // If the file already existed, set requested_size_ to 0 to show that
-    // we don't know the size.
-    requested_size_ = 0;
-    external_section_ = true;
-    if (!options.open_existing_deprecated) {
-      Close();
-      // From "if" above: GetLastError() == ERROR_ALREADY_EXISTS.
-      LogError(ALREADY_EXISTS, ERROR_ALREADY_EXISTS);
-      return false;
-    }
+    Close();
+    // From "if" above: GetLastError() == ERROR_ALREADY_EXISTS.
+    LogError(ALREADY_EXISTS, ERROR_ALREADY_EXISTS);
+    return false;
   }
 
   LogError(SUCCESS, ERROR_SUCCESS);
-  return true;
-}
-
-bool SharedMemory::Delete(const std::string& name) {
-  // intentionally empty -- there is nothing for us to do on Windows.
-  return true;
-}
-
-bool SharedMemory::Open(const std::string& name, bool read_only) {
-  DCHECK(!shm_.IsValid());
-  DWORD access = FILE_MAP_READ | SECTION_QUERY;
-  if (!read_only)
-    access |= FILE_MAP_WRITE;
-  name_ = ASCIIToUTF16(name);
-  read_only_ = read_only;
-
-  // This form of sharing shared memory is deprecated. https://crbug.com/345734.
-  // However, we can't get rid of it without a significant refactor because its
-  // used to communicate between two versions of the same service process, very
-  // early in the life cycle.
-  // Technically, we should also pass the GUID from the original shared memory
-  // region. We don't do that - this means that we will overcount this memory,
-  // which thankfully isn't relevant since Chrome only communicates with a
-  // single version of the service process.
-  // We pass the size |0|, which is a dummy size and wrong, but otherwise
-  // harmless.
-  shm_ = SharedMemoryHandle(
-      OpenFileMapping(access, false, name_.empty() ? nullptr : as_wcstr(name_)),
-      0u, UnguessableToken::Create());
-  if (!shm_.IsValid())
-    return false;
-  // If a name specified assume it's an external section.
-  if (!name_.empty())
-    external_section_ = true;
-  // Note: size_ is not set in this case.
   return true;
 }
 

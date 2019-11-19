@@ -18,8 +18,8 @@
 #include "base/values.h"
 #include "components/history/core/browser/history_backend.h"
 #include "components/history/core/browser/history_db_task.h"
-#include "components/history/core/browser/history_service.h"
 #include "components/sync/model/sync_change.h"
+#include "components/sync/model/sync_error_factory.h"
 #include "components/sync/protocol/history_delete_directive_specifics.pb.h"
 #include "components/sync/protocol/proto_value_conversions.h"
 #include "components/sync/protocol/sync.pb.h"
@@ -335,32 +335,16 @@ void DeleteDirectiveHandler::DeleteDirectiveTask::ProcessUrlDeleteDirectives(
     history_backend->DeleteURLsUntil(deletions);
 }
 
-DeleteDirectiveHandler::DeleteDirectiveHandler() : weak_ptr_factory_(this) {}
+DeleteDirectiveHandler::DeleteDirectiveHandler(
+    BackendTaskScheduler backend_task_scheduler)
+    : backend_task_scheduler_(std::move(backend_task_scheduler)) {}
 
-DeleteDirectiveHandler::~DeleteDirectiveHandler() {
-  weak_ptr_factory_.InvalidateWeakPtrs();
-}
+DeleteDirectiveHandler::~DeleteDirectiveHandler() {}
 
-void DeleteDirectiveHandler::Start(
-    HistoryService* history_service,
-    const syncer::SyncDataList& initial_sync_data,
-    std::unique_ptr<syncer::SyncChangeProcessor> sync_processor) {
-  DCHECK(thread_checker_.CalledOnValidThread());
-  sync_processor_ = std::move(sync_processor);
-  if (!initial_sync_data.empty()) {
-    // Drop processed delete directives during startup.
-    history_service->ScheduleDBTask(
-        FROM_HERE,
-        std::make_unique<DeleteDirectiveTask>(weak_ptr_factory_.GetWeakPtr(),
-                                              initial_sync_data,
-                                              DROP_AFTER_PROCESSING),
-        &internal_tracker_);
-  }
-}
-
-void DeleteDirectiveHandler::Stop() {
-  DCHECK(thread_checker_.CalledOnValidThread());
-  sync_processor_.reset();
+void DeleteDirectiveHandler::OnBackendLoaded() {
+  backend_loaded_ = true;
+  if (wait_until_ready_to_sync_cb_)
+    std::move(wait_until_ready_to_sync_cb_).Run();
 }
 
 bool DeleteDirectiveHandler::CreateDeleteDirectives(
@@ -437,10 +421,56 @@ syncer::SyncError DeleteDirectiveHandler::ProcessLocalDeleteDirective(
   return sync_processor_->ProcessSyncChanges(FROM_HERE, changes);
 }
 
+void DeleteDirectiveHandler::WaitUntilReadyToSync(base::OnceClosure done) {
+  DCHECK(!wait_until_ready_to_sync_cb_);
+  if (backend_loaded_) {
+    std::move(done).Run();
+  } else {
+    // Wait until OnBackendLoaded() gets called.
+    wait_until_ready_to_sync_cb_ = std::move(done);
+  }
+}
+
+syncer::SyncMergeResult DeleteDirectiveHandler::MergeDataAndStartSyncing(
+    syncer::ModelType type,
+    const syncer::SyncDataList& initial_sync_data,
+    std::unique_ptr<syncer::SyncChangeProcessor> sync_processor,
+    std::unique_ptr<syncer::SyncErrorFactory> error_handler) {
+  DCHECK_EQ(type, syncer::HISTORY_DELETE_DIRECTIVES);
+  DCHECK(thread_checker_.CalledOnValidThread());
+
+  sync_processor_ = std::move(sync_processor);
+  if (!initial_sync_data.empty()) {
+    // Drop processed delete directives during startup.
+    backend_task_scheduler_.Run(FROM_HERE,
+                                std::make_unique<DeleteDirectiveTask>(
+                                    weak_ptr_factory_.GetWeakPtr(),
+                                    initial_sync_data, DROP_AFTER_PROCESSING),
+                                &internal_tracker_);
+  }
+
+  return syncer::SyncMergeResult(type);
+}
+
+void DeleteDirectiveHandler::StopSyncing(syncer::ModelType type) {
+  DCHECK_EQ(type, syncer::HISTORY_DELETE_DIRECTIVES);
+  DCHECK(thread_checker_.CalledOnValidThread());
+  sync_processor_.reset();
+}
+
+syncer::SyncDataList DeleteDirectiveHandler::GetAllSyncData(
+    syncer::ModelType type) const {
+  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_EQ(type, syncer::HISTORY_DELETE_DIRECTIVES);
+  // TODO(akalin): Keep track of existing delete directives.
+  return syncer::SyncDataList();
+}
+
 syncer::SyncError DeleteDirectiveHandler::ProcessSyncChanges(
-    HistoryService* history_service,
+    const base::Location& from_here,
     const syncer::SyncChangeList& change_list) {
   DCHECK(thread_checker_.CalledOnValidThread());
+
   if (!sync_processor_) {
     return syncer::SyncError(FROM_HERE, syncer::SyncError::DATATYPE_ERROR,
                              "Sync is disabled.",
@@ -466,13 +496,13 @@ syncer::SyncError DeleteDirectiveHandler::ProcessSyncChanges(
     // Don't drop real-time delete directive so that sync engine can detect
     // redelivered delete directives to avoid processing them again and again
     // in one chrome session.
-    history_service->ScheduleDBTask(
-        FROM_HERE,
-        std::make_unique<DeleteDirectiveTask>(weak_ptr_factory_.GetWeakPtr(),
-                                              delete_directives,
-                                              KEEP_AFTER_PROCESSING),
-        &internal_tracker_);
+    backend_task_scheduler_.Run(FROM_HERE,
+                                std::make_unique<DeleteDirectiveTask>(
+                                    weak_ptr_factory_.GetWeakPtr(),
+                                    delete_directives, KEEP_AFTER_PROCESSING),
+                                &internal_tracker_);
   }
+
   return syncer::SyncError();
 }
 

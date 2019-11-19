@@ -10,7 +10,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/values.h"
 #include "content/public/browser/render_frame_host.h"
-#include "content/public/browser/render_view_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_message_handler.h"
@@ -89,15 +88,13 @@ void WebDialogUIBase::HandleRenderFrameCreated(
     delegate->GetWebUIMessageHandlers(&handlers);
   }
 
-  content::RenderViewHost* render_view_host =
-      render_frame_host->GetRenderViewHost();
   if (0 != (web_ui_->GetBindings() & content::BINDINGS_POLICY_WEB_UI))
-    render_view_host->SetWebUIProperty("dialogArguments", dialog_args);
+    render_frame_host->SetWebUIProperty("dialogArguments", dialog_args);
   for (WebUIMessageHandler* handler : handlers)
     web_ui_->AddMessageHandler(base::WrapUnique(handler));
 
   if (delegate)
-    delegate->OnDialogShown(web_ui_, render_view_host);
+    delegate->OnDialogShown(web_ui_);
 }
 
 void WebDialogUIBase::OnDialogClosed(const base::ListValue* args) {

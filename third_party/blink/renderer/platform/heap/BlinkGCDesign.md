@@ -38,7 +38,6 @@ depending on a number of criteria.
 
 For example
 - objects over 64KiB goes into `kLargeObjectArenaIndex`
-- objects that have an eager finalizer goes into `kEagerSweepArenaIndex`
 - objects that is a collection backing goes into one of the collection backing
 arenas
 - objects that is a Node or a CSSValue goes into one of the typed arenas
@@ -90,13 +89,9 @@ At this point, no destructors have been invoked.
 Thus the pre-finalizers are allowed to touch any other on-heap objects
 (which may get destructed in this sweeping phase).
 
-Step 2. Invokes destructors of dead objects that are marked as
-eagerly-finalized. See the following notes for more details about the
-eagerly-finalized objects.
+Step 2. The thread resumes mutator's execution. (A mutator means user code.)
 
-Step 3. The thread resumes mutator's execution. (A mutator means user code.)
-
-Step 4. As the mutator allocates new objects, lazy sweeping invokes
+Step 3. As the mutator allocates new objects, lazy sweeping invokes
 destructors of the remaining dead objects incrementally.
 
 There is no guarantee of the order in which the destructors are invoked.
@@ -131,10 +126,3 @@ assuming that the weak processing always runs.
 at each sweeping phase to determine which pre-finalizers to be invoked
 (the thread needs to invoke pre-finalizers of dead objects). Adding
 pre-finalizers to frequently created objects should be avoided.
-
-* Eagerly-finalized objects are guaranteed to get destructed before the
-mutator resumes its execution. This means that a destructor of
-an eagerly-finalized object is allowed to touch other not-eagerly-finalized
-objects whereas it's not allowed to touch other eagerly-finalized objects.
-This notion is useful for some objects, but nasty.
-We're planning to replace most eagerly-finalized objects with pre-finalizers.

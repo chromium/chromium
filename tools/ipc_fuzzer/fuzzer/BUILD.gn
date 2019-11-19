@@ -19,6 +19,7 @@ executable("ipc_fuzzer") {
     "rand_util.h",
   ]
   deps = [
+    "//base/util/type_safety",
     "//tools/ipc_fuzzer/message_lib:ipc_message_lib",
   ]
   public_deps = [

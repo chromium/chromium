@@ -65,7 +65,7 @@ bool TestLockScreenActionBackgroundController::ShowBackground() {
     params.delegate = new TestWindowDelegate(widget_.get());
     params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
 
-    widget_->Init(params);
+    widget_->Init(std::move(params));
   }
 
   widget_->Show();

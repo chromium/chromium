@@ -12,9 +12,7 @@
 namespace ash {
 class ScreenOrientationController;
 
-namespace mojom {
 enum class OrientationLockType;
-}
 
 class ScreenOrientationControllerTestApi {
  public:
@@ -29,9 +27,9 @@ class ScreenOrientationControllerTestApi {
 
   void SetRotationLocked(bool rotation_locked);
 
-  mojom::OrientationLockType UserLockedOrientation() const;
+  OrientationLockType UserLockedOrientation() const;
 
-  mojom::OrientationLockType GetCurrentOrientation() const;
+  OrientationLockType GetCurrentOrientation() const;
 
   void UpdateNaturalOrientation();
 

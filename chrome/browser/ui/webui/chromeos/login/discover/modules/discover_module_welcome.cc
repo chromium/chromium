@@ -30,7 +30,7 @@ class DiscoverModuleWelcomeHandler : public DiscoverHandler {
 
 DiscoverModuleWelcomeHandler::DiscoverModuleWelcomeHandler(
     JSCallsContainer* js_calls_container)
-    : DiscoverHandler(DiscoverModuleWelcome::kModuleName, js_calls_container) {}
+    : DiscoverHandler(js_calls_container) {}
 
 void DiscoverModuleWelcomeHandler::DeclareLocalizedValues(
     ::login::LocalizedValuesBuilder* builder) {

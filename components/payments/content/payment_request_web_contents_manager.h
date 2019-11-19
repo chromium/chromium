@@ -12,7 +12,7 @@
 #include "components/payments/content/payment_request.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
-#include "mojo/public/cpp/bindings/binding.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "third_party/blink/public/mojom/payments/payment_request.mojom.h"
 
 namespace content {
@@ -50,7 +50,7 @@ class PaymentRequestWebContentsManager
       content::RenderFrameHost* render_frame_host,
       content::WebContents* web_contents,
       std::unique_ptr<ContentPaymentRequestDelegate> delegate,
-      mojo::InterfaceRequest<payments::mojom::PaymentRequest> request,
+      mojo::PendingReceiver<payments::mojom::PaymentRequest> receiver,
       PaymentRequest::ObserverForTest* observer_for_testing);
 
   // Destroys the given |request|.

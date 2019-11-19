@@ -16,6 +16,7 @@
 #include "base/observer_list.h"
 #include "base/threading/thread_checker.h"
 #include "chrome/browser/chromeos/input_method/candidate_window_controller.h"
+#include "chrome/browser/chromeos/input_method/ime_service_connector.h"
 #include "chrome/browser/chromeos/login/ui/user_adding_screen.h"
 #include "chrome/browser/profiles/profile.h"
 #include "ui/base/ime/chromeos/input_method_manager.h"
@@ -116,6 +117,11 @@ class InputMethodManagerImpl : public InputMethodManager,
     void DisableInputView() override;
     const GURL& GetInputViewUrl() const override;
 
+    // Connect to an InputEngineManager instance in an IME Mojo service.
+    void ConnectMojoManager(
+        mojo::PendingReceiver<chromeos::ime::mojom::InputEngineManager>
+            receiver);
+
     // ------------------------- Data members.
     Profile* const profile;
 
@@ -162,6 +168,8 @@ class InputMethodManagerImpl : public InputMethodManager,
     // Returns the first hardware input method that is allowed or the first
     // allowed input method, if no hardware input method is allowed.
     std::string GetAllowedFallBackKeyboardLayout() const;
+
+    std::unique_ptr<ImeServiceConnector> ime_service_connector_;
   };
 
   // Constructs an InputMethodManager instance. The client is responsible for
@@ -189,6 +197,9 @@ class InputMethodManagerImpl : public InputMethodManager,
   std::unique_ptr<InputMethodDescriptors> GetSupportedInputMethods()
       const override;
   void ActivateInputMethodMenuItem(const std::string& key) override;
+  void ConnectInputEngineManager(
+      mojo::PendingReceiver<chromeos::ime::mojom::InputEngineManager> receiver)
+      override;
   bool IsISOLevel5ShiftUsedByCurrentInputMethod() const override;
   bool IsAltGrUsedByCurrentInputMethod() const override;
   void NotifyImeMenuItemsChanged(
@@ -309,7 +320,7 @@ class InputMethodManagerImpl : public InputMethodManager,
   bool enable_extension_loading_;
 
   // Whether the expanded IME menu is activated.
-  bool is_ime_menu_activated_;
+  bool is_ime_menu_activated_ = false;
 
   // The enabled state of keyboard features.
   uint32_t features_enabled_state_;

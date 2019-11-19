@@ -7,6 +7,7 @@
 #include "base/i18n/time_formatting.h"
 #include "components/security_interstitials/core/common_string_util.h"
 #include "components/security_interstitials/core/metrics_helper.h"
+#include "components/security_interstitials/core/ssl_error_options_mask.h"
 #include "components/ssl_errors/error_classification.h"
 #include "components/ssl_errors/error_info.h"
 #include "components/strings/grit/components_strings.h"
@@ -18,7 +19,7 @@ namespace {
 // Path to the relevant help center page. Used if |support_url_| is invalid.
 const char kHelpPath[] = "answer/6098869";
 
-bool IsMasked(int options, SSLErrorUI::SSLErrorOptionsMask mask) {
+bool IsMasked(int options, SSLErrorOptionsMask mask) {
   return ((options & mask) != 0);
 }
 
@@ -67,6 +68,7 @@ void SSLErrorUI::PopulateStringsForHTML(base::DictionaryValue* load_time_data) {
   common_string_util::PopulateSSLLayoutStrings(cert_error_, load_time_data);
   common_string_util::PopulateSSLDebuggingStrings(ssl_info_, time_triggered_,
                                                   load_time_data);
+  common_string_util::PopulateDarkModeDisplaySetting(load_time_data);
 
   // Shared values for both the overridable and non-overridable versions.
   load_time_data->SetBoolean("bad_clock", false);

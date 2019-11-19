@@ -16,6 +16,8 @@ window.getSelection().modify("extend", "backward", "paragraphBoundary");
 document.execCommand("ForeColor", false, "blue");
 window.getSelection().modify("move", "forward", "character");
 window.getSelection().modify("move", "backward", "word");
+// Have to move again to account for punctuation
+window.getSelection().modify("move", "backward", "word");
 document.execCommand("ForeColor", false, "green");
 document.execCommand("InsertText", false, "a combination of green and blue, not ");
 </script>

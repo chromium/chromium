@@ -1,0 +1,2 @@
+[document web]
+++[dialog] xml-roles:alertdialog

@@ -1,5 +1,4 @@
 components/browsing_data/core/counters/history_counter.cc
-browsing_data::HistoryCounter::Count
 98
 Partial
 web_history_counter

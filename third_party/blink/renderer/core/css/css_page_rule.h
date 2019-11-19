@@ -38,10 +38,6 @@ class CORE_EXPORT CSSPageRule final : public CSSRule {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static CSSPageRule* Create(StyleRulePage* rule, CSSStyleSheet* sheet) {
-    return MakeGarbageCollected<CSSPageRule>(rule, sheet);
-  }
-
   CSSPageRule(StyleRulePage*, CSSStyleSheet*);
   ~CSSPageRule() override;
 

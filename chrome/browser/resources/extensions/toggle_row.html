@@ -1,0 +1,38 @@
+<style>
+  :host {
+    flex-direction: column;
+    touch-action: none;
+  }
+
+  input {
+    display: none;
+  }
+
+  label {
+    align-items: center;
+    box-sizing: border-box;
+    cursor: pointer;
+    display: flex;
+    flex: 1;
+    padding: var(--toggle-row-label-vertical-padding, 0)
+             var(--toggle-row-label-horizontal-padding, 0);
+    width: 100%;
+  }
+
+  cr-toggle {
+    display: inline-block;
+  }
+
+  :host ::slotted(*) {
+    flex: 1;
+    margin-inline-end: 20px;
+  }
+</style>
+<label id="label">
+  <input id="native" type="checkbox" checked="[[checked]]"
+      on-change="onNativeChange_" on-click="onNativeClick_"
+      disabled="[[disabled]]">
+  <slot></slot>
+  <cr-toggle id="crToggle" checked="{{checked}}" aria-labelledby="label"
+      on-change="onCrToggleChange_" disabled="[[disabled]]"></cr-toggle>
+</label>

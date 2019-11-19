@@ -63,7 +63,7 @@ enum EntityMask {
   kEntityMaskInHTMLAttributeValue = kEntityAmp | kEntityQuot | kEntityNbsp,
 };
 
-enum class SerializationType { kAsOwnerDocument, kForcedXML };
+enum class SerializationType { kHTML, kXML };
 
 class MarkupFormatter final {
   STACK_ALLOCATED();
@@ -94,8 +94,7 @@ class MarkupFormatter final {
                                           const String& data);
   static void AppendXMLDeclaration(StringBuilder&, const Document&);
 
-  MarkupFormatter(AbsoluteURLs,
-                  SerializationType = SerializationType::kAsOwnerDocument);
+  MarkupFormatter(AbsoluteURLs, SerializationType);
   ~MarkupFormatter();
 
   void AppendStartMarkup(StringBuilder&, const Node&);
@@ -105,7 +104,7 @@ class MarkupFormatter final {
                        const AtomicString& prefix,
                        const AtomicString& local_name);
 
-  bool SerializeAsHTMLDocument(const Node&) const;
+  bool SerializeAsHTML() const;
 
   void AppendText(StringBuilder&, const Text&);
   // Serialize '<' and the element name.

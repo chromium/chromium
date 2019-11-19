@@ -12,7 +12,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_script_value.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/messaging/blink_cloneable_message.h"
-#include "third_party/blink/renderer/platform/cross_thread_copier.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_copier.h"
 
 namespace blink {
 
@@ -29,13 +29,20 @@ struct CORE_EXPORT BlinkTransferableMessage : BlinkCloneableMessage {
 
   Vector<MessagePortChannel> ports;
 
-  bool has_user_gesture = false;
-
   mojom::blink::UserActivationSnapshotPtr user_activation;
+
+  bool transfer_user_activation = false;
+  bool allow_autoplay = false;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(BlinkTransferableMessage);
 };
+
+CORE_EXPORT scoped_refptr<blink::StaticBitmapImage> ToStaticBitmapImage(
+    const SkBitmap& sk_bitmap);
+
+CORE_EXPORT base::Optional<SkBitmap> ToSkBitmap(
+    const scoped_refptr<blink::StaticBitmapImage>& static_bitmap_image);
 
 CORE_EXPORT BlinkTransferableMessage
     ToBlinkTransferableMessage(TransferableMessage);
@@ -45,15 +52,19 @@ CORE_EXPORT BlinkTransferableMessage
 // longer.
 CORE_EXPORT TransferableMessage ToTransferableMessage(BlinkTransferableMessage);
 
+}  // namespace blink
+
+namespace WTF {
+
 template <>
-struct CrossThreadCopier<BlinkTransferableMessage> {
+struct CrossThreadCopier<blink::BlinkTransferableMessage> {
   STATIC_ONLY(CrossThreadCopier);
-  using Type = BlinkTransferableMessage;
+  using Type = blink::BlinkTransferableMessage;
   static Type Copy(Type pointer) {
     return pointer;  // This is in fact a move.
   }
 };
 
-}  // namespace blink
+}  // namespace WTF
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_MESSAGING_BLINK_TRANSFERABLE_MESSAGE_H_

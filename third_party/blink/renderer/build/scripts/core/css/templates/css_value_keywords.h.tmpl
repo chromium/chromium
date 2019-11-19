@@ -12,8 +12,8 @@
 
 namespace blink {
 
-enum CSSValueID {
-  CSSValueInvalid = 0,
+enum class CSSValueID {
+  kInvalid = 0,
 {% for keyword in value_keywords %}
   {{keyword.enum_name}} = {{keyword.enum_value}},
 {% endfor %}
@@ -22,8 +22,13 @@ enum CSSValueID {
 const int numCSSValueKeywords = {{value_keywords_count}};
 const size_t maxCSSValueKeywordLength = {{max_value_keyword_length}};
 
+inline bool IsValidCSSValueID(CSSValueID id)
+{
+    return id != CSSValueID::kInvalid;
+}
+
 const char* getValueName(CSSValueID);
-bool isValueAllowedInMode(uint16_t id, CSSParserMode mode);
+bool isValueAllowedInMode(CSSValueID id, CSSParserMode mode);
 
 }  // namespace blink
 

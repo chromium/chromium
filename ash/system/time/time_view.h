@@ -56,6 +56,9 @@ class ASH_EXPORT TimeView : public ActionableView, public ClockObserver {
 
   base::HourClockType GetHourTypeForTesting() const;
 
+  // views::View:
+  const char* GetClassName() const override;
+
  private:
   friend class TimeViewTest;
 

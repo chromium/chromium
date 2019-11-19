@@ -78,9 +78,7 @@ bool CleanupImportsSync(const std::set<int64_t>& outstanding_import_offline_ids,
 
 ImportCleanupTask::ImportCleanupTask(PrefetchStore* prefetch_store,
                                      PrefetchImporter* prefetch_importer)
-    : prefetch_store_(prefetch_store),
-      prefetch_importer_(prefetch_importer),
-      weak_ptr_factory_(this) {}
+    : prefetch_store_(prefetch_store), prefetch_importer_(prefetch_importer) {}
 
 ImportCleanupTask::~ImportCleanupTask() {}
 

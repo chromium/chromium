@@ -10,7 +10,7 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observer.h"
-#include "base/time/clock.h"
+#include "base/task/cancelable_task_tracker.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_service_observer.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -19,11 +19,14 @@
 namespace explore_sites {
 class HistoryStatisticsReporter : public history::HistoryServiceObserver {
  public:
+  // Delay between the scheduling and actual computing/reporting of stats.
+  static constexpr base::TimeDelta kComputeStatisticsDelay =
+      base::TimeDelta::FromSeconds(5);
+
   static void RegisterPrefs(PrefRegistrySimple* registry);
 
   HistoryStatisticsReporter(history::HistoryService* history_service,
-                            PrefService* prefs,
-                            base::Clock* clock);
+                            PrefService* prefs);
   ~HistoryStatisticsReporter() override;
 
   // Schedules delayed task to compute/report history statistics.
@@ -45,13 +48,12 @@ class HistoryStatisticsReporter : public history::HistoryServiceObserver {
 
   history::HistoryService* const history_service_;
   PrefService* prefs_;
-  base::Clock* clock_;
 
-  std::unique_ptr<base::CancelableTaskTracker> cancelable_task_tracker_;
+  base::CancelableTaskTracker cancelable_task_tracker_;
   ScopedObserver<history::HistoryService, history::HistoryServiceObserver>
       history_service_observer_;
   bool attempted_to_report_once_ = false;
-  base::WeakPtrFactory<HistoryStatisticsReporter> weak_ptr_factory_;
+  base::WeakPtrFactory<HistoryStatisticsReporter> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(HistoryStatisticsReporter);
 };

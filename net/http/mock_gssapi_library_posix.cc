@@ -16,6 +16,14 @@ namespace test {
 struct GssNameMockImpl {
   std::string name;
   gss_OID_desc name_type;
+
+  static GssNameMockImpl* FromGssName(gss_name_t name) {
+    return reinterpret_cast<GssNameMockImpl*>(name);
+  }
+
+  static gss_name_t ToGssName(GssNameMockImpl* name) {
+    return reinterpret_cast<gss_name_t>(name);
+  }
 };
 
 }  // namespace test
@@ -28,7 +36,7 @@ void ClearOid(gss_OID dest) {
   if (!dest)
     return;
   dest->length = 0;
-  dest->elements = NULL;
+  dest->elements = nullptr;
 }
 
 void SetOid(gss_OID dest, const void* src, size_t length) {
@@ -56,8 +64,10 @@ void ClearBuffer(gss_buffer_t dest) {
   if (!dest)
     return;
   dest->length = 0;
-  delete [] reinterpret_cast<char*>(dest->value);
-  dest->value = NULL;
+  if (dest->value) {
+    delete[] reinterpret_cast<char*>(dest->value);
+    dest->value = nullptr;
+  }
 }
 
 void SetBuffer(gss_buffer_t dest, const void* src, size_t length) {
@@ -101,7 +111,7 @@ void BufferFromString(const std::string& src, gss_buffer_t dest) {
 void ClearName(gss_name_t dest) {
   if (!dest)
     return;
-  test::GssNameMockImpl* name = reinterpret_cast<test::GssNameMockImpl*>(dest);
+  auto* name = test::GssNameMockImpl::FromGssName(dest);
   name->name.clear();
   ClearOid(&name->name_type);
 }
@@ -112,24 +122,15 @@ void SetName(gss_name_t dest, const void* src, size_t length) {
   ClearName(dest);
   if (!src)
     return;
-  test::GssNameMockImpl* name = reinterpret_cast<test::GssNameMockImpl*>(dest);
+  auto* name = test::GssNameMockImpl::FromGssName(dest);
   name->name.assign(reinterpret_cast<const char*>(src), length);
 }
 
-std::string NameToString(const gss_name_t& src) {
-  std::string dest;
-  if (!src)
-    return dest;
-  test::GssNameMockImpl* string =
-      reinterpret_cast<test::GssNameMockImpl*>(src);
-  dest = string->name;
-  return dest;
-}
-
-void NameFromString(const std::string& src, gss_name_t dest) {
-  if (!dest)
-    return;
+gss_name_t NameFromString(const std::string& src) {
+  gss_name_t dest = test::GssNameMockImpl::ToGssName(
+      new test::GssNameMockImpl{"", {0, nullptr}});
   SetName(dest, src.c_str(), src.length());
+  return dest;
 }
 
 }  // namespace
@@ -193,9 +194,9 @@ MockGSSAPILibrary::SecurityContextQuery::SecurityContextQuery()
       minor_response_code(0),
       context_info() {
   expected_input_token.length = 0;
-  expected_input_token.value = NULL;
+  expected_input_token.value = nullptr;
   output_token.length = 0;
-  output_token.value = NULL;
+  output_token.value = nullptr;
 }
 
 MockGSSAPILibrary::SecurityContextQuery::SecurityContextQuery(
@@ -214,7 +215,7 @@ MockGSSAPILibrary::SecurityContextQuery::SecurityContextQuery(
     expected_input_token.value = const_cast<char*>(in_expected_input_token);
   } else {
     expected_input_token.length = 0;
-    expected_input_token.value = NULL;
+    expected_input_token.value = nullptr;
   }
 
   if (in_output_token) {
@@ -222,7 +223,7 @@ MockGSSAPILibrary::SecurityContextQuery::SecurityContextQuery(
     output_token.value = const_cast<char*>(in_output_token);
   } else {
     output_token.length = 0;
-    output_token.value = NULL;
+    output_token.value = nullptr;
   }
 }
 
@@ -252,7 +253,7 @@ void MockGSSAPILibrary::ExpectSecurityContext(
   expected_security_queries_.push_back(security_query);
 }
 
-bool MockGSSAPILibrary::Init() {
+bool MockGSSAPILibrary::Init(const NetLogWithSource&) {
   return true;
 }
 
@@ -271,15 +272,15 @@ OM_uint32 MockGSSAPILibrary::import_name(
   if (!input_name_type)
     return GSS_S_BAD_NAMETYPE;
   GssNameMockImpl* output = new GssNameMockImpl;
-  if (output == NULL)
+  if (output == nullptr)
     return GSS_S_FAILURE;
   output->name_type.length = 0;
-  output->name_type.elements = NULL;
+  output->name_type.elements = nullptr;
 
   // Save the data.
   output->name = BufferToString(input_name_buffer);
   CopyOid(&output->name_type, input_name_type);
-  *output_name = reinterpret_cast<gss_name_t>(output);
+  *output_name = test::GssNameMockImpl::ToGssName(output);
 
   return GSS_S_COMPLETE;
 }
@@ -293,10 +294,10 @@ OM_uint32 MockGSSAPILibrary::release_name(
     return GSS_S_BAD_NAME;
   if (!*input_name)
     return GSS_S_COMPLETE;
-  GssNameMockImpl* name = *reinterpret_cast<GssNameMockImpl**>(input_name);
+  GssNameMockImpl* name = GssNameMockImpl::FromGssName(*input_name);
   ClearName(*input_name);
   delete name;
-  *input_name = NULL;
+  *input_name = GSS_C_NO_NAME;
   return GSS_S_COMPLETE;
 }
 
@@ -324,12 +325,13 @@ OM_uint32 MockGSSAPILibrary::display_name(
     return GSS_S_CALL_BAD_STRUCTURE;
   if (!output_name_type)
     return GSS_S_CALL_BAD_STRUCTURE;
-  std::string name(NameToString(input_name));
+  GssNameMockImpl* internal_name = GssNameMockImpl::FromGssName(input_name);
+  std::string name = internal_name->name;
   BufferFromString(name, output_name_buffer);
-  GssNameMockImpl* internal_name =
-      *reinterpret_cast<GssNameMockImpl**>(input_name);
-  if (output_name_type)
-    *output_name_type = internal_name ? &internal_name->name_type : NULL;
+  if (output_name_type) {
+    *output_name_type =
+        internal_name ? &internal_name->name_type : GSS_C_NO_OID;
+  }
   return GSS_S_COMPLETE;
 }
 
@@ -340,15 +342,47 @@ OM_uint32 MockGSSAPILibrary::display_status(
       const gss_OID mech_type,
       OM_uint32* message_context,
       gss_buffer_t status_string) {
-  if (minor_status)
-    *minor_status = 0;
-  std::string msg = base::StringPrintf("Value: %u, Type %u",
-                                       status_value,
-                                       status_type);
-  if (message_context)
-    *message_context = 0;
+  OM_uint32 rv = GSS_S_COMPLETE;
+  *minor_status = 0;
+  std::string msg;
+  switch (static_cast<DisplayStatusSpecials>(status_value)) {
+    case DisplayStatusSpecials::MultiLine:
+      msg = base::StringPrintf("Line %u for status %u", ++*message_context,
+                               status_value);
+      if (*message_context >= 5u)
+        *message_context = 0u;
+      break;
+
+    case DisplayStatusSpecials::InfiniteLines:
+      msg = base::StringPrintf("Line %u for status %u", ++*message_context,
+                               status_value);
+      break;
+
+    case DisplayStatusSpecials::Fail:
+      rv = GSS_S_BAD_MECH;
+      msg = "You should not see this";
+      EXPECT_EQ(*message_context, 0u);
+      break;
+
+    case DisplayStatusSpecials::EmptyMessage:
+      EXPECT_EQ(*message_context, 0u);
+      break;
+
+    case DisplayStatusSpecials::UninitalizedBuffer:
+      EXPECT_EQ(*message_context, 0u);
+      return GSS_S_COMPLETE;
+
+    case DisplayStatusSpecials::InvalidUtf8:
+      msg = "\xff\xff\xff";
+      EXPECT_EQ(*message_context, 0u);
+      break;
+
+    default:
+      msg = base::StringPrintf("Value: %u, Type %u", status_value, status_type);
+      EXPECT_EQ(*message_context, 0u);
+  }
   BufferFromString(msg, status_string);
-  return GSS_S_COMPLETE;
+  return rv;
 }
 
 OM_uint32 MockGSSAPILibrary::init_sec_context(
@@ -436,7 +470,7 @@ OM_uint32 MockGSSAPILibrary::delete_sec_context(
       reinterpret_cast<GssContextMockImpl**>(context_handle);
   if (*internal_context_handle) {
     delete *internal_context_handle;
-    *internal_context_handle = NULL;
+    *internal_context_handle = nullptr;
   }
   return GSS_S_COMPLETE;
 }
@@ -459,9 +493,9 @@ OM_uint32 MockGSSAPILibrary::inquire_context(
       reinterpret_cast<GssContextMockImpl*>(context_handle);
   GssContextMockImpl& context = *internal_context_ptr;
   if (src_name)
-    NameFromString(context.src_name, *src_name);
+    *src_name = NameFromString(context.src_name);
   if (targ_name)
-    NameFromString(context.targ_name, *targ_name);
+    *targ_name = NameFromString(context.targ_name);
   if (lifetime_rec)
     *lifetime_rec = context.lifetime_rec;
   if (mech_type)

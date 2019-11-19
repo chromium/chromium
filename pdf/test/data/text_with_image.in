@@ -1,0 +1,189 @@
+{{header}}
+{{object 1 0}} <<
+  /Type /Catalog
+  /Pages 2 0 R
+  /StructTreeRoot 8 0 R
+  /Lang (en-US)
+  /MarkInfo <<
+    /Marked true
+  >>
+>>
+endobj
+{{object 2 0}} <<
+  /Type /Pages
+  /Count 1
+  /Kids [3 0 R]
+>>
+endobj
+{{object 3 0}} <<
+  /Type /Page
+  /Parent 2 0 R
+  /Contents 4 0 R
+  /MediaBox [0 0 612 792]
+  /Group <<
+    /CS /DeviceRGB
+    /I true
+    /S /Transparency
+  >>
+  /Resources <<
+    /ProcSet [/PDF /ImageC /ImageI /ImageB]
+    /XObject <<
+      /Tr8 5 0 R
+      /Im7 6 0 R
+    >>
+    /Font <<
+      /F1 13 0 R
+    >>
+    /ExtGState <<
+      /EGS9 7 0 R
+    >>
+  >>
+  /StructParents 0
+>>
+endobj
+{{object 4 0}} <<
+  {{streamlen}}
+>>
+stream
+BT
+20 50 Td
+/F1 12 Tf
+(Hello, http://yahoo.com! nice meeting you) Tj
+ET
+0.1 w
+/Artifact
+BMC
+q
+0 0 612 792 re
+W* n
+EMC
+/Figure<</MCID 0>>
+BDC
+Q
+q
+281 685.3 50 50 re
+W* n
+q
+49.9 0 0 50 281.1 685.4 cm
+/Im7 Do
+Q
+EMC
+/Figure<</MCID 1>>
+BDC
+Q
+q
+281 485.3 20 20 re
+W* n
+q
+20 0 0 20 281.1 485.4 cm
+/Im7 Do
+Q
+EMC
+/Figure<</MCID 2>>
+BDC
+Q
+q
+281 285.3 0 0 re
+W* n
+q
+0 0 0 0 281.1 285.4 cm
+/Im7 Do
+Q
+EMC
+Q
+q
+EGS9 gs /Tr8 Do
+Q
+endstream
+endobj
+{{object 5 0}} <<
+  /Type /XObject
+  /Subtype /Form
+  /BBox [-140 395 753 395.1]
+  /Group <<
+    /CS /DeviceRGB
+    /K true
+    /S /Transparency
+  >>
+  {{streamlen}}
+>>
+stream
+endstream
+endobj
+{{object 6 0}} <<
+  /Type /XObject
+  /Subtype /Image
+  /Width 50
+  /Height 50
+  /BitsPerComponent 8
+  /ColorSpace /DeviceRGB
+  /Filter [/ASCIIHexDecode /FlateDecode]
+  {{streamlen}}
+>>
+stream
+789cedc13101000000c2a0f54fed6f06a00000000000000078031d4c0001
+endstream
+endobj
+{{object 7 0}} <<
+  /ca 0.5
+  /CA 0.5
+>>
+endobj
+{{object 8 0}} <<
+  /Type /StructTreeRoot
+  /ParentTree <<
+    /Nums [0 [10 0 R 11 0 R]]
+  >>
+  /K [9 0 R]
+  /RoleMap <<
+    /Document /Document
+    /Standard /P
+    /Figure /Figure
+  >>
+>>
+endobj
+{{object 9 0}} <<
+  /Type /StructElem
+  /S /Document
+  /K [12 0 R]
+  /P 8 0 R
+  /T (TitleText)
+  /Pg 3 0 R
+>>
+endobj
+{{object 10 0}} <<
+  /Type /StructElem
+  /S /Figure
+  /K 0
+  /P 12 0 R
+  /Alt <feff0049006d00610067006500200031>
+  /Pg 3 0 R
+>>
+endobj
+{{object 11 0}} <<
+  /Type /StructElem
+  /S /Figure
+  /K 1
+  /P 12 0 R
+  /Pg 3 0 R
+>>
+endobj
+{{object 12 0}} <<
+  /Type /StructElem
+  /S /Standard
+  /K [10 0 R 11 0 R]
+  /P 9 0 R
+  /T <feff00730079006d0062006f006c003a0020003100300030006b>
+  /Pg 3 0 R
+>>
+endobj
+{{object 13 0}} <<
+  /Type /Font
+  /Subtype /Type1
+  /BaseFont /Times-Roman
+>>
+endobj
+{{xref}}
+{{trailer}}
+{{startxref}}
+%%EOF

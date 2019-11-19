@@ -1,32 +1,39 @@
 <!DOCTYPE html>
 <html>
+<head>
+  <script src="../../../resources/testharness.js"></script>
+  <script src="../../../resources/testharnessreport.js"></script>
+  <script src="../../forms/resources/picker-common.js"></script>
+  <script src="resources/calendar-picker-common.js"></script>
+</head>
+
 <body>
-<script src="../../../resources/js-test.js"></script>
-<script src="../../forms/resources/picker-common.js"></script>
-<script src="resources/calendar-picker-common.js"></script>
-<p id="description"></p>
-<div id="console"></div>
 <input type="month" id="month1" value="2000-01">
 
 <script>
-description('Tests if typing an arrow key dispatches |Focus| and |MarkDirty| a11y events.');
+async_test((t) => {
+    var markDirtyCounter = 0;
+    var focusCounter = 0;
+    accessibilityController.setNotificationListener(function(axnode, type) {
+        if (type == 'Focus') {
+            console.log('Focused: ' + accessibilityController.focusedElement.name.replace(/,/g, ''));
+            focusCounter++;
+        } else if (type == 'MarkDirty') {
+            console.log('Received MarkDirty');
+            markDirtyCounter++;
+            if (focusCounter == 2 && markDirtyCounter == 2) {
+                t.done();
+            }
+        }
+    });
 
-accessibilityController.setNotificationListener(function(axnode, type) {
-    if (type == 'Focus') {
-        debug('Focused');
-    } else if (type == 'MarkDirty') {
-        testPassed('Received MarkDirty');
-        if (++markDirtyCounter == 2)
-            finishJSTest();
+    var month1 = document.getElementById('month1');
+    function test1() {
+        eventSender.keyDown('ArrowDown');
     }
-});
-var markDirtyCounter = 0;
-var month1 = document.getElementById('month1');
-openPicker(month1, test1);
 
-function test1() {
-    eventSender.keyDown('ArrowRight');
-}
+    openPicker(month1, test1);
+}, 'Tests if typing an arrow key dispatches |Focus| and |MarkDirty| a11y events.');
 
 </script>
 </body>

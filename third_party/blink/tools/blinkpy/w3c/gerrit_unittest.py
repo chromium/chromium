@@ -7,8 +7,22 @@ import unittest
 from blinkpy.common.host_mock import MockHost
 from blinkpy.common.path_finder import RELATIVE_WEB_TESTS
 from blinkpy.common.system.executive_mock import mock_git_commands
-from blinkpy.w3c.gerrit import GerritCL
+from blinkpy.w3c.gerrit import GerritAPI, GerritCL
 from blinkpy.w3c.gerrit_mock import MockGerritAPI
+
+
+class GerritAPITest(unittest.TestCase):
+    def test_post_wrong_url(self):
+        host = MockHost()
+        gerrit = GerritAPI(host, 'user', 'token')
+        with self.assertRaises(AssertionError):
+            gerrit.post('/changes/test~master~I100/abandon', None)
+
+    def test_post_missing_auth(self):
+        host = MockHost()
+        gerrit = GerritAPI(host, '', '')
+        with self.assertRaises(AssertionError):
+            gerrit.post('/a/changes/test~master~I100/abandon', None)
 
 
 class GerritCLTest(unittest.TestCase):

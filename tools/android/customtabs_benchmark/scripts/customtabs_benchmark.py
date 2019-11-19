@@ -41,7 +41,9 @@ _INVALID_VALUE = -1
 
 def RunOnce(device, url, speculated_url, parallel_url, warmup,
             skip_launcher_activity, speculation_mode, delay_to_may_launch_url,
-            delay_to_launch_url, cold, chrome_args, reset_chrome_state):
+            delay_to_launch_url, cold, pinning_benchmark, pin_filename,
+            pin_offset, pin_length, extra_brief_memory_mb, chrome_args,
+            reset_chrome_state):
   """Runs a test on a device once.
 
   Args:
@@ -57,6 +59,12 @@ def RunOnce(device, url, speculated_url, parallel_url, warmup,
     delay_to_may_launch_url: (int) Delay to mayLaunchUrl() in ms.
     delay_to_launch_url: (int) Delay to launchUrl() in ms.
     cold: (bool) Whether the page cache should be dropped.
+    pinning_benchmark: (bool) Whether to perform the 'pinning benchmark'.
+    pin_filename: (str) The file to pin on the device.
+    pin_offset: (int) Start offset of the range to pin.
+    pin_length: (int) Number of bytes to pin.
+    extra_brief_memory_mb: (int) Number of MiB to consume before starting
+        Chrome. Applies only to the 'pinning benchmark' scenario.
     chrome_args: ([str]) List of arguments to pass to Chrome.
     reset_chrome_state: (bool) Whether to reset the Chrome local state before
         the run.
@@ -71,9 +79,9 @@ def RunOnce(device, url, speculated_url, parallel_url, warmup,
   if not device.HasRoot():
     device.EnableRoot()
 
-  timeout_s = 20
+  timeout_s = 64
   logcat_timeout = int(timeout_s + delay_to_may_launch_url / 1000.
-                       + delay_to_launch_url / 1000.) + 3;
+                       + delay_to_launch_url / 1000.);
 
   with flag_changer.CustomCommandLineFlags(
       device, _COMMAND_LINE_FILE, chrome_args):
@@ -89,8 +97,13 @@ def RunOnce(device, url, speculated_url, parallel_url, warmup,
                 'speculation_mode': str(speculation_mode),
                 'delay_to_may_launch_url': delay_to_may_launch_url,
                 'delay_to_launch_url': delay_to_launch_url,
+                'pinning_benchmark': pinning_benchmark,
+                'pin_filename': str(pin_filename),
+                'pin_offset': pin_offset,
+                'pin_length': pin_length,
+                'extra_brief_memory_mb': extra_brief_memory_mb,
                 'timeout': timeout_s})
-    result_line_re = re.compile(r'CUSTOMTABSBENCH.*: (.*)')
+    result_line_re = re.compile(r'CUSTOMTABSBENCHCSV.*: (.*)')
     logcat_monitor = device.GetLogcatMonitor(clear=True)
     logcat_monitor.Start()
     device.ForceStop(_CHROME_PACKAGE)
@@ -171,12 +184,17 @@ def LoopOnDevice(device, configs, output_filename, once=False,
 
       result = RunOnce(device,
                        config['url'],
-                       config['speculated_url'],
-                       config['parallel_url'],
+                       config.get('speculated_url', config['url']),
+                       config.get('parallel_url', ''),
                        config['warmup'], config['skip_launcher_activity'],
                        config['speculation_mode'],
                        config['delay_to_may_launch_url'],
                        config['delay_to_launch_url'], config['cold'],
+                       config.get('pinning_benchmark', False),
+                       config.get('pin_filename', ''),
+                       config.get('pin_offset', -1),
+                       config.get('pin_length', -1),
+                       config.get('extra_brief_memory_mb', 0),
                        chrome_args, reset_chrome_state=True)
       if result is not None:
         out.write(result + '\n')
@@ -249,6 +267,21 @@ def _CreateOptionParser():
                     'stdout (this is the default)', default='-')
   parser.add_option('--once', help='Run only one iteration.',
                     action='store_true', default=False)
+  parser.add_option('--pinning_benchmark',
+                    help='Compare startup with/without a preliminary step '
+                    'that pins a range of bytes in the APK into memory with '
+                    'mlock(2).', default=False, action='store_true')
+  parser.add_option('--extra_brief_memory_mb', help='How much memory to '
+                    'consume in foreground for --pinning_benchmark.',
+                    type='int', default=0)
+  parser.add_option('--pin_filename', help='The file name on the device to pin '
+                    'to memory.', default='')
+  parser.add_option('--pin_offset', help='The start offset of the range to be '
+                    'pinned to memory.',
+                    type='int', default=-1)
+  parser.add_option('--pin_length', help='The length of the range being pinned,'
+                    ' where 0 results in no pinning.',
+                    type='int', default=-1)
 
   return parser
 
@@ -279,6 +312,11 @@ def main():
       'delay_to_may_launch_url': options.delay_to_may_launch_url,
       'delay_to_launch_url': options.delay_to_launch_url,
       'cold': options.cold,
+      'pinning_benchmark': options.pinning_benchmark,
+      'pin_filename': options.pin_filename,
+      'pin_offset': options.pin_offset,
+      'pin_length': options.pin_length,
+      'extra_brief_memory_mb': options.extra_brief_memory_mb,
   }
   LoopOnDevice(device, [config], options.output_file, once=options.once)
 

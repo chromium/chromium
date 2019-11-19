@@ -7,11 +7,11 @@
   await TestRunner.loadModule('security_test_runner');
   await TestRunner.showPanel('security');
 
-  var originGroupNameSize = Object.keys(Security.SecurityPanelSidebarTree.OriginGroupName).length;
+  var originGroupNameSize = Object.keys(Security.SecurityPanelSidebarTree.OriginGroup).length;
 
   var deduplicatedNames = new Set();
-  for (var key in Security.SecurityPanelSidebarTree.OriginGroupName) {
-    var name = Security.SecurityPanelSidebarTree.OriginGroupName[key];
+  for (var key in Security.SecurityPanelSidebarTree.OriginGroup) {
+    var name = Security.SecurityPanelSidebarTree.OriginGroup[key];
     deduplicatedNames.add(name);
   }
 

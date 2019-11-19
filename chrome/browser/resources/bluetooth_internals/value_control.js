@@ -7,8 +7,8 @@
  */
 
 cr.define('value_control', function() {
-  /** @const */ var Snackbar = snackbar.Snackbar;
-  /** @const */ var SnackbarType = snackbar.SnackbarType;
+  const Snackbar = snackbar.Snackbar;
+  const SnackbarType = snackbar.SnackbarType;
 
   /**
    * @typedef {{
@@ -19,10 +19,10 @@ cr.define('value_control', function() {
    *    properties: (number|undefined),
    *  }}
    */
-  var ValueLoadOptions;
+  let ValueLoadOptions;
 
   /** @enum {string}  */
-  var ValueDataType = {
+  const ValueDataType = {
     HEXADECIMAL: 'Hexadecimal',
     UTF8: 'UTF-8',
     DECIMAL: 'Decimal',
@@ -129,8 +129,8 @@ cr.define('value_control', function() {
         throw new Error('Expected new value to start with "0x".');
       }
 
-      var result = [];
-      for (var i = 2; i < newValue.length; i += 2) {
+      const result = [];
+      for (let i = 2; i < newValue.length; i += 2) {
         result.push(parseInt(newValue.substr(i, 2), 16));
       }
 
@@ -203,7 +203,7 @@ cr.define('value_control', function() {
    * @constructor
    * @extends {HTMLDivElement}
    */
-  var ValueControl = cr.ui.define('div');
+  const ValueControl = cr.ui.define('div');
 
   ValueControl.prototype = {
     __proto__: HTMLDivElement.prototype,
@@ -245,8 +245,8 @@ cr.define('value_control', function() {
       this.typeSelect_ = document.createElement('select');
 
       Object.keys(ValueDataType).forEach(function(key) {
-        var type = ValueDataType[key];
-        var option = document.createElement('option');
+        const type = ValueDataType[key];
+        const option = document.createElement('option');
         option.value = type;
         option.text = type;
         this.typeSelect_.add(option);
@@ -254,7 +254,7 @@ cr.define('value_control', function() {
 
       this.typeSelect_.addEventListener('change', this.redraw.bind(this));
 
-      var inputDiv = document.createElement('div');
+      const inputDiv = document.createElement('div');
       inputDiv.appendChild(this.valueInput_);
       inputDiv.appendChild(this.typeSelect_);
 
@@ -266,7 +266,7 @@ cr.define('value_control', function() {
       this.writeBtn_.textContent = 'Write';
       this.writeBtn_.addEventListener('click', this.writeValue_.bind(this));
 
-      var buttonsDiv = document.createElement('div');
+      const buttonsDiv = document.createElement('div');
       buttonsDiv.appendChild(this.readBtn_);
       buttonsDiv.appendChild(this.writeBtn_);
 
@@ -306,7 +306,7 @@ cr.define('value_control', function() {
           (this.properties_ &
            bluetooth.mojom.Property.WRITE_WITHOUT_RESPONSE) === 0;
 
-      var isAvailable = !this.readBtn_.hidden || !this.writeBtn_.hidden;
+      const isAvailable = !this.readBtn_.hidden || !this.writeBtn_.hidden;
       this.unavailableMessage_.hidden = isAvailable;
       this.valueInput_.hidden = !isAvailable;
       this.typeSelect_.hidden = !isAvailable;
@@ -335,7 +335,7 @@ cr.define('value_control', function() {
     getErrorString_: function(result) {
       // TODO(crbug.com/663394): Replace with more descriptive error
       // messages.
-      var GattResult = bluetooth.mojom.GattResult;
+      const GattResult = bluetooth.mojom.GattResult;
       return Object.keys(GattResult).find(function(key) {
         return GattResult[key] === result;
       });
@@ -372,7 +372,7 @@ cr.define('value_control', function() {
               return;
             }
 
-            var errorString = this.getErrorString_(response.result);
+            const errorString = this.getErrorString_(response.result);
             Snackbar.show(
                 this.deviceAddress_ + ': ' + errorString, SnackbarType.ERROR,
                 'Retry', this.readValue_.bind(this));
@@ -411,7 +411,7 @@ cr.define('value_control', function() {
               return;
             }
 
-            var errorString = this.getErrorString_(response.result);
+            const errorString = this.getErrorString_(response.result);
             Snackbar.show(
                 this.deviceAddress_ + ': ' + errorString, SnackbarType.ERROR,
                 'Retry', this.writeValue_.bind(this));

@@ -42,6 +42,7 @@ void BadClockUI::PopulateStringsForHTML(base::DictionaryValue* load_time_data) {
   common_string_util::PopulateSSLLayoutStrings(cert_error_, load_time_data);
   common_string_util::PopulateSSLDebuggingStrings(ssl_info_, time_triggered_,
                                                   load_time_data);
+  common_string_util::PopulateDarkModeDisplaySetting(load_time_data);
 
   // Clock-specific strings.
   PopulateClockStrings(load_time_data);

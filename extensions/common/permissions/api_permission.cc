@@ -104,11 +104,10 @@ const char* APIPermission::name() const {
 //
 
 APIPermissionInfo::APIPermissionInfo(const APIPermissionInfo::InitInfo& info)
-    : id_(info.id),
-      name_(info.name),
+    : name_(info.name),
+      id_(info.id),
       flags_(info.flags),
-      api_permission_constructor_(info.constructor) {
-}
+      api_permission_constructor_(info.constructor) {}
 
 APIPermissionInfo::~APIPermissionInfo() { }
 

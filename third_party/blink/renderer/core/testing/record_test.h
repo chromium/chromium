@@ -21,8 +21,6 @@ class RecordTest final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static RecordTest* Create() { return MakeGarbageCollected<RecordTest>(); }
-
   RecordTest();
   ~RecordTest() override;
 

@@ -14,8 +14,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/dbus/session_manager_client.h"
+#include "chromeos/dbus/session_manager/session_manager_client.h"
 #include "chromeos/login/auth/login_event_recorder.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_service.h"
@@ -34,11 +33,7 @@ LoginPerformer::LoginPerformer(scoped_refptr<base::TaskRunner> task_runner,
                                Delegate* delegate)
     : delegate_(delegate),
       task_runner_(task_runner),
-      last_login_failure_(AuthFailure::AuthFailureNone()),
-      password_changed_(false),
-      password_changed_callback_count_(0),
-      auth_mode_(AUTH_MODE_INTERNAL),
-      weak_factory_(this) {}
+      last_login_failure_(AuthFailure::AuthFailureNone()) {}
 
 LoginPerformer::~LoginPerformer() {
   DVLOG(1) << "Deleting LoginPerformer";
@@ -160,7 +155,7 @@ void LoginPerformer::DoPerformLogin(const UserContext& user_context,
     SetupEasyUnlockUserFlow(user_context.GetAccountId());
 
   switch (auth_mode_) {
-    case AUTH_MODE_EXTENSION: {
+    case AuthorizationMode::kExternal: {
       RunOnlineWhitelistCheck(
           account_id, wildcard_match, user_context.GetRefreshToken(),
           base::Bind(&LoginPerformer::StartLoginCompletion,
@@ -169,7 +164,7 @@ void LoginPerformer::DoPerformLogin(const UserContext& user_context,
                      weak_factory_.GetWeakPtr()));
       break;
     }
-    case AUTH_MODE_INTERNAL:
+    case AuthorizationMode::kInternal:
       StartAuthentication();
       break;
   }
@@ -259,6 +254,14 @@ void LoginPerformer::LoginAsArcKioskAccount(
   task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&Authenticator::LoginAsArcKioskAccount,
                                 authenticator_.get(), arc_app_account_id));
+}
+
+void LoginPerformer::LoginAsWebKioskAccount(
+    const AccountId& web_app_account_id) {
+  EnsureAuthenticator();
+  task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(&Authenticator::LoginAsWebKioskAccount,
+                                authenticator_.get(), web_app_account_id));
 }
 
 void LoginPerformer::RecoverEncryptedData(const std::string& old_password) {

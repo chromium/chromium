@@ -36,7 +36,6 @@
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/traced_value.h"
-#include "third_party/blink/renderer/platform/wtf/time.h"
 
 namespace blink {
 
@@ -60,112 +59,97 @@ class CORE_EXPORT PerformanceTiming final : public ScriptWrappable,
   USING_GARBAGE_COLLECTED_MIXIN(PerformanceTiming);
 
  public:
-  static PerformanceTiming* Create(LocalFrame* frame) {
-    return MakeGarbageCollected<PerformanceTiming>(frame);
-  }
-
   explicit PerformanceTiming(LocalFrame*);
 
-  unsigned long long navigationStart() const;
-  unsigned long long inputStart() const;
-  unsigned long long unloadEventStart() const;
-  unsigned long long unloadEventEnd() const;
-  unsigned long long redirectStart() const;
-  unsigned long long redirectEnd() const;
-  unsigned long long fetchStart() const;
-  unsigned long long domainLookupStart() const;
-  unsigned long long domainLookupEnd() const;
-  unsigned long long connectStart() const;
-  unsigned long long connectEnd() const;
-  unsigned long long secureConnectionStart() const;
-  unsigned long long requestStart() const;
-  unsigned long long responseStart() const;
-  unsigned long long responseEnd() const;
-  unsigned long long domLoading() const;
-  unsigned long long domInteractive() const;
-  unsigned long long domContentLoadedEventStart() const;
-  unsigned long long domContentLoadedEventEnd() const;
-  unsigned long long domComplete() const;
-  unsigned long long loadEventStart() const;
-  unsigned long long loadEventEnd() const;
+  uint64_t navigationStart() const;
+  uint64_t inputStart() const;
+  uint64_t unloadEventStart() const;
+  uint64_t unloadEventEnd() const;
+  uint64_t redirectStart() const;
+  uint64_t redirectEnd() const;
+  uint64_t fetchStart() const;
+  uint64_t domainLookupStart() const;
+  uint64_t domainLookupEnd() const;
+  uint64_t connectStart() const;
+  uint64_t connectEnd() const;
+  uint64_t secureConnectionStart() const;
+  uint64_t requestStart() const;
+  uint64_t responseStart() const;
+  uint64_t responseEnd() const;
+  uint64_t domLoading() const;
+  uint64_t domInteractive() const;
+  uint64_t domContentLoadedEventStart() const;
+  uint64_t domContentLoadedEventEnd() const;
+  uint64_t domComplete() const;
+  uint64_t loadEventStart() const;
+  uint64_t loadEventEnd() const;
 
   // The below are non-spec timings, for Page Load UMA metrics.
 
   // The time the first document layout is performed.
-  unsigned long long FirstLayout() const;
+  uint64_t FirstLayout() const;
   // The time the first paint operation was performed.
-  unsigned long long FirstPaint() const;
+  uint64_t FirstPaint() const;
   // The time the first paint operation for image was performed.
-  unsigned long long FirstImagePaint() const;
+  uint64_t FirstImagePaint() const;
   // The time of the first 'contentful' paint. A contentful paint is a paint
   // that includes content of some kind (for example, text or image content).
-  unsigned long long FirstContentfulPaint() const;
+  uint64_t FirstContentfulPaint() const;
   // The time of the first 'meaningful' paint, A meaningful paint is a paint
   // where the page's primary content is visible.
-  unsigned long long FirstMeaningfulPaint() const;
+  uint64_t FirstMeaningfulPaint() const;
   // The time of the candidate of first 'meaningful' paint, A meaningful paint
   // candidate indicates the first time we considered a paint to qualify as the
   // potential first meaningful paint. But, be careful that it may be an
   // optimistic (i.e., too early) estimate.
   // TODO(crbug.com/848639): This function is exposed as an experiment, and if
   // not useful, this function can be removed.
-  unsigned long long FirstMeaningfulPaintCandidate() const;
+  uint64_t FirstMeaningfulPaintCandidate() const;
   // Largest Image Paint is the first paint after the largest image within
   // viewport being fully loaded. LargestImagePaint and LargestImagePaintSize
   // are the time and size of it.
-  unsigned long long LargestImagePaint() const;
+  uint64_t LargestImagePaint() const;
   uint64_t LargestImagePaintSize() const;
-  // Last Image Paint is the first paint after the last image within viewport
-  // being fully loaded. LastImagePaint and LastImagePaintSize are the time and
-  // size of it.
-  unsigned long long LastImagePaint() const;
-  uint64_t LastImagePaintSize() const;
   // The time of the first paint of the largest text within viewport.
   // Largest Text Paint is the first paint after the largest text within
   // viewport being painted. LargestTextPaint and LargestTextPaintSize
   // are the time and size of it.
-  unsigned long long LargestTextPaint() const;
+  uint64_t LargestTextPaint() const;
   uint64_t LargestTextPaintSize() const;
-  // Last Text Paint is the first paint after the last text within viewport
-  // being painted. LastTextPaint and LastTextPaintSize are the time and
-  // size of it.
-  unsigned long long LastTextPaint() const;
-  uint64_t LastTextPaintSize() const;
   // The first time the page is considered 'interactive'. This is determined
   // using heuristics based on main thread and network activity.
-  unsigned long long PageInteractive() const;
+  uint64_t PageInteractive() const;
   // The time of when we detect the page is interactive. There is a delay
   // between when the page was interactive and when we were able to detect it.
-  unsigned long long PageInteractiveDetection() const;
+  uint64_t PageInteractiveDetection() const;
   // The time of when a significant input event happened that may cause
   // observers to discard the value of Time to Interactive.
-  unsigned long long FirstInputInvalidatingInteractive() const;
+  uint64_t FirstInputInvalidatingInteractive() const;
   // The duration between the hardware timestamp and being queued on the main
   // thread for the first click, tap, key press, cancellable touchstart, or
   // pointer down followed by a pointer up.
-  unsigned long long FirstInputDelay() const;
+  uint64_t FirstInputDelay() const;
   // The timestamp of the event whose delay is reported by FirstInputDelay().
-  unsigned long long FirstInputTimestamp() const;
+  uint64_t FirstInputTimestamp() const;
   // The longest duration between the hardware timestamp and being queued on the
   // main thread for the click, tap, key press, cancellable touchstart, or
   // pointer down followed by a pointer up.
-  unsigned long long LongestInputDelay() const;
+  uint64_t LongestInputDelay() const;
   // The timestamp of the event whose delay is reported by LongestInputDelay().
-  unsigned long long LongestInputTimestamp() const;
+  uint64_t LongestInputTimestamp() const;
 
-  unsigned long long ParseStart() const;
-  unsigned long long ParseStop() const;
-  unsigned long long ParseBlockedOnScriptLoadDuration() const;
-  unsigned long long ParseBlockedOnScriptLoadFromDocumentWriteDuration() const;
-  unsigned long long ParseBlockedOnScriptExecutionDuration() const;
-  unsigned long long ParseBlockedOnScriptExecutionFromDocumentWriteDuration()
-      const;
+  uint64_t ParseStart() const;
+  uint64_t ParseStop() const;
+  uint64_t ParseBlockedOnScriptLoadDuration() const;
+  uint64_t ParseBlockedOnScriptLoadFromDocumentWriteDuration() const;
+  uint64_t ParseBlockedOnScriptExecutionDuration() const;
+  uint64_t ParseBlockedOnScriptExecutionFromDocumentWriteDuration() const;
 
   ScriptValue toJSONForBinding(ScriptState*) const;
 
   void Trace(blink::Visitor*) override;
 
-  unsigned long long MonotonicTimeToIntegerMilliseconds(TimeTicks) const;
+  uint64_t MonotonicTimeToIntegerMilliseconds(base::TimeTicks) const;
 
   std::unique_ptr<TracedValue> GetNavigationTracingData();
 

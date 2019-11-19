@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<title>Updating the 'values' attribute after sandwich order change</title>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<svg>
+  <rect width="100" height="100">
+    <animate attributeName="opacity" begin="0ms; 40ms; 70ms" dur="10ms" id="first" fill="freeze"/>
+    <animate attributeName="opacity" begin="20ms; 50ms" dur="10ms" from="1" to="1" fill="freeze"/>
+  </rect>
+</svg>
+<script>
+  async_test(t => {
+    let first_animate = document.getElementById("first");
+    window.onload = t.step_func(() => {
+      let svg = first_animate.ownerSVGElement;
+      svg.pauseAnimations();
+      window.requestAnimationFrame(t.step_func_done(() => {
+        svg.unpauseAnimations();
+        first_animate.setAttribute("values", "0; 1");
+      }));
+    });
+  });
+</script>

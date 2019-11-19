@@ -8,10 +8,15 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/ref_counted.h"
-#include "base/synchronization/lock.h"
-#include "mojo/public/cpp/system/message_pipe.h"
+#include "base/memory/scoped_refptr.h"
 #include "third_party/blink/public/common/common_export.h"
+
+namespace mojo {
+template <class HandleType>
+class ScopedHandleBase;
+class MessagePipeHandle;
+using ScopedMessagePipeHandle = ScopedHandleBase<MessagePipeHandle>;
+}  // namespace mojo
 
 namespace blink {
 
@@ -40,25 +45,7 @@ class BLINK_COMMON_EXPORT MessagePortChannel {
       std::vector<mojo::ScopedMessagePipeHandle> handles);
 
  private:
-  class State : public base::RefCountedThreadSafe<State> {
-   public:
-    State();
-    explicit State(mojo::ScopedMessagePipeHandle handle);
-
-    mojo::ScopedMessagePipeHandle TakeHandle();
-
-    const mojo::ScopedMessagePipeHandle& handle() const { return handle_; }
-
-   private:
-    friend class base::RefCountedThreadSafe<State>;
-
-    ~State();
-
-    // Guards access to the fields below.
-    base::Lock lock_;
-
-    mojo::ScopedMessagePipeHandle handle_;
-  };
+  class State;
   mutable scoped_refptr<State> state_;
 };
 

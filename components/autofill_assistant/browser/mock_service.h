@@ -9,55 +9,59 @@
 #include <string>
 #include <vector>
 
-#include "components/autofill_assistant/browser/service.h"
+#include "components/autofill_assistant/browser/service_impl.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace autofill_assistant {
 
-class MockService : public Service {
+// TODO(crbug.com/806868): inherit from |Service| instead, and properly mock
+// methods as necessary.
+class MockService : public ServiceImpl {
  public:
   MockService();
   ~MockService() override;
 
   void GetScriptsForUrl(const GURL& url,
-                        const std::map<std::string, std::string>& parameters,
+                        const TriggerContext& trigger_context,
                         ResponseCallback callback) override {
     // Transforming callback into a references allows using RunOnceCallback on
     // the argument.
-    OnGetScriptsForUrl(url, parameters, callback);
+    OnGetScriptsForUrl(url, trigger_context, callback);
   }
   MOCK_METHOD3(OnGetScriptsForUrl,
                void(const GURL& url,
-                    const std::map<std::string, std::string>& parameters,
+                    const TriggerContext& trigger_context,
                     ResponseCallback& callback));
 
   void GetActions(const std::string& script_path,
                   const GURL& url,
-                  const std::map<std::string, std::string>& parameters,
+                  const TriggerContext& trigger_context,
                   const std::string& global_payload,
                   const std::string& script_payload,
                   ResponseCallback callback) override {
-    OnGetActions(script_path, url, parameters, global_payload, script_payload,
-                 callback);
+    OnGetActions(script_path, url, trigger_context, global_payload,
+                 script_payload, callback);
   }
   MOCK_METHOD6(OnGetActions,
                void(const std::string& script_path,
                     const GURL& url,
-                    const std::map<std::string, std::string>& parameters,
+                    const TriggerContext& trigger_contexts,
                     const std::string& global_payload,
                     const std::string& script_payload,
                     ResponseCallback& callback));
 
   void GetNextActions(
+      const TriggerContext& trigger_context,
       const std::string& previous_global_payload,
       const std::string& previous_script_payload,
       const std::vector<ProcessedActionProto>& processed_actions,
       ResponseCallback callback) override {
-    OnGetNextActions(previous_global_payload, previous_script_payload,
-                     processed_actions, callback);
+    OnGetNextActions(trigger_context, previous_global_payload,
+                     previous_script_payload, processed_actions, callback);
   }
-  MOCK_METHOD4(OnGetNextActions,
-               void(const std::string& previous_global_payload,
+  MOCK_METHOD5(OnGetNextActions,
+               void(const TriggerContext& trigger_contexts,
+                    const std::string& previous_global_payload,
                     const std::string& previous_script_payload,
                     const std::vector<ProcessedActionProto>& processed_actions,
                     ResponseCallback& callback));

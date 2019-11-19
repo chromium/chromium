@@ -31,8 +31,6 @@ class HTMLUListElement final : public HTMLElement {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  DECLARE_NODE_FACTORY(HTMLUListElement);
-
   explicit HTMLUListElement(Document&);
 
  private:

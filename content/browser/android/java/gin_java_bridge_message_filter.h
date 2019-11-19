@@ -37,7 +37,7 @@ class GinJavaBridgeMessageFilter : public BrowserMessageFilter,
   // BrowserMessageFilter
   void OnDestruct() const override;
   bool OnMessageReceived(const IPC::Message& message) override;
-  base::TaskRunner* OverrideTaskRunnerForMessage(
+  scoped_refptr<base::SequencedTaskRunner> OverrideTaskRunnerForMessage(
       const IPC::Message& message) override;
 
   // RenderProcessHostObserver

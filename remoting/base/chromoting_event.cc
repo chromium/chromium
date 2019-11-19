@@ -8,7 +8,6 @@
 #include "base/strings/stringize_macros.h"
 #include "base/system/sys_info.h"
 #include "remoting/base/name_value_map.h"
-#include "remoting/base/platform_details.h"
 
 namespace remoting {
 
@@ -187,7 +186,7 @@ bool ChromotingEvent::IsDataValid() {
 
 void ChromotingEvent::AddSystemInfo() {
   SetString(kCpuKey, base::SysInfo::OperatingSystemArchitecture());
-  SetString(kOsVersionKey, GetOperatingSystemVersionString());
+  SetString(kOsVersionKey, base::SysInfo::OperatingSystemVersion());
   SetString(kWebAppVersionKey, STRINGIZE(VERSION));
 #if defined(OS_LINUX)
   Os os = Os::CHROMOTING_LINUX;
@@ -220,6 +219,139 @@ const base::Value* ChromotingEvent::GetValue(const std::string& key) const {
 std::unique_ptr<base::DictionaryValue> ChromotingEvent::CopyDictionaryValue()
     const {
   return values_map_->CreateDeepCopy();
+}
+
+// TODO(rkjnsn): Ideally we'd use the protobuf directly instead of storing
+// everything in a DictionaryValue that needs to be converted.
+apis::v1::ChromotingEvent ChromotingEvent::CreateProto() const {
+  apis::v1::ChromotingEvent event_proto;
+  if (values_map_->HasKey(kAuthMethodKey)) {
+    event_proto.set_auth_method(
+        static_cast<apis::v1::ChromotingEvent_AuthMethod>(
+            values_map_->FindKey(kAuthMethodKey)->GetInt()));
+  }
+  if (values_map_->HasKey(kCaptureLatencyKey)) {
+    event_proto.set_capture_latency(
+        values_map_->FindKey(kCaptureLatencyKey)->GetDouble());
+  }
+  if (values_map_->HasKey(kConnectionErrorKey)) {
+    event_proto.set_connection_error(
+        static_cast<apis::v1::ChromotingEvent_ConnectionError>(
+            values_map_->FindKey(kConnectionErrorKey)->GetInt()));
+  }
+  if (values_map_->HasKey(kConnectionTypeKey)) {
+    event_proto.set_connection_type(
+        static_cast<apis::v1::ChromotingEvent_ConnectionType>(
+            values_map_->FindKey(kConnectionTypeKey)->GetInt()));
+  }
+  if (values_map_->HasKey(kCpuKey)) {
+    event_proto.set_cpu(values_map_->FindKey(kCpuKey)->GetString());
+  }
+  if (values_map_->HasKey(kDecodeLatencyKey)) {
+    event_proto.set_decode_latency(
+        values_map_->FindKey(kDecodeLatencyKey)->GetDouble());
+  }
+  if (values_map_->HasKey(kEncodeLatencyKey)) {
+    event_proto.set_encode_latency(
+        values_map_->FindKey(kEncodeLatencyKey)->GetDouble());
+  }
+  if (values_map_->HasKey(kHostOsKey)) {
+    event_proto.set_host_os(static_cast<apis::v1::ChromotingEvent_Os>(
+        values_map_->FindKey(kHostOsKey)->GetInt()));
+  }
+  if (values_map_->HasKey(kHostOsVersionKey)) {
+    event_proto.set_host_os_version(
+        values_map_->FindKey(kHostOsVersionKey)->GetString());
+  }
+  if (values_map_->HasKey(kHostVersionKey)) {
+    event_proto.set_host_version(
+        values_map_->FindKey(kHostVersionKey)->GetString());
+  }
+  if (values_map_->HasKey(kMaxCaptureLatencyKey)) {
+    event_proto.set_max_capture_latency(
+        values_map_->FindKey(kMaxCaptureLatencyKey)->GetDouble());
+  }
+  if (values_map_->HasKey(kMaxDecodeLatencyKey)) {
+    event_proto.set_max_decode_latency(
+        values_map_->FindKey(kMaxDecodeLatencyKey)->GetDouble());
+  }
+  if (values_map_->HasKey(kMaxEncodeLatencyKey)) {
+    event_proto.set_max_encode_latency(
+        values_map_->FindKey(kMaxEncodeLatencyKey)->GetDouble());
+  }
+  if (values_map_->HasKey(kMaxRenderLatencyKey)) {
+    event_proto.set_max_render_latency(
+        values_map_->FindKey(kMaxRenderLatencyKey)->GetDouble());
+  }
+  if (values_map_->HasKey(kMaxRoundtripLatencyKey)) {
+    event_proto.set_max_roundtrip_latency(
+        values_map_->FindKey(kMaxRoundtripLatencyKey)->GetDouble());
+  }
+  if (values_map_->HasKey(kModeKey)) {
+    event_proto.set_mode(static_cast<apis::v1::ChromotingEvent_Mode>(
+        values_map_->FindKey(kModeKey)->GetInt()));
+  }
+  if (values_map_->HasKey(kOsKey)) {
+    event_proto.set_os(static_cast<apis::v1::ChromotingEvent_Os>(
+        values_map_->FindKey(kOsKey)->GetInt()));
+  }
+  if (values_map_->HasKey(kOsVersionKey)) {
+    event_proto.set_os_version(
+        values_map_->FindKey(kOsVersionKey)->GetString());
+  }
+  if (values_map_->HasKey(kPreviousSessionStateKey)) {
+    event_proto.set_previous_session_state(
+        static_cast<apis::v1::ChromotingEvent_SessionState>(
+            values_map_->FindKey(kPreviousSessionStateKey)->GetInt()));
+  }
+  if (values_map_->HasKey(kRenderLatencyKey)) {
+    event_proto.set_render_latency(
+        values_map_->FindKey(kRenderLatencyKey)->GetDouble());
+  }
+  if (values_map_->HasKey(kRoleKey)) {
+    event_proto.set_role(static_cast<apis::v1::ChromotingEvent_Role>(
+        values_map_->FindKey(kRoleKey)->GetInt()));
+  }
+  if (values_map_->HasKey(kRoundtripLatencyKey)) {
+    event_proto.set_roundtrip_latency(
+        values_map_->FindKey(kRoundtripLatencyKey)->GetDouble());
+  }
+  if (values_map_->HasKey(kSessionDurationKey)) {
+    event_proto.set_session_duration(
+        values_map_->FindKey(kSessionDurationKey)->GetDouble());
+  }
+  if (values_map_->HasKey(kSessionEntryPointKey)) {
+    event_proto.set_session_entry_point(
+        static_cast<apis::v1::ChromotingEvent_SessionEntryPoint>(
+            values_map_->FindKey(kSessionEntryPointKey)->GetInt()));
+  }
+  if (values_map_->HasKey(kSessionIdKey)) {
+    event_proto.set_session_id(
+        values_map_->FindKey(kSessionIdKey)->GetString());
+  }
+  if (values_map_->HasKey(kSessionStateKey)) {
+    event_proto.set_session_state(
+        static_cast<apis::v1::ChromotingEvent_SessionState>(
+            values_map_->FindKey(kSessionStateKey)->GetInt()));
+  }
+  if (values_map_->HasKey(kSignalStrategyTypeKey)) {
+    event_proto.set_signal_strategy_type(
+        static_cast<apis::v1::ChromotingEvent_SignalStrategyType>(
+            values_map_->FindKey(kSignalStrategyTypeKey)->GetInt()));
+  }
+  if (values_map_->HasKey(kTypeKey)) {
+    event_proto.set_type(static_cast<apis::v1::ChromotingEvent_Type>(
+        values_map_->FindKey(kTypeKey)->GetInt()));
+  }
+  if (values_map_->HasKey(kVideoBandwidthKey)) {
+    event_proto.set_video_bandwidth(
+        values_map_->FindKey(kVideoBandwidthKey)->GetDouble());
+  }
+  if (values_map_->HasKey(kWebAppVersionKey)) {
+    event_proto.set_webapp_version(
+        values_map_->FindKey(kWebAppVersionKey)->GetString());
+  }
+  return event_proto;
 }
 
 // static

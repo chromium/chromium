@@ -24,12 +24,16 @@
 
 <dom-module id="oobe-update-md">
   <template>
+    <link rel="stylesheet" href="oobe_dialog_host.css">
     <link rel="stylesheet" href="oobe_flex_layout.css">
     <link rel="stylesheet" href="oobe_update.css">
     <oobe-dialog hidden="[[!checkingForUpdate]]" tabindex="0"
-        aria-live="polite">
+        aria-live="polite" id="checking-for-updates-dialog">
       <iron-icon icon="oobe-update:googleg" slot="oobe-icon"></iron-icon>
       <h1 slot="title" i18n-content="checkingForUpdates"></h1>
+      <div slot="subtitle" class="update-subtitle" id="checkingForUpdatesMsg"
+          i18n-content="checkingForUpdatesMsg">
+      </div>
       <div slot="subtitle" class="update-subtitle" id="checkingForUpdateCancelHint"
           i18n-content="cancelUpdateHint" hidden="[[!cancelAllowed]]">
       </div>
@@ -43,7 +47,7 @@
       </div>
     </oobe-dialog>
     <oobe-dialog hidden="[[!requiresPermissionForCellular]]" tabindex="0"
-        aria-live="polite" has-buttons>
+        aria-live="polite" has-buttons id="cellular-permission-dialog">
       <iron-icon icon="oobe-update:googleg" slot="oobe-icon"></iron-icon>
       <h1 slot="title">
           [[i18nRecursive(locale, 'updateOverCellularPromptTitle',
@@ -58,12 +62,15 @@
                     images/2x/updating_2x.svg 2x">
       </div>
       <div slot="bottom-buttons" class="layout horizontal justified">
-        <oobe-back-button inverse on-tap="onBackClicked_"></oobe-back-button>
-        <oobe-next-button inverse on-tap="onNextClicked_"></oobe-next-button>
+        <oobe-back-button id="cellular-permission-back" inverse
+            on-click="onBackClicked_"></oobe-back-button>
+        <oobe-next-button id="cellular-permission-next" inverse
+            on-tap="onNextClicked_"></oobe-next-button>
       </div>
     </oobe-dialog>
-    <oobe-dialog hidden="[[hideUpdatingScreen_(checkingForUpdate,
-                                               requiresPermissionForCellular)]]"
+    <oobe-dialog id="updating-dialog"
+        hidden="[[hideUpdatingScreen_(checkingForUpdate,
+                                      requiresPermissionForCellular)]]"
         tabindex="0" aria-live="polite">
       <iron-icon icon="oobe-update:googleg" slot="oobe-icon"></iron-icon>
       <h1 slot="title" i18n-content="updatingScreenTitle"></h1>
@@ -75,9 +82,10 @@
           hidden="[[isNotAllowedOrUpdateCompleted_(cancelAllowed,
                                                    updateCompleted)]]">
       </div>
-      <div slot="subtitle" class="update-subtitle" i18n-content="updateCompeletedMsg"
-          hidden="[[!updateCompleted]]"></div>
-      <paper-progress slot="progress" min="0" max="100"
+      <div id="update-complete-msg" slot="subtitle" class="update-subtitle"
+          i18n-content="updateCompeletedMsg" hidden="[[!updateCompleted]]">
+      </div>
+      <paper-progress id="updating-progress" slot="progress" min="0" max="100"
           value="[[progressValue]]" hidden="[[updateCompleted]]">
       </paper-progress>
       <div slot="footer" class="flex layout vertical">

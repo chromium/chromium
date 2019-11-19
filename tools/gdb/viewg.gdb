@@ -9,7 +9,7 @@
 # For more info see
 # chromium/src/+/HEAD/docs/graphical_debugging_aid_chromium_views.md
 #
-# To make this command available, add the following to your ~/.lldbinit:
+# To make this command available, add the following to your ~/.gdbinit:
 # source {Path to SRC Root}/tools/gdbviewg.gdb
 #
 # Usage: type `viewg` at the GDB prompt, given the conditions above.
@@ -26,7 +26,7 @@ define viewg
     set logging overwrite on
     set logging redirect on
     set logging on
-    printf "%s\n", view::PrintViewGraph(this).c_str()
+    printf "%s\n", views::PrintViewGraph(this).c_str()
     set logging off
     shell dot -Tsvg -o ~/state.svg ~/state.dot
     set pagination on

@@ -6,7 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_HEAP_SELF_KEEP_ALIVE_H_
 
 #include "third_party/blink/renderer/platform/heap/persistent.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/assertions.h"
 
 namespace blink {
@@ -17,6 +17,7 @@ namespace blink {
 //
 //  class Opener : public GarbageCollected<Opener> {
 //   public:
+//    Opener() : keep_alive_(PERSISTENT_FROM_HERE) {}
 //    ...
 //    void Open() {
 //      // Retain a self-reference while in an Open()ed state:
@@ -44,9 +45,12 @@ class SelfKeepAlive final {
   DISALLOW_NEW();
 
  public:
-  SelfKeepAlive() = default;
-
-  explicit SelfKeepAlive(Self* self) { Assign(self); }
+  explicit SelfKeepAlive(const PersistentLocation& location)
+      : keep_alive_(location) {}
+  SelfKeepAlive(const PersistentLocation& location, Self* self)
+      : keep_alive_(location) {
+    Assign(self);
+  }
 
   SelfKeepAlive& operator=(Self* self) {
     Assign(self);

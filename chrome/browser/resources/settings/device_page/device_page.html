@@ -3,13 +3,13 @@
 <link rel="import" href="chrome://resources/cr_elements/cr_link_row/cr_link_row.html">
 <link rel="import" href="chrome://resources/html/i18n_behavior.html">
 <link rel="import" href="chrome://resources/html/web_ui_listener_behavior.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/paper-icon-button/paper-icon-button-light.html">
 <link rel="import" href="device_page_browser_proxy.html">
 <link rel="import" href="display.html">
 <link rel="import" href="keyboard.html">
 <link rel="import" href="pointers.html">
 <link rel="import" href="power.html">
 <link rel="import" href="storage.html">
+<link rel="import" href="storage_external.html">
 <link rel="import" href="stylus.html">
 <link rel="import" href="../prefs/prefs.html">
 <link rel="import" href="../route.html">
@@ -25,20 +25,28 @@
       <div id="main" route-path="default">
         <cr-link-row id="pointersRow"
             label="[[getPointersTitle_(hasMouse_, hasTouchpad_)]]"
-            on-click="onPointersTap_"></cr-link-row>
+            on-click="onPointersTap_"
+            role-description="$i18n{subpageArrowRoleDescription}"></cr-link-row>
         <cr-link-row class="hr" id="keyboardRow" label="$i18n{keyboardTitle}"
-            on-click="onKeyboardTap_"></cr-link-row>
+            on-click="onKeyboardTap_"
+            role-description="$i18n{subpageArrowRoleDescription}"></cr-link-row>
         <template is="dom-if" if="[[hasStylus_]]">
           <cr-link-row class="hr" id="stylusRow" label="$i18n{stylusTitle}"
-              on-click="onStylusTap_"></cr-link-row>
+              on-click="onStylusTap_"
+              role-description="$i18n{subpageArrowRoleDescription}">
+          </cr-link-row>
         </template>
         <cr-link-row class="hr" id="displayRow" label="$i18n{displayTitle}"
-            on-click="onDisplayTap_"> </cr-link-row>
+            on-click="onDisplayTap_"
+            role-description="$i18n{subpageArrowRoleDescription}"></cr-link-row>
         <cr-link-row class="hr" hidden="[[hideStorageInfo_]]" id="storageRow"
-            label="$i18n{storageTitle}" on-click="onStorageTap_"></cr-link-row>
+            label="$i18n{storageTitle}" on-click="onStorageTap_"
+            role-description="$i18n{subpageArrowRoleDescription}"></cr-link-row>
         <template is="dom-if" if="[[enablePowerSettings_]]">
           <cr-link-row class="hr" id="powerRow" label="$i18n{powerTitle}"
-              on-click="onPowerTap_"></cr-link-row>
+              on-click="onPowerTap_"
+              role-description="$i18n{subpageArrowRoleDescription}">
+          </cr-link-row>
         </template>
       </div>
       <template is="dom-if" route-path="/pointer-overlay">
@@ -77,9 +85,20 @@
             associated-control="[[$$('#storageRow')]]"
             page-title="$i18n{storageTitle}">
           <settings-storage prefs="{{prefs}}"
-              show-crostini="[[showCrostini]]">
+              show-crostini="[[showCrostini]]"
+              android-enabled="[[androidEnabled_]]">
           </settings-storage>
         </settings-subpage>
+      </template>
+      <template is="dom-if" if="[[androidEnabled_]]">
+        <template is="dom-if" route-path="/storage/externalStoragePreferences">
+          <settings-subpage
+              associated-control="[[$$('#storageRow')]]"
+              page-title="$i18n{storageExternal}">
+            <settings-storage-external prefs="{{prefs}}">
+            </settings-storage-external>
+          </settings-subpage>
+        </template>
       </template>
       <template is="dom-if" route-path="/power"
           no-search="[[!enablePowerSettings_]]">

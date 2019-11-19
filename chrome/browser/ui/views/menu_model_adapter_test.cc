@@ -6,7 +6,7 @@
 #include "base/callback.h"
 #include "base/location.h"
 #include "base/macros.h"
-#include "base/message_loop/message_loop.h"
+#include "base/message_loop/message_loop_current.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -15,8 +15,8 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "ui/base/models/menu_model.h"
 #include "ui/base/test/ui_controls.h"
+#include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/menu_button.h"
-#include "ui/views/controls/button/menu_button_listener.h"
 #include "ui/views/controls/menu/menu_controller.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/menu_runner.h"
@@ -63,7 +63,7 @@ class CommonMenuModel : public ui::MenuModel {
 
   int GetGroupIdAt(int index) const override { return 0; }
 
-  bool GetIconAt(int index, gfx::Image* icon) override { return false; }
+  bool GetIconAt(int index, gfx::Image* icon) const override { return false; }
 
   ui::ButtonMenuItemModel* GetButtonMenuItemAt(int index) const override {
     return nullptr;
@@ -152,7 +152,7 @@ class TopMenuModel : public CommonMenuModel {
 }  // namespace
 
 class MenuModelAdapterTest : public ViewEventTestBase,
-                             public views::MenuButtonListener {
+                             public views::ButtonListener {
  public:
   MenuModelAdapterTest()
       : ViewEventTestBase(),
@@ -187,15 +187,14 @@ class MenuModelAdapterTest : public ViewEventTestBase,
     return button_->GetPreferredSize();
   }
 
-  // views::MenuButtonListener implementation.
-  void OnMenuButtonClicked(views::MenuButton* source,
-                           const gfx::Point& point,
-                           const ui::Event* event) override {
+  // views::ButtonListener implementation.
+  void ButtonPressed(views::Button* source, const ui::Event& event) override {
     gfx::Point screen_location;
     views::View::ConvertPointToScreen(source, &screen_location);
     gfx::Rect bounds(screen_location, source->size());
-    menu_runner_->RunMenuAt(source->GetWidget(), button_, bounds,
-                            views::MENU_ANCHOR_TOPLEFT, ui::MENU_SOURCE_NONE);
+    menu_runner_->RunMenuAt(source->GetWidget(), button_->button_controller(),
+                            bounds, views::MenuAnchorPosition::kTopLeft,
+                            ui::MENU_SOURCE_NONE);
   }
 
   // ViewEventTestBase implementation

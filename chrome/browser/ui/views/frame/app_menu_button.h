@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "base/observer_list.h"
-#include "ui/views/controls/button/menu_button.h"
+#include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 
 class AppMenu;
 class AppMenuButtonObserver;
@@ -16,22 +16,21 @@ class AppMenuModel;
 class Browser;
 
 namespace views {
-class MenuButtonListener;
+class ButtonListener;
+class MenuButtonController;
 }  // namespace views
 
 // The app menu button lives in the top right of browser windows. It shows three
 // dots and adds a status badge when there's a need to alert the user. Clicking
 // displays the app menu.
-// TODO: Consider making ToolbarButton and AppMenuButton share a common base
-// class https://crbug.com/819854.
-class AppMenuButton : public views::MenuButton {
+class AppMenuButton : public ToolbarButton {
  public:
-  explicit AppMenuButton(views::MenuButtonListener* menu_button_listener);
+  explicit AppMenuButton(views::ButtonListener* button_listener);
   ~AppMenuButton() override;
 
-  // views::MenuButton:
-  void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
-  SkColor GetInkDropBaseColor() const override;
+  views::MenuButtonController* menu_button_controller() const {
+    return menu_button_controller_;
+  }
 
   void AddObserver(AppMenuButtonObserver* observer);
   void RemoveObserver(AppMenuButtonObserver* observer);
@@ -65,6 +64,8 @@ class AppMenuButton : public views::MenuButton {
   std::unique_ptr<AppMenu> menu_;
 
   base::ObserverList<AppMenuButtonObserver>::Unchecked observer_list_;
+
+  views::MenuButtonController* menu_button_controller_;
 
   DISALLOW_COPY_AND_ASSIGN(AppMenuButton);
 };

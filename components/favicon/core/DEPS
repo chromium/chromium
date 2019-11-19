@@ -1,6 +1,5 @@
 include_rules = [
   "+cc/paint",
-  "+components/data_use_measurement/core",
   "+components/history/core/browser",
   "+components/history/core/test",
   "+components/image_fetcher/core",

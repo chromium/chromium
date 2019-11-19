@@ -66,7 +66,7 @@ class CONTENT_EXPORT BackgroundSyncNetworkObserver
   // (to prevent flakes in tests).
   static bool ignore_network_changes_;
 
-  base::WeakPtrFactory<BackgroundSyncNetworkObserver> weak_ptr_factory_;
+  base::WeakPtrFactory<BackgroundSyncNetworkObserver> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(BackgroundSyncNetworkObserver);
 };

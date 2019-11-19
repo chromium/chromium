@@ -223,11 +223,6 @@ void ThrottlingNetworkTransaction::StopCaching() {
   network_transaction_->StopCaching();
 }
 
-bool ThrottlingNetworkTransaction::GetFullRequestHeaders(
-    net::HttpRequestHeaders* headers) const {
-  return network_transaction_->GetFullRequestHeaders(headers);
-}
-
 int64_t ThrottlingNetworkTransaction::GetTotalReceivedBytes() const {
   return network_transaction_->GetTotalReceivedBytes();
 }

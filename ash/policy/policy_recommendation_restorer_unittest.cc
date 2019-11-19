@@ -5,7 +5,8 @@
 #include "ash/policy/policy_recommendation_restorer.h"
 
 #include "ash/public/cpp/ash_pref_names.h"
-#include "ash/session/session_controller.h"
+#include "ash/public/cpp/ash_prefs.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/session/test_session_controller_client.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
@@ -38,16 +39,16 @@ class PolicyRecommendationRestorerTest : public NoSessionAshTestBase {
 
     // Register sigin prefs but not connected to pref service yet. This allows
     // us set pref values before ash connects to pref service for testing.
-    Shell::RegisterSigninProfilePrefs(prefs_->registry(), true /* for_test */);
+    RegisterSigninProfilePrefs(prefs_->registry(), true /* for_test */);
 
     restorer_ = Shell::Get()->policy_recommendation_restorer();
   }
 
   void ConnectToSigninPrefService() {
-    SessionController* session_controller = Shell::Get()->session_controller();
-    session_controller->SetSigninScreenPrefServiceForTest(
+    GetSessionControllerClient()->SetSigninScreenPrefService(
         base::WrapUnique(prefs_));
-    ASSERT_EQ(session_controller->GetSigninScreenPrefService(), prefs_);
+    ASSERT_EQ(Shell::Get()->session_controller()->GetSigninScreenPrefService(),
+              prefs_);
     // Manually trigger a user activity, so that the delay is not skipped due to
     // no user input since a pref is started observing recommended value. See
     // PolicyRecommendationRestorer::Restore() for the information.

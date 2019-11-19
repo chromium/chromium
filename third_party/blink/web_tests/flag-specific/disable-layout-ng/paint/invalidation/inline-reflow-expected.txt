@@ -1,0 +1,148 @@
+{
+  "layers": [
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF",
+      "paintInvalidations": [
+        {
+          "object": "InlineTextBox 'A A A A A AA AA'",
+          "rect": [0, 0, 300, 200],
+          "reason": "appeared"
+        },
+        {
+          "object": "InlineTextBox 'A A'",
+          "rect": [0, 0, 300, 200],
+          "reason": "appeared"
+        },
+        {
+          "object": "InlineTextBox 'AA AA AA A A A'",
+          "rect": [0, 0, 300, 200],
+          "reason": "appeared"
+        },
+        {
+          "object": "InlineTextBox 'AA AA AAA AAA'",
+          "rect": [0, 0, 300, 200],
+          "reason": "appeared"
+        },
+        {
+          "object": "InlineTextBox 'AAA AAA AAA AA'",
+          "rect": [0, 0, 300, 200],
+          "reason": "appeared"
+        },
+        {
+          "object": "InlineTextBox 'AAA AAAA AAAA'",
+          "rect": [0, 0, 300, 200],
+          "reason": "appeared"
+        },
+        {
+          "object": "InlineTextBox 'AAAAA AAAA AAAA'",
+          "rect": [0, 0, 300, 200],
+          "reason": "appeared"
+        },
+        {
+          "object": "InlineTextBox 'AAAAA AAAAA'",
+          "rect": [0, 0, 300, 200],
+          "reason": "appeared"
+        },
+        {
+          "object": "InlineTextBox 'AAAAAA AAAAA'",
+          "rect": [0, 0, 300, 200],
+          "reason": "appeared"
+        },
+        {
+          "object": "InlineTextBox 'AAAAAA AAAAAAA'",
+          "rect": [0, 0, 300, 200],
+          "reason": "appeared"
+        },
+        {
+          "object": "InlineTextBox 'A A A A A'",
+          "rect": [0, 0, 200, 300],
+          "reason": "disappeared"
+        },
+        {
+          "object": "InlineTextBox 'A A A A'",
+          "rect": [0, 0, 200, 300],
+          "reason": "disappeared"
+        },
+        {
+          "object": "InlineTextBox 'AA AA AA A'",
+          "rect": [0, 0, 200, 300],
+          "reason": "disappeared"
+        },
+        {
+          "object": "InlineTextBox 'AA AA AA'",
+          "rect": [0, 0, 200, 300],
+          "reason": "disappeared"
+        },
+        {
+          "object": "InlineTextBox 'AA AAA AAA'",
+          "rect": [0, 0, 200, 300],
+          "reason": "disappeared"
+        },
+        {
+          "object": "InlineTextBox 'AAA AAA AA'",
+          "rect": [0, 0, 200, 300],
+          "reason": "disappeared"
+        },
+        {
+          "object": "InlineTextBox 'AAA AAAA'",
+          "rect": [0, 0, 200, 300],
+          "reason": "disappeared"
+        },
+        {
+          "object": "InlineTextBox 'AAAA AAA'",
+          "rect": [0, 0, 200, 300],
+          "reason": "disappeared"
+        },
+        {
+          "object": "InlineTextBox 'AAAA AAAAA'",
+          "rect": [0, 0, 200, 300],
+          "reason": "disappeared"
+        },
+        {
+          "object": "InlineTextBox 'AAAAA AAAA'",
+          "rect": [0, 0, 200, 300],
+          "reason": "disappeared"
+        },
+        {
+          "object": "InlineTextBox 'AAAAA'",
+          "rect": [0, 0, 200, 300],
+          "reason": "disappeared"
+        },
+        {
+          "object": "InlineTextBox 'AAAAA'",
+          "rect": [0, 0, 200, 300],
+          "reason": "disappeared"
+        },
+        {
+          "object": "InlineTextBox 'AAAAAA'",
+          "rect": [0, 0, 200, 300],
+          "reason": "disappeared"
+        },
+        {
+          "object": "InlineTextBox 'AAAAAA'",
+          "rect": [0, 0, 200, 300],
+          "reason": "disappeared"
+        },
+        {
+          "object": "InlineTextBox 'AAAAAAA'",
+          "rect": [0, 0, 200, 300],
+          "reason": "disappeared"
+        },
+        {
+          "object": "InlineTextBox 'A A A A A'",
+          "rect": [0, 300, 180, 20],
+          "reason": "appeared"
+        },
+        {
+          "object": "InlineTextBox 'A A A A A'",
+          "rect": [0, 300, 180, 20],
+          "reason": "disappeared"
+        }
+      ]
+    }
+  ]
+}
+

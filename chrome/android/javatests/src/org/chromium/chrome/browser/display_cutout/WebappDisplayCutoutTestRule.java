@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.display_cutout;
 
-import static org.chromium.base.test.util.ScalableTimeout.scaleTimeout;
-
 import android.content.Intent;
 import android.net.Uri;
 import android.support.test.InstrumentationRegistry;
@@ -13,8 +11,8 @@ import android.support.test.InstrumentationRegistry;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 
-import org.chromium.blink_public.platform.WebDisplayMode;
 import org.chromium.chrome.browser.ShortcutHelper;
+import org.chromium.chrome.browser.webapps.WebDisplayMode;
 import org.chromium.chrome.browser.webapps.WebappActivity0;
 import org.chromium.content_public.browser.test.util.Criteria;
 import org.chromium.content_public.browser.test.util.CriteriaHelper;
@@ -34,7 +32,7 @@ public class WebappDisplayCutoutTestRule extends DisplayCutoutTestRule<WebappAct
     private static final String WEBAPP_SHORT_NAME = "webapp short name";
 
     /** The maximum waiting time to start {@link WebActivity0} in ms. */
-    private static final long STARTUP_TIMEOUT = scaleTimeout(10000);
+    private static final long STARTUP_TIMEOUT = 10000L;
 
     /**
      * Contains test specific configuration for launching {@link WebappActivity0}.
@@ -66,7 +64,7 @@ public class WebappDisplayCutoutTestRule extends DisplayCutoutTestRule<WebappAct
         };
     }
 
-    private void startWebappActivity(@WebDisplayMode int displayMode) throws Exception {
+    private void startWebappActivity(@WebDisplayMode int displayMode) {
         Intent intent =
                 new Intent(InstrumentationRegistry.getTargetContext(), WebappActivity0.class);
         intent.setData(Uri.parse(WebappActivity0.WEBAPP_SCHEME + "://" + WEBAPP_ID));

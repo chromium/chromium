@@ -5,9 +5,9 @@
 mojom = "//mojo/public/mojom/base/read_only_buffer.mojom"
 public_headers = [ "//base/containers/span.h" ]
 traits_headers = [ "//mojo/public/cpp/base/read_only_buffer_mojom_traits.h" ]
-sources = [
-  "//mojo/public/cpp/base/read_only_buffer_mojom_traits.cc",
-  "//mojo/public/cpp/base/read_only_buffer_mojom_traits.h",
+public_deps = [
+  "//base",
+  "//mojo/public/cpp/base:shared_typemap_traits",
 ]
 
-type_mappings = [ "mojo_base.mojom.ReadOnlyBuffer=base::span<const uint8_t>[copyable_pass_by_value,force_serialize]" ]
+type_mappings = [ "mojo_base.mojom.ReadOnlyBuffer=::base::span<const ::uint8_t>[copyable_pass_by_value,force_serialize]" ]

@@ -12,7 +12,7 @@ import("//build/config/win/visual_studio_version.gni")
 # Parameters
 #
 #   sources
-#      List of .idl file to process.
+#       List of .idl file to process.
 #
 #   header_file (optional)
 #       File name of generated header file.  Defaults to the basename of the
@@ -21,8 +21,15 @@ import("//build/config/win/visual_studio_version.gni")
 #   out_dir (optional)
 #       Directory to write the generated files to. Defaults to target_gen_dir.
 #
+#   generated_dir (optional)
+#       Directory where generated files were previously persisted.
+#       Defaults to third_party\win_build_output\midl\|out_dir|.
+#
 #   dynamic_guid (optional)
 #       If the GUID is not constant across builds, the current GUID.
+#
+#   writes_tlb (optional)
+#       Whether a .tlb file should be added to outputs. Defaults to false.
 #
 #   deps (optional)
 #   visibility (optional)
@@ -39,6 +46,14 @@ template("midl") {
     out_dir = target_gen_dir
   }
 
+  if (defined(invoker.generated_dir)) {
+    generated_dir = rebase_path(invoker.generated_dir)
+  } else {
+    # midl.py expects 'gen' to be replaced with 'midl'.
+    generated_dir = rebase_path("//third_party/win_build_output") + "/midl/" +
+                    rebase_path(rebase_path(out_dir, root_build_dir), "gen")
+  }
+
   if (defined(invoker.dynamic_guid)) {
     dynamic_guid = invoker.dynamic_guid
   } else {
@@ -49,6 +64,12 @@ template("midl") {
     header_file = invoker.header_file
   } else {
     header_file = "{{source_name_part}}.h"
+  }
+
+  if (defined(invoker.writes_tlb)) {
+    writes_tlb = invoker.writes_tlb
+  } else {
+    writes_tlb = false
   }
 
   dlldata_file = "{{source_name_part}}.dlldata.c"
@@ -62,14 +83,18 @@ template("midl") {
 
     sources = invoker.sources
 
-    # Note that .tlb is not included in the outputs as it is not always
-    # generated depending on the content of the input idl file.
     outputs = [
       "$out_dir/$header_file",
       "$out_dir/$dlldata_file",
       "$out_dir/$interface_identifier_file",
       "$out_dir/$proxy_file",
     ]
+
+    # The .tlb is only added to outputs if the invoker so desires, as it is not
+    # always generated depending on the content of the input idl file.
+    if (writes_tlb) {
+      outputs += [ "$out_dir/$type_library_file" ]
+    }
 
     if (current_cpu == "x86") {
       win_tool_arch = "environment.x86"
@@ -86,6 +111,7 @@ template("midl") {
 
     args = [
       win_tool_arch,
+      generated_dir,
       rebase_path(out_dir, root_build_dir),
       dynamic_guid,
       type_library_file,

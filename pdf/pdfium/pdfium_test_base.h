@@ -14,12 +14,16 @@
 namespace chrome_pdf {
 
 class PDFiumEngine;
+class PDFiumPage;
 class TestClient;
 
 class PDFiumTestBase : public testing::Test {
  public:
   PDFiumTestBase();
   ~PDFiumTestBase() override;
+
+  // Returns true when actually running in a Chrome OS environment.
+  static bool IsRunningOnChromeOS();
 
  protected:
   // testing::Test:
@@ -31,6 +35,9 @@ class PDFiumTestBase : public testing::Test {
   std::unique_ptr<PDFiumEngine> InitializeEngine(
       TestClient* client,
       const base::FilePath::CharType* pdf_name);
+
+  // Returns the PDFiumPage for the page index
+  PDFiumPage* GetPDFiumPageForTest(PDFiumEngine* engine, size_t page_index);
 
  private:
   // Sets the PDF to load for a test. This must be called for tests that use

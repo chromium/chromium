@@ -1,2 +1,6 @@
-AXLiveRegionChanged on AXGroup
-AXLiveRegionCreated on AXGroup
+AXLiveRegionChanged on AXGroup AXDescription="a"
+AXLiveRegionChanged on AXGroup AXDescription="b"
+AXLiveRegionChanged on AXGroup AXDescription="c"
+AXLiveRegionCreated on AXGroup AXDescription="a"
+AXLiveRegionCreated on AXGroup AXDescription="b"
+AXLiveRegionCreated on AXGroup AXDescription="c"

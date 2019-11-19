@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/logging.h"
+#include "base/numerics/ranges.h"
 
 namespace gfx {
 
@@ -20,7 +21,7 @@ float SkTransferFnEvalUnclamped(const skcms_TransferFunction& fn, float x) {
 
 float SkTransferFnEval(const skcms_TransferFunction& fn, float x) {
   float fn_at_x_unclamped = SkTransferFnEvalUnclamped(fn, x);
-  return std::min(std::max(fn_at_x_unclamped, 0.f), 1.f);
+  return base::ClampToRange(fn_at_x_unclamped, 0.0f, 1.0f);
 }
 
 skcms_TransferFunction SkTransferFnInverse(const skcms_TransferFunction& fn) {

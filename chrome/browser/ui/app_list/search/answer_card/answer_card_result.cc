@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/app_list/search/answer_card/answer_card_result.h"
 
 #include "chrome/browser/ui/app_list/app_list_controller_delegate.h"
-#include "chrome/browser/ui/app_list/search/search_util.h"
 
 namespace app_list {
 
@@ -19,7 +18,7 @@ AnswerCardResult::AnswerCardResult(Profile* profile,
       search_result_url_(search_result_url) {
   DCHECK(!stripped_search_result_url.is_empty());
   SetDisplayType(ash::SearchResultDisplayType::kCard);
-  SetResultType(ash::SearchResultType::kAnswerCard);
+  SetResultType(ash::AppListSearchResultType::kAnswerCard);
   SetQueryUrl(potential_card_url);
   SetEquivalentResutlId(stripped_search_result_url.spec());
   set_id(potential_card_url.spec());
@@ -32,7 +31,10 @@ void AnswerCardResult::Open(int event_flags) {
   list_controller_->OpenURL(profile_, search_result_url_,
                             ui::PAGE_TRANSITION_GENERATED,
                             ui::DispositionFromEventFlags(event_flags));
-  RecordHistogram(ANSWER_CARD);
+}
+
+ash::SearchResultType AnswerCardResult::GetSearchResultType() const {
+  return ash::ANSWER_CARD;
 }
 
 }  // namespace app_list

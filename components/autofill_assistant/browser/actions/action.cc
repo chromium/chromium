@@ -7,23 +7,28 @@
 #include "base/callback.h"
 #include "components/autofill_assistant/browser/actions/action.h"
 #include "components/autofill_assistant/browser/actions/action_delegate.h"
+#include "components/autofill_assistant/browser/client_status.h"
 
 namespace autofill_assistant {
 
-Action::Action(const ActionProto& proto) : proto_(proto) {}
+Action::Action(ActionDelegate* delegate, const ActionProto& proto)
+    : proto_(proto), delegate_(delegate) {}
 
 Action::~Action() {}
 
-void Action::ProcessAction(ActionDelegate* delegate,
-                           ProcessActionCallback callback) {
+void Action::ProcessAction(ProcessActionCallback callback) {
   processed_action_proto_ = std::make_unique<ProcessedActionProto>();
-  InternalProcessAction(delegate, std::move(callback));
+  InternalProcessAction(std::move(callback));
 }
 
-void Action::UpdateProcessedAction(ProcessedActionStatusProto status) {
+void Action::UpdateProcessedAction(ProcessedActionStatusProto status_proto) {
+  UpdateProcessedAction(ClientStatus(status_proto));
+}
+
+void Action::UpdateProcessedAction(const ClientStatus& status) {
   // Safety check in case process action is run twice.
   *processed_action_proto_->mutable_action() = proto_;
-  processed_action_proto_->set_status(status);
+  status.FillProto(processed_action_proto_.get());
 }
 
 // static
@@ -96,11 +101,32 @@ std::ostream& operator<<(std::ostream& out,
     case ActionProto::ActionInfoCase::kStop:
       out << "Stop";
       break;
-    case ActionProto::ActionInfoCase::kGetPaymentInformation:
-      out << "GetPaymentInformation";
+    case ActionProto::ActionInfoCase::kCollectUserData:
+      out << "CollectUserData";
       break;
     case ActionProto::ActionInfoCase::kSetAttribute:
       out << "SetAttribute";
+      break;
+    case ActionProto::ActionInfoCase::kShowInfoBox:
+      out << "ShowInfoBox";
+      break;
+    case ActionProto::ActionInfoCase::kExpectNavigation:
+      out << "ExpectNavigation";
+      break;
+    case ActionProto::ActionInfoCase::kWaitForNavigation:
+      out << "WaitForNavigation";
+      break;
+    case ActionProto::ActionInfoCase::kConfigureBottomSheet:
+      out << "ConfigureBottomSheet";
+      break;
+    case ActionProto::ActionInfoCase::kShowForm:
+      out << "ShowForm";
+      break;
+    case ActionProto::ActionInfoCase::kPopupMessage:
+      out << "PopupMessage";
+      break;
+    case ActionProto::ActionInfoCase::kWaitForDocument:
+      out << "WaitForDocument";
       break;
     case ActionProto::ActionInfoCase::ACTION_INFO_NOT_SET:
       out << "ACTION_INFO_NOT_SET";

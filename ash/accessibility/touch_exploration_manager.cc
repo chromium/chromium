@@ -7,15 +7,15 @@
 #include <memory>
 #include <vector>
 
-#include "ash/accessibility/accessibility_controller.h"
-#include "ash/accessibility/accessibility_focus_ring_controller.h"
+#include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/accessibility/accessibility_focus_ring_controller_impl.h"
 #include "ash/accessibility/touch_exploration_controller.h"
+#include "ash/keyboard/ui/keyboard_ui_controller.h"
+#include "ash/public/cpp/accessibility_focus_ring_info.h"
 #include "ash/public/cpp/app_types.h"
-#include "ash/public/interfaces/accessibility_focus_ring_controller.mojom.h"
 #include "ash/root_window_controller.h"
 #include "ash/shell.h"
 #include "ash/wm/window_util.h"
-#include "base/bind.h"
 #include "base/command_line.h"
 #include "chromeos/audio/chromeos_sounds.h"
 #include "chromeos/audio/cras_audio_handler.h"
@@ -23,14 +23,13 @@
 #include "extensions/common/constants.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/keyboard/keyboard_controller.h"
 #include "ui/wm/public/activation_client.h"
 
 namespace ash {
 
 namespace {
 
-AccessibilityController* GetA11yController() {
+AccessibilityControllerImpl* GetA11yController() {
   return Shell::Get()->accessibility_controller();
 }
 
@@ -44,17 +43,18 @@ TouchExplorationManager::TouchExplorationManager(
   Shell::Get()->AddShellObserver(this);
   Shell::Get()->accessibility_controller()->AddObserver(this);
   Shell::Get()->activation_client()->AddObserver(this);
-  keyboard::KeyboardController::Get()->AddObserver(this);
+  keyboard::KeyboardUIController::Get()->AddObserver(this);
   display::Screen::GetScreen()->AddObserver(this);
   UpdateTouchExplorationState();
 }
 
 TouchExplorationManager::~TouchExplorationManager() {
-  // TODO(jamescook): Clean up shutdown order so this check isn't needed.
+  // TODO(jamescook): Clean up shutdown order so this check isn't needed. See
+  // also the TODO in |OnAccessibilityControllerShutdown|.
   if (Shell::Get()->accessibility_controller())
     Shell::Get()->accessibility_controller()->RemoveObserver(this);
   Shell::Get()->activation_client()->RemoveObserver(this);
-  keyboard::KeyboardController::Get()->RemoveObserver(this);
+  keyboard::KeyboardUIController::Get()->RemoveObserver(this);
   display::Screen::GetScreen()->RemoveObserver(this);
   Shell::Get()->RemoveShellObserver(this);
   if (observing_window_)
@@ -63,6 +63,18 @@ TouchExplorationManager::~TouchExplorationManager() {
 
 void TouchExplorationManager::OnAccessibilityStatusChanged() {
   UpdateTouchExplorationState();
+}
+
+void TouchExplorationManager::OnAccessibilityControllerShutdown() {
+  // This code helps with shutdown, but it does not obviate the need for similar
+  // code in |TouchExplorationManager::~TouchExplorationManager|. That is
+  // because there is a |TouchExplorationManager| per display, but only one
+  // |AccessibilityController|. If you disconnect an external display, then the
+  // corresponding |TouchExplorationManager| will be destroyed, but
+  // |OnAccessibilityControllerShutdown| will not be called thereon.
+  // TODO(jamescook): Clean up shutdown order so this code is not reached (and
+  // then remove it). See also the TODO in |~TouchExplorationManager|.
+  Shell::Get()->accessibility_controller()->RemoveObserver(this);
 }
 
 void TouchExplorationManager::OnWindowPropertyChanged(aura::Window* winodw,
@@ -133,20 +145,14 @@ void TouchExplorationManager::OnTwoFingerTouchStart() {
 
 void TouchExplorationManager::OnTwoFingerTouchStop() {
   // Can be null during shutdown.
-  AccessibilityController* controller = GetA11yController();
-  if (controller)
+  if (AccessibilityControllerImpl* controller = GetA11yController())
     controller->OnTwoFingerTouchStop();
 }
 
 void TouchExplorationManager::PlaySpokenFeedbackToggleCountdown(
     int tick_count) {
-  GetA11yController()->ShouldToggleSpokenFeedbackViaTouch(base::BindOnce(
-      [](int tick_count, bool should_toggle) {
-        if (!should_toggle)
-          return;
-        GetA11yController()->PlaySpokenFeedbackToggleCountdown(tick_count);
-      },
-      tick_count));
+  if (GetA11yController()->ShouldToggleSpokenFeedbackViaTouch())
+    GetA11yController()->PlaySpokenFeedbackToggleCountdown(tick_count);
 }
 
 void TouchExplorationManager::PlayTouchTypeEarcon() {
@@ -154,14 +160,11 @@ void TouchExplorationManager::PlayTouchTypeEarcon() {
 }
 
 void TouchExplorationManager::ToggleSpokenFeedback() {
-  GetA11yController()->ShouldToggleSpokenFeedbackViaTouch(
-      base::BindOnce([](bool should_toggle) {
-        if (!should_toggle)
-          return;
-        GetA11yController()->SetSpokenFeedbackEnabled(
-            !GetA11yController()->spoken_feedback_enabled(),
-            A11Y_NOTIFICATION_SHOW);
-      }));
+  if (GetA11yController()->ShouldToggleSpokenFeedbackViaTouch()) {
+    GetA11yController()->SetSpokenFeedbackEnabled(
+        !GetA11yController()->spoken_feedback_enabled(),
+        A11Y_NOTIFICATION_SHOW);
+  }
 }
 
 void TouchExplorationManager::OnWindowActivated(
@@ -201,8 +204,8 @@ void TouchExplorationManager::OnKeyboardEnabledChanged(bool is_enabled) {
 void TouchExplorationManager::UpdateTouchExplorationState() {
   // See crbug.com/603745 for more details.
   const bool pass_through_surface =
-      wm::GetActiveWindow() &&
-      wm::GetActiveWindow()->GetProperty(
+      window_util::GetActiveWindow() &&
+      window_util::GetActiveWindow()->GetProperty(
           aura::client::kAccessibilityTouchExplorationPassThrough);
 
   const bool spoken_feedback_enabled =
@@ -230,18 +233,17 @@ void TouchExplorationManager::UpdateTouchExplorationState() {
       SilenceSpokenFeedback();
       // Clear the focus highlight.
       Shell::Get()->accessibility_focus_ring_controller()->SetFocusRing(
-          std::vector<gfx::Rect>(),
-          mojom::FocusRingBehavior::PERSIST_FOCUS_RING,
-          extension_misc::kChromeVoxExtensionId);
+          extension_misc::kChromeVoxExtensionId,
+          std::make_unique<AccessibilityFocusRingInfo>());
     } else {
       touch_exploration_controller_->SetExcludeBounds(gfx::Rect());
     }
 
     // Virtual keyboard.
-    auto* keyboard_controller = keyboard::KeyboardController::Get();
+    auto* keyboard_controller = keyboard::KeyboardUIController::Get();
     if (keyboard_controller->IsEnabled()) {
       touch_exploration_controller_->SetLiftActivationBounds(
-          keyboard_controller->visual_bounds_in_screen());
+          keyboard_controller->GetVisualBoundsInScreen());
     }
   } else {
     touch_exploration_controller_.reset();

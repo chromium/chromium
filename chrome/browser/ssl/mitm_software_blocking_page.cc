@@ -6,16 +6,14 @@
 
 #include <utility>
 
-#include "base/callback_helpers.h"
 #include "chrome/browser/interstitials/chrome_metrics_helper.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/renderer_preferences_util.h"
 #include "chrome/browser/ssl/cert_report_helper.h"
-#include "chrome/browser/ssl/ssl_cert_reporter.h"
+#include "chrome/browser/ssl/chrome_ssl_blocking_page.h"
 #include "chrome/browser/ssl/ssl_error_controller_client.h"
 #include "components/safe_browsing/common/safe_browsing_prefs.h"
+#include "components/security_interstitials/content/ssl_cert_reporter.h"
 #include "components/security_interstitials/core/metrics_helper.h"
-#include "components/security_interstitials/core/mitm_software_ui.h"
 #include "content/public/browser/interstitial_page.h"
 #include "content/public/browser/interstitial_page_delegate.h"
 #include "content/public/browser/navigation_controller.h"
@@ -25,7 +23,6 @@
 #include "content/public/browser/ssl_status.h"
 #include "content/public/browser/web_contents.h"
 #include "net/base/net_errors.h"
-#include "third_party/blink/public/mojom/renderer_preferences.mojom.h"
 
 using content::InterstitialPageDelegate;
 using content::NavigationController;
@@ -66,11 +63,9 @@ MITMSoftwareBlockingPage::MITMSoftwareBlockingPage(
     std::unique_ptr<SSLCertReporter> ssl_cert_reporter,
     const net::SSLInfo& ssl_info,
     const std::string& mitm_software_name,
-    bool is_enterprise_managed,
-    const base::Callback<void(content::CertificateRequestResultType)>& callback)
+    bool is_enterprise_managed)
     : SSLBlockingPageBase(
           web_contents,
-          cert_error,
           CertificateErrorReport::INTERSTITIAL_MITM_SOFTWARE,
           ssl_info,
           request_url,
@@ -83,7 +78,6 @@ MITMSoftwareBlockingPage::MITMSoftwareBlockingPage(
               cert_error,
               request_url,
               CreateMitmSoftwareMetricsHelper(web_contents, request_url))),
-      callback_(callback),
       ssl_info_(ssl_info),
       mitm_software_ui_(
           new security_interstitials::MITMSoftwareUI(request_url,
@@ -91,21 +85,17 @@ MITMSoftwareBlockingPage::MITMSoftwareBlockingPage(
                                                      ssl_info,
                                                      mitm_software_name,
                                                      is_enterprise_managed,
-                                                     controller())) {}
-
-MITMSoftwareBlockingPage::~MITMSoftwareBlockingPage() {
-  if (!callback_.is_null()) {
-    // Deny when the page is closed.
-    NotifyDenyCertificate();
-  }
+                                                     controller())) {
+  ChromeSSLBlockingPage::DoChromeSpecificSetup(this);
 }
+
+MITMSoftwareBlockingPage::~MITMSoftwareBlockingPage() = default;
 
 bool MITMSoftwareBlockingPage::ShouldCreateNewNavigation() const {
   return true;
 }
 
-InterstitialPageDelegate::TypeID MITMSoftwareBlockingPage::GetTypeForTesting()
-    const {
+InterstitialPageDelegate::TypeID MITMSoftwareBlockingPage::GetTypeForTesting() {
   return MITMSoftwareBlockingPage::kTypeForTesting;
 }
 
@@ -139,28 +129,4 @@ void MITMSoftwareBlockingPage::CommandReceived(const std::string& command) {
       controller()->GetPrefService());
   mitm_software_ui_->HandleCommand(
       static_cast<security_interstitials::SecurityInterstitialCommand>(cmd));
-}
-
-void MITMSoftwareBlockingPage::OverrideRendererPrefs(
-    blink::mojom::RendererPreferences* prefs) {
-  Profile* profile =
-      Profile::FromBrowserContext(web_contents()->GetBrowserContext());
-  renderer_preferences_util::UpdateFromSystemSettings(prefs, profile);
-}
-
-void MITMSoftwareBlockingPage::OnDontProceed() {
-  OnInterstitialClosing();
-  NotifyDenyCertificate();
-}
-
-void MITMSoftwareBlockingPage::NotifyDenyCertificate() {
-  // It's possible that callback_ may not exist if the user clicks "Proceed"
-  // followed by pressing the back button before the interstitial is hidden.
-  // In that case the certificate will still be treated as allowed.
-  if (callback_.is_null()) {
-    return;
-  }
-
-  base::ResetAndReturn(&callback_)
-      .Run(content::CERTIFICATE_REQUEST_RESULT_TYPE_CANCEL);
 }

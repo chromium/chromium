@@ -25,6 +25,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_HTML_LINK_ELEMENT_H_
 
 #include <memory>
+
 #include "base/single_thread_task_runner.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/create_element_flags.h"
@@ -36,7 +37,6 @@
 #include "third_party/blink/renderer/core/html/link_style.h"
 #include "third_party/blink/renderer/core/html/rel_list.h"
 #include "third_party/blink/renderer/core/loader/link_loader_client.h"
-#include "third_party/blink/renderer/platform/bindings/trace_wrapper_member.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_parameters.h"
 
 namespace blink {
@@ -52,13 +52,8 @@ class CORE_EXPORT HTMLLinkElement final : public HTMLElement,
   USING_GARBAGE_COLLECTED_MIXIN(HTMLLinkElement);
 
  public:
-  static HTMLLinkElement* Create(Document&, const CreateElementFlags);
-
   HTMLLinkElement(Document&, const CreateElementFlags);
   ~HTMLLinkElement() override;
-
-  // Returns attributes that should be checked against Trusted Types
-  const AttrNameToTrustedType& GetCheckedAttributeTypes() const override;
 
   KURL Href() const;
   const AtomicString& Rel() const;
@@ -168,9 +163,9 @@ class CORE_EXPORT HTMLLinkElement final : public HTMLElement,
   String integrity_;
   String importance_;
   network::mojom::ReferrerPolicy referrer_policy_;
-  TraceWrapperMember<DOMTokenList> sizes_;
+  Member<DOMTokenList> sizes_;
   Vector<IntSize> icon_sizes_;
-  TraceWrapperMember<RelList> rel_list_;
+  Member<RelList> rel_list_;
   LinkRelAttribute rel_attribute_;
   String scope_;
 

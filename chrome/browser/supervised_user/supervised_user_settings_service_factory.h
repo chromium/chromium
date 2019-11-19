@@ -5,17 +5,18 @@
 #ifndef CHROME_BROWSER_SUPERVISED_USER_SUPERVISED_USER_SETTINGS_SERVICE_FACTORY_H_
 #define CHROME_BROWSER_SUPERVISED_USER_SUPERVISED_USER_SETTINGS_SERVICE_FACTORY_H_
 
+#include <memory>
+
 #include "base/memory/singleton.h"
 #include "chrome/browser/supervised_user/supervised_users.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "components/keyed_service/core/simple_keyed_service_factory.h"
 
-class Profile;
+class SimpleFactoryKey;
 class SupervisedUserSettingsService;
 
-class SupervisedUserSettingsServiceFactory
-    : public BrowserContextKeyedServiceFactory {
+class SupervisedUserSettingsServiceFactory : public SimpleKeyedServiceFactory {
  public:
-  static SupervisedUserSettingsService* GetForProfile(Profile* profile);
+  static SupervisedUserSettingsService* GetForKey(SimpleFactoryKey* key);
 
   static SupervisedUserSettingsServiceFactory* GetInstance();
 
@@ -26,11 +27,10 @@ class SupervisedUserSettingsServiceFactory
   SupervisedUserSettingsServiceFactory();
   ~SupervisedUserSettingsServiceFactory() override;
 
-  // BrowserContextKeyedServiceFactory:
-  KeyedService* BuildServiceInstanceFor(
-      content::BrowserContext* profile) const override;
-  content::BrowserContext* GetBrowserContextToUse(
-      content::BrowserContext* context) const override;
+  // SimpleKeyedServiceFactory:
+  std::unique_ptr<KeyedService> BuildServiceInstanceFor(
+      SimpleFactoryKey* key) const override;
+  SimpleFactoryKey* GetKeyToUse(SimpleFactoryKey* key) const override;
 };
 
 #endif  // CHROME_BROWSER_SUPERVISED_USER_SUPERVISED_USER_SETTINGS_SERVICE_FACTORY_H_

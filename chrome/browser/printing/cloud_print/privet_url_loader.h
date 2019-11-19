@@ -17,6 +17,7 @@
 #include "base/values.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/simple_url_loader.h"
+#include "services/network/public/mojom/url_response_head.mojom-forward.h"
 #include "url/gurl.h"
 
 namespace network {
@@ -115,7 +116,7 @@ class PrivetURLLoader {
   void RequestTokenRefresh();
   void RefreshToken(const std::string& token);
   void OnResponseStarted(const GURL& final_url,
-                         const network::ResourceResponseHead& response_head);
+                         const network::mojom::URLResponseHead& response_head);
   void OnDownloadedToString(std::unique_ptr<std::string> response_body);
   void OnDownloadedToFile(base::FilePath path);
   bool CheckURLLoaderForError();
@@ -141,7 +142,7 @@ class PrivetURLLoader {
   std::string upload_content_type_;
   std::unique_ptr<network::SimpleURLLoader> url_loader_;
 
-  base::WeakPtrFactory<PrivetURLLoader> weak_factory_;
+  base::WeakPtrFactory<PrivetURLLoader> weak_factory_{this};
   DISALLOW_COPY_AND_ASSIGN(PrivetURLLoader);
 };
 

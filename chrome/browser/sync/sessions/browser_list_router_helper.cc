@@ -26,13 +26,6 @@ BrowserListRouterHelper::BrowserListRouterHelper(
 }
 
 BrowserListRouterHelper::~BrowserListRouterHelper() {
-  BrowserList* browser_list = BrowserList::GetInstance();
-  for (Browser* browser : *browser_list) {
-    if (browser->profile() == profile_) {
-      browser->tab_strip_model()->RemoveObserver(this);
-    }
-  }
-
   BrowserList::GetInstance()->RemoveObserver(this);
 }
 
@@ -52,18 +45,20 @@ void BrowserListRouterHelper::OnTabStripModelChanged(
     TabStripModel* tab_strip_model,
     const TabStripModelChange& change,
     const TabStripSelectionChange& selection) {
-  if (change.type() != TabStripModelChange::kInserted &&
-      change.type() != TabStripModelChange::kReplaced)
+  std::vector<content::WebContents*> web_contents;
+  if (change.type() == TabStripModelChange::kInserted) {
+    for (const auto& contents : change.GetInsert()->contents)
+      web_contents.push_back(contents.contents);
+  } else if (change.type() == TabStripModelChange::kReplaced) {
+    web_contents.push_back(change.GetReplace()->new_contents);
+  } else {
     return;
+  }
 
-  for (const auto& delta : change.deltas()) {
-    content::WebContents* web_contents =
-        change.type() == TabStripModelChange::kInserted
-            ? delta.insert.contents
-            : delta.replace.new_contents;
-    if (Profile::FromBrowserContext(web_contents->GetBrowserContext()) ==
+  for (auto* contents : web_contents) {
+    if (Profile::FromBrowserContext(contents->GetBrowserContext()) ==
         profile_) {
-      router_->NotifyTabModified(web_contents, false);
+      router_->NotifyTabModified(contents, false);
     }
   }
 }

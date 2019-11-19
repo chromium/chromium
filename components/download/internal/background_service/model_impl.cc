@@ -15,7 +15,7 @@
 namespace download {
 
 ModelImpl::ModelImpl(std::unique_ptr<Store> store)
-    : client_(nullptr), store_(std::move(store)), weak_ptr_factory_(this) {
+    : client_(nullptr), store_(std::move(store)) {
   DCHECK(store_);
 }
 

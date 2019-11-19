@@ -12,7 +12,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.ChromeActivity;
@@ -22,6 +21,7 @@ import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.concurrent.ExecutionException;
 
@@ -45,12 +45,12 @@ public class PermissionInfoTest {
             String origin, String embedder, @ContentSettingValues int setting, boolean incognito) {
         PermissionInfo info =
                 new PermissionInfo(PermissionInfo.Type.GEOLOCATION, origin, embedder, incognito);
-        ThreadUtils.runOnUiThreadBlocking(() -> info.setContentSetting(setting));
+        TestThreadUtils.runOnUiThreadBlocking(() -> info.setContentSetting(setting));
     }
 
     private @ContentSettingValues int getGeolocation(
             String origin, String embedder, boolean incognito) throws ExecutionException {
-        return ThreadUtils.runOnUiThreadBlocking(() -> {
+        return TestThreadUtils.runOnUiThreadBlocking(() -> {
             PermissionInfo info = new PermissionInfo(
                     PermissionInfo.Type.GEOLOCATION, origin, embedder, incognito);
             return info.getContentSetting();
@@ -61,12 +61,12 @@ public class PermissionInfoTest {
             String origin, String embedder, @ContentSettingValues int setting, boolean incognito) {
         PermissionInfo info =
                 new PermissionInfo(PermissionInfo.Type.NOTIFICATION, origin, embedder, incognito);
-        ThreadUtils.runOnUiThreadBlocking(() -> info.setContentSetting(setting));
+        TestThreadUtils.runOnUiThreadBlocking(() -> info.setContentSetting(setting));
     }
 
     private @ContentSettingValues int getNotifications(
             String origin, String embedder, boolean incognito) throws ExecutionException {
-        return ThreadUtils.runOnUiThreadBlocking(() -> {
+        return TestThreadUtils.runOnUiThreadBlocking(() -> {
             PermissionInfo info = new PermissionInfo(
                     PermissionInfo.Type.NOTIFICATION, origin, embedder, incognito);
             return info.getContentSetting();
@@ -128,8 +128,8 @@ public class PermissionInfoTest {
     public void testResetDSENotifications() throws Throwable {
         // On Android O+ we need to clear notification channels so they don't interfere with the
         // test.
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> WebsitePreferenceBridge.nativeResetNotificationsSettingsForTest());
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> WebsitePreferenceBridgeJni.get().resetNotificationsSettingsForTest());
 
         // Resetting the DSE notifications permission should change it to ALLOW.
         boolean incognito = false;
@@ -141,8 +141,8 @@ public class PermissionInfoTest {
                 ContentSettingValues.ALLOW, getNotifications(DSE_ORIGIN, null, incognito));
 
         // Resetting in incognito should not have the same behavior.
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> WebsitePreferenceBridge.nativeResetNotificationsSettingsForTest());
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> WebsitePreferenceBridgeJni.get().resetNotificationsSettingsForTest());
         incognito = true;
         setNotifications(DSE_ORIGIN, null, ContentSettingValues.BLOCK, incognito);
         Assert.assertEquals(
@@ -152,8 +152,8 @@ public class PermissionInfoTest {
                 ContentSettingValues.ASK, getNotifications(DSE_ORIGIN, null, incognito));
 
         // // Resetting a different top level origin should not have the same behavior
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> WebsitePreferenceBridge.nativeResetNotificationsSettingsForTest());
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> WebsitePreferenceBridgeJni.get().resetNotificationsSettingsForTest());
         incognito = false;
         setNotifications(OTHER_ORIGIN, null, ContentSettingValues.BLOCK, incognito);
         Assert.assertEquals(

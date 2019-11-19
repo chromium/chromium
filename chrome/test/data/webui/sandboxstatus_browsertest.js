@@ -98,20 +98,20 @@ GPUSandboxStatusUITest.prototype = {
  * Test if the GPU sandbox is enabled.
  */
 TEST_F('GPUSandboxStatusUITest', 'DISABLED_testGPUSandboxEnabled', function() {
-  var gpuyesstring = 'Sandboxed\ttrue';
-  var gpunostring = 'Sandboxed\tfalse';
+  const gpuyesstring = 'Sandboxed\ttrue';
+  const gpunostring = 'Sandboxed\tfalse';
 
-  var observer = new MutationObserver(function(mutations) {
+  let observer = new MutationObserver(function(mutations) {
     mutations.forEach(function(mutation) {
       for (var i = 0; i < mutation.addedNodes.length; i++) {
         // Here we can inspect each of the added nodes. We expect
         // to find one that contains one of the GPU status strings.
-        var addedNode = mutation.addedNodes[i];
+        let addedNode = mutation.addedNodes[i];
         // Check for both. If it contains neither, it's an unrelated
         // mutation event we don't care about. But if it contains one,
         // pass or fail accordingly.
-        var gpuyes = addedNode.innerText.match(gpuyesstring);
-        var gpuno = addedNode.innerText.match(gpunostring);
+        let gpuyes = addedNode.innerText.match(gpuyesstring);
+        let gpuno = addedNode.innerText.match(gpunostring);
         if (gpuyes || gpuno) {
           expectEquals(null, gpuno);
           expectTrue(gpuyes && (gpuyes[0] == gpuyesstring));
@@ -121,4 +121,49 @@ TEST_F('GPUSandboxStatusUITest', 'DISABLED_testGPUSandboxEnabled', function() {
     });
   });
   observer.observe(document.getElementById('basic-info'), {childList: true});
+});
+
+/**
+ * TestFixture for chrome://sandbox on Windows.
+ * @extends {testing.Test}
+ * @constructor
+ */
+function SandboxStatusWindowsUITest() {}
+
+SandboxStatusWindowsUITest.prototype = {
+  __proto__: testing.Test.prototype,
+  /**
+   * Browse to the options page & call our preLoad().
+   */
+  browsePreload: 'chrome://sandbox',
+  isAsync: true
+};
+
+// This test is for Windows only.
+GEN('#if defined(OS_WIN)');
+GEN('# define MAYBE_testSandboxStatus \\');
+GEN('     testSandboxStatus');
+GEN('#else');
+GEN('# define MAYBE_testSandboxStatus \\');
+GEN('     DISABLED_testSandboxStatus');
+GEN('#endif');
+
+/**
+ * Test that chrome://sandbox functions on Windows.
+ */
+TEST_F('SandboxStatusWindowsUITest', 'MAYBE_testSandboxStatus', function() {
+  var sandboxTitle = 'Sandbox Status';
+  var sandboxPolicies = 'policies:';
+  var sandboxMitigations = 'platformMitigations';
+
+  var titleyes = document.body.innerText.match(sandboxTitle);
+  expectTrue(titleyes !== null);
+
+  var rawNode = document.getElementById('raw-info');
+  var policiesyes = rawNode.innerText.match(sandboxPolicies);
+  expectTrue(policiesyes !== null);
+  var mitigationsyes = rawNode.innerText.match(sandboxMitigations);
+  expectTrue(mitigationsyes !== null);
+
+  testDone();
 });

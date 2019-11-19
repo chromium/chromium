@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<title>Marker shorthand can be empty string</title>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<body>
+  <svg id="container">
+    <g id="target"></g>
+  </svg>
+<script>
+'use strict';
+const target = document.getElementById('target');
+const resource = 'url("https://example.com/")';
+const resource2 = 'url("https://example.com/2")';
+test(() => {
+  target.style.marker = resource;
+  assert_equals(target.style.markerStart, resource);
+  assert_equals(target.style.markerMid, resource);
+  assert_equals(target.style.markerEnd, resource);
+  assert_equals(target.style.marker, resource);
+  assert_equals(getComputedStyle(target).marker, resource);
+
+  target.style.markerStart = resource2;
+  assert_equals(target.style.marker, '');
+  assert_equals(getComputedStyle(target).marker, '');
+  target.style.markerMid = 'none';
+  assert_equals(target.style.marker, '');
+  assert_equals(getComputedStyle(target).marker, '');
+  target.style.markerEnd = 'none';
+  assert_equals(target.style.marker, '');
+  assert_equals(getComputedStyle(target).marker, '');
+
+  target.style.markerStart = 'none';
+  assert_equals(target.style.marker, 'none');
+  assert_equals(getComputedStyle(target).marker, 'none');
+}, 'marker is empty string when marker longhands do not match');
+</script>
+</body>

@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/ui/collection_view/cells/MDCCollectionViewCell+Chrome.h"
 
 #import "ios/chrome/browser/ui/collection_view/cells/collection_view_item.h"
-#import "ios/third_party/material_components_ios/src/components/Palettes/src/MaterialPalettes.h"
+#import "ios/chrome/common/colors/semantic_color_names.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -66,7 +66,7 @@ static NSMutableDictionary<NSString*, MDCCollectionViewCell*>*
 - (void)cr_setAccessoryType:(MDCCollectionViewCellAccessoryType)accessoryType {
   self.accessoryType = accessoryType;
   if (accessoryType == MDCCollectionViewCellAccessoryDisclosureIndicator)
-    self.accessoryView.tintColor = [[MDCPalette greyPalette] tint400];
+    self.accessoryView.tintColor = [UIColor colorNamed:kGrey400Color];
 }
 
 @end

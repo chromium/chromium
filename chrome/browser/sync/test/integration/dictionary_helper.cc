@@ -11,7 +11,6 @@
 #include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/stringprintf.h"
 #include "chrome/browser/spellchecker/spellcheck_custom_dictionary.h"
 #include "chrome/browser/spellchecker/spellcheck_factory.h"
 #include "chrome/browser/spellchecker/spellcheck_service.h"
@@ -143,12 +142,9 @@ DictionaryMatchChecker::DictionaryMatchChecker()
     : MultiClientStatusChangeChecker(
           sync_datatype_helper::test()->GetSyncServices()) {}
 
-bool DictionaryMatchChecker::IsExitConditionSatisfied() {
+bool DictionaryMatchChecker::IsExitConditionSatisfied(std::ostream* os) {
+  *os << "Waiting for matching dictionaries";
   return dictionary_helper::DictionariesMatch();
-}
-
-std::string DictionaryMatchChecker::GetDebugMessage() const {
-  return "Waiting for matching dictionaries";
 }
 
 NumDictionaryEntriesChecker::NumDictionaryEntriesChecker(int index,
@@ -158,12 +154,9 @@ NumDictionaryEntriesChecker::NumDictionaryEntriesChecker(int index,
       index_(index),
       num_words_(num_words) {}
 
-bool NumDictionaryEntriesChecker::IsExitConditionSatisfied() {
-  return dictionary_helper::GetDictionarySize(index_) == num_words_;
-}
-
-std::string NumDictionaryEntriesChecker::GetDebugMessage() const {
-  return base::StringPrintf(
-      "Waiting for client %d: %" PRIuS " / %" PRIuS " words downloaded", index_,
-      dictionary_helper::GetDictionarySize(index_), num_words_);
+bool NumDictionaryEntriesChecker::IsExitConditionSatisfied(std::ostream* os) {
+  size_t actual_size = dictionary_helper::GetDictionarySize(index_);
+  *os << "Waiting for client " << index_ << ": " << actual_size << " / "
+      << num_words_ << " words downloaded";
+  return actual_size == num_words_;
 }

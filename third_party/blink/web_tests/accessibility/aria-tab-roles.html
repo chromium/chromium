@@ -3,7 +3,6 @@
 <head>
 <script src="../resources/testharness.js"></script>
 <script src="../resources/testharnessreport.js"></script>
-<script src="../resources/run-after-layout-and-paint.js"></script>
 </head>
 <body id="body">
 
@@ -18,14 +17,14 @@
 
 <script>
 
-test_after_layout_and_paint((t) => {
+test((t) => {
     var body = document.getElementById("body");
     body.focus();
 
-    var tabList = accessibilityController.focusedElement.childAtIndex(0);
+    var tabList = accessibilityController.focusedElement.childAtIndex(0).childAtIndex(0);
     var tab1 = tabList.childAtIndex(0);
     var tab2 = tabList.childAtIndex(1);
-    var tabPanel = accessibilityController.focusedElement.childAtIndex(1);
+    var tabPanel = accessibilityController.focusedElement.childAtIndex(0).childAtIndex(1);
 
     assert_equals(tabList.role, "AXRole: AXTabList");
     assert_equals(tab1.role, "AXRole: AXTab");

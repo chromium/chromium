@@ -1,0 +1,30 @@
+[MESSAGES CONTROL]
+
+disable=fixme,
+        missing-function-docstring,
+        missing-module-docstring
+
+
+[LOGGING]
+
+logging-format-style=fstr
+
+
+[FORMAT]
+
+indent-string='  '
+
+max-line-length=80
+
+
+[BASIC]
+
+function-naming-style=PascalCase
+
+good-names=f,
+           i,
+           j,
+           k,
+           ex,
+           Run,
+           _

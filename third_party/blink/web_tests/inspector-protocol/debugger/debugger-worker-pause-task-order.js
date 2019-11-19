@@ -1,7 +1,8 @@
 (async function(testRunner) {
   var {page, session, dp} = await testRunner.startBlank(
       'Tests that tasks order is not changed when worker is resumed.');
-  dp.Target.setAutoAttach({autoAttach: true, waitForDebuggerOnStart: true});
+  dp.Target.setAutoAttach({autoAttach: true, waitForDebuggerOnStart: true,
+                           flatten: true});
 
   await session.evaluate(`
       const workerScript = \`
@@ -22,20 +23,20 @@
     `);
 
   const event = await dp.Target.onceAttachedToTarget();
-  const worker = new WorkerProtocol(dp, event.params.sessionId);
+  const childSession = session.createChild(event.params.sessionId);
   testRunner.log('Worker created');
 
-  await worker.dp.Debugger.enable();
+  await childSession.protocol.Debugger.enable();
 
-  worker.dp.Runtime.runIfWaitingForDebugger();
-  await worker.dp.Debugger.oncePaused();
+  childSession.protocol.Runtime.runIfWaitingForDebugger();
+  await childSession.protocol.Debugger.oncePaused();
 
   await session.evaluate(`worker.postMessage(2)`);
-  worker.dp.Debugger.resume();
-  await worker.dp.Debugger.oncePaused();
-  const result = await worker.dp.Runtime.evaluate({expression: 'self.count'});
-  testRunner.log(`count must be 1: ${result.result.value}`);
+  childSession.protocol.Debugger.resume();
+  await childSession.protocol.Debugger.oncePaused();
+  const value = await childSession.evaluate('self.count');
+  testRunner.log(`count must be 1: ${value}`);
 
-  await worker.dp.Debugger.disable();
+  await childSession.protocol.Debugger.disable();
   testRunner.completeTest();
 })

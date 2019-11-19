@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <tuple>
 #include <unordered_set>
 #include <utility>
 #include <vector>
@@ -14,7 +15,12 @@
 #include "base/guid.h"
 #include "base/stl_util.h"
 #include "content/public/browser/browser_thread.h"
-#include "mojo/public/cpp/bindings/strong_associated_binding.h"
+#include "content/public/browser/content_browser_client.h"
+#include "content/public/browser/lock_observer.h"
+#include "content/public/common/content_client.h"
+#include "ipc/ipc_message.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
+#include "mojo/public/cpp/bindings/self_owned_associated_receiver.h"
 
 using blink::mojom::LockMode;
 
@@ -31,14 +37,14 @@ constexpr int64_t kPreemptiveLockId = 0;
 // connection can also be closed here when a lock is stolen.
 class LockHandleImpl final : public blink::mojom::LockHandle {
  public:
-  static mojo::StrongAssociatedBindingPtr<blink::mojom::LockHandle> Create(
+  static mojo::SelfOwnedAssociatedReceiverRef<blink::mojom::LockHandle> Create(
       base::WeakPtr<LockManager> context,
       const url::Origin& origin,
       int64_t lock_id,
-      blink::mojom::LockHandleAssociatedPtr* ptr) {
-    return mojo::MakeStrongAssociatedBinding(
+      mojo::PendingAssociatedRemote<blink::mojom::LockHandle>* remote) {
+    return mojo::MakeSelfOwnedAssociatedReceiver(
         std::make_unique<LockHandleImpl>(std::move(context), origin, lock_id),
-        mojo::MakeRequest(ptr));
+        remote->InitWithNewEndpointAndPassReceiver());
   }
 
   LockHandleImpl(base::WeakPtr<LockManager> context,
@@ -73,37 +79,38 @@ class LockManager::Lock {
   Lock(const std::string& name,
        LockMode mode,
        int64_t lock_id,
-       const std::string& client_id,
-       blink::mojom::LockRequestAssociatedPtr request)
+       const ReceiverState& receiver_state,
+       mojo::AssociatedRemote<blink::mojom::LockRequest> request)
       : name_(name),
         mode_(mode),
-        client_id_(client_id),
         lock_id_(lock_id),
+        client_id_(receiver_state.client_id),
+        execution_context_(receiver_state.execution_context),
         request_(std::move(request)) {}
 
-  ~Lock() = default;
-
-  // Abort a lock request.
-  void Abort(const std::string& message) {
-    DCHECK(request_);
-    DCHECK(!handle_);
-
-    request_->Abort(message);
-    request_ = nullptr;
+  ~Lock() {
+    // If the lock was ever granted, decrement the number of held locks for the
+    // frame.
+    if (lock_manager_) {
+      lock_manager_->DecrementLocksHeldByFrame(execution_context_);
+    }
   }
 
   // Grant a lock request. This mints a LockHandle and returns it over the
   // request pipe.
-  void Grant(base::WeakPtr<LockManager> context, const url::Origin& origin) {
-    DCHECK(context);
+  void Grant(LockManager* lock_manager, const url::Origin& origin) {
+    DCHECK(lock_manager);
+    DCHECK(!lock_manager_);
     DCHECK(request_);
     DCHECK(!handle_);
 
-    blink::mojom::LockHandleAssociatedPtr ptr;
-    handle_ =
-        LockHandleImpl::Create(std::move(context), origin, lock_id_, &ptr);
-    request_->Granted(ptr.PassInterface());
-    request_ = nullptr;
+    lock_manager_ = lock_manager->weak_ptr_factory_.GetWeakPtr();
+    lock_manager_->IncrementLocksHeldByFrame(execution_context_);
+
+    mojo::PendingAssociatedRemote<blink::mojom::LockHandle> remote;
+    handle_ = LockHandleImpl::Create(lock_manager_, origin, lock_id_, &remote);
+    request_->Granted(std::move(remote));
+    request_.reset();
   }
 
   // Break a granted lock. This terminates the connection, signaling an error
@@ -111,6 +118,7 @@ class LockManager::Lock {
   void Break() {
     DCHECK(!request_);
     DCHECK(handle_);
+    DCHECK(lock_manager_);
 
     LockHandleImpl* impl = static_cast<LockHandleImpl*>(handle_->impl());
     // Explicitly close the LockHandle first; this ensures that when the
@@ -129,20 +137,23 @@ class LockManager::Lock {
  private:
   const std::string name_;
   const LockMode mode_;
-  const std::string client_id_;
   const int64_t lock_id_;
+  const std::string client_id_;
+  const ExecutionContext execution_context_;
+  // Set only once the lock is granted.
+  base::WeakPtr<LockManager> lock_manager_;
 
   // Exactly one of the following is non-null at any given time.
 
   // |request_| is valid until the lock is granted (or failure).
-  blink::mojom::LockRequestAssociatedPtr request_;
+  mojo::AssociatedRemote<blink::mojom::LockRequest> request_;
 
   // Once granted, |handle_| holds this end of the pipe that lets us monitor
   // for the other end going away.
-  mojo::StrongAssociatedBindingPtr<blink::mojom::LockHandle> handle_;
+  mojo::SelfOwnedAssociatedReceiverRef<blink::mojom::LockHandle> handle_;
 };
 
-LockManager::LockManager() : weak_ptr_factory_(this) {}
+LockManager::LockManager() {}
 
 LockManager::~LockManager() = default;
 
@@ -169,28 +180,26 @@ class LockManager::OriginState {
   void PreemptLock(int64_t lock_id,
                    const std::string& name,
                    LockMode mode,
-                   const std::string& client_id,
-                   blink::mojom::LockRequestAssociatedPtr request,
-                   const url::Origin origin) {
+                   mojo::AssociatedRemote<blink::mojom::LockRequest> request,
+                   const ReceiverState& receiver_state) {
     // Preempting shared locks is not supported.
     DCHECK_EQ(mode, LockMode::EXCLUSIVE);
     std::list<Lock>& request_queue = resource_names_to_requests_[name];
     while (!request_queue.empty() && request_queue.front().is_granted())
       BreakFront(request_queue);
-    request_queue.emplace_front(name, mode, lock_id, client_id,
+    request_queue.emplace_front(name, mode, lock_id, receiver_state,
                                 std::move(request));
     auto it = request_queue.begin();
     lock_id_to_iterator_.emplace(it->lock_id(), it);
-    it->Grant(lock_manager_->weak_ptr_factory_.GetWeakPtr(), origin);
+    it->Grant(lock_manager_, receiver_state.origin);
   }
 
   void AddRequest(int64_t lock_id,
                   const std::string& name,
                   LockMode mode,
-                  const std::string& client_id,
-                  blink::mojom::LockRequestAssociatedPtr request,
+                  mojo::AssociatedRemote<blink::mojom::LockRequest> request,
                   WaitMode wait,
-                  const url::Origin origin) {
+                  const ReceiverState& receiver_state) {
     DCHECK(wait != WaitMode::PREEMPT);
     std::list<Lock>& request_queue = resource_names_to_requests_[name];
     bool can_grant = request_queue.empty() ||
@@ -203,12 +212,13 @@ class LockManager::OriginState {
       return;
     }
 
-    request_queue.emplace_back(name, mode, lock_id, client_id,
+    request_queue.emplace_back(name, mode, lock_id, receiver_state,
                                std::move(request));
     auto it = --(request_queue.end());
     lock_id_to_iterator_.emplace(it->lock_id(), it);
-    if (can_grant)
-      it->Grant(lock_manager_->weak_ptr_factory_.GetWeakPtr(), origin);
+    if (can_grant) {
+      it->Grant(lock_manager_, receiver_state.origin);
+    }
   }
 
   void EraseLock(int64_t lock_id, const url::Origin& origin) {
@@ -252,8 +262,7 @@ class LockManager::OriginState {
       return;
 
     if (request_queue.front().mode() == LockMode::EXCLUSIVE) {
-      request_queue.front().Grant(lock_manager_->weak_ptr_factory_.GetWeakPtr(),
-                                  origin);
+      request_queue.front().Grant(lock_manager_, origin);
     } else {
       DCHECK(request_queue.front().mode() == LockMode::SHARED);
       for (auto grantee = request_queue.begin();
@@ -261,7 +270,7 @@ class LockManager::OriginState {
            grantee->mode() == LockMode::SHARED;
            ++grantee) {
         DCHECK(!grantee->is_granted());
-        grantee->Grant(lock_manager_->weak_ptr_factory_.GetWeakPtr(), origin);
+        grantee->Grant(lock_manager_, origin);
       }
     }
   }
@@ -306,22 +315,26 @@ class LockManager::OriginState {
   LockManager* lock_manager_;
 };
 
-void LockManager::CreateService(blink::mojom::LockManagerRequest request,
-                                const url::Origin& origin) {
+void LockManager::BindReceiver(
+    int render_process_id,
+    int render_frame_id,
+    const url::Origin& origin,
+    mojo::PendingReceiver<blink::mojom::LockManager> receiver) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // TODO(jsbell): This should reflect the 'environment id' from HTML,
   // and be the same opaque string seen in Service Worker client ids.
   const std::string client_id = base::GenerateGUID();
 
-  bindings_.AddBinding(this, std::move(request), {origin, client_id});
+  receivers_.Add(this, std::move(receiver),
+                 {client_id, {render_process_id, render_frame_id}, origin});
 }
 
 void LockManager::RequestLock(
     const std::string& name,
     LockMode mode,
     WaitMode wait,
-    blink::mojom::LockRequestAssociatedPtrInfo request_info) {
+    mojo::PendingAssociatedRemote<blink::mojom::LockRequest> request_remote) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (wait == WaitMode::PREEMPT && mode != LockMode::EXCLUSIVE) {
@@ -334,26 +347,25 @@ void LockManager::RequestLock(
     return;
   }
 
-  const auto& context = bindings_.dispatch_context();
+  const auto& context = receivers_.current_context();
 
-  if (!base::ContainsKey(origins_, context.origin))
+  if (!base::Contains(origins_, context.origin))
     origins_.emplace(context.origin, this);
 
   int64_t lock_id = NextLockId();
 
-  blink::mojom::LockRequestAssociatedPtr request;
-  request.Bind(std::move(request_info));
-  request.set_connection_error_handler(base::BindOnce(&LockManager::ReleaseLock,
-                                                      base::Unretained(this),
-                                                      context.origin, lock_id));
+  mojo::AssociatedRemote<blink::mojom::LockRequest> request(
+      std::move(request_remote));
+  request.set_disconnect_handler(base::BindOnce(&LockManager::ReleaseLock,
+                                                base::Unretained(this),
+                                                context.origin, lock_id));
 
   OriginState& origin_state = origins_.find(context.origin)->second;
   if (wait == WaitMode::PREEMPT) {
-    origin_state.PreemptLock(lock_id, name, mode, context.client_id,
-                             std::move(request), context.origin);
+    origin_state.PreemptLock(lock_id, name, mode, std::move(request), context);
   } else
-    origin_state.AddRequest(lock_id, name, mode, context.client_id,
-                            std::move(request), wait, context.origin);
+    origin_state.AddRequest(lock_id, name, mode, std::move(request), wait,
+                            context);
 }
 
 void LockManager::ReleaseLock(const url::Origin& origin, int64_t lock_id) {
@@ -372,7 +384,7 @@ void LockManager::ReleaseLock(const url::Origin& origin, int64_t lock_id) {
 void LockManager::QueryState(QueryStateCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  const url::Origin& origin = bindings_.dispatch_context().origin;
+  const url::Origin& origin = receivers_.current_context().origin;
   auto origin_it = origins_.find(origin);
   if (origin_it == origins_.end()) {
     std::move(callback).Run(std::vector<blink::mojom::LockInfoPtr>(),
@@ -386,10 +398,63 @@ void LockManager::QueryState(QueryStateCallback callback) {
                           std::move(requested_held_pair.second));
 }
 
+bool LockManager::ExecutionContext::IsWorker() const {
+  return render_frame_id == MSG_ROUTING_NONE;
+}
+
 int64_t LockManager::NextLockId() {
   int64_t lock_id = ++next_lock_id_;
   DCHECK_GT(lock_id, kPreemptiveLockId);
   return lock_id;
+}
+
+void LockManager::IncrementLocksHeldByFrame(
+    const ExecutionContext& execution_context) {
+  // Locks held by workers are not tracked because there is no current use case.
+  // If we had a use case, we would need to find a type to identify a frame OR a
+  // worker.
+  if (execution_context.IsWorker())
+    return;
+
+  int previous_num_locks = num_locks_held_by_frame_[execution_context]++;
+
+  if (previous_num_locks > 0)
+    return;
+
+  LockObserver* observer = GetContentClient()->browser()->GetLockObserver();
+  if (observer) {
+    observer->OnFrameStartsHoldingWebLocks(execution_context.render_process_id,
+                                           execution_context.render_frame_id);
+  }
+}
+
+void LockManager::DecrementLocksHeldByFrame(
+    const ExecutionContext& execution_context) {
+  if (execution_context.IsWorker())
+    return;
+
+  auto it = num_locks_held_by_frame_.find(execution_context);
+  DCHECK(it != num_locks_held_by_frame_.end());
+  DCHECK_GT(it->second, 0);
+
+  --it->second;
+  if (it->second > 0)
+    return;
+
+  num_locks_held_by_frame_.erase(it);
+
+  LockObserver* observer = GetContentClient()->browser()->GetLockObserver();
+  if (observer) {
+    observer->OnFrameStopsHoldingWebLocks(execution_context.render_process_id,
+                                          execution_context.render_frame_id);
+  }
+}
+
+bool LockManager::ExecutionContextComparator::operator()(
+    const ExecutionContext& left,
+    const ExecutionContext& right) const {
+  return std::tie(left.render_process_id, left.render_frame_id) <
+         std::tie(right.render_process_id, right.render_frame_id);
 }
 
 }  // namespace content

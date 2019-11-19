@@ -4,15 +4,15 @@
 
 #include "components/invalidation/impl/sync_system_resources.h"
 
+#include <memory>
 #include <string>
 
 #include "base/bind.h"
 #include "base/bind_helpers.h"
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "components/invalidation/impl/push_client_channel.h"
 #include "components/invalidation/impl/state_writer.h"
 #include "google/cacheinvalidation/include/types.h"
@@ -52,7 +52,7 @@ class MockStorageCallback {
 class SyncSystemResourcesTest : public testing::Test {
  protected:
   SyncSystemResourcesTest()
-      : push_client_channel_(base::WrapUnique(new notifier::FakePushClient())),
+      : push_client_channel_(std::make_unique<notifier::FakePushClient>()),
         sync_system_resources_(&push_client_channel_, &mock_state_writer_) {}
 
   ~SyncSystemResourcesTest() override {}
@@ -85,7 +85,7 @@ class SyncSystemResourcesTest : public testing::Test {
   }
 
   // Needed by |sync_system_resources_|.
-  base::test::ScopedTaskEnvironment task_environment_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
   MockStateWriter mock_state_writer_;
   PushClientChannel push_client_channel_;
   SyncSystemResources sync_system_resources_;
@@ -188,7 +188,7 @@ class TestSyncNetworkChannel : public SyncNetworkChannel {
 
   void SendMessage(const std::string& message) override {}
 
-  void UpdateCredentials(const std::string& email,
+  void UpdateCredentials(const CoreAccountId& account_id,
                          const std::string& token) override {}
 
   int GetInvalidationClientType() override { return 0; }

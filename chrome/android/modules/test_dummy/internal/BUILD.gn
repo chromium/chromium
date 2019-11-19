@@ -1,0 +1,58 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+import("//chrome/android/modules/buildflags.gni")
+
+android_library("java") {
+  java_files = [ "java/src/org/chromium/chrome/modules/test_dummy/TestDummyProviderImpl.java" ]
+  deps = [
+    "//base:base_java",
+    "//chrome/android/features/test_dummy/internal:java",
+    "//chrome/android/features/test_dummy/public:java",
+    "//chrome/android/modules/test_dummy/public:java",
+  ]
+}
+
+# This group is effectively alias representing the module's native code,
+# allowing it to be named "native" for clarity in module descriptors. The
+# component target must be named according to the feature, so that the component
+# build's .cr.co library is named properly (ie. libtest_dummy.cr.so).
+group("native") {
+  deps = [
+    ":test_dummy",
+  ]
+}
+
+component("test_dummy") {
+  sources = [
+    "entrypoints.cc",
+  ]
+  deps = [
+    ":jni_registration",
+    "//base",
+    "//chrome/android/features/test_dummy/internal:native",
+  ]
+
+  # Test dummy native entrypoints belong in the partition.
+  if (use_native_partitions) {
+    cflags = [ "-fsymbol-partition=test_dummy_partition" ]
+  }
+}
+
+# TODO(https://crbug.com/1008109): Adapt JNI registration to point at a Java
+# target, instead of an APK/module target. This JNI registration target
+# points at ChromeModern's module, but it's used by Monochrome as well, since
+# both variants do explicit JNI registration in DFMs (for consistency).
+#
+# Alternatively, move to lazy JNI init for DFMs in Monochrome, by conditionally
+# including a registration stub, as Chrome's base library does. That requires
+# two sets of registration targets, so that the feature module template can
+# selectively pull in the real version or a stub.
+generate_jni_registration("jni_registration") {
+  target =
+      "//chrome/android:chrome_modern_public_bundle__test_dummy_bundle_module"
+  header_output = "$target_gen_dir/jni_registration.h"
+  namespace = "test_dummy"
+}

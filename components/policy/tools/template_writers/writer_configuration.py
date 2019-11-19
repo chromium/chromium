@@ -131,6 +131,7 @@ def GetConfigurationForBuild(defines):
   if 'version' in defines:
     config['version'] = defines['version']
   config['win_supported_os'] = 'SUPPORTED_WIN7'
+  config['win_supported_os_win7'] = 'SUPPORTED_WIN7_ONLY'
   if 'mac_bundle_id' in defines:
     config['mac_bundle_id'] = defines['mac_bundle_id']
   config['android_webview_restriction_prefix'] = 'com.android.browser:'

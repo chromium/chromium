@@ -17,7 +17,7 @@
 #include "chromeos/network/portal_detector/network_portal_detector.h"
 #include "components/image_fetcher/core/request_metadata.h"
 #include "components/prefs/pref_service.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -123,11 +123,6 @@ TEST_F(HatsNotificationControllerTest, OldDevice_ShouldShowNotification) {
   EXPECT_CALL(mock_network_portal_detector_,
               AddAndFireObserver(hats_notification_controller.get()))
       .Times(1);
-  // Observer is removed if an internet connection is detected. It is called
-  // a second time when hats_notification_controller is destroyed.
-  EXPECT_CALL(mock_network_portal_detector_,
-              RemoveObserver(hats_notification_controller.get()))
-      .Times(2);
 
   hats_notification_controller->Initialize(false);
 
@@ -144,6 +139,7 @@ TEST_F(HatsNotificationControllerTest, NoInternet_DoNotShowNotification) {
 
   // Upon destruction HatsNotificationController removes itself as an observer
   // from NetworkPortalDetector. This will only be called once from the
+  // destructor.
   EXPECT_CALL(mock_network_portal_detector_,
               RemoveObserver(hats_notification_controller.get()))
       .Times(1);
@@ -177,6 +173,11 @@ TEST_F(HatsNotificationControllerTest, DismissNotification_ShouldUpdatePref) {
 
   auto hats_notification_controller = InstantiateHatsController();
 
+  // HatsController removed as a network observer when user closes notification.
+  EXPECT_CALL(mock_network_portal_detector_,
+              RemoveObserver(hats_notification_controller.get()))
+      .Times(1);
+
   // Simulate closing notification via user interaction.
   hats_notification_controller->Close(true);
 
@@ -190,6 +191,43 @@ TEST_F(HatsNotificationControllerTest, DismissNotification_ShouldUpdatePref) {
   EXPECT_CALL(mock_network_portal_detector_,
               RemoveObserver(hats_notification_controller.get()))
       .Times(1);
+}
+
+TEST_F(HatsNotificationControllerTest,
+       Disconnected_RemoveNotification_Connected_AddNotification) {
+  auto hats_notification_controller = InstantiateHatsController();
+
+  // On initialization, HatsNotificationController adds itself as an observer to
+  // NetworkPortalDetector to detect internet connectivity.
+  EXPECT_CALL(mock_network_portal_detector_,
+              AddAndFireObserver(hats_notification_controller.get()))
+      .Times(1);
+
+  hats_notification_controller->Initialize(false);
+
+  // Notification is launched.
+  EXPECT_TRUE(display_service_->GetNotification(
+      HatsNotificationController::kNotificationId));
+
+  // Notification is removed when Internet connection is lost.
+  NetworkState network_state("");
+  NetworkPortalDetector::CaptivePortalState online_state;
+  online_state.status = NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_OFFLINE;
+  hats_notification_controller->OnPortalDetectionCompleted(&network_state,
+                                                           online_state);
+  EXPECT_FALSE(display_service_->GetNotification(
+      HatsNotificationController::kNotificationId));
+
+  // Notification is launched again when Internet connection is regained.
+  online_state.status = NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE;
+  hats_notification_controller->OnPortalDetectionCompleted(&network_state,
+                                                           online_state);
+  EXPECT_TRUE(display_service_->GetNotification(
+      HatsNotificationController::kNotificationId));
+
+  display_service_->RemoveNotification(
+      NotificationHandler::Type::TRANSIENT,
+      HatsNotificationController::kNotificationId, false);
 }
 
 }  // namespace chromeos

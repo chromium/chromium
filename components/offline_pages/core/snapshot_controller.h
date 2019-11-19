@@ -104,7 +104,7 @@ class SnapshotController {
   // queried.
   PageQuality current_page_quality_ = PageQuality::POOR;
 
-  base::WeakPtrFactory<SnapshotController> weak_ptr_factory_;
+  base::WeakPtrFactory<SnapshotController> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(SnapshotController);
 };

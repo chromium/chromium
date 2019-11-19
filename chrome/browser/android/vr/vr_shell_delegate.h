@@ -37,6 +37,7 @@ enum class VrSupportLevel : int {
 };
 
 class VrShell;
+class XRRuntimeManager;
 
 class VrShellDelegate : public device::GvrDelegateProvider,
                         XRRuntimeManagerObserver {
@@ -57,10 +58,7 @@ class VrShellDelegate : public device::GvrDelegateProvider,
                         const base::android::JavaParamRef<jobject>& obj,
                         jboolean success);
   void RecordVrStartAction(JNIEnv* env,
-                           const base::android::JavaParamRef<jobject>& obj,
                            jint start_action);
-  void DisplayActivate(JNIEnv* env,
-                       const base::android::JavaParamRef<jobject>& obj);
   void OnPause(JNIEnv* env, const base::android::JavaParamRef<jobject>& obj);
   void OnResume(JNIEnv* env, const base::android::JavaParamRef<jobject>& obj);
   bool IsClearActivatePending(JNIEnv* env,
@@ -81,7 +79,6 @@ class VrShellDelegate : public device::GvrDelegateProvider,
       device::mojom::VRDisplayInfoPtr display_info,
       device::mojom::XRRuntimeSessionOptionsPtr options,
       base::OnceCallback<void(device::mojom::XRSessionPtr)> callback) override;
-  void OnListeningForActivateChanged(bool listening) override;
 
   // vr::XRRuntimeManagerObserver implementation.
   // VrShellDelegate implements XRRuntimeManagerObserver to turn off poses (by
@@ -91,15 +88,11 @@ class VrShellDelegate : public device::GvrDelegateProvider,
   // VrShell got created, their poses will be turned off too on its
   // creation.
   void OnRuntimeAdded(vr::BrowserXRRuntime* runtime) override;
-
-  void OnActivateDisplayHandled(bool will_not_present);
-  void SetListeningForActivate(bool listening);
   void OnPresentResult(
       device::mojom::VRDisplayInfoPtr display_info,
       device::mojom::XRRuntimeSessionOptionsPtr options,
       base::OnceCallback<void(device::mojom::XRSessionPtr)> callback,
       bool success);
-  void SetInlineVrEnabled(bool enable);
 
   std::unique_ptr<VrCoreInfo> MakeVrCoreInfo(JNIEnv* env);
 
@@ -122,7 +115,7 @@ class VrShellDelegate : public device::GvrDelegateProvider,
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 
-  base::WeakPtrFactory<VrShellDelegate> weak_ptr_factory_;
+  base::WeakPtrFactory<VrShellDelegate> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(VrShellDelegate);
 };

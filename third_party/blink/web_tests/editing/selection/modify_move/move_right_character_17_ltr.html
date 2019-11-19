@@ -3,7 +3,6 @@
 <script src="../../../resources/testharnessreport.js"></script>
 <script src="../../assert_selection.js"></script>
 <script>
-const usesBidiAffinity = window.internals && internals.runtimeFlags.bidiCaretAffinityEnabled;
 
 selection_test(
   '<div contenteditable dir="ltr" style="width: 120px;">|before    \u05D0\u05D7\u05E8\u05D9 \u05D0\u05E0\u05E6\u05D9\u05E7\u05DC\u05D5\u05E4\u05D3\u05D9\u05D4</div>',
@@ -50,138 +49,120 @@ selection_test(
 selection_test(
   '<div contenteditable dir="ltr" style="width: 120px;">before |   \u05D0\u05D7\u05E8\u05D9 \u05D0\u05E0\u05E6\u05D9\u05E7\u05DC\u05D5\u05E4\u05D3\u05D9\u05D4</div>',
   selection => selection.modify('move', 'right', 'character'),
-  usesBidiAffinity
-      ? '<div contenteditable dir="ltr" style="width: 120px;">before    \u05D0\u05D7\u05E8\u05D9 \u05D0\u05E0\u05E6\u05D9\u05E7\u05DC\u05D5\u05E4\u05D3\u05D9|\u05D4</div>'
-      : '<div contenteditable dir="ltr" style="width: 120px;">before    \u05D0\u05D7\u05E8|\u05D9 \u05D0\u05E0\u05E6\u05D9\u05E7\u05DC\u05D5\u05E4\u05D3\u05D9\u05D4</div>',
+  '<div contenteditable dir="ltr" style="width: 120px;">before    \u05D0|\u05D7\u05E8\u05D9 \u05D0\u05E0\u05E6\u05D9\u05E7\u05DC\u05D5\u05E4\u05D3\u05D9\u05D4</div>',
   '17-7 ltr right character');
 
 selection_test(
   '<div contenteditable dir="ltr" style="width: 120px;">before  |  \u05D0\u05D7\u05E8\u05D9 \u05D0\u05E0\u05E6\u05D9\u05E7\u05DC\u05D5\u05E4\u05D3\u05D9\u05D4</div>',
   selection => selection.modify('move', 'right', 'character'),
-  usesBidiAffinity
-      ? '<div contenteditable dir="ltr" style="width: 120px;">before    \u05D0\u05D7\u05E8\u05D9 \u05D0\u05E0\u05E6\u05D9\u05E7\u05DC\u05D5\u05E4\u05D3\u05D9|\u05D4</div>'
-      : '<div contenteditable dir="ltr" style="width: 120px;">before    \u05D0\u05D7\u05E8|\u05D9 \u05D0\u05E0\u05E6\u05D9\u05E7\u05DC\u05D5\u05E4\u05D3\u05D9\u05D4</div>',
+  '<div contenteditable dir="ltr" style="width: 120px;">before    \u05D0|\u05D7\u05E8\u05D9 \u05D0\u05E0\u05E6\u05D9\u05E7\u05DC\u05D5\u05E4\u05D3\u05D9\u05D4</div>',
   '17-8 ltr right character');
 
 selection_test(
   '<div contenteditable dir="ltr" style="width: 120px;">before   | \u05D0\u05D7\u05E8\u05D9 \u05D0\u05E0\u05E6\u05D9\u05E7\u05DC\u05D5\u05E4\u05D3\u05D9\u05D4</div>',
   selection => selection.modify('move', 'right', 'character'),
-  usesBidiAffinity
-      ? '<div contenteditable dir="ltr" style="width: 120px;">before    \u05D0\u05D7\u05E8\u05D9 \u05D0\u05E0\u05E6\u05D9\u05E7\u05DC\u05D5\u05E4\u05D3\u05D9|\u05D4</div>'
-      : '<div contenteditable dir="ltr" style="width: 120px;">before    \u05D0\u05D7\u05E8|\u05D9 \u05D0\u05E0\u05E6\u05D9\u05E7\u05DC\u05D5\u05E4\u05D3\u05D9\u05D4</div>',
+  '<div contenteditable dir="ltr" style="width: 120px;">before    \u05D0|\u05D7\u05E8\u05D9 \u05D0\u05E0\u05E6\u05D9\u05E7\u05DC\u05D5\u05E4\u05D3\u05D9\u05D4</div>',
   '17-9 ltr right character');
 
 selection_test(
   '<div contenteditable dir="ltr" style="width: 120px;">before    |\u05D0\u05D7\u05E8\u05D9 \u05D0\u05E0\u05E6\u05D9\u05E7\u05DC\u05D5\u05E4\u05D3\u05D9\u05D4</div>',
   selection => selection.modify('move', 'right', 'character'),
-  usesBidiAffinity
-      ? '<div contenteditable dir="ltr" style="width: 120px;">before    \u05D0\u05D7\u05E8\u05D9 \u05D0\u05E0\u05E6\u05D9\u05E7\u05DC\u05D5\u05E4\u05D3\u05D9|\u05D4</div>'
-      : '<div contenteditable dir="ltr" style="width: 120px;">before    \u05D0\u05D7\u05E8|\u05D9 \u05D0\u05E0\u05E6\u05D9\u05E7\u05DC\u05D5\u05E4\u05D3\u05D9\u05D4</div>',
+  '<div contenteditable dir="ltr" style="width: 120px;">before    \u05D0|\u05D7\u05E8\u05D9 \u05D0\u05E0\u05E6\u05D9\u05E7\u05DC\u05D5\u05E4\u05D3\u05D9\u05D4</div>',
   '17-10 ltr right character');
 
 selection_test(
   '<div contenteditable dir="ltr" style="width: 120px;">before    \u05D0|\u05D7\u05E8\u05D9 \u05D0\u05E0\u05E6\u05D9\u05E7\u05DC\u05D5\u05E4\u05D3\u05D9\u05D4</div>',
   selection => selection.modify('move', 'right', 'character'),
-  usesBidiAffinity
-      ? '<div contenteditable dir="ltr" style="width: 120px;">before |   \u05D0\u05D7\u05E8\u05D9 \u05D0\u05E0\u05E6\u05D9\u05E7\u05DC\u05D5\u05E4\u05D3\u05D9\u05D4</div>'
-      : '<div contenteditable dir="ltr" style="width: 120px;">before    \u05D0\u05D7\u05E8\u05D9| \u05D0\u05E0\u05E6\u05D9\u05E7\u05DC\u05D5\u05E4\u05D3\u05D9\u05D4</div>',
+  '<div contenteditable dir="ltr" style="width: 120px;">before    \u05D0\u05D7|\u05E8\u05D9 \u05D0\u05E0\u05E6\u05D9\u05E7\u05DC\u05D5\u05E4\u05D3\u05D9\u05D4</div>',
   '17-11 ltr right character');
 
 selection_test(
   '<div contenteditable dir="ltr" style="width: 120px;">before    \u05D0\u05D7|\u05E8\u05D9 \u05D0\u05E0\u05E6\u05D9\u05E7\u05DC\u05D5\u05E4\u05D3\u05D9\u05D4</div>',
   selection => selection.modify('move', 'right', 'character'),
-  '<div contenteditable dir="ltr" style="width: 120px;">before    \u05D0|\u05D7\u05E8\u05D9 \u05D0\u05E0\u05E6\u05D9\u05E7\u05DC\u05D5\u05E4\u05D3\u05D9\u05D4</div>',
+  '<div contenteditable dir="ltr" style="width: 120px;">before    \u05D0\u05D7\u05E8|\u05D9 \u05D0\u05E0\u05E6\u05D9\u05E7\u05DC\u05D5\u05E4\u05D3\u05D9\u05D4</div>',
   '17-12 ltr right character');
 
 selection_test(
   '<div contenteditable dir="ltr" style="width: 120px;">before    \u05D0\u05D7\u05E8|\u05D9 \u05D0\u05E0\u05E6\u05D9\u05E7\u05DC\u05D5\u05E4\u05D3\u05D9\u05D4</div>',
   selection => selection.modify('move', 'right', 'character'),
-  '<div contenteditable dir="ltr" style="width: 120px;">before    \u05D0\u05D7|\u05E8\u05D9 \u05D0\u05E0\u05E6\u05D9\u05E7\u05DC\u05D5\u05E4\u05D3\u05D9\u05D4</div>',
+  '<div contenteditable dir="ltr" style="width: 120px;">before    \u05D0\u05D7\u05E8\u05D9| \u05D0\u05E0\u05E6\u05D9\u05E7\u05DC\u05D5\u05E4\u05D3\u05D9\u05D4</div>',
   '17-13 ltr right character');
 
 selection_test(
   '<div contenteditable dir="ltr" style="width: 120px;">before    \u05D0\u05D7\u05E8\u05D9| \u05D0\u05E0\u05E6\u05D9\u05E7\u05DC\u05D5\u05E4\u05D3\u05D9\u05D4</div>',
   selection => selection.modify('move', 'right', 'character'),
-  usesBidiAffinity
-      ? '<div contenteditable dir="ltr" style="width: 120px;">before    \u05D0\u05D7\u05E8|\u05D9 \u05D0\u05E0\u05E6\u05D9\u05E7\u05DC\u05D5\u05E4\u05D3\u05D9\u05D4</div>'
-      : '<div contenteditable dir="ltr" style="width: 120px;">before    \u05D0\u05D7\u05E8\u05D9 |\u05D0\u05E0\u05E6\u05D9\u05E7\u05DC\u05D5\u05E4\u05D3\u05D9\u05D4</div>',
+  '<div contenteditable dir="ltr" style="width: 120px;">before    \u05D0\u05D7\u05E8\u05D9 |\u05D0\u05E0\u05E6\u05D9\u05E7\u05DC\u05D5\u05E4\u05D3\u05D9\u05D4</div>',
   '17-14 ltr right character');
 
 selection_test(
   '<div contenteditable dir="ltr" style="width: 120px;">before    \u05D0\u05D7\u05E8\u05D9 |\u05D0\u05E0\u05E6\u05D9\u05E7\u05DC\u05D5\u05E4\u05D3\u05D9\u05D4</div>',
   selection => selection.modify('move', 'right', 'character'),
-  usesBidiAffinity
-      ? '<div contenteditable dir="ltr" style="width: 120px;">before    \u05D0\u05D7\u05E8\u05D9 |\u05D0\u05E0\u05E6\u05D9\u05E7\u05DC\u05D5\u05E4\u05D3\u05D9\u05D4</div>'
-      : '<div contenteditable dir="ltr" style="width: 120px;">before    \u05D0\u05D7\u05E8\u05D9 \u05D0\u05E0\u05E6\u05D9\u05E7\u05DC\u05D5\u05E4\u05D3\u05D9|\u05D4</div>',
+  '<div contenteditable dir="ltr" style="width: 120px;">before    \u05D0\u05D7\u05E8\u05D9 \u05D0|\u05E0\u05E6\u05D9\u05E7\u05DC\u05D5\u05E4\u05D3\u05D9\u05D4</div>',
   '17-15 ltr right character');
 
 selection_test(
   '<div contenteditable dir="ltr" style="width: 120px;">before    \u05D0\u05D7\u05E8\u05D9 \u05D0|\u05E0\u05E6\u05D9\u05E7\u05DC\u05D5\u05E4\u05D3\u05D9\u05D4</div>',
   selection => selection.modify('move', 'right', 'character'),
-  usesBidiAffinity
-      ? '<div contenteditable dir="ltr" style="width: 120px;">before    \u05D0\u05D7\u05E8\u05D9 |\u05D0\u05E0\u05E6\u05D9\u05E7\u05DC\u05D5\u05E4\u05D3\u05D9\u05D4</div>'
-      : '<div contenteditable dir="ltr" style="width: 120px;">before    \u05D0\u05D7\u05E8\u05D9 \u05D0\u05E0\u05E6\u05D9\u05E7\u05DC\u05D5\u05E4\u05D3\u05D9\u05D4|</div>',
+  '<div contenteditable dir="ltr" style="width: 120px;">before    \u05D0\u05D7\u05E8\u05D9 \u05D0\u05E0|\u05E6\u05D9\u05E7\u05DC\u05D5\u05E4\u05D3\u05D9\u05D4</div>',
   '17-16 ltr right character');
 
 selection_test(
   '<div contenteditable dir="ltr" style="width: 120px;">before    \u05D0\u05D7\u05E8\u05D9 \u05D0\u05E0|\u05E6\u05D9\u05E7\u05DC\u05D5\u05E4\u05D3\u05D9\u05D4</div>',
   selection => selection.modify('move', 'right', 'character'),
-  '<div contenteditable dir="ltr" style="width: 120px;">before    \u05D0\u05D7\u05E8\u05D9 \u05D0|\u05E0\u05E6\u05D9\u05E7\u05DC\u05D5\u05E4\u05D3\u05D9\u05D4</div>',
+  '<div contenteditable dir="ltr" style="width: 120px;">before    \u05D0\u05D7\u05E8\u05D9 \u05D0\u05E0\u05E6|\u05D9\u05E7\u05DC\u05D5\u05E4\u05D3\u05D9\u05D4</div>',
   '17-17 ltr right character');
 
 selection_test(
   '<div contenteditable dir="ltr" style="width: 120px;">before    \u05D0\u05D7\u05E8\u05D9 \u05D0\u05E0\u05E6|\u05D9\u05E7\u05DC\u05D5\u05E4\u05D3\u05D9\u05D4</div>',
   selection => selection.modify('move', 'right', 'character'),
-  '<div contenteditable dir="ltr" style="width: 120px;">before    \u05D0\u05D7\u05E8\u05D9 \u05D0\u05E0|\u05E6\u05D9\u05E7\u05DC\u05D5\u05E4\u05D3\u05D9\u05D4</div>',
+  '<div contenteditable dir="ltr" style="width: 120px;">before    \u05D0\u05D7\u05E8\u05D9 \u05D0\u05E0\u05E6\u05D9|\u05E7\u05DC\u05D5\u05E4\u05D3\u05D9\u05D4</div>',
   '17-18 ltr right character');
 
 selection_test(
   '<div contenteditable dir="ltr" style="width: 120px;">before    \u05D0\u05D7\u05E8\u05D9 \u05D0\u05E0\u05E6\u05D9|\u05E7\u05DC\u05D5\u05E4\u05D3\u05D9\u05D4</div>',
   selection => selection.modify('move', 'right', 'character'),
-  '<div contenteditable dir="ltr" style="width: 120px;">before    \u05D0\u05D7\u05E8\u05D9 \u05D0\u05E0\u05E6|\u05D9\u05E7\u05DC\u05D5\u05E4\u05D3\u05D9\u05D4</div>',
+  '<div contenteditable dir="ltr" style="width: 120px;">before    \u05D0\u05D7\u05E8\u05D9 \u05D0\u05E0\u05E6\u05D9\u05E7|\u05DC\u05D5\u05E4\u05D3\u05D9\u05D4</div>',
   '17-19 ltr right character');
 
 selection_test(
   '<div contenteditable dir="ltr" style="width: 120px;">before    \u05D0\u05D7\u05E8\u05D9 \u05D0\u05E0\u05E6\u05D9\u05E7|\u05DC\u05D5\u05E4\u05D3\u05D9\u05D4</div>',
   selection => selection.modify('move', 'right', 'character'),
-  '<div contenteditable dir="ltr" style="width: 120px;">before    \u05D0\u05D7\u05E8\u05D9 \u05D0\u05E0\u05E6\u05D9|\u05E7\u05DC\u05D5\u05E4\u05D3\u05D9\u05D4</div>',
+  '<div contenteditable dir="ltr" style="width: 120px;">before    \u05D0\u05D7\u05E8\u05D9 \u05D0\u05E0\u05E6\u05D9\u05E7\u05DC|\u05D5\u05E4\u05D3\u05D9\u05D4</div>',
   '17-20 ltr right character');
 
 selection_test(
   '<div contenteditable dir="ltr" style="width: 120px;">before    \u05D0\u05D7\u05E8\u05D9 \u05D0\u05E0\u05E6\u05D9\u05E7\u05DC|\u05D5\u05E4\u05D3\u05D9\u05D4</div>',
   selection => selection.modify('move', 'right', 'character'),
-  '<div contenteditable dir="ltr" style="width: 120px;">before    \u05D0\u05D7\u05E8\u05D9 \u05D0\u05E0\u05E6\u05D9\u05E7|\u05DC\u05D5\u05E4\u05D3\u05D9\u05D4</div>',
+  '<div contenteditable dir="ltr" style="width: 120px;">before    \u05D0\u05D7\u05E8\u05D9 \u05D0\u05E0\u05E6\u05D9\u05E7\u05DC\u05D5|\u05E4\u05D3\u05D9\u05D4</div>',
   '17-21 ltr right character');
 
 selection_test(
   '<div contenteditable dir="ltr" style="width: 120px;">before    \u05D0\u05D7\u05E8\u05D9 \u05D0\u05E0\u05E6\u05D9\u05E7\u05DC\u05D5|\u05E4\u05D3\u05D9\u05D4</div>',
   selection => selection.modify('move', 'right', 'character'),
-  '<div contenteditable dir="ltr" style="width: 120px;">before    \u05D0\u05D7\u05E8\u05D9 \u05D0\u05E0\u05E6\u05D9\u05E7\u05DC|\u05D5\u05E4\u05D3\u05D9\u05D4</div>',
+  '<div contenteditable dir="ltr" style="width: 120px;">before    \u05D0\u05D7\u05E8\u05D9 \u05D0\u05E0\u05E6\u05D9\u05E7\u05DC\u05D5\u05E4|\u05D3\u05D9\u05D4</div>',
   '17-22 ltr right character');
 
 selection_test(
   '<div contenteditable dir="ltr" style="width: 120px;">before    \u05D0\u05D7\u05E8\u05D9 \u05D0\u05E0\u05E6\u05D9\u05E7\u05DC\u05D5\u05E4|\u05D3\u05D9\u05D4</div>',
   selection => selection.modify('move', 'right', 'character'),
-  '<div contenteditable dir="ltr" style="width: 120px;">before    \u05D0\u05D7\u05E8\u05D9 \u05D0\u05E0\u05E6\u05D9\u05E7\u05DC\u05D5|\u05E4\u05D3\u05D9\u05D4</div>',
+  '<div contenteditable dir="ltr" style="width: 120px;">before    \u05D0\u05D7\u05E8\u05D9 \u05D0\u05E0\u05E6\u05D9\u05E7\u05DC\u05D5\u05E4\u05D3|\u05D9\u05D4</div>',
   '17-23 ltr right character');
 
 selection_test(
   '<div contenteditable dir="ltr" style="width: 120px;">before    \u05D0\u05D7\u05E8\u05D9 \u05D0\u05E0\u05E6\u05D9\u05E7\u05DC\u05D5\u05E4\u05D3|\u05D9\u05D4</div>',
   selection => selection.modify('move', 'right', 'character'),
-  '<div contenteditable dir="ltr" style="width: 120px;">before    \u05D0\u05D7\u05E8\u05D9 \u05D0\u05E0\u05E6\u05D9\u05E7\u05DC\u05D5\u05E4|\u05D3\u05D9\u05D4</div>',
+  '<div contenteditable dir="ltr" style="width: 120px;">before    \u05D0\u05D7\u05E8\u05D9 \u05D0\u05E0\u05E6\u05D9\u05E7\u05DC\u05D5\u05E4\u05D3\u05D9|\u05D4</div>',
   '17-24 ltr right character');
 
 selection_test(
   '<div contenteditable dir="ltr" style="width: 120px;">before    \u05D0\u05D7\u05E8\u05D9 \u05D0\u05E0\u05E6\u05D9\u05E7\u05DC\u05D5\u05E4\u05D3\u05D9|\u05D4</div>',
   selection => selection.modify('move', 'right', 'character'),
-  '<div contenteditable dir="ltr" style="width: 120px;">before    \u05D0\u05D7\u05E8\u05D9 \u05D0\u05E0\u05E6\u05D9\u05E7\u05DC\u05D5\u05E4\u05D3|\u05D9\u05D4</div>',
+  '<div contenteditable dir="ltr" style="width: 120px;">before    \u05D0\u05D7\u05E8\u05D9 \u05D0\u05E0\u05E6\u05D9\u05E7\u05DC\u05D5\u05E4\u05D3\u05D9\u05D4|</div>',
   '17-25 ltr right character');
 
 selection_test(
   '<div contenteditable dir="ltr" style="width: 120px;">before    \u05D0\u05D7\u05E8\u05D9 \u05D0\u05E0\u05E6\u05D9\u05E7\u05DC\u05D5\u05E4\u05D3\u05D9\u05D4|</div>',
   selection => selection.modify('move', 'right', 'character'),
-  usesBidiAffinity
-      ? '<div contenteditable dir="ltr" style="width: 120px;">before    \u05D0\u05D7\u05E8\u05D9 \u05D0\u05E0\u05E6\u05D9\u05E7\u05DC\u05D5\u05E4\u05D3\u05D9|\u05D4</div>'
-      : '<div contenteditable dir="ltr" style="width: 120px;">before    \u05D0\u05D7\u05E8\u05D9 \u05D0\u05E0\u05E6\u05D9\u05E7\u05DC\u05D5\u05E4\u05D3\u05D9\u05D4|</div>',
+  '<div contenteditable dir="ltr" style="width: 120px;">before    \u05D0\u05D7\u05E8\u05D9 \u05D0\u05E0\u05E6\u05D9\u05E7\u05DC\u05D5\u05E4\u05D3\u05D9\u05D4|</div>',
   '17-26 ltr right character');
 </script>

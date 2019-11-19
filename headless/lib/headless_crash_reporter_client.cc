@@ -17,6 +17,16 @@
 
 namespace headless {
 
+namespace {
+
+#if defined(OS_POSIX) && !defined(OS_MACOSX)
+
+constexpr char kChromeHeadlessProductName[] = "Chrome_Headless";
+
+#endif
+
+}  // namespace
+
 HeadlessCrashReporterClient::HeadlessCrashReporterClient() = default;
 HeadlessCrashReporterClient::~HeadlessCrashReporterClient() = default;
 
@@ -24,8 +34,17 @@ HeadlessCrashReporterClient::~HeadlessCrashReporterClient() = default;
 void HeadlessCrashReporterClient::GetProductNameAndVersion(
     const char** product_name,
     const char** version) {
-  *product_name = "Chrome";
+  *product_name = kChromeHeadlessProductName;
   *version = PRODUCT_VERSION;
+}
+
+void HeadlessCrashReporterClient::GetProductNameAndVersion(
+    std::string* product_name,
+    std::string* version,
+    std::string* channel) {
+  *product_name = kChromeHeadlessProductName;
+  *version = PRODUCT_VERSION;
+  *channel = "";
 }
 
 base::FilePath HeadlessCrashReporterClient::GetReporterLogFilename() {

@@ -25,12 +25,15 @@
 #include "third_party/blink/renderer/core/svg/svg_path_query.h"
 #include "third_party/blink/renderer/core/svg/svg_path_utilities.h"
 #include "third_party/blink/renderer/core/svg/svg_point_tear_off.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
 
 namespace blink {
 
-inline SVGPathElement::SVGPathElement(Document& document)
+SVGPathElement::SVGPathElement(Document& document)
     : SVGGeometryElement(svg_names::kPathTag, document),
-      path_(SVGAnimatedPath::Create(this, svg_names::kDAttr, CSSPropertyD)) {
+      path_(MakeGarbageCollected<SVGAnimatedPath>(this,
+                                                  svg_names::kDAttr,
+                                                  CSSPropertyID::kD)) {
   AddToPropertyMap(path_);
 }
 
@@ -39,14 +42,12 @@ void SVGPathElement::Trace(blink::Visitor* visitor) {
   SVGGeometryElement::Trace(visitor);
 }
 
-DEFINE_NODE_FACTORY(SVGPathElement)
-
 Path SVGPathElement::AttributePath() const {
   return path_->CurrentValue()->GetStylePath()->GetPath();
 }
 
 const StylePath* SVGPathElement::GetStylePath() const {
-  if (LayoutObject* layout_object = this->GetLayoutObject()) {
+  if (LayoutObject* layout_object = GetLayoutObject()) {
     const StylePath* style_path = layout_object->StyleRef().SvgStyle().D();
     if (style_path)
       return style_path;
@@ -63,13 +64,13 @@ Path SVGPathElement::AsPath() const {
   return GetStylePath()->GetPath();
 }
 
-float SVGPathElement::getTotalLength() {
-  GetDocument().UpdateStyleAndLayoutIgnorePendingStylesheetsForNode(this);
+float SVGPathElement::getTotalLength(ExceptionState& exception_state) {
+  GetDocument().UpdateStyleAndLayoutForNode(this);
   return SVGPathQuery(PathByteStream()).GetTotalLength();
 }
 
 SVGPointTearOff* SVGPathElement::getPointAtLength(float length) {
-  GetDocument().UpdateStyleAndLayoutIgnorePendingStylesheetsForNode(this);
+  GetDocument().UpdateStyleAndLayoutForNode(this);
   SVGPathQuery path_query(PathByteStream());
   if (length < 0) {
     length = 0;
@@ -98,7 +99,7 @@ void SVGPathElement::CollectStyleForPresentationAttribute(
     MutableCSSPropertyValueSet* style) {
   SVGAnimatedPropertyBase* property = PropertyFromAttribute(name);
   if (property == path_) {
-    SVGAnimatedPath* path = this->GetPath();
+    SVGAnimatedPath* path = GetPath();
     // If this is a <use> instance, return the referenced path to maximize
     // geometry sharing.
     if (const SVGElement* element = CorrespondingElement())

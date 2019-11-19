@@ -4,7 +4,10 @@
 
 #include "components/offline_pages/content/background_loader/background_loader_contents.h"
 
+#include <utility>
+
 #include "content/public/browser/web_contents.h"
+#include "third_party/blink/public/mojom/mediastream/media_stream.mojom-shared.h"
 
 namespace background_loader {
 
@@ -64,30 +67,23 @@ bool BackgroundLoaderContents::ShouldFocusPageAfterCrash() {
 void BackgroundLoaderContents::CanDownload(
     const GURL& url,
     const std::string& request_method,
-    const base::Callback<void(bool)>& callback) {
+    base::OnceCallback<void(bool)> callback) {
   if (delegate_) {
-    delegate_->CanDownload(callback);
+    delegate_->CanDownload(std::move(callback));
   } else {
     // Do not download anything if there's no delegate.
-    callback.Run(false);
+    std::move(callback).Run(false);
   }
 }
 
-bool BackgroundLoaderContents::ShouldCreateWebContents(
-    content::WebContents* web_contents,
-    content::RenderFrameHost* opener,
+bool BackgroundLoaderContents::IsWebContentsCreationOverridden(
     content::SiteInstance* source_site_instance,
-    int32_t route_id,
-    int32_t main_frame_route_id,
-    int32_t main_frame_widget_route_id,
     content::mojom::WindowContainerType window_container_type,
     const GURL& opener_url,
     const std::string& frame_name,
-    const GURL& target_url,
-    const std::string& partition_id,
-    content::SessionStorageNamespace* session_storage_namespace) {
+    const GURL& target_url) {
   // Background pages should not create other webcontents/tabs.
-  return false;
+  return true;
 }
 
 void BackgroundLoaderContents::AddNewContents(
@@ -117,35 +113,22 @@ void BackgroundLoaderContents::RequestMediaAccessPermission(
   // No permissions granted, act as if dismissed.
   std::move(callback).Run(
       blink::MediaStreamDevices(),
-      blink::MediaStreamRequestResult::MEDIA_DEVICE_PERMISSION_DISMISSED,
+      blink::mojom::MediaStreamRequestResult::PERMISSION_DISMISSED,
       std::unique_ptr<content::MediaStreamUI>());
 }
 
 bool BackgroundLoaderContents::CheckMediaAccessPermission(
     content::RenderFrameHost* render_frame_host,
     const GURL& security_origin,
-    blink::MediaStreamType type) {
+    blink::mojom::MediaStreamType type) {
   return false;  // No permissions granted.
 }
 
 void BackgroundLoaderContents::AdjustPreviewsStateForNavigation(
     content::WebContents* web_contents,
     content::PreviewsState* previews_state) {
-  DCHECK(previews_state);
-
-  // If previews are already disabled, do nothing.
-  if (*previews_state == content::PREVIEWS_OFF ||
-      *previews_state == content::PREVIEWS_NO_TRANSFORM) {
-    return;
-  }
-
-  if (*previews_state == content::PREVIEWS_UNSPECIFIED) {
-    *previews_state = content::PARTIAL_CONTENT_SAFE_PREVIEWS;
-  } else {
-    *previews_state &= content::PARTIAL_CONTENT_SAFE_PREVIEWS;
     if (*previews_state == 0)
       *previews_state = content::PREVIEWS_OFF;
-  }
 }
 
 bool BackgroundLoaderContents::ShouldAllowLazyLoad() {

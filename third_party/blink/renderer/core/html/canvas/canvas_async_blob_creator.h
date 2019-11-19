@@ -34,7 +34,7 @@ constexpr const char* kRGBA8ImagePixelFormatName = "uint8";
 constexpr const char* kRGBA16ImagePixelFormatName = "uint16";
 
 class CORE_EXPORT CanvasAsyncBlobCreator
-    : public GarbageCollectedFinalized<CanvasAsyncBlobCreator> {
+    : public GarbageCollected<CanvasAsyncBlobCreator> {
  public:
   // This enum is used to back an UMA histogram, and should therefore be treated
   // as append-only. Idle tasks are not implemented for some image types.
@@ -54,28 +54,21 @@ class CORE_EXPORT CanvasAsyncBlobCreator
     kNumberOfToBlobFunctionTypes
   };
 
-  static CanvasAsyncBlobCreator* Create(scoped_refptr<StaticBitmapImage>,
-                                        const ImageEncodingMimeType mime_type,
-                                        V8BlobCallback*,
-                                        ToBlobFunctionType function_type,
-                                        TimeTicks start_time,
-                                        ExecutionContext*);
-  static CanvasAsyncBlobCreator* Create(scoped_refptr<StaticBitmapImage>,
-                                        const ImageEncodeOptions* options,
-                                        ToBlobFunctionType function_type,
-                                        TimeTicks start_time,
-                                        ExecutionContext*,
-                                        ScriptPromiseResolver*);
-
   void ScheduleAsyncBlobCreation(const double& quality);
 
+  CanvasAsyncBlobCreator(scoped_refptr<StaticBitmapImage>,
+                         const ImageEncodeOptions* options,
+                         ToBlobFunctionType function_type,
+                         base::TimeTicks start_time,
+                         ExecutionContext*,
+                         ScriptPromiseResolver*);
   CanvasAsyncBlobCreator(scoped_refptr<StaticBitmapImage>,
                          const ImageEncodeOptions*,
                          ToBlobFunctionType,
                          V8BlobCallback*,
-                         TimeTicks start_time,
+                         base::TimeTicks start_time,
                          ExecutionContext*,
-                         ScriptPromiseResolver*);
+                         ScriptPromiseResolver* = nullptr);
   virtual ~CanvasAsyncBlobCreator();
 
   // Methods are virtual for mocking in unit tests
@@ -97,7 +90,7 @@ class CORE_EXPORT CanvasAsyncBlobCreator
       ImageEncodingMimeType);
   // Methods are virtual for unit testing
   virtual void ScheduleInitiateEncoding(double quality);
-  virtual void IdleEncodeRows(TimeTicks deadline);
+  virtual void IdleEncodeRows(base::TimeTicks deadline);
   virtual void PostDelayedTaskToCurrentThread(const base::Location&,
                                               base::OnceClosure,
                                               double delay_ms);
@@ -105,7 +98,7 @@ class CORE_EXPORT CanvasAsyncBlobCreator
   virtual void CreateBlobAndReturnResult();
   virtual void CreateNullAndReturnResult();
 
-  void InitiateEncoding(double quality, TimeTicks deadline);
+  void InitiateEncoding(double quality, base::TimeTicks deadline);
 
  protected:
   IdleTaskStatus idle_task_status_;
@@ -130,20 +123,15 @@ class CORE_EXPORT CanvasAsyncBlobCreator
   sk_sp<SkData> png_data_helper_;
 
   // Chrome metrics use
-  TimeTicks start_time_;
-  TimeTicks schedule_idle_task_start_time_;
+  base::TimeTicks start_time_;
+  base::TimeTicks schedule_idle_task_start_time_;
   bool static_bitmap_image_loaded_;
 
   // Used when CanvasAsyncBlobCreator runs on main thread only
   scoped_refptr<base::SingleThreadTaskRunner> parent_frame_task_runner_;
 
   // Used for HTMLCanvasElement only
-  //
-  // Note: CanvasAsyncBlobCreator is never held by other objects. As soon as
-  // an instance gets created, ScheduleAsyncBlobCreation is invoked, and then
-  // the instance is only held by a task runner (via PostTask). Thus the
-  // instance has only limited lifetime. Hence, Persistent here is okay.
-  Member<V8PersistentCallbackFunction<V8BlobCallback>> callback_;
+  Member<V8BlobCallback> callback_;
 
   // Used for OffscreenCanvas only
   Member<ScriptPromiseResolver> script_promise_resolver_;

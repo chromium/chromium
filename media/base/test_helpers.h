@@ -92,14 +92,12 @@ class TestVideoConfig {
   static VideoDecoderConfig NormalWithColorSpace(
       VideoCodec codec,
       const VideoColorSpace& color_space);
-  static VideoDecoderConfig NormalH264(
-      VideoCodecProfile = VIDEO_CODEC_PROFILE_UNKNOWN);
+  static VideoDecoderConfig NormalH264(VideoCodecProfile = H264PROFILE_MIN);
   static VideoDecoderConfig NormalCodecProfile(
       VideoCodec codec = kCodecVP8,
-      VideoCodecProfile profile = VIDEO_CODEC_PROFILE_UNKNOWN);
-  static VideoDecoderConfig NormalEncrypted(
-      VideoCodec codec = kCodecVP8,
-      VideoCodecProfile = VIDEO_CODEC_PROFILE_UNKNOWN);
+      VideoCodecProfile profile = VP8PROFILE_MIN);
+  static VideoDecoderConfig NormalEncrypted(VideoCodec codec = kCodecVP8,
+                                            VideoCodecProfile = VP8PROFILE_MIN);
   static VideoDecoderConfig NormalRotated(VideoRotation rotation);
 
   // Returns a configuration that is larger in dimensions than Normal().
@@ -393,18 +391,8 @@ MATCHER_P2(NoSpliceForBadMux, overlapped_buffer_count, splice_time_us, "") {
                              base::NumberToString(splice_time_us));
 }
 
-MATCHER_P(BufferingByPtsDts, by_pts_bool, "") {
-  return CONTAINS_STRING(arg, std::string("ChunkDemuxer: buffering by ") +
-                                  (by_pts_bool ? "PTS" : "DTS"));
-}
-
-MATCHER_P3(NegativeDtsFailureWhenByDts, frame_type, pts_us, dts_us, "") {
-  return CONTAINS_STRING(
-      arg, std::string(frame_type) + " frame with PTS " +
-               base::NumberToString(pts_us) + "us has negative DTS " +
-               base::NumberToString(dts_us) +
-               "us after applying timestampOffset, handling any discontinuity, "
-               "and filtering against append window");
+MATCHER(ChunkDemuxerCtor, "") {
+  return CONTAINS_STRING(arg, "ChunkDemuxer");
 }
 
 MATCHER_P2(DiscardingEmptyFrame, pts_us, dts_us, "") {

@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/controller/blink_leak_detector.h"
 
-#include "mojo/public/cpp/bindings/strong_binding.h"
+#include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_gc_controller.h"
@@ -19,7 +19,7 @@
 #include "third_party/blink/renderer/core/workers/dedicated_worker_messaging_proxy.h"
 #include "third_party/blink/renderer/core/workers/worker_thread.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
-#include "third_party/blink/renderer/platform/instance_counters.h"
+#include "third_party/blink/renderer/platform/instrumentation/instance_counters.h"
 #include "third_party/blink/renderer/platform/loader/fetch/memory_cache.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
 
@@ -33,9 +33,10 @@ BlinkLeakDetector::BlinkLeakDetector()
 BlinkLeakDetector::~BlinkLeakDetector() = default;
 
 // static
-void BlinkLeakDetector::Create(mojom::blink::LeakDetectorRequest request) {
-  mojo::MakeStrongBinding(std::make_unique<BlinkLeakDetector>(),
-                          std::move(request));
+void BlinkLeakDetector::Create(
+    mojo::PendingReceiver<mojom::blink::LeakDetector> receiver) {
+  mojo::MakeSelfOwnedReceiver(std::make_unique<BlinkLeakDetector>(),
+                              std::move(receiver));
 }
 
 void BlinkLeakDetector::PerformLeakDetection(
@@ -66,17 +67,14 @@ void BlinkLeakDetector::PerformLeakDetection(
   for (auto resource_fetcher : ResourceFetcher::MainThreadFetchers())
     resource_fetcher->PrepareForLeakDetection();
 
-  // Internal settings are ScriptWrappable and thus may retain documents
-  // depending on whether the garbage collector(s) are able to find the settings
-  // object through the Page supplement.
-  InternalSettings::PrepareForLeakDetection();
+  Page::PrepareForLeakDetection();
 
   // Task queue may contain delayed object destruction tasks.
   // This method is called from navigation hook inside FrameLoader,
   // so previous document is still held by the loader until the next event loop.
   // Complete all pending tasks before proceeding to gc.
   number_of_gc_needed_ = 3;
-  delayed_gc_timer_.StartOneShot(TimeDelta(), FROM_HERE);
+  delayed_gc_timer_.StartOneShot(base::TimeDelta(), FROM_HERE);
 }
 
 void BlinkLeakDetector::TimerFiredGC(TimerBase*) {
@@ -87,12 +85,13 @@ void BlinkLeakDetector::TimerFiredGC(TimerBase*) {
   V8GCController::CollectAllGarbageForTesting(
       V8PerIsolateData::MainThreadIsolate(),
       v8::EmbedderHeapTracer::EmbedderStackState::kEmpty);
-  CoreInitializer::GetInstance().CollectAllGarbageForAnimationAndPaintWorklet();
+  CoreInitializer::GetInstance()
+      .CollectAllGarbageForAnimationAndPaintWorkletForTesting();
   // Note: Oilpan precise GC is scheduled at the end of the event loop.
 
   // Inspect counters on the next event loop.
   if (--number_of_gc_needed_ > 0) {
-    delayed_gc_timer_.StartOneShot(TimeDelta(), FROM_HERE);
+    delayed_gc_timer_.StartOneShot(base::TimeDelta(), FROM_HERE);
   } else if (number_of_gc_needed_ > -1 &&
              DedicatedWorkerMessagingProxy::ProxyCount()) {
     // It is possible that all posted tasks for finalizing in-process proxy
@@ -103,7 +102,7 @@ void BlinkLeakDetector::TimerFiredGC(TimerBase*) {
     // TODO(sof): use proxyCount() to always decide if another GC needs to be
     // scheduled.  Some debug bots running browser unit tests disagree
     // (crbug.com/616714)
-    delayed_gc_timer_.StartOneShot(TimeDelta(), FROM_HERE);
+    delayed_gc_timer_.StartOneShot(base::TimeDelta(), FROM_HERE);
   } else {
     ReportResult();
   }
@@ -125,8 +124,6 @@ void BlinkLeakDetector::ReportResult() {
   result->number_of_live_context_lifecycle_state_observers =
       InstanceCounters::CounterValue(
           InstanceCounters::kContextLifecycleStateObserverCounter);
-  result->number_of_live_script_promises =
-      InstanceCounters::CounterValue(InstanceCounters::kScriptPromiseCounter);
   result->number_of_live_frames =
       InstanceCounters::CounterValue(InstanceCounters::kFrameCounter);
   result->number_of_live_v8_per_context_data = InstanceCounters::CounterValue(

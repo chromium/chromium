@@ -6,6 +6,7 @@
 #define COMPONENTS_SAFE_BROWSING_BASE_UI_MANAGER_H_
 
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/bind_helpers.h"
@@ -26,6 +27,8 @@ class HistoryService;
 
 namespace safe_browsing {
 
+class BaseBlockingPage;
+
 // Construction needs to happen on the main thread.
 class BaseUIManager
     : public base::RefCountedThreadSafe<BaseUIManager> {
@@ -35,10 +38,7 @@ class BaseUIManager
   BaseUIManager();
 
   // Called on the UI thread to display an interstitial page.
-  // |url| is the url of the resource that matches a safe browsing list.
-  // If the request contained a chain of redirects, |url| is the last url
-  // in the chain, and |original_url| is the first one (the root of the
-  // chain). Otherwise, |original_url| = |url|.
+  // |resource| is the unsafe resource that triggered the interstitial.
   virtual void DisplayBlockingPage(const UnsafeResource& resource);
 
   // This is a no-op in the base class, but should be overridden to send threat
@@ -104,6 +104,19 @@ class BaseUIManager
   // e.g. about::blank page, or chrome's new tab page.
   virtual const GURL default_safe_page() const;
 
+  // Adds an UnsafeResource |resource| for |url| to unsafe_resources_,
+  // this should be called whenever a resource load is blocked due to a SB hit.
+  void AddUnsafeResource(GURL url,
+                         security_interstitials::UnsafeResource resource);
+
+  // Checks if an UnsafeResource |resource| exists for |url|, if so, it is
+  // removed from the vector, assigned to |resource| and the function returns
+  // true. Otherwise the function returns false and nothing gets assigned to
+  // |resource|.
+  bool PopUnsafeResourceForURL(
+      GURL url,
+      security_interstitials::UnsafeResource* resource);
+
  protected:
   friend class ChromePasswordProtectionService;
   virtual ~BaseUIManager();
@@ -131,7 +144,24 @@ class BaseUIManager
   virtual void ShowBlockingPageForResource(const UnsafeResource& resource);
 
  private:
+  // When true, we immediately cancel navigations that have been blocked by Safe
+  // Browsing, otherwise we call show on the interstitial.
+  bool SafeBrowsingInterstitialsAreCommittedNavigations();
+
   friend class base::RefCountedThreadSafe<BaseUIManager>;
+
+  // Creates a blocking page, used for interstitials triggered by subresources.
+  // Should be overridden with a blocking page implementation.
+  virtual BaseBlockingPage* CreateBlockingPageForSubresource(
+      content::WebContents* contents,
+      const GURL& blocked_url,
+      const UnsafeResource& unsafe_resource);
+
+  // Stores unsafe resources so they can be fetched from a navigation throttle
+  // in the committed interstitials flow. Implemented as a pair vector since
+  // most of the time it will be empty or contain a single element.
+  std::vector<std::pair<GURL, security_interstitials::UnsafeResource>>
+      unsafe_resources_;
 
   DISALLOW_COPY_AND_ASSIGN(BaseUIManager);
 };

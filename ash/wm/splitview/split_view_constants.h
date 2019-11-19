@@ -35,7 +35,57 @@ constexpr SkColor kSplitviewLabelEnabledColor = SK_ColorWHITE;
 constexpr SkColor kSplitviewLabelBackgroundColor =
     SkColorSetA(SK_ColorBLACK, 0xDE);
 
-constexpr int kSplitviewAnimationDurationMs = 250;
+// The color of the divider.
+constexpr SkColor kSplitviewDividerColor = SK_ColorBLACK;
+
+// The color of the divider's handler.
+constexpr SkColor kSplitviewWhiteBarColor = SK_ColorWHITE;
+
+// The thickness of the divider when it is not being dragged.
+constexpr int kSplitviewDividerShortSideLength = 8;
+
+// The thickness of the divider during dragging.
+constexpr int kSplitviewDividerEnlargedShortSideLength = 16;
+
+// The time duration for the window transformation animations.
+constexpr auto kSplitviewWindowTransformDuration =
+    base::TimeDelta::FromMilliseconds(250);
+
+// The time duration for the divider animations when dragging starts and ends.
+constexpr auto kSplitviewDividerSelectionStatusChangeDuration =
+    base::TimeDelta::FromMilliseconds(250);
+
+// The time duration for the divider spawning animation.
+constexpr auto kSplitviewDividerSpawnDuration =
+    base::TimeDelta::FromMilliseconds(100);
+
+// The delay before the divider spawning animation.
+constexpr auto kSplitviewDividerSpawnDelay =
+    base::TimeDelta::FromMilliseconds(183);
+
+// The thickness of the divider's handler.
+constexpr int kSplitviewWhiteBarShortSideLength = 2;
+
+// The length of the divider's handler.
+constexpr int kSplitviewWhiteBarLongSideLength = 16;
+
+// The corner radius of the divider's handler.
+constexpr int kSplitviewWhiteBarCornerRadius = 1;
+
+// The radius of the circular handler when the divider is being dragged.
+constexpr int kSplitviewWhiteBarRadius = 4;
+
+// The length of the divider's handler when it spawns.
+constexpr int kSplitviewWhiteBarSpawnLongSideLength = 2;
+
+// The distance from the divider to where its handler spawns.
+constexpr int kSplitviewWhiteBarSpawnUnsignedOffset = 2;
+
+// The opacity of the drag-to-snap or cannot-snap drag indicator.
+constexpr float kHighlightOpacity = 0.3f;
+
+// The opacity of the split view snap preview area.
+constexpr float kPreviewAreaHighlightOpacity = 0.18f;
 
 }  // namespace ash
 

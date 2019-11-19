@@ -8,11 +8,9 @@
         .fixed { position: fixed; }
         .green { background-color: green; }
         .red { background-color: red; }
-        .composited { transform: translateZ(0); }
+        .composited { will-change: transform; }
     </style>
     <script type="text/javascript">
-        if (window.testRunner)
-            testRunner.dumpAsTextWithPixelResults();
         function moveFixedDiv()
         {
             document.getElementById('fixedDiv').style.top = '200px';

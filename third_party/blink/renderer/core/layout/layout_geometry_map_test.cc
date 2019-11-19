@@ -32,7 +32,6 @@
 
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_url_loader_mock_factory.h"
 #include "third_party/blink/public/web/web_local_frame_client.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -42,6 +41,7 @@
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
+#include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/url_test_helpers.h"
 
@@ -52,9 +52,7 @@ class LayoutGeometryMapTest : public testing::Test {
   LayoutGeometryMapTest() : base_url_("http://www.test.com/") {}
 
   void TearDown() override {
-    Platform::Current()
-        ->GetURLLoaderMockFactory()
-        ->UnregisterAllURLsAndClearMemoryCache();
+    url_test_helpers::UnregisterAllURLsAndClearMemoryCache();
   }
 
  protected:
@@ -120,43 +118,25 @@ class LayoutGeometryMapTest : public testing::Test {
     return &compositing_layer->GetLayoutObject();
   }
 
-  static const FloatRect RectFromQuad(const FloatQuad& quad) {
-    FloatRect rect;
-    rect.SetX(std::min(
-        quad.P1().X(),
-        std::min(quad.P2().X(), std::min(quad.P3().X(), quad.P4().X()))));
-    rect.SetY(std::min(
-        quad.P1().Y(),
-        std::min(quad.P2().Y(), std::min(quad.P3().Y(), quad.P4().Y()))));
-
-    rect.SetWidth(std::max(quad.P1().X(),
-                           std::max(quad.P2().X(),
-                                    std::max(quad.P3().X(), quad.P4().X()))) -
-                  rect.X());
-    rect.SetHeight(std::max(quad.P1().Y(),
-                            std::max(quad.P2().Y(),
-                                     std::max(quad.P3().Y(), quad.P4().Y()))) -
-                   rect.Y());
-    return rect;
-  }
-
   // Adjust rect by the scroll offset of the LayoutView.  This only has an
   // effect if root layer scrolling is enabled.  The only reason for doing
   // this here is so the test expected values can be the same whether or not
   // root layer scrolling is enabled.  For more context, see:
   // https://codereview.chromium.org/2417103002/#msg11
-  static FloatRect AdjustForFrameScroll(WebView* web_view,
-                                        const FloatRect& rect) {
-    FloatRect result(rect);
+  static PhysicalRect AdjustForFrameScroll(WebView* web_view,
+                                           const PhysicalRect& rect) {
+    PhysicalRect result(rect);
     LocalFrame* frame =
         static_cast<WebViewImpl*>(web_view)->MainFrameImpl()->GetFrame();
     LayoutView* layout_view = frame->GetDocument()->GetLayoutView();
     if (layout_view->HasOverflowClip())
-      result.Move(layout_view->ScrolledContentOffset());
+      result.Move(PhysicalOffset(layout_view->ScrolledContentOffset()));
     return result;
   }
 
   void RegisterMockedHttpURLLoad(const std::string& file_name) {
+    // TODO(crbug.com/751425): We should use the mock functionality
+    // via the WebViewHelper instance in each test case.
     url_test_helpers::RegisterMockedURLLoadFromBase(
         WebString::FromUTF8(base_url_), test::CoreTestDataPath(),
         WebString::FromUTF8(file_name));
@@ -183,28 +163,25 @@ TEST_F(LayoutGeometryMapTest, SimpleGeometryMapTest) {
   // differently
   LayoutGeometryMap rgm;
   rgm.PushMappingsToAncestor(GetLayoutBox(web_view, "InitialDiv"), nullptr);
-  FloatRect rect(0.0f, 0.0f, 1.0f, 2.0f);
-  EXPECT_EQ(FloatQuad(FloatRect(8.0f, 8.0f, 1.0f, 2.0f)),
-            rgm.MapToAncestor(rect, nullptr));
+  PhysicalRect rect(0, 0, 1, 2);
+  EXPECT_EQ(PhysicalRect(8, 8, 1, 2), rgm.MapToAncestor(rect, nullptr));
 
   rgm.PopMappingsToAncestor(static_cast<PaintLayer*>(nullptr));
-  EXPECT_EQ(FloatQuad(FloatRect(0.0f, 0.0f, 1.0f, 2.0f)),
-            rgm.MapToAncestor(rect, nullptr));
+  EXPECT_EQ(rect, rgm.MapToAncestor(rect, nullptr));
 
   rgm.PushMappingsToAncestor(GetLayoutBox(web_view, "InnerDiv"), nullptr);
-  EXPECT_EQ(FloatQuad(FloatRect(21.0f, 6.0f, 1.0f, 2.0f)),
+  EXPECT_EQ(PhysicalRect(21, 6, 1, 2),
             rgm.MapToAncestor(rect, GetLayoutBox(web_view, "CenterDiv")));
 
   rgm.PushMappingsToAncestor(GetLayoutBox(web_view, "OtherDiv"),
                              GetLayoutBox(web_view, "InnerDiv"));
-  EXPECT_EQ(FloatQuad(FloatRect(22.0f, 12.0f, 1.0f, 2.0f)),
+  EXPECT_EQ(PhysicalRect(22, 12, 1, 2),
             rgm.MapToAncestor(rect, GetLayoutBox(web_view, "CenterDiv")));
 
-  EXPECT_EQ(FloatQuad(FloatRect(1.0f, 6.0f, 1.0f, 2.0f)),
+  EXPECT_EQ(PhysicalRect(1, 6, 1, 2),
             rgm.MapToAncestor(rect, GetLayoutBox(web_view, "InnerDiv")));
 
-  EXPECT_EQ(FloatQuad(FloatRect(50.0f, 44.0f, 1.0f, 2.0f)),
-            rgm.MapToAncestor(rect, nullptr));
+  EXPECT_EQ(PhysicalRect(50, 44, 1, 2), rgm.MapToAncestor(rect, nullptr));
 }
 
 // Fails on Windows due to crbug.com/391457. When run through the transform the
@@ -224,53 +201,41 @@ TEST_F(LayoutGeometryMapTest, TransformedGeometryTest)
 
   LayoutGeometryMap rgm;
   rgm.PushMappingsToAncestor(GetLayoutBox(web_view, "InitialDiv"), nullptr);
-  const float kRectWidth = 15.0f;
-  const float kScaleWidth = 2.0f;
-  const float kScaleHeight = 3.0f;
-  FloatRect rect(0.0f, 0.0f, 15.0f, 25.0f);
-  EXPECT_EQ(FloatQuad(FloatRect(8.0f, 8.0f, 15.0f, 25.0f)),
-            rgm.MapToAncestor(rect, nullptr));
+  const int kRectWidth = 15;
+  const int kScaleWidth = 2;
+  const int kScaleHeight = 3;
+  PhysicalRect rect(0, 0, 15, 25);
+  EXPECT_EQ(PhysicalRect(8, 8, 15, 25), rgm.MapToAncestor(rect, nullptr));
 
   rgm.PopMappingsToAncestor(static_cast<PaintLayer*>(nullptr));
-  EXPECT_EQ(FloatQuad(FloatRect(0.0f, 0.0f, 15.0f, 25.0f)).BoundingBox(),
-            rgm.MapToAncestor(rect, nullptr).BoundingBox());
+  EXPECT_EQ(PhysicalRect(0, 0, 15, 25), rgm.MapToAncestor(rect, nullptr));
 
   rgm.PushMappingsToAncestor(GetLayoutBox(web_view, "InnerDiv"), nullptr);
-  EXPECT_EQ(FloatQuad(FloatRect(523.0f - kRectWidth, 6.0f, 15.0f, 25.0f))
-                .BoundingBox(),
-            rgm.MapToAncestor(rect, GetLayoutBox(web_view, "CenterDiv"))
-                .BoundingBox());
+  EXPECT_EQ(PhysicalRect(523.0f - kRectWidth, 6, 15, 25),
+            rgm.MapToAncestor(rect, GetLayoutBox(web_view, "CenterDiv")));
 
   rgm.PushMappingsToAncestor(GetLayoutBox(web_view, "OtherDiv"),
                              GetLayoutBox(web_view, "InnerDiv"));
-  EXPECT_EQ(FloatQuad(FloatRect(522.0f - kRectWidth, 12.0f, 15.0f, 25.0f))
-                .BoundingBox(),
-            rgm.MapToAncestor(rect, GetLayoutBox(web_view, "CenterDiv"))
-                .BoundingBox());
+  EXPECT_EQ(PhysicalRect(522.0f - kRectWidth, 12, 15, 25),
+            rgm.MapToAncestor(rect, GetLayoutBox(web_view, "CenterDiv")));
 
-  EXPECT_EQ(FloatQuad(FloatRect(1.0f, 6.0f, 15.0f, 25.0f)).BoundingBox(),
-            rgm.MapToAncestor(rect, GetLayoutBox(web_view, "InnerDiv"))
-                .BoundingBox());
+  EXPECT_EQ(PhysicalRect(1, 6, 15, 25),
+            rgm.MapToAncestor(rect, GetLayoutBox(web_view, "InnerDiv")));
 
-  EXPECT_EQ(FloatQuad(FloatRect(821.0f - kRectWidth * kScaleWidth, 31.0f,
-                                15.0f * kScaleWidth, 25.0f * kScaleHeight))
-                .BoundingBox(),
-            rgm.MapToAncestor(rect, nullptr).BoundingBox());
+  EXPECT_EQ(PhysicalRect(821 - kRectWidth * kScaleWidth, 31, 15 * kScaleWidth,
+                         25 * kScaleHeight),
+            rgm.MapToAncestor(rect, nullptr));
 
-  rect = FloatRect(10.0f, 25.0f, 15.0f, 25.0f);
-  EXPECT_EQ(FloatQuad(FloatRect(512.0f - kRectWidth, 37.0f, 15.0f, 25.0f))
-                .BoundingBox(),
-            rgm.MapToAncestor(rect, GetLayoutBox(web_view, "CenterDiv"))
-                .BoundingBox());
+  rect = PhysicalRect(10, 25, 15, 25);
+  EXPECT_EQ(PhysicalRect(512.0f - kRectWidth, 37, 15, 25),
+            rgm.MapToAncestor(rect, GetLayoutBox(web_view, "CenterDiv")));
 
-  EXPECT_EQ(FloatQuad(FloatRect(11.0f, 31.0f, 15.0f, 25.0f)).BoundingBox(),
-            rgm.MapToAncestor(rect, GetLayoutBox(web_view, "InnerDiv"))
-                .BoundingBox());
+  EXPECT_EQ(PhysicalRect(11, 31, 15, 25),
+            rgm.MapToAncestor(rect, GetLayoutBox(web_view, "InnerDiv")));
 
-  EXPECT_EQ(FloatQuad(FloatRect(801.0f - kRectWidth * kScaleWidth, 106.0f,
-                                15.0f * kScaleWidth, 25.0f * kScaleHeight))
-                .BoundingBox(),
-            rgm.MapToAncestor(rect, nullptr).BoundingBox());
+  EXPECT_EQ(PhysicalRect(801 - kRectWidth * kScaleWidth, 106, 15 * kScaleWidth,
+                         25 * kScaleHeight),
+            rgm.MapToAncestor(rect, nullptr));
 }
 
 TEST_F(LayoutGeometryMapTest, FixedGeometryTest) {
@@ -283,31 +248,32 @@ TEST_F(LayoutGeometryMapTest, FixedGeometryTest) {
 
   LayoutGeometryMap rgm;
   rgm.PushMappingsToAncestor(GetLayoutBox(web_view, "InitialDiv"), nullptr);
-  FloatRect rect(0.0f, 0.0f, 15.0f, 25.0f);
-  EXPECT_EQ(FloatQuad(FloatRect(8.0f, 8.0f, 15.0f, 25.0f)),
-            rgm.MapToAncestor(rect, nullptr));
+  PhysicalRect rect(0, 0, 15, 25);
+  EXPECT_EQ(PhysicalRect(8, 8, 15, 25), rgm.MapToAncestor(rect, nullptr));
 
   rgm.PopMappingsToAncestor(static_cast<PaintLayer*>(nullptr));
-  EXPECT_EQ(FloatQuad(FloatRect(0.0f, 0.0f, 15.0f, 25.0f)),
-            rgm.MapToAncestor(rect, nullptr));
+  EXPECT_EQ(PhysicalRect(0, 0, 15, 25), rgm.MapToAncestor(rect, nullptr));
 
   rgm.PushMappingsToAncestor(GetLayoutBox(web_view, "InnerDiv"), nullptr);
-  EXPECT_EQ(FloatQuad(FloatRect(20.0f, 14.0f, 15.0f, 25.0f)),
-            rgm.MapToAncestor(rect, nullptr));
+  EXPECT_EQ(PhysicalRect(20, 14, 15, 25), rgm.MapToAncestor(rect, nullptr));
 
   rgm.PushMappingsToAncestor(GetLayoutBox(web_view, "OtherDiv"),
                              GetLayoutBox(web_view, "InnerDiv"));
-  EXPECT_EQ(FloatQuad(FloatRect(21.0f, 20.0f, 15.0f, 25.0f)),
+  EXPECT_EQ(PhysicalRect(21, 20, 15, 25),
             rgm.MapToAncestor(rect, GetLayoutContainer(web_view, "CenterDiv")));
 
-  rect = FloatRect(22.0f, 15.2f, 15.3f, 0.0f);
-  EXPECT_EQ(FloatQuad(FloatRect(43.0f, 35.2f, 15.3f, 0.0f)),
+  rect = PhysicalRect(LayoutUnit(22), LayoutUnit(15.2f), LayoutUnit(15.3f),
+                      LayoutUnit());
+  EXPECT_EQ(PhysicalRect(LayoutUnit(43), LayoutUnit(35.2f), rect.Width(),
+                         rect.Height()),
             rgm.MapToAncestor(rect, GetLayoutContainer(web_view, "CenterDiv")));
 
-  EXPECT_EQ(FloatQuad(FloatRect(43.0f, 35.2f, 15.3f, 0.0f)),
+  EXPECT_EQ(PhysicalRect(LayoutUnit(43), LayoutUnit(35.2f), rect.Width(),
+                         rect.Height()),
             rgm.MapToAncestor(rect, GetLayoutContainer(web_view, "InnerDiv")));
 
-  EXPECT_EQ(FloatQuad(FloatRect(43.0f, 35.2f, 15.3f, 0.0f)),
+  EXPECT_EQ(PhysicalRect(LayoutUnit(43), LayoutUnit(35.2f), rect.Width(),
+                         rect.Height()),
             rgm.MapToAncestor(rect, nullptr));
 }
 
@@ -319,41 +285,41 @@ TEST_F(LayoutGeometryMapTest, ContainsFixedPositionTest) {
   web_view->MainFrameWidget()->Resize(WebSize(1000, 1000));
   UpdateAllLifecyclePhases(web_view);
 
-  FloatRect rect(0.0f, 0.0f, 100.0f, 100.0f);
+  PhysicalRect rect(0, 0, 100, 100);
   LayoutGeometryMap rgm;
 
   // This fixed position element is not contained and so is attached at the top
   // of the viewport.
   rgm.PushMappingsToAncestor(GetLayoutBox(web_view, "simple-container"),
                              nullptr);
-  EXPECT_EQ(FloatRect(8.0f, 100.0f, 100.0f, 100.0f),
+  EXPECT_EQ(PhysicalRect(8, 100, 100, 100),
             AdjustForFrameScroll(web_view, rgm.AbsoluteRect(rect)));
   rgm.PushMappingsToAncestor(GetLayoutBox(web_view, "fixed1"),
                              GetLayoutBox(web_view, "simple-container"));
-  EXPECT_EQ(FloatRect(8.0f, 50.0f, 100.0f, 100.0f),
+  EXPECT_EQ(PhysicalRect(8, 50, 100, 100),
             AdjustForFrameScroll(web_view, rgm.AbsoluteRect(rect)));
   EXPECT_EQ(
-      FloatQuad(FloatRect(0.0f, -50.0f, 100.0f, 100.0f)),
+      PhysicalRect(0, -50, 100, 100),
       rgm.MapToAncestor(rect, GetLayoutBox(web_view, "simple-container")));
   rgm.PopMappingsToAncestor(static_cast<PaintLayer*>(nullptr));
 
   // Transforms contain fixed position descendants.
   rgm.PushMappingsToAncestor(GetLayoutBox(web_view, "has-transform"), nullptr);
-  EXPECT_EQ(FloatRect(8.0f, 100.0f, 100.0f, 100.0f),
+  EXPECT_EQ(PhysicalRect(8, 100, 100, 100),
             AdjustForFrameScroll(web_view, rgm.AbsoluteRect(rect)));
   rgm.PushMappingsToAncestor(GetLayoutBox(web_view, "fixed2"),
                              GetLayoutBox(web_view, "has-transform"));
-  EXPECT_EQ(FloatRect(8.0f, 100.0f, 100.0f, 100.0f),
+  EXPECT_EQ(PhysicalRect(8, 100, 100, 100),
             AdjustForFrameScroll(web_view, rgm.AbsoluteRect(rect)));
   rgm.PopMappingsToAncestor(static_cast<PaintLayer*>(nullptr));
 
   // Paint containment contains fixed position descendants.
   rgm.PushMappingsToAncestor(GetLayoutBox(web_view, "contains-paint"), nullptr);
-  EXPECT_EQ(FloatRect(8.0f, 100.0f, 100.0f, 100.0f),
+  EXPECT_EQ(PhysicalRect(8, 100, 100, 100),
             AdjustForFrameScroll(web_view, rgm.AbsoluteRect(rect)));
   rgm.PushMappingsToAncestor(GetLayoutBox(web_view, "fixed3"),
                              GetLayoutBox(web_view, "contains-paint"));
-  EXPECT_EQ(FloatRect(8.0f, 100.0f, 100.0f, 100.0f),
+  EXPECT_EQ(PhysicalRect(8, 100, 100, 100),
             AdjustForFrameScroll(web_view, rgm.AbsoluteRect(rect)));
   rgm.PopMappingsToAncestor(static_cast<PaintLayer*>(nullptr));
 }
@@ -374,9 +340,9 @@ TEST_F(LayoutGeometryMapTest, IframeTest) {
       GetFrameElement("test_frame", web_view, "InitialDiv"), nullptr);
   rgm.PushMappingsToAncestor(
       GetFrameElement("test_frame", web_view, "InitialDiv"), nullptr);
-  FloatRect rect(0.0f, 0.0f, 1.0f, 2.0f);
+  PhysicalRect rect(0, 0, 1, 2);
 
-  EXPECT_EQ(FloatQuad(FloatRect(8.0f, 8.0f, 1.0f, 2.0f)),
+  EXPECT_EQ(PhysicalRect(8, 8, 1, 2),
             rgm_no_frame.MapToAncestor(rect, nullptr));
 
   // Our initial rect looks like: (0, 0, 1, 2)
@@ -396,14 +362,12 @@ TEST_F(LayoutGeometryMapTest, IframeTest) {
   // That maximum x should likewise be p0.x + cos(30deg) = p0.x + 0.866.
   // And the maximum y should be p0.x + sin(30deg) + 2*cos(30deg)
   //      = p0.y + 2.232.
-  EXPECT_NEAR(69.5244f, RectFromQuad(rgm.MapToAncestor(rect, nullptr)).X(),
-              0.0001f);
-  EXPECT_NEAR(-44.0237, RectFromQuad(rgm.MapToAncestor(rect, nullptr)).Y(),
-              0.0001f);
-  EXPECT_NEAR(1.866, RectFromQuad(rgm.MapToAncestor(rect, nullptr)).Width(),
-              0.0001f);
-  EXPECT_NEAR(2.232, RectFromQuad(rgm.MapToAncestor(rect, nullptr)).Height(),
-              0.0001f);
+  FloatRect mapped_bounding_box =
+      rgm.MapToAncestorQuad(rect, nullptr).BoundingBox();
+  EXPECT_NEAR(69.5244f, mapped_bounding_box.X(), 0.0001f);
+  EXPECT_NEAR(-44.0237, mapped_bounding_box.Y(), 0.0001f);
+  EXPECT_NEAR(1.866, mapped_bounding_box.Width(), 0.0001f);
+  EXPECT_NEAR(2.232, mapped_bounding_box.Height(), 0.0001f);
 
   rgm.PopMappingsToAncestor(static_cast<PaintLayer*>(nullptr));
   rgm_no_frame.PopMappingsToAncestor(static_cast<PaintLayer*>(nullptr));
@@ -412,11 +376,11 @@ TEST_F(LayoutGeometryMapTest, IframeTest) {
       GetFrameElement("test_frame", web_view, "InnerDiv"), nullptr);
   rgm_no_frame.PushMappingsToAncestor(
       GetFrameElement("test_frame", web_view, "InnerDiv"), nullptr);
-  EXPECT_EQ(FloatQuad(FloatRect(21.0f, 6.0f, 1.0f, 2.0f)),
+  EXPECT_EQ(PhysicalRect(21, 6, 1, 2),
             rgm.MapToAncestor(rect, GetFrameLayoutContainer(
                                         "test_frame", web_view, "CenterDiv")));
   EXPECT_EQ(
-      FloatQuad(FloatRect(21.0f, 6.0f, 1.0f, 2.0f)),
+      PhysicalRect(21, 6, 1, 2),
       rgm_no_frame.MapToAncestor(
           rect, GetFrameLayoutContainer("test_frame", web_view, "CenterDiv")));
 
@@ -426,32 +390,29 @@ TEST_F(LayoutGeometryMapTest, IframeTest) {
   rgm_no_frame.PushMappingsToAncestor(
       GetFrameElement("test_frame", web_view, "OtherDiv"),
       GetFrameLayoutContainer("test_frame", web_view, "InnerDiv"));
-  EXPECT_EQ(FloatQuad(FloatRect(22.0f, 12.0f, 1.0f, 2.0f)),
+  EXPECT_EQ(PhysicalRect(22, 12, 1, 2),
             rgm.MapToAncestor(rect, GetFrameLayoutContainer(
                                         "test_frame", web_view, "CenterDiv")));
   EXPECT_EQ(
-      FloatQuad(FloatRect(22.0f, 12.0f, 1.0f, 2.0f)),
+      PhysicalRect(22, 12, 1, 2),
       rgm_no_frame.MapToAncestor(
           rect, GetFrameLayoutContainer("test_frame", web_view, "CenterDiv")));
 
-  EXPECT_EQ(FloatQuad(FloatRect(1.0f, 6.0f, 1.0f, 2.0f)),
+  EXPECT_EQ(PhysicalRect(1, 6, 1, 2),
             rgm.MapToAncestor(rect, GetFrameLayoutContainer(
                                         "test_frame", web_view, "InnerDiv")));
   EXPECT_EQ(
-      FloatQuad(FloatRect(1.0f, 6.0f, 1.0f, 2.0f)),
+      PhysicalRect(1, 6, 1, 2),
       rgm_no_frame.MapToAncestor(
           rect, GetFrameLayoutContainer("test_frame", web_view, "InnerDiv")));
 
-  EXPECT_NEAR(87.8975f, RectFromQuad(rgm.MapToAncestor(rect, nullptr)).X(),
-              0.0001f);
-  EXPECT_NEAR(8.1532f, RectFromQuad(rgm.MapToAncestor(rect, nullptr)).Y(),
-              0.0001f);
-  EXPECT_NEAR(1.866, RectFromQuad(rgm.MapToAncestor(rect, nullptr)).Width(),
-              0.0001f);
-  EXPECT_NEAR(2.232, RectFromQuad(rgm.MapToAncestor(rect, nullptr)).Height(),
-              0.0001f);
+  mapped_bounding_box = rgm.MapToAncestorQuad(rect, nullptr).BoundingBox();
+  EXPECT_NEAR(87.8975f, mapped_bounding_box.X(), 0.0001f);
+  EXPECT_NEAR(8.1532f, mapped_bounding_box.Y(), 0.0001f);
+  EXPECT_NEAR(1.866, mapped_bounding_box.Width(), 0.0001f);
+  EXPECT_NEAR(2.232, mapped_bounding_box.Height(), 0.0001f);
 
-  EXPECT_EQ(FloatQuad(FloatRect(50.0f, 44.0f, 1.0f, 2.0f)),
+  EXPECT_EQ(PhysicalRect(50, 44, 1, 2),
             rgm_no_frame.MapToAncestor(rect, nullptr));
 }
 
@@ -473,34 +434,29 @@ TEST_F(LayoutGeometryMapTest, ColumnTest) {
 
   LayoutGeometryMap rgm;
   rgm.PushMappingsToAncestor(GetLayoutBox(web_view, "A"), nullptr);
-  FloatRect rect(0.0f, 0.0f, 5.0f, 3.0f);
+  PhysicalRect rect(0, 0, 5, 3);
 
-  EXPECT_EQ(FloatQuad(FloatRect(8.0f, 8.0f, 5.0f, 3.0f)),
-            rgm.MapToAncestor(rect, nullptr));
+  EXPECT_EQ(PhysicalRect(8, 8, 5, 3), rgm.MapToAncestor(rect, nullptr));
 
   rgm.PopMappingsToAncestor(static_cast<PaintLayer*>(nullptr));
-  EXPECT_EQ(FloatQuad(FloatRect(0.0f, 0.0f, 5.0f, 3.0f)),
-            rgm.MapToAncestor(rect, nullptr));
+  EXPECT_EQ(PhysicalRect(0, 0, 5, 3), rgm.MapToAncestor(rect, nullptr));
 
   rgm.PushMappingsToAncestor(GetLayoutBox(web_view, "Col1"), nullptr);
-  EXPECT_EQ(FloatQuad(FloatRect(8.0f, 8.0f, 5.0f, 3.0f)),
-            rgm.MapToAncestor(rect, nullptr));
+  EXPECT_EQ(PhysicalRect(8, 8, 5, 3), rgm.MapToAncestor(rect, nullptr));
 
   rgm.PopMappingsToAncestor(static_cast<PaintLayer*>(nullptr));
   rgm.PushMappingsToAncestor(GetLayoutBox(web_view, "Col2"), nullptr);
-  EXPECT_NEAR(8.0f + offset, RectFromQuad(rgm.MapToAncestor(rect, nullptr)).X(),
-              0.1f);
-  EXPECT_NEAR(8.0f, RectFromQuad(rgm.MapToAncestor(rect, nullptr)).Y(), 0.1f);
-  EXPECT_EQ(5.0f, RectFromQuad(rgm.MapToAncestor(rect, nullptr)).Width());
-  EXPECT_EQ(3.0f, RectFromQuad(rgm.MapToAncestor(rect, nullptr)).Height());
+  PhysicalRect mapped_rect = rgm.MapToAncestor(rect, nullptr);
+  EXPECT_NEAR(8.0f + offset, mapped_rect.X().ToFloat(), 0.1f);
+  EXPECT_NEAR(8.0f, mapped_rect.Y().ToFloat(), 0.1f);
+  EXPECT_EQ(PhysicalSize(5, 3), mapped_rect.size);
 
   rgm.PopMappingsToAncestor(static_cast<PaintLayer*>(nullptr));
   rgm.PushMappingsToAncestor(GetLayoutBox(web_view, "Col3"), nullptr);
-  EXPECT_NEAR(8.0f + offset * 2.0f,
-              RectFromQuad(rgm.MapToAncestor(rect, nullptr)).X(), 0.1f);
-  EXPECT_NEAR(8.0f, RectFromQuad(rgm.MapToAncestor(rect, nullptr)).Y(), 0.1f);
-  EXPECT_EQ(5.0f, RectFromQuad(rgm.MapToAncestor(rect, nullptr)).Width());
-  EXPECT_EQ(3.0f, RectFromQuad(rgm.MapToAncestor(rect, nullptr)).Height());
+  mapped_rect = rgm.MapToAncestor(rect, nullptr);
+  EXPECT_NEAR(8.0f + offset * 2.0f, mapped_rect.X().ToFloat(), 0.1f);
+  EXPECT_NEAR(8.0f, mapped_rect.Y().ToFloat(), 0.1f);
+  EXPECT_EQ(PhysicalSize(5, 3), mapped_rect.size);
 }
 
 TEST_F(LayoutGeometryMapTest, FloatUnderInlineLayer) {
@@ -516,7 +472,7 @@ TEST_F(LayoutGeometryMapTest, FloatUnderInlineLayer) {
   auto* span = GetElement(web_view, "span")->GetLayoutBoxModelObject();
   auto* floating = GetLayoutBox(web_view, "float");
   auto* container = GetLayoutBox(web_view, "container");
-  FloatRect rect(3.0f, 4.0f, 10.0f, 8.0f);
+  PhysicalRect rect(3, 4, 10, 8);
 
   rgm.PushMappingsToAncestor(container->Layer(), nullptr);
   rgm.PushMappingsToAncestor(span->Layer(), container->Layer());
@@ -525,32 +481,26 @@ TEST_F(LayoutGeometryMapTest, FloatUnderInlineLayer) {
     // LayoutNG inline-level floats are children of their inline-level
     // containers. As such they are positioned relative to their inline-level
     // container, (and shifted by an additional 200,100 in this case).
-    EXPECT_EQ(FloatRect(203.0f, 104.0f, 10.0f, 8.0f),
-              RectFromQuad(rgm.MapToAncestor(rect, container)));
-    EXPECT_EQ(FloatRect(263.0f, 154.0f, 10.0f, 8.0f),
-              RectFromQuad(rgm.MapToAncestor(rect, nullptr)));
+    EXPECT_EQ(PhysicalRect(203, 104, 10, 8),
+              rgm.MapToAncestor(rect, container));
+    EXPECT_EQ(PhysicalRect(263, 154, 10, 8), rgm.MapToAncestor(rect, nullptr));
   } else {
-    EXPECT_EQ(rect, RectFromQuad(rgm.MapToAncestor(rect, container)));
-    EXPECT_EQ(FloatRect(63.0f, 54.0f, 10.0f, 8.0f),
-              RectFromQuad(rgm.MapToAncestor(rect, nullptr)));
+    EXPECT_EQ(rect, rgm.MapToAncestor(rect, container));
+    EXPECT_EQ(PhysicalRect(63, 54, 10, 8), rgm.MapToAncestor(rect, nullptr));
   }
 
   rgm.PopMappingsToAncestor(span->Layer());
-  EXPECT_EQ(FloatRect(203.0f, 104.0f, 10.0f, 8.0f),
-            RectFromQuad(rgm.MapToAncestor(rect, container)));
-  EXPECT_EQ(FloatRect(263.0f, 154.0f, 10.0f, 8.0f),
-            RectFromQuad(rgm.MapToAncestor(rect, nullptr)));
+  EXPECT_EQ(PhysicalRect(203, 104, 10, 8), rgm.MapToAncestor(rect, container));
+  EXPECT_EQ(PhysicalRect(263, 154, 10, 8), rgm.MapToAncestor(rect, nullptr));
 
   rgm.PushMappingsToAncestor(floating, span);
   if (RuntimeEnabledFeatures::LayoutNGEnabled()) {
-    EXPECT_EQ(FloatRect(203.0f, 104.0f, 10.0f, 8.0f),
-              RectFromQuad(rgm.MapToAncestor(rect, container)));
-    EXPECT_EQ(FloatRect(263.0f, 154.0f, 10.0f, 8.0f),
-              RectFromQuad(rgm.MapToAncestor(rect, nullptr)));
+    EXPECT_EQ(PhysicalRect(203, 104, 10, 8),
+              rgm.MapToAncestor(rect, container));
+    EXPECT_EQ(PhysicalRect(263, 154, 10, 8), rgm.MapToAncestor(rect, nullptr));
   } else {
-    EXPECT_EQ(rect, RectFromQuad(rgm.MapToAncestor(rect, container)));
-    EXPECT_EQ(FloatRect(63.0f, 54.0f, 10.0f, 8.0f),
-              RectFromQuad(rgm.MapToAncestor(rect, nullptr)));
+    EXPECT_EQ(rect, rgm.MapToAncestor(rect, container));
+    EXPECT_EQ(PhysicalRect(63, 54, 10, 8), rgm.MapToAncestor(rect, nullptr));
   }
 }
 

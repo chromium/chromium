@@ -35,6 +35,10 @@ void FakeAndroidSmsAppHelperDelegate::TearDownAndroidSmsApp() {
   is_default_to_persist_cookie_set_ = false;
 }
 
+bool FakeAndroidSmsAppHelperDelegate::HasAppBeenManuallyUninstalledByUser() {
+  return has_app_been_manually_uninstalled_;
+}
+
 }  // namespace multidevice_setup
 
 }  // namespace chromeos

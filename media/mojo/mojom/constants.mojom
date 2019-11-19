@@ -1,0 +1,21 @@
+// Copyright 2017 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module media.mojom;
+
+// The default service name for MediaService running the process specified by
+// the |mojo_media_host| gn variable. This must match the name in
+// media/mojo/services/media_manifest.json
+const string kMediaServiceName = "media";
+
+// The default service name for MediaService hosting Renderer and CDM service.
+// It's used when the default MediaService is hosted in a different process.
+// This must match the name in media/mojo/service/media_manifest.json
+// Currently this is used on Chromecast and the service is hosted in browser
+// process.
+const string kMediaRendererServiceName = "media_renderer";
+
+// The default service name for MediaService hosting only the CDM service.
+// This must match the name in media/mojo/services/cdm_manifest.json
+const string kCdmServiceName = "cdm";

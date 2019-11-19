@@ -9,10 +9,10 @@
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
-#include "base/test/scoped_task_environment.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/dbus/shill_device_client.h"
-#include "chromeos/dbus/shill_service_client.h"
+#include "base/test/task_environment.h"
+#include "chromeos/dbus/shill/shill_clients.h"
+#include "chromeos/dbus/shill/shill_device_client.h"
+#include "chromeos/dbus/shill/shill_service_client.h"
 #include "chromeos/login/login_state/login_state.h"
 #include "chromeos/network/network_connect.h"
 #include "chromeos/network/network_connection_handler.h"
@@ -92,7 +92,7 @@ class NetworkConnectTest : public testing::Test {
 
   void SetUp() override {
     testing::Test::SetUp();
-    DBusThreadManager::Initialize();
+    shill_clients::InitializeFakes();
     LoginState::Initialize();
     SetupDefaultShillState();
     NetworkHandler::Initialize();
@@ -113,15 +113,14 @@ class NetworkConnectTest : public testing::Test {
     mock_delegate_.reset();
     LoginState::Shutdown();
     NetworkHandler::Shutdown();
-    DBusThreadManager::Shutdown();
+    shill_clients::Shutdown();
     testing::Test::TearDown();
   }
 
  protected:
   void SetupDefaultShillState() {
     base::RunLoop().RunUntilIdle();
-    device_test_ =
-        DBusThreadManager::Get()->GetShillDeviceClient()->GetTestInterface();
+    device_test_ = ShillDeviceClient::Get()->GetTestInterface();
     device_test_->ClearDevices();
     device_test_->AddDevice("/device/stub_wifi_device1", shill::kTypeWifi,
                             "stub_wifi_device1");
@@ -131,8 +130,7 @@ class NetworkConnectTest : public testing::Test {
         kCellular1DevicePath, shill::kTechnologyFamilyProperty,
         base::Value(shill::kNetworkTechnologyGsm), /*notify_changed=*/true);
 
-    service_test_ =
-        DBusThreadManager::Get()->GetShillServiceClient()->GetTestInterface();
+    service_test_ = ShillServiceClient::Get()->GetTestInterface();
     service_test_->ClearServices();
     const bool add_to_visible = true;
 
@@ -177,7 +175,7 @@ class NetworkConnectTest : public testing::Test {
 
   std::unique_ptr<MockDelegate> mock_delegate_;
   std::unique_ptr<FakeTetherDelegate> fake_tether_delegate_;
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
   ShillDeviceClient::TestInterface* device_test_;
   ShillServiceClient::TestInterface* service_test_;
 

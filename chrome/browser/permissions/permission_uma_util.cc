@@ -13,6 +13,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/engagement/site_engagement_service.h"
+#include "chrome/browser/metrics/ukm_background_recorder_service.h"
 #include "chrome/browser/permissions/permission_decision_auto_blocker.h"
 #include "chrome/browser/permissions/permission_request.h"
 #include "chrome/browser/permissions/permission_util.h"
@@ -27,7 +28,7 @@
 
 #if defined(OS_ANDROID)
 #include "base/android/jni_string.h"
-#include "jni/PermissionUmaUtil_jni.h"
+#include "chrome/android/chrome_jni_headers/PermissionUmaUtil_jni.h"
 #endif
 
 // UMA keys need to be statically initialized so plain function would not
@@ -120,6 +121,27 @@ void RecordEngagementMetric(const std::vector<PermissionRequest*>& requests,
   base::UmaHistogramPercentage(name, engagement_score);
 }
 
+void RecordPermissionActionUkm(PermissionAction action,
+                               PermissionRequestGestureType gesture_type,
+                               ContentSettingsType permission,
+                               int dismiss_count,
+                               int ignore_count,
+                               PermissionSourceUI source_ui,
+                               base::Optional<ukm::SourceId> source_id) {
+  // Only record the permission change if the origin is in the history.
+  if (!source_id.has_value())
+    return;
+
+  ukm::builders::Permission(source_id.value())
+      .SetAction(static_cast<int64_t>(action))
+      .SetGesture(static_cast<int64_t>(gesture_type))
+      .SetPermissionType(static_cast<int64_t>(permission))
+      .SetPriorDismissals(std::min(kPriorCountCap, dismiss_count))
+      .SetPriorIgnores(std::min(kPriorCountCap, ignore_count))
+      .SetSource(static_cast<int64_t>(source_ui))
+      .Record(ukm::UkmRecorder::Get());
+}
+
 }  // anonymous namespace
 
 // PermissionUmaUtil ----------------------------------------------------------
@@ -171,10 +193,10 @@ void PermissionUmaUtil::PermissionRevoked(ContentSettingsType permission,
                                           Profile* profile) {
   // TODO(tsergeant): Expand metrics definitions for revocation to include all
   // permissions.
-  if (permission == CONTENT_SETTINGS_TYPE_NOTIFICATIONS ||
-      permission == CONTENT_SETTINGS_TYPE_GEOLOCATION ||
-      permission == CONTENT_SETTINGS_TYPE_MEDIASTREAM_MIC ||
-      permission == CONTENT_SETTINGS_TYPE_MEDIASTREAM_CAMERA) {
+  if (permission == ContentSettingsType::NOTIFICATIONS ||
+      permission == ContentSettingsType::GEOLOCATION ||
+      permission == ContentSettingsType::MEDIASTREAM_MIC ||
+      permission == ContentSettingsType::MEDIASTREAM_CAMERA) {
     // An unknown gesture type is passed in since gesture type is only
     // applicable in prompt UIs where revocations are not possible.
     RecordPermissionAction(permission, PermissionAction::REVOKED, source_ui,
@@ -207,6 +229,7 @@ void PermissionUmaUtil::RecordEmbargoPromptSuppressionFromSource(
     case PermissionStatusSource::INSECURE_ORIGIN:
     case PermissionStatusSource::FEATURE_POLICY:
     case PermissionStatusSource::VIRTUAL_URL_DIFFERENT_ORIGIN:
+    case PermissionStatusSource::WEB_KIOSK_APP_MODE:
       // The permission wasn't under embargo, so don't record anything. We may
       // embargo it later.
       break;
@@ -274,7 +297,7 @@ void PermissionUmaUtil::PermissionPromptResolved(
     // TODO(timloh): We only record these metrics for permissions which use
     // PermissionRequestImpl as the other subclasses don't support
     // GetGestureType and GetContentSettingsType.
-    if (permission == CONTENT_SETTINGS_TYPE_DEFAULT)
+    if (permission == ContentSettingsType::DEFAULT)
       continue;
 
     PermissionRequestGestureType gesture_type = request->GetGestureType();
@@ -295,7 +318,7 @@ void PermissionUmaUtil::PermissionPromptResolved(
         permission, priorIgnorePrefix,
         autoblocker->GetIgnoreCount(requesting_origin, permission));
 #if defined(OS_ANDROID)
-    if (permission == CONTENT_SETTINGS_TYPE_GEOLOCATION &&
+    if (permission == ContentSettingsType::GEOLOCATION &&
         permission_action != PermissionAction::IGNORED) {
       RecordWithBatteryBucket("Permissions.BatteryLevel." + action_string +
                               ".Geolocation");
@@ -310,7 +333,7 @@ void PermissionUmaUtil::RecordPermissionPromptPriorCount(
     int count) {
   // The user is not prompted for this permissions, thus there is no prompt
   // event to record a prior count for.
-  DCHECK_NE(CONTENT_SETTINGS_TYPE_BACKGROUND_SYNC, permission);
+  DCHECK_NE(ContentSettingsType::BACKGROUND_SYNC, permission);
 
   // Expand UMA_HISTOGRAM_COUNTS_100 so that we can use a dynamically suffixed
   // histogram name.
@@ -327,6 +350,11 @@ void PermissionUmaUtil::RecordWithBatteryBucket(const std::string& histogram) {
       env, base::android::ConvertUTF8ToJavaString(env, histogram));
 }
 #endif
+
+void PermissionUmaUtil::RecordInfobarDetailsExpanded(bool expanded) {
+  base::UmaHistogramBoolean("Permissions.Prompt.Infobar.DetailsExpanded",
+                            expanded);
+}
 
 void PermissionUmaUtil::RecordPermissionAction(
     ContentSettingsType permission,
@@ -345,14 +373,16 @@ void PermissionUmaUtil::RecordPermissionAction(
   if (web_contents) {
     ukm::SourceId source_id =
         ukm::GetSourceIdForWebContentsDocument(web_contents);
-    ukm::builders::Permission(source_id)
-        .SetAction(static_cast<int64_t>(action))
-        .SetGesture(static_cast<int64_t>(gesture_type))
-        .SetPermissionType(permission)
-        .SetPriorDismissals(std::min(kPriorCountCap, dismiss_count))
-        .SetPriorIgnores(std::min(kPriorCountCap, ignore_count))
-        .SetSource(static_cast<int64_t>(source_ui))
-        .Record(ukm::UkmRecorder::Get());
+    RecordPermissionActionUkm(action, gesture_type, permission, dismiss_count,
+                              ignore_count, source_ui, source_id);
+  } else {
+    // We only record a permission change if the origin is in the user's
+    // history.
+    ukm::UkmBackgroundRecorderFactory::GetForProfile(profile)
+        ->GetBackgroundSourceIdIfAllowed(
+            url::Origin::Create(requesting_origin),
+            base::BindOnce(&RecordPermissionActionUkm, action, gesture_type,
+                           permission, dismiss_count, ignore_count, source_ui));
   }
 
   bool secure_origin = content::IsOriginSecure(requesting_origin);
@@ -361,44 +391,44 @@ void PermissionUmaUtil::RecordPermissionAction(
     // Geolocation, MidiSysEx, Push, Media and Clipboard permissions are
     // disabled on insecure origins, so there's no need to record separate
     // metrics for secure/insecure.
-    case CONTENT_SETTINGS_TYPE_GEOLOCATION:
+    case ContentSettingsType::GEOLOCATION:
       UMA_HISTOGRAM_ENUMERATION("Permissions.Action.Geolocation", action,
                                 PermissionAction::NUM);
       break;
-    case CONTENT_SETTINGS_TYPE_NOTIFICATIONS:
+    case ContentSettingsType::NOTIFICATIONS:
       PERMISSION_ACTION_UMA(secure_origin, "Permissions.Action.Notifications",
                             "Permissions.Action.SecureOrigin.Notifications",
                             "Permissions.Action.InsecureOrigin.Notifications",
                             action);
       break;
-    case CONTENT_SETTINGS_TYPE_MIDI_SYSEX:
+    case ContentSettingsType::MIDI_SYSEX:
       UMA_HISTOGRAM_ENUMERATION("Permissions.Action.MidiSysEx", action,
                                 PermissionAction::NUM);
       break;
-    case CONTENT_SETTINGS_TYPE_PROTECTED_MEDIA_IDENTIFIER:
+    case ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER:
       PERMISSION_ACTION_UMA(secure_origin, "Permissions.Action.ProtectedMedia",
                             "Permissions.Action.SecureOrigin.ProtectedMedia",
                             "Permissions.Action.InsecureOrigin.ProtectedMedia",
                             action);
       break;
-    case CONTENT_SETTINGS_TYPE_MEDIASTREAM_MIC:
+    case ContentSettingsType::MEDIASTREAM_MIC:
       UMA_HISTOGRAM_ENUMERATION("Permissions.Action.AudioCapture", action,
                                 PermissionAction::NUM);
       break;
-    case CONTENT_SETTINGS_TYPE_MEDIASTREAM_CAMERA:
+    case ContentSettingsType::MEDIASTREAM_CAMERA:
       UMA_HISTOGRAM_ENUMERATION("Permissions.Action.VideoCapture", action,
                                 PermissionAction::NUM);
       break;
-    case CONTENT_SETTINGS_TYPE_PLUGINS:
+    case ContentSettingsType::PLUGINS:
       PERMISSION_ACTION_UMA(secure_origin, "Permissions.Action.Flash",
                             "Permissions.Action.SecureOrigin.Flash",
                             "Permissions.Action.InsecureOrigin.Flash", action);
       break;
-    case CONTENT_SETTINGS_TYPE_CLIPBOARD_READ:
+    case ContentSettingsType::CLIPBOARD_READ:
       UMA_HISTOGRAM_ENUMERATION("Permissions.Action.ClipboardRead", action,
                                 PermissionAction::NUM);
       break;
-    case CONTENT_SETTINGS_TYPE_PAYMENT_HANDLER:
+    case ContentSettingsType::PAYMENT_HANDLER:
       UMA_HISTOGRAM_ENUMERATION("Permissions.Action.PaymentHandler", action,
                                 PermissionAction::NUM);
       break;

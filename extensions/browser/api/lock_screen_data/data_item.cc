@@ -326,8 +326,7 @@ DataItem::DataItem(const std::string& id,
       context_(context),
       value_store_cache_(value_store_cache),
       task_runner_(task_runner),
-      crypto_key_(crypto_key),
-      weak_ptr_factory_(this) {}
+      crypto_key_(crypto_key) {}
 
 DataItem::~DataItem() = default;
 

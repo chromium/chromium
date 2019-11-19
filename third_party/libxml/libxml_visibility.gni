@@ -1,0 +1,13 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/compiler/compiler.gni")
+
+if (is_ios) {
+  declare_args() {
+    # iOS requires additional targets added to the libxml visibility list.
+    # Entries in this list must be strings relative to //ios_internal.
+    ios_libxml_visibility_additions = []
+  }
+}

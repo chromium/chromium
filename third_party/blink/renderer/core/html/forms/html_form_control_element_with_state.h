@@ -58,7 +58,8 @@ class CORE_EXPORT HTMLFormControlElementWithState
   bool IsFormControlElementWithState() const final;
 
  private:
-  bool ShouldForceLegacyLayout() const final { return true; }
+  bool TypeShouldForceLegacyLayout() const final { return true; }
+  int DefaultTabIndex() const override;
 
   // https://html.spec.whatwg.org/C/#autofill-anchor-mantle
   bool IsWearingAutofillAnchorMantle() const;

@@ -14,6 +14,9 @@ namespace features {
 COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE)
 extern const base::Feature kTaskPerMessage;
 
+COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE)
+extern const base::Feature kMojoRecordUnreadMessageCount;
+
 }  // namespace features
 }  // namespace mojo
 

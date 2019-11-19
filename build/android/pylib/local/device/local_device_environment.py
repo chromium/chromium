@@ -82,6 +82,20 @@ def handle_shard_failures_with(on_failure):
   return decorator
 
 
+def place_nomedia_on_device(dev, device_root):
+  """Places .nomedia file in test data root.
+
+  This helps to prevent system from scanning media files inside test data.
+
+  Args:
+    dev: Device to place .nomedia file.
+    device_root: Base path on device to place .nomedia file.
+  """
+
+  dev.RunShellCommand(['mkdir', '-p', device_root], check_return=True)
+  dev.WriteFile('%s/.nomedia' % device_root, 'https://crbug.com/796640')
+
+
 class LocalDeviceEnvironment(environment.Environment):
 
   def __init__(self, args, output_manager, _error_func):

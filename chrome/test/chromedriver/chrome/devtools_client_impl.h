@@ -68,12 +68,13 @@ class DevToolsClientImpl : public DevToolsClient {
 
   DevToolsClientImpl(DevToolsClientImpl* parent, const std::string& session_id);
 
-  typedef base::Callback<bool(
-      const std::string&,
-      int,
-      internal::InspectorMessageType*,
-      internal::InspectorEvent*,
-      internal::InspectorCommandResponse*)> ParserFunc;
+  typedef base::Callback<bool(const std::string&,
+                              int,
+                              std::string*,
+                              internal::InspectorMessageType*,
+                              internal::InspectorEvent*,
+                              internal::InspectorCommandResponse*)>
+      ParserFunc;
   DevToolsClientImpl(const SyncWebSocketFactory& factory,
                      const std::string& url,
                      const std::string& id,
@@ -91,6 +92,9 @@ class DevToolsClientImpl : public DevToolsClient {
   Status SendCommand(
       const std::string& method,
       const base::DictionaryValue& params) override;
+  Status SendCommandFromWebSocket(const std::string& method,
+                                  const base::DictionaryValue& params,
+                                  int client_command_id) override;
   Status SendCommandWithTimeout(
       const std::string& method,
       const base::DictionaryValue& params,
@@ -116,6 +120,7 @@ class DevToolsClientImpl : public DevToolsClient {
   Status HandleReceivedEvents() override;
   void SetDetached() override;
   void SetOwner(WebViewImpl* owner) override;
+  DevToolsClientImpl* GetRootClient();
 
  private:
   enum ResponseState {
@@ -142,14 +147,13 @@ class DevToolsClientImpl : public DevToolsClient {
     friend class base::RefCounted<ResponseInfo>;
     ~ResponseInfo();
   };
-
-  Status SendCommandInternal(
-      const std::string& method,
-      const base::DictionaryValue& params,
-      std::unique_ptr<base::DictionaryValue>* result,
-      bool expect_response,
-      bool wait_for_response,
-      const Timeout* timeout);
+  Status SendCommandInternal(const std::string& method,
+                             const base::DictionaryValue& params,
+                             std::unique_ptr<base::DictionaryValue>* result,
+                             bool expect_response,
+                             bool wait_for_response,
+                             int client_command_id,
+                             const Timeout* timeout);
   Status ProcessNextMessage(int expected_id, const Timeout& timeout);
   Status HandleMessage(int expected_id, const std::string& message);
   Status ProcessEvent(const internal::InspectorEvent& event);
@@ -161,13 +165,18 @@ class DevToolsClientImpl : public DevToolsClient {
 
   std::unique_ptr<SyncWebSocket> socket_;
   GURL url_;
-  DevToolsClientImpl* parent_;
   // WebViewImpl that owns this instance; nullptr for browser-wide DevTools.
   WebViewImpl* owner_;
   const std::string session_id_;
+  // parent_ / children_: it's a flat hierarchy - nesting is at most one level
+  // deep. children_ holds child sessions - identified by their session id -
+  // which send/receive messages via the socket_ of their parent.
+  DevToolsClientImpl* parent_;
   std::map<std::string, DevToolsClientImpl*> children_;
   bool crashed_;
   bool detached_;
+  // For the top-level session, this is the target id.
+  // For child sessions, it's the session id.
   const std::string id_;
   FrontendCloserFunc frontend_closer_func_;
   ParserFunc parser_func_;
@@ -178,7 +187,7 @@ class DevToolsClientImpl : public DevToolsClient {
   std::list<DevToolsEventListener*> unnotified_cmd_response_listeners_;
   scoped_refptr<ResponseInfo> unnotified_cmd_response_info_;
   std::map<int, scoped_refptr<ResponseInfo>> response_info_map_;
-  int next_id_;
+  int next_id_;  // The id identifying a particular request.
   int stack_count_;
 
   DISALLOW_COPY_AND_ASSIGN(DevToolsClientImpl);
@@ -186,12 +195,14 @@ class DevToolsClientImpl : public DevToolsClient {
 
 namespace internal {
 
-bool ParseInspectorMessage(
-    const std::string& message,
-    int expected_id,
-    InspectorMessageType* type,
-    InspectorEvent* event,
-    InspectorCommandResponse* command_response);
+bool ParseInspectorMessage(const std::string& message,
+                           int expected_id,
+                           std::string* session_id,
+                           InspectorMessageType* type,
+                           InspectorEvent* event,
+                           InspectorCommandResponse* command_response);
+
+Status ParseInspectorError(const std::string& error_json);
 
 }  // namespace internal
 

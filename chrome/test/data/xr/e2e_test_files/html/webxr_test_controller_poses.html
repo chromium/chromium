@@ -1,0 +1,57 @@
+<!doctype html>
+<!--
+Tests that WebXR controller poses are properly surfaced.
+-->
+<html>
+  <head>
+    <link rel="stylesheet" type="text/css" href="../resources/webxr_e2e.css">
+  </head>
+  <body>
+    <canvas id="webgl-canvas"></canvas>
+    <script src="../resources/webxr_e2e.js"></script>
+    <script src="../resources/webxr_boilerplate.js"></script>
+    <script>
+      let expectedMatrix = null;
+      let expectedIndex = -1;
+
+      function matricesApproximatelyEqual(a, b) {
+        console.error('Given ' + JSON.stringify(a));
+        console.error('Expecting ' + JSON.stringify(b));
+        if (a === null || b === null) {
+          return false;
+        }
+        if (a.length != b.length) {
+          return false;
+        }
+        for (let i = 0; i < a.length; ++i) {
+          if (Math.abs(a[i] - b[i]) > 0.00001){
+            return false;
+          }
+        }
+        return true;
+      }
+
+      function stepWaitForMatchingPose(index, m) {
+        expectedMatrix = m;
+        expectedIndex = index;
+        onImmersiveXRFrameCallback = function(session, frame) {
+          let inputSources = session.inputSources;
+          if (inputSources.length <= expectedIndex)
+            return
+          let inputSource = inputSources[expectedIndex];
+          if (!inputSource.gripSpace)
+            return
+          let refSpace = sessionInfos[getSessionType(session)].currentRefSpace;
+          let pose = frame.getPose(inputSource.gripSpace, refSpace);
+          if (!pose)
+            return
+          if (matricesApproximatelyEqual(
+              pose.transform.matrix, expectedMatrix)) {
+            onImmersiveXRFrameCallback = null;
+            finishJavaScriptStep();
+          }
+        }
+      }
+    </script>
+  </body>
+</html>

@@ -84,7 +84,10 @@ void LayoutListMarker::StyleWillChange(StyleDifference diff,
                                        const ComputedStyle& new_style) {
   if (Style() &&
       (new_style.ListStylePosition() != StyleRef().ListStylePosition() ||
-       new_style.ListStyleType() != StyleRef().ListStyleType())) {
+       new_style.ListStyleType() != StyleRef().ListStyleType() ||
+       (new_style.ListStyleType() == EListStyleType::kString &&
+        new_style.ListStyleStringValue() !=
+            StyleRef().ListStyleStringValue()))) {
     SetNeedsLayoutAndPrefWidthsRecalcAndFullPaintInvalidation(
         layout_invalidation_reason::kStyleChange);
   }
@@ -201,21 +204,31 @@ void LayoutListMarker::UpdateContent() {
       text_ = list_marker_text::GetText(StyleRef().ListStyleType(),
                                         list_item_->Value());
       break;
+    case ListStyleCategory::kStaticString:
+      text_ = StyleRef().ListStyleStringValue();
+      break;
   }
 }
 
 String LayoutListMarker::TextAlternative() const {
+  if (GetListStyleCategory() == ListStyleCategory::kStaticString)
+    return text_;
   UChar suffix =
       list_marker_text::Suffix(StyleRef().ListStyleType(), list_item_->Value());
   // Return suffix after the marker text, even in RTL, reflecting speech order.
   return text_ + suffix + ' ';
 }
 
-LayoutUnit LayoutListMarker::GetWidthOfTextWithSuffix() const {
+LayoutUnit LayoutListMarker::GetWidthOfText(ListStyleCategory category) const {
+  // TODO(crbug.com/1012289): this code doesn't support bidi algorithm.
   if (text_.IsEmpty())
     return LayoutUnit();
   const Font& font = StyleRef().GetFont();
   LayoutUnit item_width = LayoutUnit(font.Width(TextRun(text_)));
+  if (category == ListStyleCategory::kStaticString) {
+    // Don't add a suffix.
+    return item_width;
+  }
   // TODO(wkorman): Look into constructing a text run for both text and suffix
   // and painting them together.
   UChar suffix[2] = {
@@ -242,14 +255,16 @@ void LayoutListMarker::ComputePreferredLogicalWidths() {
   }
 
   LayoutUnit logical_width;
-  switch (GetListStyleCategory()) {
+  ListStyleCategory category = GetListStyleCategory();
+  switch (category) {
     case ListStyleCategory::kNone:
       break;
     case ListStyleCategory::kSymbol:
       logical_width = WidthOfSymbol(StyleRef());
       break;
     case ListStyleCategory::kLanguage:
-      logical_width = GetWidthOfTextWithSuffix();
+    case ListStyleCategory::kStaticString:
+      logical_width = GetWidthOfText(category);
       break;
   }
 
@@ -395,6 +410,8 @@ LayoutListMarker::ListStyleCategory LayoutListMarker::GetListStyleCategory(
   switch (type) {
     case EListStyleType::kNone:
       return ListStyleCategory::kNone;
+    case EListStyleType::kString:
+      return ListStyleCategory::kStaticString;
     case EListStyleType::kDisc:
     case EListStyleType::kCircle:
     case EListStyleType::kSquare:
@@ -468,18 +485,20 @@ LayoutRect LayoutListMarker::GetRelativeMarkerRect() const {
     return LayoutRect(LayoutPoint(), ImageBulletSize());
 
   LayoutRect relative_rect;
-  switch (GetListStyleCategory()) {
+  ListStyleCategory category = GetListStyleCategory();
+  switch (category) {
     case ListStyleCategory::kNone:
       return LayoutRect();
     case ListStyleCategory::kSymbol:
       return RelativeSymbolMarkerRect(StyleRef(), Size().Width());
-    case ListStyleCategory::kLanguage: {
+    case ListStyleCategory::kLanguage:
+    case ListStyleCategory::kStaticString: {
       const SimpleFontData* font_data = StyleRef().GetFont().PrimaryFont();
       DCHECK(font_data);
       if (!font_data)
         return relative_rect;
       relative_rect =
-          LayoutRect(LayoutUnit(), LayoutUnit(), GetWidthOfTextWithSuffix(),
+          LayoutRect(LayoutUnit(), LayoutUnit(), GetWidthOfText(category),
                      LayoutUnit(font_data->GetFontMetrics().Height()));
       break;
     }
@@ -517,10 +536,20 @@ LayoutRect LayoutListMarker::RelativeSymbolMarkerRect(
 }
 
 void LayoutListMarker::ListItemStyleDidChange() {
-  scoped_refptr<ComputedStyle> new_style = ComputedStyle::Create();
-  // The marker always inherits from the list item, regardless of where it might
-  // end up (e.g., in some deeply nested line box). See CSS3 spec.
-  new_style->InheritFrom(list_item_->StyleRef());
+  Node* list_item = list_item_->GetNode();
+  const ComputedStyle* cached_marker_style =
+      list_item->IsPseudoElement()
+          ? nullptr
+          : ToElement(list_item)->CachedStyleForPseudoElement(kPseudoIdMarker);
+  scoped_refptr<ComputedStyle> new_style;
+  if (cached_marker_style) {
+    new_style = ComputedStyle::Clone(*cached_marker_style);
+  } else {
+    // The marker always inherits from the list item, regardless of where it
+    // might end up (e.g., in some deeply nested line box). See CSS3 spec.
+    new_style = ComputedStyle::Create();
+    new_style->InheritFrom(list_item_->StyleRef());
+  }
   if (Style()) {
     // Reuse the current margins. Otherwise resetting the margins to initial
     // values would trigger unnecessary layout.

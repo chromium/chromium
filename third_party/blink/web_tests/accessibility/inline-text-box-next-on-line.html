@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <script src="../resources/testharness.js"></script>
 <script src="../resources/testharnessreport.js"></script>
-<script src="../resources/run-after-layout-and-paint.js"></script>
 
 <p id="paragraph">
   The <b id="quick">quick</b> brown fox
@@ -31,7 +30,7 @@
 </ol>
 
 <script>
-test_after_layout_and_paint(() => {
+test(() => {
   let axObj = accessibilityController.accessibleElementById('paragraph');
   // Find the first inline text box.
   while (axObj.childrenCount > 0)
@@ -59,7 +58,7 @@ test_after_layout_and_paint(() => {
   assert_array_equals(lineText, ['The ', 'quick', ' brown fox ']);
 }, 'Test |NextOnLine| and |PreviousOnLine| on |AXInlineTextBox|.');
 
-test_after_layout_and_paint(() => {
+test(() => {
   let axEditable = accessibilityController.accessibleElementById('contentEditable');
   // There should be two lines in this content editable.
   assert_equals(axEditable.childrenCount, 2);
@@ -101,7 +100,7 @@ test_after_layout_and_paint(() => {
   }
 }, 'Test |NextOnLine| and |PreviousOnLine| on |AXLayoutObject|.');
 
-test_after_layout_and_paint(() => {
+test(() => {
   let axObj = accessibilityController.accessibleElementById('paragraphWithLink');
   // There should be two static text children and a link in this paragraph.
   assert_equals(axObj.childrenCount, 3);
@@ -126,7 +125,7 @@ test_after_layout_and_paint(() => {
       'link', 'Paragraph with a ']);
 }, 'Test |NextOnLine| and |PreviousOnLine| on paragraphs with links.');
 
-test_after_layout_and_paint(() => {
+test(() => {
   let axObj = accessibilityController.accessibleElementById('paragraphWithAnonymousBlock');
   // There should be three static text children in this paragraph.
   assert_equals(axObj.childrenCount, 3);
@@ -151,7 +150,7 @@ test_after_layout_and_paint(() => {
       'anonymous block', 'Paragraph with an ']);
 }, 'Test |NextOnLine| and |PreviousOnLine| on paragraphs with anonymous blocks.');
 
-test_after_layout_and_paint(() => {
+test(() => {
   let axObj = accessibilityController.accessibleElementById('list');
   // There should be a list item in this list.
   assert_equals(axObj.childrenCount, 1);

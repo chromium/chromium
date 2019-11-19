@@ -11,7 +11,7 @@
 #include "base/bind.h"
 #include "base/callback_forward.h"
 #include "base/synchronization/lock.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/unguessable_token.h"
 #include "chromeos/components/nearby/library/callable.h"
 #include "chromeos/components/nearby/library/exception.h"
@@ -67,9 +67,9 @@ class SimpleCallable : public location::nearby::Callable<bool> {
 class SubmittableExecutorBaseTest : public testing::Test {
  protected:
   SubmittableExecutorBaseTest()
-      : scoped_task_environment_(
-            base::test::ScopedTaskEnvironment::MainThreadType::DEFAULT,
-            base::test::ScopedTaskEnvironment::ExecutionMode::QUEUED) {}
+      : task_environment_(
+            base::test::TaskEnvironment::MainThreadType::DEFAULT,
+            base::test::TaskEnvironment::ThreadPoolExecutionMode::QUEUED) {}
 
   ~SubmittableExecutorBaseTest() override = default;
 
@@ -99,7 +99,7 @@ class SubmittableExecutorBaseTest : public testing::Test {
                   : multi_thread_executor_->execute(CreateRunnable(task_id));
 
     // Ensures the Runnable will complete execution before this method returns.
-    scoped_task_environment_.RunUntilIdle();
+    task_environment_.RunUntilIdle();
   }
 
   std::shared_ptr<location::nearby::Future<bool>> SubmitCallable(
@@ -116,7 +116,7 @@ class SubmittableExecutorBaseTest : public testing::Test {
                       std::make_shared<SimpleCallable>()));
 
     // Ensures the Callable will complete execution before this method returns.
-    scoped_task_environment_.RunUntilIdle();
+    task_environment_.RunUntilIdle();
 
     return future;
   }
@@ -142,7 +142,7 @@ class SubmittableExecutorBaseTest : public testing::Test {
                             base::Unretained(this), task_id));
   }
 
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_;
 
  private:
   void OnTaskRun(const base::UnguessableToken& task_id) {
@@ -232,7 +232,7 @@ TEST_F(SubmittableExecutorBaseTest,
   base::UnguessableToken task_id = base::UnguessableToken::Create();
   single_thread_executor()->execute(CreateRunnable(task_id));
   single_thread_executor()->shutdown();
-  scoped_task_environment_.RunUntilIdle();
+  task_environment_.RunUntilIdle();
 
   EXPECT_EQ(1u, GetNumExecutedTasks());
   EXPECT_TRUE(HasTaskExecuted(task_id));
@@ -244,7 +244,7 @@ TEST_F(SubmittableExecutorBaseTest,
   base::UnguessableToken task_id = base::UnguessableToken::Create();
   multi_thread_executor()->execute(CreateRunnable(task_id));
   multi_thread_executor()->shutdown();
-  scoped_task_environment_.RunUntilIdle();
+  task_environment_.RunUntilIdle();
 
   EXPECT_EQ(1u, GetNumExecutedTasks());
   EXPECT_TRUE(HasTaskExecuted(task_id));

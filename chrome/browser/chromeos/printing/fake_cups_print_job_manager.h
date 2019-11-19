@@ -7,7 +7,6 @@
 
 #include <memory>
 #include <string>
-#include <utility>
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
@@ -37,7 +36,7 @@ class FakeCupsPrintJobManager : public CupsPrintJobManager {
 
   PrintJobs print_jobs_;
   static int next_job_id_;
-  base::WeakPtrFactory<FakeCupsPrintJobManager> weak_ptr_factory_;
+  base::WeakPtrFactory<FakeCupsPrintJobManager> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(FakeCupsPrintJobManager);
 };

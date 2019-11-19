@@ -49,7 +49,7 @@ void StyleSheetCollection::Swap(StyleSheetCollection& other) {
 
 void StyleSheetCollection::SwapSheetsForSheetList(
     HeapVector<Member<StyleSheet>>& sheets) {
-  ::blink::swap(style_sheets_for_style_sheet_list_, sheets);
+  swap(style_sheets_for_style_sheet_list_, sheets);
   sheet_list_dirty_ = false;
 }
 

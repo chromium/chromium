@@ -188,68 +188,6 @@ TEST(FlatTree, IsMultipass) {
                 "RandomAccessIterator is multipass");
 }
 
-TEST(FlatTree, LastUnique) {
-  using Pair = std::pair<int, int>;
-  using Vect = std::vector<Pair>;
-
-  auto cmp = [](const Pair& lhs, const Pair& rhs) {
-    return lhs.first == rhs.first;
-  };
-
-  // Empty case.
-  Vect empty;
-  EXPECT_EQ(empty.end(), LastUnique(empty.begin(), empty.end(), cmp));
-
-  // Single element.
-  Vect one;
-  one.push_back(Pair(1, 1));
-  EXPECT_EQ(one.end(), LastUnique(one.begin(), one.end(), cmp));
-  ASSERT_EQ(1u, one.size());
-  EXPECT_THAT(one, ElementsAre(Pair(1, 1)));
-
-  // Two elements, already unique.
-  Vect two_u;
-  two_u.push_back(Pair(1, 1));
-  two_u.push_back(Pair(2, 2));
-  EXPECT_EQ(two_u.end(), LastUnique(two_u.begin(), two_u.end(), cmp));
-  EXPECT_THAT(two_u, ElementsAre(Pair(1, 1), Pair(2, 2)));
-
-  // Two elements, dupes.
-  Vect two_d;
-  two_d.push_back(Pair(1, 1));
-  two_d.push_back(Pair(1, 2));
-  auto last = LastUnique(two_d.begin(), two_d.end(), cmp);
-  EXPECT_EQ(two_d.begin() + 1, last);
-  two_d.erase(last, two_d.end());
-  EXPECT_THAT(two_d, ElementsAre(Pair(1, 2)));
-
-  // Non-dupes, dupes, non-dupes.
-  Vect ndn;
-  ndn.push_back(Pair(1, 1));
-  ndn.push_back(Pair(2, 1));
-  ndn.push_back(Pair(2, 2));
-  ndn.push_back(Pair(2, 3));
-  ndn.push_back(Pair(3, 1));
-  last = LastUnique(ndn.begin(), ndn.end(), cmp);
-  EXPECT_EQ(ndn.begin() + 3, last);
-  ndn.erase(last, ndn.end());
-  EXPECT_THAT(ndn, ElementsAre(Pair(1, 1), Pair(2, 3), Pair(3, 1)));
-
-  // Dupes, non-dupes, dupes.
-  Vect dnd;
-  dnd.push_back(Pair(1, 1));
-  dnd.push_back(Pair(1, 2));
-  dnd.push_back(Pair(1, 3));
-  dnd.push_back(Pair(2, 1));
-  dnd.push_back(Pair(3, 1));
-  dnd.push_back(Pair(3, 2));
-  dnd.push_back(Pair(3, 3));
-  last = LastUnique(dnd.begin(), dnd.end(), cmp);
-  EXPECT_EQ(dnd.begin() + 3, last);
-  dnd.erase(last, dnd.end());
-  EXPECT_THAT(dnd, ElementsAre(Pair(1, 3), Pair(2, 1), Pair(3, 3)));
-}
-
 // ----------------------------------------------------------------------------
 // Class.
 
@@ -350,7 +288,6 @@ TEST(FlatTree, DefaultConstructor) {
 
 // flat_tree(InputIterator first,
 //           InputIterator last,
-//           FlatContainerDupes dupe_handling,
 //           const Compare& comp = Compare())
 
 TEST(FlatTree, RangeConstructor) {
@@ -362,12 +299,6 @@ TEST(FlatTree, RangeConstructor) {
                          MakeInputIterator(std::end(input_vals)));
     EXPECT_THAT(first_of,
                 ElementsAre(IntPair(1, 1), IntPair(2, 1), IntPair(3, 1)));
-
-    IntPairTree last_of(MakeInputIterator(std::begin(input_vals)),
-                        MakeInputIterator(std::end(input_vals)),
-                        KEEP_LAST_OF_DUPES);
-    EXPECT_THAT(last_of,
-                ElementsAre(IntPair(1, 3), IntPair(2, 3), IntPair(3, 3)));
   }
   {
     TreeWithStrangeCompare::value_type input_vals[] = {1, 1, 1, 2, 2,
@@ -375,7 +306,6 @@ TEST(FlatTree, RangeConstructor) {
 
     TreeWithStrangeCompare cont(MakeInputIterator(std::begin(input_vals)),
                                 MakeInputIterator(std::end(input_vals)),
-                                KEEP_FIRST_OF_DUPES,
                                 NonDefaultConstructibleCompare(0));
     EXPECT_THAT(cont, ElementsAre(1, 2, 3));
   }
@@ -408,7 +338,7 @@ TEST(FlatTree, MoveConstructor) {
   EXPECT_EQ(1U, moved.count(MoveOnlyInt(4)));
 }
 
-// flat_tree(std::vector<value_type>, FlatContainerDupes dupe_handling)
+// flat_tree(std::vector<value_type>)
 
 TEST(FlatTree, VectorConstructor) {
   using Pair = std::pair<int, MoveOnlyInt>;
@@ -434,15 +364,9 @@ TEST(FlatTree, VectorConstructor) {
   const Pair& first = *(tree.begin() + 1);
   ASSERT_EQ(2, first.first);
   ASSERT_EQ(0, first.second.data());
-
-  // Test KEEP_LAST_OF_DUPES with a simple vector constructor.
-  std::vector<IntPair> int_storage{{1, 1}, {1, 2}, {2, 1}};
-  IntPairTree int_tree(std::move(int_storage), KEEP_LAST_OF_DUPES);
-  EXPECT_THAT(int_tree, ElementsAre(IntPair(1, 2), IntPair(2, 1)));
 }
 
 // flat_tree(std::initializer_list<value_type> ilist,
-//           FlatContainerDupes dupe_handling,
 //           const Compare& comp = Compare())
 
 TEST(FlatTree, InitializerListConstructor) {
@@ -455,17 +379,13 @@ TEST(FlatTree, InitializerListConstructor) {
     EXPECT_THAT(cont, ElementsAre(1, 2, 3, 4, 5, 6, 8, 10));
   }
   {
-    TreeWithStrangeCompare cont({1, 2, 3, 4, 5, 6, 10, 8}, KEEP_FIRST_OF_DUPES,
+    TreeWithStrangeCompare cont({1, 2, 3, 4, 5, 6, 10, 8},
                                 NonDefaultConstructibleCompare(0));
     EXPECT_THAT(cont, ElementsAre(1, 2, 3, 4, 5, 6, 8, 10));
   }
   {
     IntPairTree first_of({{1, 1}, {2, 1}, {1, 2}});
     EXPECT_THAT(first_of, ElementsAre(IntPair(1, 1), IntPair(2, 1)));
-  }
-  {
-    IntPairTree last_of({{1, 1}, {2, 1}, {1, 2}}, KEEP_LAST_OF_DUPES);
-    EXPECT_THAT(last_of, ElementsAre(IntPair(1, 2), IntPair(2, 1)));
   }
 }
 
@@ -791,24 +711,8 @@ TEST(FlatTree, InsertIterIter) {
 
   {
     IntIntMap cont({{1, 1}, {2, 1}, {3, 1}, {4, 1}});
-    IntPair int_pairs[] = {{1, 2}};
-    cont.insert(std::begin(int_pairs), std::end(int_pairs), KEEP_LAST_OF_DUPES);
-    EXPECT_THAT(cont, ElementsAre(IntPair(1, 2), IntPair(2, 1), IntPair(3, 1),
-                                  IntPair(4, 1)));
-  }
-
-  {
-    IntIntMap cont({{1, 1}, {2, 1}, {3, 1}, {4, 1}});
     IntPair int_pairs[] = {{5, 1}};
     cont.insert(std::begin(int_pairs), std::end(int_pairs));
-    EXPECT_THAT(cont, ElementsAre(IntPair(1, 1), IntPair(2, 1), IntPair(3, 1),
-                                  IntPair(4, 1), IntPair(5, 1)));
-  }
-
-  {
-    IntIntMap cont({{1, 1}, {2, 1}, {3, 1}, {4, 1}});
-    IntPair int_pairs[] = {{5, 1}};
-    cont.insert(std::begin(int_pairs), std::end(int_pairs), KEEP_LAST_OF_DUPES);
     EXPECT_THAT(cont, ElementsAre(IntPair(1, 1), IntPair(2, 1), IntPair(3, 1),
                                   IntPair(4, 1), IntPair(5, 1)));
   }
@@ -819,14 +723,6 @@ TEST(FlatTree, InsertIterIter) {
     cont.insert(std::begin(int_pairs), std::end(int_pairs));
     EXPECT_THAT(cont, ElementsAre(IntPair(1, 1), IntPair(2, 1), IntPair(3, 1),
                                   IntPair(4, 1)));
-  }
-
-  {
-    IntIntMap cont({{1, 1}, {2, 1}, {3, 1}, {4, 1}});
-    IntPair int_pairs[] = {{3, 2}, {1, 2}, {4, 2}, {2, 2}};
-    cont.insert(std::begin(int_pairs), std::end(int_pairs), KEEP_LAST_OF_DUPES);
-    EXPECT_THAT(cont, ElementsAre(IntPair(1, 2), IntPair(2, 2), IntPair(3, 2),
-                                  IntPair(4, 2)));
   }
 
   {
@@ -837,16 +733,6 @@ TEST(FlatTree, InsertIterIter) {
     EXPECT_THAT(cont, ElementsAre(IntPair(1, 1), IntPair(2, 1), IntPair(3, 1),
                                   IntPair(4, 1), IntPair(5, 2), IntPair(6, 2),
                                   IntPair(7, 2), IntPair(8, 2)));
-  }
-
-  {
-    IntIntMap cont({{1, 1}, {2, 1}, {3, 1}, {4, 1}});
-    IntPair int_pairs[] = {{3, 2}, {1, 2}, {4, 2}, {2, 2}, {7, 2}, {6, 2},
-                           {8, 2}, {5, 2}, {5, 3}, {6, 3}, {7, 3}, {8, 3}};
-    cont.insert(std::begin(int_pairs), std::end(int_pairs), KEEP_LAST_OF_DUPES);
-    EXPECT_THAT(cont, ElementsAre(IntPair(1, 2), IntPair(2, 2), IntPair(3, 2),
-                                  IntPair(4, 2), IntPair(5, 3), IntPair(6, 3),
-                                  IntPair(7, 3), IntPair(8, 3)));
   }
 }
 

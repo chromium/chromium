@@ -10,12 +10,20 @@
 struct wl_client;
 
 namespace exo {
+class Surface;
+
 namespace wayland {
 
 void bind_linux_explicit_synchronization(wl_client* client,
                                          void* data,
                                          uint32_t version,
                                          uint32_t id);
+
+// Validates that |surface| adheres to the commit-time restrictions of the
+// zwp_linux_surface_synchronization interface. If any rules are violated the
+// function emits an error to the client and returns false. Otherwise, the
+// function returns true.
+bool linux_surface_synchronization_validate_commit(Surface* surface);
 
 }  // namespace wayland
 }  // namespace exo

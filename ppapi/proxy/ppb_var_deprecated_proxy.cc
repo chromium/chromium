@@ -280,11 +280,8 @@ PP_Var CreateObject(PP_Instance instance,
 
 }  // namespace
 
-PPB_Var_Deprecated_Proxy::PPB_Var_Deprecated_Proxy(
-    Dispatcher* dispatcher)
-    : InterfaceProxy(dispatcher),
-      ppb_var_impl_(NULL),
-      task_factory_(this) {
+PPB_Var_Deprecated_Proxy::PPB_Var_Deprecated_Proxy(Dispatcher* dispatcher)
+    : InterfaceProxy(dispatcher), ppb_var_impl_(nullptr) {
   if (!dispatcher->IsPlugin()) {
     ppb_var_impl_ = static_cast<const PPB_Var_Deprecated*>(
         dispatcher->local_get_interface()(PPB_VAR_DEPRECATED_INTERFACE));

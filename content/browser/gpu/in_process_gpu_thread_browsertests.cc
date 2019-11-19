@@ -33,9 +33,9 @@ void CreateGpuProcessHost() {
 
 void WaitUntilGpuProcessHostIsCreated() {
   base::RunLoop run_loop;
-  base::PostTaskWithTraitsAndReply(FROM_HERE, {content::BrowserThread::IO},
-                                   base::BindOnce(&CreateGpuProcessHost),
-                                   run_loop.QuitClosure());
+  base::PostTaskAndReply(FROM_HERE, {content::BrowserThread::IO},
+                         base::BindOnce(&CreateGpuProcessHost),
+                         run_loop.QuitClosure());
   run_loop.Run();
 }
 

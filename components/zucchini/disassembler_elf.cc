@@ -208,14 +208,12 @@ bool DisassemblerElf<Traits>::ParseHeader() {
 
     // Skip empty sections. These don't affect |offset_bound|, and don't
     // contribute to RVA-offset mapping.
-    if (section->sh_size == 0)
-      continue;
+    if (section->sh_size == 0) {
+      // Skipping empty sections is only safe if the |sh_offset| is within the
+      // image. Fail if this is not true as the input is ill-formed.
+      if (section->sh_offset >= image_.size())
+        return false;
 
-    // Be lax with RVAs: Assume they fit in int32_t, even for 64-bit. If
-    // assumption fails, simply skip the section with warning.
-    if (!RangeIsBounded(section->sh_addr, section->sh_size, kRvaBound) ||
-        !RangeIsBounded(section->sh_offset, section->sh_size, kOffsetBound)) {
-      LOG(WARNING) << "Section " << i << " does not fit in int32_t.";
       continue;
     }
 
@@ -371,21 +369,21 @@ void DisassemblerElfIntel<Traits>::ParseExecSection(
 
   ConstBufferView region(image_.begin() + section.sh_offset, section.sh_size);
   Abs32GapFinder gap_finder(image_, region, abs32_locations_, 4);
-  std::unique_ptr<Rel32FinderIntel> finder =
-      std::make_unique<typename Traits::Rel32FinderUse>(image_);
+  typename Traits::Rel32FinderUse finder;
   for (auto gap = gap_finder.GetNext(); gap.has_value();
        gap = gap_finder.GetNext()) {
-    finder->Reset(gap.value());
-    for (auto rel32 = finder->GetNext(); rel32.has_value();
-         rel32 = finder->GetNext()) {
+    finder.SetRegion(gap.value());
+    for (auto rel32 = finder.GetNext(); rel32.has_value();
+         rel32 = finder.GetNext()) {
       offset_t rel32_offset =
           base::checked_cast<offset_t>(rel32->location - image_.begin());
       rva_t rel32_rva = rva_t(rel32_offset + from_offset_to_rva);
+      DCHECK_NE(rel32_rva, kInvalidRva);
       rva_t target_rva = rel32_rva + 4 + image_.read<uint32_t>(rel32_offset);
       if (target_rva_checker.IsValid(target_rva) &&
           (rel32->can_point_outside_section ||
            (start_rva <= target_rva && target_rva < end_rva))) {
-        finder->Accept();
+        finder.Accept();
         rel32_locations_.push_back(rel32_offset);
       }
     }

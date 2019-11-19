@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/html/interaction/focus/the-autofocus-attribute/resources/utils.js"></script>
+<body>
+<script>
+
+async function setupBlankWindow(t) {
+  let w = window.open('/common/blank.html');
+  await waitForLoad(w);
+  t.add_cleanup(() => { w.close(); });
+  w.focus();
+  return w;
+}
+
+promise_test(async t => {
+  let w = await setupBlankWindow(t);
+  w.document.body.innerHTML = '<object data="/common/blank.html"><input autofocus></object>';
+  await waitUntilStableAutofocusState(w);
+  assert_equals(w.document.activeElement.tagName, 'BODY');
+}, 'An autofocus element in an OBJECT with a loaded frame should not be processed');
+
+promise_test(async t => {
+  let w = await setupBlankWindow(t);
+  w.document.body.innerHTML = '<object data="/common/non-existent.html"><input autofocus></object>';
+  await waitForEvent(w.document, 'focus', {capture:true});
+  assert_equals(w.document.activeElement.tagName, 'INPUT');
+}, 'An autofocus element in an OBJECT with a load-failed frame should be processed');
+
+promise_test(async t => {
+  let w = await setupBlankWindow(t);
+  w.document.body.innerHTML = '<object data="/media/1x1-green.png"><input autofocus></object>';
+  await waitUntilStableAutofocusState(w);
+  assert_equals(w.document.activeElement.tagName, 'BODY');
+}, 'An autofocus element in an OBJECT with a loaded image should not be processed');
+
+promise_test(async t => {
+  let w = await setupBlankWindow(t);
+  w.document.body.innerHTML = '<object data="/media/non-existent.png"><input autofocus></object>';
+  await waitForEvent(w.document, 'focus', {capture:true});
+  assert_equals(w.document.activeElement.tagName, 'INPUT');
+}, 'An autofocus element in an OBJECT with a load-failed image should be processed');
+
+promise_test(async t => {
+  let w = await setupBlankWindow(t);
+  w.document.body.innerHTML = `<object id=outer data="/media/non-existent.png">
+<object id=inner data="/media/non-existent-2.png">
+<input autofocus>
+</object>
+</object>`;
+  await waitForEvent(w.document, 'focus', {capture:true});
+  assert_equals(w.document.activeElement.tagName, 'INPUT');
+}, 'An autofocus element in nested OBJECTs with load-failed images should be processed');
+</script>

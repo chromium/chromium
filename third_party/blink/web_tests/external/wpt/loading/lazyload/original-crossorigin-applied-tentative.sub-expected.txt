@@ -1,0 +1,11 @@
+main frame - DidStartNavigation
+main frame - ReadyToCommitNavigation
+main frame - didCommitLoadForFrame
+main frame - didReceiveTitle: Deferred images with loading='lazy' use the original crossorigin attribute specified at the parse time
+main frame - didFinishDocumentLoadForFrame
+main frame - didHandleOnloadEventsForFrame
+main frame - didFinishLoadForFrame
+This is a testharness.js-based test.
+FAIL Test that when deferred image is loaded, it uses the crossorigin attribute specified at parse time. assert_unreached: The image load should not fail, trying to load with CORS headers set. Reached unreachable code
+Harness: the test ran to completion.
+

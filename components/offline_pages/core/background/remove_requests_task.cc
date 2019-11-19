@@ -14,8 +14,7 @@ RemoveRequestsTask::RemoveRequestsTask(
     RequestQueueStore::UpdateCallback callback)
     : store_(store),
       request_ids_(request_ids),
-      callback_(std::move(callback)),
-      weak_ptr_factory_(this) {}
+      callback_(std::move(callback)) {}
 
 RemoveRequestsTask::~RemoveRequestsTask() {}
 

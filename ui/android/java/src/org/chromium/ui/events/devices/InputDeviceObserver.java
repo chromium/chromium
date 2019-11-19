@@ -12,6 +12,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
+import org.chromium.base.annotations.NativeMethods;
 
 /**
  * A singleton that helps detecting changes in input devices through the interface
@@ -47,17 +48,17 @@ public class InputDeviceObserver implements InputDeviceListener {
     // Override InputDeviceListener methods
     @Override
     public void onInputDeviceChanged(int deviceId) {
-        nativeInputConfigurationChanged();
+        InputDeviceObserverJni.get().inputConfigurationChanged(InputDeviceObserver.this);
     }
 
     @Override
     public void onInputDeviceRemoved(int deviceId) {
-        nativeInputConfigurationChanged();
+        InputDeviceObserverJni.get().inputConfigurationChanged(InputDeviceObserver.this);
     }
 
     @Override
     public void onInputDeviceAdded(int deviceId) {
-        nativeInputConfigurationChanged();
+        InputDeviceObserverJni.get().inputConfigurationChanged(InputDeviceObserver.this);
     }
 
     private void attachObserver() {
@@ -77,5 +78,8 @@ public class InputDeviceObserver implements InputDeviceListener {
         }
     }
 
-    private native void nativeInputConfigurationChanged();
+    @NativeMethods
+    interface Natives {
+        void inputConfigurationChanged(InputDeviceObserver caller);
+    }
 }

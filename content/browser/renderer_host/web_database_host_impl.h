@@ -10,9 +10,12 @@
 #include "base/callback_forward.h"
 #include "base/strings/string16.h"
 #include "build/build_config.h"
+#include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/binding.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "storage/browser/database/database_tracker.h"
-#include "third_party/blink/public/platform/modules/webdatabase/web_database.mojom.h"
+#include "third_party/blink/public/mojom/webdatabase/web_database.mojom.h"
 
 namespace url {
 class Origin;
@@ -28,9 +31,10 @@ class CONTENT_EXPORT WebDatabaseHostImpl
                       scoped_refptr<storage::DatabaseTracker> db_tracker);
   ~WebDatabaseHostImpl() override;
 
-  static void Create(int process_id,
-                     scoped_refptr<storage::DatabaseTracker> db_tracker,
-                     blink::mojom::WebDatabaseHostRequest request);
+  static void Create(
+      int process_id,
+      scoped_refptr<storage::DatabaseTracker> db_tracker,
+      mojo::PendingReceiver<blink::mojom::WebDatabaseHost> receiver);
 
  private:
   FRIEND_TEST_ALL_PREFIXES(WebDatabaseHostImplTest, BadMessagesUnauthorized);
@@ -147,14 +151,14 @@ class CONTENT_EXPORT WebDatabaseHostImpl
   storage::DatabaseConnections database_connections_;
 
   // Interface to the render process WebDatabase.
-  blink::mojom::WebDatabasePtr database_provider_;
+  mojo::Remote<blink::mojom::WebDatabase> database_provider_;
 
   // The database tracker for the current browser context.
   const scoped_refptr<storage::DatabaseTracker> db_tracker_;
 
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.
-  base::WeakPtrFactory<WebDatabaseHostImpl> weak_ptr_factory_;
+  base::WeakPtrFactory<WebDatabaseHostImpl> weak_ptr_factory_{this};
 };
 
 }  // namespace content

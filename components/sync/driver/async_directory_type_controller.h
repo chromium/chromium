@@ -52,8 +52,6 @@ class AsyncDirectoryTypeController : public DirectoryDataTypeController {
   // For testing only.
   AsyncDirectoryTypeController();
 
-  SyncClient* sync_client() { return sync_client_; }
-
   // Start any dependent services that need to be running before we can
   // associate models. The default implementation is a no-op.
   // Return value:
@@ -98,10 +96,6 @@ class AsyncDirectoryTypeController : public DirectoryDataTypeController {
   std::unique_ptr<DataTypeErrorHandler> CreateErrorHandler() override;
 
  private:
-  // Posted on the backend thread by StartAssociationAsync().
-  void StartAssociationWithSharedChangeProcessor(
-      const scoped_refptr<SharedChangeProcessor>& shared_change_processor);
-
   // Calls Disconnect() on |shared_change_processor_|, then sets it to
   // null.  Must be called only by StartDoneImpl() or Stop() (on the
   // UI thread) and only after a call to Start() (i.e.,
@@ -140,9 +134,7 @@ class AsyncDirectoryTypeController : public DirectoryDataTypeController {
   // The shared change processor is the thread-safe interface to the
   // datatype.  We hold a reference to it from the UI thread so that
   // we can call Disconnect() on it from Stop()/StartDoneImpl().  Most
-  // of the work is done on the backend thread, and in
-  // StartAssociationWithSharedChangeProcessor() for this class in
-  // particular.
+  // of the work is done on the backend thread.
   //
   // Lifetime: The SharedChangeProcessor object is created on the UI
   // thread and passed on to the backend thread.  This reference is

@@ -31,7 +31,7 @@ class IncrementShownCountTask : public Task {
   bool complete_;
   bool result_;
 
-  base::WeakPtrFactory<IncrementShownCountTask> weak_factory_;
+  base::WeakPtrFactory<IncrementShownCountTask> weak_factory_{this};
 };
 }  // namespace explore_sites
 

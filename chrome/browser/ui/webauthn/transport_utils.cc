@@ -61,20 +61,20 @@ base::string16 GetTransportHumanReadableName(
   return l10n_util::GetStringUTF16(message_id);
 }
 
-const gfx::VectorIcon& GetTransportVectorIcon(
+const gfx::VectorIcon* GetTransportVectorIcon(
     AuthenticatorTransport transport) {
   switch (transport) {
     case AuthenticatorTransport::kBluetoothLowEnergy:
-      return kBluetoothIcon;
+      return &kBluetoothIcon;
     case AuthenticatorTransport::kNearFieldCommunication:
-      return kNfcIcon;
+      return &kNfcIcon;
     case AuthenticatorTransport::kUsbHumanInterfaceDevice:
-      return vector_icons::kUsbIcon;
+      return &vector_icons::kUsbIcon;
     case AuthenticatorTransport::kInternal:
-      return kFingerprintIcon;
+      return &kFingerprintIcon;
     case AuthenticatorTransport::kCloudAssistedBluetoothLowEnergy:
-      return kSmartphoneIcon;
+      return &kSmartphoneIcon;
   }
   NOTREACHED();
-  return kFingerprintIcon;
+  return &kFingerprintIcon;
 }

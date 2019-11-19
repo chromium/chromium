@@ -16,7 +16,7 @@
 #include "base/test/gtest_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/threading/platform_thread.h"
 #include "components/data_reduction_proxy/core/browser/data_reduction_proxy_util.h"
 #include "components/data_reduction_proxy/core/common/data_reduction_proxy_features.h"
@@ -38,10 +38,8 @@ namespace {
 
 class WarmupURLFetcherTest : public WarmupURLFetcher {
  public:
-  WarmupURLFetcherTest(
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
+  WarmupURLFetcherTest(network::mojom::URLLoaderFactory* url_loader_factory)
       : WarmupURLFetcher(
-            std::move(url_loader_factory),
             base::BindRepeating(
                 [](const std::vector<DataReductionProxyServer>&) {
                   return network::mojom::CustomProxyConfig::New();
@@ -51,7 +49,8 @@ class WarmupURLFetcherTest : public WarmupURLFetcher {
                 base::Unretained(this)),
             base::BindRepeating(&WarmupURLFetcherTest::GetHttpRttEstimate,
                                 base::Unretained(this)),
-            base::ThreadTaskRunnerHandle::Get()) {}
+            std::string() /*user_agent*/),
+        url_loader_factory_(url_loader_factory) {}
   ~WarmupURLFetcherTest() override {}
 
   size_t callback_received_count() const { return callback_received_count_; }
@@ -59,29 +58,6 @@ class WarmupURLFetcherTest : public WarmupURLFetcher {
     return proxy_server_last_;
   }
   FetchResult success_response_last() const { return success_response_last_; }
-
-  static void InitExperimentWithTimeout(
-      base::test::ScopedFeatureList* scoped_feature_list) {
-    std::map<std::string, std::string> params;
-    params["warmup_url_fetch_min_timeout_seconds"] = "10";
-    params["warmup_url_fetch_max_timeout_seconds"] = "60";
-    params["warmup_url_fetch_init_http_rtt_multiplier"] = "12";
-    scoped_feature_list->InitAndEnableFeatureWithParameters(
-        features::kDataReductionProxyRobustConnection, params);
-  }
-
-  static void InitExperimentWithFetchWaitTimeParams(
-      base::test::ScopedFeatureList* scoped_feature_list,
-      base::TimeDelta first_retry,
-      base::TimeDelta second_retry) {
-    std::map<std::string, std::string> params;
-    params["warmup_url_fetch_wait_timer_first_retry_seconds"] =
-        base::NumberToString(first_retry.InSeconds());
-    params["warmup_url_fetch_wait_timer_second_retry_seconds"] =
-        base::NumberToString(second_retry.InSeconds());
-    scoped_feature_list->InitAndEnableFeatureWithParameters(
-        features::kDataReductionProxyRobustConnection, params);
-  }
 
   base::TimeDelta GetFetchWaitTime() const override {
     if (!fetch_wait_time_)
@@ -120,6 +96,11 @@ class WarmupURLFetcherTest : public WarmupURLFetcher {
     http_rtt_override_ = http_rtt;
   }
 
+  network::mojom::URLLoaderFactory* GetNetworkServiceURLLoaderFactory(
+      const DataReductionProxyServer& proxy_server) override {
+    return url_loader_factory_;
+  }
+
  private:
   base::Optional<base::TimeDelta> GetHttpRttEstimate() const {
     if (http_rtt_override_)
@@ -139,18 +120,15 @@ class WarmupURLFetcherTest : public WarmupURLFetcher {
   FetchResult success_response_last_ = FetchResult::kFailed;
   base::Optional<base::TimeDelta> fetch_timeout_;
   base::Optional<base::TimeDelta> http_rtt_override_;
+  network::mojom::URLLoaderFactory* url_loader_factory_;
   DISALLOW_COPY_AND_ASSIGN(WarmupURLFetcherTest);
 };
 
 // Test that query param for the warmup URL is randomly set.
 TEST(WarmupURLFetcherTest, TestGetWarmupURLWithQueryParam) {
-  base::test::ScopedTaskEnvironment scoped_task_environment;
+  base::test::SingleThreadTaskEnvironment task_environment;
   network::TestURLLoaderFactory test_url_loader_factory;
-  auto test_shared_url_loader_factory =
-      base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-          &test_url_loader_factory);
-
-  WarmupURLFetcherTest warmup_url_fetcher(test_shared_url_loader_factory);
+  WarmupURLFetcherTest warmup_url_fetcher(&test_url_loader_factory);
 
   GURL gurl_original;
   warmup_url_fetcher.GetWarmupURLWithQueryParam(&gurl_original);
@@ -179,28 +157,24 @@ TEST(WarmupURLFetcherTest, TestGetWarmupURLWithQueryParam) {
 }
 
 TEST(WarmupURLFetcherTest, TestSuccessfulFetchWarmupURLNoViaHeader) {
-  base::test::ScopedTaskEnvironment scoped_task_environment;
+  base::test::SingleThreadTaskEnvironment task_environment;
   network::TestURLLoaderFactory test_url_loader_factory;
-  auto test_shared_url_loader_factory =
-      base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-          &test_url_loader_factory);
 
   base::HistogramTester histogram_tester;
 
   auto proxy_server = net::ProxyServer::Direct();
-  WarmupURLFetcherTest warmup_url_fetcher(test_shared_url_loader_factory);
+  WarmupURLFetcherTest warmup_url_fetcher(&test_url_loader_factory);
   EXPECT_FALSE(warmup_url_fetcher.IsFetchInFlight());
-  warmup_url_fetcher.FetchWarmupURL(
-      0, DataReductionProxyServer(proxy_server, ProxyServer::UNSPECIFIED_TYPE));
+  warmup_url_fetcher.FetchWarmupURL(0, DataReductionProxyServer(proxy_server));
   EXPECT_TRUE(warmup_url_fetcher.IsFetchInFlight());
-  scoped_task_environment.RunUntilIdle();
+  task_environment.RunUntilIdle();
 
-  auto resource_response_head =
-      network::CreateResourceResponseHead(net::HTTP_OK);
-  resource_response_head.proxy_server = proxy_server;
+  auto url_response_head = network::CreateURLResponseHead(net::HTTP_OK);
+  url_response_head->proxy_server = proxy_server;
   test_url_loader_factory.SimulateResponseWithoutRemovingFromPendingList(
-      test_url_loader_factory.GetPendingRequest(0), resource_response_head,
-      "foobarbaz", network::URLLoaderCompletionStatus(net::OK));
+      test_url_loader_factory.GetPendingRequest(0),
+      std::move(url_response_head), "foobarbaz",
+      network::URLLoaderCompletionStatus(net::OK));
 
   EXPECT_FALSE(warmup_url_fetcher.IsFetchInFlight());
 
@@ -229,31 +203,27 @@ TEST(WarmupURLFetcherTest, TestSuccessfulFetchWarmupURLNoViaHeader) {
 }
 
 TEST(WarmupURLFetcherTest, TestSuccessfulFetchWarmupURLWithViaHeader) {
-  base::test::ScopedTaskEnvironment scoped_task_environment;
+  base::test::SingleThreadTaskEnvironment task_environment;
   network::TestURLLoaderFactory test_url_loader_factory;
-  auto test_shared_url_loader_factory =
-      base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-          &test_url_loader_factory);
 
   base::HistogramTester histogram_tester;
 
   auto proxy_server = net::ProxyServer::Direct();
-  WarmupURLFetcherTest warmup_url_fetcher(test_shared_url_loader_factory);
+  WarmupURLFetcherTest warmup_url_fetcher(&test_url_loader_factory);
   EXPECT_FALSE(warmup_url_fetcher.IsFetchInFlight());
-  warmup_url_fetcher.FetchWarmupURL(
-      0, DataReductionProxyServer(proxy_server, ProxyServer::UNSPECIFIED_TYPE));
+  warmup_url_fetcher.FetchWarmupURL(0, DataReductionProxyServer(proxy_server));
   EXPECT_TRUE(warmup_url_fetcher.IsFetchInFlight());
-  scoped_task_environment.RunUntilIdle();
+  task_environment.RunUntilIdle();
 
-  auto resource_response_head =
-      network::CreateResourceResponseHead(net::HTTP_NOT_FOUND);
-  resource_response_head.proxy_server = proxy_server;
+  auto url_response_head = network::CreateURLResponseHead(net::HTTP_NOT_FOUND);
+  url_response_head->proxy_server = proxy_server;
   static const char kDataReductionProxyViaValue[] =
       "Via: 1.1 Chrome-Compression-Proxy";
-  resource_response_head.headers->AddHeader(kDataReductionProxyViaValue);
+  url_response_head->headers->AddHeader(kDataReductionProxyViaValue);
   test_url_loader_factory.SimulateResponseWithoutRemovingFromPendingList(
-      test_url_loader_factory.GetPendingRequest(0), resource_response_head,
-      "foobarbaz", network::URLLoaderCompletionStatus(net::OK));
+      test_url_loader_factory.GetPendingRequest(0),
+      std::move(url_response_head), "foobarbaz",
+      network::URLLoaderCompletionStatus(net::OK));
 
   EXPECT_FALSE(warmup_url_fetcher.IsFetchInFlight());
 
@@ -285,29 +255,25 @@ TEST(WarmupURLFetcherTest, TestSuccessfulFetchWarmupURLWithViaHeader) {
 
 TEST(WarmupURLFetcherTest,
      TestSuccessfulFetchWarmupURLWithViaHeaderExperimentNotEnabled) {
-  base::test::ScopedTaskEnvironment scoped_task_environment;
+  base::test::SingleThreadTaskEnvironment task_environment;
   network::TestURLLoaderFactory test_url_loader_factory;
-  auto test_shared_url_loader_factory =
-      base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-          &test_url_loader_factory);
 
   base::HistogramTester histogram_tester;
 
   auto proxy_server = net::ProxyServer::Direct();
-  WarmupURLFetcherTest warmup_url_fetcher(test_shared_url_loader_factory);
-  warmup_url_fetcher.FetchWarmupURL(
-      0, DataReductionProxyServer(proxy_server, ProxyServer::UNSPECIFIED_TYPE));
+  WarmupURLFetcherTest warmup_url_fetcher(&test_url_loader_factory);
+  warmup_url_fetcher.FetchWarmupURL(0, DataReductionProxyServer(proxy_server));
   base::RunLoop().RunUntilIdle();
 
-  auto resource_response_head =
-      network::CreateResourceResponseHead(net::HTTP_NO_CONTENT);
-  resource_response_head.proxy_server = proxy_server;
+  auto url_response_head = network::CreateURLResponseHead(net::HTTP_NO_CONTENT);
+  url_response_head->proxy_server = proxy_server;
   static const char kDataReductionProxyViaValue[] =
       "Via: 1.1 Chrome-Compression-Proxy";
-  resource_response_head.headers->AddHeader(kDataReductionProxyViaValue);
+  url_response_head->headers->AddHeader(kDataReductionProxyViaValue);
   test_url_loader_factory.SimulateResponseWithoutRemovingFromPendingList(
-      test_url_loader_factory.GetPendingRequest(0), resource_response_head,
-      "foobarbaz", network::URLLoaderCompletionStatus(net::OK));
+      test_url_loader_factory.GetPendingRequest(0),
+      std::move(url_response_head), "foobarbaz",
+      network::URLLoaderCompletionStatus(net::OK));
 
   histogram_tester.ExpectUniqueSample(
       "DataReductionProxy.WarmupURL.FetchInitiated", 1, 1);
@@ -329,25 +295,21 @@ TEST(WarmupURLFetcherTest,
 }
 
 TEST(WarmupURLFetcherTest, TestConnectionResetFetchWarmupURL) {
-  base::test::ScopedTaskEnvironment scoped_task_environment;
+  base::test::SingleThreadTaskEnvironment task_environment;
   network::TestURLLoaderFactory test_url_loader_factory;
-  auto test_shared_url_loader_factory =
-      base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-          &test_url_loader_factory);
 
   base::HistogramTester histogram_tester;
 
-  WarmupURLFetcherTest warmup_url_fetcher(test_shared_url_loader_factory);
+  WarmupURLFetcherTest warmup_url_fetcher(&test_url_loader_factory);
   EXPECT_FALSE(warmup_url_fetcher.IsFetchInFlight());
   warmup_url_fetcher.FetchWarmupURL(
-      0, DataReductionProxyServer(net::ProxyServer::Direct(),
-                                  ProxyServer::UNSPECIFIED_TYPE));
+      0, DataReductionProxyServer(net::ProxyServer::Direct()));
   EXPECT_TRUE(warmup_url_fetcher.IsFetchInFlight());
   base::RunLoop().RunUntilIdle();
 
   test_url_loader_factory.SimulateResponseWithoutRemovingFromPendingList(
       test_url_loader_factory.GetPendingRequest(0),
-      network::ResourceResponseHead(), "foobarbaz",
+      network::mojom::URLResponseHead::New(), "foobarbaz",
       network::URLLoaderCompletionStatus(net::ERR_CONNECTION_RESET));
 
   EXPECT_FALSE(warmup_url_fetcher.IsFetchInFlight());
@@ -375,22 +337,18 @@ TEST(WarmupURLFetcherTest, TestConnectionResetFetchWarmupURL) {
 }
 
 TEST(WarmupURLFetcherTest, TestFetchTimesout) {
-  base::test::ScopedTaskEnvironment scoped_task_environment;
+  base::test::SingleThreadTaskEnvironment task_environment;
   network::TestURLLoaderFactory test_url_loader_factory;
-  auto test_shared_url_loader_factory =
-      base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-          &test_url_loader_factory);
 
   base::HistogramTester histogram_tester;
 
-  WarmupURLFetcherTest warmup_url_fetcher(test_shared_url_loader_factory);
+  WarmupURLFetcherTest warmup_url_fetcher(&test_url_loader_factory);
   // Set the timeout to a very low value. This should cause warmup URL fetcher
   // to run the callback with appropriate error code.
   warmup_url_fetcher.SetFetchTimeout(base::TimeDelta::FromSeconds(0));
   EXPECT_FALSE(warmup_url_fetcher.IsFetchInFlight());
   warmup_url_fetcher.FetchWarmupURL(
-      0, DataReductionProxyServer(net::ProxyServer::Direct(),
-                                  ProxyServer::UNSPECIFIED_TYPE));
+      0, DataReductionProxyServer(net::ProxyServer::Direct()));
   EXPECT_TRUE(warmup_url_fetcher.IsFetchInFlight());
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(warmup_url_fetcher.IsFetchInFlight());
@@ -414,32 +372,28 @@ TEST(WarmupURLFetcherTest, TestFetchTimesout) {
 }
 
 TEST(WarmupURLFetcherTest, TestSuccessfulFetchWarmupURLWithDelay) {
-  base::test::ScopedTaskEnvironment scoped_task_environment(
-      base::test::ScopedTaskEnvironment::MainThreadType::MOCK_TIME);
+  base::test::SingleThreadTaskEnvironment task_environment(
+      base::test::SingleThreadTaskEnvironment::TimeSource::MOCK_TIME);
   network::TestURLLoaderFactory test_url_loader_factory;
-  auto test_shared_url_loader_factory =
-      base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-          &test_url_loader_factory);
 
   base::HistogramTester histogram_tester;
 
   auto proxy_server = net::ProxyServer::Direct();
-  WarmupURLFetcherTest warmup_url_fetcher(test_shared_url_loader_factory);
+  WarmupURLFetcherTest warmup_url_fetcher(&test_url_loader_factory);
   EXPECT_FALSE(warmup_url_fetcher.IsFetchInFlight());
   warmup_url_fetcher.SetFetchWaitTime(base::TimeDelta::FromMilliseconds(1));
-  warmup_url_fetcher.FetchWarmupURL(
-      1, DataReductionProxyServer(proxy_server, ProxyServer::UNSPECIFIED_TYPE));
-  scoped_task_environment.FastForwardBy(base::TimeDelta::FromMilliseconds(2));
+  warmup_url_fetcher.FetchWarmupURL(1, DataReductionProxyServer(proxy_server));
+  task_environment.FastForwardBy(base::TimeDelta::FromMilliseconds(2));
 
-  auto resource_response_head =
-      network::CreateResourceResponseHead(net::HTTP_NOT_FOUND);
-  resource_response_head.proxy_server = proxy_server;
+  auto url_response_head = network::CreateURLResponseHead(net::HTTP_NOT_FOUND);
+  url_response_head->proxy_server = proxy_server;
   static const char kDataReductionProxyViaValue[] =
       "Via: 1.1 Chrome-Compression-Proxy";
-  resource_response_head.headers->AddHeader(kDataReductionProxyViaValue);
+  url_response_head->headers->AddHeader(kDataReductionProxyViaValue);
   test_url_loader_factory.SimulateResponseWithoutRemovingFromPendingList(
-      test_url_loader_factory.GetPendingRequest(0), resource_response_head,
-      "foobarbaz", network::URLLoaderCompletionStatus(net::OK));
+      test_url_loader_factory.GetPendingRequest(0),
+      std::move(url_response_head), "foobarbaz",
+      network::URLLoaderCompletionStatus(net::OK));
 
   EXPECT_FALSE(warmup_url_fetcher.IsFetchInFlight());
   base::RunLoop().RunUntilIdle();
@@ -476,15 +430,11 @@ TEST(WarmupURLFetcherTest, TestFetchTimeoutIncreasing) {
 
   base::HistogramTester histogram_tester;
 
-  base::test::ScopedTaskEnvironment scoped_task_environment;
+  base::test::SingleThreadTaskEnvironment task_environment;
   network::TestURLLoaderFactory test_url_loader_factory;
-  auto test_shared_url_loader_factory =
-      base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-          &test_url_loader_factory);
 
-  DataReductionProxyServer proxy_server(net::ProxyServer::Direct(),
-                                        ProxyServer::UNSPECIFIED_TYPE);
-  WarmupURLFetcherTest warmup_url_fetcher(test_shared_url_loader_factory);
+  DataReductionProxyServer proxy_server(net::ProxyServer::Direct());
+  WarmupURLFetcherTest warmup_url_fetcher(&test_url_loader_factory);
   EXPECT_FALSE(warmup_url_fetcher.IsFetchInFlight());
 
   EXPECT_EQ(kMinTimeout, warmup_url_fetcher.GetFetchTimeout());
@@ -510,15 +460,11 @@ TEST(WarmupURLFetcherTest, TestFetchTimeoutIncreasing) {
 TEST(WarmupURLFetcherTest, TestFetchWaitTime) {
   base::HistogramTester histogram_tester;
 
-  base::test::ScopedTaskEnvironment scoped_task_environment;
+  base::test::SingleThreadTaskEnvironment task_environment;
   network::TestURLLoaderFactory test_url_loader_factory;
-  auto test_shared_url_loader_factory =
-      base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-          &test_url_loader_factory);
 
-  DataReductionProxyServer proxy_server(net::ProxyServer::Direct(),
-                                        ProxyServer::UNSPECIFIED_TYPE);
-  WarmupURLFetcherTest warmup_url_fetcher(test_shared_url_loader_factory);
+  DataReductionProxyServer proxy_server(net::ProxyServer::Direct());
+  WarmupURLFetcherTest warmup_url_fetcher(&test_url_loader_factory);
   EXPECT_FALSE(warmup_url_fetcher.IsFetchInFlight());
 
   warmup_url_fetcher.FetchWarmupURL(1, proxy_server);
@@ -532,77 +478,6 @@ TEST(WarmupURLFetcherTest, TestFetchWaitTime) {
   warmup_url_fetcher.FetchWarmupURL(1, proxy_server);
   EXPECT_EQ(base::TimeDelta::FromSeconds(1),
             warmup_url_fetcher.GetFetchWaitTime());
-}
-
-TEST(WarmupURLFetcherTest, TestFetchWaitTimeWithFieldTrial) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  base::TimeDelta first_retry(base::TimeDelta::FromSeconds(30));
-  base::TimeDelta second_retry(base::TimeDelta::FromSeconds(60));
-  WarmupURLFetcherTest::InitExperimentWithFetchWaitTimeParams(
-      &scoped_feature_list, first_retry, second_retry);
-
-  base::HistogramTester histogram_tester;
-
-  base::test::ScopedTaskEnvironment scoped_task_environment;
-  network::TestURLLoaderFactory test_url_loader_factory;
-  auto test_shared_url_loader_factory =
-      base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-          &test_url_loader_factory);
-
-  DataReductionProxyServer proxy_server(net::ProxyServer::Direct(),
-                                        ProxyServer::UNSPECIFIED_TYPE);
-  WarmupURLFetcherTest warmup_url_fetcher(test_shared_url_loader_factory);
-  EXPECT_FALSE(warmup_url_fetcher.IsFetchInFlight());
-
-  warmup_url_fetcher.FetchWarmupURL(1, proxy_server);
-  EXPECT_EQ(first_retry, warmup_url_fetcher.GetFetchWaitTime());
-
-  warmup_url_fetcher.FetchWarmupURL(2, proxy_server);
-  EXPECT_EQ(second_retry, warmup_url_fetcher.GetFetchWaitTime());
-
-  warmup_url_fetcher.FetchWarmupURL(1, proxy_server);
-  EXPECT_EQ(first_retry, warmup_url_fetcher.GetFetchWaitTime());
-}
-
-TEST(WarmupURLFetcherTest, TestFetchTimeoutIncreasingWithFieldTrial) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  WarmupURLFetcherTest::InitExperimentWithTimeout(&scoped_feature_list);
-
-  // Must remain in sync with InitExperimentWithTimeout().
-  constexpr base::TimeDelta kMinTimeout = base::TimeDelta::FromSeconds(10);
-  constexpr base::TimeDelta kMaxTimeout = base::TimeDelta::FromSeconds(60);
-
-  base::HistogramTester histogram_tester;
-
-  base::test::ScopedTaskEnvironment scoped_task_environment;
-  network::TestURLLoaderFactory test_url_loader_factory;
-  auto test_shared_url_loader_factory =
-      base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-          &test_url_loader_factory);
-
-  DataReductionProxyServer proxy_server(net::ProxyServer::Direct(),
-                                        ProxyServer::UNSPECIFIED_TYPE);
-  WarmupURLFetcherTest warmup_url_fetcher(test_shared_url_loader_factory);
-  EXPECT_FALSE(warmup_url_fetcher.IsFetchInFlight());
-
-  EXPECT_EQ(kMinTimeout, warmup_url_fetcher.GetFetchTimeout());
-
-  base::TimeDelta http_rtt = base::TimeDelta::FromSeconds(1);
-  warmup_url_fetcher.SetHttpRttOverride(http_rtt);
-  EXPECT_EQ(http_rtt * 12, warmup_url_fetcher.GetFetchTimeout());
-
-  warmup_url_fetcher.FetchWarmupURL(1, proxy_server);
-  EXPECT_EQ(http_rtt * 24, warmup_url_fetcher.GetFetchTimeout());
-
-  warmup_url_fetcher.FetchWarmupURL(2, proxy_server);
-  EXPECT_EQ(http_rtt * 48, warmup_url_fetcher.GetFetchTimeout());
-
-  http_rtt = base::TimeDelta::FromSeconds(5);
-  warmup_url_fetcher.SetHttpRttOverride(http_rtt);
-  EXPECT_EQ(kMaxTimeout, warmup_url_fetcher.GetFetchTimeout());
-
-  warmup_url_fetcher.FetchWarmupURL(0, proxy_server);
-  EXPECT_EQ(http_rtt * 12, warmup_url_fetcher.GetFetchTimeout());
 }
 
 }  // namespace

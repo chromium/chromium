@@ -146,7 +146,7 @@ class OWNERSHIP_EXPORT OwnerSettingsService : public KeyedService {
   base::ThreadChecker thread_checker_;
 
  private:
-  base::WeakPtrFactory<OwnerSettingsService> weak_factory_;
+  base::WeakPtrFactory<OwnerSettingsService> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(OwnerSettingsService);
 };

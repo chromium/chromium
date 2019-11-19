@@ -49,7 +49,7 @@ bool IsTimezonePrefsManaged(const std::string& pref_name);
 void UpdateSystemTimezone(Profile* profile);
 
 // Set system timezone to the given |timezone_id|, as long as the given |user|
-// is allowed to set it (so not a guest, public account or child).
+// is allowed to set it (so not a guest or public account).
 // Updates only the global system timezone - not specific to the user - and
 // doesn't care if perUserTimezone is enabled.
 // Returns |true| if the system timezone is set, false if the given user cannot.

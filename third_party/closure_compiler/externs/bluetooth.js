@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -55,6 +55,17 @@ chrome.bluetooth.FilterType = {
 };
 
 /**
+ * @enum {string}
+ * @see https://developer.chrome.com/extensions/bluetooth#type-Transport
+ */
+chrome.bluetooth.Transport = {
+  INVALID: 'invalid',
+  CLASSIC: 'classic',
+  LE: 'le',
+  DUAL: 'dual',
+};
+
+/**
  * @typedef {{
  *   address: string,
  *   name: string,
@@ -82,7 +93,9 @@ chrome.bluetooth.AdapterState;
  *   connectable: (boolean|undefined),
  *   uuids: (!Array<string>|undefined),
  *   inquiryRssi: (number|undefined),
- *   inquiryTxPower: (number|undefined)
+ *   inquiryTxPower: (number|undefined),
+ *   transport: (!chrome.bluetooth.Transport|undefined),
+ *   batteryPercentage: (number|undefined)
  * }}
  * @see https://developer.chrome.com/extensions/bluetooth#type-Device
  */

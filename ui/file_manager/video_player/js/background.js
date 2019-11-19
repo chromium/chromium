@@ -32,7 +32,7 @@ var background = new BackgroundBase();
 /**
  * Creates a unique windowId string. Each call increments the sequence number
  * used to create the string. The first call returns "VIDEO_PLAYER_APP_0".
- * @return {String} windowId The windowId string.
+ * @return {string} windowId The windowId string.
  */
 var generateWindowId = (function() {
   var seq = 0;
@@ -76,7 +76,7 @@ function openVideoPlayerWindow(urls) {
         return new Promise(function(fulfill, reject) {
           var urls = util.entriesToURLs(entries);
           var videoPlayer = new AppWindowWrapper(
-              'video_player.html', windowId, windowCreateOptions);
+              'video_player.html', assert(windowId), windowCreateOptions);
 
           videoPlayer.launch(
               {items: urls, position: position}, false,

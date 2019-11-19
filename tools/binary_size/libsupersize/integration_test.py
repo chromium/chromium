@@ -92,13 +92,6 @@ def _RunApp(name, args, debug_measures=False):
     return subprocess.check_output(argv, env=env).splitlines()
 
 
-def _DiffCounts(sym):
-  counts = sym.CountsByDiffStatus()
-  return (counts[models.DIFF_STATUS_CHANGED],
-          counts[models.DIFF_STATUS_ADDED],
-          counts[models.DIFF_STATUS_REMOVED])
-
-
 class IntegrationTest(unittest.TestCase):
   maxDiff = None  # Don't trucate diffs in errors.
   cached_size_info = {}
@@ -378,7 +371,7 @@ class IntegrationTest(unittest.TestCase):
 
     d = diff.Diff(size_info1, size_info2)
     d.raw_symbols = d.raw_symbols.Sorted()
-    self.assertEquals(d.raw_symbols.CountsByDiffStatus()[1:], [2, 2, 3])
+    self.assertEquals(d.raw_symbols.CountsByDiffStatus()[1:], (2, 2, 3))
     changed_sym = d.raw_symbols.WhereNameMatches('Patcher::Name_')[0]
     padding_sym = d.raw_symbols.WhereNameMatches('symbol gap 0')[0]
     bss_sym = d.raw_symbols.WhereInSection(models.SECTION_BSS)[0]
@@ -391,113 +384,6 @@ class IntegrationTest(unittest.TestCase):
     self.assertLess(padding_idx, bss_idx)
 
     return describe.GenerateLines(d, verbose=True)
-
-  def test_Diff_Aliases1(self):
-    size_info1 = self._CloneSizeInfo()
-    size_info2 = self._CloneSizeInfo()
-
-    # Find a list of exact 4 symbols with the same aliases in |size_info2|:
-    #   text@2a0010: BarAlias()
-    #   text@2a0010: FooAlias()
-    #   text@2a0010: blink::ContiguousContainerBase::shrinkToFit() @ path1
-    #   text@2a0010: blink::ContiguousContainerBase::shrinkToFit() @ path2
-    # The blink::...::shrinkToFit() group has another member:
-    #   text@2a0000: blink::ContiguousContainerBase::shrinkToFit() @ path3
-    a1, _, _, _ = (
-        size_info2.raw_symbols.Filter(lambda s: s.num_aliases == 4)[0].aliases)
-    # Remove FooAlias().
-    size_info2.raw_symbols -= [a1]
-    a1.aliases.remove(a1)
-
-    # From |size_info1| -> |size_info2|: 1 symbol is deleted.
-    d = diff.Diff(size_info1, size_info2)
-    # Total size should not change.
-    self.assertEquals(d.raw_symbols.pss, 0)
-    # 1 symbol is erased, and PSS distributed among 3 remaining aliases, and
-    # considered as change.
-    self.assertEquals((3, 0, 1), _DiffCounts(d.raw_symbols))
-    # Grouping combines 2 x blink::ContiguousContainerBase::shrinkToFit(), so
-    # now ther are 2 changed aliases.
-    self.assertEquals((2, 0, 1), _DiffCounts(d.symbols.GroupedByFullName()))
-
-    # From |size_info2| -> |size_info1|: 1 symbol is added.
-    d = diff.Diff(size_info2, size_info1)
-    self.assertEquals(d.raw_symbols.pss, 0)
-    self.assertEquals((3, 1, 0), _DiffCounts(d.raw_symbols))
-    self.assertEquals((2, 1, 0), _DiffCounts(d.symbols.GroupedByFullName()))
-
-  def test_Diff_Aliases2(self):
-    size_info1 = self._CloneSizeInfo()
-    size_info2 = self._CloneSizeInfo()
-
-    # Same list of 4 symbols as before.
-    a1, _, a2, _ = (
-        size_info2.raw_symbols.Filter(lambda s: s.num_aliases == 4)[0].aliases)
-    # Remove BarAlias() and blink::...::shrinkToFit().
-    size_info2.raw_symbols -= [a1, a2]
-    a1.aliases.remove(a1)
-    a1.aliases.remove(a2)
-
-    # From |size_info1| -> |size_info2|: 2 symbols are deleted.
-    d = diff.Diff(size_info1, size_info2)
-    self.assertEquals(d.raw_symbols.pss, 0)
-    self.assertEquals((2, 0, 2), _DiffCounts(d.raw_symbols))
-    self.assertEquals((2, 0, 1), _DiffCounts(d.symbols.GroupedByFullName()))
-
-    # From |size_info2| -> |size_info1|: 2 symbols are added.
-    d = diff.Diff(size_info2, size_info1)
-    self.assertEquals(d.raw_symbols.pss, 0)
-    self.assertEquals((2, 2, 0), _DiffCounts(d.raw_symbols))
-    self.assertEquals((2, 1, 0), _DiffCounts(d.symbols.GroupedByFullName()))
-
-  def test_Diff_Aliases4(self):
-    size_info1 = self._CloneSizeInfo()
-    size_info2 = self._CloneSizeInfo()
-
-    # Same list of 4 symbols as before.
-    a1, a2, a3, a4 = (
-        size_info2.raw_symbols.Filter(lambda s: s.num_aliases == 4)[0].aliases)
-
-    # Remove all 4 aliases.
-    size_info2.raw_symbols -= [a1, a2, a3, a4]
-
-    # From |size_info1| -> |size_info2|: 4 symbols are deleted.
-    d = diff.Diff(size_info1, size_info2)
-    self.assertEquals(d.raw_symbols.pss, -a1.size)
-    self.assertEquals((0, 0, 4), _DiffCounts(d.raw_symbols))
-    # When grouped, BarAlias() and FooAlias() are deleted, but the
-    # blink::...::shrinkToFit() has 1 remaining symbol, so is changed.
-    self.assertEquals((1, 0, 2), _DiffCounts(d.symbols.GroupedByFullName()))
-
-    # From |size_info2| -> |size_info1|: 4 symbols are added.
-    d = diff.Diff(size_info2, size_info1)
-    self.assertEquals(d.raw_symbols.pss, a1.size)
-    self.assertEquals((0, 4, 0), _DiffCounts(d.raw_symbols))
-    self.assertEquals((1, 2, 0), _DiffCounts(d.symbols.GroupedByFullName()))
-
-  def test_Diff_Clustering(self):
-    size_info1 = self._CloneSizeInfo()
-    size_info2 = self._CloneSizeInfo()
-    S = models.SECTION_TEXT
-    size_info1.symbols += [
-        models.Symbol(S, 11, name='.L__unnamed_1193', object_path='a'), # 1
-        models.Symbol(S, 22, name='.L__unnamed_1194', object_path='a'), # 2
-        models.Symbol(S, 33, name='.L__unnamed_1195', object_path='b'), # 3
-        models.Symbol(S, 44, name='.L__bar_195', object_path='b'), # 4
-        models.Symbol(S, 55, name='.L__bar_1195', object_path='b'), # 5
-    ]
-    size_info2.symbols += [
-        models.Symbol(S, 33, name='.L__unnamed_2195', object_path='b'), # 3
-        models.Symbol(S, 11, name='.L__unnamed_2194', object_path='a'), # 1
-        models.Symbol(S, 22, name='.L__unnamed_2193', object_path='a'), # 2
-        models.Symbol(S, 44, name='.L__bar_2195', object_path='b'), # 4
-        models.Symbol(S, 55, name='.L__bar_295', object_path='b'), # 5
-    ]
-    d = diff.Diff(size_info1, size_info2)
-    d.symbols = d.symbols.Sorted()
-    self.assertEquals(d.symbols.CountsByDiffStatus()[models.DIFF_STATUS_ADDED],
-                      0)
-    self.assertEquals(d.symbols.size, 0)
 
   @_CompareWithGolden()
   def test_FullDescription(self):

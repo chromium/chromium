@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef NGAbsoluteUtils_h
-#define NGAbsoluteUtils_h
+#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_NG_ABSOLUTE_UTILS_H_
+#define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_NG_ABSOLUTE_UTILS_H_
 
 #include "base/optional.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/layout/geometry/logical_size.h"
+#include "third_party/blink/renderer/core/layout/geometry/physical_size.h"
 #include "third_party/blink/renderer/core/layout/min_max_size.h"
-#include "third_party/blink/renderer/core/layout/ng/geometry/ng_logical_size.h"
-#include "third_party/blink/renderer/core/layout/ng/geometry/ng_physical_size.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 
 namespace blink {
@@ -17,70 +17,72 @@ namespace blink {
 class ComputedStyle;
 class LayoutObject;
 class NGConstraintSpace;
-struct NGStaticPosition;
+struct NGLogicalStaticPosition;
 
-struct CORE_EXPORT NGAbsolutePhysicalPosition {
-  NGPhysicalBoxStrut inset;
-  NGPhysicalSize size;
-  NGPhysicalBoxStrut margins;
-  String ToString() const;
+struct CORE_EXPORT NGLogicalOutOfFlowPosition {
+  NGBoxStrut inset;
+  LogicalSize size;
+  NGBoxStrut margins;
 };
 
-// Implements <dialog> special case abspos static positining.
-// Returns new dialog top position if layout_dialog requires
-// <dialog> abspos centering.
+// Implements <dialog> static positioning.
+//
+// Returns new dialog top position if layout_dialog requires <dialog>
+// OOF-positioned centering.
 CORE_EXPORT base::Optional<LayoutUnit> ComputeAbsoluteDialogYPosition(
     const LayoutObject& layout_dialog,
     LayoutUnit height);
 
-// The following routines implement absolute size resolution algorithm.
+// The following routines implement the absolute size resolution algorithm.
 // https://www.w3.org/TR/css-position-3/#abs-non-replaced-width
 //
-// The size is computed as NGAbsolutePhysicalPosition.
+// The size is computed as |NGLogicalOutOfFlowPosition|.
 // It needs to be computed in 4 stages:
-// 1. If AbsoluteNeedsChildInlineSize compute estimated inline_size using
-//    MinMaxSize.ShrinkToFit.
-// 2. Compute part of PhysicalPosition that depends upon child inline size
-//    with ComputePartialAbsoluteWithChildInlineSize.
-// 3. If AbsoluteNeedsChildBlockSize compute estimated block_size by
+// 1. If |AbsoluteNeedsChildInlineSize| is true, compute estimated inline_size
+//    using |NGBlockNode::MinMaxSize|.
+// 2. Compute part of the |NGLogicalOutOfFlowPosition| which depends on the
+//    child inline-size with |ComputePartialAbsoluteWithChildInlineSize|.
+// 3. If |AbsoluteNeedsChildBlockSize| is true, compute estimated block_size by
 //    performing layout with the inline_size calculated from (2).
-// 4. Compute full PhysicalPosition by filling it in with parts that depend
-//    upon child's block_size.
+// 4. Compute the full |NGLogicalOutOfFlowPosition| with
+//    |ComputeFullAbsoluteWithChildBlockSize|.
 
-// True if ComputePartialAbsoluteWithChildInlineSize will need
-// estimated inline size.
+// Returns true if |ComputePartialAbsoluteWithChildInlineSize| will need an
+// estimated inline-size.
 CORE_EXPORT bool AbsoluteNeedsChildInlineSize(const ComputedStyle&);
 
-// True if ComputeFullAbsoluteWithChildBlockSize will need
-// estimated block size.
+// Returns true if |ComputeFullAbsoluteWithChildBlockSize| will need an
+// estimated block-size.
 CORE_EXPORT bool AbsoluteNeedsChildBlockSize(const ComputedStyle&);
 
-// Compute part of position that depends on child's inline_size.
-// replaced_size should be set if and only if element is replaced element.
-// Returns partially filled position.
-CORE_EXPORT NGAbsolutePhysicalPosition
+// Computes part of the absolute position which depends on the child's
+// inline-size.
+// |replaced_size| should be set if and only if element is replaced element.
+// Returns the partially filled position.
+CORE_EXPORT NGLogicalOutOfFlowPosition
 ComputePartialAbsoluteWithChildInlineSize(
     const NGConstraintSpace&,
     const ComputedStyle&,
     const NGBoxStrut& border_padding,
-    const NGStaticPosition&,
+    const NGLogicalStaticPosition&,
     const base::Optional<MinMaxSize>& child_minmax,
-    const base::Optional<NGLogicalSize>& replaced_size,
+    const base::Optional<LogicalSize>& replaced_size,
     const WritingMode container_writing_mode,
     const TextDirection container_direction);
 
-// Compute rest of NGPhysicalRect that depends on child's block_size.
+// Computes the rest of the absolute position which depends on child's
+// block-size.
 CORE_EXPORT void ComputeFullAbsoluteWithChildBlockSize(
     const NGConstraintSpace&,
     const ComputedStyle&,
     const NGBoxStrut& border_padding,
-    const NGStaticPosition&,
+    const NGLogicalStaticPosition&,
     const base::Optional<LayoutUnit>& child_block_size,
-    const base::Optional<NGLogicalSize>& replaced_size,
+    const base::Optional<LogicalSize>& replaced_size,
     const WritingMode container_writing_mode,
     const TextDirection container_direction,
-    NGAbsolutePhysicalPosition* position);
+    NGLogicalOutOfFlowPosition* position);
 
 }  // namespace blink
 
-#endif  // NGAbsoluteUtils_h
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_NG_ABSOLUTE_UTILS_H_

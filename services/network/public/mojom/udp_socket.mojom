@@ -66,22 +66,22 @@ struct UDPSocketOptions {
   // Sets the OS receive buffer size (in bytes) for the socket. This is the
   // SO_RCVBUF socket option. The kernel allocates this much to hold the data
   // arriving into this socket between the time when data arrives over the
-  // network and when it is read by UDPSocketReceiver. If buffer is full,
+  // network and when it is read by UDPSocketListener. If buffer is full,
   // new packets will be discarded. Default value is 0, in which case, OS's
   // default value will be used.
   int32 receive_buffer_size = 0;
 };
 
 // UDPSocket is an interface that exposes UDP socket functionalities.
-// UDPSocketReceiver is an interface that allows consumers to consume data
+// UDPSocketListener is an interface that allows consumers to consume data
 // received by the UDPSocket. The typical flow of using the interfaces is:
 // - Acquire a UDPSocket interface pointer and optionally supply a non-null
-//   UDPSocketReceiverPtr. If consumers are not interested in received data, a
-//   null UDPSocketReceiverPtr is acceptable.
+//   UDPSocketListenerPtr. If consumers are not interested in received data, a
+//   null UDPSocketListenerPtr is acceptable.
 // - Use either Bind() or Connect() before datagrams can be sent or received.
 // - (optional) Invoke setters (e.g. SetBroadcast()).
 // - Send / request to receive datagrams. Received datagrams will be delivered
-//   to the bound receiver's OnReceived() call.
+//   to the bound listener's OnReceived() call.
 // - Close the socket by destroying the interface pointer.
 interface UDPSocket {
   // Binds the address/port for this socket to |local_addr|. Caller can use port
@@ -128,8 +128,8 @@ interface UDPSocket {
   // group before destroying the socket. Returns a net error code.
   LeaveGroup(IPAddress group_address) => (int32 result);
 
-  // Notifies that the receiver is ready to accept |number| of datagrams.
-  // Correspondingly, OnReceived() of the UDPSocketReceiver interface will be
+  // Notifies that the listener is ready to accept |number| of datagrams.
+  // Correspondingly, OnReceived() of the UDPSocketListener interface will be
   // called |number| times (errors also count), unless the connection is closed
   // before that. The implementation may return net::ERR_INSUFFICIENT_RESOURCES
   // in an OnReceived() callback if the service doesn't have enough resource to
@@ -207,7 +207,7 @@ interface UDPSocket {
 
 // An interface the consumers of UDPSocket can implement to listen for incoming
 // packets. This interface is to be used together when requesting a UDPSocket.
-interface UDPSocketReceiver {
+interface UDPSocketListener {
   // Invoked when data is received.
   // - When UDPSocket is used with Bind():
   //   On success, |result| is net::OK. |src_addr| indicates the address of the

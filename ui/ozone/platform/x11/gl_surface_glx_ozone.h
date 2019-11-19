@@ -6,12 +6,10 @@
 #define UI_OZONE_PLATFORM_X11_GL_SURFACE_GLX_OZONE_H_
 
 #include "base/macros.h"
-#include "ui/events/platform/x11/x11_event_source_libevent.h"
+#include "ui/events/platform/x11/x11_event_source.h"
 #include "ui/gl/gl_surface_glx.h"
 
 namespace ui {
-
-class PlatformEventDispatcher;
 
 // Ozone specific implementation of GLX surface. Registers as a XEventDispatcher
 // to handle XEvents.
@@ -28,9 +26,6 @@ class GLSurfaceGLXOzone : public gl::NativeViewGLSurfaceGLX,
   void UnregisterEvents() override;
 
   // XEventDispatcher:
-  void CheckCanDispatchNextPlatformEvent(XEvent* xev) override;
-  void PlatformEventDispatchFinished() override;
-  PlatformEventDispatcher* GetPlatformEventDispatcher() override;
   bool DispatchXEvent(XEvent* xevent) override;
 
  private:

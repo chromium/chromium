@@ -31,7 +31,6 @@ class FirstRunView : public views::View,
   FirstRunActor* GetActor();
 
   // Overriden from views::View.
-  void Layout() override;
   void RequestFocus() override;
 
   content::WebContents* GetWebContents();
@@ -55,4 +54,3 @@ class FirstRunView : public views::View,
 }  // namespace chromeos
 
 #endif  // CHROME_BROWSER_CHROMEOS_FIRST_RUN_FIRST_RUN_VIEW_H_
-

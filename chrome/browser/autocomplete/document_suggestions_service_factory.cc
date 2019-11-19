@@ -29,7 +29,7 @@ KeyedService* DocumentSuggestionsServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
 
-  identity::IdentityManager* identity_manager =
+  signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
   return new DocumentSuggestionsService(
       identity_manager,

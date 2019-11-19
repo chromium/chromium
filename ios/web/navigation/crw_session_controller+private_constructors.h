@@ -9,7 +9,7 @@
 #include <vector>
 
 #import "ios/web/navigation/crw_session_controller.h"
-#include "ios/web/public/navigation_item_list.h"
+#include "ios/web/public/deprecated/navigation_item_list.h"
 
 namespace web {
 class BrowserState;

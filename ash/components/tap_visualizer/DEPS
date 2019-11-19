@@ -1,5 +1,0 @@
-include_rules = [
-  "+services/ws/public",
-  "+third_party/skia",
-  "+ui/compositor",
-]

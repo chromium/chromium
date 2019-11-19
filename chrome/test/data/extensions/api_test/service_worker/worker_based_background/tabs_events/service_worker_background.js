@@ -23,8 +23,8 @@ chrome.test.runTests([
   // before the onUpdated events for the create call are finished.
   function testTabCreate() {
     chrome.tabs.onCreated.addListener(function localListener(tab) {
-      chrome.test.assertEq(NEW_TAB_URL, tab.url);
-      tabProps.push({id: tab.id, url: tab.url});
+      chrome.test.assertEq(NEW_TAB_URL, tab.pendingUrl);
+      tabProps.push({id: tab.id, url: tab.pendingUrl});
       chrome.tabs.onCreated.removeListener(localListener);
     });
     chrome.tabs.onUpdated.addListener(function localListener (
@@ -41,15 +41,20 @@ chrome.test.runTests([
       chrome.test.fail(e);
     }
   },
-  // Test the chrome.tabs.onUpdated listener.
+  // Test the chrome.tabs.onUpdated listener through the loading cycle.
   function testTabOnUpdatedListener() {
     var newUrl = 'chrome://version/';
+    var gotLoading = false;
     chrome.tabs.onUpdated.addListener(function localListener(
         tabId, changeInfo, tab) {
       if (changeInfo.status === 'loading') {
-        chrome.tabs.onUpdated.removeListener(localListener);
+        chrome.test.assertFalse(gotLoading);
+        gotLoading = true;
         chrome.test.assertEq(tabProps[1].id, tabId);
         chrome.test.assertEq(newUrl, changeInfo.url);
+      } else if (changeInfo.status === 'complete') {
+        chrome.test.assertTrue(gotLoading);
+        chrome.tabs.onUpdated.removeListener(localListener);
         chrome.test.succeed();
       }
     });

@@ -7,6 +7,7 @@ include_rules = [
   "+components/compression",
   "+components/metrics",
   "+components/prefs",
+  "+components/sync",
   "+components/variations",
   "+components/version_info",
   "+content/public/test",

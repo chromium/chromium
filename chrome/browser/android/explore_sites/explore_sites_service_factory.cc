@@ -74,7 +74,7 @@ KeyedService* ExploreSitesServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
   scoped_refptr<base::SequencedTaskRunner> background_task_runner =
-      base::CreateSequencedTaskRunnerWithTraits({base::MayBlock()});
+      base::CreateSequencedTaskRunner({base::ThreadPool(), base::MayBlock()});
   base::FilePath store_path =
       profile->GetPath().Append(kExploreSitesStoreDirname);
   auto explore_sites_store =
@@ -85,7 +85,7 @@ KeyedService* ExploreSitesServiceFactory::BuildServiceInstanceFor(
       HistoryServiceFactory::GetForProfile(profile,
                                            ServiceAccessType::EXPLICIT_ACCESS);
   auto history_stats_reporter = std::make_unique<HistoryStatisticsReporter>(
-      history_service, profile->GetPrefs(), base::DefaultClock::GetInstance());
+      history_service, profile->GetPrefs());
 
   return new ExploreSitesServiceImpl(std::move(explore_sites_store),
                                      std::move(url_loader_factory_getter),

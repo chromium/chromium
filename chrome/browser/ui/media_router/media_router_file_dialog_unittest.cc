@@ -8,10 +8,10 @@
 
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/task/task_scheduler/task_scheduler.h"
+#include "base/task/thread_pool/thread_pool_instance.h"
 #include "chrome/common/media_router/issue.h"
 #include "chrome/grit/generated_resources.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -27,9 +27,9 @@ namespace media_router {
 
 namespace {
 
-// Clears out async tasks
+// Clears out async tasks.
 void FlushTasks() {
-  base::TaskScheduler::GetInstance()->FlushForTesting();
+  base::ThreadPoolInstance::Get()->FlushForTesting();
   base::RunLoop().RunUntilIdle();
 }
 
@@ -42,6 +42,13 @@ class MockDelegate
                void(const ui::SelectedFileInfo& file_info));
   MOCK_METHOD1(FileDialogSelectionFailed, void(const IssueInfo& issue));
   MOCK_METHOD0(FileDialogSelectionCanceled, void());
+
+  base::WeakPtr<MockDelegate> GetWeakPtr() {
+    return weak_factory_.GetWeakPtr();
+  }
+
+ private:
+  base::WeakPtrFactory<MockDelegate> weak_factory_{this};
 };
 
 class MockFileSystemDelegate
@@ -66,9 +73,8 @@ class MockFileSystemDelegate
 
 class MediaRouterFileDialogTest : public Test {
  public:
-  MediaRouterFileDialogTest() {
-    fake_path = base::FilePath(FILE_PATH_LITERAL("im/a/fake_path.mp3"));
-  }
+  MediaRouterFileDialogTest()
+      : fake_path_(base::FilePath(FILE_PATH_LITERAL("im/a/fake_path.mp3"))) {}
 
   void SetUp() override {
     mock_delegate_ = std::make_unique<MockDelegate>();
@@ -76,11 +82,11 @@ class MediaRouterFileDialogTest : public Test {
     auto temp_mock = std::make_unique<MockFileSystemDelegate>();
     mock_file_system_delegate = temp_mock.get();
 
-    dialog_ = std::make_unique<MediaRouterFileDialog>(mock_delegate_.get(),
-                                                      std::move(temp_mock));
+    dialog_ = std::make_unique<MediaRouterFileDialog>(
+        mock_delegate_->GetWeakPtr(), std::move(temp_mock));
     dialog_as_listener_ = dialog_.get();
 
-    // Setup default file checks to all pass
+    // Setup default file checks to all pass.
     ON_CALL(*mock_file_system_delegate, FileExists(_))
         .WillByDefault(Return(true));
     ON_CALL(*mock_file_system_delegate, IsFileReadable(_))
@@ -91,17 +97,28 @@ class MediaRouterFileDialogTest : public Test {
         .WillByDefault(Return(1));
   }
 
-  void FileSelectedExpectFailure(base::FilePath fake_path) {
-    fake_path_name = fake_path.BaseName().LossyDisplayName();
+  void SelectValidFile(const base::FilePath& path) {
+    EXPECT_CALL(*mock_file_system_delegate, FileExists(path))
+        .WillOnce(Return(true));
+    EXPECT_CALL(*mock_file_system_delegate, IsFileReadable(path))
+        .WillOnce(Return(true));
+    EXPECT_CALL(*mock_file_system_delegate, GetFileSize(path))
+        .WillOnce(Return(1));
+
+    dialog_as_listener_->FileSelected(path, 0, nullptr);
+  }
+
+  void SelectFileAndExpectFailure(const base::FilePath& path) {
+    base::string16 path_name = path.BaseName().LossyDisplayName();
     std::string error_title = l10n_util::GetStringFUTF8(
-        IDS_MEDIA_ROUTER_ISSUE_FILE_CAST_ERROR, fake_path_name);
+        IDS_MEDIA_ROUTER_ISSUE_FILE_CAST_ERROR, path_name);
 
     EXPECT_CALL(*mock_delegate_, FileDialogSelectionFailed(
                                      Field(&IssueInfo::title, error_title)));
 
-    dialog_as_listener_->FileSelected(fake_path, 0, 0);
+    dialog_as_listener_->FileSelected(path, 0, nullptr);
 
-    // Flush out the async file validation calls
+    // Flush out the async file validation calls.
     FlushTasks();
   }
 
@@ -113,76 +130,83 @@ class MediaRouterFileDialogTest : public Test {
   // Used for simulating calls from a SelectFileDialog.
   ui::SelectFileDialog::Listener* dialog_as_listener_ = nullptr;
 
-  base::FilePath fake_path;
-  base::string16 fake_path_name;
+  const base::FilePath fake_path_;
 
-  content::TestBrowserThreadBundle thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
 };
 
+// File selection succeeds, success callback called with the right file info.
+// Selected file URL is set properly.
 TEST_F(MediaRouterFileDialogTest, SelectFileSuccess) {
-  // File selection succeeds, success callback called with the right file info.
-  // Selected file URL is set properly.
-
-  // Expect all the checks and return passes
-  EXPECT_CALL(*mock_file_system_delegate, FileExists(fake_path))
-      .WillOnce(Return(true));
-  EXPECT_CALL(*mock_file_system_delegate, IsFileReadable(fake_path))
-      .WillOnce(Return(true));
-  EXPECT_CALL(*mock_file_system_delegate, GetFileSize(fake_path))
-      .WillOnce(Return(1));
-
   EXPECT_CALL(*mock_delegate_,
               FileDialogFileSelected(
-                  Field(&ui::SelectedFileInfo::local_path, fake_path)));
-
-  dialog_as_listener_->FileSelected(fake_path, 0, 0);
+                  Field(&ui::SelectedFileInfo::local_path, fake_path_)));
+  SelectValidFile(fake_path_);
 
   FlushTasks();
 
   ASSERT_THAT(dialog_->GetLastSelectedFileUrl().GetContent(),
-              ContainsRegex(base::UTF16ToUTF8(fake_path.LossyDisplayName())));
+              ContainsRegex(base::UTF16ToUTF8(fake_path_.LossyDisplayName())));
 }
 
+// File selection gets cancelled, and the failure callback gets called.
 TEST_F(MediaRouterFileDialogTest, SelectFileCanceled) {
-  // File selection gets cancelled, failure callback called
   EXPECT_CALL(*mock_delegate_, FileDialogSelectionCanceled());
 
   dialog_as_listener_->FileSelectionCanceled(0);
 }
 
 TEST_F(MediaRouterFileDialogTest, SelectFailureFileDoesNotExist) {
-  EXPECT_CALL(*mock_file_system_delegate, FileExists(fake_path))
+  EXPECT_CALL(*mock_file_system_delegate, FileExists(fake_path_))
       .WillOnce(Return(false));
 
-  FileSelectedExpectFailure(fake_path);
+  SelectFileAndExpectFailure(fake_path_);
 }
 
 TEST_F(MediaRouterFileDialogTest, SelectFailureFileDoesNotContainContent) {
-  EXPECT_CALL(*mock_file_system_delegate, GetFileSize(fake_path))
+  EXPECT_CALL(*mock_file_system_delegate, GetFileSize(fake_path_))
       .WillOnce(Return(0));
 
-  FileSelectedExpectFailure(fake_path);
+  SelectFileAndExpectFailure(fake_path_);
 }
 
 TEST_F(MediaRouterFileDialogTest, SelectFailureCannotReadGetFileSize) {
-  EXPECT_CALL(*mock_file_system_delegate, GetFileSize(fake_path))
+  EXPECT_CALL(*mock_file_system_delegate, GetFileSize(fake_path_))
       .WillOnce(Return(-1));
 
-  FileSelectedExpectFailure(fake_path);
+  SelectFileAndExpectFailure(fake_path_);
 }
 
 TEST_F(MediaRouterFileDialogTest, SelectFailureCannotReadFile) {
-  EXPECT_CALL(*mock_file_system_delegate, IsFileReadable(fake_path))
+  EXPECT_CALL(*mock_file_system_delegate, IsFileReadable(fake_path_))
       .WillOnce(Return(false));
 
-  FileSelectedExpectFailure(fake_path);
+  SelectFileAndExpectFailure(fake_path_);
 }
 
 TEST_F(MediaRouterFileDialogTest, SelectFailureFileNotSupported) {
-  EXPECT_CALL(*mock_file_system_delegate, IsFileTypeSupported(fake_path))
+  EXPECT_CALL(*mock_file_system_delegate, IsFileTypeSupported(fake_path_))
       .WillOnce(Return(false));
 
-  FileSelectedExpectFailure(fake_path);
+  SelectFileAndExpectFailure(fake_path_);
+}
+
+TEST_F(MediaRouterFileDialogTest, CancelFileSelectionAfterDelegateDeleted) {
+  mock_delegate_.reset();
+  dialog_as_listener_->FileSelectionCanceled(nullptr);
+}
+
+TEST_F(MediaRouterFileDialogTest, SelectValidFileAfterDelegateDeleted) {
+  mock_delegate_.reset();
+  SelectValidFile(fake_path_);
+}
+
+TEST_F(MediaRouterFileDialogTest, SelectInvalidFileAfterDelegateDeleted) {
+  mock_delegate_.reset();
+
+  EXPECT_CALL(*mock_file_system_delegate, GetFileSize(fake_path_))
+      .WillOnce(Return(-1));
+  dialog_as_listener_->FileSelected(fake_path_, 0, nullptr);
 }
 
 }  // namespace media_router

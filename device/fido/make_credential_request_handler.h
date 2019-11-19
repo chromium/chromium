@@ -14,10 +14,11 @@
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "base/sequence_checker.h"
+#include "device/fido/authenticator_make_credential_response.h"
 #include "device/fido/authenticator_selection_criteria.h"
 #include "device/fido/ctap_make_credential_request.h"
 #include "device/fido/fido_constants.h"
-#include "device/fido/fido_request_handler.h"
+#include "device/fido/fido_request_handler_base.h"
 #include "device/fido/fido_transport_protocol.h"
 
 namespace service_manager {
@@ -27,23 +28,51 @@ class Connector;
 namespace device {
 
 class FidoAuthenticator;
-class AuthenticatorMakeCredentialResponse;
+class FidoDiscoveryFactory;
+
+namespace pin {
+struct EmptyResponse;
+struct KeyAgreementResponse;
+struct RetriesResponse;
+class TokenResponse;
+}  // namespace pin
+
+enum class MakeCredentialStatus {
+  kSuccess,
+  kAuthenticatorResponseInvalid,
+  kUserConsentButCredentialExcluded,
+  kUserConsentDenied,
+  kAuthenticatorRemovedDuringPINEntry,
+  kSoftPINBlock,
+  kHardPINBlock,
+  kAuthenticatorMissingResidentKeys,
+  // TODO(agl): kAuthenticatorMissingUserVerification can
+  // also be returned when the authenticator supports UV, but
+  // there's no UI support for collecting a PIN. This could
+  // be clearer.
+  kAuthenticatorMissingUserVerification,
+  kStorageFull,
+  kWinInvalidStateError,
+  kWinNotAllowedError,
+};
 
 class COMPONENT_EXPORT(DEVICE_FIDO) MakeCredentialRequestHandler
-    : public FidoRequestHandler<AuthenticatorMakeCredentialResponse> {
+    : public FidoRequestHandlerBase {
  public:
+  using CompletionCallback = base::OnceCallback<void(
+      MakeCredentialStatus,
+      base::Optional<AuthenticatorMakeCredentialResponse>,
+      const FidoAuthenticator*)>;
+
   MakeCredentialRequestHandler(
       service_manager::Connector* connector,
+      FidoDiscoveryFactory* fido_discovery_factory,
       const base::flat_set<FidoTransportProtocol>& supported_transports,
       CtapMakeCredentialRequest request_parameter,
       AuthenticatorSelectionCriteria authenticator_criteria,
+      bool allow_skipping_pin_touch,
       CompletionCallback completion_callback);
   ~MakeCredentialRequestHandler() override;
-
-  // FidoRequestHandlerBase:
-  void SetPlatformAuthenticatorOrMarkUnavailable(
-      base::Optional<PlatformAuthenticatorInfo> platform_authenticator_info)
-      override;
 
  private:
   enum class State {
@@ -68,6 +97,8 @@ class COMPONENT_EXPORT(DEVICE_FIDO) MakeCredentialRequestHandler
       FidoAuthenticator* authenticator,
       CtapDeviceResponseCode response_code,
       base::Optional<AuthenticatorMakeCredentialResponse> response);
+  void HandleTouch(FidoAuthenticator* authenticator);
+  void HandleInapplicableAuthenticator(FidoAuthenticator* authenticator);
   void OnHavePIN(std::string pin);
   void OnRetriesResponse(CtapDeviceResponseCode status,
                          base::Optional<pin::RetriesResponse> response);
@@ -81,9 +112,13 @@ class COMPONENT_EXPORT(DEVICE_FIDO) MakeCredentialRequestHandler
   void OnHavePINToken(CtapDeviceResponseCode status,
                       base::Optional<pin::TokenResponse> response);
 
+  CompletionCallback completion_callback_;
   State state_ = State::kWaitingForTouch;
-  CtapMakeCredentialRequest request_parameter_;
+  CtapMakeCredentialRequest request_;
   AuthenticatorSelectionCriteria authenticator_selection_criteria_;
+  // If true, the request handler may skip the first touch to select a device
+  // that will require a PIN.
+  bool allow_skipping_pin_touch_;
   // authenticator_ points to the authenticator that will be used for this
   // operation. It's only set after the user touches an authenticator to select
   // it, after which point that authenticator will be used exclusively through
@@ -91,7 +126,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) MakeCredentialRequestHandler
   // and this pointer is cleared if it's removed during processing.
   FidoAuthenticator* authenticator_ = nullptr;
   SEQUENCE_CHECKER(my_sequence_checker_);
-  base::WeakPtrFactory<MakeCredentialRequestHandler> weak_factory_;
+  base::WeakPtrFactory<MakeCredentialRequestHandler> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(MakeCredentialRequestHandler);
 };

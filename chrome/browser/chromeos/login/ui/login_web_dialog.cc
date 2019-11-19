@@ -8,11 +8,13 @@
 #include "base/lazy_instance.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/chromeos/login/helper.h"
+#include "chrome/browser/chromeos/login/ui/login_display_host.h"
 #include "chrome/browser/ui/ash/ash_util.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/aura/window.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/views/widget/widget.h"
@@ -24,13 +26,9 @@ namespace chromeos {
 
 namespace {
 
-// Default width/height ratio of screen size.
-const double kDefaultWidthRatio = 0.6;
-const double kDefaultHeightRatio = 0.6;
-
-// Default width/height ratio of minimal dialog size.
-const double kMinimumWidthRatio = 0.25;
-const double kMinimumHeightRatio = 0.25;
+constexpr gfx::Insets kMinMargins{64, 64};
+constexpr gfx::Size kMinSize{128, 128};
+constexpr gfx::Size kMaxSize{512, 512};
 
 base::LazyInstance<base::circular_deque<WebContents*>>::DestructorAtExit
     g_web_contents_stack = LAZY_INSTANCE_INITIALIZER;
@@ -58,9 +56,10 @@ LoginWebDialog::LoginWebDialog(content::BrowserContext* browser_context,
       delegate_(delegate),
       title_(title),
       url_(url) {
-  gfx::Rect screen_bounds(CalculateScreenBounds(gfx::Size()));
-  width_ = static_cast<int>(kDefaultWidthRatio * screen_bounds.width());
-  height_ = static_cast<int>(kDefaultHeightRatio * screen_bounds.height());
+  if (!parent_window_ && chromeos::LoginDisplayHost::default_host()) {
+    parent_window_ =
+        chromeos::LoginDisplayHost::default_host()->GetNativeWindow();
+  }
 }
 
 LoginWebDialog::~LoginWebDialog() {}
@@ -68,13 +67,6 @@ LoginWebDialog::~LoginWebDialog() {}
 void LoginWebDialog::Show() {
   dialog_window_ =
       chrome::ShowWebDialog(parent_window_, browser_context_, this);
-}
-
-void LoginWebDialog::SetDialogSize(int width, int height) {
-  DCHECK_GE(width, 0);
-  DCHECK_GE(height, 0);
-  width_ = width;
-  height_ = height;
 }
 
 void LoginWebDialog::SetDialogTitle(const base::string16& title) {
@@ -100,13 +92,20 @@ void LoginWebDialog::GetWebUIMessageHandlers(
     std::vector<WebUIMessageHandler*>* handlers) const {}
 
 void LoginWebDialog::GetDialogSize(gfx::Size* size) const {
-  size->SetSize(width_, height_);
+  // TODO(https://crbug.com/1022774): Fix for the lock screen.
+  if (!parent_window_) {
+    *size = kMaxSize;
+    return;
+  }
+  gfx::Rect bounds = parent_window_->bounds();
+  bounds.Inset(kMinMargins);
+  *size = bounds.size();
+  size->SetToMin(kMaxSize);
+  size->SetToMax(kMinSize);
 }
 
 void LoginWebDialog::GetMinimumDialogSize(gfx::Size* size) const {
-  gfx::Rect screen_bounds(CalculateScreenBounds(gfx::Size()));
-  size->SetSize(kMinimumWidthRatio * screen_bounds.width(),
-                kMinimumHeightRatio * screen_bounds.height());
+  *size = kMinSize;
 }
 
 std::string LoginWebDialog::GetDialogArgs() const {
@@ -119,8 +118,7 @@ WebContents* LoginWebDialog::GetCurrentWebContents() {
   return stack.empty() ? nullptr : stack.front();
 }
 
-void LoginWebDialog::OnDialogShown(content::WebUI* webui,
-                                   content::RenderViewHost* render_view_host) {
+void LoginWebDialog::OnDialogShown(content::WebUI* webui) {
   g_web_contents_stack.Pointer()->push_front(webui->GetWebContents());
 }
 
@@ -164,8 +162,8 @@ bool LoginWebDialog::HandleOpenURLFromTab(WebContents* source,
   return (source && !chrome::FindBrowserWithWebContents(source));
 }
 
-bool LoginWebDialog::HandleShouldCreateWebContents() {
-  return false;
+bool LoginWebDialog::HandleShouldOverrideWebContentsCreation() {
+  return true;
 }
 
 std::vector<ui::Accelerator> LoginWebDialog::GetAccelerators() {

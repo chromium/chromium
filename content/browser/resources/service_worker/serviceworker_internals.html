@@ -1,5 +1,5 @@
 <!doctype html>
-<html dir="$i18n{textdirection}" lang="$i18n{language}">
+<html dir="ltr" lang="en">
 <head>
   <meta charset="utf-8">
   <title>chrome://serviceworker-internals</title>
@@ -42,6 +42,10 @@
       <div class="serviceworker-rid">
         <span>DevTools agent route ID:</span>
         <span jscontent="$this.devtools_agent_route_id"></span>
+      </div>
+      <div class="serviceworker-clients" jsselect="$this.clients">
+        <div>Client: </div>
+        <div transclude="serviceworker-client-template"></div>
       </div>
       <div>
         <div>Log:</div>
@@ -135,7 +139,15 @@
         </label>
       </div>
     </div>
-  </div>
+    <div id="serviceworker-client-template" class="serviceworker-client">
+      <div>
+        <span>ID: </span><span jscontent="$this.client_id"></span>
+      </div>
+      <div>
+        <span>URL: </span><span jscontent="$this.url"></span>
+      </div>
+    </div>
+  </div> <!-- templates end -->
   <h1>ServiceWorker</h1>
   <div class="content">
     <div id="serviceworker-options"></div>

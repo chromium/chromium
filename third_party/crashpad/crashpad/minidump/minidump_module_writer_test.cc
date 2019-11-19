@@ -265,6 +265,61 @@ void ExpectModule(const MINIDUMP_MODULE* expected,
                                                          expected_debug_utf16));
 }
 
+// ExpectModuleWithBuildIDCv() is like ExpectModule( but expects the module to
+// have a BuildID CodeView Record.
+void ExpectModuleWithBuildIDCv(const MINIDUMP_MODULE* expected,
+                               const MINIDUMP_MODULE* observed,
+                               const std::string& file_contents,
+                               const std::string& expected_module_name,
+                               const std::vector<uint8_t>& expected_build_id) {
+  EXPECT_EQ(observed->BaseOfImage, expected->BaseOfImage);
+  EXPECT_EQ(observed->SizeOfImage, expected->SizeOfImage);
+  EXPECT_EQ(observed->CheckSum, expected->CheckSum);
+  EXPECT_EQ(observed->TimeDateStamp, expected->TimeDateStamp);
+  EXPECT_EQ(observed->VersionInfo.dwSignature,
+            implicit_cast<uint32_t>(VS_FFI_SIGNATURE));
+  EXPECT_EQ(observed->VersionInfo.dwStrucVersion,
+            implicit_cast<uint32_t>(VS_FFI_STRUCVERSION));
+  EXPECT_EQ(observed->VersionInfo.dwFileVersionMS,
+            expected->VersionInfo.dwFileVersionMS);
+  EXPECT_EQ(observed->VersionInfo.dwFileVersionLS,
+            expected->VersionInfo.dwFileVersionLS);
+  EXPECT_EQ(observed->VersionInfo.dwProductVersionMS,
+            expected->VersionInfo.dwProductVersionMS);
+  EXPECT_EQ(observed->VersionInfo.dwProductVersionLS,
+            expected->VersionInfo.dwProductVersionLS);
+  EXPECT_EQ(observed->VersionInfo.dwFileFlagsMask,
+            expected->VersionInfo.dwFileFlagsMask);
+  EXPECT_EQ(observed->VersionInfo.dwFileFlags,
+            expected->VersionInfo.dwFileFlags);
+  EXPECT_EQ(observed->VersionInfo.dwFileOS, expected->VersionInfo.dwFileOS);
+  EXPECT_EQ(observed->VersionInfo.dwFileType, expected->VersionInfo.dwFileType);
+  EXPECT_EQ(observed->VersionInfo.dwFileSubtype,
+            expected->VersionInfo.dwFileSubtype);
+  EXPECT_EQ(observed->VersionInfo.dwFileDateMS,
+            expected->VersionInfo.dwFileDateMS);
+  EXPECT_EQ(observed->VersionInfo.dwFileDateLS,
+            expected->VersionInfo.dwFileDateLS);
+  EXPECT_EQ(observed->Reserved0, 0u);
+  EXPECT_EQ(observed->Reserved1, 0u);
+
+  EXPECT_NE(observed->ModuleNameRva, 0u);
+  base::string16 observed_module_name_utf16 =
+      MinidumpStringAtRVAAsString(file_contents, observed->ModuleNameRva);
+  base::string16 expected_module_name_utf16 =
+      base::UTF8ToUTF16(expected_module_name);
+  EXPECT_EQ(observed_module_name_utf16, expected_module_name_utf16);
+
+  const CodeViewRecordBuildID* codeview_build_id_record =
+      MinidumpWritableAtLocationDescriptor<CodeViewRecordBuildID>(
+          file_contents, observed->CvRecord);
+  ASSERT_TRUE(codeview_build_id_record);
+  EXPECT_EQ(memcmp(expected_build_id.data(),
+                   &codeview_build_id_record->build_id,
+                   expected_build_id.size()),
+            0);
+}
+
 TEST(MinidumpModuleWriter, EmptyModule) {
   MinidumpFileWriter minidump_file_writer;
   auto module_list_writer = std::make_unique<MinidumpModuleListWriter>();
@@ -325,9 +380,22 @@ TEST(MinidumpModuleWriter, OneModule) {
   constexpr uint32_t kFileType = VFT_DRV;
   constexpr uint32_t kFileSubtype = VFT2_DRV_KEYBOARD;
   static constexpr char kPDBName[] = "statical.pdb";
-  static constexpr uint8_t kPDBUUIDBytes[16] =
-      {0xfe, 0xdc, 0xba, 0x98, 0x76, 0x54, 0x32, 0x10,
-       0x08, 0x19, 0x2a, 0x3b, 0x4c, 0x5d, 0x6e, 0x7f};
+  static constexpr uint8_t kPDBUUIDBytes[16] = {0xfe,
+                                                0xdc,
+                                                0xba,
+                                                0x98,
+                                                0x76,
+                                                0x54,
+                                                0x32,
+                                                0x10,
+                                                0x08,
+                                                0x19,
+                                                0x2a,
+                                                0x3b,
+                                                0x4c,
+                                                0x5d,
+                                                0x6e,
+                                                0x7f};
   UUID pdb_uuid;
   pdb_uuid.InitializeFromBytes(kPDBUUIDBytes);
   constexpr uint32_t kPDBAge = 1;
@@ -471,6 +539,50 @@ TEST(MinidumpModuleWriter, OneModule_CodeViewUsesPDB20_MiscUsesUTF16) {
                                        kDebugUTF16));
 }
 
+TEST(MinidumpModuleWriter, OneModule_CodeViewBuildID) {
+  // MinidumpModuleWriter.OneModule tested with a BuildID CodeView
+  MinidumpFileWriter minidump_file_writer;
+  auto module_list_writer = std::make_unique<MinidumpModuleListWriter>();
+
+  static constexpr char kModuleName[] = "dinosaur";
+  static constexpr char kBuildID[] =
+      "averylonghashcodeormaybeitsjustrandomnumbershardtosay";
+
+  std::vector<uint8_t> build_id_data(kBuildID, kBuildID + 53);
+
+  auto module_writer = std::make_unique<MinidumpModuleWriter>();
+  module_writer->SetName(kModuleName);
+
+  auto codeview_build_id_writer =
+      std::make_unique<MinidumpModuleCodeViewRecordBuildIDWriter>();
+  codeview_build_id_writer->SetBuildID(build_id_data);
+  module_writer->SetCodeViewRecord(std::move(codeview_build_id_writer));
+
+  module_list_writer->AddModule(std::move(module_writer));
+  ASSERT_TRUE(minidump_file_writer.AddStream(std::move(module_list_writer)));
+
+  StringFile string_file;
+  ASSERT_TRUE(minidump_file_writer.WriteEverything(&string_file));
+
+  ASSERT_GT(string_file.string().size(),
+            sizeof(MINIDUMP_HEADER) + sizeof(MINIDUMP_DIRECTORY) +
+                sizeof(MINIDUMP_MODULE_LIST) + 1 * sizeof(MINIDUMP_MODULE));
+
+  const MINIDUMP_MODULE_LIST* module_list = nullptr;
+  ASSERT_NO_FATAL_FAILURE(
+      GetModuleListStream(string_file.string(), &module_list));
+
+  EXPECT_EQ(module_list->NumberOfModules, 1u);
+
+  MINIDUMP_MODULE expected = {};
+
+  ASSERT_NO_FATAL_FAILURE(ExpectModuleWithBuildIDCv(&expected,
+                                                    &module_list->Modules[0],
+                                                    string_file.string(),
+                                                    kModuleName,
+                                                    build_id_data));
+}
+
 TEST(MinidumpModuleWriter, ThreeModules) {
   // As good exercise, this test uses three modules, one with a PDB 7.0 link as
   // its CodeView record, one with no CodeView record, and one with a PDB 2.0
@@ -482,9 +594,22 @@ TEST(MinidumpModuleWriter, ThreeModules) {
   constexpr uint64_t kModuleBase0 = 0x100101000;
   constexpr uint32_t kModuleSize0 = 0xf000;
   static constexpr char kPDBName0[] = "main";
-  static constexpr uint8_t kPDBUUIDBytes0[16] =
-      {0xaa, 0xbb, 0xcc, 0xdd, 0xee, 0xff, 0x00, 0x11,
-       0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88, 0x99};
+  static constexpr uint8_t kPDBUUIDBytes0[16] = {0xaa,
+                                                 0xbb,
+                                                 0xcc,
+                                                 0xdd,
+                                                 0xee,
+                                                 0xff,
+                                                 0x00,
+                                                 0x11,
+                                                 0x22,
+                                                 0x33,
+                                                 0x44,
+                                                 0x55,
+                                                 0x66,
+                                                 0x77,
+                                                 0x88,
+                                                 0x99};
   UUID pdb_uuid_0;
   pdb_uuid_0.InitializeFromBytes(kPDBUUIDBytes0);
   constexpr uint32_t kPDBAge0 = 0;
@@ -666,9 +791,22 @@ TEST(MinidumpModuleWriter, InitializeFromSnapshot) {
   expect_modules[0].VersionInfo.dwFileType = VFT_APP;
   module_paths[0] = "/usr/bin/true";
   module_pdbs[0] = "true";
-  static constexpr uint8_t kUUIDBytes0[16] =
-      {0x00, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77,
-       0x88, 0x99, 0xaa, 0xbb, 0xcc, 0xdd, 0xee, 0xff};
+  static constexpr uint8_t kUUIDBytes0[16] = {0x00,
+                                              0x11,
+                                              0x22,
+                                              0x33,
+                                              0x44,
+                                              0x55,
+                                              0x66,
+                                              0x77,
+                                              0x88,
+                                              0x99,
+                                              0xaa,
+                                              0xbb,
+                                              0xcc,
+                                              0xdd,
+                                              0xee,
+                                              0xff};
   uuids[0].InitializeFromBytes(kUUIDBytes0);
   ages[0] = 10;
 
@@ -682,9 +820,22 @@ TEST(MinidumpModuleWriter, InitializeFromSnapshot) {
   expect_modules[1].VersionInfo.dwFileType = VFT_DLL;
   module_paths[1] = "/usr/lib/libSystem.B.dylib";
   module_pdbs[1] = "libSystem.B.dylib.pdb";
-  static constexpr uint8_t kUUIDBytes1[16] =
-      {0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
-       0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f};
+  static constexpr uint8_t kUUIDBytes1[16] = {0x00,
+                                              0x01,
+                                              0x02,
+                                              0x03,
+                                              0x04,
+                                              0x05,
+                                              0x06,
+                                              0x07,
+                                              0x08,
+                                              0x09,
+                                              0x0a,
+                                              0x0b,
+                                              0x0c,
+                                              0x0d,
+                                              0x0e,
+                                              0x0f};
   uuids[1].InitializeFromBytes(kUUIDBytes1);
   ages[1] = 20;
 
@@ -698,9 +849,22 @@ TEST(MinidumpModuleWriter, InitializeFromSnapshot) {
   expect_modules[2].VersionInfo.dwFileType = VFT_UNKNOWN;
   module_paths[2] = "/usr/lib/dyld";
   module_pdbs[2] = "/usr/lib/dyld.pdb";
-  static constexpr uint8_t kUUIDBytes2[16] =
-      {0xff, 0xfe, 0xfd, 0xfc, 0xfb, 0xfa, 0xf9, 0xf8,
-       0xf7, 0xf6, 0xf5, 0xf4, 0xf3, 0xf2, 0xf1, 0xf0};
+  static constexpr uint8_t kUUIDBytes2[16] = {0xff,
+                                              0xfe,
+                                              0xfd,
+                                              0xfc,
+                                              0xfb,
+                                              0xfa,
+                                              0xf9,
+                                              0xf8,
+                                              0xf7,
+                                              0xf6,
+                                              0xf5,
+                                              0xf4,
+                                              0xf3,
+                                              0xf2,
+                                              0xf1,
+                                              0xf0};
   uuids[2].InitializeFromBytes(kUUIDBytes2);
   ages[2] = 30;
 

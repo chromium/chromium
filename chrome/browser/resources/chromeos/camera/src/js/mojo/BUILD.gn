@@ -1,0 +1,38 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/closure_compiler/compile_js.gni")
+
+js_type_check("closure_compile") {
+  deps = [
+    ":chrome_helper",
+    ":device_operator",
+    ":image_capture",
+  ]
+}
+
+js_library("chrome_helper") {
+  deps = [
+    "//components/arc/mojom:camera_intent_js_library_for_compile",
+    "//components/chromeos_camera/common:camera_app_helper_js_library_for_compile",
+  ]
+  externs_list = [ "$externs_path/pending.js" ]
+}
+
+js_library("device_operator") {
+  deps = [
+    "..:type",
+    "//media/capture/video/chromeos/mojom:cros_camera_js_library_for_compile",
+  ]
+  externs_list = [ "$externs_path/pending.js" ]
+}
+
+js_library("image_capture") {
+  deps = [
+    ":device_operator",
+    "..:util",
+    "//media/capture/mojom:image_capture_js_library_for_compile",
+  ]
+  externs_list = [ "$externs_path/pending.js" ]
+}

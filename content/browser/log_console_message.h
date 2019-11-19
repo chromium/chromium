@@ -16,8 +16,7 @@ logging::LogSeverity ConsoleMessageLevelToLogSeverity(
 
 // Optionally logs a message from the console, depending on the set logging
 // levels and incognito state.
-// TODO(devlin): Update |level| to be a logging::LogSeverity.
-void LogConsoleMessage(int32_t level,
+void LogConsoleMessage(blink::mojom::ConsoleMessageLevel log_level,
                        const base::string16& message,
                        int32_t line_number,
                        bool is_builtin_component,

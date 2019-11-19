@@ -11,8 +11,8 @@
 #import "ios/chrome/browser/providers/chromium_voice_search_provider.h"
 #import "ios/chrome/browser/providers/images/chromium_branded_image_provider.h"
 #include "ios/chrome/browser/providers/signin/chromium_signin_resources_provider.h"
-#include "ios/chrome/browser/providers/ui/chromium_styled_text_field.h"
 #include "ios/public/provider/chrome/browser/distribution/app_distribution_provider.h"
+#include "ios/public/provider/chrome/browser/overrides_provider.h"
 #include "ios/public/provider/chrome/browser/signin/chrome_identity_service.h"
 #include "ios/public/provider/chrome/browser/signin/signin_error_provider.h"
 #import "ios/public/provider/chrome/browser/ui/fullscreen_provider.h"
@@ -31,7 +31,8 @@ ChromiumBrowserProvider::ChromiumBrowserProvider()
       user_feedback_provider_(std::make_unique<UserFeedbackProvider>()),
       voice_search_provider_(std::make_unique<ChromiumVoiceSearchProvider>()),
       spotlight_provider_(std::make_unique<ChromiumSpotlightProvider>()),
-      fullscreen_provider_(std::make_unique<FullscreenProvider>()) {}
+      fullscreen_provider_(std::make_unique<FullscreenProvider>()),
+      overrides_provider_(std::make_unique<OverridesProvider>()) {}
 
 ChromiumBrowserProvider::~ChromiumBrowserProvider() {}
 
@@ -57,9 +58,8 @@ ChromiumBrowserProvider::GetChromeIdentityService() {
   return chrome_identity_service_.get();
 }
 
-UITextField<TextFieldStyling>* ChromiumBrowserProvider::CreateStyledTextField(
-    CGRect frame) const {
-  return [[ChromiumStyledTextField alloc] initWithFrame:CGRectZero];
+UITextField* ChromiumBrowserProvider::CreateStyledTextField() const {
+  return [[UITextField alloc] initWithFrame:CGRectZero];
 }
 
 VoiceSearchProvider* ChromiumBrowserProvider::GetVoiceSearchProvider() const {
@@ -67,8 +67,7 @@ VoiceSearchProvider* ChromiumBrowserProvider::GetVoiceSearchProvider() const {
 }
 
 id<LogoVendor> ChromiumBrowserProvider::CreateLogoVendor(
-    ios::ChromeBrowserState* browser_state,
-    id<UrlLoader> loader) const {
+    ios::ChromeBrowserState* browser_state) const {
   return [[ChromiumLogoController alloc] init];
 }
 
@@ -91,4 +90,8 @@ SpotlightProvider* ChromiumBrowserProvider::GetSpotlightProvider() const {
 
 FullscreenProvider* ChromiumBrowserProvider::GetFullscreenProvider() const {
   return fullscreen_provider_.get();
+}
+
+OverridesProvider* ChromiumBrowserProvider::GetOverridesProvider() const {
+  return overrides_provider_.get();
 }

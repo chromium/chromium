@@ -19,11 +19,9 @@ const int kLimitForMonitorPer10Sec = 600;  // 10 minutes
 }  // namespace
 
 SystemTimeChangeNotifier::SystemTimeChangeNotifier()
-    : observer_list_(new base::ObserverListThreadSafe<Observer>()) {
-}
+    : observer_list_(new base::ObserverListThreadSafe<Observer>()) {}
 
-SystemTimeChangeNotifier::~SystemTimeChangeNotifier() {
-}
+SystemTimeChangeNotifier::~SystemTimeChangeNotifier() = default;
 
 void SystemTimeChangeNotifier::AddObserver(Observer* observer) {
   observer_list_->AddObserver(observer);
@@ -43,20 +41,13 @@ SystemTimeChangeNotifierPeriodicMonitor(
     : task_runner_(task_runner),
       weak_factory_(this) {
   DCHECK(task_runner_);
-}
-
-SystemTimeChangeNotifierPeriodicMonitor::
-~SystemTimeChangeNotifierPeriodicMonitor() {
-}
-
-void SystemTimeChangeNotifierPeriodicMonitor::Initialize() {
   base::Time now = Now();
   ResetTimeAndLimits(now);
   ScheduleNextMonitor(now);
 }
 
-void SystemTimeChangeNotifierPeriodicMonitor::Finalize() {
-}
+SystemTimeChangeNotifierPeriodicMonitor::
+    ~SystemTimeChangeNotifierPeriodicMonitor() = default;
 
 void SystemTimeChangeNotifierPeriodicMonitor::ResetTimeAndLimits(
     base::Time now) {

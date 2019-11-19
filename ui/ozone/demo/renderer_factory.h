@@ -5,6 +5,8 @@
 #ifndef UI_OZONE_DEMO_RENDERER_FACTORY_H_
 #define UI_OZONE_DEMO_RENDERER_FACTORY_H_
 
+#include <memory>
+
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/native_widget_types.h"
 

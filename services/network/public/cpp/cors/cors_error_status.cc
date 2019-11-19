@@ -5,6 +5,7 @@
 #include "services/network/public/cpp/cors/cors_error_status.h"
 
 #include "net/base/net_errors.h"
+#include "services/network/public/mojom/cors.mojom-shared.h"
 
 namespace network {
 

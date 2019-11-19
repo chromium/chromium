@@ -20,16 +20,16 @@ TEST(DnsConfigServiceWinTest, ParseSearchList) {
     const base::char16* input;
     const char* output[4];  // NULL-terminated, empty if expected false
   } cases[] = {
-      {STRING16_LITERAL("chromium.org"), {"chromium.org", NULL}},
-      {STRING16_LITERAL("chromium.org,org"), {"chromium.org", "org", NULL}},
+      {STRING16_LITERAL("chromium.org"), {"chromium.org", nullptr}},
+      {STRING16_LITERAL("chromium.org,org"), {"chromium.org", "org", nullptr}},
       // Empty suffixes terminate the list
-      {STRING16_LITERAL("crbug.com,com,,org"), {"crbug.com", "com", NULL}},
+      {STRING16_LITERAL("crbug.com,com,,org"), {"crbug.com", "com", nullptr}},
       // IDN are converted to punycode
       {STRING16_LITERAL("\u017c\xf3\u0142ta.pi\u0119\u015b\u0107.pl,pl"),
-       {"xn--ta-4ja03asj.xn--pi-wla5e0q.pl", "pl", NULL}},
+       {"xn--ta-4ja03asj.xn--pi-wla5e0q.pl", "pl", nullptr}},
       // Empty search list is invalid
-      {STRING16_LITERAL(""), {NULL}},
-      {STRING16_LITERAL(",,"), {NULL}},
+      {STRING16_LITERAL(""), {nullptr}},
+      {STRING16_LITERAL(",,"), {nullptr}},
   };
 
   for (const auto& t : cases) {
@@ -89,7 +89,7 @@ std::unique_ptr<IP_ADAPTER_ADDRESSES, base::FreeDeleter> CreateAdapterAddresses(
     adapter->IfType = info.if_type;
     adapter->OperStatus = info.oper_status;
     adapter->DnsSuffix = const_cast<PWCHAR>(info.dns_suffix);
-    IP_ADAPTER_DNS_SERVER_ADDRESS* address = NULL;
+    IP_ADAPTER_DNS_SERVER_ADDRESS* address = nullptr;
     for (size_t j = 0; !info.dns_server_addresses[j].empty(); ++j) {
       --num_addresses;
       if (j == 0) {

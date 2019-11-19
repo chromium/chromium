@@ -2,37 +2,46 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//third_party/grpc/grpc_library.gni")
-
 static_library("signaling") {
   sources = [
     "delegating_signal_strategy.cc",
     "delegating_signal_strategy.h",
-    "ftl_client.cc",
-    "ftl_client.h",
-    "grpc_async_call_data.cc",
-    "grpc_async_call_data.h",
-    "grpc_async_dispatcher.cc",
-    "grpc_async_dispatcher.h",
+    "ftl_client_uuid_device_id_provider.cc",
+    "ftl_client_uuid_device_id_provider.h",
+    "ftl_device_id_provider.h",
+    "ftl_grpc_context.cc",
+    "ftl_grpc_context.h",
+    "ftl_host_device_id_provider.cc",
+    "ftl_host_device_id_provider.h",
+    "ftl_message_reception_channel.cc",
+    "ftl_message_reception_channel.h",
+    "ftl_messaging_client.cc",
+    "ftl_messaging_client.h",
+    "ftl_registration_manager.cc",
+    "ftl_registration_manager.h",
+    "ftl_signal_strategy.cc",
+    "ftl_signal_strategy.h",
     "iq_sender.cc",
     "iq_sender.h",
-    "jid_util.cc",
-    "jid_util.h",
-    "log_to_server.cc",
-    "log_to_server.h",
+    "message_reception_channel.h",
+    "message_tracker.cc",
+    "message_tracker.h",
+    "messaging_client.h",
     "push_notification_subscriber.cc",
     "push_notification_subscriber.h",
+    "registration_manager.h",
+    "remoting_log_to_server.cc",
+    "remoting_log_to_server.h",
     "server_log_entry.cc",
     "server_log_entry.h",
+    "signal_strategy.cc",
     "signal_strategy.h",
     "signaling_address.cc",
     "signaling_address.h",
-    "xmpp_login_handler.cc",
-    "xmpp_login_handler.h",
-    "xmpp_signal_strategy.cc",
-    "xmpp_signal_strategy.h",
-    "xmpp_stream_parser.cc",
-    "xmpp_stream_parser.h",
+    "signaling_id_util.cc",
+    "signaling_id_util.h",
+    "xmpp_log_to_server.cc",
+    "xmpp_log_to_server.h",
   ]
 
   configs += [
@@ -42,47 +51,56 @@ static_library("signaling") {
   ]
 
   public_deps = [
-    ":ftl_grpc_library",
     "//remoting/proto",
+    "//remoting/proto/ftl/v1:ftl_grpc_library",
+    "//remoting/proto/remoting/v1:telemetry_grpc_library",
     "//third_party/libjingle_xmpp",
-    "//third_party/webrtc_overrides",
+    "//third_party/webrtc_overrides:webrtc_component",
   ]
 
   deps = [
     "//base",
     "//crypto",
     "//google_apis",
-    "//jingle:jingle_glue",
+    "//jingle:webrtc_glue",
     "//net",
     "//remoting/base",
+    "//remoting/base/grpc_support",
+    "//remoting/proto/remoting/v1:telemetry_messages",
     "//third_party/grpc:grpcpp",
   ]
 
   if (is_nacl) {
     sources -= [
-      "ftl_client.cc",
-      "ftl_client.h",
-      "grpc_async_call_data.cc",
-      "grpc_async_call_data.h",
-      "grpc_async_dispatcher.cc",
-      "grpc_async_dispatcher.h",
-      "log_to_server.cc",
+      "ftl_client_uuid_device_id_provider.cc",
+      "ftl_client_uuid_device_id_provider.h",
+      "ftl_grpc_context.cc",
+      "ftl_grpc_context.h",
+      "ftl_host_device_id_provider.cc",
+      "ftl_host_device_id_provider.h",
+      "ftl_message_reception_channel.cc",
+      "ftl_message_reception_channel.h",
+      "ftl_messaging_client.cc",
+      "ftl_messaging_client.h",
+      "ftl_registration_manager.cc",
+      "ftl_registration_manager.h",
+      "ftl_signal_strategy.cc",
+      "ftl_signal_strategy.h",
+      "remoting_log_to_server.cc",
+      "remoting_log_to_server.h",
       "server_log_entry.cc",
-      "xmpp_signal_strategy.cc",
+      "xmpp_log_to_server.cc",
     ]
     deps -= [
       "//google_apis",
+      "//remoting/base/grpc_support",
       "//third_party/grpc:grpcpp",
     ]
-    public_deps -= [ ":ftl_grpc_library" ]
+    public_deps -= [
+      "//remoting/proto/ftl/v1:ftl_grpc_library",
+      "//remoting/proto/remoting/v1:telemetry_grpc_library",
+    ]
   }
-}
-
-cc_grpc_library("ftl_grpc_library") {
-  sources = [
-    "ftl.proto",
-    "ftl_services.proto",
-  ]
 }
 
 static_library("test_support") {
@@ -105,30 +123,26 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
-    "grpc_async_dispatcher_unittest.cc",
+    "ftl_message_reception_channel_unittest.cc",
+    "ftl_messaging_client_unittest.cc",
+    "ftl_registration_manager_unittest.cc",
+    "ftl_signal_strategy_unittest.cc",
     "iq_sender_unittest.cc",
-    "jid_util_unittest.cc",
-    "log_to_server_unittest.cc",
+    "message_tracker_unittest.cc",
     "push_notification_subscriber_unittest.cc",
+    "remoting_log_to_server_unittest.cc",
     "server_log_entry_unittest.cc",
     "server_log_entry_unittest.h",
     "signaling_address_unittest.cc",
-    "xmpp_login_handler_unittest.cc",
-    "xmpp_signal_strategy_unittest.cc",
-    "xmpp_stream_parser_unittest.cc",
+    "signaling_id_util_unittest.cc",
+    "xmpp_log_to_server_unittest.cc",
   ]
 
   deps = [
     ":test_support",
-    ":unit_tests_grpc_library",
     "//net:test_support",
+    "//remoting/base/grpc_support:unit_tests",
     "//testing/gmock",
     "//testing/gtest",
-  ]
-}
-
-cc_grpc_library("unit_tests_grpc_library") {
-  sources = [
-    "grpc_async_dispatcher_test_services.proto",
   ]
 }

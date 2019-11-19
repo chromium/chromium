@@ -72,9 +72,9 @@ TEST_F(LSQPredictorTest, ConstantTimeStampNotCrash) {
                                       FromMilliseconds(t[i])};
     predictor_->Update(data);
   }
-  ui::InputPredictor::InputData result;
-  EXPECT_FALSE(predictor_->GeneratePrediction(
-      FromMilliseconds(42), false /* is_resampling */, &result));
+  // Expect false because the matrix is singular
+  // and the predictor cannot compute a prediction
+  EXPECT_FALSE(predictor_->GeneratePrediction(FromMilliseconds(42)));
 
   x = {100, 100, 100};
   y = {100, 100, 100};
@@ -84,8 +84,22 @@ TEST_F(LSQPredictorTest, ConstantTimeStampNotCrash) {
                                       FromMilliseconds(t[i])};
     predictor_->Update(data);
   }
-  EXPECT_FALSE(predictor_->GeneratePrediction(
-      FromMilliseconds(42), false /* is_resampling */, &result));
+  EXPECT_TRUE(predictor_->GeneratePrediction(FromMilliseconds(142)));
+}
+
+// Tests the LSQ predictor produce the time interval correctly.
+TEST_F(LSQPredictorTest, TimeInterval) {
+  EXPECT_EQ(predictor_->TimeInterval(), kExpectedDefaultTimeInterval);
+  std::vector<double> x = {0, 4, 10};
+  std::vector<double> y = {30, 34, 40};
+  std::vector<double> t = {0, 4, 10};
+  for (size_t i = 0; i < t.size(); i++) {
+    InputPredictor::InputData data = {gfx::PointF(x[i], y[i]),
+                                      FromMilliseconds(t[i])};
+    predictor_->Update(data);
+  }
+  EXPECT_EQ(predictor_->TimeInterval(),
+            base::TimeDelta::FromMillisecondsD((t[2] - t[0]) / 2));
 }
 
 }  // namespace test

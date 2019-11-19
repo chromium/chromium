@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2018 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<resources>
+    <dimen name="webapp_splash_offset">48dp</dimen>
+    <dimen name="webapp_splash_large_title_margin_bottom">8dp</dimen>
+    <dimen name="webapp_splash_image_size_minimum">48dp</dimen>
+</resources>

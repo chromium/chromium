@@ -14,6 +14,7 @@
 #include "base/optional.h"
 #include "base/values.h"
 #include "chrome/browser/media/router/discovery/dial/parsed_dial_device_description.h"
+#include "services/data_decoder/public/cpp/data_decoder.h"
 
 class GURL;
 
@@ -46,7 +47,7 @@ class SafeDialDeviceDescriptionParser {
     kTotalCount = 11,
   };
 
-  explicit SafeDialDeviceDescriptionParser(DataDecoder* data_decoder);
+  SafeDialDeviceDescriptionParser();
   ~SafeDialDeviceDescriptionParser();
 
   // Callback function invoked when done parsing some device description XML.
@@ -75,13 +76,9 @@ class SafeDialDeviceDescriptionParser {
  private:
   void OnXmlParsingDone(SafeDialDeviceDescriptionParser::ParseCallback callback,
                         const GURL& app_url,
-                        std::unique_ptr<base::Value> value,
-                        const base::Optional<std::string>& error);
+                        data_decoder::DataDecoder::ValueOrError result);
 
-  // Used for parsing XML. Not owned by |this|.
-  DataDecoder* const data_decoder_;
-
-  base::WeakPtrFactory<SafeDialDeviceDescriptionParser> weak_factory_;
+  base::WeakPtrFactory<SafeDialDeviceDescriptionParser> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(SafeDialDeviceDescriptionParser);
 };

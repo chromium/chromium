@@ -7,6 +7,9 @@
 
 #import <UIKit/UIKit.h>
 
+// The accessibility identifier for the Voice Search button.
+extern NSString* const kVoiceSearchInputAccessoryViewID;
+
 @protocol ToolbarAssistiveKeyboardDelegate;
 
 // Returns the leading buttons of the assistive view.

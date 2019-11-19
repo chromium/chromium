@@ -9,6 +9,9 @@
 
 syntax = "proto2";
 
+option java_multiple_files = true;
+option java_package = "org.chromium.components.sync.protocol";
+
 option optimize_for = LITE_RUNTIME;
 
 package sync_pb;
@@ -29,4 +32,8 @@ message BookmarkSpecifics {
   optional int64 creation_time_us = 4;
   optional string icon_url = 5;
   repeated MetaInfo meta_info = 6;
+  // Introduced in M78. If not present, originator_client_item_id is interpreted
+  // as GUID as long as it is of the valid format. Otherwise, field is either
+  // ignored or overwritten locally.
+  optional string guid = 7;
 }

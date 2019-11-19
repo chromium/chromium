@@ -5,6 +5,7 @@
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "build/build_config.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/test/remoting/key_code_test_map.h"
 #include "chrome/test/remoting/remote_desktop_browsertest.h"
@@ -26,7 +27,16 @@ class Me2MeBrowserTest : public RemoteDesktopBrowserTest {
   void MinimizeApp();
 };
 
-IN_PROC_BROWSER_TEST_F(Me2MeBrowserTest, MANUAL_Me2Me_Connect_Local_Host) {
+// TODO(1020591): The win7 bots do not seem to recognize the MANUAL_ prefix,
+// so we explicitly disable this test.
+#if defined(OS_WIN)
+#define MAYBE_MANUAL_Me2Me_Connect_Local_Host \
+  DISABLED_MANUAL_Me2Me_Connect_Local_Host
+#else
+#define MAYBE_MANUAL_Me2Me_Connect_Local_Host MANUAL_Me2Me_Connect_Local_Host
+#endif
+IN_PROC_BROWSER_TEST_F(Me2MeBrowserTest,
+                       MAYBE_MANUAL_Me2Me_Connect_Local_Host) {
   content::WebContents* content = SetUpTest();
   LoadScript(content, FILE_PATH_LITERAL("me2me_browser_test.js"));
   RunJavaScriptTest(content, "ConnectToLocalHost", "{"
@@ -36,8 +46,16 @@ IN_PROC_BROWSER_TEST_F(Me2MeBrowserTest, MANUAL_Me2Me_Connect_Local_Host) {
   Cleanup();
 }
 
+// TODO(1020591): The win7 bots do not seem to recognize the MANUAL_ prefix,
+// so we explicitly disable this test.
+#if defined(OS_WIN)
+#define MAYBE_MANUAL_Me2Me_Connect_Remote_Host \
+  DISABLED_MANUAL_Me2Me_Connect_Remote_Host
+#else
+#define MAYBE_MANUAL_Me2Me_Connect_Remote_Host MANUAL_Me2Me_Connect_Remote_Host
+#endif
 IN_PROC_BROWSER_TEST_F(Me2MeBrowserTest,
-                       MANUAL_Me2Me_Connect_Remote_Host) {
+                       MAYBE_MANUAL_Me2Me_Connect_Remote_Host) {
   VerifyInternetAccess();
   Install();
   LaunchChromotingApp(false);
@@ -56,8 +74,17 @@ IN_PROC_BROWSER_TEST_F(Me2MeBrowserTest,
   Cleanup();
 }
 
+// TODO(1020591): The win7 bots do not seem to recognize the MANUAL_ prefix,
+// so we explicitly disable this test.
+#if defined(OS_WIN)
+#define MAYBE_MANUAL_Me2Me_Remote_Host_Keypress \
+  DISABLED_MANUAL_Me2Me_Remote_Host_Keypress
+#else
+#define MAYBE_MANUAL_Me2Me_Remote_Host_Keypress \
+  MANUAL_Me2Me_Remote_Host_Keypress
+#endif
 IN_PROC_BROWSER_TEST_F(Me2MeBrowserTest,
-                       MANUAL_Me2Me_Remote_Host_Keypress) {
+                       MAYBE_MANUAL_Me2Me_Remote_Host_Keypress) {
   SetupForRemoteHostTest();
 
   // Test all key characters
@@ -70,8 +97,17 @@ IN_PROC_BROWSER_TEST_F(Me2MeBrowserTest,
   Cleanup();
 }
 
+// TODO(1020591): The win7 bots do not seem to recognize the MANUAL_ prefix,
+// so we explicitly disable this test.
+#if defined(OS_WIN)
+#define MAYBE_MANUAL_Me2Me_Remote_Host_Digitpress \
+  DISABLED_MANUAL_Me2Me_Remote_Host_Digitpress
+#else
+#define MAYBE_MANUAL_Me2Me_Remote_Host_Digitpress \
+  MANUAL_Me2Me_Remote_Host_Digitpress
+#endif
 IN_PROC_BROWSER_TEST_F(Me2MeBrowserTest,
-                       MANUAL_Me2Me_Remote_Host_Digitpress) {
+                       MAYBE_MANUAL_Me2Me_Remote_Host_Digitpress) {
   SetupForRemoteHostTest();
 
   // Test all digit characters
@@ -84,8 +120,17 @@ IN_PROC_BROWSER_TEST_F(Me2MeBrowserTest,
   Cleanup();
 }
 
+// TODO(1020591): The win7 bots do not seem to recognize the MANUAL_ prefix,
+// so we explicitly disable this test.
+#if defined(OS_WIN)
+#define MAYBE_MANUAL_Me2Me_Remote_Host_Specialpress \
+  DISABLED_MANUAL_Me2Me_Remote_Host_Specialpress
+#else
+#define MAYBE_MANUAL_Me2Me_Remote_Host_Specialpress \
+  MANUAL_Me2Me_Remote_Host_Specialpress
+#endif
 IN_PROC_BROWSER_TEST_F(Me2MeBrowserTest,
-                       MANUAL_Me2Me_Remote_Host_Specialpress) {
+                       MAYBE_MANUAL_Me2Me_Remote_Host_Specialpress) {
   SetupForRemoteHostTest();
 
   // Test all special characters
@@ -98,8 +143,17 @@ IN_PROC_BROWSER_TEST_F(Me2MeBrowserTest,
   Cleanup();
 }
 
+// TODO(1020591): The win7 bots do not seem to recognize the MANUAL_ prefix,
+// so we explicitly disable this test.
+#if defined(OS_WIN)
+#define MAYBE_MANUAL_Me2Me_Remote_Host_Numpadpress \
+  DISABLED_MANUAL_Me2Me_Remote_Host_Numpadpress
+#else
+#define MAYBE_MANUAL_Me2Me_Remote_Host_Numpadpress \
+  MANUAL_Me2Me_Remote_Host_Numpadpress
+#endif
 IN_PROC_BROWSER_TEST_F(Me2MeBrowserTest,
-                       MANUAL_Me2Me_Remote_Host_Numpadpress) {
+                       MAYBE_MANUAL_Me2Me_Remote_Host_Numpadpress) {
   SetupForRemoteHostTest();
 
   // Test all numpad characters
@@ -112,8 +166,14 @@ IN_PROC_BROWSER_TEST_F(Me2MeBrowserTest,
   Cleanup();
 }
 
-IN_PROC_BROWSER_TEST_F(Me2MeBrowserTest,
-                       MANUAL_Me2Me_Connect_Pinless) {
+// TODO(1020591): The win7 bots do not seem to recognize the MANUAL_ prefix,
+// so we explicitly disable this test.
+#if defined(OS_WIN)
+#define MAYBE_MANUAL_Me2Me_Connect_Pinless DISABLED_MANUAL_Me2Me_Connect_Pinless
+#else
+#define MAYBE_MANUAL_Me2Me_Connect_Pinless MANUAL_Me2Me_Connect_Pinless
+#endif
+IN_PROC_BROWSER_TEST_F(Me2MeBrowserTest, MAYBE_MANUAL_Me2Me_Connect_Pinless) {
   SetUpTest();
 
   ASSERT_FALSE(HtmlElementVisible("paired-client-manager-message"))
@@ -126,7 +186,17 @@ IN_PROC_BROWSER_TEST_F(Me2MeBrowserTest,
   Cleanup();
 }
 
-IN_PROC_BROWSER_TEST_F(Me2MeBrowserTest, MANUAL_Me2Me_v2_Alive_OnLostFocus) {
+// TODO(1020591): The win7 bots do not seem to recognize the MANUAL_ prefix,
+// so we explicitly disable this test.
+#if defined(OS_WIN)
+#define MAYBE_MANUAL_Me2Me_v2_Alive_OnLostFocus \
+  DISABLED_MANUAL_Me2Me_v2_Alive_OnLostFocus
+#else
+#define MAYBE_MANUAL_Me2Me_v2_Alive_OnLostFocus \
+  MANUAL_Me2Me_v2_Alive_OnLostFocus
+#endif
+IN_PROC_BROWSER_TEST_F(Me2MeBrowserTest,
+                       MAYBE_MANUAL_Me2Me_v2_Alive_OnLostFocus) {
   content::WebContents* content = SetUpTest();
   LoadScript(content, FILE_PATH_LITERAL("me2me_browser_test.js"));
   RunJavaScriptTest(content, "AliveOnLostFocus", "{"
@@ -136,8 +206,17 @@ IN_PROC_BROWSER_TEST_F(Me2MeBrowserTest, MANUAL_Me2Me_v2_Alive_OnLostFocus) {
   Cleanup();
 }
 
+// TODO(1020591): The win7 bots do not seem to recognize the MANUAL_ prefix,
+// so we explicitly disable this test.
+#if defined(OS_WIN)
+#define MAYBE_MANUAL_Me2Me_Disable_Remote_Connection \
+  DISABLED_MANUAL_Me2Me_Disable_Remote_Connection
+#else
+#define MAYBE_MANUAL_Me2Me_Disable_Remote_Connection \
+  MANUAL_Me2Me_Disable_Remote_Connection
+#endif
 IN_PROC_BROWSER_TEST_F(Me2MeBrowserTest,
-                       MANUAL_Me2Me_Disable_Remote_Connection) {
+                       MAYBE_MANUAL_Me2Me_Disable_Remote_Connection) {
   SetUpTest();
 
   DisableRemoteConnection();

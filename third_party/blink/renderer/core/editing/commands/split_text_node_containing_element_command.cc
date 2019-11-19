@@ -55,10 +55,10 @@ void SplitTextNodeContainingElementCommand::DoApply(EditingState*) {
   LayoutObject* parent_layout_object = parent->GetLayoutObject();
   if (!parent_layout_object || !parent_layout_object->IsInline()) {
     WrapContentsInDummySpan(parent);
-    Node* first_child = parent->firstChild();
-    if (!first_child || !first_child->IsElementNode())
+    auto* first_child_element = DynamicTo<Element>(parent->firstChild());
+    if (!first_child_element)
       return;
-    parent = ToElement(first_child);
+    parent = first_child_element;
   }
 
   SplitElement(parent, text_.Get());

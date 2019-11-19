@@ -12,14 +12,14 @@
 #include "ios/chrome/browser/ui/util/rtl_geometry.h"
 #include "ios/chrome/browser/ui/util/ui_util.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
+#import "ios/chrome/browser/url_loading/url_loading_params.h"
 #import "ios/chrome/browser/url_loading/url_loading_service.h"
+#import "ios/chrome/common/colors/dynamic_color_util.h"
+#import "ios/chrome/common/colors/semantic_color_names.h"
 #import "ios/chrome/common/string_util.h"
 #import "ios/chrome/common/ui_util/constraints_ui_util.h"
-#import "ios/third_party/material_components_ios/src/components/Buttons/src/MaterialButtons.h"
-#import "ios/third_party/material_components_ios/src/components/Palettes/src/MaterialPalettes.h"
-#import "ios/third_party/material_components_ios/src/components/Typography/src/MaterialTypography.h"
-#import "ios/web/public/navigation_manager.h"
-#include "ios/web/public/referrer.h"
+#import "ios/web/public/navigation/navigation_manager.h"
+#include "ios/web/public/navigation/referrer.h"
 #import "net/base/mac/url_conversions.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
@@ -36,8 +36,6 @@ const CGFloat kStackViewDefaultSpacing = 20.0;
 const CGFloat kStackViewImageSpacing = 22.0;
 const CGFloat kLayoutGuideVerticalMargin = 8.0;
 const CGFloat kLayoutGuideMinHeight = 12.0;
-
-const int kLinkColor = 0x3A8FFF;
 
 // The URL for the the Learn More page shown on incognito new tab.
 // Taken from ntp_resource_cache.cc.
@@ -58,7 +56,9 @@ UIFont* TitleFont() {
 
 // Returns the color to use for body text.
 UIColor* BodyTextColor() {
-  return [UIColor colorWithWhite:1.0 alpha:0.7];
+  return color::DarkModeDynamicColor(
+      [UIColor colorNamed:kTextSecondaryColor], true,
+      [UIColor colorNamed:kTextSecondaryDarkColor]);
 }
 
 // Returns a font, scaled to the current dynamic type settings, that is suitable
@@ -166,11 +166,16 @@ NSAttributedString* FormatHTMLListForUILabel(NSString* listString) {
     [_containerView addSubview:_stackView];
 
     // Incognito image.
-    UIImageView* incognitoImage = [[UIImageView alloc]
-        initWithImage:[UIImage imageNamed:@"incognito_icon"]];
-    [_stackView addArrangedSubview:incognitoImage];
+    UIImage* incognitoImage = [[UIImage imageNamed:@"incognito_icon"]
+        imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+    UIImageView* incognitoImageView =
+        [[UIImageView alloc] initWithImage:incognitoImage];
+    incognitoImageView.tintColor = color::DarkModeDynamicColor(
+        [UIColor colorNamed:kTextPrimaryColor], true,
+        [UIColor colorNamed:kTextPrimaryDarkColor]);
+    [_stackView addArrangedSubview:incognitoImageView];
     [_stackView setCustomSpacing:kStackViewImageSpacing
-                       afterView:incognitoImage];
+                       afterView:incognitoImageView];
 
     [self addTextSections];
 
@@ -348,15 +353,19 @@ NSAttributedString* FormatHTMLListForUILabel(NSString* listString) {
 
 // Triggers a navigation to the help page.
 - (void)learnMoreButtonPressed {
-  ChromeLoadParams params(GetUrlWithLang(GURL(kLearnMoreIncognitoUrl)));
-  _urlLoadingService->LoadUrlInCurrentTab(params);
+  _urlLoadingService->Load(UrlLoadParams::InCurrentTab(
+      GetUrlWithLang(GURL(kLearnMoreIncognitoUrl))));
 }
 
 // Adds views containing the text of the incognito page to |_stackView|.
 - (void)addTextSections {
-  UIColor* titleTextColor = [UIColor whiteColor];
+  UIColor* titleTextColor =
+      color::DarkModeDynamicColor([UIColor colorNamed:kTextPrimaryColor], true,
+                                  [UIColor colorNamed:kTextPrimaryDarkColor]);
   UIColor* bodyTextColor = BodyTextColor();
-  UIColor* linkTextColor = UIColorFromRGB(kLinkColor);
+  UIColor* linkTextColor =
+      color::DarkModeDynamicColor([UIColor colorNamed:kBlueColor], true,
+                                  [UIColor colorNamed:kBlueDarkColor]);
 
   // Title.
   UILabel* titleLabel = [[UILabel alloc] initWithFrame:CGRectZero];
@@ -378,6 +387,7 @@ NSAttributedString* FormatHTMLListForUILabel(NSString* listString) {
   subtitleLabel.adjustsFontForContentSizeCategory = YES;
 
   UIButton* learnMoreButton = [UIButton buttonWithType:UIButtonTypeCustom];
+  learnMoreButton.accessibilityTraits = UIAccessibilityTraitLink;
   [learnMoreButton
       setTitle:l10n_util::GetNSString(IDS_NEW_TAB_OTR_LEARN_MORE_LINK)
       forState:UIControlStateNormal];

@@ -15,15 +15,16 @@ namespace tab_ranker {
 // Window features used for logging a Tab Ranker example to UKM or calculating a
 // Tab Ranker score.
 struct WindowFeatures {
-  WindowFeatures(SessionID window_id, metrics::WindowMetricsEvent::Type type);
-  WindowFeatures(const WindowFeatures& other);
-  ~WindowFeatures();
+  WindowFeatures(metrics::WindowMetricsEvent::Type type,
+                 metrics::WindowMetricsEvent::ShowState show_state,
+                 bool is_active,
+                 int tab_count);
+
+  ~WindowFeatures() = default;
 
   bool operator==(const WindowFeatures& other) const;
   bool operator!=(const WindowFeatures& other) const;
 
-  // ID for the window, unique within the Chrome session.
-  const SessionID window_id;
   const metrics::WindowMetricsEvent::Type type;
   metrics::WindowMetricsEvent::ShowState show_state =
       metrics::WindowMetricsEvent::SHOW_STATE_UNKNOWN;

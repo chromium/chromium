@@ -396,22 +396,6 @@
 										<key>UID</key>
 										<integer>0</integer>
 									</dict>
-									<dict>
-										<key>CHILDREN</key>
-										<array/>
-										<key>GID</key>
-										<integer>0</integer>
-										<key>PATH</key>
-										<string>PrivilegedHelperTools/org.chromium.chromoting.me2me.sh</string>
-										<key>PATH_TYPE</key>
-										<integer>1</integer>
-										<key>PERMISSIONS</key>
-										<integer>493</integer>
-										<key>TYPE</key>
-										<integer>3</integer>
-										<key>UID</key>
-										<integer>0</integer>
-									</dict>
 								</array>
 								<key>GID</key>
 								<integer>0</integer>
@@ -420,7 +404,7 @@
 								<key>PATH_TYPE</key>
 								<integer>0</integer>
 								<key>PERMISSIONS</key>
-								<integer>493</integer>
+								<integer>1005</integer>
 								<key>TYPE</key>
 								<integer>1</integer>
 								<key>UID</key>
@@ -497,6 +481,70 @@
 								<integer>0</integer>
 								<key>PATH</key>
 								<string>Widgets</string>
+								<key>PATH_TYPE</key>
+								<integer>0</integer>
+								<key>PERMISSIONS</key>
+								<integer>493</integer>
+								<key>TYPE</key>
+								<integer>1</integer>
+								<key>UID</key>
+								<integer>0</integer>
+							</dict>
+							<dict>
+								<key>CHILDREN</key>
+								<array/>
+								<key>GID</key>
+								<integer>0</integer>
+								<key>PATH</key>
+								<string>Automator</string>
+								<key>PATH_TYPE</key>
+								<integer>0</integer>
+								<key>PERMISSIONS</key>
+								<integer>493</integer>
+								<key>TYPE</key>
+								<integer>1</integer>
+								<key>UID</key>
+								<integer>0</integer>
+							</dict>
+							<dict>
+								<key>CHILDREN</key>
+								<array/>
+								<key>GID</key>
+								<integer>0</integer>
+								<key>PATH</key>
+								<string>Extensions</string>
+								<key>PATH_TYPE</key>
+								<integer>0</integer>
+								<key>PERMISSIONS</key>
+								<integer>493</integer>
+								<key>TYPE</key>
+								<integer>1</integer>
+								<key>UID</key>
+								<integer>0</integer>
+							</dict>
+							<dict>
+								<key>CHILDREN</key>
+								<array/>
+								<key>GID</key>
+								<integer>0</integer>
+								<key>PATH</key>
+								<string>Input Methods</string>
+								<key>PATH_TYPE</key>
+								<integer>0</integer>
+								<key>PERMISSIONS</key>
+								<integer>493</integer>
+								<key>TYPE</key>
+								<integer>1</integer>
+								<key>UID</key>
+								<integer>0</integer>
+							</dict>
+							<dict>
+								<key>CHILDREN</key>
+								<array/>
+								<key>GID</key>
+								<integer>0</integer>
+								<key>PATH</key>
+								<string>QuickLook</string>
 								<key>PATH_TYPE</key>
 								<integer>0</integer>
 								<key>PERMISSIONS</key>
@@ -619,8 +667,16 @@
 			</dict>
 			<key>PAYLOAD_TYPE</key>
 			<integer>0</integer>
+			<key>PRESERVE_EXTENDED_ATTRIBUTES</key>
+			<false/>
+			<key>SHOW_INVISIBLE</key>
+			<false/>
+			<key>SPLIT_FORKS</key>
+			<true/>
+			<key>TREAT_MISSING_FILES_AS_WARNING</key>
+			<false/>
 			<key>VERSION</key>
-			<integer>2</integer>
+			<integer>5</integer>
 		</dict>
 		<key>PACKAGE_SCRIPTS</key>
 		<dict>
@@ -647,9 +703,23 @@
 			<integer>1</integer>
 			<key>CONCLUSION_ACTION</key>
 			<integer>0</integer>
+			<key>FOLLOW_SYMBOLIC_LINKS</key>
+			<false/>
 			<key>IDENTIFIER</key>
 			<string>@@BUNDLE_ID_HOST_SERVICE@@</string>
+			<key>LOCATION</key>
+			<integer>0</integer>
+			<key>NAME</key>
+			<string></string>
 			<key>OVERWRITE_PERMISSIONS</key>
+			<false/>
+			<key>PAYLOAD_SIZE</key>
+			<integer>-1</integer>
+			<key>REFERENCE_PATH</key>
+			<string></string>
+			<key>RELOCATABLE</key>
+			<false/>
+			<key>USE_HFS+_COMPRESSION</key>
 			<false/>
 			<key>VERSION</key>
 			<string>@@VERSION@@</string>
@@ -834,6 +904,8 @@
 			</array>
 			<key>NAME</key>
 			<string>@@HOST_SERVICE_PKG@@</string>
+			<key>PAYLOAD_ONLY</key>
+			<false/>
 		</dict>
 	</dict>
 	<key>TYPE</key>

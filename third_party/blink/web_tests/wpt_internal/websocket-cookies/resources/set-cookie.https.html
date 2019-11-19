@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<script src="/websockets/cookies/support/websocket-cookies-helper.sub.js"></script>
+<script>
+function notifySuccess(value) {
+  window.parent.postMessage('DONE: ' + value, '*');
+}
+
+function notifyFailure(reason) {
+  window.parent.postMessage('FAIL: ' + reason, '*');
+}
+
+let origin = WSS_ORIGIN;
+if (location.search == '?remote') {
+  origin = WSS_CROSS_SITE_ORIGIN;
+}
+
+setSameSiteCookies(origin, 'value').then(
+  () => connectAndGetRequestCookiesFrom(origin),
+  notifyFailure
+).then(
+  cookies => {
+    return clearSameSiteCookies(origin).then(() => {
+      notifySuccess(cookies);
+    });
+  }
+).catch(
+  notifyFailure
+);
+</script>

@@ -4,7 +4,7 @@
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//      http://www.apache.org/licenses/LICENSE-2.0
+//      https://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,6 +17,7 @@
 #include "absl/container/internal/tracked.h"
 #include "absl/container/internal/unordered_map_constructor_test.h"
 #include "absl/container/internal/unordered_map_lookup_test.h"
+#include "absl/container/internal/unordered_map_members_test.h"
 #include "absl/container/internal/unordered_map_modifiers_test.h"
 
 namespace absl {
@@ -36,6 +37,7 @@ using MapTypes = ::testing::Types<
 
 INSTANTIATE_TYPED_TEST_SUITE_P(NodeHashMap, ConstructorTest, MapTypes);
 INSTANTIATE_TYPED_TEST_SUITE_P(NodeHashMap, LookupTest, MapTypes);
+INSTANTIATE_TYPED_TEST_SUITE_P(NodeHashMap, MembersTest, MapTypes);
 INSTANTIATE_TYPED_TEST_SUITE_P(NodeHashMap, ModifiersTest, MapTypes);
 
 using M = absl::node_hash_map<std::string, Tracked<int>>;

@@ -14,7 +14,7 @@
 #include "crypto/rsa_private_key.h"
 #include "net/base/net_export.h"
 #include "net/cert/x509_certificate.h"
-#include "net/third_party/quic/core/crypto/proof_source.h"
+#include "net/third_party/quiche/src/quic/core/crypto/proof_source.h"
 
 namespace net {
 

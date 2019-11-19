@@ -51,7 +51,7 @@
       startEditingAndDumpValue(Common.Color.Format.RGB, 'color', next);
     },
 
-    function editNewProperty(next) {
+    async function editNewProperty(next) {
       var section = ElementsTestRunner.inlineStyleSection();
 
       treeElement = section.addNewBlankProperty(0);
@@ -59,15 +59,12 @@
       treeElement.nameElement.textContent = 'border-color';
       treeElement.nameElement.dispatchEvent(TestRunner.createKeyEvent('Enter'));
       treeElement.valueElement.textContent = 'hsl(120, 100%, 25%)';
-      treeElement.kickFreeFlowStyleEditForTest();
-      ElementsTestRunner.waitForStyleApplied(kicked);
+      await treeElement.kickFreeFlowStyleEditForTest();
 
-      function kicked() {
-        treeElement.valueElement.dispatchEvent(TestRunner.createKeyEvent('Tab', false, false, true));
-        treeElement.nameElement.dispatchEvent(TestRunner.createKeyEvent('Tab'));
-        TestRunner.addResult(treeElement.valueElement.textContent);
-        next();
-      }
+      treeElement.valueElement.dispatchEvent(TestRunner.createKeyEvent('Tab', false, false, true));
+      treeElement.nameElement.dispatchEvent(TestRunner.createKeyEvent('Tab'));
+      TestRunner.addResult(treeElement.valueElement.textContent);
+      next();
     }
   ]);
 

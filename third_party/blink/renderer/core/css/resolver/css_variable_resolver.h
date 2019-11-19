@@ -15,14 +15,20 @@ namespace blink {
 
 class CSSCustomPropertyDeclaration;
 class CSSParserTokenRange;
-class CSSPendingSubstitutionValue;
 class CSSVariableData;
 class CSSVariableReferenceValue;
+class CSSParserContext;
 class PropertyRegistration;
 class PropertyRegistry;
 class StyleInheritedVariables;
 class StyleNonInheritedVariables;
 class StyleResolverState;
+
+namespace cssvalue {
+
+class CSSPendingSubstitutionValue;
+
+}
 
 class CORE_EXPORT CSSVariableResolver {
   STACK_ALLOCATED();
@@ -49,6 +55,12 @@ class CORE_EXPORT CSSVariableResolver {
   virtual void ApplyAnimation(const AtomicString& name) {}
 
  private:
+  // The maximum number of tokens that may be produced by a var()
+  // reference.
+  //
+  // https://drafts.csswg.org/css-variables/#long-variables
+  static const size_t kMaxSubstitutionTokens = 16384;
+
   struct Options {
     STACK_ALLOCATED();
 
@@ -96,11 +108,11 @@ class CORE_EXPORT CSSVariableResolver {
     // properties themselves (e.g. color). When a high-priority property refers
     // to a custom property with an (inner) var()-reference, that custom
     // property is resolved "on the fly" with absolutize=false. This means that
-    // 1) a non- absolute value is returned, and 2) the resolved token stream
-    // for that custom property is not stored on the ComputedStyle. Storing the
-    // token stream on the ComputedStyle can only be done with absolutize=true,
-    // otherwise can permanently end up with the wrong token stream if one
-    // unregistered property reference a registered property, for instance.
+    // the equivalent token stream for the computed value of that custom
+    // property is not stored on ComputedStyle. Storing the token stream on
+    // ComputedStyle can only be done with absolutize=true, otherwise we can
+    // permanently end up with the wrong token stream if an unregistered
+    // property references a registered property, for instance.
     bool absolutize = false;
   };
 
@@ -118,7 +130,7 @@ class CORE_EXPORT CSSVariableResolver {
 
   const CSSValue* ResolvePendingSubstitutions(
       CSSPropertyID,
-      const CSSPendingSubstitutionValue&,
+      const cssvalue::CSSPendingSubstitutionValue&,
       const Options&);
   const CSSValue* ResolveVariableReferences(CSSPropertyID,
                                             const CSSVariableReferenceValue&,
@@ -161,14 +173,17 @@ class CORE_EXPORT CSSVariableResolver {
   scoped_refptr<CSSVariableData> ValueForEnvironmentVariable(
       const AtomicString& name);
   // Returns the CSSVariableData for a custom property, resolving and storing it
-  // if necessary.
+  // if necessary. If a cycle via font-relative units was discovered, the
+  // unit_cycle flag is set to true.
+  //
+  // https://drafts.css-houdini.org/css-properties-values-api-1/#dependency-cycles
   scoped_refptr<CSSVariableData> ValueForCustomProperty(AtomicString name,
-                                                        const Options&);
+                                                        const Options&,
+                                                        bool& unit_cycle);
   // Resolves the CSSVariableData from a custom property declaration.
   scoped_refptr<CSSVariableData> ResolveCustomProperty(AtomicString name,
                                                        const CSSVariableData&,
                                                        const Options&,
-                                                       bool resolve_urls,
                                                        bool& cycle_detected);
   // Like ResolveCustomProperty, but returns the incoming CSSVariableData if
   // no resolution is needed.
@@ -178,30 +193,31 @@ class CORE_EXPORT CSSVariableResolver {
       const Options&,
       bool& cycle_detected);
 
-  bool ShouldResolveRelativeUrls(const AtomicString& name,
-                                 const CSSVariableData&);
+  bool IsDisallowedByFontUnitFlags(const CSSVariableData&,
+                                   const Options&,
+                                   const PropertyRegistration*);
 
-  bool IsVariableDisallowed(const CSSVariableData&,
-                            const Options&,
-                            const PropertyRegistration*);
+  bool IsDisallowedByAnimationTaintedFlag(const CSSVariableData&,
+                                          const Options&);
 
   // The following utilities get/set variables on either StyleInheritedVariables
   // or StyleNonInheritedVariables, according to their PropertyRegistration.
 
-  CSSVariableData* GetVariable(const AtomicString& name,
-                               const PropertyRegistration*);
-  const CSSValue* GetRegisteredVariable(const AtomicString& name,
-                                        const PropertyRegistration&);
-  void SetVariable(const AtomicString& name,
-                   const PropertyRegistration*,
-                   scoped_refptr<CSSVariableData>);
-  void SetRegisteredVariable(const AtomicString& name,
-                             const PropertyRegistration&,
-                             const CSSValue*);
+  CSSVariableData* GetVariableData(const AtomicString& name,
+                                   const PropertyRegistration*);
+  const CSSValue* GetVariableValue(const AtomicString& name,
+                                   const PropertyRegistration&);
+  void SetVariableData(const AtomicString& name,
+                       const PropertyRegistration*,
+                       scoped_refptr<CSSVariableData>);
+  void SetVariableValue(const AtomicString& name,
+                        const PropertyRegistration&,
+                        const CSSValue*);
   void SetInvalidVariable(const AtomicString& name,
                           const PropertyRegistration*);
-  bool IsRegisteredVariableInvalid(const AtomicString& name,
-                                   const PropertyRegistration&);
+
+  const CSSParserContext* GetParserContext(
+      const CSSVariableReferenceValue&) const;
 
   const StyleResolverState& state_;
   StyleInheritedVariables* inherited_variables_;
@@ -212,6 +228,8 @@ class CORE_EXPORT CSSVariableResolver {
   // need to be tracked for additional cycles, and invalidation only
   // applies back to cycle starts.
   HashSet<AtomicString> cycle_start_points_;
+
+  friend class CSSVariableResolverTest;
 };
 
 }  // namespace blink

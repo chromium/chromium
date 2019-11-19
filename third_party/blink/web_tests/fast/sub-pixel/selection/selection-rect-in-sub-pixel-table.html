@@ -12,18 +12,12 @@ body {
 </style>
 <script src="../../../resources/run-after-layout-and-paint.js" type="text/javascript"></script>
 <script>
-if (window.testRunner) {
-    testRunner.waitUntilDone();
-    testRunner.dumpAsTextWithPixelResults();
-}
 function repaintTest() {
     window.getSelection().removeAllRanges();
-    if (window.testRunner)
-        testRunner.notifyDone();
 }
 </script>
 </head>
-<body onload="runAfterLayoutAndPaint(repaintTest)">
+<body onload="runAfterLayoutAndPaint(repaintTest, true)">
 <table style="position: absolute; top: 1.5px;">
   <tr>
   <td>

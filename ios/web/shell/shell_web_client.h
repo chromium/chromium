@@ -10,7 +10,6 @@
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #import "ios/web/public/web_client.h"
-#include "services/service_manager/public/cpp/binder_registry.h"
 
 namespace web {
 class ShellBrowserState;
@@ -28,37 +27,22 @@ class ShellWebClient : public WebClient {
       int resource_id,
       ui::ScaleFactor scale_factor) const override;
   base::RefCountedMemory* GetDataResourceBytes(int resource_id) const override;
-  std::unique_ptr<service_manager::Service> HandleServiceRequest(
-      const std::string& service_name,
-      service_manager::mojom::ServiceRequest request) override;
-  base::Optional<service_manager::Manifest> GetServiceManifestOverlay(
-      base::StringPiece name) override;
-  void BindInterfaceRequestFromMainFrame(
+  void BindInterfaceReceiverFromMainFrame(
       WebState* web_state,
-      const std::string& interface_name,
-      mojo::ScopedMessagePipeHandle interface_pipe) override;
+      mojo::GenericPendingReceiver receiver) override;
   void AllowCertificateError(
       WebState* web_state,
       int cert_error,
       const net::SSLInfo& ssl_info,
       const GURL& request_url,
       bool overridable,
+      int64_t navigation_id,
       const base::Callback<void(bool)>& callback) override;
 
   ShellBrowserState* browser_state() const;
 
  private:
-  void InitMainFrameInterfaces();
-
   ShellWebMainParts* web_main_parts_;
-
-  // Interfaces exposed to the main frame whose implementations do not need the
-  // WebState associated with that main frame as a creation argument.
-  std::unique_ptr<service_manager::BinderRegistry> main_frame_interfaces_;
-  // Interfaces exposed to the main frame whose implementations *do* need the
-  // WebState associated with that main frame as a creation argument.
-  std::unique_ptr<service_manager::BinderRegistryWithArgs<WebState*>>
-      main_frame_interfaces_parameterized_;
 
   DISALLOW_COPY_AND_ASSIGN(ShellWebClient);
 };

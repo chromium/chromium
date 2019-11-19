@@ -14,22 +14,15 @@
 #include "third_party/skia/include/core/SkPath.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/canvas.h"
+#include "ui/gfx/geometry/insets.h"
 #include "ui/views/border.h"
 #include "ui/views/bubble/tooltip_icon.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/layout/box_layout.h"
+#include "ui/views/view_class_properties.h"
 
 namespace {
-
-gfx::Size GetTextLabelsSize(const views::Label* upper_label,
-                            const views::Label* lower_label) {
-  gfx::Size upper_label_size = upper_label ? upper_label->GetPreferredSize()
-                                           : gfx::Size();
-  gfx::Size lower_label_size = lower_label ? lower_label->GetPreferredSize()
-                                           : gfx::Size();
-  return gfx::Size(std::max(upper_label_size.width(), lower_label_size.width()),
-                   upper_label_size.height() + lower_label_size.height());
-}
 
 class CircularImageView : public views::ImageView {
  public:
@@ -62,18 +55,20 @@ CredentialsItemView::CredentialsItemView(
     const base::string16& lower_text,
     SkColor hover_color,
     const autofill::PasswordForm* form,
-    network::mojom::URLLoaderFactory* loader_factory)
-    : Button(button_listener),
-      form_(form),
-      upper_label_(nullptr),
-      lower_label_(nullptr),
-      info_icon_(nullptr),
-      hover_color_(hover_color),
-      weak_ptr_factory_(this) {
+    network::mojom::URLLoaderFactory* loader_factory,
+    int upper_text_style,
+    int lower_text_style)
+    : Button(button_listener), form_(form), hover_color_(hover_color) {
   set_notify_enter_exit_on_child(true);
+  views::BoxLayout* layout =
+      SetLayoutManager(std::make_unique<views::BoxLayout>(
+          views::BoxLayout::Orientation::kHorizontal));
+  layout->set_cross_axis_alignment(
+      views::BoxLayout::CrossAxisAlignment::kCenter);
   // Create an image-view for the avatar. Make sure it ignores events so that
   // the parent can receive the events instead.
-  image_view_ = new CircularImageView;
+  auto image_view = std::make_unique<CircularImageView>();
+  image_view_ = image_view.get();
   image_view_->set_can_process_events_within_subtree(false);
   gfx::Image image = ui::ResourceBundle::GetSharedInstance().GetImageNamed(
       IDR_PROFILE_AVATAR_PLACEHOLDER_LARGE);
@@ -86,30 +81,47 @@ CredentialsItemView::CredentialsItemView(
         form_->icon_url, weak_ptr_factory_.GetWeakPtr());
     fetcher->Start(loader_factory);
   }
-  AddChildView(image_view_);
+  AddChildView(std::move(image_view));
 
   // TODO(tapted): Check these (and the STYLE_ values below) against the spec on
   // http://crbug.com/651681.
   const int kLabelContext = CONTEXT_BODY_TEXT_SMALL;
 
+  views::View* text_container = nullptr;
+  if (!upper_text.empty() || !lower_text.empty()) {
+    text_container = AddChildView(std::make_unique<views::View>());
+    views::BoxLayout* text_layout =
+        text_container->SetLayoutManager(std::make_unique<views::BoxLayout>(
+            views::BoxLayout::Orientation::kVertical));
+    text_layout->set_cross_axis_alignment(
+        views::BoxLayout::CrossAxisAlignment::kStart);
+    text_container->SetProperty(
+        views::kMarginsKey,
+        gfx::Insets(0,
+                    ChromeLayoutProvider::Get()->GetDistanceMetric(
+                        views::DISTANCE_RELATED_LABEL_HORIZONTAL),
+                    0, 0));
+    layout->SetFlexForView(text_container, 1);
+  }
+
   if (!upper_text.empty()) {
-    upper_label_ = new views::Label(upper_text, kLabelContext,
-                                    views::style::STYLE_PRIMARY);
-    upper_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-    AddChildView(upper_label_);
+    auto upper_label = std::make_unique<views::Label>(upper_text, kLabelContext,
+                                                      upper_text_style);
+    upper_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+    upper_label_ = text_container->AddChildView(std::move(upper_label));
   }
 
   if (!lower_text.empty()) {
-    lower_label_ = new views::Label(lower_text, kLabelContext, STYLE_SECONDARY);
-    lower_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-    lower_label_->SetMultiLine(true);
-    AddChildView(lower_label_);
+    auto lower_label = std::make_unique<views::Label>(lower_text, kLabelContext,
+                                                      lower_text_style);
+    lower_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+    lower_label->SetMultiLine(true);
+    lower_label_ = text_container->AddChildView(std::move(lower_label));
   }
 
   if (form_->is_public_suffix_match) {
-    info_icon_ = new views::TooltipIcon(
-        base::UTF8ToUTF16(form_->origin.GetOrigin().spec()));
-    AddChildView(info_icon_);
+    info_icon_ = AddChildView(std::make_unique<views::TooltipIcon>(
+        base::UTF8ToUTF16(form_->origin.GetOrigin().spec())));
   }
 
   if (!upper_text.empty() && !lower_text.empty())
@@ -131,65 +143,8 @@ void CredentialsItemView::SetLowerLabelColor(SkColor color) {
     lower_label_->SetEnabledColor(color);
 }
 
-void CredentialsItemView::SetHoverColor(SkColor color) {
-  hover_color_ = color;
-}
-
 int CredentialsItemView::GetPreferredHeight() const {
   return GetPreferredSize().height();
-}
-
-gfx::Size CredentialsItemView::CalculatePreferredSize() const {
-  gfx::Size labels_size = GetTextLabelsSize(upper_label_, lower_label_);
-  gfx::Size size = gfx::Size(kAvatarImageSize + labels_size.width(),
-                             std::max(kAvatarImageSize, labels_size.height()));
-  const gfx::Insets insets(GetInsets());
-  size.Enlarge(insets.width(), insets.height());
-  size.Enlarge(ChromeLayoutProvider::Get()->GetDistanceMetric(
-                   views::DISTANCE_RELATED_LABEL_HORIZONTAL),
-               0);
-
-  // Make the size at least as large as the minimum size needed by the border.
-  size.SetToMax(border() ? border()->GetMinimumSize() : gfx::Size());
-  return size;
-}
-
-int CredentialsItemView::GetHeightForWidth(int w) const {
-  return View::GetHeightForWidth(w);
-}
-
-void CredentialsItemView::Layout() {
-  gfx::Rect child_area(GetLocalBounds());
-  child_area.Inset(GetInsets());
-
-  gfx::Size image_size(image_view_->GetPreferredSize());
-  image_size.SetToMin(child_area.size());
-  gfx::Point image_origin(child_area.origin());
-  image_origin.Offset(0, (child_area.height() - image_size.height()) / 2);
-  image_view_->SetBoundsRect(gfx::Rect(image_origin, image_size));
-
-  gfx::Size upper_size =
-      upper_label_ ? upper_label_->GetPreferredSize() : gfx::Size();
-  gfx::Size lower_size =
-      lower_label_ ? lower_label_->GetPreferredSize() : gfx::Size();
-  int y_offset = (child_area.height() -
-      (upper_size.height() + lower_size.height())) / 2;
-  gfx::Point label_origin(image_origin.x() + image_size.width() +
-                              ChromeLayoutProvider::Get()->GetDistanceMetric(
-                                  views::DISTANCE_RELATED_LABEL_HORIZONTAL),
-                          child_area.origin().y() + y_offset);
-  if (upper_label_)
-    upper_label_->SetBoundsRect(gfx::Rect(label_origin, upper_size));
-  if (lower_label_) {
-    label_origin.Offset(0, upper_size.height());
-    lower_label_->SetBoundsRect(gfx::Rect(label_origin, lower_size));
-  }
-  if (info_icon_) {
-    info_icon_->SizeToPreferredSize();
-    info_icon_->SetPosition(
-        gfx::Point(child_area.right() - info_icon_->width(),
-                   child_area.CenterPoint().y() - info_icon_->height() / 2));
-  }
 }
 
 void CredentialsItemView::OnPaintBackground(gfx::Canvas* canvas) {

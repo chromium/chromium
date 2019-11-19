@@ -15,6 +15,7 @@
 #include "base/macros.h"
 #include "base/scoped_observer.h"
 #include "ui/aura/window_observer.h"
+#include "ui/base/user_activity/user_activity_detector.h"
 #include "ui/base/user_activity/user_activity_observer.h"
 #include "ui/wm/public/activation_change_observer.h"
 #include "ui/wm/public/activation_client.h"
@@ -22,10 +23,6 @@
 namespace base {
 class RepeatingTimer;
 }  // namespace base
-
-namespace ui {
-class UserActivityDetector;
-}  // namespace ui
 
 namespace ash {
 
@@ -123,8 +120,8 @@ class ASH_EXPORT DemoSessionMetricsRecorder
 
   std::unique_ptr<base::RepeatingTimer> timer_;
 
-  ScopedObserver<ui::UserActivityDetector, DemoSessionMetricsRecorder>
-      observer_;
+  ScopedObserver<ui::UserActivityDetector, ui::UserActivityObserver> observer_{
+      this};
 
   class ActiveAppArcPackageNameObserver;
   class UniqueAppsLaunchedArcPackageNameObserver;

@@ -89,8 +89,8 @@ template("chrome_ios_eg2_test_app_host") {
     deps = [
       ":$_deps_group_name",
       "//ios/chrome/app:main",
+      "//ios/chrome/test/earl_grey:eg_app_support+eg2",
       "//ios/chrome/test/earl_grey:hooks",
-      "//ios/chrome/test/earl_grey2:eg_app_support+eg2",
       "//ios/testing:http_server_bundle_data",
       "//ios/third_party/earl_grey2:app_framework+link",
     ]
@@ -101,6 +101,7 @@ template("chrome_ios_eg2_test_app_host") {
     bundle_deps += [
       "//ios/chrome/app/resources",
       "//ios/third_party/earl_grey2:app_framework+bundle",
+      "//ios/third_party/gtx:gtx+bundle",
       ios_application_icons_target,
     ]
 
@@ -117,15 +118,8 @@ template("chrome_ios_eg2_test_app_host") {
       "EG_MAIN_APPLICATION_DELEGATE=$_eg_main_application_delegate",
       "SSOAUTH_URL_SCHEME=$url_ssoauth_scheme",
       "CONTENT_WIDGET_EXTENSION_BUNDLE_ID=$chromium_bundle_id.ContentTodayExtension",
+      "CHROMIUM_BUNDLE_ID=gtest.$target_name",
     ]
-    if (ios_automatically_manage_certs) {
-      # Use the same bundle identifier for EarlGrey tests as for unit tests
-      # when managing certificates as the number of free certs is limited.
-      extra_substitutions +=
-          [ "CHROMIUM_BUNDLE_ID=gtest.${ios_generic_test_bundle_id_suffix}" ]
-    } else {
-      extra_substitutions += [ "CHROMIUM_BUNDLE_ID=gtest.$target_name" ]
-    }
   }
 }
 
@@ -147,10 +141,17 @@ template("chrome_ios_eg2_test") {
                              "deps",
                            ])
 
+    xctest_bundle_principal_class = "ChromeEGTestBundleMain"
+
     if (!defined(deps)) {
       deps = []
     }
-    deps += [ "//ios/chrome/test/earl_grey2:eg_test_support+eg2" ]
+    deps += [ "//ios/chrome/test/earl_grey:eg_test_support+eg2" ]
+
+    bundle_deps = [
+      "//ios/chrome/app/resources",
+      "//ios/third_party/gtx:gtx+bundle",
+    ]
   }
 }
 

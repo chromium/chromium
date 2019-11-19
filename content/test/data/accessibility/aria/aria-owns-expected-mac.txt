@@ -1,8 +1,8 @@
 AXWebArea
 ++AXList
 ++++AXGroup
+++++++AXListMarker AXValue='• '
 ++++++AXGroup
-++++++++AXListMarker AXValue='• '
 ++++++++AXStaticText AXValue='One'
 ++++AXGroup
 ++++++AXListMarker AXValue='• '

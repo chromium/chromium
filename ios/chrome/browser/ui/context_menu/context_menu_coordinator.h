@@ -10,10 +10,6 @@
 #include "base/ios/block_types.h"
 #import "ios/chrome/browser/ui/coordinators/chrome_coordinator.h"
 
-namespace web {
-struct ContextMenuParams;
-}
-
 // Abstracts displaying context menus for all device form factors. Will show a
 // sheet on the phone and use a popover on a tablet.
 // Once this coordinator is stopped, the underlying alert and any menu items
@@ -24,10 +20,14 @@ struct ContextMenuParams;
 // called until a subsequent |-stop|.
 @property(nonatomic, readonly, getter=isVisible) BOOL visible;
 
-// Initializes with details provided in |params|. Context menu will be presented
-// from |viewController|.
+// Initializes context menu with |title| which may be nil if context menu does
+// not need a title. For iPad where context menu may be presented at a specific
+// location, the context menu will originate from |location| in |view|.
+// Context menu will be presented from |viewController|.
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
-                                    params:(const web::ContextMenuParams&)params
+                                     title:(NSString*)title
+                                    inView:(UIView*)view
+                                atLocation:(CGPoint)location
     NS_DESIGNATED_INITIALIZER;
 
 // Params are needed for the initialization.

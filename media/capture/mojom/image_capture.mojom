@@ -47,6 +47,9 @@ struct PhotoState {
   Range sharpness;
 
   Range focus_distance;
+
+  Range pan;
+  Range tilt;
   Range zoom;
 
   bool supports_torch;
@@ -64,8 +67,8 @@ struct PhotoState {
 // https://w3c.github.io/mediacapture-image/#point2d-section
 // TODO(mcasas): use gfx::mojom::PointF after https://crbug.com/640049.
 struct Point2D {
-  float x;
-  float y;
+  double x;
+  double y;
 };
 
 // Equivalent to idl PhotoSettings + MediaTrackSettings/MediaTrackConstraintSet.
@@ -101,6 +104,11 @@ struct PhotoSettings {
 
   bool has_focus_distance;
   double focus_distance;
+
+  bool has_pan;
+  double pan;
+  bool has_tilt;
+  double tilt;
   bool has_zoom;
   double zoom;
 

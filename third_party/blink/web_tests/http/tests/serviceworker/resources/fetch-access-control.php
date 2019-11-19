@@ -53,8 +53,19 @@ if (isset($_GET[$prefix . 'ACACredentials']))
            $_GET[$prefix . 'ACACredentials']);
 if (isset($_GET[$prefix . 'ACEHeaders']))
     header('Access-Control-Expose-Headers: ' . $_GET[$prefix . 'ACEHeaders']);
-if (isset($_GET[$prefix . 'SetCookie']))
-    header('Set-Cookie: cookie=' . $_GET[$prefix . 'SetCookie']);
+
+// Whether the Set-Cookie line needs to include SameSite=None and Secure (for
+// cross-site use).
+$cookie_cross_site = isset($_GET['SameSiteNone']);
+
+if (isset($_GET[$prefix . 'SetCookie'])) {
+    if ($cookie_cross_site) {
+        header('Set-Cookie: cookie=' . $_GET[$prefix . 'SetCookie'] .
+               '; SameSite=None; Secure');
+    } else {
+        header('Set-Cookie: cookie=' . $_GET[$prefix . 'SetCookie']);
+    }
+}
 if (isset($_GET[$prefix . 'SetCookie2']))
     header('Set-Cookie2: cookie=' . $_GET[$prefix . 'SetCookie2']);
 

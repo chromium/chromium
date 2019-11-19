@@ -31,20 +31,13 @@ void Init() {
   Init(Configuration());
 }
 
-void SetDefaultProcessErrorCallback(const ProcessErrorCallback& callback) {
-  Core::Get()->SetDefaultProcessErrorCallback(callback);
+void SetDefaultProcessErrorCallback(ProcessErrorCallback callback) {
+  Core::Get()->SetDefaultProcessErrorCallback(std::move(callback));
 }
 
 scoped_refptr<base::TaskRunner> GetIOTaskRunner() {
   return Core::Get()->GetNodeController()->io_task_runner();
 }
-
-#if defined(OS_MACOSX) && !defined(OS_IOS)
-void SetMachPortProvider(base::PortProvider* port_provider) {
-  DCHECK(port_provider);
-  Core::Get()->SetMachPortProvider(port_provider);
-}
-#endif
 
 }  // namespace core
 }  // namespace mojo

@@ -64,7 +64,7 @@ SolidRoundRectPainter::SolidRoundRectPainter(SkColor bg_color,
       blend_mode_(blend_mode),
       antialias_(antialias) {}
 
-SolidRoundRectPainter::~SolidRoundRectPainter() {}
+SolidRoundRectPainter::~SolidRoundRectPainter() = default;
 
 gfx::Size SolidRoundRectPainter::GetMinimumSize() const {
   return gfx::Size();
@@ -123,8 +123,7 @@ SolidFocusPainter::SolidFocusPainter(SkColor color,
                                      const gfx::InsetsF& insets)
     : color_(color), thickness_(thickness), insets_(insets) {}
 
-SolidFocusPainter::~SolidFocusPainter() {
-}
+SolidFocusPainter::~SolidFocusPainter() = default;
 
 gfx::Size SolidFocusPainter::GetMinimumSize() const {
   return gfx::Size();
@@ -169,8 +168,7 @@ ImagePainter::ImagePainter(const gfx::ImageSkia& image,
     : nine_painter_(new gfx::NineImagePainter(image, insets)) {
 }
 
-ImagePainter::~ImagePainter() {
-}
+ImagePainter::~ImagePainter() = default;
 
 gfx::Size ImagePainter::GetMinimumSize() const {
   return nine_painter_->GetMinimumSize();
@@ -202,7 +200,7 @@ PaintedLayer::PaintedLayer(std::unique_ptr<Painter> painter)
   layer()->set_delegate(this);
 }
 
-PaintedLayer::~PaintedLayer() {}
+PaintedLayer::~PaintedLayer() = default;
 
 void PaintedLayer::OnPaintLayer(const ui::PaintContext& context) {
   ui::PaintRecorder recorder(context, layer()->size());
@@ -217,11 +215,9 @@ void PaintedLayer::OnDeviceScaleFactorChanged(float old_device_scale_factor,
 
 // Painter --------------------------------------------------------------------
 
-Painter::Painter() {
-}
+Painter::Painter() = default;
 
-Painter::~Painter() {
-}
+Painter::~Painter() = default;
 
 // static
 void Painter::PaintPainterAt(gfx::Canvas* canvas,

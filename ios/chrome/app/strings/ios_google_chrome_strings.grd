@@ -129,10 +129,10 @@ locale.  The strings in this file are specific to iOS.
         About Google Chrome
       </message>
       <message name="IDS_IOS_ABOUT_VERSION_COMPANY_NAME" desc="Company name on the about pages">
-        Google Inc.
+        Google LLC
       </message>
       <message name="IDS_IOS_ABOUT_VERSION_COPYRIGHT" desc="Copyright information on the about pages">
-        Copyright <ph name="YEAR">$1</ph> Google Inc. All rights reserved.
+        Copyright <ph name="YEAR">$1</ph> Google LLC. All rights reserved.
       </message>
       <message name="IDS_IOS_ACCOUNT_CONSISTENCY_SETUP_TITLE" desc="Title of the screen where users select an account to use. [Length: 20em] [iOS only]">
         Sign in to Chrome
@@ -175,10 +175,10 @@ locale.  The strings in this file are specific to iOS.
         Welcome to Chrome
       </message>
       <message name="IDS_IOS_GOOGLE_SERVICES_SETTINGS_IMPROVE_CHROME_TEXT" desc="Feature title in the settings for the user enable or disable. Related with 'Automatically sends usage statistics and crash reports to Google'. [iOS only]">
-        Help improve Chrome's features and performance
+        Help Improve Chrome's Features and Performance
       </message>
       <message name="IDS_IOS_GOOGLE_SERVICES_SETTINGS_SYNC_CHROME_DATA" desc="Turns off and on all the sync data (like bookmarks, history and others). [iOS only]">
-        Sync your Chrome data
+        Sync Your Chrome Data
       </message>
       <message name="IDS_IOS_LOCATION_AUTHORIZATION_ALERT" desc="Specifies the reason for sending the user's location to Google [Length: unlimited] [iOS only].">
           Get a better Google experience in Chrome based on your location.
@@ -190,13 +190,10 @@ locale.  The strings in this file are specific to iOS.
         Your account does not work on Google Chrome. Please contact your domain administrator or use a regular Google Account to sign in.
       </message>
       <message name="IDS_IOS_LONG_PRESS_TOOLBAR_IPH_PROMOTION_VOICE_OVER" desc="Text to be read by VoiceOver when the LongPress Toolbar Tip is presented to the user. Read by Text-to-Speech.">
-        Chrome tip. For more tab options, press and hold the Show Tabs button in the toolbar, which is at the bottom or top of your screen.
+        Chrome tip. For more tab options, touch &amp; hold the Show Tabs button in the toolbar, which is at the bottom or top of your screen.
       </message>
       <message name="IDS_IOS_MANAGE_SYNC_DATA_FROM_CHROME_SYNC_TITLE" desc="Title for the cell to open 'Data from Chrome sync' web page where the user can control all their data data from sync.">
         Data from Chrome sync
-      </message>
-      <message name="IDS_IOS_MANAGED_DISCONNECT_DIALOG_INFO" desc="Message explaining that signing out of a managed account will clear all the Chrome data.[Length: 200em, may be line wrapped to multiple lines at run time.] [iOS only].">
-        You are signing out of an account managed by <ph name="SIGNOUT_MANAGED_DOMAIN">$1<ex>google.com</ex></ph>. This will delete your Chrome data from this device, but your data will remain in your Google account.
       </message>
       <message name="IDS_IOS_MANAGED_DISCONNECT_DIALOG_INFO_UNITY" desc="Message explaining that signing out of a managed account will clear all the Chrome data. [Length: 200em, may be line wrapped to multiple lines at run time.] [iOS only].">
         Because you're signing out of an account managed by <ph name="SIGNOUT_MANAGED_DOMAIN">$1<ex>google.com</ex></ph>, your Chrome data will be deleted from this device. Your data will remain in your Google Account.
@@ -213,20 +210,17 @@ locale.  The strings in this file are specific to iOS.
       <message name="IDS_IOS_MOVE_TO_DOCK_TIP" desc="Text displayed on the New Tab Page for the move Chrome to the dock promo. [iOS only]">
         Tip: <ph name="BEGIN_LINK"><ex>BEGIN_LINK</ex>BEGIN_LINK</ph>Move Chrome to your dock<ph name="END_LINK"><ex>END_LINK</ex>END_LINK</ph>
       </message>
+      <message name="IDS_IOS_REVIEW_UPDATED_CHROME_TOS" desc="Text displayed on the New Tab Page to notify users of changed Terms of Serice">
+        <ph name="BEGIN_LINK"><ex>BEGIN_LINK</ex>BEGIN_LINK</ph>Review the updated Chrome Terms of Service.<ph name="END_LINK"><ex>END_LINK</ex>END_LINK</ph>
+      </message>
       <message name="IDS_IOS_OPEN_TABS_NO_SESSION_INSTRUCTIONS" desc="Information about sync displayed when the user has signed in on mobile but not on desktop">
         Access the tabs you have open on your computer, right here. Just open Chrome on your computer, go to the menu, and select “Sign in to Chrome…”
       </message>
       <message name="IDS_IOS_OPEN_TABS_SYNC_IS_OFF_MOBILE" desc="Short paragraph(s) encouraging the user to enable sync on device [Length: 300em, may be line wrapped to multiple lines at run time.]">
         Tabs that you've opened in Chrome on your other devices will appear here.
       </message>
-      <message name="IDS_IOS_OPTIONS_ACCOUNTS_SIGNOUT" desc="Title of the button to sign out of Chrome [iOS only] [60em]">
-        Sign out of Chrome
-      </message>
       <message name="IDS_IOS_OPTIONS_IMPORT_DATA_TITLE_SIGNIN" desc="The title of the Import Data settings screen when signing in. [30em]">
         Sign in to Chrome
-      </message>
-      <message name="IDS_IOS_OPTIONS_PRIVACY_FOOTER" desc="Footer for the clear browsing data dialog [Length: 300em] [iOS only]">
-        Google Chrome may use web services to improve your browsing experience. You may optionally disable these services. <ph name="BEGIN_LINK">BEGIN_LINK</ph>Learn more<ph name="END_LINK">END_LINK</ph>
       </message>
       <message name="IDS_IOS_PAGE_INFO_SECURITY_TAB_SECURE_IDENTITY" desc="The text of the identity section for iOS.">
         Chrome verified that <ph name="ISSUER">$1<ex>VeriSign</ex></ph> issued this website's certificate.
@@ -243,8 +237,8 @@ locale.  The strings in this file are specific to iOS.
       <message name="IDS_IOS_QR_SCANNER_CAMERA_PERMISSIONS_HELP_TITLE" desc="Title of modal dialog shown when the user tries to open the QR scanner but the application lacks permission to use the camera. The body of this dialog instructs the user how to change the permissions setting. [Length: 50em] [iOS only]">
         Start using Google Chrome QR scanner
       </message>
-      <message name="IDS_IOS_QR_SCANNER_CAMERA_PERMISSIONS_HELP_TITLE_GO_TO_SETTINGS" desc="Title of modal dialog shown when the user tries to open the QR scanner but the application lacks permission to use the camera. [Length: 40em] [iOS only]">
-        Turn on Google Chrome QR scanner
+      <message name="IDS_IOS_SCANNER_CAMERA_PERMISSIONS_HELP_TITLE_GO_TO_SETTINGS" desc="Title of modal dialog shown when the user tries to open the QR or credit card scanner but the application lacks permission to use the camera. [Length: 40em] [iOS only]">
+        Chrome Would Like to Access the Camera
       </message>
       <message name="IDS_IOS_QR_SCANNER_CAMERA_UNAVAILABLE_ALERT_DETAIL" desc="Body of a modal dialog shown when the user tries to open the QR scanner but the camera is unavailable. [Length: 140em] [iOS only]">
         Google Chrome can't use your camera right now
@@ -284,15 +278,6 @@ locale.  The strings in this file are specific to iOS.
       </message>
       <message name="IDS_IOS_UPGRADE_AVAILABLE" desc="Text to inform the user of the presence of a new version of the application">
         Chrome just got better! A new version is available.
-      </message>
-      <message name="IDS_IOS_SIGNIN_PROMO_SETTINGS" desc="Text to inform the user that they can sign in to get personal settings">
-        Sign in to Chrome to get your bookmarks, passwords, and more on all your devices.
-      </message>
-      <message name="IDS_IOS_SIGNIN_PROMO_RECENT_TABS" desc="Text to inform the user that they can sign in to get the recent tabs from other computers">
-        To get your tabs from your other devices, sign in to Chrome.
-      </message>
-      <message name="IDS_IOS_SIGNIN_PROMO_BOOKMARKS" desc="Text to inform the user that they can sign in to get bookmarks shared between devices">
-        To get your bookmarks on all your devices, sign in to Chrome.
       </message>
     </messages>
   </release>

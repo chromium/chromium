@@ -21,6 +21,7 @@
 #include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
 #include "v8/include/v8.h"
 
 namespace blink {
@@ -102,9 +103,9 @@ class GarbageCollectedHolder final : public GarbageCollectedScriptWrappable {
 class ScriptPromisePropertyTestBase {
  public:
   ScriptPromisePropertyTestBase()
-      : page_(DummyPageHolder::Create(IntSize(1, 1))) {
+      : page_(std::make_unique<DummyPageHolder>(IntSize(1, 1))) {
     v8::HandleScope handle_scope(GetIsolate());
-    other_script_state_ = ScriptState::Create(
+    other_script_state_ = MakeGarbageCollected<ScriptState>(
         v8::Context::New(GetIsolate()),
         DOMWrapperWorld::EnsureIsolatedWorld(GetIsolate(), 1));
   }
@@ -153,7 +154,7 @@ class ScriptPromisePropertyTestBase {
         ScriptState::From(ToV8Context(&GetDocument(), world));
     ScriptState::Scope scope(script_state);
     return ScriptValue(
-        script_state,
+        GetIsolate(),
         ToV8(value, script_state->GetContext()->Global(), GetIsolate()));
   }
 
@@ -219,8 +220,8 @@ class ScriptPromisePropertyNonScriptWrappableResolutionTargetTest
     }
     if (expected != actual) {
       ADD_FAILURE_AT(file, line)
-          << "toV8 returns an incorrect value.\n  Actual: "
-          << actual.Utf8().data() << "\nExpected: " << expected;
+          << "toV8 returns an incorrect value.\n  Actual: " << actual.Utf8()
+          << "\nExpected: " << expected;
       return;
     }
   }
@@ -288,8 +289,8 @@ TEST_F(ScriptPromisePropertyGarbageCollectedTest,
   Persistent<GCObservation> observation;
   {
     ScriptState::Scope scope(MainScriptState());
-    observation =
-        GCObservation::Create(Promise(DOMWrapperWorld::MainWorld()).V8Value());
+    observation = MakeGarbageCollected<GCObservation>(
+        Promise(DOMWrapperWorld::MainWorld()).V8Value());
   }
 
   Gc();

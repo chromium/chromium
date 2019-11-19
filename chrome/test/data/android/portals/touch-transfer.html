@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+<body>
+  <div>This is the embedder</div>
+  <portal src="touch-transfer-portal.html"></portal>
+  <script>
+    var eventType = (new URL(window.location)).searchParams.get("event");
+    document.addEventListener(eventType, e => {
+      var portal = document.querySelector("portal");
+      portal.activate();
+    });
+  </script>
+</body>
+</html>

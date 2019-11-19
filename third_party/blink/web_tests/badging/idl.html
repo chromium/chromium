@@ -5,11 +5,10 @@
 <script src="../resources/webidl2.js"></script>
 <script src="../resources/idlharness.js"></script>
 <script type="text/plain" id="tested">
-    interface ExperimentalBadge {
-      [CallWith=ScriptState, RaisesException]
-      static void set(optional [EnforceRange] unsigned long long contents);
-      [CallWith=ScriptState] static void clear();
-    };
+  interface Navigator {
+    Promise<void> setExperimentalAppBadge(optional [EnforceRange] unsigned long long contents);
+    Promise<void> clearExperimentalAppBadge();
+  };
 </script>
 <script>
     "use strict";

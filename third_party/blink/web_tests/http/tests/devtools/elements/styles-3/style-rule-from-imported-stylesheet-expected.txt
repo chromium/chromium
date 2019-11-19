@@ -5,7 +5,7 @@ Rules before toggling:
 element.style { ()
 
 [expanded] 
-.square { (imported-stylesheet.css:2 -> imported-stylesheet.css:2:2)
+.square { (imported-st…sheet.css:2 -> imported-stylesheet.css:2:2)
     background-color: red;
     display: inline-block;
 
@@ -23,7 +23,7 @@ Rules after toggling:
 element.style { ()
 
 [expanded] 
-.square { (imported-stylesheet.css:2 -> imported-stylesheet.css:2:2)
+.square { (imported-st…sheet.css:2 -> imported-stylesheet.css:2:2)
 /-- overloaded --/ /-- disabled --/     /* background-color: red; */
     display: inline-block;
 

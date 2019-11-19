@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Toast: close tests (with internals)</title>
+
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+<script src="../resources/testdriver.js"></script>
+<script src="../resources/testdriver-vendor.js"></script>
+
+<main></main>
+
+<script type="module">
+import 'std:elements/toast';
+
+test(() => {
+    const toast = document.createElement('std-toast');
+    toast.setAttribute('closebutton', '');
+    document.querySelector('main').appendChild(toast);
+    toast.open = true;
+
+    const toastCloseButton = internals.shadowRoot(toast).querySelector('[part=closebutton]');
+    toastCloseButton.click();
+
+    assert_false(toast.open);
+}, 'clicking the toast close button closes the toast');
+
+test(() => {
+    const toast = document.createElement('std-toast');
+    toast.setAttribute('closebutton', 'dismiss');
+
+    const toastCloseButton = internals.shadowRoot(toast).querySelector('[part=closebutton]');
+
+    assert_equals(toastCloseButton.textContent, 'dismiss');
+}, 'the closebutton attribute text shows up as the text content of the button');
+
+test(() => {
+    const toast = document.createElement('std-toast');
+    toast.setAttribute('closebutton', '<b>bold</b> text');
+
+    const toastCloseButton = internals.shadowRoot(toast).querySelector('[part=closebutton]');
+
+    assert_equals(toastCloseButton.textContent, '<b>bold</b> text');
+    assert_equals(toastCloseButton.querySelector('b'), null);
+}, 'passing markup as the closebutton attribute text shows up as pure text content of the button');
+
+test(() => {
+    const toast = document.createElement('std-toast');
+    toast.setAttribute('closebutton', '');
+
+    const toastCloseButton = internals.shadowRoot(toast).querySelector('[part=closebutton]');
+
+    assert_equals(toastCloseButton.textContent, '×');
+}, 'the × symbol shows up in the button when the closebutton attribute is present as empty string');
+
+test(() => {
+    const toast = document.createElement('std-toast');
+    toast.closeButton = true;
+
+    const toastCloseButton = internals.shadowRoot(toast).querySelector('[part=closebutton]');
+
+    assert_equals(toastCloseButton.textContent, '×');
+}, 'the × symbol shows up in the button when toast.closeButton is set to true');
+
+test(() => {
+    const toast = document.createElement('std-toast');
+
+    const toastCloseButton = internals.shadowRoot(toast).querySelector('[part=closebutton]');
+
+    assert_equals(toastCloseButton.getAttribute('aria-label'), 'close');
+}, 'the closebutton has aria-label="close" by default');
+
+test(() => {
+    const toast = document.createElement('std-toast');
+    toast.setAttribute('closebutton', '');
+
+    const toastCloseButton = internals.shadowRoot(toast).querySelector('[part=closebutton]');
+
+    assert_true(toastCloseButton.hasAttribute('aria-label'));
+    assert_equals(toastCloseButton.getAttribute('aria-label'), 'close');
+}, 'the default closebutton attribute shows up with an aria-label="close" attribute');
+
+test(() => {
+    const toast = document.createElement('std-toast');
+    toast.setAttribute('closebutton', 'dismiss');
+
+    const toastCloseButton = internals.shadowRoot(toast).querySelector('[part=closebutton]');
+
+    assert_false(toastCloseButton.hasAttribute('aria-label'));
+}, 'a closebutton attribute with a value shows up without an aria-label attribute');
+</script>

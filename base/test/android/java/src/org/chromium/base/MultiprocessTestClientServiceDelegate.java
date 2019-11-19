@@ -11,7 +11,6 @@ import android.os.RemoteException;
 import android.util.SparseArray;
 
 import org.chromium.base.library_loader.LibraryLoader;
-import org.chromium.base.library_loader.ProcessInitException;
 import org.chromium.base.process_launcher.ChildProcessServiceDelegate;
 import org.chromium.native_test.MainRunner;
 
@@ -55,14 +54,8 @@ public class MultiprocessTestClientServiceDelegate implements ChildProcessServic
     }
 
     @Override
-    public boolean loadNativeLibrary(Context hostContext) {
-        try {
-            LibraryLoader.getInstance().loadNow();
-            return true;
-        } catch (ProcessInitException pie) {
-            Log.e(TAG, "Unable to load native libraries.", pie);
-            return false;
-        }
+    public void loadNativeLibrary(Context hostContext) {
+        LibraryLoader.getInstance().loadNow();
     }
 
     @Override

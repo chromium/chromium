@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+from __future__ import print_function
+
 import os.path
 
 from json_parse import OrderedDict
@@ -320,13 +322,11 @@ class Function(object):
     callback_param = None
     params = json.get('parameters', [])
     for i, param in enumerate(params):
-      if param.get('type') == 'function' and i == len(params) - 1:
-        if callback_param:
-          # No ParseException because the webstore has this.
-          # Instead, pretend all intermediate callbacks are properties.
-          self.params.append(GeneratePropertyFromParam(callback_param))
+      if i == len(params) - 1 and param.get('type') == 'function':
         callback_param = param
       else:
+        # Treat all intermediate function arguments as properties. Certain APIs,
+        # such as the webstore, have these.
         self.params.append(GeneratePropertyFromParam(param))
 
     if callback_param:
@@ -464,6 +464,9 @@ class _Enum(object):
 
   def __str__(self):
     return repr(self)
+
+  def __hash__(self):
+    return hash(self.name)
 
 
 class _PropertyTypeInfo(_Enum):

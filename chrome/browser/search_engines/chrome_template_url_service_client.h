@@ -7,12 +7,9 @@
 
 #include "base/macros.h"
 #include "base/scoped_observer.h"
+#include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_service_observer.h"
 #include "components/search_engines/template_url_service_client.h"
-
-namespace history {
-class HistoryService;
-}
 
 // ChromeTemplateURLServiceClient provides keyword related history
 // functionality for TemplateURLService.
@@ -42,7 +39,7 @@ class ChromeTemplateURLServiceClient : public TemplateURLServiceClient,
  private:
   TemplateURLService* owner_;
   ScopedObserver<history::HistoryService, history::HistoryServiceObserver>
-      history_service_observer_;
+      history_service_observer_{this};
   history::HistoryService* history_service_;
 
   DISALLOW_COPY_AND_ASSIGN(ChromeTemplateURLServiceClient);

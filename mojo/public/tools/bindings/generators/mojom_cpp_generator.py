@@ -177,6 +177,13 @@ def ShouldInlineUnion(union):
            for field in union.fields)
 
 
+def HasPackedMethodOrdinals(interface):
+  """Returns whether all method ordinals are packed such that indexing into a
+  table would be efficient."""
+  max_ordinal = len(interface.methods) * 2
+  return all(method.ordinal < max_ordinal for method in interface.methods)
+
+
 class StructConstructor(object):
   """Represents a constructor for a generated struct.
 
@@ -268,10 +275,32 @@ class Generator(generator.Generator):
                 for typename in
                 self.module.structs + all_enums + self.module.unions)
     headers = set()
-    for typename, typemap in self.typemap.iteritems():
+    for typename, typemap in self.typemap.items():
       if typename in types:
         headers.update(typemap.get("public_headers", []))
     return sorted(headers)
+
+  def _ReferencesAnyHandleOrInterfaceType(self):
+    """Returns whether this module uses interfaces directly or indirectly.
+
+    When false, the generated headers do not need to include interface_ptr.h
+    and similar.
+    """
+    if len(self.module.interfaces) > 0:
+      return True
+    return any(map(mojom.ContainsHandlesOrInterfaces,
+                   self.module.structs + self.module.unions))
+
+  def _ReferencesAnyNativeType(self):
+    """Returns whether this module uses native types directly or indirectly.
+
+    When false, the generated headers do not need to include
+    native_struct_serialization.h and similar.
+    """
+    m = self.module
+    # Note that interfaces can contain scoped native types.
+    return any(map(mojom.ContainsNativeTypes,
+                   m.enums + m.structs + m.interfaces))
 
   def _GetDirectlyUsedKinds(self):
     for struct in self.module.structs + self.module.unions:
@@ -294,6 +323,7 @@ class Generator(generator.Generator):
       "all_enums": all_enums,
       "disallow_interfaces": self.disallow_interfaces,
       "disallow_native_types": self.disallow_native_types,
+      "enable_kythe_annotations": self.enable_kythe_annotations,
       "enums": self.module.enums,
       "export_attribute": self.export_attribute,
       "export_header": self.export_header,
@@ -309,6 +339,8 @@ class Generator(generator.Generator):
       "structs": self.module.structs,
       "support_lazy_serialization": self.support_lazy_serialization,
       "unions": self.module.unions,
+      "uses_interfaces": self._ReferencesAnyHandleOrInterfaceType(),
+      "uses_native_types": self._ReferencesAnyNativeType(),
       "variant": self.variant,
     }
 
@@ -337,10 +369,12 @@ class Generator(generator.Generator):
       "format_constant_declaration": self._FormatConstantDeclaration,
       "get_container_validate_params_ctor_args":
           self._GetContainerValidateParamsCtorArgs,
+      "get_full_mojom_name_for_kind": self._GetFullMojomNameForKind,
       "get_name_for_kind": self._GetNameForKind,
       "get_pad": pack.GetPad,
       "get_qualified_name_for_kind": self._GetQualifiedNameForKind,
       "has_callbacks": mojom.HasCallbacks,
+      "has_packed_method_ordinals": HasPackedMethodOrdinals,
       "has_sync_methods": mojom.HasSyncMethods,
       "method_supports_lazy_serialization":
           self._MethodSupportsLazySerialization,
@@ -351,6 +385,7 @@ class Generator(generator.Generator):
       "is_enum_kind": mojom.IsEnumKind,
       "is_integral_kind": mojom.IsIntegralKind,
       "is_interface_kind": mojom.IsInterfaceKind,
+      "is_receiver_kind": self._IsReceiverKind,
       "is_native_only_kind": IsNativeOnlyKind,
       "is_any_handle_kind": mojom.IsAnyHandleKind,
       "is_any_interface_kind": mojom.IsAnyInterfaceKind,
@@ -423,31 +458,32 @@ class Generator(generator.Generator):
 
     if self.generate_non_variant_code:
       if self.generate_message_ids:
-        self.Write(self._GenerateModuleSharedMessageIdsHeader(),
-           "%s-shared-message-ids.h" % self.module.path)
+        self.WriteWithComment(self._GenerateModuleSharedMessageIdsHeader(),
+                              "%s-shared-message-ids.h" % self.module.path)
       else:
-        self.Write(self._GenerateModuleSharedHeader(),
-                   "%s-shared.h" % self.module.path)
-        self.Write(self._GenerateModuleSharedInternalHeader(),
-                   "%s-shared-internal.h" % self.module.path)
-        self.Write(self._GenerateModuleSharedSource(),
-                   "%s-shared.cc" % self.module.path)
-        self.Write(self._GenerateModuleParamsDataHeader(),
-                   "%s-params-data.h" % self.module.path)
+        self.WriteWithComment(self._GenerateModuleSharedHeader(),
+                              "%s-shared.h" % self.module.path)
+        self.WriteWithComment(self._GenerateModuleSharedInternalHeader(),
+                              "%s-shared-internal.h" % self.module.path)
+        self.WriteWithComment(self._GenerateModuleSharedSource(),
+                              "%s-shared.cc" % self.module.path)
+        self.WriteWithComment(self._GenerateModuleParamsDataHeader(),
+                              "%s-params-data.h" % self.module.path)
     else:
       suffix = "-%s" % self.variant if self.variant else ""
-      self.Write(self._GenerateModuleHeader(),
-                 "%s%s.h" % (self.module.path, suffix))
-      self.Write(self._GenerateModuleForwardHeader(),
-                 "%s%s-forward.h" % (self.module.path, suffix))
-      self.Write(self._GenerateModuleSource(),
-                 "%s%s.cc" % (self.module.path, suffix))
-      self.Write(self._GenerateModuleImportHeadersHeader(),
-                 "%s%s-import-headers.h" % (self.module.path, suffix))
-      self.Write(self._GenerateModuleTestUtilsHeader(),
-                 "%s%s-test-utils.h" % (self.module.path, suffix))
-      self.Write(self._GenerateModuleTestUtilsSource(),
-                 "%s%s-test-utils.cc" % (self.module.path, suffix))
+      self.WriteWithComment(self._GenerateModuleHeader(),
+                            "%s%s.h" % (self.module.path, suffix))
+      self.WriteWithComment(self._GenerateModuleForwardHeader(),
+                            "%s%s-forward.h" % (self.module.path, suffix))
+      self.WriteWithComment(self._GenerateModuleSource(),
+                            "%s%s.cc" % (self.module.path, suffix))
+      self.WriteWithComment(self._GenerateModuleImportHeadersHeader(),
+                            "%s%s-import-headers.h" % (self.module.path,
+                                                       suffix))
+      self.WriteWithComment(self._GenerateModuleTestUtilsHeader(),
+                            "%s%s-test-utils.h" % (self.module.path, suffix))
+      self.WriteWithComment(self._GenerateModuleTestUtilsSource(),
+                            "%s%s-test-utils.cc" % (self.module.path, suffix))
 
   def _ConstantValue(self, constant):
     return self._ExpressionToText(constant.value, kind=constant.kind)
@@ -593,6 +629,12 @@ class Generator(generator.Generator):
     if mojom.IsPendingReceiverKind(kind):
       return "mojo::PendingReceiver<%s>" % self._GetNameForKind(
           kind.kind, add_same_module_namespaces=add_same_module_namespaces)
+    if mojom.IsPendingAssociatedRemoteKind(kind):
+      return "mojo::PendingAssociatedRemote<%s>" % self._GetNameForKind(
+          kind.kind, add_same_module_namespaces=add_same_module_namespaces)
+    if mojom.IsPendingAssociatedReceiverKind(kind):
+      return "mojo::PendingAssociatedReceiver<%s>" % self._GetNameForKind(
+          kind.kind, add_same_module_namespaces=add_same_module_namespaces)
     if mojom.IsAssociatedInterfaceKind(kind):
       return "%sAssociatedPtrInfo" % self._GetNameForKind(
           kind.kind, add_same_module_namespaces=add_same_module_namespaces)
@@ -634,6 +676,10 @@ class Generator(generator.Generator):
     if mojom.IsAnyHandleOrInterfaceKind(kind):
       return True
     return False
+
+  def _IsReceiverKind(self, kind):
+    return (mojom.IsPendingReceiverKind(kind) or
+            mojom.IsInterfaceRequestKind(kind))
 
   def _IsCopyablePassByValue(self, kind):
     if not self._IsTypemappedKind(kind):
@@ -683,9 +729,11 @@ class Generator(generator.Generator):
       return "mojo::internal::Interface_Data"
     if mojom.IsInterfaceRequestKind(kind) or mojom.IsPendingReceiverKind(kind):
       return "mojo::internal::Handle_Data"
-    if mojom.IsAssociatedInterfaceKind(kind):
+    if (mojom.IsAssociatedInterfaceKind(kind) or
+        mojom.IsPendingAssociatedRemoteKind(kind)):
       return "mojo::internal::AssociatedInterface_Data"
-    if mojom.IsAssociatedInterfaceRequestKind(kind):
+    if (mojom.IsAssociatedInterfaceRequestKind(kind) or
+        mojom.IsPendingAssociatedReceiverKind(kind)):
       return "mojo::internal::AssociatedEndpointHandle_Data"
     if mojom.IsEnumKind(kind):
       return "int32_t"
@@ -773,7 +821,7 @@ class Generator(generator.Generator):
         return "std::numeric_limits<float>::quiet_NaN()"
 
     if (kind is not None and mojom.IsFloatKind(kind)):
-        return token if token.isdigit() else token + "f";
+      return token if token.isdigit() else token + "f"
 
     # Per C++11, 2.14.2, the type of an integer literal is the first of the
     # corresponding list in Table 6 in which its value can be represented. In
@@ -903,9 +951,11 @@ class Generator(generator.Generator):
     if mojom.IsPendingReceiverKind(kind):
       return ("mojo::InterfaceRequestDataView<%sInterfaceBase>" %
               _GetName(kind.kind))
-    if mojom.IsAssociatedInterfaceKind(kind):
+    if (mojom.IsAssociatedInterfaceKind(kind) or
+        mojom.IsPendingAssociatedRemoteKind(kind)):
       return "%sAssociatedPtrInfoDataView" % _GetName(kind.kind)
-    if mojom.IsAssociatedInterfaceRequestKind(kind):
+    if (mojom.IsAssociatedInterfaceRequestKind(kind) or
+        mojom.IsPendingAssociatedReceiverKind(kind)):
       return "%sAssociatedRequestDataView" % _GetName(kind.kind)
     if mojom.IsGenericHandleKind(kind):
       return "mojo::ScopedHandle"

@@ -8,7 +8,7 @@ import "components/mirroring/mojom/cast_message_channel.mojom";
 import "components/mirroring/mojom/resource_provider.mojom";
 import "components/mirroring/mojom/session_observer.mojom";
 import "components/mirroring/mojom/session_parameters.mojom";
-import "ui/gfx/geometry/mojo/geometry.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
 
 // This interface is used to control a mirroring session.
 interface MirroringService {
@@ -20,11 +20,8 @@ interface MirroringService {
   // To stop the session, just close the message pipe.
   Start(SessionParameters params,
         gfx.mojom.Size max_resolution,
-        SessionObserver observer,
-        ResourceProvider resource_provider,
-        CastMessageChannel outbound_channel,
-        CastMessageChannel& inbound_channel);
-
-  // TODO(xjz): Add interfaces to get the streaming events/stats and mirroring
-  // logs.
+        pending_remote<SessionObserver> observer,
+        pending_remote<ResourceProvider> resource_provider,
+        pending_remote<CastMessageChannel> outbound_channel,
+        pending_receiver<CastMessageChannel> inbound_channel);
 };

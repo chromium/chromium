@@ -59,7 +59,7 @@ class DeviceController {
   // Member variables should appear before the WeakPtrFactory, to ensure
   // that any WeakPtrs to Controller are invalidated before its members
   // variable's destructors are executed, rendering them invalid.
-  base::WeakPtrFactory<DeviceController> weak_ptr_factory_;
+  base::WeakPtrFactory<DeviceController> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(DeviceController);
 };

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<style>
+  .c0 { float:right; width:100px; height:150px; }
+  .c15 { font-size:20px; font-family:Ahem; }
+  .c17 { height:10px; padding-right:100%; }
+  .c19 { float:left; width:100px; height:100px; }
+</style>
+
+<!-- Add something editable, to disable LayoutNG, to trigger the bug. -->
+<div contenteditable></div>
+
+<div id="container" style="width:400px;">
+  <div></div>
+  <span class="c15">888888888<span id="removeme"> 88</span>
+    8888888888</span><div class="c0"></div><span class="c17"></span>
+  <div class="c19"></div>
+</div>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script>
+  test(() => {
+    container.offsetTop;
+
+    // Remove some text without affecting where lines break.
+    removeme.style.display = "none";
+    container.offsetTop;
+
+    // Relayout the container without changing line widths.
+    container.style.paddingBottom = "1px";
+  }, "No crash");
+</script>

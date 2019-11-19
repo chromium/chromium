@@ -48,8 +48,7 @@ DeviceController::DeviceController(std::unique_ptr<Socket> host_socket,
                                    int exit_notifier_fd)
     : host_socket_(std::move(host_socket)),
       exit_notifier_fd_(exit_notifier_fd),
-      construction_task_runner_(base::ThreadTaskRunnerHandle::Get()),
-      weak_ptr_factory_(this) {
+      construction_task_runner_(base::ThreadTaskRunnerHandle::Get()) {
   host_socket_->AddEventFd(exit_notifier_fd);
 }
 
@@ -68,9 +67,8 @@ void DeviceController::AcceptHostCommandInternal() {
       LOG(INFO) << "Received exit notification";
     return;
   }
-  base::ScopedClosureRunner accept_next_client(
-      base::Bind(&DeviceController::AcceptHostCommandSoon,
-                 base::Unretained(this)));
+  base::ScopedClosureRunner accept_next_client(base::BindOnce(
+      &DeviceController::AcceptHostCommandSoon, base::Unretained(this)));
   // So that |socket| doesn't block on read if it has notifications.
   socket->AddEventFd(exit_notifier_fd_);
   int port;
@@ -91,8 +89,8 @@ void DeviceController::AcceptHostCommandInternal() {
       }
       std::unique_ptr<DeviceListener> new_listener(DeviceListener::Create(
           std::move(socket), port,
-          base::Bind(&DeviceController::DeleteListenerOnError,
-                     weak_ptr_factory_.GetWeakPtr())));
+          base::BindOnce(&DeviceController::DeleteListenerOnError,
+                         weak_ptr_factory_.GetWeakPtr())));
       if (!new_listener)
         return;
       new_listener->Start();

@@ -8,7 +8,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "chrome/browser/devtools/devtools_file_watcher.h"
@@ -34,7 +34,7 @@ class DevToolsFileWatcherTest : public testing::Test {
 
   base::ScopedTempDir temp_dir_;
   base::FilePath base_path_;
-  base::test::ScopedTaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_;
   bool done_flag_ = false;
 
   std::set<std::string> expected_changed_paths_;

@@ -38,7 +38,7 @@ class LevelDBSiteCharacteristicsDatabase
           callback) override;
   void WriteSiteCharacteristicsIntoDB(
       const url::Origin& origin,
-      const SiteCharacteristicsProto& site_characteristic_proto) override;
+      const SiteDataProto& site_characteristic_proto) override;
   void RemoveSiteCharacteristicsFromDB(
       const std::vector<url::Origin>& site_origins) override;
   void ClearDatabase() override;
@@ -48,7 +48,7 @@ class LevelDBSiteCharacteristicsDatabase
 
   // Returns a raw pointer to the database for testing purposes. Note that as
   // the DB operations are made on a separate sequence it's recommended to call
-  // ScopedTaskEnvironment::RunUntilIdle before calling this function to ensure
+  // TaskEnvironment::RunUntilIdle before calling this function to ensure
   // that the database has been fully initialized. The LevelDB implementation is
   // thread safe.
   leveldb::DB* GetDBForTesting();

@@ -33,12 +33,14 @@ class FeatureCompilerTest(unittest.TestCase):
 
   def setUp(self):
     feature_compiler.ENABLE_ASSERTIONS = False
-    feature_compiler.STRINGS_TO_UNICODE = True
 
   def testFeature(self):
     # Test some basic feature parsing for a sanity check.
     f = self._parseFeature({
-      'blacklist': ['aaa', 'bbb'],
+      'blacklist': [
+        'ABCDEF0123456789ABCDEF0123456789ABCDEF01',
+        '10FEDCBA9876543210FEDCBA9876543210FEDCBA'
+      ],
       'channel': 'stable',
       'command_line_switch': 'switch',
       'component_extensions_auto_granted': False,
@@ -49,6 +51,7 @@ class FeatureCompilerTest(unittest.TestCase):
       ],
       'default_parent': True,
       'dependencies': ['dependency1', 'dependency2'],
+      'disallow_for_service_workers': True,
       'extension_types': ['extension'],
       'location': 'component',
       'internal': True,
@@ -57,7 +60,10 @@ class FeatureCompilerTest(unittest.TestCase):
       'noparent': True,
       'platforms': ['mac', 'win'],
       'session_types': ['kiosk', 'regular'],
-      'whitelist': ['zzz', 'yyy']
+      'whitelist': [
+        '0123456789ABCDEF0123456789ABCDEF01234567',
+        '76543210FEDCBA9876543210FEDCBA9876543210'
+      ]
     })
     self.assertFalse(f.GetErrors())
 
@@ -94,6 +100,15 @@ class FeatureCompilerTest(unittest.TestCase):
   def testImproperValue(self):
     f = self._parseFeature({'noparent': False})
     self._hasError(f, 'Illegal value: "False"')
+
+  def testEmptyList(self):
+    f = self._parseFeature({'contexts': []})
+    self._hasError(f, 'List must specify at least one element.')
+
+  def testEmptyListWithAllowEmpty(self):
+    # `dependencies` is the only key that allows an empty list.
+    f = self._parseFeature({'dependencies': []})
+    self.assertFalse(f.GetErrors())
 
   def testApiFeaturesNeedContexts(self):
     f = self._parseFeature({'dependencies': 'alpha',

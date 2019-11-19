@@ -7,7 +7,7 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/media_values.h"
-#include "third_party/blink/renderer/platform/cross_thread_copier.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_copier.h"
 
 namespace blink {
 
@@ -33,11 +33,13 @@ class CORE_EXPORT MediaValuesCached final : public MediaValues {
     bool immersive_mode;
     bool strict_mode;
     String media_type;
-    WebDisplayMode display_mode;
+    blink::mojom::DisplayMode display_mode;
     DisplayShape display_shape;
     ColorSpaceGamut color_gamut;
-    WebColorScheme preferred_color_scheme;
+    PreferredColorScheme preferred_color_scheme;
     bool prefers_reduced_motion;
+    ForcedColors forced_colors;
+    NavigationControls navigation_controls;
 
     MediaValuesCachedData();
     explicit MediaValuesCachedData(Document&);
@@ -65,12 +67,11 @@ class CORE_EXPORT MediaValuesCached final : public MediaValues {
       data.color_gamut = color_gamut;
       data.preferred_color_scheme = preferred_color_scheme;
       data.prefers_reduced_motion = prefers_reduced_motion;
+      data.forced_colors = forced_colors;
+      data.navigation_controls = navigation_controls;
       return data;
     }
   };
-
-  static MediaValuesCached* Create();
-  static MediaValuesCached* Create(const MediaValuesCachedData&);
 
   MediaValuesCached();
   MediaValuesCached(LocalFrame*);
@@ -101,11 +102,13 @@ class CORE_EXPORT MediaValuesCached final : public MediaValues {
   Document* GetDocument() const override;
   bool HasValues() const override;
   const String MediaType() const override;
-  WebDisplayMode DisplayMode() const override;
+  blink::mojom::DisplayMode DisplayMode() const override;
   DisplayShape GetDisplayShape() const override;
   ColorSpaceGamut ColorGamut() const override;
-  WebColorScheme PreferredColorScheme() const override;
+  PreferredColorScheme GetPreferredColorScheme() const override;
   bool PrefersReducedMotion() const override;
+  ForcedColors GetForcedColors() const override;
+  NavigationControls GetNavigationControls() const override;
 
   void OverrideViewportDimensions(double width, double height) override;
 
@@ -113,14 +116,16 @@ class CORE_EXPORT MediaValuesCached final : public MediaValues {
   MediaValuesCachedData data_;
 };
 
+}  // namespace blink
+
+namespace WTF {
+
 template <>
-struct CrossThreadCopier<MediaValuesCached::MediaValuesCachedData> {
-  typedef MediaValuesCached::MediaValuesCachedData Type;
-  static Type Copy(const MediaValuesCached::MediaValuesCachedData& data) {
-    return data.DeepCopy();
-  }
+struct CrossThreadCopier<blink::MediaValuesCached::MediaValuesCachedData> {
+  typedef blink::MediaValuesCached::MediaValuesCachedData Type;
+  static Type Copy(const Type& data) { return data.DeepCopy(); }
 };
 
-}  // namespace blink
+}  // namespace WTF
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_MEDIA_VALUES_CACHED_H_

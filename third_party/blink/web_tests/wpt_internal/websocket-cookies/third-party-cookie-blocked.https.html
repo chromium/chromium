@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<meta charset="utf-8"/>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/websockets/cookies/support/websocket-cookies-helper.sub.js"></script>
+<script>
+if (window.testRunner) {
+  // Block third-party cookies.
+  testRunner.setBlockThirdPartyCookies(true);
+}
+
+promise_test(() => {
+  var value = '' + Math.random();
+  var origin = WSS_CROSS_SITE_ORIGIN;
+  return setSameSiteCookies(origin, value).then(
+    () => connectAndGetRequestCookiesFrom(origin)
+  ).then(
+    cookies => {
+      assert_equals(cookies, '(none)', 'request should not contain cookies.');
+      return clearSameSiteCookies(origin);
+    }
+  );
+}, 'Test third-party cookie blocking for WebSockets');
+</script>

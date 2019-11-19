@@ -4,8 +4,9 @@
 
 source_set("external_service") {
   sources = [
-    "external_connector.cc",
     "external_connector.h",
+    "external_connector_impl.cc",
+    "external_connector_impl.h",
     "external_service.cc",
     "external_service.h",
   ]
@@ -21,11 +22,16 @@ source_set("external_service") {
 
 source_set("process_setup") {
   sources = [
+    "crash_reporter_client.cc",
+    "crash_reporter_client.h",
     "process_setup.cc",
     "process_setup.h",
   ]
   deps = [
     "//base",
+    "//base:base_static",
+    "//chromecast/crash",
+    "//components/crash/content/app",
   ]
 }
 
@@ -65,6 +71,7 @@ executable("standalone_mojo_broker") {
   deps = [
     ":process_setup",
     "//base",
+    "//chromecast/external_mojo/public/cpp:common",
     "//chromecast/external_mojo/public/cpp:external_mojo_broker",
     "//mojo/core/embedder",
   ]

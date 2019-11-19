@@ -1,0 +1,53 @@
+// Copyright 2018 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module chrome_cleaner.mojom;
+
+import "chrome/chrome_cleaner/mojom/footprints.mojom";
+import "chrome/chrome_cleaner/mojom/string16_embedded_nulls.mojom";
+import "mojo/public/mojom/base/string16.mojom";
+
+// Passes requests that can mutate the system from the low-privilege sandbox
+// target process to the high-privilege broker process. It is implemented in
+// CleanerEngineRequestsImpl in engines/broker.
+//
+// This interface is only used when in cleaning mode, in which case the broker
+// process runs with administrator privileges, so the parameters of each method
+// must be carefully validated to ensure that the requests are safe.
+interface CleanerEngineRequests {
+  // Attempts to deletes the given file, applying some basic checks to ensure
+  // the file is safe to delete.
+  SandboxDeleteFile(FilePath file_name) => (bool result);
+
+  // Schedules the given file for post-reboot removal, applying some basic
+  // checks to ensure the file is safe to delete.
+  SandboxDeleteFilePostReboot(FilePath file_name) => (bool result);
+
+  // Deletes the given registry key. |key| may contain null characters.
+  SandboxNtDeleteRegistryKey(String16EmbeddedNulls key) => (bool result);
+
+  // Deletes the given value for the given registry key. |key| and |key_name|
+  // may contain null characters.
+  SandboxNtDeleteRegistryValue(String16EmbeddedNulls key,
+                               String16EmbeddedNulls value_name)
+    => (bool result);
+
+  // Updates the value of the given key's value to |new_value|.
+  // |new_value| must be a subset of the existing value. This is intended to be
+  // used to delete parts of a value, not to set a new value.
+  SandboxNtChangeRegistryValue(String16EmbeddedNulls key,
+                               String16EmbeddedNulls value_name,
+                               String16EmbeddedNulls new_value)
+    => (bool result);
+
+  // Deletes the given service.
+  SandboxDeleteService(mojo_base.mojom.String16 name) => (bool result);
+
+  // Deletes the given task.
+  SandboxDeleteTask(mojo_base.mojom.String16 name) => (bool result);
+
+  // Terminates the given process.
+  // The broker process can't be terminated.
+  SandboxTerminateProcess(uint32 process_id) => (bool result);
+};

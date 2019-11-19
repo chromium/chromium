@@ -18,7 +18,7 @@ StyleRay::StyleRay(float angle, RaySize size, bool contain)
 bool StyleRay::operator==(const BasicShape& o) const {
   if (!IsSameType(o))
     return false;
-  const StyleRay& other = ToStyleRay(o);
+  const StyleRay& other = To<StyleRay>(o);
   return angle_ == other.angle_ && size_ == other.size_ &&
          contain_ == other.contain_;
 }

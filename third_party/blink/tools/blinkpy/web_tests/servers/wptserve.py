@@ -23,7 +23,7 @@ class WPTServe(server_base.ServerBase):
         http_port, http_alt_port, https_port = (8001, 8081, 8444)
         ws_port, wss_port = (9001, 9444)
         self._name = 'wptserve'
-        self._log_prefixes = ('access_log', 'error_log')
+        self._log_prefixes = ('wptserve_stderr', )
         self._mappings = [{'port': http_port, 'scheme': 'http'},
                           {'port': http_alt_port, 'scheme': 'http'},
                           {'port': https_port, 'scheme': 'https', 'sslcert': True},
@@ -47,7 +47,8 @@ class WPTServe(server_base.ServerBase):
                      '--config', self._config_file,
                      '--doc_root', path_to_wpt_tests]
 
-        # TODO(burnik): Merge with default start_cmd once we roll in websockets.
+        # Some users (e.g. run_webdriver_tests.py) do not need WebSocket
+        # handlers, so we only add the flag if the directory exists.
         if self._port_obj.host.filesystem.exists(path_to_ws_handlers):
             start_cmd += ['--ws_doc_root', path_to_ws_handlers]
 
@@ -56,6 +57,8 @@ class WPTServe(server_base.ServerBase):
         self._env = port_obj.host.environ.copy()
         self._env.update({'PYTHONPATH': path_to_pywebsocket})
         self._start_cmd = start_cmd
+
+        self._error_log_path = self._filesystem.join(output_dir, 'wptserve_stderr.txt')
 
         expiration_date = datetime.date(2025, 1, 4)
         if datetime.date.today() > expiration_date - datetime.timedelta(30):
@@ -77,6 +80,13 @@ class WPTServe(server_base.ServerBase):
         json.dump(config, f)
         f.close()
         return temp_file
+
+    def _prepare_config(self):
+        # wptserve is spammy on stderr even at the INFO log level and will block
+        # the pipe, so we need to redirect it.
+        # The file is opened here instead in __init__ because _remove_stale_logs
+        # will try to delete the log file, which causes deadlocks on Windows.
+        self._stderr = self._filesystem.open_text_file_for_writing(self._error_log_path)
 
     def _stop_running_server(self):
         if not self._wait_for_action(self._check_and_kill):
@@ -106,12 +116,6 @@ class WPTServe(server_base.ServerBase):
             return True
 
         _log.debug('pid %d is running, killing it', self._pid)
-
-        # kill_process() kills the whole process tree on Windows, but not on
-        # POSIX, so we send SIGINT instead to allow wptserve to exit gracefully.
-        if self._platform.is_win():
-            self._executive.kill_process(self._pid)
-        else:
-            self._executive.interrupt(self._pid)
+        self._executive.kill_process(self._pid)
 
         return False

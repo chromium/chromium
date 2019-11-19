@@ -22,6 +22,7 @@
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/safe_browsing/chrome_cleaner/chrome_prompt_actions_win.h"
 #include "chrome/browser/safe_browsing/chrome_cleaner/mock_chrome_cleaner_process_win.h"
 #include "chrome/browser/safe_browsing/chrome_cleaner/reporter_runner_win.h"
 #include "chrome/browser/safe_browsing/chrome_cleaner/srt_field_trial_win.h"
@@ -29,9 +30,10 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/chrome_cleaner/public/constants/constants.h"
+#include "components/chrome_cleaner/public/proto/chrome_prompt.pb.h"
 #include "components/chrome_cleaner/test/test_name_helper.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -40,7 +42,6 @@
 namespace safe_browsing {
 namespace {
 
-using ::chrome_cleaner::mojom::PromptAcceptance;
 using ::testing::_;
 using ::testing::Bool;
 using ::testing::Combine;
@@ -56,6 +57,7 @@ using ExtensionCleaningFeatureStatus =
     MockChromeCleanerProcess::ExtensionCleaningFeatureStatus;
 using IdleReason = ChromeCleanerController::IdleReason;
 using ItemsReporting = MockChromeCleanerProcess::ItemsReporting;
+using PromptUserResponse = chrome_cleaner::PromptUserResponse;
 using State = ChromeCleanerController::State;
 using UserResponse = ChromeCleanerController::UserResponse;
 using UwsFoundStatus = MockChromeCleanerProcess::UwsFoundStatus;
@@ -63,19 +65,20 @@ using UwsFoundStatus = MockChromeCleanerProcess::UwsFoundStatus;
 // Returns the PromptAcceptance value that ChromeCleanerController is supposed
 // to send to the Chrome Cleaner process when ReplyWithUserResponse() is
 // called with |user_response|.
-PromptAcceptance UserResponseToPromptAcceptance(UserResponse user_response) {
+PromptUserResponse::PromptAcceptance UserResponseToPromptAcceptance(
+    UserResponse user_response) {
   switch (user_response) {
     case UserResponse::kAcceptedWithLogs:
-      return PromptAcceptance::ACCEPTED_WITH_LOGS;
+      return PromptUserResponse::ACCEPTED_WITH_LOGS;
     case UserResponse::kAcceptedWithoutLogs:
-      return PromptAcceptance::ACCEPTED_WITHOUT_LOGS;
+      return PromptUserResponse::ACCEPTED_WITHOUT_LOGS;
     case UserResponse::kDenied:  // Fallthrough
     case UserResponse::kDismissed:
-      return PromptAcceptance::DENIED;
+      return PromptUserResponse::DENIED;
   }
 
   NOTREACHED();
-  return PromptAcceptance::UNSPECIFIED;
+  return PromptUserResponse::UNSPECIFIED;
 }
 
 class MockChromeCleanerControllerObserver
@@ -171,7 +174,7 @@ class ChromeCleanerControllerSimpleTest
   // We need this because we need UI and IO threads during tests. The thread
   // bundle should be the first member of the class so that it will be destroyed
   // last.
-  content::TestBrowserThreadBundle thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
 
   bool metrics_enabled_;
   base::CommandLine command_line_;
@@ -250,11 +253,15 @@ class ChromeCleanerControllerTest
              extension_cleaning_feature_status_, registry_keys_reporting_,
              extensions_reporting_, user_response_) = GetParam();
 
+    std::vector<base::Feature> enabled_features;
+    std::vector<base::Feature> disabled_features;
     if (extension_cleaning_feature_status_ ==
-        ExtensionCleaningFeatureStatus::kEnabled)
-      features_.InitAndEnableFeature(kChromeCleanupExtensionsFeature);
-    else
-      features_.InitAndDisableFeature(kChromeCleanupExtensionsFeature);
+        ExtensionCleaningFeatureStatus::kEnabled) {
+      enabled_features.push_back(kChromeCleanupExtensionsFeature);
+    } else {
+      disabled_features.push_back(kChromeCleanupExtensionsFeature);
+    }
+    features_.InitWithFeatures(enabled_features, disabled_features);
 
     InitializeEmptyExtensionService();
 
@@ -266,7 +273,7 @@ class ChromeCleanerControllerTest
     cleaner_process_options_.set_crash_point(crash_point_);
     cleaner_process_options_.set_expected_user_response(
         uws_found_status_ == UwsFoundStatus::kNoUwsFound
-            ? PromptAcceptance::DENIED
+            ? PromptUserResponse::DENIED
             : UserResponseToPromptAcceptance(user_response_));
 
     ChromeCleanerControllerImpl::ResetInstanceForTesting();
@@ -476,23 +483,11 @@ class ChromeCleanerControllerTest
 };
 
 MULTIPROCESS_TEST_MAIN(MockChromeCleanerProcessMain) {
-  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  MockChromeCleanerProcess::Options options;
-  EXPECT_TRUE(MockChromeCleanerProcess::Options::FromCommandLine(*command_line,
-                                                                 &options));
-
-  std::string chrome_mojo_pipe_token = command_line->GetSwitchValueASCII(
-      chrome_cleaner::kChromeMojoPipeTokenSwitch);
-  EXPECT_FALSE(chrome_mojo_pipe_token.empty());
-
-  // Since failures in any of the above calls to EXPECT_*() do not actually fail
-  // the test, we need to ensure that we return an exit code to indicate test
-  // failure in such cases.
+  MockChromeCleanerProcess mock_cleaner_process;
+  EXPECT_TRUE(mock_cleaner_process.InitWithCommandLine(
+      *base::CommandLine::ForCurrentProcess()));
   if (::testing::Test::HasFailure())
     return MockChromeCleanerProcess::kInternalTestFailureExitCode;
-
-  MockChromeCleanerProcess mock_cleaner_process(options,
-                                                chrome_mojo_pipe_token);
   return mock_cleaner_process.Run();
 }
 
@@ -594,26 +589,15 @@ TEST_P(ChromeCleanerControllerTest, WithMockCleanerProcess) {
         scanner_results_on_cleaning.registry_keys(),
         UnorderedElementsAreArray(scanner_results_on_infected.registry_keys()));
   }
-
-  std::set<base::string16> extension_names_infected;
-  scanner_results_on_infected.FetchExtensionNames(profile1,
-                                                  &extension_names_infected);
-  std::set<base::string16> extension_names_cleaning;
-  scanner_results_on_cleaning.FetchExtensionNames(profile1,
-                                                  &extension_names_cleaning);
-// Extension names only reported on Windows Chrome build.
-#if defined(OS_WIN) && defined(GOOGLE_CHROME_BUILD)
-  EXPECT_EQ(!extension_names_infected.empty(), ExpectedExtensionsReported());
-  EXPECT_EQ(!extension_names_cleaning.empty(),
+  EXPECT_EQ(!scanner_results_on_infected.extension_ids().empty(),
+            ExpectedExtensionsReported());
+  EXPECT_EQ(!scanner_results_on_cleaning.extension_ids().empty(),
             ExpectedExtensionsReported() && ExpectedOnCleaningCalled());
-  if (!extension_names_cleaning.empty()) {
-    EXPECT_THAT(extension_names_cleaning,
-                UnorderedElementsAreArray(extension_names_infected));
+  if (!scanner_results_on_cleaning.extension_ids().empty()) {
+    EXPECT_THAT(
+        scanner_results_on_cleaning.extension_ids(),
+        UnorderedElementsAreArray(scanner_results_on_infected.extension_ids()));
   }
-#else
-  EXPECT_TRUE(extension_names_infected.empty());
-  EXPECT_TRUE(extension_names_cleaning.empty());
-#endif
 
   EXPECT_EQ(ExpectedRebootFlowStarted(), reboot_flow_started_);
 
@@ -633,20 +617,10 @@ TEST_P(ChromeCleanerControllerTest, WithMockCleanerProcess) {
   controller_->RemoveObserver(&mock_observer_);
 }
 
-// Make all the test parameter types printable.
-
+// Make all the test parameter types printable. Use short names because these
+// are used in tests with very many parameters.
 std::ostream& operator<<(std::ostream& out, CleanerProcessStatus status) {
-  switch (status) {
-    case CleanerProcessStatus::kFetchFailure:
-      return out << "FetchFailure";
-    case CleanerProcessStatus::kFetchSuccessInvalidProcess:
-      return out << "FetchSuccessInvalidProcess";
-    case CleanerProcessStatus::kFetchSuccessValidProcess:
-      return out << "FetchSuccessValidProcess";
-    default:
-      NOTREACHED();
-      return out << "UnknownProcessStatus" << status;
-  }
+  return out << "Proc" << static_cast<int>(status);
 }
 
 // This includes all crash points after kOnStartup, except kAfterRequestSent.
@@ -660,7 +634,7 @@ constexpr CrashPoint kCrashPointsAfterStartup[] = {
 
 // Tests where the process gets past the startup phase and finds UwS to clean.
 INSTANTIATE_TEST_SUITE_P(
-    CleanerFindsUwS,
+    CleanerFindsUwSAndRuns,
     ChromeCleanerControllerTest,
     Combine(Values(CleanerProcessStatus::kFetchSuccessValidProcess),
             ValuesIn(kCrashPointsAfterStartup),
@@ -675,9 +649,21 @@ INSTANTIATE_TEST_SUITE_P(
                    ItemsReporting::kNotReported,
                    ItemsReporting::kReported),
             Values(UserResponse::kAcceptedWithLogs,
-                   UserResponse::kAcceptedWithoutLogs,
-                   UserResponse::kDenied,
-                   UserResponse::kDismissed)),
+                   UserResponse::kAcceptedWithoutLogs)),
+    chrome_cleaner::GetParamNameForTest());
+
+// Tests where the process gets past the startup phase and finds UwS to clean,
+// but is dismissed by the user.
+INSTANTIATE_TEST_SUITE_P(
+    CleanerIsDismissed,
+    ChromeCleanerControllerTest,
+    Combine(Values(CleanerProcessStatus::kFetchSuccessValidProcess),
+            ValuesIn(kCrashPointsAfterStartup),
+            Values(UwsFoundStatus::kUwsFoundRebootRequired),
+            Values(ExtensionCleaningFeatureStatus::kEnabled),
+            Values(ItemsReporting::kReported),
+            Values(ItemsReporting::kReported),
+            Values(UserResponse::kDenied, UserResponse::kDismissed)),
     chrome_cleaner::GetParamNameForTest());
 
 // Tests where the process gets past the startup phase but finds nothing to
@@ -696,14 +682,28 @@ INSTANTIATE_TEST_SUITE_P(
             Values(UserResponse::kDismissed)),
     chrome_cleaner::GetParamNameForTest());
 
+// Tests where the process fails to download. This never gets far enough to
+// collect results, so we can save time by not repeating the tests for every
+// possible combination of results parameters.
+INSTANTIATE_TEST_SUITE_P(
+    CleanerFailsToDownload,
+    ChromeCleanerControllerTest,
+    Combine(Values(CleanerProcessStatus::kFetchFailure),
+            Values(CrashPoint::kNone),
+            Values(UwsFoundStatus::kNoUwsFound),
+            Values(ExtensionCleaningFeatureStatus::kDisabled),
+            Values(ItemsReporting::kUnsupported),
+            Values(ItemsReporting::kUnsupported),
+            Values(UserResponse::kAcceptedWithLogs)),
+    chrome_cleaner::GetParamNameForTest());
+
 // Tests where the process fails before starting a scan. This never gets far
 // enough to collect results, so we can save time by not repeating the tests
 // for every possible combination of results parameters.
 INSTANTIATE_TEST_SUITE_P(
     CleanerFailsToStart,
     ChromeCleanerControllerTest,
-    Combine(Values(CleanerProcessStatus::kFetchFailure,
-                   CleanerProcessStatus::kFetchSuccessInvalidProcess,
+    Combine(Values(CleanerProcessStatus::kFetchSuccessInvalidProcess,
                    CleanerProcessStatus::kFetchSuccessValidProcess),
             // If the process status is kFetchSuccessValidProcess, crash on
             // startup. Otherwise the process never starts so the crash point
@@ -770,7 +770,7 @@ class ChromeCleanerControllerReporterInteractionTest
   // We need this because we need UI and IO threads during tests. The thread
   // bundle should be the first member of the class so that it will be destroyed
   // last.
-  content::TestBrowserThreadBundle thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
 
   ChromeCleanerController::State initial_state_;
 

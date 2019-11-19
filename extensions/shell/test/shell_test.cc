@@ -7,14 +7,13 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
-#include "base/message_loop/message_loop.h"
+#include "base/message_loop/message_loop_current.h"
 #include "base/run_loop.h"
 #include "content/public/common/content_switches.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/shell/browser/desktop_controller.h"
 #include "extensions/shell/browser/shell_content_browser_client.h"
 #include "extensions/shell/browser/shell_extension_system.h"
-#include "ui/base/ui_base_features.h"
 
 #if defined(OS_CHROMEOS)
 #include "content/public/test/network_connection_change_simulator.h"
@@ -22,14 +21,7 @@
 
 namespace extensions {
 
-AppShellTest::AppShellTest()
-    : browser_context_(nullptr),
-      extension_system_(nullptr) {
-  // Disable mash until app_shell test infra is updated to use Window Service.
-  scoped_feature_list_.InitWithFeatures(
-      {} /* enabled */,
-      {features::kMash, features::kSingleProcessMash} /* disabled */);
-
+AppShellTest::AppShellTest() {
   CreateTestServer(base::FilePath(FILE_PATH_LITERAL("extensions/test/data")));
 }
 

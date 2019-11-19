@@ -96,7 +96,7 @@ scoped_refptr<IOBufferWithSize> WebSocketInflater::GetOutput(size_t size) {
     num_bytes_copied += num_bytes_to_copy;
     int result = InflateChokedInput();
     if (result != Z_OK && result != Z_BUF_ERROR)
-      return NULL;
+      return nullptr;
   }
   buffer->Shrink(num_bytes_copied);
   return buffer;
@@ -144,7 +144,7 @@ int WebSocketInflater::Inflate(const char* next_in,
 
 int WebSocketInflater::InflateChokedInput() {
   if (input_queue_.IsEmpty())
-    return InflateWithFlush(NULL, 0);
+    return InflateWithFlush(nullptr, 0);
 
   int result = Z_BUF_ERROR;
   while (!input_queue_.IsEmpty()) {

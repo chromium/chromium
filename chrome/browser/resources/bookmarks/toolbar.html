@@ -1,17 +1,6 @@
-<link rel="import" href="chrome://resources/html/polymer.html">
 
-<link rel="import" href="chrome://resources/cr_elements/cr_icon_button/cr_icon_button.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_toolbar/cr_toolbar.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_toolbar/cr_toolbar_selection_overlay.html">
-<link rel="import" href="chrome://resources/cr_elements/icons.html">
-<link rel="import" href="shared_style.html">
-<link rel="import" href="strings.html">
-
-<dom-module id="bookmarks-toolbar">
-  <template>
     <style include="shared-style">
       :host {
-        background: var(--md-toolbar-color);
         position: relative;
       }
 
@@ -22,14 +11,15 @@
       }
 
       cr-icon-button {
-        --cr-icon-button-color: white;
-        --cr-icon-button-ripple-color: white;
-        display: inline-block;
+        --cr-icon-button-fill-color-focus: var(--cr-toolbar-background-color);
+        justify-content: flex-end;
         margin: 4px;
       }
 
-      :host-context([dark]) cr-icon-button {
-        --cr-icon-button-color: var(--google-grey-200);
+      @media (prefers-color-scheme: light) {
+        cr-icon-button {
+          --cr-icon-button-color: currentColor;
+        }
       }
 
       :host(:not([narrow_])) cr-toolbar-selection-overlay {
@@ -58,6 +48,3 @@
         on-delete-selected-items="onDeleteSelectionTap_"
         on-clear-selected-items="onClearSelectionTap_">
     </cr-toolbar-selection-overlay>
-  </template>
-  <script src="toolbar.js"></script>
-</dom-module>

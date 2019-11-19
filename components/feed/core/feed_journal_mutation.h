@@ -40,7 +40,7 @@ class JournalMutation {
 
   // This will remove the first JournalOperation in |operations_list_| and
   // return it to caller.
-  JournalOperation TakeFristOperation();
+  JournalOperation TakeFirstOperation();
 
   JournalOperation::Type FirstOperationType();
 

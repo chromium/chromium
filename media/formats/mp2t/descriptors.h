@@ -52,7 +52,7 @@ class Descriptors {
   // |pssh_pid| and |mode| are populated with the contents of the descriptor.
   bool HasCADescriptorCenc(int* ca_pid,
                            int* pssh_pid,
-                           EncryptionMode* mode) const;
+                           EncryptionScheme* scheme) const;
 
   // Indicates whether a Private Data Indicator descriptor is present with a
   // particular |value|.

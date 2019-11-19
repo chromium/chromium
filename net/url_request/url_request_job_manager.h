@@ -37,19 +37,6 @@ class NET_EXPORT URLRequestJobManager {
   URLRequestJob* CreateJob(URLRequest* request,
                            NetworkDelegate* network_delegate) const;
 
-  // Allows interceptors to hijack the request after examining the new location
-  // of a redirect. Returns NULL if no interceptor intervenes.
-  URLRequestJob* MaybeInterceptRedirect(URLRequest* request,
-                                        NetworkDelegate* network_delegate,
-                                        const GURL& location) const;
-
-  // Allows interceptors to hijack the request after examining the response
-  // status and headers. This is also called when there is no server response
-  // at all to allow interception of failed requests due to network errors.
-  // Returns NULL if no interceptor intervenes.
-  URLRequestJob* MaybeInterceptResponse(
-      URLRequest* request, NetworkDelegate* network_delegate) const;
-
   // Returns true if the manager has a built-in handler for |scheme|.
   static bool SupportsScheme(const std::string& scheme);
 

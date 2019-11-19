@@ -49,7 +49,7 @@ typedef std::vector<std::unique_ptr<DumpInfo>> DumpList;
 std::unique_ptr<PrefService> CreatePrefService() {
   base::FilePath prefs_path;
   CHECK(base::PathService::Get(chromecast::FILE_CAST_CONFIG, &prefs_path));
-  VLOG(1) << "Loading prefs from " << prefs_path.value();
+  DVLOG(1) << "Loading prefs from " << prefs_path.value();
 
   PrefRegistrySimple* registry = new PrefRegistrySimple;
   registry->RegisterBooleanPref(prefs::kOptInStats, true);

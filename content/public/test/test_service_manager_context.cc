@@ -13,17 +13,15 @@
 namespace content {
 
 TestServiceManagerContext::TestServiceManagerContext() {
-  // Isolate from previous tests that may have already initialized
-  // ServiceManagerConnection (e.g. in
-  // RenderProcessHostImpl::InitializeChannelProxy()).
-  ServiceManagerConnection::DestroyForProcess();
   context_.reset(new ServiceManagerContext(
-      base::CreateSingleThreadTaskRunnerWithTraits({BrowserThread::IO})));
-  ServiceManagerContext::StartBrowserConnection();
+      base::CreateSingleThreadTaskRunner({BrowserThread::IO})));
+  auto* system_connection = ServiceManagerConnection::GetForProcess();
+  system_connection->Start();
 }
 
 TestServiceManagerContext::~TestServiceManagerContext() {
   ChildProcessLauncher::ResetRegisteredFilesForTesting();
+  ServiceManagerConnection::DestroyForProcess();
 }
 
 }  // namespace content

@@ -104,6 +104,10 @@ class MODULES_EXPORT ConvolverNode final : public AudioNode {
 
   void Trace(Visitor*) override;
 
+  // InspectorHelperMixin
+  void ReportDidCreate() final;
+  void ReportWillBeDestroyed() final;
+
  private:
   ConvolverHandler& GetConvolverHandler() const;
 

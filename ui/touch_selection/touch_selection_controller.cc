@@ -14,7 +14,7 @@ namespace {
 
 gfx::Vector2dF ComputeLineOffsetFromBottom(const gfx::SelectionBound& bound) {
   gfx::Vector2dF line_offset =
-      gfx::ScaleVector2d(bound.edge_top() - bound.edge_bottom(), 0.5f);
+      gfx::ScaleVector2d(bound.edge_start() - bound.edge_end(), 0.5f);
   // An offset of 8 DIPs is sufficient for most line sizes. For small lines,
   // using half the line height avoids synthesizing a point on a line above
   // (or below) the intended line.
@@ -90,9 +90,9 @@ void TouchSelectionController::OnSelectionBoundsChanged(
   if (active_status_ == SELECTION_ACTIVE) {
     // Bounds have the same orientation.
     bool need_swap = (start_selection_handle_->IsActive() &&
-                      end_.edge_bottom() == start.edge_bottom()) ||
+                      end_.edge_end() == start.edge_end()) ||
                      (end_selection_handle_->IsActive() &&
-                      end.edge_bottom() == start_.edge_bottom());
+                      end.edge_end() == start_.edge_end());
 
     // Bounds have different orientation.
     // Specifically, for writing-mode: vertical-*, selection bounds are
@@ -104,12 +104,12 @@ void TouchSelectionController::OnSelectionBoundsChanged(
     //   - start bound is from left to right,
     //   - end bound is from right to left.
     // So when previous start/end bound become current end/start bound,
-    // edge_top() and edge_bottom() are swapped. Therefore, we are comparing
-    // edge_bottom() with edge_top() here.
+    // edge_start() and edge_end() are swapped. Therefore, we are comparing
+    // edge_end() with edge_start() here.
     need_swap |= (start_selection_handle_->IsActive() &&
-                  end_.edge_bottom() == start.edge_top()) ||
+                  end_.edge_end() == start.edge_start()) ||
                  (end_selection_handle_->IsActive() &&
-                  end.edge_bottom() == start_.edge_top());
+                  end.edge_end() == start_.edge_start());
 
     if (need_swap)
       start_selection_handle_.swap(end_selection_handle_);
@@ -253,14 +253,31 @@ gfx::RectF TouchSelectionController::GetRectBetweenBounds() const {
   if (active_status_ == INACTIVE)
     return gfx::RectF();
 
-  if (start_.visible() && !end_.visible())
-    return gfx::BoundingRect(start_.edge_top(), start_.edge_bottom());
+  if (start_.visible() && !end_.visible()) {
+    // This BoundingRect is actually a line unless the selection is rotated.
+    return gfx::BoundingRect(start_.edge_start(), start_.edge_end());
+  }
 
-  if (end_.visible() && !start_.visible())
-    return gfx::BoundingRect(end_.edge_top(), end_.edge_bottom());
+  if (end_.visible() && !start_.visible()) {
+    // This BoundingRect is actually a line unless the selection is rotated.
+    return gfx::BoundingRect(end_.edge_start(), end_.edge_end());
+  }
 
   // If both handles are visible, or both are invisible, use the entire rect.
+  // Specifically, if both handles are on the same horizontal line for
+  // writing-mode: vertical-*, or both are on the same vertical line for
+  // writing-mode: horizontal, the entire rect is actually a line unless the
+  // selection is rotated.
   return RectFBetweenSelectionBounds(start_, end_);
+}
+
+gfx::RectF TouchSelectionController::GetVisibleRectBetweenBounds() const {
+  // Short-circuit for efficiency.
+  if (active_status_ == INACTIVE)
+    return gfx::RectF();
+
+  // Returns the rect of the entire visible selection rect.
+  return RectFBetweenVisibleSelectionBounds(start_, end_);
 }
 
 gfx::RectF TouchSelectionController::GetStartHandleRect() const {
@@ -304,15 +321,15 @@ float TouchSelectionController::GetActiveHandleMiddleY() const {
 
   if (!bound)
     return 0.f;
-  return (bound->edge_top().y() + bound->edge_bottom().y()) / 2.f;
+  return (bound->edge_start().y() + bound->edge_end().y()) / 2.f;
 }
 
 const gfx::PointF& TouchSelectionController::GetStartPosition() const {
-  return start_.edge_bottom();
+  return start_.edge_end();
 }
 
 const gfx::PointF& TouchSelectionController::GetEndPosition() const {
-  return end_.edge_bottom();
+  return end_.edge_end();
 }
 
 bool TouchSelectionController::WillHandleTouchEventImpl(
@@ -475,7 +492,7 @@ void TouchSelectionController::OnInsertionChanged() {
   const bool activated = ActivateInsertionIfNecessary();
 
   const TouchHandle::AnimationStyle animation = GetAnimationStyle(!activated);
-  insertion_handle_->SetFocus(start_.edge_top(), start_.edge_bottom());
+  insertion_handle_->SetFocus(start_.edge_start(), start_.edge_end());
   insertion_handle_->SetVisible(GetStartVisible(), animation);
 
   UpdateHandleLayoutIfNecessary();
@@ -491,8 +508,8 @@ void TouchSelectionController::OnSelectionChanged() {
 
   const TouchHandle::AnimationStyle animation = GetAnimationStyle(!activated);
 
-  start_selection_handle_->SetFocus(start_.edge_top(), start_.edge_bottom());
-  end_selection_handle_->SetFocus(end_.edge_top(), end_.edge_bottom());
+  start_selection_handle_->SetFocus(start_.edge_start(), start_.edge_end());
+  end_selection_handle_->SetFocus(end_.edge_start(), end_.edge_end());
 
   start_selection_handle_->SetOrientation(start_orientation_);
   end_selection_handle_->SetOrientation(end_orientation_);

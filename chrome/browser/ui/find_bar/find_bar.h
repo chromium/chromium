@@ -46,13 +46,9 @@ class FindBar {
   // Stop the animation.
   virtual void StopAnimation() = 0;
 
-  // If the find bar obscures the search results we need to move the window. To
-  // do that we need to know what is selected on the page. We simply calculate
-  // where it would be if we place it on the left of the selection and if it
-  // doesn't fit on the screen we try the right side. The parameter
-  // |selection_rect| is expected to have coordinates relative to the top of
-  // the web page area.
-  virtual void MoveWindowIfNecessary(const gfx::Rect& selection_rect) = 0;
+  // Repaints and lays out the find bar window relative to the view layout state
+  // of the current browser window.
+  virtual void MoveWindowIfNecessary() = 0;
 
   // Set the text in the find box.
   virtual void SetFindTextAndSelectedRange(
@@ -60,10 +56,10 @@ class FindBar {
       const gfx::Range& selected_range) = 0;
 
   // Gets the search string currently visible in the find box.
-  virtual base::string16 GetFindText() = 0;
+  virtual base::string16 GetFindText() const = 0;
 
   // Gets the selection.
-  virtual gfx::Range GetSelectedRange() = 0;
+  virtual gfx::Range GetSelectedRange() const = 0;
 
   // Updates the FindBar with the find result details contained within the
   // specified |result|.
@@ -73,21 +69,21 @@ class FindBar {
   // No match was found; play an audible alert.
   virtual void AudibleAlert() = 0;
 
-  virtual bool IsFindBarVisible() = 0;
+  virtual bool IsFindBarVisible() const = 0;
 
   // Upon dismissing the window, restore focus to the last focused view which is
   // not FindBarView or any of its children.
   virtual void RestoreSavedFocus() = 0;
 
   // Returns true if all tabs use a single find pasteboard.
-  virtual bool HasGlobalFindPasteboard() = 0;
+  virtual bool HasGlobalFindPasteboard() const = 0;
 
   // Called when the web contents associated with the find bar changes.
   virtual void UpdateFindBarForChangedWebContents() = 0;
 
   // Returns a pointer to the testing interface to the FindBar, or NULL
   // if there is none.
-  virtual FindBarTesting* GetFindBarTesting() = 0;
+  virtual const FindBarTesting* GetFindBarTesting() const = 0;
 };
 
 class FindBarTesting {
@@ -101,19 +97,19 @@ class FindBarTesting {
   // This is used for UI tests of the find bar. If the find bar is not currently
   // shown (return value of false), the out params will be {(0, 0), false}.
   virtual bool GetFindBarWindowInfo(gfx::Point* position,
-                                    bool* fully_visible) = 0;
+                                    bool* fully_visible) const = 0;
 
   // Gets the search string currently selected in the Find box.
-  virtual base::string16 GetFindSelectedText() = 0;
+  virtual base::string16 GetFindSelectedText() const = 0;
 
   // Gets the match count text (ie. 1 of 3) visible in the Find box.
-  virtual base::string16 GetMatchCountText() = 0;
+  virtual base::string16 GetMatchCountText() const = 0;
 
-  // Gets the pixel width of the FindBar.
-  virtual int GetWidth() = 0;
+  // Gets the pixel width of the FindBar contents.
+  virtual int GetContentsWidth() const = 0;
 
   // Gets the number of audible alerts that have been issued by this bar.
-  virtual size_t GetAudibleAlertCount() = 0;
+  virtual size_t GetAudibleAlertCount() const = 0;
 };
 
 #endif  // CHROME_BROWSER_UI_FIND_BAR_FIND_BAR_H_

@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<link rel="match" href="video-neg-offset-outline-expected.html">
+<title>Test video with negative offset outline</title>
+<style>
+video {
+  will-change: transform;
+  outline: solid orange 120px;
+  outline-offset: -120px;
+}
+</style>
+<video width="320" height="240" controls></video>

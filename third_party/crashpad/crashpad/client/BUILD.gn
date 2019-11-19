@@ -82,13 +82,23 @@ static_library("client") {
     "../util",
   ]
 
+  deps = []
+
   if (crashpad_is_win) {
     libs = [ "rpcrt4.lib" ]
     cflags = [ "/wd4201" ]  # nonstandard extension used : nameless struct/union
   }
 
+  if (crashpad_is_linux || crashpad_is_android) {
+    deps += [
+      "../third_party/lss",
+    ]
+  }
+
   if (crashpad_is_fuchsia) {
-    deps = [ "../third_party/fuchsia:zx" ]
+    deps += [
+      "../third_party/fuchsia",
+    ]
     if (crashpad_is_in_fuchsia) {
       deps += [ "//zircon/public/lib/fdio" ]
     }

@@ -33,18 +33,15 @@ ScriptValue Eval(V8TestingScope* scope, const char* script_as_string) {
     ADD_FAILURE() << "Compilation fails";
     return ScriptValue();
   }
-  return ScriptValue(scope->GetScriptState(), script->Run(scope->GetContext()));
+  return ScriptValue(scope->GetIsolate(), script->Run(scope->GetContext()));
 }
 
 ScriptValue EvalWithPrintingError(V8TestingScope* scope, const char* script) {
   v8::TryCatch block(scope->GetIsolate());
   ScriptValue r = Eval(scope, script);
   if (block.HasCaught()) {
-    ADD_FAILURE() << ToCoreString(block.Exception()
-                                      ->ToString(scope->GetContext())
-                                      .ToLocalChecked())
-                         .Utf8()
-                         .data();
+    ADD_FAILURE() << ToCoreString(
+        block.Exception()->ToString(scope->GetContext()).ToLocalChecked());
     block.ReThrow();
   }
   return r;

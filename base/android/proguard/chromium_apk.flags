@@ -15,11 +15,23 @@
   public static *** CREATOR;
 }
 
+# Keep all default constructors for used Fragments. Required since they are
+# called reflectively when fragments are reinflated after the app is killed.
+-keepclassmembers class * extends android.app.Fragment {
+  public <init>();
+}
+-keepclassmembers class * extends android.support.v4.app.Fragment {
+  public <init>();
+}
+-keepclassmembers class * extends androidx.fragment.app.Fragment {
+  public <init>();
+}
+
 # Don't obfuscate Parcelables as they might be marshalled outside Chrome.
 # If we annotated all Parcelables that get put into Bundles other than
 # for saveInstanceState (e.g. PendingIntents), then we could actually keep the
 # names of just those ones. For now, we'll just keep them all.
--keepnames class * implements android.os.Parcelable
+-keepnames class * implements android.os.Parcelable {}
 
 # Keep all enum values and valueOf methods. See
 # http://proguard.sourceforge.net/index.html#manual/examples.html
@@ -28,17 +40,11 @@
     public static **[] values();
 }
 
-# Keep classes implementing ParameterProvider -- these will be instantiated
-# via reflection.
--keep class * implements org.chromium.base.test.params.ParameterProvider
-
-# Allows Proguard freedom in removing these log related calls. We ask for debug
-# and verbose logs to be stripped out in base.Log, so we are just ensuring we
-# get rid of all other debug/verbose logs.
+# Allows Proguard freedom in removing these log related calls.
 -assumenosideeffects class android.util.Log {
   static *** d(...);
   static *** v(...);
-  static *** isLoggable(...);
+  static boolean isLoggable(...);
 }
 
 # The following chart was created on July 20, 2016, to decide on 3 optimization
@@ -58,8 +64,3 @@
 # Allowing Proguard to change modifiers. This change shrinks the .dex size by
 # ~1%, and reduces the method count by ~4%.
 -allowaccessmodification
-
-# The support library contains references to newer platform versions.
-# Don't warn about those in case this app is linking against an older
-# platform version.  We know about them, and they are safe.
--dontwarn android.support.**

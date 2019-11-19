@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2019 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/description"
+    android:layout_width="match_parent"
+    android:layout_height="32dp"
+    android:paddingStart="16dp"
+    android:paddingEnd="16dp"
+    android:ellipsize="end"
+    android:maxLines="1" />

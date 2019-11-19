@@ -10,6 +10,7 @@
 
 namespace blink {
 
+class ExceptionState;
 class HTMLVideoElement;
 class ScriptPromise;
 class ScriptState;
@@ -18,7 +19,9 @@ class HTMLVideoElementPictureInPicture {
   STATIC_ONLY(HTMLVideoElementPictureInPicture);
 
  public:
-  static ScriptPromise requestPictureInPicture(ScriptState*, HTMLVideoElement&);
+  static ScriptPromise requestPictureInPicture(ScriptState*,
+                                               HTMLVideoElement&,
+                                               ExceptionState&);
 
   static bool FastHasAttribute(const QualifiedName&, const HTMLVideoElement&);
 

@@ -1,16 +1,15 @@
 <link rel="import" href="chrome://resources/html/polymer.html">
 
 <link rel="import" href="chrome://resources/cr_components/chromeos/network/network_proxy.html">
-<link rel="import" href="chrome://resources/cr_elements/chromeos/network/cr_onc_types.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_button/cr_button.html">
 <link rel="import" href="chrome://resources/cr_elements/cr_dialog/cr_dialog.html">
 <link rel="import" href="chrome://resources/cr_elements/hidden_style_css.html">
-<link rel="import" href="chrome://resources/cr_elements/policy/cr_policy_network_behavior.html">
-<link rel="import" href="chrome://resources/cr_elements/policy/cr_policy_network_indicator.html">
+<link rel="import" href="chrome://resources/cr_elements/policy/cr_policy_network_behavior_mojo.html">
+<link rel="import" href="chrome://resources/cr_elements/policy/cr_policy_network_indicator_mojo.html">
 <link rel="import" href="chrome://resources/html/assert.html">
 <link rel="import" href="chrome://resources/html/cr/ui/focus_without_ink.html">
 <link rel="import" href="chrome://resources/html/i18n_behavior.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-flex-layout/iron-flex-layout-classes.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/paper-button/paper-button.html">
 <link rel="import" href="../controls/extension_controlled_indicator.html">
 <link rel="import" href="../controls/settings_toggle_button.html">
 <link rel="import" href="../i18n_setup.html">
@@ -20,8 +19,9 @@
 
 <dom-module id="network-proxy-section">
   <template>
-    <style include="internet-shared cr-hidden-style iron-flex iron-flex-alignment">
-      cr-policy-network-indicator {
+    <style include="internet-shared cr-hidden-style iron-flex
+        iron-flex-alignment">
+      cr-policy-network-indicator-mojo {
         margin-inline-end: 10px;
       }
 
@@ -37,19 +37,19 @@
 
     <!-- Policy indicator. Only one dom-if below will be shown. -->
     <template is="dom-if"
-        if="[[shouldShowNetworkPolicyIndicator_(networkProperties)]]">
+        if="[[shouldShowNetworkPolicyIndicator_(managedProperties)]]">
       <div class="settings-box">
         <div class="layout horizontal center">
-          <cr-policy-network-indicator
-              property="[[networkProperties.ProxySettings.Type]]"
+          <cr-policy-network-indicator-mojo
+              property="[[managedProperties.proxySettings.type]]"
               no-extension-indicator>
-          </cr-policy-network-indicator>
+          </cr-policy-network-indicator-mojo>
           <div>$i18n{networkProxyEnforcedPolicy}</div>
         </div>
       </div>
     </template>
     <template is="dom-if"
-        if="[[shouldShowExtensionIndicator_(networkProperties)]]">
+        if="[[shouldShowExtensionIndicator_(managedProperties)]]">
       <div class="settings-box">
         <extension-controlled-indicator
             extension-id="[[prefs.proxy.extensionId]]"
@@ -61,8 +61,7 @@
 
     <!-- Allow shared proxies -->
     <settings-toggle-button id="allowShared" class="continuation indented"
-        hidden$="[[!shouldShowAllowShared_(
-            networkProperties.ProxySettings.Type)]]"
+        hidden$="[[!shouldShowAllowShared_(managedProperties.source)]]"
         pref="{{prefs.settings.use_shared_proxies}}"
         label="$i18n{networkProxyAllowShared}"
         on-settings-boolean-control-change="onAllowSharedProxiesChange_"
@@ -71,7 +70,7 @@
 
     <div class="settings-box single-column stretch continuation indented">
       <network-proxy editable
-          network-properties="[[networkProperties]]"
+          managed-properties="[[managedProperties]]"
           use-shared-proxies="[[useSharedProxies_]]">
       </network-proxy>
     </div>
@@ -89,14 +88,14 @@
         $i18n{networkProxyAllowSharedWarningMessage}
       </div>
       <div slot="button-container">
-        <paper-button class="cancel-button"
+        <cr-button class="cancel-button"
             on-click="onAllowSharedDialogCancel_">
           $i18n{cancel}
-        </paper-button>
-        <paper-button class="action-button"
+        </cr-button>
+        <cr-button class="action-button"
             on-click="onAllowSharedDialogConfirm_">
           $i18n{confirm}
-        </paper-button>
+        </cr-button>
       </div>
     </cr-dialog>
   </template>

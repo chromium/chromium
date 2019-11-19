@@ -30,7 +30,8 @@
       "L2TP": {
           "Username": "some username",
           "Password": "some password",
-          "LcpEchoDisabled": true
+          // kLcpEchoDisabled is a string in Shill. TODO(1005405): fix this.
+          // "LcpEchoDisabled": true
       }
   }
 }

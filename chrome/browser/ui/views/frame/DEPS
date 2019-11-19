@@ -6,9 +6,8 @@ specific_include_rules = {
   "browser_frame_ash\.*": [
     "+ash",
   ],
-  # Shell is used only in classic Ash.
-  "immersive_mode_controller_ash.cc": [
-    "+ash/shell.h",
+  "global_menu_bar_.*x11\.*": [
+    "+dbus",
   ],
   "top_controls_slide_controller_chromeos_browsertest.cc": [
     "+cc/base/math_util.h",

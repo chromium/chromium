@@ -11,19 +11,16 @@
 #include "third_party/blink/renderer/platform/heap/heap_allocator.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/heap/self_keep_alive.h"
-#include "third_party/blink/renderer/platform/wtf/compiler.h"
 
 namespace blink {
 
 class HTMLElement;
-class WebFormElementObserverCallback;
 
 class CORE_EXPORT WebFormElementObserverImpl final
-    : public GarbageCollectedFinalized<WebFormElementObserverImpl>,
+    : public GarbageCollected<WebFormElementObserverImpl>,
       public WebFormElementObserver {
  public:
-  WebFormElementObserverImpl(HTMLElement&,
-                             std::unique_ptr<WebFormElementObserverCallback>);
+  WebFormElementObserverImpl(HTMLElement&, base::OnceClosure);
   ~WebFormElementObserverImpl() override;
 
   // WebFormElementObserver implementation.

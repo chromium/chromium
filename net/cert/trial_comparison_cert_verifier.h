@@ -22,6 +22,10 @@
 namespace net {
 class CertVerifyProc;
 
+// TrialComparisonCertVerifier is a CertVerifier that can be used to compare
+// the results between two different CertVerifyProcs. The results are reported
+// back to the caller via a ReportCallback, allowing the caller to further
+// examine the differences.
 class NET_EXPORT TrialComparisonCertVerifier : public CertVerifier {
  public:
   // These values are persisted to logs. Entries should not be renumbered and
@@ -51,8 +55,33 @@ class NET_EXPORT TrialComparisonCertVerifier : public CertVerifier {
       const net::CertVerifyResult& primary_result,
       const net::CertVerifyResult& trial_result)>;
 
-  TrialComparisonCertVerifier(bool initial_allowed,
-                              scoped_refptr<CertVerifyProc> primary_verify_proc,
+  // Create a new TrialComparisonCertVerifier. Initially, no trial
+  // verifications will actually be performed; that is, calls to Verify() will
+  // be dispatched to the underlying |primary_verify_proc|. This can be changed
+  // by calling set_trial_allowed().
+  //
+  // When trial verifications are enabled, calls to Verify() will first call
+  // into |primary_verify_proc| to verify. The result of this verification will
+  // be immediately returned to the caller of Verify, allowing them to proceed.
+  // However, the verifier will continue in the background, attempting to
+  // verify the same RequestParams using |trial_verify_proc|. If there are
+  // differences in the results, they will be reported via |report_callback|,
+  // allowing the creator to receive information about differences.
+  //
+  // If the caller abandons the CertVerifier::Request prior to the primary
+  // verification completed, no trial verification will be done. However, once
+  // the primary verifier has returned, the trial verifications will continue,
+  // provided that the underlying configuration has not been changed by
+  // calling SetConfig().
+  //
+  // Note that there may be multiple calls to both |primary_verify_proc| and
+  // |trial_verify_proc|, using different parameters to account for platform
+  // differences.
+  //
+  // TODO(rsleevi): Make the types distinct, to guarantee that
+  // |primary_verify_proc| is a System CertVerifyProc, and |trial_verify_proc|
+  // is the Builtin CertVerifyProc.
+  TrialComparisonCertVerifier(scoped_refptr<CertVerifyProc> primary_verify_proc,
                               scoped_refptr<CertVerifyProc> trial_verify_proc,
                               ReportCallback report_callback);
 
@@ -69,36 +98,21 @@ class NET_EXPORT TrialComparisonCertVerifier : public CertVerifier {
              const NetLogWithSource& net_log) override;
   void SetConfig(const Config& config) override;
 
-  // Returns a CertVerifier using the primary CertVerifyProc, which will not
-  // cause OnPrimaryVerifierComplete to be called. This can be used to
-  // attempt to re-verify a cert with different chain or flags without
-  // messing up the stats or potentially causing an infinite loop.
+ private:
+  class Job;
+  friend class Job;
+
+  CertVerifier* primary_verifier() const { return primary_verifier_.get(); }
   CertVerifier* primary_reverifier() const { return primary_reverifier_.get(); }
   CertVerifier* trial_verifier() const { return trial_verifier_.get(); }
   CertVerifier* revocation_trial_verifier() const {
     return revocation_trial_verifier_.get();
   }
 
- private:
-  class TrialVerificationJob;
-
-  void OnPrimaryVerifierComplete(const RequestParams& params,
-                                 const NetLogWithSource& net_log,
-                                 int primary_error,
-                                 const CertVerifyResult& primary_result,
-                                 base::TimeDelta primary_latency,
-                                 bool is_first_job);
-  void OnTrialVerifierComplete(const RequestParams& params,
-                               const NetLogWithSource& net_log,
-                               int trial_error,
-                               const CertVerifyResult& trial_result,
-                               base::TimeDelta latency,
-                               bool is_first_job);
-
-  void RemoveJob(TrialVerificationJob* job_ptr);
+  void RemoveJob(Job* job_ptr);
 
   // Whether the trial is allowed.
-  bool allowed_;
+  bool allowed_ = false;
   // Callback that reports are sent to.
   ReportCallback report_callback_;
 
@@ -111,8 +125,7 @@ class NET_EXPORT TrialComparisonCertVerifier : public CertVerifier {
   // revocation information.
   std::unique_ptr<CertVerifier> revocation_trial_verifier_;
 
-  std::set<std::unique_ptr<TrialVerificationJob>, base::UniquePtrComparator>
-      jobs_;
+  std::set<std::unique_ptr<Job>, base::UniquePtrComparator> jobs_;
 
   THREAD_CHECKER(thread_checker_);
 

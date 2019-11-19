@@ -46,8 +46,6 @@ class MediaRemotingDialogView : public views::BubbleDialogDelegateView {
   base::string16 GetWindowTitle() const override;
 
   // views::DialogDelegate:
-  base::string16 GetDialogButtonLabel(ui::DialogButton button) const override;
-  int GetDialogButtons() const override;
   bool Accept() override;
   bool Cancel() override;
   bool Close() override;

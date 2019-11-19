@@ -17,7 +17,7 @@ class VIEWS_EXPORT LinkListener {
   virtual void LinkClicked(Link* source, int event_flags) = 0;
 
  protected:
-  virtual ~LinkListener() {}
+  virtual ~LinkListener() = default;
 };
 
 }  // namespace views

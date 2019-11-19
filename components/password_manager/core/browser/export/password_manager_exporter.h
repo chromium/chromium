@@ -115,10 +115,6 @@ class PasswordManagerExporter {
   // sent. It will be cleared once exporting is complete.
   base::FilePath destination_;
 
-  // The moment in time that we started reading and serialising the password
-  // list. Useful for metrics.
-  base::Time export_preparation_started_;
-
   // The function which does the actual writing. It should wrap
   // base::WriteFile, unless it's changed for testing purposes.
   WriteCallback write_function_;
@@ -136,7 +132,7 @@ class PasswordManagerExporter {
   // will dereference a WeakPtr to |*this|, which means they all need to run on
   // the same sequence.
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
-  base::WeakPtrFactory<PasswordManagerExporter> weak_factory_;
+  base::WeakPtrFactory<PasswordManagerExporter> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(PasswordManagerExporter);
 };

@@ -9,10 +9,11 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import android.app.Activity;
-import android.app.Fragment;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
 import android.content.Intent;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.view.View;
 
 import org.junit.Before;
@@ -32,21 +33,21 @@ import org.chromium.chrome.R;
 public class ReauthenticationManagerTest {
     private FragmentManager mFragmentManager;
 
-    private Activity mTestActivity;
+    private FragmentActivity mTestActivity;
 
     @Before
     public void setUp() {
-        mTestActivity = Robolectric.setupActivity(Activity.class);
+        mTestActivity = Robolectric.setupActivity(FragmentActivity.class);
         PasswordReauthenticationFragment.preventLockingForTesting();
 
-        mFragmentManager = mTestActivity.getFragmentManager();
+        mFragmentManager = mTestActivity.getSupportFragmentManager();
 
         // Prepare a dummy Fragment and commit a FragmentTransaction with it.
         FragmentTransaction fragmentTransaction = mFragmentManager.beginTransaction();
-        // Replacement fragment for PasswordEntryEditor, which is the fragment that
+        // Replacement fragment for PasswordEntryViewer, which is the fragment that
         // replaces PasswordReauthentication after popBackStack is called.
-        Fragment mockPasswordEntryEditor = new Fragment();
-        fragmentTransaction.add(mockPasswordEntryEditor, "password_entry_editor");
+        Fragment mockPasswordEntryViewer = new Fragment();
+        fragmentTransaction.add(mockPasswordEntryViewer, "password_entry_viewer");
         fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();
     }

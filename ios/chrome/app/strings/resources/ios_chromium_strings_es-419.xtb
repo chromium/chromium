@@ -5,6 +5,8 @@
 <translation id="1185134272377778587">Acerca de Chromium</translation>
 <translation id="1289966288285062467">Aviso de privacidad de Chromium</translation>
 <translation id="1472013873724362412">Tu cuenta no funciona en Chromium. Comunícate con tu administrador de dominio o utiliza una cuenta común de Google para acceder.</translation>
+<translation id="1507010443238049608">Ayudar a mejorar las funciones y el rendimiento de Chromium</translation>
+<translation id="1617663976202781617">Datos de la sincronización de Chromium</translation>
 <translation id="1736662517232558588">Dat. Chromium bor.</translation>
 <translation id="1838412507805038478">Chromium verificó que <ph name="ISSUER" /> emitió el certificado de este sitio web.</translation>
 <translation id="1843424232666537147">Ciertas funciones de Chromium te ayudan a administrar los datos de Internet y la rapidez con la que puedes cargar páginas web.
@@ -13,24 +15,16 @@
 <translation id="2168108852149185974">Algunos complementos causan fallos en Chromium. Desinstala los siguientes elementos:</translation>
 <translation id="2178608107313874732">Chromium no puede usar tu cámara ahora</translation>
 <translation id="2195025571279539885">¿Quieres que Google Chrome te ofrezca traducir las páginas de este sitio que estén en <ph name="LANGUAGE_NAME" /> la próxima vez?</translation>
-<translation id="2517624234762908348">Sincronizar tus datos de Chromium</translation>
-<translation id="2647554856022461007">Es posible que Chromium use servicios web para mejorar tu experiencia de navegación (tienes la opción de inhabilitar estos servicios). <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
+<translation id="2590893390871230428">Sincronizar tus datos de Chromium</translation>
 <translation id="2730884209570016437">Chromium no puede utilizar tu cámara porque la está usando otra aplicación</translation>
 <translation id="2915596697727466327">Chromium usa Face ID para garantizar el acceso autorizado a tus contraseñas.</translation>
 <translation id="3256316712990552818">Se copió en Chromium.</translation>
-<translation id="3413120535237193088">Para obtener tus favoritos en todos tus dispositivos, accede a Chromium.</translation>
-<translation id="3473048256428424907">Activar el escáner QR en Chromium</translation>
-<translation id="3605252743693911722">Accede a tu cuenta en Chromium para obtener tus favoritos, contraseñas y mucho más desde todos tus dispositivos.</translation>
 <translation id="3805899903892079518">Chromium no tiene acceso a tus fotos o videos. Habilita el acceso en Configuración de iOS &gt; Privacidad &gt; Fotos.</translation>
-<translation id="4024541897090868497">Para obtener tus pestañas en todos los dispositivos, accede a Chromium.</translation>
-<translation id="4157467675761413638">Sugerencia de Chromium: Para obtener más opciones de pestañas, mantén presionado el botón Mostrar pestañas de la barra de herramientas, que se encuentra en la parte inferior o superior de la pantalla.</translation>
-<translation id="4241912885070669028">Estás saliendo de una cuenta que administra <ph name="SIGNOUT_MANAGED_DOMAIN" />. Con esta acción, tus datos de Chromium se borrarán en este dispositivo, pero permanecerán en tu cuenta de Google.</translation>
-<translation id="4272892696084633551">Ayudar a mejorar las funciones y el rendimiento de Chromium</translation>
 <translation id="4555020257205549924">Si activas esta función, Chromium te preguntará si deseas usar Google Traductor para traducir páginas en otros idiomas. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
+<translation id="4681781466797808448">Activar el escáner de Chromium</translation>
 <translation id="4787850887676698916">Aquí se mostrarán las pestañas que hayas abierto en Chromium en tus otros dispositivos.</translation>
-<translation id="495292094137889840">Usar el escáner QR de Chromium</translation>
 <translation id="4999538639245140991">Como estás saliendo de una cuenta que administra <ph name="SIGNOUT_MANAGED_DOMAIN" />, tus datos de Chromium se borrarán de este dispositivo, pero permanecerán en tu Cuenta de Google.</translation>
-<translation id="5231355151045086930">Salir de Chromium</translation>
+<translation id="5573014823074921752">Sugerencia de Chromium: Para obtener más opciones de pestañas, mantén presionado el botón Mostrar pestañas de la barra de herramientas, que se encuentra en la parte inferior o superior de la pantalla.</translation>
 <translation id="5862307444128926510">Bienvenido a Chromium</translation>
 <translation id="5945387852661427312">Estás accediendo con una cuenta que administra <ph name="DOMAIN" /> y dándole permiso a su administrador para que controle tus datos de Chromium. Tus datos se vincularán de forma permanente a esta cuenta. Si sales de Chromium, los datos se borrarán de este dispositivo, pero quedarán almacenados en tu cuenta de Google.</translation>
 <translation id="6068866989048414399">Condiciones del servicio de Chromium</translation>
@@ -47,11 +41,13 @@
 <translation id="7674213385180944843">Abre Configuración &gt; Privacidad &gt; Cámara &gt; Chromium y activa la cámara.</translation>
 <translation id="7746854981345936341">Sugerencia de Chromium: Algunos botones ahora están en la parte inferior de la pantalla, como Retroceder, Avanzar y Buscar.</translation>
 <translation id="786327964234957808">La cuenta de sincronización cambiará de <ph name="USER_EMAIL1" /> a <ph name="USER_EMAIL2" />. El dominio <ph name="DOMAIN" /> administra tus datos existentes de Chromium. Esta acción borrará los datos de este dispositivo, pero permanecerán en <ph name="USER_EMAIL1" />.</translation>
+<translation id="7890287942691234100">Usar el escáner de Chromium</translation>
 <translation id="8073677936375100957">¿Quieres borrar tus datos de Chromium de este dispositivo?</translation>
 <translation id="8175055321229419309">Sugerencia: <ph name="BEGIN_LINK" />Lleva Chromium a tu Dock<ph name="END_LINK" /></translation>
 <translation id="8252885722420466166">Obtén una mejor experiencia de Google en Chromium según tu ubicación.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> Los autores de Chromium. Todos los derechos reservados.</translation>
 <translation id="8809780021347235332">Para guardar imágenes, presiona Configuración para permitir que Chromium use tus fotos</translation>
 <translation id="9022552996538154597">Iniciar sesión en Chromium</translation>
+<translation id="9217078088703304241"><ph name="BEGIN_LINK" />Revisa las Condiciones del Servicio de Chromium actualizadas.<ph name="END_LINK" /></translation>
 <translation id="985602178874221306">Los creadores de Chromium</translation>
 </translationbundle>

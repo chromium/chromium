@@ -12,10 +12,6 @@ PASS Fetches can have requests with duplicate URLs
 PASS recordsAvailable is false after onbackgroundfetchsuccess finishes execution.
 PASS Using Background Fetch to fetch a non-existent resource should fail.
 PASS Fetches with mixed content should fail.
-PASS Matching to a single request should work
-PASS Matching to a non-existing request should work
-PASS Matching multiple times on the same request works as expected.
 PASS Responses failing CORS checks are not leaked
-PASS Access to active fetches is supported.
 Harness: the test ran to completion.
 

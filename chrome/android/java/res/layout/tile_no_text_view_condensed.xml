@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2015 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<!-- An icon tile. -->
+<merge
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools" >
+
+    <!-- The icon background. -->
+    <View
+        android:id="@+id/tile_view_icon_background"
+        android:layout_width="@dimen/tile_view_icon_size"
+        android:layout_height="@dimen/tile_view_icon_size"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="@dimen/tile_view_icon_background_margin_top_modern"
+        android:background="@drawable/tile_view_icon_background_modern" />
+
+    <!-- The main icon. -->
+    <ImageView
+        android:id="@+id/tile_view_icon"
+        android:layout_width="@dimen/tile_view_icon_size_modern"
+        android:layout_height="@dimen/tile_view_icon_size_modern"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="@dimen/tile_view_icon_margin_top_modern"
+        tools:ignore="ContentDescription" />
+
+    <!-- The touch highlight. -->
+    <View
+        android:id="@+id/tile_view_highlight"
+        android:layout_width="@dimen/tile_view_icon_size"
+        android:layout_height="@dimen/tile_view_icon_size"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="@dimen/tile_view_icon_background_margin_top_modern"
+        android:background="@drawable/tile_view_highlight" />
+
+    <!-- The offline badge. -->
+    <ImageView
+        android:id="@+id/offline_badge"
+        android:layout_width="@dimen/tile_view_offline_badge_size_modern"
+        android:layout_height="@dimen/tile_view_offline_badge_size_modern"
+        android:layout_gravity="top|end"
+        android:layout_marginTop="@dimen/tile_view_offline_badge_margin_top_modern_condensed"
+        android:layout_marginEnd="@dimen/tile_view_offline_badge_margin_end_modern_condensed"
+        android:visibility="gone"
+        android:contentDescription="@string/accessibility_ntp_offline_badge"
+        app:srcCompat="@drawable/ic_offline_pin_blue_white" />
+</merge>

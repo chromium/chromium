@@ -65,9 +65,8 @@ class VideoCaptureDeviceMac;
 
   // |captureDevice_| is an object coming from AVFoundation, used only to be
   // plugged in |captureDeviceInput_| and to query for session preset support.
-  AVCaptureDevice* captureDevice_;
-  // |captureDeviceInput_| is owned by |captureSession_|.
-  AVCaptureDeviceInput* captureDeviceInput_;
+  base::scoped_nsobject<AVCaptureDevice> captureDevice_;
+  base::scoped_nsobject<AVCaptureDeviceInput> captureDeviceInput_;
   base::scoped_nsobject<AVCaptureVideoDataOutput> captureVideoDataOutput_;
 
   // An AVDataOutput specialized for taking pictures out of |captureSession_|.

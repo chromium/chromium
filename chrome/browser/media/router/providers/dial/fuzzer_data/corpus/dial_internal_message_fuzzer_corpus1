@@ -1,0 +1,10 @@
+{
+  "type": "custom_dial_launch",
+  "message": {
+    "doLaunch": true,
+    "launchParameter": "pairingCode=1234abcd-890f-123e-b456-abcdef&theme=cl&v=abcdef&t=0"
+  },
+  "sequenceNumber": 1,
+  "timeoutMillis": 3000,
+  "clientId": "1234567891234567890"
+}

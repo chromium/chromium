@@ -43,19 +43,21 @@ void UserActionElementSet::DidDetach(Element& element) {
 
 bool UserActionElementSet::HasFlags(const Node* node, unsigned flags) const {
   DCHECK(node->IsUserActionElement() && node->IsElementNode());
-  return HasFlags(ToElement(node), flags);
+  return HasFlags(To<Element>(node), flags);
 }
 
 void UserActionElementSet::SetFlags(Node* node, unsigned flags) {
-  if (!node->IsElementNode())
+  auto* this_element = DynamicTo<Element>(node);
+  if (!this_element)
     return;
-  return SetFlags(ToElement(node), flags);
+  return SetFlags(this_element, flags);
 }
 
 void UserActionElementSet::ClearFlags(Node* node, unsigned flags) {
-  if (!node->IsElementNode())
+  auto* this_element = DynamicTo<Element>(node);
+  if (!this_element)
     return;
-  return ClearFlags(ToElement(node), flags);
+  return ClearFlags(this_element, flags);
 }
 
 inline bool UserActionElementSet::HasFlags(const Element* element,

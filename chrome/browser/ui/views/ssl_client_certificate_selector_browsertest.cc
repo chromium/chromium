@@ -31,9 +31,6 @@
 #include "net/test/cert_test_util.h"
 #include "net/test/test_data_directory.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
-#include "net/url_request/url_request.h"
-#include "net/url_request/url_request_context.h"
-#include "net/url_request/url_request_context_getter.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/views/test/widget_test.h"
 
@@ -63,12 +60,12 @@ class SSLClientCertificateSelectorTest : public InProcessBrowserTest {
         certs_dir, "client_2.pem", "client_2.pk8");
     ASSERT_TRUE(cert_identity_2_);
 
-    cert_request_info_ = new net::SSLCertRequestInfo;
+    cert_request_info_ = base::MakeRefCounted<net::SSLCertRequestInfo>();
     cert_request_info_->host_and_port = net::HostPortPair("foo", 123);
   }
 
   void SetUpOnMainThread() override {
-    base::PostTaskWithTraits(
+    base::PostTask(
         FROM_HERE, {BrowserThread::IO},
         base::BindOnce(&SSLClientCertificateSelectorTest::SetUpOnIOThread,
                        base::Unretained(this)));
@@ -102,14 +99,14 @@ class SSLClientCertificateSelectorTest : public InProcessBrowserTest {
   // Have to release our reference to the auth handler during the test to allow
   // it to be destroyed while the Browser and its IO thread still exist.
   void TearDownOnMainThread() override {
-    base::PostTaskWithTraits(
+    base::PostTask(
         FROM_HERE, {BrowserThread::IO},
         base::BindOnce(&SSLClientCertificateSelectorTest::CleanUpOnIOThread,
                        base::Unretained(this)));
 
     io_loop_finished_event_.Wait();
 
-    auth_requestor_ = NULL;
+    auth_requestor_.reset();
   }
 
   virtual void CleanUpOnIOThread() {
@@ -117,13 +114,6 @@ class SSLClientCertificateSelectorTest : public InProcessBrowserTest {
   }
 
  protected:
-  std::unique_ptr<net::URLRequest> MakeURLRequest(
-      net::URLRequestContextGetter* context_getter) {
-    return context_getter->GetURLRequestContext()->CreateRequest(
-        GURL("https://example"), net::DEFAULT_PRIORITY, NULL,
-        TRAFFIC_ANNOTATION_FOR_TESTS);
-  }
-
   base::WaitableEvent io_loop_finished_event_;
 
   std::unique_ptr<net::FakeClientCertIdentity> cert_identity_1_;
@@ -140,10 +130,10 @@ class SSLClientCertificateSelectorMultiTabTest
   void SetUpInProcessBrowserTestFixture() override {
     SSLClientCertificateSelectorTest::SetUpInProcessBrowserTestFixture();
 
-    cert_request_info_1_ = new net::SSLCertRequestInfo;
+    cert_request_info_1_ = base::MakeRefCounted<net::SSLCertRequestInfo>();
     cert_request_info_1_->host_and_port = net::HostPortPair("bar", 123);
 
-    cert_request_info_2_ = new net::SSLCertRequestInfo;
+    cert_request_info_2_ = base::MakeRefCounted<net::SSLCertRequestInfo>();
     cert_request_info_2_->host_and_port = net::HostPortPair("bar", 123);
   }
 
@@ -198,8 +188,8 @@ class SSLClientCertificateSelectorMultiTabTest
   }
 
   void TearDownOnMainThread() override {
-    auth_requestor_2_ = NULL;
-    auth_requestor_1_ = NULL;
+    auth_requestor_2_.reset();
+    auth_requestor_1_.reset();
     SSLClientCertificateSelectorTest::TearDownOnMainThread();
   }
 
@@ -225,7 +215,7 @@ class SSLClientCertificateSelectorMultiProfileTest
   void SetUpInProcessBrowserTestFixture() override {
     SSLClientCertificateSelectorTest::SetUpInProcessBrowserTestFixture();
 
-    cert_request_info_1_ = new net::SSLCertRequestInfo;
+    cert_request_info_1_ = base::MakeRefCounted<net::SSLCertRequestInfo>();
     cert_request_info_1_->host_and_port = net::HostPortPair("foo", 123);
   }
 
@@ -264,7 +254,7 @@ class SSLClientCertificateSelectorMultiProfileTest
   }
 
   void TearDownOnMainThread() override {
-    auth_requestor_1_ = NULL;
+    auth_requestor_1_.reset();
     SSLClientCertificateSelectorTest::TearDownOnMainThread();
   }
 
@@ -288,13 +278,7 @@ IN_PROC_BROWSER_TEST_F(SSLClientCertificateSelectorTest, SelectNone) {
   // Let the mock get checked on destruction.
 }
 
-#if defined(OS_MACOSX)
-// Focusing or input is not completely working on Mac: http://crbug.com/824418
-#define MAYBE_Escape DISABLED_Escape
-#else
-#define MAYBE_Escape Escape
-#endif
-IN_PROC_BROWSER_TEST_F(SSLClientCertificateSelectorTest, MAYBE_Escape) {
+IN_PROC_BROWSER_TEST_F(SSLClientCertificateSelectorTest, Escape) {
   base::HistogramTester histograms;
   EXPECT_CALL(*auth_requestor_.get(), CertificateSelected(nullptr, nullptr));
 
@@ -334,7 +318,7 @@ IN_PROC_BROWSER_TEST_F(SSLClientCertificateSelectorTest, CloseTab) {
   Mock::VerifyAndClear(auth_requestor_.get());
 }
 
-IN_PROC_BROWSER_TEST_F(SSLClientCertificateSelectorMultiTabTest, MAYBE_Escape) {
+IN_PROC_BROWSER_TEST_F(SSLClientCertificateSelectorMultiTabTest, Escape) {
   // auth_requestor_1_ should get selected automatically by the
   // SSLClientAuthObserver when selector_2_ is accepted, since both 1 & 2 have
   // the same host:port.
@@ -389,14 +373,7 @@ IN_PROC_BROWSER_TEST_F(SSLClientCertificateSelectorMultiTabTest, SelectSecond) {
   EXPECT_CALL(*auth_requestor_.get(), CancelCertificateSelection());
 }
 
-#if defined(OS_MACOSX)
-// Widget activation doesn't work on Mac: https://crbug.com/823543
-#define MAYBE_Escape DISABLED_Escape
-#else
-#define MAYBE_Escape Escape
-#endif
-IN_PROC_BROWSER_TEST_F(SSLClientCertificateSelectorMultiProfileTest,
-                       MAYBE_Escape) {
+IN_PROC_BROWSER_TEST_F(SSLClientCertificateSelectorMultiProfileTest, Escape) {
   EXPECT_CALL(*auth_requestor_1_.get(), CertificateSelected(nullptr, nullptr));
 
   EXPECT_TRUE(ui_test_utils::SendKeyPressSync(
@@ -410,14 +387,8 @@ IN_PROC_BROWSER_TEST_F(SSLClientCertificateSelectorMultiProfileTest,
   EXPECT_CALL(*auth_requestor_.get(), CancelCertificateSelection());
 }
 
-#if defined(OS_MACOSX)
-// Widget activation doesn't work on Mac: https://crbug.com/823543
-#define MAYBE_SelectDefault DISABLED_SelectDefault
-#else
-#define MAYBE_SelectDefault SelectDefault
-#endif
 IN_PROC_BROWSER_TEST_F(SSLClientCertificateSelectorMultiProfileTest,
-                       MAYBE_SelectDefault) {
+                       SelectDefault) {
   EXPECT_CALL(*auth_requestor_1_.get(),
               CertificateSelected(cert_identity_1_->certificate(),
                                   cert_identity_1_->ssl_private_key()));

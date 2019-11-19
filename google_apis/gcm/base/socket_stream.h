@@ -128,7 +128,7 @@ class GCM_EXPORT SocketInputStream
   // Note: last_error_ == net::ERR_IO_PENDING implies GetState() == READING.
   net::Error last_error_;
 
-  base::WeakPtrFactory<SocketInputStream> weak_ptr_factory_;
+  base::WeakPtrFactory<SocketInputStream> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(SocketInputStream);
 };
@@ -201,7 +201,7 @@ class GCM_EXPORT SocketOutputStream
   // Note: last_error_ == net::ERR_IO_PENDING implies GetState() == FLUSHING.
   net::Error last_error_;
 
-  base::WeakPtrFactory<SocketOutputStream> weak_ptr_factory_;
+  base::WeakPtrFactory<SocketOutputStream> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(SocketOutputStream);
 };

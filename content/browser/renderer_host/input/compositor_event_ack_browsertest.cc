@@ -126,7 +126,7 @@ class CompositorEventAckBrowserTest : public ContentBrowserTest {
  protected:
   void LoadURL(const char* page_data) {
     const GURL data_url(page_data);
-    NavigateToURL(shell(), data_url);
+    EXPECT_TRUE(NavigateToURL(shell(), data_url));
 
     RenderWidgetHostImpl* host = GetWidgetHost();
     host->GetView()->SetSize(gfx::Size(400, 400));
@@ -165,7 +165,9 @@ class CompositorEventAckBrowserTest : public ContentBrowserTest {
     // This event never completes its processing. As kCompositorEventAckDataURL
     // will block the renderer's main thread once it is received.
     blink::WebMouseWheelEvent wheel_event =
-        SyntheticWebMouseWheelEventBuilder::Build(10, 10, 0, -53, 0, true);
+        SyntheticWebMouseWheelEventBuilder::Build(
+            10, 10, 0, -53, 0,
+            ui::input_types::ScrollGranularity::kScrollByPrecisePixel);
     wheel_event.phase = blink::WebMouseWheelEvent::kPhaseBegan;
     GetWidgetHost()->ForwardWheelEvent(wheel_event);
 
@@ -264,9 +266,9 @@ IN_PROC_BROWSER_TEST_F(CompositorEventAckBrowserTest,
   blink::WebGestureEvent gesture_scroll_begin(
       blink::WebGestureEvent::kGestureScrollBegin,
       blink::WebInputEvent::kNoModifiers, ui::EventTimeForNow());
-  gesture_scroll_begin.SetSourceDevice(blink::kWebGestureDeviceTouchscreen);
+  gesture_scroll_begin.SetSourceDevice(blink::WebGestureDevice::kTouchscreen);
   gesture_scroll_begin.data.scroll_begin.delta_hint_units =
-      blink::WebGestureEvent::ScrollUnits::kPrecisePixels;
+      ui::input_types::ScrollGranularity::kScrollByPrecisePixel;
   gesture_scroll_begin.data.scroll_begin.delta_x_hint = 0.f;
   gesture_scroll_begin.data.scroll_begin.delta_y_hint = -5.f;
   GetWidgetHost()->ForwardGestureEvent(gesture_scroll_begin);
@@ -276,7 +278,7 @@ IN_PROC_BROWSER_TEST_F(CompositorEventAckBrowserTest,
   blink::WebGestureEvent gesture_fling_start(
       blink::WebGestureEvent::kGestureFlingStart,
       blink::WebInputEvent::kNoModifiers, ui::EventTimeForNow());
-  gesture_fling_start.SetSourceDevice(blink::kWebGestureDeviceTouchscreen);
+  gesture_fling_start.SetSourceDevice(blink::WebGestureDevice::kTouchscreen);
   gesture_fling_start.data.fling_start.velocity_x = 0.f;
   gesture_fling_start.data.fling_start.velocity_y = -2000.f;
   GetWidgetHost()->ForwardGestureEvent(gesture_fling_start);

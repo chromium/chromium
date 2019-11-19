@@ -122,7 +122,9 @@ constexpr ExperimentVariations kExperiments[] = {
      TryChromeDialog::OPEN_CHROME_DEFAULT},
     {IDS_WIN10_TOAST_RECOMMENDATION, 0,
      ExperimentVariations::CloseStyle::kCloseX,
-     TryChromeDialog::OPEN_CHROME_WELCOME_WIN10},
+     // Was formerly OPEN_CHROME_WELCOME_WIN10 but that UI is deprecated,
+     // so now kExperiments[3] == kExperiments[4].
+     TryChromeDialog::OPEN_CHROME_WELCOME},
     {IDS_WIN10_TOAST_RECOMMENDATION, 0,
      ExperimentVariations::CloseStyle::kCloseX,
      TryChromeDialog::OPEN_CHROME_WELCOME},
@@ -1034,15 +1036,16 @@ void TryChromeDialog::OnContextInitialized() {
   params.activatable = views::Widget::InitParams::ACTIVATABLE_YES;
   // An approximate window size. Layout() can adjust.
   params.bounds = gfx::Rect(kToastWidth, 120);
+  params.name = "TryChromeDialog";
   popup_ = new views::Widget;
   popup_->AddObserver(this);
-  popup_->Init(params);
+  popup_->Init(std::move(params));
 
   auto contents_view = std::make_unique<ClickableView>();
   contents_view->SetBackground(
       views::CreateSolidBackground(kTryChromeBackgroundColor));
-  views::GridLayout* layout = contents_view->SetLayoutManager(
-      std::make_unique<views::GridLayout>(contents_view.get()));
+  views::GridLayout* layout =
+      contents_view->SetLayoutManager(std::make_unique<views::GridLayout>());
   layout->set_minimum_size(gfx::Size(kToastWidth, 0));
   views::ColumnSet* columns;
 
@@ -1120,9 +1123,8 @@ void TryChromeDialog::OnContextInitialized() {
         views::Button::STATE_NORMAL,
         gfx::CreateVectorIcon(kInactiveToastCloseIcon, kBodyColor));
     close_button->set_tag(static_cast<int>(ButtonTag::CLOSE_BUTTON));
-    close_button_ = close_button.get();
     DCHECK_EQ(close_button->GetPreferredSize().width(), kCloseButtonWidth);
-    layout->AddView(close_button.release(), 1, 2);
+    close_button_ = layout->AddView(std::move(close_button), 1, 2);
     close_button_->SetVisible(false);
   } else {
     layout->SkipColumns(1);
@@ -1130,7 +1132,7 @@ void TryChromeDialog::OnContextInitialized() {
 
   // Second row.
   layout->StartRow(views::GridLayout::kFixedSize, 0);
-  layout->AddView(logo.release());
+  layout->AddView(std::move(logo));
   // All variants have a main header.
   auto header = std::make_unique<views::Label>(
       l10n_util::GetStringUTF16(kExperiments[group_].heading_id),
@@ -1139,7 +1141,7 @@ void TryChromeDialog::OnContextInitialized() {
   header->SetEnabledColor(kHeaderColor);
   header->SetMultiLine(true);
   header->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  layout->AddView(header.release());
+  layout->AddView(std::move(header));
   layout->SkipColumns(1);
 
   // Third row: May have text or may be blank.
@@ -1152,7 +1154,7 @@ void TryChromeDialog::OnContextInitialized() {
     body_text->SetEnabledColor(kBodyColor);
     body_text->SetMultiLine(true);
     body_text->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-    layout->AddView(body_text.release());
+    layout->AddView(std::move(body_text));
   }
 
   // Fourth row: one or two buttons depending on group.
@@ -1178,10 +1180,10 @@ void TryChromeDialog::OnContextInitialized() {
         this, l10n_util::GetStringUTF16(IDS_WIN10_TOAST_NO_THANKS),
         TryChromeButtonType::NO_THANKS);
     no_thanks_button->set_tag(static_cast<int>(ButtonTag::NO_THANKS_BUTTON));
-    buttons->AddChildView(no_thanks_button.release());
+    buttons->AddChildView(std::move(no_thanks_button));
   }
 
-  layout->AddView(buttons.release());
+  layout->AddView(std::move(buttons));
 
   layout->AddPaddingRow(views::GridLayout::kFixedSize,
                         kTextButtonPadding - kTryChromeBorderThickness);
@@ -1193,7 +1195,7 @@ void TryChromeDialog::OnContextInitialized() {
   // This propagation can cause views to change their size requirements.
   const gfx::Size preferred = popup_->GetContentsView()->GetPreferredSize();
   popup_->SetBounds(context_->ComputePopupBounds(popup_, preferred));
-  popup_->SetAlwaysOnTop(true);
+  popup_->SetZOrderLevel(ui::ZOrderLevel::kFloatingWindow);
 
   popup_->ShowInactive();
   delegate_->SetToastLocation(context_->GetToastLocation());

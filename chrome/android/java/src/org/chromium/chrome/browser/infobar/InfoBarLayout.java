@@ -5,11 +5,11 @@
 package org.chromium.chrome.browser.infobar;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
-import android.support.annotation.Nullable;
 import android.support.v7.content.res.AppCompatResources;
 import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
@@ -23,12 +23,17 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.ColorRes;
+import androidx.annotation.Nullable;
+
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.widget.DualControlLayout;
+import org.chromium.chrome.browser.ui.widget.DualControlLayout;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.text.NoUnderlineClickableSpan;
 import org.chromium.ui.widget.ButtonCompat;
+import org.chromium.ui.widget.ChromeImageButton;
+import org.chromium.ui.widget.ChromeImageView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -99,15 +104,15 @@ public final class InfoBarLayout extends ViewGroup implements View.OnClickListen
      * Constructs a layout for the specified infobar. After calling this, be sure to set the
      * message, the buttons, and/or the custom content using setMessage(), setButtons(), and
      * setCustomContent().
-     *
      * @param context The context used to render.
      * @param infoBarView InfoBarView that listens to events.
      * @param iconResourceId ID of the icon to use for the infobar.
+     * @param iconTintId The {@link ColorRes} used as tint for {@code iconResourceId}.
      * @param iconBitmap Bitmap for the icon to use, if the resource ID wasn't passed through.
      * @param message The message to show in the infobar.
      */
     public InfoBarLayout(Context context, InfoBarView infoBarView, int iconResourceId,
-            Bitmap iconBitmap, CharSequence message) {
+            @ColorRes int iconTintId, Bitmap iconBitmap, CharSequence message) {
         super(context);
         mControlLayouts = new ArrayList<InfoBarControlLayout>();
 
@@ -133,7 +138,7 @@ public final class InfoBarLayout extends ViewGroup implements View.OnClickListen
         mCloseButton.setLayoutParams(new LayoutParams(0, -mPadding, -mPadding, -mPadding));
 
         // Set up the icon, if necessary.
-        mIconView = createIconView(context, iconResourceId, iconBitmap);
+        mIconView = createIconView(context, iconResourceId, iconTintId, iconBitmap);
         if (mIconView != null) {
             mIconView.setLayoutParams(new LayoutParams(0, 0, mSmallIconMargin, 0));
             mIconView.getLayoutParams().width = mSmallIconSize;
@@ -305,7 +310,7 @@ public final class InfoBarLayout extends ViewGroup implements View.OnClickListen
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
         // Place all the views in the positions already determined during onMeasure().
         int width = right - left;
-        boolean isRtl = ApiCompatibilityUtils.isLayoutRtl(this);
+        boolean isRtl = getLayoutDirection() == LAYOUT_DIRECTION_RTL;
 
         for (int i = 0; i < getChildCount(); i++) {
             View child = getChildAt(i);
@@ -510,23 +515,29 @@ public final class InfoBarLayout extends ViewGroup implements View.OnClickListen
      * Creates a View that holds an icon representing an infobar.
      * @param context Context to grab resources from.
      * @param iconResourceId ID of the icon to use for the infobar.
+     * @param iconTintId The {@link ColorRes} used as tint for {@code iconResourceId}.
      * @param iconBitmap Bitmap for the icon to use, if the resource ID wasn't passed through.
      * @return {@link ImageButton} that represents the icon.
      */
     @Nullable
-    static ImageView createIconView(Context context, int iconResourceId, Bitmap iconBitmap) {
-        ImageView iconView = null;
-        if (iconResourceId != 0 || iconBitmap != null) {
-            iconView = new ImageView(context);
-            if (iconResourceId != 0) {
-                iconView.setImageDrawable(AppCompatResources.getDrawable(context, iconResourceId));
-            } else if (iconBitmap != null) {
-                iconView.setImageBitmap(iconBitmap);
+    static ImageView createIconView(
+            Context context, int iconResourceId, @ColorRes int iconTintId, Bitmap iconBitmap) {
+        if (iconResourceId == 0 && iconBitmap == null) return null;
+
+        final ChromeImageView iconView = new ChromeImageView(context);
+        if (iconResourceId != 0) {
+            iconView.setImageDrawable(AppCompatResources.getDrawable(context, iconResourceId));
+            if (iconTintId != 0) {
+                ApiCompatibilityUtils.setImageTintList(
+                        iconView, AppCompatResources.getColorStateList(context, iconTintId));
             }
-            iconView.setFocusable(false);
-            iconView.setId(R.id.infobar_icon);
-            iconView.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+        } else {
+            iconView.setImageBitmap(iconBitmap);
         }
+
+        iconView.setFocusable(false);
+        iconView.setId(R.id.infobar_icon);
+        iconView.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
         return iconView;
     }
 
@@ -536,13 +547,16 @@ public final class InfoBarLayout extends ViewGroup implements View.OnClickListen
      * @return {@link ImageButton} that represents a close button.
      */
     static ImageButton createCloseButton(Context context) {
+        final ColorStateList tint =
+                AppCompatResources.getColorStateList(context, R.color.default_icon_color);
         TypedArray a = context.obtainStyledAttributes(new int[] {R.attr.selectableItemBackground});
         Drawable closeButtonBackground = a.getDrawable(0);
         a.recycle();
 
-        ImageButton closeButton = new ImageButton(context);
+        ChromeImageButton closeButton = new ChromeImageButton(context);
         closeButton.setId(R.id.infobar_close_button);
         closeButton.setImageResource(R.drawable.btn_close);
+        ApiCompatibilityUtils.setImageTintList(closeButton, tint);
         closeButton.setBackground(closeButtonBackground);
         closeButton.setContentDescription(context.getString(R.string.infobar_close));
         closeButton.setScaleType(ImageView.ScaleType.CENTER_INSIDE);

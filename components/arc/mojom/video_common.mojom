@@ -1,0 +1,150 @@
+// Copyright 2017 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// This file defined the mojo interface between Android and Chromium for video
+// decoding and encoding. See comments of ArcVideoAccelerator for more info.
+
+module arc.mojom;
+
+import "components/arc/mojom/gfx.mojom";
+
+[Extensible]
+enum VideoCodecProfile {
+  // The values must match to the values in media::VideoCodecProfile.
+  VIDEO_CODEC_PROFILE_UNKNOWN = -1,
+  VIDEO_CODEC_PROFILE_MIN = VIDEO_CODEC_PROFILE_UNKNOWN,
+  H264PROFILE_MIN = 0,
+
+  // Including profile Constrained Baseline (CBP).
+  H264PROFILE_BASELINE = H264PROFILE_MIN,
+  H264PROFILE_MAIN = 1,
+  H264PROFILE_EXTENDED = 2,
+  H264PROFILE_HIGH = 3,
+  H264PROFILE_HIGH10PROFILE = 4,
+  H264PROFILE_HIGH422PROFILE = 5,
+  H264PROFILE_HIGH444PREDICTIVEPROFILE = 6,
+  H264PROFILE_SCALABLEBASELINE = 7,
+  H264PROFILE_SCALABLEHIGH = 8,
+  H264PROFILE_STEREOHIGH = 9,
+  H264PROFILE_MULTIVIEWHIGH = 10,
+  H264PROFILE_MAX = H264PROFILE_MULTIVIEWHIGH,
+  VP8PROFILE_MIN = 11,
+  VP8PROFILE_ANY = VP8PROFILE_MIN,
+  VP8PROFILE_MAX = VP8PROFILE_ANY,
+  VP9PROFILE_MIN = 12,
+  VP9PROFILE_PROFILE0 = VP9PROFILE_MIN,
+  VP9PROFILE_PROFILE1 = 13,
+  VP9PROFILE_PROFILE2 = 14,
+  VP9PROFILE_PROFILE3 = 15,
+  VP9PROFILE_MAX = VP9PROFILE_PROFILE3,
+  HEVCPROFILE_MIN = 16,
+  HEVCPROFILE_MAIN = HEVCPROFILE_MIN,
+  HEVCPROFILE_MAIN10 = 17,
+  HEVCPROFILE_MAIN_STILL_PICTURE = 18,
+  HEVCPROFILE_MAX = HEVCPROFILE_MAIN_STILL_PICTURE,
+  DOLBYVISION_PROFILE0 = 19,
+  DOLBYVISION_PROFILE4 = 20,
+  DOLBYVISION_PROFILE5 = 21,
+  DOLBYVISION_PROFILE7 = 22,
+  THEORAPROFILE_MIN = 23,
+  THEORAPROFILE_ANY = THEORAPROFILE_MIN,
+  THEORAPROFILE_MAX = THEORAPROFILE_ANY,
+  AV1PROFILE_MIN = 24,
+  AV1PROFILE_PROFILE_MAIN = AV1PROFILE_MIN,
+  AV1PROFILE_PROFILE_HIGH = 25,
+  AV1PROFILE_PROFILE_PRO = 26,
+  AV1PROFILE_MAX = AV1PROFILE_PROFILE_PRO,
+  DOLBYVISION_PROFILE8 = 27,
+  DOLBYVISION_PROFILE9 = 28,
+  VIDEO_CODEC_PROFILE_MAX = DOLBYVISION_PROFILE9,
+};
+
+[Extensible]
+enum HalPixelFormat {
+  // The pixel formats defined in Android but are used here. They are defined
+  // in "system/core/include/system/graphics.h"
+  HAL_PIXEL_FORMAT_BGRA_8888 = 5,
+  HAL_PIXEL_FORMAT_YCbCr_420_888 = 0x23,
+  HAL_PIXEL_FORMAT_YV12 = 0x32315659,
+  HAL_PIXEL_FORMAT_NV12 = 0x3231564e,
+};
+
+[Extensible]
+enum VideoPixelFormat {
+  // The values must match to the values in media::VideoPixelFormat
+  PIXEL_FORMAT_UNKNOWN = 0,
+  PIXEL_FORMAT_I420 = 1,
+  [MinVersion=2] PIXEL_FORMAT_YV12 = 2,
+  [MinVersion=2] PIXEL_FORMAT_NV12 = 6,
+  [MinVersion=2] PIXEL_FORMAT_NV21 = 7,
+  [MinVersion=2] PIXEL_FORMAT_ARGB = 10,
+  [MinVersion=2] PIXEL_FORMAT_ABGR = 27,
+  [MinVersion=2] PIXEL_FORMAT_XBGR = 28,
+};
+
+[Extensible]
+enum DecodeStatus {
+  // The values must match to the values in media::DecodeStatus
+  OK = 0,
+  ABORTED = 1,
+  DECODE_ERROR = 2,
+};
+
+// The offset and stride of a video frame plane. Both offset and stride must
+// be non negative.
+struct VideoFramePlane {
+  int32 offset;
+  int32 stride;
+};
+
+// The graphics dimension. Both width and height should be non-negative.
+struct Size {
+  int32 width;
+  int32 height;
+};
+
+// The information of a plane of a video frame that describes how physical
+// buffers are allocated.
+struct ColorPlaneLayout {
+  int32 stride;
+  uint32 offset;
+  uint32 size;
+};
+
+// The layout that describes how physical buffers are allocated for a video
+// frame.
+struct VideoFrameLayout {
+  VideoPixelFormat format;
+  Size coded_size;
+  array<ColorPlaneLayout> planes;
+  bool is_multi_planar;
+  uint32 buffer_addr_align;
+  uint64 modifier;
+};
+
+struct VideoFrame {
+  // Identifier of the buffer. The value of a valid frame should be non-zero.
+  uint64 id;
+  Rect visible_rect;
+  // timestamp in milliseconds.
+  int64 timestamp;
+};
+
+// Struct for storing bitstream buffer.
+struct DecoderBuffer {
+  // Field for a physical buffer. This buffer is passed over an interface from
+  // ARC++ to Chrome, with a callback method that will be run when the buffer is
+  // used and the file descriptor is closed.
+  handle handle_fd;
+  // Distance in bytes between the beginning of the buffer pointed by
+  // |handle_fd| and the beginning of bitstream buffer.
+  uint32 offset;
+  // Bitstream buffer size in bytes. The buffer length referred by |handle_fd|
+  // can be more than |offset| + |payload_size|.
+  uint32 payload_size;
+  // Whether the buffer is an end-of-stream (EOS) buffer.
+  bool end_of_stream;
+  // Timestamp in microseconds.
+  int64 timestamp;
+};

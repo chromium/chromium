@@ -17,7 +17,6 @@
 #include "base/files/file_util.h"
 #include "base/i18n/icu_util.h"
 #include "base/i18n/message_formatter.h"
-#include "base/mac/scoped_nsautorelease_pool.h"
 #include "base/mac/scoped_nsobject.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
@@ -154,188 +153,188 @@ const char kAppType_Helper[] = "helper";  // Helper app
 }  // namespace
 
 int main(int argc, char* const argv[]) {
-  base::mac::ScopedNSAutoreleasePool autorelease_pool;
+  @autoreleasepool {
+    const char* version_file_path = NULL;
+    const char* grit_output_dir = NULL;
+    const char* branding_strings_name = NULL;
+    const char* output_dir = NULL;
+    const char* app_type = kAppType_Main;
 
-  const char* version_file_path = NULL;
-  const char* grit_output_dir = NULL;
-  const char* branding_strings_name = NULL;
-  const char* output_dir = NULL;
-  const char* app_type = kAppType_Main;
-
-  // Process the args
-  int ch;
-  while ((ch = getopt(argc, argv, "t:v:g:b:o:")) != -1) {
-    switch (ch) {
-      case 't':
-        app_type = optarg;
-        break;
-      case 'v':
-        version_file_path = optarg;
-        break;
-      case 'g':
-        grit_output_dir = optarg;
-        break;
-      case 'b':
-        branding_strings_name = optarg;
-        break;
-      case 'o':
-        output_dir = optarg;
-        break;
-      default:
-        fprintf(stderr, "ERROR: bad command line arg\n");
-        exit(1);
-        break;
+    // Process the args
+    int ch;
+    while ((ch = getopt(argc, argv, "t:v:g:b:o:")) != -1) {
+      switch (ch) {
+        case 't':
+          app_type = optarg;
+          break;
+        case 'v':
+          version_file_path = optarg;
+          break;
+        case 'g':
+          grit_output_dir = optarg;
+          break;
+        case 'b':
+          branding_strings_name = optarg;
+          break;
+        case 'o':
+          output_dir = optarg;
+          break;
+        default:
+          fprintf(stderr, "ERROR: bad command line arg\n");
+          exit(1);
+          break;
+      }
     }
-  }
-  argc -= optind;
-  argv += optind;
+    argc -= optind;
+    argv += optind;
 
 #define CHECK_ARG(a, b) \
-  do { \
-    if ((a)) { \
-      fprintf(stderr, "ERROR: " b "\n"); \
-      exit(1); \
-    } \
-  } while (false)
+    do { \
+      if ((a)) { \
+        fprintf(stderr, "ERROR: " b "\n"); \
+        exit(1); \
+      } \
+    } while (false)
 
-  // Check our args
-  CHECK_ARG(!version_file_path, "Missing VERSION file path");
-  CHECK_ARG(!grit_output_dir, "Missing grit output dir path");
-  CHECK_ARG(!output_dir, "Missing path to write InfoPlist.strings files");
-  CHECK_ARG(!branding_strings_name, "Missing branding strings file name");
-  CHECK_ARG(argc == 0, "Missing language list");
-  CHECK_ARG((strcmp(app_type, kAppType_Main) != 0 &&
-             strcmp(app_type, kAppType_Helper) != 0),
-            "Unknown app type");
+    // Check our args
+    CHECK_ARG(!version_file_path, "Missing VERSION file path");
+    CHECK_ARG(!grit_output_dir, "Missing grit output dir path");
+    CHECK_ARG(!output_dir, "Missing path to write InfoPlist.strings files");
+    CHECK_ARG(!branding_strings_name, "Missing branding strings file name");
+    CHECK_ARG(argc == 0, "Missing language list");
+    CHECK_ARG((strcmp(app_type, kAppType_Main) != 0 &&
+               strcmp(app_type, kAppType_Helper) != 0),
+              "Unknown app type");
 
-  char* const* lang_list = argv;
-  int lang_list_count = argc;
+    char* const* lang_list = argv;
+    int lang_list_count = argc;
 
-  base::i18n::InitializeICU();
+    base::i18n::InitializeICU();
 
-  // Parse the version file and build our string
-  NSString* version_string = ApplicationVersionString(version_file_path);
-  if (!version_string) {
-    fprintf(stderr, "ERROR: failed to get a version string");
-    exit(1);
-  }
-
-  NSFileManager* fm = [NSFileManager defaultManager];
-
-  for (int loop = 0; loop < lang_list_count; ++loop) {
-    const char* cur_lang = lang_list[loop];
-
-    // Open the branded string pak file
-    std::unique_ptr<ui::DataPack> branded_data_pack(
-        LoadResourceDataPack(grit_output_dir, branding_strings_name, cur_lang));
-    if (branded_data_pack.get() == NULL) {
-      fprintf(stderr, "ERROR: Failed to load branded pak for language: %s\n",
-              cur_lang);
+    // Parse the version file and build our string
+    NSString* version_string = ApplicationVersionString(version_file_path);
+    if (!version_string) {
+      fprintf(stderr, "ERROR: failed to get a version string");
       exit(1);
     }
 
-    uint32_t name_id = IDS_PRODUCT_NAME;
-    const char* name_id_str = "IDS_PRODUCT_NAME";
-    uint32_t short_name_id = IDS_APP_MENU_PRODUCT_NAME;
-    const char* short_name_id_str = "IDS_APP_MENU_PRODUCT_NAME";
-    if (strcmp(app_type, kAppType_Helper) == 0) {
-      name_id = IDS_HELPER_NAME;
-      name_id_str = "IDS_HELPER_NAME";
-      short_name_id = IDS_SHORT_HELPER_NAME;
-      short_name_id_str = "IDS_SHORT_HELPER_NAME";
-    }
+    NSFileManager* fm = [NSFileManager defaultManager];
 
-    // Fetch the strings.
-    NSString* name =
+    for (int loop = 0; loop < lang_list_count; ++loop) {
+      const char* cur_lang = lang_list[loop];
+
+      // Open the branded string pak file
+      std::unique_ptr<ui::DataPack> branded_data_pack(
+          LoadResourceDataPack(grit_output_dir, branding_strings_name, cur_lang));
+      if (branded_data_pack.get() == NULL) {
+        fprintf(stderr, "ERROR: Failed to load branded pak for language: %s\n",
+                cur_lang);
+        exit(1);
+      }
+
+      uint32_t name_id = IDS_PRODUCT_NAME;
+      const char* name_id_str = "IDS_PRODUCT_NAME";
+      uint32_t short_name_id = IDS_APP_MENU_PRODUCT_NAME;
+      const char* short_name_id_str = "IDS_APP_MENU_PRODUCT_NAME";
+      if (strcmp(app_type, kAppType_Helper) == 0) {
+        name_id = IDS_HELPER_NAME;
+        name_id_str = "IDS_HELPER_NAME";
+        short_name_id = IDS_SHORT_HELPER_NAME;
+        short_name_id_str = "IDS_SHORT_HELPER_NAME";
+      }
+
+      // Fetch the strings.
+      NSString* name =
+            LoadStringFromDataPack(branded_data_pack.get(), cur_lang,
+                                   name_id, name_id_str);
+      NSString* short_name =
+            LoadStringFromDataPack(branded_data_pack.get(), cur_lang,
+                                   short_name_id, short_name_id_str);
+      NSString* copyright_format =
           LoadStringFromDataPack(branded_data_pack.get(), cur_lang,
-                                 name_id, name_id_str);
-    NSString* short_name =
+                                 IDS_ABOUT_VERSION_COPYRIGHT,
+                                 "IDS_ABOUT_VERSION_COPYRIGHT");
+
+      NSString* copyright = base::SysUTF16ToNSString(
+          base::i18n::MessageFormatter::FormatWithNumberedArgs(
+              base::SysNSStringToUTF16(copyright_format), base::Time::Now()));
+
+      NSString* permission_reason =
           LoadStringFromDataPack(branded_data_pack.get(), cur_lang,
-                                 short_name_id, short_name_id_str);
-    NSString* copyright_format =
-        LoadStringFromDataPack(branded_data_pack.get(), cur_lang,
-                               IDS_ABOUT_VERSION_COPYRIGHT,
-                               "IDS_ABOUT_VERSION_COPYRIGHT");
+                                 IDS_RUNTIME_PERMISSION_OS_REASON_TEXT,
+                                 "IDS_RUNTIME_PERMISSION_OS_REASON_TEXT");
 
-    NSString* copyright = base::SysUTF16ToNSString(
-        base::i18n::MessageFormatter::FormatWithNumberedArgs(
-            base::SysNSStringToUTF16(copyright_format), base::Time::Now()));
+      // For now, assume this is ok for all languages. If we need to, this could
+      // be moved into generated_resources.grd and fetched.
+      NSString* get_info = [NSString
+          stringWithFormat:@"%@ %@, %@", name, version_string, copyright];
 
-    NSString* permission_reason =
-        LoadStringFromDataPack(branded_data_pack.get(), cur_lang,
-                               IDS_RUNTIME_PERMISSION_OS_REASON_TEXT,
-                               "IDS_RUNTIME_PERMISSION_OS_REASON_TEXT");
+      // Generate the InfoPlist.strings file contents.
+      NSDictionary<NSString*, NSString*>* infoplist_strings = @{
+        @"CFBundleDisplayName" : name,
+        @"CFBundleGetInfoString" : get_info,
+        @"CFBundleName" : short_name,
+        @"NSHumanReadableCopyright" : copyright,
+        @"NSLocationUsageDescription" : permission_reason,
+        @"NSMicrophoneUsageDescription" : permission_reason,
+        @"NSCameraUsageDescription" : permission_reason,
+        @"NSBluetoothPeripheralUsageDescription" : permission_reason,
+      };
+      base::scoped_nsobject<NSMutableString> strings_file_contents_string(
+          [[NSMutableString alloc] init]);
+      for (NSString* key in infoplist_strings) {
+        [strings_file_contents_string
+            appendFormat:@"%@ = \"%@\";\n", key,
+                         EscapeForStringsFileValue(infoplist_strings[key])];
+      }
 
-    // For now, assume this is ok for all languages. If we need to, this could
-    // be moved into generated_resources.grd and fetched.
-    NSString* get_info = [NSString
-        stringWithFormat:@"%@ %@, %@", name, version_string, copyright];
+      // We set up Xcode projects expecting strings files to be UTF8, so make
+      // sure we write the data in that form.  When Xcode copies them it will
+      // put them final runtime encoding.
+      NSData* strings_file_contents_utf8 =
+          [strings_file_contents_string dataUsingEncoding:NSUTF8StringEncoding];
 
-    // Generate the InfoPlist.strings file contents.
-    NSDictionary<NSString*, NSString*>* infoplist_strings = @{
-      @"CFBundleDisplayName" : name,
-      @"CFBundleGetInfoString" : get_info,
-      @"CFBundleName" : short_name,
-      @"NSHumanReadableCopyright" : copyright,
-      @"NSLocationUsageDescription" : permission_reason,
-      @"NSMicrophoneUsageDescription" : permission_reason,
-      @"NSCameraUsageDescription" : permission_reason,
-      @"NSBluetoothPeripheralUsageDescription" : permission_reason,
-    };
-    base::scoped_nsobject<NSMutableString> strings_file_contents_string(
-        [[NSMutableString alloc] init]);
-    for (NSString* key in infoplist_strings) {
-      [strings_file_contents_string
-          appendFormat:@"%@ = \"%@\";\n", key,
-                       EscapeForStringsFileValue(infoplist_strings[key])];
+      if ([strings_file_contents_utf8 length] == 0) {
+        fprintf(stderr, "ERROR: failed to get the utf8 encoding of the strings "
+                "file for language: %s\n", cur_lang);
+        exit(1);
+      }
+
+      // For Cocoa to find the locale at runtime, it needs to use '_' instead of
+      // '-' (http://crbug.com/20441).  Also, 'en-US' should be represented
+      // simply as 'en' (http://crbug.com/19165, http://crbug.com/25578).
+      NSString* cur_lang_ns = [NSString stringWithUTF8String:cur_lang];
+      if ([cur_lang_ns isEqualToString:@"en-US"]) {
+        cur_lang_ns = @"en";
+      }
+      cur_lang_ns = [cur_lang_ns stringByReplacingOccurrencesOfString:@"-"
+                                                           withString:@"_"];
+      // Make sure the lproj we write to exists
+      NSString *lproj_name = [NSString stringWithFormat:@"%@.lproj", cur_lang_ns];
+      NSString *output_path =
+          [[NSString stringWithUTF8String:output_dir]
+           stringByAppendingPathComponent:lproj_name];
+      NSError* error = nil;
+      if (![fm fileExistsAtPath:output_path] &&
+          ![fm createDirectoryAtPath:output_path
+          withIntermediateDirectories:YES
+                          attributes:nil
+                               error:&error]) {
+        fprintf(stderr, "ERROR: '%s' didn't exist or we failed to create it\n",
+                [output_path UTF8String]);
+        exit(1);
+      }
+
+      // Write out the file
+      output_path =
+          [output_path stringByAppendingPathComponent:@"InfoPlist.strings"];
+      if (![strings_file_contents_utf8 writeToFile:output_path
+                                        atomically:YES]) {
+        fprintf(stderr, "ERROR: Failed to write out '%s'\n",
+                [output_path UTF8String]);
+        exit(1);
+      }
     }
-
-    // We set up Xcode projects expecting strings files to be UTF8, so make
-    // sure we write the data in that form.  When Xcode copies them it will
-    // put them final runtime encoding.
-    NSData* strings_file_contents_utf8 =
-        [strings_file_contents_string dataUsingEncoding:NSUTF8StringEncoding];
-
-    if ([strings_file_contents_utf8 length] == 0) {
-      fprintf(stderr, "ERROR: failed to get the utf8 encoding of the strings "
-              "file for language: %s\n", cur_lang);
-      exit(1);
-    }
-
-    // For Cocoa to find the locale at runtime, it needs to use '_' instead of
-    // '-' (http://crbug.com/20441).  Also, 'en-US' should be represented
-    // simply as 'en' (http://crbug.com/19165, http://crbug.com/25578).
-    NSString* cur_lang_ns = [NSString stringWithUTF8String:cur_lang];
-    if ([cur_lang_ns isEqualToString:@"en-US"]) {
-      cur_lang_ns = @"en";
-    }
-    cur_lang_ns = [cur_lang_ns stringByReplacingOccurrencesOfString:@"-"
-                                                         withString:@"_"];
-    // Make sure the lproj we write to exists
-    NSString *lproj_name = [NSString stringWithFormat:@"%@.lproj", cur_lang_ns];
-    NSString *output_path =
-        [[NSString stringWithUTF8String:output_dir]
-         stringByAppendingPathComponent:lproj_name];
-    NSError* error = nil;
-    if (![fm fileExistsAtPath:output_path] &&
-        ![fm createDirectoryAtPath:output_path
-        withIntermediateDirectories:YES
-                        attributes:nil
-                             error:&error]) {
-      fprintf(stderr, "ERROR: '%s' didn't exist or we failed to create it\n",
-              [output_path UTF8String]);
-      exit(1);
-    }
-
-    // Write out the file
-    output_path =
-        [output_path stringByAppendingPathComponent:@"InfoPlist.strings"];
-    if (![strings_file_contents_utf8 writeToFile:output_path
-                                      atomically:YES]) {
-      fprintf(stderr, "ERROR: Failed to write out '%s'\n",
-              [output_path UTF8String]);
-      exit(1);
-    }
+    return 0;
   }
-  return 0;
 }

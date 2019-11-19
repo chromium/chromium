@@ -15,6 +15,8 @@
 #include "build/build_config.h"
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/extensions/api/extension_action/extension_action_api.h"
+#include "chrome/browser/extensions/api/extension_action/test_extension_action_api_observer.h"
+#include "chrome/browser/extensions/api/extension_action/test_icon_image_observer.h"
 #include "chrome/browser/extensions/extension_action.h"
 #include "chrome/browser/extensions/extension_action_icon_factory.h"
 #include "chrome/browser/extensions/extension_action_manager.h"
@@ -36,6 +38,7 @@
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/notification_service.h"
+#include "content/public/browser/overlay_window.h"
 #include "content/public/browser/picture_in_picture_window_controller.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -81,7 +84,7 @@ void ExecuteExtensionAction(Browser* browser, const Extension* extension) {
 class BlankImageSource : public gfx::CanvasImageSource {
  public:
   explicit BlankImageSource(const gfx::Size& size)
-     : gfx::CanvasImageSource(size, false) {}
+      : gfx::CanvasImageSource(size) {}
   ~BlankImageSource() override {}
 
   void Draw(gfx::Canvas* canvas) override {}
@@ -145,14 +148,50 @@ class BrowserActionApiTest : public ExtensionApiTest {
   }
 
   ExtensionAction* GetBrowserAction(const Extension& extension) {
-    return ExtensionActionManager::Get(browser()->profile())->
-        GetBrowserAction(extension);
+    ExtensionAction* extension_action =
+        ExtensionActionManager::Get(browser()->profile())
+            ->GetExtensionAction(extension);
+    return extension_action->action_type() == ActionInfo::TYPE_BROWSER
+               ? extension_action
+               : nullptr;
   }
 
  private:
   std::unique_ptr<BrowserActionTestUtil> browser_action_test_util_;
 
   DISALLOW_COPY_AND_ASSIGN(BrowserActionApiTest);
+};
+
+// Canvas tests rely on the harness producing pixel output in order to read back
+// pixels from a canvas element. So we have to override the setup function.
+class BrowserActionApiCanvasTest : public BrowserActionApiTest {
+ public:
+  void SetUp() override {
+    EnablePixelOutput();
+    ExtensionApiTest::SetUp();
+  }
+};
+
+// Watches a frame is swapped with a new frame by e.g., navigation.
+class RenderFrameChangedWatcher : public content::WebContentsObserver {
+ public:
+  explicit RenderFrameChangedWatcher(WebContents* web_contents)
+      : WebContentsObserver(web_contents) {}
+
+  void RenderFrameHostChanged(content::RenderFrameHost* old_host,
+                              content::RenderFrameHost* new_host) override {
+    created_frame_ = new_host;
+    run_loop_.Quit();
+  }
+
+  content::RenderFrameHost* WaitAndReturnNewFrame() {
+    run_loop_.Run();
+    return created_frame_;
+  }
+
+ private:
+  base::RunLoop run_loop_;
+  content::RenderFrameHost* created_frame_;
 };
 
 IN_PROC_BROWSER_TEST_F(BrowserActionApiTest, Basic) {
@@ -173,7 +212,8 @@ IN_PROC_BROWSER_TEST_F(BrowserActionApiTest, Basic) {
   // Test that we received the changes.
   ExtensionAction* action = GetBrowserAction(*extension);
   ASSERT_EQ("Modified", action->GetTitle(ExtensionAction::kDefaultTabId));
-  ASSERT_EQ("badge", action->GetBadgeText(ExtensionAction::kDefaultTabId));
+  ASSERT_EQ("badge",
+            action->GetExplicitlySetBadgeText(ExtensionAction::kDefaultTabId));
   ASSERT_EQ(SkColorSetARGB(255, 255, 255, 255),
             action->GetBadgeBackgroundColor(ExtensionAction::kDefaultTabId));
 
@@ -186,7 +226,7 @@ IN_PROC_BROWSER_TEST_F(BrowserActionApiTest, Basic) {
   ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
 }
 
-IN_PROC_BROWSER_TEST_F(BrowserActionApiTest, DynamicBrowserAction) {
+IN_PROC_BROWSER_TEST_F(BrowserActionApiCanvasTest, DynamicBrowserAction) {
   ASSERT_TRUE(RunExtensionTest("browser_action/no_icon")) << message_;
   const Extension* extension = GetSingleLoadedExtension();
   ASSERT_TRUE(extension) << message_;
@@ -371,7 +411,14 @@ IN_PROC_BROWSER_TEST_F(BrowserActionApiTest, DynamicBrowserAction) {
   EXPECT_EQ(kEmptyPathError, catcher.message());
 }
 
-IN_PROC_BROWSER_TEST_F(BrowserActionApiTest, InvisibleIconBrowserAction) {
+// https://crbug.com/1019669; flaky on ChromeOS.
+#if defined(OS_CHROMEOS)
+#define MAYBE_InvisibleIconBrowserAction DISABLED_InvisibleIconBrowserAction
+#else
+#define MAYBE_InvisibleIconBrowserAction InvisibleIconBrowserAction
+#endif
+IN_PROC_BROWSER_TEST_F(BrowserActionApiCanvasTest,
+                       MAYBE_InvisibleIconBrowserAction) {
   // Turn this on so errors are reported.
   ExtensionActionSetIconFunction::SetReportErrorForInvisibleIconForTesting(
       true);
@@ -653,9 +700,7 @@ IN_PROC_BROWSER_TEST_F(BrowserActionApiTest, IncognitoSplit) {
   ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
 }
 
-// Disabled because of failures (crashes) on ASAN bot.
-// See http://crbug.com/98861.
-IN_PROC_BROWSER_TEST_F(BrowserActionApiTest, DISABLED_CloseBackgroundPage) {
+IN_PROC_BROWSER_TEST_F(BrowserActionApiTest, CloseBackgroundPage) {
   ASSERT_TRUE(LoadExtension(
       test_data_dir_.AppendASCII("browser_action/close_background")));
   const Extension* extension = GetSingleLoadedExtension();
@@ -665,7 +710,8 @@ IN_PROC_BROWSER_TEST_F(BrowserActionApiTest, DISABLED_CloseBackgroundPage) {
       extensions::ProcessManager::Get(browser()->profile());
   ASSERT_TRUE(manager->GetBackgroundHostForExtension(extension->id()));
   ExtensionAction* action = GetBrowserAction(*extension);
-  ASSERT_EQ("", action->GetBadgeText(ExtensionAction::kDefaultTabId));
+  ASSERT_EQ("",
+            action->GetExplicitlySetBadgeText(ExtensionAction::kDefaultTabId));
 
   content::WindowedNotificationObserver host_destroyed_observer(
       extensions::NOTIFICATION_EXTENSION_HOST_DESTROYED,
@@ -679,7 +725,8 @@ IN_PROC_BROWSER_TEST_F(BrowserActionApiTest, DISABLED_CloseBackgroundPage) {
   // and the badge text has been set.
   host_destroyed_observer.Wait();
   ASSERT_FALSE(manager->GetBackgroundHostForExtension(extension->id()));
-  ASSERT_EQ("X", action->GetBadgeText(ExtensionAction::kDefaultTabId));
+  ASSERT_EQ("X",
+            action->GetExplicitlySetBadgeText(ExtensionAction::kDefaultTabId));
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserActionApiTest, BadgeBackgroundColor) {
@@ -823,26 +870,47 @@ IN_PROC_BROWSER_TEST_F(BrowserActionApiTest, BrowserActionPopupWithIframe) {
 
   // Navigate the popup's iframe to a (cross-site) web page, and wait for that
   // page to send a message, which will ensure that the page has loaded.
+  RenderFrameChangedWatcher watcher(
+      WebContents::FromRenderFrameHost(frame_host));
   GURL foo_url(embedded_test_server()->GetURL("foo.com", "/popup_iframe.html"));
   std::string script = "location.href = '" + foo_url.spec() + "'";
-  std::string result;
-  EXPECT_TRUE(
-      content::ExecuteScriptAndExtractString(frame_host, script, &result));
-  EXPECT_EQ("DONE", result);
+  EXPECT_TRUE(ExecuteScript(frame_host, script));
+
+  frame_host = watcher.WaitAndReturnNewFrame();
+
+  // Confirm that the new page (popup_iframe.html) is actually loaded.
+  content::DOMMessageQueue dom_message_queue(frame_host);
+  std::string json;
+  EXPECT_TRUE(dom_message_queue.WaitForMessage(&json));
+  EXPECT_EQ("\"DONE\"", json);
 
   EXPECT_TRUE(actions_bar->HidePopup());
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserActionApiTest, BrowserActionWithRectangularIcon) {
   ExtensionTestMessageListener ready_listener("ready", true);
-  ASSERT_TRUE(LoadExtension(
-      test_data_dir_.AppendASCII("browser_action").AppendASCII("rect_icon")));
+
+  const Extension* extension = LoadExtension(
+      test_data_dir_.AppendASCII("browser_action").AppendASCII("rect_icon"));
+  ASSERT_TRUE(extension);
   EXPECT_TRUE(ready_listener.WaitUntilSatisfied());
+
+  // Wait for the default icon to load before accessing the underlying
+  // gfx::Image.
+  TestIconImageObserver::WaitForExtensionActionIcon(extension, profile());
+
   gfx::Image first_icon = GetBrowserActionsBar()->GetIcon(0);
+  ASSERT_FALSE(first_icon.IsEmpty());
+
+  TestExtensionActionAPIObserver observer(profile(), extension->id());
   ResultCatcher catcher;
   ready_listener.Reply(std::string());
   EXPECT_TRUE(catcher.GetNextResult());
+  // Wait for extension action to be updated.
+  observer.Wait();
+
   gfx::Image next_icon = GetBrowserActionsBar()->GetIcon(0);
+  ASSERT_FALSE(next_icon.IsEmpty());
   EXPECT_FALSE(gfx::test::AreImagesEqual(first_icon, next_icon));
 }
 
@@ -937,7 +1005,6 @@ class NavigatingExtensionPopupBrowserTest : public BrowserActionApiTest {
   enum ExpectedNavigationStatus {
     EXPECTING_NAVIGATION_SUCCESS,
     EXPECTING_NAVIGATION_FAILURE,
-    EXPECTING_NO_NAVIGATION,
   };
 
   void TestPopupNavigationViaGet(
@@ -999,11 +1066,8 @@ class NavigatingExtensionPopupBrowserTest : public BrowserActionApiTest {
     } else {
       // If the extension popup is still opened, then wait until there is no
       // load in progress, and verify whether the navigation succeeded or not.
-      if (expected_navigation_status != EXPECTING_NO_NAVIGATION) {
-        popup_navigation_observer.Wait();
-      } else {
-        EXPECT_FALSE(popup->IsLoading());
-      }
+      popup_navigation_observer.Wait();
+
       // The popup should still be alive.
       ASSERT_TRUE(popup_destruction_watcher.web_contents());
 
@@ -1044,15 +1108,16 @@ class NavigatingExtensionPopupBrowserTest : public BrowserActionApiTest {
   const Extension* other_extension_;
 };
 
+// Flaky - crbug.com/1021172
+#if defined(OS_LINUX)
+#define MAYBE_Webpage DISABLED_Webpage
+#else
+#define MAYBE_Webpage Webpage
+#endif
 // Tests that an extension pop-up cannot be navigated to a web page.
-IN_PROC_BROWSER_TEST_F(NavigatingExtensionPopupBrowserTest, Webpage) {
+IN_PROC_BROWSER_TEST_F(NavigatingExtensionPopupBrowserTest, MAYBE_Webpage) {
   GURL web_url(embedded_test_server()->GetURL("foo.com", "/title1.html"));
-
-  // The GET request will be blocked in ExtensionViewHost::OpenURLFromTab
-  // (which silently drops navigations with CURRENT_TAB disposition).
-  TestPopupNavigationViaGet(web_url, EXPECTING_NO_NAVIGATION);
-
-  // POST requests don't go through ExtensionViewHost::OpenURLFromTab.
+  TestPopupNavigationViaGet(web_url, EXPECTING_NAVIGATION_FAILURE);
   TestPopupNavigationViaPost(web_url, EXPECTING_NAVIGATION_FAILURE);
 }
 
@@ -1074,22 +1139,13 @@ IN_PROC_BROWSER_TEST_F(NavigatingExtensionPopupBrowserTest,
 IN_PROC_BROWSER_TEST_F(NavigatingExtensionPopupBrowserTest,
                        PageInOtherExtension) {
   GURL other_extension_url = other_extension().GetResourceURL("other.html");
-  TestPopupNavigationViaGet(other_extension_url, EXPECTING_NO_NAVIGATION);
+  TestPopupNavigationViaGet(other_extension_url, EXPECTING_NAVIGATION_FAILURE);
   TestPopupNavigationViaPost(other_extension_url, EXPECTING_NAVIGATION_FAILURE);
 }
 
 // Tests that navigating an extension pop-up to a http URI that returns
 // Content-Disposition: attachment; filename=...
 // works: No navigation, but download shelf visible + download goes through.
-//
-// Note - there is no "...ViaGet" flavour of this test, because we don't care
-// (yet) if GET succeeds with the download or not (it probably should succeed
-// for consistency with POST, but it always failed in M54 and before).  After
-// abandoing ShouldFork/OpenURL for all methods (not just for POST) [see comment
-// about https://crbug.com/646261 in ChromeContentRendererClient::ShouldFork]
-// GET should automagically start working for downloads.
-// TODO(lukasza): https://crbug.com/650694: Add a "Get" flavour of the test once
-// the download works both for GET and POST requests.
 IN_PROC_BROWSER_TEST_F(NavigatingExtensionPopupBrowserTest, DownloadViaPost) {
   // Setup monitoring of the downloads.
   content::DownloadTestObserverTerminal downloads_observer(
@@ -1103,6 +1159,40 @@ IN_PROC_BROWSER_TEST_F(NavigatingExtensionPopupBrowserTest, DownloadViaPost) {
   GURL download_url(
       embedded_test_server()->GetURL("foo.com", "/download-test3.gif"));
   TestPopupNavigationViaPost(download_url, EXPECTING_NAVIGATION_FAILURE);
+
+  // Verify that "download-test3.gif got downloaded.
+  downloads_observer.WaitForFinished();
+  EXPECT_EQ(0u, downloads_observer.NumDangerousDownloadsSeen());
+  EXPECT_EQ(1u, downloads_observer.NumDownloadsSeenInState(
+                    download::DownloadItem::COMPLETE));
+
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  base::FilePath downloads_directory =
+      DownloadPrefs(browser()->profile()).DownloadPath();
+  EXPECT_TRUE(base::PathExists(
+      downloads_directory.AppendASCII("download-test3-attachment.gif")));
+
+  // The test verification below is applicable only to scenarios where the
+  // download shelf is supported - on ChromeOS, instead of the download shelf,
+  // there is a download notification in the right-bottom corner of the screen.
+#if !defined(OS_CHROMEOS)
+  EXPECT_TRUE(browser()->window()->IsDownloadShelfVisible());
+#endif
+}
+
+IN_PROC_BROWSER_TEST_F(NavigatingExtensionPopupBrowserTest, DownloadViaGet) {
+  // Setup monitoring of the downloads.
+  content::DownloadTestObserverTerminal downloads_observer(
+      content::BrowserContext::GetDownloadManager(browser()->profile()),
+      1,  // == wait_count (only waiting for "download-test3.gif").
+      content::DownloadTestObserver::ON_DANGEROUS_DOWNLOAD_FAIL);
+
+  // Navigate to a URL that replies with
+  // Content-Disposition: attachment; filename=...
+  // header.
+  GURL download_url(
+      embedded_test_server()->GetURL("foo.com", "/download-test3.gif"));
+  TestPopupNavigationViaGet(download_url, EXPECTING_NAVIGATION_FAILURE);
 
   // Verify that "download-test3.gif got downloaded.
   downloads_observer.WaitForFinished();

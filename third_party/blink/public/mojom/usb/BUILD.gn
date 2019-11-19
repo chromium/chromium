@@ -5,6 +5,8 @@
 import("//mojo/public/tools/bindings/mojom.gni")
 
 mojom("usb") {
+  generate_java = true
+
   # Ideally, this mojom file should be compiled directly in "mojom_platform"
   # target in the parent directory. But as we need |scramble_message_ids| to
   # be "false" for its mojom JS file will be used in external WPT tests.
@@ -15,10 +17,7 @@ mojom("usb") {
 
   deps = [
     "//mojo/public/mojom/base",
-
-    # TODO(donna.wu@intel.com): Change the following line to //service/device/
-    # after it has been moved to //services/device.
-    "//device/usb/public/mojom",
+    "//services/device/public/mojom:usb",
   ]
 
   # USB Mojom interfaces are exposed publicly to web tests which use

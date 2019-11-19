@@ -4,6 +4,7 @@
 
 #include "chrome/browser/chromeos/power/auto_screen_brightness/utils.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/stringprintf.h"
 
 namespace chromeos {
 namespace power {
@@ -19,6 +20,10 @@ void LogDataError(DataError error) {
 
 double ConvertToLog(double value) {
   return std::log(1 + value);
+}
+
+std::string FormatToPrint(double value) {
+  return base::StringPrintf("%.4f", value) + "%";
 }
 
 }  // namespace auto_screen_brightness

@@ -1,0 +1,18 @@
+Tests that the grid shows information as expected.
+
+Grid Entries:
+    [empty]
+Grid Entries:
+    1, 1556889085000, Event1, http://127.0.0.1:8000/, [blank], Instance1, [blank]
+Grid Entries:
+    1, 1556889085000, Event1, http://127.0.0.1:8000/, [blank], Instance1, [blank]
+Grid Entries:
+    1, 1556889085000, Event1, http://127.0.0.1:8000/, [blank], Instance1, [blank]
+Grid Entries:
+    1, 1556889085000, Event1, http://127.0.0.1:8000/, [blank], Instance1, [blank]
+    2, 1556889085000, Event2, http://127.0.0.1:8080/, [blank], Instance1, [blank]
+Grid Entries:
+    1, 1556889085000, Event1, http://127.0.0.1:8000/, [blank], Instance1, [blank]
+Grid Entries:
+    [empty]
+

@@ -2,47 +2,43 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-/**
- * @param {string} title
- * @param {Array<!Entry>} entries
- * @constructor
- * @struct
- */
-function MockActionModel(title, entries) {
-  this.title = title;
-  this.entries = entries;
-  this.actionsModel = null;
+class MockActionModel {
+  /**
+   * @param {string} title
+   * @param {Array<!Entry>} entries
+   */
+  constructor(title, entries) {
+    this.title = title;
+    this.entries = entries;
+    this.actionsModel = null;
+  }
+
+  getTitle() {
+    return this.title;
+  }
+
+  onCanExecute() {}
+
+  onExecute() {
+    cr.dispatchSimpleEvent('invalidated', this.actionsModel);
+  }
 }
 
-MockActionModel.prototype.getTitle = function() {
-  return this.title;
-};
+class MockActionsModel extends cr.EventTarget {
+  constructor(actions) {
+    super();
 
-MockActionModel.prototype.onCanExecute = () => {
-};
+    this.actions_ = actions;
+    Object.keys(actions).forEach(function(key) {
+      actions[key].actionsModel = this;
+    });
+  }
 
-MockActionModel.prototype.onExecute = function() {
-  cr.dispatchSimpleEvent('invalidated', this.actionsModel);
-};
+  initialize() {
+    return Promise.resolve();
+  }
 
-/**
- * @constructor
- */
-function MockActionsModel(actions) {
-  this.actions_ = actions;
-  Object.keys(actions).forEach(function(key) {
-    actions[key].actionsModel = this;
-  });
+  getActions() {
+    return this.actions_;
+  }
 }
-
-MockActionsModel.prototype = {
-  __proto__: cr.EventTarget.prototype
-};
-
-MockActionsModel.prototype.initialize = () => {
-  return Promise.resolve();
-};
-
-MockActionsModel.prototype.getActions = function() {
-  return this.actions_;
-};

@@ -12,6 +12,7 @@
 #include "content/public/browser/web_contents.h"
 
 bool ShowPageInfoDialog(content::WebContents* web_contents,
+                        PageInfoClosingCallback closing_callback,
                         bubble_anchor_util::Anchor anchor) {
   if (!web_contents)
     return false;
@@ -27,11 +28,9 @@ bool ShowPageInfoDialog(content::WebContents* web_contents,
 
   SecurityStateTabHelper* helper =
       SecurityStateTabHelper::FromWebContents(web_contents);
-  security_state::SecurityInfo security_info;
-  helper->GetSecurityInfo(&security_info);
-
-  ShowPageInfoDialogImpl(browser, web_contents, entry->GetVirtualURL(),
-                         security_info, anchor);
+  ShowPageInfoDialogImpl(
+      browser, web_contents, entry->GetVirtualURL(), helper->GetSecurityLevel(),
+      *helper->GetVisibleSecurityState(), anchor, std::move(closing_callback));
 
   if (GetPageInfoDialogCreatedCallbackForTesting())
     std::move(GetPageInfoDialogCreatedCallbackForTesting()).Run();

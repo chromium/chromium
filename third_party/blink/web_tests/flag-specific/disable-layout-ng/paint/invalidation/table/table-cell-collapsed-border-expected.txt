@@ -1,0 +1,48 @@
+{
+  "layers": [
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF",
+      "paintInvalidations": [
+        {
+          "object": "LayoutTableRow TR",
+          "rect": [3, 264, 441, 110],
+          "reason": "style change"
+        },
+        {
+          "object": "LayoutTableRow TR",
+          "rect": [3, 166, 441, 108],
+          "reason": "style change"
+        },
+        {
+          "object": "LayoutTableRow TR",
+          "rect": [3, 364, 441, 105],
+          "reason": "style change"
+        },
+        {
+          "object": "LayoutTableRow TR",
+          "rect": [8, 64, 436, 108],
+          "reason": "style change"
+        },
+        {
+          "object": "LayoutTableCell TD id='t3'",
+          "rect": [225, 269, 112, 100],
+          "reason": "style change"
+        },
+        {
+          "object": "LayoutTableCell TD id='t1'",
+          "rect": [225, 69, 112, 100],
+          "reason": "style change"
+        },
+        {
+          "object": "LayoutTableCell TD id='t2'",
+          "rect": [8, 269, 110, 100],
+          "reason": "style change"
+        }
+      ]
+    }
+  ]
+}
+

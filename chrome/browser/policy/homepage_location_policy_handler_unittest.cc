@@ -19,11 +19,12 @@ namespace policy {
 
 namespace {
 
-constexpr char kHttpUrl[] = "http://example.com";
-constexpr char kHttpsUrl[] = "https://example.com";
+constexpr char kHttpUrl[] = "http://example.com/";
+constexpr char kHttpsUrl[] = "https://example.com/";
 constexpr char kFileUrl[] = "file:///wohnzimmertapete.html";
+constexpr char kUrlWithNoScheme[] = "example.com";
+constexpr char kFixedUrlWithNoScheme[] = "http://example.com/";
 constexpr char kInvalidSchemeUrl[] = "xss://crazy_hack.js";
-constexpr char kInvalidUrl[] = "example.com";
 constexpr char kJavascript[] =
     "(function()%7Bvar%20script%20%3D%20document.createElement(%22script%22)%"
     "3Bscript.type%3D%22text%2Fjavascript%22%3Bscript.src%3D%22https%3A%2F%"
@@ -64,9 +65,15 @@ TEST_F(HomepageLocationPolicyHandlerTest, StandardSchemesAreAccepted) {
   EXPECT_EQ(0U, errors_.size());
 }
 
-TEST_F(HomepageLocationPolicyHandlerTest, InvalidUrlIsRejected) {
-  EXPECT_FALSE(CheckPolicy(std::make_unique<base::Value>(kInvalidUrl)));
-  EXPECT_EQ(1U, errors_.size());
+TEST_F(HomepageLocationPolicyHandlerTest, kUrlWithMissingSchemeIsFixed) {
+  EXPECT_TRUE(CheckPolicy(std::make_unique<base::Value>(kUrlWithNoScheme)));
+  EXPECT_EQ(0U, errors_.size());
+
+  ApplyPolicies();
+  base::Value* value;
+  EXPECT_TRUE(prefs_.GetValue(prefs::kHomePage, &value));
+  ASSERT_TRUE(value->is_string());
+  EXPECT_EQ(value->GetString(), kFixedUrlWithNoScheme);
 }
 
 TEST_F(HomepageLocationPolicyHandlerTest, InvalidSchemeIsRejected) {

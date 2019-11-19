@@ -40,6 +40,11 @@ enum class ReadingListSelectionState {
 // to |self.commandHandler|.
 - (NSArray<UIBarButtonItem*>*)buttonItems;
 
+// Updates the title of the mark button based on the selection state. This
+// method isn't part of the update of the selection state to avoid updating it
+// too soon and messing with VoiceOver. See https://crbug.com/985744 .
+- (void)updateMarkButtonTitle;
+
 // Returns an empty ActionSheetCoordinator anchored to the mark button with no
 // message and no title.
 - (ActionSheetCoordinator*)markButtonConfirmationWithBaseViewController:

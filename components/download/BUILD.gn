@@ -14,7 +14,6 @@ group("unit_tests") {
       "//components/download/internal/common:unit_tests",
       "//components/download/public/common:unit_tests",
       "//components/download/public/task:unit_tests",
-      "//components/download/quarantine:unit_tests",
     ]
   }
 

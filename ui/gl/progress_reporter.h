@@ -17,6 +17,22 @@ class ProgressReporter {
   virtual void ReportProgress() = 0;
 };
 
+class ScopedProgressReporter {
+ public:
+  ScopedProgressReporter(ProgressReporter* progress_reporter)
+      : progress_reporter_(progress_reporter) {
+    if (progress_reporter_)
+      progress_reporter_->ReportProgress();
+  }
+  ~ScopedProgressReporter() {
+    if (progress_reporter_)
+      progress_reporter_->ReportProgress();
+  }
+
+ private:
+  ProgressReporter* progress_reporter_;
+};
+
 }  // namespace gl
 
 #endif  // UI_GL_PROGRESS_REPORTER_H_

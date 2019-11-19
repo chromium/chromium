@@ -1,8 +1,9 @@
 rootWebArea
-++staticText name='Test that elements respawn in the accessibility tree after a modal dialog closes.'
-++++inlineTextBox name='Test that elements respawn in the accessibility tree after a modal dialog closes.'
-++region
-++++popUpButton collapsed value='This should be in the tree.' haspopup=menu
-++++++menuListPopup invisible
-++++++++menuListOption name='This should be in the tree.' selected=true
-++colorWell value='#000000'
+++genericContainer ignored
+++++staticText name='Test that elements respawn in the accessibility tree after a modal dialog closes.'
+++++++inlineTextBox name='Test that elements respawn in the accessibility tree after a modal dialog closes.'
+++++section
+++++++popUpButton collapsed value='This should be in the tree.' haspopup=menu
+++++++++menuListPopup invisible
+++++++++++menuListOption name='This should be in the tree.' selected=true
+++++colorWell value='#000000'

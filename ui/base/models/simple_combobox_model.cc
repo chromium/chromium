@@ -4,12 +4,12 @@
 
 #include "ui/base/models/simple_combobox_model.h"
 
+#include <utility>
+
 namespace ui {
 
-SimpleComboboxModel::SimpleComboboxModel(
-    const std::vector<base::string16>& items)
-    : items_(items) {
-}
+SimpleComboboxModel::SimpleComboboxModel(std::vector<base::string16> items)
+    : items_(std::move(items)) {}
 
 SimpleComboboxModel::~SimpleComboboxModel() {
 }

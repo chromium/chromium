@@ -1,0 +1,62 @@
+<html>
+<head>
+<script>
+if (window.testRunner) {
+  testRunner.dumpAsText();
+  testRunner.waitUntilDone();
+  testRunner.setCanOpenWindows();
+}
+
+document.cookie = 'cookie=parent; SameSite=None; Secure';
+
+function log(msg) {
+  var line = document.createElement('div');
+  line.appendChild(document.createTextNode(msg));
+  document.getElementById('console').appendChild(line);
+}
+
+function doTest() {
+  var wnd0 = window.open('about:blank');
+  var wnd1 = window.open('');
+
+  log('--- Test begins ---\n');
+  log('* "about:blank"\n');
+  log('document.URL = ' + wnd0.document.URL + '\n');
+  log('document.baseURI = ' + wnd0.document.baseURI + '\n');
+  log('document.cookie = ' + wnd0.document.cookie + '\n');
+  log('* ""\n');
+  log('document.URL = ' + wnd1.document.URL + '\n');
+  log('document.baseURI = ' + wnd1.document.baseURI + '\n');
+  log('document.cookie = ' + wnd1.document.cookie + '\n');
+  log('--- After document.open() ---\n');
+  wnd0.document.open();
+  wnd1.document.open();
+  log('* "about:blank"\n');
+  log('document.URL = ' + wnd0.document.URL + '\n');
+  log('document.baseURI = ' + wnd0.document.baseURI + '\n');
+  log('document.cookie = ' + wnd0.document.cookie + '\n');
+  log('* ""\n');
+  log('document.URL = ' + wnd1.document.URL + '\n');
+  log('document.baseURI = ' + wnd1.document.baseURI + '\n');
+  log('document.cookie = ' + wnd1.document.cookie + '\n');
+  log('--- After document.close() ---\n');
+  wnd0.document.close();
+  wnd1.document.close();
+  log('* "about:blank"\n');
+  log('document.URL = ' + wnd0.document.URL + '\n');
+  log('document.baseURI = ' + wnd0.document.baseURI + '\n');
+  log('document.cookie = ' + wnd0.document.cookie + '\n');
+  log('* ""\n');
+  log('document.URL = ' + wnd1.document.URL + '\n');
+  log('document.baseURI = ' + wnd1.document.baseURI + '\n');
+  log('document.cookie = ' + wnd1.document.cookie + '\n');
+  log('--- Test ends ---\n');
+
+  testRunner.notifyDone();
+}
+</script>
+</head>
+<body onload="doTest()">
+<div id="console"></div>
+</body>
+</html>

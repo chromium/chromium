@@ -1,6 +1,6 @@
-<html> 
+<html>
 <head>
-<title>Test animation shorthand property</title> 
+<title>Test animation shorthand property</title>
 <style type="text/css">
 @keyframes circle {
     from { transform:rotate(0deg); }
@@ -28,10 +28,10 @@ div > div {
     animation-name: inner-circle;
 }
 </style>
+  <script src="../resources/testharness.js"></script>
+  <script src="../resources/testharnessreport.js"></script>
   <script type="text/javascript" charset="utf-8">
-    if (window.testRunner)
-        testRunner.dumpAsText();
-  
+    var test = async_test("Test animation shorthand property");
     const kProperties = [
       "animationName",
       "animationDuration",
@@ -42,31 +42,24 @@ div > div {
       "animationFillMode"
     ];
     const kExpectedResult =  { id: 'a',  values: [ "inner-circle", "5s", "linear", "0s", "1", "normal", "none" ] };
-    
+
     function start()
     {
       var resultsString = " ";
       var el = document.getElementById(kExpectedResult.id);
       var elStyle = window.getComputedStyle(el);
-        
+
       for (var i=0; i < kProperties.length; i++) {
           var computedValue = elStyle[kProperties[i]];
           var expectedValue = kExpectedResult.values[i];
-          if (computedValue == expectedValue)
-            resultsString += "Testing " + kProperties[i] + " on " + kExpectedResult.id + ": PASS" + "<br>";
-          else
-            resultsString += "Testing " + kProperties[i] + " on " + kExpectedResult.id + " expected <code>" + expectedValue + "</code> got <code>" + computedValue + "</code>: FAIL" + "<br>";
+          assert_equals(computedValue, expectedValue, "Testing " + kProperties[i] + " on " + kExpectedResult.id + " expected " + expectedValue);
       }
-
-      var results = document.getElementById('result');
-      results.innerHTML = resultsString;
     }
-    
-    window.addEventListener('load', start, false);
+
+    window.addEventListener('load', test.step_func_done(start), false);
   </script>
-</head> 
+</head>
 <body>
 <div><div id="a"></div></div>
-<div id="result"/>
 </body>
 </html>

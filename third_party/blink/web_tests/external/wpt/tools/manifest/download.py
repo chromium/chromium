@@ -1,6 +1,7 @@
 from __future__ import absolute_import
 
 import argparse
+import bz2
 import gzip
 import json
 import io
@@ -9,9 +10,22 @@ from datetime import datetime, timedelta
 
 from six.moves.urllib.request import urlopen
 
-from .vcs import Git
+try:
+    import zstandard
+except ImportError:
+    zstandard = None
+
+from .utils import git
 
 from . import log
+
+MYPY = False
+if MYPY:
+    # MYPY is set to True when run under Mypy.
+    from typing import Any
+    from typing import Callable
+    from typing import List
+    from typing import Optional
 
 here = os.path.dirname(__file__)
 
@@ -20,10 +34,12 @@ logger = log.get_logger()
 
 
 def abs_path(path):
+    # type: (str) -> str
     return os.path.abspath(os.path.expanduser(path))
 
 
 def should_download(manifest_path, rebuild_time=timedelta(days=5)):
+    # type: (str, timedelta) -> bool
     if not os.path.exists(manifest_path):
         return True
     mtime = datetime.fromtimestamp(os.path.getmtime(manifest_path))
@@ -34,16 +50,36 @@ def should_download(manifest_path, rebuild_time=timedelta(days=5)):
 
 
 def merge_pr_tags(repo_root, max_count=50):
-    git = Git.get_func(repo_root)
-    tags = []
-    for line in git("log", "--format=%D", "--max-count=%s" % max_count).split("\n"):
+    # type: (str, int) -> List[str]
+    gitfunc = git(repo_root)
+    tags = []  # type: List[str]
+    if gitfunc is None:
+        return tags
+    for line in gitfunc("log", "--format=%D", "--max-count=%s" % max_count).split("\n"):
         for ref in line.split(", "):
             if ref.startswith("tag: merge_pr_"):
                 tags.append(ref[5:])
     return tags
 
 
+def score_name(name):
+    # type: (str) -> Optional[int]
+    """Score how much we like each filename, lower wins, None rejects"""
+
+    # Accept both ways of naming the manifest asset, even though
+    # there's no longer a reason to include the commit sha.
+    if name.startswith("MANIFEST-") or name.startswith("MANIFEST."):
+        if zstandard and name.endswith("json.zst"):
+            return 1
+        if name.endswith(".json.bz2"):
+            return 2
+        if name.endswith(".json.gz"):
+            return 3
+    return None
+
+
 def github_url(tags):
+    # type: (List[str]) -> Optional[List[str]]
     for tag in tags:
         url = "https://api.github.com/repos/web-platform-tests/wpt/releases/tags/%s" % tag
         try:
@@ -62,50 +98,79 @@ def github_url(tags):
             logger.warning("Response was not valid JSON")
             return None
 
+        candidates = []
         for item in release["assets"]:
-            # Accept both ways of naming the manfest asset, even though
-            # there's no longer a reason to include the commit sha.
-            if item["name"].startswith("MANIFEST-") and item["name"].endswith(".json.gz"):
-                return item["browser_download_url"]
-            elif item["name"] == "MANIFEST.json.gz":
-                return item["browser_download_url"]
+            score = score_name(item["name"])
+            if score is not None:
+                candidates.append((score, item["browser_download_url"]))
+
+        return [item[1] for item in sorted(candidates)]
 
     return None
 
 
-def download_manifest(manifest_path, tags_func, url_func, force=False):
+def download_manifest(
+        manifest_path,  # type: str
+        tags_func,  # type: Callable[[], List[str]]
+        url_func,  # type: Callable[[List[str]], Optional[List[str]]]
+        force=False  # type: bool
+):
+    # type: (...) -> bool
     if not force and not should_download(manifest_path):
         return False
 
     tags = tags_func()
 
-    url = url_func(tags)
-    if not url:
+    urls = url_func(tags)
+    if not urls:
         logger.warning("No generated manifest found")
         return False
 
-    logger.info("Downloading manifest from %s" % url)
-    try:
-        resp = urlopen(url)
-    except Exception:
-        logger.warning("Downloading pregenerated manifest failed")
+    for url in urls:
+        logger.info("Downloading manifest from %s" % url)
+        try:
+            resp = urlopen(url)
+        except Exception:
+            logger.warning("Downloading pregenerated manifest failed")
+            continue
+
+        if resp.code != 200:
+            logger.warning("Downloading pregenerated manifest failed; got HTTP status %d" %
+                           resp.code)
+            continue
+
+        if url.endswith(".zst"):
+            if not zstandard:
+                continue
+            try:
+                dctx = zstandard.ZstdDecompressor()
+                decompressed = dctx.decompress(resp.read())
+            except IOError:
+                logger.warning("Failed to decompress downloaded file")
+                continue
+        elif url.endswith(".bz2"):
+            try:
+                decompressed = bz2.decompress(resp.read())
+            except IOError:
+                logger.warning("Failed to decompress downloaded file")
+                continue
+        elif url.endswith(".gz"):
+            fileobj = io.BytesIO(resp.read())
+            try:
+                with gzip.GzipFile(fileobj=fileobj) as gzf:
+                    decompressed = gzf.read()  # type: ignore
+            except IOError:
+                logger.warning("Failed to decompress downloaded file")
+                continue
+        else:
+            logger.warning("Unknown file extension: %s" % url)
+            continue
+        break
+    else:
         return False
 
-    if resp.code != 200:
-        logger.warning("Downloading pregenerated manifest failed; got HTTP status %d" %
-                       resp.code)
-        return False
-
-    gzf = gzip.GzipFile(fileobj=io.BytesIO(resp.read()))
-
     try:
-        decompressed = gzf.read()
-    except IOError:
-        logger.warning("Failed to decompress downloaded file")
-        return False
-
-    try:
-        with open(manifest_path, "w") as f:
+        with open(manifest_path, "wb") as f:
             f.write(decompressed)
     except Exception:
         logger.warning("Failed to write manifest")
@@ -115,6 +180,7 @@ def download_manifest(manifest_path, tags_func, url_func, force=False):
 
 
 def create_parser():
+    # type: () -> argparse.ArgumentParser
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "-p", "--path", type=abs_path, help="Path to manifest file.")
@@ -127,11 +193,13 @@ def create_parser():
 
 
 def download_from_github(path, tests_root, force=False):
+    # type: (str, str, bool) -> bool
     return download_manifest(path, lambda: merge_pr_tags(tests_root), github_url,
                              force=force)
 
 
 def run(**kwargs):
+    # type: (**Any) -> int
     if kwargs["path"] is None:
         path = os.path.join(kwargs["tests_root"], "MANIFEST.json")
     else:

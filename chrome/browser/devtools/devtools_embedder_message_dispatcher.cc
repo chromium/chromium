@@ -21,6 +21,10 @@ bool GetValue(const base::Value& value, int* result) {
   return value.GetAsInteger(result);
 }
 
+bool GetValue(const base::Value& value, double* result) {
+  return value.GetAsDouble(result);
+}
+
 bool GetValue(const base::Value& value, bool* result) {
   return value.GetAsBoolean(result);
 }
@@ -108,7 +112,7 @@ bool ParseAndHandleWithCallback(
 
 /**
  * Dispatcher for messages sent from the frontend running in an
- * isolated renderer (chrome-devtools:// or chrome://inspect) to the embedder
+ * isolated renderer (devtools:// or chrome://inspect) to the embedder
  * in the browser.
  *
  * The messages are sent via InspectorFrontendHost.sendMessageToEmbedder or
@@ -206,6 +210,10 @@ DevToolsEmbedderMessageDispatcher::CreateForDevToolsFrontend(
                      delegate);
   d->RegisterHandler("recordEnumeratedHistogram",
                      &Delegate::RecordEnumeratedHistogram, delegate);
+  d->RegisterHandler("recordPerformanceHistogram",
+                     &Delegate::RecordPerformanceHistogram, delegate);
+  d->RegisterHandler("recordUserMetricsAction",
+                     &Delegate::RecordUserMetricsAction, delegate);
   d->RegisterHandlerWithCallback("sendJsonRequest",
                                  &Delegate::SendJsonRequest, delegate);
   d->RegisterHandlerWithCallback("getPreferences",

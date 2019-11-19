@@ -9,8 +9,8 @@
 
 #include "base/macros.h"
 #include "base/strings/string16.h"
-#include "components/arc/common/ime.mojom.h"
 #include "components/arc/ime/arc_ime_bridge.h"
+#include "components/arc/mojom/ime.mojom.h"
 #include "ui/base/ime/text_input_type.h"
 #include "ui/gfx/geometry/rect.h"
 

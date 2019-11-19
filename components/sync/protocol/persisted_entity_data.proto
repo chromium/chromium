@@ -4,6 +4,9 @@
 
 syntax = "proto2";
 
+option java_multiple_files = true;
+option java_package = "org.chromium.components.sync.protocol";
+
 option optimize_for = LITE_RUNTIME;
 
 package sync_pb;
@@ -18,6 +21,6 @@ import "sync.proto";
 // using the same field numbers.
 message PersistedEntityData {
   // See corresponding fields in SyncEntity for details.
-  optional string non_unique_name = 8;
+  optional string name = 8;
   optional EntitySpecifics specifics = 21;
 }

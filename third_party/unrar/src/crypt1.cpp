@@ -1,5 +1,3 @@
-namespace third_party_unrar {
-
 extern uint CRCTab[256];
 
 void CryptData::SetKey13(const char *Password)
@@ -79,5 +77,3 @@ void CryptData::Crypt15(byte *Data,size_t Count)
     Data++;
   }
 }
-
-}  // namespace third_party_unrar

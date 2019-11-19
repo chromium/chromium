@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<style>
+    .class {
+        -internal-visited-color: red;
+    }
+    .visited_color:visited {
+        -internal-visited-color: red;
+    }
+    .effective_zoom {
+        -internal-effective-zoom: 4;
+    }
+</style>
+<div>
+    <a class="color">Should not be red</a><br>
+    <a href="" class="color">Should not be red</a><br>
+    <a href="" class="visited_color">Should not be red</a><br>
+    <span class="effective_zoom">Should be default font-size</span>
+</div>
+<script>
+    let div = document.querySelector('div');
+
+    // CSSOM:
+    let cssom_div = div.cloneNode(true);
+    for (let e of cssom_div.querySelectorAll('.color'))
+        e.style.setProperty('-internal-visited-color', 'red');
+    for (let e of cssom_div.querySelectorAll('.visited_color'))
+        e.style.setProperty('-internal-visited-color', 'red');
+    for (let e of cssom_div.querySelectorAll('.effective_zoom'))
+        e.style.setProperty('-internal-effective-zoom', '4');
+
+    // CSS Typed OM:
+    let css_typed_om_div = div.cloneNode(true);
+    let set_silently = (elm, name, value) => {
+        try {
+            elm.attributeStyleMap.set(name, value);
+        } catch (e) {
+        }
+    };
+    for (let e of css_typed_om_div.querySelectorAll('.color'))
+        set_silently(e, '-internal-visited-color', 'red');
+    for (let e of css_typed_om_div.querySelectorAll('.visited_color'))
+        set_silently(e, '-internal-visited-color', 'red');
+    for (let e of css_typed_om_div.querySelectorAll('.effective_zoom'))
+        set_silently(e, '-internal-effective-zoom', '4');
+
+    document.body.append(cssom_div, css_typed_om_div);
+</script>

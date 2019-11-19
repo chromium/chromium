@@ -41,7 +41,8 @@ UI_BASE_EXPORT std::string GetTemplatesHtml(
 
 // Assigns the given json data into |loadTimeData|, without a <script> tag.
 UI_BASE_EXPORT void AppendJsonJS(const base::DictionaryValue* json,
-                                 std::string* output);
+                                 std::string* output,
+                                 bool from_js_module);
 
 }  // namespace webui
 

@@ -12,19 +12,19 @@
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service.h"
 #include "components/consent_auditor/consent_auditor.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/web_ui_message_handler.h"
-#include "services/identity/public/cpp/identity_manager.h"
 
 namespace base {
 class ListValue;
 }
 
-namespace identity {
+namespace signin {
 class IdentityManager;
 }
 
 class SyncConfirmationHandler : public content::WebUIMessageHandler,
-                                public identity::IdentityManager::Observer,
+                                public signin::IdentityManager::Observer,
                                 public BrowserListObserver {
  public:
   // Creates a SyncConfirmationHandler for the |browser|. All strings in the
@@ -32,14 +32,13 @@ class SyncConfirmationHandler : public content::WebUIMessageHandler,
   // mapped to their GRD IDs.
   explicit SyncConfirmationHandler(
       Browser* browser,
-      const std::unordered_map<std::string, int>& string_to_grd_id_map,
-      consent_auditor::Feature consent_feature);
+      const std::unordered_map<std::string, int>& string_to_grd_id_map);
   ~SyncConfirmationHandler() override;
 
   // content::WebUIMessageHandler:
   void RegisterMessages() override;
 
-  // identity::IdentityManager::Observer:
+  // signin::IdentityManager::Observer:
   void OnExtendedAccountInfoUpdated(const AccountInfo& info) override;
 
   // BrowserListObserver:
@@ -104,10 +103,7 @@ class SyncConfirmationHandler : public content::WebUIMessageHandler,
   // and their respective GRD IDs.
   std::unordered_map<std::string, int> string_to_grd_id_map_;
 
-  // Contains the features to use when the user consent decision is recorded.
-  consent_auditor::Feature consent_feature_;
-
-  identity::IdentityManager* identity_manager_;
+  signin::IdentityManager* identity_manager_;
 
   DISALLOW_COPY_AND_ASSIGN(SyncConfirmationHandler);
 };

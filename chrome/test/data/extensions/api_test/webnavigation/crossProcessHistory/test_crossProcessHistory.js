@@ -72,7 +72,7 @@ onload = async function() {
                      processId: 1,
                      tabId: 0,
                      timeStamp: 0,
-                     transitionQualifiers: [],
+                     transitionQualifiers: ["client_redirect"],
                      transitionType: "link",
                      url: URL_TEST + "2" }},
         { label: "b-onDOMContentLoaded",
@@ -135,7 +135,7 @@ onload = async function() {
                      processId: 0,
                      tabId: 0,
                      timeStamp: 0,
-                     url: getURL('h.html') }},
+                     url: getURL('empty.html') }},
         { label: "a-onHistoryStateUpdated",
           event: "onHistoryStateUpdated",
           details: { frameId: 0,
@@ -181,8 +181,8 @@ onload = async function() {
                      timeStamp: 0,
                      url: URL_TEST + "5" }}],
         [ navigationOrder("a-"), navigationOrder("b-"),
-          [ "a-onCompleted", "b-onBeforeNavigate",
-            "a-onHistoryStateUpdated"] ]);
+          [ "b-onBeforeNavigate", "a-onHistoryStateUpdated",
+            "a-onCompleted"] ]);
 
       chrome.tabs.update(tab.id, {url: getURL('h.html?' + port)});
     },
@@ -250,7 +250,7 @@ onload = async function() {
                      processId: 1,
                      tabId: 0,
                      timeStamp: 0,
-                     transitionQualifiers: [],
+                     transitionQualifiers: ["client_redirect"],
                      transitionType: "link",
                      url: URL_TEST + "6" }},
         { label: "b-onDOMContentLoaded",

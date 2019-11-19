@@ -1,0 +1,10 @@
+{
+  // Extension ID: knldjmfmopnpolahpmmgbagdohdnhkik
+  "key": "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDcBHwzDvyBQ6bDppkIs9MP4ksKqCMyXQ/A52JivHZKh4YO/9vJsT3oaYhSpDCE9RPocOEQvwsHsFReW2nUEc6OLLyoCFFxIb7KkLGsmfakkut/fFdNJYh0xOTbSN8YvLWcqph09XAY2Y/f0AL7vfO1cuCqtkMt8hFrBGWxDdf9CQIDAQAB",
+  "version": "1.0.0.0",
+  "manifest_version": 2,
+  "name": "Service worker extension: native messaging Port connection test",
+  "description": "Test the basic functionality of passing native messages.",
+  "background": {"service_worker": "service_worker_background.js"},
+  "permissions": ["nativeMessaging"]
+}

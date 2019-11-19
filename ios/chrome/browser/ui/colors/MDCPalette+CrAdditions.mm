@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/colors/MDCPalette+CrAdditions.h"
 
-#include "ios/web/public/web_thread.h"
+#include "ios/web/public/thread/web_thread.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -17,6 +17,7 @@ static MDCPalette* g_bluePalette = nil;
 static MDCPalette* g_redPalette = nil;
 static MDCPalette* g_greenPalette = nil;
 static MDCPalette* g_yellowPalette = nil;
+static MDCPalette* g_greyPalette = nil;
 }
 
 + (MDCPalette*)cr_bluePalette {
@@ -51,6 +52,14 @@ static MDCPalette* g_yellowPalette = nil;
   return g_yellowPalette;
 }
 
++ (MDCPalette*)cr_greyPalette {
+  DCHECK(!web::WebThread::IsThreadInitialized(web::WebThread::UI) ||
+         web::WebThread::CurrentlyOn(web::WebThread::UI));
+  if (!g_greyPalette)
+    return [MDCPalette greyPalette];
+  return g_greyPalette;
+}
+
 + (void)cr_setBluePalette:(MDCPalette*)palette {
   DCHECK(!web::WebThread::IsThreadInitialized(web::WebThread::UI) ||
          web::WebThread::CurrentlyOn(web::WebThread::UI));
@@ -73,6 +82,12 @@ static MDCPalette* g_yellowPalette = nil;
   DCHECK(!web::WebThread::IsThreadInitialized(web::WebThread::UI) ||
          web::WebThread::CurrentlyOn(web::WebThread::UI));
   g_yellowPalette = palette;
+}
+
++ (void)cr_setGreyPalette:(MDCPalette*)palette {
+  DCHECK(!web::WebThread::IsThreadInitialized(web::WebThread::UI) ||
+         web::WebThread::CurrentlyOn(web::WebThread::UI));
+  g_greyPalette = palette;
 }
 
 @end

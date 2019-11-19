@@ -13,7 +13,7 @@ class CSSTransformInterpolationType : public CSSInterpolationType {
  public:
   CSSTransformInterpolationType(PropertyHandle property)
       : CSSInterpolationType(property) {
-    DCHECK_EQ(CssProperty().PropertyID(), CSSPropertyTransform);
+    DCHECK_EQ(CssProperty().PropertyID(), CSSPropertyID::kTransform);
   }
 
   InterpolationValue MaybeConvertStandardPropertyUnderlyingValue(
@@ -39,7 +39,11 @@ class CSSTransformInterpolationType : public CSSInterpolationType {
   InterpolationValue MaybeConvertValue(const CSSValue&,
                                        const StyleResolverState*,
                                        ConversionCheckers&) const final;
-  void AdditiveKeyframeHook(InterpolationValue&) const final;
+  InterpolationValue PreInterpolationCompositeIfNeeded(
+      InterpolationValue value,
+      const InterpolationValue& underlying,
+      EffectModel::CompositeOperation,
+      ConversionCheckers&) const final;
 };
 
 }  // namespace blink

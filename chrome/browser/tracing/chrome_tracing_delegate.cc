@@ -10,6 +10,7 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -18,11 +19,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/tracing/crash_service_uploader.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_otr_state.h"
 #include "chrome/common/pref_names.h"
-#include "chrome/common/trace_event_args_whitelist.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -31,16 +29,39 @@
 #include "components/version_info/version_info.h"
 #include "content/public/browser/background_tracing_config.h"
 #include "content/public/browser/browser_thread.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 
 #if defined(OS_ANDROID)
 #include "chrome/browser/crash_upload_list/crash_upload_list_android.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
+#else
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_list.h"
 #endif
 
 namespace {
 
 const int kMinDaysUntilNextUpload = 7;
+
+// These values are logged to UMA. Entries should not be renumbered and numeric
+// values should never be reused. Please keep in sync with
+// "TracingFinalizationDisallowedReason" in
+// src/tools/metrics/histograms/enums.xml.
+enum class TracingFinalizationDisallowedReason {
+  kIncognitoLaunched = 0,
+  kProfileNotLoaded = 1,
+  kCrashMetricsNotLoaded = 2,
+  kLastSessionCrashed = 3,
+  kMetricsReportingDisabled = 4,
+  kTraceUploadedRecently = 5,
+  kMaxValue = kTraceUploadedRecently
+};
+
+void RecordDisallowedMetric(TracingFinalizationDisallowedReason reason) {
+  UMA_HISTOGRAM_ENUMERATION("Tracing.Background.FinalizationDisallowedReason",
+                            reason);
+}
 
 }  // namespace
 
@@ -70,7 +91,7 @@ ChromeTracingDelegate::~ChromeTracingDelegate() {
 void ChromeTracingDelegate::OnTabModelAdded() {
   for (TabModelList::const_iterator i = TabModelList::begin();
        i != TabModelList::end(); i++) {
-    if ((*i)->IsOffTheRecord())
+    if ((*i)->GetProfile()->IsOffTheRecord())
       incognito_launched_ = true;
   }
 }
@@ -117,30 +138,49 @@ bool ProfileAllowsScenario(const content::BackgroundTracingConfig& config,
   // If the profile hasn't loaded or been created yet, we allow the scenario
   // to start up, but not be finalized.
   Profile* profile = GetProfile();
-  if (!profile)
+  if (!profile) {
+    if (profile_permission == PROFILE_REQUIRED) {
+      RecordDisallowedMetric(
+          TracingFinalizationDisallowedReason::kProfileNotLoaded);
+    }
     return profile_permission != PROFILE_REQUIRED;
+  }
 
 // Safeguard, in case background tracing is responsible for a crash on
 // startup.
 #if !defined(OS_ANDROID)
-  if (profile->GetLastSessionExitType() == Profile::EXIT_CRASHED)
+  if (profile->GetLastSessionExitType() == Profile::EXIT_CRASHED) {
+    RecordDisallowedMetric(
+        TracingFinalizationDisallowedReason::kLastSessionCrashed);
     return false;
+  }
 #else
   // If the metrics haven't loaded, we allow the scenario to start up, but not
   // be finalized.
-  if (!CrashUploadListAndroid::BrowserCrashMetricsInitialized())
+  if (!CrashUploadListAndroid::BrowserCrashMetricsInitialized()) {
+    if (profile_permission == PROFILE_REQUIRED) {
+      RecordDisallowedMetric(
+          TracingFinalizationDisallowedReason::kCrashMetricsNotLoaded);
+    }
     return profile_permission != PROFILE_REQUIRED;
+  }
 
-  if (CrashUploadListAndroid::DidBrowserCrashRecently())
+  if (CrashUploadListAndroid::DidBrowserCrashRecently()) {
+    RecordDisallowedMetric(
+        TracingFinalizationDisallowedReason::kLastSessionCrashed);
     return false;
+  }
 #endif
 
   PrefService* local_state = g_browser_process->local_state();
   DCHECK(local_state);
 
 #if !defined(OS_CHROMEOS) && defined(OFFICIAL_BUILD)
-  if (!local_state->GetBoolean(metrics::prefs::kMetricsReportingEnabled))
+  if (!local_state->GetBoolean(metrics::prefs::kMetricsReportingEnabled)) {
+    RecordDisallowedMetric(
+        TracingFinalizationDisallowedReason::kMetricsReportingDisabled);
     return false;
+  }
 #endif // !OS_CHROMEOS && OFFICIAL_BUILD
 
   if (config.tracing_mode() == content::BackgroundTracingConfig::PREEMPTIVE) {
@@ -150,6 +190,8 @@ bool ProfileAllowsScenario(const content::BackgroundTracingConfig& config,
       base::Time computed_next_allowed_time =
           last_upload_time + base::TimeDelta::FromDays(kMinDaysUntilNextUpload);
       if (computed_next_allowed_time > base::Time::Now()) {
+        RecordDisallowedMetric(
+            TracingFinalizationDisallowedReason::kTraceUploadedRecently);
         return false;
       }
     }
@@ -177,6 +219,8 @@ bool ChromeTracingDelegate::IsAllowedToEndBackgroundScenario(
     bool requires_anonymized_data) {
   if (requires_anonymized_data &&
       (incognito_launched_ || chrome::IsIncognitoSessionActive())) {
+    RecordDisallowedMetric(
+        TracingFinalizationDisallowedReason::kIncognitoLaunched);
     return false;
   }
 
@@ -215,9 +259,4 @@ ChromeTracingDelegate::GenerateMetadataDict() {
   metadata_dict->Set("field-trials", std::move(variations_list));
   metadata_dict->SetString("revision", version_info::GetLastChange());
   return metadata_dict;
-}
-
-content::MetadataFilterPredicate
-ChromeTracingDelegate::GetMetadataFilterPredicate() {
-  return base::Bind(&IsMetadataWhitelisted);
 }

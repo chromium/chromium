@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.notifications;
 
 import static org.chromium.chrome.browser.util.ViewUtils.dpToPx;
 
-import android.app.Notification;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -14,16 +13,15 @@ import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
-import android.os.StrictMode;
-import android.os.SystemClock;
 import android.text.format.DateFormat;
 import android.util.DisplayMetrics;
 import android.view.View;
 import android.widget.RemoteViews;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.ApiCompatibilityUtils;
-import org.chromium.base.VisibleForTesting;
-import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.StrictModeContext;
 import org.chromium.chrome.R;
 import org.chromium.ui.base.LocalizationUtils;
 
@@ -84,7 +82,7 @@ public class CustomNotificationBuilder extends NotificationBuilderBase {
     }
 
     @Override
-    public Notification build() {
+    public ChromeNotification build(NotificationMetadata metadata) {
         // A note about RemoteViews and updating notifications. When a notification is passed to the
         // {@code NotificationManager} with the same tag and id as a previous notification, an
         // in-place update will be performed. In that case, the actions of all new
@@ -102,17 +100,10 @@ public class CustomNotificationBuilder extends NotificationBuilderBase {
         bigView.setInt(R.id.body, "setMaxLines", calculateMaxBodyLines(fontScale));
         int scaledPadding =
                 calculateScaledPadding(fontScale, mContext.getResources().getDisplayMetrics());
-        String formattedTime = "";
-
-        // Temporarily allowing disk access. TODO: Fix. See http://crbug.com/577185
-        StrictMode.ThreadPolicy oldPolicy = StrictMode.allowThreadDiskWrites();
-        try {
-            long time = SystemClock.elapsedRealtime();
+        String formattedTime;
+        // TODO(crbug.com/577185): Temporarily allowing disk access until more permanent fix is in.
+        try (StrictModeContext ignored = StrictModeContext.allowDiskWrites()) {
             formattedTime = DateFormat.getTimeFormat(mContext).format(new Date());
-            RecordHistogram.recordTimesHistogram("Android.StrictMode.NotificationUIBuildTime",
-                    SystemClock.elapsedRealtime() - time);
-        } finally {
-            StrictMode.setThreadPolicy(oldPolicy);
         }
 
         for (RemoteViews view : new RemoteViews[] {compactView, bigView}) {
@@ -140,8 +131,8 @@ public class CustomNotificationBuilder extends NotificationBuilderBase {
         // API level of methods you call on the builder.
         // TODO(crbug.com/697104) We should probably use a Compat builder.
         ChromeNotificationBuilder builder =
-                NotificationBuilderFactory.createChromeNotificationBuilder(
-                        false /* preferCompat */, mChannelId, mRemotePackageForBuilderContext);
+                NotificationBuilderFactory.createChromeNotificationBuilder(false /* preferCompat */,
+                        mChannelId, mRemotePackageForBuilderContext, metadata);
         builder.setTicker(mTickerText);
         builder.setContentIntent(mContentIntent);
         builder.setDeleteIntent(mDeleteIntent);
@@ -260,7 +251,7 @@ public class CustomNotificationBuilder extends NotificationBuilderBase {
 
         Drawable inputDrawable = new BitmapDrawable(resources, bitmap);
         Drawable outputDrawable = ApiCompatibilityUtils.getUserBadgedDrawableForDensity(
-                mContext, inputDrawable, null /* badgeLocation */, metrics.densityDpi);
+                inputDrawable, null /* badgeLocation */, metrics.densityDpi);
 
         // The input bitmap is immutable, so the output drawable will be a different instance from
         // the input drawable if the work profile badge was applied.

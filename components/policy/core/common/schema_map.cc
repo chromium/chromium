@@ -61,16 +61,14 @@ void SchemaMap::FilterBundle(PolicyBundle* bundle) const {
 
     for (auto it_map = policy_map->begin(); it_map != policy_map->end();) {
       const std::string& policy_name = it_map->first;
-      const base::Value* policy_value = it_map->second.value.get();
+      base::Value* policy_value = it_map->second.value.get();
       Schema policy_schema = schema->GetProperty(policy_name);
       ++it_map;
       std::string error_path;
       std::string error;
       if (!policy_value ||
-          !policy_schema.Validate(*policy_value,
-                                  SCHEMA_STRICT,
-                                  &error_path,
-                                  &error)) {
+          !policy_schema.Normalize(policy_value, SCHEMA_ALLOW_UNKNOWN,
+                                   &error_path, &error, nullptr)) {
         LOG(ERROR) << "Dropping policy " << policy_name << " of component "
                    << ns.component_id << " due to error at "
                    << (error_path.empty() ? "root" : error_path) << ": "

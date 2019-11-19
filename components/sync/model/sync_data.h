@@ -26,6 +26,7 @@ class SyncEntity;
 
 namespace syncer {
 
+class ClientTagHash;
 class SyncDataLocal;
 class SyncDataRemote;
 
@@ -149,7 +150,7 @@ class SyncDataRemote : public SyncData {
 
   // Returns the tag hash value. May not always be present, in which case an
   // empty string will be returned.
-  const std::string& GetClientTagHash() const;
+  ClientTagHash GetClientTagHash() const;
 
   // Deprecated: might not be populated in SyncableService API.
   // TODO(crbug.com/870624): Remove when directory is removed.

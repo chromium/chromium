@@ -15,7 +15,6 @@ Loaded modules:
     mobile_throttling
     persistence
     platform
-    product_registry
     protocol
     sdk
     services

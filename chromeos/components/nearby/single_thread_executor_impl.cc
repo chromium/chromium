@@ -9,8 +9,8 @@ namespace chromeos {
 namespace nearby {
 
 SingleThreadExecutorImpl::SingleThreadExecutorImpl()
-    : SubmittableExecutorBase(
-          base::CreateSequencedTaskRunnerWithTraits(base::MayBlock())) {}
+    : SubmittableExecutorBase(base::CreateSequencedTaskRunner(
+          {base::ThreadPool(), base::MayBlock()})) {}
 
 SingleThreadExecutorImpl::~SingleThreadExecutorImpl() = default;
 

@@ -48,7 +48,7 @@ class GlDesktop : public Drawable {
   int max_texture_size_ = 0;
   base::WeakPtr<Canvas> canvas_ = nullptr;
   base::ThreadChecker thread_checker_;
-  base::WeakPtrFactory<Drawable> weak_factory_;
+  base::WeakPtrFactory<Drawable> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(GlDesktop);
 };

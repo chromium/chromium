@@ -11,9 +11,9 @@ namespace blink {
 
 void ConnectToQuotaDispatcherHost(
     ExecutionContext* execution_context,
-    mojom::blink::QuotaDispatcherHostRequest request) {
+    mojo::PendingReceiver<mojom::blink::QuotaDispatcherHost> receiver) {
   if (auto* interface_provider = execution_context->GetInterfaceProvider())
-    interface_provider->GetInterface(std::move(request));
+    interface_provider->GetInterface(std::move(receiver));
 }
 
 }  // namespace blink

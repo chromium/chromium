@@ -14,6 +14,7 @@ cast_source_set("media_backend") {
   ]
 
   deps = [
+    ":volume_control",
     "//base",
     "//chromecast/base",
     "//chromecast/media/cma/backend:audio_codec_support",
@@ -26,9 +27,20 @@ cast_source_set("media_backend") {
   ]
 }
 
-cast_source_set("cma_backend_support") {
+cast_source_set("volume_control") {
   sources = [
     "fuchsia_volume_control.cc",
+    "fuchsia_volume_control.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chromecast/media/cma/backend:public",
+  ]
+}
+
+cast_source_set("mixer_output") {
+  sources = [
     "mixer_output_stream_fuchsia.cc",
     "mixer_output_stream_fuchsia.h",
   ]
@@ -36,11 +48,10 @@ cast_source_set("cma_backend_support") {
   deps = [
     "//base",
     "//chromecast/base",
-    "//chromecast/media/cma/backend:public",
-    "//chromecast/public",
     "//chromecast/public/media",
     "//media",
     "//third_party/fuchsia-sdk/sdk:media",
+    "//third_party/fuchsia-sdk/sdk:sys_cpp",
   ]
 }
 
@@ -53,8 +64,9 @@ cast_source_set("unit_tests") {
   configs += [ "//chromecast/public:public_config" ]
 
   deps = [
-    ":cma_backend_support",
+    ":mixer_output",
     "//base",
+    "//base/test:test_support",
     "//testing/gtest",
     "//third_party/fuchsia-sdk/sdk:media",
   ]

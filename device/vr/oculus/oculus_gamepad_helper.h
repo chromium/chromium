@@ -5,14 +5,16 @@
 #ifndef DEVICE_VR_OCULUS_OCULUS_GAMEPAD_HELPER_H_
 #define DEVICE_VR_OCULUS_OCULUS_GAMEPAD_HELPER_H_
 
-#include "device/vr/public/mojom/isolated_xr_service.mojom.h"
+#include "base/optional.h"
+#include "device/gamepad/public/cpp/gamepads.h"
 #include "third_party/libovr/src/Include/OVR_CAPI.h"
 
 namespace device {
 
 class OculusGamepadHelper {
  public:
-  static mojom::XRGamepadDataPtr GetGamepadData(ovrSession session);
+  static base::Optional<Gamepad> CreateGamepad(ovrSession session,
+                                               ovrHandType hand);
 };
 
 }  // namespace device

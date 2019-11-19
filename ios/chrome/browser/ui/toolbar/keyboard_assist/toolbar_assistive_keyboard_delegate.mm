@@ -26,18 +26,11 @@
 
 #pragma mark - Public
 
-- (void)keyboardAccessoryVoiceSearchTouchDown:(UIView*)view {
-  if (ios::GetChromeBrowserProvider()
-          ->GetVoiceSearchProvider()
-          ->IsVoiceSearchEnabled()) {
-    [self.dispatcher preloadVoiceSearch];
-  }
-}
-
 - (void)keyboardAccessoryVoiceSearchTouchUpInside:(UIView*)view {
   if (ios::GetChromeBrowserProvider()
           ->GetVoiceSearchProvider()
           ->IsVoiceSearchEnabled()) {
+    [self.dispatcher preloadVoiceSearch];
     base::RecordAction(base::UserMetricsAction("MobileCustomRowVoiceSearch"));
     // Since the keyboard accessory view is in a different window than the main
     // UIViewController upon which Voice Search will be presented, the guide

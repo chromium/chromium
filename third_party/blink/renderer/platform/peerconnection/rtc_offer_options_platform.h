@@ -12,15 +12,6 @@ namespace blink {
 class RTCOfferOptionsPlatform final
     : public GarbageCollected<RTCOfferOptionsPlatform> {
  public:
-  static RTCOfferOptionsPlatform* Create(int32_t offer_to_receive_video,
-                                         int32_t offer_to_receive_audio,
-                                         bool voice_activity_detection,
-                                         bool ice_restart) {
-    return MakeGarbageCollected<RTCOfferOptionsPlatform>(
-        offer_to_receive_video, offer_to_receive_audio,
-        voice_activity_detection, ice_restart);
-  }
-
   RTCOfferOptionsPlatform(int32_t offer_to_receive_video,
                           int32_t offer_to_receive_audio,
                           bool voice_activity_detection,

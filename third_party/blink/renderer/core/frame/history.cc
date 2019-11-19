@@ -31,15 +31,14 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
-#include "third_party/blink/renderer/core/frame/use_counter.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/loader/frame_loader.h"
 #include "third_party/blink/renderer/core/loader/history_item.h"
-#include "third_party/blink/renderer/core/loader/navigation_scheduler.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_view.h"
@@ -90,7 +89,7 @@ SerializedScriptValue* History::state(ExceptionState& exception_state) {
 }
 
 SerializedScriptValue* History::StateInternal() const {
-  if (!GetFrame())
+  if (!GetFrame() || !GetFrame()->Loader().GetDocumentLoader())
     return nullptr;
 
   if (HistoryItem* history_item =
@@ -188,7 +187,7 @@ void History::go(ScriptState* script_state,
   if (!active_document->GetFrame() ||
       !active_document->GetFrame()->CanNavigate(*GetFrame()) ||
       !active_document->GetFrame()->IsNavigationAllowed() ||
-      !NavigationDisablerForBeforeUnload::IsNavigationAllowed()) {
+      !GetFrame()->IsNavigationAllowed()) {
     return;
   }
 
@@ -196,14 +195,15 @@ void History::go(ScriptState* script_state,
     return;
 
   if (delta) {
+    if (Page* page = GetFrame()->GetPage())
+      page->HistoryNavigationVirtualTimePauser().PauseVirtualTime();
     GetFrame()->Client()->NavigateBackForward(delta);
   } else {
     // We intentionally call reload() for the current frame if delta is zero.
     // Otherwise, navigation happens on the root frame.
     // This behavior is designed in the following spec.
     // https://html.spec.whatwg.org/C/#dom-history-go
-    GetFrame()->Reload(WebFrameLoadType::kReload,
-                       ClientRedirectPolicy::kClientRedirect);
+    GetFrame()->Reload(WebFrameLoadType::kReload);
   }
 }
 
@@ -301,7 +301,7 @@ void History::StateObjectAdded(scoped_refptr<SerializedScriptValue> data,
     return;
   }
 
-  GetFrame()->Loader().UpdateForSameDocumentNavigation(
+  GetFrame()->GetDocument()->Loader()->UpdateForSameDocumentNavigation(
       full_url, kSameDocumentNavigationHistoryApi, std::move(data),
       restoration_type, type, GetFrame()->GetDocument());
 }

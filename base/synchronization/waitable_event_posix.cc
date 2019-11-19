@@ -16,6 +16,8 @@
 #include "base/synchronization/waitable_event.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/threading/thread_restrictions.h"
+#include "base/time/time.h"
+#include "base/time/time_override.h"
 
 // -----------------------------------------------------------------------------
 // A WaitableEvent on POSIX is implemented as a wait-list. Currently we don't
@@ -152,17 +154,14 @@ class SyncWaiter : public WaitableEvent::Waiter {
 };
 
 void WaitableEvent::Wait() {
-  bool result = TimedWaitUntil(TimeTicks::Max());
+  bool result = TimedWait(TimeDelta::Max());
   DCHECK(result) << "TimedWait() should never fail with infinite timeout";
 }
 
 bool WaitableEvent::TimedWait(const TimeDelta& wait_delta) {
-  // TimeTicks takes care of overflow including the cases when wait_delta
-  // is a maximum value.
-  return TimedWaitUntil(TimeTicks::Now() + wait_delta);
-}
+  if (wait_delta <= TimeDelta())
+    return IsSignaled();
 
-bool WaitableEvent::TimedWaitUntil(const TimeTicks& end_time) {
   // Record the event that this thread is blocking upon (for hang diagnosis) and
   // consider it blocked for scheduling purposes. Ignore this for non-blocking
   // WaitableEvents.
@@ -173,8 +172,6 @@ bool WaitableEvent::TimedWaitUntil(const TimeTicks& end_time) {
     event_activity.emplace(this);
     scoped_blocking_call.emplace(BlockingType::MAY_BLOCK);
   }
-
-  const bool finite_time = !end_time.is_max();
 
   kernel_->lock_.Acquire();
   if (kernel_->signaled_) {
@@ -196,45 +193,47 @@ bool WaitableEvent::TimedWaitUntil(const TimeTicks& end_time) {
   Enqueue(&sw);
   kernel_->lock_.Release();
   // We are violating locking order here by holding the SyncWaiter lock but not
-  // the WaitableEvent lock. However, this is safe because we don't lock @lock_
+  // the WaitableEvent lock. However, this is safe because we don't lock |lock_|
   // again before unlocking it.
 
-  for (;;) {
-    // Only sample Now() if waiting for a |finite_time|.
-    Optional<TimeTicks> current_time;
-    if (finite_time)
-      current_time = TimeTicks::Now();
-
-    if (sw.fired() || (finite_time && *current_time >= end_time)) {
-      const bool return_value = sw.fired();
-
-      // We can't acquire @lock_ before releasing the SyncWaiter lock (because
-      // of locking order), however, in between the two a signal could be fired
-      // and @sw would accept it, however we will still return false, so the
-      // signal would be lost on an auto-reset WaitableEvent. Thus we call
-      // Disable which makes sw::Fire return false.
-      sw.Disable();
-      sw.lock()->Release();
-
-      // This is a bug that has been enshrined in the interface of
-      // WaitableEvent now: |Dequeue| is called even when |sw.fired()| is true,
-      // even though it'll always return false in that case. However, taking
-      // the lock ensures that |Signal| has completed before we return and
-      // means that a WaitableEvent can synchronise its own destruction.
-      kernel_->lock_.Acquire();
-      kernel_->Dequeue(&sw, &sw);
-      kernel_->lock_.Release();
-
-      return return_value;
-    }
-
-    if (finite_time) {
-      const TimeDelta max_wait(end_time - *current_time);
-      sw.cv()->TimedWait(max_wait);
-    } else {
+  // TimeTicks takes care of overflow but we special case is_max() nonetheless
+  // to avoid invoking TimeTicksNowIgnoringOverride() unnecessarily (same for
+  // the increment step of the for loop if the condition variable returns
+  // early). Ref: https://crbug.com/910524#c7
+  const TimeTicks end_time =
+      wait_delta.is_max() ? TimeTicks::Max()
+                          : subtle::TimeTicksNowIgnoringOverride() + wait_delta;
+  for (TimeDelta remaining = wait_delta; remaining > TimeDelta() && !sw.fired();
+       remaining = end_time.is_max()
+                       ? TimeDelta::Max()
+                       : end_time - subtle::TimeTicksNowIgnoringOverride()) {
+    if (end_time.is_max())
       sw.cv()->Wait();
-    }
+    else
+      sw.cv()->TimedWait(remaining);
   }
+
+  // Get the SyncWaiter signaled state before releasing the lock.
+  const bool return_value = sw.fired();
+
+  // We can't acquire |lock_| before releasing the SyncWaiter lock (because of
+  // locking order), however, in between the two a signal could be fired and
+  // |sw| would accept it, however we will still return false, so the signal
+  // would be lost on an auto-reset WaitableEvent. Thus we call Disable which
+  // makes sw::Fire return false.
+  sw.Disable();
+  sw.lock()->Release();
+
+  // This is a bug that has been enshrined in the interface of WaitableEvent
+  // now: |Dequeue| is called even when |sw.fired()| is true, even though it'll
+  // always return false in that case. However, taking the lock ensures that
+  // |Signal| has completed before we return and means that a WaitableEvent can
+  // synchronise its own destruction.
+  kernel_->lock_.Acquire();
+  kernel_->Dequeue(&sw, &sw);
+  kernel_->lock_.Release();
+
+  return return_value;
 }
 
 // -----------------------------------------------------------------------------

@@ -42,10 +42,10 @@ void CSSSkewY::setAy(CSSNumericValue* value, ExceptionState& exception_state) {
 
 CSSSkewY* CSSSkewY::FromCSSValue(const CSSFunctionValue& value) {
   DCHECK_GT(value.length(), 0U);
-  DCHECK_EQ(value.FunctionType(), CSSValueSkewY);
+  DCHECK_EQ(value.FunctionType(), CSSValueID::kSkewY);
   if (value.length(), 1U) {
     return CSSSkewY::Create(
-        CSSNumericValue::FromCSSValue(ToCSSPrimitiveValue(value.Item(0))));
+        CSSNumericValue::FromCSSValue(To<CSSPrimitiveValue>(value.Item(0))));
   }
   NOTREACHED();
   return nullptr;
@@ -64,7 +64,8 @@ const CSSFunctionValue* CSSSkewY::ToCSSValue() const {
   if (!ay)
     return nullptr;
 
-  CSSFunctionValue* result = CSSFunctionValue::Create(CSSValueSkewY);
+  CSSFunctionValue* result =
+      MakeGarbageCollected<CSSFunctionValue>(CSSValueID::kSkewY);
   result->Append(*ay);
   return result;
 }

@@ -13,8 +13,10 @@
 #include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/test/bind_test_util.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/threading/thread.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/net_errors.h"
 #include "net/base/test_completion_callback.h"
@@ -49,8 +51,7 @@ class TLSClientSocketTestBase {
 
   explicit TLSClientSocketTestBase(Mode mode)
       : mode_(mode),
-        scoped_task_environment_(
-            base::test::ScopedTaskEnvironment::MainThreadType::IO),
+        task_environment_(base::test::TaskEnvironment::MainThreadType::IO),
         url_request_context_(true) {}
   virtual ~TLSClientSocketTestBase() {}
 
@@ -59,13 +60,13 @@ class TLSClientSocketTestBase {
  protected:
   // One of the two fields will be set, depending on the mode.
   struct SocketHandle {
-    mojom::TCPConnectedSocketPtr tcp_socket;
-    mojom::ProxyResolvingSocketPtr proxy_socket;
+    mojo::Remote<mojom::TCPConnectedSocket> tcp_socket;
+    mojo::Remote<mojom::ProxyResolvingSocket> proxy_socket;
   };
 
   struct SocketRequest {
-    mojom::TCPConnectedSocketRequest tcp_socket_request;
-    mojom::ProxyResolvingSocketRequest proxy_socket_request;
+    mojo::PendingReceiver<mojom::TCPConnectedSocket> tcp_socket_receiver;
+    mojo::PendingReceiver<mojom::ProxyResolvingSocket> proxy_socket_receiver;
   };
 
   // Initializes the test fixture. If |use_mock_sockets|, mock client socket
@@ -113,9 +114,11 @@ class TLSClientSocketTestBase {
   SocketRequest MakeRequest(SocketHandle* handle) {
     SocketRequest result;
     if (mode_ == kDirect)
-      result.tcp_socket_request = mojo::MakeRequest(&handle->tcp_socket);
+      result.tcp_socket_receiver =
+          handle->tcp_socket.BindNewPipeAndPassReceiver();
     else
-      result.proxy_socket_request = mojo::MakeRequest(&handle->proxy_socket);
+      result.proxy_socket_receiver =
+          handle->proxy_socket.BindNewPipeAndPassReceiver();
     return result;
   }
 
@@ -129,24 +132,25 @@ class TLSClientSocketTestBase {
   int CreateSocketSync(SocketRequest request,
                        const net::IPEndPoint& remote_addr) {
     if (mode_ == kDirect) {
-      return CreateTCPConnectedSocketSync(std::move(request.tcp_socket_request),
-                                          remote_addr);
+      return CreateTCPConnectedSocketSync(
+          std::move(request.tcp_socket_receiver), remote_addr);
     } else {
       return CreateProxyResolvingSocketSync(
-          std::move(request.proxy_socket_request), remote_addr);
+          std::move(request.proxy_socket_receiver), remote_addr);
     }
   }
 
-  int CreateTCPConnectedSocketSync(mojom::TCPConnectedSocketRequest request,
-                                   const net::IPEndPoint& remote_addr) {
+  int CreateTCPConnectedSocketSync(
+      mojo::PendingReceiver<mojom::TCPConnectedSocket> receiver,
+      const net::IPEndPoint& remote_addr) {
     net::AddressList remote_addr_list(remote_addr);
     base::RunLoop run_loop;
     int net_error = net::ERR_FAILED;
     factory_->CreateTCPConnectedSocket(
         base::nullopt /* local_addr */, remote_addr_list,
         nullptr /* tcp_connected_socket_options */,
-        TRAFFIC_ANNOTATION_FOR_TESTS, std::move(request),
-        pre_tls_observer()->GetObserverPtr(),
+        TRAFFIC_ANNOTATION_FOR_TESTS, std::move(receiver),
+        pre_tls_observer()->GetObserverRemote(),
         base::BindLambdaForTesting(
             [&](int result,
                 const base::Optional<net::IPEndPoint>& actual_local_addr,
@@ -162,15 +166,16 @@ class TLSClientSocketTestBase {
     return net_error;
   }
 
-  int CreateProxyResolvingSocketSync(mojom::ProxyResolvingSocketRequest request,
-                                     const net::IPEndPoint& remote_addr) {
+  int CreateProxyResolvingSocketSync(
+      mojo::PendingReceiver<mojom::ProxyResolvingSocket> receiver,
+      const net::IPEndPoint& remote_addr) {
     GURL url("https://" + remote_addr.ToString());
     base::RunLoop run_loop;
     int net_error = net::ERR_FAILED;
     proxy_resolving_factory_->CreateProxyResolvingSocket(
         url, nullptr /* options */,
         net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS),
-        std::move(request), nullptr /* observer */,
+        std::move(receiver), mojo::NullRemote() /* observer */,
         base::BindLambdaForTesting(
             [&](int result,
                 const base::Optional<net::IPEndPoint>& actual_local_addr,
@@ -188,28 +193,29 @@ class TLSClientSocketTestBase {
 
   void UpgradeToTLS(SocketHandle* handle,
                     const net::HostPortPair& host_port_pair,
-                    mojom::TLSClientSocketRequest request,
+                    mojo::PendingReceiver<mojom::TLSClientSocket> receiver,
                     net::CompletionOnceCallback callback) {
     if (mode_ == kDirect) {
       UpgradeTCPConnectedSocketToTLS(handle->tcp_socket.get(), host_port_pair,
-                                     nullptr /* options */, std::move(request),
+                                     nullptr /* options */, std::move(receiver),
                                      std::move(callback));
     } else {
       UpgradeProxyResolvingSocketToTLS(handle->proxy_socket.get(),
-                                       host_port_pair, std::move(request),
+                                       host_port_pair, std::move(receiver),
                                        std::move(callback));
     }
   }
 
-  void UpgradeTCPConnectedSocketToTLS(mojom::TCPConnectedSocket* client_socket,
-                                      const net::HostPortPair& host_port_pair,
-                                      mojom::TLSClientSocketOptionsPtr options,
-                                      mojom::TLSClientSocketRequest request,
-                                      net::CompletionOnceCallback callback) {
+  void UpgradeTCPConnectedSocketToTLS(
+      mojom::TCPConnectedSocket* client_socket,
+      const net::HostPortPair& host_port_pair,
+      mojom::TLSClientSocketOptionsPtr options,
+      mojo::PendingReceiver<mojom::TLSClientSocket> receiver,
+      net::CompletionOnceCallback callback) {
     client_socket->UpgradeToTLS(
         host_port_pair, std::move(options),
         net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS),
-        std::move(request), post_tls_observer()->GetObserverPtr(),
+        std::move(receiver), post_tls_observer()->GetObserverRemote(),
         base::BindOnce(
             [](net::CompletionOnceCallback cb,
                mojo::ScopedDataPipeConsumerHandle* consumer_handle_out,
@@ -230,12 +236,12 @@ class TLSClientSocketTestBase {
   void UpgradeProxyResolvingSocketToTLS(
       mojom::ProxyResolvingSocket* client_socket,
       const net::HostPortPair& host_port_pair,
-      mojom::TLSClientSocketRequest request,
+      mojo::PendingReceiver<mojom::TLSClientSocket> receiver,
       net::CompletionOnceCallback callback) {
     client_socket->UpgradeToTLS(
         host_port_pair,
         net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS),
-        std::move(request), post_tls_observer()->GetObserverPtr(),
+        std::move(receiver), post_tls_observer()->GetObserverRemote(),
         base::BindOnce(
             [](net::CompletionOnceCallback cb,
                mojo::ScopedDataPipeConsumerHandle* consumer_handle,
@@ -279,7 +285,7 @@ class TLSClientSocketTestBase {
 
  private:
   Mode mode_;
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_;
 
   // Mojo data handles obtained from CreateTCPConnectedSocket.
   mojo::ScopedDataPipeConsumerHandle pre_tls_recv_handle_;
@@ -299,9 +305,6 @@ class TLSClientSocketTestBase {
   std::unique_ptr<ProxyResolvingSocketFactoryMojo> proxy_resolving_factory_;
   TestSocketObserver pre_tls_observer_;
   TestSocketObserver post_tls_observer_;
-  mojo::StrongBindingSet<mojom::TCPServerSocket> tcp_server_socket_bindings_;
-  mojo::StrongBindingSet<mojom::TCPConnectedSocket>
-      tcp_connected_socket_bindings_;
 
   DISALLOW_COPY_AND_ASSIGN(TLSClientSocketTestBase);
 };
@@ -342,9 +345,9 @@ TEST_P(TLSClientSocketTest, UpgradeToTLS) {
   pre_tls_recv_handle()->reset();
   pre_tls_send_handle()->reset();
   net::TestCompletionCallback callback;
-  mojom::TLSClientSocketPtr tls_socket;
-  UpgradeToTLS(&client_socket, host_port_pair, mojo::MakeRequest(&tls_socket),
-               callback.callback());
+  mojo::Remote<mojom::TLSClientSocket> tls_socket;
+  UpgradeToTLS(&client_socket, host_port_pair,
+               tls_socket.BindNewPipeAndPassReceiver(), callback.callback());
   ASSERT_EQ(net::OK, callback.WaitForResult());
   ResetSocket(&client_socket);
 
@@ -385,9 +388,9 @@ TEST_P(TLSClientSocketTest, ClosePipesRunUntilIdleAndUpgradeToTLS) {
   base::RunLoop().RunUntilIdle();
 
   net::TestCompletionCallback callback;
-  mojom::TLSClientSocketPtr tls_socket;
-  UpgradeToTLS(&client_socket, host_port_pair, mojo::MakeRequest(&tls_socket),
-               callback.callback());
+  mojo::Remote<mojom::TLSClientSocket> tls_socket;
+  UpgradeToTLS(&client_socket, host_port_pair,
+               tls_socket.BindNewPipeAndPassReceiver(), callback.callback());
   ASSERT_EQ(net::OK, callback.WaitForResult());
   ResetSocket(&client_socket);
 
@@ -401,8 +404,8 @@ TEST_P(TLSClientSocketTest, ClosePipesRunUntilIdleAndUpgradeToTLS) {
   EXPECT_TRUE(data_provider.AllWriteDataConsumed());
 }
 
-// Calling UpgradeToTLS on the same TCPConnectedSocketPtr is illegal and should
-// receive an error.
+// Calling UpgradeToTLS on the same mojo::Remote<TCPConnectedSocket> is illegal
+// and should receive an error.
 TEST_P(TLSClientSocketTest, UpgradeToTLSTwice) {
   const net::MockRead kReads[] = {net::MockRead(net::ASYNC, net::OK, 0)};
   net::SequencedSocketData data_provider(kReads, base::span<net::MockWrite>());
@@ -422,13 +425,13 @@ TEST_P(TLSClientSocketTest, UpgradeToTLSTwice) {
 
   // First UpgradeToTLS should complete successfully.
   net::TestCompletionCallback callback;
-  mojom::TLSClientSocketPtr tls_socket;
-  UpgradeToTLS(&client_socket, host_port_pair, mojo::MakeRequest(&tls_socket),
-               callback.callback());
+  mojo::Remote<mojom::TLSClientSocket> tls_socket;
+  UpgradeToTLS(&client_socket, host_port_pair,
+               tls_socket.BindNewPipeAndPassReceiver(), callback.callback());
   ASSERT_EQ(net::OK, callback.WaitForResult());
 
   // Second time UpgradeToTLS is called, it should fail.
-  mojom::TLSClientSocketPtr tls_socket2;
+  mojo::Remote<mojom::TLSClientSocket> tls_socket2;
   base::RunLoop run_loop;
   int net_error = net::ERR_FAILED;
   if (mode() == kDirect) {
@@ -442,8 +445,8 @@ TEST_P(TLSClientSocketTest, UpgradeToTLSTwice) {
     client_socket.tcp_socket->UpgradeToTLS(
         host_port_pair, nullptr /* ssl_config_ptr */,
         net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS),
-        mojo::MakeRequest(&tls_socket2), nullptr /*observer */,
-        std::move(upgrade2_callback));
+        tls_socket2.BindNewPipeAndPassReceiver(),
+        mojo::NullRemote() /*observer */, std::move(upgrade2_callback));
   } else {
     auto upgrade2_callback = base::BindLambdaForTesting(
         [&](int result, mojo::ScopedDataPipeConsumerHandle receive_pipe_handle,
@@ -454,8 +457,8 @@ TEST_P(TLSClientSocketTest, UpgradeToTLSTwice) {
     client_socket.proxy_socket->UpgradeToTLS(
         host_port_pair,
         net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS),
-        mojo::MakeRequest(&tls_socket2), nullptr /*observer */,
-        std::move(upgrade2_callback));
+        tls_socket2.BindNewPipeAndPassReceiver(),
+        mojo::NullRemote() /*observer */, std::move(upgrade2_callback));
   }
   run_loop.Run();
   ASSERT_EQ(net::ERR_SOCKET_NOT_CONNECTED, net_error);
@@ -488,7 +491,7 @@ TEST_P(TLSClientSocketTest, UpgradeToTLSWithCustomSSLConfig) {
   pre_tls_recv_handle()->reset();
   pre_tls_send_handle()->reset();
 
-  mojom::TLSClientSocketPtr tls_socket;
+  mojo::Remote<mojom::TLSClientSocket> tls_socket;
   base::RunLoop run_loop;
   mojom::TLSClientSocketOptionsPtr options =
       mojom::TLSClientSocketOptions::New();
@@ -505,7 +508,7 @@ TEST_P(TLSClientSocketTest, UpgradeToTLSWithCustomSSLConfig) {
   client_socket.tcp_socket->UpgradeToTLS(
       host_port_pair, std::move(options),
       net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS),
-      mojo::MakeRequest(&tls_socket), nullptr /*observer */,
+      tls_socket.BindNewPipeAndPassReceiver(), mojo::NullRemote() /*observer */,
       std::move(upgrade_callback));
   run_loop.Run();
   ASSERT_EQ(net::OK, net_error);
@@ -548,9 +551,9 @@ TEST_P(TLSClientSocketTest, ReadWriteBeforeUpgradeToTLS) {
   pre_tls_recv_handle()->reset();
   pre_tls_send_handle()->reset();
   net::TestCompletionCallback callback;
-  mojom::TLSClientSocketPtr tls_socket;
-  UpgradeToTLS(&client_socket, host_port_pair, mojo::MakeRequest(&tls_socket),
-               callback.callback());
+  mojo::Remote<mojom::TLSClientSocket> tls_socket;
+  UpgradeToTLS(&client_socket, host_port_pair,
+               tls_socket.BindNewPipeAndPassReceiver(), callback.callback());
   ASSERT_EQ(net::OK, callback.WaitForResult());
   ResetSocket(&client_socket);
 
@@ -588,9 +591,9 @@ TEST_P(TLSClientSocketTest, ReadErrorAfterUpgradeToTLS) {
   pre_tls_recv_handle()->reset();
   pre_tls_send_handle()->reset();
   net::TestCompletionCallback callback;
-  mojom::TLSClientSocketPtr tls_socket;
-  UpgradeToTLS(&client_socket, host_port_pair, mojo::MakeRequest(&tls_socket),
-               callback.callback());
+  mojo::Remote<mojom::TLSClientSocket> tls_socket;
+  UpgradeToTLS(&client_socket, host_port_pair,
+               tls_socket.BindNewPipeAndPassReceiver(), callback.callback());
   ASSERT_EQ(net::OK, callback.WaitForResult());
   ResetSocket(&client_socket);
 
@@ -629,9 +632,9 @@ TEST_P(TLSClientSocketTest, WriteErrorAfterUpgradeToTLS) {
   pre_tls_recv_handle()->reset();
   pre_tls_send_handle()->reset();
   net::TestCompletionCallback callback;
-  mojom::TLSClientSocketPtr tls_socket;
-  UpgradeToTLS(&client_socket, host_port_pair, mojo::MakeRequest(&tls_socket),
-               callback.callback());
+  mojo::Remote<mojom::TLSClientSocket> tls_socket;
+  UpgradeToTLS(&client_socket, host_port_pair,
+               tls_socket.BindNewPipeAndPassReceiver(), callback.callback());
   ASSERT_EQ(net::OK, callback.WaitForResult());
   ResetSocket(&client_socket);
 
@@ -671,9 +674,9 @@ TEST_P(TLSClientSocketTest, ReadFromPreTlsDataPipeAfterUpgradeToTLS) {
   net::HostPortPair host_port_pair("example.org", 443);
   pre_tls_send_handle()->reset();
   net::TestCompletionCallback callback;
-  mojom::TLSClientSocketPtr tls_socket;
-  UpgradeToTLS(&client_socket, host_port_pair, mojo::MakeRequest(&tls_socket),
-               callback.callback());
+  mojo::Remote<mojom::TLSClientSocket> tls_socket;
+  UpgradeToTLS(&client_socket, host_port_pair,
+               tls_socket.BindNewPipeAndPassReceiver(), callback.callback());
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(kMsg, Read(pre_tls_recv_handle(), kMsgSize));
@@ -717,9 +720,9 @@ TEST_P(TLSClientSocketTest, WriteToPreTlsDataPipeAfterUpgradeToTLS) {
   net::HostPortPair host_port_pair("example.org", 443);
   pre_tls_recv_handle()->reset();
   net::TestCompletionCallback callback;
-  mojom::TLSClientSocketPtr tls_socket;
-  UpgradeToTLS(&client_socket, host_port_pair, mojo::MakeRequest(&tls_socket),
-               callback.callback());
+  mojo::Remote<mojom::TLSClientSocket> tls_socket;
+  UpgradeToTLS(&client_socket, host_port_pair,
+               tls_socket.BindNewPipeAndPassReceiver(), callback.callback());
   base::RunLoop().RunUntilIdle();
 
   uint32_t num_bytes = strlen(kMsg);
@@ -766,9 +769,9 @@ TEST_P(TLSClientSocketTest, ReadAndWritePreTlsDataPipeAfterUpgradeToTLS) {
   net::HostPortPair host_port_pair("example.org", 443);
   base::RunLoop run_loop;
   net::TestCompletionCallback callback;
-  mojom::TLSClientSocketPtr tls_socket;
-  UpgradeToTLS(&client_socket, host_port_pair, mojo::MakeRequest(&tls_socket),
-               callback.callback());
+  mojo::Remote<mojom::TLSClientSocket> tls_socket;
+  UpgradeToTLS(&client_socket, host_port_pair,
+               tls_socket.BindNewPipeAndPassReceiver(), callback.callback());
   EXPECT_EQ(kMsg, Read(pre_tls_recv_handle(), kMsgSize));
   uint32_t num_bytes = strlen(kMsg);
   EXPECT_EQ(MOJO_RESULT_OK, pre_tls_send_handle()->get().WriteData(
@@ -812,9 +815,9 @@ TEST_P(TLSClientSocketTest, ReadErrorBeforeUpgradeToTLS) {
   net::HostPortPair host_port_pair("example.org", 443);
   pre_tls_send_handle()->reset();
   net::TestCompletionCallback callback;
-  mojom::TLSClientSocketPtr tls_socket;
-  UpgradeToTLS(&client_socket, host_port_pair, mojo::MakeRequest(&tls_socket),
-               callback.callback());
+  mojo::Remote<mojom::TLSClientSocket> tls_socket;
+  UpgradeToTLS(&client_socket, host_port_pair,
+               tls_socket.BindNewPipeAndPassReceiver(), callback.callback());
 
   EXPECT_EQ(kMsg, Read(pre_tls_recv_handle(), kMsgSize));
   EXPECT_EQ(net::ERR_CONNECTION_CLOSED, pre_tls_observer()->WaitForReadError());
@@ -851,9 +854,9 @@ TEST_P(TLSClientSocketTest, WriteErrorBeforeUpgradeToTLS) {
   net::HostPortPair host_port_pair("example.org", 443);
   pre_tls_recv_handle()->reset();
   net::TestCompletionCallback callback;
-  mojom::TLSClientSocketPtr tls_socket;
-  UpgradeToTLS(&client_socket, host_port_pair, mojo::MakeRequest(&tls_socket),
-               callback.callback());
+  mojo::Remote<mojom::TLSClientSocket> tls_socket;
+  UpgradeToTLS(&client_socket, host_port_pair,
+               tls_socket.BindNewPipeAndPassReceiver(), callback.callback());
   uint32_t num_bytes = strlen(kMsg);
   EXPECT_EQ(MOJO_RESULT_OK, pre_tls_send_handle()->get().WriteData(
                                 &kMsg, &num_bytes, MOJO_WRITE_DATA_FLAG_NONE));
@@ -921,9 +924,9 @@ TEST_F(TLSCLientSocketProxyTest, UpgradeToTLS) {
   pre_tls_recv_handle()->reset();
   pre_tls_send_handle()->reset();
   net::TestCompletionCallback callback;
-  mojom::TLSClientSocketPtr tls_socket;
-  UpgradeToTLS(&client_socket, host_port_pair, mojo::MakeRequest(&tls_socket),
-               callback.callback());
+  mojo::Remote<mojom::TLSClientSocket> tls_socket;
+  UpgradeToTLS(&client_socket, host_port_pair,
+               tls_socket.BindNewPipeAndPassReceiver(), callback.callback());
   ASSERT_EQ(net::OK, callback.WaitForResult());
   ResetSocket(&client_socket);
 
@@ -980,19 +983,20 @@ TEST_P(TLSClientSocketIoModeTest, MultipleWriteToTLSSocket) {
   net::SSLSocketDataProvider ssl_socket(net::ASYNC, net::OK);
   mock_client_socket_factory()->AddSSLSocketDataProvider(&ssl_socket);
 
-  mojom::TCPConnectedSocketPtr client_socket;
+  mojo::Remote<mojom::TCPConnectedSocket> client_socket;
   net::IPEndPoint server_addr(net::IPAddress::IPv4Localhost(), 1234);
-  EXPECT_EQ(net::OK, CreateTCPConnectedSocketSync(
-                         mojo::MakeRequest(&client_socket), server_addr));
+  EXPECT_EQ(net::OK,
+            CreateTCPConnectedSocketSync(
+                client_socket.BindNewPipeAndPassReceiver(), server_addr));
 
   net::HostPortPair host_port_pair("example.org", 443);
   pre_tls_recv_handle()->reset();
   pre_tls_send_handle()->reset();
   net::TestCompletionCallback callback;
-  mojom::TLSClientSocketPtr tls_socket;
+  mojo::Remote<mojom::TLSClientSocket> tls_socket;
   UpgradeTCPConnectedSocketToTLS(
       client_socket.get(), host_port_pair, nullptr /* options */,
-      mojo::MakeRequest(&tls_socket), callback.callback());
+      tls_socket.BindNewPipeAndPassReceiver(), callback.callback());
   ASSERT_EQ(net::OK, callback.WaitForResult());
   client_socket.reset();
   EXPECT_FALSE(ssl_info());
@@ -1030,22 +1034,23 @@ TEST_P(TLSClientSocketIoModeTest, SSLInfo) {
   ssl_socket.ssl_info.is_issued_by_known_root = true;
   mock_client_socket_factory()->AddSSLSocketDataProvider(&ssl_socket);
 
-  mojom::TCPConnectedSocketPtr client_socket;
+  mojo::Remote<mojom::TCPConnectedSocket> client_socket;
   net::IPEndPoint server_addr(net::IPAddress::IPv4Localhost(), 1234);
-  EXPECT_EQ(net::OK, CreateTCPConnectedSocketSync(
-                         mojo::MakeRequest(&client_socket), server_addr));
+  EXPECT_EQ(net::OK,
+            CreateTCPConnectedSocketSync(
+                client_socket.BindNewPipeAndPassReceiver(), server_addr));
 
   net::HostPortPair host_port_pair("example.org", 443);
   pre_tls_recv_handle()->reset();
   pre_tls_send_handle()->reset();
   net::TestCompletionCallback callback;
-  mojom::TLSClientSocketPtr tls_socket;
+  mojo::Remote<mojom::TLSClientSocket> tls_socket;
   mojom::TLSClientSocketOptionsPtr options =
       mojom::TLSClientSocketOptions::New();
   options->send_ssl_info = true;
   UpgradeTCPConnectedSocketToTLS(
       client_socket.get(), host_port_pair, std::move(options),
-      mojo::MakeRequest(&tls_socket), callback.callback());
+      tls_socket.BindNewPipeAndPassReceiver(), callback.callback());
   ASSERT_EQ(net::OK, callback.WaitForResult());
   ASSERT_TRUE(ssl_info());
   EXPECT_TRUE(ssl_socket.ssl_info.is_issued_by_known_root);
@@ -1094,7 +1099,7 @@ class TLSClientSocketTestWithEmbeddedTestServerBase
     pre_tls_send_handle()->reset();
     net::TestCompletionCallback callback;
     UpgradeToTLS(&client_socket, server_.host_port_pair(),
-                 mojo::MakeRequest(&tls_socket_), callback.callback());
+                 tls_socket_.BindNewPipeAndPassReceiver(), callback.callback());
     int result = callback.WaitForResult();
     ResetSocket(&client_socket);
     return result;
@@ -1105,18 +1110,19 @@ class TLSClientSocketTestWithEmbeddedTestServerBase
     // Proxy connections don't support TLSClientSocketOptions.
     DCHECK_EQ(kDirect, mode());
 
-    mojom::TCPConnectedSocketPtr tcp_socket;
+    mojo::Remote<mojom::TCPConnectedSocket> tcp_socket;
     net::IPEndPoint server_addr(net::IPAddress::IPv4Localhost(),
                                 server_.port());
-    EXPECT_EQ(net::OK, CreateTCPConnectedSocketSync(
-                           mojo::MakeRequest(&tcp_socket), server_addr));
+    EXPECT_EQ(net::OK,
+              CreateTCPConnectedSocketSync(
+                  tcp_socket.BindNewPipeAndPassReceiver(), server_addr));
 
     pre_tls_recv_handle()->reset();
     pre_tls_send_handle()->reset();
     net::TestCompletionCallback callback;
     UpgradeTCPConnectedSocketToTLS(
         tcp_socket.get(), server_.host_port_pair(), std::move(options),
-        mojo::MakeRequest(&tls_socket_), callback.callback());
+        tls_socket_.BindNewPipeAndPassReceiver(), callback.callback());
     int result = callback.WaitForResult();
     tcp_socket.reset();
     return result;
@@ -1138,7 +1144,7 @@ class TLSClientSocketTestWithEmbeddedTestServerBase
  private:
   net::EmbeddedTestServer server_;
 
-  mojom::TLSClientSocketPtr tls_socket_;
+  mojo::Remote<mojom::TLSClientSocket> tls_socket_;
 
   DISALLOW_COPY_AND_ASSIGN(TLSClientSocketTestWithEmbeddedTestServerBase);
 };

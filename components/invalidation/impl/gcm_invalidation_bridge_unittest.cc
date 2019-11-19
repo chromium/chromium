@@ -12,14 +12,14 @@
 #include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/gcm_driver/fake_gcm_driver.h"
 #include "components/gcm_driver/gcm_driver.h"
 #include "components/invalidation/impl/profile_identity_provider.h"
+#include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "net/base/ip_endpoint.h"
-#include "services/identity/public/cpp/identity_test_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace invalidation {
@@ -98,8 +98,8 @@ class GCMInvalidationBridgeTest : public ::testing::Test {
     connection_online_ = online;
   }
 
-  base::test::ScopedTaskEnvironment task_environment_;
-  identity::IdentityTestEnvironment identity_test_env_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
+  signin::IdentityTestEnvironment identity_test_env_;
   std::unique_ptr<gcm::GCMDriver> gcm_driver_;
   std::unique_ptr<ProfileIdentityProvider> identity_provider_;
 
@@ -115,8 +115,8 @@ class GCMInvalidationBridgeTest : public ::testing::Test {
 TEST_F(GCMInvalidationBridgeTest, RequestToken) {
   base::RunLoop run_loop;
 
-  // Make sure that call to RequestToken reaches OAuth2TokenService and gets
-  // back to callback.
+  // Make sure that call to RequestToken reaches the access token fetcher and
+  // gets back to callback.
   delegate_->RequestToken(
       base::Bind(&GCMInvalidationBridgeTest::RequestTokenFinished,
                  base::Unretained(this), run_loop.QuitClosure()));

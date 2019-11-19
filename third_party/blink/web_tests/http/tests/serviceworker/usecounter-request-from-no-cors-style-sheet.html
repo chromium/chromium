@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>service worker: Use Counter for intercepting requests from no-cors stylesheets</title>
+<!-- Tests UseCounter for a service worker intercepting a request from a
+     no-cors stylesheet. This cannot be upstreamed to WPT because it
+     tests Chrome's UseCounter mechanism. -->
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/test-helpers.js"></script>
+<script src="/resources/get-host-info.js"></script>
+<script>
+function isUseCounted(win, feature) {
+  return win.internals.isUseCounted(win.document, feature);
+}
+
+function observeUseCounter(win, feature) {
+  return win.internals.observeUseCounter(win.document, feature);
+}
+
+function addStyleSheet(win, href) {
+  const link = win.document.createElement('link');
+  link.rel = 'stylesheet';
+  link.href = href;
+  win.document.head.appendChild(link);
+}
+
+// Use simple.html, not blank.html, since fonts are not loaded if there is no
+// text.
+const scope = 'resources/simple.html';
+const basePath = new URL('.', self.location).pathname;
+const remoteOrigin = get_host_info()['HTTP_REMOTE_ORIGIN'];
+const remoteBase = new URL(basePath, remoteOrigin);
+
+// The feature tested by this file,
+// |kServiceWorkerInterceptedRequestFromOriginDirtyStyleSheet| from
+// web_feature.mojom.
+const kFeature = 2941;
+
+// Loads a stylesheet that requests a subresource, and verifies that the
+// feature use is counted when the stylesheet was not origin-clean.
+function style_sheet_test(styleSheet, description) {
+  promise_test(async t => {
+    const remoteOriginStyleSheet =
+        new URL(`resources/${styleSheet}`, remoteBase).href;
+
+    // |frame1| uses a same-origin style sheet.
+    const frame1 = await with_iframe('resources/simple.html');
+    t.add_cleanup(() => { frame1.remove(); });
+    const win1 = frame1.contentWindow;
+    addStyleSheet(win1, styleSheet);
+
+    // |frame2| is out-of-scope.
+    const frame2 = await with_iframe('resources/other.html');
+    t.add_cleanup(() => { frame2.remove(); });
+    const win2 = frame2.contentWindow;
+    addStyleSheet(win2, remoteOriginStyleSheet);
+
+    // |frame3| uses a cross-origin style sheet.
+    const frame3 = await with_iframe('resources/simple.html');
+    t.add_cleanup(() => { frame3.remove(); });
+    const win3 = frame3.contentWindow;
+    addStyleSheet(win3, remoteOriginStyleSheet);
+
+    // Only |frame3| should record the feature.
+    await observeUseCounter(win3, kFeature);
+    assert_false(isUseCounted(win1, kFeature));
+    assert_false(isUseCounted(win2, kFeature));
+    assert_true(isUseCounted(win3, kFeature));
+  }, description);
+}
+
+promise_test(async t => {
+  const registration = await service_worker_unregister_and_register(
+      t, 'resources/network-fallback-worker.js', scope);
+  await wait_for_state(t, registration.installing, 'activated');
+}, 'global setup');
+
+// Test a stylesheet that requests an image.
+style_sheet_test('background-image.css', 'image');
+
+// Test a stylesheet that requests an @import.
+style_sheet_test('import.css', '@import');
+
+// Test a stylesheet that requests a font.
+style_sheet_test('font-face.css', 'font');
+
+promise_test(async t => {
+  return service_worker_unregister(t, scope);
+}, 'cleanup');
+</script>

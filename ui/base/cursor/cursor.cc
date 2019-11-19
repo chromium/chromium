@@ -5,23 +5,20 @@
 #include "ui/base/cursor/cursor.h"
 
 #include "base/logging.h"
+#include "ui/gfx/skia_util.h"
 
 namespace ui {
 
-Cursor::Cursor()
-    : native_type_(CursorType::kNull),
-      platform_cursor_(0),
-      device_scale_factor_(0.0f) {}
+Cursor::Cursor() = default;
 
-Cursor::Cursor(CursorType type)
-    : native_type_(type), platform_cursor_(0), device_scale_factor_(0.0f) {}
+Cursor::Cursor(CursorType type) : native_type_(type) {}
 
 Cursor::Cursor(const Cursor& cursor)
     : native_type_(cursor.native_type_),
       platform_cursor_(cursor.platform_cursor_),
       device_scale_factor_(cursor.device_scale_factor_),
-      custom_bitmap_(cursor.custom_bitmap_),
-      custom_hotspot_(cursor.custom_hotspot_) {
+      custom_hotspot_(cursor.custom_hotspot_),
+      custom_bitmap_(cursor.custom_bitmap_) {
   if (native_type_ == CursorType::kCustom)
     RefCustomCursor();
 }
@@ -68,15 +65,16 @@ gfx::Point Cursor::GetHotspot() const {
 #endif
 }
 
-bool Cursor::IsSameAs(const Cursor& rhs) const {
-  return native_type_ == rhs.native_type_ &&
-         custom_hotspot_ == rhs.custom_hotspot_ &&
-         device_scale_factor_ == rhs.device_scale_factor_ &&
-         custom_bitmap_.getGenerationID() ==
-             rhs.custom_bitmap_.getGenerationID();
+bool Cursor::operator==(const Cursor& cursor) const {
+  return native_type_ == cursor.native_type_ &&
+         platform_cursor_ == cursor.platform_cursor_ &&
+         device_scale_factor_ == cursor.device_scale_factor_ &&
+         custom_hotspot_ == cursor.custom_hotspot_ &&
+         (native_type_ != CursorType::kCustom ||
+          gfx::BitmapsAreEqual(custom_bitmap_, cursor.custom_bitmap_));
 }
 
-void Cursor::Assign(const Cursor& cursor) {
+void Cursor::operator=(const Cursor& cursor) {
   if (*this == cursor)
     return;
   if (native_type_ == CursorType::kCustom)
@@ -86,8 +84,8 @@ void Cursor::Assign(const Cursor& cursor) {
   if (native_type_ == CursorType::kCustom)
     RefCustomCursor();
   device_scale_factor_ = cursor.device_scale_factor_;
-  custom_bitmap_ = cursor.custom_bitmap_;
   custom_hotspot_ = cursor.custom_hotspot_;
+  custom_bitmap_ = cursor.custom_bitmap_;
 }
 
 }  // namespace ui

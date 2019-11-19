@@ -1,0 +1,62 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module ui.mojom;
+
+import "mojo/public/mojom/base/string16.mojom";
+
+// Text input type which is based on blink::WebTextInputType.
+enum TextInputType {
+  NONE,
+  TEXT,
+  PASSWORD,
+  SEARCH,
+  EMAIL,
+  NUMBER,
+  TELEPHONE,
+  URL,
+  DATE,
+  DATE_TIME,
+  DATE_TIME_LOCAL,
+  MONTH,
+  TIME,
+  WEEK,
+  TEXT_AREA,
+  CONTENT_EDITABLE,
+  DATE_TIME_FIELD,
+  MAX = DATE_TIME_FIELD,
+};
+
+// See comments for ui::ImeTextSpan::Type for more details.
+enum ImeTextSpanType {
+  kComposition,
+  kSuggestion,
+  kMisspellingSuggestion,
+};
+
+// This enum represents the thickness of an underline segment of text,
+// the thickness of a ui::ImeTextSpan element.
+// The possible values are:
+// * kNone: When you don't want to paint the underline.
+// * kThin: For regular size.
+// * kThick: For thick underlines.
+enum ImeTextSpanThickness {
+  kNone,
+  kThin,
+  kThick,
+};
+
+// Represents an underlined segment of text currently composed by IME.
+// Corresponds to ui::ImeTextSpan.
+struct ImeTextSpan {
+  ImeTextSpanType type;
+  uint32 start_offset;
+  uint32 end_offset;
+  uint32 underline_color;
+  ImeTextSpanThickness thickness;
+  uint32 background_color;
+  uint32 suggestion_highlight_color;
+  bool remove_on_finish_composing;
+  array<string> suggestions;
+};

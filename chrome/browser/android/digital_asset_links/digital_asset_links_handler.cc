@@ -12,13 +12,13 @@
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
+#include "content/public/browser/web_contents.h"
 #include "net/base/load_flags.h"
 #include "net/base/url_util.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_status_code.h"
 #include "net/http/http_util.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
-#include "services/data_decoder/public/cpp/safe_json_parser.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/resource_response.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -26,6 +26,10 @@
 #include "url/origin.h"
 
 namespace {
+
+// In some cases we get a network change while fetching the digital asset
+// links file. See https://crbug.com/987329.
+const int kNumNetworkRetries = 1;
 
 // Location on a website where the asset links file can be found, see
 // https://developers.google.com/digital-asset-links/v1/getting-started.
@@ -98,6 +102,19 @@ bool StatementHasMatchingFingerprint(const base::Value& statement,
   return false;
 }
 
+// Shows a warning message in the DevTools console.
+void AddMessageToConsole(content::WebContents* web_contents,
+                         const std::string& message) {
+  if (web_contents) {
+    web_contents->GetMainFrame()->AddMessageToConsole(
+        blink::mojom::ConsoleMessageLevel::kWarning, message);
+    return;
+  }
+
+  // Fallback to LOG.
+  LOG(WARNING) << message;
+}
+
 }  // namespace
 
 namespace digital_asset_links {
@@ -105,8 +122,10 @@ namespace digital_asset_links {
 const char kDigitalAssetLinksCheckResponseKeyLinked[] = "linked";
 
 DigitalAssetLinksHandler::DigitalAssetLinksHandler(
+    content::WebContents* web_contents,
     scoped_refptr<network::SharedURLLoaderFactory> factory)
-    : shared_url_loader_factory_(std::move(factory)), weak_ptr_factory_(this) {}
+    : content::WebContentsObserver(web_contents),
+      shared_url_loader_factory_(std::move(factory)) {}
 
 DigitalAssetLinksHandler::~DigitalAssetLinksHandler() = default;
 
@@ -123,44 +142,55 @@ void DigitalAssetLinksHandler::OnURLLoadComplete(
     int net_error = url_loader_->NetError();
     if (net_error == net::ERR_INTERNET_DISCONNECTED ||
         net_error == net::ERR_NAME_NOT_RESOLVED) {
-      LOG(WARNING) << "Digital Asset Links connection failed.";
+      AddMessageToConsole(web_contents(),
+                          "Digital Asset Links connection failed.");
       std::move(callback_).Run(RelationshipCheckResult::NO_CONNECTION);
       return;
     }
 
-    LOG(WARNING) << base::StringPrintf(
-        "Digital Asset Links endpoint responded with code %d.", response_code);
+    AddMessageToConsole(
+        web_contents(),
+        base::StringPrintf(
+            "Digital Asset Links endpoint responded with code %d.",
+            response_code));
     std::move(callback_).Run(RelationshipCheckResult::FAILURE);
     return;
   }
 
-  data_decoder::SafeJsonParser::Parse(
-      /* connector=*/nullptr,  // Connector is unused on Android.
+  data_decoder::DataDecoder::ParseJsonIsolated(
       *response_body,
-      base::Bind(&DigitalAssetLinksHandler::OnJSONParseSucceeded,
-                 weak_ptr_factory_.GetWeakPtr(), package, fingerprint,
-                 relationship),
-      base::Bind(&DigitalAssetLinksHandler::OnJSONParseFailed,
-                 weak_ptr_factory_.GetWeakPtr()));
+      base::BindOnce(&DigitalAssetLinksHandler::OnJSONParseResult,
+                     weak_ptr_factory_.GetWeakPtr(), package, fingerprint,
+                     relationship));
 
   url_loader_.reset(nullptr);
 }
 
-void DigitalAssetLinksHandler::OnJSONParseSucceeded(
+void DigitalAssetLinksHandler::OnJSONParseResult(
     const std::string& package,
     const std::string& fingerprint,
     const std::string& relationship,
-    std::unique_ptr<base::Value> statement_list) {
-  if (!statement_list->is_list()) {
+    data_decoder::DataDecoder::ValueOrError result) {
+  if (!result.value) {
+    AddMessageToConsole(
+        web_contents(),
+        "Digital Asset Links response parsing failed with message: " +
+            *result.error);
     std::move(callback_).Run(RelationshipCheckResult::FAILURE);
-    LOG(WARNING) << "Statement List is not a list.";
+    return;
+  }
+
+  auto& statement_list = *result.value;
+  if (!statement_list.is_list()) {
+    std::move(callback_).Run(RelationshipCheckResult::FAILURE);
+    AddMessageToConsole(web_contents(), "Statement List is not a list.");
     return;
   }
 
   // We only output individual statement failures if none match.
   std::vector<std::string> failures;
 
-  for (const auto& statement : statement_list->GetList()) {
+  for (const auto& statement : statement_list.GetList()) {
     if (!statement.is_dict()) {
       failures.push_back("Statement is not a dictionary.");
       continue;
@@ -186,17 +216,8 @@ void DigitalAssetLinksHandler::OnJSONParseSucceeded(
   }
 
   for (const auto& failure_reason : failures)
-    LOG(WARNING) << failure_reason;
+    AddMessageToConsole(web_contents(), failure_reason);
 
-  std::move(callback_).Run(RelationshipCheckResult::FAILURE);
-}
-
-void DigitalAssetLinksHandler::OnJSONParseFailed(
-    const std::string& error_message) {
-  LOG(WARNING)
-      << base::StringPrintf(
-             "Digital Asset Links response parsing failed with message:")
-      << error_message;
   std::move(callback_).Run(RelationshipCheckResult::FAILURE);
 }
 
@@ -246,6 +267,9 @@ bool DigitalAssetLinksHandler::CheckDigitalAssetLinkRelationship(
   request->url = request_url;
   url_loader_ =
       network::SimpleURLLoader::Create(std::move(request), traffic_annotation);
+  url_loader_->SetRetryOptions(
+      kNumNetworkRetries,
+      network::SimpleURLLoader::RetryMode::RETRY_ON_NETWORK_CHANGE);
   url_loader_->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
       shared_url_loader_factory_.get(),
       base::BindOnce(&DigitalAssetLinksHandler::OnURLLoadComplete,

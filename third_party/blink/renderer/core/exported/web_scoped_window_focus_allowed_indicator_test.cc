@@ -33,11 +33,12 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
 
 namespace blink {
 
 TEST(WebScopedWindowFocusAllowedIndicatorTest, Basic) {
-  Persistent<Document> document = Document::CreateForTest();
+  Persistent<Document> document = MakeGarbageCollected<Document>();
   WebDocument web_document(document);
 
   EXPECT_FALSE(document->IsWindowInteractionAllowed());

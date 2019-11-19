@@ -34,7 +34,7 @@ public class DisplayCutoutTest {
      */
     @Test
     @LargeTest
-    public void testViewportFitAuto() throws InterruptedException, TimeoutException {
+    public void testViewportFitAuto() throws TimeoutException {
         // Display Cutout API requires Android P+.
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) return;
 
@@ -51,7 +51,7 @@ public class DisplayCutoutTest {
      */
     @Test
     @LargeTest
-    public void testViewportFitContain() throws InterruptedException, TimeoutException {
+    public void testViewportFitContain() throws TimeoutException {
         // Display Cutout API requires Android P+.
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) return;
 
@@ -68,7 +68,7 @@ public class DisplayCutoutTest {
      */
     @Test
     @LargeTest
-    public void testViewportFitCover() throws InterruptedException, TimeoutException {
+    public void testViewportFitCover() throws TimeoutException {
         // Display Cutout API requires Android P+.
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) return;
 
@@ -91,7 +91,7 @@ public class DisplayCutoutTest {
      */
     @Test
     @LargeTest
-    public void testViewportFitCoverForced() throws InterruptedException, TimeoutException {
+    public void testViewportFitCoverForced() throws TimeoutException {
         // Display Cutout API requires Android P+.
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) return;
 
@@ -116,7 +116,7 @@ public class DisplayCutoutTest {
      */
     @Test
     @LargeTest
-    public void testViewportFitDefault() throws InterruptedException, TimeoutException {
+    public void testViewportFitDefault() throws TimeoutException {
         // Display Cutout API requires Android P+.
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) return;
 
@@ -138,7 +138,7 @@ public class DisplayCutoutTest {
      */
     @Test
     @LargeTest
-    public void testViewportFitDipScale() throws InterruptedException, TimeoutException {
+    public void testViewportFitDipScale() throws TimeoutException {
         // Display Cutout API requires Android P+.
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) return;
 
@@ -156,7 +156,7 @@ public class DisplayCutoutTest {
      */
     @Test
     @LargeTest
-    public void testViewportFitSubframe() throws InterruptedException, TimeoutException {
+    public void testViewportFitSubframe() throws TimeoutException {
         // Display Cutout API requires Android P+.
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) return;
 
@@ -175,7 +175,7 @@ public class DisplayCutoutTest {
      */
     @Test
     @LargeTest
-    public void testViewportFitCoverNoCutout() throws InterruptedException, TimeoutException {
+    public void testViewportFitCoverNoCutout() throws TimeoutException {
         // Display Cutout API requires Android P+.
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) return;
 

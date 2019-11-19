@@ -45,8 +45,13 @@ class DISPLAY_EXPORT ColorProfileReader {
   typedef std::map<base::string16, base::string16> DeviceToPathMap;
   typedef std::map<base::string16, std::string> DeviceToDataMap;
 
-  // Enumerate displays and return a map to their ICC profile path.
-  static DeviceToPathMap BuildDeviceToPathMap();
+  // Enumerate displays and return a map to their ICC profile path. This
+  // needs to be run off of the main thread.
+  static ColorProfileReader::DeviceToPathMap
+  BuildDeviceToPathMapOnBackgroundThread();
+
+  // Called on the main thread when the device paths have been retrieved
+  void BuildDeviceToPathMapCompleted(DeviceToPathMap new_device_to_path_map);
 
   // Do the actual reading from the filesystem. This needs to be run off of the
   // main thread.
@@ -63,7 +68,7 @@ class DISPLAY_EXPORT ColorProfileReader {
   bool update_in_flight_ = false;
   DeviceToPathMap device_to_path_map_;
   std::map<int64_t, gfx::ICCProfile> display_id_to_profile_map_;
-  base::WeakPtrFactory<ColorProfileReader> weak_factory_;
+  base::WeakPtrFactory<ColorProfileReader> weak_factory_{this};
 };
 
 }  // namespace win

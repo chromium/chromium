@@ -61,3 +61,9 @@ NETWORK_SWITCH(kTestingFixedHttpsPort, "testing-fixed-https-port")
 // TODO(mmenke): Can we just remove this?  host-resolver-rules is more generally
 // useful.
 NETWORK_SWITCH(kHostRules, "host-rules")
+
+// Enable "greasing" HTTP/2, that is, sending SETTINGS parameters with reserved
+// identifiers and sending frames of reserved types, respectively.  See
+// https://tools.ietf.org/html/draft-bishop-httpbis-grease-00 for more detail.
+NETWORK_SWITCH(kHttp2GreaseSettings, "http2-grease-settings")
+NETWORK_SWITCH(kHttp2GreaseFrameType, "http2-grease-frame-type")

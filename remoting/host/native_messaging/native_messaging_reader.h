@@ -63,7 +63,7 @@ class NativeMessagingReader {
 
   // Allows the reader to be deleted safely even when tasks may be pending on
   // it.
-  base::WeakPtrFactory<NativeMessagingReader> weak_factory_;
+  base::WeakPtrFactory<NativeMessagingReader> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(NativeMessagingReader);
 };

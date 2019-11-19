@@ -47,10 +47,15 @@ template("python_library") {
       set_sources_assignment_filter([ "#*" ])
       sources = _py_files
 
+      # Dependencies are listed relative to the pydeps file directory, but data
+      # parameter expects paths that are relative to the current BUILD.gn
+      _script_dir = get_path_info(invoker.pydeps_file, "dir")
+      _rebased_py_files = rebase_path(sources, ".", _script_dir)
+
       # Even though the .pydep file is not used at runtime, it must be added
       # so that "gn analyze" will mark the target as changed when .py files
       # are removed but none are added or modified.
-      data = sources + [ invoker.pydeps_file ]
+      data = _rebased_py_files + [ invoker.pydeps_file ]
     } else {
       data = []
     }

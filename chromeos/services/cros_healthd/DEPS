@@ -1,0 +1,4 @@
+include_rules = [
+  "+chromeos/dbus",
+  "+mojo/public",
+]

@@ -1,0 +1,10 @@
+<% 
+try:
+    file_content = open(path)
+except:
+    raise "Should never execute here"
+doc_content = ''.join(file_content.readlines())
+file_content.close()
+%>
+
+${unicode(doc_content, encoding='utf-8')}

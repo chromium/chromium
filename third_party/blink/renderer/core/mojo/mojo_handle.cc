@@ -4,6 +4,9 @@
 
 #include "third_party/blink/renderer/core/mojo/mojo_handle.h"
 
+#include "base/numerics/safe_math.h"
+#include "mojo/public/c/system/message_pipe.h"
+#include "mojo/public/cpp/bindings/message.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "third_party/blink/renderer/bindings/core/v8/array_buffer_or_array_buffer_view.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -29,10 +32,6 @@ static const size_t kHandleVectorInlineCapacity = 4;
 
 namespace blink {
 
-MojoHandle* MojoHandle::Create(mojo::ScopedHandle handle) {
-  return MakeGarbageCollected<MojoHandle>(std::move(handle));
-}
-
 mojo::ScopedHandle MojoHandle::TakeHandle() {
   return std::move(handle_);
 }
@@ -54,27 +53,37 @@ MojoWatcher* MojoHandle::watch(ScriptState* script_state,
 MojoResult MojoHandle::writeMessage(
     ArrayBufferOrArrayBufferView& buffer,
     const HeapVector<Member<MojoHandle>>& handles) {
-  // mojo::WriteMessageRaw takes ownership of the handles, so release them here.
-  Vector<::MojoHandle, kHandleVectorInlineCapacity> raw_handles(handles.size());
-  std::transform(
-      handles.begin(), handles.end(), raw_handles.begin(),
-      [](MojoHandle* handle) { return handle->handle_.release().value(); });
+  Vector<mojo::ScopedHandle, kHandleVectorInlineCapacity> scoped_handles;
+  scoped_handles.ReserveCapacity(handles.size());
+  bool has_invalid_handles = false;
+  for (auto& handle : handles) {
+    if (!handle->handle_.is_valid())
+      has_invalid_handles = true;
+    else
+      scoped_handles.emplace_back(std::move(handle->handle_));
+  }
+  if (has_invalid_handles)
+    return MOJO_RESULT_INVALID_ARGUMENT;
 
   const void* bytes = nullptr;
   size_t num_bytes = 0;
   if (buffer.IsArrayBuffer()) {
     DOMArrayBuffer* array = buffer.GetAsArrayBuffer();
     bytes = array->Data();
-    num_bytes = array->ByteLength();
+    num_bytes = array->ByteLengthAsSizeT();
   } else {
     DOMArrayBufferView* view = buffer.GetAsArrayBufferView().View();
     bytes = view->BaseAddress();
     num_bytes = view->byteLength();
   }
 
-  return mojo::WriteMessageRaw(
-      mojo::MessagePipeHandle(handle_.get().value()), bytes, num_bytes,
-      raw_handles.data(), raw_handles.size(), MOJO_WRITE_MESSAGE_FLAG_NONE);
+  auto message = mojo::Message(
+      base::make_span(static_cast<const uint8_t*>(bytes), num_bytes),
+      base::make_span(scoped_handles));
+  DCHECK(!message.IsNull());
+  return mojo::WriteMessageNew(mojo::MessagePipeHandle(handle_.get().value()),
+                               message.TakeMojoMessage(),
+                               MOJO_WRITE_MESSAGE_FLAG_NONE);
 }
 
 MojoReadMessageResult* MojoHandle::readMessage(
@@ -122,7 +131,7 @@ MojoReadMessageResult* MojoHandle::readMessage(
 
   HeapVector<Member<MojoHandle>> handles(num_handles);
   for (uint32_t i = 0; i < num_handles; ++i) {
-    handles[i] = MojoHandle::Create(
+    handles[i] = MakeGarbageCollected<MojoHandle>(
         mojo::MakeScopedHandle(mojo::Handle(raw_handles[i])));
   }
   result_dict->setHandles(handles);
@@ -145,7 +154,7 @@ MojoWriteDataResult* MojoHandle::writeData(
   if (buffer.IsArrayBuffer()) {
     DOMArrayBuffer* array = buffer.GetAsArrayBuffer();
     elements = array->Data();
-    num_bytes = array->ByteLength();
+    num_bytes = array->DeprecatedByteLengthAsUnsigned();
   } else {
     DOMArrayBufferView* view = buffer.GetAsArrayBufferView().View();
     elements = view->BaseAddress();
@@ -208,7 +217,7 @@ MojoReadDataResult* MojoHandle::readData(
   if (buffer.IsArrayBuffer()) {
     DOMArrayBuffer* array = buffer.GetAsArrayBuffer();
     elements = array->Data();
-    num_bytes = array->ByteLength();
+    num_bytes = array->DeprecatedByteLengthAsUnsigned();
   } else {
     DOMArrayBufferView* view = buffer.GetAsArrayBufferView().View();
     elements = view->BaseAddress();
@@ -233,15 +242,11 @@ MojoMapBufferResult* MojoHandle::mapBuffer(unsigned offset,
       MojoMapBuffer(handle_.get().value(), offset, num_bytes, nullptr, &data);
   result_dict->setResult(result);
   if (result == MOJO_RESULT_OK) {
-    WTF::ArrayBufferContents::DataHandle data_handle(
-        data, num_bytes,
-        [](void* buffer, size_t length, void* alloc_data) {
+    ArrayBufferContents contents(
+        data, num_bytes, [](void* buffer, size_t length, void* alloc_data) {
           MojoResult result = MojoUnmapBuffer(buffer);
           DCHECK_EQ(result, MOJO_RESULT_OK);
-        },
-        nullptr);
-    WTF::ArrayBufferContents contents(std::move(data_handle),
-                                      WTF::ArrayBufferContents::kNotShared);
+        });
     result_dict->setBuffer(DOMArrayBuffer::Create(contents));
   }
   return result_dict;
@@ -262,7 +267,8 @@ MojoCreateSharedBufferResult* MojoHandle::duplicateBufferHandle(
                                                 handle.mutable_value());
   result_dict->setResult(result);
   if (result == MOJO_RESULT_OK) {
-    result_dict->setHandle(MojoHandle::Create(mojo::MakeScopedHandle(handle)));
+    result_dict->setHandle(
+        MakeGarbageCollected<MojoHandle>(mojo::MakeScopedHandle(handle)));
   }
   return result_dict;
 }

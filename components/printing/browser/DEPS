@@ -1,11 +1,10 @@
 include_rules = [
   "+components/crash/core/common",
-  "+components/services/pdf_compositor/public/cpp",
-  "+components/services/pdf_compositor/public/interfaces",
+  "+components/discardable_memory/service",
+  "+components/services/pdf_compositor/public",
   "+components/strings/grit",
   "+content/public/browser",
-  "+mojo/public/cpp/system",
-  "+services/service_manager/public/cpp",
+  "+mojo/public",
   "+ui/base/l10n",
 ]
 

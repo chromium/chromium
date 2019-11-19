@@ -39,7 +39,10 @@ namespace blink {
 void CachedMatchedProperties::Set(const ComputedStyle& style,
                                   const ComputedStyle& parent_style,
                                   const MatchedPropertiesVector& properties) {
-  matched_properties.AppendVector(properties);
+  for (const auto& new_matched_properties : properties) {
+    matched_properties.push_back(new_matched_properties.properties);
+    matched_properties_types.push_back(new_matched_properties.types_);
+  }
 
   // Note that we don't cache the original ComputedStyle instance. It may be
   // further modified.  The ComputedStyle in the cache is really just a holder
@@ -68,18 +71,37 @@ const CachedMatchedProperties* MatchedPropertiesCache::Find(
   CachedMatchedProperties* cache_item = it->value.Get();
   if (!cache_item)
     return nullptr;
-
-  wtf_size_t size = properties.size();
-  if (size != cache_item->matched_properties.size())
+  if (*cache_item != properties)
     return nullptr;
   if (cache_item->computed_style->InsideLink() !=
       style_resolver_state.Style()->InsideLink())
     return nullptr;
-  for (wtf_size_t i = 0; i < size; ++i) {
-    if (properties[i] != cache_item->matched_properties[i])
-      return nullptr;
-  }
   return cache_item;
+}
+
+bool CachedMatchedProperties::operator==(
+    const MatchedPropertiesVector& properties) {
+  if (properties.size() != matched_properties.size())
+    return false;
+  for (wtf_size_t i = 0; i < properties.size(); ++i) {
+    if (properties[i].properties != matched_properties[i])
+      return false;
+    if (properties[i].types_.link_match_type !=
+        matched_properties_types[i].link_match_type)
+      return false;
+    if (properties[i].types_.tree_order !=
+        matched_properties_types[i].tree_order)
+      return false;
+    if (properties[i].types_.valid_property_filter !=
+        matched_properties_types[i].valid_property_filter)
+      return false;
+  }
+  return true;
+}
+
+bool CachedMatchedProperties::operator!=(
+    const MatchedPropertiesVector& properties) {
+  return !(*this == properties);
 }
 
 void MatchedPropertiesCache::Add(const ComputedStyle& style,
@@ -158,6 +180,32 @@ bool MatchedPropertiesCache::IsCacheable(const StyleResolverState& state) {
 
 void MatchedPropertiesCache::Trace(blink::Visitor* visitor) {
   visitor->Trace(cache_);
+  visitor->RegisterWeakCallbackMethod<
+      MatchedPropertiesCache,
+      &MatchedPropertiesCache::RemoveCachedMatchedPropertiesWithDeadEntries>(
+      this);
+}
+
+void MatchedPropertiesCache::RemoveCachedMatchedPropertiesWithDeadEntries(
+    const WeakCallbackInfo& info) {
+  Vector<unsigned> to_remove;
+  for (const auto& entry_pair : cache_) {
+    // A nullptr value indicates that the entry is currently being created; see
+    // |MatchedPropertiesCache::Add|. Keep such entries.
+    if (!entry_pair.value)
+      continue;
+    for (const auto& matched_properties :
+         entry_pair.value->matched_properties) {
+      if (!info.IsHeapObjectAlive(matched_properties)) {
+        to_remove.push_back(entry_pair.key);
+        break;
+      }
+    }
+  }
+  // Allocation is forbidden during executing weak callbacks, so the data
+  // structure will not be rehashed here. The next insertion/deletion from
+  // regular code will take care of shrinking accordingly.
+  cache_.RemoveAll(to_remove);
 }
 
 }  // namespace blink

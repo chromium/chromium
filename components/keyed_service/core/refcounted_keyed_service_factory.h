@@ -26,7 +26,9 @@ class RefcountedKeyedService;
 class KEYED_SERVICE_EXPORT RefcountedKeyedServiceFactory
     : public KeyedServiceBaseFactory {
  protected:
-  RefcountedKeyedServiceFactory(const char* name, DependencyManager* manager);
+  RefcountedKeyedServiceFactory(const char* name,
+                                DependencyManager* manager,
+                                Type type);
   ~RefcountedKeyedServiceFactory() override;
 
   // A callback that supplies the instance of a KeyedService for a given
@@ -47,16 +49,14 @@ class KEYED_SERVICE_EXPORT RefcountedKeyedServiceFactory
   // not be empty.
   scoped_refptr<RefcountedKeyedService> SetTestingFactoryAndUse(
       void* context,
-      void* side_parameter,
       TestingFactory testing_factory);
 
   // Common implementation that maps |context| to some service object. Deals
   // with incognito contexts per subclass instructions with GetContextToUse()
   // method on the base.  If |create| is true, the service will be created
-  // using BuildServiceInstanceFor() if it doesn't already exist. Subclasses
-  // could pass |side_parameters| object if needed to create a service object.
-  scoped_refptr<RefcountedKeyedService>
-  GetServiceForContext(void* context, void* side_parameter, bool create);
+  // using BuildServiceInstanceFor() if it doesn't already exist.
+  scoped_refptr<RefcountedKeyedService> GetServiceForContext(void* context,
+                                                             bool create);
 
   // Maps |context| to |service| with debug checks to prevent duplication and
   // returns |service|.
@@ -68,11 +68,9 @@ class KEYED_SERVICE_EXPORT RefcountedKeyedServiceFactory
   void Disassociate(void* context);
 
   // Returns a new RefcountedKeyedService that will be associated with
-  // |context|. The |side_parameter| could be nullptr or some object required
-  // to create a service instance.
+  // |context|.
   virtual scoped_refptr<RefcountedKeyedService> BuildServiceInstanceFor(
-      void* context,
-      void* side_parameter) const = 0;
+      void* context) const = 0;
 
   // Returns whether the |context| is off-the-record or not.
   virtual bool IsOffTheRecord(void* context) const = 0;

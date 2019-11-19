@@ -3,7 +3,9 @@
 # found in the LICENSE file.
 
 import("//build/config/ui.gni")
+import("//gpu/vulkan/features.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
+import("//ui/ozone/ozone.gni")
 
 group("common") {
   if (is_component_build) {
@@ -54,6 +56,7 @@ source_set("command_buffer_traits_sources") {
 
   deps = [
     "//base",
+    "//gpu/ipc/common:vulkan_ycbcr_info",
     "//ui/gfx/ipc/buffer_types",
     "//ui/gfx/ipc/geometry",
   ]
@@ -79,6 +82,7 @@ source_set("ipc_common_sources") {
     "gpu_param_traits.cc",
     "gpu_param_traits.h",
     "gpu_param_traits_macros.h",
+    "gpu_watchdog_timeout.h",
     "memory_stats.cc",
     "memory_stats.h",
   ]
@@ -96,7 +100,7 @@ source_set("ipc_common_sources") {
       "gpu_memory_buffer_impl_dxgi.h",
     ]
   }
-  if (is_linux) {
+  if (is_linux || use_ozone) {
     sources += [
       "gpu_memory_buffer_impl_native_pixmap.cc",
       "gpu_memory_buffer_impl_native_pixmap.h",
@@ -118,6 +122,7 @@ source_set("ipc_common_sources") {
   public_deps = [
     ":command_buffer_traits_sources",
     ":surface_handle_type",
+    ":vulkan_ycbcr_info",
     "//ipc",
     "//url/ipc:url_ipc",
   ]
@@ -141,15 +146,12 @@ source_set("ipc_common_sources") {
     sources += [
       "android/scoped_surface_request_conduit.cc",
       "android/scoped_surface_request_conduit.h",
-      "android/surface_owner_android.cc",
-      "android/surface_owner_android.h",
       "gpu_surface_lookup.cc",
       "gpu_surface_lookup.h",
       "gpu_surface_tracker.cc",
       "gpu_surface_tracker.h",
     ]
     libs = [ "android" ]
-    deps += [ ":android_image_reader_utils" ]
   }
 
   if (use_ozone) {
@@ -169,6 +171,7 @@ if (is_android) {
       "//ui/gl",
     ]
     visibility = [
+      "//android_webview/browser/gfx",
       "//gpu/*",
       "//media/gpu:gpu",
     ]
@@ -186,11 +189,35 @@ source_set("surface_handle_type") {
   ]
 }
 
+component("vulkan_ycbcr_info") {
+  sources = [
+    "vulkan_ycbcr_info.cc",
+    "vulkan_ycbcr_info.h",
+  ]
+  deps = [
+    "//base",
+  ]
+  configs += [ "//gpu:gpu_implementation" ]
+}
+
+source_set("vulkan_types") {
+  sources = [
+    "vulkan_types.h",
+  ]
+  public_deps = [
+    "//ui/gfx",
+  ]
+  all_dependent_configs = [ "//third_party/vulkan:vulkan_config" ]
+  configs += [ "//gpu:gpu_implementation" ]
+}
+
 mojom("interfaces") {
+  generate_java = true
   sources = [
     "capabilities.mojom",
     "context_result.mojom",
     "dx_diag_node.mojom",
+    "gpu_extra_info.mojom",
     "gpu_feature_info.mojom",
     "gpu_info.mojom",
     "mailbox.mojom",
@@ -198,24 +225,50 @@ mojom("interfaces") {
     "memory_stats.mojom",
     "surface_handle.mojom",
     "sync_token.mojom",
+    "vulkan_ycbcr_info.mojom",
   ]
 
   public_deps = [
     ":gpu_preferences_interface",
     "//mojo/public/mojom/base",
-    "//ui/gfx/geometry/mojo",
+    "//ui/gfx/geometry/mojom",
+    "//ui/gfx/mojom",
   ]
+  if (enable_vulkan) {
+    public_deps += [ ":vulkan_interface" ]
+    enabled_features = [ "supports_vulkan" ]
+  }
 }
 
 mojom("gpu_preferences_interface") {
+  generate_java = true
   sources = [
     "gpu_preferences.mojom",
   ]
 
   public_deps = [
     "//mojo/public/mojom/base",
-    "//ui/gfx/mojo",
+    "//ui/gfx/mojom",
   ]
+
+  enabled_features = []
+  if (use_ozone) {
+    enabled_features += [ "use_ozone" ]
+  }
+}
+
+mojom("vulkan_interface") {
+  generate_java = true
+  sources = [
+    "vulkan_info.mojom",
+    "vulkan_types.mojom",
+  ]
+
+  public_deps = [
+    "//mojo/public/mojom/base",
+  ]
+
+  js_generate_struct_deserializers = true
 }
 
 mojom("test_interfaces") {
@@ -228,22 +281,44 @@ mojom("test_interfaces") {
     ":gpu_preferences_interface",
     ":interfaces",
   ]
+
+  if (enable_vulkan) {
+    public_deps += [ ":vulkan_interface" ]
+  }
 }
 
-source_set("struct_traits") {
+source_set("vulkan_types_mojom_traits") {
   sources = [
-    "context_result_struct_traits.h",
-    "mailbox_holder_struct_traits.h",
-    "mailbox_struct_traits.h",
-    "memory_stats_struct_traits.h",
-    "surface_handle_struct_traits.h",
-    "sync_token_struct_traits.h",
+    "vulkan_types_mojom_traits.h",
+  ]
+
+  deps = [
+    ":vulkan_interface_shared_cpp_sources",
+    ":vulkan_types",
+  ]
+}
+
+source_set("mojom_traits") {
+  sources = [
+    "context_result_mojom_traits.h",
+    "mailbox_holder_mojom_traits.h",
+    "mailbox_mojom_traits.h",
+    "memory_stats_mojom_traits.h",
+    "surface_handle_mojom_traits.h",
+    "sync_token_mojom_traits.h",
   ]
   deps = [
     ":interfaces_shared_cpp_sources",
     ":surface_handle_type",
+    ":vulkan_ycbcr_info",
     "//gpu/command_buffer/common",
     "//gpu/ipc/common",
     "//mojo/public/cpp/bindings:bindings",
   ]
+  if (is_android) {
+    sources += [ "vulkan_ycbcr_info_mojom_traits.h" ]
+  }
+  if (enable_vulkan) {
+    deps += [ ":vulkan_types_mojom_traits" ]
+  }
 }

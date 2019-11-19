@@ -14,11 +14,10 @@
 namespace remoting {
 
 HostStatusLogger::HostStatusLogger(scoped_refptr<HostStatusMonitor> monitor,
-                                   ServerLogEntry::Mode mode,
-                                   SignalStrategy* signal_strategy,
-                                   const std::string& directory_bot_jid)
-    : log_to_server_(mode, signal_strategy, directory_bot_jid),
-      monitor_(monitor) {
+                                   LogToServer* log_to_server)
+    : log_to_server_(log_to_server), monitor_(monitor) {
+  DCHECK(log_to_server_);
+  DCHECK(monitor_);
   monitor_->AddStatusObserver(this);
 }
 
@@ -34,12 +33,12 @@ void HostStatusLogger::LogSessionStateChange(const std::string& jid,
   std::unique_ptr<ServerLogEntry> entry(
       MakeLogEntryForSessionStateChange(connected));
   AddHostFieldsToLogEntry(entry.get());
-  entry->AddModeField(log_to_server_.mode());
+  entry->AddModeField(log_to_server_->mode());
 
   if (connected && connection_route_type_.count(jid) > 0)
     AddConnectionTypeToLogEntry(entry.get(), connection_route_type_[jid]);
 
-  log_to_server_.Log(*entry.get());
+  log_to_server_->Log(*entry.get());
 }
 
 void HostStatusLogger::OnClientConnected(const std::string& jid) {
@@ -62,10 +61,6 @@ void HostStatusLogger::OnClientRouteChange(
   if (channel_name == kVideoChannelName) {
     connection_route_type_[jid] = route.type;
   }
-}
-
-void HostStatusLogger::SetSignalingStateForTest(SignalStrategy::State state) {
-  log_to_server_.OnSignalStrategyStateChange(state);
 }
 
 }  // namespace remoting

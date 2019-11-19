@@ -18,8 +18,7 @@ namespace media {
 class CdmHostProxy;
 
 // Mock implementation of the cdm::ContentDecryptionModule interfaces.
-class MockLibraryCdm : public cdm::ContentDecryptionModule_9,
-                       public cdm::ContentDecryptionModule_10,
+class MockLibraryCdm : public cdm::ContentDecryptionModule_10,
                        public cdm::ContentDecryptionModule_11 {
  public:
   // Provides easy access to the MockLibraryCdm instance for testing to avoid
@@ -33,25 +32,6 @@ class MockLibraryCdm : public cdm::ContentDecryptionModule_9,
   MockLibraryCdm(HostInterface* host, const std::string& key_system);
 
   CdmHostProxy* GetCdmHostProxy();
-
-  // cdm::ContentDecryptionModule_9 implementation.
-  void Initialize(bool allow_distinctive_identifier,
-                  bool allow_persistent_state) override;
-  MOCK_METHOD1(
-      InitializeAudioDecoder,
-      cdm::Status(const cdm::AudioDecoderConfig_1& audio_decoder_config));
-  MOCK_METHOD1(
-      InitializeVideoDecoder,
-      cdm::Status(const cdm::VideoDecoderConfig_1& video_decoder_config));
-  MOCK_METHOD2(Decrypt,
-               cdm::Status(const cdm::InputBuffer_1& encrypted_buffer,
-                           cdm::DecryptedBlock* decrypted_block));
-  MOCK_METHOD2(DecryptAndDecodeFrame,
-               cdm::Status(const cdm::InputBuffer_1& encrypted_buffer,
-                           cdm::VideoFrame* video_frame));
-  MOCK_METHOD2(DecryptAndDecodeSamples,
-               cdm::Status(const cdm::InputBuffer_1& encrypted_buffer,
-                           cdm::AudioFrames* audio_frames));
 
   // cdm::ContentDecryptionModule_10 implementation.
   MOCK_METHOD1(

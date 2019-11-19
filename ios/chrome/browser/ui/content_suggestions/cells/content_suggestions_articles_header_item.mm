@@ -5,6 +5,8 @@
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_articles_header_item.h"
 
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
+#import "ios/chrome/common/colors/UIColor+cr_semantic_colors.h"
+#import "ios/chrome/common/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui_util/constraints_ui_util.h"
 #include "ios/chrome/grit/ios_strings.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -16,8 +18,6 @@
 namespace {
 // Leading and trailing margin for label and button.
 const CGFloat kTextMargin = 13;
-// Color for label text.
-const int kLabelColorRGB = 0x6D6D72;
 }
 
 #pragma mark - ContentSuggestionsArticlesHeaderItem
@@ -90,7 +90,7 @@ const int kLabelColorRGB = 0x6D6D72;
     _label = [[UILabel alloc] init];
     _label.translatesAutoresizingMaskIntoConstraints = NO;
     _label.font = [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
-    _label.textColor = UIColorFromRGB(kLabelColorRGB, 1.0);
+    _label.textColor = UIColor.cr_secondaryLabelColor;
     _label.adjustsFontForContentSizeCategory = YES;
     _label.adjustsFontSizeToFitWidth = YES;
 

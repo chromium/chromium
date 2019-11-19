@@ -43,8 +43,7 @@ DeviceToDeviceSecureContext::DeviceToDeviceSecureContext(
       responder_auth_message_(responder_auth_message),
       protocol_version_(protocol_version),
       last_encode_sequence_number_(kAuthenticationEncodeSequenceNumber),
-      last_decode_sequence_number_(kAuthenticationDecodeSequenceNumber),
-      weak_ptr_factory_(this) {}
+      last_decode_sequence_number_(kAuthenticationDecodeSequenceNumber) {}
 
 DeviceToDeviceSecureContext::~DeviceToDeviceSecureContext() {}
 

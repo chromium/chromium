@@ -17,15 +17,10 @@ namespace blink {
 class InheritedFontWeightChecker
     : public CSSInterpolationType::CSSConversionChecker {
  public:
-  static std::unique_ptr<InheritedFontWeightChecker> Create(
-      FontSelectionValue font_weight) {
-    return base::WrapUnique(new InheritedFontWeightChecker(font_weight));
-  }
-
- private:
-  InheritedFontWeightChecker(FontSelectionValue font_weight)
+  explicit InheritedFontWeightChecker(FontSelectionValue font_weight)
       : font_weight_(font_weight) {}
 
+ private:
   bool IsValid(const StyleResolverState& state,
                const InterpolationValue&) const final {
     return font_weight_ == state.ParentStyle()->GetFontWeight();
@@ -36,13 +31,13 @@ class InheritedFontWeightChecker
 
 InterpolationValue CSSFontWeightInterpolationType::CreateFontWeightValue(
     FontSelectionValue font_weight) const {
-  return InterpolationValue(InterpolableNumber::Create(font_weight));
+  return InterpolationValue(std::make_unique<InterpolableNumber>(font_weight));
 }
 
 InterpolationValue CSSFontWeightInterpolationType::MaybeConvertNeutral(
     const InterpolationValue&,
     ConversionCheckers&) const {
-  return InterpolationValue(InterpolableNumber::Create(0));
+  return InterpolationValue(std::make_unique<InterpolableNumber>(0));
 }
 
 InterpolationValue CSSFontWeightInterpolationType::MaybeConvertInitial(
@@ -59,7 +54,7 @@ InterpolationValue CSSFontWeightInterpolationType::MaybeConvertInherit(
   FontSelectionValue inherited_font_weight =
       state.ParentStyle()->GetFontWeight();
   conversion_checkers.push_back(
-      InheritedFontWeightChecker::Create(inherited_font_weight));
+      std::make_unique<InheritedFontWeightChecker>(inherited_font_weight));
   return CreateFontWeightValue(inherited_font_weight);
 }
 
@@ -67,31 +62,30 @@ InterpolationValue CSSFontWeightInterpolationType::MaybeConvertValue(
     const CSSValue& value,
     const StyleResolverState* state,
     ConversionCheckers& conversion_checkers) const {
-  if (value.IsPrimitiveValue()) {
+  if (auto* primitive_value = DynamicTo<CSSPrimitiveValue>(value)) {
     return CreateFontWeightValue(
-        FontSelectionValue(ToCSSPrimitiveValue(value).GetFloatValue()));
+        FontSelectionValue(primitive_value->GetFloatValue()));
   }
 
-  CHECK(value.IsIdentifierValue());
-  const CSSIdentifierValue& identifier_value = ToCSSIdentifierValue(value);
+  const auto& identifier_value = To<CSSIdentifierValue>(value);
   CSSValueID keyword = identifier_value.GetValueID();
 
   switch (keyword) {
-    case CSSValueInvalid:
+    case CSSValueID::kInvalid:
       return nullptr;
-    case CSSValueNormal:
+    case CSSValueID::kNormal:
       return CreateFontWeightValue(NormalWeightValue());
-    case CSSValueBold:
+    case CSSValueID::kBold:
       return CreateFontWeightValue(BoldWeightValue());
 
-    case CSSValueBolder:
-    case CSSValueLighter: {
+    case CSSValueID::kBolder:
+    case CSSValueID::kLighter: {
       DCHECK(state);
       FontSelectionValue inherited_font_weight =
           state->ParentStyle()->GetFontWeight();
       conversion_checkers.push_back(
-          InheritedFontWeightChecker::Create(inherited_font_weight));
-      if (keyword == CSSValueBolder) {
+          std::make_unique<InheritedFontWeightChecker>(inherited_font_weight));
+      if (keyword == CSSValueID::kBolder) {
         return CreateFontWeightValue(
             FontDescription::BolderWeight(inherited_font_weight));
       }

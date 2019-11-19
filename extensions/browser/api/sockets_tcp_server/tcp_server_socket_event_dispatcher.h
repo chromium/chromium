@@ -12,6 +12,7 @@
 #include "extensions/browser/api/api_resource_manager.h"
 #include "extensions/browser/api/sockets_tcp/sockets_tcp_api.h"
 #include "extensions/browser/api/sockets_tcp_server/sockets_tcp_server_api.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/network/public/mojom/tcp_socket.mojom.h"
 
 namespace content {
@@ -84,7 +85,7 @@ class TCPServerSocketEventDispatcher
   static void AcceptCallback(
       const AcceptParams& params,
       int result,
-      network::mojom::TCPConnectedSocketPtr socket,
+      mojo::PendingRemote<network::mojom::TCPConnectedSocket> socket,
       const base::Optional<net::IPEndPoint>& remote_addr,
       mojo::ScopedDataPipeConsumerHandle receive_pipe_handle,
       mojo::ScopedDataPipeProducerHandle send_pipe_handle);

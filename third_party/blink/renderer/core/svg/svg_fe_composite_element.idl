@@ -46,4 +46,4 @@
     [MeasureAs=SVG1DOMFilter] readonly attribute SVGAnimatedNumber k4;
 };
 
-SVGFECompositeElement implements SVGFilterPrimitiveStandardAttributes;
+SVGFECompositeElement includes SVGFilterPrimitiveStandardAttributes;

@@ -27,71 +27,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test_utils.h"
 #include "ui/base/resource/resource_bundle.h"
-// #include "ui/native_theme/test_native_theme.h"
-
-// namespace {
-
-// // Delimiter in the Most Visited icon URL that indicates a dark icon. Keep
-// value
-// // in sync with NtpIconSource.
-// const char kMVIconDarkParameter[] = "/dark/";
-
-// }  // namespace
-
 namespace local_ntp_test_utils {
-
-// // Tests that dark mode styling is properly applied to the local NTP.
-// class BaseDarkModeTest {
-//  public:
-//   BaseDarkModeTest() {}
-
-//   ui::TestNativeTheme* theme() { return &theme_; }
-
-//   // Returns true if dark mode is applied on the |frame|.
-//   bool GetIsDarkModeApplied(const content::ToRenderFrameHost& frame) {
-//     bool dark_mode_applied = false;
-//     if (instant_test_utils::GetBoolFromJS(
-//             frame,
-//             "document.documentElement.getAttribute('darkmode') === 'true'",
-//             &dark_mode_applied)) {
-//       return dark_mode_applied;
-//     }
-//     return false;
-//   }
-
-//   // Returns true if dark mode is applied on the |frame|.
-//   bool GetIsDarkModeChipApplied(const content::ToRenderFrameHost& frame) {
-//     bool dark_mode_chip_applied = false;
-//     if (!instant_test_utils::GetBoolFromJS(
-//             frame,
-//             "document.documentElement.getAttribute('darkmode') === 'true' &&
-//             "
-//             "!document.body.classList.contains('light-chip')",
-//             &dark_mode_chip_applied)) {
-//       return dark_mode_chip_applied;
-//     }
-//     return false;
-//   }
-
-//   // Returns true if dark mode is applied to the Most Visited icon at |index|
-//   // (i.e. the icon URL contains the |kMVIconDarkParameter|).
-//   bool GetIsDarkTile(const content::ToRenderFrameHost& frame, int index) {
-//     bool dark_tile = false;
-//     if (instant_test_utils::GetBoolFromJS(
-//             frame,
-//             base::StringPrintf(
-//                 "document.querySelectorAll('#mv-tiles .md-icon img')[%d]"
-//                 ".src.includes('%s')",
-//                 index, kMVIconDarkParameter),
-//             &dark_tile)) {
-//       return dark_tile;
-//     }
-//     return false;
-//   }
-
-//  private:
-//   ui::TestNativeTheme theme_;
-// };
 
 content::WebContents* OpenNewTab(Browser* browser, const GURL& url) {
   ui_test_utils::NavigateToURLWithDisposition(

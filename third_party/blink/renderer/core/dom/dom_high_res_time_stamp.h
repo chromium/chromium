@@ -5,7 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_DOM_DOM_HIGH_RES_TIME_STAMP_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_DOM_DOM_HIGH_RES_TIME_STAMP_H_
 
-#include "third_party/blink/renderer/platform/wtf/time.h"
+#include "base/time/time.h"
 
 namespace blink {
 
@@ -21,12 +21,12 @@ inline double ConvertDOMHighResTimeStampToSeconds(
 }
 
 inline DOMHighResTimeStamp ConvertTimeTicksToDOMHighResTimeStamp(
-    TimeTicks time) {
-  return (time - TimeTicks()).InMillisecondsF();
+    base::TimeTicks time) {
+  return (time - base::TimeTicks()).InMillisecondsF();
 }
 
 inline DOMHighResTimeStamp ConvertTimeDeltaToDOMHighResTimeStamp(
-    TimeDelta delta) {
+    base::TimeDelta delta) {
   return delta.InMillisecondsF();
 }
 

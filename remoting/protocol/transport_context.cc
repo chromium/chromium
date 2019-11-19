@@ -10,9 +10,8 @@
 #include "base/location.h"
 #include "base/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "build/build_config.h"
 #include "remoting/base/url_request.h"
-#include "remoting/protocol/http_ice_config_request.h"
-#include "remoting/protocol/jingle_info_request.h"
 #include "remoting/protocol/port_allocator_factory.h"
 #include "third_party/webrtc/rtc_base/socket_address.h"
 
@@ -20,6 +19,7 @@
 #include "jingle/glue/thread_wrapper.h"
 #include "net/url_request/url_request_context_getter.h"
 #include "remoting/protocol/chromium_port_allocator_factory.h"
+#include "remoting/protocol/remoting_ice_config_request.h"
 #endif  // !defined(OS_NACL)
 
 namespace remoting {
@@ -38,8 +38,7 @@ constexpr base::TimeDelta kMinimumIceConfigLifetime =
 scoped_refptr<TransportContext> TransportContext::ForTests(TransportRole role) {
   jingle_glue::JingleThreadWrapper::EnsureForCurrentMessageLoop();
   return new protocol::TransportContext(
-      nullptr, std::make_unique<protocol::ChromiumPortAllocatorFactory>(),
-      nullptr,
+      std::make_unique<protocol::ChromiumPortAllocatorFactory>(), nullptr,
       protocol::NetworkSettings(
           protocol::NetworkSettings::NAT_TRAVERSAL_OUTGOING),
       role);
@@ -47,13 +46,11 @@ scoped_refptr<TransportContext> TransportContext::ForTests(TransportRole role) {
 #endif  // !defined(OS_NACL)
 
 TransportContext::TransportContext(
-    SignalStrategy* signal_strategy,
     std::unique_ptr<PortAllocatorFactory> port_allocator_factory,
     std::unique_ptr<UrlRequestFactory> url_request_factory,
     const NetworkSettings& network_settings,
     TransportRole role)
-    : signal_strategy_(signal_strategy),
-      port_allocator_factory_(std::move(port_allocator_factory)),
+    : port_allocator_factory_(std::move(port_allocator_factory)),
       url_request_factory_(std::move(url_request_factory)),
       network_settings_(network_settings),
       role_(role) {}
@@ -81,7 +78,7 @@ void TransportContext::EnsureFreshIceConfig() {
   if (ice_config_request_[relay_mode_])
     return;
 
-  // Don't need to make jingleinfo request if both STUN and Relay are disabled.
+  // Don't need to make ICE config request if both STUN and Relay are disabled.
   if ((network_settings_.flags & (NetworkSettings::NAT_TRAVERSAL_STUN |
                                   NetworkSettings::NAT_TRAVERSAL_RELAY)) == 0) {
     return;
@@ -93,15 +90,11 @@ void TransportContext::EnsureFreshIceConfig() {
     std::unique_ptr<IceConfigRequest> request;
     switch (relay_mode_) {
       case RelayMode::TURN:
-        if (ice_config_url_.empty()) {
-          LOG(WARNING) << "ice_config_url isn't set.";
-          return;
-        }
-        request.reset(new HttpIceConfigRequest(
-            url_request_factory_.get(), ice_config_url_, oauth_token_getter_));
-        break;
-      case RelayMode::GTURN:
-        request.reset(new JingleInfoRequest(signal_strategy_));
+#if defined(OS_NACL)
+        NOTREACHED() << "TURN is not supported on NACL";
+#else
+        request = std::make_unique<RemotingIceConfigRequest>();
+#endif
         break;
     }
     ice_config_request_[relay_mode_] = std::move(request);

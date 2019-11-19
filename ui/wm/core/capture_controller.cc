@@ -67,7 +67,7 @@ void CaptureController::SetCapture(aura::Window* new_capture_window) {
     // committing |capture_window_|.
     aura::WindowTracker tracker;
     tracker.Add(new_capture_window);
-    new_capture_window->env()->gesture_recognizer()->CancelActiveTouchesExcept(
+    aura::Env::GetInstance()->gesture_recognizer()->CancelActiveTouchesExcept(
         new_capture_window);
     if (!tracker.Contains(new_capture_window))
       new_capture_window = nullptr;

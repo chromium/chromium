@@ -4,16 +4,12 @@ per-file *.idl=set noparent
 per-file *.json=file://extensions/common/api/API_OWNERS
 per-file *.idl=file://extensions/common/api/API_OWNERS
 
-per-file input_method_private.json=shuchen@chromium.org
+per-file input_method_private.json=file://ui/base/ime/OWNERS
 per-file webview*.json=file://components/guest_view/OWNERS
 
 # For trivial changes only, like adding a new enum value or attribute.
 # New APIs or changes to existing APIs should be approved by an
 # extensions OWNER from //extensions/common/api/API_OWNERS.
-per-file automation*.idl=aboxhall@chromium.org
-per-file automation*.idl=dmazzoni@chromium.org
-per-file automation*.idl=dtseng@chromium.org
-per-file automation*.idl=nektar@chromium.org
 per-file file_manager_private*.idl=file://ui/file_manager/OWNERS
 
 # COMPONENT: Platform>Extensions>API

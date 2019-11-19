@@ -12,7 +12,6 @@ import static org.junit.Assert.assertTrue;
 
 import android.support.test.filters.SmallTest;
 import android.view.View;
-import android.view.ViewGroup;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -31,7 +30,7 @@ import org.chromium.chrome.browser.omnibox.UrlBar;
 import org.chromium.chrome.browser.util.MathUtils;
 import org.chromium.chrome.browser.widget.ScrimView.ScrimObserver;
 import org.chromium.chrome.browser.widget.ScrimView.ScrimParams;
-import org.chromium.chrome.browser.widget.bottomsheet.BottomSheet;
+import org.chromium.chrome.browser.widget.bottomsheet.BottomSheetContent;
 import org.chromium.chrome.browser.widget.bottomsheet.BottomSheetController;
 import org.chromium.chrome.browser.widget.bottomsheet.TestBottomSheetContent;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -52,7 +51,6 @@ public class ScrimTest {
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
-    private BottomSheet mBottomSheet;
     private BottomSheetController mSheetController;
     private ScrimView mScrim;
 
@@ -62,26 +60,15 @@ public class ScrimTest {
         final ChromeTabbedActivity activity = mActivityTestRule.getActivity();
 
         ThreadUtils.runOnUiThreadBlocking(() -> {
-            ViewGroup coordinator = activity.findViewById(org.chromium.chrome.R.id.coordinator);
-            mBottomSheet = activity.getLayoutInflater()
-                                   .inflate(org.chromium.chrome.R.layout.bottom_sheet, coordinator)
-                                   .findViewById(org.chromium.chrome.R.id.bottom_sheet)
-                                   .findViewById(org.chromium.chrome.R.id.bottom_sheet);
-            mBottomSheet.init(coordinator, activity);
-
+            mSheetController = activity.getBottomSheetController();
             mScrim = activity.getScrim();
-
-            mSheetController = new BottomSheetController(activity,
-                    activity.getActivityTabProvider(), mScrim, mBottomSheet,
-                    activity.getCompositorViewHolder().getLayoutManager().getOverlayPanelManager(),
-                    true);
         });
     }
 
     @Test
     @SmallTest
     @Feature({"Scrim"})
-    public void testScrimVisibility() throws InterruptedException, TimeoutException {
+    public void testScrimVisibility() throws TimeoutException {
         CallbackHelper visibilityHelper = new CallbackHelper();
         ScrimObserver observer = new ScrimObserver() {
             @Override
@@ -115,25 +102,30 @@ public class ScrimTest {
     @Test
     @SmallTest
     @Feature({"Scrim"})
-    public void testBottomSheetScrim() throws InterruptedException, TimeoutException {
+    public void testBottomSheetScrim() {
+        mScrim.disableAnimationForTesting(true);
         assertScrimVisibility(false);
         assertFalse("Nothing should be obscuring the tab.",
                 mActivityTestRule.getActivity().isViewObscuringAllTabs());
         assertEquals("The scrim alpha should be 0.", 0f, mScrim.getAlpha(), MathUtils.EPSILON);
 
         ThreadUtils.runOnUiThreadBlocking(() -> {
-            mBottomSheet.showContent(new TestBottomSheetContent(
-                    mActivityTestRule.getActivity(), BottomSheet.ContentPriority.HIGH, false));
-            mBottomSheet.setSheetState(BottomSheet.SheetState.HALF, false);
+            mSheetController.requestShowContent(
+                    new TestBottomSheetContent(mActivityTestRule.getActivity(),
+                            BottomSheetContent.ContentPriority.HIGH, false),
+                    false);
+            mSheetController.setSheetStateForTesting(BottomSheetController.SheetState.HALF, false);
         });
 
         assertScrimVisibility(true);
         assertTrue("A view should be obscuring the tab.",
                 mActivityTestRule.getActivity().isViewObscuringAllTabs());
-        assertEquals("The scrim alpha should be 1.", 1f, mScrim.getAlpha(), MathUtils.EPSILON);
+        assertEquals("The scrim alpha should be 0.", 0f, mScrim.getAlpha(), MathUtils.EPSILON);
 
         ThreadUtils.runOnUiThreadBlocking(
-                () -> mBottomSheet.setSheetState(BottomSheet.SheetState.PEEK, false));
+                ()
+                        -> mSheetController.setSheetStateForTesting(
+                                BottomSheetController.SheetState.PEEK, false));
 
         assertScrimVisibility(false);
         assertFalse("Nothing should be obscuring the tab.",
@@ -145,7 +137,7 @@ public class ScrimTest {
     @SmallTest
     @Feature({"Scrim"})
     @DisabledTest(message = "crbug.com/877774")
-    public void testOmniboxScrim() throws InterruptedException, TimeoutException {
+    public void testOmniboxScrim() {
         assertScrimVisibility(false);
         assertFalse("Nothing should be obscuring the tab.",
                 mActivityTestRule.getActivity().isViewObscuringAllTabs());

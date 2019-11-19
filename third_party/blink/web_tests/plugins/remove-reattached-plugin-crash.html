@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<object id="plugin" type="application/x-blink-test-plugin"></object>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+<script>
+  test(()=> {
+    document.body.offsetTop;
+    plugin.style.display = "block";
+    document.body.offsetTop;
+    plugin.parentNode.removeChild(plugin);
+  }, "no crash or DCHECK failure");
+</script>

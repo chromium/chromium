@@ -211,7 +211,7 @@ TEST(LocaleChangeGuardTest, ShowNotificationLocaleChangedList) {
         (dash ? std::string(locale, dash - locale) : std::string(locale));
 
     const bool notification_allowed =
-        base::ContainsValue(kShowNotificationLanguages, language);
+        base::Contains(kShowNotificationLanguages, language);
 
     const char* const* skipped_begin =
         LocaleChangeGuard::GetSkipShowNotificationLanguagesForTesting();

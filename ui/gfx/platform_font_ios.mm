@@ -77,7 +77,7 @@ const std::string& PlatformFontIOS::GetFontName() const {
   return font_name_;
 }
 
-std::string PlatformFontIOS::GetActualFontNameForTesting() const {
+std::string PlatformFontIOS::GetActualFontName() const {
   return base::SysNSStringToUTF8([GetNativeFont() familyName]);
 }
 
@@ -94,6 +94,10 @@ const FontRenderParams& PlatformFontIOS::GetFontRenderParams() {
 NativeFont PlatformFontIOS::GetNativeFont() const {
   return [UIFont fontWithName:base::SysUTF8ToNSString(font_name_)
                          size:font_size_];
+}
+
+sk_sp<SkTypeface> PlatformFontIOS::GetNativeSkTypefaceIfAvailable() const {
+  return nullptr;
 }
 
 ////////////////////////////////////////////////////////////////////////////////

@@ -19,7 +19,7 @@
 #include "components/history/core/browser/history_database.h"
 #include "components/history/core/test/test_history_database.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -70,7 +70,7 @@ class BookmarkModelSQLHandlerTest : public testing::Test {
     content::RunAllPendingInMessageLoop();
   }
 
-  content::TestBrowserThreadBundle thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
 
   TestingProfileManager profile_manager_;
   BookmarkModel* bookmark_model_;
@@ -228,8 +228,8 @@ TEST_F(BookmarkModelSQLHandlerTest, Delete) {
   ASSERT_TRUE(handler.Insert(&row));
   RunMessageLoopForUI();
   // Get all bookmarks and verify there are 3 bookmarks.
-  EXPECT_EQ(1, bookmark_model_->mobile_node()->child_count());
-  EXPECT_EQ(2, bookmark_model_->other_node()->child_count());
+  EXPECT_EQ(1u, bookmark_model_->mobile_node()->children().size());
+  EXPECT_EQ(2u, bookmark_model_->other_node()->children().size());
 
   // Remove the third one.
   TableIDRow id_row;
@@ -240,8 +240,8 @@ TEST_F(BookmarkModelSQLHandlerTest, Delete) {
   ASSERT_TRUE(handler.Delete(id_rows));
   RunMessageLoopForUI();
   // Verify the first 2 bookmarks still exist.
-  EXPECT_EQ(1, bookmark_model_->mobile_node()->child_count());
-  EXPECT_EQ(1, bookmark_model_->other_node()->child_count());
+  EXPECT_EQ(1u, bookmark_model_->mobile_node()->children().size());
+  EXPECT_EQ(1u, bookmark_model_->other_node()->children().size());
 
   id_row.url = url1;
   id_rows.clear();

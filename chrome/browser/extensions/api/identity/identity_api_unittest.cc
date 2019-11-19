@@ -8,39 +8,27 @@
 #include "build/build_config.h"
 #include "chrome/browser/signin/scoped_account_consistency.h"
 #include "chrome/test/base/testing_profile.h"
-#include "components/signin/core/browser/signin_buildflags.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "components/signin/public/base/signin_buildflags.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace extensions {
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-// Tests that all accounts in extensions is only enabled when Dice is enabled.
+// Tests that all accounts in extensions is enabled when Dice is enabled.
 TEST(IdentityApiTest, DiceAllAccountsExtensions) {
-  content::TestBrowserThreadBundle test_thread_bundle;
+  content::BrowserTaskEnvironment task_environment;
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(kExtensionsAllAccountsFeature);
-
-  {
-    ScopedAccountConsistencyDice scoped_dice;
-    TestingProfile profile;
-    IdentityAPI api(&profile);
-    EXPECT_FALSE(api.AreExtensionsRestrictedToPrimaryAccount());
-    api.Shutdown();
-  }
-
-  {
-    ScopedAccountConsistencyDiceMigration scoped_dice_migration;
-    TestingProfile profile;
-    IdentityAPI api(&profile);
-    EXPECT_TRUE(api.AreExtensionsRestrictedToPrimaryAccount());
-    api.Shutdown();
-  }
+  TestingProfile profile;
+  IdentityAPI api(&profile);
+  EXPECT_FALSE(api.AreExtensionsRestrictedToPrimaryAccount());
+  api.Shutdown();
 }
 #endif
 
 TEST(IdentityApiTest, AllAccountsExtensionDisabled) {
-  content::TestBrowserThreadBundle test_thread_bundle;
+  content::BrowserTaskEnvironment task_environment;
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(kExtensionsAllAccountsFeature);

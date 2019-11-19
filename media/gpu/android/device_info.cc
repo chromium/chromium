@@ -15,17 +15,22 @@ DeviceInfo* DeviceInfo::GetInstance() {
 }
 
 int DeviceInfo::SdkVersion() {
-  static int result = base::android::BuildInfo::GetInstance()->sdk_int();
+  static const int result = base::android::BuildInfo::GetInstance()->sdk_int();
   return result;
 }
 
 bool DeviceInfo::IsVp8DecoderAvailable() {
-  static bool result = MediaCodecUtil::IsVp8DecoderAvailable();
+  static const bool result = MediaCodecUtil::IsVp8DecoderAvailable();
   return result;
 }
 
 bool DeviceInfo::IsVp9DecoderAvailable() {
-  static bool result = MediaCodecUtil::IsVp9DecoderAvailable();
+  static const bool result = MediaCodecUtil::IsVp9DecoderAvailable();
+  return result;
+}
+
+bool DeviceInfo::IsAv1DecoderAvailable() {
+  static const bool result = MediaCodecUtil::IsAv1DecoderAvailable();
   return result;
 }
 
@@ -35,12 +40,12 @@ bool DeviceInfo::IsDecoderKnownUnaccelerated(VideoCodec codec) {
 }
 
 bool DeviceInfo::IsSetOutputSurfaceSupported() {
-  static bool result = MediaCodecUtil::IsSetOutputSurfaceSupported();
+  static const bool result = MediaCodecUtil::IsSetOutputSurfaceSupported();
   return result;
 }
 
 bool DeviceInfo::SupportsOverlaySurfaces() {
-  static bool result = MediaCodecUtil::IsSurfaceViewOutputSupported();
+  static const bool result = MediaCodecUtil::IsSurfaceViewOutputSupported();
   return result;
 }
 
@@ -54,6 +59,11 @@ bool DeviceInfo::IsAsyncApiSupported() {
   // in M there's a MediaCodec bug that's not fixed until N :|
   // https://crbug.com/873094 https://crbug.com/610523
   return SdkVersion() >= base::android::SDK_VERSION_NOUGAT;
+}
+
+bool DeviceInfo::AddSupportedCodecProfileLevels(
+    std::vector<CodecProfileLevel>* result) {
+  return MediaCodecUtil::AddSupportedCodecProfileLevels(result);
 }
 
 }  // namespace media

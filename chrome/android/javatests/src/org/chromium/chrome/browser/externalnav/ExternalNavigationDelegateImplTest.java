@@ -175,7 +175,7 @@ public class ExternalNavigationDelegateImplTest {
 
     @Test
     @SmallTest
-    public void testIsDownload_noSystemDownloadManager() throws Exception {
+    public void testIsDownload_noSystemDownloadManager() {
         ExternalNavigationDelegateImpl delegate = new ExternalNavigationDelegateImpl(
                 mActivityTestRule.getActivity().getActivityTab());
         Assert.assertTrue("pdf should be a download, no viewer in Android Chrome",

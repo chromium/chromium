@@ -115,12 +115,6 @@ CompositorFrameBuilder& CompositorFrameBuilder::SetReferencedSurfaces(
   return *this;
 }
 
-CompositorFrameBuilder& CompositorFrameBuilder::SetContentSourceId(
-    uint32_t content_source_id) {
-  frame_->metadata.content_source_id = content_source_id;
-  return *this;
-}
-
 CompositorFrameBuilder& CompositorFrameBuilder::SetSendFrameTokenToEmbedder(
     bool send) {
   DCHECK(frame_->metadata.frame_token);

@@ -8,16 +8,17 @@ generate_jni("jni_headers") {
   sources = [
     "java/src/org/chromium/components/gcm_driver/GCMDriver.java",
   ]
-  jni_package = "components/gcm_driver"
 }
 
 android_library("gcm_driver_java") {
   deps = [
     "//base:base_java",
+    "//base:jni_java",
     "//content/public/android:content_java",
-    "//third_party/android_tools:android_gcm_java",
+    "//third_party/android_sdk:android_gcm_java",
     "//third_party/jsr-305:jsr_305_javalib",
   ]
+  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 
   java_files = [
     "java/src/org/chromium/components/gcm_driver/GCMDriver.java",
@@ -25,6 +26,7 @@ android_library("gcm_driver_java") {
     "java/src/org/chromium/components/gcm_driver/GoogleCloudMessagingSubscriber.java",
     "java/src/org/chromium/components/gcm_driver/GoogleCloudMessagingV2.java",
     "java/src/org/chromium/components/gcm_driver/LazySubscriptionsManager.java",
+    "java/src/org/chromium/components/gcm_driver/SubscriptionFlagManager.java",
   ]
 }
 

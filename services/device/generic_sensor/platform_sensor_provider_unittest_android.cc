@@ -4,6 +4,8 @@
 
 #include "services/device/generic_sensor/platform_sensor_provider_android.h"
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/macros.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -15,8 +17,7 @@ class PlatformSensorProviderTestAndroid : public testing::Test {
   PlatformSensorProviderTestAndroid() = default;
 
   void SetUp() override {
-    provider_ = PlatformSensorProviderAndroid::GetInstance();
-    ASSERT_TRUE(provider_);
+    provider_ = std::make_unique<PlatformSensorProviderAndroid>();
   }
 
   void CreateSensorCallback(scoped_refptr<PlatformSensor> sensor) {
@@ -24,7 +25,7 @@ class PlatformSensorProviderTestAndroid : public testing::Test {
   }
 
  protected:
-  PlatformSensorProviderAndroid* provider_;
+  std::unique_ptr<PlatformSensorProviderAndroid> provider_;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(PlatformSensorProviderTestAndroid);

@@ -1,8 +1,8 @@
 <link rel="import" href="chrome://resources/html/polymer.html">
 
 <link rel="import" href="chrome://resources/cr_elements/cr_input/cr_input.html">
-<link rel="import" href="chrome://resources/cr_elements/policy/cr_policy_network_behavior.html">
-<link rel="import" href="chrome://resources/cr_elements/policy/cr_policy_network_indicator.html">
+<link rel="import" href="chrome://resources/cr_elements/policy/cr_policy_network_behavior_mojo.html">
+<link rel="import" href="chrome://resources/cr_elements/policy/cr_policy_network_indicator_mojo.html">
 <link rel="import" href="chrome://resources/cr_elements/shared_vars_css.html">
 <link rel="import" href="network_config_element_behavior.html">
 <link rel="import" href="network_shared_css.html">
@@ -20,7 +20,7 @@
         width: 100%;
       }
 
-      cr-policy-network-indicator {
+      cr-policy-network-indicator-mojo {
         --cr-tooltip-icon-margin-start: var(--cr-controlled-by-spacing);
       }
     </style>
@@ -28,9 +28,10 @@
     <div id="container">
       <cr-input label="[[label]]" value="{{value}}"
           hidden="[[hidden]]" readonly="[[readonly]]"
-          disabled="[[getDisabled_(disabled, property)]]">
+          disabled="[[getDisabled_(disabled, property)]]"
+          on-keypress="onKeypress_">
       </cr-input>
-      <cr-policy-network-indicator
+      <cr-policy-network-indicator-mojo
           property="[[property]]" tooltip-position="left">
       </cr-policy-network-indicator>
     </div>

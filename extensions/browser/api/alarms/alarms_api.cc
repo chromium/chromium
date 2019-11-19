@@ -101,7 +101,7 @@ ExtensionFunction::ResponseAction AlarmsCreateFunction::Run() {
   }
   for (std::vector<std::string>::const_iterator it = warnings.begin();
        it != warnings.end(); ++it)
-    WriteToConsole(content::CONSOLE_MESSAGE_LEVEL_WARNING, *it);
+    WriteToConsole(blink::mojom::ConsoleMessageLevel::kWarning, *it);
 
   const int kSecondsPerMinute = 60;
   base::TimeDelta granularity =

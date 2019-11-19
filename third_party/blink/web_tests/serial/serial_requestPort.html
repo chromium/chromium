@@ -10,60 +10,47 @@
 <script src="resources/serial-test-utils.js"></script>
 <script>
 
-promise_test(async () => {
-  try {
-    let port = await navigator.serial.requestPort({});
-    assert_unreached();
-  } catch (e) {
-    assert_equals(e.code, DOMException.SECURITY_ERR);
-  }
+promise_test((t) => {
+  return promise_rejects(t, 'SecurityError', navigator.serial.requestPort());
 }, 'requestPort() rejects without a user gesture');
 
-promise_test(async () => {
+promise_test(async (t) => {
   let interceptor =
-      new MojoInterfaceInterceptor(blink.mojom.SerialService.name);
+      new MojoInterfaceInterceptor(blink.mojom.SerialService.name, "context", true);
   interceptor.oninterfacerequest = e => e.handle.close();
   interceptor.start();
 
+  await trustedClick();
   try {
-    await trustedClick();
-    let port = await navigator.serial.requestPort({});
-    assert_unreached();
-  } catch (e) {
-    assert_equals(e.code, DOMException.NOT_FOUND_ERR);
+    await promise_rejects(t, 'NotFoundError', navigator.serial.requestPort());
   } finally {
     interceptor.stop();
   }
 }, 'requestPort() rejects if Mojo service connection fails');
 
-serial_test(async (fake) => {
-  try {
-    await trustedClick();
-    let port = await navigator.serial.requestPort({});
-    assert_unreached();
-  } catch (e) {
-    assert_equals(e.code, DOMException.NOT_FOUND_ERR);
-  }
+serial_test(async (t, fake) => {
+  await trustedClick();
+  return promise_rejects(t, 'NotFoundError', navigator.serial.requestPort());
 }, 'requestPort() rejects if no port has been selected');
 
-serial_test(async (fake) => {
+serial_test(async (t, fake) => {
   let guid = fake.addPort();
   fake.setSelectedPort(guid);
 
   await trustedClick();
-  let port = await navigator.serial.requestPort({});
+  let port = await navigator.serial.requestPort();
   assert_true(port instanceof SerialPort);
   // TODO: Assert that product IDs (if provided) are passed through.
 }, 'requestPort() returns the selected port');
 
-serial_test(async (fake) => {
+serial_test(async (t, fake) => {
   let guid = fake.addPort();
   fake.setSelectedPort(guid);
 
   await trustedClick();
-  let firstPort = await navigator.serial.requestPort({});
+  let firstPort = await navigator.serial.requestPort();
   assert_true(firstPort instanceof SerialPort);
-  let secondPort = await navigator.serial.requestPort({});
+  let secondPort = await navigator.serial.requestPort();
   assert_true(secondPort instanceof SerialPort);
   assert_true(firstPort === secondPort);
 }, 'requestPort() returns the same port object every time');

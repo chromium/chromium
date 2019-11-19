@@ -9,15 +9,13 @@
 #include "chrome/browser/extensions/install_tracker_factory.h"
 #include "content/public/browser/notification_service.h"
 #include "extensions/browser/extension_prefs.h"
-#include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/pref_names.h"
 
 namespace extensions {
 
 InstallTracker::InstallTracker(content::BrowserContext* browser_context,
-                               extensions::ExtensionPrefs* prefs)
-    : extension_registry_observer_(this) {
+                               extensions::ExtensionPrefs* prefs) {
   registrar_.Add(this,
                  extensions::NOTIFICATION_EXTENSION_UPDATE_DISABLED,
                  content::Source<content::BrowserContext>(browser_context));

@@ -8,7 +8,7 @@
 #include <string>
 
 #include "base/macros.h"
-#include "components/autofill/content/common/autofill_driver.mojom.h"
+#include "components/autofill/content/common/mojom/autofill_driver.mojom.h"
 #include "components/autofill/core/common/save_password_progress_logger.h"
 
 namespace blink {

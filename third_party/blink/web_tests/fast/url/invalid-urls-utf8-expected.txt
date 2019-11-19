@@ -5,7 +5,7 @@ On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE
 FAIL src should be http:///. Was http:.
 FAIL src should be https:///. Was https:.
 FAIL src should be ftp:///. Was ftp:.
-FAIL src should be gopher:///. Was gopher:.
+PASS src is expected
 FAIL src should be ws:///. Was ws:.
 FAIL src should be wss:///. Was wss:.
 FAIL src should be foo://tête à tête@host/. Was foo://t%C3%AAte %C3%A0 t%C3%AAte@host/.
@@ -23,7 +23,7 @@ FAIL src should be ws:/tête. Was ws://xn--tte-fma/.
 FAIL src should be ftp:/tête. Was ftp://xn--tte-fma/.
 FAIL src should be http:/tête. Was http://xn--tte-fma/.
 FAIL src should be https:/tête. Was https://xn--tte-fma/.
-FAIL src should be gopher:/tête. Was gopher://xn--tte-fma/.
+FAIL src should be gopher:/tête. Was gopher:/t%C3%AAte.
 PASS successfullyParsed is true
 
 TEST COMPLETE

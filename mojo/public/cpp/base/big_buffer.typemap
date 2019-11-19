@@ -9,4 +9,5 @@ public_deps = [
   "//mojo/public/cpp/base",
   "//mojo/public/cpp/base:shared_typemap_traits",
 ]
-type_mappings = [ "mojo_base.mojom.BigBuffer=mojo_base::BigBuffer[move_only]" ]
+type_mappings =
+    [ "mojo_base.mojom.BigBuffer=::mojo_base::BigBuffer[move_only]" ]

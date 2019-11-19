@@ -4,42 +4,31 @@
 
 static_library("cpp") {
   sources = [
-    "client.cc",
-    "client.h",
     "controller.cc",
     "controller.h",
-    "sampling_profiler_wrapper.cc",
-    "sampling_profiler_wrapper.h",
-    "sender_pipe.h",
-    "sender_pipe_win.cc",
+    "profiling_client.cc",
+    "profiling_client.h",
     "settings.cc",
     "settings.h",
-    "stream.h",
     "switches.cc",
     "switches.h",
   ]
 
   public_deps = [
-    "//components/services/heap_profiling/public/mojom",
-  ]
-  deps = [
     "//base",
-    "//base:debugging_buildflags",
-    "//base/allocator:buildflags",
-    "//services/resource_coordinator/public/mojom:",
-    "//services/service_manager/public/cpp",
-    "//services/service_manager/sandbox",
+    "//components/services/heap_profiling/public/mojom",
+    "//mojo/public/cpp/bindings",
   ]
 
-  if (is_posix) {
-    sources += [ "sender_pipe_posix.cc" ]
-  }
+  deps = [
+    "//base:debugging_buildflags",
+    "//base/allocator:buildflags",
+  ]
 }
 
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "sender_pipe_unittest.cc",
     "switches_unittest.cc",
   ]
   deps = [
@@ -48,19 +37,5 @@ source_set("unit_tests") {
     "//base/allocator:buildflags",
     "//base/test:test_support",
     "//testing/gtest",
-  ]
-}
-
-source_set("manifest") {
-  sources = [
-    "manifest.cc",
-    "manifest.h",
-  ]
-
-  deps = [
-    "//base",
-    "//components/services/heap_profiling/public/mojom",
-    "//services/resource_coordinator/public/mojom",
-    "//services/service_manager/public/cpp",
   ]
 }

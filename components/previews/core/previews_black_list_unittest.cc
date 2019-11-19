@@ -18,8 +18,8 @@
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_task_environment.h"
 #include "base/test/simple_test_clock.h"
+#include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "components/blacklist/opt_out_blacklist/opt_out_blacklist_delegate.h"
@@ -89,7 +89,7 @@ class TestPreviewsBlackList : public PreviewsBlackList {
 
 class PreviewsBlackListTest : public testing::Test {
  public:
-  PreviewsBlackListTest() : field_trial_list_(nullptr), passed_reasons_({}) {}
+  PreviewsBlackListTest() : passed_reasons_({}) {}
   ~PreviewsBlackListTest() override {}
 
   void TearDown() override { variations::testing::ClearAllVariationParams(); }
@@ -152,14 +152,13 @@ class PreviewsBlackListTest : public testing::Test {
   }
 
  protected:
-  base::test::ScopedTaskEnvironment task_environment_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
 
   // Observer to |black_list_|.
   TestOptOutBlacklistDelegate blacklist_delegate_;
 
   base::SimpleTestClock test_clock_;
   std::map<std::string, std::string> params_;
-  base::FieldTrialList field_trial_list_;
 
   std::unique_ptr<TestPreviewsBlackList> black_list_;
   std::vector<PreviewsEligibilityReason> passed_reasons_;

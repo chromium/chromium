@@ -52,6 +52,14 @@ struct MergePortEventData {
   Event::PortDescriptor new_port_descriptor;
 };
 
+struct UserMessageReadAckRequestEventData {
+  uint64_t sequence_num_to_acknowledge;
+};
+
+struct UserMessageReadAckEventData {
+  uint64_t sequence_num_acknowledged;
+};
+
 #pragma pack(pop)
 
 static_assert(sizeof(Event::PortDescriptor) % kPortsMessageAlignment == 0,
@@ -74,6 +82,14 @@ static_assert(sizeof(ObserveClosureEventData) % kPortsMessageAlignment == 0,
 
 static_assert(sizeof(MergePortEventData) % kPortsMessageAlignment == 0,
               "Invalid MergePortEventData size.");
+
+static_assert(sizeof(UserMessageReadAckRequestEventData) %
+                      kPortsMessageAlignment ==
+                  0,
+              "Invalid UserMessageReadAckRequestEventData size.");
+
+static_assert(sizeof(UserMessageReadAckEventData) % kPortsMessageAlignment == 0,
+              "Invalid UserMessageReadAckEventData size.");
 
 }  // namespace
 
@@ -376,6 +392,70 @@ void MergePortEvent::SerializeData(void* buffer) const {
   auto* data = static_cast<MergePortEventData*>(buffer);
   data->new_port_name = new_port_name_;
   data->new_port_descriptor = new_port_descriptor_;
+}
+
+UserMessageReadAckRequestEvent::UserMessageReadAckRequestEvent(
+    const PortName& port_name,
+    uint64_t sequence_num_to_acknowledge)
+    : Event(Type::kUserMessageReadAckRequest, port_name),
+      sequence_num_to_acknowledge_(sequence_num_to_acknowledge) {
+  DCHECK(sequence_num_to_acknowledge);
+}
+
+UserMessageReadAckRequestEvent::~UserMessageReadAckRequestEvent() = default;
+
+// static
+ScopedEvent UserMessageReadAckRequestEvent::Deserialize(
+    const PortName& port_name,
+    const void* buffer,
+    size_t num_bytes) {
+  if (num_bytes < sizeof(UserMessageReadAckRequestEventData))
+    return nullptr;
+
+  const auto* data =
+      static_cast<const UserMessageReadAckRequestEventData*>(buffer);
+  return std::make_unique<UserMessageReadAckRequestEvent>(
+      port_name, data->sequence_num_to_acknowledge);
+}
+
+size_t UserMessageReadAckRequestEvent::GetSerializedDataSize() const {
+  return sizeof(UserMessageReadAckRequestEventData);
+}
+
+void UserMessageReadAckRequestEvent::SerializeData(void* buffer) const {
+  auto* data = static_cast<UserMessageReadAckRequestEventData*>(buffer);
+  data->sequence_num_to_acknowledge = sequence_num_to_acknowledge_;
+}
+
+UserMessageReadAckEvent::UserMessageReadAckEvent(
+    const PortName& port_name,
+    uint64_t sequence_num_acknowledged)
+    : Event(Type::kUserMessageReadAck, port_name),
+      sequence_num_acknowledged_(sequence_num_acknowledged) {
+  DCHECK(sequence_num_acknowledged);
+}
+
+UserMessageReadAckEvent::~UserMessageReadAckEvent() = default;
+
+// static
+ScopedEvent UserMessageReadAckEvent::Deserialize(const PortName& port_name,
+                                                 const void* buffer,
+                                                 size_t num_bytes) {
+  if (num_bytes < sizeof(UserMessageReadAckEventData))
+    return nullptr;
+
+  const auto* data = static_cast<const UserMessageReadAckEventData*>(buffer);
+  return std::make_unique<UserMessageReadAckEvent>(
+      port_name, data->sequence_num_acknowledged);
+}
+
+size_t UserMessageReadAckEvent::GetSerializedDataSize() const {
+  return sizeof(UserMessageReadAckEventData);
+}
+
+void UserMessageReadAckEvent::SerializeData(void* buffer) const {
+  auto* data = static_cast<UserMessageReadAckEventData*>(buffer);
+  data->sequence_num_acknowledged = sequence_num_acknowledged_;
 }
 
 }  // namespace ports

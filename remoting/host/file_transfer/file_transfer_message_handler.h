@@ -86,7 +86,7 @@ class FileTransferMessageHandler : public protocol::NamedMessagePipeHandler {
   base::Optional<BufferedFileWriter> buffered_file_writer_;
   std::unique_ptr<FileOperations::Reader> file_reader_;
   std::size_t queued_chunks_ = 0;
-  base::WeakPtrFactory<FileTransferMessageHandler> weak_ptr_factory_;
+  base::WeakPtrFactory<FileTransferMessageHandler> weak_ptr_factory_{this};
 };
 
 }  // namespace remoting

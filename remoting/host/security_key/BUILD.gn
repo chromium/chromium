@@ -39,7 +39,7 @@ source_set("security_key") {
     "//mojo/public/cpp/platform",
     "//mojo/public/cpp/system",
     "//remoting/proto",
-    "//third_party/webrtc/modules/desktop_capture",
+    "//third_party/webrtc_overrides:webrtc_component",
   ]
 
   if (is_posix) {
@@ -133,6 +133,6 @@ static_library("test_support") {
   public_deps = [
     "//testing/gmock",
     "//third_party/protobuf:protobuf_lite",
-    "//third_party/webrtc/modules/desktop_capture",
+    "//third_party/webrtc_overrides:webrtc_component",
   ]
 }

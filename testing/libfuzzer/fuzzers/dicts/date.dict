@@ -1,0 +1,40 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Fields
+"G"
+"y"
+"u"
+"Q"
+"q"
+"M"
+"L"
+"w"
+"W"
+"d"
+"D"
+"F"
+"g"
+"E"
+"e"
+"c"
+"a"
+"h"
+"H"
+"K"
+"k"
+"m"
+"s"
+"S"
+"A"
+"z"
+"Z"
+"v"
+# Quote
+"'"
+# Separators
+"."
+":"
+","
+"\""

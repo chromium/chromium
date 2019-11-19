@@ -8,7 +8,7 @@
   await TestRunner.navigatePromise(TestRunner.url('resources/basic-coverage.html'));
 
   await TestRunner.evaluateInPagePromise('performActions()');
-  CoverageTestRunner.startCoverage();
+  await CoverageTestRunner.startCoverage(true);
   await CoverageTestRunner.pollCoverage();
   CoverageTestRunner.dumpCoverageListView();
   TestRunner.addResult('Reloading Page');

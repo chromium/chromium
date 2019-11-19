@@ -22,6 +22,8 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observer.h"
 #include "base/task/cancelable_task_tracker.h"
+#include "components/favicon_base/favicon_types.h"
+#include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_service_observer.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/sessions/core/session_id.h"
@@ -39,10 +41,6 @@ namespace favicon {
 class FaviconService;
 }
 
-namespace history {
-class HistoryService;
-}
-
 namespace sync_sessions {
 
 enum IconSize {
@@ -55,8 +53,12 @@ enum IconSize {
 
 struct SyncedFaviconInfo;
 
-// Encapsulates the logic for loading and storing synced favicons.
+// FAVICON SYNC IS DEPRECATED: This class now only serves to the translation
+// from page url to icon url using sessions sync information.
+// TODO(https://crbug.com/978775): Stop implementing syncer::SyncableService
+// and rename the class accordingly.
 // TODO(zea): make this a KeyedService.
+// Encapsulates the logic for loading and storing synced favicons.
 class FaviconCache : public syncer::SyncableService,
                      public history::HistoryServiceObserver {
  public:
@@ -66,6 +68,7 @@ class FaviconCache : public syncer::SyncableService,
   ~FaviconCache() override;
 
   // SyncableService implementation.
+  void WaitUntilReadyToSync(base::OnceClosure done) override;
   syncer::SyncMergeResult MergeDataAndStartSyncing(
       syncer::ModelType type,
       const syncer::SyncDataList& initial_sync_data,
@@ -77,19 +80,19 @@ class FaviconCache : public syncer::SyncableService,
       const base::Location& from_here,
       const syncer::SyncChangeList& change_list) override;
 
-  // If a valid favicon for the icon at |favicon_url| is found, fills
-  // |favicon_png| with the png-encoded image and returns true. Else, returns
-  // false.
-  bool GetSyncedFaviconForFaviconURL(
-      const GURL& favicon_url,
-      scoped_refptr<base::RefCountedMemory>* favicon_png) const;
+  // If a valid favicon for the icon at |favicon_url| is found, returns a
+  // pointer to the png-encoded image. Otherwise, returns nullptr.
+  favicon_base::FaviconRawBitmapResult GetSyncedFaviconForFaviconURL(
+      const GURL& favicon_url) const;
 
-  // If a valid favicon for the icon associated with |page_url| is found, fills
-  // |favicon_png| with the png-encoded image and returns true. Else, returns
-  // false.
-  bool GetSyncedFaviconForPageURL(
-      const GURL& page_url,
-      scoped_refptr<base::RefCountedMemory>* favicon_png) const;
+  // Returns the value associated with |page_url| in |page_favicon_map_| if one
+  // exists, otherwise returns an empty URL.
+  GURL GetIconUrlForPageUrl(const GURL& page_url) const;
+
+  // If a valid favicon for the icon associated with |page_url| is found,
+  // returns a pointer to the png-encoded image. Otherwise, returns nullptr.
+  favicon_base::FaviconRawBitmapResult GetSyncedFaviconForPageURL(
+      const GURL& page_url) const;
 
   // Load the favicon for |page_url|. Will create a new sync node or update
   // an existing one as necessary, and update the last visit time with |mtime|,
@@ -198,8 +201,11 @@ class FaviconCache : public syncer::SyncableService,
   // history::HistoryServiceObserver:
   void OnURLsDeleted(history::HistoryService* history_service,
                      const history::DeletionInfo& deletion_info) override;
+  void OnHistoryServiceLoaded(
+      history::HistoryService* history_service) override;
 
-  favicon::FaviconService* favicon_service_;
+  favicon::FaviconService* const favicon_service_;
+  history::HistoryService* const history_service_;
 
   // Task tracker for loading favicons.
   base::CancelableTaskTracker cancelable_task_tracker_;
@@ -226,11 +232,15 @@ class FaviconCache : public syncer::SyncableService,
   // Maximum number of favicons to sync. 0 means no limit.
   const size_t max_sync_favicon_limit_;
 
+  // A vector is needed to support concurrent calls to WaitUntilReadyToSync()
+  // because this class powers two datatypes.
+  std::vector<base::OnceClosure> wait_until_ready_to_sync_cb_;
+
   ScopedObserver<history::HistoryService, history::HistoryServiceObserver>
-      history_service_observer_;
+      history_service_observer_{this};
 
   // Weak pointer factory for favicon loads.
-  base::WeakPtrFactory<FaviconCache> weak_ptr_factory_;
+  base::WeakPtrFactory<FaviconCache> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(FaviconCache);
 };

@@ -20,7 +20,6 @@
 #include "dbus/bus.h"
 #include "device/bluetooth/bluetooth_socket.h"
 #include "device/bluetooth/bluetooth_socket_thread.h"
-#include "device/bluetooth/bluetooth_uuid.h"
 #include "device/bluetooth/bluez/bluetooth_adapter_bluez.h"
 #include "device/bluetooth/bluez/bluetooth_gatt_connection_bluez.h"
 #include "device/bluetooth/bluez/bluetooth_pairing_bluez.h"
@@ -32,6 +31,7 @@
 #include "device/bluetooth/dbus/bluetooth_gatt_service_client.h"
 #include "device/bluetooth/dbus/bluetooth_input_client.h"
 #include "device/bluetooth/dbus/bluez_dbus_manager.h"
+#include "device/bluetooth/public/cpp/bluetooth_uuid.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
 using device::BluetoothDevice;
@@ -163,8 +163,7 @@ BluetoothDeviceBlueZ::BluetoothDeviceBlueZ(
       object_path_(object_path),
       num_connecting_calls_(0),
       ui_task_runner_(ui_task_runner),
-      socket_thread_(socket_thread),
-      weak_ptr_factory_(this) {
+      socket_thread_(socket_thread) {
   bluez::BluezDBusManager::Get()->GetBluetoothGattServiceClient()->AddObserver(
       this);
 

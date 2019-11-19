@@ -171,12 +171,11 @@ class PowerAPITest : public ApiUnitTest {
   bool CallFunction(FunctionType type,
                     const std::string& args,
                     const extensions::Extension* extension) {
-    scoped_refptr<UIThreadExtensionFunction> function(
-        type == REQUEST ?
-        static_cast<UIThreadExtensionFunction*>(
-            new PowerRequestKeepAwakeFunction) :
-        static_cast<UIThreadExtensionFunction*>(
-            new PowerReleaseKeepAwakeFunction));
+    scoped_refptr<ExtensionFunction> function(
+        type == REQUEST
+            ? static_cast<ExtensionFunction*>(new PowerRequestKeepAwakeFunction)
+            : static_cast<ExtensionFunction*>(
+                  new PowerReleaseKeepAwakeFunction));
     function->set_extension(extension);
     return api_test_utils::RunFunction(function.get(), args, browser_context());
   }

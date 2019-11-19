@@ -17,7 +17,7 @@ cca.sound = cca.sound || {};
 /**
  * Plays a sound.
  * @param {string} selector Selector of the sound.
- * @return {Promise} Promise for waiting finishing playing or canceling wait.
+ * @return {!Promise} Promise for waiting finishing playing or canceling wait.
  */
 cca.sound.play = function(selector) {
   // Use a timeout to wait for sound finishing playing instead of end-event
@@ -26,11 +26,10 @@ cca.sound.play = function(selector) {
   var cancel;
   var p = new Promise((resolve, reject) => {
     var element = document.querySelector(selector);
-    var timeout =
-        setTimeout(resolve, parseInt(element.dataset.timeout || 0), 10);
+    var timeout = setTimeout(resolve, Number(element.dataset.timeout || 0));
     cancel = () => {
       clearTimeout(timeout);
-      reject();
+      reject(new Error('cancel'));
     };
     element.currentTime = 0;
     element.play();

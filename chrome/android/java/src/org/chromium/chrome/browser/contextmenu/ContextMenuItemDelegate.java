@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.contextmenu;
 
-import android.support.annotation.IntDef;
+import androidx.annotation.IntDef;
 
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.content_public.common.Referrer;

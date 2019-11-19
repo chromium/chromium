@@ -55,7 +55,7 @@ ppapi::URLResponseInfoData DataFromWebURLResponse(
   }
 
   HeadersToString headers_to_string;
-  response.VisitHTTPHeaderFields(&headers_to_string);
+  response.VisitHttpHeaderFields(&headers_to_string);
   data.headers = headers_to_string.buffer();
   return data;
 }

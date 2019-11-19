@@ -1,0 +1,28 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/closure_compiler/compile_js.gni")
+
+assert(is_chromeos, "Media App is Chrome OS only")
+
+# Note we compile with reportUnknownTypes while it works, but if dependencies
+# get more complex, we should remove it and only enable in developer builds.
+js_type_check("closure_compile") {
+  closure_flags = default_closure_args + [
+                    "jscomp_error=strictCheckTypes",
+                    "jscomp_error=reportUnknownTypes",
+                  ]
+  deps = [
+    ":app_main",
+    ":mock_module",
+  ]
+}
+
+js_library("app_main") {
+  externs_list =
+      [ "//chromeos/components/media_app_ui/resources/js/media_app.externs.js" ]
+}
+
+js_library("mock_module") {
+}

@@ -21,7 +21,6 @@ class LabelButton;
 
 namespace ash {
 
-class LoginDataDispatcher;
 class LockContentsView;
 
 namespace mojom {
@@ -32,8 +31,7 @@ enum class TrayActionState;
 class LockDebugView : public views::View, public views::ButtonListener {
  public:
   LockDebugView(mojom::TrayActionState initial_note_action_state,
-                LockScreen::ScreenType screen_type,
-                LoginDataDispatcher* data_dispatcher);
+                LockScreen::ScreenType screen_type);
   ~LockDebugView() override;
 
   // views::View:
@@ -110,9 +108,6 @@ class LockDebugView : public views::View, public views::ButtonListener {
   // True if full management disclosure method for the managed sessions is
   // shown.
   bool is_managed_session_disclosure_shown_ = false;
-
-  // Whether parent access view is shown.
-  bool is_parent_access_shown_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(LockDebugView);
 };

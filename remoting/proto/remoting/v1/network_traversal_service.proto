@@ -1,0 +1,15 @@
+syntax = "proto2";
+
+package remoting.apis.v1;
+
+import "network_traversal_messages.proto";
+
+option optimize_for = LITE_RUNTIME;
+
+// A collection of RPC services which enable establishing P2P connections when
+// a direct connection is not possible.
+service RemotingNetworkTraversalService {
+  // RPC service which returns a set of ICE servers to use for establishing a
+  // P2P connection with a remote machine.
+  rpc GetIceConfig(GetIceConfigRequest) returns (GetIceConfigResponse) {}
+}

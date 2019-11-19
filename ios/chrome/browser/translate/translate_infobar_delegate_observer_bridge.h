@@ -35,6 +35,8 @@ class TranslateInfobarDelegateObserverBridge
       translate::TranslateStep step,
       translate::TranslateErrors::Type error_type) override;
   bool IsDeclinedByUser() override;
+  void OnTranslateInfoBarDelegateDestroyed(
+      translate::TranslateInfoBarDelegate* delegate) override;
 
  private:
   translate::TranslateInfoBarDelegate* translate_infobar_delegate_ = nullptr;

@@ -28,8 +28,8 @@
     "description": "Instructions for how to enable or disable this feature on any platform other than Chrome OS."
   },
   "enableDisableCros": {
-    "message": "Press <span class='key'>Alt</span> + <img src='increase_brightness.png'> (the Increase Brightness key, or F7) to turn on Caret Browsing. Press it again to turn it off.",
-    "description": "Instructions for how to enable or disable this feature on a Chromebook, where you have to hold Alt and press the special Increase Brightness key on the top of the keyboard, or F7 if you're using an alternate keyboard."
+    "message": "Press <span class='key'>Search</span> + <img src='increase_brightness.png'> (the Increase Brightness key, or F7) to turn on Caret Browsing. Press it again to turn it off.",
+    "description": "Instructions for how to enable or disable this feature on a Chromebook, where you have to hold Search and press the special Increase Brightness key on the top of the keyboard, or F7 if you're using an alternate keyboard."
   },
   "moveByWordsNonMac": {
     "message": "Hold down <span class='key'>Control</span> to move by words.",

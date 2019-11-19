@@ -4,14 +4,14 @@
 
 /**
  * @interface
- * @struct
  */
-var FileBrowserBackground = function() {};
-
-/**
- * @param {function()} callback
- */
-FileBrowserBackground.prototype.ready = function(callback) {};
-
-/** @type {!Object<!Window>} */
-FileBrowserBackground.prototype.dialogs;
+class FileBrowserBackground {
+  constructor() {
+    /** @type {!Object<!Window>} */
+    this.dialogs;
+  }
+  /**
+   * @param {function()} callback
+   */
+  ready(callback) {}
+}

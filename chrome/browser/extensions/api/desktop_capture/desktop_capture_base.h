@@ -7,23 +7,22 @@
 
 #include <array>
 #include <map>
+#include <memory>
 #include <string>
 
 #include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "chrome/browser/extensions/chrome_extension_function.h"
 #include "chrome/browser/media/webrtc/desktop_media_list.h"
-#include "chrome/browser/media/webrtc/desktop_media_picker.h"
+#include "chrome/browser/media/webrtc/desktop_media_picker_controller.h"
 #include "chrome/browser/media/webrtc/desktop_media_picker_factory.h"
 #include "chrome/common/extensions/api/desktop_capture.h"
-#include "content/public/browser/web_contents_observer.h"
 #include "url/gurl.h"
 
 namespace extensions {
 
 class DesktopCaptureChooseDesktopMediaFunctionBase
-    : public ChromeAsyncExtensionFunction,
-      public content::WebContentsObserver {
+    : public ChromeAsyncExtensionFunction {
  public:
   // Used to set PickerFactory used to create mock DesktopMediaPicker instances
   // for tests. Calling tests keep ownership of the factory. Can be called with
@@ -41,12 +40,11 @@ class DesktopCaptureChooseDesktopMediaFunctionBase
   // also be used to determine where to show the picker's UI.
   // |origin| is the origin for which the stream is created.
   // |target_name| is the display name of the stream target.
-  bool Execute(
-      const std::vector<api::desktop_capture::DesktopCaptureSourceType>&
-          sources,
-      content::WebContents* web_contents,
-      const GURL& origin,
-      const base::string16 target_name);
+  bool Execute(const std::vector<
+                   api::desktop_capture::DesktopCaptureSourceType>& sources,
+               content::WebContents* web_contents,
+               const GURL& origin,
+               const base::string16 target_name);
 
   // Returns the calling application name to show in the picker.
   std::string GetCallerDisplayName() const;
@@ -54,20 +52,16 @@ class DesktopCaptureChooseDesktopMediaFunctionBase
   int request_id_;
 
  private:
-  // content::WebContentsObserver overrides.
-  void WebContentsDestroyed() override;
+  void OnPickerDialogResults(const GURL& origin,
+                             content::WebContents* web_contents,
+                             const std::string& err,
+                             content::DesktopMediaID source);
 
-  void OnPickerDialogResults(content::DesktopMediaID source);
-
-  // URL of page that desktop capture was requested for.
-  GURL origin_;
-
-  std::unique_ptr<DesktopMediaPickerFactory> picker_factory_;
-  std::unique_ptr<DesktopMediaPicker> picker_;
+  std::unique_ptr<DesktopMediaPickerController> picker_controller_;
 };
 
 class DesktopCaptureCancelChooseDesktopMediaFunctionBase
-    : public UIThreadExtensionFunction {
+    : public ExtensionFunction {
  public:
   DesktopCaptureCancelChooseDesktopMediaFunctionBase();
 

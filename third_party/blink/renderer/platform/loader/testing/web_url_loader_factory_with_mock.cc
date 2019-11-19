@@ -18,7 +18,7 @@ WebURLLoaderFactoryWithMock::~WebURLLoaderFactoryWithMock() = default;
 std::unique_ptr<WebURLLoader> WebURLLoaderFactoryWithMock::CreateURLLoader(
     const WebURLRequest& request,
     std::unique_ptr<blink::scheduler::WebResourceLoadingTaskRunnerHandle>) {
-  return mock_factory_->CreateURLLoader(nullptr);
+  return mock_factory_->CreateURLLoader();
 }
 
 }  // namespace blink

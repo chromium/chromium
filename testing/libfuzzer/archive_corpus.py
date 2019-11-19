@@ -16,6 +16,8 @@ import sys
 import warnings
 import zipfile
 
+SEED_CORPUS_LIMIT_MB = 100
+
 
 def main():
   parser = argparse.ArgumentParser(description="Generate fuzzer config.")
@@ -23,9 +25,10 @@ def main():
                       nargs='+')
   parser.add_argument('--output', metavar='output_archive_name.zip',
                       required=True)
-  args = parser.parse_args()
 
+  args = parser.parse_args()
   corpus_files = []
+  seed_corpus_path = args.output
 
   for directory in args.corpus_directories:
     if not os.path.exists(directory):
@@ -36,7 +39,7 @@ def main():
         full_filename = os.path.join(dirpath, filename)
         corpus_files.append(full_filename)
 
-  with zipfile.ZipFile(args.output, 'w') as z:
+  with zipfile.ZipFile(seed_corpus_path, 'w') as z:
     # Turn warnings into errors to interrupt the build: crbug.com/653920.
     with warnings.catch_warnings():
       warnings.simplefilter("error")
@@ -45,6 +48,10 @@ def main():
         arcname = '%016d' % i
         z.write(corpus_file, arcname)
 
+  if os.path.getsize(seed_corpus_path) > SEED_CORPUS_LIMIT_MB * 1024 * 1024:
+    print('Seed corpus %s exceeds maximum allowed size (%d MB).' %
+          (seed_corpus_path, SEED_CORPUS_LIMIT_MB))
+    sys.exit(-1)
 
 if __name__ == '__main__':
   main()

@@ -46,30 +46,39 @@ namespace disk_cache {
 
 class Entry;
 class Backend;
-struct EntryWithOpened;
+class EntryResult;
+using EntryResultCallback = base::OnceCallback<void(EntryResult)>;
+
+// How to handle resetting the back-end cache from the previous session.
+// See CreateCacheBackend() for its usage.
+enum class ResetHandling { kReset, kResetOnError, kNeverReset };
 
 // Returns an instance of a Backend of the given |type|. |path| points to a
 // folder where the cached data will be stored (if appropriate). This cache
 // instance must be the only object that will be reading or writing files to
-// that folder (if another one exists, and |type| is not net::DISK_CACHE or
-// net::MEDIA_CACHE, this operation will not complete until the previous
-// duplicate gets destroyed and finishes all I/O).
+// that folder (if another one exists, and |type| is not net::DISK_CACHE this
+// operation will not complete until the previous duplicate gets destroyed and
+// finishes all I/O). The returned object should be deleted when not needed
+// anymore.
 //
-// The returned object should be deleted when not needed anymore.
-// If |force| is true, and there is a problem with the cache initialization, the
-// files will be deleted and a new set will be created. |max_bytes| is the
-// maximum size the cache can grow to. If zero is passed in as |max_bytes|, the
-// cache will determine the value to use. The returned pointer can be
-// NULL if a fatal error is found. The actual return value of the function is a
-// net error code. If this function returns ERR_IO_PENDING, the |callback| will
-// be invoked when a backend is available or a fatal error condition is reached.
-// The pointer to receive the |backend| must remain valid until the operation
-// completes (the callback is notified).
+// If |reset_handling| is set to kResetOnError and there is a problem with the
+// cache initialization, the files will be deleted and a new set will be
+// created. If it's set to kReset, this will happen even if there isn't a
+// problem with cache initialization. Finally, if it's set to kNeverReset, the
+// cache creation will fail if there is a problem with cache initialization.
+//
+// |max_bytes| is the maximum size the cache can grow to. If zero is passed in
+// as |max_bytes|, the cache will determine the value to use. The returned
+// pointer can be nullptr if a fatal error is found. The actual return value of
+// the function is a net error code. If this function returns ERR_IO_PENDING,
+// the |callback| will be invoked when a backend is available or a fatal error
+// condition is reached.  The pointer to receive the |backend| must remain valid
+// until the operation completes (the callback is notified).
 NET_EXPORT net::Error CreateCacheBackend(net::CacheType type,
                                          net::BackendType backend_type,
                                          const base::FilePath& path,
                                          int64_t max_bytes,
-                                         bool force,
+                                         ResetHandling reset_handling,
                                          net::NetLog* net_log,
                                          std::unique_ptr<Backend>* backend,
                                          net::CompletionOnceCallback callback);
@@ -83,7 +92,7 @@ NET_EXPORT net::Error CreateCacheBackend(
     net::BackendType backend_type,
     const base::FilePath& path,
     int64_t max_bytes,
-    bool force,
+    ResetHandling reset_handling,
     net::NetLog* net_log,
     std::unique_ptr<Backend>* backend,
     net::CompletionOnceCallback callback,
@@ -95,8 +104,7 @@ NET_EXPORT net::Error CreateCacheBackend(
 // will get invoked even if the creation fails. The invocation will always be
 // via the event loop, and never direct.
 //
-// This is currently unsupported for |type| == net::DISK_CACHE or
-// net::MEDIA_CACHE.
+// This is currently unsupported for |type| == net::DISK_CACHE.
 //
 // Note that this will not wait for |post_cleanup_callback| of a previous
 // instance for |path| to run.
@@ -105,7 +113,7 @@ NET_EXPORT net::Error CreateCacheBackend(
     net::BackendType backend_type,
     const base::FilePath& path,
     int64_t max_bytes,
-    bool force,
+    ResetHandling reset_handling,
     net::NetLog* net_log,
     std::unique_ptr<Backend>* backend,
     base::OnceClosure post_cleanup_callback,
@@ -119,27 +127,30 @@ NET_EXPORT void FlushCacheThreadForTesting();
 // The root interface for a disk cache instance.
 class NET_EXPORT Backend {
  public:
-  typedef net::CompletionOnceCallback CompletionOnceCallback;
-  typedef net::Int64CompletionOnceCallback Int64CompletionOnceCallback;
+  using CompletionOnceCallback = net::CompletionOnceCallback;
+  using Int64CompletionOnceCallback = net::Int64CompletionOnceCallback;
+  using EntryResultCallback = disk_cache::EntryResultCallback;
+  using EntryResult = disk_cache::EntryResult;
 
   class Iterator {
    public:
     virtual ~Iterator() {}
 
-    // OpenNextEntry returns |net::OK| and provides |next_entry| if there is an
-    // entry to enumerate. It returns |net::ERR_FAILED| at the end of
-    // enumeration. If the function returns |net::ERR_IO_PENDING|, then the
-    // final result will be passed to the provided |callback|, otherwise
-    // |callback| will not be called. If any entry in the cache is modified
-    // during iteration, the result of this function is thereafter undefined.
+    // OpenNextEntry returns a result with net_error() |net::OK| and provided
+    // entry if there is an entry to enumerate which it can return immediately.
+    // It returns a result with net_error() |net::ERR_FAILED| at the end of
+    // enumeration. If the function returns a result with net_error()
+    // |net::ERR_IO_PENDING|, then the final result will be passed to the
+    // provided |callback|, otherwise |callback| will not be called. If any
+    // entry in the cache is modified during iteration, the result of this
+    // function is thereafter undefined.
     //
     // Calling OpenNextEntry after the backend which created it is destroyed
     // may fail with |net::ERR_FAILED|; however it should not crash.
     //
     // Some cache backends make stronger guarantees about mutation during
     // iteration, see top comment in simple_backend_impl.h for details.
-    virtual net::Error OpenNextEntry(Entry** next_entry,
-                                     CompletionOnceCallback callback) = 0;
+    virtual EntryResult OpenNextEntry(EntryResultCallback callback) = 0;
   };
 
   // If the backend is destroyed when there are operations in progress (any
@@ -152,57 +163,49 @@ class NET_EXPORT Backend {
   // on what will succeed and what will fail.  In particular the blockfile
   // backend will leak entries closed after backend deletion, while others
   // handle it properly.
+  Backend(net::CacheType cache_type) : cache_type_(cache_type) {}
   virtual ~Backend() {}
 
   // Returns the type of this cache.
-  virtual net::CacheType GetCacheType() const = 0;
+  net::CacheType GetCacheType() const { return cache_type_; }
 
   // Returns the number of entries in the cache.
   virtual int32_t GetEntryCount() const = 0;
 
   // Atomically attempts to open an existing entry based on |key| or, if none
-  // already exists, to create a new entry. Upon success |entry_struct| contains
-  // a struct with 1) an entry pointer to either a preexisting or newly created
-  // entry 2) a bool indicting if the entry was opened or not. When the entry
-  // pointer is no longer needed, its Close method should be called. The return
-  // value is a net error code. If this method returns ERR_IO_PENDING, the
-  // |callback| will be invoked when the entry is available. The pointer to
-  // receive the |entry_struct| must remain valid until the operation completes.
-  // The |priority| of the entry determines its priority in the background
-  // worker pools.
+  // already exists, to create a new entry. Returns an EntryResult object,
+  // which contains 1) network error code; 2) if the error code is OK,
+  // an owning pointer to either a preexisting or a newly created
+  // entry; 3) a bool indicating if the entry was opened or not. When the entry
+  // pointer is no longer needed, its Close() method should be called. If this
+  // method return value has net_error() == ERR_IO_PENDING, the
+  // |callback| will be invoked when the entry is available. The |priority| of
+  // the entry determines its priority in the background worker pools.
   //
   // This method should be the preferred way to obtain an entry over using
   // OpenEntry() or CreateEntry() separately in order to simplify consumer
   // logic.
-  virtual net::Error OpenOrCreateEntry(const std::string& key,
-                                       net::RequestPriority priority,
-                                       EntryWithOpened* entry_struct,
-                                       CompletionOnceCallback callback);
+  virtual EntryResult OpenOrCreateEntry(const std::string& key,
+                                        net::RequestPriority priority,
+                                        EntryResultCallback callback) = 0;
 
-  // Opens an existing entry. Upon success, |entry| holds a pointer to an Entry
-  // object representing the specified disk cache entry. When the entry pointer
-  // is no longer needed, its Close method should be called. The return value is
-  // a net error code. If this method returns ERR_IO_PENDING, the |callback|
-  // will be invoked when the entry is available. The pointer to receive the
-  // |entry| must remain valid until the operation completes. The |priority|
-  // of the entry determines its priority in the background worker pools.
-  virtual net::Error OpenEntry(const std::string& key,
-                               net::RequestPriority priority,
-                               Entry** entry,
-                               CompletionOnceCallback callback) = 0;
+  // Opens an existing entry, returning status code, and, if successful, an
+  // entry pointer packaged up into an EntryResult. If return value's
+  // net_error() is ERR_IO_PENDING, the |callback| will be invoked when the
+  // entry is available. The |priority| of the entry determines its priority in
+  // the background worker pools.
+  virtual EntryResult OpenEntry(const std::string& key,
+                                net::RequestPriority priority,
+                                EntryResultCallback) = 0;
 
-  // Creates a new entry. Upon success, the out param holds a pointer to an
-  // Entry object representing the newly created disk cache entry. When the
-  // entry pointer is no longer needed, its Close method should be called. The
-  // return value is a net error code. If this method returns ERR_IO_PENDING,
-  // the |callback| will be invoked when the entry is available. The pointer to
-  // receive the |entry| must remain valid until the operation completes. The
-  // |priority| of the entry determines its priority in the background worker
-  // pools.
-  virtual net::Error CreateEntry(const std::string& key,
-                                 net::RequestPriority priority,
-                                 Entry** entry,
-                                 CompletionOnceCallback callback) = 0;
+  // Creates a new entry, returning status code, and, if successful, and
+  // an entry pointer packaged up into an EntryResult. If return value's
+  // net_error() is ERR_IO_PENDING, the |callback| will be invoked when the
+  // entry is available. The |priority| of the entry determines its priority in
+  // the background worker pools.
+  virtual EntryResult CreateEntry(const std::string& key,
+                                  net::RequestPriority priority,
+                                  EntryResultCallback callback) = 0;
 
   // Marks the entry, specified by the given key, for deletion. The return value
   // is a net error code. If this method returns ERR_IO_PENDING, the |callback|
@@ -284,6 +287,9 @@ class NET_EXPORT Backend {
 
   // Returns the maximum length an individual stream can have.
   virtual int64_t MaxFileSize() const = 0;
+
+ private:
+  const net::CacheType cache_type_;
 };
 
 // This interface represents an entry in the disk cache.
@@ -458,16 +464,6 @@ class NET_EXPORT Entry {
   virtual ~Entry() {}
 };
 
-// This struct is used to allow OpenOrCreateEntry() to return both an entry
-// pointer as well as a bool indicating whether the entry was opened or
-// not (i.e.: created).
-struct EntryWithOpened {
-  explicit EntryWithOpened(Entry* e) : entry(e), opened(false) {}
-  EntryWithOpened() : entry(nullptr), opened(false) {}
-  Entry* entry;
-  bool opened;
-};
-
 struct EntryDeleter {
   void operator()(Entry* entry) {
     // Note that |entry| is ref-counted.
@@ -476,7 +472,55 @@ struct EntryDeleter {
 };
 
 // Automatically closes an entry when it goes out of scope.
+// Warning: Be careful. Automatically closing may not be the desired behavior
+// when writing to an entry. You may wish to doom first (e.g., in case writing
+// hasn't yet completed but the browser is shutting down).
 typedef std::unique_ptr<Entry, EntryDeleter> ScopedEntryPtr;
+
+// Represents the result of an entry open or create operation.
+// This is a move-only, owning type, which will close the entry it owns unless
+// it's released from it via ReleaseEntry (or it's moved away from).
+class NET_EXPORT EntryResult {
+ public:
+  EntryResult();
+  ~EntryResult();
+  EntryResult(EntryResult&&);
+  EntryResult& operator=(EntryResult&&);
+
+  EntryResult(const EntryResult&) = delete;
+  EntryResult& operator=(const EntryResult&) = delete;
+
+  // Creates an entry result representing successfully opened (pre-existing)
+  // cache entry. |new_entry| must be non-null.
+  static EntryResult MakeOpened(Entry* new_entry);
+
+  // Creates an entry result representing successfully created (new)
+  // cache entry. |new_entry| must be non-null.
+  static EntryResult MakeCreated(Entry* new_entry);
+
+  // Creates an entry result representing an error. Status must not be net::OK.
+  static EntryResult MakeError(net::Error status);
+
+  // Relinquishes ownership of the entry, and returns a pointer to it.
+  // Will return nullptr if there is no such entry.
+  // WARNING: clears net_error() to ERR_FAILED, opened() to false.
+  Entry* ReleaseEntry();
+
+  // ReleaseEntry() will return a non-null pointer if and only if this is
+  // net::OK before the call to it.
+  net::Error net_error() const { return net_error_; }
+
+  // Returns true if an existing entry was opened rather than a new one created.
+  // Implies net_error() == net::OK and non-null entry.
+  bool opened() const { return opened_; }
+
+ private:
+  // Invariant to keep: |entry_| != nullptr iff |net_error_| == net::OK;
+  // |opened_| set only if entry is set.
+  net::Error net_error_ = net::ERR_FAILED;
+  bool opened_ = false;
+  ScopedEntryPtr entry_;
+};
 
 }  // namespace disk_cache
 

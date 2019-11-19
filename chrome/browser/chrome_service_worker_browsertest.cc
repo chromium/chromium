@@ -49,6 +49,7 @@
 #include "net/test/embedded_test_server/http_response.h"
 #include "ppapi/shared_impl/ppapi_switches.h"
 #include "third_party/blink/public/common/messaging/string_message_codec.h"
+#include "third_party/blink/public/mojom/service_worker/service_worker_registration.mojom.h"
 
 namespace chrome_service_worker_browser_test {
 
@@ -177,7 +178,7 @@ IN_PROC_BROWSER_TEST_F(ChromeServiceWorkerTest,
   InitializeServer();
 
   HostContentSettingsMapFactory::GetForProfile(browser()->profile())
-      ->SetDefaultContentSetting(CONTENT_SETTINGS_TYPE_JAVASCRIPT,
+      ->SetDefaultContentSetting(ContentSettingsType::JAVASCRIPT,
                                  CONTENT_SETTING_BLOCK);
 
   base::RunLoop run_loop;
@@ -206,7 +207,7 @@ IN_PROC_BROWSER_TEST_F(ChromeServiceWorkerTest,
   GetServiceWorkerContext()->StopAllServiceWorkersForOrigin(
       embedded_test_server()->base_url());
   HostContentSettingsMapFactory::GetForProfile(browser()->profile())
-      ->SetDefaultContentSetting(CONTENT_SETTINGS_TYPE_JAVASCRIPT,
+      ->SetDefaultContentSetting(ContentSettingsType::JAVASCRIPT,
                                  CONTENT_SETTING_BLOCK);
 
   const base::string16 expected_title2 = base::ASCIIToUTF16("Done");
@@ -219,8 +220,8 @@ IN_PROC_BROWSER_TEST_F(ChromeServiceWorkerTest,
 
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  EXPECT_TRUE(TabSpecificContentSettings::FromWebContents(web_contents)->
-              IsContentBlocked(CONTENT_SETTINGS_TYPE_JAVASCRIPT));
+  EXPECT_TRUE(TabSpecificContentSettings::FromWebContents(web_contents)
+                  ->IsContentBlocked(ContentSettingsType::JAVASCRIPT));
 }
 
 IN_PROC_BROWSER_TEST_F(ChromeServiceWorkerTest,
@@ -236,7 +237,7 @@ IN_PROC_BROWSER_TEST_F(ChromeServiceWorkerTest,
   msg.owned_encoded_message = blink::EncodeStringMessage(message_data);
   msg.encoded_message = msg.owned_encoded_message;
 
-  base::PostTaskWithTraits(
+  base::PostTask(
       FROM_HERE, {content::BrowserThread::IO},
       base::BindOnce(
           &content::ServiceWorkerContext::StartServiceWorkerAndDispatchMessage,
@@ -244,31 +245,6 @@ IN_PROC_BROWSER_TEST_F(ChromeServiceWorkerTest,
           embedded_test_server()->GetURL("/scope/"), std::move(msg),
           base::BindRepeating(&ExpectResultAndRun<bool>, true,
                               run_loop.QuitClosure())));
-
-  run_loop.Run();
-}
-
-IN_PROC_BROWSER_TEST_F(ChromeServiceWorkerTest,
-                       StartServiceWorkerForLongRunningMessage) {
-  base::RunLoop run_loop;
-  blink::TransferableMessage msg;
-  const base::string16 message_data = base::UTF8ToUTF16("testMessage");
-
-  WriteFile(FILE_PATH_LITERAL("sw.js"), "self.onfetch = function(e) {};");
-  WriteFile(FILE_PATH_LITERAL("test.html"), kInstallAndWaitForActivatedPage);
-  InitializeServer();
-  NavigateToPageAndWaitForReadyTitle("/test.html");
-  msg.owned_encoded_message = blink::EncodeStringMessage(message_data);
-  msg.encoded_message = msg.owned_encoded_message;
-
-  base::PostTaskWithTraits(
-      FROM_HERE, {content::BrowserThread::IO},
-      base::BindOnce(&content::ServiceWorkerContext::
-                         StartServiceWorkerAndDispatchLongRunningMessage,
-                     base::Unretained(GetServiceWorkerContext()),
-                     embedded_test_server()->GetURL("/scope/"), std::move(msg),
-                     base::BindRepeating(&ExpectResultAndRun<bool>, true,
-                                         run_loop.QuitClosure())));
 
   run_loop.Run();
 }
@@ -379,11 +355,11 @@ class ChromeServiceWorkerFetchTest : public ChromeServiceWorkerTest {
 
 class FaviconUpdateWaiter : public favicon::FaviconDriverObserver {
  public:
-  explicit FaviconUpdateWaiter(content::WebContents* web_contents)
-      : updated_(false), scoped_observer_(this) {
+  explicit FaviconUpdateWaiter(content::WebContents* web_contents) {
     scoped_observer_.Add(
         favicon::ContentFaviconDriver::FromWebContents(web_contents));
   }
+  ~FaviconUpdateWaiter() override = default;
 
   void Wait() {
     if (updated_)
@@ -405,8 +381,9 @@ class FaviconUpdateWaiter : public favicon::FaviconDriverObserver {
       std::move(quit_closure_).Run();
   }
 
-  bool updated_;
-  ScopedObserver<favicon::FaviconDriver, FaviconUpdateWaiter> scoped_observer_;
+  bool updated_ = false;
+  ScopedObserver<favicon::FaviconDriver, favicon::FaviconDriverObserver>
+      scoped_observer_{this};
   base::OnceClosure quit_closure_;
 
   DISALLOW_COPY_AND_ASSIGN(FaviconUpdateWaiter);
@@ -471,9 +448,9 @@ class ChromeServiceWorkerLinkFetchTest : public ChromeServiceWorkerFetchTest {
         ->GetMainFrame()
         ->ExecuteJavaScriptForTests(
             base::ASCIIToUTF16(js),
-            base::Bind([](const base::Closure& quit_callback,
-                          const base::Value* result) { quit_callback.Run(); },
-                       run_loop.QuitClosure()));
+            base::BindOnce([](const base::Closure& quit_callback,
+                              base::Value result) { quit_callback.Run(); },
+                           run_loop.QuitClosure()));
     run_loop.Run();
   }
 
@@ -556,6 +533,13 @@ class ChromeServiceWorkerFetchPPAPITest : public ChromeServiceWorkerFetchTest {
  protected:
   ChromeServiceWorkerFetchPPAPITest() {}
   ~ChromeServiceWorkerFetchPPAPITest() override {}
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    ChromeServiceWorkerFetchTest::SetUpCommandLine(command_line);
+    // Use --enable-nacl flag to ensure the PNaCl module can load (without
+    // needing to use an OT token)
+    command_line->AppendSwitch(switches::kEnableNaCl);
+  }
 
   void SetUpOnMainThread() override {
     base::FilePath document_root;
@@ -712,18 +696,17 @@ class StaticURLDataSource : public content::URLDataSource {
   ~StaticURLDataSource() override = default;
 
   // content::URLDataSource:
-  std::string GetSource() const override { return source_; }
-  void StartDataRequest(
-      const std::string& path,
-      const content::ResourceRequestInfo::WebContentsGetter& wc_getter,
-      const GotDataCallback& callback) override {
+  std::string GetSource() override { return source_; }
+  void StartDataRequest(const GURL& url,
+                        const content::WebContents::Getter& wc_getter,
+                        const GotDataCallback& callback) override {
     std::string data(content_);
     callback.Run(base::RefCountedString::TakeString(&data));
   }
-  std::string GetMimeType(const std::string& path) const override {
+  std::string GetMimeType(const std::string& path) override {
     return "application/javascript";
   }
-  bool ShouldAddContentSecurityPolicy() const override { return false; }
+  bool ShouldAddContentSecurityPolicy() override { return false; }
 
  private:
   const std::string source_;

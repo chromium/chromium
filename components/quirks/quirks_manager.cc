@@ -62,10 +62,10 @@ QuirksManager::QuirksManager(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
     : waiting_for_login_(true),
       delegate_(std::move(delegate)),
-      task_runner_(base::CreateTaskRunnerWithTraits({base::MayBlock()})),
+      task_runner_(
+          base::CreateTaskRunner({base::ThreadPool(), base::MayBlock()})),
       local_state_(local_state),
-      url_loader_factory_(std::move(url_loader_factory)),
-      weak_ptr_factory_(this) {}
+      url_loader_factory_(std::move(url_loader_factory)) {}
 
 QuirksManager::~QuirksManager() {
   clients_.clear();
@@ -90,6 +90,11 @@ void QuirksManager::Shutdown() {
 QuirksManager* QuirksManager::Get() {
   DCHECK(manager_);
   return manager_;
+}
+
+// static
+bool QuirksManager::HasInstance() {
+  return !!manager_;
 }
 
 // static
@@ -143,10 +148,7 @@ void QuirksManager::RequestIccProfilePath(
 void QuirksManager::ClientFinished(QuirksClient* client) {
   DCHECK(thread_checker_.CalledOnValidThread());
   SetLastServerCheck(client->product_id(), base::Time::Now());
-  auto it = std::find_if(clients_.begin(), clients_.end(),
-                         [client](const std::unique_ptr<QuirksClient>& c) {
-                           return c.get() == client;
-                         });
+  auto it = clients_.find(client);
   CHECK(it != clients_.end());
   clients_.erase(it);
 }

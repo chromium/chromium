@@ -15,6 +15,13 @@
 namespace chromecast {
 namespace media {
 
+namespace {
+
+// Maximum time for buffering before we error out the stream.
+constexpr base::TimeDelta kBufferingTimeout = base::TimeDelta::FromMinutes(1);
+
+}  // namespace
+
 BufferingController::BufferingController(
     const scoped_refptr<BufferingConfig>& config,
     const BufferingNotificationCB& buffering_notification_cb)
@@ -24,6 +31,7 @@ BufferingController::BufferingController(
       begin_buffering_time_(base::Time()),
       last_buffer_end_time_(base::Time()),
       initial_buffering_(true),
+      buffering_timeout_exceeded_(false),
       weak_factory_(this) {
   weak_this_ = weak_factory_.GetWeakPtr();
   thread_checker_.DetachFromThread();
@@ -116,6 +124,8 @@ void BufferingController::Reset() {
 
   is_buffering_ = false;
   initial_buffering_ = true;
+  buffering_timeout_exceeded_ = false;
+  buffering_timer_.Stop();
   stream_list_.clear();
 }
 
@@ -147,6 +157,8 @@ void BufferingController::OnBufferingStateChanged(
   // Start buffering.
   if (is_buffering_ && !is_buffering_prv) {
     begin_buffering_time_ = base::Time::Now();
+    buffering_timer_.Start(FROM_HERE, kBufferingTimeout, this,
+                           &BufferingController::BufferingTimeoutExceeded);
   }
 
   // End buffering.
@@ -177,10 +189,21 @@ void BufferingController::OnBufferingStateChanged(
     // Only the first buffering report is considered "initial buffering".
     last_buffer_end_time_ = current_time;
     initial_buffering_ = false;
+    buffering_timer_.Stop();
   }
 
-  if (is_buffering_prv != is_buffering_ || force_notification)
+  // Don't notify any buffering change if the timeout was exceeded, to avoid
+  // user surprise if playback resumes after extremely long buffering.
+  if (!buffering_timeout_exceeded_ &&
+      (is_buffering_prv != is_buffering_ || force_notification))
     buffering_notification_cb_.Run(is_buffering_);
+}
+
+void BufferingController::BufferingTimeoutExceeded() {
+  LOG(INFO) << __FUNCTION__;
+  metrics::CastMetricsHelper::GetInstance()->RecordApplicationEvent(
+      "Cast.Platform.BufferingTimeoutExceeded");
+  buffering_timeout_exceeded_ = true;
 }
 
 bool BufferingController::IsHighBufferLevel() {

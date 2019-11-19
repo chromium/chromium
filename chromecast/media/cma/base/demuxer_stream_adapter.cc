@@ -4,8 +4,9 @@
 
 #include "chromecast/media/cma/base/demuxer_stream_adapter.h"
 
+#include <utility>
+
 #include "base/bind.h"
-#include "base/callback_helpers.h"
 #include "base/logging.h"
 #include "base/single_thread_task_runner.h"
 #include "chromecast/media/cma/base/balanced_media_task_runner_factory.h"
@@ -122,7 +123,7 @@ void DemuxerStreamAdapter::OnNewBuffer(
   // Just discard the buffer in the flush stage.
   if (!flush_cb_.is_null()) {
     LOG(INFO) << "Flush done";
-    base::ResetAndReturn(&flush_cb_).Run();
+    std::move(flush_cb_).Run();
     return;
   }
 

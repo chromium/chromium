@@ -5,8 +5,9 @@
 #include "services/media_session/public/cpp/media_session_mojom_traits.h"
 
 #include "mojo/public/cpp/base/string16_mojom_traits.h"
+#include "mojo/public/cpp/base/time_mojom_traits.h"
 #include "third_party/skia/include/core/SkBitmap.h"
-#include "ui/gfx/geometry/mojo/geometry_struct_traits.h"
+#include "ui/gfx/geometry/mojom/geometry_mojom_traits.h"
 #include "url/mojom/url_gurl_mojom_traits.h"
 
 namespace mojo {
@@ -50,11 +51,23 @@ bool StructTraits<media_session::mojom::MediaMetadataDataView,
 const base::span<const uint8_t>
 StructTraits<media_session::mojom::MediaImageBitmapDataView,
              SkBitmap>::pixel_data(const SkBitmap& r) {
-  const SkImageInfo& info = r.info();
-  DCHECK_EQ(info.colorType(), kRGBA_8888_SkColorType);
-
   return base::make_span(static_cast<uint8_t*>(r.getPixels()),
                          r.computeByteSize());
+}
+
+// static
+media_session::mojom::MediaImageBitmapColorType
+StructTraits<media_session::mojom::MediaImageBitmapDataView,
+             SkBitmap>::color_type(const SkBitmap& r) {
+  switch (r.info().colorType()) {
+    case (kRGBA_8888_SkColorType):
+      return media_session::mojom::MediaImageBitmapColorType::kRGBA_8888;
+    case (kBGRA_8888_SkColorType):
+      return media_session::mojom::MediaImageBitmapColorType::kBGRA_8888;
+    default:
+      NOTREACHED();
+      return media_session::mojom::MediaImageBitmapColorType::kRGBA_8888;
+  }
 }
 
 // static
@@ -63,8 +76,20 @@ bool StructTraits<media_session::mojom::MediaImageBitmapDataView, SkBitmap>::
   mojo::ArrayDataView<uint8_t> pixel_data;
   data.GetPixelDataDataView(&pixel_data);
 
-  SkImageInfo info = SkImageInfo::Make(
-      data.width(), data.height(), kRGBA_8888_SkColorType, kPremul_SkAlphaType);
+  // Convert the mojo color type into the Skia equivalient. This will tell us
+  // what format the image is in.
+  SkColorType color_type;
+  switch (data.color_type()) {
+    case (media_session::mojom::MediaImageBitmapColorType::kRGBA_8888):
+      color_type = kRGBA_8888_SkColorType;
+      break;
+    case (media_session::mojom::MediaImageBitmapColorType::kBGRA_8888):
+      color_type = kBGRA_8888_SkColorType;
+      break;
+  }
+
+  SkImageInfo info = SkImageInfo::Make(data.width(), data.height(), color_type,
+                                       kPremul_SkAlphaType);
   if (info.computeByteSize(info.minRowBytes()) > pixel_data.size()) {
     // Insufficient buffer size.
     return false;
@@ -79,15 +104,36 @@ bool StructTraits<media_session::mojom::MediaImageBitmapDataView, SkBitmap>::
     return false;
   }
 
-  // Copy the pixels into |out|.
-  return out->tryAllocPixels(info) &&
-         bitmap.readPixels(info, out->getPixels(), out->rowBytes(), 0, 0);
+  // Copy the pixels into |out| and convert them to the system default color
+  // type if needed.
+  SkImageInfo out_info = info.makeColorType(kN32_SkColorType);
+  return out->tryAllocPixels(out_info) &&
+         bitmap.readPixels(out_info, out->getPixels(), out->rowBytes(), 0, 0);
 }
 
 // static
 void StructTraits<media_session::mojom::MediaImageBitmapDataView,
                   SkBitmap>::SetToNull(SkBitmap* out) {
   out->reset();
+}
+
+// static
+bool StructTraits<media_session::mojom::MediaPositionDataView,
+                  media_session::MediaPosition>::
+    Read(media_session::mojom::MediaPositionDataView data,
+         media_session::MediaPosition* out) {
+  if (!data.ReadDuration(&out->duration_))
+    return false;
+
+  if (!data.ReadPosition(&out->position_))
+    return false;
+
+  if (!data.ReadLastUpdatedTime(&out->last_updated_time_))
+    return false;
+
+  out->playback_rate_ = data.playback_rate();
+
+  return true;
 }
 
 }  // namespace mojo

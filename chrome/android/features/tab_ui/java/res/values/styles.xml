@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!-- Copyright 2019 The Chromium Authors. All rights reserved.
+
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file.
+-->
+
+<resources>
+    <!-- TODO(996512): Consider to add these TextAppearance to the main styles.xml. These are non adaptive colors. -->
+    <style name="TextAppearance.BlueTitle2Incognito" parent="TextAppearance.BlueTitle2">
+        <item name="android:textColor">@color/modern_blue_300</item>
+    </style>
+
+    <style name="TextAppearance.BlackHeadline.Black" parent="TextAppearance.WhiteHeadline">
+        <item name="android:textColor">@color/default_text_color_dark</item>
+    </style>
+
+    <style name="TabGridDialogTitleTheme">
+        <item name="colorControlNormal">@color/divider_bg_color</item>
+        <item name="colorControlActivated">@color/filled_button_bg_color</item>
+        <item name="colorControlHighlight">@color/filled_button_bg_color</item>
+    </style>
+</resources>

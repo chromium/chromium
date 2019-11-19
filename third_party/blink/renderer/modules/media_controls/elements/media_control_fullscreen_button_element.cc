@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/media_controls/elements/media_control_fullscreen_button_element.h"
 
 #include "third_party/blink/public/platform/platform.h"
+#include "third_party/blink/public/strings/grit/blink_strings.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
@@ -17,7 +18,7 @@ namespace blink {
 
 MediaControlFullscreenButtonElement::MediaControlFullscreenButtonElement(
     MediaControlsImpl& media_controls)
-    : MediaControlInputElement(media_controls, kMediaIgnore) {
+    : MediaControlInputElement(media_controls) {
   setType(input_type_names::kButton);
   SetShadowPseudoId(AtomicString("-webkit-media-controls-fullscreen-button"));
   SetIsFullscreen(MediaElement().IsFullscreen());
@@ -28,11 +29,11 @@ void MediaControlFullscreenButtonElement::SetIsFullscreen(bool is_fullscreen) {
   if (is_fullscreen) {
     setAttribute(html_names::kAriaLabelAttr,
                  WTF::AtomicString(GetLocale().QueryString(
-                     WebLocalizedString::kAXMediaExitFullscreenButton)));
+                     IDS_AX_MEDIA_EXIT_FULL_SCREEN_BUTTON)));
   } else {
     setAttribute(html_names::kAriaLabelAttr,
                  WTF::AtomicString(GetLocale().QueryString(
-                     WebLocalizedString::kAXMediaEnterFullscreenButton)));
+                     IDS_AX_MEDIA_ENTER_FULL_SCREEN_BUTTON)));
   }
   SetClass("fullscreen", is_fullscreen);
 }
@@ -41,11 +42,10 @@ bool MediaControlFullscreenButtonElement::WillRespondToMouseClickEvents() {
   return true;
 }
 
-WebLocalizedString::Name
-MediaControlFullscreenButtonElement::GetOverflowStringName() const {
+int MediaControlFullscreenButtonElement::GetOverflowStringId() const {
   if (MediaElement().IsFullscreen())
-    return WebLocalizedString::kOverflowMenuExitFullscreen;
-  return WebLocalizedString::kOverflowMenuEnterFullscreen;
+    return IDS_MEDIA_OVERFLOW_MENU_EXIT_FULLSCREEN;
+  return IDS_MEDIA_OVERFLOW_MENU_ENTER_FULLSCREEN;
 }
 
 bool MediaControlFullscreenButtonElement::HasOverflowButton() const {
@@ -61,14 +61,16 @@ const char* MediaControlFullscreenButtonElement::GetNameForHistograms() const {
 }
 
 void MediaControlFullscreenButtonElement::DefaultEventHandler(Event& event) {
-  if (event.type() == event_type_names::kClick ||
-      event.type() == event_type_names::kGesturetap) {
+  if (!IsDisabled() && (event.type() == event_type_names::kClick ||
+                        event.type() == event_type_names::kGesturetap)) {
     RecordClickMetrics();
     if (MediaElement().IsFullscreen())
       GetMediaControls().ExitFullscreen();
     else
       GetMediaControls().EnterFullscreen();
-    event.SetDefaultHandled();
+
+    if (!IsOverflowElement())
+      event.SetDefaultHandled();
   }
   MediaControlInputElement::DefaultEventHandler(event);
 }

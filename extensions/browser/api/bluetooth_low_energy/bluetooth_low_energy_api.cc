@@ -26,7 +26,7 @@
 #include "device/bluetooth/bluetooth_local_gatt_characteristic.h"
 #include "device/bluetooth/bluetooth_local_gatt_descriptor.h"
 #include "device/bluetooth/bluetooth_local_gatt_service.h"
-#include "device/bluetooth/bluetooth_uuid.h"
+#include "device/bluetooth/public/cpp/bluetooth_uuid.h"
 #include "extensions/browser/api/bluetooth_low_energy/utils.h"
 #include "extensions/browser/api/extensions_api_client.h"
 #include "extensions/browser/kiosk/kiosk_delegate.h"

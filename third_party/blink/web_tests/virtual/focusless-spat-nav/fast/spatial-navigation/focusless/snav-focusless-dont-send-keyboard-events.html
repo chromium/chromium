@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<script src="../../../../../resources/testharness.js"></script>
+<script src="../../../../../resources/testharnessreport.js"></script>
+<script src="file:///gen/layout_test_data/mojo/public/js/mojo_bindings.js"></script>
+<script src="file:///gen/third_party/blink/public/mojom/page/spatial_navigation.mojom.js"></script>
+<script src="../../../../../fast/spatial-navigation/resources/mock-snav-service.js"></script>
+<script src="../../../../../fast/spatial-navigation/resources/snav-testharness.js"></script>
+
+<style>
+  div {
+    width: 100px;
+    height: 100px;
+    margin: 5px;
+    border: 1px solid black;
+  }
+</style>
+
+<div id="first" tabindex="0">First</div>
+<div id="second" tabindex="0">Second</div>
+<div id="third" tabindex="0">Third</div>
+
+<script>
+  if (accessibilityController) {
+    accessibilityController.reset();
+  }
+
+  var resultMap = [
+    ["Down", "first"],
+    ["Down", "second"],
+    ["Down", "third"],
+  ];
+
+  // This test checks that the "focusless spatial navigation" feature doesn't
+  // dispatch key events to the elements as it navigates over them.
+  let no_keyboard_events_test =
+      async_test("Focusless SpatNav Doesn't Dispatch KeyboardEvents");
+
+  for (let id of ['first', 'second', 'third']) {
+    let e = document.getElementById(id);
+    e.addEventListener('keydown', no_keyboard_events_test.unreached_func(
+        "Focusless SpatNav should not cause keydown on '" + id + "'"));
+
+    e.addEventListener('keyup', no_keyboard_events_test.unreached_func(
+        "Focusless SpatNav should not cause keyup on '" + id + "'"));
+  }
+
+  let postAssertsFunc = no_keyboard_events_test.step_func_done(() => {});
+
+  snav.assertFocusMoves(resultMap,
+                        true /* enableSpatnav */,
+                        postAssertsFunc,
+                        true /* focuslessSpatNav */ );
+</script>

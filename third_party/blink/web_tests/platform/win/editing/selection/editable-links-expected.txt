@@ -6,7 +6,7 @@ layer at (0,0) size 800x600
     LayoutBlockFlow {BODY} at (8,8) size 784x584
       LayoutText {#text} at (0,0) size 60x19
         text run at (0,0) width 60: "This is an "
-      LayoutInline {A} at (0,0) size 72x19 [color=#0000EE]
+      LayoutInline {A} at (60,0) size 72x19 [color=#0000EE]
         LayoutText {#text} at (60,0) size 72x19
           text run at (60,0) width 72: "editable link"
       LayoutText {#text} at (132,0) size 4x19

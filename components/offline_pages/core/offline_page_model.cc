@@ -12,28 +12,13 @@ const int64_t OfflinePageModel::kInvalidOfflineId;
 
 OfflinePageModel::SavePageParams::SavePageParams()
     : proposed_offline_id(OfflinePageModel::kInvalidOfflineId),
-      is_background(false) {}
+      is_background(false),
+      use_page_problem_detectors(false) {}
 
 OfflinePageModel::SavePageParams::SavePageParams(const SavePageParams& other) =
     default;
 
 OfflinePageModel::SavePageParams::~SavePageParams() = default;
-
-OfflinePageModel::DeletedPageInfo::DeletedPageInfo() = default;
-OfflinePageModel::DeletedPageInfo::DeletedPageInfo(
-    const DeletedPageInfo& other) = default;
-OfflinePageModel::DeletedPageInfo::~DeletedPageInfo() = default;
-OfflinePageModel::DeletedPageInfo::DeletedPageInfo(
-    int64_t offline_id,
-    int64_t system_download_id,
-    const ClientId& client_id,
-    const std::string& request_origin,
-    const GURL& url)
-    : offline_id(offline_id),
-      system_download_id(system_download_id),
-      client_id(client_id),
-      request_origin(request_origin),
-      url(url) {}
 
 // static
 bool OfflinePageModel::CanSaveURL(const GURL& url) {

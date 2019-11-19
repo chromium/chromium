@@ -2,43 +2,14 @@
 <!-- Media Router-specific strings (included from generated_resources.grd). -->
 <grit-part>
   <!-- General -->
-  <message name="IDS_MEDIA_ROUTER_TITLE" desc="Title of a dialog offering possible actions for Media Router, which enables users to mirror individual tabs or desktop as well as cast content to a device.">
-    Media Router
-  </message>
   <message name="IDS_MEDIA_ROUTER_ICON_TOOLTIP_TEXT" desc="Tooltip for the Media Router Action icon, which appears in the toolbar. The tooltip appears on mouseover of the icon.">
    Display on another screen
   </message>
   <message name="IDS_MEDIA_ROUTER_MENU_ITEM_TITLE" desc="Title of menu item for Media Router, which appears in the overflow menu and page contextual menus.">
     &amp;Cast...
   </message>
-  <message name="IDS_MEDIA_ROUTER_CAST_DIALOG_TITLE" desc="Title of the dialog with which users can cast media contents to Chromecast and other devices. This text is shown at the top of the dialog on its own line, and should be considered a verb.">
-    Cast
-  </message>
-
-  <!-- Button Titles -->
-  <message name="IDS_MEDIA_ROUTER_BACK_BUTTON_TITLE" desc="Back button title, which is spoken when a screen reader is being used.">
-    Back
-  </message>
-  <message name="IDS_MEDIA_ROUTER_CLOSE_BUTTON_TITLE" desc="Close button title, which is spoken when a screen reader is being used.">
-    Close
-  </message>
-  <message name="IDS_MEDIA_ROUTER_SEARCH_BUTTON_TITLE" desc="Search button title, which is spoken when a screen reader is being used.">
-    Search
-  </message>
-  <message name="IDS_MEDIA_ROUTER_VIEW_CAST_MODE_LIST_BUTTON_TITLE" desc="View cast modes list button title, which is spoken when a screen reader is being used.">
-    View cast mode list
-  </message>
-  <message name="IDS_MEDIA_ROUTER_VIEW_DEVICE_LIST_BUTTON_TITLE" desc="View device list button title, which is spoken when a screen reader is being used.">
-    View device list
-  </message>
-  <message name="IDS_MEDIA_ROUTER_STOP_CASTING_BUTTON_ACCESSIBLE_NAME" desc="A label for the stop button that is read by screen readers when the button is in focus. It mentions device name and status to indicate which device the button is for.">
-    Stop, <ph name="SINK_NAME">$1<ex>Living Room TV</ex></ph>, <ph name="SINK_STATUS">$2<ex>Casting YouTube</ex></ph>
-  </message>
 
   <!-- Cast Modes -->
-  <message name="IDS_MEDIA_ROUTER_AUTO_CAST_MODE" desc="Title for auto cast mode that appears as the header of a list of devices. This represents the mode that will be initially shown, if the list of sinks supports more than one of the cast modes below. Note that auto mode is not a real cast mode and merely serves as a proxy for the other cast modes. This is NOT shown as a dropdown option.">
-    Cast to
-  </message>
   <message name="IDS_MEDIA_ROUTER_PRESENTATION_CAST_MODE" desc="Title for the presentation cast mode, which is used when the page is cast enabled. This is shown as a dropdown option, and if selected, also appears as the header of a list of devices.">
     Cast <ph name="HOST_NAME">$1<ex>google.com</ex></ph>
   </message>
@@ -53,15 +24,6 @@
   </message>
 
   <!-- Cast Mode Picker -->
-  <message name="IDS_MEDIA_ROUTER_SELECT_CAST_MODE_HEADER" desc="Header for the select cast mode view, which shows a list of cast modes that the user can select.">
-    Select source
-  </message>
-  <message name="IDS_MEDIA_ROUTER_SHARE_YOUR_SCREEN_SUBHEADING" desc="Subheading for screen sharing cast modes. The subheading appears above a list of screen sharing cast modes.">
-    Share your screen
-  </message>
-  <message name="IDS_MEDIA_ROUTER_CAST_LOCAL_MEDIA_SUBHEADING" desc="Subheading for local file cast modes. The subheading appears above a list of media cast modes.">
-    Stream a video or audio file
-  </message>
   <message name="IDS_MEDIA_ROUTER_CAST_LOCAL_MEDIA_TITLE" desc="Title of the local file cast mode after a local file is selected for casting.">
     Cast <ph name="FILE_NAME">$1<ex>my_media.mp3</ex></ph>
   </message>
@@ -92,39 +54,7 @@
     Optimize fullscreen videos
   </message>
 
-  <!-- First Run Flow -->
-  <message name="IDS_MEDIA_ROUTER_FIRST_RUN_FLOW_CLOUD_PREF_TEXT" desc="Text of the cloud services preferences text in the first run flow, which is shown to the user if they are currently signed in and have enabled sync.">
-    Enable casting to cloud-based services like Google Hangouts.
-  </message>
-  <if expr="_google_chrome">
-    <message name="IDS_MEDIA_ROUTER_FIRST_RUN_FLOW_TITLE" desc="Title of the first run flow, which is shown to the user the first time they use Media Router, until they acknowledge the message. This is a welcome message that introduces Media Router to the user.">
-      Welcome to the Cast experience in Chrome!
-    </message>
-    <message name="IDS_MEDIA_ROUTER_FIRST_RUN_FLOW_TEXT" desc="Text of the first run flow, which is shown to the user the first time they use Media Router. This is an introductory description of what Media Router does.">
-      You can use this feature to display content from Chrome on your TV or other devices.
-    </message>
-  </if>
-  <if expr="not _google_chrome">
-    <message name="IDS_MEDIA_ROUTER_FIRST_RUN_FLOW_TITLE" desc="Title of the first run flow, which is shown to the user the first time they use Media Router, until they acknowledge the message. This is a welcome message that introduces Media Router to the user.">
-      Welcome to the Cast experience in Chromium!
-    </message>
-    <message name="IDS_MEDIA_ROUTER_FIRST_RUN_FLOW_TEXT" desc="Text of the first run flow, which is shown to the user the first time they use Media Router. This is an introductory description of what Media Router does.">
-      You can use this feature to display content from Chromium on your TV or other devices.
-    </message>
-  </if>
-  <message name="IDS_MEDIA_ROUTER_FIRST_RUN_FLOW_BUTTON" desc="Acknowledge button for the first run flow, which, on click, will dismiss the first run flow and set the current profile's preference that the user has acknowledged the first run flow.">
-    Ok, got it
-  </message>
-
-  <!-- Issue Actions -->
-  <message name="IDS_MEDIA_ROUTER_DISMISS_BUTTON" desc="Dismiss button, which, on click, will dismiss the current issue.">
-    Dismiss
-  </message>
-
   <!-- Issue Messaging -->
-  <message name="IDS_MEDIA_ROUTER_ISSUE_HEADER" desc="Title of the header in the dialog when there is a user action blocking issue surfaced.">
-    Error
-  </message>
   <message name="IDS_MEDIA_ROUTER_ISSUE_CREATE_ROUTE_TIMEOUT" desc="Title of an issue to show when the user attempts to create a route and the Media Router times out while waiting for a route creation response.">
     Unable to cast <ph name="HOST_NAME">$1<ex>youtube.com</ex></ph>.
   </message>
@@ -133,9 +63,6 @@
   </message>
   <message name="IDS_MEDIA_ROUTER_ISSUE_CREATE_ROUTE_TIMEOUT_FOR_TAB" desc="Title of an issue to show when the user attempts to create a route to mirror a tab and the Media Router times out while waiting for a route creation response.">
     Unable to cast tab.
-  </message>
-  <message name="IDS_MEDIA_ROUTER_ISSUE_PENDING_ROUTE" desc="Title of an issue to show when the user attempts to create more than one route at a time.">
-    Only one session can be created at a time.
   </message>
   <message name="IDS_MEDIA_ROUTER_ISSUE_UNABLE_TO_CAST_DESKTOP" desc="Title of an issue to show when creating a route for desktop mirroring fails for a reason other than timeout.">
     Unable to cast desktop.
@@ -146,58 +73,8 @@
   <message name="IDS_MEDIA_ROUTER_ISSUE_FILE_CAST_ERROR" desc="Title of an issue to show when a selected file cannot be cast, file specified by FILE_NAME.">
     Unable to cast <ph name="FILE_NAME">$1<ex>my_media.mp3</ex></ph>.
   </message>
-
-  <!-- Route Details -->
-  <message name="IDS_MEDIA_ROUTER_CASTING_ACTIVITY_STATUS" desc="Label of activity status, which describes the media that is currently being casted.">
-    Casting: <ph name="routeTitle">$1<ex>Video</ex></ph>
-  </message>
-  <message name="IDS_MEDIA_ROUTER_START_CASTING_BUTTON" desc="Start casting button, which, on click, will start casting to the current route.">
-    Cast
-  </message>
-  <message name="IDS_MEDIA_ROUTER_STOP_CASTING_BUTTON" desc="Stop casting button, which, on click, will stop the current route.">
-    Stop
-  </message>
-  <message name="IDS_MEDIA_ROUTER_ROUTE_DETAILS_PLAY_TITLE" desc="The title label for a button to play media contents.">
-    Play
-  </message>
-  <message name="IDS_MEDIA_ROUTER_ROUTE_DETAILS_PAUSE_TITLE" desc="The title label for a button to pause media contents.">
-    Pause
-  </message>
-  <message name="IDS_MEDIA_ROUTER_ROUTE_DETAILS_MUTE_TITLE" desc="The title label for a button to mute media contents.">
-    Mute
-  </message>
-  <message name="IDS_MEDIA_ROUTER_ROUTE_DETAILS_UNMUTE_TITLE" desc="The title label for a button to unmute media contents.">
-    Unmute
-  </message>
-  <message name="IDS_MEDIA_ROUTER_ROUTE_DETAILS_SEEK_TITLE" desc="The title label for a seek bar for media contents.">
-    Seek
-  </message>
-  <message name="IDS_MEDIA_ROUTER_ROUTE_DETAILS_VOLUME_TITLE" desc="The title label for a volume control bar for media contents.">
-    Volume
-  </message>
-  <message name="IDS_MEDIA_ROUTER_ROUTE_DETAILS_CURRENT_TIME_LABEL" desc="The label for the current time position of media contents.">
-    Current time
-  </message>
-  <message name="IDS_MEDIA_ROUTER_ROUTE_DETAILS_DURATION_LABEL" desc="The label for the total duration of media contents.">
-    Duration
-  </message>
-  <message name="IDS_MEDIA_ROUTER_ROUTE_DETAILS_HANGOUTS_LOCAL_PRESENT_TITLE" desc="The title for the local present mode toggle for casting to a Hangouts.">
-    Smooth Motion [beta]
-  </message>
-  <message name="IDS_MEDIA_ROUTER_ROUTE_DETAILS_HANGOUTS_LOCAL_PRESENT_SUBTITLE" desc="The subtitle for the local present mode toggle for casting to a Hangouts.">
-    Use high bandwidth for best video or animation. Other people with slow connections may not see your content.
-  </message>
-  <message name="IDS_MEDIA_ROUTER_ROUTE_DETAILS_ALWAYS_USE_MIRRORING_TITLE" desc="The title for a toggle setting to choose whether video should always be mirrored (played locally and remotely), or played only remotely.">
-    Always use mirroring
-  </message>
-  <message name="IDS_MEDIA_ROUTER_ROUTE_DETAILS_FULLSCREEN_VIDEOS_DROPDOWN_TITLE" desc="The title for a toggle setting to choose whether fullscreen videos should always be mirrored (played locally and remotely), or played only remotely.">
-    Show fullscreen videos on
-  </message>
-  <message name="IDS_MEDIA_ROUTER_ROUTE_DETAILS_FULLSCREEN_VIDEOS_BOTH_SCREENS" desc="Settings option to play fullscreen videos both locally and remotely.">
-    Both screens
-  </message>
-  <message name="IDS_MEDIA_ROUTER_ROUTE_DETAILS_FULLSCREEN_VIDEOS_REMOTE_SCREEN" desc="Settings option to play fullscreen videos only remotely.">
-    Remote screen
+  <message name="IDS_MEDIA_ROUTER_ISSUE_TAB_AUDIO_NOT_SUPPORTED" desc="Title of an issue shown when the user is casting a tab, but only its visual content can be cast and not its audio output.">
+    Casting tab audio is not supported on this device.
   </message>
 
   <!-- Sink List -->
@@ -227,14 +104,6 @@
   </message>
   <message name="IDS_MEDIA_ROUTER_SOURCE_NOT_SUPPORTED" desc="Text shown as the status of a Cast device that is not compatible with the selected Cast source (contents).">
     Source not supported
-  </message>
-
-  <!-- Sink Search -->
-  <message name="IDS_MEDIA_ROUTER_SEARCH_LABEL" desc="Label for search input in sink list.">
-    Search
-  </message>
-  <message name="IDS_MEDIA_ROUTER_SEARCH_NO_MATCHES" desc="Text to display when there are no sinks matching the user input search text.">
-    No matches
   </message>
 
   <!-- File Dialog -->

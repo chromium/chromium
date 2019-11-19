@@ -28,12 +28,11 @@
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user_manager.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "net/cert/cert_verify_proc.h"
 #include "net/cert/x509_certificate.h"
 #include "net/test/cert_test_util.h"
 #include "net/test/test_data_directory.h"
-#include "services/network/cert_verifier_with_trust_anchors.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace chromeos {
@@ -108,39 +107,11 @@ const BehaviorTestCase kBehaviorTestCases[] = {
     },
 };
 
-// Weak ptr to network::CertVerifierWithTrustAnchors - object is freed in test
-// destructor once we've ensured the profile has been shut down.
-network::CertVerifierWithTrustAnchors* g_policy_cert_verifier_for_factory =
-    NULL;
-
 std::unique_ptr<KeyedService> TestPolicyCertServiceFactory(
     content::BrowserContext* context) {
   return policy::PolicyCertService::CreateForTesting(
-      kUsers[0], g_policy_cert_verifier_for_factory,
-      user_manager::UserManager::Get());
+      kUsers[0], user_manager::UserManager::Get());
 }
-
-class MockCertVerifyProc : public net::CertVerifyProc {
- public:
-  MockCertVerifyProc() = default;
-
-  // net::CertVerifyProc implementation
-  bool SupportsAdditionalTrustAnchors() const override { return true; }
-
- protected:
-  ~MockCertVerifyProc() override = default;
-
- private:
-  int VerifyInternal(net::X509Certificate* cert,
-                     const std::string& hostname,
-                     const std::string& ocsp_response,
-                     int flags,
-                     net::CRLSet* crl_set,
-                     const net::CertificateList& additional_trust_anchors,
-                     net::CertVerifyResult* result) override {
-    return net::ERR_FAILED;
-  }
-};
 
 }  // namespace
 
@@ -183,9 +154,6 @@ class MultiProfileUserControllerTest
   }
 
   void TearDown() override {
-    // Clear our cached pointer to the network::CertVerifierWithTrustAnchors.
-    g_policy_cert_verifier_for_factory = NULL;
-
     // We must ensure that the network::CertVerifierWithTrustAnchors outlives
     // the PolicyCertService so shutdown the profile here. Additionally, we need
     // to run the message loop between freeing the PolicyCertService and
@@ -237,8 +205,7 @@ class MultiProfileUserControllerTest
 
   TestingProfile* profile(int index) { return user_profiles_[index]; }
 
-  content::TestBrowserThreadBundle threads_;
-  std::unique_ptr<network::CertVerifierWithTrustAnchors> cert_verifier_;
+  content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
   FakeChromeUserManager* fake_user_manager_;  // Not owned
   user_manager::ScopedUserManager user_manager_enabler_;
@@ -411,11 +378,6 @@ TEST_F(MultiProfileUserControllerTest,
       test_users_[0].GetUserEmail());
   LoginUser(0);
 
-  cert_verifier_.reset(
-      new network::CertVerifierWithTrustAnchors(base::Closure()));
-  cert_verifier_->InitializeOnIOThread(
-      base::MakeRefCounted<MockCertVerifyProc>());
-  g_policy_cert_verifier_for_factory = cert_verifier_.get();
   ASSERT_TRUE(
       policy::PolicyCertServiceFactory::GetInstance()->SetTestingFactoryAndUse(
           profile(0), base::BindRepeating(&TestPolicyCertServiceFactory)));
@@ -450,11 +412,6 @@ TEST_F(MultiProfileUserControllerTest,
   // changed back to enabled.
   SetPrefBehavior(0, MultiProfileUserController::kBehaviorUnrestricted);
 
-  cert_verifier_.reset(
-      new network::CertVerifierWithTrustAnchors(base::Closure()));
-  cert_verifier_->InitializeOnIOThread(
-      base::MakeRefCounted<MockCertVerifyProc>());
-  g_policy_cert_verifier_for_factory = cert_verifier_.get();
   ASSERT_TRUE(
       policy::PolicyCertServiceFactory::GetInstance()->SetTestingFactoryAndUse(
           profile(0), base::BindRepeating(&TestPolicyCertServiceFactory)));
@@ -473,9 +430,7 @@ TEST_F(MultiProfileUserControllerTest,
   net::CertificateList certificates;
   certificates.push_back(
       net::ImportCertFromFile(net::GetTestCertsDirectory(), "ok_cert.pem"));
-  service->OnPolicyProvidedCertsChanged(
-      certificates /* all_server_and_authority_certs */,
-      certificates /* trust_anchors */);
+  service->SetPolicyTrustAnchorsForTesting(/*trust_anchors=*/certificates);
   EXPECT_TRUE(service->has_policy_certificates());
   EXPECT_FALSE(controller()->IsUserAllowedInSession(
       test_users_[1].GetUserEmail(), &reason));

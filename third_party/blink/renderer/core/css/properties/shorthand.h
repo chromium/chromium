@@ -10,6 +10,9 @@
 
 namespace blink {
 
+class CSSParserContext;
+class CSSParserLocalContext;
+class CSSParserTokenRange;
 class CSSPropertyValue;
 
 class Shorthand : public CSSProperty {
@@ -26,10 +29,12 @@ class Shorthand : public CSSProperty {
     NOTREACHED();
     return false;
   }
-  bool IsShorthand() const override { return true; }
 
  protected:
-  constexpr Shorthand() : CSSProperty() {}
+  constexpr Shorthand(CSSPropertyID id,
+                      uint16_t flags,
+                      char repetition_separator)
+      : CSSProperty(id, flags | kShorthand, repetition_separator) {}
 };
 
 template <>

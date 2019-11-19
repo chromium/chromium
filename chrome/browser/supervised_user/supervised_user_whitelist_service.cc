@@ -38,10 +38,7 @@ SupervisedUserWhitelistService::SupervisedUserWhitelistService(
     PrefService* prefs,
     component_updater::SupervisedUserWhitelistInstaller* installer,
     const std::string& client_id)
-    : prefs_(prefs),
-      installer_(installer),
-      client_id_(client_id),
-      weak_ptr_factory_(this) {
+    : prefs_(prefs), installer_(installer), client_id_(client_id) {
   DCHECK(prefs);
 }
 
@@ -141,6 +138,12 @@ syncer::SyncData SupervisedUserWhitelistService::CreateWhitelistSyncData(
   whitelist->set_name(name);
 
   return syncer::SyncData::CreateLocalData(id, name, specifics);
+}
+
+void SupervisedUserWhitelistService::WaitUntilReadyToSync(
+    base::OnceClosure done) {
+  // This service handles sync events at any time.
+  std::move(done).Run();
 }
 
 syncer::SyncMergeResult

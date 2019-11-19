@@ -48,25 +48,25 @@ class CONTENT_EXPORT WebUI {
 
   virtual ~WebUI() {}
 
-  virtual WebContents* GetWebContents() const = 0;
+  virtual WebContents* GetWebContents() = 0;
 
-  virtual WebUIController* GetController() const = 0;
+  virtual WebUIController* GetController() = 0;
   virtual void SetController(std::unique_ptr<WebUIController> controller) = 0;
 
   // Returns the device scale factor of the monitor that the renderer is on.
   // Whenever possible, WebUI should push resources with this scale factor to
   // Javascript.
-  virtual float GetDeviceScaleFactor() const = 0;
+  virtual float GetDeviceScaleFactor() = 0;
 
   // Gets a custom tab title provided by the Web UI. If there is no title
   // override, the string will be empty which should trigger the default title
   // behavior for the tab.
-  virtual const base::string16& GetOverriddenTitle() const = 0;
+  virtual const base::string16& GetOverriddenTitle() = 0;
   virtual void OverrideTitle(const base::string16& title) = 0;
 
   // Allows a controller to override the BindingsPolicy that should be enabled
   // for this page.
-  virtual int GetBindings() const = 0;
+  virtual int GetBindings() = 0;
   virtual void SetBindings(int bindings) = 0;
 
   virtual void AddMessageHandler(

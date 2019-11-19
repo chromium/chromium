@@ -141,7 +141,7 @@ class NET_EXPORT URLFetcherFileWriter : public URLFetcherResponseWriter {
 
   CompletionOnceCallback callback_;
 
-  base::WeakPtrFactory<URLFetcherFileWriter> weak_factory_;
+  base::WeakPtrFactory<URLFetcherFileWriter> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(URLFetcherFileWriter);
 };

@@ -1,7 +1,5 @@
 #include "rar.hpp"
 
-namespace third_party_unrar {
-
 QuickOpen::QuickOpen()
 {
   Buf=NULL;
@@ -290,5 +288,3 @@ bool QuickOpen::ReadNext()
   LastReadHeaderPos=QOHeaderPos-Offset;
   return true;
 }
-
-}  // namespace third_party_unrar

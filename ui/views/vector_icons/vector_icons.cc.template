@@ -8,13 +8,13 @@
 #include "ui/views/vector_icons.h"
 
 #include "base/logging.h"
+#include "components/vector_icons/cc_macros.h"
 #include "ui/gfx/vector_icon_types.h"
 
-#include "components/vector_icons/cc_macros.h"
+#define DECLARE_VECTOR_COMMAND(x) using gfx::x;
+DECLARE_VECTOR_COMMANDS
 
 namespace views {
-
-using namespace gfx;
 
 TEMPLATE_PLACEHOLDER
 

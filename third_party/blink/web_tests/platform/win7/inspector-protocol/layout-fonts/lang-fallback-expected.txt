@@ -1,0 +1,249 @@
+تح
+#ar:
+"Times New Roman" : 2
+
+ՀՁ
+#hy-am:
+"Sylfaen" : 2
+
+সম
+#bn:
+"Vrinda" : 2
+
+⡰⡱
+#en-us-brai:
+"Segoe UI Symbol" : 2
+
+ᨀᨁ
+#bug:
+"Arial" : 2
+
+ᐐᐑ
+#cans:
+"Euphemia" : 2
+
+𐊠𐊡
+#xcr:
+"Arial" : 2
+
+ᎡᎢ
+#chr:
+"Plantagenet Cherokee" : 2
+
+ⲁⲂ
+#copt:
+"Arial" : 2
+
+𒀀𒀌
+#akk:
+"Arial" : 2
+
+𐠀𐠁
+#ecy:
+"Arial" : 2
+
+АБВ
+#ru:
+"Times New Roman" : 3
+
+𐐀𐐁
+#en:
+"Segoe UI Symbol" : 2
+
+अआ
+#hi:
+"Mangal" : 2
+
+ሁሂ
+#am:
+"Nyala" : 2
+
+ႠႡ
+#ka:
+"Arial" : 2
+
+ΑΒ
+#el:
+"Times New Roman" : 2
+
+ਡਢ
+#pa:
+"Raavi" : 2
+
+我
+#zh-CN:
+"Microsoft YaHei" : 1
+
+我
+#zh-HK:
+"Microsoft JhengHei" : 1
+
+我
+#zh-Hans:
+"Microsoft YaHei" : 1
+
+我
+#zh-Hant:
+"Microsoft JhengHei" : 1
+
+我
+#ja:
+"Meiryo UI" : 1
+
+ᄀᄁ
+#ko:
+"Malgun Gothic" : 2
+
+בג
+#he:
+"Times New Roman" : 2
+
+កខ
+#km:
+"Khmer UI" : 2
+
+𐡁𐡂
+#arc:
+"Arial" : 2
+
+𐭡𐭢
+#pal:
+"Arial" : 2
+
+𐭁𐭂
+#xpr:
+"Arial" : 2
+
+ꦑꦒ
+#jv:
+"Arial" : 2
+
+ಡಢ
+#kn:
+"Tunga" : 2
+
+𐨐𐨑
+#sa:
+"Arial" : 2
+
+໐໑
+#lo:
+"Lao UI" : 2
+
+ꓐꓑ
+#lis:
+"Arial" : 2
+
+𐊁𐊂
+#xlc:
+"Arial" : 2
+
+𐤡𐤢
+#xld:
+"Arial" : 2
+
+ഡഢ
+#ml:
+"Kartika" : 2
+
+𐦡𐦢
+#script_meroitic:
+"Arial" : 2
+
+ကခ
+#my:
+"Arial" : 2
+
+ᦁᦂ
+#script_new_tai_lue:
+"Microsoft New Tai Lue" : 2
+
+߁߂
+#nko:
+"Ebrima" : 2
+
+ᚁ
+#script_ogham:
+"Segoe UI Symbol" : 2
+
+᱑᱒
+#script_ol_chiki:
+"Arial" : 2
+
+𐌁𐌂
+#script_old_italic:
+"Segoe UI Symbol" : 2
+
+𐎡𐎢
+#peo:
+"Arial" : 2
+
+𐩡𐩢
+#script_old_south_arabian:
+"Arial" : 2
+
+ଡଢ
+#or:
+"Kalinga" : 2
+
+ꡁꡂ
+#script_phags_pa:
+"Microsoft PhagsPa" : 2
+
+ᚠᚡ
+#script_runic:
+"Segoe UI Symbol" : 2
+
+𐑑𐑒
+#script_shavian:
+"Arial" : 2
+
+එඒ
+#si:
+"Iskoola Pota" : 2
+
+𑃑𑃒
+#script_sora_sompeng:
+"Arial" : 2
+
+ܑܒ
+#syr:
+"Estrangelo Edessa" : 2
+
+ᥑᥒ
+#script_tai_le:
+"Microsoft Tai Le" : 2
+
+றல
+#ta:
+"Latha" : 2
+
+డఢ
+#te:
+"Gautami" : 2
+
+ށނ
+#script_thaana:
+"MV Boli" : 2
+
+กข
+#th:
+"Leelawadee" : 2
+
+༁༂
+#bo:
+"Microsoft Himalaya" : 2
+
+ⴱⴲ
+#script_tifinagh:
+"Ebrima" : 2
+
+ꔁꔂ
+#vai:
+"Ebrima" : 2
+
+ꀀꀁ
+#yi:
+"Microsoft Yi Baiti" : 2
+
+

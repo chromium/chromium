@@ -1,0 +1,443 @@
+/* global */
+
+body {
+  background-color: #FDFBFC;
+  margin:38px;
+  color:#333333;
+}
+
+a {
+    font-weight:normal;
+    text-decoration:none;
+}
+
+form {
+    display:inline;
+}
+
+/* hyperlinks */
+
+a:link, a:visited, a:active {
+    color:#0000FF;
+}
+a:hover {
+    color:#700000;
+    text-decoration:underline;
+}
+
+/* paragraph links after sections.
+   These aren't visible until hovering
+   over the <h> tag, then have a
+   "reverse video" effect over the actual
+   link
+ */
+
+a.headerlink {
+    font-size: 0.8em;
+    padding: 0 4px 0 4px;
+    text-decoration: none;
+    visibility: hidden;
+}
+
+h1:hover > a.headerlink,
+h2:hover > a.headerlink,
+h3:hover > a.headerlink,
+h4:hover > a.headerlink,
+h5:hover > a.headerlink,
+h6:hover > a.headerlink,
+dt:hover > a.headerlink {
+    visibility: visible;
+}
+
+a.headerlink:hover {
+    background-color: #990000;
+    color: white;
+}
+
+
+/* Container setup */
+
+#docs-container {
+  max-width:1000px;
+  clear:both;
+}
+
+
+/* header/footer elements */
+
+#docs-header h1 {
+    font-size:20px;
+    color: #222222;
+    margin: 0;
+    padding: 0;
+}
+
+#docs-header {
+  font-family:Tahoma, Geneva,sans-serif;
+
+  font-size:.9em;
+
+}
+
+#docs-top-navigation,
+#docs-bottom-navigation {
+  font-family: Tahoma, Geneva, sans-serif;
+  background-color: #EEE;
+  border: solid 1px #CCC;
+  padding:10px;
+  font-size:.9em;
+}
+
+#docs-top-navigation {
+  margin:10px 0px 10px 0px;
+  line-height:1.2em;
+}
+
+.docs-navigation-links {
+  font-family:Tahoma, Geneva,sans-serif;
+}
+
+#docs-bottom-navigation {
+    float:right;
+    margin: 1em 0 1em 5px;
+}
+
+#docs-copyright {
+    font-size:.85em;
+    padding:5px 0px;
+}
+
+#docs-header h1,
+#docs-top-navigation h1,
+#docs-top-navigation h2 {
+  font-family:Tahoma,Geneva,sans-serif;
+  font-weight:normal;
+}
+
+#docs-top-navigation h2 {
+    margin:16px 4px 7px 5px;
+    font-size:2em;
+}
+
+#docs-search {
+    float:right;
+}
+
+#docs-top-page-control {
+  float:right;
+  width:350px;
+}
+
+#docs-top-page-control ul {
+  padding:0;
+  margin:0;
+}
+
+#docs-top-page-control li {
+    list-style-type:none;
+    padding:1px 8px;
+}
+
+
+#docs-container .version-num {
+    font-weight: bold;
+}
+
+
+/* content container, sidebar */
+
+#docs-body-container {
+  background-color:#EFEFEF;
+  border: solid 1px #CCC;
+
+}
+
+#docs-body,
+#docs-sidebar
+ {
+  /*font-family: helvetica, arial, sans-serif;
+  font-size:.9em;*/
+
+  font-family: Tahoma, Geneva, sans-serif;
+  /*font-size:.85em;*/
+  line-height:1.5em;
+
+}
+
+#docs-sidebar > ul {
+  font-size:.9em;
+}
+
+#docs-sidebar {
+  float:left;
+  width:212px;
+  padding: 10px 0 0 15px;
+  /*font-size:.85em;*/
+}
+
+#docs-sidebar h3, #docs-sidebar h4 {
+    background-color: #DDDDDD;
+    color: #222222;
+    font-family: Tahoma, Geneva,sans-serif;
+    font-size: 1.1em;
+    font-weight: normal;
+    margin: 10px 0 0 -15px;
+    padding: 5px 10px 5px 10px;
+    text-shadow: 1px 1px 0 white;
+    width:210px;
+}
+
+#docs-sidebar h3 a, #docs-sidebar h4 a {
+  color: #222222;
+}
+#docs-sidebar ul {
+  margin: 10px 10px 10px 0px;
+  padding: 0;
+  list-style: none outside none;
+}
+
+
+#docs-sidebar ul ul {
+    margin-bottom: 0;
+    margin-top: 0;
+    list-style: square outside none;
+    margin-left: 20px;
+}
+
+#docs-body {
+  background-color:#FFFFFF;
+  padding:1px 10px 10px 10px;
+}
+
+#docs-body.withsidebar {
+  margin: 0 0 0 230px;
+  border-left:3px solid #DFDFDF;
+}
+
+#docs-body h1,
+#docs-body h2,
+#docs-body h3,
+#docs-body h4 {
+  font-family:Tahoma, Geneva, sans-serif;
+}
+
+#docs-body h1 {
+  /* hide the <h1> for each content section. */
+  display:none;
+  font-size:1.8em;
+}
+
+#docs-body h2 {
+  font-size:1.6em;
+}
+
+#docs-body h3 {
+  font-size:1.4em;
+}
+
+/* SQL popup, code styles */
+
+.highlight {
+  background:none;
+}
+
+#docs-container pre {
+  font-size:1.2em;
+}
+
+#docs-container .pre {
+  font-size:1.1em;
+}
+
+#docs-container pre {
+  background-color: #f0f0f0;
+  border: solid 1px #ccc;
+  box-shadow: 2px 2px 3px #DFDFDF;
+  padding:10px;
+  margin: 5px 0px 5px 0px;
+  overflow:auto;
+  line-height:1.3em;
+}
+
+#docs-container #fixed-sidebar {
+  border-bottom: 1px solid;
+}
+
+.popup_sql, .show_sql
+{
+    background-color: #FBFBEE;
+    padding:5px 10px;
+    margin:10px -5px;
+    border:1px dashed;
+}
+
+/* the [SQL] links used to display SQL */
+#docs-container .sql_link
+{
+  font-weight:normal;
+  font-family: arial, sans-serif;
+  font-size:.9em;
+  text-transform: uppercase;
+  color:#990000;
+  border:1px solid;
+  padding:1px 2px 1px 2px;
+  margin:0px 10px 0px 15px;
+  float:right;
+  line-height:1.2em;
+}
+
+#docs-container a.sql_link,
+#docs-container .sql_link
+{
+    text-decoration: none;
+    padding:1px 2px;
+}
+
+#docs-container a.sql_link:hover {
+    text-decoration: none;
+    color:#fff;
+    border:1px solid #900;
+    background-color: #900;
+}
+
+/* docutils-specific elements */
+
+th.field-name {
+    text-align:right;
+}
+
+div.note, div.warning, p.deprecated, div.topic  {
+    background-color:#EEFFEF;
+}
+
+
+div.admonition, div.topic, p.deprecated, p.versionadded, p.versionchanged {
+    border:1px solid #CCCCCC;
+    padding:5px 10px;
+    font-size:.9em;
+    box-shadow: 2px 2px 3px #DFDFDF;
+}
+
+div.warning .admonition-title {
+    color:#FF0000;
+}
+
+div.admonition .admonition-title, div.topic .topic-title {
+    font-weight:bold;
+}
+
+.viewcode-back, .viewcode-link {
+    float:right;
+}
+
+dl.function > dt,
+dl.attribute > dt,
+dl.classmethod > dt,
+dl.method > dt,
+dl.class > dt,
+dl.exception > dt
+{
+    background-color:#F0F0F0;
+    margin:25px -10px 10px 10px;
+    padding: 0px 10px;
+}
+
+p.versionadded span.versionmodified,
+p.versionchanged span.versionmodified,
+p.deprecated span.versionmodified {
+    background-color: #F0F0F0;
+    font-style: italic;
+}
+
+dt:target, span.highlight {
+    background-color:#FBE54E;
+}
+
+a.headerlink {
+    font-size: 0.8em;
+    padding: 0 4px 0 4px;
+    text-decoration: none;
+    visibility: hidden;
+}
+
+h1:hover > a.headerlink,
+h2:hover > a.headerlink,
+h3:hover > a.headerlink,
+h4:hover > a.headerlink,
+h5:hover > a.headerlink,
+h6:hover > a.headerlink,
+dt:hover > a.headerlink {
+    visibility: visible;
+}
+
+a.headerlink:hover {
+    background-color: #00f;
+    color: white;
+}
+
+.clearboth {
+    clear:both;
+}
+
+tt.descname {
+    background-color:transparent;
+    font-size:1.2em;
+    font-weight:bold;
+}
+
+tt.descclassname {
+    background-color:transparent;
+}
+
+tt {
+    background-color:#ECF0F3;
+    padding:0 1px;
+}
+
+/* syntax highlighting overrides */
+.k, .kn {color:#0908CE;}
+.o {color:#BF0005;}
+.go {color:#804049;}
+
+
+/* special "index page" sections
+   with specific formatting
+*/
+
+div#sqlalchemy-documentation {
+  font-size:.95em;
+}
+div#sqlalchemy-documentation em {
+  font-style:normal;
+}
+div#sqlalchemy-documentation .rubric{
+  font-size:14px;
+  background-color:#EEFFEF;
+  padding:5px;
+  border:1px solid #BFBFBF;
+}
+div#sqlalchemy-documentation a, div#sqlalchemy-documentation li {
+  padding:5px 0px;
+}
+
+div#getting-started {
+  border-bottom:1px solid;
+}
+
+div#sqlalchemy-documentation div#sqlalchemy-orm {
+  float:left;
+  width:48%;
+}
+
+div#sqlalchemy-documentation div#sqlalchemy-core {
+  float:left;
+  width:48%;
+  margin:0;
+  padding-left:10px;
+  border-left:1px solid;
+}
+
+div#dialect-documentation {
+  border-top:1px solid;
+  /*clear:left;*/
+}

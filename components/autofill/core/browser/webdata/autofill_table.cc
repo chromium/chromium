@@ -22,11 +22,11 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
-#include "components/autofill/core/browser/autofill_country.h"
-#include "components/autofill/core/browser/autofill_metadata.h"
-#include "components/autofill/core/browser/autofill_profile.h"
 #include "components/autofill/core/browser/autofill_type.h"
-#include "components/autofill/core/browser/credit_card.h"
+#include "components/autofill/core/browser/data_model/autofill_metadata.h"
+#include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/geo/autofill_country.h"
 #include "components/autofill/core/browser/payments/payments_customer_data.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/webdata/autofill_change.h"
@@ -51,9 +51,6 @@
 
 namespace autofill {
 namespace {
-
-// The period after which autocomplete entries should expire in days.
-const int64_t kExpirationPeriodInDays = 60;
 
 // Helper struct for AutofillTable::RemoveFormElementsAddedBetween().
 // Contains all the necessary fields to update a row in the 'autofill' table.
@@ -413,7 +410,8 @@ bool AutofillTable::CreateTablesIfNecessary() {
           InitMaskedCreditCardsTable() && InitUnmaskedCreditCardsTable() &&
           InitServerCardMetadataTable() && InitServerAddressesTable() &&
           InitServerAddressMetadataTable() && InitAutofillSyncMetadataTable() &&
-          InitModelTypeStateTable() && InitPaymentsCustomerDataTable());
+          InitModelTypeStateTable() && InitPaymentsCustomerDataTable() &&
+          InitPaymentsUPIVPATable());
 }
 
 bool AutofillTable::IsSyncable() {
@@ -699,14 +697,8 @@ bool AutofillTable::RemoveFormElementsAddedBetween(
 
 bool AutofillTable::RemoveExpiredFormElements(
     std::vector<AutofillChange>* changes) {
-  int64_t period = kExpirationPeriodInDays;
-  auto change_type = AutofillChange::REMOVE;
-
-  if (base::FeatureList::IsEnabled(
-          autofill::features::kAutocompleteRetentionPolicyEnabled)) {
-    period = kAutocompleteRetentionPolicyPeriodInDays;
-    change_type = AutofillChange::EXPIRE;
-  }
+  const int64_t period = kAutocompleteRetentionPolicyPeriodInDays;
+  const auto change_type = AutofillChange::EXPIRE;
 
   base::Time expiration_time =
       AutofillClock::Now() - base::TimeDelta::FromDays(period);
@@ -1649,6 +1641,21 @@ bool AutofillTable::GetPaymentsCustomerData(
   return s.Succeeded();
 }
 
+bool AutofillTable::InsertVPA(const std::string& vpa) {
+  sql::Transaction transaction(db_);
+  if (!transaction.Begin())
+    return false;
+
+  sql::Statement insert_vpa_statement(
+      db_->GetUniqueStatement("INSERT INTO payments_upi_vpa (vpa) VALUES (?)"));
+  insert_vpa_statement.BindString(0, vpa);
+  insert_vpa_statement.Run();
+
+  transaction.Commit();
+
+  return db_->GetLastChangeCount() > 0;
+}
+
 bool AutofillTable::ClearAllServerData() {
   sql::Transaction transaction(db_);
   if (!transaction.Begin())
@@ -1705,8 +1712,8 @@ bool AutofillTable::ClearAllLocalData() {
 bool AutofillTable::RemoveAutofillDataModifiedBetween(
     const base::Time& delete_begin,
     const base::Time& delete_end,
-    std::vector<std::string>* profile_guids,
-    std::vector<std::string>* credit_card_guids) {
+    std::vector<std::unique_ptr<AutofillProfile>>* profiles,
+    std::vector<std::unique_ptr<CreditCard>>* credit_cards) {
   DCHECK(delete_end.is_null() || delete_begin < delete_end);
 
   time_t delete_begin_t = delete_begin.ToTimeT();
@@ -1719,17 +1726,20 @@ bool AutofillTable::RemoveAutofillDataModifiedBetween(
   s_profiles_get.BindInt64(0, delete_begin_t);
   s_profiles_get.BindInt64(1, delete_end_t);
 
-  profile_guids->clear();
+  profiles->clear();
   while (s_profiles_get.Step()) {
     std::string guid = s_profiles_get.ColumnString(0);
-    profile_guids->push_back(guid);
+    std::unique_ptr<AutofillProfile> profile = GetAutofillProfile(guid);
+    if (!profile)
+      return false;
+    profiles->push_back(std::move(profile));
   }
   if (!s_profiles_get.Succeeded())
     return false;
 
   // Remove the profile pieces.
-  for (const std::string& guid : *profile_guids) {
-    if (!RemoveAutofillProfilePieces(guid, db_))
+  for (const std::unique_ptr<AutofillProfile>& profile : *profiles) {
+    if (!RemoveAutofillProfilePieces(profile->guid(), db_))
       return false;
   }
 
@@ -1750,10 +1760,13 @@ bool AutofillTable::RemoveAutofillDataModifiedBetween(
   s_credit_cards_get.BindInt64(0, delete_begin_t);
   s_credit_cards_get.BindInt64(1, delete_end_t);
 
-  credit_card_guids->clear();
+  credit_cards->clear();
   while (s_credit_cards_get.Step()) {
     std::string guid = s_credit_cards_get.ColumnString(0);
-    credit_card_guids->push_back(guid);
+    std::unique_ptr<CreditCard> credit_card = GetCreditCard(guid);
+    if (!credit_card)
+      return false;
+    credit_cards->push_back(std::move(credit_card));
   }
   if (!s_credit_cards_get.Succeeded())
     return false;
@@ -1844,36 +1857,6 @@ bool AutofillTable::RemoveOriginURLsModifiedBetween(
   }
 
   return true;
-}
-
-bool AutofillTable::GetAutofillProfilesInTrash(
-    std::vector<std::string>* guids) {
-  guids->clear();
-
-  sql::Statement s(
-      db_->GetUniqueStatement("SELECT guid FROM autofill_profiles_trash"));
-
-  while (s.Step()) {
-    std::string guid = s.ColumnString(0);
-    guids->push_back(guid);
-  }
-
-  return s.Succeeded();
-}
-
-bool AutofillTable::EmptyAutofillProfilesTrash() {
-  sql::Statement s(
-      db_->GetUniqueStatement("DELETE FROM autofill_profiles_trash"));
-
-  return s.Run();
-}
-
-bool AutofillTable::AddAutofillGUIDToTrash(const std::string& guid) {
-  sql::Statement s(db_->GetUniqueStatement(
-      "INSERT INTO autofill_profiles_trash (guid) VALUES (?)"));
-  s.BindString(0, guid);
-
-  return s.Run();
 }
 
 bool AutofillTable::ClearAutofillProfiles() {
@@ -2612,11 +2595,12 @@ bool AutofillTable::MigrateToVersion78AddModelTypeColumns() {
                               "SELECT ?, storage_key, value "
                               "FROM autofill_sync_metadata"));
   // Note: This uses the *wrong* ID for the ModelType - instead of
-  // |syncer::ModelTypeToHistogramInt|, this should be |GetKeyValueForModelType|
+  // |syncer::ModelTypeHistogramValue|, this should be |GetKeyValueForModelType|
   // aka |syncer::ModelTypeToStableIdentifier|. But at this point, fixing it
   // here would just make an even bigger mess. Instead, we clean this up in the
   // migration to version 81. See also crbug.com/895826.
-  insert_metadata.BindInt(0, syncer::ModelTypeToHistogramInt(syncer::AUTOFILL));
+  insert_metadata.BindInt(
+      0, static_cast<int>(syncer::ModelTypeHistogramValue(syncer::AUTOFILL)));
 
   // Prior to this migration, the table was a singleton, containing only one
   // entry with id being hard-coded to 1.
@@ -2625,7 +2609,8 @@ bool AutofillTable::MigrateToVersion78AddModelTypeColumns() {
                               "(model_type, value) SELECT ?, value "
                               "FROM autofill_model_type_state WHERE id=1"));
   // Note: Like above, this uses the *wrong* ID for the ModelType.
-  insert_state.BindInt(0, syncer::ModelTypeToHistogramInt(syncer::AUTOFILL));
+  insert_state.BindInt(
+      0, static_cast<int>(syncer::ModelTypeHistogramValue(syncer::AUTOFILL)));
 
   if (!insert_metadata.Run() || !insert_state.Run()) {
     return false;
@@ -2658,7 +2643,7 @@ bool AutofillTable::MigrateToVersion81CleanUpWrongModelTypeData() {
   // in trying to recover anything, since by now it'll have been redownloaded
   // anyway.
   const int bad_model_type_id =
-      syncer::ModelTypeToHistogramInt(syncer::AUTOFILL);
+      static_cast<int>(syncer::ModelTypeHistogramValue(syncer::AUTOFILL));
   DCHECK_NE(bad_model_type_id, GetKeyValueForModelType(syncer::AUTOFILL));
 
   sql::Transaction transaction(db_);
@@ -2689,7 +2674,7 @@ bool AutofillTable::AddFormFieldValuesTime(
   for (const FormFieldData& element : elements) {
     if (seen_names.size() >= kMaximumUniqueNames)
       break;
-    if (base::ContainsKey(seen_names, element.name))
+    if (base::Contains(seen_names, element.name))
       continue;
     result = result && AddFormFieldValueTime(element, changes, time);
     seen_names.insert(element.name);
@@ -2767,9 +2752,9 @@ bool AutofillTable::GetAllSyncEntityMetadata(
   while (s.Step()) {
     std::string storage_key = s.ColumnString(0);
     std::string serialized_metadata = s.ColumnString(1);
-    sync_pb::EntityMetadata entity_metadata;
-    if (entity_metadata.ParseFromString(serialized_metadata)) {
-      metadata_batch->AddMetadata(storage_key, entity_metadata);
+    auto entity_metadata = std::make_unique<sync_pb::EntityMetadata>();
+    if (entity_metadata->ParseFromString(serialized_metadata)) {
+      metadata_batch->AddMetadata(storage_key, std::move(entity_metadata));
     } else {
       DLOG(WARNING) << "Failed to deserialize AUTOFILL model type "
                        "sync_pb::EntityMetadata.";
@@ -3135,6 +3120,17 @@ bool AutofillTable::InitPaymentsCustomerDataTable() {
   if (!db_->DoesTableExist("payments_customer_data")) {
     if (!db_->Execute("CREATE TABLE payments_customer_data "
                       "(customer_id VARCHAR)")) {
+      NOTREACHED();
+      return false;
+    }
+  }
+  return true;
+}
+
+bool AutofillTable::InitPaymentsUPIVPATable() {
+  if (!db_->DoesTableExist("payments_upi_vpa")) {
+    if (!db_->Execute("CREATE TABLE payments_upi_vpa ("
+                      "vpa VARCHAR)")) {
       NOTREACHED();
       return false;
     }

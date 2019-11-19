@@ -88,7 +88,7 @@ class FeedContentBridge {
 
   FeedContentDatabase* feed_content_database_;
 
-  base::WeakPtrFactory<FeedContentBridge> weak_ptr_factory_;
+  base::WeakPtrFactory<FeedContentBridge> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(FeedContentBridge);
 };

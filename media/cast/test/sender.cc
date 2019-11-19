@@ -17,11 +17,12 @@
 #include "base/files/file_path.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
-#include "base/message_loop/message_loop.h"
+#include "base/message_loop/message_pump_type.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/task/single_thread_task_executor.h"
 #include "base/threading/thread.h"
 #include "base/time/default_tick_clock.h"
 #include "base/values.h"
@@ -210,7 +211,7 @@ int main(int argc, char** argv) {
   audio_thread.Start();
   video_thread.Start();
 
-  base::MessageLoopForIO io_message_loop;
+  base::SingleThreadTaskExecutor io_task_executor(base::MessagePumpType::IO);
 
   // Default parameters.
   base::CommandLine* cmd = base::CommandLine::ForCurrentProcess();
@@ -239,7 +240,7 @@ int main(int argc, char** argv) {
   // Running transport on the main thread.
   scoped_refptr<media::cast::CastEnvironment> cast_environment(
       new media::cast::CastEnvironment(
-          base::DefaultTickClock::GetInstance(), io_message_loop.task_runner(),
+          base::DefaultTickClock::GetInstance(), io_task_executor.task_runner(),
           audio_thread.task_runner(), video_thread.task_runner()));
 
   // SendProcess initialization.
@@ -267,9 +268,9 @@ int main(int argc, char** argv) {
           cast_environment->Clock(), base::TimeDelta::FromSeconds(1),
           std::make_unique<TransportClient>(cast_environment->logger()),
           std::make_unique<media::cast::UdpTransportImpl>(
-              nullptr, io_message_loop.task_runner(), net::IPEndPoint(),
+              io_task_executor.task_runner(), net::IPEndPoint(),
               remote_endpoint, base::Bind(&UpdateCastTransportStatus)),
-          io_message_loop.task_runner());
+          io_task_executor.task_runner());
 
   // Set up event subscribers.
   std::unique_ptr<media::cast::EncodingEventSubscriber> video_event_subscriber;
@@ -313,7 +314,7 @@ int main(int argc, char** argv) {
   }
 
   const int logging_duration_seconds = 10;
-  io_message_loop.task_runner()->PostDelayedTask(
+  io_task_executor.task_runner()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&WriteLogsToFileAndDestroySubscribers, cast_environment,
                      std::move(video_event_subscriber),
@@ -321,7 +322,7 @@ int main(int argc, char** argv) {
                      std::move(video_log_file), std::move(audio_log_file)),
       base::TimeDelta::FromSeconds(logging_duration_seconds));
 
-  io_message_loop.task_runner()->PostDelayedTask(
+  io_task_executor.task_runner()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&WriteStatsAndDestroySubscribers, cast_environment,
                      std::move(video_stats_subscriber),
@@ -332,7 +333,7 @@ int main(int argc, char** argv) {
   // CastSender initialization.
   std::unique_ptr<media::cast::CastSender> cast_sender =
       media::cast::CastSender::Create(cast_environment, transport_sender.get());
-  io_message_loop.task_runner()->PostTask(
+  io_task_executor.task_runner()->PostTask(
       FROM_HERE,
       base::BindOnce(&media::cast::CastSender::InitializeVideo,
                      base::Unretained(cast_sender.get()),
@@ -341,7 +342,7 @@ int main(int argc, char** argv) {
                      media::cast::CreateDefaultVideoEncodeAcceleratorCallback(),
                      media::cast::CreateDefaultVideoEncodeMemoryCallback()));
   base::RunLoop().Run();  // Wait for video initialization.
-  io_message_loop.task_runner()->PostTask(
+  io_task_executor.task_runner()->PostTask(
       FROM_HERE,
       base::BindOnce(&media::cast::CastSender::InitializeAudio,
                      base::Unretained(cast_sender.get()), audio_config,

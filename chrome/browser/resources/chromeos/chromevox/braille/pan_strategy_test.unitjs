@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-GEN_INCLUDE(['../testing/chromevox_unittest_base.js']);
+GEN_INCLUDE(['//chrome/browser/resources/chromeos/chromevox/testing/chromevox_unittest_base.js']);
 
 /**
  * Test fixture.
@@ -16,7 +16,7 @@ ChromeVoxPanStrategyUnitTest.prototype = {
 
   /** @override */
   closureModuleDeps: [
-    'cvox.PanStrategy',
+    'PanStrategy',
   ],
 
 
@@ -37,7 +37,7 @@ function createArrayBuffer(content) {
 }
 
  TEST_F('ChromeVoxPanStrategyUnitTest', 'FixedPanning', function() {
-  var panner = new cvox.PanStrategy();
+  var panner = new PanStrategy();
   panner.setPanStrategy(false);
 
   panner.setDisplaySize(0, 0);
@@ -91,7 +91,7 @@ function createArrayBuffer(content) {
 
 TEST_F('ChromeVoxPanStrategyUnitTest', 'WrappedPanningSingleLine',
        function() {
-  var panner = new cvox.PanStrategy();
+  var panner = new PanStrategy();
   panner.setPanStrategy(true);
 
   // 30 cells with blank cells at positions 8, 22 and 26.
@@ -144,7 +144,7 @@ TEST_F('ChromeVoxPanStrategyUnitTest', 'WrappedPanningSingleLine',
 });
 
 TEST_F('ChromeVoxPanStrategyUnitTest', 'WrappedPanningMultiline', function() {
-  var panner = new cvox.PanStrategy();
+  var panner = new PanStrategy();
   panner.setPanStrategy(true);
 
   // 30 cells with blank cells at positions 8, 22 and 26.
@@ -174,7 +174,7 @@ TEST_F('ChromeVoxPanStrategyUnitTest', 'WrappedPanningMultiline', function() {
 });
 
 TEST_F('ChromeVoxPanStrategyUnitTest', 'FixedSetContent', function() {
-  var panner = new cvox.PanStrategy();
+  var panner = new PanStrategy();
   panner.setPanStrategy(false);
 
   var textContent = "ABCDE FGHI"
@@ -190,7 +190,7 @@ TEST_F('ChromeVoxPanStrategyUnitTest', 'FixedSetContent', function() {
 });
 
 TEST_F('ChromeVoxPanStrategyUnitTest', 'WrappedSetContent', function() {
-  var panner = new cvox.PanStrategy();
+  var panner = new PanStrategy();
   panner.setPanStrategy(true);
 
   // When first word is bigger than column size. (Don't wrap word)
@@ -248,7 +248,7 @@ TEST_F('ChromeVoxPanStrategyUnitTest', 'WrappedSetContent', function() {
 
 TEST_F('ChromeVoxPanStrategyUnitTest', 'getCurrentTextViewportContents',
        function() {
-  var panner = new cvox.PanStrategy();
+  var panner = new PanStrategy();
   panner.setPanStrategy(true);
 
   // 30 cells with blank cells at positions 8, 22 and 26.
@@ -272,7 +272,7 @@ TEST_F('ChromeVoxPanStrategyUnitTest', 'getCurrentTextViewportContents',
 });
 
 TEST_F('ChromeVoxPanStrategyUnitTest', 'WrappedUnwrappedCursors', function() {
-  var panner = new cvox.PanStrategy();
+  var panner = new PanStrategy();
   panner.setPanStrategy(true);
 
   // 30 cells with blank cells at positions 8, 22 and 26.

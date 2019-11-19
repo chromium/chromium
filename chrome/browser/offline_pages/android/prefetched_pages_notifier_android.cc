@@ -5,9 +5,9 @@
 #include "chrome/browser/offline_pages/prefetch/prefetched_pages_notifier.h"
 
 #include "base/android/jni_string.h"
+#include "chrome/android/chrome_jni_headers/OfflineNotificationBackgroundTask_jni.h"
+#include "chrome/android/chrome_jni_headers/PrefetchedPagesNotifier_jni.h"
 #include "components/offline_pages/core/offline_page_feature.h"
-#include "jni/OfflineNotificationBackgroundTask_jni.h"
-#include "jni/PrefetchedPagesNotifier_jni.h"
 #include "url/gurl.h"
 
 using base::android::ConvertUTF8ToJavaString;

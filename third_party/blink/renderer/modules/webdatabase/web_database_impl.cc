@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/modules/webdatabase/web_database_impl.h"
 
-#include "mojo/public/cpp/bindings/strong_binding.h"
+#include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "third_party/blink/renderer/modules/webdatabase/database_tracker.h"
 #include "third_party/blink/renderer/modules/webdatabase/quota_tracker.h"
 
@@ -14,9 +14,10 @@ WebDatabaseImpl::WebDatabaseImpl() = default;
 
 WebDatabaseImpl::~WebDatabaseImpl() = default;
 
-void WebDatabaseImpl::Create(mojom::blink::WebDatabaseRequest request) {
-  mojo::MakeStrongBinding(std::make_unique<WebDatabaseImpl>(),
-                          std::move(request));
+void WebDatabaseImpl::Create(
+    mojo::PendingReceiver<mojom::blink::WebDatabase> receiver) {
+  mojo::MakeSelfOwnedReceiver(std::make_unique<WebDatabaseImpl>(),
+                              std::move(receiver));
 }
 
 void WebDatabaseImpl::UpdateSize(

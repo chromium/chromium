@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-FAIL overflow-x matches overflow-inline, and overflow-y matches overflow-block when the element has a horizontal writing mode assert_equals: expected "scroll" but got "visible"
-FAIL overflow-y matches overflow-inline, and overflow-x matches overflow-block when the element has a vertical writing mode assert_equals: expected "hidden" but got "visible"
-Harness: the test ran to completion.
-

@@ -4,14 +4,14 @@
 
 #include "content/shell/common/web_test/web_test_content_client.h"
 
-#include "content/shell/common/shell_messages.h"
+#include "content/shell/common/web_test/blink_test_messages.h"
 
 namespace content {
 
 bool WebTestContentClient::CanSendWhileSwappedOut(const IPC::Message* message) {
   switch (message->type()) {
     // Used in web tests; handled in BlinkTestController.
-    case ShellViewHostMsg_PrintMessage::ID:
+    case BlinkTestHostMsg_PrintMessage::ID:
       return true;
 
     default:

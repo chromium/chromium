@@ -26,12 +26,14 @@
 #include "base/callback_forward.h"
 #include "base/files/file_path.h"
 #include "base/memory/ref_counted.h"
+#include "base/optional.h"
 #include "base/strings/string16.h"
 #include "base/supports_user_data.h"
 #include "components/download/public/common/download_danger_type.h"
 #include "components/download/public/common/download_export.h"
 #include "components/download/public/common/download_interrupt_reasons.h"
 #include "ui/base/page_transition_types.h"
+#include "url/origin.h"
 
 class GURL;
 
@@ -86,9 +88,20 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItem : public base::SupportsUserData {
     TYPE_SAVE_PAGE_AS
   };
 
+  // Result of a rename attempt for a download item.
+  enum DownloadRenameResult {
+    SUCCESS = 0,
+    FAILURE_NAME_CONFLICT = 1,
+    FAILURE_NAME_TOO_LONG = 2,
+    FAILURE_NAME_INVALID = 3,
+    FAILURE_UNAVAILABLE = 4,
+    FAILURE_UNKNOWN = 5,
+    RESULT_MAX = FAILURE_UNKNOWN
+  };
+
   // Callback used with AcquireFileAndDeleteDownload().
   typedef base::Callback<void(const base::FilePath&)> AcquireFileCallback;
-
+  using RenameDownloadCallback = base::OnceCallback<void(DownloadRenameResult)>;
   // Used to represent an invalid download ID.
   static const uint32_t kInvalidId;
 
@@ -182,6 +195,12 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItem : public base::SupportsUserData {
   // Show the download via the OS shell.
   virtual void ShowDownloadInShell() = 0;
 
+  // Rename a downloaded item to |new_name|, implementer should post and reply
+  // the result. Do not pass the full file path, just pass the file name portion
+  // instead.
+  virtual void Rename(const base::FilePath& new_name,
+                      RenameDownloadCallback callback) = 0;
+
   // State accessors -----------------------------------------------------------
 
   // Retrieve the ID for this download. The ID is provided by the owner of the
@@ -264,6 +283,9 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItem : public base::SupportsUserData {
 
   // Referrer URL for top level frame.
   virtual const GURL& GetTabReferrerUrl() const = 0;
+
+  // Origin of the original originator of this download, before redirects, etc.
+  virtual const base::Optional<url::Origin>& GetRequestInitiator() const = 0;
 
   // For downloads initiated via <a download>, this is the suggested download
   // filename from the download attribute.
@@ -468,6 +490,9 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItem : public base::SupportsUserData {
   // interruptions.
   virtual void OnContentCheckCompleted(DownloadDangerType danger_type,
                                        DownloadInterruptReason reason) = 0;
+
+  // Called when async scanning completes with the given |danger_type|.
+  virtual void OnAsyncScanningCompleted(DownloadDangerType danger_type) = 0;
 
   // Mark the download to be auto-opened when completed.
   virtual void SetOpenWhenComplete(bool open) = 0;

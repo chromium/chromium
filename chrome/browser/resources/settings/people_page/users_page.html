@@ -1,10 +1,10 @@
 <link rel="import" href="chrome://resources/html/polymer.html">
 
+<link rel="import" href="chrome://resources/cr_elements/shared_vars_css.html">
+<link rel="import" href="chrome://resources/cr_elements/action_link_css.html">
 <link rel="import" href="chrome://resources/html/action_link.html">
-<link rel="import" href="chrome://resources/html/action_link_css.html">
 <link rel="import" href="chrome://resources/html/assert.html">
 <link rel="import" href="chrome://resources/html/cr/ui/focus_without_ink.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/paper-button/paper-button.html">
 <link rel="import" href="../controls/settings_toggle_button.html">
 <link rel="import" href="../settings_shared_css.html">
 <link rel="import" href="user_list.html">
@@ -19,11 +19,15 @@
 
       #add-user-button {
         /* Add user button must be lined up with the start of users' names. */
-        margin-inline-start: var(--settings-box-row-indent);
+        margin-inline-start: var(--cr-section-indent-padding);
       }
 
       .block {
         display: block;
+      }
+
+      #header {
+        padding-inline-start: 20px;
       }
     </style>
     <div class="settings-box" hidden$="[[!isWhitelistManaged_]]">
@@ -51,19 +55,19 @@
         disabled="[[isEditingDisabled_(isOwner_, isWhitelistManaged_)]]"
         inverted>
     </settings-toggle-button>
-    <div class="list-frame">
-      <settings-user-list prefs="[[prefs]]"
-          disabled="[[isEditingUsersDisabled_(isOwner_, isWhitelistManaged_,
-              prefs.cros.accounts.allowGuest.value)]]">
-      </settings-user-list>
-      <div id="add-user-button" class="list-item"
-          hidden="[[isEditingUsersDisabled_(isOwner_, isWhitelistManaged_,
-              prefs.cros.accounts.allowGuest.value)]]">
-        <a is="action-link" class="list-button" on-click="openAddUserDialog_">
-          $i18n{addUsers}
-        </a>
+    <template is="dom-if"
+        if="[[isEditingUsersEnabled_(isOwner_, isWhitelistManaged_,
+            prefs.cros.accounts.allowGuest.value, isChild_)]]">
+      <div class="list-frame" >
+        <settings-user-list prefs="[[prefs]]">
+        </settings-user-list>
+        <div id="add-user-button" class="list-item">
+          <a is="action-link" class="list-button" on-click="openAddUserDialog_">
+            $i18n{addUsers}
+          </a>
+        </div>
       </div>
-    </div>
+    </template>
     <settings-users-add-user-dialog id="addUserDialog"
         on-close="onAddUserDialogClose_">
     </settings-users-add-user-dialog>

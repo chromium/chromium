@@ -26,6 +26,7 @@
 
 #include "third_party/blink/renderer/platform/weborigin/scheme_registry.h"
 
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/thread_specific.h"
 #include "third_party/blink/renderer/platform/wtf/threading.h"
@@ -44,6 +45,8 @@ struct PolicyAreasHashTraits : HashTraits<SchemeRegistry::PolicyAreas> {
 };
 
 class URLSchemesRegistry final {
+  USING_FAST_MALLOC(URLSchemesRegistry);
+
  public:
   URLSchemesRegistry()
       :  // For ServiceWorker schemes: HTTP is required because http://localhost
@@ -246,7 +249,7 @@ String SchemeRegistry::ListOfCorsEnabledURLSchemes() {
 }
 
 bool SchemeRegistry::ShouldTreatURLSchemeAsLegacy(const String& scheme) {
-  return scheme == "ftp" || scheme == "gopher";
+  return scheme == "ftp";
 }
 
 bool SchemeRegistry::ShouldTrackUsageMetricsForScheme(const String& scheme) {
@@ -254,7 +257,7 @@ bool SchemeRegistry::ShouldTrackUsageMetricsForScheme(const String& scheme) {
   // match the tracking policy of page_load_metrics (see
   // pageTrackDecider::ShouldTrack() for more details).
   // The scheme represents content which likely cannot be easily updated.
-  // Specifically this includes internal pages such as about, chrome-devtools,
+  // Specifically this includes internal pages such as about, devtools,
   // etc.
   // "chrome-extension" is not included because they have a single deployment
   // point (the webstore) and are designed specifically for Chrome.

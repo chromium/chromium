@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_CHROMEOS_ARC_TRACING_ARC_TRACING_BRIDGE_H_
 #define CHROME_BROWSER_CHROMEOS_ARC_TRACING_ARC_TRACING_BRIDGE_H_
 
+#include <memory>
 #include <set>
 #include <string>
 #include <vector>
@@ -15,13 +16,10 @@
 #include "base/files/scoped_file.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/trace_event/trace_event.h"
-#include "components/arc/common/tracing.mojom.h"
-#include "components/arc/connection_observer.h"
+#include "components/arc/mojom/tracing.mojom.h"
+#include "components/arc/session/connection_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "services/tracing/public/cpp/base_agent.h"
-#include "services/tracing/public/cpp/perfetto/producer_client.h"
-#include "services/tracing/public/mojom/tracing.mojom.h"
 
 namespace content {
 class BrowserContext;
@@ -76,16 +74,7 @@ class ArcTracingBridge : public KeyedService,
     // tracing::BaseAgent.
     void GetCategories(std::set<std::string>* category_set) override;
 
-    // tracing::mojom::Agent.
-    void StartTracing(const std::string& config,
-                      base::TimeTicks coordinator_time,
-                      Agent::StartTracingCallback callback) override;
-    void StopAndFlush(tracing::mojom::RecorderPtr recorder) override;
-
-    void OnTraceData(const std::string& data);
-
     ArcTracingBridge* const bridge_;
-    tracing::mojom::RecorderPtr recorder_;
 
     DISALLOW_COPY_AND_ASSIGN(ArcTracingAgent);
   };
@@ -141,7 +130,7 @@ class ArcTracingBridge : public KeyedService,
 
   // NOTE: Weak pointers must be invalidated before all other member variables
   // so it must be the last member.
-  base::WeakPtrFactory<ArcTracingBridge> weak_ptr_factory_;
+  base::WeakPtrFactory<ArcTracingBridge> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ArcTracingBridge);
 };

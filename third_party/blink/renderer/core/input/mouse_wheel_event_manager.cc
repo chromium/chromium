@@ -116,10 +116,11 @@ Node* MouseWheelEventManager::FindTargetNode(const WebMouseWheelEvent& event,
                                              const Document* doc,
                                              const LocalFrameView* view) {
   DCHECK(doc && doc->GetLayoutView() && view);
-  LayoutPoint v_point =
-      view->ConvertFromRootFrame(FlooredIntPoint(event.PositionInRootFrame()));
+  PhysicalOffset v_point(
+      view->ConvertFromRootFrame(FlooredIntPoint(event.PositionInRootFrame())));
 
-  HitTestRequest request(HitTestRequest::kReadOnly);
+  HitTestRequest request(HitTestRequest::kReadOnly |
+                         HitTestRequest::kRetargetForInert);
   HitTestLocation location(v_point);
   HitTestResult result(request, location);
   doc->GetLayoutView()->HitTest(location, result);

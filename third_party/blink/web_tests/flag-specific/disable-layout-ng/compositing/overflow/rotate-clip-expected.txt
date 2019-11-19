@@ -1,0 +1,55 @@
+{
+  "layers": [
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF"
+    },
+    {
+      "name": "LayoutBlockFlow DIV",
+      "bounds": [240, 240],
+      "transform": 2
+    },
+    {
+      "name": "LayoutBlockFlow DIV",
+      "bounds": [400, 400],
+      "contentsOpaque": true,
+      "backgroundColor": "#0000FF",
+      "transform": 3
+    }
+  ],
+  "transforms": [
+    {
+      "id": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [108, 100, 0, 1]
+      ]
+    },
+    {
+      "id": 2,
+      "parent": 1,
+      "transform": [
+        [0.707106781186548, 0.707106781186548, 0, 0],
+        [-0.707106781186548, 0.707106781186548, 0, 0],
+        [0, 0, 1, 0],
+        [0, 0, 0, 1]
+      ],
+      "origin": [120, 120]
+    },
+    {
+      "id": 3,
+      "parent": 2,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [20, 20, 0, 1]
+      ]
+    }
+  ]
+}
+

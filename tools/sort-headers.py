@@ -9,6 +9,8 @@ Shows a diff and prompts for confirmation before doing the deed.
 Works great with tools/git/for-all-touched-files.py.
 """
 
+from __future__ import print_function
+
 import optparse
 import os
 import sys
@@ -107,9 +109,9 @@ def FixFileWithConfirmFunction(filename, confirm_function,
   message in that case.
   """
   if perform_safety_checks and IsUnsafeToReorderHeaders(filename):
-    print ('Not reordering headers in %s as the script thinks that the '
-           'order of headers in this file is semantically significant.'
-           % (filename))
+    print(
+        'Not reordering headers in %s as the script thinks that the '
+        'order of headers in this file is semantically significant.' % filename)
     return
   fixfilename = filename + '.new'
   infile = open(filename, 'rb')
@@ -142,7 +144,7 @@ def DiffAndConfirm(filename, should_confirm, perform_safety_checks, for_blink):
     if sys.platform != 'win32':
       diff >>= 8
     if diff == 0:  # Check exit code.
-      print '%s: no change' % filename
+      print('%s: no change' % filename)
       return False
 
     return (not should_confirm or YesNo('Use new file (y/N)?'))

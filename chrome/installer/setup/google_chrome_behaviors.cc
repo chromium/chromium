@@ -204,7 +204,7 @@ void DoPostUninstallOperations(const base::Version& version,
     }
   }
 
-  if (os_info->version() < base::win::VERSION_WIN10 ||
+  if (os_info->version() < base::win::Version::WIN10 ||
       !NavigateToUrlWithEdge(url)) {
     NavigateToUrlWithIExplore(url);
   }

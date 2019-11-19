@@ -1,0 +1,304 @@
+# Copyright 2017 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/ios/asset_catalog.gni")
+
+group("resources") {
+  deps = [
+    ":background_color",
+    ":background_dark_color",
+    ":blue_color",
+    ":blue_dark_color",
+    ":blue_halo_color",
+    ":close_button_color",
+    ":close_button_dark_color",
+    ":disabled_tint_color",
+    ":favicon_background_color",
+    ":green_color",
+    ":green_dark_color",
+    ":grey_100_color",
+    ":grey_200_color",
+    ":grey_300_color",
+    ":grey_400_color",
+    ":grey_500_color",
+    ":grey_50_color",
+    ":grey_600_color",
+    ":grey_700_color",
+    ":grey_800_color",
+    ":grey_900_color",
+    ":mdc_ink_color",
+    ":mdc_secondary_ink_color",
+    ":placeholder_image_tint_color",
+    ":red_color",
+    ":red_dark_color",
+    ":scrim_background_color",
+    ":separator_color",
+    ":solid_button_text_color",
+    ":table_view_row_highlight_color",
+    ":table_view_row_highlight_dark_color",
+    ":text_primary_color",
+    ":text_primary_dark_color",
+    ":text_secondary_color",
+    ":text_secondary_dark_color",
+    ":textfield_background_color",
+    ":textfield_background_dark_color",
+    ":textfield_placeholder_color",
+    ":textfield_placeholder_dark_color",
+    ":toolbar_button_color",
+    ":toolbar_button_dark_color",
+    ":toolbar_shadow_color",
+  ]
+}
+
+colorset("background_color") {
+  sources = [
+    "background_color.colorset/Contents.json",
+  ]
+}
+
+colorset("background_dark_color") {
+  sources = [
+    "background_dark_color.colorset/Contents.json",
+  ]
+}
+
+colorset("blue_color") {
+  sources = [
+    "blue_color.colorset/Contents.json",
+  ]
+}
+
+colorset("blue_dark_color") {
+  sources = [
+    "blue_dark_color.colorset/Contents.json",
+  ]
+}
+
+colorset("blue_halo_color") {
+  sources = [
+    "blue_halo_color.colorset/Contents.json",
+  ]
+}
+
+colorset("close_button_color") {
+  sources = [
+    "close_button_color.colorset/Contents.json",
+  ]
+}
+
+colorset("close_button_dark_color") {
+  sources = [
+    "close_button_dark_color.colorset/Contents.json",
+  ]
+}
+
+colorset("disabled_tint_color") {
+  sources = [
+    "disabled_tint_color.colorset/Contents.json",
+  ]
+}
+
+colorset("favicon_background_color") {
+  sources = [
+    "favicon_background_color.colorset/Contents.json",
+  ]
+}
+
+colorset("green_color") {
+  sources = [
+    "green_color.colorset/Contents.json",
+  ]
+}
+
+colorset("green_dark_color") {
+  sources = [
+    "green_dark_color.colorset/Contents.json",
+  ]
+}
+
+colorset("grey_50_color") {
+  sources = [
+    "grey_50_color.colorset/Contents.json",
+  ]
+}
+
+colorset("grey_100_color") {
+  sources = [
+    "grey_100_color.colorset/Contents.json",
+  ]
+}
+
+colorset("grey_200_color") {
+  sources = [
+    "grey_200_color.colorset/Contents.json",
+  ]
+}
+
+colorset("grey_300_color") {
+  sources = [
+    "grey_300_color.colorset/Contents.json",
+  ]
+}
+
+colorset("grey_400_color") {
+  sources = [
+    "grey_400_color.colorset/Contents.json",
+  ]
+}
+
+colorset("grey_500_color") {
+  sources = [
+    "grey_500_color.colorset/Contents.json",
+  ]
+}
+
+colorset("grey_600_color") {
+  sources = [
+    "grey_600_color.colorset/Contents.json",
+  ]
+}
+
+colorset("grey_700_color") {
+  sources = [
+    "grey_700_color.colorset/Contents.json",
+  ]
+}
+
+colorset("grey_800_color") {
+  sources = [
+    "grey_800_color.colorset/Contents.json",
+  ]
+}
+
+colorset("grey_900_color") {
+  sources = [
+    "grey_900_color.colorset/Contents.json",
+  ]
+}
+
+colorset("red_color") {
+  sources = [
+    "red_color.colorset/Contents.json",
+  ]
+}
+
+colorset("red_dark_color") {
+  sources = [
+    "red_dark_color.colorset/Contents.json",
+  ]
+}
+
+colorset("mdc_ink_color") {
+  sources = [
+    "mdc_ink_color.colorset/Contents.json",
+  ]
+}
+
+colorset("mdc_secondary_ink_color") {
+  sources = [
+    "mdc_secondary_ink_color.colorset/Contents.json",
+  ]
+}
+
+colorset("placeholder_image_tint_color") {
+  sources = [
+    "placeholder_image_tint_color.colorset/Contents.json",
+  ]
+}
+
+colorset("scrim_background_color") {
+  sources = [
+    "scrim_background_color.colorset/Contents.json",
+  ]
+}
+
+colorset("separator_color") {
+  sources = [
+    "separator_color.colorset/Contents.json",
+  ]
+}
+
+colorset("solid_button_text_color") {
+  sources = [
+    "solid_button_text_color.colorset/Contents.json",
+  ]
+}
+
+colorset("table_view_row_highlight_color") {
+  sources = [
+    "table_view_row_highlight_color.colorset/Contents.json",
+  ]
+}
+
+colorset("table_view_row_highlight_dark_color") {
+  sources = [
+    "table_view_row_highlight_dark_color.colorset/Contents.json",
+  ]
+}
+
+colorset("text_primary_color") {
+  sources = [
+    "text_primary_color.colorset/Contents.json",
+  ]
+}
+
+colorset("text_primary_dark_color") {
+  sources = [
+    "text_primary_dark_color.colorset/Contents.json",
+  ]
+}
+
+colorset("text_secondary_color") {
+  sources = [
+    "text_secondary_color.colorset/Contents.json",
+  ]
+}
+
+colorset("text_secondary_dark_color") {
+  sources = [
+    "text_secondary_dark_color.colorset/Contents.json",
+  ]
+}
+
+colorset("textfield_placeholder_color") {
+  sources = [
+    "textfield_placeholder_color.colorset/Contents.json",
+  ]
+}
+
+colorset("textfield_placeholder_dark_color") {
+  sources = [
+    "textfield_placeholder_dark_color.colorset/Contents.json",
+  ]
+}
+
+colorset("textfield_background_color") {
+  sources = [
+    "textfield_background_color.colorset/Contents.json",
+  ]
+}
+
+colorset("textfield_background_dark_color") {
+  sources = [
+    "textfield_background_dark_color.colorset/Contents.json",
+  ]
+}
+
+colorset("toolbar_button_color") {
+  sources = [
+    "toolbar_button_color.colorset/Contents.json",
+  ]
+}
+
+colorset("toolbar_button_dark_color") {
+  sources = [
+    "toolbar_button_dark_color.colorset/Contents.json",
+  ]
+}
+
+colorset("toolbar_shadow_color") {
+  sources = [
+    "toolbar_shadow_color.colorset/Contents.json",
+  ]
+}

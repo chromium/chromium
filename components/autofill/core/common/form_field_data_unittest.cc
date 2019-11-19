@@ -22,7 +22,7 @@ void FillCommonFields(FormFieldData* data) {
   data->autocomplete_attribute = "off";
   data->max_length = 200;
   data->is_autofilled = true;
-  data->check_status = FormFieldData::CheckStatus::CHECKED;
+  data->check_status = FormFieldData::CheckStatus::kChecked;
   data->is_focusable = true;
   data->should_autocomplete = false;
   data->text_direction = base::i18n::RIGHT_TO_LEFT;
@@ -33,7 +33,7 @@ void FillCommonFields(FormFieldData* data) {
 }
 
 void FillVersion2Fields(FormFieldData* data) {
-  data->role = FormFieldData::ROLE_ATTRIBUTE_PRESENTATION;
+  data->role = FormFieldData::RoleAttribute::kPresentation;
 }
 
 void FillVersion3Fields(FormFieldData* data) {
@@ -73,7 +73,7 @@ void WriteSection3(const FormFieldData& data, base::Pickle* pickle) {
 }
 
 void WriteSection4(const FormFieldData& data, base::Pickle* pickle) {
-  pickle->WriteInt(data.check_status);
+  pickle->WriteInt(static_cast<int>(data.check_status));
 }
 
 void WriteSection5(const FormFieldData& data, base::Pickle* pickle) {
@@ -92,7 +92,7 @@ void WriteSection2(const FormFieldData& data, base::Pickle* pickle) {
 }
 
 void WriteVersion2Specific(const FormFieldData& data, base::Pickle* pickle) {
-  pickle->WriteInt(data.role);
+  pickle->WriteInt(static_cast<int>(data.role));
 }
 
 void WriteVersion3Specific(const FormFieldData& data, base::Pickle* pickle) {

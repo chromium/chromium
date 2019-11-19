@@ -95,24 +95,4 @@ TEST(BookmarkAppUtil, IsInNavigationScopeForLaunchUrl_Extensions) {
       GURL("chrome-extension://nkoccljplnhpfnfiajclkommnmllphnl/html/path")));
 }
 
-TEST(BookmarkAppUtil, IsValidBookmarkAppUrl) {
-  EXPECT_TRUE(IsValidBookmarkAppUrl(GURL("https://chromium.org")));
-  EXPECT_TRUE(IsValidBookmarkAppUrl(GURL("https://www.chromium.org")));
-  EXPECT_TRUE(IsValidBookmarkAppUrl(
-      GURL("https://www.chromium.org/path/to/page.html")));
-  EXPECT_TRUE(IsValidBookmarkAppUrl(GURL("http://chromium.org")));
-  EXPECT_TRUE(IsValidBookmarkAppUrl(GURL("http://www.chromium.org")));
-  EXPECT_TRUE(
-      IsValidBookmarkAppUrl(GURL("http://www.chromium.org/path/to/page.html")));
-  EXPECT_TRUE(IsValidBookmarkAppUrl(
-      GURL("chrome-extension://oafaagfgbdpldilgjjfjocjglfbolmac")));
-
-  EXPECT_FALSE(IsValidBookmarkAppUrl(GURL("ftp://www.chromium.org")));
-  EXPECT_FALSE(IsValidBookmarkAppUrl(GURL("chrome://flags")));
-  EXPECT_FALSE(IsValidBookmarkAppUrl(GURL("about:blank")));
-  EXPECT_FALSE(
-      IsValidBookmarkAppUrl(GURL("file://mhjfbmdgcfjbbpaeojofohoefgiehjai")));
-  EXPECT_FALSE(IsValidBookmarkAppUrl(GURL("chrome://extensions")));
-}
-
 }  // namespace extensions

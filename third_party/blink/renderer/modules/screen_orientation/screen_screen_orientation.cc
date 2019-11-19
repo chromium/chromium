@@ -22,8 +22,7 @@ ScreenScreenOrientation& ScreenScreenOrientation::From(Screen& screen) {
 }
 
 // static
-ScreenOrientation* ScreenScreenOrientation::orientation(ScriptState* state,
-                                                        Screen& screen) {
+ScreenOrientation* ScreenScreenOrientation::orientation(Screen& screen) {
   ScreenScreenOrientation& self = ScreenScreenOrientation::From(screen);
   if (!screen.GetFrame())
     return nullptr;

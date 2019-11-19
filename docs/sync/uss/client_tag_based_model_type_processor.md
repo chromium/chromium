@@ -106,7 +106,7 @@ progresses through 3 states worth noting:
 
 ## Entity Tracker
 
-The [`ProcessorEntityTracker`][PET] tracks the state of individual entities for
+The [`ProcessorEntity`][PET] tracks the state of individual entities for
 the processor. It keeps the [`EntityMetadata`][EM] proto in memory, as well as
 any pending commit data until it gets acked by the server. It also stores the
 special `commit_requested_sequence_number_`, which tracks the sequence number of
@@ -116,5 +116,5 @@ The tracker holds the metadata in memory forever, which is needed so we know
 what to update the on-disk memory with when we get a new local or remote change.
 Changing this would require being able to handle updates asynchronously.
 
-[PET]: https://cs.chromium.org/chromium/src/components/sync/model_impl/processor_entity_tracker.h
+[PET]: https://cs.chromium.org/chromium/src/components/sync/model_impl/processor_entity.h
 [EM]: https://cs.chromium.org/chromium/src/components/sync/protocol/entity_metadata.proto

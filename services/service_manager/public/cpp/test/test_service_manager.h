@@ -22,7 +22,7 @@ class BackgroundServiceManager;
 // a |service_manager::ServiceManager| instance directly.
 //
 // NOTE: Using this object in tests requires a task execution environment, for
-// example a live |base::test::ScopedTaskEnvironment| object.
+// example a live |base::test::TaskEnvironment| object.
 class TestServiceManager {
  public:
   // Creates a TestServiceManager using the default global list of manifests.

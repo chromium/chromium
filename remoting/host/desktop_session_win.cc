@@ -18,6 +18,7 @@
 #include "base/guid.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
+#include "base/numerics/ranges.h"
 #include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -104,8 +105,8 @@ const wchar_t kSecurityLayerValueName[] = L"SecurityLayer";
 
 webrtc::DesktopSize GetBoundedRdpDesktopSize(int width, int height) {
   return webrtc::DesktopSize(
-      std::min(kMaxRdpScreenWidth, std::max(kMinRdpScreenWidth, width)),
-      std::min(kMaxRdpScreenHeight, std::max(kMinRdpScreenHeight, height)));
+      base::ClampToRange(width, kMinRdpScreenWidth, kMaxRdpScreenWidth),
+      base::ClampToRange(height, kMinRdpScreenHeight, kMaxRdpScreenHeight));
 }
 
 // DesktopSession implementation which attaches to the host's physical console.
@@ -210,7 +211,7 @@ class RdpSession : public DesktopSessionWin {
   // Used to match |rdp_desktop_session_| with the session it is attached to.
   std::string terminal_id_;
 
-  base::WeakPtrFactory<RdpSession> weak_factory_;
+  base::WeakPtrFactory<RdpSession> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(RdpSession);
 };
@@ -244,16 +245,16 @@ void ConsoleSession::InjectSas() {
     LOG(ERROR) << "Failed to inject Secure Attention Sequence.";
 }
 
-RdpSession::RdpSession(
-    scoped_refptr<AutoThreadTaskRunner> caller_task_runner,
-    scoped_refptr<AutoThreadTaskRunner> io_task_runner,
-    DaemonProcess* daemon_process,
-    int id,
-    WtsTerminalMonitor* monitor)
-    : DesktopSessionWin(caller_task_runner, io_task_runner, daemon_process, id,
-                        monitor),
-      weak_factory_(this) {
-}
+RdpSession::RdpSession(scoped_refptr<AutoThreadTaskRunner> caller_task_runner,
+                       scoped_refptr<AutoThreadTaskRunner> io_task_runner,
+                       DaemonProcess* daemon_process,
+                       int id,
+                       WtsTerminalMonitor* monitor)
+    : DesktopSessionWin(caller_task_runner,
+                        io_task_runner,
+                        daemon_process,
+                        id,
+                        monitor) {}
 
 RdpSession::~RdpSession() {
 }
@@ -614,7 +615,7 @@ void DesktopSessionWin::OnSessionAttached(uint32_t session_id) {
   ReportElapsedTime("attached");
 
   // Launch elevated on Win8+ to enable injection of Alt+Tab and Ctrl+Alt+Del.
-  bool launch_elevated = base::win::GetVersion() >= base::win::VERSION_WIN8;
+  bool launch_elevated = base::win::GetVersion() >= base::win::Version::WIN8;
 
   // Get the name of the executable to run. |kDesktopBinaryName| specifies
   // uiAccess="true" in its manifest.

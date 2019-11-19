@@ -8,9 +8,9 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "chrome/browser/performance_manager/persistence/site_data/tab_visibility.h"
 #include "chrome/browser/resource_coordinator/site_characteristics_data_reader.h"
 #include "chrome/browser/resource_coordinator/site_characteristics_data_writer.h"
-#include "chrome/browser/resource_coordinator/site_characteristics_tab_visibility.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "url/origin.h"
 
@@ -33,7 +33,7 @@ class SiteCharacteristicsDataStore : public KeyedService {
   // afterwards if the site is loaded.
   virtual std::unique_ptr<SiteCharacteristicsDataWriter> GetWriterForOrigin(
       const url::Origin& origin,
-      TabVisibility tab_visibility) = 0;
+      performance_manager::TabVisibility tab_visibility) = 0;
 
   // Indicate if the SiteCharacteristicsDataWriter served by this data store
   // actually persist informations.

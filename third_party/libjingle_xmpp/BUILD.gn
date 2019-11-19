@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//testing/libfuzzer/fuzzer_test.gni")
 import("//testing/test.gni")
 
 group("libjingle_xmpp") {
@@ -27,7 +28,7 @@ static_library("rtc_task_runner") {
   ]
   deps = [
     "//base",
-    "//third_party/webrtc/rtc_base/third_party/sigslot",
+    "//third_party/webrtc_overrides:webrtc_component",
   ]
 }
 
@@ -52,10 +53,6 @@ static_library("rtc_xmllite") {
 
   deps = [
     "//base",
-    # TODO(mbonadei): The dependency on the TQ is not directly
-    # needed but removing it causes a linker error that it is
-    # difficult to track down.
-    "//third_party/webrtc_overrides:task_queue_impl",
   ]
   public_deps = [
     "//third_party/expat",
@@ -100,13 +97,7 @@ static_library("rtc_xmpp") {
     ":rtc_xmllite",
     "//base",
     "//net",
-    "//third_party/webrtc/rtc_base/third_party/base64",
-    "//third_party/webrtc/rtc_base/third_party/sigslot",
-
-    # TODO(mbonadei): The dependency on the TQ is not directly
-    # needed but removing it causes a linker error that it is
-    # difficult to track down.
-    "//third_party/webrtc_overrides:task_queue_impl",
+    "//third_party/webrtc_overrides:webrtc_component",
   ]
   public_deps = [
     ":rtc_task_runner",
@@ -119,6 +110,15 @@ static_library("rtc_xmpp") {
   }
 }
 
+fuzzer_test("libjingle_xmpp_xmlparser_fuzzer") {
+  sources = [
+    "xmllite/xmlparser_fuzzer.cc",
+  ]
+  deps = [
+    ":libjingle_xmpp",
+  ]
+}
+
 test("libjingle_xmpp_unittests") {
   deps = [
     ":libjingle_xmpp",
@@ -126,8 +126,7 @@ test("libjingle_xmpp_unittests") {
     "//base/test:run_all_unittests",
     "//base/test:test_support",
     "//testing/gtest",
-    "//third_party/webrtc/rtc_base:rtc_base",
-    "//third_party/webrtc_overrides:task_queue_impl",
+    "//third_party/webrtc_overrides:webrtc_component",
   ]
 
   sources = [

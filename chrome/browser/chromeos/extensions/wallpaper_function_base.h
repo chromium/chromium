@@ -33,7 +33,7 @@ void RecordCustomWallpaperLayout(const ash::WallpaperLayout& layout);
 
 // Wallpaper manager function base. It contains a image decoder to decode
 // wallpaper data.
-class WallpaperFunctionBase : public UIThreadExtensionFunction {
+class WallpaperFunctionBase : public ExtensionFunction {
  public:
   static const int kWallpaperThumbnailWidth;
   static const int kWallpaperThumbnailHeight;

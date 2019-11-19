@@ -37,8 +37,7 @@
 namespace blink {
 
 class V0CustomElementProcessingStep
-    : public GarbageCollectedFinalized<V0CustomElementProcessingStep> {
-
+    : public GarbageCollected<V0CustomElementProcessingStep> {
  public:
   V0CustomElementProcessingStep() = default;
 

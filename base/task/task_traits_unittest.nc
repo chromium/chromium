@@ -26,6 +26,8 @@ constexpr TaskTraits traits = {TaskShutdownBehavior::BLOCK_SHUTDOWN,
                                TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN};
 #elif defined(NCTEST_TASK_TRAITS_INVALID_TYPE)  // [r"no matching constructor for initialization of 'const base::TaskTraits'"]
 constexpr TaskTraits traits = {TaskShutdownBehavior::BLOCK_SHUTDOWN, true};
+#elif defined(NCTEST_TASK_TRAITS_CURRENT_THREAD_AND_THREADPOOL)  // [r"base::CurrentThread is mutually exclusive with base::ThreadPool"]
+constexpr TaskTraits traits = {ThreadPool(), CurrentThread()};
 #endif
 
 }  // namespace base

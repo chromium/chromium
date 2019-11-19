@@ -39,14 +39,12 @@ class LayoutSVGBlock : public LayoutBlockFlow {
   explicit LayoutSVGBlock(SVGElement*);
 
   // These mapping functions map coordinates in HTML spaces.
-  void MapLocalToAncestor(
-      const LayoutBoxModelObject* ancestor,
-      TransformState&,
-      MapCoordinatesFlags = kApplyContainerFlip) const final;
-  void MapAncestorToLocal(
-      const LayoutBoxModelObject* ancestor,
-      TransformState&,
-      MapCoordinatesFlags = kApplyContainerFlip) const final;
+  void MapLocalToAncestor(const LayoutBoxModelObject* ancestor,
+                          TransformState&,
+                          MapCoordinatesFlags) const final;
+  void MapAncestorToLocal(const LayoutBoxModelObject* ancestor,
+                          TransformState&,
+                          MapCoordinatesFlags) const final;
   const LayoutObject* PushMappingToContainer(
       const LayoutBoxModelObject* ancestor_to_stop_at,
       LayoutGeometryMap&) const final;
@@ -76,16 +74,13 @@ class LayoutSVGBlock : public LayoutBlockFlow {
   // LayoutSVGBlock subclasses should use GetElement() instead.
   void GetNode() const = delete;
 
-  LayoutRect VisualRectInDocument() const final;
-
-  void AbsoluteRects(Vector<IntRect>&,
-                     const LayoutPoint& accumulated_offset) const final;
+  PhysicalRect VisualRectInDocument(VisualRectFlags) const final;
 
   void UpdateFromStyle() final;
 
   bool NodeAtPoint(HitTestResult&,
-                   const HitTestLocation& location_in_container,
-                   const LayoutPoint& accumulated_offset,
+                   const HitTestLocation&,
+                   const PhysicalOffset& accumulated_offset,
                    HitTestAction) override;
 
   // The inherited version doesn't check for SVG effects.

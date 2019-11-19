@@ -76,6 +76,6 @@
       session: true
     };
     var target = SDK.targetManager.mainTarget();
-    return SDK.CookieModel._parseProtocolCookie(protocolCookie);
+    return SDK.Cookie.fromProtocolCookie(protocolCookie);
   }
 })();

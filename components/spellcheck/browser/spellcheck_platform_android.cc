@@ -39,8 +39,12 @@ bool PlatformSupportsLanguage(const std::string& current_language) {
   return true;
 }
 
-void SetLanguage(const std::string& lang_to_set) {
+void SetLanguage(const std::string& lang_to_set,
+                 base::OnceCallback<void(bool)> callback) {
+  std::move(callback).Run(true);
 }
+
+void DisableLanguage(const std::string& lang_to_disable) {}
 
 bool CheckSpelling(const base::string16& word_to_check, int tag) {
   return true;

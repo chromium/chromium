@@ -57,8 +57,8 @@ class CSSKeyframeRule final : public CSSRule {
  private:
   CSSRule::Type type() const override { return kKeyframeRule; }
 
-  TraceWrapperMember<StyleRuleKeyframe> keyframe_;
-  mutable TraceWrapperMember<KeyframeStyleRuleCSSStyleDeclaration>
+  Member<StyleRuleKeyframe> keyframe_;
+  mutable Member<KeyframeStyleRuleCSSStyleDeclaration>
       properties_cssom_wrapper_;
 
   friend class CSSKeyframesRule;

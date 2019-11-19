@@ -20,6 +20,7 @@
 #include "base/json/json_file_value_serializer.h"
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/strings/string16.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -36,6 +37,10 @@
 #include "extensions/common/file_util.h"
 #include "extensions/common/image_util.h"
 #include "extensions/common/manifest_constants.h"
+#include "extensions/common/manifest_handlers/file_handler_info.h"
+#include "net/base/url_util.h"
+#include "third_party/blink/public/common/manifest/manifest_util.h"
+#include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/color_utils.h"
@@ -49,6 +54,50 @@ namespace keys = manifest_keys;
 namespace {
 const char kIconsDirName[] = "icons";
 const char kScopeUrlHandlerId[] = "scope";
+
+std::unique_ptr<base::DictionaryValue> CreateFileHandlersForBookmarkApp(
+    const blink::Manifest::FileHandler& manifest_file_handler) {
+  base::Value file_handlers(base::Value::Type::DICTIONARY);
+
+  for (const auto& handler : manifest_file_handler.files) {
+    base::Value file_handler(base::Value::Type::DICTIONARY);
+    file_handler.SetKey(keys::kFileHandlerIncludeDirectories,
+                        base::Value(false));
+    file_handler.SetKey(keys::kFileHandlerVerb,
+                        base::Value(apps::file_handler_verbs::kOpenWith));
+
+    base::Value mime_types(base::Value::Type::LIST);
+    base::Value file_extensions(base::Value::Type::LIST);
+
+    for (const auto& acceptsUTF16 : handler.accept) {
+      std::string acceptsUTF8 = base::UTF16ToUTF8(acceptsUTF16);
+      if (acceptsUTF8.size() == 0)
+        continue;
+
+      if (acceptsUTF8[0] == '.') {
+        file_extensions.Append(base::Value(acceptsUTF8.substr(1)));
+      } else {
+        mime_types.Append(base::Value(acceptsUTF8));
+      }
+    }
+
+    file_handler.SetKey(keys::kFileHandlerTypes, std::move(mime_types));
+    file_handler.SetKey(keys::kFileHandlerExtensions,
+                        std::move(file_extensions));
+
+    // Use '{action}/?name={name}' as the id for the file handler, so we don't
+    // have to introduce a new field to the extension manifest.
+    file_handlers.SetKey(
+        net::AppendQueryParameter(manifest_file_handler.action, "name",
+                                  base::UTF16ToUTF8(handler.name))
+            .spec(),
+        std::move(file_handler));
+  }
+
+  return base::DictionaryValue::From(
+      base::Value::ToUniquePtrValue(std::move(file_handlers)));
+}
+
 }  // namespace
 
 std::unique_ptr<base::DictionaryValue> CreateURLHandlersForBookmarkApp(
@@ -130,13 +179,13 @@ scoped_refptr<Extension> ConvertWebAppToExtension(
       file_util::GetInstallTempDir(extensions_dir);
   if (install_temp_dir.empty()) {
     LOG(ERROR) << "Could not get path to profile temporary directory.";
-    return NULL;
+    return nullptr;
   }
 
   base::ScopedTempDir temp_dir;
   if (!temp_dir.CreateUniqueTempDirUnderPath(install_temp_dir)) {
     LOG(ERROR) << "Could not create temporary directory.";
-    return NULL;
+    return nullptr;
   }
 
   // Create the manifest
@@ -160,6 +209,15 @@ scoped_refptr<Extension> ConvertWebAppToExtension(
   if (!web_app.scope.is_empty()) {
     root->SetDictionary(keys::kUrlHandlers, CreateURLHandlersForBookmarkApp(
                                                 web_app.scope, web_app.title));
+  }
+
+  DCHECK_NE(blink::mojom::DisplayMode::kUndefined, web_app.display_mode);
+  root->SetString(keys::kAppDisplayMode,
+                  blink::DisplayModeToString(web_app.display_mode));
+
+  if (web_app.file_handler) {
+    root->SetDictionary(keys::kFileHandlers, CreateFileHandlersForBookmarkApp(
+                                                 web_app.file_handler.value()));
   }
 
   // Add the icons and linked icon information.
@@ -187,14 +245,14 @@ scoped_refptr<Extension> ConvertWebAppToExtension(
   JSONFileValueSerializer serializer(manifest_path);
   if (!serializer.Serialize(*root)) {
     LOG(ERROR) << "Could not serialize manifest.";
-    return NULL;
+    return nullptr;
   }
 
   // Write the icon files.
   base::FilePath icons_dir = temp_dir.GetPath().AppendASCII(kIconsDirName);
   if (!base::CreateDirectory(icons_dir)) {
     LOG(ERROR) << "Could not create icons directory.";
-    return NULL;
+    return nullptr;
   }
   for (size_t i = 0; i < web_app.icons.size(); ++i) {
     // Skip unfetched bitmaps.
@@ -208,14 +266,14 @@ scoped_refptr<Extension> ConvertWebAppToExtension(
                                            false,
                                            &image_data)) {
       LOG(ERROR) << "Could not create icon file.";
-      return NULL;
+      return nullptr;
     }
 
     const char* image_data_ptr = reinterpret_cast<const char*>(&image_data[0]);
     int size = base::checked_cast<int>(image_data.size());
     if (base::WriteFile(icon_file, image_data_ptr, size) != size) {
       LOG(ERROR) << "Could not write icon file.";
-      return NULL;
+      return nullptr;
     }
   }
 
@@ -226,7 +284,7 @@ scoped_refptr<Extension> ConvertWebAppToExtension(
       Extension::FROM_BOOKMARK | extra_creation_flags, &error);
   if (!extension.get()) {
     LOG(ERROR) << error;
-    return NULL;
+    return nullptr;
   }
 
   temp_dir.Take();  // The caller takes ownership of the directory.

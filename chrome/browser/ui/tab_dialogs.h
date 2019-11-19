@@ -18,7 +18,7 @@ class Profile;
 namespace content {
 class RenderWidgetHost;
 class WebContents;
-}
+}  // namespace content
 
 namespace ui {
 class ProfileSigninConfirmationDelegate;

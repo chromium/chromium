@@ -27,7 +27,6 @@
 #include "content/public/browser/notification_service.h"
 #include "extensions/browser/extension_function_registry.h"
 #include "extensions/browser/extension_prefs.h"
-#include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/notification_types.h"
 #include "extensions/common/feature_switch.h"
@@ -109,8 +108,7 @@ void CommandService::RegisterProfilePrefs(
 }
 
 CommandService::CommandService(content::BrowserContext* context)
-    : profile_(Profile::FromBrowserContext(context)),
-      extension_registry_observer_(this) {
+    : profile_(Profile::FromBrowserContext(context)) {
   ExtensionFunctionRegistry::GetInstance()
       .RegisterFunction<GetAllCommandsFunction>();
 
@@ -143,12 +141,12 @@ bool CommandService::RemovesBookmarkShortcut(const Extension* extension) {
 }
 
 // static
-bool CommandService::RemovesBookmarkOpenPagesShortcut(
+bool CommandService::RemovesBookmarkAllTabsShortcut(
     const Extension* extension) {
-  return UIOverrides::RemovesBookmarkOpenPagesShortcut(extension) &&
-      (extension->permissions_data()->HasAPIPermission(
-          APIPermission::kBookmarkManagerPrivate) ||
-       FeatureSwitch::enable_override_bookmarks_ui()->IsEnabled());
+  return UIOverrides::RemovesBookmarkAllTabsShortcut(extension) &&
+         (extension->permissions_data()->HasAPIPermission(
+              APIPermission::kBookmarkManagerPrivate) ||
+          FeatureSwitch::enable_override_bookmarks_ui()->IsEnabled());
 }
 
 bool CommandService::GetBrowserActionCommand(const std::string& extension_id,
@@ -426,7 +424,7 @@ bool CommandService::RequestsBookmarkShortcutOverride(
   return RemovesBookmarkShortcut(extension) &&
          GetSuggestedExtensionCommand(
              extension->id(),
-             chrome::GetPrimaryChromeAcceleratorForBookmarkPage(), nullptr);
+             chrome::GetPrimaryChromeAcceleratorForBookmarkTab(), nullptr);
 }
 
 void CommandService::AddObserver(Observer* observer) {
@@ -554,7 +552,6 @@ bool CommandService::CanAutoAssign(const Command &command,
     return true;
 
   if (command.global()) {
-    using namespace extensions;
     if (command.command_name() == manifest_values::kBrowserActionCommandEvent ||
         command.command_name() == manifest_values::kPageActionCommandEvent)
       return false;  // Browser and page actions are not global in nature.
@@ -579,7 +576,7 @@ bool CommandService::CanAutoAssign(const Command &command,
     // Not a global command, check if Chrome shortcut and whether
     // we can override it.
     if (command.accelerator() ==
-            chrome::GetPrimaryChromeAcceleratorForBookmarkPage() &&
+            chrome::GetPrimaryChromeAcceleratorForBookmarkTab() &&
         CommandService::RemovesBookmarkShortcut(extension)) {
       // If this check fails it either means we have an API to override a
       // key that isn't a ChromeAccelerator (and the API can therefore be

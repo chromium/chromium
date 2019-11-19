@@ -8,7 +8,8 @@
 #include "base/memory/scoped_refptr.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/image-decoders/image_decoder_test_helpers.h"
-#include "third_party/blink/renderer/platform/shared_buffer.h"
+#include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkSurface.h"
@@ -105,9 +106,9 @@ TEST(DeferredImageDecoderTestWoPlatform, fragmentedSignature) {
     scoped_refptr<SharedBuffer> file_buffer = ReadFile(test_files[i]);
     ASSERT_NE(file_buffer, nullptr);
     // We need contiguous data, which SharedBuffer doesn't guarantee.
-    sk_sp<SkData> sk_data = file_buffer->GetAsSkData();
-    EXPECT_EQ(sk_data->size(), file_buffer->size());
-    const char* data = reinterpret_cast<const char*>(sk_data->bytes());
+    Vector<char> contiguous = file_buffer->CopyAs<Vector<char>>();
+    EXPECT_EQ(contiguous.size(), file_buffer->size());
+    const char* data = contiguous.data();
 
     // Truncated signature (only 1 byte).  Decoder instantiation should fail.
     scoped_refptr<SharedBuffer> buffer = SharedBuffer::Create<size_t>(data, 1u);
@@ -118,7 +119,7 @@ TEST(DeferredImageDecoderTestWoPlatform, fragmentedSignature) {
 
     // Append the rest of the data.  We should be able to sniff the signature
     // now, even if segmented.
-    buffer->Append<size_t>(data + 1, sk_data->size() - 1);
+    buffer->Append<size_t>(data + 1, contiguous.size() - 1);
     EXPECT_TRUE(ImageDecoder::HasSufficientDataToSniffImageType(*buffer));
     std::unique_ptr<DeferredImageDecoder> decoder =
         DeferredImageDecoder::Create(buffer, false,

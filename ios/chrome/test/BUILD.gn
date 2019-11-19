@@ -31,9 +31,6 @@ source_set("test_support") {
     "ios_chrome_unit_test_suite.mm",
     "root_view_controller_test.h",
     "root_view_controller_test.mm",
-    "scoped_block_popups_pref.h",
-    "scoped_block_popups_pref.mm",
-    "scoped_eg_synchronization_disabler.h",
     "scoped_key_window.h",
     "testing_application_context.h",
     "testing_application_context.mm",
@@ -69,9 +66,43 @@ source_set("test_support") {
   ]
 }
 
+source_set("eg_test_support") {
+  defines = [ "CHROME_EARL_GREY_1" ]
+  configs += [ "//build/config/compiler:enable_arc" ]
+  testonly = true
+  sources = [
+    "scoped_eg_synchronization_disabler.h",
+    "scoped_eg_synchronization_disabler.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/testing/earl_grey:earl_grey_support",
+    "//ios/third_party/earl_grey:earl_grey+link",
+  ]
+}
+
+source_set("eg_test_support+eg2") {
+  defines = [ "CHROME_EARL_GREY_2" ]
+  configs += [
+    "//build/config/compiler:enable_arc",
+    "//build/config/ios:xctest_config",
+  ]
+  testonly = true
+  sources = [
+    "scoped_eg_synchronization_disabler.h",
+    "scoped_eg_synchronization_disabler.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//ios/third_party/earl_grey2:test_lib",
+  ]
+  libs = [ "XCTest.framework" ]
+}
+
 source_set("block_cleanup_test") {
   # TODO(crbug.com/733237): Replace this comment with an explicit disable_arc config.
-  # The files in this target depend on non-ARC memeory management.
+  # The files in this target depend on non-ARC memory management.
   testonly = true
   sources = [
     "block_cleanup_test.h",
@@ -93,20 +124,8 @@ source_set("run_all_unittests") {
     ":test_support",
     "//base",
     "//base/test:test_support",
+    "//ios/chrome/app/startup:startup_basic",
     "//mojo/core/embedder",
-  ]
-}
-
-source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
-  testonly = true
-  sources = [
-    "google_toolbox_unittest.mm",
-  ]
-  deps = [
-    "//base",
-    "//testing/gtest",
-    "//third_party/google_toolbox_for_mac",
   ]
 }
 
@@ -118,8 +137,8 @@ test("ios_chrome_perftests") {
     ios_packed_resources_target,
 
     # Add perf_tests target here.
-    "//ios/chrome/browser/ui:perf_tests",
     "//ios/chrome/browser/ui/ntp:perf_tests",
+    "//ios/chrome/browser/ui/omnibox:perf_tests",
     "//ios/chrome/browser/web:perf_tests",
   ]
 
@@ -134,7 +153,6 @@ test("ios_chrome_unittests") {
     ios_packed_resources_target,
 
     # Add unit_tests target here.
-    ":unit_tests",
     "//ios/chrome/app:unit_tests",
     "//ios/chrome/app/application_delegate:unit_tests",
     "//ios/chrome/app/spotlight:unit_tests",
@@ -145,7 +163,9 @@ test("ios_chrome_unittests") {
     "//ios/chrome/browser/autofill/manual_fill:unit_tests",
     "//ios/chrome/browser/browser_state:unit_tests",
     "//ios/chrome/browser/browsing_data:unit_tests",
+    "//ios/chrome/browser/complex_tasks:unit_tests",
     "//ios/chrome/browser/crash_report:unit_tests",
+    "//ios/chrome/browser/crash_report/breadcrumbs:unit_tests",
     "//ios/chrome/browser/device_sharing:unit_tests",
     "//ios/chrome/browser/download:unit_tests",
     "//ios/chrome/browser/drag_and_drop:unit_tests",
@@ -153,20 +173,27 @@ test("ios_chrome_unittests") {
     "//ios/chrome/browser/find_in_page:unit_tests",
     "//ios/chrome/browser/geolocation:unit_tests",
     "//ios/chrome/browser/history:unit_tests",
+    "//ios/chrome/browser/infobars:unit_tests",
     "//ios/chrome/browser/itunes_urls:unit_tests",
+    "//ios/chrome/browser/json_parser:unit_tests",
     "//ios/chrome/browser/language:unit_tests",
     "//ios/chrome/browser/main:unit_tests",
     "//ios/chrome/browser/metrics:unit_tests",
     "//ios/chrome/browser/metrics:unit_tests_internal",
     "//ios/chrome/browser/net:unit_tests",
+    "//ios/chrome/browser/network_activity:unit_tests",
     "//ios/chrome/browser/ntp:unit_tests",
     "//ios/chrome/browser/omaha:unit_tests",
+    "//ios/chrome/browser/open_in:unit_tests",
+    "//ios/chrome/browser/overlays:unit_tests",
+    "//ios/chrome/browser/overscroll_actions:unit_tests",
     "//ios/chrome/browser/passwords:unit_tests",
     "//ios/chrome/browser/payments:unit_tests",
     "//ios/chrome/browser/prerender:unit_tests",
     "//ios/chrome/browser/reading_list:unit_tests",
     "//ios/chrome/browser/safe_mode:unit_tests",
     "//ios/chrome/browser/search_engines:unit_tests",
+    "//ios/chrome/browser/send_tab_to_self:unit_tests",
     "//ios/chrome/browser/sessions:unit_tests",
     "//ios/chrome/browser/signin:unit_tests",
     "//ios/chrome/browser/snapshots:unit_tests",
@@ -176,18 +203,20 @@ test("ios_chrome_unittests") {
     "//ios/chrome/browser/tabs:unit_tests",
     "//ios/chrome/browser/translate:unit_tests",
     "//ios/chrome/browser/u2f:unit_tests",
-    "//ios/chrome/browser/ui:unit_tests",
     "//ios/chrome/browser/ui/activity_services:unit_tests",
     "//ios/chrome/browser/ui/alert_coordinator:unit_tests",
+    "//ios/chrome/browser/ui/alert_view_controller:unit_tests",
     "//ios/chrome/browser/ui/app_launcher:unit_tests",
     "//ios/chrome/browser/ui/authentication:unit_tests",
     "//ios/chrome/browser/ui/authentication/cells:unit_tests",
     "//ios/chrome/browser/ui/autofill/cells:unit_tests",
     "//ios/chrome/browser/ui/autofill/manual_fill:unit_tests",
+    "//ios/chrome/browser/ui/badges:unit_tests",
     "//ios/chrome/browser/ui/bookmarks:unit_tests",
     "//ios/chrome/browser/ui/bookmarks/cells:unit_tests",
     "//ios/chrome/browser/ui/broadcaster:unit_tests",
     "//ios/chrome/browser/ui/browser_container:unit_tests",
+    "//ios/chrome/browser/ui/browser_view:unit_tests",
     "//ios/chrome/browser/ui/bubble:unit_tests",
     "//ios/chrome/browser/ui/collection_view:unit_tests",
     "//ios/chrome/browser/ui/collection_view/cells:unit_tests",
@@ -207,14 +236,22 @@ test("ios_chrome_unittests") {
     "//ios/chrome/browser/ui/history:unit_tests",
     "//ios/chrome/browser/ui/icons:unit_tests",
     "//ios/chrome/browser/ui/infobars:unit_tests",
+    "//ios/chrome/browser/ui/infobars/banners:unit_tests",
     "//ios/chrome/browser/ui/keyboard:unit_tests",
     "//ios/chrome/browser/ui/list_model:unit_tests",
     "//ios/chrome/browser/ui/location_bar:unit_tests",
     "//ios/chrome/browser/ui/main:unit_tests",
     "//ios/chrome/browser/ui/main_content:unit_tests",
     "//ios/chrome/browser/ui/ntp:unit_tests",
+    "//ios/chrome/browser/ui/ntp_tile_views:unit_tests",
     "//ios/chrome/browser/ui/omnibox:unit_tests",
     "//ios/chrome/browser/ui/omnibox/popup:unit_tests",
+    "//ios/chrome/browser/ui/open_in:unit_tests",
+    "//ios/chrome/browser/ui/overlays:unit_tests",
+    "//ios/chrome/browser/ui/overlays/common/alerts:unit_tests",
+    "//ios/chrome/browser/ui/overlays/web_content_area/app_launcher:unit_tests",
+    "//ios/chrome/browser/ui/overlays/web_content_area/http_auth_dialogs:unit_tests",
+    "//ios/chrome/browser/ui/overlays/web_content_area/java_script_dialogs:unit_tests",
     "//ios/chrome/browser/ui/payments:unit_tests",
     "//ios/chrome/browser/ui/payments/cells:unit_tests",
     "//ios/chrome/browser/ui/popup_menu:unit_tests",
@@ -228,6 +265,8 @@ test("ios_chrome_unittests") {
     "//ios/chrome/browser/ui/settings/autofill:unit_tests",
     "//ios/chrome/browser/ui/settings/cells:unit_tests",
     "//ios/chrome/browser/ui/settings/clear_browsing_data:unit_tests",
+    "//ios/chrome/browser/ui/settings/credit_card_scanner:unit_tests",
+    "//ios/chrome/browser/ui/settings/language:unit_tests",
     "//ios/chrome/browser/ui/settings/password:unit_tests",
     "//ios/chrome/browser/ui/settings/sync:unit_tests",
     "//ios/chrome/browser/ui/side_swipe:unit_tests",
@@ -250,14 +289,12 @@ test("ios_chrome_unittests") {
     "//ios/chrome/browser/voice:unit_tests",
     "//ios/chrome/browser/web:unit_tests",
     "//ios/chrome/browser/web:unit_tests_internal",
-    "//ios/chrome/browser/web_resource:unit_tests",
     "//ios/chrome/browser/web_state_list:unit_tests",
     "//ios/chrome/browser/web_state_list/web_usage_enabler:unit_tests",
     "//ios/chrome/browser/webui:unit_tests",
     "//ios/chrome/common:unit_tests",
     "//ios/chrome/content_widget_extension:unit_tests",
     "//ios/chrome/search_widget_extension:unit_tests",
-    "//ios/chrome/test/base:unit_tests",
     "//ios/testing:http_server_bundle_data",
   ]
   if (ios_enable_firebase_sdk) {

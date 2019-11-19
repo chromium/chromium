@@ -5,8 +5,12 @@
 '''Support for "policy_templates.json" format used by the policy template
 generator as a source for generating ADM,ADMX,etc files.'''
 
-import types
+from __future__ import print_function
+
+import json
 import sys
+
+import six
 
 from grit.gather import skeleton_gatherer
 from grit import util
@@ -23,6 +27,15 @@ class PolicyJson(skeleton_gatherer.SkeletonGatherer):
      Translatable strings may have untranslateable placeholders with the same
      format that is used in .grd files.
   '''
+
+  def _AddEndline(self, add_comma):
+    '''Adds an endline to the skeleton tree. If add_comma is true, adds a
+       comma before the endline.
+
+    Args:
+      add_comma: A boolean to add a comma or not.
+    '''
+    self._AddNontranslateableChunk(',\n' if add_comma else '\n')
 
   def _ParsePlaceholder(self, placeholder, msg):
     '''Extracts a placeholder from a DOM node and adds it to a tclib Message.
@@ -42,14 +55,20 @@ class PolicyJson(skeleton_gatherer.SkeletonGatherer):
         for node2 in node1.childNodes:
           example_text.append(node2.toxml())
       else:
-         raise Exception('Unexpected element inside a placeholder: ' +
-                         node2.toxml())
+        raise Exception('Unexpected element inside a placeholder: ' +
+                        node2.toxml())
     if example_text == []:
       # In such cases the original text is okay for an example.
       example_text = text
+
+    replaced_text = self.Escape(''.join(text).strip())
+    replaced_text = replaced_text.replace('$1', self._config['app_name'])
+    replaced_text = replaced_text.replace('$2', self._config['os_name'])
+    replaced_text = replaced_text.replace('$3', self._config['frame_name'])
+
     msg.AppendPlaceholder(tclib.Placeholder(
         placeholder.attributes['name'].value,
-        ''.join(text).strip(),
+        replaced_text,
         ''.join(example_text).strip()))
 
   def _ParseMessage(self, string, desc):
@@ -66,7 +85,7 @@ class PolicyJson(skeleton_gatherer.SkeletonGatherer):
       node = minidom.parseString(xml).childNodes[0]
     except ExpatError:
       reason = '''Input isn't valid XML (has < & > been escaped?): ''' + string
-      raise Exception, reason, sys.exc_info()[2]
+      six.reraise(Exception, reason, sys.exc_info()[2])
 
     for child in node.childNodes:
       if child.nodeType == minidom.Node.TEXT_NODE:
@@ -86,9 +105,7 @@ class PolicyJson(skeleton_gatherer.SkeletonGatherer):
     '''
     att_text = []
     if node.attributes:
-      items = node.attributes.items()
-      items.sort()
-      for key, value in items:
+      for key, value in sorted(node.attributes.items()):
         att_text.append(' %s=\"%s\"' % (key, value))
     self._AddNontranslateableChunk("<%s%s>" %
                                    (node.tagName, ''.join(att_text)))
@@ -147,12 +164,43 @@ class PolicyJson(skeleton_gatherer.SkeletonGatherer):
       'arc_support': 'Information about the effect on Android apps'
     }
     if item_type == 'policy':
-      return '%s of the policy named %s' % (key_map[key], item['name'])
-    elif item_type == 'enum_item':
-      return ('%s of the option named %s in policy %s' %
-              (key_map[key], item['name'], parent_item['name']))
+      return ('%s of the policy named %s [owner(s): %s]' %
+              (key_map[key], item['name'],
+               ','.join(item['owners'] if 'owners' in item else 'unknown')))
+    if item_type == 'enum_item':
+      return ('%s of the option named %s in policy %s [owner(s): %s]' %
+              (key_map[key], item['name'], parent_item['name'],
+               ','.join(parent_item['owners'] if 'owners' in parent_item else 'unknown')))
+    raise Exception('Unexpected type %s' % item_type)
+
+  def _AddSchemaKeys(self, obj, depth):
+    obj_type = type(obj)
+    if obj_type == dict:
+      self._AddNontranslateableChunk('{\n')
+      keys = sorted(obj.keys())
+      for count, (key) in enumerate(keys, 1):
+        json_key = "%s: " % json.dumps(key)
+        self._AddIndentedNontranslateableChunk(depth + 1, json_key)
+        if key == 'description' and type(obj[key]) == str:
+          self._AddNontranslateableChunk("\"")
+          self._ParseMessage(obj[key], 'Description of schema property')
+          self._AddNontranslateableChunk("\"")
+        elif type(obj[key]) in (bool, int, str):
+          self._AddSchemaKeys(obj[key], 0)
+        else:
+          self._AddSchemaKeys(obj[key], depth + 1)
+        self._AddEndline(count < len(keys))
+      self._AddIndentedNontranslateableChunk(depth, '}')
+    elif obj_type == list:
+      self._AddNontranslateableChunk('[\n')
+      for count, (item) in enumerate(obj, 1):
+        self._AddSchemaKeys(item, depth + 1)
+        self._AddEndline(count < len(obj))
+      self._AddIndentedNontranslateableChunk(depth, ']')
+    elif obj_type in (bool, int, str):
+      self._AddIndentedNontranslateableChunk(depth, json.dumps(obj))
     else:
-      raise Exception('Unexpected type %s' % item_type)
+      raise Exception('Invalid schema object: %s' % obj)
 
   def _AddPolicyKey(self, item, item_type, parent_item, key, depth):
     '''Given a policy/enumeration item and a key, adds that key and its value
@@ -169,20 +217,17 @@ class PolicyJson(skeleton_gatherer.SkeletonGatherer):
       key: The name of the key to parse.
       depth: The level of indentation.
     '''
-    self._AddIndentedNontranslateableChunk(depth, "'%s': " % key)
+    self._AddIndentedNontranslateableChunk(depth, "%s: " % json.dumps(key))
     if key in ('desc', 'caption', 'label', 'arc_support'):
-      self._AddNontranslateableChunk("'''")
+      self._AddNontranslateableChunk("\"")
       self._ParseMessage(
           item[key],
           self._GetDescription(item, item_type, parent_item, key))
-      self._AddNontranslateableChunk("''',\n")
+      self._AddNontranslateableChunk("\"")
+    elif key in ('schema', 'validation_schema', 'description_schema'):
+      self._AddSchemaKeys(item[key], depth)
     else:
-      str_val = item[key]
-      if type(str_val) == types.StringType:
-        str_val = "'%s'" % self.Escape(str_val)
-      else:
-        str_val = str(str_val)
-      self._AddNontranslateableChunk(str_val + ',\n')
+      self._AddNontranslateableChunk(json.dumps(item[key], ensure_ascii=False))
 
   def _AddItems(self, items, item_type, parent_item, depth):
     '''Parses and adds a list of items from the JSON file. Items can be policies
@@ -197,32 +242,37 @@ class PolicyJson(skeleton_gatherer.SkeletonGatherer):
       depth: Indicates the depth of our position in the JSON hierarchy. Used to
         add nice line-indent to the output.
     '''
-    for item1 in items:
+    for item_count, (item1) in enumerate(items, 1):
       self._AddIndentedNontranslateableChunk(depth, "{\n")
-      for key in item1.keys():
+      keys = sorted(item1.keys())
+      for keys_count, (key) in enumerate(keys, 1):
         if key == 'items':
-          self._AddIndentedNontranslateableChunk(depth + 1, "'items': [\n")
+          self._AddIndentedNontranslateableChunk(depth + 1, "\"items\": [\n")
           self._AddItems(item1['items'], 'enum_item', item1, depth + 2)
-          self._AddIndentedNontranslateableChunk(depth + 1, "],\n")
+          self._AddIndentedNontranslateableChunk(depth + 1, "]")
         elif key == 'policies' and all(not isinstance(x, str)
                                        for x in item1['policies']):
-          self._AddIndentedNontranslateableChunk(depth + 1, "'policies': [\n")
+          self._AddIndentedNontranslateableChunk(depth + 1, "\"policies\": [\n")
           self._AddItems(item1['policies'], 'policy', item1, depth + 2)
-          self._AddIndentedNontranslateableChunk(depth + 1, "],\n")
+          self._AddIndentedNontranslateableChunk(depth + 1, "]")
         else:
           self._AddPolicyKey(item1, item_type, parent_item, key, depth + 1)
-      self._AddIndentedNontranslateableChunk(depth, "},\n")
+        self._AddEndline(keys_count < len(keys))
+      self._AddIndentedNontranslateableChunk(depth, "}")
+      self._AddEndline(item_count < len(items))
 
   def _AddMessages(self):
     '''Processed and adds the 'messages' section to the output.'''
-    self._AddNontranslateableChunk("  'messages': {\n")
-    for name, message in self.data['messages'].iteritems():
-      self._AddNontranslateableChunk("      '%s': {\n" % name)
-      self._AddNontranslateableChunk("        'text': '''")
+    self._AddNontranslateableChunk("  \"messages\": {\n")
+    messages = self.data['messages'].items()
+    for count, (name, message) in enumerate(messages, 1):
+      self._AddNontranslateableChunk("    %s: {\n" % json.dumps(name))
+      self._AddNontranslateableChunk("      \"text\": \"")
       self._ParseMessage(message['text'], message['desc'])
-      self._AddNontranslateableChunk("'''\n")
-      self._AddNontranslateableChunk("      },\n")
-    self._AddNontranslateableChunk("  },\n")
+      self._AddNontranslateableChunk("\"\n")
+      self._AddNontranslateableChunk("    }")
+      self._AddEndline(count < len(self.data['messages']))
+    self._AddNontranslateableChunk("  }\n")
 
   # Although we use the RegexpGatherer base class, we do not use the
   # _RegExpParse method of that class to implement Parse().  Instead, we
@@ -234,19 +284,42 @@ class PolicyJson(skeleton_gatherer.SkeletonGatherer):
 
     self.text_ = self._LoadInputFile()
     if util.IsExtraVerbose():
-      print self.text_
+      print(self.text_)
 
     self.data = eval(self.text_)
 
     self._AddNontranslateableChunk('{\n')
-    self._AddNontranslateableChunk("  'policy_definitions': [\n")
+    self._AddNontranslateableChunk("  \"policy_definitions\": [\n")
     self._AddItems(self.data['policy_definitions'], 'policy', None, 2)
+    self._AddNontranslateableChunk("  ],\n")
+    self._AddNontranslateableChunk("  \"policy_atomic_group_definitions\": [\n")
+    if 'policy_atomic_group_definitions' in self.data:
+      self._AddItems(self.data['policy_atomic_group_definitions'],
+                    'policy', None, 2)
     self._AddNontranslateableChunk("  ],\n")
     self._AddMessages()
     self._AddNontranslateableChunk('\n}')
 
   def Escape(self, text):
-    # \ -> \\
-    # ' -> \'
-    # " -> \"
-    return text.replace('\\', '\\\\').replace('"', '\\"').replace("'", "\\'")
+    return json.dumps(text, ensure_ascii=False)[1:-1]
+
+  def SetDefines(self, defines):
+    if not defines:
+      raise Exception('Must pass valid defines')
+
+    if '_chromium' in defines:
+      self._config = {
+        'build': 'chromium',
+        'app_name': 'Chromium',
+        'frame_name': 'Chromium Frame',
+        'os_name': 'Chromium OS',
+      }
+    elif '_google_chrome' in defines:
+      self._config = {
+        'build': 'chrome',
+        'app_name': 'Google Chrome',
+        'frame_name': 'Google Chrome Frame',
+        'os_name': 'Google Chrome OS',
+      }
+    else:
+      raise Exception('Unknown build')

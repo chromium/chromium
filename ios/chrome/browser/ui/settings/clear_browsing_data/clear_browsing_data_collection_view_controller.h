@@ -13,12 +13,19 @@ namespace ios {
 class ChromeBrowserState;
 }  // namespace ios
 
+@class ClearBrowsingDataManager;
+
 // CollectionView for clearing browsing data (including history,
 // cookies, caches, passwords, and autofill).
 @interface ClearBrowsingDataCollectionViewController
     : SettingsRootCollectionViewController <ClearBrowsingDataConsumer>
 
+// "Default" convenience initializer that Users should in general make use of.
+- (instancetype)initWithBrowserState:(ios::ChromeBrowserState*)browserState;
+
+// Designated initializer to allow dependency injection (in tests).
 - (instancetype)initWithBrowserState:(ios::ChromeBrowserState*)browserState
+                             manager:(ClearBrowsingDataManager*)manager
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithLayout:(UICollectionViewLayout*)layout

@@ -179,4 +179,12 @@ ChannelSplitterNode* ChannelSplitterNode::Create(
   return node;
 }
 
+void ChannelSplitterNode::ReportDidCreate() {
+  GraphTracer().DidCreateAudioNode(this);
+}
+
+void ChannelSplitterNode::ReportWillBeDestroyed() {
+  GraphTracer().WillDestroyAudioNode(this);
+}
+
 }  // namespace blink

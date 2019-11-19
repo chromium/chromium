@@ -64,7 +64,8 @@ class TouchSelectionControllerTest : public testing::Test,
   // testing::Test implementation.
 
   void SetUp() override {
-    controller_.reset(new TouchSelectionController(this, DefaultConfig()));
+    controller_ =
+        std::make_unique<TouchSelectionController>(this, DefaultConfig());
     // Simulate start of a TouchEvent sequence.
     controller_->WillHandleTouchEvent(
         MockMotionEvent(MotionEvent::Action::DOWN));
@@ -117,13 +118,13 @@ class TouchSelectionControllerTest : public testing::Test,
   void EnableLongPressDragSelection() {
     TouchSelectionController::Config config = DefaultConfig();
     config.enable_longpress_drag_selection = true;
-    controller_.reset(new TouchSelectionController(this, config));
+    controller_ = std::make_unique<TouchSelectionController>(this, config);
   }
 
   void SetHideActiveHandle(bool hide) {
     TouchSelectionController::Config config = DefaultConfig();
     config.hide_active_handle = hide;
-    controller_.reset(new TouchSelectionController(this, config));
+    controller_ = std::make_unique<TouchSelectionController>(this, config);
     // Simulate start of a TouchEvent sequence.
     controller_->WillHandleTouchEvent(
         MockMotionEvent(MotionEvent::Action::DOWN));

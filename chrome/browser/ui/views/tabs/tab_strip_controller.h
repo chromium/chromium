@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_TABS_TAB_STRIP_CONTROLLER_H_
 #define CHROME_BROWSER_UI_VIEWS_TABS_TAB_STRIP_CONTROLLER_H_
 
+#include <vector>
+
 #include "base/strings/string16.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/views/frame/browser_non_client_frame_view.h"
@@ -13,6 +15,8 @@
 #include "ui/base/ui_base_types.h"
 
 class Tab;
+class TabGroupVisualData;
+class TabGroupId;
 class TabStrip;
 
 namespace gfx {
@@ -74,6 +78,16 @@ class TabStripController {
   // Closes the tab at the specified index in the model.
   virtual void CloseTab(int index, CloseTabSource source) = 0;
 
+  // Ungroups the tabs at the specified index in the model.
+  virtual void UngroupAllTabsInGroup(TabGroupId group) = 0;
+
+  // Adds a new tab to end of the tab group.
+  virtual void AddNewTabInGroup(TabGroupId group) = 0;
+
+  // Moves the tab at |start_index| so that it is now at |final_index|, sliding
+  // any tabs in between left or right as appropriate.
+  virtual void MoveTab(int start_index, int final_index) = 0;
+
   // Shows a context menu for the tab at the specified point in screen coords.
   virtual void ShowContextMenuForTab(Tab* tab,
                                      const gfx::Point& p,
@@ -88,13 +102,6 @@ class TabStripController {
   // Notifies controller of a drop index update.
   virtual void OnDropIndexUpdate(int index, bool drop_before) = 0;
 
-  // Return true if this tab strip is compatible with the provided tab strip.
-  // Compatible tab strips can transfer tabs during drag and drop.
-  virtual bool IsCompatibleWith(TabStrip* other) const = 0;
-
-  // Returns the position of the new tab button within the strip.
-  virtual NewTabButtonPosition GetNewTabButtonPosition() const = 0;
-
   // Creates the new tab.
   virtual void CreateNewTab() = 0;
 
@@ -107,12 +114,26 @@ class TabStripController {
   virtual void StackedLayoutMaybeChanged() = 0;
 
   // Notifies controller that the user started dragging this tabstrip's tabs.
-  virtual void OnStartedDraggingTabs() = 0;
+  virtual void OnStartedDragging() = 0;
 
   // Notifies controller that the user stopped dragging this tabstrip's tabs.
   // This is also called when the tabs that the user is dragging were detached
   // from this tabstrip but the user is still dragging the tabs.
-  virtual void OnStoppedDraggingTabs() = 0;
+  virtual void OnStoppedDragging() = 0;
+
+  // Notifies controller that the index of the tab with keyboard focus changed
+  // to |index|.
+  virtual void OnKeyboardFocusedTabChanged(base::Optional<int> index) = 0;
+
+  // Returns the TabGroupVisualData instance for the given |group|.
+  virtual const TabGroupVisualData* GetVisualDataForGroup(
+      TabGroupId group) const = 0;
+
+  virtual void SetVisualDataForGroup(TabGroupId group,
+                                     TabGroupVisualData visual_data) = 0;
+
+  // Returns the list of tabs in the given |group|.
+  virtual std::vector<int> ListTabsInGroup(TabGroupId group) const = 0;
 
   // Determines whether the top frame is condensed vertically, as when the
   // window is maximized. If true, the top frame is just the height of a tab,
@@ -137,29 +158,24 @@ class TabStripController {
 
   // Returns the color of the browser frame for the given window activation
   // state.
-  virtual SkColor GetFrameColor(
-      BrowserNonClientFrameView::ActiveState active_state =
-          BrowserNonClientFrameView::kUseCurrent) const = 0;
+  virtual SkColor GetFrameColor(BrowserFrameActiveState active_state) const = 0;
 
   // Returns COLOR_TOOLBAR_TOP_SEPARATOR[,_INACTIVE] depending on the activation
   // state of the window.
   virtual SkColor GetToolbarTopSeparatorColor() const = 0;
 
-  // For non-transparent windows, returns the resource ID to use behind
-  // background tabs.  |has_custom_image| will be set to true if this has been
-  // customized by the theme in some way.  Note that because of fallback during
-  // image generation, |has_custom_image| may be true even when the returned
-  // background resource ID has not been directly overridden (i.e.
-  // ThemeProvider::HasCustomImage() returns false).
-  virtual int GetTabBackgroundResourceId(
-      BrowserNonClientFrameView::ActiveState active_state,
-      bool* has_custom_image) const = 0;
+  // For non-transparent windows, returns the background tab image resource ID
+  // if the image has been customized, directly or indirectly, by the theme.
+  virtual base::Optional<int> GetCustomBackgroundId(
+      BrowserFrameActiveState active_state) const = 0;
 
   // Returns the accessible tab name.
   virtual base::string16 GetAccessibleTabName(const Tab* tab) const = 0;
 
   // Returns the profile associated with the Tabstrip.
   virtual Profile* GetProfile() const = 0;
+
+  virtual const Browser* GetBrowser() const = 0;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_TAB_STRIP_CONTROLLER_H_

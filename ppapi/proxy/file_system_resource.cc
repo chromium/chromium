@@ -95,12 +95,12 @@ PP_FileSystemType FileSystemResource::GetType() {
 }
 
 void FileSystemResource::OpenQuotaFile(PP_Resource file_io) {
-  DCHECK(!base::ContainsKey(files_, file_io));
+  DCHECK(!base::Contains(files_, file_io));
   files_.insert(file_io);
 }
 
 void FileSystemResource::CloseQuotaFile(PP_Resource file_io) {
-  DCHECK(base::ContainsKey(files_, file_io));
+  DCHECK(base::Contains(files_, file_io));
   files_.erase(file_io);
 }
 

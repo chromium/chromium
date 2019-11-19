@@ -80,7 +80,7 @@ void ToastDialogView::Show() {
       &params, ash::kShellWindowId_SettingBubbleContainer);
 
   views::Widget* widget = new views::Widget;  // owned by native widget
-  widget->Init(params);
+  widget->Init(std::move(params));
   widget->AddObserver(this);
   widget->Show();
 }

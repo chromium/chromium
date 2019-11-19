@@ -9,7 +9,9 @@
 
 #include "base/memory/ref_counted.h"
 #include "content/common/content_export.h"
-#include "mojo/public/cpp/system/file_data_pipe_producer.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/system/filtered_data_source.h"
 #include "net/http/http_response_headers.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 
@@ -24,7 +26,7 @@ namespace content {
 class SharedCorsOriginAccessList;
 
 class CONTENT_EXPORT FileURLLoaderObserver
-    : public mojo::FileDataPipeProducer::Observer {
+    : public mojo::FilteredDataSource::Filter {
  public:
   FileURLLoaderObserver() {}
   ~FileURLLoaderObserver() override {}
@@ -50,8 +52,8 @@ class CONTENT_EXPORT FileURLLoaderObserver
 // A directory path will always yield a FILE_NOT_FOUND network error.
 CONTENT_EXPORT void CreateFileURLLoader(
     const network::ResourceRequest& request,
-    network::mojom::URLLoaderRequest loader,
-    network::mojom::URLLoaderClientPtr client,
+    mojo::PendingReceiver<network::mojom::URLLoader> loader,
+    mojo::PendingRemote<network::mojom::URLLoaderClient> client,
     std::unique_ptr<FileURLLoaderObserver> observer,
     bool allow_directory_listing,
     scoped_refptr<net::HttpResponseHeaders> extra_response_headers = nullptr);
@@ -67,9 +69,9 @@ CONTENT_EXPORT void CreateFileURLLoader(
 // passed, all file accesses are permitted even for CORS requests. This list
 // does not affect no-cors requests.
 CONTENT_EXPORT std::unique_ptr<network::mojom::URLLoaderFactory>
-CreateFileURLLoaderFactory(const base::FilePath& profile_path,
-                           scoped_refptr<const SharedCorsOriginAccessList>
-                               shared_cors_origin_access_list);
+CreateFileURLLoaderFactory(
+    const base::FilePath& profile_path,
+    scoped_refptr<SharedCorsOriginAccessList> shared_cors_origin_access_list);
 
 }  // namespace content
 

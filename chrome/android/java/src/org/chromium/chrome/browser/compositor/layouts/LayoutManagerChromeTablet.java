@@ -38,7 +38,7 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
      * @param host                     A {@link LayoutManagerHost} instance.
      */
     public LayoutManagerChromeTablet(LayoutManagerHost host) {
-        super(host, false);
+        super(host, false, null);
         Context context = host.getContext();
 
         mTabStripLayoutHelperManager =

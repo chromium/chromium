@@ -18,22 +18,32 @@
 
     window.jsTestIsAsync = true;
 
-    var list = speechSynthesis.getVoices();
-    var voice = list[0];
-
-    // Start a very short speaking job that will finish quickly.
-    var u = new SpeechSynthesisUtterance("this is a test string.");
-    u.voice = voice;
-
-    debug("Verify that setting and retrieving the voice works.");
-    shouldBeTrue("u.voice.name == voice.name");
-
-    u.onend = function(event) {
-       debug("Speech job finished successfully.");
-       finishJSTest();
+    var list;
+    speechSynthesis.onvoiceschanged = function() {
+        list = speechSynthesis.getVoices(); 
+        continueTest();
     }
 
-    speechSynthesis.speak(u);    
+    var u;
+    var voice;
+
+    function continueTest() {
+        voice = list[0];
+
+        // Start a very short speaking job that will finish quickly.
+        u = new SpeechSynthesisUtterance("this is a test string.");
+        u.voice = voice;
+
+        debug("Verify that setting and retrieving the voice works.");
+        shouldBeTrue("u.voice.name == voice.name");
+
+        u.onend = function(event) {
+           debug("Speech job finished successfully.");
+           finishJSTest();
+        }
+
+        speechSynthesis.speak(u);    
+    }
 
 </script>
 

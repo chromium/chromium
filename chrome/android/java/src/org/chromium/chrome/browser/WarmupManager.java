@@ -8,7 +8,6 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.net.Uri;
 import android.os.SystemClock;
-import android.support.annotation.IntDef;
 import android.view.ContextThemeWrapper;
 import android.view.InflateException;
 import android.view.LayoutInflater;
@@ -17,18 +16,21 @@ import android.view.ViewGroup;
 import android.view.ViewStub;
 import android.widget.FrameLayout;
 
+import androidx.annotation.IntDef;
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.Log;
 import org.chromium.base.StrictModeContext;
-import org.chromium.base.SysUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.TraceEvent;
-import org.chromium.base.VisibleForTesting;
+import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.widget.ControlContainer;
+import org.chromium.chrome.browser.toolbar.ControlContainer;
+import org.chromium.chrome.browser.util.UrlConstants;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
 
@@ -53,11 +55,13 @@ public class WarmupManager {
     private static final String TAG = "WarmupManager";
 
     @VisibleForTesting
-    static final String WEBCONTENTS_STATUS_HISTOGRAM = "CustomTabs.SpareWebContents.Status";
+    static final String WEBCONTENTS_STATUS_HISTOGRAM = "CustomTabs.SpareWebContents.Status2";
+
+    public static final boolean FOR_CCT = true;
 
     // See CustomTabs.SpareWebContentsStatus histogram. Append-only.
     @IntDef({WebContentsStatus.CREATED, WebContentsStatus.USED, WebContentsStatus.KILLED,
-            WebContentsStatus.DESTROYED})
+            WebContentsStatus.DESTROYED, WebContentsStatus.STOLEN})
     @Retention(RetentionPolicy.SOURCE)
     @interface WebContentsStatus {
         @VisibleForTesting
@@ -68,7 +72,9 @@ public class WarmupManager {
         int KILLED = 2;
         @VisibleForTesting
         int DESTROYED = 3;
-        int NUM_ENTRIES = 4;
+        @VisibleForTesting
+        int STOLEN = 4;
+        int NUM_ENTRIES = 5;
     }
 
     /**
@@ -83,7 +89,7 @@ public class WarmupManager {
             recordWebContentsStatus(WebContentsStatus.KILLED);
             destroySpareWebContentsInternal();
         }
-    };
+    }
 
     @SuppressLint("StaticFieldLeak")
     private static WarmupManager sWarmupManager;
@@ -97,6 +103,7 @@ public class WarmupManager {
     WebContents mSpareWebContents;
     private long mWebContentsCreationTimeMs;
     private RenderProcessGoneObserver mObserver;
+    private boolean mWebContentsCreatedForCCT;
 
     /**
      * @return The singleton instance for the WarmupManager, creating one if necessary.
@@ -264,7 +271,7 @@ public class WarmupManager {
      */
     public static void startPreconnectPredictorInitialization(Profile profile) {
         ThreadUtils.assertOnUiThread();
-        nativeStartPreconnectPredictorInitialization(profile);
+        WarmupManagerJni.get().startPreconnectPredictorInitialization(profile);
     }
 
     /** Asynchronously preconnects to a given URL if the data reduction proxy is not in use.
@@ -295,7 +302,7 @@ public class WarmupManager {
             // one will win.
             mPendingPreconnectWithProfile.put(url, profile);
         } else {
-            nativePreconnectUrlAndSubresources(profile, url);
+            WarmupManagerJni.get().preconnectUrlAndSubresources(profile, url);
         }
     }
 
@@ -317,7 +324,7 @@ public class WarmupManager {
             // Spare WebContents should not be used with spare RenderProcessHosts, but if one
             // has been created, destroy it in order not to consume too many processes.
             destroySpareWebContents();
-            nativeWarmupSpareRenderer(profile);
+            WarmupManagerJni.get().warmupSpareRenderer(profile);
         }
     }
 
@@ -326,14 +333,14 @@ public class WarmupManager {
      *
      * This creates a renderer that is suitable for any navigation. It can be picked up by any tab.
      * Can be called multiple times, and must be called from the UI thread.
-     * Note that this is a no-op on low-end devices.
+     *
+     * @param forCCT Whether this WebContents is being created for CCT.
      */
-    public void createSpareWebContents() {
+    public void createSpareWebContents(boolean forCCT) {
         ThreadUtils.assertOnUiThread();
-        if (!LibraryLoader.getInstance().isInitialized() || mSpareWebContents != null
-                || SysUtils.isLowEndDevice()) {
-            return;
-        }
+        if (!LibraryLoader.getInstance().isInitialized() || mSpareWebContents != null) return;
+
+        mWebContentsCreatedForCCT = forCCT;
         mSpareWebContents = new WebContentsFactory().createWebContentsWithWarmRenderer(
                 false /* incognito */, true /* initiallyHidden */);
         mObserver = new RenderProcessGoneObserver();
@@ -356,10 +363,12 @@ public class WarmupManager {
      * Returns a spare WebContents or null, depending on the availability of one.
      *
      * The parameters are the same as for {@link WebContentsFactory#createWebContents()}.
+     * @param forCCT Whether this WebContents is being taken by CCT.
      *
      * @return a WebContents, or null.
      */
-    public WebContents takeSpareWebContents(boolean incognito, boolean initiallyHidden) {
+    public WebContents takeSpareWebContents(
+            boolean incognito, boolean initiallyHidden, boolean forCCT) {
         ThreadUtils.assertOnUiThread();
         if (incognito) return null;
         WebContents result = mSpareWebContents;
@@ -368,7 +377,8 @@ public class WarmupManager {
         result.removeObserver(mObserver);
         mObserver = null;
         if (!initiallyHidden) result.onShow();
-        recordWebContentsStatus(WebContentsStatus.USED);
+        recordWebContentsStatus(mWebContentsCreatedForCCT == forCCT ? WebContentsStatus.USED
+                                                                    : WebContentsStatus.STOLEN);
         return result;
     }
 
@@ -386,12 +396,16 @@ public class WarmupManager {
         mObserver = null;
     }
 
-    private static void recordWebContentsStatus(@WebContentsStatus int status) {
+    private void recordWebContentsStatus(@WebContentsStatus int status) {
+        if (!mWebContentsCreatedForCCT) return;
         RecordHistogram.recordEnumeratedHistogram(
                 WEBCONTENTS_STATUS_HISTOGRAM, status, WebContentsStatus.NUM_ENTRIES);
     }
 
-    private static native void nativeStartPreconnectPredictorInitialization(Profile profile);
-    private static native void nativePreconnectUrlAndSubresources(Profile profile, String url);
-    private static native void nativeWarmupSpareRenderer(Profile profile);
+    @NativeMethods
+    interface Natives {
+        void startPreconnectPredictorInitialization(Profile profile);
+        void preconnectUrlAndSubresources(Profile profile, String url);
+        void warmupSpareRenderer(Profile profile);
+    }
 }

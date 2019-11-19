@@ -18,16 +18,12 @@ declare_args() {
   llvm_force_head_revision = false
 
   # Compile with Xcode version of clang instead of hermetic version shipped
-  # with the build. Used on iOS to ship official builds (as they are built
-  # with the version of clang shipped with Xcode).
-  use_xcode_clang = is_ios && is_official_build
+  # with the build. Used to be used iOS for official builds, but is now off by
+  # default for all configurations.
+  use_xcode_clang = false
 
   # Used for binary size analysis.
   generate_linker_map = is_android && is_official_build
-
-  # Use absolute file paths in the compiler diagnostics and __FILE__ macro
-  # if needed.
-  msvc_use_absolute_paths = false
 }
 
 if (generate_linker_map) {
@@ -38,15 +34,10 @@ if (generate_linker_map) {
          "Linker map files should only be generated for Android and Linux")
 }
 
-# The path to the hermetic install of Xcode. Only relevant when
-# use_system_xcode = false.
-hermetic_xcode_path =
-    rebase_path("//build/${target_os}_files/Xcode.app", "", root_build_dir)
-
 declare_args() {
   if (is_clang) {
     # Clang compiler version. Clang files are placed at version-dependent paths.
-    clang_version = "9.0.0"
+    clang_version = "10.0.0"
   }
 }
 

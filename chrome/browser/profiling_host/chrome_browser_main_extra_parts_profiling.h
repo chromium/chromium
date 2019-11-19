@@ -17,8 +17,7 @@ class ChromeBrowserMainExtraPartsProfiling
 
  private:
   // ChromeBrowserMainExtraParts overrides.
-  void ServiceManagerConnectionStarted(
-      content::ServiceManagerConnection* connection) override;
+  void PostCreateThreads() override;
 
   DISALLOW_COPY_AND_ASSIGN(ChromeBrowserMainExtraPartsProfiling);
 };

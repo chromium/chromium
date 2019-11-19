@@ -1,0 +1,49 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//mojo/public/tools/bindings/mojom.gni")
+
+mojom("mojo_types") {
+  generate_java = true
+  sources = [
+    "autofill_types.mojom",
+  ]
+
+  public_deps = [
+    "//mojo/public/mojom/base",
+    "//ui/gfx/geometry/mojom",
+    "//url/mojom:url_mojom_gurl",
+    "//url/mojom:url_mojom_origin",
+  ]
+}
+
+mojom("mojo_test_types") {
+  sources = [
+    "test_autofill_types.mojom",
+  ]
+
+  public_deps = [
+    ":mojo_types",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "autofill_types_mojom_traits_unittest.cc",
+  ]
+
+  public_deps = [
+    ":mojo_test_types",
+  ]
+
+  deps = [
+    "//base",
+    "//base/test:test_support",
+    "//components/autofill/core/browser:test_support",
+    "//components/password_manager/core/common",
+    "//mojo/public/cpp/bindings",
+    "//testing/gtest",
+  ]
+}

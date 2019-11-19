@@ -33,7 +33,7 @@ void TestNetworkErrorLoggingService::OnRequest(RequestDetails details) {
 }
 
 void TestNetworkErrorLoggingService::QueueSignedExchangeReport(
-    const SignedExchangeReportDetails& details) {}
+    SignedExchangeReportDetails details) {}
 
 void TestNetworkErrorLoggingService::RemoveBrowsingData(
     const base::RepeatingCallback<bool(const GURL&)>& origin_filter) {}

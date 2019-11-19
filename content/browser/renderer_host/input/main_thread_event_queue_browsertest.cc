@@ -89,7 +89,7 @@ class MainThreadEventQueueBrowserTest : public ContentBrowserTest {
  protected:
   void LoadURL(const char* page_data) {
     const GURL data_url(page_data);
-    NavigateToURL(shell(), data_url);
+    EXPECT_TRUE(NavigateToURL(shell(), data_url));
 
     RenderWidgetHostImpl* host = GetWidgetHost();
     host->GetView()->SetSize(gfx::Size(400, 400));

@@ -58,7 +58,7 @@ struct VR_UI_EXPORT Model {
   bool standalone_vr_device = false;
   bool menu_button_long_pressed = false;
   float floor_height = 0.0f;
-  bool use_new_incognito_strings = false;
+  base::TimeTicks current_time;
 
   // WebVR state.
   WebVrModel web_vr;
@@ -82,12 +82,20 @@ struct VR_UI_EXPORT Model {
   bool reposition_window_enabled() const;
   bool reposition_window_permitted() const;
 
+  // Helper methods which update the text field state
+  // as well as 'touched' field, to ensure bindings are
+  // run even if the text state has not changed.
+  void set_omnibox_text_field_info(EditedText text);
+  void set_web_input_text_field_info(EditedText text);
+
   // Focused text state.
   bool editing_input = false;
   bool editing_web_input = false;
   // Editable text field state.
   EditedText omnibox_text_field_info;
+  base::TimeTicks omnibox_text_field_touched;
   EditedText web_input_text_field_info;
+  base::TimeTicks web_input_text_field_touched;
 
   // Controller state.
   const ControllerModel& primary_controller() const;

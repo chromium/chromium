@@ -29,7 +29,7 @@
 class RegistryEntry;
 
 namespace base {
-class CancellationFlag;
+class AtomicFlag;
 class CommandLine;
 }
 
@@ -70,8 +70,8 @@ class ShellUtil {
     SHORTCUT_LOCATION_START_MENU_ROOT,
     SHORTCUT_LOCATION_START_MENU_CHROME_DIR_DEPRECATED,  // now placed in root
     SHORTCUT_LOCATION_START_MENU_CHROME_APPS_DIR,
-    SHORTCUT_LOCATION_TASKBAR_PINS,   // base::win::VERSION_WIN7 +
-    SHORTCUT_LOCATION_APP_SHORTCUTS,  // base::win::VERSION_WIN8 +
+    SHORTCUT_LOCATION_TASKBAR_PINS,   // base::win::Version::WIN7 +
+    SHORTCUT_LOCATION_APP_SHORTCUTS,  // base::win::Version::WIN8 +
     NUM_SHORTCUT_LOCATIONS
   };
 
@@ -467,12 +467,10 @@ class ShellUtil {
                                 const base::FilePath& chrome_exe,
                                 bool elevate_if_not_admin);
 
-#if defined(GOOGLE_CHROME_BUILD)
-  // Opens the Apps & Features page in the Windows settings.
+  // Opens the Apps & Features page in the Windows settings in branded builds.
   //
   // This function DCHECKS that it is only called on Windows 10 or higher.
   static bool LaunchUninstallAppsSettings();
-#endif
 
   // Windows 8: Shows and waits for the "How do you want to open webpages?"
   // dialog if Chrome is not already the default HTTP/HTTPS handler. Also does
@@ -580,7 +578,7 @@ class ShellUtil {
       const base::FilePath& old_target_exe,
       const base::FilePath& new_target_exe);
 
-  typedef base::RefCountedData<base::CancellationFlag> SharedCancellationFlag;
+  typedef base::RefCountedData<base::AtomicFlag> SharedCancellationFlag;
 
   // Appends Chrome shortcuts with non-whitelisted arguments to |shortcuts| if
   // not NULL. If |do_removal|, also removes non-whitelisted arguments from
@@ -628,16 +626,20 @@ class ShellUtil {
   // |command_line| is the command to execute when opening a file via this
   // association. It should contain "%1" (to tell Windows to pass the filename
   // as an argument).
-  // |file_type_name| and |icon_path| are the friendly name, and the path of the
-  // icon, respectively, that will be used for files of these types when
-  // associated with this application by default. (They are NOT the name/icon
-  // that will represent the application under the Open With menu.)
+  // |application_name| is the friendly name displayed for this application in
+  // the Open With menu.
+  // |file_type_name| is the friendly name for files of these types when
+  // associated with this application by default.
+  // |icon_path| is the path of the icon displayed for this application in the
+  // Open With menu, and used for files of these types when associated with this
+  // application by default.
   // |file_extensions| is the set of extensions to associate. They must not be
   // empty or start with a '.'.
   // Returns true on success, false on failure.
   static bool AddFileAssociations(
       const base::string16& prog_id,
       const base::CommandLine& command_line,
+      const base::string16& application_name,
       const base::string16& file_type_name,
       const base::FilePath& icon_path,
       const std::set<base::string16>& file_extensions);
@@ -648,6 +650,14 @@ class ShellUtil {
   // application, as given to AddFileAssociations. All information associated
   // with this name will be deleted.
   static bool DeleteFileAssociations(const base::string16& prog_id);
+
+  // Retrieves the file path of the application registered as the
+  // shell->open->command for |prog_id|. This only queries the user's
+  // registered applications in HKCU. If |prog_id| is for an app that is
+  // unrelated to the user's browser, it will still return the application
+  // registered for |prog_id|.
+  static base::FilePath GetApplicationPathForProgId(
+      const base::string16& prog_id);
 
   // This method converts all the RegistryEntries from the given list to
   // Set/CreateRegWorkItems and runs them using WorkItemList.

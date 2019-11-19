@@ -454,7 +454,7 @@ size_t ImageAnimationController::AnimationState::NextFrameIndex() const {
 ImageAnimationController::InvalidationScheduler::InvalidationScheduler(
     base::SingleThreadTaskRunner* task_runner,
     Client* client)
-    : task_runner_(task_runner), client_(client), weak_factory_(this) {
+    : task_runner_(task_runner), client_(client) {
   DCHECK(task_runner_->BelongsToCurrentThread());
 }
 

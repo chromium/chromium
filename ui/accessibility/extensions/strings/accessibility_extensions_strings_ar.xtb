@@ -31,6 +31,7 @@
 <translation id="4769065380738716500">تم استبدال الصور بواسطة النص البديل</translation>
 <translation id="4896660567607030658">لا توجد تعليقات، فقط أعرض المؤشر.</translation>
 <translation id="4937901943818762779">السماح بالصور المتحركة، ولكن لمرة واحدة فقط.</translation>
+<translation id="4949131196216960195">‏اضغط على &lt;span class='key'&gt;Search&lt;/span&gt; + &lt;img src='increase_brightness.png'&gt; (مفتاح "زيادة السطوع" أو F7) لتفعيل التصفح النصي بالمؤشر. ولإيقافه، اضغط عليه مرة أخرى.</translation>
 <translation id="4954450790315188152">عندما يتم تفعيل التصفح النصي بالمؤشر.</translation>
 <translation id="5041932793799765940">تعديل اللون</translation>
 <translation id="5094574508723441140">زيادة التباين</translation>
@@ -43,7 +44,7 @@
 <translation id="5631241868147802353">مخطط اللون التلقائي:</translation>
 <translation id="5650358096585648000">التعليقات البصرية</translation>
 <translation id="5710185147685935461">تغيير أو عكس نظام الألوان لتسهيل قراءة صفحات الويب.</translation>
-<translation id="5939518447894949180">إعادة</translation>
+<translation id="5939518447894949180">إعادة الضبط</translation>
 <translation id="595639123821853262">تدرج الرمادي معكوس</translation>
 <translation id="6017514345406065928">أخضر</translation>
 <translation id="6050189528197190982">تدرج الرمادي</translation>
@@ -60,7 +61,6 @@
 <translation id="7658239707568436148">إلغاء</translation>
 <translation id="786423340267544509">‏إضافة حد إلى العناصر التي تعمل بسمات aria-describedat أو longdesc.</translation>
 <translation id="7942349550061667556">أحمر</translation>
-<translation id="8254860724243898966">‏لتشغيل التصفح النصي بالمؤشر اضغط على &lt;span class='key'&gt;Alt&lt;/span&gt; + &lt;img src='increase_brightness.png'&gt; (مفتاح زيادة السطوع أو F7). ولإيقاف تشغيله اضغط عليه مرة أخرى.</translation>
 <translation id="8260673944985561857">خيارات التصفح النصي بالمؤشر</translation>
 <translation id="8321034316479930120">سياسة الصور المتحركة</translation>
 <translation id="8480209185614411573">تباين مرتفع</translation>

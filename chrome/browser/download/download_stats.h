@@ -191,9 +191,6 @@ enum class VideoThumbnailEvent {
 // Records download media parser event.
 void RecordMediaParserEvent(MediaParserEvent event);
 
-// Records the duration to finish parsing media file.
-void RecordMediaParserCompletionTime(const base::TimeDelta& duration);
-
 // Records media metadata parsing events.
 void RecordMediaMetadataEvent(MediaMetadataEvent event);
 

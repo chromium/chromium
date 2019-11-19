@@ -13,7 +13,6 @@
 #include "base/system/sys_info.h"
 #include "base/task_runner_util.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/tpm/tpm_token_info_getter.h"
 #include "crypto/nss_util.h"
 
@@ -22,9 +21,9 @@ namespace chromeos {
 namespace {
 
 void PostResultToTaskRunner(scoped_refptr<base::SequencedTaskRunner> runner,
-                            const base::Callback<void(bool)>& callback,
+                            base::OnceCallback<void(bool)> callback,
                             bool success) {
-  runner->PostTask(FROM_HERE, base::BindOnce(callback, success));
+  runner->PostTask(FROM_HERE, base::BindOnce(std::move(callback), success));
 }
 
 }  // namespace
@@ -34,13 +33,13 @@ static TPMTokenLoader* g_tpm_token_loader = NULL;
 // static
 void TPMTokenLoader::Initialize() {
   CHECK(!g_tpm_token_loader);
-  g_tpm_token_loader = new TPMTokenLoader(false /*for_test*/);
+  g_tpm_token_loader = new TPMTokenLoader(/*initialized_for_test=*/false);
 }
 
 // static
 void TPMTokenLoader::InitializeForTest() {
   CHECK(!g_tpm_token_loader);
-  g_tpm_token_loader = new TPMTokenLoader(true /*for_test*/);
+  g_tpm_token_loader = new TPMTokenLoader(/*initialized_for_test=*/true);
 }
 
 // static
@@ -62,16 +61,14 @@ bool TPMTokenLoader::IsInitialized() {
   return g_tpm_token_loader;
 }
 
-TPMTokenLoader::TPMTokenLoader(bool for_test)
-    : initialized_for_test_(for_test),
+TPMTokenLoader::TPMTokenLoader(bool initialized_for_test)
+    : initialized_for_test_(initialized_for_test),
       tpm_token_state_(TPM_STATE_UNKNOWN),
-      tpm_token_info_getter_(
-          TPMTokenInfoGetter::CreateForSystemToken(
-              DBusThreadManager::Get()->GetCryptohomeClient(),
-              base::ThreadTaskRunnerHandle::Get())),
+      tpm_token_info_getter_(TPMTokenInfoGetter::CreateForSystemToken(
+          CryptohomeClient::Get(),
+          base::ThreadTaskRunnerHandle::Get())),
       tpm_token_slot_id_(-1),
-      can_start_before_login_(false),
-      weak_factory_(this) {
+      can_start_before_login_(false) {
   if (!initialized_for_test_ && LoginState::IsInitialized())
     LoginState::Get()->AddObserver(this);
 
@@ -100,14 +97,14 @@ TPMTokenLoader::~TPMTokenLoader() {
 }
 
 TPMTokenLoader::TPMTokenStatus TPMTokenLoader::IsTPMTokenEnabled(
-    const TPMReadyCallback& callback) {
+    TPMReadyCallback callback) {
   if (tpm_token_state_ == TPM_TOKEN_INITIALIZED)
     return TPM_TOKEN_STATUS_ENABLED;
   if (!IsTPMLoadingEnabled() || tpm_token_state_ == TPM_DISABLED)
     return TPM_TOKEN_STATUS_DISABLED;
   // Status is not known yet.
-  if (!callback.is_null())
-    tpm_ready_callback_list_.push_back(callback);
+  if (callback)
+    tpm_ready_callback_list_.push_back(std::move(callback));
   return TPM_TOKEN_STATUS_UNDETERMINED;
 }
 
@@ -115,8 +112,9 @@ bool TPMTokenLoader::IsTPMLoadingEnabled() const {
   // TPM loading is enabled on non-ChromeOS environments, e.g. when running
   // tests on Linux.
   // Treat TPM as disabled for guest users since they do not store certs.
-  return initialized_for_test_ || (base::SysInfo::IsRunningOnChromeOS() &&
-                                   !LoginState::Get()->IsGuestSessionUser());
+  return initialized_for_test_ || enable_tpm_loading_for_testing_ ||
+         (base::SysInfo::IsRunningOnChromeOS() &&
+          !LoginState::Get()->IsGuestSessionUser());
 }
 
 void TPMTokenLoader::MaybeStartTokenInitialization() {
@@ -175,10 +173,10 @@ void TPMTokenLoader::ContinueTokenInitialization() {
           FROM_HERE,
           base::BindOnce(
               &crypto::InitializeTPMTokenAndSystemSlot, tpm_token_slot_id_,
-              base::Bind(&PostResultToTaskRunner,
-                         base::ThreadTaskRunnerHandle::Get(),
-                         base::Bind(&TPMTokenLoader::OnTPMTokenInitialized,
-                                    weak_factory_.GetWeakPtr()))));
+              base::BindOnce(
+                  &PostResultToTaskRunner, base::ThreadTaskRunnerHandle::Get(),
+                  base::BindOnce(&TPMTokenLoader::OnTPMTokenInitialized,
+                                 weak_factory_.GetWeakPtr()))));
       return;
     }
     case TPM_TOKEN_INITIALIZED: {
@@ -220,11 +218,8 @@ void TPMTokenLoader::NotifyTPMTokenReady() {
   DCHECK(tpm_token_state_ == TPM_DISABLED ||
          tpm_token_state_ == TPM_TOKEN_INITIALIZED);
   bool tpm_status = tpm_token_state_ == TPM_TOKEN_INITIALIZED;
-  for (TPMReadyCallbackList::iterator i = tpm_ready_callback_list_.begin();
-       i != tpm_ready_callback_list_.end();
-       ++i) {
-    i->Run(tpm_status);
-  }
+  for (TPMReadyCallback& callback : tpm_ready_callback_list_)
+    std::move(callback).Run(tpm_status);
   tpm_ready_callback_list_.clear();
 }
 

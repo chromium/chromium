@@ -110,8 +110,7 @@ VideoSender::VideoSender(
       playout_delay_change_cb_(playout_delay_change_cb),
       low_latency_mode_(false),
       last_reported_encoder_utilization_(-1.0),
-      last_reported_lossy_utilization_(-1.0),
-      weak_factory_(this) {
+      last_reported_lossy_utilization_(-1.0) {
   video_encoder_ = VideoEncoder::Create(
       cast_environment_,
       video_config,
@@ -129,7 +128,7 @@ VideoSender::VideoSender(
 VideoSender::~VideoSender() = default;
 
 void VideoSender::InsertRawVideoFrame(
-    const scoped_refptr<media::VideoFrame>& video_frame,
+    scoped_refptr<media::VideoFrame> video_frame,
     const base::TimeTicks& reference_time) {
   DCHECK(cast_environment_->CurrentlyOn(CastEnvironment::MAIN));
 
@@ -252,7 +251,7 @@ void VideoSender::InsertRawVideoFrame(
       MaybeRenderPerformanceMetricsOverlay(
           GetTargetPlayoutDelay(), low_latency_mode_, bitrate,
           frames_in_encoder_ + 1, last_reported_encoder_utilization_,
-          last_reported_lossy_utilization_, video_frame);
+          last_reported_lossy_utilization_, std::move(video_frame));
   if (video_encoder_->EncodeVideoFrame(
           frame_to_encode, reference_time,
           base::Bind(&VideoSender::OnEncodedVideoFrame, AsWeakPtr(),
@@ -295,7 +294,7 @@ base::TimeDelta VideoSender::GetInFlightMediaDuration() const {
 }
 
 void VideoSender::OnEncodedVideoFrame(
-    const scoped_refptr<media::VideoFrame>& video_frame,
+    scoped_refptr<media::VideoFrame> video_frame,
     int encoder_bitrate,
     std::unique_ptr<SenderEncodedFrame> encoded_frame) {
   DCHECK(cast_environment_->CurrentlyOn(CastEnvironment::MAIN));

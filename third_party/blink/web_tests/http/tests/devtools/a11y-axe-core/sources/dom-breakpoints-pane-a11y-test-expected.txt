@@ -1,0 +1,39 @@
+Testing accessibility in the DOM breakpoints pane.
+Setting DOM breakpoints.
+DOM breakpoints container text content: DOM BreakpointsSubtree modifiedNode removedNo breakpoints
+DOM breakpoints pane text content: Subtree modifiedNode removedNo breakpoints
+Running the axe-core linter on the DOM breakpoints pane.
+aXe violations: [
+  {
+    "ruleDescription": "Ensures every form element has a label",
+    "helpUrl": "https://dequeuniversity.com/rules/axe/3.3/label?application=axeAPI",
+    "ruleId": "label",
+    "impact": "critical",
+    "failedNodes": [
+      {
+        "target": [
+          [
+            ".flex-none.flex-auto.vbox:nth-child(7) > .flex-auto.vbox",
+            ".breakpoint-entry:nth-child(1) > span[is=\"dt-checkbox\"]",
+            "#ui-checkbox-label9"
+          ]
+        ],
+        "html": "<input type=\"checkbox\" id=\"ui-checkbox-label9\">",
+        "failureSummary": "Fix any of the following:\n  aria-label attribute does not exist or is empty\n  aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty\n  Form element does not have an implicit (wrapped) <label>\n  Form element does not have an explicit <label>\n  Element has no title attribute or the title attribute is empty"
+      },
+      {
+        "target": [
+          [
+            ".flex-none.flex-auto.vbox:nth-child(7) > .flex-auto.vbox",
+            ".breakpoint-entry:nth-child(2) > span[is=\"dt-checkbox\"]",
+            "#ui-checkbox-label10"
+          ]
+        ],
+        "html": "<input type=\"checkbox\" id=\"ui-checkbox-label10\">",
+        "failureSummary": "Fix any of the following:\n  aria-label attribute does not exist or is empty\n  aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty\n  Form element does not have an implicit (wrapped) <label>\n  Form element does not have an explicit <label>\n  Element has no title attribute or the title attribute is empty"
+      }
+    ]
+  }
+]
+
+

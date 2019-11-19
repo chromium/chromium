@@ -28,8 +28,7 @@ DecodedImageTracker::DecodedImageTracker(
     scoped_refptr<base::SequencedTaskRunner> task_runner)
     : image_controller_(controller),
       task_runner_(std::move(task_runner)),
-      tick_clock_(base::DefaultTickClock::GetInstance()),
-      weak_ptr_factory_(this) {
+      tick_clock_(base::DefaultTickClock::GetInstance()) {
   DCHECK(image_controller_);
 }
 
@@ -39,6 +38,7 @@ DecodedImageTracker::~DecodedImageTracker() {
 
 void DecodedImageTracker::QueueImageDecode(
     const PaintImage& image,
+    const gfx::ColorSpace& target_color_space,
     base::OnceCallback<void(bool)> callback) {
   size_t frame_index = PaintImage::kDefaultFrameIndex;
   TRACE_EVENT1(TRACE_DISABLED_BY_DEFAULT("cc.debug"),
@@ -49,7 +49,7 @@ void DecodedImageTracker::QueueImageDecode(
   // our own.
   auto image_bounds = SkIRect::MakeWH(image.width(), image.height());
   DrawImage draw_image(image, image_bounds, kNone_SkFilterQuality,
-                       SkMatrix::I(), frame_index);
+                       SkMatrix::I(), frame_index, target_color_space);
   image_controller_->QueueImageDecode(
       draw_image, base::BindOnce(&DecodedImageTracker::ImageDecodeFinished,
                                  base::Unretained(this), std::move(callback),

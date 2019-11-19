@@ -6,8 +6,6 @@ package org.chromium.chrome.browser.notifications;
 
 import static org.junit.Assert.assertThat;
 
-import static org.chromium.base.test.util.ScalableTimeout.scaleTimeout;
-
 import android.annotation.TargetApi;
 import android.app.Notification;
 import android.app.PendingIntent;
@@ -30,7 +28,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
@@ -42,17 +39,19 @@ import org.chromium.chrome.browser.ChromeSwitches;
 import org.chromium.chrome.browser.engagement.SiteEngagementService;
 import org.chromium.chrome.browser.permissions.PermissionDialogController;
 import org.chromium.chrome.browser.permissions.PermissionTestRule;
+import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.preferences.PrefServiceBridge;
 import org.chromium.chrome.browser.preferences.website.ContentSettingValues;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.widget.RoundedIconGenerator;
+import org.chromium.chrome.browser.ui.widget.RoundedIconGenerator;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.browser.TabTitleObserver;
 import org.chromium.chrome.test.util.browser.notifications.MockNotificationManagerProxy.NotificationEntry;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.content_public.browser.test.util.Criteria;
 import org.chromium.content_public.browser.test.util.CriteriaHelper;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.net.URL;
 import java.util.ArrayList;
@@ -78,17 +77,17 @@ public class NotificationPlatformBridgeTest {
 
     private static final String NOTIFICATION_TEST_PAGE =
             "/chrome/test/data/notifications/android_test.html";
-    private static final int TITLE_UPDATE_TIMEOUT_SECONDS = (int) scaleTimeout(5);
+    private static final int TITLE_UPDATE_TIMEOUT_SECONDS = (int) 5L;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         SiteEngagementService.setParamValuesForTesting();
         mNotificationTestRule.loadUrl(mPermissionTestRule.getURL(NOTIFICATION_TEST_PAGE));
         mPermissionTestRule.setActivity(mNotificationTestRule.getActivity());
     }
 
     @SuppressWarnings("MissingFail")
-    private void waitForTitle(String expectedTitle) throws InterruptedException {
+    private void waitForTitle(String expectedTitle) {
         Tab tab = mNotificationTestRule.getActivity().getActivityTab();
         TabTitleObserver titleObserver = new TabTitleObserver(tab, expectedTitle);
         try {
@@ -112,9 +111,9 @@ public class NotificationPlatformBridgeTest {
 
     private double getEngagementScoreBlocking() {
         try {
-            return ThreadUtils.runOnUiThreadBlocking(new Callable<Double>() {
+            return TestThreadUtils.runOnUiThreadBlocking(new Callable<Double>() {
                 @Override
-                public Double call() throws Exception {
+                public Double call() {
                     return SiteEngagementService.getForProfile(Profile.getLastUsedProfile())
                             .getScore(mPermissionTestRule.getOrigin());
                 }
@@ -157,8 +156,7 @@ public class NotificationPlatformBridgeTest {
         // showing a dialog.
         runJavaScript("Notification.requestPermission(sendToTest)");
         waitForTitle("denied");
-        Assert.assertEquals(
-                null, PermissionDialogController.getInstance().getCurrentDialogForTesting());
+        Assert.assertFalse(PermissionDialogController.getInstance().isDialogShownForTest());
 
         // Notifications permission should still be denied.
         Assert.assertEquals("\"denied\"", runJavaScript("Notification.permission"));
@@ -260,7 +258,6 @@ public class NotificationPlatformBridgeTest {
      * with a remote input on the action.
      */
     @Test
-    @CommandLineFlags.Add("enable-experimental-web-platform-features")
     @MinAndroidSdkLevel(Build.VERSION_CODES.KITKAT_WATCH)
     @TargetApi(Build.VERSION_CODES.KITKAT_WATCH) // RemoteInputs were only added in KITKAT_WATCH.
     @MediumTest
@@ -291,7 +288,6 @@ public class NotificationPlatformBridgeTest {
      * appropriately.
      */
     @Test
-    @CommandLineFlags.Add("enable-experimental-web-platform-features")
     @MinAndroidSdkLevel(Build.VERSION_CODES.KITKAT_WATCH)
     @TargetApi(Build.VERSION_CODES.KITKAT_WATCH) // RemoteInputs were only added in KITKAT_WATCH.
     @MediumTest
@@ -339,7 +335,6 @@ public class NotificationPlatformBridgeTest {
      * incremented appropriately.
      */
     @Test
-    @CommandLineFlags.Add("enable-experimental-web-platform-features")
     @MinAndroidSdkLevel(Build.VERSION_CODES.KITKAT_WATCH)
     @TargetApi(Build.VERSION_CODES.KITKAT_WATCH) // RemoteInputs added in KITKAT_WATCH.
     @MediumTest
@@ -401,7 +396,6 @@ public class NotificationPlatformBridgeTest {
      */
     @Test
     @TargetApi(Build.VERSION_CODES.KITKAT) // Notification.Action.actionIntent added in Android K.
-    @CommandLineFlags.Add("enable-experimental-web-platform-features")
     @MediumTest
     @Feature({"Browser", "Notifications"})
     public void testReplyToNotificationWithNoRemoteInput() throws Exception {
@@ -464,12 +458,10 @@ public class NotificationPlatformBridgeTest {
                 ContentSettingValues.ALLOW, mPermissionTestRule.getOrigin());
 
         // Disable notification vibration in preferences.
-        ThreadUtils.runOnUiThreadBlocking(new Runnable() {
-            @Override
-            public void run() {
-                PrefServiceBridge.getInstance().setNotificationsVibrateEnabled(false);
-            }
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                ()
+                        -> PrefServiceBridge.getInstance().setBoolean(
+                                Pref.NOTIFICATIONS_VIBRATE_ENABLED, false));
 
         Notification notification = showAndGetNotification("MyNotification", notificationOptions);
 
@@ -518,12 +510,10 @@ public class NotificationPlatformBridgeTest {
                 ContentSettingValues.ALLOW, mPermissionTestRule.getOrigin());
 
         // By default, vibration is enabled in notifications.
-        ThreadUtils.runOnUiThreadBlocking(new Runnable() {
-            @Override
-            public void run() {
-                Assert.assertTrue(PrefServiceBridge.getInstance().isNotificationsVibrateEnabled());
-            }
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                ()
+                        -> Assert.assertTrue(PrefServiceBridge.getInstance().getBoolean(
+                                Pref.NOTIFICATIONS_VIBRATE_ENABLED)));
 
         Notification notification = showAndGetNotification("MyNotification", "{ vibrate: 42 }");
 
@@ -646,8 +636,11 @@ public class NotificationPlatformBridgeTest {
 
         Bitmap generatedIcon = generator.generateIconForUrl(mPermissionTestRule.getOrigin());
         Assert.assertNotNull(generatedIcon);
-        Assert.assertTrue(generatedIcon.sameAs(
-                NotificationTestUtil.getLargeIconFromNotification(context, notification)));
+        // Starts from Android O MR1, large icon can be downscaled by Android platform code.
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+            Assert.assertTrue(generatedIcon.sameAs(
+                    NotificationTestUtil.getLargeIconFromNotification(context, notification)));
+        }
     }
 
     /*
@@ -852,19 +845,18 @@ public class NotificationPlatformBridgeTest {
      * @return The Android Notification object, as shown in the framework.
      */
     private Notification showAndGetNotification(String title, String options)
-            throws TimeoutException, InterruptedException {
+            throws TimeoutException {
         showNotification(title, options);
         return mNotificationTestRule.waitForNotification().notification;
     }
 
-    private void showNotification(String title, String options)
-            throws TimeoutException, InterruptedException {
+    private void showNotification(String title, String options) throws TimeoutException {
         runJavaScript("GetActivatedServiceWorkerForTest()"
                 + ".then(reg => reg.showNotification('" + title + "', " + options + "))"
                 + ".catch(sendToTest)");
     }
 
-    private String runJavaScript(String code) throws TimeoutException, InterruptedException {
+    private String runJavaScript(String code) throws TimeoutException {
         return mNotificationTestRule.runJavaScriptCodeInCurrentTab(code);
     }
 

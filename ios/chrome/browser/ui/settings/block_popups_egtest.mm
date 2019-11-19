@@ -2,28 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import <EarlGrey/EarlGrey.h>
 #import <UIKit/UIKit.h>
 #import <XCTest/XCTest.h>
 
 #include "base/strings/sys_string_conversions.h"
-#include "components/content_settings/core/browser/host_content_settings_map.h"
-#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#include "ios/chrome/browser/content_settings/host_content_settings_map_factory.h"
+#import "ios/chrome/browser/ui/settings/block_popups_app_interface.h"
 #include "ios/chrome/grit/ios_strings.h"
-#import "ios/chrome/test/app/chrome_test_util.h"
-#include "ios/chrome/test/app/navigation_test_util.h"
-#import "ios/chrome/test/app/web_view_interaction_test_util.h"
-#include "ios/chrome/test/earl_grey/accessibility_util.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
-#include "ios/chrome/test/scoped_block_popups_pref.h"
+#include "ios/chrome/test/earl_grey/scoped_block_popups_pref.h"
+#import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ios/web/public/test/http_server/http_server.h"
 #include "ios/web/public/test/http_server/http_server_util.h"
-#import "ios/web/public/test/web_view_interaction_test_util.h"
 #include "ui/base/l10n/l10n_util_mac.h"
 #include "url/gurl.h"
 
@@ -31,8 +24,11 @@
 #error "This file requires ARC support."
 #endif
 
+#if defined(CHROME_EARL_GREY_2)
+GREY_STUB_CLASS_IN_APP_MAIN_QUEUE(BlockPopupsAppInterface)
+#endif  // defined(CHROME_EARL_GREY_2)
+
 using chrome_test_util::ContentSettingsButton;
-using chrome_test_util::GetOriginalBrowserState;
 using chrome_test_util::SettingsDoneButton;
 using chrome_test_util::SettingsMenuBackButton;
 
@@ -61,30 +57,19 @@ id<GREYMatcher> BlockPopupsSettingsButton() {
 // list for as long as this object is in scope.
 class ScopedBlockPopupsException {
  public:
-  ScopedBlockPopupsException(const std::string& pattern) : pattern_(pattern) {
-    SetException(pattern_, CONTENT_SETTING_ALLOW);
+  ScopedBlockPopupsException(const std::string& pattern)
+      : pattern_(base::SysUTF8ToNSString(pattern)) {
+    [BlockPopupsAppInterface setPopupPolicy:CONTENT_SETTING_ALLOW
+                                 forPattern:pattern_];
   }
   ~ScopedBlockPopupsException() {
-    SetException(pattern_, CONTENT_SETTING_DEFAULT);
+    [BlockPopupsAppInterface setPopupPolicy:CONTENT_SETTING_DEFAULT
+                                 forPattern:pattern_];
   }
 
  private:
-  // Adds an exception for the given |pattern|.  If |setting| is
-  // CONTENT_SETTING_DEFAULT, removes the existing exception instead.
-  void SetException(const std::string& pattern, ContentSetting setting) {
-    ios::ChromeBrowserState* browserState =
-        chrome_test_util::GetOriginalBrowserState();
-
-    ContentSettingsPattern exception_pattern =
-        ContentSettingsPattern::FromString(pattern);
-    ios::HostContentSettingsMapFactory::GetForBrowserState(browserState)
-        ->SetContentSettingCustomScope(
-            exception_pattern, ContentSettingsPattern::Wildcard(),
-            CONTENT_SETTINGS_TYPE_POPUPS, std::string(), setting);
-  }
-
   // The exception pattern that this object is managing.
-  std::string pattern_;
+  NSString* pattern_;
 
   DISALLOW_COPY_AND_ASSIGN(ScopedBlockPopupsException);
 };
@@ -107,7 +92,7 @@ class ScopedBlockPopupsException {
       selectElementWithMatcher:grey_accessibilityID(
                                    @"block_popups_settings_view_controller")]
       assertWithMatcher:grey_notNil()];
-  chrome_test_util::VerifyAccessibilityForCurrentScreen();
+  [ChromeEarlGrey verifyAccessibilityForCurrentScreen];
 
   // Close the settings menu.
   [[EarlGrey selectElementWithMatcher:SettingsMenuBackButton()]
@@ -130,15 +115,13 @@ class ScopedBlockPopupsException {
   responses[openedWindowURL] = kOpenedWindowResponse;
   web::test::SetUpSimpleHttpServer(responses);
 
-  ScopedBlockPopupsPref prefSetter(CONTENT_SETTING_ALLOW,
-                                   GetOriginalBrowserState());
+  ScopedBlockPopupsPref prefSetter(CONTENT_SETTING_ALLOW);
   [ChromeEarlGrey loadURL:blockPopupsURL];
   [ChromeEarlGrey waitForMainTabCount:1];
 
-  // Request popup and make sure the popup opened in a new tab.
-  NSError* error = nil;
-  chrome_test_util::ExecuteJavaScript(kOpenPopupScript, &error);
-  GREYAssert(!error, @"Error during script execution: %@", error);
+  // Request popup (execute script without using a user gesture) and make sure
+  // the popup opened in a new tab.
+  [ChromeEarlGrey executeJavaScript:kOpenPopupScript];
   [ChromeEarlGrey waitForMainTabCount:2];
 
   // No infobar should be displayed.
@@ -161,19 +144,16 @@ class ScopedBlockPopupsException {
   responses[openedWindowURL] = kOpenedWindowResponse;
   web::test::SetUpSimpleHttpServer(responses);
 
-  ScopedBlockPopupsPref prefSetter(CONTENT_SETTING_BLOCK,
-                                   GetOriginalBrowserState());
+  ScopedBlockPopupsPref prefSetter(CONTENT_SETTING_BLOCK);
   [ChromeEarlGrey loadURL:blockPopupsURL];
   [ChromeEarlGrey waitForMainTabCount:1];
 
-  // Request popup, then make sure it was blocked and an infobar was displayed.
-  // The window.open() call is run via async JS, so the infobar may not open
-  // immediately.
-  NSError* error = nil;
-  chrome_test_util::ExecuteJavaScript(kOpenPopupScript, &error);
-  GREYAssert(!error, @"Error during script execution: %@", error);
+  // Request popup (execute script without using a user gesture), then make sure
+  // it was blocked and an infobar was displayed. The window.open() call is run
+  // via async JS, so the infobar may not open immediately.
+  [ChromeEarlGrey executeJavaScript:kOpenPopupScript];
 
-  [[GREYCondition
+  BOOL infobarVisible = [[GREYCondition
       conditionWithName:@"Wait for blocked popups infobar to show"
                   block:^BOOL {
                     NSError* error = nil;
@@ -185,6 +165,7 @@ class ScopedBlockPopupsException {
                                     error:&error];
                     return error == nil;
                   }] waitWithTimeout:4.0];
+  GREYAssertTrue(infobarVisible, @"Infobar did not appear");
   [ChromeEarlGrey waitForMainTabCount:1];
 }
 
@@ -192,8 +173,7 @@ class ScopedBlockPopupsException {
 // revealed properly when the preference switch is toggled.
 - (void)testSettingsPageWithExceptions {
   std::string allowedPattern = "[*.]example.com";
-  ScopedBlockPopupsPref prefSetter(CONTENT_SETTING_BLOCK,
-                                   GetOriginalBrowserState());
+  ScopedBlockPopupsPref prefSetter(CONTENT_SETTING_BLOCK);
   ScopedBlockPopupsException exceptionSetter(allowedPattern);
 
   [ChromeEarlGreyUI openSettingsMenu];

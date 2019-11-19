@@ -4,19 +4,25 @@
 
 #include "third_party/blink/renderer/bindings/modules/v8/serialization/v8_script_value_deserializer_for_modules.h"
 
+#include "services/service_manager/public/cpp/interface_provider.h"
 #include "third_party/blink/public/mojom/filesystem/file_system.mojom-blink.h"
+#include "third_party/blink/public/mojom/native_file_system/native_file_system_manager.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_crypto.h"
 #include "third_party/blink/public/platform/web_crypto_key_algorithm.h"
-#include "third_party/blink/public/platform/web_rtc_certificate_generator.h"
 #include "third_party/blink/renderer/bindings/modules/v8/serialization/web_crypto_sub_tags.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/crypto/crypto_key.h"
 #include "third_party/blink/renderer/modules/filesystem/dom_file_system.h"
+#include "third_party/blink/renderer/modules/imagecapture/point_2d.h"
+#include "third_party/blink/renderer/modules/native_file_system/native_file_system_directory_handle.h"
+#include "third_party/blink/renderer/modules/native_file_system/native_file_system_file_handle.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_certificate.h"
+#include "third_party/blink/renderer/modules/peerconnection/rtc_certificate_generator.h"
 #include "third_party/blink/renderer/modules/shapedetection/detected_barcode.h"
 #include "third_party/blink/renderer/modules/shapedetection/detected_face.h"
 #include "third_party/blink/renderer/modules/shapedetection/detected_text.h"
+#include "third_party/blink/renderer/modules/shapedetection/landmark.h"
 
 namespace blink {
 
@@ -41,18 +47,21 @@ ScriptWrappable* V8ScriptValueDeserializerForModules::ReadDOMObject(
               static_cast<int32_t>(mojom::blink::FileSystemType::kMaxValue) ||
           !ReadUTF8String(&name) || !ReadUTF8String(&root_url))
         return nullptr;
-      return DOMFileSystem::Create(
+      return MakeGarbageCollected<DOMFileSystem>(
           ExecutionContext::From(GetScriptState()), name,
           static_cast<mojom::blink::FileSystemType>(raw_type), KURL(root_url));
     }
+    case kNativeFileSystemFileHandleTag:
+    case kNativeFileSystemDirectoryHandleTag:
+      return ReadNativeFileSystemHandle(tag);
     case kRTCCertificateTag: {
       String pem_private_key;
       String pem_certificate;
       if (!ReadUTF8String(&pem_private_key) ||
           !ReadUTF8String(&pem_certificate))
         return nullptr;
-      std::unique_ptr<WebRTCCertificateGenerator> certificate_generator(
-          Platform::Current()->CreateRTCCertificateGenerator());
+      std::unique_ptr<RTCCertificateGenerator> certificate_generator =
+          std::make_unique<RTCCertificateGenerator>();
       if (!certificate_generator)
         return nullptr;
       rtc::scoped_refptr<rtc::RTCCertificate> certificate =
@@ -68,6 +77,9 @@ ScriptWrappable* V8ScriptValueDeserializerForModules::ReadDOMObject(
       DOMRectReadOnly* bounding_box = ReadDOMRectReadOnly();
       if (!bounding_box)
         return nullptr;
+      // TODO(crbug.com/938663): add deserialization for |format|.
+      shape_detection::mojom::BarcodeFormat format =
+          shape_detection::mojom::BarcodeFormat::UNKNOWN;
       uint32_t corner_points_length;
       if (!ReadUint32(&corner_points_length))
         return nullptr;
@@ -78,7 +90,8 @@ ScriptWrappable* V8ScriptValueDeserializerForModules::ReadDOMObject(
           return nullptr;
         corner_points.push_back(point);
       }
-      return DetectedBarcode::Create(raw_value, bounding_box, corner_points);
+      return MakeGarbageCollected<DetectedBarcode>(raw_value, bounding_box,
+                                                   format, corner_points);
     }
     case kDetectedFaceTag: {
       DOMRectReadOnly* bounding_box = ReadDOMRectReadOnly();
@@ -94,7 +107,7 @@ ScriptWrappable* V8ScriptValueDeserializerForModules::ReadDOMObject(
           return nullptr;
         landmarks.push_back(landmark);
       }
-      return DetectedFace::Create(bounding_box, landmarks);
+      return MakeGarbageCollected<DetectedFace>(bounding_box, landmarks);
     }
     case kDetectedTextTag: {
       String raw_value;
@@ -113,7 +126,8 @@ ScriptWrappable* V8ScriptValueDeserializerForModules::ReadDOMObject(
           return nullptr;
         corner_points.push_back(point);
       }
-      return DetectedText::Create(raw_value, bounding_box, corner_points);
+      return MakeGarbageCollected<DetectedText>(raw_value, bounding_box,
+                                                corner_points);
     }
     default:
       break;
@@ -346,7 +360,7 @@ CryptoKey* V8ScriptValueDeserializerForModules::ReadCryptoKey() {
           key))
     return nullptr;
 
-  return CryptoKey::Create(key);
+  return MakeGarbageCollected<CryptoKey>(key);
 }
 
 bool V8ScriptValueDeserializerForModules::ReadLandmark(Landmark* landmark) {
@@ -375,6 +389,73 @@ bool V8ScriptValueDeserializerForModules::ReadPoint2D(Point2D* point) {
   point->setX(x);
   point->setY(y);
   return true;
+}
+
+NativeFileSystemHandle*
+V8ScriptValueDeserializerForModules::ReadNativeFileSystemHandle(
+    SerializationTag tag) {
+  if (!RuntimeEnabledFeatures::CloneableNativeFileSystemHandlesEnabled()) {
+    return nullptr;
+  }
+
+  String name;
+  uint32_t token_index;
+  if (!ReadUTF8String(&name) || !ReadUint32(&token_index)) {
+    return nullptr;
+  }
+
+  // Find the FileSystemHandle's token.
+  SerializedScriptValue::NativeFileSystemTokensArray& tokens_array =
+      GetSerializedScriptValue()->NativeFileSystemTokens();
+  if (token_index >= tokens_array.size()) {
+    return nullptr;
+  }
+  mojo::PendingRemote<mojom::blink::NativeFileSystemTransferToken> token(
+      std::move(tokens_array[token_index]));
+  if (!token) {
+    return nullptr;
+  }
+
+  // Use the NativeFileSystemManager to redeem the token to clone the
+  // FileSystemHandle.
+  ExecutionContext* execution_context =
+      ExecutionContext::From(GetScriptState());
+  service_manager::InterfaceProvider* interface_provider =
+      execution_context->GetInterfaceProvider();
+  if (!interface_provider) {
+    return nullptr;
+  }
+  mojo::Remote<mojom::blink::NativeFileSystemManager>
+      native_file_system_manager;
+  interface_provider->GetInterface(
+      native_file_system_manager.BindNewPipeAndPassReceiver());
+
+  // Clone the FileSystemHandle object.
+  switch (tag) {
+    case kNativeFileSystemFileHandleTag: {
+      mojo::PendingRemote<mojom::blink::NativeFileSystemFileHandle> file_handle;
+
+      native_file_system_manager->GetFileHandleFromToken(
+          std::move(token), file_handle.InitWithNewPipeAndPassReceiver());
+
+      return MakeGarbageCollected<NativeFileSystemFileHandle>(
+          execution_context, name, std::move(file_handle));
+    }
+    case kNativeFileSystemDirectoryHandleTag: {
+      mojo::PendingRemote<mojom::blink::NativeFileSystemDirectoryHandle>
+          directory_handle;
+
+      native_file_system_manager->GetDirectoryHandleFromToken(
+          std::move(token), directory_handle.InitWithNewPipeAndPassReceiver());
+
+      return MakeGarbageCollected<NativeFileSystemDirectoryHandle>(
+          execution_context, name, std::move(directory_handle));
+    }
+    default: {
+      NOTREACHED();
+      return nullptr;
+    }
+  }
 }
 
 }  // namespace blink

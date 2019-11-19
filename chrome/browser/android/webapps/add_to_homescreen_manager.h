@@ -11,6 +11,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/macros.h"
 #include "chrome/browser/android/webapps/add_to_homescreen_data_fetcher.h"
+#include "chrome/browser/android/webapps/add_to_homescreen_installer.h"
 
 namespace content {
 class WebContents;
@@ -18,6 +19,7 @@ class WebContents;
 
 class SkBitmap;
 struct ShortcutInfo;
+struct AddToHomescreenParams;
 
 // AddToHomescreenManager is the C++ counterpart of
 // org.chromium.chrome.browser's AddToHomescreenManager in Java. This object
@@ -44,7 +46,8 @@ class AddToHomescreenManager : public AddToHomescreenDataFetcher::Observer {
  private:
   ~AddToHomescreenManager() override;
 
-  void RecordAddToHomescreen();
+  void RecordEventForAppMenu(AddToHomescreenInstaller::Event event,
+                             const AddToHomescreenParams& a2hs_params);
 
   // AddToHomescreenDataFetcher::Observer:
   void OnUserTitleAvailable(const base::string16& user_title,

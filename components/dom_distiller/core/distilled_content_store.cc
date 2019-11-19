@@ -36,12 +36,12 @@ void InMemoryContentStore::LoadContent(
   if (callback.is_null())
     return;
 
-  ContentMap::const_iterator it = cache_.Get(entry.entry_id());
+  ContentMap::const_iterator it = cache_.Get(entry.entry_id);
   bool success = it != cache_.end();
   if (!success) {
     // Could not find article by entry ID, so try looking it up by URL.
-    for (int i = 0; i < entry.pages_size(); ++i) {
-      UrlMap::const_iterator url_it = url_to_id_.find(entry.pages(i).url());
+    for (const GURL& page : entry.pages) {
+      UrlMap::const_iterator url_it = url_to_id_.find(page.spec());
       if (url_it != url_to_id_.end()) {
         it = cache_.Get(url_it->second);
         success = it != cache_.end();
@@ -64,7 +64,7 @@ void InMemoryContentStore::LoadContent(
 
 void InMemoryContentStore::InjectContent(const ArticleEntry& entry,
                                          const DistilledArticleProto& proto) {
-  cache_.Put(entry.entry_id(),
+  cache_.Put(entry.entry_id,
              std::unique_ptr<DistilledArticleProto, CacheDeletor>(
                  new DistilledArticleProto(proto), CacheDeletor(this)));
   AddUrlToIdMapping(entry, proto);
@@ -76,7 +76,7 @@ void InMemoryContentStore::AddUrlToIdMapping(
   for (int i = 0; i < proto.pages_size(); i++) {
     const DistilledPageProto& page = proto.pages(i);
     if (page.has_url()) {
-      url_to_id_[page.url()] = entry.entry_id();
+      url_to_id_[page.url()] = entry.entry_id;
     }
   }
 }
@@ -92,11 +92,9 @@ void InMemoryContentStore::EraseUrlToIdMapping(
 }
 
 InMemoryContentStore::CacheDeletor::CacheDeletor(InMemoryContentStore* store)
-    : store_(store) {
-}
+    : store_(store) {}
 
-InMemoryContentStore::CacheDeletor::~CacheDeletor() {
-}
+InMemoryContentStore::CacheDeletor::~CacheDeletor() {}
 
 void InMemoryContentStore::CacheDeletor::operator()(
     DistilledArticleProto* proto) {

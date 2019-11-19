@@ -17,10 +17,11 @@
 #include "chrome/common/extensions/api/autofill_private.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
+#include "components/autofill/core/browser/autofill_address_util.h"
 #include "components/autofill/core/browser/autofill_manager.h"
-#include "components/autofill/core/browser/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/form_data_importer.h"
-#include "components/autofill/core/browser/local_card_migration_manager.h"
+#include "components/autofill/core/browser/payments/local_card_migration_manager.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "content/public/browser/web_contents.h"
@@ -38,110 +39,6 @@ namespace {
 
 static const char kSettingsOrigin[] = "Chrome settings";
 static const char kErrorDataUnavailable[] = "Autofill data unavailable.";
-
-// TODO(crbug.com/903594): This does basically the same thing as
-//            components/autofill/core/browser/autofill_address_util.cc, we
-//            should refactor to use a single code path for this.
-// Fills |components| with the address UI components that should be used to
-// input an address for |country_code| when UI BCP 47 language code is
-// |ui_language_code|.
-void PopulateAddressComponents(
-    const std::string& country_code,
-    const std::string& ui_language_code,
-    autofill_private::AddressComponents* address_components) {
-  DCHECK(address_components);
-
-  i18n::addressinput::Localization localization;
-  localization.SetGetter(l10n_util::GetStringUTF8);
-  std::string best_address_language_code;
-  std::vector<addressinput::AddressUiComponent> components =
-      i18n::addressinput::BuildComponents(
-          country_code,
-          localization,
-          ui_language_code,
-          &best_address_language_code);
-  if (components.empty()) {
-    static const char kDefaultCountryCode[] = "US";
-    components = i18n::addressinput::BuildComponents(
-        kDefaultCountryCode,
-        localization,
-        ui_language_code,
-        &best_address_language_code);
-  }
-  address_components->language_code = best_address_language_code;
-  DCHECK(!components.empty());
-
-  autofill_private::AddressComponentRow* row = nullptr;
-  for (size_t i = 0; i < components.size(); ++i) {
-    if (components[i].field == ::i18n::addressinput::ORGANIZATION &&
-        !base::FeatureList::IsEnabled(
-            autofill::features::kAutofillEnableCompanyName)) {
-      continue;
-    }
-    if (!row ||
-        components[i - 1].length_hint ==
-            addressinput::AddressUiComponent::HINT_LONG ||
-        components[i].length_hint ==
-            addressinput::AddressUiComponent::HINT_LONG) {
-      address_components->components.push_back(
-          autofill_private::AddressComponentRow());
-      row = &address_components->components.back();
-    }
-
-    autofill_private::AddressComponent component;
-    component.field_name = components[i].name;
-
-    switch (components[i].field) {
-      case i18n::addressinput::COUNTRY:
-        component.field =
-            autofill_private::AddressField::ADDRESS_FIELD_COUNTRY_CODE;
-        break;
-      case i18n::addressinput::ADMIN_AREA:
-        component.field =
-            autofill_private::AddressField::ADDRESS_FIELD_ADDRESS_LEVEL_1;
-        break;
-      case i18n::addressinput::LOCALITY:
-        component.field =
-            autofill_private::AddressField::ADDRESS_FIELD_ADDRESS_LEVEL_2;
-        break;
-      case i18n::addressinput::DEPENDENT_LOCALITY:
-        component.field =
-            autofill_private::AddressField::ADDRESS_FIELD_ADDRESS_LEVEL_3;
-        break;
-      case i18n::addressinput::SORTING_CODE:
-        component.field =
-            autofill_private::AddressField::ADDRESS_FIELD_SORTING_CODE;
-        break;
-      case i18n::addressinput::POSTAL_CODE:
-        component.field =
-            autofill_private::AddressField::ADDRESS_FIELD_POSTAL_CODE;
-        break;
-      case i18n::addressinput::STREET_ADDRESS:
-        component.field =
-            autofill_private::AddressField::ADDRESS_FIELD_ADDRESS_LINES;
-        break;
-      case i18n::addressinput::ORGANIZATION:
-        component.field =
-            autofill_private::AddressField::ADDRESS_FIELD_COMPANY_NAME;
-        break;
-      case i18n::addressinput::RECIPIENT:
-        component.field =
-            autofill_private::AddressField::ADDRESS_FIELD_FULL_NAME;
-        break;
-    }
-
-    switch (components[i].length_hint) {
-      case addressinput::AddressUiComponent::HINT_LONG:
-        component.is_long_field = true;
-        break;
-      case addressinput::AddressUiComponent::HINT_SHORT:
-        component.is_long_field = false;
-        break;
-    }
-
-    row->row.push_back(std::move(component));
-  }
-}
 
 // Searches the |list| for the value at |index|.  If this value is present in
 // any of the rest of the list, then the item (at |index|) is removed. The
@@ -172,6 +69,19 @@ void RemoveDuplicatePhoneNumberAtIndex(
 
   if (is_duplicate)
     list->Remove(index, nullptr);
+}
+
+autofill::AutofillManager* GetAutofillManager(
+    content::WebContents* web_contents) {
+  if (!web_contents) {
+    return nullptr;
+  }
+  autofill::ContentAutofillDriver* autofill_driver =
+      autofill::ContentAutofillDriverFactory::FromWebContents(web_contents)
+          ->DriverForFrame(web_contents->GetMainFrame());
+  if (!autofill_driver)
+    return nullptr;
+  return autofill_driver->autofill_manager();
 }
 
 }  // namespace
@@ -213,10 +123,6 @@ ExtensionFunction::ResponseAction AutofillPrivateSaveAddressFunction::Run() {
       existing_profile
           ? *existing_profile
           : autofill::AutofillProfile(base::GenerateGUID(), kSettingsOrigin);
-
-  // Strings from JavaScript use UTF-8 encoding. This container is used as an
-  // intermediate container for functions which require UTF-16 strings.
-  std::vector<base::string16> string16Container;
 
   if (address->full_names) {
     std::string full_name;
@@ -294,6 +200,7 @@ ExtensionFunction::ResponseAction AutofillPrivateSaveAddressFunction::Run() {
     profile.set_language_code(*address->language_code);
 
   if (use_existing_profile) {
+    profile.set_origin(kSettingsOrigin);
     personal_data->UpdateProfile(profile);
   } else {
     personal_data->AddProfile(profile);
@@ -343,13 +250,28 @@ ExtensionFunction::ResponseAction
           api::autofill_private::GetAddressComponents::Params::Create(*args_);
   EXTENSION_FUNCTION_VALIDATE(parameters.get());
 
-  autofill_private::AddressComponents components;
-  PopulateAddressComponents(
-      parameters->country_code,
-      g_browser_process->GetApplicationLocale(),
-      &components);
+  auto components = std::make_unique<base::ListValue>();
+  std::string language_code_;
 
-  return RespondNow(OneArgument(components.ToValue()));
+  autofill::GetAddressComponents(parameters->country_code,
+                                 g_browser_process->GetApplicationLocale(),
+                                 components.get(), &language_code_);
+
+  // Convert ListValue to AddressComponents
+  base::Value address_components(base::Value::Type::DICTIONARY);
+  base::Value rows(base::Value::Type::LIST);
+
+  for (auto& component : components->GetList()) {
+    base::Value row(base::Value::Type::DICTIONARY);
+    row.SetKey("row", std::move(component));
+    rows.Append(std::move(row));
+  }
+
+  address_components.SetKey("components", std::move(rows));
+  address_components.SetKey("languageCode", base::Value(language_code_));
+
+  return RespondNow(OneArgument(
+      base::Value::ToUniquePtrValue(std::move(address_components))));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -544,56 +466,6 @@ AutofillPrivateGetCreditCardListFunction::Run() {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-// AutofillPrivateGetLocalCreditCardListFunction
-
-AutofillPrivateGetLocalCreditCardListFunction::
-    AutofillPrivateGetLocalCreditCardListFunction()
-    : chrome_details_(this) {}
-
-AutofillPrivateGetLocalCreditCardListFunction::
-    ~AutofillPrivateGetLocalCreditCardListFunction() {}
-
-ExtensionFunction::ResponseAction
-AutofillPrivateGetLocalCreditCardListFunction::Run() {
-  autofill::PersonalDataManager* personal_data =
-      autofill::PersonalDataManagerFactory::GetForProfile(
-          chrome_details_.GetProfile());
-
-  DCHECK(personal_data && personal_data->IsDataLoaded());
-
-  autofill_util::CreditCardEntryList local_credit_card_list =
-      autofill_util::GenerateLocalCreditCardList(*personal_data);
-  return RespondNow(ArgumentList(
-      api::autofill_private::GetLocalCreditCardList::Results::Create(
-          local_credit_card_list)));
-}
-
-////////////////////////////////////////////////////////////////////////////////
-// AutofillPrivateGetServerCreditCardListFunction
-
-AutofillPrivateGetServerCreditCardListFunction::
-    AutofillPrivateGetServerCreditCardListFunction()
-    : chrome_details_(this) {}
-
-AutofillPrivateGetServerCreditCardListFunction::
-    ~AutofillPrivateGetServerCreditCardListFunction() {}
-
-ExtensionFunction::ResponseAction
-AutofillPrivateGetServerCreditCardListFunction::Run() {
-  autofill::PersonalDataManager* personal_data =
-      autofill::PersonalDataManagerFactory::GetForProfile(
-          chrome_details_.GetProfile());
-
-  DCHECK(personal_data && personal_data->IsDataLoaded());
-
-  autofill_util::CreditCardEntryList server_credit_card_list =
-      autofill_util::GenerateServerCreditCardList(*personal_data);
-  return RespondNow(ArgumentList(
-      api::autofill_private::GetServerCreditCardList::Results::Create(
-          server_credit_card_list)));
-}
-
-////////////////////////////////////////////////////////////////////////////////
 // AutofillPrivateMigrateCreditCardsFunction
 
 AutofillPrivateMigrateCreditCardsFunction::
@@ -608,17 +480,13 @@ AutofillPrivateMigrateCreditCardsFunction::Run() {
   autofill::PersonalDataManager* personal_data =
       autofill::PersonalDataManagerFactory::GetForProfile(
           chrome_details_.GetProfile());
-  // Get the web contents to get autofill manager.
-  content::WebContents* web_contents = GetSenderWebContents();
-  if (!personal_data || !personal_data->IsDataLoaded() || !web_contents)
+  if (!personal_data || !personal_data->IsDataLoaded())
     return RespondNow(Error(kErrorDataUnavailable));
 
   // Get the AutofillManager from the web contents. AutofillManager has a
   // pointer to its AutofillClient which owns FormDataImporter.
   autofill::AutofillManager* autofill_manager =
-      autofill::ContentAutofillDriverFactory::FromWebContents(web_contents)
-          ->DriverForFrame(web_contents->GetMainFrame())
-          ->autofill_manager();
+      GetAutofillManager(GetSenderWebContents());
   if (!autofill_manager || !autofill_manager->client())
     return RespondNow(Error(kErrorDataUnavailable));
 
@@ -666,4 +534,36 @@ AutofillPrivateLogServerCardLinkClickedFunction::Run() {
   return RespondNow(NoArguments());
 }
 
+////////////////////////////////////////////////////////////////////////////////
+// AutofillPrivateSetCreditCardFIDOAuthEnabledStateFunction
+
+AutofillPrivateSetCreditCardFIDOAuthEnabledStateFunction::
+    AutofillPrivateSetCreditCardFIDOAuthEnabledStateFunction()
+    : chrome_details_(this) {}
+
+AutofillPrivateSetCreditCardFIDOAuthEnabledStateFunction::
+    ~AutofillPrivateSetCreditCardFIDOAuthEnabledStateFunction() {}
+
+ExtensionFunction::ResponseAction
+AutofillPrivateSetCreditCardFIDOAuthEnabledStateFunction::Run() {
+  // Getting CreditCardAccessManager from WebContents.
+  autofill::AutofillManager* autofill_manager =
+      GetAutofillManager(GetSenderWebContents());
+  if (!autofill_manager)
+    return RespondNow(Error(kErrorDataUnavailable));
+  autofill::CreditCardAccessManager* credit_card_access_manager =
+      autofill_manager->credit_card_access_manager();
+  if (!credit_card_access_manager)
+    return RespondNow(Error(kErrorDataUnavailable));
+
+  std::unique_ptr<
+      api::autofill_private::SetCreditCardFIDOAuthEnabledState::Params>
+      parameters = api::autofill_private::SetCreditCardFIDOAuthEnabledState::
+          Params::Create(*args_);
+  EXTENSION_FUNCTION_VALIDATE(parameters.get());
+
+  credit_card_access_manager->OnSettingsPageFIDOAuthToggled(
+      parameters->enabled);
+  return RespondNow(NoArguments());
+}
 }  // namespace extensions

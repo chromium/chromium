@@ -7,6 +7,8 @@
 UploadSysroot for each supported arch of each sysroot creator.
 """
 
+from __future__ import print_function
+
 import glob
 import hashlib
 import json
@@ -87,13 +89,13 @@ def main():
   for _, proc in procs:
     proc.join()
 
-  print "SYSROOT CREATION SUMMARY"
+  print("SYSROOT CREATION SUMMARY")
   failures = 0
   for name, proc in procs:
     if proc.exitcode:
       failures += 1
     status = "FAILURE" if proc.exitcode else "SUCCESS"
-    print "%s sysroot creation\t%s" % (name, status)
+    print("%s sysroot creation\t%s" % (name, status))
   return failures
 
 

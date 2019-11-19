@@ -63,7 +63,7 @@ class BrowserMessageFilter::Internal : public IPC::MessageFilter {
     filter_->OverrideThreadForMessage(message, &thread);
 
     if (thread == BrowserThread::IO) {
-      scoped_refptr<base::TaskRunner> runner =
+      scoped_refptr<base::SequencedTaskRunner> runner =
           filter_->OverrideTaskRunnerForMessage(message);
       if (runner.get()) {
         runner->PostTask(
@@ -75,7 +75,7 @@ class BrowserMessageFilter::Internal : public IPC::MessageFilter {
       return DispatchMessage(message);
     }
 
-    base::PostTaskWithTraits(
+    base::PostTask(
         FROM_HERE, {thread},
         base::BindOnce(base::IgnoreResult(&Internal::DispatchMessage), this,
                        message));
@@ -146,7 +146,7 @@ bool BrowserMessageFilter::Send(IPC::Message* message) {
   }
 
   if (!BrowserThread::CurrentlyOn(BrowserThread::IO)) {
-    base::PostTaskWithTraits(
+    base::PostTask(
         FROM_HERE, {BrowserThread::IO},
         base::BindOnce(base::IgnoreResult(&BrowserMessageFilter::Send), this,
                        message));
@@ -160,7 +160,8 @@ bool BrowserMessageFilter::Send(IPC::Message* message) {
   return false;
 }
 
-base::TaskRunner* BrowserMessageFilter::OverrideTaskRunnerForMessage(
+scoped_refptr<base::SequencedTaskRunner>
+BrowserMessageFilter::OverrideTaskRunnerForMessage(
     const IPC::Message& message) {
   return nullptr;
 }

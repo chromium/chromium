@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/passwords/password_save_confirmation_view.h"
 
+#include <memory>
+
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/grit/generated_resources.h"
@@ -16,15 +18,19 @@
 PasswordSaveConfirmationView::PasswordSaveConfirmationView(
     content::WebContents* web_contents,
     views::View* anchor_view,
-    const gfx::Point& anchor_point,
     DisplayReason reason)
-    : PasswordBubbleViewBase(web_contents, anchor_view, anchor_point, reason) {
+    : PasswordBubbleViewBase(web_contents,
+                             anchor_view,
+                             reason,
+                             /*auto_dismissable=*/false) {
   SetLayoutManager(std::make_unique<views::FillLayout>());
+
+  DialogDelegate::set_buttons(ui::DIALOG_BUTTON_NONE);
 
   auto label = std::make_unique<views::StyledLabel>(
       model()->save_confirmation_text(), this);
   label->SetTextContext(CONTEXT_BODY_TEXT_LARGE);
-  label->SetDefaultTextStyle(STYLE_SECONDARY);
+  label->SetDefaultTextStyle(views::style::STYLE_SECONDARY);
   auto link_style = views::StyledLabel::RangeStyleInfo::CreateForLink();
   link_style.disable_line_wrapping = false;
   label->AddStyleRange(model()->save_confirmation_link_range(), link_style);
@@ -33,10 +39,6 @@ PasswordSaveConfirmationView::PasswordSaveConfirmationView(
 }
 
 PasswordSaveConfirmationView::~PasswordSaveConfirmationView() = default;
-
-int PasswordSaveConfirmationView::GetDialogButtons() const {
-  return ui::DIALOG_BUTTON_NONE;
-}
 
 bool PasswordSaveConfirmationView::ShouldShowCloseButton() const {
   return true;

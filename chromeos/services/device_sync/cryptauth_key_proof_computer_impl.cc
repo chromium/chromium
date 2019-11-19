@@ -83,21 +83,24 @@ CryptAuthKeyProofComputerImpl::~CryptAuthKeyProofComputerImpl() = default;
 base::Optional<std::string> CryptAuthKeyProofComputerImpl::ComputeKeyProof(
     const CryptAuthKey& key,
     const std::string& payload,
-    const std::string& salt) {
-  if (key.IsSymmetricKey())
-    return ComputeSymmetricKeyProof(key, payload, salt);
+    const std::string& salt,
+    const base::Optional<std::string>& info) {
+  if (key.IsAsymmetricKey())
+    return ComputeAsymmetricKeyProof(key, payload, salt);
 
-  return ComputeAsymmetricKeyProof(key, payload, salt);
+  DCHECK(info);
+  return ComputeSymmetricKeyProof(key, payload, salt, *info);
 }
 
 base::Optional<std::string>
 CryptAuthKeyProofComputerImpl::ComputeSymmetricKeyProof(
     const CryptAuthKey& symmetric_key,
     const std::string& payload,
-    const std::string& salt) {
-  std::string derived_symmetric_key_material = crypto::HkdfSha256(
-      symmetric_key.symmetric_key(), salt, symmetric_key.handle(),
-      NumBytesForSymmetricKeyType(symmetric_key.type()));
+    const std::string& salt,
+    const std::string& info) {
+  std::string derived_symmetric_key_material =
+      crypto::HkdfSha256(symmetric_key.symmetric_key(), salt, info,
+                         NumBytesForSymmetricKeyType(symmetric_key.type()));
 
   crypto::HMAC hmac(crypto::HMAC::HashAlgorithm::SHA256);
   std::vector<unsigned char> signed_payload(hmac.DigestLength());

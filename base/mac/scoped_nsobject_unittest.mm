@@ -4,7 +4,6 @@
 
 #include <vector>
 
-#include "base/mac/scoped_nsautorelease_pool.h"
 #include "base/mac/scoped_nsobject.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -24,8 +23,7 @@ TEST(ScopedNSObjectTest, ScopedNSObject) {
     base::scoped_nsobject<NSObject> p3 = p1;
     ASSERT_EQ(p1.get(), p3.get());
     ASSERT_EQ(2u, [p1 retainCount]);
-    {
-      base::mac::ScopedNSAutoreleasePool pool;
+    @autoreleasepool {
       p3 = p1;
     }
     ASSERT_EQ(p1.get(), p3.get());
@@ -46,8 +44,7 @@ TEST(ScopedNSObjectTest, ScopedNSObject) {
 
   base::scoped_nsobject<NSObject> p6 = p1;
   ASSERT_EQ(3u, [p6 retainCount]);
-  {
-    base::mac::ScopedNSAutoreleasePool pool;
+  @autoreleasepool {
     p6.autorelease();
     ASSERT_EQ(nil, p6.get());
     ASSERT_EQ(3u, [p1 retainCount]);

@@ -29,9 +29,14 @@ class MediaSessionService : public service_manager::Service {
                        const std::string& interface_name,
                        mojo::ScopedMessagePipeHandle interface_pipe) override;
 
+  const AudioFocusManager& audio_focus_manager_for_testing() const {
+    return *audio_focus_manager_.get();
+  }
+
  private:
   service_manager::ServiceBinding service_binding_;
   service_manager::BinderRegistry registry_;
+
   std::unique_ptr<AudioFocusManager> audio_focus_manager_;
 
   DISALLOW_COPY_AND_ASSIGN(MediaSessionService);

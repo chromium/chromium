@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+from __future__ import print_function
+
 import base64
 import codecs
 import json
@@ -84,7 +86,7 @@ def main():
             for dll in ('chrome.dll', 'chrome_child.dll')]
   for dll_path in dlls:
     if os.path.exists(dll_path):
-      print 'Tallying %s...' % dll_path
+      print('Tallying %s...' % dll_path)
       json_path = dll_path + '.json'
       Run(os.path.join(BASE_DIR, '..', '..', '..', 'third_party', 'syzygy',
                        'binaries', 'exe', 'experimental', 'code_tally.exe'),
@@ -93,9 +95,10 @@ def main():
           '--output-file=' + json_path)
       jsons.append(json_path)
   if not jsons:
-    print 'Couldn\'t find dlls.'
-    print 'Pass fully qualified dll name(s) if you want to use something other '
-    print 'than out\\Release\\chrome.dll and chrome_child.dll.'
+    print('Couldn\'t find dlls.')
+    print(
+        'Pass fully qualified dll name(s) if you want to use something other ')
+    print('than out\\Release\\chrome.dll and chrome_child.dll.')
     return 1
 
   # Munge the code_tally json format into an easier-to-view format.
@@ -103,7 +106,7 @@ def main():
     with open(json_name, 'r') as jsonf:
       all_data = json.load(jsonf)
     html_path = os.path.splitext(json_name)[0] + '.html'
-    print 'Generating %s... (standlone)' % html_path
+    print('Generating %s... (standlone)' % html_path)
     by_source = {}
     symbols_index = {}
     symbols = []

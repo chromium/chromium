@@ -8,6 +8,7 @@
 #include "base/task/post_task.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "gpu/command_buffer/service/texture_owner.h"
 
 namespace content {
 
@@ -20,14 +21,15 @@ ScopedSurfaceRequestManager* ScopedSurfaceRequestManager::GetInstance() {
 
 base::UnguessableToken
 ScopedSurfaceRequestManager::RegisterScopedSurfaceRequest(
-    const ScopedSurfaceRequestCB& request_cb) {
+    ScopedSurfaceRequestCB request_cb) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(!request_cb.is_null());
 
   base::UnguessableToken request_token = base::UnguessableToken::Create();
 
   DCHECK(!request_callbacks_.count(request_token));
-  request_callbacks_.insert(std::make_pair(request_token, request_cb));
+  request_callbacks_.insert(
+      std::make_pair(request_token, std::move(request_cb)));
 
   return request_token;
 }
@@ -48,7 +50,7 @@ ScopedSurfaceRequestManager::GetAndUnregisterInternal(
 
   auto it = request_callbacks_.find(request_token);
   if (it != request_callbacks_.end()) {
-    request = it->second;
+    request = std::move(it->second);
     request_callbacks_.erase(it);
   }
 
@@ -57,9 +59,9 @@ ScopedSurfaceRequestManager::GetAndUnregisterInternal(
 
 void ScopedSurfaceRequestManager::ForwardSurfaceOwnerForSurfaceRequest(
     const base::UnguessableToken& request_token,
-    const gpu::SurfaceOwner* surface_owner) {
+    const gpu::TextureOwner* texture_owner) {
   FulfillScopedSurfaceRequest(request_token,
-                              surface_owner->CreateJavaSurface());
+                              texture_owner->CreateJavaSurface());
 }
 
 void ScopedSurfaceRequestManager::FulfillScopedSurfaceRequest(
@@ -67,7 +69,7 @@ void ScopedSurfaceRequestManager::FulfillScopedSurfaceRequest(
     gl::ScopedJavaSurface surface) {
   // base::Unretained is safe because the lifetime of this object is tied to
   // the lifetime of the browser process.
-  base::PostTaskWithTraits(
+  base::PostTask(
       FROM_HERE, {BrowserThread::UI},
       base::BindOnce(&ScopedSurfaceRequestManager::CompleteRequestOnUiThread,
                      base::Unretained(this), request_token,
@@ -83,7 +85,7 @@ void ScopedSurfaceRequestManager::CompleteRequestOnUiThread(
       GetAndUnregisterInternal(request_token);
 
   if (!request.is_null())
-    request.Run(std::move(surface));
+    std::move(request).Run(std::move(surface));
 }
 
 ScopedSurfaceRequestManager::ScopedSurfaceRequestManager() {}

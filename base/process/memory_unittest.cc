@@ -66,7 +66,7 @@ TEST(ProcessMemoryTest, MacTerminateOnHeapCorruption) {
 #endif
   // Assert that freeing an unallocated pointer will crash the process.
   char buf[9];
-  asm("" : "=r" (buf));  // Prevent clang from being too smart.
+  asm("" : "=m"(buf));  // Prevent clang from being too smart.
 #if ARCH_CPU_64_BITS
   // On 64 bit Macs, the malloc system automatically abort()s on heap corruption
   // but does not output anything.
@@ -307,7 +307,6 @@ TEST_F(OutOfMemoryDeathTest, SecurityValloc) {
     }, kOomRegex);
 }
 
-#if PVALLOC_AVAILABLE == 1
 TEST_F(OutOfMemoryDeathTest, Pvalloc) {
   ASSERT_DEATH({
       SetUpInDeathAssert();
@@ -321,7 +320,6 @@ TEST_F(OutOfMemoryDeathTest, SecurityPvalloc) {
       value_ = pvalloc(insecure_test_size_);
     }, kOomRegex);
 }
-#endif  // PVALLOC_AVAILABLE == 1
 
 TEST_F(OutOfMemoryDeathTest, Memalign) {
   ASSERT_DEATH({

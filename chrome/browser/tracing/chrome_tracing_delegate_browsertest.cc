@@ -98,16 +98,15 @@ class ChromeTracingDelegateBrowserTest : public InProcessBrowserTest {
   }
 
  private:
-  void OnUpload(const scoped_refptr<base::RefCountedString>& file_contents,
-                std::unique_ptr<const base::DictionaryValue> metadata,
+  void OnUpload(std::unique_ptr<std::string> file_contents,
                 content::BackgroundTracingManager::FinishedProcessingCallback
                     done_callback) {
     receive_count_ += 1;
 
-    base::PostTaskWithTraits(FROM_HERE, {content::BrowserThread::UI},
-                             base::BindOnce(std::move(done_callback), true));
-    base::PostTaskWithTraits(FROM_HERE, {content::BrowserThread::UI},
-                             on_upload_callback_);
+    base::PostTask(FROM_HERE, {content::BrowserThread::UI},
+                   base::BindOnce(std::move(done_callback), true));
+    base::PostTask(FROM_HERE, {content::BrowserThread::UI},
+                   on_upload_callback_);
   }
 
   void OnStartedFinalizing(bool success) {
@@ -115,8 +114,8 @@ class ChromeTracingDelegateBrowserTest : public InProcessBrowserTest {
     last_on_started_finalizing_success_ = success;
 
     if (!on_started_finalization_callback_.is_null()) {
-      base::PostTaskWithTraits(FROM_HERE, {content::BrowserThread::UI},
-                               on_started_finalization_callback_);
+      base::PostTask(FROM_HERE, {content::BrowserThread::UI},
+                     on_started_finalization_callback_);
     }
   }
 
@@ -147,6 +146,12 @@ IN_PROC_BROWSER_TEST_F(ChromeTracingDelegateBrowserTest,
   const base::Time last_upload_time = base::Time::FromInternalValue(
       local_state->GetInt64(prefs::kBackgroundTracingLastUpload));
   EXPECT_FALSE(last_upload_time.is_null());
+
+  content::BackgroundTracingManager::GetInstance()->AbortScenarioForTesting();
+  base::RunLoop wait_for_abort;
+  content::BackgroundTracingManager::GetInstance()->WhenIdle(
+      wait_for_abort.QuitClosure());
+  wait_for_abort.Run();
 
   // We should not be able to start a new reactive scenario immediately after
   // a previous one gets uploaded.
@@ -181,6 +186,16 @@ IN_PROC_BROWSER_TEST_F(ChromeTracingDelegateBrowserTest,
   const base::Time last_upload_time = base::Time::FromInternalValue(
       local_state->GetInt64(prefs::kBackgroundTracingLastUpload));
   EXPECT_FALSE(last_upload_time.is_null());
+
+  content::BackgroundTracingManager::GetInstance()->AbortScenarioForTesting();
+  base::RunLoop wait_for_abort;
+  content::BackgroundTracingManager::GetInstance()->WhenIdle(
+      wait_for_abort.QuitClosure());
+  wait_for_abort.Run();
+
+  EXPECT_FALSE(StartPreemptiveScenario(
+      base::RepeatingClosure(),
+      content::BackgroundTracingManager::NO_DATA_FILTERING));
 
   // We move the last upload time to eight days in the past,
   // and at that point should be able to start a scenario again.

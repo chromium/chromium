@@ -10,12 +10,10 @@
 #include "mojo/core/node_controller.h"
 #include "mojo/core/user_message_impl.h"
 
-using namespace mojo::core;
-
 // Message deserialization may register handles in the global handle table. We
 // need to initialize Core for that to be OK.
 struct Environment {
-  Environment() { InitializeCore(); }
+  Environment() { mojo::core::InitializeCore(); }
 };
 
 extern "C" int LLVMFuzzerTestOneInput(const unsigned char* data, size_t size) {
@@ -23,17 +21,18 @@ extern "C" int LLVMFuzzerTestOneInput(const unsigned char* data, size_t size) {
 
   // Try using our fuzz input as the payload of an otherwise well-formed user
   // message event.
-  std::unique_ptr<ports::UserMessageEvent> event;
-  MojoResult result = UserMessageImpl::CreateEventForNewSerializedMessage(
-      static_cast<uint32_t>(size), nullptr, 0, &event);
+  std::unique_ptr<mojo::core::ports::UserMessageEvent> event;
+  MojoResult result =
+      mojo::core::UserMessageImpl::CreateEventForNewSerializedMessage(
+          static_cast<uint32_t>(size), nullptr, 0, &event);
   DCHECK_EQ(result, MOJO_RESULT_OK);
   DCHECK(event);
-  auto* message = event->GetMessage<UserMessageImpl>();
+  auto* message = event->GetMessage<mojo::core::UserMessageImpl>();
   std::copy(data, data + size,
             static_cast<unsigned char*>(message->user_payload()));
-  Channel::MessagePtr serialized_event =
-      UserMessageImpl::FinalizeEventMessage(std::move(event));
-  NodeController::DeserializeMessageAsEventForFuzzer(
+  mojo::core::Channel::MessagePtr serialized_event =
+      mojo::core::UserMessageImpl::FinalizeEventMessage(std::move(event));
+  mojo::core::NodeController::DeserializeMessageAsEventForFuzzer(
       std::move(serialized_event));
 
   return 0;

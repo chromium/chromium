@@ -1,0 +1,50 @@
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="noindex, nofollow">
+    <title>Form tests.</title>
+  </head>
+  <body>
+    <h3>Form filling</h3>
+
+    <h4>Credit card</h4>
+    <div>
+      <form id="form1" action="https://example.com/" method="post">
+        Name on card: <input type="text" id="name" name="name"/><br/>
+        Card Number: <input type="text" id="card_number" name="card_number"/><br/>
+        CVC: <input type="text" name="cv2_number" id="cv2_number"/><br/>
+        Expiry date: <select name="exp_month" id="exp_month">
+          <option value="01">01</option>
+          <option value="02">02</option>
+          <option value="03">03</option>
+          <option value="04">04</option>
+          <option value="05">05</option>
+          <option value="06">06</option>
+          <option value="07">07</option>
+          <option value="08">08</option>
+          <option value="09">09</option>
+          <option value="10">10</option>
+          <option value="11">11</option>
+          <option value="12">12</option>
+        </select>
+        <select name="exp_year" id="exp_year">
+          <option value="2019">2019</option>
+          <option value="2020">2020</option>
+          <option value="2021">2021</option>
+          <option value="2022">2022</option>
+          <option value="2023">2023</option>
+          <option value="2050">2050</option>
+        </select>
+      </form>
+    </div>
+
+    <h4>Profile</h4>
+    <div>
+      <form id="form2" action="https://example.com/" method="post">
+        Name: <input type="text" id="profile_name" name="name" autocomplete="name"/><br/>
+        EMail: <input type="text" id="email" name="email" autocomplete="email"/>
+      </form>
+    </div>
+  </body>
+</html>

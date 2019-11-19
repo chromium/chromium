@@ -18,6 +18,7 @@
  */
 
 #include "third_party/blink/renderer/core/svg/svg_animated_number_optional_number.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
 
 namespace blink {
 
@@ -28,16 +29,19 @@ SVGAnimatedNumberOptionalNumber::SVGAnimatedNumberOptionalNumber(
     : SVGAnimatedPropertyCommon<SVGNumberOptionalNumber>(
           context_element,
           attribute_name,
-          SVGNumberOptionalNumber::Create(SVGNumber::Create(initial_value),
-                                          SVGNumber::Create(initial_value)),
-          CSSPropertyInvalid,
+          MakeGarbageCollected<SVGNumberOptionalNumber>(
+              MakeGarbageCollected<SVGNumber>(initial_value),
+              MakeGarbageCollected<SVGNumber>(initial_value)),
+          CSSPropertyID::kInvalid,
           static_cast<unsigned>(initial_value)),
-      first_number_(SVGAnimatedNumber::Create(context_element,
-                                              attribute_name,
-                                              BaseValue()->FirstNumber())),
-      second_number_(SVGAnimatedNumber::Create(context_element,
-                                               attribute_name,
-                                               BaseValue()->SecondNumber())) {
+      first_number_(
+          MakeGarbageCollected<SVGAnimatedNumber>(context_element,
+                                                  attribute_name,
+                                                  BaseValue()->FirstNumber())),
+      second_number_(MakeGarbageCollected<SVGAnimatedNumber>(
+          context_element,
+          attribute_name,
+          BaseValue()->SecondNumber())) {
   first_number_->SetParentOptionalNumber(this);
   second_number_->SetParentOptionalNumber(this);
 }

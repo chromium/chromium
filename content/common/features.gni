@@ -12,3 +12,5 @@ declare_args() {
   # false, critical memory pressure is treated like moderate pressure in foreground).
   allow_critical_memory_pressure_handling_in_foreground = is_chromecast
 }
+
+enable_screen_capture = is_linux || is_mac || is_win || is_android

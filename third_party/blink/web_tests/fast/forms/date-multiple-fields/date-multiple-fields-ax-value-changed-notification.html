@@ -3,6 +3,7 @@
 <head>
   <script src="../../../resources/testharness.js"></script>
   <script src="../../../resources/testharnessreport.js"></script>
+  <script src="../resources/multiple-fields-ax-value-changed-notification-helper.js"></script>
 </head>
 <body>
 <input id="test" type="date" value="2012-10-09">
@@ -10,31 +11,17 @@
 
 async_test((t) => {
     var testInput = document.getElementById("test");
-    var expected = [
-        [ "Focus", "Month", "10" ],
-        [ "Focus", "Day", "09" ],
-        [ "Focus", "Year", "2012" ],
-        [ "ValueChanged", "Day", "04" ],
-        [ "ValueChanged", "Day", "04" ],
-        [ "ValueChanged", "Year", "2013" ],
-        [ "ValueChanged", "Year", "2013" ] ];
 
-    accessibilityController.addNotificationListener(
-        t.step_func((element, notification) => {
-            if (notification == 'Focus' || notification == 'ValueChanged') {
-                var next_expectation = expected.shift();
-                assert_equals(notification, next_expectation[0]);
-                assert_equals(element.name.trim(), next_expectation[1]);
-                assert_equals(element.valueDescription.substr(20), next_expectation[2]);
-            }
-            if (expected.length === 0)
-                t.done();
-        }));
+    var listener = new TestAccessibilityControllerNotificationListener(t);
+    listener.queueExpectedNotification("Focus", "Month", "10", "\t");
+    listener.queueExpectedNotification("Focus", "Day", "09", "4");
+    listener.queueExpectedNotification("Focus", "Year", "2012", "ArrowUp");
+    listener.queueExpectedNotification("ValueChanged", "Day", "04");
+    listener.queueExpectedNotification("ValueChanged", "Day", "04");
+    listener.queueExpectedNotification("ValueChanged", "Year", "2013");
+    listener.queueExpectedNotification("ValueChanged", "Year", "2013");
 
     testInput.focus();
-    eventSender.keyDown('\t');
-    eventSender.keyDown('4');
-    eventSender.keyDown('ArrowUp');
 
     window.setTimeout(function() {
         assert_unreached("Did not receive all accessibility notifications");

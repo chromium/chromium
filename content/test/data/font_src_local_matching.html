@@ -112,7 +112,7 @@ function stripSpaces(fontName) {
   return fontName.replace(/\s+/g, '');
 }
 
-function addTestNodes() {
+async function addTestNodes() {
   var containerDiv = document.createElement("div");
   var fontFaceDeclarations = "";
     for (font_name_and_testchars of getFontsWithTestCharsForOS()) {
@@ -129,6 +129,7 @@ function addTestNodes() {
   }
   fontfaces.innerText = fontFaceDeclarations;
   document.body.appendChild(containerDiv);
+  await document.fonts.ready;
   // Force layout so that the DevTools side of the test can start accessing
   // nodes' font information reliably.
   document.body.offsetTop;

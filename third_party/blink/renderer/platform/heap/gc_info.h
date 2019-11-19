@@ -10,7 +10,7 @@
 #include "third_party/blink/renderer/platform/heap/finalizer_traits.h"
 #include "third_party/blink/renderer/platform/heap/name_traits.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/assertions.h"
 #include "third_party/blink/renderer/platform/wtf/deque.h"
 #include "third_party/blink/renderer/platform/wtf/hash_counted_set.h"
@@ -25,12 +25,11 @@
 namespace blink {
 
 // GCInfo contains metadata for objects that are instantiated from classes that
-// inherit for GarbageCollected or GarbageCollectedFinalized.
+// inherit from GarbageCollected.
 struct GCInfo {
   const TraceCallback trace;
   const FinalizationCallback finalize;
   const NameCallback name;
-  const bool non_trivial_finalizer;
   const bool has_v_table;
 };
 
@@ -63,7 +62,7 @@ class PLATFORM_EXPORT GCInfoTable {
     return info;
   }
 
-  uint32_t EnsureGCInfoIndex(const GCInfo*, std::atomic_uint32_t*);
+  uint32_t EnsureGCInfoIndex(const GCInfo*, std::atomic<std::uint32_t>*);
 
   uint32_t GcInfoIndex() const { return current_index_; }
 
@@ -94,51 +93,25 @@ class PLATFORM_EXPORT GCInfoTable {
   Mutex table_mutex_;
 };
 
-// GCInfoAtBaseType should be used when returning a unique 14 bit integer
-// for a given gcInfo.
 template <typename T>
-struct GCInfoAtBaseType {
-  STATIC_ONLY(GCInfoAtBaseType);
+struct GCInfoTrait {
+  STATIC_ONLY(GCInfoTrait);
   static uint32_t Index() {
     static_assert(sizeof(T), "T must be fully defined");
     static const GCInfo kGcInfo = {
-        TraceTrait<T>::Trace, FinalizerTrait<T>::Finalize,
-        NameTrait<T>::GetName, FinalizerTrait<T>::kNonTrivialFinalizer,
-        std::is_polymorphic<T>::value};
+        TraceTrait<T>::Trace,
+        FinalizerTrait<T>::kNonTrivialFinalizer ? FinalizerTrait<T>::Finalize
+                                                : nullptr,
+        NameTrait<T>::GetName, std::is_polymorphic<T>::value};
     // This is more complicated than using threadsafe initialization, but this
     // is instantiated many times (once for every GC type).
-    static std::atomic_uint32_t gc_info_index{0};
+    static std::atomic<std::uint32_t> gc_info_index{0};
     uint32_t index = gc_info_index.load(std::memory_order_acquire);
     if (!index)
       index = GCInfoTable::Get().EnsureGCInfoIndex(&kGcInfo, &gc_info_index);
     DCHECK_GE(index, 1u);
     DCHECK_LT(index, GCInfoTable::kMaxIndex);
     return index;
-  }
-};
-
-template <typename T,
-          bool = WTF::IsSubclassOfTemplate<typename std::remove_const<T>::type,
-                                           GarbageCollected>::value>
-struct GetGarbageCollectedType;
-
-template <typename T>
-struct GetGarbageCollectedType<T, true> {
-  STATIC_ONLY(GetGarbageCollectedType);
-  using type = typename T::GarbageCollectedType;
-};
-
-template <typename T>
-struct GetGarbageCollectedType<T, false> {
-  STATIC_ONLY(GetGarbageCollectedType);
-  using type = T;
-};
-
-template <typename T>
-struct GCInfoTrait {
-  STATIC_ONLY(GCInfoTrait);
-  static uint32_t Index() {
-    return GCInfoAtBaseType<typename GetGarbageCollectedType<T>::type>::Index();
   }
 };
 

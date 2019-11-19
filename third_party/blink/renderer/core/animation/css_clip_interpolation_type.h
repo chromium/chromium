@@ -13,7 +13,7 @@ class CSSClipInterpolationType : public CSSInterpolationType {
  public:
   CSSClipInterpolationType(PropertyHandle property)
       : CSSInterpolationType(property) {
-    DCHECK_EQ(CssProperty().PropertyID(), CSSPropertyClip);
+    DCHECK_EQ(CssProperty().PropertyID(), CSSPropertyID::kClip);
   }
 
   InterpolationValue MaybeConvertStandardPropertyUnderlyingValue(

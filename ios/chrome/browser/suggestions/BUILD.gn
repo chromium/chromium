@@ -12,12 +12,12 @@ source_set("suggestions") {
     "//base",
     "//components/browser_sync",
     "//components/keyed_service/ios",
+    "//components/signin/public/identity_manager",
     "//components/suggestions",
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/signin",
     "//ios/chrome/browser/sync",
     "//ios/web",
     "//net",
-    "//services/identity/public/cpp",
   ]
 }

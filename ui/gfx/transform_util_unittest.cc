@@ -11,6 +11,7 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/point3_f.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/rect_f.h"
 
 namespace gfx {
 namespace {
@@ -80,8 +81,8 @@ TEST(TransformUtilTest, SnapTranslation) {
   Transform result(Transform::kSkipInitialization);
   Transform transform;
 
-  transform.Translate3d(
-      SkDoubleToMScalar(1.01), SkDoubleToMScalar(1.99), SkDoubleToMScalar(3.0));
+  transform.Translate3d(SkDoubleToMScalar(1.01), SkDoubleToMScalar(1.99),
+                        SkDoubleToMScalar(3.0));
 
   Rect viewport(1920, 1200);
   bool snapped = SnapTransform(&result, transform, viewport);
@@ -94,8 +95,8 @@ TEST(TransformUtilTest, SnapTranslationDistantViewport) {
   Transform transform;
   const int kOffset = 5000;
 
-  transform.Translate3d(
-      SkDoubleToMScalar(1.01), SkDoubleToMScalar(1.99), SkDoubleToMScalar(3.0));
+  transform.Translate3d(SkDoubleToMScalar(1.01), SkDoubleToMScalar(1.99),
+                        SkDoubleToMScalar(3.0));
 
   Rect viewport(kOffset, kOffset, 1920, 1200);
   bool snapped = SnapTransform(&result, transform, viewport);
@@ -108,8 +109,7 @@ TEST(TransformUtilTest, SnapScale) {
   Transform result(Transform::kSkipInitialization);
   Transform transform;
 
-  transform.Scale3d(SkDoubleToMScalar(5.0),
-                    SkDoubleToMScalar(2.00001),
+  transform.Scale3d(SkDoubleToMScalar(5.0), SkDoubleToMScalar(2.00001),
                     SkDoubleToMScalar(1.0));
   Rect viewport(1920, 1200);
   bool snapped = SnapTransform(&result, transform, viewport);
@@ -121,8 +121,8 @@ TEST(TransformUtilTest, NoSnapScale) {
   Transform result(Transform::kSkipInitialization);
   Transform transform;
 
-  transform.Scale3d(
-    SkDoubleToMScalar(5.0), SkDoubleToMScalar(2.1), SkDoubleToMScalar(1.0));
+  transform.Scale3d(SkDoubleToMScalar(5.0), SkDoubleToMScalar(2.1),
+                    SkDoubleToMScalar(1.0));
   Rect viewport(1920, 1200);
   bool snapped = SnapTransform(&result, transform, viewport);
 
@@ -136,8 +136,7 @@ TEST(TransformUtilTest, SnapCompositeTransform) {
   transform.Translate3d(SkDoubleToMScalar(30.5), SkDoubleToMScalar(20.0),
                         SkDoubleToMScalar(10.1));
   transform.RotateAboutZAxis(89.99);
-  transform.Scale3d(SkDoubleToMScalar(1.0),
-                    SkDoubleToMScalar(3.00001),
+  transform.Scale3d(SkDoubleToMScalar(1.0), SkDoubleToMScalar(3.00001),
                     SkDoubleToMScalar(2.0));
 
   Rect viewport(1920, 1200);
@@ -168,10 +167,8 @@ TEST(TransformUtilTest, NoSnapSkewedCompositeTransform) {
   Transform result(Transform::kSkipInitialization);
   Transform transform;
 
-
   transform.RotateAboutZAxis(89.99);
-  transform.Scale3d(SkDoubleToMScalar(1.0),
-                    SkDoubleToMScalar(3.00001),
+  transform.Scale3d(SkDoubleToMScalar(1.0), SkDoubleToMScalar(3.00001),
                     SkDoubleToMScalar(2.0));
   transform.Translate3d(SkDoubleToMScalar(30.5), SkDoubleToMScalar(20.0),
                         SkDoubleToMScalar(10.1));
@@ -320,6 +317,16 @@ TEST(TransformUtilTest, Transform2D) {
   EXPECT_APPROX_EQ(-1, decompR90Translate.skew[0]);
   EXPECT_APPROX_EQ(sin(base::kPiDouble / 8), decompR90Translate.quaternion.z());
   EXPECT_APPROX_EQ(cos(base::kPiDouble / 8), decompR90Translate.quaternion.w());
+}
+
+TEST(TransformUtilTest, TransformBetweenRects) {
+  const RectF src_rect(0.f, 0.f, 5.f, 5.f);
+  const RectF dst_rect(10.f, 10.f, 10.f, 20.f);
+
+  Transform transform = TransformBetweenRects(src_rect, dst_rect);
+  RectF transformed_rect = src_rect;
+  transform.TransformRect(&transformed_rect);
+  EXPECT_EQ(dst_rect, transformed_rect);
 }
 
 }  // namespace

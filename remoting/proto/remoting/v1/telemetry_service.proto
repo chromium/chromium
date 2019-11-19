@@ -1,0 +1,20 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+
+package remoting.apis.v1;
+
+import "telemetry_messages.proto";
+
+// A collection of RPC services which enable client telemetry logging.
+service RemotingTelemetryService {
+  // RPC service which creates telemetry events in our reporting pipeline.
+  rpc CreateEvent(CreateEventRequest) returns (CreateEventResponse) {}
+
+  // RPC service which generates server log entries.
+  rpc CreateLogEntry(CreateLogEntryRequest) returns (CreateLogEntryResponse) {}
+}

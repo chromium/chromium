@@ -25,7 +25,7 @@ class TransformOperations;
 class CC_ANIMATION_EXPORT AnimationTarget {
  public:
   virtual ~AnimationTarget() {}
-  virtual void NotifyClientFloatAnimated(float opacity,
+  virtual void NotifyClientFloatAnimated(float value,
                                          int target_property_id,
                                          KeyframeModel* keyframe_model) = 0;
   virtual void NotifyClientFilterAnimated(const FilterOperations& filter,

@@ -1,0 +1,49 @@
+// Copyright 2017 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module media.mojom;
+
+import "media/mojo/mojom/audio_parameters.mojom";
+import "media/mojo/mojom/media_types.mojom";
+
+// An interface for controlling an audio input stream.
+// On error, the message pipe is closed.
+// To close the stream, just close the message pipe.
+interface AudioInputStream {
+  // Starts recording audio, can be called only once.
+  Record();
+
+  // Sets volume. Volume must be in the range [0, 1].
+  SetVolume(double volume);
+};
+
+// An interface for receiving notifications of state changes of an
+// AudioInputStream.
+interface AudioInputStreamClient {
+  OnError();
+  OnMutedStateChanged(bool is_muted);
+};
+
+// An AudioInputStreamObserver gets notifications about events related to an
+// AudioInputStream. DidStartRecording() is invoked when the stream starts
+// recording. Stream destruction is notified through binding connection error.
+interface AudioInputStreamObserver {
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum DisconnectReason {
+    // The Disconnect reason wasn't given explicitly. This probably means that
+    // the audio service crashed.
+    kDefault = 0,
+    // This code is used as disconnect reason when stream ended or failed to
+    // start due to an unrecoverable platform error, e.g. the hardware device is
+    // busy or disconnected.
+    kPlatformError = 1,
+    kTerminatedByClient = 2,
+    kStreamCreationFailed = 3,
+    kDocumentDestroyed = 4,
+  };
+
+  // It will be called only once when input stream starts recording.
+  DidStartRecording();
+};

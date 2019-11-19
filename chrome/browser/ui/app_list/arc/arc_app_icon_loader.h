@@ -23,7 +23,7 @@ class ArcAppIconLoader : public AppIconLoader,
                          public ArcAppIcon::Observer {
  public:
   ArcAppIconLoader(Profile* profile,
-                   int icon_size,
+                   int icon_size_in_dip,
                    AppIconLoaderDelegate* delegate);
   ~ArcAppIconLoader() override;
 

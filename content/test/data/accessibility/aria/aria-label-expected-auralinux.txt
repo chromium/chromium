@@ -1,0 +1,2 @@
+[document web]
+++[check box] name='aria label' checkable:true

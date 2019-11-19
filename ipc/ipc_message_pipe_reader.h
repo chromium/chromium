@@ -18,7 +18,9 @@
 #include "base/threading/thread_checker.h"
 #include "ipc/ipc.mojom.h"
 #include "ipc/ipc_message.h"
-#include "mojo/public/cpp/bindings/associated_binding.h"
+#include "mojo/public/cpp/bindings/associated_receiver.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
+#include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/scoped_interface_endpoint_handle.h"
 #include "mojo/public/cpp/system/core.h"
 #include "mojo/public/cpp/system/message_pipe.h"
@@ -66,8 +68,8 @@ class COMPONENT_EXPORT(IPC) MessagePipeReader : public mojom::Channel {
   //
   // Note that MessagePipeReader doesn't delete |delegate|.
   MessagePipeReader(mojo::MessagePipeHandle pipe,
-                    mojom::ChannelAssociatedPtr sender,
-                    mojo::AssociatedInterfaceRequest<mojom::Channel> receiver,
+                    mojo::AssociatedRemote<mojom::Channel> sender,
+                    mojo::PendingAssociatedReceiver<mojom::Channel> receiver,
                     Delegate* delegate);
   ~MessagePipeReader() override;
 
@@ -85,7 +87,7 @@ class COMPONENT_EXPORT(IPC) MessagePipeReader : public mojom::Channel {
   void GetRemoteInterface(const std::string& name,
                           mojo::ScopedInterfaceEndpointHandle handle);
 
-  mojom::ChannelAssociatedPtr& sender() { return sender_; }
+  mojo::AssociatedRemote<mojom::Channel>& sender() { return sender_; }
 
  protected:
   void OnPipeClosed();
@@ -101,8 +103,8 @@ class COMPONENT_EXPORT(IPC) MessagePipeReader : public mojom::Channel {
 
   // |delegate_| is null once the message pipe is closed.
   Delegate* delegate_;
-  mojom::ChannelAssociatedPtr sender_;
-  mojo::AssociatedBinding<mojom::Channel> binding_;
+  mojo::AssociatedRemote<mojom::Channel> sender_;
+  mojo::AssociatedReceiver<mojom::Channel> receiver_;
   base::ThreadChecker thread_checker_;
 
   DISALLOW_COPY_AND_ASSIGN(MessagePipeReader);

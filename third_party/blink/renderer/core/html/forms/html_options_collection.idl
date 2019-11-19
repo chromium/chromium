@@ -21,6 +21,7 @@
 
 // https://html.spec.whatwg.org/C/#the-htmloptionscollection-interface
 
+[Exposed=Window]
 interface HTMLOptionsCollection : HTMLCollection {
     // Inherits item() and namedItem()
     [CEReactions, RaisesException=Setter] attribute unsigned long length; // shadows inherited length

@@ -78,13 +78,15 @@ DirOpenResult SyncableDirectoryTest::ReopenDirectory() {
   // performance benefits of not writing to disk.
   dir_ = std::make_unique<Directory>(
       std::make_unique<TestDirectoryBackingStore>(kDirectoryName, &connection_),
-      MakeWeakHandle(handler_.GetWeakPtr()), base::Closure(), nullptr, nullptr);
+      MakeWeakHandle(handler_.GetWeakPtr()), base::Closure(), nullptr);
 
   DirOpenResult open_result =
       dir_->Open(kDirectoryName, &delegate_, NullTransactionObserver());
 
   if (open_result != OPENED_NEW && open_result != OPENED_EXISTING) {
     dir_.reset();
+  } else {
+    dir_->set_cache_guid(dir_->legacy_cache_guid());
   }
 
   return open_result;
@@ -408,154 +410,6 @@ TEST_F(SyncableDirectoryTest, TakeSnapshotGetsOnlyDirtyHandlesTest) {
       EXPECT_TRUE((*i)->is_dirty());
     }
     dir()->VacuumAfterSaveChanges(snapshot);
-  }
-}
-
-// Test delete journals management.
-TEST_F(SyncableDirectoryTest, ManageDeleteJournals) {
-  sync_pb::EntitySpecifics bookmark_specifics;
-  AddDefaultFieldValue(BOOKMARKS, &bookmark_specifics);
-  bookmark_specifics.mutable_bookmark()->set_url("url");
-
-  // The first two IDs are server IDs.
-  Id id1 = TestIdFactory::FromNumber(1);
-  Id id2 = TestIdFactory::FromNumber(2);
-  // The third one is a client ID.
-  Id id3 = TestIdFactory::FromNumber(-3);
-  int64_t handle1 = 0;
-  int64_t handle2 = 0;
-  int64_t handle3 = 0;
-  {
-    // Create 3 bookmark entries and save in database.
-    {
-      WriteTransaction trans(FROM_HERE, UNITTEST, dir().get());
-
-      MutableEntry item1(&trans, CREATE, BOOKMARKS, trans.root_id(), "item1");
-      item1.PutId(id1);
-      item1.PutSpecifics(bookmark_specifics);
-      item1.PutServerSpecifics(bookmark_specifics);
-      item1.PutIsUnappliedUpdate(true);
-      item1.PutBaseVersion(10);
-      handle1 = item1.GetMetahandle();
-
-      MutableEntry item2(&trans, CREATE, BOOKMARKS, trans.root_id(), "item2");
-      item2.PutId(id2);
-      item2.PutSpecifics(bookmark_specifics);
-      item2.PutServerSpecifics(bookmark_specifics);
-      item2.PutIsUnappliedUpdate(true);
-      item2.PutBaseVersion(10);
-      handle2 = item2.GetMetahandle();
-
-      MutableEntry item3(&trans, CREATE, BOOKMARKS, trans.root_id(), "item3");
-      item3.PutId(id3);
-      item3.PutSpecifics(bookmark_specifics);
-      item3.PutServerSpecifics(bookmark_specifics);
-      item3.PutIsUnsynced(true);
-      handle3 = item3.GetMetahandle();
-    }
-    ASSERT_EQ(OPENED_EXISTING, SimulateSaveAndReloadDir());
-  }
-
-  {  // Test adding and saving delete journals.
-    DeleteJournal* delete_journal = dir()->delete_journal();
-    {
-      WriteTransaction trans(FROM_HERE, UNITTEST, dir().get());
-      EntryKernelSet journal_entries;
-      delete_journal->GetDeleteJournals(&trans, BOOKMARKS, &journal_entries);
-      ASSERT_EQ(0u, journal_entries.size());
-
-      // Set SERVER_IS_DEL of the entries to true and they should be added to
-      // delete journals, but only if the deletion is initiated in update e.g.
-      // IS_UNAPPLIED_UPDATE is also true.
-      MutableEntry item1(&trans, GET_BY_ID, id1);
-      ASSERT_TRUE(item1.good());
-      item1.PutServerIsDel(true);
-      MutableEntry item2(&trans, GET_BY_ID, id2);
-      ASSERT_TRUE(item2.good());
-      item2.PutServerIsDel(true);
-      MutableEntry item3(&trans, GET_BY_ID, id3);
-      ASSERT_TRUE(item3.good());
-      item3.PutServerIsDel(true);
-      // Expect only the first two items to be in the delete journal.
-      EntryKernel tmp;
-      tmp.put(ID, id1);
-      EXPECT_TRUE(delete_journal->delete_journals_.count(&tmp));
-      tmp.put(ID, id2);
-      EXPECT_TRUE(delete_journal->delete_journals_.count(&tmp));
-      tmp.put(ID, id3);
-      EXPECT_FALSE(delete_journal->delete_journals_.count(&tmp));
-    }
-
-    // Save delete journals in database and verify memory clearing.
-    ASSERT_TRUE(dir()->SaveChanges());
-    {
-      ReadTransaction trans(FROM_HERE, dir().get());
-      EXPECT_EQ(0u, delete_journal->GetDeleteJournalSize(&trans));
-    }
-    ASSERT_EQ(OPENED_EXISTING, SimulateSaveAndReloadDir());
-  }
-
-  {
-    {
-      // Test reading delete journals from database.
-      WriteTransaction trans(FROM_HERE, UNITTEST, dir().get());
-      DeleteJournal* delete_journal = dir()->delete_journal();
-      EntryKernelSet journal_entries;
-      delete_journal->GetDeleteJournals(&trans, BOOKMARKS, &journal_entries);
-      ASSERT_EQ(2u, journal_entries.size());
-      EntryKernel tmp;
-      tmp.put(META_HANDLE, handle1);
-      EXPECT_TRUE(journal_entries.count(&tmp));
-      tmp.put(META_HANDLE, handle2);
-      EXPECT_TRUE(journal_entries.count(&tmp));
-      tmp.put(META_HANDLE, handle3);
-      EXPECT_FALSE(journal_entries.count(&tmp));
-
-      // Purge item2.
-      MetahandleSet to_purge;
-      to_purge.insert(handle2);
-      delete_journal->PurgeDeleteJournals(&trans, to_purge);
-
-      // Verify that item2 is purged from journals in memory and will be
-      // purged from database.
-      tmp.put(ID, id2);
-      EXPECT_FALSE(delete_journal->delete_journals_.count(&tmp));
-      EXPECT_EQ(1u, delete_journal->delete_journals_to_purge_.size());
-      EXPECT_TRUE(delete_journal->delete_journals_to_purge_.count(handle2));
-    }
-    ASSERT_EQ(OPENED_EXISTING, SimulateSaveAndReloadDir());
-  }
-
-  {
-    {
-      // Verify purged entry is gone in database.
-      WriteTransaction trans(FROM_HERE, UNITTEST, dir().get());
-      DeleteJournal* delete_journal = dir()->delete_journal();
-      EntryKernelSet journal_entries;
-      delete_journal->GetDeleteJournals(&trans, BOOKMARKS, &journal_entries);
-      ASSERT_EQ(1u, journal_entries.size());
-      EntryKernel tmp;
-      tmp.put(ID, id1);
-      tmp.put(META_HANDLE, handle1);
-      EXPECT_TRUE(journal_entries.count(&tmp));
-
-      // Undelete item1 (IS_UNAPPLIED_UPDATE shouldn't matter in this case).
-      MutableEntry item1(&trans, GET_BY_ID, id1);
-      ASSERT_TRUE(item1.good());
-      item1.PutIsUnappliedUpdate(false);
-      item1.PutServerIsDel(false);
-      EXPECT_TRUE(delete_journal->delete_journals_.empty());
-      EXPECT_EQ(1u, delete_journal->delete_journals_to_purge_.size());
-      EXPECT_TRUE(delete_journal->delete_journals_to_purge_.count(handle1));
-    }
-    ASSERT_EQ(OPENED_EXISTING, SimulateSaveAndReloadDir());
-  }
-
-  {
-    // Verify undeleted entry is gone from database.
-    ReadTransaction trans(FROM_HERE, dir().get());
-    DeleteJournal* delete_journal = dir()->delete_journal();
-    ASSERT_EQ(0u, delete_journal->GetDeleteJournalSize(&trans));
   }
 }
 
@@ -1809,16 +1663,6 @@ TEST_F(SyncableDirectoryTest, SaveChangesSnapshot_HasUnsavedMetahandleChanges) {
   snapshot.metahandles_to_purge.insert(1);
   EXPECT_TRUE(snapshot.HasUnsavedMetahandleChanges());
   snapshot.metahandles_to_purge.clear();
-
-  EXPECT_FALSE(snapshot.HasUnsavedMetahandleChanges());
-  snapshot.delete_journals.insert(std::make_unique<EntryKernel>());
-  EXPECT_TRUE(snapshot.HasUnsavedMetahandleChanges());
-  snapshot.delete_journals.clear();
-
-  EXPECT_FALSE(snapshot.HasUnsavedMetahandleChanges());
-  snapshot.delete_journals_to_purge.insert(1);
-  EXPECT_TRUE(snapshot.HasUnsavedMetahandleChanges());
-  snapshot.delete_journals_to_purge.clear();
 }
 
 // Verify that Directory triggers an unrecoverable error when a catastrophic
@@ -1826,9 +1670,12 @@ TEST_F(SyncableDirectoryTest, SaveChangesSnapshot_HasUnsavedMetahandleChanges) {
 TEST_F(SyncableDirectoryTest, CatastrophicError) {
   MockUnrecoverableErrorHandler unrecoverable_error_handler;
   Directory dir(
-      std::make_unique<InMemoryDirectoryBackingStore>("catastrophic_error"),
-      MakeWeakHandle(unrecoverable_error_handler.GetWeakPtr()), base::Closure(),
-      nullptr, nullptr);
+      std::make_unique<InMemoryDirectoryBackingStore>(
+          "catastrophic_error", base::BindRepeating([]() -> std::string {
+            return "test_cache_guid";
+          })),
+      MakeWeakHandle(unrecoverable_error_handler.GetWeakPtr()),
+      base::RepeatingClosure(), nullptr);
   ASSERT_EQ(OPENED_NEW, dir.Open(kDirectoryName, directory_change_delegate(),
                                  NullTransactionObserver()));
   ASSERT_EQ(0, unrecoverable_error_handler.invocation_count());

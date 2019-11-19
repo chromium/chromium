@@ -1,0 +1,27 @@
+This is a testharness.js-based test.
+PASS domain
+PASS URL
+PASS documentURI
+PASS baseURI
+PASS referrer
+PASS title
+PASS contentType
+PASS readyState
+PASS location
+PASS defaultView
+PASS body
+PASS doctype
+PASS all
+PASS cookie
+PASS Test document URL properties after redirect
+PASS Test document URL properties of document with <base> after redirect
+FAIL lastModified set to time of response if no HTTP header provided assert_less_than_equal: expected a number less than or equal to 1566177285 but got 1566180885
+FAIL lastModified set to related HTTP header if provided assert_equals: expected 1566155231000 but got 1566151631000
+PASS cookie (after setting it)
+PASS styleSheets should be an object
+PASS implementation should be an object
+PASS images should be an object
+PASS forms should be an object
+PASS links should be an object
+Harness: the test ran to completion.
+

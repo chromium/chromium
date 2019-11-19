@@ -5,10 +5,12 @@
 package org.chromium.chrome.browser.offlinepages.prefetch;
 
 import android.content.Context;
+import android.os.Build;
 import android.text.format.DateUtils;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.ContextUtils;
-import org.chromium.base.VisibleForTesting;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.chrome.browser.DeviceConditions;
@@ -240,7 +242,12 @@ public class OfflineNotificationBackgroundTask extends NativeBackgroundTask {
         boolean tooManyIgnoredNotifications =
                 PrefetchPrefs.getIgnoredNotificationCounter() >= IGNORED_NOTIFICATION_MAX;
 
-        return noNewPages || tooManyIgnoredNotifications;
+        // Always enable on O+ devices because notification settings are handled at the system
+        // level, so the value of this pref can be ignored.
+        boolean disabledByPref = Build.VERSION.SDK_INT < Build.VERSION_CODES.O
+                && !PrefetchPrefs.getNotificationEnabled();
+
+        return noNewPages || tooManyIgnoredNotifications || disabledByPref;
     }
 
     private void resetPrefs() {

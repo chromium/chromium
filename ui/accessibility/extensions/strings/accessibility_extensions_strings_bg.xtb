@@ -31,6 +31,7 @@
 <translation id="4769065380738716500">Изображенията бяха заменени с алтернативния текст за тях.</translation>
 <translation id="4896660567607030658">Без обратна връзка – показване само на курсора.</translation>
 <translation id="4937901943818762779">Разрешаване на анимираните изображения, но само веднъж.</translation>
+<translation id="4949131196216960195">Натиснете &lt;span class='key'&gt;Търсене&lt;/span&gt; + &lt;img src='increase_brightness.png'&gt; (клавиша за увеличаване на яркостта, или F7), за да включите функцията Caret Browsing. Направете отново това, за да я изключите.</translation>
 <translation id="4954450790315188152">Когато функцията Caret Browsing е активирана:</translation>
 <translation id="5041932793799765940">Коригиране на цветовете</translation>
 <translation id="5094574508723441140">Увеличен контраст</translation>
@@ -60,7 +61,6 @@
 <translation id="7658239707568436148">Отказ</translation>
 <translation id="786423340267544509">Добавяне на контури към елементите с атрибути „aria-describedat“ или „longdesc“.</translation>
 <translation id="7942349550061667556">червено</translation>
-<translation id="8254860724243898966">Натиснете &lt;span class='key'&gt;Alt&lt;/span&gt; + &lt;img src='increase_brightness.png'&gt; (клавиша за увеличаване на яркостта или F7), за да включите функцията Caret Browsing. Направете това отново, за да я изключите.</translation>
 <translation id="8260673944985561857">Опции за Caret Browsing</translation>
 <translation id="8321034316479930120">Правило за анимациите</translation>
 <translation id="8480209185614411573">High Contrast</translation>

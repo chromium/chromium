@@ -25,19 +25,19 @@
 
 // https://html.spec.whatwg.org/C/#textmetrics
 
-// TODO(foolip): Exposed=(Window,Worker)
+[Exposed=(Window,Worker)]
 interface TextMetrics {
     // x-direction
-    readonly attribute float width; // advance width
+    readonly attribute double width; // advance width
     [RuntimeEnabled=ExtendedTextMetrics] readonly attribute FrozenArray<double> advances;
-    [RuntimeEnabled=ExtendedTextMetrics] readonly attribute double actualBoundingBoxLeft;
-    [RuntimeEnabled=ExtendedTextMetrics] readonly attribute double actualBoundingBoxRight;
+    readonly attribute double actualBoundingBoxLeft;
+    readonly attribute double actualBoundingBoxRight;
 
     // y-direction
     [RuntimeEnabled=ExtendedTextMetrics] readonly attribute double fontBoundingBoxAscent;
     [RuntimeEnabled=ExtendedTextMetrics] readonly attribute double fontBoundingBoxDescent;
-    [RuntimeEnabled=ExtendedTextMetrics] readonly attribute double actualBoundingBoxAscent;
-    [RuntimeEnabled=ExtendedTextMetrics] readonly attribute double actualBoundingBoxDescent;
+    readonly attribute double actualBoundingBoxAscent;
+    readonly attribute double actualBoundingBoxDescent;
     [RuntimeEnabled=ExtendedTextMetrics] readonly attribute double emHeightAscent;
     [RuntimeEnabled=ExtendedTextMetrics] readonly attribute double emHeightDescent;
     [RuntimeEnabled=ExtendedTextMetrics] Baselines getBaselines();

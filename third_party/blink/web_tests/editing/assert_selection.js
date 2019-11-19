@@ -754,6 +754,7 @@ class Sample {
     this.selection_.computeRight = computeRight;
     this.selection_.computeTop = computeTop;
     this.selection_.computeBottom = computeBottom;
+    this.selection_.window = this.iframe_.contentWindow;
     this.load(sampleText);
   }
 

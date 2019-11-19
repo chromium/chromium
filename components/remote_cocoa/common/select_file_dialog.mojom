@@ -1,0 +1,44 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module remote_cocoa.mojom;
+
+import "mojo/public/mojom/base/file_path.mojom";
+import "mojo/public/mojom/base/string16.mojom";
+
+// The type of dialog to open. This corresponds to the subset of
+// ui::SelectFileDialog::Type that is used on macOS.
+enum SelectFileDialogType {
+  kFolder,
+  kUploadFolder,
+  kExistingFolder,
+  kOpenFile,
+  kOpenMultiFile,
+  kSaveAsFile
+};
+
+// Information about the file extensions to be shown in the dialog.
+struct SelectFileTypeInfo {
+  // The list of allowed extensions.
+  array<array<string>> extensions;
+
+  // Override of system descriptions of specified extensions.
+  array<mojo_base.mojom.String16> extension_description_overrides;
+
+  // Specifies whether or not there is be a filter added for all files.
+  bool include_all_files;
+};
+
+// The interface to a file selection (Save As, Upload, etc) dialog.
+interface SelectFileDialog {
+  // Show the dialog, and issue a callback when it has completed.
+  Show(SelectFileDialogType type,
+       mojo_base.mojom.String16 title,
+       mojo_base.mojom.FilePath file_path,
+       SelectFileTypeInfo? file_types,
+       int32 file_type_index,
+       string default_extension) => (bool was_cancelled,
+                                     array<mojo_base.mojom.FilePath> files,
+                                     int32 index);
+};

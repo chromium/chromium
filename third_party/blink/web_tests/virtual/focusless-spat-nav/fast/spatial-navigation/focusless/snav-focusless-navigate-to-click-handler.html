@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<!--
+  This test checks that elements that are otherwise unfocusable are spat-nav
+  navigable if they have a click handler.
+-->
+
+<script src="../../../../../resources/testharness.js"></script>
+<script src="../../../../../resources/testharnessreport.js"></script>
+<script src="file:///gen/layout_test_data/mojo/public/js/mojo_bindings.js"></script>
+<script src="file:///gen/third_party/blink/public/mojom/page/spatial_navigation.mojom.js"></script>
+<script src="../../../../../fast/spatial-navigation/resources/mock-snav-service.js"></script>
+<script src="../../../../../fast/spatial-navigation/resources/snav-testharness.js"></script>
+
+<style>
+  div {
+    width: 100px;
+    height: 100px;
+    margin: 5px;
+    border: 1px solid black;
+  }
+</style>
+
+<div id="first">First</div>
+<div id="second">Second</div>
+
+<!--
+  Wrap the target in a div and give it a child to ensure the event
+  handler doesn't in any way transfer to the parent or child.
+-->
+<div id="wrapper">
+  <div id="third">
+    <div id="inner">Third</div>
+  </div>
+</div>
+
+<script>
+  let first = document.getElementById("first");
+  let second = document.getElementById("second");
+  let third = document.getElementById("third");
+
+  third.addEventListener('click', () => {});
+
+  test(() => {
+    assert_true(!!window.internals);
+
+    // Move interest. Since the first two boxes don't have tabindex, they're
+    // unfocusable and spat-nav will skip them.
+    snav.triggerMove('Down');
+    assert_equals(window.internals.interestedElement,
+                  third,
+                  "'third' should be interested");
+  }, "Click handlers cause elements to become intersting to spat-nav.");
+</script>

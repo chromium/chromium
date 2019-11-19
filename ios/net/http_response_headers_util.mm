@@ -26,7 +26,7 @@ const char kHeaderLineFormat[] = "%s: %s";
 
 namespace net {
 
-const std::string kDummyHttpStatusDescription = "DummyStatusDescription";
+const char kDummyHttpStatusDescription[] = "DummyStatusDescription";
 
 scoped_refptr<HttpResponseHeaders> CreateHeadersFromNSHTTPURLResponse(
     NSHTTPURLResponse* response) {
@@ -35,7 +35,7 @@ scoped_refptr<HttpResponseHeaders> CreateHeadersFromNSHTTPURLResponse(
   NSInteger status_code = response.statusCode;
   std::string status_line = base::SysNSStringToUTF8([NSString
       stringWithFormat:kHttpStatusLineFormat, static_cast<long>(status_code),
-                       kDummyHttpStatusDescription.c_str()]);
+                       kDummyHttpStatusDescription]);
   scoped_refptr<HttpResponseHeaders> http_headers(
       new HttpResponseHeaders(status_line));
   // Iterate through |response|'s headers and add them to |http_headers|.

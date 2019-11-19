@@ -4,6 +4,7 @@
 
 #include "content/browser/media/session/media_session_controllers_manager.h"
 
+#include "base/stl_util.h"
 #include "content/browser/media/session/media_session_controller.h"
 #include "media/base/media_switches.h"
 #include "services/media_session/public/cpp/features.h"
@@ -47,6 +48,13 @@ bool MediaSessionControllersManager::RequestPlay(
   if (!IsMediaSessionEnabled())
     return true;
 
+  // If we have previously received the position for this player then we should
+  // initialize the controller with it.
+  media_session::MediaPosition* position = nullptr;
+  auto position_it = position_map_.find(id);
+  if (position_it != position_map_.end())
+    position = &position_it->second;
+
   // Since we don't remove session instances on pause, there may be an existing
   // instance for this playback attempt.
   //
@@ -55,8 +63,11 @@ bool MediaSessionControllersManager::RequestPlay(
   // controller. A later playback attempt will create a new controller.
   auto it = controllers_map_.find(id);
   if (it != controllers_map_.end()) {
-    if (it->second->Initialize(has_audio, is_remote, media_content_type))
+    if (it->second->Initialize(has_audio, is_remote, media_content_type,
+                               position)) {
       return true;
+    }
+
     controllers_map_.erase(it);
     return false;
   }
@@ -64,8 +75,10 @@ bool MediaSessionControllersManager::RequestPlay(
   std::unique_ptr<MediaSessionController> controller(
       new MediaSessionController(id, media_web_contents_observer_));
 
-  if (!controller->Initialize(has_audio, is_remote, media_content_type))
+  if (!controller->Initialize(has_audio, is_remote, media_content_type,
+                              position)) {
     return false;
+  }
 
   controllers_map_[id] = std::move(controller);
   return true;
@@ -86,6 +99,21 @@ void MediaSessionControllersManager::OnEnd(const MediaPlayerId& id) {
   if (!IsMediaSessionEnabled())
     return;
   controllers_map_.erase(id);
+}
+
+void MediaSessionControllersManager::OnMediaPositionStateChanged(
+    const MediaPlayerId& id,
+    const media_session::MediaPosition& position) {
+  if (!IsMediaSessionEnabled())
+    return;
+
+  base::InsertOrAssign(position_map_, id, position);
+
+  auto it = controllers_map_.find(id);
+  if (it == controllers_map_.end())
+    return;
+
+  it->second->OnMediaPositionStateChanged(position);
 }
 
 void MediaSessionControllersManager::WebContentsMutedStateChanged(bool muted) {

@@ -1,8 +1,0 @@
-This is a testharness.js-based test.
-PASS The start time of a newly-created transition is unresolved
-FAIL The start time of transitions is based on when they are generated assert_less_than: A CSS transition added in a later frame has a later start time expected a number less than 43.924000001425156 but got 43.924000001425156
-PASS The start time of a transition can be set
-PASS The start time can be set to seek a transition
-FAIL Seeking a transition using start time dispatches transition events promise_test: Unhandled rejection with value: object "Error: Timed out waiting for Promise to resolve: transitionstart"
-Harness: the test ran to completion.
-

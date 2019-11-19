@@ -5,9 +5,11 @@ per-file histograms.xml=file://base/metrics/OWNERS
 #  - You work in the same area as them.
 #  - They are already a good reviewer for the non-metrics part of the CL.
 per-file histograms.xml=alexilin@chromium.org
+per-file histograms.xml=altimin@chromium.org # Scheduling-related metrics.
 per-file histograms.xml=csharrison@chromium.org
 per-file histograms.xml=cthomp@chromium.org  # For security-related metrics only.
 per-file histograms.xml=schenney@chromium.org
+per-file histograms.xml=tbansal@chromium.org
 
 per-file histograms.xml=set noparent
 

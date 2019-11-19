@@ -2,6 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+# Nothing outside //chrome/chrome_cleaner can depend on these targets.
+visibility = [ "//chrome/chrome_cleaner/*" ]
+
 source_set("components") {
   sources = [
     "component_api.h",
@@ -18,13 +21,14 @@ source_set("components") {
   ]
 
   deps = [
-    "//base:base",
+    "//base",
+    "//chrome/chrome_cleaner:buildflags",
     "//chrome/chrome_cleaner/chrome_utils:chrome_util_lib",
     "//chrome/chrome_cleaner/chrome_utils:extension_file_logger_lib",
     "//chrome/chrome_cleaner/chrome_utils:extensions_util_lib",
     "//chrome/chrome_cleaner/constants:common_strings",
     "//chrome/chrome_cleaner/constants:uws_id",
-    "//chrome/chrome_cleaner/http:http",
+    "//chrome/chrome_cleaner/http",
     "//chrome/chrome_cleaner/http:http_status_codes",
     "//chrome/chrome_cleaner/logging:common",
     "//chrome/chrome_cleaner/logging:scoped_timed_task_logger",
@@ -37,9 +41,9 @@ source_set("components") {
     "//chrome/chrome_cleaner/pup_data:pup_data_base",
     "//components/chrome_cleaner/public/constants:constants",
     "//components/crx_file",
-    "//crypto:crypto",
+    "//crypto",
     "//third_party/zlib/google:zip",
-    "//url:url",
+    "//url",
   ]
 }
 
@@ -63,6 +67,7 @@ source_set("unittest_sources") {
     "//chrome/chrome_cleaner/constants:uws_id",
     "//chrome/chrome_cleaner/http:mock_http_agent_factory",
     "//chrome/chrome_cleaner/logging:cleaner_logging",
+    "//chrome/chrome_cleaner/logging:common",
     "//chrome/chrome_cleaner/logging/proto:chrome_cleaner_report_proto",
     "//chrome/chrome_cleaner/os:cleaner_os",
     "//chrome/chrome_cleaner/os:common_os",

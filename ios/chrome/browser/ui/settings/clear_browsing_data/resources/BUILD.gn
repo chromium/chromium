@@ -1,0 +1,45 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/ios/asset_catalog.gni")
+
+imageset("clear_browsing_data_autofill") {
+  sources = [
+    "clear_browsing_data_autofill.imageset/Contents.json",
+    "clear_browsing_data_autofill.imageset/clear_browsing_data_autofill@2x.png",
+    "clear_browsing_data_autofill.imageset/clear_browsing_data_autofill@3x.png",
+  ]
+}
+
+imageset("clear_browsing_data_cached_images") {
+  sources = [
+    "clear_browsing_data_cached_images.imageset/Contents.json",
+    "clear_browsing_data_cached_images.imageset/clear_browsing_data_cached_images@2x.png",
+    "clear_browsing_data_cached_images.imageset/clear_browsing_data_cached_images@3x.png",
+  ]
+}
+
+imageset("clear_browsing_data_cookies") {
+  sources = [
+    "clear_browsing_data_cookies.imageset/Contents.json",
+    "clear_browsing_data_cookies.imageset/clear_browsing_data_cookies@2x.png",
+    "clear_browsing_data_cookies.imageset/clear_browsing_data_cookies@3x.png",
+  ]
+}
+
+imageset("clear_browsing_data_history") {
+  sources = [
+    "clear_browsing_data_history.imageset/Contents.json",
+    "clear_browsing_data_history.imageset/clear_browsing_data_history@2x.png",
+    "clear_browsing_data_history.imageset/clear_browsing_data_history@3x.png",
+  ]
+}
+
+imageset("clear_browsing_data_passwords") {
+  sources = [
+    "clear_browsing_data_passwords.imageset/Contents.json",
+    "clear_browsing_data_passwords.imageset/clear_browsing_data_passwords@2x.png",
+    "clear_browsing_data_passwords.imageset/clear_browsing_data_passwords@3x.png",
+  ]
+}

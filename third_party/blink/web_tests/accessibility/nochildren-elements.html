@@ -20,6 +20,14 @@
 
 
     <script>
+      function allChildrenAreIgnored(element) {
+        for(let i = 0; i < element.childCount; ++i) {
+          if (!element.childAtIndex(i).isIgnored)
+            return false;
+        }
+        return true;
+      }
+
         if (window.accessibilityController) {
             var result = document.getElementById("result");
 
@@ -35,19 +43,19 @@
             var element4Children = element4.attributesOfChildren();
             var element5Children = element5.attributesOfChildren();
 
-            result.innerText += element1Children != "" ? "FAIL#1 " + element1Children : "PASS";
+            result.innerText += allChildrenAreIgnored(element1) ? "PASS" : "FAIL#1 " + element1Children;
             result.innerText += "\n";
 
-            result.innerText += element2Children != "" ? "FAIL#2 " + element2Children : "PASS";
+            result.innerText += allChildrenAreIgnored(element2) ? "PASS" : "FAIL#2 " + element2Children;
             result.innerText += "\n";
 
-            result.innerText += element3Children != "" ? "FAIL#3 " + element3Children : "PASS";
+            result.innerText += allChildrenAreIgnored(element3) ? "PASS" : "FAIL#3 " + element3Children;
             result.innerText += "\n";
 
-            result.innerText += element4Children == "" ? "FAIL#4 " : "PASS";
+            result.innerText += allChildrenAreIgnored(element4) ? "PASS" : "FAIL#4 " + element4Children;
             result.innerText += "\n";
 
-            result.innerText += element5Children == "" ? "FAIL#5 " : "PASS";
+            result.innerText += allChildrenAreIgnored(element5) ? "PASS" : "FAIL#5 " + element5Children;
             result.innerText += "\n";
         }
     </script>

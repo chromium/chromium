@@ -91,7 +91,7 @@ void BrowserContextKeyedAPIFactory<
 }
 
 VerifyTrustAPI::VerifyTrustAPI(content::BrowserContext* context)
-    : io_part_(new IOPart), registry_observer_(this), weak_factory_(this) {
+    : io_part_(new IOPart) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   registry_observer_.Add(ExtensionRegistry::Get(context));
 }
@@ -112,7 +112,7 @@ void VerifyTrustAPI::Verify(std::unique_ptr<Params> params,
       &CallBackOnUI, base::Bind(&VerifyTrustAPI::FinishedVerificationOnUI,
                                 weak_factory_.GetWeakPtr(), ui_callback)));
 
-  base::PostTaskWithTraits(
+  base::PostTask(
       FROM_HERE, {content::BrowserThread::IO},
       base::BindOnce(&IOPart::Verify, base::Unretained(io_part_.get()),
                      base::Passed(&params), extension_id, finish_callback));
@@ -122,7 +122,7 @@ void VerifyTrustAPI::OnExtensionUnloaded(
     content::BrowserContext* browser_context,
     const Extension* extension,
     UnloadedExtensionReason reason) {
-  base::PostTaskWithTraits(
+  base::PostTask(
       FROM_HERE, {content::BrowserThread::IO},
       base::BindOnce(&IOPart::OnExtensionUnloaded,
                      base::Unretained(io_part_.get()), extension->id()));
@@ -142,9 +142,8 @@ void VerifyTrustAPI::CallBackOnUI(const VerifyCallback& ui_callback,
                                   const std::string& error,
                                   int return_value,
                                   int cert_status) {
-  base::PostTaskWithTraits(
-      FROM_HERE, {content::BrowserThread::UI},
-      base::BindOnce(ui_callback, error, return_value, cert_status));
+  base::PostTask(FROM_HERE, {content::BrowserThread::UI},
+                 base::BindOnce(ui_callback, error, return_value, cert_status));
 }
 
 VerifyTrustAPI::IOPart::~IOPart() {
@@ -180,8 +179,9 @@ void VerifyTrustAPI::IOPart::Verify(std::unique_ptr<Params> params,
     return;
   }
 
-  if (!base::ContainsKey(extension_to_verifier_, extension_id)) {
-    extension_to_verifier_[extension_id] = net::CertVerifier::CreateDefault();
+  if (!base::Contains(extension_to_verifier_, extension_id)) {
+    extension_to_verifier_[extension_id] =
+        net::CertVerifier::CreateDefault(/*cert_net_fetcher=*/nullptr);
   }
   net::CertVerifier* verifier = extension_to_verifier_[extension_id].get();
 
@@ -191,6 +191,7 @@ void VerifyTrustAPI::IOPart::Verify(std::unique_ptr<Params> params,
   const int flags = 0;
 
   std::string ocsp_response;
+  std::string sct_list;
   net::CertVerifyResult* const verify_result_ptr = verify_result.get();
 
   RequestState* request_state = new RequestState();
@@ -200,7 +201,7 @@ void VerifyTrustAPI::IOPart::Verify(std::unique_ptr<Params> params,
 
   const int return_value = verifier->Verify(
       net::CertVerifier::RequestParams(std::move(cert_chain), details.hostname,
-                                       flags, ocsp_response),
+                                       flags, ocsp_response, sct_list),
       verify_result_ptr, bound_callback, &request_state->request, *net_log);
 
   if (return_value != net::ERR_IO_PENDING) {

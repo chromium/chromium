@@ -32,6 +32,7 @@
 
 #include "third_party/blink/renderer/core/svg/svg_transform_tear_off.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
 
 namespace blink {
 
@@ -87,55 +88,55 @@ DEFINE_SETTER(F)
 #undef DEFINE_SETTER
 
 SVGMatrixTearOff* SVGMatrixTearOff::translate(double tx, double ty) {
-  SVGMatrixTearOff* matrix = Create(Value());
+  auto* matrix = MakeGarbageCollected<SVGMatrixTearOff>(Value());
   matrix->MutableValue()->Translate(tx, ty);
   return matrix;
 }
 
 SVGMatrixTearOff* SVGMatrixTearOff::scale(double s) {
-  SVGMatrixTearOff* matrix = Create(Value());
+  auto* matrix = MakeGarbageCollected<SVGMatrixTearOff>(Value());
   matrix->MutableValue()->Scale(s, s);
   return matrix;
 }
 
 SVGMatrixTearOff* SVGMatrixTearOff::scaleNonUniform(double sx, double sy) {
-  SVGMatrixTearOff* matrix = Create(Value());
+  auto* matrix = MakeGarbageCollected<SVGMatrixTearOff>(Value());
   matrix->MutableValue()->Scale(sx, sy);
   return matrix;
 }
 
 SVGMatrixTearOff* SVGMatrixTearOff::rotate(double d) {
-  SVGMatrixTearOff* matrix = Create(Value());
+  auto* matrix = MakeGarbageCollected<SVGMatrixTearOff>(Value());
   matrix->MutableValue()->Rotate(d);
   return matrix;
 }
 
 SVGMatrixTearOff* SVGMatrixTearOff::flipX() {
-  SVGMatrixTearOff* matrix = Create(Value());
+  auto* matrix = MakeGarbageCollected<SVGMatrixTearOff>(Value());
   matrix->MutableValue()->FlipX();
   return matrix;
 }
 
 SVGMatrixTearOff* SVGMatrixTearOff::flipY() {
-  SVGMatrixTearOff* matrix = Create(Value());
+  auto* matrix = MakeGarbageCollected<SVGMatrixTearOff>(Value());
   matrix->MutableValue()->FlipY();
   return matrix;
 }
 
 SVGMatrixTearOff* SVGMatrixTearOff::skewX(double angle) {
-  SVGMatrixTearOff* matrix = Create(Value());
+  auto* matrix = MakeGarbageCollected<SVGMatrixTearOff>(Value());
   matrix->MutableValue()->SkewX(angle);
   return matrix;
 }
 
 SVGMatrixTearOff* SVGMatrixTearOff::skewY(double angle) {
-  SVGMatrixTearOff* matrix = Create(Value());
+  auto* matrix = MakeGarbageCollected<SVGMatrixTearOff>(Value());
   matrix->MutableValue()->SkewY(angle);
   return matrix;
 }
 
 SVGMatrixTearOff* SVGMatrixTearOff::multiply(SVGMatrixTearOff* other) {
-  SVGMatrixTearOff* matrix = Create(Value());
+  auto* matrix = MakeGarbageCollected<SVGMatrixTearOff>(Value());
   *matrix->MutableValue() *= other->Value();
   return matrix;
 }
@@ -146,7 +147,7 @@ SVGMatrixTearOff* SVGMatrixTearOff::inverse(ExceptionState& exception_state) {
                                       "The matrix is not invertible.");
     return nullptr;
   }
-  return Create(Value().Inverse());
+  return MakeGarbageCollected<SVGMatrixTearOff>(Value().Inverse());
 }
 
 SVGMatrixTearOff* SVGMatrixTearOff::rotateFromVector(
@@ -160,7 +161,7 @@ SVGMatrixTearOff* SVGMatrixTearOff::rotateFromVector(
   }
   AffineTransform copy = Value();
   copy.RotateFromVector(x, y);
-  return Create(copy);
+  return MakeGarbageCollected<SVGMatrixTearOff>(copy);
 }
 
 }  // namespace blink

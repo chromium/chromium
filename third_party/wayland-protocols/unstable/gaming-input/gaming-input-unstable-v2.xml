@@ -76,6 +76,26 @@
       </description>
       <arg name="gamepad" type="new_id" interface="zcr_gamepad_v2" summary="new connected gamepad"/>
     </event>
+
+    <enum name="bus_type">
+      <description summary="gamepad device bus type">
+        Device connection type e.g. Bluetooth
+      </description>
+      <entry name="usb" value="0" summary="Universal Serial Bus" />
+      <entry name="bluetooth" value="1" summary="Bluetooth" />
+    </enum>
+
+    <event name="gamepad_added_with_device_info">
+      <description summary="gamepad added event">
+        Notification that there is gamepad connected at this seat.
+      </description>
+      <arg name="gamepad" type="new_id" interface="zcr_gamepad_v2" summary="new connected gamepad"/>
+      <arg name="name" type="string" summary="name of the gamepad device" />
+      <arg name="bus" type="uint" enum="bus_type" summary="type of the device connection e.g. Bluetooth" />
+      <arg name="vendor_id" type="uint" summary="vendor ID of the gamepad device" />
+      <arg name="product_id" type="uint" summary="product ID of the gamepad device" />
+      <arg name="version" type="uint" summary="product version of the gamepad device" />
+    </event>
   </interface>
 
   <interface name="zcr_gamepad_v2" version="1">
@@ -147,6 +167,29 @@
         frame before proceeding.
       </description>
       <arg name="time" type="uint" summary="timestamp with millisecond granularity"/>
+    </event>
+
+    <event name="axis_added">
+      <description summary="an axis is added">
+        Adds an axis to the gamepad. Only called when the gamepad was created by
+        gamepad_added_with_device_info. The values are compatible with
+        input_absinfo.
+      </description>
+      <arg name="index" type="uint" summary="An index of the axis" />
+      <arg name="min_value" type="int" summary="minimum value of the axis" />
+      <arg name="max_value" type="int" summary="maximum value of the axis" />
+      <arg name="flat" type="int" summary="input within this value are ignored" />
+      <arg name="fuzz" type="int" summary="used to filter noise" />
+      <arg name="resolution" type="int" summary="resolution of input in units per millimeter, or units per radian for rotational axes." />
+    </event>
+
+    <event name="activated">
+      <description summary="Gamepad activated">
+        Activates the gamepad i.e. the gamepad will be visible to applications
+        after this event is fired. All axis_added events should be sent before
+        this event. Only called when the gamepad was created by
+        gamepad_added_with_device_info.
+      </description>
     </event>
   </interface>
 </protocol>

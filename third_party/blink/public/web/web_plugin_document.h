@@ -52,8 +52,6 @@ class WebPluginDocument final : public WebDocument {
 
   BLINK_EXPORT WebPlugin* Plugin();
 
-  BLINK_EXPORT void SetShowBeforeUnloadDialog(bool show_dialog);
-
 #if INSIDE_BLINK
   WebPluginDocument(PluginDocument*);
   WebPluginDocument& operator=(PluginDocument*);

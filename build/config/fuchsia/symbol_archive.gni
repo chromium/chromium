@@ -4,15 +4,16 @@
 
 assert(is_fuchsia)
 
-# Creates a tarball of binaries' debug data, structured according
-# to the ".build_ids" convention used by the symbolizer and GNU GDB.
+# Creates a tarball of unstripped binaries, structured according to the
+# ".build_ids" convention used by the symbolizer and GNU GDB.
 #
 # Parameters:
 #   ids_txt: The "ids.txt" file which lists the relative paths to unstripped
 #            executables and libraries, along with their build IDs.
-#   archive_name: The path to the compressed tarball that will be
-#                   generated.
+#   archive_name: The path to the compressed tarball that will be generated.
 template("symbol_archive") {
+  assert(!is_debug)
+
   action(target_name) {
     _ids_txt = invoker.ids_txt
     _build_ids = invoker.archive_name
@@ -31,9 +32,10 @@ template("symbol_archive") {
 
     args = [
       rebase_path(_ids_txt),
+      "-o",
       rebase_path(_build_ids),
-      "--eu-strip",
-      rebase_path("//buildtools/third_party/eu-strip/bin/eu-strip"),
+      "--fuchsia-build-id-dir",
+      rebase_path("//third_party/fuchsia-sdk/sdk/.build-id"),
     ]
   }
 }

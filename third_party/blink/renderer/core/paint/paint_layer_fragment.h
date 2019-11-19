@@ -27,7 +27,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_PAINT_LAYER_FRAGMENT_H_
 
 #include "third_party/blink/renderer/core/paint/clip_rect.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
@@ -54,7 +54,7 @@ struct PaintLayerFragment {
 
   // The PaintLayer's size in the space defined by |root_fragment_data|.
   // See PaintLayer::size_ for the exact rectangle.
-  LayoutRect layer_bounds;
+  PhysicalRect layer_bounds;
 
   // The rectangle used to clip the background.
   //

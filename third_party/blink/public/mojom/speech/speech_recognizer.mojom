@@ -14,11 +14,11 @@ import "url/mojom/origin.mojom";
 struct StartSpeechRecognitionRequestParams {
   // Used to create a connection with a SpeechRecognitionSession implementation
   // that will be created when the session is created.
-  SpeechRecognitionSession& session_request;
+  pending_receiver<SpeechRecognitionSession> session_receiver;
 
   // Used by the browser to communicate with a SpeechRecognitionSessionClient
   // implementation created for the new session.
-  SpeechRecognitionSessionClient client;
+  pending_remote<SpeechRecognitionSessionClient> client;
 
   // Language to use for speech recognition.
   string language;

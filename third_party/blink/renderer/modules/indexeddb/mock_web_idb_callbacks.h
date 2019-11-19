@@ -7,8 +7,9 @@
 
 #include "base/macros.h"
 #include "base/optional.h"
+#include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom-blink.h"
+#include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom-blink-forward.h"
 #include "third_party/blink/public/platform/web_blob_info.h"
 #include "third_party/blink/public/web/web_heap.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_database_error.h"
@@ -25,7 +26,7 @@ class MockWebIDBCallbacks : public WebIDBCallbacks {
 
   void SetState(base::WeakPtr<WebIDBCursorImpl>, int64_t);
 
-  MOCK_METHOD2(Error, void(int32_t, const String&));
+  MOCK_METHOD2(Error, void(mojom::blink::IDBException, const String&));
 
   void SuccessCursorContinue(
       std::unique_ptr<IDBKey>,
@@ -42,13 +43,14 @@ class MockWebIDBCallbacks : public WebIDBCallbacks {
   MOCK_METHOD1(SuccessStringList, void(const Vector<String>&));
 
   void SuccessCursor(
-      mojom::blink::IDBCursorAssociatedPtrInfo cursor_info,
+      mojo::PendingAssociatedRemote<mojom::blink::IDBCursor> cursor_info,
       std::unique_ptr<IDBKey> key,
       std::unique_ptr<IDBKey> primary_key,
       base::Optional<std::unique_ptr<IDBValue>> optional_value) override;
   MOCK_METHOD4(
       DoSuccessCursor,
-      void(const mojom::blink::IDBCursorAssociatedPtrInfo& cursor_info,
+      void(const mojo::PendingAssociatedRemote<mojom::blink::IDBCursor>&
+               cursor_info,
            const std::unique_ptr<IDBKey>& key,
            const std::unique_ptr<IDBKey>& primary_key,
            const base::Optional<std::unique_ptr<IDBValue>>& optional_value));
@@ -59,7 +61,7 @@ class MockWebIDBCallbacks : public WebIDBCallbacks {
                     Vector<std::unique_ptr<IDBValue>> values));
 
   MOCK_METHOD2(SuccessDatabase,
-               void(mojom::blink::IDBDatabaseAssociatedPtrInfo,
+               void(mojo::PendingAssociatedRemote<mojom::blink::IDBDatabase>,
                     const IDBDatabaseMetadata&));
 
   void SuccessKey(std::unique_ptr<IDBKey>) override;
@@ -79,7 +81,7 @@ class MockWebIDBCallbacks : public WebIDBCallbacks {
   MOCK_METHOD1(Blocked, void(int64_t oldVersion));
 
   MOCK_METHOD5(UpgradeNeeded,
-               void(mojom::blink::IDBDatabaseAssociatedPtrInfo,
+               void(mojo::PendingAssociatedRemote<mojom::blink::IDBDatabase>,
                     int64_t oldVersion,
                     mojom::IDBDataLoss dataLoss,
                     const String& dataLossMessage,

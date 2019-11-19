@@ -40,15 +40,16 @@ def main():
     exe = os.path.join('.', 'flatbuffers_unittests')
 
   env = os.environ.copy()
+  failures = []
   with common.temporary_file() as tempfile_path:
     rc = xvfb.run_executable([exe], env, stdoutfile=tempfile_path)
 
     # The flatbuffer tests do not really conform to anything parsable, except
     # that they will succeed with "ALL TESTS PASSED".
     with open(tempfile_path) as f:
-      failures = f.read()
-      if failures == "ALL TESTS PASSED\n":
-        failures = []
+      output = f.read()
+      if output != "ALL TESTS PASSED\n":
+        failures = [output]
 
   with open(args.isolated_script_test_output, 'w') as fp:
     json.dump({'valid': True,'failures': failures}, fp)

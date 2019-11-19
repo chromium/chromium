@@ -50,6 +50,7 @@ class PLATFORM_EXPORT FontFamily {
   const FontFamily* Next() const;
 
   void AppendFamily(scoped_refptr<SharedFontFamily>);
+  void AppendFamily(AtomicString family);
   scoped_refptr<SharedFontFamily> ReleaseNext();
 
   // Returns this font family's name followed by all subsequent linked

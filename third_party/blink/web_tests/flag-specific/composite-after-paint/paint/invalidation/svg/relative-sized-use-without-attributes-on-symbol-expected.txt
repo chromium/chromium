@@ -1,0 +1,28 @@
+{
+  "layers": [
+    {
+      "name": "Scrolling background of LayoutView #document",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF",
+      "paintInvalidations": [
+        {
+          "object": "NGPhysicalBoxFragment LayoutNGBlockFlow div id='contentBox'",
+          "rect": [8, 52, 402, 402],
+          "reason": "geometry"
+        },
+        {
+          "object": "LayoutSVGViewportContainer svg id='gamesBorder'",
+          "rect": [27, 69, 364, 366],
+          "reason": "paint property change"
+        },
+        {
+          "object": "LayoutSVGViewportContainer svg id='gamesBorder'",
+          "rect": [13, 207, 92, 92],
+          "reason": "paint property change"
+        }
+      ]
+    }
+  ]
+}
+

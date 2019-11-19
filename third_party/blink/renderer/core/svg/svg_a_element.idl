@@ -25,8 +25,9 @@
 
 // https://svgwg.org/svg2-draft/linking.html#InterfaceSVGAElement
 
+[Exposed=Window]
 interface SVGAElement : SVGGraphicsElement {
     [ImplementedAs=svgTarget, Measure] readonly attribute SVGAnimatedString target;
 };
 
-SVGAElement implements SVGURIReference;
+SVGAElement includes SVGURIReference;

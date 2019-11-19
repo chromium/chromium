@@ -40,6 +40,7 @@
 #include "third_party/blink/renderer/core/dom/mutation_record.h"
 #include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/execution_context/window_agent.h"
 #include "third_party/blink/renderer/core/html/html_slot_element.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -80,11 +81,10 @@ class MutationObserver::V8DelegateImpl final
   }
 
  private:
-  TraceWrapperMember<V8MutationCallback> callback_;
+  Member<V8MutationCallback> callback_;
 };
 
 static unsigned g_observer_priority = 0;
-
 struct MutationObserver::ObserverLessThan {
   bool operator()(const Member<MutationObserver>& lhs,
                   const Member<MutationObserver>& rhs) {
@@ -108,13 +108,11 @@ MutationObserver* MutationObserver::Create(ScriptState* script_state,
 
 MutationObserver::MutationObserver(ExecutionContext* execution_context,
                                    Delegate* delegate)
-    : ContextClient(execution_context),
-      delegate_(delegate),
-      priority_(g_observer_priority++) {}
-
-MutationObserver::~MutationObserver() {
-  CancelInspectorAsyncTasks();
+    : ContextClient(execution_context), delegate_(delegate) {
+  priority_ = g_observer_priority++;
 }
+
+MutationObserver::~MutationObserver() = default;
 
 void MutationObserver::observe(Node* node,
                                const MutationObserverInit* observer_init,
@@ -226,9 +224,7 @@ static MutationObserverSet& ActiveMutationObservers() {
                       (MakeGarbageCollected<MutationObserverSet>()));
   return *active_observers;
 }
-
 using SlotChangeList = HeapVector<Member<HTMLSlotElement>>;
-
 // TODO(hayato): We should have a SlotChangeList for each unit of related
 // similar-origin browsing context.
 // https://html.spec.whatwg.org/C/#unit-of-related-similar-origin-browsing-contexts
@@ -237,24 +233,24 @@ static SlotChangeList& ActiveSlotChangeList() {
                       (MakeGarbageCollected<SlotChangeList>()));
   return *slot_change_list;
 }
-
 static MutationObserverSet& SuspendedMutationObservers() {
   DEFINE_STATIC_LOCAL(Persistent<MutationObserverSet>, suspended_observers,
                       (MakeGarbageCollected<MutationObserverSet>()));
   return *suspended_observers;
 }
-
 static void EnsureEnqueueMicrotask() {
   if (ActiveMutationObservers().IsEmpty() && ActiveSlotChangeList().IsEmpty())
     Microtask::EnqueueMicrotask(WTF::Bind(&MutationObserver::DeliverMutations));
 }
 
+// static
 void MutationObserver::EnqueueSlotChange(HTMLSlotElement& slot) {
   DCHECK(IsMainThread());
   EnsureEnqueueMicrotask();
   ActiveSlotChangeList().push_back(&slot);
 }
 
+// static
 void MutationObserver::CleanSlotChangeList(Document& document) {
   SlotChangeList kept;
   kept.ReserveCapacity(ActiveSlotChangeList().size());
@@ -275,7 +271,7 @@ void MutationObserver::EnqueueMutationRecord(MutationRecord* mutation) {
   records_.push_back(mutation);
   ActivateObserver(this);
   probe::AsyncTaskScheduled(delegate_->GetExecutionContext(), mutation->type(),
-                            mutation);
+                            mutation->async_task_id());
 }
 
 void MutationObserver::SetHasTransientRegistration() {
@@ -296,8 +292,10 @@ bool MutationObserver::ShouldBeSuspended() const {
 }
 
 void MutationObserver::CancelInspectorAsyncTasks() {
-  for (auto& record : records_)
-    probe::AsyncTaskCanceled(delegate_->GetExecutionContext(), record);
+  for (auto& record : records_) {
+    probe::AsyncTaskCanceled(delegate_->GetExecutionContext(),
+                             record->async_task_id());
+  }
 }
 
 void MutationObserver::Deliver() {
@@ -322,15 +320,15 @@ void MutationObserver::Deliver() {
 
   // Report the first (earliest) stack as the async cause.
   probe::AsyncTask async_task(delegate_->GetExecutionContext(),
-                              records.front());
+                              records.front()->async_task_id());
   delegate_->Deliver(records, *this);
 }
 
+// static
 void MutationObserver::ResumeSuspendedObservers() {
   DCHECK(IsMainThread());
   if (SuspendedMutationObservers().IsEmpty())
     return;
-
   MutationObserverVector suspended;
   CopyToVector(SuspendedMutationObservers(), suspended);
   for (const auto& observer : suspended) {
@@ -341,20 +339,18 @@ void MutationObserver::ResumeSuspendedObservers() {
   }
 }
 
+// static
 void MutationObserver::DeliverMutations() {
   // These steps are defined in DOM Standard's "notify mutation observers".
   // https://dom.spec.whatwg.org/#notify-mutation-observers
   DCHECK(IsMainThread());
-
   MutationObserverVector observers;
   CopyToVector(ActiveMutationObservers(), observers);
   ActiveMutationObservers().clear();
-
   SlotChangeList slots;
   slots.swap(ActiveSlotChangeList());
   for (const auto& slot : slots)
     slot->ClearSlotChangeEventEnqueued();
-
   std::sort(observers.begin(), observers.end(), ObserverLessThan());
   for (const auto& observer : observers) {
     if (!observer->GetExecutionContext()) {
@@ -362,7 +358,6 @@ void MutationObserver::DeliverMutations() {
       // intentionally do not hold their execution context. Do nothing then.
       continue;
     }
-
     if (observer->ShouldBeSuspended())
       SuspendedMutationObservers().insert(observer);
     else

@@ -59,6 +59,13 @@ NSString* const kActiveKeyPath = @"active";
   [self resetConstraints];
 }
 
+- (NSString*)description {
+  return [NSString
+      stringWithFormat:@"<%@: %p - %@, layoutFrame=%@, owningView=%@>",
+                       NSStringFromClass([self class]), self, self.name,
+                       NSStringFromCGRect(self.layoutFrame), self.owningView];
+}
+
 #pragma mark - Accessors
 
 - (BOOL)isConstrained {

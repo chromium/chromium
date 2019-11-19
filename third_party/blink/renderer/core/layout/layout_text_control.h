@@ -57,17 +57,12 @@ class CORE_EXPORT LayoutTextControl : public LayoutBlockFlow {
   void StyleDidChange(StyleDifference, const ComputedStyle* old_style) override;
 
   void HitInnerEditorElement(HitTestResult&,
-                             const LayoutPoint& point_in_container,
-                             const LayoutPoint& accumulated_offset);
-
-  int TextBlockLogicalWidth() const;
-  int TextBlockLogicalHeight() const;
-
-  float ScaleEmToUnits(int x) const;
+                             const HitTestLocation&,
+                             const PhysicalOffset& accumulated_offset);
 
   static bool HasValidAvgCharWidth(const SimpleFontData*,
                                    const AtomicString& family);
-  virtual float GetAvgCharWidth(const AtomicString& family) const;
+  float GetAvgCharWidth(const AtomicString& family) const;
   virtual LayoutUnit PreferredContentLogicalWidth(float char_width) const = 0;
   virtual LayoutUnit ComputeControlLogicalHeight(
       LayoutUnit line_height,
@@ -98,8 +93,8 @@ class CORE_EXPORT LayoutTextControl : public LayoutBlockFlow {
   void ComputePreferredLogicalWidths() final;
   void RemoveLeftoverAnonymousBlock(LayoutBlock*) final {}
 
-  void AddOutlineRects(Vector<LayoutRect>&,
-                       const LayoutPoint& additional_offset,
+  void AddOutlineRects(Vector<PhysicalRect>&,
+                       const PhysicalOffset& additional_offset,
                        NGOutlineType) const final;
 
   bool CanBeProgramaticallyScrolled() const final { return true; }

@@ -11,22 +11,23 @@
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/password_form.h"
 #include "components/autofill/ios/browser/autofill_util.h"
-#import "components/password_manager/core/browser/form_parsing/ios_form_parser.h"
+#include "components/password_manager/core/browser/password_form_manager_for_ui.h"
 #include "components/password_manager/core/browser/password_manager.h"
 #include "components/password_manager/ios/account_select_fill_data.h"
 #import "components/password_manager/ios/password_form_helper.h"
 #import "components/password_manager/ios/password_suggestion_helper.h"
-#import "ios/web/public/origin_util.h"
-#include "ios/web/public/url_scheme_util.h"
-#include "ios/web/public/web_state/web_frame.h"
-#include "ios/web/public/web_state/web_frame_util.h"
-#import "ios/web/public/web_state/web_state_observer_bridge.h"
+#import "ios/web/common/origin_util.h"
+#include "ios/web/common/url_scheme_util.h"
+#include "ios/web/public/js_messaging/web_frame.h"
+#include "ios/web/public/js_messaging/web_frame_util.h"
+#import "ios/web/public/web_state.h"
+#import "ios/web/public/web_state_observer_bridge.h"
 #import "ios/web_view/internal/autofill/cwv_autofill_suggestion_internal.h"
+#import "ios/web_view/internal/passwords/cwv_password_internal.h"
 #import "ios/web_view/internal/passwords/web_view_password_manager_client.h"
 #import "ios/web_view/internal/passwords/web_view_password_manager_driver.h"
 #include "ios/web_view/internal/web_view_browser_state.h"
 #import "ios/web_view/public/cwv_autofill_controller_delegate.h"
-
 #include "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -67,8 +68,7 @@ typedef void (^PasswordSuggestionsAvailableCompletion)(
 
 // Informs the |_passwordManager| of the password forms (if any were present)
 // that have been found on the page.
-- (void)didFinishPasswordFormExtraction:
-    (const std::vector<autofill::PasswordForm>&)forms;
+- (void)didFinishPasswordFormExtraction:(const std::vector<FormData>&)forms;
 
 // Finds all password forms in DOM and sends them to the password manager for
 // further processing.
@@ -164,8 +164,7 @@ typedef void (^PasswordSuggestionsAvailableCompletion)(
 
   if (!webState->ContentIsHTML()) {
     // If the current page is not HTML, it does not contain any HTML forms.
-    [self
-        didFinishPasswordFormExtraction:std::vector<autofill::PasswordForm>()];
+    [self didFinishPasswordFormExtraction:std::vector<FormData>()];
   }
 
   [self findPasswordFormsAndSendThemToPasswordManager];
@@ -191,6 +190,10 @@ typedef void (^PasswordSuggestionsAvailableCompletion)(
                    : nullptr;
 }
 
+- (web::WebState*)webState {
+  return _webState;
+}
+
 - (password_manager::PasswordManager*)passwordManager {
   return _passwordManager.get();
 }
@@ -209,25 +212,25 @@ typedef void (^PasswordSuggestionsAvailableCompletion)(
   __block std::unique_ptr<PasswordFormManagerForUI> formPtr(
       std::move(formToSave));
 
-  NSString* userName =
-      base::SysUTF16ToNSString(formPtr->GetPendingCredentials().username_value);
+  const PasswordForm& credentials = formPtr->GetPendingCredentials();
+  CWVPassword* password =
+      [[CWVPassword alloc] initWithPasswordForm:credentials];
 
   [self.delegate passwordController:self
-      decidePasswordSavingPolicyForUsername:userName
-                            decisionHandler:^(
-                                CWVPasswordUserDecision decision) {
-                              switch (decision) {
-                                case CWVPasswordUserDecisionYes:
-                                  formPtr->Save();
-                                  break;
-                                case CWVPasswordUserDecisionNever:
-                                  formPtr->PermanentlyBlacklist();
-                                  break;
-                                default:
-                                  // Do nothing.
-                                  break;
-                              }
-                            }];
+        decideSavePolicyForPassword:password
+                    decisionHandler:^(CWVPasswordUserDecision decision) {
+                      switch (decision) {
+                        case CWVPasswordUserDecisionYes:
+                          formPtr->Save();
+                          break;
+                        case CWVPasswordUserDecisionNever:
+                          formPtr->PermanentlyBlacklist();
+                          break;
+                        default:
+                          // Do nothing.
+                          break;
+                      }
+                    }];
 }
 
 - (void)showUpdatePasswordInfoBar:
@@ -240,28 +243,22 @@ typedef void (^PasswordSuggestionsAvailableCompletion)(
   // ios_chrome_update_password_infobar_delegate.mm
   __block std::unique_ptr<PasswordFormManagerForUI> formPtr(
       std::move(formToUpdate));
-  BOOL hasMultipleCredentials =
-      formPtr->GetBestMatches().size() > 1 && !formPtr->IsPasswordOverridden();
 
-  const autofill::PasswordForm& credentials =
-      hasMultipleCredentials ? *(formPtr->GetPreferredMatch())
-                             : formPtr->GetPendingCredentials();
-  NSString* userName = base::SysUTF16ToNSString(credentials.username_value);
+  const PasswordForm& credentials = formPtr->GetPendingCredentials();
+  CWVPassword* password =
+      [[CWVPassword alloc] initWithPasswordForm:credentials];
 
   [self.delegate passwordController:self
-      decidePasswordUpdatingPolicyForUsername:userName
-                              decisionHandler:^(
-                                  CWVPasswordUserDecision decision) {
-                                DCHECK_NE(decision,
-                                          CWVPasswordUserDecisionNever);
-                                if (decision == CWVPasswordUserDecisionYes) {
-                                  formPtr->Update(credentials);
-                                }
-                              }];
+      decideUpdatePolicyForPassword:password
+                    decisionHandler:^(CWVPasswordUserDecision decision) {
+                      DCHECK_NE(decision, CWVPasswordUserDecisionNever);
+                      if (decision == CWVPasswordUserDecisionYes) {
+                        formPtr->Update(credentials);
+                      }
+                    }];
 }
 
-- (void)showAutosigninNotification:
-    (std::unique_ptr<autofill::PasswordForm>)formSignedIn {
+- (void)showAutosigninNotification:(std::unique_ptr<PasswordForm>)formSignedIn {
   // TODO(crbug.com/865114): Implement remaining logic.
 }
 
@@ -280,16 +277,20 @@ typedef void (^PasswordSuggestionsAvailableCompletion)(
 #pragma mark - PasswordFormHelperDelegate
 
 - (void)formHelper:(PasswordFormHelper*)formHelper
-     didSubmitForm:(const PasswordForm&)form
+     didSubmitForm:(const FormData&)form
        inMainFrame:(BOOL)inMainFrame {
+  // TODO(crbug.com/949519): remove using PasswordForm completely when the old
+  // parser is gone.
+  PasswordForm password_form;
+  password_form.form_data = form;
   if (inMainFrame) {
     self.passwordManager->OnPasswordFormSubmitted(self.passwordManagerDriver,
-                                                  form);
+                                                  password_form);
   } else {
     // Show a save prompt immediately because for iframes it is very hard to
     // figure out correctness of password forms submission.
-    self.passwordManager->OnPasswordFormSubmittedNoChecks(
-        self.passwordManagerDriver, form);
+    self.passwordManager->OnPasswordFormSubmittedNoChecksForiOS(
+        self.passwordManagerDriver, password_form);
   }
 }
 
@@ -302,14 +303,19 @@ typedef void (^PasswordSuggestionsAvailableCompletion)(
 
 #pragma mark - Private methods
 
-- (void)didFinishPasswordFormExtraction:
-    (const std::vector<autofill::PasswordForm>&)forms {
+- (void)didFinishPasswordFormExtraction:(const std::vector<FormData>&)forms {
   // Do nothing if |self| has been detached.
   if (!_passwordManager) {
     return;
   }
 
-  if (!forms.empty()) {
+  // TODO(crbug.com/949519): remove using PasswordForm completely when the old
+  // parser is gone.
+  std::vector<PasswordForm> password_forms(forms.size());
+  for (size_t i = 0; i < forms.size(); ++i)
+    password_forms[i].form_data = forms[i];
+
+  if (!password_forms.empty()) {
     // TODO(crbug.com/865114):
     // Notify web_state about password forms, so that this can be taken into
     // account for the security state.
@@ -317,13 +323,15 @@ typedef void (^PasswordSuggestionsAvailableCompletion)(
     [self.suggestionHelper updateStateOnPasswordFormExtracted];
     // Invoke the password manager callback to autofill password forms
     // on the loaded page.
-    _passwordManager->OnPasswordFormsParsed(self.passwordManagerDriver, forms);
+    _passwordManager->OnPasswordFormsParsed(self.passwordManagerDriver,
+                                            password_forms);
   } else {
     [self informNoSavedCredentials];
   }
   // Invoke the password manager callback to check if password was
   // accepted or rejected.
-  _passwordManager->OnPasswordFormsRendered(self.passwordManagerDriver, forms,
+  _passwordManager->OnPasswordFormsRendered(self.passwordManagerDriver,
+                                            password_forms,
                                             /*did_stop_loading=*/true);
 }
 
@@ -332,7 +340,7 @@ typedef void (^PasswordSuggestionsAvailableCompletion)(
   // manager.
   __weak CWVPasswordController* weakSelf = self;
   [self.formHelper findPasswordFormsWithCompletionHandler:^(
-                       const std::vector<autofill::PasswordForm>& forms) {
+                       const std::vector<FormData>& forms) {
     [weakSelf didFinishPasswordFormExtraction:forms];
   }];
 }

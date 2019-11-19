@@ -25,13 +25,6 @@ void CCTestSuite::Initialize() {
 
   gl::GLSurfaceTestSupport::InitializeOneOff();
 
-  // Always enable gpu and oop raster, regardless of platform and blacklist.
-  auto* gpu_feature_info = gpu::GetTestGpuThreadHolder()->GetGpuFeatureInfo();
-  gpu_feature_info->status_values[gpu::GPU_FEATURE_TYPE_GPU_RASTERIZATION] =
-      gpu::kGpuFeatureStatusEnabled;
-  gpu_feature_info->status_values[gpu::GPU_FEATURE_TYPE_OOP_RASTERIZATION] =
-      gpu::kGpuFeatureStatusEnabled;
-
   viz::Paths::RegisterPathProvider();
 
   base::ThreadIdNameManager::GetInstance()->SetName("Main");

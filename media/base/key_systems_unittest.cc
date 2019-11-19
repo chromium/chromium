@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/logging.h"
+#include "media/base/audio_parameters.h"
 #include "media/base/decrypt_config.h"
 #include "media/base/eme_constants.h"
 #include "media/base/key_systems.h"
@@ -92,9 +93,9 @@ class AesKeySystemProperties : public TestKeySystemPropertiesBase {
   std::string GetKeySystemName() const override { return name_; }
 
   EmeConfigRule GetEncryptionSchemeConfigRule(
-      EncryptionMode encryption_scheme) const override {
-    return (encryption_scheme == EncryptionMode::kUnencrypted ||
-            encryption_scheme == EncryptionMode::kCenc)
+      EncryptionScheme encryption_scheme) const override {
+    return (encryption_scheme == EncryptionScheme::kUnencrypted ||
+            encryption_scheme == EncryptionScheme::kCenc)
                ? EmeConfigRule::SUPPORTED
                : EmeConfigRule::NOT_SUPPORTED;
   }
@@ -124,12 +125,12 @@ class ExternalKeySystemProperties : public TestKeySystemPropertiesBase {
   // Pretend clear (unencrypted) and 'cenc' content are always supported. But
   // 'cbcs' is not supported by hardware secure codecs.
   EmeConfigRule GetEncryptionSchemeConfigRule(
-      EncryptionMode encryption_scheme) const override {
+      EncryptionScheme encryption_scheme) const override {
     switch (encryption_scheme) {
-      case media::EncryptionMode::kUnencrypted:
-      case media::EncryptionMode::kCenc:
+      case media::EncryptionScheme::kUnencrypted:
+      case media::EncryptionScheme::kCenc:
         return media::EmeConfigRule::SUPPORTED;
-      case media::EncryptionMode::kCbcs:
+      case media::EncryptionScheme::kCbcs:
         return media::EmeConfigRule::HW_SECURE_CODECS_NOT_ALLOWED;
     }
     NOTREACHED();
@@ -169,7 +170,7 @@ class ExternalKeySystemProperties : public TestKeySystemPropertiesBase {
 };
 
 void ExpectEncryptionSchemeConfigRule(const std::string& key_system,
-                                      EncryptionMode encryption_scheme,
+                                      EncryptionScheme encryption_scheme,
                                       EmeConfigRule expected_rule) {
   EXPECT_EQ(expected_rule,
             KeySystems::GetInstance()->GetEncryptionSchemeConfigRule(
@@ -271,6 +272,9 @@ class TestMediaClient : public MediaClient {
   // test the key system update case.
   void DisableExternalKeySystemSupport();
 
+  base::Optional<::media::AudioRendererAlgorithmParameters>
+  GetAudioRendererAlgorithmParameters(AudioParameters audio_parameters) final;
+
  private:
   bool is_update_needed_;
   bool supports_external_key_system_;
@@ -315,6 +319,12 @@ void TestMediaClient::SetKeySystemsUpdateNeeded() {
 
 void TestMediaClient::DisableExternalKeySystemSupport() {
   supports_external_key_system_ = false;
+}
+
+base::Optional<::media::AudioRendererAlgorithmParameters>
+TestMediaClient::GetAudioRendererAlgorithmParameters(
+    AudioParameters audio_parameters) {
+  return base::nullopt;
 }
 
 }  // namespace
@@ -616,11 +626,11 @@ TEST_F(KeySystemsTest,
 
 TEST_F(KeySystemsTest,
        IsSupportedKeySystem_UsesAesDecryptor_EncryptionSchemes) {
-  ExpectEncryptionSchemeConfigRule(kUsesAes, EncryptionMode::kUnencrypted,
+  ExpectEncryptionSchemeConfigRule(kUsesAes, EncryptionScheme::kUnencrypted,
                                    EmeConfigRule::SUPPORTED);
-  ExpectEncryptionSchemeConfigRule(kUsesAes, EncryptionMode::kCenc,
+  ExpectEncryptionSchemeConfigRule(kUsesAes, EncryptionScheme::kCenc,
                                    EmeConfigRule::SUPPORTED);
-  ExpectEncryptionSchemeConfigRule(kUsesAes, EncryptionMode::kCbcs,
+  ExpectEncryptionSchemeConfigRule(kUsesAes, EncryptionScheme::kCbcs,
                                    EmeConfigRule::NOT_SUPPORTED);
 }
 
@@ -750,11 +760,11 @@ TEST_F(KeySystemsTest,
   if (!CanRunExternalKeySystemTests())
     return;
 
-  ExpectEncryptionSchemeConfigRule(kExternal, EncryptionMode::kUnencrypted,
+  ExpectEncryptionSchemeConfigRule(kExternal, EncryptionScheme::kUnencrypted,
                                    EmeConfigRule::SUPPORTED);
-  ExpectEncryptionSchemeConfigRule(kExternal, EncryptionMode::kCenc,
+  ExpectEncryptionSchemeConfigRule(kExternal, EncryptionScheme::kCenc,
                                    EmeConfigRule::SUPPORTED);
-  ExpectEncryptionSchemeConfigRule(kExternal, EncryptionMode::kCbcs,
+  ExpectEncryptionSchemeConfigRule(kExternal, EncryptionScheme::kCbcs,
                                    EmeConfigRule::HW_SECURE_CODECS_NOT_ALLOWED);
 }
 

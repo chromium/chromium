@@ -1,0 +1,374 @@
+// Copyright 2015 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Next MinVersion: 23
+
+module arc.mojom;
+
+// These values describe failure reason of sign-in.
+[Extensible]
+enum ArcSignInStatus {
+  // Negative values are reserved for internal use.
+  // The values are shuffled to keep the backward compatibility and don't match
+  // ProvisioningResult in arc_optin_uma.h
+  // Next value: 22.
+  UNKNOWN_ERROR = 0,
+
+  // Mojo errors:
+  // MOJO_VERSION_MISMATCH: is sent when an API is not supported
+  //   due to Host/Instance version mismatch.
+  // MOJO_CALL_TIMEOUT: is sent when a Mojo invocation is started
+  //   but not completed with time out.
+  MOJO_VERSION_MISMATCH = 6,
+  MOJO_CALL_TIMEOUT = 7,
+
+  // Device check-in errors:
+  // DEVICE_CHECK_IN_FAILED: is sent when "check-in" procedure is completed
+  //   but is actually failed.
+  // DEVICE_CHECK_IN_TIMEOUT: is sent when "check-in" procedure started
+  //   but is not completed.
+  // DEVICE_CHECK_IN_INTERNAL_ERROR: is sent when "check-in" procedure is
+  //   started, but some unexpected error situation happens so that it could
+  //   not completed.
+  DEVICE_CHECK_IN_FAILED = 4,
+  DEVICE_CHECK_IN_TIMEOUT = 8,
+  DEVICE_CHECK_IN_INTERNAL_ERROR = 9,
+
+  // GMS errors:
+  // GMS_NETWORK_ERROR: is sent when GMS sign-in procedure is started, but
+  //   it reports NETWORK_ERROR.
+  // GMS_SERVICE_UNAVAILABLE: is sent when GMS sign-in procedure is started
+  //   but it reports SERVICE_UNAVAILABLE. Note that this is not generic
+  //   service unavailable error code.
+  // GMS_BAD_AUTHENTICATION: is sent when GMS sign-in procedure is started
+  //   but it reports BAD_AUTHENTICATION.
+  // GMS_SIGN_IN_FAILED: is sent when GMS sign in procedure is started but
+  //   it reports an error other than above NETWORK_ERROR, SERVICE_UNAVAILABLE
+  //   or BAD_AUTHENTICATION. In general, we do not expect this kind of cases.
+  // GMS_SIGN_IN_TIMEOUT: is sent when GMS sign in procedure is started but
+  //   not returned.
+  // GMS_SIGN_IN_INTERNAL_ERROR: is sent when GMS sign in procedure is started
+  //   but could not completed.
+  GMS_NETWORK_ERROR = 1,
+  GMS_SERVICE_UNAVAILABLE = 2,
+  GMS_BAD_AUTHENTICATION = 3,
+  GMS_SIGN_IN_FAILED = 10,
+  GMS_SIGN_IN_TIMEOUT = 11,
+  GMS_SIGN_IN_INTERNAL_ERROR = 12,
+
+  // Cloud provisioning errors.
+  CLOUD_PROVISION_FLOW_FAILED = 5,
+  CLOUD_PROVISION_FLOW_TIMEOUT = 13,
+  CLOUD_PROVISION_FLOW_INTERNAL_ERROR = 14,
+
+  // Network connection is unavailable.
+  [MinVersion=8] NO_NETWORK_CONNECTION = 15,
+
+  // Server does not return authorization.
+  [MinVersion=10] CHROME_SERVER_COMMUNICATION_ERROR = 16,
+
+  // ARC was disabled for Active Directory user.
+  [MinVersion=10] ARC_DISABLED = 17,
+
+  [MinVersion=10] SUCCESS = 18,
+
+  // ARC was already provisioned.
+  [MinVersion=11] SUCCESS_ALREADY_PROVISIONED = 19,
+
+  // Account type is not supported for authorization.
+  [MinVersion=16] UNSUPPORTED_ACCOUNT_TYPE = 20,
+
+  // Account is not present in Chrome OS Account Manager.
+  [MinVersion=21] CHROME_ACCOUNT_NOT_FOUND = 21,
+};
+
+// These values describe account check status.
+[Extensible]
+enum AccountCheckStatus {
+    // Checked account exists and is up to date.
+    [MinVersion=9] UP_TO_DATE = 0,
+
+    // Checked account is new in the system.
+    [MinVersion=9] NEW = 1,
+
+    // Checked account exists but need to be reauthorized.
+    [MinVersion=9] NEED_REAUTH = 2,
+
+    // Checked account exists but it is in unknown state.
+    [MinVersion=9] UNKNOWN = 3,
+
+    // Account check has failed.
+    [MinVersion=9] CHECK_FAILED = 4,
+
+    // NOTE: If you add any entries to this enum, you must also update the
+    // corresponding UMA callsite in Chrome arc::UpdateAuthAccountCheckStatus.
+};
+
+[Extensible]
+enum MainAccountResolutionStatus {
+    // No hash code was set for the main account. System contains no account of
+    // required type.
+    [MinVersion=22] NO_HASH_CODE_NO_ACCOUNT = 0,
+
+    // No hash code was set for the main account. System contains only single
+    // account of required type.
+    [MinVersion=22] NO_HASH_CODE_SINGLE_ACCOUNT = 1,
+
+    // No hash code was set for the main account. System contains multiple
+    // accounts of required type.
+    [MinVersion=22] NO_HASH_CODE_MULTIPLE_ACCOUNTS = 2,
+
+    // Hash code was set but no account currently available.
+    [MinVersion=22] HASH_CODE_NO_ACCOUNT = 3,
+
+    // Hash code was set but it does not match single account of required type.
+    [MinVersion=22] HASH_CODE_DO_NOT_MATCH_SINGLE_ACCOUNT = 4,
+
+    // Hash code was set but it does not match multiple accounts of required
+    // type.
+    [MinVersion=22] HASH_CODE_DO_NOT_MATCH_MULTIPLE_ACCOUNTS = 5,
+
+    // Hash code was set and it matches single account of required type.
+    [MinVersion=22] HASH_CODE_MATCH_SINGLE_ACCOUNT = 6,
+
+    // Hash code was set and it matches one of multiple accounts of required
+    // type.
+    [MinVersion=22] HASH_CODE_MATCH_MULTIPLE_ACCOUNTS = 7,
+
+    // Hash code collides with multiple accounts of required type.
+    [MinVersion=22] HASH_CODE_COLLIDE_FOR_MULTIPLE_ACCOUNTS = 8,
+
+    // NOTE: If you add any entries to this enum, you must also update the
+    // corresponding UMA ArcAuthMainAccountResolutionStatus at
+    // tools/metrics/histograms/enums.xml.
+};
+
+// These values describe the result of ARC attempting to change supervision
+// state after an account type change.
+[Extensible]
+enum SupervisionChangeStatus {
+  // CloudDPC supervision was disabled successfully.
+  [MinVersion=13] CLOUD_DPC_DISABLED = 0,
+
+  // CloudDPC supervision was already disabled.
+  [MinVersion=13] CLOUD_DPC_ALREADY_DISABLED = 1,
+
+  // CloudDPC supervision was enabled successfully.
+  [MinVersion=13] CLOUD_DPC_ENABLED = 2,
+
+  // CloudDPC supervision was already enabled.
+  [MinVersion=13] CLOUD_DPC_ALREADY_ENABLED = 3,
+
+  // Invalid state returned from Chrome.
+  [MinVersion=13] INVALID_SUPERVISION_STATE = 4,
+
+  // Failed to disable CloudDPC due to an unspecified error.
+  [MinVersion=13] CLOUD_DPC_DISABLING_FAILED = 5,
+
+  // Failed to enable CloudDPC due to an unspecified error.
+  [MinVersion=13] CLOUD_DPC_ENABLING_FAILED = 6,
+};
+
+// These values describe the type of the Chrome account to provision.
+[Extensible]
+enum ChromeAccountType {
+  // Next value: 6
+  UNKNOWN = 0,
+
+  // Chrome login account type is a user account.
+  USER_ACCOUNT = 1,
+
+  // Chrome login account type is a robot (service) account.
+  ROBOT_ACCOUNT = 2,
+
+  // Chrome login account type is an Active Directory account.
+  ACTIVE_DIRECTORY_ACCOUNT = 3,
+
+  // Chrome login account type is a child account.
+  CHILD_ACCOUNT = 4,
+
+  // Chrome login account is a demo session account that was enrolled offline,
+  // using policies bundled with Chrome OS, and thus does not have a working
+  // robot account associated with it.
+  [MinVersion=14] OFFLINE_DEMO_ACCOUNT = 5,
+};
+
+// These values describe the type of the metrics to report.
+[Extensible]
+enum MetricsType {
+  // Duration of waiting for network connection in milliseconds.
+  NETWORK_WAITING_TIME_MILLISECONDS = 0,
+
+  // Number of attempts to wait for Checkin task completed. 0 indicates that
+  // Checkin task was already completed prior to GMS SignIn.
+  CHECKIN_ATTEMPTS = 1,
+
+  // Duration of waiting for Checkin task completed in milliseconds.
+  CHECKIN_TIME_MILLISECONDS = 2,
+
+  // Duration of waiting for sign-in completed in milliseconds.
+  SIGNIN_TIME_MILLISECONDS = 3,
+
+  // Duration of checking the status of account.
+  [MinVersion=9] ACCOUNT_CHECK_MILLISECONDS = 4,
+};
+
+// These values describe the type of account update.
+[Extensible]
+enum AccountUpdateType {
+  // An account was updated or inserted in Chrome OS Account Manager.
+  UPSERT = 0,
+
+  // An account was removed from Chrome OS Account Manager.
+  REMOVAL = 1,
+};
+
+// The necessary information for Android to sign in and provision itself.
+struct AccountInfo {
+  // Name of account, used to map to existing Android account.
+  [MinVersion=9] string? account_name@4;
+
+  // The authorization code that can be used in Android to sign in when
+  // account_type is USER_ACCOUNT, ROBOT_ACCOUNT or CHILD_ACCOUNT. If it is
+  // null in these cases, sign-in will be skipped.
+  string? auth_code@0;
+
+  // If account_type is ACTIVE_DIRECTORY_ACCOUNT, this contains an enrollment
+  // token for a Managed Google Play account. If it is null in this case,
+  // sign-in will be skipped.
+  [MinVersion=6] string? enrollment_token@3;
+
+  // The type of Chrome account to provision.
+  ChromeAccountType account_type@1;
+
+  // Whether the account is managed from Chrome OS.
+  bool is_managed@2;
+};
+
+// Information about an account in ARC. Used during the one-time migration of
+// accounts from ARC to Chrome OS Account Manager.
+struct ArcAccountInfo {
+  // Account's email id.
+  string email;
+
+  // Account's obfuscated Gaia id.
+  string gaia_id;
+};
+
+// Next Method ID: 18.
+interface AuthHost {
+  // Notifies Chrome that the authorization flow is completed and provides
+  // resulting |status|. If |initial_signin| is true then this indicates that
+  // authorization happened for initial device provisioning.
+  // If |account_name| is not present, it is assumed to be the Primary/Device
+  // account. It cannot/must not be supplied when |initial_signin| is true.
+  [MinVersion=11] OnAuthorizationComplete@10(
+      ArcSignInStatus status,
+      bool initial_signin,
+      [MinVersion=18] string? account_name);
+
+  // Notifies Chrome that the sign-in is completed successfully.
+  [MinVersion=2] OnSignInCompleteDeprecated@2();
+
+  // Notifies Chrome that the sign-in fails to complete and provides failure
+  // reason.
+  [MinVersion=2] OnSignInFailedDeprecated@3(ArcSignInStatus reason);
+
+  // Asynchronously requests an authorization code, as well as the account
+  // information. If |initial_signin| is true then that means request is for
+  // initial signin flow. Otherwise it is used for reauthorization flow.
+  [MinVersion=5] RequestAccountInfoDeprecated@7(
+      [MinVersion=11] bool initial_signin);
+
+  // Reports metrics to Chrome to be recorded in UMA.
+  [MinVersion=7] ReportMetrics@8(MetricsType metrics_type, int32 value);
+
+  // Reports result of account check.
+  [MinVersion=9] ReportAccountCheckStatus@9(AccountCheckStatus status);
+
+  // Reports to Chrome the result of changing the supervision state.
+  // Chrome informs ARC on every boot if a supervision transition is necessary
+  // or not (see https://crrev.com/c/1069031). ARC should report back only if
+  // a transition was necessary.
+  [MinVersion=13] ReportSupervisionChangeStatus@11(
+      SupervisionChangeStatus status);
+
+  // Requests an authorization code, as well as the account information for the
+  // Primary/Device Account in Chrome OS Account Manager.
+  // This is called for ARC's initial provisioning flow.
+  // If the request completes successfully, |status| must be SUCCESS and
+  // |account_info| is not null.
+  // In case of an error, |status| must contain the reason of failure, other
+  // than SUCCESS, and |account_info| is null.
+  [MinVersion=15] RequestPrimaryAccountInfo@12()
+      => (ArcSignInStatus status, AccountInfo? account_info);
+
+  // Requests an authorization code, as well as the account information for an
+  // account in Chrome OS Account Manager.
+  // This must be called after ARC's initial provisioning flow is complete.
+  // If the request completes successfully, |status| must be SUCCESS and
+  // |account_info| is not null.
+  // In case of an error, |status| must contain the reason of failure, other
+  // than SUCCESS, and |account_info| is null.
+  [MinVersion=15] RequestAccountInfo@13(string account_name)
+      => (ArcSignInStatus status, AccountInfo? account_info);
+
+  // Returns |true| if Chrome OS Account Manager is available for this session.
+  // Account Manager is not available in Guest Sessions and Public Sessions
+  // among other cases. Returning |true| here has the effect of routing all
+  // Google account management |Intent|s from Android to Chrome OS Account
+  // Manager, instead of launching Android's account management flows.
+  [MinVersion=20] IsAccountManagerAvailable@14() => (bool is_available);
+
+  // Handles an Android |Intent| to add a Google account by displaying Chrome OS
+  // Account Manager's account addition UI.
+  [MinVersion=20] HandleAddAccountRequest@15();
+
+  // Handles an Android |Intent| to remove a Google account. |account_name| is
+  // the Google email id for the account. |account_name| cannot be null or
+  // empty.
+  // Note: Calling this API will not silently remove |account_name|. Currently
+  // it redirects users to Chrome OS Account Manager's Settings Page.
+  [MinVersion=20] HandleRemoveAccountRequest@16(string account_name);
+
+  // Handles an Android |Intent| to update a Google account by displaying Chrome
+  // OS Account Manager's re-authentication UI. |account_name| is the Google
+  // email id for the account. |account_name| cannot be null or empty.
+  [MinVersion=20] HandleUpdateCredentialsRequest@17(string account_name);
+};
+
+// Next Method ID: 6
+interface AuthInstance {
+  // DEPRECATED: Please use Init@2 instead.
+  InitDeprecated@0(AuthHost host_ptr);
+
+  // Establishes full-duplex communication with the host.
+  [MinVersion=12] Init@2(AuthHost host_ptr) => ();
+
+  // Callback from RequestAccountInfo. This cannot be a normal callback since
+  // the result can sometimes take a few minutes in some cases (Kiosk mode),
+  // and in other cases there is a UI that the user is shown and they can take
+  // an arbitrarily long amount of time to interact with.
+  // If the request completes successfully, |status| must be SUCCESS and
+  // |account_info| is not null.
+  // In case of an error, |status| must contain the reason of failure, other
+  // than SUCCESS, and |account_info| is null.
+  [MinVersion=5] OnAccountInfoReadyDeprecated@1(
+      AccountInfo? account_info, [MinVersion=10] ArcSignInStatus status);
+
+  // A notification that an account was updated (or inserted, or removed; see
+  // |AccountUpdateType|) in Chrome OS Account Manager.
+  // This notification is sent for the Primary/Device Account and Secondary
+  // Accounts, both.
+  [MinVersion=17] OnAccountUpdated@3(
+      string account_name, AccountUpdateType update_type);
+
+  // Gets the list of Google accounts in ARC. Called during the one-time
+  // migration of accounts from ARC to Chrome OS Account Manager.
+  [MinVersion=19] GetGoogleAccounts@4() => (array<ArcAccountInfo> accounts);
+
+  // Gets resolution status of main account for statistics reporting.
+  [MinVersion=22] GetMainAccountResolutionStatus@5()
+      => (MainAccountResolutionStatus status);
+};

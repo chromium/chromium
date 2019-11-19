@@ -20,8 +20,6 @@
 
 #include "base/bind.h"
 #include "base/compiler_specific.h"
-#include "base/memory/protected_memory.h"
-#include "base/memory/protected_memory_cfi.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/posix/unix_domain_socket.h"
 #include "base/rand_util.h"

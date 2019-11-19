@@ -34,7 +34,7 @@ class LoadWatcher : public content::RenderFrameObserver {
     delete this;
   }
 
-  void DidFailProvisionalLoad(const blink::WebURLError& error) override {
+  void DidFailProvisionalLoad() override {
     // Use PostTask to avoid running user scripts while handling this
     // DidFailProvisionalLoad notification.
     base::ThreadTaskRunnerHandle::Get()->PostTask(
@@ -53,7 +53,7 @@ class LoadWatcher : public content::RenderFrameObserver {
 }  // namespace
 
 RenderFrameObserverNatives::RenderFrameObserverNatives(ScriptContext* context)
-    : ObjectBackedNativeHandler(context), weak_ptr_factory_(this) {}
+    : ObjectBackedNativeHandler(context) {}
 
 RenderFrameObserverNatives::~RenderFrameObserverNatives() {}
 

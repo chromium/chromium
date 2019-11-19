@@ -37,9 +37,9 @@ bool AudioDeviceDescription::IsLoopbackDevice(const std::string& device_id) {
 
 // static
 bool AudioDeviceDescription::UseSessionIdToSelectDevice(
-    int session_id,
+    const base::UnguessableToken& session_id,
     const std::string& device_id) {
-  return session_id && device_id.empty();
+  return !session_id.is_empty() && device_id.empty();
 }
 
 // static

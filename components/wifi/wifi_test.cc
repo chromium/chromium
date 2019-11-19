@@ -14,14 +14,15 @@
 #include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
-#include "base/message_loop/message_loop.h"
 #include "base/message_loop/message_loop_current.h"
+#include "base/message_loop/message_pump_type.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/single_thread_task_executor.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/wifi/wifi_service.h"
@@ -103,7 +104,6 @@ WiFiTest::Result WiFiTest::Main(int argc, const char* argv[]) {
     return RESULT_WRONG_USAGE;
   }
 
-  base::MessageLoopForIO loop;
   result_ = RESULT_PENDING;
 
   return result_;
@@ -135,10 +135,10 @@ bool WiFiTest::ParseCommandLine(int argc, const char* argv[]) {
     MessageBoxA(nullptr, __FUNCTION__, "Debug Me!", MB_OK);
 #endif
 
-  base::MessageLoopForIO loop;
+  base::SingleThreadTaskExecutor executor(base::MessagePumpType::IO);
 
   wifi_service_.reset(WiFiService::Create());
-  wifi_service_->Initialize(loop.task_runner());
+  wifi_service_->Initialize(executor.task_runner());
 
   if (parsed_command_line.HasSwitch("list")) {
     base::ListValue network_list;
@@ -198,7 +198,7 @@ bool WiFiTest::ParseCommandLine(int argc, const char* argv[]) {
       }
 
       wifi_service_->SetEventObservers(
-          loop.task_runner(),
+          executor.task_runner(),
           base::Bind(&WiFiTest::OnNetworksChanged, base::Unretained(this)),
           base::Bind(&WiFiTest::OnNetworkListChanged, base::Unretained(this)));
 
@@ -231,7 +231,7 @@ bool WiFiTest::ParseCommandLine(int argc, const char* argv[]) {
 
   if (parsed_command_line.HasSwitch("scan")) {
     wifi_service_->SetEventObservers(
-        loop.task_runner(),
+        executor.task_runner(),
         base::Bind(&WiFiTest::OnNetworksChanged, base::Unretained(this)),
         base::Bind(&WiFiTest::OnNetworkListChanged, base::Unretained(this)));
     wifi_service_->RequestNetworkScan();
@@ -258,7 +258,8 @@ bool WiFiTest::ParseCommandLine(int argc, const char* argv[]) {
 int main(int argc, const char* argv[]) {
   base::CommandLine::Init(argc, argv);
   logging::LoggingSettings settings;
-  settings.logging_dest = logging::LOG_TO_SYSTEM_DEBUG_LOG;
+  settings.logging_dest =
+      logging::LOG_TO_SYSTEM_DEBUG_LOG | logging::LOG_TO_STDERR;
   logging::InitLogging(settings);
 
   wifi::WiFiTest wifi_test;

@@ -39,15 +39,12 @@ void NSSCertDatabaseChromeOS::SetSystemSlot(
   profile_filter_.Init(GetPublicSlot(), GetPrivateSlot(), GetSystemSlot());
 }
 
-ScopedCERTCertificateList NSSCertDatabaseChromeOS::ListCertsSync() {
-  return ListCertsImpl(profile_filter_);
-}
-
 void NSSCertDatabaseChromeOS::ListCerts(
     NSSCertDatabase::ListCertsCallback callback) {
-  base::PostTaskWithTraitsAndReplyWithResult(
+  base::PostTaskAndReplyWithResult(
       FROM_HERE,
-      {base::MayBlock(), base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
+      {base::ThreadPool(), base::MayBlock(),
+       base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
       base::BindOnce(&NSSCertDatabaseChromeOS::ListCertsImpl, profile_filter_),
       std::move(callback));
 }

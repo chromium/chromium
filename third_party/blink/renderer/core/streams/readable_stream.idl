@@ -5,8 +5,7 @@
 // https://streams.spec.whatwg.org/#rs-class
 [
     Exposed=(Window,Worker,Worklet),
-    // TODO(yhirano): Remove CustomConstructor. See https://crbug.com/906476.
-    CustomConstructor(optional any underlyingSource, optional any strategy),
+    Constructor(optional any underlyingSource, optional any strategy),
     RaisesException=Constructor,
     ConstructorCallWith=ScriptState
 ] interface ReadableStream {
@@ -16,10 +15,10 @@
     // TODO(yhirano): function length is different from what's specced. Fix it.
     [RaisesException, CallWith=ScriptState, NotEnumerable] Promise<any> cancel(
         optional any reason);
-    [RaisesException, CallWith=ScriptState, NotEnumerable] any getReader(optional any mode);
-    [RaisesException, CallWith=ScriptState, NotEnumerable] any pipeThrough(
+    [RaisesException, CallWith=ScriptState, NotEnumerable, MeasureAs=ReadableStreamGetReader] any getReader(optional any mode);
+    [RaisesException, CallWith=ScriptState, NotEnumerable, MeasureAs=ReadableStreamPipeThrough] any pipeThrough(
         any transformStream, optional any options);
-    [RaisesException, CallWith=ScriptState, NotEnumerable] Promise<any> pipeTo(
+    [RaisesException, CallWith=ScriptState, NotEnumerable, MeasureAs=ReadableStreamPipeTo] Promise<any> pipeTo(
         any destination, optional any option);
     [RaisesException, CallWith=ScriptState, NotEnumerable] any tee();
 };

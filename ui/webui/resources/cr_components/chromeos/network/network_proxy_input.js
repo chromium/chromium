@@ -4,10 +4,13 @@
 
 /**
  * @fileoverview Polymer element for displaying and editing a single
- * network proxy value. When the URL or port changes, a 'proxy-change' event is
- * fired with the combined url and port values passed as a single string,
- * url:port.
+ * network proxy value. When the URL or port changes, a 'proxy-input-change'
+ * event is fired with the combined url and port values passed as a single
+ * string, url:port.
  */
+(function() {
+'use strict';
+
 Polymer({
   is: 'network-proxy-input',
 
@@ -32,12 +35,15 @@ Polymer({
 
     /**
      * The proxy object.
-     * @type {!CrOnc.ProxyLocation}
+     * @type {!chromeos.networkConfig.mojom.ManagedProxyLocation}
      */
     value: {
       type: Object,
       value: function() {
-        return {Host: '', Port: 80};
+        return {
+          host: OncMojo.createManagedString(''),
+          port: OncMojo.createManagedInt(80),
+        };
       },
       notify: true,
     },
@@ -52,11 +58,12 @@ Polymer({
    * @private
    */
   onValueChange_: function() {
-    let port = parseInt(this.value.Port, 10);
+    let port = parseInt(this.value.port.activeValue, 10);
     if (isNaN(port)) {
       port = 80;
     }
-    this.value.Port = port;
-    this.fire('proxy-change', {value: this.value});
+    this.value.port.activeValue = port;
+    this.fire('proxy-input-change', this.value);
   }
 });
+})();

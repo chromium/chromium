@@ -11,7 +11,7 @@ import "url/mojom/origin.mojom";
 // cloning. This is implemented by the browser process.
 interface SessionStorageNamespace {
   OpenArea(url.mojom.Origin origin,
-           associated StorageArea& area);
+           pending_associated_receiver<StorageArea> area);
   // Clones this namespace the new given namespace. Used before navigating to
   // a new frame which would be given this session storage namespace.
   Clone(string clone_to_namespace);

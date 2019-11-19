@@ -7,7 +7,7 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/files/file_path.h"
-#include "jni/ContentUriTestUtils_jni.h"
+#include "base/test/base_unittests_jni_headers/ContentUriTestUtils_jni.h"
 
 using base::android::ScopedJavaLocalRef;
 

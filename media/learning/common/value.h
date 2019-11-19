@@ -36,6 +36,7 @@ class COMPONENT_EXPORT(LEARNING_COMMON) Value {
 
   explicit Value(const char* x);
   explicit Value(const std::string& x);
+  explicit Value(bool x);
 
   Value(const Value& other);
   Value(Value&&) noexcept;

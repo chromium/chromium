@@ -245,6 +245,10 @@ class PannerNode final : public AudioNode {
   double coneOuterGain() const;
   void setConeOuterGain(double, ExceptionState&);
 
+  // InspectorHelperMixin
+  void ReportDidCreate() final;
+  void ReportWillBeDestroyed() final;
+
  private:
   Member<AudioParam> position_x_;
   Member<AudioParam> position_y_;

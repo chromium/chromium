@@ -1,4 +1,4 @@
-<!doctype html>
+<!DOCTYPE html>
 <style>
 .animated {
   animation: test 10ms;
@@ -8,27 +8,23 @@
   0% {}
 }
 </style>
-<div id="test">FAIL</div>
+<div id="block"></div>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
 <script>
-if (window.testRunner) {
-  testRunner.dumpAsText();
-  testRunner.waitUntilDone();
-}
-onload = function() {
-  // This test covers a specific regression where an on-demand timing update
-  // that was triggered after an animation received a start time could cause
-  // CSS Animation and Transition events to not be fired on the subseuquent
-  // animation-frame timing update.
-  test.classList.add('animated');
-  test.addEventListener('animationstart', function() {
-    document.documentElement.textContent = 'PASS';
-    if (window.testRunner)
-      testRunner.notifyDone();
-  });
-  requestAnimationFrame(function() {
-    setTimeout(function() {
-      getComputedStyle(test).left;
-    });
-  });
-}
+async_test(t => {
+  window.addEventListener("load", t.step_func(() => {
+    // This test covers a specific regression where an on-demand timing update
+    // that was triggered after an animation received a start time could cause
+    // CSS Animation and Transition events to not be fired on the subseuquent
+    // animation-frame timing update.
+    block.classList.add('animated');
+    block.addEventListener('animationstart', t.step_func_done(() => {}));
+    requestAnimationFrame(t.step_func(() => {
+      t.step_timeout(() => {
+        getComputedStyle(block).left;
+      });
+    }));
+  }));
+}, "Should fire animation events after on-demand timing update");
 </script>

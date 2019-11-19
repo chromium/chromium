@@ -2,12 +2,37 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-cr.define('downloads', function() {
-  const Item = Polymer({
+import {Polymer, html, beforeNextRender} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {BrowserProxy} from './browser_proxy.js';
+import {DangerType, States} from './constants.js';
+import {IconLoader} from './icon_loader.js';
+import './icons.js';
+import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
+import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
+import 'chrome://resources/cr_elements/cr_icons_css.m.js';
+import {getInstance} from 'chrome://resources/cr_elements/cr_toast/cr_toast_manager.m.js';
+import 'chrome://resources/cr_elements/hidden_style_css.m.js';
+import 'chrome://resources/cr_elements/icons.m.js';
+import 'chrome://resources/cr_elements/shared_vars_css.m.js';
+import 'chrome://resources/js/action_link.js';
+import 'chrome://resources/cr_elements/action_link_css.m.js';
+import {HTMLEscape} from 'chrome://resources/js/util.m.js';
+import {assert} from 'chrome://resources/js/assert.m.js';
+import './strings.m.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {FocusRowBehavior} from 'chrome://resources/js/cr/ui/focus_row_behavior.m.js';
+import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.js';
+import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
+import 'chrome://resources/polymer/v3_0/paper-progress/paper-progress.js';
+import 'chrome://resources/polymer/v3_0/paper-styles/color.js';
+
+  Polymer({
     is: 'downloads-item',
 
+    _template: html`{__html_template__}`,
+
     behaviors: [
-      cr.ui.FocusRowBehavior,
+      FocusRowBehavior,
     ],
 
     /** Used by FocusRowBehavior. */
@@ -107,12 +132,12 @@ cr.define('downloads', function() {
 
     /** @override */
     ready: function() {
-      this.mojoHandler_ = downloads.BrowserProxy.getInstance().handler;
+      this.mojoHandler_ = BrowserProxy.getInstance().handler;
       this.content = this.$.content;
     },
 
     focusOnRemoveButton: function() {
-      cr.ui.focusWithoutInk(this.$.remove);
+      focusWithoutInk(this.$.remove);
     },
 
     /** Overrides FocusRowBehavior. */
@@ -128,7 +153,7 @@ cr.define('downloads', function() {
 
     /** @return {!HTMLElement} */
     getFileIcon: function() {
-      return assert(this.$['file-icon']);
+      return /** @type {!HTMLElement} */ (this.$['file-icon']);
     },
 
     /**
@@ -164,7 +189,7 @@ cr.define('downloads', function() {
      * @private
      */
     computeCompletelyOnDisk_: function() {
-      return this.data.state == downloads.States.COMPLETE &&
+      return this.data.state == States.COMPLETE &&
           !this.data.fileExternallyRemoved;
     },
 
@@ -177,7 +202,7 @@ cr.define('downloads', function() {
         return '';
       }
 
-      const url = `chrome://extensions#${this.data.byExtId}`;
+      const url = `chrome://extensions/?id=${this.data.byExtId}`;
       const name = this.data.byExtName;
       return loadTimeData.getStringF('controlledByUrl', url, HTMLEscape(name));
     },
@@ -211,28 +236,50 @@ cr.define('downloads', function() {
       const data = this.data;
 
       switch (data.state) {
-        case downloads.States.DANGEROUS:
-          const fileName = data.fileName;
+        case States.COMPLETE:
           switch (data.dangerType) {
-            case downloads.DangerType.DANGEROUS_FILE:
-              return loadTimeData.getString('dangerFileDesc');
-
-            case downloads.DangerType.DANGEROUS_URL:
-            case downloads.DangerType.DANGEROUS_CONTENT:
-            case downloads.DangerType.DANGEROUS_HOST:
-              return loadTimeData.getString('dangerDownloadDesc');
-
-            case downloads.DangerType.UNCOMMON_CONTENT:
-              return loadTimeData.getString('dangerUncommonDesc');
-
-            case downloads.DangerType.POTENTIALLY_UNWANTED:
-              return loadTimeData.getString('dangerSettingsDesc');
+            case DangerType.DEEP_SCANNED_SAFE:
+              return loadTimeData.getString('deepScannedSafeDesc');
+            case DangerType.DEEP_SCANNED_OPENED_DANGEROUS:
+              return loadTimeData.getString('deepScannedOpenedDangerousDesc');
           }
           break;
 
-        case downloads.States.IN_PROGRESS:
-        case downloads.States.PAUSED:  // Fallthrough.
+        case States.DANGEROUS:
+          const fileName = data.fileName;
+          switch (data.dangerType) {
+            case DangerType.DANGEROUS_FILE:
+              return loadTimeData.getString('dangerFileDesc');
+
+            case DangerType.DANGEROUS_URL:
+            case DangerType.DANGEROUS_CONTENT:
+            case DangerType.DANGEROUS_HOST:
+              return loadTimeData.getString('dangerDownloadDesc');
+
+            case DangerType.UNCOMMON_CONTENT:
+              return loadTimeData.getString('dangerUncommonDesc');
+
+            case DangerType.POTENTIALLY_UNWANTED:
+              return loadTimeData.getString('dangerSettingsDesc');
+
+            case DangerType.SENSITIVE_CONTENT_WARNING:
+              return loadTimeData.getString('sensitiveContentWarningDesc');
+          }
+          break;
+
+        case States.IN_PROGRESS:
+        case States.PAUSED:  // Fallthrough.
           return data.progressStatusText;
+
+        case States.INTERRUPTED:
+          switch (data.dangerType) {
+            case DangerType.SENSITIVE_CONTENT_BLOCK:
+              return loadTimeData.getString('sensitiveContentBlockedDesc');
+            case DangerType.BLOCKED_TOO_LARGE:
+              return loadTimeData.getString('blockedTooLargeDesc');
+            case DangerType.BLOCKED_PASSWORD_PROTECTED:
+              return loadTimeData.getString('blockedPasswordProtectedDesc');
+          }
       }
 
       return '';
@@ -243,6 +290,24 @@ cr.define('downloads', function() {
      * @private
      */
     computeIcon_: function() {
+      if (this.data) {
+        const dangerType = this.data.dangerType;
+
+        if ((loadTimeData.getBoolean('requestsApVerdicts') &&
+             dangerType == DangerType.UNCOMMON_CONTENT) ||
+            dangerType == DangerType.SENSITIVE_CONTENT_WARNING) {
+          return 'cr:error';
+        }
+
+        const WARNING_TYPES = [
+          DangerType.SENSITIVE_CONTENT_BLOCK,
+          DangerType.BLOCKED_TOO_LARGE,
+          DangerType.BLOCKED_PASSWORD_PROTECTED,
+        ];
+        if (WARNING_TYPES.includes(dangerType)) {
+          return 'cr:warning';
+        }
+      }
       if (this.isDangerous_) {
         return 'cr:warning';
       }
@@ -257,8 +322,8 @@ cr.define('downloads', function() {
      * @private
      */
     computeIsActive_: function() {
-      return this.data.state != downloads.States.CANCELLED &&
-          this.data.state != downloads.States.INTERRUPTED &&
+      return this.data.state != States.CANCELLED &&
+          this.data.state != States.INTERRUPTED &&
           !this.data.fileExternallyRemoved;
     },
 
@@ -267,7 +332,7 @@ cr.define('downloads', function() {
      * @private
      */
     computeIsDangerous_: function() {
-      return this.data.state == downloads.States.DANGEROUS;
+      return this.data.state == States.DANGEROUS;
     },
 
     /**
@@ -275,7 +340,7 @@ cr.define('downloads', function() {
      * @private
      */
     computeIsInProgress_: function() {
-      return this.data.state == downloads.States.IN_PROGRESS;
+      return this.data.state == States.IN_PROGRESS;
     },
 
     /**
@@ -284,10 +349,10 @@ cr.define('downloads', function() {
      */
     computeIsMalware_: function() {
       return this.isDangerous_ &&
-          (this.data.dangerType == downloads.DangerType.DANGEROUS_CONTENT ||
-           this.data.dangerType == downloads.DangerType.DANGEROUS_HOST ||
-           this.data.dangerType == downloads.DangerType.DANGEROUS_URL ||
-           this.data.dangerType == downloads.DangerType.POTENTIALLY_UNWANTED);
+          (this.data.dangerType == DangerType.DANGEROUS_CONTENT ||
+           this.data.dangerType == DangerType.DANGEROUS_HOST ||
+           this.data.dangerType == DangerType.DANGEROUS_URL ||
+           this.data.dangerType == DangerType.POTENTIALLY_UNWANTED);
     },
 
     /** @private */
@@ -307,14 +372,7 @@ cr.define('downloads', function() {
 
       // Wait for dom-if to switch to true, in case the text has just changed
       // from empty.
-      // TODO (rbpotter): Remove this conditional when Polymer 2 migration is
-      // complete.
-      if (Polymer.DomIf) {
-        Polymer.RenderStatus.beforeNextRender(
-            this, () => this.toggleButtonClass_());
-      } else {
-        this.async(() => this.toggleButtonClass_());
-      }
+      beforeNextRender(this, () => this.toggleButtonClass_());
     },
 
     /**
@@ -350,8 +408,8 @@ cr.define('downloads', function() {
      * @private
      */
     computeShowCancel_: function() {
-      return this.data.state == downloads.States.IN_PROGRESS ||
-          this.data.state == downloads.States.PAUSED;
+      return this.data.state == States.IN_PROGRESS ||
+          this.data.state == States.PAUSED;
     },
 
     /**
@@ -368,13 +426,13 @@ cr.define('downloads', function() {
      */
     computeTag_: function() {
       switch (this.data.state) {
-        case downloads.States.CANCELLED:
+        case States.CANCELLED:
           return loadTimeData.getString('statusCancelled');
 
-        case downloads.States.INTERRUPTED:
+        case States.INTERRUPTED:
           return this.data.lastReasonText;
 
-        case downloads.States.COMPLETE:
+        case States.COMPLETE:
           return this.data.fileExternallyRemoved ?
               loadTimeData.getString('statusRemoved') :
               '';
@@ -394,6 +452,11 @@ cr.define('downloads', function() {
     /** @private */
     observeControlledBy_: function() {
       this.$['controlled-by'].innerHTML = this.controlledBy_;
+      if (this.controlledBy_) {
+        const link = this.$$('#controlled-by a');
+        link.setAttribute('focus-row-control', '');
+        link.setAttribute('focus-type', 'controlledBy');
+      }
     },
 
     /** @private */
@@ -402,13 +465,21 @@ cr.define('downloads', function() {
         return;
       }
 
+      const OVERRIDDEN_ICON_TYPES = [
+        DangerType.SENSITIVE_CONTENT_BLOCK,
+        DangerType.BLOCKED_TOO_LARGE,
+        DangerType.BLOCKED_PASSWORD_PROTECTED,
+      ];
+
       if (this.isDangerous_) {
         this.$.url.removeAttribute('href');
+        this.useFileIcon_ = false;
+      } else if (OVERRIDDEN_ICON_TYPES.includes(this.data.dangerType)) {
         this.useFileIcon_ = false;
       } else {
         this.$.url.href = assert(this.data.url);
         const path = this.data.filePath;
-        downloads.IconLoader.getInstance()
+        IconLoader.getInstance()
             .loadIcon(this.$['file-icon'], path)
             .then(success => {
               if (path == this.data.filePath) {
@@ -448,6 +519,12 @@ cr.define('downloads', function() {
     },
 
     /** @private */
+    onUrlTap_: function() {
+      chrome.send('metricsHandler:recordAction',
+        ['Downloads_OpenUrlOfDownloadedItem']);
+    },
+
+    /** @private */
     onPauseOrResumeTap_: function() {
       if (this.isInProgress_) {
         this.mojoHandler_.pause(this.data.id);
@@ -458,8 +535,20 @@ cr.define('downloads', function() {
 
     /** @private */
     onRemoveTap_: function() {
+      const pieces = loadTimeData.getSubstitutedStringPieces(
+          loadTimeData.getString('toastRemovedFromList'), this.data.fileName);
+      pieces.forEach(p => {
+        // Make the file name collapsible.
+        p.collapsible = !!p.arg;
+      });
+      getInstance().showForStringPieces(
+          /**
+           * @type {!Array<{collapsible: boolean,
+           *                 value: string,
+           *                 arg: (string|null)}>}
+           */
+          (pieces), true);
       this.mojoHandler_.remove(this.data.id);
-      this.fire('restore-focus-after-remove');
     },
 
     /** @private */
@@ -491,6 +580,3 @@ cr.define('downloads', function() {
       });
     }
   });
-
-  return {Item: Item};
-});

@@ -10,7 +10,6 @@
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 #include "third_party/blink/renderer/core/execution_context/context_lifecycle_observer.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
-#include "third_party/blink/renderer/platform/bindings/trace_wrapper_member.h"
 
 namespace blink {
 
@@ -53,7 +52,7 @@ class MojoWatcher final : public ScriptWrappable,
   void RunReadyCallback(MojoResult);
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
-  TraceWrapperMember<V8MojoWatchCallback> callback_;
+  Member<V8MojoWatchCallback> callback_;
   mojo::ScopedTrapHandle trap_handle_;
   mojo::Handle handle_;
 };

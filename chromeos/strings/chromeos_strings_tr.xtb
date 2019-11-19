@@ -1,22 +1,41 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="tr">
+<translation id="1482734542997480527"><ph name="ENROLLMENT_DOMAIN" /> bu cihazı yönetiyor ve etkinliklerinizi izleyebilir.</translation>
 <translation id="1510238584712386396">Başlatıcı</translation>
 <translation id="1734367976349034509">Bu cihaz kuruluş tarafından yönetiliyor</translation>
+<translation id="1930797645656624981">Chrome OS Giriş Yöntemi Hizmeti</translation>
+<translation id="1979103255016296513">Şifre değişikliği zamanı geçti</translation>
 <translation id="2049639323467105390">Bu cihaz <ph name="DOMAIN" /> tarafından yönetiliyor.</translation>
 <translation id="2083960536266308407">Ekranda hiçbir şey bulunamadı</translation>
 <translation id="2338501278241028356">Yakındaki cihazları keşfetmek için Bluetooth'u aç</translation>
 <translation id="2805756323405976993">Uygulamalar</translation>
 <translation id="2872961005593481000">Kapat</translation>
-<translation id="3147142846278915599">Launcher (uygulamalar senkronize ediliyor...)</translation>
+<translation id="3008341117444806826">YENİLE</translation>
+<translation id="3838338534323494292">Yeni şifre</translation>
+<translation id="4003259559679196451"><ph name="ENROLLMENT_DOMAIN" /> bu cihazı yönetiyor ve ziyaret edilen web siteleri, şifreler ve e-postalar dahil olmak üzere tüm kullanıcı etkinliklerine erişimi var.</translation>
+<translation id="4227825898293920515">Şifrenin süresi <ph name="TIME" /> içinde doluyor</translation>
+<translation id="4429881212383817840">Kerberos biletinin süresi yakında doluyor</translation>
+<translation id="445059817448385655">Eski şifre</translation>
+<translation id="467510802200863975">Şifreler eşleşmiyor</translation>
 <translation id="4731797938093519117">Ebeveyn erişimi</translation>
+<translation id="4890353053343094602">Hemen yeni bir tane seçin</translation>
 <translation id="5212543919916444558">Ekranınızda size yardımcı olabileceğim bir şey bulamıyorum.
 Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="5222676887888702881">Çıkış</translation>
+<translation id="5317780077021120954">Kaydet</translation>
+<translation id="5332948983412042822">Yeni bir tane seçin</translation>
 <translation id="5457599981699367932">Misafir olarak Göz At</translation>
 <translation id="54609108002486618">Yönetilen</translation>
 <translation id="5832805196449965646">Kişi Ekle</translation>
 <translation id="5895138241574237353">Yeniden başlat</translation>
+<translation id="6058625436358447366">Bitirmek için eski ve yeni şifrenizi girin</translation>
+<translation id="6106186594183574873">Bitirmek için eski şifrenizi girin</translation>
+<translation id="6146993107019042706">Bitirmek için yeni şifrenizi girin</translation>
 <translation id="7658239707568436148">İptal</translation>
+<translation id="7690294790491645610">Yeni şifreyi doğrula</translation>
+<translation id="808894953321890993">Şifreyi değiştir</translation>
+<translation id="8747900814994928677">Değişikliği onaylayın</translation>
+<translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> için bileti yenileyin</translation>
 <translation id="9111102763498581341">Kilidi Aç</translation>
 </translationbundle>

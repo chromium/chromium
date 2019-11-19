@@ -1,0 +1,9 @@
+[document web]
+++[check box] name='CheckBox1' checked checkable:true xml-roles:checkbox
+++[check box] name='CheckBox2' checkable:true xml-roles:checkbox
+++[check box] name='CheckBox3' indeterminate checkable:true xml-roles:checkbox
+++[check box] name='CheckBox4' checkable:true xml-roles:checkbox
+++[check box] name='Complex checkbox' checkable:true xml-roles:checkbox
+++++[static] name='Complex '
+++++[entry] selectable-text
+++++[static] name=' checkbox'

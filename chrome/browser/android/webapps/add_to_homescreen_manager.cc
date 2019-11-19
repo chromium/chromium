@@ -9,8 +9,10 @@
 #include "base/location.h"
 #include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/android/chrome_jni_headers/AddToHomescreenManager_jni.h"
 #include "chrome/browser/android/shortcut_helper.h"
 #include "chrome/browser/android/webapk/webapk_install_service.h"
+#include "chrome/browser/android/webapps/add_to_homescreen_installer.h"
 #include "chrome/browser/banners/app_banner_manager_android.h"
 #include "chrome/browser/banners/app_banner_settings_helper.h"
 #include "chrome/browser/installable/installable_manager.h"
@@ -19,10 +21,9 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
-#include "jni/AddToHomescreenManager_jni.h"
 #include "mojo/public/cpp/bindings/interface_request.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
-#include "third_party/blink/public/platform/modules/installation/installation.mojom.h"
+#include "third_party/blink/public/mojom/installation/installation.mojom.h"
 #include "ui/gfx/android/java_bitmap.h"
 
 using base::android::JavaParamRef;
@@ -65,29 +66,61 @@ void AddToHomescreenManager::AddToHomescreen(
   if (!web_contents)
     return;
 
-  RecordAddToHomescreen();
-  if (is_webapk_compatible_) {
-    WebApkInstallService::Get(web_contents->GetBrowserContext())
-        ->InstallAsync(web_contents, data_fetcher_->shortcut_info(),
-                       data_fetcher_->primary_icon(),
-                       data_fetcher_->badge_icon(),
-                       InstallableMetrics::GetInstallSource(
-                           web_contents, InstallTrigger::MENU));
-  } else {
-    base::string16 user_title =
+  AddToHomescreenParams params;
+  params.app_type = data_fetcher_->shortcut_info().source ==
+                            ShortcutInfo::SOURCE_ADD_TO_HOMESCREEN_PWA
+                        ? AddToHomescreenParams::AppType::WEBAPK
+                        : AddToHomescreenParams::AppType::SHORTCUT;
+  params.shortcut_info =
+      std::make_unique<ShortcutInfo>(data_fetcher_->shortcut_info());
+  params.primary_icon = data_fetcher_->primary_icon();
+  params.badge_icon = data_fetcher_->badge_icon();
+  params.has_maskable_primary_icon = data_fetcher_->has_maskable_primary_icon();
+  params.install_source = InstallableMetrics::GetInstallSource(
+      data_fetcher_->web_contents(), InstallTrigger::MENU);
+  if (!is_webapk_compatible_) {
+    params.shortcut_info->user_title =
         base::android::ConvertJavaStringToUTF16(env, j_user_title);
-    data_fetcher_->shortcut_info().user_title = user_title;
-    ShortcutHelper::AddToLauncherWithSkBitmap(
-        web_contents, data_fetcher_->shortcut_info(),
-        data_fetcher_->primary_icon(),
-        data_fetcher_->has_maskable_primary_icon());
   }
 
-  // Fire the appinstalled event and do install time logging.
-  banners::AppBannerManagerAndroid* app_banner_manager =
-      banners::AppBannerManagerAndroid::FromWebContents(web_contents);
-  app_banner_manager->OnInstall(false /* is_native */,
-                                data_fetcher_->shortcut_info().display);
+  // base::Unretained() is safe because the lifetime of this object is
+  // controlled by its Java counterpart. It will be destroyed when the add to
+  // home screen prompt is dismissed, which occurs after the last time
+  // RecordEventForAppMenu can be called.
+  AddToHomescreenInstaller::Install(
+      data_fetcher_->web_contents(), params,
+      base::Bind(&AddToHomescreenManager::RecordEventForAppMenu,
+                 base::Unretained(this)));
+}
+
+void AddToHomescreenManager::RecordEventForAppMenu(
+    AddToHomescreenInstaller::Event event,
+    const AddToHomescreenParams& a2hs_params) {
+  DCHECK_NE(a2hs_params.app_type, AddToHomescreenParams::AppType::NATIVE);
+  if (!data_fetcher_->web_contents())
+    return;
+
+  switch (event) {
+    case AddToHomescreenInstaller::Event::INSTALL_STARTED:
+      AppBannerSettingsHelper::RecordBannerEvent(
+          data_fetcher_->web_contents(),
+          data_fetcher_->web_contents()->GetURL(),
+          a2hs_params.shortcut_info->url.spec(),
+          AppBannerSettingsHelper::APP_BANNER_EVENT_DID_ADD_TO_HOMESCREEN,
+          base::Time::Now());
+      break;
+    case AddToHomescreenInstaller::Event::INSTALL_REQUEST_FINISHED: {
+      banners::AppBannerManagerAndroid* app_banner_manager =
+          banners::AppBannerManagerAndroid::FromWebContents(
+              data_fetcher_->web_contents());
+      // Fire the appinstalled event and do install time logging.
+      if (app_banner_manager)
+        app_banner_manager->OnInstall(a2hs_params.shortcut_info->display);
+      break;
+    }
+    default:
+      break;
+  }
 }
 
 void AddToHomescreenManager::Start(content::WebContents* web_contents) {
@@ -102,20 +135,6 @@ void AddToHomescreenManager::Start(content::WebContents* web_contents) {
 }
 
 AddToHomescreenManager::~AddToHomescreenManager() {}
-
-void AddToHomescreenManager::RecordAddToHomescreen() {
-  // Record that the shortcut has been added, so no banners will be shown
-  // for this app.
-  content::WebContents* web_contents = data_fetcher_->web_contents();
-  if (!web_contents)
-    return;
-
-  AppBannerSettingsHelper::RecordBannerEvent(
-      web_contents, web_contents->GetURL(),
-      data_fetcher_->shortcut_info().url.spec(),
-      AppBannerSettingsHelper::APP_BANNER_EVENT_DID_ADD_TO_HOMESCREEN,
-      base::Time::Now());
-}
 
 void AddToHomescreenManager::OnUserTitleAvailable(
     const base::string16& user_title,

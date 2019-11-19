@@ -17,9 +17,13 @@
     <string name="menu_reset_webview">Destroy and create new WebView</string>
     <string name="menu_clear_cache">Clear cache</string>
     <string name="menu_enable_tracing">Enable tracing</string>
+    <string name="menu_force_dark_off">Force Dark Off</string>
+    <string name="menu_force_dark_auto">Force Dark Auto</string>
+    <string name="menu_force_dark_on">Force Dark On</string>
     <string name="menu_start_animation_activity">Animation test</string>
     <string name="menu_print">Print</string>
     <string name="menu_about">About WebView</string>
+    <string name="menu_devui">WebView DevTools</string>
     <string name="load_url">Load URL</string>
 
     <!-- activity_webview_animation_test strings -->
@@ -28,4 +32,7 @@
     <string name="rotate_button">Rotate</string>
     <string name="scale_button">Scale</string>
     <string name="translate_button">Translate</string>
+
+    <!--  activity_web_platform_tests strings -->
+    <string name="close_button">close</string>
 </resources>

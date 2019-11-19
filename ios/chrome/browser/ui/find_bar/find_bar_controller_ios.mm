@@ -12,7 +12,6 @@
 #include "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/find_in_page/find_in_page_controller.h"
 #import "ios/chrome/browser/find_in_page/find_in_page_model.h"
-#import "ios/chrome/browser/ui/UIView+SizeClassSupport.h"
 #import "ios/chrome/browser/ui/commands/browser_commands.h"
 #import "ios/chrome/browser/ui/find_bar/find_bar_view.h"
 #import "ios/chrome/browser/ui/image_util/image_util.h"
@@ -20,6 +19,8 @@
 #include "ios/chrome/browser/ui/util/rtl_geometry.h"
 #include "ios/chrome/browser/ui/util/ui_util.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
+#import "ios/chrome/common/colors/dynamic_color_util.h"
+#import "ios/chrome/common/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui_util/constraints_ui_util.h"
 #include "ui/base/l10n/l10n_util_mac.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -114,9 +115,17 @@ const NSTimeInterval kSearchShortDelay = 0.100;
   UIView* findBarBackground = nil;
 
   findBarBackground = [[UIView alloc] initWithFrame:CGRectMake(0, 0, width, 1)];
-  findBarBackground.backgroundColor =
-      self.isIncognito ? UIColorFromRGB(kIncognitoToolbarBackgroundColor)
-                       : UIColorFromRGB(kToolbarBackgroundColor);
+  if (@available(iOS 13, *)) {
+    // When iOS 12 is dropped, only the next line is needed for styling.
+    // Every other check for |incognitoStyle| can be removed, as well as
+    // the incognito specific assets.
+    findBarBackground.overrideUserInterfaceStyle =
+        self.isIncognito ? UIUserInterfaceStyleDark
+                         : UIUserInterfaceStyleUnspecified;
+  }
+  findBarBackground.backgroundColor = color::DarkModeDynamicColor(
+      [UIColor colorNamed:kBackgroundColor], self.isIncognito,
+      [UIColor colorNamed:kBackgroundDarkColor]);
   self.findBarView =
       [[FindBarView alloc] initWithDarkAppearance:self.isIncognito];
 

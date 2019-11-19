@@ -7,10 +7,12 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_animator.h"
+#import "ios/chrome/browser/ui/fullscreen/fullscreen_content_adjustment_util.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_controller_observer.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_model.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_web_view_resizer.h"
 #include "ios/chrome/browser/ui/util/ui_util.h"
+#import "ios/web/public/web_state.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -36,6 +38,29 @@ void FullscreenMediator::SetWebState(web::WebState* webState) {
   resizer_.webState = webState;
 }
 
+void FullscreenMediator::SetIsBrowserTraitCollectionUpdating(bool updating) {
+  if (updating_browser_trait_collection_ == updating)
+    return;
+  updating_browser_trait_collection_ = updating;
+  if (updating_browser_trait_collection_) {
+    resizer_.compensateFrameChangeByOffset = NO;
+    scrolled_to_top_during_trait_collection_updates_ =
+        model_->is_scrolled_to_top();
+  } else {
+    resizer_.compensateFrameChangeByOffset = YES;
+    if (scrolled_to_top_during_trait_collection_updates_) {
+      // If the content was scrolled to the top when the trait collection began
+      // updating, changes in toolbar heights may cause the top of the page to
+      // become hidden.  Ensure that the page remains scrolled to the top after
+      // the trait collection finishes updating.
+      web::WebState* web_state = resizer_.webState;
+      if (web_state)
+        MoveContentBelowHeader(web_state->GetWebViewProxy(), model_);
+      scrolled_to_top_during_trait_collection_updates_ = false;
+    }
+  }
+}
+
 void FullscreenMediator::EnterFullscreen() {
   if (model_->enabled())
     AnimateWithStyle(FullscreenAnimatorStyle::ENTER_FULLSCREEN);
@@ -48,14 +73,6 @@ void FullscreenMediator::ExitFullscreen() {
   // decelerating.
   model_->IgnoreRemainderOfCurrentScroll();
   AnimateWithStyle(FullscreenAnimatorStyle::EXIT_FULLSCREEN);
-}
-
-void FullscreenMediator::StopFrameChangeCompensation() {
-  resizer_.compensateFrameChangeByOffset = NO;
-}
-
-void FullscreenMediator::StartFrameChangeCompensation() {
-  resizer_.compensateFrameChangeByOffset = YES;
 }
 
 void FullscreenMediator::Disconnect() {

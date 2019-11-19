@@ -4,8 +4,9 @@
 
 #include "base/bind.h"
 #include "base/macros.h"
-#include "base/message_loop/message_loop.h"
-#include "mojo/public/cpp/bindings/binding_set.h"
+#include "base/task/single_thread_task_executor.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
 #include "services/service_manager/public/cpp/binder_registry.h"
 #include "services/service_manager/public/cpp/service.h"
 #include "services/service_manager/public/cpp/service_binding.h"
@@ -21,7 +22,7 @@ class TestClient : public Service, public mojom::TestService {
   TestClient(mojom::ServiceRequest request)
       : service_binding_(this, std::move(request)) {
     registry_.AddInterface(base::BindRepeating(
-        &TestClient::BindTestServiceRequest, base::Unretained(this)));
+        &TestClient::BindTestServiceReceiver, base::Unretained(this)));
   }
 
   ~TestClient() override = default;
@@ -37,15 +38,16 @@ class TestClient : public Service, public mojom::TestService {
   // mojom::TestService
   void Test(TestCallback callback) override { std::move(callback).Run(); }
 
-  void BindTestServiceRequest(mojom::TestServiceRequest request) {
-    bindings_.AddBinding(this, std::move(request));
+  void BindTestServiceReceiver(
+      mojo::PendingReceiver<mojom::TestService> receiver) {
+    receivers_.Add(this, std::move(receiver));
   }
 
   void Quit() override { service_binding_.RequestClose(); }
 
   ServiceBinding service_binding_;
   BinderRegistry registry_;
-  mojo::BindingSet<mojom::TestService> bindings_;
+  mojo::ReceiverSet<mojom::TestService> receivers_;
 
   DISALLOW_COPY_AND_ASSIGN(TestClient);
 };
@@ -53,6 +55,6 @@ class TestClient : public Service, public mojom::TestService {
 }  // namespace service_manager
 
 void ServiceMain(service_manager::mojom::ServiceRequest request) {
-  base::MessageLoop message_loop;
+  base::SingleThreadTaskExecutor main_task_executor;
   service_manager::TestClient(std::move(request)).RunUntilTermination();
 }

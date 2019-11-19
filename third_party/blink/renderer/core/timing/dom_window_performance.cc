@@ -38,7 +38,7 @@ WindowPerformance* DOMWindowPerformance::performance(LocalDOMWindow& window) {
 
 WindowPerformance* DOMWindowPerformance::performance() {
   if (!performance_)
-    performance_ = WindowPerformance::Create(GetSupplementable());
+    performance_ = MakeGarbageCollected<WindowPerformance>(GetSupplementable());
   return performance_.Get();
 }
 

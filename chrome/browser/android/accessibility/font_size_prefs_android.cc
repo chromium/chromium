@@ -6,12 +6,12 @@
 
 #include "base/bind.h"
 #include "base/observer_list.h"
+#include "chrome/android/chrome_jni_headers/FontSizePrefs_jni.h"
 #include "chrome/browser/profiles/profile_android.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
-#include "jni/FontSizePrefs_jni.h"
 
 using base::android::JavaParamRef;
 using base::android::JavaRef;

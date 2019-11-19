@@ -1,0 +1,14 @@
+syntax = "proto2";
+
+package remoting.apis.v1;
+
+import "remote_support_host_messages.proto";
+
+option optimize_for = LITE_RUNTIME;
+
+// A set of RPC services which provide remote support functionality.
+service RemoteSupportService {
+  // RPC service which registers a remote support host.
+  rpc RegisterSupportHost(RegisterSupportHostRequest)
+      returns (RegisterSupportHostResponse) {}
+}

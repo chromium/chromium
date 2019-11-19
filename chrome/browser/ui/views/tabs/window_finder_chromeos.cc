@@ -4,82 +4,10 @@
 
 #include "chrome/browser/ui/views/tabs/window_finder.h"
 
-#include "ash/wm/window_finder.h"  // mash-ok
-#include "ui/aura/mus/topmost_window_tracker.h"
-#include "ui/aura/mus/window_tree_client.h"
-#include "ui/aura/window.h"
-#include "ui/base/ui_base_features.h"
-#include "ui/views/mus/mus_client.h"
-
-namespace {
-
-// The class to be used by ash to find an eligible chrome window that we can
-// attach the dragged tabs into.
-class WindowFinderClassic : public WindowFinder {
- public:
-  WindowFinderClassic() {}
-
-  gfx::NativeWindow GetLocalProcessWindowAtPoint(
-      const gfx::Point& screen_point,
-      const std::set<gfx::NativeWindow>& ignore) override {
-    return ash::wm::GetTopmostWindowAtPoint(screen_point, ignore, nullptr);
-  }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WindowFinderClassic);
-};
-
-// The class to be used by mash to find an eligible chrome window that we can
-// attach the dragged tabs into.
-class WindowFinderMus : public WindowFinder {
- public:
-  WindowFinderMus(TabDragController::EventSource event_source,
-                  gfx::NativeWindow window) {
-    ws::mojom::MoveLoopSource source =
-        (event_source == TabDragController::EVENT_SOURCE_MOUSE)
-            ? ws::mojom::MoveLoopSource::MOUSE
-            : ws::mojom::MoveLoopSource::TOUCH;
-    tracker_ = views::MusClient::Get()
-                   ->window_tree_client()
-                   ->StartObservingTopmostWindow(source, window);
-  }
-
-  gfx::NativeWindow GetLocalProcessWindowAtPoint(
-      const gfx::Point& screen_point,
-      const std::set<gfx::NativeWindow>& ignore) override {
-    DCHECK_LE(ignore.size(), 1u);
-    aura::Window* window = tracker_->GetTopmost();
-    if (ignore.find(window) != ignore.end())
-      window = tracker_->GetSecondTopmost();
-    if (ignore.find(window) != ignore.end())
-      window = nullptr;
-    if (!window)
-      return nullptr;
-    views::Widget* widget = views::Widget::GetWidgetForNativeView(window);
-    if (!widget)
-      return nullptr;
-    return widget->GetNativeWindow();
-  }
-
- private:
-  std::unique_ptr<aura::TopmostWindowTracker> tracker_;
-
-  DISALLOW_COPY_AND_ASSIGN(WindowFinderMus);
-};
-
-}  // namespace
-
-std::unique_ptr<WindowFinder> WindowFinder::Create(
-    TabDragController::EventSource source,
-    gfx::NativeWindow window) {
-  if (features::IsUsingWindowService())
-    return std::make_unique<WindowFinderMus>(source, window);
-  return std::make_unique<WindowFinderClassic>();
-}
+#include "ash/public/cpp/window_finder.h"
 
 gfx::NativeWindow WindowFinder::GetLocalProcessWindowAtPoint(
     const gfx::Point& screen_point,
     const std::set<gfx::NativeWindow>& ignore) {
-  NOTREACHED();
-  return nullptr;
+  return ash::GetTopmostWindowAtPoint(screen_point, ignore);
 }

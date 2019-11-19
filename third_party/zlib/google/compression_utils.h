@@ -42,6 +42,12 @@ bool GzipUncompress(const std::string& input, std::string* output);
 // Returns true for success.
 bool GzipUncompress(base::StringPiece input, base::StringPiece output);
 
+// Uncompresses the data in |input| using gzip, and writes the results to
+// |output|, which must NOT be the underlying string of |input|, and is resized
+// if necessary.
+// Returns true for success.
+bool GzipUncompress(base::StringPiece input, std::string* output);
+
 // Returns the uncompressed size from GZIP-compressed |compressed_data|.
 uint32_t GetUncompressedSize(base::StringPiece compressed_data);
 

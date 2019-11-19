@@ -19,7 +19,7 @@ message Command {
     UnregisterHost unregister_host = 2;
     SelectCache select_cache = 3;
     SetSpawningHostId set_spawning_host_id = 4;
-    SelectCacheForSharedWorker select_cache_for_shared_worker = 5;
+    SelectCacheForWorker select_cache_for_worker = 5;
     MarkAsForeignEntry mark_as_foreign_entry = 6;
     GetStatus get_status = 7;
     StartUpdate start_update = 8;
@@ -128,7 +128,7 @@ message SetSpawningHostId {
   required HostId spawning_host_id = 2;
 }
 
-message SelectCacheForSharedWorker {
+message SelectCacheForWorker {
   required HostId host_id = 1;
   required CacheId cache_document_was_loaded_from = 2;
 }

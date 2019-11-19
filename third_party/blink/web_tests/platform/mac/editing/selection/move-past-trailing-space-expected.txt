@@ -1,0 +1,26 @@
+EDITING DELEGATE: webViewDidChangeSelection:WebViewDidChangeSelectionNotification
+EDITING DELEGATE: webViewDidChangeSelection:WebViewDidChangeSelectionNotification
+EDITING DELEGATE: webViewDidChangeSelection:WebViewDidChangeSelectionNotification
+EDITING DELEGATE: webViewDidChangeSelection:WebViewDidChangeSelectionNotification
+EDITING DELEGATE: webViewDidChangeSelection:WebViewDidChangeSelectionNotification
+EDITING DELEGATE: webViewDidChangeSelection:WebViewDidChangeSelectionNotification
+EDITING DELEGATE: webViewDidChangeSelection:WebViewDidChangeSelectionNotification
+EDITING DELEGATE: webViewDidChangeSelection:WebViewDidChangeSelectionNotification
+EDITING DELEGATE: webViewDidChangeSelection:WebViewDidChangeSelectionNotification
+EDITING DELEGATE: webViewDidChangeSelection:WebViewDidChangeSelectionNotification
+EDITING DELEGATE: webViewDidChangeSelection:WebViewDidChangeSelectionNotification
+EDITING DELEGATE: webViewDidChangeSelection:WebViewDidChangeSelectionNotification
+EDITING DELEGATE: webViewDidChangeSelection:WebViewDidChangeSelectionNotification
+layer at (0,0) size 800x600
+  LayoutView at (0,0) size 800x600
+layer at (0,0) size 800x600
+  LayoutBlockFlow {HTML} at (0,0) size 800x600
+    LayoutBlockFlow {BODY} at (8,8) size 784x584
+      LayoutBlockFlow {DIV} at (0,0) size 228x84 [border: (2px solid #FF0000)]
+        LayoutInline {SPAN} at (78,14) size 136x56
+          LayoutText {#text} at (78,14) size 136x56
+            text run at (78,14) width 61 RTL: " \x{5D0}\x{5D7}\x{5E8}\x{5D9}"
+            text run at (138,14) width 76: "before"
+            text run at (80,42) width 134 RTL: "\x{5D0}\x{5E0}\x{5E6}\x{5D9}\x{5E7}\x{5DC}\x{5D5}\x{5E4}\x{5D3}\x{5D9}\x{5D4}"
+        LayoutText {#text} at (0,0) size 0x0
+caret: position 12 of child 0 {#text} of child 1 {SPAN} of child 1 {DIV} of body

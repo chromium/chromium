@@ -1,0 +1,88 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//ios/build/config.gni")
+
+source_set("common") {
+  sources = [
+    "crw_content_view.h",
+    "crw_web_view_content_view.h",
+    "crw_web_view_content_view.mm",
+    "features.h",
+    "features.mm",
+    "origin_util.h",
+    "origin_util.mm",
+    "referrer_util.cc",
+    "referrer_util.h",
+    "url_scheme_util.h",
+    "url_scheme_util.mm",
+    "url_util.cc",
+    "url_util.h",
+  ]
+
+  deps = [
+    "//base",
+    "//ios/web/public/navigation",
+    "//net",
+    "//url",
+  ]
+
+  libs = [ "UIKit.framework" ]
+
+  configs += [ "//build/config/compiler:enable_arc" ]
+}
+
+source_set("web_view_creation_util") {
+  sources = [
+    "web_view_creation_util.h",
+    "web_view_creation_util.mm",
+  ]
+
+  deps = [
+    ":user_agent",
+    "//base",
+    "//ios/web/web_state:web_view_internal_creation_util",
+    "//ios/web/web_state/ui:wk_web_view_configuration_provider",
+  ]
+
+  libs = [ "UIKit.framework" ]
+
+  configs += [ "//build/config/compiler:enable_arc" ]
+}
+
+# This is a separate target as it is used by Cronet.
+source_set("user_agent") {
+  deps = [
+    "//base",
+  ]
+
+  sources = [
+    "user_agent.h",
+    "user_agent.mm",
+  ]
+
+  configs += [ "//build/config/compiler:enable_arc" ]
+}
+
+source_set("unittests") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  testonly = true
+  deps = [
+    ":common",
+    ":user_agent",
+    "//base",
+    "//ios/web/public/navigation",
+    "//net",
+    "//testing/gtest",
+    "//url",
+  ]
+
+  sources = [
+    "origin_util_unittest.mm",
+    "referrer_util_unittest.cc",
+    "url_scheme_util_unittest.mm",
+    "url_util_unittest.cc",
+    "user_agent_unittest.mm",
+  ]
+}

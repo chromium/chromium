@@ -1,7 +1,8 @@
 This is a testharness.js-based test.
-FAIL Test same events are ordered by elements. assert_equals: Number of actual events (0: ) should match expected events (, ) expected 2 but got 0
-FAIL Test start and iteration events are ordered by time. assert_equals: Number of actual events (0: ) should match expected events (, ) expected 2 but got 0
-FAIL Test iteration and end events are ordered by time. assert_equals: Number of actual events (0: ) should match expected events (, ) expected 2 but got 0
-FAIL Test start and end events are sorted correctly when fired simultaneously assert_equals: Number of actual events (0: ) should match expected events (, , , ) expected 4 but got 0
+PASS Same events are ordered by elements
+FAIL Same events on pseudo-elements follow the prescribed order assert_equals: Event #3 targets should match expected Element node <div style="animation: anim 100s" id="parent-div"><div st... but got Element node <div style="animation: anim 100s"></div>
+FAIL Start and iteration events are ordered by time assert_equals: Event #1 types should match (expected: animationiteration, animationstart, actual: animationstart, animationiteration) expected "animationiteration" but got "animationstart"
+FAIL Iteration and end events are ordered by time assert_equals: Event #1 types should match (expected: animationiteration, animationend, actual: animationend, animationiteration) expected "animationiteration" but got "animationend"
+FAIL Start and end events are sorted correctly when fired simultaneously assert_equals: Event #1 targets should match expected Element node <div style="animation: anim 100s 2"></div> but got Element node <div style="animation: anim 100s 100s"></div>
 Harness: the test ran to completion.
 

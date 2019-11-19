@@ -2,5 +2,7 @@ guidou@chromium.org
 hbos@chromium.org
 tommi@chromium.org
 
-# TEAM: media-capture-and-streams@grotations.appspotmail.com
+per-file media_stream_audio_processor*=aluebs@chromium.org
+
+# TEAM: webrtc-dev@chromium.org
 # COMPONENT: Blink>GetUserMedia

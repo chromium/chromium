@@ -11,10 +11,20 @@
     <item android:id="@+id/menu_enable_tracing"
           android:checkable="true"
           android:title="@string/menu_enable_tracing"/>
+    <group android:checkableBehavior="single">
+        <item android:id="@+id/menu_force_dark_off"
+              android:title="@string/menu_force_dark_off"/>
+        <item android:id="@+id/menu_force_dark_auto"
+              android:title="@string/menu_force_dark_auto"/>
+        <item android:id="@+id/menu_force_dark_on"
+              android:title="@string/menu_force_dark_on"/>
+    </group>
     <item android:id="@+id/menu_print"
           android:title="@string/menu_print"/>
     <item android:id="@+id/start_animation_activity"
           android:title="@string/menu_start_animation_activity"/>
     <item android:id="@+id/menu_about"
           android:title="@string/menu_about"/>
+    <item android:id="@+id/menu_devui"
+          android:title="@string/menu_devui"/>
 </menu>

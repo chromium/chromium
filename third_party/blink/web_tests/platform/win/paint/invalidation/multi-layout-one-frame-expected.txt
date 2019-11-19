@@ -1,17 +1,6 @@
 {
   "layers": [
     {
-      "name": "LayoutView #document",
-      "bounds": [800, 600],
-      "drawsContent": false,
-      "backgroundColor": "#FFFFFF"
-    },
-    {
-      "name": "Scrolling Layer",
-      "bounds": [800, 600],
-      "drawsContent": false
-    },
-    {
       "name": "Scrolling Contents Layer",
       "bounds": [800, 600],
       "contentsOpaque": true,
@@ -36,6 +25,11 @@
           "object": "InlineTextBox 'FAILED'",
           "rect": [10, 10, 44, 18],
           "reason": "disappeared"
+        },
+        {
+          "object": "NGPhysicalTextFragment ' '",
+          "rect": [181, 9, 4, 19],
+          "reason": "geometry"
         }
       ]
     }

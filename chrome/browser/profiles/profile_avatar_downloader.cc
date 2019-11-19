@@ -69,7 +69,7 @@ void ProfileAvatarDownloader::Start() {
     fetcher_->Init(
         std::string(),
         net::URLRequest::REDUCE_REFERRER_GRANULARITY_ON_TRANSITION_CROSS_ORIGIN,
-        net::LOAD_NORMAL);
+        network::mojom::CredentialsMode::kInclude);
     fetcher_->Start(loader_factory);
   }
 }
@@ -81,8 +81,7 @@ void ProfileAvatarDownloader::OnFetchComplete(const GURL& url,
     return;
 
   // Decode the downloaded bitmap. Ownership of the image is taken by |cache_|.
-  gfx::Image image = gfx::Image::CreateFrom1xBitmap(*bitmap);
-  callback_.Run(&image,
+  callback_.Run(gfx::Image::CreateFrom1xBitmap(*bitmap),
                 profiles::GetDefaultAvatarIconFileNameAtIndex(icon_index_),
                 profiles::GetPathOfHighResAvatarAtIndex(icon_index_));
 }

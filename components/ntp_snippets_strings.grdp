@@ -23,16 +23,21 @@
     </message>
   </if>
 
+  <if expr="use_titlecase">
+    <message name="IDS_NTP_SUGGESTIONS_SECTION_HEADER" desc="Header of the suggested content section, which is a list of suggested content displayed as cards on the New Tab Page. This will replace a string 'Articles for You', which was used when the suggested content was just news articles. ">
+      For You
+    </message>
+  </if>
+
+  <if expr="not use_titlecase">
+    <message name="IDS_NTP_SUGGESTIONS_SECTION_HEADER" desc="Header of the suggested content section, which is a list of suggested content displayed as cards on the New Tab Page. This will replace a string 'Articles for You', which was used when the suggested content was just news articles. " formatter_data="android_java">
+      For you
+    </message>
+  </if>
+
+
   <message name="IDS_NTP_ARTICLE_SUGGESTIONS_SECTION_EMPTY" desc="On the New Tab Page, text of the card explaining to the user that they can expect to see suggested articles in this area in the future.">
     Your suggested articles appear here
-  </message>
-
-  <message name="IDS_NTP_BOOKMARK_SUGGESTIONS_SECTION_HEADER" desc="Header of the bookmarks section. The bookmarks section shows a list of recently *visited* bookmarks, irrespective of their creation date. It is *not* a list of recently *created* bookmarks">
-    Recent bookmarks
-  </message>
-
-  <message name="IDS_NTP_BOOKMARK_SUGGESTIONS_SECTION_EMPTY" desc="On the New Tab Page, text of the card explaining to the user that they can expect to see bookmarks in this area in the future.">
-    Your recently visited bookmarks appear here
   </message>
 
   <!-- When you change this string, please change IDS_NTP_PHYSICAL_WEB_PAGE_SUGGESTIONS_SECTION_EMPTY description accordingly. -->

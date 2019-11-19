@@ -1,36 +1,20 @@
 {
   "layers": [
     {
-      "name": "LayoutView #document",
-      "bounds": [800, 600],
-      "drawsContent": false,
-      "backgroundColor": "#FFFFFF"
-    },
-    {
-      "name": "Scrolling Layer",
-      "bounds": [800, 600],
-      "drawsContent": false
-    },
-    {
       "name": "Scrolling Contents Layer",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
       "paintInvalidations": [
         {
-          "object": "LayoutBlockFlow (positioned) DIV id='t'",
+          "object": "LayoutNGBlockFlow (positioned) DIV id='t'",
           "rect": [8, 166, 100, 100],
           "reason": "appeared"
         },
         {
-          "object": "InlineTextBox '\u00A0'",
+          "object": "NGPhysicalTextFragment '\u00A0'",
           "rect": [8, 148, 4, 18],
-          "reason": "appeared"
-        },
-        {
-          "object": "InlineTextBox '\u00A0'",
-          "rect": [8, 148, 4, 18],
-          "reason": "disappeared"
+          "reason": "geometry"
         }
       ]
     }

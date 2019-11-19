@@ -6,14 +6,14 @@ cr.define('chrome.sync.events_tab', function() {
   'use strict';
 
   function toggleDisplay(event) {
-    var originatingButton = event.target;
+    const originatingButton = event.target;
     if (originatingButton.className != 'toggle-button') {
       return;
     }
-    var detailsNode = originatingButton.parentNode.getElementsByClassName(
-        'details')[0];
-    var detailsColumn = detailsNode.parentNode;
-    var detailsRow = detailsColumn.parentNode;
+    const detailsNode =
+        originatingButton.parentNode.getElementsByClassName('details')[0];
+    const detailsColumn = detailsNode.parentNode;
+    const detailsRow = detailsColumn.parentNode;
 
     if (!detailsRow.classList.contains('expanded')) {
       detailsRow.classList.toggle('expanded');
@@ -24,16 +24,16 @@ cr.define('chrome.sync.events_tab', function() {
       detailsColumn.removeAttribute('colspan');
       detailsRow.classList.toggle('expanded');
     }
-  };
+  }
 
   function displaySyncEvents() {
-    var entries = chrome.sync.log.entries;
-    var eventTemplateContext = {
+    const entries = chrome.sync.log.entries;
+    const eventTemplateContext = {
       eventList: entries,
     };
-    var context = new JsEvalContext(eventTemplateContext);
+    const context = new JsEvalContext(eventTemplateContext);
     jstProcess(context, $('sync-events'));
-  };
+  }
 
   function onLoad() {
     $('sync-events').addEventListener('click', toggleDisplay);

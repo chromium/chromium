@@ -13,7 +13,7 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "chromeos/dbus/session_manager_client.h"
+#include "chromeos/dbus/session_manager/session_manager_client.h"
 #include "components/account_id/account_id.h"
 #include "components/policy/core/common/cloud/cloud_policy_validator.h"
 #include "components/policy/core/common/cloud/user_cloud_policy_store_base.h"
@@ -99,7 +99,7 @@ class UserCloudPolicyStoreChromeOS : public UserCloudPolicyStoreBase {
   // Used to load the policy key provided by session manager as a file.
   std::unique_ptr<CachedPolicyKeyLoaderChromeOS> cached_policy_key_loader_;
 
-  base::WeakPtrFactory<UserCloudPolicyStoreChromeOS> weak_factory_;
+  base::WeakPtrFactory<UserCloudPolicyStoreChromeOS> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(UserCloudPolicyStoreChromeOS);
 };

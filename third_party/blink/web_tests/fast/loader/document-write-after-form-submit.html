@@ -1,0 +1,8 @@
+<form id="f"  method="get" action="resources/pass-and-notify-done.html"></form>
+<script>
+if (window.testRunner)
+  testRunner.dumpAsText();
+f.submit();
+document.open();
+document.write("This should not cancel the form submission");
+</script>

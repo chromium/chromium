@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<meta charset="UTF-8">
+<body>
+<script src="../interpolation/resources/interpolation-test.js"></script>
+<script>
+// ------------ Addition tests --------------
+
+assertComposition({
+  property: 'transform',
+  underlying: 'translate(10px, 20px)',
+  addFrom: 'translate(100px, 200px)',
+  addTo: 'translate(200px, 400px)',
+}, [
+  {at: -0.5, is: 'translate(60px, 120px)'},
+  {at: 0, is: 'translate(110px, 220px)'},
+  {at: 0.25, is: 'translate(135px, 270px)'},
+  {at: 0.5, is: 'translate(160px, 320px)'},
+  {at: 0.75, is: 'translate(185px, 370px)'},
+  {at: 1, is: 'translate(210px, 420px)'},
+  {at: 1.5, is: 'translate(260px, 520px)'},
+]);
+
+assertComposition({
+  property: 'transform',
+  underlying: 'translate(10px, 20px)',
+  addFrom: 'translate(100px, 200px)',
+  replaceTo: 'translate(210px, 420px)',
+}, [
+  {at: -0.5, is: 'translate(60px, 120px)'},
+  {at: 0, is: 'translate(110px, 220px)'},
+  {at: 0.25, is: 'translate(135px, 270px)'},
+  {at: 0.5, is: 'translate(160px, 320px)'},
+  {at: 0.75, is: 'translate(185px, 370px)'},
+  {at: 1, is: 'translate(210px, 420px)'},
+  {at: 1.5, is: 'translate(260px, 520px)'},
+]);
+
+// When testing translate functions in isolation, the additive and accumulation
+// behaviors are functionally identical. This test includes a rotate to ensure
+// both methods are implemented; add should append the from/to after the rotate.
+assertComposition({
+  property: 'transform',
+  underlying: 'translateX(100px) rotate(90deg)',
+  addFrom: 'translateX(100px)',
+  addTo: 'translateX(200px)',
+}, [
+  {at: -0.5, is: 'translateX(100px) rotate(90deg) translateX(50px)'},
+  {at: 0, is: 'translateX(100px) rotate(90deg) translateX(100px)'},
+  {at: 0.25, is: 'translateX(100px) rotate(90deg) translateX(125px)'},
+  {at: 0.5, is: 'translateX(100px) rotate(90deg) translateX(150px)'},
+  {at: 0.75, is: 'translateX(100px) rotate(90deg) translateX(175px)'},
+  {at: 1, is: 'translateX(100px) rotate(90deg) translateX(200px)'},
+  {at: 1.5, is: 'translateX(100px) rotate(90deg) translateX(250px)'},
+]);
+
+// ------------ Accumulation tests --------------
+
+assertComposition({
+  property: 'transform',
+  underlying: 'translateX(100px)',
+  accumulateFrom: 'translateX(50px)',
+  accumulateTo: 'translateX(250px)',
+}, [
+  {at: -0.5, is: 'translateX(50px)'},
+  {at: 0, is: 'translateX(150px)'},
+  {at: 0.25, is: 'translateX(200px)'},
+  {at: 0.5, is: 'translateX(250px)'},
+  {at: 0.75, is: 'translateX(300px)'},
+  {at: 1, is: 'translateX(350px)'},
+  {at: 1.5, is: 'translateX(450px)'},
+]);
+
+assertComposition({
+  property: 'transform',
+  underlying: 'translateY(100px)',
+  accumulateFrom: 'translateY(50px)',
+  accumulateTo: 'translateY(250px)',
+}, [
+  {at: -0.5, is: 'translateY(50px)'},
+  {at: 0, is: 'translateY(150px)'},
+  {at: 0.25, is: 'translateY(200px)'},
+  {at: 0.5, is: 'translateY(250px)'},
+  {at: 0.75, is: 'translateY(300px)'},
+  {at: 1, is: 'translateY(350px)'},
+  {at: 1.5, is: 'translateY(450px)'},
+]);
+
+assertComposition({
+  property: 'transform',
+  underlying: 'translateZ(100px)',
+  accumulateFrom: 'translateZ(50px)',
+  accumulateTo: 'translateZ(250px)',
+}, [
+  {at: -0.5, is: 'translateZ(50px)'},
+  {at: 0, is: 'translateZ(150px)'},
+  {at: 0.25, is: 'translateZ(200px)'},
+  {at: 0.5, is: 'translateZ(250px)'},
+  {at: 0.75, is: 'translateZ(300px)'},
+  {at: 1, is: 'translateZ(350px)'},
+  {at: 1.5, is: 'translateZ(450px)'},
+]);
+
+// The translate functions all share the same primitive type (translate3d), so
+// can be accumulated between.
+assertComposition({
+  property: 'transform',
+  underlying: 'translate(100px, 50px)',
+  accumulateFrom: 'translateZ(50px)',
+  accumulateTo: 'translateZ(250px)',
+}, [
+  {at: -0.5, is: 'translate3d(100px, 50px, -50px)'},
+  {at: 0, is: 'translate3d(100px, 50px, 50px)'},
+  {at: 0.25, is: 'translate3d(100px, 50px, 100px)'},
+  {at: 0.5, is: 'translate3d(100px, 50px, 150px)'},
+  {at: 0.75, is: 'translate3d(100px, 50px, 200px)'},
+  {at: 1, is: 'translate3d(100px, 50px, 250px)'},
+  {at: 1.5, is: 'translate3d(100px, 50px, 350px)'},
+]);
+
+// When testing translate functions in isolation, the additive and accumulation
+// behaviors are functionally identical. This test includes a rotate to ensure
+// both methods are implemented; accumulate should combine the transform before
+// the rotate.
+assertComposition({
+  property: 'transform',
+  underlying: 'translateX(100px) rotate(90deg)',
+  accumulateFrom: 'translateX(100px)',
+  accumulateTo: 'translateX(200px)',
+}, [
+  {at: -0.5, is: 'translateX(150px) rotate(90deg)'},
+  {at: 0, is: 'translateX(200px) rotate(90deg)'},
+  {at: 0.25, is: 'translateX(225px) rotate(90deg)'},
+  {at: 0.5, is: 'translateX(250px) rotate(90deg)'},
+  {at: 0.75, is: 'translateX(275px) rotate(90deg)'},
+  {at: 1, is: 'translateX(300px) rotate(90deg)'},
+  {at: 1.5, is: 'translateX(350px) rotate(90deg)'},
+]);
+</script>
+</body>

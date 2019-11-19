@@ -10,9 +10,8 @@ generate_token.py http://127.0.0.1:8000 EventTiming --expire-timestamp=200000000
 <script src="/resources/origin-trials-helper.js"></script>
 <script>
 test(t => {
-  OriginTrialsHelper.check_properties(this,
+  OriginTrialsHelper.check_properties_exist(this,
       {'PerformanceEventTiming': ['processingStart', 'cancelable'],
-       'Performance': ['clearEventTimings', 'setEventTimingBufferMaxSize', 'oneventtimingbufferfull'],
        });
 }, 'EventTiming API interfaces and properties in Origin-Trial enabled document.');
 </script>

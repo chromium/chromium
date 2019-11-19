@@ -10,14 +10,11 @@
 #include "base/scoped_observer.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
 #include "extensions/common/extension.h"
 
 class Profile;
-
-namespace extensions {
-class ExtensionRegistry;
-}
 
 namespace user_prefs {
 class PrefRegistrySyncable;
@@ -60,9 +57,9 @@ class AppShortcutManager : public KeyedService,
 
   ScopedObserver<extensions::ExtensionRegistry,
                  extensions::ExtensionRegistryObserver>
-      extension_registry_observer_;
+      extension_registry_observer_{this};
 
-  base::WeakPtrFactory<AppShortcutManager> weak_ptr_factory_;
+  base::WeakPtrFactory<AppShortcutManager> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(AppShortcutManager);
 };

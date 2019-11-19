@@ -36,10 +36,10 @@ bool IsChromeAccelerator(const ui::Accelerator& accelerator, Profile* profile) {
   return false;
 }
 
-ui::Accelerator GetPrimaryChromeAcceleratorForBookmarkPage() {
+ui::Accelerator GetPrimaryChromeAcceleratorForBookmarkTab() {
   std::vector<AcceleratorMapping> accelerators = GetAcceleratorList();
   for (size_t i = 0; i < accelerators.size(); ++i) {
-    if (accelerators[i].command_id == IDC_BOOKMARK_PAGE) {
+    if (accelerators[i].command_id == IDC_BOOKMARK_THIS_TAB) {
       return ui::Accelerator(accelerators[i].keycode,
                              accelerators[i].modifiers);
     }

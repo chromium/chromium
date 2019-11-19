@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="resources/snav-testharness.js"></script>
+
+<style>
+  div {
+    width: 100px;
+    height: 100px;
+    margin: 5px;
+    border: 1px solid black;
+  }
+  div:hover {
+    background-color: dodgerblue;
+  }
+  iframe {
+    width: 200px;
+    height: 200px;
+  }
+</style>
+
+<div id="first" tabindex="0">First</div>
+<iframe srcdoc="
+    <!DOCTYPE html>
+    <style>
+      div:hover {
+        background-color: dodgerblue;
+      }
+      div {
+        width: 100px;
+        height: 100px;
+        margin: 5px;
+        border: 1px solid black;
+      }
+    </style>
+    <div id='second' tabindex='0'>Second</div>"></iframe>
+<div id="third" tabindex="0">Third</div>
+
+<script>
+  // This test checks whether hover state is correctly applied and removed from
+  // elements as the become and lose interest. Includes an iframe to get at
+  // least basic exercise of cross-frame cases.
+  snav.assertSnavEnabledAndTestable();
+
+  const t = async_test("Test hover application during spatial navigation.");
+
+  onload = t.step_func(() => {
+    const iframe = document.querySelector("iframe");
+    const first = document.getElementById("first");
+    const second = iframe.contentDocument.getElementById("second");
+    const third = document.getElementById("third");
+
+    // Moves interest to |first| element.
+    snav.triggerMove("Down");
+
+    assert_equals(window.internals.interestedElement,
+                  first, "|first| element gets interest.");
+    assert_true(first.matches(":hover"),
+                "|first| should be hovered when interested.");
+
+    // First down will interest iframe. Down again to interest |second|.
+    snav.triggerMove("Down");
+    snav.triggerMove("Down");
+
+    assert_equals(window.internals.interestedElement,
+                  second, "|second| element gets interest.");
+    assert_true(second.matches(":hover"),
+                "|second| should be hovered when interested.");
+    assert_true(iframe.matches(":hover"),
+                "|iframe| should be hovered as element inside is hovered.");
+    assert_false(first.matches(":hover"),
+                "|first| should no longer be hovered.");
+
+    // Down again to interest |third|.
+    snav.triggerMove("Down");
+    assert_equals(window.internals.interestedElement,
+                  third, "|third| element gets interest.");
+    assert_true(third.matches(":hover"),
+                "|third| should be hovered when interested.");
+    assert_false(second.matches(":hover"),
+                "|second| should no longer be hovered.");
+    assert_false(iframe.matches(":hover"),
+                "|iframe| should no longer be hovered.");
+
+    t.done();
+  });
+</script>

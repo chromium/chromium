@@ -5,8 +5,8 @@
 #import "ios/chrome/browser/ui/payments/billing_address_selection_mediator.h"
 
 #include "base/mac/foundation_util.h"
-#include "components/autofill/core/browser/autofill_profile.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
+#include "components/autofill/core/browser/data_model/autofill_profile.h"
 #import "ios/chrome/browser/payments/payment_request_unittest_base.h"
 #import "ios/chrome/browser/payments/payment_request_util.h"
 #import "ios/chrome/browser/ui/payments/cells/autofill_profile_item.h"
@@ -28,10 +28,16 @@ class PaymentRequestBillingAddressSelectionMediatorTest
       public PlatformTest {
  protected:
   // PlatformTest:
-  void SetUp() override { DoSetUp(); }
+  void SetUp() override {
+    PlatformTest::SetUp();
+    DoSetUp();
+  }
 
   // PlatformTest:
-  void TearDown() override { DoTearDown(); }
+  void TearDown() override {
+    DoTearDown();
+    PlatformTest::TearDown();
+  }
 };
 
 // Tests that the expected selectable items are created and that the index of

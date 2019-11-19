@@ -8,7 +8,8 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "mojo/public/cpp/bindings/binding.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/system/data_pipe_drainer.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 
@@ -18,28 +19,30 @@ namespace network {
 class EmptyURLLoaderClient : public mojom::URLLoaderClient,
                              public mojo::DataPipeDrainer::Client {
  public:
-  // Binds |client_request| to a newly constructed EmptyURLLoaderClient which
+  // Binds |client_receiver| to a newly constructed EmptyURLLoaderClient which
   // will drain/discard all callbacks/data.  Takes ownership of |url_loader| and
-  // discards ith (together with EmptyURLLoaderClient) when the URL request has
+  // discards it (together with EmptyURLLoaderClient) when the URL request has
   // been completed.
-  static void DrainURLRequest(mojom::URLLoaderClientRequest client_request,
-                              mojom::URLLoaderPtr url_loader);
+  static void DrainURLRequest(
+      mojo::PendingReceiver<mojom::URLLoaderClient> client_receiver,
+      mojom::URLLoaderPtr url_loader);
 
  private:
-  EmptyURLLoaderClient(mojom::URLLoaderClientRequest client_request,
-                       mojom::URLLoaderPtr url_loader);
+  EmptyURLLoaderClient(
+      mojo::PendingReceiver<mojom::URLLoaderClient> client_receiver,
+      mojom::URLLoaderPtr url_loader);
 
   ~EmptyURLLoaderClient() override;
   void DeleteSelf();
 
   // mojom::URLLoaderClient overrides:
-  void OnReceiveResponse(const ResourceResponseHead& head) override;
+  void OnReceiveResponse(mojom::URLResponseHeadPtr head) override;
   void OnReceiveRedirect(const net::RedirectInfo& redirect_info,
-                         const ResourceResponseHead& head) override;
+                         mojom::URLResponseHeadPtr head) override;
   void OnUploadProgress(int64_t current_position,
                         int64_t total_size,
                         OnUploadProgressCallback callback) override;
-  void OnReceiveCachedMetadata(const std::vector<uint8_t>& data) override;
+  void OnReceiveCachedMetadata(mojo_base::BigBuffer data) override;
   void OnTransferSizeUpdated(int32_t transfer_size_diff) override;
   void OnStartLoadingResponseBody(
       mojo::ScopedDataPipeConsumerHandle body) override;
@@ -49,7 +52,7 @@ class EmptyURLLoaderClient : public mojom::URLLoaderClient,
   void OnDataAvailable(const void* data, size_t num_bytes) override;
   void OnDataComplete() override;
 
-  mojo::Binding<mojom::URLLoaderClient> binding_;
+  mojo::Receiver<mojom::URLLoaderClient> receiver_;
 
   std::unique_ptr<mojo::DataPipeDrainer> response_body_drainer_;
 

@@ -3,8 +3,8 @@
 # found in the LICENSE file.
 
 typemaps = [
+  "//content/public/common/browser_controls_state.typemap",
   "//content/public/common/drop_data.typemap",
-  "//content/public/common/load_timing_info.typemap",
   "//content/public/common/resource_type.typemap",
   "//content/public/common/webplugininfo.typemap",
 ]

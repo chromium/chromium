@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_PAGE_LOAD_METRICS_OBSERVERS_DOCUMENT_WRITE_PAGE_LOAD_METRICS_OBSERVER_H_
 
 #include "base/macros.h"
-#include "chrome/browser/page_load_metrics/page_load_metrics_observer.h"
+#include "components/page_load_metrics/browser/page_load_metrics_observer.h"
 
 namespace internal {
 
@@ -25,19 +25,16 @@ class DocumentWritePageLoadMetricsObserver
 
   // page_load_metrics::PageLoadMetricsObserver implementation:
   void OnFirstContentfulPaintInPage(
-      const page_load_metrics::mojom::PageLoadTiming& timing,
-      const page_load_metrics::PageLoadExtraInfo& extra_info) override;
+      const page_load_metrics::mojom::PageLoadTiming& timing) override;
 
   void OnFirstMeaningfulPaintInMainFrameDocument(
-      const page_load_metrics::mojom::PageLoadTiming& timing,
-      const page_load_metrics::PageLoadExtraInfo& extra_info) override;
+      const page_load_metrics::mojom::PageLoadTiming& timing) override;
 
   void OnParseStop(
-      const page_load_metrics::mojom::PageLoadTiming& timing,
-      const page_load_metrics::PageLoadExtraInfo& extra_info) override;
+      const page_load_metrics::mojom::PageLoadTiming& timing) override;
 
-  void OnLoadingBehaviorObserved(
-      const page_load_metrics::PageLoadExtraInfo& extra_info) override;
+  void OnLoadingBehaviorObserved(content::RenderFrameHost* rfh,
+                                 int behavior_flags) override;
 
   enum DocumentWriteLoadingBehavior {
     LOADING_BEHAVIOR_BLOCK,
@@ -51,16 +48,13 @@ class DocumentWritePageLoadMetricsObserver
                                         ukm::SourceId source_id);
 
   void LogDocumentWriteBlockFirstContentfulPaint(
-      const page_load_metrics::mojom::PageLoadTiming& timing,
-      const page_load_metrics::PageLoadExtraInfo& info);
+      const page_load_metrics::mojom::PageLoadTiming& timing);
 
   void LogDocumentWriteBlockParseStop(
-      const page_load_metrics::mojom::PageLoadTiming& timing,
-      const page_load_metrics::PageLoadExtraInfo& info);
+      const page_load_metrics::mojom::PageLoadTiming& timing);
 
   void LogDocumentWriteBlockFirstMeaningfulPaint(
-      const page_load_metrics::mojom::PageLoadTiming& timing,
-      const page_load_metrics::PageLoadExtraInfo& info);
+      const page_load_metrics::mojom::PageLoadTiming& timing);
 
   bool doc_write_same_site_diff_scheme_ = false;
   bool doc_write_block_observed_ = false;

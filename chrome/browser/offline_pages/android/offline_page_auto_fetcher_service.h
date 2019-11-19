@@ -7,11 +7,13 @@
 
 #include <memory>
 #include <queue>
+#include <string>
 #include <utility>
 #include <vector>
 
 #include "base/callback_forward.h"
 #include "base/memory/weak_ptr.h"
+#include "base/strings/string16.h"
 #include "chrome/browser/offline_pages/android/auto_fetch_page_load_watcher.h"
 #include "chrome/common/offline_page_auto_fetcher.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -65,7 +67,8 @@ class OfflinePageAutoFetcherService : public KeyedService,
     // Calls |offline_pages::ShowAutoFetchCompleteNotification()|.
     virtual void ShowAutoFetchCompleteNotification(
         const base::string16& pageTitle,
-        const std::string& url,
+        const std::string& original_url,
+        const std::string& final_url,
         int android_tab_id,
         int64_t offline_id) = 0;
   };
@@ -101,7 +104,6 @@ class OfflinePageAutoFetcherService : public KeyedService,
                          int64_t received_bytes) override {}
 
  private:
-
   base::WeakPtr<OfflinePageAutoFetcherService> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
   }

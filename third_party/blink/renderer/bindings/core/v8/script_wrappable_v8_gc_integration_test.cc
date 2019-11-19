@@ -12,66 +12,51 @@
 
 namespace blink {
 
-namespace v8_gc_integration_test {
+namespace {
 
-void PreciselyCollectGarbage() {
-  ThreadState::Current()->CollectAllGarbage();
-}
+using ScriptWrappableV8GCIntegrationTest = BindingTestSupportingGC;
 
-// The following directly calls testing GCs in V8 to avoid cluttering a globally
-// visible interface with calls that have to be carefully staged.
-
-void RunV8MinorGC(v8::Isolate* isolate) {
-  CHECK(isolate);
-  isolate->RequestGarbageCollectionForTesting(
-      v8::Isolate::GarbageCollectionType::kMinorGarbageCollection);
-}
-
-void RunV8FullGCWithoutScanningOilpanStack(v8::Isolate* isolate) {
-  CHECK(isolate);
-  V8GCController::CollectAllGarbageForTesting(
-      isolate, v8::EmbedderHeapTracer::EmbedderStackState::kEmpty);
-}
-
-}  // namespace v8_gc_integration_test
+}  // namespace
 
 // =============================================================================
 // Tests that ScriptWrappable and its wrapper survive or are reclaimed in
 // certain garbage collection scenarios.
 // =============================================================================
 
-TEST(ScriptWrappableV8GCIntegrationTest, V8ReportsLiveObjectsDuringFullGc) {
+TEST_F(ScriptWrappableV8GCIntegrationTest, V8ReportsLiveObjectsDuringFullGc) {
   V8TestingScope scope;
-  v8::Isolate* isolate = scope.GetIsolate();
+  SetIsolate(scope.GetIsolate());
 
   v8::Persistent<v8::Value> holder;
   GCObjectLivenessObserver<DeathAwareScriptWrappable> observer;
   {
-    v8::HandleScope handle_scope(isolate);
+    v8::HandleScope handle_scope(GetIsolate());
     DeathAwareScriptWrappable* object = DeathAwareScriptWrappable::Create();
     observer.Observe(object);
 
-    holder.Reset(isolate, ToV8(object, scope.GetContext()->Global(), isolate));
+    holder.Reset(GetIsolate(),
+                 ToV8(object, scope.GetContext()->Global(), GetIsolate()));
   }
 
-  v8_gc_integration_test::RunV8MinorGC(isolate);
-  v8_gc_integration_test::PreciselyCollectGarbage();
+  RunV8MinorGC();
+  PreciselyCollectGarbage();
   EXPECT_FALSE(observer.WasCollected());
   holder.Reset();
 }
 
-TEST(ScriptWrappableV8GCIntegrationTest, V8ReportsLiveObjectsDuringScavenger) {
+TEST_F(ScriptWrappableV8GCIntegrationTest,
+       V8ReportsLiveObjectsDuringScavenger) {
   V8TestingScope scope;
-  v8::Isolate* isolate = scope.GetIsolate();
+  SetIsolate(scope.GetIsolate());
 
   GCObjectLivenessObserver<DeathAwareScriptWrappable> observer;
   {
-    v8::HandleScope handle_scope(isolate);
+    v8::HandleScope handle_scope(GetIsolate());
     DeathAwareScriptWrappable* object = DeathAwareScriptWrappable::Create();
     observer.Observe(object);
 
     v8::Local<v8::Value> wrapper =
-        ToV8(object, scope.GetContext()->Global(), isolate);
+        ToV8(object, scope.GetContext()->Global(), GetIsolate());
     EXPECT_TRUE(wrapper->IsObject());
     v8::Local<v8::Object> wrapper_object =
         wrapper->ToObject(scope.GetContext()).ToLocalChecked();
@@ -85,54 +70,55 @@ TEST(ScriptWrappableV8GCIntegrationTest, V8ReportsLiveObjectsDuringScavenger) {
 
   // Scavenger should not collect JavaScript wrappers that are modified, even if
   // they are otherwise unreachable.
-  v8_gc_integration_test::RunV8MinorGC(isolate);
-  v8_gc_integration_test::PreciselyCollectGarbage();
+  RunV8MinorGC();
+  PreciselyCollectGarbage();
 
   EXPECT_FALSE(observer.WasCollected());
 }
 
-TEST(ScriptWrappableV8GCIntegrationTest,
-     OilpanDoesntCollectObjectsReachableFromV8) {
+TEST_F(ScriptWrappableV8GCIntegrationTest,
+       OilpanDoesntCollectObjectsReachableFromV8) {
   V8TestingScope scope;
-  v8::Isolate* isolate = scope.GetIsolate();
+  SetIsolate(scope.GetIsolate());
 
   v8::Persistent<v8::Value> holder;
   GCObjectLivenessObserver<DeathAwareScriptWrappable> observer;
   {
-    v8::HandleScope handle_scope(isolate);
+    v8::HandleScope handle_scope(GetIsolate());
     DeathAwareScriptWrappable* object = DeathAwareScriptWrappable::Create();
     observer.Observe(object);
 
     // Creates new V8 wrapper and associates it with global scope
-    holder.Reset(isolate, ToV8(object, scope.GetContext()->Global(), isolate));
+    holder.Reset(GetIsolate(),
+                 ToV8(object, scope.GetContext()->Global(), GetIsolate()));
   }
 
-  v8_gc_integration_test::RunV8MinorGC(isolate);
-  v8_gc_integration_test::RunV8FullGCWithoutScanningOilpanStack(isolate);
-  v8_gc_integration_test::PreciselyCollectGarbage();
+  RunV8MinorGC();
+  RunV8FullGC();
+  PreciselyCollectGarbage();
 
   EXPECT_FALSE(observer.WasCollected());
   holder.Reset();
 }
 
-TEST(ScriptWrappableV8GCIntegrationTest,
-     OilpanCollectObjectsNotReachableFromV8) {
+TEST_F(ScriptWrappableV8GCIntegrationTest,
+       OilpanCollectObjectsNotReachableFromV8) {
   V8TestingScope scope;
-  v8::Isolate* isolate = scope.GetIsolate();
+  SetIsolate(scope.GetIsolate());
 
   GCObjectLivenessObserver<DeathAwareScriptWrappable> observer;
   {
-    v8::HandleScope handle_scope(isolate);
+    v8::HandleScope handle_scope(GetIsolate());
     DeathAwareScriptWrappable* object = DeathAwareScriptWrappable::Create();
     observer.Observe(object);
 
     // Creates new V8 wrapper and associates it with global scope
-    ToV8(object, scope.GetContext()->Global(), isolate);
+    ToV8(object, scope.GetContext()->Global(), GetIsolate());
   }
 
-  v8_gc_integration_test::RunV8MinorGC(isolate);
-  v8_gc_integration_test::RunV8FullGCWithoutScanningOilpanStack(isolate);
-  v8_gc_integration_test::PreciselyCollectGarbage();
+  RunV8MinorGC();
+  RunV8FullGC();
+  PreciselyCollectGarbage();
 
   EXPECT_TRUE(observer.WasCollected());
 }

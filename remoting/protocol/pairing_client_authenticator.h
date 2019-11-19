@@ -51,7 +51,7 @@ class PairingClientAuthenticator : public PairingAuthenticatorBase {
   // yet been set.
   bool waiting_for_pin_ = false;
 
-  base::WeakPtrFactory<PairingClientAuthenticator> weak_factory_;
+  base::WeakPtrFactory<PairingClientAuthenticator> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(PairingClientAuthenticator);
 };

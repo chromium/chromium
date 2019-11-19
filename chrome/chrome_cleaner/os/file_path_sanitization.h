@@ -5,6 +5,8 @@
 #ifndef CHROME_CHROME_CLEANER_OS_FILE_PATH_SANITIZATION_H_
 #define CHROME_CHROME_CLEANER_OS_FILE_PATH_SANITIZATION_H_
 
+#include <windows.h>
+
 #include <map>
 #include <vector>
 
@@ -69,6 +71,17 @@ base::string16 SanitizeCommandLine(const base::CommandLine& command_line);
 // expanded full absolute path.
 base::FilePath ExpandSpecialFolderPath(int csidl,
                                        const base::FilePath& input_path);
+
+// Returns true iff |file_path| is safe to access from the sandbox.
+bool ValidateSandboxFilePath(const base::FilePath& file_path);
+
+// Returns true iff |file_attributes| contains no attributes that indicate a
+// remote file, such as FILE_ATTRIBUTE_RECALL_ON_DATA_ACCESS.
+bool IsLocalFileAttributes(DWORD file_attributes);
+
+// Returns true iff |file_path|'s attributes can be retrieved and they indicate
+// a local file according to IsLocalFileAttributes.
+bool IsFilePresentLocally(const base::FilePath& file_path);
 
 }  // namespace chrome_cleaner
 

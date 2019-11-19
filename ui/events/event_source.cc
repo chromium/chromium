@@ -42,8 +42,7 @@ class EventSource::EventRewriterContinuationImpl
                                 EventRewriter* rewriter)
       : source_(source),
         rewriter_(rewriter),
-        self_(source->rewriter_list_.end()),
-        weak_ptr_factory_(this) {}
+        self_(source->rewriter_list_.end()) {}
   ~EventRewriterContinuationImpl() override {}
 
   EventRewriter* rewriter() const { return rewriter_; }
@@ -76,7 +75,7 @@ class EventSource::EventRewriterContinuationImpl
   EventRewriter* rewriter_;
   EventRewriterList::iterator self_;
 
-  base::WeakPtrFactory<EventRewriterContinuationImpl> weak_ptr_factory_;
+  base::WeakPtrFactory<EventRewriterContinuationImpl> weak_ptr_factory_{this};
   DISALLOW_COPY_AND_ASSIGN(EventRewriterContinuationImpl);
 };
 

@@ -12,6 +12,7 @@
 #include "content/common/content_security_policy/content_security_policy.h"
 #include "content/common/content_security_policy_header.h"
 #include "content/common/navigation_params.h"
+#include "services/network/public/mojom/content_security_policy.mojom-forward.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -114,7 +115,7 @@ struct CONTENT_EXPORT CSPViolationParams {
                      const std::vector<std::string>& report_endpoints,
                      bool use_reporting_api,
                      const std::string& header,
-                     const blink::mojom::ContentSecurityPolicyType& disposition,
+                     network::mojom::ContentSecurityPolicyType disposition,
                      bool after_redirect,
                      const SourceLocation& source_location);
   CSPViolationParams(const CSPViolationParams& other);
@@ -147,7 +148,7 @@ struct CONTENT_EXPORT CSPViolationParams {
 
   // Each policy has an associated disposition, which is either "enforce" or
   // "report".
-  blink::mojom::ContentSecurityPolicyType disposition;
+  network::mojom::ContentSecurityPolicyType disposition;
 
   // Whether or not the violation happens after a redirect.
   bool after_redirect;

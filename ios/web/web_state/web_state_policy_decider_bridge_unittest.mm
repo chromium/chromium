@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/web/public/web_state/web_state_policy_decider_bridge.h"
+#import "ios/web/public/navigation/web_state_policy_decider_bridge.h"
 
 #import "ios/web/public/test/fakes/crw_fake_web_state_policy_decider.h"
 #import "ios/web/public/test/fakes/test_web_state.h"

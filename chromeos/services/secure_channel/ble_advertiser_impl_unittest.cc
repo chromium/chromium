@@ -10,7 +10,7 @@
 
 #include "base/bind.h"
 #include "base/test/gtest_util.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/test/test_simple_task_runner.h"
 #include "chromeos/services/secure_channel/error_tolerant_ble_advertisement_impl.h"
 #include "chromeos/services/secure_channel/fake_ble_advertiser.h"
@@ -262,7 +262,7 @@ class SecureChannelBleAdvertiserImplTest : public testing::Test {
   }
 
  private:
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_;
 
   std::unique_ptr<FakeBleAdvertiserDelegate> fake_delegate_;
   std::unique_ptr<FakeBleServiceDataHelper> fake_ble_service_data_helper_;

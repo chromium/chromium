@@ -1,0 +1,110 @@
+<link rel="import" href="chrome://resources/html/i18n_behavior.html">
+<link rel="import" href="chrome://resources/html/polymer.html">
+<link rel="import" href="../appearance_page/fonts_browser_proxy.html">
+<link rel="import" href="../controls/settings_dropdown_menu.html">
+<link rel="import" href="../controls/settings_slider.html">
+<link rel="import" href="../settings_shared_css.html">
+
+<dom-module id="settings-captions">
+  <template>
+    <style include="settings-shared">
+      .preview-box {
+        align-items: center;
+        background-image:
+          url(chrome://theme/IDR_ACCESSIBILITY_CAPTIONS_PREVIEW_BACKGROUND);
+        background-position: center;
+        background-size: cover;
+        display: flex;
+        height: 112px;
+        justify-content: center;
+        margin: 0 var(--cr-section-padding) var(--cr-section-padding);
+        text-align: center;
+      }
+    </style>
+    <div class="settings-box first">
+      <h2 class="start">$i18n{captionsPreview}</h2>
+    </div>
+    <div class="preview-box">
+      <span style="
+          font-size:[[prefs.accessibility.captions.text_size.value]];
+          font-family:[[prefs.accessibility.captions.text_font.value]];
+          background-color: [[computeBackgroundColor_(
+              prefs.accessibility.captions.background_opacity.value,
+              prefs.accessibility.captions.background_color.value)]];
+          color: [[computeTextColor_(
+              prefs.accessibility.captions.text_opacity.value,
+              prefs.accessibility.captions.text_color.value)]];
+          text-shadow: [[prefs.accessibility.captions.text_shadow.value]];
+          padding: [[computePadding_(
+              prefs.accessibility.captions.text_size.value)]]">
+        $i18n{quickBrownFox}
+      </span>
+    </div>
+    <div class="settings-box continuation">
+      <h2 class="start">$i18n{captionsSettings}</h2>
+    </div>
+    <div class="list-frame">
+      <div class="list-item underbar first">
+        <div class="start settings-box-text">$i18n{captionsTextSize}</div>
+        <settings-dropdown-menu id="captionsTextSize"
+            label="$i18n{captionsTextSize}"
+            pref="{{prefs.accessibility.captions.text_size}}"
+            menu-options="[[textSizeOptions_]]">
+        </settings-dropdown-menu>
+      </div>
+      <div class="list-item underbar">
+        <div class="start settings-box-text">$i18n{captionsTextFont}</div>
+        <settings-dropdown-menu id="captionsTextFont"
+            label="$i18n{captionsTextFont}"
+            pref="{{prefs.accessibility.captions.text_font}}"
+            menu-options="[[textFontOptions_]]">
+        </settings-dropdown-menu>
+      </div>
+      <div class="list-item underbar">
+        <div class="start settings-box-text">$i18n{captionsTextColor}</div>
+        <settings-dropdown-menu id="captionsTextColor"
+            label="$i18n{captionsTextColor}"
+            pref="{{prefs.accessibility.captions.text_color}}"
+            menu-options="[[colorOptions_]]">
+        </settings-dropdown-menu>
+      </div>
+      <div class="list-item underbar">
+        <div class="start settings-box-text">$i18n{captionsTextOpacity}</div>
+        <settings-dropdown-menu id="captionsTextOpacity"
+            label="$i18n{captionsTextOpacity}"
+            pref="{{prefs.accessibility.captions.text_opacity}}"
+            menu-options="[[textOpacityOptions_]]">
+        </settings-dropdown-menu>
+      </div>
+      <div class="list-item underbar">
+        <div class="start settings-box-text">$i18n{captionsTextShadow}</div>
+        <settings-dropdown-menu id="captionsTextShadow"
+            label="$i18n{captionsTextShadow}"
+            pref="{{prefs.accessibility.captions.text_shadow}}"
+            menu-options="[[textShadowOptions_]]">
+        </settings-dropdown-menu>
+      </div>
+      <div class="list-item underbar">
+        <div class="start settings-box-text">
+          $i18n{captionsBackgroundColor}
+        </div>
+        <settings-dropdown-menu id="captionsBackgroundColor"
+            label="$i18n{captionsBackgroundColor}"
+            pref="{{prefs.accessibility.captions.background_color}}"
+            menu-options="[[colorOptions_]]">
+        </settings-dropdown-menu>
+      </div>
+      <div class="list-item">
+        <div class="start settings-box-text">
+          $i18n{captionsBackgroundOpacity}
+        </div>
+        <settings-dropdown-menu id="captionsBackgroundOpacity"
+            label="$i18n{captionsBackgroundOpacity}"
+            pref="{{prefs.accessibility.captions.background_opacity}}"
+            menu-options="[[backgroundOpacityOptions_]]">
+        </settings-dropdown-menu>
+      </div>
+    </div>
+  </template>
+  <script src="captions_subpage.js"></script>
+</dom-module>

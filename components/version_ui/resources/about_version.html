@@ -22,6 +22,7 @@ about:version template page
     <script src="chrome://resources/js/ios/web_ui.js"></script>
 </if>
 
+    <script src="chrome://resources/js/promise_resolver.js"></script>
     <script src="chrome://resources/js/cr.js"></script>
     <script src="chrome://resources/js/load_time_data.js"></script>
     <script src="chrome://resources/js/parse_html_subset.js"></script>
@@ -35,10 +36,18 @@ about:version template page
       <div id="logo">
 <if expr="not is_android and not is_ios">
         <!-- Version for themes. -->
-        <img src="chrome://theme/IDR_PRODUCT_LOGO">
+        <picture>
+          <source srcset="chrome://theme/IDR_PRODUCT_LOGO_WHITE" media="(prefers-color-scheme: dark)">
+          <source srcset="chrome://theme/IDR_PRODUCT_LOGO" media="(prefers-color-scheme: light), (prefers-color-scheme: no-preference)">
+          <img src="chrome://theme/IDR_PRODUCT_LOGO">
+        </picture>
 </if>
 <if expr="is_ios or is_android">
-        <img src="../../../components/resources/default_100_percent/%DISTRIBUTION%/product_logo.png">
+        <picture>
+          <source srcset="../../../components/resources/default_100_percent/%DISTRIBUTION%/product_logo_white.png" media="(prefers-color-scheme: dark)">
+          <source srcset="../../../components/resources/default_100_percent/%DISTRIBUTION%/product_logo.png" media="(prefers-color-scheme: light), (prefers-color-scheme: no-preference)">
+          <img src="../../../components/resources/default_100_percent/%DISTRIBUTION%/product_logo.png">
+        </picture>
 </if>
         <div id="company">$i18n{company}</div>
         <div id="copyright">$i18n{copyright}</div>
@@ -69,7 +78,7 @@ about:version template page
 <if expr="is_android">
             <span>$i18n{os_version}</span>
 </if>
-<if expr="is_win">
+<if expr="is_win or is_macosx">
             <span id="os_version"></span>
 </if>
           </td>
@@ -143,6 +152,16 @@ about:version template page
           <td class="label">$i18n{variations_cmd_name}</td>
           <td class="version-wide" id="variations-cmd"></td>
         </tr>
+        <tr id="sanitizer-section" hidden>
+          <td class="label">Sanitizer</td>
+          <td class="version" id="sanitizer">$i18n{sanitizer}</td>
+        </tr>
+<if expr="is_ios">
+        <tr id="compiler-section">
+          <td class="label">Compiler</td>
+          <td class="version" id="compiler">$i18n{compiler}</td>
+        </tr>
+</if>
       </table>
     </div>
   </body>

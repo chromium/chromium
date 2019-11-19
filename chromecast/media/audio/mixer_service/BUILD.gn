@@ -6,6 +6,12 @@ import("//build/buildflag_header.gni")
 import("//chromecast/chromecast.gni")
 import("//third_party/protobuf/proto_library.gni")
 
+buildflag_header("buildflags") {
+  header = "buildflags.h"
+
+  flags = [ "HAVE_FULL_MIXER=$have_full_mixer" ]
+}
+
 proto_library("proto") {
   proto_out_dir = "chromecast/media/audio/mixer_service"
   sources = [
@@ -13,44 +19,135 @@ proto_library("proto") {
   ]
 }
 
-use_unix_sockets = is_linux
-buildflag_header("buildflags") {
-  header = "mixer_service_buildflags.h"
-
-  flags = [ "USE_UNIX_SOCKETS=$use_unix_sockets" ]
-}
-
 cast_source_set("common") {
   sources = [
+    "constants.cc",
     "constants.h",
-    "proto_helpers.cc",
-    "proto_helpers.h",
+    "conversions.cc",
+    "conversions.h",
+    "mixer_socket.cc",
+    "mixer_socket.h",
   ]
 
   deps = [
     ":buildflags",
-    ":proto",
     "//base",
-    "//chromecast/net:small_message_socket",
+    "//chromecast/net:io_buffer_pool",
+    "//chromecast/public",
+    "//chromecast/public/media",
     "//net",
+  ]
+
+  public_deps = [
+    ":proto",
+    "//chromecast/net:small_message_socket",
   ]
 }
 
 cast_source_set("connection") {
   sources = [
-    "mixer_service_connection.cc",
-    "mixer_service_connection.h",
-    "mixer_service_connection_factory.cc",
-    "mixer_service_connection_factory.h",
+    "mixer_connection.cc",
+    "mixer_connection.h",
   ]
 
   deps = [
-    ":buildflags",
     ":common",
-    ":proto",
     "//base",
     "//chromecast/base",
-    "//chromecast/net:small_message_socket",
+    "//chromecast/media/audio:audio_buildflags",
+    "//net",
+  ]
+}
+
+cast_source_set("output_stream_connection") {
+  sources = [
+    "output_stream_connection.cc",
+    "output_stream_connection.h",
+  ]
+
+  deps = [
+    ":common",
+    ":connection",
+    ":proto",
+    "//base",
+    "//chromecast/net:io_buffer_pool",
+    "//net",
+  ]
+}
+
+cast_source_set("control_connection") {
+  sources = [
+    "control_connection.cc",
+    "control_connection.h",
+  ]
+
+  deps = [
+    ":common",
+    ":connection",
+    ":proto",
+    "//base",
+    "//chromecast/public",
+    "//net",
+  ]
+}
+
+cast_source_set("mixer_control") {
+  sources = [
+    "mixer_control.cc",
+    "mixer_control.h",
+  ]
+
+  deps = [
+    ":common",
+    ":control_connection",
+    "//base",
+    "//chromecast/media/audio:audio_io_thread",
+  ]
+}
+
+cast_source_set("loopback_connection") {
+  sources = [
+    "loopback_connection.cc",
+    "loopback_connection.h",
+  ]
+
+  deps = [
+    ":common",
+    ":connection",
+    ":proto",
+    "//base",
+    "//chromecast/net:io_buffer_pool",
+    "//chromecast/public/media",
+    "//net",
+  ]
+}
+
+cast_source_set("redirected_audio_connection") {
+  sources = [
+    "redirected_audio_connection.cc",
+    "redirected_audio_connection.h",
+  ]
+
+  deps = [
+    ":common",
+    ":connection",
+    ":proto",
+    "//base",
+    "//chromecast/net:io_buffer_pool",
+    "//chromecast/public",
+    "//net",
+  ]
+}
+
+cast_source_set("audio_socket_service") {
+  sources = [
+    "audio_socket_service.cc",
+    "audio_socket_service.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chromecast/media/audio:audio_buildflags",
     "//net",
   ]
 }

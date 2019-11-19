@@ -22,15 +22,13 @@ class FilePath;
 class Version;
 }
 
-namespace service_manager {
-class Connector;
-}
-
 namespace update_client {
 
 class ActivityDataService;
 class NetworkFetcherFactory;
+class PatcherFactory;
 class ProtocolHandlerFactory;
+class UnzipperFactory;
 
 using RecoveryCRXElevator = base::OnceCallback<std::tuple<bool, int, int>(
     const base::FilePath& crx_path,
@@ -105,10 +103,9 @@ class Configurator : public base::RefCountedThreadSafe<Configurator> {
 
   virtual scoped_refptr<NetworkFetcherFactory> GetNetworkFetcherFactory() = 0;
 
-  // Returns a new connector to the service manager. That connector is not bound
-  // to any thread yet.
-  virtual std::unique_ptr<service_manager::Connector>
-  CreateServiceManagerConnector() const = 0;
+  virtual scoped_refptr<UnzipperFactory> GetUnzipperFactory() = 0;
+
+  virtual scoped_refptr<PatcherFactory> GetPatcherFactory() = 0;
 
   // True means that this client can handle delta updates.
   virtual bool EnabledDeltas() const = 0;

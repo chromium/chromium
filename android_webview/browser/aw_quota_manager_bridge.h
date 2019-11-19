@@ -87,7 +87,7 @@ class AwQuotaManagerBridge
   AwBrowserContext* browser_context_;
   JavaObjectWeakGlobalRef java_ref_;
 
-  base::WeakPtrFactory<AwQuotaManagerBridge> weak_factory_;
+  base::WeakPtrFactory<AwQuotaManagerBridge> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(AwQuotaManagerBridge);
 };

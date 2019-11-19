@@ -19,6 +19,9 @@ class SurfaceObserver {
   // changes.
   virtual void OnWindowOcclusionChanged(Surface* surface) {}
 
+  // Called on each commit.
+  virtual void OnCommit(Surface* surface) {}
+
  protected:
   virtual ~SurfaceObserver() {}
 };

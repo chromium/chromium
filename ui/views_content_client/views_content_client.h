@@ -40,14 +40,15 @@ namespace ui {
 //   ui::ViewsContentClient params(argc, argv);
 // #endif
 //
-//   params.set_task(base::Bind(&InitMyApp));
+//   params.set_on_pre_main_message_loop_run_callback(
+//       base::BindOnce(&InitMyApp));
 //   return params.RunMain();
 // }
 class VIEWS_CONTENT_CLIENT_EXPORT ViewsContentClient {
  public:
-  typedef base::Callback<
-      void(content::BrowserContext* browser_context,
-           gfx::NativeWindow window_context)> Task;
+  using OnPreMainMessageLoopRunCallback =
+      base::OnceCallback<void(content::BrowserContext* browser_context,
+                              gfx::NativeWindow window_context)>;
 
 #if defined(OS_WIN)
   ViewsContentClient(HINSTANCE instance,
@@ -63,8 +64,16 @@ class VIEWS_CONTENT_CLIENT_EXPORT ViewsContentClient {
 
   // The task to run at the end of BrowserMainParts::PreMainMessageLoopRun().
   // Ignored if this is not the main process.
-  void set_task(const Task& task) { task_ = task; }
-  const Task& task() const { return task_; }
+  void set_on_pre_main_message_loop_run_callback(
+      OnPreMainMessageLoopRunCallback callback) {
+    on_pre_main_message_loop_run_callback_ = std::move(callback);
+  }
+
+  // Calls the OnPreMainMessageLoopRun callback. |browser_context| is the
+  // current browser context. |window_context| is a candidate root window that
+  // may be null.
+  void OnPreMainMessageLoopRun(content::BrowserContext* browser_context,
+                               gfx::NativeWindow window_context);
 
   // Called by ViewsContentClientMainParts to supply the quit-closure to use
   // to exit RunMain().
@@ -81,7 +90,7 @@ class VIEWS_CONTENT_CLIENT_EXPORT ViewsContentClient {
   int argc_;
   const char** argv_;
 #endif
-  Task task_;
+  OnPreMainMessageLoopRunCallback on_pre_main_message_loop_run_callback_;
   base::OnceClosure quit_closure_;
 
   DISALLOW_COPY_AND_ASSIGN(ViewsContentClient);

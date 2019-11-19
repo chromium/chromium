@@ -4,6 +4,8 @@
 
 #include "chrome/browser/metrics/perf/metric_collector.h"
 
+#include <utility>
+
 #include "base/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
@@ -12,19 +14,13 @@
 
 namespace metrics {
 
+namespace internal {
+
 namespace {
 
 // Name prefix of the histogram that represents the success and various failure
 // modes for a collector.
 const char kCollectionOutcomeHistogramPrefix[] = "ChromeOS.CWP.Collect";
-
-// Name prefix of the histogram that counts the number of reports uploaded by a
-// collector.
-const char kUploadCountHistogramPrefix[] = "ChromeOS.CWP.Upload";
-
-// An upper bound on the count of reports expected to be uploaded by an UMA
-// callback.
-const int kMaxValueUploadReports = 10;
 
 // This is used to space out session restore collections in the face of several
 // notifications in a short period of time. There should be no less than this
@@ -75,51 +71,45 @@ void RemoveUnknownFieldsFromMessagesWithStrings(PerfDataProto* proto) {
 
 }  // namespace
 
-MetricCollector::MetricCollector(const std::string& name)
-    : MetricCollector(name, CollectionParams()) {}
-
 MetricCollector::MetricCollector(const std::string& name,
                                  const CollectionParams& collection_params)
-    : collection_params_(collection_params) {
-  collect_uma_histogram_ =
-      std::string(kCollectionOutcomeHistogramPrefix) + name;
-  upload_uma_histogram_ = std::string(kUploadCountHistogramPrefix) + name;
+    : collection_params_(collection_params),
+      collect_uma_histogram_(std::string(kCollectionOutcomeHistogramPrefix) +
+                             name) {
+  // Allow rebinding |sequence_checker_| to the sequence the collector runs on.
+  DETACH_FROM_SEQUENCE(sequence_checker_);
 }
 
-MetricCollector::~MetricCollector() {
+MetricCollector::~MetricCollector() = default;
+
+void MetricCollector::Init() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  SetUp();
 }
 
-void MetricCollector::AddToUmaHistogram(CollectionAttemptStatus outcome) const {
-  base::UmaHistogramEnumeration(collect_uma_histogram_, outcome,
-                                CollectionAttemptStatus::NUM_OUTCOMES);
+void MetricCollector::AddCachedDataDelta(size_t delta) {
+  cached_data_size_ += delta;
 }
 
-bool MetricCollector::GetSampledProfiles(
-    std::vector<SampledProfile>* sampled_profiles) {
+void MetricCollector::ResetCachedDataSize() {
+  cached_data_size_ = 0;
+}
+
+void MetricCollector::RecordUserLogin(base::TimeTicks login_time) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!ShouldUpload() || cached_profile_data_.empty()) {
-    base::UmaHistogramExactLinear(upload_uma_histogram_, 0,
-                                  kMaxValueUploadReports);
-    return false;
-  }
 
-  base::UmaHistogramExactLinear(upload_uma_histogram_,
-                                cached_profile_data_.size(),
-                                kMaxValueUploadReports);
-  sampled_profiles->insert(
-      sampled_profiles->end(),
-      std::make_move_iterator(cached_profile_data_.begin()),
-      std::make_move_iterator(cached_profile_data_.end()));
-  cached_profile_data_.clear();
-  return true;
+  login_time_ = login_time;
+  next_profiling_interval_start_ = login_time;
+  ScheduleIntervalCollection();
+}
+void MetricCollector::StopTimer() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  timer_.AbandonAndStop();
 }
 
-bool MetricCollector::ShouldUpload() const {
-  return true;
-}
-
-void MetricCollector::SuspendDone(base::TimeDelta sleep_duration) {
+void MetricCollector::ScheduleSuspendDoneCollection(
+    base::TimeDelta sleep_duration) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Collect a profile only 1/|sampling_factor| of the time, to avoid
   // collecting too much data. (0 means disable the trigger)
   const auto& resume_params = collection_params_.resume_from_suspend;
@@ -136,25 +126,25 @@ void MetricCollector::SuspendDone(base::TimeDelta sleep_duration) {
       RandomTimeDelta(resume_params.max_collection_delay);
   timer_.Start(FROM_HERE, collection_delay,
                base::BindOnce(&MetricCollector::CollectPerfDataAfterResume,
-                              AsWeakPtr(), sleep_duration, collection_delay));
+                              GetWeakPtr(), sleep_duration, collection_delay));
 }
 
-void MetricCollector::CollectPerfDataAfterResume(
-    base::TimeDelta sleep_duration,
-    base::TimeDelta time_after_resume) {
+void MetricCollector::OnJankStarted() {
   // Fill out a SampledProfile protobuf that will contain the collected data.
   auto sampled_profile = std::make_unique<SampledProfile>();
-  sampled_profile->set_trigger_event(SampledProfile::RESUME_FROM_SUSPEND);
-  sampled_profile->set_suspend_duration_ms(sleep_duration.InMilliseconds());
-  sampled_profile->set_ms_after_resume(time_after_resume.InMilliseconds());
+  sampled_profile->set_trigger_event(SampledProfile::JANKY_TASK);
 
   CollectIfNecessary(std::move(sampled_profile));
 }
 
-void MetricCollector::OnSessionRestoreDone(int num_tabs_restored) {
-  // Collect a profile only 1/|sampling_factor| of the time, to
-  // avoid collecting too much data and potentially causing UI latency.
-  // (0 means disable the trigger)
+void MetricCollector::OnJankStopped() {
+  StopCollection();
+}
+
+void MetricCollector::ScheduleSessionRestoreCollection(int num_tabs_restored) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // Collect a profile only 1/|sampling_factor| of the time, to avoid
+  // collecting too much data. (0 means disable the trigger)
   const auto& restore_params = collection_params_.restore_session;
   if (restore_params.sampling_factor == 0 ||
       base::RandGenerator(restore_params.sampling_factor) != 0) {
@@ -182,7 +172,25 @@ void MetricCollector::OnSessionRestoreDone(int num_tabs_restored) {
   timer_.Start(
       FROM_HERE, collection_delay,
       base::BindOnce(&MetricCollector::CollectPerfDataAfterSessionRestore,
-                     AsWeakPtr(), collection_delay, num_tabs_restored));
+                     GetWeakPtr(), collection_delay, num_tabs_restored));
+}
+
+void MetricCollector::AddToUmaHistogram(CollectionAttemptStatus outcome) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  base::UmaHistogramEnumeration(collect_uma_histogram_, outcome,
+                                CollectionAttemptStatus::NUM_OUTCOMES);
+}
+
+void MetricCollector::CollectPerfDataAfterResume(
+    base::TimeDelta sleep_duration,
+    base::TimeDelta time_after_resume) {
+  // Fill out a SampledProfile protobuf that will contain the collected data.
+  auto sampled_profile = std::make_unique<SampledProfile>();
+  sampled_profile->set_trigger_event(SampledProfile::RESUME_FROM_SUSPEND);
+  sampled_profile->set_suspend_duration_ms(sleep_duration.InMilliseconds());
+  sampled_profile->set_ms_after_resume(time_after_resume.InMilliseconds());
+
+  CollectIfNecessary(std::move(sampled_profile));
 }
 
 void MetricCollector::CollectPerfDataAfterSessionRestore(
@@ -202,9 +210,12 @@ void MetricCollector::ScheduleIntervalCollection() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (timer_.IsRunning())
     return;
+  // Schedule periodic collection only if periodic_interval is non-zero. A value
+  // of zero is the escape hatch for turning periodic collection off via Finch.
+  if (collection_params_.periodic_interval.is_zero())
+    return;
 
   const base::TimeTicks now = base::TimeTicks::Now();
-
   base::TimeTicks interval_end =
       next_profiling_interval_start_ + collection_params_.periodic_interval;
   if (now > interval_end) {
@@ -222,8 +233,9 @@ void MetricCollector::ScheduleIntervalCollection() {
   if (scheduled_time < now)
     scheduled_time = now;
 
-  timer_.Start(FROM_HERE, scheduled_time - now, this,
-               &MetricCollector::DoPeriodicCollection);
+  timer_.Start(
+      FROM_HERE, scheduled_time - now,
+      base::BindOnce(&MetricCollector::DoPeriodicCollection, GetWeakPtr()));
 
   // Update the profiling interval tracker to the start of the next interval.
   next_profiling_interval_start_ = interval_end;
@@ -256,71 +268,33 @@ bool MetricCollector::ShouldCollect() const {
   return true;
 }
 
-void MetricCollector::OnUserLoggedIn() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  const base::TimeTicks now = base::TimeTicks::Now();
-  login_time_ = now;
-  next_profiling_interval_start_ = now;
-  ScheduleIntervalCollection();
-}
-
-void MetricCollector::Deactivate() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // Stop the timer, but leave |cached_profile_data_| intact.
-  timer_.Stop();
-}
-
 void MetricCollector::SaveSerializedPerfProto(
     std::unique_ptr<SampledProfile> sampled_profile,
-    PerfProtoType type,
-    const std::string& serialized_proto) {
+    std::string serialized_proto) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (serialized_proto.empty()) {
     AddToUmaHistogram(CollectionAttemptStatus::ILLEGAL_DATA_RETURNED);
     return;
   }
 
-  switch (type) {
-    case PerfProtoType::PERF_TYPE_DATA: {
-      PerfDataProto perf_data_proto;
-      if (!perf_data_proto.ParseFromString(serialized_proto)) {
-        AddToUmaHistogram(CollectionAttemptStatus::PROTOBUF_NOT_PARSED);
-        return;
-      }
-      RemoveUnknownFieldsFromMessagesWithStrings(&perf_data_proto);
-      sampled_profile->mutable_perf_data()->Swap(&perf_data_proto);
-      break;
-    }
-    case PerfProtoType::PERF_TYPE_STAT: {
-      PerfStatProto perf_stat_proto;
-      if (!perf_stat_proto.ParseFromString(serialized_proto)) {
-        AddToUmaHistogram(CollectionAttemptStatus::PROTOBUF_NOT_PARSED);
-        return;
-      }
-      sampled_profile->mutable_perf_stat()->Swap(&perf_stat_proto);
-      break;
-    }
-    case PerfProtoType::PERF_TYPE_UNSUPPORTED:
-      AddToUmaHistogram(CollectionAttemptStatus::PROTOBUF_NOT_PARSED);
-      return;
+  PerfDataProto perf_data_proto;
+  if (!perf_data_proto.ParseFromString(serialized_proto)) {
+    AddToUmaHistogram(CollectionAttemptStatus::PROTOBUF_NOT_PARSED);
+    return;
   }
+  RemoveUnknownFieldsFromMessagesWithStrings(&perf_data_proto);
+  sampled_profile->mutable_perf_data()->Swap(&perf_data_proto);
 
   sampled_profile->set_ms_after_boot(base::SysInfo::Uptime().InMilliseconds());
   DCHECK(!login_time_.is_null());
   sampled_profile->set_ms_after_login(
       (base::TimeTicks::Now() - login_time_).InMilliseconds());
 
-  // Add the collected data to the container of collected SampledProfiles.
-  cached_profile_data_.resize(cached_profile_data_.size() + 1);
-  cached_profile_data_.back().Swap(sampled_profile.get());
+  // Run |profile_done_callback_| on success.
   AddToUmaHistogram(CollectionAttemptStatus::SUCCESS);
+  profile_done_callback_.Run(std::move(sampled_profile));
 }
 
-size_t MetricCollector::cached_profile_data_size() const {
-  size_t data_size = 0;
-  for (size_t i = 0; i < cached_profile_data_.size(); ++i) {
-    data_size += cached_profile_data_[i].ByteSize();
-  }
-  return data_size;
-}
+}  // namespace internal
 
 }  // namespace metrics

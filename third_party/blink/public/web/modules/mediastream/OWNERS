@@ -1,0 +1,4 @@
+file://third_party/blink/common/mediastream/OWNERS
+
+# TEAM: webrtc-dev@chromium.org
+# COMPONENT: Blink>GetUserMedia

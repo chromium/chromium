@@ -1,0 +1,326 @@
+<!doctype html>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<script src="../../assert_selection.js"></script>
+<script>
+if (window.internals)
+  internals.settings.setEditingBehavior('win');
+
+selection_test(
+  '<div contenteditable dir="rtl">|אבד opq rst דעפ <span dir="ltr">abc uvw אאא def lmn</span>אבצ hij xyz וקק</div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="rtl">אבד |opq rst דעפ <span dir="ltr">abc uvw אאא def lmn</span>אבצ hij xyz וקק</div>',
+  '20-0 left word');
+
+selection_test(
+  '<div contenteditable dir="rtl">א|בד opq rst דעפ <span dir="ltr">abc uvw אאא def lmn</span>אבצ hij xyz וקק</div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="rtl">אבד |opq rst דעפ <span dir="ltr">abc uvw אאא def lmn</span>אבצ hij xyz וקק</div>',
+  '20-1 left word');
+
+selection_test(
+  '<div contenteditable dir="rtl">אב|ד opq rst דעפ <span dir="ltr">abc uvw אאא def lmn</span>אבצ hij xyz וקק</div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="rtl">אבד |opq rst דעפ <span dir="ltr">abc uvw אאא def lmn</span>אבצ hij xyz וקק</div>',
+  '20-2 left word');
+
+selection_test(
+  '<div contenteditable dir="rtl">אבד| opq rst דעפ <span dir="ltr">abc uvw אאא def lmn</span>אבצ hij xyz וקק</div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="rtl">\u05D0\u05D1\u05D3 opq |rst \u05D3\u05E2\u05E4 <span dir="ltr">abc uvw \u05D0\u05D0\u05D0 def lmn</span>\u05D0\u05D1\u05E6 hij xyz \u05D5\u05E7\u05E7</div>',
+  '20-3 left word');
+
+selection_test(
+  '<div contenteditable dir="rtl">אבד |opq rst דעפ <span dir="ltr">abc uvw אאא def lmn</span>אבצ hij xyz וקק</div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="rtl">\u05D0\u05D1\u05D3 opq |rst \u05D3\u05E2\u05E4 <span dir="ltr">abc uvw \u05D0\u05D0\u05D0 def lmn</span>\u05D0\u05D1\u05E6 hij xyz \u05D5\u05E7\u05E7</div>',
+  '20-4 left word');
+
+selection_test(
+  '<div contenteditable dir="rtl">אבד o|pq rst דעפ <span dir="ltr">abc uvw אאא def lmn</span>אבצ hij xyz וקק</div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="rtl">\u05D0\u05D1\u05D3 opq |rst \u05D3\u05E2\u05E4 <span dir="ltr">abc uvw \u05D0\u05D0\u05D0 def lmn</span>\u05D0\u05D1\u05E6 hij xyz \u05D5\u05E7\u05E7</div>',
+  '20-5 left word');
+
+selection_test(
+  '<div contenteditable dir="rtl">אבד op|q rst דעפ <span dir="ltr">abc uvw אאא def lmn</span>אבצ hij xyz וקק</div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="rtl">\u05D0\u05D1\u05D3 opq |rst \u05D3\u05E2\u05E4 <span dir="ltr">abc uvw \u05D0\u05D0\u05D0 def lmn</span>\u05D0\u05D1\u05E6 hij xyz \u05D5\u05E7\u05E7</div>',
+  '20-6 left word');
+
+selection_test(
+  '<div contenteditable dir="rtl">אבד opq| rst דעפ <span dir="ltr">abc uvw אאא def lmn</span>אבצ hij xyz וקק</div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="rtl">אבד opq rst |דעפ <span dir="ltr">abc uvw אאא def lmn</span>אבצ hij xyz וקק</div>',
+  '20-7 left word');
+
+selection_test(
+  '<div contenteditable dir="rtl">אבד opq |rst דעפ <span dir="ltr">abc uvw אאא def lmn</span>אבצ hij xyz וקק</div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="rtl">\u05D0\u05D1\u05D3 opq rst |\u05D3\u05E2\u05E4 <span dir="ltr">abc uvw \u05D0\u05D0\u05D0 def lmn</span>\u05D0\u05D1\u05E6 hij xyz \u05D5\u05E7\u05E7</div>',
+  '20-8 left word');
+
+selection_test(
+  '<div contenteditable dir="rtl">אבד opq r|st דעפ <span dir="ltr">abc uvw אאא def lmn</span>אבצ hij xyz וקק</div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="rtl">\u05D0\u05D1\u05D3 opq rst |\u05D3\u05E2\u05E4 <span dir="ltr">abc uvw \u05D0\u05D0\u05D0 def lmn</span>\u05D0\u05D1\u05E6 hij xyz \u05D5\u05E7\u05E7</div>',
+  '20-9 left word');
+
+selection_test(
+  '<div contenteditable dir="rtl">אבד opq rs|t דעפ <span dir="ltr">abc uvw אאא def lmn</span>אבצ hij xyz וקק</div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="rtl">\u05D0\u05D1\u05D3 opq rst |\u05D3\u05E2\u05E4 <span dir="ltr">abc uvw \u05D0\u05D0\u05D0 def lmn</span>\u05D0\u05D1\u05E6 hij xyz \u05D5\u05E7\u05E7</div>',
+  '20-10 left word');
+
+selection_test(
+  '<div contenteditable dir="rtl">אבד opq rst| דעפ <span dir="ltr">abc uvw אאא def lmn</span>אבצ hij xyz וקק</div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="rtl">\u05D0\u05D1\u05D3 opq rst \u05D3\u05E2\u05E4 |<span dir="ltr">abc uvw \u05D0\u05D0\u05D0 def lmn</span>\u05D0\u05D1\u05E6 hij xyz \u05D5\u05E7\u05E7</div>',
+  '20-11 left word');
+
+selection_test(
+  '<div contenteditable dir="rtl">אבד opq rst |דעפ <span dir="ltr">abc uvw אאא def lmn</span>אבצ hij xyz וקק</div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="rtl">אבד opq rst דעפ |<span dir="ltr">abc uvw אאא def lmn</span>אבצ hij xyz וקק</div>',
+  '20-12 left word');
+
+selection_test(
+  '<div contenteditable dir="rtl">אבד opq rst ד|עפ <span dir="ltr">abc uvw אאא def lmn</span>אבצ hij xyz וקק</div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="rtl">אבד opq rst דעפ |<span dir="ltr">abc uvw אאא def lmn</span>אבצ hij xyz וקק</div>',
+  '20-13 left word');
+
+selection_test(
+  '<div contenteditable dir="rtl">אבד opq rst דע|פ <span dir="ltr">abc uvw אאא def lmn</span>אבצ hij xyz וקק</div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="rtl">אבד opq rst דעפ |<span dir="ltr">abc uvw אאא def lmn</span>אבצ hij xyz וקק</div>',
+  '20-14 left word');
+
+selection_test(
+  '<div contenteditable dir="rtl">אבד opq rst דעפ| <span dir="ltr">abc uvw אאא def lmn</span>אבצ hij xyz וקק</div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="rtl">\u05D0\u05D1\u05D3 opq rst \u05D3\u05E2\u05E4 <span dir="ltr">abc |uvw \u05D0\u05D0\u05D0 def lmn</span>\u05D0\u05D1\u05E6 hij xyz \u05D5\u05E7\u05E7</div>',
+  '20-15 left word');
+
+selection_test(
+  '<div contenteditable dir="rtl">אבד opq rst דעפ |<span dir="ltr">abc uvw אאא def lmn</span>אבצ hij xyz וקק</div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="rtl">\u05D0\u05D1\u05D3 opq rst \u05D3\u05E2\u05E4 <span dir="ltr">abc |uvw \u05D0\u05D0\u05D0 def lmn</span>\u05D0\u05D1\u05E6 hij xyz \u05D5\u05E7\u05E7</div>',
+  '20-16 left word');
+
+selection_test(
+  '<div contenteditable dir="rtl">אבד opq rst דעפ <span dir="ltr">|abc uvw אאא def lmn</span>אבצ hij xyz וקק</div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="rtl">\u05D0\u05D1\u05D3 opq rst \u05D3\u05E2\u05E4 <span dir="ltr">abc |uvw \u05D0\u05D0\u05D0 def lmn</span>\u05D0\u05D1\u05E6 hij xyz \u05D5\u05E7\u05E7</div>',
+  '20-17 left word');
+
+selection_test(
+  '<div contenteditable dir="rtl">אבד opq rst דעפ <span dir="ltr">a|bc uvw אאא def lmn</span>אבצ hij xyz וקק</div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="rtl">\u05D0\u05D1\u05D3 opq rst \u05D3\u05E2\u05E4 <span dir="ltr">abc |uvw \u05D0\u05D0\u05D0 def lmn</span>\u05D0\u05D1\u05E6 hij xyz \u05D5\u05E7\u05E7</div>',
+  '20-18 left word');
+
+selection_test(
+  '<div contenteditable dir="rtl">אבד opq rst דעפ <span dir="ltr">ab|c uvw אאא def lmn</span>אבצ hij xyz וקק</div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="rtl">\u05D0\u05D1\u05D3 opq rst \u05D3\u05E2\u05E4 <span dir="ltr">abc |uvw \u05D0\u05D0\u05D0 def lmn</span>\u05D0\u05D1\u05E6 hij xyz \u05D5\u05E7\u05E7</div>',
+  '20-19 left word');
+
+selection_test(
+  '<div contenteditable dir="rtl">אבד opq rst דעפ <span dir="ltr">abc| uvw אאא def lmn</span>אבצ hij xyz וקק</div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="rtl">\u05D0\u05D1\u05D3 opq rst \u05D3\u05E2\u05E4 <span dir="ltr">abc uvw |\u05D0\u05D0\u05D0 def lmn</span>\u05D0\u05D1\u05E6 hij xyz \u05D5\u05E7\u05E7</div>',
+  '20-20 left word');
+
+selection_test(
+  '<div contenteditable dir="rtl">אבד opq rst דעפ <span dir="ltr">abc |uvw אאא def lmn</span>אבצ hij xyz וקק</div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="rtl">\u05D0\u05D1\u05D3 opq rst \u05D3\u05E2\u05E4 <span dir="ltr">abc uvw |\u05D0\u05D0\u05D0 def lmn</span>\u05D0\u05D1\u05E6 hij xyz \u05D5\u05E7\u05E7</div>',
+  '20-21 left word');
+
+selection_test(
+  '<div contenteditable dir="rtl">אבד opq rst דעפ <span dir="ltr">abc u|vw אאא def lmn</span>אבצ hij xyz וקק</div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="rtl">\u05D0\u05D1\u05D3 opq rst \u05D3\u05E2\u05E4 <span dir="ltr">abc uvw |\u05D0\u05D0\u05D0 def lmn</span>\u05D0\u05D1\u05E6 hij xyz \u05D5\u05E7\u05E7</div>',
+  '20-22 left word');
+
+selection_test(
+  '<div contenteditable dir="rtl">אבד opq rst דעפ <span dir="ltr">abc uv|w אאא def lmn</span>אבצ hij xyz וקק</div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="rtl">\u05D0\u05D1\u05D3 opq rst \u05D3\u05E2\u05E4 <span dir="ltr">abc uvw |\u05D0\u05D0\u05D0 def lmn</span>\u05D0\u05D1\u05E6 hij xyz \u05D5\u05E7\u05E7</div>',
+  '20-23 left word');
+
+selection_test(
+  '<div contenteditable dir="rtl">אבד opq rst דעפ <span dir="ltr">abc uvw| אאא def lmn</span>אבצ hij xyz וקק</div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="rtl">\u05D0\u05D1\u05D3 opq rst \u05D3\u05E2\u05E4 <span dir="ltr">abc uvw \u05D0\u05D0\u05D0 |def lmn</span>\u05D0\u05D1\u05E6 hij xyz \u05D5\u05E7\u05E7</div>',
+  '20-24 left word');
+
+selection_test(
+  '<div contenteditable dir="rtl">אבד opq rst דעפ <span dir="ltr">abc uvw |אאא def lmn</span>אבצ hij xyz וקק</div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="rtl">\u05D0\u05D1\u05D3 opq rst \u05D3\u05E2\u05E4 <span dir="ltr">abc uvw \u05D0\u05D0\u05D0 |def lmn</span>\u05D0\u05D1\u05E6 hij xyz \u05D5\u05E7\u05E7</div>',
+  '20-25 left word');
+
+selection_test(
+  '<div contenteditable dir="rtl">אבד opq rst דעפ <span dir="ltr">abc uvw א|אא def lmn</span>אבצ hij xyz וקק</div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="rtl">\u05D0\u05D1\u05D3 opq rst \u05D3\u05E2\u05E4 <span dir="ltr">abc uvw \u05D0\u05D0\u05D0 |def lmn</span>\u05D0\u05D1\u05E6 hij xyz \u05D5\u05E7\u05E7</div>',
+  '20-26 left word');
+
+selection_test(
+  '<div contenteditable dir="rtl">אבד opq rst דעפ <span dir="ltr">abc uvw אא|א def lmn</span>אבצ hij xyz וקק</div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="rtl">\u05D0\u05D1\u05D3 opq rst \u05D3\u05E2\u05E4 <span dir="ltr">abc uvw \u05D0\u05D0\u05D0 |def lmn</span>\u05D0\u05D1\u05E6 hij xyz \u05D5\u05E7\u05E7</div>',
+  '20-27 left word');
+
+selection_test(
+  '<div contenteditable dir="rtl">אבד opq rst דעפ <span dir="ltr">abc uvw אאא| def lmn</span>אבצ hij xyz וקק</div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="rtl">\u05D0\u05D1\u05D3 opq rst \u05D3\u05E2\u05E4 <span dir="ltr">abc uvw \u05D0\u05D0\u05D0 def |lmn</span>\u05D0\u05D1\u05E6 hij xyz \u05D5\u05E7\u05E7</div>',
+  '20-28 left word');
+
+selection_test(
+  '<div contenteditable dir="rtl">אבד opq rst דעפ <span dir="ltr">abc uvw אאא |def lmn</span>אבצ hij xyz וקק</div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="rtl">\u05D0\u05D1\u05D3 opq rst \u05D3\u05E2\u05E4 <span dir="ltr">abc uvw \u05D0\u05D0\u05D0 def |lmn</span>\u05D0\u05D1\u05E6 hij xyz \u05D5\u05E7\u05E7</div>',
+  '20-29 left word');
+
+selection_test(
+  '<div contenteditable dir="rtl">אבד opq rst דעפ <span dir="ltr">abc uvw אאא d|ef lmn</span>אבצ hij xyz וקק</div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="rtl">\u05D0\u05D1\u05D3 opq rst \u05D3\u05E2\u05E4 <span dir="ltr">abc uvw \u05D0\u05D0\u05D0 def |lmn</span>\u05D0\u05D1\u05E6 hij xyz \u05D5\u05E7\u05E7</div>',
+  '20-30 left word');
+
+selection_test(
+  '<div contenteditable dir="rtl">אבד opq rst דעפ <span dir="ltr">abc uvw אאא de|f lmn</span>אבצ hij xyz וקק</div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="rtl">\u05D0\u05D1\u05D3 opq rst \u05D3\u05E2\u05E4 <span dir="ltr">abc uvw \u05D0\u05D0\u05D0 def |lmn</span>\u05D0\u05D1\u05E6 hij xyz \u05D5\u05E7\u05E7</div>',
+  '20-31 left word');
+
+selection_test(
+  '<div contenteditable dir="rtl">אבד opq rst דעפ <span dir="ltr">abc uvw אאא def| lmn</span>אבצ hij xyz וקק</div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="rtl">\u05D0\u05D1\u05D3 opq rst \u05D3\u05E2\u05E4 <span dir="ltr">abc uvw \u05D0\u05D0\u05D0 def lmn</span>\u05D0\u05D1\u05E6 |hij xyz \u05D5\u05E7\u05E7</div>',
+  '20-32 left word');
+
+selection_test(
+  '<div contenteditable dir="rtl">אבד opq rst דעפ <span dir="ltr">abc uvw אאא def |lmn</span>אבצ hij xyz וקק</div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="rtl">\u05D0\u05D1\u05D3 opq rst \u05D3\u05E2\u05E4 <span dir="ltr">abc uvw \u05D0\u05D0\u05D0 def lmn</span>\u05D0\u05D1\u05E6 |hij xyz \u05D5\u05E7\u05E7</div>',
+  '20-33 left word');
+
+selection_test(
+  '<div contenteditable dir="rtl">אבד opq rst דעפ <span dir="ltr">abc uvw אאא def l|mn</span>אבצ hij xyz וקק</div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="rtl">\u05D0\u05D1\u05D3 opq rst \u05D3\u05E2\u05E4 <span dir="ltr">abc uvw \u05D0\u05D0\u05D0 def lmn</span>\u05D0\u05D1\u05E6 |hij xyz \u05D5\u05E7\u05E7</div>',
+  '20-34 left word');
+
+selection_test(
+  '<div contenteditable dir="rtl">אבד opq rst דעפ <span dir="ltr">abc uvw אאא def lm|n</span>אבצ hij xyz וקק</div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="rtl">\u05D0\u05D1\u05D3 opq rst \u05D3\u05E2\u05E4 <span dir="ltr">abc uvw \u05D0\u05D0\u05D0 def lmn</span>\u05D0\u05D1\u05E6 |hij xyz \u05D5\u05E7\u05E7</div>',
+  '20-35 left word');
+
+selection_test(
+  '<div contenteditable dir="rtl">אבד opq rst דעפ <span dir="ltr">abc uvw אאא def lmn|</span>אבצ hij xyz וקק</div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="rtl">אבד opq rst דעפ <span dir="ltr">abc uvw אאא def lmn</span>אבצ |hij xyz וקק</div>',
+  '20-36 left word');
+
+selection_test(
+  '<div contenteditable dir="rtl">אבד opq rst דעפ <span dir="ltr">abc uvw אאא def lmn</span>|אבצ hij xyz וקק</div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="rtl">אבד opq rst דעפ <span dir="ltr">abc uvw אאא def lmn</span>אבצ |hij xyz וקק</div>',
+  '20-37 left word');
+
+selection_test(
+  '<div contenteditable dir="rtl">אבד opq rst דעפ <span dir="ltr">abc uvw אאא def lmn</span>א|בצ hij xyz וקק</div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="rtl">אבד opq rst דעפ <span dir="ltr">abc uvw אאא def lmn</span>אבצ |hij xyz וקק</div>',
+  '20-38 left word');
+
+selection_test(
+  '<div contenteditable dir="rtl">אבד opq rst דעפ <span dir="ltr">abc uvw אאא def lmn</span>אב|צ hij xyz וקק</div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="rtl">אבד opq rst דעפ <span dir="ltr">abc uvw אאא def lmn</span>אבצ |hij xyz וקק</div>',
+  '20-39 left word');
+
+selection_test(
+  '<div contenteditable dir="rtl">אבד opq rst דעפ <span dir="ltr">abc uvw אאא def lmn</span>אבצ| hij xyz וקק</div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="rtl">\u05D0\u05D1\u05D3 opq rst \u05D3\u05E2\u05E4 <span dir="ltr">abc uvw \u05D0\u05D0\u05D0 def lmn</span>\u05D0\u05D1\u05E6 hij |xyz \u05D5\u05E7\u05E7</div>',
+  '20-40 left word');
+
+selection_test(
+  '<div contenteditable dir="rtl">אבד opq rst דעפ <span dir="ltr">abc uvw אאא def lmn</span>אבצ |hij xyz וקק</div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="rtl">\u05D0\u05D1\u05D3 opq rst \u05D3\u05E2\u05E4 <span dir="ltr">abc uvw \u05D0\u05D0\u05D0 def lmn</span>\u05D0\u05D1\u05E6 hij |xyz \u05D5\u05E7\u05E7</div>',
+  '20-41 left word');
+
+selection_test(
+  '<div contenteditable dir="rtl">אבד opq rst דעפ <span dir="ltr">abc uvw אאא def lmn</span>אבצ h|ij xyz וקק</div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="rtl">\u05D0\u05D1\u05D3 opq rst \u05D3\u05E2\u05E4 <span dir="ltr">abc uvw \u05D0\u05D0\u05D0 def lmn</span>\u05D0\u05D1\u05E6 hij |xyz \u05D5\u05E7\u05E7</div>',
+  '20-42 left word');
+
+selection_test(
+  '<div contenteditable dir="rtl">אבד opq rst דעפ <span dir="ltr">abc uvw אאא def lmn</span>אבצ hi|j xyz וקק</div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="rtl">\u05D0\u05D1\u05D3 opq rst \u05D3\u05E2\u05E4 <span dir="ltr">abc uvw \u05D0\u05D0\u05D0 def lmn</span>\u05D0\u05D1\u05E6 hij |xyz \u05D5\u05E7\u05E7</div>',
+  '20-43 left word');
+
+selection_test(
+  '<div contenteditable dir="rtl">אבד opq rst דעפ <span dir="ltr">abc uvw אאא def lmn</span>אבצ hij| xyz וקק</div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="rtl">אבד opq rst דעפ <span dir="ltr">abc uvw אאא def lmn</span>אבצ hij xyz |וקק</div>',
+  '20-44 left word');
+
+selection_test(
+  '<div contenteditable dir="rtl">אבד opq rst דעפ <span dir="ltr">abc uvw אאא def lmn</span>אבצ hij |xyz וקק</div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="rtl">\u05D0\u05D1\u05D3 opq rst \u05D3\u05E2\u05E4 <span dir="ltr">abc uvw \u05D0\u05D0\u05D0 def lmn</span>\u05D0\u05D1\u05E6 hij xyz |\u05D5\u05E7\u05E7</div>',
+  '20-45 left word');
+
+selection_test(
+  '<div contenteditable dir="rtl">אבד opq rst דעפ <span dir="ltr">abc uvw אאא def lmn</span>אבצ hij x|yz וקק</div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="rtl">\u05D0\u05D1\u05D3 opq rst \u05D3\u05E2\u05E4 <span dir="ltr">abc uvw \u05D0\u05D0\u05D0 def lmn</span>\u05D0\u05D1\u05E6 hij xyz |\u05D5\u05E7\u05E7</div>',
+  '20-46 left word');
+
+selection_test(
+  '<div contenteditable dir="rtl">אבד opq rst דעפ <span dir="ltr">abc uvw אאא def lmn</span>אבצ hij xy|z וקק</div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="rtl">\u05D0\u05D1\u05D3 opq rst \u05D3\u05E2\u05E4 <span dir="ltr">abc uvw \u05D0\u05D0\u05D0 def lmn</span>\u05D0\u05D1\u05E6 hij xyz |\u05D5\u05E7\u05E7</div>',
+  '20-47 left word');
+
+selection_test(
+  '<div contenteditable dir="rtl">אבד opq rst דעפ <span dir="ltr">abc uvw אאא def lmn</span>אבצ hij xyz| וקק</div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="rtl">\u05D0\u05D1\u05D3 opq rst \u05D3\u05E2\u05E4 <span dir="ltr">abc uvw \u05D0\u05D0\u05D0 def lmn</span>\u05D0\u05D1\u05E6 hij xyz \u05D5\u05E7\u05E7|</div>',
+  '20-48 left word');
+
+selection_test(
+  '<div contenteditable dir="rtl">אבד opq rst דעפ <span dir="ltr">abc uvw אאא def lmn</span>אבצ hij xyz |וקק</div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="rtl">אבד opq rst דעפ <span dir="ltr">abc uvw אאא def lmn</span>אבצ hij xyz וקק|</div>',
+  '20-49 left word');
+
+selection_test(
+  '<div contenteditable dir="rtl">אבד opq rst דעפ <span dir="ltr">abc uvw אאא def lmn</span>אבצ hij xyz ו|קק</div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="rtl">אבד opq rst דעפ <span dir="ltr">abc uvw אאא def lmn</span>אבצ hij xyz וקק|</div>',
+  '20-50 left word');
+
+selection_test(
+  '<div contenteditable dir="rtl">אבד opq rst דעפ <span dir="ltr">abc uvw אאא def lmn</span>אבצ hij xyz וק|ק</div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="rtl">אבד opq rst דעפ <span dir="ltr">abc uvw אאא def lmn</span>אבצ hij xyz וקק|</div>',
+  '20-51 left word');
+
+selection_test(
+  '<div contenteditable dir="rtl">אבד opq rst דעפ <span dir="ltr">abc uvw אאא def lmn</span>אבצ hij xyz וקק|</div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="rtl">אבד opq rst דעפ <span dir="ltr">abc uvw אאא def lmn</span>אבצ hij xyz וקק|</div>',
+  '20-52 left word');
+</script>

@@ -1,0 +1,18 @@
+\bphilippines\b	ph
+\bboulevard\b	blvd
+\bextension\b	ext
+\bbarangay\b	
+\bcaptain\b	cap
+\bgeneral\b	gen
+\bavenue\b	av
+\bdoctor\b	dr
+\bstreet\b	st
+\bnorth\b	n
+\bsouth\b	s
+\bbrgy\b	
+\beast\b	e
+\bextn\b	ext
+\broad\b	rd
+\bwest\b	w
+\bave\b	av
+\bbgy\b	

@@ -27,17 +27,17 @@
 #include "ui/base/models/table_model_observer.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/controls/scroll_view.h"
 #include "ui/views/controls/table/table_view.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
-#include "ui/views/window/dialog_client_view.h"
 
 #if defined(OS_CHROMEOS)
 #include "ash/public/cpp/shelf_item.h"
 #include "ash/public/cpp/window_properties.h"
 #include "chrome/grit/theme_resources.h"
-#include "ui/aura/client/aura_constants.h"
+#include "ui/aura/window.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/image/image_skia.h"
 #endif  // defined(OS_CHROMEOS)
@@ -100,12 +100,9 @@ task_manager::TaskManagerTableModel* TaskManagerView::Show(Browser* browser) {
   // Generated as crx_file::id_util::GenerateId("org.chromium.taskmanager")
   static constexpr char kTaskManagerId[] = "ijaigheoohcacdnplfbdimmcfldnnhdi";
   const ash::ShelfID shelf_id(kTaskManagerId);
-  window->SetProperty(ash::kShelfIDKey, new std::string(shelf_id.Serialize()));
+  window->SetProperty(ash::kShelfIDKey, shelf_id.Serialize());
+  window->SetProperty(ash::kAppIDKey, shelf_id.app_id);
   window->SetProperty<int>(ash::kShelfItemTypeKey, ash::TYPE_DIALOG);
-  ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
-  gfx::ImageSkia* icon = rb.GetImageSkiaNamed(IDR_ASH_SHELF_ICON_TASK_MANAGER);
-  // The new gfx::ImageSkia instance is owned by the window itself.
-  window->SetProperty(aura::client::kWindowIconKey, new gfx::ImageSkia(*icon));
 #endif
   return g_task_manager_view->table_model_.get();
 }
@@ -125,7 +122,7 @@ void TaskManagerView::SetColumnVisibility(int column_id, bool new_visibility) {
 }
 
 bool TaskManagerView::IsTableSorted() const {
-  return tab_table_->is_sorted();
+  return tab_table_->GetIsSorted();
 }
 
 TableSortDescriptor TaskManagerView::GetSortDescriptor() const {
@@ -183,6 +180,15 @@ base::string16 TaskManagerView::GetWindowTitle() const {
   return l10n_util::GetStringUTF16(IDS_TASK_MANAGER_TITLE);
 }
 
+gfx::ImageSkia TaskManagerView::GetWindowIcon() {
+#if defined(OS_CHROMEOS)
+  return *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
+      IDR_ASH_SHELF_ICON_TASK_MANAGER);
+#else
+  return views::DialogDelegateView::GetWindowIcon();
+#endif
+}
+
 std::string TaskManagerView::GetWindowName() const {
   return prefs::kTaskManagerWindowPlacement;
 }
@@ -201,15 +207,6 @@ bool TaskManagerView::Accept() {
 
 bool TaskManagerView::Close() {
   return true;
-}
-
-int TaskManagerView::GetDialogButtons() const {
-  return ui::DIALOG_BUTTON_OK;
-}
-
-base::string16 TaskManagerView::GetDialogButtonLabel(
-    ui::DialogButton button) const {
-  return l10n_util::GetStringUTF16(IDS_TASK_MANAGER_KILL);
 }
 
 bool TaskManagerView::IsDialogButtonEnabled(ui::DialogButton button) const {
@@ -235,10 +232,6 @@ void TaskManagerView::WindowClosing() {
   table_model_->StoreColumnsSettings();
 }
 
-bool TaskManagerView::ShouldUseCustomFrame() const {
-  return false;
-}
-
 void TaskManagerView::GetGroupRange(int model_index, views::GroupRange* range) {
   table_model_->GetRowsGroupRange(model_index, &range->start, &range->length);
 }
@@ -256,21 +249,22 @@ void TaskManagerView::OnKeyDown(ui::KeyboardCode keycode) {
     ActivateSelectedTab();
 }
 
-void TaskManagerView::ShowContextMenuForView(views::View* source,
-                                             const gfx::Point& point,
-                                             ui::MenuSourceType source_type) {
-  menu_model_.reset(new ui::SimpleMenuModel(this));
+void TaskManagerView::ShowContextMenuForViewImpl(
+    views::View* source,
+    const gfx::Point& point,
+    ui::MenuSourceType source_type) {
+  menu_model_ = std::make_unique<ui::SimpleMenuModel>(this);
 
   for (const auto& table_column : columns_) {
     menu_model_->AddCheckItem(table_column.id,
                               l10n_util::GetStringUTF16(table_column.id));
   }
 
-  menu_runner_.reset(new views::MenuRunner(menu_model_.get(),
-                                           views::MenuRunner::CONTEXT_MENU));
+  menu_runner_ = std::make_unique<views::MenuRunner>(
+      menu_model_.get(), views::MenuRunner::CONTEXT_MENU);
 
   menu_runner_->RunMenuAt(GetWidget(), nullptr, gfx::Rect(point, gfx::Size()),
-                          views::MENU_ANCHOR_TOPLEFT, source_type);
+                          views::MenuAnchorPosition::kTopLeft, source_type);
 }
 
 bool TaskManagerView::IsCommandIdChecked(int id) const {
@@ -294,6 +288,11 @@ TaskManagerView::TaskManagerView()
     : tab_table_(nullptr),
       tab_table_parent_(nullptr),
       is_always_on_top_(false) {
+  DialogDelegate::set_use_custom_frame(false);
+  DialogDelegate::set_buttons(ui::DIALOG_BUTTON_OK);
+  DialogDelegate::set_button_label(
+      ui::DIALOG_BUTTON_OK, l10n_util::GetStringUTF16(IDS_TASK_MANAGER_KILL));
+
   Init();
   chrome::RecordDialogCreation(chrome::DialogIdentifier::TASK_MANAGER);
 }
@@ -315,17 +314,19 @@ void TaskManagerView::Init() {
   }
 
   // Create the table view.
-  tab_table_ =
-      new views::TableView(nullptr, columns_, views::ICON_AND_TEXT, false);
-  table_model_.reset(new TaskManagerTableModel(this));
-  tab_table_->SetModel(table_model_.get());
-  tab_table_->SetGrouper(this);
-  tab_table_->set_observer(this);
-  tab_table_->set_context_menu_controller(this);
+  auto tab_table = std::make_unique<views::TableView>(
+      nullptr, columns_, views::ICON_AND_TEXT, false);
+  tab_table_ = tab_table.get();
+  table_model_ = std::make_unique<TaskManagerTableModel>(this);
+  tab_table->SetModel(table_model_.get());
+  tab_table->SetGrouper(this);
+  tab_table->SetSortOnPaint(true);
+  tab_table->set_observer(this);
+  tab_table->set_context_menu_controller(this);
   set_context_menu_controller(this);
 
-  tab_table_parent_ = tab_table_->CreateParentIfNecessary();
-  AddChildView(tab_table_parent_);
+  tab_table_parent_ = AddChildView(
+      views::TableView::CreateScrollViewWithTable(std::move(tab_table)));
 
   SetLayoutManager(std::make_unique<views::FillLayout>());
 
@@ -348,7 +349,9 @@ void TaskManagerView::Init() {
 
 void TaskManagerView::InitAlwaysOnTopState() {
   RetrieveSavedAlwaysOnTopState();
-  GetWidget()->SetAlwaysOnTop(is_always_on_top_);
+  GetWidget()->SetZOrderLevel(is_always_on_top_
+                                  ? ui::ZOrderLevel::kFloatingWindow
+                                  : ui::ZOrderLevel::kNormal);
 }
 
 void TaskManagerView::ActivateSelectedTab() {

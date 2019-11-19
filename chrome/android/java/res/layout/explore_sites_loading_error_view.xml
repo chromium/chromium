@@ -18,14 +18,15 @@
         android:layout_marginBottom="@dimen/explore_sites_error_image_margin_bottom"
         android:layout_marginHorizontal="@dimen/explore_sites_page_padding"
         android:contentDescription="@string/explore_sites_loading_error" />
-    <TextView
+    <org.chromium.ui.widget.TextViewWithLeading
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="start"
         android:text="@string/explore_sites_loading_error"
         android:layout_marginHorizontal="@dimen/explore_sites_page_padding"
         android:layout_marginBottom="@dimen/explore_sites_page_padding"
-        android:textAppearance="@style/TextAppearance.BlackHeadline" />
+        android:textAppearance="@style/TextAppearance.BlackHeadline"
+        app:leading="@dimen/headline_size_leading" />
     <org.chromium.ui.widget.TextViewWithLeading
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

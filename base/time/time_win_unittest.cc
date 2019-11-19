@@ -7,6 +7,7 @@
 #include <mmsystem.h>
 #include <process.h>
 #include <stdint.h>
+#include <windows.foundation.h>
 
 #include <cmath>
 #include <limits>
@@ -247,6 +248,10 @@ TEST(TimeTicks, TimerPerformance) {
   }
 }
 
+#if !defined(ARCH_CPU_ARM64)
+// This test is disabled on Windows ARM64 systems because TSCTicksPerSecond is
+// only used in Chromium for QueryThreadCycleTime, and QueryThreadCycleTime
+// doesn't use a constant-rate timer on ARM64.
 TEST(TimeTicks, TSCTicksPerSecond) {
   if (ThreadTicks::IsSupported()) {
     ThreadTicks::WaitUntilInitialized();
@@ -254,13 +259,11 @@ TEST(TimeTicks, TSCTicksPerSecond) {
     // Read the CPU frequency from the registry.
     base::win::RegKey processor_key(
         HKEY_LOCAL_MACHINE,
-        STRING16_LITERAL("Hardware\\Description\\System\\CentralProcessor\\0"),
-        KEY_QUERY_VALUE);
+        L"Hardware\\Description\\System\\CentralProcessor\\0", KEY_QUERY_VALUE);
     ASSERT_TRUE(processor_key.Valid());
     DWORD processor_mhz_from_registry;
     ASSERT_EQ(ERROR_SUCCESS,
-              processor_key.ReadValueDW(STRING16_LITERAL("~MHz"),
-                                        &processor_mhz_from_registry));
+              processor_key.ReadValueDW(L"~MHz", &processor_mhz_from_registry));
 
     // Expect the measured TSC frequency to be similar to the processor
     // frequency from the registry (0.5% error).
@@ -269,6 +272,7 @@ TEST(TimeTicks, TSCTicksPerSecond) {
                 0.005 * processor_mhz_from_registry);
   }
 }
+#endif
 
 TEST(TimeTicks, FromQPCValue) {
   if (!TimeTicks::IsHighResolution())
@@ -285,25 +289,29 @@ TEST(TimeTicks, FromQPCValue) {
   // of possible QPC tick values.
   std::vector<int64_t> test_cases;
   test_cases.push_back(0);
-  const int kNumAdvancements = 100;
-  int64_t ticks = 0;
-  int64_t ticks_increment = 10;
-  for (int i = 0; i < kNumAdvancements; ++i) {
-    test_cases.push_back(ticks);
-    ticks += ticks_increment;
-    ticks_increment = ticks_increment * 6 / 5;
+
+  // Build the test cases.
+  {
+    const int kNumAdvancements = 100;
+    int64_t ticks = 0;
+    int64_t ticks_increment = 10;
+    for (int i = 0; i < kNumAdvancements; ++i) {
+      test_cases.push_back(ticks);
+      ticks += ticks_increment;
+      ticks_increment = ticks_increment * 6 / 5;
+    }
+    test_cases.push_back(Time::kQPCOverflowThreshold - 1);
+    test_cases.push_back(Time::kQPCOverflowThreshold);
+    test_cases.push_back(Time::kQPCOverflowThreshold + 1);
+    ticks = Time::kQPCOverflowThreshold + 10;
+    ticks_increment = 10;
+    for (int i = 0; i < kNumAdvancements; ++i) {
+      test_cases.push_back(ticks);
+      ticks += ticks_increment;
+      ticks_increment = ticks_increment * 6 / 5;
+    }
+    test_cases.push_back(std::numeric_limits<int64_t>::max());
   }
-  test_cases.push_back(Time::kQPCOverflowThreshold - 1);
-  test_cases.push_back(Time::kQPCOverflowThreshold);
-  test_cases.push_back(Time::kQPCOverflowThreshold + 1);
-  ticks = Time::kQPCOverflowThreshold + 10;
-  ticks_increment = 10;
-  for (int i = 0; i < kNumAdvancements; ++i) {
-    test_cases.push_back(ticks);
-    ticks += ticks_increment;
-    ticks_increment = ticks_increment * 6 / 5;
-  }
-  test_cases.push_back(std::numeric_limits<int64_t>::max());
 
   // Test that the conversions using FromQPCValue() match those computed here
   // using simple floating-point arithmetic.  The floating-point math provides
@@ -359,6 +367,32 @@ TEST(TimeDelta, FromFileTime) {
   // 2^32 * 100 ns ~= 2^32 * 10 us.
   EXPECT_EQ(TimeDelta::FromMicroseconds((1ull << 32) / 10),
             TimeDelta::FromFileTime(ft));
+}
+
+TEST(TimeDelta, FromWinrtDateTime) {
+  ABI::Windows::Foundation::DateTime dt;
+  dt.UniversalTime = 0;
+
+  // 0 UniversalTime = no delta since epoch.
+  EXPECT_EQ(TimeDelta(), TimeDelta::FromWinrtDateTime(dt));
+
+  dt.UniversalTime = 101;
+
+  // 101 * 100 ns ~= 10.1 microseconds.
+  EXPECT_EQ(TimeDelta::FromMicrosecondsD(10.1),
+            TimeDelta::FromWinrtDateTime(dt));
+}
+
+TEST(TimeDelta, ToWinrtDateTime) {
+  auto time_delta = TimeDelta::FromSeconds(0);
+
+  // No delta since epoch = 0 DateTime.
+  EXPECT_EQ(0, time_delta.ToWinrtDateTime().UniversalTime);
+
+  time_delta = TimeDelta::FromMicrosecondsD(10);
+
+  // 10 microseconds = 100 * 100 ns.
+  EXPECT_EQ(100, time_delta.ToWinrtDateTime().UniversalTime);
 }
 
 TEST(HighResolutionTimer, GetUsage) {

@@ -2,12 +2,11 @@
 <head>
 <script src="../resources/testharness.js"></script>
 <script src="../resources/testharnessreport.js"></script>
-<script src="../resources/run-after-layout-and-paint.js"></script>
 </head>
 <body>
 <a href="#" id="link">
 <script>
-test_after_layout_and_paint((t) => {
+test((t) => {
     var link = document.getElementById("link");
     link.focus();
     link.style.display = "block";

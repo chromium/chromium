@@ -37,6 +37,8 @@ function assertContextClickSelection(
   const textNode = findTextNode(container);
   const range = document.createRange();
   range.setStart(textNode, offset);
+  // Clear mouse button states from last runs.
+  eventSender.setMouseButtonState(-1, []);
 
   const rect = range.getClientRects()[0];
   const x = document.offsetLeft + rect.left + 2;

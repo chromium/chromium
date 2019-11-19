@@ -17,6 +17,11 @@
     "extension_types": ["extension", "legacy_packaged_app", "platform_app"],
     "location": "component"
   },
+  "commandLinePrivate": {
+    "channel": "stable",
+    "extension_types": ["extension", "legacy_packaged_app", "platform_app"],
+    "location": "component"
+  },
   "history": {
     "channel": "stable",
     "extension_types": ["extension", "legacy_packaged_app"]

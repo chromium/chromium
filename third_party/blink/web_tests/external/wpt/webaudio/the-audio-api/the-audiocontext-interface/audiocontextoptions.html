@@ -35,7 +35,7 @@
               `context.sampleRate (${context.sampleRate} Hz)`).beGreaterThan(0);
 
             defaultLatency = context.baseLatency;
-            should(defaultLatency, 'default baseLatency').beGreaterThan(0);
+            should(defaultLatency, 'default baseLatency').beGreaterThanOrEqualTo(0);
 
             // Verify that an AudioContext can be created with the expected
             // latency types.
@@ -130,7 +130,7 @@
             should(context1.baseLatency, 'high latency context baseLatency')
                 .beEqualTo(context2.baseLatency);
             should(context1.baseLatency, 'high latency context baseLatency')
-                .beGreaterThan(interactiveLatency);
+                .beGreaterThanOrEqualTo(interactiveLatency);
             closingPromises.push(context1.close());
             closingPromises.push(context2.close());
 
@@ -154,6 +154,45 @@
             Promise.all(closingPromises).then(function() {
               task.done();
             });
+          });
+
+      audit.define(
+          {
+            label: 'test-audiocontextoptions-sampleRate',
+            description:
+                'Test creating contexts with non-default sampleRate values.'
+          },
+          function(task, should) {
+            // A sampleRate of 1 is unlikely to be supported on any browser,
+            // test that this rate is rejected.
+            should(
+                () => {
+                  context = new AudioContext({sampleRate: 1})
+                },
+                'context = new AudioContext({sampleRate: 1})')
+                .throw(DOMException);
+
+            // A sampleRate of 1,000,000 is unlikely to be supported on any
+            // browser, test that this rate is also rejected.
+            should(
+                () => {
+                  context = new AudioContext({sampleRate: 1000000})
+                },
+                'context = new AudioContext({sampleRate: 1000000})')
+                .throw(DOMException);
+
+            should(
+                () => {
+                  context = new AudioContext({sampleRate: 24000})
+                },
+                'context = new AudioContext({sampleRate: 24000})')
+                .notThrow();
+            should(
+                context.sampleRate, 'sampleRate inrange')
+                .beEqualTo(24000);
+
+            context.close();
+            task.done();
           });
 
       audit.run();

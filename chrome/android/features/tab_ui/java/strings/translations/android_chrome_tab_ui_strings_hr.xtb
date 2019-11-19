@@ -1,0 +1,29 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="hr">
+<translation id="1075622780330595106">Broj vaših kartica koje niste koristili neko vrijeme: <ph name="NUMBER_OF_TABS" />. Želite li ih zatvoriti?</translation>
+<translation id="1181037720776840403">Ukloni</translation>
+<translation id="125153950246128346">Dodirnite za prikaz druge kartice</translation>
+<translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> kartica}one{<ph name="TABS_COUNT_MANY" /> kartica}few{<ph name="TABS_COUNT_MANY" /> kartice}other{<ph name="TABS_COUNT_MANY" /> kartica}}</translation>
+<translation id="257674075312929031">Grupa</translation>
+<translation id="2613747923081026172">Izradi grupu</translation>
+<translation id="2671423594960767771">Dijeli grupu</translation>
+<translation id="2977480621796371840">Ukloni iz grupe</translation>
+<translation id="4212246570487010370">Nastavite pregledavati</translation>
+<translation id="4648718555153979859">Ovdje su grupirane vaše kartice</translation>
+<translation id="5007392906805964215">Pregled</translation>
+<translation id="5073204694187207510">Sakrij rešetku na cijelom zaslonu</translation>
+<translation id="5082793167783849073">Izradom grupe možete brzo usporediti stranice. Da biste započeli, dodirnite i držite vezu.</translation>
+<translation id="5580090775658607195">Kartice su grupirane (njih <ph name="TAB_COUNT" />)</translation>
+<translation id="5792534911093536736">Više kartica</translation>
+<translation id="58326064309361797">Povucite kartice da biste ih grupirali</translation>
+<translation id="6040143037577758943">Zatvori</translation>
+<translation id="6193448654517602979">Odaberite kartice</translation>
+<translation id="6615455863669487791">Pokaži mi</translation>
+<translation id="6840760312327750441">Da biste grupirali kartice, dodirnite i držite karticu. Zatim je povucite na drugu karticu.</translation>
+<translation id="7151209024774799310">Ukloni kartice iz grupe</translation>
+<translation id="7559245342362162951">Prikaži kartice grupe u rešetki na cijelom zaslonu</translation>
+<translation id="9150694013019234766">Prebacujte se između kartica u grupi kartica pri dnu zaslona</translation>
+<translation id="9169594135889675189">Dodaj novu karticu grupi</translation>
+<translation id="959682366969460160">Organizirajte se</translation>
+</translationbundle>

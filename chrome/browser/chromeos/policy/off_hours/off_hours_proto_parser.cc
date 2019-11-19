@@ -64,7 +64,7 @@ std::unique_ptr<base::DictionaryValue> ConvertOffHoursProtoToValue(
       ExtractIgnoredPolicyProtoTagsFromProto(container);
   auto ignored_policies_value = std::make_unique<base::ListValue>();
   for (const auto& policy : ignored_policy_proto_tags)
-    ignored_policies_value->GetList().emplace_back(policy);
+    ignored_policies_value->Append(policy);
   off_hours->SetList("ignored_policy_proto_tags",
                      std::move(ignored_policies_value));
   return off_hours;

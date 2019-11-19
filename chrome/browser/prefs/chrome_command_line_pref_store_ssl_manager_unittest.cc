@@ -4,7 +4,7 @@
 
 #include "base/command_line.h"
 #include "base/memory/ref_counted.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "chrome/browser/prefs/chrome_command_line_pref_store.h"
 #include "chrome/browser/ssl/ssl_config_service_manager.h"
 #include "chrome/common/chrome_switches.h"
@@ -22,7 +22,7 @@ class CommandLinePrefStoreSSLManagerTest : public testing::Test {
   CommandLinePrefStoreSSLManagerTest() {}
 
  protected:
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
 };
 
 // Test that command-line settings for SSL versions are respected and that they

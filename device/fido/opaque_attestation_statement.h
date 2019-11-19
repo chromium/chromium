@@ -23,7 +23,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) OpaqueAttestationStatement
   ~OpaqueAttestationStatement() override;
 
   // AttestationStatement:
-  cbor::Value::MapValue GetAsCBORMap() const override;
+  cbor::Value AsCBOR() const override;
   bool IsSelfAttestation() override;
   bool IsAttestationCertificateInappropriatelyIdentifying() override;
   base::Optional<base::span<const uint8_t>> GetLeafCertificate() const override;

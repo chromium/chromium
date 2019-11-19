@@ -5,7 +5,8 @@
 package org.chromium.chrome.browser.metrics;
 
 import android.os.SystemClock;
-import android.support.annotation.IntDef;
+
+import androidx.annotation.IntDef;
 
 import org.chromium.base.library_loader.LibraryProcessType;
 import org.chromium.base.metrics.RecordHistogram;

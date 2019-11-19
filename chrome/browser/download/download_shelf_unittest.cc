@@ -15,8 +15,8 @@
 #include "components/download/public/common/mock_download_item.h"
 #include "content/public/browser/download_item_utils.h"
 #include "content/public/browser/notification_service.h"
+#include "content/public/test/browser_task_environment.h"
 #include "content/public/test/mock_download_manager.h"
-#include "content/public/test/test_browser_thread_bundle.h"
 #include "extensions/common/extension.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -56,7 +56,7 @@ class DownloadShelfTest : public testing::Test {
  protected:
   std::unique_ptr<download::MockDownloadItem> GetInProgressMockDownload();
 
-  content::TestBrowserThreadBundle test_browser_thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<download::MockDownloadItem> download_item_;
   std::unique_ptr<content::MockDownloadManager> download_manager_;
   TestDownloadShelf shelf_;

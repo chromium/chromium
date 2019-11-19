@@ -1,4 +1,5 @@
 rootWebArea
-++toolbar horizontal
-++++staticText name='A toolbar'
-++++++inlineTextBox name='A toolbar'
+++genericContainer ignored
+++++toolbar horizontal
+++++++staticText name='A toolbar'
+++++++++inlineTextBox name='A toolbar'

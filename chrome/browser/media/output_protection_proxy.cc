@@ -11,14 +11,27 @@
 #include "content/public/browser/web_contents.h"
 #include "ui/display/types/display_constants.h"
 
+namespace {
+
+gfx::NativeView GetRenderFrameView(int render_process_id, int render_frame_id) {
+  auto* host =
+      content::RenderFrameHost::FromID(render_process_id, render_frame_id);
+  return host ? host->GetNativeView() : gfx::kNullNativeView;
+}
+
+}  // namespace
+
 OutputProtectionProxy::OutputProtectionProxy(int render_process_id,
                                              int render_frame_id)
     : render_process_id_(render_process_id),
-      render_frame_id_(render_frame_id),
+      render_frame_id_(render_frame_id)
 #if defined(OS_CHROMEOS)
-      output_protection_delegate_(render_process_id, render_frame_id),
+      ,
+      output_protection_delegate_(
+          // On OS_CHROMEOS, NativeView and NativeWindow are both aura::Window*.
+          GetRenderFrameView(render_process_id, render_frame_id))
 #endif  // defined(OS_CHROMEOS)
-      weak_ptr_factory_(this) {
+{
 }
 
 OutputProtectionProxy::~OutputProtectionProxy() {
@@ -60,11 +73,8 @@ void OutputProtectionProxy::ProcessQueryStatusResult(
   DVLOG(1) << __func__ << ": " << success << ", " << link_mask;
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  content::RenderFrameHost* rfh =
-      content::RenderFrameHost::FromID(render_process_id_, render_frame_id_);
-  // TODO(xjz): Investigate whether this check (and the checks in
-  // OutputProtectionDelegate) should be removed.
-  if (!rfh) {
+  // TODO(xjz): Investigate whether this check should be removed.
+  if (!GetRenderFrameView(render_process_id_, render_frame_id_)) {
     LOG(WARNING) << "RenderFrameHost is not alive.";
     callback.Run(false, 0, 0);
     return;

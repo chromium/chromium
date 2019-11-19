@@ -7,46 +7,73 @@
 
 #include <memory>
 
-#include "ash/public/interfaces/arc_custom_tab.mojom.h"
+#include "ash/public/cpp/arc_custom_tab.h"
+#include "base/containers/flat_set.h"
 #include "base/macros.h"
-#include "mojo/public/cpp/bindings/binding.h"
-#include "services/ws/remote_view_host/server_remote_view_host.h"
+#include "ui/aura/window_observer.h"
 #include "ui/views/view.h"
+
+namespace exo {
+class Surface;
+}
+
+namespace views {
+class NativeViewHost;
+}
 
 namespace ash {
 
-// Implementation of ArcCustomTabView interface.
-class ArcCustomTabView : public views::View, public mojom::ArcCustomTabView {
+// A view-based implementation of ArcCustomTab which works in the classic
+// environment.
+class ArcCustomTabView : public ArcCustomTab,
+                         public views::View,
+                         public aura::WindowObserver {
  public:
-  // Creates a new ArcCustomTabView instance. The instance will be deleted when
-  // the pointer is closed. Returns null when the arguments are invalid.
-  static mojom::ArcCustomTabViewPtr Create(int32_t task_id,
-                                           int32_t surface_id,
-                                           int32_t top_margin);
-
-  // mojom::ArcCustomTabView:
-  void EmbedUsingToken(const base::UnguessableToken& token) override;
-
-  // views::View:
-  void Layout() override;
-
- private:
-  ArcCustomTabView(int32_t surface_id, int32_t top_margin);
+  ArcCustomTabView(aura::Window* arc_app_window,
+                   int32_t surface_id,
+                   int32_t top_margin);
   ~ArcCustomTabView() override;
 
-  // Binds this instance to the pointer.
-  void Bind(mojom::ArcCustomTabViewPtr* ptr);
+ private:
+  // ArcCustomTab:
+  void Attach(gfx::NativeView view) override;
+  gfx::NativeView GetHostView() override;
 
-  // Deletes this object when the mojo connection is closed.
-  void Close();
+  // views::View:
+  void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
+  void Layout() override;
+
+  // aura::WindowObserver:
+  void OnWindowHierarchyChanged(const HierarchyChangeParams& params) override;
+  void OnWindowBoundsChanged(aura::Window* window,
+                             const gfx::Rect& old_bounds,
+                             const gfx::Rect& new_bounds,
+                             ui::PropertyChangeReason reason) override;
+  void OnWindowPropertyChanged(aura::Window* window,
+                               const void* key,
+                               intptr_t old) override;
+  void OnWindowStackingChanged(aura::Window* window) override;
+  void OnWindowDestroying(aura::Window* window) override;
+
+  // Ensures the window/layer orders for the NativeViewHost.
+  void EnsureWindowOrders();
 
   // Converts the point from the given window to this view.
   void ConvertPointFromWindow(aura::Window* window, gfx::Point* point);
 
-  mojo::Binding<mojom::ArcCustomTabView> binding_;
-  ws::ServerRemoteViewHost* remote_view_host_;
-  int32_t surface_id_, top_margin_;
-  base::WeakPtrFactory<ArcCustomTabView> weak_ptr_factory_;
+  // Tries to find the surface.
+  exo::Surface* FindSurface();
+
+  views::NativeViewHost* const host_;
+  aura::Window* const arc_app_window_;
+  const int32_t surface_id_, top_margin_;
+  aura::Window* surface_window_ = nullptr;
+  base::flat_set<aura::Window*> observed_surfaces_;
+  aura::Window* native_view_container_ = nullptr;
+
+  bool reorder_scheduled_ = false;
+
+  base::WeakPtrFactory<ArcCustomTabView> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ArcCustomTabView);
 };

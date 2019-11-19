@@ -1,1 +1,0 @@
-There should be one big square below containing four squares. Top left square should be filled with 3 rows of 3 circles. Top right square should have one column of 3 circles. The bottom left square should have one row with three circles. The bottom right square should have one circle in the top-left corner.

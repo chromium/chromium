@@ -364,9 +364,9 @@ void AppendAppSharedField(const std::vector<PageCount>& app_shared_pages,
   out->append("[");
   for (std::vector<PageCount>::const_iterator it = app_shared_pages.begin();
        it != app_shared_pages.end(); ++it) {
-    out->append(base::IntToString(it->total_count * kPageSize));
+    out->append(base::NumberToString(it->total_count * kPageSize));
     out->append(":");
-    out->append(base::IntToString(it->unevictable_count * kPageSize));
+    out->append(base::NumberToString(it->unevictable_count * kPageSize));
     if (it + 1 != app_shared_pages.end())
       out->append(",");
   }
@@ -511,7 +511,7 @@ int main(int argc, char** argv) {
     }
 
     base::ScopedClosureRunner auto_resume_processes(
-        base::Bind(&KillAll, pids, SIGCONT));
+        base::BindOnce(&KillAll, pids, SIGCONT));
     KillAll(pids, SIGSTOP);
     for (std::vector<pid_t>::const_iterator it = pids.begin(); it != pids.end();
          ++it) {

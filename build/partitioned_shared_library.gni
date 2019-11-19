@@ -1,0 +1,140 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/clang/clang.gni")
+
+# This template creates a set of shared libraries, by linking a single
+# "partitioned" shared library, then splitting it into multiple pieces.
+# The intention is to facilitate code-splitting between a base library and
+# additional feature-specific libraries that may be obtained and loaded at a
+# later time.
+#
+# The combined library is an intermediate product made by leveraging the LLVM
+# toolchain.  Code modules may be labeled via compiler flag as belonging to a
+# particular partition.  At link time, any symbols reachable by only a single
+# partition's entrypoints will be located in a partition-specific library
+# segment.  After linking, the segments are split apart using objcopy into
+# separate libraries.  The main library is then packaged with the application
+# as usual, while feature libraries may be packaged, delivered and loaded
+# separately (via an Android Dynamic Feature Module).
+#
+# When loading a feature library, the intended address of the library must be
+# supplied to the loader, so that it can be mapped to the memory location.  The
+# address offsets of the feature libraries are stored in the base library and
+# accessed through special symbols named according to the partitions.
+#
+# The template instantiates targets for the base library, as well as each
+# specified partition, based on the root target name.  Example:
+#
+#   - libmonochrome            (base library)
+#   - libmonochrome_foo        (partition library for feature 'foo')
+#   - libmonochrome_bar        (partition library for feature 'bar')
+#
+# Note that the feature library filenames are chosen based on the main
+# library's name (eg. libmonochrome_foo.so), but the soname of the feature
+# library is based on the feature name (eg. "foo").  This should generally be
+# okay, with the caveat that loading the library multiple times *might* cause
+# problems in Android.
+#
+# This template uses shared_library's default configurations.
+#
+# Variables:
+#   partitions: A list of library partition names to extract, in addition to
+#     the base library.
+
+template("partitioned_shared_library") {
+  assert(is_clang)
+  forward_variables_from(invoker, [ "testonly" ])
+
+  _combined_library_target = "${target_name}__combined"
+
+  # Strip "lib" from target names; it will be re-added to output libraries.
+  _output_name = string_replace(target_name, "lib", "")
+
+  shared_library(_combined_library_target) {
+    forward_variables_from(invoker, "*", [ "partitions" ])
+    if (!defined(ldflags)) {
+      ldflags = []
+    }
+    ldflags += [
+      "-Wl,-soname,lib${_output_name}.so",
+      "--link-only",
+    ]
+
+    # This shared library is an intermediate artifact that should not packaged
+    # into the final build. Therefore, reset metadata.
+    metadata = {
+    }
+  }
+
+  template("partition_action") {
+    action(target_name) {
+      deps = [
+        ":$_combined_library_target",
+      ]
+      script = "//build/extract_partition.py"
+      sources = [
+        "$root_out_dir/lib.unstripped/lib${_output_name}__combined.so",
+      ]
+      outputs = [
+        invoker.unstripped_output,
+        invoker.stripped_output,
+      ]
+      data = [
+        invoker.unstripped_output,
+      ]
+      metadata = {
+        shared_libraries = [ invoker.stripped_output ]
+      }
+      args = [
+        "--objcopy",
+        rebase_path("$clang_base_path/bin/llvm-objcopy", root_build_dir),
+        "--unstripped-output",
+        rebase_path(invoker.unstripped_output, root_build_dir),
+        "--stripped-output",
+        rebase_path(invoker.stripped_output, root_build_dir),
+      ]
+      if (defined(invoker.partition) && invoker.partition != "") {
+        args += [
+          "--partition",
+          "${invoker.partition}",
+        ]
+      }
+      args += [ rebase_path(sources[0], root_build_dir) ]
+    }
+  }
+
+  partition_action(target_name) {
+    stripped_output = "$root_out_dir/lib${_output_name}.so"
+    unstripped_output = "$root_out_dir/lib.unstripped/lib${_output_name}.so"
+  }
+
+  # Note that as of now, non-base partition libraries are placed in a
+  # subdirectory of the root output directory.  This is because partition
+  # sonames are not sensitive to the filename of the base library, and as such,
+  # their corresponding file names may be generated multiple times by different
+  # base libraries.  To avoid collisions, each base library target has a
+  # corresponding subdir for its extra partitions.
+  #
+  # If this proves problematic to various pieces of infrastructure, a proposed
+  # alternative is allowing the linker to rename partitions.  For example,
+  # feature "foo" may be a partition.  If two different base libraries both
+  # define "foo" partitions, the linker may be made to accept an extra command
+  # to rename the partition's soname to "foo1" or "foo2".  Other build config
+  # can name the libraries foo1.so and foo2.so, allowing them to reside in the
+  # same directory.
+  foreach(_partition, invoker.partitions) {
+    partition_action("${target_name}_${_partition}") {
+      partition = "${_partition}_partition"
+      stripped_output = "$root_out_dir/lib${_output_name}_${partition}.so"
+      unstripped_output =
+          "$root_out_dir/lib.unstripped/lib${_output_name}_${partition}.so"
+    }
+  }
+}
+
+set_defaults("partitioned_shared_library") {
+  configs = default_shared_library_configs
+}

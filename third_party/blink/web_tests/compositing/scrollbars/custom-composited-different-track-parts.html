@@ -38,29 +38,16 @@
 }
 </style>
 <script>
-  if (window.internals) {
-    internals.settings.setMockScrollbarsEnabled(false);
-  }
-  if (window.testRunner) {
-    testRunner.waitUntilDone();
-    testRunner.dumpAsTextWithPixelResults(); // This is only useful as a pixel test.
-  }
-
   function doTest()
   {
     window.scrollTo(400,300);
-    window.setTimeout(function() {
-      if (window.testRunner) {
-        testRunner.notifyDone();
-      }
-    }, 0);
   }
 
   window.addEventListener("load", doTest, false);
 </script>
 </head>
 <body>
-<div style="width: 1600px; height: 1000px; transform: translateZ(0);">
+<div style="width: 1600px; height: 1000px; will-change: transform;">
 </div>
 <div style="position : absolute; left : 450; top : 350; width : 200px; height : 100px; border-style : solid; border-color : green; border-width : 2px">
 <!---

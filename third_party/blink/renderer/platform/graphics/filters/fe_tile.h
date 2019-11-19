@@ -29,8 +29,6 @@ namespace blink {
 
 class PLATFORM_EXPORT FETile final : public FilterEffect {
  public:
-  static FETile* Create(Filter*);
-
   FETile(Filter*);
 
   WTF::TextStream& ExternalRepresentation(WTF::TextStream&,

@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<title>Test playbackRate and defaultPlaybackRate.</title>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+<video></video>
+<script>
+async_test(t => {
+  let video = document.querySelector("video");
+  video.src = "content/test.ogv";
+
+  video.addEventListener('canplaythrough', t.step_func(() => {
+    assert_equals(video.defaultPlaybackRate, 1.0);
+    video.defaultPlaybackRate = Number.MAX_VALUE;
+
+    assert_equals(video.defaultPlaybackRate, 1.0);
+    video.load();
+
+    video.addEventListener('canplaythrough', t.step_func_done(() => {
+      assert_equals(video.defaultPlaybackRate, 1.0);
+    }), { once: true });
+  }), { once: true });
+});
+</script>

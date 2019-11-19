@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2019 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<org.chromium.chrome.browser.toolbar.bottom.ScrollingBottomViewResourceFrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content" >
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:id="@+id/bottom_controls_wrapper"
+        android:layout_height="wrap_content" >
+
+        <ImageView
+            android:id="@+id/bottom_container_top_shadow"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/toolbar_shadow_height"
+            android:src="@drawable/modern_toolbar_shadow"
+            android:scaleType="fitXY"
+            android:scaleY="-1"
+            tools:ignore="ContentDescription" />
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/bottom_container_slot" >
+
+            <ViewStub
+                android:id="@+id/bottom_toolbar_stub"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="start|bottom"
+                android:inflatedId="@+id/bottom_toolbar"
+                android:layout="@layout/bottom_toolbar" />
+
+        </FrameLayout>
+
+    </LinearLayout>
+
+</org.chromium.chrome.browser.toolbar.bottom.ScrollingBottomViewResourceFrameLayout>

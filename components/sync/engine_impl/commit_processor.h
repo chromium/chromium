@@ -41,13 +41,19 @@ class CommitProcessor {
   // exceed |max_entries|.
   // Note: |cookie_jar_mismatch| and |cookie_jar_empty| are used only for
   // metrics recording purposes specific to the SESSIONS type.
-  void GatherCommitContributions(ModelTypeSet commit_types,
-                                 size_t max_entries,
-                                 bool cookie_jar_mismatch,
-                                 bool cookie_jar_empty,
-                                 Commit::ContributionMap* contributions);
+  Commit::ContributionMap GatherCommitContributions(ModelTypeSet commit_types,
+                                                    size_t max_entries,
+                                                    bool cookie_jar_mismatch,
+                                                    bool cookie_jar_empty);
 
  private:
+  // Returns the number of entries added.
+  int GatherCommitContributionsForType(ModelType type,
+                                       size_t max_entries,
+                                       bool cookie_jar_mismatch,
+                                       bool cookie_jar_empty,
+                                       Commit::ContributionMap* contributions);
+
   // A map of 'commit contributors', one for each enabled type.
   CommitContributorMap* commit_contributor_map_;
 

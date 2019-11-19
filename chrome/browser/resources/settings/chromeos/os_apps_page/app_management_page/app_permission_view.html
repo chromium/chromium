@@ -1,0 +1,27 @@
+<link rel="import" href="chrome://resources/html/polymer.html">
+
+<link rel="import" href="dom_switch.html">
+<link rel="import" href="pwa_permission_view.html">
+<link rel="import" href="arc_permission_view.html">
+<link rel="import" href="chrome_app_permission_view.html">
+<link rel="import" href="../../../settings_shared_css.html">
+
+<dom-module id="app-management-app-permission-view">
+  <template>
+    <style include="settings-shared">
+    </style>
+    <app-management-dom-switch id="view-selector"
+        route="[[getSelectedRouteId_(app_)]]">
+      <template>
+        <app-management-pwa-permission-view route-id="pwa-permission-view">
+        </app-management-pwa-permission-view>
+        <app-management-arc-permission-view route-id="arc-permission-view">
+        </app-management-arc-permission-view>
+        <app-management-chrome-app-permission-view
+            route-id="chrome-app-permission-view">
+        </app-management-chrome-app-permission-view>
+      </template>
+    </app-management-dom-switch>
+  </template>
+  <script src="app_permission_view.js"></script>
+</dom-module>

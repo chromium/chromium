@@ -46,7 +46,7 @@
 #include "net/test/embedded_test_server/http_response.h"
 #include "net/test/spawned_test_server/spawned_test_server.h"
 #include "net/test/test_data_directory.h"
-#include "net/test/test_with_scoped_task_environment.h"
+#include "net/test/test_with_task_environment.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "net/url_request/url_request.h"
 #include "net/url_request/url_request_context.h"
@@ -97,14 +97,16 @@ class ConnectTestingEventInterface : public WebSocketEventInterface {
   void OnCreateURLRequest(URLRequest* request) override {}
 
   void OnAddChannelResponse(const std::string& selected_subprotocol,
-                            const std::string& extensions) override;
+                            const std::string& extensions,
+                            int64_t send_flow_control_quota) override;
 
   void OnDataFrame(bool fin,
                    WebSocketMessageType type,
-                   scoped_refptr<IOBuffer> data,
-                   size_t data_size) override;
+                   base::span<const char> payload) override;
 
-  void OnFlowControl(int64_t quota) override;
+  bool HasPendingDataFrames() override { return false; }
+
+  void OnSendFlowControlQuotaAdded(int64_t quota) override;
 
   void OnClosingHandshake() override;
 
@@ -123,10 +125,11 @@ class ConnectTestingEventInterface : public WebSocketEventInterface {
   void OnSSLCertificateError(
       std::unique_ptr<SSLErrorCallbacks> ssl_error_callbacks,
       const GURL& url,
+      int net_error,
       const SSLInfo& ssl_info,
       bool fatal) override;
 
-  int OnAuthRequired(scoped_refptr<AuthChallengeInfo> auth_info,
+  int OnAuthRequired(const AuthChallengeInfo& auth_info,
                      scoped_refptr<HttpResponseHeaders> response_headers,
                      const IPEndPoint& remote_endpoint,
                      base::OnceCallback<void(const AuthCredentials*)> callback,
@@ -166,7 +169,8 @@ std::string ConnectTestingEventInterface::extensions() const {
 
 void ConnectTestingEventInterface::OnAddChannelResponse(
     const std::string& selected_subprotocol,
-    const std::string& extensions) {
+    const std::string& extensions,
+    int64_t send_flow_control_quota) {
   selected_subprotocol_ = selected_subprotocol;
   extensions_ = extensions;
   QuitNestedEventLoop();
@@ -174,10 +178,10 @@ void ConnectTestingEventInterface::OnAddChannelResponse(
 
 void ConnectTestingEventInterface::OnDataFrame(bool fin,
                                                WebSocketMessageType type,
-                                               scoped_refptr<IOBuffer> data,
-                                               size_t data_size) {}
+                                               base::span<const char> payload) {
+}
 
-void ConnectTestingEventInterface::OnFlowControl(int64_t quota) {}
+void ConnectTestingEventInterface::OnSendFlowControlQuotaAdded(int64_t quota) {}
 
 void ConnectTestingEventInterface::OnClosingHandshake() {}
 
@@ -200,6 +204,7 @@ void ConnectTestingEventInterface::OnFinishOpeningHandshake(
 void ConnectTestingEventInterface::OnSSLCertificateError(
     std::unique_ptr<SSLErrorCallbacks> ssl_error_callbacks,
     const GURL& url,
+    int net_error,
     const SSLInfo& ssl_info,
     bool fatal) {
   base::ThreadTaskRunnerHandle::Get()->PostTask(
@@ -209,7 +214,7 @@ void ConnectTestingEventInterface::OnSSLCertificateError(
 }
 
 int ConnectTestingEventInterface::OnAuthRequired(
-    scoped_refptr<AuthChallengeInfo> auth_info,
+    const AuthChallengeInfo& auth_info,
     scoped_refptr<HttpResponseHeaders> response_headers,
     const IPEndPoint& remote_endpoint,
     base::OnceCallback<void(const AuthCredentials*)> callback,
@@ -263,7 +268,7 @@ class TestProxyDelegateWithProxyInfo : public ProxyDelegate {
   DISALLOW_COPY_AND_ASSIGN(TestProxyDelegateWithProxyInfo);
 };
 
-class WebSocketEndToEndTest : public TestWithScopedTaskEnvironment {
+class WebSocketEndToEndTest : public TestWithTaskEnvironment {
  protected:
   WebSocketEndToEndTest()
       : event_interface_(),
@@ -290,11 +295,13 @@ class WebSocketEndToEndTest : public TestWithScopedTaskEnvironment {
     }
     url::Origin origin = url::Origin::Create(GURL("http://localhost"));
     GURL site_for_cookies("http://localhost/");
+    net::NetworkIsolationKey network_isolation_key(origin, origin);
     event_interface_ = new ConnectTestingEventInterface();
     channel_ = std::make_unique<WebSocketChannel>(
         base::WrapUnique(event_interface_), &context_);
     channel_->SendAddChannelRequest(GURL(socket_url), sub_protocols_, origin,
-                                    site_for_cookies, HttpRequestHeaders());
+                                    site_for_cookies, network_isolation_key,
+                                    HttpRequestHeaders());
     event_interface_->WaitForResponse();
     return !event_interface_->failed();
   }

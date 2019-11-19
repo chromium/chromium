@@ -1,3 +1,0 @@
-Tests pause and resume animation. Should not crash. (https://bugs.webkit.org/show_bug.cgi?id=67510)
-
-Did not crash, so PASSED

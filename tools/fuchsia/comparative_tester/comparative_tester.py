@@ -7,6 +7,8 @@
 # Fuchsia devices and then compares their output to each other, extracting the
 # relevant performance data from the output of gtest.
 
+from __future__ import print_function
+
 import argparse
 import logging
 import os

@@ -3,11 +3,18 @@
 # found in the LICENSE file.
 
 import("//third_party/closure_compiler/compile_js.gni")
+import("../../tools/js_modulizer.gni")
 
 js_type_check("closure_compile") {
   deps = [
     ":event_target",
     ":ui",
+  ]
+}
+
+js_type_check("closure_compile_modules") {
+  deps = [
+    ":event_target.m",
   ]
 }
 
@@ -20,5 +27,19 @@ js_library("event_target") {
 js_library("ui") {
   deps = [
     "..:cr",
+  ]
+}
+
+js_library("event_target.m") {
+  sources = [
+    "$root_gen_dir/ui/webui/resources/js/cr/event_target.m.js",
+  ]
+  extra_deps = [ ":modulize" ]
+}
+
+js_modulizer("modulize") {
+  input_files = [ "event_target.js" ]
+  deps = [
+    "ui:modulize",
   ]
 }

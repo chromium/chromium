@@ -1,4 +1,7 @@
 CONSOLE ERROR: line 15: Not allowed to navigate top frame to data URL: data:text/plain,a
+CONSOLE ERROR: Not allowed to navigate top frame to data URL: data:text/plain,b
+CONSOLE ERROR: Not allowed to navigate top frame to data URL: data:text/plain,i
+CONSOLE ERROR: Not allowed to navigate top frame to data URL: data:text/plain,j
 Tests that manipulating location properties in a just-created window object does not crash. Note: Turn off pop-up blocking to run this in-browser.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".

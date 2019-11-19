@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.download;
 import static org.chromium.chrome.browser.preferences.download.DownloadDirectoryAdapter.NO_SELECTED_ITEM_ID;
 
 import android.content.Context;
-import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.CheckBox;
@@ -17,9 +16,10 @@ import android.widget.ScrollView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import org.chromium.chrome.browser.preferences.PrefServiceBridge;
+import androidx.annotation.Nullable;
+
 import org.chromium.chrome.browser.preferences.download.DownloadDirectoryAdapter;
-import org.chromium.chrome.browser.widget.AlertDialogEditText;
+import org.chromium.chrome.browser.ui.widget.text.AlertDialogEditText;
 import org.chromium.chrome.download.R;
 
 import java.io.File;
@@ -56,8 +56,8 @@ public class DownloadLocationCustomView
         mDialogType = dialogType;
 
         // Automatically check "don't show again" the first time the user is seeing the dialog.
-        boolean isInitial = PrefServiceBridge.getInstance().getPromptForDownloadAndroid()
-                == DownloadPromptStatus.SHOW_INITIAL;
+        boolean isInitial =
+                DownloadUtils.getPromptForDownloadAndroid() == DownloadPromptStatus.SHOW_INITIAL;
         mDontShowAgain.setChecked(isInitial);
         mDontShowAgain.setOnCheckedChangeListener(this);
 
@@ -88,9 +88,8 @@ public class DownloadLocationCustomView
     // CompoundButton.OnCheckedChangeListener implementation.
     @Override
     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-        int newStatus =
-                isChecked ? DownloadPromptStatus.DONT_SHOW : DownloadPromptStatus.SHOW_PREFERENCE;
-        PrefServiceBridge.getInstance().setPromptForDownloadAndroid(newStatus);
+        DownloadUtils.setPromptForDownloadAndroid(
+                isChecked ? DownloadPromptStatus.DONT_SHOW : DownloadPromptStatus.SHOW_PREFERENCE);
     }
 
     // Helper methods available to DownloadLocationDialogBridge.

@@ -12,13 +12,8 @@ js_type_check("closure_compile") {
 
 js_library("snippets_internals") {
   deps = [
+    "//chrome/browser/ui/webui/snippets_internals:mojo_bindings_js_library_for_compile",
     "//third_party/jstemplate:jstemplate",
     "//ui/webui/resources/js:util",
-  ]
-  extra_deps =
-      [ "//chrome/browser/ui/webui/snippets_internals:mojo_bindings_js" ]
-  externs_list = [
-    "$root_gen_dir/chrome/browser/ui/webui/snippets_internals/snippets_internals.mojom.externs.js",
-    "$externs_path/mojo.js",
   ]
 }

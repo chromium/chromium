@@ -45,14 +45,6 @@ bool WVTestLicenseServerConfig::GetServerCommandLine(
     return false;
   }
 
-  // Add the Python protocol buffers files directory to Python path.
-  base::FilePath pyproto_dir;
-  if (!GetPyProtoPath(&pyproto_dir)) {
-    DVLOG(0) << "Cannot find pyproto directory required by license server.";
-    return false;
-  }
-  AppendToPythonPath(pyproto_dir);
-
   base::FilePath license_server_path;
   GetLicenseServerPath(&license_server_path);
   if (!base::PathExists(license_server_path)) {
@@ -99,6 +91,20 @@ bool WVTestLicenseServerConfig::GetServerCommandLine(
   command_line->AppendArgPath(config_path.Append(kProfilesFileName));
   command_line->AppendArg(base::StringPrintf("--port=%u", port_));
   return true;
+}
+
+base::Optional<base::EnvironmentMap>
+WVTestLicenseServerConfig::GetServerEnvironment() {
+  // Add the Python protocol buffers files directory to Python path.
+  base::FilePath pyproto_dir;
+  if (!GetPyProtoPath(&pyproto_dir)) {
+    DVLOG(0) << "Cannot find pyproto directory required by license server.";
+    return base::nullopt;
+  }
+
+  base::EnvironmentMap map;
+  SetPythonPathInEnvironment({pyproto_dir}, &map);
+  return map;
 }
 
 bool WVTestLicenseServerConfig::SelectServerPort() {

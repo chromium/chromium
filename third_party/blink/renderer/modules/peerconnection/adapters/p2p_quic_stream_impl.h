@@ -5,7 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_PEERCONNECTION_ADAPTERS_P2P_QUIC_STREAM_IMPL_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_PEERCONNECTION_ADAPTERS_P2P_QUIC_STREAM_IMPL_H_
 
-#include "net/third_party/quic/core/quic_session.h"
+#include "net/third_party/quiche/src/quic/core/quic_session.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/modules/peerconnection/adapters/p2p_quic_stream.h"
 
@@ -18,7 +18,7 @@ class MODULES_EXPORT P2PQuicStreamImpl final : public quic::QuicStream,
                     quic::QuicSession* session,
                     uint32_t delegate_read_buffer_size,
                     uint32_t write_buffer_size);
-  P2PQuicStreamImpl(quic::PendingStream pending,
+  P2PQuicStreamImpl(quic::PendingStream* pending,
                     quic::QuicSession* session,
                     uint32_t delegate_read_buffer_size,
                     uint32_t write_buffer_size);

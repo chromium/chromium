@@ -27,7 +27,6 @@
 #include "components/offline_pages/core/background/request_queue_store.h"
 #include "components/offline_pages/core/background/scheduler.h"
 #include "components/offline_pages/core/offline_page_feature.h"
-#include "components/offline_pages/core/offline_pages_ukm_reporter.h"
 #include "content/public/browser/web_contents.h"
 
 namespace network {
@@ -68,7 +67,7 @@ RequestCoordinatorFactory::RequestCoordinatorFactory()
     : BrowserContextKeyedServiceFactory(
           "OfflineRequestCoordinator",
           BrowserContextDependencyManager::GetInstance()) {
-  DependsOn(OfflinePageModelFactory::GetInstance());
+  // Depends on OfflinePageModelFactory in SimpleDependencyManager.
 }
 
 // static
@@ -96,8 +95,8 @@ KeyedService* RequestCoordinatorFactory::BuildServiceInstanceFor(
       context, policy.get(), model, std::move(load_termination_listener)));
 
   scoped_refptr<base::SequencedTaskRunner> background_task_runner =
-      base::CreateSequencedTaskRunnerWithTraits(
-          {base::MayBlock(), base::TaskPriority::BEST_EFFORT});
+      base::CreateSequencedTaskRunner({base::ThreadPool(), base::MayBlock(),
+                                       base::TaskPriority::BEST_EFFORT});
   Profile* profile = Profile::FromBrowserContext(context);
   base::FilePath queue_store_path =
       profile->GetPath().Append(chrome::kOfflinePageRequestQueueDirname);
@@ -109,11 +108,9 @@ KeyedService* RequestCoordinatorFactory::BuildServiceInstanceFor(
       scheduler(new android::BackgroundSchedulerBridge());
   network::NetworkQualityTracker* network_quality_tracker =
       g_browser_process->network_quality_tracker();
-  std::unique_ptr<OfflinePagesUkmReporter> ukm_reporter(
-      new OfflinePagesUkmReporter());
   RequestCoordinator* request_coordinator = new RequestCoordinator(
       std::move(policy), std::move(offliner), std::move(queue),
-      std::move(scheduler), network_quality_tracker, std::move(ukm_reporter),
+      std::move(scheduler), network_quality_tracker,
       std::make_unique<ActiveTabInfo>(profile));
 
   CCTRequestObserver::AttachToRequestCoordinator(request_coordinator);

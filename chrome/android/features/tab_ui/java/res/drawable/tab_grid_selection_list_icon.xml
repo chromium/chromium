@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2019 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<level-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:maxLevel="@integer/list_item_level_default">
+        <shape android:shape="oval">
+            <solid android:color="@android:color/transparent"/>
+            <stroke
+                android:width="2dp"
+                android:color="@color/default_icon_color"/>
+        </shape>
+    </item>
+    <item android:maxLevel="@integer/list_item_level_selected">
+        <shape android:shape="oval">
+            <solid android:color="@color/light_active_color" />
+        </shape>
+    </item>
+</level-list>

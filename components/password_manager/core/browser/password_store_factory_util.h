@@ -38,7 +38,9 @@ void ToggleAffiliationBasedMatchingBasedOnPasswordSyncedState(
 // Creates a LoginDatabase. Looks in |profile_path| for the database file.
 // Does not call LoginDatabase::Init() -- to avoid UI jank, that needs to be
 // called by PasswordStore::Init() on the background thread.
-std::unique_ptr<LoginDatabase> CreateLoginDatabase(
+std::unique_ptr<LoginDatabase> CreateLoginDatabaseForProfileStorage(
+    const base::FilePath& profile_path);
+std::unique_ptr<LoginDatabase> CreateLoginDatabaseForAccountStorage(
     const base::FilePath& profile_path);
 
 }  // namespace password_manager

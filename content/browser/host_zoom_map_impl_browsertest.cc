@@ -39,19 +39,17 @@ void RunTestForURL(const GURL& url,
   // Assume caller has set the zoom level to |host_zoom_level| using
   // either a host or host+scheme entry in the HostZoomMap prior to
   // calling this function.
-  EXPECT_DOUBLE_EQ(host_zoom_level, host_zoom_map->GetZoomLevelForView(
-                                        url, process_id, view_id));
+  EXPECT_DOUBLE_EQ(host_zoom_level, host_zoom_map->GetZoomLevel(web_contents));
 
-  // Make sure that GetZoomLevelForView() works for temporary zoom levels.
+  // Make sure that GetZoomLevel() works for temporary zoom levels.
   host_zoom_map->SetTemporaryZoomLevel(process_id, view_id, temp_zoom_level);
-  EXPECT_DOUBLE_EQ(temp_zoom_level, host_zoom_map->GetZoomLevelForView(
-                                        url, process_id, view_id));
+  EXPECT_DOUBLE_EQ(temp_zoom_level, host_zoom_map->GetZoomLevel(web_contents));
   // Clear the temporary zoom level in case subsequent test calls use the same
   // web_contents.
   host_zoom_map->ClearTemporaryZoomLevel(process_id, view_id);
 }
 
-// Test to make sure that GetZoomForView() works properly for zoom levels
+// Test to make sure that GetZoomLevel() works properly for zoom levels
 // stored by host value, and can distinguish temporary zoom levels from
 // these.
 IN_PROC_BROWSER_TEST_F(HostZoomMapImplBrowserTest, GetZoomForView_Host) {
@@ -72,7 +70,7 @@ IN_PROC_BROWSER_TEST_F(HostZoomMapImplBrowserTest, GetZoomForView_Host) {
   RunTestForURL(url, shell(), host_zoom_level, temp_zoom_level);
 }
 
-// Test to make sure that GetZoomForView() works properly for zoom levels
+// Test to make sure that GetZoomLevel() works properly for zoom levels
 // stored by host and scheme values, and can distinguish temporary zoom levels
 // from these.
 IN_PROC_BROWSER_TEST_F(HostZoomMapImplBrowserTest,

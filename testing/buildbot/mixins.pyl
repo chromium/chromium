@@ -39,7 +39,7 @@
 #
 # == Regular ==
 # Mixin:
-#   'mac-rel-args': {
+#   'mac-archive-rel-args': {
 #     'args': [
 #       'mac-release/sizes',
 #     ],
@@ -49,11 +49,11 @@
 #   {
 #     'name': 'chromium'
 #     'machines': {
-#       'mac-rel': {
+#       'mac-archive-rel': {
 #         'test_suites': {
 #           'scripts': 'public_build_scripts',
 #         },
-#         'mixins': ['mac-rel-args'],
+#         'mixins': ['mac-archive-rel-args'],
 #       },
 #     },
 #   },
@@ -62,7 +62,7 @@
 #   {
 #     'name': 'chromium'
 #     'machines': {
-#       'mac-rel': {
+#       'mac-archive-rel': {
 #         "scripts": [
 #           {
 #             "args": [
@@ -126,10 +126,10 @@
 #   },
 
 {
-  'amd_8870m': {
+  'android_q': {
     'swarming': {
       'dimensions': {
-        'gpu': '1002:6821',
+        'device_os': 'Q',
       },
     },
   },
@@ -142,10 +142,10 @@
       },
     },
   },
-  'arm_tester': {
+  'arm64': {
     'swarming': {
       'dimensions': {
-        'cpu': 'armv7l-32',
+        'cpu': 'arm64',
       },
     },
   },
@@ -157,8 +157,22 @@
       },
     },
   },
+  'chrome-swarming-pool': {
+    'swarming': {
+      'dimensions': {
+        'pool': 'chrome.tests',
+      },
+    },
+  },
   'code-coverage': {
     'isolate_coverage_data': True,
+  },
+  'docker': {
+    'swarming': {
+      'dimensions': {
+        'inside_docker': '1',
+      },
+    },
   },
   'flounder': {
     # Nexus 9
@@ -173,9 +187,17 @@
     # NVIDIA SHIELD TV
     'swarming': {
       'dimensions': {
+        'device_os_type': 'user',
         'device_type': 'foster',
         'os': 'Android',
       },
+    },
+  },
+  'fuchsia_aemu': {
+    '$mixin_append': {
+      'args': [
+        '--device=aemu',
+      ],
     },
   },
   'gpu_pool': {
@@ -204,6 +226,13 @@
   'kitkat': {
     'swarming': {
       'dimensions': {
+        'device_os': 'KTU84P',
+      },
+    },
+  },
+  'kitkat_generic': {
+    'swarming': {
+      'dimensions': {
         'device_os': 'K',
       },
     },
@@ -216,7 +245,7 @@
       'expiration': 21600,
     },
   },
-  'linux-rel-args': {
+  'linux-archive-rel-args': {
     'args': [
       'linux-release-64/sizes',
     ],
@@ -225,6 +254,13 @@
     'swarming': {
       'dimensions': {
         'os': 'Ubuntu-14.04',
+      },
+    },
+  },
+  'linux-xenial': {
+    'swarming': {
+      'dimensions': {
+        'os': 'Ubuntu-16.04',
       },
     },
   },
@@ -249,8 +285,9 @@
   'linux_intel_hd_630': {
     'swarming': {
       'dimensions': {
-        'gpu': '8086:5912-17.1.4',
-        'os': 'Ubuntu',
+        # Defined in bot_config.py in internal infradata/config workspace
+        'gpu': 'intel-hd-630-ubuntu-stable',
+        'os': 'linux-intel-stable',
         'pool': 'Chrome-GPU',
       }
     }
@@ -259,17 +296,32 @@
     # Similar to stable, but with a newer Mesa version.
     'swarming': {
       'dimensions': {
-        'gpu': '8086:5912-18.0.5',
-        'os': 'Ubuntu',
+        'gpu': '8086:5912-19.0.2',
+        'os': 'Ubuntu-19.04',
         'pool': 'Chrome-GPU',
       },
     },
   },
+  'linux_intel_uhd_630': {
+    'swarming': {
+      'dimensions': {
+        # Defined in bot_config.py in internal infradata/config workspace
+        'gpu': 'intel-uhd-630-ubuntu-stable',
+        'os': 'Ubuntu-19.04',
+        'pool': 'Chrome-GPU',
+      },
+      # Same long expiration as win10_intel_uhd_630_stable due to capacity.
+      # TODO(https://crbug.com/986939): Remove this when more devices
+      # are added.
+      'expiration': 14400,
+    }
+  },
   'linux_nvidia_quadro_p400': {
     'swarming': {
       'dimensions': {
-        'gpu': '10de:1cb3-384.90',
-        'os': 'Ubuntu',
+        # Defined in bot_config.py in internal infradata/config workspace
+        'gpu': 'nvidia-quadro-p400-ubuntu-stable',
+        'os': 'linux-nvidia-stable',
         'pool': 'Chrome-GPU',
       }
     }
@@ -277,8 +329,8 @@
   'linux_nvidia_quadro_p400_experimental': {
     'swarming': {
       'dimensions': {
-        'gpu': '10de:1cb3-410.78',
-        'os': 'Ubuntu',
+        'gpu': '10de:1cb3-418.56',
+        'os': 'Ubuntu-19.04',
         'pool': 'Chrome-GPU',
       },
     },
@@ -290,7 +342,7 @@
       },
     },
   },
-  'mac-rel-args': {
+  'mac-archive-rel-args': {
     'args': [
       'mac-release/sizes',
     ],
@@ -312,14 +364,21 @@
   'mac_10.13': {
     'swarming': {
       'dimensions': {
-        'os': 'Mac-10.13',
+        'os': 'Mac-10.13.6',
       },
     },
   },
   'mac_10.14': {
     'swarming': {
       'dimensions': {
-        'os': 'Mac-10.14',
+        'os': 'Mac-10.14.6',
+      },
+    },
+  },
+  'mac_10.15_beta': {
+    'swarming': {
+      'dimensions': {
+        'os': 'Mac-10.15',
       },
     },
   },
@@ -335,7 +394,7 @@
     'swarming': {
       'dimensions': {
         'gpu': '8086:0a2e',
-        'os': 'Mac-10.12.6',
+        'os': 'mac-intel-stable',
       },
     },
   },
@@ -344,7 +403,6 @@
       'dimensions': {
         'gpu': '8086:0a2e',
         'os': 'Mac-10.13.6',
-        'pool': 'Chrome-GPU',
       },
     },
   },
@@ -352,7 +410,7 @@
     'swarming': {
       'dimensions': {
         'gpu': '1002:679e',
-        'os': 'Mac-10.12',
+        'os': 'Mac-10.12.6',
         'pool': 'Chrome-GPU',
       },
     },
@@ -362,7 +420,7 @@
       'dimensions': {
         'gpu': '1002:6821',
         'hidpi': '1',
-        'os': 'Mac-10.13.6',
+        'os': 'mac-amd-stable',
         'pool': 'Chrome-GPU',
       },
     },
@@ -383,7 +441,7 @@
       'dimensions': {
         'gpu': '10de:0fe9',
         'hidpi': '1',
-        'os': 'Mac-10.13.6',
+        'os': 'mac-nvidia-stable',
         'pool': 'Chrome-GPU',
       },
     },
@@ -394,17 +452,8 @@
       'dimensions': {
         'gpu': '10de:0fe9',
         'hidpi': '1',
-        'os': 'Mac-10.13.6',
+        'os': 'Mac-10.14.6',
         'pool': 'Chrome-GPU',
-      },
-    },
-  },
-  'marlin': {
-    # Pixel XL
-    'swarming': {
-      'dimensions': {
-        'device_type': 'marlin',
-        'os': 'Android',
       },
     },
   },
@@ -413,6 +462,29 @@
       'dimensions': {
         'device_os': 'MMB29Q',
       },
+    },
+  },
+  'marshmallow-x86-emulator': {
+    '$mixin_append': {
+      'args': [
+        '--avd-config=../../tools/android/avd/proto/generic_android23.textpb',
+      ],
+    },
+    'swarming': {
+      'dimensions': {
+        'device_os': None,
+        'device_type': None,
+      },
+      'named_caches': [
+        {
+          'name': 'avd_generic_android23',
+          'path': '.android',
+        },
+        {
+          'name': 'system_images_android_23_google_apis_x86',
+          'path': '.emulator_sdk',
+        },
+      ]
     },
   },
   'marshmallow_generic': {
@@ -436,38 +508,42 @@
       },
     },
   },
-  'nvidia_750m_mac_edition': {
+  'oreo_fleet': {
     'swarming': {
       'dimensions': {
-        'gpu': '10de:0fe9',
+        'device_os': 'OPM4.171019.021.P2',
+        'device_os_flavor': 'google',
       },
     },
   },
-  'optional_mac_gpu_slicing': {
-    'swarming': {
-      'optional_dimensions': {
-        # Wait 10 minutes for 10.13 and then fall back to the specified
-        # dimensions (usually 10.12).  The format for optional dimensions
-        # is: expiration: [{key, value}, ..].
-        600: [
-          {
-            'os': 'Mac-10.13.6',
-          }
-        ],
-      },
-    }
-  },
-  'oreo': {
+  'pie-x86-emulator': {
+    '$mixin_append': {
+      'args': [
+        '--avd-config=../../tools/android/avd/proto/generic_android28.textpb',
+      ],
+    },
     'swarming': {
       'dimensions': {
-        'device_os': 'O',
+        'device_os': None,
+        'device_type': None,
       },
+      'named_caches': [
+        {
+          'name': 'avd_generic_android28',
+          'path': '.android',
+        },
+        {
+          'name': 'system_images_android_28_google_apis_x86',
+          'path': '.emulator_sdk',
+        },
+      ]
     },
   },
-  'pie': {
+  'pie_fleet': {
     'swarming': {
       'dimensions': {
-        'device_os': 'P',
+        'device_os': 'PQ3A.190801.002',
+        'device_os_flavor': 'google',
       },
     },
   },
@@ -478,6 +554,11 @@
         'device_type': 'shamu',
         'os': 'Android',
       },
+    },
+  },
+  'swarming_containment_auto': {
+    'swarming': {
+      'containment_type': 'AUTO',
     },
   },
   'walleye': {
@@ -496,11 +577,27 @@
       },
     },
   },
+  'win10-1803': {
+    'swarming': {
+      'dimensions': {
+        'os': 'Windows-10-17134',
+      },
+    },
+  },
+  'win10_amd_rx_550': {
+    'swarming': {
+      'dimensions': {
+        'gpu': '1002:699f',
+        'os': 'Windows-10',
+        'pool': 'Chrome-GPU',
+      },
+    },
+  },
   'win10_intel_hd_630_experimental': {
     # Currently same as stable version.
     'swarming': {
       'dimensions': {
-        'gpu': '8086:5912-24.20.100.6286',
+        'gpu': '8086:5912-26.20.100.7323',
         'os': 'Windows-10',
         'pool': 'Chrome-GPU',
       },
@@ -509,7 +606,33 @@
   'win10_intel_hd_630_stable': {
     'swarming': {
       'dimensions': {
-        'gpu': '8086:5912-24.20.100.6286',
+        # Defined in bot_config.py in internal infradata/config workspace
+        'gpu': 'intel-hd-630-win10-stable',
+        'os': 'Windows-10',
+        'pool': 'Chrome-GPU',
+      },
+    },
+  },
+  'win10_intel_uhd_630_stable': {
+    'swarming': {
+      'dimensions': {
+        # Defined in bot_config.py in internal infradata/config workspace
+        'gpu': 'intel-uhd-630-win10-stable',
+        'os': 'Windows-10',
+        'pool': 'Chrome-GPU',
+      },
+      # ~50% of the WebGL2 conformance tests time out with the default
+      # 1 hour expiration, but the last shard times out with a 3 hour
+      # expiration, so use 4 hours.
+      # TODO(https://crbug.com/986939): Remove this when more devices
+      # are added.
+      'expiration': 14400,
+    },
+  },
+  'win10_nvidia_geforce_gtx_1660': {
+    'swarming': {
+      'dimensions': {
+        'gpu': '10de:2184',
         'os': 'Windows-10',
         'pool': 'Chrome-GPU',
       },
@@ -518,7 +641,7 @@
   'win10_nvidia_quadro_p400_experimental': {
     'swarming': {
       'dimensions': {
-        'gpu': '10de:1cb3-24.21.14.1195',
+        'gpu': '10de:1cb3-26.21.14.3102',
         'os': 'Windows-10',
         'pool': 'Chrome-GPU',
       },
@@ -527,7 +650,8 @@
   'win10_nvidia_quadro_p400_stable': {
     'swarming': {
       'dimensions': {
-        'gpu': '10de:1cb3-24.21.14.1195',
+        # Defined in bot_config.py in internal infradata/config workspace
+        'gpu': 'nvidia-quadro-p400-win10-stable',
         'os': 'Windows-10',
         'pool': 'Chrome-GPU',
       },

@@ -15,7 +15,6 @@
 #include "base/at_exit.h"
 #include "base/logging.h"
 #include "base/macros.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/trace_to_file.h"
 #include "build/build_config.h"
 
@@ -28,7 +27,7 @@ namespace base {
 class XmlUnitTestResultPrinter;
 
 // Instantiates TestSuite, runs it and returns exit code.
-int RunUnitTestsUsingBaseTestSuite(int argc, char **argv);
+int RunUnitTestsUsingBaseTestSuite(int argc, char** argv);
 
 class TestSuite {
  public:
@@ -42,6 +41,16 @@ class TestSuite {
   virtual ~TestSuite();
 
   int Run();
+
+  // Disables checks for thread and process priority at the beginning and end of
+  // each test. Most tests should not use this.
+  void DisableCheckForThreadAndProcessPriority();
+
+  // Disables checks for thread priority at the end of each test (still checks
+  // at the beginning of each test). This should be used for tests that run in
+  // their own process and should start with normal priorities but are allowed
+  // to end with different priorities.
+  void DisableCheckForThreadPriorityAtTestEnd();
 
   // Disables checks for certain global objects being leaked across tests.
   void DisableCheckForLeakedGlobals();
@@ -83,13 +92,13 @@ class TestSuite {
 
   bool initialized_command_line_ = false;
 
-  test::ScopedFeatureList scoped_feature_list_;
-
   XmlUnitTestResultPrinter* printer_ = nullptr;
 
   std::unique_ptr<logging::ScopedLogAssertHandler> assert_handler_;
 
   bool check_for_leaked_globals_ = true;
+  bool check_for_thread_and_process_priority_ = true;
+  bool check_for_thread_priority_at_test_end_ = true;
 
   bool is_initialized_ = false;
 

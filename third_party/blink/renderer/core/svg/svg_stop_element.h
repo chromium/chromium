@@ -33,8 +33,6 @@ class SVGStopElement final : public SVGElement {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  DECLARE_NODE_FACTORY(SVGStopElement);
-
   explicit SVGStopElement(Document&);
 
   Color StopColorIncludingOpacity() const;

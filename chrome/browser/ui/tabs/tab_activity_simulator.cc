@@ -45,6 +45,7 @@ void TabActivitySimulator::Navigate(content::WebContents* web_contents,
   std::unique_ptr<content::NavigationSimulator> navigation =
       content::NavigationSimulator::CreateBrowserInitiated(url, web_contents);
   navigation->SetTransition(page_transition);
+  navigation->SetKeepLoading(true);
   navigation->Commit();
 }
 

@@ -1,0 +1,16 @@
+This is a testharness.js-based test.
+PASS Unmapped built-in module specifiers / should resolve "std:blank" to "std:blank"
+FAIL Unmapped built-in module specifiers / should error resolving "std:none" assert_throws: function "() => resolveUnderTest(NONE)" did not throw
+PASS Remapping built-in module specifiers / should remap built-in modules
+FAIL Remapping built-in module specifiers / should remap built-in modules with slashes assert_equals: expected "https://example.com/app/blank-slash/bar" but got "std:blank/bar"
+FAIL Remapping built-in module specifiers / should remap built-in modules with fallbacks Failed to resolve module specifier std:blank: Import Map: "std:blank" matches with "std:blank" but fails to be mapped (no viable URLs)
+FAIL Remapping built-in module specifiers / should remap built-in modules with slashes and fallbacks Failed to resolve module specifier std:blank/: Import Map: "std:blank/" matches with "std:blank/" but fails to be mapped (no viable URLs)
+PASS Remapping to built-in modules / should remap to "std:blank"
+PASS Remapping to built-in modules / should fail when remapping to "std:blank/"
+FAIL Remapping to built-in modules / should remap to "std:blank/for-testing" assert_equals: expected "std:blank/for-testing" but got "https://example.com/blank/for-testing"
+PASS Remapping to built-in modules / should remap to "std:blank" for URL-like specifiers
+PASS Remapping to built-in modules / should fail when remapping to "std:none"
+FAIL Fallbacks with built-in module addresses / should resolve to "std:blank" Failed to resolve module specifier blank: Import Map: "blank" matches with "blank" but fails to be mapped (no viable URLs)
+FAIL Fallbacks with built-in module addresses / should fall back past "std:none" Failed to resolve module specifier none: Import Map: "none" matches with "none" but fails to be mapped (no viable URLs)
+Harness: the test ran to completion.
+

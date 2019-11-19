@@ -1,8 +1,0 @@
-https://bugs.webkit.org/show_bug.cgi?id=95772: There should be six green bars below with a PASS in each.
-
-PASS
-PASS
-PASS
-PASS
-PASS
-PASS

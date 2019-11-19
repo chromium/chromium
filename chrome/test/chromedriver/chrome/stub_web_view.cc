@@ -53,6 +53,13 @@ Status StubWebView::SendCommand(const std::string& cmd,
   return Status(kOk);
 }
 
+Status StubWebView::SendCommandFromWebSocket(
+    const std::string& cmd,
+    const base::DictionaryValue& params,
+    const int client_cmd_id) {
+  return Status(kOk);
+}
+
 Status StubWebView::SendCommandAndGetResult(
         const std::string& cmd,
         const base::DictionaryValue& params,
@@ -94,6 +101,14 @@ Status StubWebView::CallUserAsyncFunction(
   return Status(kOk);
 }
 
+Status StubWebView::CallUserSyncScript(const std::string& frame,
+                                       const std::string& script,
+                                       const base::ListValue& args,
+                                       const base::TimeDelta& timeout,
+                                       std::unique_ptr<base::Value>* result) {
+  return Status(kOk);
+}
+
 Status StubWebView::GetFrameByFunction(const std::string& frame,
                                        const std::string& function,
                                        const base::ListValue& args,
@@ -102,19 +117,29 @@ Status StubWebView::GetFrameByFunction(const std::string& frame,
 }
 
 Status StubWebView::DispatchMouseEvents(const std::list<MouseEvent>& events,
-                                        const std::string& frame) {
+                                        const std::string& frame,
+                                        bool async_dispatch_events) {
   return Status(kOk);
 }
 
-Status StubWebView::DispatchTouchEvent(const TouchEvent& event) {
+Status StubWebView::DispatchTouchEvent(const TouchEvent& event,
+                                       bool async_dispatch_events) {
   return Status(kOk);
 }
 
-Status StubWebView::DispatchTouchEvents(const std::list<TouchEvent>& events) {
+Status StubWebView::DispatchTouchEvents(const std::list<TouchEvent>& events,
+                                        bool async_dispatch_events) {
   return Status(kOk);
 }
 
-Status StubWebView::DispatchKeyEvents(const std::list<KeyEvent>& events) {
+Status StubWebView::DispatchTouchEventWithMultiPoints(
+    const std::list<TouchEvent>& events,
+    bool async_dispatch_events) {
+  return Status(kOk);
+}
+
+Status StubWebView::DispatchKeyEvents(const std::list<KeyEvent>& events,
+                                      bool async_dispatch_events) {
   return Status(kOk);
 }
 
@@ -166,16 +191,21 @@ Status StubWebView::OverrideNetworkConditions(
   return Status(kOk);
 }
 
+Status StubWebView::OverrideDownloadDirectoryIfNeeded(
+    const std::string& download_directory) {
+  return Status(kOk);
+}
+
 Status StubWebView::CaptureScreenshot(
     std::string* screenshot,
     const base::DictionaryValue& params) {
   return Status(kOk);
 }
 
-Status StubWebView::SetFileInputFiles(
-    const std::string& frame,
-    const base::DictionaryValue& element,
-    const std::vector<base::FilePath>& files) {
+Status StubWebView::SetFileInputFiles(const std::string& frame,
+                                      const base::DictionaryValue& element,
+                                      const std::vector<base::FilePath>& files,
+                                      const bool append) {
   return Status(kOk);
 }
 
@@ -205,20 +235,8 @@ Status StubWebView::SynthesizeScrollGesture(int x,
   return Status(kOk);
 }
 
-Status StubWebView::SynthesizePinchGesture(int x, int y, double scale_factor) {
-  return Status(kOk);
-}
-
-Status StubWebView::GetScreenOrientation(std::string* orientation) {
-  return Status(kOk);
-}
-
-Status StubWebView::SetScreenOrientation(std::string orientation) {
-  return Status(kOk);
-}
-
-Status StubWebView::DeleteScreenOrientation() {
-  return Status(kOk);
+bool StubWebView::IsNonBlocking() {
+  return false;
 }
 
 bool StubWebView::IsOOPIF(const std::string& frame_id) {

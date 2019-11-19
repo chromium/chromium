@@ -9,8 +9,8 @@
 
 namespace {
 
-const int kSupportedChromeVersion[] = {CHROME_VERSION};
+const int kSupportedBrowserVersion[] = {CHROME_VERSION};
 
 }  // namespace
 
-const int kSupportedChromeMajorVersion = kSupportedChromeVersion[0];
+const int kSupportedBrowserMajorVersion = kSupportedBrowserVersion[0];

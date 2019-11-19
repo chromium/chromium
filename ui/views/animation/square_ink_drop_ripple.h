@@ -51,7 +51,7 @@ class SquareInkDropRippleTestApi;
 class VIEWS_EXPORT SquareInkDropRipple : public InkDropRipple {
  public:
   // The shape to use for the ACTIVATED/DEACTIVATED states.
-  enum ActivatedShape { CIRCLE, ROUNDED_RECT };
+  enum class ActivatedShape { kCircle, kRoundedRect };
 
   SquareInkDropRipple(const gfx::Size& large_size,
                       int large_corner_radius,

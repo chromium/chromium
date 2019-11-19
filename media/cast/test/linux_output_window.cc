@@ -120,27 +120,24 @@ void LinuxOutputWindow::CreateWindow(int x_pos,
   XSync(display_, false);
 }
 
-void LinuxOutputWindow::RenderFrame(
-    const scoped_refptr<media::VideoFrame>& video_frame) {
-  const gfx::Size damage_size(std::min(video_frame->visible_rect().width(),
-                                       image_->width),
-                              std::min(video_frame->visible_rect().height(),
-                                       image_->height));
+void LinuxOutputWindow::RenderFrame(const media::VideoFrame& video_frame) {
+  const gfx::Size damage_size(
+      std::min(video_frame.visible_rect().width(), image_->width),
+      std::min(video_frame.visible_rect().height(), image_->height));
 
   if (damage_size.width() < image_->width ||
       damage_size.height() < image_->height)
     memset(image_->data, 0x00, image_->bytes_per_line * image_->height);
 
   if (!damage_size.IsEmpty()) {
-    libyuv::I420ToARGB(video_frame->visible_data(VideoFrame::kYPlane),
-                       video_frame->stride(VideoFrame::kYPlane),
-                       video_frame->visible_data(VideoFrame::kUPlane),
-                       video_frame->stride(VideoFrame::kUPlane),
-                       video_frame->visible_data(VideoFrame::kVPlane),
-                       video_frame->stride(VideoFrame::kVPlane),
+    libyuv::I420ToARGB(video_frame.visible_data(VideoFrame::kYPlane),
+                       video_frame.stride(VideoFrame::kYPlane),
+                       video_frame.visible_data(VideoFrame::kUPlane),
+                       video_frame.stride(VideoFrame::kUPlane),
+                       video_frame.visible_data(VideoFrame::kVPlane),
+                       video_frame.stride(VideoFrame::kVPlane),
                        reinterpret_cast<uint8_t*>(image_->data),
-                       image_->bytes_per_line,
-                       damage_size.width(),
+                       image_->bytes_per_line, damage_size.width(),
                        damage_size.height());
   }
 

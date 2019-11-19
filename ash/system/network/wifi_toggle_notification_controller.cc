@@ -6,16 +6,18 @@
 
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/system/model/system_tray_model.h"
 #include "ash/system/network/network_icon.h"
+#include "ash/system/network/tray_network_state_model.h"
 #include "ash/system/tray/system_tray_notifier.h"
-#include "chromeos/network/network_state_handler.h"
+#include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
 
-using chromeos::NetworkHandler;
-using chromeos::NetworkStateHandler;
-using chromeos::NetworkTypePattern;
+using chromeos::network_config::mojom::DeviceStateProperties;
+using chromeos::network_config::mojom::DeviceStateType;
+using chromeos::network_config::mojom::NetworkType;
 using message_center::Notification;
 
 namespace ash {
@@ -51,17 +53,25 @@ WifiToggleNotificationController::~WifiToggleNotificationController() {
 }
 
 void WifiToggleNotificationController::RequestToggleWifi() {
-  // This will always be triggered by a user action (e.g. keyboard shortcut)
-  NetworkStateHandler* handler = NetworkHandler::Get()->network_state_handler();
-  bool enabled = handler->IsTechnologyEnabled(NetworkTypePattern::WiFi());
-  Shell::Get()->metrics()->RecordUserMetricsAction(
-      enabled ? UMA_STATUS_AREA_DISABLE_WIFI : UMA_STATUS_AREA_ENABLE_WIFI);
-  handler->SetTechnologyEnabled(NetworkTypePattern::WiFi(), !enabled,
-                                chromeos::network_handler::ErrorCallback());
   message_center::MessageCenter* message_center =
       message_center::MessageCenter::Get();
+  // Remove any existing notification.
   if (message_center->FindVisibleNotificationById(kWifiToggleNotificationId))
     message_center->RemoveNotification(kWifiToggleNotificationId, false);
+
+  TrayNetworkStateModel* model =
+      Shell::Get()->system_tray_model()->network_state_model();
+  const DeviceStateProperties* wifi = model->GetDevice(NetworkType::kWiFi);
+  // A WiFi device should always exist, but the model is not part of Shell
+  // so just return to handle the edge case.
+  if (!wifi)
+    return;
+  bool enabled = wifi->device_state == DeviceStateType::kEnabled;
+  Shell::Get()->metrics()->RecordUserMetricsAction(
+      enabled ? UMA_STATUS_AREA_DISABLE_WIFI : UMA_STATUS_AREA_ENABLE_WIFI);
+  model->SetNetworkTypeEnabledState(NetworkType::kWiFi, !enabled);
+
+  // Create a new notification with the new state.
   message_center->AddNotification(CreateNotification(!enabled));
 }
 

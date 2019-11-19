@@ -13,11 +13,10 @@
 #include "base/logging.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/values.h"
-#include "components/autofill/ios/browser/autofill_switches.h"
 #import "components/autofill/ios/browser/autofill_util.h"
-#import "ios/web/public/web_state/js/crw_js_injection_receiver.h"
-#include "ios/web/public/web_state/web_frame.h"
-#include "ios/web/public/web_state/web_frames_manager.h"
+#import "ios/web/public/deprecated/crw_js_injection_receiver.h"
+#include "ios/web/public/js_messaging/web_frame.h"
+#include "ios/web/public/js_messaging/web_frames_manager.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -25,7 +24,7 @@
 
 @implementation JsSuggestionManager {
   // The injection receiver used to evaluate JavaScript.
-  CRWJSInjectionReceiver* _receiver;
+  __weak CRWJSInjectionReceiver* _receiver;
   web::WebFramesManager* _webFramesManager;
 }
 
@@ -133,11 +132,8 @@
 }
 
 - (web::WebFrame*)frameWithFrameID:(NSString*)frameID {
-  if (autofill::switches::IsAutofillIFrameMessagingEnabled()) {
-    DCHECK(_webFramesManager);
-    return _webFramesManager->GetFrameWithId(base::SysNSStringToUTF8(frameID));
-  }
-  return nil;
+  DCHECK(_webFramesManager);
+  return _webFramesManager->GetFrameWithId(base::SysNSStringToUTF8(frameID));
 }
 
 @end

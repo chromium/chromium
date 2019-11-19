@@ -6,6 +6,8 @@
 
 #include <algorithm>
 
+#include "base/numerics/ranges.h"
+#include "build/build_config.h"
 #include "ui/events/event.h"
 #include "ui/gfx/render_text.h"
 #include "ui/views/metrics.h"
@@ -114,7 +116,7 @@ bool SelectionController::OnMouseDragged(const ui::MouseEvent& event) {
     SelectThroughLastDragLocation();
   } else if (!drag_selection_timer_.IsRunning()) {
     // Select through the edge of the visible text, then start the scroll timer.
-    last_drag_location_.set_x(std::min(std::max(0, x), width));
+    last_drag_location_.set_x(base::ClampToRange(x, 0, width));
     SelectThroughLastDragLocation();
 
     drag_selection_timer_.Start(

@@ -12,6 +12,10 @@ body {
   margin-top: .5em;
 }
 
+#tableTitle {
+  color: #4a4a4a;
+}
+
 #status {
   color: rgb(66, 133, 244);
   display: inline-block;

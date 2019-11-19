@@ -1,0 +1,13 @@
+// Copyright 2018 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://wicg.github.io/layout-instability/#sec-layout-shift
+[Exposed=Window]
+interface LayoutShift : PerformanceEntry {
+    readonly attribute double value;
+    readonly attribute boolean hadRecentInput;
+    readonly attribute DOMHighResTimeStamp lastInputTime;
+
+    [CallWith=ScriptState, ImplementedAs=toJSONForBinding] object toJSON();
+};

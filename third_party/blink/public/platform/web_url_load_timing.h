@@ -37,6 +37,7 @@
 
 #if INSIDE_BLINK
 #include "base/memory/scoped_refptr.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_copier.h"  // nogncheck
 #endif
 
 namespace blink {
@@ -119,6 +120,8 @@ class WebURLLoadTiming {
   BLINK_PLATFORM_EXPORT WebURLLoadTiming& operator=(
       scoped_refptr<ResourceLoadTiming>);
   BLINK_PLATFORM_EXPORT operator scoped_refptr<ResourceLoadTiming>() const;
+  BLINK_PLATFORM_EXPORT WebURLLoadTiming DeepCopy() const;
+  BLINK_PLATFORM_EXPORT bool operator==(const WebURLLoadTiming&) const;
 #endif
 
  private:
@@ -126,5 +129,16 @@ class WebURLLoadTiming {
 };
 
 }  // namespace blink
+
+namespace WTF {
+#if INSIDE_BLINK
+template <>
+struct CrossThreadCopier<blink::WebURLLoadTiming> {
+  STATIC_ONLY(CrossThreadCopier);
+  typedef blink::WebURLLoadTiming Type;
+  PLATFORM_EXPORT static Type Copy(const blink::WebURLLoadTiming&);
+};
+#endif
+}  // namespace WTF
 
 #endif

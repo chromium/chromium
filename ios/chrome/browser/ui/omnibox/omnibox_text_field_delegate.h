@@ -10,11 +10,8 @@
 @protocol OmniboxTextFieldDelegate<UITextFieldDelegate>
 
 @optional
-// Called when the OmniboxTextFieldIOS performs a copy operation.  Returns YES
-// if the delegate handled the copy operation itself.  If the delegate returns
-// NO, the field must perform the copy.  Some platforms (iOS 4) do not expose an
-// API that allows the delegate to handle the copy.
-- (BOOL)onCopy;
+// Called when the OmniboxTextFieldIOS performs a copy operation.
+- (void)onCopy;
 
 // Called before the OmniboxTextFieldIOS performs a paste operation.
 - (void)willPaste;

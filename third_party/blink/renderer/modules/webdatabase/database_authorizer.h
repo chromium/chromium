@@ -28,8 +28,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_WEBDATABASE_DATABASE_AUTHORIZER_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBDATABASE_DATABASE_AUTHORIZER_H_
 
-#include "third_party/blink/renderer/platform/heap/handle.h"
-#include "third_party/blink/renderer/platform/wtf/forward.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -37,10 +36,9 @@ namespace blink {
 extern const int kSQLAuthAllow;
 extern const int kSQLAuthDeny;
 
-class DatabaseContext;
+class DatabaseAuthorizer {
+  DISALLOW_NEW();
 
-class DatabaseAuthorizer
-    : public GarbageCollectedFinalized<DatabaseAuthorizer> {
  public:
   enum Permissions {
     kReadWriteMask = 0,
@@ -48,13 +46,8 @@ class DatabaseAuthorizer
     kNoAccessMask = 1 << 2
   };
 
-  static DatabaseAuthorizer* Create(DatabaseContext*,
-                                    const String& database_info_table_name);
-
-  explicit DatabaseAuthorizer(DatabaseContext*,
-                              const String& database_info_table_name);
-
-  void Trace(blink::Visitor*);
+  explicit DatabaseAuthorizer(const String& database_info_table_name);
+  ~DatabaseAuthorizer();
 
   int CreateTable(const String& table_name);
   int CreateTempTable(const String& table_name);
@@ -107,7 +100,6 @@ class DatabaseAuthorizer
   bool HadDeletes() const { return had_deletes_; }
 
  private:
-  void AddWhitelistedFunctions();
   int DenyBasedOnTableName(const String&) const;
   int UpdateDeletesBasedOnTableName(const String&);
   bool AllowWrite();
@@ -119,8 +111,6 @@ class DatabaseAuthorizer
   bool had_deletes_ : 1;
 
   const String database_info_table_name_;
-
-  Member<DatabaseContext> database_context_;
 };
 
 }  // namespace blink

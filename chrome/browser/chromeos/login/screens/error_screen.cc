@@ -10,12 +10,13 @@
 #include "base/command_line.h"
 #include "base/logging.h"
 #include "chrome/browser/app_mode/app_mode_utils.h"
+#include "chrome/browser/apps/app_service/app_launch_params.h"
+#include "chrome/browser/apps/launch_service/launch_service.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/chromeos/app_mode/certificate_manager_dialog.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_app_manager.h"
 #include "chrome/browser/chromeos/login/auth/chrome_login_performer.h"
 #include "chrome/browser/chromeos/login/chrome_restart_request.h"
-#include "chrome/browser/chromeos/login/screens/network_error_view.h"
 #include "chrome/browser/chromeos/login/startup_utils.h"
 #include "chrome/browser/chromeos/login/ui/captive_portal_window_proxy.h"
 #include "chrome/browser/chromeos/login/ui/login_display_host.h"
@@ -28,13 +29,11 @@
 #include "chrome/browser/extensions/component_loader.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/ui/extensions/app_launch_params.h"
-#include "chrome/browser/ui/extensions/application_launch.h"
+#include "chrome/browser/ui/webui/chromeos/login/error_screen_handler.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/grit/browser_resources.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/dbus/power_manager_client.h"
-#include "chromeos/dbus/session_manager_client.h"
+#include "chromeos/dbus/power/power_manager_client.h"
+#include "chromeos/dbus/session_manager/session_manager_client.h"
 #include "chromeos/network/network_connection_handler.h"
 #include "chromeos/network/network_handler.h"
 #include "chromeos/network/portal_detector/network_portal_detector.h"
@@ -50,15 +49,6 @@
 namespace chromeos {
 
 namespace {
-
-constexpr const char kContextKeyErrorStateCode[] = "error-state-code";
-constexpr const char kContextKeyErrorStateNetwork[] = "error-state-network";
-constexpr const char kContextKeyGuestSigninAllowed[] = "guest-signin-allowed";
-constexpr const char kContextKeyOfflineSigninAllowed[] =
-    "offline-signin-allowed";
-constexpr const char kContextKeyShowConnectingIndicator[] =
-    "show-connecting-indicator";
-constexpr const char kContextKeyUIState[] = "ui-state";
 
 // Returns the current running kiosk app profile in a kiosk session. Otherwise,
 // returns nullptr.
@@ -82,12 +72,11 @@ constexpr const char
 constexpr const char ErrorScreen::kUserActionRebootButtonClicked[] = "reboot";
 constexpr const char ErrorScreen::kUserActionShowCaptivePortalClicked[] =
     "show-captive-portal";
+constexpr const char ErrorScreen::kUserActionNetworkConnected[] =
+    "network-connected";
 
-ErrorScreen::ErrorScreen(BaseScreenDelegate* base_screen_delegate,
-                         NetworkErrorView* view)
-    : BaseScreen(base_screen_delegate, OobeScreen::SCREEN_ERROR_MESSAGE),
-      view_(view),
-      weak_factory_(this) {
+ErrorScreen::ErrorScreen(ErrorScreenView* view)
+    : BaseScreen(ErrorScreenView::kScreenId), view_(view) {
   network_state_informer_ = new NetworkStateInformer();
   network_state_informer_->Init();
   NetworkHandler::Get()->network_connection_handler()->AddObserver(this);
@@ -102,11 +91,13 @@ ErrorScreen::~ErrorScreen() {
 }
 
 void ErrorScreen::AllowGuestSignin(bool allowed) {
-  GetContextEditor().SetBoolean(kContextKeyGuestSigninAllowed, allowed);
+  if (view_)
+    view_->SetGuestSigninAllowed(allowed);
 }
 
 void ErrorScreen::AllowOfflineLogin(bool allowed) {
-  GetContextEditor().SetBoolean(kContextKeyOfflineSigninAllowed, allowed);
+  if (view_)
+    view_->SetOfflineSigninAllowed(allowed);
 }
 
 void ErrorScreen::FixCaptivePortal() {
@@ -123,7 +114,7 @@ NetworkError::ErrorState ErrorScreen::GetErrorState() const {
   return error_state_;
 }
 
-OobeScreen ErrorScreen::GetParentScreen() const {
+OobeScreenId ErrorScreen::GetParentScreen() const {
   return parent_screen_;
 }
 
@@ -132,26 +123,27 @@ void ErrorScreen::HideCaptivePortal() {
     captive_portal_window_proxy_->Close();
 }
 
-void ErrorScreen::OnViewDestroyed(NetworkErrorView* view) {
+void ErrorScreen::OnViewDestroyed(ErrorScreenView* view) {
   if (view_ == view)
     view_ = nullptr;
 }
 
 void ErrorScreen::SetUIState(NetworkError::UIState ui_state) {
   ui_state_ = ui_state;
-  GetContextEditor().SetInteger(kContextKeyUIState,
-                                static_cast<int>(ui_state_));
+  if (view_)
+    view_->SetUIState(ui_state);
 }
 
 void ErrorScreen::SetErrorState(NetworkError::ErrorState error_state,
                                 const std::string& network) {
   error_state_ = error_state;
-  GetContextEditor()
-      .SetInteger(kContextKeyErrorStateCode, static_cast<int>(error_state_))
-      .SetString(kContextKeyErrorStateNetwork, network);
+  if (view_) {
+    view_->SetErrorStateCode(error_state);
+    view_->SetErrorStateNetwork(network);
+  }
 }
 
-void ErrorScreen::SetParentScreen(OobeScreen parent_screen) {
+void ErrorScreen::SetParentScreen(OobeScreenId parent_screen) {
   parent_screen_ = parent_screen;
   // Not really used on JS side yet so no need to propagate to screen context.
 }
@@ -168,7 +160,13 @@ void ErrorScreen::ShowCaptivePortal() {
 }
 
 void ErrorScreen::ShowConnectingIndicator(bool show) {
-  GetContextEditor().SetBoolean(kContextKeyShowConnectingIndicator, show);
+  if (view_)
+    view_->SetShowConnectingIndicator(show);
+}
+
+void ErrorScreen::SetIsPersistentError(bool is_persistent) {
+  if (view_)
+    view_->SetIsPersistentError(is_persistent);
 }
 
 ErrorScreen::ConnectRequestCallbackSubscription
@@ -182,6 +180,26 @@ void ErrorScreen::MaybeInitCaptivePortalWindowProxy(
     captive_portal_window_proxy_ = std::make_unique<CaptivePortalWindowProxy>(
         network_state_informer_.get(), web_contents);
   }
+}
+
+void ErrorScreen::DoShow() {
+  LOG(WARNING) << "Network error screen message is shown";
+  content::NotificationService::current()->Notify(
+      chrome::NOTIFICATION_LOGIN_NETWORK_ERROR_SHOWN,
+      content::NotificationService::AllSources(),
+      content::NotificationService::NoDetails());
+  network_portal_detector::GetInstance()->SetStrategy(
+      PortalDetectorStrategy::STRATEGY_ID_ERROR_SCREEN);
+}
+
+void ErrorScreen::DoHide() {
+  LOG(WARNING) << "Network error screen message is hidden";
+  if (on_hide_callback_) {
+    on_hide_callback_->Run();
+    on_hide_callback_.reset();
+  }
+  network_portal_detector::GetInstance()->SetStrategy(
+      PortalDetectorStrategy::STRATEGY_ID_LOGIN_SCREEN);
 }
 
 void ErrorScreen::Show() {
@@ -198,26 +216,6 @@ void ErrorScreen::Hide() {
     view_->Hide();
 }
 
-void ErrorScreen::OnShow() {
-  LOG(WARNING) << "Network error screen message is shown";
-  content::NotificationService::current()->Notify(
-      chrome::NOTIFICATION_LOGIN_NETWORK_ERROR_SHOWN,
-      content::NotificationService::AllSources(),
-      content::NotificationService::NoDetails());
-  network_portal_detector::GetInstance()->SetStrategy(
-      PortalDetectorStrategy::STRATEGY_ID_ERROR_SCREEN);
-}
-
-void ErrorScreen::OnHide() {
-  LOG(WARNING) << "Network error screen message is hidden";
-  if (on_hide_callback_) {
-    on_hide_callback_->Run();
-    on_hide_callback_.reset();
-  }
-  network_portal_detector::GetInstance()->SetStrategy(
-      PortalDetectorStrategy::STRATEGY_ID_LOGIN_SCREEN);
-}
-
 void ErrorScreen::OnUserAction(const std::string& action_id) {
   if (action_id == kUserActionShowCaptivePortalClicked)
     ShowCaptivePortal();
@@ -231,6 +229,8 @@ void ErrorScreen::OnUserAction(const std::string& action_id) {
     OnLocalStateErrorPowerwashButtonClicked();
   else if (action_id == kUserActionRebootButtonClicked)
     OnRebootButtonClicked();
+  else if (action_id == kUserActionNetworkConnected)
+    Hide();
   else
     BaseScreen::OnUserAction(action_id);
 }
@@ -298,11 +298,10 @@ void ErrorScreen::OnDiagnoseButtonClicked() {
       IDR_CONNECTIVITY_DIAGNOSTICS_MANIFEST,
       base::FilePath(extension_misc::kConnectivityDiagnosticsPath));
 
-  const extensions::Extension* extension =
-      extension_service->GetExtensionById(extension_id, true);
-  OpenApplication(AppLaunchParams(
-      profile, extension, extensions::LAUNCH_CONTAINER_WINDOW,
-      WindowOpenDisposition::NEW_WINDOW, extensions::SOURCE_CHROME_INTERNAL));
+  apps::LaunchService::Get(profile)->OpenApplication(apps::AppLaunchParams(
+      extension_id, apps::mojom::LaunchContainer::kLaunchContainerWindow,
+      WindowOpenDisposition::NEW_WINDOW,
+      apps::mojom::AppLaunchSource::kSourceChromeInternal));
   KioskAppManager::Get()->InitSession(profile, extension_id);
 
   LoginDisplayHost::default_host()->Finalize(base::BindOnce(
@@ -316,9 +315,7 @@ void ErrorScreen::OnLaunchOobeGuestSession() {
 }
 
 void ErrorScreen::OnLocalStateErrorPowerwashButtonClicked() {
-  chromeos::DBusThreadManager::Get()
-      ->GetSessionManagerClient()
-      ->StartDeviceWipe();
+  SessionManagerClient::Get()->StartDeviceWipe();
 }
 
 void ErrorScreen::OnRebootButtonClicked() {

@@ -29,13 +29,4 @@ class HeapObject : public GarbageCollected<HeapObject> {
 ./persistent_field_in_gc_managed_class.h:27:5: note: [blink-gc] Field 'm_weakPersistent' defining a GC root declared here:
     WeakPersistent<HeapObject> m_weakPersistent;
     ^
-./persistent_field_in_gc_managed_class.h:20:1: warning: [blink-gc] Class 'HeapObject' requires finalization.
-class HeapObject : public GarbageCollected<HeapObject> {
-^
-./persistent_field_in_gc_managed_class.h:26:5: note: [blink-gc] Field 'm_objs' requiring finalization declared here:
-    Persistent<HeapVector<Member<HeapObject>>> m_objs;
-    ^
-./persistent_field_in_gc_managed_class.h:27:5: note: [blink-gc] Field 'm_weakPersistent' requiring finalization declared here:
-    WeakPersistent<HeapObject> m_weakPersistent;
-    ^
-5 warnings generated.
+4 warnings generated.

@@ -32,12 +32,6 @@ bool HasDebugRightsPrivileges();
 // @returns true if the current process is running elevated.
 bool HasAdminRights();
 
-// Check whether the thumbprint (sha1) of the signing certificate of a given
-// file is part of a sorted array of thumbprints.
-bool IsFileCertificateThumbprintInArray(const base::FilePath& fullpath,
-                                        const char* const thumbprints[],
-                                        size_t thumbprints_length);
-
 // Check whether a process is running with the image |executable|. Return true
 // if a process is found.
 bool IsProcessRunning(const wchar_t* executable);

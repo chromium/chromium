@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-PASS Test Performance Timeline API in Service Worker
-PASS empty service worker fetch event included in performance timings
-PASS User Timing
-FAIL Resource Timing assert_equals: expected 2 but got 3
-Harness: the test ran to completion.
-

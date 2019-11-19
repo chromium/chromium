@@ -1,5 +1,5 @@
 <!doctype html>
-<html dir="$i18n{textdirection}" lang="$i18n{language}" $i18n{dark}>
+<html dir="$i18n{textdirection}" lang="$i18n{language}" $i18n{a11yenhanced}>
 <head>
   <meta charset="utf8">
   <title>$i18n{title}</title>
@@ -55,14 +55,18 @@
     #loading-toolbar {
       align-items: center;
       background: var(--md-toolbar-color);
+      border-bottom: var(--md-toolbar-border);
+      box-sizing: border-box;
       color: #fff;
-      height: 56px;
+      height: var(--md-toolbar-height);
       letter-spacing: .25px;
       padding-inline-start: 24px;
     }
 
-    html[dark] #loading-toolbar {
-      color: rgb(232, 234, 237);  /* --google-grey-200 */
+    @media (prefers-color-scheme: dark) {
+      #loading-toolbar {
+        color: rgb(232, 234, 237);  /* --google-grey-200 */
+      }
     }
 
     #loading-message {
@@ -95,7 +99,6 @@
   <link rel="import" href="chrome://resources/html/util.html">
   <link rel="import" href="constants.html">
   <script src="history.js"></script>
-  <link rel="import" href="chrome://resources/html/dark_mode.html">
 
   <link rel="import" href="app.html" async id="bundle">
 </body>

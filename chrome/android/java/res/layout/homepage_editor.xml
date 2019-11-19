@@ -22,7 +22,7 @@
             android:orientation="vertical"
             android:focusableInTouchMode="true" >
 
-            <org.chromium.chrome.browser.widget.CompatibilityTextInputLayout
+            <org.chromium.chrome.browser.widget.ChromeTextInputLayout
                 android:id="@+id/homepage_url"
                 style="@style/PreferenceScreenLayout"
                 android:layout_width="match_parent"
@@ -36,7 +36,7 @@
                     android:inputType="textUri"
                     android:singleLine="true"
                     android:hint="@string/options_homepage_edit_label" />
-            </org.chromium.chrome.browser.widget.CompatibilityTextInputLayout>
+            </org.chromium.chrome.browser.widget.ChromeTextInputLayout>
 
             <Space style="@style/ButtonBarTopSpacer" />
             <View style="@style/ButtonBarTopDivider" />

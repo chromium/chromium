@@ -10,19 +10,17 @@
 #include "ui/gfx/animation/slide_animation.h"
 #include "ui/views/animation/bounds_animator_observer.h"
 #include "ui/views/view.h"
+#include "ui/views/widget/widget.h"
 
 namespace views {
 
 BoundsAnimator::BoundsAnimator(View* parent)
-    : parent_(parent), container_(new gfx::AnimationContainer()) {
-  container_->set_observer(this);
+    : AnimationDelegateViews(parent),
+      parent_(parent),
+      container_(new gfx::AnimationContainer()) {
 }
 
 BoundsAnimator::~BoundsAnimator() {
-  // Reset the delegate so that we don't attempt to notify our observer from
-  // the destructor.
-  container_->set_observer(nullptr);
-
   // Delete all the animations, but don't remove any child views. We assume the
   // view owns us and is going to be deleted anyway.
   for (auto& entry : data_)
@@ -136,8 +134,8 @@ void BoundsAnimator::Cancel() {
   AnimationContainerProgressed(container_.get());
 }
 
-void BoundsAnimator::SetAnimationDuration(int duration_ms) {
-  animation_duration_ms_ = duration_ms;
+void BoundsAnimator::SetAnimationDuration(base::TimeDelta duration) {
+  animation_duration_ = duration;
 }
 
 void BoundsAnimator::AddObserver(BoundsAnimatorObserver* observer) {
@@ -151,7 +149,7 @@ void BoundsAnimator::RemoveObserver(BoundsAnimatorObserver* observer) {
 std::unique_ptr<gfx::SlideAnimation> BoundsAnimator::CreateAnimation() {
   auto animation = std::make_unique<gfx::SlideAnimation>(this);
   animation->SetContainer(container_.get());
-  animation->SetSlideDuration(animation_duration_ms_);
+  animation->SetSlideDuration(animation_duration_);
   animation->SetTweenType(tween_type_);
   return animation;
 }
@@ -210,10 +208,10 @@ void BoundsAnimator::AnimationEndedOrCanceled(const gfx::Animation* animation,
   Data data = RemoveFromMaps(view);
 
   if (data.delegate) {
-    if (type == ANIMATION_ENDED) {
+    if (type == AnimationEndType::kEnded) {
       data.delegate->AnimationEnded(animation);
     } else {
-      DCHECK_EQ(ANIMATION_CANCELED, type);
+      DCHECK_EQ(AnimationEndType::kCanceled, type);
       data.delegate->AnimationCanceled(animation);
     }
   }
@@ -244,11 +242,11 @@ void BoundsAnimator::AnimationProgressed(const gfx::Animation* animation) {
 }
 
 void BoundsAnimator::AnimationEnded(const gfx::Animation* animation) {
-  AnimationEndedOrCanceled(animation, ANIMATION_ENDED);
+  AnimationEndedOrCanceled(animation, AnimationEndType::kEnded);
 }
 
 void BoundsAnimator::AnimationCanceled(const gfx::Animation* animation) {
-  AnimationEndedOrCanceled(animation, ANIMATION_CANCELED);
+  AnimationEndedOrCanceled(animation, AnimationEndType::kCanceled);
 }
 
 void BoundsAnimator::AnimationContainerProgressed(

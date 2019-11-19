@@ -221,16 +221,53 @@
 <h2 id="content_scripts">Use Content Scripts Carefully</h2>
 <p>
   While <a href="/content_scripts">content scripts</a> live in an
-  <a href="/content_scripts#execution-environment">isolated world</a>,
-  they are not immune from attacks.
-  Content scripts are the only part of an extension
-  that interacts directly with the web page.
-  Because of this,
-  hostile websites may manipulate parts of the DOM the content script depends on,
-  or exploit surprising web standard behavior, such as
-  <a href="https://html.spec.whatwg.org/#dom-window-nameditem">named items</a>.
+  <a href="/content_scripts#isolated_world">isolated world</a>,
+  they are not immune from attacks:
+  <ul>
+    <li>
+      Content scripts are the only part of an extension that interacts
+      directly with the web page.  Because of this, hostile web pages may
+      manipulate parts of the DOM the content script depends on, or exploit
+      surprising web standard behavior, such as
+      <a href="https://html.spec.whatwg.org/#dom-window-nameditem">named items</a>.
+    </li><li>
+      To interact with DOM of web pages, content scripts need to execute in
+      the same renderer process as the web page.  This makes content scripts
+      vulnerable to leaking data via side channel attacks (e.g.,
+      <a href="https://spectreattack.com/">Spectre</a>),
+      and to being taken over by an attacker if a malicious web page
+      compromises the renderer process.
+    </li>
+  </ul>
+</p><p>
   Sensitive work should be performed in a dedicated process,
-  such as the extension's <a href="/background_page">background script</a>.
+  such as the extension's <a href="/background_pages">background script</a>.
+  Avoid accidentally exposing extension privileges to content scripts:
+  <ul>
+    <li>
+      Assume that
+      <a href="/messaging#content-scripts-are-less-trustworthy"
+        >messages from a content script</a>
+      might have been crafted by an attacker (e.g.
+      <a href="#sanitize">validate and sanitize</a>
+      all input and protect your scripts from
+      <a href="/messaging#cross-site-scripting">cross-site scripting</a>).
+    </li><li>
+      Assume any data sent to the content script might leak to the web page.
+      Do not send sensitive data (e.g. secrets from the extension, data from
+      other web origins, browsing history) to content scripts.
+    </li><li>
+      Limit the scope of privileged actions that can be triggered
+      by content scripts.  Do not allow content scripts to
+      <a href="/xhr#xhr-vs-content-scripts"
+           >trigger requests to arbitrary URLs</a>
+      or pass arbitrary arguments to extension APIs (e.g., do not
+      allow passing arbitrary URLs to
+      <a href="https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API"
+        ><code>fetch</code></a> or
+      <a href="/tabs#method-create"><code>chrome.tabs.create</code></a> API).
+    </li>
+  </ul>
 </p>
 <h2 id="sanitize">Register and Sanitize Inputs</h2>
 <p>
@@ -269,7 +306,7 @@
   });
 </pre>
 <p>
-  Prevent an extension from executing an attackers script by
+  Prevent an extension from executing an attacker's script by
   sanitizing user inputs and incoming data,
   even from the extension itself and approved sources.
   <a href="/security#avoid">Avoid executable APIs</a>.

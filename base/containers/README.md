@@ -29,30 +29,35 @@ Google naming. Be sure to use the base namespace.
 
 ### Usage advice
 
-  * Generally avoid `std::unordered_set` and `std::unordered_map`. In the
-    common case, query performance is unlikely to be sufficiently higher than
+*   Generally avoid `std::unordered_set` and `std::unordered_map`. In the common
+    case, query performance is unlikely to be sufficiently higher than
     `std::map` to make a difference, insert performance is slightly worse, and
     the memory overhead is high. This makes sense mostly for large tables where
     you expect a lot of lookups.
 
-  * Most maps and sets in Chrome are small and contain objects that can be
-    moved efficiently. In this case, consider `base::flat_map` and
-    `base::flat_set`. You need to be aware of the maximum expected size of
-    the container since individual inserts and deletes are O(n), giving O(n^2)
-    construction time for the entire map. But because it avoids mallocs in most
-    cases, inserts are better or comparable to other containers even for
-    several dozen items, and efficiently-moved types are unlikely to have
-    performance problems for most cases until you have hundreds of items. If
-    your container can be constructed in one shot, the constructor from vector
-    gives O(n log n) construction times and it should be strictly better than
-    a `std::map`.
+*   Most maps and sets in Chrome are small and contain objects that can be moved
+    efficiently. In this case, consider `base::flat_map` and `base::flat_set`.
+    You need to be aware of the maximum expected size of the container since
+    individual inserts and deletes are O(n), giving O(n^2) construction time for
+    the entire map. But because it avoids mallocs in most cases, inserts are
+    better or comparable to other containers even for several dozen items, and
+    efficiently-moved types are unlikely to have performance problems for most
+    cases until you have hundreds of items. If your container can be constructed
+    in one shot, the constructor from vector gives O(n log n) construction times
+    and it should be strictly better than a `std::map`.
 
-  * `base::small_map` has better runtime memory usage without the poor
-    mutation performance of large containers that `base::flat_map` has. But this
-    advantage is partially offset by additional code size. Prefer in cases
-    where you make many objects so that the code/heap tradeoff is good.
+    Conceptually inserting a range of n elements into a `base::flat_map` or
+    `base::flat_set` behaves as if insert() was called for each individually
+    element. Thus in case the input range contains repeated elements, only the
+    first one of these duplicates will be inserted into the container. This
+    behaviour applies to construction from a range as well.
 
-  * Use `std::map` and `std::set` if you can't decide. Even if they're not
+*   `base::small_map` has better runtime memory usage without the poor mutation
+    performance of large containers that `base::flat_map` has. But this
+    advantage is partially offset by additional code size. Prefer in cases where
+    you make many objects so that the code/heap tradeoff is good.
+
+*   Use `std::map` and `std::set` if you can't decide. Even if they're not
     great, they're unlikely to be bad or surprising.
 
 ### Map and set details
@@ -155,7 +160,7 @@ std::generate_n(std::back_inserter(ptr_vec), 5, []{
 });
 
 // Construct a set.
-UniquePtrSet<int> ptr_set(std::move(ptr_vec), base::KEEP_FIRST_OF_DUPES);
+UniquePtrSet<int> ptr_set(std::move(ptr_vec));
 
 // Use raw pointers to lookup keys.
 int* ptr = ptr_set.begin()->get();
@@ -165,8 +170,7 @@ EXPECT_TRUE(ptr_set.find(ptr) == ptr_set.begin());
 Example `flat_map<std::string, int>`:
 
 ```cpp
-base::flat_map<std::string, int> str_to_int({{"a", 1}, {"c", 2},{"b", 2}},
-                                            base::KEEP_FIRST_OF_DUPES);
+base::flat_map<std::string, int> str_to_int({{"a", 1}, {"c", 2},{"b", 2}});
 
 // Does not construct temporary strings.
 str_to_int.find("c")->second = 3;

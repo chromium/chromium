@@ -23,8 +23,9 @@ This test verifies scroll position restores correctly when a thumb drag has been
 This test is expected to fail on Mac and Linux because those platforms don't cancel scrolling when mouse cursor is out of a certain range. It is Windows-specific behavior.
 <script src="../../resources/js-test.js"></script>
 <script>
+    window.jsTestIsAsync = true;
     var container = document.getElementById("container");
-    container.scrollLeft = 350;
+    container.scrollLeft = -365;
 
     if (window.eventSender) {
         eventSender.dragMode = false;
@@ -32,9 +33,13 @@ This test is expected to fail on Mac and Linux because those platforms don't can
         eventSender.mouseDown();
 
         eventSender.mouseMoveTo(100, 195);
-        shouldBe("container.scrollLeft" , "0");
-
-        eventSender.mouseMoveTo(100, 700);
-        shouldBe("container.scrollLeft" , "350");
+        requestAnimationFrame(function() {
+            shouldBe("container.scrollLeft" , "-715");
+            eventSender.mouseMoveTo(100, 700);
+            requestAnimationFrame(function() {
+              shouldBe("container.scrollLeft" , "-365");
+              finishJSTest();
+            });
+        });
     }
 </script>

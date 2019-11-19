@@ -93,6 +93,10 @@ SERVICE_MANAGER_SANDBOX_EXPORT std::string StringFromUtilitySandboxType(
 SERVICE_MANAGER_SANDBOX_EXPORT SandboxType
 UtilitySandboxTypeFromString(const std::string& sandbox_string);
 
+SERVICE_MANAGER_SANDBOX_EXPORT void EnableAudioSandbox(bool enable);
+
+SERVICE_MANAGER_SANDBOX_EXPORT bool IsAudioSandboxEnabled();
+
 }  // namespace service_manager
 
 #endif  // SERVICES_SERVICE_MANAGER_SANDBOX_SANDBOX_TYPE_H_

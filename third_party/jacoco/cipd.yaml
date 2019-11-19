@@ -1,0 +1,16 @@
+# Copyright 2017 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# To create CIPD package run the following command.
+# cipd create --pkg-def cipd.yaml -tag version:$(cat version.txt)
+package: chromium/third_party/jacoco
+description: Jacoco code coverage package
+data:
+  - file: lib/jacocoagent.jar
+  - file: lib/jacocoant.jar
+  - file: lib/jacococli.jar
+  - file: lib/org.jacoco.agent-0.8.3.201901230119.jar
+  - file: lib/org.jacoco.ant-0.8.3.201901230119.jar
+  - file: lib/org.jacoco.core-0.8.3.201901230119.jar
+  - file: lib/org.jacoco.report-0.8.3.201901230119.jar

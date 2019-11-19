@@ -14,8 +14,9 @@
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "content/public/browser/notification_service.h"
-#include "content/public/test/test_utils.h"
+#include "chrome/test/base/ui_test_utils.h"
+#include "content/public/common/content_switches.h"
+#include "ui/base/test/ns_ax_tree_validator.h"
 
 // Test harness for Mac-specific behaviors of BrowserWindow.
 class BrowserWindowMacTest : public InProcessBrowserTest {
@@ -35,7 +36,7 @@ IN_PROC_BROWSER_TEST_F(BrowserWindowMacTest, MenuCommandsAfterDestroy) {
       base::scoped_policy::RETAIN);
   base::scoped_nsobject<NSMenuItem> bookmark_menu_item(
       [[[[NSApp mainMenu] itemWithTag:IDC_BOOKMARKS_MENU] submenu]
-          itemWithTag:IDC_BOOKMARK_PAGE],
+          itemWithTag:IDC_BOOKMARK_THIS_TAB],
       base::scoped_policy::RETAIN);
 
   // The mainMenu item doesn't have an action associated while the browser
@@ -47,11 +48,8 @@ IN_PROC_BROWSER_TEST_F(BrowserWindowMacTest, MenuCommandsAfterDestroy) {
   EXPECT_TRUE(window.get());
   EXPECT_TRUE(bookmark_menu_item.get());
 
-  content::WindowedNotificationObserver close_observer(
-      chrome::NOTIFICATION_BROWSER_CLOSED,
-      content::NotificationService::AllSources());
   chrome::CloseAllBrowsersAndQuit();
-  close_observer.Wait();
+  ui_test_utils::WaitForBrowserToClose();
 
   EXPECT_EQ([bookmark_menu_item action], @selector(commandDispatch:));
 
@@ -60,4 +58,34 @@ IN_PROC_BROWSER_TEST_F(BrowserWindowMacTest, MenuCommandsAfterDestroy) {
   // NSWindow (e.g. NativeWidgetMacNSWindow)'s defaultValidateUserInterfaceItem,
   // which currently asks |super|. That is, NSWindow. Which says YES.
   EXPECT_TRUE([window validateUserInterfaceItem:bookmark_menu_item]);
+}
+
+class BrowserWindowMacA11yTest : public BrowserWindowMacTest {
+ public:
+  BrowserWindowMacA11yTest() = default;
+  ~BrowserWindowMacA11yTest() override = default;
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    BrowserWindowMacTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitch(switches::kForceRendererAccessibility);
+  }
+
+ private:
+  DISALLOW_COPY_AND_ASSIGN(BrowserWindowMacA11yTest);
+};
+
+IN_PROC_BROWSER_TEST_F(BrowserWindowMacA11yTest, A11yTreeIsWellFormed) {
+  NSWindow* window = browser()->window()->GetNativeWindow().GetNativeNSWindow();
+  size_t nodes_visited = 0;
+  base::Optional<ui::NSAXTreeProblemDetails> details =
+      ui::ValidateNSAXTree(window, &nodes_visited);
+  EXPECT_FALSE(details.has_value()) << details->ToString();
+
+  // There should be at least a handful of AX nodes in the tree - fail this test
+  // if for some reason (eg) the window has no children, which would otherwise
+  // be a well-formed AX tree.
+  EXPECT_GE(nodes_visited, 10U);
+
+  if (HasFailure())
+    ui::PrintNSAXTree(window);
 }

@@ -14,6 +14,6 @@ public_deps = [
 ]
 
 type_mappings = [
-  "mojo_base.mojom.BigString16=base::string16",
-  "mojo_base.mojom.String16=base::string16",
+  "mojo_base.mojom.BigString16=::base::string16",
+  "mojo_base.mojom.String16=::base::string16",
 ]

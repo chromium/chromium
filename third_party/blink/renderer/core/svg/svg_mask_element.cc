@@ -25,45 +25,51 @@
 
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_resource_masker.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
 
 namespace blink {
 
-inline SVGMaskElement::SVGMaskElement(Document& document)
+SVGMaskElement::SVGMaskElement(Document& document)
     : SVGElement(svg_names::kMaskTag, document),
       SVGTests(this),
       // Spec: If the x/y attribute is not specified, the effect is as if a
       // value of "-10%" were specified.
-      x_(SVGAnimatedLength::Create(this,
-                                   svg_names::kXAttr,
-                                   SVGLengthMode::kWidth,
-                                   SVGLength::Initial::kPercentMinus10,
-                                   CSSPropertyX)),
-      y_(SVGAnimatedLength::Create(this,
-                                   svg_names::kYAttr,
-                                   SVGLengthMode::kHeight,
-                                   SVGLength::Initial::kPercentMinus10,
-                                   CSSPropertyY)),
+      x_(MakeGarbageCollected<SVGAnimatedLength>(
+          this,
+          svg_names::kXAttr,
+          SVGLengthMode::kWidth,
+          SVGLength::Initial::kPercentMinus10,
+          CSSPropertyID::kX)),
+      y_(MakeGarbageCollected<SVGAnimatedLength>(
+          this,
+          svg_names::kYAttr,
+          SVGLengthMode::kHeight,
+          SVGLength::Initial::kPercentMinus10,
+          CSSPropertyID::kY)),
       // Spec: If the width/height attribute is not specified, the effect is as
       // if a value of "120%" were specified.
-      width_(SVGAnimatedLength::Create(this,
-                                       svg_names::kWidthAttr,
-                                       SVGLengthMode::kWidth,
-                                       SVGLength::Initial::kPercent120,
-                                       CSSPropertyWidth)),
-      height_(SVGAnimatedLength::Create(this,
-                                        svg_names::kHeightAttr,
-                                        SVGLengthMode::kHeight,
-                                        SVGLength::Initial::kPercent120,
-                                        CSSPropertyHeight)),
-      mask_units_(SVGAnimatedEnumeration<SVGUnitTypes::SVGUnitType>::Create(
+      width_(MakeGarbageCollected<SVGAnimatedLength>(
+          this,
+          svg_names::kWidthAttr,
+          SVGLengthMode::kWidth,
+          SVGLength::Initial::kPercent120,
+          CSSPropertyID::kWidth)),
+      height_(MakeGarbageCollected<SVGAnimatedLength>(
+          this,
+          svg_names::kHeightAttr,
+          SVGLengthMode::kHeight,
+          SVGLength::Initial::kPercent120,
+          CSSPropertyID::kHeight)),
+      mask_units_(MakeGarbageCollected<
+                  SVGAnimatedEnumeration<SVGUnitTypes::SVGUnitType>>(
           this,
           svg_names::kMaskUnitsAttr,
           SVGUnitTypes::kSvgUnitTypeObjectboundingbox)),
-      mask_content_units_(
-          SVGAnimatedEnumeration<SVGUnitTypes::SVGUnitType>::Create(
-              this,
-              svg_names::kMaskContentUnitsAttr,
-              SVGUnitTypes::kSvgUnitTypeUserspaceonuse)) {
+      mask_content_units_(MakeGarbageCollected<
+                          SVGAnimatedEnumeration<SVGUnitTypes::SVGUnitType>>(
+          this,
+          svg_names::kMaskContentUnitsAttr,
+          SVGUnitTypes::kSvgUnitTypeUserspaceonuse)) {
   AddToPropertyMap(x_);
   AddToPropertyMap(y_);
   AddToPropertyMap(width_);
@@ -82,8 +88,6 @@ void SVGMaskElement::Trace(blink::Visitor* visitor) {
   SVGElement::Trace(visitor);
   SVGTests::Trace(visitor);
 }
-
-DEFINE_NODE_FACTORY(SVGMaskElement)
 
 void SVGMaskElement::CollectStyleForPresentationAttribute(
     const QualifiedName& name,
@@ -126,7 +130,7 @@ void SVGMaskElement::SvgAttributeChanged(const QualifiedName& attr_name) {
     }
 
     LayoutSVGResourceContainer* layout_object =
-        ToLayoutSVGResourceContainer(this->GetLayoutObject());
+        ToLayoutSVGResourceContainer(GetLayoutObject());
     if (layout_object)
       layout_object->InvalidateCacheAndMarkForLayout();
 
@@ -148,7 +152,8 @@ void SVGMaskElement::ChildrenChanged(const ChildrenChange& change) {
   }
 }
 
-LayoutObject* SVGMaskElement::CreateLayoutObject(const ComputedStyle&) {
+LayoutObject* SVGMaskElement::CreateLayoutObject(const ComputedStyle&,
+                                                 LegacyLayout) {
   return new LayoutSVGResourceMasker(this);
 }
 

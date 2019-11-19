@@ -1,7 +1,0 @@
-include_rules = [
-  "+components/services/filesystem/public/interfaces",
-  "+mojo/public",
-  "+mojo/util",
-  "+services/service_manager",
-  "+third_party/leveldatabase",
-]

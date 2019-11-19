@@ -6,7 +6,7 @@
 
 #include <memory>
 
-#include "ash/shelf/shelf_constants.h"
+#include "ash/public/cpp/shelf_config.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ui/display/display.h"
@@ -40,7 +40,7 @@ std::unique_ptr<views::Widget> CreateChromeVoxPanel() {
   params.activatable = views::Widget::InitParams::ACTIVATABLE_NO;
   params.bounds = gfx::Rect(0, 0, root_window->bounds().width(),
                             root_window->bounds().height());
-  widget->Init(params);
+  widget->Init(std::move(params));
   return widget;
 }
 
@@ -83,14 +83,14 @@ TEST_F(AccessibilityPanelLayoutManagerTest, PanelFullscreen) {
   widget->Show();
 
   layout_manager->SetPanelBounds(gfx::Rect(0, 0, 0, kDefaultPanelHeight),
-                                 mojom::AccessibilityPanelState::FULL_WIDTH);
+                                 AccessibilityPanelState::FULL_WIDTH);
 
   gfx::Rect expected_work_area = screen->GetPrimaryDisplay().work_area();
 
   // When the panel is fullscreen it fills the display and clears the
   // work area.
   layout_manager->SetPanelBounds(gfx::Rect(),
-                                 mojom::AccessibilityPanelState::FULLSCREEN);
+                                 AccessibilityPanelState::FULLSCREEN);
   EXPECT_EQ(widget->GetNativeWindow()->bounds(),
             screen->GetPrimaryDisplay().bounds());
   EXPECT_EQ(screen->GetPrimaryDisplay().work_area().y(), 0);
@@ -98,7 +98,7 @@ TEST_F(AccessibilityPanelLayoutManagerTest, PanelFullscreen) {
   // Restoring the panel to default size restores the bounds and sets
   // the work area.
   layout_manager->SetPanelBounds(gfx::Rect(0, 0, 0, kDefaultPanelHeight),
-                                 mojom::AccessibilityPanelState::FULL_WIDTH);
+                                 AccessibilityPanelState::FULL_WIDTH);
   gfx::Rect expected_bounds(0, 0, screen->GetPrimaryDisplay().bounds().width(),
                             kDefaultPanelHeight);
   EXPECT_EQ(widget->GetNativeWindow()->bounds(), expected_bounds);
@@ -110,17 +110,15 @@ TEST_F(AccessibilityPanelLayoutManagerTest, SetBounds) {
   widget->Show();
 
   gfx::Rect bounds(0, 0, 100, 100);
-  GetLayoutManager()->SetPanelBounds(bounds,
-                                     mojom::AccessibilityPanelState::BOUNDED);
+  GetLayoutManager()->SetPanelBounds(bounds, AccessibilityPanelState::BOUNDED);
   EXPECT_EQ(widget->GetNativeWindow()->bounds(), bounds);
 }
 
 TEST_F(AccessibilityPanelLayoutManagerTest, DisplayBoundsChange) {
   std::unique_ptr<views::Widget> widget = CreateChromeVoxPanel();
   widget->Show();
-  GetLayoutManager()->SetPanelBounds(
-      gfx::Rect(0, 0, 0, kDefaultPanelHeight),
-      mojom::AccessibilityPanelState::FULL_WIDTH);
+  GetLayoutManager()->SetPanelBounds(gfx::Rect(0, 0, 0, kDefaultPanelHeight),
+                                     AccessibilityPanelState::FULL_WIDTH);
 
   // When the display resolution changes the panel still sits at the top of the
   // screen.
@@ -132,7 +130,7 @@ TEST_F(AccessibilityPanelLayoutManagerTest, DisplayBoundsChange) {
 
   gfx::Rect expected_work_area = screen->GetPrimaryDisplay().bounds();
   expected_work_area.Inset(0, kDefaultPanelHeight, 0,
-                           ShelfConstants::shelf_size());
+                           ShelfConfig::Get()->shelf_size());
   EXPECT_EQ(screen->GetPrimaryDisplay().work_area(), expected_work_area);
 }
 

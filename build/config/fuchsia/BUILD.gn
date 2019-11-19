@@ -3,7 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/config/fuchsia/config.gni")
-import("//build/config/fuchsia/rules.gni")
+import("//build/config/fuchsia/generate_runner_scripts.gni")
 import("//build/config/sysroot.gni")
 
 assert(is_fuchsia)
@@ -51,75 +51,13 @@ config("compiler") {
 
   # TODO(crbug.com/821951): Clang enables SafeStack by default when targeting
   # Fuchsia, but it breaks some tests, notably in V8.
-  cflags += [ "-fno-sanitize=safe-stack" ]
+  # Force the toolchain to use shadow-call-stack instead, until that is default.
+  cflags += [
+    "-fno-sanitize=safe-stack",
+    "-fsanitize=shadow-call-stack",
+  ]
 
   libs = [ "zircon" ]
-}
-
-# Writes an extended version of fvm.blk to fvm.extended.blk.
-blobstore_extended_path = "$root_out_dir/fvm.extended.blk"
-action("blobstore_extended_fvm") {
-  # The file is grown by 1GB, which should be large enough to hold packaged
-  # binaries and assets. The value should be increased if the size becomes a
-  # limitation in the future.
-  _extend_size = "1073741824"  # 1GB
-
-  _target_dir = "${fuchsia_sdk}/target/${current_cpu}"
-
-  script = "//build/config/fuchsia/extend_fvm.py"
-
-  inputs = [
-    "${fuchsia_sdk}/tools/fvm",
-    "${_target_dir}/fvm.blk",
-  ]
-  outputs = [
-    blobstore_extended_path,
-  ]
-
-  args = [
-    rebase_path("${fuchsia_sdk}/tools/fvm", root_build_dir),
-    rebase_path("${_target_dir}/fvm.blk", root_build_dir),
-    rebase_path(blobstore_extended_path, root_build_dir),
-    _extend_size,
-  ]
-}
-
-#  _________________________________________
-# / Create a compressed copy-on-write (COW) \
-# \ image based on fvm.blk.                 /
-#  -----------------------------------------
-#         \   ^__^
-#          \  (oo)\_______
-#             (__)\       )\/\
-#                 ||----w |
-#                 ||     ||
-action("blobstore_extended_qcow2") {
-  script = "//build/gn_run_binary.py"
-
-  deps = [
-    ":blobstore_extended_fvm",
-  ]
-  inputs = [
-    blobstore_extended_path,
-  ]
-  outputs = [
-    blobstore_qcow_path,
-  ]
-  data = [
-    blobstore_qcow_path,
-  ]
-
-  args = [
-    rebase_path("${qemu_root}/bin/qemu-img", root_build_dir),
-    "convert",
-    "-f",
-    "raw",
-    "-O",
-    "qcow2",
-    "-c",
-    rebase_path(blobstore_extended_path, root_build_dir),
-    rebase_path(blobstore_qcow_path, root_build_dir),
-  ]
 }
 
 # Settings for executables.

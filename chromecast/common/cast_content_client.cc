@@ -5,6 +5,8 @@
 #include "chromecast/common/cast_content_client.h"
 
 #include <stdint.h>
+#include <memory>
+#include <utility>
 
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
@@ -13,6 +15,7 @@
 #include "chromecast/base/version.h"
 #include "chromecast/chromecast_buildflags.h"
 #include "content/public/common/user_agent.h"
+#include "mojo/public/cpp/bindings/binder_map.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "url/url_util.h"
@@ -23,6 +26,12 @@
 
 #if defined(OS_ANDROID)
 #include "chromecast/common/media/cast_media_drm_bridge_client.h"
+#endif
+
+#if !defined(OS_FUCHSIA)
+#include "base/no_destructor.h"
+#include "components/services/heap_profiling/public/cpp/profiling_client.h"  // nogncheck
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #endif
 
 namespace chromecast {
@@ -105,24 +114,26 @@ void CastContentClient::AddAdditionalSchemes(Schemes* schemes) {
 #endif
 }
 
-base::string16 CastContentClient::GetLocalizedString(int message_id) const {
+base::string16 CastContentClient::GetLocalizedString(int message_id) {
   return l10n_util::GetStringUTF16(message_id);
 }
 
 base::StringPiece CastContentClient::GetDataResource(
     int resource_id,
-    ui::ScaleFactor scale_factor) const {
+    ui::ScaleFactor scale_factor) {
   return ui::ResourceBundle::GetSharedInstance().GetRawDataResourceForScale(
       resource_id, scale_factor);
 }
 
 base::RefCountedMemory* CastContentClient::GetDataResourceBytes(
-    int resource_id) const {
+    int resource_id) {
+  // Chromecast loads localized resources for the home screen via this code
+  // path. See crbug.com/643886 for details.
   return ui::ResourceBundle::GetSharedInstance().LoadLocalizedResourceBytes(
       resource_id);
 }
 
-gfx::Image& CastContentClient::GetNativeImageNamed(int resource_id) const {
+gfx::Image& CastContentClient::GetNativeImageNamed(int resource_id) {
   return ui::ResourceBundle::GetSharedInstance().GetNativeImageNamed(
       resource_id);
 }
@@ -132,6 +143,22 @@ gfx::Image& CastContentClient::GetNativeImageNamed(int resource_id) const {
   return new media::CastMediaDrmBridgeClient();
 }
 #endif  // OS_ANDROID
+
+void CastContentClient::ExposeInterfacesToBrowser(
+    scoped_refptr<base::SequencedTaskRunner> io_task_runner,
+    mojo::BinderMap* binders) {
+#if !defined(OS_FUCHSIA)
+  binders->Add(
+      base::BindRepeating(
+          [](mojo::PendingReceiver<heap_profiling::mojom::ProfilingClient>
+                 receiver) {
+            static base::NoDestructor<heap_profiling::ProfilingClient>
+                profiling_client;
+            profiling_client->BindToInterface(std::move(receiver));
+          }),
+      io_task_runner);
+#endif  // !defined(OS_FUCHSIA)
+}
 
 }  // namespace shell
 }  // namespace chromecast

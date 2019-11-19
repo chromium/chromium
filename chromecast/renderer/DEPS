@@ -9,10 +9,13 @@ include_rules = [
   "+content/public/renderer",
   "+extensions/common",
   "+extensions/renderer",
+  "+gin",
   "+media/base",
   "+media/media_buildflags.h",
   "+media/renderers",
   "+mojo/public",
+  "+services/network/public/cpp",
   "+services/service_manager/public",
   "+third_party/blink/public",
+  "+v8",
 ]

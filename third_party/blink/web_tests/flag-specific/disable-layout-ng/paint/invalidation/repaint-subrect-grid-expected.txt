@@ -1,0 +1,113 @@
+{
+  "layers": [
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF",
+      "paintInvalidations": [
+        {
+          "object": "LayoutBlockFlow (positioned) DIV id='mask'",
+          "rect": [45, 18, 20, 19],
+          "reason": "geometry"
+        },
+        {
+          "object": "LayoutBlockFlow (positioned) DIV id='mask'",
+          "rect": [45, 18, 20, 19],
+          "reason": "geometry"
+        },
+        {
+          "object": "LayoutBlockFlow (positioned) DIV id='mask'",
+          "rect": [36, 36, 19, 19],
+          "reason": "geometry"
+        },
+        {
+          "object": "LayoutBlockFlow HTML",
+          "rect": [36, 36, 19, 19],
+          "reason": "chunk disappeared"
+        },
+        {
+          "object": "LayoutBlockFlow (positioned) DIV id='mask'",
+          "rect": [36, 0, 19, 19],
+          "reason": "geometry"
+        },
+        {
+          "object": "LayoutBlockFlow (positioned) DIV id='mask'",
+          "rect": [36, 0, 19, 19],
+          "reason": "geometry"
+        },
+        {
+          "object": "LayoutBlockFlow (positioned) DIV id='mask'",
+          "rect": [27, 18, 19, 19],
+          "reason": "geometry"
+        },
+        {
+          "object": "LayoutBlockFlow (positioned) DIV id='mask'",
+          "rect": [27, 18, 19, 19],
+          "reason": "geometry"
+        },
+        {
+          "object": "LayoutBlockFlow (positioned) DIV id='mask'",
+          "rect": [18, 36, 19, 19],
+          "reason": "geometry"
+        },
+        {
+          "object": "LayoutBlockFlow (positioned) DIV id='mask'",
+          "rect": [18, 36, 19, 19],
+          "reason": "geometry"
+        },
+        {
+          "object": "LayoutBlockFlow (positioned) DIV id='mask'",
+          "rect": [18, 0, 19, 19],
+          "reason": "geometry"
+        },
+        {
+          "object": "LayoutBlockFlow (positioned) DIV id='mask'",
+          "rect": [18, 0, 19, 19],
+          "reason": "geometry"
+        },
+        {
+          "object": "LayoutBlockFlow (positioned) DIV id='mask'",
+          "rect": [9, 18, 19, 19],
+          "reason": "geometry"
+        },
+        {
+          "object": "LayoutBlockFlow (positioned) DIV id='mask'",
+          "rect": [9, 18, 19, 19],
+          "reason": "geometry"
+        },
+        {
+          "object": "LayoutBlockFlow (positioned) DIV id='mask'",
+          "rect": [0, 36, 19, 19],
+          "reason": "geometry"
+        },
+        {
+          "object": "LayoutBlockFlow (positioned) DIV id='mask'",
+          "rect": [0, 36, 19, 19],
+          "reason": "geometry"
+        },
+        {
+          "object": "LayoutBlockFlow (positioned) DIV id='mask'",
+          "rect": [0, 0, 19, 19],
+          "reason": "geometry"
+        },
+        {
+          "object": "LayoutBlockFlow HTML",
+          "rect": [0, 0, 19, 19],
+          "reason": "chunk appeared"
+        },
+        {
+          "object": "LayoutBlockFlow (positioned) DIV id='mask'",
+          "rect": [0, 18, 10, 19],
+          "reason": "geometry"
+        },
+        {
+          "object": "LayoutBlockFlow (positioned) DIV id='mask'",
+          "rect": [0, 18, 10, 19],
+          "reason": "geometry"
+        }
+      ]
+    }
+  ]
+}
+

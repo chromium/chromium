@@ -39,6 +39,8 @@ class DiscardableMemoryImpl : public DiscardableMemory {
     return data_.get();
   }
 
+  void DiscardForTesting() override {}
+
   trace_event::MemoryAllocatorDump* CreateMemoryAllocatorDump(
       const char* name,
       trace_event::ProcessMemoryDump* pmd) const override {
@@ -56,6 +58,10 @@ class DiscardableMemoryImpl : public DiscardableMemory {
 std::unique_ptr<DiscardableMemory>
 TestDiscardableMemoryAllocator::AllocateLockedDiscardableMemory(size_t size) {
   return std::make_unique<DiscardableMemoryImpl>(size);
+}
+
+size_t TestDiscardableMemoryAllocator::GetBytesAllocated() const {
+  return 0U;
 }
 
 }  // namespace base

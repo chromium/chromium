@@ -31,6 +31,7 @@
 <translation id="4769065380738716500">Bilder wurden durch ihren "ALT"-Text ersetzt.</translation>
 <translation id="4896660567607030658">Kein Feedback, nur den Cursor zeigen</translation>
 <translation id="4937901943818762779">Animierte Bilder zulassen, aber nur ein Mal anzeigen</translation>
+<translation id="4949131196216960195">Drücken Sie &lt;span class='key'&gt;Search&lt;/span&gt; + &lt;img src='increase_brightness.png'&gt; (die Taste zum Erhöhen der Helligkeit oder F7), um die Tastaturnavigation zu aktivieren. Drücken Sie sie noch einmal, um sie wieder zu deaktivieren.</translation>
 <translation id="4954450790315188152">Wenn die Tastaturnavigation aktiviert ist:</translation>
 <translation id="5041932793799765940">Farbanpassung</translation>
 <translation id="5094574508723441140">Kontrasterhöhung</translation>
@@ -52,14 +53,13 @@
 <translation id="6550675742724504774">Optionen</translation>
 <translation id="6838518108677880446">Einrichtung:</translation>
 <translation id="690628312087070417">Wenn der Cursor zu einer weit entfernten Stelle springt:</translation>
-<translation id="6965382102122355670">OK</translation>
+<translation id="6965382102122355670">Ok</translation>
 <translation id="7379645913608427028">Grad</translation>
 <translation id="7384431257964758081">Hoher Kontrast ist aktiviert.</translation>
 <translation id="7586636300921797327">Schritt 2: Verschieben Sie den Regler, bis alle Sterne in der ausgewählten Zeile sichtbar sind.</translation>
 <translation id="7658239707568436148">Abbrechen</translation>
 <translation id="786423340267544509">Rahmen zu Elementen mit "aria-describedat"- oder "longdesc"-Attribut hinzufügen</translation>
 <translation id="7942349550061667556">Rot</translation>
-<translation id="8254860724243898966">Drücken Sie &lt;span class='key'&gt;Alt&lt;/span&gt; + &lt;img src='increase_brightness.png'&gt; (die Taste zum Erhöhen der Helligkeit oder F7), um die Tastaturnavigation zu aktivieren. Durch erneutes Drücken können Sie sie wieder deaktivieren.</translation>
 <translation id="8260673944985561857">Optionen für die Tastaturnavigation</translation>
 <translation id="8321034316479930120">Animationsrichtlinie</translation>
 <translation id="8480209185614411573">Hoher Kontrast</translation>

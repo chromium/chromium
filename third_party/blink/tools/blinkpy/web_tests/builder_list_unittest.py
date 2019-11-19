@@ -44,6 +44,7 @@ class BuilderListTest(unittest.TestCase):
             'Try B': {'port_name': 'port-b', 'specifiers': ['B', 'Release'], 'is_try_builder': True},
             'CQ Try A': {'bucket': 'bucket.a', 'port_name': 'port-a', 'specifiers': ['A', 'Release'], 'is_try_builder': True},
             'CQ Try B': {'bucket': 'bucket.b', 'port_name': 'port-b', 'specifiers': ['B', 'Release'], 'is_try_builder': True},
+            'CQ Try C': {'bucket': 'bucket.c', 'port_name': 'port-c', 'specifiers': ['c', 'Release'], 'is_try_builder': True, 'master': "luci", 'has_webdriver_tests': True},
         })
 
     def test_constructor_validates_list(self):
@@ -54,7 +55,7 @@ class BuilderListTest(unittest.TestCase):
 
     def test_all_builder_names(self):
         builders = self.sample_builder_list()
-        self.assertEqual(['Blink A', 'Blink B', 'Blink B (dbg)', 'Blink C (dbg)', 'CQ Try A', 'CQ Try B', 'Try A', 'Try B'],
+        self.assertEqual(['Blink A', 'Blink B', 'Blink B (dbg)', 'Blink C (dbg)', 'CQ Try A', 'CQ Try B', 'CQ Try C', 'Try A', 'Try B'],
                          builders.all_builder_names())
 
     def test_all_continuous_builder_names(self):
@@ -63,7 +64,7 @@ class BuilderListTest(unittest.TestCase):
 
     def test_all_try_builder_names(self):
         builders = self.sample_builder_list()
-        self.assertEqual(['CQ Try A', 'CQ Try B', 'Try A', 'Try B'], builders.all_try_builder_names())
+        self.assertEqual(['CQ Try A', 'CQ Try B', 'CQ Try C', 'Try A', 'Try B'], builders.all_try_builder_names())
 
     def test_all_port_names(self):
         builders = self.sample_builder_list()
@@ -76,6 +77,24 @@ class BuilderListTest(unittest.TestCase):
     def test_bucket_for_builder_configured_bucket(self):
         builders = self.sample_builder_list()
         self.assertEqual('bucket.a', builders.bucket_for_builder('CQ Try A'))
+
+    def test_master_for_builder_default_master(self):
+        builders = self.sample_builder_list()
+        self.assertEqual('', builders.master_for_builder('Try A'))
+
+    def test_master_for_builder_configured_master(self):
+        builders = self.sample_builder_list()
+        self.assertEqual('luci', builders.master_for_builder('CQ Try C'))
+
+    def test_has_webdriver_tests_for_builder_default_value(self):
+        builders = self.sample_builder_list()
+        self.assertEqual(
+            None, builders.has_webdriver_tests_for_builder('Try A'))
+
+    def test_has_webdriver_tests_for_builder_configured_value(self):
+        builders = self.sample_builder_list()
+        self.assertEqual(
+            True, builders.has_webdriver_tests_for_builder('CQ Try C'))
 
     def test_port_name_for_builder_name(self):
         builders = self.sample_builder_list()

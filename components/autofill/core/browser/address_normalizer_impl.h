@@ -70,7 +70,7 @@ class AddressNormalizerImpl : public AddressNormalizer {
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  base::WeakPtrFactory<AddressNormalizerImpl> weak_ptr_factory_;
+  base::WeakPtrFactory<AddressNormalizerImpl> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(AddressNormalizerImpl);
 };

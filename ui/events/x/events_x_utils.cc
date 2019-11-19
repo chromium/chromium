@@ -677,20 +677,6 @@ gfx::Vector2d GetMouseWheelOffsetFromXEvent(const XEvent& xev) {
   }
 }
 
-void ClearTouchIdIfReleasedFromXEvent(const XEvent& xev) {
-  ui::EventType type = ui::EventTypeFromXEvent(xev);
-  if (type == ui::ET_TOUCH_CANCELLED || type == ui::ET_TOUCH_RELEASED) {
-    ui::TouchFactory* factory = ui::TouchFactory::GetInstance();
-    ui::DeviceDataManagerX11* manager = ui::DeviceDataManagerX11::GetInstance();
-    double tracking_id;
-    if (manager->GetEventData(xev,
-                              ui::DeviceDataManagerX11::DT_TOUCH_TRACKING_ID,
-                              &tracking_id)) {
-      factory->ReleaseSlotForTrackingID(tracking_id);
-    }
-  }
-}
-
 int GetTouchIdFromXEvent(const XEvent& xev) {
   double slot = 0;
   ui::DeviceDataManagerX11* manager = ui::DeviceDataManagerX11::GetInstance();
@@ -748,6 +734,13 @@ EventPointerType GetTouchPointerTypeFromXEvent(const XEvent& xev) {
   DCHECK(ui::TouchFactory::GetInstance()->IsTouchDevice(event->sourceid));
   return ui::TouchFactory::GetInstance()->GetTouchDevicePointerType(
       event->sourceid);
+}
+
+PointerDetails GetTouchPointerDetailsFromXEvent(const XEvent& xev) {
+  return PointerDetails(
+      EventPointerType::POINTER_TYPE_TOUCH, GetTouchIdFromXEvent(xev),
+      GetTouchRadiusXFromXEvent(xev), GetTouchRadiusYFromXEvent(xev),
+      GetTouchForceFromXEvent(xev), GetTouchAngleFromXEvent(xev));
 }
 
 bool GetScrollOffsetsFromXEvent(const XEvent& xev,

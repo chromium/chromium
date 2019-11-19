@@ -38,21 +38,13 @@ class FlashDownloadInterceptionTest : public ChromeRenderViewHostTestHarness {
 
   void SetFlashContentSetting(ContentSetting setting) {
     host_content_settings_map()->SetContentSettingDefaultScope(
-        source_url_, source_url_, CONTENT_SETTINGS_TYPE_PLUGINS, std::string(),
+        source_url_, source_url_, ContentSettingsType::PLUGINS, std::string(),
         setting);
   }
 
  private:
   const GURL source_url_;
 };
-
-TEST_F(FlashDownloadInterceptionTest, PreferHtmlOverPluginsOff) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(features::kPreferHtmlOverPlugins);
-
-  EXPECT_FALSE(
-      ShouldStopFlashDownloadAction("https://get.adobe.com/flashplayer/"));
-}
 
 TEST_F(FlashDownloadInterceptionTest, DownloadUrlVariations) {
   const char* const flash_intercept_urls[] = {

@@ -5,9 +5,10 @@
 #include "sandbox/win/src/process_mitigations_win32k_dispatcher.h"
 
 #include <algorithm>
+#include <string>
 
-#include "base/memory/shared_memory.h"
-#include "base/strings/string16.h"
+#include "base/memory/platform_shared_memory_region.h"
+#include "base/memory/unsafe_shared_memory_region.h"
 #include "base/unguessable_token.h"
 #include "base/win/windows_version.h"
 #include "sandbox/win/src/interception.h"
@@ -20,18 +21,27 @@ namespace sandbox {
 
 namespace {
 
-base::SharedMemoryHandle GetSharedMemoryHandle(const ClientInfo& client_info,
-                                               HANDLE handle,
-                                               size_t size) {
-  HANDLE result_handle = nullptr;
+base::UnsafeSharedMemoryRegion GetSharedMemoryRegion(
+    const ClientInfo& client_info,
+    HANDLE handle,
+    size_t size) {
+  HANDLE dup_handle = nullptr;
   intptr_t handle_int = reinterpret_cast<intptr_t>(handle);
   if (handle_int <= 0 ||
       !::DuplicateHandle(client_info.process, handle, ::GetCurrentProcess(),
-                         &result_handle, 0, false, DUPLICATE_SAME_ACCESS)) {
-    result_handle = nullptr;
+                         &dup_handle, 0, false, DUPLICATE_SAME_ACCESS)) {
+    return {};
   }
-  return base::SharedMemoryHandle(result_handle, size,
-                                  base::UnguessableToken::Create());
+  // The raw handle returned from ::DuplicateHandle() must be wrapped in a
+  // base::PlatformSharedMemoryRegion.
+  base::subtle::PlatformSharedMemoryRegion platform_region =
+      base::subtle::PlatformSharedMemoryRegion::Take(
+          base::win::ScopedHandle(dup_handle),
+          base::subtle::PlatformSharedMemoryRegion::Mode::kUnsafe, size,
+          base::UnguessableToken::Create());
+  // |platform_region| can now be wrapped in a base::UnsafeSharedMemoryRegion.
+  return base::UnsafeSharedMemoryRegion::Deserialize(
+      std::move(platform_region));
 }
 
 }  // namespace
@@ -60,51 +70,51 @@ ProcessMitigationsWin32KDispatcher::ProcessMitigationsWin32KDispatcher(
     PolicyBase* policy_base)
     : policy_base_(policy_base) {
   static const IPCCall enum_display_monitors_params = {
-      {IPC_USER_ENUMDISPLAYMONITORS_TAG, {INOUTPTR_TYPE}},
+      {IpcTag::USER_ENUMDISPLAYMONITORS, {INOUTPTR_TYPE}},
       reinterpret_cast<CallbackGeneric>(
           &ProcessMitigationsWin32KDispatcher::EnumDisplayMonitors)};
   static const IPCCall get_monitor_info_params = {
-      {IPC_USER_GETMONITORINFO_TAG, {VOIDPTR_TYPE, INOUTPTR_TYPE}},
+      {IpcTag::USER_GETMONITORINFO, {VOIDPTR_TYPE, INOUTPTR_TYPE}},
       reinterpret_cast<CallbackGeneric>(
           &ProcessMitigationsWin32KDispatcher::GetMonitorInfo)};
   static const IPCCall get_suggested_output_size_params = {
-      {IPC_GDI_GETSUGGESTEDOPMPROTECTEDOUTPUTARRAYSIZE_TAG, {WCHAR_TYPE}},
+      {IpcTag::GDI_GETSUGGESTEDOPMPROTECTEDOUTPUTARRAYSIZE, {WCHAR_TYPE}},
       reinterpret_cast<CallbackGeneric>(
           &ProcessMitigationsWin32KDispatcher::
               GetSuggestedOPMProtectedOutputArraySize)};
   static const IPCCall create_protected_outputs_params = {
-      {IPC_GDI_CREATEOPMPROTECTEDOUTPUTS_TAG, {WCHAR_TYPE, INOUTPTR_TYPE}},
+      {IpcTag::GDI_CREATEOPMPROTECTEDOUTPUTS, {WCHAR_TYPE, INOUTPTR_TYPE}},
       reinterpret_cast<CallbackGeneric>(
           &ProcessMitigationsWin32KDispatcher::CreateOPMProtectedOutputs)};
   static const IPCCall get_cert_size_params = {
-      {IPC_GDI_GETCERTIFICATESIZE_TAG, {WCHAR_TYPE, VOIDPTR_TYPE}},
+      {IpcTag::GDI_GETCERTIFICATESIZE, {WCHAR_TYPE, VOIDPTR_TYPE}},
       reinterpret_cast<CallbackGeneric>(
           &ProcessMitigationsWin32KDispatcher::GetCertificateSize)};
   static const IPCCall get_cert_params = {
-      {IPC_GDI_GETCERTIFICATE_TAG,
+      {IpcTag::GDI_GETCERTIFICATE,
        {WCHAR_TYPE, VOIDPTR_TYPE, VOIDPTR_TYPE, UINT32_TYPE}},
       reinterpret_cast<CallbackGeneric>(
           &ProcessMitigationsWin32KDispatcher::GetCertificate)};
   static const IPCCall destroy_protected_output_params = {
-      {IPC_GDI_DESTROYOPMPROTECTEDOUTPUT_TAG, {VOIDPTR_TYPE}},
+      {IpcTag::GDI_DESTROYOPMPROTECTEDOUTPUT, {VOIDPTR_TYPE}},
       reinterpret_cast<CallbackGeneric>(
           &ProcessMitigationsWin32KDispatcher::DestroyOPMProtectedOutput)};
   static const IPCCall get_random_number_params = {
-      {IPC_GDI_GETOPMRANDOMNUMBER_TAG, {VOIDPTR_TYPE, INOUTPTR_TYPE}},
+      {IpcTag::GDI_GETOPMRANDOMNUMBER, {VOIDPTR_TYPE, INOUTPTR_TYPE}},
       reinterpret_cast<CallbackGeneric>(
           &ProcessMitigationsWin32KDispatcher::GetOPMRandomNumber)};
   static const IPCCall set_signing_key_params = {
-      {IPC_GDI_SETOPMSIGNINGKEYANDSEQUENCENUMBERS_TAG,
+      {IpcTag::GDI_SETOPMSIGNINGKEYANDSEQUENCENUMBERS,
        {VOIDPTR_TYPE, INOUTPTR_TYPE}},
       reinterpret_cast<CallbackGeneric>(
           &ProcessMitigationsWin32KDispatcher::
               SetOPMSigningKeyAndSequenceNumbers)};
   static const IPCCall configure_protected_output_params = {
-      {IPC_GDI_CONFIGUREOPMPROTECTEDOUTPUT_TAG, {VOIDPTR_TYPE, VOIDPTR_TYPE}},
+      {IpcTag::GDI_CONFIGUREOPMPROTECTEDOUTPUT, {VOIDPTR_TYPE, VOIDPTR_TYPE}},
       reinterpret_cast<CallbackGeneric>(
           &ProcessMitigationsWin32KDispatcher::ConfigureOPMProtectedOutput)};
   static const IPCCall get_information_params = {
-      {IPC_GDI_GETOPMINFORMATION_TAG, {VOIDPTR_TYPE, VOIDPTR_TYPE}},
+      {IpcTag::GDI_GETOPMINFORMATION, {VOIDPTR_TYPE, VOIDPTR_TYPE}},
       reinterpret_cast<CallbackGeneric>(
           &ProcessMitigationsWin32KDispatcher::GetOPMInformation)};
 
@@ -125,14 +135,14 @@ ProcessMitigationsWin32KDispatcher::~ProcessMitigationsWin32KDispatcher() {}
 
 bool ProcessMitigationsWin32KDispatcher::SetupService(
     InterceptionManager* manager,
-    int service) {
+    IpcTag service) {
   if (!(policy_base_->GetProcessMitigations() &
         sandbox::MITIGATION_WIN32K_DISABLE)) {
     return false;
   }
 
   switch (service) {
-    case IPC_GDI_GDIDLLINITIALIZE_TAG: {
+    case IpcTag::GDI_GDIDLLINITIALIZE: {
       if (!INTERCEPT_EAT(manager, L"gdi32.dll", GdiDllInitialize,
                          GDIINITIALIZE_ID, 12)) {
         return false;
@@ -140,7 +150,7 @@ bool ProcessMitigationsWin32KDispatcher::SetupService(
       return true;
     }
 
-    case IPC_GDI_GETSTOCKOBJECT_TAG: {
+    case IpcTag::GDI_GETSTOCKOBJECT: {
       if (!INTERCEPT_EAT(manager, L"gdi32.dll", GetStockObject,
                          GETSTOCKOBJECT_ID, 8)) {
         return false;
@@ -148,7 +158,7 @@ bool ProcessMitigationsWin32KDispatcher::SetupService(
       return true;
     }
 
-    case IPC_USER_REGISTERCLASSW_TAG: {
+    case IpcTag::USER_REGISTERCLASSW: {
       if (!INTERCEPT_EAT(manager, L"user32.dll", RegisterClassW,
                          REGISTERCLASSW_ID, 8)) {
         return false;
@@ -156,7 +166,7 @@ bool ProcessMitigationsWin32KDispatcher::SetupService(
       return true;
     }
 
-    case IPC_USER_ENUMDISPLAYMONITORS_TAG: {
+    case IpcTag::USER_ENUMDISPLAYMONITORS: {
       if (!INTERCEPT_EAT(manager, L"user32.dll", EnumDisplayMonitors,
                          ENUMDISPLAYMONITORS_ID, 20)) {
         return false;
@@ -164,7 +174,7 @@ bool ProcessMitigationsWin32KDispatcher::SetupService(
       return true;
     }
 
-    case IPC_USER_ENUMDISPLAYDEVICES_TAG: {
+    case IpcTag::USER_ENUMDISPLAYDEVICES: {
       if (!INTERCEPT_EAT(manager, L"user32.dll", EnumDisplayDevicesA,
                          ENUMDISPLAYDEVICESA_ID, 20)) {
         return false;
@@ -172,7 +182,7 @@ bool ProcessMitigationsWin32KDispatcher::SetupService(
       return true;
     }
 
-    case IPC_USER_GETMONITORINFO_TAG: {
+    case IpcTag::USER_GETMONITORINFO: {
       if (!INTERCEPT_EAT(manager, L"user32.dll", GetMonitorInfoA,
                          GETMONITORINFOA_ID, 12)) {
         return false;
@@ -185,19 +195,19 @@ bool ProcessMitigationsWin32KDispatcher::SetupService(
       return true;
     }
 
-    case IPC_GDI_CREATEOPMPROTECTEDOUTPUTS_TAG:
+    case IpcTag::GDI_CREATEOPMPROTECTEDOUTPUTS:
       if (!INTERCEPT_EAT(manager, L"gdi32.dll", CreateOPMProtectedOutputs,
                          CREATEOPMPROTECTEDOUTPUTS_ID, 24)) {
         return false;
       }
       return true;
 
-    case IPC_GDI_GETCERTIFICATE_TAG:
+    case IpcTag::GDI_GETCERTIFICATE:
       if (!INTERCEPT_EAT(manager, L"gdi32.dll", GetCertificate,
                          GETCERTIFICATE_ID, 20)) {
         return false;
       }
-      if (base::win::GetVersion() < base::win::VERSION_WIN10_TH2)
+      if (base::win::GetVersion() < base::win::Version::WIN10_TH2)
         return true;
       if (!INTERCEPT_EAT(manager, L"gdi32.dll", GetCertificateByHandle,
                          GETCERTIFICATEBYHANDLE_ID, 20)) {
@@ -205,12 +215,12 @@ bool ProcessMitigationsWin32KDispatcher::SetupService(
       }
       return true;
 
-    case IPC_GDI_GETCERTIFICATESIZE_TAG:
+    case IpcTag::GDI_GETCERTIFICATESIZE:
       if (!INTERCEPT_EAT(manager, L"gdi32.dll", GetCertificateSize,
                          GETCERTIFICATESIZE_ID, 16)) {
         return false;
       }
-      if (base::win::GetVersion() < base::win::VERSION_WIN10_TH2)
+      if (base::win::GetVersion() < base::win::Version::WIN10_TH2)
         return true;
       if (!INTERCEPT_EAT(manager, L"gdi32.dll", GetCertificateSizeByHandle,
                          GETCERTIFICATESIZEBYHANDLE_ID, 16)) {
@@ -218,35 +228,35 @@ bool ProcessMitigationsWin32KDispatcher::SetupService(
       }
       return true;
 
-    case IPC_GDI_DESTROYOPMPROTECTEDOUTPUT_TAG:
+    case IpcTag::GDI_DESTROYOPMPROTECTEDOUTPUT:
       if (!INTERCEPT_EAT(manager, L"gdi32.dll", DestroyOPMProtectedOutput,
                          DESTROYOPMPROTECTEDOUTPUT_ID, 8)) {
         return false;
       }
       return true;
 
-    case IPC_GDI_CONFIGUREOPMPROTECTEDOUTPUT_TAG:
+    case IpcTag::GDI_CONFIGUREOPMPROTECTEDOUTPUT:
       if (!INTERCEPT_EAT(manager, L"gdi32.dll", ConfigureOPMProtectedOutput,
                          CONFIGUREOPMPROTECTEDOUTPUT_ID, 20)) {
         return false;
       }
       return true;
 
-    case IPC_GDI_GETOPMINFORMATION_TAG:
+    case IpcTag::GDI_GETOPMINFORMATION:
       if (!INTERCEPT_EAT(manager, L"gdi32.dll", GetOPMInformation,
                          GETOPMINFORMATION_ID, 16)) {
         return false;
       }
       return true;
 
-    case IPC_GDI_GETOPMRANDOMNUMBER_TAG:
+    case IpcTag::GDI_GETOPMRANDOMNUMBER:
       if (!INTERCEPT_EAT(manager, L"gdi32.dll", GetOPMRandomNumber,
                          GETOPMRANDOMNUMBER_ID, 12)) {
         return false;
       }
       return true;
 
-    case IPC_GDI_GETSUGGESTEDOPMPROTECTEDOUTPUTARRAYSIZE_TAG:
+    case IpcTag::GDI_GETSUGGESTEDOPMPROTECTEDOUTPUTARRAYSIZE:
       if (!INTERCEPT_EAT(manager, L"gdi32.dll",
                          GetSuggestedOPMProtectedOutputArraySize,
                          GETSUGGESTEDOPMPROTECTEDOUTPUTARRAYSIZE_ID, 12)) {
@@ -254,7 +264,7 @@ bool ProcessMitigationsWin32KDispatcher::SetupService(
       }
       return true;
 
-    case IPC_GDI_SETOPMSIGNINGKEYANDSEQUENCENUMBERS_TAG:
+    case IpcTag::GDI_SETOPMSIGNINGKEYANDSEQUENCENUMBERS:
       if (!INTERCEPT_EAT(manager, L"gdi32.dll",
                          SetOPMSigningKeyAndSequenceNumbers,
                          SETOPMSIGNINGKEYANDSEQUENCENUMBERS_ID, 12)) {
@@ -323,7 +333,7 @@ bool ProcessMitigationsWin32KDispatcher::GetMonitorInfo(IPCInfo* ipc,
 
 bool ProcessMitigationsWin32KDispatcher::
     GetSuggestedOPMProtectedOutputArraySize(IPCInfo* ipc,
-                                            base::string16* device_name) {
+                                            std::wstring* device_name) {
   if (!policy_base_->GetEnableOPMRedirection()) {
     ipc->return_info.nt_status = STATUS_ACCESS_DENIED;
     return true;
@@ -341,7 +351,7 @@ bool ProcessMitigationsWin32KDispatcher::
 
 bool ProcessMitigationsWin32KDispatcher::CreateOPMProtectedOutputs(
     IPCInfo* ipc,
-    base::string16* device_name,
+    std::wstring* device_name,
     CountedBuffer* protected_outputs) {
   if (!policy_base_->GetEnableOPMRedirection()) {
     ipc->return_info.nt_status = STATUS_ACCESS_DENIED;
@@ -370,7 +380,7 @@ bool ProcessMitigationsWin32KDispatcher::CreateOPMProtectedOutputs(
 
 bool ProcessMitigationsWin32KDispatcher::GetCertificateSize(
     IPCInfo* ipc,
-    base::string16* device_name,
+    std::wstring* device_name,
     void* protected_output) {
   if (!policy_base_->GetEnableOPMRedirection()) {
     ipc->return_info.nt_status = STATUS_ACCESS_DENIED;
@@ -400,7 +410,7 @@ bool ProcessMitigationsWin32KDispatcher::GetCertificateSize(
 
 bool ProcessMitigationsWin32KDispatcher::GetCertificate(
     IPCInfo* ipc,
-    base::string16* device_name,
+    std::wstring* device_name,
     void* protected_output,
     void* shared_buffer_handle,
     uint32_t shared_buffer_size) {
@@ -413,22 +423,22 @@ bool ProcessMitigationsWin32KDispatcher::GetCertificate(
     ipc->return_info.nt_status = STATUS_ACCESS_DENIED;
     return true;
   }
-  base::SharedMemoryHandle handle = GetSharedMemoryHandle(
+  base::UnsafeSharedMemoryRegion region = GetSharedMemoryRegion(
       *ipc->client_info, shared_buffer_handle, shared_buffer_size);
-  if (!handle.IsValid()) {
+  if (!region.IsValid()) {
     ipc->return_info.nt_status = STATUS_ACCESS_DENIED;
     return true;
   }
-  base::SharedMemory cert_data(handle, false);
-  if (!cert_data.Map(shared_buffer_size)) {
+  base::WritableSharedMemoryMapping cert_data = region.Map();
+  if (!cert_data.IsValid()) {
     ipc->return_info.nt_status = STATUS_ACCESS_DENIED;
     return true;
   }
   NTSTATUS status = STATUS_INVALID_PARAMETER;
   if (device_name->size() > 0) {
     status = ProcessMitigationsWin32KLockdownPolicy::GetCertificateAction(
-        *ipc->client_info, *device_name, static_cast<BYTE*>(cert_data.memory()),
-        shared_buffer_size);
+        *ipc->client_info, *device_name,
+        cert_data.GetMemoryAsSpan<BYTE>().data(), shared_buffer_size);
   } else {
     scoped_refptr<ProtectedVideoOutput> output =
         GetProtectedVideoOutput(protected_output, false);
@@ -436,7 +446,7 @@ bool ProcessMitigationsWin32KDispatcher::GetCertificate(
       status =
           ProcessMitigationsWin32KLockdownPolicy::GetCertificateByHandleAction(
               *ipc->client_info, output.get()->handle(),
-              static_cast<BYTE*>(cert_data.memory()), shared_buffer_size);
+              cert_data.GetMemoryAsSpan<BYTE>().data(), shared_buffer_size);
     }
   }
   ipc->return_info.nt_status = status;
@@ -517,15 +527,15 @@ bool ProcessMitigationsWin32KDispatcher::ConfigureOPMProtectedOutput(
     ipc->return_info.nt_status = STATUS_INVALID_HANDLE;
     return true;
   };
-  base::SharedMemoryHandle handle =
-      GetSharedMemoryHandle(*ipc->client_info, shared_buffer_handle,
+  base::UnsafeSharedMemoryRegion region =
+      GetSharedMemoryRegion(*ipc->client_info, shared_buffer_handle,
                             sizeof(DXGKMDT_OPM_CONFIGURE_PARAMETERS));
-  if (!handle.IsValid()) {
+  if (!region.IsValid()) {
     ipc->return_info.nt_status = STATUS_ACCESS_DENIED;
     return true;
   }
-  base::SharedMemory buffer(handle, false);
-  if (!buffer.Map(sizeof(DXGKMDT_OPM_CONFIGURE_PARAMETERS))) {
+  base::WritableSharedMemoryMapping buffer = region.Map();
+  if (!buffer.IsValid()) {
     ipc->return_info.nt_status = STATUS_ACCESS_DENIED;
     return true;
   }
@@ -554,15 +564,15 @@ bool ProcessMitigationsWin32KDispatcher::GetOPMInformation(
       std::max(sizeof(DXGKMDT_OPM_GET_INFO_PARAMETERS),
                sizeof(DXGKMDT_OPM_REQUESTED_INFORMATION));
 
-  base::SharedMemoryHandle handle = GetSharedMemoryHandle(
+  base::UnsafeSharedMemoryRegion region = GetSharedMemoryRegion(
       *ipc->client_info, shared_buffer_handle, shared_buffer_size);
-  if (!handle.IsValid()) {
+  if (!region.IsValid()) {
     ipc->return_info.nt_status = STATUS_ACCESS_DENIED;
     return true;
   }
-  base::SharedMemory buffer(handle, false);
 
-  if (!buffer.Map(shared_buffer_size)) {
+  base::WritableSharedMemoryMapping buffer = region.Map();
+  if (!buffer.IsValid()) {
     ipc->return_info.nt_status = STATUS_ACCESS_DENIED;
     return true;
   }

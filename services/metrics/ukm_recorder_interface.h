@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_UKM_UKM_INTERFACE_H_
 #define COMPONENTS_UKM_UKM_INTERFACE_H_
 
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "services/metrics/public/mojom/ukm_interface.mojom.h"
 
 namespace ukm {
@@ -18,8 +19,9 @@ class UkmRecorderInterface : public ukm::mojom::UkmRecorderInterface {
   UkmRecorderInterface(ukm::UkmRecorder* ukm_recorder);
   ~UkmRecorderInterface() override;
 
-  static void Create(ukm::UkmRecorder* ukm_recorder,
-                     ukm::mojom::UkmRecorderInterfaceRequest request);
+  static void Create(
+      ukm::UkmRecorder* ukm_recorder,
+      mojo::PendingReceiver<ukm::mojom::UkmRecorderInterface> receiver);
 
  private:
   // ukm::mojom::UkmRecorderInterface:

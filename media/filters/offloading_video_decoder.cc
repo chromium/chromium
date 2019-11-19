@@ -27,23 +27,23 @@ class CancellationHelper {
   void Cancel() { cancellation_flag_->Set(); }
 
   void Decode(scoped_refptr<DecoderBuffer> buffer,
-              const VideoDecoder::DecodeCB& decode_cb) {
+              VideoDecoder::DecodeCB decode_cb) {
     if (cancellation_flag_->IsSet()) {
-      decode_cb.Run(DecodeStatus::ABORTED);
+      std::move(decode_cb).Run(DecodeStatus::ABORTED);
       return;
     }
 
-    decoder_->Decode(std::move(buffer), decode_cb);
+    decoder_->Decode(std::move(buffer), std::move(decode_cb));
   }
 
-  void Reset(const base::Closure& reset_cb) {
+  void Reset(base::OnceClosure reset_cb) {
     // OffloadableVideoDecoders are required to have a synchronous Reset(), so
     // we don't need to wait for the Reset to complete. Despite this, we don't
     // want to run |reset_cb| before we've reset the cancellation flag or the
     // client may end up issuing another Reset() before this code runs.
     decoder_->Reset(base::DoNothing());
     cancellation_flag_.reset(new base::AtomicFlag());
-    reset_cb.Run();
+    std::move(reset_cb).Run();
   }
 
   OffloadableVideoDecoder* decoder() const { return decoder_.get(); }
@@ -61,8 +61,7 @@ OffloadingVideoDecoder::OffloadingVideoDecoder(
     std::unique_ptr<OffloadableVideoDecoder> decoder)
     : min_offloading_width_(min_offloading_width),
       supported_codecs_(std::move(supported_codecs)),
-      helper_(std::make_unique<CancellationHelper>(std::move(decoder))),
-      weak_factory_(this) {
+      helper_(std::make_unique<CancellationHelper>(std::move(decoder))) {
   DETACH_FROM_THREAD(thread_checker_);
 }
 
@@ -83,7 +82,7 @@ std::string OffloadingVideoDecoder::GetDisplayName() const {
 void OffloadingVideoDecoder::Initialize(const VideoDecoderConfig& config,
                                         bool low_delay,
                                         CdmContext* cdm_context,
-                                        const InitCB& init_cb,
+                                        InitCB init_cb,
                                         const OutputCB& output_cb,
                                         const WaitingCB& waiting_cb) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
@@ -109,7 +108,8 @@ void OffloadingVideoDecoder::Initialize(const VideoDecoderConfig& config,
           // possible for this class to be destroyed during Initialize().
           base::BindOnce(&OffloadingVideoDecoder::Initialize,
                          weak_factory_.GetWeakPtr(), config, low_delay,
-                         cdm_context, init_cb, output_cb, waiting_cb));
+                         cdm_context, std::move(init_cb), output_cb,
+                         waiting_cb));
       return;
     }
 
@@ -124,59 +124,61 @@ void OffloadingVideoDecoder::Initialize(const VideoDecoderConfig& config,
 
   // Offloaded decoders expect asynchronous execution of callbacks; even if we
   // aren't currently using the offload thread.
-  InitCB bound_init_cb = BindToCurrentLoop(init_cb);
+  InitCB bound_init_cb = BindToCurrentLoop(std::move(init_cb));
   OutputCB bound_output_cb = BindToCurrentLoop(output_cb);
 
   // If we're not offloading just pass through to the wrapped decoder.
   if (disable_offloading) {
     offload_task_runner_ = nullptr;
     helper_->decoder()->Initialize(config, low_delay, cdm_context,
-                                   bound_init_cb, bound_output_cb, waiting_cb);
+                                   std::move(bound_init_cb), bound_output_cb,
+                                   waiting_cb);
     return;
   }
 
   if (!offload_task_runner_) {
-    offload_task_runner_ = base::CreateSequencedTaskRunnerWithTraits(
-        {base::TaskPriority::USER_BLOCKING});
+    offload_task_runner_ = base::CreateSequencedTaskRunner(
+        {base::ThreadPool(), base::TaskPriority::USER_BLOCKING});
   }
 
   offload_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&OffloadableVideoDecoder::Initialize,
                      base::Unretained(helper_->decoder()), config, low_delay,
-                     cdm_context, bound_init_cb, bound_output_cb, waiting_cb));
+                     cdm_context, std::move(bound_init_cb), bound_output_cb,
+                     waiting_cb));
 }
 
 void OffloadingVideoDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
-                                    const DecodeCB& decode_cb) {
+                                    DecodeCB decode_cb) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(buffer);
   DCHECK(decode_cb);
 
-  DecodeCB bound_decode_cb = BindToCurrentLoop(decode_cb);
+  DecodeCB bound_decode_cb = BindToCurrentLoop(std::move(decode_cb));
   if (!offload_task_runner_) {
-    helper_->decoder()->Decode(std::move(buffer), bound_decode_cb);
+    helper_->decoder()->Decode(std::move(buffer), std::move(bound_decode_cb));
     return;
   }
 
   offload_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&CancellationHelper::Decode,
                                 base::Unretained(helper_.get()),
-                                std::move(buffer), bound_decode_cb));
+                                std::move(buffer), std::move(bound_decode_cb)));
 }
 
-void OffloadingVideoDecoder::Reset(const base::Closure& reset_cb) {
+void OffloadingVideoDecoder::Reset(base::OnceClosure reset_cb) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-  base::Closure bound_reset_cb = BindToCurrentLoop(reset_cb);
+  base::OnceClosure bound_reset_cb = BindToCurrentLoop(std::move(reset_cb));
   if (!offload_task_runner_) {
-    helper_->Reset(bound_reset_cb);
+    helper_->Reset(std::move(bound_reset_cb));
   } else {
     helper_->Cancel();
     offload_task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(&CancellationHelper::Reset,
-                       base::Unretained(helper_.get()), bound_reset_cb));
+        FROM_HERE, base::BindOnce(&CancellationHelper::Reset,
+                                  base::Unretained(helper_.get()),
+                                  std::move(bound_reset_cb)));
   }
 }
 

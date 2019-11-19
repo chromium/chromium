@@ -194,7 +194,7 @@ std::pair<FileCreationInfo, int64_t> CreateFileAndWriteItems(
     DiskSpaceFuncPtr disk_space_function,
     const FilePath& file_path,
     scoped_refptr<base::TaskRunner> file_task_runner,
-    std::vector<base::span<const char>> data,
+    std::vector<base::span<const uint8_t>> data,
     size_t total_size_bytes) {
   DCHECK_NE(0u, total_size_bytes);
   UMA_HISTOGRAM_MEMORY_KB("Storage.Blob.PageFileSize", total_size_bytes / 1024);
@@ -234,9 +234,9 @@ std::pair<FileCreationInfo, int64_t> CreateFileAndWriteItems(
     size_t length = item.size();
     size_t bytes_left = length;
     while (bytes_left > 0) {
-      bytes_written =
-          file.WriteAtCurrentPos(item.data() + (length - bytes_left),
-                                 base::saturated_cast<int>(bytes_left));
+      bytes_written = file.WriteAtCurrentPos(
+          reinterpret_cast<const char*>(item.data() + (length - bytes_left)),
+          base::saturated_cast<int>(bytes_left));
       if (bytes_written < 0)
         break;
       DCHECK_LE(static_cast<size_t>(bytes_written), bytes_left);
@@ -324,8 +324,7 @@ class BlobMemoryController::MemoryQuotaAllocationTask
       : controller_(controller),
         pending_items_(std::move(pending_items)),
         done_callback_(std::move(done_callback)),
-        allocation_size_(quota_request_size),
-        weak_factory_(this) {}
+        allocation_size_(quota_request_size) {}
 
   ~MemoryQuotaAllocationTask() override = default;
 
@@ -365,7 +364,7 @@ class BlobMemoryController::MemoryQuotaAllocationTask
   size_t allocation_size_;
   PendingMemoryQuotaTaskList::iterator my_list_position_;
 
-  base::WeakPtrFactory<MemoryQuotaAllocationTask> weak_factory_;
+  base::WeakPtrFactory<MemoryQuotaAllocationTask> weak_factory_{this};
   DISALLOW_COPY_AND_ASSIGN(MemoryQuotaAllocationTask);
 };
 
@@ -379,8 +378,7 @@ class BlobMemoryController::FileQuotaAllocationTask
       std::vector<scoped_refptr<ShareableBlobDataItem>> unreserved_file_items,
       FileQuotaRequestCallback done_callback)
       : controller_(memory_controller),
-        done_callback_(std::move(done_callback)),
-        weak_factory_(this) {
+        done_callback_(std::move(done_callback)) {
     // Get the file sizes and total size.
     uint64_t total_size =
         GetTotalSizeAndFileSizes(unreserved_file_items, &file_sizes_);
@@ -523,7 +521,7 @@ class BlobMemoryController::FileQuotaAllocationTask
   uint64_t allocation_size_;
   PendingFileQuotaTaskList::iterator my_list_position_;
 
-  base::WeakPtrFactory<FileQuotaAllocationTask> weak_factory_;
+  base::WeakPtrFactory<FileQuotaAllocationTask> weak_factory_{this};
   DISALLOW_COPY_AND_ASSIGN(FileQuotaAllocationTask);
 };
 
@@ -538,8 +536,7 @@ BlobMemoryController::BlobMemoryController(
           base::MRUCache<uint64_t, ShareableBlobDataItem*>::NO_AUTO_EVICT),
       memory_pressure_listener_(
           base::BindRepeating(&BlobMemoryController::OnMemoryPressure,
-                              base::Unretained(this))),
-      weak_factory_(this) {}
+                              base::Unretained(this))) {}
 
 BlobMemoryController::~BlobMemoryController() = default;
 
@@ -942,7 +939,7 @@ void BlobMemoryController::MaybeScheduleEvictionUntilSystemHealthy(
     if (total_items_size == 0)
       break;
 
-    std::vector<base::span<const char>> data_for_paging;
+    std::vector<base::span<const uint8_t>> data_for_paging;
     for (auto& shared_blob_item : items_to_swap) {
       items_paging_to_file_.insert(shared_blob_item->item_id());
       data_for_paging.push_back(shared_blob_item->item()->bytes());

@@ -37,7 +37,7 @@ from blinkpy.common import exit_codes
 from blinkpy.common.host import Host
 from blinkpy.web_tests.controllers.manager import Manager
 from blinkpy.web_tests.models import test_run_results
-from blinkpy.web_tests.port.factory import configuration_options, platform_options
+from blinkpy.web_tests.port.factory import configuration_options, platform_options, wpt_options
 from blinkpy.web_tests.views import printing
 
 _log = logging.getLogger(__name__)
@@ -108,6 +108,9 @@ def parse_args(args):
         ('Printing Options', printing.print_options()))
 
     option_group_definitions.append(
+        ('web-platform-tests (WPT) Options', wpt_options()))
+
+    option_group_definitions.append(
         ('Android-specific Options', [
             optparse.make_option(
                 '--adb-device',
@@ -140,6 +143,11 @@ def parse_args(args):
                 action='store_false',
                 default=True,
                 help=('Do not log Zircon debug messages.')),
+            optparse.make_option(
+                '--device',
+                choices=['aemu','qemu'],
+                default='qemu',
+                help=('Choose device to launch Fuchsia with.')),
         ]))
 
     option_group_definitions.append(
@@ -153,11 +161,22 @@ def parse_args(args):
                 help=('Additional command line flag to pass to the driver. Specify multiple '
                       'times to add multiple flags.')),
             optparse.make_option(
+                '--flag-specific',
+                dest='flag_specific',
+                action='store',
+                default=None,
+                help=('Name of a flag-specific configuration defined in FlagSpecificConfig, '
+                      ' as a shortcut of --additional-driver-flag options.')),
+            optparse.make_option(
                 '--additional-expectations',
                 action='append',
                 default=[],
                 help=('Path to a test_expectations file that will override previous '
                       'expectations. Specify multiple times for multiple sets of overrides.')),
+            optparse.make_option(
+                '--ignore-default-expectations',
+                action='store_true',
+                help=('Do not use the default set of TestExpectations files.')),
             optparse.make_option(
                 '--additional-platform-directory',
                 action='append',
@@ -278,6 +297,14 @@ def parse_args(args):
                 type='int',
                 default=None,
                 help='Exit after the first N failures instead of running all tests'),
+            optparse.make_option(
+                '--fuzzy-diff',
+                action='store_true',
+                default=False,
+                help=('When running tests on an actual GPU, variance in pixel '
+                      'output can leads image differences causing failed expectations. '
+                      'Instead a fuzzy diff is used to account for this variance. '
+                      'See tools/imagediff/image_diff.cc')),
             optparse.make_option(
                 '--ignore-builder-category',
                 action='store',
@@ -420,12 +447,13 @@ def parse_args(args):
                 '--test-list',
                 action='append',
                 metavar='FILE',
-                help='read list of tests to run from file'),
+                help='read list of tests to run from file, as if they were specified on the command line'),
             optparse.make_option(
                 '--isolated-script-test-filter',
+                action='append',
                 type='string',
-                help='A list of tests to run separated by TWO colons, e.g. fast::css/test.html, '
-                     'same as listing them as positional arguments'),
+                help='A list of test globs to run or skip, separated by TWO colons, e.g. fast::css/test.html; '
+                     'prefix the glob with "-" to skip it'),
             # TODO(crbug.com/893235): Remove gtest_filter when FindIt no longer uses it.
             optparse.make_option(
                 '--gtest_filter',
@@ -464,29 +492,25 @@ def parse_args(args):
                 '--zero-tests-executed-ok',
                 action='store_true',
                 help='If set, exit with a success code when no tests are run.'
-                ' Used on trybots when web tests are retried without patch.')
-        ]))
-
-    option_group_definitions.append(
-        ('web-platform-tests (WPT) Options', [
+                ' Used on trybots when web tests are retried without patch.'),
             optparse.make_option(
-                '--no-manifest-update',
-                dest='manifest_update',
-                action='store_false',
-                default=True,
-                help=('Do not update the web-platform-tests MANIFEST.json.')),
+                '--driver-kill-timeout-secs',
+                type=float,
+                default=1.0,
+                help=('Number of seconds to wait before killing a driver, and the main '
+                      'use case is to leave enough time to allow the process to '
+                      'finish post-run hooks, such as dumping code coverage data. '
+                      'Default is 1 second, can be overriden for specific use cases.'))
         ]))
 
     # FIXME: Move these into json_results_generator.py.
     option_group_definitions.append(
         ('Result JSON Options', [
-            optparse.make_option(
-                '--build-name',
-                default='DUMMY_BUILD_NAME',
-                help='The name of the builder used in its path, e.g. webkit-rel.'),
+            # TODO(qyearsley): --build-name is unused and should be removed.
+            optparse.make_option('--build-name', help=optparse.SUPPRESS_HELP),
             optparse.make_option(
                 '--step-name',
-                default='webkit_tests',
+                default='blink_web_tests',
                 help='The name of the step in a build running this script.'),
             optparse.make_option(
                 '--build-number',
@@ -495,15 +519,16 @@ def parse_args(args):
             optparse.make_option(
                 '--builder-name',
                 default='',
-                help=('The name of the builder shown on the waterfall running this script '
-                      'e.g. WebKit.')),
-            optparse.make_option(
-                '--master-name',
-                help='The name of the buildbot master.'),
+                help='The name of the builder shown on the waterfall running '
+                     'this script, e.g. "Mac10.13 Tests".'),
+            # TODO(crbug/1002702): Remove this, it's not actually a Buildbot
+            # master since Buildbot is gone.
+            optparse.make_option('--master-name'),
             optparse.make_option(
                 '--test-results-server',
                 default='',
-                help='If specified, upload results json files to this appengine server.'),
+                help='If specified, upload results JSON files to this '
+                     'App Engine server.'),
         ]))
 
     option_parser = optparse.OptionParser(
@@ -580,9 +605,6 @@ def _set_up_derived_options(port, options, args):
 
     if not options.skipped:
         options.skipped = 'default'
-
-    if options.isolated_script_test_filter:
-        args.extend(options.isolated_script_test_filter.split('::'))
 
     if options.gtest_filter:
         args.extend(options.gtest_filter.split(':'))

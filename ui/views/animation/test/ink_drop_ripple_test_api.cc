@@ -11,7 +11,7 @@ InkDropRippleTestApi::InkDropRippleTestApi(InkDropRipple* ink_drop_ripple)
     : ui::test::MultiLayerAnimatorTestController(this),
       ink_drop_ripple_(ink_drop_ripple) {}
 
-InkDropRippleTestApi::~InkDropRippleTestApi() {}
+InkDropRippleTestApi::~InkDropRippleTestApi() = default;
 
 std::vector<ui::LayerAnimator*> InkDropRippleTestApi::GetLayerAnimators() {
   return std::vector<ui::LayerAnimator*>();

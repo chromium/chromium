@@ -16,6 +16,19 @@ enum class SwapResult {
   SWAP_RESULT_LAST = SWAP_NAK_RECREATE_BUFFERS,
 };
 
+struct SwapTimings {
+  // When the GPU service first started processing the SwapBuffers request.
+  base::TimeTicks swap_start;
+
+  // On most platforms, this is when the GPU service finished processing the
+  // SwapBuffers request. On ChromeOS, this corresponds to the present time.
+  // TODO(brianderson): Differentiate the concepts without introducing
+  // dicontinuities in associated UMA data.
+  base::TimeTicks swap_end;
+
+  bool is_null() const { return swap_start.is_null() && swap_end.is_null(); }
+};
+
 // Sent by ImageTransportSurfaces to their clients in response to a SwapBuffers.
 struct SwapResponse {
   // The swap's sequence id which helps clients determine which SwapBuffers
@@ -27,14 +40,8 @@ struct SwapResponse {
   // Indicates whether the swap succeeded or not.
   SwapResult result;
 
-  // When the GPU service first started processing the SwapBuffers request.
-  base::TimeTicks swap_start;
-
-  // On most platforms, this is when the GPU service finished processing the
-  // SwapBuffers request. On ChromeOS, this corresponds to the present time.
-  // TODO(brianderson): Differentiate the concepts without introducing
-  // dicontinuities in associated UMA data.
-  base::TimeTicks swap_end;
+  // Timing information about the given swap.
+  SwapTimings timings;
 };
 
 }  // namespace gfx

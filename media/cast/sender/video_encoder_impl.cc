@@ -29,7 +29,7 @@ void InitializeEncoderOnEncoderThread(
 void EncodeVideoFrameOnEncoderThread(
     scoped_refptr<CastEnvironment> environment,
     SoftwareVideoEncoder* encoder,
-    const scoped_refptr<media::VideoFrame>& video_frame,
+    scoped_refptr<media::VideoFrame> video_frame,
     const base::TimeTicks& reference_time,
     const VideoEncoderImpl::CodecDynamicConfig& dynamic_config,
     const VideoEncoderImpl::FrameEncodedCallback& frame_encoded_callback) {
@@ -40,7 +40,7 @@ void EncodeVideoFrameOnEncoderThread(
   encoder->UpdateRates(dynamic_config.bit_rate);
 
   std::unique_ptr<SenderEncodedFrame> encoded_frame(new SenderEncodedFrame());
-  encoder->Encode(video_frame, reference_time, encoded_frame.get());
+  encoder->Encode(std::move(video_frame), reference_time, encoded_frame.get());
   encoded_frame->encode_completion_time = environment->Clock()->NowTicks();
   environment->PostTask(
       CastEnvironment::MAIN,
@@ -104,22 +104,19 @@ VideoEncoderImpl::~VideoEncoderImpl() {
 }
 
 bool VideoEncoderImpl::EncodeVideoFrame(
-    const scoped_refptr<media::VideoFrame>& video_frame,
+    scoped_refptr<media::VideoFrame> video_frame,
     const base::TimeTicks& reference_time,
     const FrameEncodedCallback& frame_encoded_callback) {
   DCHECK(cast_environment_->CurrentlyOn(CastEnvironment::MAIN));
   DCHECK(!video_frame->visible_rect().IsEmpty());
   DCHECK(!frame_encoded_callback.is_null());
 
-  cast_environment_->PostTask(CastEnvironment::VIDEO,
-                              FROM_HERE,
-                              base::Bind(&EncodeVideoFrameOnEncoderThread,
-                                         cast_environment_,
-                                         encoder_.get(),
-                                         video_frame,
-                                         reference_time,
-                                         dynamic_config_,
-                                         frame_encoded_callback));
+  cast_environment_->PostTask(
+      CastEnvironment::VIDEO, FROM_HERE,
+      base::BindRepeating(&EncodeVideoFrameOnEncoderThread, cast_environment_,
+                          encoder_.get(), std::move(video_frame),
+                          reference_time, dynamic_config_,
+                          frame_encoded_callback));
 
   dynamic_config_.key_frame_requested = false;
   return true;

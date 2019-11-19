@@ -8,5 +8,5 @@
     "persistent": false,
     "scripts": ["test.js"]
   },
-  "permissions": ["autotestPrivate"]
+  "permissions": ["autotestPrivate", "system.display"]
 }

@@ -21,11 +21,10 @@ namespace {
 WebUIDataSource* CreateWebApksUIDataSource() {
   WebUIDataSource* html_source =
       WebUIDataSource::Create(chrome::kChromeUIWebApksHost);
-  html_source->SetJsonPath("strings.js");
+  html_source->UseStringsJs();
   html_source->AddResourcePath("webapks.js", IDR_WEBAPKS_UI_JS);
   html_source->AddResourcePath("about_webapks.css", IDR_WEBAPKS_UI_CSS);
   html_source->SetDefaultResource(IDR_WEBAPKS_UI_HTML);
-  html_source->UseGzip();
 
   return html_source;
 }

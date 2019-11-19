@@ -8,13 +8,18 @@
 namespace previews {
 namespace switches {
 
+// Whether the previews blacklist should be ignored, according to command line
+// switches.
+bool ShouldIgnorePreviewsBlacklist();
+
 extern const char kDoNotRequireLitePageRedirectInfoBar[];
 extern const char kIgnorePreviewsBlacklist[];
+extern const char kForceEnablePreviews[];
 extern const char kLitePageServerPreviewHost[];
 extern const char kIgnoreLitePageRedirectOptimizationBlacklist[];
 extern const char kClearLitePageRedirectLocalBlacklist[];
-extern const char kHintsProtoOverride[];
-extern const char kPurgeHintCacheStore[];
+extern const char kLitePageRedirectOverridesPageHints[];
+extern const char kEnableDeferAllScriptWithoutOptimizationHints[];
 
 }  // namespace switches
 }  // namespace previews

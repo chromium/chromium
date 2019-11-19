@@ -15,13 +15,14 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
+#include "chrome/browser/chromeos/file_manager/path_util.h"
 #include "chrome/browser/chromeos/fileapi/recent_arc_media_source.h"
-#include "chrome/browser/chromeos/fileapi/recent_download_source.h"
+#include "chrome/browser/chromeos/fileapi/recent_disk_source.h"
 #include "chrome/browser/chromeos/fileapi/recent_drive_source.h"
 #include "chrome/browser/chromeos/fileapi/recent_file.h"
 #include "chrome/browser/chromeos/fileapi/recent_model_factory.h"
 #include "content/public/browser/browser_thread.h"
-#include "storage/browser/fileapi/file_system_context.h"
+#include "storage/browser/file_system/file_system_context.h"
 
 using content::BrowserThread;
 
@@ -41,7 +42,16 @@ std::vector<std::unique_ptr<RecentSource>> CreateDefaultSources(
     Profile* profile) {
   std::vector<std::unique_ptr<RecentSource>> sources;
   sources.emplace_back(std::make_unique<RecentArcMediaSource>(profile));
-  sources.emplace_back(std::make_unique<RecentDownloadSource>(profile));
+  // Crostini.
+  sources.emplace_back(std::make_unique<RecentDiskSource>(
+      file_manager::util::GetCrostiniMountPointName(profile),
+      true /* ignore_dotfiles */, 4 /* max_depth */,
+      "FileBrowser.Recent.LoadCrostini"));
+  // Downloads / MyFiles.
+  sources.emplace_back(std::make_unique<RecentDiskSource>(
+      file_manager::util::GetDownloadsMountPointName(profile),
+      false /* ignore_dotfiles */, 0 /* max_depth unlimited */,
+      "FileBrowser.Recent.LoadDownloads"));
   sources.emplace_back(std::make_unique<RecentDriveSource>(profile));
   return sources;
 }
@@ -65,7 +75,7 @@ RecentModel::RecentModel(Profile* profile)
     : RecentModel(CreateDefaultSources(profile)) {}
 
 RecentModel::RecentModel(std::vector<std::unique_ptr<RecentSource>> sources)
-    : sources_(std::move(sources)), weak_ptr_factory_(this) {
+    : sources_(std::move(sources)) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 }
 

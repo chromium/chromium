@@ -9,6 +9,7 @@
 #include "base/values.h"
 #include "chrome/browser/download/download_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_key.h"
 #include "components/download/public/background_service/download_params.h"
 #include "components/download/public/background_service/download_service.h"
 #include "content/public/browser/web_ui.h"
@@ -17,7 +18,7 @@
 namespace download_internals {
 
 DownloadInternalsUIMessageHandler::DownloadInternalsUIMessageHandler()
-    : download_service_(nullptr), weak_ptr_factory_(this) {}
+    : download_service_(nullptr) {}
 
 DownloadInternalsUIMessageHandler::~DownloadInternalsUIMessageHandler() {
   if (download_service_)
@@ -42,7 +43,8 @@ void DownloadInternalsUIMessageHandler::RegisterMessages() {
           weak_ptr_factory_.GetWeakPtr()));
 
   Profile* profile = Profile::FromWebUI(web_ui());
-  download_service_ = DownloadServiceFactory::GetForBrowserContext(profile);
+  download_service_ =
+      DownloadServiceFactory::GetForKey(profile->GetProfileKey());
   download_service_->GetLogger()->AddObserver(this);
 }
 

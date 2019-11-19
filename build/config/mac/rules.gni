@@ -63,58 +63,6 @@ template("mac_info_plist") {
   }
 }
 
-# Template to compile and package Mac XIB files as bundle data.
-#
-# Arguments
-#
-#     sources:
-#         list of string, sources to comiple
-#
-#     output_path:
-#         (optional) string, the path to use for the outputs list in the
-#         bundle_data step. If unspecified, defaults to bundle_resources_dir.
-template("mac_xib_bundle_data") {
-  _target_name = target_name
-  _compile_target_name = _target_name + "_compile_ibtool"
-
-  compile_ib_files(_compile_target_name) {
-    forward_variables_from(invoker, [ "testonly" ])
-    visibility = [ ":$_target_name" ]
-    sources = invoker.sources
-    output_extension = "nib"
-    ibtool_flags = [
-      "--minimum-deployment-target",
-      mac_deployment_target,
-
-      # TODO(rsesek): Enable this once all the bots are on Xcode 7+.
-      # "--target-device",
-      # "mac",
-    ]
-  }
-
-  bundle_data(_target_name) {
-    forward_variables_from(invoker,
-                           [
-                             "testonly",
-                             "visibility",
-                           ])
-
-    public_deps = [
-      ":$_compile_target_name",
-    ]
-    sources = get_target_outputs(":$_compile_target_name")
-
-    _output_path = "{{bundle_resources_dir}}"
-    if (defined(invoker.output_path)) {
-      _output_path = invoker.output_path
-    }
-
-    outputs = [
-      "$_output_path/{{source_file_part}}",
-    ]
-  }
-}
-
 # Template to package a shared library into a Mac framework bundle.
 #
 # By default, the bundle target this template generates does not link the
@@ -403,6 +351,13 @@ template("mac_framework_bundle") {
       ":$_shared_library_bundle_data",
     ]
 
+    if (enable_dsyms) {
+      data = [
+        "$root_out_dir/$_output_name.dSYM/Contents/Info.plist",
+        "$root_out_dir/$_output_name.dSYM/Contents/Resources/DWARF/$_output_name",
+      ]
+    }
+
     bundle_root_dir = _framework_base_dir
     bundle_contents_dir = _framework_root_dir
     bundle_resources_dir = "$bundle_contents_dir/Resources"
@@ -603,6 +558,14 @@ template("mac_app_bundle") {
     if (_write_pkg_info) {
       deps += [ ":$_pkg_info_bundle_data" ]
     }
+
+    if (enable_dsyms) {
+      data = [
+        "$root_out_dir/$_output_name.dSYM/Contents/Info.plist",
+        "$root_out_dir/$_output_name.dSYM/Contents/Resources/DWARF/$_output_name",
+      ]
+    }
+
     product_type = _product_type
     bundle_root_dir = "$root_out_dir/${_output_name}.${_output_extension}"
     bundle_contents_dir = "$bundle_root_dir/Contents"
@@ -645,7 +608,7 @@ template("mac_plugin_bundle") {
     forward_variables_from(invoker, [ "testonly" ])
     visibility = [ ":$_target_name" ]
     sources = [
-      "$target_out_dir/${_output_name}.so",
+      "$target_out_dir/$_output_name.so",
     ]
     outputs = [
       "{{bundle_executable_dir}}/$_output_name",
@@ -668,6 +631,13 @@ template("mac_plugin_bundle") {
       deps = []
     }
     deps += [ ":$_loadable_module_bundle_data" ]
+
+    if (enable_dsyms) {
+      data = [
+        "$root_out_dir/$_output_name.so.dSYM/Contents/Info.plist",
+        "$root_out_dir/$_output_name.so.dSYM/Contents/Resources/DWARF/$_output_name.so",
+      ]
+    }
 
     bundle_root_dir = "$root_out_dir/$_output_name.plugin"
     bundle_contents_dir = "$bundle_root_dir/Contents"

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/web/public/web_state/web_state_delegate_bridge.h"
+#import "ios/web/public/web_state_delegate_bridge.h"
 
 #import <Foundation/Foundation.h>
 
@@ -10,10 +10,11 @@
 
 #include "base/bind.h"
 #include "base/strings/utf_string_conversions.h"
-#import "ios/web/public/test/crw_mock_web_state_delegate.h"
+#import "ios/web/public/test/crw_fake_web_state_delegate.h"
 #import "ios/web/public/test/fakes/test_web_state.h"
-#import "ios/web/public/web_state/context_menu_params.h"
+#import "ios/web/public/ui/context_menu_params.h"
 #include "testing/platform_test.h"
+#import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
 #include "ui/base/page_transition_types.h"
 
@@ -25,6 +26,7 @@
 // any optional methods.
 @interface TestEmptyWebStateDelegate : NSObject<CRWWebStateDelegate>
 @end
+
 @implementation TestEmptyWebStateDelegate
 @end
 
@@ -36,10 +38,7 @@ class WebStateDelegateBridgeTest : public PlatformTest {
   void SetUp() override {
     PlatformTest::SetUp();
 
-    id originalMockDelegate =
-        [OCMockObject niceMockForProtocol:@protocol(CRWWebStateDelegate)];
-    delegate_ = [[CRWMockWebStateDelegate alloc]
-        initWithRepresentedObject:originalMockDelegate];
+    delegate_ = [[CRWFakeWebStateDelegate alloc] init];
     empty_delegate_ = [[TestEmptyWebStateDelegate alloc] init];
 
     bridge_.reset(new WebStateDelegateBridge(delegate_));
@@ -47,11 +46,10 @@ class WebStateDelegateBridgeTest : public PlatformTest {
   }
 
   void TearDown() override {
-    EXPECT_OCMOCK_VERIFY((OCMockObject*)delegate_);
     PlatformTest::TearDown();
   }
 
-  CRWMockWebStateDelegate* delegate_;
+  CRWFakeWebStateDelegate* delegate_;
   id empty_delegate_;
   std::unique_ptr<WebStateDelegateBridge> bridge_;
   std::unique_ptr<WebStateDelegateBridge> empty_delegate_bridge_;
@@ -88,7 +86,7 @@ TEST_F(WebStateDelegateBridgeTest, OpenURLFromWebState) {
   ASSERT_FALSE([delegate_ openURLParams]);
 
   web::WebState::OpenURLParams params(
-      GURL("https://chromium.test/"),
+      GURL("https://chromium.test/"), GURL("https://virtual.chromium.test/"),
       web::Referrer(GURL("https://chromium2.test/"), ReferrerPolicyNever),
       WindowOpenDisposition::NEW_WINDOW, ui::PAGE_TRANSITION_FORM_SUBMIT, true);
   EXPECT_EQ(&test_web_state_,
@@ -98,6 +96,7 @@ TEST_F(WebStateDelegateBridgeTest, OpenURLFromWebState) {
   const web::WebState::OpenURLParams* result_params = [delegate_ openURLParams];
   ASSERT_TRUE(result_params);
   EXPECT_EQ(params.url, result_params->url);
+  EXPECT_EQ(params.virtual_url, result_params->virtual_url);
   EXPECT_EQ(params.referrer.url, result_params->referrer.url);
   EXPECT_EQ(params.referrer.policy, result_params->referrer.policy);
   EXPECT_EQ(params.disposition, result_params->disposition);

@@ -4,7 +4,6 @@
 
 // https://html.spec.whatwg.org/C/#cookies
 
-[NoInterfaceObject]
-interface NavigatorCookies {
+interface mixin NavigatorCookies {
   readonly attribute boolean cookieEnabled;
 };

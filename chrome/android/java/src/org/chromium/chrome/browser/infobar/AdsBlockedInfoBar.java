@@ -42,7 +42,7 @@ public class AdsBlockedInfoBar extends ConfirmInfoBar implements OnCheckedChange
 
     private AdsBlockedInfoBar(int iconDrawbleId, String message, String oKButtonText,
             String reloadButtonText, String toggleText, String followUpMessage) {
-        super(iconDrawbleId, null, message, null, null, null); //, oKButtonText, reloadButtonText);
+        super(iconDrawbleId, R.color.infobar_icon_drawable_color, null, message, null, null, null);
         mFollowUpMessage = followUpMessage;
         mMessage = message;
         mOKButtonText = oKButtonText;

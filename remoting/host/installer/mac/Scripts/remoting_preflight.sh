@@ -8,9 +8,11 @@
 
 HELPERTOOLS=/Library/PrivilegedHelperTools
 SERVICE_NAME=org.chromium.chromoting
+HOST_BUNDLE_NAME=@@HOST_BUNDLE_NAME@@
 CONFIG_FILE="$HELPERTOOLS/$SERVICE_NAME.json"
-SCRIPT_FILE="$HELPERTOOLS/$SERVICE_NAME.me2me.sh"
-USERS_TMP_FILE="$SCRIPT_FILE.users"
+OLD_SCRIPT_FILE="$HELPERTOOLS/$SERVICE_NAME.me2me.sh"
+HOST_SERVICE_BINARY="$HELPERTOOLS/$HOST_BUNDLE_NAME/Contents/MacOS/remoting_me2me_host_service"
+USERS_TMP_FILE="$HOST_SERVICE_BINARY.users"
 PLIST=/Library/LaunchAgents/org.chromium.chromoting.plist
 ENABLED_FILE="$HELPERTOOLS/$SERVICE_NAME.me2me_enabled"
 ENABLED_FILE_BACKUP="$ENABLED_FILE.backup"
@@ -24,10 +26,14 @@ function on_error {
 }
 
 function find_users_with_active_hosts {
-  ps -eo uid,command | awk -v script="$SCRIPT_FILE" '
-    $2 == "/bin/sh" && $3 == script && $4 == "--run-from-launchd" {
-      print $1
-    }'
+  # User might be running the old script, the new service binary, or both in
+  # some cases, so we need to find both processes then dedup the uid.
+  ps -eo uid,command |
+    awk -v script="$OLD_SCRIPT_FILE" -v binary="$HOST_SERVICE_BINARY" '
+      ($2 == "/bin/sh" && $3 == script && $4 == "--run-from-launchd") ||
+      ($2 == binary && $3 == "--run-from-launchd") {
+        print $1
+      }' | sort | uniq
 }
 
 function find_login_window_for_user {
@@ -61,6 +67,16 @@ logger Running Chrome Remote Desktop preflight script @@VERSION@@
 if [[ -f "$ENABLED_FILE" ]]; then
   logger Moving _enabled file
   mv "$ENABLED_FILE" "$ENABLED_FILE_BACKUP"
+fi
+
+# If there is an old launchd script, create a backup of it, so that the
+# postflight script can restore it. This ensures the new host service falls back
+# to the old launchd script when it is available on Mojave.
+# The script needs to be backed up and restored, as the new package does not
+# provide it, and the installer deletes it from the system.
+if [[ -f "$OLD_SCRIPT_FILE" ]]; then
+  logger Backing up launchd agent
+  cp "$OLD_SCRIPT_FILE" "$INSTALLER_TEMP/script_backup"
 fi
 
 # Stop and unload the service for each user currently running the service, and

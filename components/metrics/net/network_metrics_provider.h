@@ -103,6 +103,11 @@ class NetworkMetricsProvider
   void SetNetworkConnectionTracker(
       network::NetworkConnectionTracker* network_connection_tracker);
 
+  // Invoked at the time a new user metrics log record is being finalized, on
+  // the main thread. NCN Histograms that want to be logged once per record
+  // should be logged in this method.
+  void FinalizingMetricsLogRecord();
+
   // Watches for network connection changes.
   // This |network_connection_tracker_| raw pointer is not owned by this class.
   // It is obtained from the global |g_network_connection_tracker| pointer in
@@ -145,7 +150,7 @@ class NetworkMetricsProvider
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  base::WeakPtrFactory<NetworkMetricsProvider> weak_ptr_factory_;
+  base::WeakPtrFactory<NetworkMetricsProvider> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(NetworkMetricsProvider);
 };

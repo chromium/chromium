@@ -24,7 +24,7 @@ LocaleFeaturePodController::LocaleFeaturePodController(
 LocaleFeaturePodController::~LocaleFeaturePodController() = default;
 
 FeaturePodButton* LocaleFeaturePodController::CreateButton() {
-  auto* button = new FeaturePodButton(this);
+  auto* button = new FeaturePodButton(this, /*is_togglable=*/false);
   const bool visible =
       !Shell::Get()->system_tray_model()->locale()->locale_list().empty();
   button->SetVisible(visible);

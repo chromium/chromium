@@ -1,0 +1,11 @@
+Verifies that setting a cookie with a domain attribute which does not match the current domain sends a Network.ResponseReceivedExtraInfo event with the corresponding blocked cookie.
+
+Bad domain attribute blocked set-cookies: [
+  {
+    "blockedReasons": [
+      "InvalidDomain"
+    ],
+    "cookieLine": "name=value; Domain=cookie.test"
+  }
+]
+

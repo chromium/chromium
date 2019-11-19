@@ -2,8 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/mac/tweak_info_plist.gni")
 import("//build/config/ios/ios_sdk.gni")
+import("//build/mac/tweak_info_plist.gni")
 import("//ios/build/chrome_build.gni")
 import("//ios/public/provider/chrome/browser/build_config.gni")
 import("//ios/third_party/earl_grey/ios_eg_test.gni")
@@ -158,15 +158,8 @@ template("chrome_ios_eg_test") {
       "EG_MAIN_APPLICATION_DELEGATE=$_eg_main_application_delegate",
       "SSOAUTH_URL_SCHEME=$url_ssoauth_scheme",
       "CONTENT_WIDGET_EXTENSION_BUNDLE_ID=$chromium_bundle_id.ContentTodayExtension",
+      "CHROMIUM_BUNDLE_ID=gtest.$target_name",
     ]
-    if (ios_automatically_manage_certs) {
-      # Use the same bundle identifier for EarlGrey tests as for unit tests
-      # when managing certificates as the number of free certs is limited.
-      extra_substitutions +=
-          [ "CHROMIUM_BUNDLE_ID=gtest.${ios_generic_test_bundle_id_suffix}" ]
-    } else {
-      extra_substitutions += [ "CHROMIUM_BUNDLE_ID=gtest.$target_name" ]
-    }
   }
 }
 

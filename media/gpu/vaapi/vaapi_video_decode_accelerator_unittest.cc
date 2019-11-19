@@ -7,9 +7,8 @@
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "media/gpu/accelerated_video_decoder.h"
-#include "media/gpu/format_utils.h"
 #include "media/gpu/vaapi/vaapi_picture.h"
 #include "media/gpu/vaapi/vaapi_picture_factory.h"
 #include "media/gpu/vaapi/vaapi_wrapper.h"
@@ -46,6 +45,9 @@ const gfx::Size kPictureSize(64, 48);
 constexpr size_t kNewNumPictures = 3;
 const gfx::Size kNewPictureSize(64, 48);
 
+MATCHER_P2(IsExpectedDecoderBuffer, data_size, decrypt_config, "") {
+  return arg.data_size() == data_size && arg.decrypt_config() == decrypt_config;
+}
 }  // namespace
 
 class MockAcceleratedVideoDecoder : public AcceleratedVideoDecoder {
@@ -53,25 +55,27 @@ class MockAcceleratedVideoDecoder : public AcceleratedVideoDecoder {
   MockAcceleratedVideoDecoder() = default;
   ~MockAcceleratedVideoDecoder() override = default;
 
-  MOCK_METHOD4(
-      SetStream,
-      void(int32_t id, const uint8_t* ptr, size_t size, const DecryptConfig*));
+  MOCK_METHOD2(SetStream, void(int32_t id, const DecoderBuffer&));
   MOCK_METHOD0(Flush, bool());
   MOCK_METHOD0(Reset, void());
   MOCK_METHOD0(Decode, DecodeResult());
   MOCK_CONST_METHOD0(GetPicSize, gfx::Size());
+  MOCK_CONST_METHOD0(GetVisibleRect, gfx::Rect());
   MOCK_CONST_METHOD0(GetRequiredNumOfPictures, size_t());
   MOCK_CONST_METHOD0(GetNumReferenceFrames, size_t());
 };
 
 class MockVaapiWrapper : public VaapiWrapper {
  public:
-  MockVaapiWrapper() = default;
-  MOCK_METHOD4(
-      CreateContextAndSurfaces,
-      bool(unsigned int, const gfx::Size&, size_t, std::vector<VASurfaceID>*));
-  MOCK_METHOD2(CreateContext, bool(unsigned int, const gfx::Size&));
-  MOCK_METHOD0(DestroyContextAndSurfaces, void());
+  MockVaapiWrapper(CodecMode mode) : VaapiWrapper(mode) {}
+  MOCK_METHOD5(CreateContextAndSurfaces,
+               bool(unsigned int,
+                    const gfx::Size&,
+                    SurfaceUsageHint,
+                    size_t,
+                    std::vector<VASurfaceID>*));
+  MOCK_METHOD1(CreateContext, bool(const gfx::Size&));
+  MOCK_METHOD1(DestroyContextAndSurfaces, void(std::vector<VASurfaceID>));
 
  private:
   ~MockVaapiWrapper() override = default;
@@ -101,7 +105,7 @@ class MockVaapiPicture : public VaapiPicture {
   bool Allocate(gfx::BufferFormat format) override { return true; }
   bool ImportGpuMemoryBufferHandle(
       gfx::BufferFormat format,
-      const gfx::GpuMemoryBufferHandle& gpu_memory_buffer_handle) override {
+      gfx::GpuMemoryBufferHandle gpu_memory_buffer_handle) override {
     return true;
   }
   bool DownloadFromSurface(
@@ -146,10 +150,10 @@ class VaapiVideoDecodeAcceleratorTest : public TestWithParam<TestParams>,
                            const scoped_refptr<gl::GLImage>& image,
                            bool can_bind_to_sampler) { return true; })),
         decoder_thread_("VaapiVideoDecodeAcceleratorTestThread"),
-        mock_decoder_(new MockAcceleratedVideoDecoder),
+        mock_decoder_(new ::testing::StrictMock<MockAcceleratedVideoDecoder>),
         mock_vaapi_picture_factory_(new MockVaapiPictureFactory()),
-        mock_vaapi_wrapper_(new MockVaapiWrapper()),
-        mock_vpp_vaapi_wrapper_(new MockVaapiWrapper()),
+        mock_vaapi_wrapper_(new MockVaapiWrapper(VaapiWrapper::kDecode)),
+        mock_vpp_vaapi_wrapper_(new MockVaapiWrapper(VaapiWrapper::kDecode)),
         weak_ptr_factory_(this) {
     decoder_thread_.Start();
 
@@ -178,8 +182,7 @@ class VaapiVideoDecodeAcceleratorTest : public TestWithParam<TestParams>,
   ~VaapiVideoDecodeAcceleratorTest() {}
 
   void SetUp() override {
-    in_shm_.reset(new base::SharedMemory);
-    ASSERT_TRUE(in_shm_->CreateAndMapAnonymous(kInputSize));
+    in_shm_ = base::UnsafeSharedMemoryRegion::Create(kInputSize);
   }
 
   void SetVdaStateToUnitialized() {
@@ -187,9 +190,9 @@ class VaapiVideoDecodeAcceleratorTest : public TestWithParam<TestParams>,
     vda_.state_ = VaapiVideoDecodeAccelerator::kUninitialized;
   }
 
-  void QueueInputBuffer(const BitstreamBuffer& bitstream_buffer) {
-    vda_.QueueInputBuffer(bitstream_buffer.ToDecoderBuffer(),
-                          bitstream_buffer.id());
+  void QueueInputBuffer(BitstreamBuffer bitstream_buffer) {
+    auto id = bitstream_buffer.id();
+    vda_.QueueInputBuffer(bitstream_buffer.ToDecoderBuffer(), id);
   }
 
   void AssignPictureBuffers(const std::vector<PictureBuffer>& picture_buffers) {
@@ -219,7 +222,9 @@ class VaapiVideoDecodeAcceleratorTest : public TestWithParam<TestParams>,
     ::testing::InSequence s;
     base::RunLoop run_loop;
     base::Closure quit_closure = run_loop.QuitClosure();
-    EXPECT_CALL(*mock_decoder_, SetStream(_, _, kInputSize, nullptr));
+    EXPECT_CALL(*mock_decoder_,
+                SetStream(_, IsExpectedDecoderBuffer(kInputSize, nullptr)))
+        .WillOnce(Return());
     EXPECT_CALL(*mock_decoder_, Decode())
         .WillOnce(Return(AcceleratedVideoDecoder::kAllocateNewSurfaces));
 
@@ -229,7 +234,14 @@ class VaapiVideoDecodeAcceleratorTest : public TestWithParam<TestParams>,
     const size_t kNumReferenceFrames = num_pictures / 2;
     EXPECT_CALL(*mock_decoder_, GetNumReferenceFrames())
         .WillOnce(Return(kNumReferenceFrames));
-    EXPECT_CALL(*mock_vaapi_wrapper_, DestroyContextAndSurfaces());
+    EXPECT_CALL(*mock_decoder_, GetVisibleRect())
+        .WillOnce(Return(gfx::Rect(picture_size)));
+    if (vda_.buffer_allocation_mode_ !=
+        VaapiVideoDecodeAccelerator::BufferAllocationMode::kNone) {
+      EXPECT_CALL(*mock_vaapi_wrapper_, DestroyContextAndSurfaces(_));
+    } else {
+      // TODO(crbug.com/971891): Make virtual and expect DestroyContext().
+    }
 
     if (expect_dismiss_picture_buffers) {
       EXPECT_CALL(*this, DismissPictureBuffer(_))
@@ -247,11 +259,12 @@ class VaapiVideoDecodeAcceleratorTest : public TestWithParam<TestParams>,
                                       1, picture_size, _))
         .WillOnce(RunClosure(quit_closure));
 
-    base::SharedMemoryHandle handle;
-    handle = base::SharedMemory::DuplicateHandle(in_shm_->handle());
-    BitstreamBuffer bitstream_buffer(bitstream_id, handle, kInputSize);
+    auto region = base::UnsafeSharedMemoryRegion::TakeHandleForSerialization(
+        in_shm_.Duplicate());
+    BitstreamBuffer bitstream_buffer(bitstream_id, std::move(region),
+                                     kInputSize);
 
-    QueueInputBuffer(bitstream_buffer);
+    QueueInputBuffer(std::move(bitstream_buffer));
     run_loop.Run();
   }
 
@@ -271,7 +284,7 @@ class VaapiVideoDecodeAcceleratorTest : public TestWithParam<TestParams>,
     // |decode_using_client_picture_buffers| determines the concrete method for
     // creation of context, surfaces and VaapiPictures.
     if (GetParam().decode_using_client_picture_buffers) {
-      EXPECT_CALL(*mock_vaapi_wrapper_, CreateContext(_, picture_size))
+      EXPECT_CALL(*mock_vaapi_wrapper_, CreateContext(picture_size))
           .WillOnce(Return(true));
       EXPECT_CALL(
           *mock_vaapi_picture_factory_,
@@ -284,9 +297,11 @@ class VaapiVideoDecodeAcceleratorTest : public TestWithParam<TestParams>,
       const size_t kNumReferenceFrames = 1 + num_pictures / 2;
       EXPECT_CALL(
           *mock_vaapi_wrapper_,
-          CreateContextAndSurfaces(_, picture_size, kNumReferenceFrames, _))
+          CreateContextAndSurfaces(
+              _, picture_size, VaapiWrapper::SurfaceUsageHint::kVideoDecoder,
+              kNumReferenceFrames, _))
           .WillOnce(DoAll(
-              WithArg<3>(Invoke([kNumReferenceFrames](
+              WithArg<4>(Invoke([kNumReferenceFrames](
                                     std::vector<VASurfaceID>* va_surface_ids) {
                 va_surface_ids->resize(kNumReferenceFrames);
               })),
@@ -324,17 +339,19 @@ class VaapiVideoDecodeAcceleratorTest : public TestWithParam<TestParams>,
   void DecodeOneFrameFast(int32_t bitstream_id) {
     base::RunLoop run_loop;
     base::Closure quit_closure = run_loop.QuitClosure();
-    EXPECT_CALL(*mock_decoder_, SetStream(_, _, kInputSize, nullptr));
+    EXPECT_CALL(*mock_decoder_,
+                SetStream(_, IsExpectedDecoderBuffer(kInputSize, nullptr)))
+        .WillOnce(Return());
     EXPECT_CALL(*mock_decoder_, Decode())
         .WillOnce(Return(AcceleratedVideoDecoder::kRanOutOfStreamData));
     EXPECT_CALL(*this, NotifyEndOfBitstreamBuffer(bitstream_id))
         .WillOnce(RunClosure(quit_closure));
 
-    base::SharedMemoryHandle handle;
-    handle = base::SharedMemory::DuplicateHandle(in_shm_->handle());
-    BitstreamBuffer bitstream_buffer(bitstream_id, handle, kInputSize);
+    auto region = base::UnsafeSharedMemoryRegion::TakeHandleForSerialization(
+        in_shm_.Duplicate());
+    QueueInputBuffer(
+        BitstreamBuffer(bitstream_id, std::move(region), kInputSize));
 
-    QueueInputBuffer(bitstream_buffer);
     run_loop.Run();
   }
 
@@ -350,7 +367,7 @@ class VaapiVideoDecodeAcceleratorTest : public TestWithParam<TestParams>,
   MOCK_METHOD0(NotifyResetDone, void());
   MOCK_METHOD1(NotifyError, void(VideoDecodeAccelerator::Error));
 
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_;
 
   // The class under test and a worker thread for it.
   VaapiVideoDecodeAccelerator vda_;
@@ -363,7 +380,7 @@ class VaapiVideoDecodeAcceleratorTest : public TestWithParam<TestParams>,
   scoped_refptr<MockVaapiWrapper> mock_vaapi_wrapper_;
   scoped_refptr<MockVaapiWrapper> mock_vpp_vaapi_wrapper_;
 
-  std::unique_ptr<base::SharedMemory> in_shm_;
+  base::UnsafeSharedMemoryRegion in_shm_;
 
  private:
   base::WeakPtrFactory<VaapiVideoDecodeAcceleratorTest> weak_ptr_factory_;
@@ -391,30 +408,32 @@ TEST_P(VaapiVideoDecodeAcceleratorTest, SupportedPlatforms) {
 TEST_P(VaapiVideoDecodeAcceleratorTest, QueueInputBufferAndError) {
   SetVdaStateToUnitialized();
 
-  base::SharedMemoryHandle handle;
-  handle = base::SharedMemory::DuplicateHandle(in_shm_->handle());
-  BitstreamBuffer bitstream_buffer(kBitstreamId, handle, kInputSize);
+  auto region = base::UnsafeSharedMemoryRegion::TakeHandleForSerialization(
+      in_shm_.Duplicate());
+  BitstreamBuffer bitstream_buffer(kBitstreamId, std::move(region), kInputSize);
 
   EXPECT_CALL(*this,
               NotifyError(VaapiVideoDecodeAccelerator::PLATFORM_FAILURE));
-  QueueInputBuffer(bitstream_buffer);
+  QueueInputBuffer(std::move(bitstream_buffer));
 }
 
 // Verifies that Decode() returning kDecodeError ends up pinging NotifyError().
 TEST_P(VaapiVideoDecodeAcceleratorTest, QueueInputBufferAndDecodeError) {
-  base::SharedMemoryHandle handle;
-  handle = base::SharedMemory::DuplicateHandle(in_shm_->handle());
-  BitstreamBuffer bitstream_buffer(kBitstreamId, handle, kInputSize);
+  auto region = base::UnsafeSharedMemoryRegion::TakeHandleForSerialization(
+      in_shm_.Duplicate());
+  BitstreamBuffer bitstream_buffer(kBitstreamId, std::move(region), kInputSize);
 
   base::RunLoop run_loop;
   base::Closure quit_closure = run_loop.QuitClosure();
-  EXPECT_CALL(*mock_decoder_, SetStream(_, _, kInputSize, nullptr));
+  EXPECT_CALL(*mock_decoder_,
+              SetStream(_, IsExpectedDecoderBuffer(kInputSize, nullptr)))
+      .WillOnce(Return());
   EXPECT_CALL(*mock_decoder_, Decode())
       .WillOnce(Return(AcceleratedVideoDecoder::kDecodeError));
   EXPECT_CALL(*this, NotifyError(VaapiVideoDecodeAccelerator::PLATFORM_FAILURE))
       .WillOnce(RunClosure(quit_closure));
 
-  QueueInputBuffer(bitstream_buffer);
+  QueueInputBuffer(std::move(bitstream_buffer));
   run_loop.Run();
 }
 

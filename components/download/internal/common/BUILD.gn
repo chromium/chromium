@@ -18,6 +18,7 @@ source_set("internal") {
   ]
 
   sources = [
+    "all_download_event_notifier.cc",
     "base_file.cc",
     "base_file_win.cc",
     "download_create_info.cc",
@@ -38,8 +39,6 @@ source_set("internal") {
     "download_stats.cc",
     "download_task_runner.cc",
     "download_ukm_helper.cc",
-    "download_url_loader_factory_getter.cc",
-    "download_url_loader_factory_getter_impl.cc",
     "download_utils.cc",
     "download_worker.cc",
     "download_worker.h",
@@ -53,12 +52,17 @@ source_set("internal") {
     "resource_downloader.h",
     "save_package_download_job.cc",
     "save_package_download_job.h",
+    "simple_download_manager.cc",
+    "simple_download_manager_coordinator.cc",
     "stream_handle_input_stream.cc",
     "url_download_handler_factory.cc",
     "url_download_request_handle.cc",
+    "url_loader_factory_provider.cc",
   ]
 
   public_deps = [
+    "//components/services/quarantine/public/mojom",
+    "//mojo/public/cpp/bindings",
     "//services/network/public/mojom",
   ]
 
@@ -71,9 +75,15 @@ source_set("internal") {
     "//components/leveldb_proto",
     "//mojo/public/c/system",
     "//net",
+    "//services/device/public/mojom:mojom",
     "//services/metrics/public/cpp:ukm_builders",
     "//services/network/public/cpp",
+    "//services/service_manager/public/cpp:cpp",
   ]
+
+  if (is_win) {
+    deps += [ "//components/services/quarantine/public/cpp:features" ]
+  }
 
   if (is_android) {
     sources += [
@@ -95,7 +105,9 @@ if (is_android) {
 
     deps = [
       "//base:base_java",
+      "//base:jni_java",
     ]
+    annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   }
 
   generate_jni("jni_headers") {
@@ -103,7 +115,6 @@ if (is_android) {
     sources = [
       "android/java/src/org/chromium/components/download/DownloadCollectionBridge.java",
     ]
-    jni_package = "components/download/internal/common"
   }
 }
 
@@ -127,6 +138,7 @@ source_set("unit_tests") {
   }
 
   sources = [
+    "all_download_event_notifier_unittest.cc",
     "base_file_unittest.cc",
     "base_file_win_unittest.cc",
     "download_db_cache_unittest.cc",

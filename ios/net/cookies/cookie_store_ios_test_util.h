@@ -36,15 +36,15 @@ class TestPersistentCookieStore
 
  private:
   // net::CookieMonster::PersistentCookieStore implementation:
-  void Load(const LoadedCallback& loaded_callback,
+  void Load(LoadedCallback loaded_callback,
             const NetLogWithSource& net_log) override;
   void LoadCookiesForKey(const std::string& key,
-                         const LoadedCallback& loaded_callback) override;
+                         LoadedCallback loaded_callback) override;
   void AddCookie(const net::CanonicalCookie& cc) override;
   void UpdateCookieAccessTime(const net::CanonicalCookie& cc) override;
   void DeleteCookie(const net::CanonicalCookie& cc) override;
   void SetForceKeepSessionState() override;
-  void SetBeforeFlushCallback(base::RepeatingClosure callback) override;
+  void SetBeforeCommitCallback(base::RepeatingClosure callback) override;
   void Flush(base::OnceClosure callback) override;
 
   ~TestPersistentCookieStore() override;
@@ -76,8 +76,7 @@ class ScopedTestingCookieStoreIOSClient {
 
 void RecordCookieChanges(std::vector<net::CanonicalCookie>* out_cookies,
                          std::vector<bool>* out_removes,
-                         const net::CanonicalCookie& cookie,
-                         net::CookieChangeCause cause);
+                         const net::CookieChangeInfo& change);
 
 // Sets a cookie.
 void SetCookie(const std::string& cookie_line,

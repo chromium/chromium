@@ -1,0 +1,55 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+
+java_group("jacoco_all_java") {
+  testonly = true
+  deps = [
+    ":jacocoagent_java",
+    ":jacocoant_java",
+    ":jacococli_java",
+    ":org_jacocoagent_java",
+    ":org_jacocoant_java",
+    ":org_jacococore_java",
+    ":org_jacocoreport_java",
+  ]
+}
+
+java_prebuilt("jacocoagent_java") {
+  include_java_resources = true
+  supports_android = true
+  jar_path = "lib/jacocoagent.jar"
+  proguard_configs = [ "jacoco_instrument.flags" ]
+}
+
+java_prebuilt("jacocoant_java") {
+  testonly = true
+  jar_path = "lib/jacocoant.jar"
+}
+
+java_prebuilt("jacococli_java") {
+  testonly = true
+  jar_path = "lib/jacococli.jar"
+}
+
+java_prebuilt("org_jacocoagent_java") {
+  testonly = true
+  jar_path = "lib/org.jacoco.agent-0.8.3.201901230119.jar"
+}
+
+java_prebuilt("org_jacocoant_java") {
+  testonly = true
+  jar_path = "lib/org.jacoco.ant-0.8.3.201901230119.jar"
+}
+
+java_prebuilt("org_jacococore_java") {
+  testonly = true
+  jar_path = "lib/org.jacoco.core-0.8.3.201901230119.jar"
+}
+
+java_prebuilt("org_jacocoreport_java") {
+  testonly = true
+  jar_path = "lib/org.jacoco.report-0.8.3.201901230119.jar"
+}

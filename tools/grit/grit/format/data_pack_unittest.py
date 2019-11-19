@@ -5,6 +5,7 @@
 
 '''Unit tests for grit.format.data_pack'''
 
+from __future__ import print_function
 
 import os
 import sys

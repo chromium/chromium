@@ -40,8 +40,12 @@
     return simulateClick(document.getElementById("view_source_link"));
   }
 
-  function clickDeadFileNewWindowLink() {
-    return simulateClick(document.getElementById("dead_file_new_window_link"));
+  function clickLinkToSelf() {
+    return simulateClick(document.getElementById("linkToSelf"));
+  }
+
+  function clickGoogleChromeLink() {
+    return simulateClick(document.getElementById("google_chrome_link"));
   }
  </script>
  </head>
@@ -51,6 +55,9 @@
 <a href="view-source:about:blank" id="view_source_link">view-source:</a><br>
 <a href="title2.html" id="same_site_new_window_link" target="_blank">same-site new window</a>
 <a href="http://foo.com/title2.html" id="cross_site_new_window_link" target="_blank">cross-site new window</a>
-<a href="file://" id="dead_file_new_window_link" target="_blank">dead-file new window</a>
-
+<a href="" id="linkToSelf" target="_blank">self new window</a>
+<script>
+  document.getElementById("linkToSelf").href = window.location.toString();
+</script>
+<a href="googlechrome://" id="google_chrome_link">googlechrome:</a></br>
 </html>

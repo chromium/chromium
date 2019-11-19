@@ -11,7 +11,6 @@
 #include "ash/app_list/app_list_export.h"
 #include "ash/app_list/views/app_list_menu_model_adapter.h"
 #include "ash/app_list/views/search_result_base_view.h"
-#include "ash/public/interfaces/menu.mojom.h"
 #include "base/macros.h"
 #include "ui/views/context_menu_controller.h"
 
@@ -20,31 +19,39 @@ class ImageView;
 class Label;
 }  // namespace views
 
-namespace app_list {
+namespace ash {
 
 class AppListViewDelegate;
-class SearchResult;
 class PaginationModel;
+class SearchResult;
 
 // A tile view that displays a search result. It hosts view for search result
 // that has SearchResult::DisplayType DISPLAY_TILE or DISPLAY_RECOMMENDATION.
 class APP_LIST_EXPORT SearchResultTileItemView
     : public SearchResultBaseView,
-      public views::ContextMenuController,
-      public AppListMenuModelAdapter::Delegate {
+      public views::ContextMenuController {
  public:
   SearchResultTileItemView(AppListViewDelegate* view_delegate,
-                           PaginationModel* pagination_model,
+                           ash::PaginationModel* pagination_model,
                            bool show_in_apps_page);
   ~SearchResultTileItemView() override;
 
   void OnResultChanged() override;
-  void SetIndexInItemListView(size_t index);
+
+  // Overridden from SearchResultBaseView:
+  base::string16 ComputeAccessibleName() const override;
 
   // Informs the SearchResultTileItemView of its parent's background color. The
   // controls within the SearchResultTileItemView will adapt to suit the given
   // color.
   void SetParentBackgroundColor(SkColor color);
+
+  void set_group_index_in_container_view(int index) {
+    group_index_in_container_view_ = index;
+  }
+  int group_index_in_container_view() const {
+    return group_index_in_container_view_;
+  }
 
   // Overridden from views::ButtonListener:
   void ButtonPressed(views::Button* sender, const ui::Event& event) override;
@@ -61,19 +68,21 @@ class APP_LIST_EXPORT SearchResultTileItemView
   void OnMetadataChanged() override;
 
   // views::ContextMenuController overrides:
-  void ShowContextMenuForView(views::View* source,
-                              const gfx::Point& point,
-                              ui::MenuSourceType source_type) override;
-
-  // AppListMenuModelAdapter::Delegate overrides:
-  void ExecuteCommand(int command_id, int event_flags) override;
+  void ShowContextMenuForViewImpl(views::View* source,
+                                  const gfx::Point& point,
+                                  ui::MenuSourceType source_type) override;
 
  private:
-  // Bound by ShowContextMenuForView().
+  // Launch the result and log to various histograms.
+  // |by_button_press|: True if |result_| is activated by button pressing;
+  //                    otherwise |result| is activated by ENTER key pressing.
+  void ActivateResult(int event_flags, bool by_button_press);
+
+  // Bound by ShowContextMenuForViewImpl().
   void OnGetContextMenuModel(views::View* source,
                              const gfx::Point& point,
                              ui::MenuSourceType source_type,
-                             std::vector<ash::mojom::MenuItemPtr> menu);
+                             std::unique_ptr<ui::SimpleMenuModel> menu_model);
 
   // The callback used when a menu closes.
   void OnMenuClosed();
@@ -92,7 +101,7 @@ class APP_LIST_EXPORT SearchResultTileItemView
   bool IsSuggestedAppTileShownInAppPage() const;
 
   // Records an app being launched.
-  void LogAppLaunch() const;
+  void LogAppLaunchForSuggestedApp() const;
 
   void UpdateBackgroundColor();
 
@@ -100,11 +109,10 @@ class APP_LIST_EXPORT SearchResultTileItemView
   void Layout() override;
   const char* GetClassName() const override;
   gfx::Size CalculatePreferredSize() const override;
-  bool GetTooltipText(const gfx::Point& p,
-                      base::string16* tooltip) const override;
+  base::string16 GetTooltipText(const gfx::Point& p) const override;
 
   AppListViewDelegate* const view_delegate_;           // Owned by AppListView.
-  PaginationModel* const pagination_model_;            // Owned by AppsGridView.
+  ash::PaginationModel* const pagination_model_;       // Owned by AppsGridView.
 
   views::ImageView* icon_ = nullptr;         // Owned by views hierarchy.
   views::ImageView* badge_ = nullptr;        // Owned by views hierarchy.
@@ -115,20 +123,23 @@ class APP_LIST_EXPORT SearchResultTileItemView
 
   SkColor parent_background_color_ = SK_ColorTRANSPARENT;
 
+  // The index of the app in its display group in its container view. Currently,
+  // there are three separately displayed groups for apps in launcher's
+  // suggestion window: Installed apps, play store apps, play store reinstalled
+  // app.
+  int group_index_in_container_view_;
+
   const bool is_play_store_app_search_enabled_;
   const bool is_app_reinstall_recommendation_enabled_;
   const bool show_in_apps_page_;  // True if shown in app list's apps page.
 
   std::unique_ptr<AppListMenuModelAdapter> context_menu_;
 
-  // The index of this item in the search_result_tile_item_list_view, only used
-  // for logging.
-  int index_in_item_list_view_ = -1;
-  base::WeakPtrFactory<SearchResultTileItemView> weak_ptr_factory_;
+  base::WeakPtrFactory<SearchResultTileItemView> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(SearchResultTileItemView);
 };
 
-}  // namespace app_list
+}  // namespace ash
 
 #endif  // ASH_APP_LIST_VIEWS_SEARCH_RESULT_TILE_ITEM_VIEW_H_

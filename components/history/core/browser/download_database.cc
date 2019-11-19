@@ -488,7 +488,7 @@ void DownloadDatabase::QueryDownloads(std::vector<DownloadRow>* results) {
       dropped_reason = DROPPED_REASON_BAD_DANGER_TYPE;
     }
     if (dropped_reason == DROPPED_REASON_MAX) {
-      DCHECK(!base::ContainsKey(info_map, info->id));
+      DCHECK(!base::Contains(info_map, info->id));
       uint32_t id = info->id;
       info_map[id] = info.release();
     }
@@ -511,7 +511,7 @@ void DownloadDatabase::QueryDownloads(std::vector<DownloadRow>* results) {
 
     // Confirm the id has already been seen--if it hasn't, discard the
     // record.
-    if (!base::ContainsKey(info_map, id))
+    if (!base::Contains(info_map, id))
       continue;
 
     // Confirm all previous URLs in the chain have already been seen;
@@ -845,8 +845,6 @@ void DownloadDatabase::QueryDownloadSlices(DownloadRowMap* download_row_map) {
     // record.
     auto it = download_row_map->find(info.download_id);
     bool found = (it != download_row_map->end());
-    UMA_HISTOGRAM_BOOLEAN(
-        "Download.DatabaseDownloadExistsForDownloadSlice", found);
     if (!found) {
       RemoveDownloadSlices(info.download_id);
       continue;

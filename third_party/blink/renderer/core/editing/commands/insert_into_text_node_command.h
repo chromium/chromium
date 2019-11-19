@@ -34,12 +34,6 @@ class Text;
 
 class InsertIntoTextNodeCommand final : public SimpleEditCommand {
  public:
-  static InsertIntoTextNodeCommand* Create(Text* node,
-                                           unsigned offset,
-                                           const String& text) {
-    return MakeGarbageCollected<InsertIntoTextNodeCommand>(node, offset, text);
-  }
-
   InsertIntoTextNodeCommand(Text* node, unsigned offset, const String& text);
 
   void Trace(Visitor*) override;

@@ -33,4 +33,11 @@ HTMLTagCollection::HTMLTagCollection(ContainerNode& root_node,
   DCHECK(root_node.GetDocument().IsHTMLDocument());
 }
 
+HTMLTagCollection::HTMLTagCollection(ContainerNode& root_node,
+                                     CollectionType type,
+                                     const AtomicString& qualified_name)
+    : HTMLTagCollection(root_node, qualified_name) {
+  DCHECK_EQ(type, kHTMLTagCollectionType);
+}
+
 }  // namespace blink

@@ -17,6 +17,7 @@
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "extensions/browser/extension_event_histogram_value.h"
+#include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
 #include "extensions/common/api/bluetooth.h"
 #include "extensions/common/api/bluetooth_private.h"
@@ -34,7 +35,6 @@ class BluetoothDiscoverySession;
 
 namespace extensions {
 class BluetoothApiPairingDelegate;
-class ExtensionRegistry;
 struct EventListenerInfo;
 
 class BluetoothEventRouter : public device::BluetoothAdapter::Observer,
@@ -181,9 +181,9 @@ class BluetoothEventRouter : public device::BluetoothAdapter::Observer,
   content::NotificationRegistrar registrar_;
 
   ScopedObserver<ExtensionRegistry, ExtensionRegistryObserver>
-      extension_registry_observer_;
+      extension_registry_observer_{this};
 
-  base::WeakPtrFactory<BluetoothEventRouter> weak_ptr_factory_;
+  base::WeakPtrFactory<BluetoothEventRouter> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(BluetoothEventRouter);
 };

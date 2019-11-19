@@ -47,6 +47,7 @@ enum KeyboardCode {
   VKEY_CAPITAL = 0x14,
   VKEY_KANA = 0x15,
   VKEY_HANGUL = 0x15,
+  VKEY_PASTE = 0x16,
   VKEY_JUNJA = 0x17,
   VKEY_FINAL = 0x18,
   VKEY_HANJA = 0x19,
@@ -223,6 +224,7 @@ enum KeyboardCode {
   VKEY_BRIGHTNESS_UP = 0xD9,
   VKEY_KBD_BRIGHTNESS_DOWN = 0xDA,
   VKEY_KBD_BRIGHTNESS_UP = 0xE8,
+  VKEY_SPATNAV_BACK = 0xE9,
 
   // Windows does not have a specific key code for AltGr. We use the unused 0xE1
   // (VK_OEM_AX) code to represent AltGr, matching the behaviour of Firefox on

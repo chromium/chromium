@@ -5,6 +5,8 @@
 #ifndef DEVICE_FIDO_FIDO_DISCOVERY_BASE_H_
 #define DEVICE_FIDO_FIDO_DISCOVERY_BASE_H_
 
+#include <vector>
+
 #include "base/component_export.h"
 #include "base/logging.h"
 #include "base/macros.h"
@@ -23,13 +25,14 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoDiscoveryBase {
     virtual ~Observer();
 
     // It is guaranteed that this is never invoked synchronously from Start().
-    virtual void DiscoveryStarted(FidoDiscoveryBase* discovery, bool success) {}
+    // |authenticators| is the list of authenticators discovered upon start.
+    virtual void DiscoveryStarted(
+        FidoDiscoveryBase* discovery,
+        bool success,
+        std::vector<FidoAuthenticator*> authenticators = {}) {}
 
-    // It is guaranteed that AuthenticatorAdded/AuthenticatorRemoved() will not
-    // be invoked before the client of FidoDiscoveryBase calls
-    // FidoDiscoveryBase::Start(). However, for authenticators already known to
-    // the system at that point, AuthenticatorAdded() might already be called to
-    // reported already known devices.
+    // Called after DiscoveryStarted for any devices discovered after
+    // initialization.
     virtual void AuthenticatorAdded(FidoDiscoveryBase* discovery,
                                     FidoAuthenticator* authenticator) = 0;
     virtual void AuthenticatorRemoved(FidoDiscoveryBase* discovery,

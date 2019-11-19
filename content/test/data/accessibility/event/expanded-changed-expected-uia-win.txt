@@ -1,0 +1,6 @@
+AriaProperties changed on role=link, name=Toggle
+AriaProperties changed on role=list, name=list
+AriaProperties changed on role=listitem, name=list item 1
+AriaProperties changed on role=listitem, name=list item 2
+AriaProperties changed on role=listitem, name=list item 3
+ExpandCollapseExpandCollapseState changed on role=link, name=Toggle

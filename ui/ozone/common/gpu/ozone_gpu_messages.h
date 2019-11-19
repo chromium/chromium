@@ -35,6 +35,9 @@ IPC_ENUM_TRAITS_MAX_VALUE(display::DisplayConnectionType,
 
 IPC_ENUM_TRAITS_MAX_VALUE(display::HDCPState, display::HDCP_STATE_LAST)
 
+IPC_ENUM_TRAITS_MAX_VALUE(display::PanelOrientation,
+                          display::PanelOrientation::kLast)
+
 IPC_ENUM_TRAITS_MAX_VALUE(gfx::OverlayTransform, gfx::OVERLAY_TRANSFORM_LAST)
 
 IPC_ENUM_TRAITS_MAX_VALUE(ui::OverlayStatus, ui::OVERLAY_STATUS_LAST)
@@ -56,9 +59,11 @@ IPC_STRUCT_TRAITS_BEGIN(ui::DisplaySnapshot_Params)
   IPC_STRUCT_TRAITS_MEMBER(has_color_correction_matrix)
   IPC_STRUCT_TRAITS_MEMBER(color_correction_in_linear_space)
   IPC_STRUCT_TRAITS_MEMBER(color_space)
+  IPC_STRUCT_TRAITS_MEMBER(bits_per_channel)
   IPC_STRUCT_TRAITS_MEMBER(display_name)
   IPC_STRUCT_TRAITS_MEMBER(sys_path)
   IPC_STRUCT_TRAITS_MEMBER(modes)
+  IPC_STRUCT_TRAITS_MEMBER(panel_orientation)
   IPC_STRUCT_TRAITS_MEMBER(edid)
   IPC_STRUCT_TRAITS_MEMBER(has_current_mode)
   IPC_STRUCT_TRAITS_MEMBER(current_mode)
@@ -67,7 +72,6 @@ IPC_STRUCT_TRAITS_BEGIN(ui::DisplaySnapshot_Params)
   IPC_STRUCT_TRAITS_MEMBER(product_code)
   IPC_STRUCT_TRAITS_MEMBER(year_of_manufacture)
   IPC_STRUCT_TRAITS_MEMBER(maximum_cursor_size)
-  IPC_STRUCT_TRAITS_MEMBER(has_associated_crtc)
 IPC_STRUCT_TRAITS_END()
 
 IPC_STRUCT_TRAITS_BEGIN(display::GammaRampRGBEntry)
@@ -82,6 +86,7 @@ IPC_STRUCT_TRAITS_BEGIN(ui::OverlayCheck_Params)
   IPC_STRUCT_TRAITS_MEMBER(format)
   IPC_STRUCT_TRAITS_MEMBER(display_rect)
   IPC_STRUCT_TRAITS_MEMBER(crop_rect)
+  IPC_STRUCT_TRAITS_MEMBER(is_opaque)
   IPC_STRUCT_TRAITS_MEMBER(plane_z_order)
   IPC_STRUCT_TRAITS_MEMBER(is_overlay_candidate)
 IPC_STRUCT_TRAITS_END()
@@ -110,8 +115,9 @@ IPC_MESSAGE_CONTROL2(OzoneGpuMsg_CursorMove,
 // Explicit creation of a window. We explicitly create the window such
 // that any state change in the window is not lost while the surface is
 // created on the GPU side.
-IPC_MESSAGE_CONTROL1(OzoneGpuMsg_CreateWindow,
-                     gfx::AcceleratedWidget /* widget */)
+IPC_MESSAGE_CONTROL2(OzoneGpuMsg_CreateWindow,
+                     gfx::AcceleratedWidget /* widget */,
+                     gfx::Rect /* initial_bounds */)
 
 IPC_MESSAGE_CONTROL1(OzoneGpuMsg_DestroyWindow,
                      gfx::AcceleratedWidget /* widget */)

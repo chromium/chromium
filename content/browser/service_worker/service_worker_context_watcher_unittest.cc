@@ -10,7 +10,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "content/browser/service_worker/embedded_worker_test_helper.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration.mojom.h"
 
@@ -35,7 +35,7 @@ void DidUnregisterServiceWorker(blink::ServiceWorkerStatusCode* status_out,
 
 class WatcherCallback {
  public:
-  WatcherCallback() : weak_factory_(this) {}
+  WatcherCallback() {}
 
   ~WatcherCallback() {}
 
@@ -114,7 +114,7 @@ class WatcherCallback {
 
   int callback_count_ = 0;
 
-  base::WeakPtrFactory<WatcherCallback> weak_factory_;
+  base::WeakPtrFactory<WatcherCallback> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(WatcherCallback);
 };
@@ -124,7 +124,7 @@ class WatcherCallback {
 class ServiceWorkerContextWatcherTest : public testing::Test {
  public:
   ServiceWorkerContextWatcherTest()
-      : browser_thread_bundle_(TestBrowserThreadBundle::IO_MAINLOOP) {}
+      : task_environment_(BrowserTaskEnvironment::IO_MAINLOOP) {}
 
   void SetUp() override {
     helper_.reset(new EmbeddedWorkerTestHelper(base::FilePath()));
@@ -146,7 +146,7 @@ class ServiceWorkerContextWatcherTest : public testing::Test {
     options.scope = scope;
     int64_t registration_id = blink::mojom::kInvalidServiceWorkerRegistrationId;
     context()->RegisterServiceWorker(
-        script_url, options,
+        script_url, options, blink::mojom::FetchClientSettingsObject::New(),
         base::BindOnce(&DidRegisterServiceWorker, &registration_id));
     base::RunLoop().RunUntilIdle();
     return registration_id;
@@ -170,7 +170,7 @@ class ServiceWorkerContextWatcherTest : public testing::Test {
 
  private:
   std::unique_ptr<EmbeddedWorkerTestHelper> helper_;
-  TestBrowserThreadBundle browser_thread_bundle_;
+  BrowserTaskEnvironment task_environment_;
 
   DISALLOW_COPY_AND_ASSIGN(ServiceWorkerContextWatcherTest);
 };

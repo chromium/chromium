@@ -20,6 +20,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string16.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_info_cache_observer.h"
@@ -58,6 +59,7 @@ class ProfileInfoCache : public ProfileInfoInterface,
                          const base::string16& name,
                          const std::string& gaia_id,
                          const base::string16& user_name,
+                         bool is_consented_primary_account,
                          size_t icon_index,
                          const std::string& supervised_user_id,
                          const AccountId& account_id);
@@ -72,18 +74,11 @@ class ProfileInfoCache : public ProfileInfoInterface,
   // directly referring to this implementation.
   size_t GetIndexOfProfileWithPath(
       const base::FilePath& profile_path) const override;
+  // Deprecated 10/2019, Do not use!
+  // Use GetNameToDisplayOfProfileAtIndex instead.
   base::string16 GetNameOfProfileAtIndex(size_t index) const override;
   // Will be removed SOON with ProfileInfoCache tests. Do not use!
   base::FilePath GetPathOfProfileAtIndex(size_t index) const override;
-  // Will be removed SOON with ProfileInfoCache tests. Do not use!
-  base::string16 GetUserNameOfProfileAtIndex(size_t index) const override;
-  // Will be removed SOON with ProfileInfoCache tests. Do not use!
-  const gfx::Image& GetAvatarIconOfProfileAtIndex(size_t index) const override;
-  // Note that a return value of false could mean an error in collection or
-  // that there are currently no background apps running. However, the action
-  // which results is the same in both cases (thus far).
-  // Will be removed SOON with ProfileInfoCache tests. Do not use!
-  bool GetBackgroundStatusOfProfileAtIndex(size_t index) const override;
   base::string16 GetGAIANameOfProfileAtIndex(size_t index) const override;
   base::string16 GetGAIAGivenNameOfProfileAtIndex(size_t index) const override;
   std::string GetGAIAIdOfProfileAtIndex(size_t index) const override;
@@ -107,24 +102,18 @@ class ProfileInfoCache : public ProfileInfoInterface,
   // Will be removed SOON with ProfileInfoCache tests. Do not use!
   size_t GetAvatarIconIndexOfProfileAtIndex(size_t index) const;
 
-  // Warning: This will re-sort profiles and thus may change indices!
-  void SetNameOfProfileAtIndex(size_t index, const base::string16& name);
-  void SetAuthInfoOfProfileAtIndex(size_t index,
-                                   const std::string& gaia_id,
-                                   const base::string16& user_name);
+  void SetLocalProfileNameOfProfileAtIndex(size_t index,
+                                           const base::string16& name);
   // Will be removed SOON with ProfileInfoCache tests. Do not use!
   void SetAvatarIconOfProfileAtIndex(size_t index, size_t icon_index);
   void SetIsOmittedProfileAtIndex(size_t index, bool is_omitted);
   void SetSupervisedUserIdOfProfileAtIndex(size_t index, const std::string& id);
-  // Will be removed SOON with ProfileInfoCache tests. Do not use!
-  void SetBackgroundStatusOfProfileAtIndex(size_t index,
-                                           bool running_background_apps);
   // Warning: This will re-sort profiles and thus may change indices!
   void SetGAIANameOfProfileAtIndex(size_t index, const base::string16& name);
   // Warning: This will re-sort profiles and thus may change indices!
   void SetGAIAGivenNameOfProfileAtIndex(size_t index,
                                         const base::string16& name);
-  void SetGAIAPictureOfProfileAtIndex(size_t index, const gfx::Image* image);
+  void SetGAIAPictureOfProfileAtIndex(size_t index, gfx::Image image);
   void SetIsUsingGAIAPictureOfProfileAtIndex(size_t index, bool value);
   void SetProfileSigninRequiredAtIndex(size_t index, bool value);
   void SetProfileIsUsingDefaultNameAtIndex(size_t index, bool value);
@@ -135,6 +124,9 @@ class ProfileInfoCache : public ProfileInfoInterface,
 
   const base::FilePath& GetUserDataDir() const;
 
+  // Gets the name of the profile, which is the one displayed in the User Menu.
+  base::string16 GetNameToDisplayOfProfileAtIndex(size_t index);
+
   // Register cache related preferences in Local State.
   static void RegisterPrefs(PrefRegistrySimple* registry);
 
@@ -143,6 +135,7 @@ class ProfileInfoCache : public ProfileInfoInterface,
                   const base::string16& name,
                   const std::string& gaia_id,
                   const base::string16& user_name,
+                  bool is_consented_primary_account,
                   size_t icon_index,
                   const std::string& supervised_user_id,
                   const AccountId& account_id) override;
@@ -152,9 +145,17 @@ class ProfileInfoCache : public ProfileInfoInterface,
   bool GetProfileAttributesWithPath(const base::FilePath& path,
                                     ProfileAttributesEntry** entry) override;
 
+  void NotifyProfileAuthInfoChanged(const base::FilePath& profile_path);
+
+  static const char kNameKey[];
+  static const char kGAIANameKey[];
+  static const char kGAIAGivenNameKey[];
+
  private:
   FRIEND_TEST_ALL_PREFIXES(ProfileAttributesStorageTest,
                            DownloadHighResAvatarTest);
+  FRIEND_TEST_ALL_PREFIXES(ProfileInfoCacheTest,
+                           MigrateLegacyProfileNamesAndRecomputeIfNeeded);
 
   const base::DictionaryValue* GetInfoForProfileAtIndex(size_t index) const;
   // Saves the profile info to a cache.
@@ -174,16 +175,21 @@ class ProfileInfoCache : public ProfileInfoInterface,
   // generic profile avatar.
   const gfx::Image* GetHighResAvatarOfProfileAtIndex(size_t index) const;
 
+  // Download and high-res avatars used by the profiles.
+  void DownloadAvatars();
+  void NotifyIfProfileNamesHaveChanged();
+
+#if !defined(OS_ANDROID) && !defined(OS_CHROMEOS)
+  void LoadGAIAPictureIfNeeded();
   // Migrate any legacy profile names ("First user", "Default Profile") to
-  // new style default names ("Person 1"), and download and high-res avatars
-  // used by the profiles.
-  void MigrateLegacyProfileNamesAndDownloadAvatars();
+  // new style default names ("Person 1"). Rename any duplicates of "Person n"
+  // i.e. Two or more profiles with the profile name "Person 1" would be
+  // recomputed to "Person 1" and "Person 2".
+  void MigrateLegacyProfileNamesAndRecomputeIfNeeded();
+  static void SetLegacyProfileMigrationForTesting(bool value);
+#endif  // !defined(OS_ANDROID) && !defined(OS_CHROMEOS)
 
-  // Remove statistics values that have previously been stored and are not used
-  // anymore.
-  void RemoveDeprecatedStatistics();
-
-  std::vector<std::string> sorted_keys_;
+  std::vector<std::string> keys_;
   const base::FilePath user_data_dir_;
 
   DISALLOW_COPY_AND_ASSIGN(ProfileInfoCache);

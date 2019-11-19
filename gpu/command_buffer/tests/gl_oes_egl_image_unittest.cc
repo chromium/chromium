@@ -127,10 +127,10 @@ TEST_F(GpuOESEGLImageTest, EGLImageToTexture) {
 
   // Bind the image.
   EXPECT_TRUE(image->BindTexImage(GL_TEXTURE_2D));
-  unsigned internal_format = image->GetInternalFormat();
   gl_.decoder()->SetLevelInfo(
-      texture_id, 0 /* level */, internal_format, size.width(), size.height(),
-      1 /* depth */, internal_format, GL_UNSIGNED_BYTE, gfx::Rect(size));
+      texture_id, 0 /* level */, image->GetInternalFormat(), size.width(),
+      size.height(), 1 /* depth */, image->GetDataFormat(),
+      image->GetDataType(), gfx::Rect(size));
   gl_.decoder()->BindImage(texture_id, GL_TEXTURE_2D, image.get(),
                            true /* can_bind_to_sampler */);
 

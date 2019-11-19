@@ -12,6 +12,7 @@
 #include "sandbox/win/src/sandbox.h"
 #include "sandbox/win/src/sandbox_factory.h"
 #include "sandbox/win/src/target_services.h"
+#include "sandbox/win/src/win_utils.h"
 #include "sandbox/win/tests/common/controller.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -61,6 +62,24 @@ SBOX_TESTS_COMMAND int RestrictedTokenTest_openprocess(int argc,
   return SBOX_TEST_DENIED;
 }
 
+// Opens a the process token and checks if it's restricted.
+SBOX_TESTS_COMMAND int RestrictedTokenTest_IsRestricted(int argc,
+                                                        wchar_t** argv) {
+  HANDLE token_handle;
+  if (!::OpenProcessToken(::GetCurrentProcess(), TOKEN_QUERY, &token_handle))
+    return SBOX_TEST_FIRST_ERROR;
+  base::win::ScopedHandle token(token_handle);
+
+  std::unique_ptr<BYTE[]> groups;
+  if (GetTokenInformation(token_handle, TokenRestrictedSids, &groups) !=
+      ERROR_SUCCESS) {
+    return SBOX_TEST_SECOND_ERROR;
+  }
+
+  auto* token_groups = reinterpret_cast<PTOKEN_GROUPS>(groups.get());
+  return token_groups->GroupCount > 0 ? SBOX_TEST_SUCCEEDED : SBOX_TEST_FAILED;
+}
+
 TEST(RestrictedTokenTest, OpenLowPrivilegedProcess) {
   // Test limited privilege to renderer open.
   ASSERT_EQ(SBOX_TEST_SUCCEEDED,
@@ -75,6 +94,16 @@ TEST(RestrictedTokenTest, OpenLowPrivilegedProcess) {
   // Ensure unsandboxed process can still open the renderer for all access.
   ASSERT_EQ(SBOX_TEST_SUCCEEDED,
             RunOpenProcessTest(true, true, PROCESS_ALL_ACCESS));
+}
+
+TEST(RestrictedTokenTest, CheckNonAdminRestricted) {
+  TestRunner runner(JOB_NONE, USER_RESTRICTED_SAME_ACCESS, USER_NON_ADMIN);
+  EXPECT_EQ(SBOX_TEST_FAILED,
+            runner.RunTest(L"RestrictedTokenTest_IsRestricted"));
+  TestRunner runner_restricted(JOB_NONE, USER_RESTRICTED_SAME_ACCESS,
+                               USER_RESTRICTED_NON_ADMIN);
+  EXPECT_EQ(SBOX_TEST_SUCCEEDED,
+            runner_restricted.RunTest(L"RestrictedTokenTest_IsRestricted"));
 }
 
 }  // namespace sandbox

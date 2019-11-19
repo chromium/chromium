@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://extensions/extensions.js';
+
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {testVisible} from './test_util.js';
+
 /** @fileoverview Suite of tests for activity-log-history-item. */
 suite('ExtensionsActivityLogHistoryItemTest', function() {
   /**
@@ -9,7 +14,7 @@ suite('ExtensionsActivityLogHistoryItemTest', function() {
    * @type {extensions.ActivityLogHistoryItem}
    */
   let activityLogHistoryItem;
-  let testVisible;
+  let boundTestVisible;
 
   /**
    * ActivityGroup data for the activityLogHistoryItem
@@ -25,13 +30,14 @@ suite('ExtensionsActivityLogHistoryItemTest', function() {
       key: 'i18n.getUILanguage',
       count: 1,
       activityType: chrome.activityLogPrivate.ExtensionActivityFilter.API_CALL,
-      countsByUrl: new Map()
+      countsByUrl: new Map(),
+      expanded: false
     };
 
-    activityLogHistoryItem = new extensions.ActivityLogHistoryItem();
+    activityLogHistoryItem =
+        document.createElement('activity-log-history-item');
     activityLogHistoryItem.data = testActivityGroup;
-    testVisible =
-        extension_test_util.testVisible.bind(null, activityLogHistoryItem);
+    boundTestVisible = testVisible.bind(null, activityLogHistoryItem);
 
     document.body.appendChild(activityLogHistoryItem);
   });
@@ -41,10 +47,10 @@ suite('ExtensionsActivityLogHistoryItemTest', function() {
   });
 
   test('no page URLs shown when activity has no associated page', function() {
-    Polymer.dom.flush();
+    flush();
 
-    testVisible('#activity-item-main-row', true);
-    testVisible('#page-url-list', false);
+    boundTestVisible('#activity-item-main-row', true);
+    boundTestVisible('#page-url-list', false);
   });
 
   test('clicking the expand button shows the associated page URL', function() {
@@ -60,13 +66,13 @@ suite('ExtensionsActivityLogHistoryItemTest', function() {
     };
     activityLogHistoryItem.set('data', testActivityGroup);
 
-    Polymer.dom.flush();
+    flush();
 
-    testVisible('#activity-item-main-row', true);
-    testVisible('#page-url-list', false);
+    boundTestVisible('#activity-item-main-row', true);
+    boundTestVisible('#page-url-list', false);
 
     activityLogHistoryItem.$$('#activity-item-main-row').click();
-    testVisible('#page-url-list', true);
+    boundTestVisible('#page-url-list', true);
   });
 
   test('count not shown when there is only 1 page URL', function() {
@@ -84,11 +90,11 @@ suite('ExtensionsActivityLogHistoryItemTest', function() {
     activityLogHistoryItem.set('data', testActivityGroup);
     activityLogHistoryItem.$$('#activity-item-main-row').click();
 
-    Polymer.dom.flush();
+    flush();
 
-    testVisible('#activity-item-main-row', true);
-    testVisible('#page-url-list', true);
-    testVisible('.page-url-count', false);
+    boundTestVisible('#activity-item-main-row', true);
+    boundTestVisible('#page-url-list', true);
+    boundTestVisible('.page-url-count', false);
   });
 
   test('count shown in descending order for multiple page URLs', function() {
@@ -106,11 +112,11 @@ suite('ExtensionsActivityLogHistoryItemTest', function() {
     activityLogHistoryItem.set('data', testActivityGroup);
     activityLogHistoryItem.$$('#activity-item-main-row').click();
 
-    Polymer.dom.flush();
+    flush();
 
-    testVisible('#activity-item-main-row', true);
-    testVisible('#page-url-list', true);
-    testVisible('.page-url-count', true);
+    boundTestVisible('#activity-item-main-row', true);
+    boundTestVisible('#page-url-list', true);
+    boundTestVisible('.page-url-count', true);
 
     const pageUrls =
         activityLogHistoryItem.shadowRoot.querySelectorAll('.page-url');

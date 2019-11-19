@@ -8,6 +8,7 @@
   <style is="custom-style" include="user-pod-template-shared-styles"></style>
 </custom-style>
 
+<link rel="import" href="chrome://resources/cr_elements/cr_icon_button/cr_icon_button.html">
 <link rel="import" href="chrome://resources/cr_elements/icons.html">
 
 <iron-iconset-svg name="user-pod" size="24">
@@ -17,11 +18,8 @@
       Inlined from Polymer's iron-icons to avoid importing everything.
       See http://goo.gl/Y1OdAq for instructions on adding additional icons.
       -->
-      <g id="arrow-forward" fill="none" fill-rule="evenodd">
-        <polygon points="0 0 20 0 20 20 0 20"/>
-        <polygon fill="#FFF" points="10.042 3.5 8.896 4.646 13.43 9.188 3.542 9.188 3.542 10.813 13.43 10.813 8.896 15.354 10.042 16.5 16.542 10"/>
-      </g>
-      <g id="dropdown" fill="#FFFFFF" stroke="none" stroke-width="1" fill-rule="evenodd" opacity="0.34">
+      <g id="arrow-forward"><path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"></path></g>
+      <g id="dropdown" stroke="none" stroke-width="1" fill-rule="evenodd">
         <polygon points="16.59 8.59 12 13.17 7.41 8.59 6 10 12 16 18 10"></polygon>
       </g>
       <g id="legacy-supervised-badge">
@@ -53,7 +51,8 @@
     </div>
 <if expr="chromeos">
     <div class="pin-container pin-disabled pin-tag">
-      <pin-keyboard enable-password hide-input enable-placeholder>
+      <pin-keyboard enable-password hide-input enable-placeholder
+          enable-letters>
       </pin-keyboard>
     </div>
 </if>
@@ -77,10 +76,9 @@
             <iron-icon class="capslock-hint" icon="user-pod:caps-lock">
             </iron-icon>
           </div>
-          <paper-icon-button class="submit-button" disabled
-                             aria-label="$i18n{submitButtonAccessibleName}"
-                             icon="user-pod:arrow-forward" tabindex="-1">
-          </paper-icon-button>
+          <cr-icon-button class="submit-button" disabled
+              aria-label="$i18n{submitButtonAccessibleName}"
+              iron-icon="user-pod:arrow-forward" tabindex="-1"></cr-icon-button>
 </if>
         </div>
         <!-- User Click Authentication -->
@@ -95,9 +93,6 @@
           <span class="reauth-warning"></span>
           <span class="reauth-name-hint"></span>
         </div>
-        <div class="launch-app-button-container" hidden>
-          <button class="launch-app-button">$i18n{launchAppButton}</button>
-        </div>
         <div class="input-line">
           <svg>
             <line x1="0" y1="0" x2="204" y2="0">
@@ -107,9 +102,8 @@
       <div class="name-container">
         <div class="name"></div>
         <div class="action-box-area">
-          <paper-icon-button class="action-box-button" disabled
-                             icon="user-pod:dropdown">
-          </paper-icon-button>
+          <cr-icon-button class="action-box-button"
+              iron-icon="user-pod:dropdown"></cr-icon-button>
           <div class="action-box-button ripple-circle"></div>
           <iron-icon icon="cr:more-vert" class="action-box-icon"></iron-icon>
         </div>
@@ -159,13 +153,11 @@
             <div class="action-box-remove-legacy-supervised-user-warning-text">
               $i18n{removeLegacySupervisedUserWarningText}
             </div>
-            <div class="action-box-remove-non-owner-user-warning-text">
-              $i18n{removeNonOwnerUserWarningText}
-            </div>
-            <!-- paper-button is imported inside user_manager.html -->
-            <paper-button class="remove-warning-button action-button">
+            <div class="action-box-remove-non-owner-user-warning-text"></div>
+            <!-- cr-button is imported inside user_manager.html -->
+            <cr-button class="remove-warning-button action-button" noink>
               $i18n{removeUserWarningButtonTitle}
-            </paper-button>
+            </cr-button>
           </div>
         </div>
       </div>
@@ -174,10 +166,9 @@
         </iron-icon>
         <div class="info"></div>
         <div class="button-container">
-          <paper-icon-button class="public-account-submit-button expand-button"
-                             aria-label="$i18n{submitButtonAccessibleName}"
-                             icon="user-pod:arrow-forward" tabindex="-1">
-          </paper-icon-button>
+          <cr-icon-button class="public-account-submit-button expand-button"
+              aria-label="$i18n{submitButtonAccessibleName}"
+              iron-icon="user-pod:arrow-forward" tabindex="-1"></cr-icon-button>
         </div>
       </div>
     </div>
@@ -235,9 +226,8 @@
         <a class="language-and-input" href="#" role="button">
           $i18n{publicSessionLanguageAndInput}
         </a>
-        <paper-icon-button class="language-and-input-dropdown"
-                           icon="user-pod:dropdown">
-        </paper-icon-button>
+        <cr-icon-button class="language-and-input-dropdown"
+            iron-icon="user-pod:dropdown"></cr-icon-button>
       </div>
     </div>
     <div class="language-and-input-section">
@@ -259,10 +249,9 @@
       </div>
     </div>
     <div class="enter-button-container">
-      <paper-icon-button class="public-account-submit-button enter-button"
+      <cr-icon-button class="public-account-submit-button enter-button"
           aria-label="$i18n{publicAccountEnterAccessibleName}"
-          icon="user-pod:arrow-forward">
-      </paper-icon-button>
+          iron-icon="user-pod:arrow-forward"></cr-icon-button>
     </div>
   </div>
 </div>

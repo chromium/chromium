@@ -10,7 +10,6 @@
 
 namespace switches {
 
-COMPOSITOR_EXPORT extern const char kEnableHardwareOverlays[];
 COMPOSITOR_EXPORT extern const char kEnablePixelOutputInTests[];
 COMPOSITOR_EXPORT extern const char kUIEnableRGBA4444Textures[];
 COMPOSITOR_EXPORT extern const char kUIEnableZeroCopy[];

@@ -12,14 +12,10 @@
 #include "base/strings/string16.h"
 #include "components/search_engines/search_terms_data.h"
 
-class Profile;
-
 // Implementation of SearchTermsData that is only usable on the UI thread.
 class UIThreadSearchTermsData : public SearchTermsData {
  public:
-  // If |profile_| is NULL, the Google base URL accessors will return default
-  // values, and NTPIsThemedParam() will return an empty string.
-  explicit UIThreadSearchTermsData(Profile* profile);
+  UIThreadSearchTermsData();
 
   std::string GoogleBaseURLValue() const override;
   std::string GetApplicationLocale() const override;
@@ -34,18 +30,11 @@ class UIThreadSearchTermsData : public SearchTermsData {
   std::string GetMailRUReferralID() const override;
 #endif
 
-  // Used by tests to override the value for the Google base URL.  Passing the
-  // empty string cancels this override.
-  static void SetGoogleBaseURL(const std::string& base_url);
-
   // Estimates dynamic memory usage.
   // See base/trace_event/memory_usage_estimator.h for more info.
   size_t EstimateMemoryUsage() const override;
 
  private:
-  static std::string* google_base_url_;
-  Profile* profile_;
-
   DISALLOW_COPY_AND_ASSIGN(UIThreadSearchTermsData);
 };
 

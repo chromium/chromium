@@ -51,6 +51,7 @@ class ProfileAttributesStorage
                           const base::string16& name,
                           const std::string& gaia_id,
                           const base::string16& user_name,
+                          bool is_consented_primary_account,
                           size_t icon_index,
                           const std::string& supervised_user_id,
                           const AccountId& account_id) = 0;
@@ -83,7 +84,15 @@ class ProfileAttributesStorage
   base::string16 ChooseNameForNewProfile(size_t icon_index) const;
 
   // Determines whether |name| is one of the default assigned names.
-  bool IsDefaultProfileName(const base::string16& name) const;
+  // On Desktop, if |include_check_for_legacy_profile_name| is false,
+  // |IsDefaultProfileName()| would only return true if the |name| is in the
+  // form of |Person %n| which is the new default local profile name. If
+  // |include_check_for_legacy_profile_name| is true, we will also check if name
+  // is one of the legacy profile names (e.g. Saratoga, Default user, ..).
+  // For other platforms, so far |include_check_for_legacy_profile_name|
+  // is not used.
+  bool IsDefaultProfileName(const base::string16& name,
+                            bool include_check_for_legacy_profile_name) const;
 
   // Returns an avatar icon index that can be assigned to a newly created
   // profile. Note that the icon may not be unique since there are a limited
@@ -134,7 +143,7 @@ class ProfileAttributesStorage
   // profile pictures and the ProfileAvatarDownloader that is used to download
   // the high res avatars.
   void SaveAvatarImageAtPath(const base::FilePath& profile_path,
-                             const gfx::Image* image,
+                             gfx::Image image,
                              const std::string& key,
                              const base::FilePath& image_path);
 
@@ -147,8 +156,7 @@ class ProfileAttributesStorage
 
   // A cache of gaia/high res avatar profile pictures. This cache is updated
   // lazily so it needs to be mutable.
-  mutable std::unordered_map<std::string, std::unique_ptr<gfx::Image>>
-      cached_avatar_images_;
+  mutable std::unordered_map<std::string, gfx::Image> cached_avatar_images_;
 
   // Marks a profile picture as loading from disk. This prevents a picture from
   // loading multiple times.
@@ -174,7 +182,7 @@ class ProfileAttributesStorage
   // decoded into |image|.
   void OnAvatarPictureLoaded(const base::FilePath& profile_path,
                              const std::string& key,
-                             gfx::Image** image) const;
+                             gfx::Image image) const;
 
   // Called when the picture given by |file_name| has been saved to disk. Used
   // both for the GAIA profile picture and the high res avatar files.

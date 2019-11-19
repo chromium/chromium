@@ -22,7 +22,7 @@ class CSPContextTest : public CSPContext {
   }
 
   bool SchemeShouldBypassCSP(const base::StringPiece& scheme) override {
-    return base::ContainsValue(scheme_to_bypass_, scheme);
+    return base::Contains(scheme_to_bypass_, scheme);
   }
 
  private:
@@ -38,7 +38,7 @@ class CSPContextTest : public CSPContext {
 
 ContentSecurityPolicyHeader EmptyCspHeader() {
   return ContentSecurityPolicyHeader(
-      std::string(), blink::mojom::ContentSecurityPolicyType::kEnforce,
+      std::string(), network::mojom::ContentSecurityPolicyType::kEnforce,
       blink::kWebContentSecurityPolicySourceHTTP);
 }
 

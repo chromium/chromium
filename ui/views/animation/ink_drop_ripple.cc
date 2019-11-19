@@ -13,22 +13,11 @@
 
 namespace views {
 
-const double InkDropRipple::kSlowAnimationDurationFactor = 3.0;
-
-bool InkDropRipple::UseFastAnimations() {
-  static bool fast =
-      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-          (::switches::kMaterialDesignInkDropAnimationSpeed)) !=
-      ::switches::kMaterialDesignInkDropAnimationSpeedSlow;
-  return fast;
-}
-
 const float InkDropRipple::kHiddenOpacity = 0.f;
 
-InkDropRipple::InkDropRipple()
-    : target_ink_drop_state_(InkDropState::HIDDEN), observer_(nullptr) {}
+InkDropRipple::InkDropRipple() = default;
 
-InkDropRipple::~InkDropRipple() {}
+InkDropRipple::~InkDropRipple() = default;
 
 void InkDropRipple::AnimateToState(InkDropState ink_drop_state) {
   // Does not return early if |target_ink_drop_state_| == |ink_drop_state| for

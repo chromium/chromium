@@ -7,12 +7,11 @@
 
 #include "chrome/browser/ui/views/passwords/password_bubble_view_base.h"
 #include "ui/views/controls/button/button.h"
-#include "ui/views/controls/textfield/textfield_controller.h"
+#include "ui/views/controls/editable_combobox/editable_combobox_listener.h"
 #include "ui/views/view.h"
 
 namespace views {
-class Combobox;
-class Label;
+class EditableCombobox;
 class ToggleImageButton;
 }  // namespace views
 
@@ -23,16 +22,13 @@ class PasswordSignInPromoView;
 // "Save"/"Update" button and a "Never"/"Nope" button.
 class PasswordPendingView : public PasswordBubbleViewBase,
                             public views::ButtonListener,
-                            public views::TextfieldController {
+                            public views::EditableComboboxListener {
  public:
   PasswordPendingView(content::WebContents* web_contents,
                       views::View* anchor_view,
-                      const gfx::Point& anchor_point,
                       DisplayReason reason);
 
-#if defined(UNIT_TEST)
-  const View* username_field() const { return username_field_; }
-#endif
+  views::View* GetUsernameTextfieldForTest() const;
 
  private:
   ~PasswordPendingView() override;
@@ -40,16 +36,17 @@ class PasswordPendingView : public PasswordBubbleViewBase,
   // views::ButtonListener:
   void ButtonPressed(views::Button* sender, const ui::Event& event) override;
 
-  // views::TextfieldController:
-  void ContentsChanged(views::Textfield* sender,
-                       const base::string16& new_contents) override;
+  // views::EditableComboboxListener:
+  // Used for both the username and password editable comboboxes.
+  void OnContentChanged(views::EditableCombobox* editable_combobox) override;
 
   // PasswordBubbleViewBase:
-  views::View* CreateFootnoteView() override;
+  std::unique_ptr<views::View> CreateFootnoteView() override;
   gfx::Size CalculatePreferredSize() const override;
   views::View* GetInitiallyFocusedView() override;
   int GetDialogButtons() const override;
   base::string16 GetDialogButtonLabel(ui::DialogButton button) const override;
+  bool IsDialogButtonEnabled(ui::DialogButton button) const override;
   gfx::ImageSkia GetWindowIcon() override;
   bool ShouldShowWindowIcon() const override;
   bool ShouldShowCloseButton() const override;
@@ -59,6 +56,7 @@ class PasswordPendingView : public PasswordBubbleViewBase,
 
   // View:
   void AddedToWidget() override;
+  void OnThemeChanged() override;
 
   void TogglePasswordVisibility();
   void UpdateUsernameAndPasswordInModel();
@@ -73,14 +71,11 @@ class PasswordPendingView : public PasswordBubbleViewBase,
   // active.
   PasswordSignInPromoView* sign_in_promo_;
 
-  views::View* username_field_;
+  views::EditableCombobox* username_dropdown_;
   views::ToggleImageButton* password_view_button_;
-  views::View* initially_focused_view_;
 
-  // The view for the password value. Only one of |password_dropdown_| and
-  // |password_label_| should be available.
-  views::Combobox* password_dropdown_;
-  views::Label* password_label_;
+  // The view for the password value.
+  views::EditableCombobox* password_dropdown_;
 
   bool are_passwords_revealed_;
 

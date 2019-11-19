@@ -15,52 +15,54 @@ class SetCharacterDataCommandTest : public EditingTestBase {};
 TEST_F(SetCharacterDataCommandTest, replaceTextWithSameLength) {
   SetBodyContent("<div contenteditable>This is a good test case</div>");
 
-  SimpleEditCommand* command = SetCharacterDataCommand::Create(
-      ToText(GetDocument().body()->firstChild()->firstChild()), 10, 4, "lame");
+  SimpleEditCommand* command = MakeGarbageCollected<SetCharacterDataCommand>(
+      To<Text>(GetDocument().body()->firstChild()->firstChild()), 10, 4,
+      "lame");
 
   command->DoReapply();
   EXPECT_EQ(
       "This is a lame test case",
-      ToText(GetDocument().body()->firstChild()->firstChild())->wholeText());
+      To<Text>(GetDocument().body()->firstChild()->firstChild())->wholeText());
 
   command->DoUnapply();
   EXPECT_EQ(
       "This is a good test case",
-      ToText(GetDocument().body()->firstChild()->firstChild())->wholeText());
+      To<Text>(GetDocument().body()->firstChild()->firstChild())->wholeText());
 }
 
 TEST_F(SetCharacterDataCommandTest, replaceTextWithLongerText) {
   SetBodyContent("<div contenteditable>This is a good test case</div>");
 
-  SimpleEditCommand* command = SetCharacterDataCommand::Create(
-      ToText(GetDocument().body()->firstChild()->firstChild()), 10, 4, "lousy");
+  SimpleEditCommand* command = MakeGarbageCollected<SetCharacterDataCommand>(
+      To<Text>(GetDocument().body()->firstChild()->firstChild()), 10, 4,
+      "lousy");
 
   command->DoReapply();
   EXPECT_EQ(
       "This is a lousy test case",
-      ToText(GetDocument().body()->firstChild()->firstChild())->wholeText());
+      To<Text>(GetDocument().body()->firstChild()->firstChild())->wholeText());
 
   command->DoUnapply();
   EXPECT_EQ(
       "This is a good test case",
-      ToText(GetDocument().body()->firstChild()->firstChild())->wholeText());
+      To<Text>(GetDocument().body()->firstChild()->firstChild())->wholeText());
 }
 
 TEST_F(SetCharacterDataCommandTest, replaceTextWithShorterText) {
   SetBodyContent("<div contenteditable>This is a good test case</div>");
 
-  SimpleEditCommand* command = SetCharacterDataCommand::Create(
-      ToText(GetDocument().body()->firstChild()->firstChild()), 10, 4, "meh");
+  SimpleEditCommand* command = MakeGarbageCollected<SetCharacterDataCommand>(
+      To<Text>(GetDocument().body()->firstChild()->firstChild()), 10, 4, "meh");
 
   command->DoReapply();
   EXPECT_EQ(
       "This is a meh test case",
-      ToText(GetDocument().body()->firstChild()->firstChild())->wholeText());
+      To<Text>(GetDocument().body()->firstChild()->firstChild())->wholeText());
 
   command->DoUnapply();
   EXPECT_EQ(
       "This is a good test case",
-      ToText(GetDocument().body()->firstChild()->firstChild())->wholeText());
+      To<Text>(GetDocument().body()->firstChild()->firstChild())->wholeText());
 }
 
 TEST_F(SetCharacterDataCommandTest, insertTextIntoEmptyNode) {
@@ -69,53 +71,54 @@ TEST_F(SetCharacterDataCommandTest, insertTextIntoEmptyNode) {
   GetDocument().body()->firstChild()->appendChild(
       GetDocument().CreateEditingTextNode(""));
 
-  SimpleEditCommand* command = SetCharacterDataCommand::Create(
-      ToText(GetDocument().body()->firstChild()->firstChild()), 0, 0, "hello");
+  SimpleEditCommand* command = MakeGarbageCollected<SetCharacterDataCommand>(
+      To<Text>(GetDocument().body()->firstChild()->firstChild()), 0, 0,
+      "hello");
 
   command->DoReapply();
   EXPECT_EQ(
       "hello",
-      ToText(GetDocument().body()->firstChild()->firstChild())->wholeText());
+      To<Text>(GetDocument().body()->firstChild()->firstChild())->wholeText());
 
   command->DoUnapply();
   EXPECT_EQ(
       "",
-      ToText(GetDocument().body()->firstChild()->firstChild())->wholeText());
+      To<Text>(GetDocument().body()->firstChild()->firstChild())->wholeText());
 }
 
 TEST_F(SetCharacterDataCommandTest, insertTextAtEndOfNonEmptyNode) {
   SetBodyContent("<div contenteditable>Hello</div>");
 
-  SimpleEditCommand* command = SetCharacterDataCommand::Create(
-      ToText(GetDocument().body()->firstChild()->firstChild()), 5, 0,
+  SimpleEditCommand* command = MakeGarbageCollected<SetCharacterDataCommand>(
+      To<Text>(GetDocument().body()->firstChild()->firstChild()), 5, 0,
       ", world!");
 
   command->DoReapply();
   EXPECT_EQ(
       "Hello, world!",
-      ToText(GetDocument().body()->firstChild()->firstChild())->wholeText());
+      To<Text>(GetDocument().body()->firstChild()->firstChild())->wholeText());
 
   command->DoUnapply();
   EXPECT_EQ(
       "Hello",
-      ToText(GetDocument().body()->firstChild()->firstChild())->wholeText());
+      To<Text>(GetDocument().body()->firstChild()->firstChild())->wholeText());
 }
 
 TEST_F(SetCharacterDataCommandTest, replaceEntireNode) {
   SetBodyContent("<div contenteditable>Hello</div>");
 
-  SimpleEditCommand* command = SetCharacterDataCommand::Create(
-      ToText(GetDocument().body()->firstChild()->firstChild()), 0, 5, "Bye");
+  SimpleEditCommand* command = MakeGarbageCollected<SetCharacterDataCommand>(
+      To<Text>(GetDocument().body()->firstChild()->firstChild()), 0, 5, "Bye");
 
   command->DoReapply();
   EXPECT_EQ(
       "Bye",
-      ToText(GetDocument().body()->firstChild()->firstChild())->wholeText());
+      To<Text>(GetDocument().body()->firstChild()->firstChild())->wholeText());
 
   command->DoUnapply();
   EXPECT_EQ(
       "Hello",
-      ToText(GetDocument().body()->firstChild()->firstChild())->wholeText());
+      To<Text>(GetDocument().body()->firstChild()->firstChild())->wholeText());
 }
 
 TEST_F(SetCharacterDataCommandTest, CombinedText) {
@@ -123,7 +126,7 @@ TEST_F(SetCharacterDataCommandTest, CombinedText) {
       "<div contenteditable style='writing-mode:vertical-lr; "
       "-webkit-text-combine:horizontal' />");
 
-  Text* text_node = ToText(GetDocument().body()->firstChild()->appendChild(
+  auto* text_node = To<Text>(GetDocument().body()->firstChild()->appendChild(
       GetDocument().CreateEditingTextNode("")));
   UpdateAllLifecyclePhasesForTest();
 
@@ -132,7 +135,7 @@ TEST_F(SetCharacterDataCommandTest, CombinedText) {
   EXPECT_FALSE(ToLayoutTextCombine(text_node->GetLayoutObject())->IsCombined());
 
   SimpleEditCommand* command =
-      SetCharacterDataCommand::Create(text_node, 0, 0, "text");
+      MakeGarbageCollected<SetCharacterDataCommand>(text_node, 0, 0, "text");
   command->DoReapply();
   UpdateAllLifecyclePhasesForTest();
 

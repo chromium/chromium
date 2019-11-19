@@ -1,6 +1,11 @@
 rootWebArea
-++genericContainer
-++++staticText name='Cats'
-++++++inlineTextBox name='Cats'
-++genericContainer
-++++checkBox name='done' checkedState=false
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer
+++++++++staticText name='Cats'
+++++++++++inlineTextBox name='Cats'
+++++++genericContainer
+++++++++checkBox name='checkbox' checkedState=false
+++++++genericContainer
+++++++++staticText name='done'
+++++++++++inlineTextBox name='done'

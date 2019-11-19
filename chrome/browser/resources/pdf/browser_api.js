@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-'use strict';
+import {assert} from 'chrome://resources/js/assert.m.js';
 
 /**
  * @param {!Object} streamInfo The stream object pointing to the data contained
@@ -49,7 +49,7 @@ function lookupInitialZoom(streamInfo) {
 /**
  * A class providing an interface to the browser.
  */
-class BrowserApi {
+export class BrowserApi {
   /**
    * @param {!Object} streamInfo The stream object which points to the data
    *     contained in the PDF.
@@ -86,15 +86,6 @@ class BrowserApi {
    */
   getStreamInfo() {
     return this.streamInfo_;
-  }
-
-  /**
-   * Aborts the stream.
-   */
-  abortStream() {
-    if (chrome.mimeHandlerPrivate) {
-      chrome.mimeHandlerPrivate.abortStream();
-    }
   }
 
   /**
@@ -170,8 +161,8 @@ BrowserApi.ZoomBehavior = {
 /**
  * Creates a BrowserApi for an extension running as a mime handler.
  *
- * @return {Promise<BrowserApi>} A promise to a BrowserApi instance constructed
- *     using the mimeHandlerPrivate API.
+ * @return {!Promise<!BrowserApi>} A promise to a BrowserApi instance
+ *     constructed using the mimeHandlerPrivate API.
  */
 function createBrowserApiForMimeHandlerView() {
   return new Promise(function(resolve, reject) {
@@ -207,8 +198,8 @@ function createBrowserApiForMimeHandlerView() {
 /**
  * Creates a BrowserApi instance for an extension not running as a mime handler.
  *
- * @return {Promise<BrowserApi>} A promise to a BrowserApi instance constructed
- *     from the URL.
+ * @return {!Promise<!BrowserApi>} A promise to a BrowserApi instance
+ *     constructed from the URL.
  */
 function createBrowserApiForPrintPreview() {
   const url = window.location.search.substring(1);
@@ -236,10 +227,10 @@ function createBrowserApiForPrintPreview() {
 }
 
 /**
- * @return {Promise<BrowserApi>} A promise to a BrowserApi instance for the
+ * @return {!Promise<!BrowserApi>} A promise to a BrowserApi instance for the
  *     current environment.
  */
-function createBrowserApi() {
+export function createBrowserApi() {
   if (location.origin === 'chrome://print') {
     return createBrowserApiForPrintPreview();
   }

@@ -1,6 +1,37 @@
-<script src=resources/common.js></script>
+<script src=../priorities/resources/common.js></script>
 <script src=../resources/testharness.js></script>
 <script src=../resources/testharnessreport.js></script>
+
+<script>
+const priority_tests = [
+  {
+    promise: internals.getResourcePriority(new URL('../resources/square.png', location), document),
+    expected_priority: kHigh,
+    description: 'high importance on <img> must translate to kHigh resource load priority'
+  },
+  {
+    promise: internals.getResourcePriority(new URL('../resources/square.png?1', location), document),
+    expected_priority: kLow,
+    description: 'low importance on <img> must translate to kLow resource load priority'
+  },
+  {
+    promise: internals.getResourcePriority(new URL('../resources/square.png?2', location), document),
+    expected_priority: kLow,
+    description: 'auto importance on <img> must translate to kLow resource load priority'
+  },
+  {
+    promise: internals.getResourcePriority(new URL('../resources/square.png?3', location), document),
+    expected_priority: kLow,
+    description: 'invalid importance on <img> must translate to kLow resource load priority'
+  },
+  {
+    promise: internals.getResourcePriority(new URL('../resources/square.png?3', location), document),
+    expected_priority: kLow,
+    description: 'missing importance on <img> must translate to kLow resource load priority'
+  }
+];
+
+</script>
 
 <img id=img1 importance=high src=../resources/square.png alt=img>
 <img id=img2 importance=low src=../resources/square.png?1 alt=img>
@@ -9,22 +40,24 @@
 <img id=img5 src=../resources/square.png?4 alt=img>
 
 <script>
-  async_test(t => {
-    addEventListener('DOMContentLoaded', t.step_func(() => {
-      const msg = 'all images must be fetched by the preload scanner';
-      assert_true(internals.isPreloaded(img1.src), msg);
-      assert_true(internals.isPreloaded(img2.src), msg);
-      assert_true(internals.isPreloaded(img3.src), msg);
-      assert_true(internals.isPreloaded(img4.src), msg);
-      assert_true(internals.isPreloaded(img5.src), msg);
+  promise_test(async (t) => {
+    await new Promise(resolve => {
+      addEventListener('DOMContentLoaded', resolve);
+    });
 
-      assert_equals(getPriority(img1.src), kHigh, 'high importance on <img> must translate to kHigh resource load priority');
-      assert_equals(getPriority(img2.src), kLow, 'low importance on <img> must translate to kLow resource load priority');
-      assert_equals(getPriority(img3.src), kLow, 'auto importance on <img> must translate to kLow resource load priority');
-      assert_equals(getPriority(img4.src), kLow, 'invalid importance on <img> must translate to kLow resource load priority');
-      assert_equals(getPriority(img5.src), kLow, 'missing importance on <img> must translate to kLow resource load priority');
+    const base_msg = " was fetched by the preload scanner";
+    assert_true(internals.isPreloaded(img1.src), img1.src + base_msg);
+    assert_true(internals.isPreloaded(img2.src), img2.src + base_msg);
+    assert_true(internals.isPreloaded(img3.src), img3.src + base_msg);
+    assert_true(internals.isPreloaded(img4.src), img4.src + base_msg);
+    assert_true(internals.isPreloaded(img5.src), img5.src + base_msg);
+  }, 'all images must be fetched by the preload scanner');
 
-      t.done();
-    }));
-  }, 'importance attribute on <img>s fetched by the preload scanner correctly affects resource load priority');
+  // Setup the tests described by |priority_tests|.
+  for (test of priority_tests) {
+    promise_test(async () => {
+      const priority = await test.promise;
+      assert_equals(priority, test.expected_priority);
+    }, test.description);
+  }
 </script>

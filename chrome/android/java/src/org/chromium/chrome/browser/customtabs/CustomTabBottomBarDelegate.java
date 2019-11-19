@@ -7,11 +7,7 @@ package org.chromium.chrome.browser.customtabs;
 import android.app.PendingIntent;
 import android.app.PendingIntent.CanceledException;
 import android.content.Intent;
-import android.content.res.Resources;
 import android.net.Uri;
-import android.support.annotation.Nullable;
-import android.support.customtabs.CustomTabsIntent;
-import android.view.InflateException;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnLayoutChangeListener;
@@ -21,16 +17,20 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.RemoteViews;
 
-import org.chromium.base.ContextUtils;
+import androidx.annotation.Nullable;
+import androidx.browser.customtabs.CustomTabsIntent;
+
 import org.chromium.base.Log;
 import org.chromium.base.metrics.CachedMetrics;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeActivity;
-import org.chromium.chrome.browser.compositor.bottombar.OverlayPanelManager;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanelManager.OverlayPanelManagerObserver;
+import org.chromium.chrome.browser.compositor.layouts.LayoutManager;
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
 import org.chromium.chrome.browser.fullscreen.ChromeFullscreenManager;
 import org.chromium.chrome.browser.fullscreen.ChromeFullscreenManager.FullscreenListener;
+import org.chromium.chrome.browser.night_mode.RemoteViewsWithNightModeInflater;
+import org.chromium.chrome.browser.night_mode.SystemNightModeMonitor;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.ui.interpolators.BakedBezierInterpolator;
 
@@ -49,11 +49,15 @@ public class CustomTabBottomBarDelegate implements FullscreenListener {
     private static final CachedMetrics.ActionEvent REMOTE_VIEWS_UPDATED =
             new CachedMetrics.ActionEvent("CustomTabsRemoteViewsUpdated");
     private static final int SLIDE_ANIMATION_DURATION_MS = 400;
-    private ChromeActivity mActivity;
-    private ChromeFullscreenManager mFullscreenManager;
+
+    private final ChromeActivity mActivity;
+    private final ChromeFullscreenManager mFullscreenManager;
+    private final CustomTabIntentDataProvider mDataProvider;
+    private final CustomTabNightModeStateController mNightModeStateController;
+    private final SystemNightModeMonitor mSystemNightModeMonitor;
+
     private ViewGroup mBottomBarView;
     @Nullable private View mBottomBarContentView;
-    private CustomTabIntentDataProvider mDataProvider;
     private PendingIntent mClickPendingIntent;
     private int[] mClickableIDs;
     private boolean mShowShadow = true;
@@ -76,11 +80,19 @@ public class CustomTabBottomBarDelegate implements FullscreenListener {
 
     @Inject
     public CustomTabBottomBarDelegate(ChromeActivity activity,
-            CustomTabIntentDataProvider dataProvider, ChromeFullscreenManager fullscreenManager) {
+            CustomTabIntentDataProvider dataProvider,
+            ChromeFullscreenManager fullscreenManager,
+            CustomTabNightModeStateController nightModeStateController,
+            SystemNightModeMonitor systemNightModeMonitor,
+            CustomTabCompositorContentInitializer compositorContentInitializer) {
         mActivity = activity;
         mDataProvider = dataProvider;
         mFullscreenManager = fullscreenManager;
+        mNightModeStateController = nightModeStateController;
+        mSystemNightModeMonitor = systemNightModeMonitor;
         fullscreenManager.addListener(this);
+
+        compositorContentInitializer.addCallback(this::addOverlayPanelManagerObserver);
     }
 
     /**
@@ -218,12 +230,8 @@ public class CustomTabBottomBarDelegate implements FullscreenListener {
         return mBottomBarView;
     }
 
-    public void addOverlayPanelManagerObserver() {
-        if (mActivity.getCompositorViewHolder().getLayoutManager() == null) return;
-        OverlayPanelManager manager =
-                mActivity.getCompositorViewHolder().getLayoutManager().getOverlayPanelManager();
-
-        manager.addObserver(new OverlayPanelManagerObserver() {
+    public void addOverlayPanelManagerObserver(LayoutManager layoutDriver) {
+        layoutDriver.getOverlayPanelManager().addObserver(new OverlayPanelManagerObserver() {
             @Override
             public void onOverlayPanelShown() {
                 if (mBottomBarView == null) return;
@@ -247,6 +255,10 @@ public class CustomTabBottomBarDelegate implements FullscreenListener {
         });
     }
 
+    /**
+     * This method remove bottomBarView completely.
+     * If you need to hide it temporarily use {@link #hideBottomBar(boolean)}.
+     */
     private void hideBottomBar() {
         if (mBottomBarView == null) return;
         mBottomBarView.animate().alpha(0f).translationY(mBottomBarView.getHeight())
@@ -263,14 +275,11 @@ public class CustomTabBottomBarDelegate implements FullscreenListener {
     }
 
     private boolean showRemoteViews(RemoteViews remoteViews) {
-        final View inflatedView;
-        try {
-            inflatedView =
-                    remoteViews.apply(ContextUtils.getApplicationContext(), getBottomBarView());
-        } catch (RemoteViews.ActionException | InflateException | Resources.NotFoundException e) {
-            Log.e(TAG, "Failed to inflate the RemoteViews", e);
-            return false;
-        }
+        final View inflatedView = RemoteViewsWithNightModeInflater.inflate(remoteViews,
+                getBottomBarView(), mNightModeStateController.isInNightMode(),
+                mSystemNightModeMonitor.isSystemNightModeOn());
+
+        if (inflatedView == null) return false;
 
         if (mClickableIDs != null && mClickPendingIntent != null) {
             for (int id : mClickableIDs) {
@@ -345,11 +354,21 @@ public class CustomTabBottomBarDelegate implements FullscreenListener {
         if (mBottomBarView == null) return; // Check bottom bar view but don't inflate it.
         // Hide the container of the bottom bar while the extension is showing. This doesn't
         // affect the content.
-        boolean keyboardExtensionHidesBottomBar = mActivity.getManualFillingController()
-                                                          .getKeyboardExtensionSizeManager()
-                                                          .getKeyboardExtensionHeight()
+        boolean keyboardExtensionHidesBottomBar =
+                mActivity.getManualFillingComponent().getKeyboardExtensionViewResizer().getHeight()
                 > 0;
-        if (keyboardExtensionHidesBottomBar) {
+        hideBottomBar(keyboardExtensionHidesBottomBar);
+    }
+
+    /**
+     * This method temporarily hides bottomBarView.
+     *
+     * If you need to remove bottom bar completely use {@link #hideBottomBar()}.
+     *
+     * @param hidesBottomBar whether bottom bar needs to be hidden.
+     */
+    public void hideBottomBar(boolean hidesBottomBar) {
+        if (hidesBottomBar) {
             getBottomBarView().setVisibility(View.GONE);
             mFullscreenManager.setBottomControlsHeight(0);
         } else {

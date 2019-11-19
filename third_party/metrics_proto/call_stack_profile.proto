@@ -53,6 +53,9 @@ message CallStackProfile {
     // Index of the hash of the metadata name.
     optional int32 name_hash_index = 1;
 
+    // Optional user-specified key value. Absent if unspecified.
+    optional sint64 key = 3;
+
     // Value for the item. An absent value indicates the metadata has become
     // unset since the previous StackSample.
     optional sint64 value = 2;
@@ -109,6 +112,21 @@ message CallStackProfile {
     // metadata items are specified only when their values change from the
     // previous sample. Items are not guaranteed to be in a particular order.
     repeated MetadataItem metadata = 5;
+
+    // Weight of the sample. When omitted the sample is presumed to have
+    // a weight of 1.
+    // Not currently used for CPU profiles.
+    // For heap profiles it represents the total number of bytes associated with
+    // the StackSample record.
+    optional int64 weight = 6;
+
+    // Number of events associated with the sample. When omitted the default
+    // value of 1 should be used.
+    // Not currently used for CPU profiles.
+    // For heap profiles it represents the number of allocations associated with
+    // the StackSample record. The following relation holds:
+    //   allocation_size * count == weight.
+    optional int64 count = 7 [default = 1];
   }
 
   // The previous sample encoding. Deprecated 2018/08/04 in favor of

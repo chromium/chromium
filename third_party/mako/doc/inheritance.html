@@ -1,0 +1,752 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        
+        <title>
+            
+    
+                Inheritance
+             &mdash;
+    Mako 1.0.14 Documentation
+
+        </title>
+
+        
+            <!-- begin iterate through site-imported + sphinx environment css_files -->
+                <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+                <link rel="stylesheet" href="_static/changelog.css" type="text/css" />
+                <link rel="stylesheet" href="_static/sphinx_paramlinks.css" type="text/css" />
+                <link rel="stylesheet" href="_static/docs.css" type="text/css" />
+            <!-- end iterate through site-imported + sphinx environment css_files -->
+        
+
+        
+    
+
+    <!-- begin layout.mako headers -->
+
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="top" title="Mako 1.0.14 Documentation" href="index.html" />
+        <link rel="next" title="Filtering and Buffering" href="filtering.html" />
+        <link rel="prev" title="Namespaces" href="namespaces.html" />
+    <!-- end layout.mako headers -->
+
+
+    </head>
+    <body>
+        
+
+
+
+
+
+
+
+
+
+
+<div id="docs-container">
+
+
+
+<div id="docs-header">
+    <h1>Mako 1.0.14 Documentation</h1>
+
+    <div id="docs-search">
+    Search:
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" size="18" /> <input type="submit" value="Search" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+
+    <div id="docs-version-header">
+        Release: <span class="version-num">1.0.14</span>
+
+    </div>
+
+</div>
+
+<div id="docs-top-navigation">
+    <div id="docs-top-page-control" class="docs-navigation-links">
+        <ul>
+            <li>Prev:
+            <a href="namespaces.html" title="previous chapter">Namespaces</a>
+            </li>
+            <li>Next:
+            <a href="filtering.html" title="next chapter">Filtering and Buffering</a>
+            </li>
+
+        <li>
+            <a href="index.html">Table of Contents</a> |
+            <a href="genindex.html">Index</a>
+        </li>
+        </ul>
+    </div>
+
+    <div id="docs-navigation-banner">
+        <a href="index.html">Mako 1.0.14 Documentation</a>
+        » 
+                Inheritance
+            
+
+        <h2>
+            
+                Inheritance
+            
+        </h2>
+    </div>
+
+</div>
+
+<div id="docs-body-container">
+
+
+    <div id="docs-sidebar">
+    <div id="sidebar-banner">
+        
+    </div>
+
+    <h3><a href="index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">Inheritance</a><ul>
+<li><a class="reference internal" href="#nesting-blocks">Nesting Blocks</a></li>
+<li><a class="reference internal" href="#rendering-a-named-block-multiple-times">Rendering a Named Block Multiple Times</a></li>
+<li><a class="reference internal" href="#but-what-about-defs">But what about Defs?</a></li>
+<li><a class="reference internal" href="#using-the-next-namespace-to-produce-content-wrapping">Using the <code class="docutils literal notranslate"><span class="pre">next</span></code> Namespace to Produce Content Wrapping</a></li>
+<li><a class="reference internal" href="#using-the-parent-namespace-to-augment-defs">Using the <code class="docutils literal notranslate"><span class="pre">parent</span></code> Namespace to Augment Defs</a></li>
+<li><a class="reference internal" href="#using-include-with-template-inheritance">Using <code class="docutils literal notranslate"><span class="pre">&lt;%include&gt;</span></code> with Template Inheritance</a></li>
+<li><a class="reference internal" href="#inheritable-attributes">Inheritable Attributes</a></li>
+</ul>
+</li>
+</ul>
+
+
+    <h4>Previous Topic</h4>
+    <p>
+    <a href="namespaces.html" title="previous chapter">Namespaces</a>
+    </p>
+    <h4>Next Topic</h4>
+    <p>
+    <a href="filtering.html" title="next chapter">Filtering and Buffering</a>
+    </p>
+
+    <h4>Quick Search</h4>
+    <p>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" size="18" /> <input type="submit" value="Search" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </p>
+
+    </div>
+
+    <div id="docs-body" class="withsidebar" >
+        
+<div class="section" id="inheritance">
+<span id="inheritance-toplevel"></span><h1>Inheritance<a class="headerlink" href="#inheritance" title="Permalink to this headline">¶</a></h1>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Most of the inheritance examples here take advantage of a feature that’s
+new in Mako as of version 0.4.1 called the “block”.  This tag is very similar to
+the “def” tag but is more streamlined for usage with inheritance.  Note that
+all of the examples here which use blocks can also use defs instead.  Contrasting
+usages will be illustrated.</p>
+</div>
+<p>Using template inheritance, two or more templates can organize
+themselves into an <strong>inheritance chain</strong>, where content and
+functions from all involved templates can be intermixed. The
+general paradigm of template inheritance is this: if a template
+<code class="docutils literal notranslate"><span class="pre">A</span></code> inherits from template <code class="docutils literal notranslate"><span class="pre">B</span></code>, then template <code class="docutils literal notranslate"><span class="pre">A</span></code> agrees
+to send the executional control to template <code class="docutils literal notranslate"><span class="pre">B</span></code> at runtime
+(<code class="docutils literal notranslate"><span class="pre">A</span></code> is called the <strong>inheriting</strong> template). Template <code class="docutils literal notranslate"><span class="pre">B</span></code>,
+the <strong>inherited</strong> template, then makes decisions as to what
+resources from <code class="docutils literal notranslate"><span class="pre">A</span></code> shall be executed.</p>
+<p>In practice, it looks like this. Here’s a hypothetical inheriting
+template, <code class="docutils literal notranslate"><span class="pre">index.html</span></code>:</p>
+<div class="highlight-mako notranslate"><div class="highlight"><pre><span></span><span class="cp">## index.html</span><span class="x"></span>
+<span class="cp">&lt;%</span><span class="nb">inherit</span> <span class="na">file=</span><span class="s">&quot;base.html&quot;</span><span class="cp">/&gt;</span><span class="x"></span>
+
+<span class="cp">&lt;%</span><span class="nb">block</span> <span class="na">name=</span><span class="s">&quot;header&quot;</span><span class="cp">&gt;</span><span class="x"></span>
+<span class="x">    this is some header content</span>
+<span class="cp">&lt;/%</span><span class="nb">block</span><span class="cp">&gt;</span><span class="x"></span>
+
+<span class="x">this is the body content.</span></pre></div>
+</div>
+<p>And <code class="docutils literal notranslate"><span class="pre">base.html</span></code>, the inherited template:</p>
+<div class="highlight-mako notranslate"><div class="highlight"><pre><span></span><span class="cp">## base.html</span><span class="x"></span>
+<span class="x">&lt;html&gt;</span>
+<span class="x">    &lt;body&gt;</span>
+<span class="x">        &lt;div class=&quot;header&quot;&gt;</span>
+<span class="x">            </span><span class="cp">&lt;%</span><span class="nb">block</span> <span class="na">name=</span><span class="s">&quot;header&quot;</span><span class="cp">/&gt;</span><span class="x"></span>
+<span class="x">        &lt;/div&gt;</span>
+
+<span class="x">        </span><span class="cp">${</span><span class="bp">self</span><span class="o">.</span><span class="n">body</span><span class="p">()</span><span class="cp">}</span><span class="x"></span>
+
+<span class="x">        &lt;div class=&quot;footer&quot;&gt;</span>
+<span class="x">            </span><span class="cp">&lt;%</span><span class="nb">block</span> <span class="na">name=</span><span class="s">&quot;footer&quot;</span><span class="cp">&gt;</span><span class="x"></span>
+<span class="x">                this is the footer</span>
+<span class="x">            </span><span class="cp">&lt;/%</span><span class="nb">block</span><span class="cp">&gt;</span><span class="x"></span>
+<span class="x">        &lt;/div&gt;</span>
+<span class="x">    &lt;/body&gt;</span>
+<span class="x">&lt;/html&gt;</span></pre></div>
+</div>
+<p>Here is a breakdown of the execution:</p>
+<ol class="arabic">
+<li><p>When <code class="docutils literal notranslate"><span class="pre">index.html</span></code> is rendered, control immediately passes to
+<code class="docutils literal notranslate"><span class="pre">base.html</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">base.html</span></code> then renders the top part of an HTML document,
+then invokes the <code class="docutils literal notranslate"><span class="pre">&lt;%block</span> <span class="pre">name=&quot;header&quot;&gt;</span></code> block.  It invokes the
+underlying <code class="docutils literal notranslate"><span class="pre">header()</span></code> function off of a built-in namespace
+called <code class="docutils literal notranslate"><span class="pre">self</span></code> (this namespace was first introduced in the
+<a class="reference internal" href="namespaces.html"><span class="doc">Namespaces chapter</span></a> in <a class="reference internal" href="namespaces.html#namespace-self"><span class="std std-ref">self</span></a>). Since
+<code class="docutils literal notranslate"><span class="pre">index.html</span></code> is the topmost template and also defines a block
+called <code class="docutils literal notranslate"><span class="pre">header</span></code>, it’s this <code class="docutils literal notranslate"><span class="pre">header</span></code> block that ultimately gets
+executed – instead of the one that’s present in <code class="docutils literal notranslate"><span class="pre">base.html</span></code>.</p></li>
+<li><p>Control comes back to <code class="docutils literal notranslate"><span class="pre">base.html</span></code>. Some more HTML is
+rendered.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">base.html</span></code> executes <code class="docutils literal notranslate"><span class="pre">self.body()</span></code>. The <code class="docutils literal notranslate"><span class="pre">body()</span></code>
+function on all template-based namespaces refers to the main
+body of the template, therefore the main body of
+<code class="docutils literal notranslate"><span class="pre">index.html</span></code> is rendered.</p></li>
+<li><p>When <code class="docutils literal notranslate"><span class="pre">&lt;%block</span> <span class="pre">name=&quot;header&quot;&gt;</span></code> is encountered in <code class="docutils literal notranslate"><span class="pre">index.html</span></code>
+during the <code class="docutils literal notranslate"><span class="pre">self.body()</span></code> call, a conditional is checked – does the
+current inherited template, i.e. <code class="docutils literal notranslate"><span class="pre">base.html</span></code>, also define this block? If yes,
+the <code class="docutils literal notranslate"><span class="pre">&lt;%block&gt;</span></code> is <strong>not</strong> executed here – the inheritance
+mechanism knows that the parent template is responsible for rendering
+this block (and in fact it already has).  In other words a block
+only renders in its <em>basemost scope</em>.</p></li>
+<li><p>Control comes back to <code class="docutils literal notranslate"><span class="pre">base.html</span></code>. More HTML is rendered,
+then the <code class="docutils literal notranslate"><span class="pre">&lt;%block</span> <span class="pre">name=&quot;footer&quot;&gt;</span></code> expression is invoked.</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">footer</span></code> block is only defined in <code class="docutils literal notranslate"><span class="pre">base.html</span></code>, so being
+the topmost definition of <code class="docutils literal notranslate"><span class="pre">footer</span></code>, it’s the one that
+executes. If <code class="docutils literal notranslate"><span class="pre">index.html</span></code> also specified <code class="docutils literal notranslate"><span class="pre">footer</span></code>, then
+its version would <strong>override</strong> that of the base.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">base.html</span></code> finishes up rendering its HTML and the template
+is complete, producing:</p>
+<div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">html</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">body</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">div</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;header&quot;</span><span class="p">&gt;</span>
+            this is some header content
+        <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+
+        this is the body content.
+
+        <span class="p">&lt;</span><span class="nt">div</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;footer&quot;</span><span class="p">&gt;</span>
+            this is the footer
+        <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+    <span class="p">&lt;/</span><span class="nt">body</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">html</span><span class="p">&gt;</span></pre></div>
+</div>
+</li>
+</ol>
+<p>…and that is template inheritance in a nutshell. The main idea
+is that the methods that you call upon <code class="docutils literal notranslate"><span class="pre">self</span></code> always
+correspond to the topmost definition of that method. Very much
+the way <code class="docutils literal notranslate"><span class="pre">self</span></code> works in a Python class, even though Mako is
+not actually using Python class inheritance to implement this
+functionality. (Mako doesn’t take the “inheritance” metaphor too
+seriously; while useful to setup some commonly recognized
+semantics, a textual template is not very much like an
+object-oriented class construct in practice).</p>
+<div class="section" id="nesting-blocks">
+<h2>Nesting Blocks<a class="headerlink" href="#nesting-blocks" title="Permalink to this headline">¶</a></h2>
+<p>The named blocks defined in an inherited template can also be nested within
+other blocks.  The name given to each block is globally accessible via any inheriting
+template.  We can add a new block <code class="docutils literal notranslate"><span class="pre">title</span></code> to our <code class="docutils literal notranslate"><span class="pre">header</span></code> block:</p>
+<div class="highlight-mako notranslate"><div class="highlight"><pre><span></span><span class="cp">## base.html</span><span class="x"></span>
+<span class="x">&lt;html&gt;</span>
+<span class="x">    &lt;body&gt;</span>
+<span class="x">        &lt;div class=&quot;header&quot;&gt;</span>
+<span class="x">            </span><span class="cp">&lt;%</span><span class="nb">block</span> <span class="na">name=</span><span class="s">&quot;header&quot;</span><span class="cp">&gt;</span><span class="x"></span>
+<span class="x">                &lt;h2&gt;</span>
+<span class="x">                    </span><span class="cp">&lt;%</span><span class="nb">block</span> <span class="na">name=</span><span class="s">&quot;title&quot;</span><span class="cp">/&gt;</span><span class="x"></span>
+<span class="x">                &lt;/h2&gt;</span>
+<span class="x">            </span><span class="cp">&lt;/%</span><span class="nb">block</span><span class="cp">&gt;</span><span class="x"></span>
+<span class="x">        &lt;/div&gt;</span>
+
+<span class="x">        </span><span class="cp">${</span><span class="bp">self</span><span class="o">.</span><span class="n">body</span><span class="p">()</span><span class="cp">}</span><span class="x"></span>
+
+<span class="x">        &lt;div class=&quot;footer&quot;&gt;</span>
+<span class="x">            </span><span class="cp">&lt;%</span><span class="nb">block</span> <span class="na">name=</span><span class="s">&quot;footer&quot;</span><span class="cp">&gt;</span><span class="x"></span>
+<span class="x">                this is the footer</span>
+<span class="x">            </span><span class="cp">&lt;/%</span><span class="nb">block</span><span class="cp">&gt;</span><span class="x"></span>
+<span class="x">        &lt;/div&gt;</span>
+<span class="x">    &lt;/body&gt;</span>
+<span class="x">&lt;/html&gt;</span></pre></div>
+</div>
+<p>The inheriting template can name either or both of <code class="docutils literal notranslate"><span class="pre">header</span></code> and <code class="docutils literal notranslate"><span class="pre">title</span></code>, separately
+or nested themselves:</p>
+<div class="highlight-mako notranslate"><div class="highlight"><pre><span></span><span class="cp">## index.html</span><span class="x"></span>
+<span class="cp">&lt;%</span><span class="nb">inherit</span> <span class="na">file=</span><span class="s">&quot;base.html&quot;</span><span class="cp">/&gt;</span><span class="x"></span>
+
+<span class="cp">&lt;%</span><span class="nb">block</span> <span class="na">name=</span><span class="s">&quot;header&quot;</span><span class="cp">&gt;</span><span class="x"></span>
+<span class="x">    this is some header content</span>
+<span class="x">    </span><span class="cp">${</span><span class="n">parent</span><span class="o">.</span><span class="n">header</span><span class="p">()</span><span class="cp">}</span><span class="x"></span>
+<span class="cp">&lt;/%</span><span class="nb">block</span><span class="cp">&gt;</span><span class="x"></span>
+
+<span class="cp">&lt;%</span><span class="nb">block</span> <span class="na">name=</span><span class="s">&quot;title&quot;</span><span class="cp">&gt;</span><span class="x"></span>
+<span class="x">    this is the title</span>
+<span class="cp">&lt;/%</span><span class="nb">block</span><span class="cp">&gt;</span><span class="x"></span>
+
+<span class="x">this is the body content.</span></pre></div>
+</div>
+<p>Note when we overrode <code class="docutils literal notranslate"><span class="pre">header</span></code>, we added an extra call <code class="docutils literal notranslate"><span class="pre">${parent.header()}</span></code> in order to invoke
+the parent’s <code class="docutils literal notranslate"><span class="pre">header</span></code> block in addition to our own.  That’s described in more detail below,
+in <a class="reference internal" href="#parent-namespace"><span class="std std-ref">Using the parent Namespace to Augment Defs</span></a>.</p>
+</div>
+<div class="section" id="rendering-a-named-block-multiple-times">
+<h2>Rendering a Named Block Multiple Times<a class="headerlink" href="#rendering-a-named-block-multiple-times" title="Permalink to this headline">¶</a></h2>
+<p>Recall from the section <a class="reference internal" href="defs.html#blocks"><span class="std std-ref">Using Blocks</span></a> that a named block is just like a <code class="docutils literal notranslate"><span class="pre">&lt;%def&gt;</span></code>,
+with some different usage rules.  We can call one of our named sections distinctly, for example
+a section that is used more than once, such as the title of a page:</p>
+<div class="highlight-mako notranslate"><div class="highlight"><pre><span></span><span class="x">&lt;html&gt;</span>
+<span class="x">    &lt;head&gt;</span>
+<span class="x">        &lt;title&gt;</span><span class="cp">${</span><span class="bp">self</span><span class="o">.</span><span class="n">title</span><span class="p">()</span><span class="cp">}</span><span class="x">&lt;/title&gt;</span>
+<span class="x">    &lt;/head&gt;</span>
+<span class="x">    &lt;body&gt;</span>
+<span class="x">    </span><span class="cp">&lt;%</span><span class="nb">block</span> <span class="na">name=</span><span class="s">&quot;header&quot;</span><span class="cp">&gt;</span><span class="x"></span>
+<span class="x">        &lt;h2&gt;</span><span class="cp">&lt;%</span><span class="nb">block</span> <span class="na">name=</span><span class="s">&quot;title&quot;</span><span class="cp">/&gt;</span><span class="x">&lt;/h2&gt;</span>
+<span class="x">    </span><span class="cp">&lt;/%</span><span class="nb">block</span><span class="cp">&gt;</span><span class="x"></span>
+<span class="x">    </span><span class="cp">${</span><span class="bp">self</span><span class="o">.</span><span class="n">body</span><span class="p">()</span><span class="cp">}</span><span class="x"></span>
+<span class="x">    &lt;/body&gt;</span>
+<span class="x">&lt;/html&gt;</span></pre></div>
+</div>
+<p>Where above an inheriting template can define <code class="docutils literal notranslate"><span class="pre">&lt;%block</span> <span class="pre">name=&quot;title&quot;&gt;</span></code> just once, and it will be
+used in the base template both in the <code class="docutils literal notranslate"><span class="pre">&lt;title&gt;</span></code> section as well as the <code class="docutils literal notranslate"><span class="pre">&lt;h2&gt;</span></code>.</p>
+</div>
+<div class="section" id="but-what-about-defs">
+<h2>But what about Defs?<a class="headerlink" href="#but-what-about-defs" title="Permalink to this headline">¶</a></h2>
+<p>The previous example used the <code class="docutils literal notranslate"><span class="pre">&lt;%block&gt;</span></code> tag to produce areas of content
+to be overridden.  Before Mako 0.4.1, there wasn’t any such tag – instead
+there was only the <code class="docutils literal notranslate"><span class="pre">&lt;%def&gt;</span></code> tag.   As it turns out, named blocks and defs are
+largely interchangeable.  The def simply doesn’t call itself automatically,
+and has more open-ended naming and scoping rules that are more flexible and similar
+to Python itself, but less suited towards layout.  The first example from
+this chapter using defs would look like:</p>
+<div class="highlight-mako notranslate"><div class="highlight"><pre><span></span><span class="cp">## index.html</span><span class="x"></span>
+<span class="cp">&lt;%</span><span class="nb">inherit</span> <span class="na">file=</span><span class="s">&quot;base.html&quot;</span><span class="cp">/&gt;</span><span class="x"></span>
+
+<span class="cp">&lt;%</span><span class="nb">def</span> <span class="na">name=</span><span class="s">&quot;header()&quot;</span><span class="cp">&gt;</span><span class="x"></span>
+<span class="x">    this is some header content</span>
+<span class="cp">&lt;/%</span><span class="nb">def</span><span class="cp">&gt;</span><span class="x"></span>
+
+<span class="x">this is the body content.</span></pre></div>
+</div>
+<p>And <code class="docutils literal notranslate"><span class="pre">base.html</span></code>, the inherited template:</p>
+<div class="highlight-mako notranslate"><div class="highlight"><pre><span></span><span class="cp">## base.html</span><span class="x"></span>
+<span class="x">&lt;html&gt;</span>
+<span class="x">    &lt;body&gt;</span>
+<span class="x">        &lt;div class=&quot;header&quot;&gt;</span>
+<span class="x">            </span><span class="cp">${</span><span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="p">()</span><span class="cp">}</span><span class="x"></span>
+<span class="x">        &lt;/div&gt;</span>
+
+<span class="x">        </span><span class="cp">${</span><span class="bp">self</span><span class="o">.</span><span class="n">body</span><span class="p">()</span><span class="cp">}</span><span class="x"></span>
+
+<span class="x">        &lt;div class=&quot;footer&quot;&gt;</span>
+<span class="x">            </span><span class="cp">${</span><span class="bp">self</span><span class="o">.</span><span class="n">footer</span><span class="p">()</span><span class="cp">}</span><span class="x"></span>
+<span class="x">        &lt;/div&gt;</span>
+<span class="x">    &lt;/body&gt;</span>
+<span class="x">&lt;/html&gt;</span>
+
+<span class="cp">&lt;%</span><span class="nb">def</span> <span class="na">name=</span><span class="s">&quot;header()&quot;</span><span class="cp">/&gt;</span><span class="x"></span>
+<span class="cp">&lt;%</span><span class="nb">def</span> <span class="na">name=</span><span class="s">&quot;footer()&quot;</span><span class="cp">&gt;</span><span class="x"></span>
+<span class="x">    this is the footer</span>
+<span class="cp">&lt;/%</span><span class="nb">def</span><span class="cp">&gt;</span><span class="x"></span></pre></div>
+</div>
+<p>Above, we illustrate that defs differ from blocks in that their definition
+and invocation are defined in two separate places, instead of at once. You can <em>almost</em> do exactly what a
+block does if you put the two together:</p>
+<div class="highlight-mako notranslate"><div class="highlight"><pre><span></span><span class="x">&lt;div class=&quot;header&quot;&gt;</span>
+<span class="x">    </span><span class="cp">&lt;%</span><span class="nb">def</span> <span class="na">name=</span><span class="s">&quot;header()&quot;</span><span class="cp">&gt;&lt;/%</span><span class="nb">def</span><span class="cp">&gt;${</span><span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="p">()</span><span class="cp">}</span><span class="x"></span>
+<span class="x">&lt;/div&gt;</span></pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">&lt;%block&gt;</span></code> is obviously more streamlined than the <code class="docutils literal notranslate"><span class="pre">&lt;%def&gt;</span></code> for this kind
+of usage.  In addition,
+the above “inline” approach with <code class="docutils literal notranslate"><span class="pre">&lt;%def&gt;</span></code> does not work with nesting:</p>
+<div class="highlight-mako notranslate"><div class="highlight"><pre><span></span><span class="x">&lt;head&gt;</span>
+<span class="x">    </span><span class="cp">&lt;%</span><span class="nb">def</span> <span class="na">name=</span><span class="s">&quot;header()&quot;</span><span class="cp">&gt;</span><span class="x"></span>
+<span class="x">        &lt;title&gt;</span>
+<span class="x">        ## this won&#39;t work !</span>
+<span class="x">        </span><span class="cp">&lt;%</span><span class="nb">def</span> <span class="na">name=</span><span class="s">&quot;title()&quot;</span><span class="cp">&gt;</span><span class="x">default title</span><span class="cp">&lt;/%</span><span class="nb">def</span><span class="cp">&gt;${</span><span class="bp">self</span><span class="o">.</span><span class="n">title</span><span class="p">()</span><span class="cp">}</span><span class="x"></span>
+<span class="x">        &lt;/title&gt;</span>
+<span class="x">    </span><span class="cp">&lt;/%</span><span class="nb">def</span><span class="cp">&gt;${</span><span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="p">()</span><span class="cp">}</span><span class="x"></span>
+<span class="x">&lt;/head&gt;</span></pre></div>
+</div>
+<p>Where above, the <code class="docutils literal notranslate"><span class="pre">title()</span></code> def, because it’s a def within a def, is not part of the
+template’s exported namespace and will not be part of <code class="docutils literal notranslate"><span class="pre">self</span></code>.  If the inherited template
+did define its own <code class="docutils literal notranslate"><span class="pre">title</span></code> def at the top level, it would be called, but the “default title”
+above is not present at all on <code class="docutils literal notranslate"><span class="pre">self</span></code> no matter what.  For this to work as expected
+you’d instead need to say:</p>
+<div class="highlight-mako notranslate"><div class="highlight"><pre><span></span><span class="x">&lt;head&gt;</span>
+<span class="x">    </span><span class="cp">&lt;%</span><span class="nb">def</span> <span class="na">name=</span><span class="s">&quot;header()&quot;</span><span class="cp">&gt;</span><span class="x"></span>
+<span class="x">        &lt;title&gt;</span>
+<span class="x">        </span><span class="cp">${</span><span class="bp">self</span><span class="o">.</span><span class="n">title</span><span class="p">()</span><span class="cp">}</span><span class="x"></span>
+<span class="x">        &lt;/title&gt;</span>
+<span class="x">    </span><span class="cp">&lt;/%</span><span class="nb">def</span><span class="cp">&gt;${</span><span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="p">()</span><span class="cp">}</span><span class="x"></span>
+
+<span class="x">    </span><span class="cp">&lt;%</span><span class="nb">def</span> <span class="na">name=</span><span class="s">&quot;title()&quot;</span><span class="cp">/&gt;</span><span class="x"></span>
+<span class="x">&lt;/head&gt;</span></pre></div>
+</div>
+<p>That is, <code class="docutils literal notranslate"><span class="pre">title</span></code> is defined outside of any other defs so that it is in the <code class="docutils literal notranslate"><span class="pre">self</span></code> namespace.
+It works, but the definition needs to be potentially far away from the point of render.</p>
+<p>A named block is always placed in the <code class="docutils literal notranslate"><span class="pre">self</span></code> namespace, regardless of nesting,
+so this restriction is lifted:</p>
+<div class="highlight-mako notranslate"><div class="highlight"><pre><span></span><span class="cp">## base.html</span><span class="x"></span>
+<span class="x">&lt;head&gt;</span>
+<span class="x">    </span><span class="cp">&lt;%</span><span class="nb">block</span> <span class="na">name=</span><span class="s">&quot;header&quot;</span><span class="cp">&gt;</span><span class="x"></span>
+<span class="x">        &lt;title&gt;</span>
+<span class="x">        </span><span class="cp">&lt;%</span><span class="nb">block</span> <span class="na">name=</span><span class="s">&quot;title&quot;</span><span class="cp">/&gt;</span><span class="x"></span>
+<span class="x">        &lt;/title&gt;</span>
+<span class="x">    </span><span class="cp">&lt;/%</span><span class="nb">block</span><span class="cp">&gt;</span><span class="x"></span>
+<span class="x">&lt;/head&gt;</span></pre></div>
+</div>
+<p>The above template defines <code class="docutils literal notranslate"><span class="pre">title</span></code> inside of <code class="docutils literal notranslate"><span class="pre">header</span></code>, and an inheriting template can define
+one or both in <strong>any</strong> configuration, nested inside each other or not, in order for them to be used:</p>
+<div class="highlight-mako notranslate"><div class="highlight"><pre><span></span><span class="cp">## index.html</span><span class="x"></span>
+<span class="cp">&lt;%</span><span class="nb">inherit</span> <span class="na">file=</span><span class="s">&quot;base.html&quot;</span><span class="cp">/&gt;</span><span class="x"></span>
+<span class="cp">&lt;%</span><span class="nb">block</span> <span class="na">name=</span><span class="s">&quot;title&quot;</span><span class="cp">&gt;</span><span class="x"></span>
+<span class="x">    the title</span>
+<span class="cp">&lt;/%</span><span class="nb">block</span><span class="cp">&gt;</span><span class="x"></span>
+<span class="cp">&lt;%</span><span class="nb">block</span> <span class="na">name=</span><span class="s">&quot;header&quot;</span><span class="cp">&gt;</span><span class="x"></span>
+<span class="x">    the header</span>
+<span class="cp">&lt;/%</span><span class="nb">block</span><span class="cp">&gt;</span><span class="x"></span></pre></div>
+</div>
+<p>So while the <code class="docutils literal notranslate"><span class="pre">&lt;%block&gt;</span></code> tag lifts the restriction of nested blocks not being available externally,
+in order to achieve this it <em>adds</em> the restriction that all block names in a single template need
+to be globally unique within the template, and additionally that a <code class="docutils literal notranslate"><span class="pre">&lt;%block&gt;</span></code> can’t be defined
+inside of a <code class="docutils literal notranslate"><span class="pre">&lt;%def&gt;</span></code>. It’s a more restricted tag suited towards a more specific use case than <code class="docutils literal notranslate"><span class="pre">&lt;%def&gt;</span></code>.</p>
+</div>
+<div class="section" id="using-the-next-namespace-to-produce-content-wrapping">
+<h2>Using the <code class="docutils literal notranslate"><span class="pre">next</span></code> Namespace to Produce Content Wrapping<a class="headerlink" href="#using-the-next-namespace-to-produce-content-wrapping" title="Permalink to this headline">¶</a></h2>
+<p>Sometimes you have an inheritance chain that spans more than two
+templates. Or maybe you don’t, but you’d like to build your
+system such that extra inherited templates can be inserted in
+the middle of a chain where they would be smoothly integrated.
+If each template wants to define its layout just within its main
+body, you can’t just call <code class="docutils literal notranslate"><span class="pre">self.body()</span></code> to get at the
+inheriting template’s body, since that is only the topmost body.
+To get at the body of the <em>next</em> template, you call upon the
+namespace <code class="docutils literal notranslate"><span class="pre">next</span></code>, which is the namespace of the template
+<strong>immediately following</strong> the current template.</p>
+<p>Lets change the line in <code class="docutils literal notranslate"><span class="pre">base.html</span></code> which calls upon
+<code class="docutils literal notranslate"><span class="pre">self.body()</span></code> to instead call upon <code class="docutils literal notranslate"><span class="pre">next.body()</span></code>:</p>
+<div class="highlight-mako notranslate"><div class="highlight"><pre><span></span><span class="cp">## base.html</span><span class="x"></span>
+<span class="x">&lt;html&gt;</span>
+<span class="x">    &lt;body&gt;</span>
+<span class="x">        &lt;div class=&quot;header&quot;&gt;</span>
+<span class="x">            </span><span class="cp">&lt;%</span><span class="nb">block</span> <span class="na">name=</span><span class="s">&quot;header&quot;</span><span class="cp">/&gt;</span><span class="x"></span>
+<span class="x">        &lt;/div&gt;</span>
+
+<span class="x">        </span><span class="cp">${</span><span class="nb">next</span><span class="o">.</span><span class="n">body</span><span class="p">()</span><span class="cp">}</span><span class="x"></span>
+
+<span class="x">        &lt;div class=&quot;footer&quot;&gt;</span>
+<span class="x">            </span><span class="cp">&lt;%</span><span class="nb">block</span> <span class="na">name=</span><span class="s">&quot;footer&quot;</span><span class="cp">&gt;</span><span class="x"></span>
+<span class="x">                this is the footer</span>
+<span class="x">            </span><span class="cp">&lt;/%</span><span class="nb">block</span><span class="cp">&gt;</span><span class="x"></span>
+<span class="x">        &lt;/div&gt;</span>
+<span class="x">    &lt;/body&gt;</span>
+<span class="x">&lt;/html&gt;</span></pre></div>
+</div>
+<p>Lets also add an intermediate template called <code class="docutils literal notranslate"><span class="pre">layout.html</span></code>,
+which inherits from <code class="docutils literal notranslate"><span class="pre">base.html</span></code>:</p>
+<div class="highlight-mako notranslate"><div class="highlight"><pre><span></span><span class="cp">## layout.html</span><span class="x"></span>
+<span class="cp">&lt;%</span><span class="nb">inherit</span> <span class="na">file=</span><span class="s">&quot;base.html&quot;</span><span class="cp">/&gt;</span><span class="x"></span>
+<span class="x">&lt;ul&gt;</span>
+<span class="x">    </span><span class="cp">&lt;%</span><span class="nb">block</span> <span class="na">name=</span><span class="s">&quot;toolbar&quot;</span><span class="cp">&gt;</span><span class="x"></span>
+<span class="x">        &lt;li&gt;selection 1&lt;/li&gt;</span>
+<span class="x">        &lt;li&gt;selection 2&lt;/li&gt;</span>
+<span class="x">        &lt;li&gt;selection 3&lt;/li&gt;</span>
+<span class="x">    </span><span class="cp">&lt;/%</span><span class="nb">block</span><span class="cp">&gt;</span><span class="x"></span>
+<span class="x">&lt;/ul&gt;</span>
+<span class="x">&lt;div class=&quot;mainlayout&quot;&gt;</span>
+<span class="x">    </span><span class="cp">${</span><span class="nb">next</span><span class="o">.</span><span class="n">body</span><span class="p">()</span><span class="cp">}</span><span class="x"></span>
+<span class="x">&lt;/div&gt;</span></pre></div>
+</div>
+<p>And finally change <code class="docutils literal notranslate"><span class="pre">index.html</span></code> to inherit from
+<code class="docutils literal notranslate"><span class="pre">layout.html</span></code> instead:</p>
+<div class="highlight-mako notranslate"><div class="highlight"><pre><span></span><span class="cp">## index.html</span><span class="x"></span>
+<span class="cp">&lt;%</span><span class="nb">inherit</span> <span class="na">file=</span><span class="s">&quot;layout.html&quot;</span><span class="cp">/&gt;</span>
+
+<span class="cp">## .. rest of template</span><span class="x"></span></pre></div>
+</div>
+<p>In this setup, each call to <code class="docutils literal notranslate"><span class="pre">next.body()</span></code> will render the body
+of the next template in the inheritance chain (which can be
+written as <code class="docutils literal notranslate"><span class="pre">base.html</span> <span class="pre">-&gt;</span> <span class="pre">layout.html</span> <span class="pre">-&gt;</span> <span class="pre">index.html</span></code>). Control
+is still first passed to the bottommost template <code class="docutils literal notranslate"><span class="pre">base.html</span></code>,
+and <code class="docutils literal notranslate"><span class="pre">self</span></code> still references the topmost definition of any
+particular def.</p>
+<p>The output we get would be:</p>
+<div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">html</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">body</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">div</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;header&quot;</span><span class="p">&gt;</span>
+            this is some header content
+        <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+
+        <span class="p">&lt;</span><span class="nt">ul</span><span class="p">&gt;</span>
+            <span class="p">&lt;</span><span class="nt">li</span><span class="p">&gt;</span>selection 1<span class="p">&lt;/</span><span class="nt">li</span><span class="p">&gt;</span>
+            <span class="p">&lt;</span><span class="nt">li</span><span class="p">&gt;</span>selection 2<span class="p">&lt;/</span><span class="nt">li</span><span class="p">&gt;</span>
+            <span class="p">&lt;</span><span class="nt">li</span><span class="p">&gt;</span>selection 3<span class="p">&lt;/</span><span class="nt">li</span><span class="p">&gt;</span>
+        <span class="p">&lt;/</span><span class="nt">ul</span><span class="p">&gt;</span>
+
+        <span class="p">&lt;</span><span class="nt">div</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;mainlayout&quot;</span><span class="p">&gt;</span>
+        this is the body content.
+        <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+
+        <span class="p">&lt;</span><span class="nt">div</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;footer&quot;</span><span class="p">&gt;</span>
+            this is the footer
+        <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+    <span class="p">&lt;/</span><span class="nt">body</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">html</span><span class="p">&gt;</span></pre></div>
+</div>
+<p>So above, we have the <code class="docutils literal notranslate"><span class="pre">&lt;html&gt;</span></code>, <code class="docutils literal notranslate"><span class="pre">&lt;body&gt;</span></code> and
+<code class="docutils literal notranslate"><span class="pre">header</span></code>/<code class="docutils literal notranslate"><span class="pre">footer</span></code> layout of <code class="docutils literal notranslate"><span class="pre">base.html</span></code>, we have the
+<code class="docutils literal notranslate"><span class="pre">&lt;ul&gt;</span></code> and <code class="docutils literal notranslate"><span class="pre">mainlayout</span></code> section of <code class="docutils literal notranslate"><span class="pre">layout.html</span></code>, and the
+main body of <code class="docutils literal notranslate"><span class="pre">index.html</span></code> as well as its overridden <code class="docutils literal notranslate"><span class="pre">header</span></code>
+def. The <code class="docutils literal notranslate"><span class="pre">layout.html</span></code> template is inserted into the middle of
+the chain without <code class="docutils literal notranslate"><span class="pre">base.html</span></code> having to change anything.
+Without the <code class="docutils literal notranslate"><span class="pre">next</span></code> namespace, only the main body of
+<code class="docutils literal notranslate"><span class="pre">index.html</span></code> could be used; there would be no way to call
+<code class="docutils literal notranslate"><span class="pre">layout.html</span></code>’s body content.</p>
+</div>
+<div class="section" id="using-the-parent-namespace-to-augment-defs">
+<span id="parent-namespace"></span><h2>Using the <code class="docutils literal notranslate"><span class="pre">parent</span></code> Namespace to Augment Defs<a class="headerlink" href="#using-the-parent-namespace-to-augment-defs" title="Permalink to this headline">¶</a></h2>
+<p>Lets now look at the other inheritance-specific namespace, the
+opposite of <code class="docutils literal notranslate"><span class="pre">next</span></code> called <code class="docutils literal notranslate"><span class="pre">parent</span></code>. <code class="docutils literal notranslate"><span class="pre">parent</span></code> is the
+namespace of the template <strong>immediately preceding</strong> the current
+template. What’s useful about this namespace is that
+defs or blocks can call upon their overridden versions.
+This is not as hard as it sounds and
+is very much like using the <code class="docutils literal notranslate"><span class="pre">super</span></code> keyword in Python. Lets
+modify <code class="docutils literal notranslate"><span class="pre">index.html</span></code> to augment the list of selections provided
+by the <code class="docutils literal notranslate"><span class="pre">toolbar</span></code> function in <code class="docutils literal notranslate"><span class="pre">layout.html</span></code>:</p>
+<div class="highlight-mako notranslate"><div class="highlight"><pre><span></span><span class="cp">## index.html</span><span class="x"></span>
+<span class="cp">&lt;%</span><span class="nb">inherit</span> <span class="na">file=</span><span class="s">&quot;layout.html&quot;</span><span class="cp">/&gt;</span><span class="x"></span>
+
+<span class="cp">&lt;%</span><span class="nb">block</span> <span class="na">name=</span><span class="s">&quot;header&quot;</span><span class="cp">&gt;</span><span class="x"></span>
+<span class="x">    this is some header content</span>
+<span class="cp">&lt;/%</span><span class="nb">block</span><span class="cp">&gt;</span><span class="x"></span>
+
+<span class="cp">&lt;%</span><span class="nb">block</span> <span class="na">name=</span><span class="s">&quot;toolbar&quot;</span><span class="cp">&gt;</span>
+    <span class="cp">## call the parent&#39;s toolbar first</span><span class="x"></span>
+<span class="x">    </span><span class="cp">${</span><span class="n">parent</span><span class="o">.</span><span class="n">toolbar</span><span class="p">()</span><span class="cp">}</span><span class="x"></span>
+<span class="x">    &lt;li&gt;selection 4&lt;/li&gt;</span>
+<span class="x">    &lt;li&gt;selection 5&lt;/li&gt;</span>
+<span class="cp">&lt;/%</span><span class="nb">block</span><span class="cp">&gt;</span><span class="x"></span>
+
+<span class="x">this is the body content.</span></pre></div>
+</div>
+<p>Above, we implemented a <code class="docutils literal notranslate"><span class="pre">toolbar()</span></code> function, which is meant
+to override the definition of <code class="docutils literal notranslate"><span class="pre">toolbar</span></code> within the inherited
+template <code class="docutils literal notranslate"><span class="pre">layout.html</span></code>. However, since we want the content
+from that of <code class="docutils literal notranslate"><span class="pre">layout.html</span></code> as well, we call it via the
+<code class="docutils literal notranslate"><span class="pre">parent</span></code> namespace whenever we want it’s content, in this case
+before we add our own selections. So the output for the whole
+thing is now:</p>
+<div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">html</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">body</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">div</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;header&quot;</span><span class="p">&gt;</span>
+            this is some header content
+        <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+
+        <span class="p">&lt;</span><span class="nt">ul</span><span class="p">&gt;</span>
+            <span class="p">&lt;</span><span class="nt">li</span><span class="p">&gt;</span>selection 1<span class="p">&lt;/</span><span class="nt">li</span><span class="p">&gt;</span>
+            <span class="p">&lt;</span><span class="nt">li</span><span class="p">&gt;</span>selection 2<span class="p">&lt;/</span><span class="nt">li</span><span class="p">&gt;</span>
+            <span class="p">&lt;</span><span class="nt">li</span><span class="p">&gt;</span>selection 3<span class="p">&lt;/</span><span class="nt">li</span><span class="p">&gt;</span>
+            <span class="p">&lt;</span><span class="nt">li</span><span class="p">&gt;</span>selection 4<span class="p">&lt;/</span><span class="nt">li</span><span class="p">&gt;</span>
+            <span class="p">&lt;</span><span class="nt">li</span><span class="p">&gt;</span>selection 5<span class="p">&lt;/</span><span class="nt">li</span><span class="p">&gt;</span>
+        <span class="p">&lt;/</span><span class="nt">ul</span><span class="p">&gt;</span>
+
+        <span class="p">&lt;</span><span class="nt">div</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;mainlayout&quot;</span><span class="p">&gt;</span>
+        this is the body content.
+        <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+
+        <span class="p">&lt;</span><span class="nt">div</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;footer&quot;</span><span class="p">&gt;</span>
+            this is the footer
+        <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+    <span class="p">&lt;/</span><span class="nt">body</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">html</span><span class="p">&gt;</span></pre></div>
+</div>
+<p>and you’re now a template inheritance ninja!</p>
+</div>
+<div class="section" id="using-include-with-template-inheritance">
+<h2>Using <code class="docutils literal notranslate"><span class="pre">&lt;%include&gt;</span></code> with Template Inheritance<a class="headerlink" href="#using-include-with-template-inheritance" title="Permalink to this headline">¶</a></h2>
+<p>A common source of confusion is the behavior of the <code class="docutils literal notranslate"><span class="pre">&lt;%include&gt;</span></code> tag,
+often in conjunction with its interaction within template inheritance.
+Key to understanding the <code class="docutils literal notranslate"><span class="pre">&lt;%include&gt;</span></code> tag is that it is a <em>dynamic</em>, e.g.
+runtime, include, and not a static include.   The <code class="docutils literal notranslate"><span class="pre">&lt;%include&gt;</span></code> is only processed
+as the template renders, and not at inheritance setup time.   When encountered,
+the referenced template is run fully as an entirely separate template with no
+linkage to any current inheritance structure.</p>
+<p>If the tag were on the other hand a <em>static</em> include, this would allow source
+within the included template to interact within the same inheritance context
+as the calling template, but currently Mako has no static include facility.</p>
+<p>In practice, this means that <code class="docutils literal notranslate"><span class="pre">&lt;%block&gt;</span></code> elements defined in an <code class="docutils literal notranslate"><span class="pre">&lt;%include&gt;</span></code>
+file will not interact with corresponding <code class="docutils literal notranslate"><span class="pre">&lt;%block&gt;</span></code> elements in the calling
+template.</p>
+<p>A common mistake is along these lines:</p>
+<div class="highlight-mako notranslate"><div class="highlight"><pre><span></span><span class="cp">## partials.mako</span><span class="x"></span>
+<span class="cp">&lt;%</span><span class="nb">block</span> <span class="na">name=</span><span class="s">&quot;header&quot;</span><span class="cp">&gt;</span><span class="x"></span>
+<span class="x">    Global Header</span>
+<span class="cp">&lt;/%</span><span class="nb">block</span><span class="cp">&gt;</span>
+
+<span class="cp">## parent.mako</span><span class="x"></span>
+<span class="cp">&lt;%</span><span class="nb">include</span> <span class="na">file=</span><span class="s">&quot;partials.mako&quot;</span><span class="cp">&gt;</span>
+
+<span class="cp">## child.mako</span><span class="x"></span>
+<span class="cp">&lt;%</span><span class="nb">inherit</span> <span class="na">file=</span><span class="s">&quot;parent.mako&quot;</span><span class="cp">&gt;</span><span class="x"></span>
+<span class="cp">&lt;%</span><span class="nb">block</span> <span class="na">name=</span><span class="s">&quot;header&quot;</span><span class="cp">&gt;</span><span class="x"></span>
+<span class="x">    Custom Header</span>
+<span class="cp">&lt;/%</span><span class="nb">block</span><span class="cp">&gt;</span><span class="x"></span></pre></div>
+</div>
+<p>Above, one might expect that the <code class="docutils literal notranslate"><span class="pre">&quot;header&quot;</span></code> block declared in <code class="docutils literal notranslate"><span class="pre">child.mako</span></code>
+might be invoked, as a result of it overriding the same block present in
+<code class="docutils literal notranslate"><span class="pre">parent.mako</span></code> via the include for <code class="docutils literal notranslate"><span class="pre">partials.mako</span></code>.  But this is not the case.
+Instead, <code class="docutils literal notranslate"><span class="pre">parent.mako</span></code> will invoke <code class="docutils literal notranslate"><span class="pre">partials.mako</span></code>, which then invokes
+<code class="docutils literal notranslate"><span class="pre">&quot;header&quot;</span></code> in <code class="docutils literal notranslate"><span class="pre">partials.mako</span></code>, and then is finished rendering.  Nothing
+from <code class="docutils literal notranslate"><span class="pre">child.mako</span></code> will render; there is no interaction between the <code class="docutils literal notranslate"><span class="pre">&quot;header&quot;</span></code>
+block in <code class="docutils literal notranslate"><span class="pre">child.mako</span></code> and the <code class="docutils literal notranslate"><span class="pre">&quot;header&quot;</span></code> block in <code class="docutils literal notranslate"><span class="pre">partials.mako</span></code>.</p>
+<p>Instead, <code class="docutils literal notranslate"><span class="pre">parent.mako</span></code> must explicitly state the inheritance structure.
+In order to call upon specific elements of <code class="docutils literal notranslate"><span class="pre">partials.mako</span></code>, we will call upon
+it as a namespace:</p>
+<div class="highlight-mako notranslate"><div class="highlight"><pre><span></span><span class="cp">## partials.mako</span><span class="x"></span>
+<span class="cp">&lt;%</span><span class="nb">block</span> <span class="na">name=</span><span class="s">&quot;header&quot;</span><span class="cp">&gt;</span><span class="x"></span>
+<span class="x">    Global Header</span>
+<span class="cp">&lt;/%</span><span class="nb">block</span><span class="cp">&gt;</span>
+
+<span class="cp">## parent.mako</span><span class="x"></span>
+<span class="cp">&lt;%</span><span class="nb">namespace</span> <span class="na">name=</span><span class="s">&quot;partials&quot;</span> <span class="na">file=</span><span class="s">&quot;partials.mako&quot;</span><span class="cp">/&gt;</span><span class="x"></span>
+<span class="cp">&lt;%</span><span class="nb">block</span> <span class="na">name=</span><span class="s">&quot;header&quot;</span><span class="cp">&gt;</span><span class="x"></span>
+<span class="x">    </span><span class="cp">${</span><span class="n">partials</span><span class="o">.</span><span class="n">header</span><span class="p">()</span><span class="cp">}</span><span class="x"></span>
+<span class="cp">&lt;/%</span><span class="nb">block</span><span class="cp">&gt;</span>
+
+<span class="cp">## child.mako</span><span class="x"></span>
+<span class="cp">&lt;%</span><span class="nb">inherit</span> <span class="na">file=</span><span class="s">&quot;parent.mako&quot;</span><span class="cp">&gt;</span><span class="x"></span>
+<span class="cp">&lt;%</span><span class="nb">block</span> <span class="na">name=</span><span class="s">&quot;header&quot;</span><span class="cp">&gt;</span><span class="x"></span>
+<span class="x">    Custom Header</span>
+<span class="cp">&lt;/%</span><span class="nb">block</span><span class="cp">&gt;</span><span class="x"></span></pre></div>
+</div>
+<p>Where above, <code class="docutils literal notranslate"><span class="pre">parent.mako</span></code> states the inheritance structure that <code class="docutils literal notranslate"><span class="pre">child.mako</span></code>
+is to participate within.  <code class="docutils literal notranslate"><span class="pre">partials.mako</span></code> only defines defs/blocks that can be
+used on a per-name basis.</p>
+<p>Another scenario is below, which results in both <code class="docutils literal notranslate"><span class="pre">&quot;SectionA&quot;</span></code> blocks being rendered for the <code class="docutils literal notranslate"><span class="pre">child.mako</span></code> document:</p>
+<div class="highlight-mako notranslate"><div class="highlight"><pre><span></span><span class="cp">## base.mako</span><span class="x"></span>
+<span class="cp">${</span><span class="bp">self</span><span class="o">.</span><span class="n">body</span><span class="p">()</span><span class="cp">}</span><span class="x"></span>
+<span class="cp">&lt;%</span><span class="nb">block</span> <span class="na">name=</span><span class="s">&quot;SectionA&quot;</span><span class="cp">&gt;</span><span class="x"></span>
+<span class="x">    base.mako</span>
+<span class="cp">&lt;/%</span><span class="nb">block</span><span class="cp">&gt;</span>
+
+<span class="cp">## parent.mako</span><span class="x"></span>
+<span class="cp">&lt;%</span><span class="nb">inherit</span> <span class="na">file=</span><span class="s">&quot;base.mako&quot;</span><span class="cp">&gt;</span><span class="x"></span>
+<span class="cp">&lt;%</span><span class="nb">include</span> <span class="na">file=</span><span class="s">&quot;child.mako&quot;</span><span class="cp">&gt;</span>
+
+<span class="cp">## child.mako</span><span class="x"></span>
+<span class="cp">&lt;%</span><span class="nb">block</span> <span class="na">name=</span><span class="s">&quot;SectionA&quot;</span><span class="cp">&gt;</span><span class="x"></span>
+<span class="x">    child.mako</span>
+<span class="cp">&lt;/%</span><span class="nb">block</span><span class="cp">&gt;</span><span class="x"></span></pre></div>
+</div>
+<p>The resolution is similar; instead of using <code class="docutils literal notranslate"><span class="pre">&lt;%include&gt;</span></code>, we call upon the blocks
+of <code class="docutils literal notranslate"><span class="pre">child.mako</span></code> using a namespace:</p>
+<div class="highlight-mako notranslate"><div class="highlight"><pre><span></span><span class="cp">## parent.mako</span><span class="x"></span>
+<span class="cp">&lt;%</span><span class="nb">inherit</span> <span class="na">file=</span><span class="s">&quot;base.mako&quot;</span><span class="cp">&gt;</span><span class="x"></span>
+<span class="cp">&lt;%</span><span class="nb">namespace</span> <span class="na">name=</span><span class="s">&quot;child&quot;</span> <span class="na">file=</span><span class="s">&quot;child.mako&quot;</span><span class="cp">&gt;</span><span class="x"></span>
+
+<span class="cp">&lt;%</span><span class="nb">block</span> <span class="na">name=</span><span class="s">&quot;SectionA&quot;</span><span class="cp">&gt;</span><span class="x"></span>
+<span class="x">    </span><span class="cp">${</span><span class="n">child</span><span class="o">.</span><span class="n">SectionA</span><span class="p">()</span><span class="cp">}</span><span class="x"></span>
+<span class="cp">&lt;/%</span><span class="nb">block</span><span class="cp">&gt;</span><span class="x"></span></pre></div>
+</div>
+</div>
+<div class="section" id="inheritable-attributes">
+<span id="inheritance-attr"></span><h2>Inheritable Attributes<a class="headerlink" href="#inheritable-attributes" title="Permalink to this headline">¶</a></h2>
+<p>The <a class="reference internal" href="namespaces.html#mako.runtime.Namespace.attr" title="mako.runtime.Namespace.attr"><code class="xref py py-attr docutils literal notranslate"><span class="pre">attr</span></code></a> accessor of the <a class="reference internal" href="namespaces.html#mako.runtime.Namespace" title="mako.runtime.Namespace"><code class="xref py py-class docutils literal notranslate"><span class="pre">Namespace</span></code></a> object
+allows access to module level variables declared in a template. By accessing
+<code class="docutils literal notranslate"><span class="pre">self.attr</span></code>, you can access regular attributes from the
+inheritance chain as declared in <code class="docutils literal notranslate"><span class="pre">&lt;%!</span> <span class="pre">%&gt;</span></code> sections. Such as:</p>
+<div class="highlight-mako notranslate"><div class="highlight"><pre><span></span><span class="cp">&lt;%!</span>
+    <span class="n">class_</span> <span class="o">=</span> <span class="s2">&quot;grey&quot;</span>
+<span class="cp">%&gt;</span><span class="x"></span>
+
+<span class="x">&lt;div class=&quot;</span><span class="cp">${</span><span class="bp">self</span><span class="o">.</span><span class="n">attr</span><span class="o">.</span><span class="n">class_</span><span class="cp">}</span><span class="x">&quot;&gt;</span>
+<span class="x">    </span><span class="cp">${</span><span class="bp">self</span><span class="o">.</span><span class="n">body</span><span class="p">()</span><span class="cp">}</span><span class="x"></span>
+<span class="x">&lt;/div&gt;</span></pre></div>
+</div>
+<p>If an inheriting template overrides <code class="docutils literal notranslate"><span class="pre">class_</span></code> to be
+<code class="docutils literal notranslate"><span class="pre">&quot;white&quot;</span></code>, as in:</p>
+<div class="highlight-mako notranslate"><div class="highlight"><pre><span></span><span class="cp">&lt;%!</span>
+    <span class="n">class_</span> <span class="o">=</span> <span class="s2">&quot;white&quot;</span>
+<span class="cp">%&gt;</span><span class="x"></span>
+<span class="cp">&lt;%</span><span class="nb">inherit</span> <span class="na">file=</span><span class="s">&quot;parent.html&quot;</span><span class="cp">/&gt;</span><span class="x"></span>
+
+<span class="x">This is the body</span></pre></div>
+</div>
+<p>you’ll get output like:</p>
+<div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">div</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;white&quot;</span><span class="p">&gt;</span>
+    This is the body
+<span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span></pre></div>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="namespaces.html#namespace-attr-for-includes"><span class="std std-ref">Version One - Use Namespace.attr</span></a> - a more sophisticated example using
+<a class="reference internal" href="namespaces.html#mako.runtime.Namespace.attr" title="mako.runtime.Namespace.attr"><code class="xref py py-attr docutils literal notranslate"><span class="pre">Namespace.attr</span></code></a>.</p>
+</div>
+</div>
+</div>
+
+    </div>
+
+</div>
+
+<div id="docs-bottom-navigation" class="docs-navigation-links">
+        Previous:
+        <a href="namespaces.html" title="previous chapter">Namespaces</a>
+        Next:
+        <a href="filtering.html" title="next chapter">Filtering and Buffering</a>
+
+    <div id="docs-copyright">
+        &copy; Copyright the Mako authors and contributors.
+        Documentation generated using <a href="http://sphinx.pocoo.org/">Sphinx</a> 2.1.2
+        with Mako templates.
+    </div>
+</div>
+
+</div>
+
+
+
+        
+        
+
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+          URL_ROOT:    './',
+          VERSION:     '1.0.14',
+          COLLAPSE_MODINDEX: false,
+          FILE_SUFFIX: '.html'
+      };
+    </script>
+
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+
+    <!-- begin iterate through sphinx environment script_files -->
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+    <!-- end iterate through sphinx environment script_files -->
+
+    <script type="text/javascript" src="_static/detectmobile.js"></script>
+    <script type="text/javascript" src="_static/init.js"></script>
+
+
+    </body>
+</html>
+
+

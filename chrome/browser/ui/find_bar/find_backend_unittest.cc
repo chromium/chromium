@@ -45,7 +45,7 @@ TEST_F(FindBackendTest, InternalState) {
 
   // Get another WebContents object ready.
   std::unique_ptr<WebContents> contents2(
-      WebContentsTester::CreateTestWebContents(profile(), NULL));
+      WebContentsTester::CreateTestWebContents(profile(), nullptr));
   FindTabHelper::CreateForWebContents(contents2.get());
   FindTabHelper* find_tab_helper2 =
       FindTabHelper::FromWebContents(contents2.get());

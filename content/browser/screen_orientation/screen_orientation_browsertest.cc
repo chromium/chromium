@@ -75,49 +75,47 @@ class ScreenOrientationBrowserTest : public ContentBrowserTest  {
     }
 
     // This simulates what the browser process does when the screen orientation
-    // is changed:
-    // 1. RenderWidgetHostImpl is notified which sends a ViweMsg_Resize message
-    // to the top-level frame.
+    // is changed.
     main_frame_rwh->SetScreenOrientationForTesting(angle, type);
-
-    // 2. The WebContents sends a PageMsg_UpdateScreenInfo to all the renderers
-    // involved in the FrameTree.
-    web_contents()->GetFrameTree()->root()->render_manager()->SendPageMessage(
-        new PageMsg_UpdateScreenInfo(MSG_ROUTING_NONE, screen_info), nullptr);
   }
 
   int GetOrientationAngle() {
-    int angle;
-    ExecuteScriptAndGetValue(shell()->web_contents()->GetMainFrame(),
-                             "screen.orientation.angle")->GetAsInteger(&angle);
+    int angle =
+        ExecuteScriptAndGetValue(shell()->web_contents()->GetMainFrame(),
+                                 "screen.orientation.angle")
+            .GetInt();
     return angle;
   }
 
   std::string GetOrientationType() {
-    std::string type;
-    ExecuteScriptAndGetValue(shell()->web_contents()->GetMainFrame(),
-                             "screen.orientation.type")->GetAsString(&type);
+    std::string type =
+        ExecuteScriptAndGetValue(shell()->web_contents()->GetMainFrame(),
+                                 "screen.orientation.type")
+            .GetString();
     return type;
   }
 
   bool ScreenOrientationSupported() {
-    bool support;
-    ExecuteScriptAndGetValue(shell()->web_contents()->GetMainFrame(),
-                             "'orientation' in screen")->GetAsBoolean(&support);
+    bool support =
+        ExecuteScriptAndGetValue(shell()->web_contents()->GetMainFrame(),
+                                 "'orientation' in screen")
+            .GetBool();
     return support;
   }
 
   bool WindowOrientationSupported() {
-    bool support;
-    ExecuteScriptAndGetValue(shell()->web_contents()->GetMainFrame(),
-                             "'orientation' in window")->GetAsBoolean(&support);
+    bool support =
+        ExecuteScriptAndGetValue(shell()->web_contents()->GetMainFrame(),
+                                 "'orientation' in window")
+            .GetBool();
     return support;
   }
 
   int GetWindowOrientationAngle() {
-    int angle;
-    ExecuteScriptAndGetValue(shell()->web_contents()->GetMainFrame(),
-                             "window.orientation")->GetAsInteger(&angle);
+    int angle =
+        ExecuteScriptAndGetValue(shell()->web_contents()->GetMainFrame(),
+                                 "window.orientation")
+            .GetInt();
     return angle;
   }
 

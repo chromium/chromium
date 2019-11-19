@@ -16,9 +16,11 @@
 #include "base/time/clock.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/infobars/infobar_service.h"
 #include "chrome/browser/notifications/notification_interactive_uitest_support.h"
 #include "chrome/browser/notifications/notification_test_util.h"
+#include "chrome/browser/permissions/permission_uma_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
@@ -29,6 +31,8 @@
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
+#include "components/history/core/browser/history_service.h"
+#include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/notification_source.h"
 #include "content/public/browser/notification_types.h"
@@ -261,9 +265,8 @@ IN_PROC_BROWSER_TEST_F(NotificationsTest, TestPermissionAPI) {
   EXPECT_EQ("denied", QueryPermissionStatus(browser()));
 }
 
-IN_PROC_BROWSER_TEST_F(NotificationsTest, TestPermissionEmbargo) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  EnablePermissionsEmbargo(&scoped_feature_list);
+IN_PROC_BROWSER_TEST_F(NotificationsTestWithPermissionsEmbargo,
+                       TestPermissionEmbargo) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   ui_test_utils::NavigateToURL(browser(), GetTestPageURL());
@@ -355,6 +358,49 @@ IN_PROC_BROWSER_TEST_F(NotificationsTest, TestDenyAndThenAllowDomain) {
   EXPECT_NE("-1", result);
 
   ASSERT_EQ(1, GetNotificationCount());
+}
+
+IN_PROC_BROWSER_TEST_F(NotificationsTest, InlinePermissionRevokeUkm) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+
+  // Verify able to create, deny, and close the notification.
+  AllowAllOrigins();
+  ui_test_utils::NavigateToURL(browser(), GetTestPageURL());
+
+  Profile* profile = Profile::FromBrowserContext(browser()
+                                                     ->tab_strip_model()
+                                                     ->GetActiveWebContents()
+                                                     ->GetBrowserContext());
+  history::HistoryService* history_service =
+      HistoryServiceFactory::GetForProfile(profile,
+                                           ServiceAccessType::EXPLICIT_ACCESS);
+  base::RunLoop origin_queried_waiter;
+  history_service->set_origin_queried_closure_for_testing(
+      origin_queried_waiter.QuitClosure());
+
+  CreateSimpleNotification(browser(), true);
+  ASSERT_EQ(1, GetNotificationCount());
+
+  message_center::NotificationList::Notifications notifications =
+      message_center::MessageCenter::Get()->GetVisibleNotifications();
+  message_center::MessageCenter::Get()->DisableNotification(
+      (*notifications.rbegin())->id());
+
+  origin_queried_waiter.Run();
+
+  auto entries = ukm_recorder.GetEntriesByName("Permission");
+  EXPECT_EQ(1u, entries.size());
+  auto* entry = entries.front();
+
+  ukm_recorder.ExpectEntrySourceHasUrl(entry,
+                                       embedded_test_server()->base_url());
+  EXPECT_EQ(*ukm_recorder.GetEntryMetric(entry, "Source"),
+            static_cast<int64_t>(PermissionSourceUI::INLINE_SETTINGS));
+  EXPECT_EQ(*ukm_recorder.GetEntryMetric(entry, "PermissionType"),
+            static_cast<int64_t>(ContentSettingsType::NOTIFICATIONS));
+  EXPECT_EQ(*ukm_recorder.GetEntryMetric(entry, "Action"),
+            static_cast<int64_t>(PermissionAction::REVOKED));
 }
 
 IN_PROC_BROWSER_TEST_F(NotificationsTest, TestCreateDenyCloseNotifications) {

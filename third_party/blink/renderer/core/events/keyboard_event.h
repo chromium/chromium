@@ -49,8 +49,10 @@ class CORE_EXPORT KeyboardEvent final : public UIEventWithKeyState {
   }
 
   static KeyboardEvent* Create(const WebKeyboardEvent& web_event,
-                               LocalDOMWindow* dom_window) {
-    return MakeGarbageCollected<KeyboardEvent>(web_event, dom_window);
+                               LocalDOMWindow* dom_window,
+                               bool cancellable = true) {
+    return MakeGarbageCollected<KeyboardEvent>(web_event, dom_window,
+                                               cancellable);
   }
 
   static KeyboardEvent* Create(ScriptState*,
@@ -58,7 +60,9 @@ class CORE_EXPORT KeyboardEvent final : public UIEventWithKeyState {
                                const KeyboardEventInit*);
 
   KeyboardEvent();
-  KeyboardEvent(const WebKeyboardEvent&, LocalDOMWindow*);
+  KeyboardEvent(const WebKeyboardEvent&,
+                LocalDOMWindow*,
+                bool cancellable = true);
   KeyboardEvent(const AtomicString&, const KeyboardEventInit*);
   ~KeyboardEvent() override;
 

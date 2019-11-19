@@ -82,8 +82,7 @@ SingleLogFileLogSource::SingleLogFileLogSource(SupportedSource source_type)
       source_type_(source_type),
       log_file_dir_path_(kDefaultSystemLogDirPath),
       num_bytes_read_(0),
-      file_inode_(0),
-      weak_ptr_factory_(this) {}
+      file_inode_(0) {}
 
 SingleLogFileLogSource::~SingleLogFileLogSource() {}
 
@@ -99,9 +98,10 @@ void SingleLogFileLogSource::Fetch(SysLogsSourceCallback callback) {
 
   auto response = std::make_unique<SystemLogsResponse>();
   auto* response_ptr = response.get();
-  base::PostTaskWithTraitsAndReply(
+  base::PostTaskAndReply(
       FROM_HERE,
-      base::TaskTraits(base::MayBlock(), base::TaskPriority::BEST_EFFORT),
+      base::TaskTraits({base::ThreadPool(), base::MayBlock(),
+                        base::TaskPriority::BEST_EFFORT}),
       base::BindOnce(&SingleLogFileLogSource::ReadFile,
                      weak_ptr_factory_.GetWeakPtr(),
                      kMaxNumAllowedLogRotationsDuringFileRead, response_ptr),

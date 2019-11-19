@@ -4,7 +4,7 @@
 
 package org.chromium.components.signin.test.util;
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import org.chromium.base.ObserverList;
 import org.chromium.base.ThreadUtils;
@@ -22,7 +22,7 @@ public class FakeProfileDataSource implements ProfileDataSource {
     private final ObserverList<Observer> mObservers = new ObserverList<>();
     private final Map<String, ProfileData> mProfileDataMap = new HashMap<>();
 
-    FakeProfileDataSource() {}
+    public FakeProfileDataSource() {}
 
     @Override
     public Map<String, ProfileData> getProfileDataMap() {

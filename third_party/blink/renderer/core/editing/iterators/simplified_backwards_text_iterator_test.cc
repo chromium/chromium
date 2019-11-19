@@ -30,15 +30,12 @@ class SimplifiedBackwardsTextIteratorTest : public EditingTestBase {
     for (SimplifiedBackwardsTextIterator iterator(selection.ComputeRange(),
                                                   behavior);
          !iterator.AtEnd(); iterator.Advance()) {
-      BackwardsTextBuffer buffer;
-      iterator.CopyTextTo(&buffer);
       if (!is_first)
         builder.Append(", ", 2);
       is_first = false;
-      builder.Append(buffer.Data(), buffer.Size());
+      builder.Append(iterator.GetTextState().GetTextForTesting());
     }
-    CString utf8 = builder.ToString().Utf8();
-    return std::string(utf8.data(), utf8.length());
+    return builder.ToString().Utf8();
   }
 };
 
@@ -46,15 +43,15 @@ template <typename Strategy>
 static String ExtractString(const Element& element) {
   const EphemeralRangeTemplate<Strategy> range =
       EphemeralRangeTemplate<Strategy>::RangeOfContents(element);
-  BackwardsTextBuffer buffer;
+  String result;
   for (SimplifiedBackwardsTextIteratorAlgorithm<Strategy> it(range);
        !it.AtEnd(); it.Advance()) {
-    it.CopyTextTo(&buffer);
+    result = it.GetTextState().GetTextForTesting() + result;
   }
-  return String(buffer.Data(), buffer.Size());
+  return result;
 }
 
-TEST_F(SimplifiedBackwardsTextIteratorTest, CopyTextToWithFirstLetterPart) {
+TEST_F(SimplifiedBackwardsTextIteratorTest, IterateWithFirstLetterPart) {
   InsertStyleElement("p::first-letter {font-size: 200%}");
   // TODO(editing-dev): |SimplifiedBackwardsTextIterator| should not account
   // collapsed whitespace (http://crbug.com/760428)
@@ -227,100 +224,6 @@ TEST_F(SimplifiedBackwardsTextIteratorTest, characterAt) {
   EXPECT_EQ('r', back_iter2.CharacterAt(3)) << message2;
   EXPECT_EQ('h', back_iter2.CharacterAt(4)) << message2;
   EXPECT_EQ('t', back_iter2.CharacterAt(5)) << message2;
-}
-
-TEST_F(SimplifiedBackwardsTextIteratorTest, copyTextTo) {
-  const char* body_content =
-      "<a id=host><b id=one>one</b> not appeared <b id=two>two</b></a>";
-  const char* shadow_content =
-      "three <content select=#two></content> <content select=#one></content> "
-      "zero";
-  SetBodyContent(body_content);
-  SetShadowContent(shadow_content, "host");
-
-  Element* host = GetDocument().getElementById("host");
-  const char* message =
-      "|backIter%d| should have emitted '%s' in reverse order.";
-
-  EphemeralRangeTemplate<EditingStrategy> range1(
-      EphemeralRangeTemplate<EditingStrategy>::RangeOfContents(*host));
-  SimplifiedBackwardsTextIteratorAlgorithm<EditingStrategy> back_iter1(range1);
-  BackwardsTextBuffer output1;
-  back_iter1.CopyTextTo(&output1, 0, 2);
-  EXPECT_EQ("wo", String(output1.Data(), output1.Size()))
-      << String::Format(message, 1, "wo").Utf8().data();
-  back_iter1.CopyTextTo(&output1, 2, 1);
-  EXPECT_EQ("two", String(output1.Data(), output1.Size()))
-      << String::Format(message, 1, "two").Utf8().data();
-  back_iter1.Advance();
-  back_iter1.CopyTextTo(&output1, 0, 1);
-  EXPECT_EQ("etwo", String(output1.Data(), output1.Size()))
-      << String::Format(message, 1, "etwo").Utf8().data();
-  back_iter1.CopyTextTo(&output1, 1, 2);
-  EXPECT_EQ("onetwo", String(output1.Data(), output1.Size()))
-      << String::Format(message, 1, "onetwo").Utf8().data();
-
-  EphemeralRangeTemplate<EditingInFlatTreeStrategy> range2(
-      EphemeralRangeTemplate<EditingInFlatTreeStrategy>::RangeOfContents(
-          *host));
-  SimplifiedBackwardsTextIteratorAlgorithm<EditingInFlatTreeStrategy>
-      back_iter2(range2);
-  BackwardsTextBuffer output2;
-  back_iter2.CopyTextTo(&output2, 0, 2);
-  EXPECT_EQ("ro", String(output2.Data(), output2.Size()))
-      << String::Format(message, 2, "ro").Utf8().data();
-  back_iter2.CopyTextTo(&output2, 2, 3);
-  EXPECT_EQ(" zero", String(output2.Data(), output2.Size()))
-      << String::Format(message, 2, " zero").Utf8().data();
-  back_iter2.Advance();
-  back_iter2.CopyTextTo(&output2, 0, 1);
-  EXPECT_EQ("e zero", String(output2.Data(), output2.Size()))
-      << String::Format(message, 2, "e zero").Utf8().data();
-  back_iter2.CopyTextTo(&output2, 1, 2);
-  EXPECT_EQ("one zero", String(output2.Data(), output2.Size()))
-      << String::Format(message, 2, "one zero").Utf8().data();
-  back_iter2.Advance();
-  back_iter2.CopyTextTo(&output2, 0, 1);
-  EXPECT_EQ(" one zero", String(output2.Data(), output2.Size()))
-      << String::Format(message, 2, " one zero").Utf8().data();
-  back_iter2.Advance();
-  back_iter2.CopyTextTo(&output2, 0, 2);
-  EXPECT_EQ("wo one zero", String(output2.Data(), output2.Size()))
-      << String::Format(message, 2, "wo one zero").Utf8().data();
-  back_iter2.CopyTextTo(&output2, 2, 1);
-  EXPECT_EQ("two one zero", String(output2.Data(), output2.Size()))
-      << String::Format(message, 2, "two one zero").Utf8().data();
-  back_iter2.Advance();
-  back_iter2.CopyTextTo(&output2, 0, 3);
-  EXPECT_EQ("ee two one zero", String(output2.Data(), output2.Size()))
-      << String::Format(message, 2, "ee two one zero").Utf8().data();
-  back_iter2.CopyTextTo(&output2, 3, 3);
-  EXPECT_EQ("three two one zero", String(output2.Data(), output2.Size()))
-      << String::Format(message, 2, "three two one zero").Utf8().data();
-}
-
-TEST_F(SimplifiedBackwardsTextIteratorTest, CopyWholeCodePoints) {
-  const char* body_content = "&#x13000;&#x13001;&#x13002; &#x13140;&#x13141;.";
-  SetBodyContent(body_content);
-
-  const UChar kExpected[] = {0xD80C, 0xDC00, 0xD80C, 0xDC01, 0xD80C, 0xDC02,
-                             ' ',    0xD80C, 0xDD40, 0xD80C, 0xDD41, '.'};
-
-  EphemeralRange range(EphemeralRange::RangeOfContents(GetDocument()));
-  SimplifiedBackwardsTextIterator iter(range);
-  BackwardsTextBuffer buffer;
-  EXPECT_EQ(1, iter.CopyTextTo(&buffer, 0, 1))
-      << "Should emit 1 UChar for '.'.";
-  EXPECT_EQ(2, iter.CopyTextTo(&buffer, 1, 1))
-      << "Should emit 2 UChars for 'U+13141'.";
-  EXPECT_EQ(2, iter.CopyTextTo(&buffer, 3, 2))
-      << "Should emit 2 UChars for 'U+13140'.";
-  EXPECT_EQ(5, iter.CopyTextTo(&buffer, 5, 4))
-      << "Should emit 5 UChars for 'U+13001U+13002 '.";
-  EXPECT_EQ(2, iter.CopyTextTo(&buffer, 10, 2))
-      << "Should emit 2 UChars for 'U+13000'.";
-  for (int i = 0; i < 12; i++)
-    EXPECT_EQ(kExpected[i], buffer[i]);
 }
 
 TEST_F(SimplifiedBackwardsTextIteratorTest, TextSecurity) {

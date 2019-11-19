@@ -35,31 +35,33 @@ class EventAckData {
                               int render_process_id,
                               int64_t version_id,
                               int event_id,
+                              bool worker_stopped,
                               base::OnceClosure failure_callback);
 
  private:
-  class IOEventInfo;
+  class CoreThreadEventInfo;
 
-  static void StartExternalRequestOnIO(
+  static void StartExternalRequestOnCoreThread(
       content::ServiceWorkerContext* context,
       int render_process_id,
       int64_t version_id,
       int event_id,
-      scoped_refptr<EventAckData::IOEventInfo> unacked_events);
+      scoped_refptr<EventAckData::CoreThreadEventInfo> unacked_events);
 
-  static void FinishExternalRequestOnIO(
+  static void FinishExternalRequestOnCoreThread(
       content::ServiceWorkerContext* context,
       int render_process_id,
       int64_t version_id,
       int event_id,
-      scoped_refptr<IOEventInfo> unacked_events,
+      bool worker_stopped,
+      scoped_refptr<CoreThreadEventInfo> unacked_events,
       base::OnceClosure failure_callback);
 
   // Contains map of unacked event information keyed by event id.
-  // Created on UI thread, but accessed only on IO thread.
-  scoped_refptr<IOEventInfo> unacked_events_;
+  // Created on UI thread, but accessed only on the core thread.
+  scoped_refptr<CoreThreadEventInfo> unacked_events_;
 
-  base::WeakPtrFactory<EventAckData> weak_factory_;
+  base::WeakPtrFactory<EventAckData> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(EventAckData);
 };

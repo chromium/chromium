@@ -15,7 +15,6 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
 /** Web payments test for blob URL.  */
@@ -29,7 +28,7 @@ public class PaymentRequestBlobUrlTest {
     @Test
     @MediumTest
     @Feature({"Payments"})
-    public void test() throws InterruptedException, ExecutionException, TimeoutException {
+    public void test() throws TimeoutException {
         mPaymentRequestTestRule.openPageAndClickNode("buy");
         mPaymentRequestTestRule.assertWaitForPageScaleFactorMatch(2);
         mPaymentRequestTestRule.expectResultContains(

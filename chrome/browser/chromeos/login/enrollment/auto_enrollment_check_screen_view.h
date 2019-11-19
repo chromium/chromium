@@ -23,8 +23,7 @@ class AutoEnrollmentCheckScreenView {
     virtual void OnViewDestroyed(AutoEnrollmentCheckScreenView* view) = 0;
   };
 
-  constexpr static OobeScreen kScreenId =
-      OobeScreen::SCREEN_AUTO_ENROLLMENT_CHECK;
+  constexpr static StaticOobeScreenId kScreenId{"auto-enrollment-check"};
 
   virtual ~AutoEnrollmentCheckScreenView() {}
 

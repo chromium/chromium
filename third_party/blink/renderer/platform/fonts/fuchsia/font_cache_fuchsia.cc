@@ -46,18 +46,29 @@ void FontCache::SetSystemFontFamily(const AtomicString& family_name) {
 
 scoped_refptr<SimpleFontData> FontCache::PlatformFallbackFontForCharacter(
     const FontDescription& font_description,
-    UChar32 c,
+    UChar32 character,
     const SimpleFontData* font_data_to_substitute,
     FontFallbackPriority fallback_priority) {
   sk_sp<SkFontMgr> font_mgr(SkFontMgr::RefDefault());
-  AtomicString family_name = GetFamilyNameForCharacter(
-      font_mgr.get(), c, font_description, fallback_priority);
-  if (family_name.IsEmpty())
-    return GetLastResortFallbackFont(font_description, kDoNotRetain);
-  return FontDataFromFontPlatformData(
-      GetFontPlatformData(font_description,
-                          FontFaceCreationParams(family_name)),
-      kDoNotRetain);
+  std::string family_name = font_description.Family().Family().Utf8();
+  Bcp47Vector locales =
+      GetBcp47LocaleForRequest(font_description, fallback_priority);
+  sk_sp<SkTypeface> typeface(font_mgr->matchFamilyStyleCharacter(
+      family_name.c_str(), font_description.SkiaFontStyle(), locales.data(),
+      locales.size(), character));
+  if (!typeface)
+    return nullptr;
+
+  bool synthetic_bold =
+      font_description.IsSyntheticBold() && !typeface->isBold();
+  bool synthetic_italic =
+      font_description.IsSyntheticItalic() && !typeface->isItalic();
+
+  auto font_data = std::make_unique<FontPlatformData>(
+      std::move(typeface), std::string(), font_description.EffectiveFontSize(),
+      synthetic_bold, synthetic_italic, font_description.Orientation());
+
+  return FontDataFromFontPlatformData(font_data.get(), kDoNotRetain);
 }
 
 }  // namespace blink

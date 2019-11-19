@@ -5,8 +5,8 @@
 #include "chrome/browser/chromeos/arc/optin/arc_terms_of_service_oobe_negotiator.h"
 
 #include "base/bind.h"
-#include "chrome/browser/chromeos/login/screens/arc_terms_of_service_screen_view.h"
 #include "chrome/browser/chromeos/login/ui/login_display_host.h"
+#include "chrome/browser/ui/webui/chromeos/login/arc_terms_of_service_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/oobe_ui.h"
 
 namespace arc {
@@ -23,7 +23,7 @@ chromeos::ArcTermsOfServiceScreenView* GetScreenView() {
   chromeos::LoginDisplayHost* host = chromeos::LoginDisplayHost::default_host();
   DCHECK(host);
   DCHECK(host->GetOobeUI());
-  return host->GetOobeUI()->GetArcTermsOfServiceScreenView();
+  return host->GetOobeUI()->GetView<chromeos::ArcTermsOfServiceScreenHandler>();
 }
 
 }  // namespace

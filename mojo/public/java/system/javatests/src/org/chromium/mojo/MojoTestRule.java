@@ -4,7 +4,7 @@
 
 package org.chromium.mojo;
 
-import android.support.annotation.IntDef;
+import androidx.annotation.IntDef;
 
 import org.junit.rules.ExternalResource;
 
@@ -40,7 +40,7 @@ public class MojoTestRule extends ExternalResource {
     }
 
     @Override
-    protected void before() throws Throwable {
+    protected void before() {
         LibraryLoader.getInstance().ensureInitialized(LibraryProcessType.PROCESS_BROWSER);
         if (mShouldInitCore && !sIsCoreInitialized) {
             nativeInitCore();

@@ -32,6 +32,9 @@ class OmniboxPopupView {
   // mean opening or closing the window.
   virtual void UpdatePopupAppearance() = 0;
 
+  // Called to inform result view of button focus.
+  virtual void ProvideButtonFocusHint(size_t line) = 0;
+
   // Notification that the icon used for the given match has been updated.
   virtual void OnMatchIconUpdated(size_t match_index) = 0;
 

@@ -34,9 +34,6 @@ _TEST_RUNNER_PATH = os.path.join(
     os.path.dirname(__file__), os.pardir, os.pardir,
     'build', 'android', 'test_runner.py')
 
-_EXPECTED_FAILURES_FILE = os.path.join(
-    os.path.dirname(__file__), 'cts_config', 'expected_failure_on_bot.json')
-
 _WEBVIEW_CTS_GCS_PATH_FILE = os.path.join(
     os.path.dirname(__file__), 'cts_config', 'webview_cts_gcs_path.json')
 _ARCH_SPECIFIC_CTS_INFO = ["filename", "unzip_dir", "_origin"]
@@ -52,7 +49,9 @@ SDK_PLATFORM_DICT = {
     version_codes.NOUGAT: 'N',
     version_codes.NOUGAT_MR1: 'N',
     version_codes.OREO: 'O',
-    version_codes.OREO_MR1: 'O'
+    version_codes.OREO_MR1: 'O',
+    version_codes.PIE: 'P',
+    version_codes.Q: 'Q',
 }
 
 # The test apks are apparently compatible across all architectures, the
@@ -96,20 +95,6 @@ def GetCTSModuleNames(arch, cts_release):
   return [os.path.basename(r['apk']) for r in test_runs]
 
 
-def GetExpectedFailures():
-  """Gets list of tests expected to fail in <class>#<method> format.
-
-  See _EXPECTED_FAILURES_FILE
-  """
-  with open(_EXPECTED_FAILURES_FILE) as f:
-    expected_failures_info = json.load(f)
-  expected_failures = []
-  for class_name, methods in expected_failures_info.iteritems():
-    expected_failures.extend(['%s#%s' % (class_name, m['name'])
-                              for m in methods])
-  return expected_failures
-
-
 def GetTestRunFilterArg(args, test_run):
   """ Merges json file filters with cmdline filters using
       test_filter.InitializeFilterFromArgs
@@ -126,15 +111,11 @@ def GetTestRunFilterArg(args, test_run):
         filter_string,
         positive_patterns=[i["match"] for i in includes])
 
-  excludes = test_run.get("excludes", [])
-  filter_string = test_filter.AppendPatternsToFilter(
-      filter_string,
-      negative_patterns=[e["match"] for e in excludes])
-
   if args.skip_expected_failures:
+    excludes = test_run.get("excludes", [])
     filter_string = test_filter.AppendPatternsToFilter(
         filter_string,
-        negative_patterns=GetExpectedFailures())
+        negative_patterns=[e["match"] for e in excludes])
 
   if filter_string:
     return [TEST_FILTER_OPT + '=' + filter_string]
@@ -320,6 +301,21 @@ def UninstallAnyCtsWebkitPackages(device):
     device.Uninstall(package)
 
 
+def ForwardArgsToTestRunner(known_args):
+  """Convert any args that should be forwarded to test_runner.py"""
+  forwarded_args = []
+  if known_args.devices:
+    # test_runner.py parses --device as nargs instead of append args
+    forwarded_args.extend(['--device'] + known_args.devices)
+  if known_args.blacklist_file:
+    forwarded_args.extend(['--blacklist-file', known_args.blacklist_file])
+
+  if known_args.verbose:
+    forwarded_args.extend(['-' + 'v' * known_args.verbose])
+  #TODO: Pass quiet to test runner when it becomes supported
+  return forwarded_args
+
+
 def main():
   parser = argparse.ArgumentParser()
   parser.add_argument(
@@ -373,13 +369,13 @@ def main():
   logging_common.InitializeLogging(args)
   devil_chromium.Initialize()
 
+  test_runner_args.extend(ForwardArgsToTestRunner(args))
+
   devices = script_common.GetDevices(args.devices, args.blacklist_file)
   device = devices[0]
   if len(devices) > 1:
-    logging.warning('Only single device supported, using 1st of %d devices: %s',
-                    len(devices), device.serial)
-  test_runner_args.extend(['-d', device.serial])
-
+    logging.warning('Detection of arch and cts-release will use 1st of %d '
+                    'devices: %s', len(devices), device.serial)
   arch = args.arch or DetermineArch(device)
   cts_release = args.cts_release or DetermineCtsRelease(device)
 

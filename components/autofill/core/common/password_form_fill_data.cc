@@ -12,34 +12,42 @@
 
 namespace autofill {
 
-PasswordFormFillData::PasswordFormFillData() : wait_for_username(false) {}
+namespace {
 
-PasswordFormFillData::PasswordFormFillData(const PasswordFormFillData& other) =
-    default;
+bool IsPublicSuffixMatchOrAffiliationBasedMatch(const PasswordForm& form) {
+  return form.is_public_suffix_match || form.is_affiliation_based_match;
+}
 
-PasswordFormFillData::~PasswordFormFillData() = default;
+}  // namespace
 
-void InitPasswordFormFillData(
+PasswordFormFillData::PasswordFormFillData() = default;
+
+PasswordFormFillData::PasswordFormFillData(
     const PasswordForm& form_on_page,
-    const std::map<base::string16, const PasswordForm*>& matches,
-    const PasswordForm* const preferred_match,
-    bool wait_for_username_before_autofill,
-    PasswordFormFillData* result) {
+    const std::vector<const PasswordForm*>& matches,
+    const PasswordForm& preferred_match,
+    bool wait_for_username)
+    : form_renderer_id(form_on_page.form_data.unique_renderer_id),
+      name(form_on_page.form_data.name),
+      origin(form_on_page.origin),
+      action(form_on_page.action),
+      uses_account_store(preferred_match.IsUsingAccountStore()),
+      wait_for_username(wait_for_username),
+      has_renderer_ids(form_on_page.has_renderer_ids) {
   // Note that many of the |FormFieldData| members are not initialized for
   // |username_field| and |password_field| because they are currently not used
   // by the password autocomplete code.
-  FormFieldData username_field;
-  username_field.value = preferred_match->username_value;
-  FormFieldData password_field;
-  password_field.value = preferred_match->password_value;
-  if (!form_on_page.only_for_fallback) {
-    // Fill fields identifying information only for non-fallback case. In
-    // fallback case, a fill popup is shown on clicking on each password
-    // field so no need in any field identifiers.
+  username_field.value = preferred_match.username_value;
+  password_field.value = preferred_match.password_value;
+  if (!form_on_page.only_for_fallback &&
+      (form_on_page.HasPasswordElement() || form_on_page.IsSingleUsername())) {
+    // Fill fields identifying information only for non-fallback case when
+    // password element is found. In other cases a fill popup is shown on
+    // clicking on each password field so no need in any field identifiers.
     username_field.name = form_on_page.username_element;
     username_field.unique_renderer_id =
         form_on_page.username_element_renderer_id;
-    result->username_may_use_prefilled_placeholder =
+    username_may_use_prefilled_placeholder =
         form_on_page.username_may_use_prefilled_placeholder;
 
     password_field.name = form_on_page.password_element;
@@ -54,32 +62,33 @@ void InitPasswordFormFillData(
 #endif
   }
 
-  // Fill basic form data.
-  result->form_renderer_id = form_on_page.form_data.unique_renderer_id;
-  result->name = form_on_page.form_data.name;
-  result->origin = form_on_page.origin;
-  result->action = form_on_page.action;
-  result->username_field = username_field;
-  result->password_field = password_field;
-  result->wait_for_username = wait_for_username_before_autofill;
-  result->has_renderer_ids = form_on_page.has_renderer_ids;
-
-  if (preferred_match->is_public_suffix_match ||
-      preferred_match->is_affiliation_based_match)
-    result->preferred_realm = preferred_match->signon_realm;
+  if (IsPublicSuffixMatchOrAffiliationBasedMatch(preferred_match))
+    preferred_realm = preferred_match.signon_realm;
 
   // Copy additional username/value pairs.
-  for (const auto& it : matches) {
-    if (it.second != preferred_match) {
-      PasswordAndRealm value;
-      value.password = it.second->password_value;
-      if (it.second->is_public_suffix_match ||
-          it.second->is_affiliation_based_match)
-        value.realm = it.second->signon_realm;
-      result->additional_logins[it.first] = value;
-    }
+  for (const PasswordForm* match : matches) {
+    if (match == &preferred_match)
+      continue;
+    PasswordAndMetadata& value = additional_logins[match->username_value];
+    value.password = match->password_value;
+    value.uses_account_store = match->IsUsingAccountStore();
+    if (IsPublicSuffixMatchOrAffiliationBasedMatch(*match))
+      value.realm = match->signon_realm;
   }
 }
+
+PasswordFormFillData::PasswordFormFillData(const PasswordFormFillData&) =
+    default;
+
+PasswordFormFillData& PasswordFormFillData::operator=(
+    const PasswordFormFillData&) = default;
+
+PasswordFormFillData::PasswordFormFillData(PasswordFormFillData&&) = default;
+
+PasswordFormFillData& PasswordFormFillData::operator=(PasswordFormFillData&&) =
+    default;
+
+PasswordFormFillData::~PasswordFormFillData() = default;
 
 PasswordFormFillData MaybeClearPasswordValues(
     const PasswordFormFillData& data) {

@@ -32,7 +32,7 @@ class EmptyFileMonitor : public FileMonitor {
                    stats::FileCleanupReason reason) override;
   void HardRecover(const InitCallback& callback) override;
 
-  base::WeakPtrFactory<EmptyFileMonitor> weak_ptr_factory_;
+  base::WeakPtrFactory<EmptyFileMonitor> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(EmptyFileMonitor);
 };

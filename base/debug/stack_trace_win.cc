@@ -119,8 +119,12 @@ FilePath GetExePath() {
 }
 
 bool InitializeSymbols() {
-  if (g_initialized_symbols)
-    return g_init_error == ERROR_SUCCESS;
+  if (g_initialized_symbols) {
+    // Force a reinitialization. Will ensure any modules loaded after process
+    // startup also get symbolized.
+    SymCleanup(GetCurrentProcess());
+    g_initialized_symbols = false;
+  }
   g_initialized_symbols = true;
   // Defer symbol load until they're needed, use undecorated names, and get line
   // numbers.

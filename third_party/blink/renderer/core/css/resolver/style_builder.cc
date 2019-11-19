@@ -70,8 +70,8 @@ void StyleBuilder::ApplyProperty(const CSSProperty& property,
 
   CSSPropertyID id = property.PropertyID();
   bool is_inherited = property.IsInherited();
-  if (id != CSSPropertyVariable && (value.IsVariableReferenceValue() ||
-                                    value.IsPendingSubstitutionValue())) {
+  if (id != CSSPropertyID::kVariable && (value.IsVariableReferenceValue() ||
+                                         value.IsPendingSubstitutionValue())) {
     bool omit_animation_tainted =
         CSSAnimations::IsAnimationAffectingProperty(property);
     const CSSValue* resolved_value =
@@ -86,7 +86,8 @@ void StyleBuilder::ApplyProperty(const CSSProperty& property,
   }
 
   DCHECK(!property.IsShorthand())
-      << "Shorthand property id = " << id << " wasn't expanded at parsing time";
+      << "Shorthand property id = " << static_cast<int>(id)
+      << " wasn't expanded at parsing time";
 
   bool is_inherit = state.ParentNode() && value.IsInheritedValue();
   bool is_initial = value.IsInitialValue() ||
@@ -96,14 +97,6 @@ void StyleBuilder::ApplyProperty(const CSSProperty& property,
   DCHECK(!is_inherit || !is_initial);
   // isInherit => (state.parentNode() && state.parentStyle())
   DCHECK(!is_inherit || (state.ParentNode() && state.ParentStyle()));
-
-  if (!state.ApplyPropertyToRegularStyle() &&
-      (!state.ApplyPropertyToVisitedLinkStyle() ||
-       !property.IsValidForVisitedLink())) {
-    // Limit the properties that can be applied to only the ones honored by
-    // :visited.
-    return;
-  }
 
   if (is_inherit && !state.ParentStyle()->HasExplicitlyInheritedProperties() &&
       !is_inherited) {
@@ -115,10 +108,6 @@ void StyleBuilder::ApplyProperty(const CSSProperty& property,
     else
       is_initial = true;
   }
-
-  // CSSPropertyVariable currently handles initial/inherit inside ApplyValue.
-  DCHECK(id != CSSPropertyVariable || !is_initial);
-  DCHECK(id != CSSPropertyVariable || !is_inherit);
 
   if (is_initial)
     To<Longhand>(property).ApplyInitial(state);

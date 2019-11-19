@@ -13,9 +13,12 @@
 #include "content/common/content_export.h"
 #include "content/common/media/renderer_audio_input_stream_factory.mojom.h"
 #include "media/base/audio_parameters.h"
-#include "media/mojo/interfaces/audio_data_pipe.mojom.h"
-#include "media/mojo/interfaces/audio_input_stream.mojom.h"
-#include "mojo/public/cpp/bindings/binding.h"
+#include "media/mojo/mojom/audio_data_pipe.mojom.h"
+#include "media/mojo/mojom/audio_input_stream.mojom.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "services/audio/public/mojom/audio_processing.mojom.h"
 #include "services/audio/public/mojom/stream_factory.mojom.h"
 
@@ -41,7 +44,8 @@ class CONTENT_EXPORT AudioInputStreamBroker final
       bool enable_agc,
       audio::mojom::AudioProcessingConfigPtr processing_config,
       AudioStreamBroker::DeleterCallback deleter,
-      mojom::RendererAudioInputStreamFactoryClientPtr renderer_factory_client);
+      mojo::PendingRemote<mojom::RendererAudioInputStreamFactoryClient>
+          renderer_factory_client);
 
   ~AudioInputStreamBroker() final;
 
@@ -52,7 +56,7 @@ class CONTENT_EXPORT AudioInputStreamBroker final
   void DidStartRecording() final;
 
  private:
-  void StreamCreated(media::mojom::AudioInputStreamPtr stream,
+  void StreamCreated(mojo::PendingRemote<media::mojom::AudioInputStream> stream,
                      media::mojom::ReadOnlyAudioDataPipePtr data_pipe,
                      bool initially_muted,
                      const base::Optional<base::UnguessableToken>& stream_id);
@@ -73,15 +77,17 @@ class CONTENT_EXPORT AudioInputStreamBroker final
   DeleterCallback deleter_;
 
   audio::mojom::AudioProcessingConfigPtr processing_config_;
-  mojom::RendererAudioInputStreamFactoryClientPtr renderer_factory_client_;
-  mojo::Binding<AudioInputStreamObserver> observer_binding_;
-  media::mojom::AudioInputStreamClientRequest client_request_;
+  mojo::Remote<mojom::RendererAudioInputStreamFactoryClient>
+      renderer_factory_client_;
+  mojo::Receiver<AudioInputStreamObserver> observer_receiver_{this};
+  mojo::PendingReceiver<media::mojom::AudioInputStreamClient>
+      pending_client_receiver_;
 
   media::mojom::AudioInputStreamObserver::DisconnectReason disconnect_reason_ =
       media::mojom::AudioInputStreamObserver::DisconnectReason::
           kDocumentDestroyed;
 
-  base::WeakPtrFactory<AudioInputStreamBroker> weak_ptr_factory_;
+  base::WeakPtrFactory<AudioInputStreamBroker> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(AudioInputStreamBroker);
 };

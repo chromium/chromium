@@ -16,10 +16,6 @@
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/sync/driver/sync_service.h"
 
-namespace identity {
-class IdentityManager;
-}
-
 namespace password_manager {
 
 // The sync- and GAIA- aware implementation of the filter.
@@ -27,17 +23,13 @@ class SyncCredentialsFilter : public CredentialsFilter {
  public:
   using SyncServiceFactoryFunction =
       base::RepeatingCallback<const syncer::SyncService*(void)>;
-  using IdentityManagerFactoryFunction =
-      base::RepeatingCallback<const identity::IdentityManager*(void)>;
 
   // Implements protection of sync credentials. Uses |client| to get the last
   // commited entry URL for a check against GAIA reauth site. Uses the factory
-  // functions repeatedly to get the sync service and signin manager to pass
-  // them to sync_util methods.
+  // function repeatedly to get the sync service to pass to sync_util methods.
   SyncCredentialsFilter(
-      const PasswordManagerClient* client,
-      SyncServiceFactoryFunction sync_service_factory_function,
-      IdentityManagerFactoryFunction identity_manager_factory_function);
+      PasswordManagerClient* client,
+      SyncServiceFactoryFunction sync_service_factory_function);
   ~SyncCredentialsFilter() override;
 
   // CredentialsFilter
@@ -47,17 +39,13 @@ class SyncCredentialsFilter : public CredentialsFilter {
   bool ShouldSaveEnterprisePasswordHash(
       const autofill::PasswordForm& form) const override;
   void ReportFormLoginSuccess(
-      const PasswordFormManagerInterface& form_manager) const override;
+      const PasswordFormManager& form_manager) const override;
   bool IsSyncAccountEmail(const std::string& username) const override;
 
  private:
-  const PasswordManagerClient* const client_;
+  PasswordManagerClient* const client_;
 
   const SyncServiceFactoryFunction sync_service_factory_function_;
-
-  // For incognito profile, |identity_manager_factory_function_| returns the
-  // sign in manager of its original profile.
-  const IdentityManagerFactoryFunction identity_manager_factory_function_;
 
   DISALLOW_COPY_AND_ASSIGN(SyncCredentialsFilter);
 };

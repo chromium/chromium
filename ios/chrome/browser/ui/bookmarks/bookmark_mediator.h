@@ -20,6 +20,7 @@ class PrefRegistrySyncable;
 }  // namespace user_prefs
 
 class GURL;
+@class MDCSnackbarMessage;
 
 // Mediator for the bookmarks.
 @interface BookmarkMediator : NSObject
@@ -39,10 +40,11 @@ class GURL;
                   inBrowserState:(ios::ChromeBrowserState*)browserState;
 
 // Adds a bookmark with a |title| and a |URL| and display a snackbar with an
-// |editAction|.
-- (void)addBookmarkWithTitle:(NSString*)title
-                         URL:(const GURL&)URL
-                  editAction:(void (^)())editAction;
+// |editAction|. Returns a message to be displayed after the Bookmark has been
+// added.
+- (MDCSnackbarMessage*)addBookmarkWithTitle:(NSString*)title
+                                        URL:(const GURL&)URL
+                                 editAction:(void (^)())editAction;
 
 @end
 

@@ -4,10 +4,11 @@
 
 package org.chromium.chrome.browser.download.home.list.holder;
 
-import android.support.annotation.CallSuper;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
+
+import androidx.annotation.CallSuper;
 
 import org.chromium.chrome.browser.download.home.list.ListItem;
 import org.chromium.chrome.browser.download.home.list.ListProperties;

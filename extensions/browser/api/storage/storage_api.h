@@ -17,7 +17,7 @@
 namespace extensions {
 
 // Superclass of all settings functions.
-class SettingsFunction : public UIThreadExtensionFunction {
+class SettingsFunction : public ExtensionFunction {
  protected:
   SettingsFunction();
   ~SettingsFunction() override;

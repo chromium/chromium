@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "content/public/renderer/render_frame.h"
+#include "content/public/renderer/render_view.h"
 #include "content/shell/renderer/web_test/blink_test_runner.h"
 #include "content/shell/renderer/web_test/web_test_render_thread_observer.h"
 #include "content/shell/test_runner/web_test_interfaces.h"
@@ -23,7 +24,7 @@ namespace content {
 
 WebTestRenderFrameObserver::WebTestRenderFrameObserver(
     RenderFrame* render_frame)
-    : RenderFrameObserver(render_frame), binding_(this) {
+    : RenderFrameObserver(render_frame) {
   test_runner::WebTestRunner* test_runner =
       WebTestRenderThreadObserver::GetInstance()
           ->test_interfaces()
@@ -32,16 +33,44 @@ WebTestRenderFrameObserver::WebTestRenderFrameObserver(
       test_runner->GetWebContentSettings());
   render_frame->GetWebFrame()->SetTextCheckClient(
       test_runner->GetWebTextCheckClient());
-  render_frame->GetAssociatedInterfaceRegistry()->AddInterface(base::Bind(
-      &WebTestRenderFrameObserver::BindRequest, base::Unretained(this)));
+  render_frame->GetAssociatedInterfaceRegistry()->AddInterface(
+      base::BindRepeating(&WebTestRenderFrameObserver::BindReceiver,
+                          base::Unretained(this)));
 }
 
 WebTestRenderFrameObserver::~WebTestRenderFrameObserver() = default;
 
-void WebTestRenderFrameObserver::BindRequest(
-    mojom::WebTestControlAssociatedRequest request) {
-  binding_.Bind(std::move(request),
-                blink::scheduler::GetSingleThreadTaskRunnerForTesting());
+void WebTestRenderFrameObserver::BindReceiver(
+    mojo::PendingAssociatedReceiver<mojom::WebTestControl> receiver) {
+  receiver_.Bind(std::move(receiver),
+                 blink::scheduler::GetSingleThreadTaskRunnerForTesting());
+}
+
+void WebTestRenderFrameObserver::ReadyToCommitNavigation(
+    blink::WebDocumentLoader* document_loader) {
+  if (!render_frame()->IsMainFrame())
+    return;
+  focus_on_next_commit_ = true;
+}
+
+void WebTestRenderFrameObserver::DidCommitProvisionalLoad(
+    bool is_same_document_navigation,
+    ui::PageTransition transition) {
+  if (!render_frame()->IsMainFrame())
+    return;
+  if (focus_on_next_commit_) {
+    focus_on_next_commit_ = false;
+    render_frame()->GetRenderView()->GetWebView()->SetFocusedFrame(
+        render_frame()->GetWebFrame());
+  }
+  BlinkTestRunner::Get(render_frame()->GetRenderView())
+      ->DidCommitNavigationInMainFrame();
+}
+
+void WebTestRenderFrameObserver::DidFailProvisionalLoad() {
+  if (!render_frame()->IsMainFrame())
+    return;
+  focus_on_next_commit_ = false;
 }
 
 void WebTestRenderFrameObserver::OnDestruct() {
@@ -55,22 +84,9 @@ void WebTestRenderFrameObserver::CaptureDump(CaptureDumpCallback callback) {
 
 void WebTestRenderFrameObserver::CompositeWithRaster(
     CompositeWithRasterCallback callback) {
-  blink::WebWidget* widget = render_frame()->GetWebFrame()->FrameWidget();
-  blink::WebView* view = render_frame()->GetWebFrame()->View();
-  if (widget) {
-    widget->UpdateAllLifecyclePhasesAndCompositeForTesting(/*do_raster=*/true);
-
-    // The current PagePopup is composited together with the main frame.
-    // TODO(danakj): This means that an OOPIF's popup, which is attached to a
-    // WebView without a main frame, would have no opportunity to execute this
-    // method call.
-    if (render_frame()->IsMainFrame()) {
-      if (blink::WebPagePopup* popup = view->GetPagePopup()) {
-        popup->UpdateAllLifecyclePhasesAndCompositeForTesting(
-            /*do_raster=*/true);
-      }
-    }
-  }
+  // When the TestFinished() occurred, if the browser is capturing pixels, it
+  // asks each composited RenderFrame to submit a new frame via here.
+  render_frame()->UpdateAllLifecyclePhasesAndCompositeForTesting();
   std::move(callback).Run();
 }
 

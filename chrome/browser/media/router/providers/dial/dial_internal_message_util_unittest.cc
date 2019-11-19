@@ -107,7 +107,7 @@ TEST_F(DialInternalMessageUtilTest, ParseV2StopSessionMessage) {
   EXPECT_EQ("152127444812943594", message->client_id);
   EXPECT_EQ(-1, message->sequence_number);
 
-  EXPECT_TRUE(util_.IsStopSessionMessage(*message));
+  EXPECT_TRUE(DialInternalMessageUtil::IsStopSessionMessage(*message));
 }
 
 TEST_F(DialInternalMessageUtilTest, CreateReceiverActionCastMessage) {

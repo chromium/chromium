@@ -1,0 +1,3 @@
+AriaProperties changed on role=checkbox, name=checkbox2
+AriaProperties changed on role=checkbox, name=checkbox3
+AriaProperties changed on role=checkbox, name=checkbox4

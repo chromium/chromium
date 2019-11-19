@@ -73,7 +73,7 @@ class BleListenerOperation
   BleConnectionManager* ble_connection_manager_;
 
   bool is_attempt_active_ = false;
-  base::WeakPtrFactory<BleListenerOperation> weak_ptr_factory_;
+  base::WeakPtrFactory<BleListenerOperation> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(BleListenerOperation);
 };

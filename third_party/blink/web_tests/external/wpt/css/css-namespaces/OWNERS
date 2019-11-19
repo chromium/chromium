@@ -1,8 +1,6 @@
-# TEAM: style-dev@chromium.org
+# TEAM: layout-dev@chromium.org
 # COMPONENT: Blink>CSS
-bugsnash@chromium.org
+futhark@chromium.org
+andruud@chromium.org
 ericwilligers@chromium.org
-meade@chromium.org
-nainar@chromium.org
-rjwright@chromium.org
 shend@chromium.org

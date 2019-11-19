@@ -4,7 +4,7 @@
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//      http://www.apache.org/licenses/LICENSE-2.0
+//      https://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -59,7 +59,8 @@
 // CycleClock that runs at atleast 1 MHz. We've found some Android
 // ARM64 devices where this is not the case, so we disable it by
 // default on Android ARM64.
-#if defined(__native_client__) || TARGET_OS_IPHONE || \
+#if defined(__native_client__) ||                      \
+    (defined(TARGET_OS_IPHONE) && TARGET_OS_IPHONE) || \
     (defined(__ANDROID__) && defined(__aarch64__))
 #define ABSL_USE_UNSCALED_CYCLECLOCK_DEFAULT 0
 #else
@@ -83,6 +84,7 @@
       defined(_M_IX86) || defined(_M_X64))
 #define ABSL_INTERNAL_UNSCALED_CYCLECLOCK_FREQUENCY_IS_CPU_FREQUENCY
 #endif
+
 namespace absl {
 namespace time_internal {
 class UnscaledCycleClockWrapperForGetCurrentTime;
@@ -114,6 +116,7 @@ class UnscaledCycleClock {
 
 }  // namespace base_internal
 }  // namespace absl
+
 #endif  // ABSL_USE_UNSCALED_CYCLECLOCK
 
 #endif  // ABSL_BASE_INTERNAL_UNSCALEDCYCLECLOCK_H_

@@ -7,12 +7,18 @@
   await TestRunner.loadModule('coverage');
 
   testAndDump([], []);
-  testAndDump([{end: 10, count: 1}], []);
-  testAndDump([{end: 10, count: 1}], [{end: 10, count: 1}]);
-  testAndDump([{end: 10, count: 1}], [{end: 20, count: 1}]);
-  testAndDump([{end: 10, count: 1}, {end: 20, count: 1}], []);
-  testAndDump([{end: 30, count: 1}], [{end: 10, count: undefined}, {end: 20, count: 2}]);
-  testAndDump([{end: 30, count: undefined}], [{end: 10, count: undefined}, {end: 20, count: 2}]);
+  testAndDump([{end: 10, count: 1, stamp: 100}], []);
+  testAndDump([{end: 10, count: 1, stamp: 100}], [{end: 10, count: 1, stamp: 100}]);
+  testAndDump([{end: 10, count: 1, stamp: 100}], [{end: 20, count: 1, stamp: 100}]);
+  testAndDump([{end: 10, count: 1, stamp: 100}, {end: 20, count: 1, stamp: 100}], []);
+  testAndDump([{end: 30, count: 1, stamp: 100}], [{end: 10, count: undefined, stamp: 100}, {end: 20, count: 2, stamp: 100}]);
+  testAndDump([{end: 30, count: undefined, stamp: 100}], [{end: 10, count: undefined, stamp: 100}, {end: 20, count: 2, stamp: 100}]);
+
+  TestRunner.addResult(`Merging different stamps should result in the minimum timestamp`);
+  testAndDump([{end: 10, count: 1, stamp: 100}], [{end: 10, count: 1, stamp: 200}]);
+  testAndDump([{end: 10, count: 1, stamp: 100}], [{end: 20, count: 1, stamp: 200}]);
+  testAndDump([{end: 10, count: 1, stamp: 100}, {end: 20, count: 1, stamp: 200}], []);
+  testAndDump([{end: 30, count: 1, stamp: 100}], [{end: 10, count: undefined, stamp: 100}, {end: 20, count: 2, stamp: 200}]);
 
   TestRunner.completeTest();
 

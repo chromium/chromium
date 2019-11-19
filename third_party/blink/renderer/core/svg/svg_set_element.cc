@@ -24,12 +24,10 @@
 
 namespace blink {
 
-inline SVGSetElement::SVGSetElement(Document& document)
+SVGSetElement::SVGSetElement(Document& document)
     : SVGAnimateElement(svg_names::kSetTag, document) {
   SetAnimationMode(kToAnimation);
 }
-
-DEFINE_NODE_FACTORY(SVGSetElement)
 
 void SVGSetElement::UpdateAnimationMode() {
   // No-op, as <set> has a constant animation mode of ToAnimation.

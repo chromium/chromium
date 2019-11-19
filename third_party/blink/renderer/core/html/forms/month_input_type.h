@@ -37,8 +37,6 @@ namespace blink {
 
 class MonthInputType final : public BaseTemporalInputType {
  public:
-  static InputType* Create(HTMLInputElement&);
-
   explicit MonthInputType(HTMLInputElement& element)
       : BaseTemporalInputType(element) {}
 

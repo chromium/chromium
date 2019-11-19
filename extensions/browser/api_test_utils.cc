@@ -36,7 +36,7 @@ namespace extensions {
 
 namespace api_test_utils {
 
-SendResponseHelper::SendResponseHelper(UIThreadExtensionFunction* function) {
+SendResponseHelper::SendResponseHelper(ExtensionFunction* function) {
   function->set_has_callback(true);
   function->set_response_callback(
       base::Bind(&SendResponseHelper::OnResponse, base::Unretained(this)));
@@ -51,8 +51,7 @@ bool SendResponseHelper::GetResponse() {
 
 void SendResponseHelper::OnResponse(ExtensionFunction::ResponseType response,
                                     const base::ListValue& results,
-                                    const std::string& error,
-                                    functions::HistogramValue histogram_value) {
+                                    const std::string& error) {
   ASSERT_NE(ExtensionFunction::BAD_MESSAGE, response);
   response_.reset(new bool(response == ExtensionFunction::SUCCEEDED));
   run_loop_.Quit();
@@ -90,7 +89,7 @@ std::string GetString(const base::DictionaryValue* val,
 }
 
 std::unique_ptr<base::Value> RunFunctionWithDelegateAndReturnSingleResult(
-    scoped_refptr<UIThreadExtensionFunction> function,
+    scoped_refptr<ExtensionFunction> function,
     const std::string& args,
     content::BrowserContext* context,
     std::unique_ptr<extensions::ExtensionFunctionDispatcher> dispatcher,
@@ -104,7 +103,7 @@ std::unique_ptr<base::Value> RunFunctionWithDelegateAndReturnSingleResult(
 }
 
 std::unique_ptr<base::Value> RunFunctionWithDelegateAndReturnSingleResult(
-    scoped_refptr<UIThreadExtensionFunction> function,
+    scoped_refptr<ExtensionFunction> function,
     std::unique_ptr<base::ListValue> args,
     content::BrowserContext* context,
     std::unique_ptr<extensions::ExtensionFunctionDispatcher> dispatcher,
@@ -122,14 +121,14 @@ std::unique_ptr<base::Value> RunFunctionWithDelegateAndReturnSingleResult(
 }
 
 std::unique_ptr<base::Value> RunFunctionAndReturnSingleResult(
-    UIThreadExtensionFunction* function,
+    ExtensionFunction* function,
     const std::string& args,
     content::BrowserContext* context) {
   return RunFunctionAndReturnSingleResult(function, args, context, NONE);
 }
 
 std::unique_ptr<base::Value> RunFunctionAndReturnSingleResult(
-    UIThreadExtensionFunction* function,
+    ExtensionFunction* function,
     const std::string& args,
     content::BrowserContext* context,
     RunFunctionFlags flags) {
@@ -140,13 +139,13 @@ std::unique_ptr<base::Value> RunFunctionAndReturnSingleResult(
       function, args, context, std::move(dispatcher), flags);
 }
 
-std::string RunFunctionAndReturnError(UIThreadExtensionFunction* function,
+std::string RunFunctionAndReturnError(ExtensionFunction* function,
                                       const std::string& args,
                                       content::BrowserContext* context) {
   return RunFunctionAndReturnError(function, args, context, NONE);
 }
 
-std::string RunFunctionAndReturnError(UIThreadExtensionFunction* function,
+std::string RunFunctionAndReturnError(ExtensionFunction* function,
                                       const std::string& args,
                                       content::BrowserContext* context,
                                       RunFunctionFlags flags) {
@@ -165,7 +164,7 @@ std::string RunFunctionAndReturnError(UIThreadExtensionFunction* function,
   return function->GetError();
 }
 
-bool RunFunction(UIThreadExtensionFunction* function,
+bool RunFunction(ExtensionFunction* function,
                  const std::string& args,
                  content::BrowserContext* context) {
   std::unique_ptr<ExtensionFunctionDispatcher> dispatcher(
@@ -174,7 +173,7 @@ bool RunFunction(UIThreadExtensionFunction* function,
 }
 
 bool RunFunction(
-    UIThreadExtensionFunction* function,
+    ExtensionFunction* function,
     const std::string& args,
     content::BrowserContext* context,
     std::unique_ptr<extensions::ExtensionFunctionDispatcher> dispatcher,
@@ -187,7 +186,7 @@ bool RunFunction(
 }
 
 bool RunFunction(
-    UIThreadExtensionFunction* function,
+    ExtensionFunction* function,
     std::unique_ptr<base::ListValue> args,
     content::BrowserContext* context,
     std::unique_ptr<extensions::ExtensionFunctionDispatcher> dispatcher,

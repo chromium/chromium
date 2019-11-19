@@ -5,7 +5,6 @@
 #ifndef CC_TREES_RENDER_FRAME_METADATA_OBSERVER_H_
 #define CC_TREES_RENDER_FRAME_METADATA_OBSERVER_H_
 
-#include "base/macros.h"
 #include "cc/cc_export.h"
 #include "cc/trees/render_frame_metadata.h"
 
@@ -22,7 +21,11 @@ namespace cc {
 class CC_EXPORT RenderFrameMetadataObserver {
  public:
   RenderFrameMetadataObserver() = default;
+  RenderFrameMetadataObserver(const RenderFrameMetadataObserver&) = delete;
   virtual ~RenderFrameMetadataObserver() = default;
+
+  RenderFrameMetadataObserver& operator=(const RenderFrameMetadataObserver&) =
+      delete;
 
   // Binds on the current thread. This should only be called from the compositor
   // thread.
@@ -34,9 +37,6 @@ class CC_EXPORT RenderFrameMetadataObserver {
       const RenderFrameMetadata& render_frame_metadata,
       viz::CompositorFrameMetadata* compositor_frame_metadata,
       bool force_send) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(RenderFrameMetadataObserver);
 };
 
 }  // namespace cc

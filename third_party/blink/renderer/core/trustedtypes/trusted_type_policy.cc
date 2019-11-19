@@ -7,7 +7,6 @@
 #include "third_party/blink/renderer/core/trustedtypes/trusted_html.h"
 #include "third_party/blink/renderer/core/trustedtypes/trusted_script.h"
 #include "third_party/blink/renderer/core/trustedtypes/trusted_script_url.h"
-#include "third_party/blink/renderer/core/trustedtypes/trusted_url.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/to_v8.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
@@ -15,19 +14,8 @@
 namespace blink {
 
 TrustedTypePolicy::TrustedTypePolicy(const String& policy_name,
-                                     TrustedTypePolicyOptions* policy_options,
-                                     bool exposed)
-    : name_(policy_name), policy_options_(policy_options) {
-  policy_options_->setExposed(exposed);
-}
-
-TrustedTypePolicy* TrustedTypePolicy::Create(
-    const String& policy_name,
-    TrustedTypePolicyOptions* policy_options,
-    bool exposed) {
-  return MakeGarbageCollected<TrustedTypePolicy>(policy_name, policy_options,
-                                                 exposed);
-}
+                                     TrustedTypePolicyOptions* policy_options)
+    : name_(policy_name), policy_options_(policy_options) {}
 
 TrustedHTML* TrustedTypePolicy::createHTML(ScriptState* script_state,
                                            const String& input,
@@ -49,12 +37,6 @@ TrustedScriptURL* TrustedTypePolicy::createScriptURL(
   return CreateScriptURL(script_state->GetIsolate(), input, exception_state);
 }
 
-TrustedURL* TrustedTypePolicy::createURL(ScriptState* script_state,
-                                         const String& input,
-                                         ExceptionState& exception_state) {
-  return CreateURL(script_state->GetIsolate(), input, exception_state);
-}
-
 TrustedHTML* TrustedTypePolicy::CreateHTML(v8::Isolate* isolate,
                                            const String& input,
                                            ExceptionState& exception_state) {
@@ -71,7 +53,7 @@ TrustedHTML* TrustedTypePolicy::CreateHTML(v8::Isolate* isolate,
     exception_state.RethrowV8Exception(try_catch.Exception());
     return nullptr;
   }
-  return TrustedHTML::Create(html);
+  return MakeGarbageCollected<TrustedHTML>(html);
 }
 
 TrustedScript* TrustedTypePolicy::CreateScript(
@@ -91,7 +73,7 @@ TrustedScript* TrustedTypePolicy::CreateScript(
     exception_state.RethrowV8Exception(try_catch.Exception());
     return nullptr;
   }
-  return TrustedScript::Create(script);
+  return MakeGarbageCollected<TrustedScript>(script);
 }
 
 TrustedScriptURL* TrustedTypePolicy::CreateScriptURL(
@@ -113,34 +95,11 @@ TrustedScriptURL* TrustedTypePolicy::CreateScriptURL(
     exception_state.RethrowV8Exception(try_catch.Exception());
     return nullptr;
   }
-  return TrustedScriptURL::Create(script_url);
-}
-
-TrustedURL* TrustedTypePolicy::CreateURL(v8::Isolate* isolate,
-                                         const String& input,
-                                         ExceptionState& exception_state) {
-  if (!policy_options_->createURL()) {
-    exception_state.ThrowTypeError(
-        "Policy " + name_ +
-        "'s TrustedTypePolicyOptions did not specify a 'createURL' member.");
-    return nullptr;
-  }
-  v8::TryCatch try_catch(isolate);
-  String url;
-  if (!policy_options_->createURL()->Invoke(nullptr, input).To(&url)) {
-    DCHECK(try_catch.HasCaught());
-    exception_state.RethrowV8Exception(try_catch.Exception());
-    return nullptr;
-  }
-  return TrustedURL::Create(url);
+  return MakeGarbageCollected<TrustedScriptURL>(script_url);
 }
 
 String TrustedTypePolicy::name() const {
   return name_;
-}
-
-bool TrustedTypePolicy::exposed() const {
-  return policy_options_->exposed();
 }
 
 void TrustedTypePolicy::Trace(blink::Visitor* visitor) {

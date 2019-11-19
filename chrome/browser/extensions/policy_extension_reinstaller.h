@@ -48,7 +48,7 @@ class PolicyExtensionReinstaller {
   // Whether or not there is a pending PostTask to Fire().
   bool scheduled_fire_pending_ = false;
 
-  base::WeakPtrFactory<PolicyExtensionReinstaller> weak_factory_;
+  base::WeakPtrFactory<PolicyExtensionReinstaller> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(PolicyExtensionReinstaller);
 };

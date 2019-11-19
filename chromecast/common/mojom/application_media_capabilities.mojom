@@ -12,5 +12,5 @@ interface ApplicationMediaCapabilitiesObserver {
 
 // Media capabilities for an individual application.
 interface ApplicationMediaCapabilities {
-  AddObserver(ApplicationMediaCapabilitiesObserver observer);
+  AddObserver(pending_remote<ApplicationMediaCapabilitiesObserver> observer);
 };

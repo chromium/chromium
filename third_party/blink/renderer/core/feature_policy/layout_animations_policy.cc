@@ -4,9 +4,10 @@
 
 #include "third_party/blink/renderer/core/feature_policy/layout_animations_policy.h"
 
+#include "third_party/blink/public/mojom/feature_policy/feature_policy.mojom-blink.h"
 #include "third_party/blink/renderer/core/css/properties/css_property.h"
 #include "third_party/blink/renderer/core/execution_context/security_context.h"
-#include "third_party/blink/renderer/core/feature_policy/feature_policy.h"
+#include "third_party/blink/renderer/core/feature_policy/feature_policy_parser.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 
 namespace blink {
@@ -15,10 +16,10 @@ String GetViolationMessage(const CSSProperty& property) {
   return String::Format(
       "Feature policy violation: CSS property '%s' violates feature policy "
       "'%s' which is disabled in this document",
-      property.GetPropertyNameString().Utf8().data(),
+      property.GetPropertyNameString().Utf8().c_str(),
       GetNameForFeature(mojom::FeaturePolicyFeature::kLayoutAnimations)
           .Utf8()
-          .data());
+          .c_str());
 }
 }  // namespace
 

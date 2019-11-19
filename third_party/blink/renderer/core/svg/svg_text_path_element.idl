@@ -25,6 +25,7 @@
 
 // https://svgwg.org/svg2-draft/text.html#InterfaceSVGTextPathElement
 
+[Exposed=Window]
 interface SVGTextPathElement : SVGTextContentElement {
     // textPath Method Types
     [MeasureAs=SVG1DOMText] const unsigned short TEXTPATH_METHODTYPE_UNKNOWN   = 0;
@@ -41,5 +42,5 @@ interface SVGTextPathElement : SVGTextContentElement {
     [MeasureAs=SVG1DOMText] readonly attribute SVGAnimatedEnumeration spacing;
 };
 
-SVGTextPathElement implements SVGURIReference;
-//SVGTextPathElement implements SVGAnimatedPathData;
+SVGTextPathElement includes SVGURIReference;
+//SVGTextPathElement includes SVGAnimatedPathData;

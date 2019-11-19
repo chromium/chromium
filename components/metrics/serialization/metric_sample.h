@@ -26,6 +26,17 @@ class MetricSample {
     USER_ACTION
   };
 
+  // Use one of the static methods in this class instead of calling the
+  // constructor directly.
+  //
+  // The constructor is exposed for std::make_unique.
+  MetricSample(SampleType sample_type,
+               const std::string& metric_name,
+               const int sample,
+               const int min,
+               const int max,
+               const int bucket_count);
+
   ~MetricSample();
 
   // Returns true if the sample is valid (can be serialized without ambiguity).
@@ -96,13 +107,6 @@ class MetricSample {
   bool IsEqual(const MetricSample& sample);
 
  private:
-  MetricSample(SampleType sample_type,
-               const std::string& metric_name,
-               const int sample,
-               const int min,
-               const int max,
-               const int bucket_count);
-
   const SampleType type_;
   const std::string name_;
   const int sample_;

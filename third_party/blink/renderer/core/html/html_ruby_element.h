@@ -13,13 +13,11 @@ namespace blink {
 // so HTMLElement's createLayoutObject doesn't need to know about it.
 class HTMLRubyElement final : public HTMLElement {
  public:
-  DECLARE_NODE_FACTORY(HTMLRubyElement);
-
   explicit HTMLRubyElement(Document&);
 
  private:
-  LayoutObject* CreateLayoutObject(const ComputedStyle&) override;
-  bool ShouldForceLegacyLayout() const final { return true; }
+  LayoutObject* CreateLayoutObject(const ComputedStyle&, LegacyLayout) override;
+  bool TypeShouldForceLegacyLayout() const final { return true; }
 };
 
 }  // namespace blink

@@ -52,8 +52,15 @@ class WebGLRenderbuffer final : public WebGLSharedPlatform3DObject {
   GLsizei Width() const { return width_; }
   GLsizei Height() const { return height_; }
 
-  bool HasEverBeenBound() const { return Object() && has_ever_been_bound_; }
+  // Returns:
+  //   -1 if the renderbuffer *used to be* multisampled and *is now*
+  //     single-sampled
+  //   0 if the renderbuffer's multisample state hasn't changed
+  //   1 if the renderbuffer *used to be* single-sampled and *is now*
+  //     multisampled
+  int UpdateMultisampleState(bool multisampled);
 
+  bool HasEverBeenBound() const { return Object() && has_ever_been_bound_; }
   void SetHasEverBeenBound() { has_ever_been_bound_ = true; }
 
   void Trace(blink::Visitor*) override;
@@ -66,6 +73,7 @@ class WebGLRenderbuffer final : public WebGLSharedPlatform3DObject {
 
   GLenum internal_format_;
   GLsizei width_, height_;
+  bool is_multisampled_;
 
   bool has_ever_been_bound_;
 };

@@ -14,9 +14,7 @@
 #include "base/version.h"
 #include "content/common/content_export.h"
 #include "media/base/content_decryption_module.h"
-// TODO(crbug.com/825041): Move EncryptionMode out of decrypt_config and
-// rename it to EncryptionScheme.
-#include "media/base/decrypt_config.h"
+#include "media/base/encryption_scheme.h"
 #include "media/base/video_codecs.h"
 #include "media/cdm/cdm_proxy.h"
 
@@ -26,7 +24,7 @@ namespace content {
 struct CONTENT_EXPORT CdmCapability {
   CdmCapability();
   CdmCapability(std::vector<media::VideoCodec> video_codecs,
-                base::flat_set<media::EncryptionMode> encryption_schemes,
+                base::flat_set<media::EncryptionScheme> encryption_schemes,
                 base::flat_set<media::CdmSessionType> session_types,
                 base::flat_set<media::CdmProxy::Protocol> cdm_proxy_protocols);
   CdmCapability(const CdmCapability& other);
@@ -46,7 +44,7 @@ struct CONTENT_EXPORT CdmCapability {
   bool supports_vp9_profile2 = false;
 
   // List of encryption schemes supported by the CDM (e.g. cenc).
-  base::flat_set<media::EncryptionMode> encryption_schemes;
+  base::flat_set<media::EncryptionScheme> encryption_schemes;
 
   // List of session types supported by the CDM.
   base::flat_set<media::CdmSessionType> session_types;

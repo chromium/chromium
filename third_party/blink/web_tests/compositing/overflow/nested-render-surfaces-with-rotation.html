@@ -42,11 +42,13 @@
     }
 
     .rotated {
-      transform: translateZ(0) rotate(5deg);
+      transform: rotate(5deg);
+      will-change: transform;
     }
 
     .counter-rotated {
-      transform: translateZ(0) rotate(-9deg);
+      transform: rotate(-9deg);
+      will-change: transform;
     }
 </style>
 </head>

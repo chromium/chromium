@@ -8,7 +8,7 @@
 
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "chromeos/components/tether/fake_network_configuration_remover.h"
 #include "chromeos/components/tether/pref_names.h"
 #include "chromeos/network/network_connection_handler.h"
@@ -197,7 +197,7 @@ class WifiHotspotDisconnectorImplTest : public testing::Test {
     return helper_.GetServiceStringProperty(service_path, key);
   }
 
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_;
   NetworkStateTestHelper helper_{true /* use_default_devices_and_services */};
 
   std::unique_ptr<TestNetworkConnectionHandler>
@@ -230,7 +230,7 @@ TEST_F(WifiHotspotDisconnectorImplTest, NetworkNotActuallyConnected) {
   SimulateConnectionToWifiNetwork();
   SetWifiNetworkToDisconnected();
 
-  CallDisconnect(wifi_service_path_);
+  CallDisconnect(kWifiNetworkGuid);
   EXPECT_EQ(NetworkConnectionHandler::kErrorNotConnected, GetResultAndReset());
 
   // Configuration should not have been removed.
@@ -243,7 +243,7 @@ TEST_F(WifiHotspotDisconnectorImplTest, WifiDisconnectionFails) {
 
   should_disconnect_successfully_ = false;
 
-  CallDisconnect(wifi_service_path_);
+  CallDisconnect(kWifiNetworkGuid);
   EXPECT_EQ(NetworkConnectionHandler::kErrorDisconnectFailed,
             GetResultAndReset());
 
@@ -260,7 +260,7 @@ TEST_F(WifiHotspotDisconnectorImplTest, WifiDisconnectionFails) {
 TEST_F(WifiHotspotDisconnectorImplTest, WifiDisconnectionSucceeds) {
   SimulateConnectionToWifiNetwork();
 
-  CallDisconnect(wifi_service_path_);
+  CallDisconnect(kWifiNetworkGuid);
   EXPECT_EQ(kSuccessResult, GetResultAndReset());
 
   // The Wi-Fi network should be disconnected.

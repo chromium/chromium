@@ -1,7 +1,0 @@
-CONSOLE ERROR: line 5: The XSS Auditor refused to execute a script in 'http://localhost:8000/security/xssAuditor/intercept/echo-form-action.pl/%22%20onmouseover=%22JavaScript:alert(document.domain)%22%20name=%22?m=login' because its source code was found within the request. The server sent an 'X-XSS-Protection' header requesting this behavior.
-
-
---------
-Frame: '<!--framePath //<!--frame0-->-->'
---------
-This is an iframe with a injected form

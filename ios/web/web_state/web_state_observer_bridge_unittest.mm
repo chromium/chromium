@@ -2,15 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/web/public/web_state/web_state_observer_bridge.h"
+#import "ios/web/public/web_state_observer_bridge.h"
 
 #include "base/memory/ptr_util.h"
 #include "base/scoped_observer.h"
-#include "ios/web/public/favicon_url.h"
+#import "ios/web/navigation/navigation_context_impl.h"
+#include "ios/web/public/favicon/favicon_url.h"
 #import "ios/web/public/test/fakes/crw_test_web_state_observer.h"
 #import "ios/web/public/test/fakes/test_web_state.h"
-#import "ios/web/public/web_state/web_state_observer_bridge.h"
-#import "ios/web/web_state/navigation_context_impl.h"
 #include "net/http/http_response_headers.h"
 #include "testing/platform_test.h"
 

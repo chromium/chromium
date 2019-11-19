@@ -94,9 +94,9 @@ JNI_GENERATOR_EXPORT jobjectArray
 
 JNI_GENERATOR_EXPORT void Java_org_chromium_base_natives_GEN_1JNI_org_1chromium_1foo_1Foo_1baz(
     JNIEnv* env,
-    jobject jcaller,
-    jobject caller,
-    jlong nativePtr) {
+    jclass jcaller,
+    jlong nativePtr,
+    jobject caller) {
   TRACE_EVENT0("jni", "Ptr::Baz");
   Ptr* native = reinterpret_cast<Ptr*>(nativePtr);
   CHECK_NATIVE_PTR(env, jcaller, native, "Baz");
@@ -105,12 +105,12 @@ JNI_GENERATOR_EXPORT void Java_org_chromium_base_natives_GEN_1JNI_org_1chromium_
 
 JNI_GENERATOR_EXPORT void Java_org_chromium_base_natives_GEN_1JNI_org_1chromium_1foo_1Foo_1fooBar(
     JNIEnv* env,
-    jobject jcaller,
+    jclass jcaller,
     jlong nativePtr) {
   TRACE_EVENT0("jni", "Ptr::FooBar");
   Ptr* native = reinterpret_cast<Ptr*>(nativePtr);
   CHECK_NATIVE_PTR(env, jcaller, native, "FooBar");
-  return native->FooBar(env, base::android::JavaParamRef<jobject>(env, jcaller));
+  return native->FooBar(env);
 }
 
 

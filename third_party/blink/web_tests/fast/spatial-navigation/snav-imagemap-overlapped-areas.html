@@ -1,38 +1,49 @@
+<!doctype html>
 <map name="map" title="map" id="firstmap">
-  <area shape="circle" coords="45,45,25" href="#" id="1">
-  <area shape="rect" coords="45,60,95,110" href="#" id="2">
-  <area shape="poly" coords="80,20,130,20,130,180,30,180,30,130,80,130" href="#" id="3">
-  <area shape="default" href="#" id="4">
+  <area shape="circle" coords="45,45,25" href="#" id="circle">
+  <area shape="rect" coords="45,60,95,110" href="#" id="rect">
+  <area shape="poly" coords="80,20,130,20,130,180,30,180,30,130,80,130" href="#" id="poly">
+  <area shape="default" href="#" id="default">
 </map>
 
-<a id="start" href="a"><img src="resources/green.png" width=50px height=50px></a>
+<a id="first" href="a"><img src="resources/green.png" width=50px height=50px></a>
+<br><br>
 <div>
   <img src="resources/green.png" width=200px height=200px usemap="#map">
 </div>
-<a id="5" href="a"><img src="resources/green.png" width=50px height=50px></a>
+<a id="last" href="a"><img src="resources/green.png" width=50px height=50px></a>
 
-<p>This test tests that areas of an imagemap can be reached with spatial navigation even if they are overlapped.</p>
+<p>All areas of an image map should be reachable with spatial navigation, even if they overlap.</p>
 
 <script src="../../resources/testharness.js"></script>
 <script src="../../resources/testharnessreport.js"></script>
 <script src="resources/snav-testharness.js"></script>
 <script>
   var resultMap = [
-    ["Down", "4"],
-    ["Down", "1"],
-    ["Down", "2"],
-    ["Down", "5"],
-    ["Up", "4"],
-    ["Up", "3"],
-    ["Up", "2"],
-    ["Left", "1"],
-    ["Right", "3"],
-    ["Left", "2"],
-    ["Up", "1"],
-    ["Up", "start"],
+    ["Down", "default"],
+    ["Down", "poly"],
+    ["Left", "rect"],
+    ["Left", "circle"],
+    ["Down", "rect"],
+    ["Down", "last"],
+    ["Up", "default"],
+    ["Up", "poly"],
+    ["Up", "rect"],
+    ["Up", "circle"],
+    ["Up", "first"],
   ];
-
   // Start at a known place.
-  document.getElementById("start").focus();
+  document.getElementById("first").focus();
   snav.assertFocusMoves(resultMap);
 </script>
+
+<p><em>Manual test instruction: Ensure the img's default area gets visited first since it is the
+outermost area and closest to #first. From there, ensure that all internal areas are reachable too.
+</em></p>
+
+<p>In general, if two areas are on the same distance from current focus F, SpatNav should prioritize
+the area that can absorb most of F's projection.</p>
+
+<p>When looking for the closest "insider" (here, areas inside the focused img), SpatNav projects
+he img's edge onto each area. Here #poly wins over #circle because #poly's area absorbs more
+of the projection.</p>

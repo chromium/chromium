@@ -8,6 +8,8 @@ Note that source file names are treated as symbols in this script while they
 are actually not.
 """
 
+from __future__ import print_function
+
 import json
 import logging
 import os
@@ -203,9 +205,9 @@ def main():
                                       sys.stdin)
   for address, symbol in symbols_dict.iteritems():
     if symbol:
-      print '%016x %s' % (address, symbol)
+      print('%016x %s' % (address, symbol))
     else:
-      print '%016x' % address
+      print('%016x' % address)
 
   return 0
 

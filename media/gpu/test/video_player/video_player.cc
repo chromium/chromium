@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
+#include "media/gpu/macros.h"
 #include "media/gpu/test/video_player/video.h"
 #include "media/gpu/test/video_player/video_decoder_client.h"
 
@@ -13,6 +14,30 @@
 
 namespace media {
 namespace test {
+
+namespace {
+// Get the name of the specified video player |event|.
+const char* EventName(VideoPlayerEvent event) {
+  switch (event) {
+    case VideoPlayerEvent::kInitialized:
+      return "Initialized";
+    case VideoPlayerEvent::kFrameDecoded:
+      return "FrameDecoded";
+    case VideoPlayerEvent::kFlushing:
+      return "Flushing";
+    case VideoPlayerEvent::kFlushDone:
+      return "FlushDone";
+    case VideoPlayerEvent::kResetting:
+      return "Resetting";
+    case VideoPlayerEvent::kResetDone:
+      return "ResetDone";
+    case VideoPlayerEvent::kConfigInfo:
+      return "ConfigInfo";
+    default:
+      return "Unknown";
+  }
+}
+}  // namespace
 
 VideoPlayer::VideoPlayer()
     : video_(nullptr),
@@ -30,46 +55,44 @@ VideoPlayer::~VideoPlayer() {
 
 // static
 std::unique_ptr<VideoPlayer> VideoPlayer::Create(
-    const Video* video,
+    const VideoDecoderClientConfig& config,
+    gpu::GpuMemoryBufferFactory* gpu_memory_buffer_factory,
     std::unique_ptr<FrameRenderer> frame_renderer,
-    std::vector<std::unique_ptr<VideoFrameProcessor>> frame_processors,
-    const VideoDecoderClientConfig& config) {
+    std::vector<std::unique_ptr<VideoFrameProcessor>> frame_processors) {
   auto video_player = base::WrapUnique(new VideoPlayer());
-  video_player->Initialize(video, std::move(frame_renderer),
-                           std::move(frame_processors), config);
+  if (!video_player->CreateDecoderClient(config, gpu_memory_buffer_factory,
+                                         std::move(frame_renderer),
+                                         std::move(frame_processors))) {
+    return nullptr;
+  }
   return video_player;
 }
 
-void VideoPlayer::Initialize(
-    const Video* video,
+bool VideoPlayer::CreateDecoderClient(
+    const VideoDecoderClientConfig& config,
+    gpu::GpuMemoryBufferFactory* gpu_memory_buffer_factory,
     std::unique_ptr<FrameRenderer> frame_renderer,
-    std::vector<std::unique_ptr<VideoFrameProcessor>> frame_processors,
-    const VideoDecoderClientConfig& config) {
+    std::vector<std::unique_ptr<VideoFrameProcessor>> frame_processors) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(video_player_state_, VideoPlayerState::kUninitialized);
-  DCHECK(frame_renderer && video);
+  DCHECK(frame_renderer);
   DVLOGF(4);
 
+  // base::Unretained is safe here as we will never receive callbacks after
+  // destroying the video player, since the video decoder client will be
+  // destroyed first.
   EventCallback event_cb =
       base::BindRepeating(&VideoPlayer::NotifyEvent, base::Unretained(this));
 
   decoder_client_ = VideoDecoderClient::Create(
-      event_cb, std::move(frame_renderer), std::move(frame_processors), config);
-  CHECK(decoder_client_) << "Failed to create decoder client";
+      event_cb, gpu_memory_buffer_factory, std::move(frame_renderer),
+      std::move(frame_processors), config);
+  if (!decoder_client_) {
+    VLOGF(1) << "Failed to create video decoder client";
+    return false;
+  }
 
-  // Create a decoder for the specified video.
-  // TODO(dstaessens@) Remove support for allocate mode, and always use import
-  // mode. Support for allocate mode is temporary maintained for older platforms
-  // that don't support import mode.
-  VideoDecodeAccelerator::Config decoder_config(video->Profile());
-  decoder_config.output_mode =
-      config.allocation_mode == AllocationMode::kImport
-          ? VideoDecodeAccelerator::Config::OutputMode::IMPORT
-          : VideoDecodeAccelerator::Config::OutputMode::ALLOCATE;
-  decoder_client_->CreateDecoder(decoder_config, video->Data());
-
-  video_ = video;
-  video_player_state_ = VideoPlayerState::kIdle;
+  return true;
 }
 
 void VideoPlayer::Destroy() {
@@ -81,8 +104,34 @@ void VideoPlayer::Destroy() {
   video_player_state_ = VideoPlayerState::kDestroyed;
 }
 
+void VideoPlayer::SetEventWaitTimeout(base::TimeDelta timeout) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DVLOGF(4);
+
+  event_timeout_ = timeout;
+}
+
+bool VideoPlayer::Initialize(const Video* video) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(video_player_state_ == VideoPlayerState::kUninitialized ||
+         video_player_state_ == VideoPlayerState::kIdle);
+  DCHECK(video);
+  DVLOGF(4);
+
+  decoder_client_->Initialize(video);
+
+  // Wait until the video decoder is initialized.
+  if (!WaitForEvent(VideoPlayerEvent::kInitialized))
+    return false;
+
+  video_ = video;
+  video_player_state_ = VideoPlayerState::kIdle;
+  return true;
+}
+
 void VideoPlayer::Play() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK_EQ(video_player_state_, VideoPlayerState::kIdle);
   DVLOGF(4);
 
   // Play until the end of the video.
@@ -136,9 +185,7 @@ FrameRenderer* VideoPlayer::GetFrameRenderer() const {
   return decoder_client_->GetFrameRenderer();
 }
 
-bool VideoPlayer::WaitForEvent(VideoPlayerEvent event,
-                               size_t times,
-                               base::TimeDelta max_wait) {
+bool VideoPlayer::WaitForEvent(VideoPlayerEvent event, size_t times) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_GE(times, 1u);
   DVLOGF(4) << "Event ID: " << static_cast<size_t>(event);
@@ -160,11 +207,14 @@ bool VideoPlayer::WaitForEvent(VideoPlayerEvent event,
     }
 
     // Check whether we've exceeded the maximum time we're allowed to wait.
-    if (time_waiting >= max_wait)
+    if (time_waiting >= event_timeout_) {
+      LOG(ERROR) << "Timeout while waiting for '" << EventName(event)
+                 << "' event";
       return false;
+    }
 
     const base::TimeTicks start_time = base::TimeTicks::Now();
-    event_cv_.TimedWait(max_wait);
+    event_cv_.TimedWait(event_timeout_ - time_waiting);
     time_waiting += base::TimeTicks::Now() - start_time;
   }
 }
@@ -190,6 +240,11 @@ size_t VideoPlayer::GetEventCount(VideoPlayerEvent event) const {
 
 bool VideoPlayer::WaitForFrameProcessors() {
   return !decoder_client_ || decoder_client_->WaitForFrameProcessors();
+}
+
+void VideoPlayer::WaitForRenderer() {
+  if (decoder_client_)
+    decoder_client_->WaitForRenderer();
 }
 
 size_t VideoPlayer::GetFlushDoneCount() const {

@@ -11,9 +11,7 @@ MockIMECandidateWindowHandler::MockIMECandidateWindowHandler()
       update_lookup_table_call_count_(0) {
 }
 
-MockIMECandidateWindowHandler::~MockIMECandidateWindowHandler() {
-
-}
+MockIMECandidateWindowHandler::~MockIMECandidateWindowHandler() = default;
 
 void MockIMECandidateWindowHandler::UpdateLookupTable(
     const ui::CandidateWindow& table,

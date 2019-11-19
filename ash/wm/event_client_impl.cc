@@ -4,12 +4,12 @@
 
 #include "ash/wm/event_client_impl.h"
 
+#include "ash/keyboard/ui/keyboard_util.h"
 #include "ash/public/cpp/shell_window_ids.h"
-#include "ash/session/session_controller.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/tray_action/tray_action.h"
 #include "ui/aura/window.h"
-#include "ui/keyboard/keyboard_util.h"
 
 namespace ash {
 

@@ -1,8 +1,4 @@
-<link rel="import" href="shared_vars.html">
-<link rel="import" href="chrome://resources/cr_elements/shared_style_css.html">
-<link rel="import" href="chrome://resources/cr_elements/shared_vars_css.html">
 
-<dom-module id="shared-style">
   <template>
     <style include="cr-shared-style">
       hr {
@@ -12,8 +8,10 @@
         margin: 8px 0;
       }
 
-      :host-context([dark]) hr {
-        background: var(--cr-separator-color);
+      @media (prefers-color-scheme: dark) {
+        hr {
+          background: var(--cr-separator-color);
+        }
       }
 
       .drag-above::before,
@@ -53,17 +51,28 @@
       }
 
       .folder-icon {
-        -webkit-mask-image: url(images/folder.svg);
-        -webkit-mask-size: contain;
-        background-color: currentcolor;
-        color: var(--folder-icon-color);
+        content: url(chrome://theme/IDR_FOLDER_CLOSED);
         height: 20px;
         min-width: 20px;
         width: 20px;
       }
 
+<if expr="is_macosx">
+      @media (prefers-color-scheme: dark) {
+        .folder-icon {
+           content: url(chrome://theme/IDR_FOLDER_CLOSED_WHITE);
+        }
+      }
+</if>
+
+<if expr="not is_macosx">
       .folder-icon[open] {
-        -webkit-mask-image: url(images/folder_open.svg);
+        content: url(chrome://theme/IDR_FOLDER_OPEN);
+      }
+</if>
+
+      :host-context([dir=rtl]) .folder-icon {
+        transform: scaleX(-1);
       }
 
       .website-icon {
@@ -72,12 +81,5 @@
         margin: 2px;
         width: 16px;
       }
-
-      .elided-text {
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-      }
     </style>
   </template>
-</dom-module>

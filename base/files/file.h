@@ -10,10 +10,10 @@
 #include <string>
 
 #include "base/base_export.h"
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/file_tracing.h"
 #include "base/files/platform_file.h"
-#include "base/files/scoped_file.h"
 #include "base/macros.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -200,6 +200,14 @@ class BASE_EXPORT File {
   // defined by |whence|. Returns the resultant current position in the file
   // (relative to the start) or -1 in case of error.
   int64_t Seek(Whence whence, int64_t offset);
+
+  // Simplified versions of Read() and friends (see below) that check the int
+  // return value and just return a boolean. They return true if and only if
+  // the function read in / wrote out exactly |size| bytes of data.
+  bool ReadAndCheck(int64_t offset, span<uint8_t> data);
+  bool ReadAtCurrentPosAndCheck(span<uint8_t> data);
+  bool WriteAndCheck(int64_t offset, span<const uint8_t> data);
+  bool WriteAtCurrentPosAndCheck(span<const uint8_t> data);
 
   // Reads the given number of bytes (or until EOF is reached) starting with the
   // given offset. Returns the number of bytes read, or -1 on error. Note that

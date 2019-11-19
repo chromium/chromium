@@ -4,6 +4,10 @@
 
 import("//components/gcm_driver/config.gni")
 
+if (is_android) {
+  import("//build/config/android/rules.gni")
+}
+
 static_library("instance_id") {
   sources = [
     "instance_id.cc",
@@ -76,4 +80,12 @@ source_set("unit_tests") {
     "//net:test_support",
     "//testing/gtest",
   ]
+}
+
+if (is_android) {
+  java_cpp_enum("instance_id_java_enums_srcjar") {
+    sources = [
+      "instance_id.h",
+    ]
+  }
 }

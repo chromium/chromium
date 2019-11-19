@@ -6,6 +6,7 @@
 #define UI_OZONE_PLATFORM_SCENIC_SCENIC_WINDOW_CANVAS_H_
 
 #include <lib/ui/scenic/cpp/resources.h>
+#include <memory>
 
 #include "base/macros.h"
 #include "base/memory/shared_memory_mapping.h"

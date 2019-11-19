@@ -61,8 +61,11 @@
     <message name="IDS_PAYMENTS_ORDER_SUMMARY_LABEL" desc="The title of the section that shows the summary of the order, including names and prices of individual line items, i.e. the bill. Sentence-cased." formatter_data="android_java">
       Order summary
     </message>
-    <message name="IDS_PAYMENT_REQUEST_PAYMENT_METHOD_SECTION_NAME" desc="The name of the Payment Method section in the Payment Sheet of the Payment Request dialog. Sentence-cased.">
+    <message name="IDS_PAYMENT_REQUEST_PAYMENT_METHOD_SECTION_NAME" desc="The name of the Payment Method section in the Payment Sheet of the Payment Request dialog. Sentence-cased." formatter_data="android_java">
       Payment
+    </message>
+    <message name="IDS_PAYMENT_ACCOUNT_BALANCE" desc="The label for the amount of funds in user's digital wallet. Sentence-cased." formatter_data="android_java">
+      Account balance
     </message>
     <message name="IDS_PAYMENT_REQUEST_CONTACT_INFO_SECTION_NAME" desc="The name of the Contact Info section in the Payment Sheet of the Payment Request dialog. Sentence-cased.">
       Contact info
@@ -129,6 +132,9 @@
     </message>
     <message name="IDS_PAYMENT_REQUEST_PAYMENT_METHOD_SECTION_NAME" desc="The name of the Payment Method section in the Payment Sheet of the Payment Request dialog. Title-Cased.">
       Payment
+    </message>
+    <message name="IDS_PAYMENT_ACCOUNT_BALANCE" desc="The label for the amount of funds in user's digital wallet. Title-Cased." formatter_data="android_java">
+      Account Balance
     </message>
     <message name="IDS_PAYMENT_REQUEST_CONTACT_INFO_SECTION_NAME" desc="The name of the Contact Info section in the Payment Sheet of the Payment Request dialog. Title-Cased.">
       Contact Info
@@ -284,7 +290,7 @@
     <message name="IDS_PAYMENTS_LOADING_MESSAGE" desc="The text that informs the user that payment information is being loaded up. Sentence-cased." formatter_data="android_java">
       Loading
     </message>
-    <message name="IDS_PAYMENTS_PROCESSING_MESSAGE" desc="The text that informs the user that payment is being processed. Sentence-cased.">
+    <message name="IDS_PAYMENTS_PROCESSING_MESSAGE" desc="The text that informs the user that payment is being processed. Sentence-cased." formatter_data="android_java">
       Processing
     </message>
      <message name="IDS_PAYMENTS_CHECKING_OPTION" desc="Text explaining that the option the user selected is being checked and verified. Sentence-cased." formatter_data="android_java">
@@ -292,6 +298,9 @@
     </message>
     <message name="IDS_PAYMENTS_UPDATED_LABEL" desc="The text that informs the user that the total value of their cart has been updated. Sentence-cased." formatter_data="android_java">
       Updated
+    </message>
+    <message name="IDS_PAYMENT_COMPLETE_MESSAGE" desc="A status message that the payment transaction has completed. Sentence-cased." formatter_data="android_java">
+      Payment complete
     </message>
   </if>  <!-- not use_titlecase -->
   <!-- Fields & Editors, Title-cased -->
@@ -335,7 +344,7 @@
     <message name="IDS_PAYMENTS_LOADING_MESSAGE" desc="The text that informs the user that payment information is being loaded up. Title-Cased.">
       Loading
     </message>
-    <message name="IDS_PAYMENTS_PROCESSING_MESSAGE" desc="The text that informs the user that payment is being processed. Title-Cased.">
+    <message name="IDS_PAYMENTS_PROCESSING_MESSAGE" desc="The text that informs the user that payment is being processed. Title-Cased." formatter_data="android_java">
       Processing
     </message>
      <message name="IDS_PAYMENTS_CHECKING_OPTION" desc="Text explaining that the option the user selected is being checked and verified. Title-Cased." formatter_data="android_java">
@@ -343,6 +352,9 @@
     </message>
     <message name="IDS_PAYMENTS_UPDATED_LABEL" desc="The text that informs the user that the total value of their cart has been updated. Title-Cased." formatter_data="android_java">
       Updated
+    </message>
+    <message name="IDS_PAYMENT_COMPLETE_MESSAGE" desc="A status message that the payment transaction has completed. Title-Cased." formatter_data="android_java">
+      Payment Complete
     </message>
   </if>  <!-- use_titlecase -->
 
@@ -374,6 +386,12 @@
   <if expr="is_android">
     <message name="IDS_PAYMENTS_CARD_AND_ADDRESS_SETTINGS_SIGNED_IN" desc="Label of the section containing the origin description and the link to go to the settings page for card and address options. This label is used when the user is signed in." formatter_data="android_java">
       Cards and addresses are from Chrome and your Google Account (<ph name="ACCOUNT_EMAIL">%1$s<ex>johndoe@gmail.com</ex></ph>). You can manage them in <ph name="BEGIN_LINK">BEGIN_LINK</ph>Settings<ph name="END_LINK">END_LINK</ph>.
+    </message>
+    <message name="IDS_PAYMENT_TOUCH_SENSOR_TO_PAY" desc="A prompt for the user to place the finger on the fingerprint scanner, which will confirm payment transaction." formatter_data="android_java">
+      Touch sensor to pay
+    </message>
+    <message name="IDS_PAYMENT_FINGERPRINT_NOT_RECOGNIZED" desc="A status message about user's fingerprint not being recognized after the user has touched the fingerprint scanner, so the payment transaction cannot complete. This is a brief version of the sentence 'Your fingerprint is not recognized.'" formatter_data="android_java">
+      Not recognized
     </message>
   </if>
   <if expr="not is_android">
@@ -582,9 +600,6 @@
     <message name="IDS_EXTERNAL_PAYMENT_APP_LEAVE_INCOGNITO_WARNING" desc="Alert dialog text warning the user that incognito mode does not continue into external payment apps." formatter_data="android_java">
       Leaving incognito mode to pay via an external application. Continue?
     </message>
-    <message name="IDS_EXTERNAL_PAYMENT_APP_LEAVE_PRIVATE_WARNING" desc="Alert dialog text warning the user that private mode does not continue into external payment apps." formatter_data="android_java">
-      Leaving private mode to pay via an external application. Continue?
-    </message>
   </if>
 
   <!-- Payment Request section preview strings. They are slightly different on desktop and android because the pluralization and formatting code behaves differently. -->
@@ -636,5 +651,19 @@
   </message>
   <message name="IDS_PAYMENTS_ORDER_SUMMARY_ACCESSIBLE_LABEL" desc="The string used to format what the screenreader reads out for the order summary section of the Payment Sheet.">
     Order Summary, <ph name="TOTAL_LABEL">$1<ex>Total, USD $10.00</ex></ph>, More Details
+  </message>
+
+  <!-- Payment Handler strings -->
+  <message name="IDS_PAYMENT_HANDLER_SHEET_DESCRIPTION" desc="Accessibility string read when the payment-handler bottom sheet is opened. It describes the payment-handler where users can fill in the payment info." formatter_data="android_java">
+    Payment handler sheet
+  </message>
+  <message name="IDS_PAYMENT_HANDLER_SHEET_OPENED_HALF" desc="Accessibility string read when the payment-handler bottom sheet is opened at half height. The sheet will occupy up to the half screen." formatter_data="android_java">
+    Payment handler sheet is half-opened
+  </message>
+  <message name="IDS_PAYMENT_HANDLER_SHEET_OPENED_FULL" desc="Accessibility string read when the payment-handler bottom sheet is opened at full height. The sheet will occupy up to the full screen." formatter_data="android_java">
+    Payment handler sheet is opened
+  </message>
+  <message name="IDS_PAYMENT_HANDLER_SHEET_CLOSED" desc="Accessibility string read when the payment-handler bottom sheet is closed." formatter_data="android_java">
+    Payment handler sheet is closed
   </message>
 </grit-part>

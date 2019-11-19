@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+PASS Initial connectionState should be new
+PASS Closing the connection should set connectionState to closed
+PASS connection with one data channel should eventually have connected connection state
+FAIL connection with one data channel should eventually have transports in connected state Cannot read property 'transport' of null
+PASS connectionState remains new when not adding remote ice candidates
+PASS connectionState transitions to connected via connecting
+Harness: the test ran to completion.
+

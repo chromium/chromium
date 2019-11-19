@@ -155,7 +155,7 @@ std::unique_ptr<base::ListValue> GetLanguageList(
     if (lang.empty() || lang == language_id)
       continue;
 
-    if (base::ContainsValue(base_language_codes, language_id)) {
+    if (base::Contains(base_language_codes, language_id)) {
       // Language is supported. No need to replace
       continue;
     }
@@ -163,7 +163,7 @@ std::unique_ptr<base::ListValue> GetLanguageList(
     if (!l10n_util::CheckAndResolveLocale(language_id, &resolved_locale))
       continue;
 
-    if (!base::ContainsValue(base_language_codes, resolved_locale)) {
+    if (!base::Contains(base_language_codes, resolved_locale)) {
       // Resolved locale is not supported.
       continue;
     }
@@ -186,7 +186,7 @@ std::unique_ptr<base::ListValue> GetLanguageList(
        it != language_codes.end(); ++it) {
      // Exclude the language which is not in |base_langauge_codes| even it has
      // input methods.
-     if (!base::ContainsValue(base_language_codes, *it))
+     if (!base::Contains(base_language_codes, *it))
        continue;
 
      const base::string16 display_name =
@@ -354,8 +354,12 @@ void ResolveLanguageListInThreadPool(
 
   std::string selected_language;
   if (!language_switch_result) {
-    selected_language =
-        StartupCustomizationDocument::GetInstance()->initial_locale_default();
+    if (!g_browser_process->GetApplicationLocale().empty()) {
+      selected_language = g_browser_process->GetApplicationLocale();
+    } else {
+      selected_language =
+          StartupCustomizationDocument::GetInstance()->initial_locale_default();
+    }
   } else {
     if (language_switch_result->success) {
       if (language_switch_result->requested_locale ==
@@ -426,8 +430,8 @@ void ResolveUILanguageList(
     const UILanguageListResolvedCallback& callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  base::PostTaskWithTraits(
-      FROM_HERE, {base::MayBlock()},
+  base::PostTask(
+      FROM_HERE, {base::ThreadPool(), base::MayBlock()},
       base::BindOnce(&ResolveLanguageListInThreadPool,
                      base::Passed(&language_switch_result),
                      base::SequencedTaskRunnerHandle::Get(), callback));
@@ -581,9 +585,10 @@ void GetKeyboardLayoutsForLocale(
   // thread.
   std::string (*get_application_locale)(const std::string&, bool) =
       &l10n_util::GetApplicationLocale;
-  base::PostTaskWithTraitsAndReplyWithResult(
+  base::PostTaskAndReplyWithResult(
       FROM_HERE,
-      {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
+      {base::ThreadPool(), base::MayBlock(),
+       base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
       base::BindOnce(get_application_locale, locale,
                      false /* set_icu_locale */),
       base::BindOnce(&GetKeyboardLayoutsForResolvedLocale, locale, callback));

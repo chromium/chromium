@@ -6,15 +6,15 @@
 
 namespace content {
 
-MockWidgetImpl::MockWidgetImpl(mojo::InterfaceRequest<mojom::Widget> request)
-    : binding_(this, std::move(request)) {}
+MockWidgetImpl::MockWidgetImpl(mojo::PendingReceiver<mojom::Widget> request)
+    : receiver_(this, std::move(request)) {}
 
 MockWidgetImpl::~MockWidgetImpl() {}
 
 void MockWidgetImpl::SetupWidgetInputHandler(
-    mojom::WidgetInputHandlerRequest request,
-    mojom::WidgetInputHandlerHostPtr host) {
-  input_handler_ = std::make_unique<MockWidgetInputHandler>(std::move(request),
+    mojo::PendingReceiver<mojom::WidgetInputHandler> receiver,
+    mojo::PendingRemote<mojom::WidgetInputHandlerHost> host) {
+  input_handler_ = std::make_unique<MockWidgetInputHandler>(std::move(receiver),
                                                             std::move(host));
 }
 

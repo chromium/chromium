@@ -5,14 +5,17 @@
 
 '''Unit tests for grit.tool.rc2grd'''
 
+from __future__ import print_function
+
 import os
 import sys
 if __name__ == '__main__':
   sys.path.append(os.path.join(os.path.dirname(__file__), '../..'))
 
 import re
-import StringIO
 import unittest
+
+from six import StringIO
 
 from grit import grd_reader
 from grit.node import base
@@ -90,7 +93,7 @@ END
                '  IDS_PROGRAMS_SHUTDOWN_TEXT      "Google Desktop Search needs to close the following programs:\\n\\n$1\\nThe installation will not proceed if you choose to cancel."\n'
                'END\n')
     tool = rc2grd.Rc2Grd()
-    tool.role_model = grd_reader.Parse(StringIO.StringIO(
+    tool.role_model = grd_reader.Parse(StringIO(
       '''<?xml version="1.0" encoding="UTF-8"?>
       <grit latest_public_release="2" source_lang_id="en-US" current_release="3" base_dir=".">
         <release seq="3">

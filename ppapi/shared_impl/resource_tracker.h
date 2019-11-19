@@ -131,7 +131,7 @@ class PPAPI_SHARED_EXPORT ResourceTracker {
   // is protected by the proxy lock and is thread-safe, so this will be NULL.
   std::unique_ptr<base::ThreadChecker> thread_checker_;
 
-  base::WeakPtrFactory<ResourceTracker> weak_ptr_factory_;
+  base::WeakPtrFactory<ResourceTracker> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ResourceTracker);
 };

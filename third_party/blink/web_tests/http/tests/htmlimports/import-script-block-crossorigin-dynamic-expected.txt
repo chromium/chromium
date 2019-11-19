@@ -1,12 +1,10 @@
-CONSOLE WARNING: HTML Imports is deprecated and will be removed in M73, around March 2019. Please use ES modules instead. See https://www.chromestatus.com/features/5144752345317376 for more details.
-CONSOLE ERROR: Access to script at 'http://127.0.0.1:8000/htmlimports/resources/external-script.js' from origin 'http://localhost:8000' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource.
-CONSOLE ERROR: Access to script at 'http://127.0.0.1:8000/htmlimports/resources/cors-js.cgi' from origin 'http://localhost:8000' has been blocked by CORS policy: The 'Access-Control-Allow-Origin' header has a value 'http://127.0.0.1:8000' that is not equal to the supplied origin.
+CONSOLE WARNING: HTML Imports is deprecated and will be removed in M80, around February 2020. Please use ES modules instead. See https://www.chromestatus.com/features/5144752345317376 and https://developers.google.com/web/updates/2019/07/web-components-time-to-upgrade for more details.
 This test ensures that crossorigin-marked script elements are blocked properly
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-PASS document.externalScriptHasRun is undefined
-PASS document.corsExternalScriptHasRun is undefined
+PASS document.externalScriptHasRun is true
+PASS document.corsExternalScriptHasRun is true
 PASS document.corsExternalScriptForLocalhostHasRun is true
 PASS successfullyParsed is true
 

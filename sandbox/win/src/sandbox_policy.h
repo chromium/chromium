@@ -8,8 +8,9 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <string>
+
 #include "base/memory/scoped_refptr.h"
-#include "base/strings/string16.h"
 #include "sandbox/win/src/sandbox_types.h"
 #include "sandbox/win/src/security_level.h"
 
@@ -20,16 +21,17 @@ class AppContainerProfile;
 class TargetPolicy {
  public:
   // Windows subsystems that can have specific rules.
-  // Note: The process subsystem(SUBSY_PROCESS) does not evaluate the request
+  // Note: The process subsystem(SUBSYS_PROCESS) does not evaluate the request
   // exactly like the CreateProcess API does. See the comment at the top of
   // process_thread_dispatcher.cc for more details.
   enum SubSystem {
-    SUBSYS_FILES,           // Creation and opening of files and pipes.
-    SUBSYS_NAMED_PIPES,     // Creation of named pipes.
-    SUBSYS_PROCESS,         // Creation of child processes.
-    SUBSYS_REGISTRY,        // Creation and opening of registry keys.
-    SUBSYS_SYNC,            // Creation of named sync objects.
-    SUBSYS_WIN32K_LOCKDOWN  // Win32K Lockdown related policy.
+    SUBSYS_FILES,            // Creation and opening of files and pipes.
+    SUBSYS_NAMED_PIPES,      // Creation of named pipes.
+    SUBSYS_PROCESS,          // Creation of child processes.
+    SUBSYS_REGISTRY,         // Creation and opening of registry keys.
+    SUBSYS_SYNC,             // Creation of named sync objects.
+    SUBSYS_WIN32K_LOCKDOWN,  // Win32K Lockdown related policy.
+    SUBSYS_SIGNED_BINARY     // Signed binary policy.
   };
 
   // Allowable semantics when a rule is matched.
@@ -56,9 +58,10 @@ class TargetPolicy {
     FAKE_USER_GDI_INIT,     // Fakes user32 and gdi32 initialization. This can
                             // be used to allow the DLLs to load and initialize
                             // even if the process cannot access that subsystem.
-    IMPLEMENT_OPM_APIS      // Implements FAKE_USER_GDI_INIT and also exposes
+    IMPLEMENT_OPM_APIS,     // Implements FAKE_USER_GDI_INIT and also exposes
                             // IPC calls to handle Output Protection Manager
                             // APIs.
+    SIGNED_ALLOW_LOAD       // Allows loading the module when CIG is enabled.
   };
 
   // Increments the reference count of this object. The reference count must
@@ -151,7 +154,7 @@ class TargetPolicy {
   // Returns the name of the alternate desktop used. If an alternate window
   // station is specified, the name is prepended by the window station name,
   // followed by a backslash.
-  virtual base::string16 GetAlternateDesktop() const = 0;
+  virtual std::wstring GetAlternateDesktop() const = 0;
 
   // Precreates the desktop and window station, if any.
   virtual ResultCode CreateAlternateDesktop(bool alternate_winstation) = 0;

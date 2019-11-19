@@ -147,8 +147,8 @@ suite('ProtocolHandlers', function() {
   function testButtonFlow(button, browserProxyHandler) {
     return initPage().then(() => {
       // Initiating the elements
-      const menuButtons = testElement.root.querySelectorAll(
-          'paper-icon-button-light.icon-more-vert');
+      const menuButtons =
+          testElement.root.querySelectorAll('cr-icon-button.icon-more-vert');
       assertEquals(3, menuButtons.length);
       const dialog = testElement.$$('cr-action-menu');
       return Promise.all([[0, 0], [1, 0], [1, 1]].map((indices, menuIndex) => {
@@ -157,7 +157,7 @@ suite('ProtocolHandlers', function() {
         // Test the button for the first protocol handler
         browserProxy.reset();
         assertFalse(dialog.open);
-        menuButtons[menuIndex].querySelector('button').click();
+        menuButtons[menuIndex].click();
         assertTrue(dialog.open);
         testElement.$[button].click();
         assertFalse(dialog.open);
@@ -182,16 +182,16 @@ suite('ProtocolHandlers', function() {
   test('default button works', function() {
     browserProxy.setProtocolHandlers(protocols);
     return testButtonFlow('defaultButton', 'setProtocolDefault').then(() => {
-      const menuButtons = testElement.root.querySelectorAll(
-          'paper-icon-button-light.icon-more-vert');
+      const menuButtons =
+          testElement.root.querySelectorAll('cr-icon-button.icon-more-vert');
       const closeMenu = () => testElement.$$('cr-action-menu').close();
-      menuButtons[0].querySelector('button').click();
+      menuButtons[0].click();
       assertTrue(testElement.$.defaultButton.hidden);
       closeMenu();
-      menuButtons[1].querySelector('button').click();
+      menuButtons[1].click();
       assertTrue(testElement.$.defaultButton.hidden);
       closeMenu();
-      menuButtons[2].querySelector('button').click();
+      menuButtons[2].click();
       assertFalse(testElement.$.defaultButton.hidden);
     });
   });

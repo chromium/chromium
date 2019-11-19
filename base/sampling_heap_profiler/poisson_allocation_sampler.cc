@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <atomic>
 #include <cmath>
+#include <memory>
 #include <utility>
 
 #include "base/allocator/allocator_shim.h"
@@ -16,7 +17,6 @@
 #include "base/no_destructor.h"
 #include "base/partition_alloc_buildflags.h"
 #include "base/rand_util.h"
-#include "base/sampling_heap_profiler/lock_free_address_hash_set.h"
 #include "build/build_config.h"
 
 #if defined(OS_MACOSX) || defined(OS_ANDROID)
@@ -319,9 +319,8 @@ PoissonAllocationSampler::PoissonAllocationSampler() {
   CHECK_EQ(nullptr, instance_);
   instance_ = this;
   Init();
-  auto sampled_addresses = std::make_unique<LockFreeAddressHashSet>(64);
-  g_sampled_addresses_set = sampled_addresses.get();
-  sampled_addresses_stack_.push_back(std::move(sampled_addresses));
+  auto* sampled_addresses = new LockFreeAddressHashSet(64);
+  g_sampled_addresses_set.store(sampled_addresses, std::memory_order_release);
 }
 
 // static
@@ -350,8 +349,8 @@ bool PoissonAllocationSampler::InstallAllocatorHooks() {
 #endif  // BUILDFLAG(USE_ALLOCATOR_SHIM)
 
 #if BUILDFLAG(USE_PARTITION_ALLOC) && !defined(OS_NACL)
-  PartitionAllocHooks::SetAllocationHook(&PartitionAllocHook);
-  PartitionAllocHooks::SetFreeHook(&PartitionFreeHook);
+  PartitionAllocHooks::SetObserverHooks(&PartitionAllocHook,
+                                        &PartitionFreeHook);
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC) && !defined(OS_NACL)
 
   bool expected = false;
@@ -407,12 +406,20 @@ void PoissonAllocationSampler::RecordAlloc(void* address,
                                            size_t size,
                                            AllocatorType type,
                                            const char* context) {
-  if (UNLIKELY(!g_running.load(std::memory_order_relaxed)))
-    return;
   g_accumulated_bytes_tls += size;
   intptr_t accumulated_bytes = g_accumulated_bytes_tls;
   if (LIKELY(accumulated_bytes < 0))
     return;
+
+  if (UNLIKELY(!g_running.load(std::memory_order_relaxed))) {
+    // Sampling is in fact disabled. Reset the state of the sampler.
+    // We do this check off the fast-path, because it's quite a rare state when
+    // allocation hooks are installed but the sampler is not running.
+    g_sampling_interval_initialized_tls = false;
+    g_accumulated_bytes_tls = 0;
+    return;
+  }
+
   instance_->DoRecordAlloc(accumulated_bytes, size, address, type, context);
 }
 
@@ -426,6 +433,21 @@ void PoissonAllocationSampler::DoRecordAlloc(intptr_t accumulated_bytes,
     return;
 
   size_t mean_interval = g_sampling_interval.load(std::memory_order_relaxed);
+
+  if (UNLIKELY(!g_sampling_interval_initialized_tls)) {
+    g_sampling_interval_initialized_tls = true;
+    // This is the very first allocation on the thread. It always makes it
+    // passing the condition at |RecordAlloc|, because g_accumulated_bytes_tls
+    // is initialized with zero due to TLS semantics.
+    // Generate proper sampling interval instance and make sure the allocation
+    // has indeed crossed the threshold before counting it as a sample.
+    accumulated_bytes -= GetNextSampleInterval(mean_interval);
+    if (accumulated_bytes < 0) {
+      g_accumulated_bytes_tls = accumulated_bytes;
+      return;
+    }
+  }
+
   size_t samples = accumulated_bytes / mean_interval;
   accumulated_bytes %= mean_interval;
 
@@ -436,50 +458,44 @@ void PoissonAllocationSampler::DoRecordAlloc(intptr_t accumulated_bytes,
 
   g_accumulated_bytes_tls = accumulated_bytes;
 
-  if (UNLIKELY(!g_sampling_interval_initialized_tls)) {
-    g_sampling_interval_initialized_tls = true;
-    // This is the very first allocation on the thread. It always produces an
-    // extra sample because g_accumulated_bytes_tls is initialized with zero
-    // due to TLS semantics.
-    // Make sure we don't count this extra sample.
-    if (!--samples)
-      return;
-  }
-
   if (UNLIKELY(ScopedMuteThreadSamples::IsMuted()))
     return;
 
   ScopedMuteThreadSamples no_reentrancy_scope;
-  AutoLock lock(mutex_);
+  std::vector<SamplesObserver*> observers_copy;
+  {
+    AutoLock lock(mutex_);
 
-  // TODO(alph): Sometimes RecordAlloc is called twice in a row without
-  // a RecordFree in between. Investigate it.
-  if (sampled_addresses_set().Contains(address))
-    return;
-  sampled_addresses_set().Insert(address);
-  BalanceAddressesHashSet();
+    // TODO(alph): Sometimes RecordAlloc is called twice in a row without
+    // a RecordFree in between. Investigate it.
+    if (sampled_addresses_set().Contains(address))
+      return;
+    sampled_addresses_set().Insert(address);
+    BalanceAddressesHashSet();
+    observers_copy = observers_;
+  }
 
   size_t total_allocated = mean_interval * samples;
-  for (auto* observer : observers_)
+  for (auto* observer : observers_copy)
     observer->SampleAdded(address, size, total_allocated, type, context);
-}
-
-// static
-void PoissonAllocationSampler::RecordFree(void* address) {
-  if (UNLIKELY(address == nullptr))
-    return;
-  if (UNLIKELY(sampled_addresses_set().Contains(address)))
-    instance_->DoRecordFree(address);
 }
 
 void PoissonAllocationSampler::DoRecordFree(void* address) {
   if (UNLIKELY(ScopedMuteThreadSamples::IsMuted()))
     return;
+  // There is a rare case on macOS and Android when the very first thread_local
+  // access in ScopedMuteThreadSamples constructor may allocate and
+  // thus reenter DoRecordAlloc. However the call chain won't build up further
+  // as RecordAlloc accesses are guarded with pthread TLS-based ReentryGuard.
   ScopedMuteThreadSamples no_reentrancy_scope;
-  AutoLock lock(mutex_);
-  for (auto* observer : observers_)
+  std::vector<SamplesObserver*> observers_copy;
+  {
+    AutoLock lock(mutex_);
+    observers_copy = observers_;
+    sampled_addresses_set().Remove(address);
+  }
+  for (auto* observer : observers_copy)
     observer->SampleRemoved(address);
-  sampled_addresses_set().Remove(address);
 }
 
 void PoissonAllocationSampler::BalanceAddressesHashSet() {
@@ -497,16 +513,15 @@ void PoissonAllocationSampler::BalanceAddressesHashSet() {
       std::make_unique<LockFreeAddressHashSet>(current_set.buckets_count() * 2);
   new_set->Copy(current_set);
   // Atomically switch all the new readers to the new set.
-  g_sampled_addresses_set = new_set.get();
-  // We still have to keep all the old maps alive to resolve the theoretical
-  // race with readers in |RecordFree| that have already obtained the map,
+  g_sampled_addresses_set.store(new_set.release(), std::memory_order_release);
+  // We leak the older set because we still have to keep all the old maps alive
+  // as there might be reader threads that have already obtained the map,
   // but haven't yet managed to access it.
-  sampled_addresses_stack_.push_back(std::move(new_set));
 }
 
 // static
 LockFreeAddressHashSet& PoissonAllocationSampler::sampled_addresses_set() {
-  return *g_sampled_addresses_set.load(std::memory_order_relaxed);
+  return *g_sampled_addresses_set.load(std::memory_order_acquire);
 }
 
 // static
@@ -523,6 +538,8 @@ void PoissonAllocationSampler::SuppressRandomnessForTest(bool suppress) {
 void PoissonAllocationSampler::AddSamplesObserver(SamplesObserver* observer) {
   ScopedMuteThreadSamples no_reentrancy_scope;
   AutoLock lock(mutex_);
+  DCHECK(std::find(observers_.begin(), observers_.end(), observer) ==
+         observers_.end());
   observers_.push_back(observer);
   InstallAllocatorHooksOnce();
   g_running = !observers_.empty();
@@ -533,7 +550,7 @@ void PoissonAllocationSampler::RemoveSamplesObserver(
   ScopedMuteThreadSamples no_reentrancy_scope;
   AutoLock lock(mutex_);
   auto it = std::find(observers_.begin(), observers_.end(), observer);
-  CHECK(it != observers_.end());
+  DCHECK(it != observers_.end());
   observers_.erase(it);
   g_running = !observers_.empty();
 }

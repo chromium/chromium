@@ -8,6 +8,7 @@
 #include <stdint.h>
 #include <vector>
 
+#include "cast_decrypt_config.h"
 #include "stream_id.h"
 
 namespace chromecast {
@@ -19,6 +20,7 @@ static const int kMaxBytesPerSample = 4;
 // Maximum audio sampling rate.
 static const int kMaxSampleRate = 192000;
 
+// TODO(guohuideng): change at least AudioCodec and SampleFormat to enum class.
 enum AudioCodec : int {
   kAudioCodecUnknown = 0,
   kCodecAAC,
@@ -36,6 +38,41 @@ enum AudioCodec : int {
   kAudioCodecMin = kAudioCodecUnknown,
   kAudioCodecMax = kCodecMpegHAudio,
 };
+
+enum class ChannelLayout {
+  UNSUPPORTED,
+
+  // Front C
+  MONO,
+
+  // Front L, Front R
+  STEREO,
+
+  // Front L, Front R, Front C, LFE, Side L, Side R
+  SURROUND_5_1,
+
+  // Actual channel layout is specified in the bitstream and the actual channel
+  // count is unknown at Chromium media pipeline level (useful for audio
+  // pass-through mode).
+  BITSTREAM,
+
+  // Max value, must always equal the largest entry ever logged.
+  MAX_LAST = BITSTREAM,
+};
+
+// Internal chromecast apps use this to decide on channel_layout.
+inline ChannelLayout ChannelLayoutFromChannelNumber(int channel_number) {
+  switch (channel_number) {
+    case 1:
+      return ChannelLayout::MONO;
+    case 2:
+      return ChannelLayout::STEREO;
+    case 6:
+      return ChannelLayout::SURROUND_5_1;
+    default:
+      return ChannelLayout::UNSUPPORTED;
+  }
+}
 
 enum SampleFormat : int {
   kUnknownSampleFormat = 0,
@@ -64,9 +101,10 @@ enum VideoCodec : int {
   kCodecHEVC,
   kCodecDolbyVisionH264,
   kCodecDolbyVisionHEVC,
+  kCodecAV1,
 
   kVideoCodecMin = kVideoCodecUnknown,
-  kVideoCodecMax = kCodecDolbyVisionHEVC,
+  kVideoCodecMax = kCodecAV1,
 };
 
 // Profile for Video codec.
@@ -95,9 +133,12 @@ enum VideoProfile : int {
   kHEVCMain,
   kHEVCMain10,
   kHEVCMainStillPicture,
+  kAV1ProfileMain,
+  kAV1ProfileHigh,
+  kAV1ProfilePro,
 
   kVideoProfileMin = kVideoProfileUnknown,
-  kVideoProfileMax = kHEVCMainStillPicture,
+  kVideoProfileMax = kAV1ProfilePro,
 };
 
 struct CodecProfileLevel {
@@ -105,68 +146,6 @@ struct CodecProfileLevel {
   VideoProfile profile;
   int level;
 };
-
-// Specification of whether and how the stream is encrypted (in whole or part).
-struct EncryptionScheme {
-  // Algorithm and mode that was used to encrypt the stream.
-  enum CipherMode {
-    CIPHER_MODE_UNENCRYPTED,
-    CIPHER_MODE_AES_CTR,
-    CIPHER_MODE_AES_CBC
-  };
-
-  // CENC 3rd Edition adds pattern encryption, through two new protection
-  // schemes: 'cens' (with AES-CTR) and 'cbcs' (with AES-CBC).
-  // The pattern applies independently to each 'encrypted' part of the frame (as
-  // defined by the relevant subsample entries), and reduces further the
-  // actual encryption applied through a repeating pattern of (encrypt:skip)
-  // 16 byte blocks. For example, in a (1:9) pattern, the first block is
-  // encrypted, and the next nine are skipped. This pattern is applied
-  // repeatedly until the end of the last 16-byte block in the subsample.
-  // Any remaining bytes are left clear.
-  // If either of encrypt_blocks or skip_blocks is 0, pattern encryption is
-  // disabled.
-  struct Pattern {
-    Pattern() {}
-    Pattern(uint32_t encrypt_blocks, uint32_t skip_blocks);
-    ~Pattern() {}
-    bool IsInEffect() const;
-
-    uint32_t encrypt_blocks = 0;
-    uint32_t skip_blocks = 0;
-  };
-
-  EncryptionScheme() {}
-  EncryptionScheme(CipherMode mode, const Pattern& pattern);
-  ~EncryptionScheme() {}
-  bool is_encrypted() const { return mode != CIPHER_MODE_UNENCRYPTED; }
-
-  CipherMode mode = CIPHER_MODE_UNENCRYPTED;
-  Pattern pattern;
-};
-
-inline EncryptionScheme::Pattern::Pattern(uint32_t encrypt_blocks,
-                                          uint32_t skip_blocks)
-    : encrypt_blocks(encrypt_blocks), skip_blocks(skip_blocks) {
-}
-
-inline bool EncryptionScheme::Pattern::IsInEffect() const {
-  return encrypt_blocks != 0 && skip_blocks != 0;
-}
-
-inline EncryptionScheme::EncryptionScheme(CipherMode mode,
-                                          const Pattern& pattern)
-    : mode(mode), pattern(pattern) {
-}
-
-inline EncryptionScheme Unencrypted() {
-  return EncryptionScheme();
-}
-
-inline EncryptionScheme AesCtrEncryptionScheme() {
-  return EncryptionScheme(EncryptionScheme::CIPHER_MODE_AES_CTR,
-                          EncryptionScheme::Pattern());
-}
 
 // ---- Begin copy/paste from //media/base/video_color_space.h ----
 // Described in ISO 23001-8:2016
@@ -291,12 +270,16 @@ struct AudioConfig {
   AudioConfig(const AudioConfig& other);
   ~AudioConfig();
 
-  bool is_encrypted() const { return encryption_scheme.is_encrypted(); }
+  bool is_encrypted() const {
+    return encryption_scheme != EncryptionScheme::kUnencrypted;
+  }
 
   // Stream id.
   StreamId id;
   // Audio codec.
   AudioCodec codec;
+  // Audio channel layout.
+  ChannelLayout channel_layout;
   // The format of each audio sample.
   SampleFormat sample_format;
   // Number of bytes in each channel.
@@ -314,10 +297,12 @@ struct AudioConfig {
 inline AudioConfig::AudioConfig()
     : id(kPrimary),
       codec(kAudioCodecUnknown),
+      channel_layout(ChannelLayout::UNSUPPORTED),
       sample_format(kUnknownSampleFormat),
       bytes_per_channel(0),
       channel_number(0),
-      samples_per_second(0) {}
+      samples_per_second(0),
+      encryption_scheme(EncryptionScheme::kUnencrypted) {}
 inline AudioConfig::AudioConfig(const AudioConfig& other) = default;
 inline AudioConfig::~AudioConfig() {
 }
@@ -330,7 +315,9 @@ struct VideoConfig {
   VideoConfig(const VideoConfig& other);
   ~VideoConfig();
 
-  bool is_encrypted() const { return encryption_scheme.is_encrypted(); }
+  bool is_encrypted() const {
+    return encryption_scheme != EncryptionScheme::kUnencrypted;
+  }
 
   // Stream Id.
   StreamId id;
@@ -361,27 +348,23 @@ inline VideoConfig::VideoConfig()
     : id(kPrimary),
       codec(kVideoCodecUnknown),
       profile(kVideoProfileUnknown),
-      additional_config(nullptr) {
-}
+      additional_config(nullptr),
+      encryption_scheme(EncryptionScheme::kUnencrypted) {}
 
 inline VideoConfig::VideoConfig(const VideoConfig& other) = default;
 
 inline VideoConfig::~VideoConfig() {
 }
 
-// TODO(erickung): Remove following two inline IsValidConfig() functions. These
-// are to keep existing CMA backend implementation consistent until the clean up
-// is done. These SHOULD NOT be used in New CMA backend implementation.
 inline bool IsValidConfig(const AudioConfig& config) {
   return config.codec >= kAudioCodecMin && config.codec <= kAudioCodecMax &&
          config.codec != kAudioCodecUnknown &&
+         config.channel_layout != ChannelLayout::UNSUPPORTED &&
          config.sample_format >= kSampleFormatMin &&
          config.sample_format <= kSampleFormatMax &&
          config.sample_format != kUnknownSampleFormat &&
-         // TODO(servolk): Add channel_layout field to the AudioConfig in the
-         // next Cast system update and change this condition to
-         // (channel_number > 0 || channel_layout == CHANNEL_LAYOUT_BITSTREAM)
-         (config.channel_number > 0 || config.codec == kCodecMpegHAudio) &&
+         (config.channel_number > 0 ||
+          config.channel_layout == ChannelLayout::BITSTREAM) &&
          config.bytes_per_channel > 0 &&
          config.bytes_per_channel <= kMaxBytesPerSample &&
          config.samples_per_second > 0 &&

@@ -4,10 +4,24 @@
 
 module feed_internals.mojom;
 
+import "url/mojom/url.mojom";
+
 // General properties of Feed suggestions.
 struct Properties {
-  // Whether the Feed is enabled.
+  // Whether the Feed feature flag is enabled.
   bool is_feed_enabled;
+
+  // Whether suggested articles section is expanded.
+  bool is_feed_visible;
+
+  // Whether suggested articles are allowed. Typically set by policy.
+  bool is_feed_allowed;
+
+  // Whether prefetching for offline availability is enabled.
+  bool is_prefetching_enabled;
+
+  // Feed fetch URL.
+  url.mojom.Url feed_fetch_url;
 };
 
 struct UserClassifier {
@@ -27,12 +41,36 @@ struct LastFetchProperties {
   // Last fetch status.
   int32 last_fetch_status;
 
+  // Reason for the last fetch.
+  string last_fetch_trigger;
+
   // Last fetch time.
   Time? last_fetch_time;
 
   // Time until which the scheduler will stop requesting refreshes, unless there
   // is direct user interaction.
   Time? refresh_suppress_time;
+
+  // For test server authentication.
+  string last_bless_nonce;
+};
+
+// Models a single suggestion in the Feed.
+struct Suggestion {
+  // Title of the suggestion.
+  string title;
+
+  // URL of the suggested page.
+  url.mojom.Url url;
+
+  // Name of the content's publisher.
+  string publisher_name;
+
+  // URL of the image associated with the suggestion.
+  url.mojom.Url image_url;
+
+  // URL of the suggested page's favicon.
+  url.mojom.Url favicon_url;
 };
 
 // Time wrapper to allow for nullable objects.
@@ -58,4 +96,19 @@ interface PageHandler {
   // Clear all data cached by the Feed library. Also triggers a refresh of the
   // Feed.
   ClearCachedDataAndRefreshFeed();
+
+  // Trigger a refresh of the Feed.
+  RefreshFeed();
+
+  // Get the last known content with metadata.
+  GetCurrentContent() => (array<Suggestion> suggestions);
+
+  // Internal state dump of the Feed library's process scope.
+  GetFeedProcessScopeDump() => (string dump);
+
+  // Record all Feed metrics into a log.
+  GetFeedHistograms() => (string log);
+
+  // Set feed host override. Empty to clear override.
+  OverrideFeedHost(string host);
 };

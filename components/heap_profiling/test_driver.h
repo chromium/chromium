@@ -10,6 +10,7 @@
 #include "base/allocator/partition_allocator/partition_alloc.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted_memory.h"
+#include "base/process/process_handle.h"
 #include "base/synchronization/waitable_event.h"
 #include "components/services/heap_profiling/public/cpp/settings.h"
 #include "components/services/heap_profiling/public/mojom/heap_profiling_client.mojom.h"
@@ -49,11 +50,6 @@ class TestDriver {
     // The stack profiling mode to test.
     mojom::StackMode stack_mode = mojom::StackMode::NATIVE_WITHOUT_THREAD_NAMES;
 
-    // Whether the client should stream samples as they are collected through
-    // the provided pipe. When false the samples are accumulated on the client
-    // side and can be retrieved later.
-    bool stream_samples = true;
-
     // Whether the caller has already started profiling with the given mode.
     // When false, the test driver is responsible for starting profiling.
     bool profiling_already_started = false;
@@ -86,10 +82,6 @@ class TestDriver {
   // Populates |initialization_success_| with the result of
   // |RunInitializationOnUIThread|, and then signals |wait_for_ui_thread_|.
   void CheckOrStartProfilingOnUIThreadAndSignal();
-
-  // Calls Supervisor::SetKeepSmallAllocations() and then signals
-  // |wait_for_ui_thread_|.
-  void SetKeepSmallAllocationsOnUIThreadAndSignal();
 
   // If profiling is expected to already be started, confirm it.
   // Otherwise, start profiling with the given mode.

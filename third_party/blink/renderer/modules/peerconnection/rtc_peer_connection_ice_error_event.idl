@@ -1,0 +1,15 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+//https://w3c.github.io/webrtc-pc/#rtcpeerconnectioniceerrorevent
+
+[
+    Constructor (DOMString type, RTCPeerConnectionIceErrorEventInit eventInitDict),
+    Exposed=Window
+] interface RTCPeerConnectionIceErrorEvent : Event {
+  readonly attribute DOMString hostCandidate;
+  readonly attribute DOMString url;
+  readonly attribute unsigned short errorCode;
+  readonly attribute USVString errorText;
+};

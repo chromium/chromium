@@ -170,6 +170,16 @@ class DaemonProcess
   void OnProcessStats(
       const protocol::AggregatedProcessResourceUsage& usage) override;
 
+  // Gets the location of the config file.
+  base::FilePath GetConfigPath();
+
+  // Updates the config file, replacing the current OAuth refresh token with the
+  // one provided.
+  void UpdateConfigRefreshToken(const std::string& token);
+  static void UpdateConfigRefreshTokenOnIoThread(
+      const base::FilePath& config_file,
+      const std::string& token);
+
   // Task runner on which public methods of this class must be called.
   scoped_refptr<AutoThreadTaskRunner> caller_task_runner_;
 

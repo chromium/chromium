@@ -6,7 +6,7 @@
 <!-- PaymentRequestUI dialog
      Sits at the bottom of the screen like a Bottom Sheet.
 -->
-<org.chromium.chrome.browser.widget.BoundedLinearLayout
+<org.chromium.chrome.browser.ui.widget.BoundedLinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/payment_request"
@@ -14,12 +14,12 @@
     android:gravity="center"
     app:maxWidthLandscape="@dimen/payments_ui_max_dialog_width"
     app:maxWidthPortrait="@dimen/payments_ui_max_dialog_width"
-    android:background="@color/modern_primary_color" >
+    android:background="@color/payment_request_bg" >
 
     <include layout="@layout/payment_request_header" />
     <include layout="@layout/payment_request_spinny" />
 
-    <org.chromium.chrome.browser.widget.FadingEdgeScrollView
+    <org.chromium.chrome.browser.ui.widget.FadingEdgeScrollView
         android:id="@+id/option_container"
         android:layout_height="0dp"
         android:layout_width="match_parent"
@@ -30,10 +30,19 @@
             android:id="@+id/payment_container_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical" />
+            android:orientation="vertical">
+            <TextView
+                android:id="@+id/retry_error"
+                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:visibility="gone"
+                android:textAppearance="@style/TextAppearance.PaymentsUiSectionWarningText" />
+        </LinearLayout>
 
-    </org.chromium.chrome.browser.widget.FadingEdgeScrollView>
+    </org.chromium.chrome.browser.ui.widget.FadingEdgeScrollView>
 
      <include layout="@layout/payment_request_bottom_bar" />
 
-</org.chromium.chrome.browser.widget.BoundedLinearLayout>
+</org.chromium.chrome.browser.ui.widget.BoundedLinearLayout>

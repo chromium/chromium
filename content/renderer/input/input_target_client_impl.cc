@@ -12,15 +12,15 @@
 namespace content {
 
 InputTargetClientImpl::InputTargetClientImpl(RenderFrameImpl* render_frame)
-    : render_frame_(render_frame), binding_(this) {}
+    : render_frame_(render_frame) {}
 
 InputTargetClientImpl::~InputTargetClientImpl() {}
 
-void InputTargetClientImpl::BindToRequest(
-    viz::mojom::InputTargetClientRequest request) {
-  DCHECK(!binding_.is_bound());
-  binding_.Bind(std::move(request), render_frame_->GetTaskRunner(
-                                        blink::TaskType::kInternalDefault));
+void InputTargetClientImpl::BindToReceiver(
+    mojo::PendingReceiver<viz::mojom::InputTargetClient> receiver) {
+  DCHECK(!receiver_.is_bound());
+  receiver_.Bind(std::move(receiver), render_frame_->GetTaskRunner(
+                                          blink::TaskType::kInternalDefault));
 }
 
 void InputTargetClientImpl::FrameSinkIdAt(const gfx::PointF& point,

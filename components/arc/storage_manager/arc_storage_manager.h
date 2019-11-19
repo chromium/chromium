@@ -9,7 +9,7 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "components/arc/common/storage_manager.mojom.h"
+#include "components/arc/mojom/storage_manager.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 namespace content {

@@ -45,7 +45,7 @@ class DriveFileStreamServiceProvider
 
   // Keep this last so that all weak pointers will be invalidated at the
   // beginning of destruction.
-  base::WeakPtrFactory<DriveFileStreamServiceProvider> weak_ptr_factory_;
+  base::WeakPtrFactory<DriveFileStreamServiceProvider> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(DriveFileStreamServiceProvider);
 };

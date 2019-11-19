@@ -28,7 +28,7 @@ namespace {
 class RoundedCornersImageSource : public gfx::CanvasImageSource {
  public:
   explicit RoundedCornersImageSource(const gfx::ImageSkia& icon)
-      : gfx::CanvasImageSource(icon.size(), false), icon_(icon) {}
+      : gfx::CanvasImageSource(icon.size()), icon_(icon) {}
   ~RoundedCornersImageSource() override {}
 
  private:

@@ -7,7 +7,7 @@
 #include <stdint.h>
 
 #include "chrome/test/base/testing_profile.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -55,7 +55,7 @@ class PushMessagingAppIdentifierTest : public testing::Test {
   PushMessagingAppIdentifier different_sw_;
 
  private:
-  content::TestBrowserThreadBundle thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
 };
 

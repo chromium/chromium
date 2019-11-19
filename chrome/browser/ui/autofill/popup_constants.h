@@ -5,9 +5,7 @@
 #ifndef CHROME_BROWSER_UI_AUTOFILL_POPUP_CONSTANTS_H_
 #define CHROME_BROWSER_UI_AUTOFILL_POPUP_CONSTANTS_H_
 
-#include "base/time/time.h"
 #include "build/build_config.h"
-#include "ui/gfx/geometry/insets.h"
 
 namespace autofill {
 
@@ -18,15 +16,6 @@ const int kPopupBorderThickness = 1;
 // In views, the implementation takes care of the border itself.
 const int kPopupBorderThickness = 0;
 #endif
-
-constexpr int kMigrationDialogMainContainerChildSpacing = 24;
-constexpr gfx::Insets kMigrationDialogInsets = gfx::Insets(0, 24, 48, 24);
-
-// The time span a card bubble should be visible even if the document
-// navigates away meanwhile. This is to ensure that the user can see
-// the bubble.
-constexpr base::TimeDelta kCardBubbleSurviveNavigationTime =
-    base::TimeDelta::FromSeconds(5);
 
 }  // namespace autofill
 

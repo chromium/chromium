@@ -37,8 +37,6 @@
         'filesystem.cc',
         'filesystem.h',
         'gtest_death.h',
-        'gtest_disabled.cc',
-        'gtest_disabled.h',
         'hex_string.cc',
         'hex_string.h',
         'linux/fake_ptrace_connection.cc',

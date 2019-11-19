@@ -25,7 +25,7 @@ class SuggestionsProvider;
 // Serves as the entry point for external signals into the prefetching system.
 // It listens to these events, converts them to the appropriate internal tasks
 // and manage their execution and inter-dependencies.
-// Tasks are generally categorized as one of the follwoing types:
+// Tasks are generally categorized as one of the following types:
 // 1. Event handlers. These react to incoming events, such as new URLs coming
 //    from suggestion service or network request finished and response is
 //    available. Typical task of this type would capture the incoming data into

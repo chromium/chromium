@@ -5,6 +5,7 @@
 #include "base/i18n/break_iterator.h"
 
 #include <stddef.h>
+#include <vector>
 
 #include "base/stl_util.h"
 #include "base/strings/string_piece.h"
@@ -372,6 +373,56 @@ TEST(BreakIteratorTest, BreakLine) {
   EXPECT_FALSE(iter.IsWord());
 }
 
+TEST(BreakIteratorTest, BreakSentence) {
+  string16 nl(UTF8ToUTF16("\n"));
+  string16 str(UTF8ToUTF16(
+      "\nFoo bar!\nOne sentence.\n\n\tAnother sentence?One more thing"));
+  BreakIterator iter(str, BreakIterator::BREAK_SENTENCE);
+  ASSERT_TRUE(iter.Init());
+  EXPECT_TRUE(iter.Advance());
+  EXPECT_FALSE(iter.IsWord());
+  EXPECT_EQ(nl, iter.GetString());
+  EXPECT_TRUE(iter.Advance());
+  EXPECT_FALSE(iter.IsWord());
+  EXPECT_EQ(UTF8ToUTF16("Foo bar!\n"), iter.GetString());
+  EXPECT_TRUE(iter.Advance());
+  EXPECT_FALSE(iter.IsWord());
+  EXPECT_EQ(UTF8ToUTF16("One sentence.\n"), iter.GetString());
+  EXPECT_TRUE(iter.Advance());
+  EXPECT_FALSE(iter.IsWord());
+  EXPECT_EQ(nl, iter.GetString());
+  EXPECT_TRUE(iter.Advance());
+  EXPECT_FALSE(iter.IsWord());
+  EXPECT_EQ(UTF8ToUTF16("\tAnother sentence?"), iter.GetString());
+  EXPECT_TRUE(iter.Advance());
+  EXPECT_FALSE(iter.IsWord());
+  EXPECT_EQ(UTF8ToUTF16("One more thing"), iter.GetString());
+  EXPECT_FALSE(iter.Advance());  // Test unexpected advance after end.
+  EXPECT_FALSE(iter.IsWord());
+}
+
+TEST(BreakIteratorTest, IsSentenceBoundary) {
+  string16 str(UTF8ToUTF16(
+      "Foo bar!\nOne sentence.\n\n\tAnother sentence?One more thing"));
+  BreakIterator iter(str, BreakIterator::BREAK_SENTENCE);
+  ASSERT_TRUE(iter.Init());
+
+  std::vector<size_t> sentence_breaks;
+  sentence_breaks.push_back(0);
+  sentence_breaks.push_back(9);
+  sentence_breaks.push_back(23);
+  sentence_breaks.push_back(24);
+  sentence_breaks.push_back(42);
+  for (size_t i = 0; i < str.size(); i++) {
+    if (std::find(sentence_breaks.begin(), sentence_breaks.end(), i) !=
+        sentence_breaks.end()) {
+      EXPECT_TRUE(iter.IsSentenceBoundary(i)) << " at index=" << i;
+    } else {
+      EXPECT_FALSE(iter.IsSentenceBoundary(i)) << " at index=" << i;
+    }
+  }
+}
+
 TEST(BreakIteratorTest, BreakLineNL) {
   string16 nl(UTF8ToUTF16("\n"));
   string16 str(UTF8ToUTF16("\nfoo bar!\n\npouet boom\n"));
@@ -437,19 +488,29 @@ TEST(BreakIteratorTest, BreakLineWide32) {
 }
 
 TEST(BreakIteratorTest, BreakCharacter) {
-  static const wchar_t* kCharacters[] = {
-    // An English word consisting of four ASCII characters.
-    L"w", L"o", L"r", L"d", L" ",
-    // A Hindi word (which means "Hindi") consisting of three Devanagari
-    // characters.
-    L"\x0939\x093F", L"\x0928\x094D", L"\x0926\x0940", L" ",
-    // A Thai word (which means "feel") consisting of three Thai characters.
-    L"\x0E23\x0E39\x0E49", L"\x0E2A\x0E36", L"\x0E01", L" ",
+  static const char* kCharacters[] = {
+      // An English word consisting of four ASCII characters.
+      "w",
+      "o",
+      "r",
+      "d",
+      " ",
+      // A Hindi word (which means "Hindi") consisting of two Devanagari
+      // grapheme clusters.
+      "\u0939\u093F",
+      "\u0928\u094D\u0926\u0940",
+      " ",
+      // A Thai word (which means "feel") consisting of three Thai grapheme
+      // clusters.
+      "\u0E23\u0E39\u0E49",
+      "\u0E2A\u0E36",
+      "\u0E01",
+      " ",
   };
   std::vector<string16> characters;
   string16 text;
   for (auto*& i : kCharacters) {
-    characters.push_back(WideToUTF16(i));
+    characters.push_back(base::UTF8ToUTF16(i));
     text.append(characters.back());
   }
   BreakIterator iter(text, BreakIterator::BREAK_CHARACTER);

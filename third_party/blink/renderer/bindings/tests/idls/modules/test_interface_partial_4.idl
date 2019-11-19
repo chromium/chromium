@@ -2,13 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Test for [OriginTrialEnabled] extended attribute applied to a partial
-// interface. This is separate from TestInterfacePartial, as the
-// [OriginTrialEnabled] attribute cannot be applied with [RuntimeEnabled].
+// Test for [RuntimeEnabled] extended attribute referencing an origin trial
+// applied to a partial interface.
 
 [
     ImplementedAs=TestInterfacePartial4,
-    OriginTrialEnabled=OriginTrialPartialFeature, // Conflicts with RuntimeEnabled
+    RuntimeEnabled=OriginTrialPartialFeature,
     SecureContext
 ] partial interface TestInterface {
     const unsigned short PARTIAL4_UNSIGNED_SHORT = 4;

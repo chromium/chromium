@@ -13,9 +13,9 @@
 #include "chrome/browser/supervised_user/child_accounts/child_account_service.h"
 #include "chrome/browser/supervised_user/child_accounts/child_account_service_factory.h"
 #include "components/google/core/common/google_util.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
-#include "services/identity/public/cpp/identity_manager.h"
 
 #if defined(OS_ANDROID)
 #include "chrome/browser/supervised_user/child_accounts/child_account_service_android.h"
@@ -39,12 +39,12 @@ SupervisedUserGoogleAuthNavigationThrottle::
         Profile* profile,
         content::NavigationHandle* navigation_handle)
     : content::NavigationThrottle(navigation_handle),
-      child_account_service_(
-          ChildAccountServiceFactory::GetForProfile(profile)),
+      child_account_service_(ChildAccountServiceFactory::GetForProfile(profile))
 #if defined(OS_ANDROID)
-      has_shown_reauth_(false),
+      ,
+      has_shown_reauth_(false)
 #endif
-      weak_ptr_factory_(this) {
+{
 }
 
 SupervisedUserGoogleAuthNavigationThrottle::

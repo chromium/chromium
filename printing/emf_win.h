@@ -24,7 +24,7 @@ class FilePath;
 namespace gfx {
 class Rect;
 class Size;
-}
+}  // namespace gfx
 
 namespace printing {
 

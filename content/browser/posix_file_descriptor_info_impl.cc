@@ -36,23 +36,23 @@ void PosixFileDescriptorInfoImpl::Transfer(int id, base::ScopedFD fd) {
   owned_descriptors_.push_back(std::move(fd));
 }
 
-base::PlatformFile PosixFileDescriptorInfoImpl::GetFDAt(size_t i) const {
+base::PlatformFile PosixFileDescriptorInfoImpl::GetFDAt(size_t i) {
   return mapping_[i].first;
 }
 
-int PosixFileDescriptorInfoImpl::GetIDAt(size_t i) const {
+int PosixFileDescriptorInfoImpl::GetIDAt(size_t i) {
   return mapping_[i].second;
 }
 
 const base::MemoryMappedFile::Region& PosixFileDescriptorInfoImpl::GetRegionAt(
-    size_t i) const {
+    size_t i) {
   auto iter = ids_to_regions_.find(GetIDAt(i));
   return (iter != ids_to_regions_.end())
              ? iter->second
              : base::MemoryMappedFile::Region::kWholeFile;
 }
 
-size_t PosixFileDescriptorInfoImpl::GetMappingSize() const {
+size_t PosixFileDescriptorInfoImpl::GetMappingSize() {
   return mapping_.size();
 }
 
@@ -65,8 +65,8 @@ bool PosixFileDescriptorInfoImpl::HasID(int id) const {
   return false;
 }
 
-bool PosixFileDescriptorInfoImpl::OwnsFD(base::PlatformFile file) const {
-  return base::ContainsValue(owned_descriptors_, file);
+bool PosixFileDescriptorInfoImpl::OwnsFD(base::PlatformFile file) {
+  return base::Contains(owned_descriptors_, file);
 }
 
 base::ScopedFD PosixFileDescriptorInfoImpl::ReleaseFD(base::PlatformFile file) {
@@ -92,13 +92,12 @@ void PosixFileDescriptorInfoImpl::AddToMapping(
     ids_to_regions_[id] = region;
 }
 
-const base::FileHandleMappingVector& PosixFileDescriptorInfoImpl::GetMapping()
-    const {
+const base::FileHandleMappingVector& PosixFileDescriptorInfoImpl::GetMapping() {
   return mapping_;
 }
 
 base::FileHandleMappingVector
-PosixFileDescriptorInfoImpl::GetMappingWithIDAdjustment(int delta) const {
+PosixFileDescriptorInfoImpl::GetMappingWithIDAdjustment(int delta) {
   base::FileHandleMappingVector result(mapping_);
 
   // Adding delta to each ID.

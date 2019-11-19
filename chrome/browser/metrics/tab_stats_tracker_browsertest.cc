@@ -4,13 +4,22 @@
 
 #include "chrome/browser/metrics/tab_stats_tracker.h"
 
+#include <vector>
+
 #include "base/containers/flat_map.h"
+#include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/resource_coordinator/tab_lifecycle_observer.h"
+#include "chrome/browser/resource_coordinator/tab_lifecycle_unit_external.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/ui_test_utils.h"
+#include "content/public/browser/web_contents.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace metrics {
@@ -18,6 +27,35 @@ namespace metrics {
 namespace {
 
 using TabsStats = TabStatsDataStore::TabsStats;
+using TabLifecycleObserver = resource_coordinator::TabLifecycleObserver;
+
+class FreezeWaiter : public TabLifecycleObserver {
+ public:
+  explicit FreezeWaiter(content::WebContents* web_contents)
+      : web_contents_(web_contents) {
+    resource_coordinator::TabLifecycleUnitExternal::AddTabLifecycleObserver(
+        this);
+  }
+
+  ~FreezeWaiter() override {
+    resource_coordinator::TabLifecycleUnitExternal::RemoveTabLifecycleObserver(
+        this);
+  }
+
+  void Wait() { run_loop_.Run(); }
+
+ private:
+  void OnFrozenStateChange(content::WebContents* contents,
+                           bool is_frozen) override {
+    if (web_contents_ != contents || !is_frozen)
+      return;
+
+    run_loop_.Quit();
+  }
+
+  content::WebContents* web_contents_;
+  base::RunLoop run_loop_;
+};
 
 void EnsureTabStatsMatchExpectations(const TabsStats& expected,
                                      const TabsStats& actual) {
@@ -26,6 +64,12 @@ void EnsureTabStatsMatchExpectations(const TabsStats& expected,
   EXPECT_EQ(expected.max_tab_per_window, actual.max_tab_per_window);
   EXPECT_EQ(expected.window_count, actual.window_count);
   EXPECT_EQ(expected.window_count_max, actual.window_count_max);
+}
+
+void FreezeWebContents(content::WebContents* web_contents) {
+  FreezeWaiter freeze_waiter(web_contents);
+  web_contents->SetPageFrozen(true);
+  freeze_waiter.Wait();
 }
 
 }  // namespace
@@ -74,6 +118,62 @@ class TabStatsTrackerBrowserTest : public InProcessBrowserTest {
 
   DISALLOW_COPY_AND_ASSIGN(TabStatsTrackerBrowserTest);
 };
+
+IN_PROC_BROWSER_TEST_F(TabStatsTrackerBrowserTest, FrozenTabPercentage) {
+  std::vector<Browser*> browsers;
+
+  // Create 3 windows.
+  browsers.push_back(browser());
+  browsers.push_back(CreateBrowser(ProfileManager::GetActiveUserProfile()));
+  browsers.push_back(CreateBrowser(ProfileManager::GetActiveUserProfile()));
+
+  // Ensure there are 3 tabs per window.
+  for (Browser* browser : browsers) {
+    ui_test_utils::NavigateToURL(browser, GURL("about:blank"));
+    AddTabAtIndexToBrowser(browser, 1, GURL("about:blank"),
+                           ui::PAGE_TRANSITION_TYPED, true);
+    AddTabAtIndexToBrowser(browser, 2, GURL("about:blank"),
+                           ui::PAGE_TRANSITION_TYPED, true);
+  }
+
+  // Verify that there are 6 hidden tabs, none of which are frozen.
+  tab_stats_tracker_->OnHeartbeatEvent();
+  histogram_tester_.ExpectTotalCount("Tabs.FrozenTabPercentage.6To20HiddenTabs",
+                                     1);
+  histogram_tester_.ExpectTotalCount("Tabs.FrozenTabPercentage.1To5HiddenTabs",
+                                     0);
+  EXPECT_THAT(histogram_tester_.GetAllSamples(
+                  "Tabs.FrozenTabPercentage.6To20HiddenTabs"),
+              testing::ElementsAre(base::Bucket(0, 1)));
+
+  // Freeze 2 of the hidden tabs.
+  FreezeWebContents(browsers[0]->tab_strip_model()->GetWebContentsAt(0));
+  FreezeWebContents(browsers[1]->tab_strip_model()->GetWebContentsAt(0));
+
+  // Verify that 2/6 hidden tabs are frozen.
+  tab_stats_tracker_->OnHeartbeatEvent();
+  histogram_tester_.ExpectTotalCount("Tabs.FrozenTabPercentage.6To20HiddenTabs",
+                                     2);
+  histogram_tester_.ExpectTotalCount("Tabs.FrozenTabPercentage.1To5HiddenTabs",
+                                     0);
+  EXPECT_THAT(histogram_tester_.GetAllSamples(
+                  "Tabs.FrozenTabPercentage.6To20HiddenTabs"),
+              testing::ElementsAre(base::Bucket(0, 1), base::Bucket(33, 1)));
+
+  // Close one of the frozen, hidden tabs.
+  browsers[0]->tab_strip_model()->CloseWebContentsAt(
+      0, TabStripModel::CloseTypes::CLOSE_NONE);
+
+  // Verify that 1/5 hidden tabs are frozen.
+  tab_stats_tracker_->OnHeartbeatEvent();
+  histogram_tester_.ExpectTotalCount("Tabs.FrozenTabPercentage.6To20HiddenTabs",
+                                     2);
+  histogram_tester_.ExpectTotalCount("Tabs.FrozenTabPercentage.1To5HiddenTabs",
+                                     1);
+  EXPECT_THAT(histogram_tester_.GetAllSamples(
+                  "Tabs.FrozenTabPercentage.1To5HiddenTabs"),
+              testing::ElementsAre(base::Bucket(20, 1)));
+}
 
 IN_PROC_BROWSER_TEST_F(TabStatsTrackerBrowserTest,
                        TabsAndWindowsAreCountedAccurately) {
@@ -153,10 +253,10 @@ IN_PROC_BROWSER_TEST_F(TabStatsTrackerBrowserTest,
       data_store->GetTabIDForTesting(web_contents).value();
   browser()->tab_strip_model()->DetachWebContentsAt(
       browser()->tab_strip_model()->GetIndexOfWebContents(web_contents));
-  EXPECT_TRUE(base::ContainsKey(*interval_map, tab_id));
+  EXPECT_TRUE(base::Contains(*interval_map, tab_id));
   tab_stats_tracker_->OnInterval(kValidLongInterval, interval_map);
   EXPECT_EQ(1U, interval_map->size());
-  EXPECT_FALSE(base::ContainsKey(*interval_map, tab_id));
+  EXPECT_FALSE(base::Contains(*interval_map, tab_id));
 
   web_contents = data_store->existing_tabs_for_testing()->begin()->first;
 
@@ -165,7 +265,7 @@ IN_PROC_BROWSER_TEST_F(TabStatsTrackerBrowserTest,
   tab_id = data_store->GetTabIDForTesting(web_contents).value();
   browser()->tab_strip_model()->DetachWebContentsAt(
       browser()->tab_strip_model()->GetIndexOfWebContents(web_contents));
-  EXPECT_TRUE(base::ContainsKey(*interval_map, tab_id));
+  EXPECT_TRUE(base::Contains(*interval_map, tab_id));
   tab_stats_tracker_->OnInterval(kValidLongInterval, interval_map);
   EXPECT_EQ(0U, interval_map->size());
 }

@@ -20,6 +20,7 @@
 #include "ui/gfx/geometry/point_f.h"
 
 class GURL;
+struct PP_PdfAccessibilityActionData;
 
 namespace base {
 class FilePath;
@@ -158,6 +159,10 @@ class PepperPluginInstance {
   // Issues undo and redo commands.
   virtual void Undo() = 0;
   virtual void Redo() = 0;
+
+  // Forwards Accessibility actions to plugin.
+  virtual void HandleAccessibilityAction(
+      const PP_PdfAccessibilityActionData& action_data) = 0;
 };
 
 }  // namespace content

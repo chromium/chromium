@@ -1,8 +1,6 @@
-benwells@chromium.org
-dominickn@chromium.org
+file://chrome/browser/permissions/PERMISSIONS_OWNERS
 felt@chromium.org
 mlamouri@chromium.org
-raymes@chromium.org
-timloh@chromium.org
 
 # COMPONENT: Internals>Permissions
+# TEAM: permissions-dev@chromium.org

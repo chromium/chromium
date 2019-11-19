@@ -61,11 +61,6 @@
                     "minimum": 0,
                     "maximum": 65535
                   },
-                  "nativeCrxBindingsEnabled": {
-                    "type": "boolean",
-                    "optional": true,
-                    "description": "Whether native extension bindings are enabled."
-                  },
                   "loginStatus": {
                     "type": "object",
                     "optional": true,

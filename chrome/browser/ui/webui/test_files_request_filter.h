@@ -14,6 +14,10 @@ namespace test {
 // request path has "/test/<filename>" format.
 content::WebUIDataSource::HandleRequestCallback GetTestFilesRequestFilter();
 
+// Returns a callback indicating which requests should be handled by the filter.
+content::WebUIDataSource::ShouldHandleRequestCallback
+GetTestShouldHandleRequest();
+
 }  // namespace test
 
 #endif  // CHROME_BROWSER_UI_WEBUI_TEST_FILES_REQUEST_FILTER_H_

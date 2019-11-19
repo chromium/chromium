@@ -1,0 +1,32 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Use the <code>chrome.login</code> API to launch and exit user sessions.
+[platforms=("chromeos"),
+ implemented_in="chrome/browser/chromeos/extensions/login_screen/login/login_api.h"]
+namespace login {
+  callback VoidCallback = void ();
+  callback StringCallback = void (DOMString result);
+
+  interface Functions {
+    // Launches a managed guest session if one is set up via the admin console.
+    // If there are several managed guest sessions set up, it will launch the
+    // first available one.
+    static void launchManagedGuestSession(optional VoidCallback callback);
+
+    // Exits the current session.
+    // |dataForNextLoginAttempt|: If set, stores data which can be read by
+    // <code>fetchDataForNextLoginAttempt()</code> from the login screen. If
+    // unset, any currently stored data will be cleared.
+    static void exitCurrentSession(optional DOMString dataForNextLoginAttempt,
+                                   optional VoidCallback callback);
+
+    // Reads the <code>dataForNextLoginAttempt</code> set by
+    // <code>exitCurrentSession()</code>. Clears the previously stored data
+    // after reading so it can only be read once.
+    // |callback|: Called with the stored data, or an empty string if there was
+    // no previously stored data.
+    static void fetchDataForNextLoginAttempt(StringCallback callback);
+  };
+};

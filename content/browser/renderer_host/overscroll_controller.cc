@@ -8,6 +8,7 @@
 
 #include "base/command_line.h"
 #include "base/logging.h"
+#include "base/numerics/ranges.h"
 #include "content/browser/renderer_host/overscroll_controller_delegate.h"
 #include "content/public/browser/overscroll_configuration.h"
 #include "content/public/common/content_features.h"
@@ -26,11 +27,11 @@ bool IsGestureEventFromTouchpad(const blink::WebInputEvent& event) {
   DCHECK(blink::WebInputEvent::IsGestureEventType(event.GetType()));
   const blink::WebGestureEvent& gesture =
       static_cast<const blink::WebGestureEvent&>(event);
-  return gesture.SourceDevice() == blink::kWebGestureDeviceTouchpad;
+  return gesture.SourceDevice() == blink::WebGestureDevice::kTouchpad;
 }
 
 bool IsGestureEventFromAutoscroll(const blink::WebGestureEvent event) {
-  return event.SourceDevice() == blink::kWebGestureDeviceSyntheticAutoscroll;
+  return event.SourceDevice() == blink::WebGestureDevice::kSyntheticAutoscroll;
 }
 
 bool IsGestureScrollUpdateInertialEvent(const blink::WebInputEvent& event) {
@@ -40,12 +41,12 @@ bool IsGestureScrollUpdateInertialEvent(const blink::WebInputEvent& event) {
   const blink::WebGestureEvent& gesture =
       static_cast<const blink::WebGestureEvent&>(event);
   return gesture.data.scroll_update.inertial_phase ==
-         blink::WebGestureEvent::kMomentumPhase;
+         blink::WebGestureEvent::InertialPhaseState::kMomentum;
 }
 
 float ClampAbsoluteValue(float value, float max_abs) {
   DCHECK_LT(0.f, max_abs);
-  return std::max(-max_abs, std::min(value, max_abs));
+  return base::ClampToRange(value, -max_abs, max_abs);
 }
 
 }  // namespace
@@ -76,23 +77,24 @@ bool OverscrollController::ShouldProcessEvent(
       if (IsGestureEventFromAutoscroll(gesture))
         return false;
 
-      blink::WebGestureEvent::ScrollUnits scrollUnits;
+      ui::input_types::ScrollGranularity granularity;
       switch (event.GetType()) {
         case blink::WebInputEvent::kGestureScrollBegin:
-          scrollUnits = gesture.data.scroll_begin.delta_hint_units;
+          granularity = gesture.data.scroll_begin.delta_hint_units;
           break;
         case blink::WebInputEvent::kGestureScrollUpdate:
-          scrollUnits = gesture.data.scroll_update.delta_units;
+          granularity = gesture.data.scroll_update.delta_units;
           break;
         case blink::WebInputEvent::kGestureScrollEnd:
-          scrollUnits = gesture.data.scroll_end.delta_units;
+          granularity = gesture.data.scroll_end.delta_units;
           break;
         default:
-          scrollUnits = blink::WebGestureEvent::kPixels;
+          granularity = ui::input_types::ScrollGranularity::kScrollByPixel;
           break;
       }
 
-      return scrollUnits == blink::WebGestureEvent::kPrecisePixels;
+      return granularity ==
+             ui::input_types::ScrollGranularity::kScrollByPrecisePixel;
     }
     default:
       break;
@@ -266,7 +268,7 @@ bool OverscrollController::DispatchEventCompletesAction(
     const blink::WebGestureEvent gesture_event =
         static_cast<const blink::WebGestureEvent&>(event);
     if (gesture_event.data.scroll_update.inertial_phase !=
-        blink::WebGestureEvent::kMomentumPhase)
+        blink::WebGestureEvent::InertialPhaseState::kMomentum)
       return false;
   }
 
@@ -278,7 +280,7 @@ bool OverscrollController::DispatchEventCompletesAction(
     const blink::WebGestureEvent gesture_event =
         static_cast<const blink::WebGestureEvent&>(event);
     if (gesture_event.data.scroll_end.inertial_phase !=
-        blink::WebGestureEvent::kMomentumPhase)
+        blink::WebGestureEvent::InertialPhaseState::kMomentum)
       return false;
   }
 
@@ -320,10 +322,10 @@ bool OverscrollController::DispatchEventCompletesAction(
           ? overscroll_delta_x_
           : overscroll_delta_y_;
   const float ratio = fabs(delta) / std::max(size.width(), size.height());
-  const float threshold = OverscrollConfig::GetThreshold(
+  const float threshold =
       overscroll_source_ == OverscrollSource::TOUCHPAD
-          ? OverscrollConfig::Threshold::kCompleteTouchpad
-          : OverscrollConfig::Threshold::kCompleteTouchscreen);
+          ? OverscrollConfig::kCompleteTouchpadThresholdPercent
+          : OverscrollConfig::kCompleteTouchscreenThresholdPercent;
   return ratio >= threshold;
 }
 
@@ -358,9 +360,10 @@ bool OverscrollController::ProcessEventForOverscroll(
       // when the scrolling is in inertial state.
       const blink::WebGestureEvent gesture_event =
           static_cast<const blink::WebGestureEvent&>(event);
-      bool reset_scroll_state = !IsGestureEventFromTouchpad(event) ||
-                                (gesture_event.data.scroll_end.inertial_phase ==
-                                 blink::WebGestureEvent::kMomentumPhase);
+      bool reset_scroll_state =
+          !IsGestureEventFromTouchpad(event) ||
+          (gesture_event.data.scroll_end.inertial_phase ==
+           blink::WebGestureEvent::InertialPhaseState::kMomentum);
 
       if (reset_scroll_state)
         ResetScrollState();
@@ -388,7 +391,7 @@ bool OverscrollController::ProcessEventForOverscroll(
       event_processed = ProcessOverscroll(
           gesture.data.scroll_update.delta_x,
           gesture.data.scroll_update.delta_y,
-          gesture.SourceDevice() == blink::kWebGestureDeviceTouchpad,
+          gesture.SourceDevice() == blink::WebGestureDevice::kTouchpad,
           is_gesture_scroll_update_inertial_event);
       if (is_gesture_scroll_update_inertial_event) {
         // Record the timestamp of first inertial event.
@@ -457,9 +460,9 @@ bool OverscrollController::ProcessOverscroll(float delta_x,
   overscroll_delta_x_ += delta_x;
   overscroll_delta_y_ += delta_y;
 
-  const float start_threshold = OverscrollConfig::GetThreshold(
-      is_touchpad ? OverscrollConfig::Threshold::kStartTouchpad
-                  : OverscrollConfig::Threshold::kStartTouchscreen);
+  const float start_threshold =
+      is_touchpad ? OverscrollConfig::kStartTouchpadThresholdDips
+                  : OverscrollConfig::kStartTouchscreenThresholdDips;
   if (fabs(overscroll_delta_x_) <= start_threshold &&
       fabs(overscroll_delta_y_) <= start_threshold) {
     SetOverscrollMode(OVERSCROLL_NONE, OverscrollSource::NONE);

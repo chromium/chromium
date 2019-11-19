@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/platform/graphics/filters/fe_offset.h"
 #include "third_party/blink/renderer/platform/graphics/filters/filter.h"
 #include "third_party/blink/renderer/platform/graphics/filters/source_graphic.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
 
 namespace blink {
 
@@ -21,21 +22,22 @@ class FECompositeTest : public testing::Test {
     // Use big filter region to avoid it from affecting FEComposite's MapRect
     // results.
     FloatRect filter_region(-10000, -10000, 20000, 20000);
-    auto* filter =
-        Filter::Create(FloatRect(), filter_region, 1, Filter::kUserSpace);
+    auto* filter = MakeGarbageCollected<Filter>(FloatRect(), filter_region, 1,
+                                                Filter::kUserSpace);
 
     // Input 1 of composite has a fixed output rect.
-    auto* source_graphic1 = SourceGraphic::Create(filter);
+    auto* source_graphic1 = MakeGarbageCollected<SourceGraphic>(filter);
     source_graphic1->SetClipsToBounds(false);
     source_graphic1->SetSourceRect(kInput1Rect);
 
     // Input 2 of composite will pass composite->MapRect()'s parameter as its
     // output.
-    auto* source_graphic2 = SourceGraphic::Create(filter);
+    auto* source_graphic2 = MakeGarbageCollected<SourceGraphic>(filter);
     source_graphic2->SetClipsToBounds(false);
 
     // Composite input 1 and input 2.
-    auto* composite = FEComposite::Create(filter, type, k1, k2, k3, k4);
+    auto* composite =
+        MakeGarbageCollected<FEComposite>(filter, type, k1, k2, k3, k4);
     composite->SetClipsToBounds(false);
     composite->InputEffects().push_back(source_graphic1);
     composite->InputEffects().push_back(source_graphic2);

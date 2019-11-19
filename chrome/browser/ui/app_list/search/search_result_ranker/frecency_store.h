@@ -5,10 +5,10 @@
 #ifndef CHROME_BROWSER_UI_APP_LIST_SEARCH_SEARCH_RESULT_RANKER_FRECENCY_STORE_H_
 #define CHROME_BROWSER_UI_APP_LIST_SEARCH_SEARCH_RESULT_RANKER_FRECENCY_STORE_H_
 
+#include <map>
 #include <string>
 #include <vector>
 
-#include "base/containers/flat_map.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
 #include "base/optional.h"
@@ -38,17 +38,26 @@ class FrecencyStore {
     int32_t last_num_updates;
   };
 
-  // Record the use of a value.
-  void Update(const std::string& value);
+  using ScoreTable = std::map<std::string, FrecencyStore::ValueData>;
+
+  // Record the use of a value. Returns its ID.
+  unsigned int Update(const std::string& value);
   // Change one value to another but retain its original ID and score.
   void Rename(const std::string& value, const std::string& new_value);
-  // Remove a value from the store entirely.
+  // Remove a value and its associated ID from the store entirely.
   void Remove(const std::string& value);
 
+  // Returns the ID for the given value. If the value is not in the store,
+  // return base::nullopt.
   base::Optional<unsigned int> GetId(const std::string& value);
   // Return all stored value data. This ensures all scores have been correctly
   // updated, and none of the scores are below the |min_score_| threshold.
-  const base::flat_map<std::string, FrecencyStore::ValueData>& GetAll();
+  const ScoreTable& GetAll();
+
+  // Returns the underlying storage data structure. This does not ensure scores
+  // are correct, and should not be used for scoring items. However it is
+  // useful, for example, for implementing custom cleanup logic.
+  ScoreTable* get_mutable_values() { return &values_; }
 
   void ToProto(FrecencyStoreProto* proto) const;
   void FromProto(const FrecencyStoreProto& proto);
@@ -74,8 +83,7 @@ class FrecencyStore {
   float decay_coeff_;
 
   // This stores all the data of the frecency store.
-  // TODO(tby): benchmark which map is best in practice for our use.
-  base::flat_map<std::string, FrecencyStore::ValueData> values_;
+  ScoreTable values_;
 
   // Number of times the store has been updated.
   unsigned int num_updates_ = 0;

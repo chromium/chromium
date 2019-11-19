@@ -70,17 +70,20 @@ ScriptState* CallbackFunctionBase::CallbackRelevantScriptStateOrThrowException(
   return nullptr;
 }
 
-V8PersistentCallbackFunctionBase::V8PersistentCallbackFunctionBase(
-    CallbackFunctionBase* callback_function)
-    : callback_function_(callback_function) {
-  v8::Isolate* isolate = callback_function_->GetIsolate();
-  v8::HandleScope scope(isolate);
-  auto local = callback_function_->callback_function_.NewLocal(isolate);
-  v8_function_.Reset(isolate, local);
-}
+void CallbackFunctionBase::EvaluateAsPartOfCallback(
+    base::OnceCallback<void()> closure) {
+  if (!callback_relevant_script_state_)
+    return;
 
-void V8PersistentCallbackFunctionBase::Trace(blink::Visitor* visitor) {
-  visitor->Trace(callback_function_);
+  // https://heycam.github.io/webidl/#es-invoking-callback-functions
+  // step 8: Prepare to run script with relevant settings.
+  ScriptState::Scope callback_relevant_context_scope(
+      callback_relevant_script_state_);
+  // step 9: Prepare to run a callback with stored settings.
+  v8::Context::BackupIncumbentScope backup_incumbent_scope(
+      IncumbentScriptState()->GetContext());
+
+  std::move(closure).Run();
 }
 
 }  // namespace blink

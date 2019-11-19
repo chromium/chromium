@@ -10,26 +10,6 @@ import "url/mojom/url.mojom";
 
 const int64 kInvalidServiceWorkerVersionId = -1;
 
-// Describes whether a controller service worker exists and if it has a fetch
-// handler.
-//
-// BEWARE: In non-NetS13nServiceWorker, the renderer often does not know which
-// controller service worker a request will go to, as skipWaiting() may occur
-// in the browser process at the same time the renderer makes a request.
-// Therefore, non-NetS13nServiceWorker should usually treat
-// kNoFetchEventHandler and kControlled as the same.
-//
-// TODO(falken): This should be moved to controller_service_worker.mojom once
-// it moves to Blink.
-enum ControllerServiceWorkerMode {
-  // No controller exists.
-  kNoController,
-  // The controller exists, but it has no fetch event handler.
-  kNoFetchEventHandler,
-  // The controller exists and it has a fetch event handler.
-  kControlled
-};
-
 // Describes a ServiceWorker object:
 // https://w3c.github.io/ServiceWorker/#serviceworker-interface
 struct ServiceWorkerObjectInfo {
@@ -38,16 +18,16 @@ struct ServiceWorkerObjectInfo {
   int64 version_id = kInvalidServiceWorkerVersionId;
 
   // ServiceWorker#state
-  ServiceWorkerState state = ServiceWorkerState.kUnknown;
+  ServiceWorkerState state = ServiceWorkerState.kParsed;
 
   // ServiceWorker#scriptURL
   url.mojom.Url url;
 
   // This object's host in the browser process.
-  associated ServiceWorkerObjectHost host_ptr_info;
+  pending_associated_remote<ServiceWorkerObjectHost> host_remote;
 
   // This object in the renderer process.
-  associated ServiceWorkerObject& request;
+  pending_associated_receiver<ServiceWorkerObject> receiver;
 };
 
 // The browser-side host of one ServiceWorker JavaScript object. The renderer

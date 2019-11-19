@@ -17,11 +17,17 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task_runner.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "ui/events/ozone/evdev/event_converter_evdev.h"
 #include "ui/events/ozone/evdev/event_device_info.h"
 #include "ui/events/ozone/evdev/events_ozone_evdev_export.h"
 #include "ui/events/ozone/evdev/input_device_settings_evdev.h"
+#include "ui/events/ozone/evdev/touch_filter/shared_palm_detection_filter_state.h"
 #include "ui/ozone/public/input_controller.h"
+
+#if defined(USE_EVDEV_GESTURES)
+#include "ui/events/ozone/chromeos/gesture_properties_service.h"
+#endif
 
 namespace ui {
 
@@ -62,6 +68,9 @@ class EVENTS_OZONE_EVDEV_EXPORT InputDeviceFactoryEvdev {
   void GetTouchEventLog(const base::FilePath& out_dir,
                         InputController::GetTouchEventLogReply reply);
 
+  void GetGesturePropertiesService(
+      mojo::PendingReceiver<ozone::mojom::GesturePropertiesService> receiver);
+
   base::WeakPtr<InputDeviceFactoryEvdev> GetWeakPtr();
 
  private:
@@ -86,6 +95,7 @@ class EVENTS_OZONE_EVDEV_EXPORT InputDeviceFactoryEvdev {
   void NotifyMouseDevicesUpdated();
   void NotifyTouchpadDevicesUpdated();
   void NotifyGamepadDevicesUpdated();
+  void NotifyUncategorizedDevicesUpdated();
 
   void SetIntPropertyForOneType(const EventDeviceType type,
                                 const std::string& name,
@@ -97,18 +107,22 @@ class EVENTS_OZONE_EVDEV_EXPORT InputDeviceFactoryEvdev {
   void EnableDevices();
 
   // Task runner for our thread.
-  scoped_refptr<base::TaskRunner> task_runner_;
+  const scoped_refptr<base::TaskRunner> task_runner_;
 
   // Cursor movement.
-  CursorDelegateEvdev* cursor_;
+  CursorDelegateEvdev* const cursor_;
+
+  // Shared Palm state.
+  const std::unique_ptr<SharedPalmDetectionFilterState> shared_palm_state_;
 
 #if defined(USE_EVDEV_GESTURES)
   // Gesture library property provider (used by touchpads/mice).
   std::unique_ptr<GesturePropertyProvider> gesture_property_provider_;
+  std::unique_ptr<GesturePropertiesService> gesture_properties_service_;
 #endif
 
   // Dispatcher for events.
-  std::unique_ptr<DeviceEventDispatcherEvdev> dispatcher_;
+  const std::unique_ptr<DeviceEventDispatcherEvdev> dispatcher_;
 
   // Number of pending device additions & device classes.
   int pending_device_changes_ = 0;
@@ -117,6 +131,7 @@ class EVENTS_OZONE_EVDEV_EXPORT InputDeviceFactoryEvdev {
   bool mouse_list_dirty_ = true;
   bool touchpad_list_dirty_ = true;
   bool gamepad_list_dirty_ = true;
+  bool uncategorized_list_dirty_ = true;
 
   // Whether we have a list of devices that were present at startup.
   bool startup_devices_enumerated_ = false;
@@ -138,7 +153,7 @@ class EVENTS_OZONE_EVDEV_EXPORT InputDeviceFactoryEvdev {
   std::map<base::FilePath, std::unique_ptr<EventConverterEvdev>> converters_;
 
   // Support weak pointers for attach & detach callbacks.
-  base::WeakPtrFactory<InputDeviceFactoryEvdev> weak_ptr_factory_;
+  base::WeakPtrFactory<InputDeviceFactoryEvdev> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(InputDeviceFactoryEvdev);
 };

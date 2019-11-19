@@ -55,10 +55,12 @@
   <message name="IDS_POLICY_DM_STATUS_CANNOT_SIGN_REQUEST" desc="Message indicating a failure to sign a request.">
     Request could not be signed
   </message>
+  <message name="IDS_POLICY_DM_STATUS_REQUEST_TOO_LARGE" desc="Message indicating a request to enterprise server is too large.">
+    Request is too large
+  </message>
   <message name="IDS_POLICY_DM_STATUS_CONSUMER_ACCOUNT_WITH_PACKAGED_LICENSE" desc="Message to show when the user tries to enroll a device with a packaged license using a consumer account.">
     Can't enroll with consumer account (packaged license available).
   </message>
-
   <message name="IDS_POLICY_VALIDATION_OK" desc="Message indicating successful policy validation.">
     Validation successful
   </message>
@@ -158,6 +160,9 @@
   <message name="IDS_POLICY_NOT_SPECIFIED_ERROR" desc="The text displayed in the status column when a policy value should have been specified but wasn't.">
     Must be specified.
   </message>
+  <message name="IDS_POLICY_EXTENSION_SETTINGS_ORIGIN_LIMIT_WARNING" desc="The text displayed in the status column of the 'Extension Settings' policy when more than 100 origins are specified.">
+    This field should not have more than <ph name="MAX_ITEMS_LIMIT">$1<ex>100</ex></ph> entries. All further entries will be discarded.
+  </message>
   <message name="IDS_POLICY_SUBKEY_ERROR" desc="The text displayed in the status column for errors in a subkey of a policy.">
     Key "<ph name="SUBKEY">$1<ex>ProxyMode</ex></ph>": <ph name="ERROR">$2<ex>Must be specified.</ex></ph>
   </message>
@@ -173,6 +178,27 @@
   <message name="IDS_POLICY_INVALID_SEARCH_URL_ERROR" desc="The text displayed in the status column when a the URL given for DefaultSearchProviderSearchURL is invalid.">
     Invalid search URL.
   </message>
+  <message name="IDS_POLICY_INVALID_SECURE_DNS_MODE_ERROR" desc="The text displayed in the status column when the value for DnsOverHttpsMode is invalid.">
+    Invalid DnsOverHttps mode.
+  </message>
+  <message name="IDS_POLICY_SECURE_DNS_MODE_NOT_SUPPORTED_ERROR" desc="The text displayed in the status column when the value for DnsOverHttpsMode is secure, which is not supported yet.">
+    The DnsOverHttps mode <ph name="SECURE_DNS_MODE_SECURE">'secure'</ph> is not yet supported, the mode has been set to <ph name="SECURE_DNS_MODE_OFF">'off'</ph>.
+  </message>
+  <message name="IDS_POLICY_SECURE_DNS_TEMPLATES_INVALID_ERROR" desc="The text displayed in the status column when one or more of the DnsOverHttpsTemplates server template URIs is invalid.">
+    One or more of the DnsOverHttpsTemplates server template URIs is invalid and will not be used.
+  </message>
+  <message name="IDS_POLICY_SECURE_DNS_TEMPLATES_IRRELEVANT_MODE_ERROR" desc="The text displayed in the status column when the DnsOverHttpsTemplate policy is specified but DnsOverHttpsMode is not set to a value that makes the templates relevant.">
+    The DnsOverHttpsTemplates value is not relevant, and will not be used, unless the DnsOverHttpsMode policy is set to either <ph name="SECURE_DNS_MODE_AUTOMATIC">'automatic'</ph> or <ph name="SECURE_DNS_MODE_SECURE">'secure'</ph>.
+  </message>
+  <message name="IDS_POLICY_SECURE_DNS_TEMPLATES_INVALID_MODE_ERROR" desc="The text displayed in the status column when the DnsOverHttpsTemplate policy is specified but DnsOverHttpsMode is not valid.">
+    The templates you've specified may not be applied due to an error with the DnsOverHttpsMode policy.
+  </message>
+  <message name="IDS_POLICY_SECURE_DNS_TEMPLATES_UNSET_MODE_ERROR" desc="The text displayed in the status column when the DnsOverHttpsTemplate policy is specified but DnsOverHttpsMode is unset.">
+    The templates you've specified may not be applied due to the DnsOverHttpsMode policy not being set.
+  </message>
+  <message name="IDS_POLICY_SECURE_DNS_TEMPLATES_NOT_SPECIFIED_ERROR" desc="The text displayed in the status column when the DnsOverHttpsTemplate policy is not specified but the DnsOverHttpsMode is secure.">
+    Must be specified and a valid string when DnsOverHttpsMode is <ph name="SECURE_DNS_MODE_SECURE">'secure'</ph>.
+  </message>
   <message name="IDS_POLICY_INVALID_PROXY_MODE_ERROR" desc="The text displayed in the status column when the value for ProxyMode is invalid.">
     Invalid proxy mode.
   </message>
@@ -183,7 +209,7 @@
     This computer is not detected as enterprise managed so policy can only automatically install extensions hosted on the Chrome Webstore. The Chrome Webstore update URL is "<ph name="CWS_UPDATE_URL">$1<ex>https://clients2.google.com/service/update2/crx</ex></ph>".
   </message>
   <message name="IDS_POLICY_HOMEPAGE_LOCATION_ERROR" desc="The text displayed in the status column when the homepage URL given by the HomepageLocation policy is invalid.">
-    Invalid URL. Must be a URL with a standard scheme.
+    Invalid URL. Must be a URL with a standard scheme, e.g http://example.com or https://example.com.
   </message>
   <message name="IDS_POLICY_PROXY_MODE_DISABLED_ERROR" desc="The text displayed in the status column when use of a proxy is disabled but a proxy configuration is given.">
     Use of a proxy is disabled but an explicit proxy configuration is specified.
@@ -328,14 +354,14 @@ Additional details:
   <message name="IDS_POLICY_LABEL_REFRESH_INTERVAL" desc="Label for the refresh interval in the policy status boxes.">
     Fetch interval:
   </message>
-  <message name="IDS_POLICY_LABEL_MESSAGES" desc="Label for the messages row in the policy table.">
-    Messages
-  </message>
   <message name="IDS_POLICY_LABEL_CONFLICT" desc="Label for the conflict row in the policy table.">
     Conflict
   </message>
-  <message name="IDS_POLICY_LABEL_WARNING_AND_CONFLICT" desc="Label for the conflict row in the policy table when there are warnings and conflicts.">
-    Warnings, Conflict
+  <message name="IDS_POLICY_LABEL_ERROR" desc="Label for the error row in the policy table.">
+    Error
+  </message>
+  <message name="IDS_POLICY_LABEL_IGNORED" desc="Label for the ignored row in the policy table.">
+    Ignored
   </message>
   <message name="IDS_POLICY_LABEL_VALUE" desc="Label for the value row in the policy table.">
     Value
@@ -404,14 +430,17 @@ Additional details:
   <message name="IDS_POLICY_SOURCE_CLOUD" desc="Indicates that the policy originates from the cloud.">
     Cloud
   </message>
+  <message name="IDS_POLICY_SOURCE_MERGED" desc="Indicates that the policy is a merged values from multiple sources.">
+    Merged
+  </message>
   <message name="IDS_POLICY_SOURCE_ACTIVE_DIRECTORY" desc="Indicates that the policy originates from a local server, e.g. Samba or Active Directory.">
     <ph name="MICROSOFT_ACTIVE_DIRECTORY">Local Server</ph>
   </message>
   <message name="IDS_POLICY_SOURCE_PLATFORM" desc="Indicates that the policy is obtained from the local OS.">
     Platform
   </message>
-  <message name="IDS_POLICY_SOURCE_PUBLIC_SESSION_OVERRIDE" desc="Indicates that the policy is set programmatically because of an active managed session (for Chrome OS only). It could have overridden other sources that set this policy.">
-    Managed session override
+  <message name="IDS_POLICY_SOURCE_DEVICE_LOCAL_ACCOUNT_OVERRIDE" desc="Indicates that the policy is set programmatically because of an active device-local account session: managed session or Kiosk app (both for Chrome OS only). It could have overridden other sources that set this policy.">
+    Device local account override
   </message>
   <message name="IDS_POLICY_RISK_TAG_FULL_ADMIN_ACCESS" desc="Title of a group/tag whose policies potentially allow the administrator to access all of a user's data.">
     Full Admin Access
@@ -440,13 +469,60 @@ Additional details:
   <message name="IDS_POLICY_HIDE_EXPANDED_STATUS" desc="Text for the link that hides the policy status. Used when the policy status is too long to be always visible.">
     Hide status
   </message>
+  <message name="IDS_POLICY_LIST_MERGING_WRONG_POLICY_TYPE_SPECIFIED" desc="Text explaining that a policy specified to be merged as a list is not a list.">
+    Warning: This policy was not merged as a list as specified by policy because it is not a list.
+  </message>
+  <message name="IDS_POLICY_DICTIONARY_MERGING_WRONG_POLICY_TYPE_SPECIFIED" desc="Text explaining that a policy specified to be merged as a dictionary is not a dictionary.">
+    Warning: This policy was not merged as a dictionary as specified by policy because it is not a dictionary.
+  </message>
+  <message name="IDS_POLICY_DICTIONARY_MERGING_POLICY_NOT_ALLOWED" desc="Text explaining that a policy specified to be merged as a dictionary is not allowed to be merged.">
+    Warning: This policy was not merged as specified in PolicyDictionaryMultipleSourceMergeList policy because it is not part of the dictionary policies that can be merged.
+  </message>
   <message name="IDS_POLICY_CONFLICT_SAME_VALUE" desc="Text explaining that a policy had conflicting sources, but with the same values.">
-    Warning: More than one source is present for the policy, but the values are the same.
+    More than one source is present for the policy, but the values are the same.
   </message>
   <message name="IDS_POLICY_CONFLICT_DIFF_VALUE" desc="Text explaining that a policy had conflicting sources and values.">
-    Warning: More than one source with conflicting values is present for this policy!
+    More than one source with conflicting values is present for this policy!
+  </message>
+  <message name="IDS_POLICY_MIGRATED_OLD_POLICY" desc="Text explaining that a policy is deprecated, and that admins should use the new policy instead">
+    This policy is deprecated. You should use the <ph name="NEW_POLICY">$1<ex>AllowDinosaurEasterEgg</ex></ph> policy instead.
+  </message>
+  <message name="IDS_POLICY_MIGRATED_NEW_POLICY" desc="Text explaining that the policy value was automatically copied from a deprecated policy's value">
+    This policy was automatically copied from the deprecated <ph name="OLD_POLICY">$1<ex>AllowDinosaurEasterEgg</ex></ph> policy. You should use this policy instead.
   </message>
   <message name="IDS_POLICY_BLOCKED" desc="Text explaining that a policy is blocked, therefore ignored.">
     This policy is blocked, its value will be ignored.
+  </message>
+  <message name="IDS_POLICY_IGNORED_BY_GROUP_MERGING" desc="Text explaining that a policy is ignored because another policy of the same group has a higher priority">
+    This policy is ignored because another policy from the same policy group has a higher priority.
+  </message>
+  <message name="IDS_POLICY_INVALID_VALUE"  desc="Text explaining that the policy value is invalid">
+    Policy value is not valid.
+  </message>
+  <if expr="not is_macosx">
+    <message name="IDS_POLICY_SPELLCHECK_UNKNOWN_LANGUAGE" desc="Warning message in the policy summary page for the spellcheck policies when a language is unrecognized or unsupported.">
+      List entry "<ph name="LANGUAGE_ID">$1<ex>xx-YY</ex></ph>": Unknown or unsupported language.
+    </message>
+    <message name="IDS_POLICY_SPELLCHECK_BLACKLIST_IGNORE" desc="Warning message in the policy summary page for the spellcheck blacklist policy when a language is both force-enabled and force-disabled. 'SpellcheckLanguage' is a policy name and shouldn't be translated.">
+    List entry "<ph name="LANGUAGE_ID">$1<ex>en-GB</ex></ph>": Entry ignored because it is also included in the SpellcheckLanguage policy.
+    </message>
+  </if>
+  <message name="IDS_POLICY_LABEL_IS_AFFILIATED" desc="Label to indicate if the user is affiliated or not.">
+    Is affiliated:
+  </message>
+  <message name="IDS_POLICY_IS_AFFILIATED_YES" desc="Indicates the user is affiliated.">
+    Yes
+  </message>
+  <message name="IDS_POLICY_IS_AFFILIATED_NO" desc="Indicates the user is not affiliated.">
+    No
+  </message>
+  <message name="IDS_POLICY_LABEL_IS_OFFHOURS_ACTIVE" desc="Label to indicate if the off-hours policy is active or not.">
+    Off-Hours Policy:
+  </message>
+  <message name="IDS_POLICY_OFFHOURS_ACTIVE" desc="Indicates the off-hours policy is active.">
+    Active
+  </message>
+  <message name="IDS_POLICY_OFFHOURS_NOT_ACTIVE" desc="Indicates the off-hours policy is not active.">
+    Not active
   </message>
 </grit-part>

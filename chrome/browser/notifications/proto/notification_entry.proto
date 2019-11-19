@@ -1,0 +1,54 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+
+package notifications.proto;
+
+import "client_state.proto";
+import "impression.proto";
+import "notification_data.proto";
+
+// Defines scheduling and throttling details.
+// Next tag: 6
+message ScheduleParams {
+  enum Priority {
+    LOW = 0;
+    NO_THROTTLE = 1;
+  }
+
+  optional Priority priority = 1;
+  repeated Impression.ImpressionMapping impression_mapping = 2;
+
+  // The starting time of deliver time window for the notification.
+  optional int64 deliver_time_start = 3;
+
+  // The end time of deliver time window for the notification.
+  optional int64 deliver_time_end = 4;
+
+  // The custom suppression duration in ms.
+  optional int64 custom_suppression_duration_ms = 5;
+}
+
+// The notification entry that contains all data for a scheduled notification.
+// Next tag: 6
+message NotificationEntry {
+  // The type of the notification.
+  optional SchedulerClientType type = 1;
+
+  // The guid of the notification entry. Serve as the key of the database
+  // record.
+  optional string guid = 2;
+
+  // Creation time stamp in milliseconds since epoch.
+  optional int64 create_time = 3;
+
+  // Notification data used by the UI.
+  optional NotificationData notification_data = 4;
+
+  // Scheduling parameters.
+  optional ScheduleParams schedule_params = 5;
+}

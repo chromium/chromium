@@ -10,6 +10,7 @@
 #include "base/callback.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
+#include "remoting/host/input_monitor/local_input_monitor.h"
 
 namespace base {
 class SingleThreadTaskRunner;
@@ -30,7 +31,7 @@ class LocalKeyboardInputMonitor {
       scoped_refptr<base::SingleThreadTaskRunner> caller_task_runner,
       scoped_refptr<base::SingleThreadTaskRunner> input_task_runner,
       scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner,
-      base::RepeatingClosure on_key_event_callback,
+      LocalInputMonitor::KeyPressedCallback on_key_event_callback,
       base::OnceClosure disconnect_callback);
 
  protected:

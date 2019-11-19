@@ -42,9 +42,7 @@ int GetDelayMs() {
 
 }  // namespace
 
-SerialExtensionHostQueue::SerialExtensionHostQueue()
-    : pending_create_(false), ptr_factory_(this) {
-}
+SerialExtensionHostQueue::SerialExtensionHostQueue() : pending_create_(false) {}
 
 SerialExtensionHostQueue::~SerialExtensionHostQueue() {
 }

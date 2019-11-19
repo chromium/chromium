@@ -21,12 +21,12 @@
 #include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/notification_types.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
-#include "services/identity/public/cpp/identity_manager.h"
 
 using content::MessageLoopRunner;
 
@@ -42,9 +42,9 @@ const char kGetPasswordFieldFromDiceSigninPage[] =
     "  return e.querySelector('input[type=password]');"
     "})()";
 
-// The SignInObserver observes the signin manager and blocks until a signin
+// The SignInObserver observes the identity manager and blocks until a signin
 // success or failure notification is fired.
-class SignInObserver : public identity::IdentityManager::Observer {
+class SignInObserver : public signin::IdentityManager::Observer {
  public:
   SignInObserver() : seen_(false), running_(false), signed_in_(false) {}
 
@@ -54,7 +54,7 @@ class SignInObserver : public identity::IdentityManager::Observer {
   }
 
   // Blocks and waits until the user signs in. Wait() does not block if a
-  // GoogleSigninSucceeded or a GoogleSigninFailed has already occurred.
+  // GoogleSigninSucceeded has already occurred.
   void Wait() {
     if (seen_)
       return;
@@ -63,12 +63,6 @@ class SignInObserver : public identity::IdentityManager::Observer {
     message_loop_runner_ = new MessageLoopRunner;
     message_loop_runner_->Run();
     EXPECT_TRUE(seen_);
-  }
-
-  void OnPrimaryAccountSigninFailed(
-      const GoogleServiceAuthError& error) override {
-    DVLOG(1) << "Google signin failed.";
-    QuitLoopRunner();
   }
 
   void OnPrimaryAccountSet(
@@ -199,11 +193,16 @@ class SigninViewControllerTestUtil {
     content::WebContents* dialog_web_contents =
         signin_view_controller->GetModalDialogWebContentsForTesting();
     DCHECK_NE(dialog_web_contents, nullptr);
+    std::string confirm_button_selector =
+        "document.querySelector('sync-confirmation-app').shadowRoot."
+        "querySelector('#confirmButton')";
     std::string message;
     std::string find_button_js =
         "if (document.readyState != 'complete') {"
         "  window.domAutomationController.send('DocumentNotReady');"
-        "} else if (document.getElementById('confirmButton') == null) {"
+        "} else if (" +
+        confirm_button_selector +
+        " == null) {"
         "  window.domAutomationController.send('NotFound');"
         "} else {"
         "  window.domAutomationController.send('Ok');"
@@ -215,9 +214,8 @@ class SigninViewControllerTestUtil {
 
     // This cannot be a synchronous call, because it closes the window as a side
     // effect, which may cause the javascript execution to never finish.
-    content::ExecuteScriptAsync(
-        dialog_web_contents,
-        "document.getElementById('confirmButton').click();");
+    content::ExecuteScriptAsync(dialog_web_contents,
+                                confirm_button_selector + ".click();");
     return true;
 #endif
   }
@@ -300,7 +298,7 @@ bool SignInWithUI(Browser* browser,
   return false;
 #else
   SignInObserver signin_observer;
-  ScopedObserver<identity::IdentityManager, SignInObserver>
+  ScopedObserver<signin::IdentityManager, signin::IdentityManager::Observer>
       scoped_signin_observer(&signin_observer);
   scoped_signin_observer.Add(
       IdentityManagerFactory::GetForProfile(browser->profile()));

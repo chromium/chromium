@@ -1,21 +1,40 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="gu">
+<translation id="1482734542997480527"><ph name="ENROLLMENT_DOMAIN" /> તમારા ડિવાઇસને મેનેજ કરે છે અને કદાચ તમારી પ્રવૃત્તિનું નિરીક્ષણ કરી શકે છે.</translation>
 <translation id="1510238584712386396">લૉન્ચર</translation>
 <translation id="1734367976349034509">આ ઉપકરણ એન્ટરપ્રાઇઝ દ્વારા સંચાલિત થાય છે</translation>
+<translation id="1930797645656624981">Chrome OS ઇનપુટ પદ્ધતિ સેવા</translation>
+<translation id="1979103255016296513">પાસવર્ડ બદલવાની તારીખ નીકળી ગઈ છે</translation>
 <translation id="2049639323467105390">આ ઉપકરણને <ph name="DOMAIN" /> દ્વારા મેનેજ કરવામાં આવેલું છે.</translation>
 <translation id="2083960536266308407">સ્ક્રીન પર કંઈ મળ્યું નથી</translation>
 <translation id="2338501278241028356">નજીકનાં ડિવાઇસ શોધવા માટે Bluetooth ચાલુ કરો</translation>
 <translation id="2805756323405976993">એપ્સ</translation>
 <translation id="2872961005593481000">શટ ડાઉન કરો</translation>
-<translation id="3147142846278915599">લોન્ચર (એપ્લિકેશન્સને સમન્વયિત કરી રહ્યું છે..)</translation>
+<translation id="3008341117444806826">રિફ્રેશ કરો</translation>
+<translation id="3838338534323494292">નવો પાસવર્ડ</translation>
+<translation id="4003259559679196451"><ph name="ENROLLMENT_DOMAIN" /> આ ડિવાઇસને મેનેજ કરે છે અને મુલાકાત લીધેલા વેબપેજ, પાસવર્ડ અને ઇમેઇલ સહિત, બધી વપરાશકર્તા પ્રવૃત્તિઓનો ઍક્સેસ ધરાવે છે.</translation>
+<translation id="4227825898293920515"><ph name="TIME" />માં પાસવર્ડની સમયસીમા સમાપ્ત થાય છે</translation>
+<translation id="4429881212383817840">ટૂંક સમયમાં Kerberos ટિકિટની સમયસીમા સમાપ્ત થશે</translation>
+<translation id="445059817448385655">જૂનો પાસવર્ડ</translation>
+<translation id="467510802200863975">પાસવર્ડ મેળ ખાતા નથી</translation>
 <translation id="4731797938093519117">માતાપિતા માટે ઍક્સેસ</translation>
+<translation id="4890353053343094602">તરત જ નવો પાસવર્ડ પસંદ કરો</translation>
 <translation id="5212543919916444558">મને તમારી સ્ક્રીન પર એવી કોઈપણ વસ્તુ મળી નથી કે જેમાં હું તમારી સહાય કરી શકું. મને કંઈપણ પૂછવા માટે માઇકને ટૅપ કરી જુઓ.</translation>
 <translation id="5222676887888702881">સાઇન આઉટ</translation>
+<translation id="5317780077021120954">સાચવો</translation>
+<translation id="5332948983412042822">કૃપા કરીને નવો પાસવર્ડ પસંદ કરો</translation>
 <translation id="5457599981699367932">અતિથિ તરીકે બ્રાઉઝ કરો</translation>
 <translation id="54609108002486618">મેનેજ કરેલું</translation>
 <translation id="5832805196449965646">વ્યક્તિ ઉમેરો</translation>
 <translation id="5895138241574237353">પુનઃપ્રારંભ કરો</translation>
+<translation id="6058625436358447366">સમાપ્ત કરવા માટે, તમારા જૂના અને નવા પાસવર્ડ દાખલ કરો</translation>
+<translation id="6106186594183574873">સમાપ્ત કરવા માટે, તમારો જૂનો પાસવર્ડ દાખલ કરો</translation>
+<translation id="6146993107019042706">સમાપ્ત કરવા માટે, તમારો નવો પાસવર્ડ દાખલ કરો</translation>
 <translation id="7658239707568436148">રદ કરો</translation>
+<translation id="7690294790491645610">નવા પાસવર્ડની પુષ્ટિ કરો</translation>
+<translation id="808894953321890993">પાસવર્ડ બદલો</translation>
+<translation id="8747900814994928677">ફેરફાર કન્ફર્મ કરો</translation>
+<translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> માટે ટિકિટ રિફ્રેશ કરો</translation>
 <translation id="9111102763498581341">અનલોક કરો</translation>
 </translationbundle>

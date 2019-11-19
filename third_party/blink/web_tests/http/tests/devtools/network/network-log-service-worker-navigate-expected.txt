@@ -5,6 +5,6 @@ request.url(): http://127.0.0.1:8000/devtools/network/resources/service-worker-r
 frame
 
 request.url(): http://127.0.0.1:8000/devtools/network/resources/service-worker-repeat-fetch.html
-worker
+service-worker
 
 

@@ -28,15 +28,17 @@
 #import "ios/chrome/browser/ui/reading_list/reading_list_list_view_controller_delegate.h"
 #import "ios/chrome/browser/ui/reading_list/reading_list_mediator.h"
 #import "ios/chrome/browser/ui/reading_list/reading_list_table_view_controller.h"
+#import "ios/chrome/browser/ui/table_view/feature_flags.h"
 #import "ios/chrome/browser/ui/table_view/table_view_animator.h"
 #import "ios/chrome/browser/ui/table_view/table_view_navigation_controller.h"
 #import "ios/chrome/browser/ui/table_view/table_view_navigation_controller_constants.h"
 #import "ios/chrome/browser/ui/table_view/table_view_presentation_controller.h"
 #import "ios/chrome/browser/ui/util/pasteboard_util.h"
+#import "ios/chrome/browser/url_loading/url_loading_params.h"
 #import "ios/chrome/browser/url_loading/url_loading_service.h"
 #import "ios/chrome/browser/url_loading/url_loading_service_factory.h"
 #include "ios/chrome/grit/ios_strings.h"
-#include "ios/web/public/referrer.h"
+#include "ios/web/public/navigation/referrer.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "url/gurl.h"
@@ -129,8 +131,26 @@
   self.navigationController = [[TableViewNavigationController alloc]
       initWithTable:self.tableViewController];
   self.navigationController.toolbarHidden = NO;
-  self.navigationController.transitioningDelegate = self;
-  self.navigationController.modalPresentationStyle = UIModalPresentationCustom;
+
+  BOOL useCustomPresentation = YES;
+  if (IsCollectionsCardPresentationStyleEnabled()) {
+    if (@available(iOS 13, *)) {
+#if defined(__IPHONE_13_0) && (__IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_13_0)
+      [self.navigationController
+          setModalPresentationStyle:UIModalPresentationFormSheet];
+      self.navigationController.presentationController.delegate =
+          self.tableViewController;
+      useCustomPresentation = NO;
+#endif
+    }
+  }
+
+  if (useCustomPresentation) {
+    self.navigationController.transitioningDelegate = self;
+    self.navigationController.modalPresentationStyle =
+        UIModalPresentationCustom;
+  }
+
   [self.baseViewController presentViewController:self.navigationController
                                         animated:YES
                                       completion:nil];
@@ -364,25 +384,19 @@ animationControllerForDismissedController:(UIViewController*)dismissed {
   // Use a referrer with a specific URL to signal that this entry should not be
   // taken into account for the Most Visited tiles.
   if (newTab) {
-    web::Referrer referrer = web::Referrer(GURL(kReadingListReferrerURL),
-                                           web::ReferrerPolicyDefault);
-    OpenNewTabCommand* command =
-        [[OpenNewTabCommand alloc] initWithURL:loadURL
-                                    virtualURL:entryURL
-                                      referrer:referrer
-                                   inIncognito:incognito
-                                  inBackground:NO
-                                      appendTo:kLastTab];
+    UrlLoadParams params = UrlLoadParams::InNewTab(loadURL, entryURL);
+    params.in_incognito = incognito;
+    params.web_params.referrer = web::Referrer(GURL(kReadingListReferrerURL),
+                                               web::ReferrerPolicyDefault);
     UrlLoadingServiceFactory::GetForBrowserState(self.browserState)
-        ->OpenUrlInNewTab(command);
+        ->Load(params);
   } else {
-    web::NavigationManager::WebLoadParams params(loadURL);
-    params.transition_type = ui::PAGE_TRANSITION_AUTO_BOOKMARK;
-    params.referrer = web::Referrer(GURL(kReadingListReferrerURL),
-                                    web::ReferrerPolicyDefault);
-    ChromeLoadParams chromeParams(params);
+    UrlLoadParams params = UrlLoadParams::InCurrentTab(loadURL);
+    params.web_params.transition_type = ui::PAGE_TRANSITION_AUTO_BOOKMARK;
+    params.web_params.referrer = web::Referrer(GURL(kReadingListReferrerURL),
+                                               web::ReferrerPolicyDefault);
     UrlLoadingServiceFactory::GetForBrowserState(self.browserState)
-        ->LoadUrlInCurrentTab(chromeParams);
+        ->Load(params);
   }
 
   [self stop];

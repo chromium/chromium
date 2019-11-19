@@ -25,4 +25,13 @@ SelectedFileInfo& SelectedFileInfo::operator=(const SelectedFileInfo& other) =
 SelectedFileInfo& SelectedFileInfo::operator=(SelectedFileInfo&& other) =
     default;
 
+// Converts a list of FilePaths to a list of ui::SelectedFileInfo.
+std::vector<SelectedFileInfo> FilePathListToSelectedFileInfoList(
+    const std::vector<base::FilePath>& paths) {
+  std::vector<SelectedFileInfo> selected_files;
+  for (const auto& path : paths)
+    selected_files.push_back(SelectedFileInfo(path, path));
+  return selected_files;
+}
+
 }  // namespace ui

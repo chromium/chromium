@@ -5,11 +5,11 @@
 #ifndef HEADLESS_LIB_BROWSER_HEADLESS_WEB_CONTENTS_IMPL_H_
 #define HEADLESS_LIB_BROWSER_HEADLESS_WEB_CONTENTS_IMPL_H_
 
-#include <list>
 #include <memory>
+#include <set>
 #include <string>
-#include <unordered_map>
 
+#include "base/memory/scoped_refptr.h"
 #include "base/observer_list.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "content/public/browser/devtools_agent_host_observer.h"
@@ -19,7 +19,6 @@
 #include "headless/public/headless_devtools_target.h"
 #include "headless/public/headless_export.h"
 #include "headless/public/headless_web_contents.h"
-#include "ui/compositor/external_begin_frame_client.h"
 
 class SkBitmap;
 
@@ -42,8 +41,7 @@ class HEADLESS_EXPORT HeadlessWebContentsImpl
       public HeadlessDevToolsTarget,
       public content::DevToolsAgentHostObserver,
       public content::RenderProcessHostObserver,
-      public content::WebContentsObserver,
-      public ui::ExternalBeginFrameClient {
+      public content::WebContentsObserver {
  public:
   ~HeadlessWebContentsImpl() override;
 
@@ -90,10 +88,6 @@ class HEADLESS_EXPORT HeadlessWebContentsImpl
   void RenderFrameDeleted(content::RenderFrameHost* render_frame_host) override;
   void RenderViewReady() override;
 
-  // ui::ExternalBeginFrameClient implementation:
-  void OnDisplayDidFinishFrame(const viz::BeginFrameAck& ack) override;
-  void OnNeedsExternalBeginFrames(bool needs_begin_frames) override;
-
   content::WebContents* web_contents() const;
   bool OpenURL(const GURL& url);
 
@@ -125,39 +119,27 @@ class HEADLESS_EXPORT HeadlessWebContentsImpl
     return begin_frame_control_enabled_;
   }
 
-  bool needs_external_begin_frames() const {
-    return needs_external_begin_frames_;
-  }
-
   using FrameFinishedCallback =
       base::OnceCallback<void(bool /* has_damage */,
-                              std::unique_ptr<SkBitmap>)>;
+                              std::unique_ptr<SkBitmap>,
+                              std::string /* error_message*/)>;
   void BeginFrame(const base::TimeTicks& frame_timeticks,
                   const base::TimeTicks& deadline,
                   const base::TimeDelta& interval,
                   bool animate_only,
                   bool capture_screenshot,
                   FrameFinishedCallback frame_finished_callback);
-  bool HasPendingFrame() const { return !pending_frames_.empty(); }
 
  private:
-  struct PendingFrame;
-
   // Takes ownership of |web_contents|.
   HeadlessWebContentsImpl(std::unique_ptr<content::WebContents> web_contents,
                           HeadlessBrowserContextImpl* browser_context);
 
   void InitializeWindow(const gfx::Rect& initial_bounds);
 
-  void PendingFrameReadbackComplete(PendingFrame* pending_frame,
-                                    const SkBitmap& bitmap);
-
-  uint64_t begin_frame_source_id_ = viz::BeginFrameArgs::kManualSourceId;
   uint64_t begin_frame_sequence_number_ =
       viz::BeginFrameArgs::kStartingFrameNumber;
   bool begin_frame_control_enabled_ = false;
-  bool needs_external_begin_frames_ = false;
-  std::list<std::unique_ptr<PendingFrame>> pending_frames_;
 
   class Delegate;
   std::unique_ptr<Delegate> web_contents_delegate_;
@@ -176,7 +158,8 @@ class HEADLESS_EXPORT HeadlessWebContentsImpl
 
   base::ObserverList<HeadlessWebContents::Observer>::Unchecked observers_;
 
-  base::WeakPtrFactory<HeadlessWebContentsImpl> weak_ptr_factory_;
+  class PendingFrame;
+  base::WeakPtr<PendingFrame> pending_frame_;
 
   DISALLOW_COPY_AND_ASSIGN(HeadlessWebContentsImpl);
 };

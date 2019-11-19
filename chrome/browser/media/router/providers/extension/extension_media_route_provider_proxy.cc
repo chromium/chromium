@@ -17,19 +17,17 @@ namespace media_router {
 
 ExtensionMediaRouteProviderProxy::ExtensionMediaRouteProviderProxy(
     content::BrowserContext* context)
-    : binding_(this),
-      request_manager_(
-          EventPageRequestManagerFactory::GetApiForBrowserContext(context)),
-      weak_factory_(this) {}
+    : request_manager_(
+          EventPageRequestManagerFactory::GetApiForBrowserContext(context)) {}
 
 ExtensionMediaRouteProviderProxy::~ExtensionMediaRouteProviderProxy() = default;
 
 void ExtensionMediaRouteProviderProxy::Bind(
-    mojom::MediaRouteProviderRequest request) {
-  // This method is called when the previous Binding became invalid. We close it
-  // first to make sure it is in a clean state.
-  binding_.Close();
-  binding_.Bind(std::move(request));
+    mojo::PendingReceiver<mojom::MediaRouteProvider> receiver) {
+  // This method is called when the previous receiver became invalid. We close
+  // it first to make sure it is in a clean state.
+  receiver_.reset();
+  receiver_.Bind(std::move(receiver));
 }
 
 void ExtensionMediaRouteProviderProxy::CreateRoute(
@@ -212,8 +210,8 @@ void ExtensionMediaRouteProviderProxy::ProvideSinks(
 
 void ExtensionMediaRouteProviderProxy::CreateMediaRouteController(
     const std::string& route_id,
-    mojom::MediaControllerRequest media_controller,
-    mojom::MediaStatusObserverPtr observer,
+    mojo::PendingReceiver<mojom::MediaController> media_controller,
+    mojo::PendingRemote<mojom::MediaStatusObserver> observer,
     CreateMediaRouteControllerCallback callback) {
   request_manager_->RunOrDefer(
       base::BindOnce(
@@ -224,9 +222,10 @@ void ExtensionMediaRouteProviderProxy::CreateMediaRouteController(
 }
 
 void ExtensionMediaRouteProviderProxy::RegisterMediaRouteProvider(
-    mojom::MediaRouteProviderPtr media_route_provider) {
-  media_route_provider_ = std::move(media_route_provider);
-  media_route_provider_.set_connection_error_handler(
+    mojo::PendingRemote<mojom::MediaRouteProvider> media_route_provider) {
+  media_route_provider_.reset();
+  media_route_provider_.Bind(std::move(media_route_provider));
+  media_route_provider_.set_disconnect_handler(
       base::BindOnce(&ExtensionMediaRouteProviderProxy::OnMojoConnectionError,
                      base::Unretained(this)));
   request_manager_->OnMojoConnectionsReady();
@@ -383,11 +382,11 @@ void ExtensionMediaRouteProviderProxy::DoProvideSinks(
 
 void ExtensionMediaRouteProviderProxy::DoCreateMediaRouteController(
     const std::string& route_id,
-    mojom::MediaControllerRequest media_controller,
-    mojom::MediaStatusObserverPtr observer,
+    mojo::PendingReceiver<mojom::MediaController> media_controller,
+    mojo::PendingRemote<mojom::MediaStatusObserver> observer,
     CreateMediaRouteControllerCallback callback) {
   DVLOG(1) << "DoCreateMediaRouteController";
-  if (!media_controller.is_pending() || !observer.is_bound())
+  if (!media_controller.is_valid() || !observer.is_valid())
     return;
 
   media_route_provider_->CreateMediaRouteController(

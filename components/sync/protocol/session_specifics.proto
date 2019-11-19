@@ -9,6 +9,9 @@
 
 syntax = "proto2";
 
+option java_multiple_files = true;
+option java_package = "org.chromium.components.sync.protocol";
+
 option optimize_for = LITE_RUNTIME;
 
 package sync_pb;
@@ -173,6 +176,10 @@ message TabNavigation {
   // an entry is replaced multiple times, it represents data prior to the
   // *first* replace.
   optional ReplacedNavigation replaced_navigation = 29;
+
+  // The page language as determined by its textual content. An ISO 639 language
+  // code (two letters, except for Chinese where a localization is necessary).
+  optional string page_language = 30;
 }
 
 // Navigation information for a single redirection within a single navigation.

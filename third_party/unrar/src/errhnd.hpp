@@ -1,8 +1,6 @@
 #ifndef _RAR_ERRHANDLER_
 #define _RAR_ERRHANDLER_
 
-namespace third_party_unrar {
-
 enum RAR_EXIT // RAR exit code.
 { 
   RARX_SUCCESS   =   0,
@@ -69,6 +67,5 @@ class ErrorHandler
     bool MainExit = false; // main() is completed.
 };
 
-}  // namespace third_party_unrar
 
 #endif

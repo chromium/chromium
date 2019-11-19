@@ -4,11 +4,12 @@
 
 #include "components/offline_pages/core/prefetch/store/prefetch_downloader_quota.h"
 
+#include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/offline_pages/core/offline_page_feature.h"
 #include "components/offline_pages/core/prefetch/store/prefetch_store_test_util.h"
-#include "components/variations/variations_params_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace offline_pages {
@@ -23,12 +24,8 @@ const char kInvalidText[] = "tacos";
 
 class PrefetchDownloaderQuotaTest : public testing::Test {
  public:
-  PrefetchDownloaderQuotaTest();
-  ~PrefetchDownloaderQuotaTest() override = default;
-
-  void SetUp() override { store_test_util_.BuildStoreInMemory(); }
-
-  void TearDown() override { store_test_util_.DeleteStore(); }
+  PrefetchDownloaderQuotaTest() { store_test_util_.BuildStoreInMemory(); }
+  ~PrefetchDownloaderQuotaTest() override { store_test_util_.DeleteStore(); }
 
   PrefetchStore* store() { return store_test_util_.store(); }
 
@@ -37,24 +34,17 @@ class PrefetchDownloaderQuotaTest : public testing::Test {
   void SetTestingMaxDailyQuotaBytes(const std::string& max_config);
 
  private:
-  scoped_refptr<base::TestMockTimeTaskRunner> task_runner_;
-  base::ThreadTaskRunnerHandle task_runner_handle_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
   PrefetchStoreTestUtil store_test_util_;
-  variations::testing::VariationParamsManager params_manager_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
-
-PrefetchDownloaderQuotaTest::PrefetchDownloaderQuotaTest()
-    : task_runner_(new base::TestMockTimeTaskRunner),
-      task_runner_handle_(task_runner_),
-      store_test_util_(task_runner_) {}
 
 void PrefetchDownloaderQuotaTest::SetTestingMaxDailyQuotaBytes(
     const std::string& max_config) {
-  params_manager_.ClearAllVariationParams();
-  params_manager_.SetVariationParamsWithFeatureAssociations(
-      kPrefetchingOfflinePagesFeature.name,
-      {{"offline_pages_max_daily_quota_bytes", max_config}},
-      {kPrefetchingOfflinePagesFeature.name});
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitAndEnableFeatureWithParameters(
+      kPrefetchingOfflinePagesFeature,
+      {{"offline_pages_max_daily_quota_bytes", max_config}});
 }
 
 TEST_F(PrefetchDownloaderQuotaTest, GetMaxDailyQuotaBytes) {

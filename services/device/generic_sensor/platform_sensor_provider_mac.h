@@ -14,8 +14,6 @@ class PlatformSensorProviderMac : public PlatformSensorProvider {
   PlatformSensorProviderMac();
   ~PlatformSensorProviderMac() override;
 
-  static PlatformSensorProviderMac* GetInstance();
-
  protected:
   void CreateSensorInternal(mojom::SensorType type,
                             SensorReadingSharedBuffer* reading_buffer,

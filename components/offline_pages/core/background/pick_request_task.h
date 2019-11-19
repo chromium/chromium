@@ -18,7 +18,6 @@
 
 namespace offline_pages {
 
-class ClientPolicyController;
 class OfflinerPolicy;
 class PickRequestTask;
 class RequestQueueStore;
@@ -49,7 +48,6 @@ class PickRequestTask : public Task {
 
   PickRequestTask(RequestQueueStore* store,
                   OfflinerPolicy* policy,
-                  ClientPolicyController* policy_controller,
                   RequestPickedCallback picked_callback,
                   RequestNotPickedCallback not_picked_callback,
                   RequestCountCallback request_count_callback,
@@ -101,7 +99,6 @@ class PickRequestTask : public Task {
   // Member variables, all pointers are not owned here.
   RequestQueueStore* store_;
   OfflinerPolicy* policy_;
-  ClientPolicyController* policy_controller_;
   RequestPickedCallback picked_callback_;
   RequestNotPickedCallback not_picked_callback_;
   RequestCountCallback request_count_callback_;
@@ -111,7 +108,7 @@ class PickRequestTask : public Task {
   // directly here seems dangerous.
   base::circular_deque<int64_t>* prioritized_requests_;
   // Allows us to pass a weak pointer to callbacks.
-  base::WeakPtrFactory<PickRequestTask> weak_ptr_factory_;
+  base::WeakPtrFactory<PickRequestTask> weak_ptr_factory_{this};
 };
 
 }  // namespace offline_pages

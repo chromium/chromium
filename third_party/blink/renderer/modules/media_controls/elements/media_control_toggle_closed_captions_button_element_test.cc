@@ -5,9 +5,11 @@
 #include "third_party/blink/renderer/modules/media_controls/elements/media_control_toggle_closed_captions_button_element.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/strings/grit/blink_strings.h"
 #include "third_party/blink/renderer/core/html/media/html_media_element.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/modules/media_controls/media_controls_impl.h"
+#include "third_party/blink/renderer/modules/media_controls/media_controls_text_track_manager.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 
 namespace blink {
@@ -19,10 +21,10 @@ const char kEnglishLabel[] = "English";
 
 class LocalePlatformSupport : public TestingPlatformSupport {
  public:
-  WebString QueryLocalizedString(WebLocalizedString::Name name) override {
-    if (name == WebLocalizedString::kTextTracksOff)
+  WebString QueryLocalizedString(int resource_id) override {
+    if (resource_id == IDS_MEDIA_TRACKS_OFF)
       return kTextTracksOffString;
-    return TestingPlatformSupport::QueryLocalizedString(name);
+    return TestingPlatformSupport::QueryLocalizedString(resource_id);
   }
 };
 
@@ -31,7 +33,6 @@ class LocalePlatformSupport : public TestingPlatformSupport {
 class MediaControlToggleClosedCaptionsButtonElementTest : public PageTestBase {
  public:
   void SetUp() final {
-    RuntimeEnabledFeatures::SetModernMediaControlsEnabled(true);
     PageTestBase::SetUp();
     SetBodyInnerHTML("<video controls></video>");
     media_element_ =
@@ -46,9 +47,11 @@ class MediaControlToggleClosedCaptionsButtonElementTest : public PageTestBase {
  protected:
   HTMLMediaElement* MediaElement() { return media_element_; }
   void SelectTextTrack(unsigned index) {
-    media_controls_->ShowTextTrackAtIndex(index);
+    media_controls_->GetTextTrackManager().ShowTextTrackAtIndex(index);
   }
-  void SelectOff() { media_controls_->DisableShowingTextTracks(); }
+  void SelectOff() {
+    media_controls_->GetTextTrackManager().DisableShowingTextTracks();
+  }
   String GetOverflowMenuSubtitleString() {
     return captions_overflow_button_->GetOverflowMenuSubtitleString();
   }

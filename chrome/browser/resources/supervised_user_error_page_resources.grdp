@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<grit-part>
+  <include name="IDR_SUPERVISED_USER_BLOCK_INTERSTITIAL_HTML" file="supervised_user/supervised_user_error_page/resources/supervised_user_block_interstitial.html" flattenhtml="true" type="BINDATA" compress="brotli" />
+</grit-part>

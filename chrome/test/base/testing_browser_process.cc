@@ -35,10 +35,9 @@
 #include "content/public/browser/notification_service.h"
 #include "extensions/buildflags/buildflags.h"
 #include "media/media_buildflags.h"
-#include "net/url_request/url_request_context_getter.h"
 #include "printing/buildflags/buildflags.h"
-#include "services/network/public/cpp/network_quality_tracker.h"
 #include "services/network/test/test_network_connection_tracker.h"
+#include "services/network/test/test_network_quality_tracker.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(ENABLE_BACKGROUND_MODE)
@@ -71,7 +70,12 @@ TestingBrowserProcess* TestingBrowserProcess::GetGlobal() {
 // static
 void TestingBrowserProcess::CreateInstance() {
   DCHECK(!g_browser_process);
-  g_browser_process = new TestingBrowserProcess;
+  TestingBrowserProcess* process = new TestingBrowserProcess;
+  // Set |g_browser_process| before initializing the TestingBrowserProcess
+  // because some members may depend on |g_browser_process| (in particular,
+  // ChromeExtensionsBrowserClient).
+  g_browser_process = process;
+  process->Init();
 }
 
 // static
@@ -85,30 +89,7 @@ void TestingBrowserProcess::DeleteInstance() {
 TestingBrowserProcess::TestingBrowserProcess()
     : notification_service_(content::NotificationService::Create()),
       app_locale_("en"),
-      is_shutting_down_(false),
-      local_state_(nullptr),
-      io_thread_(nullptr),
-      system_request_context_(nullptr),
-      rappor_service_(nullptr),
-      platform_part_(new TestingBrowserProcessPlatformPart()),
-      test_network_connection_tracker_(
-          network::TestNetworkConnectionTracker::CreateInstance()) {
-  content::SetNetworkConnectionTrackerForTesting(
-      test_network_connection_tracker_.get());
-
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-  extensions_browser_client_.reset(
-      new extensions::ChromeExtensionsBrowserClient);
-  extensions_browser_client_->AddAPIProvider(
-      std::make_unique<chrome_apps::ChromeAppsBrowserAPIProvider>());
-  extensions::AppWindowClient::Set(ChromeAppWindowClient::GetInstance());
-  extensions::ExtensionsBrowserClient::Set(extensions_browser_client_.get());
-#endif
-
-#if !defined(OS_ANDROID)
-  KeepAliveRegistry::GetInstance()->SetIsShuttingDown(false);
-#endif
-}
+      platform_part_(new TestingBrowserProcessPlatformPart()) {}
 
 TestingBrowserProcess::~TestingBrowserProcess() {
   EXPECT_FALSE(local_state_);
@@ -125,7 +106,24 @@ TestingBrowserProcess::~TestingBrowserProcess() {
   DCHECK_EQ(static_cast<BrowserProcess*>(nullptr), g_browser_process);
 }
 
-void TestingBrowserProcess::ResourceDispatcherHostCreated() {
+void TestingBrowserProcess::Init() {
+  test_network_connection_tracker_ =
+      network::TestNetworkConnectionTracker::CreateInstance();
+  content::SetNetworkConnectionTrackerForTesting(
+      test_network_connection_tracker_.get());
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  extensions_browser_client_ =
+      std::make_unique<extensions::ChromeExtensionsBrowserClient>();
+  extensions_browser_client_->AddAPIProvider(
+      std::make_unique<chrome_apps::ChromeAppsBrowserAPIProvider>());
+  extensions::AppWindowClient::Set(ChromeAppWindowClient::GetInstance());
+  extensions::ExtensionsBrowserClient::Set(extensions_browser_client_.get());
+#endif
+
+#if !defined(OS_ANDROID)
+  KeepAliveRegistry::GetInstance()->SetIsShuttingDown(false);
+#endif
 }
 
 void TestingBrowserProcess::FlushLocalStateAndReply(base::OnceClosure reply) {
@@ -151,10 +149,6 @@ rappor::RapporServiceImpl* TestingBrowserProcess::rappor_service() {
   return rappor_service_;
 }
 
-IOThread* TestingBrowserProcess::io_thread() {
-  return io_thread_;
-}
-
 SystemNetworkContextManager*
 TestingBrowserProcess::system_network_context_manager() {
   return nullptr;
@@ -167,11 +161,11 @@ TestingBrowserProcess::shared_url_loader_factory() {
 
 network::NetworkQualityTracker*
 TestingBrowserProcess::network_quality_tracker() {
-  if (!network_quality_tracker_) {
-    network_quality_tracker_ = std::make_unique<network::NetworkQualityTracker>(
-        base::BindRepeating(&content::GetNetworkService));
+  if (!test_network_quality_tracker_) {
+    test_network_quality_tracker_ =
+        std::make_unique<network::TestNetworkQualityTracker>();
   }
-  return network_quality_tracker_.get();
+  return test_network_quality_tracker_.get();
 }
 
 WatchDogThread* TestingBrowserProcess::watchdog_thread() {
@@ -198,6 +192,10 @@ PrefService* TestingBrowserProcess::local_state() {
 }
 
 variations::VariationsService* TestingBrowserProcess::variations_service() {
+  return nullptr;
+}
+
+StartupData* TestingBrowserProcess::startup_data() {
   return nullptr;
 }
 
@@ -276,10 +274,6 @@ TestingBrowserProcess::optimization_guide_service() {
   return optimization_guide_service_.get();
 }
 
-net::URLRequestContextGetter* TestingBrowserProcess::system_request_context() {
-  return system_request_context_;
-}
-
 BrowserProcessPlatformPart* TestingBrowserProcess::platform_part() {
   return platform_part_.get();
 }
@@ -295,7 +289,6 @@ NotificationUIManager* TestingBrowserProcess::notification_ui_manager() {
     notification_ui_manager_ = NotificationUIManager::Create();
   return notification_ui_manager_.get();
 #else
-  NOTIMPLEMENTED();
   return nullptr;
 #endif
 }
@@ -375,19 +368,17 @@ DownloadRequestLimiter* TestingBrowserProcess::download_request_limiter() {
   return download_request_limiter_.get();
 }
 
-net_log::ChromeNetLog* TestingBrowserProcess::net_log() {
-  return nullptr;
-}
-
 component_updater::ComponentUpdateService*
 TestingBrowserProcess::component_updater() {
   return nullptr;
 }
 
+#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
 component_updater::SupervisedUserWhitelistInstaller*
 TestingBrowserProcess::supervised_user_whitelist_installer() {
   return nullptr;
 }
+#endif
 
 MediaFileSystemRegistry* TestingBrowserProcess::media_file_system_registry() {
 #if defined(OS_ANDROID)
@@ -433,21 +424,6 @@ resource_coordinator::TabManager* TestingBrowserProcess::GetTabManager() {
   return resource_coordinator_parts()->tab_manager();
 }
 
-shell_integration::DefaultWebClientState
-TestingBrowserProcess::CachedDefaultWebClientState() {
-  return shell_integration::UNKNOWN_DEFAULT;
-}
-
-prefs::InProcessPrefServiceFactory*
-TestingBrowserProcess::pref_service_factory() const {
-  return nullptr;
-}
-
-void TestingBrowserProcess::SetSystemRequestContext(
-    net::URLRequestContextGetter* context_getter) {
-  system_request_context_ = context_getter;
-}
-
 void TestingBrowserProcess::SetSharedURLLoaderFactory(
     scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory) {
   shared_url_loader_factory_ = shared_url_loader_factory;
@@ -485,10 +461,6 @@ void TestingBrowserProcess::SetLocalState(PrefService* local_state) {
     created_browser_policy_connector_ = false;
   }
   local_state_ = local_state;
-}
-
-void TestingBrowserProcess::SetIOThread(IOThread* io_thread) {
-  io_thread_ = io_thread;
 }
 
 void TestingBrowserProcess::ShutdownBrowserPolicyConnector() {

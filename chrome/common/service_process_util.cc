@@ -12,10 +12,11 @@
 
 #include "base/base_switches.h"
 #include "base/command_line.h"
+#include "base/hash/sha1.h"
 #include "base/logging.h"
+#include "base/memory/shared_memory_mapping.h"
 #include "base/memory/singleton.h"
 #include "base/path_service.h"
-#include "base/sha1.h"
 #include "base/stl_util.h"
 #include "base/strings/string16.h"
 #include "base/strings/string_number_conversions.h"
@@ -49,61 +50,7 @@ struct ServiceProcessSharedData {
   base::ProcessId service_process_pid;
 };
 
-// Gets the name of the shared memory used by the service process to write its
-// version. The name is not versioned.
-std::string GetServiceProcessSharedMemName() {
-  return GetServiceProcessScopedName("_service_shmem");
-}
-
-enum ServiceProcessRunningState {
-  SERVICE_NOT_RUNNING,
-  SERVICE_OLDER_VERSION_RUNNING,
-  SERVICE_SAME_VERSION_RUNNING,
-  SERVICE_NEWER_VERSION_RUNNING,
-};
-
-ServiceProcessRunningState GetServiceProcessRunningState(
-    std::string* service_version_out, base::ProcessId* pid_out) {
-  std::string version;
-  if (!GetServiceProcessData(&version, pid_out))
-    return SERVICE_NOT_RUNNING;
-
-#if defined(OS_POSIX)
-  // We only need to check for service running on POSIX because Windows cleans
-  // up shared memory files when an app crashes, so there isn't a chance of
-  // us reading bogus data from shared memory for an app that has died.
-  if (!CheckServiceProcessReady()) {
-    return SERVICE_NOT_RUNNING;
-  }
-#endif  // defined(OS_POSIX)
-
-  // At this time we have a version string. Set the out param if it exists.
-  if (service_version_out)
-    *service_version_out = version;
-
-  base::Version service_version(version);
-  // If the version string is invalid, treat it like an older version.
-  if (!service_version.IsValid())
-    return SERVICE_OLDER_VERSION_RUNNING;
-
-  // Get the version of the currently *running* instance of Chrome.
-  const base::Version& running_version = version_info::GetVersion();
-  if (!running_version.IsValid()) {
-    NOTREACHED() << "Failed to parse version info";
-    // Our own version is invalid. This is an error case. Pretend that we
-    // are out of date.
-    return SERVICE_NEWER_VERSION_RUNNING;
-  }
-
-  int comp = running_version.CompareTo(service_version);
-  if (comp == 0)
-    return SERVICE_SAME_VERSION_RUNNING;
-  return comp > 0 ? SERVICE_OLDER_VERSION_RUNNING
-                  : SERVICE_NEWER_VERSION_RUNNING;
-}
-
 }  // namespace
-
 
 // Return a name that is scoped to this instance of the service process. We
 // use the user-data-dir and the version as a scoping prefix.
@@ -116,27 +63,25 @@ std::string GetServiceProcessScopedVersionedName(
 
 // Reads the named shared memory to get the shared data. Returns false if no
 // matching shared memory was found.
-bool GetServiceProcessData(std::string* version, base::ProcessId* pid) {
-  std::unique_ptr<base::SharedMemory> shared_mem_service_data;
-  shared_mem_service_data.reset(new base::SharedMemory());
-  ServiceProcessSharedData* service_data = NULL;
-  if (shared_mem_service_data.get() &&
-      shared_mem_service_data->Open(GetServiceProcessSharedMemName(), true) &&
-      shared_mem_service_data->Map(sizeof(ServiceProcessSharedData))) {
-    service_data = reinterpret_cast<ServiceProcessSharedData*>(
-        shared_mem_service_data->memory());
-    // Make sure the version in shared memory is null-terminated. If it is not,
-    // treat it as invalid.
-    if (version && memchr(service_data->service_process_version, '\0',
-                          sizeof(service_data->service_process_version)))
-      *version = service_data->service_process_version;
-    if (pid)
-      *pid = service_data->service_process_pid;
-    return true;
-  }
-  return false;
-}
+// static
+bool ServiceProcessState::GetServiceProcessData(std::string* version,
+                                                base::ProcessId* pid) {
+  base::ReadOnlySharedMemoryMapping service_process_data_mapping =
+      OpenServiceProcessDataMapping(sizeof(ServiceProcessSharedData));
+  if (!service_process_data_mapping.IsValid())
+    return false;
 
+  const ServiceProcessSharedData* service_data =
+      service_process_data_mapping.GetMemoryAs<ServiceProcessSharedData>();
+  // Make sure the version in shared memory is null-terminated. If it is not,
+  // treat it as invalid.
+  if (version && memchr(service_data->service_process_version, '\0',
+                        sizeof(service_data->service_process_version)))
+    *version = service_data->service_process_version;
+  if (pid)
+    *pid = service_data->service_process_pid;
+  return true;
+}
 #endif  // !OS_MACOSX
 
 // Return a name that is scoped to this instance of the service process. We
@@ -199,8 +144,9 @@ ServiceProcessState::ServiceProcessState() : state_(NULL) {
 
 ServiceProcessState::~ServiceProcessState() {
 #if !defined(OS_MACOSX)
-  if (shared_mem_service_data_.get()) {
-    shared_mem_service_data_->Delete(GetServiceProcessSharedMemName());
+  if (service_process_data_region_.IsValid()) {
+    service_process_data_region_ = {};
+    DeleteServiceProcessDataRegion();
   }
 #endif  // !OS_MACOSX
   TearDownState();
@@ -208,7 +154,9 @@ ServiceProcessState::~ServiceProcessState() {
 
 void ServiceProcessState::SignalStopped() {
   TearDownState();
-  shared_mem_service_data_.reset();
+#if !defined(OS_MACOSX)
+  service_process_data_region_ = {};
+#endif  // !OS_MACOSX
 }
 
 #if !defined(OS_MACOSX)
@@ -224,6 +172,11 @@ bool ServiceProcessState::Initialize() {
   // Write the version we are using to shared memory. This can be used by a
   // newer service to signal us to exit.
   return CreateSharedData();
+}
+
+// static
+std::string ServiceProcessState::GetServiceProcessSharedMemName() {
+  return GetServiceProcessScopedName("_service_shmem");
 }
 
 bool ServiceProcessState::HandleOtherVersion() {
@@ -253,30 +206,66 @@ bool ServiceProcessState::CreateSharedData() {
     return false;
   }
 
-  std::unique_ptr<base::SharedMemory> shared_mem_service_data(
-      new base::SharedMemory());
-  if (!shared_mem_service_data.get())
-    return false;
-
   uint32_t alloc_size = sizeof(ServiceProcessSharedData);
-  // TODO(viettrungluu): Named shared memory is deprecated (crbug.com/345734).
-  if (!shared_mem_service_data->CreateNamedDeprecated
-          (GetServiceProcessSharedMemName(), true, alloc_size))
+  service_process_data_region_ = CreateServiceProcessDataRegion(alloc_size);
+  if (!service_process_data_region_.IsValid())
     return false;
-
-  if (!shared_mem_service_data->Map(alloc_size))
+  base::WritableSharedMemoryMapping mapping =
+      service_process_data_region_.Map();
+  if (!mapping.IsValid())
     return false;
-
-  memset(shared_mem_service_data->memory(), 0, alloc_size);
+  memset(mapping.memory(), 0, alloc_size);
   ServiceProcessSharedData* shared_data =
-      reinterpret_cast<ServiceProcessSharedData*>(
-          shared_mem_service_data->memory());
+      mapping.GetMemoryAs<ServiceProcessSharedData>();
+  DCHECK(shared_data);
   memcpy(shared_data->service_process_version,
          version_info::GetVersionNumber().c_str(),
          version_info::GetVersionNumber().length());
   shared_data->service_process_pid = base::GetCurrentProcId();
-  shared_mem_service_data_ = std::move(shared_mem_service_data);
   return true;
+}
+
+// static
+ServiceProcessState::ServiceProcessRunningState
+ServiceProcessState::GetServiceProcessRunningState(
+    std::string* service_version_out,
+    base::ProcessId* pid_out) {
+  std::string version;
+  if (!ServiceProcessState::GetServiceProcessData(&version, pid_out))
+    return SERVICE_NOT_RUNNING;
+
+#if defined(OS_POSIX)
+  // We only need to check for service running on POSIX because Windows cleans
+  // up shared memory files when an app crashes, so there isn't a chance of
+  // us reading bogus data from shared memory for an app that has died.
+  if (!CheckServiceProcessReady()) {
+    return SERVICE_NOT_RUNNING;
+  }
+#endif  // defined(OS_POSIX)
+
+  // At this time we have a version string. Set the out param if it exists.
+  if (service_version_out)
+    *service_version_out = version;
+
+  base::Version service_version(version);
+  // If the version string is invalid, treat it like an older version.
+  if (!service_version.IsValid())
+    return SERVICE_OLDER_VERSION_RUNNING;
+
+  // Get the version of the currently *running* instance of Chrome.
+  const base::Version& running_version = version_info::GetVersion();
+  if (!running_version.IsValid()) {
+    NOTREACHED() << "Failed to parse version info";
+    // Our own version is invalid. This is an error case. Pretend that we
+    // are out of date.
+    return SERVICE_NEWER_VERSION_RUNNING;
+  }
+
+  int comp = running_version.CompareTo(service_version);
+  if (comp == 0)
+    return SERVICE_SAME_VERSION_RUNNING;
+  return comp > 0 ? SERVICE_OLDER_VERSION_RUNNING
+                  : SERVICE_NEWER_VERSION_RUNNING;
 }
 
 mojo::NamedPlatformChannel::ServerName

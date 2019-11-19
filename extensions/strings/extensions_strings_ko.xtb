@@ -12,7 +12,6 @@
 <translation id="2159915644201199628">'<ph name="IMAGE_NAME" />' 이미지를 디코딩하지 못했습니다.</translation>
 <translation id="2350172092385603347">번역한 언어를 이용하였지만 매니페스트에 기본 언어(default_locale)를 지정하지 않았습니다.</translation>
 <translation id="2576842806987913196">동일한 이름의 CRX 파일이 이미 있습니다.</translation>
-<translation id="2753617847762399167">불법 경로(절대 또는 상대): '<ph name="IMAGE_PATH" />'</translation>
 <translation id="2785530881066938471">콘텐츠 스크립트에 파일('<ph name="RELATIVE_PATH" />')을 로드할 수 없습니다. UTF-8로 인코딩되지 않았습니다.</translation>
 <translation id="2903070246402204397"><ph name="EXTENSION_NAME" />(확장 프로그램 ID '<ph name="EXTENSION_ID" />')은(는) 관리자에 의해 차단되었습니다. <ph name="ADMIN_INFO" /></translation>
 <translation id="2988488679308982380">패키지를 설치할 수 없습니다. '<ph name="ERROR_CODE" />'</translation>
@@ -20,7 +19,7 @@
 <translation id="3144135466825225871">crx 파일을 대체하지 못했습니다. 파일을 사용 중인지 확인하세요.</translation>
 <translation id="3163201441334626963">공급업체 <ph name="VENDOR_ID" />의 알 수 없는 제품 <ph name="PRODUCT_ID" /></translation>
 <translation id="3302709122321372472">콘텐츠 스크립트의 css('<ph name="RELATIVE_PATH" />')를 로드하지 못했습니다.</translation>
-<translation id="3369521687965833290">확장 프로그램을 압축해제할 수 없습니다. 확장 프로그램을 안전하게 압축해제하려면 드라이브 문자로 시작되고 정션(junction), 마운트 포인트(mount point) 또는 심볼릭 링크가 포함되지 않은 프로필 디렉토리 경로가 있어야 합니다. 프로필에 해당 경로가 없습니다.</translation>
+<translation id="3369521687965833290">확장 프로그램을 압축해제할 수 없습니다. 확장 프로그램을 안전하게 압축해제하려면 드라이브 문자로 시작되고 정션(junction), 마운트 포인트(mount point) 또는 심볼릭 링크가 포함되지 않은 프로필 디렉터리 경로가 있어야 합니다. 프로필에 해당 경로가 없습니다.</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" />(일련번호 <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397">공급업체 <ph name="VENDOR_ID" />의 <ph name="PRODUCT_NAME" />(일련번호 <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">비공개 키 입력 값은 유효한 경로여야 합니다.</translation>
@@ -33,25 +32,22 @@
 <translation id="4811956658694082538">유틸리티 프로세스가 충돌하여 패키지를 설정하지 못했습니다. Chrome을 다시 시작하고 다시 설치해 보세요.</translation>
 <translation id="4988792151665380515">공개 키를 내보내지 못했습니다.</translation>
 <translation id="5026754133087629784">Webview: <ph name="WEBVIEW_TAG_NAME" /></translation>
-<translation id="5098647635849512368">패키지할 디렉토리에 대한 절대 경로를 찾을 수 없습니다.</translation>
+<translation id="5098647635849512368">패키지할 디렉터리에 대한 절대 경로를 찾을 수 없습니다.</translation>
 <translation id="5356315618422219272">Appview: <ph name="APPVIEW_TAG_NAME" /></translation>
 <translation id="5436430103864390185">창 모양은 지원되지 않습니다.</translation>
 <translation id="5456409301717116725">이 확장 프로그램은 키 파일 '<ph name="KEY_PATH" />'을(를) 포함합니다. 사용하지 않는 것이 좋습니다.</translation>
 <translation id="5486326529110362464">비공개 키 입력 값이 있어야 합니다.</translation>
-<translation id="5627523580512561598">확장 프로그램 <ph name="EXTENSION_NAME" /></translation>
-<translation id="5960890139610307736">확장보기: <ph name="EXTENSIONVIEW_TAG_NAME" /></translation>
 <translation id="5972529113578162692">이 시스템의 관리자가 <ph name="EXTENSION_NAME" />의 설치를 요구합니다. 이 확장 프로그램은 제거할 수 없습니다.</translation>
 <translation id="6027032947578871493"><ph name="VENDOR_NAME" />의 알 수 없는 제품 <ph name="PRODUCT_ID" />(일련번호 <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="6068932090455285721">공급업체 <ph name="VENDOR_ID" />의 <ph name="PRODUCT_NAME" /></translation>
-<translation id="6143635259298204954">확장 프로그램을 압축해제할 수 없습니다. 확장 프로그램을 안전하게 압축해제하려면 심볼릭 링크가 포함되지 않은 프로필 디렉토리 경로가 있어야 합니다. 프로필에 해당 경로가 없습니다.</translation>
+<translation id="6143635259298204954">확장 프로그램을 압축해제할 수 없습니다. 확장 프로그램을 안전하게 압축해제하려면 심볼릭 링크가 포함되지 않은 프로필 디렉터리 경로가 있어야 합니다. 프로필에 해당 경로가 없습니다.</translation>
 <translation id="6322279351188361895">비공개 키를 읽지 못했습니다.</translation>
-<translation id="6391538222494443604">입력 디렉토리가 있어야 합니다.</translation>
+<translation id="6391538222494443604">입력 디렉터리가 있어야 합니다.</translation>
 <translation id="641087317769093025">확장 프로그램의 압축을 해제하지 못했습니다.</translation>
 <translation id="6413453408918378296">'<ph name="ICON" />' 아이콘이 충분히 표시되지 않습니다.</translation>
 <translation id="6542618148162044354">'<ph name="APP_NAME" />'이(가) 사용자의 기기 하나 이상에 액세스 권한을 요청하고 있습니다.</translation>
 <translation id="657064425229075395">백그라운드 스크립트('<ph name="BACKGROUND_SCRIPT" />')를 로드하지 못했습니다.</translation>
 <translation id="6580950983454333167"><ph name="VENDOR_NAME" />의 제품 <ph name="PRODUCT_NAME" />(일련 번호 <ph name="SERIAL_NUMBER" />)</translation>
-<translation id="6731255991101203740">'<ph name="DIRECTORY_PATH" />'의 압축을 해제하기 위한 디렉토리를 만들지 못했습니다.</translation>
 <translation id="677806580227005219">Mimehandler: <ph name="MIMEHANDLERVIEW_TAG_NAME" /></translation>
 <translation id="6840444547062817500">확장 프로그램이 너무 자주 새로고침됩니다.</translation>
 <translation id="7003844668372540529"><ph name="VENDOR_NAME" />의 알 수 없는 제품 <ph name="PRODUCT_ID" /></translation>

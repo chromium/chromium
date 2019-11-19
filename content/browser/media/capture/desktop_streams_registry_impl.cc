@@ -51,7 +51,7 @@ DesktopStreamsRegistryImpl::~DesktopStreamsRegistryImpl() {}
 std::string DesktopStreamsRegistryImpl::RegisterStream(
     int render_process_id,
     int render_frame_id,
-    const GURL& origin,
+    const url::Origin& origin,
     const DesktopMediaID& source,
     const std::string& extension_name,
     const DesktopStreamRegistryType type) {
@@ -67,7 +67,7 @@ std::string DesktopStreamsRegistryImpl::RegisterStream(
   stream.extension_name = extension_name;
   stream.type = type;
 
-  base::PostDelayedTaskWithTraits(
+  base::PostDelayedTask(
       FROM_HERE, {BrowserThread::UI},
       base::BindOnce(&DesktopStreamsRegistryImpl::CleanupStream,
                      base::Unretained(this), id),
@@ -80,7 +80,7 @@ DesktopMediaID DesktopStreamsRegistryImpl::RequestMediaForStreamId(
     const std::string& id,
     int render_process_id,
     int render_frame_id,
-    const GURL& origin,
+    const url::Origin& origin,
     std::string* extension_name,
     const DesktopStreamRegistryType type) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);

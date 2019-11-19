@@ -26,11 +26,12 @@ source_set("u2f_internal") {
   ]
   deps = [
     "//base",
-    "//components/google/core/browser",
+    "//components/google/core/common",
     "//crypto",
     "//ios/chrome/browser",
     "//ios/chrome/common",
-    "//ios/web",
+    "//ios/web/public",
+    "//ios/web/public/deprecated",
     "//net",
     "//url",
   ]
@@ -49,7 +50,7 @@ source_set("unit_tests") {
     "//base",
     "//ios/chrome/browser",
     "//ios/chrome/browser/web:tab_id_tab_helper",
-    "//ios/web",
+    "//ios/web/public/deprecated",
     "//ios/web/public/test/fakes",
     "//net",
     "//testing/gmock",

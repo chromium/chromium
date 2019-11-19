@@ -11,7 +11,7 @@
 
 #include "base/macros.h"
 #include "chrome/browser/media/webrtc/desktop_media_picker.h"
-#include "components/arc/common/screen_capture.mojom.h"
+#include "components/arc/mojom/screen_capture.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "content/public/browser/desktop_media_id.h"
 
@@ -90,7 +90,7 @@ class ArcScreenCaptureBridge : public KeyedService,
       granted_permissions_map_;
 
   // WeakPtrFactory to use for callbacks.
-  base::WeakPtrFactory<ArcScreenCaptureBridge> weak_factory_;
+  base::WeakPtrFactory<ArcScreenCaptureBridge> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ArcScreenCaptureBridge);
 };

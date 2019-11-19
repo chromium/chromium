@@ -38,14 +38,20 @@ namespace blink {
 class CSSImageGeneratorValue;
 class CSSImageSetValue;
 class CSSImageValue;
-class CSSURIValue;
 class CSSValue;
 class ComputedStyle;
 class Element;
+class PseudoElement;
 class SVGResource;
 class StyleImage;
 class StylePendingImage;
 class TreeScope;
+
+namespace cssvalue {
+
+class CSSURIValue;
+
+}
 
 // Holds information about resources, requested by stylesheets.
 // Lifetime: per-element style resolve.
@@ -53,7 +59,9 @@ class ElementStyleResources {
   STACK_ALLOCATED();
 
  public:
-  ElementStyleResources(Element&, float device_scale_factor);
+  ElementStyleResources(Element&,
+                        float device_scale_factor,
+                        PseudoElement* pseudo_element);
 
   StyleImage* GetStyleImage(CSSPropertyID, const CSSValue&);
   StyleImage* CachedOrPendingFromValue(CSSPropertyID, const CSSImageValue&);
@@ -62,7 +70,7 @@ class ElementStyleResources {
   enum AllowExternal { kDontAllowExternalResource, kAllowExternalResource };
   SVGResource* GetSVGResourceFromValue(
       TreeScope&,
-      const CSSURIValue&,
+      const cssvalue::CSSURIValue&,
       AllowExternal = kDontAllowExternalResource) const;
 
   void LoadPendingResources(ComputedStyle*);
@@ -83,6 +91,7 @@ class ElementStyleResources {
   Member<Element> element_;
   HashSet<CSSPropertyID> pending_image_properties_;
   float device_scale_factor_;
+  Member<PseudoElement> pseudo_element_;
   DISALLOW_COPY_AND_ASSIGN(ElementStyleResources);
 };
 

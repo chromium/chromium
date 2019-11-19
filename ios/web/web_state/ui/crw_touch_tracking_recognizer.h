@@ -24,7 +24,8 @@
 @property(nonatomic, weak) id<CRWTouchTrackingDelegate> touchTrackingDelegate;
 
 // Designated initializer for CRWTouchTrackingRecognizer.
-- (id)initWithDelegate:(id<CRWTouchTrackingDelegate>)delegate;
+- (id)initWithTouchTrackingDelegate:
+    (id<CRWTouchTrackingDelegate>)touchTrackingDelegate;
 
 @end
 

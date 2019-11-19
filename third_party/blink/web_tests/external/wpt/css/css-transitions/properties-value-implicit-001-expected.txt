@@ -1,7 +1,7 @@
 This is a testharness.js-based test.
 Found 60 tests; 59 PASS, 1 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS background-position length-em(em) / values
-FAIL background-position length-em(em) / events assert_equals: Expected TransitionEnd events triggered on .transition expected "background-position:0.5s" but got "background-position-x:0.5s"
+FAIL background-position length-em(em) / events assert_equals: Expected TransitionEnd events triggered on .transition expected "background-position:2s" but got "background-position-x:2s"
 PASS border-top-width length-em(em) / values
 PASS border-top-width length-em(em) / events
 PASS border-right-width length-em(em) / values

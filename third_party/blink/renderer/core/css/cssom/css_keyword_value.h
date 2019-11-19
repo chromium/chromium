@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/cssom/css_style_value.h"
 #include "third_party/blink/renderer/core/css_value_keywords.h"
+#include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
 
@@ -37,13 +38,12 @@ class CORE_EXPORT CSSKeywordValue final : public CSSStyleValue {
   DISALLOW_COPY_AND_ASSIGN(CSSKeywordValue);
 };
 
-DEFINE_TYPE_CASTS(CSSKeywordValue,
-                  CSSStyleValue,
-                  value,
-                  value->GetType() ==
-                      CSSStyleValue::StyleValueType::kKeywordType,
-                  value.GetType() ==
-                      CSSStyleValue::StyleValueType::kKeywordType);
+template <>
+struct DowncastTraits<CSSKeywordValue> {
+  static bool AllowFrom(const CSSStyleValue& value) {
+    return value.GetType() == CSSStyleValue::StyleValueType::kKeywordType;
+  }
+};
 
 }  // namespace blink
 

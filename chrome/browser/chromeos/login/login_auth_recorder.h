@@ -19,32 +19,34 @@ class LoginAuthRecorder : public session_manager::SessionManagerObserver {
  public:
   // Authentication method to unlock the screen. This enum is used to back an
   // UMA histogram and new values should be inserted immediately above
-  // kMethodCount.
+  // kMaxValue.
   enum class AuthMethod {
     kPassword = 0,
-    kPin,
-    kSmartlock,
-    kFingerprint,
-    kMethodCount,
+    kPin = 1,
+    kSmartlock = 2,
+    kFingerprint = 3,
+    kChallengeResponse = 4,
+    kMaxValue = kChallengeResponse,
   };
 
   // The type of switching between auth methods. This enum is used to back an
   // UMA histogram and new values should be inserted immediately above
-  // kSwitchTypeCount.
+  // kMaxValue.
   enum class AuthMethodSwitchType {
     kPasswordToPin = 0,
-    kPasswordToSmartlock,
-    kPinToPassword,
-    kPinToSmartlock,
-    kSmartlockToPassword,
-    kSmartlockToPin,
-    kPasswordToFingerprint,
-    kPinToFingerprint,
-    kSmartlockToFingerprint,
-    kFingerprintToPassword,
-    kFingerprintToPin,
-    kFingerprintToSmartlock,
-    kSwitchTypeCount,
+    kPasswordToSmartlock = 1,
+    kPinToPassword = 2,
+    kPinToSmartlock = 3,
+    kSmartlockToPassword = 4,
+    kSmartlockToPin = 5,
+    kPasswordToFingerprint = 6,
+    kPinToFingerprint = 7,
+    kSmartlockToFingerprint = 8,
+    kFingerprintToPassword = 9,
+    kFingerprintToPin = 10,
+    kFingerprintToSmartlock = 11,
+    kPasswordToChallengeResponse = 12,
+    kMaxValue = kPasswordToChallengeResponse,
   };
 
   LoginAuthRecorder();

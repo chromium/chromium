@@ -5,7 +5,7 @@
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//      http://www.apache.org/licenses/LICENSE-2.0
+//      https://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -27,31 +27,24 @@
 #include <cstring>
 #include <memory>
 #include <type_traits>
+#include <utility>
 
 #include "absl/base/internal/identity.h"
 #include "absl/base/macros.h"
+#include "absl/meta/type_traits.h"
 
 namespace absl {
 
 namespace internal_casts {
 
-// NOTE: Not a fully compliant implementation of `std::is_trivially_copyable`.
-// TODO(calabrese) Branch on implementations that directly provide
-// `std::is_trivially_copyable`, create a more rigorous workaround, and publicly
-// expose in meta/type_traits.
-template <class T>
-struct is_trivially_copyable
-    : std::integral_constant<
-          bool, std::is_destructible<T>::value&& __has_trivial_destructor(T) &&
-                    __has_trivial_copy(T) && __has_trivial_assign(T)> {};
-
 template <class Dest, class Source>
 struct is_bitcastable
-    : std::integral_constant<bool,
-                             sizeof(Dest) == sizeof(Source) &&
-                                 is_trivially_copyable<Source>::value &&
-                                 is_trivially_copyable<Dest>::value &&
-                                 std::is_default_constructible<Dest>::value> {};
+    : std::integral_constant<
+          bool,
+          sizeof(Dest) == sizeof(Source) &&
+              type_traits_internal::is_trivially_copyable<Source>::value &&
+              type_traits_internal::is_trivially_copyable<Dest>::value &&
+              std::is_default_constructible<Dest>::value> {};
 
 }  // namespace internal_casts
 

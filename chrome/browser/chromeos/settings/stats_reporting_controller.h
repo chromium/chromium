@@ -126,7 +126,7 @@ class StatsReportingController {
   base::CallbackList<void(void)> callback_list_;
   std::unique_ptr<CrosSettings::ObserverSubscription> setting_subscription_;
 
-  base::WeakPtrFactory<StatsReportingController> weak_factory_;
+  base::WeakPtrFactory<StatsReportingController> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(StatsReportingController);
 };

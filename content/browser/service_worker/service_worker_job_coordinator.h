@@ -23,12 +23,13 @@ class ServiceWorkerRegistration;
 // This class manages all in-flight registration or unregistration jobs.
 class CONTENT_EXPORT ServiceWorkerJobCoordinator {
  public:
-  explicit ServiceWorkerJobCoordinator(
-      base::WeakPtr<ServiceWorkerContextCore> context);
+  explicit ServiceWorkerJobCoordinator(ServiceWorkerContextCore* context);
   ~ServiceWorkerJobCoordinator();
 
   void Register(const GURL& script_url,
                 const blink::mojom::ServiceWorkerRegistrationOptions& options,
+                blink::mojom::FetchClientSettingsObjectPtr
+                    outside_fetch_client_settings_object,
                 ServiceWorkerRegisterJob::RegistrationCallback callback);
 
   void Unregister(const GURL& scope,
@@ -39,12 +40,18 @@ class CONTENT_EXPORT ServiceWorkerJobCoordinator {
   void Update(ServiceWorkerRegistration* registration,
               bool force_bypass_cache,
               bool skip_script_comparison,
+              blink::mojom::FetchClientSettingsObjectPtr
+                  outside_fetch_client_settings_object,
               ServiceWorkerRegisterJob::RegistrationCallback callback);
 
   // Calls ServiceWorkerRegisterJobBase::Abort() on the specified jobs (all jobs
   // for a given scope, or all jobs entirely) and removes them.
   void Abort(const GURL& scope);
   void AbortAll();
+
+  // Marks that the ServiceWorkerContextCore is shutting down, so jobs may be
+  // destroyed before finishing.
+  void ClearForShutdown();
 
   // Removes the job. A job that was not aborted must call FinishJob when it is
   // done.
@@ -62,12 +69,6 @@ class CONTENT_EXPORT ServiceWorkerJobCoordinator {
     // whether it was newly added.
     ServiceWorkerRegisterJobBase* Push(
         std::unique_ptr<ServiceWorkerRegisterJobBase> job);
-
-    // Dooms the installing worker of the running register/update job if a
-    // register/update job is scheduled to run after it. This corresponds to
-    // the "Terminate installing worker" steps at the beginning of the spec's
-    // [[Update]] and [[Install]] algorithms.
-    void DoomInstallingWorkerIfNeeded();
 
     // Starts the first job in the queue.
     void StartOneJob();
@@ -90,9 +91,8 @@ class CONTENT_EXPORT ServiceWorkerJobCoordinator {
     DISALLOW_COPY_AND_ASSIGN(JobQueue);
   };
 
-  // The ServiceWorkerContextCore object should always outlive the
-  // job coordinator, the core owns the coordinator.
-  base::WeakPtr<ServiceWorkerContextCore> context_;
+  // The ServiceWorkerContextCore object must outlive this.
+  ServiceWorkerContextCore* const context_;
   std::map<GURL, JobQueue> job_queues_;
 
   DISALLOW_COPY_AND_ASSIGN(ServiceWorkerJobCoordinator);

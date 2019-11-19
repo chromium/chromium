@@ -17,10 +17,10 @@
 #include "base/task/post_task.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
-#include "components/autofill/core/browser/address_i18n.h"
 #include "components/autofill/core/browser/autofill_data_util.h"
-#include "components/autofill/core/browser/autofill_profile.h"
-#include "components/autofill/core/browser/phone_number_i18n.h"
+#include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/geo/address_i18n.h"
+#include "components/autofill/core/browser/geo/phone_number_i18n.h"
 #include "third_party/libaddressinput/chromium/chrome_address_validator.h"
 #include "third_party/libaddressinput/src/cpp/include/libaddressinput/address_data.h"
 #include "third_party/libaddressinput/src/cpp/include/libaddressinput/source.h"
@@ -92,8 +92,7 @@ class AddressNormalizerImpl::NormalizationRequest {
                        AddressNormalizer::NormalizationCallback callback)
       : profile_(profile),
         app_locale_(app_locale),
-        callback_(std::move(callback)),
-        weak_ptr_factory_(this) {
+        callback_(std::move(callback)) {
     // OnRulesLoaded will be called in |timeout_seconds| if the rules are not
     // loaded in time.
     base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
@@ -140,7 +139,7 @@ class AddressNormalizerImpl::NormalizationRequest {
   AddressNormalizer::NormalizationCallback callback_;
 
   bool has_responded_ = false;
-  base::WeakPtrFactory<NormalizationRequest> weak_ptr_factory_;
+  base::WeakPtrFactory<NormalizationRequest> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(NormalizationRequest);
 };
@@ -148,7 +147,7 @@ class AddressNormalizerImpl::NormalizationRequest {
 AddressNormalizerImpl::AddressNormalizerImpl(std::unique_ptr<Source> source,
                                              std::unique_ptr<Storage> storage,
                                              const std::string& app_locale)
-    : app_locale_(app_locale), weak_ptr_factory_(this) {
+    : app_locale_(app_locale) {
   // |address_validator_| is created in the background. Once initialized, it
   // will run any pending normalization.
   //
@@ -157,8 +156,9 @@ AddressNormalizerImpl::AddressNormalizerImpl(std::unique_ptr<Source> source,
   // shutdown. This is important to prevent an access race when the destructor
   // of |storage| accesses an ObserverList that lives on the current sequence.
   // https://crbug.com/829122
-  base::PostTaskWithTraitsAndReplyWithResult(
-      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+  base::PostTaskAndReplyWithResult(
+      FROM_HERE,
+      {base::ThreadPool(), base::MayBlock(), base::TaskPriority::BEST_EFFORT},
       base::BindOnce(
           &CreateAddressValidator, std::move(source),
           DeleteOnTaskRunnerStorageUniquePtr(

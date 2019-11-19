@@ -59,32 +59,6 @@
         .catch(error => { sendValueToTest(error.name); });
   }
 
-  // Requests getusermedia and sets it up to test audio muting callbacks.
-  function getUserMediaForAudioMutingTest(initial_muted_state) {
-    console.log('Calling getUserMediaForAudioMutingTest.');
-    navigator.mediaDevices.getUserMedia({audio: true})
-        .then(stream => {
-          var track = stream.getAudioTracks()[0];
-          track.onmute = function(event) {
-            cancelTestTimeout();
-            sendValueToTest("onmute: muted="+ track.muted.toString() +
-                            ", readyState=" + track.readyState);
-          }
-          track.onunmute = function(event) {
-            cancelTestTimeout();
-            sendValueToTest("onunmute: muted="+ track.muted.toString() +
-                              ", readyState=" + track.readyState);
-          }
-          if (track.muted == initial_muted_state) {
-            reportTestSuccess();
-          } else {
-            failTest("Expected track.muted to be: " + initial_muted_state +
-                     ", was: " + track.muted);
-          }
-        })
-        .catch(failTest);
-  }
-
   function renderClonedMediastreamAndStop(constraints, waitTimeInSeconds) {
     console.log('Calling renderClonedMediastreamAndStop.');
     navigator.mediaDevices.getUserMedia(constraints)
@@ -846,32 +820,56 @@
     }).catch(failTest);
   }
 
-  function getUserMediaEchoCancellationOnAndOff() {
-    var stream;
-    navigator.mediaDevices.getUserMedia({
-      audio: {
-        deviceId: {exact: "default"},
-        echoCancellation: {exact: true}
-      }
-    }).then(s => {
-      stream = s;
-      assertTrue(stream.getAudioTracks()[0].getSettings().echoCancellation);
-      // Chromium's current implementation does not support tracks from the
-      // same source to have different echo cancellation settings. This
-      // getUserMedia() call is expected to fail.
-      navigator.mediaDevices.getUserMedia({
-        audio: {
-          deviceId: {exact: "default"},
-          echoCancellation: {exact: false}
-        }
-      }).then(
-          s => failTest("Unexpected accepted promise from getUserMedia()"),
-          e => {
-            assertEquals(e.name, "OverconstrainedError");
-            stream.getAudioTracks()[0].stop();
-            reportTestSuccess();
-          });
-    }).catch(failTest);
+  async function getUserMediaEchoCancellationOnAndOff() {
+    try {
+      var streams;
+
+      streams = await navigator.mediaDevices.getUserMedia({
+          audio: {
+              deviceId: {exact: "default"},
+              echoCancellation: {exact: true}
+          }
+      });
+      assertTrue(streams.getAudioTracks()[0].getSettings().echoCancellation);
+
+      streams = await navigator.mediaDevices.getUserMedia({
+          audio: {
+              deviceId: {exact: "default"},
+              echoCancellation: {exact: false}
+          }
+      });
+      assertFalse(streams.getAudioTracks()[0].getSettings().echoCancellation);
+      reportTestSuccess();
+    } catch(err) {
+      failTest('getUserMedia() failed, error: ' + err.message);
+    }
+  }
+
+  async function getUserMediaEchoCancellationOnAndOffAndVideo() {
+    try {
+      var streams;
+
+      streams = await navigator.mediaDevices.getUserMedia({
+          video: true,
+          audio: {
+              deviceId: {exact: "default"},
+              echoCancellation: {exact: true}
+          }
+      });
+      assertTrue(streams.getAudioTracks()[0].getSettings().echoCancellation);
+
+      streams = await navigator.mediaDevices.getUserMedia({
+          video: true,
+          audio: {
+              deviceId: {exact: "default"},
+              echoCancellation: {exact: false}
+          }
+      });
+      assertFalse(streams.getAudioTracks()[0].getSettings().echoCancellation);
+      reportTestSuccess();
+    } catch(err) {
+      failTest('getUserMedia() failed, error: ' + err.message);
+    }
   }
 
   var resolveTrackEndedAfterServiceCrash;
@@ -913,6 +911,38 @@
       reportTestSuccess();
     } catch(err) {
       failTest('getUserMedia() failed');
+    }
+  }
+
+  function playStreamAndGetElement(stream) {
+    v = document.createElement("video");
+    document.body.append(v);
+    v.srcObject = stream;
+    v.play();
+    return v;
+  }
+
+  async function getUserMediaCloneAndApplyConstraints() {
+    const stream = await navigator.mediaDevices.getUserMedia({video: { width: 640, height: 480 }});
+    const video = playStreamAndGetElement(stream);
+
+    const clone1 = stream.clone();
+    await clone1.getVideoTracks()[0].applyConstraints({width: 500, height: 500});
+    const video1 = playStreamAndGetElement(clone1);
+
+    const clone2 = stream.clone();
+    await clone2.getVideoTracks()[0].applyConstraints({width: 100, height: 100});
+    const video2 = playStreamAndGetElement(clone2);
+
+    var numFrames = 0;
+    var numOnProgress = 0;
+    video2.onprogress = () => {
+      numFrames += video2.webkitDecodedFrameCount;
+      ++numOnProgress;
+      if (numFrames >= 1)
+        reportTestSuccess();
+      if (numOnProgress > 20)
+        failTest("track from cloned stream is not producing any frames");
     }
   }
 

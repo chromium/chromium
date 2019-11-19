@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL Data channel should send data following the order of the send call promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'send' on 'RTCDataChannel': Blob support not implemented yet"
+Harness: the test ran to completion.
+

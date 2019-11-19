@@ -9,14 +9,15 @@
 
 #include "base/bind_helpers.h"
 #include "base/macros.h"
-#include "base/message_loop/message_loop.h"
 #include "base/run_loop.h"
+#include "base/test/task_environment.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/values.h"
 #include "components/prefs/pref_notifier_impl.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
-#include "mojo/public/cpp/bindings/binding_set.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "services/preferences/public/cpp/dictionary_value_update.h"
 #include "services/preferences/public/cpp/scoped_pref_update.h"
 #include "services/preferences/public/mojom/preferences.mojom.h"
@@ -31,19 +32,17 @@ constexpr char kUninitializedDictionaryKey[] = "path.to.an.uninitialized.dict";
 class PersistentPrefStoreClientTest : public testing::Test,
                                       public mojom::PersistentPrefStore {
  public:
-  PersistentPrefStoreClientTest() : binding_(this) {}
+  PersistentPrefStoreClientTest() = default;
 
   // testing::Test:
   void SetUp() override {
-    mojom::PersistentPrefStorePtrInfo store_proxy_info;
-    binding_.Bind(mojo::MakeRequest(&store_proxy_info));
     auto persistent_pref_store_client =
         base::MakeRefCounted<PersistentPrefStoreClient>(
             mojom::PersistentPrefStoreConnection::New(
                 mojom::PrefStoreConnection::New(
-                    mojom::PrefStoreObserverRequest(),
+                    mojo::PendingReceiver<mojom::PrefStoreObserver>(),
                     base::Value(base::Value::Type::DICTIONARY), true),
-                std::move(store_proxy_info),
+                receiver_.BindNewPipeAndPassRemote(),
                 ::PersistentPrefStore::PREF_READ_ERROR_NONE, false));
     auto pref_registry = base::MakeRefCounted<PrefRegistrySimple>();
     pref_registry->RegisterDictionaryPref(kDictionaryKey);
@@ -61,7 +60,7 @@ class PersistentPrefStoreClientTest : public testing::Test,
   void TearDown() override {
     pref_service_ = nullptr;
     base::RunLoop().RunUntilIdle();
-    binding_.Close();
+    receiver_.reset();
     base::RunLoop().RunUntilIdle();
   }
 
@@ -79,7 +78,7 @@ class PersistentPrefStoreClientTest : public testing::Test,
 
   void ExpectNoUpdate() {
     pref_service()->CommitPendingWrite();
-    binding_.FlushForTesting();
+    receiver_.FlushForTesting();
     EXPECT_TRUE(last_updates_.empty());
   }
 
@@ -102,11 +101,11 @@ class PersistentPrefStoreClientTest : public testing::Test,
   void ClearMutableValues() override {}
   void OnStoreDeletionFromDisk() override {}
 
-  base::MessageLoop message_loop_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
 
   std::unique_ptr<PrefService> pref_service_;
 
-  mojo::Binding<mojom::PersistentPrefStore> binding_;
+  mojo::Receiver<mojom::PersistentPrefStore> receiver_{this};
 
   std::vector<mojom::PrefUpdatePtr> last_updates_;
   base::OnceClosure on_update_;

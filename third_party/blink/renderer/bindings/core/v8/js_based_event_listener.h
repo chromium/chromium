@@ -7,6 +7,7 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/events/event_listener.h"
+#include "third_party/blink/renderer/platform/bindings/v8_private_property.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "v8/include/v8.h"
 
@@ -89,6 +90,8 @@ struct DowncastTraits<JSBasedEventListener> {
     return event_listener.IsJSBasedEventListener();
   }
 };
+
+extern const V8PrivateProperty::SymbolKey kPrivatePropertyGlobalEvent;
 
 }  // namespace blink
 

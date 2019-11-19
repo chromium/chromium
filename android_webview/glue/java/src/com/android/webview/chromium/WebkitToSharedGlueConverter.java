@@ -14,9 +14,9 @@ import android.webkit.WebView;
 
 import org.chromium.android_webview.AwContentsClient.AwWebResourceError;
 import org.chromium.android_webview.AwContentsClient.AwWebResourceRequest;
-import org.chromium.android_webview.AwSafeBrowsingResponse;
 import org.chromium.android_webview.AwServiceWorkerSettings;
 import org.chromium.android_webview.AwSettings;
+import org.chromium.android_webview.safe_browsing.AwSafeBrowsingResponse;
 import org.chromium.base.Callback;
 import org.chromium.content_public.browser.MessagePort;
 

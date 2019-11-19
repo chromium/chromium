@@ -6,7 +6,7 @@
 
 #include "base/bind.h"
 #include "base/memory/ref_counted.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "media/learning/impl/fisher_iris_dataset.h"
 #include "media/learning/impl/test_random_number_generator.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -38,11 +38,11 @@ class ExtraTreesTest : public testing::TestWithParam<LearningTask::Ordering> {
             [](std::unique_ptr<Model>* model_out,
                std::unique_ptr<Model> model) { *model_out = std::move(model); },
             &model));
-    scoped_task_environment_.RunUntilIdle();
+    task_environment_.RunUntilIdle();
     return model;
   }
 
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_;
 
   TestRandomNumberGenerator rng_;
   ExtraTreesTrainer trainer_;
@@ -55,7 +55,7 @@ TEST_P(ExtraTreesTest, EmptyTrainingDataWorks) {
   TrainingData empty;
   auto model = Train(task_, empty);
   EXPECT_NE(model.get(), nullptr);
-  EXPECT_EQ(model->PredictDistribution(FeatureVector()), TargetDistribution());
+  EXPECT_EQ(model->PredictDistribution(FeatureVector()), TargetHistogram());
 }
 
 TEST_P(ExtraTreesTest, FisherIrisDataset) {
@@ -67,8 +67,7 @@ TEST_P(ExtraTreesTest, FisherIrisDataset) {
   // Verify predictions on the training set, just for sanity.
   size_t num_correct = 0;
   for (const LabelledExample& example : training_data) {
-    TargetDistribution distribution =
-        model->PredictDistribution(example.features);
+    TargetHistogram distribution = model->PredictDistribution(example.features);
     TargetValue predicted_value;
     if (distribution.FindSingularMax(&predicted_value) &&
         predicted_value == example.target_value) {
@@ -102,8 +101,7 @@ TEST_P(ExtraTreesTest, WeightedTrainingSetIsSupported) {
   auto model = Train(task_, training_data);
 
   // The singular max should be example_1.
-  TargetDistribution distribution =
-      model->PredictDistribution(example_1.features);
+  TargetHistogram distribution = model->PredictDistribution(example_1.features);
   TargetValue predicted_value;
   EXPECT_TRUE(distribution.FindSingularMax(&predicted_value));
   EXPECT_EQ(predicted_value, example_1.target_value);
@@ -135,8 +133,7 @@ TEST_P(ExtraTreesTest, RegressionWorks) {
   auto model = Train(task_, training_data);
 
   // Make sure that the results are in the right range.
-  TargetDistribution distribution =
-      model->PredictDistribution(example_1.features);
+  TargetHistogram distribution = model->PredictDistribution(example_1.features);
   EXPECT_GT(distribution.Average(), example_1.target_value.value() * 0.95);
   EXPECT_LT(distribution.Average(), example_1.target_value.value() * 1.05);
   distribution = model->PredictDistribution(example_2.features);
@@ -194,10 +191,10 @@ TEST_P(ExtraTreesTest, RegressionVsBinaryClassification) {
   // the data is separable, it probably should be exact.
   for (auto& r_example : r_examples) {
     const FeatureVector& fv = r_example.features;
-    TargetDistribution c_dist = c_model->PredictDistribution(fv);
+    TargetHistogram c_dist = c_model->PredictDistribution(fv);
     EXPECT_LE(c_dist.Average(), r_example.target_value.value() * 1.05);
     EXPECT_GE(c_dist.Average(), r_example.target_value.value() * 0.95);
-    TargetDistribution r_dist = r_model->PredictDistribution(fv);
+    TargetHistogram r_dist = r_model->PredictDistribution(fv);
     EXPECT_LE(r_dist.Average(), r_example.target_value.value() * 1.05);
     EXPECT_GE(r_dist.Average(), r_example.target_value.value() * 0.95);
   }

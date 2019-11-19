@@ -17,7 +17,6 @@ import org.chromium.chrome.browser.init.ProcessInitializationHandler;
  * A Service that provides access to {@link ChromeBrowserSyncAdapter}.
  */
 public class ChromeBrowserSyncAdapterService extends Service {
-
     @SuppressLint("StaticFieldLeak")
     private static ChromeBrowserSyncAdapter sSyncAdapter;
     private static final Object LOCK = new Object();

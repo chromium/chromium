@@ -29,26 +29,32 @@ void UpdateSearchEngine(TemplateURLService* service) {
   DCHECK(service);
   DCHECK(service->loaded());
   std::vector<TemplateURL*> old_engines = service->GetTemplateURLs();
-  size_t default_engine;
+  size_t default_engine_index;
   std::vector<std::unique_ptr<TemplateURLData>> new_engines =
       TemplateURLPrepopulateData::GetPrepopulatedEngines(nullptr,
-                                                         &default_engine);
-  DCHECK(default_engine == 0);
+                                                         &default_engine_index);
+  DCHECK(default_engine_index == 0);
   DCHECK(new_engines[0]->prepopulate_id == kGoogleEnginePrepopulatedId);
   // The aim is to replace the old search engines with the new ones.
   // It is not possible to remove all of them, because removing the current
   // selected engine is not allowed.
   // It is not possible to add all the new ones first, because the service gets
   // confused when a prepopulated engine is there more than once.
-  // Instead, this will in a first pass makes google as the default engine. In
-  // a second pass, it will remove all other search engines. At last, in a third
-  // pass, it will add all new engines but google.
-  for (auto* engine : old_engines) {
-    if (engine->prepopulate_id() == kGoogleEnginePrepopulatedId)
-      service->SetUserSelectedDefaultSearchProvider(engine);
+  // Instead, this will in a first pass make Google as the default engine if
+  // the currently selected engine is neither Google nor custom engine. Then it
+  // will remove all prepopulated search engines except Google. At last, in a
+  // third pass, it will add all new engines except Google.
+  const TemplateURL* default_engine = service->GetDefaultSearchProvider();
+  if (default_engine->prepopulate_id() > kGoogleEnginePrepopulatedId) {
+    for (auto* engine : old_engines) {
+      if (engine->prepopulate_id() == kGoogleEnginePrepopulatedId) {
+        service->SetUserSelectedDefaultSearchProvider(engine);
+        break;
+      }
+    }
   }
   for (auto* engine : old_engines) {
-    if (engine->prepopulate_id() != kGoogleEnginePrepopulatedId)
+    if (engine->prepopulate_id() > kGoogleEnginePrepopulatedId)
       service->Remove(engine);
   }
   for (const auto& engine : new_engines) {

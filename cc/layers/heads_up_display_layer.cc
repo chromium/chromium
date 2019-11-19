@@ -65,6 +65,15 @@ std::unique_ptr<LayerImpl> HeadsUpDisplayLayer::CreateLayerImpl(
   return HeadsUpDisplayLayerImpl::Create(tree_impl, id());
 }
 
+const std::vector<gfx::Rect>& HeadsUpDisplayLayer::LayoutShiftRects() const {
+  return layout_shift_rects_;
+}
+
+void HeadsUpDisplayLayer::SetLayoutShiftRects(
+    const std::vector<gfx::Rect>& rects) {
+  layout_shift_rects_ = rects;
+}
+
 void HeadsUpDisplayLayer::PushPropertiesTo(LayerImpl* layer) {
   Layer::PushPropertiesTo(layer);
   TRACE_EVENT0("cc", "HeadsUpDisplayLayer::PushPropertiesTo");
@@ -72,6 +81,8 @@ void HeadsUpDisplayLayer::PushPropertiesTo(LayerImpl* layer) {
       static_cast<HeadsUpDisplayLayerImpl*>(layer);
 
   layer_impl->SetHUDTypeface(typeface_);
+  layer_impl->SetLayoutShiftRects(layout_shift_rects_);
+  layout_shift_rects_.clear();
 }
 
 }  // namespace cc

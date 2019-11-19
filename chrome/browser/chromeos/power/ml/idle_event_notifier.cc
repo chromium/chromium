@@ -5,8 +5,6 @@
 #include "chrome/browser/chromeos/power/ml/idle_event_notifier.h"
 
 #include "base/logging.h"
-#include "base/time/default_clock.h"
-#include "chrome/browser/chromeos/power/ml/real_boot_clock.h"
 #include "chrome/browser/chromeos/power/ml/recent_events_counter.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/power_manager/idle.pb.h"
@@ -60,13 +58,11 @@ IdleEventNotifier::ActivityData::ActivityData(const ActivityData& input_data) {
 IdleEventNotifier::IdleEventNotifier(
     PowerManagerClient* power_manager_client,
     ui::UserActivityDetector* detector,
-    viz::mojom::VideoDetectorObserverRequest request)
-    : clock_(base::DefaultClock::GetInstance()),
-      boot_clock_(std::make_unique<RealBootClock>()),
-      power_manager_client_observer_(this),
+    mojo::PendingReceiver<viz::mojom::VideoDetectorObserver> receiver)
+    : power_manager_client_observer_(this),
       user_activity_observer_(this),
       internal_data_(std::make_unique<ActivityDataInternal>()),
-      binding_(this, std::move(request)),
+      receiver_(this, std::move(receiver)),
       key_counter_(
           std::make_unique<RecentEventsCounter>(kUserInputEventsDuration,
                                                 kNumUserInputEventsBuckets)),
@@ -83,24 +79,6 @@ IdleEventNotifier::IdleEventNotifier(
 }
 
 IdleEventNotifier::~IdleEventNotifier() = default;
-
-void IdleEventNotifier::SetClockForTesting(
-    scoped_refptr<base::SequencedTaskRunner> task_runner,
-    base::Clock* test_clock,
-    std::unique_ptr<BootClock> test_boot_clock) {
-  clock_ = test_clock;
-  boot_clock_ = std::move(test_boot_clock);
-}
-
-void IdleEventNotifier::AddObserver(Observer* observer) {
-  DCHECK(observer);
-  observers_.AddObserver(observer);
-}
-
-void IdleEventNotifier::RemoveObserver(Observer* observer) {
-  DCHECK(observer);
-  observers_.RemoveObserver(observer);
-}
 
 void IdleEventNotifier::LidEventReceived(
     chromeos::PowerManagerClient::LidState state,
@@ -119,15 +97,6 @@ void IdleEventNotifier::PowerChanged(
   }
 }
 
-void IdleEventNotifier::ScreenDimImminent() {
-  // powerd should not dim the screen if video is playing.
-  DCHECK(!video_playing_);
-  const ActivityData data = ConvertActivityData(*internal_data_);
-
-  for (auto& observer : observers_)
-    observer.OnIdleEventObserved(data);
-  ResetTimestampsForRecentActivity();
-}
 
 void IdleEventNotifier::SuspendDone(const base::TimeDelta& sleep_duration) {
   // SuspendDone is triggered by user opening the lid (or other user
@@ -148,7 +117,7 @@ void IdleEventNotifier::SuspendDone(const base::TimeDelta& sleep_duration) {
       // could have |video_playing_| = true. If |sleep_duration| < kIdleDelay,
       // we consider video never stopped. Otherwise, we treat it as a new video
       // playing session.
-      internal_data_->video_start_time = boot_clock_->GetTimeSinceBoot();
+      internal_data_->video_start_time = boot_clock_.GetTimeSinceBoot();
     }
   }
 
@@ -188,9 +157,19 @@ void IdleEventNotifier::OnVideoActivityEnded() {
   UpdateActivityData(ActivityType::VIDEO);
 }
 
+IdleEventNotifier::ActivityData IdleEventNotifier::GetActivityDataAndReset() {
+  const ActivityData data = ConvertActivityData(*internal_data_);
+  ResetTimestampsForRecentActivity();
+  return data;
+}
+
+IdleEventNotifier::ActivityData IdleEventNotifier::GetActivityData() const {
+  return ConvertActivityData(*internal_data_);
+}
+
 IdleEventNotifier::ActivityData IdleEventNotifier::ConvertActivityData(
     const ActivityDataInternal& internal_data) const {
-  const base::TimeDelta time_since_boot = boot_clock_->GetTimeSinceBoot();
+  const base::TimeDelta time_since_boot = boot_clock_.GetTimeSinceBoot();
   ActivityData data;
 
   base::Time::Exploded exploded;
@@ -247,11 +226,11 @@ IdleEventNotifier::ActivityData IdleEventNotifier::ConvertActivityData(
 }
 
 void IdleEventNotifier::UpdateActivityData(ActivityType type) {
-  base::Time now = clock_->Now();
+  const base::Time now = base::Time::Now();
   DCHECK(internal_data_);
   internal_data_->last_activity_time = now;
 
-  const base::TimeDelta time_since_boot = boot_clock_->GetTimeSinceBoot();
+  const base::TimeDelta time_since_boot = boot_clock_.GetTimeSinceBoot();
 
   internal_data_->last_activity_since_boot = time_since_boot;
   if (!internal_data_->earliest_activity_since_boot) {

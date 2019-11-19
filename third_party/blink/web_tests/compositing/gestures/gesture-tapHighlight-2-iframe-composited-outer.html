@@ -4,7 +4,7 @@
 <script src="resources/link-highlight-helper.js"></script>
 </head>
 <body onLoad="runTest();">
-<iframe id="nestingFrame" src="resources/1-nested-frame-noncomposited.html" style="position: relative; left: 10px; top: 10px; width: 450px; height: 150px; transform: translateZ(0);"></iframe>
+<iframe id="nestingFrame" src="resources/1-nested-frame-noncomposited.html" style="position: relative; left: 10px; top: 10px; width: 450px; height: 150px; will-change: transform;"></iframe>
 <div style="position: relative; left: 10px; top: 20px;">
 This test is successful if "Target Link" is covered by a green box with square corners.
 </div>

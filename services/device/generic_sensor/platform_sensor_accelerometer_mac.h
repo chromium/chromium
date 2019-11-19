@@ -17,8 +17,8 @@ namespace device {
 // Implementation of PlatformSensor for macOS to query the accelerometer
 // sensor.
 // This is a single instance object per browser process which is created by
-// The singleton PlatformSensorProviderMac. If there are no clients, this
-// instance is not created.
+// PlatformSensorProviderMac. If there are no clients, this instance is not
+// created.
 class PlatformSensorAccelerometerMac : public PlatformSensor {
  public:
   // Construct a platform sensor of type ACCELEROMETER, given a buffer |mapping|

@@ -17,6 +17,12 @@ Storage
 Cache
   Cache Storage
   Application Cache
+Background Services
+  Background Fetch
+  Background Sync
+  Notifications
+  Payment Handler
+  Push Messaging
 Frames
   top
 log: visible view: unknown
@@ -37,6 +43,12 @@ Storage
 Cache
   Cache Storage
   Application Cache
+Background Services
+  Background Fetch
+  Background Sync
+  Notifications
+  Payment Handler
+  Push Messaging
 Frames
   top
     Images
@@ -62,6 +74,12 @@ Storage
 Cache
   Cache Storage
   Application Cache
+Background Services
+  Background Fetch
+  Background Sync
+  Notifications
+  Payment Handler
+  Push Messaging
 Frames
   top
     Images
@@ -87,6 +105,12 @@ Storage
 Cache
   Cache Storage
   Application Cache
+Background Services
+  Background Fetch
+  Background Sync
+  Notifications
+  Payment Handler
+  Push Messaging
 Frames
   top
     Images

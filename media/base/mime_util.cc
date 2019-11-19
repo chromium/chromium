@@ -4,14 +4,15 @@
 
 #include "media/base/mime_util.h"
 
+#include "base/no_destructor.h"
 #include "media/base/mime_util_internal.h"
 
 namespace media {
 
 // This variable is Leaky because it is accessed from WorkerPool threads.
-static internal::MimeUtil* GetMimeUtil() {
-  static internal::MimeUtil* mime_util = new internal::MimeUtil();
-  return mime_util;
+static const internal::MimeUtil* GetMimeUtil() {
+  static const base::NoDestructor<internal::MimeUtil> mime_util;
+  return &(*mime_util);
 }
 
 bool IsSupportedMediaMimeType(const std::string& mime_type) {

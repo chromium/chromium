@@ -6,6 +6,7 @@
 
 #include "base/base_switches.h"
 #include "base/command_line.h"
+#include "build/branding_buildflags.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/metrics/metrics_service.h"
 #include "components/prefs/pref_service.h"
@@ -25,14 +26,14 @@ bool IsMetricsReportingEnabledForOfficialBuild(PrefService* pref_service) {
 // static
 bool MetricsServiceAccessor::IsMetricsReportingEnabled(
     PrefService* pref_service) {
-#if defined(GOOGLE_CHROME_BUILD)
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   return IsMetricsReportingEnabledForOfficialBuild(pref_service);
 #else
   // In non-official builds, disable metrics reporting completely.
   return g_force_official_enabled_test
              ? IsMetricsReportingEnabledForOfficialBuild(pref_service)
              : false;
-#endif  // defined(GOOGLE_CHROME_BUILD)
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 }
 
 // static

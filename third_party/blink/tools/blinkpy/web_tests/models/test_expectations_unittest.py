@@ -35,9 +35,7 @@ from blinkpy.common.system.output_capture import OutputCapture
 from blinkpy.web_tests.models.test_configuration import TestConfiguration, TestConfigurationConverter
 from blinkpy.web_tests.models.test_expectations import (
     TestExpectationLine, TestExpectations, ParseError, TestExpectationParser,
-    PASS, FAIL, TEXT, IMAGE, IMAGE_PLUS_TEXT, AUDIO,
-    TIMEOUT, CRASH, LEAK, SKIP, WONTFIX, MISSING
-)
+    PASS, FAIL, TIMEOUT, CRASH, SKIP)
 
 
 class Base(unittest.TestCase):
@@ -126,16 +124,10 @@ class MiscTests(Base):
 
         # test handling of SKIPped tests and results
         self.assertEqual(TestExpectations.result_was_expected(SKIP, set([CRASH])), False)
-        self.assertEqual(TestExpectations.result_was_expected(SKIP, set([LEAK])), False)
+        self.assertEqual(TestExpectations.result_was_expected(SKIP, set([FAIL])), False)
 
         # test handling of MISSING results
-        self.assertEqual(TestExpectations.result_was_expected(MISSING, set([PASS])), False)
-
-    def test_suffixes_for_expectations(self):
-        self.assertEqual(TestExpectations.suffixes_for_expectations(set([FAIL])), set(['txt', 'png', 'wav']))
-        self.assertEqual(TestExpectations.suffixes_for_expectations(set([IMAGE])), set(['png']))
-        self.assertEqual(TestExpectations.suffixes_for_expectations(set([FAIL, IMAGE, CRASH])), set(['txt', 'png', 'wav']))
-        self.assertEqual(TestExpectations.suffixes_for_expectations(set()), set())
+        self.assertEqual(TestExpectations.result_was_expected(FAIL, set([PASS])), False)
 
     def test_category_expectations(self):
         # This test checks unknown tests are not present in the
@@ -221,21 +213,6 @@ class MiscTests(Base):
                                      'Bug(override) failures/expected/text.html [ Timeout ]\n'
                                      'Bug(override) failures/expected/text.html [ Crash ]\n')
 
-    def test_sanitizer_flag(self):
-        def match(test, result):
-            return self._exp.matches_an_expected_result(test, result, sanitizer_is_enabled=True)
-
-        self.parse_exp("""
-Bug(test) failures/expected/crash.html [ Crash ]
-Bug(test) failures/expected/image.html [ Failure ]
-Bug(test) failures/expected/text.html [ Failure ]
-Bug(test) failures/expected/timeout.html [ Timeout ]
-""")
-        self.assertTrue(match('failures/expected/crash.html', CRASH))
-        self.assertTrue(match('failures/expected/image.html', PASS))
-        self.assertTrue(match('failures/expected/text.html', PASS))
-        self.assertTrue(match('failures/expected/timeout.html', TIMEOUT))
-
     def test_more_specific_override_resets_skip(self):
         self.parse_exp('Bug(x) failures/expected [ Skip ]\n'
                        'Bug(x) failures/expected/text.html [ Failure ]\n')
@@ -278,7 +255,7 @@ Bug(test) failures/expected/timeout.html [ Timeout ]
 class SkippedTests(Base):
 
     def check(self, expectations, overrides, ignore_tests, lint=False, expected_results=None):
-        expected_results = expected_results or [WONTFIX, SKIP, FAIL]
+        expected_results = expected_results or [SKIP, FAIL]
         port = MockHost().port_factory.get(
             'test-win-win7',
             options=optparse.Values({'ignore_tests': ignore_tests}))
@@ -354,7 +331,9 @@ class ExpectationSyntaxTests(Base):
         expectations = expectations or []
         warnings = warnings or []
         line_number = '1'
-        expectation_line = TestExpectationLine.tokenize_line(filename, line, line_number)
+        host = MockHost()
+        expectation_line = TestExpectationLine.tokenize_line(
+            filename, line, line_number, host.port_factory.get('test-win-win7', None))
         self.assertEqual(expectation_line.warnings, warnings)
         self.assertEqual(expectation_line.name, name)
         self.assertEqual(expectation_line.filename, filename)
@@ -386,23 +365,21 @@ class ExpectationSyntaxTests(Base):
         self.assert_tokenize_exp('foo.html [ Slow ]', specifiers=[], expectations=['SLOW'], filename='SlowTests')
         self.assert_tokenize_exp('foo.html [ Timeout Slow ]', specifiers=[], expectations=['SKIP', 'TIMEOUT'], warnings=[
                                  'Only SLOW expectations are allowed in SlowTests'], filename='SlowTests')
+        self.assert_tokenize_exp('external/wpt/foo.html [ Slow ]', name='external/wpt/foo.html', specifiers=[], expectations=['SLOW'], warnings=[
+                                 'WPT should not be added to SlowTests; they should be marked as slow inside the test (see https://web-platform-tests.org/writing-tests/testharness-api.html#harness-timeout)'], filename='SlowTests')
 
     def test_wontfix(self):
         self.assert_tokenize_exp(
-            'foo.html [ WontFix ]', specifiers=[], expectations=['WONTFIX', 'SKIP'], warnings=[
-                'WONTFIX tests should only be added to NeverFixTests or StaleTestExpectations and not to TestExpectations.'])
+            'foo.html [ Skip Failure ]', specifiers=[], expectations=['SKIP'], warnings=[
+                'A test marked SKIP must not have other expectations.'])
         self.assert_tokenize_exp(
-            'foo.html [ WontFix Failure ]', specifiers=[], expectations=['WONTFIX', 'SKIP'], warnings=[
-                'A test marked Skip or WontFix must not have other expectations.',
-                'WONTFIX tests should only be added to NeverFixTests or StaleTestExpectations and not to TestExpectations.'])
+            'foo.html [ Skip Failure ]', specifiers=[], expectations=['SKIP'], warnings=[
+                'A test marked SKIP must not have other expectations.',
+                'Only SKIP expectations are allowed in NeverFixTests.'], filename='NeverFixTests')
         self.assert_tokenize_exp(
-            'foo.html [ WontFix Failure ]', specifiers=[], expectations=['WONTFIX', 'SKIP'], warnings=[
-                'A test marked Skip or WontFix must not have other expectations.',
-                'Only WONTFIX expectations are allowed in NeverFixTests'], filename='NeverFixTests')
-        self.assert_tokenize_exp(
-            'foo.html [ WontFix Timeout ]', specifiers=[], expectations=['WONTFIX', 'TIMEOUT'], warnings=[
-                'A test marked Skip or WontFix must not have other expectations.',
-                'Only WONTFIX expectations are allowed in NeverFixTests'], filename='NeverFixTests')
+            'foo.html [ Skip Timeout ]', specifiers=[], expectations=['Skip', 'TIMEOUT'], warnings=[
+                'A test marked SKIP must not have other expectations.',
+                'Only SKIP expectations are allowed in NeverFixTests.'], filename='NeverFixTests')
 
     def test_blank_line(self):
         self.assert_tokenize_exp('', name=None)
@@ -755,7 +732,7 @@ class TestExpectationsParserTests(unittest.TestCase):
     def test_expectation_line_for_test(self):
         # This is kind of a silly test, but it at least ensures that we don't throw an error.
         test_name = 'foo/test.html'
-        expectations = set(['PASS', 'IMAGE'])
+        expectations = set(['PASS', 'FAIL'])
 
         expectation_line = TestExpectationLine()
         expectation_line.original_string = test_name
@@ -778,7 +755,8 @@ class TestExpectationSerializationTests(unittest.TestCase):
         unittest.TestCase.__init__(self, testFunc)
 
     def _tokenize(self, line):
-        return TestExpectationLine.tokenize_line('path', line, 0)
+        host = MockHost()
+        return TestExpectationLine.tokenize_line('path', line, 0, host.port_factory.get('test-win-win7', None))
 
     def assert_round_trip(self, in_string, expected_string=None):
         expectation = self._tokenize(in_string)
@@ -829,7 +807,7 @@ class TestExpectationSerializationTests(unittest.TestCase):
         expectation_line = TestExpectationLine()
         expectation_line.bugs = ['Bug(x)']
         expectation_line.name = 'test/name/for/realz.html'
-        expectation_line.parsed_expectations = set([IMAGE])
+        expectation_line.parsed_expectations = set([FAIL])
         self.assertIsNone(expectation_line.to_string(self._converter))
         expectation_line.matching_configurations = set([TestConfiguration('win7', 'x86', 'release')])
         self.assertEqual(expectation_line.to_string(self._converter),
@@ -842,7 +820,7 @@ class TestExpectationSerializationTests(unittest.TestCase):
         expectation_line = TestExpectationLine()
         expectation_line.bugs = ['Bug(x)']
         expectation_line.name = 'test/name/for/realz.html'
-        expectation_line.parsed_expectations = set([IMAGE])
+        expectation_line.parsed_expectations = set([FAIL])
         self.assertIsNone(expectation_line.to_string(self._converter))
         expectation_line.matching_configurations = set([TestConfiguration('mac10.10', 'x86', 'release')])
         self.assertEqual(expectation_line.to_string(self._converter),
@@ -857,8 +835,8 @@ class TestExpectationSerializationTests(unittest.TestCase):
         self.assertEqual(expectation_line._serialize_parsed_expectations(parsed_expectation_to_string), '')
         expectation_line.parsed_expectations = set([FAIL])
         self.assertEqual(expectation_line._serialize_parsed_expectations(parsed_expectation_to_string), 'fail')
-        expectation_line.parsed_expectations = set([PASS, IMAGE])
-        self.assertEqual(expectation_line._serialize_parsed_expectations(parsed_expectation_to_string), 'image pass')
+        expectation_line.parsed_expectations = set([PASS, FAIL])
+        self.assertEqual(expectation_line._serialize_parsed_expectations(parsed_expectation_to_string), 'pass fail')
         expectation_line.parsed_expectations = set([FAIL, PASS])
         self.assertEqual(expectation_line._serialize_parsed_expectations(parsed_expectation_to_string), 'pass fail')
 
@@ -884,8 +862,8 @@ class TestExpectationSerializationTests(unittest.TestCase):
             TestExpectationLine._format_line([], ['MODIFIERS'], 'name', ['EXPECTATIONS'], None),
             '[ MODIFIERS ] name [ EXPECTATIONS ]')
         self.assertEqual(
-            TestExpectationLine._format_line([], [], 'foo/test.html', ['Skip', 'WontFix'], None),
-            'foo/test.html [ WontFix ]')
+            TestExpectationLine._format_line([], [], 'foo/test.html', ['Skip'], None),
+            'foo/test.html [ Skip ]')
 
     def test_string_roundtrip(self):
         self.assert_round_trip('')
@@ -927,7 +905,7 @@ class TestExpectationSerializationTests(unittest.TestCase):
             expectation_line.original_string = 'Nay'
             expectation_line.bugs = ['Bug(x)']
             expectation_line.name = 'Yay'
-            expectation_line.parsed_expectations = set([IMAGE])
+            expectation_line.parsed_expectations = set([FAIL])
             expectation_line.matching_configurations = matching_configurations
             lines.append(expectation_line)
             if reconstitute:

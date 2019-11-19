@@ -29,6 +29,9 @@ class TestProfileManager(process_profiles.ProfileManager):
   def _ReadOffsets(self, filename):
     return self._filecontents_mapping[filename]
 
+  def _ReadJSON(self, filename):
+    return self._filecontents_mapping[filename]
+
 
 def ProfileFile(timestamp_sec, phase, process_name=None):
   global _FILE_COUNTER

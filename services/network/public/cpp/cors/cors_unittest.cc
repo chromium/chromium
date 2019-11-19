@@ -21,7 +21,7 @@ TEST_F(CorsTest, CheckAccessDetectsInvalidResponse) {
       CheckAccess(GURL(), 0 /* response_status_code */,
                   base::nullopt /* allow_origin_header */,
                   base::nullopt /* allow_credentials_header */,
-                  network::mojom::FetchCredentialsMode::kOmit, url::Origin());
+                  network::mojom::CredentialsMode::kOmit, url::Origin());
   ASSERT_TRUE(error_status);
   EXPECT_EQ(mojom::CorsError::kInvalidResponse, error_status->cors_error);
 }
@@ -38,7 +38,7 @@ TEST_F(CorsTest, CheckAccessDetectsWildcardOriginNotAllowed) {
       CheckAccess(response_url, response_status_code,
                   allow_all_header /* allow_origin_header */,
                   base::nullopt /* allow_credentials_header */,
-                  network::mojom::FetchCredentialsMode::kOmit, origin);
+                  network::mojom::CredentialsMode::kOmit, origin);
   EXPECT_FALSE(error1);
 
   // Access-Control-Allow-Origin '*' should not be allowed if credentials mode
@@ -47,7 +47,7 @@ TEST_F(CorsTest, CheckAccessDetectsWildcardOriginNotAllowed) {
       CheckAccess(response_url, response_status_code,
                   allow_all_header /* allow_origin_header */,
                   base::nullopt /* allow_credentials_header */,
-                  network::mojom::FetchCredentialsMode::kInclude, origin);
+                  network::mojom::CredentialsMode::kInclude, origin);
   ASSERT_TRUE(error2);
   EXPECT_EQ(mojom::CorsError::kWildcardOriginNotAllowed, error2->cors_error);
 }
@@ -63,7 +63,7 @@ TEST_F(CorsTest, CheckAccessDetectsMissingAllowOriginHeader) {
       CheckAccess(response_url, response_status_code,
                   base::nullopt /* allow_origin_header */,
                   base::nullopt /* allow_credentials_header */,
-                  network::mojom::FetchCredentialsMode::kOmit, origin);
+                  network::mojom::CredentialsMode::kOmit, origin);
   ASSERT_TRUE(error);
   EXPECT_EQ(mojom::CorsError::kMissingAllowOriginHeader, error->cors_error);
 }
@@ -81,7 +81,7 @@ TEST_F(CorsTest, CheckAccessDetectsMultipleAllowOriginValues) {
       CheckAccess(response_url, response_status_code,
                   space_separated_multiple_origins /* allow_origin_header */,
                   base::nullopt /* allow_credentials_header */,
-                  network::mojom::FetchCredentialsMode::kOmit, origin);
+                  network::mojom::CredentialsMode::kOmit, origin);
   ASSERT_TRUE(error1);
   EXPECT_EQ(mojom::CorsError::kMultipleAllowOriginValues, error1->cors_error);
 
@@ -91,7 +91,7 @@ TEST_F(CorsTest, CheckAccessDetectsMultipleAllowOriginValues) {
       CheckAccess(response_url, response_status_code,
                   comma_separated_multiple_origins /* allow_origin_header */,
                   base::nullopt /* allow_credentials_header */,
-                  network::mojom::FetchCredentialsMode::kOmit, origin);
+                  network::mojom::CredentialsMode::kOmit, origin);
   ASSERT_TRUE(error2);
   EXPECT_EQ(mojom::CorsError::kMultipleAllowOriginValues, error2->cors_error);
 }
@@ -106,7 +106,7 @@ TEST_F(CorsTest, CheckAccessDetectsInvalidAllowOriginValue) {
       CheckAccess(response_url, response_status_code,
                   std::string("invalid.origin") /* allow_origin_header */,
                   base::nullopt /* allow_credentials_header */,
-                  network::mojom::FetchCredentialsMode::kOmit, origin);
+                  network::mojom::CredentialsMode::kOmit, origin);
   ASSERT_TRUE(error);
   EXPECT_EQ(mojom::CorsError::kInvalidAllowOriginValue, error->cors_error);
   EXPECT_EQ("invalid.origin", error->failed_parameter);
@@ -122,14 +122,14 @@ TEST_F(CorsTest, CheckAccessDetectsAllowOriginMismatch) {
       CheckAccess(response_url, response_status_code,
                   origin.Serialize() /* allow_origin_header */,
                   base::nullopt /* allow_credentials_header */,
-                  network::mojom::FetchCredentialsMode::kOmit, origin);
+                  network::mojom::CredentialsMode::kOmit, origin);
   ASSERT_FALSE(error1);
 
   base::Optional<CorsErrorStatus> error2 = CheckAccess(
       response_url, response_status_code,
       std::string("http://not.google.com") /* allow_origin_header */,
       base::nullopt /* allow_credentials_header */,
-      network::mojom::FetchCredentialsMode::kOmit, origin);
+      network::mojom::CredentialsMode::kOmit, origin);
   ASSERT_TRUE(error2);
   EXPECT_EQ(mojom::CorsError::kAllowOriginMismatch, error2->cors_error);
   EXPECT_EQ("http://not.google.com", error2->failed_parameter);
@@ -142,7 +142,7 @@ TEST_F(CorsTest, CheckAccessDetectsAllowOriginMismatch) {
   base::Optional<CorsErrorStatus> error3 = CheckAccess(
       response_url, response_status_code, null_string /* allow_origin_header */,
       base::nullopt /* allow_credentials_header */,
-      network::mojom::FetchCredentialsMode::kOmit, null_origin);
+      network::mojom::CredentialsMode::kOmit, null_origin);
   EXPECT_FALSE(error3);
 }
 
@@ -156,14 +156,14 @@ TEST_F(CorsTest, CheckAccessDetectsInvalidAllowCredential) {
       CheckAccess(response_url, response_status_code,
                   origin.Serialize() /* allow_origin_header */,
                   std::string("true") /* allow_credentials_header */,
-                  network::mojom::FetchCredentialsMode::kInclude, origin);
+                  network::mojom::CredentialsMode::kInclude, origin);
   ASSERT_FALSE(error1);
 
   base::Optional<CorsErrorStatus> error2 =
       CheckAccess(response_url, response_status_code,
                   origin.Serialize() /* allow_origin_header */,
                   std::string("fuga") /* allow_credentials_header */,
-                  network::mojom::FetchCredentialsMode::kInclude, origin);
+                  network::mojom::CredentialsMode::kInclude, origin);
   ASSERT_TRUE(error2);
   EXPECT_EQ(mojom::CorsError::kInvalidAllowCredentials, error2->cors_error);
   EXPECT_EQ("fuga", error2->failed_parameter);
@@ -174,16 +174,16 @@ TEST_F(CorsTest, CheckAccessDetectsInvalidAllowCredential) {
 TEST_F(CorsTest, CheckRedirectLocation) {
   struct TestCase {
     GURL url;
-    mojom::FetchRequestMode request_mode;
+    mojom::RequestMode request_mode;
     bool cors_flag;
     bool tainted;
     base::Optional<CorsErrorStatus> expectation;
   };
 
-  const auto kCors = mojom::FetchRequestMode::kCors;
+  const auto kCors = mojom::RequestMode::kCors;
   const auto kCorsWithForcedPreflight =
-      mojom::FetchRequestMode::kCorsWithForcedPreflight;
-  const auto kNoCors = mojom::FetchRequestMode::kNoCors;
+      mojom::RequestMode::kCorsWithForcedPreflight;
+  const auto kNoCors = mojom::RequestMode::kNoCors;
 
   const url::Origin origin = url::Origin::Create(GURL("http://example.com/"));
   const GURL same_origin_url("http://example.com/");

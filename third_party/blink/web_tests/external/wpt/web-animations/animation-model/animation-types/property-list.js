@@ -190,7 +190,6 @@ const gCSSProperties = {
   'border-image-outset': {
     // https://drafts.csswg.org/css-backgrounds-3/#border-image-outset
     types: [
-      { type: 'discrete', options: [ [ '1 2 3 4', '5 6 7 8' ] ] }
     ]
   },
   'border-image-repeat': {
@@ -202,7 +201,6 @@ const gCSSProperties = {
   'border-image-slice': {
     // https://drafts.csswg.org/css-backgrounds-3/#border-image-slice
     types: [
-      { type: 'discrete', options: [ [ '1 2 3 4', '5 6 7 8' ] ] }
     ]
   },
   'border-image-source': {
@@ -216,7 +214,6 @@ const gCSSProperties = {
   'border-image-width': {
     // https://drafts.csswg.org/css-backgrounds-3/#border-image-width
     types: [
-      { type: 'discrete', options: [ [ '1 2 3 4', '5 6 7 8' ] ] }
     ]
   },
   'border-left-color': {
@@ -412,15 +409,6 @@ const gCSSProperties = {
     types: [ 'length',
       { type: 'discrete', options: [ [ 'auto', '1px' ] ] }
     ]
-  },
-  'content': {
-    // https://drafts.csswg.org/css-content-3/#propdef-content
-    types: [
-      { type: 'discrete', options: [ [ '"a"', '"b"' ] ] }
-    ],
-    setup: t => {
-      return getPseudoElement(t, 'before');
-    }
   },
   'counter-increment': {
     // https://drafts.csswg.org/css-lists-3/#propdef-counter-increment
@@ -993,6 +981,10 @@ const gCSSProperties = {
     types: [
     ]
   },
+  'offset-distance': {
+    // https://drafts.fxtf.org/motion-1/#offset-distance-property
+    types: [ 'lengthPercentageOrCalc' ]
+  },
   'offset-path': {
     // https://drafts.fxtf.org/motion-1/#offset-path-property
     types: [
@@ -1175,18 +1167,6 @@ const gCSSProperties = {
       { type: 'discrete', options: [ [ 'auto', 'smooth' ] ] }
     ]
   },
-  'scroll-snap-type-x': {
-    // https://developer.mozilla.org/en/docs/Web/CSS/scroll-snap-type-x
-    types: [
-      { type: 'discrete', options: [ [ 'mandatory', 'proximity' ] ] }
-    ]
-  },
-  'scroll-snap-type-y': {
-    // https://developer.mozilla.org/en/docs/Web/CSS/scroll-snap-type-y
-    types: [
-      { type: 'discrete', options: [ [ 'mandatory', 'proximity' ] ] }
-    ]
-  },
   'shape-outside': {
     // http://dev.w3.org/csswg/css-shapes/#propdef-shape-outside
     types: [
@@ -1218,7 +1198,7 @@ const gCSSProperties = {
     // https://svgwg.org/svg2-draft/painting.html#StrokeDasharrayProperty
     types: [
       'dasharray',
-      { type: 'discrete', options: [ [ 'none', '10, 20' ] ] }
+      { type: 'discrete', options: [ [ 'none', '10px, 20px' ] ] }
     ]
   },
   'stroke-dashoffset': {
@@ -1313,7 +1293,7 @@ const gCSSProperties = {
   'text-emphasis-style': {
     // http://dev.w3.org/csswg/css-text-decor-3/#propdef-text-emphasis-style
     types: [
-      { type: 'discrete', options: [ [ 'filled circle', 'open dot' ] ] }
+      { type: 'discrete', options: [ [ 'circle', 'open dot' ] ] }
     ]
   },
   'text-indent': {
@@ -1443,13 +1423,11 @@ const gCSSProperties = {
 };
 
 function testAnimationSamples(animation, idlName, testSamples) {
-  const type = animation.effect.target.type;
-  const target = animation.effect.target.constructor.name === 'CSSPseudoElement'
-                 ? animation.effect.target.element
-                 : animation.effect.target;
+  const pseudoType = animation.effect.pseudoElement;
+  const target = animation.effect.target;
   for (const testSample of testSamples) {
     animation.currentTime = testSample.time;
-    assert_equals(getComputedStyle(target, type)[idlName],
+    assert_equals(getComputedStyle(target, pseudoType)[idlName],
                   testSample.expected,
                   `The value should be ${testSample.expected}` +
                   ` at ${testSample.time}ms`);
@@ -1464,10 +1442,8 @@ function toOrderedArray(string) {
 // don't specify an order for serializing computed values.
 // This test is for such the property.
 function testAnimationSamplesWithAnyOrder(animation, idlName, testSamples) {
-  const type = animation.effect.target.type;
-  const target = animation.effect.target.constructor.name === 'CSSPseudoElement'
-                 ? animation.effect.target.element
-                 : animation.effect.target;
+  const type = animation.effect.pseudoElement;
+  const target = animation.effect.target;
   for (const testSample of testSamples) {
     animation.currentTime = testSample.time;
 

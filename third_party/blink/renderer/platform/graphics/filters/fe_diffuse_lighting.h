@@ -31,12 +31,6 @@ class LightSource;
 
 class PLATFORM_EXPORT FEDiffuseLighting final : public FELighting {
  public:
-  static FEDiffuseLighting* Create(Filter*,
-                                   const Color&,
-                                   float,
-                                   float,
-                                   scoped_refptr<LightSource>);
-
   FEDiffuseLighting(Filter*,
                     const Color&,
                     float,

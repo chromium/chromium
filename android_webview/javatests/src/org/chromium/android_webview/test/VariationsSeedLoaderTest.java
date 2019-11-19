@@ -9,18 +9,17 @@ import static org.chromium.android_webview.test.OnlyRunIn.ProcessMode.SINGLE_PRO
 import android.content.Intent;
 import android.os.Handler;
 import android.os.Looper;
-import android.support.test.InstrumentationRegistry;
 import android.support.test.filters.MediumTest;
 
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.android_webview.VariationsSeedLoader;
-import org.chromium.android_webview.VariationsUtils;
-import org.chromium.android_webview.services.ServiceInit;
+import org.chromium.android_webview.common.variations.VariationsUtils;
 import org.chromium.android_webview.test.services.MockVariationsSeedServer;
 import org.chromium.android_webview.test.util.VariationsTestUtils;
 import org.chromium.base.ContextUtils;
@@ -38,24 +37,46 @@ import java.util.concurrent.TimeoutException;
 @RunWith(AwJUnit4ClassRunner.class)
 @OnlyRunIn(SINGLE_PROCESS)
 public class VariationsSeedLoaderTest {
+    private static final long CURRENT_TIME_MILLIS = 1234567890;
+    private static final long EXPIRED_TIMESTAMP = 0;
     private static final long TIMEOUT_MILLIS = 10000;
 
+    // Needed for tests that test histograms, which rely on native code.
+    @Rule
+    public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
+
     private static class TestLoaderResult extends CallbackHelper {
-        private boolean mSeedRequested;
+        private volatile boolean mBackgroundWorkFinished;
+        private volatile boolean mForegroundWorkFinished;
+        private volatile boolean mSeedRequested;
 
         public boolean wasSeedRequested() {
             assert getCallCount() > 0;
             return mSeedRequested;
         }
 
-        public void notifyCalled(boolean seedRequested) {
-            mSeedRequested = seedRequested;
-            super.notifyCalled();
+        public void markSeedRequested() {
+            mSeedRequested = true;
+        }
+
+        public void onBackgroundWorkFinished() {
+            mBackgroundWorkFinished = true;
+            maybeNotifyCalled();
+        }
+
+        public void onForegroundWorkFinished() {
+            mForegroundWorkFinished = true;
+            maybeNotifyCalled();
+        }
+
+        private void maybeNotifyCalled() {
+            if (mBackgroundWorkFinished && mForegroundWorkFinished) {
+                notifyCalled();
+            }
         }
     }
 
     private static class TestLoader extends VariationsSeedLoader {
-        private boolean mSeedRequested;
         private TestLoaderResult mResult;
 
         public TestLoader(TestLoaderResult result) {
@@ -72,12 +93,22 @@ public class VariationsSeedLoaderTest {
         @Override
         protected void requestSeedFromService(long oldSeedDate) {
             super.requestSeedFromService(oldSeedDate);
-            mSeedRequested = true;
+            mResult.markSeedRequested();
         }
 
         @Override
         protected void onBackgroundWorkFinished() {
-            mResult.notifyCalled(mSeedRequested);
+            mResult.onBackgroundWorkFinished();
+        }
+
+        @Override
+        protected long getSeedLoadTimeoutMillis() {
+            return TIMEOUT_MILLIS;
+        }
+
+        @Override
+        protected long getCurrentTimeMillis() {
+            return CURRENT_TIME_MILLIS;
         }
     }
 
@@ -85,21 +116,23 @@ public class VariationsSeedLoaderTest {
 
     // Create a TestLoader, run it on the UI thread, and block until it's finished. The return value
     // indicates whether the loader decided to request a new seed.
-    private boolean runTestLoaderBlocking() throws InterruptedException, TimeoutException {
+    private boolean runTestLoaderBlocking() throws TimeoutException {
         final TestLoaderResult result = new TestLoaderResult();
         Runnable run = () -> {
             TestLoader loader = new TestLoader(result);
             loader.startVariationsInit();
             loader.finishVariationsInit();
+            result.onForegroundWorkFinished();
         };
 
         CallbackHelper onRequestReceived = MockVariationsSeedServer.getRequestHelper();
         int requestsReceived = onRequestReceived.getCallCount();
         Assert.assertTrue("Failed to post seed loader Runnable", mMainHandler.post(run));
-        result.waitForCallback("Timed out waiting for loader to finish background work.", 0);
+        result.waitForCallback("Timed out waiting for loader to finish.", 0);
         if (result.wasSeedRequested()) {
-            onRequestReceived.waitForCallback("Seed requested, but timed out waiting for request" +
-                    " to arrive in MockVariationsSeedServer", requestsReceived);
+            onRequestReceived.waitForCallback("Seed requested, but timed out waiting for request"
+                            + " to arrive in MockVariationsSeedServer",
+                    requestsReceived);
             return true;
         }
         return false;
@@ -108,10 +141,6 @@ public class VariationsSeedLoaderTest {
     @Before
     public void setUp() throws IOException {
         mMainHandler = new Handler(Looper.getMainLooper());
-        ContextUtils.initApplicationContextForTests(
-                InstrumentationRegistry.getInstrumentation()
-                        .getTargetContext().getApplicationContext());
-        ServiceInit.setPrivateDataDirectorySuffix();
         RecordHistogram.setDisabledForTests(true);
         VariationsTestUtils.deleteSeeds();
     }
@@ -120,6 +149,22 @@ public class VariationsSeedLoaderTest {
     public void tearDown() throws IOException {
         RecordHistogram.setDisabledForTests(false);
         VariationsTestUtils.deleteSeeds();
+    }
+
+    private void assertNoAppSeedRequestStateValues() {
+        Assert.assertEquals(0,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        VariationsSeedLoader.APP_SEED_REQUEST_STATE_HISTOGRAM_NAME));
+    }
+
+    private void assertSingleAppSeedRequestStateValue(
+            @VariationsSeedLoader.AppSeedRequestState int state) {
+        Assert.assertEquals(1,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        VariationsSeedLoader.APP_SEED_REQUEST_STATE_HISTOGRAM_NAME));
+        Assert.assertEquals(1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        VariationsSeedLoader.APP_SEED_REQUEST_STATE_HISTOGRAM_NAME, state));
     }
 
     // Test the case that:
@@ -283,5 +328,77 @@ public class VariationsSeedLoaderTest {
         } finally {
             VariationsTestUtils.deleteSeeds();
         }
+    }
+
+    // Test we record the Variations.AppSeedRequestState metric when the seed is fresh.
+    @Test
+    @MediumTest
+    public void testRecordSeedFresh() throws Exception {
+        RecordHistogram.setDisabledForTests(false);
+        File oldFile = VariationsUtils.getSeedFile();
+        Assert.assertTrue("Expected seed file to not already exist", oldFile.createNewFile());
+        VariationsTestUtils.writeMockSeed(oldFile);
+        oldFile.setLastModified(CURRENT_TIME_MILLIS);
+        assertNoAppSeedRequestStateValues();
+
+        runTestLoaderBlocking();
+
+        assertSingleAppSeedRequestStateValue(VariationsSeedLoader.AppSeedRequestState.SEED_FRESH);
+    }
+
+    // Test we record the Variations.AppSeedRequestState metric when a new seed is requested.
+    @Test
+    @MediumTest
+    public void testRecordSeedRequested() throws Exception {
+        RecordHistogram.setDisabledForTests(false);
+        File oldFile = VariationsUtils.getSeedFile();
+        Assert.assertTrue("Expected seed file to not already exist", oldFile.createNewFile());
+        VariationsTestUtils.writeMockSeed(oldFile);
+        oldFile.setLastModified(EXPIRED_TIMESTAMP);
+        assertNoAppSeedRequestStateValues();
+
+        runTestLoaderBlocking();
+
+        assertSingleAppSeedRequestStateValue(
+                VariationsSeedLoader.AppSeedRequestState.SEED_REQUESTED);
+    }
+
+    // Test we record the Variations.AppSeedRequestState metric when a seed request is throttled.
+    @Test
+    @MediumTest
+    public void testRecordSeedRequestThrottled() throws Exception {
+        RecordHistogram.setDisabledForTests(false);
+        File oldFile = VariationsUtils.getSeedFile();
+        Assert.assertTrue("Expected seed file to not already exist", oldFile.createNewFile());
+        VariationsTestUtils.writeMockSeed(oldFile);
+        oldFile.setLastModified(EXPIRED_TIMESTAMP);
+        // Update the last modified time of the stamp file to simulate having just requested a
+        // new seed from the service.
+        VariationsUtils.updateStampTime();
+        assertNoAppSeedRequestStateValues();
+
+        runTestLoaderBlocking();
+
+        assertSingleAppSeedRequestStateValue(
+                VariationsSeedLoader.AppSeedRequestState.SEED_REQUEST_THROTTLED);
+    }
+
+    // Test we record the Variations.AppSeedFreshness metric with loading a seed.
+    @Test
+    @MediumTest
+    public void testRecordAppSeedFreshness() throws Exception {
+        long seedAgeHours = 2;
+        RecordHistogram.setDisabledForTests(false);
+        File oldFile = VariationsUtils.getSeedFile();
+        Assert.assertTrue("Expected seed file to not already exist", oldFile.createNewFile());
+        VariationsTestUtils.writeMockSeed(oldFile);
+        oldFile.setLastModified(CURRENT_TIME_MILLIS - TimeUnit.HOURS.toMillis(seedAgeHours));
+
+        runTestLoaderBlocking();
+
+        Assert.assertEquals(1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        VariationsSeedLoader.APP_SEED_FRESHNESS_HISTOGRAM_NAME,
+                        (int) TimeUnit.HOURS.toMinutes(seedAgeHours)));
     }
 }

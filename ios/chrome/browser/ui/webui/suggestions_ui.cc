@@ -11,7 +11,7 @@
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/chrome_url_constants.h"
 #include "ios/chrome/browser/suggestions/suggestions_service_factory.h"
-#include "ios/web/public/url_data_source_ios.h"
+#include "ios/web/public/webui/url_data_source_ios.h"
 
 namespace suggestions {
 

@@ -50,7 +50,7 @@ class PluginResponseInterceptorURLLoaderThrottleBrowserTest
   int CountPDFProcesses() {
     int result = -1;
     base::RunLoop run_loop;
-    base::PostTaskWithTraitsAndReply(
+    base::PostTaskAndReply(
         FROM_HERE, {content::BrowserThread::IO},
         base::BindOnce(&PluginResponseInterceptorURLLoaderThrottleBrowserTest::
                            CountPDFProcessesOnIOThread,

@@ -65,7 +65,7 @@ class POLICY_EXPORT CloudExternalDataManager : public ExternalDataManager {
  protected:
   CloudPolicyStore* policy_store_;  // Not owned.
 
-  base::WeakPtrFactory<CloudExternalDataManager> weak_factory_;
+  base::WeakPtrFactory<CloudExternalDataManager> weak_factory_{this};
 
  private:
   DISALLOW_COPY_AND_ASSIGN(CloudExternalDataManager);

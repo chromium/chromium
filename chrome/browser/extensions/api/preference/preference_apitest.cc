@@ -29,12 +29,12 @@
 #include "components/safe_browsing/common/safe_browsing_prefs.h"
 #include "components/translate/core/browser/translate_pref_names.h"
 #include "content/public/browser/notification_service.h"
-#include "content/public/common/webrtc_ip_handling_policy.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/test_extension_registry_observer.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/result_catcher.h"
 #include "media/media_buildflags.h"
+#include "third_party/blink/public/common/peerconnection/webrtc_ip_handling_policy.h"
 
 class ExtensionPreferenceApiTest : public extensions::ExtensionApiTest {
  protected:
@@ -139,7 +139,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionPreferenceApiTest, MAYBE_Standard) {
   prefs->SetBoolean(prefs::kWebRTCMultipleRoutesEnabled, false);
   prefs->SetBoolean(prefs::kWebRTCNonProxiedUdpEnabled, false);
   prefs->SetString(prefs::kWebRTCIPHandlingPolicy,
-                   content::kWebRTCIPHandlingDefaultPublicInterfaceOnly);
+                   blink::kWebRTCIPHandlingDefaultPublicInterfaceOnly);
 
   const char kExtensionPath[] = "preference/standard";
 

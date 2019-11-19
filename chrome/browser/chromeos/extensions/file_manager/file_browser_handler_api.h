@@ -81,7 +81,7 @@ class FileSelectorFactory {
 // The fileBrowserHandlerInternal.selectFile extension function implementation.
 // See the file description for more info.
 class FileBrowserHandlerInternalSelectFileFunction
-    : public extensions::LoggedUIThreadExtensionFunction {
+    : public extensions::LoggedExtensionFunction {
  public:
   // Default constructor used in production code.
   // It will create its own FileSelectorFactory implementation, and set the
@@ -108,7 +108,7 @@ class FileBrowserHandlerInternalSelectFileFunction
   // The class is ref counted, so destructor should not be public.
   ~FileBrowserHandlerInternalSelectFileFunction() override;
 
-  // UIThreadExtensionFunction implementation.
+  // ExtensionFunction implementation.
   // Runs the extension function implementation.
   ResponseAction Run() override;
 

@@ -1,10 +1,11 @@
 <!DOCTYPE HTML>
 <html manifest="resources/fail-on-update.php">
+<head>
+<title>fail-on-update.html</title>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
 <script>
-if (window.testRunner) {
-    testRunner.dumpAsText();
-    testRunner.waitUntilDone();
-}
+setup({ single_test: true });
 
 function setManifestDeleted(state, callback)
 {
@@ -26,7 +27,7 @@ function test()
     function afterDelete()
     {
         applicationCache.update();
-        window.location = 'resources/notify-no-crash.html';
+        done();
     }
 }
 
@@ -49,6 +50,8 @@ applicationCache.addEventListener('cached', function() { setTimeout(test, 0) }, 
 var timeoutId = setTimeout(resetManifest, 100);
 
 </script>
+</head>
+<body>
 <p>Test for a particular incorrect assertion failure.</p>
-
+</body>
 </html>

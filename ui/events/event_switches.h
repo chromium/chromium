@@ -23,6 +23,7 @@ EVENTS_BASE_EXPORT extern const char kExtraTouchNoiseFiltering[];
 EVENTS_BASE_EXPORT extern const char kTouchCalibration[];
 EVENTS_BASE_EXPORT extern const char kEdgeTouchFiltering[];
 EVENTS_BASE_EXPORT extern const char kLowPressureTouchFiltering[];
+EVENTS_BASE_EXPORT extern const char kDisableCancelAllTouches[];
 #endif
 
 }  // namespace switches

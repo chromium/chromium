@@ -6,9 +6,9 @@
 
 #include <notify.h>
 
+#include "base/bind.h"
 #include "base/logging.h"
 #include "base/mac/mac_util.h"
-#include "base/message_loop/message_loop_current.h"
 #include "base/posix/eintr_wrapper.h"
 
 namespace net {
@@ -35,8 +35,7 @@ void HoldNotifyFileDescriptorsGlobals() {
 }
 }  // namespace
 
-NotifyWatcherMac::NotifyWatcherMac()
-    : notify_fd_(-1), notify_token_(-1), watcher_(FROM_HERE) {
+NotifyWatcherMac::NotifyWatcherMac() : notify_fd_(-1), notify_token_(-1) {
   HoldNotifyFileDescriptorsGlobals();
 }
 
@@ -53,12 +52,10 @@ bool NotifyWatcherMac::Watch(const char* key, const CallbackType& callback) {
   if (status != NOTIFY_STATUS_OK)
     return false;
   DCHECK_GE(notify_fd_, 0);
-  if (!base::MessageLoopCurrentForIO::Get()->WatchFileDescriptor(
-          notify_fd_, true, base::MessagePumpForIO::WATCH_READ, &watcher_,
-          this)) {
-    Cancel();
-    return false;
-  }
+  watcher_ = base::FileDescriptorWatcher::WatchReadable(
+      notify_fd_,
+      base::BindRepeating(&NotifyWatcherMac::OnFileCanReadWithoutBlocking,
+                          base::Unretained(this)));
   callback_ = callback;
   return true;
 }
@@ -68,11 +65,11 @@ void NotifyWatcherMac::Cancel() {
     notify_cancel(notify_token_);  // Also closes |notify_fd_|.
     notify_fd_ = -1;
     callback_.Reset();
-    watcher_.StopWatchingFileDescriptor();
+    watcher_.reset();
   }
 }
 
-void NotifyWatcherMac::OnFileCanReadWithoutBlocking(int fd) {
+void NotifyWatcherMac::OnFileCanReadWithoutBlocking() {
   int token;
   int status = HANDLE_EINTR(read(notify_fd_, &token, sizeof(token)));
   if (status != sizeof(token)) {

@@ -28,8 +28,7 @@ DelayBasedTimeSource::DelayBasedTimeSource(
       interval_(BeginFrameArgs::DefaultInterval()),
       last_tick_time_(base::TimeTicks() - interval_),
       next_tick_time_(base::TimeTicks()),
-      task_runner_(task_runner),
-      weak_factory_(this) {}
+      task_runner_(task_runner) {}
 
 DelayBasedTimeSource::~DelayBasedTimeSource() = default;
 

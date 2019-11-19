@@ -53,7 +53,6 @@ class ExtensionAction {
   static const int kDefaultTabId;
 
   ExtensionAction(const extensions::Extension& extension,
-                  extensions::ActionInfo::Type action_type,
                   const extensions::ActionInfo& manifest_data);
   ~ExtensionAction();
 
@@ -63,6 +62,10 @@ class ExtensionAction {
   // What kind of action is this?
   extensions::ActionInfo::Type action_type() const {
     return action_type_;
+  }
+
+  extensions::ActionInfo::DefaultState default_state() const {
+    return default_state_;
   }
 
   // Set the url which the popup will load when the user clicks this action's
@@ -115,8 +118,13 @@ class ExtensionAction {
   void SetBadgeText(int tab_id, const std::string& text) {
     SetValue(&badge_text_, tab_id, text);
   }
-  // Get the badge text for a tab, or the default if no badge text was set.
-  std::string GetBadgeText(int tab_id) const {
+
+  // Clear this action's badge text on a specific tab.
+  void ClearBadgeText(int tab_id) { badge_text_.erase(tab_id); }
+
+  // Get the badge text that has been set using SetBadgeText for a tab, or the
+  // default if no badge text was set.
+  std::string GetExplicitlySetBadgeText(int tab_id) const {
     return GetValue(&badge_text_, tab_id);
   }
 
@@ -140,6 +148,29 @@ class ExtensionAction {
     return GetValue(&badge_background_color_, tab_id);
   }
 
+  // Set this ExtensionAction's DNR matched action count on a specific tab.
+  void SetDNRActionCount(int tab_id, int action_count) {
+    SetValue(&dnr_action_count_, tab_id, action_count);
+  }
+  // Get this ExtensionAction's DNR matched action count on a specific tab.
+  // Returns -1 if no entry is found.
+  int GetDNRActionCount(int tab_id) const {
+    return GetValue(&dnr_action_count_, tab_id);
+  }
+  // Clear this ExtensionAction's DNR matched action count for all tabs.
+  void ClearDNRActionCountForAllTabs() { dnr_action_count_.clear(); }
+
+  // Get the badge text displayed for a tab, calculated based on both
+  // |badge_text_| and |dnr_action_count_|. Returns in order of priority:
+  // - GetExplicitlySetBadgeText(tab_id) if it exists for the |tab_id|
+  // - GetDNRActionCount(tab_id)
+  // - The default badge text, if set, otherwise: an empty string.
+  std::string GetDisplayBadgeText(int tab_id) const;
+
+  // Returns whether this extension action is using the DNR action count as its
+  // badge text.
+  bool UseDNRActionCountAsBadgeText(int tab_id) const;
+
   // Set this action's badge visibility on a specific tab.  Returns true if
   // the visibility has changed.
   bool SetIsVisible(int tab_id, bool value);
@@ -161,7 +192,7 @@ class ExtensionAction {
     if (const bool* tab_is_visible = FindOrNull(&is_visible_, tab_id))
       return *tab_is_visible;
 
-    if (base::ContainsKey(declarative_show_count_, tab_id))
+    if (base::Contains(declarative_show_count_, tab_id))
       return true;
 
     if (const bool* default_is_visible =
@@ -193,6 +224,7 @@ class ExtensionAction {
   bool HasBadgeTextColor(int tab_id) const;
   bool HasIsVisible(int tab_id) const;
   bool HasIcon(int tab_id) const;
+  bool HasDNRActionCount(int tab_id) const;
 
   extensions::IconImage* default_icon_image() {
     return default_icon_image_.get();
@@ -252,6 +284,8 @@ class ExtensionAction {
   const std::string extension_name_;
 
   const extensions::ActionInfo::Type action_type_;
+  // The default state of the action.
+  const extensions::ActionInfo::DefaultState default_state_;
 
   // Each of these data items can have both a global state (stored with the key
   // kDefaultTabId), or tab-specific state (stored with the tab_id as the key).
@@ -277,6 +311,11 @@ class ExtensionAction {
   // declarative_icon_[tab_id][declarative_rule_priority] is a vector of icon
   // images that are currently in effect
   std::map<int, std::map<int, std::vector<gfx::Image> > > declarative_icon_;
+
+  // Maps tab_id to the number of actions taken based on declarative net request
+  // rule matches on incoming requests. Overrides the default |badge_text_| for
+  // this extension if it has called chrome.setActionCountAsBadgeText(true).
+  std::map<int, int> dnr_action_count_;
 
   // ExtensionIconSet containing paths to bitmaps from which default icon's
   // image representations will be selected.

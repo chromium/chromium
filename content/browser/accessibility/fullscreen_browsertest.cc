@@ -6,11 +6,11 @@
 #include "content/browser/accessibility/browser_accessibility.h"
 #include "content/browser/accessibility/browser_accessibility_manager.h"
 #include "content/browser/web_contents/web_contents_impl.h"
+#include "content/public/test/accessibility_notification_waiter.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/shell/browser/shell.h"
-#include "content/test/accessibility_browser_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace content {
@@ -51,9 +51,10 @@ class FakeFullscreenDelegate : public WebContentsDelegate {
   FakeFullscreenDelegate() = default;
   ~FakeFullscreenDelegate() override = default;
 
-  void EnterFullscreenModeForTab(WebContents*,
-                                 const GURL&,
-                                 const blink::WebFullscreenOptions&) override {
+  void EnterFullscreenModeForTab(
+      WebContents*,
+      const GURL&,
+      const blink::mojom::FullscreenOptions&) override {
     is_fullscreen_ = true;
   }
 
@@ -61,7 +62,7 @@ class FakeFullscreenDelegate : public WebContentsDelegate {
     is_fullscreen_ = false;
   }
 
-  bool IsFullscreenForTabOrPending(const WebContents*) const override {
+  bool IsFullscreenForTabOrPending(const WebContents*) override {
     return is_fullscreen_;
   }
 
@@ -84,7 +85,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityFullscreenBrowserTest,
                                          ax::mojom::Event::kLoadComplete);
   GURL url(
       embedded_test_server()->GetURL("/accessibility/fullscreen/links.html"));
-  NavigateToURL(shell(), url);
+  EXPECT_TRUE(NavigateToURL(shell(), url));
   waiter.WaitForNotification();
 
   WebContentsImpl* web_contents =
@@ -121,7 +122,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityFullscreenBrowserTest,
                                          ax::mojom::Event::kLoadComplete);
   GURL url(
       embedded_test_server()->GetURL("/accessibility/fullscreen/iframe.html"));
-  NavigateToURL(shell(), url);
+  EXPECT_TRUE(NavigateToURL(shell(), url));
   waiter.WaitForNotification();
 
   WebContentsImpl* web_contents =

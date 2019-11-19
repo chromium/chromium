@@ -13,8 +13,10 @@
 #include "components/viz/common/surfaces/frame_sink_id.h"
 #include "components/viz/host/viz_host_export.h"
 #include "media/base/video_types.h"
-#include "mojo/public/cpp/bindings/binding.h"
-#include "services/viz/privileged/interfaces/compositing/frame_sink_video_capture.mojom.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
+#include "services/viz/privileged/mojom/compositing/frame_sink_video_capture.mojom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/size.h"
@@ -34,7 +36,7 @@ class VIZ_HOST_EXPORT ClientFrameSinkVideoCapturer
     : private mojom::FrameSinkVideoConsumer {
  public:
   // A re-connectable FrameSinkVideoCaptureOverlay. See CreateOverlay().
-  class Overlay : public mojom::FrameSinkVideoCaptureOverlay {
+  class VIZ_HOST_EXPORT Overlay : public mojom::FrameSinkVideoCaptureOverlay {
    public:
     Overlay(base::WeakPtr<ClientFrameSinkVideoCapturer> client_capturer,
             int32_t stacking_index);
@@ -56,7 +58,7 @@ class VIZ_HOST_EXPORT ClientFrameSinkVideoCapturer
 
     base::WeakPtr<ClientFrameSinkVideoCapturer> client_capturer_;
     const int32_t stacking_index_;
-    mojom::FrameSinkVideoCaptureOverlayPtr overlay_;
+    mojo::Remote<mojom::FrameSinkVideoCaptureOverlay> overlay_;
 
     SkBitmap image_;
     gfx::RectF bounds_;
@@ -64,8 +66,8 @@ class VIZ_HOST_EXPORT ClientFrameSinkVideoCapturer
     DISALLOW_COPY_AND_ASSIGN(Overlay);
   };
 
-  using EstablishConnectionCallback =
-      base::RepeatingCallback<void(mojom::FrameSinkVideoCapturerRequest)>;
+  using EstablishConnectionCallback = base::RepeatingCallback<void(
+      mojo::PendingReceiver<mojom::FrameSinkVideoCapturer>)>;
 
   explicit ClientFrameSinkVideoCapturer(EstablishConnectionCallback callback);
   ~ClientFrameSinkVideoCapturer() override;
@@ -118,7 +120,8 @@ class VIZ_HOST_EXPORT ClientFrameSinkVideoCapturer
       base::ReadOnlySharedMemoryRegion data,
       media::mojom::VideoFrameInfoPtr info,
       const gfx::Rect& content_rect,
-      mojom::FrameSinkVideoConsumerFrameCallbacksPtr callbacks) final;
+      mojo::PendingRemote<mojom::FrameSinkVideoConsumerFrameCallbacks>
+          callbacks) final;
   void OnStopped() final;
 
   // Establishes connection to FrameSinkVideoCapturer and sends the existing
@@ -151,10 +154,10 @@ class VIZ_HOST_EXPORT ClientFrameSinkVideoCapturer
 
   mojom::FrameSinkVideoConsumer* consumer_ = nullptr;
   EstablishConnectionCallback establish_connection_callback_;
-  mojom::FrameSinkVideoCapturerPtr capturer_;
-  mojo::Binding<mojom::FrameSinkVideoConsumer> consumer_binding_;
+  mojo::Remote<mojom::FrameSinkVideoCapturer> capturer_remote_;
+  mojo::Receiver<mojom::FrameSinkVideoConsumer> consumer_receiver_{this};
 
-  base::WeakPtrFactory<ClientFrameSinkVideoCapturer> weak_factory_;
+  base::WeakPtrFactory<ClientFrameSinkVideoCapturer> weak_factory_{this};
 };
 
 }  // namespace viz

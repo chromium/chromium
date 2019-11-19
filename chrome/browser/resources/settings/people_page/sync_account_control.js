@@ -87,13 +87,11 @@ Polymer({
           'promoSecondaryLabelWithNoAccount, shownAccount_)',
     },
 
-    unifiedConsentEnabled: Boolean,
-
     /** @private */
     showSetupButtons_: {
       type: Boolean,
-      computed: 'computeShowSetupButtons_(unifiedConsentEnabled,' +
-          'hideButtons, syncStatus.setupInProgress)',
+      computed: 'computeShowSetupButtons_(' +
+          'hideButtons, syncStatus.firstSetupInProgress)',
     },
   },
 
@@ -210,7 +208,7 @@ Polymer({
    * @private
    */
   getAccountLabel_: function(label, account) {
-    if (this.unifiedConsentEnabled && this.syncStatus.setupInProgress) {
+    if (this.syncStatus.firstSetupInProgress) {
       return this.syncStatus.statusText || account;
     }
     return this.syncStatus.signedIn && !this.syncStatus.hasError &&
@@ -455,8 +453,7 @@ Polymer({
    * @private
    */
   computeShowSetupButtons_: function() {
-    return !this.hideButtons && !!this.unifiedConsentEnabled &&
-        !!this.syncStatus.setupInProgress;
+    return !this.hideButtons && !!this.syncStatus.firstSetupInProgress;
   },
 
   /** @private */

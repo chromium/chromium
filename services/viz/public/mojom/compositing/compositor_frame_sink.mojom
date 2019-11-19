@@ -1,0 +1,103 @@
+// Copyright 2016 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module viz.mojom;
+
+import "mojo/public/mojom/base/time.mojom";
+import "mojo/public/mojom/base/shared_memory.mojom";
+import "services/viz/public/mojom/compositing/begin_frame_args.mojom";
+import "services/viz/public/mojom/compositing/compositor_frame.mojom";
+import "services/viz/public/mojom/compositing/local_surface_id.mojom";
+import "services/viz/public/mojom/compositing/frame_timing_details.mojom";
+import "services/viz/public/mojom/compositing/returned_resource.mojom";
+import "services/viz/public/mojom/hit_test/hit_test_region_list.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
+import "gpu/ipc/common/mailbox.mojom";
+
+
+// A CompositorFrameSink is an interface for receiving CompositorFrame
+// structs. A CompositorFrame contains the complete output meant for display.
+// Each time a client has a graphical update, and receives an OnBeginFrame, it
+// is responsible for creating a CompositorFrame to update its portion of the
+// screen.
+interface CompositorFrameSink {
+  // Lets the display compositor know that the client wishes to receive the next
+  // BeginFrame event.
+  SetNeedsBeginFrame(bool needs_begin_frame);
+
+  // Lets the display compositor know that the client also wants to receive
+  // BeginFrames with the animate_only flag set. Only clients that opt in
+  // will receive such BeginFrames.
+  SetWantsAnimateOnlyBeginFrames();
+
+  // Submits a CompositorFrame to the display compositor that will be presented
+  // to screen the next time frames from all CompositorFrameSinks are aggregated
+  // to produce a display CompositorFrame. If a client wishes to allocate a new
+  // surface (e.g. during resize), then it can simply allocate a new
+  // |local_surface_id|. The local_id component of |local_surface_id| must be
+  // monontonically increasing for each change to LocalSurfaceId. Submit time is
+  // set to when this function is called to used for tracing how much time is
+  // spend between a CompositorFrame is sent and received. Once a
+  // |hit_test_region_list| is received, it will be reused until a new one is
+  // submitted.
+  // TODO(weiliangc): Submit time is recorded in microseconds right now and
+  // should be changed to use TimeTicks when Blink can send base types directly.
+  // For successful swaps, the implementation must call
+  // DidReceiveCompositorFrameAck() asynchronously when the frame has been
+  // processed in order to unthrottle the next frame.
+  SubmitCompositorFrame(LocalSurfaceId local_surface_id,
+                        CompositorFrame frame,
+                        HitTestRegionList? hit_test_region_list,
+                        uint64 submit_time);
+  // Same as above, submits a CompositorFrame to the display compositor. The
+  // implementation only returns when it's ready to receive another frame.
+  // We also return the list of resources that would be returned by
+  // DidReceiveCompositorFrameAck.
+  [Sync] SubmitCompositorFrameSync(LocalSurfaceId local_surface_id,
+                        CompositorFrame frame,
+                        HitTestRegionList? hit_test_region_list,
+                        uint64 submit_time)
+                        => (array<ReturnedResource> resources);
+
+  // Notifies the frame sink that a BeginFrame was completed, but that no
+  // CompositorFrame was produced as a result of it.
+  DidNotProduceFrame(BeginFrameAck ack);
+
+  // Informs the display compositor that the client allocated a shared bitmap.
+  // The |id| can then be used in subsequent CompositorFrames given to
+  // SubmitCompositorFrame. The |id| is a Mailbox type which doubles as a
+  // SharedBitmapId for this case.
+  DidAllocateSharedBitmap(mojo_base.mojom.ReadOnlySharedMemoryRegion region,
+                          gpu.mojom.Mailbox id);
+
+  // Informs the display compositor that the client deleted a shared bitmap. This
+  // allows the service to free the shared memory that was previously given to it
+  // via DidAllocateSharedBitmap(). The |id| is a Mailbox type which doubles as a
+  // SharedBitmapId for this case.
+  DidDeleteSharedBitmap(gpu.mojom.Mailbox id);
+};
+
+interface CompositorFrameSinkClient {
+  // Notification that the previous CompositorFrame given to
+  // SubmitCompositorFrame() has been processed and that another frame
+  // can be submitted. This provides backpressure from the display compositor
+  // so that frames are submitted only at the rate it can handle them.
+  // TODO(fsamuel): This method ought not be necessary with unified BeginFrame.
+  // However, there's a fair amount of cleanup and refactoring necessary to get
+  // rid of it.
+  DidReceiveCompositorFrameAck(array<ReturnedResource> resources);
+
+  // Notification for the client to generate a CompositorFrame. The client is
+  // required to respond with either SubmitCompositorFrame() or
+  // DidNotProduceFrame(). If the client is unresponsive then begin frames will
+  // be throttled and eventually stopped entirely.
+  OnBeginFrame(BeginFrameArgs args,
+               map<uint32, FrameTimingDetails> details);
+
+  // Inform the client that OnBeginFrame may not be called for some time.
+  OnBeginFramePausedChanged(bool paused);
+
+  // Returns resources sent to SubmitCompositorFrame to be reused or freed.
+  ReclaimResources(array<ReturnedResource> resources);
+};

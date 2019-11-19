@@ -12,7 +12,6 @@
 #include "base/callback.h"
 
 namespace extensions {
-
 namespace api {
 
 class DocumentScanInterface {
@@ -30,21 +29,22 @@ class DocumentScanInterface {
 
   enum ScanMode { kScanModeColor, kScanModeGray, kScanModeLineart };
 
-  typedef base::Callback<void(
+  using ListScannersResultsCallback = base::OnceCallback<void(
       const std::vector<ScannerDescription>& scanner_descriptions,
-      const std::string& error)> ListScannersResultsCallback;
+      const std::string& error)>;
 
-  typedef base::Callback<void(const std::string& scanned_image,
+  using ScanResultsCallback =
+      base::OnceCallback<void(const std::string& scanned_image,
                               const std::string& mime_type,
-                              const std::string& error)> ScanResultsCallback;
+                              const std::string& error)>;
 
   virtual ~DocumentScanInterface();
 
   virtual void Scan(const std::string& scanner_name,
                     ScanMode mode,
                     int resolution_dpi,
-                    const ScanResultsCallback& callback) = 0;
-  virtual void ListScanners(const ListScannersResultsCallback& callback) = 0;
+                    ScanResultsCallback callback) = 0;
+  virtual void ListScanners(ListScannersResultsCallback callback) = 0;
 
   // Creates a platform-specific DocumentScanInterface instance.
   static DocumentScanInterface* CreateInstance();
@@ -54,7 +54,6 @@ class DocumentScanInterface {
 };
 
 }  // namespace api
-
 }  // namespace extensions
 
 #endif  // EXTENSIONS_BROWSER_API_DOCUMENT_SCAN_DOCUMENT_SCAN_INTERFACE_H_

@@ -26,6 +26,7 @@
 // https://svgwg.org/svg2-draft/types.html#InterfaceSVGAnimatedEnumeration
 
 [
+    Exposed=Window,
     ImplementedAs=SVGAnimatedEnumerationBase
 ] interface SVGAnimatedEnumeration {
     [RaisesException=Setter] attribute unsigned short baseVal;

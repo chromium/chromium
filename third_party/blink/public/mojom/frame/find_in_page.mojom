@@ -4,7 +4,7 @@
 
 module blink.mojom;
 
-import "ui/gfx/geometry/mojo/geometry.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
 
 interface FindInPage {
   // If |options.find_next| is false, this is a "Start Find" call.
@@ -40,7 +40,7 @@ interface FindInPage {
   // Sets the client for this FindInPage instance. Should be called before
   // calling ActivateNearestFindResult.
   // TODO(rakina): Remove the need for this?
-  SetClient(FindInPageClient client);
+  SetClient(pending_remote<FindInPageClient> client);
 
   // Returns the bounding boxes of the find-in-page match markers from the
   // frame. The bounding boxes are returned in find-in-page coordinates.

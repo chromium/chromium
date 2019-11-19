@@ -9,7 +9,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/sequenced_task_runner.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
 #include "components/policy/core/common/async_policy_loader.h"
@@ -84,7 +84,7 @@ class AsyncPolicyProviderTest : public testing::Test {
   void SetUp() override;
   void TearDown() override;
 
-  base::test::ScopedTaskEnvironment task_environment_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
   SchemaRegistry schema_registry_;
   PolicyBundle initial_bundle_;
   MockPolicyLoader* loader_;

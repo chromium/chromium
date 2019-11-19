@@ -1,0 +1,8 @@
+include_rules = [
+  "+components/viz/common/gpu",
+  "+gpu",
+  "+third_party/skia",
+  "+ui/base/ui_base_features.h",
+  "+ui/gfx",
+  "+ui/gl",
+]

@@ -5,12 +5,13 @@
 #ifndef FUCHSIA_ENGINE_CONTEXT_PROVIDER_IMPL_H_
 #define FUCHSIA_ENGINE_CONTEXT_PROVIDER_IMPL_H_
 
+#include <fuchsia/web/cpp/fidl.h>
 #include <lib/fidl/cpp/binding_set.h>
+#include <lib/fidl/cpp/interface_ptr_set.h>
 #include <memory>
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "chromium/web/cpp/fidl.h"
 #include "fuchsia/engine/web_engine_export.h"
 
 namespace base {
@@ -20,38 +21,40 @@ class Process;
 }  // namespace base
 
 class WEB_ENGINE_EXPORT ContextProviderImpl
-    : public chromium::web::ContextProvider {
+    : public fuchsia::web::ContextProvider,
+      public fuchsia::web::Debug {
  public:
   using LaunchCallbackForTest = base::RepeatingCallback<base::Process(
       const base::CommandLine& command,
       const base::LaunchOptions& options)>;
 
+  // Handle Id used to pass the request channel to Context processes.
+  static const uint32_t kContextRequestHandleId;
+
   ContextProviderImpl();
   ~ContextProviderImpl() override;
 
-  // Binds |this| object instance to |request|.
-  // The service will persist and continue to serve other channels in the event
-  // that a bound channel is dropped.
-  void Bind(fidl::InterfaceRequest<chromium::web::ContextProvider> request);
-
-  // chromium::web::ContextProvider implementation.
-  void Create(chromium::web::CreateContextParams params,
-              ::fidl::InterfaceRequest<chromium::web::Context> context_request)
-      override;
-  void Create2(chromium::web::CreateContextParams2 params,
-               ::fidl::InterfaceRequest<chromium::web::Context> context_request)
-      override;
+  // fuchsia::web::ContextProvider implementation.
+  void Create(
+      fuchsia::web::CreateContextParams params,
+      fidl::InterfaceRequest<fuchsia::web::Context> context_request) override;
 
   // Sets a |launch| callback to use instead of calling LaunchProcess() to
   // create Context processes.
   void SetLaunchCallbackForTest(LaunchCallbackForTest launch);
 
  private:
+  // fuchsia::web::Debug implementation.
+  void EnableDevTools(
+      fidl::InterfaceHandle<fuchsia::web::DevToolsListener> listener,
+      EnableDevToolsCallback callback) override;
+
   // Set by tests to use to launch Context child processes, e.g. to allow a
   // fake Context process to be launched.
   LaunchCallbackForTest launch_for_test_;
 
-  fidl::BindingSet<chromium::web::ContextProvider> bindings_;
+  // The DevToolsListeners registered via the Debug interface.
+  fidl::InterfacePtrSet<fuchsia::web::DevToolsListener> devtools_listeners_;
 
   DISALLOW_COPY_AND_ASSIGN(ContextProviderImpl);
 };

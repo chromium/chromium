@@ -7,7 +7,7 @@
 #include <algorithm>
 
 #import "ios/chrome/browser/ui/collection_view/cells/MDCCollectionViewCell+Chrome.h"
-#import "ios/chrome/browser/ui/colors/MDCPalette+CrAdditions.h"
+#import "ios/chrome/common/colors/semantic_color_names.h"
 #import "ios/third_party/material_components_ios/src/components/Typography/src/MaterialTypography.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -60,7 +60,7 @@ const CGFloat kMinDetailTextWidthRatio = 0.25f;
 
 - (UIColor*)nameColor {
   if (!_nameColor) {
-    _nameColor = [[MDCPalette greyPalette] tint900];
+    _nameColor = [UIColor colorNamed:kTextPrimaryColor];
   }
   return _nameColor;
 }
@@ -75,7 +75,7 @@ const CGFloat kMinDetailTextWidthRatio = 0.25f;
 
 - (UIColor*)valueColor {
   if (!_valueColor) {
-    _valueColor = [[MDCPalette greyPalette] tint500];
+    _valueColor = [UIColor colorNamed:kTextSecondaryColor];
   }
   return _valueColor;
 }
@@ -122,7 +122,7 @@ const CGFloat kMinDetailTextWidthRatio = 0.25f;
     [contentView addSubview:_textLabel];
 
     _textLabel.font = [[MDCTypography fontLoader] mediumFontOfSize:14];
-    _textLabel.textColor = [[MDCPalette greyPalette] tint900];
+    _textLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
 
     _detailTextLabel = [[UILabel alloc] init];
     _detailTextLabel.translatesAutoresizingMaskIntoConstraints = NO;
@@ -130,7 +130,7 @@ const CGFloat kMinDetailTextWidthRatio = 0.25f;
     [contentView addSubview:_detailTextLabel];
 
     _detailTextLabel.font = [[MDCTypography fontLoader] regularFontOfSize:14];
-    _detailTextLabel.textColor = [[MDCPalette greyPalette] tint500];
+    _detailTextLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
 
     // Set up the width constraints. They are activated here and updated in
     // layoutSubviews.

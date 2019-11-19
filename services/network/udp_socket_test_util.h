@@ -14,6 +14,7 @@
 #include "base/macros.h"
 #include "base/optional.h"
 #include "base/run_loop.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_errors.h"
 #include "services/network/public/mojom/udp_socket.mojom.h"
@@ -26,7 +27,7 @@ namespace test {
 // completion.
 class UDPSocketTestHelper {
  public:
-  explicit UDPSocketTestHelper(mojom::UDPSocketPtr* socket);
+  explicit UDPSocketTestHelper(mojo::Remote<mojom::UDPSocket>* socket);
   ~UDPSocketTestHelper();
   int ConnectSync(const net::IPEndPoint& remote_addr,
                   mojom::UDPSocketOptionsPtr options,
@@ -44,11 +45,11 @@ class UDPSocketTestHelper {
   int LeaveGroupSync(const net::IPAddress& group_address);
 
  private:
-  mojom::UDPSocketPtr* socket_;
+  mojo::Remote<mojom::UDPSocket>* socket_;
 };
 
-// An implementation of mojom::UDPSocketReceiver that records received results.
-class UDPSocketReceiverImpl : public mojom::UDPSocketReceiver {
+// An implementation of mojom::UDPSocketListener that records received results.
+class UDPSocketListenerImpl : public mojom::UDPSocketListener {
  public:
   struct ReceivedResult {
     ReceivedResult(int net_error_arg,
@@ -62,8 +63,8 @@ class UDPSocketReceiverImpl : public mojom::UDPSocketReceiver {
     base::Optional<std::vector<uint8_t>> data;
   };
 
-  UDPSocketReceiverImpl();
-  ~UDPSocketReceiverImpl() override;
+  UDPSocketListenerImpl();
+  ~UDPSocketListenerImpl() override;
 
   const std::vector<ReceivedResult>& results() const { return results_; }
 
@@ -77,7 +78,7 @@ class UDPSocketReceiverImpl : public mojom::UDPSocketReceiver {
   std::vector<ReceivedResult> results_;
   size_t expected_receive_count_;
 
-  DISALLOW_COPY_AND_ASSIGN(UDPSocketReceiverImpl);
+  DISALLOW_COPY_AND_ASSIGN(UDPSocketListenerImpl);
 };
 
 }  // namespace test

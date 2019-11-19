@@ -2,11 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/extensions/api/settings_private/settings_private_event_router_factory.h"
+
 #include "chrome/browser/extensions/api/settings_private/settings_private_delegate_factory.h"
 #include "chrome/browser/extensions/api/settings_private/settings_private_event_router.h"
-#include "chrome/browser/extensions/api/settings_private/settings_private_event_router_factory.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "content/public/browser/browser_context.h"
+#include "extensions/browser/event_router_factory.h"
 #include "extensions/browser/extension_system_provider.h"
 #include "extensions/browser/extensions_browser_client.h"
 
@@ -30,6 +32,7 @@ SettingsPrivateEventRouterFactory::SettingsPrivateEventRouterFactory()
           "SettingsPrivateEventRouter",
           BrowserContextDependencyManager::GetInstance()) {
   DependsOn(ExtensionsBrowserClient::Get()->GetExtensionSystemFactory());
+  DependsOn(EventRouterFactory::GetInstance());
   DependsOn(SettingsPrivateDelegateFactory::GetInstance());
 }
 
@@ -44,7 +47,8 @@ KeyedService* SettingsPrivateEventRouterFactory::BuildServiceInstanceFor(
 content::BrowserContext*
 SettingsPrivateEventRouterFactory::GetBrowserContextToUse(
     content::BrowserContext* context) const {
-  return ExtensionsBrowserClient::Get()->GetOriginalContext(context);
+  // Use the incognito profile in guest mode.
+  return context;
 }
 
 bool SettingsPrivateEventRouterFactory::ServiceIsCreatedWithBrowserContext()
@@ -53,7 +57,7 @@ bool SettingsPrivateEventRouterFactory::ServiceIsCreatedWithBrowserContext()
 }
 
 bool SettingsPrivateEventRouterFactory::ServiceIsNULLWhileTesting() const {
-  return false;
+  return true;
 }
 
 }  // namespace extensions

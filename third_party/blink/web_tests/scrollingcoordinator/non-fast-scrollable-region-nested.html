@@ -24,7 +24,7 @@
               'iframe are correctly offset by the iframe location.');
 
   onload = function() {
-    nonFastScrollableRects = sortRects(internals.nonFastScrollableRects(document));
+    nonFastScrollableRects = sortRects([...internals.nonFastScrollableRects(document)]);
     shouldBe('nonFastScrollableRects.length', '3');
     shouldBeEqualToString('rectToString(nonFastScrollableRects[0])', '[51, 102, 200, 200]');
     shouldBeEqualToString('rectToString(nonFastScrollableRects[1])', '[51, 402, 211, 211]');

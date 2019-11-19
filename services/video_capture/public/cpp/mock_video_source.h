@@ -5,7 +5,8 @@
 #ifndef SERVICES_VIDEO_CAPTURE_PUBLIC_CPP_MOCK_VIDEO_SOURCE_H_
 #define SERVICES_VIDEO_CAPTURE_PUBLIC_CPP_MOCK_VIDEO_SOURCE_H_
 
-#include "services/video_capture/public/mojom/receiver.mojom.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "services/video_capture/public/mojom/video_frame_handler.mojom.h"
 #include "services/video_capture/public/mojom/video_source.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -17,19 +18,22 @@ class MockVideoSource : public video_capture::mojom::VideoSource {
   ~MockVideoSource() override;
 
   void CreatePushSubscription(
-      video_capture::mojom::ReceiverPtr subscriber,
+      mojo::PendingRemote<video_capture::mojom::VideoFrameHandler> subscriber,
       const media::VideoCaptureParams& requested_settings,
       bool force_reopen_with_new_settings,
-      video_capture::mojom::PushVideoStreamSubscriptionRequest subscription,
+      mojo::PendingReceiver<video_capture::mojom::PushVideoStreamSubscription>
+          subscription,
       CreatePushSubscriptionCallback callback) override;
 
-  MOCK_METHOD5(DoCreatePushSubscription,
-               void(video_capture::mojom::ReceiverPtr& subscriber,
-                    const media::VideoCaptureParams& requested_settings,
-                    bool force_reopen_with_new_settings,
-                    video_capture::mojom::PushVideoStreamSubscriptionRequest&
-                        subscription,
-                    CreatePushSubscriptionCallback& callback));
+  MOCK_METHOD5(
+      DoCreatePushSubscription,
+      void(mojo::PendingRemote<video_capture::mojom::VideoFrameHandler>
+               subscriber,
+           const media::VideoCaptureParams& requested_settings,
+           bool force_reopen_with_new_settings,
+           mojo::PendingReceiver<
+               video_capture::mojom::PushVideoStreamSubscription> subscription,
+           CreatePushSubscriptionCallback& callback));
 };
 
 }  // namespace video_capture

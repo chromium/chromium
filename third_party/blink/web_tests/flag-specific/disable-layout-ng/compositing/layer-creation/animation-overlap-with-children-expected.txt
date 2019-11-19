@@ -1,0 +1,79 @@
+Should be composited
+Should not be composited
+Should be composited
+{
+  "layers": [
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF"
+    },
+    {
+      "name": "LayoutBlockFlow DIV id='to-animate' class='container animating'",
+      "bounds": [262, 212],
+      "transform": 2
+    },
+    {
+      "name": "LayoutBlockFlow DIV class='composited banner'",
+      "bounds": [250, 50],
+      "contentsOpaque": true,
+      "backgroundColor": "#C0C0C0",
+      "transform": 3
+    },
+    {
+      "name": "Squashing Layer (first squashed layer: LayoutBlockFlow (positioned) DIV class='test1 box')",
+      "position": [5, 15],
+      "bounds": [100, 100],
+      "transform": 3
+    },
+    {
+      "name": "LayoutBlockFlow (relative positioned) DIV class='box'",
+      "bounds": [100, 100],
+      "contentsOpaque": true,
+      "backgroundColor": "#0000FF",
+      "transform": 4
+    }
+  ],
+  "transforms": [
+    {
+      "id": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [8, 8, 0, 1]
+      ]
+    },
+    {
+      "id": 2,
+      "parent": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [0, 0, 0, 1]
+      ]
+    },
+    {
+      "id": 3,
+      "parent": 2,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [6, 6, 0, 1]
+      ]
+    },
+    {
+      "id": 4,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [18, 230, 0, 1]
+      ]
+    }
+  ]
+}
+

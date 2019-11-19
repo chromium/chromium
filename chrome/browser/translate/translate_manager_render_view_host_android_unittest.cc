@@ -12,11 +12,9 @@
 
 #include "build/build_config.h"
 #include "chrome/browser/infobars/infobar_service.h"
-#include "chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/translate/translate_fake_page.h"
 #include "chrome/browser/translate/translate_service.h"
-#include "chrome/browser/ui/browser_window.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
@@ -58,8 +56,8 @@ class TranslateManagerRenderViewHostAndroidTest
     details.adopted_language = lang;
     ChromeTranslateClient::FromWebContents(web_contents())
         ->translate_driver()
-        .RegisterPage(fake_page_.BindToNewPagePtr(), details,
-                      page_translatable);
+        ->RegisterPage(fake_page_.BindToNewPageRemote(), details,
+                       page_translatable);
   }
 
   InfoBarService* infobar_service() {
@@ -107,7 +105,7 @@ class TranslateManagerRenderViewHostAndroidTest
     ChromeTranslateClient::CreateForWebContents(web_contents());
     ChromeTranslateClient::FromWebContents(web_contents())
         ->translate_driver()
-        .set_translate_max_reload_attempts(0);
+        ->set_translate_max_reload_attempts(0);
   }
 
   void TearDown() override {

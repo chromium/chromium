@@ -276,11 +276,8 @@ void TabLoader::StartLoading(const std::vector<RestoredTab>& tabs) {
   // Create a TabLoaderDelegate which will allow OS specific behavior for tab
   // loading. This needs to be done before any calls to AddTab, as the delegate
   // is used there.
-  bool delegate_existed = true;
-  if (!delegate_) {
+  if (!delegate_)
     delegate_ = TabLoaderDelegate::Create(this);
-    delegate_existed = false;
-  }
 
   // Add the tabs to the list of tabs loading/to load. Also, restore the
   // favicons of the background tabs (the title has already been set by now).

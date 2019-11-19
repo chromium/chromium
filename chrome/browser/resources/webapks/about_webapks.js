@@ -2,11 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import './strings.m.js';
+
+import {addWebUIListener} from 'chrome://resources/js/cr.m.js';
+import {$, createElementWithClassName} from 'chrome://resources/js/util.m.js';
+
 /**
  * @typedef {{
  *   name: string,
  *   shortName: string,
  *   packageName: string,
+ *   id: string,
  *   shellApkVersion: number,
  *   versionCode: number,
  *   uri: string,
@@ -18,10 +24,24 @@
  *   themeColor: string,
  *   backgroundColor: string,
  *   lastUpdateCheckTimeMs: number,
+ *   lastUpdateCompletionTimeMs: number,
  *   relaxUpdates: boolean,
+ *   backingBrowser: string,
+ *   isBackingBrowser: boolean,
+ *   updateStatus: string,
  * }}
  */
 let WebApkInfo;
+
+/**
+ * @typedef {{
+ *   id: string,
+ *   status: string,
+ * }}
+ */
+let UpdateStatus;
+
+const UPDATE_TIMEOUT = 60 * 1000;  // milliseconds.
 
 /**
  * Creates and returns an element (with |text| as content) assigning it the
@@ -39,20 +59,6 @@ function createElementWithTextAndClass(text, type, className) {
 }
 
 /**
- * Callback from the backend with the information of a WebAPK to display.
- * This will be called once for each WebAPK available on the device and each
- * one will be appended at the end of the other.
- *
- * @param {!Array<WebApkInfo>} webApkList List of objects with information about
- * WebAPKs installed.
- */
-function returnWebApksInfo(webApkList) {
-  for (const webApkInfo of webApkList) {
-    addWebApk(webApkInfo);
-  }
-}
-
-/**
  * @param {HTMLElement} webApkList List of elements which contain WebAPK
  * attributes.
  * @param {string} label Text that identifies the new element.
@@ -67,9 +73,24 @@ function addWebApkField(webApkList, label, value) {
 }
 
 /**
+ * @param {HTMLElement} webApkList List of elements which contain WebAPK
+ * attributes.
+ * @param {string} text For the button.
+ * @param {function()} callback Invoked on click.
+ * @return {Element} The button that was created.
+ */
+function addWebApkButton(webApkList, text, callback) {
+  const divElement =
+      createElementWithTextAndClass(text, 'button', 'update-button');
+  divElement.onclick = callback;
+  webApkList.appendChild(divElement);
+  return divElement;
+}
+
+/**
  * Adds a new entry to the page with the information of a WebAPK.
  *
- * @param {WebApkInfo} webApkInfo Information about an installed WebAPK.
+ * @param {!WebApkInfo} webApkInfo Information about an installed WebAPK.
  */
 function addWebApk(webApkInfo) {
   /** @type {HTMLElement} */ const webApkList = $('webapk-list');
@@ -98,10 +119,43 @@ function addWebApk(webApkInfo) {
       webApkList, 'Last Update Check Time: ',
       new Date(webApkInfo.lastUpdateCheckTimeMs).toString());
   addWebApkField(
+      webApkList, 'Last Update Completion Time: ',
+      new Date(webApkInfo.lastUpdateCompletionTimeMs).toString());
+  addWebApkField(
       webApkList, 'Check for Updates Less Frequently: ',
       webApkInfo.relaxUpdates.toString());
+  addWebApkField(webApkList, 'Owning Browser: ', webApkInfo.backingBrowser);
+  addWebApkField(webApkList, 'Update Status: ', webApkInfo.updateStatus);
+
+  // TODO(ckitagawa): Convert to an enum using mojom handlers.
+  if (webApkInfo.updateStatus == 'Not updatable' ||
+      !webApkInfo.isBackingBrowser) {
+    return;
+  }
+
+  const buttonElement =
+      addWebApkButton(webApkList, 'Update ' + webApkInfo.name, () => {
+        alert(
+            'The WebAPK will check for an update the next time it launches. ' +
+            'If an update is available, the "Update Status" on this page ' +
+            'will switch to "Scheduled". The update will be installed once ' +
+            'the WebAPK is closed (this may take a few minutes).');
+        chrome.send('requestWebApkUpdate', [webApkInfo.id]);
+      });
+
+  // Prevent updates in the WebAPK server caching window as they will fail.
+  const msSinceLastUpdate = Date.now() - webApkInfo.lastUpdateCompletionTimeMs;
+  if (msSinceLastUpdate < UPDATE_TIMEOUT) {
+    buttonElement.disabled = true;
+    window.setTimeout(() => {
+      buttonElement.disabled = false;
+    }, UPDATE_TIMEOUT - msSinceLastUpdate);
+  }
 }
 
 document.addEventListener('DOMContentLoaded', function() {
+  // Add a WebUI listener for the 'web-apk-info' event emmitted from the
+  // backend. This will be triggered once per WebAPK.
+  addWebUIListener('web-apk-info', addWebApk);
   chrome.send('requestWebApksInfo');
 });

@@ -1,0 +1,39 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+
+package remoting.ftl;
+
+// Next Id: 4
+message ChromotingMessage {
+  // Monotonically increasing sequence id for messages, starting at 1.
+  // Use 0 (or don't set) for messages that are not part of a sequence.
+  optional int32 sequence_id = 2;
+
+  oneof message {
+    ChromotingXmppMessage xmpp = 1;
+    HostStatusChangeMessage status = 3;
+  }
+}
+
+// Chromoting Legacy XMPP message.
+// Next Id: 2
+message ChromotingXmppMessage {
+  // A serialized version of the IQ stanza.
+  optional string stanza = 1;
+}
+
+// Notifies the host of a change in its status in the Directory.
+// Next Id: 2
+message HostStatusChangeMessage {
+  enum DirectoryState {
+    NOT_SET = 0;
+    DELETED = 1;
+  }
+  // Most recentOperation that was performed on the host entry.
+  optional DirectoryState directory_state = 1;
+}

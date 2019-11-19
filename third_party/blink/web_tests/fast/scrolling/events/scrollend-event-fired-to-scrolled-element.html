@@ -2,6 +2,7 @@
 <script src="../../../resources/testharness.js"></script>
 <script src="../../../resources/testharnessreport.js"></script>
 <script src="../../../resources/gesture-util.js"></script>
+<script src="resources/scroll-util.js"></script>
 <style>
 #scrollableDiv {
   width: 200px;
@@ -30,15 +31,6 @@ var scrolling_div = document.getElementById('scrollableDiv');
 var rect = scrolling_div.getBoundingClientRect();
 var x = rect.left + rect.width / 2;
 var y = rect.top + rect.height / 2;
-function scrollRight() {
-  return smoothScroll(1000, x, y, GestureSourceType.TOUCH_INPUT, "right",
-      SPEED_INSTANT);
-}
-
-function scrollDown() {
-  return smoothScroll(1000, x, y, GestureSourceType.TOUCH_INPUT, "down",
-      SPEED_INSTANT);
-}
 
 var horizontal_scrollend_arrived = false;
 var vertical_scrollend_arrived = false;
@@ -55,25 +47,46 @@ function onVerticalScrollEnd(event) {
 scrolling_div.addEventListener("scrollend", onHorizontalScrollEnd);
 scrolling_div.addEventListener("scrollend", onVerticalScrollEnd);
 
-promise_test (async (t) => {
-  // Make sure that no scrollend event is sent to document.
-  document.addEventListener("scrollend",
-      t.unreached_func("Document got unexpected scrollend event."));
-
+async function test_scrollend_event_fire(source_device,
+    precise_scroll_deltas) {
+  horizontal_scrollend_arrived = false;
+  vertical_scrollend_arrived = false;
+  scrolling_div.scrollTo(0, 0);
   await waitForCompositorCommit();
 
   // Do a horizontal scroll and wait for scrollend event.
-  await scrollRight();
+  await scrollRight(source_device, precise_scroll_deltas);
   await waitFor(() => { return horizontal_scrollend_arrived; },
       'Scroller did not receive scrollend event after horizontal scroll.');
   assert_equals(scrolling_div.scrollWidth - scrolling_div.scrollLeft,
               scrolling_div.clientWidth);
 
   // Do a vertical scroll and wait for scrollend event.
-  await scrollDown();
+  await scrollDown(source_device, precise_scroll_deltas);
   await waitFor(() => { return vertical_scrollend_arrived; },
       'Scroller did not receive scrollend event after vertical scroll.');
   assert_equals(scrolling_div.scrollHeight - scrolling_div.scrollTop,
               scrolling_div.clientHeight);
-}, 'Tests that the scrolled element gets scrollend event at the end of scroll.');
+}
+
+promise_test (async (t) => {
+  // Make sure that no scrollend event is sent to document.
+  document.addEventListener("scrollend",
+      t.unreached_func("Document got unexpected scrollend event."));
+  return test_scrollend_event_fire(GestureSourceType.TOUCH_INPUT);
+}, 'Tests that the scrolled element gets scrollend event at the end of touch scrolling.');
+promise_test (async (t) => {
+  // Make sure that no scrollend event is sent to document.
+  document.addEventListener("scrollend",
+      t.unreached_func("Document got unexpected scrollend event."));
+  return test_scrollend_event_fire(GestureSourceType.MOUSE_INPUT, true);
+}, 'Tests that the scrolled element gets scrollend event at the end of ' +
+   'non-animated wheel scrolling.');
+promise_test (async (t) => {
+  // Make sure that no scrollend event is sent to document.
+  document.addEventListener("scrollend",
+      t.unreached_func("Document got unexpected scrollend event."));
+  return test_scrollend_event_fire(GestureSourceType.MOUSE_INPUT, false);
+}, 'Tests that the scrolled element gets scrollend event at the end of ' +
+   'animated wheel scrolling (smooth-scrolling).');
 </script>

@@ -1,0 +1,16 @@
+Name: linux-syscall-support
+Short Name: lss
+URL: https://chromium.googlesource.com/linux-syscall-support/
+Revision: See DEPS
+License: BSD 3-clause
+License File: lss/linux-syscall-support.h
+Security Critical: yes
+
+Description:
+Every so often, projects need to directly embed Linux system calls instead of
+calling the implementations in the system runtime library. This project
+provides a header file that can be included into your application whenever you
+need to make direct system calls.
+
+Local Modifications:
+None.

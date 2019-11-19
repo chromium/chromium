@@ -5,28 +5,15 @@
 // Simplified implementation of the <code>chrome.identity</code> for app_shell.
 namespace identity {
 
-  dictionary GetAuthTokenDetails {
-    // Ignored parameter. Exists only for compatibility.
-    boolean? interactive;
-  };
-
   dictionary InvalidTokenDetails {
     // Ignored parameter. Exists only for compatibility.
     DOMString? token;
   };
 
-  // Called with the OAuth2 access token on success or undefined on error.
-  callback GetAuthTokenCallback = void (optional DOMString token);
-  
   // Called by removeCachedAuthToken().
   callback InvalidateAuthTokenCallback = void ();
 
   interface Functions {
-    // Returns an OAuth2 access token for the current app_shell user for scopes
-    // from the manifest. Does not prompt the user. 
-    static void getAuthToken(GetAuthTokenDetails options,
-                             GetAuthTokenCallback callback);
-
     // Stub. Calls callback immediately because app_shell does not cache access
     // tokens the way Chrome does.
     static void removeCachedAuthToken(InvalidTokenDetails details,

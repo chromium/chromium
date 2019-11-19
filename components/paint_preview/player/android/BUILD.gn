@@ -1,0 +1,74 @@
+# Copyright 2019 The Chromium Authors.All rights reserved.
+# Use of this source code is governed by a BSD - style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+
+source_set("player_android") {
+  sources = [
+    "player_compositor_delegate_android.cc",
+    "player_compositor_delegate_android.h",
+  ]
+
+  deps = [
+    ":jni_headers",
+    "//base",
+    "//components/paint_preview/browser",
+    "//components/paint_preview/player",
+    "//components/services/paint_preview_compositor",
+    "//ui/gfx",
+    "//url",
+  ]
+
+  public_deps = [
+    "//components/services/paint_preview_compositor/public/mojom",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "player_compositor_delegate_android_unittest.cc",
+  ]
+  deps = [
+    ":player_android",
+    "//base",
+    "//base/test:test_support",
+    "//skia",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}
+
+generate_jni("jni_headers") {
+  sources = [
+    "java/src/org/chromium/components/paintpreview/player/PlayerCompositorDelegateImpl.java",
+  ]
+}
+
+android_library("java") {
+  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+
+  java_files = [
+    "java/src/org/chromium/components/paintpreview/player/PaintPreviewFrame.java",
+    "java/src/org/chromium/components/paintpreview/player/PlayerCompositorDelegate.java",
+    "java/src/org/chromium/components/paintpreview/player/PlayerCompositorDelegateImpl.java",
+    "java/src/org/chromium/components/paintpreview/player/PlayerManager.java",
+    "java/src/org/chromium/components/paintpreview/player/frame/PlayerFrameCoordinator.java",
+  ]
+
+  deps = [
+    "//base:base_java",
+    "//base:jni_java",
+  ]
+}
+
+junit_binary("paint_preview_junit_tests") {
+  java_files = [ "junit/src/org/chromium/components/paintpreview/player/PlayerManagerTest.java" ]
+  deps = [
+    ":java",
+    "//base:base_java",
+    "//base:base_java_test_support",
+    "//base:base_junit_test_support",
+  ]
+}

@@ -90,7 +90,8 @@ class ErrorTolerantBleAdvertisementImpl
 
   base::Closure stop_callback_;
 
-  base::WeakPtrFactory<ErrorTolerantBleAdvertisementImpl> weak_ptr_factory_;
+  base::WeakPtrFactory<ErrorTolerantBleAdvertisementImpl> weak_ptr_factory_{
+      this};
 
   DISALLOW_COPY_AND_ASSIGN(ErrorTolerantBleAdvertisementImpl);
 };

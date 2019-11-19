@@ -5,13 +5,13 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_TABLE_PAINTER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_TABLE_PAINTER_H_
 
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
 
-class LayoutPoint;
 class LayoutTable;
 struct PaintInfo;
+struct PhysicalOffset;
 
 class TablePainter {
   STACK_ALLOCATED();
@@ -19,10 +19,10 @@ class TablePainter {
  public:
   TablePainter(const LayoutTable& layout_table) : layout_table_(layout_table) {}
 
-  void PaintObject(const PaintInfo&, const LayoutPoint& paint_offset);
+  void PaintObject(const PaintInfo&, const PhysicalOffset& paint_offset);
   void PaintBoxDecorationBackground(const PaintInfo&,
-                                    const LayoutPoint& paint_offset);
-  void PaintMask(const PaintInfo&, const LayoutPoint& paint_offset);
+                                    const PhysicalOffset& paint_offset);
+  void PaintMask(const PaintInfo&, const PhysicalOffset& paint_offset);
 
  private:
   void PaintCollapsedBorders(const PaintInfo&);

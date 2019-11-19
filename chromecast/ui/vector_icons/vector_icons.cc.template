@@ -1,0 +1,23 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// vector_icons.cc.template is used to generate vector_icons.cc. Edit the former
+// rather than the latter.
+
+#include "chromecast/ui/vector_icons.h"
+
+#include "base/logging.h"
+#include "components/vector_icons/cc_macros.h"
+#include "ui/gfx/vector_icon_types.h"
+
+#define DECLARE_VECTOR_COMMAND(x) using gfx::x;
+DECLARE_VECTOR_COMMANDS
+
+namespace chromecast {
+namespace vector_icons {
+
+TEMPLATE_PLACEHOLDER
+
+}  // namespace vector_icons
+}  // namespace chromecast

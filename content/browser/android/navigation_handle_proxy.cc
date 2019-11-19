@@ -7,8 +7,8 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
+#include "content/public/android/content_jni_headers/NavigationHandle_jni.h"
 #include "content/public/browser/navigation_handle.h"
-#include "jni/NavigationHandle_jni.h"
 
 using base::android::AttachCurrentThread;
 using base::android::ConvertUTF8ToJavaString;
@@ -88,7 +88,6 @@ NavigationHandleProxy::~NavigationHandleProxy() {
 // Called from Java.
 void NavigationHandleProxy::SetRequestHeader(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
     const JavaParamRef<jstring>& name,
     const JavaParamRef<jstring>& value) {
   cpp_navigation_handle_->SetRequestHeader(ConvertJavaStringToUTF8(name),
@@ -98,7 +97,6 @@ void NavigationHandleProxy::SetRequestHeader(
 // Called from Java.
 void NavigationHandleProxy::RemoveRequestHeader(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
     const JavaParamRef<jstring>& name) {
   cpp_navigation_handle_->RemoveRequestHeader(ConvertJavaStringToUTF8(name));
 }

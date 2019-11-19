@@ -16,10 +16,10 @@
 #include "chromecast/app/android/cast_crash_reporter_client_android.h"
 #include "chromecast/base/chromecast_config_android.h"
 #include "chromecast/base/version.h"
+#include "chromecast/browser/jni_headers/CastCrashHandler_jni.h"
 #include "components/crash/content/app/crash_reporter_client.h"
 #include "components/crash/content/app/crashpad.h"
 #include "content/public/common/content_switches.h"
-#include "jni/CastCrashHandler_jni.h"
 
 namespace {
 

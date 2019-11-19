@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_POLICY_ENTERPRISE_STARTUP_DIALOG_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_POLICY_ENTERPRISE_STARTUP_DIALOG_VIEW_H_
 
+#include <memory>
 #include <string>
 
 #include "base/callback_forward.h"
@@ -46,10 +47,6 @@ class EnterpriseStartupDialogView : public views::DialogDelegateView {
   bool Close() override;
   bool ShouldShowWindowTitle() const override;
   ui::ModalType GetModalType() const override;
-  views::View* CreateExtraView() override;
-
-  // override ui::DialogModal
-  int GetDialogButtons() const override;
 
   // override views::View
   gfx::Size CalculatePreferredSize() const override;
@@ -57,12 +54,13 @@ class EnterpriseStartupDialogView : public views::DialogDelegateView {
   // Remove all existing child views from the dialog, show/hide dialog buttons.
   void ResetDialog(bool show_accept_button);
   // Append child views to the content area, setup the layout.
-  void SetupLayout(views::View* icon, views::View* text);
+  void SetupLayout(std::unique_ptr<views::View> icon,
+                   std::unique_ptr<views::View> text);
 
   EnterpriseStartupDialog::DialogResultCallback callback_;
-  bool can_show_browser_window_;
+  bool can_show_browser_window_ = false;
 
-  base::WeakPtrFactory<EnterpriseStartupDialogView> weak_factory_;
+  base::WeakPtrFactory<EnterpriseStartupDialogView> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(EnterpriseStartupDialogView);
 };

@@ -74,7 +74,7 @@ class InstantExtendedTest : public InProcessBrowserTest,
           ->OmniboxFocusChanged(OMNIBOX_FOCUS_VISIBLE,
                                 OMNIBOX_FOCUS_CHANGE_EXPLICIT);
     } else {
-      instant_browser()->window()->GetLocationBar()->FocusLocation();
+      instant_browser()->window()->GetLocationBar()->FocusLocation(false);
     }
   }
 

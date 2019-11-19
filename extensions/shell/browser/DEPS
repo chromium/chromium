@@ -20,18 +20,15 @@ include_rules = [
   "+content/shell/browser/shell_url_request_context_getter.h",
 
   # For device backend support.
-  "+device/base",
   "+device/bluetooth",
-  "+device/usb",
 
   "+gin",
-
-  "+google_apis/gaia",
 
   "+net",
 
   "+ppapi",
   "+services/network/session_cleanup_cookie_store.h",
+  "+services/network/public/mojom/cors_origin_pattern.mojom.h",
   "+services/network/public/mojom/url_loader.mojom.h",
   "+storage/browser/quota",
   "+third_party/skia/include",

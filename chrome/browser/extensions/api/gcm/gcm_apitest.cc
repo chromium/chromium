@@ -12,8 +12,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "components/browser_sync/browser_sync_switches.h"
 #include "components/gcm_driver/fake_gcm_profile_service.h"
+#include "components/sync/driver/sync_driver_switches.h"
 #include "extensions/test/result_catcher.h"
 
 using extensions::ResultCatcher;
@@ -126,8 +126,8 @@ IN_PROC_BROWSER_TEST_F(GcmApiTest, Register) {
 
   const std::vector<std::string>& sender_ids =
       service()->last_registered_sender_ids();
-  EXPECT_TRUE(base::ContainsValue(sender_ids, "Sender1"));
-  EXPECT_TRUE(base::ContainsValue(sender_ids, "Sender2"));
+  EXPECT_TRUE(base::Contains(sender_ids, "Sender1"));
+  EXPECT_TRUE(base::Contains(sender_ids, "Sender2"));
 }
 
 IN_PROC_BROWSER_TEST_F(GcmApiTest, Unregister) {

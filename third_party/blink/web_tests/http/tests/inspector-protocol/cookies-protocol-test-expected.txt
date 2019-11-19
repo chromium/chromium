@@ -119,6 +119,12 @@ name: cookie8, value: url-based, domain: www.chromium.org, path: /, secure, sess
 
 Running test: deleteAllCookies
 
+Running test: setCookiesWithInvalidCookie
+Adding multiple cookies
+Num of cookies 0
+
+Running test: deleteAllCookies
+
 Running test: deleteCookieByURL
 Adding multiple cookies
 Num of cookies 2

@@ -13,7 +13,7 @@ class CSSTranslateInterpolationType : public CSSInterpolationType {
  public:
   CSSTranslateInterpolationType(PropertyHandle property)
       : CSSInterpolationType(property) {
-    DCHECK_EQ(CssProperty().PropertyID(), CSSPropertyTranslate);
+    DCHECK_EQ(CssProperty().PropertyID(), CSSPropertyID::kTranslate);
   }
 
   InterpolationValue MaybeConvertStandardPropertyUnderlyingValue(

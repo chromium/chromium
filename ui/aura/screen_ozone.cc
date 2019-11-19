@@ -9,11 +9,19 @@
 #include "ui/aura/window_tree_host.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
+#include "ui/ozone/public/ozone_platform.h"
+#include "ui/ozone/public/platform_screen.h"
 
 namespace aura {
 
-ScreenOzone::ScreenOzone(std::unique_ptr<ui::PlatformScreen> platform_screen)
-    : platform_screen_(std::move(platform_screen)) {}
+ScreenOzone::ScreenOzone() {
+  platform_screen_ = ui::OzonePlatform::GetInstance()->CreateScreen();
+  if (!platform_screen_) {
+    NOTREACHED()
+        << "PlatformScreen is not implemented for this ozone platform.";
+  }
+}
+
 ScreenOzone::~ScreenOzone() = default;
 
 gfx::Point ScreenOzone::GetCursorScreenPoint() {

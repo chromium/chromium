@@ -1,0 +1,114 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chrome/browser/profiles/pref_service_builder_utils.h"
+
+#include <stddef.h>
+
+#include <memory>
+#include <utility>
+
+#include "base/files/file_util.h"
+#include "base/path_service.h"
+#include "base/sequenced_task_runner.h"
+#include "base/threading/scoped_blocking_call.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/policy/chrome_browser_policy_connector.h"
+#include "chrome/browser/prefs/browser_prefs.h"
+#include "chrome/browser/prefs/chrome_pref_service_factory.h"
+#include "chrome/browser/prefs/in_process_service_factory_factory.h"
+#include "chrome/browser/prefs/profile_pref_store_manager.h"
+#include "chrome/browser/safe_browsing/safe_browsing_service.h"
+#include "chrome/common/buildflags.h"
+#include "chrome/common/chrome_constants.h"
+#include "chrome/grit/chromium_strings.h"
+#include "components/keyed_service/content/browser_context_dependency_manager.h"
+#include "components/keyed_service/core/simple_dependency_manager.h"
+#include "components/keyed_service/core/simple_keyed_service_factory.h"
+#include "components/policy/core/common/cloud/cloud_policy_manager.h"
+#include "components/pref_registry/pref_registry_syncable.h"
+#include "components/prefs/pref_value_store.h"
+#include "components/sync_preferences/pref_service_syncable.h"
+#include "content/public/browser/network_service_instance.h"
+#include "services/preferences/public/cpp/in_process_service_factory.h"
+#include "services/preferences/public/mojom/tracked_preference_validation_delegate.mojom.h"
+#include "ui/base/l10n/l10n_util.h"
+
+#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
+#include "chrome/browser/content_settings/content_settings_supervised_provider.h"
+#include "chrome/browser/supervised_user/supervised_user_constants.h"
+#include "chrome/browser/supervised_user/supervised_user_settings_service.h"
+#include "chrome/browser/supervised_user/supervised_user_settings_service_factory.h"
+#endif
+
+namespace {
+
+// Text content of README file created in each profile directory. Both %s
+// placeholders must contain the product name. This is not localizable and hence
+// not in resources.
+const char kReadmeText[] =
+    "%s settings and storage represent user-selected preferences and "
+    "information and MUST not be extracted, overwritten or modified except "
+    "through %s defined APIs.";
+
+}  // namespace
+
+void CreateProfileReadme(const base::FilePath& profile_path) {
+  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
+                                                base::BlockingType::MAY_BLOCK);
+  base::FilePath readme_path = profile_path.Append(chrome::kReadmeFilename);
+  std::string product_name = l10n_util::GetStringUTF8(IDS_PRODUCT_NAME);
+  std::string readme_text = base::StringPrintf(
+      kReadmeText, product_name.c_str(), product_name.c_str());
+  if (base::WriteFile(readme_path, readme_text.data(), readme_text.size()) ==
+      -1) {
+    LOG(ERROR) << "Could not create README file.";
+  }
+}
+
+void RegisterProfilePrefs(bool is_signin_profile,
+                          const std::string& locale,
+                          user_prefs::PrefRegistrySyncable* pref_registry) {
+#if defined(OS_CHROMEOS)
+  if (is_signin_profile)
+    RegisterSigninProfilePrefs(pref_registry);
+  else
+#endif
+    RegisterUserProfilePrefs(pref_registry, locale);
+
+  SimpleDependencyManager::GetInstance()->RegisterProfilePrefsForServices(
+      pref_registry);
+  BrowserContextDependencyManager::GetInstance()
+      ->RegisterProfilePrefsForServices(pref_registry);
+}
+
+std::unique_ptr<sync_preferences::PrefServiceSyncable> CreatePrefService(
+    scoped_refptr<user_prefs::PrefRegistrySyncable> pref_registry,
+    PrefStore* extension_pref_store,
+    policy::PolicyService* policy_service,
+    policy::ChromeBrowserPolicyConnector* browser_policy_connector,
+    mojo::PendingRemote<prefs::mojom::TrackedPreferenceValidationDelegate>
+        pref_validation_delegate,
+    scoped_refptr<base::SequencedTaskRunner> io_task_runner,
+    SimpleFactoryKey* key,
+    const base::FilePath& path,
+    bool async_prefs) {
+  SupervisedUserSettingsService* supervised_user_settings = nullptr;
+#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
+  supervised_user_settings =
+      SupervisedUserSettingsServiceFactory::GetForKey(key);
+  supervised_user_settings->Init(path, io_task_runner.get(), !async_prefs);
+#endif
+  {
+    std::unique_ptr<PrefValueStore::Delegate> delegate =
+        InProcessPrefServiceFactoryFactory::GetInstanceForKey(key)
+            ->CreateDelegate();
+    delegate->InitPrefRegistry(pref_registry.get());
+    return chrome_prefs::CreateProfilePrefs(
+        path, std::move(pref_validation_delegate), policy_service,
+        supervised_user_settings, extension_pref_store, pref_registry,
+        browser_policy_connector, async_prefs, io_task_runner,
+        std::move(delegate));
+  }
+}

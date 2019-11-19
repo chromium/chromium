@@ -14,6 +14,7 @@
 #include "components/prefs/pref_registry.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "net/http/http_server_properties.h"
 #include "net/nqe/network_quality_estimator.h"
 
 namespace {
@@ -70,8 +71,7 @@ NetworkQualitiesPrefDelegate::NetworkQualitiesPrefDelegate(
     PrefService* pref_service,
     net::NetworkQualityEstimator* network_quality_estimator)
     : prefs_manager_(std::make_unique<PrefDelegateImpl>(pref_service)),
-      network_quality_estimator_(network_quality_estimator),
-      weak_ptr_factory_(this) {
+      network_quality_estimator_(network_quality_estimator) {
   DCHECK(pref_service);
   DCHECK(network_quality_estimator_);
 

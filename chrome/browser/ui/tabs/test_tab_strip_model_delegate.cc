@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/tabs/test_tab_strip_model_delegate.h"
 
+#include <vector>
+
 #include "chrome/browser/extensions/tab_helper.h"
 #include "chrome/browser/ui/tab_contents/core_tab_helper.h"
 
@@ -14,9 +16,9 @@ TestTabStripModelDelegate::~TestTabStripModelDelegate() {
 }
 
 void TestTabStripModelDelegate::AddTabAt(const GURL& url,
-                                            int index,
-                                            bool foreground) {
-}
+                                         int index,
+                                         bool foreground,
+                                         base::Optional<TabGroupId> group) {}
 
 Browser* TestTabStripModelDelegate::CreateNewStripWithContents(
     std::vector<NewStripContents> contentses,
@@ -55,20 +57,5 @@ bool TestTabStripModelDelegate::ShouldRunUnloadListenerBeforeClosing(
 
 bool TestTabStripModelDelegate::RunUnloadListenerBeforeClosing(
     content::WebContents* contents) {
-  return true;
-}
-
-TabStripModelDelegate::RestoreTabType
-TestTabStripModelDelegate::GetRestoreTabType() {
-  return TabStripModelDelegate::RESTORE_NONE;
-}
-
-void TestTabStripModelDelegate::RestoreTab() {
-}
-
-bool TestTabStripModelDelegate::CanBookmarkAllTabs() const {
-  return true;
-}
-
-void TestTabStripModelDelegate::BookmarkAllTabs() {
+  return false;
 }

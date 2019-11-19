@@ -42,7 +42,7 @@
 #include "third_party/blink/public/platform/web_media_stream_track.h"
 #include "third_party/blink/renderer/platform/audio/audio_destination_consumer.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/threading_primitives.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -50,7 +50,9 @@
 namespace blink {
 
 class PLATFORM_EXPORT MediaStreamSource final
-    : public GarbageCollectedFinalized<MediaStreamSource> {
+    : public GarbageCollected<MediaStreamSource> {
+  USING_PRE_FINALIZER(MediaStreamSource, Dispose);
+
  public:
   class PLATFORM_EXPORT Observer : public GarbageCollectedMixin {
    public:
@@ -68,19 +70,12 @@ class PLATFORM_EXPORT MediaStreamSource final
 
   enum class EchoCancellationMode { kDisabled, kBrowser, kAec3, kSystem };
 
-  static MediaStreamSource* Create(const String& id,
-                                   StreamType,
-                                   const String& name,
-                                   bool remote,
-                                   ReadyState = kReadyStateLive,
-                                   bool requires_consumer = false);
-
   MediaStreamSource(const String& id,
                     StreamType,
                     const String& name,
                     bool remote,
-                    ReadyState,
-                    bool requires_consumer);
+                    ReadyState = kReadyStateLive,
+                    bool requires_consumer = false);
 
   const String& Id() const { return id_; }
   StreamType GetType() const { return type_; }
@@ -126,11 +121,9 @@ class PLATFORM_EXPORT MediaStreamSource final
     return audio_consumers_;
   }
 
-  // |m_extraData| may hold pointers to GC objects, and it may touch them in
-  // destruction.  So this class is eagerly finalized to finalize |m_extraData|
-  // promptly.
-  EAGERLY_FINALIZE();
   void Trace(blink::Visitor*);
+
+  void Dispose();
 
  private:
   String id_;
@@ -142,7 +135,8 @@ class PLATFORM_EXPORT MediaStreamSource final
   bool requires_consumer_;
   HeapHashSet<WeakMember<Observer>> observers_;
   Mutex audio_consumers_lock_;
-  HashSet<AudioDestinationConsumer*> audio_consumers_;
+  HashSet<AudioDestinationConsumer*> audio_consumers_
+      GUARDED_BY(audio_consumers_lock_);
   std::unique_ptr<WebPlatformMediaStreamSource> platform_source_;
   WebMediaConstraints constraints_;
   WebMediaStreamSource::Capabilities capabilities_;

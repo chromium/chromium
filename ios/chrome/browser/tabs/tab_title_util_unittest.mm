@@ -10,7 +10,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/download/download_manager_tab_helper.h"
-#import "ios/web/public/navigation_item.h"
+#import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/test/fakes/fake_download_task.h"
 #import "ios/web/public/test/fakes/test_navigation_manager.h"
 #import "ios/web/public/test/fakes/test_web_state.h"

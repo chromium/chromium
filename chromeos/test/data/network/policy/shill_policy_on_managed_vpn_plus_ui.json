@@ -16,11 +16,9 @@
     "OpenVPN.User": "user name",
     "Type": "openvpn"
   },
-  "SSID": "{a3860e83-f03d-4cb1-bafa-b22c9e746950}",
   "SaveCredentials": true,
   "State": "idle",
   "Type": "vpn",
   "UIData": "{\"onc_source\":\"user_policy\",\"user_settings\":{\"GUID\":\"{a3860e83-f03d-4cb1-bafa-b22c9e746950}\",\"Name\":\"my vpn\",\"Type\":\"VPN\",\"VPN\":{\"AutoConnect\":false,\"Host\":\"vpn.my.domain.com\",\"OpenVPN\":{\"ClientCertPKCS11Id\":\"1:2345\",\"ClientCertType\":\"PKCS11Id\",\"OTP\":\"user OTP\",\"Password\":\"FAKE_CREDENTIAL_VPaJDV9x\",\"SaveCredentials\":true,\"UserAuthenticationType\":\"PasswordAndOTP\",\"Username\":\"user name\"},\"Type\":\"OpenVPN\"}}}",
-  "Visible": true,
-  "WiFi.HexSSID": "7B61333836306538332D663033642D346362312D626166612D6232326339653734363935307D"
+  "Visible": true
 }

@@ -1,0 +1,6 @@
+document
+++group
+++++group
+++++++description Name='First blockquote has a child element.'
+++group
+++++description Name='Second blockquote has no child.'

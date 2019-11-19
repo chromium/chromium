@@ -43,12 +43,6 @@
             "items": {"$ref": "BookmarkNodeDataElement"}
           }
         }
-      },
-      {
-        "id": "MetaInfoFields",
-        "type": "object",
-        "description": "Collection of meta info fields.",
-        "additionalProperties": {"type": "string"}
       }
     ],
     "functions": [
@@ -140,6 +134,18 @@
             "name": "isFromTouch",
             "type": "boolean",
             "description": "True if the drag was initiated from touch."
+          },
+          {
+            "name": "x",
+            "type": "integer",
+            "minimum": 0,
+            "description": "The clientX of the dragStart event"
+          },
+          {
+            "name": "y",
+            "type": "integer",
+            "minimum": 0,
+            "description": "The clientY of the dragStart event"
           }
         ]
       },
@@ -193,16 +199,6 @@
         ]
       },
       {
-        "name": "canEdit",
-        "type": "function",
-        "description": "Whether bookmarks can be modified.",
-        "parameters": [
-          {"type": "function", "name": "callback", "parameters": [
-            {"name": "result", "type": "boolean"}
-          ]}
-        ]
-      },
-      {
         "name": "removeTrees",
         "type": "function",
         "description": "Recursively removes list of bookmarks nodes.",
@@ -218,125 +214,6 @@
         ]
       },
       {
-        "name": "recordLaunch",
-        "type": "function",
-        "description": "",
-        "parameters": []
-      },
-      {
-        "name": "createWithMetaInfo",
-        "type": "function",
-        "description": "Mimics the functionality of bookmarks.create, but will additionally set the given meta info fields.",
-        "parameters": [
-          {
-            "name": "bookmark",
-            "$ref": "bookmarks.CreateDetails"
-          },
-          {
-            "name": "metaInfo",
-            "$ref": "MetaInfoFields"
-          },
-          {
-            "type": "function",
-            "name": "callback",
-            "optional": true,
-            "parameters": [
-              {
-                "name": "result",
-                "$ref": "bookmarks.BookmarkTreeNode"
-              }
-            ]
-          }
-        ]
-      },
-      {
-        "name": "getMetaInfo",
-        "type": "function",
-        "description": "Gets meta info from a bookmark node.",
-        "allowAmbiguousOptionalArguments": true,
-        "parameters": [
-          {
-            "name": "id",
-            "description": "The id of the bookmark to retrieve meta info from. If omitted meta info for all nodes is returned.",
-            "optional": true,
-            "type": "string"
-          },
-          {
-            "name": "key",
-            "description": "The key for the meta info to retrieve. If omitted, all fields are returned.",
-            "optional": true,
-            "type": "string"
-          },
-          {
-            "type": "function",
-            "optional": true,
-            "name": "callback",
-            "parameters": [
-              {
-                "name": "value",
-                "description": "If a key was given, the value of the specified field, if present. Otherwise an object containing all meta info fields for the node. If id is not given then meta info for all nodes as an object with node id to meta info.",
-                "optional": true,
-                "choices": [
-                  {"type": "string"},
-                  {"type": "object", "additionalProperties": {"type": "any"}}
-                ]
-              }
-            ]
-          }
-        ]
-      },
-      {
-        "name": "setMetaInfo",
-        "type": "function",
-        "description": "Sets a meta info value for a bookmark node.",
-        "parameters": [
-          {
-            "name": "id",
-            "description": "The id of the bookmark node to set the meta info on.",
-            "type": "string"
-          },
-          {
-            "name": "key",
-            "description": "The key of the meta info to set.",
-            "type": "string"
-          },
-          {
-            "name": "value",
-            "description": "The meta info to set.",
-            "type": "string"
-          },
-          {
-            "name": "callback",
-            "type": "function",
-            "optional": true,
-            "parameters": []
-          }
-        ]
-      },
-      {
-        "name": "updateMetaInfo",
-        "type": "function",
-        "description": "Updates a set of meta info values for a bookmark node.",
-        "parameters": [
-          {
-            "name": "id",
-            "description": "The id of the bookmark node to update the meta info of.",
-            "type": "string"
-          },
-          {
-            "name": "metaInfoChanges",
-            "description": "A set of meta info key/value pairs to update.",
-            "$ref": "MetaInfoFields"
-          },
-          {
-            "name": "callback",
-            "type": "function",
-            "optional": true,
-            "parameters": []
-          }
-        ]
-      },
-      {
         "name": "undo",
         "type": "function",
         "description": "Performs an undo of the last change to the bookmark model.",
@@ -347,48 +224,6 @@
         "type": "function",
         "description": "Performs a redo of last undone change to the bookmark model.",
         "parameters": []
-      },
-      {
-        "name": "getUndoInfo",
-        "type": "function",
-        "description": "Gets the information for the undo if available.",
-        "parameters": [
-          {
-            "type": "function",
-            "name": "callback",
-            "parameters": [
-              {
-                "name": "result",
-                "type": "object",
-                "properties": {
-                  "enabled" : {"type": "boolean", "description": "Whether there is an action to undo."},
-                  "label" : {"type": "string", "description": "The i18n label to use for the undo action."}
-				}
-              }
-            ]
-          }
-        ]
-      },
-      {
-        "name": "getRedoInfo",
-        "type": "function",
-        "description": "Gets the information for the redo if available.",
-        "parameters": [
-          {
-            "type": "function",
-            "name": "callback",
-            "parameters": [
-              {
-                "name": "result",
-                "type": "object",
-                "properties": {
-                  "enabled" : {"type": "boolean", "description": "Whether there is an action to redo"},
-                  "label" : {"type": "string", "description": "The i18n label to use for the redo action"}
-                }
-              }
-            ]
-          }
-        ]
       }
     ],
     "events": [
@@ -414,15 +249,6 @@
         "description": "Fired when the user drops bookmarks on the document.",
         "parameters": [
           {"name": "bookmarkNodeData", "$ref": "BookmarkNodeData"}
-        ]
-      },
-      {
-        "name": "onMetaInfoChanged",
-        "type": "function",
-        "description": "Fired when the meta info of a node changes.",
-        "parameters": [
-          {"name": "id", "type": "string"},
-          {"name": "metaInfoChanges", "$ref": "MetaInfoFields"}
         ]
       }
     ]

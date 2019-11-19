@@ -1,0 +1,138 @@
+{
+  "layers": [
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF",
+      "paintInvalidations": [
+        {
+          "object": "InlineTextBox 'a ridge or furrow in the way wherever\n'",
+          "rect": [14, 240, 406, 139],
+          "reason": "geometry"
+        },
+        {
+          "object": "InlineTextBox 'begin again, it was very'",
+          "rect": [14, 240, 406, 139],
+          "reason": "geometry"
+        },
+        {
+          "object": "InlineTextBox 'getting up and walking off to other parts of\n'",
+          "rect": [14, 240, 406, 139],
+          "reason": "appeared"
+        },
+        {
+          "object": "InlineTextBox 'getting up and walking off to other parts of\n'",
+          "rect": [14, 240, 406, 139],
+          "reason": "disappeared"
+        },
+        {
+          "object": "InlineTextBox 'hedgehog to, and, as the doubled-up\n'",
+          "rect": [14, 240, 406, 139],
+          "reason": "appeared"
+        },
+        {
+          "object": "InlineTextBox 'hedgehog to, and, as the doubled-up\n'",
+          "rect": [14, 240, 406, 139],
+          "reason": "disappeared"
+        },
+        {
+          "object": "InlineTextBox 'in the act of crawling away: besides all\n'",
+          "rect": [14, 240, 406, 139],
+          "reason": "geometry"
+        },
+        {
+          "object": "InlineTextBox 'provoking to find that the hedgehog had\n'",
+          "rect": [14, 240, 406, 139],
+          "reason": "geometry"
+        },
+        {
+          "object": "InlineTextBox 'she wanted to send the'",
+          "rect": [14, 240, 406, 139],
+          "reason": "geometry"
+        },
+        {
+          "object": "InlineTextBox 'soldiers were always'",
+          "rect": [14, 240, 406, 139],
+          "reason": "appeared"
+        },
+        {
+          "object": "InlineTextBox 'soldiers were always'",
+          "rect": [14, 240, 406, 139],
+          "reason": "disappeared"
+        },
+        {
+          "object": "InlineTextBox 'soon came to the conclusion that it was a very\n'",
+          "rect": [14, 240, 406, 139],
+          "reason": "appeared"
+        },
+        {
+          "object": "InlineTextBox 'soon came to the conclusion that it was a very\n'",
+          "rect": [14, 240, 406, 139],
+          "reason": "disappeared"
+        },
+        {
+          "object": "InlineTextBox 'the ground, Alice'",
+          "rect": [14, 240, 406, 139],
+          "reason": "appeared"
+        },
+        {
+          "object": "InlineTextBox 'the ground, Alice'",
+          "rect": [14, 240, 406, 139],
+          "reason": "disappeared"
+        },
+        {
+          "object": "InlineTextBox 'this, there was generally'",
+          "rect": [14, 240, 406, 139],
+          "reason": "geometry"
+        },
+        {
+          "object": "InlineTextBox 'unrolled itself, and was'",
+          "rect": [14, 240, 406, 139],
+          "reason": "geometry"
+        },
+        {
+          "object": "InlineTextBox 'difficult'",
+          "rect": [65, 360, 356, 39],
+          "reason": "appeared"
+        },
+        {
+          "object": "InlineTextBox 'difficult'",
+          "rect": [65, 360, 356, 39],
+          "reason": "disappeared"
+        },
+        {
+          "object": "InlineTextBox 'game indeed.\n'",
+          "rect": [65, 360, 356, 39],
+          "reason": "appeared"
+        },
+        {
+          "object": "InlineTextBox 'game indeed.\n'",
+          "rect": [65, 360, 356, 39],
+          "reason": "disappeared"
+        },
+        {
+          "object": "InlineTextBox 'The players all played at once without waiting'",
+          "rect": [65, 400, 304, 19],
+          "reason": "appeared"
+        },
+        {
+          "object": "InlineTextBox 'The players all played at once without waiting'",
+          "rect": [65, 400, 304, 19],
+          "reason": "disappeared"
+        },
+        {
+          "object": "LayoutBlockFlow (floating) SPAN id='blueFloat'",
+          "rect": [14, 363, 48, 65],
+          "reason": "geometry"
+        },
+        {
+          "object": "InlineTextBox 'foo'",
+          "rect": [27, 363, 22, 20],
+          "reason": "appeared"
+        }
+      ]
+    }
+  ]
+}
+

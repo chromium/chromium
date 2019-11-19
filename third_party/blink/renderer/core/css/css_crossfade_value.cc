@@ -36,11 +36,11 @@ namespace blink {
 namespace cssvalue {
 
 static bool SubimageIsPending(const CSSValue& value) {
-  if (value.IsImageValue())
-    return ToCSSImageValue(value).IsCachePending();
+  if (auto* image_value = DynamicTo<CSSImageValue>(value))
+    return image_value->IsCachePending();
 
-  if (value.IsImageGeneratorValue())
-    return ToCSSImageGeneratorValue(value).IsPending();
+  if (auto* image_generator_value = DynamicTo<CSSImageGeneratorValue>(value))
+    return image_generator_value->IsPending();
 
   NOTREACHED();
 
@@ -50,11 +50,11 @@ static bool SubimageIsPending(const CSSValue& value) {
 static bool SubimageKnownToBeOpaque(const CSSValue& value,
                                     const Document& document,
                                     const ComputedStyle& style) {
-  if (value.IsImageValue())
-    return ToCSSImageValue(value).KnownToBeOpaque(document, style);
+  if (auto* image_value = DynamicTo<CSSImageValue>(value))
+    return image_value->KnownToBeOpaque(document, style);
 
-  if (value.IsImageGeneratorValue())
-    return ToCSSImageGeneratorValue(value).KnownToBeOpaque(document, style);
+  if (auto* img_generator_value = DynamicTo<CSSImageGeneratorValue>(value))
+    return img_generator_value->KnownToBeOpaque(document, style);
 
   NOTREACHED();
 
@@ -66,17 +66,17 @@ static ImageResourceContent* CachedImageForCSSValue(CSSValue* value,
   if (!value)
     return nullptr;
 
-  if (value->IsImageValue()) {
-    StyleImage* style_image_resource = ToCSSImageValue(value)->CacheImage(
-        document, FetchParameters::kAllowPlaceholder);
+  if (auto* image_value = DynamicTo<CSSImageValue>(value)) {
+    StyleImage* style_image_resource =
+        image_value->CacheImage(document, FetchParameters::kAllowPlaceholder);
     if (!style_image_resource)
       return nullptr;
 
     return style_image_resource->CachedImage();
   }
 
-  if (value->IsImageGeneratorValue()) {
-    ToCSSImageGeneratorValue(value)->LoadSubimages(document);
+  if (auto* img_generator_value = DynamicTo<CSSImageGeneratorValue>(value)) {
+    img_generator_value->LoadSubimages(document);
     // FIXME: Handle CSSImageGeneratorValue (and thus cross-fades with gradients
     // and canvas).
     return nullptr;
@@ -99,10 +99,11 @@ static Image* RenderableImageForCSSValue(CSSValue* value,
 }
 
 static KURL UrlForCSSValue(const CSSValue& value) {
-  if (!value.IsImageValue())
+  auto* image_value = DynamicTo<CSSImageValue>(value);
+  if (!image_value)
     return KURL();
 
-  return KURL(ToCSSImageValue(value).Url());
+  return KURL(image_value->Url());
 }
 
 CSSCrossfadeValue::CSSCrossfadeValue(CSSValue* from_value,
@@ -141,14 +142,26 @@ String CSSCrossfadeValue::CustomCSSText() const {
   return result.ToString();
 }
 
-CSSCrossfadeValue* CSSCrossfadeValue::ValueWithURLsMadeAbsolute() {
+CSSCrossfadeValue* CSSCrossfadeValue::ComputedCSSValue(
+    const ComputedStyle& style,
+    bool allow_visited_style) {
   CSSValue* from_value = from_value_;
-  if (from_value_->IsImageValue())
-    from_value = ToCSSImageValue(*from_value_).ValueWithURLMadeAbsolute();
+  if (auto* from_image_value = DynamicTo<CSSImageValue>(from_value_.Get())) {
+    from_value = from_image_value->ValueWithURLMadeAbsolute();
+  } else if (auto* from_generator_value =
+                 DynamicTo<CSSImageGeneratorValue>(from_value_.Get())) {
+    from_value =
+        from_generator_value->ComputedCSSValue(style, allow_visited_style);
+  }
   CSSValue* to_value = to_value_;
-  if (to_value_->IsImageValue())
-    to_value = ToCSSImageValue(*to_value_).ValueWithURLMadeAbsolute();
-  return CSSCrossfadeValue::Create(from_value, to_value, percentage_value_);
+  if (auto* to_image_value = DynamicTo<CSSImageValue>(to_value_.Get())) {
+    to_value = to_image_value->ValueWithURLMadeAbsolute();
+  } else if (auto* to_generator_value =
+                 DynamicTo<CSSImageGeneratorValue>(to_value_.Get())) {
+    to_value = to_generator_value->ComputedCSSValue(style, allow_visited_style);
+  }
+  return MakeGarbageCollected<CSSCrossfadeValue>(from_value, to_value,
+                                                 percentage_value_);
 }
 
 FloatSize CSSCrossfadeValue::FixedSize(

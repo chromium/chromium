@@ -34,14 +34,6 @@
 
 namespace blink {
 
-InertEffect* InertEffect::Create(KeyframeEffectModelBase* effect,
-                                 const Timing& timing,
-                                 bool paused,
-                                 double inherited_time) {
-  return MakeGarbageCollected<InertEffect>(effect, timing, paused,
-                                           inherited_time);
-}
-
 InertEffect::InertEffect(KeyframeEffectModelBase* model,
                          const Timing& timing,
                          bool paused,
@@ -49,7 +41,7 @@ InertEffect::InertEffect(KeyframeEffectModelBase* model,
     : AnimationEffect(timing),
       model_(model),
       paused_(paused),
-      inherited_time_(inherited_time) {}
+      inherited_time_(OptionalFromDoubleWithNull(inherited_time)) {}
 
 void InertEffect::Sample(HeapVector<Member<Interpolation>>& result) const {
   UpdateInheritedTime(inherited_time_, kTimingUpdateOnDemand);
@@ -58,14 +50,17 @@ void InertEffect::Sample(HeapVector<Member<Interpolation>>& result) const {
     return;
   }
 
-  double iteration = CurrentIteration();
-  DCHECK_GE(iteration, 0);
-  model_->Sample(clampTo<int>(iteration, 0), Progress().value(),
-                 IterationDuration(), result);
+  base::Optional<double> iteration = CurrentIteration();
+  DCHECK(iteration);
+  DCHECK_GE(iteration.value(), 0);
+  model_->Sample(clampTo<int>(iteration.value(), 0), Progress().value(),
+                 SpecifiedTiming().IterationDuration(), result);
 }
 
-double InertEffect::CalculateTimeToEffectChange(bool, double, double) const {
-  return std::numeric_limits<double>::infinity();
+AnimationTimeDelta InertEffect::CalculateTimeToEffectChange(bool,
+                                                            double,
+                                                            double) const {
+  return AnimationTimeDelta::Max();
 }
 
 void InertEffect::Trace(blink::Visitor* visitor) {

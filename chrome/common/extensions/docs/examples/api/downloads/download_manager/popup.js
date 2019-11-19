@@ -199,10 +199,6 @@ function DownloadItem(data) {
     item.open();
     return false;
   };
-  item.getElement('open-filename').ondragstart = function() {
-    item.drag();
-    return false;
-  };
   item.getElement('pause').onclick = function() {
     item.pause();
     return false;
@@ -448,10 +444,6 @@ DownloadItem.prototype.onChanged = function(delta) {
 DownloadItem.prototype.onErased = function() {
   window.removeEventListener('mousemove', this.more_mousemove);
   document.getElementById('items').removeChild(this.div);
-};
-
-DownloadItem.prototype.drag = function() {
-  chrome.downloads.drag(this.id);
 };
 
 DownloadItem.prototype.show = function() {

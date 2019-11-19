@@ -113,6 +113,10 @@ typedef void(GL_APIENTRYP PFNGLRELEASETEXIMAGE2DCHROMIUMPROC)(GLenum target,
 #define GL_RGB_YCBCR_420V_CHROMIUM 0x78FC
 #endif
 
+#ifndef GL_RGB_YCBCR_P010_CHROMIUM
+#define GL_RGB_YCBCR_P010_CHROMIUM 0x78FD
+#endif
+
 /* GL_CHROMIUM_deschedule */
 #ifndef GL_CHROMIUM_deschedule
 #define GL_CHROMIUM_deschedule 1
@@ -211,8 +215,13 @@ typedef void (GL_APIENTRYP PFNGLBINDUNIFORMLOCATIONCHROMIUMPROC) (
 #define GL_CHROMIUM_command_buffer_query 1
 
 #ifndef GL_COMMANDS_ISSUED_CHROMIUM
-// TODO(gman): Get official numbers for this constants.
+// TODO(andrescj): Get official numbers for these constants.
 #define GL_COMMANDS_ISSUED_CHROMIUM 0x6004
+#endif
+
+#ifndef GL_COMMANDS_ISSUED_TIMESTAMP_CHROMIUM
+// TODO(andrescj): Get official numbers for these constants.
+#define GL_COMMANDS_ISSUED_TIMESTAMP_CHROMIUM 0x6005
 #endif
 #endif  /* GL_CHROMIUM_command_buffer_query */
 
@@ -300,23 +309,23 @@ typedef void (GL_APIENTRYP PFNGLBLITFRAMEBUFFERCHROMIUMPROC) (GLint srcX0, GLint
 #endif
 #endif  /* GL_CHROMIUM_framebuffer_multisample */
 
-/* GL_CHROMIUM_texture_compression_dxt3 */
-#ifndef GL_CHROMIUM_texture_compression_dxt3
-#define GL_CHROMIUM_texture_compression_dxt3 1
+/* GL_ANGLE_texture_compression_dxt3 */
+#ifndef GL_ANGLE_texture_compression_dxt3
+#define GL_ANGLE_texture_compression_dxt3 1
 
 #ifndef GL_COMPRESSED_RGBA_S3TC_DXT3_EXT
 #define GL_COMPRESSED_RGBA_S3TC_DXT3_EXT 0x83F2
 #endif
-#endif  /* GL_CHROMIUM_texture_compression_dxt3 */
+#endif /* GL_ANGLE_texture_compression_dxt3 */
 
-/* GL_CHROMIUM_texture_compression_dxt5 */
-#ifndef GL_CHROMIUM_texture_compression_dxt5
-#define GL_CHROMIUM_texture_compression_dxt5 1
+/* GL_ANGLE_texture_compression_dxt5 */
+#ifndef GL_ANGLE_texture_compression_dxt5
+#define GL_ANGLE_texture_compression_dxt5 1
 
 #ifndef GL_COMPRESSED_RGBA_S3TC_DXT5_EXT
 #define GL_COMPRESSED_RGBA_S3TC_DXT5_EXT 0x83F3
 #endif
-#endif  /* GL_CHROMIUM_texture_compression_dxt5 */
+#endif /* GL_ANGLE_texture_compression_dxt5 */
 
 /* GL_CHROMIUM_async_pixel_transfers */
 #ifndef GL_CHROMIUM_async_pixel_transfers
@@ -635,6 +644,10 @@ typedef void(GL_APIENTRYP PFNGLRESIZECHROMIUMPROC)(GLuint width,
 #define GL_COLOR_SPACE_DISPLAY_P3_CHROMIUM 0x8AF4
 #endif
 
+#ifndef GL_COLOR_SPACE_HDR10_CHROMIUM
+#define GL_COLOR_SPACE_HDR10_CHROMIUM 0x8AF5
+#endif
+
 #endif  /* GL_CHROMIUM_resize */
 
 /* GL_CHROMIUM_get_multiple */
@@ -771,6 +784,7 @@ GL_APICALL void GL_APIENTRY
 glScheduleCALayerSharedStateCHROMIUM(GLfloat opacity,
                                      GLboolean is_clipped,
                                      const GLfloat* clip_rect,
+                                     const GLfloat* rounded_corner_bounds,
                                      GLint sorting_context_id,
                                      const GLfloat* transform);
 GL_APICALL void GL_APIENTRY
@@ -787,6 +801,7 @@ typedef void(GL_APIENTRYP PFNGLSCHEDULECALAYERSHAREDSTATECHROMIUMPROC)(
     GLfloat opacity,
     GLboolean is_clipped,
     const GLfloat* clip_rect,
+    GLfloat clip_rect_corner_radius,
     GLint sorting_context_id,
     const GLfloat* transform);
 typedef void(GL_APIENTRYP PFNGLSCHEDULECALAYERCHROMIUMPROC)(
@@ -1279,9 +1294,19 @@ typedef void(GL_APIENTRYP PFNGLUNPREMULTIPLYANDDITHERCOPYCHROMIUMPROC)(
 /* GL_CHROMIUM_shared_image */
 #ifndef GL_CHROMIUM_shared_image
 #define GL_CHROMIUM_shared_image 1
-#define GL_SHARED_IMAGE_ACCESS_MODE_READ_CHROMIUM 0x8AF5
-#define GL_SHARED_IMAGE_ACCESS_MODE_READWRITE_CHROMIUM 0x8AF6
+#define GL_SHARED_IMAGE_ACCESS_MODE_READ_CHROMIUM 0x8AF6
+#define GL_SHARED_IMAGE_ACCESS_MODE_READWRITE_CHROMIUM 0x8AF7
 #endif /* GL_CHROMIUM_shared_image */
+
+/* GL_CHROMIUM_program_completion_query */
+#ifndef GL_CHROMIUM_program_completion_query
+#define GL_CHROMIUM_program_completion_query 1
+
+#ifndef GL_PROGRAM_COMPLETION_QUERY_CHROMIUM
+// TODO(jie.a.chen@intel.com): Get official numbers for this constants.
+#define GL_PROGRAM_COMPLETION_QUERY_CHROMIUM 0x6009
+#endif
+#endif /* GL_CHROMIUM_program_completion_query */
 
 #ifdef __cplusplus
 }

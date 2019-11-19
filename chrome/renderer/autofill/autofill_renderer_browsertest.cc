@@ -13,7 +13,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/test/base/chrome_render_view_test.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "components/autofill/content/common/autofill_driver.mojom.h"
+#include "components/autofill/content/common/mojom/autofill_driver.mojom.h"
 #include "components/autofill/content/renderer/autofill_agent.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/form_data.h"
@@ -21,7 +21,8 @@
 #include "content/public/common/content_switches.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_view.h"
-#include "mojo/public/cpp/bindings/associated_binding_set.h"
+#include "mojo/public/cpp/bindings/associated_receiver_set.h"
+#include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/platform/web_string.h"
@@ -56,8 +57,9 @@ class FakeContentAutofillDriver : public mojom::AutofillDriver {
   FakeContentAutofillDriver() : called_field_change_(false) {}
   ~FakeContentAutofillDriver() override {}
 
-  void BindRequest(mojom::AutofillDriverAssociatedRequest request) {
-    bindings_.AddBinding(this, std::move(request));
+  void BindReceiver(
+      mojo::PendingAssociatedReceiver<mojom::AutofillDriver> receiver) {
+    receivers_.Add(this, std::move(receiver));
   }
 
   bool called_field_change() const { return called_field_change_; }
@@ -79,7 +81,7 @@ class FakeContentAutofillDriver : public mojom::AutofillDriver {
 
   void FormSubmitted(const FormData& form,
                      bool known_success,
-                     SubmissionSource source) override {}
+                     mojom::SubmissionSource source) override {}
 
   void TextFieldDidChange(const FormData& form,
                           const FormFieldData& field,
@@ -127,7 +129,7 @@ class FakeContentAutofillDriver : public mojom::AutofillDriver {
   // Records data received via FormSeen() call.
   std::unique_ptr<std::vector<FormData>> forms_;
 
-  mojo::AssociatedBindingSet<mojom::AutofillDriver> bindings_;
+  mojo::AssociatedReceiverSet<mojom::AutofillDriver> receivers_;
 };
 
 }  // namespace
@@ -156,8 +158,9 @@ class AutofillRendererTest : public ChromeRenderViewTest {
   }
 
   void BindAutofillDriver(mojo::ScopedInterfaceEndpointHandle handle) {
-    fake_driver_.BindRequest(
-        mojom::AutofillDriverAssociatedRequest(std::move(handle)));
+    fake_driver_.BindReceiver(
+        mojo::PendingAssociatedReceiver<mojom::AutofillDriver>(
+            std::move(handle)));
   }
 
   FakeContentAutofillDriver fake_driver_;
@@ -386,16 +389,12 @@ TEST_F(AutofillRendererTest, IgnoreNonUserGestureTextFieldChanges) {
   while (!full_name.Focused())
     GetMainFrame()->View()->AdvanceFocus(false);
 
-  // Not a user gesture, so no IPC message to browser.
-  DisableUserGestureSimulationForAutofill();
   ASSERT_FALSE(fake_driver_.called_field_change());
   full_name.SetValue("Alice", true);
   GetMainFrame()->AutofillClient()->TextFieldDidChange(full_name);
   base::RunLoop().RunUntilIdle();
   ASSERT_FALSE(fake_driver_.called_field_change());
 
-  // A user gesture will send a message to the browser.
-  EnableUserGestureSimulationForAutofill();
   SimulateUserInputChangeForElement(&full_name, "Alice");
   ASSERT_TRUE(fake_driver_.called_field_change());
 }

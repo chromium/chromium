@@ -34,7 +34,9 @@ enum BrowserInitializationStageType {
 // Browser view information created during startup.
 @property(nonatomic, readonly) id<BrowserInterfaceProvider> interfaceProvider;
 
-// Initializes the application up to |stage|.
+// Initializes the application up to |stage|. This is safe to call multiple
+// times for the same value of |stage|; the actions for each stage will only
+// be run once during the lifetime of the app.
 - (void)startUpBrowserToStage:(BrowserInitializationStageType)stage;
 
 @end

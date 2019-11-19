@@ -74,7 +74,6 @@ PASS keypress is unaffected on a windowless body
 PASS keyup is unaffected on a windowless body
 PASS loadeddata is unaffected on a windowless body
 PASS loadedmetadata is unaffected on a windowless body
-FAIL loadend is unaffected on a windowless body assert_equals: expected (object) null but got (undefined) undefined
 PASS loadstart is unaffected on a windowless body
 PASS mousedown is unaffected on a windowless body
 PASS mouseenter is unaffected on a windowless body
@@ -94,6 +93,7 @@ FAIL securitypolicyviolation is unaffected on a windowless body assert_equals: e
 PASS seeked is unaffected on a windowless body
 PASS seeking is unaffected on a windowless body
 PASS select is unaffected on a windowless body
+FAIL slotchange is unaffected on a windowless body assert_equals: expected (object) null but got (undefined) undefined
 PASS stalled is unaffected on a windowless body
 PASS submit is unaffected on a windowless body
 PASS suspend is unaffected on a windowless body
@@ -178,7 +178,6 @@ PASS keypress is unaffected on a windowless frameset
 PASS keyup is unaffected on a windowless frameset
 PASS loadeddata is unaffected on a windowless frameset
 PASS loadedmetadata is unaffected on a windowless frameset
-FAIL loadend is unaffected on a windowless frameset assert_equals: expected (object) null but got (undefined) undefined
 PASS loadstart is unaffected on a windowless frameset
 PASS mousedown is unaffected on a windowless frameset
 PASS mouseenter is unaffected on a windowless frameset
@@ -198,6 +197,7 @@ FAIL securitypolicyviolation is unaffected on a windowless frameset assert_equal
 PASS seeked is unaffected on a windowless frameset
 PASS seeking is unaffected on a windowless frameset
 PASS select is unaffected on a windowless frameset
+FAIL slotchange is unaffected on a windowless frameset assert_equals: expected (object) null but got (undefined) undefined
 PASS stalled is unaffected on a windowless frameset
 PASS submit is unaffected on a windowless frameset
 PASS suspend is unaffected on a windowless frameset

@@ -1,15 +1,16 @@
 rootWebArea
-++treeGrid
-++++row hierarchicalLevel=1 selected=false
-++++++cell name='Cell at level 1' selected=false
-++++++++staticText name='Cell at level 1'
-++++++++++inlineTextBox name='Cell at level 1'
-++++row hierarchicalLevel=2 selected=false
-++++++cell name='Cell at level 2' selected=false
-++++++++staticText name='Cell at level 2'
-++++++++++inlineTextBox name='Cell at level 2'
-++treeGrid
-++++row hierarchicalLevel=1 selected=false
-++++++cell name='Cell at level 1' selected=false
-++++++++staticText name='Cell at level 1'
-++++++++++inlineTextBox name='Cell at level 1'
+++genericContainer ignored
+++++treeGrid
+++++++row hierarchicalLevel=1 selected=false
+++++++++cell name='Cell at level 1' selected=false
+++++++++++staticText name='Cell at level 1'
+++++++++++++inlineTextBox name='Cell at level 1'
+++++++row hierarchicalLevel=2 selected=false
+++++++++cell name='Cell at level 2' selected=false
+++++++++++staticText name='Cell at level 2'
+++++++++++++inlineTextBox name='Cell at level 2'
+++++treeGrid
+++++++row hierarchicalLevel=1 selected=false
+++++++++cell name='Cell at level 1' selected=false
+++++++++++staticText name='Cell at level 1'
+++++++++++++inlineTextBox name='Cell at level 1'

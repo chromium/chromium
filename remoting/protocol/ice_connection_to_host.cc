@@ -28,6 +28,7 @@ namespace remoting {
 namespace protocol {
 
 IceConnectionToHost::IceConnectionToHost() = default;
+
 IceConnectionToHost::~IceConnectionToHost() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
@@ -49,6 +50,10 @@ void IceConnectionToHost::Connect(
   event_callback_ = event_callback;
 
   SetState(CONNECTING, OK);
+}
+
+void IceConnectionToHost::Disconnect(ErrorCode error) {
+  session_->Close(error);
 }
 
 const SessionConfig& IceConnectionToHost::config() {

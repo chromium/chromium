@@ -22,7 +22,7 @@ namespace remoting {
 
 FakeSecurityKeyIpcClient::FakeSecurityKeyIpcClient(
     const base::Closure& channel_event_callback)
-    : channel_event_callback_(channel_event_callback), weak_factory_(this) {
+    : channel_event_callback_(channel_event_callback) {
   DCHECK(!channel_event_callback_.is_null());
 }
 

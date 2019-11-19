@@ -47,11 +47,14 @@ import java.util.Arrays;
  */
 @RunWith(BaseJUnit4ClassRunner.class)
 public class CustomNotificationBuilderTest {
+    private static final String NOTIFICATION_TAG = "TestNotificationTag";
+    private static final int NOTIFICATION_ID = 99;
+
     @Rule
     public NativeLibraryTestRule mActivityTestRule = new NativeLibraryTestRule();
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         mActivityTestRule.loadNativeLibraryNoBrowserProcess();
     }
 
@@ -63,8 +66,8 @@ public class CustomNotificationBuilderTest {
     public void testSetAll() {
         Context context = InstrumentationRegistry.getTargetContext();
 
-        PendingIntent contentIntent = createIntent(context, "Content");
-        PendingIntent deleteIntent = createIntent(context, "Delete");
+        PendingIntentProvider contentIntent = createIntent(context, "Content");
+        PendingIntentProvider deleteIntent = createIntent(context, "Delete");
 
         Bitmap smallIcon =
                 BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_chrome);
@@ -72,25 +75,26 @@ public class CustomNotificationBuilderTest {
         Bitmap largeIcon = createIcon(Color.RED);
         Bitmap actionIcon = createIcon(Color.WHITE);
 
-        Notification notification = new CustomNotificationBuilder(context)
-                                            .setSmallIconId(R.drawable.ic_chrome)
-                                            .setLargeIcon(largeIcon)
-                                            .setTitle("title")
-                                            .setBody("body")
-                                            .setOrigin("origin")
-                                            .setChannelId(ChannelDefinitions.ChannelId.SITES)
-                                            .setTicker("ticker")
-                                            .setDefaults(Notification.DEFAULT_ALL)
-                                            .setVibrate(new long[] {100L})
-                                            .setContentIntent(contentIntent)
-                                            .setDeleteIntent(deleteIntent)
-                                            .addButtonAction(actionIcon, "button",
-                                                    createIntent(context, "ActionButtonOne"))
-                                            .addButtonAction(actionIcon, "button",
-                                                    createIntent(context, "ActionButtonTwo"))
-                                            .addSettingsAction(0 /* iconId */, "settings",
-                                                    createIntent(context, "SettingsButton"))
-                                            .build();
+        NotificationBuilderBase builder =
+                new CustomNotificationBuilder(context)
+                        .setSmallIconId(R.drawable.ic_chrome)
+                        .setLargeIcon(largeIcon)
+                        .setTitle("title")
+                        .setBody("body")
+                        .setOrigin("origin")
+                        .setChannelId(ChannelDefinitions.ChannelId.SITES)
+                        .setTicker("ticker")
+                        .setDefaults(Notification.DEFAULT_ALL)
+                        .setVibrate(new long[] {100L})
+                        .setContentIntent(contentIntent)
+                        .setDeleteIntent(deleteIntent)
+                        .addButtonAction(actionIcon, "button",
+                                createIntent(context, "ActionButtonOne").getPendingIntent())
+                        .addButtonAction(actionIcon, "button",
+                                createIntent(context, "ActionButtonTwo").getPendingIntent())
+                        .addSettingsAction(0 /* iconId */, "settings",
+                                createIntent(context, "SettingsButton").getPendingIntent());
+        Notification notification = buildNotification(builder);
 
         assertSmallNotificationIconAsExpected(context, notification, smallIcon);
         assertLargeNotificationIconAsExpected(context, notification, largeIcon);
@@ -114,8 +118,6 @@ public class CustomNotificationBuilderTest {
         Assert.assertEquals(Notification.DEFAULT_ALL, notification.defaults);
         Assert.assertEquals(1, notification.vibrate.length);
         Assert.assertEquals(100L, notification.vibrate[0]);
-        Assert.assertSame(contentIntent, notification.contentIntent);
-        Assert.assertSame(deleteIntent, notification.deleteIntent);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             // Notification.publicVersion was added in Android L.
@@ -144,9 +146,9 @@ public class CustomNotificationBuilderTest {
     @DisableIf.Build(sdk_is_greater_than = 23, message = "crbug.com/779228")
     public void testZeroActionButtons() {
         Context context = InstrumentationRegistry.getTargetContext();
-        Notification notification = new CustomNotificationBuilder(context)
-                                            .setChannelId(ChannelDefinitions.ChannelId.SITES)
-                                            .build();
+        NotificationBuilderBase builder = new CustomNotificationBuilder(context).setChannelId(
+                ChannelDefinitions.ChannelId.SITES);
+        Notification notification = buildNotification(builder);
         View bigView = notification.bigContentView.apply(context, new LinearLayout(context));
         ArrayList<View> buttons = new ArrayList<>();
         bigView.findViewsWithText(buttons, "button", View.FIND_VIEWS_WITH_TEXT);
@@ -163,21 +165,23 @@ public class CustomNotificationBuilderTest {
     @DisableIf.Build(sdk_is_greater_than = 23, message = "crbug.com/779228")
     public void testMaxActionButtons() {
         Context context = InstrumentationRegistry.getTargetContext();
-        NotificationBuilderBase builder = new CustomNotificationBuilder(context)
-                                                  .setChannelId(ChannelDefinitions.ChannelId.SITES)
-                                                  .addButtonAction(null /* iconBitmap */, "button",
-                                                          createIntent(context, "ActionButtonOne"))
-                                                  .addButtonAction(null /* iconBitmap */, "button",
-                                                          createIntent(context, "ActionButtonTwo"));
+        NotificationBuilderBase builder =
+                new CustomNotificationBuilder(context)
+                        .setChannelId(ChannelDefinitions.ChannelId.SITES)
+                        .addButtonAction(null /* iconBitmap */, "button",
+                                createIntent(context, "ActionButtonOne").getPendingIntent())
+                        .addButtonAction(null /* iconBitmap */, "button",
+                                createIntent(context, "ActionButtonTwo").getPendingIntent());
         try {
-            builder.addButtonAction(
-                    null /* iconBitmap */, "button", createIntent(context, "ActionButtonThree"));
+            builder.addButtonAction(null /* iconBitmap */, "button",
+                    createIntent(context, "ActionButtonThree").getPendingIntent());
             Assert.fail(
                     "This statement should not be reached as the previous statement should throw.");
         } catch (IllegalStateException e) {
             Assert.assertEquals("Cannot add more than 2 actions.", e.getMessage());
         }
-        Notification notification = builder.build();
+
+        Notification notification = buildNotification(builder);
         View bigView = notification.bigContentView.apply(context, new LinearLayout(context));
         ArrayList<View> buttons = new ArrayList<>();
         bigView.findViewsWithText(buttons, "button", View.FIND_VIEWS_WITH_TEXT);
@@ -194,12 +198,11 @@ public class CustomNotificationBuilderTest {
 
         Bitmap largeIcon = createIcon(Color.RED);
 
-        Notification notification = new CustomNotificationBuilder(context)
-                                            .setChannelId(ChannelDefinitions.ChannelId.SITES)
-                                            .setLargeIcon(largeIcon)
-                                            .setSmallIconId(R.drawable.ic_chrome)
-                                            .build();
-
+        NotificationBuilderBase builder = new CustomNotificationBuilder(context)
+                                                  .setChannelId(ChannelDefinitions.ChannelId.SITES)
+                                                  .setLargeIcon(largeIcon)
+                                                  .setSmallIconId(R.drawable.ic_chrome);
+        Notification notification = buildNotification(builder);
         assertLargeNotificationIconAsExpected(context, notification, largeIcon);
     }
 
@@ -211,11 +214,11 @@ public class CustomNotificationBuilderTest {
 
         Bitmap smallIcon = createIcon(Color.RED);
 
-        Notification notification = new CustomNotificationBuilder(context)
-                .setChannelId(ChannelDefinitions.ChannelId.SITES)
-                .setSmallIconForContent(smallIcon)
-                .setStatusBarIcon(smallIcon)
-                .build();
+        NotificationBuilderBase builder = new CustomNotificationBuilder(context)
+                                                  .setChannelId(ChannelDefinitions.ChannelId.SITES)
+                                                  .setSmallIconForContent(smallIcon)
+                                                  .setStatusBarIcon(smallIcon);
+        Notification notification = buildNotification(builder);
 
         // Note that small icon as a Bitmap should be present on pre-M, even though it can't
         // be shown in the status bar
@@ -229,12 +232,13 @@ public class CustomNotificationBuilderTest {
         Context context = InstrumentationRegistry.getTargetContext();
         Bitmap actionIcon = createIcon(Color.RED);
 
-        Notification notification = new CustomNotificationBuilder(context)
-                .setChannelId(ChannelDefinitions.ChannelId.SITES)
-                .setSmallIconId(R.drawable.ic_chrome)
-                .addButtonAction(actionIcon, "button",
-                        createIntent(context, "ActionButton"))
-                .build();
+        NotificationBuilderBase builder =
+                new CustomNotificationBuilder(context)
+                        .setChannelId(ChannelDefinitions.ChannelId.SITES)
+                        .setSmallIconId(R.drawable.ic_chrome)
+                        .addButtonAction(actionIcon, "button",
+                                createIntent(context, "ActionButton").getPendingIntent());
+        Notification notification = buildNotification(builder);
 
         Bitmap whiteIcon = createIcon(Color.WHITE);
 
@@ -265,7 +269,7 @@ public class CustomNotificationBuilderTest {
     public void testCharSequenceLimits() {
         Context context = InstrumentationRegistry.getTargetContext();
         int maxLength = CustomNotificationBuilder.MAX_CHARSEQUENCE_LENGTH;
-        Notification notification =
+        NotificationBuilderBase builder =
                 new CustomNotificationBuilder(context)
                         .setTitle(createString('a', maxLength + 1))
                         .setBody(createString('b', maxLength + 1))
@@ -273,8 +277,9 @@ public class CustomNotificationBuilderTest {
                         .setChannelId(ChannelDefinitions.ChannelId.SITES)
                         .setTicker(createString('d', maxLength + 1))
                         .addButtonAction(null /* iconBitmap */, createString('e', maxLength + 1),
-                                createIntent(context, "ActionButtonOne"))
-                        .build();
+                                createIntent(context, "ActionButtonOne").getPendingIntent());
+        Notification notification = buildNotification(builder);
+
         View compactView = notification.contentView.apply(context, new LinearLayout(context));
         View bigView = notification.bigContentView.apply(context, new LinearLayout(context));
 
@@ -330,7 +335,7 @@ public class CustomNotificationBuilderTest {
                         .setOrigin("https://www.google.com")
                         .setChannelId(ChannelDefinitions.ChannelId.SITES);
 
-        Notification notification = notificationBuilder.build();
+        Notification notification = buildNotification(notificationBuilder);
 
         Bitmap expectedIcon = NotificationBuilderBase.createIconGenerator(context.getResources())
                                       .generateIconForUrl("https://www.google.com");
@@ -350,7 +355,7 @@ public class CustomNotificationBuilderTest {
                         .setChannelId(ChannelDefinitions.ChannelId.SITES)
                         .setLargeIcon(null);
 
-        Notification notification = notificationBuilder.build();
+        Notification notification = buildNotification(notificationBuilder);
 
         Bitmap expectedIcon = NotificationBuilderBase.createIconGenerator(context.getResources())
                                       .generateIconForUrl("https://www.chromium.org");
@@ -377,7 +382,7 @@ public class CustomNotificationBuilderTest {
                         .setChannelId(ChannelDefinitions.ChannelId.SITES)
                         .addTextAction(null, "Action Title", null, "Placeholder");
 
-        Notification notification = notificationBuilder.build();
+        Notification notification = buildNotification(notificationBuilder);
 
         Assert.assertEquals(1, notification.actions.length);
         Assert.assertEquals("Action Title", notification.actions[0].title);
@@ -404,7 +409,11 @@ public class CustomNotificationBuilderTest {
         View bigView = notification.bigContentView.apply(context, new LinearLayout(context));
         Drawable bigViewIcon = ((ImageView) bigView.findViewById(R.id.icon)).getDrawable();
         Assert.assertNotNull(bigViewIcon);
-        Assert.assertTrue(expectedIcon.sameAs(((BitmapDrawable) bigViewIcon).getBitmap()));
+
+        // Starts from Android O MR1, large icon can be downscaled by Android platform code.
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+            Assert.assertTrue(expectedIcon.sameAs(((BitmapDrawable) bigViewIcon).getBitmap()));
+        }
     }
 
     private static void assertSmallNotificationIconAsExpected(
@@ -455,9 +464,9 @@ public class CustomNotificationBuilderTest {
         return result;
     }
 
-    private static PendingIntent createIntent(Context context, String action) {
+    private static PendingIntentProvider createIntent(Context context, String action) {
         Intent intent = new Intent("CustomNotificationBuilderTest." + action);
-        return PendingIntent.getBroadcast(
+        return PendingIntentProvider.getBroadcast(
                 context, 0 /* requestCode */, intent, PendingIntent.FLAG_UPDATE_CURRENT);
     }
 
@@ -471,5 +480,12 @@ public class CustomNotificationBuilderTest {
         Bitmap icon = Bitmap.createBitmap(
                 new int[] {color}, 1 /* width */, 1 /* height */, Bitmap.Config.ARGB_8888);
         return icon.copy(Bitmap.Config.ARGB_8888, true /* isMutable */);
+    }
+
+    private static Notification buildNotification(NotificationBuilderBase builder) {
+        NotificationMetadata metadata =
+                new NotificationMetadata(NotificationUmaTracker.SystemNotificationType.SITES,
+                        NOTIFICATION_TAG, NOTIFICATION_ID);
+        return builder.build(metadata).getNotification();
     }
 }

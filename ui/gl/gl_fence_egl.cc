@@ -42,9 +42,12 @@ std::unique_ptr<GLFenceEGL> GLFenceEGL::Create(EGLenum type, EGLint* attribs) {
 }
 
 bool GLFenceEGL::InitializeInternal(EGLenum type, EGLint* attribs) {
+  sync_ = EGL_NO_SYNC_KHR;
   display_ = eglGetCurrentDisplay();
-  sync_ = eglCreateSyncKHR(display_, type, attribs);
-  glFlush();
+  if (display_ != EGL_NO_DISPLAY) {
+    sync_ = eglCreateSyncKHR(display_, type, attribs);
+    glFlush();
+  }
   return sync_ != EGL_NO_SYNC_KHR;
 }
 

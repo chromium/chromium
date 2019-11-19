@@ -5,6 +5,7 @@
 #ifndef BASE_MAC_FOUNDATION_UTIL_H_
 #define BASE_MAC_FOUNDATION_UTIL_H_
 
+#include <AvailabilityMacros.h>
 #include <CoreFoundation/CoreFoundation.h>
 
 #include <string>
@@ -52,7 +53,9 @@ typedef CR_FORWARD_ENUM(unsigned int, NSSearchPathDirectory);
 typedef unsigned int NSSearchPathDomainMask;
 #endif
 
-#if defined(OS_IOS)
+#if defined(OS_IOS) ||                  \
+    (defined(MAC_OS_X_VERSION_10_15) && \
+     MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_15)
 typedef struct CF_BRIDGED_TYPE(id) __SecCertificate* SecCertificateRef;
 typedef struct CF_BRIDGED_TYPE(id) __SecKey* SecKeyRef;
 typedef struct CF_BRIDGED_TYPE(id) __SecPolicy* SecPolicyRef;
@@ -397,5 +400,18 @@ BASE_EXPORT extern std::ostream& operator<<(std::ostream& o,
                                             const CFErrorRef err);
 BASE_EXPORT extern std::ostream& operator<<(std::ostream& o,
                                             const CFStringRef str);
+BASE_EXPORT extern std::ostream& operator<<(std::ostream& o, CFRange);
+
+#if defined(__OBJC__)
+BASE_EXPORT extern std::ostream& operator<<(std::ostream& o, id);
+BASE_EXPORT extern std::ostream& operator<<(std::ostream& o, NSRange);
+BASE_EXPORT extern std::ostream& operator<<(std::ostream& o, SEL);
+
+#if !defined(OS_IOS)
+BASE_EXPORT extern std::ostream& operator<<(std::ostream& o, NSPoint);
+BASE_EXPORT extern std::ostream& operator<<(std::ostream& o, NSRect);
+BASE_EXPORT extern std::ostream& operator<<(std::ostream& o, NSSize);
+#endif
+#endif
 
 #endif  // BASE_MAC_FOUNDATION_UTIL_H_

@@ -7,6 +7,8 @@ package org.chromium.components.safe_browsing;
 import org.chromium.base.Log;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
+import org.chromium.base.annotations.NativeMethods;
+import org.chromium.base.metrics.RecordHistogram;
 
 import java.lang.reflect.InvocationTargetException;
 
@@ -52,9 +54,10 @@ public final class SafeBrowsingApiBridge {
                     @Override
                     public void onUrlCheckDone(
                             long callbackId, int resultStatus, String metadata, long checkDelta) {
-                        nativeOnUrlCheckDone(callbackId, resultStatus, metadata, checkDelta);
+                        SafeBrowsingApiBridgeJni.get().onUrlCheckDone(
+                                callbackId, resultStatus, metadata, checkDelta);
                     }
-                }, nativeAreLocalBlacklistsEnabled());
+                }, SafeBrowsingApiBridgeJni.get().areLocalBlacklistsEnabled());
         return initSuccesssful ? handler : null;
     }
 
@@ -81,7 +84,30 @@ public final class SafeBrowsingApiBridge {
         }
     }
 
-    private static native boolean nativeAreLocalBlacklistsEnabled();
-    private static native void nativeOnUrlCheckDone(
-            long callbackId, int resultStatus, String metadata, long checkDelta);
+    /**
+     * TODO(crbug.com/995926): Make this call async
+     * Starts a Safe Browsing Allowlist check.
+     *
+     * If the uri is in the allowlist, return true. Otherwise, return false.
+     */
+    @CalledByNative
+    private static boolean startAllowlistLookup(
+            SafeBrowsingApiHandler handler, String uri, int threatType) {
+        long allowlistLookupStartTime = System.currentTimeMillis();
+        boolean matched = handler.startAllowlistLookup(uri, threatType);
+        recordAllowlistLookupTimeInMs(System.currentTimeMillis() - allowlistLookupStartTime);
+        return matched;
+    }
+
+    // Histograms
+    private static void recordAllowlistLookupTimeInMs(long lookupTimeInMs) {
+        RecordHistogram.recordTimesHistogram(
+                "SB2.RemoteCall.LocalAllowlistLookupTime", lookupTimeInMs);
+    }
+
+    @NativeMethods
+    interface Natives {
+        boolean areLocalBlacklistsEnabled();
+        void onUrlCheckDone(long callbackId, int resultStatus, String metadata, long checkDelta);
+    }
 }

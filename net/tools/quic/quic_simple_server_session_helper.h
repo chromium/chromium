@@ -5,8 +5,8 @@
 #ifndef NET_TOOLS_QUIC_QUIC_SIMPLE_SERVER_SESSION_HELPER_H_
 #define NET_TOOLS_QUIC_QUIC_SIMPLE_SERVER_SESSION_HELPER_H_
 
-#include "net/third_party/quic/core/crypto/quic_random.h"
-#include "net/third_party/quic/core/http/quic_server_session_base.h"
+#include "net/third_party/quiche/src/quic/core/crypto/quic_random.h"
+#include "net/third_party/quiche/src/quic/core/http/quic_server_session_base.h"
 
 namespace net {
 
@@ -19,18 +19,11 @@ class QuicSimpleServerSessionHelper
 
   ~QuicSimpleServerSessionHelper() override;
 
-  quic::QuicConnectionId GenerateConnectionIdForReject(
-      quic::QuicTransportVersion /*version*/,
-      quic::QuicConnectionId /*connection_id*/) const override;
-
   bool CanAcceptClientHello(const quic::CryptoHandshakeMessage& message,
                             const quic::QuicSocketAddress& client_address,
                             const quic::QuicSocketAddress& peer_address,
                             const quic::QuicSocketAddress& self_address,
                             std::string* error_details) const override;
-
- private:
-  quic::QuicRandom* random_;  // Unowned.
 };
 
 }  // namespace net

@@ -1,130 +1,8 @@
 <!DOCTYPE html>
 <meta charset="UTF-8">
-<style>
-.parent {
-  clip-path: circle(80% at 30% 10%);
-}
-.target {
-  clip-path: circle(60% at 10% 30%);
-}
-</style>
 <body>
 <script src="resources/interpolation-test.js"></script>
 <script>
-/* TODO: add inset test once blend() works for it */
-
-assertInterpolation({
-  property: 'clip-path',
-  from: neutralKeyframe,
-  to: 'circle(40% at 20% 20%)',
-}, [
-  {at: -0.3, is: 'circle(66% at 7% 33%)'},
-  {at: 0, is: 'circle(60% at 10% 30%)'},
-  {at: 0.3, is: 'circle(54% at 13% 27%)'},
-  {at: 0.6, is: 'circle(48% at 16% 24%)'},
-  {at: 1, is: 'circle(40% at 20% 20%)'},
-  {at: 1.5, is: 'circle(30% at 25% 15%)'},
-]);
-
-assertNoInterpolation({
-  property: 'clip-path',
-  from: 'initial',
-  to: 'circle(40% at 20% 20%)',
-});
-
-assertInterpolation({
-  property: 'clip-path',
-  from: 'inherit',
-  to: 'circle(40% at 20% 20%)',
-}, [
-  {at: -0.3, is: 'circle(92% at 33% 7%)'},
-  {at: 0, is: 'circle(80% at 30% 10%)'},
-  {at: 0.3, is: 'circle(68% at 27% 13%)'},
-  {at: 0.6, is: 'circle(56% at 24% 16%)'},
-  {at: 1, is: 'circle(40% at 20% 20%)'},
-  {at: 1.5, is: 'circle(20% at 15% 25%)'},
-]);
-
-assertNoInterpolation({
-  property: 'clip-path',
-  from: 'unset',
-  to: 'circle(40% at 20% 20%)',
-});
-
-assertInterpolation({
-  property: 'clip-path',
-  from: 'circle(100% at 0% 0%)',
-  to: 'circle(50% at 25% 25%)',
-}, [
-  {at: -0.3, is: 'circle(115% at -7.5% -7.5%)'},
-  {at: 0, is: 'circle(100% at 0% 0%)'},
-  {at: 0.3, is: 'circle(85% at 7.5% 7.5%)'},
-  {at: 0.6, is: 'circle(70% at 15% 15%)'},
-  {at: 1, is: 'circle(50% at 25% 25%)'},
-  {at: 1.5, is: 'circle(25% at 37.5% 37.5%)'}
-]);
-
-assertInterpolation({
-  property: 'clip-path',
-  from: 'ellipse(100% 100% at 0% 0%)',
-  to: 'ellipse(50% 50% at 25% 25%)',
-}, [
-  {at: -0.3, is: 'ellipse(115% 115% at -7.5% -7.5%)'},
-  {at: 0, is: 'ellipse(100% 100% at 0% 0%)'},
-  {at: 0.3, is: 'ellipse(85% 85% at 7.5% 7.5%)'},
-  {at: 0.6, is: 'ellipse(70% 70% at 15% 15%)'},
-  {at: 1, is: 'ellipse(50% 50% at 25% 25%)'},
-  {at: 1.5, is: 'ellipse(25% 25% at 37.5% 37.5%)'}
-]);
-
-assertInterpolation({
-  property: 'clip-path',
-  from: 'polygon(nonzero, 0px 0px, 25px 25px, 50px 50px)',
-  to: 'polygon(nonzero, 25px 25px, 50px 50px, 75px 75px)',
-}, [
-  {at: -0.3, is: 'polygon(nonzero, -7.5px -7.5px, 17.5px 17.5px, 42.5px 42.5px)'},
-  {at: 0, is: 'polygon(nonzero, 0px 0px, 25px 25px, 50px 50px)'},
-  {at: 0.3, is: 'polygon(nonzero, 7.5px 7.5px, 32.5px 32.5px, 57.5px 57.5px)'},
-  {at: 0.6, is: 'polygon(nonzero, 15px 15px, 40px 40px, 65px 65px)'},
-  {at: 1, is: 'polygon(nonzero, 25px 25px, 50px 50px, 75px 75px)'},
-  {at: 1.5, is: 'polygon(nonzero, 37.5px 37.5px, 62.5px 62.5px, 87.5px 87.5px)'}
-]);
-
-assertNoInterpolation({
-  property: 'clip-path',
-  from: 'polygon(evenodd, 0px 0px, 25px 25px, 50px 50px)',
-  to: 'polygon(nonzero, 25px 25px, 50px 50px, 75px 75px)',
-});
-
-assertInterpolation({
-  property: 'clip-path',
-  from: 'inset(100%)',
-  to: 'inset(120%)',
-}, [
-  {at: -0.3, is: 'inset(94%)'},
-  {at: 0, is: 'inset(100%)'},
-  {at: 0.3, is: 'inset(106%)'},
-  {at: 0.6, is: 'inset(112%)'},
-  {at: 1, is: 'inset(120%)'},
-  {at: 1.5, is: 'inset(130%)'},
-]);
-
-assertNoInterpolation({
-  property: 'clip-path',
-  from: 'none',
-  to: 'ellipse(100% 100% at 0% 0%)',
-});
-
-assertInterpolation({
-  property: 'clip-path',
-  from: 'circle(25% at right 5% bottom 15px)',
-  to: 'circle(45% at right 25% bottom 35px)',
-}, [
-  {at: 0.25, is: 'circle(30% at 90% calc(-20px + 100%))'},
-  {at: 0.5, is: 'circle(35% at 85% calc(-25px + 100%))'},
-  {at: 0.75, is: 'circle(40% at 80% calc(-30px + 100%))'},
-]);
-
 // Regression test for crbug.com/920122.
 assertInterpolation({
   property: 'clip-path',
@@ -133,13 +11,6 @@ assertInterpolation({
 }, [
   {at: 3.40282e+38, is: 'inset(calc(3.40282e+38% + -3.40282e+38px))'},
 ]);
-
-
-assertNoInterpolation({
-  property: 'clip-path',
-  from: 'url("/clip-source")',
-  to: 'ellipse(100% 100% at 0% 0%)',
-});
 
 // clip-path <geometry-box> support is not yet implemented in Blink.
 // crbug.com/694218

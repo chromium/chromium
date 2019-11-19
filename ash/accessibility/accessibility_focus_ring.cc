@@ -11,92 +11,27 @@
 #include "ui/display/screen.h"
 
 namespace ash {
+namespace {
 
-// static
-gfx::Rect AccessibilityFocusRing::screen_bounds_for_testing_;
-
-// static
-AccessibilityFocusRing AccessibilityFocusRing::CreateWithRect(
-    const gfx::Rect& bounds,
-    int margin) {
-  // Compute the height of the top and bottom cap.
-  int cap_height = std::min(bounds.height() / 2, margin * 2);
-
-  gfx::Rect top(bounds.x(), bounds.y(), bounds.width(), cap_height);
-  gfx::Rect bottom(bounds.x(), bounds.bottom() - cap_height, bounds.width(),
-                   cap_height);
-  gfx::Rect body(bounds.x(), top.bottom(), bounds.width(),
-                 bottom.y() - top.bottom());
-
-  return CreateWithParagraphShape(top, body, bottom, margin);
+bool IsFocusRingOffscreen(const gfx::Rect& top,
+                          const gfx::Rect& middle,
+                          const gfx::Rect& bottom,
+                          const gfx::Rect& screen_bounds) {
+  if (top.y() > screen_bounds.bottom())
+    return true;
+  if (middle.right() < screen_bounds.x())
+    return true;
+  if (middle.x() > screen_bounds.right())
+    return true;
+  if (bottom.bottom() < screen_bounds.y())
+    return true;
+  return false;
 }
 
-// static
-AccessibilityFocusRing AccessibilityFocusRing::Interpolate(
-    const AccessibilityFocusRing& r1,
-    const AccessibilityFocusRing& r2,
-    double fraction) {
-  AccessibilityFocusRing dst;
-  for (int i = 0; i < 36; ++i) {
-    dst.points[i] = gfx::Point(
-        r1.points[i].x() * (1 - fraction) + r2.points[i].x() * fraction,
-        r1.points[i].y() * (1 - fraction) + r2.points[i].y() * fraction);
-  }
-  return dst;
-}
-
-// static
-AccessibilityFocusRing AccessibilityFocusRing::CreateWithParagraphShape(
-    const gfx::Rect& orig_top_line,
-    const gfx::Rect& orig_body,
-    const gfx::Rect& orig_bottom_line,
-    int margin) {
-  gfx::Rect top = orig_top_line;
-  gfx::Rect middle = orig_body;
-  gfx::Rect bottom = orig_bottom_line;
-
-  gfx::Rect display = GetScreenBoundsForRect(middle);
-
-  top.Intersect(display);
-  bottom.Intersect(display);
-
-  // Because calling Intersect() on a rect with a height of 0 causes all
-  // dimensions to be reset, we need to adjust middle manually (all other rects
-  // are guaranteed nonzero height).
-  if (middle.x() < 0) {
-    middle.set_width(middle.width() + middle.x());
-    middle.set_x(0);
-  }
-  if (middle.y() < 0) {
-    middle.set_height(middle.height() + middle.y());
-    middle.set_y(0);
-  }
-  if (middle.width() > display.width() - middle.x()) {
-    middle.set_width(display.width() - middle.x());
-  }
-  if (middle.height() > display.height() - middle.y()) {
-    middle.set_height(display.height() - middle.y());
-  }
-
-  int min_height = std::min(top.height(), bottom.height());
-  margin = std::min(margin, min_height / 2);
-
-  if (top.x() <= middle.x() + 2 * margin) {
-    top.set_width(top.width() + top.x() - middle.x());
-    top.set_x(middle.x());
-  }
-  if (top.right() >= middle.right() - 2 * margin) {
-    top.set_width(middle.right() - top.x());
-  }
-
-  if (bottom.x() <= middle.x() + 2 * margin) {
-    bottom.set_width(bottom.width() + bottom.x() - middle.x());
-    bottom.set_x(middle.x());
-  }
-  if (bottom.right() >= middle.right() - 2 * margin) {
-    bottom.set_width(middle.right() - bottom.x());
-  }
-
+AccessibilityFocusRing CreateFromThreeRects(const gfx::Rect& top,
+                                            const gfx::Rect& middle,
+                                            const gfx::Rect& bottom,
+                                            int margin) {
   AccessibilityFocusRing ring;
   ring.points[0] = gfx::Point(top.x(), top.bottom() - margin);
   ring.points[1] = gfx::Point(top.x(), top.y() + margin);
@@ -156,6 +91,128 @@ AccessibilityFocusRing AccessibilityFocusRing::CreateWithParagraphShape(
   ring.points[35] = gfx::Point(top.x(), top.bottom());
 
   return ring;
+}
+
+constexpr int kScreenPaddingDip = 2;
+}  // namespace
+
+int AccessibilityFocusRing::GetScreenPaddingForTesting() {
+  return kScreenPaddingDip;
+}
+
+// static
+gfx::Rect AccessibilityFocusRing::screen_bounds_for_testing_;
+
+// static
+AccessibilityFocusRing AccessibilityFocusRing::CreateWithRect(
+    const gfx::Rect& bounds,
+    int margin) {
+  // Compute the height of the top and bottom cap.
+  int cap_height = std::min(bounds.height() / 2, margin * 2);
+
+  gfx::Rect top(bounds.x(), bounds.y(), bounds.width(), cap_height);
+  gfx::Rect bottom(bounds.x(), bounds.bottom() - cap_height, bounds.width(),
+                   cap_height);
+  gfx::Rect body(bounds.x(), top.bottom(), bounds.width(),
+                 bottom.y() - top.bottom());
+
+  return CreateWithParagraphShape(top, body, bottom, margin);
+}
+
+// static
+AccessibilityFocusRing AccessibilityFocusRing::Interpolate(
+    const AccessibilityFocusRing& r1,
+    const AccessibilityFocusRing& r2,
+    double fraction) {
+  AccessibilityFocusRing dst;
+  for (int i = 0; i < 36; ++i) {
+    dst.points[i] = gfx::Point(
+        r1.points[i].x() * (1 - fraction) + r2.points[i].x() * fraction,
+        r1.points[i].y() * (1 - fraction) + r2.points[i].y() * fraction);
+  }
+  return dst;
+}
+
+// static
+void AccessibilityFocusRing::ClipToBounds(gfx::Rect* rect,
+                                          const gfx::Rect& bounds) {
+  if (rect->x() < bounds.x()) {
+    rect->set_width(rect->width() + rect->x() - bounds.x());
+    rect->set_x(bounds.x());
+  }
+  if (rect->x() > bounds.right()) {
+    rect->set_width(0);
+    rect->set_x(bounds.right());
+  } else if (rect->right() > bounds.right()) {
+    rect->set_width(rect->width() - rect->right() + bounds.right());
+  }
+
+  if (rect->y() < bounds.y()) {
+    rect->set_height(rect->height() + rect->y() - bounds.y());
+    rect->set_y(bounds.y());
+  }
+  if (rect->y() > bounds.bottom()) {
+    rect->set_height(0);
+    rect->set_y(bounds.bottom());
+  } else if (rect->bottom() > bounds.bottom()) {
+    rect->set_height(rect->height() - rect->bottom() + bounds.bottom());
+  }
+}
+
+// static
+AccessibilityFocusRing AccessibilityFocusRing::CreateWithParagraphShape(
+    const gfx::Rect& orig_top_line,
+    const gfx::Rect& orig_body,
+    const gfx::Rect& orig_bottom_line,
+    int margin) {
+  gfx::Rect top = orig_top_line;
+  gfx::Rect middle = orig_body;
+  gfx::Rect bottom = orig_bottom_line;
+
+  gfx::Rect screen_bounds = GetScreenBoundsForRect(middle);
+  screen_bounds.Inset(kScreenPaddingDip, kScreenPaddingDip);
+
+  // Don't force a focus ring that is entirely offscreen to display.
+  if (IsFocusRingOffscreen(top, middle, bottom, screen_bounds))
+    return CreateFromThreeRects(top, middle, bottom, margin);
+
+  if (top.Intersects(screen_bounds))
+    top.Intersect(screen_bounds);
+  else
+    ClipToBounds(&top, screen_bounds);
+
+  if (middle.Intersects(screen_bounds))
+    middle.Intersect(screen_bounds);
+  else
+    ClipToBounds(&middle, screen_bounds);
+
+  if (bottom.Intersects(screen_bounds))
+    bottom.Intersect(screen_bounds);
+  else
+    ClipToBounds(&bottom, screen_bounds);
+
+  int min_height = std::min(top.height(), bottom.height());
+  margin = std::min(margin, min_height / 2);
+
+  // Add space around top/bottom, if necessary, to allow focus ring to draw
+  // properly.
+  if (top.x() <= middle.x() + 2 * margin) {
+    top.set_width(top.width() + top.x() - middle.x());
+    top.set_x(middle.x());
+  }
+  if (top.right() >= middle.right() - 2 * margin) {
+    top.set_width(middle.right() - top.x());
+  }
+
+  if (bottom.x() <= middle.x() + 2 * margin) {
+    bottom.set_width(bottom.width() + bottom.x() - middle.x());
+    bottom.set_x(middle.x());
+  }
+  if (bottom.right() >= middle.right() - 2 * margin) {
+    bottom.set_width(middle.right() - bottom.x());
+  }
+
+  return CreateFromThreeRects(top, middle, bottom, margin);
 }
 
 gfx::Rect AccessibilityFocusRing::GetBounds() const {

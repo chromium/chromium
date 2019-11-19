@@ -12,14 +12,13 @@
 #include "components/cookie_config/cookie_store_util.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/network_service_instance.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "net/extras/sqlite/cookie_crypto_delegate.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/network_service.mojom.h"
-
-#if defined(OS_MACOSX)
-#include "base/mac/mac_util.h"
-#endif
 
 namespace content {
 namespace {
@@ -28,7 +27,7 @@ constexpr char kCookieName[] = "Name";
 constexpr char kCookieValue[] = "Value";
 
 net::CookieList GetCookies(
-    const network::mojom::CookieManagerPtr& cookie_manager) {
+    const mojo::Remote<network::mojom::CookieManager>& cookie_manager) {
   base::RunLoop run_loop;
   net::CookieList cookies_out;
   cookie_manager->GetAllCookies(
@@ -40,38 +39,57 @@ net::CookieList GetCookies(
   return cookies_out;
 }
 
-void SetCookie(const network::mojom::CookieManagerPtr& cookie_manager) {
+void SetCookie(
+    const mojo::Remote<network::mojom::CookieManager>& cookie_manager) {
   base::Time t = base::Time::Now();
   net::CanonicalCookie cookie(kCookieName, kCookieValue, "www.test.com", "/", t,
                               t + base::TimeDelta::FromDays(1), base::Time(),
-                              false, false, net::CookieSameSite::DEFAULT_MODE,
+                              true /* secure */, false /* http-only*/,
+                              net::CookieSameSite::NO_RESTRICTION,
                               net::COOKIE_PRIORITY_DEFAULT);
   base::RunLoop run_loop;
   cookie_manager->SetCanonicalCookie(
-      cookie, "http", false,
-      base::BindLambdaForTesting([&](bool success) { run_loop.Quit(); }));
+      cookie, "https", net::CookieOptions(),
+      base::BindLambdaForTesting(
+          [&](net::CanonicalCookie::CookieInclusionStatus status) {
+            run_loop.Quit();
+          }));
+  run_loop.Run();
+}
+
+void FlushCookies(
+    const mojo::Remote<network::mojom::CookieManager>& cookie_manager) {
+  base::RunLoop run_loop;
+  cookie_manager->FlushCookieStore(
+      base::BindLambdaForTesting([&]() { run_loop.Quit(); }));
   run_loop.Run();
 }
 
 // See |NetworkServiceBrowserTest| for content's version of tests.
-class ChromeNetworkServiceBrowserTest : public InProcessBrowserTest {
+class ChromeNetworkServiceBrowserTest
+    : public InProcessBrowserTest,
+      public ::testing::WithParamInterface</*kNetworkServiceInProcess*/ bool> {
  public:
   ChromeNetworkServiceBrowserTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        network::features::kNetworkService);
+    bool in_process = GetParam();
+    // Verify that cookie encryption works both in-process and out of process.
+    if (in_process)
+      scoped_feature_list_.InitAndEnableFeature(
+          features::kNetworkServiceInProcess);
   }
 
  protected:
-  network::mojom::NetworkContextPtr CreateNetworkContext(
+  mojo::PendingRemote<network::mojom::NetworkContext> CreateNetworkContext(
       bool enable_encrypted_cookies) {
-    network::mojom::NetworkContextPtr network_context;
+    mojo::PendingRemote<network::mojom::NetworkContext> network_context;
     network::mojom::NetworkContextParamsPtr context_params =
         network::mojom::NetworkContextParams::New();
     context_params->enable_encrypted_cookies = enable_encrypted_cookies;
     context_params->cookie_path =
         browser()->profile()->GetPath().Append(FILE_PATH_LITERAL("cookies"));
     GetNetworkService()->CreateNetworkContext(
-        mojo::MakeRequest(&network_context), std::move(context_params));
+        network_context.InitWithNewPipeAndPassReceiver(),
+        std::move(context_params));
     return network_context;
   }
 
@@ -81,12 +99,12 @@ class ChromeNetworkServiceBrowserTest : public InProcessBrowserTest {
   DISALLOW_COPY_AND_ASSIGN(ChromeNetworkServiceBrowserTest);
 };
 
-IN_PROC_BROWSER_TEST_F(ChromeNetworkServiceBrowserTest, PRE_EncryptedCookies) {
+IN_PROC_BROWSER_TEST_P(ChromeNetworkServiceBrowserTest, PRE_EncryptedCookies) {
   // First set a cookie with cookie encryption enabled.
-  network::mojom::NetworkContextPtr context =
-      CreateNetworkContext(/*enable_encrypted_cookies=*/true);
-  network::mojom::CookieManagerPtr cookie_manager;
-  context->GetCookieManager(mojo::MakeRequest(&cookie_manager));
+  mojo::Remote<network::mojom::NetworkContext> context(
+      CreateNetworkContext(/*enable_encrypted_cookies=*/true));
+  mojo::Remote<network::mojom::CookieManager> cookie_manager;
+  context->GetCookieManager(cookie_manager.BindNewPipeAndPassReceiver());
 
   SetCookie(cookie_manager);
 
@@ -94,23 +112,18 @@ IN_PROC_BROWSER_TEST_F(ChromeNetworkServiceBrowserTest, PRE_EncryptedCookies) {
   ASSERT_EQ(1u, cookies.size());
   EXPECT_EQ(kCookieName, cookies[0].Name());
   EXPECT_EQ(kCookieValue, cookies[0].Value());
+
+  FlushCookies(cookie_manager);
 }
 
-#if defined(OS_WIN)
-// The cookies.size() ASSERT is failing flakily on the Win7 bots.
-// See https://crbug.com/868667
+// This flakes on Mac10.12: http://crbug.com/1019655
+#if defined(OS_MACOSX)
 #define MAYBE_EncryptedCookies DISABLED_EncryptedCookies
 #else
 #define MAYBE_EncryptedCookies EncryptedCookies
 #endif
-
-IN_PROC_BROWSER_TEST_F(ChromeNetworkServiceBrowserTest,
+IN_PROC_BROWSER_TEST_P(ChromeNetworkServiceBrowserTest,
                        MAYBE_EncryptedCookies) {
-#if defined(OS_MACOSX)
-  // TODO(https://crbug.com/868667): Fix and reenable test.
-  if (base::mac::IsOS10_11())
-    return;
-#endif
   net::CookieCryptoDelegate* crypto_delegate =
       cookie_config::GetCookieCryptoDelegate();
   std::string ciphertext;
@@ -120,16 +133,24 @@ IN_PROC_BROWSER_TEST_F(ChromeNetworkServiceBrowserTest,
     return;
 
   // Now attempt to read the cookie with encryption disabled.
-  network::mojom::NetworkContextPtr context =
-      CreateNetworkContext(/*enable_encrypted_cookies=*/false);
-  network::mojom::CookieManagerPtr cookie_manager;
-  context->GetCookieManager(mojo::MakeRequest(&cookie_manager));
+  mojo::Remote<network::mojom::NetworkContext> context(
+      CreateNetworkContext(/*enable_encrypted_cookies=*/false));
+  mojo::Remote<network::mojom::CookieManager> cookie_manager;
+  context->GetCookieManager(cookie_manager.BindNewPipeAndPassReceiver());
 
   net::CookieList cookies = GetCookies(cookie_manager);
   ASSERT_EQ(1u, cookies.size());
   EXPECT_EQ(kCookieName, cookies[0].Name());
   EXPECT_EQ("", cookies[0].Value());
 }
+
+INSTANTIATE_TEST_SUITE_P(InProcess,
+                         ChromeNetworkServiceBrowserTest,
+                         ::testing::Values(true));
+
+INSTANTIATE_TEST_SUITE_P(OutOfProcess,
+                         ChromeNetworkServiceBrowserTest,
+                         ::testing::Values(false));
 
 }  // namespace
 }  // namespace content

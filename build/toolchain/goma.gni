@@ -27,3 +27,6 @@ declare_args() {
     }
   }
 }
+
+assert(!is_win || !use_goma || is_clang,
+       "cl.exe does not work on goma, use clang")

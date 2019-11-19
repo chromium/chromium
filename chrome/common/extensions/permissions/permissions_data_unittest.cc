@@ -14,6 +14,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/common/extensions/extension_test_util.h"
+#include "chrome/common/webui_url_constants.h"
 #include "components/crx_file/id_util.h"
 #include "content/public/common/socket_permission_request.h"
 #include "extensions/common/constants.h"
@@ -45,6 +46,12 @@ namespace extensions {
 namespace {
 
 const char kAllHostsPermission[] = "*://*/*";
+
+GURL GetFaviconURL(const char* path) {
+  GURL::Replacements replace_path;
+  replace_path.SetPathStr(path);
+  return GURL(chrome::kChromeUIFaviconURL).ReplaceComponents(replace_path);
+}
 
 bool CheckSocketPermission(scoped_refptr<Extension> extension,
                            SocketPermissionRequest::OperationType type,
@@ -83,7 +90,7 @@ void CheckRestrictedUrls(const Extension* extension,
                          bool block_chrome_urls) {
   // We log the name so we know _which_ extension failed here.
   const std::string& name = extension->name();
-  const GURL chrome_settings_url("chrome://settings/");
+  const GURL chrome_settings_url(chrome::kChromeUISettingsURL);
   const GURL chrome_extension_url("chrome-extension://foo/bar.html");
   const GURL google_url("https://www.google.com/");
   const GURL self_url("chrome-extension://" + extension->id() + "/foo.html");
@@ -379,11 +386,11 @@ class ExtensionScriptAndCaptureVisibleTest : public testing::Test {
         test_example_com("https://test.example.com"),
         sample_example_com("https://sample.example.com"),
         file_url("file:///foo/bar"),
-        favicon_url("chrome://favicon/http://www.google.com"),
+        favicon_url(GetFaviconURL("http://www.google.com")),
         extension_url("chrome-extension://" +
                       crx_file::id_util::GenerateIdForPath(
                           base::FilePath(FILE_PATH_LITERAL("foo")))),
-        settings_url("chrome://settings"),
+        settings_url(chrome::kChromeUISettingsURL),
         about_flags_url("about:flags") {
     urls_.insert(http_url);
     urls_.insert(http_url_with_path);
@@ -1155,7 +1162,9 @@ class CaptureVisiblePageTest : public testing::Test {
   DISALLOW_COPY_AND_ASSIGN(CaptureVisiblePageTest);
 };
 
-TEST_F(CaptureVisiblePageTest, URLsCapturableWithEitherActiveTabOrAllURLs) {
+// TODO(crbug.com/1004573) Disabled due to flake
+TEST_F(CaptureVisiblePageTest,
+       DISABLED_URLsCapturableWithEitherActiveTabOrAllURLs) {
   const GURL test_urls[] = {
       // Normal web page.
       GURL("https://example.com"),
@@ -1219,10 +1228,10 @@ TEST_F(CaptureVisiblePageTest, URLsCapturableOnlyWithActiveTab) {
       GURL("data:text/html;charset=utf-8,<html>Hello!</html>"),
 
       // A chrome:-scheme page.
-      GURL("chrome://settings"),
+      GURL(chrome::kChromeUISettingsURL),
 
       // The NTP.
-      GURL("chrome://newtab"),
+      GURL(chrome::kChromeUINewTabURL),
 
       // The Chrome Web Store.
       ExtensionsClient::Get()->GetWebstoreBaseURL(),
@@ -1330,14 +1339,16 @@ TEST_F(CaptureVisiblePageTest, SelfExtensionURLs) {
 TEST_F(CaptureVisiblePageTest, PolicyBlockedURLs) {
   {
     URLPattern example_com(URLPattern::SCHEME_ALL, "https://example.com/*");
-    URLPattern chrome_settings(URLPattern::SCHEME_ALL, "chrome://settings/*");
+    URLPattern chrome_settings(URLPattern::SCHEME_ALL,
+                               chrome::kChromeUISettingsURL);
+    chrome_settings.SetPath("*");
     URLPatternSet blocked_patterns({example_com, chrome_settings});
     PermissionsData::SetDefaultPolicyHostRestrictions(blocked_patterns,
                                                       URLPatternSet());
   }
 
   const GURL test_urls[] = {
-      GURL("https://example.com"), GURL("chrome://settings/"),
+      GURL("https://example.com"), GURL(chrome::kChromeUISettingsURL),
   };
 
   for (const GURL& url : test_urls) {

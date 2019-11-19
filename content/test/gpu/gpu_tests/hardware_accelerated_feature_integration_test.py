@@ -3,9 +3,9 @@
 # found in the LICENSE file.
 
 import sys
+import os
 
 from gpu_tests import gpu_integration_test
-import gpu_tests.hardware_accelerated_feature_expectations as hw_expectations
 
 test_harness_script = r"""
   function VerifyHardwareAccelerated(feature) {
@@ -43,10 +43,6 @@ class HardwareAcceleratedFeatureIntegrationTest(
     cls.StartBrowser()
     cls.SetStaticServerDirs([])
 
-  @classmethod
-  def _CreateExpectations(cls):
-    return hw_expectations.HardwareAcceleratedFeatureExpectations()
-
   def _Navigate(self, url):
     # It's crucial to use the action_runner, rather than the tab's
     # Navigate method directly. It waits for the document ready state
@@ -73,6 +69,13 @@ class HardwareAcceleratedFeatureIntegrationTest(
       print 'Test failed. Printing page contents:'
       print tab.EvaluateJavaScript('document.body.innerHTML')
       self.fail('%s not hardware accelerated' % feature)
+
+  @classmethod
+  def ExpectationsFiles(cls):
+    return [
+        os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                     'test_expectations',
+                     'hardware_accelerated_feature_expectations.txt')]
 
 def load_tests(loader, tests, pattern):
   del loader, tests, pattern  # Unused.

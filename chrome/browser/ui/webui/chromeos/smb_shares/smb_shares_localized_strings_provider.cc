@@ -20,6 +20,8 @@ void AddLocalizedStrings(content::WebUIDataSource* html_source) {
       {"smbShareName", IDS_SETTINGS_DOWNLOADS_ADD_SHARE_NAME},
       {"smbShareUsername", IDS_SETTINGS_DOWNLOADS_ADD_SHARE_USERNAME},
       {"smbSharePassword", IDS_SETTINGS_DOWNLOADS_ADD_SHARE_PASSWORD},
+      {"smbShareSaveCredentials",
+       IDS_SETTINGS_DOWNLOADS_ADD_SHARE_SAVE_CREDENTIALS},
       {"smbShareAuthenticationMethod",
        IDS_SETTINGS_DOWNLOADS_ADD_SHARE_AUTHENTICATION_METHOD},
       {"smbShareStandardAuthentication",
@@ -40,6 +42,10 @@ void AddLocalizedStrings(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_DOWNLOADS_SHARE_ADDED_MOUNT_EXISTS_MESSAGE},
       {"smbShareAddedInvalidURLMessage",
        IDS_SETTINGS_DOWNLOADS_SHARE_ADDED_MOUNT_INVALID_URL_MESSAGE},
+      {"smbShareAddedInvalidSSOURLMessage",
+       IDS_SETTINGS_DOWNLOADS_SHARE_ADDED_MOUNT_INVALID_SSO_URL_MESSAGE},
+      {"smbShareDiscoveryMessage",
+       IDS_SETTINGS_DOWNLOADS_ADD_SHARE_DISCOVERY_MESSAGE},
   };
   AddLocalizedStringsBulk(html_source, kLocalizedStrings,
                           base::size(kLocalizedStrings));

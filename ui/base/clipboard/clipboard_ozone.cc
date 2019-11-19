@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/containers/flat_map.h"
 #include "base/containers/span.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
@@ -15,29 +16,71 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/timer/timer.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/base/clipboard/clipboard_buffer.h"
 #include "ui/base/clipboard/clipboard_constants.h"
+#include "ui/base/clipboard/clipboard_monitor.h"
 #include "ui/base/clipboard/custom_data_helper.h"
 #include "ui/gfx/codec/png_codec.h"
+#include "ui/ozone/buildflags.h"
 #include "ui/ozone/public/ozone_platform.h"
 #include "ui/ozone/public/platform_clipboard.h"
+
+#if defined(OS_CHROMEOS) && BUILDFLAG(OZONE_PLATFORM_X11)
+#include "base/command_line.h"
+#include "ui/base/clipboard/clipboard_aura.h"
+#include "ui/base/ui_base_switches.h"
+#endif
 
 namespace ui {
 
 namespace {
 
 // The amount of time to wait for a request to complete before aborting it.
-constexpr base::TimeDelta kRequestTimeoutMs =
-    base::TimeDelta::FromMilliseconds(10000);
+constexpr base::TimeDelta kRequestTimeout = base::TimeDelta::FromSeconds(10);
+
+// Depending on the backend, the platform clipboard may or may not be
+// available.  Should it be absent, we provide a dummy one.  It always calls
+// back immediately with empty data, and denies ownership of any buffer.
+class StubPlatformClipboard : public PlatformClipboard {
+ public:
+  StubPlatformClipboard() = default;
+  ~StubPlatformClipboard() override = default;
+
+  // PlatformClipboard:
+  void OfferClipboardData(
+      ClipboardBuffer buffer,
+      const PlatformClipboard::DataMap& data_map,
+      PlatformClipboard::OfferDataClosure callback) override {
+    std::move(callback).Run();
+  }
+  void RequestClipboardData(
+      ClipboardBuffer buffer,
+      const std::string& mime_type,
+      PlatformClipboard::DataMap* data_map,
+      PlatformClipboard::RequestDataClosure callback) override {
+    std::move(callback).Run({});
+  }
+  void GetAvailableMimeTypes(
+      ClipboardBuffer buffer,
+      PlatformClipboard::GetMimeTypesClosure callback) override {
+    std::move(callback).Run({});
+  }
+  bool IsSelectionOwner(ClipboardBuffer buffer) override { return false; }
+  void SetSequenceNumberUpdateCb(
+      PlatformClipboard::SequenceNumberUpdateCb cb) override {}
+};
 
 }  // namespace
 
-// A helper class, which uses a request pattern to asynchronously communicate
-// with the ozone::PlatformClipboard and fetch clipboard data with mimes
-// specified.
+// A helper class that uses a request pattern to asynchronously communicate
+// with the ozone::PlatformClipboard and fetch clipboard data with the
+// specified MIME types.
 class ClipboardOzone::AsyncClipboardOzone {
  public:
   explicit AsyncClipboardOzone(PlatformClipboard* platform_clipboard)
       : platform_clipboard_(platform_clipboard), weak_factory_(this) {
+    DCHECK(platform_clipboard_);
+
     // Set a callback to listen to requests to increase the clipboard sequence
     // number.
     auto update_sequence_cb =
@@ -49,65 +92,64 @@ class ClipboardOzone::AsyncClipboardOzone {
 
   ~AsyncClipboardOzone() = default;
 
-  base::span<uint8_t> ReadClipboardDataAndWait(ClipboardType type,
+  base::span<uint8_t> ReadClipboardDataAndWait(ClipboardBuffer buffer,
                                                const std::string& mime_type) {
-    // TODO(tonikitoo): add selection support.
-    if (type == ClipboardType::CLIPBOARD_TYPE_SELECTION)
-      return base::span<uint8_t>();
-
     // We can use a fastpath if we are the owner of the selection.
-    if (platform_clipboard_->IsSelectionOwner()) {
-      auto it = offered_data_.find(mime_type);
-      if (it == offered_data_.end())
-        return base::span<uint8_t>();
+    if (platform_clipboard_->IsSelectionOwner(buffer)) {
+      auto it = offered_data_[buffer].find(mime_type);
+      if (it == offered_data_[buffer].end())
+        return {};
       return base::make_span(it->second.data(), it->second.size());
     }
 
-    auto request = std::make_unique<Request>(RequestType::kRead);
-    request->requested_mime_type = mime_type;
-    ProcessRequestAndWaitForResult(request.get());
+    Request request(RequestType::kRead);
+    request.requested_mime_type = mime_type;
+    PerformRequestAndWaitForResult(buffer, &request);
 
-    offered_data_ = std::move(request->data_map);
-    auto it = offered_data_.find(mime_type);
-    if (it == offered_data_.end())
-      return base::span<uint8_t>();
+    offered_data_[buffer] = request.data_map;
+    auto it = offered_data_[buffer].find(mime_type);
+    if (it == offered_data_[buffer].end())
+      return {};
     return base::make_span(it->second.data(), it->second.size());
   }
 
-  std::vector<std::string> RequestMimeTypes() {
+  std::vector<std::string> RequestMimeTypes(ClipboardBuffer buffer) {
     // We can use a fastpath if we are the owner of the selection.
-    if (platform_clipboard_->IsSelectionOwner()) {
+    if (platform_clipboard_->IsSelectionOwner(buffer)) {
       std::vector<std::string> mime_types;
-      for (const auto& item : offered_data_)
+      for (const auto& item : offered_data_[buffer])
         mime_types.push_back(item.first);
       return mime_types;
     }
 
-    auto request = std::make_unique<Request>(RequestType::kGetMime);
-    ProcessRequestAndWaitForResult(request.get());
-    return std::move(request->mime_types);
+    Request request(RequestType::kGetMime);
+    PerformRequestAndWaitForResult(buffer, &request);
+    return request.mime_types;
   }
 
-  void OfferData() {
-    auto request = std::make_unique<Request>(RequestType::kOffer);
-    request->data_map = offered_data_;
-    ProcessRequestAndWaitForResult(request.get());
+  void OfferData(ClipboardBuffer buffer) {
+    Request request(RequestType::kOffer);
+    request.data_map = data_to_offer_;
+    offered_data_[buffer] = std::move(data_to_offer_);
+    PerformRequestAndWaitForResult(buffer, &request);
 
-    UpdateClipboardSequenceNumber();
+    UpdateClipboardSequenceNumber(buffer);
+  }
+
+  void Clear(ClipboardBuffer buffer) {
+    data_to_offer_.clear();
+    OfferData(buffer);
+    ClipboardMonitor::GetInstance()->NotifyClipboardDataChanged();
   }
 
   void InsertData(std::vector<uint8_t> data, const std::string& mime_type) {
-    DCHECK(offered_data_.find(mime_type) == offered_data_.end());
-    offered_data_[mime_type] = std::move(data);
+    DCHECK_EQ(data_to_offer_.count(mime_type), 0U);
+    data_to_offer_[mime_type] = std::move(data);
+    ClipboardMonitor::GetInstance()->NotifyClipboardDataChanged();
   }
 
-  void ClearOfferedData() { offered_data_.clear(); }
-
-  uint64_t GetSequenceNumber(ClipboardType type) {
-    if (type == ClipboardType::CLIPBOARD_TYPE_COPY_PASTE)
-      return clipboard_sequence_number_;
-    // TODO(tonikitoo): add sequence number for the selection clipboard type.
-    return 0;
+  uint64_t GetSequenceNumber(ClipboardBuffer buffer) {
+    return clipboard_sequence_number_[buffer];
   }
 
  private:
@@ -117,17 +159,16 @@ class ClipboardOzone::AsyncClipboardOzone {
     kGetMime = 2,
   };
 
-  // A structure, which holds request data to process inquiries from
-  // the ClipboardOzone.
+  // Holds request data to process inquiries from the ClipboardOzone.
   struct Request {
-    explicit Request(RequestType type) : current_type(type) {}
+    explicit Request(RequestType request_type) : type(request_type) {}
     ~Request() = default;
 
     // Describes the type of the request.
-    RequestType current_type;
+    RequestType type;
 
     // A closure that is used to signal the request is processed.
-    base::OnceClosure request_closure;
+    base::OnceClosure finish_closure;
 
     // Used for kRead and kOffer requests. It contains either data offered by
     // Chromium to a system clipboard or a read data offered by the system
@@ -143,68 +184,70 @@ class ClipboardOzone::AsyncClipboardOzone {
     std::vector<std::string> mime_types;
   };
 
-  void ProcessRequestAndWaitForResult(Request* request) {
+  void PerformRequestAndWaitForResult(ClipboardBuffer buffer,
+                                      Request* request) {
+    DCHECK(request);
     DCHECK(!abort_timer_.IsRunning());
     DCHECK(!pending_request_);
 
-    // TODO(https://crbug.com/913422): the implementation is known to be
-    // dangerous, and may cause blocks in ui thkRead. But base::Clipboard was
-    // designed to have synchrous APIs rather than asynchronous ones that at
-    // least two system clipboards on X11 and Wayland provide.
-    base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
-    request->request_closure = run_loop.QuitClosure();
-
     pending_request_ = request;
-    switch (pending_request_->current_type) {
+    switch (pending_request_->type) {
       case (RequestType::kRead):
-        ProcessReadRequest(request);
+        DispatchReadRequest(buffer, request);
         break;
       case (RequestType::kOffer):
-        ProcessOfferRequest(request);
+        DispatchOfferRequest(buffer, request);
         break;
       case (RequestType::kGetMime):
-        ProcessGetMimeRequest(request);
+        DispatchGetMimeRequest(buffer, request);
         break;
     }
 
     if (!pending_request_)
       return;
 
+    // TODO(https://crbug.com/913422): the implementation is known to be
+    // dangerous, and may cause blocks in ui thread. But base::Clipboard was
+    // designed to have synchrous APIs rather than asynchronous ones that at
+    // least two system clipboards on X11 and Wayland provide.
+    base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
+    request->finish_closure = run_loop.QuitClosure();
+
     // Set a timeout timer after which the request will be aborted.
-    abort_timer_.Start(FROM_HERE, kRequestTimeoutMs, this,
-                       &AsyncClipboardOzone::AbortStaledRequest);
+    abort_timer_.Start(FROM_HERE, kRequestTimeout, this,
+                       &AsyncClipboardOzone::AbortStalledRequest);
     run_loop.Run();
   }
 
-  void AbortStaledRequest() {
-    if (pending_request_)
-      std::move(pending_request_->request_closure).Run();
+  void AbortStalledRequest() {
+    if (pending_request_ && pending_request_->finish_closure)
+      std::move(pending_request_->finish_closure).Run();
   }
 
-  void ProcessReadRequest(Request* request) {
+  void DispatchReadRequest(ClipboardBuffer buffer, Request* request) {
     auto callback = base::BindOnce(&AsyncClipboardOzone::OnTextRead,
                                    weak_factory_.GetWeakPtr());
-    DCHECK(platform_clipboard_);
     platform_clipboard_->RequestClipboardData(
-        request->requested_mime_type, &request->data_map, std::move(callback));
+        buffer, request->requested_mime_type, &request->data_map,
+        std::move(callback));
   }
 
-  void ProcessOfferRequest(Request* request) {
+  void DispatchOfferRequest(ClipboardBuffer buffer, Request* request) {
     auto callback = base::BindOnce(&AsyncClipboardOzone::OnOfferDone,
                                    weak_factory_.GetWeakPtr());
-    DCHECK(platform_clipboard_);
-    platform_clipboard_->OfferClipboardData(request->data_map,
+    platform_clipboard_->OfferClipboardData(buffer, request->data_map,
                                             std::move(callback));
   }
 
-  void ProcessGetMimeRequest(Request* request) {
+  void DispatchGetMimeRequest(ClipboardBuffer buffer, Request* request) {
     auto callback = base::BindOnce(&AsyncClipboardOzone::OnGotMimeTypes,
                                    weak_factory_.GetWeakPtr());
-    DCHECK(platform_clipboard_);
-    platform_clipboard_->GetAvailableMimeTypes(std::move(callback));
+    platform_clipboard_->GetAvailableMimeTypes(buffer, std::move(callback));
   }
 
   void OnTextRead(const base::Optional<std::vector<uint8_t>>& data) {
+    // |data| is already set in request's data_map, so just finish request
+    // processing.
     CompleteRequest();
   }
 
@@ -216,17 +259,24 @@ class ClipboardOzone::AsyncClipboardOzone {
   }
 
   void CompleteRequest() {
+    if (!pending_request_)
+      return;
     abort_timer_.Stop();
-    auto closure = std::move(pending_request_->request_closure);
+    if (pending_request_->finish_closure)
+      std::move(pending_request_->finish_closure).Run();
     pending_request_ = nullptr;
-    std::move(closure).Run();
   }
 
-  void UpdateClipboardSequenceNumber() { ++clipboard_sequence_number_; }
+  void UpdateClipboardSequenceNumber(ClipboardBuffer buffer) {
+    ++clipboard_sequence_number_[buffer];
+  }
 
-  // Cached clipboard data, which is pending to be written. Must be cleared on
-  // every new write to the |platform_clipboard_|.
-  PlatformClipboard::DataMap offered_data_;
+  // Clipboard data accumulated for writing.
+  PlatformClipboard::DataMap data_to_offer_;
+
+  // Clipboard data that had been offered most recently.  Used as a cache to
+  // read data if we still own it.
+  base::flat_map<ClipboardBuffer, PlatformClipboard::DataMap> offered_data_;
 
   // A current pending request being processed.
   Request* pending_request_ = nullptr;
@@ -237,7 +287,7 @@ class ClipboardOzone::AsyncClipboardOzone {
   // Provides communication to a system clipboard under ozone level.
   PlatformClipboard* platform_clipboard_ = nullptr;
 
-  uint64_t clipboard_sequence_number_ = 0;
+  base::flat_map<ClipboardBuffer, uint64_t> clipboard_sequence_number_;
 
   base::WeakPtrFactory<AsyncClipboardOzone> weak_factory_;
 
@@ -246,84 +296,101 @@ class ClipboardOzone::AsyncClipboardOzone {
 
 // Clipboard factory method.
 Clipboard* Clipboard::Create() {
+// linux-chromeos uses aura clipboard by default, but supports ozone x11
+// with flag --use-system-clipbboard.
+#if defined(OS_CHROMEOS) && BUILDFLAG(OZONE_PLATFORM_X11)
+  if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kUseSystemClipboard)) {
+    return new ClipboardAura;
+  }
+#endif
   return new ClipboardOzone;
 }
 
 // ClipboardOzone implementation.
 ClipboardOzone::ClipboardOzone() {
-  async_clipboard_ozone_ =
-      std::make_unique<ClipboardOzone::AsyncClipboardOzone>(
-          OzonePlatform::GetInstance()->GetPlatformClipboard());
+  auto* platform_clipboard =
+      OzonePlatform::GetInstance()->GetPlatformClipboard();
+  if (platform_clipboard) {
+    async_clipboard_ozone_ =
+        std::make_unique<ClipboardOzone::AsyncClipboardOzone>(
+            platform_clipboard);
+  } else {
+    static base::NoDestructor<StubPlatformClipboard> stub_platform_clipboard;
+    async_clipboard_ozone_ =
+        std::make_unique<ClipboardOzone::AsyncClipboardOzone>(
+            stub_platform_clipboard.get());
+  }
 }
 
 ClipboardOzone::~ClipboardOzone() = default;
 
 void ClipboardOzone::OnPreShutdown() {}
 
-uint64_t ClipboardOzone::GetSequenceNumber(ClipboardType type) const {
-  return async_clipboard_ozone_->GetSequenceNumber(type);
+uint64_t ClipboardOzone::GetSequenceNumber(ClipboardBuffer buffer) const {
+  return async_clipboard_ozone_->GetSequenceNumber(buffer);
 }
 
 bool ClipboardOzone::IsFormatAvailable(const ClipboardFormatType& format,
-                                       ClipboardType type) const {
+                                       ClipboardBuffer buffer) const {
   DCHECK(CalledOnValidThread());
-  // TODO(tonikitoo): add selection support.
-  if (type == ClipboardType::CLIPBOARD_TYPE_SELECTION)
-    return false;
 
-  auto available_types = async_clipboard_ozone_->RequestMimeTypes();
-  for (auto mime_type : available_types) {
-    if (format.ToString() == mime_type) {
-      return true;
-    }
-  }
-  return false;
+  auto available_types = async_clipboard_ozone_->RequestMimeTypes(buffer);
+  return base::Contains(available_types, format.ToString());
 }
 
-void ClipboardOzone::Clear(ClipboardType type) {
-  async_clipboard_ozone_->ClearOfferedData();
-  async_clipboard_ozone_->OfferData();
+void ClipboardOzone::Clear(ClipboardBuffer buffer) {
+  async_clipboard_ozone_->Clear(buffer);
 }
 
-void ClipboardOzone::ReadAvailableTypes(ClipboardType type,
+void ClipboardOzone::ReadAvailableTypes(ClipboardBuffer buffer,
                                         std::vector<base::string16>* types,
                                         bool* contains_filenames) const {
   DCHECK(CalledOnValidThread());
+
   types->clear();
 
-  // TODO(tonikitoo): add selection support.
-  if (type == ClipboardType::CLIPBOARD_TYPE_SELECTION)
-    return;
-
-  auto available_types = async_clipboard_ozone_->RequestMimeTypes();
-  for (auto mime_type : available_types)
-    types->push_back(base::UTF8ToUTF16(mime_type));
+  auto available_types = async_clipboard_ozone_->RequestMimeTypes(buffer);
+  for (auto& mime_type : available_types) {
+    // Special handling for chromium/x-web-custom-data.
+    // We must read the data and deserialize it to find the list
+    // of mime types to report.
+    if (mime_type == ClipboardFormatType::GetWebCustomDataType().ToString()) {
+      auto data = async_clipboard_ozone_->ReadClipboardDataAndWait(
+          buffer, ClipboardFormatType::GetWebCustomDataType().ToString());
+      ui::ReadCustomDataTypes(data.data(), data.size(), types);
+    } else {
+      types->push_back(base::UTF8ToUTF16(mime_type));
+    }
+  }
 }
 
-void ClipboardOzone::ReadText(ClipboardType type,
+void ClipboardOzone::ReadText(ClipboardBuffer buffer,
                               base::string16* result) const {
   DCHECK(CalledOnValidThread());
 
   auto clipboard_data =
-      async_clipboard_ozone_->ReadClipboardDataAndWait(type, kMimeTypeText);
+      async_clipboard_ozone_->ReadClipboardDataAndWait(buffer, kMimeTypeText);
   *result = base::UTF8ToUTF16(base::StringPiece(
       reinterpret_cast<char*>(clipboard_data.data()), clipboard_data.size()));
 }
 
-void ClipboardOzone::ReadAsciiText(ClipboardType type,
+void ClipboardOzone::ReadAsciiText(ClipboardBuffer buffer,
                                    std::string* result) const {
   DCHECK(CalledOnValidThread());
+
   auto clipboard_data =
-      async_clipboard_ozone_->ReadClipboardDataAndWait(type, kMimeTypeText);
+      async_clipboard_ozone_->ReadClipboardDataAndWait(buffer, kMimeTypeText);
   result->assign(clipboard_data.begin(), clipboard_data.end());
 }
 
-void ClipboardOzone::ReadHTML(ClipboardType type,
+void ClipboardOzone::ReadHTML(ClipboardBuffer buffer,
                               base::string16* markup,
                               std::string* src_url,
                               uint32_t* fragment_start,
                               uint32_t* fragment_end) const {
   DCHECK(CalledOnValidThread());
+
   markup->clear();
   if (src_url)
     src_url->clear();
@@ -331,37 +398,41 @@ void ClipboardOzone::ReadHTML(ClipboardType type,
   *fragment_end = 0;
 
   auto clipboard_data =
-      async_clipboard_ozone_->ReadClipboardDataAndWait(type, kMimeTypeHTML);
+      async_clipboard_ozone_->ReadClipboardDataAndWait(buffer, kMimeTypeHTML);
   *markup = base::UTF8ToUTF16(base::StringPiece(
       reinterpret_cast<char*>(clipboard_data.data()), clipboard_data.size()));
   DCHECK(markup->length() <= std::numeric_limits<uint32_t>::max());
   *fragment_end = static_cast<uint32_t>(markup->length());
 }
 
-void ClipboardOzone::ReadRTF(ClipboardType type, std::string* result) const {
+void ClipboardOzone::ReadRTF(ClipboardBuffer buffer,
+                             std::string* result) const {
   DCHECK(CalledOnValidThread());
+
   auto clipboard_data =
-      async_clipboard_ozone_->ReadClipboardDataAndWait(type, kMimeTypeRTF);
+      async_clipboard_ozone_->ReadClipboardDataAndWait(buffer, kMimeTypeRTF);
   result->assign(clipboard_data.begin(), clipboard_data.end());
 }
 
-SkBitmap ClipboardOzone::ReadImage(ClipboardType type) const {
+SkBitmap ClipboardOzone::ReadImage(ClipboardBuffer buffer) const {
   DCHECK(CalledOnValidThread());
+
   auto clipboard_data =
-      async_clipboard_ozone_->ReadClipboardDataAndWait(type, kMimeTypePNG);
+      async_clipboard_ozone_->ReadClipboardDataAndWait(buffer, kMimeTypePNG);
   SkBitmap bitmap;
-  if (gfx::PNGCodec::Decode(clipboard_data.data(), clipboard_data.size(),
-                            &bitmap))
-    return SkBitmap(bitmap);
-  return SkBitmap();
+  if (!gfx::PNGCodec::Decode(clipboard_data.data(), clipboard_data.size(),
+                             &bitmap))
+    return {};
+  return SkBitmap(bitmap);
 }
 
-void ClipboardOzone::ReadCustomData(ClipboardType clipboard_type,
+void ClipboardOzone::ReadCustomData(ClipboardBuffer buffer,
                                     const base::string16& type,
                                     base::string16* result) const {
   DCHECK(CalledOnValidThread());
+
   auto custom_data = async_clipboard_ozone_->ReadClipboardDataAndWait(
-      clipboard_type, kMimeTypeWebCustomData);
+      buffer, kMimeTypeWebCustomData);
   ui::ReadCustomDataForType(custom_data.data(), custom_data.size(), type,
                             result);
 }
@@ -376,22 +447,49 @@ void ClipboardOzone::ReadBookmark(base::string16* title,
 void ClipboardOzone::ReadData(const ClipboardFormatType& format,
                               std::string* result) const {
   DCHECK(CalledOnValidThread());
+
   auto clipboard_data = async_clipboard_ozone_->ReadClipboardDataAndWait(
-      ClipboardType::CLIPBOARD_TYPE_COPY_PASTE, format.ToString());
+      ClipboardBuffer::kCopyPaste, format.ToString());
   result->assign(clipboard_data.begin(), clipboard_data.end());
 }
 
-void ClipboardOzone::WriteObjects(ClipboardType type,
-                                  const ObjectMap& objects) {
+void ClipboardOzone::WritePortableRepresentations(ClipboardBuffer buffer,
+                                                  const ObjectMap& objects) {
   DCHECK(CalledOnValidThread());
-  if (type == ClipboardType::CLIPBOARD_TYPE_COPY_PASTE) {
-    async_clipboard_ozone_->ClearOfferedData();
 
-    for (const auto& object : objects)
-      DispatchObject(static_cast<ObjectType>(object.first), object.second);
+  for (const auto& object : objects)
+    DispatchPortableRepresentation(object.first, object.second);
 
-    async_clipboard_ozone_->OfferData();
+  async_clipboard_ozone_->OfferData(buffer);
+
+  // Just like Aura/X11 implementation does, copy text data from the copy/paste
+  // selection to the primary selection.
+  if (buffer == ClipboardBuffer::kCopyPaste) {
+    auto text_iter = objects.find(PortableFormat::kText);
+    if (text_iter != objects.end()) {
+      const ObjectMapParams& params_vector = text_iter->second;
+      if (params_vector.size()) {
+        const ObjectMapParam& char_vector = params_vector[0];
+        const uint8_t* uint8_data =
+            reinterpret_cast<const uint8_t*>(char_vector.data());
+        if (char_vector.size()) {
+          std::vector<uint8_t> data(uint8_data,
+                                    uint8_data + char_vector.size());
+          async_clipboard_ozone_->InsertData(std::move(data), kMimeTypeText);
+        }
+      }
+      async_clipboard_ozone_->OfferData(ClipboardBuffer::kSelection);
+    }
   }
+}
+
+void ClipboardOzone::WritePlatformRepresentations(
+    ClipboardBuffer buffer,
+    std::vector<Clipboard::PlatformRepresentation> platform_representations) {
+  DCHECK(CalledOnValidThread());
+  DispatchPlatformRepresentations(std::move(platform_representations));
+
+  async_clipboard_ozone_->OfferData(buffer);
 }
 
 void ClipboardOzone::WriteText(const char* text_data, size_t text_len) {
@@ -443,7 +541,7 @@ void ClipboardOzone::WriteData(const ClipboardFormatType& format,
                                const char* data_data,
                                size_t data_len) {
   std::vector<uint8_t> data(data_data, data_data + data_len);
-  async_clipboard_ozone_->InsertData(data, format.ToString());
+  async_clipboard_ozone_->InsertData(std::move(data), format.ToString());
 }
 
 }  // namespace ui

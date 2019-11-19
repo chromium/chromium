@@ -27,6 +27,10 @@ namespace content {
 class BrowserContext;
 }
 
+namespace cryptohome {
+class BaseReply;
+}
+
 namespace chromeos {
 
 class AuthStatusConsumer;
@@ -151,12 +155,22 @@ class COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH) CryptohomeAuthenticator
   // otherwise.
   void LoginAsArcKioskAccount(const AccountId& app_account_id) override;
 
+  // Initiates login into the web kiosk mode account identified by
+  // |app_account_id|.
+  // Mounts a public cryptohome, which will be ephemeral if the
+  // |DeviceEphemeralUsersEnabled| policy is enabled and non-ephemeral
+  // otherwise.
+  void LoginAsWebKioskAccount(const AccountId& app_account_id) override;
+
   // These methods must be called on the UI thread, as they make DBus calls
   // and also call back to the login UI.
   void OnAuthSuccess() override;
   void OnAuthFailure(const AuthFailure& error) override;
   void RecoverEncryptedData(const std::string& old_password) override;
   void ResyncEncryptedData() override;
+
+  // Called after UnmountEx finishes.
+  void OnUnmountEx(base::Optional<cryptohome::BaseReply> reply);
 
   // AuthAttemptStateResolver overrides.
   // Attempts to make a decision and call back |consumer_| based on
@@ -170,6 +184,10 @@ class COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH) CryptohomeAuthenticator
   void OnOffTheRecordAuthSuccess();
   void OnPasswordChangeDetected();
   void OnOldEncryptionDetected(bool has_incomplete_migration);
+
+  // Migrate cryptohome key for |user_context| using |old_password|.
+  void MigrateKey(const UserContext& user_context,
+                  const std::string& old_password);
 
  protected:
   ~CryptohomeAuthenticator() override;

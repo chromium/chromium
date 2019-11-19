@@ -14,6 +14,9 @@
  * change if the page is re-opened later.
  */
 
+// #import {assert} from './assert.m.js';
+// #import {parseHtmlSubset} from './parse_html_subset.m.js';
+
 /**
  * @typedef {{
  *   substitutions: (Array<string>|undefined),
@@ -21,10 +24,10 @@
  *   tags: (Array<string>|undefined),
  * }}
  */
-let SanitizeInnerHtmlOpts;
+/* #export */ let SanitizeInnerHtmlOpts;
 
 // eslint-disable-next-line no-var
-/** @type {!LoadTimeData} */ var loadTimeData;
+/* #export */ /** @type {!LoadTimeData} */ var loadTimeData;
 
 // Expose this type globally as a temporary work around until
 // https://github.com/google/closure-compiler/issues/544 is fixed.
@@ -234,4 +237,9 @@ function LoadTimeData(){}
 
   expect(!loadTimeData, 'should only include this file once');
   loadTimeData = new LoadTimeData;
+
+  // Expose |loadTimeData| directly on |window|. This is only necessary by the
+  // auto-generated load_time_data.m.js, since within a JS module the scope is
+  // local.
+  window.loadTimeData = loadTimeData;
 })();

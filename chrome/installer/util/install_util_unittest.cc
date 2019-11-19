@@ -32,6 +32,7 @@
 
 using base::win::RegKey;
 using ::testing::_;
+using ::testing::Not;
 using ::testing::Return;
 using ::testing::StrEq;
 
@@ -378,6 +379,12 @@ TEST_F(InstallUtilTest, ValueEquals) {
   EXPECT_TRUE(pred.Evaluate(L"howdy"));
 }
 
+// A matcher that returns true if its argument (a string) matches a given
+// base::FilePath.
+MATCHER_P(EqPathIgnoreCase, value, "") {
+  return base::FilePath::CompareEqualIgnoreCase(arg, value.value());
+}
+
 TEST_F(InstallUtilTest, ProgramCompare) {
   base::ScopedTempDir test_dir;
   ASSERT_TRUE(test_dir.CreateUniqueTempDir());
@@ -421,8 +428,7 @@ TEST_F(InstallUtilTest, ProgramCompare) {
   ASSERT_NE(static_cast<DWORD>(0), short_len);
   ASSERT_GT(static_cast<DWORD>(MAX_PATH), short_len);
   short_expect.resize(short_len);
-  ASSERT_FALSE(base::FilePath::CompareEqualIgnoreCase(expect.value(),
-                                                      short_expect));
+  ASSERT_THAT(short_expect, Not(EqPathIgnoreCase(expect)));
   EXPECT_TRUE(InstallUtil::ProgramCompare(expect).Evaluate(
       L"\"" + short_expect + L"\""));
 }
@@ -439,14 +445,14 @@ TEST_F(InstallUtilTest, AddDowngradeVersion) {
   base::Version lower_new_version_1("1.1.1.0");
   base::Version lower_new_version_2("1.1.0.0");
 
-  ASSERT_FALSE(InstallUtil::GetDowngradeVersion().IsValid());
+  ASSERT_FALSE(InstallUtil::GetDowngradeVersion());
 
   // Upgrade should not create the value.
   list.reset(WorkItem::CreateWorkItemList());
   InstallUtil::AddUpdateDowngradeVersionItem(kRoot, &current_version,
                                              higer_new_version, list.get());
   ASSERT_TRUE(list->Do());
-  ASSERT_FALSE(InstallUtil::GetDowngradeVersion().IsValid());
+  ASSERT_FALSE(InstallUtil::GetDowngradeVersion());
 
   // Downgrade should create the value.
   list.reset(WorkItem::CreateWorkItemList());
@@ -501,7 +507,7 @@ TEST_F(InstallUtilTest, DeleteDowngradeVersion) {
   InstallUtil::AddUpdateDowngradeVersionItem(kRoot, &lower_new_version_1,
                                              higer_new_version, list.get());
   ASSERT_TRUE(list->Do());
-  ASSERT_FALSE(InstallUtil::GetDowngradeVersion().IsValid());
+  ASSERT_FALSE(InstallUtil::GetDowngradeVersion());
 
   // Fresh install should delete the value if it exists.
   list.reset(WorkItem::CreateWorkItemList());
@@ -513,7 +519,7 @@ TEST_F(InstallUtilTest, DeleteDowngradeVersion) {
   InstallUtil::AddUpdateDowngradeVersionItem(kRoot, nullptr,
                                              lower_new_version_1, list.get());
   ASSERT_TRUE(list->Do());
-  ASSERT_FALSE(InstallUtil::GetDowngradeVersion().IsValid());
+  ASSERT_FALSE(InstallUtil::GetDowngradeVersion());
 }
 
 TEST(DeleteRegistryKeyTest, DeleteAccessRightIsEnoughToDelete) {

@@ -336,11 +336,16 @@ ChromePermissionMessageRule::GetAllRules() {
   // system should allow us to design a system that is simple enough to explain
   // yet powerful enough to encapsulate all the messages we want to display.
   ChromePermissionMessageRule rules_arr[] = {
+      // BEGIN POWERFUL PERMISSIONS:
+      // The following permissions are shown in the chrome://management page.
+      // See also GetPowerfulPermissionMessages().
+
       // Full access permission messages.
       {IDS_EXTENSION_PROMPT_WARNING_DEBUGGER, {APIPermission::kDebugger}, {}},
       {IDS_EXTENSION_PROMPT_WARNING_FULL_ACCESS,
        {APIPermission::kFullAccess},
-       {APIPermission::kDeclarativeWebRequest, APIPermission::kFavicon,
+       {APIPermission::kDeclarativeWebRequest,
+        APIPermission::kDeclarativeNetRequestFeedback, APIPermission::kFavicon,
         APIPermission::kHostsAll, APIPermission::kHostsAllReadOnly,
         APIPermission::kProcesses, APIPermission::kTab,
         APIPermission::kTopSites, APIPermission::kWebNavigation,
@@ -355,16 +360,18 @@ ChromePermissionMessageRule::GetAllRules() {
       // message if both permissions are required.
       {IDS_EXTENSION_PROMPT_WARNING_ALL_HOSTS,
        {APIPermission::kHostsAll},
-       {APIPermission::kDeclarativeWebRequest, APIPermission::kFavicon,
+       {APIPermission::kDeclarativeWebRequest,
+        APIPermission::kDeclarativeNetRequestFeedback, APIPermission::kFavicon,
         APIPermission::kHostsAllReadOnly, APIPermission::kHostReadOnly,
         APIPermission::kHostReadWrite, APIPermission::kProcesses,
         APIPermission::kTab, APIPermission::kTopSites,
         APIPermission::kWebNavigation, APIPermission::kDeclarativeNetRequest}},
       {IDS_EXTENSION_PROMPT_WARNING_ALL_HOSTS_READ_ONLY,
        {APIPermission::kHostsAllReadOnly},
-       {APIPermission::kFavicon, APIPermission::kHostReadOnly,
-        APIPermission::kProcesses, APIPermission::kTab,
-        APIPermission::kTopSites, APIPermission::kWebNavigation}},
+       {APIPermission::kDeclarativeNetRequestFeedback, APIPermission::kFavicon,
+        APIPermission::kHostReadOnly, APIPermission::kProcesses,
+        APIPermission::kTab, APIPermission::kTopSites,
+        APIPermission::kWebNavigation}},
 
       {std::make_unique<HostListFormatter>(
            IDS_EXTENSION_PROMPT_WARNING_1_HOST,
@@ -392,32 +399,45 @@ ChromePermissionMessageRule::GetAllRules() {
       // list of most frequently visited sites.
       {IDS_EXTENSION_PROMPT_WARNING_HISTORY_WRITE_AND_SESSIONS,
        {APIPermission::kHistory, APIPermission::kSessions},
-       {APIPermission::kFavicon, APIPermission::kProcesses, APIPermission::kTab,
+       {APIPermission::kDeclarativeNetRequestFeedback, APIPermission::kFavicon,
+        APIPermission::kProcesses, APIPermission::kTab,
         APIPermission::kTopSites, APIPermission::kWebNavigation}},
       {IDS_EXTENSION_PROMPT_WARNING_HISTORY_READ_AND_SESSIONS,
        {APIPermission::kTab, APIPermission::kSessions},
-       {APIPermission::kFavicon, APIPermission::kProcesses,
-        APIPermission::kTopSites, APIPermission::kWebNavigation}},
+       {APIPermission::kDeclarativeNetRequestFeedback, APIPermission::kFavicon,
+        APIPermission::kProcesses, APIPermission::kTopSites,
+        APIPermission::kWebNavigation}},
       {IDS_EXTENSION_PROMPT_WARNING_HISTORY_WRITE,
        {APIPermission::kHistory},
-       {APIPermission::kFavicon, APIPermission::kProcesses, APIPermission::kTab,
+       {APIPermission::kDeclarativeNetRequestFeedback, APIPermission::kFavicon,
+        APIPermission::kProcesses, APIPermission::kTab,
         APIPermission::kTopSites, APIPermission::kWebNavigation}},
       // Note: kSessions allows reading history from other devices only if kTab
       // is also present. Therefore, there are no _AND_SESSIONS versions of
       // the other rules that generate the HISTORY_READ warning.
       {IDS_EXTENSION_PROMPT_WARNING_HISTORY_READ,
        {APIPermission::kTab},
-       {APIPermission::kFavicon, APIPermission::kProcesses,
-        APIPermission::kTopSites, APIPermission::kWebNavigation}},
-      {IDS_EXTENSION_PROMPT_WARNING_HISTORY_READ,
-       {APIPermission::kProcesses},
-       {APIPermission::kFavicon, APIPermission::kTopSites,
+       {APIPermission::kDeclarativeNetRequestFeedback, APIPermission::kFavicon,
+        APIPermission::kProcesses, APIPermission::kTopSites,
         APIPermission::kWebNavigation}},
       {IDS_EXTENSION_PROMPT_WARNING_HISTORY_READ,
+       {APIPermission::kProcesses},
+       {APIPermission::kDeclarativeNetRequestFeedback, APIPermission::kFavicon,
+        APIPermission::kTopSites, APIPermission::kWebNavigation}},
+      {IDS_EXTENSION_PROMPT_WARNING_HISTORY_READ,
        {APIPermission::kWebNavigation},
+       {APIPermission::kDeclarativeNetRequestFeedback, APIPermission::kFavicon,
+        APIPermission::kTopSites}},
+      {IDS_EXTENSION_PROMPT_WARNING_HISTORY_READ,
+       {APIPermission::kDeclarativeNetRequestFeedback},
        {APIPermission::kFavicon, APIPermission::kTopSites}},
       {IDS_EXTENSION_PROMPT_WARNING_FAVICON, {APIPermission::kFavicon}, {}},
       {IDS_EXTENSION_PROMPT_WARNING_TOPSITES, {APIPermission::kTopSites}, {}},
+      {IDS_EXTENSION_PROMPT_WARNING_PRINTING_METRICS,
+       {APIPermission::kPrintingMetrics},
+       {}},
+
+      // END POWERFUL PERMISSIONS
 
       {IDS_EXTENSION_PROMPT_WARNING_DECLARATIVE_WEB_REQUEST,
        {APIPermission::kDeclarativeWebRequest},
@@ -653,6 +673,16 @@ ChromePermissionMessageRule::GetAllRules() {
        {}},
       {IDS_EXTENSION_PROMPT_WARNING_ENTERPRISE_HARDWARE_PLATFORM,
        {APIPermission::kEnterpriseHardwarePlatform},
+       {}},
+      {IDS_EXTENSION_PROMPT_WARNING_LOGIN, {APIPermission::kLogin}, {}},
+      {IDS_EXTENSION_PROMPT_WARNING_LOGIN_SCREEN_UI,
+       {APIPermission::kLoginScreenUi},
+       {}},
+      {IDS_EXTENSION_PROMPT_WARNING_LOGIN_SCREEN_STORAGE,
+       {APIPermission::kLoginScreenStorage},
+       {}},
+      {IDS_EXTENSION_PROMPT_WARNING_TRANSIENT_BACKGROUND,
+       {APIPermission::kTransientBackground},
        {}},
   };
 

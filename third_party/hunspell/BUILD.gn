@@ -109,10 +109,24 @@ static_library("hunspell") {
   }
 }
 
-fuzzer_test("hunspell_fuzzer") {
+fuzzer_test("hunspell_spell_fuzzer") {
   sources = [
-    "fuzz/hunspell_fuzzer.cc",
     "fuzz/hunspell_fuzzer_hunspell_dictionary.h",
+    "fuzz/hunspell_spell_fuzzer.cc",
+  ]
+  deps = [
+    ":hunspell",
+    "//base:base",
+  ]
+
+  # This is a dictionary for the fuzzer, not a spellcheck dictionary.
+  dict = "fuzz/hunspell.dict"
+}
+
+fuzzer_test("hunspell_suggest_fuzzer") {
+  sources = [
+    "fuzz/hunspell_fuzzer_hunspell_dictionary.h",
+    "fuzz/hunspell_suggest_fuzzer.cc",
   ]
   deps = [
     ":hunspell",

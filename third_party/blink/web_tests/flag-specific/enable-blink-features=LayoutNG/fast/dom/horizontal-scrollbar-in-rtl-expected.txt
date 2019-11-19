@@ -1,8 +1,0 @@
-original scroll x for RTL page : Success
-horizontal scroll: : Success
-continuously call window.scrollX : Success
-zoom in and out preserve scroll position: Success
-resize preserves scroll position: Success
-KeyDown HOME move x-scroll position to right for RTL page: -1000
-KeyDown END move x-scroll position to right for RTL page: -1000
-selectAll selects all document: Success

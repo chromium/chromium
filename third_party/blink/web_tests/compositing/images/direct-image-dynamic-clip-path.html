@@ -2,7 +2,7 @@
 <html>
 <style>
   .composited {
-    transform: translateZ(0);
+    will-change: transform;
   }
   .clip-path {
     -webkit-clip-path: circle(45%);
@@ -25,9 +25,7 @@ function done() {
     testRunner.notifyDone();
 }
 
-if (window.testRunner) {
-  testRunner.dumpAsTextWithPixelResults();
+if (window.testRunner)
   testRunner.waitUntilDone();
-}
 </script>
 </html>

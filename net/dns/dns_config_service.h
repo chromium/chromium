@@ -9,7 +9,7 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/threading/thread_checker.h"
+#include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "net/base/net_export.h"
@@ -20,14 +20,17 @@
 namespace net {
 
 // Service for reading system DNS settings, on demand or when signalled by
-// internal watchers and NetworkChangeNotifier.
+// internal watchers and NetworkChangeNotifier. This object is not thread-safe
+// and methods may perform blocking I/O so methods must be called on a sequence
+// that allows blocking (i.e. base::MayBlock).
 class NET_EXPORT_PRIVATE DnsConfigService {
  public:
   // Callback interface for the client, called on the same thread as
   // ReadConfig() and WatchConfig().
   typedef base::Callback<void(const DnsConfig& config)> CallbackType;
 
-  // Creates the platform-specific DnsConfigService.
+  // Creates the platform-specific DnsConfigService. May return |nullptr| if
+  // reading system DNS settings is not supported on the current platform.
   static std::unique_ptr<DnsConfigService> CreateSystemService();
 
   DnsConfigService();
@@ -42,6 +45,11 @@ class NET_EXPORT_PRIVATE DnsConfigService {
   // changes from last call or has to be withdrawn. Can be called at most once.
   // Might require MessageLoopForIO.
   void WatchConfig(const CallbackType& callback);
+
+  // Triggers invalidation and re-read of the current configuration (followed by
+  // invocation of the callback). For use only on platforms expecting
+  // network-stack-external notifications of DNS config changes.
+  virtual void RefreshConfig();
 
  protected:
   enum WatchStatus {
@@ -70,7 +78,7 @@ class NET_EXPORT_PRIVATE DnsConfigService {
 
   void set_watch_failed(bool value) { watch_failed_ = value; }
 
-  THREAD_CHECKER(thread_checker_);
+  SEQUENCE_CHECKER(sequence_checker_);
 
  private:
   // The timer counts from the last Invalidate* until complete config is read.

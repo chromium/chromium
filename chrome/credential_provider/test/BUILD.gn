@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/toolchain/toolchain.gni")
 import("//testing/test.gni")
 
 test("gcp_unittests") {
@@ -14,8 +15,6 @@ test("gcp_unittests") {
     "../gaiacp/reauth_credential_unittests.cc",
     "com_fakes.cc",
     "com_fakes.h",
-    "fake_gls_run_helper.cc",
-    "fake_gls_run_helper.h",
     "gcp_fakes.cc",
     "gcp_fakes.h",
     "gcp_gls_output_unittest.cc",
@@ -24,6 +23,7 @@ test("gcp_unittests") {
     "gls_runner_test_base.cc",
     "gls_runner_test_base.h",
     "test_credential.h",
+    "test_credential_provider.h",
   ]
 
   deps = [
@@ -42,12 +42,10 @@ test("gcp_unittests") {
     "../eventlog:gcp_eventlog_provider",
     "../gaiacp:gaia1_0",
     "../setup:gcp_setup",
-    "//chrome",
   ]
 
   data = [
     "//net/tools/testserver/",
-    "//third_party/pyftpdlib/",
     "//third_party/pywebsocket/src/mod_pywebsocket/",
     "//third_party/tlslite/",
   ]

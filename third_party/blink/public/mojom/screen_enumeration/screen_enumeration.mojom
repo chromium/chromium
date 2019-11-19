@@ -1,0 +1,18 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+import "ui/display/mojom/display.mojom";
+
+// This interface is implemented by the browser process to pass screen data to
+// window and worker processes.
+interface ScreenEnumeration {
+  // If success is false, other returned values are meaningless. Otherwise,
+  // |displays| is the list of connected display devices, and |primary_id| is
+  // the id of the primary display.
+  GetDisplays() => (array<display.mojom.Display> displays,
+                    int64 primary_id,
+                    bool success);
+};

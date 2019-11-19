@@ -24,6 +24,8 @@
 #include "base/macros.h"
 #include "build/build_config.h"
 
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+
 // No gtest tests; only static_assert checks.
 
 namespace WTF {
@@ -129,6 +131,8 @@ typedef int IntArraySized[4];
 #if !defined(COMPILER_MSVC) || defined(__clang__)
 
 class AssignmentDeleted final {
+  STACK_ALLOCATED();
+
  private:
   AssignmentDeleted& operator=(const AssignmentDeleted&) = delete;
 };
@@ -139,6 +143,8 @@ static_assert(!std::is_move_assignable<AssignmentDeleted>::value,
               "AssignmentDeleted isn't move assignable.");
 
 class AssignmentPrivate final {
+  STACK_ALLOCATED();
+
  private:
   AssignmentPrivate& operator=(const AssignmentPrivate&);
 };
@@ -149,6 +155,8 @@ static_assert(!std::is_move_assignable<AssignmentPrivate>::value,
               "AssignmentPrivate isn't move assignable.");
 
 class CopyAssignmentDeleted final {
+  STACK_ALLOCATED();
+
  public:
   CopyAssignmentDeleted& operator=(CopyAssignmentDeleted&&);
 
@@ -162,6 +170,8 @@ static_assert(std::is_move_assignable<CopyAssignmentDeleted>::value,
               "CopyAssignmentDeleted is move assignable.");
 
 class CopyAssignmentPrivate final {
+  STACK_ALLOCATED();
+
  public:
   CopyAssignmentPrivate& operator=(CopyAssignmentPrivate&&);
 
@@ -175,6 +185,8 @@ static_assert(std::is_move_assignable<CopyAssignmentPrivate>::value,
               "CopyAssignmentPrivate is move assignable.");
 
 class CopyAssignmentUndeclared final {
+  STACK_ALLOCATED();
+
  public:
   CopyAssignmentUndeclared& operator=(CopyAssignmentUndeclared&&);
 };
@@ -185,6 +197,8 @@ static_assert(std::is_move_assignable<CopyAssignmentUndeclared>::value,
               "CopyAssignmentUndeclared is move assignable.");
 
 class Assignable final {
+  STACK_ALLOCATED();
+
  public:
   Assignable& operator=(const Assignable&);
 };
@@ -204,11 +218,15 @@ static_assert(std::is_move_assignable<AssignableImplicit>::value,
 #endif  // !defined(COMPILER_MSVC) || defined(__clang__)
 
 class DefaultConstructorDeleted final {
+  STACK_ALLOCATED();
+
  private:
   DefaultConstructorDeleted() = delete;
 };
 
 class DestructorDeleted final {
+  STACK_ALLOCATED();
+
  private:
   ~DestructorDeleted() = delete;
 };

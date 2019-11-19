@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL RTCDtlsTransport.prototype.getRemoteCertificates RTCSctpTransport is not defined
-Harness: the test ran to completion.
-

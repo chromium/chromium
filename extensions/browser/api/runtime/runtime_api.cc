@@ -12,6 +12,7 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/metrics/histogram.h"
+#include "base/one_shot_event.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -21,14 +22,11 @@
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/child_process_security_policy.h"
-#include "content/public/browser/render_frame_host.h"
-#include "content/public/browser/render_process_host.h"
 #include "extensions/browser/api/runtime/runtime_api_delegate.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/events/lazy_event_dispatch_util.h"
 #include "extensions/browser/extension_host.h"
 #include "extensions/browser/extension_prefs.h"
-#include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/extension_util.h"
 #include "extensions/browser/extensions_browser_client.h"
@@ -40,8 +38,7 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest_handlers/background_info.h"
 #include "extensions/common/manifest_handlers/shared_module_info.h"
-#include "extensions/common/one_shot_event.h"
-#include "storage/browser/fileapi/isolated_context.h"
+#include "storage/browser/file_system/isolated_context.h"
 #include "url/gurl.h"
 
 using content::BrowserContext;
@@ -147,13 +144,6 @@ void DispatchOnStartupEventImpl(
       ->DispatchEventToExtension(extension_id, std::move(event));
 }
 
-void SetUninstallURL(ExtensionPrefs* prefs,
-                     const std::string& extension_id,
-                     const std::string& url_string) {
-  prefs->UpdateExtensionPref(extension_id, kUninstallUrl,
-                             std::make_unique<base::Value>(url_string));
-}
-
 std::string GetUninstallURL(ExtensionPrefs* prefs,
                             const std::string& extension_id) {
   std::string url_string;
@@ -188,14 +178,11 @@ void BrowserContextKeyedAPIFactory<RuntimeAPI>::DeclareFactoryDependencies() {
 
 RuntimeAPI::RuntimeAPI(content::BrowserContext* context)
     : browser_context_(context),
-      extension_registry_observer_(this),
-      process_manager_observer_(this),
       minimum_duration_between_restarts_(base::TimeDelta::FromHours(
           kMinDurationBetweenSuccessiveRestartsHours)),
       dispatch_chrome_updated_event_(false),
       did_read_delayed_restart_preferences_(false),
-      was_last_restart_due_to_delayed_restart_api_(false),
-      weak_ptr_factory_(this) {
+      was_last_restart_due_to_delayed_restart_api_(false) {
   // RuntimeAPI is redirected in incognito, so |browser_context_| is never
   // incognito.
   DCHECK(!browser_context_->IsOffTheRecord());
@@ -630,14 +617,16 @@ ExtensionFunction::ResponseAction RuntimeOpenOptionsPageFunction::Run() {
 }
 
 ExtensionFunction::ResponseAction RuntimeSetUninstallURLFunction::Run() {
-  std::string url_string;
-  EXTENSION_FUNCTION_VALIDATE(args_->GetString(0, &url_string));
+  std::unique_ptr<api::runtime::SetUninstallURL::Params> params(
+      api::runtime::SetUninstallURL::Params::Create(*args_));
+  EXTENSION_FUNCTION_VALIDATE(params);
+  if (!params->url.empty() && !GURL(params->url).SchemeIsHTTPOrHTTPS())
+    return RespondNow(Error(kInvalidUrlError, params->url));
 
-  if (!url_string.empty() && !GURL(url_string).SchemeIsHTTPOrHTTPS()) {
-    return RespondNow(Error(kInvalidUrlError, url_string));
-  }
-  SetUninstallURL(
-      ExtensionPrefs::Get(browser_context()), extension_id(), url_string);
+  ExtensionPrefs::Get(browser_context())
+      ->UpdateExtensionPref(
+          extension_id(), kUninstallUrl,
+          std::make_unique<base::Value>(std::move(params->url)));
   return RespondNow(NoArguments());
 }
 
@@ -738,15 +727,16 @@ RuntimeGetPackageDirectoryEntryFunction::Run() {
 
   std::string relative_path = kPackageDirectoryPath;
   base::FilePath path = extension_->path();
-  std::string filesystem_id = isolated_context->RegisterFileSystemForPath(
-      storage::kFileSystemTypeNativeLocal, std::string(), path, &relative_path);
+  storage::IsolatedContext::ScopedFSHandle filesystem =
+      isolated_context->RegisterFileSystemForPath(
+          storage::kFileSystemTypeNativeLocal, std::string(), path,
+          &relative_path);
 
-  int renderer_id = render_frame_host()->GetProcess()->GetID();
   content::ChildProcessSecurityPolicy* policy =
       content::ChildProcessSecurityPolicy::GetInstance();
-  policy->GrantReadFileSystem(renderer_id, filesystem_id);
+  policy->GrantReadFileSystem(source_process_id(), filesystem.id());
   std::unique_ptr<base::DictionaryValue> dict(new base::DictionaryValue());
-  dict->SetString("fileSystemId", filesystem_id);
+  dict->SetString("fileSystemId", filesystem.id());
   dict->SetString("baseName", relative_path);
   return RespondNow(OneArgument(std::move(dict)));
 }

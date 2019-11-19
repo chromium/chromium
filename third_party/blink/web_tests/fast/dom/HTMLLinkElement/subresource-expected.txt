@@ -1,4 +1,3 @@
-prefetch.link has MIME type text/plain
 PASS successfullyParsed is true
 
 TEST COMPLETE

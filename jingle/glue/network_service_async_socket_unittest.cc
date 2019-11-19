@@ -14,13 +14,17 @@
 #include "base/containers/circular_deque.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
-#include "base/message_loop/message_loop.h"
 #include "base/message_loop/message_pump_default.h"
 #include "base/run_loop.h"
 #include "base/stl_util.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/test/task_environment.h"
 #include "mojo/public/cpp/bindings/binding.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/bindings/unique_receiver_set.h"
 #include "mojo/public/cpp/system/data_pipe_utils.h"
 #include "net/base/address_list.h"
 #include "net/base/host_port_pair.h"
@@ -142,13 +146,13 @@ class MockProxyResolvingSocket : public network::mojom::ProxyResolvingSocket {
   MockProxyResolvingSocket() {}
   ~MockProxyResolvingSocket() override {}
 
-  void Connect(network::mojom::SocketObserverPtr observer,
+  void Connect(mojo::PendingRemote<network::mojom::SocketObserver> observer,
                network::mojom::ProxyResolvingSocketFactory::
                    CreateProxyResolvingSocketCallback callback) {
     mojo::DataPipe send_pipe;
     mojo::DataPipe receive_pipe;
 
-    observer_ = std::move(observer);
+    observer_.Bind(std::move(observer));
     receive_pipe_handle_ = std::move(receive_pipe.producer_handle);
     send_pipe_handle_ = std::move(send_pipe.consumer_handle);
 
@@ -163,15 +167,15 @@ class MockProxyResolvingSocket : public network::mojom::ProxyResolvingSocket {
   void UpgradeToTLS(
       const net::HostPortPair& host_port_pair,
       const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
-      network::mojom::TLSClientSocketRequest request,
-      network::mojom::SocketObserverPtr observer,
+      mojo::PendingReceiver<network::mojom::TLSClientSocket> receiver,
+      mojo::PendingRemote<network::mojom::SocketObserver> observer,
       network::mojom::ProxyResolvingSocket::UpgradeToTLSCallback callback)
       override {
     NOTREACHED();
   }
 
  private:
-  network::mojom::SocketObserverPtr observer_;
+  mojo::Remote<network::mojom::SocketObserver> observer_;
   mojo::ScopedDataPipeProducerHandle receive_pipe_handle_;
   mojo::ScopedDataPipeConsumerHandle send_pipe_handle_;
 
@@ -189,23 +193,23 @@ class MockProxyResolvingSocketFactory
       const GURL& url,
       network::mojom::ProxyResolvingSocketOptionsPtr options,
       const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
-      network::mojom::ProxyResolvingSocketRequest request,
-      network::mojom::SocketObserverPtr observer,
+      mojo::PendingReceiver<network::mojom::ProxyResolvingSocket> receiver,
+      mojo::PendingRemote<network::mojom::SocketObserver> observer,
       CreateProxyResolvingSocketCallback callback) override {
     auto socket = std::make_unique<MockProxyResolvingSocket>();
     socket_raw_ = socket.get();
-    proxy_resolving_socket_bindings_.AddBinding(std::move(socket),
-                                                std::move(request));
+    proxy_resolving_socket_receivers_.Add(std::move(socket),
+                                          std::move(receiver));
     socket_raw_->Connect(std::move(observer), std::move(callback));
   }
 
   MockProxyResolvingSocket* socket() { return socket_raw_; }
 
  private:
-  mojo::StrongBindingSet<network::mojom::ProxyResolvingSocket>
-      proxy_resolving_socket_bindings_;
+  mojo::UniqueReceiverSet<network::mojom::ProxyResolvingSocket>
+      proxy_resolving_socket_receivers_;
 
-  // Owned by |proxy_resolving_socket_bindings_|.
+  // Owned by |proxy_resolving_socket_receivers_|.
   MockProxyResolvingSocket* socket_raw_;
 
   DISALLOW_COPY_AND_ASSIGN(MockProxyResolvingSocketFactory);
@@ -341,11 +345,12 @@ class NetworkServiceAsyncSocketTest : public testing::Test,
   }
 
   void BindToProxyResolvingSocketFactory(
-      network::mojom::ProxyResolvingSocketFactoryRequest request) {
-    proxy_resolving_socket_factory_binding_ = std::make_unique<
-        mojo::Binding<network::mojom::ProxyResolvingSocketFactory>>(
+      mojo::PendingReceiver<network::mojom::ProxyResolvingSocketFactory>
+          receiver) {
+    proxy_resolving_socket_factory_receiver_ = std::make_unique<
+        mojo::Receiver<network::mojom::ProxyResolvingSocketFactory>>(
         proxy_resolving_socket_factory_.get());
-    proxy_resolving_socket_factory_binding_->Bind(std::move(request));
+    proxy_resolving_socket_factory_receiver_->Bind(std::move(receiver));
   }
 
   enum Signal {
@@ -390,9 +395,10 @@ class NetworkServiceAsyncSocketTest : public testing::Test,
     }
 
     std::string ToString() const {
-      return base::StrCat(
-          {"(", base::IntToString(signal), ",", base::IntToString(state), ",",
-           base::IntToString(error), ",", base::IntToString(net_error), ")"});
+      return base::StrCat({"(", base::NumberToString(signal), ",",
+                           base::NumberToString(state), ",",
+                           base::NumberToString(error), ",",
+                           base::NumberToString(net_error), ")"});
     }
 
     Signal signal;
@@ -552,7 +558,7 @@ class NetworkServiceAsyncSocketTest : public testing::Test,
   }
 
   // Need a message loop for both the socket and Mojo.
-  base::MessageLoop message_loop_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
 
   AsyncSocketDataProvider async_socket_data_provider_;
   net::SSLSocketDataProvider ssl_socket_data_provider_;
@@ -565,8 +571,8 @@ class NetworkServiceAsyncSocketTest : public testing::Test,
   MockProxyResolvingSocketFactory* mock_proxy_resolving_socket_factory_;
   std::unique_ptr<network::mojom::ProxyResolvingSocketFactory>
       proxy_resolving_socket_factory_;
-  std::unique_ptr<mojo::Binding<network::mojom::ProxyResolvingSocketFactory>>
-      proxy_resolving_socket_factory_binding_;
+  std::unique_ptr<mojo::Receiver<network::mojom::ProxyResolvingSocketFactory>>
+      proxy_resolving_socket_factory_receiver_;
 
   std::unique_ptr<NetworkServiceAsyncSocket> ns_async_socket_;
   base::circular_deque<SignalSocketState> signal_socket_states_;

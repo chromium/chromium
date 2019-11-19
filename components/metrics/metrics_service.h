@@ -38,6 +38,8 @@ class PrefService;
 class PrefRegistrySimple;
 FORWARD_DECLARE_TEST(ChromeMetricsServiceClientTest,
                      TestRegisterMetricsServiceProviders);
+FORWARD_DECLARE_TEST(IOSChromeMetricsServiceClientTest,
+                     TestRegisterMetricsServiceProviders);
 
 namespace base {
 class HistogramSamples;
@@ -127,10 +129,12 @@ class MetricsService : public base::HistogramFlattener {
 
 #if defined(OS_ANDROID) || defined(OS_IOS)
   // Called when the application is going into background mode.
-  void OnAppEnterBackground();
+  // If |keep_recording_in_background| is true, UMA is still recorded and
+  // reported while in the background.
+  void OnAppEnterBackground(bool keep_recording_in_background = false);
 
   // Called when the application is coming out of background mode.
-  void OnAppEnterForeground();
+  void OnAppEnterForeground(bool force_open_new_log = false);
 #else
   // Set the dirty flag, which will require a later call to LogCleanShutdown().
   void LogNeedForCleanShutdown();
@@ -177,6 +181,10 @@ class MetricsService : public base::HistogramFlattener {
   MetricsLogStore* log_store() {
     return reporting_service_.metrics_log_store();
   }
+
+  // Sets the persistent system profile. Virtual for tests.
+  virtual void SetPersistentSystemProfile(const std::string& serialized_proto,
+                                          bool complete);
 
   // Records the current environment (system profile) in |log|, and persists
   // the results in prefs.
@@ -289,8 +297,7 @@ class MetricsService : public base::HistogramFlattener {
 
   // Records the current environment (system profile) in |log|, and persists
   // the results in prefs and GlobalPersistentSystemProfile.
-  // Exposed for testing.
-  void RecordCurrentEnvironment(MetricsLog* log);
+  void RecordCurrentEnvironment(MetricsLog* log, bool complete);
 
   // Record complete list of histograms into the current log.
   // Called when we close a log.
@@ -388,11 +395,13 @@ class MetricsService : public base::HistogramFlattener {
   FRIEND_TEST_ALL_PREFIXES(MetricsServiceTest, IsPluginProcess);
   FRIEND_TEST_ALL_PREFIXES(::ChromeMetricsServiceClientTest,
                            TestRegisterMetricsServiceProviders);
+  FRIEND_TEST_ALL_PREFIXES(::IOSChromeMetricsServiceClientTest,
+                           TestRegisterMetricsServiceProviders);
   SEQUENCE_CHECKER(sequence_checker_);
 
   // Weak pointers factory used to post task on different threads. All weak
   // pointers managed by this factory have the same lifetime as MetricsService.
-  base::WeakPtrFactory<MetricsService> self_ptr_factory_;
+  base::WeakPtrFactory<MetricsService> self_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(MetricsService);
 };

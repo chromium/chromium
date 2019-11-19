@@ -23,6 +23,14 @@ COMPONENTS_DOWNLOAD_EXPORT void SetIOTaskRunner(
 COMPONENTS_DOWNLOAD_EXPORT scoped_refptr<base::SingleThreadTaskRunner>
 GetIOTaskRunner();
 
+// Sets the task runner for download DB, must be called on UI thread.
+COMPONENTS_DOWNLOAD_EXPORT void SetDownloadDBTaskRunnerForTesting(
+    const scoped_refptr<base::SequencedTaskRunner>& task_runner);
+
+// Gets the task runner for download DB, must be called on UI thread.
+COMPONENTS_DOWNLOAD_EXPORT scoped_refptr<base::SequencedTaskRunner>
+GetDownloadDBTaskRunnerForTesting();
+
 }  // namespace download
 
 #endif  // COMPONENTS_DOWNLOAD_PUBLIC_COMMON_DOWNLOAD_TASK_RUNNER_H_

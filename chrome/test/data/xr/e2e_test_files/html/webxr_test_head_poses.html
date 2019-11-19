@@ -1,0 +1,43 @@
+<!doctype html>
+<!--
+Tests that WebXR head poses are properly surfaced.
+-->
+<html>
+  <head>
+    <link rel="stylesheet" type="text/css" href="../resources/webxr_e2e.css">
+  </head>
+  <body>
+    <canvas id="webgl-canvas"></canvas>
+    <script src="../resources/webxr_e2e.js"></script>
+    <script src="../resources/webxr_boilerplate.js"></script>
+    <script>
+      let expectedMatrix = null;
+
+      function matricesApproximatelyEqual(a, b) {
+        if (a === null || b === null) {
+          return false;
+        }
+        if (a.length != b.length) {
+          return false;
+        }
+        for (let i = 0; i < a.length; ++i) {
+          if (Math.abs(a[i] - b[i]) > 0.00001){
+            return false;
+          }
+        }
+        return true;
+      }
+
+      function stepWaitForMatchingPose(m) {
+        expectedMatrix = m;
+        onPoseCallback = function(pose) {
+          if (matricesApproximatelyEqual(
+              pose.transform.matrix, expectedMatrix)) {
+            onPoseCallback = null;
+            finishJavaScriptStep();
+          }
+        }
+      }
+    </script>
+  </body>
+</html>

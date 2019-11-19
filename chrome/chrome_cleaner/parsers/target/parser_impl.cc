@@ -4,6 +4,8 @@
 
 #include "chrome/chrome_cleaner/parsers/target/parser_impl.h"
 
+#include <utility>
+
 #include "base/json/json_reader.h"
 #include "base/values.h"
 #include "base/win/scoped_handle.h"
@@ -12,10 +14,10 @@
 
 namespace chrome_cleaner {
 
-ParserImpl::ParserImpl(mojom::ParserRequest request,
+ParserImpl::ParserImpl(mojo::PendingReceiver<mojom::Parser> receiver,
                        base::OnceClosure connection_error_handler)
-    : binding_(this, std::move(request)) {
-  binding_.set_connection_error_handler(std::move(connection_error_handler));
+    : receiver_(this, std::move(receiver)) {
+  receiver_.set_disconnect_handler(std::move(connection_error_handler));
 }
 
 ParserImpl::~ParserImpl() = default;

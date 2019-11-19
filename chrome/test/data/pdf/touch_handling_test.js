@@ -2,10 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {PDFScriptingAPI} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_scripting_api.js';
+
 function sendTouchStart(touches) {
-  var id = 0;
-  let touchList = touches.map(function(xy) {
-    var touchInit = {
+  let id = 0;
+  const touchList = touches.map(function(xy) {
+    const touchInit = {
       identifier: id++,
       target: viewer.plugin_,
       clientX: xy.x,
@@ -30,16 +32,17 @@ function createContextMenuEvent() {
   });
 }
 
-var tests = [
+const tests = [
   // Test suppression of the context menu on single touch.
   function testContextMenuSingleTouch() {
     sendTouchStart([{x: 10, y: 10}]);
 
-    let event = createContextMenuEvent();
+    const event = createContextMenuEvent();
     // Dispatch event will be false if the event is cancellable and one of the
     // handlers called preventDefault.
-    chrome.test.assertFalse(document.dispatchEvent(event),
-        "Should have called preventDefault() for single touch.");
+    chrome.test.assertFalse(
+        document.dispatchEvent(event),
+        'Should have called preventDefault() for single touch.');
     chrome.test.succeed();
   },
 
@@ -47,9 +50,10 @@ var tests = [
   function testContextMenuDoubleTouch() {
     sendTouchStart([{x: 10, y: 10}, {x: 15, y: 15}]);
 
-    let event = createContextMenuEvent();
-    chrome.test.assertTrue(document.dispatchEvent(event),
-        "Should not have called preventDefault() for double touch.");
+    const event = createContextMenuEvent();
+    chrome.test.assertTrue(
+        document.dispatchEvent(event),
+        'Should not have called preventDefault() for double touch.');
     chrome.test.succeed();
   },
 
@@ -71,7 +75,7 @@ var tests = [
   // }
 ];
 
-var scriptingAPI = new PDFScriptingAPI(window, window);
+const scriptingAPI = new PDFScriptingAPI(window, window);
 scriptingAPI.setLoadCallback(function() {
   chrome.test.runTests(tests);
 });

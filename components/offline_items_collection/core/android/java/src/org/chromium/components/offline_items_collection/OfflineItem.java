@@ -74,8 +74,10 @@ public class OfflineItem implements Cloneable {
     public boolean isTransient;
     public boolean isSuggested;
     public boolean isAccelerated;
-    public boolean refreshVisuals;
     public boolean promoteOrigin;
+    public boolean canRename;
+    public boolean ignoreVisuals;
+    public double contentQualityScore;
 
     // Content Metadata.
     public long totalSizeBytes;
@@ -108,7 +110,7 @@ public class OfflineItem implements Cloneable {
 
     public OfflineItem() {
         id = new ContentId();
-        filter = OfflineItemFilter.FILTER_OTHER;
+        filter = OfflineItemFilter.OTHER;
         state = OfflineItemState.COMPLETE;
     }
 
@@ -122,7 +124,6 @@ public class OfflineItem implements Cloneable {
         clone.isTransient = isTransient;
         clone.isSuggested = isSuggested;
         clone.isAccelerated = isAccelerated;
-        clone.refreshVisuals = refreshVisuals;
         clone.promoteOrigin = promoteOrigin;
         clone.totalSizeBytes = totalSizeBytes;
         clone.externallyRemoved = externallyRemoved;
@@ -132,6 +133,9 @@ public class OfflineItem implements Cloneable {
         clone.isOpenable = isOpenable;
         clone.filePath = filePath;
         clone.mimeType = mimeType;
+        clone.canRename = canRename;
+        clone.ignoreVisuals = ignoreVisuals;
+        clone.contentQualityScore = contentQualityScore;
         clone.pageUrl = pageUrl;
         clone.originalUrl = originalUrl;
         clone.isOffTheRecord = isOffTheRecord;

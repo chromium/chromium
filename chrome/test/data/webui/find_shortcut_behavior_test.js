@@ -2,11 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// clang-format off
+// #import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
+// #import {assert} from 'chrome://resources/js/assert.m.js';
+// #import {eventToPromise} from 'chrome://test/test_util.m.js';
+// #import {FindShortcutBehavior, FindShortcutManager} from 'chrome://resources/js/find_shortcut_behavior.m.js';
+// #import {isMac} from 'chrome://resources/js/cr.m.js';
+// #import {Polymer, html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+// #import {pressAndReleaseKeyOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
+// #import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
+// clang-format on
+
 suite('find-shortcut', () => {
   /** @override */
-  suiteSetup(
-      () => PolymerTest.importHtml(
-          'chrome://resources/cr_elements/cr_dialog/cr_dialog.html'));
+  /* #ignore */ suiteSetup(
+      /* #ignore */ () => PolymerTest.importHtml(
+          /* #ignore */ 'chrome://resources/cr_elements/cr_dialog/' +
+          /* #ignore */ 'cr_dialog.html'));
 
   /**
    * @type {PromiseResolver<!{modalContextOpen: boolean, self: HTMLElement}>}

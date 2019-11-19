@@ -6,7 +6,7 @@
 #define COMPONENTS_FEATURE_ENGAGEMENT_INTERNAL_CHROME_VARIATIONS_CONFIGURATION_H_
 
 #include "base/macros.h"
-#include "components/feature_engagement/internal/configuration.h"
+#include "components/feature_engagement/public/configuration.h"
 #include "components/feature_engagement/public/feature_list.h"
 
 namespace base {
@@ -38,6 +38,9 @@ class ChromeVariationsConfiguration : public Configuration {
  private:
   void ParseFeatureConfig(const base::Feature* feature,
                           const FeatureVector& all_features);
+  // Returns true if FeatureConfig was found with a local hard coded
+  // configuration.
+  bool MaybeAddClientSideFeatureConfig(const base::Feature* feature);
 
   // The current configurations.
   ConfigMap configs_;

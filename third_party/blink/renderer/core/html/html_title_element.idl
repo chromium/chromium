@@ -18,7 +18,9 @@
  */
 
 // https://html.spec.whatwg.org/C/#the-title-element
-[HTMLConstructor]
-interface HTMLTitleElement : HTMLElement {
+[
+    Exposed=Window,
+    HTMLConstructor
+] interface HTMLTitleElement : HTMLElement {
     [CEReactions] attribute DOMString text;
 };

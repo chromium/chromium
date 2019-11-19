@@ -32,6 +32,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_WORKERS_DEDICATED_WORKER_GLOBAL_SCOPE_H_
 
 #include <memory>
+#include "third_party/blink/renderer/core/animation_frame/worker_animation_frame_provider.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/messaging/message_port.h"
 #include "third_party/blink/renderer/core/workers/worker_global_scope.h"
@@ -44,15 +45,29 @@ class DedicatedWorkerObjectProxy;
 class DedicatedWorkerThread;
 class PostMessageOptions;
 class ScriptState;
+class WorkerClassicScriptLoader;
 struct GlobalScopeCreationParams;
 
 class CORE_EXPORT DedicatedWorkerGlobalScope final : public WorkerGlobalScope {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  DedicatedWorkerGlobalScope(std::unique_ptr<GlobalScopeCreationParams>,
-                             DedicatedWorkerThread*,
-                             base::TimeTicks time_origin);
+  // TODO(nhiroki): Merge Create() into the constructor after
+  // off-the-main-thread worker script fetch is enabled by default.
+  static DedicatedWorkerGlobalScope* Create(
+      std::unique_ptr<GlobalScopeCreationParams>,
+      DedicatedWorkerThread*,
+      base::TimeTicks time_origin);
+
+  // Do not call this. Use Create() instead. This is public only for
+  // MakeGarbageCollected.
+  DedicatedWorkerGlobalScope(
+      std::unique_ptr<GlobalScopeCreationParams>,
+      DedicatedWorkerThread*,
+      base::TimeTicks time_origin,
+      std::unique_ptr<Vector<String>> outside_origin_trial_tokens,
+      const BeginFrameProviderParams& begin_frame_provider_params);
+
   ~DedicatedWorkerGlobalScope() override;
 
   // Implements ExecutionContext.
@@ -62,17 +77,36 @@ class CORE_EXPORT DedicatedWorkerGlobalScope final : public WorkerGlobalScope {
   // (via WorkerOrWorkletGlobalScope -> EventTargetWithInlineData).
   const AtomicString& InterfaceName() const override;
 
+  // RequestAnimationFrame
+  int requestAnimationFrame(V8FrameRequestCallback* callback, ExceptionState&);
+  void cancelAnimationFrame(int id);
+  WorkerAnimationFrameProvider* GetAnimationFrameProvider() {
+    return animation_frame_provider_;
+  }
+
   // Implements WorkerGlobalScope.
-  void ImportModuleScript(
+  void Initialize(const KURL& response_url,
+                  network::mojom::ReferrerPolicy response_referrer_policy,
+                  network::mojom::IPAddressSpace response_address_space,
+                  const Vector<CSPHeaderAndType>& response_csp_headers,
+                  const Vector<String>* response_origin_trial_tokens,
+                  int64_t appcache_host) override;
+  void FetchAndRunClassicScript(
+      const KURL& script_url,
+      const FetchClientSettingsObjectSnapshot& outside_settings_object,
+      WorkerResourceTimingNotifier& outside_resource_timing_notifier,
+      const v8_inspector::V8StackTraceId& stack_id) override;
+  void FetchAndRunModuleScript(
       const KURL& module_url_record,
       const FetchClientSettingsObjectSnapshot& outside_settings_object,
-      network::mojom::FetchCredentialsMode) override;
+      WorkerResourceTimingNotifier& outside_resource_timing_notifier,
+      network::mojom::CredentialsMode) override;
 
   // Called by the bindings (dedicated_worker_global_scope.idl).
   const String name() const;
   void postMessage(ScriptState*,
                    const ScriptValue& message,
-                   Vector<ScriptValue>& transfer,
+                   HeapVector<ScriptValue>& transfer,
                    ExceptionState&);
   void postMessage(ScriptState*,
                    const ScriptValue& message,
@@ -85,9 +119,14 @@ class CORE_EXPORT DedicatedWorkerGlobalScope final : public WorkerGlobalScope {
   void Trace(blink::Visitor*) override;
 
  private:
+  void DidReceiveResponseForClassicScript(
+      WorkerClassicScriptLoader* classic_script_loader);
+  void DidFetchClassicScript(WorkerClassicScriptLoader* classic_script_loader,
+                             const v8_inspector::V8StackTraceId& stack_id);
+
   DedicatedWorkerObjectProxy& WorkerObjectProxy() const;
 
-  mojom::RequestContextType GetDestinationForMainScript() override;
+  Member<WorkerAnimationFrameProvider> animation_frame_provider_;
 };
 
 template <>

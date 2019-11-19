@@ -14,8 +14,8 @@ bool IsExtensionDownload(const download::DownloadItem& download_item) {
   return false;
 }
 
-bool OffStoreInstallAllowedByPrefs(Profile* profile,
-                                   const download::DownloadItem& item) {
+bool IsTrustedExtensionDownload(Profile* profile,
+                                const download::DownloadItem& item) {
   // Extensions are not supported on Android, return the safe default.
   return false;
 }

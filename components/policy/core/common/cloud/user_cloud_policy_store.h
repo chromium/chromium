@@ -30,7 +30,8 @@ class POLICY_EXPORT DesktopCloudPolicyStore : public UserCloudPolicyStoreBase {
       const base::FilePath& policy_file,
       const base::FilePath& key_file,
       scoped_refptr<base::SequencedTaskRunner> background_task_runner,
-      PolicyScope policy_scope);
+      PolicyScope policy_scope,
+      PolicySource policy_source);
   ~DesktopCloudPolicyStore() override;
 
   // Loads policy immediately on the current thread. Virtual for mocks.
@@ -90,7 +91,7 @@ class POLICY_EXPORT DesktopCloudPolicyStore : public UserCloudPolicyStoreBase {
   base::FilePath key_path_;
 
   // WeakPtrFactory used to create callbacks for validating and storing policy.
-  base::WeakPtrFactory<DesktopCloudPolicyStore> weak_factory_;
+  base::WeakPtrFactory<DesktopCloudPolicyStore> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(DesktopCloudPolicyStore);
 };

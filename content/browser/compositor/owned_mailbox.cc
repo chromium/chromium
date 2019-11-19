@@ -10,7 +10,7 @@
 namespace content {
 
 OwnedMailbox::OwnedMailbox(gpu::gles2::GLES2Interface* gl)
-    : gl_(gl), texture_id_(0), weak_ptr_factory_(this) {
+    : gl_(gl), texture_id_(0) {
   DCHECK(gl_);
 
   // Create the texture.

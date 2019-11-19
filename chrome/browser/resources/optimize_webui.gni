@@ -40,11 +40,6 @@ template("optimize_webui") {
     foreach(_out, invoker.html_out_files) {
       outputs += [ "$target_gen_dir/$_out" ]
     }
-    if (defined(invoker.html_out_files_polymer2)) {
-      foreach(_out, invoker.html_out_files_polymer2) {
-        outputs += [ "$target_gen_dir/$_out" ]
-      }
-    }
     foreach(_out, invoker.js_out_files) {
       outputs += [ "$target_gen_dir/$_out" ]
     }
@@ -67,9 +62,6 @@ template("optimize_webui") {
     args += [ "--html_in_files" ] + invoker.html_in_files
     args += [ "--html_out_files" ] + invoker.html_out_files
 
-    if (defined(invoker.html_out_files_polymer2)) {
-      args += [ "--html_out_files_polymer2" ] + invoker.html_out_files_polymer2
-    }
     args += [ "--js_out_files" ] + invoker.js_out_files
 
     if (defined(invoker.excludes)) {
@@ -82,31 +74,11 @@ template("optimize_webui") {
         invoker.insert_in_head,
       ]
     }
-  }
-}
 
-template("polymer_css_build") {
-  node(target_name) {
-    script = "//chrome/browser/resources/polymer_css_build_gn.py"
-
-    # Input and outputs files must be in the same order.
-    inputs = []
-    foreach(_input, invoker.input_files) {
-      inputs += [ "$target_gen_dir/$_input" ]
+    if (defined(invoker.js_module_in_files)) {
+      inputs += [ "//chrome/browser/resources/tools/rollup_plugin.js" ]
+      args += [ "--js_module_in_files" ] + invoker.js_module_in_files
     }
-
-    outputs = []
-    foreach(_output, invoker.output_files) {
-      outputs += [ "$target_gen_dir/$_output" ]
-    }
-
-    deps = invoker.deps
-
-    args = [
-             "--out_folder",
-             rebase_path(target_gen_dir, root_build_dir),
-             "--input_files",
-           ] + invoker.input_files + [ "--output_files" ] + invoker.output_files
   }
 }
 

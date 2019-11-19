@@ -10,7 +10,7 @@
 #include "base/android/jni_android.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -37,11 +37,11 @@ class AwFormDatabaseServiceTest : public Test {
 
   void TearDown() override {
     service_->Shutdown();
-    scoped_task_environment_.RunUntilIdle();
+    task_environment_.RunUntilIdle();
   }
 
   // The path to the temporary directory used for the test operations.
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_;
   base::ScopedTempDir temp_dir_;
   JNIEnv* env_;
   std::unique_ptr<AwFormDatabaseService> service_;

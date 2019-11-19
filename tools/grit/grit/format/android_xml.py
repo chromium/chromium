@@ -59,9 +59,10 @@ in the output xml file. For example:
   </plurals>
 """
 
+from __future__ import print_function
+
 import os
 import re
-import types
 import xml.sax.saxutils
 
 from grit import lazy_re
@@ -76,7 +77,7 @@ _TAGGED_ONLY_DEFAULT = False
 # In tagged-only mode, only messages with this tag will be ouputted.
 _EMIT_TAG = 'android_java'
 
-_NAME_PATTERN = lazy_re.compile('IDS_(?P<name>[A-Z0-9_]+)\Z')
+_NAME_PATTERN = lazy_re.compile(r'IDS_(?P<name>[A-Z0-9_]+)\Z')
 
 # Most strings are output as a <string> element. Note the double quotes
 # around the value to preserve whitespace.
@@ -94,7 +95,7 @@ _PLURALS_PATTERN = lazy_re.compile(r'\{[A-Z_]+,\s*plural,(?P<items>.*)\}$',
 # Repeatedly matched against the <items> capture in _PLURALS_PATTERN,
 # to match "<quantity>{<value>}".
 _PLURALS_ITEM_PATTERN = lazy_re.compile(r'(?P<quantity>\S+?)\s*'
-                                        '\{(?P<value>.*?)\}')
+                                        r'\{(?P<value>.*?)\}')
 _PLURALS_QUANTITY_MAP = {
   '=0': 'zero',
   'zero': 'zero',

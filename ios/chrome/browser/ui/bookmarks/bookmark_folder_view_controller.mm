@@ -18,6 +18,7 @@
 #import "ios/chrome/browser/ui/bookmarks/cells/bookmark_folder_item.h"
 #import "ios/chrome/browser/ui/icons/chrome_icon.h"
 #import "ios/chrome/browser/ui/material_components/utils.h"
+#import "ios/chrome/common/colors/UIColor+cr_semantic_colors.h"
 #include "ios/chrome/grit/ios_strings.h"
 #include "ui/base/l10n/l10n_util_mac.h"
 
@@ -78,6 +79,9 @@ using bookmarks::BookmarkNode;
 @property(nonatomic, assign, readonly)
     const std::vector<const BookmarkNode*>& folders;
 
+// The dispatcher for this ViewController.
+@property(nonatomic, readonly, weak) id<BrowserCommands> dispatcher;
+
 // Reloads the model and the updates |self.tableView| to reflect any model
 // changes.
 - (void)reloadModel;
@@ -110,7 +114,8 @@ using bookmarks::BookmarkNode;
                           editedNodes:
                               (const std::set<const BookmarkNode*>&)nodes
                          allowsCancel:(BOOL)allowsCancel
-                       selectedFolder:(const BookmarkNode*)selectedFolder {
+                       selectedFolder:(const BookmarkNode*)selectedFolder
+                           dispatcher:(id<BrowserCommands>)dispatcher {
   DCHECK(bookmarkModel);
   DCHECK(bookmarkModel->loaded());
   DCHECK(selectedFolder == NULL || selectedFolder->is_folder());
@@ -122,6 +127,7 @@ using bookmarks::BookmarkNode;
     _bookmarkModel = bookmarkModel;
     _editedNodes = nodes;
     _selectedFolder = selectedFolder;
+    _dispatcher = dispatcher;
 
     // Set up the bookmark model oberver.
     _modelBridge.reset(
@@ -152,12 +158,10 @@ using bookmarks::BookmarkNode;
   self.title = l10n_util::GetNSString(IDS_IOS_BOOKMARK_CHOOSE_GROUP_BUTTON);
 
   if (self.allowsCancel) {
-    UIBarButtonItem* cancelItem =
-        [ChromeIcon templateBarButtonItemWithImage:[ChromeIcon closeIcon]
-                                            target:self
-                                            action:@selector(cancel:)];
-    cancelItem.accessibilityLabel =
-        l10n_util::GetNSString(IDS_IOS_BOOKMARK_NEW_CANCEL_BUTTON_LABEL);
+    UIBarButtonItem* cancelItem = [[UIBarButtonItem alloc]
+        initWithBarButtonSystemItem:UIBarButtonSystemItemCancel
+                             target:self
+                             action:@selector(cancel:)];
     cancelItem.accessibilityIdentifier = @"Cancel";
     self.navigationItem.leftBarButtonItem = cancelItem;
   } else {
@@ -227,7 +231,7 @@ using bookmarks::BookmarkNode;
     UIView* separator = [[UIView alloc] initWithFrame:separatorFrame];
     separator.autoresizingMask = UIViewAutoresizingFlexibleBottomMargin |
                                  UIViewAutoresizingFlexibleWidth;
-    separator.backgroundColor = bookmark_utils_ios::separatorColor();
+    separator.backgroundColor = UIColor.cr_opaqueSeparatorColor;
     [headerView addSubview:separator];
   }
   return headerView;
@@ -299,6 +303,13 @@ using bookmarks::BookmarkNode;
 - (void)bookmarkFolderEditorWillCommitTitleChange:
     (BookmarkFolderEditorViewController*)controller {
   // Do nothing.
+}
+
+#pragma mark - UIAdaptivePresentationControllerDelegate
+
+- (void)presentationControllerDidDismiss:
+    (UIPresentationController*)presentationController {
+  [self.delegate folderPickerDidDismiss:self];
 }
 
 #pragma mark - BookmarkModelBridgeObserver
@@ -441,7 +452,8 @@ using bookmarks::BookmarkNode;
   BookmarkFolderEditorViewController* folderCreator =
       [BookmarkFolderEditorViewController
           folderCreatorWithBookmarkModel:self.bookmarkModel
-                            parentFolder:self.selectedFolder];
+                            parentFolder:self.selectedFolder
+                              dispatcher:self.dispatcher];
   folderCreator.delegate = self;
   [self.navigationController pushViewController:folderCreator animated:YES];
   self.folderAddController = folderCreator;

@@ -6,8 +6,8 @@
 // browser_tests.exe --gtest_filter=ProxySettingsApiTest.ProxyEventsParseError
 
 var expected_error = {
+    details: "line: 1: Uncaught SyntaxError: Unexpected token '!'",
     error: "net::ERR_PAC_SCRIPT_FAILED",
-    details: "line: 1: Uncaught SyntaxError: Unexpected token !",
     fatal: false
 };
 

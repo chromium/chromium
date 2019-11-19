@@ -100,9 +100,6 @@ class {{v8_class_or_partial}} {
   {% if iterator_method %}
   {{exported}}static void {{iterator_method.camel_case_name}}MethodCallback(const v8::FunctionCallbackInfo<v8::Value>& info);
   {% endif %}
-  {% if has_origin_safe_method_setter %}
-  {{exported}}static void {{cpp_class}}OriginSafeMethodSetterCallback(v8::Local<v8::Name> name, v8::Local<v8::Value> v8_value, const v8::PropertyCallbackInfo<void>& info);
-  {% endif %}
 
  private:
   {% if needs_runtime_enabled_installer %}

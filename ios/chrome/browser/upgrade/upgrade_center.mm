@@ -20,7 +20,7 @@
 #import "ios/chrome/browser/ui/commands/open_new_tab_command.h"
 #include "ios/chrome/grit/ios_chromium_strings.h"
 #include "ios/chrome/grit/ios_strings.h"
-#import "ios/web/public/url_scheme_util.h"
+#import "ios/web/common/url_scheme_util.h"
 #import "net/base/mac/url_conversions.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/image/image.h"

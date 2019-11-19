@@ -160,7 +160,7 @@ bool BindWithPack(const UnboundConversion* props,
 }
 
 std::string Summarize(const UntypedFormatSpecImpl format,
-                 absl::Span<const FormatArgImpl> args) {
+                      absl::Span<const FormatArgImpl> args) {
   typedef SummarizingConverter Converter;
   std::string out;
   {
@@ -188,7 +188,7 @@ std::ostream& Streamable::Print(std::ostream& os) const {
 }
 
 std::string& AppendPack(std::string* out, const UntypedFormatSpecImpl format,
-                   absl::Span<const FormatArgImpl> args) {
+                        absl::Span<const FormatArgImpl> args) {
   size_t orig = out->size();
   if (ABSL_PREDICT_FALSE(!FormatUntyped(out, format, args))) {
     out->erase(orig);

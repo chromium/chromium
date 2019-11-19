@@ -172,9 +172,43 @@ enum ServerFieldType {
   // Price fields are detected, but not filled.
   PRICE = 98,
 
+  // Password-type fields which are not actual passwords.
+  NOT_PASSWORD = 99,
+
+  // Username field when there is no corresponding password field. It might be
+  // because of:
+  // 1. Username first flow: a user has to type username first on one page and
+  // then password on another page
+  // 2. Username and password fields are in different <form>s.
+  SINGLE_USERNAME = 100,
+
+  // Text-type fields which are not usernames.
+  NOT_USERNAME = 101,
+
+  // UPI/VPA is a payment method, which is stored and filled. See
+  // https://en.wikipedia.org/wiki/Unified_Payments_Interface
+  UPI_VPA = 102,
+
+  // Just the street name of an address, no house number.
+  // Currently not used by Chrome.
+  ADDRESS_HOME_STREET = 103,
+
+  // House number of an address, may be alphanumeric.
+  // Currently not used by Chrome.
+  ADDRESS_HOME_HOUSE_NUMBER = 104,
+
+  // Floor within in a building, may be alphanumeric.
+  // Currently not used by Chrome.
+  ADDRESS_HOME_FLOOR = 105,
+
+  // A catch-all for other type of subunits (only used until something more
+  // precise is defined).
+  // Currently not used by Chrome.
+  ADDRESS_HOME_OTHER_SUBUNIT = 106,
+
   // No new types can be added without a corresponding change to the Autofill
   // server.
-  MAX_VALID_FIELD_TYPE = 99,
+  MAX_VALID_FIELD_TYPE = 107,
 };
 
 // The list of all HTML autocomplete field type hints supported by Chrome.

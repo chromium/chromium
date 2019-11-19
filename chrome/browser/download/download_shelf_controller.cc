@@ -4,11 +4,15 @@
 
 #include "chrome/browser/download/download_shelf_controller.h"
 
+#include <utility>
+
 #include "chrome/browser/download/download_shelf.h"
 #include "chrome/browser/download/offline_item_model_manager.h"
 #include "chrome/browser/download/offline_item_model_manager_factory.h"
 #include "chrome/browser/download/offline_item_utils.h"
 #include "chrome/browser/offline_items_collection/offline_content_aggregator_factory.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "components/offline_items_collection/core/offline_content_aggregator.h"
@@ -19,7 +23,8 @@ using offline_items_collection::OfflineContentAggregator;
 
 DownloadShelfController::DownloadShelfController(Profile* profile)
     : profile_(profile) {
-  aggregator_ = OfflineContentAggregatorFactory::GetForBrowserContext(profile_);
+  aggregator_ =
+      OfflineContentAggregatorFactory::GetForKey(profile_->GetProfileKey());
   aggregator_->AddObserver(this);
 }
 
@@ -30,7 +35,7 @@ DownloadShelfController::~DownloadShelfController() {
 void DownloadShelfController::OnItemsAdded(
     const OfflineContentProvider::OfflineItemList& items) {
   for (const auto& item : items)
-    OnItemUpdated(item);
+    OnItemUpdated(item, base::nullopt);
 }
 
 void DownloadShelfController::OnItemRemoved(const ContentId& id) {
@@ -41,7 +46,9 @@ void DownloadShelfController::OnItemRemoved(const ContentId& id) {
       ->RemoveOfflineItemModelData(id);
 }
 
-void DownloadShelfController::OnItemUpdated(const OfflineItem& item) {
+void DownloadShelfController::OnItemUpdated(
+    const OfflineItem& item,
+    const base::Optional<UpdateDelta>& update_delta) {
   if (profile_->IsOffTheRecord() != item.is_off_the_record)
     return;
 

@@ -56,7 +56,7 @@ class UI_BASE_EXPORT ImageCursors {
 
   std::unique_ptr<CursorLoader> cursor_loader_;
   CursorSize cursor_size_;
-  base::WeakPtrFactory<ImageCursors> weak_ptr_factory_;
+  base::WeakPtrFactory<ImageCursors> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ImageCursors);
 };

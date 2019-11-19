@@ -80,7 +80,7 @@ TEST(KeepaliveStatisticsRecorderTest, IssueOneRequest) {
   constexpr int process = 4;
 
   r.Register(process);
-  r.OnLoadStarted(process);
+  r.OnLoadStarted(process, 12);
   {
     const auto& map = r.per_process_records();
     EXPECT_EQ(1u, map.size());
@@ -89,12 +89,13 @@ TEST(KeepaliveStatisticsRecorderTest, IssueOneRequest) {
     EXPECT_EQ(1, it->second.num_registrations);
     EXPECT_EQ(1, it->second.num_inflight_requests);
     EXPECT_EQ(1, it->second.peak_inflight_requests);
+    EXPECT_EQ(12, it->second.total_request_size);
 
     EXPECT_EQ(1, r.num_inflight_requests());
     EXPECT_EQ(1, r.peak_inflight_requests());
   }
 
-  r.OnLoadFinished(process);
+  r.OnLoadFinished(process, 12);
   {
     const auto& map = r.per_process_records();
     EXPECT_EQ(1u, map.size());
@@ -103,6 +104,7 @@ TEST(KeepaliveStatisticsRecorderTest, IssueOneRequest) {
     EXPECT_EQ(1, it->second.num_registrations);
     EXPECT_EQ(0, it->second.num_inflight_requests);
     EXPECT_EQ(1, it->second.peak_inflight_requests);
+    EXPECT_EQ(0, it->second.total_request_size);
 
     EXPECT_EQ(0, r.num_inflight_requests());
     EXPECT_EQ(1, r.peak_inflight_requests());
@@ -121,23 +123,23 @@ TEST(KeepaliveStatisticsRecorderTest, IssueRequests) {
   r.Register(process2);
   r.Register(process2);
 
-  r.OnLoadStarted(process1);
-  r.OnLoadStarted(process1);
-  r.OnLoadStarted(process2);
-  r.OnLoadStarted(process2);
-  r.OnLoadStarted(process2);
-  r.OnLoadStarted(process2);
-  r.OnLoadStarted(no_process);
-  r.OnLoadFinished(process2);
-  r.OnLoadFinished(process2);
-  r.OnLoadFinished(process2);
-  r.OnLoadStarted(process2);
-  r.OnLoadStarted(no_process);
-  r.OnLoadStarted(no_process);
-  r.OnLoadStarted(no_process);
-  r.OnLoadStarted(no_process);
-  r.OnLoadStarted(no_process);
-  r.OnLoadFinished(no_process);
+  r.OnLoadStarted(process1, 13);
+  r.OnLoadStarted(process1, 5);
+  r.OnLoadStarted(process2, 8);
+  r.OnLoadStarted(process2, 4);
+  r.OnLoadStarted(process2, 82);
+  r.OnLoadStarted(process2, 3);
+  r.OnLoadStarted(no_process, 1);
+  r.OnLoadFinished(process2, 4);
+  r.OnLoadFinished(process2, 8);
+  r.OnLoadFinished(process2, 82);
+  r.OnLoadStarted(process2, 13);
+  r.OnLoadStarted(no_process, 4);
+  r.OnLoadStarted(no_process, 5);
+  r.OnLoadStarted(no_process, 6);
+  r.OnLoadStarted(no_process, 7);
+  r.OnLoadStarted(no_process, 8);
+  r.OnLoadFinished(no_process, 6);
 
   const auto& map = r.per_process_records();
   EXPECT_EQ(2u, map.size());
@@ -147,11 +149,13 @@ TEST(KeepaliveStatisticsRecorderTest, IssueRequests) {
   EXPECT_EQ(3, it1->second.num_registrations);
   EXPECT_EQ(2, it1->second.num_inflight_requests);
   EXPECT_EQ(2, it1->second.peak_inflight_requests);
+  EXPECT_EQ(18, it1->second.total_request_size);
 
   ASSERT_NE(it2, map.end());
   EXPECT_EQ(2, it2->second.num_registrations);
   EXPECT_EQ(2, it2->second.num_inflight_requests);
   EXPECT_EQ(4, it2->second.peak_inflight_requests);
+  EXPECT_EQ(16, it2->second.total_request_size);
 
   EXPECT_EQ(9, r.num_inflight_requests());
   EXPECT_EQ(10, r.peak_inflight_requests());
@@ -162,12 +166,12 @@ TEST(KeepaliveStatisticsRecorderTest, ProcessReuse) {
   constexpr int process = 2;
 
   r.Register(process);
-  r.OnLoadStarted(process);
-  r.OnLoadStarted(process);
-  r.OnLoadStarted(process);
-  r.OnLoadFinished(process);
-  r.OnLoadFinished(process);
-  r.OnLoadFinished(process);
+  r.OnLoadStarted(process, 1);
+  r.OnLoadStarted(process, 2);
+  r.OnLoadStarted(process, 3);
+  r.OnLoadFinished(process, 2);
+  r.OnLoadFinished(process, 3);
+  r.OnLoadFinished(process, 1);
   r.Unregister(process);
 
   r.Register(process);
@@ -178,6 +182,7 @@ TEST(KeepaliveStatisticsRecorderTest, ProcessReuse) {
   EXPECT_EQ(1, it->second.num_registrations);
   EXPECT_EQ(0, it->second.num_inflight_requests);
   EXPECT_EQ(0, it->second.peak_inflight_requests);
+  EXPECT_EQ(0, it->second.total_request_size);
 }
 
 }  // namespace

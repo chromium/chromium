@@ -7,16 +7,13 @@
 #ifndef STORAGE_LEVELDB_PORT_PORT_CHROMIUM_H_
 #define STORAGE_LEVELDB_PORT_PORT_CHROMIUM_H_
 
-#include <stddef.h>
-#include <stdint.h>
-
+#include <cassert>
+#include <condition_variable>  // NOLINT
 #include <cstring>
+#include <mutex>  // NOLINT
 #include <string>
 
-#include "base/atomicops.h"
 #include "base/macros.h"
-#include "base/synchronization/condition_variable.h"
-#include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
 #include "build/build_config.h"
 
@@ -28,56 +25,41 @@ static const bool kLittleEndian = true;
 
 class LOCKABLE Mutex {
  public:
-  Mutex();
-  ~Mutex();
-  void Lock() EXCLUSIVE_LOCK_FUNCTION();
-  void Unlock() UNLOCK_FUNCTION();
-  void AssertHeld() ASSERT_EXCLUSIVE_LOCK();
+  Mutex() = default;
+  ~Mutex() = default;
+
+  Mutex(const Mutex&) = delete;
+  Mutex& operator=(const Mutex&) = delete;
+
+  void Lock() EXCLUSIVE_LOCK_FUNCTION() { mu_.lock(); }
+  void Unlock() UNLOCK_FUNCTION() { mu_.unlock(); }
+  void AssertHeld() ASSERT_EXCLUSIVE_LOCK() {}
 
  private:
-  base::Lock mu_;
-
   friend class CondVar;
-  DISALLOW_COPY_AND_ASSIGN(Mutex);
+  std::mutex mu_;
 };
 
+// Thinly wraps std::condition_variable.
 class CondVar {
  public:
-  explicit CondVar(Mutex* mu);
-  ~CondVar();
-  void Wait();
-  void Signal();
-  void SignalAll();
+  explicit CondVar(Mutex* mu) : mu_(mu) { assert(mu != nullptr); }
+  ~CondVar() = default;
+
+  CondVar(const CondVar&) = delete;
+  CondVar& operator=(const CondVar&) = delete;
+
+  void Wait() {
+    std::unique_lock<std::mutex> lock(mu_->mu_, std::adopt_lock);
+    cv_.wait(lock);
+    lock.release();
+  }
+  void Signal() { cv_.notify_one(); }
+  void SignalAll() { cv_.notify_all(); }
 
  private:
-  base::ConditionVariable cv_;
-
-  DISALLOW_COPY_AND_ASSIGN(CondVar);
-};
-
-class AtomicPointer {
- public:
-  AtomicPointer() = default;
-  ~AtomicPointer() = default;
-
-  explicit AtomicPointer(void* p) : rep_(reinterpret_cast<Rep>(p)) {}
-
-  inline void* Acquire_Load() const {
-    return reinterpret_cast<void*>(base::subtle::Acquire_Load(&rep_));
-  }
-  inline void Release_Store(void* v) {
-    base::subtle::Release_Store(&rep_, reinterpret_cast<Rep>(v));
-  }
-  inline void* NoBarrier_Load() const {
-    return reinterpret_cast<void*>(base::subtle::NoBarrier_Load(&rep_));
-  }
-  inline void NoBarrier_Store(void* v) {
-    base::subtle::NoBarrier_Store(&rep_, reinterpret_cast<Rep>(v));
-  }
-
- private:
-  using Rep = base::subtle::AtomicWord;
-  Rep rep_;
+  std::condition_variable cv_;
+  Mutex* const mu_;
 };
 
 bool Snappy_Compress(const char* input, size_t input_length,

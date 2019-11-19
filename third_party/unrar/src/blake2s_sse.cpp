@@ -1,7 +1,5 @@
 // Based on public domain code written in 2012 by Samuel Neves
 
-namespace third_party_unrar {
-
 extern const byte blake2s_sigma[10][16];
 
 // Initialization vector.
@@ -129,5 +127,3 @@ static int blake2s_compress_sse( blake2s_state *S, const byte block[BLAKE2S_BLOC
   STORE( &S->h[4], _mm_xor_si128( ff1, _mm_xor_si128( row[1], row[3] ) ) );
   return 0;
 }
-
-}  // namespace third_party_unrar

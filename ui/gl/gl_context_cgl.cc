@@ -17,8 +17,8 @@
 #include "base/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/trace_event.h"
+#include "ui/gl/dual_gpu_state_mac.h"
 #include "ui/gl/gl_bindings.h"
-#include "ui/gl/gl_fence.h"
 #include "ui/gl/gl_gl_api_implementation.h"
 #include "ui/gl/gl_implementation.h"
 #include "ui/gl/gl_surface.h"
@@ -99,18 +99,12 @@ bool GLContextCGL::Initialize(GLSurface* compatible_surface,
     return false;
 
   // If using the discrete gpu, create a pixel format requiring it before we
-  // create the context.
+  // create the context. If switchable GPUs are unsupported, we should bias
+  // toward the discrete gpu.
   if (!GLContext::SwitchableGPUsSupported() ||
-      gpu_preference == PreferDiscreteGpu) {
-    std::vector<CGLPixelFormatAttribute> discrete_attribs;
-    discrete_attribs.push_back((CGLPixelFormatAttribute) 0);
-    GLint num_pixel_formats;
-    if (CGLChoosePixelFormat(&discrete_attribs.front(),
-                             &discrete_pixelformat_,
-                             &num_pixel_formats) != kCGLNoError) {
-      LOG(ERROR) << "Error choosing pixel format.";
-      return false;
-    }
+      gpu_preference == GpuPreference::kHighPerformance) {
+    DualGPUStateMac::GetInstance()->RegisterHighPerformanceContext(this);
+    is_high_performance_context_ = true;
     // The renderer might be switched after this, so ignore the saved ID.
     share_group()->SetRendererID(-1);
   }
@@ -127,16 +121,16 @@ bool GLContextCGL::Initialize(GLSurface* compatible_surface,
   }
 
   gpu_preference_ = gpu_preference;
-  // Contexts that prefer integrated gpu are known to use only the subset of GL
+  // Contexts that prefer low power gpu are known to use only the subset of GL
   // that can be safely migrated between the iGPU and the dGPU. Mark those
   // contexts as safe to forcibly transition between the GPUs by default.
   // http://crbug.com/180876, http://crbug.com/227228
-  safe_to_force_gpu_switch_ = gpu_preference == PreferIntegratedGpu;
+  safe_to_force_gpu_switch_ = gpu_preference == GpuPreference::kLowPower;
   return true;
 }
 
 void GLContextCGL::Destroy() {
-  if (!yuv_to_rgb_converters_.empty() || !backpressure_fences_.empty()) {
+  if (!yuv_to_rgb_converters_.empty() || HasBackpressureFences()) {
     // If this context is not current, bind this context's API so that the YUV
     // converter and GLFences can safely destruct
     GLContext* current_context = GetRealCurrent();
@@ -147,25 +141,16 @@ void GLContextCGL::Destroy() {
     ScopedCGLSetCurrentContext scoped_set_current(
         static_cast<CGLContextObj>(context_));
     yuv_to_rgb_converters_.clear();
-    backpressure_fences_.clear();
+    DestroyBackpressureFences();
 
     // Rebind the current context's API if needed.
     if (current_context && current_context != this) {
       SetCurrentGL(current_context->GetCurrentGL());
     }
   }
-  if (discrete_pixelformat_) {
-    if (base::ThreadTaskRunnerHandle::IsSet()) {
-      // Delay releasing the pixel format for 10 seconds to reduce the number of
-      // unnecessary GPU switches.
-      base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-          FROM_HERE,
-          base::BindOnce(&CGLReleasePixelFormat, discrete_pixelformat_),
-          base::TimeDelta::FromSeconds(10));
-    } else {
-      CGLReleasePixelFormat(discrete_pixelformat_);
-    }
-    discrete_pixelformat_ = nullptr;
+
+  if (is_high_performance_context_) {
+    DualGPUStateMac::GetInstance()->RemoveHighPerformanceContext(this);
   }
   if (context_) {
     CGLDestroyContext(static_cast<CGLContextObj>(context_));
@@ -183,8 +168,8 @@ bool GLContextCGL::ForceGpuSwitchIfNeeded() {
     int screen;
     CGLGetVirtualScreen(static_cast<CGLContextObj>(context_), &screen);
 
-    if (g_support_renderer_switching &&
-        !discrete_pixelformat_ && renderer_id != -1 &&
+    if (g_support_renderer_switching && !is_high_performance_context_ &&
+        renderer_id != -1 &&
         (screen != screen_ || renderer_id != renderer_id_)) {
       // Attempt to find a virtual screen that's using the requested renderer,
       // and switch the context to use that screen. Don't attempt to switch if
@@ -223,75 +208,6 @@ YUVToRGBConverter* GLContextCGL::GetYUVToRGBConverter(
     yuv_to_rgb_converter =
         std::make_unique<YUVToRGBConverter>(*GetVersionInfo(), color_space);
   return yuv_to_rgb_converter.get();
-}
-
-constexpr uint64_t kInvalidFenceId = 0;
-
-uint64_t GLContextCGL::BackpressureFenceCreate() {
-  TRACE_EVENT0("gpu", "GLContextCGL::BackpressureFenceCreate");
-
-  // This flush will trigger a crash if FlushForDriverCrashWorkaround is not
-  // called sufficiently frequently.
-  glFlush();
-
-  if (gl::GLFence::IsSupported()) {
-    next_backpressure_fence_ += 1;
-    backpressure_fences_[next_backpressure_fence_] = GLFence::Create();
-    return next_backpressure_fence_;
-  }
-  glFinish();
-  return kInvalidFenceId;
-}
-
-void GLContextCGL::BackpressureFenceWait(uint64_t fence_id) {
-  TRACE_EVENT0("gpu", "GLContextCGL::BackpressureFenceWait");
-  if (fence_id == kInvalidFenceId) {
-    return;
-  }
-
-  // If a fence is not found, then it has already been waited on.
-  auto found = backpressure_fences_.find(fence_id);
-  if (found == backpressure_fences_.end())
-    return;
-  std::unique_ptr<GLFence> fence = std::move(found->second);
-  backpressure_fences_.erase(found);
-
-  // While we could call GLFence::ClientWait, this performs a busy wait on
-  // Mac, leading to high CPU usage. Instead we poll with a 1ms delay. This
-  // should have minimal impact, as we will only hit this path when we are
-  // more than one frame (16ms) behind.
-  //
-  // Note that on some platforms (10.9), fences appear to sometimes get
-  // lost and will never pass. Add a 32ms timout to prevent these
-  // situations from causing a GPU process hang.
-  // https://crbug.com/618075
-  bool fence_completed = false;
-  for (int poll_iter = 0; !fence_completed && poll_iter < 32; ++poll_iter) {
-    if (poll_iter > 0) {
-      base::PlatformThread::Sleep(base::TimeDelta::FromMilliseconds(1));
-    }
-    {
-      TRACE_EVENT0("gpu", "GLFence::HasCompleted");
-      fence_completed = fence->HasCompleted();
-    }
-  }
-  if (!fence_completed) {
-    TRACE_EVENT0("gpu", "Finish");
-    // We timed out waiting for the above fence, just issue a glFinish.
-    glFinish();
-  }
-  fence.reset();
-
-  // Waiting on |fence_id| has implicitly waited on all previous fences, so
-  // remove them.
-  while (backpressure_fences_.begin()->first < fence_id)
-    backpressure_fences_.erase(backpressure_fences_.begin());
-}
-
-void GLContextCGL::FlushForDriverCrashWorkaround() {
-  if (!context_ || CGLGetCurrentContext() != context_)
-    return;
-  glFlush();
 }
 
 bool GLContextCGL::MakeCurrent(GLSurface* surface) {
@@ -335,6 +251,15 @@ bool GLContextCGL::MakeCurrent(GLSurface* surface) {
 
   release_current.Cancel();
   return true;
+}
+
+void GLContextCGL::SetVisibility(bool visibility) {
+  if (!is_high_performance_context_ || !g_support_renderer_switching)
+    return;
+  if (visibility)
+    DualGPUStateMac::GetInstance()->RegisterHighPerformanceContext(this);
+  else
+    DualGPUStateMac::GetInstance()->RemoveHighPerformanceContext(this);
 }
 
 void GLContextCGL::ReleaseCurrent(GLSurface* surface) {

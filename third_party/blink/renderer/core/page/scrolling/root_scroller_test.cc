@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/platform/platform.h"
+#include "third_party/blink/public/common/page/page_zoom.h"
 #include "third_party/blink/public/platform/web_coalesced_input_event.h"
 #include "third_party/blink/public/platform/web_url_loader_mock_factory.h"
 #include "third_party/blink/public/web/web_console_message.h"
@@ -11,7 +11,7 @@
 #include "third_party/blink/public/web/web_remote_frame.h"
 #include "third_party/blink/public/web/web_script_source.h"
 #include "third_party/blink/public/web/web_settings.h"
-#include "third_party/blink/renderer/bindings/core/v8/node_or_string.h"
+#include "third_party/blink/renderer/bindings/core/v8/node_or_string_or_trusted_script.h"
 #include "third_party/blink/renderer/core/exported/web_remote_frame_impl.h"
 #include "third_party/blink/renderer/core/frame/browser_controls.h"
 #include "third_party/blink/renderer/core/frame/dom_visual_viewport.h"
@@ -64,9 +64,7 @@ class RootScrollerTest : public testing::Test,
 
   ~RootScrollerTest() override {
     features_backup_.Restore();
-    Platform::Current()
-        ->GetURLLoaderMockFactory()
-        ->UnregisterAllURLsAndClearMemoryCache();
+    url_test_helpers::UnregisterAllURLsAndClearMemoryCache();
   }
 
   void SetAndSelectRootScroller(Document& document, Element* element) {
@@ -78,12 +76,12 @@ class RootScrollerTest : public testing::Test,
     }
   }
 
-  WebViewImpl* Initialize(const std::string& page_name,
+  WebViewImpl* Initialize(const String& page_name,
                           frame_test_helpers::TestWebWidgetClient* client) {
     return InitializeInternal(base_url_ + page_name, client);
   }
 
-  WebViewImpl* Initialize(const std::string& page_name) {
+  WebViewImpl* Initialize(const String& page_name) {
     return InitializeInternal(base_url_ + page_name, nullptr);
   }
 
@@ -101,10 +99,11 @@ class RootScrollerTest : public testing::Test,
     settings->SetMainFrameResizesAreOrientationChanges(true);
   }
 
-  void RegisterMockedHttpURLLoad(const std::string& file_name) {
+  void RegisterMockedHttpURLLoad(const String& file_name) {
+    // TODO(crbug.com/751425): We should use the mock functionality
+    // via |helper_|.
     url_test_helpers::RegisterMockedURLLoadFromBase(
-        WebString::FromUTF8(base_url_), test::CoreTestDataPath(),
-        WebString::FromUTF8(file_name));
+        WebString(base_url_), test::CoreTestDataPath(), WebString(file_name));
   }
 
   void ExecuteScript(const WebString& code) {
@@ -147,14 +146,14 @@ class RootScrollerTest : public testing::Test,
   WebCoalescedInputEvent GenerateTouchGestureEvent(WebInputEvent::Type type,
                                                    int delta_x = 0,
                                                    int delta_y = 0) {
-    return GenerateGestureEvent(type, kWebGestureDeviceTouchscreen, delta_x,
+    return GenerateGestureEvent(type, WebGestureDevice::kTouchscreen, delta_x,
                                 delta_y);
   }
 
   WebCoalescedInputEvent GenerateWheelGestureEvent(WebInputEvent::Type type,
                                                    int delta_x = 0,
                                                    int delta_y = 0) {
-    return GenerateGestureEvent(type, kWebGestureDeviceTouchpad, delta_x,
+    return GenerateGestureEvent(type, WebGestureDevice::kTouchpad, delta_x,
                                 delta_y);
   }
 
@@ -177,14 +176,14 @@ class RootScrollerTest : public testing::Test,
   }
 
   WebViewImpl* InitializeInternal(
-      const std::string& url,
+      const String& url,
       frame_test_helpers::TestWebWidgetClient* client) {
-    helper_.InitializeAndLoad(url, nullptr, nullptr, client,
+    helper_.InitializeAndLoad(url.Utf8(), nullptr, nullptr, client,
                               &ConfigureSettings);
 
     // Initialize browser controls to be shown.
-    GetWebView()->ResizeWithBrowserControls(IntSize(400, 400), 50, 0, true);
-    GetWebView()->GetBrowserControls().SetShownRatio(1);
+    GetWebView()->ResizeWithBrowserControls(IntSize(400, 400), 50, 60, true);
+    GetWebView()->GetBrowserControls().SetShownRatio(1, 1);
 
     UpdateAllLifecyclePhases(MainFrameView());
 
@@ -196,7 +195,7 @@ class RootScrollerTest : public testing::Test,
         DocumentLifecycle::LifecycleUpdateReason::kTest);
   }
 
-  std::string base_url_;
+  String base_url_;
   std::unique_ptr<frame_test_helpers::TestWebViewClient> view_client_;
   frame_test_helpers::WebViewHelper helper_;
   RuntimeEnabledFeatures::Backup features_backup_;
@@ -226,8 +225,8 @@ TEST_F(RootScrollerTest, defaultEffectiveRootScrollerIsDocumentNode) {
 
   // Replace the documentElement with the iframe. The effectiveRootScroller
   // should remain the same.
-  HeapVector<NodeOrString> nodes;
-  nodes.push_back(NodeOrString::FromNode(iframe));
+  HeapVector<NodeOrStringOrTrustedScript> nodes;
+  nodes.push_back(NodeOrStringOrTrustedScript::FromNode(iframe));
   document->documentElement()->ReplaceWith(nodes, ASSERT_NO_EXCEPTION);
 
   UpdateAllLifecyclePhases(MainFrameView());
@@ -239,12 +238,11 @@ TEST_F(RootScrollerTest, defaultEffectiveRootScrollerIsDocumentNode) {
 class OverscrollTestWebWidgetClient
     : public frame_test_helpers::TestWebWidgetClient {
  public:
-  MOCK_METHOD5(DidOverscroll,
+  MOCK_METHOD4(DidOverscroll,
                void(const WebFloatSize&,
                     const WebFloatSize&,
                     const WebFloatPoint&,
-                    const WebFloatSize&,
-                    const cc::OverscrollBehavior&));
+                    const WebFloatSize&));
 };
 
 // Tests that setting an element as the root scroller causes it to control url
@@ -267,11 +265,13 @@ TEST_F(RootScrollerTest, TestSetRootScroller) {
   {
     // Scrolling over the #container DIV should cause the browser controls to
     // hide.
-    EXPECT_FLOAT_EQ(1, GetBrowserControls().ShownRatio());
+    EXPECT_FLOAT_EQ(1, GetBrowserControls().TopShownRatio());
+    EXPECT_FLOAT_EQ(1, GetBrowserControls().BottomShownRatio());
     GetWebView()->MainFrameWidget()->HandleInputEvent(
         GenerateTouchGestureEvent(WebInputEvent::kGestureScrollUpdate, 0,
                                   -GetBrowserControls().TopHeight()));
-    EXPECT_FLOAT_EQ(0, GetBrowserControls().ShownRatio());
+    EXPECT_FLOAT_EQ(0, GetBrowserControls().TopShownRatio());
+    EXPECT_FLOAT_EQ(0, GetBrowserControls().BottomShownRatio());
   }
 
   {
@@ -287,8 +287,7 @@ TEST_F(RootScrollerTest, TestSetRootScroller) {
     // Scroll 50 pixels past the end. Ensure we report the 50 pixels as
     // overscroll.
     EXPECT_CALL(client, DidOverscroll(WebFloatSize(0, 50), WebFloatSize(0, 50),
-                                      WebFloatPoint(100, 100), WebFloatSize(),
-                                      cc::OverscrollBehavior()));
+                                      WebFloatPoint(100, 100), WebFloatSize()));
     GetWebView()->MainFrameWidget()->HandleInputEvent(GenerateTouchGestureEvent(
         WebInputEvent::kGestureScrollUpdate, 0, -500));
     EXPECT_FLOAT_EQ(maximum_scroll, container->scrollTop());
@@ -300,8 +299,7 @@ TEST_F(RootScrollerTest, TestSetRootScroller) {
   {
     // Continue the gesture overscroll.
     EXPECT_CALL(client, DidOverscroll(WebFloatSize(0, 20), WebFloatSize(0, 70),
-                                      WebFloatPoint(100, 100), WebFloatSize(),
-                                      cc::OverscrollBehavior()));
+                                      WebFloatPoint(100, 100), WebFloatSize()));
     GetWebView()->MainFrameWidget()->HandleInputEvent(
         GenerateTouchGestureEvent(WebInputEvent::kGestureScrollUpdate, 0, -20));
     EXPECT_FLOAT_EQ(maximum_scroll, container->scrollTop());
@@ -320,8 +318,7 @@ TEST_F(RootScrollerTest, TestSetRootScroller) {
         GenerateTouchGestureEvent(WebInputEvent::kGestureScrollBegin));
 
     EXPECT_CALL(client, DidOverscroll(WebFloatSize(0, 30), WebFloatSize(0, 30),
-                                      WebFloatPoint(100, 100), WebFloatSize(),
-                                      cc::OverscrollBehavior()));
+                                      WebFloatPoint(100, 100), WebFloatSize()));
     GetWebView()->MainFrameWidget()->HandleInputEvent(
         GenerateTouchGestureEvent(WebInputEvent::kGestureScrollUpdate, 0, -30));
     EXPECT_FLOAT_EQ(maximum_scroll, container->scrollTop());
@@ -338,10 +335,12 @@ TEST_F(RootScrollerTest, TestSetRootScroller) {
     GetWebView()->MainFrameWidget()->HandleInputEvent(
         GenerateTouchGestureEvent(WebInputEvent::kGestureScrollBegin));
 
-    EXPECT_FLOAT_EQ(0, GetBrowserControls().ShownRatio());
+    EXPECT_FLOAT_EQ(0, GetBrowserControls().TopShownRatio());
+    EXPECT_FLOAT_EQ(0, GetBrowserControls().BottomShownRatio());
     GetWebView()->MainFrameWidget()->HandleInputEvent(
         GenerateTouchGestureEvent(WebInputEvent::kGestureScrollUpdate, 0, 30));
-    EXPECT_FLOAT_EQ(0.6, GetBrowserControls().ShownRatio());
+    EXPECT_FLOAT_EQ(0.6, GetBrowserControls().TopShownRatio());
+    EXPECT_FLOAT_EQ(0.6, GetBrowserControls().BottomShownRatio());
 
     GetWebView()->MainFrameWidget()->HandleInputEvent(
         GenerateTouchGestureEvent(WebInputEvent::kGestureScrollEnd));
@@ -545,8 +544,6 @@ TEST_F(RootScrollerTest, SetRootScrollerIframeUsesCorrectLayerAndCallback) {
   // No root scroller set, the document node should be the global root and the
   // main LocalFrameView's scroll layer should be the layer to use.
   {
-    EXPECT_EQ(main_controller.RootScrollerLayer(),
-              MainFrameView()->LayoutViewport()->LayerForScrolling());
     EXPECT_TRUE(main_controller.IsViewportScrollCallback(
         MainFrame()->GetDocument()->GetApplyScroll()));
   }
@@ -556,8 +553,6 @@ TEST_F(RootScrollerTest, SetRootScrollerIframeUsesCorrectLayerAndCallback) {
   {
     SetAndSelectRootScroller(*iframe->contentDocument(), container);
 
-    EXPECT_EQ(main_controller.RootScrollerLayer(),
-              MainFrameView()->LayoutViewport()->LayerForScrolling());
     EXPECT_TRUE(main_controller.IsViewportScrollCallback(
         MainFrame()->GetDocument()->GetApplyScroll()));
   }
@@ -568,10 +563,6 @@ TEST_F(RootScrollerTest, SetRootScrollerIframeUsesCorrectLayerAndCallback) {
   {
     SetAndSelectRootScroller(*MainFrame()->GetDocument(), iframe);
 
-    ScrollableArea* container_scroller =
-        ToLayoutBox(container->GetLayoutObject())->GetScrollableArea();
-    EXPECT_EQ(main_controller.RootScrollerLayer(),
-              container_scroller->LayerForScrolling());
     EXPECT_FALSE(main_controller.IsViewportScrollCallback(
         MainFrame()->GetDocument()->GetApplyScroll()));
     EXPECT_TRUE(
@@ -583,10 +574,6 @@ TEST_F(RootScrollerTest, SetRootScrollerIframeUsesCorrectLayerAndCallback) {
   // scroller.
   {
     SetAndSelectRootScroller(*iframe->contentDocument(), nullptr);
-    EXPECT_EQ(main_controller.RootScrollerLayer(), iframe->contentDocument()
-                                                       ->View()
-                                                       ->LayoutViewport()
-                                                       ->LayerForScrolling());
     EXPECT_FALSE(
         main_controller.IsViewportScrollCallback(container->GetApplyScroll()));
     EXPECT_FALSE(main_controller.IsViewportScrollCallback(
@@ -599,8 +586,6 @@ TEST_F(RootScrollerTest, SetRootScrollerIframeUsesCorrectLayerAndCallback) {
   // document node and corresponding layer.
   {
     SetAndSelectRootScroller(*MainFrame()->GetDocument(), nullptr);
-    EXPECT_EQ(main_controller.RootScrollerLayer(),
-              MainFrameView()->LayoutViewport()->LayerForScrolling());
     EXPECT_TRUE(main_controller.IsViewportScrollCallback(
         MainFrame()->GetDocument()->GetApplyScroll()));
     EXPECT_FALSE(
@@ -804,8 +789,8 @@ TEST_F(RootScrollerTest, RemoteMainFrame) {
         WebSecurityOrigin(SecurityOrigin::CreateUniqueOpaque()), false);
     local_frame = frame_test_helpers::CreateLocalChild(*remote_main_frame);
 
-    frame_test_helpers::LoadFrame(local_frame,
-                                  base_url_ + "root-scroller-child.html");
+    frame_test_helpers::LoadFrame(
+        local_frame, base_url_.Utf8() + "root-scroller-child.html");
     widget = local_frame->FrameWidget();
     widget->Resize(WebSize(400, 400));
   }
@@ -886,11 +871,6 @@ TEST_F(RootScrollerTest, NonMainLocalRootLifecycle) {
   ASSERT_EQ(MainFrame()->GetDocument(), global_controller.GlobalRootScroller());
 
   UpdateAllLifecyclePhases(MainFrameView());
-  GraphicsLayer* scroll_layer = global_controller.RootScrollerLayer();
-  GraphicsLayer* container_layer = global_controller.RootContainerLayer();
-
-  ASSERT_TRUE(scroll_layer);
-  ASSERT_TRUE(container_layer);
 
   // Put the local main frame into Layout clean and have the non-main local
   // root do a complete lifecycle update.
@@ -900,8 +880,6 @@ TEST_F(RootScrollerTest, NonMainLocalRootLifecycle) {
   UpdateAllLifecyclePhases(helper_.LocalMainFrame()->GetFrameView());
 
   EXPECT_EQ(MainFrame()->GetDocument(), global_controller.GlobalRootScroller());
-  EXPECT_EQ(global_controller.RootScrollerLayer(), scroll_layer);
-  EXPECT_EQ(global_controller.RootContainerLayer(), container_layer);
 }
 
 // Tests that removing the root scroller element from the DOM resets the
@@ -946,8 +924,6 @@ TEST_F(RootScrollerTest, DocumentElementHasNoLayoutObject) {
       MainFrame()->GetDocument()->GetPage()->GlobalRootScrollerController();
 
   EXPECT_EQ(MainFrame()->GetDocument(), global_controller.GlobalRootScroller());
-  EXPECT_EQ(MainFrameView()->LayoutViewport()->LayerForScrolling(),
-            global_controller.RootScrollerLayer());
 }
 
 // On Android, the main scrollbars are owned by the visual viewport and the
@@ -1019,7 +995,7 @@ TEST_F(RootScrollerTest, TopControlsAdjustmentAppliedToRootScroller) {
                                      "</div>",
                                      base_url);
 
-  GetWebView()->ResizeWithBrowserControls(IntSize(400, 400), 50, 0, true);
+  GetWebView()->ResizeWithBrowserControls(IntSize(400, 400), 50, 50, true);
   UpdateAllLifecyclePhases(MainFrameView());
 
   Element* container = MainFrame()->GetDocument()->getElementById("container");
@@ -1036,11 +1012,13 @@ TEST_F(RootScrollerTest, TopControlsAdjustmentAppliedToRootScroller) {
 
   GetWebView()->MainFrameWidget()->HandleInputEvent(
       GenerateTouchGestureEvent(WebInputEvent::kGestureScrollBegin));
-  ASSERT_EQ(1, GetBrowserControls().ShownRatio());
+  ASSERT_EQ(1, GetBrowserControls().TopShownRatio());
+  ASSERT_EQ(1, GetBrowserControls().BottomShownRatio());
   GetWebView()->MainFrameWidget()->HandleInputEvent(
       GenerateTouchGestureEvent(WebInputEvent::kGestureScrollUpdate, 0,
                                 -GetBrowserControls().TopHeight()));
-  ASSERT_EQ(0, GetBrowserControls().ShownRatio());
+  ASSERT_EQ(0, GetBrowserControls().TopShownRatio());
+  ASSERT_EQ(0, GetBrowserControls().BottomShownRatio());
   EXPECT_EQ(1000 - 450, container_scroller->MaximumScrollOffset().Height());
 
   GetWebView()->MainFrameWidget()->HandleInputEvent(
@@ -1049,7 +1027,7 @@ TEST_F(RootScrollerTest, TopControlsAdjustmentAppliedToRootScroller) {
 
   GetWebView()->MainFrameWidget()->HandleInputEvent(
       GenerateTouchGestureEvent(WebInputEvent::kGestureScrollEnd));
-  GetWebView()->ResizeWithBrowserControls(IntSize(400, 450), 50, 0, false);
+  GetWebView()->ResizeWithBrowserControls(IntSize(400, 450), 50, 50, false);
   EXPECT_EQ(1000 - 450, container_scroller->MaximumScrollOffset().Height());
 }
 
@@ -1618,7 +1596,7 @@ TEST_F(ImplicitRootScrollerSimTest, ImplicitRootScroller) {
   // overflow: auto and overflow: scroll should cause a valid element to be
   // promoted to root scroller. Otherwise, they shouldn't, even if they're
   // otherwise a valid root scroller element.
-  std::vector<std::tuple<String, String, Node*>> test_cases = {
+  Vector<std::tuple<String, String, Node*>> test_cases = {
       {"overflow", "hidden", &GetDocument()},
       {"overflow", "auto", container},
       {"overflow", "scroll", container},
@@ -1994,15 +1972,15 @@ TEST_F(ImplicitRootScrollerSimTest, UseCounterNegative) {
   ASSERT_NE(container,
             GetDocument().GetRootScrollerController().EffectiveRootScroller());
 
-  EXPECT_FALSE(UseCounter::IsCounted(
-      GetDocument(), WebFeature::kActivatedImplicitRootScroller));
+  EXPECT_FALSE(
+      GetDocument().IsUseCounted(WebFeature::kActivatedImplicitRootScroller));
 
   container->style()->setProperty(&GetDocument(), "height", "150%", String(),
                                   ASSERT_NO_EXCEPTION);
   Compositor().BeginFrame();
 
-  EXPECT_FALSE(UseCounter::IsCounted(
-      GetDocument(), WebFeature::kActivatedImplicitRootScroller));
+  EXPECT_FALSE(
+      GetDocument().IsUseCounted(WebFeature::kActivatedImplicitRootScroller));
 }
 
 // Tests use counter for implicit root scroller. Ensure it's counted on a
@@ -2042,8 +2020,8 @@ TEST_F(ImplicitRootScrollerSimTest, UseCounterPositive) {
   ASSERT_EQ(container,
             GetDocument().GetRootScrollerController().EffectiveRootScroller());
 
-  EXPECT_TRUE(UseCounter::IsCounted(
-      GetDocument(), WebFeature::kActivatedImplicitRootScroller));
+  EXPECT_TRUE(
+      GetDocument().IsUseCounted(WebFeature::kActivatedImplicitRootScroller));
 
   container->style()->setProperty(&GetDocument(), "height", "150%", String(),
                                   ASSERT_NO_EXCEPTION);
@@ -2052,8 +2030,8 @@ TEST_F(ImplicitRootScrollerSimTest, UseCounterPositive) {
   ASSERT_NE(container,
             GetDocument().GetRootScrollerController().EffectiveRootScroller());
 
-  EXPECT_TRUE(UseCounter::IsCounted(
-      GetDocument(), WebFeature::kActivatedImplicitRootScroller));
+  EXPECT_TRUE(
+      GetDocument().IsUseCounted(WebFeature::kActivatedImplicitRootScroller));
 }
 
 // Tests use counter for implicit root scroller. Ensure it's counted on a
@@ -2093,8 +2071,8 @@ TEST_F(ImplicitRootScrollerSimTest, UseCounterPositiveAfterLoad) {
   ASSERT_NE(container,
             GetDocument().GetRootScrollerController().EffectiveRootScroller());
 
-  EXPECT_FALSE(UseCounter::IsCounted(
-      GetDocument(), WebFeature::kActivatedImplicitRootScroller));
+  EXPECT_FALSE(
+      GetDocument().IsUseCounted(WebFeature::kActivatedImplicitRootScroller));
 
   container->style()->setProperty(&GetDocument(), "height", "100%", String(),
                                   ASSERT_NO_EXCEPTION);
@@ -2103,8 +2081,8 @@ TEST_F(ImplicitRootScrollerSimTest, UseCounterPositiveAfterLoad) {
   ASSERT_EQ(container,
             GetDocument().GetRootScrollerController().EffectiveRootScroller());
 
-  EXPECT_TRUE(UseCounter::IsCounted(
-      GetDocument(), WebFeature::kActivatedImplicitRootScroller));
+  EXPECT_TRUE(
+      GetDocument().IsUseCounted(WebFeature::kActivatedImplicitRootScroller));
 }
 
 // Tests that if we have multiple valid candidates for implicit promotion, we
@@ -2331,15 +2309,15 @@ TEST_F(ImplicitRootScrollerSimTest,
 
   // Simulate hiding the top controls. The root scroller should remain valid at
   // the new height.
-  WebView().GetPage()->GetBrowserControls().SetShownRatio(0);
-  WebView().ResizeWithBrowserControls(IntSize(800, 650), 50, 0, false);
+  WebView().GetPage()->GetBrowserControls().SetShownRatio(0, 0);
+  WebView().ResizeWithBrowserControls(IntSize(800, 650), 50, 50, false);
   Compositor().BeginFrame();
   EXPECT_EQ(container,
             GetDocument().GetRootScrollerController().EffectiveRootScroller());
 
   // Simulate showing the top controls. The root scroller should remain valid.
-  WebView().GetPage()->GetBrowserControls().SetShownRatio(1);
-  WebView().ResizeWithBrowserControls(IntSize(800, 600), 50, 0, true);
+  WebView().GetPage()->GetBrowserControls().SetShownRatio(1, 1);
+  WebView().ResizeWithBrowserControls(IntSize(800, 600), 50, 50, true);
   Compositor().BeginFrame();
   EXPECT_EQ(container,
             GetDocument().GetRootScrollerController().EffectiveRootScroller());
@@ -2360,9 +2338,9 @@ TEST_F(ImplicitRootScrollerSimTest,
   EXPECT_EQ(container,
             GetDocument().GetRootScrollerController().EffectiveRootScroller());
   EXPECT_EQ(ToLayoutBox(container->GetLayoutObject())->Size().Height(), 600);
-  WebView().SetZoomLevel(WebView::ZoomFactorToZoomLevel(2.0));
-  WebView().GetPage()->GetBrowserControls().SetShownRatio(0);
-  WebView().ResizeWithBrowserControls(IntSize(800, 650), 50, 0, false);
+  WebView().SetZoomLevel(PageZoomFactorToZoomLevel(2.0));
+  WebView().GetPage()->GetBrowserControls().SetShownRatio(0, 0);
+  WebView().ResizeWithBrowserControls(IntSize(800, 650), 50, 50, false);
   Compositor().BeginFrame();
   EXPECT_EQ(container->clientHeight(), 325);
   EXPECT_EQ(container,
@@ -2555,6 +2533,206 @@ TEST_F(ImplicitRootScrollerSimTest, PromotionChangesLayoutSize) {
       << "Once loaded, the iframe should be promoted.";
 }
 
+// Tests that bottom-fixed objects inside of an iframe root scroller and frame
+// are marked as being affected by top controls movement. Those inside a
+// non-rootScroller iframe should not be marked as such.
+TEST_F(ImplicitRootScrollerSimTest, BottomFixedAffectedByTopControls) {
+  WebView().ResizeWithBrowserControls(IntSize(800, 650), 50, 0, false);
+  SimRequest main_request("https://example.com/test.html", "text/html");
+  SimRequest child_request1("https://example.com/child1.html", "text/html");
+  SimRequest child_request2("https://example.com/child2.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  main_request.Complete(R"HTML(
+          <!DOCTYPE html>
+          <style>
+            ::-webkit-scrollbar {
+              width: 0px;
+              height: 0px;
+            }
+            body, html {
+              width: 100%;
+              height: 100%;
+              margin: 0px;
+            }
+            #container1 {
+              width: 100%;
+              height: 100%;
+              border: 0;
+            }
+            #container2 {
+              position: absolute;
+              width: 10px;
+              height: 10px;
+              left: 100px;
+              top: 100px;
+              border: 0;
+            }
+            #fixed {
+              position: fixed;
+              bottom: 10px;
+              left: 10px;
+              width: 10px;
+              height: 10px;
+              background-color: red;
+            }
+          </style>
+          <iframe id="container1" src="child1.html">
+          </iframe>
+          <iframe id="container2" src="child2.html">
+          </iframe>
+          <div id="fixed"></div>
+      )HTML");
+  child_request1.Complete(R"HTML(
+        <!DOCTYPE html>
+        <style>
+          body {
+            height: 1000px;
+          }
+          #fixed {
+            width: 50px;
+            height: 50px;
+            position: fixed;
+            bottom: 0px;
+            left: 0px;
+          }
+        </style>
+        <div id="fixed"></div>
+  )HTML");
+  child_request2.Complete(R"HTML(
+        <!DOCTYPE html>
+        <style>
+          body {
+            height: 1000px;
+          }
+          #fixed {
+            width: 50px;
+            height: 50px;
+            position: fixed;
+            bottom: 0px;
+            left: 0px;
+          }
+        </style>
+        <div id="fixed"></div>
+  )HTML");
+
+  Compositor().BeginFrame();
+
+  Element* container1 = GetDocument().getElementById("container1");
+  Element* container2 = GetDocument().getElementById("container2");
+  ASSERT_EQ(container1,
+            GetDocument().GetRootScrollerController().EffectiveRootScroller())
+      << "The #container1 iframe must be promoted.";
+
+  Document* child1_document =
+      To<HTMLFrameOwnerElement>(container1)->contentDocument();
+  Document* child2_document =
+      To<HTMLFrameOwnerElement>(container2)->contentDocument();
+  LayoutObject* fixed =
+      GetDocument().getElementById("fixed")->GetLayoutObject();
+  LayoutObject* fixed1 =
+      child1_document->getElementById("fixed")->GetLayoutObject();
+  LayoutObject* fixed2 =
+      child2_document->getElementById("fixed")->GetLayoutObject();
+
+  EXPECT_TRUE(fixed->FirstFragment()
+                  .ContentsProperties()
+                  .Transform()
+                  .IsAffectedByOuterViewportBoundsDelta());
+  EXPECT_TRUE(fixed1->FirstFragment()
+                  .ContentsProperties()
+                  .Transform()
+                  .IsAffectedByOuterViewportBoundsDelta());
+  EXPECT_FALSE(fixed2->FirstFragment()
+                   .ContentsProperties()
+                   .Transform()
+                   .IsAffectedByOuterViewportBoundsDelta());
+}
+
+// Ensure that we're using the content box for an iframe. Promotion will cause
+// the content to use the layout size of the parent frame so having padding or
+// a border would cause us to relayout.
+TEST_F(ImplicitRootScrollerSimTest, IframeUsesContentBox) {
+  WebView().ResizeWithBrowserControls(IntSize(800, 600), 0, 0, false);
+  SimRequest main_request("https://example.com/test.html", "text/html");
+  SimRequest child_request("https://example.com/child.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  main_request.Complete(R"HTML(
+          <!DOCTYPE>
+          <style>
+            iframe {
+              position: absolute;
+              top: 0;
+              left: 0;
+              width: 100%;
+              height: 100%;
+              border: none;
+              box-sizing: border-box;
+
+            }
+            body, html {
+              margin: 0;
+              width: 100%;
+              height: 100%;
+              overflow:hidden;
+            }
+
+          </style>
+          <iframe id="container" src="child.html">
+      )HTML");
+  child_request.Complete(R"HTML(
+        <!DOCTYPE html>
+        <style>
+          div {
+            border: 5px solid black;
+            background-color: red;
+            width: 99%;
+            height: 100px;
+          }
+          html {
+            height: 200%;
+          }
+        </style>
+        <div></div>
+  )HTML");
+
+  Compositor().BeginFrame();
+
+  Element* iframe = GetDocument().getElementById("container");
+
+  ASSERT_EQ(iframe,
+            GetDocument().GetRootScrollerController().EffectiveRootScroller())
+      << "The iframe should start off promoted.";
+
+  // Adding padding should cause the iframe to be demoted.
+  {
+    iframe->setAttribute(html_names::kStyleAttr, "padding-left: 20%");
+    Compositor().BeginFrame();
+
+    EXPECT_NE(iframe,
+              GetDocument().GetRootScrollerController().EffectiveRootScroller())
+        << "The iframe should be demoted once it has padding.";
+  }
+
+  // Replacing padding with a border should also ensure the iframe remains
+  // demoted.
+  {
+    iframe->setAttribute(html_names::kStyleAttr, "border: 5px solid black");
+    Compositor().BeginFrame();
+
+    EXPECT_NE(iframe,
+              GetDocument().GetRootScrollerController().EffectiveRootScroller())
+        << "The iframe should be demoted once it has border.";
+  }
+
+  // Removing the border should now cause the iframe to be promoted once again.
+  iframe->setAttribute(html_names::kStyleAttr, "");
+  Compositor().BeginFrame();
+
+  ASSERT_EQ(iframe,
+            GetDocument().GetRootScrollerController().EffectiveRootScroller())
+      << "The iframe should once again be promoted when border is removed";
+}
+
 // Test that we don't promote any elements implicitly if the main document has
 // vertical scrolling.
 TEST_F(ImplicitRootScrollerSimTest, OverflowInMainDocumentRestrictsImplicit) {
@@ -2743,7 +2921,7 @@ TEST_F(ImplicitRootScrollerSimTest, ClippingAncestorPreventsPromotion) {
   Compositor().BeginFrame();
 
   // Each of these style-value pairs should prevent promotion of the iframe.
-  std::vector<std::tuple<String, String>> test_cases = {
+  Vector<std::tuple<String, String>> test_cases = {
       {"overflow", "scroll"},
       {"overflow", "hidden"},
       {"overflow", "auto"},
@@ -2874,11 +3052,13 @@ class RootScrollerHitTest : public RootScrollerSimTest {
   void HideTopControlsWithMaximalScroll() {
     // Do a scroll gesture that hides the top controls and scrolls all the way
     // to the bottom.
-    ASSERT_EQ(1, GetBrowserControls().ShownRatio());
+    ASSERT_EQ(1, GetBrowserControls().TopShownRatio());
+    ASSERT_EQ(1, GetBrowserControls().BottomShownRatio());
     WebView().MainFrameWidget()->ApplyViewportChanges(
-        {gfx::ScrollOffset(), gfx::Vector2dF(), 1, -1,
+        {gfx::ScrollOffset(), gfx::Vector2dF(), 1, false, -1, -1,
          cc::BrowserControlsState::kBoth});
-    ASSERT_EQ(0, GetBrowserControls().ShownRatio());
+    ASSERT_EQ(0, GetBrowserControls().TopShownRatio());
+    ASSERT_EQ(0, GetBrowserControls().BottomShownRatio());
 
     Node* scroller = GetDocument()
                          .GetPage()
@@ -2888,7 +3068,7 @@ class RootScrollerHitTest : public RootScrollerSimTest {
         ToLayoutBox(scroller->GetLayoutObject())->GetScrollableArea();
     scrollable_area->DidScroll(FloatPoint(0, 100000));
 
-    WebView().ResizeWithBrowserControls(IntSize(400, 450), 50, 0, false);
+    WebView().ResizeWithBrowserControls(IntSize(400, 450), 50, 50, false);
 
     Compositor().BeginFrame();
   }
@@ -2898,8 +3078,8 @@ class RootScrollerHitTest : public RootScrollerSimTest {
 // revealed by hiding the URL bar works properly when using a root scroller
 // when the target and scroller are in the same PaintLayer.
 TEST_F(RootScrollerHitTest, HitTestInAreaRevealedByURLBarSameLayer) {
-  WebView().ResizeWithBrowserControls(IntSize(400, 400), 50, 0, true);
-  GetBrowserControls().SetShownRatio(1);
+  WebView().ResizeWithBrowserControls(IntSize(400, 400), 50, 50, true);
+  GetBrowserControls().SetShownRatio(1, 1);
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
 
@@ -2951,8 +3131,8 @@ TEST_F(RootScrollerHitTest, HitTestInAreaRevealedByURLBarSameLayer) {
 // revealed by hiding the URL bar works properly when using a root scroller
 // when the target and scroller are in different PaintLayers.
 TEST_F(RootScrollerHitTest, HitTestInAreaRevealedByURLBarDifferentLayer) {
-  WebView().ResizeWithBrowserControls(IntSize(400, 400), 50, 0, true);
-  GetBrowserControls().SetShownRatio(1);
+  WebView().ResizeWithBrowserControls(IntSize(400, 400), 50, 50, true);
+  GetBrowserControls().SetShownRatio(1, 1);
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
 
@@ -3004,8 +3184,8 @@ TEST_F(RootScrollerHitTest, HitTestInAreaRevealedByURLBarDifferentLayer) {
 // revealed by hiding the URL bar works properly when using a root scroller
 // inside an iframe, when the target and scroller are in different PaintLayers.
 TEST_F(RootScrollerHitTest, HitTestHideURLBarDifferentLayerIframe) {
-  WebView().ResizeWithBrowserControls(IntSize(400, 400), 50, 0, true);
-  GetBrowserControls().SetShownRatio(1);
+  WebView().ResizeWithBrowserControls(IntSize(400, 400), 50, 50, true);
+  GetBrowserControls().SetShownRatio(1, 1);
   SimRequest main_request("https://example.com/test.html", "text/html");
   SimRequest child_request("https://example.com/child.html", "text/html");
 
@@ -3085,8 +3265,8 @@ TEST_F(RootScrollerHitTest, HitTestHideURLBarDifferentLayerIframe) {
 // revealed by hiding the URL bar works properly when using a root scroller
 // inside an iframe, when the target and scroller are in the same PaintLayer.
 TEST_F(RootScrollerHitTest, HitTestHideURLBarSameLayerIframe) {
-  WebView().ResizeWithBrowserControls(IntSize(400, 400), 50, 0, true);
-  GetBrowserControls().SetShownRatio(1);
+  WebView().ResizeWithBrowserControls(IntSize(400, 400), 50, 50, true);
+  GetBrowserControls().SetShownRatio(1, 1);
   SimRequest main_request("https://example.com/test.html", "text/html");
   SimRequest child_request("https://example.com/child.html", "text/html");
 

@@ -3,23 +3,18 @@
 // found in the LICENSE file.
 
 /**
- * @constructor
- * @struct
- * @extends {HTMLElement}
- *
- * TODO(yawano): This extern file is a temporary fix. Create or migrate to
- *     proper extern definitions of paper elements.
+ * Interface that Files app uses from <paper-ripple>.
  */
-function PaperRipple() {}
+class PaperRipple extends HTMLElement {
+  simulatedRipple() {}
 
-PaperRipple.prototype.simulatedRipple = function() {};
+  /**
+   * @param {Event=} event
+   */
+  downAction(event) {}
 
-/**
- * @param {Event=} event
- */
-PaperRipple.prototype.downAction = function(event) {};
-
-/**
- * @param {Event=} event
- */
-PaperRipple.prototype.upAction = function(event) {};
+  /**
+   * @param {Event=} event
+   */
+  upAction(event) {}
+}

@@ -184,7 +184,7 @@ TEST_F(BackgroundFetchManagerTest, BlobsExtracted) {
   RequestInit* request_init = RequestInit::Create();
   request_init->setMethod("POST");
   request_init->setBody(blink::ScriptValue(
-      scope.GetScriptState(), ToV8(body_text, scope.GetScriptState())));
+      scope.GetIsolate(), ToV8(body_text, scope.GetScriptState())));
   Request* image_request =
       Request::Create(scope.GetScriptState(), image_url.GetString(),
                       request_init, scope.GetExceptionState());

@@ -10,4 +10,7 @@ source_set("common_constants") {
     "gcp_strings.cc",
     "gcp_strings.h",
   ]
+  deps = [
+    "//build:branding_buildflags",
+  ]
 }

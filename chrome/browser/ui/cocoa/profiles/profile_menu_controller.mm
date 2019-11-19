@@ -21,8 +21,9 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/cocoa/last_active_browser_cocoa.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/signin/core/browser/account_consistency_method.h"
+#include "components/prefs/pref_service.h"
 #include "ui/base/l10n/l10n_util_mac.h"
 #include "ui/gfx/image/image.h"
 
@@ -37,6 +38,13 @@ enum ValidateMenuItemSelector {
   SWITCH_PROFILE_DOCK,
   MAX_VALIDATE_MENU_SELECTOR,
 };
+
+// Check Add Person pref.
+bool IsAddPersonEnabled() {
+  PrefService* service = g_browser_process->local_state();
+  DCHECK(service);
+  return service->GetBoolean(prefs::kBrowserAddPersonEnabled);
+}
 
 }  // namespace
 
@@ -149,18 +157,8 @@ class Observer : public BrowserListObserver, public AvatarMenuObserver {
     if (dock) {
       [item setIndentationLevel:1];
     } else {
-      gfx::Image itemIcon;
-      // Always use the low-res, small default avatars in the menu.
-      AvatarMenu::GetImageForMenuButton(itemData.profile_path, &itemIcon);
-
-      // The image might be too large and need to be resized (i.e. if this is
-      // a signed-in user using the GAIA profile photo).
-      if (itemIcon.Width() > profiles::kAvatarIconWidth ||
-          itemIcon.Height() > profiles::kAvatarIconHeight) {
-        itemIcon = profiles::GetAvatarIconForWebUI(itemIcon, true);
-      }
-      DCHECK(itemIcon.Width() <= profiles::kAvatarIconWidth);
-      DCHECK(itemIcon.Height() <= profiles::kAvatarIconHeight);
+      gfx::Image itemIcon =
+          profiles::GetAvatarIconForNSMenu(itemData.profile_path);
       [item setImage:itemIcon.ToNSImage()];
       [item setState:itemData.active ? NSOnState : NSOffState];
     }
@@ -178,6 +176,9 @@ class Observer : public BrowserListObserver, public AvatarMenuObserver {
     return [menuItem action] != @selector(newProfile:) &&
            [menuItem action] != @selector(editProfile:);
   }
+
+  if (!IsAddPersonEnabled())
+    return [menuItem action] != @selector(newProfile:);
 
   size_t index = avatarMenu_->GetActiveProfileIndex();
   if (avatarMenu_->GetNumberOfItems() <= index) {
@@ -225,11 +226,10 @@ class Observer : public BrowserListObserver, public AvatarMenuObserver {
 }
 
 - (void)initializeMenu {
-  observer_.reset(new ProfileMenuControllerInternal::Observer(self));
-  avatarMenu_.reset(new AvatarMenu(
+  observer_ = std::make_unique<ProfileMenuControllerInternal::Observer>(self);
+  avatarMenu_ = std::make_unique<AvatarMenu>(
       &g_browser_process->profile_manager()->GetProfileAttributesStorage(),
-      observer_.get(),
-      NULL));
+      observer_.get(), nullptr);
   avatarMenu_->RebuildMenu();
 
   [[self menu] addItem:[NSMenuItem separatorItem]];
@@ -239,11 +239,14 @@ class Observer : public BrowserListObserver, public AvatarMenuObserver {
                                         action:@selector(editProfile:)];
   [[self menu] addItem:item];
 
-  [[self menu] addItem:[NSMenuItem separatorItem]];
-  item = [self createItemWithTitle:l10n_util::GetNSStringWithFixup(
-      IDS_PROFILES_CREATE_NEW_PROFILE_OPTION)
-                            action:@selector(newProfile:)];
-  [[self menu] addItem:item];
+  if (IsAddPersonEnabled()) {
+    [[self menu] addItem:[NSMenuItem separatorItem]];
+
+    item = [self createItemWithTitle:l10n_util::GetNSStringWithFixup(
+                                         IDS_PROFILES_CREATE_NEW_PROFILE_OPTION)
+                              action:@selector(newProfile:)];
+    [[self menu] addItem:item];
+  }
 
   [self rebuildMenu];
 }

@@ -4,8 +4,8 @@
 
 #include "chromecast/browser/metrics/cast_metrics_prefs.h"
 
-#include "chromecast/browser/metrics/cast_metrics_service_client.h"
 #include "chromecast/browser/metrics/cast_stability_metrics_provider.h"
+#include "chromecast/metrics/cast_metrics_service_client.h"
 #include "components/metrics/metrics_service.h"
 
 namespace chromecast {

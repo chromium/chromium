@@ -18,8 +18,8 @@
 #include "content/public/browser/frame_service_base.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "media/mojo/interfaces/media_drm_storage.mojom.h"
-#include "mojo/public/cpp/bindings/binding.h"
+#include "media/mojo/mojom/media_drm_storage.mojom.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -31,6 +31,12 @@ class RenderFrameHost;
 }
 
 namespace cdm {
+
+namespace prefs {
+
+extern const char kMediaDrmStorage[];
+
+}  // namespace prefs
 
 // Implements media::mojom::MediaDrmStorage using PrefService.
 // This file is located under components/ so that it can be shared by multiple
@@ -80,11 +86,12 @@ class MediaDrmStorageImpl final
   // |allow_empty_origin_id_cb| is used to determine if an empty origin ID is
   // allowed or not. It is called if |get_origin_id_cb| is unable to return an
   // origin ID.
-  MediaDrmStorageImpl(content::RenderFrameHost* render_frame_host,
-                      PrefService* pref_service,
-                      GetOriginIdCB get_origin_id_cb,
-                      AllowEmptyOriginIdCB allow_empty_origin_id_cb,
-                      media::mojom::MediaDrmStorageRequest request);
+  MediaDrmStorageImpl(
+      content::RenderFrameHost* render_frame_host,
+      PrefService* pref_service,
+      GetOriginIdCB get_origin_id_cb,
+      AllowEmptyOriginIdCB allow_empty_origin_id_cb,
+      mojo::PendingReceiver<media::mojom::MediaDrmStorage> receiver);
 
   // media::mojom::MediaDrmStorage implementation.
   void Initialize(InitializeCallback callback) final;
@@ -125,7 +132,7 @@ class MediaDrmStorageImpl final
   bool is_initialized_ = false;
 
   // NOTE: Weak pointers must be invalidated before all other member variables.
-  base::WeakPtrFactory<MediaDrmStorageImpl> weak_factory_;
+  base::WeakPtrFactory<MediaDrmStorageImpl> weak_factory_{this};
 };
 
 }  // namespace cdm

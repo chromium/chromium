@@ -48,6 +48,10 @@ class ClipboardRecentContent {
   // clipboard's content changed.
   virtual void SuppressClipboardContent() = 0;
 
+  // Clear clipboard content. Different with |SuppressClipboardContent|, this
+  // function will clear content in the clipboard.
+  virtual void ClearClipboardContent() = 0;
+
  protected:
   // GetRecentURLFromClipboard() should never return a URL from a clipboard
   // older than this.

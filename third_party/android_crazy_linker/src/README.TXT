@@ -125,9 +125,6 @@ BUGS & TODOs:
 Testing:
 --------
 
-  If you modify this code, check your changes by running the test suite using:
-
-    cd $NDK
-    tests/run-tests.sh crazy_linker
+  See android_linker_testing.md
 
   See DESIGN.TXT for an overview of the library's design.

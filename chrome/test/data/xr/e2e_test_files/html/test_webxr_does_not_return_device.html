@@ -11,9 +11,8 @@ Tests that WebXR does not report immersive-vr support when OpenVR is disabled.
     <script src="../../../../../../third_party/blink/web_tests/resources/testharness.js"></script>
     <script src="../resources/webxr_e2e.js"></script>
     <script>
-      navigator.xr.supportsSessionMode('immersive-vr').then( () => {
-        assert_unreached("WebXR indicated support for 'immersive-vr'");
-      }, () => {
+      navigator.xr.isSessionSupported('immersive-vr').then((supported) => {
+        assert_false(supported, "WebXR indicated support for 'immersive-vr'");
         done();
       });
     </script>

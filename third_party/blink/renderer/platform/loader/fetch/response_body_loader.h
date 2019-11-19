@@ -26,7 +26,7 @@ class ResponseBodyLoader;
 // See ResponseBodyLoader for details. This is a virtual interface to expose
 // only Drain functions.
 class PLATFORM_EXPORT ResponseBodyLoaderDrainableInterface
-    : public GarbageCollectedFinalized<ResponseBodyLoaderDrainableInterface> {
+    : public GarbageCollected<ResponseBodyLoaderDrainableInterface> {
  public:
   virtual ~ResponseBodyLoaderDrainableInterface() = default;
 

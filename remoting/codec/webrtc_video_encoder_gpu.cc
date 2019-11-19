@@ -60,8 +60,7 @@ WebrtcVideoEncoderGpu::WebrtcVideoEncoderGpu(
     media::VideoCodecProfile codec_profile)
     : state_(UNINITIALIZED),
       codec_profile_(codec_profile),
-      bitrate_filter_(kH264MinimumTargetBitrateKbpsPerMegapixel),
-      weak_factory_(this) {}
+      bitrate_filter_(kH264MinimumTargetBitrateKbpsPerMegapixel) {}
 
 WebrtcVideoEncoderGpu::~WebrtcVideoEncoderGpu() = default;
 
@@ -158,10 +157,13 @@ void WebrtcVideoEncoderGpu::RequireBitstreamBuffers(
   output_buffers_.clear();
 
   for (unsigned int i = 0; i < kWebrtcVideoEncoderGpuOutputBufferCount; ++i) {
-    auto shm = std::make_unique<base::SharedMemory>();
+    auto output_buffer = std::make_unique<OutputBuffer>();
+    output_buffer->region =
+        base::UnsafeSharedMemoryRegion::Create(output_buffer_size_);
+    output_buffer->mapping = output_buffer->region.Map();
     // TODO(gusss): Do we need to handle mapping failure more gracefully?
-    CHECK(shm->CreateAndMapAnonymous(output_buffer_size_));
-    output_buffers_.push_back(std::move(shm));
+    CHECK(output_buffer->IsValid());
+    output_buffers_.push_back(std::move(output_buffer));
   }
 
   for (size_t i = 0; i < output_buffers_.size(); ++i) {
@@ -183,11 +185,11 @@ void WebrtcVideoEncoderGpu::BitstreamBufferReady(
 
   std::unique_ptr<EncodedFrame> encoded_frame =
       std::make_unique<EncodedFrame>();
-  base::SharedMemory* output_buffer =
-      output_buffers_[bitstream_buffer_id].get();
-  DCHECK(output_buffer->memory());
-  encoded_frame->data.assign(reinterpret_cast<char*>(output_buffer->memory()),
-                             metadata.payload_size_bytes);
+  OutputBuffer* output_buffer = output_buffers_[bitstream_buffer_id].get();
+  DCHECK(output_buffer->IsValid());
+  base::span<char> data_span =
+      output_buffer->mapping.GetMemoryAsSpan<char>(metadata.payload_size_bytes);
+  encoded_frame->data.assign(data_span.begin(), data_span.end());
   encoded_frame->key_frame = metadata.key_frame;
   encoded_frame->size = webrtc::DesktopSize(input_coded_size_.width(),
                                             input_coded_size_.height());
@@ -207,6 +209,10 @@ void WebrtcVideoEncoderGpu::BitstreamBufferReady(
 void WebrtcVideoEncoderGpu::NotifyError(
     media::VideoEncodeAccelerator::Error error) {
   LOG(ERROR) << __func__ << " error: " << error;
+}
+
+bool WebrtcVideoEncoderGpu::OutputBuffer::IsValid() {
+  return region.IsValid() && mapping.IsValid();
 }
 
 void WebrtcVideoEncoderGpu::BeginInitialization() {
@@ -240,8 +246,8 @@ void WebrtcVideoEncoderGpu::UseOutputBitstreamBufferId(
   DVLOG(3) << __func__ << " id=" << bitstream_buffer_id;
   video_encode_accelerator_->UseOutputBitstreamBuffer(media::BitstreamBuffer(
       bitstream_buffer_id,
-      output_buffers_[bitstream_buffer_id]->handle().Duplicate(),
-      output_buffer_size_));
+      output_buffers_[bitstream_buffer_id]->region.Duplicate(),
+      output_buffers_[bitstream_buffer_id]->region.GetSize()));
 }
 
 void WebrtcVideoEncoderGpu::RunAnyPendingEncode() {

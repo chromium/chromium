@@ -1,0 +1,50 @@
+supported_platforms: [ANDROID, CHROME_OS]
+
+# Usage quota fully used, should lock the device by usage limit.
+cases {
+  input {
+    usage_limits {
+      effective_day: SUNDAY
+      usage_quota_mins: 120
+    }
+  }
+  current_state {
+    # Sunday, Feb 24th 2019 at 15:00pm
+    time_millis: 1551020400000
+    timezone: "GMT"
+    # 2 hours
+    usage_millis: 7200000
+  }
+  output {
+    is_locked: true
+    active_policy: USAGE_LIMIT
+    # Monday, Feb 25th 2019 at 6:00am
+    next_unlocking_time_millis: 1551074400000
+    next_active_policy: NO_ACTIVE_POLICY
+    remaining_quota_millis: 0
+  }
+}
+
+# Only a fraction of quota used, device should be unlocked.
+cases {
+  input {
+    usage_limits {
+      effective_day: FRIDAY
+      usage_quota_mins: 60
+    }
+  }
+  current_state {
+    # Friday, Feb 22th 2019 at 15:00pm
+    time_millis: 1550847600000
+    timezone: "GMT"
+    # 15 minutes
+    usage_millis: 900000
+  }
+  output {
+    is_locked: false
+    active_policy: NO_ACTIVE_POLICY
+    next_active_policy: USAGE_LIMIT
+    # 45 minutes
+    remaining_quota_millis: 2700000
+  }
+}

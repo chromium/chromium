@@ -20,7 +20,7 @@
 #include "base/stl_util.h"
 #include "base/strings/string16.h"
 #include "base/strings/string_util.h"
-#include "base/synchronization/cancellation_flag.h"
+#include "base/synchronization/atomic_flag.h"
 #include "base/test/scoped_path_override.h"
 #include "base/test/test_reg_util_win.h"
 #include "base/test/test_shortcut_win.h"
@@ -41,6 +41,7 @@ const wchar_t kOtherIco[] = L"other.ico";
 // For registry tests.
 const wchar_t kTestProgid[] = L"TestApp";
 const wchar_t kTestOpenCommand[] = L"C:\\test.exe";
+const wchar_t kTestApplicationName[] = L"Test Application";
 const wchar_t kTestFileTypeName[] = L"Test File Type";
 const wchar_t kTestIconPath[] = L"D:\\test.ico";
 const wchar_t* kTestFileExtensions[] = {
@@ -651,7 +652,7 @@ TEST_F(ShellUtilShortcutTest, ClearShortcutArguments) {
       ShellUtil::CURRENT_USER,
       chrome_exe_,
       false,
-      NULL,
+      nullptr,
       &shortcuts));
   ASSERT_EQ(2u, shortcuts.size());
   std::pair<base::FilePath, base::string16> shortcut3 =
@@ -670,7 +671,7 @@ TEST_F(ShellUtilShortcutTest, ClearShortcutArguments) {
       ShellUtil::CURRENT_USER,
       chrome_exe_,
       true,
-      NULL,
+      nullptr,
       &shortcuts));
   ASSERT_EQ(2u, shortcuts.size());
   shortcut3 = shortcuts[0].first == shortcut3_path ? shortcuts[0] :
@@ -832,11 +833,9 @@ class ShellUtilRegistryTest : public testing::Test {
 
 TEST_F(ShellUtilRegistryTest, AddFileAssociations) {
   // Create file associations.
-  EXPECT_TRUE(ShellUtil::AddFileAssociations(kTestProgid,
-                                             OpenCommand(),
-                                             kTestFileTypeName,
-                                             base::FilePath(kTestIconPath),
-                                             FileExtensions()));
+  EXPECT_TRUE(ShellUtil::AddFileAssociations(
+      kTestProgid, OpenCommand(), kTestApplicationName, kTestFileTypeName,
+      base::FilePath(kTestIconPath), FileExtensions()));
 
   // Ensure that the registry keys have been correctly set.
   base::win::RegKey key;
@@ -846,6 +845,8 @@ TEST_F(ShellUtilRegistryTest, AddFileAssociations) {
       key.Open(HKEY_CURRENT_USER, L"Software\\Classes\\TestApp", KEY_READ));
   EXPECT_EQ(ERROR_SUCCESS, key.ReadValue(L"", &value));
   EXPECT_EQ(L"Test File Type", value);
+  EXPECT_EQ(ERROR_SUCCESS, key.ReadValue(L"FileExtensions", &value));
+  EXPECT_EQ(L".test1;.test2", value);
   ASSERT_EQ(ERROR_SUCCESS,
             key.Open(HKEY_CURRENT_USER,
                      L"Software\\Classes\\TestApp\\DefaultIcon",
@@ -858,6 +859,17 @@ TEST_F(ShellUtilRegistryTest, AddFileAssociations) {
                      KEY_READ));
   EXPECT_EQ(ERROR_SUCCESS, key.ReadValue(L"", &value));
   EXPECT_EQ(L"\"C:\\test.exe\" \"%1\"", value);
+
+  // The Application subkey and values are only required by Windows 8 and later.
+  if (base::win::GetVersion() >= base::win::Version::WIN8) {
+    ASSERT_EQ(ERROR_SUCCESS,
+              key.Open(HKEY_CURRENT_USER,
+                       L"Software\\Classes\\TestApp\\Application", KEY_READ));
+    EXPECT_EQ(ERROR_SUCCESS, key.ReadValue(L"ApplicationName", &value));
+    EXPECT_EQ(L"Test Application", value);
+    EXPECT_EQ(ERROR_SUCCESS, key.ReadValue(L"ApplicationIcon", &value));
+    EXPECT_EQ(L"D:\\test.ico,0", value);
+  }
 
   // .test1 should be default-associated with our test app.
   ASSERT_EQ(
@@ -891,11 +903,9 @@ TEST_F(ShellUtilRegistryTest, AddFileAssociations) {
 
 TEST_F(ShellUtilRegistryTest, DeleteFileAssociations) {
   // Create file associations.
-  EXPECT_TRUE(ShellUtil::AddFileAssociations(kTestProgid,
-                                             OpenCommand(),
-                                             kTestFileTypeName,
-                                             base::FilePath(kTestIconPath),
-                                             FileExtensions()));
+  ASSERT_TRUE(ShellUtil::AddFileAssociations(
+      kTestProgid, OpenCommand(), kTestApplicationName, kTestFileTypeName,
+      base::FilePath(kTestIconPath), FileExtensions()));
 
   // Delete them.
   EXPECT_TRUE(ShellUtil::DeleteFileAssociations(kTestProgid));
@@ -907,14 +917,36 @@ TEST_F(ShellUtilRegistryTest, DeleteFileAssociations) {
       ERROR_SUCCESS,
       key.Open(HKEY_CURRENT_USER, L"Software\\Classes\\TestApp", KEY_READ));
 
-  // We don't currently delete the associations with the particular extensions.
-  // Still, ensure that .test2 is still associated with the other app.
-  // TODO(mgiuca): Update this expectation when we delete the associations.
+  // .test1 and .test2 should no longer be associated with the test app.
+  ASSERT_EQ(ERROR_SUCCESS,
+            key.Open(HKEY_CURRENT_USER,
+                     L"Software\\Classes\\.test1\\OpenWithProgids", KEY_READ));
+  EXPECT_FALSE(key.HasValue(L"TestApp"));
+  ASSERT_EQ(ERROR_SUCCESS,
+            key.Open(HKEY_CURRENT_USER,
+                     L"Software\\Classes\\.test2\\OpenWithProgids", KEY_READ));
+  EXPECT_FALSE(key.HasValue(L"TestApp"));
+
+  // .test1 should no longer have a default handler.
+  ASSERT_EQ(ERROR_SUCCESS, key.Open(HKEY_CURRENT_USER,
+                                    L"Software\\Classes\\.test1", KEY_READ));
+  EXPECT_FALSE(key.HasValue(L""));
+
+  // .test2 should still have the other app as its default handler.
   ASSERT_EQ(
       ERROR_SUCCESS,
       key.Open(HKEY_CURRENT_USER, L"Software\\Classes\\.test2", KEY_READ));
   EXPECT_EQ(ERROR_SUCCESS, key.ReadValue(L"", &value));
   EXPECT_EQ(L"SomeOtherApp", value);
+}
+
+TEST_F(ShellUtilRegistryTest, GetApplicationForProgId) {
+  // Create file associations.
+  ASSERT_TRUE(ShellUtil::AddFileAssociations(
+      kTestProgid, OpenCommand(), kTestApplicationName, kTestFileTypeName,
+      base::FilePath(kTestIconPath), FileExtensions()));
+  base::FilePath exe_path = ShellUtil::GetApplicationPathForProgId(kTestProgid);
+  EXPECT_EQ(exe_path, base::FilePath(kTestOpenCommand));
 }
 
 TEST(ShellUtilTest, BuildAppModelIdBasic) {

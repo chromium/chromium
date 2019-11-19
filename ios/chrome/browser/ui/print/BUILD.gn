@@ -22,26 +22,3 @@ source_set("print") {
   ]
   libs = [ "UIKit.framework" ]
 }
-
-source_set("eg_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
-  testonly = true
-  sources = [
-    "print_controller_egtest.mm",
-  ]
-  deps = [
-    "//ios/chrome/app/strings",
-    "//ios/chrome/browser/ui",
-    "//ios/chrome/test/app:test_support",
-    "//ios/chrome/test/earl_grey:test_support",
-    "//ios/testing/earl_grey:earl_grey_support",
-    "//ios/third_party/earl_grey:earl_grey+link",
-    "//ios/web/public/test/http_server",
-    "//ui/base",
-    "//url",
-  ]
-  libs = [
-    "UIKit.framework",
-    "XCTest.framework",
-  ]
-}

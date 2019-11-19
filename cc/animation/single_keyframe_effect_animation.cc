@@ -62,7 +62,7 @@ scoped_refptr<Animation> SingleKeyframeEffectAnimation::CreateImplInstance()
 }
 
 ElementId SingleKeyframeEffectAnimation::element_id() const {
-  return element_id_of_keyframe_effect(GetKeyframeEffect()->id());
+  return GetKeyframeEffect()->element_id();
 }
 
 void SingleKeyframeEffectAnimation::AttachElement(ElementId element_id) {

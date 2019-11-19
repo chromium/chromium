@@ -1,0 +1,43 @@
+{
+  "layers": [
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF",
+      "paintInvalidations": [
+        {
+          "object": "InlineTextBox 'quote 2'",
+          "rect": [17, 28, 47, 19],
+          "reason": "disappeared"
+        },
+        {
+          "object": "InlineTextBox 'quote 2'",
+          "rect": [16, 28, 47, 19],
+          "reason": "appeared"
+        },
+        {
+          "object": "InlineTextBox '\u003E'",
+          "rect": [64, 28, 9, 19],
+          "reason": "disappeared"
+        },
+        {
+          "object": "InlineTextBox '\u003C'",
+          "rect": [8, 28, 9, 19],
+          "reason": "disappeared"
+        },
+        {
+          "object": "InlineTextBox '}'",
+          "rect": [63, 28, 8, 19],
+          "reason": "appeared"
+        },
+        {
+          "object": "InlineTextBox '{'",
+          "rect": [8, 28, 8, 19],
+          "reason": "appeared"
+        }
+      ]
+    }
+  ]
+}
+

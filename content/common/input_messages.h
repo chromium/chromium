@@ -71,14 +71,11 @@ IPC_ENUM_TRAITS_MIN_MAX_VALUE(blink::WebPointerProperties::Button,
 IPC_ENUM_TRAITS_MAX_VALUE(blink::WebPointerProperties::PointerType,
                           blink::WebPointerProperties::PointerType::kLastEntry)
 IPC_ENUM_TRAITS_MAX_VALUE(blink::WebGestureDevice,
-                          (blink::WebGestureDevice::kWebGestureDeviceCount - 1))
+                          blink::WebGestureDevice::kMaxValue)
 IPC_ENUM_TRAITS_MAX_VALUE(blink::WebInputEvent::DispatchType,
                           blink::WebInputEvent::DispatchType::kLastDispatchType)
-IPC_ENUM_TRAITS_MAX_VALUE(blink::WebGestureEvent::ScrollUnits,
-                          blink::WebGestureEvent::ScrollUnits::kLastScrollUnit)
-IPC_ENUM_TRAITS_MAX_VALUE(
-    blink::WebGestureEvent::InertialPhaseState,
-    blink::WebGestureEvent::InertialPhaseState::kLastPhase)
+IPC_ENUM_TRAITS_MAX_VALUE(blink::WebGestureEvent::InertialPhaseState,
+                          blink::WebGestureEvent::InertialPhaseState::kMaxValue)
 IPC_ENUM_TRAITS_MAX_VALUE(blink::WebTouchPoint::State,
                           blink::WebTouchPoint::State::kStateMax)
 IPC_ENUM_TRAITS_MAX_VALUE(
@@ -122,8 +119,7 @@ IPC_STRUCT_TRAITS_BEGIN(content::SyntheticSmoothScrollGestureParams)
   IPC_STRUCT_TRAITS_MEMBER(speed_in_pixels_s)
   IPC_STRUCT_TRAITS_MEMBER(fling_velocity_x)
   IPC_STRUCT_TRAITS_MEMBER(fling_velocity_y)
-  IPC_STRUCT_TRAITS_MEMBER(precise_scrolling_deltas)
-  IPC_STRUCT_TRAITS_MEMBER(scroll_by_page)
+  IPC_STRUCT_TRAITS_MEMBER(granularity)
 IPC_STRUCT_TRAITS_END()
 
 IPC_STRUCT_TRAITS_BEGIN(content::SyntheticPinchGestureParams)

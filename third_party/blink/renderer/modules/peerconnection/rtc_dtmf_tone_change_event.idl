@@ -26,6 +26,7 @@
 // https://w3c.github.io/webrtc-pc/#rtcdtmftonechangeevent
 
 [
+    Exposed=Window,
     Constructor(DOMString type, RTCDTMFToneChangeEventInit eventInitDict)
 ] interface RTCDTMFToneChangeEvent : Event {
     readonly attribute DOMString tone;

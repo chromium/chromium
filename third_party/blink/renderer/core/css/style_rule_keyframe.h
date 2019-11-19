@@ -16,11 +16,6 @@ class CSSPropertyValueSet;
 
 class StyleRuleKeyframe final : public StyleRuleBase {
  public:
-  static StyleRuleKeyframe* Create(std::unique_ptr<Vector<double>> keys,
-                                   CSSPropertyValueSet* properties) {
-    return MakeGarbageCollected<StyleRuleKeyframe>(std::move(keys), properties);
-  }
-
   StyleRuleKeyframe(std::unique_ptr<Vector<double>>, CSSPropertyValueSet*);
 
   // Exposed to JavaScript.

@@ -54,7 +54,7 @@ class KURL;
 // any response. The request is made independent of any LocalFrame staying
 // alive, and must only stay alive until the transmission has completed
 // successfully (or not -- errors are not propagated back either.) Upon
-// transmission, the the load is cancelled and the loader cancels itself.
+// transmission, the load is cancelled and the loader cancels itself.
 //
 // The ping loader is used by audit pings, beacon transmissions and image loads
 // during page unloading.
@@ -62,22 +62,19 @@ class CORE_EXPORT PingLoader {
   STATIC_ONLY(PingLoader);
 
  public:
-  enum ViolationReportType {
-    kContentSecurityPolicyViolationReport,
-    kXSSAuditorViolationReport
-  };
-
   static void SendLinkAuditPing(LocalFrame*,
                                 const KURL& ping_url,
                                 const KURL& destination_url);
   static void SendViolationReport(LocalFrame*,
                                   const KURL& report_url,
-                                  scoped_refptr<EncodedFormData> report,
-                                  ViolationReportType);
+                                  scoped_refptr<EncodedFormData> report);
 
   // The last argument is guaranteed to be set to the size of payload if
   // these method return true. If these method returns false, the value
   // shouldn't be used.
+  // Note: To ensure the correct Javascript world is used for CSP checks, these
+  // should be called synchronously from the point navigator.sendBeacon is
+  // called.
   static bool SendBeacon(LocalFrame*, const KURL&, const String&);
   static bool SendBeacon(LocalFrame*, const KURL&, DOMArrayBufferView*);
   static bool SendBeacon(LocalFrame*, const KURL&, Blob*);

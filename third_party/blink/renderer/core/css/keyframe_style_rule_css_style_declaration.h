@@ -14,13 +14,6 @@ class CSSKeyframeRule;
 class KeyframeStyleRuleCSSStyleDeclaration final
     : public StyleRuleCSSStyleDeclaration {
  public:
-  static KeyframeStyleRuleCSSStyleDeclaration* Create(
-      MutableCSSPropertyValueSet& property_set,
-      CSSKeyframeRule* parent_rule) {
-    return MakeGarbageCollected<KeyframeStyleRuleCSSStyleDeclaration>(
-        property_set, parent_rule);
-  }
-
   KeyframeStyleRuleCSSStyleDeclaration(MutableCSSPropertyValueSet&,
                                        CSSKeyframeRule*);
 

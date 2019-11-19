@@ -58,24 +58,16 @@ enum {
   kRelationNoOpener = 0x00040000,
 };
 
-class ExceptionState;
-class USVStringOrTrustedURL;
-
 class CORE_EXPORT HTMLAnchorElement : public HTMLElement, public DOMURLUtils {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static HTMLAnchorElement* Create(Document&);
-
+  HTMLAnchorElement(Document& document);
   HTMLAnchorElement(const QualifiedName&, Document&);
   ~HTMLAnchorElement() override;
 
-  // Returns attributes that should be checked against Trusted Types
-  const AttrNameToTrustedType& GetCheckedAttributeTypes() const override;
-
   KURL Href() const;
   void SetHref(const AtomicString&);
-  void setHref(const USVStringOrTrustedURL&, ExceptionState&);
 
   const AtomicString& GetName() const;
 
@@ -105,7 +97,6 @@ class CORE_EXPORT HTMLAnchorElement : public HTMLElement, public DOMURLUtils {
  protected:
   void ParseAttribute(const AttributeModificationParams&) override;
   bool SupportsFocus() const override;
-  bool MatchesEnabledPseudoClass() const override;
 
  private:
   void AttributeChanged(const AttributeModificationParams&) override;
@@ -114,12 +105,12 @@ class CORE_EXPORT HTMLAnchorElement : public HTMLElement, public DOMURLUtils {
   bool IsKeyboardFocusable() const override;
   void DefaultEventHandler(Event&) final;
   bool HasActivationBehavior() const override;
-  void SetActive(bool = true) final;
+  void SetActive(bool active) final;
   void AccessKeyAction(bool send_mouse_events) final;
   bool IsURLAttribute(const Attribute&) const final;
   bool HasLegalLinkAttribute(const QualifiedName&) const final;
   bool CanStartSelection() const final;
-  int tabIndex() const final;
+  int DefaultTabIndex() const final;
   bool draggable() const final;
   bool IsInteractiveContent() const final;
   InsertionNotificationRequest InsertedInto(ContainerNode&) override;
@@ -127,7 +118,7 @@ class CORE_EXPORT HTMLAnchorElement : public HTMLElement, public DOMURLUtils {
 
   unsigned link_relations_ : 31;
   mutable LinkHash cached_visited_link_hash_;
-  TraceWrapperMember<RelList> rel_list_;
+  Member<RelList> rel_list_;
 };
 
 inline LinkHash HTMLAnchorElement::VisitedLinkHash() const {

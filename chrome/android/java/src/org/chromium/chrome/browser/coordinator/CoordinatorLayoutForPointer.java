@@ -20,6 +20,8 @@ import android.view.View;
 public class CoordinatorLayoutForPointer extends CoordinatorLayout {
     public CoordinatorLayoutForPointer(Context context, AttributeSet attrs) {
         super(context, attrs);
+        setFocusable(false);
+        setImportantForAccessibility(IMPORTANT_FOR_ACCESSIBILITY_NO);
     }
 
     private boolean isWithinBoundOfView(int x, int y, View view) {

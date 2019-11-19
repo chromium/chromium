@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_BLUETOOTH_BLUETOOTH_LE_SCAN_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_BLUETOOTH_BLUETOOTH_LE_SCAN_H_
 
+#include "mojo/public/cpp/bindings/receiver_set.h"
 #include "third_party/blink/renderer/modules/bluetooth/bluetooth.h"
 #include "third_party/blink/renderer/modules/bluetooth/bluetooth_le_scan_filter_init.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
@@ -16,12 +17,7 @@ class BluetoothLEScan final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static BluetoothLEScan* Create(
-      mojo::BindingId,
-      Bluetooth*,
-      mojom::blink::WebBluetoothRequestLEScanOptionsPtr);
-
-  BluetoothLEScan(mojo::BindingId,
+  BluetoothLEScan(mojo::ReceiverId,
                   Bluetooth*,
                   mojom::blink::WebBluetoothRequestLEScanOptionsPtr);
 
@@ -36,12 +32,11 @@ class BluetoothLEScan final : public ScriptWrappable {
   void Trace(blink::Visitor*) override;
 
  private:
-  mojo::BindingId id_;
+  mojo::ReceiverId id_;
   HeapVector<Member<BluetoothLEScanFilterInit>> filters_;
   Member<Bluetooth> bluetooth_;
   const bool keep_repeated_devices_;
   const bool accept_all_advertisements_;
-  bool is_active_ = true;
 };
 
 }  // namespace blink

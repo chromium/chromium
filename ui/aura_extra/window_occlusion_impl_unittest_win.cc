@@ -138,7 +138,7 @@ TEST_P(WindowOcclusionWinTest, SimpleOccluded) {
       ComputeOcclusion();
 
   EXPECT_EQ(result.size(), 1U);
-  ASSERT_TRUE(base::ContainsKey(result, window));
+  ASSERT_TRUE(base::Contains(result, window));
   EXPECT_EQ(result[window], aura::Window::OcclusionState::OCCLUDED);
 }
 
@@ -152,7 +152,7 @@ TEST_P(WindowOcclusionWinTest, SimpleVisible) {
       ComputeOcclusion();
 
   EXPECT_EQ(result.size(), 1U);
-  ASSERT_TRUE(base::ContainsKey(result, window));
+  ASSERT_TRUE(base::Contains(result, window));
   EXPECT_EQ(result[window], aura::Window::OcclusionState::VISIBLE);
   Clear();
 }
@@ -170,10 +170,10 @@ TEST_P(WindowOcclusionWinTest, OccludedByAuraWindow) {
 
   EXPECT_EQ(result.size(), 2U);
 
-  ASSERT_TRUE(base::ContainsKey(result, window1));
+  ASSERT_TRUE(base::Contains(result, window1));
   EXPECT_EQ(result[window1], aura::Window::OcclusionState::VISIBLE);
 
-  ASSERT_TRUE(base::ContainsKey(result, window2));
+  ASSERT_TRUE(base::Contains(result, window2));
   EXPECT_EQ(result[window2], aura::Window::OcclusionState::OCCLUDED);
 }
 
@@ -195,7 +195,7 @@ TEST_P(WindowOcclusionWinTest, OccludedByMultipleWindows) {
       ComputeOcclusion();
 
   EXPECT_EQ(result.size(), 1U);
-  ASSERT_TRUE(base::ContainsKey(result, window));
+  ASSERT_TRUE(base::Contains(result, window));
   EXPECT_EQ(result[window], aura::Window::OcclusionState::OCCLUDED);
 }
 
@@ -213,10 +213,10 @@ TEST_P(WindowOcclusionWinTest, PartiallyOverlappedAuraWindows) {
 
   EXPECT_EQ(result.size(), 2U);
 
-  ASSERT_TRUE(base::ContainsKey(result, window1));
+  ASSERT_TRUE(base::Contains(result, window1));
   EXPECT_EQ(result[window1], aura::Window::OcclusionState::VISIBLE);
 
-  ASSERT_TRUE(base::ContainsKey(result, window2));
+  ASSERT_TRUE(base::Contains(result, window2));
   EXPECT_EQ(result[window2], aura::Window::OcclusionState::VISIBLE);
 }
 
@@ -234,7 +234,7 @@ TEST_P(WindowOcclusionWinTest, PartiallyOverlappedWindows) {
 
   EXPECT_EQ(result.size(), 1U);
 
-  ASSERT_TRUE(base::ContainsKey(result, window));
+  ASSERT_TRUE(base::Contains(result, window));
   EXPECT_EQ(result[window], aura::Window::OcclusionState::VISIBLE);
 }
 
@@ -251,7 +251,7 @@ TEST_P(WindowOcclusionWinTest, EmptyWindowIsVisible) {
 
   EXPECT_EQ(result.size(), 1U);
 
-  ASSERT_TRUE(base::ContainsKey(result, window));
+  ASSERT_TRUE(base::Contains(result, window));
   EXPECT_EQ(result[window], aura::Window::OcclusionState::VISIBLE);
 }
 

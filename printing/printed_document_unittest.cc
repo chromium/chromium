@@ -10,12 +10,12 @@ namespace printing {
 
 TEST(PrintedDocumentTest, GetCenteredPageContentRect) {
   scoped_refptr<PrintedDocument> document;
-  PrintSettings settings;
   gfx::Rect page_content;
   const base::string16 name(base::ASCIIToUTF16("name"));
 
   // No centering.
-  document = base::MakeRefCounted<PrintedDocument>(settings, name, 1);
+  document = base::MakeRefCounted<PrintedDocument>(
+      std::make_unique<PrintSettings>(), name, 1);
   gfx::Size page_size = gfx::Size(1200, 1200);
   gfx::Rect page_content_rect = gfx::Rect(0, 0, 400, 1100);
   page_content = document->GetCenteredPageContentRect(
@@ -26,7 +26,8 @@ TEST(PrintedDocumentTest, GetCenteredPageContentRect) {
   EXPECT_EQ(1100, page_content.height());
 
   // X centered.
-  document = base::MakeRefCounted<PrintedDocument>(settings, name, 1);
+  document = base::MakeRefCounted<PrintedDocument>(
+      std::make_unique<PrintSettings>(), name, 1);
   page_size = gfx::Size(500, 1200);
   page_content = document->GetCenteredPageContentRect(
       gfx::Size(1000, 1000), page_size, page_content_rect);
@@ -36,7 +37,8 @@ TEST(PrintedDocumentTest, GetCenteredPageContentRect) {
   EXPECT_EQ(1100, page_content.height());
 
   // Y centered.
-  document = base::MakeRefCounted<PrintedDocument>(settings, name, 1);
+  document = base::MakeRefCounted<PrintedDocument>(
+      std::make_unique<PrintSettings>(), name, 1);
   page_size = gfx::Size(1200, 500);
   page_content = document->GetCenteredPageContentRect(
       gfx::Size(1000, 1000), page_size, page_content_rect);
@@ -46,7 +48,8 @@ TEST(PrintedDocumentTest, GetCenteredPageContentRect) {
   EXPECT_EQ(1100, page_content.height());
 
   // Both X and Y centered.
-  document = base::MakeRefCounted<PrintedDocument>(settings, name, 1);
+  document = base::MakeRefCounted<PrintedDocument>(
+      std::make_unique<PrintSettings>(), name, 1);
   page_size = gfx::Size(500, 500),
   page_content = document->GetCenteredPageContentRect(
       gfx::Size(1000, 1000), page_size, page_content_rect);

@@ -5,7 +5,7 @@
 #include "ui/android/overscroll_refresh_handler.h"
 
 #include "base/android/jni_android.h"
-#include "jni/OverscrollRefreshHandler_jni.h"
+#include "ui/android/ui_android_jni_headers/OverscrollRefreshHandler_jni.h"
 
 using base::android::AttachCurrentThread;
 
@@ -20,10 +20,12 @@ OverscrollRefreshHandler::OverscrollRefreshHandler(
 OverscrollRefreshHandler::~OverscrollRefreshHandler() {}
 
 bool OverscrollRefreshHandler::PullStart(OverscrollAction type,
+                                         float startx,
+                                         float starty,
                                          bool navigate_forward) {
-  return Java_OverscrollRefreshHandler_start(AttachCurrentThread(),
-                                             j_overscroll_refresh_handler_,
-                                             type, navigate_forward);
+  return Java_OverscrollRefreshHandler_start(
+      AttachCurrentThread(), j_overscroll_refresh_handler_, type, startx,
+      starty, navigate_forward);
 }
 
 void OverscrollRefreshHandler::PullUpdate(float x_delta, float y_delta) {

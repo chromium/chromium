@@ -73,15 +73,14 @@ CourierRenderer::CourierRenderer(
       rpc_handle_(rpc_broker_->GetUniqueHandle()),
       remote_renderer_handle_(RpcBroker::kInvalidHandle),
       video_renderer_sink_(video_renderer_sink),
-      clock_(base::DefaultTickClock::GetInstance()),
-      weak_factory_(this) {
+      clock_(base::DefaultTickClock::GetInstance()) {
   VLOG(2) << __func__;
   // Note: The constructor is running on the main thread, but will be destroyed
   // on the media thread. Therefore, all weak pointers must be dereferenced on
   // the media thread.
   const RpcBroker::ReceiveMessageCallback receive_callback =
-      base::Bind(&CourierRenderer::OnMessageReceivedOnMainThread,
-                 media_task_runner_, weak_factory_.GetWeakPtr());
+      base::BindRepeating(&CourierRenderer::OnMessageReceivedOnMainThread,
+                          media_task_runner_, weak_factory_.GetWeakPtr());
   rpc_broker_->RegisterMessageReceiverCallback(rpc_handle_, receive_callback);
 }
 
@@ -102,7 +101,7 @@ CourierRenderer::~CourierRenderer() {
 
 void CourierRenderer::Initialize(MediaResource* media_resource,
                                  RendererClient* client,
-                                 const PipelineStatusCB& init_cb) {
+                                 PipelineStatusCallback init_cb) {
   VLOG(2) << __func__;
   DCHECK(media_task_runner_->BelongsToCurrentThread());
   DCHECK(media_resource);
@@ -110,13 +109,14 @@ void CourierRenderer::Initialize(MediaResource* media_resource,
 
   if (state_ != STATE_UNINITIALIZED) {
     media_task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(init_cb, PIPELINE_ERROR_INVALID_STATE));
+        FROM_HERE,
+        base::BindOnce(std::move(init_cb), PIPELINE_ERROR_INVALID_STATE));
     return;
   }
 
   media_resource_ = media_resource;
   client_ = client;
-  init_workflow_done_callback_ = init_cb;
+  init_workflow_done_callback_ = std::move(init_cb);
 
   state_ = STATE_CREATE_PIPE;
 
@@ -151,14 +151,14 @@ void CourierRenderer::Initialize(MediaResource* media_resource,
 }
 
 void CourierRenderer::SetCdm(CdmContext* cdm_context,
-                             const CdmAttachedCB& cdm_attached_cb) {
+                             CdmAttachedCB cdm_attached_cb) {
   DCHECK(media_task_runner_->BelongsToCurrentThread());
 
   // Media remoting doesn't support encrypted content.
   NOTIMPLEMENTED();
 }
 
-void CourierRenderer::Flush(const base::Closure& flush_cb) {
+void CourierRenderer::Flush(base::OnceClosure flush_cb) {
   VLOG(2) << __func__;
   DCHECK(media_task_runner_->BelongsToCurrentThread());
   DCHECK(!flush_cb_);
@@ -168,7 +168,7 @@ void CourierRenderer::Flush(const base::Closure& flush_cb) {
     // In the error state, this renderer will be shut down shortly. To prevent
     // breaking the pipeline impl, just run the done callback (interface
     // requirement).
-    media_task_runner_->PostTask(FROM_HERE, flush_cb);
+    media_task_runner_->PostTask(FROM_HERE, std::move(flush_cb));
     return;
   }
 
@@ -189,7 +189,7 @@ void CourierRenderer::Flush(const base::Closure& flush_cb) {
     return;
   }
 
-  flush_cb_ = flush_cb;
+  flush_cb_ = std::move(flush_cb);
 
   // Issues RPC_R_FLUSHUNTIL RPC message.
   std::unique_ptr<pb::RpcMessage> rpc(new pb::RpcMessage());
@@ -334,7 +334,8 @@ void CourierRenderer::OnDataPipeCreated(
         main_task_runner_, media_task_runner_, "audio", audio_demuxer_stream,
         rpc_broker_, audio_rpc_handle, std::move(audio),
         std::move(audio_handle),
-        base::Bind(&CourierRenderer::OnFatalError, base::Unretained(this))));
+        base::BindOnce(&CourierRenderer::OnFatalError,
+                       base::Unretained(this))));
   }
 
   // Create video demuxer stream adapter if video is available.
@@ -345,7 +346,8 @@ void CourierRenderer::OnDataPipeCreated(
         main_task_runner_, media_task_runner_, "video", video_demuxer_stream,
         rpc_broker_, video_rpc_handle, std::move(video),
         std::move(video_handle),
-        base::Bind(&CourierRenderer::OnFatalError, base::Unretained(this))));
+        base::BindOnce(&CourierRenderer::OnFatalError,
+                       base::Unretained(this))));
   }
 
   // Checks if data pipe is created successfully.
@@ -423,9 +425,6 @@ void CourierRenderer::OnReceivedRpc(std::unique_ptr<pb::RpcMessage> message) {
     case pb::RpcMessage::RPC_RC_ONWAITINGFORDECRYPTIONKEY:
       VLOG(2) << __func__ << ": Received RPC_RC_ONWAITINGFORDECRYPTIONKEY.";
       client_->OnWaiting(WaitingReason::kNoDecryptionKey);
-      break;
-    case pb::RpcMessage::RPC_RC_ONDURATIONCHANGE:
-      OnDurationChange(std::move(message));
       break;
 
     default:
@@ -581,16 +580,20 @@ void CourierRenderer::OnBufferingStateChange(
           << message->rendererclient_onbufferingstatechange_rpc().state();
   base::Optional<BufferingState> state = ToMediaBufferingState(
       message->rendererclient_onbufferingstatechange_rpc().state());
+  BufferingStateChangeReason reason = BUFFERING_CHANGE_REASON_UNKNOWN;
   if (!state.has_value())
     return;
   if (state == BufferingState::BUFFERING_HAVE_NOTHING) {
     receiver_is_blocked_on_local_demuxers_ = IsWaitingForDataFromDemuxers();
+    reason = receiver_is_blocked_on_local_demuxers_
+                 ? DEMUXER_UNDERFLOW
+                 : REMOTING_NETWORK_CONGESTION;
   } else if (receiver_is_blocked_on_local_demuxers_) {
     receiver_is_blocked_on_local_demuxers_ = false;
     ResetMeasurements();
   }
 
-  client_->OnBufferingStateChange(state.value());
+  client_->OnBufferingStateChange(state.value(), reason);
 }
 
 void CourierRenderer::OnAudioConfigChange(
@@ -700,18 +703,6 @@ void CourierRenderer::OnStatisticsUpdate(
   }
   UpdateVideoStatsQueue(stats.video_frames_decoded, stats.video_frames_dropped);
   client_->OnStatisticsUpdate(stats);
-}
-
-void CourierRenderer::OnDurationChange(
-    std::unique_ptr<pb::RpcMessage> message) {
-  DCHECK(media_task_runner_->BelongsToCurrentThread());
-  DCHECK(message);
-  VLOG(2) << __func__ << ": Received RPC_RC_ONDURATIONCHANGE with usec="
-          << message->integer64_value();
-  if (message->integer64_value() < 0)
-    return;
-  client_->OnDurationChange(
-      base::TimeDelta::FromMicroseconds(message->integer64_value()));
 }
 
 void CourierRenderer::OnFatalError(StopTrigger stop_trigger) {

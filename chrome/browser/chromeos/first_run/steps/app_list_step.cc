@@ -4,8 +4,7 @@
 
 #include "chrome/browser/chromeos/first_run/steps/app_list_step.h"
 
-#include "ash/public/interfaces/first_run_helper.mojom.h"
-#include "base/bind.h"
+#include "ash/public/cpp/first_run_helper.h"
 #include "chrome/browser/chromeos/first_run/first_run_controller.h"
 #include "chrome/browser/chromeos/first_run/step_names.h"
 #include "chrome/browser/ui/webui/chromeos/first_run/first_run_actor.h"
@@ -26,12 +25,8 @@ AppListStep::AppListStep(FirstRunController* controller, FirstRunActor* actor)
 
 void AppListStep::DoShow() {
   // FirstRunController owns this object, so use Unretained.
-  first_run_controller()->first_run_helper_ptr()->GetAppListButtonBounds(
-      base::BindOnce(&AppListStep::ShowWithButtonBounds,
-                     base::Unretained(this)));
-}
-
-void AppListStep::ShowWithButtonBounds(const gfx::Rect& screen_bounds) {
+  gfx::Rect screen_bounds =
+      first_run_controller()->first_run_helper()->GetAppListButtonBounds();
   gfx::Point center = screen_bounds.CenterPoint();
   actor()->AddRoundHole(center.x(), center.y(), kCircleRadius);
   actor()->ShowStepPointingTo(name(), center.x(), center.y(), kCircleRadius);
@@ -39,4 +34,3 @@ void AppListStep::ShowWithButtonBounds(const gfx::Rect& screen_bounds) {
 
 }  // namespace first_run
 }  // namespace chromeos
-

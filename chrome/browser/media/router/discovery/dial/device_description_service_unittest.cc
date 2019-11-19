@@ -6,12 +6,12 @@
 
 #include "base/strings/stringprintf.h"
 #include "base/test/mock_callback.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "chrome/browser/media/router/discovery/dial/device_description_fetcher.h"
 #include "chrome/browser/media/router/discovery/dial/dial_device_data.h"
 #include "chrome/browser/media/router/discovery/dial/parsed_dial_device_description.h"
 #include "chrome/browser/media/router/discovery/dial/safe_dial_device_description_parser.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -55,7 +55,7 @@ class TestDeviceDescriptionService : public DeviceDescriptionService {
   TestDeviceDescriptionService(
       const DeviceDescriptionParseSuccessCallback& success_cb,
       const DeviceDescriptionParseErrorCallback& error_cb)
-      : DeviceDescriptionService(nullptr, success_cb, error_cb) {}
+      : DeviceDescriptionService(success_cb, error_cb) {}
 
   MOCK_METHOD2(ParseDeviceDescription,
                void(const DialDeviceData&, const DialDeviceDescriptionData&));
@@ -105,7 +105,7 @@ class DeviceDescriptionServiceTest : public ::testing::Test {
   }
 
  protected:
-  base::test::ScopedTaskEnvironment environment_;
+  base::test::TaskEnvironment environment_;
   base::MockCallback<
       DeviceDescriptionService::DeviceDescriptionParseSuccessCallback>
       mock_success_cb_;
@@ -222,7 +222,7 @@ TEST_F(DeviceDescriptionServiceTest, TestCleanUpCacheEntries) {
 
   device_description_service_.CleanUpCacheEntries();
   EXPECT_EQ(size_t(1), description_cache_.size());
-  EXPECT_TRUE(base::ContainsKey(description_cache_, device_data_3.label()));
+  EXPECT_TRUE(base::Contains(description_cache_, device_data_3.label()));
 
   AddToCache(device_data_3.label(), ParsedDialDeviceDescription(),
              true /* expired*/);

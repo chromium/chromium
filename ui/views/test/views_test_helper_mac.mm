@@ -7,7 +7,6 @@
 #import <Cocoa/Cocoa.h>
 
 #include "base/bind.h"
-#import "base/mac/scoped_nsautorelease_pool.h"
 #include "ui/base/test/scoped_fake_full_keyboard_access.h"
 #include "ui/base/test/scoped_fake_nswindow_focus.h"
 #include "ui/base/test/scoped_fake_nswindow_fullscreen.h"
@@ -48,10 +47,12 @@ void ViewsTestHelperMac::SetUp() {
   // activations and fullscreen mode. This allows interactive_ui_tests to test
   // the actual OS window activation and fullscreen codepaths.
   if (!ui_controls::IsUIControlsEnabled()) {
-    faked_focus_.reset(new ui::test::ScopedFakeNSWindowFocus);
-    faked_fullscreen_.reset(new ui::test::ScopedFakeNSWindowFullscreen);
+    faked_focus_ = std::make_unique<ui::test::ScopedFakeNSWindowFocus>();
+    faked_fullscreen_ =
+        std::make_unique<ui::test::ScopedFakeNSWindowFullscreen>();
   }
-  faked_full_keyboard_access_.reset(new ui::test::ScopedFakeFullKeyboardAccess);
+  faked_full_keyboard_access_ =
+      std::make_unique<ui::test::ScopedFakeFullKeyboardAccess>();
 }
 
 void ViewsTestHelperMac::TearDown() {
@@ -61,13 +62,14 @@ void ViewsTestHelperMac::TearDown() {
   // this is handled automatically by views::Widget::CloseAllSecondaryWidgets().
   // Unit tests on Aura may create Widgets owned by a RootWindow that gets torn
   // down, but on Mac we need to be more explicit.
-  base::mac::ScopedNSAutoreleasePool pool;  // Ensure the NSArray is released.
-  NSArray* native_windows = [NSApp windows];
-  for (NSWindow* window : native_windows)
-    DCHECK(!Widget::GetWidgetForNativeWindow(window)) << "Widget not closed.";
+  @autoreleasepool {
+    NSArray* native_windows = [NSApp windows];
+    for (NSWindow* window : native_windows)
+      DCHECK(!Widget::GetWidgetForNativeWindow(window)) << "Widget not closed.";
 
-  ui::test::EventGeneratorDelegate::SetFactoryFunction(
-      ui::test::EventGeneratorDelegate::FactoryFunction());
+    ui::test::EventGeneratorDelegate::SetFactoryFunction(
+        ui::test::EventGeneratorDelegate::FactoryFunction());
+  }
 }
 
 }  // namespace views

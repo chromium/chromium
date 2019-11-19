@@ -15,13 +15,14 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
+#include "components/metrics/file_metrics_provider.h"
 #include "components/metrics/metrics_log_uploader.h"
 #include "components/metrics/metrics_service_client.h"
 #include "components/omnibox/browser/omnibox_event_global_tracker.h"
 #include "components/ukm/observers/history_delete_observer.h"
-#include "components/ukm/observers/sync_disable_observer.h"
+#include "components/ukm/observers/ukm_consent_state_observer.h"
 #import "ios/chrome/browser/metrics/incognito_web_state_observer.h"
-#include "ios/web/public/web_state/global_web_state_observer.h"
+#include "ios/web/public/deprecated/global_web_state_observer.h"
 
 class IOSChromeStabilityMetricsProvider;
 class PrefRegistrySimple;
@@ -44,7 +45,7 @@ class UkmService;
 class IOSChromeMetricsServiceClient : public IncognitoWebStateObserver,
                                       public metrics::MetricsServiceClient,
                                       public ukm::HistoryDeleteObserver,
-                                      public ukm::SyncDisableObserver,
+                                      public ukm::UkmConsentStateObserver,
                                       public web::GlobalWebStateObserver {
  public:
   ~IOSChromeMetricsServiceClient() override;
@@ -75,14 +76,15 @@ class IOSChromeMetricsServiceClient : public IncognitoWebStateObserver,
       override;
   base::TimeDelta GetStandardUploadInterval() override;
   void OnRendererProcessCrash() override;
-  bool SyncStateAllowsUkm() override;
+  bool IsUkmAllowedForAllProfiles() override;
   bool AreNotificationListenersEnabledOnAllProfiles() override;
+  std::string GetUploadSigningKey() override;
 
   // ukm::HistoryDeleteObserver:
   void OnHistoryDeleted() override;
 
-  // ukm::SyncDisableObserver:
-  void OnSyncPrefsChanged(bool must_purge) override;
+  // ukm::UkmConsentStateObserver:
+  void OnUkmAllowedStateChanged(bool must_purge) override;
 
   // web::GlobalWebStateObserver:
   void WebStateDidStartLoading(web::WebState* web_state) override;
@@ -93,6 +95,10 @@ class IOSChromeMetricsServiceClient : public IncognitoWebStateObserver,
   void OnIncognitoWebStateRemoved() override;
 
   metrics::EnableMetricsDefault GetMetricsReportingDefaultState() override;
+
+  // Determine what to do with a file based on filename. Visible for testing.
+  static metrics::FileMetricsProvider::FilterAction FilterBrowserMetricsFiles(
+      const base::FilePath& path);
 
  private:
   explicit IOSChromeMetricsServiceClient(

@@ -1,0 +1,21 @@
+Verifies that cookies not within the current path of the request to a domain send Network.*ExtraInfo events with corresponding blocked cookies.
+
+requestWillBeSentExtraInfo blocked cookies: [
+  {
+    "blockedReasons": [
+      "NotOnPath"
+    ],
+    "cookie": {
+      "name": "name",
+      "value": "value",
+      "domain": "cookie.test",
+      "path": "/inspector-protocol/network/resources/set-cookie.php",
+      "expires": -1,
+      "size": 9,
+      "httpOnly": false,
+      "secure": false,
+      "session": true
+    }
+  }
+]
+

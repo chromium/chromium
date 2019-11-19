@@ -14,8 +14,7 @@
 namespace audio {
 
 DeviceNotifier::DeviceNotifier()
-    : task_runner_(base::SequencedTaskRunnerHandle::Get()),
-      weak_factory_(this) {
+    : task_runner_(base::SequencedTaskRunnerHandle::Get()) {
   base::SystemMonitor::Get()->AddDevicesChangedObserver(this);
 }
 
@@ -24,22 +23,24 @@ DeviceNotifier::~DeviceNotifier() {
   base::SystemMonitor::Get()->RemoveDevicesChangedObserver(this);
 }
 
-void DeviceNotifier::Bind(mojom::DeviceNotifierRequest request,
+void DeviceNotifier::Bind(mojo::PendingReceiver<mojom::DeviceNotifier> receiver,
                           TracedServiceRef context_ref) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
-  bindings_.AddBinding(this, std::move(request), std::move(context_ref));
+  receivers_.Add(this, std::move(receiver), std::move(context_ref));
 }
 
-void DeviceNotifier::RegisterListener(mojom::DeviceListenerPtr listener) {
+void DeviceNotifier::RegisterListener(
+    mojo::PendingRemote<mojom::DeviceListener> listener) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
   TRACE_EVENT1("audio", "audio::DeviceNotifier::RegisterListener", "id",
                next_listener_id_);
 
   int listener_id = next_listener_id_++;
-  listener.set_connection_error_handler(
+  auto& new_listener = listeners_[listener_id];
+  new_listener.Bind(std::move(listener));
+  new_listener.set_disconnect_handler(
       base::BindRepeating(&DeviceNotifier::RemoveListener,
                           weak_factory_.GetWeakPtr(), listener_id));
-  listeners_[listener_id] = std::move(listener);
 }
 
 void DeviceNotifier::OnDevicesChanged(

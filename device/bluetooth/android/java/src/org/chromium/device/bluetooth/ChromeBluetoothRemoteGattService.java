@@ -8,6 +8,7 @@ import org.chromium.base.Log;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNIAdditionalImport;
 import org.chromium.base.annotations.JNINamespace;
+import org.chromium.base.annotations.NativeMethods;
 
 import java.util.List;
 
@@ -46,9 +47,6 @@ final class ChromeBluetoothRemoteGattService {
         mNativeBluetoothRemoteGattServiceAndroid = 0;
     }
 
-    // ---------------------------------------------------------------------------------------------
-    // BluetoothRemoteGattServiceAndroid methods implemented in java:
-
     // Implements BluetoothRemoteGattServiceAndroid::Create.
     @CalledByNative
     private static ChromeBluetoothRemoteGattService create(
@@ -76,17 +74,18 @@ final class ChromeBluetoothRemoteGattService {
             // characteristic instances with the same UUID on this service.
             String characteristicInstanceId = mInstanceId + "/"
                     + characteristic.getUuid().toString() + "," + characteristic.getInstanceId();
-            nativeCreateGattRemoteCharacteristic(mNativeBluetoothRemoteGattServiceAndroid,
+            ChromeBluetoothRemoteGattServiceJni.get().createGattRemoteCharacteristic(
+                    mNativeBluetoothRemoteGattServiceAndroid, ChromeBluetoothRemoteGattService.this,
                     characteristicInstanceId, characteristic, mChromeDevice);
         }
     }
 
-    // ---------------------------------------------------------------------------------------------
-    // BluetoothAdapterDevice C++ methods declared for access from java:
-
-    // Binds to BluetoothRemoteGattServiceAndroid::CreateGattRemoteCharacteristic.
-    private native void nativeCreateGattRemoteCharacteristic(
-            long nativeBluetoothRemoteGattServiceAndroid, String instanceId,
-            Wrappers.BluetoothGattCharacteristicWrapper characteristicWrapper,
-            ChromeBluetoothDevice chromeBluetoothDevice);
+    @NativeMethods
+    interface Natives {
+        // Binds to BluetoothRemoteGattServiceAndroid::CreateGattRemoteCharacteristic.
+        void createGattRemoteCharacteristic(long nativeBluetoothRemoteGattServiceAndroid,
+                ChromeBluetoothRemoteGattService caller, String instanceId,
+                Wrappers.BluetoothGattCharacteristicWrapper characteristicWrapper,
+                ChromeBluetoothDevice chromeBluetoothDevice);
+    }
 }

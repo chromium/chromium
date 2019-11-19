@@ -12,7 +12,6 @@
 <translation id="2159915644201199628">Изображението не можа да се декодира: „<ph name="IMAGE_NAME" />“</translation>
 <translation id="2350172092385603347">Беше използвана локализация, но променливата „default_locale“ не беше посочена в манифеста.</translation>
 <translation id="2576842806987913196">Вече присъства CRX файл с това име.</translation>
-<translation id="2753617847762399167">Непозволен път (абсолютен или относителен с (..): „<ph name="IMAGE_PATH" />“</translation>
 <translation id="2785530881066938471">Файлът „<ph name="RELATIVE_PATH" />“ за скрипта за съдържание не можа да бъде зареден. Не е кодиран в UTF-8.</translation>
 <translation id="2903070246402204397">Разширението <ph name="EXTENSION_NAME" /> (идентификационен номер <ph name="EXTENSION_ID" />) е блокирано от администратора. <ph name="ADMIN_INFO" /></translation>
 <translation id="2988488679308982380">Пакетът не можа да се инсталира: „<ph name="ERROR_CODE" />“</translation>
@@ -38,8 +37,6 @@
 <translation id="5436430103864390185">Оформените прозорци не се поддържат.</translation>
 <translation id="5456409301717116725">Разширението включва файла с ключ „<ph name="KEY_PATH" />“. Вероятно не искате да направите това.</translation>
 <translation id="5486326529110362464">Въведената стойност за личен ключ трябва да съществува.</translation>
-<translation id="5627523580512561598">разширението „<ph name="EXTENSION_NAME" />“</translation>
-<translation id="5960890139610307736">ExtensionView: <ph name="EXTENSIONVIEW_TAG_NAME" /></translation>
 <translation id="5972529113578162692">Администраторът на тази машина изисква разширението <ph name="EXTENSION_NAME" /> да е инсталирано. То не може да бъде деинсталирано.</translation>
 <translation id="6027032947578871493">Неизвестен продукт <ph name="PRODUCT_ID" /> от <ph name="VENDOR_NAME" /> (сериен номер <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="6068932090455285721"><ph name="PRODUCT_NAME" /> от доставчик <ph name="VENDOR_ID" /></translation>
@@ -51,7 +48,6 @@
 <translation id="6542618148162044354"><ph name="APP_NAME" /> иска достъп до едно или повече от устройствата ви:</translation>
 <translation id="657064425229075395">Не можа да се зареди фоновият скрипт „<ph name="BACKGROUND_SCRIPT" />“.</translation>
 <translation id="6580950983454333167"><ph name="PRODUCT_NAME" /> от <ph name="VENDOR_NAME" /> (сериен номер: <ph name="SERIAL_NUMBER" />)</translation>
-<translation id="6731255991101203740">Директорията за разархивиране не можа да се създаде: „<ph name="DIRECTORY_PATH" />“</translation>
 <translation id="677806580227005219">Манипулатор на MIME: <ph name="MIMEHANDLERVIEW_TAG_NAME" /></translation>
 <translation id="6840444547062817500">Това разширение се презарежда твърде често.</translation>
 <translation id="7003844668372540529">Неизвестен продукт <ph name="PRODUCT_ID" /> от <ph name="VENDOR_NAME" /></translation>

@@ -1,23 +1,29 @@
-<script src=resources/common.js></script>
+<script src=../priorities/resources/common.js></script>
 <script src=../resources/testharness.js></script>
 <script src=../resources/testharnessreport.js></script>
 
 <script>
   const tests = [
-    {test: async_test('high importance on <link rel=stylesheet>s not fetched by the preload scanner must have no effect on resource load priority'), importance: 'high', expected_priority: kVeryHigh},
-    {test: async_test('low importance on <link rel=stylesheet>s not fetched by the preload scanner must have no effect on resource load priority'), importance: 'low', expected_priority: kVeryHigh},
-    {test: async_test('auto importance on <link rel=stylesheet>s not fetched by the preload scanner must have no effect on resource load priority'), importance: 'auto', expected_priority: kVeryHigh},
-    {test: async_test('invalid importance on <link rel=stylesheet>s not fetched by the preload scanner must have no effect on resource load priority'), importance: 'xyz', expected_priority: kVeryHigh},
-    {test: async_test('missing importance on <link rel=stylesheet>s not fetched by the preload scanner must have no effect on resource load priority'), expected_priority: kVeryHigh}
+    {description: 'high importance on <link rel=stylesheet>s not fetched by the preload scanner must have no effect on resource load priority', importance: 'high', expected_priority: kVeryHigh},
+    {description: 'low importance on <link rel=stylesheet>s not fetched by the preload scanner must have no effect on resource load priority', importance: 'low', expected_priority: kVeryHigh},
+    {description: 'auto importance on <link rel=stylesheet>s not fetched by the preload scanner must have no effect on resource load priority', importance: 'auto', expected_priority: kVeryHigh},
+    {description: 'invalid importance on <link rel=stylesheet>s not fetched by the preload scanner must have no effect on resource load priority', importance: 'xyz', expected_priority: kVeryHigh},
+    {description: 'missing importance on <link rel=stylesheet>s not fetched by the preload scanner must have no effect on resource load priority', expected_priority: kVeryHigh}
   ];
 
   let iteration = 0;
   for (const test of tests) {
-    const link = document.createElement('link');
-    link.rel = 'stylesheet';
-    if (test.importance) link.importance = test.importance;
-    link.href = `../resources/dummy.css?${iteration++}`;
-    link.onload = assert_priority_onload(link.href, test.expected_priority, test.test);
-    document.head.appendChild(link);
+    promise_test(async () => {
+      const link = document.createElement('link');
+      link.rel = 'stylesheet';
+      if (test.importance) link.importance = test.importance;
+
+      const url = new URL(`../resources/square.png?${iteration++}`, location);
+      const priorityPromise = internals.getResourcePriority(url, document);
+      link.href = url;
+      document.head.appendChild(link);
+      const priority = await priorityPromise;
+      assert_equals(priority, test.expected_priority, test.description);
+    });
   }
 </script>

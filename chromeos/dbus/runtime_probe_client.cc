@@ -20,7 +20,7 @@ namespace chromeos {
 
 class RuntimeProbeClientImpl : public RuntimeProbeClient {
  public:
-  RuntimeProbeClientImpl() : weak_ptr_factory_(this) {}
+  RuntimeProbeClientImpl() {}
 
   ~RuntimeProbeClientImpl() override = default;
 
@@ -74,7 +74,7 @@ class RuntimeProbeClientImpl : public RuntimeProbeClient {
 
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.
-  base::WeakPtrFactory<RuntimeProbeClientImpl> weak_ptr_factory_;
+  base::WeakPtrFactory<RuntimeProbeClientImpl> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(RuntimeProbeClientImpl);
 };

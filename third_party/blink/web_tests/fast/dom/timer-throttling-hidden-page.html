@@ -10,7 +10,9 @@
         var firstTimerWhileNotVisible = true;
         var isPageVisible = true;
         var timeoutInterval = 100;
-        var tolerance = 20;
+        // Some of our testing hardware runs very slowly, so we need a generous
+        // tolerance value.
+        var tolerance = 200;
         var timerAlignmentInterval = 1000;
 
         function testTimer()
@@ -19,7 +21,9 @@
             if (!isPageVisible) {
                 if (firstTimerWhileNotVisible) {
                     firstTimerIntervalWhilePageNotVisible = time - previousTime;
-                    var minValue = timeoutInterval - tolerance;
+                    // Even if (tolerance > timeoutInterval), we should never
+                    // get a negative elapsed time, so clamp minValue to zero.
+                    var minValue = Math.max(0, timeoutInterval - tolerance);
                     shouldBeGreaterThanOrEqual("firstTimerIntervalWhilePageNotVisible", minValue.toString());
                     var maxValue = timeoutInterval + timerAlignmentInterval + tolerance;
                     shouldBeTrue("firstTimerIntervalWhilePageNotVisible <= " + maxValue);

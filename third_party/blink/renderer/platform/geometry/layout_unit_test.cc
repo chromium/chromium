@@ -62,6 +62,40 @@ TEST(LayoutUnitTest, LayoutUnitInt) {
   EXPECT_EQ(kIntMaxForLayoutUnit, LayoutUnit(kIntMaxForLayoutUnit + 1).ToInt());
   EXPECT_EQ(kIntMaxForLayoutUnit, LayoutUnit(INT_MAX / 2).ToInt());
   EXPECT_EQ(kIntMaxForLayoutUnit, LayoutUnit(INT_MAX).ToInt());
+
+  // Test the raw unsaturated value
+  EXPECT_EQ(0, LayoutUnit(0).RawValue());
+  // Internally the max number we can represent (without saturating)
+  // is all the (non-sign) bits set except for the bottom n fraction bits
+  const int max_internal_representation =
+      std::numeric_limits<int>::max() ^ ((1 << kLayoutUnitFractionalBits) - 1);
+  EXPECT_EQ(max_internal_representation,
+            LayoutUnit(kIntMaxForLayoutUnit).RawValue());
+  EXPECT_EQ(GetMaxSaturatedSetResultForTesting(),
+            LayoutUnit(kIntMaxForLayoutUnit + 100).RawValue());
+  EXPECT_EQ((kIntMaxForLayoutUnit - 100) << kLayoutUnitFractionalBits,
+            LayoutUnit(kIntMaxForLayoutUnit - 100).RawValue());
+  EXPECT_EQ(GetMinSaturatedSetResultForTesting(),
+            LayoutUnit(kIntMinForLayoutUnit).RawValue());
+  EXPECT_EQ(GetMinSaturatedSetResultForTesting(),
+            LayoutUnit(kIntMinForLayoutUnit - 100).RawValue());
+  // Shifting negative numbers left has undefined behavior, so use
+  // multiplication instead of direct shifting here.
+  EXPECT_EQ((kIntMinForLayoutUnit + 100) * (1 << kLayoutUnitFractionalBits),
+            LayoutUnit(kIntMinForLayoutUnit + 100).RawValue());
+}
+
+TEST(LayoutUnitTest, LayoutUnitUnsigned) {
+  // Test the raw unsaturated value
+  EXPECT_EQ(0, LayoutUnit((unsigned)0).RawValue());
+  EXPECT_EQ(GetMaxSaturatedSetResultForTesting(),
+            LayoutUnit((unsigned)kIntMaxForLayoutUnit).RawValue());
+  const unsigned kOverflowed = kIntMaxForLayoutUnit + 100;
+  EXPECT_EQ(GetMaxSaturatedSetResultForTesting(),
+            LayoutUnit(kOverflowed).RawValue());
+  const unsigned kNotOverflowed = kIntMaxForLayoutUnit - 100;
+  EXPECT_EQ((kIntMaxForLayoutUnit - 100) << kLayoutUnitFractionalBits,
+            LayoutUnit(kNotOverflowed).RawValue());
 }
 
 TEST(LayoutUnitTest, LayoutUnitFloat) {
@@ -318,6 +352,28 @@ TEST(LayoutUnitTest, LayoutMod) {
   EXPECT_EQ(LayoutUnit(), LayoutMod(LayoutUnit(123), 2));
   EXPECT_EQ(LayoutUnit(LayoutUnit::Epsilon()),
             LayoutMod(LayoutUnit(123 + LayoutUnit::Epsilon()), 2));
+}
+
+TEST(LayoutUnitTest, Fraction) {
+  EXPECT_TRUE(LayoutUnit(-1.9f).HasFraction());
+  EXPECT_TRUE(LayoutUnit(-1.6f).HasFraction());
+  EXPECT_TRUE(LayoutUnit::FromFloatRound(-1.51f).HasFraction());
+  EXPECT_TRUE(LayoutUnit::FromFloatRound(-1.5f).HasFraction());
+  EXPECT_TRUE(LayoutUnit::FromFloatRound(-1.49f).HasFraction());
+  EXPECT_FALSE(LayoutUnit(-1.0f).HasFraction());
+  EXPECT_TRUE(LayoutUnit::FromFloatRound(-0.95f).HasFraction());
+  EXPECT_TRUE(LayoutUnit::FromFloatRound(-0.51f).HasFraction());
+  EXPECT_TRUE(LayoutUnit::FromFloatRound(-0.50f).HasFraction());
+  EXPECT_TRUE(LayoutUnit::FromFloatRound(-0.49f).HasFraction());
+  EXPECT_TRUE(LayoutUnit(-0.1f).HasFraction());
+  EXPECT_FALSE(LayoutUnit(-1.0f).HasFraction());
+  EXPECT_FALSE(LayoutUnit(0.0f).HasFraction());
+  EXPECT_TRUE(LayoutUnit(0.1f).HasFraction());
+  EXPECT_TRUE(LayoutUnit::FromFloatRound(0.49f).HasFraction());
+  EXPECT_TRUE(LayoutUnit::FromFloatRound(0.50f).HasFraction());
+  EXPECT_TRUE(LayoutUnit::FromFloatRound(0.51f).HasFraction());
+  EXPECT_TRUE(LayoutUnit(0.95f).HasFraction());
+  EXPECT_FALSE(LayoutUnit(1.0f).HasFraction());
 }
 
 }  // namespace blink

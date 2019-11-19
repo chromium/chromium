@@ -12,6 +12,7 @@
 #include "base/trace_event/trace_event.h"
 #include "components/download/public/background_service/download_params.h"
 #include "components/download/public/background_service/download_service.h"
+#include "components/download/public/background_service/service_config.h"
 #include "components/offline_pages/core/offline_clock.h"
 #include "components/offline_pages/core/offline_event_logger.h"
 #include "components/offline_pages/core/prefetch/prefetch_dispatcher.h"
@@ -39,10 +40,7 @@ PrefetchDownloaderImpl::PrefetchDownloaderImpl(
     download::DownloadService* download_service,
     version_info::Channel channel,
     PrefService* prefs)
-    : download_service_(download_service),
-      channel_(channel),
-      prefs_(prefs),
-      weak_ptr_factory_(this) {
+    : download_service_(download_service), channel_(channel), prefs_(prefs) {
   DCHECK(download_service);
 }
 
@@ -120,6 +118,7 @@ void PrefetchDownloaderImpl::StartDownload(const std::string& download_id,
   params.scheduling_params.cancel_time =
       OfflineTimeNow() + kPrefetchDownloadLifetime;
   params.request_params.url = PrefetchDownloadURL(download_location, channel_);
+  params.request_params.require_safety_checks = false;
 
   std::string experiment_header = PrefetchExperimentHeader();
   if (!experiment_header.empty()) {
@@ -215,6 +214,10 @@ void PrefetchDownloaderImpl::OnDownloadFailed(const std::string& download_id) {
   prefetch_service_->GetLogger()->RecordActivity(
       "Downloader: Download failed, download_id=" + download_id);
   NotifyDispatcher(prefetch_service_, result);
+}
+
+int PrefetchDownloaderImpl::GetMaxConcurrentDownloads() {
+  return download_service_->GetConfig().GetMaxConcurrentDownloads();
 }
 
 void PrefetchDownloaderImpl::OnStartDownload(

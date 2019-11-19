@@ -32,6 +32,18 @@ Polymer({
         return map;
       },
     },
+
+    // <if expr="chromeos">
+    /**
+     * TODO(crbug.com/950007): Remove when SplitSettings is the default because
+     * CUPS printers will exist only in the OS settings page.
+     * @private
+     */
+    showCupsPrinters_: {
+      type: Boolean,
+      value: () => loadTimeData.getBoolean('showOSSettings'),
+    }
+    // </if>
   },
 
   // <if expr="chromeos">

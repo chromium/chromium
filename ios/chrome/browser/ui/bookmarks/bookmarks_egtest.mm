@@ -2,12 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import <EarlGrey/EarlGrey.h>
 #import <UIKit/UIKit.h>
 #import <XCTest/XCTest.h>
 #include <vector>
 
+#include "base/format_macros.h"
 #include "base/ios/ios_util.h"
+#include "base/mac/foundation_util.h"
 #include "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #include "base/test/scoped_feature_list.h"
@@ -19,21 +20,19 @@
 #include "ios/chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/pref_names.h"
-#import "ios/chrome/browser/ui/authentication/cells/signin_promo_view.h"
+#import "ios/chrome/browser/ui/authentication/cells/signin_promo_view_constants.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui.h"
 #import "ios/chrome/browser/ui/authentication/signin_earlgrey_utils.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_path_cache.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_ui_constants.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_utils_ios.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_constants.h"
+#import "ios/chrome/browser/ui/table_view/feature_flags.h"
 #import "ios/chrome/browser/ui/table_view/table_view_navigation_controller_constants.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_constants.h"
 #include "ios/chrome/browser/ui/util/ui_util.h"
-#import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #include "ios/chrome/grit/ios_strings.h"
-#import "ios/chrome/test/app/bookmarks_test_util.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
-#import "ios/chrome/test/app/tab_test_util.h"
 #import "ios/chrome/test/earl_grey/accessibility_util.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
@@ -41,7 +40,7 @@
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/public/provider/chrome/browser/signin/fake_chrome_identity.h"
 #import "ios/public/provider/chrome/browser/signin/fake_chrome_identity_service.h"
-#include "ios/web/public/features.h"
+#import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ios/web/public/test/http_server/http_server.h"
 #include "ios/web/public/test/http_server/http_server_util.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -105,8 +104,8 @@ id<GREYMatcher> NavigateBackButtonTo(NSString* previousViewControllerLabel) {
       grey_anyOf(grey_accessibilityLabel(previousViewControllerLabel),
                  grey_accessibilityLabel(@"Back"), nil);
 
-  return grey_allOf(grey_kindOfClass([UIButton class]),
-                    grey_ancestor(grey_kindOfClass([UINavigationBar class])),
+  return grey_allOf(grey_kindOfClassName(@"UIButton"),
+                    grey_ancestor(grey_kindOfClassName(@"UINavigationBar")),
                     buttonLabelMatcher, nil);
 }
 
@@ -173,15 +172,13 @@ id<GREYMatcher> SearchIconButton() {
   [super setUp];
 
   [ChromeEarlGrey waitForBookmarksToFinishLoading];
-  GREYAssert(chrome_test_util::ClearBookmarks(),
-             @"Not all bookmarks were removed.");
+  [ChromeEarlGrey clearBookmarks];
 }
 
 // Tear down called once per test.
 - (void)tearDown {
   [super tearDown];
-  GREYAssert(chrome_test_util::ClearBookmarks(),
-             @"Not all bookmarks were removed.");
+  [ChromeEarlGrey clearBookmarks];
   // Clear position cache so that Bookmarks starts at the root folder in next
   // test.
   ios::ChromeBrowserState* browser_state =
@@ -211,7 +208,7 @@ id<GREYMatcher> SearchIconButton() {
   [BookmarksTestCase assertBookmarksWithTitle:bookmarkTitle expectedCount:1];
 
   // Verify the star is lit.
-  if (!IsCompactWidth()) {
+  if (![ChromeEarlGrey isCompactWidth]) {
     [[EarlGrey
         selectElementWithMatcher:grey_accessibilityLabel(
                                      l10n_util::GetNSString(IDS_TOOLTIP_STAR))]
@@ -219,7 +216,7 @@ id<GREYMatcher> SearchIconButton() {
   }
 
   // Open the BookmarkEditor.
-  if (IsCompactWidth()) {
+  if ([ChromeEarlGrey isCompactWidth]) {
     [ChromeEarlGreyUI openToolsMenu];
     [[[EarlGrey
         selectElementWithMatcher:grey_allOf(grey_accessibilityID(
@@ -245,7 +242,7 @@ id<GREYMatcher> SearchIconButton() {
   [BookmarksTestCase assertBookmarksWithTitle:bookmarkTitle expectedCount:0];
 
   // Verify the the page is no longer bookmarked.
-  if (IsCompactWidth()) {
+  if ([ChromeEarlGrey isCompactWidth]) {
     [ChromeEarlGreyUI openToolsMenu];
     [[[EarlGrey
         selectElementWithMatcher:grey_allOf(grey_accessibilityID(
@@ -255,6 +252,8 @@ id<GREYMatcher> SearchIconButton() {
         onElementWithMatcher:grey_accessibilityID(
                                  kPopupMenuToolsMenuTableViewId)]
         assertWithMatcher:grey_notNil()];
+    // After veryfing, close the ToolsMenu by tapping on its button.
+    [ChromeEarlGreyUI openToolsMenu];
   } else {
     [[EarlGrey
         selectElementWithMatcher:grey_accessibilityLabel(
@@ -334,7 +333,7 @@ id<GREYMatcher> SearchIconButton() {
 - (void)testKeyboardCommandsRegistered_AddBookmark {
   // Add the bookmark.
   [BookmarksTestCase starCurrentTab];
-  GREYAssertTrue(chrome_test_util::GetRegisteredKeyCommandsCount() > 0,
+  GREYAssertTrue([ChromeEarlGrey registeredKeyCommandCount] > 0,
                  @"Some keyboard commands are registered.");
 }
 
@@ -351,7 +350,7 @@ id<GREYMatcher> SearchIconButton() {
       performAction:grey_tap()];
 
   // Edit the bookmark.
-  if (!IsCompactWidth()) {
+  if (![ChromeEarlGrey isCompactWidth]) {
     [[EarlGrey selectElementWithMatcher:StarButton()] performAction:grey_tap()];
   } else {
     [ChromeEarlGreyUI openToolsMenu];
@@ -364,14 +363,14 @@ id<GREYMatcher> SearchIconButton() {
                                  kPopupMenuToolsMenuTableViewId)]
         performAction:grey_tap()];
   }
-  GREYAssertTrue(chrome_test_util::GetRegisteredKeyCommandsCount() == 0,
+  GREYAssertTrue([ChromeEarlGrey registeredKeyCommandCount] == 0,
                  @"No keyboard commands are registered.");
 }
 
 // Test that swiping left to right navigate back.
 - (void)testNavigateBackWithGesture {
   // Disabled on iPad as there is not "navigate back" gesture.
-  if (IsIPadIdiom()) {
+  if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"Test not applicable for iPad");
   }
 
@@ -380,6 +379,14 @@ id<GREYMatcher> SearchIconButton() {
 #if !TARGET_IPHONE_SIMULATOR
   EARL_GREY_TEST_DISABLED(@"Test disabled on devices.");
 #endif
+
+  if (@available(iOS 13, *)) {
+    // Navigate back side swipe gesture does not work on iOS13 simulator. This
+    // is not specific to Bookmarks. The issue is that the gesture needs to
+    // start offscreen, and EG cannot replicate that.
+    // TODO(crbug.com/978877): Fix the bug in EG and enable the test.
+    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 13.");
+  }
 
   [BookmarksTestCase setupStandardBookmarks];
   [BookmarksTestCase openBookmarks];
@@ -390,7 +397,7 @@ id<GREYMatcher> SearchIconButton() {
   [[EarlGrey
       selectElementWithMatcher:grey_allOf(
                                    grey_accessibilityID(@"Mobile Bookmarks"),
-                                   grey_kindOfClass([UITableViewCell class]),
+                                   grey_kindOfClassName(@"UITableViewCell"),
                                    nil)] assertWithMatcher:grey_nil()];
 
   // Open the first folder, to be able to go back twice on the bookmarks.
@@ -399,12 +406,12 @@ id<GREYMatcher> SearchIconButton() {
       performAction:grey_tap()];
 
   // Back twice using swipe left gesture.
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(@"bookmarksTableView")]
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kBookmarkHomeTableViewIdentifier)]
       performAction:grey_swipeFastInDirectionWithStartPoint(kGREYDirectionRight,
                                                             0.01, 0.5)];
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(@"bookmarksTableView")]
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kBookmarkHomeTableViewIdentifier)]
       performAction:grey_swipeFastInDirectionWithStartPoint(kGREYDirectionRight,
                                                             0.01, 0.5)];
 
@@ -434,7 +441,7 @@ id<GREYMatcher> SearchIconButton() {
       assertWithMatcher:grey_notNil()];
 }
 
-- (void)testBookmarkContextBarInVariousSelectionModes {
+- (void)testBookmarkContextBarInSingleSelectionModes {
   [BookmarksTestCase setupStandardBookmarks];
   [BookmarksTestCase openBookmarks];
   [BookmarksTestCase openMobileBookmarks];
@@ -560,6 +567,29 @@ id<GREYMatcher> SearchIconButton() {
       selectElementWithMatcher:ContextBarTrailingButtonWithLabel(
                                    [BookmarksTestCase contextBarCancelString])]
       assertWithMatcher:grey_allOf(grey_notNil(), grey_enabled(), nil)];
+
+  // Cancel edit mode
+  [BookmarksTestCase closeContextBarEditMode];
+
+  [BookmarksTestCase verifyContextBarInDefaultStateWithSelectEnabled:YES
+                                                    newFolderEnabled:YES];
+}
+
+- (void)testBookmarkContextBarInMultipleSelectionModes {
+  [BookmarksTestCase setupStandardBookmarks];
+  [BookmarksTestCase openBookmarks];
+  [BookmarksTestCase openMobileBookmarks];
+
+  // Verify the context bar is shown.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kBookmarkHomeUIToolbarIdentifier)]
+      assertWithMatcher:grey_notNil()];
+
+  // Change to edit mode
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kBookmarkHomeTrailingButtonIdentifier)]
+      performAction:grey_tap()];
 
   // Multi select URL and folders.
   [[EarlGrey
@@ -687,7 +717,7 @@ id<GREYMatcher> SearchIconButton() {
 // pressed. (iPad specific)
 - (void)DISABLED_testNewFolderNameCommittedWhenKeyboardDismissedOnIpad {
   // Tablet only (handset keyboard does not have "hide keyboard" button).
-  if (!IsIPadIdiom()) {
+  if (![ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"Test not supported on iPhone");
   }
   [BookmarksTestCase setupStandardBookmarks];
@@ -899,8 +929,35 @@ id<GREYMatcher> SearchIconButton() {
       assertWithMatcher:grey_notNil()];
 
   // Verify that the resulting page is an error page.
-  std::string error = net::ErrorToShortString(net::ERR_INVALID_URL);
-  [ChromeEarlGrey waitForWebViewContainingText:error];
+  std::string errorMessage = net::ErrorToShortString(net::ERR_INVALID_URL);
+  [ChromeEarlGrey waitForWebStateContainingText:errorMessage];
+}
+
+- (void)testSwipeDownToDismiss {
+  if (!base::ios::IsRunningOnOrLater(13, 0, 0)) {
+    EARL_GREY_TEST_SKIPPED(@"Test disabled on iOS 12 and lower.");
+  }
+  if (!IsCollectionsCardPresentationStyleEnabled()) {
+    EARL_GREY_TEST_SKIPPED(@"Test disabled on when feature flag is off.");
+  }
+
+  [BookmarksTestCase setupStandardBookmarks];
+  [BookmarksTestCase openBookmarks];
+
+  // Check that the TableView is presented.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kBookmarkHomeTableViewIdentifier)]
+      assertWithMatcher:grey_notNil()];
+
+  // Swipe TableView down.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kBookmarkHomeTableViewIdentifier)]
+      performAction:grey_swipeFastInDirection(kGREYDirectionDown)];
+
+  // Check that the TableView has been dismissed.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kBookmarkHomeTableViewIdentifier)]
+      assertWithMatcher:grey_nil()];
 }
 
 #pragma mark - Helpers
@@ -920,8 +977,7 @@ id<GREYMatcher> SearchIconButton() {
 + (void)openBookmarkFolder:(NSString*)bookmarkFolder {
   [[EarlGrey
       selectElementWithMatcher:grey_allOf(
-                                   grey_kindOfClass(
-                                       NSClassFromString(@"UITableViewCell")),
+                                   grey_kindOfClassName(@"UITableViewCell"),
                                    grey_descendant(grey_text(bookmarkFolder)),
                                    nil)] performAction:grey_tap()];
 }
@@ -1268,18 +1324,18 @@ id<GREYMatcher> SearchIconButton() {
   // Switch to the next Tab and verify "Second URL" appears.
   // TODO(crbug.com/695749): see we if can add switchToNextTab to
   // chrome_test_util so that we don't need to pass tabIndex here.
-  chrome_test_util::SelectTabAtIndexInCurrentMode(tabIndex + 1);
+  [ChromeEarlGrey selectTabAtIndex:tabIndex + 1];
   [[EarlGrey selectElementWithMatcher:OmniboxText(getSecondURL().GetContent())]
       assertWithMatcher:grey_notNil()];
 
   // Switch to the next Tab and verify "First URL" appears.
-  chrome_test_util::SelectTabAtIndexInCurrentMode(tabIndex + 2);
+  [ChromeEarlGrey selectTabAtIndex:tabIndex + 2];
   [[EarlGrey selectElementWithMatcher:OmniboxText(getFirstURL().GetContent())]
       assertWithMatcher:grey_notNil()];
 }
 
 // Verifies that there is |count| children on the bookmark folder with |name|.
-+ (void)assertChildCount:(int)count ofFolderWithName:(NSString*)name {
++ (void)assertChildCount:(size_t)count ofFolderWithName:(NSString*)name {
   base::string16 name16(base::SysNSStringToUTF16(name));
   bookmarks::BookmarkModel* bookmarkModel =
       ios::BookmarkModelFactory::GetForBrowserState(
@@ -1297,10 +1353,10 @@ id<GREYMatcher> SearchIconButton() {
     }
   }
   GREYAssert(folder, @"No folder named %@", name);
-  GREYAssertEqual(
-      folder->child_count(), count,
-      @"Unexpected number of children in folder '%@': %d instead of %d", name,
-      folder->child_count(), count);
+  GREYAssertEqual(folder->children().size(), count,
+                  @"Unexpected number of children in folder '%@': %" PRIuS
+                   " instead of %" PRIuS,
+                  name, folder->children().size(), count);
 }
 
 + (void)verifyContextMenuForSingleURL {
@@ -1458,8 +1514,7 @@ id<GREYMatcher> SearchIconButton() {
 + (void)verifyBookmarkFolderIsSeen:(NSString*)bookmarkFolder {
   [[EarlGrey
       selectElementWithMatcher:grey_allOf(
-                                   grey_kindOfClass(
-                                       NSClassFromString(@"UITableViewCell")),
+                                   grey_kindOfClassName(@"UITableViewCell"),
                                    grey_descendant(grey_text(bookmarkFolder)),
                                    nil)]
       assertWithMatcher:grey_sufficientlyVisible()];
@@ -1467,20 +1522,28 @@ id<GREYMatcher> SearchIconButton() {
 
 // Scroll the bookmarks to top.
 + (void)scrollToTop {
-  // Provide a start points since it prevents some tests timing out under
-  // certain configurations.
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(@"bookmarksTableView")]
-      performAction:grey_scrollToContentEdgeWithStartPoint(kGREYContentEdgeTop,
-                                                           0.5, 0.5)];
+  // On iOS 13 the settings menu appears as a card that can be dismissed with a
+  // downward swipe, for this reason we need to swipe up programatically to
+  // avoid dismissin the VC.
+  GREYPerformBlock scrollToTopBlock =
+      ^BOOL(id element, __strong NSError** error) {
+        UIScrollView* view = base::mac::ObjCCastStrict<UIScrollView>(element);
+        view.contentOffset = CGPointZero;
+        return YES;
+      };
+
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kBookmarkHomeTableViewIdentifier)]
+      performAction:[GREYActionBlock actionWithName:@"Scroll to top"
+                                       performBlock:scrollToTopBlock]];
 }
 
 // Scroll the bookmarks to bottom.
 + (void)scrollToBottom {
   // Provide a start points since it prevents some tests timing out under
   // certain configurations.
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(@"bookmarksTableView")]
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kBookmarkHomeTableViewIdentifier)]
       performAction:grey_scrollToContentEdgeWithStartPoint(
                         kGREYContentEdgeBottom, 0.5, 0.5)];
 }
@@ -1697,15 +1760,13 @@ id<GREYMatcher> SearchIconButton() {
   [super setUp];
 
   [ChromeEarlGrey waitForBookmarksToFinishLoading];
-  GREYAssert(chrome_test_util::ClearBookmarks(),
-             @"Not all bookmarks were removed.");
+  [ChromeEarlGrey clearBookmarks];
 }
 
 // Tear down called once per test.
 - (void)tearDown {
   [super tearDown];
-  GREYAssert(chrome_test_util::ClearBookmarks(),
-             @"Not all bookmarks were removed.");
+  [ChromeEarlGrey clearBookmarks];
   // Clear position cache so that Bookmarks starts at the root folder in next
   // test.
   ios::ChromeBrowserState* browser_state =
@@ -1722,7 +1783,7 @@ id<GREYMatcher> SearchIconButton() {
   // grey_swipeFastInDirectionWithStartPoint doesn't work either and it might
   // fail on devices. Disabling this test under these conditions on the
   // meantime.
-  if (!IsCompactWidth()) {
+  if (![ChromeEarlGrey isCompactWidth]) {
     EARL_GREY_TEST_SKIPPED(@"Test disabled on iPad.");
   }
 
@@ -1772,7 +1833,7 @@ id<GREYMatcher> SearchIconButton() {
   // grey_swipeFastInDirectionWithStartPoint doesn't work either and it might
   // fail on devices. Disabling this test under these conditions on the
   // meantime.
-  if (!IsCompactWidth()) {
+  if (![ChromeEarlGrey isCompactWidth]) {
     EARL_GREY_TEST_SKIPPED(@"Test disabled on iPad on iOS11.");
   }
 
@@ -1787,7 +1848,7 @@ id<GREYMatcher> SearchIconButton() {
 
   // Verify the delete confirmation button shows up.
   [[[EarlGrey selectElementWithMatcher:BookmarksDeleteSwipeButton()]
-      inRoot:grey_kindOfClass(NSClassFromString(@"UITableView"))]
+      inRoot:grey_kindOfClassName(@"UITableView")]
       assertWithMatcher:grey_notNil()];
 
   // Change to edit mode
@@ -1798,7 +1859,7 @@ id<GREYMatcher> SearchIconButton() {
 
   // Verify the delete confirmation button is gone after entering edit mode.
   [[[EarlGrey selectElementWithMatcher:BookmarksDeleteSwipeButton()]
-      inRoot:grey_kindOfClass(NSClassFromString(@"UITableView"))]
+      inRoot:grey_kindOfClassName(@"UITableView")]
       assertWithMatcher:grey_nil()];
 
   // Swipe action on "Second URL".  This should not bring out delete
@@ -1809,7 +1870,7 @@ id<GREYMatcher> SearchIconButton() {
 
   // Verify the delete confirmation button doesn't appear.
   [[[EarlGrey selectElementWithMatcher:BookmarksDeleteSwipeButton()]
-      inRoot:grey_kindOfClass(NSClassFromString(@"UITableView"))]
+      inRoot:grey_kindOfClassName(@"UITableView")]
       assertWithMatcher:grey_nil()];
 
   // Cancel edit mode
@@ -1823,7 +1884,7 @@ id<GREYMatcher> SearchIconButton() {
   // Verify the delete confirmation button shows up. (swipe-to-delete is
   // re-enabled).
   [[[EarlGrey selectElementWithMatcher:BookmarksDeleteSwipeButton()]
-      inRoot:grey_kindOfClass(NSClassFromString(@"UITableView"))]
+      inRoot:grey_kindOfClassName(@"UITableView")]
       assertWithMatcher:grey_notNil()];
 }
 
@@ -2080,14 +2141,7 @@ id<GREYMatcher> SearchIconButton() {
 
 // Verify the Open All functionality on multiple url selection.
 // TODO(crbug.com/816699): Re-enable this test on simulators.
-#if !TARGET_IPHONE_SIMULATOR
-#define MAYBE_testContextMenuForMultipleURLOpenAll \
-  testContextMenuForMultipleURLOpenAll
-#else
-#define MAYBE_testContextMenuForMultipleURLOpenAll \
-  FLAKY_testContextMenuForMultipleURLOpenAll
-#endif
-- (void)MAYBE_testContextMenuForMultipleURLOpenAll {
+- (void)FLAKY_testContextMenuForMultipleURLOpenAll {
   [BookmarksTestCase setupStandardBookmarks];
   [BookmarksTestCase openBookmarks];
   [BookmarksTestCase openMobileBookmarks];
@@ -2098,7 +2152,7 @@ id<GREYMatcher> SearchIconButton() {
 
   // Verify there are 3 normal tabs.
   [ChromeEarlGrey waitForMainTabCount:3];
-  GREYAssertTrue(chrome_test_util::GetIncognitoTabCount() == 0,
+  GREYAssertTrue([ChromeEarlGrey incognitoTabCount] == 0,
                  @"Incognito tab count should be 0");
 
   // Verify the order of open tabs.
@@ -2115,7 +2169,7 @@ id<GREYMatcher> SearchIconButton() {
 
   // Verify there are 6 normal tabs and no new incognito tabs.
   [ChromeEarlGrey waitForMainTabCount:6];
-  GREYAssertTrue(chrome_test_util::GetIncognitoTabCount() == 1,
+  GREYAssertTrue([ChromeEarlGrey incognitoTabCount] == 1,
                  @"Incognito tab count should be 1");
 
   // Close the incognito tab to go back to normal mode.
@@ -2130,14 +2184,7 @@ id<GREYMatcher> SearchIconButton() {
 
 // Verify the Open All in Incognito functionality on multiple url selection.
 // TODO(crbug.com/816699): Re-enable this test on simulators.
-#if !TARGET_IPHONE_SIMULATOR
-#define MAYBE_testContextMenuForMultipleURLOpenAllInIncognito \
-  testContextMenuForMultipleURLOpenAllInIncognito
-#else
-#define MAYBE_testContextMenuForMultipleURLOpenAllInIncognito \
-  FLAKY_testContextMenuForMultipleURLOpenAllInIncognito
-#endif
-- (void)MAYBE_testContextMenuForMultipleURLOpenAllInIncognito {
+- (void)FLAKY_testContextMenuForMultipleURLOpenAllInIncognito {
   [BookmarksTestCase setupStandardBookmarks];
   [BookmarksTestCase openBookmarks];
   [BookmarksTestCase openMobileBookmarks];
@@ -2148,11 +2195,11 @@ id<GREYMatcher> SearchIconButton() {
 
   // Verify there are 3 incognito tabs and no new normal tab.
   [ChromeEarlGrey waitForIncognitoTabCount:3];
-  GREYAssertTrue(chrome_test_util::GetMainTabCount() == 1,
+  GREYAssertTrue([ChromeEarlGrey mainTabCount] == 1,
                  @"Main tab count should be 1");
 
   // Verify the current tab is an incognito tab.
-  GREYAssertTrue(chrome_test_util::IsIncognitoMode(),
+  GREYAssertTrue([ChromeEarlGrey isIncognitoMode],
                  @"Failed to switch to incognito mode");
 
   // Verify the order of open tabs.
@@ -2169,7 +2216,7 @@ id<GREYMatcher> SearchIconButton() {
 
   // Verify there are 5 incognito tabs and no new normal tab.
   [ChromeEarlGrey waitForIncognitoTabCount:5];
-  GREYAssertTrue(chrome_test_util::GetMainTabCount() == 1,
+  GREYAssertTrue([ChromeEarlGrey mainTabCount] == 1,
                  @"Main tab count should be 1");
 
   // Verify the order of open tabs.
@@ -2202,7 +2249,7 @@ id<GREYMatcher> SearchIconButton() {
 
   // Verify there is 1 new normal tab created and no new incognito tab created.
   [ChromeEarlGrey waitForMainTabCount:2];
-  GREYAssertTrue(chrome_test_util::GetIncognitoTabCount() == 0,
+  GREYAssertTrue([ChromeEarlGrey incognitoTabCount] == 0,
                  @"Incognito tab count should be 0");
 
   // Verify "Second URL" appears in the omnibox.
@@ -2222,11 +2269,11 @@ id<GREYMatcher> SearchIconButton() {
 
   // Verify there is 1 incognito tab created and no new normal tab created.
   [ChromeEarlGrey waitForIncognitoTabCount:1];
-  GREYAssertTrue(chrome_test_util::GetMainTabCount() == 2,
+  GREYAssertTrue([ChromeEarlGrey mainTabCount] == 2,
                  @"Main tab count should be 2");
 
   // Verify the current tab is an incognito tab.
-  GREYAssertTrue(chrome_test_util::IsIncognitoMode(),
+  GREYAssertTrue([ChromeEarlGrey isIncognitoMode],
                  @"Failed to switch to incognito mode");
 
   // Verify "French URL" appears in the omnibox.
@@ -2244,13 +2291,13 @@ id<GREYMatcher> SearchIconButton() {
       assertWithMatcher:grey_notNil()];
 
   // Verify the current tab is an incognito tab.
-  GREYAssertTrue(chrome_test_util::IsIncognitoMode(),
+  GREYAssertTrue([ChromeEarlGrey isIncognitoMode],
                  @"Failed to staying at incognito mode");
 
   // Verify no new tabs created.
-  GREYAssertTrue(chrome_test_util::GetIncognitoTabCount() == 1,
+  GREYAssertTrue([ChromeEarlGrey incognitoTabCount] == 1,
                  @"Incognito tab count should be 1");
-  GREYAssertTrue(chrome_test_util::GetMainTabCount() == 2,
+  GREYAssertTrue([ChromeEarlGrey mainTabCount] == 2,
                  @"Main tab count should be 2");
 
   [BookmarksTestCase openBookmarks];
@@ -2266,11 +2313,11 @@ id<GREYMatcher> SearchIconButton() {
 
   // Verify a new incognito tab is created.
   [ChromeEarlGrey waitForIncognitoTabCount:2];
-  GREYAssertTrue(chrome_test_util::GetMainTabCount() == 2,
+  GREYAssertTrue([ChromeEarlGrey mainTabCount] == 2,
                  @"Main tab count should be 2");
 
   // Verify the current tab is an incognito tab.
-  GREYAssertTrue(chrome_test_util::IsIncognitoMode(),
+  GREYAssertTrue([ChromeEarlGrey isIncognitoMode],
                  @"Failed to staying at incognito mode");
 
   // Verify "Second URL" appears in the omnibox.
@@ -2290,11 +2337,11 @@ id<GREYMatcher> SearchIconButton() {
 
   // Verify a new normal tab is created and no incognito tab is created.
   [ChromeEarlGrey waitForMainTabCount:3];
-  GREYAssertTrue(chrome_test_util::GetIncognitoTabCount() == 2,
+  GREYAssertTrue([ChromeEarlGrey incognitoTabCount] == 2,
                  @"Incognito tab count should be 2");
 
   // Verify the current tab is a normal tab.
-  GREYAssertFalse(chrome_test_util::IsIncognitoMode(),
+  GREYAssertFalse([ChromeEarlGrey isIncognitoMode],
                   @"Failed to switch to normal mode");
 
   // Verify "French URL" appears in the omnibox.
@@ -2692,6 +2739,69 @@ id<GREYMatcher> SearchIconButton() {
                                                     newFolderEnabled:YES];
 }
 
+- (void)testSwipeDownToDismissFromPushedVC {
+  if (!base::ios::IsRunningOnOrLater(13, 0, 0)) {
+    EARL_GREY_TEST_SKIPPED(@"Test disabled on iOS 12 and lower.");
+  }
+  if (!IsCollectionsCardPresentationStyleEnabled()) {
+    EARL_GREY_TEST_SKIPPED(@"Test disabled on when feature flag is off.");
+  }
+
+  [BookmarksTestCase setupStandardBookmarks];
+  [BookmarksTestCase openBookmarks];
+  [BookmarksTestCase openMobileBookmarks];
+
+  // Open Edit Bookmark through long press.
+  [[EarlGrey
+      selectElementWithMatcher:TappableBookmarkNodeWithLabel(@"First URL")]
+      performAction:grey_longPress()];
+
+  [[EarlGrey selectElementWithMatcher:ButtonWithAccessibilityLabelId(
+                                          IDS_IOS_BOOKMARK_CONTEXT_MENU_EDIT)]
+      performAction:grey_tap()];
+
+  // Tap on Folder to open folder picker.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(@"Change Folder")]
+      performAction:grey_tap()];
+
+  // Check that Change Folder is presented.
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_accessibilityID(kBookmarkFolderPickerViewContainerIdentifier)]
+      assertWithMatcher:grey_notNil()];
+
+  // Swipe TableView down.
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_accessibilityID(kBookmarkFolderPickerViewContainerIdentifier)]
+      performAction:grey_swipeFastInDirection(kGREYDirectionDown)];
+
+  // Check that the TableView has been dismissed.
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_accessibilityID(kBookmarkFolderPickerViewContainerIdentifier)]
+      assertWithMatcher:grey_nil()];
+
+  // Open EditBookmark again to verify it was cleaned up successsfully.
+  [[EarlGrey
+      selectElementWithMatcher:TappableBookmarkNodeWithLabel(@"First URL")]
+      performAction:grey_longPress()];
+
+  [[EarlGrey selectElementWithMatcher:ButtonWithAccessibilityLabelId(
+                                          IDS_IOS_BOOKMARK_CONTEXT_MENU_EDIT)]
+      performAction:grey_tap()];
+
+  // Swipe EditBookmark down.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kBookmarkEditViewContainerIdentifier)]
+      performAction:grey_swipeFastInDirection(kGREYDirectionDown)];
+
+  // Check that the EditBookmark has been dismissed.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kBookmarkEditViewContainerIdentifier)]
+      assertWithMatcher:grey_nil()];
+}
+
 @end
 
 // Bookmark promo integration tests for Chrome.
@@ -2704,15 +2814,13 @@ id<GREYMatcher> SearchIconButton() {
   [super setUp];
 
   [ChromeEarlGrey waitForBookmarksToFinishLoading];
-  GREYAssert(chrome_test_util::ClearBookmarks(),
-             @"Not all bookmarks were removed.");
+  [ChromeEarlGrey clearBookmarks];
 }
 
 // Tear down called once per test.
 - (void)tearDown {
   [super tearDown];
-  GREYAssert(chrome_test_util::ClearBookmarks(),
-             @"Not all bookmarks were removed.");
+  [ChromeEarlGrey clearBookmarks];
   // Clear position cache so that Bookmarks starts at the root folder in next
   // test.
   ios::ChromeBrowserState* browser_state =
@@ -2800,10 +2908,11 @@ id<GREYMatcher> SearchIconButton() {
       selectElementWithMatcher:grey_allOf(PrimarySignInButton(),
                                           grey_sufficientlyVisible(), nil)]
       performAction:grey_tap()];
-  [[EarlGrey
-      selectElementWithMatcher:grey_allOf(grey_buttonTitle(@"Cancel"),
-                                          grey_sufficientlyVisible(), nil)]
-      performAction:grey_tap()];
+  // Cancel the sign-in operation.
+  [[EarlGrey selectElementWithMatcher:
+                 grey_buttonTitle([l10n_util::GetNSString(
+                     IDS_IOS_ACCOUNT_CONSISTENCY_SETUP_SKIP_BUTTON)
+                     uppercaseString])] performAction:grey_tap()];
 
   // Check that the bookmarks UI reappeared and the cell is still here.
   [BookmarksTestCase verifyPromoAlreadySeen:NO];
@@ -2828,14 +2937,13 @@ id<GREYMatcher> SearchIconButton() {
   [SigninEarlGreyUI
       checkSigninPromoVisibleWithMode:SigninPromoViewModeWarmState];
 
-  // Tap the Sign in button.
+  // Tap the primary button.
   [[EarlGrey
-      selectElementWithMatcher:grey_allOf(grey_accessibilityID(
-                                              kSigninPromoSecondaryButtonId),
+      selectElementWithMatcher:grey_allOf(PrimarySignInButton(),
                                           grey_sufficientlyVisible(), nil)]
       performAction:grey_tap()];
 
-  // Tap the CANCEL button.
+  // Cancel the sign-in operation.
   [[EarlGrey selectElementWithMatcher:
                  grey_buttonTitle([l10n_util::GetNSString(
                      IDS_IOS_ACCOUNT_CONSISTENCY_SETUP_SKIP_BUTTON)
@@ -2869,6 +2977,9 @@ id<GREYMatcher> SearchIconButton() {
       selectElementWithMatcher:grey_allOf(SecondarySignInButton(),
                                           grey_sufficientlyVisible(), nil)]
       performAction:grey_tap()];
+
+  // Select the identity to dismiss the identity chooser.
+  [SigninEarlGreyUI selectIdentityWithEmail:identity.userEmail];
 
   // Tap the CANCEL button.
   [[EarlGrey selectElementWithMatcher:
@@ -2918,15 +3029,13 @@ id<GREYMatcher> SearchIconButton() {
   [super setUp];
 
   [ChromeEarlGrey waitForBookmarksToFinishLoading];
-  GREYAssert(chrome_test_util::ClearBookmarks(),
-             @"Not all bookmarks were removed.");
+  [ChromeEarlGrey clearBookmarks];
 }
 
 // Tear down called once per test.
 - (void)tearDown {
   [super tearDown];
-  GREYAssert(chrome_test_util::ClearBookmarks(),
-             @"Not all bookmarks were removed.");
+  [ChromeEarlGrey clearBookmarks];
 
   // Clear position cache so that Bookmarks starts at the root folder in next
   // test.
@@ -2943,7 +3052,7 @@ id<GREYMatcher> SearchIconButton() {
   [BookmarksTestCase setupStandardBookmarks];
   [BookmarksTestCase openBookmarks];
 
-  chrome_test_util::VerifyAccessibilityForCurrentScreen();
+  [ChromeEarlGrey verifyAccessibilityForCurrentScreen];
 }
 
 // Tests that all elements on mobile bookmarks are accessible.
@@ -2952,7 +3061,7 @@ id<GREYMatcher> SearchIconButton() {
   [BookmarksTestCase openBookmarks];
   [BookmarksTestCase openMobileBookmarks];
 
-  chrome_test_util::VerifyAccessibilityForCurrentScreen();
+  [ChromeEarlGrey verifyAccessibilityForCurrentScreen];
 }
 
 // Tests that all elements on the bookmarks folder Edit page are accessible.
@@ -2976,7 +3085,7 @@ id<GREYMatcher> SearchIconButton() {
       selectElementWithMatcher:grey_accessibilityID(
                                    kBookmarkFolderEditViewContainerIdentifier)]
       assertWithMatcher:grey_notNil()];
-  chrome_test_util::VerifyAccessibilityForCurrentScreen();
+  [ChromeEarlGrey verifyAccessibilityForCurrentScreen];
 }
 
 // Tests that all elements on the bookmarks Edit page are accessible.
@@ -2993,6 +3102,8 @@ id<GREYMatcher> SearchIconButton() {
   [[EarlGrey selectElementWithMatcher:ButtonWithAccessibilityLabelId(
                                           IDS_IOS_BOOKMARK_CONTEXT_MENU_EDIT)]
       performAction:grey_tap()];
+  // TODO(crbug.com/976930): to support EG2 need to use [ChromeEarlGrey
+  // verifyAccessibilityForCurrentScreen]
   chrome_test_util::VerifyAccessibilityForCurrentScreen();
 }
 
@@ -3011,6 +3122,8 @@ id<GREYMatcher> SearchIconButton() {
                                           IDS_IOS_BOOKMARK_CONTEXT_MENU_MOVE)]
       performAction:grey_tap()];
 
+  // TODO(crbug.com/976930): to support EG2 need to use [ChromeEarlGrey
+  // verifyAccessibilityForCurrentScreen]
   chrome_test_util::VerifyAccessibilityForCurrentScreen();
 }
 
@@ -3036,7 +3149,7 @@ id<GREYMatcher> SearchIconButton() {
                                    kBookmarkCreateNewFolderCellIdentifier)]
       performAction:grey_tap()];
 
-  chrome_test_util::VerifyAccessibilityForCurrentScreen();
+  [ChromeEarlGrey verifyAccessibilityForCurrentScreen];
 }
 
 // Tests that all elements on bookmarks Delete and Undo are accessible.
@@ -3065,7 +3178,7 @@ id<GREYMatcher> SearchIconButton() {
   // Wait until it's gone.
   [BookmarksTestCase waitForDeletionOfBookmarkWithTitle:@"Second URL"];
 
-  chrome_test_util::VerifyAccessibilityForCurrentScreen();
+  [ChromeEarlGrey verifyAccessibilityForCurrentScreen];
 }
 
 // Tests that all elements on the bookmarks Select page are accessible.
@@ -3080,7 +3193,7 @@ id<GREYMatcher> SearchIconButton() {
                                    kBookmarkHomeTrailingButtonIdentifier)]
       performAction:grey_tap()];
 
-  chrome_test_util::VerifyAccessibilityForCurrentScreen();
+  [ChromeEarlGrey verifyAccessibilityForCurrentScreen];
 }
 
 @end
@@ -3095,15 +3208,13 @@ id<GREYMatcher> SearchIconButton() {
   [super setUp];
 
   [ChromeEarlGrey waitForBookmarksToFinishLoading];
-  GREYAssert(chrome_test_util::ClearBookmarks(),
-             @"Not all bookmarks were removed.");
+  [ChromeEarlGrey clearBookmarks];
 }
 
 // Tear down called once per test.
 - (void)tearDown {
   [super tearDown];
-  GREYAssert(chrome_test_util::ClearBookmarks(),
-             @"Not all bookmarks were removed.");
+  [ChromeEarlGrey clearBookmarks];
   // Clear position cache so that Bookmarks starts at the root folder in next
   // test.
   ios::ChromeBrowserState* browser_state =
@@ -3313,6 +3424,46 @@ id<GREYMatcher> SearchIconButton() {
                                                     newFolderEnabled:YES];
 }
 
+- (void)testSwipeDownToDismissFromEditFolder {
+  if (!base::ios::IsRunningOnOrLater(13, 0, 0)) {
+    EARL_GREY_TEST_SKIPPED(@"Test disabled on iOS 12 and lower.");
+  }
+  if (!IsCollectionsCardPresentationStyleEnabled()) {
+    EARL_GREY_TEST_SKIPPED(@"Test disabled on when feature flag is off.");
+  }
+
+  [BookmarksTestCase setupStandardBookmarks];
+  [BookmarksTestCase openBookmarks];
+  [BookmarksTestCase openMobileBookmarks];
+
+  // Invoke Move through long press.
+  [[EarlGrey
+      selectElementWithMatcher:TappableBookmarkNodeWithLabel(@"Folder 1.1")]
+      performAction:grey_longPress()];
+
+  [[EarlGrey selectElementWithMatcher:ButtonWithAccessibilityLabelId(
+                                          IDS_IOS_BOOKMARK_CONTEXT_MENU_MOVE)]
+      performAction:grey_tap()];
+
+  // Check that the TableView is presented.
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_accessibilityID(kBookmarkFolderPickerViewContainerIdentifier)]
+      assertWithMatcher:grey_notNil()];
+
+  // Swipe TableView down.
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_accessibilityID(kBookmarkFolderPickerViewContainerIdentifier)]
+      performAction:grey_swipeFastInDirection(kGREYDirectionDown)];
+
+  // Check that the TableView has been dismissed.
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_accessibilityID(kBookmarkFolderPickerViewContainerIdentifier)]
+      assertWithMatcher:grey_nil()];
+}
+
 // Test when current navigating folder is deleted in background, empty
 // background should be shown with context bar buttons disabled.
 - (void)testWhenCurrentFolderDeletedInBackground {
@@ -3392,13 +3543,13 @@ id<GREYMatcher> SearchIconButton() {
 
   // Dismiss the context menu. On non compact width tap the Bookmarks TableView
   // to dismiss, since there might not be a cancel button.
-  if (IsCompactWidth()) {
+  if ([ChromeEarlGrey isCompactWidth]) {
     [[EarlGrey
         selectElementWithMatcher:ButtonWithAccessibilityLabelId(IDS_CANCEL)]
         performAction:grey_tap()];
   } else {
-    [[EarlGrey
-        selectElementWithMatcher:grey_accessibilityID(@"bookmarksTableView")]
+    [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                            kBookmarkHomeTableViewIdentifier)]
         performAction:grey_tap()];
   }
 
@@ -3922,6 +4073,7 @@ id<GREYMatcher> SearchIconButton() {
 
   // Interrupt the folder name editing by entering Folder 1
   [BookmarksTestCase scrollToTop];
+
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(@"Folder 1")]
       performAction:grey_tap()];
   // Come back to Mobile Bookmarks.
@@ -3938,7 +4090,8 @@ id<GREYMatcher> SearchIconButton() {
 
   // Interrupt the folder name editing by tapping on First URL.
   [BookmarksTestCase scrollToTop];
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(@"First URL")]
+
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(@"French URL")]
       performAction:grey_tap()];
   // Reopen bookmarks.
   [BookmarksTestCase openBookmarks];
@@ -4036,15 +4189,13 @@ id<GREYMatcher> SearchIconButton() {
   [super setUp];
 
   [ChromeEarlGrey waitForBookmarksToFinishLoading];
-  GREYAssert(chrome_test_util::ClearBookmarks(),
-             @"Not all bookmarks were removed.");
+  [ChromeEarlGrey clearBookmarks];
 }
 
 // Tear down called once per test.
 - (void)tearDown {
   [super tearDown];
-  GREYAssert(chrome_test_util::ClearBookmarks(),
-             @"Not all bookmarks were removed.");
+  [ChromeEarlGrey clearBookmarks];
   // Clear position cache so that Bookmarks starts at the root folder in next
   // test.
   ios::ChromeBrowserState* browser_state =
@@ -4248,7 +4399,7 @@ id<GREYMatcher> SearchIconButton() {
 
   // Try long press.
   [[EarlGrey
-      selectElementWithMatcher:TappableBookmarkNodeWithLabel(@"First URL")]
+      selectElementWithMatcher:TappableBookmarkNodeWithLabel(@"French URL")]
       performAction:grey_longPress()];
 
   // Verify context menu is not visible.
@@ -4425,7 +4576,7 @@ id<GREYMatcher> SearchIconButton() {
   // grey_swipeFastInDirectionWithStartPoint doesn't work either and it might
   // fail on devices. Disabling this test under these conditions on the
   // meantime.
-  if (!IsCompactWidth()) {
+  if (![ChromeEarlGrey isCompactWidth]) {
     EARL_GREY_TEST_SKIPPED(@"Test disabled on iPad on iOS11.");
   }
 
@@ -4453,7 +4604,7 @@ id<GREYMatcher> SearchIconButton() {
   // grey_swipeFastInDirectionWithStartPoint doesn't work either and it might
   // fail on devices. Disabling this test under these conditions on the
   // meantime.
-  if (!IsCompactWidth()) {
+  if (![ChromeEarlGrey isCompactWidth]) {
     EARL_GREY_TEST_SKIPPED(@"Test disabled on iPad on iOS11.");
   }
 
@@ -4481,8 +4632,7 @@ id<GREYMatcher> SearchIconButton() {
   [BookmarksTestCase openMobileBookmarks];
 
   // Verify search bar is enabled.
-  [[EarlGrey selectElementWithMatcher:grey_kindOfClass(
-                                          NSClassFromString(@"UISearchBar"))]
+  [[EarlGrey selectElementWithMatcher:grey_kindOfClassName(@"UISearchBar")]
       assertWithMatcher:grey_userInteractionEnabled()];
 
   // Change to edit mode
@@ -4492,16 +4642,14 @@ id<GREYMatcher> SearchIconButton() {
       performAction:grey_tap()];
 
   // Verify search bar is disabled.
-  [[EarlGrey selectElementWithMatcher:grey_kindOfClass(
-                                          NSClassFromString(@"UISearchBar"))]
+  [[EarlGrey selectElementWithMatcher:grey_kindOfClassName(@"UISearchBar")]
       assertWithMatcher:grey_not(grey_userInteractionEnabled())];
 
   // Cancel edito mode.
   [BookmarksTestCase closeContextBarEditMode];
 
   // Verify search bar is enabled.
-  [[EarlGrey selectElementWithMatcher:grey_kindOfClass(
-                                          NSClassFromString(@"UISearchBar"))]
+  [[EarlGrey selectElementWithMatcher:grey_kindOfClassName(@"UISearchBar")]
       assertWithMatcher:grey_userInteractionEnabled()];
 }
 

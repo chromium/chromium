@@ -10,14 +10,6 @@
 
 namespace webrtc_logging {
 
-namespace {
-
-inline uint32_t Min3(uint32_t a, uint32_t b, uint32_t c) {
-  return std::min(a, std::min(b, c));
-}
-
-}  // namespace
-
 PartialCircularBuffer::PartialCircularBuffer(void* buffer, uint32_t buffer_size)
     : buffer_data_(reinterpret_cast<BufferData*>(buffer)),
       memory_buffer_size_(buffer_size),
@@ -74,7 +66,7 @@ uint32_t PartialCircularBuffer::Read(void* buffer, uint32_t buffer_size) {
   if (position_ < buffer_data_->wrap_position) {
     uint32_t to_wrap_pos = buffer_data_->wrap_position - position_;
     uint32_t to_eow = buffer_data_->total_written - total_read_;
-    uint32_t to_read = Min3(buffer_size, to_wrap_pos, to_eow);
+    uint32_t to_read = std::min({buffer_size, to_wrap_pos, to_eow});
     memcpy(buffer_uint8, buffer_data_->data + position_, to_read);
     position_ += to_read;
     total_read_ += to_read;
@@ -103,7 +95,7 @@ uint32_t PartialCircularBuffer::Read(void* buffer, uint32_t buffer_size) {
     uint32_t remaining_buffer_size = buffer_size - read;
     uint32_t to_eof = data_size_ - position_;
     uint32_t to_eow = buffer_data_->total_written - total_read_;
-    uint32_t to_read = Min3(remaining_buffer_size, to_eof, to_eow);
+    uint32_t to_read = std::min({remaining_buffer_size, to_eof, to_eow});
     memcpy(buffer_uint8 + read, buffer_data_->data + position_, to_read);
     position_ += to_read;
     total_read_ += to_read;
@@ -128,7 +120,7 @@ uint32_t PartialCircularBuffer::Read(void* buffer, uint32_t buffer_size) {
   uint32_t remaining_buffer_size = buffer_size - read;
   uint32_t to_eob = buffer_data_->end_position - position_;
   uint32_t to_eow = buffer_data_->total_written - total_read_;
-  uint32_t to_read = Min3(remaining_buffer_size, to_eob, to_eow);
+  uint32_t to_read = std::min({remaining_buffer_size, to_eob, to_eow});
   memcpy(buffer_uint8 + read, buffer_data_->data + position_, to_read);
   position_ += to_read;
   total_read_ += to_read;

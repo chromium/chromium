@@ -52,12 +52,18 @@ SHIM_ALWAYS_EXPORT int posix_memalign(void** r, size_t a, size_t s) __THROW {
   return ShimPosixMemalign(r, a, s);
 }
 
+SHIM_ALWAYS_EXPORT size_t malloc_size(void* address) __THROW {
+  return ShimGetSizeEstimate(address, nullptr);
+}
+
+SHIM_ALWAYS_EXPORT size_t malloc_usable_size(void* address) __THROW {
+  return ShimGetSizeEstimate(address, nullptr);
+}
+
 // The default dispatch translation unit has to define also the following
 // symbols (unless they are ultimately routed to the system symbols):
 //   void malloc_stats(void);
 //   int mallopt(int, int);
 //   struct mallinfo mallinfo(void);
-//   size_t malloc_size(void*);
-//   size_t malloc_usable_size(const void*);
 
 }  // extern "C"

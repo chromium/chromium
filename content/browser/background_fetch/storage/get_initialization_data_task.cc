@@ -17,13 +17,12 @@
 #include "content/browser/background_fetch/storage/image_helpers.h"
 #include "content/browser/background_fetch/storage/mark_registration_for_deletion_task.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
-#include "content/common/service_worker/service_worker_utils.h"
+#include "content/common/fetch/fetch_api_request_proto.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
 #include "ui/gfx/image/image.h"
 #include "url/origin.h"
 
 namespace content {
-
 namespace background_fetch {
 
 namespace {
@@ -79,8 +78,7 @@ class GetUIOptionsTask : public InitializationSubTask {
   GetUIOptionsTask(DatabaseTaskHost* host,
                    const SubTaskInit& sub_task_init,
                    base::OnceClosure done_closure)
-      : InitializationSubTask(host, sub_task_init, std::move(done_closure)),
-        weak_factory_(this) {}
+      : InitializationSubTask(host, sub_task_init, std::move(done_closure)) {}
 
   ~GetUIOptionsTask() override = default;
 
@@ -133,7 +131,7 @@ class GetUIOptionsTask : public InitializationSubTask {
     FinishWithError(blink::mojom::BackgroundFetchError::NONE);
   }
 
-  base::WeakPtrFactory<GetUIOptionsTask> weak_factory_;  // Keep as last.
+  base::WeakPtrFactory<GetUIOptionsTask> weak_factory_{this};  // Keep as last.
 };
 
 // Gets the number of completed fetches, the number of active fetches,
@@ -147,8 +145,7 @@ class GetRequestsTask : public InitializationSubTask {
   GetRequestsTask(DatabaseTaskHost* host,
                   const SubTaskInit& sub_task_init,
                   base::OnceClosure done_closure)
-      : InitializationSubTask(host, sub_task_init, std::move(done_closure)),
-        weak_factory_(this) {}
+      : InitializationSubTask(host, sub_task_init, std::move(done_closure)) {}
 
   ~GetRequestsTask() override = default;
 
@@ -240,7 +237,7 @@ class GetRequestsTask : public InitializationSubTask {
 
       auto request_info = base::MakeRefCounted<BackgroundFetchRequestInfo>(
           active_request.request_index(),
-          ServiceWorkerUtils::DeserializeFetchRequestFromString(
+          DeserializeFetchRequestFromString(
               active_request.serialized_request()),
           active_request.request_body_size());
       request_info->SetDownloadGuid(active_request.download_guid());
@@ -277,7 +274,7 @@ class GetRequestsTask : public InitializationSubTask {
     FinishWithError(blink::mojom::BackgroundFetchError::NONE);
   }
 
-  base::WeakPtrFactory<GetRequestsTask> weak_factory_;  // Keep as last.
+  base::WeakPtrFactory<GetRequestsTask> weak_factory_{this};  // Keep as last.
 
   DISALLOW_COPY_AND_ASSIGN(GetRequestsTask);
 };
@@ -289,8 +286,7 @@ class FillFromMetadataTask : public InitializationSubTask {
   FillFromMetadataTask(DatabaseTaskHost* host,
                        const SubTaskInit& sub_task_init,
                        base::OnceClosure done_closure)
-      : InitializationSubTask(host, sub_task_init, std::move(done_closure)),
-        weak_factory_(this) {}
+      : InitializationSubTask(host, sub_task_init, std::move(done_closure)) {}
 
   ~FillFromMetadataTask() override = default;
 
@@ -338,9 +334,10 @@ class FillFromMetadataTask : public InitializationSubTask {
             metadata.registration().developer_id(),
             metadata.registration().unique_id());
 
-    // Fill BackgroundFetchRegistration.
-    auto& registration = sub_task_init().initialization_data->registration;
-    ToBackgroundFetchRegistration(metadata, registration.get());
+    // Fill BackgroundFetchRegistrationData.
+    auto& registration_data =
+        sub_task_init().initialization_data->registration_data;
+    ToBackgroundFetchRegistration(metadata, registration_data.get());
 
     // Total number of requests.
     sub_task_init().initialization_data->num_requests = metadata.num_fetches();
@@ -375,7 +372,8 @@ class FillFromMetadataTask : public InitializationSubTask {
     FinishWithError(blink::mojom::BackgroundFetchError::NONE);
   }
 
-  base::WeakPtrFactory<FillFromMetadataTask> weak_factory_;  // Keep as last.
+  base::WeakPtrFactory<FillFromMetadataTask> weak_factory_{
+      this};  // Keep as last.
 
   DISALLOW_COPY_AND_ASSIGN(FillFromMetadataTask);
 };
@@ -387,8 +385,7 @@ class FillBackgroundFetchInitializationDataTask : public InitializationSubTask {
   FillBackgroundFetchInitializationDataTask(DatabaseTaskHost* host,
                                             const SubTaskInit& sub_task_init,
                                             base::OnceClosure done_closure)
-      : InitializationSubTask(host, sub_task_init, std::move(done_closure)),
-        weak_factory_(this) {}
+      : InitializationSubTask(host, sub_task_init, std::move(done_closure)) {}
 
   ~FillBackgroundFetchInitializationDataTask() override = default;
 
@@ -415,8 +412,8 @@ class FillBackgroundFetchInitializationDataTask : public InitializationSubTask {
   }
 
  private:
-  base::WeakPtrFactory<FillBackgroundFetchInitializationDataTask>
-      weak_factory_;  // Keep as last.
+  base::WeakPtrFactory<FillBackgroundFetchInitializationDataTask> weak_factory_{
+      this};  // Keep as last.
 
   DISALLOW_COPY_AND_ASSIGN(FillBackgroundFetchInitializationDataTask);
 };
@@ -435,7 +432,7 @@ BackgroundFetchInitializationData::~BackgroundFetchInitializationData() =
 GetInitializationDataTask::GetInitializationDataTask(
     DatabaseTaskHost* host,
     GetInitializationDataCallback callback)
-    : DatabaseTask(host), callback_(std::move(callback)), weak_factory_(this) {}
+    : DatabaseTask(host), callback_(std::move(callback)) {}
 
 GetInitializationDataTask::~GetInitializationDataTask() = default;
 
@@ -524,5 +521,4 @@ std::string GetInitializationDataTask::HistogramName() const {
 }
 
 }  // namespace background_fetch
-
 }  // namespace content

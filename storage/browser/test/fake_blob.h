@@ -5,6 +5,7 @@
 #ifndef STORAGE_BROWSER_TEST_FAKE_BLOB_H_
 #define STORAGE_BROWSER_TEST_FAKE_BLOB_H_
 
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/mojom/blob/blob.mojom.h"
 
 namespace storage {
@@ -15,15 +16,16 @@ class FakeBlob : public blink::mojom::Blob {
  public:
   explicit FakeBlob(const std::string& uuid);
 
-  blink::mojom::BlobPtr Clone();
-  void Clone(blink::mojom::BlobRequest request) override;
-  void AsDataPipeGetter(network::mojom::DataPipeGetterRequest) override;
+  mojo::PendingRemote<blink::mojom::Blob> Clone();
+  void Clone(mojo::PendingReceiver<blink::mojom::Blob> receiver) override;
+  void AsDataPipeGetter(
+      mojo::PendingReceiver<network::mojom::DataPipeGetter>) override;
   void ReadRange(uint64_t offset,
                  uint64_t size,
                  mojo::ScopedDataPipeProducerHandle,
-                 blink::mojom::BlobReaderClientPtr) override;
+                 mojo::PendingRemote<blink::mojom::BlobReaderClient>) override;
   void ReadAll(mojo::ScopedDataPipeProducerHandle,
-               blink::mojom::BlobReaderClientPtr) override;
+               mojo::PendingRemote<blink::mojom::BlobReaderClient>) override;
   void ReadSideData(ReadSideDataCallback) override;
   void GetInternalUUID(GetInternalUUIDCallback callback) override;
 

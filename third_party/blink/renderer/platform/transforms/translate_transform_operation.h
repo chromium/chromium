@@ -91,6 +91,8 @@ class PLATFORM_EXPORT TranslateTransformOperation final
     return x_ == t->x_ && y_ == t->y_ && z_ == t->z_;
   }
 
+  scoped_refptr<TransformOperation> Accumulate(
+      const TransformOperation& other) override;
   scoped_refptr<TransformOperation> Blend(
       const TransformOperation* from,
       double progress,
@@ -98,6 +100,8 @@ class PLATFORM_EXPORT TranslateTransformOperation final
   scoped_refptr<TransformOperation> Zoom(double factor) final {
     return ZoomTranslate(factor);
   }
+
+  bool PreservesAxisAlignment() const final { return true; }
 
   TranslateTransformOperation(const Length& tx,
                               const Length& ty,

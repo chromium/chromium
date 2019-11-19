@@ -27,8 +27,7 @@ class MigrationWaiter : public StatusChangeChecker {
   ~MigrationWaiter() override;
 
   // StatusChangeChecker implementation .
-  bool IsExitConditionSatisfied() override;
-  std::string GetDebugMessage() const override;
+  bool IsExitConditionSatisfied(std::ostream* os) override;
 
   // Callback invoked by our associated waiter when migration state changes.
   void OnMigrationStateChange();

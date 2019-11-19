@@ -11,7 +11,7 @@
 #include "chrome/browser/task_manager/providers/task.h"
 #include "chrome/browser/task_manager/task_manager_observer.h"
 #include "content/public/common/process_type.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -90,12 +90,12 @@ class FallbackTaskProviderTest : public testing::Test,
 
   // task_manager::TaskProviderObserver:
   void TaskAdded(Task* task) override {
-    EXPECT_FALSE(base::ContainsValue(seen_tasks_, task));
+    EXPECT_FALSE(base::Contains(seen_tasks_, task));
     seen_tasks_.emplace_back(task);
   }
 
   void TaskRemoved(Task* task) override {
-    EXPECT_TRUE(base::ContainsValue(seen_tasks_, task));
+    EXPECT_TRUE(base::Contains(seen_tasks_, task));
     base::Erase(seen_tasks_, task);
   }
 
@@ -150,7 +150,7 @@ class FallbackTaskProviderTest : public testing::Test,
   std::vector<Task*> seen_tasks() { return seen_tasks_; }
 
  private:
-  content::TestBrowserThreadBundle thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<FallbackTaskProvider> task_provider_;
   std::vector<Task*> seen_tasks_;
 

@@ -26,7 +26,7 @@ namespace signin_metrics {
 enum class AccessPoint;
 enum class PromoAction;
 enum class Reason;
-}
+}  // namespace signin_metrics
 
 // Class responsible for showing and hiding all sign-in related UIs
 // (modal sign-in, DICE full-tab sign-in page, sync confirmation dialog, sign-in
@@ -80,7 +80,6 @@ class SigninViewController {
 
   // Sets the height of the modal signin dialog.
   void SetModalSigninHeight(int height);
-
 
   // Notifies this object that it's |delegate_| member has become invalid.
   void ResetModalSigninDelegate();

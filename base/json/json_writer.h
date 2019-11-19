@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/base_export.h"
+#include "base/json/json_common.h"
 #include "base/macros.h"
 
 namespace base {
@@ -42,16 +43,21 @@ class BASE_EXPORT JSONWriter {
   // TODO(tc): Should we generate json if it would be invalid json (e.g.,
   // |node| is not a DictionaryValue/ListValue or if there are inf/-inf float
   // values)? Return true on success and false on failure.
-  static bool Write(const Value& node, std::string* json);
+  static bool Write(const Value& node,
+                    std::string* json,
+                    size_t max_depth = internal::kAbsoluteMaxDepth);
 
   // Same as above but with |options| which is a bunch of JSONWriter::Options
   // bitwise ORed together. Return true on success and false on failure.
   static bool WriteWithOptions(const Value& node,
                                int options,
-                               std::string* json);
+                               std::string* json,
+                               size_t max_depth = internal::kAbsoluteMaxDepth);
 
  private:
-  JSONWriter(int options, std::string* json);
+  JSONWriter(int options,
+             std::string* json,
+             size_t max_depth = internal::kAbsoluteMaxDepth);
 
   // Called recursively to build the JSON string. When completed,
   // |json_string_| will contain the JSON.
@@ -66,6 +72,12 @@ class BASE_EXPORT JSONWriter {
 
   // Where we write JSON data as we generate it.
   std::string* json_string_;
+
+  // Maximum depth to write.
+  const size_t max_depth_;
+
+  // The number of times the writer has recursed (current stack depth).
+  size_t stack_depth_;
 
   DISALLOW_COPY_AND_ASSIGN(JSONWriter);
 };

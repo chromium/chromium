@@ -9,7 +9,6 @@
 #include "third_party/blink/renderer/platform/loader/fetch/resource_response.h"
 #include "third_party/blink/renderer/platform/network/http_names.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
-#include "third_party/blink/renderer/platform/wtf/time.h"
 
 namespace blink {
 
@@ -254,7 +253,7 @@ TEST_F(ClientHintsPreferencesTest, ParseHeaders) {
     EXPECT_FALSE(
         enabled_types.IsEnabled(mojom::WebClientHintsType::kUAPlatform));
     EXPECT_FALSE(enabled_types.IsEnabled(mojom::WebClientHintsType::kUAModel));
-    TimeDelta persist_duration = preferences.GetPersistDuration();
+    base::TimeDelta persist_duration = preferences.GetPersistDuration();
     EXPECT_EQ(base::TimeDelta(), persist_duration);
 
     const KURL kurl(String::FromUTF8("https://www.google.com/"));

@@ -7,8 +7,9 @@
 
 // This struct specifies the work to be done by the InstallableManager.
 // Data is cached and fetched in the order specified in this struct.
-// If the eligibility check fails, processing halts immediately. Otherwise, a
-// web app manifest is fetched before the remaining items.
+// Processing halts immediately upon the first error unless |is_debug_mode| is
+// true, otherwise, all tasks will be run and a complete list of errors will be
+// returned.
 struct InstallableParams {
   // Check whether the current WebContents is eligible to be installed, i.e it:
   //  - is served over HTTPS
@@ -44,6 +45,10 @@ struct InstallableParams {
   // that the callback will not be called for any site that does not install a
   // service worker.
   bool wait_for_worker = false;
+
+  // True if the check should not short-circuit exit on errors, but continue
+  // and accumulate all possible errors.
+  bool is_debug_mode = false;
 };
 
 #endif  // CHROME_BROWSER_INSTALLABLE_INSTALLABLE_PARAMS_H_

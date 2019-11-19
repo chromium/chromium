@@ -1,21 +1,40 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="es">
+<translation id="1482734542997480527"><ph name="ENROLLMENT_DOMAIN" /> gestiona este dispositivo y es posible que supervise tu actividad.</translation>
 <translation id="1510238584712386396">Menú de aplicaciones</translation>
 <translation id="1734367976349034509">Este es un dispositivo administrado por la empresa</translation>
+<translation id="1930797645656624981">Servicio de método de introducción de Chrome OS</translation>
+<translation id="1979103255016296513">Ya ha terminado el plazo para cambiar la contraseña</translation>
 <translation id="2049639323467105390">Este dispositivo está gestionado por <ph name="DOMAIN" /></translation>
 <translation id="2083960536266308407">No se ha encontrado nada en la pantalla</translation>
 <translation id="2338501278241028356">Activa el Bluetooth para encontrar dispositivos cercanos</translation>
 <translation id="2805756323405976993">Aplicaciones</translation>
 <translation id="2872961005593481000">Apagar</translation>
-<translation id="3147142846278915599">Menú de aplicaciones (sincronizando aplicaciones...)</translation>
+<translation id="3008341117444806826">ACTUALIZAR</translation>
+<translation id="3838338534323494292">Contraseña nueva</translation>
+<translation id="4003259559679196451"><ph name="ENROLLMENT_DOMAIN" /> gestiona este dispositivo y tiene acceso a toda la actividad del usuario, incluidas las páginas web visitadas, sus contraseñas y su correo electrónico.</translation>
+<translation id="4227825898293920515">La contraseña caducará dentro de <ph name="TIME" /></translation>
+<translation id="4429881212383817840">El ticket de Kerberos caducará pronto</translation>
+<translation id="445059817448385655">Contraseña antigua</translation>
+<translation id="467510802200863975">Las contraseñas no coinciden</translation>
 <translation id="4731797938093519117">Acceso parental</translation>
+<translation id="4890353053343094602">Selecciona otra inmediatamente</translation>
 <translation id="5212543919916444558">No encuentro nada en la pantalla con lo que pueda ayudarte. Toca el micrófono para pedirme algo.</translation>
 <translation id="5222676887888702881">Cerrar sesión</translation>
+<translation id="5317780077021120954">Guardar</translation>
+<translation id="5332948983412042822">Selecciona otra ahora</translation>
 <translation id="5457599981699367932">Navegar como invitado</translation>
 <translation id="54609108002486618">Administrado</translation>
 <translation id="5832805196449965646">Añadir perfil</translation>
 <translation id="5895138241574237353">Reiniciar</translation>
+<translation id="6058625436358447366">Para finalizar, introduce tu contraseña anterior y la nueva</translation>
+<translation id="6106186594183574873">Para finalizar, introduce tu contraseña anterior</translation>
+<translation id="6146993107019042706">Para finalizar, introduce tu contraseña nueva</translation>
 <translation id="7658239707568436148">Cancelar</translation>
+<translation id="7690294790491645610">Confirma la nueva contraseña</translation>
+<translation id="808894953321890993">Cambiar contraseña</translation>
+<translation id="8747900814994928677">Confirmar cambio</translation>
+<translation id="910415269708673980">Actualiza el ticket de <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9111102763498581341">Desbloquear</translation>
 </translationbundle>

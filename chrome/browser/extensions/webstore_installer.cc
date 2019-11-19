@@ -55,7 +55,6 @@
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/extension_file_task_runner.h"
-#include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/install/crx_install_error.h"
 #include "extensions/common/extension.h"
@@ -66,10 +65,6 @@
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
-
-#if defined(OS_CHROMEOS)
-#include "chrome/browser/chromeos/drive/file_system_util.h"
-#endif
 
 using content::BrowserContext;
 using content::BrowserThread;
@@ -286,7 +281,6 @@ WebstoreInstaller::WebstoreInstaller(Profile* profile,
                                      std::unique_ptr<Approval> approval,
                                      InstallSource source)
     : content::WebContentsObserver(web_contents),
-      extension_registry_observer_(this),
       profile_(profile),
       delegate_(delegate),
       id_(id),
@@ -397,7 +391,7 @@ void WebstoreInstaller::OnExtensionInstalled(
     download_item_->Remove();
     download_item_ = NULL;
   }
-  crx_installer_ = NULL;
+  crx_installer_.reset();
 
   if (pending_modules_.empty()) {
     CHECK_EQ(extension->id(), id_);
@@ -578,14 +572,6 @@ void WebstoreInstaller::DownloadCrx(
   base::FilePath download_directory(g_download_directory_for_tests ?
       *g_download_directory_for_tests : download_path);
 
-#if defined(OS_CHROMEOS)
-  // Do not use drive for extension downloads.
-  if (drive::util::IsUnderDriveMountPoint(download_directory)) {
-    download_directory = DownloadPrefs::FromBrowserContext(
-        profile_)->GetDefaultDownloadDirectoryForProfile();
-  }
-#endif
-
   base::PostTaskAndReplyWithResult(
       GetExtensionFileTaskRunner().get(), FROM_HERE,
       base::BindOnce(&GetDownloadFilePath, download_directory, extension_id),
@@ -738,11 +724,6 @@ void WebstoreInstaller::StartCrxInstaller(const DownloadItem& download) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(!crx_installer_.get());
 
-  // The clock may be backward, e.g. daylight savings time just happenned.
-  if (download.GetEndTime() >= download.GetStartTime()) {
-    UMA_HISTOGRAM_TIMES("Extensions.WebstoreDownload.FileDownload",
-                        download.GetEndTime() - download.GetStartTime());
-  }
   ExtensionService* service = ExtensionSystem::Get(profile_)->
       extension_service();
   CHECK(service);

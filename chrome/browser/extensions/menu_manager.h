@@ -22,9 +22,10 @@
 #include "base/strings/string16.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/extension_icon_manager.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_registrar.h"
+#include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
 #include "extensions/common/url_pattern_set.h"
 #include "ui/gfx/image/image.h"
@@ -38,7 +39,6 @@ struct ContextMenuParams;
 
 namespace extensions {
 class Extension;
-class ExtensionRegistry;
 class StateStore;
 
 // Represents a menu item added by an extension.
@@ -178,7 +178,6 @@ class MenuItem {
   const OwnedList& children() { return children_; }
   const Id& id() const { return id_; }
   Id* parent_id() const { return parent_id_.get(); }
-  int child_count() const { return children_.size(); }
   const ContextList& contexts() const { return contexts_; }
   Type type() const { return type_; }
   bool checked() const { return checked_; }
@@ -283,7 +282,7 @@ class MenuItem {
 };
 
 // This class keeps track of menu items added by extensions.
-class MenuManager : public content::NotificationObserver,
+class MenuManager : public ProfileObserver,
                     public base::SupportsWeakPtr<MenuManager>,
                     public KeyedService,
                     public ExtensionRegistryObserver {
@@ -356,10 +355,9 @@ class MenuManager : public content::NotificationObserver,
   // default extension icon.
   gfx::Image GetIconForExtension(const std::string& extension_id);
 
-  // content::NotificationObserver implementation.
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override;
+  // ProfileObserver:
+  void OnOffTheRecordProfileCreated(Profile* off_the_record) override;
+  void OnProfileWillBeDestroyed(Profile* profile) override;
 
   // ExtensionRegistryObserver implementation.
   void OnExtensionLoaded(content::BrowserContext* browser_context,
@@ -405,11 +403,11 @@ class MenuManager : public content::NotificationObserver,
   // items.
   std::map<MenuItem::Id, MenuItem*> items_by_id_;
 
-  content::NotificationRegistrar registrar_;
-
-  // Listen to extension load, unloaded notifications.
+  // Listen to extension load, unloaded events.
   ScopedObserver<ExtensionRegistry, ExtensionRegistryObserver>
-      extension_registry_observer_;
+      extension_registry_observer_{this};
+
+  ScopedObserver<Profile, ProfileObserver> observed_profiles_{this};
 
   ExtensionIconManager icon_manager_;
 

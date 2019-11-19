@@ -2,138 +2,136 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-cr.define('print_button_test', function() {
-  /** @enum {string} */
-  const TestNames = {
-    LocalPrintHidePreview: 'local print hide preview',
-    PDFPrintVisiblePreview: 'pdf print visible preview',
-  };
+import {NativeLayer, PluginProxy} from 'chrome://print/print_preview.js';
+import {assert} from 'chrome://resources/js/assert.m.js';
+import {NativeLayerStub} from 'chrome://test/print_preview/native_layer_stub.js';
+import {PDFPluginStub} from 'chrome://test/print_preview/plugin_stub.js';
+import {getCddTemplate, getDefaultInitialSettings, getPdfPrinter} from 'chrome://test/print_preview/print_preview_test_utils.js';
 
-  const suiteName = 'PrintButtonTest';
-  suite(suiteName, function() {
-    /** @type {?PrintPreviewAppElement} */
-    let page = null;
+window.print_button_test = {};
+print_button_test.suiteName = 'PrintButtonTest';
+/** @enum {string} */
+print_button_test.TestNames = {
+  LocalPrintHidePreview: 'local print hide preview',
+  PDFPrintVisiblePreview: 'pdf print visible preview',
+};
 
-    /** @type {?print_preview.NativeLayer} */
-    let nativeLayer = null;
+suite(print_button_test.suiteName, function() {
+  /** @type {?PrintPreviewAppElement} */
+  let page = null;
 
-    /** @type {boolean} */
-    let printBeforePreviewReady = false;
+  /** @type {?NativeLayer} */
+  let nativeLayer = null;
 
-    /** @type {boolean} */
-    let previewHidden = false;
+  /** @type {boolean} */
+  let printBeforePreviewReady = false;
 
-    /** @type {!print_preview.NativeInitialSettings} */
-    const initialSettings =
-        print_preview_test_utils.getDefaultInitialSettings();
+  /** @type {boolean} */
+  let previewHidden = false;
 
-    /** @override */
-    setup(function() {
-      nativeLayer = new print_preview.NativeLayerStub();
-      print_preview.NativeLayer.setInstance(nativeLayer);
-      PolymerTest.clearBody();
-      nativeLayer.setInitialSettings(initialSettings);
-      let localDestinationInfos = [
-        {printerName: 'FooName', deviceName: 'FooDevice'},
-      ];
-      nativeLayer.setLocalDestinations(localDestinationInfos);
-      nativeLayer.setLocalDestinationCapabilities(
-          print_preview_test_utils.getCddTemplate(
-              initialSettings.printerName));
-      nativeLayer.setLocalDestinationCapabilities(
-          print_preview_test_utils.getPdfPrinter());
+  /** @type {!NativeInitialSettings} */
+  const initialSettings = getDefaultInitialSettings();
 
-      const pluginProxy = new print_preview.PDFPluginStub();
-      pluginProxy.setPluginCompatible(true);
-      print_preview_new.PluginProxy.setInstance(pluginProxy);
+  /** @override */
+  setup(function() {
+    nativeLayer = new NativeLayerStub();
+    NativeLayer.setInstance(nativeLayer);
+    PolymerTest.clearBody();
+    nativeLayer.setInitialSettings(initialSettings);
+    const localDestinationInfos = [
+      {printerName: 'FooName', deviceName: 'FooDevice'},
+    ];
+    nativeLayer.setLocalDestinations(localDestinationInfos);
+    nativeLayer.setLocalDestinationCapabilities(
+        getCddTemplate(initialSettings.printerName));
+    nativeLayer.setLocalDestinationCapabilities(getPdfPrinter());
 
-      page = document.createElement('print-preview-app');
-      document.body.appendChild(page);
-      pluginProxy.setLoadCallback(() => {
-        // Print before calling previewArea.onPluginLoad_. This simulates the
-        // user clicking the print button while the preview is still loading,
-        // since previewArea.onPluginLoad_() indicates to the UI that the
-        // preview is ready.
-        if (printBeforePreviewReady) {
-          const header = page.$$('print-preview-header');
-          const printButton = header.$$('.action-button');
-          assertFalse(printButton.disabled);
-          printButton.click();
-        }
+    const pluginProxy = new PDFPluginStub();
+    pluginProxy.setPluginCompatible(true);
+    PluginProxy.setInstance(pluginProxy);
 
-        const previewArea = page.$.previewArea;
-        previewArea.onPluginLoad_(true);
-      });
-
-      previewHidden = false;
-      nativeLayer.whenCalled('hidePreview').then(() => {
-        previewHidden = true;
-      });
+    page = document.createElement('print-preview-app');
+    document.body.appendChild(page);
+    pluginProxy.setPreloadCallback(() => {
+      // Print before calling previewArea.onPluginLoad_. This simulates the
+      // user clicking the print button while the preview is still loading,
+      // since previewArea.onPluginLoad_() indicates to the UI that the
+      // preview is ready.
+      if (printBeforePreviewReady) {
+        const sidebar = page.$$('print-preview-sidebar');
+        const parentElement = sidebar.$$('print-preview-button-strip');
+        const printButton = parentElement.$$('.action-button');
+        assertFalse(printButton.disabled);
+        printButton.click();
+      }
     });
 
-    function waitForInitialPreview() {
-      return nativeLayer.whenCalled('getInitialSettings')
-          .then(function() {
-            page.destinationStore_.startLoadAllDestinations();
-            // Wait for the preview request.
-            return Promise.all([
-              nativeLayer.whenCalled('getPrinterCapabilities'),
-              nativeLayer.whenCalled('getPreview')
-            ]);
-          });
-    }
-
-    // Tests that hidePreview() is called before print() if a local printer is
-    // selected and the user clicks print while the preview is loading.
-    test(assert(TestNames.LocalPrintHidePreview), function() {
-      printBeforePreviewReady = true;
-
-      return waitForInitialPreview().then(function() {
-        // Wait for the print request.
-        return nativeLayer.whenCalled('print');
-      }).then(function(printTicket) {
-        assertTrue(previewHidden);
-
-        // Verify that the printer name is correct.
-        assertEquals('FooDevice', JSON.parse(printTicket).deviceName);
-        return nativeLayer.whenCalled('dialogClose');
-      });
-    });
-
-    // Tests that hidePreview() is not called if Save as PDF is selected and
-    // the user clicks print while the preview is loading.
-    test(assert(TestNames.PDFPrintVisiblePreview), function() {
-      printBeforePreviewReady = false;
-
-      return waitForInitialPreview().then(function() {
-        // Setup to print before the preview loads.
-        printBeforePreviewReady = true;
-
-        // Select Save as PDF destination
-        const pdfDestination = page.destinationStore_.destinations().find(
-                d => d.id == 'Save as PDF');
-        assertTrue(!!pdfDestination);
-        page.destinationStore_.selectDestination(pdfDestination);
-
-        // Reload preview and wait for print.
-        return Promise.all([
-          nativeLayer.whenCalled('getPrinterCapabilities'),
-          nativeLayer.whenCalled('getPreview'),
-          nativeLayer.whenCalled('print')
-        ]);
-      }).then(function(args) {
-        assertFalse(previewHidden);
-
-        const printTicket = args[2];
-        // Verify that the printer name is correct.
-        assertEquals('Save as PDF', JSON.parse(printTicket).deviceName);
-        return nativeLayer.whenCalled('dialogClose');
-      });
+    previewHidden = false;
+    nativeLayer.whenCalled('hidePreview').then(() => {
+      previewHidden = true;
     });
   });
 
-  return {
-    suiteName: suiteName,
-    TestNames: TestNames,
-  };
+  function waitForInitialPreview() {
+    return nativeLayer.whenCalled('getInitialSettings').then(function() {
+      // Wait for the preview request.
+      return Promise.all([
+        nativeLayer.whenCalled('getPrinterCapabilities'),
+        nativeLayer.whenCalled('getPreview')
+      ]);
+    });
+  }
+
+  // Tests that hidePreview() is called before print() if a local printer is
+  // selected and the user clicks print while the preview is loading.
+  test(assert(print_button_test.TestNames.LocalPrintHidePreview), function() {
+    printBeforePreviewReady = true;
+
+    return waitForInitialPreview()
+        .then(function() {
+          // Wait for the print request.
+          return nativeLayer.whenCalled('print');
+        })
+        .then(function(printTicket) {
+          assertTrue(previewHidden);
+
+          // Verify that the printer name is correct.
+          assertEquals('FooDevice', JSON.parse(printTicket).deviceName);
+          return nativeLayer.whenCalled('dialogClose');
+        });
+  });
+
+  // Tests that hidePreview() is not called if Save as PDF is selected and
+  // the user clicks print while the preview is loading.
+  test(assert(print_button_test.TestNames.PDFPrintVisiblePreview), function() {
+    printBeforePreviewReady = false;
+
+    return waitForInitialPreview()
+        .then(function() {
+          nativeLayer.reset();
+          // Setup to print before the preview loads.
+          printBeforePreviewReady = true;
+
+          // Select Save as PDF destination
+          const destinationSettings =
+              page.$$('print-preview-sidebar')
+                  .$$('print-preview-destination-settings');
+          const pdfDestination =
+              destinationSettings.destinationStore_.destinations().find(
+                  d => d.id == 'Save as PDF');
+          assertTrue(!!pdfDestination);
+          destinationSettings.destinationStore_.selectDestination(
+              pdfDestination);
+
+          // Reload preview and wait for print.
+          return nativeLayer.whenCalled('print');
+        })
+        .then(function(printTicket) {
+          assertFalse(previewHidden);
+
+          // Verify that the printer name is correct.
+          assertEquals('Save as PDF', JSON.parse(printTicket).deviceName);
+          return nativeLayer.whenCalled('dialogClose');
+        });
+  });
 });

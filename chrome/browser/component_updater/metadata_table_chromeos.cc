@@ -9,8 +9,8 @@
 #include <utility>
 #include <vector>
 
+#include "base/hash/sha1.h"
 #include "base/memory/ptr_util.h"
-#include "base/sha1.h"
 #include "base/strings/string_number_conversions.h"
 #include "chromeos/cryptohome/system_salt_getter.h"
 #include "components/component_updater/component_updater_paths.h"
@@ -183,14 +183,15 @@ void MetadataTable::AddItem(const std::string& hashed_user_id,
   base::Value item(base::Value::Type::DICTIONARY);
   item.SetKey(kMetadataContentItemHashedUserIdKey, base::Value(hashed_user_id));
   item.SetKey(kMetadataContentItemComponentKey, base::Value(component_name));
-  installed_items_.GetList().emplace_back(std::move(item));
+  installed_items_.Append(std::move(item));
 }
 
 bool MetadataTable::DeleteItem(const std::string& hashed_user_id,
                                const std::string& component_name) {
-  auto item = GetInstalledItemIndex(hashed_user_id, component_name);
-  if (item != installed_items_.GetList().end()) {
-    installed_items_.GetList().erase(item);
+  size_t index = GetInstalledItemIndex(hashed_user_id, component_name);
+  if (index != installed_items_.GetList().size()) {
+    installed_items_.GetList().erase(installed_items_.GetList().begin() +
+                                     index);
     return true;
   }
   return false;
@@ -200,25 +201,25 @@ bool MetadataTable::HasComponentForUser(
     const std::string& hashed_user_id,
     const std::string& component_name) const {
   return GetInstalledItemIndex(hashed_user_id, component_name) !=
-         installed_items_.GetList().end();
+         installed_items_.GetList().size();
 }
 
-base::Value::ListStorage::const_iterator MetadataTable::GetInstalledItemIndex(
+size_t MetadataTable::GetInstalledItemIndex(
     const std::string& hashed_user_id,
     const std::string& component_name) const {
-  for (auto it = installed_items_.GetList().begin();
-       it != installed_items_.GetList().end(); ++it) {
+  for (size_t i = 0; i < installed_items_.GetList().size(); ++i) {
+    const auto& dict = installed_items_.GetList()[i];
     const std::string& user_id =
-        GetRequiredStringFromDict(*it, kMetadataContentItemHashedUserIdKey);
+        GetRequiredStringFromDict(dict, kMetadataContentItemHashedUserIdKey);
     if (user_id != hashed_user_id)
       continue;
     const std::string& name =
-        GetRequiredStringFromDict(*it, kMetadataContentItemComponentKey);
+        GetRequiredStringFromDict(dict, kMetadataContentItemComponentKey);
     if (name != component_name)
       continue;
-    return it;
+    return i;
   }
-  return installed_items_.GetList().end();
+  return installed_items_.GetList().size();
 }
 
 }  // namespace component_updater

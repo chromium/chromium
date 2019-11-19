@@ -35,7 +35,7 @@ import org.chromium.content_public.browser.WebContents;
  * notified by intent.
  */
 class CastWebContentsSurfaceHelper {
-    private static final String TAG = "cr_CastWebContents";
+    private static final String TAG = "CastWebContents";
 
     private static final int TEARDOWN_GRACE_PERIOD_TIMEOUT_MILLIS = 300;
 

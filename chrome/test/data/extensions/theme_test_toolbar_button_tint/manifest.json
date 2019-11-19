@@ -1,0 +1,11 @@
+{
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAuGMyBRIRAOiUgubfmS+4RHiNi/u/okGcU17xoKTXnziTiwmo7lq4V7unr3Vn4wWSG5bIG+yhQhQAG1TvfsXimBIUrrVKX4b9IADZIHR5akWgb1K4EV111PW/D8RDOwYgTPHPx5eA49TxB0Yw36DNC9LE0tPZOGgDR9hCFgaN1bcszlmJBcBmx39iGCeKPIjKB4bp5hXe33T5IUdoyuW4JHf4JDqC6unwQ1Y9nwzCRUbFis7YevbGQCgWP3I+Hp+bOo30mC2/Gq2UZfIczR4vIOrarxBV8IO4Ue4gzaDl6dGkGKnkZ3JdZKbLeRke1DmaKfjVSsTUp++X2nfMaPZphQIDAQAB",
+  "manifest_version": 2,
+  "name": "Toolbar button color test",
+  "theme": {
+    "tints": {
+      "buttons": [0.1, 0.1, 0.1]
+    }
+  },
+  "version": "0.0.1"
+}

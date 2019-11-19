@@ -38,6 +38,12 @@ BASE_EXPORT void BreakDebugger();
 BASE_EXPORT void SetSuppressDebugUI(bool suppress);
 BASE_EXPORT bool IsDebugUISuppressed();
 
+// If a debugger is present, verifies that it is properly set up, and DCHECK()s
+// if misconfigured.  Currently only verifies that //tools/gdb/gdbinit has been
+// sourced when using gdb on Linux and //tools/lldb/lldbinit.py has been sourced
+// when using lldb on macOS.
+BASE_EXPORT void VerifyDebugger();
+
 }  // namespace debug
 }  // namespace base
 

@@ -13,7 +13,7 @@
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "components/sync/driver/configure_context.h"
 #include "components/sync/engine/commit_queue.h"
@@ -132,8 +132,9 @@ class TestModelTypeConfigurer : public ModelTypeConfigurer {
 class TestModelTypeController : public ModelTypeController {
  public:
   explicit TestModelTypeController(
-      std::unique_ptr<ModelTypeControllerDelegate> delegate_on_disk)
-      : ModelTypeController(kTestModelType, std::move(delegate_on_disk)) {}
+      std::unique_ptr<ModelTypeControllerDelegate> delegate_for_full_sync_mode)
+      : ModelTypeController(kTestModelType,
+                            std::move(delegate_for_full_sync_mode)) {}
   ~TestModelTypeController() override {}
 
   using ModelTypeController::ReportModelError;
@@ -141,7 +142,7 @@ class TestModelTypeController : public ModelTypeController {
 
 ConfigureContext MakeConfigureContext() {
   ConfigureContext context;
-  context.authenticated_account_id = kAccountId;
+  context.authenticated_account_id = CoreAccountId(kAccountId);
   context.cache_guid = kCacheGuid;
   return context;
 }
@@ -192,9 +193,10 @@ class ModelTypeControllerTest : public testing::Test {
   }
 
   void RegisterWithBackend(bool expect_downloaded) {
-    base::MockCallback<base::RepeatingCallback<void(bool)>> callback;
-    EXPECT_CALL(callback, Run(expect_downloaded));
-    controller_.RegisterWithBackend(callback.Get(), &configurer_);
+    auto result = expect_downloaded
+                      ? DataTypeController::TYPE_ALREADY_DOWNLOADED
+                      : DataTypeController::TYPE_NOT_YET_DOWNLOADED;
+    EXPECT_EQ(result, controller_.RegisterWithBackend(&configurer_));
     // ModelTypeProcessorProxy does posting of tasks.
     base::RunLoop().RunUntilIdle();
   }
@@ -223,7 +225,7 @@ class ModelTypeControllerTest : public testing::Test {
   TestModelTypeController* controller() { return &controller_; }
 
  private:
-  base::test::ScopedTaskEnvironment task_environment_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
   NiceMock<MockDelegate> mock_delegate_;
   TestModelTypeConfigurer configurer_;
   TestModelTypeProcessor processor_;
@@ -299,7 +301,7 @@ TEST_F(ModelTypeControllerTest, ActivateWithError) {
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(DataTypeController::FAILED, controller()->state());
   histogram_tester.ExpectBucketCount(
-      kStartFailuresHistogram, ModelTypeToHistogramInt(kTestModelType), 1);
+      kStartFailuresHistogram, ModelTypeHistogramValue(kTestModelType), 1);
   histogram_tester.ExpectTotalCount(kRunFailuresHistogram, 0);
 }
 
@@ -442,7 +444,7 @@ TEST_F(ModelTypeControllerTest, StopWhileStartingWithError) {
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(DataTypeController::FAILED, controller()->state());
   histogram_tester.ExpectBucketCount(kStartFailuresHistogram,
-                                     ModelTypeToHistogramInt(kTestModelType),
+                                     ModelTypeHistogramValue(kTestModelType),
                                      /*count=*/1);
   histogram_tester.ExpectTotalCount(kRunFailuresHistogram, 0);
 }
@@ -554,34 +556,34 @@ TEST_F(ModelTypeControllerTest, StopAndReportErrorWhileStarting) {
   EXPECT_EQ(DataTypeController::FAILED, controller()->state());
 }
 
-// Tests that StorageOption is honored when the controller has been constructed
+// Tests that SyncMode is honored when the controller has been constructed
 // with two delegates.
-TEST(ModelTypeControllerWithMultiDelegateTest, ToggleStorageOption) {
-  base::test::ScopedTaskEnvironment task_environment;
-  NiceMock<MockDelegate> delegate_on_disk;
-  NiceMock<MockDelegate> delegate_in_memory;
+TEST(ModelTypeControllerWithMultiDelegateTest, ToggleSyncMode) {
+  base::test::SingleThreadTaskEnvironment task_environment;
+  NiceMock<MockDelegate> delegate_for_full_sync_mode;
+  NiceMock<MockDelegate> delegate_for_transport_mode;
 
   ModelTypeController controller(
       kTestModelType,
       std::make_unique<ForwardingModelTypeControllerDelegate>(
-          &delegate_on_disk),
+          &delegate_for_full_sync_mode),
       std::make_unique<ForwardingModelTypeControllerDelegate>(
-          &delegate_in_memory));
+          &delegate_for_transport_mode));
 
   ConfigureContext context;
-  context.authenticated_account_id = kAccountId;
+  context.authenticated_account_id = CoreAccountId(kAccountId);
   context.cache_guid = kCacheGuid;
 
   ModelTypeControllerDelegate::StartCallback start_callback;
 
-  // Start sync with STORAGE_IN_MEMORY.
-  EXPECT_CALL(delegate_on_disk, OnSyncStarting(_, _)).Times(0);
-  EXPECT_CALL(delegate_in_memory, OnSyncStarting(_, _))
+  // Start sync with SyncMode::kTransportOnly.
+  EXPECT_CALL(delegate_for_full_sync_mode, OnSyncStarting(_, _)).Times(0);
+  EXPECT_CALL(delegate_for_transport_mode, OnSyncStarting(_, _))
       .WillOnce([&](const DataTypeActivationRequest& request,
                     ModelTypeControllerDelegate::StartCallback callback) {
         start_callback = std::move(callback);
       });
-  context.storage_option = STORAGE_IN_MEMORY;
+  context.sync_mode = SyncMode::kTransportOnly;
   controller.LoadModels(context, base::DoNothing());
 
   ASSERT_EQ(DataTypeController::MODEL_STARTING, controller.state());
@@ -592,19 +594,19 @@ TEST(ModelTypeControllerWithMultiDelegateTest, ToggleStorageOption) {
   ASSERT_EQ(DataTypeController::MODEL_LOADED, controller.state());
 
   // Stop sync.
-  EXPECT_CALL(delegate_on_disk, OnSyncStopping(_)).Times(0);
-  EXPECT_CALL(delegate_in_memory, OnSyncStopping(_));
+  EXPECT_CALL(delegate_for_full_sync_mode, OnSyncStopping(_)).Times(0);
+  EXPECT_CALL(delegate_for_transport_mode, OnSyncStopping(_));
   controller.Stop(DISABLE_SYNC, base::DoNothing());
   ASSERT_EQ(DataTypeController::NOT_RUNNING, controller.state());
 
-  // Start sync with STORAGE_ON_DISK.
-  EXPECT_CALL(delegate_in_memory, OnSyncStarting(_, _)).Times(0);
-  EXPECT_CALL(delegate_on_disk, OnSyncStarting(_, _))
+  // Start sync with SyncMode::kFull.
+  EXPECT_CALL(delegate_for_transport_mode, OnSyncStarting(_, _)).Times(0);
+  EXPECT_CALL(delegate_for_full_sync_mode, OnSyncStarting(_, _))
       .WillOnce([&](const DataTypeActivationRequest& request,
                     ModelTypeControllerDelegate::StartCallback callback) {
         start_callback = std::move(callback);
       });
-  context.storage_option = STORAGE_ON_DISK;
+  context.sync_mode = SyncMode::kFull;
   controller.LoadModels(context, base::DoNothing());
 
   ASSERT_EQ(DataTypeController::MODEL_STARTING, controller.state());
@@ -615,8 +617,8 @@ TEST(ModelTypeControllerWithMultiDelegateTest, ToggleStorageOption) {
   ASSERT_EQ(DataTypeController::MODEL_LOADED, controller.state());
 
   // Stop sync.
-  EXPECT_CALL(delegate_in_memory, OnSyncStopping(_)).Times(0);
-  EXPECT_CALL(delegate_on_disk, OnSyncStopping(_));
+  EXPECT_CALL(delegate_for_transport_mode, OnSyncStopping(_)).Times(0);
+  EXPECT_CALL(delegate_for_full_sync_mode, OnSyncStopping(_));
   controller.Stop(DISABLE_SYNC, base::DoNothing());
   ASSERT_EQ(DataTypeController::NOT_RUNNING, controller.state());
 }
@@ -652,7 +654,7 @@ TEST_F(ModelTypeControllerTest, ReportErrorAfterLoaded) {
   EXPECT_EQ(DataTypeController::FAILED, controller()->state());
   histogram_tester.ExpectTotalCount(kStartFailuresHistogram, 0);
   histogram_tester.ExpectBucketCount(kRunFailuresHistogram,
-                                     ModelTypeToHistogramInt(kTestModelType),
+                                     ModelTypeHistogramValue(kTestModelType),
                                      /*count=*/1);
 }
 

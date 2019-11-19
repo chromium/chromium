@@ -15,7 +15,8 @@
 #define MALLOC_WRAPPER_EXPORT __attribute__((visibility("default")))
 #endif  // defined(WIN32)
 
-// Calls malloc directly.
-MALLOC_WRAPPER_EXPORT void* MallocWrapper(size_t size);
+// Calls malloc directly. Defined as a C function so that the function can be
+// easily referenced by dlsym() without complications from C++ name mangling.
+extern "C" MALLOC_WRAPPER_EXPORT void* MallocWrapper(size_t size);
 
 #endif  // BASE_TEST_MALLOC_WRAPPER_H_

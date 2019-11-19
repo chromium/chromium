@@ -18,7 +18,6 @@ TestPaymentRequestDelegate::TestPaymentRequestDelegate(
           base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
               &test_url_loader_factory_)),
       payments_client_(test_shared_loader_factory_,
-                       /*pref_service=*/nullptr,
                        /*identity_manager=*/nullptr,
                        personal_data_manager),
       full_card_request_(&autofill_client_,
@@ -38,10 +37,6 @@ const std::string& TestPaymentRequestDelegate::GetApplicationLocale() const {
 
 bool TestPaymentRequestDelegate::IsIncognito() const {
   return false;
-}
-
-bool TestPaymentRequestDelegate::IsSslCertificateValid() {
-  return true;
 }
 
 const GURL& TestPaymentRequestDelegate::GetLastCommittedURL() const {

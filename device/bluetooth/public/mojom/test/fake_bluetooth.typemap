@@ -9,5 +9,6 @@ traits_headers =
 deps = [
   "//device/bluetooth",
 ]
-type_mappings =
-    [ "bluetooth.mojom.ServiceDataMap=device::BluetoothDevice::ServiceDataMap" ]
+type_mappings = [
+  "bluetooth.mojom.ServiceDataMap=::device::BluetoothDevice::ServiceDataMap",
+]

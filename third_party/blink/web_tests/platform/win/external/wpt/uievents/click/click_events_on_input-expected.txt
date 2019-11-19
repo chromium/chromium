@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL Test click and auxclick on input element assert_true: Should have got at least "click". expected true got false
+Harness: the test ran to completion.
+

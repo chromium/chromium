@@ -23,7 +23,8 @@
 #include "chrome/common/importer/profile_import.mojom.h"
 #include "components/favicon_base/favicon_usage_data.h"
 #include "components/history/core/browser/history_types.h"
-#include "mojo/public/cpp/bindings/binding.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 class ExternalProcessImporterHost;
 struct ImportedBookmarkEntry;
@@ -146,10 +147,10 @@ class ExternalProcessImporterClient
   bool cancelled_;
 
   // Used to start and stop the actual importer running in a different process.
-  chrome::mojom::ProfileImportPtr profile_import_;
+  mojo::Remote<chrome::mojom::ProfileImport> profile_import_;
 
   // Used to receive progress updates from the importer.
-  mojo::Binding<chrome::mojom::ProfileImportObserver> binding_;
+  mojo::Receiver<chrome::mojom::ProfileImportObserver> receiver_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ExternalProcessImporterClient);
 };

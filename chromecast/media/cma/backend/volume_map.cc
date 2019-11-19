@@ -8,17 +8,25 @@
 
 #include "base/bind.h"
 #include "base/logging.h"
+#include "base/no_destructor.h"
 #include "base/values.h"
 #include "chromecast/media/cma/backend/cast_audio_json.h"
+#include "chromecast/public/volume_control.h"
 
 namespace chromecast {
 namespace media {
 
 namespace {
+
 constexpr char kKeyVolumeMap[] = "volume_map";
 constexpr char kKeyLevel[] = "level";
 constexpr char kKeyDb[] = "db";
 constexpr float kMinDbFS = -120.0f;
+
+VolumeMap& GetVolumeMap() {
+  static base::NoDestructor<VolumeMap> volume_map;
+  return *volume_map;
+}
 
 }  // namespace
 
@@ -69,9 +77,6 @@ void VolumeMap::LoadVolumeMap(std::unique_ptr<base::Value> cast_audio_config) {
     double db;
     CHECK(volume_map_entry->GetDouble(kKeyDb, &db));
     CHECK_LE(db, 0.0);
-    if (level == 1.0) {
-      CHECK_EQ(db, 0.0);
-    }
 
     new_map.push_back({level, db});
   }
@@ -134,6 +139,16 @@ void VolumeMap::UseDefaultVolumeMap() {
                                     {1.0f, 0.0f}};
   base::AutoLock lock(lock_);
   volume_map_ = std::move(new_map);
+}
+
+// static
+float VolumeControl::VolumeToDbFS(float volume) {
+  return GetVolumeMap().VolumeToDbFS(volume);
+}
+
+// static
+float VolumeControl::DbFSToVolume(float db) {
+  return GetVolumeMap().DbFSToVolume(db);
 }
 
 }  // namespace media

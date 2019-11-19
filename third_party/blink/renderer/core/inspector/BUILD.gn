@@ -12,13 +12,10 @@ _inspector_protocol_dir = "//third_party/inspector_protocol"
 
 blink_core_sources("inspector") {
   sources = [
-    "add_string_to_digestor.cc",
-    "add_string_to_digestor.h",
     "console_message.cc",
     "console_message.h",
     "console_message_storage.cc",
     "console_message_storage.h",
-    "console_types.h",
     "dev_tools_emulator.cc",
     "dev_tools_emulator.h",
     "dev_tools_host.cc",
@@ -33,6 +30,8 @@ blink_core_sources("inspector") {
     "dom_patch_support.h",
     "identifiers_factory.cc",
     "identifiers_factory.h",
+    "inspect_tools.cc",
+    "inspect_tools.h",
     "inspected_frames.cc",
     "inspected_frames.h",
     "inspector_animation_agent.cc",
@@ -63,6 +62,10 @@ blink_core_sources("inspector") {
     "inspector_layer_tree_agent.h",
     "inspector_log_agent.cc",
     "inspector_log_agent.h",
+    "inspector_media_agent.cc",
+    "inspector_media_agent.h",
+    "inspector_media_context_impl.cc",
+    "inspector_media_context_impl.h",
     "inspector_memory_agent.cc",
     "inspector_memory_agent.h",
     "inspector_network_agent.cc",
@@ -85,10 +88,10 @@ blink_core_sources("inspector") {
     "inspector_style_sheet.h",
     "inspector_task_runner.cc",
     "inspector_task_runner.h",
-    "inspector_testing_agent.cc",
-    "inspector_testing_agent.h",
     "inspector_trace_events.cc",
     "inspector_trace_events.h",
+    "legacy_dom_snapshot_agent.cc",
+    "legacy_dom_snapshot_agent.h",
     "main_thread_debugger.cc",
     "main_thread_debugger.h",
     "network_resources_data.cc",
@@ -161,6 +164,8 @@ inspector_protocol_generate("protocol_sources") {
     "inspector/protocol/LayerTree.h",
     "inspector/protocol/Log.cpp",
     "inspector/protocol/Log.h",
+    "inspector/protocol/Media.cpp",
+    "inspector/protocol/Media.h",
     "inspector/protocol/Memory.cpp",
     "inspector/protocol/Memory.h",
     "inspector/protocol/Network.cpp",
@@ -176,8 +181,8 @@ inspector_protocol_generate("protocol_sources") {
     "inspector/protocol/Runtime.h",
     "inspector/protocol/Security.cpp",
     "inspector/protocol/Security.h",
-    "inspector/protocol/Testing.cpp",
-    "inspector/protocol/Testing.h",
+    "inspector/protocol/WebAudio.cpp",
+    "inspector/protocol/WebAudio.h",
   ]
 
   deps = [
@@ -207,6 +212,7 @@ jumbo_source_set("generated") {
     "//third_party/blink/renderer/core/probe:generated",
     "//third_party/blink/renderer/platform:make_platform_generated",
     "//third_party/blink/renderer/platform/wtf",
+    "//third_party/inspector_protocol:crdtp",
     "//v8",
   ]
 }

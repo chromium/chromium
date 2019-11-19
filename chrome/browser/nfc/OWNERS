@@ -1,0 +1,6 @@
+file://services/device/nfc/OWNERS
+
+per-file *permission_context*=file://chrome/browser/permissions/PERMISSIONS_OWNERS
+
+# COMPONENT: Blink>NFC
+# TEAM: device-dev@chromium.org

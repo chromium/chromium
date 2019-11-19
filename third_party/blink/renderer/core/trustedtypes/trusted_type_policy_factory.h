@@ -16,6 +16,7 @@ namespace blink {
 class ExceptionState;
 class ScriptState;
 class ScriptValue;
+class TrustedHTML;
 class TrustedTypePolicy;
 class TrustedTypePolicyOptions;
 
@@ -25,19 +26,14 @@ class CORE_EXPORT TrustedTypePolicyFactory final : public ScriptWrappable,
   USING_GARBAGE_COLLECTED_MIXIN(TrustedTypePolicyFactory);
 
  public:
-  static TrustedTypePolicyFactory* Create(ExecutionContext* context) {
-    return MakeGarbageCollected<TrustedTypePolicyFactory>(context);
-  }
-
   explicit TrustedTypePolicyFactory(ExecutionContext*);
 
   // TrustedTypePolicyFactory.idl
   TrustedTypePolicy* createPolicy(const String&,
                                   const TrustedTypePolicyOptions*,
-                                  bool exposed,
                                   ExceptionState&);
 
-  TrustedTypePolicy* getExposedPolicy(const String&);
+  TrustedTypePolicy* defaultPolicy() const;
 
   Vector<String> getPolicyNames() const;
 
@@ -45,6 +41,25 @@ class CORE_EXPORT TrustedTypePolicyFactory final : public ScriptWrappable,
   bool isScript(ScriptState*, const ScriptValue&);
   bool isScriptURL(ScriptState*, const ScriptValue&);
   bool isURL(ScriptState*, const ScriptValue&);
+
+  TrustedHTML* emptyHTML() const;
+
+  String getPropertyType(const String& tagName,
+                         const String& propertyName) const;
+  String getPropertyType(const String& tagName,
+                         const String& propertyName,
+                         const String& elementNS) const;
+  String getAttributeType(const String& tagName,
+                          const String& attributeName) const;
+  String getAttributeType(const String& tagName,
+                          const String& attributeName,
+                          const String& tagNS) const;
+  String getAttributeType(const String& tagName,
+                          const String& attributeName,
+                          const String& tagNS,
+                          const String& attributeNS) const;
+  ScriptValue getTypeMapping(ScriptState*) const;
+  ScriptValue getTypeMapping(ScriptState*, const String& ns) const;
 
   // Count whether a Trusted Type error occured during DOM operations.
   // (We aggregate this here to get a count per document, so that we can
@@ -57,7 +72,8 @@ class CORE_EXPORT TrustedTypePolicyFactory final : public ScriptWrappable,
   const WrapperTypeInfo* GetWrapperTypeInfoFromScriptValue(ScriptState*,
                                                            const ScriptValue&);
 
-  HeapHashMap<String, TraceWrapperMember<TrustedTypePolicy>> policy_map_;
+  Member<TrustedHTML> empty_html_;
+  HeapHashMap<String, Member<TrustedTypePolicy>> policy_map_;
 
   bool hadAssignmentError = false;
 };

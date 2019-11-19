@@ -212,21 +212,4 @@ bool IsSessionRestorePending(Profile* profile) {
   return pending_session_restore;
 }
 
-void ResetAreAllSessionsMergedForTesting() {
-  if (AreAllSessionMergedAlready()) {
-    // This is safe for tests since it will only be called from SetUp() once per
-    // test and not concurrently.
-    int current_value = g_all_profiles_restored_.SubtleRefCountForDebug();
-    bool is_positive = current_value > 0;
-    if (!is_positive)
-      current_value *= -1;
-    for (int i = 0; i < current_value; i++) {
-      if (is_positive)
-        g_all_profiles_restored_.Decrement();
-      else
-        g_all_profiles_restored_.Increment();
-    }
-  }
-}
-
 }  // namespace merge_session_throttling_utils

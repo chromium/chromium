@@ -40,7 +40,7 @@ MediaDevicesManager::BoolDeviceTypes DoCheckPermissionsOnUIThread(
   RenderFrameHostDelegate* delegate = frame_host->delegate();
   url::Origin origin = frame_host->GetLastCommittedOrigin();
   bool audio_permission = delegate->CheckMediaAccessPermission(
-      frame_host, origin, blink::MEDIA_DEVICE_AUDIO_CAPTURE);
+      frame_host, origin, blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE);
   bool mic_feature_policy = true;
   bool camera_feature_policy = true;
   mic_feature_policy = frame_host->IsFeatureEnabled(
@@ -64,8 +64,9 @@ MediaDevicesManager::BoolDeviceTypes DoCheckPermissionsOnUIThread(
   // Camera.
   result[blink::MEDIA_DEVICE_TYPE_VIDEO_INPUT] =
       requested_device_types[blink::MEDIA_DEVICE_TYPE_VIDEO_INPUT] &&
-      delegate->CheckMediaAccessPermission(frame_host, origin,
-                                           blink::MEDIA_DEVICE_VIDEO_CAPTURE) &&
+      delegate->CheckMediaAccessPermission(
+          frame_host, origin,
+          blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE) &&
       camera_feature_policy;
 
   return result;
@@ -116,7 +117,7 @@ void MediaDevicesPermissionChecker::CheckPermission(
     return;
   }
 
-  base::PostTaskWithTraitsAndReplyWithResult(
+  base::PostTaskAndReplyWithResult(
       FROM_HERE, {BrowserThread::UI},
       base::BindOnce(&CheckSinglePermissionOnUIThread, device_type,
                      render_process_id, render_frame_id),
@@ -136,7 +137,7 @@ void MediaDevicesPermissionChecker::CheckPermissions(
     return;
   }
 
-  base::PostTaskWithTraitsAndReplyWithResult(
+  base::PostTaskAndReplyWithResult(
       FROM_HERE, {BrowserThread::UI},
       base::BindOnce(&DoCheckPermissionsOnUIThread, requested,
                      render_process_id, render_frame_id),

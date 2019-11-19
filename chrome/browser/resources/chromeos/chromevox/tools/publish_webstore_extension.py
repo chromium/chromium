@@ -55,8 +55,8 @@ def CreateOptionParser():
 def GetVersion():
   '''Returns the chrome version string.'''
   filename = os.path.join(_CHROME_SOURCE_DIR, 'chrome', 'VERSION')
-  values = version.fetch_values([filename])
-  return version.subst_template('@MAJOR@.@MINOR@.@BUILD@.@PATCH@', values)
+  values = version.FetchValues([filename])
+  return version.SubstTemplate('@MAJOR@.@MINOR@.@BUILD@.@PATCH@', values)
 
 
 def MakeChromeVoxManifest():

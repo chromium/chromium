@@ -26,16 +26,16 @@ class VideoFrame;
 class MEDIA_EXPORT VideoDecoder {
  public:
   // Callback for VideoDecoder initialization.
-  using InitCB = base::Callback<void(bool success)>;
+  using InitCB = base::OnceCallback<void(bool success)>;
 
   // Callback for VideoDecoder to return a decoded frame whenever it becomes
   // available. Only non-EOS frames should be returned via this callback.
-  using OutputCB = base::Callback<void(const scoped_refptr<VideoFrame>&)>;
+  using OutputCB = base::RepeatingCallback<void(scoped_refptr<VideoFrame>)>;
 
   // Callback type for Decode(). Called after the decoder has completed decoding
   // corresponding DecoderBuffer, indicating that it's ready to accept another
   // buffer to decode.
-  using DecodeCB = base::Callback<void(DecodeStatus)>;
+  using DecodeCB = base::OnceCallback<void(DecodeStatus)>;
 
   VideoDecoder();
 
@@ -84,7 +84,7 @@ class MEDIA_EXPORT VideoDecoder {
   virtual void Initialize(const VideoDecoderConfig& config,
                           bool low_delay,
                           CdmContext* cdm_context,
-                          const InitCB& init_cb,
+                          InitCB init_cb,
                           const OutputCB& output_cb,
                           const WaitingCB& waiting_cb) = 0;
 
@@ -107,12 +107,12 @@ class MEDIA_EXPORT VideoDecoder {
   // |decode_cb| must be called after that. Callers will not call Decode()
   // again until after the flush completes.
   virtual void Decode(scoped_refptr<DecoderBuffer> buffer,
-                      const DecodeCB& decode_cb) = 0;
+                      DecodeCB decode_cb) = 0;
 
   // Resets decoder state. All pending Decode() requests will be finished or
   // aborted before |closure| is called.
   // Note: No VideoDecoder calls should be made before |closure| is executed.
-  virtual void Reset(const base::Closure& closure) = 0;
+  virtual void Reset(base::OnceClosure closure) = 0;
 
   // Returns true if the decoder needs bitstream conversion before decoding.
   virtual bool NeedsBitstreamConversion() const;

@@ -15,6 +15,7 @@
 #include "base/time/time.h"
 
 class GURL;
+@class MDCSnackbarMessage;
 
 namespace bookmarks {
 class BookmarkModel;
@@ -38,32 +39,8 @@ const bookmarks::BookmarkNode* FindFolderById(bookmarks::BookmarkModel* model,
 // to display a slighly different wording for the default folders.
 NSString* TitleForBookmarkNode(const bookmarks::BookmarkNode* node);
 
-// Returns the default color for |url| when no image is available.
-UIColor* DefaultColor(const GURL& url);
-
 // Returns the subtitle relevant to the bookmark navigation ui.
 NSString* subtitleForBookmarkNode(const bookmarks::BookmarkNode* node);
-
-// On iPad, background color can be transparent. Wrapper for the light grey
-// background color.
-UIColor* mainBackgroundColor();
-// Returns the menu's background color. White when the menu is in a slide over
-// panel, transparent otherwise.
-UIColor* menuBackgroundColor();
-// Primary title labels use this color.
-UIColor* darkTextColor();
-// Secondary title labels use this color.
-UIColor* lightTextColor();
-// The color to use if the text needs to change color when highlighted.
-UIColor* highlightedDarkTextColor();
-// The color used for the editing bar.
-UIColor* blueColor();
-// The color used for the navigation bar.
-UIColor* GrayColor();
-// The gray color for line separators.
-UIColor* separatorColor();
-// The black color for the folder labels.
-UIColor* FolderLabelColor();
 
 // Returns the current status bar height.
 CGFloat StatusBarHeight();
@@ -71,15 +48,13 @@ CGFloat StatusBarHeight();
 // Returns whether the bookmark menu should be presented in a slide in panel.
 BOOL bookmarkMenuIsInSlideInPanel();
 
-// Creates a drop shadow with the given width.
-UIView* dropShadowWithWidth(CGFloat width);
-
 #pragma mark - Updating Bookmarks
 
 // Creates the bookmark if |node| is NULL. Otherwise updates |node|.
 // |folder| is the intended parent of |node|.
-// A snackbar is presented, that let the user undo the changes.
-void CreateOrUpdateBookmarkWithUndoToast(
+// Returns a snackbar with an undo action, returns nil if operation wasn't
+// successful or there's nothing to undo.
+MDCSnackbarMessage* CreateOrUpdateBookmarkWithUndoToast(
     const bookmarks::BookmarkNode* node,
     NSString* title,
     const GURL& url,
@@ -87,17 +62,19 @@ void CreateOrUpdateBookmarkWithUndoToast(
     bookmarks::BookmarkModel* bookmark_model,
     ios::ChromeBrowserState* browser_state);
 
-// Updates a bookmark node position, with undo toast.
-void UpdateBookmarkPositionWithUndoToast(
+// Updates a bookmark node position, and returns a snackbar with an undo action.
+// Returns nil if the operation wasn't successful or there's nothing to undo.
+MDCSnackbarMessage* UpdateBookmarkPositionWithUndoToast(
     const bookmarks::BookmarkNode* node,
     const bookmarks::BookmarkNode* folder,
     int position,
     bookmarks::BookmarkModel* bookmark_model,
     ios::ChromeBrowserState* browser_state);
 
-// Deletes all bookmarks in |model| that are in |bookmarks|, and presents a
-// snackbar with an undo action.
-void DeleteBookmarksWithUndoToast(
+// Deletes all bookmarks in |model| that are in |bookmarks|, and returns a
+// snackbar with an undo action. Returns nil if the operation wasn't successful
+// or there's nothing to undo.
+MDCSnackbarMessage* DeleteBookmarksWithUndoToast(
     const std::set<const bookmarks::BookmarkNode*>& bookmarks,
     bookmarks::BookmarkModel* model,
     ios::ChromeBrowserState* browser_state);
@@ -106,9 +83,10 @@ void DeleteBookmarksWithUndoToast(
 void DeleteBookmarks(const std::set<const bookmarks::BookmarkNode*>& bookmarks,
                      bookmarks::BookmarkModel* model);
 
-// Move all |bookmarks| to the given |folder|, and presents a snackbar with an
-// undo action.
-void MoveBookmarksWithUndoToast(
+// Move all |bookmarks| to the given |folder|, and returns a snackbar with an
+// undo action. Returns nil if the operation wasn't successful or there's
+// nothing to undo.
+MDCSnackbarMessage* MoveBookmarksWithUndoToast(
     const std::set<const bookmarks::BookmarkNode*>& bookmarks,
     bookmarks::BookmarkModel* model,
     const bookmarks::BookmarkNode* folder,

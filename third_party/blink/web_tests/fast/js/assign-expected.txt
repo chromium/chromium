@@ -12,9 +12,9 @@ PASS y, x = 7; x is 7
 PASS ((x)) = 8; x is 8
 PASS ((window.x)) = 9; x is 9
 PASS ((window["x"])) = 10; x is 10
-PASS (y, x) = "FAIL"; threw exception ReferenceError: Invalid left-hand side in assignment.
-PASS (true ? x : y) = "FAIL"; threw exception ReferenceError: Invalid left-hand side in assignment.
-PASS x++ = "FAIL"; threw exception ReferenceError: Invalid left-hand side in assignment.
+PASS (y, x) = "FAIL"; threw exception SyntaxError: Invalid left-hand side in assignment.
+PASS (true ? x : y) = "FAIL"; threw exception SyntaxError: Invalid left-hand side in assignment.
+PASS x++ = "FAIL"; threw exception SyntaxError: Invalid left-hand side in assignment.
 PASS successfullyParsed is true
 
 TEST COMPLETE

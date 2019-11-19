@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+ <head>
+  <title>Content Index API Test</title>
+  <script src="../result_queue.js"></script>
+ </head>
+ <body>
+  <h1>Content Index Test</h1>
+  <script>
+    navigator.serviceWorker.register('sw.js');
+
+    async function addContent(id, icons = []) {
+      try {
+        const registration = await navigator.serviceWorker.ready;
+        await registration.index.add({
+          id,
+          title: 'Title!',
+          description: 'Description!',
+          category: 'article',
+          icons,
+          launchUrl: '/content_index/test.html',
+        });
+        sendResultToTest('ok');
+      } catch (e) {
+        sendErrorToTest(e);
+      }
+    }
+
+   </script>
+ </body>
+</html>

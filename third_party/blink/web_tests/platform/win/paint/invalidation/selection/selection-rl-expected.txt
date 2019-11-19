@@ -1,26 +1,15 @@
 {
   "layers": [
     {
-      "name": "LayoutView #document",
-      "bounds": [800, 600],
-      "drawsContent": false,
-      "backgroundColor": "#FFFFFF"
-    },
-    {
-      "name": "Scrolling Layer",
-      "bounds": [800, 600],
-      "drawsContent": false
-    },
-    {
       "name": "Scrolling Contents Layer",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
       "paintInvalidations": [
         {
-          "object": "InlineTextBox 'Testing both hit testing'",
-          "rect": [773, 43, 19, 77],
-          "reason": "selection"
+          "object": "NGPhysicalTextFragment 'Testing both hit testing'",
+          "rect": [772, 8, 20, 133],
+          "reason": "geometry"
         }
       ]
     }

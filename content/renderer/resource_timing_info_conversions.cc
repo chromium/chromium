@@ -116,6 +116,9 @@ blink::WebResourceTimingInfo ResourceTimingInfoToWebResourceTimingInfo(
   info.decoded_body_size = resource_timing.decoded_body_size;
 
   info.did_reuse_connection = resource_timing.did_reuse_connection;
+  // TODO(https://crbug.com/970242): This may result in errounous reporting of
+  // iframes with different schemes than its parent frame.
+  info.is_secure_context = false;
 
   info.allow_timing_details = resource_timing.allow_timing_details;
   info.allow_redirect_details = resource_timing.allow_redirect_details;

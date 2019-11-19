@@ -25,7 +25,7 @@
 #include "media/audio/audio_system.h"
 #include "media/base/media_switches.h"
 #include "media/base/video_facing.h"
-#include "mojo/public/cpp/bindings/strong_binding.h"
+#include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "third_party/blink/public/common/mediastream/media_devices.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
@@ -64,12 +64,12 @@ void MediaDevicesDispatcherHost::Create(
     int render_process_id,
     int render_frame_id,
     MediaStreamManager* media_stream_manager,
-    blink::mojom::MediaDevicesDispatcherHostRequest request) {
+    mojo::PendingReceiver<blink::mojom::MediaDevicesDispatcherHost> receiver) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  mojo::MakeStrongBinding(
+  mojo::MakeSelfOwnedReceiver(
       std::make_unique<MediaDevicesDispatcherHost>(
           render_process_id, render_frame_id, media_stream_manager),
-      std::move(request));
+      std::move(receiver));
 }
 
 MediaDevicesDispatcherHost::MediaDevicesDispatcherHost(
@@ -79,8 +79,7 @@ MediaDevicesDispatcherHost::MediaDevicesDispatcherHost(
     : render_process_id_(render_process_id),
       render_frame_id_(render_frame_id),
       media_stream_manager_(media_stream_manager),
-      num_pending_audio_input_parameters_(0),
-      weak_factory_(this) {
+      num_pending_audio_input_parameters_(0) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 }
 
@@ -102,10 +101,13 @@ void MediaDevicesDispatcherHost::EnumerateDevices(
     bool request_video_input,
     bool request_audio_output,
     bool request_video_input_capabilities,
+    bool request_audio_input_capabilities,
     EnumerateDevicesCallback client_callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
-  if (!request_audio_input && !request_video_input && !request_audio_output) {
+  if ((!request_audio_input && !request_video_input && !request_audio_output) ||
+      (request_video_input_capabilities && !request_video_input) ||
+      (request_audio_input_capabilities && !request_audio_input)) {
     bad_message::ReceivedBadMessage(
         render_process_id_, bad_message::MDDH_INVALID_DEVICE_TYPE_REQUEST);
     return;
@@ -121,15 +123,15 @@ void MediaDevicesDispatcherHost::EnumerateDevices(
 
   media_stream_manager_->media_devices_manager()->EnumerateDevices(
       render_process_id_, render_frame_id_, devices_to_enumerate,
-      request_video_input_capabilities, std::move(client_callback));
+      request_video_input_capabilities, request_audio_input_capabilities,
+      std::move(client_callback));
 }
 
 void MediaDevicesDispatcherHost::GetVideoInputCapabilities(
     GetVideoInputCapabilitiesCallback client_callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   base::PostTaskAndReplyWithResult(
-      base::CreateSingleThreadTaskRunnerWithTraits({BrowserThread::UI}).get(),
-      FROM_HERE,
+      base::CreateSingleThreadTaskRunner({BrowserThread::UI}).get(), FROM_HERE,
       base::BindOnce(media_stream_manager_->media_devices_manager()
                          ->salt_and_origin_callback(),
                      render_process_id_, render_frame_id_),
@@ -156,8 +158,7 @@ void MediaDevicesDispatcherHost::GetAvailableVideoInputDeviceFormats(
 void MediaDevicesDispatcherHost::GetAudioInputCapabilities(
     GetAudioInputCapabilitiesCallback client_callback) {
   base::PostTaskAndReplyWithResult(
-      base::CreateSingleThreadTaskRunnerWithTraits({BrowserThread::UI}).get(),
-      FROM_HERE,
+      base::CreateSingleThreadTaskRunner({BrowserThread::UI}).get(), FROM_HERE,
       base::BindOnce(media_stream_manager_->media_devices_manager()
                          ->salt_and_origin_callback(),
                      render_process_id_, render_frame_id_),
@@ -169,7 +170,7 @@ void MediaDevicesDispatcherHost::AddMediaDevicesListener(
     bool subscribe_audio_input,
     bool subscribe_video_input,
     bool subscribe_audio_output,
-    blink::mojom::MediaDevicesListenerPtr listener) {
+    mojo::PendingRemote<blink::mojom::MediaDevicesListener> listener) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
   if (!subscribe_audio_input && !subscribe_video_input &&
@@ -264,8 +265,7 @@ void MediaDevicesDispatcherHost::GetVideoInputDeviceFormats(
     GetVideoInputDeviceFormatsCallback client_callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   base::PostTaskAndReplyWithResult(
-      base::CreateSingleThreadTaskRunnerWithTraits({BrowserThread::UI}).get(),
-      FROM_HERE,
+      base::CreateSingleThreadTaskRunner({BrowserThread::UI}).get(), FROM_HERE,
       base::BindOnce(media_stream_manager_->media_devices_manager()
                          ->salt_and_origin_callback(),
                      render_process_id_, render_frame_id_),
@@ -355,9 +355,11 @@ void MediaDevicesDispatcherHost::GotAudioInputEnumeration(
   DCHECK_EQ(num_pending_audio_input_parameters_, 0U);
   for (const auto& device_info :
        enumeration[blink::MEDIA_DEVICE_TYPE_AUDIO_INPUT]) {
+    auto parameters = media::AudioParameters::UnavailableDeviceParams();
     blink::mojom::AudioInputDeviceCapabilities capabilities(
-        device_info.device_id, device_info.group_id,
-        media::AudioParameters::UnavailableDeviceParams());
+        device_info.device_id, device_info.group_id, parameters,
+        parameters.IsValid(), parameters.channels(), parameters.sample_rate(),
+        parameters.GetBufferDuration());
     if (device_info.device_id == default_device_id)
       current_audio_input_capabilities_.insert(
           current_audio_input_capabilities_.begin(), std::move(capabilities));

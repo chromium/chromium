@@ -6,6 +6,11 @@
 
 #include <stddef.h>
 
+#include <windows.h>
+
+#include "base/strings/utf_string_conversions.h"
+#include "base/unguessable_token.h"
+#include "base/win/scoped_handle.h"
 #include "sandbox/win/src/sandbox.h"
 #include "sandbox/win/src/sandbox_factory.h"
 #include "sandbox/win/src/target_services.h"
@@ -13,6 +18,45 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace sandbox {
+
+namespace {
+std::wstring NonCollidingName() {
+  auto token = base::UnguessableToken::Create();
+  return base::UTF8ToWide(token.ToString().c_str());
+}
+
+struct PolicyDiagnosticsWaiter {
+ public:
+  PolicyDiagnosticsWaiter() {
+    event.Set(::CreateEventW(nullptr, false, false, nullptr));
+    policies = nullptr;
+  }
+
+  base::win::ScopedHandle event;
+  std::unique_ptr<PolicyList> policies;
+
+  std::unique_ptr<PolicyList> WaitForPolicies() {
+    ::WaitForSingleObject(event.Get(), INFINITE);
+    return std::move(policies);
+  }
+};
+
+class TestDiagnosticsReceiver : public PolicyDiagnosticsReceiver {
+ public:
+  TestDiagnosticsReceiver() {}
+  ~TestDiagnosticsReceiver() final {}
+  TestDiagnosticsReceiver(PolicyDiagnosticsWaiter* waiter) { waiter_ = waiter; }
+  PolicyDiagnosticsWaiter* waiter_;
+  void ReceiveDiagnostics(std::unique_ptr<PolicyList> policies) override {
+    waiter_->policies = std::move(policies);
+    ::SetEvent(waiter_->event.Get());
+  }
+  void OnError(ResultCode error) override {
+    // Tests should not result in this function being called.
+    FAIL() << "OnError should not be called";
+  }
+};
+}  // namespace
 
 // Returns the current process state.
 SBOX_TESTS_COMMAND int IntegrationTestsTest_state(int argc, wchar_t **argv) {
@@ -65,6 +109,32 @@ SBOX_TESTS_COMMAND int IntegrationTestsTest_args(int argc, wchar_t **argv) {
   }
 
   return argc;
+}
+
+// Sets the first named event, then waits on the second. This ensures
+// this process is alive and remains alive while its parent tests diagnostics.
+SBOX_TESTS_COMMAND int IntegrationTestsTest_event(int argc, wchar_t** argv) {
+  if (argc < 2)
+    return SBOX_TEST_INVALID_PARAMETER;
+
+  HANDLE hEventA =
+      ::OpenEventW(SYNCHRONIZE | EVENT_MODIFY_STATE, false, argv[0]);
+  if (!hEventA)
+    return SBOX_TEST_NOT_FOUND;
+  base::win::ScopedHandle handle_started(hEventA);
+
+  HANDLE hEventB = ::OpenEventW(SYNCHRONIZE, false, argv[1]);
+  if (!hEventB)
+    return SBOX_TEST_NOT_FOUND;
+  base::win::ScopedHandle handle_done(hEventB);
+
+  if (!::SetEvent(handle_started.Get()))
+    return SBOX_TEST_FIRST_ERROR;
+
+  if (WAIT_OBJECT_0 != ::WaitForSingleObject(handle_done.Get(), 1000))
+    return SBOX_TEST_SECOND_ERROR;
+
+  return SBOX_TEST_SUCCEEDED;
 }
 
 // Creates a job and tries to run a process inside it. The function can be
@@ -303,6 +373,73 @@ TEST(IntegrationTestsTest, RunJoblessChildFromInsideJob) {
   runner.SetTimeout(2000);
   ASSERT_EQ(SBOX_TEST_SUCCEEDED,
             runner.RunTest(L"IntegrationTestsTest_job none"));
+}
+
+// GetPolicyInfo validation
+TEST(IntegrationTestsTest, GetPolicyDiagnosticsReflectsActiveChildren) {
+  TestRunner runner;
+  // Unique event names so tests can run in parallel.
+  auto name_a = NonCollidingName();
+  auto name_done = NonCollidingName();
+
+  runner.SetTimeout(2000);
+  runner.SetAsynchronous(true);
+  runner.AddRule(TargetPolicy::SUBSYS_SYNC, TargetPolicy::EVENTS_ALLOW_ANY,
+                 name_a.c_str());
+  runner.AddRule(TargetPolicy::SUBSYS_SYNC, TargetPolicy::EVENTS_ALLOW_ANY,
+                 name_done.c_str());
+
+  // This helper can be reused if it has finished waiting.
+  auto waiter = std::make_unique<PolicyDiagnosticsWaiter>();
+  {
+    // But the receiver cannot be reused as it is consumed by GetPolicyInfo().
+    auto receiver = std::make_unique<TestDiagnosticsReceiver>(waiter.get());
+    auto result = runner.broker()->GetPolicyDiagnostics(std::move(receiver));
+    ASSERT_EQ(SBOX_ALL_OK, result);
+
+    // Initially no children so no policies.
+    auto policies = waiter->WaitForPolicies();
+    ASSERT_EQ(policies->size(), 0U);
+  }
+
+  HANDLE event_a = CreateEventW(nullptr, true, false, name_a.c_str());
+  base::win::ScopedHandle handle_started(event_a);
+  HANDLE event_done = CreateEventW(nullptr, true, false, name_done.c_str());
+  base::win::ScopedHandle handle_done(event_done);
+
+  auto cmd_line = std::wstring(L"IntegrationTestsTest_event ");
+  cmd_line += name_a;
+  cmd_line += L" ";
+  cmd_line += name_done;
+
+  ASSERT_EQ(SBOX_TEST_SUCCEEDED, runner.RunTest(cmd_line.c_str()));
+  ASSERT_EQ(WAIT_OBJECT_0, ::WaitForSingleObject(handle_started.Get(), 1000));
+
+  {
+    // After starting a process, there should be one policy.
+    auto receiver = std::make_unique<TestDiagnosticsReceiver>(waiter.get());
+    ASSERT_EQ(SBOX_ALL_OK,
+              runner.broker()->GetPolicyDiagnostics(std::move(receiver)));
+    auto policies = waiter->WaitForPolicies();
+    ASSERT_EQ(policies->size(), 1U);
+  }
+
+  SetEvent(handle_done.Get());
+  ASSERT_EQ(SBOX_ALL_OK, runner.broker()->WaitForAllTargets());
+
+  // TODO(ajgo) WaitForAllTargets is satisfied when the final process
+  // in a job exits but before the final job notification is received
+  // by the tracking thread. We have to give that notification a chance
+  // before we test to see if the job itself is removed.
+  SleepEx(100, true);
+  {
+    // Finally there should be no processes and no policies.
+    auto receiver = std::make_unique<TestDiagnosticsReceiver>(waiter.get());
+    ASSERT_EQ(SBOX_ALL_OK,
+              runner.broker()->GetPolicyDiagnostics(std::move(receiver)));
+    auto policies = waiter->WaitForPolicies();
+    ASSERT_EQ(policies->size(), 0U);
+  }
 }
 
 }  // namespace sandbox

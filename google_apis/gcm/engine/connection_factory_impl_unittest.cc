@@ -9,15 +9,15 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/message_loop/message_loop.h"
 #include "base/optional.h"
 #include "base/run_loop.h"
-#include "base/test/scoped_task_environment.h"
 #include "base/test/simple_test_tick_clock.h"
+#include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "google_apis/gcm/base/mcs_util.h"
 #include "google_apis/gcm/engine/fake_connection_handler.h"
 #include "google_apis/gcm/monitoring/fake_gcm_stats_recorder.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "net/base/backoff_entry.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "net/url_request/url_request_test_util.h"
@@ -160,6 +160,7 @@ TestConnectionFactoryImpl::TestConnectionFactoryImpl(
           BuildEndpoints(),
           net::BackoffEntry::Policy(),
           get_socket_factory_callback,
+          base::ThreadTaskRunnerHandle::Get(),
           &dummy_recorder_,
           network::TestNetworkConnectionTracker::GetInstance()),
       connect_result_(net::ERR_UNEXPECTED),
@@ -293,36 +294,37 @@ class ConnectionFactoryImplTest
 
  private:
   void GetProxyResolvingSocketFactory(
-      network::mojom::ProxyResolvingSocketFactoryRequest request) {
-    network_context_->CreateProxyResolvingSocketFactory(std::move(request));
+      mojo::PendingReceiver<network::mojom::ProxyResolvingSocketFactory>
+          receiver) {
+    network_context_->CreateProxyResolvingSocketFactory(std::move(receiver));
   }
   void ConnectionsComplete();
 
   std::unique_ptr<network::TestNetworkConnectionTracker>
       network_connection_tracker_;
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_;
   TestConnectionFactoryImpl factory_;
   std::unique_ptr<base::RunLoop> run_loop_;
 
   GURL connected_server_;
   std::unique_ptr<net::NetworkChangeNotifier> network_change_notifier_;
   std::unique_ptr<network::NetworkService> network_service_;
-  network::mojom::NetworkContextPtr network_context_ptr_;
+  mojo::Remote<network::mojom::NetworkContext> network_context_remote_;
   std::unique_ptr<network::NetworkContext> network_context_;
 };
 
 ConnectionFactoryImplTest::ConnectionFactoryImplTest()
     : network_connection_tracker_(
           network::TestNetworkConnectionTracker::CreateInstance()),
-      scoped_task_environment_(
-          base::test::ScopedTaskEnvironment::MainThreadType::IO),
+      task_environment_(base::test::TaskEnvironment::MainThreadType::IO),
       factory_(base::BindRepeating(
                    &ConnectionFactoryImplTest::GetProxyResolvingSocketFactory,
                    base::Unretained(this)),
                base::Bind(&ConnectionFactoryImplTest::ConnectionsComplete,
                           base::Unretained(this))),
       run_loop_(new base::RunLoop()),
-      network_change_notifier_(net::NetworkChangeNotifier::CreateMock()),
+      network_change_notifier_(
+          net::NetworkChangeNotifier::CreateMockIfNeeded()),
       network_service_(network::NetworkService::CreateForTesting()) {
   network::mojom::NetworkContextParamsPtr params =
       network::mojom::NetworkContextParams::New();
@@ -330,8 +332,8 @@ ConnectionFactoryImplTest::ConnectionFactoryImplTest()
   // configuration.
   params->initial_proxy_config = net::ProxyConfigWithAnnotation::CreateDirect();
   network_context_ = std::make_unique<network::NetworkContext>(
-      network_service_.get(), mojo::MakeRequest(&network_context_ptr_),
-      std::move(params));
+      network_service_.get(),
+      network_context_remote_.BindNewPipeAndPassReceiver(), std::move(params));
   factory()->SetConnectionListener(this);
   factory()->Initialize(ConnectionFactory::BuildLoginRequestCallback(),
                         ConnectionHandler::ProtoReceivedCallback(),

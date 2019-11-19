@@ -21,7 +21,7 @@
 #include "chrome/browser/chromeos/settings/scoped_cros_settings_test_helper.h"
 #include "chrome/browser/extensions/external_provider_impl.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/common/extension_urls.h"
 #include "extensions/common/verifier_formats.h"
@@ -46,7 +46,7 @@ class ExternalCacheImplTest : public testing::Test,
                               public ExternalCacheDelegate {
  public:
   ExternalCacheImplTest()
-      : thread_bundle_(content::TestBrowserThreadBundle::REAL_IO_THREAD),
+      : task_environment_(content::BrowserTaskEnvironment::REAL_IO_THREAD),
         test_shared_loader_factory_(
             base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
                 &test_url_loader_factory_)) {}
@@ -119,7 +119,7 @@ class ExternalCacheImplTest : public testing::Test,
   }
 
  private:
-  content::TestBrowserThreadBundle thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
 
   network::TestURLLoaderFactory test_url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_;
@@ -138,9 +138,8 @@ TEST_F(ExternalCacheImplTest, Basic) {
   base::FilePath cache_dir(CreateCacheDir(false));
   ExternalCacheImpl external_cache(
       cache_dir, url_loader_factory(),
-      base::CreateSequencedTaskRunnerWithTraits({base::MayBlock()}), this, true,
-      false);
-  external_cache.use_null_connector_for_test();
+      base::CreateSequencedTaskRunner({base::ThreadPool(), base::MayBlock()}),
+      this, true, false);
 
   std::unique_ptr<base::DictionaryValue> prefs(new base::DictionaryValue);
   prefs->Set(kTestExtensionId1, CreateEntryWithUpdateUrl(true));
@@ -261,9 +260,8 @@ TEST_F(ExternalCacheImplTest, PreserveInstalled) {
   base::FilePath cache_dir(CreateCacheDir(false));
   ExternalCacheImpl external_cache(
       cache_dir, url_loader_factory(),
-      base::CreateSequencedTaskRunnerWithTraits({base::MayBlock()}), this, true,
-      false);
-  external_cache.use_null_connector_for_test();
+      base::CreateSequencedTaskRunner({base::ThreadPool(), base::MayBlock()}),
+      this, true, false);
 
   std::unique_ptr<base::DictionaryValue> prefs(new base::DictionaryValue);
   prefs->Set(kTestExtensionId1, CreateEntryWithUpdateUrl(true));

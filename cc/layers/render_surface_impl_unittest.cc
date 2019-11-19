@@ -9,7 +9,7 @@
 #include "cc/layers/append_quads_data.h"
 #include "cc/test/fake_mask_layer_impl.h"
 #include "cc/test/fake_raster_source.h"
-#include "cc/test/layer_test_common.h"
+#include "cc/test/layer_tree_impl_test_base.h"
 #include "components/viz/common/quads/render_pass_draw_quad.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -20,12 +20,14 @@ TEST(RenderSurfaceLayerImplTest, Occlusion) {
   gfx::Size layer_size(1000, 1000);
   gfx::Size viewport_size(1000, 1000);
 
-  LayerTestCommon::LayerImplTest impl;
+  LayerTreeImplTestBase impl;
 
-  LayerImpl* owning_layer_impl = impl.AddChildToRoot<LayerImpl>();
+  LayerImpl* owning_layer_impl = impl.AddLayer<LayerImpl>();
   owning_layer_impl->SetBounds(layer_size);
   owning_layer_impl->SetDrawsContent(true);
-  owning_layer_impl->test_properties()->force_render_surface = true;
+  CopyProperties(impl.root_layer(), owning_layer_impl);
+  CreateEffectNode(owning_layer_impl).render_surface_reason =
+      RenderSurfaceReason::kTest;
 
   impl.CalcDrawProps(viewport_size);
 
@@ -37,8 +39,7 @@ TEST(RenderSurfaceLayerImplTest, Occlusion) {
     gfx::Rect occluded;
     impl.AppendSurfaceQuadsWithOcclusion(render_surface_impl, occluded);
 
-    LayerTestCommon::VerifyQuadsExactlyCoverRect(impl.quad_list(),
-                                                 gfx::Rect(layer_size));
+    VerifyQuadsExactlyCoverRect(impl.quad_list(), gfx::Rect(layer_size));
     EXPECT_EQ(1u, impl.quad_list().size());
   }
 
@@ -47,7 +48,7 @@ TEST(RenderSurfaceLayerImplTest, Occlusion) {
     gfx::Rect occluded(owning_layer_impl->visible_layer_rect());
     impl.AppendSurfaceQuadsWithOcclusion(render_surface_impl, occluded);
 
-    LayerTestCommon::VerifyQuadsExactlyCoverRect(impl.quad_list(), gfx::Rect());
+    VerifyQuadsExactlyCoverRect(impl.quad_list(), gfx::Rect());
     EXPECT_EQ(impl.quad_list().size(), 0u);
   }
 
@@ -57,8 +58,8 @@ TEST(RenderSurfaceLayerImplTest, Occlusion) {
     impl.AppendSurfaceQuadsWithOcclusion(render_surface_impl, occluded);
 
     size_t partially_occluded_count = 0;
-    LayerTestCommon::VerifyQuadsAreOccluded(
-        impl.quad_list(), occluded, &partially_occluded_count);
+    VerifyQuadsAreOccluded(impl.quad_list(), occluded,
+                           &partially_occluded_count);
     // The layer outputs one quad, which is partially occluded.
     EXPECT_EQ(1u, impl.quad_list().size());
     EXPECT_EQ(1u, partially_occluded_count);
@@ -67,56 +68,40 @@ TEST(RenderSurfaceLayerImplTest, Occlusion) {
 
 static std::unique_ptr<viz::RenderPass> DoAppendQuadsWithScaledMask(
     DrawMode draw_mode,
-    float device_scale_factor,
-    Layer::LayerMaskType mask_type) {
+    float device_scale_factor) {
   gfx::Size layer_size(1000, 1000);
-  gfx::Size viewport_size(1000, 1000);
+  gfx::Rect viewport_rect(1000, 1000);
   float scale_factor = 2;
   scoped_refptr<FakeRasterSource> raster_source =
       FakeRasterSource::CreateFilledSolidColor(layer_size);
 
-  LayerTreeSettings settings;
-  settings.layer_transforms_should_scale_layer_contents = true;
-  LayerTestCommon::LayerImplTest impl(settings);
-  std::unique_ptr<LayerImpl> root =
-      LayerImpl::Create(impl.host_impl()->active_tree(), 2);
-  std::unique_ptr<LayerImpl> surface =
-      LayerImpl::Create(impl.host_impl()->active_tree(), 3);
-  surface->SetBounds(layer_size);
-  surface->test_properties()->force_render_surface = true;
+  LayerTreeImplTestBase impl;
+  auto* root = impl.root_layer();
 
+  auto* surface = impl.AddLayer<LayerImpl>();
+  surface->SetBounds(layer_size);
   gfx::Transform scale;
   scale.Scale(scale_factor, scale_factor);
-  surface->test_properties()->transform = scale;
+  CopyProperties(root, surface);
+  CreateTransformNode(surface).local = scale;
+  CreateEffectNode(surface).render_surface_reason = RenderSurfaceReason::kTest;
 
-  std::unique_ptr<FakeMaskLayerImpl> mask_layer = FakeMaskLayerImpl::Create(
-      impl.host_impl()->active_tree(), 4, raster_source, mask_type);
+  auto* mask_layer = impl.AddLayer<FakeMaskLayerImpl>(raster_source);
   mask_layer->set_resource_size(
       gfx::ScaleToCeiledSize(layer_size, scale_factor));
-  mask_layer->SetDrawsContent(true);
-  mask_layer->SetBounds(layer_size);
-  surface->test_properties()->SetMaskLayer(std::move(mask_layer));
+  SetupMaskProperties(surface, mask_layer);
 
-  std::unique_ptr<LayerImpl> child =
-      LayerImpl::Create(impl.host_impl()->active_tree(), 5);
+  auto* child = impl.AddLayer<LayerImpl>();
   child->SetDrawsContent(true);
   child->SetBounds(layer_size);
+  CopyProperties(surface, child);
 
-  surface->test_properties()->AddChild(std::move(child));
-  root->test_properties()->AddChild(std::move(surface));
-  impl.host_impl()->active_tree()->SetRootLayerForTesting(std::move(root));
+  LayerTreeImpl* active_tree = impl.host_impl()->active_tree();
+  active_tree->SetDeviceScaleFactor(device_scale_factor);
+  active_tree->SetDeviceViewportRect(viewport_rect);
+  UpdateDrawProperties(active_tree);
 
-  impl.host_impl()->active_tree()->SetDeviceScaleFactor(device_scale_factor);
-  impl.host_impl()->active_tree()->SetDeviceViewportSize(viewport_size);
-  impl.host_impl()->active_tree()->BuildLayerListAndPropertyTreesForTesting();
-  impl.host_impl()->active_tree()->UpdateDrawProperties();
-
-  LayerImpl* surface_raw = impl.host_impl()
-                               ->active_tree()
-                               ->root_layer_for_testing()
-                               ->test_properties()
-                               ->children[0];
-  RenderSurfaceImpl* render_surface_impl = GetRenderSurface(surface_raw);
+  RenderSurfaceImpl* render_surface_impl = GetRenderSurface(surface);
   std::unique_ptr<viz::RenderPass> render_pass = viz::RenderPass::Create();
   AppendQuadsData append_quads_data;
   render_surface_impl->AppendQuads(draw_mode, render_pass.get(),
@@ -125,19 +110,20 @@ static std::unique_ptr<viz::RenderPass> DoAppendQuadsWithScaledMask(
 }
 
 TEST(RenderSurfaceLayerImplTest, AppendQuadsWithScaledMask) {
-  std::unique_ptr<viz::RenderPass> render_pass = DoAppendQuadsWithScaledMask(
-      DRAW_MODE_HARDWARE, 1.f, Layer::LayerMaskType::SINGLE_TEXTURE_MASK);
+  std::unique_ptr<viz::RenderPass> render_pass =
+      DoAppendQuadsWithScaledMask(DRAW_MODE_HARDWARE, 1.f);
   DCHECK(render_pass->quad_list.front());
   const viz::RenderPassDrawQuad* quad =
       viz::RenderPassDrawQuad::MaterialCast(render_pass->quad_list.front());
-  EXPECT_EQ(gfx::RectF(0, 0, 1, 1), quad->mask_uv_rect);
+  // Mask layers don't use quad's mask functionality.
+  EXPECT_EQ(gfx::RectF(), quad->mask_uv_rect);
   EXPECT_EQ(gfx::Vector2dF(2.f, 2.f), quad->filters_scale);
+  EXPECT_EQ(0u, quad->mask_resource_id());
 }
 
 TEST(RenderSurfaceLayerImplTest, ResourcelessAppendQuadsSkipMask) {
   std::unique_ptr<viz::RenderPass> render_pass =
-      DoAppendQuadsWithScaledMask(DRAW_MODE_RESOURCELESS_SOFTWARE, 1.f,
-                                  Layer::LayerMaskType::SINGLE_TEXTURE_MASK);
+      DoAppendQuadsWithScaledMask(DRAW_MODE_RESOURCELESS_SOFTWARE, 1.f);
   DCHECK(render_pass->quad_list.front());
   const viz::RenderPassDrawQuad* quad =
       viz::RenderPassDrawQuad::MaterialCast(render_pass->quad_list.front());
@@ -146,8 +132,8 @@ TEST(RenderSurfaceLayerImplTest, ResourcelessAppendQuadsSkipMask) {
 
 TEST(RenderSurfaceLayerImplTest,
      AppendQuadsWithSolidColorMaskAndDeviceScaleFactor) {
-  std::unique_ptr<viz::RenderPass> render_pass = DoAppendQuadsWithScaledMask(
-      DRAW_MODE_HARDWARE, 2.f, Layer::LayerMaskType::MULTI_TEXTURE_MASK);
+  std::unique_ptr<viz::RenderPass> render_pass =
+      DoAppendQuadsWithScaledMask(DRAW_MODE_HARDWARE, 2.f);
   DCHECK(render_pass->quad_list.front());
   const viz::RenderPassDrawQuad* quad =
       viz::RenderPassDrawQuad::MaterialCast(render_pass->quad_list.front());
@@ -156,8 +142,8 @@ TEST(RenderSurfaceLayerImplTest,
   // With tiled mask layer, we only generate mask quads for visible rect. In
   // this case |quad_layer_rect| is not fully covered, but
   // |visible_quad_layer_rect| is fully covered.
-  LayerTestCommon::VerifyQuadsExactlyCoverRect(
-      render_pass->quad_list, quad->shared_quad_state->visible_quad_layer_rect);
+  VerifyQuadsExactlyCoverRect(render_pass->quad_list,
+                              quad->shared_quad_state->visible_quad_layer_rect);
 }
 
 }  // namespace

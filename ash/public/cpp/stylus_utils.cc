@@ -7,7 +7,7 @@
 #include "ash/public/cpp/ash_switches.h"
 #include "base/command_line.h"
 #include "ui/display/display.h"
-#include "ui/events/devices/input_device_manager.h"
+#include "ui/events/devices/device_data_manager.h"
 #include "ui/events/devices/touchscreen_device.h"
 #include "ui/gfx/geometry/point.h"
 
@@ -36,7 +36,7 @@ bool HasStylusInput() {
 
   // Check to see if the hardware reports it is stylus capable.
   for (const ui::TouchscreenDevice& device :
-       ui::InputDeviceManager::GetInstance()->GetTouchscreenDevices()) {
+       ui::DeviceDataManager::GetInstance()->GetTouchscreenDevices()) {
     if (device.has_stylus &&
         device.type == ui::InputDeviceType::INPUT_DEVICE_INTERNAL) {
       return true;

@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//components/viz/viz.gni")
+import("//gpu/vulkan/features.gni")
 
 viz_static_library("test_support") {
   testonly = true
@@ -38,51 +39,55 @@ viz_static_library("test_support") {
     "mock_display_client.cc",
     "mock_display_client.h",
     "mock_helper.h",
-    "ordered_texture_map.cc",
-    "ordered_texture_map.h",
     "paths.cc",
     "paths.h",
-    "surface_hittest_test_helpers.cc",
-    "surface_hittest_test_helpers.h",
+    "stub_surface_client.cc",
+    "stub_surface_client.h",
     "surface_id_allocator_set.cc",
     "surface_id_allocator_set.h",
     "test_context_provider.cc",
     "test_context_provider.h",
     "test_context_support.cc",
     "test_context_support.h",
-    "test_display_provider.cc",
-    "test_display_provider.h",
     "test_frame_sink_manager.cc",
     "test_frame_sink_manager.h",
     "test_gles2_interface.cc",
     "test_gles2_interface.h",
     "test_gpu_memory_buffer_manager.cc",
     "test_gpu_memory_buffer_manager.h",
+    "test_gpu_service_holder.cc",
+    "test_gpu_service_holder.h",
+    "test_image_factory.cc",
+    "test_image_factory.h",
+    "test_in_process_context_provider.cc",
+    "test_in_process_context_provider.h",
     "test_latest_local_surface_id_lookup_delegate.cc",
     "test_latest_local_surface_id_lookup_delegate.h",
-    "test_layer_tree_frame_sink.cc",
-    "test_layer_tree_frame_sink.h",
+    "test_output_surface_provider.cc",
+    "test_output_surface_provider.h",
     "test_shared_bitmap_manager.cc",
     "test_shared_bitmap_manager.h",
-    "test_texture.cc",
-    "test_texture.h",
   ]
   deps = [
     "//base",
     "//base/test:test_support",
-    "//cc",
     "//components/viz/host",
     "//components/viz/service",
     "//gpu:raster",
     "//gpu:test_support",
+    "//gpu/command_buffer/client:gles2_implementation",
     "//gpu/skia_bindings",
-    "//services/viz/privileged/interfaces",
+    "//services/viz/privileged/mojom",
     "//testing/gmock",
     "//testing/gtest",
     "//ui/gfx/geometry",
     "//ui/gl",
     "//ui/latency:test_support",
   ]
+
+  if (enable_vulkan) {
+    deps += [ "//gpu/vulkan/init" ]
+  }
 }
 
 viz_source_set("test_suite") {

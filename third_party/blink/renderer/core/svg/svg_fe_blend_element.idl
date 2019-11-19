@@ -53,4 +53,4 @@
     [MeasureAs=SVG1DOMFilter] readonly attribute SVGAnimatedEnumeration mode;
 };
 
-SVGFEBlendElement implements SVGFilterPrimitiveStandardAttributes;
+SVGFEBlendElement includes SVGFilterPrimitiveStandardAttributes;

@@ -1,0 +1,42 @@
+<link rel="import" href="../../html/polymer.html">
+
+<link rel="import" href="chrome://resources/polymer/v1_0/iron-a11y-announcer/iron-a11y-announcer.html">
+<link rel="import" href="../../html/assert.html">
+<link rel="import" href="../../html/cr.html">
+<link rel="import" href="../../html/event_tracker.html">
+<link rel="import" href="../cr_button/cr_button.html">
+<link rel="import" href="cr_toast.html">
+
+<dom-module id="cr-toast-manager">
+  <template>
+    <style>
+      #content {
+        display: flex;
+        flex: 1;
+      }
+
+      .collapsible {
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      span {
+        white-space: pre;
+      }
+
+      .elided-text {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+    </style>
+    <cr-toast id="toast" duration="[[duration]]">
+      <div id="content" class="elided-text"></div>
+      <cr-button id="button" hidden$="[[!showUndo_]]" on-click="onUndoClick_"
+          aria-label$="[[undoDescription]]">
+        [[undoLabel]]
+      </cr-button>
+    </cr-toast>
+  </template>
+  <script src="cr_toast_manager.js"></script>
+</dom-module>

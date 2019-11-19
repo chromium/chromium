@@ -1,18 +1,17 @@
 <link rel="import" href="chrome://resources/html/polymer.html">
 
+<link rel="import" href="chrome://resources/cr_elements/cr_button/cr_button.html">
 <link rel="import" href="chrome://resources/cr_elements/cr_dialog/cr_dialog.html">
 <link rel="import" href="chrome://resources/cr_elements/cr_input/cr_input.html">
 <link rel="import" href="chrome://resources/cr_elements/hidden_style_css.html">
-<link rel="import" href="chrome://resources/cr_elements/paper_button_style_css.html">
 <link rel="import" href="chrome://resources/html/cr.html">
 <link rel="import" href="chrome://resources/html/i18n_behavior.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-flex-layout/iron-flex-layout-classes.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-list/iron-list.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/paper-button/paper-button.html">
 
 <dom-module id="bluetooth-dialog">
   <template>
-    <style include="cr-hidden-style paper-button-style iron-flex">
+    <style include="cr-hidden-style iron-flex">
       #pairing {
         margin-bottom: 10px;
       }
@@ -70,21 +69,22 @@
       }
 
       /* Override default style since it assumes a single action-button */
-      paper-button.cancel-button {
+      cr-button.cancel-button {
         margin: 0;
       }
 
-      paper-button.action-button {
+      cr-button.action-button {
         margin-inline-start: 8px;
       }
     </style>
     <!-- TODO(stevenjb/dschuyler): Find a solution to support i18n{} here -->
     <cr-dialog id="dialog" no-cancel="[[noCancel]]"
         close-text="[[i18n('close')]]" on-cancel="onDialogCanceled_"
-        on-closed="onDialogCanceled_">
+        on-closed="onDialogCanceled_" exportparts="dialog">
       <div slot="title">[[dialogTitle]]</div>
       <div slot="body">
-        <div class="contents layout vertical center center-justified">
+        <div class="contents layout vertical center center-justified"
+            role="alert">
           <template is="dom-if" if="[[!errorMessage_]]">
             <div id="pairing" class="layout vertical center center-justified">
               <div class="dialog-message">
@@ -123,31 +123,30 @@
       </div>
       <div slot="button-container">
         <template is="dom-if" if="[[!errorMessage_]]">
-          <paper-button hidden$="[[showDismiss_(pairingDevice, pairingEvent_)]]"
-              class="cancel-button" on-tap="onCancelTap_">
+          <cr-button hidden$="[[showDismiss_(pairingDevice, pairingEvent_)]]"
+              class="cancel-button" on-click="onCancelTap_">
            [[i18n('cancel')]]
-          </paper-button>
-          <paper-button hidden$="[[!showAcceptReject_(pairingEvent_)]]"
-              class="action-button" on-tap="onAcceptTap_">
+          </cr-button>
+          <cr-button hidden$="[[!showAcceptReject_(pairingEvent_)]]"
+              id="accept-button" class="action-button" on-click="onAcceptTap_">
             [[i18n('bluetoothAccept')]]
-          </paper-button>
-          <paper-button hidden$="[[!showAcceptReject_(pairingEvent_)]]"
-              class="action-button" on-tap="onRejectTap_">
+          </cr-button>
+          <cr-button hidden$="[[!showAcceptReject_(pairingEvent_)]]"
+              class="action-button" on-click="onRejectTap_">
             [[i18n('bluetoothReject')]]
-          </paper-button>
-          <paper-button hidden$="[[!showConnect_(pairingEvent_)]]"
+          </cr-button>
+          <cr-button hidden$="[[!showConnect_(pairingEvent_)]]"
               disabled="[[!enableConnect_(pairingEvent_, pinOrPass_)]]"
-              class="action-button" on-tap="onConnectTap_">
+              class="action-button" on-click="onConnectTap_">
             [[i18n('bluetoothPair')]]
-          </paper-button>
-          <paper-button
-              hidden$="[[!showDismiss_(pairingDevice, pairingEvent_)]]"
-              class="action-button" on-tap="close">
+          </cr-button>
+          <cr-button hidden$="[[!showDismiss_(pairingDevice, pairingEvent_)]]"
+              class="action-button" on-click="close">
             [[i18n('ok')]]
-          </paper-button>
+          </cr-button>
         </template>
         <template is="dom-if" if="[[errorMessage_]]">
-          <paper-button  on-tap="close">[[i18n('ok')]]</paper-button>
+          <cr-button on-click="close">[[i18n('ok')]]</cr-button>
         </template>
       </div>
     </cr-dialog>

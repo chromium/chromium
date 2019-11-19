@@ -1,0 +1,49 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("ui_resources") {
+  inputs = [
+    "chrome.bmp",
+    "error.bmp",
+    "google_update_ico",
+    "resources.grh",
+    "resources_en.rc",
+  ]
+}
+
+source_set("ui") {
+  sources = [
+    "complete_wnd.cc",
+    "complete_wnd.h",
+    "constants.cc",
+    "constants.h",
+    "owner_draw_controls.cc",
+    "owner_draw_controls.h",
+    "progress_wnd.cc",
+    "progress_wnd.h",
+    "splash_screen.cc",
+    "splash_screen.h",
+    "ui.cc",
+    "ui.h",
+    "ui_ctls.h",
+    "ui_displayed_event.cc",
+    "ui_displayed_event.h",
+    "util.cc",
+    "util.h",
+    "yes_no_dialog.cc",
+    "yes_no_dialog.h",
+  ]
+
+  deps = [
+    ":ui_resources",
+    "//base",
+    "//base:i18n",
+    "//chrome/updater:common",
+    "//chrome/updater/win:base",
+    "//chrome/updater/win:install_progress_observer",
+    "//third_party/wtl",
+  ]
+
+  cflags_cc = [ "-Wno-missing-braces" ]
+}

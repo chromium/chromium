@@ -4,16 +4,22 @@
 
 package org.chromium.chrome.browser.signin;
 
+import android.app.Activity;
 import android.os.Bundle;
-import android.support.annotation.IntDef;
-import android.support.annotation.Nullable;
 
+import androidx.annotation.IntDef;
+import androidx.annotation.Nullable;
+
+import org.chromium.base.annotations.UsedByReflection;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.preferences.PrefServiceBridge;
+import org.chromium.chrome.browser.ChromeFeatureList;
+import org.chromium.chrome.browser.SyncFirstSetupCompleteSource;
 import org.chromium.chrome.browser.preferences.PreferencesLauncher;
-import org.chromium.chrome.browser.preferences.SyncAndServicesPreferences;
+import org.chromium.chrome.browser.preferences.sync.SyncAndServicesPreferences;
+import org.chromium.chrome.browser.sync.ProfileSyncService;
+import org.chromium.components.signin.metrics.SigninAccessPoint;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -89,6 +95,7 @@ public class SigninFragment extends SigninFragmentBase {
     }
 
     // Every fragment must have a public default constructor.
+    @UsedByReflection("SigninActivity.java")
     public SigninFragment() {}
 
     @Override
@@ -126,31 +133,35 @@ public class SigninFragment extends SigninFragmentBase {
     @Override
     protected void onSigninAccepted(String accountName, boolean isDefaultAccount,
             boolean settingsClicked, Runnable callback) {
-        if (PrefServiceBridge.getInstance().getSyncLastAccountName() != null) {
-            AccountSigninActivity.recordSwitchAccountSourceHistogram(
-                    AccountSigninActivity.SwitchAccountSource.SIGNOUT_SIGNIN);
-        }
+        IdentityServicesProvider.getSigninManager().signIn(
+                accountName, new SigninManager.SignInCallback() {
+                    @Override
+                    public void onSignInComplete() {
+                        UnifiedConsentServiceBridge.setUrlKeyedAnonymizedDataCollectionEnabled(
+                                true);
+                        if (settingsClicked) {
+                            PreferencesLauncher.launchSettingsPage(getActivity(),
+                                    SyncAndServicesPreferences.class,
+                                    SyncAndServicesPreferences.createArguments(true));
+                        } else if (ChromeFeatureList.isEnabled(
+                                           ChromeFeatureList.SYNC_MANUAL_START_ANDROID)) {
+                            ProfileSyncService.get().setFirstSetupComplete(
+                                    SyncFirstSetupCompleteSource.BASIC_FLOW);
+                        }
 
-        SigninManager.get().signIn(accountName, getActivity(), new SigninManager.SignInCallback() {
-            @Override
-            public void onSignInComplete() {
-                UnifiedConsentServiceBridge.setUrlKeyedAnonymizedDataCollectionEnabled(true);
-                if (settingsClicked) {
-                    PreferencesLauncher.launchSettingsPage(getActivity(),
-                            SyncAndServicesPreferences.class,
-                            SyncAndServicesPreferences.createArguments(true));
-                }
+                        recordSigninCompletedHistogramAccountInfo();
 
-                recordSigninCompletedHistogramAccountInfo();
-                getActivity().finish();
-                callback.run();
-            }
+                        Activity activity = getActivity();
+                        if (activity != null) activity.finish();
 
-            @Override
-            public void onSignInAborted() {
-                callback.run();
-            }
-        });
+                        callback.run();
+                    }
+
+                    @Override
+                    public void onSignInAborted() {
+                        callback.run();
+                    }
+                });
     }
 
     @Override

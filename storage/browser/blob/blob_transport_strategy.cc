@@ -26,13 +26,12 @@ class NoneNeededTransportStrategy : public BlobTransportStrategy {
                               ResultCallback result_callback)
       : BlobTransportStrategy(builder, std::move(result_callback)) {}
 
-  void AddBytesElement(blink::mojom::DataElementBytes* bytes,
-                       const blink::mojom::BytesProviderPtr& data) override {
+  void AddBytesElement(
+      blink::mojom::DataElementBytes* bytes,
+      const mojo::Remote<blink::mojom::BytesProvider>& data) override {
     DCHECK(bytes->embedded_data);
     DCHECK_EQ(bytes->length, bytes->embedded_data->size());
-    builder_->AppendData(
-        reinterpret_cast<const char*>(bytes->embedded_data->data()),
-        bytes->length);
+    builder_->AppendData(base::make_span(*bytes->embedded_data));
   }
 
   void BeginTransport(
@@ -48,8 +47,9 @@ class ReplyTransportStrategy : public BlobTransportStrategy {
                          ResultCallback result_callback)
       : BlobTransportStrategy(builder, std::move(result_callback)) {}
 
-  void AddBytesElement(blink::mojom::DataElementBytes* bytes,
-                       const blink::mojom::BytesProviderPtr& data) override {
+  void AddBytesElement(
+      blink::mojom::DataElementBytes* bytes,
+      const mojo::Remote<blink::mojom::BytesProvider>& data) override {
     BlobDataBuilder::FutureData future_data =
         builder_->AppendFutureData(bytes->length);
     // base::Unretained is safe because |this| is guaranteed (by the contract
@@ -83,10 +83,7 @@ class ReplyTransportStrategy : public BlobTransportStrategy {
           .Run(BlobStatus::ERR_INVALID_CONSTRUCTION_ARGUMENTS);
       return;
     }
-    bool populate_result = future_data.Populate(
-        base::make_span(reinterpret_cast<const char*>(data.data()),
-                        data.size()),
-        0);
+    bool populate_result = future_data.Populate(base::make_span(data), 0);
     DCHECK(populate_result);
 
     if (++num_resolved_requests_ == requests_.size())
@@ -109,8 +106,9 @@ class DataPipeTransportStrategy : public BlobTransportStrategy {
                  mojo::SimpleWatcher::ArmingPolicy::AUTOMATIC,
                  base::SequencedTaskRunnerHandle::Get()) {}
 
-  void AddBytesElement(blink::mojom::DataElementBytes* bytes,
-                       const blink::mojom::BytesProviderPtr& data) override {
+  void AddBytesElement(
+      blink::mojom::DataElementBytes* bytes,
+      const mojo::Remote<blink::mojom::BytesProvider>& data) override {
     // Split up the data in |max_bytes_data_item_size| sized chunks.
     std::vector<BlobDataBuilder::FutureData> future_data;
     for (uint64_t source_offset = 0; source_offset < bytes->length;
@@ -213,7 +211,7 @@ class DataPipeTransportStrategy : public BlobTransportStrategy {
       num_bytes =
           std::min<uint32_t>(num_bytes, limits_.max_bytes_data_item_size -
                                             offset_in_builder_element);
-      base::span<char> output_buffer =
+      base::span<uint8_t> output_buffer =
           future_data[relative_element_index].GetDataToPopulate(
               offset_in_builder_element, num_bytes);
       DCHECK(output_buffer.data());
@@ -260,8 +258,9 @@ class FileTransportStrategy : public BlobTransportStrategy {
       : BlobTransportStrategy(builder, std::move(result_callback)),
         limits_(limits) {}
 
-  void AddBytesElement(blink::mojom::DataElementBytes* bytes,
-                       const blink::mojom::BytesProviderPtr& data) override {
+  void AddBytesElement(
+      blink::mojom::DataElementBytes* bytes,
+      const mojo::Remote<blink::mojom::BytesProvider>& data) override {
     uint64_t source_offset = 0;
     while (source_offset < bytes->length) {
       if (current_file_size_ >= limits_.max_file_size ||

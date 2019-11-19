@@ -109,8 +109,9 @@ void CPUFreqMonitorDelegate::RecordFrequency(unsigned int cpu_id,
 
 scoped_refptr<SingleThreadTaskRunner>
 CPUFreqMonitorDelegate::CreateTaskRunner() {
-  return base::CreateSingleThreadTaskRunnerWithTraits(
-      {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN,
+  return base::CreateSingleThreadTaskRunner(
+      {base::ThreadPool(), base::MayBlock(),
+       base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN,
        base::TaskPriority::BEST_EFFORT},
       base::SingleThreadTaskRunnerThreadMode::SHARED);
 }
@@ -119,7 +120,7 @@ CPUFreqMonitor::CPUFreqMonitor()
     : CPUFreqMonitor(std::make_unique<CPUFreqMonitorDelegate>()) {}
 
 CPUFreqMonitor::CPUFreqMonitor(std::unique_ptr<CPUFreqMonitorDelegate> delegate)
-    : delegate_(std::move(delegate)), weak_ptr_factory_(this) {}
+    : delegate_(std::move(delegate)) {}
 
 CPUFreqMonitor::~CPUFreqMonitor() {
   Stop();

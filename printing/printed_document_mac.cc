@@ -27,7 +27,7 @@ bool PrintedDocument::RenderPrintedDocument(PrintingContext* context) {
   }
 
   DCHECK(metafile);
-  const PageSetup& page_setup = immutable_.settings_.page_setup_device_units();
+  const PageSetup& page_setup = immutable_.settings_->page_setup_device_units();
   gfx::Rect content_area = GetCenteredPageContentRect(
       page_setup.physical_size(), page_size, page_content_rect);
 

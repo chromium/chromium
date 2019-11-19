@@ -13,12 +13,13 @@
 namespace blink {
 
 class ModuleScript;
+class ScriptState;
 
 // A ModuleTreeClient that lives on the worklet context's thread.
 class WorkletModuleTreeClient final : public ModuleTreeClient {
  public:
   WorkletModuleTreeClient(
-      Modulator*,
+      ScriptState*,
       scoped_refptr<base::SingleThreadTaskRunner> outside_settings_task_runner,
       WorkletPendingTasks*);
 
@@ -28,7 +29,7 @@ class WorkletModuleTreeClient final : public ModuleTreeClient {
   void Trace(blink::Visitor*) override;
 
  private:
-  Member<Modulator> modulator_;
+  Member<ScriptState> script_state_;
   scoped_refptr<base::SingleThreadTaskRunner> outside_settings_task_runner_;
   CrossThreadPersistent<WorkletPendingTasks> pending_tasks_;
 };

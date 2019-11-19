@@ -18,6 +18,12 @@ source_set("cpp") {
     "input_ipc.h",
     "output_device.cc",
     "output_device.h",
+    "sounds/audio_stream_handler.cc",
+    "sounds/audio_stream_handler.h",
+    "sounds/sounds_manager.cc",
+    "sounds/sounds_manager.h",
+    "sounds/test_data.cc",
+    "sounds/test_data.h",
   ]
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]

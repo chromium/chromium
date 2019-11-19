@@ -14,6 +14,8 @@ factors are also removed from existing image sets to support explicitly
 referencing all available images.
 """
 
+from __future__ import print_function
+
 import os
 import re
 
@@ -29,27 +31,27 @@ DIST_SUBSTR = '%DISTRIBUTION%'
 
 # Matches a chrome theme source URL.
 _THEME_SOURCE = lazy_re.compile(
-    '(?P<baseurl>chrome://theme/IDR_[A-Z0-9_]*)(?P<query>\?.*)?')
+    r'(?P<baseurl>chrome://theme/IDR_[A-Z0-9_]*)(?P<query>\?.*)?')
 # Pattern for matching CSS url() function.
-_CSS_URL_PATTERN = 'url\((?P<quote>"|\'|)(?P<filename>[^"\'()]*)(?P=quote)\)'
+_CSS_URL_PATTERN = r'url\((?P<quote>"|\'|)(?P<filename>[^"\'()]*)(?P=quote)\)'
 # Matches CSS url() functions with the capture group 'filename'.
 _CSS_URL = lazy_re.compile(_CSS_URL_PATTERN)
 # Matches one or more CSS image urls used in given properties.
 _CSS_IMAGE_URLS = lazy_re.compile(
-    '(?P<attribute>content|background|[\w-]*-image):\s*' +
-        '(?P<urls>(' + _CSS_URL_PATTERN + '\s*,?\s*)+)')
+    r'(?P<attribute>content|background|[\w-]*-image):\s*'
+        r'(?P<urls>(' + _CSS_URL_PATTERN + r'\s*,?\s*)+)')
 # Matches CSS image sets.
 _CSS_IMAGE_SETS = lazy_re.compile(
-    '(?P<attribute>content|background|[\w-]*-image):[ ]*' +
-        '-webkit-image-set\((?P<images>' +
-        '(\s*,?\s*url\((?P<quote>"|\'|)[^"\'()]*(?P=quote)\)[ ]*[0-9.]*x)*)\)',
+    r'(?P<attribute>content|background|[\w-]*-image):[ ]*'
+        r'-webkit-image-set\((?P<images>'
+        r'(\s*,?\s*url\((?P<quote>"|\'|)[^"\'()]*(?P=quote)\)[ ]*[0-9.]*x)*)\)',
     re.MULTILINE)
 # Matches a single image in a CSS image set with the capture group scale.
-_CSS_IMAGE_SET_IMAGE = lazy_re.compile('\s*,?\s*' +
-    'url\((?P<quote>"|\'|)[^"\'()]*(?P=quote)\)[ ]*(?P<scale>[0-9.]*x)',
+_CSS_IMAGE_SET_IMAGE = lazy_re.compile(r'\s*,?\s*'
+    r'url\((?P<quote>"|\'|)[^"\'()]*(?P=quote)\)[ ]*(?P<scale>[0-9.]*x)',
     re.MULTILINE)
 _HTML_IMAGE_SRC = lazy_re.compile(
-    '<img[^>]+src=\"(?P<filename>[^">]*)\"[^>]*>')
+    r'<img[^>]+src=\"(?P<filename>[^">]*)\"[^>]*>')
 
 def GetImageList(
     base_path, filename, scale_factors, distribution,
@@ -99,9 +101,12 @@ def GetImageList(
     scale_image_path = os.path.join(scale_path[0], scale_factor, scale_path[1])
     if os.path.isfile(scale_image_path):
       # HTML/CSS always uses forward slashed paths.
-      scale_image_name = re.sub('(?P<path>(.*/)?)(?P<file>[^/]*)',
-                                '\\g<path>' + scale_factor + '/\\g<file>',
-                                filename)
+      parts = filename.rsplit('/', 1)
+      if len(parts) == 1:
+        path = ''
+      else:
+        path = parts[0] + '/'
+      scale_image_name = path + scale_factor + '/' + parts[-1]
       images.append((scale_factor, scale_image_name))
   return images
 
@@ -339,6 +344,10 @@ class ChromeHtml(interface.GathererBase):
     """Parses and inlines the represented file."""
 
     filename = self.GetInputPath()
+    # If there is a grd_node, prefer its GetInputPath(), as that may do more
+    # processing to make the call to ToRealPath() below work correctly.
+    if self.grd_node:
+      filename = self.grd_node.GetInputPath()
     if self.filename_expansion_function:
       filename = self.filename_expansion_function(filename)
     # Hack: some unit tests supply an absolute path and no root node.

@@ -150,11 +150,11 @@ void GinJavaMethodInvocationHelper::Invoke() {
 
   if (coercion_error == kGinJavaBridgeNoError) {
     if (method->is_static()) {
-      InvokeMethod(
-          NULL, cls.obj(), method->return_type(), method->id(), &parameters[0]);
+      InvokeMethod(nullptr, cls.obj(), method->return_type(), method->id(),
+                   parameters.data());
     } else {
-      InvokeMethod(
-          obj.obj(), NULL, method->return_type(), method->id(), &parameters[0]);
+      InvokeMethod(obj.obj(), nullptr, method->return_type(), method->id(),
+                   parameters.data());
     }
   } else {
     SetInvocationError(coercion_error);

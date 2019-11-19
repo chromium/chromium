@@ -9,6 +9,10 @@ import android.content.Context;
 import android.content.res.Configuration;
 import android.text.TextUtils;
 
+import org.chromium.base.ApplicationStatus;
+import org.chromium.base.annotations.CalledByNative;
+import org.chromium.base.annotations.NativeMethods;
+import org.chromium.base.library_loader.LibraryProcessType;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
@@ -20,6 +24,7 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabObserver;
 import org.chromium.chrome.browser.util.UrlUtilities;
+import org.chromium.content_public.browser.BrowserStartupController;
 import org.chromium.content_public.browser.WebContents;
 
 /**
@@ -38,24 +43,21 @@ public class UmaSessionStats {
     private TabModelSelectorTabObserver mTabModelSelectorTabObserver;
 
     private final Context mContext;
-    private final boolean mIsMultiWindowCapable;
     private ComponentCallbacks mComponentCallbacks;
 
     private boolean mKeyboardConnected;
 
     public UmaSessionStats(Context context) {
         mContext = context;
-        mIsMultiWindowCapable = context.getPackageManager().hasSystemFeature(
-                SAMSUNG_MULTWINDOW_PACKAGE);
     }
 
     private void recordPageLoadStats(Tab tab) {
         WebContents webContents = tab.getWebContents();
         boolean isDesktopUserAgent = webContents != null
                 && webContents.getNavigationController().getUseDesktopUserAgent();
-        nativeRecordPageLoaded(isDesktopUserAgent);
+        UmaSessionStatsJni.get().recordPageLoaded(isDesktopUserAgent);
         if (mKeyboardConnected) {
-            nativeRecordPageLoadedWithKeyboard();
+            UmaSessionStatsJni.get().recordPageLoadedWithKeyboard();
         }
 
         String url = tab.getUrl();
@@ -74,7 +76,7 @@ public class UmaSessionStats {
         if (mTabModelSelector == null) return;
 
         TabModel regularModel = mTabModelSelector.getModel(false);
-        nativeRecordTabCountPerLoad(getTabCountFromModel(regularModel));
+        UmaSessionStatsJni.get().recordTabCountPerLoad(getTabCountFromModel(regularModel));
     }
 
     private int getTabCountFromModel(TabModel model) {
@@ -113,7 +115,7 @@ public class UmaSessionStats {
             };
         }
 
-        nativeUmaResumeSession(sNativeUmaSessionStats);
+        UmaSessionStatsJni.get().umaResumeSession(sNativeUmaSessionStats, UmaSessionStats.this);
         updatePreferences();
         updateMetricsServiceState();
         DefaultBrowserInfo.logDefaultBrowserStats();
@@ -123,19 +125,7 @@ public class UmaSessionStats {
         // Lazily create the native object and the notification handler. These objects are never
         // destroyed.
         if (sNativeUmaSessionStats == 0) {
-            sNativeUmaSessionStats = nativeInit();
-        }
-    }
-
-    /**
-     * Logs screen ratio on Samsung MultiWindow devices.
-     */
-    public void logMultiWindowStats(int windowArea, int displayArea, int instanceCount) {
-        if (mIsMultiWindowCapable) {
-            if (displayArea == 0) return;
-            int areaPercent = (windowArea * 100) / displayArea;
-            int safePercent = areaPercent > 0 ? areaPercent : 0;
-            nativeRecordMultiWindowSession(safePercent, instanceCount);
+            sNativeUmaSessionStats = UmaSessionStatsJni.get().init();
         }
     }
 
@@ -149,7 +139,7 @@ public class UmaSessionStats {
             mTabModelSelector = null;
         }
 
-        nativeUmaEndSession(sNativeUmaSessionStats);
+        UmaSessionStatsJni.get().umaEndSession(sNativeUmaSessionStats, UmaSessionStats.this);
     }
 
     /**
@@ -162,7 +152,7 @@ public class UmaSessionStats {
         privacyManager.setUsageAndCrashReporting(consent);
 
         // Perform native changes needed to reflect the new consent value.
-        nativeChangeMetricsReportingConsent(consent);
+        UmaSessionStatsJni.get().changeMetricsReportingConsent(consent);
 
         updateMetricsServiceState();
     }
@@ -171,21 +161,21 @@ public class UmaSessionStats {
      * Initializes the metrics consent bit to false. Used only for testing.
      */
     public static void initMetricsAndCrashReportingForTesting() {
-        nativeInitMetricsAndCrashReportingForTesting();
+        UmaSessionStatsJni.get().initMetricsAndCrashReportingForTesting();
     }
 
     /**
      * Clears the metrics consent bit used for testing to original setting. Used only for testing.
      */
     public static void unSetMetricsAndCrashReportingForTesting() {
-        nativeUnsetMetricsAndCrashReportingForTesting();
+        UmaSessionStatsJni.get().unsetMetricsAndCrashReportingForTesting();
     }
 
     /**
      * Updates the metrics consent bit to |consent|. Used only for testing.
      */
     public static void updateMetricsAndCrashReportingForTesting(boolean consent) {
-        nativeUpdateMetricsAndCrashReportingForTesting(consent);
+        UmaSessionStatsJni.get().updateMetricsAndCrashReportingForTesting(consent);
     }
 
     /**
@@ -200,7 +190,7 @@ public class UmaSessionStats {
         boolean mayUploadStats = privacyManager.isMetricsUploadPermitted();
 
         // Re-start the MetricsService with the given parameter, and current consent.
-        nativeUpdateMetricsServiceState(mayUploadStats);
+        UmaSessionStatsJni.get().updateMetricsServiceState(mayUploadStats);
     }
 
     /**
@@ -208,7 +198,6 @@ public class UmaSessionStats {
      */
     private void updatePreferences() {
         PrivacyPreferencesManager prefManager = PrivacyPreferencesManager.getInstance();
-        prefManager.migrateUsageAndCrashPreferences();
 
         // Update the metrics sampling state so it's available before the native feature list is
         // available.
@@ -219,28 +208,47 @@ public class UmaSessionStats {
     }
 
     public static void registerExternalExperiment(String studyName, int[] experimentIds) {
-        nativeRegisterExternalExperiment(studyName, experimentIds);
+        assert isMetricsServiceAvailable();
+        UmaSessionStatsJni.get().registerExternalExperiment(studyName, experimentIds);
     }
 
     public static void registerSyntheticFieldTrial(String trialName, String groupName) {
-        nativeRegisterSyntheticFieldTrial(trialName, groupName);
+        assert isMetricsServiceAvailable();
+        UmaSessionStatsJni.get().registerSyntheticFieldTrial(trialName, groupName);
     }
 
-    private static native long nativeInit();
-    private static native void nativeChangeMetricsReportingConsent(boolean consent);
-    private static native void nativeInitMetricsAndCrashReportingForTesting();
-    private static native void nativeUnsetMetricsAndCrashReportingForTesting();
-    private static native void nativeUpdateMetricsAndCrashReportingForTesting(boolean consent);
-    private static native void nativeUpdateMetricsServiceState(boolean mayUpload);
-    private native void nativeUmaResumeSession(long nativeUmaSessionStats);
-    private native void nativeUmaEndSession(long nativeUmaSessionStats);
-    private static native void nativeRegisterExternalExperiment(
-            String studyName, int[] experimentIds);
-    private static native void nativeRegisterSyntheticFieldTrial(
-            String trialName, String groupName);
-    private static native void nativeRecordMultiWindowSession(int areaPercent, int instanceCount);
-    private static native void nativeRecordTabCountPerLoad(int numTabsOpen);
-    private static native void nativeRecordPageLoaded(boolean isDesktopUserAgent);
-    private static native void nativeRecordPageLoadedWithKeyboard();
+    /**
+     * UmaSessionStats exposes two static methods on the metrics service. Namely {@link
+     * #registerExternalExperiment} and {@link #registerSyntheticFieldTrial}. However those can only
+     * be used in full-browser mode and as such you must check this before calling them.
+     */
+    public static boolean isMetricsServiceAvailable() {
+        return BrowserStartupController.get(LibraryProcessType.PROCESS_BROWSER)
+                .isFullBrowserStarted();
+    }
 
+    /**
+     * Returns whether there is a visible activity.
+     */
+    @CalledByNative
+    private static boolean hasVisibleActivity() {
+        return ApplicationStatus.hasVisibleActivities();
+    }
+
+    @NativeMethods
+    interface Natives {
+        long init();
+        void changeMetricsReportingConsent(boolean consent);
+        void initMetricsAndCrashReportingForTesting();
+        void unsetMetricsAndCrashReportingForTesting();
+        void updateMetricsAndCrashReportingForTesting(boolean consent);
+        void updateMetricsServiceState(boolean mayUpload);
+        void umaResumeSession(long nativeUmaSessionStats, UmaSessionStats caller);
+        void umaEndSession(long nativeUmaSessionStats, UmaSessionStats caller);
+        void registerExternalExperiment(String studyName, int[] experimentIds);
+        void registerSyntheticFieldTrial(String trialName, String groupName);
+        void recordTabCountPerLoad(int numTabsOpen);
+        void recordPageLoaded(boolean isDesktopUserAgent);
+        void recordPageLoadedWithKeyboard();
+    }
 }

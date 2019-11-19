@@ -1,0 +1,53 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# TODO(dpapad): Share these with polymer_modulizer.gni.
+common_namespace_rewrites = [
+  "cr.addSingletonGetter|addSingletonGetter",
+  "cr.addWebUIListener|addWebUIListener",
+  "cr.dispatchSimpleEvent|dispatchSimpleEvent",
+  "cr.isAndroid|isAndroid",
+  "cr.isChromeOS|isChromeOS",
+  "cr.isIOS|isIOS",
+  "cr.isLinux|isLinux",
+  "cr.isMac|isMac",
+  "cr.isWindows|isWindows",
+  "cr.removeWebUIListener|removeWebUIListener",
+  "cr.sendWithPromise|sendWithPromise",
+  "cr.ui.FocusOutlineManager|FocusOutlineManager",
+  "Polymer.dom.flush|flush",
+  "Polymer.RenderStatus.afterNextRender|afterNextRender",
+  "Polymer.RenderStatus.beforeNextRender|beforeNextRender",
+]
+
+template("js_modulizer") {
+  action(target_name) {
+    script = "//ui/webui/resources/tools/js_modulizer.py"
+
+    inputs = invoker.input_files
+
+    outputs = []
+    foreach(_input, invoker.input_files) {
+      outputs +=
+          [ "$target_gen_dir/" + get_path_info(_input, "name") + ".m.js" ]
+    }
+
+    args = [
+             "--in_folder",
+             rebase_path(".", root_build_dir),
+             "--out_folder",
+             rebase_path(target_gen_dir, root_build_dir),
+             "--input_files",
+           ] + invoker.input_files
+
+    args += [ "--namespace_rewrites" ] + common_namespace_rewrites
+    if (defined(invoker.namespace_rewrites)) {
+      args += invoker.namespace_rewrites
+    }
+
+    if (defined(invoker.deps)) {
+      deps = invoker.deps
+    }
+  }
+}

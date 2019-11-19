@@ -16,10 +16,12 @@
 #include "base/files/file_util.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "chrome/browser/chromeos/certificate_provider/certificate_provider_service.h"
 #include "chrome/browser/chromeos/certificate_provider/certificate_provider_service_factory.h"
+#include "chrome/browser/chromeos/ui/request_pin_view.h"
 #include "chrome/browser/extensions/api/certificate_provider/certificate_provider_api.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -53,29 +55,27 @@ using testing::_;
 
 namespace {
 
-void IgnoreResult(const base::Closure& callback, const base::Value* value) {
+void IgnoreResult(const base::Closure& callback, base::Value value) {
   callback.Run();
 }
 
-void StoreBool(bool* result,
-               const base::Closure& callback,
-               const base::Value* value) {
-  value->GetAsBoolean(result);
+void StoreBool(bool* result, const base::Closure& callback, base::Value value) {
+  value.GetAsBoolean(result);
   callback.Run();
 }
 
 void StoreString(std::string* result,
                  const base::Closure& callback,
-                 const base::Value* value) {
-  value->GetAsString(result);
+                 base::Value value) {
+  value.GetAsString(result);
   callback.Run();
 }
 
 void StoreDigest(std::vector<uint8_t>* digest,
                  const base::Closure& callback,
-                 const base::Value* value) {
-  ASSERT_TRUE(value->is_blob()) << "Unexpected value in StoreDigest";
-  digest->assign(value->GetBlob().begin(), value->GetBlob().end());
+                 base::Value value) {
+  ASSERT_TRUE(value.is_blob()) << "Unexpected value in StoreDigest";
+  digest->assign(value.GetBlob().begin(), value.GetBlob().end());
   callback.Run();
 }
 
@@ -107,42 +107,6 @@ std::string JsUint8Array(const std::vector<uint8_t>& bytes) {
   }
   res += "])";
   return res;
-}
-
-// Enters the code in the ShowPinDialog window and pushes the OK event.
-void EnterCode(chromeos::CertificateProviderService* service,
-               const base::string16& code) {
-  chromeos::RequestPinView* view =
-      service->pin_dialog_manager()->active_view_for_testing();
-  view->textfield_for_testing()->SetText(code);
-  view->Accept();
-  base::RunLoop().RunUntilIdle();
-}
-
-// Enters the valid code for extensions from local example folders, in the
-// ShowPinDialog window and waits for the window to close. The extension code
-// is expected to send "Success" message after the validation and request to
-// stopPinRequest is done.
-void EnterCorrectPin(chromeos::CertificateProviderService* service) {
-  ExtensionTestMessageListener listener("Success", false);
-  EnterCode(service, base::ASCIIToUTF16("1234"));
-  ASSERT_TRUE(listener.WaitUntilSatisfied());
-}
-
-// Enters an invalid code for extensions from local example folders, in the
-// ShowPinDialog window and waits for the window to update with the error. The
-// extension code is expected to send "Invalid PIN" message after the validation
-// and the new requestPin (with the error) is done.
-void EnterWrongPin(chromeos::CertificateProviderService* service) {
-  ExtensionTestMessageListener listener("Invalid PIN", false);
-  EnterCode(service, base::ASCIIToUTF16("567"));
-  ASSERT_TRUE(listener.WaitUntilSatisfied());
-
-  // Check that we have an error message displayed.
-  chromeos::RequestPinView* view =
-      service->pin_dialog_manager()->active_view_for_testing();
-  EXPECT_EQ(gfx::kGoogleRed600,
-            view->error_label_for_testing()->enabled_color());
 }
 
 class CertificateProviderApiTest : public extensions::ExtensionApiTest {
@@ -182,24 +146,113 @@ class CertificateProviderApiTest : public extensions::ExtensionApiTest {
 };
 
 class CertificateProviderRequestPinTest : public CertificateProviderApiTest {
- public:
-  // Loads certificate_provider extension from |folder| and |file_name|.
-  // Returns the CertificateProviderService object from browser context.
-  chromeos::CertificateProviderService* LoadRequestPinExtension(
-      const std::string& folder,
-      const std::string& file_name) {
-    const base::FilePath extension_path =
-        test_data_dir_.AppendASCII("certificate_provider/" + folder);
-    const extensions::Extension* const extension =
-        LoadExtension(extension_path);
-    chromeos::CertificateProviderService* service =
+ protected:
+  static constexpr int kFakeSignRequestId = 123;
+  static constexpr int kWrongPinAttemptsLimit = 3;
+  static constexpr const char* kCorrectPin = "1234";
+  static constexpr const char* kWrongPin = "567";
+
+  void SetUpOnMainThread() override {
+    CertificateProviderApiTest::SetUpOnMainThread();
+    cert_provider_service_ =
         chromeos::CertificateProviderServiceFactory::GetForBrowserContext(
             profile());
-    service->pin_dialog_manager()->AddSignRequestId(extension->id(), 123);
-    ui_test_utils::NavigateToURL(browser(),
-                                 extension->GetResourceURL(file_name));
-    return service;
+    command_request_listener_ = std::make_unique<ExtensionTestMessageListener>(
+        "GetCommand", /*will_reply=*/true);
+    LoadRequestPinExtension();
   }
+
+  void TearDownOnMainThread() override {
+    if (command_request_listener_->was_satisfied()) {
+      // Avoid destroying a non-replied extension function without.
+      command_request_listener_->Reply(/*message=*/std::string());
+    }
+    command_request_listener_.reset();
+    CertificateProviderApiTest::TearDownOnMainThread();
+  }
+
+  void AddFakeSignRequest(int sign_request_id) {
+    cert_provider_service_->pin_dialog_manager()->AddSignRequestId(
+        extension_->id(), sign_request_id, {});
+  }
+
+  void NavigateTo(const std::string& test_page_file_name) {
+    ui_test_utils::NavigateToURL(
+        browser(), extension_->GetResourceURL(test_page_file_name));
+  }
+
+  chromeos::RequestPinView* GetActivePinDialogView() {
+    return cert_provider_service_->pin_dialog_manager()
+        ->default_dialog_host_for_testing()
+        ->active_view_for_testing();
+  }
+
+  views::Widget* GetActivePinDialogWindow() {
+    return cert_provider_service_->pin_dialog_manager()
+        ->default_dialog_host_for_testing()
+        ->active_window_for_testing();
+  }
+
+  // Enters the code in the ShowPinDialog window and pushes the OK event.
+  void EnterCode(const std::string& code) {
+    GetActivePinDialogView()->textfield_for_testing()->SetText(
+        base::ASCIIToUTF16(code));
+    GetActivePinDialogView()->Accept();
+    base::RunLoop().RunUntilIdle();
+  }
+
+  // Enters the valid code for extensions from local example folders, in the
+  // ShowPinDialog window and waits for the window to close. The extension code
+  // is expected to send "Success" message after the validation and request to
+  // stopPinRequest is done.
+  void EnterCorrectPinAndWaitForMessage() {
+    ExtensionTestMessageListener listener("Success", false);
+    EnterCode(kCorrectPin);
+    ASSERT_TRUE(listener.WaitUntilSatisfied());
+  }
+
+  // Enters an invalid code for extensions from local example folders, in the
+  // ShowPinDialog window and waits for the window to update with the error. The
+  // extension code is expected to send "Invalid PIN" message after the
+  // validation and the new requestPin (with the error) is done.
+  void EnterWrongPinAndWaitForMessage() {
+    ExtensionTestMessageListener listener("Invalid PIN", false);
+    EnterCode(kWrongPin);
+    ASSERT_TRUE(listener.WaitUntilSatisfied());
+
+    // Check that we have an error message displayed.
+    EXPECT_EQ(
+        gfx::kGoogleRed600,
+        GetActivePinDialogView()->error_label_for_testing()->GetEnabledColor());
+  }
+
+  bool SendCommand(const std::string& command) {
+    if (!command_request_listener_->WaitUntilSatisfied())
+      return false;
+    command_request_listener_->Reply(command);
+    command_request_listener_->Reset();
+    return true;
+  }
+
+  bool SendCommandAndWaitForMessage(const std::string& command,
+                                    const std::string& expected_message) {
+    ExtensionTestMessageListener listener(expected_message,
+                                          /*will_reply=*/false);
+    if (!SendCommand(command))
+      return false;
+    return listener.WaitUntilSatisfied();
+  }
+
+ private:
+  void LoadRequestPinExtension() {
+    const base::FilePath extension_path =
+        test_data_dir_.AppendASCII("certificate_provider/request_pin");
+    extension_ = LoadExtension(extension_path);
+  }
+
+  chromeos::CertificateProviderService* cert_provider_service_ = nullptr;
+  const extensions::Extension* extension_ = nullptr;
+  std::unique_ptr<ExtensionTestMessageListener> command_request_listener_;
 };
 
 }  // namespace
@@ -249,7 +302,7 @@ IN_PROC_BROWSER_TEST_F(CertificateProviderApiTest, Basic) {
     base::RunLoop run_loop;
     extension_contents->GetMainFrame()->ExecuteJavaScriptForTests(
         base::ASCIIToUTF16("signDigestRequest.digest;"),
-        base::Bind(&StoreDigest, &request_digest, run_loop.QuitClosure()));
+        base::BindOnce(&StoreDigest, &request_digest, run_loop.QuitClosure()));
     run_loop.Run();
   }
 
@@ -277,7 +330,7 @@ IN_PROC_BROWSER_TEST_F(CertificateProviderApiTest, Basic) {
         "replyWithSignature(" + JsUint8Array(signature) + ");";
     extension_contents->GetMainFrame()->ExecuteJavaScriptForTests(
         base::ASCIIToUTF16(code),
-        base::Bind(&IgnoreResult, run_loop.QuitClosure()));
+        base::BindOnce(&IgnoreResult, run_loop.QuitClosure()));
     run_loop.Run();
   }
 
@@ -291,7 +344,7 @@ IN_PROC_BROWSER_TEST_F(CertificateProviderApiTest, Basic) {
     std::string https_reply;
     https_contents->GetMainFrame()->ExecuteJavaScriptForTests(
         base::ASCIIToUTF16("document.body.textContent;"),
-        base::Bind(&StoreString, &https_reply, run_loop.QuitClosure()));
+        base::BindOnce(&StoreString, &https_reply, run_loop.QuitClosure()));
     run_loop.Run();
     // Expect the server to return the fingerprint of the client cert that we
     // presented, which should be the fingerprint of 'l1_leaf.der'.
@@ -300,7 +353,7 @@ IN_PROC_BROWSER_TEST_F(CertificateProviderApiTest, Basic) {
     //   chrome/test/data/extensions/api_test/certificate_provider/l1_leaf.der
     ASSERT_EQ(
         "got client cert with fingerprint: "
-        "2ab3f55e06eb8b36a741fe285a769da45edb2695",
+        "edeb84ab3b5a36dd09a3203c74794b25efa8f126",
         https_reply);
   }
 
@@ -311,7 +364,7 @@ IN_PROC_BROWSER_TEST_F(CertificateProviderApiTest, Basic) {
     bool result = false;
     extension_contents->GetMainFrame()->ExecuteJavaScriptForTests(
         base::ASCIIToUTF16(code),
-        base::Bind(&StoreBool, &result, run_loop.QuitClosure()));
+        base::BindOnce(&StoreBool, &result, run_loop.QuitClosure()));
     run_loop.Run();
     EXPECT_TRUE(result);
   }
@@ -319,96 +372,293 @@ IN_PROC_BROWSER_TEST_F(CertificateProviderApiTest, Basic) {
 
 // User enters the correct PIN.
 IN_PROC_BROWSER_TEST_F(CertificateProviderRequestPinTest, ShowPinDialogAccept) {
-  chromeos::CertificateProviderService* service =
-      LoadRequestPinExtension("request_pin", "basic.html");
+  AddFakeSignRequest(kFakeSignRequestId);
+  NavigateTo("basic.html");
 
   // Enter the valid PIN.
-  EnterCorrectPin(service);
+  EnterCorrectPinAndWaitForMessage();
 
   // The view should be set to nullptr when the window is closed.
-  EXPECT_EQ(service->pin_dialog_manager()->active_view_for_testing(), nullptr);
+  EXPECT_FALSE(GetActivePinDialogView());
 }
 
-// User closes the dialog kMaxClosedDialogsPer10Mins times, and the extension
+// User closes the dialog kMaxClosedDialogsPerMinute times, and the extension
 // should be blocked from showing it again.
 IN_PROC_BROWSER_TEST_F(CertificateProviderRequestPinTest, ShowPinDialogClose) {
-  chromeos::CertificateProviderService* service =
-      LoadRequestPinExtension("request_pin", "basic.html");
+  AddFakeSignRequest(kFakeSignRequestId);
+  NavigateTo("basic.html");
 
-  views::Widget* window =
-      service->pin_dialog_manager()->active_window_for_testing();
   for (int i = 0;
-       i < extensions::api::certificate_provider::kMaxClosedDialogsPer10Mins;
+       i < extensions::api::certificate_provider::kMaxClosedDialogsPerMinute;
        i++) {
     ExtensionTestMessageListener listener("User closed the dialog", false);
-    window->Close();
+    GetActivePinDialogWindow()->Close();
     ASSERT_TRUE(listener.WaitUntilSatisfied());
-    window = service->pin_dialog_manager()->active_window_for_testing();
   }
 
   ExtensionTestMessageListener close_listener("User closed the dialog", true);
-  window->Close();
+  GetActivePinDialogWindow()->Close();
   ASSERT_TRUE(close_listener.WaitUntilSatisfied());
   close_listener.Reply("GetLastError");
   ExtensionTestMessageListener last_error_listener(
-      "This request exceeds the MAX_PIN_DIALOGS_CLOSED_PER_10_MINUTES quota.",
+      "This request exceeds the MAX_PIN_DIALOGS_CLOSED_PER_MINUTE quota.",
       false);
   ASSERT_TRUE(last_error_listener.WaitUntilSatisfied());
-  EXPECT_EQ(service->pin_dialog_manager()->active_view_for_testing(), nullptr);
+  EXPECT_FALSE(GetActivePinDialogView());
 }
 
 // User enters a wrong PIN first and a correct PIN on the second try.
 IN_PROC_BROWSER_TEST_F(CertificateProviderRequestPinTest,
                        ShowPinDialogWrongPin) {
-  chromeos::CertificateProviderService* service =
-      LoadRequestPinExtension("request_pin", "basic.html");
-  EnterWrongPin(service);
+  AddFakeSignRequest(kFakeSignRequestId);
+  NavigateTo("basic.html");
+  EnterWrongPinAndWaitForMessage();
 
   // The window should be active.
-  EXPECT_EQ(
-      service->pin_dialog_manager()->active_window_for_testing()->IsVisible(),
-      true);
-  EXPECT_NE(service->pin_dialog_manager()->active_view_for_testing(), nullptr);
+  EXPECT_TRUE(GetActivePinDialogWindow()->IsVisible());
+  EXPECT_TRUE(GetActivePinDialogView());
 
   // Enter the valid PIN.
-  EnterCorrectPin(service);
+  EnterCorrectPinAndWaitForMessage();
 
   // The view should be set to nullptr when the window is closed.
-  EXPECT_EQ(service->pin_dialog_manager()->active_view_for_testing(), nullptr);
+  EXPECT_FALSE(GetActivePinDialogView());
 }
 
 // User enters wrong PIN three times.
 IN_PROC_BROWSER_TEST_F(CertificateProviderRequestPinTest,
                        ShowPinDialogWrongPinThreeTimes) {
-  chromeos::CertificateProviderService* service =
-      LoadRequestPinExtension("request_pin", "basic.html");
-  for (int i = 0; i < 3; i++) {
-    EnterWrongPin(service);
-  }
-
-  chromeos::RequestPinView* view =
-      service->pin_dialog_manager()->active_view_for_testing();
+  AddFakeSignRequest(kFakeSignRequestId);
+  NavigateTo("basic.html");
+  for (int i = 0; i < kWrongPinAttemptsLimit; i++)
+    EnterWrongPinAndWaitForMessage();
 
   // The textfield has to be disabled, as extension does not allow input now.
-  EXPECT_EQ(view->textfield_for_testing()->enabled(), false);
+  EXPECT_FALSE(GetActivePinDialogView()->textfield_for_testing()->GetEnabled());
 
   // Close the dialog.
   ExtensionTestMessageListener listener("No attempt left", false);
-  service->pin_dialog_manager()->active_window_for_testing()->Close();
+  GetActivePinDialogWindow()->Close();
   ASSERT_TRUE(listener.WaitUntilSatisfied());
-  EXPECT_EQ(service->pin_dialog_manager()->active_view_for_testing(), nullptr);
+  EXPECT_FALSE(GetActivePinDialogView());
 }
 
 // User closes the dialog while the extension is processing the request.
 IN_PROC_BROWSER_TEST_F(CertificateProviderRequestPinTest,
                        ShowPinDialogCloseWhileProcessing) {
-  chromeos::CertificateProviderService* service =
-      LoadRequestPinExtension("request_pin", "basic_lock.html");
+  AddFakeSignRequest(kFakeSignRequestId);
+  NavigateTo("operated.html");
 
-  EnterCode(service, base::ASCIIToUTF16("123"));
-  service->pin_dialog_manager()->active_window_for_testing()->Close();
+  EXPECT_TRUE(SendCommandAndWaitForMessage("Request", "request1:begun"));
+  ExtensionTestMessageListener listener(
+      base::StringPrintf("request1:success:%s", kWrongPin), false);
+  EnterCode(kWrongPin);
+  EXPECT_TRUE(listener.WaitUntilSatisfied());
+
+  GetActivePinDialogWindow()->Close();
   base::RunLoop().RunUntilIdle();
 
   // The view should be set to nullptr when the window is closed.
-  EXPECT_EQ(service->pin_dialog_manager()->active_view_for_testing(), nullptr);
+  EXPECT_FALSE(GetActivePinDialogView());
+}
+
+// Extension closes the dialog kMaxClosedDialogsPerMinute times after the user
+// inputs some value, and it should be blocked from showing it again.
+IN_PROC_BROWSER_TEST_F(CertificateProviderRequestPinTest,
+                       RepeatedProgrammaticCloseAfterInput) {
+  NavigateTo("operated.html");
+
+  for (int i = 0;
+       i <
+       extensions::api::certificate_provider::kMaxClosedDialogsPerMinute + 1;
+       i++) {
+    AddFakeSignRequest(kFakeSignRequestId);
+    EXPECT_TRUE(SendCommandAndWaitForMessage(
+        "Request", base::StringPrintf("request%d:begun", i + 1)));
+
+    EnterCode(kCorrectPin);
+    EXPECT_TRUE(SendCommandAndWaitForMessage(
+        "Stop", base::StringPrintf("stop%d:success", i + 1)));
+    EXPECT_FALSE(GetActivePinDialogView());
+  }
+
+  AddFakeSignRequest(kFakeSignRequestId);
+  EXPECT_TRUE(SendCommandAndWaitForMessage(
+      "Request",
+      base::StringPrintf(
+          "request%d:error:This request exceeds the "
+          "MAX_PIN_DIALOGS_CLOSED_PER_MINUTE quota.",
+          extensions::api::certificate_provider::kMaxClosedDialogsPerMinute +
+              2)));
+  EXPECT_FALSE(GetActivePinDialogView());
+}
+
+// Extension erroneously attempts to close the PIN dialog twice.
+IN_PROC_BROWSER_TEST_F(CertificateProviderRequestPinTest, DoubleClose) {
+  AddFakeSignRequest(kFakeSignRequestId);
+  NavigateTo("operated.html");
+
+  EXPECT_TRUE(SendCommand("Request"));
+  EXPECT_TRUE(SendCommandAndWaitForMessage("Stop", "stop1:success"));
+  EXPECT_TRUE(SendCommandAndWaitForMessage(
+      "Stop", "stop2:error:No active dialog from extension."));
+  EXPECT_FALSE(GetActivePinDialogView());
+}
+
+// Extension closes the dialog kMaxClosedDialogsPerMinute times before the user
+// inputs anything, and it should be blocked from showing it again.
+IN_PROC_BROWSER_TEST_F(CertificateProviderRequestPinTest,
+                       RepeatedProgrammaticCloseBeforeInput) {
+  NavigateTo("operated.html");
+
+  for (int i = 0;
+       i <
+       extensions::api::certificate_provider::kMaxClosedDialogsPerMinute + 1;
+       i++) {
+    AddFakeSignRequest(kFakeSignRequestId);
+    EXPECT_TRUE(SendCommand("Request"));
+    EXPECT_TRUE(SendCommandAndWaitForMessage(
+        "Stop", base::StringPrintf("stop%d:success", i + 1)));
+    EXPECT_FALSE(GetActivePinDialogView());
+  }
+
+  AddFakeSignRequest(kFakeSignRequestId);
+  EXPECT_TRUE(SendCommandAndWaitForMessage(
+      "Request",
+      base::StringPrintf(
+          "request%d:error:This request exceeds the "
+          "MAX_PIN_DIALOGS_CLOSED_PER_MINUTE quota.",
+          extensions::api::certificate_provider::kMaxClosedDialogsPerMinute +
+              2)));
+  EXPECT_FALSE(GetActivePinDialogView());
+}
+
+// Extension erroneously attempts to stop the PIN request with an error before
+// the user provided any input.
+IN_PROC_BROWSER_TEST_F(CertificateProviderRequestPinTest,
+                       StopWithErrorBeforeInput) {
+  AddFakeSignRequest(kFakeSignRequestId);
+  NavigateTo("operated.html");
+
+  EXPECT_TRUE(SendCommand("Request"));
+  EXPECT_TRUE(SendCommandAndWaitForMessage(
+      "StopWithUnknownError", "stop1:error:No user input received"));
+  EXPECT_TRUE(GetActivePinDialogView()->textfield_for_testing()->GetEnabled());
+}
+
+// Extension erroneously uses an invalid sign request ID.
+IN_PROC_BROWSER_TEST_F(CertificateProviderRequestPinTest, InvalidRequestId) {
+  NavigateTo("operated.html");
+
+  EXPECT_TRUE(SendCommandAndWaitForMessage(
+      "Request", "request1:error:Invalid signRequestId"));
+  EXPECT_FALSE(GetActivePinDialogView());
+}
+
+// Extension specifies zero left attempts in the very first PIN request.
+IN_PROC_BROWSER_TEST_F(CertificateProviderRequestPinTest, ZeroAttemptsAtStart) {
+  AddFakeSignRequest(kFakeSignRequestId);
+  NavigateTo("operated.html");
+
+  EXPECT_TRUE(SendCommandAndWaitForMessage("RequestWithZeroAttempts",
+                                           "request1:begun"));
+
+  // The textfield has to be disabled, as there are no attempts left.
+  EXPECT_FALSE(GetActivePinDialogView()->textfield_for_testing()->GetEnabled());
+
+  ExtensionTestMessageListener listener("request1:empty", false);
+  GetActivePinDialogWindow()->Close();
+  EXPECT_TRUE(listener.WaitUntilSatisfied());
+}
+
+// Extension erroneously passes a negative attempts left count.
+IN_PROC_BROWSER_TEST_F(CertificateProviderRequestPinTest, NegativeAttempts) {
+  AddFakeSignRequest(kFakeSignRequestId);
+  NavigateTo("operated.html");
+
+  EXPECT_TRUE(SendCommandAndWaitForMessage(
+      "RequestWithNegativeAttempts", "request1:error:Invalid attemptsLeft"));
+  EXPECT_FALSE(GetActivePinDialogView());
+}
+
+// Extension erroneously attempts to close a non-existing dialog.
+IN_PROC_BROWSER_TEST_F(CertificateProviderRequestPinTest, CloseNonExisting) {
+  AddFakeSignRequest(kFakeSignRequestId);
+  NavigateTo("operated.html");
+
+  EXPECT_TRUE(SendCommandAndWaitForMessage(
+      "Stop", "stop1:error:No active dialog from extension."));
+  EXPECT_FALSE(GetActivePinDialogView());
+}
+
+// Extension erroneously attempts to stop a non-existing dialog with an error.
+IN_PROC_BROWSER_TEST_F(CertificateProviderRequestPinTest, StopNonExisting) {
+  AddFakeSignRequest(kFakeSignRequestId);
+  NavigateTo("operated.html");
+
+  EXPECT_TRUE(SendCommandAndWaitForMessage(
+      "StopWithUnknownError", "stop1:error:No active dialog from extension."));
+  EXPECT_FALSE(GetActivePinDialogView());
+}
+
+// Extension erroneously attempts to start or stop the PIN request before the
+// user closed the previously stopped with an error PIN request.
+IN_PROC_BROWSER_TEST_F(CertificateProviderRequestPinTest,
+                       UpdateAlreadyStopped) {
+  AddFakeSignRequest(kFakeSignRequestId);
+  NavigateTo("operated.html");
+
+  EXPECT_TRUE(SendCommandAndWaitForMessage("Request", "request1:begun"));
+  EnterCode(kWrongPin);
+  EXPECT_TRUE(SendCommand("StopWithUnknownError"));
+
+  EXPECT_TRUE(SendCommandAndWaitForMessage(
+      "StopWithUnknownError", "stop2:error:No user input received"));
+  EXPECT_TRUE(SendCommandAndWaitForMessage(
+      "Request", "request2:error:Previous request not finished"));
+  EXPECT_FALSE(GetActivePinDialogView()->textfield_for_testing()->GetEnabled());
+}
+
+// Extension starts a new PIN request after it stopped the previous one with an
+// error.
+IN_PROC_BROWSER_TEST_F(CertificateProviderRequestPinTest, StartAfterStop) {
+  AddFakeSignRequest(kFakeSignRequestId);
+  NavigateTo("operated.html");
+
+  EXPECT_TRUE(SendCommandAndWaitForMessage("Request", "request1:begun"));
+  EnterCode(kWrongPin);
+  EXPECT_TRUE(SendCommandAndWaitForMessage("Stop", "stop1:success"));
+  EXPECT_FALSE(GetActivePinDialogView());
+
+  EXPECT_TRUE(SendCommandAndWaitForMessage("Request", "request2:begun"));
+  ExtensionTestMessageListener listener(
+      base::StringPrintf("request2:success:%s", kCorrectPin), false);
+  EnterCode(kCorrectPin);
+  EXPECT_TRUE(listener.WaitUntilSatisfied());
+  EXPECT_FALSE(GetActivePinDialogView()->textfield_for_testing()->GetEnabled());
+}
+
+// Test that no quota is applied to the first PIN requests for each requestId.
+IN_PROC_BROWSER_TEST_F(CertificateProviderRequestPinTest,
+                       RepeatedCloseWithDifferentIds) {
+  NavigateTo("operated.html");
+
+  for (int i = 0;
+       i <
+       extensions::api::certificate_provider::kMaxClosedDialogsPer10Minutes + 2;
+       i++) {
+    AddFakeSignRequest(kFakeSignRequestId + i);
+    EXPECT_TRUE(SendCommandAndWaitForMessage(
+        "Request", base::StringPrintf("request%d:begun", i + 1)));
+
+    ExtensionTestMessageListener listener(
+        base::StringPrintf("request%d:empty", i + 1), false);
+    ASSERT_TRUE(GetActivePinDialogView());
+    GetActivePinDialogView()->GetWidget()->CloseWithReason(
+        views::Widget::ClosedReason::kCloseButtonClicked);
+    EXPECT_TRUE(listener.WaitUntilSatisfied());
+    EXPECT_FALSE(GetActivePinDialogView());
+
+    EXPECT_TRUE(SendCommand("IncrementRequestId"));
+  }
 }

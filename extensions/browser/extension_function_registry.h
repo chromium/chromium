@@ -9,17 +9,18 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/memory/scoped_refptr.h"
 #include "extensions/browser/extension_function_histogram_value.h"
 
 class ExtensionFunction;
 
 // A factory function for creating new ExtensionFunction instances.
-using ExtensionFunctionFactory = ExtensionFunction* (*)();
+using ExtensionFunctionFactory = scoped_refptr<ExtensionFunction> (*)();
 
 // Template for defining ExtensionFunctionFactory.
 template <class T>
-ExtensionFunction* NewExtensionFunction() {
-  return new T();
+scoped_refptr<ExtensionFunction> NewExtensionFunction() {
+  return base::MakeRefCounted<T>();
 }
 
 // Contains a list of all known extension functions and allows clients to
@@ -54,7 +55,7 @@ class ExtensionFunctionRegistry {
                                   ExtensionFunctionFactory factory);
 
   // Factory method for the ExtensionFunction registered as 'name'.
-  ExtensionFunction* NewFunction(const std::string& name);
+  scoped_refptr<ExtensionFunction> NewFunction(const std::string& name);
 
   // Registers a new extension function. This will override any existing entry.
   void Register(const FactoryEntry& entry);

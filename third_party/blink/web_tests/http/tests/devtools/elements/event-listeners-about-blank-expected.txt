@@ -4,24 +4,24 @@ Tests event listeners output in the Elements sidebar panel when the listeners ar
 ======== click ========
 == Raw
 [expanded] bodyRemoveevent-listeners-about-blank.js:16
-    useCapture: true
-    passive: false
-    once: false
     handler: function f() {}
+    once: false
+    passive: false
+    useCapture: true
 
 ======== hover ========
 == Raw
 [expanded] div#div-in-iframeRemoveevent-listeners-about-blank.js:16
-    useCapture: true
-    passive: false
-    once: true
     handler: function f() {}
+    once: true
+    passive: false
+    useCapture: true
 
 ======== wheel ========
 == Raw
 [expanded] bodyRemoveToggle Passiveevent-listeners-about-blank.js:16
-    useCapture: false
-    passive: true
-    once: false
     handler: function f() {}
+    once: false
+    passive: true
+    useCapture: false
 

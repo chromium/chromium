@@ -9,6 +9,7 @@
 #include <shlobj.h>
 
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
@@ -24,6 +25,7 @@
 #include "base/test/scoped_path_override.h"
 #include "base/test/test_shortcut_win.h"
 #include "base/test/test_timeouts.h"
+#include "base/unguessable_token.h"
 #include "base/win/windows_version.h"
 #include "chrome/chrome_cleaner/os/file_path_sanitization.h"
 #include "chrome/chrome_cleaner/os/layered_service_provider_wrapper.h"
@@ -59,7 +61,6 @@ const wchar_t kFileName2[] = L"Filename two";
 const wchar_t kFileName3[] = L"Third filename";
 const wchar_t kLongFileName1[] = L"Long File Name.bla";
 const wchar_t kLongFileName2[] = L"Other Long File Name.bla";
-const wchar_t kLongFileName2Subset[] = L"Long File";
 const char kFileContent1[] = "This is the file content.";
 const char kFileContent2[] = "Hi!";
 const char kFileContent3[] = "Hello World!";
@@ -198,7 +199,7 @@ bool WhitelistSampleDLL(const base::FilePath& path) {
 TEST(DiskUtilTests, GetX64ProgramFilePath) {
   base::FilePath x64_program_files =
       GetX64ProgramFilesPath(base::FilePath(kProgramFilesBaseName));
-  if (base::win::OSInfo::GetInstance()->architecture() ==
+  if (base::win::OSInfo::GetArchitecture() ==
       base::win::OSInfo::X86_ARCHITECTURE) {
     EXPECT_TRUE(x64_program_files.empty());
     return;
@@ -389,7 +390,7 @@ TEST(DiskUtilTests, CollectMatchingPathsNoWildcards) {
   base::FilePath no_wildcard_path(sub_dir.GetPath());
   CollectMatchingPaths(no_wildcard_path, &matches);
   EXPECT_EQ(1UL, matches.size());
-  EXPECT_TRUE(base::ContainsValue(matches, sub_dir.GetPath()));
+  EXPECT_TRUE(base::Contains(matches, sub_dir.GetPath()));
 }
 
 TEST(DiskUtilTests, CollectExecutableMatchingPaths) {
@@ -542,31 +543,6 @@ TEST(DiskUtilTests, PathHasActiveExtension) {
   EXPECT_FALSE(PathHasActiveExtension(base::FilePath(L"C:\\uws\\file.jpg")));
   EXPECT_FALSE(PathHasActiveExtension(base::FilePath(L"C:\\uws\\file.jpg ")));
   EXPECT_FALSE(PathHasActiveExtension(base::FilePath(L"C:\\file.txt::$DATA")));
-}
-
-TEST(DiskUtilTests, HasDosExecutableHeader) {
-  base::ScopedTempDir temp;
-  ASSERT_TRUE(temp.CreateUniqueTempDir());
-  base::FilePath executable = temp.GetPath().Append(L"executable.txt");
-  const char kExecutableFileContents[] = "MZ I am executable";
-  chrome_cleaner::CreateFileWithContent(executable, kExecutableFileContents,
-                                        sizeof(kExecutableFileContents));
-  EXPECT_TRUE(HasDosExecutableHeader(executable));
-
-  base::FilePath non_executable = temp.GetPath().Append(L"text.exe");
-  const char kTextFileContents[] = "I am benign text";
-  chrome_cleaner::CreateFileWithContent(non_executable, kTextFileContents,
-                                        sizeof(kTextFileContents));
-  EXPECT_FALSE(HasDosExecutableHeader(non_executable));
-}
-
-TEST(DiskUtilTests, HasAlternateFileStream) {
-  EXPECT_FALSE(HasAlternateFileStream(base::FilePath(L"C:\\file.txt")));
-  EXPECT_FALSE(HasAlternateFileStream(base::FilePath(L"C:\\file.txt::$DATA")));
-
-  EXPECT_TRUE(HasAlternateFileStream(base::FilePath(L"C:\\file.txt:stream")));
-  EXPECT_TRUE(
-      HasAlternateFileStream(base::FilePath(L"C:\\file.txt:stream:$TYPE")));
 }
 
 TEST(DiskUtilTests, ExpandEnvPath) {
@@ -775,34 +751,6 @@ TEST(DiskUtilTests, DeleteFileFromTempProcess) {
   EXPECT_FALSE(process_handle.IsValid());
 }
 
-TEST(DiskUtilTests, ShortPathContainsCaseInsensitive) {
-  base::ScopedTempDir scoped_temp_dir;
-  ASSERT_TRUE(scoped_temp_dir.CreateUniqueTempDir());
-  base::FilePath short_name_path;
-  CreateFileAndGetShortName(scoped_temp_dir.GetPath().Append(kLongFileName1),
-                            &short_name_path);
-
-  // Make sure the test strings would fail with the previous API.
-  ASSERT_FALSE(
-      String16ContainsCaseInsensitive(short_name_path.value(), kLongFileName1));
-
-  // Find the long name from the shorten version.
-  EXPECT_TRUE(ShortPathContainsCaseInsensitive(short_name_path.value(),
-                                               kLongFileName1));
-
-  // Make sure the shorten version can also be found.
-  EXPECT_TRUE(ShortPathContainsCaseInsensitive(short_name_path.value(),
-                                               short_name_path.value()));
-
-  // Validate the not found case.
-  EXPECT_FALSE(ShortPathContainsCaseInsensitive(short_name_path.value(),
-                                                kLongFileName2));
-
-  // Validate a non shorten case.
-  EXPECT_TRUE(
-      ShortPathContainsCaseInsensitive(kLongFileName2, kLongFileName2Subset));
-}
-
 TEST(DiskUtilTests, PathEqual) {
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
@@ -840,9 +788,7 @@ TEST(DiskUtilTests, GetAppDataProductDirectory) {
   EXPECT_TRUE(PathEqual(appdata_dir, product_folder.DirName().DirName()));
 }
 
-// TODO(crbug.com/867550): This does not work in component builds because
-// test_process.exe depends on DLL's that don't get copied. Fix and re-enable.
-TEST(DiskUtilTests, DISABLED_ZoneIdentifier) {
+TEST(DiskUtilTests, ZoneIdentifier) {
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
   base::FilePath path(temp_dir.GetPath().Append(kTestProcessExecutableName));
@@ -871,33 +817,39 @@ TEST(DiskUtilTests, DISABLED_ZoneIdentifier) {
   EXPECT_EQ("[ZoneTransfer]\r\nZoneId=0\r\n", content);
 }
 
-// TODO(crbug.com/867550): This does not work in component builds because
-// test_process.exe depends on DLL's that don't get copied. Fix and re-enable.
-TEST(DiskUtilTests, DISABLED_ZoneIdentifierWhenProcessIsRunning) {
-  base::ScopedTempDir temp_dir;
-  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+TEST(DiskUtilTests, ZoneIdentifierWhenProcessIsRunning) {
+  base::FilePath executable_path;
+  ASSERT_TRUE(base::PathService::Get(base::DIR_EXE, &executable_path));
 
-  if (!DoesVolumeSupportNamedStreams(temp_dir.GetPath())) {
+  if (!DoesVolumeSupportNamedStreams(executable_path)) {
     LOG(ERROR) << "Skip ZoneIdentifier : alternate streams not supported.";
     return;
   }
 
-  // Copy the test_process executable in a temporary folder.
-  base::FilePath executable_path;
-  ASSERT_TRUE(base::PathService::Get(base::DIR_EXE, &executable_path));
+  // Copy the test_process executable to a temporary name. We don't use a
+  // ScopedTempDir here because in a component build, the executable depends on
+  // DLL's that would have to be copied into the folder too.
   base::FilePath source_exe_path(
       executable_path.Append(kTestProcessExecutableName));
-  base::FilePath target_exe_path(
-      temp_dir.GetPath().Append(kTestProcessExecutableName));
+  base::string16 target_exe_name = base::StrCat(
+      {base::UTF8ToUTF16(base::UnguessableToken::Create().ToString()),
+       L".exe"});
+  base::FilePath target_exe_path(executable_path.Append(target_exe_name));
+
   ASSERT_TRUE(base::CopyFile(source_exe_path, target_exe_path));
+  base::ScopedClosureRunner delete_temp_file(base::BindOnce(
+      [](const base::FilePath& temp_file) {
+        base::DeleteFile(temp_file, /*recursive=*/false);
+      },
+      target_exe_path));
 
   // Launch the test_process and wait it's completion. The process must set its
   // zone identifier.
   EXPECT_FALSE(HasZoneIdentifier(target_exe_path));
-  ASSERT_FALSE(IsProcessRunning(kTestProcessExecutableName));
+  ASSERT_FALSE(IsProcessRunning(target_exe_name.c_str()));
   ASSERT_TRUE(LaunchTestProcess(target_exe_path.value().c_str(),
                                 kTestForceOverwriteZoneIdentifier, false));
-  EXPECT_TRUE(WaitForProcessesStopped(kTestProcessExecutableName));
+  EXPECT_TRUE(WaitForProcessesStopped(target_exe_name.c_str()));
   EXPECT_TRUE(HasZoneIdentifier(target_exe_path));
 
   // Validate the content of the Zone.Identifier stream.

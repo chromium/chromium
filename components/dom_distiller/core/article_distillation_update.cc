@@ -9,7 +9,7 @@
 namespace dom_distiller {
 
 ArticleDistillationUpdate::ArticleDistillationUpdate(
-    const std::vector<scoped_refptr<RefCountedPageProto> >& pages,
+    const std::vector<scoped_refptr<RefCountedPageProto>>& pages,
     bool has_next_page,
     bool has_prev_page)
     : has_next_page_(has_next_page),

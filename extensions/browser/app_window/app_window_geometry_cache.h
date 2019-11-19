@@ -20,6 +20,7 @@
 #include "base/values.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/geometry/rect.h"
@@ -27,7 +28,6 @@
 namespace extensions {
 
 class ExtensionPrefs;
-class ExtensionRegistry;
 
 // A cache for persisted geometry of app windows, both to not have to wait
 // for IO when creating a new window, and to not cause IO on every window
@@ -149,7 +149,7 @@ class AppWindowGeometryCache : public KeyedService,
 
   // Listen to extension load, unloaded notifications.
   ScopedObserver<ExtensionRegistry, ExtensionRegistryObserver>
-      extension_registry_observer_;
+      extension_registry_observer_{this};
 
   base::ObserverList<Observer>::Unchecked observers_;
 };

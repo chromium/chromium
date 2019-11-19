@@ -217,17 +217,16 @@ TEST_F(ProxyPolicyHandlerTest, PacScriptProxyModeInvalid) {
 TEST_F(ProxyPolicyHandlerTest, PacScriptProxyModeBug78016) {
   PolicyMap policy;
   policy.Set(key::kProxyServer, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
-             POLICY_SOURCE_CLOUD,
-             base::WrapUnique(new base::Value(std::string())), nullptr);
+             POLICY_SOURCE_CLOUD, std::make_unique<base::Value>(std::string()),
+             nullptr);
   policy.Set(key::kProxyPacUrl, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
              POLICY_SOURCE_CLOUD,
-             base::WrapUnique(new base::Value("http://short.org/proxy.pac")),
+             std::make_unique<base::Value>("http://short.org/proxy.pac"),
              nullptr);
-  policy.Set(
-      key::kProxyMode, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
-      POLICY_SOURCE_CLOUD,
-      base::WrapUnique(new base::Value(ProxyPrefs::kPacScriptProxyModeName)),
-      nullptr);
+  policy.Set(key::kProxyMode, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
+             POLICY_SOURCE_CLOUD,
+             std::make_unique<base::Value>(ProxyPrefs::kPacScriptProxyModeName),
+             nullptr);
   UpdateProviderPolicy(policy);
   VerifyProxyPrefs(std::string(),
                    "http://short.org/proxy.pac",

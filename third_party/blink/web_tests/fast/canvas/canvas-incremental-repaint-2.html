@@ -13,11 +13,6 @@
   <script src="../../resources/run-after-layout-and-paint.js"></script>
   <script type="text/javascript" charset="utf-8">
 
-    if (window.testRunner) {
-      testRunner.dumpAsTextWithPixelResults();
-      testRunner.waitUntilDone();
-    }
-
     function repaintTest()
     {
       var canvas = document.getElementById('canvas1');
@@ -30,13 +25,10 @@
       ctx.transform(1, 0, 0, -1, 0, 0);
       ctx.fillRect(0, 100, 200, 80);
       ctx.restore();
-      if (window.testRunner) {
-          testRunner.notifyDone();
-      }
     }
   </script>
 </head>
-<body onload="runAfterLayoutAndPaint(repaintTest)">
+<body onload="runAfterLayoutAndPaint(repaintTest, true)">
   <canvas id="canvas1"></canvas>
 </body>
 </html>

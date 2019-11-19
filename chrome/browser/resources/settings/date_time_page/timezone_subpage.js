@@ -27,22 +27,26 @@ Polymer({
    */
   getTimeZoneResolveMethodsList_: function() {
     const result = [];
+    const pref =
+        this.getPref('generated.resolve_timezone_by_geolocation_method_short');
     // Make sure current value is in the list, even if it is not
     // user-selectable.
-    if (this.getPref('generated.resolve_timezone_by_geolocation_method_short')
-            .value == settings.TimeZoneAutoDetectMethod.DISABLED) {
-      result.push({
-        value: settings.TimeZoneAutoDetectMethod.DISABLED,
-        name: loadTimeData.getString('setTimeZoneAutomaticallyDisabled')
-      });
+    if (pref.value == settings.TimeZoneAutoDetectMethod.DISABLED) {
+      // If disabled by policy, show the 'Automatic timezone disabled' label.
+      // Otherwise, just show the default string, since the control will be
+      // disabled as well.
+      const label = pref.controlledBy ?
+          loadTimeData.getString('setTimeZoneAutomaticallyDisabled') :
+          loadTimeData.getString('setTimeZoneAutomaticallyIpOnlyDefault');
+      result.push(
+          {value: settings.TimeZoneAutoDetectMethod.DISABLED, name: label});
     }
     result.push({
       value: settings.TimeZoneAutoDetectMethod.IP_ONLY,
       name: loadTimeData.getString('setTimeZoneAutomaticallyIpOnlyDefault')
     });
 
-    if (this.getPref('generated.resolve_timezone_by_geolocation_method_short')
-            .value ==
+    if (pref.value ==
         settings.TimeZoneAutoDetectMethod.SEND_WIFI_ACCESS_POINTS) {
       result.push({
         value: settings.TimeZoneAutoDetectMethod.SEND_WIFI_ACCESS_POINTS,

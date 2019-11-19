@@ -15,6 +15,7 @@ source_set("lib") {
   # dependence should only be for the purpose of embedding the Device Service.
   visibility = [
     ":test_support",
+    ":tests",
     "//content/browser",
   ]
   sources = [
@@ -26,17 +27,17 @@ source_set("lib") {
 
   deps = [
     "//base",
-    "//device/usb/mojo",
-    "//device/usb/public/mojom",
-    "//device/usb/public/mojom:test",
     "//services/device/fingerprint",
     "//services/device/generic_sensor",
     "//services/device/geolocation",
     "//services/device/power_monitor",
     "//services/device/public/cpp:device_features",
     "//services/device/public/mojom",
+    "//services/device/public/mojom:usb",
+    "//services/device/public/mojom:usb_test",
     "//services/device/screen_orientation",
     "//services/device/time_zone_monitor",
+    "//services/device/usb/mojo",
     "//services/device/wake_lock",
     "//services/service_manager/public/cpp",
     "//ui/gfx",
@@ -124,6 +125,7 @@ source_set("tests") {
   ]
 
   deps = [
+    ":lib",
     ":test_support",
     "//base",
     "//base/test:test_support",
@@ -164,6 +166,7 @@ source_set("tests") {
     sources += [ "fingerprint/fingerprint_chromeos_unittest.cc" ]
     deps += [
       "//chromeos/dbus:test_support",
+      "//chromeos/dbus/biod:test_support",
       "//chromeos/network:test_support",
       "//services/device/bluetooth:bluetooth_system_tests",
       "//services/device/fingerprint",
@@ -180,6 +183,7 @@ source_set("tests") {
     deps += [
       ":device_service_jni_headers",
       "//services/device/public/java:geolocation_java_test_support",
+      "//services/device/usb:java",
       "//services/device/vibration/android:vibration_jni_headers",
     ]
   } else {
@@ -196,6 +200,7 @@ source_set("tests") {
 
     if (!is_linux_without_udev && !is_android) {
       sources += [
+        "hid/hid_connection_impl_unittest.cc",
         "hid/hid_service_unittest.cc",
         "hid/input_service_linux_unittest.cc",
         "hid/test_report_descriptors.cc",
@@ -206,9 +211,9 @@ source_set("tests") {
       if (!is_ios) {
         sources += [ "hid/hid_connection_unittest.cc" ]
         deps += [
-          "//device:usb_test_gadget",
-          "//device/usb",
+          ":usb_test_gadget",
           "//net:test_support",
+          "//services/device/usb",
         ]
       }
     }
@@ -231,7 +236,57 @@ source_set("tests") {
     ]
   }
 
+  # USB does not compile on iOS.
+  if (!is_ios) {
+    sources += [
+      "public/cpp/usb/usb_utils_unittest.cc",
+      "usb/mojo/device_impl_unittest.cc",
+      "usb/mojo/device_manager_impl_unittest.cc",
+      "usb/usb_descriptors_unittest.cc",
+      "usb/usb_device_handle_unittest.cc",
+      "usb/usb_service_unittest.cc",
+      "usb/webusb_descriptors_unittest.cc",
+    ]
+    deps += [
+      ":usb_test_gadget",
+      "//device/base",
+      "//net:test_support",
+      "//services/device/public/cpp:test_support",
+      "//services/device/public/cpp/usb",
+      "//services/device/public/mojom",
+      "//services/device/usb",
+      "//services/device/usb:test_support",
+      "//services/device/usb/mojo",
+    ]
+
+    if (!is_android) {
+      sources += [ "public/cpp/usb/usb_ids_unittest.cc" ]
+    }
+  }
+
+  # UsbContext is a libusb-specific object.
+  if (is_mac || is_win) {
+    sources += [ "usb/usb_context_unittest.cc" ]
+    deps += [ "//third_party/libusb" ]
+  }
+
   if (is_win) {
+    sources += [
+      "generic_sensor/platform_sensor_provider_winrt_unittest.cc",
+      "generic_sensor/platform_sensor_reader_winrt_unittests.cc",
+      "geolocation/win/fake_geocoordinate_winrt.cc",
+      "geolocation/win/fake_geocoordinate_winrt.h",
+      "geolocation/win/fake_geolocator_winrt.cc",
+      "geolocation/win/fake_geolocator_winrt.h",
+      "geolocation/win/fake_geoposition_winrt.cc",
+      "geolocation/win/fake_geoposition_winrt.h",
+      "geolocation/win/fake_position_changed_event_args_winrt.cc",
+      "geolocation/win/fake_position_changed_event_args_winrt.h",
+      "geolocation/win/fake_status_changed_event_args_winrt.cc",
+      "geolocation/win/fake_status_changed_event_args_winrt.h",
+      "geolocation/win/location_provider_winrt_unittest.cc",
+    ]
+
     # Needed for "generic_sensor/platform_sensor_and_provider_unittest_win.cc"
     libs = [
       "propsys.lib",
@@ -269,7 +324,6 @@ if (is_android) {
     sources = [
       "android/java/src/org/chromium/services/device/InterfaceRegistrar.java",
     ]
-    jni_package = "device_service"
   }
 
   android_library("java") {
@@ -300,10 +354,27 @@ if (is_android) {
       "//services/device/public/mojom:mojom_java",
       "//services/device/screen_orientation:java",
       "//services/device/time_zone_monitor:java",
+      "//services/device/usb:java",
       "//services/device/vibration/android:vibration_manager_java",
       "//services/device/wake_lock/power_save_blocker:java",
       "//services/service_manager/public/java:service_manager_java",
       "//services/service_manager/public/mojom:mojom_java",
     ]
   }
+}
+
+source_set("usb_test_gadget") {
+  testonly = true
+
+  sources = [
+    "test/usb_test_gadget.h",
+    "test/usb_test_gadget_impl.cc",
+  ]
+
+  deps = [
+    "//device/base",
+    "//net:test_support",
+    "//services/device/usb",
+    "//tools/usb_gadget",
+  ]
 }

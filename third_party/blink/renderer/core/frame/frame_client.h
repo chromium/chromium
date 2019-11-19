@@ -6,9 +6,10 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_FRAME_CLIENT_H_
 
 #include "base/unguessable_token.h"
-#include "third_party/blink/public/mojom/frame/lifecycle.mojom-blink.h"
+#include "third_party/blink/public/mojom/frame/lifecycle.mojom-blink-forward.h"
 #include "third_party/blink/public/platform/blame_context.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 
 namespace blink {
@@ -16,7 +17,7 @@ namespace blink {
 class Frame;
 enum class FrameDetachType;
 
-class CORE_EXPORT FrameClient : public GarbageCollectedFinalized<FrameClient> {
+class CORE_EXPORT FrameClient : public GarbageCollected<FrameClient> {
  public:
   virtual bool InShadowTree() const = 0;
 
@@ -32,11 +33,10 @@ class CORE_EXPORT FrameClient : public GarbageCollectedFinalized<FrameClient> {
 
   virtual unsigned BackForwardLength() = 0;
 
-  virtual void FrameFocused() const = 0;
-
-  virtual void VisibilityChanged(blink::mojom::FrameVisibility visibility) = 0;
-
   virtual base::UnguessableToken GetDevToolsFrameToken() const = 0;
+
+  // Transfers user activation state from |source_frame| to the this frame.
+  virtual void TransferUserActivationFrom(LocalFrame* source_frame) {}
 
   virtual ~FrameClient() = default;
 

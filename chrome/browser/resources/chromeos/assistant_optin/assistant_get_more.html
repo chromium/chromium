@@ -4,6 +4,7 @@
 
 <dom-module id="assistant-get-more">
   <template>
+    <link rel="stylesheet" href="../login/oobe_dialog_host.css">
     <link rel="stylesheet" href="../login/oobe_flex_layout.css">
     <link rel="stylesheet" href="assistant_get_more.css">
     <link rel="stylesheet" href="assistant_shared_styles.css">
@@ -19,7 +20,8 @@
               i18n-content="assistantReadyMessage"></div>
           <div class="flex layout horizontal center">
             <div id="ready-image-container">
-              <img id="ready-img" src="assistant_ready.svg">
+              <img id="ready-img" class="oobe-illustration"
+                  src="assistant_ready.svg">
             </div>
             <div id="toggles-container"></div>
           </div>

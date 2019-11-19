@@ -5,7 +5,7 @@
 #include "services/device/geolocation/geolocation_config.h"
 
 #include "base/bind.h"
-#include "mojo/public/cpp/bindings/strong_binding.h"
+#include "mojo/public/cpp/bindings/self_owned_receiver.h"
 
 namespace device {
 
@@ -14,9 +14,10 @@ GeolocationConfig::GeolocationConfig() = default;
 GeolocationConfig::~GeolocationConfig() = default;
 
 // static
-void GeolocationConfig::Create(mojom::GeolocationConfigRequest request) {
-  mojo::MakeStrongBinding(std::make_unique<GeolocationConfig>(),
-                          std::move(request));
+void GeolocationConfig::Create(
+    mojo::PendingReceiver<mojom::GeolocationConfig> receiver) {
+  mojo::MakeSelfOwnedReceiver(std::make_unique<GeolocationConfig>(),
+                              std::move(receiver));
 }
 
 void GeolocationConfig::IsHighAccuracyLocationBeingCaptured(

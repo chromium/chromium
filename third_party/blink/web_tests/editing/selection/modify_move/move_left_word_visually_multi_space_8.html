@@ -1,0 +1,278 @@
+<!doctype html>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<script src="../../assert_selection.js"></script>
+<script>
+if (window.internals)
+  internals.settings.setEditingBehavior('win');
+
+selection_test(
+  '<div contenteditable dir="ltr">|    אבצ    דעפ    abc   def   חיח    ופק    </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr">    |אבצ    דעפ    abc   def   חיח    ופק    </div>',
+  '8-0 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr"> |   אבצ    דעפ    abc   def   חיח    ופק    </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr">    |אבצ    דעפ    abc   def   חיח    ופק    </div>',
+  '8-1 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr">  |  אבצ    דעפ    abc   def   חיח    ופק    </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr">    |אבצ    דעפ    abc   def   חיח    ופק    </div>',
+  '8-2 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr">   | אבצ    דעפ    abc   def   חיח    ופק    </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr">    |אבצ    דעפ    abc   def   חיח    ופק    </div>',
+  '8-3 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr">    |אבצ    דעפ    abc   def   חיח    ופק    </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr">    |אבצ    דעפ    abc   def   חיח    ופק    </div>',
+  '8-4 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr">    א|בצ    דעפ    abc   def   חיח    ופק    </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr">    |\u05D0\u05D1\u05E6    \u05D3\u05E2\u05E4    abc   def   \u05D7\u05D9\u05D7    \u05D5\u05E4\u05E7    </div>',
+  '8-5 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr">    אב|צ    דעפ    abc   def   חיח    ופק    </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr">    |\u05D0\u05D1\u05E6    \u05D3\u05E2\u05E4    abc   def   \u05D7\u05D9\u05D7    \u05D5\u05E4\u05E7    </div>',
+  '8-6 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr">    אבצ|    דעפ    abc   def   חיח    ופק    </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr">    |אבצ    דעפ    abc   def   חיח    ופק    </div>',
+  '8-7 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr">    אבצ |   דעפ    abc   def   חיח    ופק    </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr">    |אבצ    דעפ    abc   def   חיח    ופק    </div>',
+  '8-8 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr">    אבצ  |  דעפ    abc   def   חיח    ופק    </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr">    |אבצ    דעפ    abc   def   חיח    ופק    </div>',
+  '8-9 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr">    אבצ   | דעפ    abc   def   חיח    ופק    </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr">    |אבצ    דעפ    abc   def   חיח    ופק    </div>',
+  '8-10 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr">    אבצ    |דעפ    abc   def   חיח    ופק    </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr">    |אבצ    דעפ    abc   def   חיח    ופק    </div>',
+  '8-11 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr">    אבצ    ד|עפ    abc   def   חיח    ופק    </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr">    \u05D0\u05D1\u05E6 |   \u05D3\u05E2\u05E4    abc   def   \u05D7\u05D9\u05D7    \u05D5\u05E4\u05E7    </div>',
+  '8-12 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr">    אבצ    דע|פ    abc   def   חיח    ופק    </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr">    \u05D0\u05D1\u05E6 |   \u05D3\u05E2\u05E4    abc   def   \u05D7\u05D9\u05D7    \u05D5\u05E4\u05E7    </div>',
+  '8-13 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr">    אבצ    דעפ|    abc   def   חיח    ופק    </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr">    \u05D0\u05D1\u05E6 |   \u05D3\u05E2\u05E4    abc   def   \u05D7\u05D9\u05D7    \u05D5\u05E4\u05E7    </div>',
+  '8-14 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr">    אבצ    דעפ |   abc   def   חיח    ופק    </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr">    \u05D0\u05D1\u05E6 |   \u05D3\u05E2\u05E4    abc   def   \u05D7\u05D9\u05D7    \u05D5\u05E4\u05E7    </div>',
+  '8-15 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr">    אבצ    דעפ  |  abc   def   חיח    ופק    </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr">    \u05D0\u05D1\u05E6 |   \u05D3\u05E2\u05E4    abc   def   \u05D7\u05D9\u05D7    \u05D5\u05E4\u05E7    </div>',
+  '8-16 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr">    אבצ    דעפ   | abc   def   חיח    ופק    </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr">    \u05D0\u05D1\u05E6 |   \u05D3\u05E2\u05E4    abc   def   \u05D7\u05D9\u05D7    \u05D5\u05E4\u05E7    </div>',
+  '8-17 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr">    אבצ    דעפ    |abc   def   חיח    ופק    </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr">    \u05D0\u05D1\u05E6 |   \u05D3\u05E2\u05E4    abc   def   \u05D7\u05D9\u05D7    \u05D5\u05E4\u05E7    </div>',
+  '8-18 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr">    אבצ    דעפ    a|bc   def   חיח    ופק    </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr">    אבצ    דעפ |   abc   def   חיח    ופק    </div>',
+  '8-19 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr">    אבצ    דעפ    ab|c   def   חיח    ופק    </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr">    אבצ    דעפ |   abc   def   חיח    ופק    </div>',
+  '8-20 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr">    אבצ    דעפ    abc|   def   חיח    ופק    </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr">    אבצ    דעפ |   abc   def   חיח    ופק    </div>',
+  '8-21 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr">    אבצ    דעפ    abc |  def   חיח    ופק    </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr">    אבצ    דעפ |   abc   def   חיח    ופק    </div>',
+  '8-22 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr">    אבצ    דעפ    abc  | def   חיח    ופק    </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr">    אבצ    דעפ |   abc   def   חיח    ופק    </div>',
+  '8-23 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr">    אבצ    דעפ    abc   |def   חיח    ופק    </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr">    אבצ    דעפ |   abc   def   חיח    ופק    </div>',
+  '8-24 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr">    אבצ    דעפ    abc   d|ef   חיח    ופק    </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr">    אבצ    דעפ    abc |  def   חיח    ופק    </div>',
+  '8-25 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr">    אבצ    דעפ    abc   de|f   חיח    ופק    </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr">    אבצ    דעפ    abc |  def   חיח    ופק    </div>',
+  '8-26 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr">    אבצ    דעפ    abc   def|   חיח    ופק    </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr">    אבצ    דעפ    abc |  def   חיח    ופק    </div>',
+  '8-27 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr">    אבצ    דעפ    abc   def |  חיח    ופק    </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr">    אבצ    דעפ    abc |  def   חיח    ופק    </div>',
+  '8-28 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr">    אבצ    דעפ    abc   def  | חיח    ופק    </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr">    אבצ    דעפ    abc |  def   חיח    ופק    </div>',
+  '8-29 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr">    אבצ    דעפ    abc   def   |חיח    ופק    </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr">    אבצ    דעפ    abc |  def   חיח    ופק    </div>',
+  '8-30 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr">    אבצ    דעפ    abc   def   ח|יח    ופק    </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr">    \u05D0\u05D1\u05E6    \u05D3\u05E2\u05E4    abc   def |  \u05D7\u05D9\u05D7    \u05D5\u05E4\u05E7    </div>',
+  '8-31 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr">    אבצ    דעפ    abc   def   חי|ח    ופק    </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr">    \u05D0\u05D1\u05E6    \u05D3\u05E2\u05E4    abc   def |  \u05D7\u05D9\u05D7    \u05D5\u05E4\u05E7    </div>',
+  '8-32 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr">    אבצ    דעפ    abc   def   חיח|    ופק    </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr">    אבצ    דעפ    abc   def |  חיח    ופק    </div>',
+  '8-33 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr">    אבצ    דעפ    abc   def   חיח |   ופק    </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr">    אבצ    דעפ    abc   def |  חיח    ופק    </div>',
+  '8-34 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr">    אבצ    דעפ    abc   def   חיח  |  ופק    </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr">    אבצ    דעפ    abc   def |  חיח    ופק    </div>',
+  '8-35 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr">    אבצ    דעפ    abc   def   חיח   | ופק    </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr">    אבצ    דעפ    abc   def |  חיח    ופק    </div>',
+  '8-36 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr">    אבצ    דעפ    abc   def   חיח    |ופק    </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr">    אבצ    דעפ    abc   def |  חיח    ופק    </div>',
+  '8-37 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr">    אבצ    דעפ    abc   def   חיח    ו|פק    </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr">    \u05D0\u05D1\u05E6    \u05D3\u05E2\u05E4    abc   def   \u05D7\u05D9\u05D7 |   \u05D5\u05E4\u05E7    </div>',
+  '8-38 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr">    אבצ    דעפ    abc   def   חיח    ופ|ק    </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr">    \u05D0\u05D1\u05E6    \u05D3\u05E2\u05E4    abc   def   \u05D7\u05D9\u05D7 |   \u05D5\u05E4\u05E7    </div>',
+  '8-39 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr">    אבצ    דעפ    abc   def   חיח    ופק|    </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr">    \u05D0\u05D1\u05E6    \u05D3\u05E2\u05E4    abc   def   \u05D7\u05D9\u05D7 |   \u05D5\u05E4\u05E7    </div>',
+  '8-40 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr">    אבצ    דעפ    abc   def   חיח    ופק |   </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr">    \u05D0\u05D1\u05E6    \u05D3\u05E2\u05E4    abc   def   \u05D7\u05D9\u05D7 |   \u05D5\u05E4\u05E7    </div>',
+  '8-41 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr">    אבצ    דעפ    abc   def   חיח    ופק  |  </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr">    \u05D0\u05D1\u05E6    \u05D3\u05E2\u05E4    abc   def   \u05D7\u05D9\u05D7 |   \u05D5\u05E4\u05E7    </div>',
+  '8-42 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr">    אבצ    דעפ    abc   def   חיח    ופק   | </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr">    \u05D0\u05D1\u05E6    \u05D3\u05E2\u05E4    abc   def   \u05D7\u05D9\u05D7 |   \u05D5\u05E4\u05E7    </div>',
+  '8-43 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr">    אבצ    דעפ    abc   def   חיח    ופק    |</div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr">    \u05D0\u05D1\u05E6    \u05D3\u05E2\u05E4    abc   def   \u05D7\u05D9\u05D7 |   \u05D5\u05E4\u05E7    </div>',
+  '8-44 left word');
+</script>

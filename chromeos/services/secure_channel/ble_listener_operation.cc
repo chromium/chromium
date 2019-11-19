@@ -67,8 +67,7 @@ BleListenerOperation::BleListenerOperation(
           device_id_pair,
           connection_priority,
           task_runner),
-      ble_connection_manager_(ble_connection_manager),
-      weak_ptr_factory_(this) {}
+      ble_connection_manager_(ble_connection_manager) {}
 
 BleListenerOperation::~BleListenerOperation() = default;
 

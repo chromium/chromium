@@ -89,13 +89,6 @@ bool TestExtensionsClient::IsScriptableURL(const GURL& url,
   return true;
 }
 
-bool TestExtensionsClient::ShouldSuppressFatalErrors() const {
-  return true;
-}
-
-void TestExtensionsClient::RecordDidSuppressFatalError() {
-}
-
 const GURL& TestExtensionsClient::GetWebstoreBaseURL() const {
   return webstore_base_url_;
 }

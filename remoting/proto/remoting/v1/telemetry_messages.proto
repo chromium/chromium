@@ -1,0 +1,39 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+
+package remoting.apis.v1;
+
+import "chromoting_event.proto";
+import "generic_log_entry.proto";
+
+// Contains one or more ChromotingEvents to use for generating telemetry events.
+message ChromotingEventData {
+  repeated ChromotingEvent events = 1;
+}
+
+// Contains a GenericLogEntry for generating a telemetry event.
+message GenericLogEntryData {
+  // The entry to log.
+  optional GenericLogEntry entry = 1;
+}
+
+// Requests that the data in |payload| be converted into telemetry events.
+message CreateEventRequest {
+  optional ChromotingEventData payload = 1;
+}
+
+// The response to a CreateEventRequest.
+message CreateEventResponse {}
+
+// Requests that the data in |payload| be converted into a server log entry.
+message CreateLogEntryRequest {
+  optional GenericLogEntryData payload = 1;
+}
+
+// The response to a CreateLogEntryRequest.
+message CreateLogEntryResponse {}

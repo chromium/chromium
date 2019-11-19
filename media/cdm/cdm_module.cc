@@ -61,11 +61,11 @@ void ReportLoadResult(LoadResult load_result) {
                             LoadResult::kLoadResultCount);
 }
 
-void ReportLoadErrorCode(const base::NativeLibraryLoadError& error) {
+void ReportLoadErrorCode(const base::NativeLibraryLoadError* error) {
 // Only report load error code on Windows because that's the only platform that
 // has a numerical error value.
 #if defined(OS_WIN)
-  base::UmaHistogramSparse("Media.EME.CdmLoadErrorCode", error.code);
+  base::UmaHistogramSparse("Media.EME.CdmLoadErrorCode", error->code);
 #endif
 }
 
@@ -128,16 +128,15 @@ bool CdmModule::Initialize(const base::FilePath& cdm_path) {
   cdm_path_ = cdm_path;
 
   // Load the CDM.
-  base::NativeLibraryLoadError error;
   base::TimeTicks start = base::TimeTicks::Now();
-  library_.Reset(base::LoadNativeLibrary(cdm_path, &error));
+  library_ = base::ScopedNativeLibrary(cdm_path);
   base::TimeDelta load_time = base::TimeTicks::Now() - start;
   if (!library_.is_valid()) {
     LOG(ERROR) << "CDM at " << cdm_path.value() << " could not be loaded.";
-    LOG(ERROR) << "Error: " << error.ToString();
+    LOG(ERROR) << "Error: " << library_.GetError()->ToString();
     ReportLoadResult(base::PathExists(cdm_path) ? LoadResult::kLoadFailed
                                                 : LoadResult::kFileMissing);
-    ReportLoadErrorCode(error);
+    ReportLoadErrorCode(library_.GetError());
     return false;
   }
 
@@ -162,7 +161,7 @@ bool CdmModule::Initialize(const base::FilePath& cdm_path) {
     deinitialize_cdm_module_func_ = nullptr;
     create_cdm_func_ = nullptr;
     get_cdm_version_func_ = nullptr;
-    library_.Release();
+    library_.reset();
     ReportLoadResult(LoadResult::kEntryPointMissing);
     return false;
   }

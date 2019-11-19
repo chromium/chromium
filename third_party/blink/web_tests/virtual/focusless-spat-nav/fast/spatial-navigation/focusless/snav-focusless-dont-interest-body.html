@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<script src="../../../../../resources/testharness.js"></script>
+<script src="../../../../../resources/testharnessreport.js"></script>
+<script src="file:///gen/layout_test_data/mojo/public/js/mojo_bindings.js"></script>
+<script src="file:///gen/third_party/blink/public/mojom/page/spatial_navigation.mojom.js"></script>
+<script src="../../../../../fast/spatial-navigation/resources/mock-snav-service.js"></script>
+<script src="../../../../../fast/spatial-navigation/resources/snav-testharness.js"></script>
+
+<body>
+<button id="button" autofocus>button</button>
+
+<script>
+  let button = document.getElementById("button");
+  let initialState = snavCallback();
+
+  promise_test(async () => {
+    await snav.rAF();
+    await snav.rAF();
+    assert_equals(document.activeElement,
+                  button,
+                  "'button' should start focused.");
+    assert_equals(window.internals.interestedElement,
+                  button,
+                  "'button' should start interested.");
+
+    await initialState;
+    assert_true(mockSnavService.canExitFocus,
+                "Should be able to exit focus.");
+    assert_true(mockSnavService.canSelectElement,
+                "Should be able to select element.");
+
+    document.activeElement.blur()
+    await snavCallback();
+    assert_equals(document.activeElement,
+                  document.body,
+                  "'body' should be focused.");
+    assert_equals(window.internals.interestedElement,
+                  button,
+                  "'button' should still be interested.");
+    assert_false(mockSnavService.canExitFocus,
+                "Should not be able to exit focus.");
+    assert_true(mockSnavService.canSelectElement,
+                "Should be able to select element.");
+
+  }, 'Spat Nav does not pass interest to the body.');
+</script>
+</body>

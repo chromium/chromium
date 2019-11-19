@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<title>Mojo message pipe tests</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+
+let testData = (() => {
+  let dataIn = new Uint8Array(42);
+  for (let i = 0; i < dataIn.length; ++i)
+    dataIn[i] = i * i;
+
+  return {
+    read(handle) {
+      let {result, buffer, handles} = handle.readMessage();
+      assert_equals(result, Mojo.RESULT_OK);
+      assert_array_equals(new Uint8Array(buffer), dataIn);
+      assert_array_equals(handles, []);
+    },
+    write(handle) {
+      let result = handle.writeMessage(dataIn, []);
+      assert_equals(result, Mojo.RESULT_OK);
+    }
+  };
+})();
+
+test(() => {
+  let {result, handle0, handle1} = Mojo.createMessagePipe();
+  assert_equals(result, Mojo.RESULT_OK);
+  assert_true(handle0 instanceof MojoHandle);
+  assert_true(handle1 instanceof MojoHandle);
+}, "Create pipe");
+
+test(() => {
+  let {handle0, handle1} = Mojo.createMessagePipe();
+  handle0.close();
+  let {result} = handle0.readMessage();
+  assert_equals(result, Mojo.RESULT_INVALID_ARGUMENT);
+}, "Read from invalid handle");
+
+test(() => {
+  let {handle0, handle1} = Mojo.createMessagePipe();
+  let {result} = handle0.readMessage();
+  assert_equals(result, Mojo.RESULT_SHOULD_WAIT);
+}, "Read from empty pipe");
+
+test(() => {
+  let {handle0, handle1} = Mojo.createMessagePipe();
+  handle0.close();
+  let result = handle0.writeMessage(new ArrayBuffer(4), []);
+  assert_equals(result, Mojo.RESULT_INVALID_ARGUMENT);
+}, "Write to invalid handle");
+
+async_test((test) => {
+  let {handle0, handle1} = Mojo.createMessagePipe();
+
+  handle0.watch({readable: true}, test.step_func_done((result) => {
+    assert_equals(result, Mojo.RESULT_OK);
+    {
+      let {result, buffer, handles} = handle0.readMessage();
+      assert_equals(result, Mojo.RESULT_OK);
+      assert_equals(buffer.byteLength, 0);
+      assert_array_equals(handles, []);
+    }
+  }));
+  let result = handle1.writeMessage(new ArrayBuffer(0), []);
+  assert_equals(result, Mojo.RESULT_OK);
+}, "Send empty message");
+
+async_test((test) => {
+  let {handle0, handle1} = Mojo.createMessagePipe();
+
+  handle0.watch({readable: true}, test.step_func_done((result) => {
+    assert_equals(result, Mojo.RESULT_OK);
+    testData.read(handle0);
+  }));
+  testData.write(handle1);
+}, "Send buffer");
+
+async_test((test) => {
+  let pipe1 = Mojo.createMessagePipe();
+  let pipe2 = Mojo.createMessagePipe();
+  pipe2.handle0.watch({readable: true}, test.step_func_done((result) => {
+    assert_equals(result, Mojo.RESULT_OK);
+    testData.read(pipe2.handle0);
+  }));
+  pipe1.handle0.watch({readable: true}, test.step_func((result) => {
+    assert_equals(result, Mojo.RESULT_OK);
+    {
+      let {result, handles} = pipe1.handle0.readMessage();
+      assert_equals(result, Mojo.RESULT_OK);
+      assert_equals(1, handles.length);
+      testData.write(handles[0]);
+    }
+  }));
+  pipe1.handle1.writeMessage(new ArrayBuffer(0), [pipe2.handle1]);
+}, "Send handle");
+
+test(() => {
+  const pipe1 = Mojo.createMessagePipe();
+  const pipe2 = Mojo.createMessagePipe();
+  pipe2.handle0.close();
+  const result = pipe1.handle0.writeMessage(new ArrayBuffer(0), [pipe2.handle0]);
+  assert_equals(result, Mojo.RESULT_INVALID_ARGUMENT);
+}, "Send invalid handle");
+
+</script>

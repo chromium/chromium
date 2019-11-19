@@ -1,0 +1,49 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("scanner") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "camera_controller.h",
+    "camera_controller.mm",
+    "preview_overlay_view.h",
+    "preview_overlay_view.mm",
+    "scanner_alerts.h",
+    "scanner_alerts.mm",
+    "scanner_presenting.h",
+    "scanner_transitioning_delegate.h",
+    "scanner_transitioning_delegate.mm",
+    "scanner_view.h",
+    "scanner_view.mm",
+    "scanner_view_controller.h",
+    "scanner_view_controller.mm",
+    "video_preview_view.h",
+    "video_preview_view.mm",
+  ]
+  deps = [
+    ":camera_state",
+    "resources:scanner_torch_off",
+    "resources:scanner_torch_on",
+    "//base",
+    "//components/version_info",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/ui/commands",
+    "//ios/chrome/browser/ui/icons",
+    "//ios/chrome/browser/ui/util",
+    "//ios/chrome/common:ios_app_bundle_id_prefix_buildflags",
+    "//ios/chrome/common/ui_util",
+    "//ios/third_party/material_components_ios",
+    "//ui/base",
+  ]
+  libs = [
+    "AVFoundation.framework",
+    "UIKit.framework",
+  ]
+}
+
+source_set("camera_state") {
+  sources = [
+    "camera_state.h",
+  ]
+}

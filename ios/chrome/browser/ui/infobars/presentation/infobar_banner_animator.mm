@@ -15,8 +15,16 @@
   return 1;
 }
 
-// TODO(crbug.com/911864): PLACEHOLDER animation to present the InfobarBanner.
+// "This method can only be a nop if the transition is interactive and not a
+// percentDriven interactive transition." (As stated in this method public
+// interface). Since this criteria is met it NO-OPs.
 - (void)animateTransition:
+    (id<UIViewControllerContextTransitioning>)transitionContext {
+}
+
+#pragma mark - UIViewControllerTransitioningDelegate
+
+- (void)startInteractiveTransition:
     (id<UIViewControllerContextTransitioning>)transitionContext {
   // Set up the keys for the "base" view/VC and the "presented" view/VC. These
   // will be used to fetch the associated objects later.
@@ -51,36 +59,40 @@
     CGRect presentedViewStartFrame = presentedViewFinalFrame;
     presentedViewStartFrame.origin.y = -CGRectGetWidth(containerView.bounds);
     presentedView.frame = presentedViewStartFrame;
+    presentedView.alpha = 0;
   } else {
     presentedViewFinalFrame = presentedView.frame;
     presentedViewFinalFrame.origin.y = -CGRectGetWidth(containerView.bounds);
   }
 
-  // Animate using the animator's own duration value.
-  [UIView animateWithDuration:[self transitionDuration:transitionContext]
-      delay:0
-      usingSpringWithDamping:0.85
-      initialSpringVelocity:0
-      options:UIViewAnimationOptionTransitionNone
-      animations:^{
-        presentedView.frame = presentedViewFinalFrame;
-      }
-      completion:^(BOOL finished) {
-        BOOL success = ![transitionContext transitionWasCancelled];
+  UIViewPropertyAnimator* animator = [[UIViewPropertyAnimator alloc]
+      initWithDuration:[self transitionDuration:transitionContext]
+          dampingRatio:0.85
+            animations:^{
+              presentedView.frame = presentedViewFinalFrame;
+              presentedView.alpha = 1;
+            }];
 
-        // If presentation failed, remove the view.
-        if (self.presenting && !success) {
-          [presentedView removeFromSuperview];
-        }
+  [animator addCompletion:^(UIViewAnimatingPosition finalPosition) {
+    BOOL success = ![transitionContext transitionWasCancelled];
 
-        // If dismiss was successful, remove the view.
-        if (!self.presenting && success) {
-          [presentedView removeFromSuperview];
-        }
+    // If presentation failed, remove the view.
+    if (self.presenting && !success) {
+      [presentedView removeFromSuperview];
+    }
 
-        // Notify UIKit that the transition has finished
-        [transitionContext completeTransition:success];
-      }];
+    // If dismiss was successful, remove the view.
+    if (!self.presenting && success) {
+      [presentedView removeFromSuperview];
+    }
+
+    // Notify UIKit that the transition has finished
+    [transitionContext finishInteractiveTransition];
+    [transitionContext completeTransition:success];
+  }];
+
+  self.propertyAnimator = animator;
+  [self.propertyAnimator startAnimation];
 }
 
 @end

@@ -21,4 +21,9 @@ public interface ArDelegate {
      * to notify AR that the activity was resumed.
      **/
     public void registerOnResumeActivity(Activity activity);
+
+    /**
+     * Used to let AR immersive mode intercept the Back button to exit immersive mode.
+     */
+    public boolean onBackPressed();
 }

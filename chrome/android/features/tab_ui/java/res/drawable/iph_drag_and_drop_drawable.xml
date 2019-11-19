@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:height="45dp"
+    android:width="70dp"
+    android:viewportHeight="450"
+    android:viewportWidth="700"
+    tools:targetApi="21">
+    <group android:name="selected_card_background">
+        <path android:fillColor="#E2E1E1"
+            android:pathData="
+                M100,100 h200
+                a20,20 0 0 1 20,20
+                v200
+                a20,20 0 0 1 -20,20
+                h-200
+                a20,20 0 0 1 -20,-20
+                v-200
+                a20,20 0 0 1 20,-20
+                z"
+            android:strokeColor="#E2E1E1"
+            android:strokeWidth="3"/>
+    </group>
+    <group android:name="hovered_card"
+        android:pivotX="200"
+        android:pivotY="230">
+        <path android:fillColor="#FFFFFF"
+            android:pathData="
+                M100,100 h200
+                a20,20 0 0 1 20,20
+                v200
+                a20,20 0 0 1 -20,20
+                h-200
+                a20,20 0 0 1 -20,-20
+                v-200
+                a20,20 0 0 1 20,-20
+                z"
+            android:strokeColor="#E2E1E1"
+            android:strokeWidth="3"/>
+    </group>
+    <group android:name="selected_card"
+        android:pivotX="500"
+        android:pivotY="230">
+        <path android:fillColor="#FFFFFF"
+            android:name="selected_card_rectangle"
+            android:pathData="
+                M400,100 h200
+                a20,20 0 0 1 20,20
+                v200
+                a20,20 0 0 1 -20,20
+                h-200
+                a20,20 0 0 1 -20,-20
+                v-200
+                a20,20 0 0 1 20,-20
+                z"
+            android:strokeColor="#E2E1E1"
+            android:strokeWidth="3"/>
+    </group>
+    <group android:name="touch_point_background"
+        android:pivotX="470"
+        android:pivotY="200">
+        <path
+            android:name="touch_point_background_circle"
+            android:fillColor="@color/modern_blue_600"
+            android:pathData="
+                M 470, 200
+                m -40, 0
+                a 40,40 0 1,0 80,0
+                a 40,40 0 1,0 -80,0
+                z
+                "
+            />
+    </group>
+    <group android:name="touch_point"
+        android:pivotX="470"
+        android:pivotY="200">
+        <path
+            android:name="touch_point_circle"
+            android:fillColor="@color/modern_blue_600"
+            android:pathData="
+                M 470, 200
+                m -24, 0
+                a 24,24 0 1,0 48,0
+                a 24,24 0 1,0 -48,0
+                z
+                "
+            />
+    </group>
+</vector>

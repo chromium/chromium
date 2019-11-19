@@ -5,6 +5,7 @@
 #include "ui/views/controls/native/native_view_host.h"
 
 #include "base/logging.h"
+#include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/gfx/canvas.h"
 #include "ui/views/controls/native/native_view_host_wrapper.h"
@@ -14,18 +15,12 @@
 namespace views {
 
 // static
-const char NativeViewHost::kViewClassName[] = "NativeViewHost";
 const char kWidgetNativeViewHostKey[] = "WidgetNativeViewHost";
 
 ////////////////////////////////////////////////////////////////////////////////
 // NativeViewHost, public:
 
-NativeViewHost::NativeViewHost()
-    : native_view_(NULL),
-      fast_resize_(false),
-      fast_resize_at_last_layout_(false),
-      resize_background_color_(SK_ColorWHITE) {
-}
+NativeViewHost::NativeViewHost() = default;
 
 NativeViewHost::~NativeViewHost() {
   // As part of deleting NativeViewHostWrapper the native view is unparented.
@@ -38,7 +33,13 @@ void NativeViewHost::Attach(gfx::NativeView native_view) {
   DCHECK(!native_view_);
   native_view_ = native_view;
   native_wrapper_->AttachNativeView();
-  Layout();
+  InvalidateLayout();
+  // The call to InvalidateLayout() triggers an async call to Layout(), which
+  // updates the visibility of the NativeView. The call to Layout() only happens
+  // if |this| is drawn. Call hide if not drawn as otherwise the NativeView
+  // could be visible when |this| is not.
+  if (!IsDrawn())
+    native_wrapper_->HideWidget();
 
   Widget* widget = Widget::GetWidgetForNativeView(native_view);
   if (widget)
@@ -66,6 +67,10 @@ bool NativeViewHost::SetCustomMask(std::unique_ptr<ui::LayerOwner> mask) {
 
 void NativeViewHost::SetHitTestTopInset(int top_inset) {
   native_wrapper_->SetHitTestTopInset(top_inset);
+}
+
+int NativeViewHost::GetHitTestTopInset() const {
+  return native_wrapper_->GetHitTestTopInset();
 }
 
 void NativeViewHost::SetNativeViewSize(const gfx::Size& size) {
@@ -125,7 +130,6 @@ void NativeViewHost::Layout() {
   } else {
     native_wrapper_->HideWidget();
   }
-  fast_resize_at_last_layout_ = visible && fast_resize_;
 }
 
 void NativeViewHost::OnPaint(gfx::Canvas* canvas) {
@@ -147,10 +151,12 @@ void NativeViewHost::OnPaint(gfx::Canvas* canvas) {
   // It would be nice if this used some approximation of the page's
   // current background color.
   if (native_wrapper_->HasInstalledClip())
-    canvas->FillRect(GetLocalBounds(), resize_background_color_);
+    canvas->FillRect(GetLocalBounds(), SK_ColorWHITE);
 }
 
 void NativeViewHost::VisibilityChanged(View* starting_from, bool is_visible) {
+  // This does not use InvalidateLayout() to ensure the visibility state is
+  // correctly set (if this View isn't visible, Layout() won't be called).
   Layout();
 }
 
@@ -162,7 +168,7 @@ bool NativeViewHost::GetNeedsNotificationWhenVisibleBoundsChange() const {
 }
 
 void NativeViewHost::OnVisibleBoundsChanged() {
-  Layout();
+  InvalidateLayout();
 }
 
 void NativeViewHost::ViewHierarchyChanged(
@@ -189,10 +195,6 @@ void NativeViewHost::ViewHierarchyChanged(
   }
 }
 
-const char* NativeViewHost::GetClassName() const {
-  return kViewClassName;
-}
-
 void NativeViewHost::OnFocus() {
   if (native_view_)
     native_wrapper_->SetFocus();
@@ -215,7 +217,8 @@ gfx::NativeCursor NativeViewHost::GetCursor(const ui::MouseEvent& event) {
 }
 
 void NativeViewHost::SetVisible(bool visible) {
-  native_wrapper_->SetVisible(visible);
+  if (native_view_)
+    native_wrapper_->SetVisible(visible);
   View::SetVisible(visible);
 }
 
@@ -227,11 +230,11 @@ void NativeViewHost::Detach(bool destroyed) {
     if (!destroyed) {
       Widget* widget = Widget::GetWidgetForNativeView(native_view_);
       if (widget)
-        widget->SetNativeWindowProperty(kWidgetNativeViewHostKey, NULL);
+        widget->SetNativeWindowProperty(kWidgetNativeViewHostKey, nullptr);
       ClearFocus();
     }
     native_wrapper_->NativeViewDetaching(destroyed);
-    native_view_ = NULL;
+    native_view_ = nullptr;
   }
 }
 
@@ -242,11 +245,15 @@ void NativeViewHost::ClearFocus() {
 
   Widget::Widgets widgets;
   Widget::GetAllChildWidgets(native_view(), &widgets);
-  for (auto i = widgets.begin(); i != widgets.end(); ++i) {
-    focus_manager->ViewRemoved((*i)->GetRootView());
+  for (auto* widget : widgets) {
+    focus_manager->ViewRemoved(widget->GetRootView());
     if (!focus_manager->GetFocusedView())
       return;
   }
 }
+
+BEGIN_METADATA(NativeViewHost)
+METADATA_PARENT_CLASS(View)
+END_METADATA()
 
 }  // namespace views

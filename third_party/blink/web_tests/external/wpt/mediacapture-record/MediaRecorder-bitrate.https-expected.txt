@@ -1,0 +1,21 @@
+This is a testharness.js-based test.
+FAIL Passing no bitrate config results in defaults assert_not_equals: got disallowed value 0
+FAIL Passing bitsPerSecond:0 results in targets close to 0 assert_approx_equals: expected 0 +/- 100000 but got 106000
+FAIL Passing only audioBitsPerSecond:0 results in 0 for audio, default for video assert_equals: expected 0 but got 6000
+FAIL Passing only videoBitsPerSecond:0 results in 0 for video, default for audio assert_not_equals: got disallowed value 0
+FAIL Passing bitsPerSecond:0 overrides audio/video-specific values assert_approx_equals: expected 0 +/- 100000 but got 106000
+PASS Passing bitsPerSecond overrides audio/video zero values
+PASS Passing bitsPerSecond sets audio/video bitrate values
+FAIL Passing only audioBitsPerSecond results in default for video assert_not_equals: got disallowed value 0
+FAIL Passing only videoBitsPerSecond results in default for audio assert_not_equals: got disallowed value 0
+FAIL Passing videoBitsPerSecond for audio-only stream still results in something for video assert_not_equals: got disallowed value 0
+FAIL Passing audioBitsPerSecond for video-only stream still results in something for audio assert_equals: expected 100000 but got 0
+FAIL Passing bitsPerSecond for audio-only stream still results in something for video assert_not_equals: got disallowed value 0
+FAIL Passing bitsPerSecond for video-only stream still results in something for audio assert_not_equals: got disallowed value 0
+PASS Selected default track bitrates are not changed by start()
+PASS Passed-in track bitrates are not changed by start()
+PASS Passing bitsPerSecond for audio/video stream does not change track bitrates in start()
+FAIL Passing bitsPerSecond for audio stream sets video track bitrate to 0 in start() assert_approx_equals: expected 500000 +/- 100000 but got 128000
+FAIL Passing bitsPerSecond for video stream sets audio track bitrate to 0 in start() assert_not_equals: got disallowed value 0
+Harness: the test ran to completion.
+

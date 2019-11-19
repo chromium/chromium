@@ -31,6 +31,8 @@ class HistoryService;
 
 namespace safe_browsing {
 
+class BaseBlockingPage;
+
 struct HitReport;
 
 // Construction needs to happen on the main thread.
@@ -89,20 +91,6 @@ class SafeBrowsingUIManager : public BaseUIManager {
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* remove);
 
-  // Adds an UnsafeResource |resource| for |url| to unsafe_resources_,
-  // this should be called by the UrlCheckerDelegate whenever a resource load
-  // is blocked due to a SB hit.
-  void AddUnsafeResource(GURL url,
-                         security_interstitials::UnsafeResource resource);
-
-  // Checks if an UnsafeResource |resource| exists for |url|, if so, it is
-  // removed from the vector, assigned to |resource| and the function returns
-  // true. Otherwise the function returns false and nothing gets assigned to
-  // |resource|.
-  bool PopUnsafeResourceForURL(
-      GURL url,
-      security_interstitials::UnsafeResource* resource);
-
   const std::string app_locale() const override;
   history::HistoryService* history_service(
       content::WebContents* web_contents) override;
@@ -131,14 +119,15 @@ class SafeBrowsingUIManager : public BaseUIManager {
   static GURL GetMainFrameWhitelistUrlForResourceForTesting(
       const safe_browsing::SafeBrowsingUIManager::UnsafeResource& resource);
 
+  // Creates a blocking page, used for interstitials triggered by subresources.
+  // Override is using a different blocking page.
+  BaseBlockingPage* CreateBlockingPageForSubresource(
+      content::WebContents* contents,
+      const GURL& blocked_url,
+      const UnsafeResource& unsafe_resource) override;
+
   // Safebrowsing service.
   scoped_refptr<SafeBrowsingService> sb_service_;
-
-  // Stores unsafe resources so they can be fetched from a navigation throttle
-  // in the committed interstitials flow. Implemented as a pair vector since
-  // most of the time it will be empty or contain a single element.
-  std::vector<std::pair<GURL, security_interstitials::UnsafeResource>>
-      unsafe_resources_;
 
   base::ObserverList<Observer>::Unchecked observer_list_;
 

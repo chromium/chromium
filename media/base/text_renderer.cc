@@ -25,8 +25,7 @@ TextRenderer::TextRenderer(
     : task_runner_(task_runner),
       add_text_track_cb_(add_text_track_cb),
       state_(kUninitialized),
-      pending_read_count_(0),
-      weak_factory_(this) {}
+      pending_read_count_(0) {}
 
 TextRenderer::~TextRenderer() {
   DCHECK(task_runner_->BelongsToCurrentThread());
@@ -174,7 +173,7 @@ void TextRenderer::BufferReady(DemuxerStream* stream,
   }
 
   if (input->end_of_stream()) {
-    CueReady(stream, NULL);
+    CueReady(stream, nullptr);
     return;
   }
 
@@ -312,8 +311,8 @@ void TextRenderer::Read(
   state->read_state = TextTrackState::kReadPending;
   ++pending_read_count_;
 
-  text_stream->Read(base::Bind(
-      &TextRenderer::BufferReady, weak_factory_.GetWeakPtr(), text_stream));
+  text_stream->Read(base::BindOnce(&TextRenderer::BufferReady,
+                                   weak_factory_.GetWeakPtr(), text_stream));
 }
 
 TextRenderer::TextTrackState::TextTrackState(std::unique_ptr<TextTrack> tt)

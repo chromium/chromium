@@ -11,10 +11,11 @@
 #include "base/bind.h"
 #include "base/bind_helpers.h"
 #include "base/memory/ref_counted.h"
-#include "base/message_loop/message_loop.h"
+#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/test/bind_test_util.h"
+#include "base/test/task_environment.h"
 #include "ios/net/cookies/cookie_store_ios_client.h"
 #import "ios/net/cookies/cookie_store_ios_test_util.h"
 #import "ios/net/cookies/ns_http_system_cookie_store.h"
@@ -22,6 +23,7 @@
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_store_change_unittest.h"
 #include "net/cookies/cookie_store_unittest.h"
+#include "net/cookies/cookie_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
 
@@ -67,8 +69,9 @@ struct CookieStoreIOSTestTraits {
   static const bool has_exact_change_cause = false;
   static const bool has_exact_change_ordering = false;
   static const int creation_time_granularity_in_ms = 1000;
+  static const bool supports_cookie_access_semantics = false;
 
-  base::MessageLoop loop_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
 };
 
 INSTANTIATE_TYPED_TEST_SUITE_P(CookieStoreIOS,
@@ -87,9 +90,9 @@ INSTANTIATE_TYPED_TEST_SUITE_P(CookieStoreIOS,
 namespace {
 
 // Helper callback to be passed to CookieStore::GetAllCookiesForURLAsync().
-class GetAllCookiesCallback {
+class GetAllCookiesHelperCallback {
  public:
-  GetAllCookiesCallback() : did_run_(false) {}
+  GetAllCookiesHelperCallback() : did_run_(false) {}
 
   // Returns true if the callback has been run.
   bool did_run() { return did_run_; }
@@ -97,11 +100,11 @@ class GetAllCookiesCallback {
   // Returns the parameter of the callback.
   const net::CookieList& cookie_list() { return cookie_list_; }
 
-  void Run(const net::CookieList& cookie_list,
+  void Run(const net::CookieStatusList& cookie_status_list,
            const net::CookieStatusList& excluded_cookies) {
     ASSERT_FALSE(did_run_);
     did_run_ = true;
-    cookie_list_ = cookie_list;
+    cookie_list_ = net::cookie_util::StripStatuses(cookie_status_list);
   }
 
  private:
@@ -109,7 +112,7 @@ class GetAllCookiesCallback {
   net::CookieList cookie_list_;
 };
 
-void IgnoreList(const net::CookieList& ignored,
+void IgnoreList(const net::CookieStatusList& ignored,
                 const net::CookieStatusList& excluded_cookies) {}
 
 }  // namespace
@@ -195,7 +198,7 @@ class CookieStoreIOSTest : public PlatformTest {
   const GURL kTestCookieURLFoo;
   const GURL kTestCookieURLBarBar;
 
-  base::MessageLoop loop_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
   ScopedTestingCookieStoreIOSClient scoped_cookie_store_ios_client_;
   scoped_refptr<TestPersistentCookieStore> backend_;
   // |system_store_| will point to the NSHTTPSystemCookieStore object owned by
@@ -236,17 +239,14 @@ TEST_F(CookieStoreIOSTest, DeleteCanonicalCookie) {
   ClearCookies();
   SetCookie("abc=def");
 
-  // Match options to what SetCookie uses.
-  CookieOptions options;
-  options.set_include_httponly();
-
   // Time is different, though.
   base::Time not_now = base::Time::Now() - base::TimeDelta::FromDays(30);
 
   // Semantics for CookieMonster::DeleteCanonicalCookieAsync don't match deletes
   // for same key if cookie value changed.  Document CookieStoreIOS compat.
-  std::unique_ptr<CanonicalCookie> non_equiv_cookie = CanonicalCookie::Create(
-      kTestCookieURLFooBar, "abc=wfg", not_now, options);
+  std::unique_ptr<CanonicalCookie> non_equiv_cookie =
+      CanonicalCookie::Create(kTestCookieURLFooBar, "abc=wfg", not_now,
+                              base::nullopt /* server_time */);
   base::RunLoop run_loop;
   store_->DeleteCanonicalCookieAsync(
       *non_equiv_cookie, base::BindLambdaForTesting([&](uint32_t deleted) {
@@ -257,18 +257,20 @@ TEST_F(CookieStoreIOSTest, DeleteCanonicalCookie) {
 
   // Cookie should still exist.
   base::RunLoop run_loop2;
-  GetCookies(base::BindLambdaForTesting(
-      [&](const CookieList& cookies, const CookieStatusList& excluded_list) {
+  GetCookies(
+      base::BindLambdaForTesting([&](const CookieStatusList& cookies,
+                                     const CookieStatusList& excluded_list) {
         ASSERT_EQ(1u, cookies.size());
-        EXPECT_EQ("abc", cookies[0].Name());
-        EXPECT_EQ("def", cookies[0].Value());
+        EXPECT_EQ("abc", cookies[0].cookie.Name());
+        EXPECT_EQ("def", cookies[0].cookie.Value());
         run_loop2.Quit();
       }));
   run_loop2.Run();
 
   // Now delete equivalent one with non-matching ctime.
-  std::unique_ptr<CanonicalCookie> equiv_cookie = CanonicalCookie::Create(
-      kTestCookieURLFooBar, "abc=def", not_now, options);
+  std::unique_ptr<CanonicalCookie> equiv_cookie =
+      CanonicalCookie::Create(kTestCookieURLFooBar, "abc=def", not_now,
+                              base::nullopt /* server_time */);
 
   base::RunLoop run_loop3;
   store_->DeleteCanonicalCookieAsync(
@@ -280,8 +282,9 @@ TEST_F(CookieStoreIOSTest, DeleteCanonicalCookie) {
 
   // Cookie should no longer exist.
   base::RunLoop run_loop4;
-  GetCookies(base::BindLambdaForTesting(
-      [&](const CookieList& cookies, const CookieStatusList& excluded_list) {
+  GetCookies(
+      base::BindLambdaForTesting([&](const CookieStatusList& cookies,
+                                     const CookieStatusList& excluded_list) {
         EXPECT_EQ(0u, cookies.size());
         run_loop4.Quit();
       }));
@@ -322,7 +325,7 @@ TEST_F(CookieStoreIOSTest, SameValueDoesNotCallHook) {
   EXPECT_EQ(1U, cookies_changed_.size());
 }
 
-TEST_F(CookieStoreIOSTest, GetAllCookiesForURLAsync) {
+TEST_F(CookieStoreIOSTest, GetAllCookies) {
   const GURL kTestCookieURLFooBar("http://foo.google.com/bar");
   ScopedTestingCookieStoreIOSClient scoped_cookie_store_ios_client(
       std::make_unique<TestCookieStoreIOSClient>());
@@ -331,16 +334,19 @@ TEST_F(CookieStoreIOSTest, GetAllCookiesForURLAsync) {
       std::make_unique<NSHTTPSystemCookieStore>(), nullptr /* net_log */);
 
   // Add a cookie.
-  net::CookieOptions options;
-  options.set_include_httponly();
-  cookie_store->SetCookieWithOptionsAsync(
-      kTestCookieURLFooBar, "a=b", options,
-      net::CookieStore::SetCookiesCallback());
+  auto canonical_cookie = net::CanonicalCookie::Create(
+      kTestCookieURLFooBar, "a=b", base::Time::Now(),
+      base::nullopt /* server_time */);
+  cookie_store->SetCanonicalCookieAsync(std::move(canonical_cookie),
+                                        kTestCookieURLFooBar.scheme(),
+                                        net::CookieOptions::MakeAllInclusive(),
+                                        net::CookieStore::SetCookiesCallback());
   // Check we can get the cookie.
-  GetAllCookiesCallback callback;
-  cookie_store->GetAllCookiesForURLAsync(
-      kTestCookieURLFooBar,
-      base::Bind(&GetAllCookiesCallback::Run, base::Unretained(&callback)));
+  GetAllCookiesHelperCallback callback;
+  cookie_store->GetCookieListWithOptionsAsync(
+      kTestCookieURLFooBar, net::CookieOptions::MakeAllInclusive(),
+      base::Bind(&GetAllCookiesHelperCallback::Run,
+                 base::Unretained(&callback)));
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(callback.did_run());
   EXPECT_EQ(1u, callback.cookie_list().size());

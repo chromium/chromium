@@ -16,7 +16,6 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "components/update_client/update_client_errors.h"
-#include "services/service_manager/public/cpp/connector.h"
 
 namespace crx_file {
 enum class VerifierFormat;
@@ -26,6 +25,8 @@ namespace update_client {
 
 class CrxInstaller;
 class ComponentPatcher;
+class Patcher;
+class Unzipper;
 
 // In charge of unpacking the component CRX package and verifying that it is
 // well formed and the cryptographic signature is correct.
@@ -83,12 +84,14 @@ class ComponentUnpacker : public base::RefCountedThreadSafe<ComponentUnpacker> {
   using Callback = base::OnceCallback<void(const Result& result)>;
 
   // Constructs an unpacker for a specific component unpacking operation.
-  // |pk_hash| is the expected/ public key SHA256 hash. |path| is the current
-  // location of the CRX.
+  // |pk_hash| is the expected public developer key's SHA256 hash. If empty,
+  // the unpacker accepts any developer key. |path| is the current location
+  // of the CRX.
   ComponentUnpacker(const std::vector<uint8_t>& pk_hash,
                     const base::FilePath& path,
                     scoped_refptr<CrxInstaller> installer,
-                    std::unique_ptr<service_manager::Connector> connector,
+                    std::unique_ptr<Unzipper> unzipper,
+                    scoped_refptr<Patcher> patcher,
                     crx_file::VerifierFormat crx_format);
 
   // Begins the actual unpacking of the files. May invoke a patcher and the
@@ -131,7 +134,8 @@ class ComponentUnpacker : public base::RefCountedThreadSafe<ComponentUnpacker> {
   scoped_refptr<ComponentPatcher> patcher_;
   scoped_refptr<CrxInstaller> installer_;
   Callback callback_;
-  std::unique_ptr<service_manager::Connector> connector_;
+  std::unique_ptr<Unzipper> unzipper_;
+  scoped_refptr<Patcher> patcher_tool_;
   crx_file::VerifierFormat crx_format_;
   UnpackerError error_;
   int extended_error_;

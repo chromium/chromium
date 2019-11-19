@@ -8,7 +8,7 @@ Name Strings
 
 Version
 
-    Last Modifed Date: February 7, 2014
+    Last Modifed Date: March 27, 2019
 
 Dependencies
 
@@ -23,8 +23,8 @@ Overview
     This extension implements a subset of EXT_color_buffer_float on top of
     OpenGL ES 2.0.
 
-    This extension enables rendering to floating point RGBA textures. When
-    this extension is enabled:
+    This extension enables rendering to floating point RGBA textures and
+    renderbuffers. When this extension is enabled:
 
     * The 32-bit floating point type GL_RGBA32F becomes available as a
       color-renderable internal format. Textures created with type = FLOAT,
@@ -36,13 +36,16 @@ Overview
       OpenGL ES 2.0 spec that the internalformat parameter and format parameter
       of TexImage2D must match is lifted for this case.
 
+    * GL_RGBA32F becomes an available internalformat for RenderbufferStorage.
+
     Floating point RGBA textures may still be created also with the unsized
     GL_RGBA internal format, but whether such textures are renderable is not
     guaranteed.
 
 New Tokens
 
-    Accepted by the <internalformat> parameter of TexImage2D:
+    Accepted by the <internalformat> parameter of RenderbufferStorage and
+    TexImage2D:
 
     GL_RGBA32F      0x8814
 
@@ -61,4 +64,4 @@ New State
 Revision History
 
     2/7/2014    Documented the extension
-
+    3/27/2019   Add support for renderbuffers

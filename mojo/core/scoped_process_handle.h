@@ -13,6 +13,10 @@
 #include "base/win/scoped_handle.h"
 #endif
 
+#if defined(OS_FUCHSIA)
+#include <lib/zx/process.h>
+#endif
+
 namespace mojo {
 namespace core {
 
@@ -52,6 +56,8 @@ class ScopedProcessHandle {
  private:
 #if defined(OS_WIN)
   base::win::ScopedHandle handle_;
+#elif defined(OS_FUCHSIA)
+  zx::process process_;
 #else
   base::ProcessHandle handle_ = base::kNullProcessHandle;
 #endif

@@ -171,7 +171,7 @@ void SiteEngagementService::Helper::MediaTracker::DidFinishNavigation(
 
 void SiteEngagementService::Helper::MediaTracker::MediaStartedPlaying(
     const MediaPlayerInfo& media_info,
-    const MediaPlayerId& id) {
+    const content::MediaPlayerId& id) {
   // Only begin engagement detection when media actually starts playing.
   active_media_players_.push_back(id);
   if (!IsTimerRunning())
@@ -180,7 +180,7 @@ void SiteEngagementService::Helper::MediaTracker::MediaStartedPlaying(
 
 void SiteEngagementService::Helper::MediaTracker::MediaStoppedPlaying(
     const MediaPlayerInfo& media_info,
-    const MediaPlayerId& id,
+    const content::MediaPlayerId& id,
     WebContentsObserver::MediaStoppedReason reason) {
   base::Erase(active_media_players_, id);
 }

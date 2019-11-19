@@ -148,7 +148,7 @@ class MEDIA_EXPORT WebMClusterParser : public WebMParserClient {
   typedef std::map<int, Track> TextTrackMap;
 
  public:
-  WebMClusterParser(int64_t timecode_scale,
+  WebMClusterParser(int64_t timecode_scale_ns,
                     int audio_track_num,
                     base::TimeDelta audio_default_duration,
                     int video_track_num,

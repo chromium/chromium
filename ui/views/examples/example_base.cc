@@ -17,43 +17,10 @@ namespace examples {
 // This function can only be called if there is a visible examples window.
 void LogStatus(const std::string& status);
 
-namespace {
-
-// TODO(oshima): Check if this special container is still necessary.
-class ContainerView : public View {
- public:
-  explicit ContainerView(ExampleBase* base)
-      : example_view_created_(false),
-        example_base_(base) {
-  }
-
- private:
-  // View:
-  void ViewHierarchyChanged(
-      const ViewHierarchyChangedDetails& details) override {
-    View::ViewHierarchyChanged(details);
-    // We're not using child == this because a Widget may not be
-    // available when this is added to the hierarchy.
-    if (details.is_add && GetWidget() && !example_view_created_) {
-      example_view_created_ = true;
-      example_base_->CreateExampleView(this);
-    }
-  }
-
-  // True if the example view has already been created, or false otherwise.
-  bool example_view_created_;
-
-  ExampleBase* example_base_;
-
-  DISALLOW_COPY_AND_ASSIGN(ContainerView);
-};
-
-}  // namespace
-
-ExampleBase::~ExampleBase() {}
+ExampleBase::~ExampleBase() = default;
 
 ExampleBase::ExampleBase(const char* title) : example_title_(title) {
-  container_ = new ContainerView(this);
+  container_ = new View();
 }
 
 // Prints a message in the status area, at the bottom of the window.

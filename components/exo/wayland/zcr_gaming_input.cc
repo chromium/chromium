@@ -4,21 +4,32 @@
 
 #include "components/exo/wayland/zcr_gaming_input.h"
 
-#include <gaming-input-unstable-v1-server-protocol.h>
 #include <gaming-input-unstable-v2-server-protocol.h>
 #include <wayland-server-core.h>
 #include <wayland-server-protocol-core.h>
 
+#include "base/feature_list.h"
 #include "base/macros.h"
 #include "components/exo/gamepad_delegate.h"
 #include "components/exo/gaming_seat.h"
 #include "components/exo/gaming_seat_delegate.h"
 #include "components/exo/wayland/server_util.h"
+#include "ui/events/devices/gamepad_device.h"
 
 namespace exo {
 namespace wayland {
 
 namespace {
+
+unsigned int GetGamepadBusType(ui::InputDeviceType type) {
+  switch (type) {
+    case ui::INPUT_DEVICE_BLUETOOTH:
+      return ZCR_GAMING_SEAT_V2_BUS_TYPE_BLUETOOTH;
+    default:
+      // Internal and unknown types also default to USB.
+      return ZCR_GAMING_SEAT_V2_BUS_TYPE_USB;
+  }
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 // gaming_input_interface:
@@ -60,14 +71,14 @@ class WaylandGamepadDelegate : public GamepadDelegate {
     zcr_gamepad_v2_send_axis(gamepad_resource_, NowInMilliseconds(), axis,
                              wl_fixed_from_double(value));
   }
-  void OnButton(int button, bool pressed, double value) override {
+  void OnButton(int button, bool pressed) override {
     if (!gamepad_resource_) {
       return;
     }
     uint32_t state = pressed ? ZCR_GAMEPAD_V2_BUTTON_STATE_PRESSED
                              : ZCR_GAMEPAD_V2_BUTTON_STATE_RELEASED;
     zcr_gamepad_v2_send_button(gamepad_resource_, NowInMilliseconds(), button,
-                               state, wl_fixed_from_double(value));
+                               state, wl_fixed_from_double(0));
   }
   void OnFrame() override {
     if (!gamepad_resource_) {
@@ -113,7 +124,7 @@ class WaylandGamingSeatDelegate : public GamingSeatDelegate {
            wl_resource_get_client(surface_resource) ==
                wl_resource_get_client(gaming_seat_resource_);
   }
-  GamepadDelegate* GamepadAdded() override {
+  GamepadDelegate* GamepadAdded(const ui::GamepadDevice& device) override {
     wl_resource* gamepad_resource =
         wl_resource_create(wl_resource_get_client(gaming_seat_resource_),
                            &zcr_gamepad_v2_interface,
@@ -126,8 +137,17 @@ class WaylandGamingSeatDelegate : public GamingSeatDelegate {
         gamepad_resource, &gamepad_implementation, gamepad_delegate,
         &WaylandGamepadDelegate::ResetGamepadResource);
 
-    zcr_gaming_seat_v2_send_gamepad_added(gaming_seat_resource_,
-                                          gamepad_resource);
+    zcr_gaming_seat_v2_send_gamepad_added_with_device_info(
+        gaming_seat_resource_, gamepad_resource, device.name.c_str(),
+        GetGamepadBusType(device.type), device.vendor_id, device.product_id,
+        device.version);
+
+    for (const auto& axis : device.axes) {
+      zcr_gamepad_v2_send_axis_added(gamepad_resource, axis.code,
+                                     axis.min_value, axis.max_value, axis.flat,
+                                     axis.fuzz, axis.resolution);
+    }
+    zcr_gamepad_v2_send_activated(gamepad_resource);
     wl_client_flush(wl_resource_get_client(gaming_seat_resource_));
 
     return gamepad_delegate;

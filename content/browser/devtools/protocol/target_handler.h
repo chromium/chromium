@@ -56,12 +56,14 @@ class TargetHandler : public DevToolsDomainHandler,
   void DidFinishNavigation();
   std::unique_ptr<NavigationThrottle> CreateThrottleForNavigation(
       NavigationHandle* navigation_handle);
+  void UpdatePortals();
 
   // Domain implementation.
   Response SetDiscoverTargets(bool discover) override;
   void SetAutoAttach(bool auto_attach,
                      bool wait_for_debugger_on_start,
                      Maybe<bool> flatten,
+                     Maybe<bool> window_open,
                      std::unique_ptr<SetAutoAttachCallback> callback) override;
   Response SetRemoteLocations(
       std::unique_ptr<protocol::Array<Target::RemoteLocation>>) override;
@@ -93,6 +95,8 @@ class TargetHandler : public DevToolsDomainHandler,
                         Maybe<int> height,
                         Maybe<std::string> context_id,
                         Maybe<bool> enable_begin_frame_control,
+                        Maybe<bool> new_window,
+                        Maybe<bool> background,
                         std::string* out_target_id) override;
   Response GetTargets(
       std::unique_ptr<protocol::Array<Target::TargetInfo>>* target_infos)
@@ -111,6 +115,7 @@ class TargetHandler : public DevToolsDomainHandler,
   void SetAutoAttachInternal(bool auto_attach,
                              bool wait_for_debugger_on_start,
                              bool flatten,
+                             bool window_open,
                              base::OnceClosure callback);
 
   // DevToolsAgentHostObserver implementation.
@@ -126,6 +131,7 @@ class TargetHandler : public DevToolsDomainHandler,
   std::unique_ptr<Target::Frontend> frontend_;
   TargetAutoAttacher auto_attacher_;
   bool flatten_auto_attach_ = false;
+  bool attach_to_window_open_ = false;
   bool discover_;
   std::map<std::string, std::unique_ptr<Session>> attached_sessions_;
   std::map<DevToolsAgentHost*, Session*> auto_attached_sessions_;
@@ -134,7 +140,7 @@ class TargetHandler : public DevToolsDomainHandler,
   std::string owner_target_id_;
   DevToolsSession* root_session_;
   base::flat_set<Throttle*> throttles_;
-  base::WeakPtrFactory<TargetHandler> weak_factory_;
+  base::WeakPtrFactory<TargetHandler> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(TargetHandler);
 };

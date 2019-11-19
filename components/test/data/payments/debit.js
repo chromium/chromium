@@ -29,7 +29,7 @@ function buildPaymentRequest() {
 }
 
 /** Requests payment via a debit card. */
-function buy() {  // eslint-disable-line no-unused-vars
+function buy() { // eslint-disable-line no-unused-vars
   try {
     buildPaymentRequest()
         .show()
@@ -51,7 +51,7 @@ function buy() {  // eslint-disable-line no-unused-vars
 }
 
 /** Checks whether payment via a debit card is possible. */
-function canMakePayment() {  // eslint-disable-line no-unused-vars
+function canMakePayment() { // eslint-disable-line no-unused-vars
   try {
     buildPaymentRequest()
         .canMakePayment()
@@ -67,7 +67,7 @@ function canMakePayment() {  // eslint-disable-line no-unused-vars
 }
 
 /** Checks whether an active debit card is ready for payment. */
-function hasEnrolledInstrument() {  // eslint-disable-line no-unused-vars
+function hasEnrolledInstrument() { // eslint-disable-line no-unused-vars
   try {
     buildPaymentRequest()
         .hasEnrolledInstrument()

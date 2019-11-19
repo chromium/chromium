@@ -171,7 +171,7 @@ class InstallVerifier : public KeyedService,
   // consider allowed until we hear back from the server signature request.
   ExtensionIdSet provisional_;
 
-  base::WeakPtrFactory<InstallVerifier> weak_factory_;
+  base::WeakPtrFactory<InstallVerifier> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(InstallVerifier);
 };

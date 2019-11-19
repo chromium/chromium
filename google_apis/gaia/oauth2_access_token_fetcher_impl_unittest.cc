@@ -11,7 +11,7 @@
 
 #include "base/bind.h"
 #include "base/run_loop.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "google_apis/gaia/oauth2_access_token_consumer.h"
@@ -91,7 +91,7 @@ class OAuth2AccessTokenFetcherImplTest : public testing::Test {
       url_loader_factory_.AddResponse(url.spec(), body, http_response_code);
     } else {
       url_loader_factory_.AddResponse(
-          url, network::ResourceResponseHead(), body,
+          url, network::mojom::URLResponseHead::New(), body,
           network::URLLoaderCompletionStatus(net_error_code));
     }
 
@@ -103,8 +103,7 @@ class OAuth2AccessTokenFetcherImplTest : public testing::Test {
     GURL url(GaiaUrls::GetInstance()->oauth2_token_url());
     url_loader_factory_.AddResponse(
         url,
-        network::CreateResourceResponseHead(
-            net::HTTP_PROXY_AUTHENTICATION_REQUIRED),
+        network::CreateURLResponseHead(net::HTTP_PROXY_AUTHENTICATION_REQUIRED),
         std::string(),
         network::URLLoaderCompletionStatus(net::ERR_TUNNEL_CONNECTION_FAILED),
         network::TestURLLoaderFactory::Redirects(),
@@ -115,7 +114,7 @@ class OAuth2AccessTokenFetcherImplTest : public testing::Test {
   }
 
  protected:
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
   MockOAuth2AccessTokenConsumer consumer_;
   URLLoaderFactoryInterceptor url_loader_factory_interceptor_;
   network::TestURLLoaderFactory url_loader_factory_;

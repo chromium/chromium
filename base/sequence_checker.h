@@ -8,6 +8,7 @@
 #include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/sequence_checker_impl.h"
+#include "build/build_config.h"
 
 // SequenceChecker is a helper class used to help verify that some methods of a
 // class are called sequentially (for thread-safety).
@@ -54,7 +55,12 @@
   DCHECK((name).CalledOnValidSequence())
 #define DETACH_FROM_SEQUENCE(name) (name).DetachFromSequence()
 #else  // DCHECK_IS_ON()
+#if __OBJC__ && defined(OS_IOS) && !HAS_FEATURE(objc_cxx_static_assert)
+// TODO(thakis): Remove this branch once Xcode's clang has clang r356148.
 #define SEQUENCE_CHECKER(name)
+#else
+#define SEQUENCE_CHECKER(name) static_assert(true, "")
+#endif
 #define DCHECK_CALLED_ON_VALID_SEQUENCE(name) EAT_STREAM_PARAMETERS
 #define DETACH_FROM_SEQUENCE(name)
 #endif  // DCHECK_IS_ON()
@@ -68,6 +74,13 @@ namespace base {
 class SequenceCheckerDoNothing {
  public:
   SequenceCheckerDoNothing() = default;
+
+  // Moving between matching sequences is allowed to help classes with
+  // SequenceCheckers that want a default move-construct/assign.
+  SequenceCheckerDoNothing(SequenceCheckerDoNothing&& other) = default;
+  SequenceCheckerDoNothing& operator=(SequenceCheckerDoNothing&& other) =
+      default;
+
   bool CalledOnValidSequence() const WARN_UNUSED_RESULT { return true; }
   void DetachFromSequence() {}
 

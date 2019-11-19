@@ -11,8 +11,6 @@
     <includes>
       <include name="IDR_CONTENT_SHELL_BROKEN_CANVAS" file="resources/brokenCanvas.png" type="BINDATA" />
       <include name="IDR_CONTENT_SHELL_DEVTOOLS_DISCOVERY_PAGE" file="resources/shell_devtools_discovery_page.html" type="BINDATA" />
-      <include name="IDR_CONTENT_SHELL_MISSING_IMAGE_GIF" file="resources/missingImage.gif" type="BINDATA" />
-      <include name="IDR_CONTENT_SHELL_MISSING_IMAGE_PNG" file="resources/missingImage.png" type="BINDATA" />
     </includes>
   </release>
 </grit>

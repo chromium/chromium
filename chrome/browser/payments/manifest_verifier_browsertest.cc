@@ -22,6 +22,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/url_request/url_request_context_getter.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/re2/src/re2/re2.h"
 
 namespace payments {
 namespace {
@@ -75,6 +76,8 @@ class ManifestVerifierBrowserTest : public InProcessBrowserTest {
     return verified_apps_;
   }
 
+  const std::string& error_message() const { return error_message_; }
+
   // Expects that the verified payment app with |id| has the |expected_scope|
   // and the |expected_methods| and the
   // |expect_has_explicitly_verified_methods|.
@@ -90,13 +93,16 @@ class ManifestVerifierBrowserTest : public InProcessBrowserTest {
     EXPECT_EQ(expected_methods, actual_methods);
     EXPECT_EQ(expect_has_explicitly_verified_methods,
               it->second->has_explicitly_verified_methods);
+    EXPECT_TRUE(error_message().empty()) << error_message();
   }
 
  private:
   // Called by the verifier upon completed verification. These |apps| have only
   // valid payment methods.
-  void OnPaymentAppsVerified(content::PaymentAppProvider::PaymentApps apps) {
+  void OnPaymentAppsVerified(content::PaymentAppProvider::PaymentApps apps,
+                             const std::string& error_message) {
     verified_apps_ = std::move(apps);
+    error_message_ = error_message;
   }
 
   // Serves the payment method manifest files.
@@ -104,6 +110,8 @@ class ManifestVerifierBrowserTest : public InProcessBrowserTest {
 
   // The apps that have been verified by the Verify() method.
   content::PaymentAppProvider::PaymentApps verified_apps_;
+
+  std::string error_message_;
 
   DISALLOW_COPY_AND_ASSIGN(ManifestVerifierBrowserTest);
 };
@@ -115,6 +123,7 @@ IN_PROC_BROWSER_TEST_F(ManifestVerifierBrowserTest, NoApps) {
     Verify(content::PaymentAppProvider::PaymentApps());
 
     EXPECT_TRUE(verified_apps().empty());
+    EXPECT_TRUE(error_message().empty()) << error_message();
   }
 
   // Repeat verifications should have identical results.
@@ -122,6 +131,7 @@ IN_PROC_BROWSER_TEST_F(ManifestVerifierBrowserTest, NoApps) {
     Verify(content::PaymentAppProvider::PaymentApps());
 
     EXPECT_TRUE(verified_apps().empty());
+    EXPECT_TRUE(error_message().empty()) << error_message();
   }
 }
 
@@ -135,6 +145,7 @@ IN_PROC_BROWSER_TEST_F(ManifestVerifierBrowserTest, NoMethods) {
     Verify(std::move(apps));
 
     EXPECT_TRUE(verified_apps().empty());
+    EXPECT_TRUE(error_message().empty()) << error_message();
   }
 
   // Repeat verifications should have identical results.
@@ -146,6 +157,7 @@ IN_PROC_BROWSER_TEST_F(ManifestVerifierBrowserTest, NoMethods) {
     Verify(std::move(apps));
 
     EXPECT_TRUE(verified_apps().empty());
+    EXPECT_TRUE(error_message().empty()) << error_message();
   }
 }
 
@@ -161,6 +173,7 @@ IN_PROC_BROWSER_TEST_F(ManifestVerifierBrowserTest,
     Verify(std::move(apps));
 
     EXPECT_TRUE(verified_apps().empty());
+    EXPECT_TRUE(error_message().empty()) << error_message();
   }
 
   // Repeat verifications should have identical results.
@@ -173,6 +186,7 @@ IN_PROC_BROWSER_TEST_F(ManifestVerifierBrowserTest,
     Verify(std::move(apps));
 
     EXPECT_TRUE(verified_apps().empty());
+    EXPECT_TRUE(error_message().empty()) << error_message();
   }
 }
 
@@ -188,6 +202,7 @@ IN_PROC_BROWSER_TEST_F(ManifestVerifierBrowserTest, KnownPaymentMethodName) {
 
     EXPECT_EQ(1U, verified_apps().size());
     ExpectApp(0, "https://bobpay.com/webpay", {"basic-card"}, false);
+    EXPECT_TRUE(error_message().empty()) << error_message();
   }
 
   // Repeat verifications should have identical results.
@@ -201,6 +216,7 @@ IN_PROC_BROWSER_TEST_F(ManifestVerifierBrowserTest, KnownPaymentMethodName) {
 
     EXPECT_EQ(1U, verified_apps().size());
     ExpectApp(0, "https://bobpay.com/webpay", {"basic-card"}, false);
+    EXPECT_TRUE(error_message().empty()) << error_message();
   }
 }
 
@@ -220,6 +236,7 @@ IN_PROC_BROWSER_TEST_F(ManifestVerifierBrowserTest,
     EXPECT_EQ(1U, verified_apps().size());
     ExpectApp(0, "https://bobpay.com/webpay", {"basic-card", "interledger"},
               false);
+    EXPECT_TRUE(error_message().empty()) << error_message();
   }
 
   // Repeat verifications should have identical results.
@@ -235,6 +252,7 @@ IN_PROC_BROWSER_TEST_F(ManifestVerifierBrowserTest,
     EXPECT_EQ(1U, verified_apps().size());
     ExpectApp(0, "https://bobpay.com/webpay", {"basic-card", "interledger"},
               false);
+    EXPECT_TRUE(error_message().empty()) << error_message();
   }
 }
 
@@ -255,6 +273,7 @@ IN_PROC_BROWSER_TEST_F(ManifestVerifierBrowserTest,
     EXPECT_EQ(2U, verified_apps().size());
     ExpectApp(0, "https://bobpay.com/webpay", {"basic-card"}, false);
     ExpectApp(1, "https://alicepay.com/webpay", {"basic-card"}, false);
+    EXPECT_TRUE(error_message().empty()) << error_message();
   }
 
   // Repeat verifications should have identical results.
@@ -271,6 +290,7 @@ IN_PROC_BROWSER_TEST_F(ManifestVerifierBrowserTest,
     EXPECT_EQ(2U, verified_apps().size());
     ExpectApp(0, "https://bobpay.com/webpay", {"basic-card"}, false);
     ExpectApp(1, "https://alicepay.com/webpay", {"basic-card"}, false);
+    EXPECT_TRUE(error_message().empty()) << error_message();
   }
 }
 
@@ -290,6 +310,7 @@ IN_PROC_BROWSER_TEST_F(ManifestVerifierBrowserTest,
     EXPECT_EQ(1U, verified_apps().size());
     ExpectApp(0, "https://bobpay.com/webpay", {"https://frankpay.com/webpay"},
               false);
+    EXPECT_TRUE(error_message().empty()) << error_message();
   }
 
   // Repeat verifications should have identical results.
@@ -303,6 +324,7 @@ IN_PROC_BROWSER_TEST_F(ManifestVerifierBrowserTest,
     EXPECT_EQ(1U, verified_apps().size());
     ExpectApp(0, "https://bobpay.com/webpay", {"https://frankpay.com/webpay"},
               false);
+    EXPECT_TRUE(error_message().empty()) << error_message();
   }
 }
 
@@ -322,6 +344,7 @@ IN_PROC_BROWSER_TEST_F(ManifestVerifierBrowserTest,
     EXPECT_EQ(1U, verified_apps().size());
     ExpectApp(0, "https://404.com/webpay", {"https://frankpay.com/webpay"},
               false);
+    EXPECT_TRUE(error_message().empty()) << error_message();
   }
 
   // Repeat verifications should have identical results.
@@ -335,6 +358,7 @@ IN_PROC_BROWSER_TEST_F(ManifestVerifierBrowserTest,
     EXPECT_EQ(1U, verified_apps().size());
     ExpectApp(0, "https://404.com/webpay", {"https://frankpay.com/webpay"},
               false);
+    EXPECT_TRUE(error_message().empty()) << error_message();
   }
 }
 
@@ -355,6 +379,7 @@ IN_PROC_BROWSER_TEST_F(ManifestVerifierBrowserTest,
     EXPECT_EQ(1U, verified_apps().size());
     ExpectApp(0, "https://bobpay.com/anything/here",
               {"https://bobpay.com/does/not/matter/whats/here"}, true);
+    EXPECT_TRUE(error_message().empty()) << error_message();
   }
 
   // Repeat verifications should have identical results.
@@ -369,6 +394,7 @@ IN_PROC_BROWSER_TEST_F(ManifestVerifierBrowserTest,
     EXPECT_EQ(1U, verified_apps().size());
     ExpectApp(0, "https://bobpay.com/anything/here",
               {"https://bobpay.com/does/not/matter/whats/here"}, true);
+    EXPECT_TRUE(error_message().empty()) << error_message();
   }
 }
 
@@ -389,6 +415,7 @@ IN_PROC_BROWSER_TEST_F(ManifestVerifierBrowserTest,
     EXPECT_EQ(1U, verified_apps().size());
     ExpectApp(0, "https://404.com/anything/here",
               {"https://404.com/does/not/matter/whats/here"}, true);
+    EXPECT_TRUE(error_message().empty()) << error_message();
   }
 
   // Repeat verifications should have identical results.
@@ -403,6 +430,7 @@ IN_PROC_BROWSER_TEST_F(ManifestVerifierBrowserTest,
     EXPECT_EQ(1U, verified_apps().size());
     ExpectApp(0, "https://404.com/anything/here",
               {"https://404.com/does/not/matter/whats/here"}, true);
+    EXPECT_TRUE(error_message().empty()) << error_message();
   }
 }
 
@@ -430,6 +458,7 @@ IN_PROC_BROWSER_TEST_F(ManifestVerifierBrowserTest, OneSupportedOrigin) {
     ExpectApp(0, "https://alicepay.com/webpay",
               {"https://georgepay.com/webpay", "https://ikepay.com/webpay"},
               true);
+    EXPECT_TRUE(error_message().empty()) << error_message();
   }
 
   // Repeat verifications should have identical results.
@@ -450,6 +479,7 @@ IN_PROC_BROWSER_TEST_F(ManifestVerifierBrowserTest, OneSupportedOrigin) {
     ExpectApp(0, "https://alicepay.com/webpay",
               {"https://georgepay.com/webpay", "https://ikepay.com/webpay"},
               true);
+    EXPECT_TRUE(error_message().empty()) << error_message();
   }
 }
 
@@ -472,6 +502,7 @@ IN_PROC_BROWSER_TEST_F(ManifestVerifierBrowserTest, ThreeTypesOfMethods) {
               {"basic-card", "https://alicepay.com/webpay2",
                "https://ikepay.com/webpay"},
               true);
+    EXPECT_TRUE(error_message().empty()) << error_message();
   }
 
   // Repeat verifications should have identical results.
@@ -490,36 +521,87 @@ IN_PROC_BROWSER_TEST_F(ManifestVerifierBrowserTest, ThreeTypesOfMethods) {
               {"basic-card", "https://alicepay.com/webpay2",
                "https://ikepay.com/webpay"},
               true);
+    EXPECT_TRUE(error_message().empty()) << error_message();
   }
 }
 
 // Verify that a payment handler from https://bobpay.com/webpay cannot use
 // payment method names that are unreachable websites, the origin of which does
 // not match that of the payment handler.
-IN_PROC_BROWSER_TEST_F(ManifestVerifierBrowserTest, PaymentMethodName404) {
+IN_PROC_BROWSER_TEST_F(ManifestVerifierBrowserTest,
+                       SinglePaymentMethodName404) {
+  std::string expected_pattern =
+      "Unable to make a HEAD request to "
+      "\"https://127.0.0.1:\\d+/404.test/webpay\" for payment method manifest.";
   {
     content::PaymentAppProvider::PaymentApps apps;
     apps[0] = std::make_unique<content::StoredPaymentApp>();
-    apps[0]->scope = GURL("https://bobpay.com/webpay");
-    apps[0]->enabled_methods.push_back("https://404.com/webpay");
-    apps[0]->enabled_methods.push_back("https://404aswell.com/webpay");
+    apps[0]->scope = GURL("https://bobpay.test/webpay");
+    apps[0]->enabled_methods.push_back("https://404.test/webpay");
 
     Verify(std::move(apps));
 
     EXPECT_TRUE(verified_apps().empty());
+    EXPECT_TRUE(RE2::FullMatch(error_message(), expected_pattern))
+        << "Actual error message \"" << error_message()
+        << "\" did not match expected pattern \"" << expected_pattern << "\".";
   }
 
   // Repeat verifications should have identical results.
   {
     content::PaymentAppProvider::PaymentApps apps;
     apps[0] = std::make_unique<content::StoredPaymentApp>();
-    apps[0]->scope = GURL("https://bobpay.com/webpay");
-    apps[0]->enabled_methods.push_back("https://404.com/webpay");
-    apps[0]->enabled_methods.push_back("https://404aswell.com/webpay");
+    apps[0]->scope = GURL("https://bobpay.test/webpay");
+    apps[0]->enabled_methods.push_back("https://404.test/webpay");
 
     Verify(std::move(apps));
 
     EXPECT_TRUE(verified_apps().empty());
+    EXPECT_TRUE(RE2::FullMatch(error_message(), expected_pattern))
+        << "Actual error message \"" << error_message()
+        << "\" did not match expected pattern \"" << expected_pattern << "\".";
+  }
+}
+
+// Verify that a payment handler from https://bobpay.com/webpay cannot use
+// payment method names that are unreachable websites, the origin of which does
+// not match that of the payment handler. Since multiple downloads fail, the
+// error message will describe the first failure.
+IN_PROC_BROWSER_TEST_F(ManifestVerifierBrowserTest,
+                       MultiplePaymentMethodName404) {
+  std::string expected_pattern =
+      "Unable to make a HEAD request to "
+      "\"https://127.0.0.1:\\d+/404(aswell)?.test/webpay\" for payment method "
+      "manifest.";
+  {
+    content::PaymentAppProvider::PaymentApps apps;
+    apps[0] = std::make_unique<content::StoredPaymentApp>();
+    apps[0]->scope = GURL("https://bobpay.test/webpay");
+    apps[0]->enabled_methods.push_back("https://404.test/webpay");
+    apps[0]->enabled_methods.push_back("https://404aswell.test/webpay");
+
+    Verify(std::move(apps));
+
+    EXPECT_TRUE(verified_apps().empty());
+    EXPECT_TRUE(RE2::FullMatch(error_message(), expected_pattern))
+        << "Actual error message \"" << error_message()
+        << "\" did not match expected pattern \"" << expected_pattern << "\".";
+  }
+
+  // Repeat verifications should have identical results.
+  {
+    content::PaymentAppProvider::PaymentApps apps;
+    apps[0] = std::make_unique<content::StoredPaymentApp>();
+    apps[0]->scope = GURL("https://bobpay.test/webpay");
+    apps[0]->enabled_methods.push_back("https://404.test/webpay");
+    apps[0]->enabled_methods.push_back("https://404aswell.test/webpay");
+
+    Verify(std::move(apps));
+
+    EXPECT_TRUE(verified_apps().empty());
+    EXPECT_TRUE(RE2::FullMatch(error_message(), expected_pattern))
+        << "Actual error message \"" << error_message()
+        << "\" did not match expected pattern \"" << expected_pattern << "\".";
   }
 }
 
@@ -544,6 +626,7 @@ IN_PROC_BROWSER_TEST_F(ManifestVerifierBrowserTest,
               {"basic-card", "interledger", "payee-credit-transfer",
                "payer-credit-transfer", "tokenized-card"},
               false);
+    EXPECT_TRUE(error_message().empty()) << error_message();
   }
 
   // Repeat verifications should have identical results.
@@ -565,6 +648,7 @@ IN_PROC_BROWSER_TEST_F(ManifestVerifierBrowserTest,
               {"basic-card", "interledger", "payee-credit-transfer",
                "payer-credit-transfer", "tokenized-card"},
               false);
+    EXPECT_TRUE(error_message().empty()) << error_message();
   }
 }
 

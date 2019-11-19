@@ -1,0 +1,125 @@
+// Copyright 2017 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Next min version: 3
+
+module cros.mojom;
+
+import "media/capture/video/chromeos/mojom/camera3.mojom";
+import "media/capture/video/chromeos/mojom/camera_metadata.mojom";
+
+enum CameraFacing {
+  CAMERA_FACING_BACK = 0,
+  CAMERA_FACING_FRONT = 1,
+  CAMERA_FACING_EXTERNAL = 2,
+};
+
+struct CameraResourceCost {
+  uint32 resource_cost;
+};
+
+struct CameraInfo {
+  CameraFacing facing;
+  int32 orientation;
+  uint32 device_version;
+  CameraMetadata static_camera_characteristics;
+  [MinVersion=1] CameraResourceCost? resource_cost;
+  [MinVersion=1] array<string>? conflicting_devices;
+};
+
+enum CameraDeviceStatus {
+  CAMERA_DEVICE_STATUS_NOT_PRESENT = 0,
+  CAMERA_DEVICE_STATUS_PRESENT = 1,
+  CAMERA_DEVICE_STATUS_ENUMERATING = 2,
+};
+
+enum TorchModeStatus {
+  TORCH_MODE_STATUS_NOT_AVAILABLE = 0,
+  TORCH_MODE_STATUS_AVAILABLE_OFF = 1,
+  TORCH_MODE_STATUS_AVAILABLE_ON = 2,
+};
+
+// CameraModuleCallbacks is a translation of the camera_module_callbacks_t API
+// (https://goo.gl/8Hf8S8).  CameraModuleCallbacks is used by the camera HAL to
+// inform the client of the various status change of a camera.
+//
+// Next method ID: 2
+interface CameraModuleCallbacks {
+  // CameraDeviceStatusChange() is called by the camera HAL to notify the client
+  // of the new status of the camera device specified by |camera_id|.
+  CameraDeviceStatusChange@0(int32 camera_id, CameraDeviceStatus new_status);
+
+  // TorchModeStatusChange() is called by the camera HAL to notify the client of
+  // the new status of the torch mode of the flash unit associated with
+  // |camera_id|.
+  [MinVersion=1]
+  TorchModeStatusChange@1(int32 camera_id, TorchModeStatus new_status);
+};
+
+// VendorTagOps is a translation of the vendor_tag_ops_t API
+// (https://goo.gl/3aLWv3). This structure contains basic functions for
+// enumerating an immutable set of vendor-defined camera metadata tags, and
+// querying static information about their structure/type.
+//
+// Next method ID: 5
+// TODO(hywu): evaluate passing an array of vendor tags along with their
+// section names, tag names, and types
+interface VendorTagOps {
+  // Get the number of vendor tags supported on this platform. Return -1 on
+  // error.
+  GetTagCount@0() => (int32 result);
+
+  // Fill an array with all of the supported vendor tags on this platform.
+  GetAllTags@1() => (array<uint32> tag_array);
+
+  // Get the vendor section name for a vendor-specified entry tag.
+  GetSectionName@2(uint32 tag) => (string? name);
+
+  // Get the tag name for a vendor-specified entry tag.
+  GetTagName@3(uint32 tag) => (string? name);
+
+  // Get tag type for a vendor-specified entry tag. Return -1 on error.
+  GetTagType@4(uint32 tag) => (int32 type);
+};
+
+// CameraModule is a translation of the camera_module_t API
+// (https://goo.gl/8Hf8S8).  CameraModule is the interface to interact with a
+// camera HAL to query device info and open camera devices.
+//
+// Next method ID: 7
+interface CameraModule {
+  // Opens the camera device specified by |camera_id|.  On success, the camera
+  // device is accessible through the |device_ops| returned.
+  OpenDevice@0(int32 camera_id,
+               pending_receiver<Camera3DeviceOps> device_ops_request)
+      => (int32 result);
+
+  // Gets the number of cameras currently present on the system.
+  GetNumberOfCameras@1() => (int32 result);
+
+  // Gets various info about the camera specified by |camera_id|.
+  GetCameraInfo@2(int32 camera_id) => (int32 result, CameraInfo? camera_info);
+
+  // Registers the CameraModuleCallbacks interface with the camera HAL.
+  SetCallbacks@3(pending_remote<CameraModuleCallbacks> callbacks)
+      => (int32 result);
+
+  // Turns on or off the torch mode of the flash unit associated with the given
+  // |camera_id|.
+  [MinVersion=1]
+  SetTorchMode@4(int32 camera_id, bool enabled) => (int32 result);
+
+  // Called by the client before any other methods are invoked.  The Init()
+  // method can be used by the camera HAL to perform initialization and other
+  // one-time operations.
+  [MinVersion=1]
+  Init@5() => (int32 result);
+
+  // Get methods to query for vendor extension metadata tag information. The HAL
+  // should fill in all the vendor tag operation methods, or leave ops unchanged
+  // if no vendor tags are defined.
+  [MinVersion=2]
+  GetVendorTagOps@6(pending_receiver<VendorTagOps> vendor_tag_ops_request)
+      => ();
+};

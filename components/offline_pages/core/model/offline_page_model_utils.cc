@@ -74,8 +74,7 @@ base::FilePath GenerateUniqueFilenameForOfflinePage(
           title, url, false /* can_save_as_complete */, kMHTMLMimeType));
 
   // Find a unique name based on |suggested_path|.
-  int uniquifier =
-      base::GetUniquePathNumber(suggested_path, base::FilePath::StringType());
+  int uniquifier = base::GetUniquePathNumber(suggested_path);
   base::FilePath::StringType suffix;
   if (uniquifier > 0)
 #if defined(OS_WIN)

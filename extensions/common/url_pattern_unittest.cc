@@ -10,6 +10,8 @@
 
 #include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
+#include "content/public/common/url_constants.h"
+#include "content/public/test/test_utils.h"
 #include "extensions/common/constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -36,8 +38,8 @@ TEST(ExtensionURLPatternTest, ParseInvalid) {
       {"about://", URLPattern::ParseResult::kWrongSchemeSeparator},
       {"http://", URLPattern::ParseResult::kEmptyHost},
       {"http:///", URLPattern::ParseResult::kEmptyHost},
-      {"http:// /", URLPattern::ParseResult::kEmptyHost},
       {"http://:1234/", URLPattern::ParseResult::kEmptyHost},
+      {"http://*./", URLPattern::ParseResult::kEmptyHost},
       {"http://*foo/bar", URLPattern::ParseResult::kInvalidHostWildcard},
       {"http://foo.*.bar/baz", URLPattern::ParseResult::kInvalidHostWildcard},
       {"http://fo.*.ba:123/baz", URLPattern::ParseResult::kInvalidHostWildcard},
@@ -63,7 +65,7 @@ TEST(ExtensionURLPatternTest, ParseInvalid) {
 
 TEST(ExtensionURLPatternTest, Ports) {
   const struct {
-    const char* pattern;
+    const std::string pattern;
     URLPattern::ParseResult expected_result;
     const char* expected_port;
   } kTestPatterns[] = {
@@ -80,19 +82,18 @@ TEST(ExtensionURLPatternTest, Ports) {
       {"http://foo:123456/", URLPattern::ParseResult::kInvalidPort, "*"},
       {"http://foo:80:80/monkey", URLPattern::ParseResult::kInvalidPort, "*"},
       {"file://foo:1234/bar", URLPattern::ParseResult::kSuccess, "*"},
-      {"chrome://foo:1234/bar", URLPattern::ParseResult::kInvalidPort, "*"},
+      {content::GetWebUIURLString("foo:1234/bar"),
+       URLPattern::ParseResult::kInvalidPort, "*"},
 
       // Port-like strings in the path should not trigger a warning.
       {"http://*/:1234", URLPattern::ParseResult::kSuccess, "*"},
       {"http://*.foo/bar:1234", URLPattern::ParseResult::kSuccess, "*"},
-      {"http://foo/bar:1234/path", URLPattern::ParseResult::kSuccess, "*"},
-      {"http://*.foo.*/:1234", URLPattern::ParseResult::kSuccess, "*"}};
+      {"http://foo/bar:1234/path", URLPattern::ParseResult::kSuccess, "*"}};
 
   for (size_t i = 0; i < base::size(kTestPatterns); ++i) {
     URLPattern pattern(URLPattern::SCHEME_ALL);
     EXPECT_EQ(kTestPatterns[i].expected_result,
-              pattern.Parse(kTestPatterns[i].pattern,
-                            URLPattern::ALLOW_WILDCARD_FOR_EFFECTIVE_TLD))
+              pattern.Parse(kTestPatterns[i].pattern))
         << "Got unexpected result for URL pattern: "
         << kTestPatterns[i].pattern;
     EXPECT_EQ(kTestPatterns[i].expected_port, pattern.port())
@@ -164,7 +165,6 @@ TEST(ExtensionURLPatternTest, Match1) {
   EXPECT_EQ("http", pattern.scheme());
   EXPECT_EQ("", pattern.host());
   EXPECT_TRUE(pattern.match_subdomains());
-  EXPECT_TRUE(pattern.match_effective_tld());
   EXPECT_FALSE(pattern.match_all_urls());
   EXPECT_EQ("/*", pattern.path());
   EXPECT_TRUE(pattern.MatchesURL(GURL("http://google.com")));
@@ -181,7 +181,6 @@ TEST(ExtensionURLPatternTest, Match2) {
   EXPECT_EQ("https", pattern.scheme());
   EXPECT_EQ("", pattern.host());
   EXPECT_TRUE(pattern.match_subdomains());
-  EXPECT_TRUE(pattern.match_effective_tld());
   EXPECT_FALSE(pattern.match_all_urls());
   EXPECT_EQ("/foo*", pattern.path());
   EXPECT_TRUE(pattern.MatchesURL(GURL("https://www.google.com/foo")));
@@ -200,7 +199,6 @@ TEST(URLPatternTest, Match3) {
   EXPECT_EQ("http", pattern.scheme());
   EXPECT_EQ("google.com", pattern.host());
   EXPECT_TRUE(pattern.match_subdomains());
-  EXPECT_TRUE(pattern.match_effective_tld());
   EXPECT_FALSE(pattern.match_all_urls());
   EXPECT_EQ("/foo*bar", pattern.path());
   EXPECT_TRUE(pattern.MatchesURL(GURL("http://google.com/foobar")));
@@ -222,7 +220,6 @@ TEST(ExtensionURLPatternTest, Match5) {
   EXPECT_EQ("file", pattern.scheme());
   EXPECT_EQ("", pattern.host());
   EXPECT_FALSE(pattern.match_subdomains());
-  EXPECT_TRUE(pattern.match_effective_tld());
   EXPECT_FALSE(pattern.match_all_urls());
   EXPECT_EQ("/foo?bar\\*baz", pattern.path());
   EXPECT_TRUE(pattern.MatchesURL(GURL("file:///foo?bar\\hellobaz")));
@@ -237,7 +234,6 @@ TEST(ExtensionURLPatternTest, Match6) {
   EXPECT_EQ("http", pattern.scheme());
   EXPECT_EQ("127.0.0.1", pattern.host());
   EXPECT_FALSE(pattern.match_subdomains());
-  EXPECT_TRUE(pattern.match_effective_tld());
   EXPECT_FALSE(pattern.match_all_urls());
   EXPECT_EQ("/*", pattern.path());
   EXPECT_TRUE(pattern.MatchesURL(GURL("http://127.0.0.1")));
@@ -253,7 +249,6 @@ TEST(ExtensionURLPatternTest, Match7) {
   // Canonicalization forces 0.0.1 to 0.0.0.1.
   EXPECT_EQ("0.0.0.1", pattern.host());
   EXPECT_TRUE(pattern.match_subdomains());
-  EXPECT_TRUE(pattern.match_effective_tld());
   EXPECT_FALSE(pattern.match_all_urls());
   EXPECT_EQ("/*", pattern.path());
   // Subdomain matching is never done if the argument has an IP address host.
@@ -270,7 +265,6 @@ TEST(ExtensionURLPatternTest, Match8) {
   EXPECT_EQ("http", pattern.scheme());
   EXPECT_EQ("xn--gkd", pattern.host());
   EXPECT_TRUE(pattern.match_subdomains());
-  EXPECT_TRUE(pattern.match_effective_tld());
   EXPECT_FALSE(pattern.match_all_urls());
   EXPECT_EQ("/a%C2%81%E1*", pattern.path());
   EXPECT_TRUE(pattern.MatchesURL(
@@ -283,16 +277,17 @@ TEST(ExtensionURLPatternTest, Match8) {
 TEST(ExtensionURLPatternTest, Match9) {
   URLPattern pattern(kAllSchemes);
   EXPECT_EQ(URLPattern::ParseResult::kSuccess,
-            pattern.Parse("chrome://favicon/*"));
-  EXPECT_EQ("chrome", pattern.scheme());
+            pattern.Parse(content::GetWebUIURLString("favicon/*")));
+  EXPECT_EQ(content::kChromeUIScheme, pattern.scheme());
   EXPECT_EQ("favicon", pattern.host());
   EXPECT_FALSE(pattern.match_subdomains());
-  EXPECT_TRUE(pattern.match_effective_tld());
   EXPECT_FALSE(pattern.match_all_urls());
   EXPECT_EQ("/*", pattern.path());
-  EXPECT_TRUE(pattern.MatchesURL(GURL("chrome://favicon/http://google.com")));
-  EXPECT_TRUE(pattern.MatchesURL(GURL("chrome://favicon/https://google.com")));
-  EXPECT_FALSE(pattern.MatchesURL(GURL("chrome://history")));
+  EXPECT_TRUE(
+      pattern.MatchesURL(content::GetWebUIURL("favicon/http://google.com")));
+  EXPECT_TRUE(
+      pattern.MatchesURL(content::GetWebUIURL("favicon/https://google.com")));
+  EXPECT_FALSE(pattern.MatchesURL(content::GetWebUIURL("history")));
 }
 
 // *://
@@ -301,15 +296,15 @@ TEST(ExtensionURLPatternTest, Match10) {
   EXPECT_EQ(URLPattern::ParseResult::kSuccess, pattern.Parse("*://*/*"));
   EXPECT_TRUE(pattern.MatchesScheme("http"));
   EXPECT_TRUE(pattern.MatchesScheme("https"));
-  EXPECT_FALSE(pattern.MatchesScheme("chrome"));
+  EXPECT_FALSE(pattern.MatchesScheme(content::kChromeUIScheme));
   EXPECT_FALSE(pattern.MatchesScheme("file"));
   EXPECT_FALSE(pattern.MatchesScheme("ftp"));
   EXPECT_TRUE(pattern.match_subdomains());
-  EXPECT_TRUE(pattern.match_effective_tld());
   EXPECT_FALSE(pattern.match_all_urls());
   EXPECT_EQ("/*", pattern.path());
   EXPECT_TRUE(pattern.MatchesURL(GURL("http://127.0.0.1")));
-  EXPECT_FALSE(pattern.MatchesURL(GURL("chrome://favicon/http://google.com")));
+  EXPECT_FALSE(
+      pattern.MatchesURL(content::GetWebUIURL("favicon/http://google.com")));
   EXPECT_FALSE(pattern.MatchesURL(GURL("file:///foo/bar")));
   EXPECT_FALSE(pattern.MatchesURL(GURL("file://localhost/foo/bar")));
 }
@@ -318,17 +313,17 @@ TEST(ExtensionURLPatternTest, Match10) {
 TEST(ExtensionURLPatternTest, Match11) {
   URLPattern pattern(kAllSchemes);
   EXPECT_EQ(URLPattern::ParseResult::kSuccess, pattern.Parse("<all_urls>"));
-  EXPECT_TRUE(pattern.MatchesScheme("chrome"));
+  EXPECT_TRUE(pattern.MatchesScheme(content::kChromeUIScheme));
   EXPECT_TRUE(pattern.MatchesScheme("http"));
   EXPECT_TRUE(pattern.MatchesScheme("https"));
   EXPECT_TRUE(pattern.MatchesScheme("file"));
   EXPECT_TRUE(pattern.MatchesScheme("filesystem"));
   EXPECT_TRUE(pattern.MatchesScheme(extensions::kExtensionScheme));
   EXPECT_TRUE(pattern.match_subdomains());
-  EXPECT_TRUE(pattern.match_effective_tld());
   EXPECT_TRUE(pattern.match_all_urls());
   EXPECT_EQ("/*", pattern.path());
-  EXPECT_TRUE(pattern.MatchesURL(GURL("chrome://favicon/http://google.com")));
+  EXPECT_TRUE(
+      pattern.MatchesURL(content::GetWebUIURL("favicon/http://google.com")));
   EXPECT_TRUE(pattern.MatchesURL(GURL("http://127.0.0.1")));
   EXPECT_TRUE(pattern.MatchesURL(GURL("file:///foo/bar")));
   EXPECT_TRUE(pattern.MatchesURL(GURL("file://localhost/foo/bar")));
@@ -351,7 +346,7 @@ TEST(ExtensionURLPatternTest, Match11) {
 TEST(ExtensionURLPatternTest, Match12) {
   URLPattern pattern(URLPattern::SCHEME_ALL);
   EXPECT_EQ(URLPattern::ParseResult::kSuccess, pattern.Parse("<all_urls>"));
-  EXPECT_TRUE(pattern.MatchesScheme("chrome"));
+  EXPECT_TRUE(pattern.MatchesScheme(content::kChromeUIScheme));
   EXPECT_TRUE(pattern.MatchesScheme("http"));
   EXPECT_TRUE(pattern.MatchesScheme("https"));
   EXPECT_TRUE(pattern.MatchesScheme("file"));
@@ -361,18 +356,26 @@ TEST(ExtensionURLPatternTest, Match12) {
   EXPECT_TRUE(pattern.MatchesScheme("about"));
   EXPECT_TRUE(pattern.MatchesScheme(extensions::kExtensionScheme));
   EXPECT_TRUE(pattern.match_subdomains());
-  EXPECT_TRUE(pattern.match_effective_tld());
   EXPECT_TRUE(pattern.match_all_urls());
   EXPECT_EQ("/*", pattern.path());
-  EXPECT_TRUE(pattern.MatchesURL(GURL("chrome://favicon/http://google.com")));
+  EXPECT_TRUE(
+      pattern.MatchesURL(content::GetWebUIURL("favicon/http://google.com")));
   EXPECT_TRUE(pattern.MatchesURL(GURL("http://127.0.0.1")));
   EXPECT_TRUE(pattern.MatchesURL(GURL("file:///foo/bar")));
   EXPECT_TRUE(pattern.MatchesURL(GURL("file://localhost/foo/bar")));
-  EXPECT_TRUE(pattern.MatchesURL(GURL("chrome://newtab")));
+  EXPECT_TRUE(pattern.MatchesURL(content::GetWebUIURL("newtab")));
   EXPECT_TRUE(pattern.MatchesURL(GURL("about:blank")));
   EXPECT_TRUE(pattern.MatchesURL(GURL("about:version")));
   EXPECT_TRUE(pattern.MatchesURL(
       GURL("data:text/html;charset=utf-8,<html>asdf</html>")));
+}
+
+TEST(ExtensionURLPatternTest, DoesntMatchInvalid) {
+  URLPattern pattern(kAllSchemes);
+  // Even the all_urls pattern shouldn't match an invalid URL.
+  EXPECT_EQ(URLPattern::ParseResult::kSuccess,
+            pattern.Parse(URLPattern::kAllUrlsPattern));
+  EXPECT_FALSE(pattern.MatchesURL(GURL("http:")));
 }
 
 static const struct MatchPatterns {
@@ -413,7 +416,6 @@ TEST(ExtensionURLPatternTest, Match14) {
   EXPECT_EQ("", pattern.host());
   EXPECT_FALSE(pattern.match_subdomains());
   EXPECT_FALSE(pattern.match_all_urls());
-  EXPECT_TRUE(pattern.match_effective_tld());
   EXPECT_EQ("/foo*", pattern.path());
   EXPECT_FALSE(pattern.MatchesURL(GURL("file://foo")));
   EXPECT_FALSE(pattern.MatchesURL(GURL("file://foobar")));
@@ -430,7 +432,6 @@ TEST(ExtensionURLPatternTest, Match15) {
   EXPECT_EQ("", pattern.host());
   EXPECT_FALSE(pattern.match_subdomains());
   EXPECT_FALSE(pattern.match_all_urls());
-  EXPECT_TRUE(pattern.match_effective_tld());
   EXPECT_EQ("/foo*", pattern.path());
   EXPECT_FALSE(pattern.MatchesURL(GURL("file://foo")));
   EXPECT_FALSE(pattern.MatchesURL(GURL("file://foobar")));
@@ -448,7 +449,6 @@ TEST(ExtensionURLPatternTest, Match16) {
   // Since hostname is ignored for file://.
   EXPECT_EQ("", pattern.host());
   EXPECT_FALSE(pattern.match_subdomains());
-  EXPECT_TRUE(pattern.match_effective_tld());
   EXPECT_FALSE(pattern.match_all_urls());
   EXPECT_EQ("/foo*", pattern.path());
   EXPECT_FALSE(pattern.MatchesURL(GURL("file://foo")));
@@ -516,46 +516,13 @@ TEST(ExtensionURLPatternTest, Match19) {
       GURL("filesystem:chrome-extension://ftw/t/file.txt")));
 }
 
-// effective TLD wildcard
-TEST(URLPatternTest, EffectiveTldWildcard) {
-  URLPattern pattern(kAllSchemes);
-  EXPECT_EQ(URLPattern::ParseResult::kSuccess,
-            pattern.Parse("http://*.google.*/foo*bar",
-                          URLPattern::ALLOW_WILDCARD_FOR_EFFECTIVE_TLD));
-  EXPECT_EQ("http", pattern.scheme());
-  EXPECT_EQ("google", pattern.host());
-  EXPECT_TRUE(pattern.match_subdomains());
-  EXPECT_FALSE(pattern.match_effective_tld());
-  EXPECT_FALSE(pattern.match_all_urls());
-  EXPECT_EQ("/foo*bar", pattern.path());
-  EXPECT_TRUE(pattern.MatchesURL(GURL("http://google.com/foobar")));
-  EXPECT_TRUE(pattern.MatchesURL(GURL("http://www.google.com.br/foo?bar")));
-  EXPECT_TRUE(
-      pattern.MatchesURL(GURL("http://monkey.images.google.co.uk/foooobar")));
-  EXPECT_FALSE(pattern.MatchesURL(GURL("http://yahoo.com/foobar")));
-  EXPECT_TRUE(pattern.MatchesURL(GURL("filesystem:http://google.com/foo/bar")));
-  EXPECT_FALSE(pattern.MatchesURL(
-      GURL("filesystem:http://google.com/temporary/foobar")));
-  URLPattern pattern_sub(kAllSchemes);
-  EXPECT_EQ(URLPattern::ParseResult::kSuccess,
-            pattern_sub.Parse("https://maps.google.*/",
-                              URLPattern::ALLOW_WILDCARD_FOR_EFFECTIVE_TLD));
-  EXPECT_EQ("https", pattern_sub.scheme());
-  EXPECT_EQ("maps.google", pattern_sub.host());
-  EXPECT_FALSE(pattern_sub.match_subdomains());
-  EXPECT_FALSE(pattern_sub.match_all_urls());
-  EXPECT_EQ("/", pattern_sub.path());
-  EXPECT_TRUE(pattern_sub.MatchesURL(GURL("https://maps.google.co.uk/")));
-  EXPECT_FALSE(pattern_sub.MatchesURL(GURL("https://sub.maps.google.co.uk/")));
-}
-
 static const struct GetAsStringPatterns {
-  const char* pattern;
+  const std::string pattern;
 } kGetAsStringTestCases[] = {
     {"http://www/"},
     {"http://*/*"},
-    {"chrome://*/*"},
-    {"chrome://newtab/"},
+    {content::GetWebUIURLString("*/*")},
+    {content::GetWebUIURLString("newtab/")},
     {"about:*"},
     {"about:blank"},
     {"chrome-extension://*/*"},
@@ -662,7 +629,7 @@ TEST(ExtensionURLPatternTest, ConvertToExplicitSchemes) {
   EXPECT_EQ("https://*/*", all_urls[1].GetAsString());
   EXPECT_EQ("file:///*", all_urls[2].GetAsString());
   EXPECT_EQ("ftp://*/*", all_urls[3].GetAsString());
-  EXPECT_EQ("chrome://*/*", all_urls[4].GetAsString());
+  EXPECT_EQ(content::GetWebUIURLString("*/*"), all_urls[4].GetAsString());
   EXPECT_EQ("chrome-extension://*/*", all_urls[5].GetAsString());
   EXPECT_EQ("filesystem://*/*", all_urls[6].GetAsString());
   EXPECT_EQ("ws://*/*", all_urls[7].GetAsString());
@@ -1297,6 +1264,42 @@ TEST(ExtensionURLPatternTest, ContainsSchemes) {
   EXPECT_TRUE(http.Contains(
       URLPattern(URLPattern::SCHEME_HTTP | URLPattern::SCHEME_HTTPS,
                  "http://google.com/*")));
+}
+
+// Tests the handling of whitespace, along with various "."s.
+TEST(ExtensionURLPatternTest, WhitespaceHostParsing) {
+  constexpr char const* kHosts[] = {
+      ".", " ", " .", ". ", ". .", ". . .", " . ",
+  };
+
+  for (const char* host : kHosts) {
+    SCOPED_TRACE(base::StringPrintf("Testing Host: '%s'", host));
+
+    std::string pattern_str = base::StringPrintf("https://%s/*", host);
+    URLPattern pattern(URLPattern::SCHEME_HTTPS);
+    EXPECT_EQ(URLPattern::ParseResult::kSuccess, pattern.Parse(pattern_str));
+
+    std::string match_subdomains_pattern_str =
+        base::StringPrintf("https://*.%s/*", host);
+    URLPattern match_subdomains_pattern(URLPattern::SCHEME_HTTPS);
+    EXPECT_EQ(URLPattern::ParseResult::kSuccess,
+              match_subdomains_pattern.Parse(match_subdomains_pattern_str));
+
+    GURL url(base::StringPrintf("https://%s/foo", host));
+    EXPECT_TRUE(url.is_valid());
+    GURL subdomain_url(base::StringPrintf("https://foo.%s/foo", host));
+    EXPECT_TRUE(subdomain_url.is_valid());
+
+    // Both the root pattern and the subdomain-matching pattern should match
+    // the root URL.
+    EXPECT_TRUE(pattern.MatchesURL(url)) << url;
+    EXPECT_TRUE(match_subdomains_pattern.MatchesURL(url)) << url;
+
+    // Only the subdomain-matching pattern should match the subdomain URL.
+    EXPECT_FALSE(pattern.MatchesURL(subdomain_url)) << subdomain_url;
+    EXPECT_TRUE(match_subdomains_pattern.MatchesURL(subdomain_url))
+        << subdomain_url;
+  }
 }
 
 }  // namespace

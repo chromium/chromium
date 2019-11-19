@@ -47,7 +47,7 @@ void ScopedPrefConnectionBuilder::ProvideIncognitoPersistentPrefStoreUnderlay(
                                                         observed_prefs_.end());
   std::vector<std::string> filtered_persistent_perf_names;
   for (const char* persistent_perf_name : persistent_perf_names) {
-    if (base::ContainsKey(observed_prefs, persistent_perf_name))
+    if (base::Contains(observed_prefs, persistent_perf_name))
       filtered_persistent_perf_names.emplace_back(persistent_perf_name);
   }
   incognito_connection_ = mojom::IncognitoPersistentPrefStoreConnection::New(

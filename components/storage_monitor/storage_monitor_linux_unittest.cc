@@ -21,8 +21,8 @@
 #include "base/run_loop.h"
 #include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/task/task_scheduler/task_scheduler.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/task/thread_pool/thread_pool_instance.h"
+#include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/storage_monitor/mock_removable_storage_observer.h"
 #include "components/storage_monitor/removable_device_constants.h"
@@ -83,42 +83,33 @@ std::unique_ptr<StorageInfo> GetDeviceInfo(const base::FilePath& device_path,
       break;
     }
   }
-
-  std::unique_ptr<StorageInfo> storage_info;
-  if (!device_found) {
-    NOTREACHED();
-    return storage_info;
-  }
+  DCHECK(device_found);
 
   StorageInfo::Type type = kTestDeviceData[i].type;
-  storage_info.reset(new StorageInfo(
+  auto storage_info = std::make_unique<StorageInfo>(
       StorageInfo::MakeDeviceId(type, kTestDeviceData[i].unique_id),
-      mount_point.value(),
-      base::ASCIIToUTF16("volume label"),
-      base::ASCIIToUTF16("vendor name"),
-      base::ASCIIToUTF16("model name"),
-      kTestDeviceData[i].partition_size_in_bytes));
+      mount_point.value(), base::ASCIIToUTF16("volume label"),
+      base::ASCIIToUTF16("vendor name"), base::ASCIIToUTF16("model name"),
+      kTestDeviceData[i].partition_size_in_bytes);
   return storage_info;
 }
 
 uint64_t GetDevicePartitionSize(const std::string& device) {
-  for (size_t i = 0; i < base::size(kTestDeviceData); ++i) {
-    if (device == kTestDeviceData[i].device_path)
-      return kTestDeviceData[i].partition_size_in_bytes;
+  for (const auto& data : kTestDeviceData) {
+    if (device == data.device_path)
+      return data.partition_size_in_bytes;
   }
   return 0;
 }
 
 std::string GetDeviceId(const std::string& device) {
-  for (size_t i = 0; i < base::size(kTestDeviceData); ++i) {
-    if (device == kTestDeviceData[i].device_path) {
-      return StorageInfo::MakeDeviceId(kTestDeviceData[i].type,
-                                            kTestDeviceData[i].unique_id);
-    }
+  for (const auto& data : kTestDeviceData) {
+    if (device == data.device_path)
+      return StorageInfo::MakeDeviceId(data.type, data.unique_id);
   }
   if (device == kInvalidDevice) {
     return StorageInfo::MakeDeviceId(StorageInfo::FIXED_MASS_STORAGE,
-                                          kInvalidDevice);
+                                     kInvalidDevice);
   }
   return std::string();
 }
@@ -127,9 +118,9 @@ class TestStorageMonitorLinux : public StorageMonitorLinux {
  public:
   explicit TestStorageMonitorLinux(const base::FilePath& path)
       : StorageMonitorLinux(path) {
-    SetGetDeviceInfoCallbackForTest(base::Bind(&GetDeviceInfo));
+    SetGetDeviceInfoCallbackForTest(base::BindRepeating(&GetDeviceInfo));
   }
-  ~TestStorageMonitorLinux() override {}
+  ~TestStorageMonitorLinux() override = default;
 
  private:
   void UpdateMtab(
@@ -137,8 +128,8 @@ class TestStorageMonitorLinux : public StorageMonitorLinux {
     StorageMonitorLinux::UpdateMtab(new_mtab);
 
     // The UpdateMtab call performs the actual mounting by posting tasks
-    // to the task scheduler. This also needs to be flushed.
-    base::TaskScheduler::GetInstance()->FlushForTesting();
+    // to the thread pool. This also needs to be flushed.
+    base::ThreadPoolInstance::Get()->FlushForTesting();
 
     // Once the storage monitor picks up the changes to the fake mtab file,
     // exit the RunLoop that should be blocking the main test thread.
@@ -165,8 +156,8 @@ class StorageMonitorLinuxTest : public testing::Test {
     const std::string mount_type;
   };
 
-  StorageMonitorLinuxTest() {}
-  ~StorageMonitorLinuxTest() override {}
+  StorageMonitorLinuxTest() = default;
+  ~StorageMonitorLinuxTest() override = default;
 
  protected:
   void SetUp() override {
@@ -180,21 +171,20 @@ class StorageMonitorLinuxTest : public testing::Test {
       MtabTestData("dummydevice", "dummydir", kInvalidFS),
     };
     WriteToMtab(initial_test_data, base::size(initial_test_data),
-                true /* overwrite */);
+                /*overwrite=*/true);
 
-    monitor_.reset(new TestStorageMonitorLinux(mtab_file_));
-
-    mock_storage_observer_.reset(new MockRemovableStorageObserver);
+    monitor_ = std::make_unique<TestStorageMonitorLinux>(mtab_file_);
+    mock_storage_observer_ = std::make_unique<MockRemovableStorageObserver>();
     monitor_->AddObserver(mock_storage_observer_.get());
 
     monitor_->Init();
-    scoped_task_environment_.RunUntilIdle();
+    task_environment_.RunUntilIdle();
   }
 
   void TearDown() override {
-    scoped_task_environment_.RunUntilIdle();
+    task_environment_.RunUntilIdle();
     monitor_->RemoveObserver(mock_storage_observer_.get());
-    scoped_task_environment_.RunUntilIdle();
+    task_environment_.RunUntilIdle();
 
     // Linux storage monitor must be destroyed on the UI thread, so do it here.
     monitor_.reset();
@@ -203,7 +193,7 @@ class StorageMonitorLinuxTest : public testing::Test {
   // Append mtab entries from the |data| array of size |data_size| to the mtab
   // file, and run the message loop.
   void AppendToMtabAndRunLoop(const MtabTestData* data, size_t data_size) {
-    WriteToMtab(data, data_size, false  /* do not overwrite */);
+    WriteToMtab(data, data_size, /*overwrite=*/false);
     // Block until the mtab changes are detected by the file watcher.
     base::RunLoop().Run();
   }
@@ -211,7 +201,7 @@ class StorageMonitorLinuxTest : public testing::Test {
   // Overwrite the mtab file with mtab entries from the |data| array of size
   // |data_size|, and run the message loop.
   void OverwriteMtabAndRunLoop(const MtabTestData* data, size_t data_size) {
-    WriteToMtab(data, data_size, true  /* overwrite */);
+    WriteToMtab(data, data_size, /*overwrite=*/true);
     // Block until the mtab changes are detected by the file watcher.
     base::RunLoop().Run();
   }
@@ -219,22 +209,21 @@ class StorageMonitorLinuxTest : public testing::Test {
   // Simplied version of OverwriteMtabAndRunLoop() that just deletes all the
   // entries in the mtab file.
   void WriteEmptyMtabAndRunLoop() {
-    OverwriteMtabAndRunLoop(nullptr,  // No data.
-                            0);       // No data length.
+    OverwriteMtabAndRunLoop(/*data=*/nullptr, /*data_size=*/0);
   }
 
   // Create a directory named |dir| relative to the test directory.
   // It has a DCIM directory, so StorageMonitorLinux recognizes it as a media
   // directory.
   base::FilePath CreateMountPointWithDCIMDir(const std::string& dir) {
-    return CreateMountPoint(dir, true  /* create DCIM dir */);
+    return CreateMountPoint(dir, /*with_dcim_dir=*/true);
   }
 
   // Create a directory named |dir| relative to the test directory.
   // It does not have a DCIM directory, so StorageMonitorLinux does not
   // recognize it as a media directory.
   base::FilePath CreateMountPointWithoutDCIMDir(const std::string& dir) {
-    return CreateMountPoint(dir, false  /* do not create DCIM dir */);
+    return CreateMountPoint(dir, /*with_dcim_dir=*/false);
   }
 
   void RemoveDCIMDirFromMountPoint(const std::string& dir) {
@@ -309,7 +298,7 @@ class StorageMonitorLinuxTest : public testing::Test {
     ASSERT_EQ(1, endmntent(file));
   }
 
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_;
 
   std::unique_ptr<MockRemovableStorageObserver> mock_storage_observer_;
 
@@ -348,7 +337,8 @@ TEST_F(StorageMonitorLinuxTest, BasicAttachDetach) {
 }
 
 // Only removable devices are recognized.
-TEST_F(StorageMonitorLinuxTest, Removable) {
+// This test is flaky, see https://crbug.com/1012211
+TEST_F(StorageMonitorLinuxTest, DISABLED_Removable) {
   base::FilePath test_path_a = CreateMountPointWithDCIMDir(kMountPointA);
   ASSERT_FALSE(test_path_a.empty());
   MtabTestData test_data1[] = {
@@ -433,7 +423,7 @@ TEST_F(StorageMonitorLinuxTest, SwapMountPoints) {
 }
 
 // More complicated test case with multiple devices on multiple mount points.
-TEST_F(StorageMonitorLinuxTest, MultiDevicesMultiMountPoints) {
+TEST_F(StorageMonitorLinuxTest, DISABLED_MultiDevicesMultiMountPoints) {
   base::FilePath test_path_a = CreateMountPointWithDCIMDir(kMountPointA);
   base::FilePath test_path_b = CreateMountPointWithDCIMDir(kMountPointB);
   ASSERT_FALSE(test_path_a.empty());
@@ -500,7 +490,8 @@ TEST_F(StorageMonitorLinuxTest, MultiDevicesMultiMountPoints) {
   EXPECT_EQ(5, observer().detach_calls());
 }
 
-TEST_F(StorageMonitorLinuxTest, MultipleMountPointsWithNonDCIMDevices) {
+TEST_F(StorageMonitorLinuxTest,
+       DISABLED_MultipleMountPointsWithNonDCIMDevices) {
   base::FilePath test_path_a = CreateMountPointWithDCIMDir(kMountPointA);
   base::FilePath test_path_b = CreateMountPointWithDCIMDir(kMountPointB);
   ASSERT_FALSE(test_path_a.empty());
@@ -660,7 +651,7 @@ TEST_F(StorageMonitorLinuxTest, DeviceLookUp) {
   EXPECT_EQ(1, observer().detach_calls());
 }
 
-TEST_F(StorageMonitorLinuxTest, DevicePartitionSize) {
+TEST_F(StorageMonitorLinuxTest, DISABLED_DevicePartitionSize) {
   base::FilePath test_path_a = CreateMountPointWithDCIMDir(kMountPointA);
   base::FilePath test_path_b = CreateMountPointWithoutDCIMDir(kMountPointB);
   ASSERT_FALSE(test_path_a.empty());

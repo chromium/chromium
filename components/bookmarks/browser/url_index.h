@@ -40,7 +40,9 @@ class UrlIndex : public HistoryBookmarkModel {
   BookmarkNode* root() { return root_.get(); }
 
   // Adds |node| to |parent| at |index|.
-  void Add(BookmarkNode* parent, int index, std::unique_ptr<BookmarkNode> node);
+  void Add(BookmarkNode* parent,
+           size_t index,
+           std::unique_ptr<BookmarkNode> node);
 
   // Removes |node| and all its descendants from the map, returns the set of
   // urls that are no longer contained in the index.

@@ -5,9 +5,8 @@
 #ifndef CHROME_INSTALLER_LAUNCHER_SUPPORT_CHROME_LAUNCHER_SUPPORT_H_
 #define CHROME_INSTALLER_LAUNCHER_SUPPORT_CHROME_LAUNCHER_SUPPORT_H_
 
-namespace base {
-class FilePath;
-}
+#include <base/files/file_path.h>
+#include <base/version.h>
 
 namespace chrome_launcher_support {
 
@@ -29,6 +28,14 @@ base::FilePath GetChromePathForInstallationLevel(InstallationLevel level,
 // to the SxS (Canary) version of chrome.exe. The file path returned (if any) is
 // guaranteed to exist.
 base::FilePath GetAnyChromePath(bool is_sxs);
+
+// Returns the version of Chrome registered in Google Update at the specified
+// installation level, if it can be found in the registry.
+// Note: This version number may be different from the version of Chrome that
+// the user is already running or will get run when the user launches Chrome.
+// If |is_sxs| is true, gets the version of the SxS (Canary) version of Chrome.
+base::Version GetChromeVersionForInstallationLevel(InstallationLevel level,
+                                                   bool is_sxs);
 
 }  // namespace chrome_launcher_support
 

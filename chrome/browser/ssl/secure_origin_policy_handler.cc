@@ -19,7 +19,7 @@ SecureOriginPolicyHandler::SecureOriginPolicyHandler(const char* policy_name,
                                                      Schema schema)
     : SchemaValidatingPolicyHandler(policy_name,
                                     schema.GetKnownProperty(policy_name),
-                                    SCHEMA_STRICT) {
+                                    SCHEMA_ALLOW_UNKNOWN) {
   DCHECK(policy_name == key::kUnsafelyTreatInsecureOriginAsSecure ||
          policy_name == key::kOverrideSecurityRestrictionsOnInsecureOrigin);
 }

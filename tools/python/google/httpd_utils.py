@@ -5,6 +5,8 @@
 
 """A class to help start/stop a local apache http server."""
 
+from __future__ import print_function
+
 import logging
 import optparse
 import os
@@ -182,8 +184,8 @@ def main():
   options, args = option_parser.parse_args()
 
   if not options.server:
-    print ("Usage: %s -k {start|stop} [-r document_root] [--apache2]" %
-           sys.argv[0])
+    print("Usage: %s -k {start|stop} [-r document_root] [--apache2]" %
+          sys.argv[0])
     return 1
 
   document_root = None

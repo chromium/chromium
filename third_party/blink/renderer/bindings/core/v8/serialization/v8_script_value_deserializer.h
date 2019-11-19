@@ -12,7 +12,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_script_value.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "v8/include/v8.h"
 
 namespace blink {
@@ -81,6 +81,10 @@ class CORE_EXPORT V8ScriptValueDeserializer
       return true;
     }
     return false;
+  }
+
+  SerializedScriptValue* GetSerializedScriptValue() {
+    return serialized_script_value_.get();
   }
 
  private:

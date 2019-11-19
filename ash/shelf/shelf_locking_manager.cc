@@ -4,7 +4,7 @@
 
 #include "ash/shelf/shelf_locking_manager.h"
 
-#include "ash/session/session_controller.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
 #include "ash/wm/lock_state_controller.h"
@@ -17,7 +17,7 @@ ShelfLockingManager::ShelfLockingManager(Shelf* shelf)
       scoped_session_observer_(this) {
   DCHECK(shelf_);
   Shell::Get()->lock_state_controller()->AddObserver(this);
-  SessionController* controller = Shell::Get()->session_controller();
+  SessionControllerImpl* controller = Shell::Get()->session_controller();
   session_locked_ =
       controller->GetSessionState() != session_manager::SessionState::ACTIVE;
   screen_locked_ = controller->IsScreenLocked();

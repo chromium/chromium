@@ -45,11 +45,6 @@ class MODULES_EXPORT FileEntry final : public Entry {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static FileEntry* Create(DOMFileSystemBase* file_system,
-                           const String& full_path) {
-    return MakeGarbageCollected<FileEntry>(file_system, full_path);
-  }
-
   FileEntry(DOMFileSystemBase*, const String& full_path);
 
   void createWriter(V8FileWriterCallback*, V8ErrorCallback* = nullptr);

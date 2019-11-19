@@ -27,6 +27,9 @@ class SmbUrl {
   // Returns the host of the URL which can be resolved or unresolved.
   std::string GetHost() const;
 
+  // Returns the share component of the URL.
+  std::string GetShare() const;
+
   // Returns the full URL.
   const std::string& ToString() const;
 
@@ -60,6 +63,9 @@ class SmbUrl {
 
   // Holds the identified host of the URL. This does not store the host itself.
   url::Component host_;
+
+  // Share name component of the URL.
+  std::string share_;
 
   DISALLOW_COPY_AND_ASSIGN(SmbUrl);
 };
